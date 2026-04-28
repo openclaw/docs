@@ -136,6 +136,7 @@ GET /api/diagnostics/prometheus
     - معرّفات طلبات provider الخام (فقط تجزئات محدودة، عند الاقتضاء، على spans — وليس أبدًا على المقاييس)
     - مفاتيح الجلسات ومعرّفات الجلسات
     - أسماء المضيفين، ومسارات الملفات، والقيم السرية
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ increase(openclaw_prometheus_series_dropped_total[15m]) > 0
     - تتم المصادقة عبر مصادقة Gateway العادية.
     - السطح يقتصر على المقاييس فقط (من دون تتبعات أو سجلات).
     - الأفضل للحِزم التي تعتمد أصلًا على Prometheus + Grafana.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - نموذج **دفع**: يرسل OpenClaw بيانات OTLP/HTTP إلى مجمّع أو إلى واجهة خلفية متوافقة مع OTLP.
     - يتضمن السطح المقاييس، والتتبعات، والسجلات.
     - يربط مع Prometheus عبر OpenTelemetry Collector (مُصدِّر `prometheus` أو `prometheusremotewrite`) عندما تحتاج إلى الاثنين.
     - راجع [تصدير OpenTelemetry](/ar/gateway/opentelemetry) للاطلاع على الفهرس الكامل.
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ increase(openclaw_prometheus_series_dropped_total[15m]) > 0
     - تحقّق من `diagnostics.enabled: true` في الإعدادات.
     - أكّد أن Plugin مفعّل ومحمّل عبر `openclaw plugins list --enabled`.
     - أنشئ بعض الحركة؛ فلا تصدر counters وhistograms أي أسطر إلا بعد حدث واحد على الأقل.
+
   </Accordion>
   <Accordion title="401 / unauthorized">
     تتطلب نقطة النهاية نطاق مشغّل Gateway (`auth: "gateway"` مع `gatewayRuntimeScopeSurface: "trusted-operator"`). استخدم الرمز المميز أو كلمة المرور نفسها التي يستخدمها Prometheus لأي مسار آخر خاص بمشغّل Gateway. لا يوجد وضع عام غير موثّق.

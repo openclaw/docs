@@ -115,6 +115,7 @@ No todas las ejecuciones de agentes crean una tarea. Los turnos de Heartbeat y e
     - Turnos de Heartbeat: sesión principal; consulta [Heartbeat](/es/gateway/heartbeat)
     - Turnos normales de chat interactivo
     - Respuestas directas de `/command`
+
   </Accordion>
 </AccordionGroup>
 

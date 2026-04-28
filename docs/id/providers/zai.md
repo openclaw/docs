@@ -187,6 +187,7 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
     - Z.AI menggunakan autentikasi Bearer dengan API key Anda.
     - Opsi onboarding `zai-api-key` mendeteksi endpoint Z.AI yang cocok dari prefiks key secara otomatis.
     - Gunakan opsi regional eksplisit (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) saat Anda ingin memaksa surface API tertentu.
+
   </Accordion>
 </AccordionGroup>
 

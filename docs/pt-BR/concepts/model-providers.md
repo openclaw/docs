@@ -25,6 +25,7 @@ Referência para **provedores de LLM/modelo** (não canais de chat como WhatsApp
     - Helpers da CLI: `openclaw onboard`, `openclaw models list`, `openclaw models set <provider/model>`.
     - `models.providers.*.models[].contextWindow` é metadado nativo do modelo; `contextTokens` é o limite efetivo do runtime.
     - Regras de fallback, probes de cooldown e persistência de substituição por sessão: [Failover de modelo](/pt-BR/concepts/model-failover).
+
   </Accordion>
   <Accordion title="Divisão entre provedor/runtime do OpenAI">
     Rotas da família OpenAI são específicas por prefixo:
@@ -76,6 +77,7 @@ A lista completa de hooks do SDK de provedor e exemplos de Plugins incluídos es
     - Requisições são repetidas com a próxima chave apenas em respostas de rate limit (por exemplo `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` ou mensagens periódicas de limite de uso).
     - Falhas que não sejam de rate limit falham imediatamente; nenhuma rotação de chave é tentada.
     - Quando todas as chaves candidatas falham, o erro final retornado vem da última tentativa.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ Nos seletores de modelo do onboarding/configure, a opção de auth Volcengine pr
     - `volcengine/kimi-k2-5-260127` (Kimi K2.5)
     - `volcengine/glm-4-7-251222` (GLM 4.7)
     - `volcengine/deepseek-v3-2-251201` (DeepSeek V3.2 128K)
+
   </Tab>
   <Tab title="Modelos coding (volcengine-plan)">
     - `volcengine-plan/ark-code-latest`
@@ -428,6 +431,7 @@ Nos seletores de modelo do onboarding/configure, a opção de auth Volcengine pr
     - `volcengine-plan/kimi-k2.5`
     - `volcengine-plan/kimi-k2-thinking`
     - `volcengine-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -457,6 +461,7 @@ Nos seletores de modelo do onboarding/configure, a opção de auth BytePlus pref
     - `byteplus/seed-1-8-251228` (Seed 1.8)
     - `byteplus/kimi-k2-5-260127` (Kimi K2.5)
     - `byteplus/glm-4-7-251222` (GLM 4.7)
+
   </Tab>
   <Tab title="Modelos coding (byteplus-plan)">
     - `byteplus-plan/ark-code-latest`
@@ -464,6 +469,7 @@ Nos seletores de modelo do onboarding/configure, a opção de auth BytePlus pref
     - `byteplus-plan/kimi-k2.5`
     - `byteplus-plan/kimi-k2-thinking`
     - `byteplus-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -669,6 +675,7 @@ Exemplo (compatível com OpenAI):
     - Para controles de chat template do vLLM, defina `agents.defaults.models["provider/model"].params.chat_template_kwargs`. O OpenClaw envia automaticamente `enable_thinking: false` e `force_nonempty_content: true` para `vllm/nemotron-3-*` quando o nível de thinking da sessão está desativado.
     - Se `baseUrl` estiver vazio/omitido, o OpenClaw mantém o comportamento padrão do OpenAI (que resolve para `api.openai.com`).
     - Por segurança, um `compat.supportsDeveloperRole: true` explícito ainda é sobrescrito em endpoints `openai-completions` não nativos.
+
   </Accordion>
 </AccordionGroup>
 

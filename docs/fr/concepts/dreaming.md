@@ -93,6 +93,7 @@ Il existe aussi une voie de remplissage historique fondée pour les tâches de r
     - `memory rem-backfill --path ...` écrit des entrées de journal fondées et réversibles dans `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` prépare des candidats durables fondés dans le même magasin de preuves à court terme que celui déjà utilisé par la phase deep normale.
     - `memory rem-backfill --rollback` et `--rollback-short-term` suppriment ces artefacts de backfill préparés sans toucher aux entrées de journal ordinaires ni au rappel live à court terme.
+
   </Accordion>
 </AccordionGroup>
 

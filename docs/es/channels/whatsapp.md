@@ -371,6 +371,7 @@ Cuando el número propio vinculado también está presente en `allowFrom`, se ac
     - límite predeterminado de fragmento: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - el modo `newline` prioriza los límites de párrafo (líneas en blanco), y luego recurre a una fragmentación segura por longitud
+
   </Accordion>
 
   <Accordion title="Comportamiento de multimedia saliente">
@@ -383,6 +384,7 @@ Cuando el número propio vinculado también está presente en `allowFrom`, se ac
     - la reproducción de GIF animados es compatible mediante `gifPlayback: true` en envíos de video
     - los subtítulos se aplican al primer elemento multimedia al enviar cargas útiles de respuesta con varios elementos multimedia, excepto que las notas de voz PTT envían primero el audio y el texto visible por separado porque los clientes de WhatsApp no muestran los subtítulos de notas de voz de forma consistente
     - el origen multimedia puede ser HTTP(S), `file://` o rutas locales
+
   </Accordion>
 
   <Accordion title="Límites de tamaño de multimedia y comportamiento alternativo">
@@ -391,6 +393,7 @@ Cuando el número propio vinculado también está presente en `allowFrom`, se ac
     - las anulaciones por cuenta usan `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - las imágenes se optimizan automáticamente (barrido de tamaño/calidad) para ajustarse a los límites
     - si falla el envío de multimedia, la alternativa del primer elemento envía una advertencia de texto en lugar de descartar la respuesta silenciosamente
+
   </Accordion>
 </AccordionGroup>
 
@@ -475,12 +478,14 @@ Notas de comportamiento:
     - los IDs de cuenta provienen de `channels.whatsapp.accounts`
     - selección de cuenta predeterminada: `default` si existe; en caso contrario, el primer ID de cuenta configurado (ordenado)
     - los IDs de cuenta se normalizan internamente para la búsqueda
+
   </Accordion>
 
   <Accordion title="Rutas de credenciales y compatibilidad heredada">
     - ruta actual de autenticación: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - archivo de copia de seguridad: `creds.json.bak`
     - la autenticación predeterminada heredada en `~/.openclaw/credentials/` sigue siendo reconocida/migrada para flujos de cuenta predeterminada
+
   </Accordion>
 
   <Accordion title="Comportamiento de cierre de sesión">

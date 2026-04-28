@@ -226,6 +226,7 @@ OpenClaw buduje listę kandydatów na podstawie aktualnie żądanego `provider/m
     - Jeśli bieżące uruchomienie jest już na skonfigurowanym fallbacku w tej samej rodzinie dostawcy, OpenClaw nadal używa pełnego skonfigurowanego łańcucha.
     - Jeśli bieżące uruchomienie jest u innego dostawcy niż w konfiguracji i ten bieżący model nie jest już częścią skonfigurowanego łańcucha fallback, OpenClaw nie dołącza niepowiązanych skonfigurowanych fallbacków od innego dostawcy.
     - Gdy uruchomienie zaczęło się od nadpisania, skonfigurowany primary jest dołączany na końcu, aby łańcuch mógł wrócić do normalnego domyślnego stanu po wyczerpaniu wcześniejszych kandydatów.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ OpenClaw buduje listę kandydatów na podstawie aktualnie żądanego `provider/m
     - wyłączeniach billingowych
     - `LiveSessionModelSwitchError`, który jest normalizowany do ścieżki failover, aby nieaktualny zapisany model nie tworzył zewnętrznej pętli ponownych prób
     - innych nierozpoznanych błędach, gdy nadal pozostają kandydaci
+
   </Tab>
   <Tab title="Nie kontynuuje przy">
     - jawnych przerwaniach, które nie mają charakteru timeout/failover
     - błędach przepełnienia kontekstu, które powinny pozostać w logice Compaction/ponownych prób (na przykład `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` lub `ollama error: context length exceeded`)
     - końcowym nieznanym błędzie, gdy nie ma już żadnych kandydatów
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Gdy każdy profil uwierzytelniania dla dostawcy jest już w cooldown, OpenClaw n
     - Kandydat primary może zostać sprawdzony przez sondę blisko wygaśnięcia cooldown, z ograniczaniem częstotliwości per dostawca.
     - Równorzędne fallbacki u tego samego dostawcy mogą być próbowane mimo cooldown, gdy błąd wygląda na przejściowy (`rate_limit`, `overloaded` lub nieznany). Jest to szczególnie istotne, gdy limit szybkości jest ograniczony do modelu i model równorzędny może nadal odzyskać sprawność natychmiast.
     - Przejściowe sondy cooldown są ograniczone do jednej na dostawcę na jedno uruchomienie fallback, aby pojedynczy dostawca nie blokował fallback między dostawcami.
+
   </Accordion>
 </AccordionGroup>
 

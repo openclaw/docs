@@ -212,6 +212,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
       - Coloque IDs negativos de grupo ou supergrupo do Telegram, como `-1001234567890`, em `channels.telegram.groups`.
       - Coloque IDs de usuário do Telegram, como `8734062810`, em `groupAllowFrom` quando quiser limitar quais pessoas dentro de um grupo permitido podem acionar o bot.
       - Use `groupAllowFrom: ["*"]` apenas quando quiser que qualquer membro de um grupo permitido possa conversar com o bot.
+
     </Warning>
 
   </Tab>

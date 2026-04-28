@@ -44,14 +44,17 @@ Il n’installe ni ne modifie quoi que ce soit sur l’hôte distant.
       - Configuration uniquement
       - Configuration + identifiants + sessions
       - Réinitialisation complète (supprime aussi l’espace de travail)
+
   </Step>
   <Step title="Modèle et authentification">
     - La matrice complète des options figure dans [Options d’authentification et de modèle](#auth-and-model-options).
+
   </Step>
   <Step title="Espace de travail">
     - Valeur par défaut : `~/.openclaw/workspace` (configurable).
     - Initialise les fichiers d’espace de travail nécessaires au rituel d’amorçage du premier lancement.
     - Structure de l’espace de travail : [Agent workspace](/fr/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Demande le port, le bind, le mode d’authentification et l’exposition Tailscale.
@@ -65,6 +68,7 @@ Il n’installe ni ne modifie quoi que ce soit sur l’hôte distant.
       - Ne peut pas être combiné avec `--gateway-token`.
     - Désactivez l’authentification uniquement si vous faites entièrement confiance à tous les processus locaux.
     - Les binds non loopback exigent également une authentification.
+
   </Step>
   <Step title="Canaux">
     - [WhatsApp](/fr/channels/whatsapp) : connexion QR facultative
@@ -88,18 +92,22 @@ Il n’installe ni ne modifie quoi que ce soit sur l’hôte distant.
       - Si la création de la tâche est refusée, OpenClaw se replie sur un élément de démarrage par utilisateur dans le dossier Startup et démarre immédiatement la Gateway.
       - Les tâches planifiées restent préférées car elles offrent un meilleur état de supervision.
     - Sélection du runtime : Node (recommandé ; requis pour WhatsApp et Telegram). Bun n’est pas recommandé.
+
   </Step>
   <Step title="Vérification d’état">
     - Démarre la Gateway (si nécessaire) et exécute `openclaw health`.
     - `openclaw status --deep` ajoute la sonde d’état live de la Gateway à la sortie d’état, y compris les sondes de canaux lorsque c’est pris en charge.
+
   </Step>
   <Step title="Skills">
     - Lit les Skills disponibles et vérifie les prérequis.
     - Vous laisse choisir le gestionnaire Node : npm, pnpm ou bun.
     - Installe les dépendances facultatives (certaines utilisent Homebrew sur macOS).
+
   </Step>
   <Step title="Fin">
     - Résumé et étapes suivantes, y compris les options d’application iOS, Android et macOS.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Ce que vous définissez :
 - Indications de découverte :
   - macOS : Bonjour (`dns-sd`)
   - Linux : Avahi (`avahi-browse`)
+
 </Note>
 
 ## Options d’authentification et de modèle

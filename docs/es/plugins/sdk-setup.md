@@ -307,6 +307,7 @@ Los canales de espacio de trabajo incluidos que mantienen exportaciones seguras 
     - El canal está deshabilitado pero necesita superficies de setup/onboarding.
     - El canal está habilitado pero sin configurar.
     - La carga diferida está habilitada (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Qué debe registrar setupEntry">
     - El objeto plugin del channel (mediante `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ Los canales de espacio de trabajo incluidos que mantienen exportaciones seguras 
     - Servicios en segundo plano.
     - Importaciones pesadas de runtime (crypto, SDK).
     - Métodos del gateway necesarios solo después del inicio.
+
   </Accordion>
 </AccordionGroup>
 

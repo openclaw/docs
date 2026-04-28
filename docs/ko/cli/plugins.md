@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - `owner/repo` 같은 GitHub 리포지토리 축약형
     - `https://github.com/owner/repo` 같은 GitHub 리포지토리 URL
     - git URL
+
   </Tab>
   <Tab title="원격 marketplace 규칙">
     GitHub 또는 git에서 로드된 원격 marketplace의 경우, Plugin 항목은 복제된 marketplace 리포지토리 내부에 머물러야 합니다. OpenClaw는 해당 리포지토리의 상대 경로 소스를 허용하고, 원격 manifest의 HTTP(S), 절대 경로, git, GitHub, 기타 비경로 Plugin 소스는 거부합니다.

@@ -307,6 +307,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - channel ถูกปิดใช้งาน แต่ยังต้องใช้พื้นผิวการตั้งค่า/onboarding
     - channel ถูกเปิดใช้งานแล้วแต่ยังไม่ได้กำหนดค่า
     - เปิดใช้ deferred loading (`deferConfiguredChannelFullLoadUntilAfterListen`)
+
   </Accordion>
   <Accordion title="สิ่งที่ setupEntry ต้องลงทะเบียน">
     - ออบเจ็กต์ channel plugin (ผ่าน `defineSetupPluginEntry`)
@@ -321,6 +322,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - background services
     - import runtime ที่มีน้ำหนักมาก (crypto, SDK ต่าง ๆ)
     - gateway method ที่จำเป็นเฉพาะหลังเริ่มต้นระบบ
+
   </Accordion>
 </AccordionGroup>
 

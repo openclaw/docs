@@ -137,6 +137,7 @@ Fuente de verdad actual:
     - `/session idle <duration|off>` y `/session max-age <duration|off>` administran el vencimiento de la vinculación de hilos.
     - `/export-session [path]` exporta la sesión actual a HTML. Alias: `/export`.
     - `/export-trajectory [path]` exporta un [paquete de trayectoria](/es/tools/trajectory) JSONL para la sesión actual. Alias: `/trajectory`.
+
   </Accordion>
   <Accordion title="Controles del modelo y de ejecución">
     - `/think <level>` establece el nivel de razonamiento. Las opciones provienen del perfil del proveedor del modelo activo; los niveles comunes son `off`, `minimal`, `low`, `medium` y `high`, con niveles personalizados como `xhigh`, `adaptive`, `max` o `on` binario solo cuando se admiten. Alias: `/thinking`, `/t`.
@@ -149,6 +150,7 @@ Fuente de verdad actual:
     - `/model [name|#|status]` muestra o establece el modelo.
     - `/models [provider] [page] [limit=<n>|size=<n>|all]` enumera proveedores o modelos de un proveedor.
     - `/queue <mode>` administra el comportamiento de la cola (`steer`, `interrupt`, `followup`, `collect`, `steer-backlog`) más opciones como `debounce:2s cap:25 drop:summarize`.
+
   </Accordion>
   <Accordion title="Detección y estado">
     - `/help` muestra el resumen corto de ayuda.
@@ -160,12 +162,14 @@ Fuente de verdad actual:
     - `/context [list|detail|json]` explica cómo se ensambla el contexto.
     - `/whoami` muestra tu ID de remitente. Alias: `/id`.
     - `/usage off|tokens|full|cost` controla el pie de uso por respuesta o imprime un resumen local de costes.
+
   </Accordion>
   <Accordion title="Skills, listas de permitidos, aprobaciones">
     - `/skill <name> [input]` ejecuta una skill por nombre.
     - `/allowlist [list|add|remove] ...` administra entradas de la lista de permitidos. Solo texto.
     - `/approve <id> <decision>` resuelve solicitudes de aprobación de ejecución.
     - `/btw <question>` hace una pregunta secundaria sin cambiar el contexto futuro de la sesión. Consulta [BTW](/es/tools/btw).
+
   </Accordion>
   <Accordion title="Subagentes y ACP">
     - `/subagents list|kill|log|info|send|steer|spawn` administra ejecuciones de subagentes para la sesión actual.
@@ -175,6 +179,7 @@ Fuente de verdad actual:
     - `/agents` enumera los agentes vinculados por hilo para la sesión actual.
     - `/kill <id|#|all>` aborta uno o todos los subagentes en ejecución.
     - `/steer <id|#> <message>` envía dirección a un subagente en ejecución. Alias: `/tell`.
+
   </Accordion>
   <Accordion title="Escrituras y administración solo para el propietario">
     - `/config show|get|set|unset` lee o escribe `openclaw.json`. Solo para el propietario. Requiere `commands.config: true`.
@@ -183,6 +188,7 @@ Fuente de verdad actual:
     - `/debug show|set|unset|reset` administra anulaciones de configuración solo en tiempo de ejecución. Solo para el propietario. Requiere `commands.debug: true`.
     - `/restart` reinicia OpenClaw cuando está habilitado. Predeterminado: habilitado; configura `commands.restart: false` para deshabilitarlo.
     - `/send on|off|inherit` establece la política de envío. Solo para el propietario.
+
   </Accordion>
   <Accordion title="Voz, TTS, control del canal">
     - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` controla TTS. Consulta [TTS](/es/tools/tts).
@@ -190,6 +196,7 @@ Fuente de verdad actual:
     - `/bash <command>` ejecuta un comando del shell del host. Solo texto. Alias: `! <command>`. Requiere `commands.bash: true` más listas de permitidos de `tools.elevated`.
     - `!poll [sessionId]` comprueba un trabajo bash en segundo plano.
     - `!stop [sessionId]` detiene un trabajo bash en segundo plano.
+
   </Accordion>
 </AccordionGroup>
 
@@ -238,11 +245,13 @@ Las skills invocables por el usuario también se exponen como slash commands:
     - `/restart` está habilitado de forma predeterminada; establece `commands.restart: false` para deshabilitarlo.
     - `/plugins install <spec>` acepta las mismas especificaciones de Plugin que `openclaw plugins install`: ruta/archivo local, paquete npm o `clawhub:<pkg>`.
     - `/plugins enable|disable` actualiza la configuración del Plugin y puede solicitar un reinicio.
+
   </Accordion>
   <Accordion title="Comportamiento específico por canal">
     - Comando nativo solo de Discord: `/vc join|leave|status` controla canales de voz (no disponible como texto). `join` requiere un guild y un canal de voz/stage seleccionado. Requiere `channels.discord.voice` y comandos nativos.
     - Los comandos de vinculación de hilos de Discord (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) requieren que las vinculaciones de hilos efectivas estén habilitadas (`session.threadBindings.enabled` y/o `channels.discord.threadBindings.enabled`).
     - Referencia de comandos ACP y comportamiento del entorno de ejecución: [Agentes ACP](/es/tools/acp-agents).
+
   </Accordion>
   <Accordion title="Seguridad de verbose / trace / fast / reasoning">
     - `/verbose` está pensado para depuración y visibilidad adicional; mantenlo **desactivado** en uso normal.
@@ -251,6 +260,7 @@ Las skills invocables por el usuario también se exponen como slash commands:
     - `/fast` es específico del proveedor: OpenAI/OpenAI Codex lo asignan a `service_tier=priority` en endpoints nativos de Responses, mientras que las solicitudes públicas directas a Anthropic, incluido el tráfico autenticado por OAuth enviado a `api.anthropic.com`, lo asignan a `service_tier=auto` o `standard_only`. Consulta [OpenAI](/es/providers/openai) y [Anthropic](/es/providers/anthropic).
     - Los resúmenes de fallos de herramientas siguen mostrándose cuando corresponde, pero el texto detallado del fallo solo se incluye cuando `/verbose` está en `on` o `full`.
     - `/reasoning`, `/verbose` y `/trace` son arriesgados en entornos de grupo: pueden revelar razonamiento interno, salida de herramientas o diagnósticos del Plugin que no pretendías exponer. Es preferible dejarlos desactivados, especialmente en chats de grupo.
+
   </Accordion>
   <Accordion title="Cambio de modelo">
     - `/model` conserva inmediatamente el nuevo modelo de sesión.
@@ -258,6 +268,7 @@ Las skills invocables por el usuario también se exponen como slash commands:
     - Si ya hay una ejecución activa, OpenClaw marca un cambio en vivo como pendiente y solo reinicia en el nuevo modelo en un punto limpio de reintento.
     - Si la actividad de herramientas o la salida de respuesta ya han empezado, el cambio pendiente puede permanecer en cola hasta una oportunidad posterior de reintento o el siguiente turno del usuario.
     - En la TUI local, `/crestodian [request]` vuelve de la TUI normal del agente a Crestodian. Esto es independiente del modo de rescate del canal de mensajes y no concede autoridad de configuración remota.
+
   </Accordion>
   <Accordion title="Ruta rápida y atajos en línea">
     - **Ruta rápida:** los mensajes solo de comandos de remitentes incluidos en la lista de permitidos se gestionan inmediatamente (omiten la cola y el modelo).
@@ -266,6 +277,7 @@ Las skills invocables por el usuario también se exponen como slash commands:
       - Ejemplo: `hey /status` activa una respuesta de estado, y el texto restante continúa por el flujo normal.
     - Actualmente: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
     - Los mensajes no autorizados solo de comandos se ignoran en silencio, y los tokens `/...` en línea se tratan como texto sin formato.
+
   </Accordion>
   <Accordion title="Comandos de skill y argumentos nativos">
     - **Comandos de skill:** las skills `user-invocable` se exponen como slash commands. Los nombres se sanitizan a `a-z0-9_` (máx. 32 caracteres); las colisiones reciben sufijos numéricos (por ejemplo, `_2`).
@@ -274,6 +286,7 @@ Las skills invocables por el usuario también se exponen como slash commands:
       - Las skills pueden declarar opcionalmente `command-dispatch: tool` para enrutar el comando directamente a una herramienta (determinista, sin modelo).
       - Ejemplo: `/prose` (Plugin OpenProse) — consulta [OpenProse](/es/prose).
     - **Argumentos de comandos nativos:** Discord usa autocompletado para opciones dinámicas (y menús con botones cuando omites argumentos obligatorios). Telegram y Slack muestran un menú de botones cuando un comando admite opciones y omites el argumento. Las opciones dinámicas se resuelven contra el modelo de sesión de destino, por lo que las opciones específicas del modelo, como los niveles de `/think`, siguen la anulación `/model` de esa sesión.
+
   </Accordion>
 </AccordionGroup>
 
@@ -411,6 +424,7 @@ Ejemplos:
 - `/plugins list` y `/plugins show` usan detección real de Plugins contra el espacio de trabajo actual más la configuración en disco.
 - `/plugins enable|disable` solo actualiza la configuración del Plugin; no instala ni desinstala Plugins.
 - Después de cambios de habilitación/deshabilitación, reinicia el gateway para aplicarlos.
+
 </Note>
 
 ## Notas sobre la superficie
@@ -423,6 +437,7 @@ Ejemplos:
       - Slack: `agent:<agentId>:slack:slash:<userId>` (prefijo configurable mediante `channels.slack.slashCommand.sessionPrefix`)
       - Telegram: `telegram:slash:<userId>` (apunta a la sesión del chat mediante `CommandTargetSessionKey`)
     - **`/stop`** apunta a la sesión de chat activa para poder abortar la ejecución actual.
+
   </Accordion>
   <Accordion title="Detalles específicos de Slack">
     `channels.slack.slashCommand` sigue siendo compatible para un único comando de estilo `/openclaw`. Si habilitas `commands.native`, debes crear un slash command de Slack por cada comando integrado (con los mismos nombres que `/help`). Los menús de argumentos de comandos para Slack se entregan como botones efímeros de Block Kit.

@@ -57,6 +57,7 @@ OpenClaw wählt Modelle in dieser Reihenfolge aus:
     - `agents.defaults.musicGenerationModel` wird von der gemeinsamen Funktion zur Musikgenerierung verwendet. Wenn es weggelassen wird, kann `music_generate` trotzdem einen auth-gestützten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider, dann die verbleibenden registrierten Provider für Musikgenerierung in der Reihenfolge der Provider-IDs. Wenn Sie einen bestimmten Provider/ein bestimmtes Modell festlegen, konfigurieren Sie auch die Auth/API-Schlüssel dieses Providers.
     - `agents.defaults.videoGenerationModel` wird von der gemeinsamen Funktion zur Videogenerierung verwendet. Wenn es weggelassen wird, kann `video_generate` trotzdem einen auth-gestützten Provider-Standard ableiten. Es versucht zuerst den aktuellen Standard-Provider, dann die verbleibenden registrierten Provider für Videogenerierung in der Reihenfolge der Provider-IDs. Wenn Sie einen bestimmten Provider/ein bestimmtes Modell festlegen, konfigurieren Sie auch die Auth/API-Schlüssel dieses Providers.
     - Standards pro Agent können `agents.defaults.model` über `agents.list[].model` plus Bindings überschreiben (siehe [Multi-Agent-Routing](/de/concepts/multi-agent)).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Dies geschieht **bevor** eine normale Antwort erzeugt wird, daher kann es sich s
 - Das Modell zu `agents.defaults.models` hinzuzufügen, oder
 - die Allowlist zu leeren (`agents.defaults.models` entfernen), oder
 - ein Modell aus `/model list` auszuwählen.
+
 </Warning>
 
 Beispiel für eine Allowlist-Konfiguration:
@@ -157,6 +159,7 @@ Sie können Modelle für die aktuelle Sitzung wechseln, ohne neu zu starten:
     - Auf Discord öffnen `/model` und `/models` einen interaktiven Picker mit Dropdowns für Provider und Modell sowie einem Schritt zum Absenden.
     - `/models add` ist veraltet und gibt jetzt eine Veraltungsmeldung zurück, anstatt Modelle aus dem Chat zu registrieren.
     - `/model <#>` wählt aus diesem Picker aus.
+
   </Accordion>
   <Accordion title="Persistenz und Live-Wechsel">
     - `/model` speichert die neue Sitzungsauswahl sofort.
@@ -164,6 +167,7 @@ Sie können Modelle für die aktuelle Sitzung wechseln, ohne neu zu starten:
     - Wenn bereits ein Lauf aktiv ist, markiert OpenClaw einen Live-Wechsel als ausstehend und startet erst an einem sauberen Wiederholungspunkt mit dem neuen Modell neu.
     - Wenn Tool-Aktivität oder Antwortausgabe bereits begonnen hat, kann der ausstehende Wechsel bis zu einer späteren Wiederholungsmöglichkeit oder bis zur nächsten Benutzereingabe in der Warteschlange bleiben.
     - `/model status` ist die detaillierte Ansicht (Auth-Kandidaten und, falls konfiguriert, Provider-Endpunkt `baseUrl` + `api`-Modus).
+
   </Accordion>
   <Accordion title="Ref-Parsing">
     - Modell-Refs werden durch Aufteilen am **ersten** `/` geparst. Verwenden Sie `provider/model`, wenn Sie `/model <ref>` eingeben.
@@ -233,6 +237,7 @@ Zeigt das aufgelöste primäre Modell, Fallbacks, Bildmodell und eine Auth-Über
     - Verwenden Sie `--check` für Automatisierung (Exit `1` bei fehlend/abgelaufen, `2` bei bald ablaufend).
     - Verwenden Sie `--probe` für Live-Auth-Prüfungen; Probe-Zeilen können aus Auth-Profilen, Env-Zugangsdaten oder `models.json` stammen.
     - Wenn explizites `auth.order.<provider>` ein gespeichertes Profil auslässt, meldet Probe `excluded_by_auth_order`, statt es zu versuchen. Wenn Auth vorhanden ist, aber für diesen Provider kein prüfbares Modell aufgelöst werden kann, meldet Probe `status: no_model`.
+
   </Accordion>
 </AccordionGroup>
 

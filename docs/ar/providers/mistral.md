@@ -166,6 +166,7 @@ x-i18n:
     - تكون Base URL الخاصة بالموفّر افتراضيًا `https://api.mistral.ai/v1`.
     - نموذج الإعداد الأولي الافتراضي هو `mistral/mistral-large-latest`.
     - تستخدم Z.AI مصادقة Bearer مع مفتاح API الخاص بك.
+
   </Accordion>
 </AccordionGroup>
 

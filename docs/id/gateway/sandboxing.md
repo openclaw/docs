@@ -32,6 +32,7 @@ Ini bukan batas keamanan yang sempurna, tetapi secara material membatasi akses f
     - Akses observer noVNC dilindungi kata sandi secara default; OpenClaw mengeluarkan URL token berumur pendek yang menyajikan halaman bootstrap lokal dan membuka noVNC dengan kata sandi di fragmen URL (bukan log query/header).
     - `agents.defaults.sandbox.browser.allowHostControl` memungkinkan sesi yang di-sandbox menargetkan browser host secara eksplisit.
     - Allowlist opsional mengatur `target: "custom"`: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ Gunakan `backend: "ssh"` saat Anda ingin OpenClaw meng-sandbox `exec`, tool file
     - Pada penggunaan pertama setelah create atau recreate, OpenClaw melakukan seed workspace remote tersebut dari workspace lokal sekali.
     - Setelah itu, `exec`, `read`, `write`, `edit`, `apply_patch`, pembacaan media prompt, dan staging media masuk berjalan langsung terhadap workspace remote melalui SSH.
     - OpenClaw tidak menyinkronkan perubahan remote kembali ke workspace lokal secara otomatis.
+
   </Accordion>
   <Accordion title="Material autentikasi">
     - `identityFile`, `certificateFile`, `knownHostsFile`: gunakan file lokal yang sudah ada dan teruskan melalui config OpenSSH.
     - `identityData`, `certificateData`, `knownHostsData`: gunakan string inline atau SecretRef. OpenClaw me-resolve semuanya melalui snapshot runtime secret normal, menuliskannya ke file sementara dengan `0600`, lalu menghapusnya saat sesi SSH berakhir.
     - Jika `*File` dan `*Data` diatur untuk item yang sama, `*Data` menang untuk sesi SSH tersebut.
+
   </Accordion>
   <Accordion title="Konsekuensi remote-canonical">
     Ini adalah model **remote-canonical**. Workspace SSH remote menjadi status sandbox yang sebenarnya setelah seed awal.
@@ -205,11 +208,13 @@ Mode OpenShell:
     - OpenClaw meminta config SSH khusus sandbox dari OpenShell melalui `openshell sandbox ssh-config <name>`.
     - Core menulis config SSH itu ke file sementara, membuka sesi SSH, dan menggunakan ulang bridge filesystem remote yang sama seperti `backend: "ssh"`.
     - Dalam mode `mirror`, hanya lifecycle yang berbeda: sinkronkan lokal ke remote sebelum exec, lalu sinkronkan kembali setelah exec.
+
   </Accordion>
   <Accordion title="Batasan OpenShell saat ini">
     - browser sandbox belum didukung
     - `sandbox.docker.binds` tidak didukung pada backend OpenShell
     - knob runtime khusus Docker di bawah `sandbox.docker.*` tetap hanya berlaku untuk backend Docker
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ Contoh (source read-only + satu direktori data tambahan):
 - Mount sensitif (secret, SSH key, kredensial layanan) sebaiknya `:ro` kecuali benar-benar diperlukan.
 - Gabungkan dengan `workspaceAccess: "ro"` jika Anda hanya memerlukan akses baca ke workspace; mode bind tetap independen.
 - Lihat [Sandbox vs Tool Policy vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated) untuk cara bind berinteraksi dengan kebijakan tool dan elevated exec.
+
 </Warning>
 
 ## Image dan penyiapan
@@ -423,6 +429,7 @@ Secara default, container sandbox Docker berjalan **tanpa jaringan**. Override d
     - `network: "host"` diblokir.
     - `network: "container:<id>"` diblokir secara default (risiko bypass namespace join).
     - Override break-glass: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ Path:
     - `readOnlyRoot: true` mencegah penulisan; atur `readOnlyRoot: false` atau buat custom image.
     - `user` harus root untuk instalasi paket (hilangkan `user` atau atur `user: "0:0"`).
     - Sandbox exec **tidak** mewarisi `process.env` host. Gunakan `agents.defaults.sandbox.docker.env` (atau custom image) untuk API key skill.
+
   </Accordion>
 </AccordionGroup>
 

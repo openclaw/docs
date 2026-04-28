@@ -294,10 +294,12 @@ metadata:
     - Node install は `openclaw.json` の `skills.install.nodeManager` に従います（デフォルト: npm、選択肢: npm/pnpm/yarn/bun）。これは skill install にのみ影響します。Gateway runtime は引き続き Node であるべきで、Bun は WhatsApp/Telegram には推奨されません。
     - Gateway を使う installer 選択は優先度ベースです。install spec に複数の kind が混在する場合、OpenClaw は `skills.install.preferBrew` が有効で `brew` が存在するときは Homebrew を優先し、次に `uv`、その次に設定された node manager、その後に `go` や `download` などの他のフォールバックを優先します。
     - すべての install spec が `download` の場合、OpenClaw は 1 つの優先 installer にまとめず、すべての download option を表示します。
+
   </Accordion>
   <Accordion title="installer ごとの詳細">
     - **Go install:** `go` がなく `brew` が使える場合、gateway はまず Homebrew で Go を install し、可能なら `GOBIN` を Homebrew の `bin` に設定します。
     - **download install:** `url`（必須）、`archive`（`tar.gz` | `tar.bz2` | `zip`）、`extract`（デフォルト: archive が検出されたら自動）、`stripComponents`、`targetDir`（デフォルト: `~/.openclaw/tools/<skillKey>`）。
+
   </Accordion>
 </AccordionGroup>
 

@@ -210,6 +210,7 @@ Step Plan（`stepfun-plan`）：
     - `step-3.5-flash-2603` 当前仅在 `stepfun-plan` 上暴露。
     - 单个 auth 流程会为 `stepfun` 和 `stepfun-plan` 写入与区域匹配的配置文件，因此两个接口可以一起被发现。
     - 使用 `openclaw models list` 和 `openclaw models set <provider/model>` 查看或切换模型。
+
   </Accordion>
 </AccordionGroup>
 

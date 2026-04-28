@@ -407,12 +407,14 @@ O efeito prático é que o OpenClaw sabe, de antemão, qual plugin é dono de qu
     - pertencentes ao core
     - reutilizáveis por múltiplos plugins
     - consumíveis por canais/recursos sem conhecimento do fornecedor
+
   </Tab>
   <Tab title="Maus contratos">
     - política específica de fornecedor escondida no core
     - escapatórias isoladas de plugin que contornam o registro
     - código de canal acessando diretamente uma implementação de fornecedor
     - objetos de runtime ad hoc que não fazem parte de `OpenClawPluginApi` ou `api.runtime`
+
   </Tab>
 </Tabs>
 
@@ -428,6 +430,7 @@ Implicações:
 - um plugin nativo pode registrar ferramentas, handlers de rede, hooks e serviços
 - um bug em plugin nativo pode travar ou desestabilizar o gateway
 - um plugin nativo malicioso equivale à execução arbitrária de código dentro do processo do OpenClaw
+
 </Warning>
 
 Pacotes compatíveis são mais seguros por padrão porque o OpenClaw atualmente os trata como pacotes de metadados/conteúdo. Nas versões atuais, isso significa principalmente Skills empacotadas.
@@ -443,6 +446,7 @@ Para nomes de pacotes de workspace empacotados, mantenha o id do plugin ancorado
 - Um plugin de workspace com o mesmo id de um plugin empacotado intencionalmente sombreia a cópia empacotada quando esse plugin de workspace está ativado/na allowlist.
 - Isso é normal e útil para desenvolvimento local, testes de patch e hotfixes.
 - A confiança em plugins empacotados é resolvida a partir do snapshot da origem — o manifesto e o código em disco no momento do carregamento — e não dos metadados de instalação. Um registro de instalação corrompido ou substituído não pode ampliar silenciosamente a superfície de confiança de um plugin empacotado além do que a origem real declara.
+
 </Note>
 
 ## Limite de exportação

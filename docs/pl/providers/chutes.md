@@ -138,6 +138,7 @@ Dołączony katalog awaryjny zawiera bieżące referencje Chutes:
     - Wykrywanie przez klucz API i OAuth używa tego samego identyfikatora providera `chutes`.
     - Modele Chutes są rejestrowane jako `chutes/<model-id>`.
     - Jeśli wykrywanie nie powiedzie się przy starcie, dołączony statyczny katalog jest używany automatycznie.
+
   </Accordion>
 </AccordionGroup>
 

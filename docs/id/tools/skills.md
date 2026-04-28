@@ -292,10 +292,12 @@ metadata:
     - Instalasi node menghormati `skills.install.nodeManager` di `openclaw.json` (default: npm; opsi: npm/pnpm/yarn/bun). Ini hanya memengaruhi instalasi skill; runtime Gateway tetap sebaiknya Node — Bun tidak direkomendasikan untuk WhatsApp/Telegram.
     - Pemilihan installer yang didukung Gateway berbasis preferensi: saat spesifikasi instalasi mencampur beberapa jenis, OpenClaw memprioritaskan Homebrew saat `skills.install.preferBrew` diaktifkan dan `brew` ada, lalu `uv`, lalu node manager yang dikonfigurasi, lalu fallback lain seperti `go` atau `download`.
     - Jika setiap spesifikasi instalasi adalah `download`, OpenClaw menampilkan semua opsi unduhan alih-alih meringkasnya menjadi satu installer yang diprioritaskan.
+
   </Accordion>
   <Accordion title="Detail per installer">
     - **Instalasi Go:** jika `go` tidak ada dan `brew` tersedia, gateway akan memasang Go melalui Homebrew terlebih dahulu dan menetapkan `GOBIN` ke `bin` Homebrew jika memungkinkan.
     - **Instalasi unduhan:** `url` (wajib), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (default: otomatis saat arsip terdeteksi), `stripComponents`, `targetDir` (default: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

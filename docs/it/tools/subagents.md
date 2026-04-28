@@ -79,12 +79,14 @@ chat del richiedente quando l'esecuzione termina.
     - Al completamento, il sub-agent annuncia un messaggio di riepilogo/risultato nel canale chat del richiedente.
     - Il completamento è push-based. Una volta avviato, **non** interrogare in loop `/subagents list`, `sessions_list` o `sessions_history` solo per attendere la fine; ispeziona lo stato solo su richiesta per debug o intervento.
     - Al completamento, OpenClaw chiude in best-effort le schede/processi browser tracciati aperti da quella sessione sub-agent prima che continui il flusso di cleanup dell'annuncio.
+
   </Accordion>
   <Accordion title="Resilienza della consegna per spawn manuale">
     - OpenClaw prova prima la consegna diretta `agent` con una chiave di idempotenza stabile.
     - Se la consegna diretta fallisce, ricade sull'instradamento tramite coda.
     - Se l'instradamento tramite coda non è ancora disponibile, l'annuncio viene ritentato con un breve backoff esponenziale prima del give-up finale.
     - La consegna del completamento mantiene la route del richiedente risolta: le route di completamento vincolate a thread o conversazione vincono quando disponibili; se l'origine del completamento fornisce solo un canale, OpenClaw riempie il target/account mancante dalla route risolta della sessione del richiedente (`lastChannel` / `lastTo` / `lastAccountId`) così che la consegna diretta continui a funzionare.
+
   </Accordion>
   <Accordion title="Metadati di handoff del completamento">
     L'handoff di completamento alla sessione del richiedente è contesto interno generato a runtime
@@ -102,6 +104,7 @@ chat del richiedente quando l'esecuzione termina.
     - `/subagents spawn` è modalità one-shot (`mode: "run"`). Per sessioni persistenti vincolate a thread, usa `sessions_spawn` con `thread: true` e `mode: "session"`.
     - Per sessioni harness ACP (Claude Code, Gemini CLI, OpenCode o Codex ACP/acpx esplicito), usa `sessions_spawn` con `runtime: "acp"` quando lo strumento pubblicizza quel runtime. Vedi [Modello di consegna ACP](/it/tools/acp-agents#delivery-model) quando fai debug di completamenti o loop agente-a-agente. Quando il Plugin `codex` è abilitato, il controllo chat/thread Codex dovrebbe preferire `/codex ...` rispetto ad ACP, a meno che l'utente non chieda esplicitamente ACP/acpx.
     - OpenClaw nasconde `runtime: "acp"` finché ACP non è abilitato, il richiedente non è in sandbox e un Plugin backend come `acpx` non è caricato. `runtime: "acp"` si aspetta un id di harness ACP esterno, oppure una voce `agents.list[]` con `runtime.type="acp"`; usa il runtime predefinito del sub-agent per i normali agenti di configurazione OpenClaw da `agents_list`.
+
   </Accordion>
 </AccordionGroup>
 

@@ -33,6 +33,7 @@ Pour une vue d’ensemble de haut niveau, voir [Onboarding (CLI)](/fr/start/wiza
       - Configuration uniquement
       - Configuration + identifiants + sessions
       - Réinitialisation complète (supprime aussi l’espace de travail)
+
   </Step>
   <Step title="Modèle/Auth">
     - **Clé API Anthropic** : utilise `ANTHROPIC_API_KEY` si présente ou demande une clé, puis l’enregistre pour l’usage du daemon.
@@ -83,6 +84,7 @@ Pour une vue d’ensemble de haut niveau, voir [Onboarding (CLI)](/fr/start/wiza
     - Valeur par défaut `~/.openclaw/workspace` (configurable).
     - Initialise les fichiers d’espace de travail nécessaires au rituel bootstrap de l’agent.
     - Guide complet sur la structure de l’espace de travail + sauvegarde : [Espace de travail de l’agent](/fr/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Port, bind, mode d’authentification, exposition Tailscale.
@@ -98,6 +100,7 @@ Pour une vue d’ensemble de haut niveau, voir [Onboarding (CLI)](/fr/start/wiza
       - Ne peut pas être combiné avec `--gateway-token`.
     - Désactivez l’authentification uniquement si vous faites totalement confiance à tous les processus locaux.
     - Les binds non loopback nécessitent toujours une authentification.
+
   </Step>
   <Step title="Canaux">
     - [WhatsApp](/fr/channels/whatsapp) : connexion QR facultative.
@@ -109,12 +112,14 @@ Pour une vue d’ensemble de haut niveau, voir [Onboarding (CLI)](/fr/start/wiza
     - [BlueBubbles](/fr/channels/bluebubbles) : **recommandé pour iMessage** ; URL du serveur + mot de passe + webhook.
     - [iMessage](/fr/channels/imessage) : chemin CLI `imsg` hérité + accès à la base de données.
     - Sécurité DM : la valeur par défaut est l’appairage. Le premier DM envoie un code ; approuvez-le via `openclaw pairing approve <channel> <code>` ou utilisez des listes d’autorisation.
+
   </Step>
   <Step title="Recherche web">
     - Choisissez un fournisseur pris en charge tel que Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG ou Tavily (ou ignorez).
     - Les fournisseurs adossés à une API peuvent utiliser des variables d’environnement ou une configuration existante pour une configuration rapide ; les fournisseurs sans clé utilisent plutôt leurs prérequis spécifiques.
     - Ignorez avec `--skip-search`.
     - Configurez plus tard : `openclaw configure --section web`.
+
   </Step>
   <Step title="Installation du daemon">
     - macOS : LaunchAgent
@@ -126,18 +131,22 @@ Pour une vue d’ensemble de haut niveau, voir [Onboarding (CLI)](/fr/start/wiza
     - Si l’authentification par token requiert un token et que `gateway.auth.token` est géré par SecretRef, l’installation du daemon le valide mais ne persiste pas les valeurs de token en clair résolues dans les métadonnées d’environnement du service superviseur.
     - Si l’authentification par token requiert un token et que le SecretRef de token configuré n’est pas résolu, l’installation du daemon est bloquée avec des indications exploitables.
     - Si `gateway.auth.token` et `gateway.auth.password` sont tous deux configurés et que `gateway.auth.mode` n’est pas défini, l’installation du daemon est bloquée jusqu’à ce que le mode soit défini explicitement.
+
   </Step>
   <Step title="Vérification d’état">
     - Démarre le Gateway (si nécessaire) et exécute `openclaw health`.
     - Astuce : `openclaw status --deep` ajoute la probe d’état live du gateway à la sortie de statut, y compris les probes de canal lorsque pris en charge (nécessite un gateway joignable).
+
   </Step>
   <Step title="Skills (recommandé)">
     - Lit les Skills disponibles et vérifie les prérequis.
     - Vous permet de choisir un gestionnaire de paquets Node : **npm / pnpm** (bun déconseillé).
     - Installe les dépendances facultatives (certaines utilisent Homebrew sur macOS).
+
   </Step>
   <Step title="Terminer">
     - Résumé + étapes suivantes, y compris les apps iOS/Android/macOS pour des fonctionnalités supplémentaires.
+
   </Step>
 </Steps>
 

@@ -430,6 +430,7 @@ MiniMax 插件还通过 MiniMax Coding Plan
     - OpenClaw 会将 MiniMax coding-plan 用量标准化为与其他提供商相同的 “% left” 显示方式。MiniMax 原始的 `usage_percent` / `usagePercent` 字段表示的是剩余额度，而不是已消耗额度，因此 OpenClaw 会将其反转。有计数字段时优先使用计数字段。
     - 当 API 返回 `model_remains` 时，OpenClaw 会优先选择聊天模型条目，在需要时根据 `start_time` / `end_time` 推导窗口标签，并在计划标签中包含所选模型名称，以便更容易区分 coding-plan 窗口。
     - 用量快照将 `minimax`、`minimax-cn` 和 `minimax-portal` 视为同一个 MiniMax 配额面，并优先使用已存储的 MiniMax OAuth，然后才回退到 Coding Plan key 环境变量。
+
   </Accordion>
 </AccordionGroup>
 

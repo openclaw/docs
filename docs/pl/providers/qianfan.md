@@ -117,6 +117,7 @@ Domyślne dołączone odwołanie modelu to `qianfan/deepseek-v3.2`. `models.prov
     - Upewnij się, że Twój klucz API zaczyna się od `bce-v3/ALTAK-` i że dostęp do API Qianfan jest włączony w konsoli Baidu Cloud.
     - Jeśli modele nie są wyświetlane, potwierdź, że Twoje konto ma aktywowaną usługę Qianfan.
     - Domyślny base URL to `https://qianfan.baidubce.com/v2`. Zmieniaj go tylko wtedy, gdy używasz niestandardowego punktu końcowego lub proxy.
+
   </Accordion>
 </AccordionGroup>
 

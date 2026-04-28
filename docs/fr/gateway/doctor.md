@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - Vérification de fraîcheur du protocole UI (reconstruit l’interface Control UI lorsque le schéma de protocole est plus récent).
     - Vérification d’état de santé + invite au redémarrage.
     - Résumé de l’état des Skills (éligibles/manquants/bloqués) et état des plugins.
+
   </Accordion>
   <Accordion title="Configuration et migrations">
     - Normalisation de configuration pour les valeurs héritées.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - Migration de clés de contrat de manifeste de plugin héritées (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - Migration du magasin Cron hérité (`jobId`, `schedule.cron`, champs de livraison/charge utile de niveau supérieur, `provider` dans la charge utile, tâches de secours Webhook simples `notify: true`).
     - Migration de politique d’exécution d’agent héritée vers `agents.defaults.agentRuntime` et `agents.list[].agentRuntime`.
+
   </Accordion>
   <Accordion title="État et intégrité">
     - Inspection des fichiers de verrou de session et nettoyage des verrous obsolètes.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - Vérifications des permissions du fichier de configuration (`chmod 600`) lors d’une exécution locale.
     - État de santé de l’authentification des modèles : vérifie l’expiration OAuth, peut rafraîchir les tokens proches de l’expiration et signale les états de cooldown/désactivation des profils d’authentification.
     - Détection d’un répertoire d’espace de travail supplémentaire (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, services et superviseurs">
     - Réparation d’image sandbox lorsque le sandboxing est activé.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Audit de configuration de superviseur (launchd/systemd/schtasks) avec réparation facultative.
     - Vérifications des bonnes pratiques d’exécution Gateway (Node vs Bun, chemins de gestionnaire de version).
     - Diagnostics de collision de port Gateway (par défaut `18789`).
+
   </Accordion>
   <Accordion title="Authentification, sécurité et appairage">
     - Avertissements de sécurité pour les politiques DM ouvertes.
     - Vérifications d’authentification Gateway pour le mode token local (propose la génération de token lorsqu’aucune source de token n’existe ; n’écrase pas les configurations token SecretRef).
     - Détection des problèmes d’appairage d’appareil (premières demandes d’appairage en attente, mises à niveau de rôle/périmètre en attente, dérive obsolète du cache local de token d’appareil, et dérive d’authentification des enregistrements appairés).
+
   </Accordion>
   <Accordion title="Espace de travail et shell">
     - Vérification de linger systemd sous Linux.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - Vérification de l’état de préparation du fournisseur d’embeddings pour la recherche Memory (modèle local, clé API distante ou binaire QMD).
     - Vérifications d’installation source (incohérence d’espace de travail pnpm, ressources UI manquantes, binaire tsx manquant).
     - Écrit la configuration mise à jour + les métadonnées d’assistant.
+
   </Accordion>
 </AccordionGroup>
 

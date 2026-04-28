@@ -102,6 +102,7 @@ x-i18n:
     - Te wdrożenia mogą się różnić i zmieniać w czasie; nie ma jednej stałej rekomendacji dostawcy.
     - Sprawdź bieżące ustawienie środowiska wykonawczego na każdym gateway przez `openclaw models status`.
     - Dla agentów wrażliwych na bezpieczeństwo / z włączonymi narzędziami używaj najsilniejszego dostępnego modelu najnowszej generacji.
+
   </Accordion>
 
   <Accordion title="Jak przełączać modele w locie (bez restartu)?">

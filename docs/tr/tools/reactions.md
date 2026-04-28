@@ -37,35 +37,42 @@ aracını `react` eylemiyle kullanarak mesajlara emoji reaction ekleyebilir ve k
   <Accordion title="Discord ve Slack">
     - Boş `emoji`, botun mesaj üzerindeki tüm reaction’larını kaldırır.
     - `remove: true` yalnızca belirtilen emojiyi kaldırır.
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - Boş `emoji`, uygulamanın mesaj üzerindeki reaction’larını kaldırır.
     - `remove: true` yalnızca belirtilen emojiyi kaldırır.
+
   </Accordion>
 
   <Accordion title="Telegram">
     - Boş `emoji`, botun reaction’larını kaldırır.
     - `remove: true` da reaction’ları kaldırır, ancak araç doğrulaması için yine de boş olmayan bir `emoji` gerektirir.
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - Boş `emoji`, bot reaction’ını kaldırır.
     - `remove: true`, dahili olarak boş emojiye eşlenir (araç çağrısında yine de `emoji` gerektirir).
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - Boş olmayan `emoji` gerektirir.
     - `remove: true`, o belirli emoji reaction’ını kaldırır.
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - `add`, `remove` ve `list` eylemleriyle `feishu_reaction` aracını kullanın.
     - Ekleme/kaldırma `emoji_type` gerektirir; kaldırma ayrıca `reaction_id` de gerektirir.
+
   </Accordion>
 
   <Accordion title="Signal">
     - Gelen reaction bildirimleri `channels.signal.reactionNotifications` tarafından denetlenir: `"off"` bunları devre dışı bırakır, `"own"` (varsayılan) kullanıcılar bot mesajlarına reaction verdiğinde olay yayınlar ve `"all"` tüm reaction’lar için olay yayınlar.
+
   </Accordion>
 </AccordionGroup>
 

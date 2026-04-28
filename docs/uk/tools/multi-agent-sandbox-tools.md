@@ -232,6 +232,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     - Якщо встановлено `agents.list[].tools.sandbox.tools`, це замінює `tools.sandbox.tools` для цього агента.
     - Якщо встановлено `agents.list[].tools.profile`, це перевизначає `tools.profile` для цього агента.
     - Ключі інструментів провайдера можуть приймати або `provider` (наприклад, `google-antigravity`), або `provider/model` (наприклад, `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Поведінка порожнього allowlist">
     Якщо будь-який явний список дозволених інструментів у цьому ланцюжку призводить до того, що для запуску не залишається жодного викликаного інструмента, OpenClaw зупиняється до надсилання запиту моделі. Це зроблено навмисно: агент, налаштований із відсутнім інструментом, наприклад `agents.list[].tools.allow: ["query_db"]`, має завершуватися з явною помилкою, доки не буде увімкнено Plugin, який реєструє `query_db`, а не продовжувати працювати як текстовий агент.
@@ -360,6 +361,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="Перевірте обмеження інструментів">
     - Надішліть повідомлення, яке вимагає обмежених інструментів.
     - Переконайтеся, що агент не може використовувати заборонені інструменти.
+
   </Step>
   <Step title="Відстежуйте журнали">
     ```bash
@@ -376,15 +378,18 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Accordion title="Агент не працює в пісочниці попри `mode: 'all'`">
     - Перевірте, чи немає глобального `agents.defaults.sandbox.mode`, яке це перевизначає.
     - Конфігурація агента має пріоритет, тож установіть `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Інструменти все ще доступні попри список deny">
     - Перевірте порядок фільтрації інструментів: global → agent → sandbox → subagent.
     - Кожен рівень може лише додатково обмежувати, а не повертати доступ.
     - Перевірте через журнали: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Контейнер не ізольований для кожного агента">
     - Установіть `scope: "agent"` у конфігурації пісочниці для конкретного агента.
     - Типове значення — `"session"`, яке створює один контейнер на сесію.
+
   </Accordion>
 </AccordionGroup>
 

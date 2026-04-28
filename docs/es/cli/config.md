@@ -56,6 +56,7 @@ Imprime el esquema JSON generado para `openclaw.json` en stdout como JSON.
     - Las ramas `anyOf` / `oneOf` / `allOf` también heredan los mismos metadatos de documentación cuando existe documentación de campo coincidente.
     - Metadatos de esquema de Plugin + canal en vivo en el mejor esfuerzo cuando se pueden cargar los manifiestos del runtime.
     - Un esquema de respaldo limpio incluso cuando la configuración actual no es válida.
+
   </Accordion>
   <Accordion title="RPC de runtime relacionado">
     `config.schema.lookup` devuelve una ruta de configuración normalizada con un nodo de esquema superficial (`title`, `description`, `type`, `enum`, `const`, límites comunes), metadatos coincidentes de pistas de UI y resúmenes de hijos inmediatos. Úsalo para un análisis detallado con alcance por ruta en Control UI o clientes personalizados.
@@ -191,15 +192,18 @@ Los destinos del constructor de proveedor deben usar `secrets.providers.<alias>`
   <Accordion title="Indicadores comunes">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Proveedor Env (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (repetible)
+
   </Accordion>
   <Accordion title="Proveedor File (--provider-source file)">
     - `--provider-path <path>` (obligatorio)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Proveedor Exec (--provider-source exec)">
     - `--provider-command <path>` (obligatorio)
@@ -212,6 +216,7 @@ Los destinos del constructor de proveedor deben usar `secrets.providers.<alias>`
     - `--provider-trusted-dir <path>` (repetible)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - Las comprobaciones de SecretRef exec se omiten de forma predeterminada durante `dry-run` para evitar efectos secundarios de comandos.
     - Usa `--allow-exec` con `--dry-run` para activar las comprobaciones de SecretRef exec (esto puede ejecutar comandos del proveedor).
     - `--allow-exec` es solo para `dry-run` y da error si se usa sin `--dry-run`.
+
   </Accordion>
   <Accordion title="Campos de --dry-run --json">
     `--dry-run --json` imprime un informe legible por máquina:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: el provider/ref referenciado no puede resolverse actualmente (variable de entorno ausente, puntero de archivo no válido, fallo del provider exec o incompatibilidad entre provider/source).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: `dry-run` omitió refs exec; vuelve a ejecutar con `--allow-exec` si necesitas validación de capacidad de resolución exec.
     - En modo por lotes, corrige las entradas con error y vuelve a ejecutar `--dry-run` antes de escribir.
+
   </Accordion>
 </AccordionGroup>
 

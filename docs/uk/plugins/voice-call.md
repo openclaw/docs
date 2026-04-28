@@ -172,12 +172,14 @@ Plugin Voice Call працює **всередині процесу Gateway**. Я
     - У безкоштовному тарифі ngrok задавайте `publicUrl` як точний URL ngrok; перевірка підпису завжди примусово виконується.
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` дозволяє Webhook Twilio з недійсними підписами **лише** коли `tunnel.provider="ngrok"` і `serve.bind` є loopback (локальний агент ngrok). Лише для локальної розробки.
     - URL ngrok на безкоштовному тарифі можуть змінюватися або додавати проміжну поведінку; якщо `publicUrl` зміниться, підписи Twilio перестануть проходити перевірку. Для production краще використовувати стабільний домен або funnel Tailscale.
+
   </Accordion>
   <Accordion title="Ліміти з’єднань для streaming">
     - `streaming.preStartTimeoutMs` закриває сокети, які ніколи не надсилають коректний кадр `start`.
     - `streaming.maxPendingConnections` обмежує загальну кількість неавтентифікованих сокетів до початку.
     - `streaming.maxPendingConnectionsPerIp` обмежує кількість неавтентифікованих сокетів до початку на одну вихідну IP-адресу.
     - `streaming.maxConnections` обмежує загальну кількість відкритих сокетів медіапотоку (очікувальні + активні).
+
   </Accordion>
   <Accordion title="Міграції застарілої конфігурації">
     Старіші конфігурації, які використовують `provider: "log"`, `twilio.from` або застарілі ключі OpenAI у `streaming.*`, переписуються командою `openclaw doctor --fix`.

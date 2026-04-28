@@ -68,6 +68,7 @@ Se la comprensione fallisce o è disabilitata, **il flusso di risposta continua*
       - policy `attachments` (`mode`, `maxAttachments`, `prefer`)
       - `scope` (gating facoltativo per canale/chatType/chiave sessione)
     - `tools.media.concurrency`: numero massimo di esecuzioni concorrenti per capacità (predefinito **2**).
+
   </Accordion>
 </AccordionGroup>
 
@@ -164,6 +165,7 @@ Valori predefiniti consigliati:
     - Se un modello primario Gateway/WebChat è solo testo, gli allegati immagine vengono preservati come riferimenti offloaded `media://inbound/*` così gli strumenti immagine/PDF o il modello immagine configurato possono comunque ispezionarli invece di perdere l'allegato.
     - Le richieste esplicite `openclaw infer image describe --model <provider/model>` sono diverse: eseguono direttamente quel provider/modello compatibile con immagini, inclusi riferimenti Ollama come `ollama/qwen2.5vl:7b`.
     - Se `<capability>.enabled: true` ma non sono configurati modelli, OpenClaw prova il **modello di risposta attivo** quando il suo provider supporta la capacità.
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +266,7 @@ Per le voci CLI, **imposta `capabilities` esplicitamente** per evitare corrispon
 
 - La comprensione delle immagini `minimax` e `minimax-portal` proviene dal provider media di proprietà del plugin `MiniMax-VL-01`.
 - Il catalogo testuale MiniMax incluso resta inizialmente solo testo; le voci esplicite `models.providers.minimax` materializzano riferimenti chat M2.7 compatibili con immagini.
+
 </Note>
 
 ## Guida alla selezione del modello
@@ -297,6 +300,7 @@ Quando `mode: "all"`, gli output sono etichettati `[Image 1/2]`, `[Audio 2/2]`, 
     - Questo percorso di estrazione degli allegati omette intenzionalmente il lungo banner `SECURITY NOTICE:` per evitare di gonfiare il prompt dei media; i marcatori di confine e i metadati restano comunque presenti.
     - Se un file non ha testo estraibile, OpenClaw inietta `[No extractable text]`.
     - Se in questo percorso un PDF usa come fallback immagini renderizzate delle pagine, il prompt dei media mantiene il placeholder `[PDF content rendered to images; images not forwarded to model]` perché questo passaggio di estrazione degli allegati inoltra blocchi di testo, non le immagini PDF renderizzate.
+
   </Accordion>
 </AccordionGroup>
 

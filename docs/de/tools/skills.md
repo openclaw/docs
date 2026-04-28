@@ -292,10 +292,12 @@ metadata:
     - Node-Installationen berücksichtigen `skills.install.nodeManager` in `openclaw.json` (Standard: npm; Optionen: npm/pnpm/yarn/bun). Dies betrifft nur Skill-Installationen; die Gateway-Laufzeit sollte weiterhin Node sein — Bun wird für WhatsApp/Telegram nicht empfohlen.
     - Die Gateway-gestützte Installer-Auswahl ist präferenzgesteuert: Wenn Installer-Spezifikationen verschiedene Typen mischen, bevorzugt OpenClaw Homebrew, wenn `skills.install.preferBrew` aktiviert ist und `brew` existiert, dann `uv`, dann den konfigurierten Node-Manager und danach andere Fallbacks wie `go` oder `download`.
     - Wenn jede Installer-Spezifikation `download` ist, zeigt OpenClaw alle Download-Optionen an, statt auf einen bevorzugten Installer zu reduzieren.
+
   </Accordion>
   <Accordion title="Details pro Installer">
     - **Go-Installationen:** Wenn `go` fehlt und `brew` verfügbar ist, installiert das Gateway zuerst Go über Homebrew und setzt `GOBIN` wenn möglich auf Homebrews `bin`.
     - **Download-Installationen:** `url` (erforderlich), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (Standard: automatisch, wenn ein Archiv erkannt wird), `stripComponents`, `targetDir` (Standard: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

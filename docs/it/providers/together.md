@@ -126,6 +126,7 @@ la selezione del provider e il comportamento di failover.
     - Se i modelli non compaiono, conferma che la chiave API sia impostata nell'
       ambiente corretto per il tuo processo Gateway.
     - I riferimenti modello usano la forma `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

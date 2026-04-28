@@ -164,12 +164,14 @@ nadal zwracają dokładnie brakującą konfigurację dostawcy podczas użycia.
     - W darmowym planie ngrok ustaw `publicUrl` na dokładny adres URL ngrok; weryfikacja podpisu jest zawsze wymuszana.
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` pozwala na Webhooki Twilio z nieprawidłowymi podpisami **tylko** gdy `tunnel.provider="ngrok"` i `serve.bind` wskazuje local loopback (lokalny agent ngrok). Tylko lokalny dev.
     - Adresy URL darmowego planu ngrok mogą się zmieniać lub dodawać zachowanie pośrednie; jeśli `publicUrl` przestanie być aktualny, podpisy Twilio będą błędne. W środowisku produkcyjnym preferuj stabilną domenę lub funnel Tailscale.
+
   </Accordion>
   <Accordion title="Limity połączeń strumieniowych">
     - `streaming.preStartTimeoutMs` zamyka gniazda, które nigdy nie wysyłają prawidłowej ramki `start`.
     - `streaming.maxPendingConnections` ogranicza łączną liczbę nieuwierzytelnionych gniazd przed startem.
     - `streaming.maxPendingConnectionsPerIp` ogranicza liczbę nieuwierzytelnionych gniazd przed startem na adres IP źródła.
     - `streaming.maxConnections` ogranicza łączną liczbę otwartych gniazd strumienia mediów (oczekujące + aktywne).
+
   </Accordion>
   <Accordion title="Migracje starszej konfiguracji">
     Starsze konfiguracje używające `provider: "log"`, `twilio.from` lub starszych

@@ -126,6 +126,7 @@ x-i18n:
     - إذا فشل اكتشاف النموذج عند بدء التشغيل، يعود OpenClaw إلى الفهرس الثابت المضمّن الذي يحتوي على `kilocode/kilo/auto`.
     - تأكد من أن مفتاح API الخاص بك صالح وأن حساب Kilo لديك يحتوي على النماذج المطلوبة مفعلة.
     - عندما يعمل Gateway كـ daemon، تأكد من أن `KILOCODE_API_KEY` متاح لتلك العملية (على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`).
+
   </Accordion>
 </AccordionGroup>
 

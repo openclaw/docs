@@ -212,6 +212,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
       - 将 `-1001234567890` 这样的负数 Telegram 群组或超级群组聊天 ID 放在 `channels.telegram.groups` 下。
       - 当你想限制允许群组中哪些人可以触发机器人时，将 `8734062810` 这样的 Telegram 用户 ID 放在 `groupAllowFrom` 下。
       - 仅当你希望允许群组中的任意成员都能与机器人对话时，才使用 `groupAllowFrom: ["*"]`。
+
     </Warning>
 
   </Tab>

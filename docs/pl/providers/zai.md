@@ -188,6 +188,7 @@ Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne 
     - Z.AI używa uwierzytelniania Bearer z Twoim kluczem API.
     - Opcja onboardingu `zai-api-key` automatycznie wykrywa pasujący punkt końcowy Z.AI na podstawie prefiksu klucza.
     - Użyj jawnych opcji regionalnych (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`), gdy chcesz wymusić określoną powierzchnię API.
+
   </Accordion>
 </AccordionGroup>
 

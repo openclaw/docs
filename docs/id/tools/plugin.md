@@ -146,6 +146,7 @@ penemuan Plugin gagal alih-alih diam-diam fallback ke path sumber.
   <Accordion title="Plugin memori">
     - `memory-core` — pencarian memori bawaan (default melalui `plugins.slots.memory`)
     - `memory-lancedb` — memori jangka panjang install-on-demand dengan auto-recall/capture (setel `plugins.slots.memory = "memory-lancedb"`)
+
   </Accordion>
 
   <Accordion title="Penyedia speech (diaktifkan secara default)">
@@ -155,6 +156,7 @@ penemuan Plugin gagal alih-alih diam-diam fallback ke path sumber.
   <Accordion title="Lainnya">
     - `browser` — Plugin browser bawaan untuk alat browser, CLI `openclaw browser`, metode Gateway `browser.request`, runtime browser, dan layanan kontrol browser default (diaktifkan secara default; nonaktifkan sebelum menggantinya)
     - `copilot-proxy` — bridge VS Code Copilot Proxy (dinonaktifkan secara default)
+
   </Accordion>
 </AccordionGroup>
 
@@ -204,6 +206,7 @@ atau gunakan `openclaw gateway restart` terhadap Gateway yang sedang berjalan.
   - **Dinonaktifkan**: Plugin ada tetapi aturan pengaktifan menonaktifkannya. Konfigurasi tetap disimpan.
   - **Hilang**: konfigurasi merujuk ke ID Plugin yang tidak ditemukan oleh discovery.
   - **Tidak valid**: Plugin ada tetapi konfigurasinya tidak cocok dengan skema yang dideklarasikan.
+
 </Accordion>
 
 ## Discovery dan prioritas

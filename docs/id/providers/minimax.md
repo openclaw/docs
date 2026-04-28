@@ -433,6 +433,7 @@ Lihat [MiniMax Search](/id/tools/minimax-search) untuk konfigurasi dan penggunaa
     - OpenClaw menormalkan penggunaan coding-plan MiniMax ke tampilan `% tersisa` yang sama seperti provider lain. Field mentah `usage_percent` / `usagePercent` MiniMax adalah kuota tersisa, bukan kuota yang dikonsumsi, jadi OpenClaw membalikkannya. Field berbasis hitungan menang bila ada.
     - Saat API mengembalikan `model_remains`, OpenClaw mengutamakan entri model chat, menurunkan label jendela dari `start_time` / `end_time` bila perlu, dan menyertakan nama model terpilih dalam label plan agar jendela coding-plan lebih mudah dibedakan.
     - Snapshot penggunaan memperlakukan `minimax`, `minimax-cn`, dan `minimax-portal` sebagai surface kuota MiniMax yang sama, dan mengutamakan OAuth MiniMax yang tersimpan sebelum fallback ke env var key Coding Plan.
+
   </Accordion>
 </AccordionGroup>
 

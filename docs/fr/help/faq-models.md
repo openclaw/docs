@@ -101,6 +101,7 @@ x-i18n:
     - Ces déploiements peuvent différer et évoluer dans le temps ; il n’existe pas de recommandation fixe de fournisseur.
     - Vérifiez le paramètre d’exécution actuel sur chaque gateway avec `openclaw models status`.
     - Pour les agents sensibles à la sécurité/avec outils activés, utilisez le modèle de dernière génération le plus puissant disponible.
+
   </Accordion>
 
   <Accordion title="Comment changer de modèle à la volée (sans redémarrer) ?">

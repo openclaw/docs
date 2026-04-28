@@ -68,6 +68,7 @@ Onaylandıktan sonra cihaz hatırlanır ve `openclaw devices revoke --device <id
 - `gateway.auth.allowTailscale: true` olduğunda, Tailscale kimliği doğrulandığında ve tarayıcı cihaz kimliğini sunduğunda Tailscale Serve, Control UI operatör oturumları için eşleştirme gidiş-dönüşünü atlayabilir.
 - Doğrudan Tailnet bind'leri, LAN tarayıcı bağlantıları ve cihaz kimliği olmayan tarayıcı profilleri yine de açık onay gerektirir.
 - Her tarayıcı profili benzersiz bir cihaz kimliği oluşturur; bu nedenle tarayıcı değiştirmek veya tarayıcı verilerini temizlemek yeniden eşleştirme gerektirir.
+
 </Note>
 
 ## Kişisel kimlik (tarayıcı yereli)
@@ -96,18 +97,21 @@ Control UI, ilk yüklemede tarayıcı yerel ayarınıza göre kendini yerelleşt
     - Gateway WS üzerinden modelle sohbet edin (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`).
     - Tarayıcıdan doğrudan WebRTC üzerinden OpenAI Realtime ile konuşun. Gateway, `talk.realtime.session` ile kısa ömürlü bir Realtime istemci sırrı üretir; tarayıcı mikrofon sesini doğrudan OpenAI'ye gönderir ve `openclaw_agent_consult` tool çağrılarını, daha büyük yapılandırılmış OpenClaw modeli için `chat.send` üzerinden geri iletir.
     - Sohbet içinde tool çağrılarını + canlı tool çıktı kartlarını akış halinde gösterin (agent olayları).
+
   </Accordion>
   <Accordion title="Kanallar, örnekler, oturumlar, rüyalar">
     - Kanallar: yerleşik ve paketlenmiş/dış Plugin kanallarının durumu, QR girişi ve kanal başına config (`channels.status`, `web.login.*`, `config.patch`).
     - Örnekler: varlık listesi + yenileme (`system-presence`).
     - Oturumlar: liste + oturum başına model/thinking/fast/verbose/trace/reasoning geçersiz kılmaları (`sessions.list`, `sessions.patch`).
     - Rüyalar: Dreaming durumu, etkinleştir/devre dışı bırak anahtarı ve Dream Diary okuyucusu (`doctor.memory.status`, `doctor.memory.dreamDiary`, `config.patch`).
+
   </Accordion>
   <Accordion title="Cron, Skills, node'lar, exec onayları">
     - Cron işleri: listele/ekle/düzenle/çalıştır/etkinleştir/devre dışı bırak + çalışma geçmişi (`cron.*`).
     - Skills: durum, etkinleştir/devre dışı bırak, kur, API anahtarı güncellemeleri (`skills.*`).
     - Node'lar: liste + yetenekler (`node.list`).
     - Exec onayları: `exec host=gateway/node` için gateway veya node allowlist'lerini + ask ilkesini düzenleyin (`exec.approvals.*`).
+
   </Accordion>
   <Accordion title="Config">
     - `~/.openclaw/openclaw.json` görüntüleyin/düzenleyin (`config.get`, `config.set`).
@@ -118,11 +122,13 @@ Control UI, ilk yüklemede tarayıcı yerel ayarınıza göre kendini yerelleşt
     - Bir anlık görüntü güvenli şekilde ham gidiş-dönüş yapamıyorsa Control UI Form modunu zorunlu kılar ve o anlık görüntü için Raw modunu devre dışı bırakır.
     - Raw JSON düzenleyicide "Reset to saved", düzleştirilmiş bir anlık görüntüyü yeniden işlemek yerine ham yazılmış biçimi (biçimlendirme, yorumlar, `$include` düzeni) korur; böylece anlık görüntü güvenli gidiş-dönüş yapabildiğinde dış düzenlemeler sıfırlamadan sonra da korunur.
     - Yapılandırılmış SecretRef nesne değerleri, nesneden dizeye yanlışlıkla bozulmayı önlemek için form metin girdilerinde salt okunur işlenir.
+
   </Accordion>
   <Accordion title="Hata ayıklama, günlükler, güncelleme">
     - Hata ayıklama: durum/sağlık/model anlık görüntüleri + olay günlüğü + manuel RPC çağrıları (`status`, `health`, `models.list`).
     - Günlükler: filtreleme/dışa aktarma ile gateway dosya günlüklerinin canlı kuyruğu (`logs.tail`).
     - Güncelleme: paket/git güncellemesi + yeniden başlatma (`update.run`) ve yeniden başlatma raporu.
+
   </Accordion>
   <Accordion title="Cron işleri panel notları">
     - Yalıtılmış işler için teslimat varsayılan olarak özet duyurusudur. Yalnızca dahili çalıştırmalar istiyorsanız bunu none olarak değiştirebilirsiniz.
@@ -133,6 +139,7 @@ Control UI, ilk yüklemede tarayıcı yerel ayarınıza göre kendini yerelleşt
     - Form doğrulaması alan düzeyinde hatalarla satır içidir; geçersiz değerler düzeltilene kadar kaydet düğmesini devre dışı bırakır.
     - Adanmış bir bearer token göndermek için `cron.webhookToken` ayarlayın; atlanırsa Webhook auth üstbilgisi olmadan gönderilir.
     - Kullanımdan kaldırılmış fallback: `notify: true` ile saklanan eski işler, taşınana kadar `cron.webhook` kullanabilir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -149,6 +156,7 @@ Control UI, ilk yüklemede tarayıcı yerel ayarınıza göre kendini yerelleşt
     - `chat.inject`, oturum transcript'ine bir assistant notu ekler ve yalnızca UI güncellemeleri için bir `chat` olayı yayınlar (agent çalıştırması yok, kanal teslimi yok).
     - Sohbet üstbilgisindeki model ve thinking seçicileri, etkin oturumu `sessions.patch` üzerinden hemen yamalar; bunlar tek turluk gönderim seçenekleri değil, kalıcı oturum geçersiz kılmalarıdır.
     - Taze Gateway oturum kullanımı raporları yüksek bağlam baskısı gösterdiğinde, sohbet düzenleyici alanı bir bağlam bildirimi gösterir ve önerilen Compaction düzeylerinde normal oturum Compaction yolunu çalıştıran bir compact düğmesi sunar. Gateway yeniden taze kullanım bildirene kadar bayat token anlık görüntüleri gizlenir.
+
   </Accordion>
   <Accordion title="Talk modu (tarayıcı WebRTC)">
     Talk modu, tarayıcı WebRTC oturumlarını destekleyen kayıtlı bir gerçek zamanlı ses sağlayıcısı kullanır. `talk.provider: "openai"` artı `talk.providers.openai.apiKey` ile OpenAI yapılandırın veya Voice Call gerçek zamanlı sağlayıcı config'ini yeniden kullanın. Tarayıcı standart OpenAI API anahtarını asla almaz; yalnızca geçici Realtime istemci sırrını alır. Google Live gerçek zamanlı ses, backend Voice Call ve Google Meet köprüleri için desteklenir, ancak bu tarayıcı WebRTC yolunda henüz desteklenmez. Realtime oturum istemi Gateway tarafından derlenir; `talk.realtime.session`, çağıran tarafından sağlanan talimat geçersiz kılmalarını kabul etmez.
@@ -161,11 +169,13 @@ Control UI, ilk yüklemede tarayıcı yerel ayarınıza göre kendini yerelleşt
     - Bir çalıştırma etkinken normal takip mesajları kuyruğa alınır. Kuyruktaki bir mesajda **Steer** seçeneğine tıklayarak bu takip mesajını çalışan tura enjekte edin.
     - Bant dışı iptal için `/stop` yazın (veya `stop`, `stop action`, `stop run`, `stop openclaw`, `please stop` gibi tek başına iptal ifadelerini kullanın).
     - `chat.abort`, o oturum için tüm etkin çalıştırmaları iptal etmek üzere `{ sessionKey }` destekler (`runId` olmadan).
+
   </Accordion>
   <Accordion title="İptal edilen kısmi içeriğin korunması">
     - Bir çalıştırma iptal edildiğinde kısmi assistant metni yine de UI'da gösterilebilir.
     - Gateway, arabelleğe alınmış çıktı varsa iptal edilen kısmi assistant metnini transcript geçmişine kalıcı olarak yazar.
     - Kalıcılaştırılmış girdiler iptal metadata'sı içerir; böylece transcript tüketicileri iptal edilmiş kısmi çıktıları normal tamamlanmış çıktılardan ayırt edebilir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -322,6 +332,7 @@ Belgelenmiş istisnalar:
     - Başarılı trusted-proxy auth, cihaz kimliği olmadan **operatör** Control UI oturumlarına izin verebilir.
     - Bu, node-rolü Control UI oturumlarına genişlemez.
     - Aynı host üzerindeki loopback reverse proxy'ler yine de trusted-proxy auth koşullarını karşılamaz; bkz. [Trusted proxy auth](/tr/gateway/trusted-proxy-auth).
+
   </Accordion>
 </AccordionGroup>
 
@@ -408,6 +419,7 @@ Control UI statik dosyalardır; WebSocket hedefi yapılandırılabilir ve HTTP o
     - Gateway başlangıcı, etkin çalışma zamanı bind ve porttan `http://localhost:<port>` ve `http://127.0.0.1:<port>` gibi yerel origin'leri tohumlayabilir, ancak uzak tarayıcı origin'leri yine de açık girdiler gerektirir.
     - Sıkı denetimli yerel testler dışında `gateway.controlUi.allowedOrigins: ["*"]` kullanmayın. Bu, "kullandığım host ile eşleştir" değil, "herhangi bir tarayıcı origin'ine izin ver" anlamına gelir.
     - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`, Host-header origin fallback modunu etkinleştirir, ancak bu tehlikeli bir güvenlik modudur.
+
   </Accordion>
 </AccordionGroup>
 

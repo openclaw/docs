@@ -56,6 +56,7 @@ openclaw config validate --json
     - สาขา `anyOf` / `oneOf` / `allOf` ก็สืบทอดเมทาดาต้าเอกสารเดียวกันด้วยเมื่อมีเอกสารประกอบของฟิลด์ที่ตรงกัน
     - เมทาดาต้า schema ของ Plugin + channel แบบสดเท่าที่ทำได้ เมื่อสามารถโหลด manifest ของ runtime ได้
     - schema fallback ที่สะอาดแม้ config ปัจจุบันจะไม่ถูกต้อง
+
   </Accordion>
   <Accordion title="RPC ของ runtime ที่เกี่ยวข้อง">
     `config.schema.lookup` จะคืนค่าพาธ config แบบ normalized หนึ่งพาธ พร้อมโหนด schema แบบตื้น (`title`, `description`, `type`, `enum`, `const`, ขอบเขตทั่วไป), เมทาดาต้า UI hint ที่ตรงกัน และสรุปลูกโดยตรง ใช้สำหรับการเจาะลึกแบบกำหนดขอบเขตตามพาธใน Control UI หรือไคลเอนต์แบบกำหนดเอง
@@ -191,15 +192,18 @@ openclaw config set secrets.providers.vaultfile \
   <Accordion title="แฟล็กร่วม">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Env provider (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (ใช้ซ้ำได้)
+
   </Accordion>
   <Accordion title="File provider (--provider-source file)">
     - `--provider-path <path>` (จำเป็น)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Exec provider (--provider-source exec)">
     - `--provider-command <path>` (จำเป็น)
@@ -212,6 +216,7 @@ openclaw config set secrets.providers.vaultfile \
     - `--provider-trusted-dir <path>` (ใช้ซ้ำได้)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - การตรวจสอบ SecretRef แบบ exec จะถูกข้ามตามค่าเริ่มต้นระหว่าง dry-run เพื่อหลีกเลี่ยงผลข้างเคียงจากคำสั่ง
     - ใช้ `--allow-exec` ร่วมกับ `--dry-run` เพื่อเลือกเปิดการตรวจสอบ SecretRef แบบ exec (การทำเช่นนี้อาจรันคำสั่งของ provider)
     - `--allow-exec` ใช้ได้เฉพาะกับ dry-run และจะเกิดข้อผิดพลาดหากใช้โดยไม่มี `--dry-run`
+
   </Accordion>
   <Accordion title="ฟิลด์ของ --dry-run --json">
     `--dry-run --json` จะพิมพ์รายงานที่อ่านได้ด้วยเครื่อง:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: provider/ref ที่อ้างอิงอยู่ไม่สามารถ resolve ได้ในขณะนี้ (ตัวแปร env หายไป, file pointer ไม่ถูกต้อง, exec provider ล้มเหลว, หรือ provider/source ไม่ตรงกัน)
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run ข้าม exec refs; รันใหม่ด้วย `--allow-exec` หากคุณต้องการตรวจสอบความสามารถในการ resolve ของ exec
     - สำหรับโหมดแบตช์ ให้แก้ไขรายการที่ล้มเหลวและรัน `--dry-run` อีกครั้งก่อนเขียนจริง
+
   </Accordion>
 </AccordionGroup>
 

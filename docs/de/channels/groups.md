@@ -32,6 +32,7 @@ Standardverhalten:
 - **DM-Zugriff** wird durch `*.allowFrom` gesteuert.
 - **Gruppenzugriff** wird durch `*.groupPolicy` + Allowlists (`*.groups`, `*.groupAllowFrom`) gesteuert.
 - **Auslösen von Antworten** wird durch Erwähnungssteuerung (`requireMention`, `/activation`) gesteuert.
+
 </Note>
 
 Schneller Ablauf (was mit einer Gruppennachricht passiert):
@@ -56,6 +57,7 @@ Standardmäßig priorisiert OpenClaw normales Chatverhalten und behält den Kont
   <Accordion title="Das aktuelle Verhalten ist kanalspezifisch">
     - Einige Kanäle wenden bereits in bestimmten Pfaden senderbasierte Filterung für ergänzenden Kontext an (zum Beispiel Slack-Thread-Seeding, Matrix-Antwort-/Thread-Lookups).
     - Andere Kanäle geben Zitat-/Antwort-/Weiterleitungskontext weiterhin so weiter, wie er empfangen wurde.
+
   </Accordion>
   <Accordion title="Härtungsrichtung (geplant)">
     - `contextVisibility: "all"` (Standard) behält das aktuelle Verhalten „wie empfangen“ bei.
@@ -231,6 +233,7 @@ Steuern Sie, wie Gruppen-/Raumnachrichten pro Kanal behandelt werden:
     - Die Telegram-Allowlist kann Benutzer-IDs (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) oder Benutzernamen (`"@alice"` oder `"alice"`) abgleichen; Präfixe sind nicht case-sensitive.
     - Standard ist `groupPolicy: "allowlist"`; wenn Ihre Gruppen-Allowlist leer ist, werden Gruppennachrichten blockiert.
     - Laufzeitsicherheit: Wenn ein Provider-Block vollständig fehlt (`channels.<provider>` nicht vorhanden), fällt die Gruppenrichtlinie auf einen Fail-Closed-Modus zurück (typischerweise `allowlist`), statt `channels.defaults.groupPolicy` zu erben.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ Das Antworten auf eine Bot-Nachricht zählt als implizite Erwähnung, wenn der K
     - Gruppen, in denen stille Antworten erlaubt sind, behandeln saubere leere oder nur auf Reasoning basierende Modellzüge als still, gleichbedeutend mit `NO_REPLY`. Direktchats behandeln leere Antworten weiterhin als fehlgeschlagenen Agentenzug.
     - Discord-Standardwerte liegen in `channels.discord.guilds."*"` (überschreibbar pro Guild/Kanal).
     - Kontext des Gruppenverlaufs wird kanalübergreifend einheitlich verpackt und ist **nur ausstehend** (Nachrichten, die wegen Erwähnungssteuerung übersprungen wurden); verwenden Sie `messages.groupChat.historyLimit` für den globalen Standard und `channels.<channel>.historyLimit` (oder `channels.<channel>.accounts.*.historyLimit`) für Überschreibungen. Setzen Sie `0`, um dies zu deaktivieren.
+
   </Accordion>
 </AccordionGroup>
 

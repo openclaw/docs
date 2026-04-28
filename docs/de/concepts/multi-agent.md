@@ -244,11 +244,13 @@ Bindings sind **deterministisch** und **der spezifischste Treffer gewinnt**:
   <Accordion title="Tie-Breaking und AND-Semantik">
     - Wenn mehrere Bindings auf derselben Ebene übereinstimmen, gewinnt das erste in Konfigurationsreihenfolge.
     - Wenn ein Binding mehrere Abgleichsfelder setzt (zum Beispiel `peer` + `guildId`), sind alle angegebenen Felder erforderlich (AND-Semantik).
+
   </Accordion>
   <Accordion title="Details zum Konto-Scope">
     - Ein Binding ohne `accountId` stimmt nur mit dem Standardkonto überein.
     - Verwenden Sie `accountId: "*"` für einen channelweiten Fallback über alle Konten hinweg.
     - Wenn Sie später dasselbe Binding für denselben Agenten mit einer expliziten Konto-ID hinzufügen, stuft OpenClaw das vorhandene nur-channelweite Binding auf kontoabhängig hoch, statt es zu duplizieren.
+
   </Accordion>
 </AccordionGroup>
 

@@ -408,6 +408,7 @@ Config は `plugins.entries.minimax.config.webSearch.*` 配下にあります。
     - OpenClaw は、MiniMax coding-plan 利用量を、他 provider と同じ `% left` 表示に正規化します。MiniMax の生の `usage_percent` / `usagePercent` フィールドは消費済み quota ではなく残 quota を意味するため、OpenClaw はそれらを反転します。件数ベースのフィールドが存在する場合はそれが優先されます。
     - API が `model_remains` を返す場合、OpenClaw は chat-model エントリを優先し、必要に応じて `start_time` / `end_time` から window ラベルを導出し、さらに coding-plan window を区別しやすくするため plan ラベルに選択された model 名を含めます。
     - 利用スナップショットでは、`minimax`、`minimax-cn`、`minimax-portal` を同じ MiniMax quota サーフェスとして扱い、Coding Plan key env var にフォールバックする前に保存済みの MiniMax OAuth を優先します。
+
   </Accordion>
 </AccordionGroup>
 

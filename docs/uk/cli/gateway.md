@@ -51,6 +51,7 @@ openclaw gateway run
     - Прив’язка поза межами loopback без автентифікації заблокована (захисний механізм безпеки).
     - `SIGUSR1` запускає перезапуск у межах процесу, якщо це дозволено (`commands.restart` увімкнено за замовчуванням; встановіть `commands.restart: false`, щоб заблокувати ручний перезапуск, тоді як застосування gateway tool/config apply/update залишиться дозволеним).
     - Обробники `SIGINT`/`SIGTERM` зупиняють процес gateway, але не відновлюють жоден спеціальний стан термінала. Якщо ви обгортаєте CLI у TUI або введення в raw mode, відновіть термінал перед виходом.
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ openclaw gateway run
     - За замовчуванням: зручний для читання людиною формат (з кольором у TTY).
     - `--json`: машинозчитуваний JSON (без стилізації/індикатора).
     - `--no-color` (або `NO_COLOR=1`): вимкнути ANSI, зберігши людський макет.
+
   </Tab>
   <Tab title="Спільні параметри">
     - `--url <url>`: URL WebSocket Gateway.
@@ -136,6 +138,7 @@ openclaw gateway run
     - `--password <password>`: пароль Gateway.
     - `--timeout <ms>`: тайм-аут/бюджет часу (залежить від команди).
     - `--expect-final`: чекати на «final» відповідь (виклики агента).
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="Конфіденційність і поведінка пакетів">
     - Записи зберігають операційні метадані: назви подій, лічильники, розміри в байтах, показники пам’яті, стан черги/сесії, назви каналів/плагінів і відредаговані зведення сесій. Вони не зберігають текст чату, тіла Webhook, результати інструментів, сирі тіла запитів або відповідей, токени, cookies, секретні значення, імена хостів чи сирі id сесій. Установіть `diagnostics.enabled: false`, щоб повністю вимкнути записувач.
     - У разі фатального завершення Gateway, тайм-аутів завершення роботи й помилок запуску під час перезапуску OpenClaw записує той самий діагностичний знімок у `~/.openclaw/logs/stability/openclaw-stability-*.json`, якщо записувач має події. Перегляньте найновіший пакет за допомогою `openclaw gateway stability --bundle latest`; `--limit`, `--type` і `--since-seq` також застосовуються до виводу пакета.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - Використовуйте `--require-rpc` у скриптах і автоматизації, коли недостатньо лише служби, що слухає, і потрібно, щоб також були працездатними виклики RPC з областю читання.
     - `--deep` додає best-effort-сканування додаткових інсталяцій launchd/systemd/schtasks. Коли виявлено кілька служб, схожих на gateway, людиночитаний вивід показує підказки з очищення та попереджає, що в більшості налаштувань на машині має працювати один gateway.
     - Людиночитаний вивід містить розв’язаний шлях до файлового журналу, а також знімок шляхів/дійсності конфігурації CLI-порівняно-зі-службою, щоб допомогти діагностувати дрейф профілю або каталогу стану.
+
   </Accordion>
   <Accordion title="Перевірки дрейфу автентифікації systemd у Linux">
     - В інсталяціях Linux systemd перевірки дрейфу автентифікації служби читають значення `Environment=` і `EnvironmentFile=` з unit-файлу (включно з `%h`, шляхами в лапках, кількома файлами й необов’язковими файлами з `-`).
     - Перевірки дрейфу розв’язують SecretRef `gateway.auth.token`, використовуючи об’єднане runtime env (спочатку env команди служби, потім резервне env процесу).
     - Якщо автентифікація токеном фактично не активна (явний `gateway.auth.mode` зі значенням `password`/`none`/`trusted-proxy`, або mode не задано там, де може перемогти password і жоден кандидат токена не може перемогти), перевірки дрейфу токена пропускають розв’язання токена конфігурації.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read` означає, що з’єднання встановлено успішно, але RPC з областю читання обмежений. Це повідомляється як **погіршена** досяжність, а не повний збій.
     - Як і `gateway status`, probe повторно використовує наявну кешовану автентифікацію пристрою, але не створює стан першої ідентичності пристрою чи pairing.
     - Код виходу є ненульовим лише тоді, коли жодна перевірена ціль не є досяжною.
+
   </Accordion>
   <Accordion title="Вивід JSON">
     Верхній рівень:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: було досяжно більше ніж одну ціль; це незвично, якщо тільки ви навмисно не запускаєте ізольовані профілі, наприклад rescue bot.
     - `auth_secretref_unresolved`: налаштований auth SecretRef не вдалося розв’язати для цілі, що завершилася невдачею.
     - `probe_scope_limited`: WebSocket-з’єднання встановлено успішно, але read probe був обмежений через відсутність `operator.read`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -468,10 +476,12 @@ openclaw gateway restart
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
     - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--wrapper <path>`, `--force`, `--json`
     - `gateway uninstall|start|stop|restart`: `--json`
+
   </Accordion>
   <Accordion title="Поведінка життєвого циклу">
     - Використовуйте `gateway restart`, щоб перезапустити керовану службу. Не поєднуйте `gateway stop` і `gateway start` як заміну перезапуску; у macOS `gateway stop` навмисно вимикає LaunchAgent перед його зупинкою.
     - Команди життєвого циклу підтримують `--json` для скриптів.
+
   </Accordion>
   <Accordion title="Автентифікація і SecretRefs під час інсталяції">
     - Коли для автентифікації токеном потрібен токен і `gateway.auth.token` керується через SecretRef, `gateway install` перевіряє, що SecretRef можна розв’язати, але не зберігає розв’язаний токен у метаданих середовища служби.
@@ -479,6 +489,7 @@ openclaw gateway restart
     - Для автентифікації паролем у `gateway run` надавайте перевагу `OPENCLAW_GATEWAY_PASSWORD`, `--password-file` або `gateway.auth.password` на основі SecretRef замість вбудованого `--password`.
     - У режимі виведеної автентифікації лише shell-змінна `OPENCLAW_GATEWAY_PASSWORD` не послаблює вимоги до токена під час інсталяції; використовуйте стійку конфігурацію (`gateway.auth.password` або config `env`) під час інсталяції керованої служби.
     - Якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не задано, інсталяцію буде заблоковано, доки режим не буде задано явно.
+
   </Accordion>
 </AccordionGroup>
 
@@ -525,6 +536,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - CLI сканує `local.` плюс налаштований wide-area domain, коли його увімкнено.
 - `wsUrl` у JSON-виводі виводиться з розв’язаного endpoint служби, а не з підказок лише з TXT, таких як `lanHost` або `tailnetDns`.
 - Для mDNS у `local.` `sshPort` і `cliPath` транслюються лише тоді, коли `discovery.mdns.mode` має значення `full`. Wide-area DNS-SD усе одно записує `cliPath`; `sshPort` там також залишається необов’язковим.
+
 </Note>
 
 ## Пов’язане

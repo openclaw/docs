@@ -184,6 +184,7 @@ Dies ist idempotent und kann sicher mehrfach ausgeführt werden.
     - Stellen Sie sicher, dass Sie zuerst über Tailscale-VPN zugreifen können
     - SSH-Zugriff (Port 22) ist immer erlaubt
     - Das Gateway ist absichtlich nur über Tailscale erreichbar
+
   </Accordion>
   <Accordion title="Der Service startet nicht">
     ```bash

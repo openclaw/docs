@@ -154,6 +154,7 @@ Claude 4.6 모델은 명시적인 thinking 수준이 설정되지 않은 경우 
 관련 Anthropic 문서:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## 프롬프트 캐싱
@@ -216,6 +217,7 @@ OpenClaw는 API-key 인증에 대해 Anthropic의 프롬프트 캐싱 기능을 
     - Bedrock의 Anthropic Claude 모델 (`amazon-bedrock/*anthropic.claude*`)은 구성된 경우 `cacheRetention` pass-through를 허용합니다.
     - Anthropic가 아닌 Bedrock 모델은 런타임에서 `cacheRetention: "none"`으로 강제됩니다.
     - API-key 스마트 기본값은 명시적인 값이 설정되지 않은 경우 Claude-on-Bedrock ref에 대해서도 `cacheRetention: "short"`를 기본 설정합니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -248,6 +250,7 @@ OpenClaw는 API-key 인증에 대해 Anthropic의 프롬프트 캐싱 기능을 
     - 직접 `api.anthropic.com` 요청에만 주입됩니다. 프록시 경로는 `service_tier`를 변경하지 않습니다.
     - 명시적인 `serviceTier` 또는 `service_tier` params가 설정되면, 둘 다 설정된 경우 `/fast`보다 우선합니다.
     - Priority Tier 용량이 없는 계정에서는 `service_tier: "auto"`가 `standard`로 해석될 수 있습니다.
+
     </Note>
 
   </Accordion>

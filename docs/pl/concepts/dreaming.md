@@ -93,6 +93,7 @@ Istnieje też ugruntowana ścieżka historycznego backfill do przeglądu i odzys
     - `memory rem-backfill --path ...` zapisuje odwracalne ugruntowane wpisy dziennika do `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` przygotowuje ugruntowanych trwałych kandydatów w tym samym krótkoterminowym magazynie dowodów, którego używa już zwykła faza Deep.
     - `memory rem-backfill --rollback` i `--rollback-short-term` usuwają te przygotowane artefakty backfill bez naruszania zwykłych wpisów dziennika ani aktywnego krótkoterminowego recall.
+
   </Accordion>
 </AccordionGroup>
 

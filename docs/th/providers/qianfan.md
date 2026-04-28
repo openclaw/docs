@@ -117,6 +117,7 @@ model ref แบบ bundled เริ่มต้นคือ `qianfan/deepseek-
     - ตรวจสอบว่า API key ของคุณขึ้นต้นด้วย `bce-v3/ALTAK-` และเปิดใช้การเข้าถึง Qianfan API แล้วในคอนโซล Baidu Cloud
     - หากไม่มีโมเดลแสดงขึ้นมา ให้ยืนยันว่าบัญชีของคุณเปิดใช้บริการ Qianfan แล้ว
     - base URL เริ่มต้นคือ `https://qianfan.baidubce.com/v2` เปลี่ยนเฉพาะเมื่อคุณใช้ custom endpoint หรือ proxy
+
   </Accordion>
 </AccordionGroup>
 

@@ -38,6 +38,7 @@ Slack uygulama entegrasyonlarıyla DM'ler ve kanallar için üretime hazırdır.
         - aşağıdaki [örnek manifest'i](#manifest-and-scope-checklist) yapıştırın ve oluşturmaya devam edin
         - `connections:write` iznine sahip bir **App-Level Token** (`xapp-...`) oluşturun
         - uygulamayı yükleyin ve gösterilen **Bot Token** (`xoxb-...`) değerini kopyalayın
+
       </Step>
 
       <Step title="OpenClaw'ı yapılandırın">
@@ -624,6 +625,7 @@ Notlar:
     - `channels.slack.chunkMode="newline"` paragraf öncelikli bölmeyi etkinleştirir
     - dosya gönderimleri Slack yükleme API'lerini kullanır ve iş parçacığı yanıtları (`thread_ts`) içerebilir
     - yapılandırıldığında giden medya üst sınırı `channels.slack.mediaMaxMb` izler; aksi halde kanal gönderimleri medya işlem hattındaki MIME türü varsayılanlarını kullanır
+
   </Accordion>
 
   <Accordion title="Teslimat hedefleri">

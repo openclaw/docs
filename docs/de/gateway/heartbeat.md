@@ -41,6 +41,7 @@ Fehlerbehebung: [Geplante Aufgaben](/de/automation/cron-jobs#troubleshooting)
     - Verwenden Sie leichtgewichtigen Bootstrap-Kontext, wenn Heartbeat-Läufe nur `HEARTBEAT.md` benötigen.
     - Aktivieren Sie isolierte Sitzungen, um nicht bei jedem Heartbeat den vollständigen Gesprächsverlauf zu senden.
     - Beschränken Sie Heartbeats auf aktive Stunden (Ortszeit).
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Verwenden Sie `accountId`, um ein bestimmtes Konto in Multi-Account-Kanälen wie
   - `main` (Standard): Hauptsitzung des Agenten.
   - Expliziter Sitzungsschlüssel (kopieren aus `openclaw sessions --json` oder der [Sessions-CLI](/de/cli/sessions)).
   - Formate von Sitzungsschlüsseln: siehe [Sitzungen](/de/concepts/session) und [Gruppen](/de/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: an den zuletzt verwendeten externen Kanal zustellen.
   - expliziter Kanal: jeder konfigurierte Kanal oder jede Plugin-ID, zum Beispiel `discord`, `matrix`, `telegram` oder `whatsapp`.
   - `none` (Standard): Heartbeat ausführen, aber **nicht extern zustellen**.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Steuert das Zustellungsverhalten für direkte/DM-Ziele. `allow`: direkte/DM-Heartbeat-Zustellung erlauben. `block`: direkte/DM-Zustellung unterdrücken (`reason=dm-blocked`).
@@ -274,6 +277,7 @@ Verwenden Sie `accountId`, um ein bestimmtes Konto in Multi-Account-Kanälen wie
   - Jede IANA-Kennung (z. B. `America/New_York`): wird direkt verwendet; falls ungültig, wird auf das oben beschriebene Verhalten für `"user"` zurückgegriffen.
   - `start` und `end` dürfen für ein aktives Fenster nicht gleich sein; gleiche Werte werden als Fenster mit Nullbreite behandelt (immer außerhalb des Fensters).
   - Außerhalb des aktiven Fensters werden Heartbeats bis zum nächsten Tick innerhalb des Fensters übersprungen.
+
 </ParamField>
 
 ## Zustellungsverhalten
@@ -286,16 +290,19 @@ Verwenden Sie `accountId`, um ein bestimmtes Konto in Multi-Account-Kanälen wie
     - Heartbeat-Zustellungen erlauben standardmäßig direkte/DM-Ziele. Setzen Sie `directPolicy: "block"`, um Sendungen an direkte Ziele zu unterdrücken, während der Heartbeat-Turn weiterhin ausgeführt wird.
     - Wenn die Hauptwarteschlange ausgelastet ist, wird der Heartbeat übersprungen und später erneut versucht.
     - Wenn `target` zu keinem externen Ziel aufgelöst wird, findet der Lauf dennoch statt, aber es wird keine ausgehende Nachricht gesendet.
+
   </Accordion>
   <Accordion title="Sichtbarkeit und Überspringverhalten">
     - Wenn `showOk`, `showAlerts` und `useIndicator` alle deaktiviert sind, wird der Lauf sofort mit `reason=alerts-disabled` übersprungen.
     - Wenn nur die Warnungszustellung deaktiviert ist, kann OpenClaw den Heartbeat dennoch ausführen, Zeitstempel für fällige Aufgaben aktualisieren, den Idle-Zeitstempel der Sitzung wiederherstellen und die ausgehende Warnungs-Payload unterdrücken.
     - Wenn das aufgelöste Heartbeat-Ziel Tippen unterstützt, zeigt OpenClaw während des aktiven Heartbeat-Laufs eine Tippen-Anzeige an. Dabei wird dasselbe Ziel verwendet, an das auch Chat-Ausgaben des Heartbeat gesendet würden, und dies wird durch `typingMode: "never"` deaktiviert.
+
   </Accordion>
   <Accordion title="Sitzungslebenszyklus und Audit">
     - Heartbeat-only-Antworten halten die Sitzung **nicht** aktiv. Heartbeat-Metadaten können die Sitzungszeile aktualisieren, aber das Idle-Ablaufen verwendet `lastInteractionAt` aus der letzten echten Benutzer-/Kanalnachricht, und tägliches Ablaufen verwendet `sessionStartedAt`.
     - Der Verlauf in Control UI und WebChat blendet Heartbeat-Prompts und reine OK-Bestätigungen aus. Das zugrunde liegende Sitzungs-Transkript kann diese Turns für Audit/Replay dennoch enthalten.
     - Losgelöste [Hintergrundaufgaben](/de/automation/tasks) können ein Systemereignis in die Warteschlange stellen und den Heartbeat wecken, wenn die Hauptsitzung etwas schnell bemerken soll. Dieses Wecken macht den Heartbeat-Lauf nicht zu einer Hintergrundaufgabe.
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - Inhalt außerhalb der Aufgaben in `HEARTBEAT.md` bleibt erhalten und wird nach der Liste fälliger Aufgaben als zusätzlicher Kontext angehängt.
     - Zeitstempel der letzten Ausführung von Aufgaben werden im Sitzungsstatus (`heartbeatTaskState`) gespeichert, sodass Intervalle normale Neustarts überstehen.
     - Aufgabenzeitstempel werden erst fortgeschrieben, nachdem ein Heartbeat-Lauf seinen normalen Antwortpfad abgeschlossen hat. Übersprungene Läufe wegen `empty-heartbeat-file` / `no-tasks-due` markieren Aufgaben nicht als abgeschlossen.
+
   </Accordion>
 </AccordionGroup>
 

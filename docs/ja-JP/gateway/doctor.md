@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - UIプロトコルの新しさチェック（プロトコルスキーマが新しい場合はControl UIを再ビルド）。
     - ヘルスチェック + 再起動プロンプト。
     - Skillsの状態サマリー（対象/不足/ブロック）とPluginの状態。
+
   </Accordion>
   <Accordion title="設定と移行">
     - 従来値の設定正規化。
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - 従来のPluginマニフェスト契約キー移行（`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`）。
     - 従来のCronストア移行（`jobId`, `schedule.cron`, トップレベルのdelivery/payloadフィールド, payload `provider`, 単純な `notify: true` Webhookフォールバックジョブ）。
     - 従来のagent runtime-policyの `agents.defaults.agentRuntime` と `agents.list[].agentRuntime` への移行。
+
   </Accordion>
   <Accordion title="状態と整合性">
     - セッションロックファイルの検査と古いロックのクリーンアップ。
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - ローカル実行時の設定ファイル権限チェック（chmod 600）。
     - モデル認証の健全性: OAuth期限切れを確認し、期限切れが近いトークンを更新でき、auth-profileのクールダウン/無効状態を報告します。
     - 追加のworkspaceディレクトリ検出（`~/openclaw`）。
+
   </Accordion>
   <Accordion title="Gateway、サービス、supervisor">
     - サンドボックス有効時のサンドボックスイメージ修復。
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Supervisor設定監査（launchd/systemd/schtasks）と任意の修復。
     - Gatewayランタイムのベストプラクティスチェック（Node vs Bun、バージョンマネージャーパス）。
     - Gatewayポート競合診断（デフォルト `18789`）。
+
   </Accordion>
   <Accordion title="認証、セキュリティ、ペアリング">
     - オープンDMポリシーに対するセキュリティ警告。
     - ローカルトークンモード向けのGateway認証チェック（トークンソースが存在しない場合はトークン生成を提案。token SecretRef設定は上書きしません）。
     - デバイスペアリング問題の検出（保留中の初回ペアリクエスト、保留中のロール/スコープアップグレード、古いローカルdevice-tokenキャッシュのドリフト、paired-record認証ドリフト）。
+
   </Accordion>
   <Accordion title="Workspaceとシェル">
     - Linuxでのsystemd lingerチェック。
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - memory search embeddingプロバイダー準備状況チェック（ローカルモデル、リモートAPIキー、またはQMDバイナリ）。
     - ソースインストールチェック（pnpm workspace mismatch、UIアセット欠落、tsxバイナリ欠落）。
     - 更新済み設定 + ウィザードメタデータを書き込みます。
+
   </Accordion>
 </AccordionGroup>
 

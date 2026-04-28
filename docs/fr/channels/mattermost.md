@@ -97,6 +97,7 @@ Les commandes slash natives sont facultatives. Lorsqu’elles sont activées, Op
     - Pour les configurations multi-comptes, `commands` peut être défini au niveau supérieur ou sous `channels.mattermost.accounts.<id>.commands` (les valeurs de compte remplacent les champs de niveau supérieur).
     - Les rappels de commandes sont validés avec les tokens par commande renvoyés par Mattermost lorsque OpenClaw enregistre les commandes `oc_*`.
     - Les rappels slash échouent de manière fermée lorsque l’enregistrement a échoué, que le démarrage a été partiel ou que le token de rappel ne correspond à aucune des commandes enregistrées.
+
   </Accordion>
   <Accordion title="Exigence d’accessibilité">
     Le point de terminaison de rappel doit être accessible depuis le serveur Mattermost.
@@ -291,11 +292,13 @@ Activez avec `channels.mattermost.streaming` :
     - `block` utilise des morceaux de brouillon de style ajout dans le post d’aperçu.
     - `progress` affiche un aperçu d’état pendant la génération et ne publie la réponse finale qu’à la fin.
     - `off` désactive la diffusion d’aperçu.
+
   </Accordion>
   <Accordion title="Remarques sur le comportement de diffusion">
     - Si le flux ne peut pas être finalisé sur place (par exemple si le post a été supprimé en cours de flux), OpenClaw revient à l’envoi d’un nouveau post final afin que la réponse ne soit jamais perdue.
     - Les charges utiles contenant uniquement le raisonnement sont supprimées des posts de canal, y compris le texte qui arrive sous forme de blocquote `> Reasoning:`. Définissez `/reasoning on` pour voir la réflexion sur d’autres surfaces ; le post final Mattermost ne conserve que la réponse.
     - Voir [Streaming](/fr/concepts/streaming#preview-streaming-modes) pour la matrice de correspondance des canaux.
+
   </Accordion>
 </AccordionGroup>
 
@@ -369,6 +372,7 @@ Lorsqu’un utilisateur clique sur un bouton :
     - Les rappels de boutons utilisent une vérification HMAC-SHA256 (automatique, aucune configuration requise).
     - Mattermost supprime les données de rappel de ses réponses API (fonction de sécurité), donc tous les boutons sont retirés au clic — une suppression partielle n’est pas possible.
     - Les identifiants d’action contenant des tirets ou des underscores sont nettoyés automatiquement (limitation du routage Mattermost).
+
   </Accordion>
   <Accordion title="Configuration et accessibilité">
     - `channels.mattermost.capabilities` : tableau de chaînes de capacités. Ajoutez `"inlineButtons"` pour activer la description de l’outil de boutons dans le prompt système de l’agent.
@@ -377,6 +381,7 @@ Lorsqu’un utilisateur clique sur un bouton :
     - Si `interactions.callbackBaseUrl` est omis, OpenClaw dérive l’URL de rappel à partir de `gateway.customBindHost` + `gateway.port`, puis revient à `http://localhost:<port>`.
     - Règle d’accessibilité : l’URL de rappel des boutons doit être accessible depuis le serveur Mattermost. `localhost` ne fonctionne que lorsque Mattermost et OpenClaw s’exécutent sur le même hôte/espace de noms réseau.
     - Si votre cible de rappel est privée/tailnet/interne, ajoutez son hôte/domaine à `ServiceSettings.AllowedUntrustedInternalConnections` de Mattermost.
+
   </Accordion>
 </AccordionGroup>
 
@@ -472,6 +477,7 @@ context = {**ctx, "_token": token}
     - Signez toujours **tous** les champs du context (moins `_token`). La gateway supprime `_token`, puis signe tout le reste. Signer un sous-ensemble provoque un échec de vérification silencieux.
     - Utilisez `sort_keys=True` — la gateway trie les clés avant la signature, et Mattermost peut réordonner les champs du context lors du stockage de la charge utile.
     - Dérivez le secret à partir du bot token (déterministe), et non à partir d’octets aléatoires. Le secret doit être identique dans le processus qui crée les boutons et dans la gateway qui les vérifie.
+
   </Accordion>
 </AccordionGroup>
 
@@ -507,6 +513,7 @@ Mattermost prend en charge plusieurs comptes sous `channels.mattermost.accounts`
   <Accordion title="Erreurs d’authentification ou de multi-comptes">
     - Vérifiez le bot token, l’URL de base et si le compte est activé.
     - Problèmes multi-comptes : les variables d’environnement ne s’appliquent qu’au compte `default`.
+
   </Accordion>
   <Accordion title="Les commandes slash natives échouent">
     - `Unauthorized: invalid command token.` : OpenClaw n’a pas accepté le token de rappel. Causes typiques :
@@ -516,6 +523,7 @@ Mattermost prend en charge plusieurs comptes sous `channels.mattermost.accounts`
       - la gateway a redémarré sans réactiver les commandes slash
     - Si les commandes slash natives cessent de fonctionner, vérifiez les journaux pour `mattermost: failed to register slash commands` ou `mattermost: native slash commands enabled but no commands could be registered`.
     - Si `callbackUrl` est omis et que les journaux avertissent que le rappel a été résolu en `http://127.0.0.1:18789/...`, cette URL n’est probablement accessible que lorsque Mattermost s’exécute sur le même hôte/espace de noms réseau qu’OpenClaw. Définissez à la place un `commands.callbackUrl` explicite et accessible de l’extérieur.
+
   </Accordion>
   <Accordion title="Problèmes de boutons">
     - Les boutons apparaissent comme des blocs blancs : l’agent envoie peut-être des données de bouton mal formées. Vérifiez que chaque bouton comporte bien les champs `text` et `callback_data`.
@@ -525,6 +533,7 @@ Mattermost prend en charge plusieurs comptes sous `channels.mattermost.accounts`
     - La gateway journalise `missing _token in context` : le champ `_token` n’est pas présent dans le context du bouton. Assurez-vous qu’il est inclus lors de la construction de la charge utile d’intégration.
     - La confirmation affiche l’ID brut au lieu du nom du bouton : `context.action_id` ne correspond pas à l’`id` du bouton. Définissez les deux à la même valeur nettoyée.
     - L’agent ne connaît pas les boutons : ajoutez `capabilities: ["inlineButtons"]` à la configuration du canal Mattermost.
+
   </Accordion>
 </AccordionGroup>
 

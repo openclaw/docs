@@ -136,6 +136,7 @@ GET /api/diagnostics/prometheus
     - сирі ідентифікатори запитів провайдера (лише обмежені хеші, де це застосовно, у spans — ніколи в метриках)
     - ключі сесій та ідентифікатори сесій
     - імена хостів, шляхи до файлів, секретні значення
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ OpenClaw підтримує обидві поверхні незалежно. В
     - Автентифікація через стандартну автентифікацію Gateway.
     - Поверхня охоплює лише метрики (без трасувань або логів).
     - Найкраще підходить для стеків, уже стандартизованих на Prometheus + Grafana.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - Модель **Push**: OpenClaw надсилає OTLP/HTTP до збирача або бекенда, сумісного з OTLP.
     - Поверхня включає метрики, трасування та логи.
     - Працює через міст до Prometheus за допомогою OpenTelemetry Collector (експортер `prometheus` або `prometheusremotewrite`), коли вам потрібні обидві можливості.
     - Повний каталог див. у [експорті OpenTelemetry](/uk/gateway/opentelemetry).
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ OpenClaw підтримує обидві поверхні незалежно. В
     - Перевірте `diagnostics.enabled: true` у конфігурації.
     - Підтвердьте, що Plugin увімкнено й завантажено, за допомогою `openclaw plugins list --enabled`.
     - Згенеруйте певний трафік; counter і histogram починають виводити рядки лише після принаймні однієї події.
+
   </Accordion>
   <Accordion title="401 / unauthorized">
     Кінцева точка вимагає область operator Gateway (`auth: "gateway"` з `gatewayRuntimeScopeSurface: "trusted-operator"`). Використовуйте той самий токен або пароль, який Prometheus використовує для будь-якого іншого маршруту operator Gateway. Публічного неавтентифікованого режиму немає.

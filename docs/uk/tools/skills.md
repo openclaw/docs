@@ -73,6 +73,7 @@ OpenClaw завантажує skills з таких джерел, **від най
     - Установіть `agents.list[].skills: []`, щоб не дозволити жодного skill.
     - Непорожній список `agents.list[].skills` є **остаточним** набором для цього агента — він не об’єднується з defaults.
     - Ефективний список дозволів застосовується під час побудови prompt, виявлення slash-команд skills, синхронізації sandbox і знімків skills.
+
   </Accordion>
 </AccordionGroup>
 
@@ -268,10 +269,12 @@ metadata:
     - Інсталяції Node враховують `skills.install.nodeManager` у `openclaw.json` (типово: npm; варіанти: npm/pnpm/yarn/bun). Це впливає лише на встановлення skills; середовище виконання Gateway все одно має бути Node — Bun не рекомендується для WhatsApp/Telegram.
     - Вибір інсталятора через Gateway базується на пріоритетах: коли специфікації встановлення змішують різні типи, OpenClaw віддає перевагу Homebrew, якщо ввімкнено `skills.install.preferBrew` і існує `brew`, потім `uv`, потім налаштований менеджер node, потім інші запасні варіанти, як-от `go` або `download`.
     - Якщо всі специфікації встановлення мають тип `download`, OpenClaw показує всі варіанти завантаження замість зведення до одного бажаного інсталятора.
+
   </Accordion>
   <Accordion title="Деталі для кожного інсталятора">
     - **Інсталяції Go:** якщо `go` відсутній, а `brew` доступний, gateway спочатку встановлює Go через Homebrew і, за можливості, встановлює `GOBIN` у `bin` від Homebrew.
     - **Інсталяції через download:** `url` (обов’язково), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (типово: auto, якщо виявлено архів), `stripComponents`, `targetDir` (типово: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

@@ -127,6 +127,7 @@ Anbieterauswahl und Failover-Verhalten.
     - Wenn keine Modelle erscheinen, bestätigen Sie, dass der API-Schlüssel in der korrekten
       Umgebung für Ihren Gateway-Prozess gesetzt ist.
     - Modellreferenzen verwenden das Format `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

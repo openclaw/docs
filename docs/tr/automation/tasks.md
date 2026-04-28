@@ -115,6 +115,7 @@ Her aracı çalıştırması bir görev oluşturmaz. Heartbeat dönüşleri ve n
     - Heartbeat dönüşleri — ana oturum; bkz. [Heartbeat](/tr/gateway/heartbeat)
     - Normal etkileşimli sohbet dönüşleri
     - Doğrudan `/command` yanıtları
+
   </Accordion>
 </AccordionGroup>
 

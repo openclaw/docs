@@ -307,6 +307,7 @@ Dołączone kanały workspace, które przechowują eksporty bezpieczne dla konfi
     - Kanał jest wyłączony, ale wymaga powierzchni konfiguracji/wdrożenia.
     - Kanał jest włączony, ale nieskonfigurowany.
     - Włączone jest odroczone ładowanie (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Co setupEntry musi rejestrować">
     - Obiekt Plugin kanału (przez `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ Dołączone kanały workspace, które przechowują eksporty bezpieczne dla konfi
     - Usług działających w tle.
     - Ciężkich importów runtime (crypto, SDK).
     - Metod Gateway potrzebnych dopiero po uruchomieniu.
+
   </Accordion>
 </AccordionGroup>
 

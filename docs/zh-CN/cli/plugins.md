@@ -172,6 +172,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - GitHub 仓库简写，例如 `owner/repo`
     - GitHub 仓库 URL，例如 `https://github.com/owner/repo`
     - git URL
+
   </Tab>
   <Tab title="远程 marketplace 规则">
     对于从 GitHub 或 git 加载的远程 marketplace，插件条目必须保留在克隆得到的 marketplace 仓库内。OpenClaw 接受来自该仓库的相对路径源，并拒绝远程清单中的 HTTP(S)、绝对路径、git、GitHub 以及其他非路径插件源。

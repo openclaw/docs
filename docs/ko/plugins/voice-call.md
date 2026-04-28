@@ -164,12 +164,14 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
     - ngrok 무료 티어에서는 정확한 ngrok URL로 `publicUrl`을 설정하세요. 서명 검증은 항상 강제됩니다.
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true`는 `tunnel.provider="ngrok"`이고 `serve.bind`가 loopback(ngrok 로컬 에이전트)일 때에만 잘못된 서명의 Twilio Webhook을 허용합니다. 로컬 개발 전용입니다.
     - Ngrok 무료 티어 URL은 변경되거나 중간 동작을 추가할 수 있습니다. `publicUrl`이 바뀌면 Twilio 서명이 실패합니다. 프로덕션에서는 안정적인 도메인이나 Tailscale funnel을 선호하세요.
+
   </Accordion>
   <Accordion title="스트리밍 연결 상한">
     - `streaming.preStartTimeoutMs`는 유효한 `start` 프레임을 보내지 않는 소켓을 닫습니다.
     - `streaming.maxPendingConnections`는 인증되지 않은 시작 전 소켓의 총 수를 제한합니다.
     - `streaming.maxPendingConnectionsPerIp`는 소스 IP별 인증되지 않은 시작 전 소켓 수를 제한합니다.
     - `streaming.maxConnections`는 열려 있는 미디어 스트림 소켓의 총 수(대기 중 + 활성)를 제한합니다.
+
   </Accordion>
   <Accordion title="레거시 config 마이그레이션">
     `provider: "log"`, `twilio.from`, 또는 레거시

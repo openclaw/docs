@@ -210,6 +210,7 @@ Scegli la superficie provider e segui i passaggi di configurazione.
     - `step-3.5-flash-2603` è attualmente esposto solo su `stepfun-plan`.
     - Un singolo flusso auth scrive profili con regione corrispondente sia per `stepfun` sia per `stepfun-plan`, così entrambe le superfici possono essere rilevate insieme.
     - Usa `openclaw models list` e `openclaw models set <provider/model>` per ispezionare o cambiare i modelli.
+
   </Accordion>
 </AccordionGroup>
 

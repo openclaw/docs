@@ -40,6 +40,7 @@ OpenClaw เชื่อมต่อกับ API แบบเนทีฟขอ
         - **Cloud + Local** — โฮสต์ Ollama ในเครื่องพร้อมโมเดลคลาวด์ที่ถูกกำหนดเส้นทางผ่านโฮสต์นั้น
         - **Cloud only** — โมเดล Ollama แบบโฮสต์ผ่าน `https://ollama.com`
         - **Local only** — ใช้เฉพาะโมเดลในเครื่อง
+
       </Step>
       <Step title="เลือกโมเดล">
         `Cloud only` จะถามหา `OLLAMA_API_KEY` และแนะนำค่าเริ่มต้นของโมเดลคลาวด์แบบโฮสต์ `Cloud + Local` และ `Local only` จะถามหา base URL ของ Ollama, ค้นหาโมเดลที่พร้อมใช้งาน และดึงโมเดลในเครื่องที่เลือกให้อัตโนมัติหากยังไม่มี `Cloud + Local` จะตรวจสอบด้วยว่าโฮสต์ Ollama นั้นลงชื่อเข้าใช้สำหรับการเข้าถึงคลาวด์แล้วหรือยัง
@@ -79,6 +80,7 @@ OpenClaw เชื่อมต่อกับ API แบบเนทีฟขอ
         - **Cloud + Local**: ติดตั้ง Ollama, ลงชื่อเข้าใช้ด้วย `ollama signin` และกำหนดเส้นทางคำขอคลาวด์ผ่านโฮสต์นั้น
         - **Cloud only**: ใช้ `https://ollama.com` กับ `OLLAMA_API_KEY`
         - **Local only**: ติดตั้ง Ollama จาก [ollama.com/download](https://ollama.com/download)
+
       </Step>
       <Step title="ดึงโมเดลในเครื่อง (เฉพาะในเครื่อง)">
         ```bash

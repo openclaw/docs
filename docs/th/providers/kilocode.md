@@ -116,6 +116,7 @@ model ใดก็ตามที่พร้อมใช้งานบน gate
     - หากการค้นหา model ล้มเหลวตอนเริ่มต้นระบบ OpenClaw จะ fallback ไปใช้แคตตาล็อก static ที่มาพร้อมกันซึ่งมี `kilocode/kilo/auto`
     - ตรวจสอบว่า API key ของคุณถูกต้อง และบัญชี Kilo ของคุณเปิดใช้งาน model ที่ต้องการแล้ว
     - เมื่อ Gateway รันเป็น daemon ให้แน่ใจว่า process นั้นเข้าถึง `KILOCODE_API_KEY` ได้ (เช่นใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv`)
+
   </Accordion>
 </AccordionGroup>
 

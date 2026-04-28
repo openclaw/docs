@@ -305,6 +305,7 @@ production
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="คีย์ `dangerous*` / `dangerously*` ทั้งหมดใน schema ของ config">

@@ -36,35 +36,42 @@ x-i18n:
   <Accordion title="Discord 및 Slack">
     - 빈 `emoji`는 해당 메시지에서 봇의 모든 리액션을 제거합니다.
     - `remove: true`는 지정한 이모지만 제거합니다.
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - 빈 `emoji`는 메시지에서 앱의 리액션을 제거합니다.
     - `remove: true`는 지정한 이모지만 제거합니다.
+
   </Accordion>
 
   <Accordion title="Telegram">
     - 빈 `emoji`는 봇의 리액션을 제거합니다.
     - `remove: true`도 리액션을 제거하지만, 도구 검증을 위해 여전히 비어 있지 않은 `emoji`가 필요합니다.
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - 빈 `emoji`는 봇 리액션을 제거합니다.
     - `remove: true`는 내부적으로 빈 이모지로 매핑됩니다(여전히 도구 호출에는 `emoji`가 필요함).
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - 비어 있지 않은 `emoji`가 필요합니다.
     - `remove: true`는 해당 특정 이모지 리액션을 제거합니다.
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - 작업 `add`, `remove`, `list`가 있는 `feishu_reaction` 도구를 사용하세요.
     - 추가/제거에는 `emoji_type`이 필요하고, 제거에는 `reaction_id`도 필요합니다.
+
   </Accordion>
 
   <Accordion title="Signal">
     - 인바운드 리액션 알림은 `channels.signal.reactionNotifications`로 제어됩니다. `"off"`는 이를 비활성화하고, `"own"`(기본값)은 사용자가 봇 메시지에 리액션할 때 이벤트를 발생시키며, `"all"`은 모든 리액션에 대해 이벤트를 발생시킵니다.
+
   </Accordion>
 </AccordionGroup>
 

@@ -33,6 +33,7 @@ Yüksek düzey genel bakış için bkz. [Onboarding (CLI)](/tr/start/wizard).
       - Yalnızca config
       - Config + kimlik bilgileri + oturumlar
       - Tam sıfırlama (workspace'i de kaldırır)
+
   </Step>
   <Step title="Model/Auth">
     - **Anthropic API anahtarı**: mevcutsa `ANTHROPIC_API_KEY` kullanır veya anahtar ister, sonra bunu daemon kullanımı için kaydeder.
@@ -83,6 +84,7 @@ Yüksek düzey genel bakış için bkz. [Onboarding (CLI)](/tr/start/wizard).
     - Varsayılan `~/.openclaw/workspace` (yapılandırılabilir).
     - Agent bootstrap ritüeli için gereken workspace dosyalarını tohumlar.
     - Tam workspace yerleşimi + yedekleme kılavuzu: [Agent workspace](/tr/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Port, bind, auth modu, Tailscale exposure.
@@ -98,6 +100,7 @@ Yüksek düzey genel bakış için bkz. [Onboarding (CLI)](/tr/start/wizard).
       - `--gateway-token` ile birleştirilemez.
     - Yalnızca her yerel sürece tam güveniyorsanız auth'u devre dışı bırakın.
     - Loopback dışı bind'ler yine de auth gerektirir.
+
   </Step>
   <Step title="Kanallar">
     - [WhatsApp](/tr/channels/whatsapp): isteğe bağlı QR girişi.
@@ -109,12 +112,14 @@ Yüksek düzey genel bakış için bkz. [Onboarding (CLI)](/tr/start/wizard).
     - [BlueBubbles](/tr/channels/bluebubbles): **iMessage için önerilir**; sunucu URL'si + parola + webhook.
     - [iMessage](/tr/channels/imessage): eski `imsg` CLI yolu + DB erişimi.
     - DM güvenliği: varsayılan eşleştirmedir. İlk DM bir kod gönderir; `openclaw pairing approve <channel> <code>` ile onaylayın veya allowlist kullanın.
+
   </Step>
   <Step title="Web arama">
     - Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG veya Tavily gibi desteklenen bir sağlayıcı seçin (veya atlayın).
     - API destekli sağlayıcılar hızlı kurulum için env değişkenleri veya mevcut config kullanabilir; anahtarsız sağlayıcılar sağlayıcıya özgü önkoşullarını kullanır.
     - `--skip-search` ile atlayın.
     - Daha sonra yapılandırın: `openclaw configure --section web`.
+
   </Step>
   <Step title="Daemon kurulumu">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ Yüksek düzey genel bakış için bkz. [Onboarding (CLI)](/tr/start/wizard).
     - Token auth bir token gerektiriyorsa ve `gateway.auth.token` SecretRef ile yönetiliyorsa daemon kurulumu bunu doğrular, ancak çözülmüş düz metin token değerlerini supervisor hizmet ortamı metadata'sına kalıcılaştırmaz.
     - Token auth bir token gerektiriyorsa ve yapılandırılmış token SecretRef çözümlenmemişse daemon kurulumu uygulanabilir rehberlikle engellenir.
     - Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa, mod açıkça ayarlanana kadar daemon kurulumu engellenir.
+
   </Step>
   <Step title="Sağlık denetimi">
     - Gateway'i başlatır (gerekirse) ve `openclaw health` çalıştırır.
     - İpucu: `openclaw status --deep`, durum çıktısına canlı gateway sağlık probe'unu ekler; desteklendiğinde kanal probe'ları da dahil edilir (erişilebilir bir gateway gerektirir).
+
   </Step>
   <Step title="Skills (önerilir)">
     - Mevcut Skills'i okur ve gereksinimleri denetler.
     - Bir node yöneticisi seçmenize izin verir: **npm / pnpm** (bun önerilmez).
     - İsteğe bağlı bağımlılıkları kurar (bazıları macOS'ta Homebrew kullanır).
+
   </Step>
   <Step title="Bitir">
     - Ek özellikler için iOS/Android/macOS uygulamaları dahil özet + sonraki adımlar.
+
   </Step>
 </Steps>
 

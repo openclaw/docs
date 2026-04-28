@@ -33,6 +33,7 @@ Aby zobaczyć ogólny przegląd, zobacz [Wdrażanie (CLI)](/pl/start/wizard).
       - Tylko konfiguracja
       - Konfiguracja + poświadczenia + sesje
       - Pełny reset (usuwa także obszar roboczy)
+
   </Step>
   <Step title="Model/Uwierzytelnianie">
     - **Klucz API Anthropic**: używa `ANTHROPIC_API_KEY`, jeśli jest obecny, lub pyta o klucz, a następnie zapisuje go do użycia przez demon.
@@ -82,6 +83,7 @@ Aby zobaczyć ogólny przegląd, zobacz [Wdrażanie (CLI)](/pl/start/wizard).
     - Domyślnie `~/.openclaw/workspace` (można skonfigurować).
     - Tworzy pliki obszaru roboczego potrzebne do rytuału bootstrapu agenta.
     - Pełny układ obszaru roboczego + przewodnik tworzenia kopii zapasowych: [Obszar roboczy agenta](/pl/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Port, powiązanie, tryb uwierzytelniania, ekspozycja Tailscale.
@@ -97,6 +99,7 @@ Aby zobaczyć ogólny przegląd, zobacz [Wdrażanie (CLI)](/pl/start/wizard).
       - Nie można łączyć z `--gateway-token`.
     - Wyłącz uwierzytelnianie tylko wtedy, gdy w pełni ufasz każdemu procesowi lokalnemu.
     - Powiązania inne niż loopback nadal wymagają uwierzytelniania.
+
   </Step>
   <Step title="Kanały">
     - [WhatsApp](/pl/channels/whatsapp): opcjonalne logowanie kodem QR.
@@ -108,12 +111,14 @@ Aby zobaczyć ogólny przegląd, zobacz [Wdrażanie (CLI)](/pl/start/wizard).
     - [BlueBubbles](/pl/channels/bluebubbles): **zalecane dla iMessage**; URL serwera + hasło + webhook.
     - [iMessage](/pl/channels/imessage): starsza ścieżka CLI `imsg` + dostęp do bazy danych.
     - Bezpieczeństwo wiadomości prywatnych: domyślnie używane jest parowanie. Pierwsza wiadomość prywatna wysyła kod; zatwierdź przez `openclaw pairing approve <channel> <code>` lub użyj list dozwolonych.
+
   </Step>
   <Step title="Wyszukiwanie w sieci">
     - Wybierz obsługiwanego dostawcę, takiego jak Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG lub Tavily (albo pomiń).
     - Dostawcy oparti na API mogą używać zmiennych środowiskowych lub istniejącej konfiguracji do szybkiej konfiguracji; dostawcy niewymagający klucza używają zamiast tego własnych wymagań wstępnych.
     - Pomiń za pomocą `--skip-search`.
     - Skonfiguruj później: `openclaw configure --section web`.
+
   </Step>
   <Step title="Instalacja demona">
     - macOS: LaunchAgent
@@ -125,18 +130,22 @@ Aby zobaczyć ogólny przegląd, zobacz [Wdrażanie (CLI)](/pl/start/wizard).
     - Jeśli uwierzytelnianie tokenem wymaga tokena, a `gateway.auth.token` jest zarządzany przez SecretRef, instalacja demona weryfikuje go, ale nie utrwala rozwiązanych jawnych wartości tokena w metadanych środowiska usługi nadzorcy.
     - Jeśli uwierzytelnianie tokenem wymaga tokena, a skonfigurowany SecretRef tokena nie jest rozwiązany, instalacja demona jest blokowana z instrukcjami możliwymi do wykonania.
     - Jeśli skonfigurowane są jednocześnie `gateway.auth.token` i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, instalacja demona jest blokowana do momentu jawnego ustawienia trybu.
+
   </Step>
   <Step title="Kontrola stanu">
     - Uruchamia Gateway (jeśli to konieczne) i wykonuje `openclaw health`.
     - Wskazówka: `openclaw status --deep` dodaje sondę stanu działającego Gateway do danych wyjściowych statusu, w tym sondy kanałów, gdy są obsługiwane (wymaga osiągalnego Gateway).
+
   </Step>
   <Step title="Skills (zalecane)">
     - Odczytuje dostępne Skills i sprawdza wymagania.
     - Pozwala wybrać menedżera Node: **npm / pnpm** (bun nie jest zalecany).
     - Instaluje opcjonalne zależności (niektóre używają Homebrew w systemie macOS).
+
   </Step>
   <Step title="Zakończenie">
     - Podsumowanie + kolejne kroki, w tym aplikacje iOS/Android/macOS dla dodatkowych funkcji.
+
   </Step>
 </Steps>
 

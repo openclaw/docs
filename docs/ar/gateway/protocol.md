@@ -288,6 +288,7 @@ Gateway → العميل:
     - يُلحق `system-event` حدث نظام ويمكنه تحديث/بث سياق الحضور.
     - يعيد `last-heartbeat` أحدث حدث Heartbeat محفوظ.
     - يبدّل `set-heartbeats` معالجة Heartbeat على gateway.
+
   </Accordion>
 
   <Accordion title="النماذج والاستخدام">
@@ -298,6 +299,7 @@ Gateway → العميل:
     - يعيد `sessions.usage` ملخصات الاستخدام لكل جلسة.
     - يعيد `sessions.usage.timeseries` سلسلة زمنية للاستخدام لجلسة واحدة.
     - يعيد `sessions.usage.logs` إدخالات سجل الاستخدام لجلسة واحدة.
+
   </Accordion>
 
   <Accordion title="القنوات ومساعدات تسجيل الدخول">
@@ -308,11 +310,13 @@ Gateway → العميل:
     - يرسل `push.test` دفعة APNs اختبارية إلى Node iOS مسجلة.
     - يعيد `voicewake.get` مشغلات كلمة التنبيه المخزنة.
     - يحدّث `voicewake.set` مشغلات كلمة التنبيه ويبث التغيير.
+
   </Accordion>
 
   <Accordion title="المراسلة والسجلات">
     - `send` هو RPC التسليم الصادر المباشر لعمليات الإرسال المستهدفة إلى قناة/حساب/خيط خارج مشغل الدردشة.
     - يعيد `logs.tail` ذيل سجل ملفات gateway المضبوط مع عناصر التحكم في cursor/الحد الأقصى والحد الأقصى للبايتات.
+
   </Accordion>
 
   <Accordion title="Talk وTTS">
@@ -324,6 +328,7 @@ Gateway → العميل:
     - يبدّل `tts.enable` و`tts.disable` حالة تفضيلات TTS.
     - يحدّث `tts.setProvider` موفر TTS المفضل.
     - يشغّل `tts.convert` تحويل نص إلى كلام لمرة واحدة.
+
   </Accordion>
 
   <Accordion title="الأسرار، والإعداد، والتحديث، والمعالج">
@@ -337,6 +342,7 @@ Gateway → العميل:
     - يعيد `config.schema.lookup` حمولة بحث محددة بالمسار لمسار إعداد واحد: المسار المطبع، وعقدة مخطط سطحية، وhint المطابق + `hintPath`، وملخصات الأبناء المباشرين لعمليات التعمق في UI/CLI. وتحتفظ عقد مخطط البحث بالوثائق المواجهة للمستخدم وحقول التحقق الشائعة (`title`، و`description`، و`type`، و`enum`، و`const`، و`format`، و`pattern`، وحدود الأرقام/السلاسل/المصفوفات/الكائنات، وأعلام مثل `additionalProperties`، و`deprecated`، و`readOnly`، و`writeOnly`). وتعرض ملخصات الأبناء `key`، و`path` المطبع، و`type`، و`required`، و`hasChildren`، بالإضافة إلى `hint` / `hintPath` المطابقين.
     - يشغّل `update.run` تدفق تحديث gateway ويجدول إعادة التشغيل فقط عندما ينجح التحديث نفسه.
     - تعرض `wizard.start` و`wizard.next` و`wizard.status` و`wizard.cancel` معالج الإعداد الأولي عبر WS RPC.
+
   </Accordion>
 
   <Accordion title="مساعدات الوكيل ومساحة العمل">
@@ -345,6 +351,7 @@ Gateway → العميل:
     - تدير `agents.files.list` و`agents.files.get` و`agents.files.set` ملفات التهيئة الأولية لمساحة العمل المعروضة لوكيل.
     - يعيد `agent.identity.get` هوية المساعد الفعلية لوكيل أو جلسة.
     - ينتظر `agent.wait` حتى ينتهي التشغيل ويعيد اللقطة النهائية عند توفرها.
+
   </Accordion>
 
   <Accordion title="التحكم في الجلسة">
@@ -361,6 +368,7 @@ Gateway → العميل:
     - تنفّذ `sessions.reset` و`sessions.delete` و`sessions.compact` صيانة الجلسة.
     - يعيد `sessions.get` صف الجلسة المخزن بالكامل.
     - لا يزال تنفيذ الدردشة يستخدم `chat.history` و`chat.send` و`chat.abort` و`chat.inject`. يتم تطبيع `chat.history` للعرض لعملاء UI: حيث تُزال وسوم التوجيه المضمنة من النص المرئي، وتُزال حمولات XML الخاصة باستدعاء الأدوات في النص العادي (بما في ذلك `<tool_call>...</tool_call>`، و`<function_call>...</function_call>`، و`<tool_calls>...</tool_calls>`، و`<function_calls>...</function_calls>`، وكتل استدعاء الأدوات المقتطعة) إضافةً إلى رموز التحكم الخاصة بالنموذج المسرّبة بصيغة ASCII/العرض الكامل، وتُحذف صفوف المساعد التي تحتوي فقط على رموز الصمت الخالصة مثل `NO_REPLY` / `no_reply` المطابقة تمامًا، ويمكن استبدال الصفوف كبيرة الحجم بعناصر نائبة.
+
   </Accordion>
 
   <Accordion title="إقران الأجهزة ورموز الأجهزة">
@@ -368,6 +376,7 @@ Gateway → العميل:
     - تدير `device.pair.approve` و`device.pair.reject` و`device.pair.remove` سجلات إقران الأجهزة.
     - يدوّر `device.token.rotate` رمز جهاز مقترن ضمن حدود دوره المعتمد ونطاق المستدعي.
     - يبطل `device.token.revoke` رمز جهاز مقترن ضمن حدود دوره المعتمد ونطاق المستدعي.
+
   </Accordion>
 
   <Accordion title="إقران Node، والاستدعاء، والعمل المعلق">
@@ -380,6 +389,7 @@ Gateway → العميل:
     - يحدّث `node.canvas.capability.refresh` رموز قدرات canvas محددة النطاق.
     - تمثل `node.pending.pull` و`node.pending.ack` واجهات طابور الـ node المتصلة.
     - تدير `node.pending.enqueue` و`node.pending.drain` العمل المعلق الدائم لـ Nodes غير المتصلة/غير المتاحة.
+
   </Accordion>
 
   <Accordion title="عائلات الموافقات">
@@ -388,11 +398,13 @@ Gateway → العميل:
     - تدير `exec.approvals.get` و`exec.approvals.set` لقطات سياسة موافقات exec الخاصة بـ gateway.
     - تدير `exec.approvals.node.get` و`exec.approvals.node.set` سياسة موافقات exec المحلية في node عبر أوامر relay الخاصة بـ node.
     - تغطي `plugin.approval.request` و`plugin.approval.list` و`plugin.approval.waitDecision` و`plugin.approval.resolve` تدفقات الموافقات المعرفة من Plugin.
+
   </Accordion>
 
   <Accordion title="الأتمتة وSkills والأدوات">
     - الأتمتة: يجدول `wake` حقن نص تنبيه فوري أو عند Heartbeat التالية؛ وتدير `cron.list` و`cron.status` و`cron.add` و`cron.update` و`cron.remove` و`cron.run` و`cron.runs` العمل المجدول.
     - Skills والأدوات: `commands.list` و`skills.*` و`tools.catalog` و`tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

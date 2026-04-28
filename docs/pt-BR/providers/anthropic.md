@@ -154,6 +154,7 @@ Substitua por mensagem com `/think:<level>` ou em parâmetros do modelo:
 Documentação relacionada da Anthropic:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## Cache de prompt
@@ -216,6 +217,7 @@ O OpenClaw oferece suporte ao recurso de cache de prompt da Anthropic para auten
     - Modelos Claude da Anthropic no Bedrock (`amazon-bedrock/*anthropic.claude*`) aceitam pass-through de `cacheRetention` quando configurado.
     - Modelos Bedrock que não são Anthropic são forçados para `cacheRetention: "none"` em runtime.
     - Padrões inteligentes de chave de API também inicializam `cacheRetention: "short"` para referências Claude-on-Bedrock quando nenhum valor explícito é definido.
+
   </Accordion>
 </AccordionGroup>
 
@@ -248,6 +250,7 @@ O OpenClaw oferece suporte ao recurso de cache de prompt da Anthropic para auten
     - Só é injetado para requisições diretas a `api.anthropic.com`. Rotas por proxy deixam `service_tier` intocado.
     - Parâmetros explícitos `serviceTier` ou `service_tier` substituem `/fast` quando ambos estão definidos.
     - Em contas sem capacidade de Priority Tier, `service_tier: "auto"` pode ser resolvido como `standard`.
+
     </Note>
 
   </Accordion>

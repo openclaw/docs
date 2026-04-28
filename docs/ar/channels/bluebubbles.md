@@ -73,6 +73,7 @@ x-i18n:
 - احرص دائمًا على تعيين كلمة مرور لـ Webhook.
 - تكون مصادقة Webhook مطلوبة دائمًا. يرفض OpenClaw طلبات Webhook الخاصة بـ BlueBubbles ما لم تتضمن كلمة مرور/guid يطابق `channels.bluebubbles.password` (مثلًا `?password=<password>` أو `x-password`)، بغض النظر عن بنية loopback/proxy.
 - يتم التحقق من مصادقة كلمة المرور قبل قراءة/تحليل أجسام Webhook كاملة.
+
 </Warning>
 
 ## إبقاء Messages.app نشطًا (إعدادات VM / بدون واجهة)
@@ -184,10 +185,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - الاقتران هو تبادل الرموز الافتراضي. التفاصيل: [الاقتران](/ar/channels/pairing)
+
   </Tab>
   <Tab title="المجموعات">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (الافتراضي: `allowlist`).
     - يتحكم `channels.bluebubbles.groupAllowFrom` بمن يمكنه التفعيل داخل المجموعات عند ضبط `allowlist`.
+
   </Tab>
 </Tabs>
 
@@ -400,6 +403,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     - **upload-file**: إرسال وسائط/ملفات (`to` و`buffer` و`filename` و`asVoice`).
       - المذكرات الصوتية: اضبط `asVoice: true` مع صوت **MP3** أو **CAF** للإرسال كرسالة صوتية في iMessage. يحوّل BlueBubbles ملفات MP3 إلى CAF عند إرسال المذكرات الصوتية.
     - الاسم البديل القديم: لا يزال `sendAttachment` يعمل، لكن `upload-file` هو اسم الإجراء القياسي.
+
   </Accordion>
 </AccordionGroup>
 
@@ -480,6 +484,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     - **زمن انتظار إضافي لأوامر التحكم في الرسائل الخاصة.** عند تفعيل هذا الخيار، تنتظر رسائل أوامر التحكم في الرسائل الخاصة (مثل `Dump` و`Save` وما إلى ذلك) الآن حتى نافذة إزالة الارتداد قبل الإرسال، تحسبًا لوصول Webhook تحمل حمولة. أما أوامر دردشات المجموعات فتبقى فورية.
     - **الناتج المدمج محدود** — يُحدَّد النص المدمج بسقف 4000 حرف مع علامة `…[truncated]` صريحة؛ وتُحدَّد المرفقات بسقف 20؛ وتُحدَّد إدخالات المصدر بسقف 10 (يتم الاحتفاظ بالأول والأحدث بعد ذلك). لا يزال كل `messageId` من المصدر يصل إلى إزالة تكرار الوارد، بحيث يُتعرّف على أي إعادة تشغيل لاحقة من MessagePoller لأي حدث فردي على أنها مكررة.
     - **اشتراك اختياري، لكل قناة.** لا تتأثر القنوات الأخرى (Telegram وWhatsApp وSlack و…).
+
   </Tab>
 </Tabs>
 
@@ -558,6 +563,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     - `channels.bluebubbles.serverUrl`: عنوان URL الأساسي لـ REST API في BlueBubbles.
     - `channels.bluebubbles.password`: كلمة مرور API.
     - `channels.bluebubbles.webhookPath`: مسار نقطة نهاية Webhook (الافتراضي: `/bluebubbles-webhook`).
+
   </Accordion>
   <Accordion title="سياسة الوصول">
     - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (الافتراضي: `pairing`).
@@ -566,6 +572,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     - `channels.bluebubbles.groupAllowFrom`: قائمة السماح لمرسلي المجموعات.
     - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: على macOS، إثراء اختياري للمشاركين غير المسمّين في المجموعات من جهات الاتصال المحلية بعد اجتياز البوابات. الافتراضي: `false`.
     - `channels.bluebubbles.groups`: إعدادات لكل مجموعة (`requireMention` وغيرها).
+
   </Accordion>
   <Accordion title="التسليم والتقسيم">
     - `channels.bluebubbles.sendReadReceipts`: إرسال إيصالات القراءة (الافتراضي: `true`).
@@ -573,6 +580,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     - `channels.bluebubbles.textChunkLimit`: حجم الجزء الصادر بالأحرف (الافتراضي: 4000).
     - `channels.bluebubbles.sendTimeoutMs`: مهلة كل طلب بالمللي ثانية لإرسال النصوص الصادرة عبر `/api/v1/message/text` (الافتراضي: 30000). ارفع القيمة على إعدادات macOS 26 حيث قد تتوقف عمليات إرسال iMessage عبر Private API لأكثر من 60 ثانية داخل إطار عمل iMessage؛ مثلًا `45000` أو `60000`. تحافظ عمليات الفحص والاستعلام عن الدردشات والتفاعلات والتعديلات وفحوصات السلامة حاليًا على الافتراضي الأقصر البالغ 10 ثوانٍ؛ ومن المخطط لاحقًا توسيع التغطية لتشمل التفاعلات والتعديلات. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
     - `channels.bluebubbles.chunkMode`: تؤدي `length` (الافتراضي) إلى التقسيم فقط عند تجاوز `textChunkLimit`؛ أما `newline` فتقسّم عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
+
   </Accordion>
   <Accordion title="الوسائط والسجل">
     - `channels.bluebubbles.mediaMaxMb`: الحد الأقصى للوسائط الواردة/الصادرة بالميغابايت (الافتراضي: 8).
@@ -580,10 +588,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     - `channels.bluebubbles.coalesceSameSenderDms`: دمج Webhook المتتالية للرسائل الخاصة من المرسل نفسه في دورة وكيل واحدة بحيث يصل الإرسال المقسّم من Apple للنص + URL كرسالة واحدة (الافتراضي: `false`). راجع [دمج الرسائل الخاصة المقسّمة عند الإرسال](#coalescing-split-send-dms-command--url-in-one-composition) للاطلاع على السيناريوهات وضبط النافذة والمفاضلات. يوسّع نافذة إزالة الارتداد الافتراضية للرسائل الواردة من 500 ms إلى 2500 ms عند التمكين من دون ضبط `messages.inbound.byChannel.bluebubbles` صراحةً.
     - `channels.bluebubbles.historyLimit`: الحد الأقصى لرسائل المجموعات للسياق (تعطّل القيمة 0 هذا الخيار).
     - `channels.bluebubbles.dmHistoryLimit`: حد سجل الرسائل الخاصة.
+
   </Accordion>
   <Accordion title="الإجراءات والحسابات">
     - `channels.bluebubbles.actions`: تمكين/تعطيل إجراءات محددة.
     - `channels.bluebubbles.accounts`: إعدادات متعددة الحسابات.
+
   </Accordion>
 </AccordionGroup>
 

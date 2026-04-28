@@ -149,12 +149,14 @@ voice-call 凭证支持 SecretRef。`plugins.entries.voice-call.config.twilio.au
     - 在 ngrok 免费套餐上，将 `publicUrl` 设置为精确的 ngrok URL；签名验证始终强制启用。
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` 仅在 `tunnel.provider="ngrok"` 且 `serve.bind` 为 loopback（ngrok 本地代理）时，允许 Twilio webhook 使用无效签名。仅限本地开发。
     - Ngrok 免费套餐 URL 可能变化或增加中间页行为；如果 `publicUrl` 漂移，Twilio 签名会验证失败。生产环境中：优先使用稳定域名或 Tailscale funnel。
+
   </Accordion>
   <Accordion title="流式连接上限">
     - `streaming.preStartTimeoutMs` 会关闭那些始终未发送有效 `start` 帧的套接字。
     - `streaming.maxPendingConnections` 限制未经认证、启动前套接字的总数。
     - `streaming.maxPendingConnectionsPerIp` 限制每个源 IP 的未经认证、启动前套接字数量。
     - `streaming.maxConnections` 限制所有已打开媒体流套接字的总数（待启动 + 活跃）。
+
   </Accordion>
   <Accordion title="旧版配置迁移">
     使用 `provider: "log"`、`twilio.from` 或旧版 `streaming.*` OpenAI 键名的旧配置，会由 `openclaw doctor --fix` 重写。当前运行时暂时仍接受旧的 voice-call 键名，但推荐的重写路径是 `openclaw doctor --fix`，该兼容垫片只是临时措施。

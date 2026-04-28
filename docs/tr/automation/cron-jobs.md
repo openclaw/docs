@@ -277,6 +277,7 @@ Kanca uç noktalarını local loopback, tailnet veya güvenilir ters proxy arkas
 - Çağıranın seçtiği oturumlar gerekmiyorsa `hooks.allowRequestSessionKey=false` olarak tutun.
 - `hooks.allowRequestSessionKey` etkinleştirirseniz, izin verilen oturum anahtarı biçimlerini sınırlamak için ayrıca `hooks.allowedSessionKeyPrefixes` ayarlayın.
 - Kanca yükleri varsayılan olarak güvenlik sınırlarıyla sarılır.
+
 </Warning>
 
 ## Gmail PubSub entegrasyonu
@@ -379,6 +380,7 @@ Model geçersiz kılma notu:
 - Modele izin veriliyorsa, tam olarak o sağlayıcı/model izole aracı çalıştırmasına ulaşır.
 - İzin verilmiyorsa, cron bir uyarı verir ve işin aracı/varsayılan model seçimine geri döner.
 - Yapılandırılmış geri dönüş zincirleri yine uygulanır, ancak açık bir iş başına geri dönüş listesi olmayan düz bir `--model` geçersiz kılması artık sessiz ek bir yeniden deneme hedefi olarak aracının birincil modeline düşmez.
+
 </Note>
 
 ## Yapılandırma
@@ -438,6 +440,7 @@ openclaw doctor
     - Gateway'in kesintisiz olarak çalıştığını doğrulayın.
     - `cron` zamanlamaları için saat dilimini (`--tz`), ana makinenin saat dilimiyle karşılaştırarak doğrulayın.
     - Çalıştırma çıktısında `reason: not-due` görünmesi, el ile çalıştırmanın `openclaw cron run <jobId> --due` ile kontrol edildiği ve işin zamanının henüz gelmediği anlamına gelir.
+
   </Accordion>
   <Accordion title="Cron tetiklendi ama teslimat yok">
     - Teslimat modu `none` ise çalıştırıcıdan geri dönüş gönderimi beklenmez. Bir sohbet rotası varsa aracı yine de `message` aracıyla doğrudan gönderebilir.
@@ -446,16 +449,19 @@ openclaw doctor
     - Kanal kimlik doğrulama hataları (`unauthorized`, `Forbidden`), teslimatın kimlik bilgileri tarafından engellendiği anlamına gelir.
     - İzole çalıştırma yalnızca sessiz belirteci (`NO_REPLY` / `no_reply`) döndürürse, OpenClaw doğrudan giden teslimatı bastırır ve geri dönüşteki kuyruklu özet yolunu da bastırır; bu nedenle sohbete hiçbir şey geri gönderilmez.
     - Aracının kullanıcıya kendisinin mesaj göndermesi gerekiyorsa, işin kullanılabilir bir rotaya sahip olduğunu kontrol edin (`channel: "last"` ve önceki bir sohbet ya da açık kanal/hedef).
+
   </Accordion>
   <Accordion title="Cron veya heartbeat /new-style geçişini engelliyor gibi görünüyor">
     - Günlük ve boşta sıfırlama tazeliği `updatedAt` temelli değildir; bkz. [Oturum yönetimi](/tr/concepts/session#session-lifecycle).
     - Cron uyandırmaları, Heartbeat çalıştırmaları, exec bildirimleri ve Gateway kayıt işlemleri yönlendirme/durum için oturum satırını güncelleyebilir, ancak `sessionStartedAt` veya `lastInteractionAt` alanlarını uzatmaz.
     - Bu alanlar mevcut olmadan önce oluşturulmuş eski satırlar için OpenClaw, dosya hâlâ mevcutsa transcript JSONL oturum başlığından `sessionStartedAt` değerini geri kazanabilir. `lastInteractionAt` alanı olmayan eski boşta satırlar, boşta temel çizgisi olarak bu geri kazanılmış başlangıç zamanını kullanır.
+
   </Accordion>
   <Accordion title="Saat dilimiyle ilgili dikkat edilmesi gerekenler">
     - `--tz` olmadan cron, Gateway ana makinesinin saat dilimini kullanır.
     - Saat dilimi olmayan `at` zamanlamaları UTC olarak değerlendirilir.
     - Heartbeat `activeHours`, yapılandırılmış saat dilimi çözümlemesini kullanır.
+
   </Accordion>
 </AccordionGroup>
 

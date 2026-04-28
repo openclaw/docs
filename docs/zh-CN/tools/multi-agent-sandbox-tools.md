@@ -232,6 +232,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     - 如果设置了 `agents.list[].tools.sandbox.tools`，则它会替换该智能体的 `tools.sandbox.tools`。
     - 如果设置了 `agents.list[].tools.profile`，则它会覆盖该智能体的 `tools.profile`。
     - 提供商工具键可接受 `provider`（例如 `google-antigravity`）或 `provider/model`（例如 `openai/gpt-5.4`）。
+
   </Accordion>
   <Accordion title="空 allowlist 行为">
     如果该链路中的任何显式 allowlist 最终导致此次运行没有可调用工具，OpenClaw 会在将提示提交给模型之前停止。这是有意设计的：如果某个智能体配置了缺失的工具，例如 `agents.list[].tools.allow: ["query_db"]`，那么在启用注册 `query_db` 的插件之前，它应当明确失败，而不是继续作为纯文本智能体运行。
@@ -360,6 +361,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="测试工具限制">
     - 发送一条需要受限工具的消息。
     - 验证该智能体无法使用被拒绝的工具。
+
   </Step>
   <Step title="监控日志">
     ```bash
@@ -376,15 +378,18 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Accordion title="尽管设置了 `mode: 'all'`，智能体仍未进入沙箱">
     - 检查是否存在覆盖它的全局 `agents.defaults.sandbox.mode`。
     - 智能体专属配置优先级更高，因此请设置 `agents.list[].sandbox.mode: "all"`。
+
   </Accordion>
   <Accordion title="尽管有 deny 列表，工具仍然可用">
     - 检查工具过滤顺序：全局 → 智能体 → 沙箱 → 子智能体。
     - 每一层都只能进一步限制，不能重新授予。
     - 通过日志验证：`[tools] filtering tools for agent:${agentId}`。
+
   </Accordion>
   <Accordion title="容器未按智能体隔离">
     - 在智能体专属沙箱配置中设置 `scope: "agent"`。
     - 默认值是 `"session"`，这会为每个会话创建一个容器。
+
   </Accordion>
 </AccordionGroup>
 

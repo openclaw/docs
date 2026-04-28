@@ -102,6 +102,7 @@ x-i18n:
 - 같은 호스트의 loopback 프록시 설정에서는 대신 token/password 인증을 사용하거나, OpenClaw가 검증할 수 있는 비-loopback 신뢰 프록시 주소를 통해 라우팅하세요.
 - 비-loopback Control UI 배포에는 여전히 명시적인 `gateway.controlUi.allowedOrigins`가 필요합니다.
 - **전달된 헤더 증거는 loopback 로컬성보다 우선합니다.** 요청이 loopback으로 들어왔더라도 `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` 헤더가 비로컬 origin을 가리키면, 그 증거는 loopback 로컬성 주장을 무효화합니다. 요청은 페어링, trusted-proxy 인증, Control UI 기기 ID 게이팅에서 원격 요청으로 취급됩니다. 이는 같은 호스트의 loopback 프록시가 전달 헤더 ID를 세탁해 trusted-proxy 인증에 사용하는 것을 막습니다.
+
 </Warning>
 
 ### 구성 참조

@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - Pemeriksaan kesegaran protokol UI (membangun ulang Control UI saat schema protokol lebih baru).
     - Pemeriksaan health + prompt restart.
     - Ringkasan status Skills (eligible/missing/blocked) dan status Plugin.
+
   </Accordion>
   <Accordion title="Config dan migrasi">
     - Normalisasi config untuk nilai legacy.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - Migrasi key kontrak manifest Plugin legacy (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - Migrasi store Cron legacy (`jobId`, `schedule.cron`, field delivery/payload tingkat atas, payload `provider`, job fallback Webhook sederhana `notify: true`).
     - Migrasi legacy runtime-policy agent ke `agents.defaults.agentRuntime` dan `agents.list[].agentRuntime`.
+
   </Accordion>
   <Accordion title="State dan integritas">
     - Inspeksi file lock sesi dan pembersihan lock basi.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - Pemeriksaan izin file config (`chmod 600`) saat berjalan secara lokal.
     - Health auth model: memeriksa kedaluwarsa OAuth, dapat me-refresh token yang akan kedaluwarsa, dan melaporkan status cooldown/dinonaktifkan pada auth-profile.
     - Deteksi workspace dir tambahan (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, layanan, dan supervisor">
     - Perbaikan image sandbox saat sandboxing diaktifkan.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Audit config supervisor (launchd/systemd/schtasks) dengan perbaikan opsional.
     - Pemeriksaan best practice runtime Gateway (Node vs Bun, path version-manager).
     - Diagnostik bentrokan port Gateway (default `18789`).
+
   </Accordion>
   <Accordion title="Auth, keamanan, dan pairing">
     - Peringatan keamanan untuk kebijakan DM terbuka.
     - Pemeriksaan auth Gateway untuk mode token lokal (menawarkan pembuatan token saat tidak ada source token; tidak menimpa config SecretRef token).
     - Deteksi masalah pairing perangkat (permintaan pairing pertama kali yang tertunda, peningkatan role/scope yang tertunda, drift cache token perangkat lokal yang basi, dan drift auth paired-record).
+
   </Accordion>
   <Accordion title="Workspace dan shell">
     - Pemeriksaan linger systemd di Linux.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - Pemeriksaan kesiapan provider embedding memory search (model lokal, API key remote, atau biner QMD).
     - Pemeriksaan instalasi source (mismatch workspace pnpm, aset UI hilang, biner tsx hilang).
     - Menulis config dan metadata wizard yang diperbarui.
+
   </Accordion>
 </AccordionGroup>
 

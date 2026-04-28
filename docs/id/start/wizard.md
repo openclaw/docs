@@ -61,9 +61,11 @@ Onboarding dimulai dengan **QuickStart** (default) vs **Advanced** (kontrol penu
     - Default isolasi DM: onboarding lokal menulis `session.dmScope: "per-channel-peer"` saat belum disetel. Detail: [CLI Setup Reference](/id/start/wizard-cli-reference#outputs-and-internals)
     - Eksposur Tailscale **Off**
     - DM Telegram + WhatsApp default ke **allowlist** (Anda akan diminta memasukkan nomor telepon)
+
   </Tab>
   <Tab title="Advanced (kontrol penuh)">
     - Mengekspos setiap langkah (mode, workspace, gateway, channels, daemon, skills).
+
   </Tab>
 </Tabs>
 

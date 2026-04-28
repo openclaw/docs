@@ -93,6 +93,7 @@ Bu günlük, yükseltme kaynağı değil, Dreams UI içinde insanlar tarafından
     - `memory rem-backfill --path ...`, geri alınabilir temellendirilmiş günlük girdilerini `DREAMS.md` içine yazar.
     - `memory rem-backfill --path ... --stage-short-term`, temellendirilmiş kalıcı adayları normal deep evresinin zaten kullandığı aynı kısa süreli kanıt deposuna hazırlar.
     - `memory rem-backfill --rollback` ve `--rollback-short-term`, bu hazırlanan geri doldurma yapıtlarını sıradan günlük girdilerine veya canlı kısa süreli geri çağırmaya dokunmadan kaldırır.
+
   </Accordion>
 </AccordionGroup>
 

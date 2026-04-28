@@ -115,6 +115,7 @@ x-i18n:
     - Heartbeat ターン — メインセッション。詳細は [Heartbeat](/ja-JP/gateway/heartbeat) を参照
     - 通常の対話チャットターン
     - 直接の `/command` 応答
+
   </Accordion>
 </AccordionGroup>
 

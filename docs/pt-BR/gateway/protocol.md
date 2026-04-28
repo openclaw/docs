@@ -289,6 +289,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `system-event` acrescenta um evento do sistema e pode atualizar/transmitir contexto de presença.
     - `last-heartbeat` retorna o evento de Heartbeat persistido mais recente.
     - `set-heartbeats` alterna o processamento de Heartbeat no gateway.
+
   </Accordion>
 
   <Accordion title="Modelos e uso">
@@ -299,6 +300,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `sessions.usage` retorna resumos de uso por sessão.
     - `sessions.usage.timeseries` retorna séries temporais de uso para uma sessão.
     - `sessions.usage.logs` retorna entradas de log de uso para uma sessão.
+
   </Accordion>
 
   <Accordion title="Canais e helpers de login">
@@ -309,11 +311,13 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `push.test` envia um push APNs de teste para um node iOS registrado.
     - `voicewake.get` retorna os gatilhos de wake-word armazenados.
     - `voicewake.set` atualiza os gatilhos de wake-word e transmite a alteração.
+
   </Accordion>
 
   <Accordion title="Mensagens e logs">
     - `send` é o RPC de entrega direta de saída para envios direcionados a canal/conta/thread fora do executor de chat.
     - `logs.tail` retorna o tail do log de arquivo configurado do gateway com controles de cursor/limite e bytes máximos.
+
   </Accordion>
 
   <Accordion title="Talk e TTS">
@@ -325,6 +329,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `tts.enable` e `tts.disable` alternam o estado das preferências de TTS.
     - `tts.setProvider` atualiza o provider preferido de TTS.
     - `tts.convert` executa conversão pontual de texto em fala.
+
   </Accordion>
 
   <Accordion title="Segredos, configuração, atualização e assistente">
@@ -338,6 +343,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `config.schema.lookup` retorna um payload de busca com escopo de caminho para um caminho de configuração: caminho normalizado, um nó superficial do schema, hint correspondente + `hintPath` e resumos imediatos de filhos para drill-down de UI/CLI. Nós de schema de lookup mantêm a documentação voltada ao usuário e campos comuns de validação (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, limites numéricos/de string/de array/de objeto e flags como `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Resumos de filhos expõem `key`, `path` normalizado, `type`, `required`, `hasChildren`, além de `hint` / `hintPath` correspondentes.
     - `update.run` executa o fluxo de atualização do gateway e agenda uma reinicialização apenas quando a própria atualização foi bem-sucedida.
     - `wizard.start`, `wizard.next`, `wizard.status` e `wizard.cancel` expõem o assistente de onboarding por WS RPC.
+
   </Accordion>
 
   <Accordion title="Helpers de agente e workspace">
@@ -346,6 +352,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `agents.files.list`, `agents.files.get` e `agents.files.set` gerenciam os arquivos de bootstrap do workspace expostos para um agente.
     - `agent.identity.get` retorna a identidade efetiva do assistente para um agente ou sessão.
     - `agent.wait` espera uma execução terminar e retorna o snapshot terminal quando disponível.
+
   </Accordion>
 
   <Accordion title="Controle de sessão">
@@ -362,6 +369,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `sessions.reset`, `sessions.delete` e `sessions.compact` executam manutenção de sessão.
     - `sessions.get` retorna a linha completa da sessão armazenada.
     - A execução de chat continua usando `chat.history`, `chat.send`, `chat.abort` e `chat.inject`. `chat.history` é normalizado para exibição para clientes de UI: tags de diretiva inline são removidas do texto visível, payloads XML de chamada de ferramenta em texto simples (incluindo `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` e blocos truncados de chamada de ferramenta) e tokens de controle do modelo vazados em ASCII/largura total são removidos, linhas puras do assistente com token silencioso como `NO_REPLY` / `no_reply` exatos são omitidas e linhas grandes demais podem ser substituídas por placeholders.
+
   </Accordion>
 
   <Accordion title="Pareamento de dispositivo e tokens de dispositivo">
@@ -369,6 +377,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `device.pair.approve`, `device.pair.reject` e `device.pair.remove` gerenciam registros de pareamento de dispositivo.
     - `device.token.rotate` rotaciona um token de dispositivo pareado dentro dos limites aprovados de role e escopo do chamador.
     - `device.token.revoke` revoga um token de dispositivo pareado dentro dos limites aprovados de role e escopo do chamador.
+
   </Accordion>
 
   <Accordion title="Pareamento de node, invoke e trabalho pendente">
@@ -381,6 +390,7 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `node.canvas.capability.refresh` atualiza tokens de capacidade de canvas com escopo.
     - `node.pending.pull` e `node.pending.ack` são as APIs de fila para nodes conectados.
     - `node.pending.enqueue` e `node.pending.drain` gerenciam trabalho pendente durável para nodes offline/desconectados.
+
   </Accordion>
 
   <Accordion title="Famílias de aprovação">
@@ -389,11 +399,13 @@ de métodos de Plugin/canal carregados. Trate isso como descoberta de recursos, 
     - `exec.approvals.get` e `exec.approvals.set` gerenciam snapshots da política de aprovação de exec do gateway.
     - `exec.approvals.node.get` e `exec.approvals.node.set` gerenciam política local de aprovação de exec do node por meio de comandos de relay do node.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` e `plugin.approval.resolve` cobrem fluxos de aprovação definidos por Plugin.
+
   </Accordion>
 
   <Accordion title="Automação, Skills e ferramentas">
     - Automação: `wake` agenda uma injeção imediata ou no próximo Heartbeat de texto de ativação; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` gerenciam trabalho agendado.
     - Skills e ferramentas: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

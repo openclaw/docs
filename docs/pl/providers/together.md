@@ -127,6 +127,7 @@ wybór providera i zachowanie failover.
     - Jeśli modele się nie pojawiają, potwierdź, że klucz API jest ustawiony w poprawnym
       środowisku dla procesu Gateway.
     - Referencje modeli mają postać `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

@@ -289,10 +289,12 @@ metadata:
     - Node 安装会遵循 `openclaw.json` 中的 `skills.install.nodeManager`（默认：npm；可选：npm/pnpm/yarn/bun）。这只影响 skill 安装；Gateway 网关 运行时仍应使用 Node —— 不建议 WhatsApp/Telegram 使用 Bun。
     - Gateway 网关 支持的安装器选择是基于偏好驱动的：当安装规范混合多种类型时，如果启用了 `skills.install.preferBrew` 且存在 `brew`，OpenClaw 会优先选择 Homebrew，然后是 `uv`，再然后是已配置的 node manager，最后才是 `go` 或 `download` 等其他回退选项。
     - 如果每个安装规范都是 `download`，OpenClaw 会展示所有下载选项，而不是折叠为一个首选安装器。
+
   </Accordion>
   <Accordion title="每种安装器的细节">
     - **Go 安装：** 如果缺少 `go` 但可用 `brew`，Gateway 网关 会先通过 Homebrew 安装 Go，并尽可能将 `GOBIN` 设置为 Homebrew 的 `bin`。
     - **下载安装：** `url`（必填）、`archive`（`tar.gz` | `tar.bz2` | `zip`）、`extract`（默认：检测到归档文件时自动）、`stripComponents`、`targetDir`（默认：`~/.openclaw/tools/<skillKey>`）。
+
   </Accordion>
 </AccordionGroup>
 

@@ -97,6 +97,7 @@ Slash command native bersifat opt-in. Saat diaktifkan, OpenClaw mendaftarkan sla
     - Untuk penyiapan multi-akun, `commands` dapat ditetapkan pada level atas atau di bawah `channels.mattermost.accounts.<id>.commands` (nilai akun menimpa field level atas).
     - Callback command divalidasi dengan token per-command yang dikembalikan Mattermost saat OpenClaw mendaftarkan command `oc_*`.
     - Callback slash gagal secara tertutup saat pendaftaran gagal, startup hanya sebagian, atau token callback tidak cocok dengan salah satu command yang terdaftar.
+
   </Accordion>
   <Accordion title="Persyaratan keterjangkauan">
     Endpoint callback harus dapat dijangkau dari server Mattermost.
@@ -291,11 +292,13 @@ Aktifkan melalui `channels.mattermost.streaming`:
     - `block` menggunakan potongan draf bergaya append di dalam post pratinjau.
     - `progress` menampilkan pratinjau status saat menghasilkan dan hanya mem-posting jawaban akhir saat selesai.
     - `off` menonaktifkan streaming pratinjau.
+
   </Accordion>
   <Accordion title="Catatan perilaku streaming">
     - Jika stream tidak dapat diselesaikan di tempat (misalnya post dihapus di tengah stream), OpenClaw akan fallback dengan mengirim post final baru agar balasan tidak pernah hilang.
     - Payload yang hanya berisi reasoning disembunyikan dari post saluran, termasuk teks yang datang sebagai blockquote `> Reasoning:`. Tetapkan `/reasoning on` untuk melihat pemikiran di surface lain; post final Mattermost hanya menyimpan jawabannya.
     - Lihat [Streaming](/id/concepts/streaming#preview-streaming-modes) untuk matriks pemetaan saluran.
+
   </Accordion>
 </AccordionGroup>
 
@@ -369,6 +372,7 @@ Saat pengguna mengklik tombol:
     - Callback tombol menggunakan verifikasi HMAC-SHA256 (otomatis, tidak perlu konfigurasi).
     - Mattermost menghapus data callback dari respons API-nya (fitur keamanan), sehingga semua tombol dihapus saat diklik — penghapusan sebagian tidak dimungkinkan.
     - ID aksi yang berisi tanda hubung atau garis bawah dibersihkan secara otomatis (keterbatasan perutean Mattermost).
+
   </Accordion>
   <Accordion title="Konfigurasi dan keterjangkauan">
     - `channels.mattermost.capabilities`: array string kemampuan. Tambahkan `"inlineButtons"` untuk mengaktifkan deskripsi tool tombol dalam prompt sistem agen.
@@ -377,6 +381,7 @@ Saat pengguna mengklik tombol:
     - Jika `interactions.callbackBaseUrl` dihilangkan, OpenClaw menurunkan URL callback dari `gateway.customBindHost` + `gateway.port`, lalu fallback ke `http://localhost:<port>`.
     - Aturan keterjangkauan: URL callback tombol harus dapat dijangkau dari server Mattermost. `localhost` hanya berfungsi saat Mattermost dan OpenClaw berjalan pada host/network namespace yang sama.
     - Jika target callback Anda bersifat privat/tailnet/internal, tambahkan host/domain-nya ke Mattermost `ServiceSettings.AllowedUntrustedInternalConnections`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -472,6 +477,7 @@ context = {**ctx, "_token": token}
     - Selalu tandatangani **semua** field context (kecuali `_token`). Gateway menghapus `_token` lalu menandatangani semua yang tersisa. Menandatangani hanya sebagian akan menyebabkan kegagalan verifikasi secara diam-diam.
     - Gunakan `sort_keys=True` — Gateway mengurutkan key sebelum menandatangani, dan Mattermost dapat mengubah urutan field context saat menyimpan payload.
     - Turunkan secret dari token bot (deterministik), bukan byte acak. Secret harus sama di seluruh proses yang membuat tombol dan Gateway yang memverifikasi.
+
   </Accordion>
 </AccordionGroup>
 
@@ -507,6 +513,7 @@ Mattermost mendukung beberapa akun di bawah `channels.mattermost.accounts`:
   <Accordion title="Error autentikasi atau multi-akun">
     - Periksa token bot, base URL, dan apakah akun diaktifkan.
     - Masalah multi-akun: variabel lingkungan hanya berlaku untuk akun `default`.
+
   </Accordion>
   <Accordion title="Slash command native gagal">
     - `Unauthorized: invalid command token.`: OpenClaw tidak menerima token callback. Penyebab umumnya:
@@ -516,6 +523,7 @@ Mattermost mendukung beberapa akun di bawah `channels.mattermost.accounts`:
       - Gateway dimulai ulang tanpa mengaktifkan ulang slash command
     - Jika slash command native berhenti berfungsi, periksa log untuk `mattermost: failed to register slash commands` atau `mattermost: native slash commands enabled but no commands could be registered`.
     - Jika `callbackUrl` dihilangkan dan log memperingatkan bahwa callback di-resolve ke `http://127.0.0.1:18789/...`, URL tersebut kemungkinan hanya dapat dijangkau saat Mattermost berjalan pada host/network namespace yang sama dengan OpenClaw. Sebagai gantinya, tetapkan `commands.callbackUrl` eksplisit yang dapat dijangkau dari luar.
+
   </Accordion>
   <Accordion title="Masalah tombol">
     - Tombol muncul sebagai kotak putih: agen mungkin mengirim data tombol yang salah format. Periksa bahwa setiap tombol memiliki field `text` dan `callback_data`.
@@ -525,6 +533,7 @@ Mattermost mendukung beberapa akun di bawah `channels.mattermost.accounts`:
     - Log Gateway `missing _token in context`: field `_token` tidak ada dalam context tombol. Pastikan field itu disertakan saat membangun payload integration.
     - Konfirmasi menampilkan ID mentah, bukan nama tombol: `context.action_id` tidak cocok dengan `id` tombol. Tetapkan keduanya ke nilai yang sama dan sudah dibersihkan.
     - Agen tidak mengetahui tombol: tambahkan `capabilities: ["inlineButtons"]` ke konfigurasi saluran Mattermost.
+
   </Accordion>
 </AccordionGroup>
 

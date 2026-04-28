@@ -72,6 +72,7 @@ OpenClaw'ın kodlama çalışma zamanını kendisinin barındırması ve ajan ot
     - `openclaw agent` ve `openclaw infer model run` gibi tek seferlik ajan giriş noktaları, yanıt tamamlandığında açtıkları paketlenmiş MCP çalışma zamanlarını sonlandırır; böylece yinelenen betikli çalıştırmalar stdio MCP alt süreçlerini biriktirmez
     - OpenClaw tarafından başlatılan stdio MCP sunucuları (paketlenmiş veya kullanıcı tarafından yapılandırılmış), kapatma sırasında bir süreç ağacı olarak kapatılır; böylece sunucunun başlattığı alt süreçler, üst stdio istemcisi çıktıktan sonra yaşamaya devam etmez
     - bir oturumu silmek veya sıfırlamak, paylaşılan çalışma zamanı temizleme yolu üzerinden o oturumun MCP istemcilerini serbest bırakır; böylece kaldırılmış bir oturuma bağlı kalan stdio bağlantıları olmaz
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ Geçerli olay türleri:
 - kuyruk yalnızca canlıdır; MCP köprüsü başladığında başlar
 - `events_poll` ve `events_wait`, daha eski Gateway geçmişini kendiliğinden yeniden oynatmaz
 - kalıcı geçmiş birikimi `messages_read` ile okunmalıdır
+
 </Warning>
 
 ### Claude kanal bildirimleri
@@ -367,6 +369,7 @@ Bu kaydedilmiş tanımlar; gömülü Pi ve diğer çalışma zamanı bağdaştı
     - çalışma zamanı bağdaştırıcıları, yürütme anında gerçekte hangi taşıma şekillerini desteklediklerine karar verir
     - gömülü Pi, yapılandırılmış MCP araçlarını normal `coding` ve `messaging` araç profillerinde açığa çıkarır; `minimal` bunları hâlâ gizler ve `tools.deny: ["bundle-mcp"]` bunları açıkça devre dışı bırakır
     - oturum kapsamlı paketlenmiş MCP çalışma zamanları, boşta geçen `mcp.sessionIdleTtlMs` milisaniyeden sonra toplanır (varsayılan 10 dakika; devre dışı bırakmak için `0` ayarlayın) ve tek seferlik gömülü çalıştırmalar bunları çalıştırma sonunda temizler
+
   </Accordion>
 </AccordionGroup>
 

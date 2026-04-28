@@ -124,6 +124,7 @@ les modèles découverts avant le catalogue statique de repli. Le repli intégr�
     - Si la découverte de modèle échoue au démarrage, OpenClaw revient au catalogue statique intégré contenant `kilocode/kilo/auto`.
     - Confirmez que votre clé API est valide et que votre compte Kilo a bien les modèles souhaités activés.
     - Lorsque le Gateway s’exécute comme daemon, assurez-vous que `KILOCODE_API_KEY` est disponible pour ce processus (par exemple dans `~/.openclaw/.env` ou via `env.shellEnv`).
+
   </Accordion>
 </AccordionGroup>
 

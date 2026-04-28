@@ -209,6 +209,7 @@ LiteLLM 也可以通过兼容 OpenAI 的 `/images/generations` 和 `/images/edit
       不支持 `service_tier`、Responses `store`、prompt-cache 提示，也不支持
       OpenAI reasoning 兼容载荷整形
     - 在自定义 LiteLLM base URL 上，不会注入隐藏的 OpenClaw 归因请求头（`originator`、`version`、`User-Agent`）
+
   </Accordion>
 </AccordionGroup>
 

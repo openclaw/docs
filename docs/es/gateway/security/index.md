@@ -309,6 +309,7 @@ producción.
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="Todas las claves `dangerous*` / `dangerously*` del esquema de configuración">

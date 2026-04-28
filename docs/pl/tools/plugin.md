@@ -146,6 +146,7 @@ wykrywania Pluginu zamiast cichego przejścia do ścieżek źródłowych.
   <Accordion title="Pluginy pamięci">
     - `memory-core` — dołączone do pakietu wyszukiwanie pamięci (domyślnie przez `plugins.slots.memory`)
     - `memory-lancedb` — instalowana na żądanie pamięć długoterminowa z automatycznym przywoływaniem/przechwytywaniem (ustaw `plugins.slots.memory = "memory-lancedb"`)
+
   </Accordion>
 
   <Accordion title="Dostawcy mowy (domyślnie włączeni)">
@@ -155,6 +156,7 @@ wykrywania Pluginu zamiast cichego przejścia do ścieżek źródłowych.
   <Accordion title="Inne">
     - `browser` — dołączony do pakietu Plugin przeglądarki dla narzędzia browser, CLI `openclaw browser`, metody Gateway `browser.request`, środowiska uruchomieniowego przeglądarki i domyślnej usługi sterowania przeglądarką (domyślnie włączony; wyłącz go przed zastąpieniem)
     - `copilot-proxy` — most VS Code Copilot Proxy (domyślnie wyłączony)
+
   </Accordion>
 </AccordionGroup>
 
@@ -204,6 +206,7 @@ albo użyj `openclaw gateway restart` względem działającego Gateway.
   - **Disabled**: Plugin istnieje, ale reguły włączania go wyłączyły. Konfiguracja jest zachowywana.
   - **Missing**: konfiguracja odwołuje się do identyfikatora Pluginu, którego wykrywanie nie znalazło.
   - **Invalid**: Plugin istnieje, ale jego konfiguracja nie odpowiada zadeklarowanemu schematowi.
+
 </Accordion>
 
 ## Wykrywanie i pierwszeństwo

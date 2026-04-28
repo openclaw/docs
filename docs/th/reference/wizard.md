@@ -33,6 +33,7 @@ x-i18n:
       - เฉพาะคอนฟิก
       - คอนฟิก + ข้อมูลรับรอง + เซสชัน
       - รีเซ็ตทั้งหมด (ลบ workspace ด้วย)
+
   </Step>
   <Step title="โมเดล/Auth">
     - **Anthropic API key**: ใช้ `ANTHROPIC_API_KEY` หากมีอยู่ หรือถามหา key จากนั้นบันทึกไว้สำหรับใช้งานกับ daemon
@@ -83,6 +84,7 @@ x-i18n:
     - ค่าเริ่มต้นคือ `~/.openclaw/workspace` (กำหนดเองได้)
     - สร้างไฟล์ workspace ที่จำเป็นสำหรับกระบวนการ bootstrap ของเอเจนต์
     - โครงสร้าง workspace แบบเต็ม + คู่มือสำรองข้อมูล: [Agent workspace](/th/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - พอร์ต, bind, โหมด auth, การเปิดเผยผ่าน tailscale
@@ -98,6 +100,7 @@ x-i18n:
       - ใช้ร่วมกับ `--gateway-token` ไม่ได้
     - ปิด auth เฉพาะเมื่อคุณเชื่อถือทุกโพรเซสในเครื่องอย่างสมบูรณ์
     - bind ที่ไม่ใช่ loopback ยังคงต้องใช้ auth
+
   </Step>
   <Step title="Channels">
     - [WhatsApp](/th/channels/whatsapp): login ด้วย QR แบบเลือกได้
@@ -109,12 +112,14 @@ x-i18n:
     - [BlueBubbles](/th/channels/bluebubbles): **แนะนำสำหรับ iMessage**; server URL + password + webhook
     - [iMessage](/th/channels/imessage): path ของ `imsg` CLI แบบเก่า + การเข้าถึงฐานข้อมูล
     - ความปลอดภัยของ DM: ค่าเริ่มต้นคือการจับคู่ DM แรกจะส่งโค้ดมา; อนุมัติผ่าน `openclaw pairing approve <channel> <code>` หรือใช้ allowlist
+
   </Step>
   <Step title="Web search">
     - เลือก provider ที่รองรับ เช่น Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG หรือ Tavily (หรือข้าม)
     - provider ที่ใช้ API สามารถใช้ env var หรือคอนฟิกที่มีอยู่เพื่อการตั้งค่าอย่างรวดเร็ว; provider ที่ไม่ต้องใช้ key จะใช้ข้อกำหนดเบื้องต้นเฉพาะของ provider นั้นแทน
     - ข้ามด้วย `--skip-search`
     - ตั้งค่าภายหลัง: `openclaw configure --section web`
+
   </Step>
   <Step title="การติดตั้ง Daemon">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ x-i18n:
     - หาก token auth ต้องใช้ token และ `gateway.auth.token` ถูกจัดการด้วย SecretRef การติดตั้ง daemon จะตรวจสอบความถูกต้อง แต่จะไม่เก็บค่า plaintext token ที่ resolve แล้วลงใน metadata ของสภาพแวดล้อม service ของ supervisor
     - หาก token auth ต้องใช้ token และ token SecretRef ที่ตั้งค่าไว้ไม่สามารถ resolve ได้ การติดตั้ง daemon จะถูกบล็อกพร้อมคำแนะนำที่ทำตามได้จริง
     - หากมีทั้ง `gateway.auth.token` และ `gateway.auth.password` ถูกตั้งค่า และ `gateway.auth.mode` ยังไม่ถูกตั้ง การติดตั้ง daemon จะถูกบล็อกจนกว่าจะตั้งค่า mode อย่างชัดเจน
+
   </Step>
   <Step title="การตรวจสอบสุขภาพระบบ">
     - เริ่ม Gateway (หากจำเป็น) และรัน `openclaw health`
     - เคล็ดลับ: `openclaw status --deep` จะเพิ่ม live gateway health probe ลงในเอาต์พุตสถานะ รวมถึง channel probe เมื่อรองรับ (ต้องเข้าถึง gateway ได้)
+
   </Step>
   <Step title="Skills (แนะนำ)">
     - อ่าน Skills ที่มีอยู่และตรวจสอบข้อกำหนด
     - ให้คุณเลือก node manager: **npm / pnpm** (bun ไม่แนะนำ)
     - ติดตั้ง dependency แบบเลือกได้ (บางรายการใช้ Homebrew บน macOS)
+
   </Step>
   <Step title="เสร็จสิ้น">
     - สรุป + ขั้นตอนถัดไป รวมถึงแอป iOS/Android/macOS สำหรับฟีเจอร์เพิ่มเติม
+
   </Step>
 </Steps>
 

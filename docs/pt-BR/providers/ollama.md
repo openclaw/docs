@@ -40,6 +40,7 @@ Escolha seu método e modo preferido de configuração inicial.
         - **Cloud + Local** — host Ollama local mais modelos em nuvem roteados por esse host
         - **Cloud only** — modelos hospedados do Ollama via `https://ollama.com`
         - **Local only** — apenas modelos locais
+
       </Step>
       <Step title="Selecione um modelo">
         `Cloud only` solicita `OLLAMA_API_KEY` e sugere padrões hospedados na nuvem. `Cloud + Local` e `Local only` pedem uma base URL do Ollama, descobrem os modelos disponíveis e fazem auto-pull do modelo local selecionado se ele ainda não estiver disponível. `Cloud + Local` também verifica se esse host Ollama está autenticado para acesso à nuvem.
@@ -79,6 +80,7 @@ Escolha seu método e modo preferido de configuração inicial.
         - **Cloud + Local**: instale o Ollama, faça login com `ollama signin` e roteie solicitações de nuvem por esse host
         - **Cloud only**: use `https://ollama.com` com um `OLLAMA_API_KEY`
         - **Local only**: instale o Ollama a partir de [ollama.com/download](https://ollama.com/download)
+
       </Step>
       <Step title="Baixe um modelo local (somente local)">
         ```bash

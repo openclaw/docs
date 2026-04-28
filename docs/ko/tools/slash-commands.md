@@ -142,6 +142,7 @@ Gateway 관리 명령은 계속 로컬에 남습니다. `/acp ...`는 항상 Ope
     - `/session idle <duration|off>` 및 `/session max-age <duration|off>`는 스레드 바인딩 만료를 관리합니다.
     - `/export-session [path]`는 현재 세션을 HTML로 내보냅니다. 별칭: `/export`.
     - `/export-trajectory [path]`는 현재 세션에 대한 JSONL [trajectory bundle](/ko/tools/trajectory)을 내보냅니다. 별칭: `/trajectory`.
+
   </Accordion>
   <Accordion title="모델 및 실행 제어">
     - `/think <level>`은 thinking 수준을 설정합니다. 옵션은 활성 모델의 제공자 프로필에서 가져오며, 일반적인 수준은 `off`, `minimal`, `low`, `medium`, `high`이고, `xhigh`, `adaptive`, `max` 같은 사용자 지정 수준이나 이진 `on`은 지원되는 경우에만 제공됩니다. 별칭: `/thinking`, `/t`.
@@ -154,6 +155,7 @@ Gateway 관리 명령은 계속 로컬에 남습니다. `/acp ...`는 항상 Ope
     - `/model [name|#|status]`는 모델을 표시하거나 설정합니다.
     - `/models [provider] [page] [limit=<n>|size=<n>|all]`는 제공자 또는 제공자의 모델을 나열합니다.
     - `/queue <mode>`는 대기열 동작(`steer`, `interrupt`, `followup`, `collect`, `steer-backlog`)과 `debounce:2s cap:25 drop:summarize` 같은 옵션을 관리합니다.
+
   </Accordion>
   <Accordion title="검색 및 상태">
     - `/help`는 짧은 도움말 요약을 표시합니다.
@@ -165,12 +167,14 @@ Gateway 관리 명령은 계속 로컬에 남습니다. `/acp ...`는 항상 Ope
     - `/context [list|detail|json]`은 컨텍스트가 어떻게 조합되는지 설명합니다.
     - `/whoami`는 발신자 ID를 표시합니다. 별칭: `/id`.
     - `/usage off|tokens|full|cost`는 응답별 사용량 바닥글을 제어하거나 로컬 비용 요약을 출력합니다.
+
   </Accordion>
   <Accordion title="Skills, 허용 목록, 승인">
     - `/skill <name> [input]`은 이름으로 skill을 실행합니다.
     - `/allowlist [list|add|remove] ...`는 허용 목록 항목을 관리합니다. 텍스트 전용입니다.
     - `/approve <id> <decision>`은 exec 승인 프롬프트를 해결합니다.
     - `/btw <question>`은 향후 세션 컨텍스트를 변경하지 않고 부가 질문을 합니다. [BTW](/ko/tools/btw)를 참조하세요.
+
   </Accordion>
   <Accordion title="하위 에이전트 및 ACP">
     - `/subagents list|kill|log|info|send|steer|spawn`은 현재 세션의 하위 에이전트 실행을 관리합니다.
@@ -180,6 +184,7 @@ Gateway 관리 명령은 계속 로컬에 남습니다. `/acp ...`는 항상 Ope
     - `/agents`는 현재 세션의 스레드 바인딩된 에이전트를 나열합니다.
     - `/kill <id|#|all>`은 하나 또는 모든 실행 중인 하위 에이전트를 중단합니다.
     - `/steer <id|#> <message>`는 실행 중인 하위 에이전트에 조정 메시지를 보냅니다. 별칭: `/tell`.
+
   </Accordion>
   <Accordion title="소유자 전용 쓰기 및 관리">
     - `/config show|get|set|unset`은 `openclaw.json`을 읽거나 씁니다. 소유자 전용입니다. `commands.config: true`가 필요합니다.
@@ -188,6 +193,7 @@ Gateway 관리 명령은 계속 로컬에 남습니다. `/acp ...`는 항상 Ope
     - `/debug show|set|unset|reset`은 런타임 전용 구성 재정의를 관리합니다. 소유자 전용입니다. `commands.debug: true`가 필요합니다.
     - `/restart`는 활성화된 경우 OpenClaw를 재시작합니다. 기본값: 활성화됨. 비활성화하려면 `commands.restart: false`를 설정하세요.
     - `/send on|off|inherit`는 전송 정책을 설정합니다. 소유자 전용입니다.
+
   </Accordion>
   <Accordion title="음성, TTS, 채널 제어">
     - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help`는 TTS를 제어합니다. [TTS](/ko/tools/tts)를 참조하세요.
@@ -195,6 +201,7 @@ Gateway 관리 명령은 계속 로컬에 남습니다. `/acp ...`는 항상 Ope
     - `/bash <command>`는 호스트 셸 명령을 실행합니다. 텍스트 전용입니다. 별칭: `! <command>`. `commands.bash: true`와 `tools.elevated` 허용 목록이 필요합니다.
     - `!poll [sessionId]`는 백그라운드 bash 작업을 확인합니다.
     - `!stop [sessionId]`는 백그라운드 bash 작업을 중지합니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -243,11 +250,13 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
     - `/restart`는 기본적으로 활성화되어 있습니다. 비활성화하려면 `commands.restart: false`를 설정하세요.
     - `/plugins install <spec>`은 `openclaw plugins install`과 동일한 Plugin spec을 허용합니다: 로컬 경로/아카이브, npm 패키지, 또는 `clawhub:<pkg>`.
     - `/plugins enable|disable`는 Plugin 구성을 업데이트하며 재시작을 요청할 수 있습니다.
+
   </Accordion>
   <Accordion title="채널별 동작">
     - Discord 전용 네이티브 명령: `/vc join|leave|status`는 음성 채널을 제어합니다(텍스트로는 사용할 수 없음). `join`에는 길드와 선택된 voice/stage 채널이 필요합니다. `channels.discord.voice` 및 네이티브 명령이 필요합니다.
     - Discord 스레드 바인딩 명령(`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`)에는 유효한 스레드 바인딩 활성화가 필요합니다(`session.threadBindings.enabled` 및/또는 `channels.discord.threadBindings.enabled`).
     - ACP 명령 참조 및 런타임 동작: [ACP agents](/ko/tools/acp-agents).
+
   </Accordion>
   <Accordion title="Verbose / trace / fast / reasoning 안전성">
     - `/verbose`는 디버깅과 추가 가시성을 위한 것이므로 일반 사용에서는 **꺼 둔 상태**를 유지하세요.
@@ -256,6 +265,7 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
     - `/fast`는 제공자별입니다. OpenAI/OpenAI Codex는 이를 네이티브 Responses 엔드포인트의 `service_tier=priority`에 매핑하고, `api.anthropic.com`으로 전송되는 OAuth 인증 트래픽을 포함한 직접 공개 Anthropic 요청은 이를 `service_tier=auto` 또는 `standard_only`에 매핑합니다. [OpenAI](/ko/providers/openai) 및 [Anthropic](/ko/providers/anthropic)을 참조하세요.
     - 관련이 있을 때 도구 실패 요약은 계속 표시되지만, 자세한 실패 텍스트는 `/verbose`가 `on` 또는 `full`일 때만 포함됩니다.
     - `/reasoning`, `/verbose`, `/trace`는 그룹 설정에서 위험합니다. 의도하지 않은 내부 reasoning, 도구 출력 또는 Plugin 진단이 드러날 수 있습니다. 특히 그룹 채팅에서는 꺼 두는 것이 좋습니다.
+
   </Accordion>
   <Accordion title="모델 전환">
     - `/model`은 새 세션 모델을 즉시 유지합니다.
@@ -263,6 +273,7 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
     - 이미 실행이 활성화되어 있으면 OpenClaw는 라이브 전환을 보류 중으로 표시하고 깔끔한 재시도 시점에서만 새 모델로 다시 시작합니다.
     - 도구 활동이나 응답 출력이 이미 시작되었다면 보류 중인 전환은 이후 재시도 기회 또는 다음 사용자 턴까지 대기할 수 있습니다.
     - 로컬 TUI에서 `/crestodian [request]`는 일반 에이전트 TUI에서 Crestodian으로 돌아갑니다. 이는 메시지 채널 구조 모드와 별개이며 원격 구성 권한을 부여하지 않습니다.
+
   </Accordion>
   <Accordion title="빠른 경로 및 인라인 단축키">
     - **빠른 경로:** 허용 목록에 있는 발신자의 명령 전용 메시지는 즉시 처리됩니다(대기열 + 모델 우회).
@@ -271,6 +282,7 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
       - 예: `hey /status`는 상태 응답을 트리거하고, 남은 텍스트는 일반 흐름을 계속 따릅니다.
     - 현재: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
     - 권한이 없는 명령 전용 메시지는 조용히 무시되며, 인라인 `/...` 토큰은 일반 텍스트로 처리됩니다.
+
   </Accordion>
   <Accordion title="Skill 명령 및 네이티브 인수">
     - **Skill 명령:** `user-invocable` Skills는 슬래시 명령으로 노출됩니다. 이름은 `a-z0-9_`로 정리되며(최대 32자), 충돌 시 숫자 접미사가 붙습니다(예: `_2`).
@@ -279,6 +291,7 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
       - Skills는 선택적으로 `command-dispatch: tool`을 선언하여 명령을 도구로 직접 라우팅할 수 있습니다(결정적, 모델 없음).
       - 예: `/prose` (OpenProse Plugin) — [OpenProse](/ko/prose)를 참조하세요.
     - **네이티브 명령 인수:** Discord는 동적 옵션에 자동완성을 사용합니다(필수 인수를 생략하면 버튼 메뉴도 제공). Telegram과 Slack은 명령이 선택지를 지원하고 인수를 생략하면 버튼 메뉴를 표시합니다. 동적 선택지는 대상 세션 모델을 기준으로 확인되므로 `/think` 수준 같은 모델별 옵션은 해당 세션의 `/model` 재정의를 따릅니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -416,6 +429,7 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
 - `/plugins list`와 `/plugins show`는 현재 워크스페이스와 디스크의 구성을 기준으로 실제 Plugin 검색을 사용합니다.
 - `/plugins enable|disable`는 Plugin 구성만 업데이트하며 Plugin을 설치하거나 제거하지는 않습니다.
 - 활성화/비활성화 변경 후에는 적용을 위해 Gateway를 재시작하세요.
+
 </Note>
 
 ## 표면 참고
@@ -428,6 +442,7 @@ Dock 명령은 네이티브 명령을 지원하는 채널 Plugin에서 생성됩
       - Slack: `agent:<agentId>:slack:slash:<userId>` (접두사는 `channels.slack.slashCommand.sessionPrefix`로 구성 가능)
       - Telegram: `telegram:slash:<userId>` (`CommandTargetSessionKey`를 통해 채팅 세션을 대상으로 함)
     - **`/stop`**은 활성 채팅 세션을 대상으로 하므로 현재 실행을 중단할 수 있습니다.
+
   </Accordion>
   <Accordion title="Slack 세부 사항">
     `channels.slack.slashCommand`는 단일 `/openclaw` 스타일 명령용으로 여전히 지원됩니다. `commands.native`를 활성화하면 기본 제공 명령마다 Slack 슬래시 명령을 하나씩 생성해야 합니다(`/help`와 같은 이름). Slack용 명령 인수 메뉴는 ephemeral Block Kit 버튼으로 전달됩니다.

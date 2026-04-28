@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - pola root default: `/Users/*/Library/Messages/Attachments`
     - SCP menggunakan pemeriksaan host-key ketat (`StrictHostKeyChecking=yes`)
     - ukuran media keluar menggunakan `channels.imessage.mediaMaxMb` (default 16 MB)
+
   </Accordion>
 
   <Accordion title="Chunking keluar">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - mode chunk: `channels.imessage.chunkMode`
       - `length` (default)
       - `newline` (pemecahan dengan prioritas paragraf)
+
   </Accordion>
 
   <Accordion title="Format pengalamatan">

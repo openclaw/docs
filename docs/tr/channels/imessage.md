@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - varsayılan kök deseni: `/Users/*/Library/Messages/Attachments`
     - SCP, katı host anahtarı denetimi kullanır (`StrictHostKeyChecking=yes`)
     - giden medya boyutu `channels.imessage.mediaMaxMb` kullanır (varsayılan 16 MB)
+
   </Accordion>
 
   <Accordion title="Giden parçalama">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - parça modu: `channels.imessage.chunkMode`
       - `length` (varsayılan)
       - `newline` (önce paragraf bölme)
+
   </Accordion>
 
   <Accordion title="Adresleme biçimleri">

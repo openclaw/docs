@@ -102,6 +102,7 @@ Implicaciones:
 - Para configuraciones de proxy loopback en el mismo host, usa en su lugar autenticación por token/contraseña, o enruta a través de una dirección de proxy de confianza no loopback que OpenClaw pueda verificar.
 - Los despliegues de UI de control no loopback siguen necesitando `gateway.controlUi.allowedOrigins` explícito.
 - **La evidencia de cabeceras reenviadas sobrescribe la localidad loopback.** Si una solicitud llega por loopback pero lleva cabeceras `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` que apuntan a un origen no local, esa evidencia invalida la afirmación de localidad loopback. La solicitud se trata como remota para emparejamiento, autenticación trusted-proxy y compuerta de identidad de dispositivo de la UI de control. Esto evita que un proxy loopback en el mismo host blanquee identidad de cabeceras reenviadas hacia la autenticación trusted-proxy.
+
 </Warning>
 
 ### Referencia de configuración

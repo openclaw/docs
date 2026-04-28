@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - Sprawdzenie aktualności protokołu UI (przebudowuje Control UI, gdy schemat protokołu jest nowszy).
     - Kontrola kondycji + monit o restart.
     - Podsumowanie statusu Skills (kwalifikujące się/brakujące/zablokowane) i statusu Pluginów.
+
   </Accordion>
   <Accordion title="Konfiguracja i migracje">
     - Normalizacja konfiguracji dla starszych wartości.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - Migracja starszych kluczy kontraktów manifestu Pluginu (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - Migracja starszego magazynu Cron (`jobId`, `schedule.cron`, pola delivery/payload na najwyższym poziomie, `provider` w payload, proste zadania fallback webhook z `notify: true`).
     - Migracja starszej polityki runtime agenta do `agents.defaults.agentRuntime` i `agents.list[].agentRuntime`.
+
   </Accordion>
   <Accordion title="Stan i integralność">
     - Inspekcja plików blokad sesji i czyszczenie nieaktualnych blokad.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - Kontrole uprawnień pliku konfiguracji (`chmod 600`) przy uruchomieniu lokalnym.
     - Kondycja uwierzytelniania modeli: sprawdza wygaśnięcie OAuth, może odświeżać wygasające tokeny i zgłasza stany cooldown/disabled profilu auth.
     - Wykrywanie dodatkowego katalogu workspace (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, usługi i supervisory">
     - Naprawa obrazu sandboxa, gdy sandboxing jest włączony.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Audyt konfiguracji supervisora (launchd/systemd/schtasks) z opcjonalną naprawą.
     - Kontrole dobrych praktyk runtime Gateway (Node vs Bun, ścieżki menedżera wersji).
     - Diagnostyka konfliktów portu Gateway (domyślnie `18789`).
+
   </Accordion>
   <Accordion title="Uwierzytelnianie, bezpieczeństwo i pairing">
     - Ostrzeżenia bezpieczeństwa dla otwartych polityk DM.
     - Kontrole uwierzytelniania Gateway dla lokalnego trybu tokenów (oferuje wygenerowanie tokenu, gdy nie istnieje źródło tokenu; nie nadpisuje konfiguracji token SecretRef).
     - Wykrywanie problemów z pairowaniem urządzeń (oczekujące żądania pairingu przy pierwszym użyciu, oczekujące podniesienia ról/zakresów, dryf nieaktualnej lokalnej pamięci podręcznej tokenu urządzenia i dryf uwierzytelniania sparowanych rekordów).
+
   </Accordion>
   <Accordion title="Workspace i shell">
     - Kontrola linger systemd w Linux.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - Kontrola gotowości dostawcy embeddingów dla wyszukiwania pamięci (model lokalny, zdalny klucz API lub binarka QMD).
     - Kontrole instalacji ze źródła (niedopasowanie workspace pnpm, brakujące zasoby UI, brakująca binarka tsx).
     - Zapisuje zaktualizowaną konfigurację + metadane kreatora.
+
   </Accordion>
 </AccordionGroup>
 

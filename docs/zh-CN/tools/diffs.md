@@ -198,6 +198,7 @@ x-i18n:
       - `fileQuality: "hq"`：最大 14 MP（14,000,000 个渲染像素）。
       - `fileQuality: "print"`：最大 24 MP（24,000,000 个渲染像素）。
       - PDF 另有最多 50 页的限制。
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ URL 构造行为：
     - 启用远程访问时，对远程未命中进行限流：
       - 每 60 秒 40 次失败
       - 锁定 60 秒（`429 Too Many Requests`）
+
   </Accordion>
   <Accordion title="文件渲染加固">
     - 截图浏览器请求路由默认拒绝。
     - 仅允许来自 `http://127.0.0.1/plugins/diffs/assets/*` 的本地查看器资源。
     - 外部网络请求会被阻止。
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ URL 构造行为：
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="平台回退">
     平台命令/路径发现回退机制。
@@ -456,6 +460,7 @@ URL 构造行为：
     - `Invalid baseUrl: ...` — 使用带可选路径的 `http(s)` 源地址，不要带 query/hash。
     - `{field} exceeds maximum size (...)` — 请减小负载大小。
     - 大型 patch 被拒绝 — 请减少 patch 的文件数量或总行数。
+
   </Accordion>
   <Accordion title="查看器可访问性">
     - 查看器 URL 默认解析到 `127.0.0.1`。
@@ -468,6 +473,7 @@ URL 构造行为：
       - 如果你只需要附件，优先使用 `mode: "file"` 或 `mode: "both"`，或
       - 如果你需要可共享的查看器 URL，则有意启用 `security.allowRemoteViewer`，并设置插件的 `viewerBaseUrl` 或传入代理/公共 `baseUrl`
     - 仅当你确实需要外部查看器访问时，才启用 `security.allowRemoteViewer`。
+
   </Accordion>
   <Accordion title="未修改行没有展开按钮">
     对于 patch 输入，如果 patch 不携带可展开的上下文，就可能出现这种情况。这是预期行为，并不表示查看器失败。
@@ -476,6 +482,7 @@ URL 构造行为：
     - 产物因 TTL 到期而过期。
     - 令牌或路径已更改。
     - 清理过程移除了陈旧数据。
+
   </Accordion>
 </AccordionGroup>
 

@@ -176,6 +176,7 @@ GLM 模型可用作 `zai/<model>`（例如：`zai/glm-5`）。默认内置模型
     - Z.AI 使用你的 API 密钥进行 Bearer 身份验证。
     - `zai-api-key` 新手引导选项会根据密钥前缀自动检测匹配的 Z.AI 端点。
     - 当你想强制使用特定 API 界面时，请使用显式区域选项（`zai-coding-global`、`zai-coding-cn`、`zai-global`、`zai-cn`）。
+
   </Accordion>
 </AccordionGroup>
 

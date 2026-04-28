@@ -32,6 +32,7 @@ Varsayılan davranış:
 - **DM erişimi** `*.allowFrom` tarafından kontrol edilir.
 - **Grup erişimi** `*.groupPolicy` + izin listeleri (`*.groups`, `*.groupAllowFrom`) tarafından kontrol edilir.
 - **Yanıt tetikleme** bahsetme sınırlaması (`requireMention`, `/activation`) tarafından kontrol edilir.
+
 </Note>
 
 Hızlı akış (bir grup mesajına ne olur):
@@ -56,6 +57,7 @@ Varsayılan olarak OpenClaw, normal sohbet davranışına öncelik verir ve bağ
   <Accordion title="Mevcut davranış kanala özeldir">
     - Bazı kanallar, belirli yollarda ek bağlam için zaten gönderici tabanlı filtreleme uygular (örneğin Slack konu başlangıcı, Matrix yanıt/konu aramaları).
     - Diğer kanallar ise alıntı/yanıt/iletme bağlamını alındığı gibi aktarmaya devam eder.
+
   </Accordion>
   <Accordion title="Sıkılaştırma yönü (planlandı)">
     - `contextVisibility: "all"` (varsayılan), mevcut alındığı gibi davranışı korur.
@@ -231,6 +233,7 @@ Grup/oda mesajlarının kanal başına nasıl ele alınacağını kontrol edin:
     - Telegram izin listesi kullanıcı kimlikleriyle (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) veya kullanıcı adlarıyla (`"@alice"` ya da `"alice"`) eşleşebilir; önekler büyük/küçük harfe duyarsızdır.
     - Varsayılan `groupPolicy: "allowlist"` değeridir; grup izin listeniz boşsa grup mesajları engellenir.
     - Çalışma zamanı güvenliği: bir sağlayıcı bloğu tamamen yoksa (`channels.<provider>` yoksa), grup politikası `channels.defaults.groupPolicy` değerini devralmak yerine başarısız olduğunda kapalı moda (genellikle `allowlist`) geri döner.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ Bir bot mesajına yanıt vermek, kanal yanıt meta verilerini destekliyorsa ört
     - Sessiz yanıta izin verilen gruplar, temiz boş veya yalnızca akıl yürütme içeren model dönüşlerini `NO_REPLY` ile eşdeğer şekilde sessiz kabul eder. Doğrudan sohbetler ise boş yanıtları yine başarısız bir ajan dönüşü olarak ele alır.
     - Discord varsayılanları `channels.discord.guilds."*"` içinde bulunur (guild/kanal başına geçersiz kılınabilir).
     - Grup geçmişi bağlamı kanallar arasında tutarlı şekilde sarmalanır ve **yalnızca beklemedeki** durumlar içindir (bahsetme sınırlaması nedeniyle atlanan mesajlar); genel varsayılan için `messages.groupChat.historyLimit`, geçersiz kılmalar için `channels.<channel>.historyLimit` (veya `channels.<channel>.accounts.*.historyLimit`) kullanın. Devre dışı bırakmak için `0` ayarlayın.
+
   </Accordion>
 </AccordionGroup>
 

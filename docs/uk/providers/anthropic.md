@@ -154,6 +154,7 @@ Anthropic не опублікує нову політику.
 Пов’язана документація Anthropic:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## Кешування prompt-ів
@@ -216,6 +217,7 @@ OpenClaw підтримує функцію кешування prompt-ів Anthro
     - Моделі Anthropic Claude на Bedrock (`amazon-bedrock/*anthropic.claude*`) приймають наскрізний параметр `cacheRetention`, якщо його налаштовано.
     - Для моделей Bedrock, що не належать Anthropic, під час виконання примусово встановлюється `cacheRetention: "none"`.
     - Типові розумні налаштування для API key також задають `cacheRetention: "short"` для посилань Claude-on-Bedrock, якщо явно не задано інше значення.
+
   </Accordion>
 </AccordionGroup>
 
@@ -248,6 +250,7 @@ OpenClaw підтримує функцію кешування prompt-ів Anthro
     - Інʼєктується лише для прямих запитів до `api.anthropic.com`. Маршрути через проксі залишають `service_tier` без змін.
     - Явні параметри `serviceTier` або `service_tier` мають пріоритет над `/fast`, коли задано обидва.
     - Для акаунтів без місткості Priority Tier значення `service_tier: "auto"` може розв’язатися як `standard`.
+
     </Note>
 
   </Accordion>

@@ -32,6 +32,7 @@ OpenClaw는 **sandbox 백엔드 내부에서 도구를 실행**하여 피해 범
     - noVNC observer 액세스는 기본적으로 비밀번호로 보호되며, OpenClaw는 로컬 bootstrap 페이지를 제공하고 URL fragment에 비밀번호를 담아 noVNC를 여는 단기 토큰 URL을 출력합니다(query/header 로그에는 남지 않음).
     - `agents.defaults.sandbox.browser.allowHostControl`은 sandbox 세션이 호스트 브라우저를 명시적으로 대상으로 삼도록 허용합니다.
     - 선택적 allowlist가 `target: "custom"`을 제어합니다: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ OpenClaw Gateway 자체를 Docker 컨테이너로 배포하는 경우, 호스트
     - 생성 또는 재생성 후 처음 사용할 때 OpenClaw는 로컬 워크스페이스에서 원격 워크스페이스로 한 번 시드합니다.
     - 그 이후 `exec`, `read`, `write`, `edit`, `apply_patch`, prompt 미디어 읽기, 인바운드 미디어 staging은 SSH를 통해 원격 워크스페이스를 직접 대상으로 실행됩니다.
     - OpenClaw는 원격 변경 사항을 로컬 워크스페이스로 자동 동기화하지 않습니다.
+
   </Accordion>
   <Accordion title="인증 자료">
     - `identityFile`, `certificateFile`, `knownHostsFile`: 기존 로컬 파일을 사용하고 OpenSSH config를 통해 전달합니다.
     - `identityData`, `certificateData`, `knownHostsData`: 인라인 문자열 또는 SecretRef를 사용합니다. OpenClaw는 일반 secrets 런타임 스냅샷을 통해 이를 해석하고, `0600` 권한의 임시 파일에 기록한 뒤 SSH 세션이 끝나면 삭제합니다.
     - 같은 항목에 대해 `*File`과 `*Data`가 모두 설정된 경우, 해당 SSH 세션에서는 `*Data`가 우선합니다.
+
   </Accordion>
   <Accordion title="원격 정본 모델의 결과">
     이것은 **원격 정본(remote-canonical)** 모델입니다. 초기 시드 이후 원격 SSH 워크스페이스가 실제 sandbox 상태가 됩니다.
@@ -205,11 +208,13 @@ OpenShell 모드:
     - OpenClaw는 `openshell sandbox ssh-config <name>`을 통해 OpenShell에 sandbox 전용 SSH config를 요청합니다.
     - 코어는 그 SSH config를 임시 파일에 기록하고 SSH 세션을 열며, `backend: "ssh"`에서 사용하는 동일한 원격 파일 시스템 bridge를 재사용합니다.
     - `mirror` 모드에서는 라이프사이클만 다릅니다: exec 전에 로컬에서 원격으로 동기화한 뒤 exec 후 다시 동기화합니다.
+
   </Accordion>
   <Accordion title="현재 OpenShell 제한 사항">
     - sandbox 브라우저는 아직 지원되지 않음
     - `sandbox.docker.binds`는 OpenShell 백엔드에서 지원되지 않음
     - `sandbox.docker.*` 아래의 Docker 전용 런타임 설정은 계속 Docker 백엔드에만 적용됨
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ OpenShell 백엔드에서는:
 - 민감한 마운트(secret, SSH 키, 서비스 자격 증명)는 절대적으로 필요하지 않은 한 `:ro`여야 합니다.
 - 워크스페이스에 읽기 액세스만 필요하다면 `workspaceAccess: "ro"`와 함께 사용하세요. bind 모드는 계속 독립적으로 유지됩니다.
 - bind가 tool policy 및 elevated exec와 어떻게 상호작용하는지는 [Sandbox vs Tool Policy vs Elevated](/ko/gateway/sandbox-vs-tool-policy-vs-elevated)를 참조하세요.
+
 </Warning>
 
 ## 이미지 및 설정
@@ -423,6 +429,7 @@ OpenShell 백엔드에서는:
     - `network: "host"`는 차단됩니다.
     - `network: "container:<id>"`는 기본적으로 차단됩니다(namespace join 우회 위험).
     - break-glass override: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ Docker gateway 배포에서는 `scripts/docker/setup.sh`가 sandbox config를 bo
     - `readOnlyRoot: true`는 쓰기를 막습니다. `readOnlyRoot: false`로 설정하거나 사용자 지정 이미지를 굽으세요.
     - 패키지 설치에는 `user`가 root여야 합니다(`user`를 생략하거나 `user: "0:0"`으로 설정).
     - Sandbox exec는 호스트 `process.env`를 상속하지 **않습니다**. Skill API 키에는 `agents.defaults.sandbox.docker.env`(또는 사용자 지정 이미지)를 사용하세요.
+
   </Accordion>
 </AccordionGroup>
 

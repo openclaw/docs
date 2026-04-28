@@ -232,6 +232,7 @@ Urutan pemfilteran adalah:
     - Jika `agents.list[].tools.sandbox.tools` disetel, itu menggantikan `tools.sandbox.tools` untuk agen tersebut.
     - Jika `agents.list[].tools.profile` disetel, itu mengoverride `tools.profile` untuk agen tersebut.
     - Key tool provider menerima `provider` (misalnya `google-antigravity`) atau `provider/model` (misalnya `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Perilaku allowlist kosong">
     Jika allowlist eksplisit mana pun dalam rantai itu membuat proses berjalan tanpa tool yang dapat dipanggil, OpenClaw berhenti sebelum mengirim prompt ke model. Ini disengaja: agen yang dikonfigurasi dengan tool yang tidak ada seperti `agents.list[].tools.allow: ["query_db"]` seharusnya gagal dengan jelas sampai plugin yang mendaftarkan `query_db` diaktifkan, bukan melanjutkan sebagai agen hanya-teks.
@@ -360,6 +361,7 @@ Setelah mengonfigurasi sandbox dan tool multi-agen:
   <Step title="Uji pembatasan tool">
     - Kirim pesan yang memerlukan tool terbatas.
     - Verifikasi bahwa agen tidak dapat menggunakan tool yang ditolak.
+
   </Step>
   <Step title="Pantau log">
     ```bash
@@ -376,15 +378,18 @@ Setelah mengonfigurasi sandbox dan tool multi-agen:
   <Accordion title="Agen tidak disandbox meskipun `mode: 'all'`">
     - Periksa apakah ada `agents.defaults.sandbox.mode` global yang mengoverridenya.
     - Konfigurasi khusus agen memiliki prioritas, jadi setel `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Tool masih tersedia meskipun ada daftar deny">
     - Periksa urutan pemfilteran tool: global → agen → sandbox → subagen.
     - Setiap level hanya dapat lebih membatasi, bukan memberikan kembali.
     - Verifikasi dengan log: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Container tidak terisolasi per agen">
     - Setel `scope: "agent"` dalam konfigurasi sandbox khusus agen.
     - Default adalah `"session"` yang membuat satu container per sesi.
+
   </Accordion>
 </AccordionGroup>
 

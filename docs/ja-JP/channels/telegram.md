@@ -212,6 +212,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
       - `-1001234567890` のような負のTelegramグループまたはsupergroupチャットIDは `channels.telegram.groups` の下に置いてください。
       - 許可されたグループ内で、どの人がbotをトリガーできるかを制限したい場合は、`8734062810` のようなTelegramユーザーIDを `groupAllowFrom` の下に置いてください。
       - 許可されたグループの任意のメンバーがbotと話せるようにしたい場合にのみ、`groupAllowFrom: ["*"]` を使用してください。
+
     </Warning>
 
   </Tab>

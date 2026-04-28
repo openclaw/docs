@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - motif de racine par défaut : `/Users/*/Library/Messages/Attachments`
     - SCP utilise une vérification stricte des clés d’hôte (`StrictHostKeyChecking=yes`)
     - la taille des médias sortants utilise `channels.imessage.mediaMaxMb` (16 Mo par défaut)
+
   </Accordion>
 
   <Accordion title="Segmentation sortante">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - mode de segmentation : `channels.imessage.chunkMode`
       - `length` (par défaut)
       - `newline` (segmentation par paragraphes en priorité)
+
   </Accordion>
 
   <Accordion title="Formats d’adressage">

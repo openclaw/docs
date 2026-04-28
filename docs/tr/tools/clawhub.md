@@ -148,11 +148,13 @@ kötüye kullanımı yavaşlatır.
     - Bildirim nedenleri zorunludur ve kaydedilir.
     - Her kullanıcının aynı anda en fazla 20 etkin bildirimi olabilir.
     - 3'ten fazla benzersiz bildirimi olan Skills varsayılan olarak otomatik gizlenir.
+
   </Accordion>
   <Accordion title="Moderasyon">
     - Moderatörler gizli Skills'i görebilir, görünür yapabilir, silebilir veya kullanıcıları yasaklayabilir.
     - Bildirim özelliğini kötüye kullanmak hesap yasaklarına yol açabilir.
     - Moderatör olmakla mı ilgileniyorsunuz? OpenClaw Discord'da sorun ve bir moderatör veya bakımcıyla iletişime geçin.
+
   </Accordion>
 </AccordionGroup>
 
@@ -351,6 +353,7 @@ Plugin yükleme yollarında çalışma zamanı TypeScript derlemesini önler.
     - Her yayımlama yeni bir **semver** `SkillVersion` oluşturur.
     - Etiketler (`latest` gibi) bir sürümü işaret eder; etiketleri taşımak geri alma yapmanızı sağlar.
     - Changelog'lar sürüm başına eklenir ve eşzamanlama veya güncelleme yayımlarken boş olabilir.
+
   </Accordion>
   <Accordion title="Yerel değişiklikler ve kayıt defteri sürümleri">
     Güncellemeler, içerik karması kullanarak yerel skill içeriğini kayıt defteri sürümleriyle karşılaştırır. Yerel dosyalar yayımlanmış hiçbir sürümle eşleşmiyorsa, CLI üzerine yazmadan önce sorar (veya
@@ -365,6 +368,7 @@ Plugin yükleme yollarında çalışma zamanı TypeScript derlemesini önler.
   <Accordion title="Depolama ve lockfile">
     - Kurulu Skills, workdir'iniz altındaki `.clawhub/lock.json` içinde kaydedilir.
     - Auth token'ları ClawHub CLI yapılandırma dosyasında saklanır (`CLAWHUB_CONFIG_PATH` ile geçersiz kılınabilir).
+
   </Accordion>
   <Accordion title="Telemetri (kurulum sayıları)">
     Oturum açmış halde `clawhub sync` çalıştırdığınızda, CLI kurulum sayılarını hesaplamak için en az düzeyde

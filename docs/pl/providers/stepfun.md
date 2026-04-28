@@ -210,6 +210,7 @@ Wybierz powierzchnię dostawcy i wykonaj kroki konfiguracji.
     - `step-3.5-flash-2603` jest obecnie udostępniany tylko w `stepfun-plan`.
     - Pojedynczy przepływ auth zapisuje profile dopasowane do regionu zarówno dla `stepfun`, jak i `stepfun-plan`, dzięki czemu obie powierzchnie mogą być wykrywane razem.
     - Użyj `openclaw models list` i `openclaw models set <provider/model>`, aby sprawdzać lub przełączać modele.
+
   </Accordion>
 </AccordionGroup>
 

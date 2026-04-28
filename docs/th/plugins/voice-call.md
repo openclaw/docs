@@ -145,12 +145,14 @@ Plugin Voice Call ทำงาน **ภายในโปรเซส Gateway** 
     - บน ngrok ฟรี ให้ตั้ง `publicUrl` เป็น URL ngrok ที่ตรงกันทุกประการ; การตรวจสอบลายเซ็นจะถูกบังคับใช้เสมอ
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` อนุญาตให้ Webhook ของ Twilio ที่มีลายเซ็นไม่ถูกต้องผ่านได้ **เฉพาะ** เมื่อ `tunnel.provider="ngrok"` และ `serve.bind` เป็น loopback (ngrok local agent) เท่านั้น ใช้สำหรับการพัฒนาในเครื่องเท่านั้น
     - URL ของ ngrok ฟรีอาจเปลี่ยนแปลงหรือเพิ่มพฤติกรรมแบบ interstitial; หาก `publicUrl` เปลี่ยนไป ลายเซ็นของ Twilio จะล้มเหลว ในระบบจริงควรใช้โดเมนคงที่หรือ Tailscale funnel
+
   </Accordion>
   <Accordion title="ขีดจำกัดการเชื่อมต่อแบบสตรีมมิง">
     - `streaming.preStartTimeoutMs` จะปิดซ็อกเก็ตที่ไม่เคยส่งเฟรม `start` ที่ถูกต้อง
     - `streaming.maxPendingConnections` จำกัดจำนวนซ็อกเก็ต pre-start ที่ยังไม่ยืนยันตัวตนทั้งหมด
     - `streaming.maxPendingConnectionsPerIp` จำกัดจำนวนซ็อกเก็ต pre-start ที่ยังไม่ยืนยันตัวตนต่อ source IP
     - `streaming.maxConnections` จำกัดจำนวนซ็อกเก็ต media stream ที่เปิดอยู่ทั้งหมด (pending + active)
+
   </Accordion>
   <Accordion title="การย้าย config แบบเดิม">
     config รุ่นเก่าที่ใช้ `provider: "log"`, `twilio.from` หรือคีย์ OpenAI แบบเดิมภายใต้ `streaming.*` จะถูกเขียนใหม่โดย `openclaw doctor --fix` ปัจจุบัน runtime fallback ยังยอมรับคีย์ voice-call แบบเก่าเหล่านี้อยู่ แต่เส้นทางการเขียนใหม่คือ `openclaw doctor --fix` และ compat shim นี้เป็นเพียงชั่วคราว

@@ -63,6 +63,7 @@ backend yang tidak tersedia.
     - Adaptor harness target (Codex, Claude, dll.) dapat diambil sesuai kebutuhan dengan `npx` saat pertama kali Anda menggunakannya.
     - Autentikasi vendor tetap harus tersedia di host untuk harness tersebut.
     - Jika host tidak memiliki npm atau akses jaringan, pengambilan adaptor saat pertama kali dijalankan akan gagal sampai cache dipanaskan sebelumnya atau adaptor dipasang dengan cara lain.
+
   </Accordion>
   <Accordion title="Prasyarat runtime">
     ACP meluncurkan proses harness eksternal nyata. OpenClaw memiliki
@@ -152,6 +153,7 @@ Alur cepat `/acp` dari chat:
     - `cancel` membatalkan giliran aktif saat backend mendukung pembatalan; ini tidak menghapus metadata binding atau sesi.
     - `close` mengakhiri sesi ACP dari sudut pandang OpenClaw dan menghapus binding. Harness mungkin masih menyimpan riwayat upstream-nya sendiri jika mendukung resume.
     - Worker runtime yang idle memenuhi syarat untuk dibersihkan setelah `acp.runtime.ttlMinutes`; metadata sesi yang tersimpan tetap tersedia untuk `/acp sessions`.
+
   </Accordion>
   <Accordion title="Aturan perutean Codex native">
     Pemicu bahasa alami yang harus dirutekan ke **Plugin Codex
@@ -182,6 +184,7 @@ Alur cepat `/acp` dari chat:
     - `openai/*` plus `agentRuntime.id: "codex"` — runtime tersemat app-server Codex native.
     - `/codex ...` — kontrol percakapan Codex native.
     - `/acp ...` atau `runtime: "acp"` — kontrol ACP/acpx eksplisit.
+
   </Accordion>
   <Accordion title="Pemicu bahasa alami perutean ACP">
     Pemicu yang harus dirutekan ke runtime ACP:
@@ -280,6 +283,7 @@ Contoh:
     - Di Discord, `spawnAcpSessions` hanya diperlukan saat OpenClaw perlu membuat thread anak untuk `--thread auto|here` — tidak untuk `--bind here`.
     - Jika Anda melakukan spawn ke agen ACP yang berbeda tanpa `--cwd`, OpenClaw mewarisi ruang kerja **agen target** secara default. Jalur turunan yang hilang (`ENOENT`/`ENOTDIR`) fallback ke default backend; kesalahan akses lain (misalnya `EACCES`) ditampilkan sebagai kesalahan spawn.
     - Perintah manajemen Gateway tetap lokal di percakapan terikat — perintah `/acp ...` ditangani oleh OpenClaw meskipun teks tindak lanjut normal dirutekan ke sesi ACP yang terikat; `/status` dan `/unfocus` juga tetap lokal kapan pun penanganan perintah diaktifkan untuk permukaan tersebut.
+
   </Accordion>
   <Accordion title="Sesi terikat thread">
     Saat binding thread diaktifkan untuk adaptor saluran:
@@ -307,6 +311,7 @@ Contoh:
     - Adaptor saluran apa pun yang mengekspos kemampuan binding sesi/thread.
     - Dukungan bawaan saat ini: thread/saluran **Discord**, topik **Telegram** (topik forum di grup/supergrup dan topik DM).
     - Saluran Plugin dapat menambahkan dukungan melalui antarmuka binding yang sama.
+
   </Accordion>
 </AccordionGroup>
 
@@ -327,22 +332,23 @@ entri `bindings[]` tingkat atas.
 - **Topik forum Telegram:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **DM/grup BlueBubbles:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Utamakan `chat_id:*` atau `chat_identifier:*` untuk binding grup yang stabil.
 - **DM/grup iMessage:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Utamakan `chat_id:*` untuk binding grup yang stabil.
+
 </ParamField>
-  <ParamField path="bindings[].agentId" type="string">
+<ParamField path="bindings[].agentId" type="string">
   id agen OpenClaw pemilik.
-  </ParamField>
-  <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
+</ParamField>
+<ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
   Override ACP opsional.
-  </ParamField>
-  <ParamField path="bindings[].acp.label" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.label" type="string">
   Label opsional yang ditujukan untuk operator.
-  </ParamField>
-  <ParamField path="bindings[].acp.cwd" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.cwd" type="string">
   Direktori kerja runtime opsional.
-  </ParamField>
-  <ParamField path="bindings[].acp.backend" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.backend" type="string">
   Override backend opsional.
-  </ParamField>
+</ParamField>
 
 ### Default runtime per agen
 
@@ -717,6 +723,7 @@ sandbox OpenClaw.
 - Kebijakan sandbox OpenClaw **tidak** membungkus eksekusi harness ACP.
 - OpenClaw tetap menegakkan gate fitur ACP, agen yang diizinkan, kepemilikan sesi, binding saluran, dan kebijakan pengiriman Gateway.
 - Gunakan `runtime: "subagent"` untuk pekerjaan native OpenClaw yang ditegakkan sandbox.
+
 </Warning>
 
 Keterbatasan saat ini:

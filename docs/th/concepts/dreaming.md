@@ -93,6 +93,7 @@ diary นี้มีไว้สำหรับให้อ่านใน Drea
     - `memory rem-backfill --path ...` เขียนรายการ diary แบบอิงข้อเท็จจริงที่ย้อนกลับได้ลงใน `DREAMS.md`
     - `memory rem-backfill --path ... --stage-short-term` จัดเตรียมผู้สมัครแบบถาวรที่อิงข้อเท็จจริงไว้ใน evidence store ระยะสั้นเดียวกับที่ระยะ Deep ปกติใช้อยู่แล้ว
     - `memory rem-backfill --rollback` และ `--rollback-short-term` จะลบอาร์ติแฟกต์ backfill ที่จัดเตรียมไว้เหล่านั้น โดยไม่แตะรายการ diary ปกติหรือ live short-term recall
+
   </Accordion>
 </AccordionGroup>
 

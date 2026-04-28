@@ -63,6 +63,7 @@ un backend no disponible.
     - Los adaptadores de harness de destino (Codex, Claude, etc.) pueden descargarse bajo demanda con `npx` la primera vez que los uses.
     - La autenticación del proveedor debe seguir existiendo en el host para ese harness.
     - Si el host no tiene npm o acceso a red, las descargas de adaptadores en la primera ejecución fallan hasta que se precalienten las cachés o el adaptador se instale de otra forma.
+
   </Accordion>
   <Accordion title="Requisitos previos de runtime">
     ACP lanza un proceso real de harness externo. OpenClaw es propietario del enrutamiento,
@@ -152,6 +153,7 @@ Flujo rápido de `/acp` desde el chat:
     - `cancel` aborta el turno activo cuando el backend admite cancelación; no elimina la vinculación ni los metadatos de la sesión.
     - `close` finaliza la sesión ACP desde el punto de vista de OpenClaw y elimina la vinculación. Un harness puede seguir manteniendo su propio historial ascendente si admite reanudación.
     - Los workers de runtime inactivos son candidatos a limpieza después de `acp.runtime.ttlMinutes`; los metadatos almacenados de sesión siguen disponibles para `/acp sessions`.
+
   </Accordion>
   <Accordion title="Reglas de enrutamiento nativo de Codex">
     Disparadores en lenguaje natural que deben enrutar al **Plugin nativo de Codex**
@@ -182,6 +184,7 @@ Flujo rápido de `/acp` desde el chat:
     - `openai/*` más `agentRuntime.id: "codex"` — runtime integrado nativo de app-server de Codex.
     - `/codex ...` — control nativo de conversación de Codex.
     - `/acp ...` o `runtime: "acp"` — control ACP/acpx explícito.
+
   </Accordion>
   <Accordion title="Disparadores en lenguaje natural para enrutamiento ACP">
     Disparadores que deben enrutar al runtime ACP:
@@ -279,6 +282,7 @@ Ejemplos:
     - En Discord, `spawnAcpSessions` solo se requiere cuando OpenClaw necesita crear un hilo hijo para `--thread auto|here`, no para `--bind here`.
     - Si creas una sesión para un agente ACP diferente sin `--cwd`, OpenClaw hereda por defecto el espacio de trabajo del **agente de destino**. Las rutas heredadas faltantes (`ENOENT`/`ENOTDIR`) recurren al valor predeterminado del backend; otros errores de acceso (por ejemplo `EACCES`) aparecen como errores de creación.
     - Los comandos de gestión del Gateway permanecen locales en conversaciones vinculadas: los comandos `/acp ...` son gestionados por OpenClaw incluso cuando el texto normal de seguimiento se enruta a la sesión ACP vinculada; `/status` y `/unfocus` también permanecen locales siempre que la gestión de comandos esté habilitada para esa superficie.
+
   </Accordion>
   <Accordion title="Sesiones vinculadas a hilos">
     Cuando las vinculaciones de hilo están habilitadas para un adaptador de canal:
@@ -306,6 +310,7 @@ Ejemplos:
     - Cualquier adaptador de canal que exponga capacidad de vinculación de sesión/hilo.
     - Compatibilidad integrada actual: hilos/canales de **Discord**, temas de **Telegram** (temas de foro en grupos/supergrupos y temas en mensajes directos).
     - Los canales de Plugins pueden añadir compatibilidad a través de la misma interfaz de vinculación.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,22 +331,23 @@ las entradas `bindings[]` de nivel superior.
 - **Tema de foro de Telegram:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **DM/grupo de BlueBubbles:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Prefiere `chat_id:*` o `chat_identifier:*` para vinculaciones estables de grupo.
 - **DM/grupo de iMessage:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Prefiere `chat_id:*` para vinculaciones estables de grupo.
+
 </ParamField>
-  <ParamField path="bindings[].agentId" type="string">
+<ParamField path="bindings[].agentId" type="string">
   El ID del agente propietario de OpenClaw.
-  </ParamField>
-  <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
+</ParamField>
+<ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
   Sobrescritura ACP opcional.
-  </ParamField>
-  <ParamField path="bindings[].acp.label" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.label" type="string">
   Etiqueta opcional orientada al operador.
-  </ParamField>
-  <ParamField path="bindings[].acp.cwd" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.cwd" type="string">
   Directorio de trabajo opcional del runtime.
-  </ParamField>
-  <ParamField path="bindings[].acp.backend" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.backend" type="string">
   Sobrescritura opcional del backend.
-  </ParamField>
+</ParamField>
 
 ### Valores predeterminados de runtime por agente
 
@@ -711,6 +717,7 @@ sandbox de OpenClaw.
 - La política de sandbox de OpenClaw **no** encapsula la ejecución del arnés ACP.
 - OpenClaw sigue aplicando puertas de funciones de ACP, agentes permitidos, propiedad de la sesión, vinculaciones de canal y política de entrega del Gateway.
 - Usa `runtime: "subagent"` para trabajo nativo de OpenClaw con sandbox obligatorio.
+
 </Warning>
 
 Limitaciones actuales:

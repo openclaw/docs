@@ -369,6 +369,7 @@ WhatsApp 수신 메시지에는 개인 메시지 내용, 전화번호,
     - 기본 청크 제한: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - `newline` 모드는 문단 경계(빈 줄)를 우선 사용하고, 이후 길이 안전 청크 분할로 폴백합니다
+
   </Accordion>
 
   <Accordion title="발신 미디어 동작">
@@ -381,6 +382,7 @@ WhatsApp 수신 메시지에는 개인 메시지 내용, 전화번호,
     - 애니메이션 GIF 재생은 비디오 전송에서 `gifPlayback: true`로 지원됩니다
     - 멀티미디어 답장 페이로드 전송 시 캡션은 첫 번째 미디어 항목에 적용되지만, PTT 음성 노트는 WhatsApp 클라이언트가 음성 노트 캡션을 일관되게 렌더링하지 않으므로 오디오를 먼저 보내고 표시 텍스트는 별도로 전송합니다
     - 미디어 소스는 HTTP(S), `file://`, 또는 로컬 경로를 사용할 수 있습니다
+
   </Accordion>
 
   <Accordion title="미디어 크기 제한 및 폴백 동작">
@@ -389,6 +391,7 @@ WhatsApp 수신 메시지에는 개인 메시지 내용, 전화번호,
     - 계정별 override는 `channels.whatsapp.accounts.<accountId>.mediaMaxMb`를 사용합니다
     - 이미지는 제한에 맞도록 자동 최적화(크기 조정/품질 스윕)됩니다
     - 미디어 전송 실패 시, 첫 번째 항목 폴백이 응답을 조용히 버리지 않고 텍스트 경고를 전송합니다
+
   </Accordion>
 </AccordionGroup>
 
@@ -473,12 +476,14 @@ ack 반응은 `reactionLevel`에 의해 게이트되며, `reactionLevel`이 `"of
     - 계정 ID는 `channels.whatsapp.accounts`에서 가져옵니다
     - 기본 계정 선택: `default`가 있으면 그것을 사용하고, 없으면 구성된 첫 번째 계정 ID(정렬 기준)를 사용합니다
     - 계정 ID는 조회를 위해 내부적으로 정규화됩니다
+
   </Accordion>
 
   <Accordion title="자격 증명 경로 및 레거시 호환성">
     - 현재 인증 경로: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - 백업 파일: `creds.json.bak`
     - `~/.openclaw/credentials/`의 레거시 기본 인증도 기본 계정 흐름에서는 계속 인식/마이그레이션됩니다
+
   </Accordion>
 
   <Accordion title="로그아웃 동작">

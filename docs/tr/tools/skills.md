@@ -74,6 +74,7 @@ Konum/öncelik, aynı adlı skill'in hangi kopyasının kazanacağını belirler
     - Hiç skill olmaması için `agents.list[].skills: []` ayarlayın.
     - Boş olmayan bir `agents.list[].skills` listesi, o aracı için **nihai** kümedir — varsayılanlarla birleştirilmez.
     - Etkili izin listesi; istem oluşturma, skill eğik çizgi komutu keşfi, sandbox eşzamanlama ve skill anlık görüntüleri genelinde uygulanır.
+
   </Accordion>
 </AccordionGroup>
 
@@ -261,10 +262,12 @@ metadata:
     - Node kurulumları, `openclaw.json` içindeki `skills.install.nodeManager` ayarına uyar (varsayılan: npm; seçenekler: npm/pnpm/yarn/bun). Bu yalnızca skill kurulumlarını etkiler; Gateway çalışma zamanı yine de Node olmalıdır — Bun, WhatsApp/Telegram için önerilmez.
     - Gateway destekli kurucu seçimi tercih odaklıdır: kurucu belirtimleri türleri karıştırıyorsa OpenClaw, `skills.install.preferBrew` etkinken ve `brew` mevcutsa önce Homebrew'ı, sonra `uv`'yi, sonra yapılandırılmış node yöneticisini, ardından `go` veya `download` gibi diğer geri dönüşleri tercih eder.
     - Her kurulum belirtimi `download` ise OpenClaw, tek bir tercih edilen kurucuya daraltmak yerine tüm indirme seçeneklerini gösterir.
+
   </Accordion>
   <Accordion title="Kurucu başına ayrıntılar">
     - **Go kurulumları:** `go` yoksa ve `brew` varsa gateway önce Homebrew ile Go'yu kurar ve mümkün olduğunda `GOBIN` değerini Homebrew'ın `bin` dizinine ayarlar.
     - **İndirme kurulumları:** `url` (zorunlu), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (varsayılan: arşiv algılanırsa otomatik), `stripComponents`, `targetDir` (varsayılan: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

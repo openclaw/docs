@@ -32,6 +32,7 @@ Bu kusursuz bir güvenlik sınırı değildir, ancak model aptalca bir şey yapt
     - noVNC gözlemci erişimi varsayılan olarak parola korumalıdır; OpenClaw kısa ömürlü bir belirteç URL'si üretir, bu URL yerel bir bootstrap sayfası sunar ve noVNC'yi parola URL fragment'ında açar (sorgu/üstbilgi günlüklerinde değil).
     - `agents.defaults.sandbox.browser.allowHostControl`, sandbox içindeki oturumların host tarayıcıyı açıkça hedeflemesine izin verir.
     - İsteğe bağlı izin listeleri `target: "custom"` için geçit görevi görür: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ OpenClaw'ın `exec`, dosya araçları ve medya okumalarını SSH ile erişilebil
     - Oluşturma veya yeniden oluşturmadan sonraki ilk kullanımda, bu uzak çalışma alanını bir kez yerel çalışma alanından tohumlar.
     - Bundan sonra `exec`, `read`, `write`, `edit`, `apply_patch`, istem medya okumaları ve gelen medya aşamalandırma doğrudan SSH üzerinden uzak çalışma alanına karşı çalışır.
     - OpenClaw, uzak değişiklikleri otomatik olarak yerel çalışma alanına geri eşzamanlamaz.
+
   </Accordion>
   <Accordion title="Kimlik doğrulama materyali">
     - `identityFile`, `certificateFile`, `knownHostsFile`: mevcut yerel dosyaları kullanır ve OpenSSH yapılandırması üzerinden geçirir.
     - `identityData`, `certificateData`, `knownHostsData`: satır içi dizgeler veya SecretRef kullanır. OpenClaw bunları normal secrets çalışma zamanı anlık görüntüsü üzerinden çözümler, `0600` ile geçici dosyalara yazar ve SSH oturumu bittiğinde siler.
     - Aynı öğe için hem `*File` hem `*Data` ayarlanmışsa, o SSH oturumu için `*Data` kazanır.
+
   </Accordion>
   <Accordion title="Uzak-kanonik sonuçlar">
     Bu bir **uzak-kanonik** modeldir. Uzak SSH çalışma alanı, ilk tohumlamadan sonra gerçek sandbox durumu haline gelir.
@@ -205,11 +208,13 @@ OpenShell modları:
     - OpenClaw, OpenShell'den `openshell sandbox ssh-config <name>` aracılığıyla sandbox'a özgü SSH yapılandırması ister.
     - Çekirdek bu SSH yapılandırmasını geçici bir dosyaya yazar, SSH oturumunu açar ve `backend: "ssh"` tarafından kullanılan aynı uzak dosya sistemi bridge'ini yeniden kullanır.
     - Yalnızca `mirror` modunda yaşam döngüsü farklıdır: exec öncesi yerelden uzağa eşzamanla, sonra geri eşzamanla.
+
   </Accordion>
   <Accordion title="Geçerli OpenShell sınırlamaları">
     - sandbox tarayıcı henüz desteklenmiyor
     - `sandbox.docker.binds`, OpenShell arka ucunda desteklenmiyor
     - `sandbox.docker.*` altındaki Docker'a özgü çalışma zamanı düğmeleri yalnızca Docker arka ucuna uygulanır
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ Genel ve ajan başına bind'ler **birleştirilir** (yerine geçmez). `scope: "sh
 - Hassas bağlamalar (gizli bilgiler, SSH anahtarları, hizmet kimlik bilgileri) kesinlikle gerekmedikçe `:ro` olmalıdır.
 - Çalışma alanına yalnızca okuma erişimi gerekiyorsa `workspaceAccess: "ro"` ile birleştirin; bind modları bağımsız kalır.
 - Bind'lerin araç ilkesi ve elevated exec ile nasıl etkileştiği için bkz. [Sandbox ve Araç İlkesi ve Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated).
+
 </Warning>
 
 ## İmajlar ve kurulum
@@ -423,6 +429,7 @@ Varsayılan olarak Docker sandbox kapsayıcıları **ağ olmadan** çalışır. 
     - `network: "host"` engellenir.
     - `network: "container:<id>"` varsayılan olarak engellenir (namespace join atlatma riski).
     - Acil durum geçersiz kılma: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ Yollar:
     - `readOnlyRoot: true`, yazmayı engeller; `readOnlyRoot: false` ayarlayın veya özel imaj hazırlayın.
     - Paket kurulumları için `user` root olmalıdır (`user`'ı atlayın veya `user: "0:0"` ayarlayın).
     - Sandbox exec, host `process.env` değerini devralmaz. Skill API anahtarları için `agents.defaults.sandbox.docker.env` (veya özel imaj) kullanın.
+
   </Accordion>
 </AccordionGroup>
 

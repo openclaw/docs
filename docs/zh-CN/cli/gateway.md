@@ -51,6 +51,7 @@ openclaw gateway run
     - 未启用身份验证时，禁止绑定到 loopback 之外的地址（安全护栏）。
     - 在获得授权时，`SIGUSR1` 会触发进程内重启（`commands.restart` 默认启用；设置 `commands.restart: false` 可阻止手动重启，但 gateway 工具 / 配置 apply/update 仍然允许）。
     - `SIGINT` / `SIGTERM` 处理器会停止 gateway 进程，但不会恢复任何自定义终端状态。如果你用 TUI 或 raw-mode 输入封装 CLI，请在退出前恢复终端。
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ openclaw gateway run
     - 默认：人类可读（在 TTY 中带颜色）。
     - `--json`：机器可读 JSON（无样式 / 无 spinner）。
     - `--no-color`（或 `NO_COLOR=1`）：禁用 ANSI，同时保留人类可读布局。
+
   </Tab>
   <Tab title="共享选项">
     - `--url <url>`：Gateway 网关 WebSocket URL。
@@ -136,6 +138,7 @@ openclaw gateway run
     - `--password <password>`：Gateway 网关密码。
     - `--timeout <ms>`：超时 / 预算（因命令而异）。
     - `--expect-final`：等待“final”响应（智能体调用）。
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="隐私和 bundle 行为">
     - 记录会保留运维元数据：事件名称、计数、字节大小、内存读数、队列 / 会话状态、渠道 / 插件名称以及已脱敏的会话摘要。它们不会保留聊天文本、webhook 正文、工具输出、原始请求或响应正文、令牌、cookie、秘密值、主机名或原始会话 ID。将 `diagnostics.enabled: false` 设为关闭，可完全禁用该记录器。
     - 在 Gateway 网关发生致命退出、关闭超时和重启启动失败时，如果记录器中有事件，OpenClaw 会将相同的诊断快照写入 `~/.openclaw/logs/stability/openclaw-stability-*.json`。可使用 `openclaw gateway stability --bundle latest` 检查最新 bundle；`--limit`、`--type` 和 `--since-seq` 同样适用于 bundle 输出。
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - 当仅有监听服务还不够、你还需要读作用域的 RPC 调用也保持健康时，请在脚本和自动化中使用 `--require-rpc`。
     - `--deep` 会尽力扫描额外的 launchd / systemd / schtasks 安装项。当检测到多个类似 gateway 的服务时，人类可读输出会打印清理提示，并警告大多数环境应每台机器仅运行一个 gateway。
     - 人类可读输出会包含解析后的文件日志路径，以及 CLI 与服务配置路径 / 有效性快照，以帮助诊断 profile 或状态目录漂移。
+
   </Accordion>
   <Accordion title="Linux systemd 身份验证漂移检查">
     - 在 Linux systemd 安装中，服务身份验证漂移检查会同时读取单元中的 `Environment=` 和 `EnvironmentFile=` 值（包括 `%h`、带引号的路径、多个文件以及可选的 `-` 文件）。
     - 漂移检查会使用合并后的运行时环境变量解析 `gateway.auth.token` SecretRef（优先使用服务命令环境变量，其次回退到进程环境变量）。
     - 如果令牌身份验证实际上未启用（显式 `gateway.auth.mode` 为 `password` / `none` / `trusted-proxy`，或 mode 未设置且 password 可能胜出，同时没有任何可能胜出的令牌候选值），则令牌漂移检查会跳过配置中的令牌解析。
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read` 表示连接成功，但读作用域 RPC 受限。它会被报告为**降级**可达性，而不是完全失败。
     - 与 `gateway status` 一样，probe 会复用现有缓存的设备身份验证，但不会创建首次设备身份或配对状态。
     - 仅当所有被探测目标都不可达时，退出码才为非零。
+
   </Accordion>
   <Accordion title="JSON 输出">
     顶层：
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`：可达目标不止一个；除非你有意运行隔离的 profile（例如 rescue bot），否则这并不常见。
     - `auth_secretref_unresolved`：某个失败目标的已配置身份验证 SecretRef 无法解析。
     - `probe_scope_limited`：WebSocket 连接成功，但读探针因缺少 `operator.read` 而受限。
+
   </Accordion>
 </AccordionGroup>
 
@@ -467,10 +475,12 @@ openclaw gateway restart
     - `gateway status`：`--url`、`--token`、`--password`、`--timeout`、`--no-probe`、`--require-rpc`、`--deep`、`--json`
     - `gateway install`：`--port`、`--runtime <node|bun>`、`--token`、`--wrapper <path>`、`--force`、`--json`
     - `gateway uninstall|start|stop|restart`：`--json`
+
   </Accordion>
   <Accordion title="生命周期行为">
     - 使用 `gateway restart` 重启托管服务。不要把 `gateway stop` 和 `gateway start` 串联起来作为重启替代方案；在 macOS 上，`gateway stop` 会先有意禁用 LaunchAgent，然后再停止它。
     - 生命周期命令接受 `--json`，便于脚本调用。
+
   </Accordion>
   <Accordion title="安装时的身份验证和 SecretRef">
     - 当令牌身份验证需要令牌且 `gateway.auth.token` 由 SecretRef 管理时，`gateway install` 会验证 SecretRef 可解析，但不会将解析后的令牌持久化到服务环境元数据中。
@@ -478,6 +488,7 @@ openclaw gateway restart
     - 对于 `gateway run` 的密码身份验证，优先使用 `OPENCLAW_GATEWAY_PASSWORD`、`--password-file` 或由 SecretRef 支持的 `gateway.auth.password`，不要使用内联 `--password`。
     - 在推断身份验证模式下，仅 shell 中的 `OPENCLAW_GATEWAY_PASSWORD` 不会放宽安装时的令牌要求；安装托管服务时，请使用持久配置（`gateway.auth.password` 或配置中的 `env`）。
     - 如果同时配置了 `gateway.auth.token` 和 `gateway.auth.password`，且 `gateway.auth.mode` 未设置，则在显式设置 mode 之前会阻止安装。
+
   </Accordion>
 </AccordionGroup>
 
@@ -524,6 +535,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - CLI 会扫描 `local.`，以及启用时已配置的广域域名。
 - JSON 输出中的 `wsUrl` 是从解析后的服务端点推导出来的，而不是来自仅 TXT 的提示，例如 `lanHost` 或 `tailnetDns`。
 - 在 `local.` mDNS 上，仅当 `discovery.mdns.mode` 为 `full` 时，才会广播 `sshPort` 和 `cliPath`。广域 DNS-SD 仍会写入 `cliPath`；`sshPort` 在那里也仍然是可选的。
+
 </Note>
 
 ## 相关内容

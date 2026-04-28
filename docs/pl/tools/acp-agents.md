@@ -63,6 +63,7 @@ niedostępnego backendu.
     - Docelowe adaptery harnessów (Codex, Claude itd.) mogą zostać pobrane na żądanie przez `npx` przy pierwszym użyciu.
     - Uwierzytelnianie dostawcy nadal musi istnieć na hoście dla tego harnessu.
     - Jeśli host nie ma npm ani dostępu do sieci, pobieranie adapterów przy pierwszym uruchomieniu zakończy się niepowodzeniem, dopóki cache nie zostanie wcześniej rozgrzany lub adapter nie zostanie zainstalowany w inny sposób.
+
   </Accordion>
   <Accordion title="Wymagania środowiska uruchomieniowego">
     ACP uruchamia prawdziwy zewnętrzny proces harnessu. OpenClaw obsługuje trasowanie,
@@ -152,6 +153,7 @@ Szybki przepływ `/acp` z czatu:
     - `cancel` przerywa aktywną turę, gdy backend obsługuje anulowanie; nie usuwa powiązania ani metadanych sesji.
     - `close` kończy sesję ACP z punktu widzenia OpenClaw i usuwa powiązanie. Harness może nadal zachować własną historię upstream, jeśli obsługuje wznowienie.
     - Nieaktywne workery środowiska uruchomieniowego kwalifikują się do czyszczenia po `acp.runtime.ttlMinutes`; zapisane metadane sesji pozostają dostępne dla `/acp sessions`.
+
   </Accordion>
   <Accordion title="Natywne zasady trasowania Codex">
     Wyzwalacze w języku naturalnym, które powinny być kierowane do **natywnego pluginu Codex**, gdy jest włączony:
@@ -181,6 +183,7 @@ Szybki przepływ `/acp` z czatu:
     - `openai/*` plus `agentRuntime.id: "codex"` — natywne wbudowane środowisko uruchomieniowe serwera aplikacji Codex.
     - `/codex ...` — natywne sterowanie rozmową Codex.
     - `/acp ...` lub `runtime: "acp"` — jawne sterowanie ACP/acpx.
+
   </Accordion>
   <Accordion title="Wyzwalacze trasowania ACP w języku naturalnym">
     Wyzwalacze, które powinny być kierowane do środowiska uruchomieniowego ACP:
@@ -279,6 +282,7 @@ Przykłady:
     - Na Discord `spawnAcpSessions` jest wymagane tylko wtedy, gdy OpenClaw musi utworzyć potomny wątek dla `--thread auto|here` — nie dla `--bind here`.
     - Jeśli uruchomisz innego agenta ACP bez `--cwd`, OpenClaw domyślnie dziedziczy obszar roboczy **docelowego agenta**. Brakujące odziedziczone ścieżki (`ENOENT`/`ENOTDIR`) wracają do domyślnej wartości backendu; inne błędy dostępu (np. `EACCES`) są zwracane jako błędy uruchomienia.
     - Polecenia zarządzania Gateway pozostają lokalne w związanych rozmowach — polecenia `/acp ...` są obsługiwane przez OpenClaw nawet wtedy, gdy zwykły tekst kolejnych wiadomości trafia do związanej sesji ACP; `/status` i `/unfocus` również pozostają lokalne zawsze, gdy obsługa poleceń jest włączona dla tej powierzchni.
+
   </Accordion>
   <Accordion title="Sesje związane z wątkiem">
     Gdy wiązania wątków są włączone dla adaptera kanału:
@@ -306,6 +310,7 @@ Przykłady:
     - Każdy adapter kanału, który udostępnia możliwość wiązania sesji/wątku.
     - Obecne wbudowane wsparcie: wątki/kanały **Discord**, tematy **Telegram** (tematy forum w grupach/supergrupach i tematy DM).
     - Kanały pluginów mogą dodawać obsługę przez ten sam interfejs wiązania.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,22 +331,23 @@ wpisach najwyższego poziomu `bindings[]`.
 - **Temat forum Telegram:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **DM/grupa BlueBubbles:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Preferuj `chat_id:*` lub `chat_identifier:*` dla stabilnych powiązań grupowych.
 - **DM/grupa iMessage:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Preferuj `chat_id:*` dla stabilnych powiązań grupowych.
+
 </ParamField>
-  <ParamField path="bindings[].agentId" type="string">
+<ParamField path="bindings[].agentId" type="string">
   Identyfikator agenta OpenClaw będącego właścicielem.
-  </ParamField>
-  <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
+</ParamField>
+<ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
   Opcjonalne nadpisanie ACP.
-  </ParamField>
-  <ParamField path="bindings[].acp.label" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.label" type="string">
   Opcjonalna etykieta widoczna dla operatora.
-  </ParamField>
-  <ParamField path="bindings[].acp.cwd" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.cwd" type="string">
   Opcjonalny katalog roboczy środowiska uruchomieniowego.
-  </ParamField>
-  <ParamField path="bindings[].acp.backend" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.backend" type="string">
   Opcjonalne nadpisanie backendu.
-  </ParamField>
+</ParamField>
 
 ### Domyślne ustawienia środowiska uruchomieniowego per agent
 
@@ -715,6 +721,7 @@ sandboxa OpenClaw.
 - Polityka sandboxa OpenClaw **nie** otacza wykonania harnessu ACP.
 - OpenClaw nadal egzekwuje bramki funkcji ACP, dozwolonych agentów, własność sesji, powiązania kanałów i politykę dostarczania Gateway.
 - Użyj `runtime: "subagent"` dla natywnej pracy OpenClaw wymuszanej przez sandbox.
+
 </Warning>
 
 Obecne ograniczenia:

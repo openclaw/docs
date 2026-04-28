@@ -198,6 +198,7 @@ Wszystkie pola są opcjonalne, chyba że zaznaczono inaczej.
       - `fileQuality: "hq"`: maks. 14 MP (14,000,000 wyrenderowanych pikseli).
       - `fileQuality: "print"`: maks. 24 MP (24,000,000 wyrenderowanych pikseli).
       - PDF ma dodatkowo limit 50 stron.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Zasady `baseUrl`:
     - Ograniczanie częstotliwości zdalnych niepowodzeń, gdy zdalny dostęp jest włączony:
       - 40 niepowodzeń na 60 sekund
       - blokada na 60 sekund (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Wzmocnienie zabezpieczeń renderowania plików">
     - Routing żądań przeglądarki do zrzutów ekranu domyślnie wszystko odrzuca.
     - Dozwolone są tylko lokalne zasoby przeglądarki z `http://127.0.0.1/plugins/diffs/assets/*`.
     - Zewnętrzne żądania sieciowe są blokowane.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Kolejność rozwiązywania:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Awaryjnie dla platformy">
     Zapasowe wykrywanie polecenia/ścieżki dla platformy.
@@ -456,6 +460,7 @@ Napraw to, instalując Chrome, Chromium, Edge lub Brave albo ustawiając jedną 
     - `Invalid baseUrl: ...` — użyj pochodzenia `http(s)` z opcjonalną ścieżką, bez query/hash.
     - `{field} exceeds maximum size (...)` — zmniejsz rozmiar ładunku.
     - Odrzucenie dużego patcha — zmniejsz liczbę plików w patchu lub łączną liczbę linii.
+
   </Accordion>
   <Accordion title="Dostępność przeglądarki">
     - Adres URL przeglądarki domyślnie wskazuje na `127.0.0.1`.
@@ -468,6 +473,7 @@ Napraw to, instalując Chrome, Chromium, Edge lub Brave albo ustawiając jedną 
       - preferuj `mode: "file"` lub `mode: "both"`, gdy potrzebujesz tylko załącznika, albo
       - celowo włącz `security.allowRemoteViewer` i ustaw Plugin `viewerBaseUrl` lub przekaż proxy/publiczny `baseUrl`, gdy potrzebujesz współdzielonego adresu URL przeglądarki
     - Włączaj `security.allowRemoteViewer` tylko wtedy, gdy zamierzasz udostępniać zewnętrzny dostęp do przeglądarki.
+
   </Accordion>
   <Accordion title="Wiersz niezmienionych linii nie ma przycisku rozwijania">
     Może się to zdarzyć dla danych wejściowych patch, gdy patch nie zawiera rozwijalnego kontekstu. Jest to oczekiwane i nie oznacza awarii przeglądarki.
@@ -476,6 +482,7 @@ Napraw to, instalując Chrome, Chromium, Edge lub Brave albo ustawiając jedną 
     - Artefakt wygasł z powodu TTL.
     - Token lub ścieżka zostały zmienione.
     - Czyszczenie usunęło nieaktualne dane.
+
   </Accordion>
 </AccordionGroup>
 

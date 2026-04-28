@@ -36,35 +36,42 @@ x-i18n:
   <Accordion title="Discord และ Slack">
     - `emoji` ว่างจะลบรีแอ็กชันทั้งหมดของบอตบนข้อความนั้น
     - `remove: true` จะลบเฉพาะอีโมจิที่ระบุ
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - `emoji` ว่างจะลบรีแอ็กชันของแอปบนข้อความนั้น
     - `remove: true` จะลบเฉพาะอีโมจิที่ระบุ
+
   </Accordion>
 
   <Accordion title="Telegram">
     - `emoji` ว่างจะลบรีแอ็กชันของบอต
     - `remove: true` ก็ใช้ลบรีแอ็กชันเช่นกัน แต่ยังต้องใช้ `emoji` ที่ไม่ว่างสำหรับการตรวจสอบของเครื่องมือ
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - `emoji` ว่างจะลบรีแอ็กชันของบอต
     - `remove: true` จะถูกแมปภายในให้เป็นอีโมจิว่าง (แต่ยังต้องมี `emoji` ในการเรียกเครื่องมือ)
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - ต้องใช้ `emoji` ที่ไม่ว่าง
     - `remove: true` จะลบรีแอ็กชันของอีโมจินั้นโดยเฉพาะ
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - ใช้เครื่องมือ `feishu_reaction` พร้อม action `add`, `remove` และ `list`
     - การเพิ่ม/ลบต้องใช้ `emoji_type`; ส่วนการลบยังต้องใช้ `reaction_id` ด้วย
+
   </Accordion>
 
   <Accordion title="Signal">
     - การแจ้งเตือนรีแอ็กชันขาเข้าถูกควบคุมโดย `channels.signal.reactionNotifications`: `"off"` จะปิด, `"own"` (ค่าปริยาย) จะปล่อย event เมื่อผู้ใช้รีแอ็กกับข้อความของบอต และ `"all"` จะปล่อย event สำหรับรีแอ็กชันทั้งหมด
+
   </Accordion>
 </AccordionGroup>
 

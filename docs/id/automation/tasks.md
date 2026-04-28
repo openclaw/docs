@@ -115,6 +115,7 @@ Tidak setiap eksekusi agen membuat tugas. Giliran Heartbeat dan chat interaktif 
     - Giliran Heartbeat — sesi utama; lihat [Heartbeat](/id/gateway/heartbeat)
     - Giliran chat interaktif normal
     - Respons `/command` langsung
+
   </Accordion>
 </AccordionGroup>
 

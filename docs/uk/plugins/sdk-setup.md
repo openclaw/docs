@@ -307,6 +307,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - Канал вимкнено, але йому потрібні поверхні налаштування/онбордингу.
     - Канал увімкнено, але не налаштовано.
     - Увімкнено відкладене завантаження (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Що має реєструвати setupEntry">
     - Об’єкт Plugin каналу (через `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - Фонові сервіси.
     - Важкі імпорти runtime (crypto, SDK).
     - Методи Gateway, потрібні лише після запуску.
+
   </Accordion>
 </AccordionGroup>
 

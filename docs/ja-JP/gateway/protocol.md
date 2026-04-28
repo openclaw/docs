@@ -252,6 +252,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `system-event` はsystem eventを追加し、presence contextを更新/配信できます。
     - `last-heartbeat` は最新の永続化heartbeat eventを返します。
     - `set-heartbeats` はgateway上のHeartbeat処理を切り替えます。
+
   </Accordion>
 
   <Accordion title="modelとusage">
@@ -262,6 +263,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `sessions.usage` はsessionごとのusage summaryを返します。
     - `sessions.usage.timeseries` は1つのsessionのtimeseries usageを返します。
     - `sessions.usage.logs` は1つのsessionのusage log entryを返します。
+
   </Accordion>
 
   <Accordion title="チャンネルとlogin helper">
@@ -272,11 +274,13 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `push.test` は、登録済みiOS nodeにテストAPNs pushを送ります。
     - `voicewake.get` は、保存済みwake-word triggerを返します。
     - `voicewake.set` は、wake-word triggerを更新し、変更をbroadcastします。
+
   </Accordion>
 
   <Accordion title="メッセージングとlogs">
     - `send` は、chat runnerの外でchannel/account/thread指定送信を行う直接の送信配信RPCです。
     - `logs.tail` は、cursor/limitとmax-byte制御付きで設定済みgateway file-log tailを返します。
+
   </Accordion>
 
   <Accordion title="TalkとTTS">
@@ -288,6 +292,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `tts.enable` と `tts.disable` は、TTS設定状態を切り替えます。
     - `tts.setProvider` は、優先TTS providerを更新します。
     - `tts.convert` は、one-shotのtext-to-speech変換を実行します。
+
   </Accordion>
 
   <Accordion title="Secret、config、update、wizard">
@@ -301,6 +306,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `config.schema.lookup` は、1つのconfig pathに対するpathスコープlookup payloadを返します。正規化済みpath、浅いschema node、一致したhint + `hintPath`、UI/CLI drill-down用の直接のchild summaryが含まれます。lookup schema nodeには、ユーザー向けdocsと一般的な検証field（`title`、`description`、`type`、`enum`、`const`、`format`、`pattern`、数値/文字列/配列/objectの境界、および `additionalProperties`、`deprecated`、`readOnly`、`writeOnly` のようなflag）が保持されます。child summaryには `key`、正規化済み `path`、`type`、`required`、`hasChildren`、および一致した `hint` / `hintPath` が含まれます。
     - `update.run` はgateway update flowを実行し、update自体が成功した場合にのみrestartをスケジュールします。
     - `wizard.start`、`wizard.next`、`wizard.status`、`wizard.cancel` は、オンボーディングウィザードをWS RPC経由で公開します。
+
   </Accordion>
 
   <Accordion title="agentとworkspace helper">
@@ -309,6 +315,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `agents.files.list`、`agents.files.get`、`agents.files.set` は、agent向けに公開されるbootstrap workspace fileを管理します。
     - `agent.identity.get` は、agentまたはsessionに対する有効なassistant identityを返します。
     - `agent.wait` は、実行完了を待ち、利用可能な場合は終了snapshotを返します。
+
   </Accordion>
 
   <Accordion title="session制御">
@@ -325,6 +332,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `sessions.reset`、`sessions.delete`、`sessions.compact` は、session maintenanceを行います。
     - `sessions.get` は、保存済みの完全なsession rowを返します。
     - chat実行は引き続き `chat.history`、`chat.send`、`chat.abort`、`chat.inject` を使います。`chat.history` はUI client向けに表示正規化されています。visible textからinline directive tagを除去し、plain-textのtool-call XML payload（`<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`、切り詰められたtool-call blockを含む）と漏れたASCII/全角model control tokenを除去し、正確な `NO_REPLY` / `no_reply` のような純粋なsilent-token assistant rowを省略し、大きすぎるrowはplaceholderに置き換えられることがあります。
+
   </Accordion>
 
   <Accordion title="device pairingとdevice token">
@@ -332,6 +340,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `device.pair.approve`、`device.pair.reject`、`device.pair.remove` は、device-pairing recordを管理します。
     - `device.token.rotate` は、承認済みroleと呼び出し元scopeの境界内でpaired device tokenをローテーションします。
     - `device.token.revoke` は、承認済みroleと呼び出し元scopeの境界内でpaired device tokenを失効させます。
+
   </Accordion>
 
   <Accordion title="node pairing、invoke、pending work">
@@ -344,6 +353,7 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `node.canvas.capability.refresh` は、スコープ付きcanvas-capability tokenを更新します。
     - `node.pending.pull` と `node.pending.ack` は、connected-node queue APIです。
     - `node.pending.enqueue` と `node.pending.drain` は、offline/disconnected node向けの永続pending workを管理します。
+
   </Accordion>
 
   <Accordion title="承認ファミリー">
@@ -352,11 +362,13 @@ server pushのWebSocket broadcast eventは、pairing scopeだけのsessionやnod
     - `exec.approvals.get` と `exec.approvals.set` は、gateway exec承認policy snapshotを管理します。
     - `exec.approvals.node.get` と `exec.approvals.node.set` は、node relay command経由でnodeローカルのexec承認policyを管理します。
     - `plugin.approval.request`、`plugin.approval.list`、`plugin.approval.waitDecision`、`plugin.approval.resolve` は、Plugin定義の承認flowを扱います。
+
   </Accordion>
 
   <Accordion title="Automation、Skills、tools">
     - Automation: `wake` は、即時または次Heartbeatのwake text injectionをスケジュールします。`cron.list`、`cron.status`、`cron.add`、`cron.update`、`cron.remove`、`cron.run`、`cron.runs` は、スケジュール作業を管理します。
     - Skillsとtools: `commands.list`、`skills.*`、`tools.catalog`、`tools.effective`。
+
   </Accordion>
 </AccordionGroup>
 

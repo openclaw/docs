@@ -175,6 +175,7 @@ Kontrol cara agen memproses pesan:
     - Semua agen yang terdaftar memproses pesan.
     - Setiap agen memiliki key sesi sendiri dan konteks yang terisolasi.
     - Agen memproses secara paralel (default) atau berurutan.
+
   </Step>
   <Step title="Jika tidak ada dalam daftar siaran">
     Perutean normal berlaku (binding pertama yang cocok).

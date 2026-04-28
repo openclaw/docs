@@ -44,14 +44,17 @@ Nie instaluje ani nie modyfikuje niczego na zdalnym hoście.
       - Tylko konfiguracja
       - Konfiguracja + poświadczenia + sesje
       - Pełny reset (usuwa także workspace)
+
   </Step>
   <Step title="Model i uwierzytelnianie">
     - Pełna macierz opcji znajduje się w [Opcjach uwierzytelniania i modeli](#auth-and-model-options).
+
   </Step>
   <Step title="Workspace">
     - Domyślnie `~/.openclaw/workspace` (można skonfigurować).
     - Dodaje pliki workspace potrzebne do bootstrap ritual przy pierwszym uruchomieniu.
     - Układ workspace: [Workspace agenta](/pl/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Pyta o port, bind, tryb auth i ekspozycję Tailscale.
@@ -65,6 +68,7 @@ Nie instaluje ani nie modyfikuje niczego na zdalnym hoście.
       - Nie można jej łączyć z `--gateway-token`.
     - Wyłącz auth tylko wtedy, gdy w pełni ufasz każdemu lokalnemu procesowi.
     - Powiązania inne niż loopback nadal wymagają auth.
+
   </Step>
   <Step title="Kanały">
     - [WhatsApp](/pl/channels/whatsapp): opcjonalne logowanie QR
@@ -88,18 +92,22 @@ Nie instaluje ani nie modyfikuje niczego na zdalnym hoście.
       - Jeśli utworzenie zadania zostanie odrzucone, OpenClaw przechodzi na element logowania w folderze Startup dla danego użytkownika i natychmiast uruchamia Gateway.
       - Scheduled Tasks pozostają preferowane, ponieważ zapewniają lepszy status supervisor.
     - Wybór środowiska uruchomieniowego: Node (zalecane; wymagane dla WhatsApp i Telegram). Bun nie jest zalecany.
+
   </Step>
   <Step title="Kontrola kondycji">
     - Uruchamia Gateway (jeśli to potrzebne) i wykonuje `openclaw health`.
     - `openclaw status --deep` dodaje aktywne sprawdzanie kondycji Gateway do danych wyjściowych statusu, łącznie z kontrolami kanałów, gdy są obsługiwane.
+
   </Step>
   <Step title="Skills">
     - Odczytuje dostępne Skills i sprawdza wymagania.
     - Pozwala wybrać menedżera Node: npm, pnpm albo bun.
     - Instaluje opcjonalne zależności (niektóre używają Homebrew na macOS).
+
   </Step>
   <Step title="Zakończenie">
     - Podsumowanie i kolejne kroki, w tym opcje dla aplikacji iOS, Android i macOS.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Co ustawiasz:
 - Wskazówki wykrywania:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Opcje uwierzytelniania i modeli

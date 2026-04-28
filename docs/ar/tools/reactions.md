@@ -36,35 +36,42 @@ x-i18n:
   <Accordion title="Discord and Slack">
     - تؤدي قيمة `emoji` الفارغة إلى إزالة جميع تفاعلات الروبوت على الرسالة.
     - يزيل `remove: true` قيمة emoji المحددة فقط.
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - تؤدي قيمة `emoji` الفارغة إلى إزالة تفاعلات التطبيق على الرسالة.
     - يزيل `remove: true` قيمة emoji المحددة فقط.
+
   </Accordion>
 
   <Accordion title="Telegram">
     - تؤدي قيمة `emoji` الفارغة إلى إزالة تفاعلات الروبوت.
     - يزيل `remove: true` التفاعلات أيضًا، لكنه ما يزال يتطلب `emoji` غير فارغ للتحقق من الأداة.
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - تؤدي قيمة `emoji` الفارغة إلى إزالة تفاعل الروبوت.
     - يتم ربط `remove: true` داخليًا بـ emoji فارغة (مع أنه ما يزال يتطلب `emoji` في استدعاء الأداة).
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - يتطلب `emoji` غير فارغ.
     - يزيل `remove: true` تفاعل emoji المحدد هذا.
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - استخدم أداة `feishu_reaction` مع الإجراءات `add` و`remove` و`list`.
     - يتطلب الإجراءان add/remove الحقل `emoji_type`؛ كما يتطلب remove أيضًا `reaction_id`.
+
   </Accordion>
 
   <Accordion title="Signal">
     - يتم التحكم في إشعارات التفاعلات الواردة بواسطة `channels.signal.reactionNotifications`: تؤدي القيمة `"off"` إلى تعطيلها، وتؤدي `"own"` ‏(الافتراضي) إلى إصدار أحداث عندما يتفاعل المستخدمون مع رسائل الروبوت، وتؤدي `"all"` إلى إصدار أحداث لجميع التفاعلات.
+
   </Accordion>
 </AccordionGroup>
 

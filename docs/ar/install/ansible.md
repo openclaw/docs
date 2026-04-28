@@ -184,6 +184,7 @@ cd openclaw-ansible
     - تأكد أولًا من أنك تستطيع الوصول عبر Tailscale VPN
     - يُسمح دائمًا بالوصول عبر SSH ‏(المنفذ 22)
     - لا يمكن الوصول إلى Gateway إلا عبر Tailscale حسب التصميم
+
   </Accordion>
   <Accordion title="الخدمة لا تبدأ">
     ```bash

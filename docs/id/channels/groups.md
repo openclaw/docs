@@ -32,6 +32,7 @@ Artinya: pengirim yang masuk allowlist dapat memicu OpenClaw dengan me-mention-n
 - **Akses DM** dikendalikan oleh `*.allowFrom`.
 - **Akses grup** dikendalikan oleh `*.groupPolicy` + allowlist (`*.groups`, `*.groupAllowFrom`).
 - **Pemicu balasan** dikendalikan oleh gating mention (`requireMention`, `/activation`).
+
 </Note>
 
 Alur cepat (apa yang terjadi pada pesan grup):
@@ -56,6 +57,7 @@ Secara default, OpenClaw memprioritaskan perilaku chat normal dan mempertahankan
   <Accordion title="Perilaku saat ini bersifat khusus per channel">
     - Beberapa channel sudah menerapkan pemfilteran berbasis pengirim untuk konteks tambahan di jalur tertentu (misalnya Slack thread seeding, lookup balasan/thread Matrix).
     - Channel lain masih meneruskan konteks kutipan/balasan/forward sebagaimana diterima.
+
   </Accordion>
   <Accordion title="Arah hardening (direncanakan)">
     - `contextVisibility: "all"` (default) mempertahankan perilaku saat ini sebagaimana diterima.
@@ -231,6 +233,7 @@ Kendalikan bagaimana pesan grup/room ditangani per channel:
     - Allowlist Telegram dapat mencocokkan id pengguna (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) atau username (`"@alice"` atau `"alice"`); prefix tidak peka huruf besar/kecil.
     - Default adalah `groupPolicy: "allowlist"`; jika allowlist grup Anda kosong, pesan grup diblokir.
     - Keamanan runtime: ketika blok provider sama sekali tidak ada (`channels.<provider>` tidak ada), kebijakan grup fallback ke mode fail-closed (biasanya `allowlist`) alih-alih mewarisi `channels.defaults.groupPolicy`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ Membalas pesan bot dihitung sebagai mention implisit ketika channel mendukung me
     - Grup tempat balasan senyap diizinkan memperlakukan giliran model yang benar-benar kosong atau hanya berisi reasoning sebagai senyap, setara dengan `NO_REPLY`. Chat langsung tetap memperlakukan balasan kosong sebagai giliran agen yang gagal.
     - Default Discord berada di `channels.discord.guilds."*"` (dapat dioverride per guild/channel).
     - Konteks riwayat grup dibungkus secara seragam di semua channel dan bersifat **pending-only** (pesan dilewati karena gating mention); gunakan `messages.groupChat.historyLimit` untuk default global dan `channels.<channel>.historyLimit` (atau `channels.<channel>.accounts.*.historyLimit`) untuk override. Tetapkan `0` untuk menonaktifkan.
+
   </Accordion>
 </AccordionGroup>
 

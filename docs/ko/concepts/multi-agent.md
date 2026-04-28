@@ -244,11 +244,13 @@ openclaw agents list --bindings
   <Accordion title="타이브레이킹 및 AND 의미론">
     - 같은 계층에서 여러 바인딩이 일치하면 config 순서상 첫 번째 항목이 우선합니다.
     - 바인딩이 여러 match 필드(예: `peer` + `guildId`)를 설정하면, 지정된 모든 필드가 필요합니다(`AND` 의미론).
+
   </Accordion>
   <Accordion title="계정 범위 세부 사항">
     - `accountId`를 생략한 바인딩은 기본 계정에만 일치합니다.
     - 모든 계정에 대한 채널 전체 대체에는 `accountId: "*"`를 사용하세요.
     - 나중에 같은 에이전트에 대해 같은 바인딩을 명시적 account id와 함께 추가하면, OpenClaw는 기존의 채널 전용 바인딩을 복제하는 대신 계정 범위 바인딩으로 업그레이드합니다.
+
   </Accordion>
 </AccordionGroup>
 

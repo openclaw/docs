@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - Standardmuster für Stammverzeichnisse: `/Users/*/Library/Messages/Attachments`
     - SCP verwendet eine strikte Host-Key-Prüfung (`StrictHostKeyChecking=yes`)
     - die Größe ausgehender Medien verwendet `channels.imessage.mediaMaxMb` (Standard 16 MB)
+
   </Accordion>
 
   <Accordion title="Ausgehendes Chunking">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - Chunk-Modus: `channels.imessage.chunkMode`
       - `length` (Standard)
       - `newline` (absatzorientiertes Aufteilen zuerst)
+
   </Accordion>
 
   <Accordion title="Adressierungsformate">

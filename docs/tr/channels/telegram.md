@@ -212,6 +212,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
       - `-1001234567890` gibi negatif Telegram grup veya süper grup sohbet kimliklerini `channels.telegram.groups` altına koyun.
       - İzin verilen bir grubun içindeki hangi kişilerin botu tetikleyebileceğini sınırlamak istediğinizde `8734062810` gibi Telegram kullanıcı kimliklerini `groupAllowFrom` altına koyun.
       - İzin verilen bir grubun herhangi bir üyesinin botla konuşabilmesini istediğinizde yalnızca `groupAllowFrom: ["*"]` kullanın.
+
     </Warning>
 
   </Tab>

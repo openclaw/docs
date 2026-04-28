@@ -307,6 +307,7 @@ Kuruluma güvenli dış modüllerde setup-safe dışa aktarımlar tutan paketlen
     - Kanal devre dışıdır ama kurulum/ilk kurulum yüzeylerine ihtiyaç vardır.
     - Kanal etkindir ama yapılandırılmamıştır.
     - Ertelenmiş yükleme etkindir (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="setupEntry'nin kaydetmesi gerekenler">
     - Kanal Plugin nesnesi (`defineSetupPluginEntry` aracılığıyla).
@@ -321,6 +322,7 @@ Kuruluma güvenli dış modüllerde setup-safe dışa aktarımlar tutan paketlen
     - Arka plan hizmetleri.
     - Ağır çalışma zamanı içe aktarımları (kriptografi, SDK'ler).
     - Yalnızca başlangıçtan sonra gereken gateway yöntemleri.
+
   </Accordion>
 </AccordionGroup>
 

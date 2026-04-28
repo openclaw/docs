@@ -123,6 +123,7 @@ Contoh skema:
   - `deny` — blokir semua permintaan exec host.
   - `allowlist` — izinkan hanya perintah yang ada di allowlist.
   - `full` — izinkan semuanya (setara dengan elevated).
+
 </ParamField>
 
 ### `exec.ask`
@@ -131,6 +132,7 @@ Contoh skema:
   - `off` — jangan pernah memunculkan prompt.
   - `on-miss` — munculkan prompt hanya saat allowlist tidak cocok.
   - `always` — munculkan prompt pada setiap perintah. Kepercayaan tahan lama `allow-always` **tidak** menekan prompt saat mode ask efektif adalah `always`.
+
 </ParamField>
 
 ### `askFallback`
@@ -141,6 +143,7 @@ Contoh skema:
 - `deny` — blokir.
 - `allowlist` — izinkan hanya jika allowlist cocok.
 - `full` — izinkan.
+
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
@@ -187,6 +190,7 @@ YOLO adalah perilaku host default kecuali Anda memperketatnya secara eksplisit:
 - YOLO memilih **bagaimana** exec host disetujui: `security=full` plus `ask=off`.
 - Dalam mode YOLO, OpenClaw **tidak** menambahkan gate persetujuan obfuscation perintah heuristik atau lapisan penolakan script-preflight di atas kebijakan exec host yang dikonfigurasi.
 - `auto` tidak membuat perutean gateway menjadi override gratis dari sesi tersandbox. Permintaan per-panggilan `host=node` diizinkan dari `auto`; `host=gateway` hanya diizinkan dari `auto` saat tidak ada runtime sandbox yang aktif. Untuk default non-auto yang stabil, setel `tools.exec.host` atau gunakan `/exec host=...` secara eksplisit.
+
 </Warning>
 
 Provider berbasis CLI yang mengekspos mode izin noninteraktif mereka sendiri
@@ -265,6 +269,7 @@ EOF
 - `openclaw exec-policy` tidak menyinkronkan persetujuan node.
 - `openclaw exec-policy set --host node` ditolak.
 - Persetujuan exec node diambil dari node saat runtime, sehingga pembaruan yang ditargetkan ke node harus menggunakan `openclaw approvals --node ...`.
+
 </Note>
 
 ### Shortcut hanya-sesi
@@ -316,6 +321,7 @@ daftar bin Skill. Nonaktifkan ini jika Anda menginginkan allowlist manual yang k
 - Ini adalah **allowlist kenyamanan implisit**, terpisah dari entri allowlist path manual.
 - Ini ditujukan untuk lingkungan operator tepercaya di mana Gateway dan node berada dalam batas kepercayaan yang sama.
 - Jika Anda memerlukan kepercayaan eksplisit yang ketat, pertahankan `autoAllowSkills: false` dan gunakan hanya entri allowlist path manual.
+
 </Warning>
 
 ## Safe bins dan penerusan persetujuan

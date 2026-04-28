@@ -307,6 +307,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - 渠道已禁用，但仍需要设置/新手引导界面。
     - 渠道已启用，但尚未配置。
     - 已启用延迟加载（`deferConfiguredChannelFullLoadUntilAfterListen`）。
+
   </Accordion>
   <Accordion title="setupEntry 必须注册什么">
     - 渠道插件对象（通过 `defineSetupPluginEntry`）。
@@ -321,6 +322,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - 后台服务。
     - 沉重的运行时导入（加密、SDK）。
     - 仅在启动后才需要的 Gateway 网关方法。
+
   </Accordion>
 </AccordionGroup>
 

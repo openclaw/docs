@@ -135,6 +135,7 @@ El catálogo alternativo incluido contiene las referencias actuales de Chutes:
     - Tanto el descubrimiento con clave de API como con OAuth usan el mismo id de proveedor `chutes`.
     - Los modelos de Chutes se registran como `chutes/<model-id>`.
     - Si el descubrimiento falla al arrancar, el catálogo estático incluido se usa automáticamente.
+
   </Accordion>
 </AccordionGroup>
 

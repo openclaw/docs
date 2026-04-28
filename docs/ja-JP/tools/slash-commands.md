@@ -137,6 +137,7 @@ x-i18n:
     - `/session idle <duration|off>` と `/session max-age <duration|off>` はスレッドバインディングの有効期限を管理します。
     - `/export-session [path]` は現在のセッションを HTML にエクスポートします。別名: `/export`。
     - `/export-trajectory [path]` は現在のセッションの JSONL [trajectory bundle](/ja-JP/tools/trajectory) をエクスポートします。別名: `/trajectory`。
+
   </Accordion>
   <Accordion title="モデルと実行制御">
     - `/think <level>` は thinking level を設定します。選択肢はアクティブモデルのプロバイダプロファイルに依存します。一般的な level は `off`、`minimal`、`low`、`medium`、`high` で、`xhigh`、`adaptive`、`max`、または二値の `on` のようなカスタム level はサポートされている場合にのみ利用できます。別名: `/thinking`、`/t`。
@@ -149,6 +150,7 @@ x-i18n:
     - `/model [name|#|status]` はモデルの表示または設定を行います。
     - `/models [provider] [page] [limit=<n>|size=<n>|all]` はプロバイダ一覧、または特定プロバイダのモデル一覧を表示します。
     - `/queue <mode>` はキュー動作（`steer`、`interrupt`、`followup`、`collect`、`steer-backlog`）と、`debounce:2s cap:25 drop:summarize` のようなオプションを管理します。
+
   </Accordion>
   <Accordion title="検出とステータス">
     - `/help` は短いヘルプ要約を表示します。
@@ -160,12 +162,14 @@ x-i18n:
     - `/context [list|detail|json]` はコンテキストがどのように組み立てられるかを説明します。
     - `/whoami` はあなたの sender id を表示します。別名: `/id`。
     - `/usage off|tokens|full|cost` はレスポンスごとの使用量フッターを制御するか、ローカルコスト要約を表示します。
+
   </Accordion>
   <Accordion title="Skills、allowlist、承認">
     - `/skill <name> [input]` は名前で Skill を実行します。
     - `/allowlist [list|add|remove] ...` は allowlist エントリを管理します。テキスト専用です。
     - `/approve <id> <decision>` は exec 承認プロンプトを解決します。
     - `/btw <question>` は将来のセッションコンテキストを変更せずにサイドクエスチョンを行います。[BTW](/ja-JP/tools/btw) を参照してください。
+
   </Accordion>
   <Accordion title="Subagents と ACP">
     - `/subagents list|kill|log|info|send|steer|spawn` は現在のセッションの sub-agent 実行を管理します。
@@ -175,6 +179,7 @@ x-i18n:
     - `/agents` は現在のセッションのスレッドバインドされたエージェントを一覧表示します。
     - `/kill <id|#|all>` は実行中の 1 つまたはすべての sub-agent を中断します。
     - `/steer <id|#> <message>` は実行中の sub-agent にステアリングを送信します。別名: `/tell`。
+
   </Accordion>
   <Accordion title="owner 専用の書き込みと管理">
     - `/config show|get|set|unset` は `openclaw.json` を読み書きします。owner 専用です。`commands.config: true` が必要です。
@@ -183,6 +188,7 @@ x-i18n:
     - `/debug show|set|unset|reset` はランタイム専用設定上書きを管理します。owner 専用です。`commands.debug: true` が必要です。
     - `/restart` は有効な場合に OpenClaw を再起動します。デフォルト: 有効。無効にするには `commands.restart: false` を設定します。
     - `/send on|off|inherit` は送信ポリシーを設定します。owner 専用です。
+
   </Accordion>
   <Accordion title="音声、TTS、チャネル制御">
     - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` は TTS を制御します。[TTS](/ja-JP/tools/tts) を参照してください。
@@ -190,6 +196,7 @@ x-i18n:
     - `/bash <command>` はホスト shell コマンドを実行します。テキスト専用です。別名: `! <command>`。`commands.bash: true` と `tools.elevated` allowlist が必要です。
     - `!poll [sessionId]` はバックグラウンド bash ジョブを確認します。
     - `!stop [sessionId]` はバックグラウンド bash ジョブを停止します。
+
   </Accordion>
 </AccordionGroup>
 
@@ -238,11 +245,13 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
     - `/restart` はデフォルトで有効です。無効にするには `commands.restart: false` を設定します。
     - `/plugins install <spec>` は `openclaw plugins install` と同じ Plugin spec を受け付けます: ローカルパス/アーカイブ、npm package、または `clawhub:<pkg>`。
     - `/plugins enable|disable` は Plugin 設定を更新し、再起動を求める場合があります。
+
   </Accordion>
   <Accordion title="チャネル固有の動作">
     - Discord 専用ネイティブコマンド: `/vc join|leave|status` は voice channel を制御します（テキストでは利用不可）。`join` には guild と選択された voice/stage channel が必要です。`channels.discord.voice` とネイティブコマンドが必要です。
     - Discord のスレッドバインディングコマンド（`/focus`、`/unfocus`、`/agents`、`/session idle`、`/session max-age`）には、有効な thread bindings（`session.threadBindings.enabled` および/または `channels.discord.threadBindings.enabled`）が必要です。
     - ACP コマンドリファレンスとランタイム動作: [ACP agents](/ja-JP/tools/acp-agents)。
+
   </Accordion>
   <Accordion title="verbose / trace / fast / reasoning の安全性">
     - `/verbose` はデバッグと追加可視性を目的としています。通常使用では **off** のままにしてください。
@@ -251,6 +260,7 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
     - `/fast` はプロバイダ固有です。OpenAI/OpenAI Codex ではネイティブ Responses エンドポイント上の `service_tier=priority` に対応し、OAuth 認証済みで `api.anthropic.com` に送られるトラフィックを含む直接の公開 Anthropic リクエストでは `service_tier=auto` または `standard_only` に対応します。[OpenAI](/ja-JP/providers/openai) と [Anthropic](/ja-JP/providers/anthropic) を参照してください。
     - ツール失敗要約は必要に応じて引き続き表示されますが、詳細な失敗テキストは `/verbose` が `on` または `full` の場合にのみ含まれます。
     - `/reasoning`、`/verbose`、`/trace` はグループ設定では危険です。意図していない内部 reasoning、ツール出力、Plugin 診断を露出する可能性があります。特にグループチャットではオフのままを推奨します。
+
   </Accordion>
   <Accordion title="モデル切り替え">
     - `/model` は新しいセッションモデルを即座に永続化します。
@@ -258,6 +268,7 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
     - すでに実行がアクティブな場合、OpenClaw は live 切り替えを保留として記録し、クリーンなリトライポイントでのみ新しいモデルに再起動します。
     - ツール動作または返信出力がすでに始まっている場合、その保留切り替えは後のリトライ機会または次のユーザーターンまで待機することがあります。
     - ローカル TUI では、`/crestodian [request]` は通常のエージェント TUI から Crestodian に戻ります。これはメッセージチャネルの rescue mode とは別で、リモート設定権限を付与するものではありません。
+
   </Accordion>
   <Accordion title="高速パスとインラインショートカット">
     - **高速パス:** allowlist 登録済み送信者からのコマンドのみのメッセージは即座に処理されます（キュー + モデルをバイパス）。
@@ -266,6 +277,7 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
       - 例: `hey /status` は status 返信を発生させ、残りのテキストは通常フローを続行します。
     - 現在対象: `/help`、`/commands`、`/status`、`/whoami`（`/id`）。
     - 未認可のコマンドのみメッセージは黙って無視され、インラインの `/...` トークンはプレーンテキストとして扱われます。
+
   </Accordion>
   <Accordion title="Skill コマンドとネイティブ引数">
     - **Skill コマンド:** `user-invocable` Skills は slash command として公開されます。名前は `a-z0-9_` にサニタイズされ（最大 32 文字）、衝突には数値サフィックスが付きます（例: `_2`）。
@@ -274,6 +286,7 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
       - Skills は任意で `command-dispatch: tool` を宣言し、コマンドを直接ツールへルーティングできます（決定的、モデルなし）。
       - 例: `/prose`（OpenProse Plugin）— [OpenProse](/ja-JP/prose) を参照してください。
     - **ネイティブコマンド引数:** Discord は動的オプションに autocomplete を使用します（必須引数を省略した場合はボタンメニューも表示）。Telegram と Slack は、コマンドが選択肢をサポートしていて引数を省略した場合にボタンメニューを表示します。動的選択肢は対象セッションモデルに対して解決されるため、`/think` level のようなモデル固有オプションはそのセッションの `/model` 上書きに従います。
+
   </Accordion>
 </AccordionGroup>
 
@@ -411,6 +424,7 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
 - `/plugins list` と `/plugins show` は、現在のワークスペースとディスク上の設定に対して実際の Plugin 検出を使用します。
 - `/plugins enable|disable` は Plugin 設定のみを更新します。Plugin のインストールやアンインストールは行いません。
 - enable/disable の変更後は、適用のために gateway を再起動してください。
+
 </Note>
 
 ## サーフェス注記
@@ -423,6 +437,7 @@ Dock コマンドは、ネイティブコマンドサポートを持つチャネ
       - Slack: `agent:<agentId>:slack:slash:<userId>`（prefix は `channels.slack.slashCommand.sessionPrefix` で設定可能）
       - Telegram: `telegram:slash:<userId>`（`CommandTargetSessionKey` を介してチャットセッションを対象にします）
     - **`/stop`** は現在のチャットセッションを対象にし、現在の実行を中断できるようにします。
+
   </Accordion>
   <Accordion title="Slack 固有事項">
     `channels.slack.slashCommand` は、単一の `/openclaw` 形式コマンド向けとして今もサポートされています。`commands.native` を有効にする場合は、組み込みコマンドごとに 1 つの Slack slash command を作成する必要があります（名前は `/help` と同じです）。Slack 向けのコマンド引数メニューは ephemeral な Block Kit ボタンとして配信されます。

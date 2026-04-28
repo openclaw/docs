@@ -307,6 +307,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - 채널이 비활성화되어 있지만 설정/온보딩 표면이 필요한 경우
     - 채널이 활성화되어 있지만 아직 구성되지 않은 경우
     - 지연 로딩이 활성화된 경우 (`deferConfiguredChannelFullLoadUntilAfterListen`)
+
   </Accordion>
   <Accordion title="setupEntry가 반드시 등록해야 하는 것">
     - 채널 Plugin 객체 (`defineSetupPluginEntry`를 통해)
@@ -321,6 +322,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - 백그라운드 서비스
     - 무거운 런타임 import (crypto, SDK)
     - 시작 이후에만 필요한 Gateway 메서드
+
   </Accordion>
 </AccordionGroup>
 

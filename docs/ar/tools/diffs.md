@@ -199,6 +199,7 @@ x-i18n:
       - `fileQuality: "hq"`: حد أقصى 14 MP (14,000,000 بكسل مُصيَّر).
       - `fileQuality: "print"`: حد أقصى 24 MP (24,000,000 بكسل مُصيَّر).
       - كما أن PDF له حد أقصى يبلغ 50 صفحة.
+
   </Accordion>
 </AccordionGroup>
 
@@ -414,11 +415,13 @@ x-i18n:
     - خنق الإخفاقات البعيدة عند تفعيل الوصول البعيد:
       - 40 إخفاقًا لكل 60 ثانية
       - حظر لمدة 60 ثانية (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="تقوية تصيير الملفات">
     - يكون توجيه طلبات متصفح لقطات الشاشة مرفوضًا افتراضيًا ما لم يُسمح به.
     - لا يُسمح إلا بأصول العارض المحلية من `http://127.0.0.1/plugins/diffs/assets/*`.
     - يتم حظر طلبات الشبكة الخارجية.
+
   </Accordion>
 </AccordionGroup>
 
@@ -436,6 +439,7 @@ x-i18n:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="الرجوع حسب المنصة">
     الرجوع إلى اكتشاف الأمر/المسار بحسب المنصة.
@@ -457,6 +461,7 @@ x-i18n:
     - `Invalid baseUrl: ...` — استخدم أصل `http(s)` مع مسار اختياري، ومن دون query أو hash.
     - `{field} exceeds maximum size (...)` — قلّل حجم الحمولة.
     - رفض Patch كبيرة — قلّل عدد ملفات Patch أو عدد الأسطر الكلي.
+
   </Accordion>
   <Accordion title="إمكانية الوصول إلى العارض">
     - يُحل عنوان URL الخاص بالعارض إلى `127.0.0.1` افتراضيًا.
@@ -469,6 +474,7 @@ x-i18n:
       - فضّل `mode: "file"` أو `mode: "both"` عندما تحتاج فقط إلى مرفق، أو
       - فعّل عمدًا `security.allowRemoteViewer` واضبط `viewerBaseUrl` الخاص بـ Plugin أو مرّر `baseUrl` خاصًا بوكيل/عام عندما تحتاج إلى عنوان URL قابل للمشاركة للعارض
     - فعّل `security.allowRemoteViewer` فقط عندما تنوي السماح بوصول خارجي إلى العارض.
+
   </Accordion>
   <Accordion title="صف الأسطر غير المعدّلة لا يحتوي على زر توسيع">
     قد يحدث هذا مع إدخال Patch عندما لا تحمل Patch سياقًا قابلًا للتوسيع. هذا سلوك متوقع ولا يشير إلى فشل في العارض.
@@ -477,6 +483,7 @@ x-i18n:
     - انتهت صلاحية العنصر بسبب TTL.
     - تم تغيير الرمز أو المسار.
     - أزال التنظيف البيانات القديمة.
+
   </Accordion>
 </AccordionGroup>
 

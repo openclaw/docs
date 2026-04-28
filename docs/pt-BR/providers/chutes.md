@@ -137,6 +137,7 @@ O catálogo de fallback integrado inclui refs atuais do Chutes:
     - A descoberta por chave de API e por OAuth usam o mesmo ID de provider `chutes`.
     - Modelos do Chutes são registrados como `chutes/<model-id>`.
     - Se a descoberta falhar na inicialização, o catálogo estático integrado é usado automaticamente.
+
   </Accordion>
 </AccordionGroup>
 

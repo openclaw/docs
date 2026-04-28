@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - การตรวจสอบความใหม่ของโปรโตคอล UI (สร้าง Control UI ใหม่เมื่อ schema ของโปรโตคอลใหม่กว่า)
     - การตรวจสอบสถานะ + พรอมป์ให้รีสตาร์ต
     - สรุปสถานะ Skills (ใช้งานได้/ขาดหาย/ถูกบล็อก) และสถานะ Plugin
+
   </Accordion>
   <Accordion title="คอนฟิกและ migration">
     - การทำคอนฟิกให้เป็นมาตรฐานสำหรับค่ารูปแบบเดิม
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - migration ของคีย์สัญญา manifest ของ Plugin แบบเดิม (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`)
     - migration ของที่เก็บ Cron แบบเดิม (`jobId`, `schedule.cron`, ฟิลด์ delivery/payload ระดับบนสุด, `provider` ใน payload, งาน Webhook fallback แบบ `notify: true` อย่างง่าย)
     - migration ของนโยบายรันไทม์ agent แบบเดิมไปเป็น `agents.defaults.agentRuntime` และ `agents.list[].agentRuntime`
+
   </Accordion>
   <Accordion title="สถานะและความถูกต้อง">
     - การตรวจสอบไฟล์ล็อกของเซสชันและการล้างล็อกที่ค้าง
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - การตรวจสอบสิทธิ์ของไฟล์คอนฟิก (chmod 600) เมื่อรันในเครื่อง
     - สถานะ auth ของโมเดล: ตรวจสอบการหมดอายุของ OAuth, สามารถรีเฟรชโทเค็นที่ใกล้หมดอายุ และรายงานสถานะคูลดาวน์/ปิดใช้งานของ auth profile
     - การตรวจจับไดเรกทอรี workspace เพิ่มเติม (`~/openclaw`)
+
   </Accordion>
   <Accordion title="Gateway, บริการ และ supervisor">
     - การซ่อมแซมอิมเมจ sandbox เมื่อเปิดใช้ sandboxing
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - การตรวจสอบคอนฟิก supervisor (launchd/systemd/schtasks) พร้อมตัวเลือกการซ่อมแซม
     - การตรวจสอบแนวทางปฏิบัติที่ดีของรันไทม์ Gateway (Node เทียบกับ Bun, พาธของ version manager)
     - การวินิจฉัยพอร์ต Gateway ชนกัน (ค่าเริ่มต้น `18789`)
+
   </Accordion>
   <Accordion title="Auth, ความปลอดภัย และการจับคู่">
     - คำเตือนด้านความปลอดภัยสำหรับนโยบาย DM แบบเปิด
     - การตรวจสอบ auth ของ Gateway สำหรับโหมด local token (มีตัวเลือกสร้าง token เมื่อไม่มีแหล่ง token; ไม่เขียนทับคอนฟิก token SecretRef)
     - การตรวจจับปัญหาการจับคู่อุปกรณ์ (คำขอจับคู่ครั้งแรกที่รอดำเนินการ, การอัปเกรด role/scope ที่รอดำเนินการ, ความคลาดเคลื่อนของแคช local device-token ที่ค้างเก่า, และความคลาดเคลื่อนด้าน auth ของระเบียน paired)
+
   </Accordion>
   <Accordion title="Workspace และ shell">
     - การตรวจสอบ systemd linger บน Linux
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - การตรวจสอบความพร้อมของผู้ให้บริการ embedding สำหรับการค้นหา Memory (โมเดล local, API key ระยะไกล หรือไบนารี QMD)
     - การตรวจสอบการติดตั้งจากซอร์ส (pnpm workspace ไม่ตรงกัน, ขาด asset ของ UI, ขาดไบนารี tsx)
     - เขียนคอนฟิกและ metadata ของ wizard ที่อัปเดตแล้ว
+
   </Accordion>
 </AccordionGroup>
 

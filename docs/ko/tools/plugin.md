@@ -147,6 +147,7 @@ plugin 검색이 실패합니다.
   <Accordion title="메모리 plugin">
     - `memory-core` — 번들 메모리 검색(기본값: `plugins.slots.memory`)
     - `memory-lancedb` — 필요 시 설치되는 장기 메모리(auto-recall/capture 포함) (`plugins.slots.memory = "memory-lancedb"`로 설정)
+
   </Accordion>
 
   <Accordion title="음성 provider(기본 활성화)">
@@ -156,6 +157,7 @@ plugin 검색이 실패합니다.
   <Accordion title="기타">
     - `browser` — browser 도구, `openclaw browser` CLI, `browser.request` gateway 메서드, browser 런타임, 기본 browser control service를 위한 번들 browser plugin(기본 활성화, 교체 전에 비활성화해야 함)
     - `copilot-proxy` — VS Code Copilot Proxy 브리지(기본 비활성화)
+
   </Accordion>
 </AccordionGroup>
 
@@ -205,6 +207,7 @@ plugin의 참여를 허용한다는 뜻입니다. 이미 실행 중인 원격 Ga
   - **비활성화됨**: plugin은 존재하지만 활성화 규칙으로 인해 꺼져 있습니다. config는 유지됩니다.
   - **누락됨**: config가 plugin id를 참조하지만 검색에서 찾지 못했습니다.
   - **잘못됨**: plugin은 존재하지만 config가 선언된 스키마와 일치하지 않습니다.
+
 </Accordion>
 
 ## 검색 및 우선순위

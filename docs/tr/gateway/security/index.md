@@ -302,6 +302,7 @@ node-rol Control UI oturumlarına uzanmaz.
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="Yapılandırma şemasındaki tüm `dangerous*` / `dangerously*` anahtarları">

@@ -93,6 +93,7 @@ Também existe uma trilha de preenchimento histórico fundamentado para trabalho
     - `memory rem-backfill --path ...` grava entradas reversíveis de diário fundamentado em `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` prepara candidatos duráveis fundamentados no mesmo armazenamento de evidências de curto prazo que a fase profunda normal já usa.
     - `memory rem-backfill --rollback` e `--rollback-short-term` removem esses artefatos preparados de backfill sem tocar em entradas comuns de diário ou no recall ativo normal de curto prazo.
+
   </Accordion>
 </AccordionGroup>
 

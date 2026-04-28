@@ -175,6 +175,7 @@ Steuern Sie, wie Agenten Nachrichten verarbeiten:
     - Alle aufgeführten Agenten verarbeiten die Nachricht.
     - Jeder Agent hat seinen eigenen Sitzungsschlüssel und einen isolierten Kontext.
     - Agenten verarbeiten parallel (Standard) oder sequenziell.
+
   </Step>
   <Step title="Wenn nicht in der Broadcast-Liste">
     Es gilt das normale Routing (erste passende Bindung).

@@ -93,6 +93,7 @@ Es gibt außerdem einen fundierten Backfill-Pfad für Überprüfungs- und Wieder
     - `memory rem-backfill --path ...` schreibt reversible fundierte Tagebucheinträge in `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` stellt fundierte dauerhafte Kandidaten in denselben Kurzzeit-Evidenzspeicher bereit, den die normale Deep-Phase bereits verwendet.
     - `memory rem-backfill --rollback` und `--rollback-short-term` entfernen diese bereitgestellten Backfill-Artefakte, ohne gewöhnliche Tagebucheinträge oder den aktuellen kurzfristigen Recall zu verändern.
+
   </Accordion>
 </AccordionGroup>
 

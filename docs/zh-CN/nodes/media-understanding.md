@@ -68,6 +68,7 @@ OpenClaw 可以在回复流水线运行前，**总结入站媒体**（图像/音
       - `attachments` 策略（`mode`、`maxAttachments`、`prefer`）
       - `scope`（可选，按渠道/聊天类型/会话键进行限制）
     - `tools.media.concurrency`：能力并发运行的最大数量（默认 **2**）。
+
   </Accordion>
 </AccordionGroup>
 
@@ -164,6 +165,7 @@ OpenClaw 可以在回复流水线运行前，**总结入站媒体**（图像/音
     - 如果 Gateway 网关/WebChat 主模型仅支持文本，图像附件会保留为卸载的 `media://inbound/*` 引用，这样图像/PDF 工具或已配置的图像模型仍可检查它们，而不会丢失附件。
     - 显式的 `openclaw infer image describe --model <provider/model>` 请求有所不同：它们会直接运行该支持图像的 provider/模型，包括像 `ollama/qwen2.5vl:7b` 这样的 Ollama 引用。
     - 如果 `<capability>.enabled: true` 但未配置任何模型，OpenClaw 会在活动回复模型的提供商支持该能力时尝试使用**活动回复模型**。
+
   </Accordion>
 </AccordionGroup>
 
@@ -266,6 +268,7 @@ OpenClaw 可以在回复流水线运行前，**总结入站媒体**（图像/音
 
 - `minimax` 和 `minimax-portal` 图像理解来自插件自有的 `MiniMax-VL-01` 媒体 provider。
 - 内置的 MiniMax 文本目录仍然从纯文本开始；显式的 `models.providers.minimax` 条目会具体化为支持图像的 M2.7 聊天引用。
+
 </Note>
 
 ## 模型选择指南
@@ -299,6 +302,7 @@ OpenClaw 可以在回复流水线运行前，**总结入站媒体**（图像/音
     - 该附件提取路径会有意省略较长的 `SECURITY NOTICE:` 横幅，以避免让媒体提示词过于臃肿；但边界标记和元数据仍会保留。
     - 如果文件没有可提取的文本，OpenClaw 会注入 `[No extractable text]`。
     - 如果 PDF 在此路径中回退为渲染后的页面图像，媒体提示词会保留占位文本 `[PDF content rendered to images; images not forwarded to model]`，因为该附件提取步骤转发的是文本块，而不是渲染后的 PDF 图像。
+
   </Accordion>
 </AccordionGroup>
 

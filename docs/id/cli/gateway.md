@@ -51,6 +51,7 @@ openclaw gateway run
     - Bind di luar loopback tanpa auth akan diblokir (pagar pengaman).
     - `SIGUSR1` memicu restart dalam proses jika diizinkan (`commands.restart` aktif secara default; atur `commands.restart: false` untuk memblokir restart manual, sementara gateway tool/config apply/update tetap diizinkan).
     - Handler `SIGINT`/`SIGTERM` menghentikan proses gateway, tetapi tidak memulihkan status terminal kustom apa pun. Jika Anda membungkus CLI dengan TUI atau input mode-raw, pulihkan terminal sebelum keluar.
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ Semua perintah kueri menggunakan RPC WebSocket.
     - Default: dapat dibaca manusia (berwarna di TTY).
     - `--json`: JSON yang dapat dibaca mesin (tanpa styling/spinner).
     - `--no-color` (atau `NO_COLOR=1`): nonaktifkan ANSI sambil mempertahankan tata letak yang dapat dibaca manusia.
+
   </Tab>
   <Tab title="Opsi bersama">
     - `--url <url>`: URL WebSocket Gateway.
@@ -136,6 +138,7 @@ Semua perintah kueri menggunakan RPC WebSocket.
     - `--password <password>`: password Gateway.
     - `--timeout <ms>`: timeout/anggaran waktu (bervariasi per perintah).
     - `--expect-final`: tunggu respons "final" (panggilan agen).
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="Privasi dan perilaku bundle">
     - Catatan menyimpan metadata operasional: nama peristiwa, jumlah, ukuran byte, pembacaan memori, status antrean/sesi, nama channel/plugin, dan ringkasan sesi yang disunting. Catatan ini tidak menyimpan teks chat, body Webhook, output tool, body permintaan atau respons mentah, token, cookie, nilai rahasia, hostname, atau ID sesi mentah. Atur `diagnostics.enabled: false` untuk menonaktifkan perekam sepenuhnya.
     - Pada exit Gateway fatal, timeout shutdown, dan kegagalan startup restart, OpenClaw menulis snapshot diagnostik yang sama ke `~/.openclaw/logs/stability/openclaw-stability-*.json` saat perekam memiliki peristiwa. Periksa bundle terbaru dengan `openclaw gateway stability --bundle latest`; `--limit`, `--type`, dan `--since-seq` juga berlaku untuk output bundle.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - Gunakan `--require-rpc` dalam skrip dan otomatisasi ketika layanan yang mendengarkan saja tidak cukup dan Anda juga memerlukan panggilan RPC scope baca yang sehat.
     - `--deep` menambahkan pemindaian best-effort untuk instalasi launchd/systemd/schtasks tambahan. Ketika beberapa layanan mirip gateway terdeteksi, output yang dapat dibaca manusia mencetak petunjuk pembersihan dan memperingatkan bahwa sebagian besar penyiapan seharusnya menjalankan satu gateway per mesin.
     - Output yang dapat dibaca manusia mencakup path log file yang telah di-resolve plus snapshot path/validitas config CLI-vs-service untuk membantu mendiagnosis drift profil atau state-dir.
+
   </Accordion>
   <Accordion title="Pemeriksaan auth-drift systemd Linux">
     - Pada instalasi systemd Linux, pemeriksaan drift auth membaca nilai `Environment=` dan `EnvironmentFile=` dari unit (termasuk `%h`, path dalam kutip, beberapa file, dan file opsional `-`).
     - Pemeriksaan drift me-resolve SecretRef `gateway.auth.token` menggunakan env runtime gabungan (env perintah layanan lebih dulu, lalu fallback env proses).
     - Jika auth token tidak efektif aktif (eksplisit `gateway.auth.mode` bernilai `password`/`none`/`trusted-proxy`, atau mode tidak diatur saat password dapat menang dan tidak ada kandidat token yang dapat menang), pemeriksaan token-drift melewati resolusi token config.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read` berarti koneksi berhasil tetapi RPC scope-baca terbatas. Ini dilaporkan sebagai reachability **degraded**, bukan kegagalan penuh.
     - Seperti `gateway status`, probe menggunakan ulang auth perangkat cache yang ada tetapi tidak membuat identitas perangkat atau status pairing untuk pertama kali.
     - Kode keluar non-zero hanya ketika tidak ada target yang di-probe dapat dijangkau.
+
   </Accordion>
   <Accordion title="Output JSON">
     Tingkat atas:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: lebih dari satu target dapat dijangkau; ini tidak biasa kecuali Anda sengaja menjalankan profil terisolasi, seperti rescue bot.
     - `auth_secretref_unresolved`: SecretRef auth yang dikonfigurasi tidak dapat di-resolve untuk target yang gagal.
     - `probe_scope_limited`: koneksi WebSocket berhasil, tetapi probe baca dibatasi oleh tidak adanya `operator.read`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -434,6 +442,7 @@ openclaw gateway uninstall
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
     - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
     - `gateway uninstall|start|stop|restart`: `--json`
+
   </Accordion>
   <Accordion title="Catatan instalasi dan siklus hidup layanan">
     - `gateway install` mendukung `--port`, `--runtime`, `--token`, `--force`, `--json`.
@@ -444,6 +453,7 @@ openclaw gateway uninstall
     - Dalam mode auth inferred, `OPENCLAW_GATEWAY_PASSWORD` yang hanya ada di shell tidak melonggarkan persyaratan token install; gunakan config yang tahan lama (`gateway.auth.password` atau config `env`) saat menginstal layanan terkelola.
     - Jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi dan `gateway.auth.mode` tidak diatur, install diblokir sampai mode diatur secara eksplisit.
     - Perintah siklus hidup menerima `--json` untuk scripting.
+
   </Accordion>
 </AccordionGroup>
 
@@ -490,6 +500,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - CLI memindai `local.` plus domain wide-area yang dikonfigurasi saat diaktifkan.
 - `wsUrl` dalam output JSON diturunkan dari endpoint layanan yang telah di-resolve, bukan dari petunjuk TXT-only seperti `lanHost` atau `tailnetDns`.
 - Pada mDNS `local.`, `sshPort` dan `cliPath` hanya disiarkan ketika `discovery.mdns.mode` adalah `full`. Wide-area DNS-SD tetap menulis `cliPath`; `sshPort` juga tetap opsional di sana.
+
 </Note>
 
 ## Terkait

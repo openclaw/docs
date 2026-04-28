@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - `owner/repo` のようなGitHubリポジトリ短縮記法
     - `https://github.com/owner/repo` のようなGitHubリポジトリURL
     - git URL
+
   </Tab>
   <Tab title="リモートマーケットプレイスのルール">
     GitHubまたはgitから読み込まれるリモートマーケットプレイスでは、Pluginエントリはクローンされたマーケットプレイスリポジトリ内にとどまる必要があります。OpenClawは、そのリポジトリからの相対パスソースを受け入れ、リモートマニフェスト内のHTTP(S)、絶対パス、git、GitHub、およびその他のパス以外のPluginソースは拒否します。

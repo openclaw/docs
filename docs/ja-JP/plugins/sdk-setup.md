@@ -308,6 +308,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - channel が無効化されているが、セットアップ/オンボーディング用サーフェスが必要な場合。
     - channel は有効だが未設定の場合。
     - 遅延ロードが有効な場合（`deferConfiguredChannelFullLoadUntilAfterListen`）。
+
   </Accordion>
   <Accordion title="setupEntry が登録しなければならないもの">
     - channel Plugin オブジェクト（`defineSetupPluginEntry` 経由）。
@@ -322,6 +323,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - バックグラウンドサービス。
     - 重いランタイム import（crypto、SDK）。
     - 起動後にのみ必要な gateway method。
+
   </Accordion>
 </AccordionGroup>
 

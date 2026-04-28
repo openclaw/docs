@@ -138,6 +138,7 @@ openclaw logs --follow
     - `incomplete turn detected ... stopReason=stop payloads=0` → backend завершив запит Chat Completions, але не повернув видимий користувачу текст відповіді асистента для цього ходу. OpenClaw один раз повторює безпечні для відтворення порожні OpenAI-сумісні ходи; сталі збої зазвичай означають, що backend видає порожній/нетекстовий вміст або пригнічує текст фінальної відповіді.
     - прямі малі запити успішні, але запуски агентів OpenClaw завершуються аварією backend/моделі (наприклад, Gemma на деяких збірках `inferrs`) → імовірно, транспорт OpenClaw уже налаштований правильно; проблема в тому, що backend не справляється з більшим форматом prompt середовища виконання агента.
     - після вимкнення tools кількість збоїв зменшується, але вони не зникають → схеми tools були частиною навантаження, але залишкова проблема все ще пов’язана з місткістю моделі/сервера вищого рівня або з багом backend.
+
   </Accordion>
   <Accordion title="Варіанти виправлення">
     1. Встановіть `compat.requiresStringContent: true` для backend Chat Completions, що підтримують лише рядковий вміст.
@@ -214,6 +215,7 @@ openclaw gateway status --json
     - `too many failed authentication attempts (retry later)` від loopback-клієнта browser-origin → повторні збої з того самого нормалізованого `Origin` тимчасово блокуються; інше localhost-джерело використовує окремий bucket.
     - повторюваний `unauthorized` після цієї повторної спроби → розсинхронізація спільного токена/токена пристрою; оновіть конфігурацію токена і за потреби повторно схваліть/ротуйте токен пристрою.
     - `gateway connect failed:` → неправильна ціль host/port/url.
+
   </Accordion>
 </AccordionGroup>
 
@@ -295,6 +297,7 @@ openclaw gateway status --deep   # також перевіряє сервіси 
     - `Other gateway-like services detected (best effort)` → існують застарілі або паралельні юніти launchd/systemd/schtasks. У більшості конфігурацій на одній машині має працювати один gateway; якщо вам справді потрібно більше одного, ізолюйте порти + конфігурацію/стан/робочий простір. Див. [/gateway#multiple-gateways-same-host](/uk/gateway#multiple-gateways-same-host).
     - `System-level OpenClaw gateway service detected` від doctor → існує системний юніт systemd, тоді як сервіс рівня користувача відсутній. Видаліть або вимкніть дублікат, перш ніж дозволяти doctor встановити сервіс користувача, або встановіть `OPENCLAW_SERVICE_REPAIR_POLICY=external`, якщо системний юніт є запланованим супервізором.
     - `Gateway service port does not match current gateway config` → установлений супервізор усе ще фіксує старий `--port`. Виконайте `openclaw doctor --fix` або `openclaw gateway install --force`, а потім перезапустіть сервіс gateway.
+
   </Accordion>
 </AccordionGroup>
 
@@ -330,6 +333,7 @@ openclaw doctor
     - Активну конфігурацію було відновлено з останньої перевіреної справної копії.
     - Наступний хід main-agent отримає попередження не переписувати відхилену конфігурацію бездумно.
     - Якщо всі помилки перевірки були в межах `plugins.entries.<id>...`, OpenClaw не відновлюватиме весь файл. Локальні збої Plugin залишаються помітними, а не пов’язані з ними користувацькі налаштування лишаються в активній конфігурації.
+
   </Accordion>
   <Accordion title="Перевірка і виправлення">
     ```bash
@@ -346,6 +350,7 @@ openclaw doctor
     - `Config write rejected:` → запис намагався прибрати обов’язкову структуру, різко зменшити файл або зберегти невалідну конфігурацію.
     - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` або `size-drop-vs-last-good:*` → під час запуску поточний файл було визнано пошкодженим, бо він утратив поля або розмір порівняно з останньою відомою справною резервною копією.
     - `Config last-known-good promotion skipped` → кандидат містив замасковані заповнювачі секретів, наприклад `***`.
+
   </Accordion>
   <Accordion title="Варіанти виправлення">
     1. Залиште відновлену активну конфігурацію, якщо вона правильна.
@@ -449,6 +454,7 @@ openclaw logs --follow
     - `heartbeat skipped` з `reason=no-tasks-due` → `HEARTBEAT.md` містить блок `tasks:`, але на цей тік жодне із завдань не підлягає виконанню.
     - `heartbeat: unknown accountId` → недійсний ID облікового запису для цілі доставки Heartbeat.
     - `heartbeat skipped` з `reason=dm-blocked` → ціль Heartbeat була визначена як призначення у стилі DM, тоді як `agents.defaults.heartbeat.directPolicy` (або перевизначення для конкретного агента) має значення `block`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -517,12 +523,14 @@ openclaw doctor
     - `browser.cdpUrl must be http(s) or ws(s)` → налаштований URL CDP використовує непідтримувану схему, наприклад `file:` або `ftp:`.
     - `browser.cdpUrl has invalid port` → налаштований URL CDP має неправильний або неприпустимий порт.
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → у поточному встановленні gateway відсутня залежність середовища виконання `playwright-core` для вбудованого browser Plugin; виконайте `openclaw doctor --fix`, а потім перезапустіть gateway. Знімки ARIA і базові знімки сторінки все ще можуть працювати, але навігація, AI-знімки, знімки елементів за CSS-селекторами та експорт PDF залишаться недоступними.
+
   </Accordion>
   <Accordion title="Ознаки Chrome MCP / existing-session">
     - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session ще не зміг приєднатися до вибраного каталогу даних браузера. Відкрийте сторінку inspect браузера, увімкніть віддалене налагодження, тримайте браузер відкритим, схваліть перший запит на приєднання, а потім повторіть спробу. Якщо стан входу в обліковий запис не потрібен, віддайте перевагу керованому профілю `openclaw`.
     - `No Chrome tabs found for profile="user"` → для профілю приєднання Chrome MCP немає відкритих локальних вкладок Chrome.
     - `Remote CDP for profile "<name>" is not reachable` → налаштований віддалений endpoint CDP недосяжний з хоста gateway.
     - `Browser attachOnly is enabled ... not reachable` або `Browser attachOnly is enabled and CDP websocket ... is not reachable` → для профілю лише з приєднанням немає досяжної цілі, або HTTP endpoint відповів, але WebSocket CDP усе одно не вдалося відкрити.
+
   </Accordion>
   <Accordion title="Ознаки element / screenshot / upload">
     - `fullPage is not supported for element screenshots` → запит на знімок екрана поєднав `--full-page` з `--ref` або `--element`.
@@ -534,6 +542,7 @@ openclaw doctor
     - `existing-session evaluate does not support timeoutMs overrides.` → не вказуйте `timeoutMs` для `act:evaluate` у профілях `profile="user"` / Chrome MCP existing-session, або використайте керований/CDP-профіль браузера, коли потрібен власний timeout.
     - `response body is not supported for existing-session profiles yet.` → `responsebody` усе ще потребує керованого браузера або сирого профілю CDP.
     - застарілі перевизначення viewport / dark-mode / locale / offline у профілях attach-only або віддаленого CDP → виконайте `openclaw browser stop --browser-profile <name>`, щоб закрити активний сеанс керування і звільнити стан емуляції Playwright/CDP без перезапуску всього gateway.
+
   </Accordion>
 </AccordionGroup>
 

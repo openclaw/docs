@@ -44,14 +44,17 @@ x-i18n:
       - 구성만
       - 구성 + 자격 증명 + 세션
       - 전체 초기화(workspace도 제거)
+
   </Step>
   <Step title="모델 및 인증">
     - 전체 옵션 매트릭스는 [인증 및 모델 옵션](#auth-and-model-options)에 있습니다.
+
   </Step>
   <Step title="Workspace">
     - 기본값은 `~/.openclaw/workspace`입니다(구성 가능).
     - 첫 실행 bootstrap ritual에 필요한 workspace 파일을 생성합니다.
     - workspace 레이아웃: [Agent workspace](/ko/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - 포트, 바인드, 인증 모드, Tailscale 노출 여부를 묻습니다.
@@ -65,6 +68,7 @@ x-i18n:
       - `--gateway-token`과 함께 사용할 수 없습니다.
     - 모든 로컬 프로세스를 완전히 신뢰하는 경우에만 인증을 비활성화하세요.
     - loopback이 아닌 바인드도 여전히 인증이 필요합니다.
+
   </Step>
   <Step title="채널">
     - [WhatsApp](/ko/channels/whatsapp): 선택적 QR 로그인
@@ -76,6 +80,7 @@ x-i18n:
     - [BlueBubbles](/ko/channels/bluebubbles): iMessage에 권장됨. 서버 URL + 비밀번호 + Webhook
     - [iMessage](/ko/channels/imessage): 레거시 `imsg` CLI 경로 + DB 액세스
     - DM 보안: 기본값은 페어링입니다. 첫 DM은 코드를 보내며, `openclaw pairing approve <channel> <code>`로 승인하거나 allowlist를 사용할 수 있습니다.
+
   </Step>
   <Step title="데몬 설치">
     - macOS: LaunchAgent
@@ -87,18 +92,22 @@ x-i18n:
       - 작업 생성이 거부되면 OpenClaw는 사용자별 Startup 폴더 로그인 항목으로 대체하고 즉시 Gateway를 시작합니다.
       - Scheduled Task는 더 나은 supervisor 상태를 제공하므로 여전히 선호됩니다.
     - 런타임 선택: Node(권장, WhatsApp 및 Telegram에 필요). Bun은 권장되지 않습니다.
+
   </Step>
   <Step title="상태 점검">
     - 필요하면 Gateway를 시작하고 `openclaw health`를 실행합니다.
     - `openclaw status --deep`는 상태 출력에 라이브 Gateway 상태 프로브를 추가하며, 지원되는 경우 채널 프로브도 포함합니다.
+
   </Step>
   <Step title="Skills">
     - 사용 가능한 Skills를 읽고 요구 사항을 확인합니다.
     - 노드 관리자 선택 가능: npm, pnpm 또는 bun.
     - 선택적 종속성을 설치합니다(일부는 macOS에서 Homebrew 사용).
+
   </Step>
   <Step title="마무리">
     - iOS, Android, macOS 앱 옵션을 포함한 요약 및 다음 단계.
+
   </Step>
 </Steps>
 
@@ -125,6 +134,7 @@ Control UI 자산이 없으면 wizard는 이를 빌드하려고 시도합니다.
 - 검색 힌트:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## 인증 및 모델 옵션

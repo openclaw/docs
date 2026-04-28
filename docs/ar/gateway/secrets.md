@@ -58,6 +58,7 @@ x-i18n:
         - تكون `gateway.remote.token` نشطة عندما يمكن أن تفوز مصادقة token ولا يكون هناك env/auth token مهيأ.
         - تكون `gateway.remote.password` نشطة فقط عندما يمكن أن تفوز مصادقة password ولا يكون هناك env/auth password مهيأ.
     - يكون SecretRef الخاص بـ `gateway.auth.token` غير نشط لتحليل مصادقة بدء التشغيل عندما تكون `OPENCLAW_GATEWAY_TOKEN` مضبوطة، لأن مدخل token من env يفوز في وقت التشغيل هذا.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ x-i18n:
   <Accordion title="موفّر Env">
     - قائمة سماح اختيارية عبر `allowlist`.
     - تؤدي قيم env المفقودة/الفارغة إلى فشل التحليل.
+
   </Accordion>
   <Accordion title="موفّر File">
     - يقرأ ملفًا محليًا من `path`.
@@ -173,6 +175,7 @@ x-i18n:
     - يتوقع `mode: "singleValue"` أن يكون معرّف المرجع هو `"value"` ويعيد محتويات الملف.
     - يجب أن يجتاز المسار فحوصات الملكية/الأذونات.
     - ملاحظة الإخفاق المغلق في Windows: إذا لم يكن تحقق ACL متاحًا لمسار ما، يفشل التحليل. وبالنسبة إلى المسارات الموثوقة فقط، اضبط `allowInsecurePath: true` على ذلك المزوّد لتجاوز فحوصات أمان المسار.
+
   </Accordion>
   <Accordion title="موفّر Exec">
     - يشغّل مسار binary مطلقًا مهيأ، من دون shell.

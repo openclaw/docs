@@ -175,6 +175,7 @@ Controlla come gli agenti elaborano i messaggi:
     - Tutti gli agenti elencati elaborano il messaggio.
     - Ogni agente ha la propria chiave di sessione e un contesto isolato.
     - Gli agenti elaborano in parallelo (predefinito) o in sequenza.
+
   </Step>
   <Step title="Se non è nell'elenco di trasmissione">
     Si applica il routing normale (primo binding corrispondente).

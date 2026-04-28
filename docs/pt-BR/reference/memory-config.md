@@ -546,6 +546,7 @@ Para comportamento conceitual e comandos slash, veja [Dreaming](/pt-BR/concepts/
 - O Dreaming grava o estado da máquina em `memory/.dreams/`.
 - O Dreaming grava saída narrativa legível por humanos em `DREAMS.md` (ou `dreams.md`, se já existir).
 - A política e os limites das fases light/deep/REM são comportamento interno, não configuração voltada ao usuário.
+
 </Note>
 
 ## Relacionado

@@ -154,6 +154,7 @@ Remplacez-le par message avec `/think:<level>` ou dans les paramètres du modèl
 Documentation Anthropic associée :
 - [Réflexion adaptative](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Réflexion étendue](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## Mise en cache des prompts
@@ -216,6 +217,7 @@ OpenClaw prend en charge la fonctionnalité de mise en cache des prompts d’Ant
     - Les modèles Anthropic Claude sur Bedrock (`amazon-bedrock/*anthropic.claude*`) acceptent le passage direct de `cacheRetention` lorsqu’il est configuré.
     - Les modèles Bedrock non Anthropic sont forcés à `cacheRetention: "none"` à l’exécution.
     - Les valeurs par défaut intelligentes pour les clés API définissent aussi `cacheRetention: "short"` pour les références Claude-sur-Bedrock lorsqu’aucune valeur explicite n’est définie.
+
   </Accordion>
 </AccordionGroup>
 
@@ -248,6 +250,7 @@ OpenClaw prend en charge la fonctionnalité de mise en cache des prompts d’Ant
     - Injecté uniquement pour les requêtes directes vers `api.anthropic.com`. Les routes proxy laissent `service_tier` inchangé.
     - Des paramètres `serviceTier` ou `service_tier` explicites remplacent `/fast` lorsque les deux sont définis.
     - Sur les comptes sans capacité Priority Tier, `service_tier: "auto"` peut se résoudre en `standard`.
+
     </Note>
 
   </Accordion>

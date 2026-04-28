@@ -150,11 +150,13 @@ sans bloquer les contributeurs légitimes.
     - Les motifs de signalement sont obligatoires et enregistrés.
     - Chaque utilisateur peut avoir jusqu’à 20 signalements actifs à la fois.
     - Les Skills avec plus de 3 signalements uniques sont automatiquement masqués par défaut.
+
   </Accordion>
   <Accordion title="Modération">
     - Les modérateurs peuvent voir les Skills masqués, les réafficher, les supprimer ou bannir des utilisateurs.
     - L’abus de la fonctionnalité de signalement peut entraîner un bannissement du compte.
     - Vous souhaitez devenir modérateur ? Demandez sur le Discord OpenClaw et contactez un modérateur ou un mainteneur.
+
   </Accordion>
 </AccordionGroup>
 
@@ -354,6 +356,7 @@ dans les chemins de chargement des plugins.
     - Chaque publication crée une nouvelle `SkillVersion` **semver**.
     - Les tags (comme `latest`) pointent vers une version ; déplacer des tags permet de revenir en arrière.
     - Les journaux des modifications sont attachés par version et peuvent être vides lors de la synchronisation ou de la publication de mises à jour.
+
   </Accordion>
   <Accordion title="Changements locaux vs versions du registre">
     Les mises à jour comparent le contenu local du Skill aux versions du registre à l’aide d’un
@@ -370,6 +373,7 @@ dans les chemins de chargement des plugins.
   <Accordion title="Stockage et fichier de verrouillage">
     - Les Skills installés sont enregistrés dans `.clawhub/lock.json` sous votre workdir.
     - Les jetons d’authentification sont stockés dans le fichier de configuration de la CLI ClawHub (remplacement via `CLAWHUB_CONFIG_PATH`).
+
   </Accordion>
   <Accordion title="Télémétrie (comptes d’installation)">
     Lorsque vous exécutez `clawhub sync` en étant connecté, la CLI envoie un instantané minimal

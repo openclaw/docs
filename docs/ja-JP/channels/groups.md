@@ -55,6 +55,7 @@ otherwise -> reply
   <Accordion title="現在の動作はチャネルごとに異なります">
     - 一部のチャネルでは、特定の経路において補足コンテキストに送信者ベースのフィルタリングがすでに適用されています（たとえばSlackのスレッドシード、Matrixの返信/スレッド参照）。
     - 他のチャネルでは、引用/返信/転送コンテキストは受信時のまま渡されます。
+
   </Accordion>
   <Accordion title="ハードニングの方向性（予定）">
     - `contextVisibility: "all"`（デフォルト）は、現在の受信時そのままの動作を維持します。
@@ -230,6 +231,7 @@ otherwise -> reply
     - Telegramの許可リストは、ユーザーID（`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`）またはユーザー名（`"@alice"` または `"alice"`）に一致できます。プレフィックスは大文字小文字を区別しません。
     - デフォルトは `groupPolicy: "allowlist"` です。グループ許可リストが空の場合、グループメッセージはブロックされます。
     - 実行時の安全性: プロバイダーブロックが完全に欠けている場合（`channels.<provider>` が存在しない場合）、グループポリシーは `channels.defaults.groupPolicy` を継承するのではなく、フェイルクローズドモード（通常は `allowlist`）にフォールバックします。
+
   </Accordion>
 </AccordionGroup>
 
@@ -298,6 +300,7 @@ otherwise -> reply
     - サイレント返信が許可されているグループでは、きれいな空応答または推論のみのモデルターンはサイレントとして扱われ、`NO_REPLY` と同等です。ダイレクトチャットでは、空の返信は引き続き失敗したエージェントターンとして扱われます。
     - Discordのデフォルトは `channels.discord.guilds."*"` にあります（guild/channel ごとに上書き可能）。
     - グループ履歴コンテキストは、チャネル間で統一的にラップされ、**pending-only**（メンションゲーティングによってスキップされたメッセージのみ）です。グローバルデフォルトには `messages.groupChat.historyLimit` を使用し、上書きには `channels.<channel>.historyLimit`（または `channels.<channel>.accounts.*.historyLimit`）を使用します。無効にするには `0` を設定してください。
+
   </Accordion>
 </AccordionGroup>
 

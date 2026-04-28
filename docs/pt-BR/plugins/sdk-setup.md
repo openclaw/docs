@@ -307,6 +307,7 @@ Canais empacotados do workspace que mantêm exportações seguras para setup em 
     - O canal está desabilitado, mas precisa de superfícies de setup/onboarding.
     - O canal está habilitado, mas não configurado.
     - O carregamento adiado está habilitado (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="O que setupEntry deve registrar">
     - O objeto do Plugin de canal (via `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ Canais empacotados do workspace que mantêm exportações seguras para setup em 
     - Serviços em segundo plano.
     - Importações pesadas de runtime (criptografia, SDKs).
     - Métodos de gateway necessários apenas após a inicialização.
+
   </Accordion>
 </AccordionGroup>
 

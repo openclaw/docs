@@ -407,12 +407,14 @@ Praktyczny efekt jest taki, że OpenClaw z góry wie, który plugin posiada któ
     - należące do rdzenia
     - wielokrotnego użytku przez wiele pluginów
     - możliwe do wykorzystania przez kanały/funkcje bez wiedzy o dostawcy
+
   </Tab>
   <Tab title="Złe kontrakty">
     - polityka specyficzna dla dostawcy ukryta w rdzeniu
     - jednorazowe furtki dla pluginów omijające rejestr
     - kod kanału sięgający bezpośrednio do implementacji dostawcy
     - doraźne obiekty środowiska uruchomieniowego, które nie są częścią `OpenClawPluginApi` ani `api.runtime`
+
   </Tab>
 </Tabs>
 
@@ -428,6 +430,7 @@ Konsekwencje:
 - natywny plugin może rejestrować narzędzia, handlery sieciowe, hooki i usługi
 - błąd natywnego pluginu może spowodować awarię lub destabilizację gateway
 - złośliwy natywny plugin jest równoważny dowolnemu wykonaniu kodu w procesie OpenClaw
+
 </Warning>
 
 Zgodne pakiety są domyślnie bezpieczniejsze, ponieważ OpenClaw obecnie traktuje je jako pakiety metadanych/treści. W bieżących wydaniach oznacza to głównie dołączone Skills.
@@ -443,6 +446,7 @@ Dla nazw pakietów dołączonych przestrzeni roboczej zachowaj identyfikator plu
 - Plugin przestrzeni roboczej z tym samym identyfikatorem co dołączony plugin celowo przesłania dołączoną kopię, gdy ten plugin przestrzeni roboczej jest włączony/znajduje się na liście dozwolonych.
 - Jest to normalne i przydatne przy lokalnym rozwoju, testowaniu poprawek i hotfiksach.
 - Zaufanie dołączonego pluginu jest rozstrzygane na podstawie snapshotu źródła — manifestu i kodu na dysku w momencie ładowania — a nie na podstawie metadanych instalacji. Uszkodzony lub podmieniony rekord instalacji nie może po cichu rozszerzyć powierzchni zaufania dołączonego pluginu ponad to, co deklaruje rzeczywiste źródło.
+
 </Note>
 
 ## Granica eksportu

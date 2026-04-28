@@ -139,6 +139,7 @@ Katalog fallback bundled mencakup ref Chutes saat ini:
     - Discovery API-key dan OAuth sama-sama menggunakan id provider `chutes`.
     - Model Chutes didaftarkan sebagai `chutes/<model-id>`.
     - Jika discovery gagal saat startup, katalog statis bundled digunakan secara otomatis.
+
   </Accordion>
 </AccordionGroup>
 

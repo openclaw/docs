@@ -371,6 +371,7 @@ Quando o próprio número vinculado também está presente em `allowFrom`, as pr
     - limite padrão de fragmento: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - o modo `newline` prefere limites de parágrafo (linhas em branco) e depois usa fragmentação segura por tamanho como fallback
+
   </Accordion>
 
   <Accordion title="Comportamento de mídia de saída">
@@ -383,6 +384,7 @@ Quando o próprio número vinculado também está presente em `allowFrom`, as pr
     - a reprodução de GIF animado é compatível via `gifPlayback: true` em envios de vídeo
     - legendas são aplicadas ao primeiro item de mídia ao enviar payloads de resposta com múltiplas mídias, exceto que mensagens de voz PTT enviam primeiro o áudio e o texto visível separadamente porque clientes do WhatsApp não renderizam legendas de mensagens de voz de forma consistente
     - a origem da mídia pode ser HTTP(S), `file://` ou caminhos locais
+
   </Accordion>
 
   <Accordion title="Limites de tamanho de mídia e comportamento de fallback">
@@ -391,6 +393,7 @@ Quando o próprio número vinculado também está presente em `allowFrom`, as pr
     - substituições por conta usam `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - imagens são otimizadas automaticamente (redimensionamento/varredura de qualidade) para caber nos limites
     - em caso de falha no envio de mídia, o fallback do primeiro item envia um aviso em texto em vez de descartar a resposta silenciosamente
+
   </Accordion>
 </AccordionGroup>
 
@@ -475,12 +478,14 @@ Observações de comportamento:
     - IDs de conta vêm de `channels.whatsapp.accounts`
     - seleção de conta padrão: `default` se presente; caso contrário, o primeiro ID de conta configurado (ordenado)
     - IDs de conta são normalizados internamente para busca
+
   </Accordion>
 
   <Accordion title="Caminhos de credenciais e compatibilidade legada">
     - caminho atual de autenticação: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - arquivo de backup: `creds.json.bak`
     - a autenticação padrão legada em `~/.openclaw/credentials/` ainda é reconhecida/migrada para fluxos de conta padrão
+
   </Accordion>
 
   <Accordion title="Comportamento de logout">

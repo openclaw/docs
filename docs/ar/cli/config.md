@@ -56,6 +56,7 @@ openclaw config validate --json
     - ترث فروع `anyOf` / `oneOf` / `allOf` أيضًا بيانات التعريف نفسها للتوثيق عند وجود وثائق حقول مطابقة.
     - بيانات تعريف مخطط Plugin + القناة الحية بأفضل جهد عندما يمكن تحميل manifestات وقت التشغيل.
     - مخطط احتياطي نظيف حتى عندما تكون الإعدادات الحالية غير صالحة.
+
   </Accordion>
   <Accordion title="Runtime RPC ذو صلة">
     يعيد `config.schema.lookup` مسار إعدادات واحدًا مُطبَّعًا مع عقدة مخطط سطحية (`title` و`description` و`type` و`enum` و`const` والحدود الشائعة)، وبيانات تعريف تلميحات UI المطابقة، وملخصات العناصر الفرعية المباشرة. استخدمه للتعمق المقيّد بالمسار في Control UI أو العملاء المخصصين.
@@ -191,15 +192,18 @@ openclaw config set secrets.providers.vaultfile \
   <Accordion title="أعلام شائعة">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`، `exec`)
+
   </Accordion>
   <Accordion title="مزوّد Env ‏(`--provider-source env`)">
     - `--provider-allowlist <ENV_VAR>` (قابل للتكرار)
+
   </Accordion>
   <Accordion title="مزوّد الملف ‏(`--provider-source file`)">
     - `--provider-path <path>` (مطلوب)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="مزوّد Exec ‏(`--provider-source exec`)">
     - `--provider-command <path>` (مطلوب)
@@ -212,6 +216,7 @@ openclaw config set secrets.providers.vaultfile \
     - `--provider-trusted-dir <path>` (قابل للتكرار)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - تُتخطى فحوصات Exec SecretRef افتراضيًا أثناء التشغيل التجريبي لتجنب الآثار الجانبية للأوامر.
     - استخدم `--allow-exec` مع `--dry-run` للاشتراك في فحوصات Exec SecretRef (قد يؤدي هذا إلى تنفيذ أوامر المزوّد).
     - `--allow-exec` مخصص للتشغيل التجريبي فقط ويعطي خطأ إذا استُخدم بدون `--dry-run`.
+
   </Accordion>
   <Accordion title="حقول `--dry-run --json`">
     يطبع `--dry-run --json` تقريرًا قابلاً للقراءة آليًا:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: لا يمكن حاليًا حل provider/ref المشار إليه (متغير بيئة مفقود، أو مؤشر ملف غير صالح، أو فشل مزوّد exec، أو عدم تطابق بين provider/source).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: تخطى التشغيل التجريبي مراجع exec؛ أعد التشغيل مع `--allow-exec` إذا كنت تحتاج إلى التحقق من قابلية حل exec.
     - في وضع الدفعات، أصلح الإدخالات الفاشلة وأعد تشغيل `--dry-run` قبل الكتابة.
+
   </Accordion>
 </AccordionGroup>
 

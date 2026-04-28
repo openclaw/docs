@@ -184,6 +184,7 @@ Bu işlem idempotenttir ve birden fazla kez çalıştırmak güvenlidir.
     - Önce Tailscale VPN üzerinden erişebildiğinizden emin olun
     - SSH erişimine (port 22) her zaman izin verilir
     - Gateway’e tasarım gereği yalnızca Tailscale üzerinden erişilebilir
+
   </Accordion>
   <Accordion title="Hizmet başlamıyor">
     ```bash

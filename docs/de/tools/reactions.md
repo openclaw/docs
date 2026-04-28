@@ -36,35 +36,42 @@ mit der Aktion `react` verwendet. Das Verhalten von Reaktionen variiert je nach 
   <Accordion title="Discord und Slack">
     - Ein leeres `emoji` entfernt alle Reaktionen des Bots auf die Nachricht.
     - `remove: true` entfernt nur das angegebene Emoji.
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - Ein leeres `emoji` entfernt die Reaktionen der App auf die Nachricht.
     - `remove: true` entfernt nur das angegebene Emoji.
+
   </Accordion>
 
   <Accordion title="Telegram">
     - Ein leeres `emoji` entfernt die Reaktionen des Bots.
     - `remove: true` entfernt ebenfalls Reaktionen, erfordert aber für die Tool-Validierung weiterhin ein nicht-leeres `emoji`.
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - Ein leeres `emoji` entfernt die Reaktion des Bots.
     - `remove: true` wird intern auf ein leeres Emoji abgebildet (erfordert im Tool-Aufruf weiterhin `emoji`).
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - Erfordert ein nicht-leeres `emoji`.
     - `remove: true` entfernt diese spezifische Emoji-Reaktion.
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - Verwenden Sie das Tool `feishu_reaction` mit den Aktionen `add`, `remove` und `list`.
     - Hinzufügen/Entfernen erfordert `emoji_type`; Entfernen erfordert zusätzlich `reaction_id`.
+
   </Accordion>
 
   <Accordion title="Signal">
     - Benachrichtigungen über eingehende Reaktionen werden über `channels.signal.reactionNotifications` gesteuert: `"off"` deaktiviert sie, `"own"` (Standard) erzeugt Ereignisse, wenn Benutzer auf Bot-Nachrichten reagieren, und `"all"` erzeugt Ereignisse für alle Reaktionen.
+
   </Accordion>
 </AccordionGroup>
 

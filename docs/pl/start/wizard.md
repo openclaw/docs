@@ -61,9 +61,11 @@ Onboarding zaczyna się od wyboru **QuickStart** (ustawienia domyślne) albo **A
     - Domyślna izolacja DM: lokalny onboarding zapisuje `session.dmScope: "per-channel-peer"`, jeśli nie jest ustawione. Szczegóły: [CLI Setup Reference](/pl/start/wizard-cli-reference#outputs-and-internals)
     - Ekspozycja Tailscale **Wyłączona**
     - Domyślnie Telegram + WhatsApp DM używają **allowlist** (zostaniesz poproszony o podanie swojego numeru telefonu)
+
   </Tab>
   <Tab title="Advanced (pełna kontrola)">
     - Ujawnia każdy krok (tryb, obszar roboczy, gateway, kanały, daemon, Skills).
+
   </Tab>
 </Tabs>
 

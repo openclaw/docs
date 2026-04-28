@@ -146,6 +146,7 @@ peer を持つ TypeScript ソース file に解決される必要があります
   <Accordion title="メモリ Plugin">
     - `memory-core` — 同梱メモリ検索（`plugins.slots.memory` によるデフォルト）
     - `memory-lancedb` — 自動リコール/キャプチャ付きのオンデマンドインストール長期メモリ（`plugins.slots.memory = "memory-lancedb"` を設定）
+
   </Accordion>
 
   <Accordion title="Speech provider（デフォルトで有効）">
@@ -155,6 +156,7 @@ peer を持つ TypeScript ソース file に解決される必要があります
   <Accordion title="その他">
     - `browser` — browser tool、`openclaw browser` CLI、`browser.request` gateway method、browser runtime、およびデフォルト browser control service のための同梱 browser Plugin（デフォルトで有効。置き換える前に無効化してください）
     - `copilot-proxy` — VS Code Copilot Proxy bridge（デフォルトでは無効）
+
   </Accordion>
 </AccordionGroup>
 
@@ -196,6 +198,7 @@ child が同じ Plugin コードで再起動済みであることを証明する
   - **Disabled**: Plugin は存在するが、有効化ルールにより無効化されている。config は保持される。
   - **Missing**: config が Plugin id を参照しているが、検出で見つからなかった。
   - **Invalid**: Plugin は存在するが、その config が宣言された schema と一致しない。
+
 </Accordion>
 
 ## 検出と優先順位

@@ -117,6 +117,7 @@ Referensi model bawaan default adalah `qianfan/deepseek-v3.2`. Anda hanya perlu 
     - Pastikan API key Anda dimulai dengan `bce-v3/ALTAK-` dan akses API Qianfan telah diaktifkan di konsol Baidu Cloud.
     - Jika model tidak terdaftar, pastikan akun Anda telah mengaktifkan layanan Qianfan.
     - Base URL default adalah `https://qianfan.baidubce.com/v2`. Ubah hanya jika Anda menggunakan endpoint atau proxy kustom.
+
   </Accordion>
 </AccordionGroup>
 

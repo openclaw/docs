@@ -133,6 +133,7 @@ openclaw logs --follow
     - `messages[...].content: invalid type: sequence, expected a string` → バックエンドが構造化されたChat Completionsコンテンツパーツを拒否しています。修正: `models.providers.<provider>.models[].compat.requiresStringContent: true` を設定します。
     - 直接の小さなリクエストは成功するが、OpenClawのagent実行がバックエンド/モデルクラッシュで失敗する（たとえば一部の `inferrs` ビルド上のGemma） → OpenClawの転送自体はすでに正しい可能性が高く、バックエンドがより大きなagentランタイムプロンプト形式で失敗しています。
     - toolsを無効化すると失敗は減るが消えない → tool schemaが負荷の一部だっただけで、残る問題は依然として上流のモデル/サーバー容量またはバックエンドバグです。
+
   </Accordion>
   <Accordion title="修正オプション">
     1. 文字列のみのChat Completionsバックエンドに対して `compat.requiresStringContent: true` を設定します。
@@ -209,6 +210,7 @@ openclaw gateway status --json
     - browser originのloopbackクライアントからの `too many failed authentication attempts (retry later)` → 同じ正規化済み `Origin` からの繰り返し失敗は一時的にロックアウトされます。別のlocalhost originは別バケットを使用します。
     - そのリトライ後も `unauthorized` が繰り返される → 共有token/device tokenのドリフトです。トークン設定を更新し、必要ならdevice tokenを再承認/ローテーションしてください。
     - `gateway connect failed:` → host/port/urlターゲットが誤っています。
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,6 +290,7 @@ openclaw gateway status --deep   # システムレベルのサービスもスキ
     - `refusing to bind gateway ... without auth` → 有効なgateway認証経路（token/password、または設定済みのtrusted-proxy）がない状態での非loopback bindです。
     - `another gateway instance is already listening` / `EADDRINUSE` → ポート競合です。
     - `Other gateway-like services detected (best effort)` → 古いまたは並列の launchd/systemd/schtasks unit が存在します。ほとんどの構成ではマシンごとに1つのgatewayを維持すべきです。複数必要な場合は、ポート + config/state/workspace を分離してください。参照: [/gateway#multiple-gateways-same-host](/ja-JP/gateway#multiple-gateways-same-host)。
+
   </Accordion>
 </AccordionGroup>
 
@@ -323,6 +326,7 @@ openclaw doctor
     - アクティブ設定は、最後に検証済みだったlast-known-goodコピーから復元されました。
     - 次のmain-agentターンでは、拒否された設定をむやみに書き直さないよう警告されます。
     - すべての検証問題が `plugins.entries.<id>...` 配下にあった場合、OpenClawはファイル全体を復元しません。Pluginローカルの失敗は明示的なままにしつつ、関係ないユーザー設定はアクティブ設定に残ります。
+
   </Accordion>
   <Accordion title="確認と修復">
     ```bash
@@ -339,6 +343,7 @@ openclaw doctor
     - `Config write rejected:` → 書き込みが、必須構造の削除、大幅なファイル縮小、または無効設定の永続化を試みました。
     - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good`, または `size-drop-vs-last-good:*` → 起動時に、現在ファイルがlast-known-goodバックアップと比べてフィールドやサイズを失っていたため、破損と見なされました。
     - `Config last-known-good promotion skipped` → 候補に `***` のようなマスク済みシークレットプレースホルダーが含まれていました。
+
   </Accordion>
   <Accordion title="修正オプション">
     1. 復元されたアクティブ設定が正しければ、そのまま維持します。
@@ -442,6 +447,7 @@ openclaw logs --follow
     - `heartbeat skipped` と `reason=no-tasks-due` → `HEARTBEAT.md` に `tasks:` ブロックはありますが、このtick時点で期限のタスクがありません。
     - `heartbeat: unknown accountId` → Heartbeat配信ターゲットのaccount idが無効です。
     - `heartbeat skipped` と `reason=dm-blocked` → HeartbeatターゲットがDM形式の宛先に解決されましたが、`agents.defaults.heartbeat.directPolicy`（またはagentごとの上書き）が `block` に設定されています。
+
   </Accordion>
 </AccordionGroup>
 
@@ -510,12 +516,14 @@ openclaw doctor
     - `browser.cdpUrl must be http(s) or ws(s)` → 設定されたCDP URLが `file:` や `ftp:` のような未対応スキームを使っています。
     - `browser.cdpUrl has invalid port` → 設定されたCDP URLのポートが不正、または範囲外です。
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → 現在のgatewayインストールには、バンドルされたbrowser Pluginの `playwright-core` ランタイム依存関係がありません。`openclaw doctor --fix` を実行してからgatewayを再起動してください。ARIAスナップショットと基本的なページスクリーンショットは引き続き動作することがありますが、ナビゲーション、AIスナップショット、CSSセレクター要素スクリーンショット、PDFエクスポートは引き続き利用できません。
+
   </Accordion>
   <Accordion title="Chrome MCP / existing-session のシグネチャ">
     - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session が、選択されたBrowserデータディレクトリにまだ接続できませんでした。Browser inspectページを開き、リモートデバッグを有効にし、Browserを開いたままにして、最初の接続プロンプトを承認してから再試行してください。サインイン状態が不要なら、管理された `openclaw` プロファイルを推奨します。
     - `No Chrome tabs found for profile="user"` → Chrome MCP接続プロファイルに、開いているローカルChromeタブがありません。
     - `Remote CDP for profile "<name>" is not reachable` → 設定されたリモートCDPエンドポイントにgatewayホストから到達できません。
     - `Browser attachOnly is enabled ... not reachable` または `Browser attachOnly is enabled and CDP websocket ... is not reachable` → attach-onlyプロファイルに到達可能なターゲットがないか、HTTPエンドポイントは応答したもののCDP WebSocketを開けませんでした。
+
   </Accordion>
   <Accordion title="要素 / スクリーンショット / アップロードのシグネチャ">
     - `fullPage is not supported for element screenshots` → スクリーンショット要求で `--full-page` と `--ref` または `--element` を混在させています。
@@ -527,6 +535,7 @@ openclaw doctor
     - `existing-session evaluate does not support timeoutMs overrides.` → `profile="user"` / Chrome MCP existing-session プロファイルでは `act:evaluate` に `timeoutMs` を指定しないでください。カスタムタイムアウトが必要な場合は管理Browser/CDPプロファイルを使用してください。
     - `response body is not supported for existing-session profiles yet.` → `responsebody` には、引き続き管理Browserまたは生のCDPプロファイルが必要です。
     - attach-only またはリモートCDPプロファイルで viewport / dark-mode / locale / offline 上書きが古いまま残る → `openclaw browser stop --browser-profile <name>` を実行して、gateway全体を再起動せずに、アクティブな制御セッションを閉じ、Playwright/CDPエミュレーション状態を解放してください。
+
   </Accordion>
 </AccordionGroup>
 

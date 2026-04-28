@@ -57,6 +57,7 @@ OpenClaw memilih model dalam urutan ini:
     - `agents.defaults.musicGenerationModel` digunakan oleh kapabilitas pembuatan musik bersama. Jika dihilangkan, `music_generate` tetap dapat menyimpulkan default provider yang didukung auth. Mula-mula mencoba provider default saat ini, lalu provider pembuatan musik terdaftar yang tersisa dalam urutan id provider. Jika Anda menetapkan provider/model tertentu, konfigurasikan juga auth/API key provider tersebut.
     - `agents.defaults.videoGenerationModel` digunakan oleh kapabilitas pembuatan video bersama. Jika dihilangkan, `video_generate` tetap dapat menyimpulkan default provider yang didukung auth. Mula-mula mencoba provider default saat ini, lalu provider pembuatan video terdaftar yang tersisa dalam urutan id provider. Jika Anda menetapkan provider/model tertentu, konfigurasikan juga auth/API key provider tersebut.
     - Default per agen dapat menimpa `agents.defaults.model` melalui `agents.list[].model` beserta binding (lihat [Routing multi-agen](/id/concepts/multi-agent)).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Ini terjadi **sebelum** balasan normal dihasilkan, sehingga pesannya bisa terasa
 - Tambahkan model ke `agents.defaults.models`, atau
 - Hapus allowlist (hapus `agents.defaults.models`), atau
 - Pilih model dari `/model list`.
+
 </Warning>
 
 Contoh config allowlist:
@@ -157,6 +159,7 @@ Anda dapat mengganti model untuk sesi saat ini tanpa restart:
     - Di Discord, `/model` dan `/models` membuka pemilih interaktif dengan dropdown provider dan model plus langkah Submit.
     - `/models add` sudah usang dan sekarang mengembalikan pesan deprecasi alih-alih mendaftarkan model dari chat.
     - `/model <#>` memilih dari pemilih tersebut.
+
   </Accordion>
   <Accordion title="Persistensi dan penggantian live">
     - `/model` langsung menyimpan pilihan sesi baru.
@@ -164,6 +167,7 @@ Anda dapat mengganti model untuk sesi saat ini tanpa restart:
     - Jika eksekusi sudah aktif, OpenClaw menandai pergantian live sebagai pending dan hanya restart ke model baru pada titik percobaan ulang yang bersih.
     - Jika aktivitas tool atau output balasan sudah dimulai, pergantian yang pending dapat tetap diantrikan hingga kesempatan percobaan ulang berikutnya atau giliran pengguna berikutnya.
     - `/model status` adalah tampilan detail (kandidat auth dan, bila dikonfigurasi, provider endpoint `baseUrl` + mode `api`).
+
   </Accordion>
   <Accordion title="Parsing ref">
     - Ref model di-parse dengan memisahkan pada `/` **pertama**. Gunakan `provider/model` saat mengetik `/model <ref>`.
@@ -233,6 +237,7 @@ Menampilkan model utama yang telah di-resolve, fallback, model gambar, dan ikhti
     - Gunakan `--check` untuk otomatisasi (kode keluar `1` saat hilang/kedaluwarsa, `2` saat akan kedaluwarsa).
     - Gunakan `--probe` untuk pemeriksaan auth live; baris probe dapat berasal dari profil auth, kredensial env, atau `models.json`.
     - Jika `auth.order.<provider>` eksplisit menghilangkan profil yang disimpan, probe melaporkan `excluded_by_auth_order` alih-alih mencobanya. Jika auth ada tetapi tidak ada model yang dapat diprobe untuk provider itu, probe melaporkan `status: no_model`.
+
   </Accordion>
 </AccordionGroup>
 

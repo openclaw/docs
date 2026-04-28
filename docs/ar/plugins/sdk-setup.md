@@ -307,6 +307,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - تكون القناة معطلة لكنها تحتاج إلى أس surfaces الإعداد/الإعداد الأوّلي.
     - تكون القناة مفعلة لكنها غير مهيأة.
     - يكون التحميل المؤجل مفعّلًا (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="ما الذي يجب أن يسجله setupEntry">
     - كائن Channel plugin ‏(عبر `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ export default defineSetupPluginEntry(myChannelPlugin);
     - الخدمات الخلفية.
     - واردات runtime الثقيلة (التشفير، وSDKs).
     - طرق gateway المطلوبة فقط بعد بدء التشغيل.
+
   </Accordion>
 </AccordionGroup>
 

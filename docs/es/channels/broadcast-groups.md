@@ -175,6 +175,7 @@ Controla cómo los agentes procesan los mensajes:
     - Todos los agentes listados procesan el mensaje.
     - Cada agente tiene su propia clave de sesión y contexto aislado.
     - Los agentes procesan en paralelo (predeterminado) o de forma secuencial.
+
   </Step>
   <Step title="Si no está en la lista de difusión">
     Se aplica el enrutamiento normal (el primer `binding` coincidente).

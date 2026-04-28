@@ -93,6 +93,7 @@ Esiste anche un percorso di backfill storico fondato per lavoro di revisione e r
     - `memory rem-backfill --path ...` scrive voci di diario fondate e reversibili in `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` prepara candidati durevoli fondati nello stesso archivio di evidenze a breve termine già usato dalla normale fase deep.
     - `memory rem-backfill --rollback` e `--rollback-short-term` rimuovono quegli artefatti di backfill preparati senza toccare le normali voci di diario o il richiamo live a breve termine.
+
   </Accordion>
 </AccordionGroup>
 

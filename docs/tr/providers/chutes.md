@@ -138,6 +138,7 @@ Paketlenmiş geri dönüş kataloğu güncel Chutes referanslarını içerir:
     - API anahtarı ve OAuth keşfi aynı `chutes` sağlayıcı kimliğini kullanır.
     - Chutes modelleri `chutes/<model-id>` olarak kaydedilir.
     - Başlangıçta keşif başarısız olursa paketlenmiş statik katalog otomatik olarak kullanılır.
+
   </Accordion>
 </AccordionGroup>
 

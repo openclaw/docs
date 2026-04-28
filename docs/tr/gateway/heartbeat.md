@@ -41,6 +41,7 @@ Sorun giderme: [Zamanlanmış Görevler](/tr/automation/cron-jobs#troubleshootin
     - Heartbeat çalıştırmaları yalnızca `HEARTBEAT.md` gerektiriyorsa hafif bootstrap bağlamı kullanın.
     - Her heartbeat'te tam konuşma geçmişini göndermemek için yalıtılmış oturumları etkinleştirin.
     - Heartbeat'leri etkin saatlerle sınırlayın (yerel saat).
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
   - `main` (varsayılan): aracı ana oturumu.
   - Açık oturum anahtarı (`openclaw sessions --json` veya [sessions CLI](/tr/cli/sessions) çıktısından kopyalayın).
   - Oturum anahtarı biçimleri: bkz. [Oturumlar](/tr/concepts/session) ve [Gruplar](/tr/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: son kullanılan harici kanala teslim et.
   - açık kanal: `discord`, `matrix`, `telegram` veya `whatsapp` gibi yapılandırılmış herhangi bir kanal veya Plugin kimliği.
   - `none` (varsayılan): heartbeat'i çalıştır ama harici olarak **teslim etme**.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Doğrudan/DM teslim davranışını kontrol eder. `allow`: doğrudan/DM heartbeat teslimine izin ver. `block`: doğrudan/DM teslimini bastır (`reason=dm-blocked`).
@@ -274,6 +277,7 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
   - Herhangi bir IANA tanımlayıcısı (ör. `America/New_York`): doğrudan kullanılır; geçersizse yukarıdaki `"user"` davranışına geri döner.
   - `start` ve `end`, etkin bir pencere için eşit olmamalıdır; eşit değerler sıfır genişlik olarak değerlendirilir (her zaman pencerenin dışında).
   - Etkin pencerenin dışında heartbeat'ler atlanır ve pencere içindeki bir sonraki tikte yeniden çalışır.
+
 </ParamField>
 
 ## Teslim davranışı
@@ -286,16 +290,19 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
     - Heartbeat teslimleri varsayılan olarak doğrudan/DM hedeflerine izin verir. Heartbeat dönüşünü yine çalıştırırken doğrudan hedefli gönderimleri bastırmak için `directPolicy: "block"` ayarlayın.
     - Ana kuyruk meşgulse heartbeat atlanır ve daha sonra yeniden denenir.
     - `target` hiçbir harici hedefe çözümlenmezse çalıştırma yine gerçekleşir ancak dışa giden mesaj gönderilmez.
+
   </Accordion>
   <Accordion title="Görünürlük ve atlama davranışı">
     - `showOk`, `showAlerts` ve `useIndicator` değerlerinin tümü devre dışıysa çalıştırma en başta `reason=alerts-disabled` ile atlanır.
     - Yalnızca uyarı teslimi devre dışıysa OpenClaw yine de heartbeat'i çalıştırabilir, due-task zaman damgalarını güncelleyebilir, oturum boşta kalma zaman damgasını geri yükleyebilir ve dışa dönük uyarı yükünü bastırabilir.
     - Çözümlenen heartbeat hedefi yazıyor göstergesini destekliyorsa OpenClaw, heartbeat çalıştırması etkinken yazıyor göstergesini gösterir. Bu, heartbeat'in sohbet çıktısını göndereceği aynı hedefi kullanır ve `typingMode: "never"` ile devre dışı bırakılır.
+
   </Accordion>
   <Accordion title="Oturum yaşam döngüsü ve denetim">
     - Yalnızca heartbeat yanıtları oturumu canlı tutmaz. Heartbeat meta verileri oturum satırını güncelleyebilir, ancak boşta kalma süresi son gerçek kullanıcı/kanal mesajındaki `lastInteractionAt` değerini kullanır ve günlük sona erme `sessionStartedAt` kullanır.
     - Control UI ve WebChat geçmişi heartbeat istemlerini ve yalnızca OK içeren onayları gizler. Alttaki oturum transkripti yine de denetim/yeniden oynatma için bu dönüşleri içerebilir.
     - Ayrık [arka plan görevleri](/tr/automation/tasks), ana oturumun bir şeyi hızlıca fark etmesi gerektiğinde bir sistem olayı kuyruğa alabilir ve heartbeat'i uyandırabilir. Bu uyandırma heartbeat çalıştırmasını bir arka plan görevi yapmaz.
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - `HEARTBEAT.md` içindeki görev olmayan içerik korunur ve zamanı gelen görev listesinden sonra ek bağlam olarak eklenir.
     - Görev son çalıştırma zaman damgaları oturum durumunda (`heartbeatTaskState`) saklanır; bu nedenle aralıklar normal yeniden başlatmalarda korunur.
     - Görev zaman damgaları yalnızca heartbeat çalıştırması normal yanıt yolunu tamamladıktan sonra ilerletilir. Atlanan `empty-heartbeat-file` / `no-tasks-due` çalıştırmaları görevleri tamamlanmış olarak işaretlemez.
+
   </Accordion>
 </AccordionGroup>
 

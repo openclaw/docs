@@ -371,6 +371,7 @@ Quando il numero personale collegato è presente anche in `allowFrom`, si attiva
     - limite predefinito dei blocchi: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - la modalità `newline` preferisce i confini dei paragrafi (righe vuote), poi usa come fallback una suddivisione sicura per lunghezza
+
   </Accordion>
 
   <Accordion title="Comportamento dei media in uscita">
@@ -383,6 +384,7 @@ Quando il numero personale collegato è presente anche in `allowFrom`, si attiva
     - la riproduzione di GIF animate è supportata tramite `gifPlayback: true` negli invii video
     - le didascalie vengono applicate al primo elemento multimediale quando si inviano payload di risposta multi-media, tranne che le note vocali PTT inviano prima l'audio e il testo visibile separatamente perché i client WhatsApp non mostrano in modo coerente le didascalie delle note vocali
     - la sorgente media può essere HTTP(S), `file://` o percorsi locali
+
   </Accordion>
 
   <Accordion title="Limiti di dimensione dei media e comportamento di fallback">
@@ -391,6 +393,7 @@ Quando il numero personale collegato è presente anche in `allowFrom`, si attiva
     - gli override per account usano `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - le immagini vengono ottimizzate automaticamente (ridimensionamento/scansione qualità) per rientrare nei limiti
     - in caso di errore nell'invio dei media, il fallback del primo elemento invia un avviso testuale invece di scartare silenziosamente la risposta
+
   </Accordion>
 </AccordionGroup>
 
@@ -475,12 +478,14 @@ Note sul comportamento:
     - gli id account provengono da `channels.whatsapp.accounts`
     - selezione dell'account predefinito: `default` se presente, altrimenti il primo id account configurato (ordinato)
     - gli id account vengono normalizzati internamente per la ricerca
+
   </Accordion>
 
   <Accordion title="Percorsi delle credenziali e compatibilità legacy">
     - percorso di autenticazione attuale: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - file di backup: `creds.json.bak`
     - l'autenticazione predefinita legacy in `~/.openclaw/credentials/` è ancora riconosciuta/migrata per i flussi dell'account predefinito
+
   </Accordion>
 
   <Accordion title="Comportamento del logout">

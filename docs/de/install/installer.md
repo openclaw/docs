@@ -86,12 +86,14 @@ Empfohlen für die meisten interaktiven Installationen auf macOS/Linux/WSL.
   <Step title="OpenClaw installieren">
     - Methode `npm` (Standard): globale npm-Installation
     - Methode `git`: Repository klonen/aktualisieren, Abhängigkeiten mit pnpm installieren, bauen und dann den Wrapper unter `~/.local/bin/openclaw` installieren
+
   </Step>
   <Step title="Aufgaben nach der Installation">
     - Aktualisiert einen geladenen Gateway-Dienst nach bestem Bemühen (`openclaw gateway install --force`, dann Neustart)
     - Führt bei Upgrades und Git-Installationen `openclaw doctor --non-interactive` aus (Best Effort)
     - Versucht bei Bedarf Onboarding (TTY verfügbar, Onboarding nicht deaktiviert und Bootstrap-/Konfigurationsprüfungen erfolgreich)
     - Setzt standardmäßig `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ sowie Git-Checkout-Installationen innerhalb desselben Präfix-Flows.
   <Step title="OpenClaw unter dem Präfix installieren">
     - Methode `npm` (Standard): installiert unter dem Präfix mit npm und schreibt dann einen Wrapper nach `<prefix>/bin/openclaw`
     - Methode `git`: klont/aktualisiert ein Checkout (Standard `~/openclaw`) und schreibt dennoch den Wrapper nach `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="Geladenen Gateway-Dienst aktualisieren">
     Wenn bereits ein Gateway-Dienst aus demselben Präfix geladen ist, führt das Skript
@@ -293,11 +296,13 @@ sowie Git-Checkout-Installationen innerhalb desselben Präfix-Flows.
   <Step title="OpenClaw installieren">
     - Methode `npm` (Standard): globale npm-Installation mit dem ausgewählten `-Tag`
     - Methode `git`: Repository klonen/aktualisieren, mit pnpm installieren/bauen und den Wrapper unter `%USERPROFILE%\.local\bin\openclaw.cmd` installieren
+
   </Step>
   <Step title="Aufgaben nach der Installation">
     - Fügt das benötigte bin-Verzeichnis nach Möglichkeit dem Benutzer-PATH hinzu
     - Aktualisiert einen geladenen Gateway-Dienst nach bestem Bemühen (`openclaw gateway install --force`, dann Neustart)
     - Führt bei Upgrades und Git-Installationen `openclaw doctor --non-interactive` aus (Best Effort)
+
   </Step>
   <Step title="Fehler behandeln">
     Installationen mit `iwr ... | iex` und Scriptblock melden einen terminierenden Fehler, ohne die aktuelle PowerShell-Sitzung zu schließen. Direkte Installationen mit `powershell -File` / `pwsh -File` beenden sich für Automatisierung weiterhin mit einem Fehlercode ungleich null.

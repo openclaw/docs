@@ -97,6 +97,7 @@ Natywne polecenia slash są opcjonalne. Gdy są włączone, OpenClaw rejestruje 
     - W konfiguracjach z wieloma kontami `commands` można ustawić na najwyższym poziomie albo w `channels.mattermost.accounts.<id>.commands` (wartości konta zastępują pola najwyższego poziomu).
     - Zwrotne wywołania poleceń są weryfikowane za pomocą tokenów per polecenie zwracanych przez Mattermost, gdy OpenClaw rejestruje polecenia `oc_*`.
     - Zwrotne wywołania slash domyślnie kończą się odmową, gdy rejestracja się nie powiodła, uruchomienie było częściowe albo token callbacku nie pasuje do żadnego z zarejestrowanych poleceń.
+
   </Accordion>
   <Accordion title="Wymaganie osiągalności">
     Endpoint callbacku musi być osiągalny z serwera Mattermost.
@@ -291,11 +292,13 @@ Włącz przez `channels.mattermost.streaming`:
     - `block` używa fragmentów roboczych w stylu dopisywania wewnątrz posta podglądu.
     - `progress` pokazuje podgląd statusu podczas generowania i publikuje końcową odpowiedź dopiero po zakończeniu.
     - `off` wyłącza strumieniowanie podglądu.
+
   </Accordion>
   <Accordion title="Uwagi o działaniu strumieniowania">
     - Jeśli strumienia nie można sfinalizować w miejscu (na przykład post został usunięty w trakcie strumieniowania), OpenClaw wraca do wysłania nowego końcowego posta, więc odpowiedź nigdy nie zostanie utracona.
     - Ładunki zawierające wyłącznie rozumowanie są pomijane w postach kanałowych, w tym tekst docierający jako blok cytatu `> Reasoning:`. Ustaw `/reasoning on`, aby widzieć tok myślenia w innych powierzchniach; końcowy post Mattermost zawiera tylko odpowiedź.
     - Zobacz [Streaming](/pl/concepts/streaming#preview-streaming-modes), aby poznać macierz mapowania kanałów.
+
   </Accordion>
 </AccordionGroup>
 
@@ -369,6 +372,7 @@ Gdy użytkownik kliknie przycisk:
     - Callbacki przycisków używają weryfikacji HMAC-SHA256 (automatycznie, bez potrzeby konfiguracji).
     - Mattermost usuwa dane callbacku ze swoich odpowiedzi API (funkcja bezpieczeństwa), więc po kliknięciu usuwane są wszystkie przyciski — częściowe usunięcie nie jest możliwe.
     - Identyfikatory akcji zawierające myślniki lub podkreślenia są automatycznie sanityzowane (ograniczenie routingu Mattermost).
+
   </Accordion>
   <Accordion title="Konfiguracja i osiągalność">
     - `channels.mattermost.capabilities`: tablica ciągów możliwości. Dodaj `"inlineButtons"`, aby włączyć opis narzędzia przycisków w promptcie systemowym agenta.
@@ -377,6 +381,7 @@ Gdy użytkownik kliknie przycisk:
     - Jeśli pominięto `interactions.callbackBaseUrl`, OpenClaw wyprowadza URL callbacku z `gateway.customBindHost` + `gateway.port`, a następnie wraca do `http://localhost:<port>`.
     - Reguła osiągalności: URL callbacku przycisku musi być osiągalny z serwera Mattermost. `localhost` działa tylko wtedy, gdy Mattermost i OpenClaw działają na tym samym hoście / w tej samej przestrzeni nazw sieci.
     - Jeśli cel callbacku jest prywatny/tailnet/wewnętrzny, dodaj jego host/domenę do `ServiceSettings.AllowedUntrustedInternalConnections` w Mattermost.
+
   </Accordion>
 </AccordionGroup>
 
@@ -472,6 +477,7 @@ context = {**ctx, "_token": token}
     - Zawsze podpisuj **wszystkie** pola context (bez `_token`). Gateway usuwa `_token`, a następnie podpisuje wszystko, co pozostało. Podpisanie tylko części pól powoduje ciche niepowodzenie weryfikacji.
     - Użyj `sort_keys=True` — Gateway sortuje klucze przed podpisaniem, a Mattermost może zmienić kolejność pól context podczas przechowywania ładunku.
     - Wyprowadzaj sekret z tokenu bota (deterministycznie), a nie z losowych bajtów. Sekret musi być taki sam w procesie tworzącym przyciski i w Gateway, który je weryfikuje.
+
   </Accordion>
 </AccordionGroup>
 
@@ -507,6 +513,7 @@ Mattermost obsługuje wiele kont w `channels.mattermost.accounts`:
   <Accordion title="Błędy uwierzytelniania lub wielu kont">
     - Sprawdź token bota, bazowy URL oraz to, czy konto jest włączone.
     - Problemy z wieloma kontami: zmienne środowiskowe dotyczą tylko konta `default`.
+
   </Accordion>
   <Accordion title="Natywne polecenia slash nie działają">
     - `Unauthorized: invalid command token.`: OpenClaw nie zaakceptował tokenu callbacku. Typowe przyczyny:
@@ -516,6 +523,7 @@ Mattermost obsługuje wiele kont w `channels.mattermost.accounts`:
       - Gateway uruchomiono ponownie bez ponownej aktywacji poleceń slash
     - Jeśli natywne polecenia slash przestaną działać, sprawdź logi pod kątem `mattermost: failed to register slash commands` lub `mattermost: native slash commands enabled but no commands could be registered`.
     - Jeśli pominięto `callbackUrl`, a logi ostrzegają, że callback został rozwiązany do `http://127.0.0.1:18789/...`, ten URL prawdopodobnie jest osiągalny tylko wtedy, gdy Mattermost działa na tym samym hoście / w tej samej przestrzeni nazw sieci co OpenClaw. Ustaw jawny, zewnętrznie osiągalny `commands.callbackUrl`.
+
   </Accordion>
   <Accordion title="Problemy z przyciskami">
     - Przyciski wyglądają jak białe pola: agent może wysyłać nieprawidłowo sformatowane dane przycisków. Sprawdź, czy każdy przycisk ma pola `text` i `callback_data`.
@@ -525,6 +533,7 @@ Mattermost obsługuje wiele kont w `channels.mattermost.accounts`:
     - Logi Gateway pokazują `missing _token in context`: pole `_token` nie znajduje się w context przycisku. Upewnij się, że jest uwzględnione podczas budowania ładunku integracji.
     - Potwierdzenie pokazuje surowy identyfikator zamiast nazwy przycisku: `context.action_id` nie odpowiada `id` przycisku. Ustaw oba na tę samą sanityzowaną wartość.
     - Agent nie wie o przyciskach: dodaj `capabilities: ["inlineButtons"]` do konfiguracji kanału Mattermost.
+
   </Accordion>
 </AccordionGroup>
 

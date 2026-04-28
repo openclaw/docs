@@ -546,6 +546,7 @@ Para el comportamiento conceptual y los comandos con barra, consulta [Dreaming](
 - Dreaming escribe estado de máquina en `memory/.dreams/`.
 - Dreaming escribe salida narrativa legible por humanos en `DREAMS.md` (o el `dreams.md` existente).
 - La política y los umbrales de las fases Light/Deep/REM son comportamiento interno, no configuración orientada al usuario.
+
 </Note>
 
 ## Relacionado

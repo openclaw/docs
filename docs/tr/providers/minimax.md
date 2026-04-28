@@ -432,6 +432,7 @@ Tam web arama yapılandırması ve kullanımı için bkz. [MiniMax Search](/tr/t
     - OpenClaw, MiniMax coding-plan kullanımını diğer sağlayıcılarda kullanılan aynı `% kaldı` gösterimine normalleştirir. MiniMax'in ham `usage_percent` / `usagePercent` alanları tüketilen kotayı değil, kalan kotayı temsil eder; bu yüzden OpenClaw bunları tersine çevirir. Sayaç tabanlı alanlar mevcutsa önceliklidir.
     - API `model_remains` döndürdüğünde OpenClaw sohbet-modeli girdisini tercih eder, gerektiğinde pencere etiketini `start_time` / `end_time` üzerinden türetir ve coding-plan pencerelerinin ayırt edilmesini kolaylaştırmak için seçilen model adını plan etiketine dahil eder.
     - Kullanım anlık görüntüleri `minimax`, `minimax-cn` ve `minimax-portal` değerlerini aynı MiniMax kota yüzeyi olarak değerlendirir ve Coding Plan anahtar ortam değişkenlerine geri dönmeden önce saklanan MiniMax OAuth'u tercih eder.
+
   </Accordion>
 </AccordionGroup>
 

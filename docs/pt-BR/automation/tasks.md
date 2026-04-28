@@ -115,6 +115,7 @@ Nem toda execução de agente cria uma tarefa. Turnos de Heartbeat e chat intera
     - Turnos de Heartbeat — sessão principal; veja [Heartbeat](/pt-BR/gateway/heartbeat)
     - Turnos normais de chat interativo
     - Respostas diretas de `/command`
+
   </Accordion>
 </AccordionGroup>
 

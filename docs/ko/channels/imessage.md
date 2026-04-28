@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - 기본 루트 패턴: `/Users/*/Library/Messages/Attachments`
     - SCP는 엄격한 호스트 키 검사(`StrictHostKeyChecking=yes`)를 사용합니다
     - 아웃바운드 미디어 크기는 `channels.imessage.mediaMaxMb`를 사용합니다(기본값 16 MB)
+
   </Accordion>
 
   <Accordion title="아웃바운드 청크 분할">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - 청크 모드: `channels.imessage.chunkMode`
       - `length`(기본값)
       - `newline`(문단 우선 분할)
+
   </Accordion>
 
   <Accordion title="주소 지정 형식">

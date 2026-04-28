@@ -198,6 +198,7 @@ Semua field bersifat opsional kecuali dinyatakan lain.
       - `fileQuality: "hq"`: maksimum 14 MP (14.000.000 piksel hasil render).
       - `fileQuality: "print"`: maksimum 24 MP (24.000.000 piksel hasil render).
       - PDF juga memiliki maksimum 50 halaman.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Aturan `baseUrl`:
     - Throttling miss jarak jauh saat akses jarak jauh diaktifkan:
       - 40 kegagalan per 60 detik
       - lockout 60 detik (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Penguatan rendering file">
     - Routing permintaan browser screenshot default-nya deny-by-default.
     - Hanya aset penampil lokal dari `http://127.0.0.1/plugins/diffs/assets/*` yang diizinkan.
     - Permintaan jaringan eksternal diblokir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Urutan resolusi:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Fallback platform">
     Fallback penemuan perintah/path platform.
@@ -456,6 +460,7 @@ Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau dengan menye
     - `Invalid baseUrl: ...` — gunakan origin `http(s)` dengan path opsional, tanpa query/hash.
     - `{field} exceeds maximum size (...)` — kurangi ukuran payload.
     - Penolakan patch besar — kurangi jumlah file patch atau total baris.
+
   </Accordion>
   <Accordion title="Aksesibilitas penampil">
     - URL penampil secara default mengarah ke `127.0.0.1`.
@@ -468,6 +473,7 @@ Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau dengan menye
       - pilih `mode: "file"` atau `mode: "both"` saat Anda hanya memerlukan lampiran, atau
       - aktifkan `security.allowRemoteViewer` secara sengaja dan setel Plugin `viewerBaseUrl` atau berikan `baseUrl` proxy/publik saat Anda memerlukan URL penampil yang dapat dibagikan
     - Aktifkan `security.allowRemoteViewer` hanya jika Anda memang menginginkan akses penampil eksternal.
+
   </Accordion>
   <Accordion title="Baris unmodified-lines tidak memiliki tombol expand">
     Ini dapat terjadi untuk input patch ketika patch tidak membawa konteks yang dapat diperluas. Ini adalah perilaku yang diharapkan dan tidak menunjukkan kegagalan penampil.
@@ -476,6 +482,7 @@ Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau dengan menye
     - Artefak kedaluwarsa karena TTL.
     - Token atau path berubah.
     - Pembersihan menghapus data usang.
+
   </Accordion>
 </AccordionGroup>
 

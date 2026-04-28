@@ -40,6 +40,7 @@ Tercih ettiğiniz kurulum yöntemini ve kipi seçin.
         - **Cloud + Local** — yerel Ollama ana bilgisayarı artı bu ana bilgisayar üzerinden yönlendirilen bulut modelleri
         - **Cloud only** — `https://ollama.com` üzerinden barındırılan Ollama modelleri
         - **Local only** — yalnızca yerel modeller
+
       </Step>
       <Step title="Bir model seçin">
         `Cloud only`, `OLLAMA_API_KEY` ister ve barındırılan bulut varsayılanlarını önerir. `Cloud + Local` ve `Local only`, bir Ollama temel URL'si ister, kullanılabilir modelleri keşfeder ve seçilen yerel model henüz mevcut değilse otomatik olarak çeker. `Cloud + Local` ayrıca bu Ollama ana bilgisayarının bulut erişimi için oturum açmış olup olmadığını da kontrol eder.
@@ -79,6 +80,7 @@ Tercih ettiğiniz kurulum yöntemini ve kipi seçin.
         - **Cloud + Local**: Ollama'yı kurun, `ollama signin` ile oturum açın ve bulut isteklerini bu ana bilgisayar üzerinden yönlendirin
         - **Cloud only**: `https://ollama.com` adresini bir `OLLAMA_API_KEY` ile kullanın
         - **Local only**: Ollama'yı [ollama.com/download](https://ollama.com/download) adresinden kurun
+
       </Step>
       <Step title="Yerel bir model çekin (yalnızca yerel)">
         ```bash

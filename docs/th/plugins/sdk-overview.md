@@ -25,6 +25,7 @@ Plugin SDK คือสัญญาแบบมีชนิดระหว่า
 - Channel Plugin? ดู [Channel plugins](/th/plugins/sdk-channel-plugins)
 - Provider Plugin? ดู [Provider plugins](/th/plugins/sdk-provider-plugins)
 - Tool หรือ lifecycle hook Plugin? ดู [Plugin hooks](/th/plugins/hooks)
+
 </Tip>
 
 ## รูปแบบการ import

@@ -24,6 +24,7 @@ x-i18n:
 - 渠道插件？参见 [渠道插件](/zh-CN/plugins/sdk-channel-plugins)。
 - 提供商插件？参见 [提供商插件](/zh-CN/plugins/sdk-provider-plugins)。
 - 工具或生命周期钩子插件？参见 [插件钩子](/zh-CN/plugins/hooks)。
+
 </Tip>
 
 ## 导入约定

@@ -72,6 +72,7 @@ Utilisez plutôt [`openclaw acp`](/fr/cli/acp) lorsque OpenClaw doit héberger l
     - les points d’entrée d’agent à exécution unique tels que `openclaw agent` et `openclaw infer model run` retirent tous les runtimes MCP intégrés qu’ils ouvrent une fois la réponse terminée, afin que les exécutions répétées par script n’accumulent pas de processus enfants MCP stdio
     - les serveurs MCP stdio lancés par OpenClaw (intégrés ou configurés par l’utilisateur) sont arrêtés comme un arbre de processus à l’extinction, de sorte que les sous-processus enfants démarrés par le serveur ne survivent pas après la fermeture du client stdio parent
     - la suppression ou la réinitialisation d’une session détruit les clients MCP de cette session via le chemin de nettoyage partagé du runtime, de sorte qu’il n’existe aucune connexion stdio persistante liée à une session supprimée
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ Types d’événements actuels :
 - la file d’attente est uniquement en direct ; elle démarre lorsque le pont MCP démarre
 - `events_poll` et `events_wait` ne rejouent pas d’eux-mêmes l’historique plus ancien de la Gateway
 - le backlog durable doit être lu avec `messages_read`
+
 </Warning>
 
 ### Notifications de canal Claude
@@ -367,6 +369,7 @@ Ces définitions enregistrées servent aux runtimes qu’OpenClaw lance ou confi
     - les adaptateurs de runtime décident quels formats de transport ils prennent réellement en charge au moment de l’exécution
     - Pi intégré expose les outils MCP configurés dans les profils d’outils normaux `coding` et `messaging` ; `minimal` les masque toujours, et `tools.deny: ["bundle-mcp"]` les désactive explicitement
     - les runtimes MCP intégrés limités à une session sont récupérés après `mcp.sessionIdleTtlMs` millisecondes d’inactivité (10 minutes par défaut ; définissez `0` pour désactiver) et les exécutions intégrées à usage unique les nettoient à la fin de l’exécution
+
   </Accordion>
 </AccordionGroup>
 

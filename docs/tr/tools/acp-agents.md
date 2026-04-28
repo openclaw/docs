@@ -63,6 +63,7 @@ kullanılamayan bir arka uç önermesin.
     - Hedef harness adaptörleri (Codex, Claude vb.) ilk kullanımda isteğe bağlı olarak `npx` ile getirilebilir.
     - O harness için sağlayıcı auth’ının yine de ana makinede mevcut olması gerekir.
     - Ana makinede npm veya ağ erişimi yoksa, ilk çalıştırma adaptör getirmeleri önbellekler önceden ısıtılana veya adaptör başka bir yolla kurulana kadar başarısız olur.
+
   </Accordion>
   <Accordion title="Çalışma zamanı ön koşulları">
     ACP gerçek bir harici harness süreci başlatır. OpenClaw yönlendirme,
@@ -152,6 +153,7 @@ Sohbetten hızlı `/acp` akışı:
     - `cancel`, arka uç iptali destekliyorsa etkin dönüşü iptal eder; bağı veya oturum meta verisini silmez.
     - `close`, ACP oturumunu OpenClaw’ın bakış açısından bitirir ve bağı kaldırır. Bir harness sürdürmeyi destekliyorsa kendi upstream geçmişini yine de tutabilir.
     - Boştaki çalışma zamanı worker’ları `acp.runtime.ttlMinutes` sonrasında temizlenmeye uygundur; saklanan oturum meta verisi `/acp sessions` için kullanılabilir kalır.
+
   </Accordion>
   <Accordion title="Yerel Codex yönlendirme kuralları">
     **Yerel Codex Plugin’i**ne yönlenmesi gereken doğal dil tetikleyicileri
@@ -183,6 +185,7 @@ Sohbetten hızlı `/acp` akışı:
     - `openai/*` artı `agentRuntime.id: "codex"` — yerel Codex app-server gömülü çalışma zamanı.
     - `/codex ...` — yerel Codex konuşma denetimi.
     - `/acp ...` veya `runtime: "acp"` — açık ACP/acpx denetimi.
+
   </Accordion>
   <Accordion title="ACP yönlendirme doğal dil tetikleyicileri">
     ACP çalışma zamanına yönlenmesi gereken tetikleyiciler:
@@ -281,6 +284,7 @@ oturumu yerinde sıfırlar; `/acp close` bağı kaldırır.
     - Discord’da `spawnAcpSessions`, yalnızca OpenClaw’ın `--thread auto|here` için alt iş parçacığı oluşturması gerektiğinde gerekir — `--bind here` için gerekmez.
     - `--cwd` olmadan farklı bir ACP aracısına başlatırsanız, OpenClaw varsayılan olarak **hedef aracının** çalışma alanını devralır. Eksik devralınmış yollar (`ENOENT`/`ENOTDIR`) arka ucun varsayılanına geri döner; diğer erişim hataları (`EACCES` gibi) başlatma hatası olarak görünür.
     - Gateway yönetim komutları bağlı konuşmalarda yerelde kalır — normal takip metni bağlı ACP oturumuna yönlense bile `/acp ...` komutları OpenClaw tarafından işlenir; ayrıca bu yüzey için komut işleme etkin olduğunda `/status` ve `/unfocus` da yerelde kalır.
+
   </Accordion>
   <Accordion title="İş parçacığına bağlı oturumlar">
     Bir kanal adaptörü için iş parçacığı bağları etkin olduğunda:
@@ -308,6 +312,7 @@ oturumu yerinde sıfırlar; `/acp close` bağı kaldırır.
     - Oturum/iş parçacığı bağlama yeteneği sunan herhangi bir kanal adaptörü.
     - Geçerli yerleşik destek: **Discord** iş parçacıkları/kanalları, **Telegram** konuları (gruplar/süper gruplardaki forum konuları ve DM konuları).
     - Plugin kanalları aynı bağlama arayüzü üzerinden destek ekleyebilir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -328,22 +333,23 @@ kalıcı ACP bağları yapılandırın.
 - **Telegram forum konusu:** `match.channel="telegram"` + `match.peer.id="<chatId>:topic:<topicId>"`
 - **BlueBubbles DM/grup:** `match.channel="bluebubbles"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Kararlı grup bağları için `chat_id:*` veya `chat_identifier:*` tercih edin.
 - **iMessage DM/grup:** `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. Kararlı grup bağları için `chat_id:*` tercih edin.
+
 </ParamField>
-  <ParamField path="bindings[].agentId" type="string">
+<ParamField path="bindings[].agentId" type="string">
   Sahip OpenClaw aracı kimliği.
-  </ParamField>
-  <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
+</ParamField>
+<ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
   İsteğe bağlı ACP geçersiz kılması.
-  </ParamField>
-  <ParamField path="bindings[].acp.label" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.label" type="string">
   İsteğe bağlı operatör odaklı etiket.
-  </ParamField>
-  <ParamField path="bindings[].acp.cwd" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.cwd" type="string">
   İsteğe bağlı çalışma zamanı çalışma dizini.
-  </ParamField>
-  <ParamField path="bindings[].acp.backend" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.backend" type="string">
   İsteğe bağlı arka uç geçersiz kılması.
-  </ParamField>
+</ParamField>
 
 ### Aracı başına çalışma zamanı varsayılanları
 
@@ -717,6 +723,7 @@ içinde değil, ana makine çalışma zamanında çalışır.
 - OpenClaw’ın sandbox ilkesi ACP harness yürütmesini **sarmalamaz**.
 - OpenClaw yine de ACP özellik kapılarını, izinli aracıları, oturum sahipliğini, kanal bağlarını ve Gateway teslim ilkesini uygular.
 - Sandbox zorunlu OpenClaw-yerel işler için `runtime: "subagent"` kullanın.
+
 </Warning>
 
 Geçerli sınırlamalar:

@@ -115,6 +115,7 @@ x-i18n:
     - 心跳轮次——主会话；参见 [Heartbeat](/zh-CN/gateway/heartbeat)
     - 普通交互式聊天轮次
     - 直接 `/command` 响应
+
   </Accordion>
 </AccordionGroup>
 

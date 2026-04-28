@@ -102,6 +102,7 @@ Sonuçları:
 - Aynı host loopback proxy kurulumları için bunun yerine token/password auth kullanın veya OpenClaw'ın doğrulayabileceği loopback olmayan güvenilen bir proxy adresi üzerinden yönlendirin.
 - Loopback olmayan Control UI dağıtımları yine de açık `gateway.controlUi.allowedOrigins` gerektirir.
 - **Forwarded-header kanıtı, loopback yerelliğini geçersiz kılar.** Bir istek loopback üzerinden gelirse ama yerel olmayan bir kökeni işaret eden `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` üstbilgileri taşıyorsa, bu kanıt loopback yerellik iddiasını geçersiz kılar. İstek eşleştirme, trusted-proxy auth ve Control UI cihaz-kimliği geçitlemesi açısından uzak kabul edilir. Bu, aynı host üzerindeki bir loopback proxy'nin iletilen üstbilgi kimliğini trusted-proxy auth içine aklamasını önler.
+
 </Warning>
 
 ### Yapılandırma başvurusu

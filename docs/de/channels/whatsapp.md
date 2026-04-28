@@ -371,6 +371,7 @@ Wenn die verknüpfte eigene Nummer auch in `allowFrom` vorhanden ist, werden Sch
     - Standard-Chunk-Limit: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - der Modus `newline` bevorzugt Absatzgrenzen (Leerzeilen) und greift dann auf längensicheres Chunking zurück
+
   </Accordion>
 
   <Accordion title="Verhalten ausgehender Medien">
@@ -383,6 +384,7 @@ Wenn die verknüpfte eigene Nummer auch in `allowFrom` vorhanden ist, werden Sch
     - animierte GIF-Wiedergabe wird über `gifPlayback: true` bei Video-Sendungen unterstützt
     - Beschriftungen werden beim Senden von Antwort-Payloads mit mehreren Medien auf das erste Medienelement angewendet, außer PTT-Sprachnotizen senden das Audio zuerst und sichtbaren Text separat, da WhatsApp-Clients Beschriftungen für Sprachnotizen nicht konsistent darstellen
     - Medienquelle kann HTTP(S), `file://` oder lokale Pfade sein
+
   </Accordion>
 
   <Accordion title="Mediengrößenlimits und Fallback-Verhalten">
@@ -391,6 +393,7 @@ Wenn die verknüpfte eigene Nummer auch in `allowFrom` vorhanden ist, werden Sch
     - kontoabhängige Überschreibungen verwenden `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - Bilder werden automatisch optimiert (Größenanpassung/Qualitätsdurchlauf), um in die Limits zu passen
     - bei Fehlschlägen beim Mediensenden sendet der Fallback für das erste Element eine Textwarnung, statt die Antwort stillschweigend zu verwerfen
+
   </Accordion>
 </AccordionGroup>
 
@@ -475,12 +478,14 @@ Hinweise zum Verhalten:
     - Konto-IDs stammen aus `channels.whatsapp.accounts`
     - Standard-Kontoauswahl: `default`, falls vorhanden, andernfalls die erste konfigurierte Konto-ID (sortiert)
     - Konto-IDs werden intern für Lookups normalisiert
+
   </Accordion>
 
   <Accordion title="Pfad für Zugangsdaten und Legacy-Kompatibilität">
     - aktueller Auth-Pfad: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - Backup-Datei: `creds.json.bak`
     - Legacy-Standardauthentifizierung in `~/.openclaw/credentials/` wird für Standard-Konto-Abläufe weiterhin erkannt/migriert
+
   </Accordion>
 
   <Accordion title="Logout-Verhalten">

@@ -308,6 +308,7 @@ Saluran workspace bawaan yang menyimpan ekspor aman-penyiapan dalam modul sideca
     - Saluran dinonaktifkan tetapi memerlukan surface penyiapan/onboarding.
     - Saluran diaktifkan tetapi belum dikonfigurasi.
     - Deferred loading diaktifkan (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Apa yang harus didaftarkan setupEntry">
     - Objek Plugin saluran (melalui `defineSetupPluginEntry`).
@@ -322,6 +323,7 @@ Saluran workspace bawaan yang menyimpan ekspor aman-penyiapan dalam modul sideca
     - Layanan latar belakang.
     - Import runtime berat (kripto, SDK).
     - Metode gateway yang hanya diperlukan setelah startup.
+
   </Accordion>
 </AccordionGroup>
 

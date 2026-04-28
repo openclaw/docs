@@ -73,6 +73,7 @@ Les versions actuelles d’OpenClaw intègrent BlueBubbles, donc les builds empa
 - Définissez toujours un mot de passe de Webhook.
 - L’authentification du Webhook est toujours requise. OpenClaw rejette les requêtes de Webhook BlueBubbles sauf si elles incluent un mot de passe/guid correspondant à `channels.bluebubbles.password` (par exemple `?password=<password>` ou `x-password`), quelle que soit la topologie loopback/proxy.
 - L’authentification par mot de passe est vérifiée avant la lecture/l’analyse complète des corps de Webhook.
+
 </Warning>
 
 ## Maintenir Messages.app actif (configurations VM / headless)
@@ -184,10 +185,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - L’appairage est l’échange de jetons par défaut. Détails : [Appairage](/fr/channels/pairing)
+
   </Tab>
   <Tab title="Groups">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (par défaut : `allowlist`).
     - `channels.bluebubbles.groupAllowFrom` contrôle qui peut déclencher dans les groupes lorsque `allowlist` est défini.
+
   </Tab>
 </Tabs>
 
@@ -400,6 +403,7 @@ BlueBubbles prend en charge des actions de message avancées lorsqu’elles sont
     - **upload-file** : envoyer des médias/fichiers (`to`, `buffer`, `filename`, `asVoice`).
       - Mémos vocaux : définissez `asVoice: true` avec de l’audio **MP3** ou **CAF** pour l’envoyer comme message vocal iMessage. BlueBubbles convertit MP3 → CAF lors de l’envoi de mémos vocaux.
     - Alias hérité : `sendAttachment` fonctionne toujours, mais `upload-file` est le nom d’action canonique.
+
   </Accordion>
 </AccordionGroup>
 
@@ -480,6 +484,7 @@ Les deux Webhooks arrivent à OpenClaw avec ~0,8 à 2,0 s d’écart sur la plup
     - **Latence supplémentaire pour les commandes de contrôle DM.** Avec ce drapeau activé, les messages de commande de contrôle DM (comme `Dump`, `Save`, etc.) attendent désormais jusqu’à la fenêtre de debounce avant l’envoi, au cas où un Webhook de payload arriverait. Les commandes de discussion de groupe conservent un envoi instantané.
     - **La sortie fusionnée est limitée** — le texte fusionné est plafonné à 4000 caractères avec un marqueur explicite `…[truncated]` ; les pièces jointes sont plafonnées à 20 ; les entrées source sont plafonnées à 10 (le premier et le plus récent sont conservés au-delà de cette limite). Chaque `messageId` source atteint toujours la déduplication entrante, de sorte qu’une relecture ultérieure MessagePoller d’un événement individuel est reconnue comme un doublon.
     - **Activation explicite, par canal.** Les autres canaux (Telegram, WhatsApp, Slack, …) ne sont pas affectés.
+
   </Tab>
 </Tabs>
 
@@ -558,6 +563,7 @@ Configuration complète : [Configuration](/fr/gateway/configuration)
     - `channels.bluebubbles.serverUrl` : URL de base de l’API REST BlueBubbles.
     - `channels.bluebubbles.password` : mot de passe de l’API.
     - `channels.bluebubbles.webhookPath` : chemin du point de terminaison du Webhook (par défaut : `/bluebubbles-webhook`).
+
   </Accordion>
   <Accordion title="Politique d’accès">
     - `channels.bluebubbles.dmPolicy` : `pairing | allowlist | open | disabled` (par défaut : `pairing`).
@@ -566,6 +572,7 @@ Configuration complète : [Configuration](/fr/gateway/configuration)
     - `channels.bluebubbles.groupAllowFrom` : liste d’autorisation des expéditeurs de groupe.
     - `channels.bluebubbles.enrichGroupParticipantsFromContacts` : sur macOS, enrichit éventuellement les participants de groupe sans nom à partir des Contacts locaux après validation du filtrage. Par défaut : `false`.
     - `channels.bluebubbles.groups` : configuration par groupe (`requireMention`, etc.).
+
   </Accordion>
   <Accordion title="Livraison et segmentation">
     - `channels.bluebubbles.sendReadReceipts` : envoyer des accusés de lecture (par défaut : `true`).
@@ -573,6 +580,7 @@ Configuration complète : [Configuration](/fr/gateway/configuration)
     - `channels.bluebubbles.textChunkLimit` : taille des segments sortants en caractères (par défaut : 4000).
     - `channels.bluebubbles.sendTimeoutMs` : délai d’attente par requête en ms pour les envois de texte sortants via `/api/v1/message/text` (par défaut : 30000). Augmentez cette valeur sur les configurations macOS 26 où les envois iMessage via la Private API peuvent se bloquer pendant 60+ secondes dans le framework iMessage ; par exemple `45000` ou `60000`. Les sondes, recherches de chat, réactions, modifications et vérifications d’état conservent actuellement le délai plus court par défaut de 10 s ; l’extension de cette couverture aux réactions et aux modifications est prévue dans un suivi. Remplacement par compte : `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
     - `channels.bluebubbles.chunkMode` : `length` (par défaut) ne segmente qu’en cas de dépassement de `textChunkLimit` ; `newline` segmente sur les lignes vides (limites de paragraphe) avant la segmentation par longueur.
+
   </Accordion>
   <Accordion title="Médias et historique">
     - `channels.bluebubbles.mediaMaxMb` : limite de taille des médias entrants/sortants en Mo (par défaut : 8).
@@ -580,10 +588,12 @@ Configuration complète : [Configuration](/fr/gateway/configuration)
     - `channels.bluebubbles.coalesceSameSenderDms` : fusionner des Webhooks DM consécutifs du même expéditeur en un seul tour agent afin que l’envoi scindé texte+URL d’Apple arrive comme un seul message (par défaut : `false`). Voir [Fusion des DM en envoi scindé](#coalescing-split-send-dms-command--url-in-one-composition) pour les scénarios, l’ajustement de la fenêtre et les compromis. Élargit la fenêtre de debounce entrante par défaut de 500 ms à 2500 ms lorsqu’elle est activée sans `messages.inbound.byChannel.bluebubbles` explicite.
     - `channels.bluebubbles.historyLimit` : nombre maximal de messages de groupe pour le contexte (0 désactive).
     - `channels.bluebubbles.dmHistoryLimit` : limite d’historique DM.
+
   </Accordion>
   <Accordion title="Actions et comptes">
     - `channels.bluebubbles.actions` : activer/désactiver des actions spécifiques.
     - `channels.bluebubbles.accounts` : configuration multi-comptes.
+
   </Accordion>
 </AccordionGroup>
 

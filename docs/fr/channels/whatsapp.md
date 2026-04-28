@@ -371,6 +371,7 @@ Lorsque le numéro personnel lié est aussi présent dans `allowFrom`, les prote
     - limite de segment par défaut : `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - le mode `newline` privilégie les limites de paragraphe (lignes vides), puis se replie sur une segmentation sûre par longueur
+
   </Accordion>
 
   <Accordion title="Comportement des médias sortants">
@@ -383,6 +384,7 @@ Lorsque le numéro personnel lié est aussi présent dans `allowFrom`, les prote
     - la lecture GIF animée est prise en charge via `gifPlayback: true` sur les envois vidéo
     - les légendes sont appliquées au premier élément média lors de l'envoi de charges utiles de réponse multimédia, sauf que les notes vocales PTT envoient l'audio d'abord et le texte visible séparément, car les clients WhatsApp n'affichent pas les légendes de note vocale de manière cohérente
     - la source du média peut être HTTP(S), `file://` ou des chemins locaux
+
   </Accordion>
 
   <Accordion title="Limites de taille des médias et comportement de repli">
@@ -391,6 +393,7 @@ Lorsque le numéro personnel lié est aussi présent dans `allowFrom`, les prote
     - les surcharges par compte utilisent `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - les images sont optimisées automatiquement (balayage redimensionnement/qualité) pour respecter les limites
     - en cas d'échec d'envoi d'un média, le repli sur le premier élément envoie un avertissement texte au lieu d'ignorer silencieusement la réponse
+
   </Accordion>
 </AccordionGroup>
 
@@ -475,12 +478,14 @@ Remarques sur le comportement :
     - les identifiants de compte proviennent de `channels.whatsapp.accounts`
     - sélection du compte par défaut : `default` s'il est présent, sinon premier identifiant de compte configuré (trié)
     - les identifiants de compte sont normalisés en interne pour la recherche
+
   </Accordion>
 
   <Accordion title="Chemins des identifiants et compatibilité héritée">
     - chemin d'authentification actuel : `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - fichier de sauvegarde : `creds.json.bak`
     - l'ancienne authentification par défaut dans `~/.openclaw/credentials/` est toujours reconnue/migrée pour les flux de compte par défaut
+
   </Accordion>
 
   <Accordion title="Comportement de déconnexion">

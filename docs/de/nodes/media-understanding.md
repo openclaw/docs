@@ -68,6 +68,7 @@ Wenn das Verständnis fehlschlägt oder deaktiviert ist, wird **der Antwortfluss
       - Richtlinie `attachments` (`mode`, `maxAttachments`, `prefer`)
       - `scope` (optionales Gating nach Channel/chatType/Sitzungsschlüssel)
     - `tools.media.concurrency`: maximale gleichzeitige Fähigkeit-Läufe (Standard **2**).
+
   </Accordion>
 </AccordionGroup>
 
@@ -164,6 +165,7 @@ Empfohlene Standardwerte:
     - Wenn ein primäres Gateway-/WebChat-Modell nur Text unterstützt, bleiben Bildanhänge als ausgelagerte Referenzen `media://inbound/*` erhalten, sodass die Bild-/PDF-Tools oder das konfigurierte Bildmodell sie weiterhin prüfen können, statt den Anhang zu verlieren.
     - Explizite Anfragen `openclaw infer image describe --model <provider/model>` sind etwas anderes: Sie führen dieses bildfähige Provider-/Modell direkt aus, einschließlich Ollama-Referenzen wie `ollama/qwen2.5vl:7b`.
     - Wenn `<capability>.enabled: true` gesetzt ist, aber keine Modelle konfiguriert sind, versucht OpenClaw das **aktive Antwortmodell**, wenn dessen Provider die Fähigkeit unterstützt.
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +266,7 @@ Für CLI-Einträge sollten Sie `capabilities` **explizit setzen**, um überrasch
 
 - `minimax`- und `minimax-portal`-Bildverständnis stammt vom Plugin-eigenen Medienprovider `MiniMax-VL-01`.
 - Der gebündelte MiniMax-Textkatalog beginnt weiterhin nur mit Text; explizite Einträge `models.providers.minimax` materialisieren bildfähige M2.7-Chat-Referenzen.
+
 </Note>
 
 ## Leitfaden zur Modellauswahl
@@ -297,6 +300,7 @@ Wenn `mode: "all"` gesetzt ist, werden Ausgaben als `[Image 1/2]`, `[Audio 2/2]`
     - Dieser Pfad zur Anhangsextraktion lässt absichtlich das lange Banner `SECURITY NOTICE:` weg, damit der Medien-Prompt nicht aufgebläht wird; die Begrenzungsmarker und Metadaten bleiben trotzdem erhalten.
     - Wenn eine Datei keinen extrahierbaren Text hat, fügt OpenClaw `[No extractable text]` ein.
     - Wenn ein PDF in diesem Pfad auf gerenderte Seitenbilder zurückfällt, behält der Medien-Prompt den Platzhalter `[PDF content rendered to images; images not forwarded to model]`, weil dieser Anhangsextraktionsschritt Textblöcke weiterleitet, nicht die gerenderten PDF-Bilder.
+
   </Accordion>
 </AccordionGroup>
 

@@ -115,6 +115,7 @@ Nie każde uruchomienie agenta tworzy zadanie. Tury Heartbeat i zwykły interakt
     - Tury Heartbeat — sesja główna; zobacz [Heartbeat](/pl/gateway/heartbeat)
     - Zwykłe tury interaktywnego czatu
     - Bezpośrednie odpowiedzi `/command`
+
   </Accordion>
 </AccordionGroup>
 

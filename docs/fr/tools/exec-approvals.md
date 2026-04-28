@@ -124,6 +124,7 @@ Exemple de schéma :
   - `deny` — bloquer toutes les requêtes d’exec sur hôte.
   - `allowlist` — autoriser uniquement les commandes présentes dans la liste d’autorisation.
   - `full` — tout autoriser (équivalent à elevated).
+
 </ParamField>
 
 ### `exec.ask`
@@ -132,6 +133,7 @@ Exemple de schéma :
   - `off` — ne jamais afficher d’invite.
   - `on-miss` — afficher une invite uniquement lorsqu’il n’y a pas de correspondance dans la liste d’autorisation.
   - `always` — afficher une invite pour chaque commande. La confiance durable `allow-always` **ne** supprime **pas** les invites lorsque le mode ask effectif est `always`.
+
 </ParamField>
 
 ### `askFallback`
@@ -142,6 +144,7 @@ Exemple de schéma :
 - `deny` — bloquer.
 - `allowlist` — autoriser uniquement si la liste d’autorisation correspond.
 - `full` — autoriser.
+
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
@@ -188,6 +191,7 @@ YOLO est le comportement hôte par défaut sauf si vous le resserrez expliciteme
 - YOLO choisit **comment** l’exec hôte est approuvé : `security=full` plus `ask=off`.
 - En mode YOLO, OpenClaw **n’ajoute pas** de gate d’approbation heuristique séparée contre l’obfuscation de commande ni de couche de rejet preflight de script par-dessus la politique configurée d’exec hôte.
 - `auto` ne fait pas du routage gateway une dérogation gratuite depuis une session sandboxée. Une requête `host=node` par appel est autorisée depuis `auto` ; `host=gateway` n’est autorisé depuis `auto` que lorsqu’aucun runtime sandbox n’est actif. Pour une valeur par défaut stable non-`auto`, définissez `tools.exec.host` ou utilisez explicitement `/exec host=...`.
+
 </Warning>
 
 Les fournisseurs soutenus par CLI qui exposent leur propre mode de permission non interactif
@@ -266,6 +270,7 @@ EOF
 - `openclaw exec-policy` ne synchronise pas les approbations du Node.
 - `openclaw exec-policy set --host node` est rejeté.
 - Les approbations exec du Node sont récupérées depuis le Node à l’exécution, donc les mises à jour ciblant le Node doivent utiliser `openclaw approvals --node ...`.
+
 </Note>
 
 ### Raccourci session uniquement
@@ -318,6 +323,7 @@ liste des binaires de Skills. Désactivez cela si vous voulez des listes d’aut
 - Il s’agit d’une **liste d’autorisation implicite de confort**, distincte des entrées manuelles de liste d’autorisation par chemin.
 - Elle est destinée aux environnements opérateur de confiance où Gateway et Node partagent la même frontière de confiance.
 - Si vous exigez une confiance explicite stricte, gardez `autoAllowSkills: false` et utilisez uniquement des entrées manuelles de liste d’autorisation par chemin.
+
 </Warning>
 
 ## Bins sûrs et transfert d’approbation

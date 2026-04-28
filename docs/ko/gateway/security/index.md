@@ -299,6 +299,7 @@ HTTPS(Tailscale Serve)를 선호하거나 `127.0.0.1`에서 UI를 여세요.
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="config 스키마의 모든 `dangerous*` / `dangerously*` 키">

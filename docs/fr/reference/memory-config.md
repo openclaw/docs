@@ -546,6 +546,7 @@ Pour le comportement conceptuel et les commandes slash, consultez [Dreaming](/fr
 - Dreaming écrit l’état machine dans `memory/.dreams/`.
 - Dreaming écrit une sortie narrative lisible par l’humain dans `DREAMS.md` (ou le fichier existant `dreams.md`).
 - La stratégie et les seuils des phases light/deep/REM relèvent du comportement interne, et non d’une configuration orientée utilisateur.
+
 </Note>
 
 ## Lié

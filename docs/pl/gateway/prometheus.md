@@ -136,6 +136,7 @@ Wymagane jest `diagnostics.enabled: true`. Bez tego plugin nadal rejestruje tras
     - surowe identyfikatory żądań providera (tylko ograniczone hashe, tam gdzie dotyczy, na spanach — nigdy w metrykach)
     - klucze sesji i identyfikatory sesji
     - nazwy hostów, ścieżki plików, wartości sekretów
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ OpenClaw obsługuje obie powierzchnie niezależnie. Możesz używać jednej, obu
     - Uwierzytelnianie przez zwykłe auth Gateway.
     - Powierzchnia obejmuje tylko metryki (bez śladów i logów).
     - Najlepsze dla stosów już opartych na Prometheus + Grafana.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - Model **push**: OpenClaw wysyła OTLP/HTTP do collectora lub backendu zgodnego z OTLP.
     - Powierzchnia obejmuje metryki, ślady i logi.
     - Mostkuje do Prometheus przez OpenTelemetry Collector (eksporter `prometheus` lub `prometheusremotewrite`), gdy potrzebujesz obu.
     - Pełny katalog znajdziesz w [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ OpenClaw obsługuje obie powierzchnie niezależnie. Możesz używać jednej, obu
     - Sprawdź `diagnostics.enabled: true` w konfiguracji.
     - Potwierdź, że plugin jest włączony i załadowany, używając `openclaw plugins list --enabled`.
     - Wygeneruj trochę ruchu; countery i histogramy emitują linie dopiero po co najmniej jednym zdarzeniu.
+
   </Accordion>
   <Accordion title="401 / unauthorized">
     Endpoint wymaga zakresu operatora Gateway (`auth: "gateway"` z `gatewayRuntimeScopeSurface: "trusted-operator"`). Użyj tego samego tokenu lub hasła, którego Prometheus używa do każdej innej trasy operatora Gateway. Nie ma publicznego trybu nieuwierzytelnionego.

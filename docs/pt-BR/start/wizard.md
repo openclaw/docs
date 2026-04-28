@@ -61,9 +61,11 @@ O onboarding começa com **QuickStart** (padrões) vs **Advanced** (controle tot
     - Padrão de isolamento de DM: o onboarding local grava `session.dmScope: "per-channel-peer"` quando não definido. Detalhes: [CLI Setup Reference](/pt-BR/start/wizard-cli-reference#outputs-and-internals)
     - Exposição por Tailscale **Desligada**
     - DMs de Telegram + WhatsApp usam **allowlist** por padrão (você será solicitado a informar seu número de telefone)
+
   </Tab>
   <Tab title="Advanced (controle total)">
     - Expõe todas as etapas (modo, workspace, gateway, canais, daemon, Skills).
+
   </Tab>
 </Tabs>
 

@@ -97,6 +97,7 @@ Native Slash-Befehle sind optional. Wenn sie aktiviert sind, registriert OpenCla
     - Für Setups mit mehreren Accounts kann `commands` auf oberster Ebene oder unter `channels.mattermost.accounts.<id>.commands` gesetzt werden (Account-Werte überschreiben Felder auf oberster Ebene).
     - Befehls-Callbacks werden mit den pro Befehl zurückgegebenen Token validiert, die Mattermost zurückgibt, wenn OpenClaw `oc_*`-Befehle registriert.
     - Slash-Callbacks schlagen fail-closed fehl, wenn die Registrierung fehlgeschlagen ist, der Start nur teilweise erfolgt ist oder das Callback-Token nicht mit einem der registrierten Befehle übereinstimmt.
+
   </Accordion>
   <Accordion title="Anforderung an die Erreichbarkeit">
     Der Callback-Endpunkt muss vom Mattermost-Server aus erreichbar sein.
@@ -291,11 +292,13 @@ Aktivierung über `channels.mattermost.streaming`:
     - `block` verwendet Entwurfs-Chunks im Anhänge-Stil innerhalb des Vorschau-Beitrags.
     - `progress` zeigt während der Generierung eine Statusvorschau und veröffentlicht die endgültige Antwort erst nach Abschluss.
     - `off` deaktiviert Vorschau-Streaming.
+
   </Accordion>
   <Accordion title="Hinweise zum Streaming-Verhalten">
     - Wenn der Stream nicht an Ort und Stelle finalisiert werden kann (zum Beispiel wenn der Beitrag während des Streams gelöscht wurde), greift OpenClaw auf das Senden eines neuen finalen Beitrags zurück, damit die Antwort nie verloren geht.
     - Reine Reasoning-Payloads werden in Channel-Beiträgen unterdrückt, einschließlich Text, der als `> Reasoning:`-Blockquote ankommt. Setzen Sie `/reasoning on`, um das Denken auf anderen Oberflächen zu sehen; der finale Mattermost-Beitrag enthält nur die Antwort.
     - Die Zuordnungsmatrix für Channels finden Sie unter [Streaming](/de/concepts/streaming#preview-streaming-modes).
+
   </Accordion>
 </AccordionGroup>
 
@@ -369,6 +372,7 @@ Wenn ein Benutzer auf eine Schaltfläche klickt:
     - Für Schaltflächen-Callbacks wird HMAC-SHA256-Verifizierung verwendet (automatisch, keine Konfiguration erforderlich).
     - Mattermost entfernt Callback-Daten aus seinen API-Antworten (Sicherheitsfunktion), daher werden beim Klick alle Schaltflächen entfernt — eine teilweise Entfernung ist nicht möglich.
     - Aktions-IDs mit Bindestrichen oder Unterstrichen werden automatisch bereinigt (Routing-Einschränkung in Mattermost).
+
   </Accordion>
   <Accordion title="Konfiguration und Erreichbarkeit">
     - `channels.mattermost.capabilities`: Array von Fähigkeits-Strings. Fügen Sie `"inlineButtons"` hinzu, um die Tool-Beschreibung für Schaltflächen im Agenten-System-Prompt zu aktivieren.
@@ -377,6 +381,7 @@ Wenn ein Benutzer auf eine Schaltfläche klickt:
     - Wenn `interactions.callbackBaseUrl` weggelassen wird, leitet OpenClaw die Callback-URL aus `gateway.customBindHost` + `gateway.port` ab und greift dann auf `http://localhost:<port>` zurück.
     - Erreichbarkeitsregel: Die Schaltflächen-Callback-URL muss vom Mattermost-Server aus erreichbar sein. `localhost` funktioniert nur, wenn Mattermost und OpenClaw auf demselben Host/im selben Netzwerk-Namespace laufen.
     - Wenn Ihr Callback-Ziel privat/Tailnet/intern ist, fügen Sie dessen Host/Domain zu `ServiceSettings.AllowedUntrustedInternalConnections` in Mattermost hinzu.
+
   </Accordion>
 </AccordionGroup>
 
@@ -472,6 +477,7 @@ context = {**ctx, "_token": token}
     - Signieren Sie immer **alle** Kontextfelder (ohne `_token`). Das Gateway entfernt `_token` und signiert dann alles Verbleibende. Das Signieren einer Teilmenge führt zu stillschweigendem Verifizierungsfehler.
     - Verwenden Sie `sort_keys=True` — das Gateway sortiert Schlüssel vor dem Signieren, und Mattermost kann Kontextfelder beim Speichern der Payload neu anordnen.
     - Leiten Sie das Geheimnis aus dem Bot-Token ab (deterministisch), nicht aus zufälligen Bytes. Das Geheimnis muss in dem Prozess, der Schaltflächen erstellt, und im Gateway, das sie verifiziert, identisch sein.
+
   </Accordion>
 </AccordionGroup>
 
@@ -507,6 +513,7 @@ Mattermost unterstützt mehrere Accounts unter `channels.mattermost.accounts`:
   <Accordion title="Authentifizierungs- oder Mehrfach-Account-Fehler">
     - Prüfen Sie das Bot-Token, die Basis-URL und ob der Account aktiviert ist.
     - Probleme mit mehreren Accounts: Umgebungsvariablen gelten nur für den `default`-Account.
+
   </Accordion>
   <Accordion title="Native Slash-Befehle schlagen fehl">
     - `Unauthorized: invalid command token.`: OpenClaw hat das Callback-Token nicht akzeptiert. Typische Ursachen:
@@ -516,6 +523,7 @@ Mattermost unterstützt mehrere Accounts unter `channels.mattermost.accounts`:
       - Das Gateway wurde neu gestartet, ohne die Slash-Befehle erneut zu aktivieren.
     - Wenn native Slash-Befehle nicht mehr funktionieren, prüfen Sie die Logs auf `mattermost: failed to register slash commands` oder `mattermost: native slash commands enabled but no commands could be registered`.
     - Wenn `callbackUrl` weggelassen wird und Logs warnen, dass das Callback zu `http://127.0.0.1:18789/...` aufgelöst wurde, ist diese URL wahrscheinlich nur erreichbar, wenn Mattermost auf demselben Host/im selben Netzwerk-Namespace wie OpenClaw läuft. Setzen Sie stattdessen eine explizite extern erreichbare `commands.callbackUrl`.
+
   </Accordion>
   <Accordion title="Probleme mit Schaltflächen">
     - Schaltflächen erscheinen als weiße Kästchen: Der Agent sendet möglicherweise fehlerhafte Schaltflächendaten. Prüfen Sie, ob jede Schaltfläche sowohl `text`- als auch `callback_data`-Felder hat.
@@ -525,6 +533,7 @@ Mattermost unterstützt mehrere Accounts unter `channels.mattermost.accounts`:
     - Gateway-Logs `missing _token in context`: Das Feld `_token` fehlt im Kontext der Schaltfläche. Stellen Sie sicher, dass es beim Erstellen der Integrations-Payload enthalten ist.
     - In der Bestätigung wird die rohe ID statt des Schaltflächennamens angezeigt: `context.action_id` stimmt nicht mit der `id` der Schaltfläche überein. Setzen Sie beide auf denselben bereinigten Wert.
     - Der Agent weiß nichts über Schaltflächen: Fügen Sie `capabilities: ["inlineButtons"]` zur Mattermost-Channel-Konfiguration hinzu.
+
   </Accordion>
 </AccordionGroup>
 

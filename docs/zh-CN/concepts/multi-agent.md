@@ -244,11 +244,13 @@ openclaw agents list --bindings
   <Accordion title="平局处理和 AND 语义">
     - 如果同一层级中有多个绑定匹配，则按配置顺序取第一个。
     - 如果一个绑定设置了多个匹配字段（例如 `peer` + `guildId`），则所有指定字段都必须匹配（`AND` 语义）。
+
   </Accordion>
   <Accordion title="账号作用域细节">
     - 省略 `accountId` 的绑定只匹配默认账号。
     - 使用 `accountId: "*"` 可为该渠道下所有账号设置渠道级回退。
     - 如果你之后为同一个智能体、同一绑定添加了显式账号 id，OpenClaw 会将现有的仅渠道绑定升级为账号作用域绑定，而不是创建重复项。
+
   </Accordion>
 </AccordionGroup>
 

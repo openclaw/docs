@@ -136,6 +136,7 @@ OpenClaw는 번들 Chutes 카탈로그에 대해 세 가지 편의 별칭을 등
     - API 키와 OAuth discovery는 모두 동일한 `chutes` provider id를 사용합니다.
     - Chutes 모델은 `chutes/<model-id>` 형식으로 등록됩니다.
     - 시작 시 discovery가 실패하면 번들 정적 카탈로그가 자동으로 사용됩니다.
+
   </Accordion>
 </AccordionGroup>
 

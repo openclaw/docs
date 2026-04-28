@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - Frischeprüfung des UI-Protokolls (baut die Control UI neu, wenn das Protokollschema neuer ist).
     - Health-Check + Neustartaufforderung.
     - Zusammenfassung des Skills-Status (zulässig/fehlend/blockiert) und Plugin-Status.
+
   </Accordion>
   <Accordion title="Konfiguration und Migrationen">
     - Konfigurationsnormalisierung für Legacy-Werte.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - Migration von Legacy-Vertragsschlüsseln in Plugin-Manifests (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - Migration des Legacy-Cron-Stores (`jobId`, `schedule.cron`, Top-Level-Felder für delivery/payload, Payload-`provider`, einfache Webhook-Fallback-Jobs mit `notify: true`).
     - Migration der Legacy-Richtlinie zur Agent-Laufzeit nach `agents.defaults.agentRuntime` und `agents.list[].agentRuntime`.
+
   </Accordion>
   <Accordion title="Zustand und Integrität">
     - Prüfung von Sitzungs-Lock-Dateien und Bereinigung veralteter Locks.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - Prüfungen der Berechtigungen der Konfigurationsdatei (chmod 600) bei lokaler Ausführung.
     - Zustand der Model-Authentifizierung: prüft OAuth-Ablauf, kann bald ablaufende Tokens aktualisieren und meldet Cooldown-/Deaktivierungszustände von Auth-Profilen.
     - Erkennung zusätzlicher Workspace-Verzeichnisse (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, Dienste und Supervisoren">
     - Reparatur von Sandbox-Images, wenn Sandboxing aktiviert ist.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Audit der Supervisor-Konfiguration (launchd/systemd/schtasks) mit optionaler Reparatur.
     - Best-Practice-Prüfungen für die Gateway-Laufzeit (Node vs Bun, Pfade von Versionsmanagern).
     - Diagnose von Gateway-Portkonflikten (Standard `18789`).
+
   </Accordion>
   <Accordion title="Authentifizierung, Sicherheit und Kopplung">
     - Sicherheitswarnungen für offene DM-Richtlinien.
     - Prüfungen der Gateway-Authentifizierung für den lokalen Token-Modus (bietet Tokenerzeugung an, wenn keine Token-Quelle existiert; überschreibt keine Token-SecretRef-Konfigurationen).
     - Erkennung von Problemen bei der Gerätekopplung (ausstehende Kopplungsanfragen beim ersten Mal, ausstehende Rollen-/Scope-Upgrades, Drift in veraltetem lokalem Device-Token-Cache und Drift in Auth-Status gepaarter Einträge).
+
   </Accordion>
   <Accordion title="Workspace und Shell">
     - Prüfung von systemd-linger unter Linux.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - Bereitschaftsprüfung des Embedding-Anbieters für die Speichersuche (lokales Modell, entfernter API-Schlüssel oder QMD-Binärdatei).
     - Prüfungen von Source-Installationen (pnpm-Workspace-Mismatch, fehlende UI-Assets, fehlende `tsx`-Binärdatei).
     - Schreibt aktualisierte Konfiguration + Wizard-Metadaten.
+
   </Accordion>
 </AccordionGroup>
 

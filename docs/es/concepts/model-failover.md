@@ -226,6 +226,7 @@ OpenClaw construye la lista de candidatos a partir del `provider/model` solicita
     - Si la ejecución actual ya está en un respaldo configurado de la misma familia de provider, OpenClaw sigue usando toda la cadena configurada.
     - Si la ejecución actual está en un provider diferente al de la configuración y ese modelo actual no forma ya parte de la cadena de respaldo configurada, OpenClaw no añade respaldos configurados no relacionados de otro provider.
     - Cuando la ejecución comenzó desde una anulación, el primario configurado se añade al final para que la cadena pueda volver a asentarse en el valor predeterminado normal una vez agotados los candidatos anteriores.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ OpenClaw construye la lista de candidatos a partir del `provider/model` solicita
     - deshabilitaciones por facturación
     - `LiveSessionModelSwitchError`, que se normaliza en una ruta de respaldo para que un modelo persistido obsoleto no cree un bucle externo de reintento
     - otros errores no reconocidos cuando todavía quedan candidatos
+
   </Tab>
   <Tab title="No continúa con">
     - abortos explícitos que no tienen forma de tiempo de espera/respaldo
     - errores de desbordamiento de contexto que deben permanecer dentro de la lógica de Compaction/reintento (por ejemplo `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` u `ollama error: context length exceeded`)
     - un error desconocido final cuando no quedan candidatos
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Cuando todos los perfiles de autenticación de un provider ya están en enfriami
     - El candidato primario puede sondearse cerca del vencimiento del enfriamiento, con una limitación por provider.
     - Los hermanos de respaldo del mismo provider pueden intentarse a pesar del enfriamiento cuando el fallo parece transitorio (`rate_limit`, `overloaded` o desconocido). Esto es especialmente relevante cuando un límite de velocidad tiene alcance de modelo y un modelo hermano aún puede recuperarse de inmediato.
     - Los sondeos transitorios de enfriamiento se limitan a uno por provider por ejecución de respaldo para que un solo provider no bloquee el respaldo entre providers.
+
   </Accordion>
 </AccordionGroup>
 

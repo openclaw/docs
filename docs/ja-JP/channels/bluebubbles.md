@@ -73,6 +73,7 @@ x-i18n:
 - 必ずWebhookパスワードを設定してください。
 - Webhook認証は常に必須です。OpenClawは、loopback/proxyの構成にかかわらず、`channels.bluebubbles.password` に一致するpassword/guid（たとえば `?password=<password>` または `x-password`）が含まれていない限り、BlueBubblesのWebhookリクエストを拒否します。
 - パスワード認証は、Webhook本文全体を読み取り/解析する前に確認されます。
+
 </Warning>
 
 ## Messages.appを生かしておく（VM / ヘッドレス構成）
@@ -184,10 +185,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - ペアリングがデフォルトのトークン交換です。詳細: [Pairing](/ja-JP/channels/pairing)
+
   </Tab>
   <Tab title="グループ">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled`（デフォルト: `allowlist`）。
     - `channels.bluebubbles.groupAllowFrom` は、`allowlist` が設定されているときに、グループ内で誰がトリガーできるかを制御します。
+
   </Tab>
 </Tabs>
 
@@ -400,6 +403,7 @@ BlueBubblesは、設定で有効にすると高度なメッセージアクショ
     - **upload-file**: メディア/ファイルを送信します（`to`, `buffer`, `filename`, `asVoice`）。
       - ボイスメモ: **MP3** または **CAF** 音声に `asVoice: true` を設定すると、iMessageの音声メッセージとして送信できます。BlueBubblesはボイスメモ送信時にMP3 → CAFへ変換します。
     - レガシーエイリアス: `sendAttachment` も引き続き動作しますが、正式なアクション名は `upload-file` です。
+
   </Accordion>
 </AccordionGroup>
 
@@ -481,6 +485,7 @@ OpenClawは、トークン節約のために_短縮_メッセージID（例: `1`
     - **DM制御コマンドのレイテンシーが増加します。** このフラグがオンの場合、DMの制御コマンドメッセージ（`Dump`、`Save` など）は、payloadのWebhookが続いて来る可能性があるため、ディスパッチ前に最大でデバウンスウィンドウ分待機します。グループチャットのコマンドは即時ディスパッチのままです。
     - **結合出力には上限があります** — 結合されたテキストは4000文字で打ち切られ、明示的な `…[truncated]` マーカーが付きます。添付ファイルは20件、ソースエントリーは10件で上限です（それを超える場合は最初と最新を保持）。各ソース `messageId` は引き続き受信重複排除に渡されるため、後から個別イベントがMessagePollerで再生されても重複として認識されます。
     - **チャンネル単位のオプトインです。** 他のチャンネル（Telegram、WhatsApp、Slack、…）には影響しません。
+
   </Tab>
 </Tabs>
 
@@ -559,6 +564,7 @@ OpenClawは、トークン節約のために_短縮_メッセージID（例: `1`
     - `channels.bluebubbles.serverUrl`: BlueBubbles REST APIのベースURL。
     - `channels.bluebubbles.password`: APIパスワード。
     - `channels.bluebubbles.webhookPath`: Webhookエンドポイントのパス（デフォルト: `/bluebubbles-webhook`）。
+
   </Accordion>
   <Accordion title="アクセスポリシー">
     - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled`（デフォルト: `pairing`）。
@@ -567,6 +573,7 @@ OpenClawは、トークン節約のために_短縮_メッセージID（例: `1`
     - `channels.bluebubbles.groupAllowFrom`: グループ送信者の許可リスト。
     - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: macOS上で、ゲーティング通過後に名前のないグループ参加者をローカルContactsから任意で補完します。デフォルト: `false`。
     - `channels.bluebubbles.groups`: グループごとの設定（`requireMention` など）。
+
   </Accordion>
   <Accordion title="配信とチャンク分割">
     - `channels.bluebubbles.sendReadReceipts`: 開封確認を送信します（デフォルト: `true`）。
@@ -574,6 +581,7 @@ OpenClawは、トークン節約のために_短縮_メッセージID（例: `1`
     - `channels.bluebubbles.textChunkLimit`: 送信チャンクサイズ（文字数、デフォルト: 4000）。
     - `channels.bluebubbles.sendTimeoutMs`: `/api/v1/message/text` 経由で送信テキストを送る際のリクエストごとのタイムアウト（ms、デフォルト: 30000）。macOS 26環境でPrivate APIのiMessage送信がiMessageフレームワーク内で60秒超停止することがある場合は、たとえば `45000` や `60000` に引き上げてください。現在、プローブ、チャット検索、リアクション、編集、ヘルスチェックは引き続き短い10秒デフォルトを使います。リアクションと編集まで対象を広げるのは今後のフォローアップで予定されています。アカウントごとの上書き: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`。
     - `channels.bluebubbles.chunkMode`: `length`（デフォルト）は `textChunkLimit` を超えた場合のみ分割します。`newline` は長さによる分割の前に空行（段落境界）で分割します。
+
   </Accordion>
   <Accordion title="メディアと履歴">
     - `channels.bluebubbles.mediaMaxMb`: 受信/送信メディアの上限サイズ（MB、デフォルト: 8）。
@@ -581,10 +589,12 @@ OpenClawは、トークン節約のために_短縮_メッセージID（例: `1`
     - `channels.bluebubbles.coalesceSameSenderDms`: 同じ送信者から連続するDM Webhookを1つのエージェントターンに結合し、Appleのテキスト+URL分割送信を1つのメッセージとして届かせます（デフォルト: `false`）。シナリオ、ウィンドウ調整、トレードオフについては [分割送信DMの結合](#coalescing-split-send-dms-command--url-in-one-composition) を参照してください。明示的な `messages.inbound.byChannel.bluebubbles` がない状態で有効化すると、デフォルトの受信デバウンスウィンドウは500 msから2500 msに広がります。
     - `channels.bluebubbles.historyLimit`: コンテキスト用のグループメッセージ最大数（0で無効）。
     - `channels.bluebubbles.dmHistoryLimit`: DM履歴上限。
+
   </Accordion>
   <Accordion title="アクションとアカウント">
     - `channels.bluebubbles.actions`: 個別アクションの有効/無効。
     - `channels.bluebubbles.accounts`: 複数アカウント設定。
+
   </Accordion>
 </AccordionGroup>
 

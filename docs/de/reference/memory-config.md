@@ -546,6 +546,7 @@ Zum konzeptionellen Verhalten und zu Slash-Befehlen siehe [Dreaming](/de/concept
 - Dreaming schreibt Maschinenzustand nach `memory/.dreams/`.
 - Dreaming schreibt menschenlesbare narrative Ausgabe nach `DREAMS.md` (oder in eine vorhandene `dreams.md`).
 - Die Richtlinie und Schwellenwerte für die Phasen Light/Deep/REM sind internes Verhalten und keine benutzerseitige Konfiguration.
+
 </Note>
 
 ## Verwandt

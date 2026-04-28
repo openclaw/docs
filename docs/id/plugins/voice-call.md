@@ -164,12 +164,14 @@ mengembalikan konfigurasi provider yang hilang secara persis saat digunakan.
     - Pada tier gratis ngrok, atur `publicUrl` ke URL ngrok yang persis; verifikasi signature selalu diberlakukan.
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` mengizinkan Webhook Twilio dengan signature tidak valid **hanya** saat `tunnel.provider="ngrok"` dan `serve.bind` adalah loopback (agen lokal ngrok). Hanya untuk dev lokal.
     - URL ngrok tier gratis dapat berubah atau menambahkan perilaku interstitial; jika `publicUrl` bergeser, signature Twilio gagal. Untuk produksi: pilih domain stabil atau funnel Tailscale.
+
   </Accordion>
   <Accordion title="Batas koneksi streaming">
     - `streaming.preStartTimeoutMs` menutup socket yang tidak pernah mengirim frame `start` yang valid.
     - `streaming.maxPendingConnections` membatasi total socket pra-start yang belum diautentikasi.
     - `streaming.maxPendingConnectionsPerIp` membatasi socket pra-start yang belum diautentikasi per IP sumber.
     - `streaming.maxConnections` membatasi total socket media stream yang terbuka (tertunda + aktif).
+
   </Accordion>
   <Accordion title="Migrasi config lama">
     Config lama yang menggunakan `provider: "log"`, `twilio.from`, atau key OpenAI `streaming.*`

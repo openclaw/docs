@@ -37,35 +37,42 @@ x-i18n:
   <Accordion title="Discord 和 Slack">
     - 空 `emoji` 会移除机器人在该消息上的所有表情回应。
     - `remove: true` 只会移除指定的 emoji。
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - 空 `emoji` 会移除应用在该消息上的表情回应。
     - `remove: true` 只会移除指定的 emoji。
+
   </Accordion>
 
   <Accordion title="Telegram">
     - 空 `emoji` 会移除机器人的表情回应。
     - `remove: true` 也会移除表情回应，但为了通过工具校验，仍然要求提供非空 `emoji`。
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - 空 `emoji` 会移除机器人的表情回应。
     - `remove: true` 会在内部映射为空 emoji（但工具调用中仍然要求提供 `emoji`）。
+
   </Accordion>
 
   <Accordion title="Zalo Personal（zalouser）">
     - 要求 `emoji` 非空。
     - `remove: true` 会移除该特定 emoji 表情回应。
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - 使用 `feishu_reaction` 工具，并配合 `add`、`remove` 和 `list` 动作。
     - 添加/移除都要求 `emoji_type`；移除还要求提供 `reaction_id`。
+
   </Accordion>
 
   <Accordion title="Signal">
     - 入站表情回应通知由 `channels.signal.reactionNotifications` 控制：`"off"` 会禁用它们，`"own"`（默认）会在用户对机器人消息做出回应时发出事件，而 `"all"` 会为所有表情回应发出事件。
+
   </Accordion>
 </AccordionGroup>
 

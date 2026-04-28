@@ -226,6 +226,7 @@ OpenClaw baut die Kandidatenliste aus dem aktuell angeforderten `provider/model`
     - Wenn der aktuelle Lauf bereits auf einem konfigurierten Fallback derselben Provider-Familie läuft, verwendet OpenClaw weiterhin die vollständige konfigurierte Kette.
     - Wenn der aktuelle Lauf auf einem anderen Provider als in der Konfiguration läuft und dieses aktuelle Modell nicht bereits Teil der konfigurierten Fallback-Kette ist, hängt OpenClaw keine nicht zusammenhängenden konfigurierten Fallbacks eines anderen Providers an.
     - Wenn der Lauf mit einer Überschreibung begonnen hat, wird das konfigurierte primäre Modell am Ende angehängt, damit sich die Kette nach Ausschöpfen früherer Kandidaten wieder auf den normalen Standard einpendeln kann.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ OpenClaw baut die Kandidatenliste aus dem aktuell angeforderten `provider/model`
     - Billing-Deaktivierungen
     - `LiveSessionModelSwitchError`, das in einen Fallback-Pfad normalisiert wird, damit ein veraltetes persistiertes Modell keine äußere Retry-Schleife erzeugt
     - anderen nicht erkannten Fehlern, wenn noch Kandidaten übrig sind
+
   </Tab>
   <Tab title="Setzt nicht fort bei">
     - expliziten Abbrüchen, die nicht timeout-/fallback-artig sind
     - Kontextüberlauffehlern, die innerhalb der Compaction-/Retry-Logik bleiben sollten (zum Beispiel `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` oder `ollama error: context length exceeded`)
     - einem letzten unbekannten Fehler, wenn keine Kandidaten mehr übrig sind
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Wenn sich jedes Authentifizierungsprofil für einen Provider bereits im Cooldown
     - Der primäre Kandidat kann nahe dem Ablauf des Cooldowns geprüft werden, mit einer providerbezogenen Drosselung.
     - Gleichartige Fallback-Geschwister desselben Providers können trotz Cooldown versucht werden, wenn der Fehler transient wirkt (`rate_limit`, `overloaded` oder unbekannt). Das ist besonders relevant, wenn ein Rate Limit modellbezogen ist und sich ein Geschwistermodell möglicherweise sofort erholen kann.
     - Transiente Cooldown-Probes sind auf eine pro Provider pro Fallback-Lauf begrenzt, damit ein einzelner Provider den providerübergreifenden Fallback nicht blockiert.
+
   </Accordion>
 </AccordionGroup>
 

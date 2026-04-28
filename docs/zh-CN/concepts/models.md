@@ -57,6 +57,7 @@ OpenClaw 按以下顺序选择模型：
     - `agents.defaults.musicGenerationModel` 用于共享音乐生成功能。如果省略，`music_generate` 仍可推断出带凭证的提供商默认值。它会先尝试当前默认提供商，然后按提供商 id 顺序尝试其余已注册的音乐生成提供商。如果你设置了特定的提供商/模型，也请配置该提供商的凭证/API 密钥。
     - `agents.defaults.videoGenerationModel` 用于共享视频生成功能。如果省略，`video_generate` 仍可推断出带凭证的提供商默认值。它会先尝试当前默认提供商，然后按提供商 id 顺序尝试其余已注册的视频生成提供商。如果你设置了特定的提供商/模型，也请配置该提供商的凭证/API 密钥。
     - 每个智能体的默认值可以通过 `agents.list[].model` 以及绑定覆盖 `agents.defaults.model`（参见 [多智能体路由](/zh-CN/concepts/multi-agent)）。
+
   </Accordion>
 </AccordionGroup>
 
@@ -132,6 +133,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - 将该模型添加到 `agents.defaults.models`，或
 - 清除允许列表（移除 `agents.defaults.models`），或
 - 从 `/model list` 中选择一个模型。
+
 </Warning>
 
 允许列表示例配置：
@@ -166,6 +168,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
     - 在 Discord 上，`/model` 和 `/models` 会打开一个交互式选择器，其中包含提供商和模型下拉菜单，以及一个提交步骤。
     - `/models add` 已弃用，现在会返回弃用提示消息，而不是从聊天中注册模型。
     - `/model <#>` 会从该选择器中选择。
+
   </Accordion>
   <Accordion title="持久化和实时切换">
     - `/model` 会立即持久化新的会话选择。
@@ -174,6 +177,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
     - 如果工具活动或回复输出已经开始，待处理切换可能会一直排队，直到后续的重试机会或下一个用户轮次。
     - 用户为该会话选择的 `/model` 引用是严格的：如果所选提供商/模型不可达，回复会明确失败，而不是静默地从 `agents.defaults.model.fallbacks` 回答。这与已配置默认值和 cron 作业主模型不同，后者仍可使用回退链。
     - `/model status` 是详细视图（凭证候选项，以及在已配置时显示提供商端点 `baseUrl` + `api` 模式）。
+
   </Accordion>
   <Accordion title="引用解析">
     - 模型引用通过在**第一个** `/` 处分割来解析。输入 `/model <ref>` 时请使用 `provider/model`。
@@ -243,6 +247,7 @@ openclaw models image-fallbacks clear
     - 自动化场景请使用 `--check`（缺失/已过期时退出码为 `1`，即将过期时为 `2`）。
     - 实时凭证检查请使用 `--probe`；探测行可以来自凭证配置文件、环境变量凭证或 `models.json`。
     - 如果显式的 `auth.order.<provider>` 省略了某个已存储配置文件，探测会报告 `excluded_by_auth_order`，而不是尝试它。如果凭证存在，但无法为该提供商解析出可探测模型，探测会报告 `status: no_model`。
+
   </Accordion>
 </AccordionGroup>
 

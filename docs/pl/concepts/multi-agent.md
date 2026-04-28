@@ -244,11 +244,13 @@ Powiązania są **deterministyczne** i obowiązuje zasada **najbardziej szczegó
   <Accordion title="Rozstrzyganie remisów i semantyka AND">
     - Jeśli wiele powiązań pasuje w tej samej warstwie, wygrywa pierwsze w kolejności konfiguracji.
     - Jeśli powiązanie ustawia wiele pól dopasowania (na przykład `peer` + `guildId`), wszystkie określone pola są wymagane (semantyka `AND`).
+
   </Accordion>
   <Accordion title="Szczegóły zakresu konta">
     - Powiązanie, które pomija `accountId`, pasuje tylko do konta domyślnego.
     - Użyj `accountId: "*"` dla fallbacku na poziomie kanału obejmującego wszystkie konta.
     - Jeśli później dodasz to samo powiązanie dla tego samego agenta z jawnym identyfikatorem konta, OpenClaw zaktualizuje istniejące powiązanie tylko na poziomie kanału do zakresu konta zamiast je duplikować.
+
   </Accordion>
 </AccordionGroup>
 

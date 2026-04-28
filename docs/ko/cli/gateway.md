@@ -51,6 +51,7 @@ openclaw gateway run
     - 인증 없이 loopback을 넘어서 바인딩하는 것은 차단됩니다(안전 가드레일).
     - `SIGUSR1`은 권한이 있을 때 인프로세스 재시작을 트리거합니다(`commands.restart`는 기본적으로 활성화되어 있으며, 수동 재시작을 막으려면 `commands.restart: false`를 설정하세요. gateway tool/config apply/update는 계속 허용됩니다).
     - `SIGINT`/`SIGTERM` 핸들러는 gateway 프로세스를 중지하지만 사용자 지정 터미널 상태는 복원하지 않습니다. TUI 또는 raw-mode 입력으로 CLI를 감쌌다면 종료 전에 터미널을 복원하세요.
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ openclaw gateway run
     - 기본값: 사람이 읽기 쉬운 형식(TTY에서는 색상 포함).
     - `--json`: 기계 판독 가능한 JSON(스타일/스피너 없음).
     - `--no-color`(또는 `NO_COLOR=1`): 인간용 레이아웃은 유지하면서 ANSI 비활성화.
+
   </Tab>
   <Tab title="공통 옵션">
     - `--url <url>`: Gateway WebSocket URL.
@@ -136,6 +138,7 @@ openclaw gateway run
     - `--password <password>`: Gateway 비밀번호.
     - `--timeout <ms>`: timeout/budget(명령별로 다름).
     - `--expect-final`: "final" 응답을 기다립니다(에이전트 호출).
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="개인정보 보호 및 bundle 동작">
     - 기록은 운영 메타데이터를 유지합니다: 이벤트 이름, 횟수, 바이트 크기, 메모리 판독값, 큐/세션 상태, 채널/plugin 이름, redacted된 세션 요약. 채팅 텍스트, Webhook 본문, 도구 출력, 원시 요청/응답 본문, 토큰, 쿠키, 비밀 값, 호스트명, 원시 세션 ID는 유지하지 않습니다. recorder를 완전히 비활성화하려면 `diagnostics.enabled: false`를 설정하세요.
     - recorder에 이벤트가 있을 경우, 치명적인 Gateway 종료, 종료 timeout, 재시작 시작 실패 시 OpenClaw는 동일한 진단 스냅샷을 `~/.openclaw/logs/stability/openclaw-stability-*.json`에 기록합니다. 최신 bundle은 `openclaw gateway stability --bundle latest`로 검사하세요. `--limit`, `--type`, `--since-seq`도 bundle 출력에 적용됩니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - 스크립트 및 자동화에서는 단순히 서비스가 수신 대기 중인 것만으로는 충분하지 않고 읽기 범위 RPC 호출도 정상이어야 할 때 `--require-rpc`를 사용하세요.
     - `--deep`은 추가 launchd/systemd/schtasks 설치를 최선형 방식으로 스캔합니다. gateway처럼 보이는 서비스가 여러 개 감지되면, 인간용 출력은 정리 힌트를 표시하고 대부분의 설정은 머신당 gateway 하나를 실행해야 한다고 경고합니다.
     - 인간용 출력에는 프로필 또는 state-dir 드리프트 진단에 도움이 되도록 해석된 파일 로그 경로와 CLI 대 서비스 config 경로/유효성 스냅샷이 포함됩니다.
+
   </Accordion>
   <Accordion title="Linux systemd auth-drift 검사">
     - Linux systemd 설치에서 서비스 인증 드리프트 검사는 유닛의 `Environment=`와 `EnvironmentFile=` 값을 모두 읽습니다(`%h`, 인용된 경로, 여러 파일, 선택적 `-` 파일 포함).
     - 드리프트 검사는 병합된 런타임 env를 사용해 `gateway.auth.token` SecretRef를 해석합니다(서비스 명령 env 우선, 이후 프로세스 env fallback).
     - 토큰 인증이 사실상 활성화되지 않은 경우(명시적 `gateway.auth.mode`가 `password`/`none`/`trusted-proxy`이거나, mode가 설정되지 않았고 password가 우선될 수 있으며 token 후보가 우선될 수 없는 경우), 토큰 드리프트 검사는 config 토큰 해석을 건너뜁니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read`는 연결은 성공했지만 읽기 범위 RPC가 제한되었다는 뜻입니다. 이는 완전 실패가 아니라 **degraded** 도달 가능성으로 보고됩니다.
     - `gateway status`와 마찬가지로 probe는 기존 캐시된 device 인증을 재사용하지만, 최초 device ID나 pairing 상태를 만들지는 않습니다.
     - 종료 코드는 probe된 대상 중 어느 것도 도달할 수 없을 때만 0이 아닌 값입니다.
+
   </Accordion>
   <Accordion title="JSON 출력">
     최상위:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: 둘 이상의 대상에 도달 가능했음; rescue bot처럼 의도적으로 격리된 프로필을 실행하지 않는 한 일반적이지 않음.
     - `auth_secretref_unresolved`: 실패한 대상에 대해 구성된 인증 SecretRef를 해석할 수 없음.
     - `probe_scope_limited`: WebSocket 연결은 성공했지만 읽기 probe가 `operator.read` 부족으로 제한됨.
+
   </Accordion>
 </AccordionGroup>
 
@@ -434,6 +442,7 @@ openclaw gateway uninstall
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
     - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
     - `gateway uninstall|start|stop|restart`: `--json`
+
   </Accordion>
   <Accordion title="서비스 설치 및 라이프사이클 참고 사항">
     - `gateway install`은 `--port`, `--runtime`, `--token`, `--force`, `--json`을 지원합니다.
@@ -444,6 +453,7 @@ openclaw gateway uninstall
     - 추론된 인증 모드에서는 셸 전용 `OPENCLAW_GATEWAY_PASSWORD`가 설치 토큰 요구 사항을 완화하지 않습니다. 관리형 서비스를 설치할 때는 지속성 config(`gateway.auth.password` 또는 config `env`)를 사용하세요.
     - `gateway.auth.token`과 `gateway.auth.password`가 모두 구성되어 있고 `gateway.auth.mode`가 설정되지 않았다면, mode를 명시적으로 설정할 때까지 설치가 차단됩니다.
     - 라이프사이클 명령은 스크립팅용으로 `--json`을 지원합니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -490,6 +500,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - CLI는 활성화된 경우 `local.`과 구성된 와이드 에어리어 도메인을 함께 스캔합니다.
 - JSON 출력의 `wsUrl`은 `lanHost` 또는 `tailnetDns` 같은 TXT 전용 힌트가 아니라 해석된 서비스 엔드포인트에서 파생됩니다.
 - `local.` mDNS에서는 `discovery.mdns.mode`가 `full`일 때만 `sshPort`와 `cliPath`가 브로드캐스트됩니다. Wide-Area DNS-SD는 여전히 `cliPath`를 기록하며, `sshPort`도 সেখানে 선택 사항으로 남습니다.
+
 </Note>
 
 ## 관련 항목

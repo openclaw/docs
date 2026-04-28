@@ -58,6 +58,7 @@ SecretRefs werden nur auf effektiv aktiven Oberflächen validiert.
         - `gateway.remote.token` ist aktiv, wenn Token-Authentifizierung gewinnen kann und kein env-/auth-Token konfiguriert ist.
         - `gateway.remote.password` ist nur aktiv, wenn Passwort-Authentifizierung gewinnen kann und kein env-/auth-Passwort konfiguriert ist.
     - SecretRef für `gateway.auth.token` ist für die Auth-Auflösung beim Start inaktiv, wenn `OPENCLAW_GATEWAY_TOKEN` gesetzt ist, weil die env-Token-Eingabe für diese Laufzeit gewinnt.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ Definieren Sie Provider unter `secrets.providers`:
   <Accordion title="Env-Provider">
     - Optionale Allowlist über `allowlist`.
     - Fehlende/leere env-Werte lassen die Auflösung fehlschlagen.
+
   </Accordion>
   <Accordion title="File-Provider">
     - Liest eine lokale Datei aus `path`.
@@ -173,6 +175,7 @@ Definieren Sie Provider unter `secrets.providers`:
     - `mode: "singleValue"` erwartet die Ref-ID `"value"` und gibt den Dateiinhalt zurück.
     - Der Pfad muss Eigentums-/Berechtigungsprüfungen bestehen.
     - Hinweis zu fail-closed unter Windows: Wenn die ACL-Verifizierung für einen Pfad nicht verfügbar ist, schlägt die Auflösung fehl. Nur für vertrauenswürdige Pfade können Sie `allowInsecurePath: true` auf diesem Provider setzen, um die Pfadsicherheitsprüfungen zu umgehen.
+
   </Accordion>
   <Accordion title="Exec-Provider">
     - Führt den konfigurierten absoluten Binary-Pfad aus, ohne Shell.

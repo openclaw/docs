@@ -56,6 +56,7 @@ OpenClaw імпортує стан Hermes через вбудований про
   <Accordion title="Конфігурація моделей">
     - Вибір моделі за замовчуванням із Hermes `config.yaml`.
     - Налаштовані провайдери моделей і користувацькі OpenAI-сумісні endpoint-и з `providers` і `custom_providers`.
+
   </Accordion>
   <Accordion title="MCP-сервери">
     Визначення MCP-серверів із `mcp_servers` або `mcp.servers`.
@@ -63,6 +64,7 @@ OpenClaw імпортує стан Hermes через вбудований про
   <Accordion title="Файли робочого простору">
     - `SOUL.md` і `AGENTS.md` копіюються до робочого простору агента OpenClaw.
     - `memories/MEMORY.md` і `memories/USER.md` **додаються** до відповідних файлів пам’яті OpenClaw замість перезапису.
+
   </Accordion>
   <Accordion title="Конфігурація пам’яті">
     Типові налаштування пам’яті для файлової пам’яті OpenClaw. Зовнішні провайдери пам’яті, як-от Honcho, записуються як елементи архіву або ручної перевірки, щоб ви могли перенести їх навмисно.

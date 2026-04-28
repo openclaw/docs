@@ -133,6 +133,7 @@ openclaw logs --follow
     - `messages[...].content: invalid type: sequence, expected a string` → arka uç yapılandırılmış Chat Completions içerik bölümlerini reddediyor. Düzeltme: `models.providers.<provider>.models[].compat.requiresStringContent: true` ayarlayın.
     - doğrudan küçük istekler başarılı, ancak OpenClaw aracı çalıştırmaları arka uç/model çökmeleriyle başarısız oluyor (örneğin bazı `inferrs` derlemelerinde Gemma) → OpenClaw taşıması büyük olasılıkla zaten doğru; arka uç daha büyük aracı çalışma zamanı istem biçiminde başarısız oluyor.
     - araçları devre dışı bıraktıktan sonra hatalar azalıyor ama kaybolmuyor → araç şemaları baskının bir parçasıydı, ancak kalan sorun hâlâ yukarı akış model/sunucu kapasitesi veya bir arka uç hatası.
+
   </Accordion>
   <Accordion title="Düzeltme seçenekleri">
     1. Yalnızca dize kullanan Chat Completions arka uçları için `compat.requiresStringContent: true` ayarlayın.
@@ -209,6 +210,7 @@ openclaw gateway status --json
     - Tarayıcı origin'li bir loopback istemcisinden gelen `too many failed authentication attempts (retry later)` → aynı normalize edilmiş `Origin` değerinden gelen tekrar eden hatalar geçici olarak kilitlenir; başka bir localhost origin'i ayrı bir kova kullanır.
     - Bundan sonraki tekrarlayan `unauthorized` → paylaşılan token/device token kayması; gerekirse token yapılandırmasını yenileyin ve device token'i yeniden onaylayın/döndürün.
     - `gateway connect failed:` → yanlış ana makine/bağlantı noktası/url hedefi.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,6 +290,7 @@ openclaw gateway status --deep   # sistem düzeyindeki hizmetleri de tara
     - `refusing to bind gateway ... without auth` → geçerli bir gateway kimlik doğrulama yolu olmadan loopback dışı bağlama (token/password veya yapılandırılmışsa trusted-proxy).
     - `another gateway instance is already listening` / `EADDRINUSE` → bağlantı noktası çakışması.
     - `Other gateway-like services detected (best effort)` → eski veya paralel launchd/systemd/schtasks birimleri mevcut. Çoğu kurulum makine başına tek bir gateway tutmalıdır; birden fazlasına ihtiyacınız varsa bağlantı noktalarını + config/state/workspace alanlarını yalıtın. Bkz. [/gateway#multiple-gateways-same-host](/tr/gateway#multiple-gateways-same-host).
+
   </Accordion>
 </AccordionGroup>
 
@@ -323,6 +326,7 @@ openclaw doctor
     - Etkin yapılandırma, en son doğrulanmış son bilinen iyi kopyadan geri yüklendi.
     - Sonraki ana aracı dönüşü, reddedilen yapılandırmayı körü körüne yeniden yazmaması için uyarılır.
     - Tüm doğrulama sorunları `plugins.entries.<id>...` altında olsaydı, OpenClaw tüm dosyayı geri yüklemezdi. Plugin yerel hataları yüksek sesle kalırken ilgisiz kullanıcı ayarları etkin yapılandırmada kalır.
+
   </Accordion>
   <Accordion title="İnceleyin ve onarın">
     ```bash
@@ -339,6 +343,7 @@ openclaw doctor
     - `Config write rejected:` → yazım, gerekli yapıyı düşürmeye, dosyayı keskin biçimde küçültmeye veya geçersiz yapılandırmayı kalıcılaştırmaya çalıştı.
     - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` veya `size-drop-vs-last-good:*` → başlangıç, mevcut dosyayı son bilinen iyi yedeğe göre alan veya boyut kaybettiği için clobbered olarak değerlendirdi.
     - `Config last-known-good promotion skipped` → aday, `***` gibi sansürlenmiş gizli bilgi yer tutucuları içeriyordu.
+
   </Accordion>
   <Accordion title="Düzeltme seçenekleri">
     1. Doğruysa geri yüklenen etkin yapılandırmayı koruyun.
@@ -442,6 +447,7 @@ openclaw logs --follow
     - `heartbeat skipped` ve `reason=no-tasks-due` → `HEARTBEAT.md` bir `tasks:` bloğu içeriyor, ancak görevlerin hiçbiri bu tikte zamanı gelmiş değil.
     - `heartbeat: unknown accountId` → Heartbeat teslimat hedefi için geçersiz hesap kimliği.
     - `heartbeat skipped` ve `reason=dm-blocked` → Heartbeat hedefi DM tarzı bir hedefe çözümlendi, ancak `agents.defaults.heartbeat.directPolicy` (veya aracı başına geçersiz kılma) `block` olarak ayarlı.
+
   </Accordion>
 </AccordionGroup>
 
@@ -510,12 +516,14 @@ openclaw doctor
     - `browser.cdpUrl must be http(s) or ws(s)` → yapılandırılmış CDP URL'si `file:` veya `ftp:` gibi desteklenmeyen bir şema kullanıyor.
     - `browser.cdpUrl has invalid port` → yapılandırılmış CDP URL'sinde kötü veya aralık dışı bir bağlantı noktası var.
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → geçerli gateway kurulumu, paketli browser Plugin'inin `playwright-core` çalışma zamanı bağımlılığına sahip değil; `openclaw doctor --fix` çalıştırın, ardından gateway'i yeniden başlatın. ARIA anlık görüntüleri ve temel sayfa ekran görüntüleri yine de çalışabilir, ancak gezinme, AI anlık görüntüleri, CSS seçici öğe ekran görüntüleri ve PDF dışa aktarma kullanılamaz durumda kalır.
+
   </Accordion>
   <Accordion title="Chrome MCP / existing-session imzaları">
     - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session seçilen tarayıcı veri dizinine henüz bağlanamadı. Tarayıcı inspect sayfasını açın, uzaktan hata ayıklamayı etkinleştirin, tarayıcıyı açık tutun, ilk bağlanma istemini onaylayın, sonra yeniden deneyin. Oturum açılmış durum gerekmiyorsa yönetilen `openclaw` profilini tercih edin.
     - `No Chrome tabs found for profile="user"` → Chrome MCP bağlanma profilinin açık yerel Chrome sekmesi yok.
     - `Remote CDP for profile "<name>" is not reachable` → yapılandırılmış uzak CDP uç noktasına gateway ana makinesinden erişilemiyor.
     - `Browser attachOnly is enabled ... not reachable` veya `Browser attachOnly is enabled and CDP websocket ... is not reachable` → yalnızca bağlanmalı profilin erişilebilir hedefi yok veya HTTP uç noktası yanıt verdi ama CDP WebSocket yine de açılamadı.
+
   </Accordion>
   <Accordion title="Öğe / ekran görüntüsü / yükleme imzaları">
     - `fullPage is not supported for element screenshots` → ekran görüntüsü isteği `--full-page` ile `--ref` veya `--element` seçeneklerini karıştırdı.
@@ -527,6 +535,7 @@ openclaw doctor
     - `existing-session evaluate does not support timeoutMs overrides.` → `profile="user"` / Chrome MCP existing-session profillerinde `act:evaluate` için `timeoutMs` kullanmayın veya özel zaman aşımı gerekiyorsa yönetilen/CDP tarayıcı profili kullanın.
     - `response body is not supported for existing-session profiles yet.` → `responsebody` hâlâ yönetilen bir tarayıcı veya ham CDP profili gerektirir.
     - yalnızca bağlanmalı veya uzak CDP profillerinde eski viewport / koyu mod / yerel ayar / çevrimdışı geçersiz kılmaları → tüm gateway'i yeniden başlatmadan etkin kontrol oturumunu kapatmak ve Playwright/CDP öykünme durumunu serbest bırakmak için `openclaw browser stop --browser-profile <name>` çalıştırın.
+
   </Accordion>
 </AccordionGroup>
 

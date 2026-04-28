@@ -57,6 +57,7 @@ OpenClaw sélectionne les modèles dans cet ordre :
     - `agents.defaults.musicGenerationModel` est utilisé par la capacité partagée de génération musicale. S'il est omis, `music_generate` peut tout de même déduire une valeur par défaut de fournisseur adossée à l'authentification. Il essaie d'abord le fournisseur par défaut actuel, puis les autres fournisseurs de génération musicale enregistrés dans l'ordre des ids de fournisseur. Si vous définissez un fournisseur/modèle spécifique, configurez aussi l'authentification / la clé API de ce fournisseur.
     - `agents.defaults.videoGenerationModel` est utilisé par la capacité partagée de génération vidéo. S'il est omis, `video_generate` peut tout de même déduire une valeur par défaut de fournisseur adossée à l'authentification. Il essaie d'abord le fournisseur par défaut actuel, puis les autres fournisseurs de génération vidéo enregistrés dans l'ordre des ids de fournisseur. Si vous définissez un fournisseur/modèle spécifique, configurez aussi l'authentification / la clé API de ce fournisseur.
     - Les valeurs par défaut par agent peuvent remplacer `agents.defaults.model` via `agents.list[].model` plus les liaisons (voir [Routage multi-agent](/fr/concepts/multi-agent)).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Cela se produit **avant** qu'une réponse normale ne soit générée, donc le me
 - Ajouter le modèle à `agents.defaults.models`, ou
 - Effacer la liste d'autorisation (supprimer `agents.defaults.models`), ou
 - Choisir un modèle depuis `/model list`.
+
 </Warning>
 
 Exemple de configuration de liste d'autorisation :
@@ -157,6 +159,7 @@ Vous pouvez changer de modèle pour la session actuelle sans redémarrer :
     - Sur Discord, `/model` et `/models` ouvrent un sélecteur interactif avec listes déroulantes de fournisseur et de modèle plus une étape Submit.
     - `/models add` est obsolète et renvoie désormais un message de dépréciation au lieu d'enregistrer des modèles depuis le chat.
     - `/model <#>` sélectionne à partir de ce sélecteur.
+
   </Accordion>
   <Accordion title="Persistance et bascule en direct">
     - `/model` conserve immédiatement la nouvelle sélection de session.
@@ -164,6 +167,7 @@ Vous pouvez changer de modèle pour la session actuelle sans redémarrer :
     - Si une exécution est déjà active, OpenClaw marque une bascule en direct comme en attente et ne redémarre dans le nouveau modèle qu'à un point de nouvelle tentative propre.
     - Si l'activité des outils ou la sortie de réponse a déjà commencé, la bascule en attente peut rester en file jusqu'à une occasion de nouvelle tentative ultérieure ou jusqu'au prochain tour utilisateur.
     - `/model status` est la vue détaillée (candidats d'authentification et, lorsqu'ils sont configurés, `baseUrl` du endpoint du fournisseur + mode `api`).
+
   </Accordion>
   <Accordion title="Analyse de la référence">
     - Les références de modèle sont analysées en découpant sur le **premier** `/`. Utilisez `provider/model` lorsque vous saisissez `/model <ref>`.
@@ -233,6 +237,7 @@ Affiche le modèle principal résolu, les replis, le modèle d'image et un aper�
     - Utilisez `--check` pour l'automatisation (code de sortie `1` si manquant / expiré, `2` si bientôt expiré).
     - Utilisez `--probe` pour des vérifications d'authentification en direct ; les lignes de sonde peuvent provenir de profils d'authentification, d'identifiants d'environnement ou de `models.json`.
     - Si `auth.order.<provider>` explicite omet un profil stocké, la sonde signale `excluded_by_auth_order` au lieu de l'essayer. Si l'authentification existe mais qu'aucun modèle sondable ne peut être résolu pour ce fournisseur, la sonde signale `status: no_model`.
+
   </Accordion>
 </AccordionGroup>
 

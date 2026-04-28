@@ -137,6 +137,7 @@ Sumber kebenaran saat ini:
     - `/session idle <duration|off>` dan `/session max-age <duration|off>` mengelola kedaluwarsa thread-binding.
     - `/export-session [path]` mengekspor sesi saat ini ke HTML. Alias: `/export`.
     - `/export-trajectory [path]` mengekspor [bundle trajectory](/id/tools/trajectory) JSONL untuk sesi saat ini. Alias: `/trajectory`.
+
   </Accordion>
   <Accordion title="Kontrol model dan run">
     - `/think <level>` menetapkan level thinking. Opsi berasal dari profil provider model aktif; level umum adalah `off`, `minimal`, `low`, `medium`, dan `high`, dengan level kustom seperti `xhigh`, `adaptive`, `max`, atau `on` biner hanya jika didukung. Alias: `/thinking`, `/t`.
@@ -149,6 +150,7 @@ Sumber kebenaran saat ini:
     - `/model [name|#|status]` menampilkan atau menetapkan model.
     - `/models [provider] [page] [limit=<n>|size=<n>|all]` mencantumkan provider atau model untuk sebuah provider.
     - `/queue <mode>` mengelola perilaku antrean (`steer`, `interrupt`, `followup`, `collect`, `steer-backlog`) plus opsi seperti `debounce:2s cap:25 drop:summarize`.
+
   </Accordion>
   <Accordion title="Penemuan dan status">
     - `/help` menampilkan ringkasan bantuan singkat.
@@ -160,12 +162,14 @@ Sumber kebenaran saat ini:
     - `/context [list|detail|json]` menjelaskan bagaimana konteks dirakit.
     - `/whoami` menampilkan id pengirim Anda. Alias: `/id`.
     - `/usage off|tokens|full|cost` mengontrol footer penggunaan per-respons atau mencetak ringkasan biaya lokal.
+
   </Accordion>
   <Accordion title="Skills, allowlist, persetujuan">
     - `/skill <name> [input]` menjalankan skill berdasarkan nama.
     - `/allowlist [list|add|remove] ...` mengelola entri allowlist. Hanya teks.
     - `/approve <id> <decision>` menyelesaikan prompt persetujuan exec.
     - `/btw <question>` mengajukan pertanyaan sampingan tanpa mengubah konteks sesi di masa depan. Lihat [BTW](/id/tools/btw).
+
   </Accordion>
   <Accordion title="Subagent dan ACP">
     - `/subagents list|kill|log|info|send|steer|spawn` mengelola run sub-agent untuk sesi saat ini.
@@ -175,6 +179,7 @@ Sumber kebenaran saat ini:
     - `/agents` mencantumkan agent yang terikat thread untuk sesi saat ini.
     - `/kill <id|#|all>` membatalkan satu atau semua sub-agent yang sedang berjalan.
     - `/steer <id|#> <message>` mengirim steering ke sub-agent yang sedang berjalan. Alias: `/tell`.
+
   </Accordion>
   <Accordion title="Penulisan khusus pemilik dan admin">
     - `/config show|get|set|unset` membaca atau menulis `openclaw.json`. Khusus pemilik. Memerlukan `commands.config: true`.
@@ -183,6 +188,7 @@ Sumber kebenaran saat ini:
     - `/debug show|set|unset|reset` mengelola override config hanya-runtime. Khusus pemilik. Memerlukan `commands.debug: true`.
     - `/restart` memulai ulang OpenClaw saat diaktifkan. Default: aktif; setel `commands.restart: false` untuk menonaktifkannya.
     - `/send on|off|inherit` menetapkan kebijakan kirim. Khusus pemilik.
+
   </Accordion>
   <Accordion title="Voice, TTS, kontrol saluran">
     - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` mengontrol TTS. Lihat [TTS](/id/tools/tts).
@@ -190,6 +196,7 @@ Sumber kebenaran saat ini:
     - `/bash <command>` menjalankan perintah shell host. Hanya teks. Alias: `! <command>`. Memerlukan `commands.bash: true` plus allowlist `tools.elevated`.
     - `!poll [sessionId]` memeriksa pekerjaan bash latar belakang.
     - `!stop [sessionId]` menghentikan pekerjaan bash latar belakang.
+
   </Accordion>
 </AccordionGroup>
 
@@ -238,11 +245,13 @@ Skills yang dapat dipanggil pengguna juga diekspos sebagai slash command:
     - `/restart` aktif secara default; setel `commands.restart: false` untuk menonaktifkannya.
     - `/plugins install <spec>` menerima spec Plugin yang sama seperti `openclaw plugins install`: path/arsip lokal, package npm, atau `clawhub:<pkg>`.
     - `/plugins enable|disable` memperbarui config Plugin dan mungkin meminta restart.
+
   </Accordion>
   <Accordion title="Perilaku khusus saluran">
     - Perintah bawaan khusus Discord: `/vc join|leave|status` mengontrol saluran voice (tidak tersedia sebagai teks). `join` memerlukan guild dan saluran voice/stage yang dipilih. Memerlukan `channels.discord.voice` dan perintah bawaan.
     - Perintah Discord thread-binding (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) memerlukan thread binding efektif untuk diaktifkan (`session.threadBindings.enabled` dan/atau `channels.discord.threadBindings.enabled`).
     - Referensi perintah ACP dan perilaku runtime: [Agent ACP](/id/tools/acp-agents).
+
   </Accordion>
   <Accordion title="Keamanan verbose / trace / fast / reasoning">
     - `/verbose` ditujukan untuk debugging dan visibilitas tambahan; biarkan **off** dalam penggunaan normal.
@@ -251,6 +260,7 @@ Skills yang dapat dipanggil pengguna juga diekspos sebagai slash command:
     - `/fast` bersifat khusus provider: OpenAI/OpenAI Codex memetakannya ke `service_tier=priority` pada endpoint Responses bawaan, sementara permintaan Anthropic publik langsung, termasuk traffic yang diautentikasi OAuth yang dikirim ke `api.anthropic.com`, memetakannya ke `service_tier=auto` atau `standard_only`. Lihat [OpenAI](/id/providers/openai) dan [Anthropic](/id/providers/anthropic).
     - Ringkasan kegagalan tool tetap ditampilkan saat relevan, tetapi teks kegagalan terperinci hanya disertakan saat `/verbose` bernilai `on` atau `full`.
     - `/reasoning`, `/verbose`, dan `/trace` berisiko dalam pengaturan grup: mereka dapat mengungkap reasoning internal, output tool, atau diagnostik Plugin yang tidak ingin Anda tampilkan. Sebaiknya biarkan tetap nonaktif, terutama di obrolan grup.
+
   </Accordion>
   <Accordion title="Pergantian model">
     - `/model` mempertahankan model sesi baru secara langsung.
@@ -258,6 +268,7 @@ Skills yang dapat dipanggil pengguna juga diekspos sebagai slash command:
     - Jika run sudah aktif, OpenClaw menandai pergantian live sebagai tertunda dan hanya memulai ulang ke model baru pada titik coba-ulang yang bersih.
     - Jika aktivitas tool atau output balasan sudah dimulai, pergantian tertunda dapat tetap mengantre sampai ada kesempatan coba-ulang berikutnya atau giliran pengguna berikutnya.
     - Di TUI lokal, `/crestodian [request]` mengembalikan dari TUI agent normal ke Crestodian. Ini terpisah dari mode rescue message-channel dan tidak memberikan otoritas config jarak jauh.
+
   </Accordion>
   <Accordion title="Fast path dan shortcut inline">
     - **Fast path:** pesan hanya-perintah dari pengirim yang ada di allowlist ditangani segera (melewati antrean + model).
@@ -266,6 +277,7 @@ Skills yang dapat dipanggil pengguna juga diekspos sebagai slash command:
       - Contoh: `hey /status` memicu balasan status, dan teks sisanya berlanjut melalui alur normal.
     - Saat ini: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
     - Pesan hanya-perintah yang tidak berwenang diabaikan secara diam-diam, dan token inline `/...` diperlakukan sebagai teks biasa.
+
   </Accordion>
   <Accordion title="Perintah skill dan argumen bawaan">
     - **Perintah skill:** Skills `user-invocable` diekspos sebagai slash command. Nama disanitasi menjadi `a-z0-9_` (maks 32 karakter); bentrokan mendapat sufiks numerik (misalnya `_2`).
@@ -274,6 +286,7 @@ Skills yang dapat dipanggil pengguna juga diekspos sebagai slash command:
       - Skill dapat secara opsional mendeklarasikan `command-dispatch: tool` untuk merutekan perintah langsung ke tool (deterministik, tanpa model).
       - Contoh: `/prose` (Plugin OpenProse) — lihat [OpenProse](/id/prose).
     - **Argumen perintah bawaan:** Discord menggunakan autocomplete untuk opsi dinamis (dan menu tombol saat Anda menghilangkan argumen wajib). Telegram dan Slack menampilkan menu tombol saat suatu perintah mendukung pilihan dan Anda menghilangkan argumennya. Pilihan dinamis di-resolve terhadap model sesi target, sehingga opsi khusus model seperti level `/think` mengikuti override `/model` sesi tersebut.
+
   </Accordion>
 </AccordionGroup>
 
@@ -411,6 +424,7 @@ Contoh:
 - `/plugins list` dan `/plugins show` menggunakan penemuan Plugin nyata terhadap workspace saat ini plus config di disk.
 - `/plugins enable|disable` hanya memperbarui config Plugin; ini tidak menginstal atau menghapus instalasi Plugin.
 - Setelah perubahan enable/disable, mulai ulang gateway untuk menerapkannya.
+
 </Note>
 
 ## Catatan surface
@@ -423,6 +437,7 @@ Contoh:
       - Slack: `agent:<agentId>:slack:slash:<userId>` (prefiks dapat dikonfigurasi melalui `channels.slack.slashCommand.sessionPrefix`)
       - Telegram: `telegram:slash:<userId>` (menargetkan sesi chat melalui `CommandTargetSessionKey`)
     - **`/stop`** menargetkan sesi chat aktif sehingga dapat membatalkan run saat ini.
+
   </Accordion>
   <Accordion title="Khusus Slack">
     `channels.slack.slashCommand` masih didukung untuk satu perintah bergaya `/openclaw`. Jika Anda mengaktifkan `commands.native`, Anda harus membuat satu slash command Slack per built-in command (nama yang sama seperti `/help`). Menu argumen perintah untuk Slack dikirim sebagai tombol Block Kit ephemeral.

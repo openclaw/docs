@@ -138,6 +138,7 @@ x-i18n:
     - يدير `/session idle <duration|off>` و`/session max-age <duration|off>` انتهاء صلاحية ربط الخيط.
     - يصدّر `/export-session [path]` الجلسة الحالية إلى HTML. الاسم البديل: `/export`.
     - يصدّر `/export-trajectory [path]` حزمة [trajectory](/ar/tools/trajectory) بصيغة JSONL للجلسة الحالية. الاسم البديل: `/trajectory`.
+
   </Accordion>
   <Accordion title="عناصر التحكم في النموذج والتشغيل">
     - يضبط `/think <level>` مستوى التفكير. وتأتي الخيارات من ملف تعريف مزوّد النموذج النشط؛ والمستويات الشائعة هي `off` و`minimal` و`low` و`medium` و`high`، مع مستويات مخصصة مثل `xhigh` و`adaptive` و`max` أو الثنائي `on` فقط عندما يكون ذلك مدعومًا. الأسماء البديلة: `/thinking`, `/t`.
@@ -150,6 +151,7 @@ x-i18n:
     - يعرض `/model [name|#|status]` النموذج أو يضبطه.
     - يسرد `/models [provider] [page] [limit=<n>|size=<n>|all]` المزوّدين أو النماذج الخاصة بمزوّد.
     - يدير `/queue <mode>` سلوك قائمة الانتظار (`steer`, `interrupt`, `followup`, `collect`, `steer-backlog`) بالإضافة إلى خيارات مثل `debounce:2s cap:25 drop:summarize`.
+
   </Accordion>
   <Accordion title="الاكتشاف والحالة">
     - يعرض `/help` ملخص المساعدة القصير.
@@ -161,12 +163,14 @@ x-i18n:
     - يشرح `/context [list|detail|json]` كيفية تجميع السياق.
     - يعرض `/whoami` معرّف المُرسِل الخاص بك. الاسم البديل: `/id`.
     - يتحكم `/usage off|tokens|full|cost` في تذييل الاستخدام لكل استجابة أو يطبع ملخص تكلفة محليًا.
+
   </Accordion>
   <Accordion title="Skills، وقوائم السماح، والموافقات">
     - يشغّل `/skill <name> [input]` Skill بالاسم.
     - يدير `/allowlist [list|add|remove] ...` إدخالات قائمة السماح. نصي فقط.
     - يحل `/approve <id> <decision>` مطالبات موافقة exec.
     - يطرح `/btw <question>` سؤالًا جانبيًا دون تغيير سياق الجلسة المستقبلي. راجع [BTW](/ar/tools/btw).
+
   </Accordion>
   <Accordion title="الوكلاء الفرعيون وACP">
     - يدير `/subagents list|kill|log|info|send|steer|spawn` تشغيلات الوكيل الفرعي للجلسة الحالية.
@@ -176,6 +180,7 @@ x-i18n:
     - يسرد `/agents` الوكلاء المرتبطين بالخيط للجلسة الحالية.
     - يجهض `/kill <id|#|all>` وكيلًا فرعيًا واحدًا أو جميع الوكلاء الفرعيين العاملين.
     - يرسل `/steer <id|#> <message>` توجيهًا إلى وكيل فرعي عامل. الاسم البديل: `/tell`.
+
   </Accordion>
   <Accordion title="كتابات المالك فقط والإدارة">
     - يقرأ `/config show|get|set|unset` ملف `openclaw.json` أو يكتبه. للمالك فقط. ويتطلب `commands.config: true`.
@@ -184,6 +189,7 @@ x-i18n:
     - يدير `/debug show|set|unset|reset` تجاوزات الإعدادات الخاصة بوقت التشغيل فقط. للمالك فقط. ويتطلب `commands.debug: true`.
     - يعيد `/restart` تشغيل OpenClaw عندما يكون مفعّلًا. الافتراضي: مفعّل؛ اضبط `commands.restart: false` لتعطيله.
     - يضبط `/send on|off|inherit` سياسة الإرسال. للمالك فقط.
+
   </Accordion>
   <Accordion title="الصوت، وTTS، والتحكم في القناة">
     - يتحكم `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` في TTS. راجع [TTS](/ar/tools/tts).
@@ -191,6 +197,7 @@ x-i18n:
     - يشغّل `/bash <command>` أمر shell على المضيف. نصي فقط. الاسم البديل: `! <command>`. ويتطلب `commands.bash: true` بالإضافة إلى قوائم السماح `tools.elevated`.
     - يتحقق `!poll [sessionId]` من مهمة bash في الخلفية.
     - يوقف `!stop [sessionId]` مهمة bash في الخلفية.
+
   </Accordion>
 </AccordionGroup>
 
@@ -239,11 +246,13 @@ x-i18n:
     - يكون `/restart` مفعّلًا افتراضيًا؛ اضبط `commands.restart: false` لتعطيله.
     - يقبل `/plugins install <spec>` مواصفات Plugins نفسها التي يقبلها `openclaw plugins install`: مسار/أرشيف محلي، أو حزمة npm، أو `clawhub:<pkg>`.
     - يحدّث `/plugins enable|disable` إعدادات Plugin وقد يطالب بإعادة تشغيل.
+
   </Accordion>
   <Accordion title="سلوك خاص بالقناة">
     - الأمر الأصلي على Discord فقط: يتحكم `/vc join|leave|status` في قنوات الصوت (غير متاح نصيًا). ويتطلب `join` وجود guild وقناة صوت/مسرح محددة. ويتطلب `channels.discord.voice` والأوامر الأصلية.
     - تتطلب أوامر ربط الخيوط في Discord ‏(`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) أن تكون روابط الخيوط الفعلية مفعّلة (`session.threadBindings.enabled` و/أو `channels.discord.threadBindings.enabled`).
     - مرجع أوامر ACP وسلوك وقت التشغيل: [وكلاء ACP](/ar/tools/acp-agents).
+
   </Accordion>
   <Accordion title="أمان verbose / trace / fast / reasoning">
     - إن `/verbose` مخصص للتصحيح وإظهار المزيد من التفاصيل؛ أبقه **معطلًا** في الاستخدام العادي.
@@ -252,6 +261,7 @@ x-i18n:
     - إن `/fast` خاص بالمزوّد: إذ تربطه OpenAI/OpenAI Codex إلى `service_tier=priority` على نقاط نهاية Responses الأصلية، بينما تربط الطلبات العامة المباشرة إلى Anthropic، بما في ذلك الحركة المصادَق عليها عبر OAuth المرسلة إلى `api.anthropic.com`، إلى `service_tier=auto` أو `standard_only`. راجع [OpenAI](/ar/providers/openai) و[Anthropic](/ar/providers/anthropic).
     - ما تزال ملخصات فشل الأدوات تُعرض عند الاقتضاء، لكن يُدرج نص الفشل التفصيلي فقط عندما تكون `/verbose` على `on` أو `full`.
     - تُعد `/reasoning` و`/verbose` و`/trace` خطِرة في إعدادات المجموعات: إذ قد تكشف تفكيرًا داخليًا، أو مخرجات أدوات، أو تشخيصات Plugins لم تكن تنوي كشفها. فضّل إبقاءها معطلة، خاصة في دردشات المجموعات.
+
   </Accordion>
   <Accordion title="تبديل النموذج">
     - يحتفظ `/model` بالنموذج الجديد للجلسة فورًا.
@@ -259,6 +269,7 @@ x-i18n:
     - إذا كان هناك تشغيل نشط بالفعل، يضع OpenClaw علامة على التبديل الحي على أنه معلق ولا يعيد التشغيل إلى النموذج الجديد إلا عند نقطة إعادة محاولة نظيفة.
     - إذا كان نشاط الأدوات أو مخرجات الرد قد بدأ بالفعل، فقد يبقى التبديل المعلق في قائمة الانتظار حتى فرصة إعادة محاولة لاحقة أو دور المستخدم التالي.
     - في TUI المحلية، يعيد `/crestodian [request]` من TUI الوكيل العادية إلى Crestodian. وهذا منفصل عن وضع الإنقاذ في قناة الرسائل ولا يمنح سلطة إعدادات عن بُعد.
+
   </Accordion>
   <Accordion title="المسار السريع والاختصارات المضمنة">
     - **المسار السريع:** تُعالَج الرسائل التي تحتوي على أوامر فقط من مرسلين ضمن قائمة السماح فورًا (تتجاوز قائمة الانتظار + النموذج).
@@ -267,6 +278,7 @@ x-i18n:
       - مثال: يؤدي `hey /status` إلى رد حالة، ويستمر النص المتبقي عبر التدفق العادي.
     - حاليًا: `/help` و`/commands` و`/status` و`/whoami` ‏(`/id`).
     - تُتجاهل رسائل الأوامر فقط غير المصرح بها بصمت، وتُعامَل الرموز المضمنة `/...` على أنها نص عادي.
+
   </Accordion>
   <Accordion title="أوامر Skills والوسيطات الأصلية">
     - **أوامر Skills:** تُكشف Skills من نوع `user-invocable` كأوامر مائلة. وتُنظّف الأسماء إلى `a-z0-9_` ‏(بحد أقصى 32 حرفًا)؛ وتُضاف لاحقات رقمية عند التصادمات (مثل `_2`).
@@ -275,6 +287,7 @@ x-i18n:
       - يمكن للـ Skills أن تعلن اختياريًا `command-dispatch: tool` لتوجيه الأمر مباشرة إلى أداة (بشكل حتمي، ومن دون نموذج).
       - مثال: `/prose` ‏(Plugin OpenProse) — راجع [OpenProse](/ar/prose).
     - **وسيطات الأوامر الأصلية:** يستخدم Discord الإكمال التلقائي للخيارات الديناميكية (وقوائم الأزرار عندما تحذف وسيطات مطلوبة). ويعرض Telegram وSlack قائمة أزرار عندما يدعم الأمر خيارات وتحذف الوسيطة. وتُحل الخيارات الديناميكية مقابل نموذج الجلسة المستهدفة، لذلك تتبع الخيارات الخاصة بالنموذج مثل مستويات `/think` تجاوز `/model` الخاص بتلك الجلسة.
+
   </Accordion>
 </AccordionGroup>
 
@@ -412,6 +425,7 @@ x-i18n:
 - يستخدم `/plugins list` و`/plugins show` اكتشاف Plugins الحقيقي مقابل مساحة العمل الحالية والإعدادات الموجودة على القرص.
 - يقوم `/plugins enable|disable` بتحديث إعدادات Plugin فقط؛ ولا يثبت أو يزيل Plugins.
 - بعد تغييرات enable/disable، أعد تشغيل gateway لتطبيقها.
+
 </Note>
 
 ## ملاحظات عن الأسطح
@@ -424,6 +438,7 @@ x-i18n:
       - Slack: ‏`agent:<agentId>:slack:slash:<userId>` ‏(البادئة قابلة للتهيئة عبر `channels.slack.slashCommand.sessionPrefix`)
       - Telegram: ‏`telegram:slash:<userId>` ‏(ويستهدف جلسة الدردشة عبر `CommandTargetSessionKey`)
     - يستهدف **`/stop`** جلسة الدردشة النشطة حتى يتمكن من إجهاض التشغيل الحالي.
+
   </Accordion>
   <Accordion title="تفاصيل خاصة بـ Slack">
     ما يزال `channels.slack.slashCommand` مدعومًا لأمر واحد بنمط `/openclaw`. وإذا فعّلت `commands.native`، فيجب عليك إنشاء Slack slash command واحدة لكل أمر مضمّن (بالأسماء نفسها مثل `/help`). وتُسلَّم قوائم وسائط الأوامر الخاصة بـ Slack كأزرار Block Kit مؤقتة.

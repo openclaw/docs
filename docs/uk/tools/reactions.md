@@ -36,35 +36,42 @@ x-i18n:
   <Accordion title="Discord і Slack">
     - Порожній `emoji` видаляє всі реакції бота на повідомлення.
     - `remove: true` видаляє лише вказане emoji.
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - Порожній `emoji` видаляє реакції застосунку на повідомлення.
     - `remove: true` видаляє лише вказане emoji.
+
   </Accordion>
 
   <Accordion title="Telegram">
     - Порожній `emoji` видаляє реакції бота.
     - `remove: true` також видаляє реакції, але все одно потребує непорожнього `emoji` для валідації інструмента.
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - Порожній `emoji` видаляє реакцію бота.
     - `remove: true` внутрішньо мапиться на порожнє emoji (але все одно потребує `emoji` у виклику інструмента).
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - Потребує непорожнього `emoji`.
     - `remove: true` видаляє реакцію саме з цим emoji.
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - Використовуйте інструмент `feishu_reaction` з діями `add`, `remove` і `list`.
     - Add/remove потребує `emoji_type`; remove також потребує `reaction_id`.
+
   </Accordion>
 
   <Accordion title="Signal">
     - Вхідні сповіщення про реакції контролюються через `channels.signal.reactionNotifications`: `"off"` вимикає їх, `"own"` (типово) генерує події, коли користувачі реагують на повідомлення бота, а `"all"` генерує події для всіх реакцій.
+
   </Accordion>
 </AccordionGroup>
 

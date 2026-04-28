@@ -303,6 +303,7 @@ x-i18n:
     - `agent`: будь-яка сесія, що належить поточному id агента (може включати інших користувачів, якщо ви запускаєте сесії для кожного відправника під тим самим id агента).
     - `all`: будь-яка сесія. Націлювання між агентами все одно потребує `tools.agentToAgent`.
     - Обмеження sandbox: коли поточна сесія працює в sandbox і `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, видимість примусово встановлюється в `tree`, навіть якщо `tools.sessions.visibility="all"`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -334,6 +335,7 @@ x-i18n:
     - Входи base64 перевіряються зі строгими перевірками алфавіту/відступів і захистом розміру до декодування.
     - Права доступу до файлів: `0700` для каталогів і `0600` для файлів.
     - Очищення дотримується політики `cleanup`: `delete` завжди видаляє вкладення; `keep` зберігає їх лише коли `retainOnSessionKeep: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -427,6 +429,7 @@ OpenClaw використовує вбудований каталог модел
       - Для однакових моделей `contextTokens` зберігає явне обмеження runtime, якщо воно задане; використовуйте це, щоб обмежити ефективний контекст без зміни рідних метаданих моделі.
       - Використовуйте `models.mode: "replace"`, якщо хочете, щоб конфігурація повністю переписала `models.json`.
       - Збереження маркерів є авторитетним від джерела: маркери записуються з активного знімка вихідної конфігурації (до розв’язання), а не з розв’язаних секретних значень runtime.
+
   </Accordion>
 </AccordionGroup>
 
@@ -437,6 +440,7 @@ OpenClaw використовує вбудований каталог модел
     - `models.mode`: поведінка каталогу провайдерів (`merge` або `replace`).
     - `models.providers`: мапа власних провайдерів із ключем за id провайдера.
       - Безпечні зміни: використовуйте `openclaw config set models.providers.<id> '<json>' --strict-json --merge` або `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` для додаткових оновлень. `config set` відмовляється від руйнівних замін, якщо ви не передасте `--replace`.
+
   </Accordion>
   <Accordion title="Підключення провайдера та автентифікація">
     - `models.providers.*.api`: адаптер запитів (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` тощо). Для самостійно розгорнутих бекендів `/v1/chat/completions`, як-от MLX, vLLM, SGLang і більшість локальних серверів, сумісних з OpenAI, використовуйте `openai-completions`. Власний провайдер із `baseUrl`, але без `api`, типово використовує `openai-completions`; задавайте `openai-responses` лише тоді, коли бекенд підтримує `/v1/responses`.
@@ -450,6 +454,7 @@ OpenClaw використовує вбудований каталог модел
     - `models.providers.*.authHeader`: примусово передавати облікові дані в заголовку `Authorization`, коли це потрібно.
     - `models.providers.*.baseUrl`: базовий URL API upstream.
     - `models.providers.*.headers`: додаткові статичні заголовки для маршрутизації через проксі/tenant.
+
   </Accordion>
   <Accordion title="Перевизначення транспорту запитів">
     `models.providers.*.request`: перевизначення транспорту для HTTP-запитів model-provider.
@@ -467,6 +472,7 @@ OpenClaw використовує вбудований каталог модел
     - `models.providers.*.models.*.contextTokens`: необов’язкове обмеження контексту runtime. Це перевизначає `contextTokens` на рівні провайдера; використовуйте його, коли хочете менший ефективний бюджет контексту, ніж рідний `contextWindow` моделі; `openclaw models list` показує обидва значення, коли вони відрізняються.
     - `models.providers.*.models.*.compat.supportsDeveloperRole`: необов’язкова підказка сумісності. Для `api: "openai-completions"` із непорожнім нерідним `baseUrl` (хост не `api.openai.com`) OpenClaw примусово встановлює це значення в `false` під час runtime. Порожній/відсутній `baseUrl` зберігає типову поведінку OpenAI.
     - `models.providers.*.models.*.compat.requiresStringContent`: необов’язкова підказка сумісності для чат-ендпоїнтів, сумісних з OpenAI і таких, що приймають лише рядки. Коли значення `true`, OpenClaw зводить масиви `messages[].content`, що містять лише текст, до простих рядків перед надсиланням запиту.
+
   </Accordion>
   <Accordion title="Виявлення Amazon Bedrock">
     - `plugins.entries.amazon-bedrock.config.discovery`: корінь налаштувань автовиявлення Bedrock.
@@ -476,6 +482,7 @@ OpenClaw використовує вбудований каталог модел
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: інтервал опитування для оновлення виявлення.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: резервне вікно контексту для виявлених моделей.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: резервна максимальна кількість вихідних токенів для виявлених моделей.
+
   </Accordion>
 </AccordionGroup>
 

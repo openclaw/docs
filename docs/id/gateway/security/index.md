@@ -308,6 +308,7 @@ produksi.
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="Semua kunci `dangerous*` / `dangerously*` dalam schema config">

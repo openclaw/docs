@@ -289,6 +289,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `system-event`, bir sistem olayı ekler ve presence bağlamını güncelleyebilir/yayınlayabilir.
     - `last-heartbeat`, en son kalıcı Heartbeat olayını döndürür.
     - `set-heartbeats`, gateway üzerinde Heartbeat işlemeyi açar/kapatır.
+
   </Accordion>
 
   <Accordion title="Modeller ve kullanım">
@@ -299,6 +300,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `sessions.usage`, oturum başına kullanım özetlerini döndürür.
     - `sessions.usage.timeseries`, tek bir oturum için zaman serisi kullanımını döndürür.
     - `sessions.usage.logs`, tek bir oturum için kullanım günlüğü girdilerini döndürür.
+
   </Accordion>
 
   <Accordion title="Kanallar ve giriş yardımcıları">
@@ -309,11 +311,13 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `push.test`, kayıtlı bir iOS Node'una test APNs push gönderir.
     - `voicewake.get`, depolanan uyandırma sözcüğü tetikleyicilerini döndürür.
     - `voicewake.set`, uyandırma sözcüğü tetikleyicilerini günceller ve değişikliği yayınlar.
+
   </Accordion>
 
   <Accordion title="Mesajlaşma ve günlükler">
     - `send`, sohbet çalıştırıcısının dışında kanal/hesap/iş parçacığı hedefli gönderimler için doğrudan giden teslim RPC'sidir.
     - `logs.tail`, imleç/sınır ve en yüksek bayt denetimleriyle yapılandırılmış gateway dosya günlüğü son kısmını döndürür.
+
   </Accordion>
 
   <Accordion title="Talk ve TTS">
@@ -325,6 +329,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `tts.enable` ve `tts.disable`, TTS tercih durumunu açar/kapatır.
     - `tts.setProvider`, tercih edilen TTS sağlayıcısını günceller.
     - `tts.convert`, tek seferlik metinden konuşmaya dönüştürme çalıştırır.
+
   </Accordion>
 
   <Accordion title="Gizli bilgiler, yapılandırma, güncelleme ve sihirbaz">
@@ -338,6 +343,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `config.schema.lookup`, tek bir yapılandırma yolu için yol kapsamlı lookup payload'ı döndürür: normalleştirilmiş yol, sığ bir şema düğümü, eşleşen hint + `hintPath` ve UI/CLI drill-down için anlık alt öğe özetleri. Lookup şema düğümleri kullanıcıya dönük dokümanları ve yaygın doğrulama alanlarını (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, sayısal/dize/dizi/nesne sınırları ve `additionalProperties`, `deprecated`, `readOnly`, `writeOnly` gibi bayraklar) korur. Alt öğe özetleri `key`, normalleştirilmiş `path`, `type`, `required`, `hasChildren` ile eşleşen `hint` / `hintPath` değerlerini açığa çıkarır.
     - `update.run`, gateway güncelleme akışını çalıştırır ve yalnızca güncellemenin kendisi başarılı olduğunda yeniden başlatma planlar.
     - `wizard.start`, `wizard.next`, `wizard.status` ve `wizard.cancel`, onboarding sihirbazını WS RPC üzerinden sunar.
+
   </Accordion>
 
   <Accordion title="Ajan ve çalışma alanı yardımcıları">
@@ -346,6 +352,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `agents.files.list`, `agents.files.get` ve `agents.files.set`, bir ajan için açığa çıkarılan bootstrap çalışma alanı dosyalarını yönetir.
     - `agent.identity.get`, bir ajan veya oturum için etkin asistan kimliğini döndürür.
     - `agent.wait`, bir çalıştırmanın bitmesini bekler ve kullanılabildiğinde terminal snapshot'ını döndürür.
+
   </Accordion>
 
   <Accordion title="Oturum denetimi">
@@ -362,6 +369,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `sessions.reset`, `sessions.delete` ve `sessions.compact`, oturum bakımı yapar.
     - `sessions.get`, tam depolanmış oturum satırını döndürür.
     - Sohbet yürütmesi hâlâ `chat.history`, `chat.send`, `chat.abort` ve `chat.inject` kullanır. `chat.history`, UI istemcileri için görüntüleme-normalleştirilmiştir: satır içi yönerge etiketleri görünür metinden çıkarılır, düz metin araç çağrısı XML payload'ları (`<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` ve kırpılmış araç çağrısı blokları dâhil) ve sızmış ASCII/tam genişlikli model kontrol token'ları çıkarılır, tam olarak `NO_REPLY` / `no_reply` olan salt sessiz-token asistan satırları atlanır ve aşırı büyük satırlar yer tutucularla değiştirilebilir.
+
   </Accordion>
 
   <Accordion title="Cihaz eşleştirme ve cihaz token'ları">
@@ -369,6 +377,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `device.pair.approve`, `device.pair.reject` ve `device.pair.remove`, cihaz eşleştirme kayıtlarını yönetir.
     - `device.token.rotate`, eşleştirilmiş bir cihaz token'ını onaylı rolü ve çağıran kapsam sınırları içinde döndürür.
     - `device.token.revoke`, eşleştirilmiş bir cihaz token'ını onaylı rolü ve çağıran kapsam sınırları içinde iptal eder.
+
   </Accordion>
 
   <Accordion title="Node eşleştirme, invoke ve bekleyen işler">
@@ -381,6 +390,7 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `node.canvas.capability.refresh`, kapsamlı canvas yetenek token'larını yeniler.
     - `node.pending.pull` ve `node.pending.ack`, bağlı Node kuyruğu API'leridir.
     - `node.pending.enqueue` ve `node.pending.drain`, çevrimdışı/bağlantısı kesik Node'lar için kalıcı bekleyen işleri yönetir.
+
   </Accordion>
 
   <Accordion title="Onay aileleri">
@@ -389,11 +399,13 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
     - `exec.approvals.get` ve `exec.approvals.set`, gateway exec onay politikası snapshot'larını yönetir.
     - `exec.approvals.node.get` ve `exec.approvals.node.set`, Node relay komutları aracılığıyla Node-yerel exec onay politikasını yönetir.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` ve `plugin.approval.resolve`, plugin tanımlı onay akışlarını kapsar.
+
   </Accordion>
 
   <Accordion title="Otomasyon, Skills ve araçlar">
     - Otomasyon: `wake`, hemen veya bir sonraki Heartbeat için metin enjeksiyonu planlar; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs`, planlanmış işleri yönetir.
     - Skills ve araçlar: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

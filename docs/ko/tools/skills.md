@@ -294,10 +294,12 @@ metadata:
     - Node 설치는 `openclaw.json`의 `skills.install.nodeManager`를 따릅니다(기본값: npm, 옵션: npm/pnpm/yarn/bun). 이는 Skill 설치에만 영향을 줍니다. Gateway 런타임은 여전히 Node여야 하며 WhatsApp/Telegram에는 Bun을 권장하지 않습니다.
     - Gateway 기반 설치 프로그램 선택은 선호도 기반입니다. 설치 사양에 여러 종류가 섞여 있으면 OpenClaw는 `skills.install.preferBrew`가 활성화되어 있고 `brew`가 존재할 때 Homebrew를 우선하고, 그다음 `uv`, 그다음 구성된 node manager, 이후 `go` 또는 `download` 같은 다른 대체 수단을 사용합니다.
     - 모든 설치 사양이 `download`이면 OpenClaw는 하나의 선호 설치 프로그램으로 축약하지 않고 모든 다운로드 옵션을 표시합니다.
+
   </Accordion>
   <Accordion title="설치 프로그램별 세부 사항">
     - **Go 설치:** `go`가 없고 `brew`를 사용할 수 있으면 Gateway는 먼저 Homebrew를 통해 Go를 설치하고, 가능하면 `GOBIN`을 Homebrew의 `bin`으로 설정합니다.
     - **다운로드 설치:** `url`(필수), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (기본값: 아카이브 감지 시 자동), `stripComponents`, `targetDir` (기본값: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

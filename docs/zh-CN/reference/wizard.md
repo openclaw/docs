@@ -33,6 +33,7 @@ x-i18n:
       - 仅配置
       - 配置 + 凭证 + 会话
       - 完整重置（还会移除工作区）
+
   </Step>
   <Step title="模型/认证">
     - **Anthropic API key**：如果存在 `ANTHROPIC_API_KEY` 则直接使用，否则提示输入 key，然后保存以供守护进程使用。
@@ -83,6 +84,7 @@ x-i18n:
     - 默认是 `~/.openclaw/workspace`（可配置）。
     - 会为智能体 bootstrap ritual 初始化所需的工作区文件。
     - 完整工作区布局 + 备份指南： [智能体工作区](/zh-CN/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway 网关">
     - 端口、绑定、认证模式、Tailscale 暴露。
@@ -98,6 +100,7 @@ x-i18n:
       - 不能与 `--gateway-token` 同时使用。
     - 仅当你完全信任所有本地进程时才禁用认证。
     - 非 loopback 绑定仍然要求认证。
+
   </Step>
   <Step title="渠道">
     - [WhatsApp](/zh-CN/channels/whatsapp)：可选 QR 登录。
@@ -109,12 +112,14 @@ x-i18n:
     - [BlueBubbles](/zh-CN/channels/bluebubbles)：**iMessage 推荐方案**；服务器 URL + 密码 + webhook。
     - [iMessage](/zh-CN/channels/imessage)：旧版 `imsg` CLI 路径 + DB 访问。
     - 私信安全：默认使用配对。第一条私信会发送一个代码；通过 `openclaw pairing approve <channel> <code>` 批准，或使用 allowlist。
+
   </Step>
   <Step title="Web 搜索">
     - 选择一个受支持的 provider，例如 Brave、DuckDuckGo、Exa、Firecrawl、Gemini、Grok、Kimi、MiniMax Search、Ollama Web 搜索、Perplexity、SearXNG 或 Tavily（也可以跳过）。
     - 基于 API 的 provider 可以使用环境变量或现有配置进行快速设置；无需 key 的 provider 则使用各自 provider 特定的前置条件。
     - 使用 `--skip-search` 跳过。
     - 稍后配置：`openclaw configure --section web`。
+
   </Step>
   <Step title="守护进程安装">
     - macOS：LaunchAgent
@@ -126,18 +131,22 @@ x-i18n:
     - 如果 token 认证需要 token 且 `gateway.auth.token` 由 SecretRef 管理，守护进程安装会校验它，但不会将已解析出的明文 token 值持久化到 supervisor 服务环境元数据中。
     - 如果 token 认证需要 token 且配置的 token SecretRef 无法解析，守护进程安装会被阻止，并给出可操作的指引。
     - 如果同时配置了 `gateway.auth.token` 和 `gateway.auth.password` 且未设置 `gateway.auth.mode`，守护进程安装会被阻止，直到显式设置 mode。
+
   </Step>
   <Step title="健康检查">
     - 启动 Gateway 网关（如果需要）并运行 `openclaw health`。
     - 提示：`openclaw status --deep` 会在状态输出中加入实时 Gateway 网关健康探测，包括支持时的渠道探测（需要 Gateway 网关可访问）。
+
   </Step>
   <Step title="Skills（推荐）">
     - 读取可用的 Skills 并检查依赖要求。
     - 让你选择一个 node 管理器：**npm / pnpm**（不推荐 bun）。
     - 安装可选依赖（其中一些在 macOS 上使用 Homebrew）。
+
   </Step>
   <Step title="完成">
     - 显示摘要 + 后续步骤，包括 iOS/Android/macOS 应用以获得更多功能。
+
   </Step>
 </Steps>
 

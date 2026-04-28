@@ -370,6 +370,7 @@ Saat nomor diri yang tertaut juga ada di `allowFrom`, perlindungan self-chat Wha
     - batas potongan default: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - mode `newline` mengutamakan batas paragraf (baris kosong), lalu fallback ke pemecahan aman berdasarkan panjang
+
   </Accordion>
 
   <Accordion title="Perilaku media keluar">
@@ -382,6 +383,7 @@ Saat nomor diri yang tertaut juga ada di `allowFrom`, perlindungan self-chat Wha
     - pemutaran GIF animasi didukung melalui `gifPlayback: true` pada pengiriman video
     - caption diterapkan ke item media pertama saat mengirim payload balasan multi-media, kecuali voice note PTT mengirim audio terlebih dahulu dan teks terlihat secara terpisah karena klien WhatsApp tidak merender caption voice note secara konsisten
     - sumber media dapat berupa HTTP(S), `file://`, atau path lokal
+
   </Accordion>
 
   <Accordion title="Batas ukuran media dan perilaku fallback">
@@ -390,6 +392,7 @@ Saat nomor diri yang tertaut juga ada di `allowFrom`, perlindungan self-chat Wha
     - override per akun menggunakan `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - gambar dioptimalkan otomatis (resize/sapuan kualitas) agar sesuai batas
     - saat pengiriman media gagal, fallback item pertama mengirim peringatan teks alih-alih diam-diam membuang respons
+
   </Accordion>
 </AccordionGroup>
 
@@ -474,12 +477,14 @@ Catatan perilaku:
     - id akun berasal dari `channels.whatsapp.accounts`
     - pemilihan akun default: `default` jika ada, jika tidak maka id akun pertama yang dikonfigurasi (diurutkan)
     - id akun dinormalisasi secara internal untuk lookup
+
   </Accordion>
 
   <Accordion title="Path kredensial dan kompatibilitas lama">
     - path auth saat ini: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - file cadangan: `creds.json.bak`
     - auth default lama di `~/.openclaw/credentials/` masih dikenali/dimigrasikan untuk alur akun default
+
   </Accordion>
 
   <Accordion title="Perilaku logout">

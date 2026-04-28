@@ -56,6 +56,7 @@ Wypisuje wygenerowany schemat JSON dla `openclaw.json` na stdout jako JSON.
     - Gałęzie `anyOf` / `oneOf` / `allOf` również dziedziczą te same metadane dokumentacyjne, gdy istnieje pasująca dokumentacja pola.
     - Metadane schematu Plugin + kanału z aktywnego środowiska uruchomieniowego w miarę możliwości, gdy można załadować manifesty środowiska uruchomieniowego.
     - Czysty schemat zapasowy nawet wtedy, gdy bieżąca konfiguracja jest nieprawidłowa.
+
   </Accordion>
   <Accordion title="Powiązane RPC środowiska uruchomieniowego">
     `config.schema.lookup` zwraca jedną znormalizowaną ścieżkę konfiguracji z płytkim węzłem schematu (`title`, `description`, `type`, `enum`, `const`, wspólne ograniczenia), dopasowanymi metadanymi podpowiedzi UI oraz podsumowaniami bezpośrednich elementów podrzędnych. Użyj tego do schodzenia w dół według zakresu ścieżki w Control UI lub klientach niestandardowych.
@@ -191,15 +192,18 @@ Cele konstruktora dostawcy muszą używać `secrets.providers.<alias>` jako ści
   <Accordion title="Wspólne flagi">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Dostawca env (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (powtarzalne)
+
   </Accordion>
   <Accordion title="Dostawca plików (--provider-source file)">
     - `--provider-path <path>` (wymagane)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Dostawca exec (--provider-source exec)">
     - `--provider-command <path>` (wymagane)
@@ -212,6 +216,7 @@ Cele konstruktora dostawcy muszą używać `secrets.providers.<alias>` jako ści
     - `--provider-trusted-dir <path>` (powtarzalne)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - Kontrole exec SecretRef są domyślnie pomijane podczas dry-run, aby uniknąć skutków ubocznych poleceń.
     - Użyj `--allow-exec` razem z `--dry-run`, aby włączyć kontrole exec SecretRef (może to wykonać polecenia dostawcy).
     - `--allow-exec` działa tylko dla dry-run i zgłasza błąd, jeśli zostanie użyte bez `--dry-run`.
+
   </Accordion>
   <Accordion title="Pola --dry-run --json">
     `--dry-run --json` wypisuje raport czytelny maszynowo:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: wskazany dostawca/odwołanie nie może obecnie zostać rozwiązany (brakująca zmienna env, nieprawidłowy wskaźnik pliku, błąd dostawcy exec albo niedopasowanie dostawcy/źródła).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run pominął odwołania exec; uruchom ponownie z `--allow-exec`, jeśli potrzebujesz walidacji rozwiązywalności exec.
     - W trybie wsadowym popraw błędne wpisy i uruchom ponownie `--dry-run` przed zapisem.
+
   </Accordion>
 </AccordionGroup>
 

@@ -277,6 +277,7 @@ hook 엔드포인트는 loopback, tailnet 또는 신뢰할 수 있는 리버스 
 - 호출자가 세션을 선택해야 하는 요구 사항이 없다면 `hooks.allowRequestSessionKey=false`를 유지하세요.
 - `hooks.allowRequestSessionKey`를 활성화하는 경우, 허용되는 세션 키 형태를 제한하기 위해 `hooks.allowedSessionKeyPrefixes`도 함께 설정하세요.
 - hook 페이로드는 기본적으로 안전 경계로 감싸집니다.
+
 </Warning>
 
 ## Gmail PubSub 통합
@@ -379,6 +380,7 @@ openclaw cron edit <jobId> --clear-agent
 - 모델이 허용되면 해당 정확한 provider/model이 격리된 에이전트 실행에 전달됩니다.
 - 허용되지 않으면 cron은 경고를 표시하고 작업의 agent/default 모델 선택으로 폴백합니다.
 - 구성된 폴백 체인은 계속 적용되지만, 명시적인 작업별 폴백 목록이 없는 일반 `--model` override는 더 이상 에이전트 기본 모델로 조용히 추가 재시도되지 않습니다.
+
 </Note>
 
 ## 구성
@@ -438,6 +440,7 @@ openclaw doctor
     - Gateway가 계속 실행 중인지 확인하세요.
     - `cron` 스케줄의 경우, 시간대(`--tz`)와 호스트 시간대가 맞는지 확인하세요.
     - 실행 출력의 `reason: not-due`는 `openclaw cron run <jobId> --due`로 수동 실행을 확인했지만 아직 작업 실행 시점이 아니었음을 의미합니다.
+
   </Accordion>
   <Accordion title="Cron은 실행되었지만 전달되지 않음">
     - 전달 모드 `none`은 러너의 폴백 전송이 없음을 의미합니다. 채팅 경로를 사용할 수 있으면 에이전트는 여전히 `message` 도구로 직접 전송할 수 있습니다.
@@ -446,16 +449,19 @@ openclaw doctor
     - 채널 인증 오류(`unauthorized`, `Forbidden`)는 자격 증명 때문에 전달이 차단되었음을 의미합니다.
     - 격리된 실행이 무음 토큰(`NO_REPLY` / `no_reply`)만 반환하면, OpenClaw는 직접 아웃바운드 전달을 억제하고 폴백 대기열 요약 경로도 억제하므로 채팅으로 아무것도 다시 게시되지 않습니다.
     - 에이전트가 사용자에게 직접 메시지해야 한다면, 작업에 사용 가능한 경로가 있는지 확인하세요(`channel: "last"`와 이전 채팅 조합 또는 명시적인 채널/대상).
+
   </Accordion>
   <Accordion title="Cron 또는 Heartbeat 때문에 /new-style rollover가 막히는 것처럼 보임">
     - 일일 및 유휴 리셋 freshness는 `updatedAt` 기준이 아닙니다. [세션 관리](/ko/concepts/session#session-lifecycle)를 참조하세요.
     - cron wakeup, Heartbeat 실행, exec 알림, gateway bookkeeping은 라우팅/상태를 위해 세션 행을 업데이트할 수 있지만, `sessionStartedAt` 또는 `lastInteractionAt`을 연장하지는 않습니다.
     - 이러한 필드가 존재하기 전에 생성된 레거시 행의 경우, OpenClaw는 파일이 여전히 사용 가능하면 transcript JSONL 세션 헤더에서 `sessionStartedAt`을 복구할 수 있습니다. `lastInteractionAt`이 없는 레거시 유휴 행은 복구된 시작 시간을 유휴 기준 시각으로 사용합니다.
+
   </Accordion>
   <Accordion title="시간대 관련 주의사항">
     - `--tz`가 없는 cron은 gateway 호스트 시간대를 사용합니다.
     - 시간대가 없는 `at` 스케줄은 UTC로 처리됩니다.
     - Heartbeat `activeHours`는 구성된 시간대 해석을 사용합니다.
+
   </Accordion>
 </AccordionGroup>
 

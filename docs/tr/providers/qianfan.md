@@ -117,6 +117,7 @@ Varsayılan paketlenmiş model ref'i `qianfan/deepseek-v3.2` şeklindedir. Özel
     - API anahtarınızın `bce-v3/ALTAK-` ile başladığından ve Baidu Cloud konsolunda Qianfan API erişiminin etkin olduğundan emin olun.
     - Modeller listelenmiyorsa hesabınızda Qianfan hizmetinin etkinleştirildiğini doğrulayın.
     - Varsayılan base URL `https://qianfan.baidubce.com/v2` şeklindedir. Bunu yalnızca özel bir uç nokta veya proxy kullanıyorsanız değiştirin.
+
   </Accordion>
 </AccordionGroup>
 

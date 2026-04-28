@@ -434,6 +434,7 @@ Unter [MiniMax Search](/de/tools/minimax-search) finden Sie die vollständige Ko
     - OpenClaw normalisiert die Nutzung des MiniMax Coding Plan auf dieselbe Anzeige „% verbleibend“, die auch bei anderen Providern verwendet wird. Die rohen Felder `usage_percent` / `usagePercent` von MiniMax stehen für verbleibende Quota, nicht für verbrauchte Quota, daher invertiert OpenClaw sie. Zählbasierte Felder haben Vorrang, wenn sie vorhanden sind.
     - Wenn die API `model_remains` zurückgibt, bevorzugt OpenClaw den Eintrag des Chat-Modells, leitet bei Bedarf die Fensterbezeichnung aus `start_time` / `end_time` ab und nimmt den ausgewählten Modellnamen in die Plan-Bezeichnung auf, damit sich Fenster des Coding Plan leichter unterscheiden lassen.
     - Usage-Snapshots behandeln `minimax`, `minimax-cn` und `minimax-portal` als dieselbe MiniMax-Quota-Oberfläche und bevorzugen gespeichertes MiniMax OAuth, bevor auf Env-Variablen mit Coding-Plan-Keys zurückgegriffen wird.
+
   </Accordion>
 </AccordionGroup>
 

@@ -167,12 +167,14 @@ yapılandırmasını döndürür.
     - ngrok ücretsiz katmanda `publicUrl` değerini tam ngrok URL'si olarak ayarlayın; imza doğrulaması her zaman zorunludur.
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true`, Twilio Webhook'larına **yalnızca** `tunnel.provider="ngrok"` ve `serve.bind` loopback olduğunda (ngrok yerel aracısı) geçersiz imzalarla izin verir. Yalnızca yerel geliştirme içindir.
     - Ngrok ücretsiz katman URL'leri değişebilir veya araya giren davranış ekleyebilir; `publicUrl` kayarsa Twilio imzaları başarısız olur. Üretimde kararlı bir alan adı veya bir Tailscale funnel tercih edin.
+
   </Accordion>
   <Accordion title="Akış bağlantı sınırları">
     - `streaming.preStartTimeoutMs`, geçerli bir `start` çerçevesi hiç göndermeyen soketleri kapatır.
     - `streaming.maxPendingConnections`, kimliği doğrulanmamış başlangıç öncesi toplam soket sayısını sınırlar.
     - `streaming.maxPendingConnectionsPerIp`, kaynak IP başına kimliği doğrulanmamış başlangıç öncesi soketleri sınırlar.
     - `streaming.maxConnections`, toplam açık medya akışı soketi sayısını (bekleyen + etkin) sınırlar.
+
   </Accordion>
   <Accordion title="Eski yapılandırma geçişleri">
     `provider: "log"`, `twilio.from` veya eski

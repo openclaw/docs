@@ -32,6 +32,7 @@ En clair : les expéditeurs autorisés par liste d’autorisation peuvent décle
 - L’**accès aux DM** est contrôlé par `*.allowFrom`.
 - L’**accès aux groupes** est contrôlé par `*.groupPolicy` + les listes d’autorisation (`*.groups`, `*.groupAllowFrom`).
 - Le **déclenchement des réponses** est contrôlé par le filtrage par mention (`requireMention`, `/activation`).
+
 </Note>
 
 Flux rapide (ce qui se passe pour un message de groupe) :
@@ -56,6 +57,7 @@ Par défaut, OpenClaw privilégie un comportement de discussion normal et conser
   <Accordion title="Le comportement actuel dépend du canal">
     - Certains canaux appliquent déjà un filtrage basé sur l’expéditeur pour le contexte supplémentaire dans certains chemins (par exemple, amorçage de fil Slack, recherches de réponse/fil Matrix).
     - D’autres canaux transmettent encore le contexte de citation/réponse/transfert tel qu’il a été reçu.
+
   </Accordion>
   <Accordion title="Orientation de durcissement (prévue)">
     - `contextVisibility: "all"` (par défaut) conserve le comportement actuel tel que reçu.
@@ -231,6 +233,7 @@ Contrôlez la manière dont les messages de groupe/salon sont gérés par canal 
     - La liste d’autorisation Telegram peut correspondre à des identifiants utilisateur (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) ou à des noms d’utilisateur (`"@alice"` ou `"alice"`) ; les préfixes sont insensibles à la casse.
     - La valeur par défaut est `groupPolicy: "allowlist"` ; si votre liste d’autorisation de groupe est vide, les messages de groupe sont bloqués.
     - Sécurité à l’exécution : lorsqu’un bloc de fournisseur est totalement absent (`channels.<provider>` absent), la politique de groupe revient à un mode fermé par défaut en cas d’échec (généralement `allowlist`) au lieu d’hériter de `channels.defaults.groupPolicy`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ Répondre à un message de bot compte comme une mention implicite lorsque le can
     - Les groupes où les réponses silencieuses sont autorisées traitent les tours de modèle vides ou contenant uniquement du raisonnement comme silencieux, équivalents à `NO_REPLY`. Les discussions directes traitent toujours les réponses vides comme un tour d’agent échoué.
     - Les valeurs par défaut de Discord se trouvent dans `channels.discord.guilds."*"` (surchargeables par serveur/canal).
     - Le contexte de l’historique de groupe est encapsulé uniformément sur tous les canaux et est **pending-only** (messages ignorés en raison du filtrage par mention) ; utilisez `messages.groupChat.historyLimit` pour la valeur par défaut globale et `channels.<channel>.historyLimit` (ou `channels.<channel>.accounts.*.historyLimit`) pour les substitutions. Définissez `0` pour désactiver.
+
   </Accordion>
 </AccordionGroup>
 

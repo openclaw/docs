@@ -232,6 +232,7 @@ L’ordre de filtrage est le suivant :
     - Si `agents.list[].tools.sandbox.tools` est défini, il remplace `tools.sandbox.tools` pour cet agent.
     - Si `agents.list[].tools.profile` est défini, il remplace `tools.profile` pour cet agent.
     - Les clés d’outils du fournisseur acceptent soit `provider` (par ex. `google-antigravity`), soit `provider/model` (par ex. `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Comportement d’une allowlist vide">
     Si une allowlist explicite de cette chaîne aboutit à une exécution sans aucun outil appelable, OpenClaw s’arrête avant de soumettre le prompt au modèle. C’est intentionnel : un agent configuré avec un outil manquant tel que `agents.list[].tools.allow: ["query_db"]` doit échouer de façon visible jusqu’à ce que le plugin qui enregistre `query_db` soit activé, et non continuer comme un agent texte uniquement.
@@ -360,6 +361,7 @@ Après avoir configuré le sandbox et les outils multi-agent :
   <Step title="Tester les restrictions d’outils">
     - Envoyez un message nécessitant des outils restreints.
     - Vérifiez que l’agent ne peut pas utiliser les outils refusés.
+
   </Step>
   <Step title="Surveiller les journaux">
     ```bash
@@ -376,15 +378,18 @@ Après avoir configuré le sandbox et les outils multi-agent :
   <Accordion title="L’agent n’est pas placé en sandbox malgré `mode: 'all'`">
     - Vérifiez s’il existe un `agents.defaults.sandbox.mode` global qui le remplace.
     - La configuration spécifique à l’agent a priorité ; définissez donc `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Des outils restent disponibles malgré la liste deny">
     - Vérifiez l’ordre de filtrage des outils : global → agent → sandbox → sous-agent.
     - Chaque niveau peut seulement restreindre davantage, pas réautoriser.
     - Vérifiez avec les journaux : `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Le conteneur n’est pas isolé par agent">
     - Définissez `scope: "agent"` dans la configuration de sandbox spécifique à l’agent.
     - La valeur par défaut est `"session"`, ce qui crée un conteneur par session.
+
   </Accordion>
 </AccordionGroup>
 

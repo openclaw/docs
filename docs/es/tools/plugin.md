@@ -147,6 +147,7 @@ el descubrimiento de plugins en lugar de recurrir silenciosamente a las rutas fu
   <Accordion title="Plugins de memoria">
     - `memory-core` — búsqueda de memoria incluida (predeterminado mediante `plugins.slots.memory`)
     - `memory-lancedb` — memoria a largo plazo de instalación bajo demanda con recuperación/captura automática (establece `plugins.slots.memory = "memory-lancedb"`)
+
   </Accordion>
 
   <Accordion title="Proveedores de voz (habilitados por defecto)">
@@ -156,6 +157,7 @@ el descubrimiento de plugins en lugar de recurrir silenciosamente a las rutas fu
   <Accordion title="Otros">
     - `browser` — plugin de navegador incluido para la herramienta de navegador, la CLI `openclaw browser`, el método de gateway `browser.request`, el tiempo de ejecución del navegador y el servicio de control de navegador predeterminado (habilitado por defecto; desactívalo antes de reemplazarlo)
     - `copilot-proxy` — puente de Proxy de VS Code Copilot (deshabilitado por defecto)
+
   </Accordion>
 </AccordionGroup>
 
@@ -205,6 +207,7 @@ o usa `openclaw gateway restart` contra el Gateway en ejecución.
   - **Deshabilitado**: el plugin existe pero las reglas de habilitación lo desactivaron. La configuración se conserva.
   - **Ausente**: la configuración hace referencia a un id de plugin que el descubrimiento no encontró.
   - **Inválido**: el plugin existe pero su configuración no coincide con el esquema declarado.
+
 </Accordion>
 
 ## Descubrimiento y precedencia

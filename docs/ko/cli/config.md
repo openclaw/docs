@@ -56,6 +56,7 @@ openclaw config validate --json
     - `anyOf` / `oneOf` / `allOf` 분기도 일치하는 필드 문서가 있을 때 동일한 문서 메타데이터를 상속합니다
     - 런타임 manifest를 로드할 수 있을 때 best-effort 방식의 라이브 Plugin + 채널 schema 메타데이터
     - 현재 config가 잘못되어 있어도 깔끔한 폴백 schema
+
   </Accordion>
   <Accordion title="관련 런타임 RPC">
     `config.schema.lookup`은 하나의 정규화된 config 경로와 얕은 schema 노드(`title`, `description`, `type`, `enum`, `const`, 공통 경계값), 일치하는 UI 힌트 메타데이터, 즉시 하위 항목 요약을 반환합니다. Control UI 또는 커스텀 클라이언트에서 경로 범위 drill-down에 사용하세요.
@@ -191,15 +192,18 @@ Provider 빌더 대상은 경로로 `secrets.providers.<alias>`를 사용해야 
   <Accordion title="공통 플래그">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Env provider (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (반복 가능)
+
   </Accordion>
   <Accordion title="File provider (--provider-source file)">
     - `--provider-path <path>` (필수)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Exec provider (--provider-source exec)">
     - `--provider-command <path>` (필수)
@@ -212,6 +216,7 @@ Provider 빌더 대상은 경로로 `secrets.providers.<alias>`를 사용해야 
     - `--provider-trusted-dir <path>` (반복 가능)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - exec SecretRef 검사는 명령 부작용을 피하기 위해 기본적으로 드라이 런 중 건너뜁니다.
     - exec SecretRef 검사에 옵트인하려면 `--dry-run`과 함께 `--allow-exec`를 사용하세요(이 경우 provider 명령을 실행할 수 있음).
     - `--allow-exec`는 드라이 런 전용이며, `--dry-run` 없이 사용하면 오류가 발생합니다.
+
   </Accordion>
   <Accordion title="--dry-run --json 필드">
     `--dry-run --json`은 기계 판독 가능한 보고서를 출력합니다.
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: 참조된 provider/ref를 현재 해석할 수 없습니다(누락된 env var, 잘못된 파일 포인터, exec provider 실패, 또는 provider/source 불일치).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: 드라이 런이 exec ref를 건너뛰었습니다. exec 해석 가능성 검증이 필요하면 `--allow-exec`와 함께 다시 실행하세요.
     - 배치 모드에서는 실패한 항목을 수정한 뒤, 쓰기 전에 `--dry-run`을 다시 실행하세요.
+
   </Accordion>
 </AccordionGroup>
 

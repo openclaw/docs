@@ -188,6 +188,7 @@ GLM 모델은 `zai/<model>` 형식으로 사용할 수 있습니다(예: `zai/gl
     - Z.AI는 API 키를 사용한 Bearer 인증을 사용합니다.
     - `zai-api-key` 온보딩 선택은 키 접두사에서 일치하는 Z.AI 엔드포인트를 자동 감지합니다.
     - 특정 API 표면을 강제로 사용하려면 명시적 지역 선택(`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`)을 사용하세요.
+
   </Accordion>
 </AccordionGroup>
 

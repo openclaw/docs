@@ -86,12 +86,14 @@ Recommandé pour la plupart des installations interactives sur macOS/Linux/WSL.
   <Step title="Installer OpenClaw">
     - méthode `npm` (par défaut) : installation npm globale
     - méthode `git` : clone/met à jour le dépôt, installe les dépendances avec pnpm, compile, puis installe le wrapper dans `~/.local/bin/openclaw`
+
   </Step>
   <Step title="Tâches post-installation">
     - Rafraîchit au mieux un service gateway déjà chargé (`openclaw gateway install --force`, puis redémarrage)
     - Exécute `openclaw doctor --non-interactive` lors des mises à niveau et des installations git (au mieux)
     - Tente l’onboarding lorsque c’est approprié (TTY disponible, onboarding non désactivé, et vérifications bootstrap/configuration réussies)
     - Définit par défaut `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ ainsi que les installations depuis checkout git dans le même flux à préfixe.
   <Step title="Installer OpenClaw sous le préfixe">
     - méthode `npm` (par défaut) : installe sous le préfixe avec npm, puis écrit le wrapper dans `<prefix>/bin/openclaw`
     - méthode `git` : clone/met à jour un checkout (par défaut `~/openclaw`) et écrit quand même le wrapper dans `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="Rafraîchir le service gateway chargé">
     Si un service gateway est déjà chargé depuis ce même préfixe, le script exécute
@@ -293,11 +296,13 @@ ainsi que les installations depuis checkout git dans le même flux à préfixe.
   <Step title="Installer OpenClaw">
     - méthode `npm` (par défaut) : installation npm globale en utilisant le `-Tag` sélectionné
     - méthode `git` : clone/met à jour le dépôt, installe/compile avec pnpm, et installe le wrapper dans `%USERPROFILE%\.local\bin\openclaw.cmd`
+
   </Step>
   <Step title="Tâches post-installation">
     - Ajoute le répertoire bin nécessaire au PATH utilisateur lorsque c’est possible
     - Rafraîchit au mieux un service gateway déjà chargé (`openclaw gateway install --force`, puis redémarrage)
     - Exécute `openclaw doctor --non-interactive` lors des mises à niveau et des installations git (au mieux)
+
   </Step>
   <Step title="Gérer les échecs">
     Les installations `iwr ... | iex` et scriptblock signalent une erreur terminale sans fermer la session PowerShell en cours. Les installations directes `powershell -File` / `pwsh -File` se terminent quand même avec un code non nul pour l’automatisation.

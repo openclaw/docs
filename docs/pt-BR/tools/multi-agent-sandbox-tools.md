@@ -232,6 +232,7 @@ A ordem de filtragem é:
     - Se `agents.list[].tools.sandbox.tools` estiver definido, ele substitui `tools.sandbox.tools` para esse agente.
     - Se `agents.list[].tools.profile` estiver definido, ele substitui `tools.profile` para esse agente.
     - Chaves de ferramentas de provider aceitam tanto `provider` (por exemplo `google-antigravity`) quanto `provider/model` (por exemplo `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Comportamento de allowlist vazia">
     Se qualquer allowlist explícita nessa cadeia fizer com que a execução fique sem ferramentas chamáveis, o OpenClaw interrompe antes de enviar o prompt ao modelo. Isso é intencional: um agente configurado com uma ferramenta ausente, como `agents.list[].tools.allow: ["query_db"]`, deve falhar explicitamente até que o plugin que registra `query_db` seja habilitado, e não continuar como um agente somente de texto.
@@ -360,6 +361,7 @@ Depois de configurar sandbox e ferramentas para múltiplos agentes:
   <Step title="Testar restrições de ferramentas">
     - Envie uma mensagem que exija ferramentas restritas.
     - Verifique se o agente não consegue usar ferramentas negadas.
+
   </Step>
   <Step title="Monitorar logs">
     ```bash
@@ -376,15 +378,18 @@ Depois de configurar sandbox e ferramentas para múltiplos agentes:
   <Accordion title="Agente sem sandbox apesar de `mode: 'all'`">
     - Verifique se há um `agents.defaults.sandbox.mode` global que o substitui.
     - A config específica do agente tem precedência, então defina `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Ferramentas ainda disponíveis apesar da lista deny">
     - Verifique a ordem de filtragem de ferramentas: global → agente → sandbox → subagente.
     - Cada nível só pode restringir mais, não restaurar permissões.
     - Verifique nos logs: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Contêiner não isolado por agente">
     - Defina `scope: "agent"` na config de sandbox específica do agente.
     - O padrão é `"session"`, que cria um contêiner por sessão.
+
   </Accordion>
 </AccordionGroup>
 

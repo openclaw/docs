@@ -303,6 +303,7 @@ x-i18n:
     - `agent`：属于当前智能体 ID 的任意会话（如果你在同一智能体 ID 下按发送者运行会话，则可能包括其他用户）。
     - `all`：任意会话。跨智能体定向仍然需要 `tools.agentToAgent`。
     - 沙箱限制：当当前会话处于沙箱隔离中，且 `agents.defaults.sandbox.sessionToolsVisibility="spawned"` 时，即使 `tools.sessions.visibility="all"`，可见性也会被强制为 `tree`。
+
   </Accordion>
 </AccordionGroup>
 
@@ -334,6 +335,7 @@ x-i18n:
     - Base64 输入会进行严格的字母表 / 填充校验，并在解码前执行大小保护检查。
     - 目录权限为 `0700`，文件权限为 `0600`。
     - 清理遵循 `cleanup` 策略：`delete` 总会删除附件；`keep` 仅在 `retainOnSessionKeep: true` 时保留附件。
+
   </Accordion>
 </AccordionGroup>
 
@@ -427,6 +429,7 @@ OpenClaw 使用内置模型目录。可通过配置中的 `models.providers` 或
       - 匹配模型的 `contextTokens` 会在存在时保留显式运行时上限；当你希望限制有效上下文而不改变原生模型元数据时可使用它。
       - 当你希望配置完全重写 `models.json` 时，使用 `models.mode: "replace"`。
       - 标记持久化以源配置为权威：标记从当前生效的源配置快照（解析前）写入，而不是从已解析的运行时机密值写入。
+
   </Accordion>
 </AccordionGroup>
 
@@ -437,6 +440,7 @@ OpenClaw 使用内置模型目录。可通过配置中的 `models.providers` 或
     - `models.mode`：提供商目录行为（`merge` 或 `replace`）。
     - `models.providers`：按提供商 ID 键控的自定义提供商映射。
       - 安全编辑：对增量更新，使用 `openclaw config set models.providers.<id> '<json>' --strict-json --merge` 或 `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge`。除非传入 `--replace`，否则 `config set` 会拒绝破坏性替换。
+
   </Accordion>
   <Accordion title="提供商连接和认证">
     - `models.providers.*.api`：请求适配器（`openai-completions`、`openai-responses`、`anthropic-messages`、`google-generative-ai` 等）。对于自托管的 `/v1/chat/completions` 后端，例如 MLX、vLLM、SGLang 以及大多数与 OpenAI 兼容的本地服务器，请使用 `openai-completions`。带有 `baseUrl` 但没有 `api` 的自定义提供商默认使用 `openai-completions`；仅当后端支持 `/v1/responses` 时才设置 `openai-responses`。
@@ -450,6 +454,7 @@ OpenClaw 使用内置模型目录。可通过配置中的 `models.providers` 或
     - `models.providers.*.authHeader`：在需要时强制通过 `Authorization` header 传输凭证。
     - `models.providers.*.baseUrl`：上游 API 基础 URL。
     - `models.providers.*.headers`：用于代理 / 租户路由的额外静态 headers。
+
   </Accordion>
   <Accordion title="请求传输覆盖">
     `models.providers.*.request`：模型提供商 HTTP 请求的传输覆盖。
@@ -467,6 +472,7 @@ OpenClaw 使用内置模型目录。可通过配置中的 `models.providers` 或
     - `models.providers.*.models.*.contextTokens`：可选的运行时上下文上限。它会覆盖提供商级 `contextTokens`；当你希望有效上下文预算小于模型原生 `contextWindow` 时可使用它；当两者不同，`openclaw models list` 会同时显示这两个值。
     - `models.providers.*.models.*.compat.supportsDeveloperRole`：可选的兼容性提示。对于 `api: "openai-completions"` 且 `baseUrl` 为非空、非原生值（主机不是 `api.openai.com`）的情况，OpenClaw 会在运行时强制将其设为 `false`。空或省略的 `baseUrl` 会保留默认的 OpenAI 行为。
     - `models.providers.*.models.*.compat.requiresStringContent`：适用于仅支持字符串的 OpenAI 兼容聊天端点的可选兼容性提示。当设为 `true` 时，OpenClaw 会在发送请求前将纯文本 `messages[].content` 数组拍平成普通字符串。
+
   </Accordion>
   <Accordion title="Amazon Bedrock 发现">
     - `plugins.entries.amazon-bedrock.config.discovery`：Bedrock 自动发现设置根路径。
@@ -476,6 +482,7 @@ OpenClaw 使用内置模型目录。可通过配置中的 `models.providers` 或
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`：发现刷新轮询间隔。
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`：已发现模型的回退上下文窗口。
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`：已发现模型的回退最大输出 token 数。
+
   </Accordion>
 </AccordionGroup>
 

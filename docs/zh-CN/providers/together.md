@@ -125,6 +125,7 @@ OpenClaw 内置了以下 Together 目录：
     - 如果模型未显示，请确认 API key 是否已在你的 Gateway 网关进程所使用的正确
       环境中设置。
     - 模型引用的格式是 `together/<model-id>`。
+
   </Accordion>
 </AccordionGroup>
 

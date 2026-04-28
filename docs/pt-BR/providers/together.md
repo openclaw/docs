@@ -124,6 +124,7 @@ seleção de provedor e comportamento de failover.
     - Verifique se sua chave funciona: `openclaw models list --provider together`
     - Se os modelos não estiverem aparecendo, confirme que a chave de API está definida no ambiente correto para o processo do Gateway.
     - Refs de modelo usam o formato `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

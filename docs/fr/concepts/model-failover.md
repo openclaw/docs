@@ -226,6 +226,7 @@ OpenClaw construit la liste des candidats à partir du `provider/model` actuelle
     - Si l’exécution actuelle est déjà sur un repli configuré dans la même famille de fournisseur, OpenClaw continue à utiliser la chaîne configurée complète.
     - Si l’exécution actuelle est sur un fournisseur différent de celui de la configuration et que ce modèle actuel ne fait pas déjà partie de la chaîne de repli configurée, OpenClaw n’ajoute pas de replis configurés non liés provenant d’un autre fournisseur.
     - Lorsque l’exécution a commencé à partir d’un remplacement, le primaire configuré est ajouté à la fin afin que la chaîne puisse se rétablir sur la valeur par défaut normale une fois les candidats précédents épuisés.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ OpenClaw construit la liste des candidats à partir du `provider/model` actuelle
     - désactivations liées à la facturation
     - `LiveSessionModelSwitchError`, qui est normalisée en chemin de repli afin qu’un modèle persisté obsolète ne crée pas de boucle externe de nouvelle tentative
     - autres erreurs non reconnues lorsqu’il reste encore des candidats
+
   </Tab>
   <Tab title="Ne continue pas sur">
     - abandons explicites qui ne sont pas de type délai d’attente/repli
     - erreurs de dépassement de contexte qui doivent rester dans la logique de Compaction/nouvelle tentative (par exemple `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model`, ou `ollama error: context length exceeded`)
     - une erreur inconnue finale lorsqu’il ne reste plus de candidats
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Lorsque tous les profils d’authentification d’un fournisseur sont déjà en 
     - Le candidat primaire peut être sondé à l’approche de l’expiration de la période de refroidissement, avec une limitation par fournisseur.
     - Des modèles frères de repli sur le même fournisseur peuvent être essayés malgré la période de refroidissement lorsque l’échec semble transitoire (`rate_limit`, `overloaded`, ou inconnu). C’est particulièrement pertinent lorsqu’une limitation de débit est limitée au modèle et qu’un modèle frère peut encore récupérer immédiatement.
     - Les sondes de période de refroidissement transitoire sont limitées à une par fournisseur et par exécution de repli afin qu’un seul fournisseur ne bloque pas le repli inter-fournisseurs.
+
   </Accordion>
 </AccordionGroup>
 

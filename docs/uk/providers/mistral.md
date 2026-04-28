@@ -168,6 +168,7 @@ OpenClaw типово використовує для realtime STT Mistral `pcm_
     - Типова base URL провайдера: `https://api.mistral.ai/v1`.
     - Типова модель onboarding: `mistral/mistral-large-latest`.
     - Z.AI використовує Bearer auth з вашим API key.
+
   </Accordion>
 </AccordionGroup>
 

@@ -232,6 +232,7 @@ Kolejność filtrowania jest następująca:
     - Jeśli ustawiono `agents.list[].tools.sandbox.tools`, zastępuje ono `tools.sandbox.tools` dla tego agenta.
     - Jeśli ustawiono `agents.list[].tools.profile`, nadpisuje ono `tools.profile` dla tego agenta.
     - Klucze narzędzi dostawcy akceptują zarówno `provider` (np. `google-antigravity`), jak i `provider/model` (np. `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Zachowanie pustej listy dozwolonych">
     Jeśli jakakolwiek jawna lista dozwolonych w tym łańcuchu pozostawi uruchomienie bez wywoływalnych narzędzi, OpenClaw zatrzymuje się przed wysłaniem promptu do modelu. Jest to zamierzone: agent skonfigurowany z brakującym narzędziem, takim jak `agents.list[].tools.allow: ["query_db"]`, powinien zakończyć się głośnym błędem, dopóki nie zostanie włączony Plugin rejestrujący `query_db`, a nie działać dalej jako agent wyłącznie tekstowy.
@@ -360,6 +361,7 @@ Po skonfigurowaniu sandbox i narzędzi dla wielu agentów:
   <Step title="Przetestuj ograniczenia narzędzi">
     - Wyślij wiadomość wymagającą ograniczonych narzędzi.
     - Zweryfikuj, że agent nie może używać narzędzi z listy deny.
+
   </Step>
   <Step title="Monitoruj logi">
     ```bash
@@ -376,15 +378,18 @@ Po skonfigurowaniu sandbox i narzędzi dla wielu agentów:
   <Accordion title="Agent nie jest uruchamiany w sandbox mimo `mode: 'all'`">
     - Sprawdź, czy istnieje globalne `agents.defaults.sandbox.mode`, które to nadpisuje.
     - Konfiguracja specyficzna dla agenta ma pierwszeństwo, więc ustaw `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Narzędzia nadal są dostępne mimo listy deny">
     - Sprawdź kolejność filtrowania narzędzi: globalne → agent → sandbox → subagent.
     - Każdy poziom może tylko dalej ograniczać, a nie przywracać.
     - Zweryfikuj w logach: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Kontener nie jest izolowany per agent">
     - Ustaw `scope: "agent"` w konfiguracji sandbox specyficznej dla agenta.
     - Domyślnie jest `"session"`, co tworzy jeden kontener na sesję.
+
   </Accordion>
 </AccordionGroup>
 

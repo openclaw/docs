@@ -58,6 +58,7 @@ SecretRefs são validados apenas em superfícies efetivamente ativas.
         - `gateway.remote.token` fica ativo quando a auth por token pode prevalecer e nenhum token de env/auth está configurado.
         - `gateway.remote.password` fica ativo apenas quando a auth por senha pode prevalecer e nenhuma senha de env/auth está configurada.
     - O SecretRef de `gateway.auth.token` fica inativo para resolução de auth no startup quando `OPENCLAW_GATEWAY_TOKEN` está definido, porque a entrada de token de env prevalece para esse runtime.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ Defina provedores em `secrets.providers`:
   <Accordion title="Provedor de env">
     - Lista de permissões opcional via `allowlist`.
     - Valores de env ausentes/vazios falham na resolução.
+
   </Accordion>
   <Accordion title="Provedor de file">
     - Lê arquivo local de `path`.
@@ -173,6 +175,7 @@ Defina provedores em `secrets.providers`:
     - `mode: "singleValue"` espera o id de ref `"value"` e retorna o conteúdo do arquivo.
     - O caminho deve passar por verificações de propriedade/permissão.
     - Observação fail-closed no Windows: se a verificação de ACL estiver indisponível para um caminho, a resolução falha. Apenas para caminhos confiáveis, defina `allowInsecurePath: true` nesse provedor para ignorar verificações de segurança do caminho.
+
   </Accordion>
   <Accordion title="Provedor de exec">
     - Executa o caminho absoluto do binário configurado, sem shell.

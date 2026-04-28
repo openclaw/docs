@@ -232,6 +232,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     - إذا تم تعيين `agents.list[].tools.sandbox.tools`، فإنه يستبدل `tools.sandbox.tools` لذلك الوكيل.
     - إذا تم تعيين `agents.list[].tools.profile`، فإنه يتجاوز `tools.profile` لذلك الوكيل.
     - تقبل مفاتيح أدوات المزوّد إما `provider` (مثل `google-antigravity`) أو `provider/model` (مثل `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="سلوك قائمة السماح الفارغة">
     إذا أدّت أي قائمة سماح صريحة في هذه السلسلة إلى عدم بقاء أي أدوات قابلة للاستدعاء أثناء التشغيل، فإن OpenClaw يتوقف قبل إرسال prompt إلى النموذج. هذا مقصود: يجب أن يفشل الوكيل المضبوط بأداة مفقودة مثل `agents.list[].tools.allow: ["query_db"]` بشكل واضح إلى أن يتم تفعيل Plugin التي تسجّل `query_db`، لا أن يستمر كوكيل نصي فقط.
@@ -360,6 +361,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="اختبار قيود الأدوات">
     - أرسل رسالة تتطلب أدوات مقيّدة.
     - تحقّق من أن الوكيل لا يمكنه استخدام الأدوات المرفوضة.
+
   </Step>
   <Step title="مراقبة السجلات">
     ```bash
@@ -376,15 +378,18 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Accordion title="الوكيل غير معزول داخل sandbox رغم `mode: 'all'`">
     - تحقّق مما إذا كانت هناك قيمة عامة في `agents.defaults.sandbox.mode` تتجاوزها.
     - إعدادات الوكيل الخاصة لها الأولوية، لذا اضبط `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="الأدوات ما تزال متاحة رغم قائمة الرفض">
     - تحقّق من ترتيب تصفية الأدوات: عام → وكيل → sandbox → وكيل فرعي.
     - يمكن لكل مستوى أن يقيّد فقط، ولا يمكنه إعادة منح الأدوات.
     - تحقّق عبر السجلات: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="الحاوية غير معزولة لكل وكيل">
     - اضبط `scope: "agent"` في إعدادات sandbox الخاصة بالوكيل.
     - القيمة الافتراضية هي `"session"`، ما ينشئ حاوية واحدة لكل جلسة.
+
   </Accordion>
 </AccordionGroup>
 

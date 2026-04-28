@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - รูปแบบ root เริ่มต้น: `/Users/*/Library/Messages/Attachments`
     - SCP ใช้การตรวจสอบ host key แบบเข้มงวด (`StrictHostKeyChecking=yes`)
     - ขนาดสื่อขาออกใช้ `channels.imessage.mediaMaxMb` (ค่าเริ่มต้น 16 MB)
+
   </Accordion>
 
   <Accordion title="การแบ่งข้อความขาออก">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - โหมดการแบ่งข้อความ: `channels.imessage.chunkMode`
       - `length` (ค่าเริ่มต้น)
       - `newline` (แบ่งโดยย่อหน้าก่อน)
+
   </Accordion>
 
   <Accordion title="รูปแบบการระบุปลายทาง">

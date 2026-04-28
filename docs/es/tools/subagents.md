@@ -82,12 +82,14 @@ chat solicitante cuando la ejecución termina.
     - Al finalizar, el subagente anuncia un mensaje de resumen/resultado de vuelta al canal de chat solicitante.
     - La finalización se basa en envío. Una vez generado, **no** consultes `/subagents list`, `sessions_list` o `sessions_history` en bucle solo para esperar a que termine; inspecciona el estado solo bajo demanda para depuración o intervención.
     - Al finalizar, OpenClaw intenta cerrar de la mejor manera posible las pestañas/procesos de navegador rastreados abiertos por esa sesión de subagente antes de que continúe el flujo de limpieza del anuncio.
+
   </Accordion>
   <Accordion title="Resiliencia de entrega de generación manual">
     - OpenClaw intenta primero la entrega directa de `agent` con una clave de idempotencia estable.
     - Si la entrega directa falla, recurre al enrutamiento en cola.
     - Si el enrutamiento en cola sigue sin estar disponible, se reintenta el anuncio con un breve retroceso exponencial antes del abandono final.
     - La entrega de finalización conserva la ruta resuelta del solicitante: las rutas de finalización vinculadas a hilo o a conversación prevalecen cuando están disponibles; si el origen de finalización solo proporciona un canal, OpenClaw completa el destino/cuenta faltante a partir de la ruta resuelta de la sesión solicitante (`lastChannel` / `lastTo` / `lastAccountId`) para que la entrega directa siga funcionando.
+
   </Accordion>
   <Accordion title="Metadatos de transferencia de finalización">
     La transferencia de finalización a la sesión solicitante es contexto interno
@@ -105,6 +107,7 @@ chat solicitante cuando la ejecución termina.
     - `/subagents spawn` es modo de una sola ejecución (`mode: "run"`). Para sesiones persistentes vinculadas a hilos, usa `sessions_spawn` con `thread: true` y `mode: "session"`.
     - Para sesiones de arnés ACP (Claude Code, Gemini CLI, OpenCode o Codex ACP/acpx explícito), usa `sessions_spawn` con `runtime: "acp"` cuando la herramienta anuncie ese runtime. Consulta [Modelo de entrega ACP](/es/tools/acp-agents#delivery-model) al depurar finalizaciones o bucles de agente a agente. Cuando el Plugin `codex` está habilitado, el control de chat/hilo de Codex debe preferir `/codex ...` sobre ACP a menos que el usuario solicite explícitamente ACP/acpx.
     - OpenClaw oculta `runtime: "acp"` hasta que ACP está habilitado, el solicitante no está en sandbox y hay cargado un Plugin backend como `acpx`. `runtime: "acp"` espera un id de arnés ACP externo, o una entrada `agents.list[]` con `runtime.type="acp"`; usa el runtime predeterminado de subagente para agentes normales de configuración de OpenClaw desde `agents_list`.
+
   </Accordion>
 </AccordionGroup>
 

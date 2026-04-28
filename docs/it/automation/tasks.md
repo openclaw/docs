@@ -115,6 +115,7 @@ Non ogni esecuzione dell’agente crea un’attività. I turni di Heartbeat e la
     - Turni di Heartbeat — sessione principale; vedi [Heartbeat](/it/gateway/heartbeat)
     - Normali turni di chat interattiva
     - Risposte dirette a `/command`
+
   </Accordion>
 </AccordionGroup>
 

@@ -168,6 +168,7 @@ OpenClaw 默认将 Mistral 实时 STT 设置为 8 kHz 的 `pcm_mulaw`，这样 V
     - Provider Base URL 默认为 `https://api.mistral.ai/v1`。
     - 新手引导默认模型为 `mistral/mistral-large-latest`。
     - Z.AI 使用携带你的 API key 的 Bearer 认证。
+
   </Accordion>
 </AccordionGroup>
 

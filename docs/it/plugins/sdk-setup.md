@@ -307,6 +307,7 @@ I canali workspace inclusi che mantengono esportazioni sicure per il setup in mo
     - Il canale è disabilitato ma richiede superfici di setup/onboarding.
     - Il canale è abilitato ma non configurato.
     - Il caricamento differito è abilitato (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Cosa deve registrare setupEntry">
     - L'oggetto Plugin del canale (tramite `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ I canali workspace inclusi che mantengono esportazioni sicure per il setup in mo
     - Servizi in background.
     - Import runtime pesanti (crypto, SDK).
     - Metodi del Gateway necessari solo dopo l'avvio.
+
   </Accordion>
 </AccordionGroup>
 

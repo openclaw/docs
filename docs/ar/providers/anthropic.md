@@ -154,6 +154,7 @@ x-i18n:
 وثائق Anthropic ذات الصلة:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## تخزين الموجهات مؤقتًا
@@ -216,6 +217,7 @@ x-i18n:
     - تقبل نماذج Anthropic Claude على Bedrock ‏(`amazon-bedrock/*anthropic.claude*`) تمرير `cacheRetention` عند تهيئتها.
     - تُفرض القيمة `cacheRetention: "none"` أثناء runtime على نماذج Bedrock غير التابعة لـ Anthropic.
     - تقوم الإعدادات الذكية الافتراضية لمفتاح API أيضًا ببذر `cacheRetention: "short"` لمراجع Claude-on-Bedrock عندما لا تكون هناك قيمة صريحة مضبوطة.
+
   </Accordion>
 </AccordionGroup>
 
@@ -248,6 +250,7 @@ x-i18n:
     - لا يتم حقنه إلا في الطلبات المباشرة إلى `api.anthropic.com`. وتترك مسارات proxy قيمة `service_tier` دون تغيير.
     - تتجاوز معاملات `serviceTier` أو `service_tier` الصريحة قيمة `/fast` عندما يتم تعيينهما معًا.
     - في الحسابات التي لا تملك سعة Priority Tier، قد تُحل `service_tier: "auto"` إلى `standard`.
+
     </Note>
 
   </Accordion>

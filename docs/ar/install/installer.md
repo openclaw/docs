@@ -86,12 +86,14 @@ x-i18n:
   <Step title="تثبيت OpenClaw">
     - طريقة `npm` (الافتراضية): تثبيت npm عالمي
     - طريقة `git`: استنساخ/تحديث المستودع، وتثبيت الاعتماديات باستخدام pnpm، والبناء، ثم تثبيت wrapper عند `~/.local/bin/openclaw`
+
   </Step>
   <Step title="مهام ما بعد التثبيت">
     - يحدّث خدمة gateway المحمّلة بأفضل جهد (`openclaw gateway install --force`، ثم إعادة التشغيل)
     - يشغّل `openclaw doctor --non-interactive` عند الترقيات وتثبيتات git (best effort)
     - يحاول تشغيل التهيئة الأولى عندما يكون ذلك مناسبًا (وجود TTY، وعدم تعطيل التهيئة الأولى، واجتياز فحوصات bootstrap/config)
     - يضبط افتراضيًا `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ x-i18n:
   <Step title="تثبيت OpenClaw تحت البادئة">
     - طريقة `npm` (الافتراضية): يثبّت تحت البادئة باستخدام npm، ثم يكتب wrapper إلى `<prefix>/bin/openclaw`
     - طريقة `git`: يستنسخ/يحدّث checkout ‏(الافتراضي `~/openclaw`) ويكتب أيضًا wrapper إلى `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="تحديث خدمة gateway المحمّلة">
     إذا كانت خدمة gateway محمّلة بالفعل من نفس البادئة، يشغّل السكربت
@@ -293,11 +296,13 @@ x-i18n:
   <Step title="تثبيت OpenClaw">
     - طريقة `npm` (الافتراضية): تثبيت npm عالمي باستخدام `-Tag` المحدد
     - طريقة `git`: استنساخ/تحديث المستودع، والتثبيت/البناء باستخدام pnpm، وتثبيت wrapper عند `%USERPROFILE%\.local\bin\openclaw.cmd`
+
   </Step>
   <Step title="مهام ما بعد التثبيت">
     - يضيف دليل bin المطلوب إلى PATH الخاص بالمستخدم متى أمكن
     - يحدّث خدمة gateway المحمّلة بأفضل جهد (`openclaw gateway install --force`، ثم إعادة التشغيل)
     - يشغّل `openclaw doctor --non-interactive` عند الترقيات وتثبيتات git (best effort)
+
   </Step>
   <Step title="التعامل مع الإخفاقات">
     تبلغ عمليات التثبيت من نوع `iwr ... | iex` وscriptblock عن خطأ منهي من دون إغلاق جلسة PowerShell الحالية. أما عمليات التثبيت المباشرة عبر `powershell -File` / `pwsh -File` فتخرج بقيمة غير صفرية من أجل الأتمتة.

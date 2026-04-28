@@ -93,6 +93,7 @@ Dreaming **اختياري** وهو معطّل افتراضيًا.
     - يكتب `memory rem-backfill --path ...` إدخالات يوميات مستندة إلى أساس واقعي وقابلة للعكس في `DREAMS.md`.
     - يجهّز `memory rem-backfill --path ... --stage-short-term` مرشحين دائمين مستندين إلى أساس واقعي في مخزن الأدلة قصيرة الأجل نفسه الذي تستخدمه مرحلة Deep العادية أصلًا.
     - يزيل `memory rem-backfill --rollback` و`--rollback-short-term` عناصر backfill المجهزة هذه من دون المساس بإدخالات اليوميات العادية أو الاستدعاء الحي قصير الأجل.
+
   </Accordion>
 </AccordionGroup>
 

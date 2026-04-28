@@ -68,6 +68,7 @@ Jika pemahaman gagal atau dinonaktifkan, **alur balasan tetap berlanjut** dengan
       - kebijakan `attachments` (`mode`, `maxAttachments`, `prefer`)
       - `scope` (gating opsional berdasarkan channel/chatType/session key)
     - `tools.media.concurrency`: jumlah maksimum eksekusi kapabilitas bersamaan (default **2**).
+
   </Accordion>
 </AccordionGroup>
 
@@ -164,6 +165,7 @@ Default yang direkomendasikan:
     - Jika model utama Gateway/WebChat hanya mendukung teks, lampiran gambar dipertahankan sebagai ref `media://inbound/*` yang di-offload sehingga tool gambar/PDF atau model gambar yang dikonfigurasi tetap dapat memeriksanya alih-alih kehilangan lampiran.
     - Permintaan eksplisit `openclaw infer image describe --model <provider/model>` berbeda: perintah ini menjalankan provider/model yang mendukung gambar tersebut secara langsung, termasuk ref Ollama seperti `ollama/qwen2.5vl:7b`.
     - Jika `<capability>.enabled: true` tetapi tidak ada model yang dikonfigurasi, OpenClaw mencoba **model balasan aktif** ketika provider-nya mendukung kapabilitas tersebut.
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +266,7 @@ Untuk entri CLI, **set `capabilities` secara eksplisit** agar tidak terjadi keco
 
 - Pemahaman gambar `minimax` dan `minimax-portal` berasal dari provider media `MiniMax-VL-01` milik Plugin.
 - Katalog teks MiniMax bawaan tetap dimulai sebagai text-only; entri `models.providers.minimax` eksplisit mematerialkan ref chat M2.7 yang mendukung gambar.
+
 </Note>
 
 ## Panduan pemilihan model
@@ -297,6 +300,7 @@ Saat `mode: "all"`, output diberi label `[Image 1/2]`, `[Audio 2/2]`, dll.
     - Jalur ekstraksi lampiran ini sengaja menghilangkan banner panjang `SECURITY NOTICE:` agar prompt media tidak membengkak; penanda batas dan metadata tetap ada.
     - Jika sebuah file tidak memiliki teks yang dapat diekstrak, OpenClaw menyuntikkan `[No extractable text]`.
     - Jika sebuah PDF fallback ke gambar halaman yang dirender pada jalur ini, prompt media mempertahankan placeholder `[PDF content rendered to images; images not forwarded to model]` karena langkah ekstraksi lampiran ini meneruskan blok teks, bukan gambar PDF yang dirender.
+
   </Accordion>
 </AccordionGroup>
 

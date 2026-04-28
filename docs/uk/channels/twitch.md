@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="Бот не відповідає на повідомлення">
     - **Перевірте керування доступом:** Переконайтеся, що ваш user ID є в `allowFrom`, або тимчасово приберіть `allowFrom` і задайте `allowedRoles: ["all"]` для перевірки.
     - **Перевірте, що бот перебуває в каналі:** Бот має приєднатися до каналу, заданого в `channel`.
+
   </Accordion>
   <Accordion title="Проблеми з токеном">
     "Failed to connect" або помилки автентифікації:

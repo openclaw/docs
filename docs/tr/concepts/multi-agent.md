@@ -244,11 +244,13 @@ Bağlamalar **deterministiktir** ve **en spesifik olan kazanır**:
   <Accordion title="Eşitlik bozma ve AND semantiği">
     - Aynı katmanda birden çok bağlama eşleşirse yapılandırma sırasındaki ilki kazanır.
     - Bir bağlama birden çok eşleşme alanı ayarlarsa (ör. `peer` + `guildId`), belirtilen tüm alanlar gerekir (`AND` semantiği).
+
   </Accordion>
   <Accordion title="Hesap kapsamı ayrıntısı">
     - `accountId` atlayan bir bağlama yalnızca varsayılan hesapla eşleşir.
     - Tüm hesaplar için kanal genelinde fallback olarak `accountId: "*"` kullanın.
     - Daha sonra aynı ajan için aynı bağlamayı açık bir hesap kimliğiyle eklerseniz OpenClaw, onu çoğaltmak yerine mevcut yalnızca kanal kapsamlı bağlamayı hesap kapsamlıya yükseltir.
+
   </Accordion>
 </AccordionGroup>
 

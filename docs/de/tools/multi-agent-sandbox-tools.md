@@ -232,6 +232,7 @@ Die Filterreihenfolge ist:
     - Wenn `agents.list[].tools.sandbox.tools` gesetzt ist, ersetzt es `tools.sandbox.tools` für diesen Agenten.
     - Wenn `agents.list[].tools.profile` gesetzt ist, überschreibt es `tools.profile` für diesen Agenten.
     - Provider-Tool-Schlüssel akzeptieren entweder `provider` (z. B. `google-antigravity`) oder `provider/model` (z. B. `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Verhalten bei leerer Allowlist">
     Wenn eine explizite Allowlist in dieser Kette dazu führt, dass für den Lauf keine aufrufbaren Tools mehr übrig sind, stoppt OpenClaw, bevor der Prompt an das Modell gesendet wird. Das ist beabsichtigt: Ein Agent, der mit einem fehlenden Tool wie `agents.list[].tools.allow: ["query_db"]` konfiguriert ist, soll deutlich fehlschlagen, bis das Plugin aktiviert ist, das `query_db` registriert, und nicht stattdessen als reiner Text-Agent fortfahren.
@@ -360,6 +361,7 @@ Nach der Konfiguration von Sandbox und Tools für mehrere Agenten:
   <Step title="Tool-Einschränkungen testen">
     - Senden Sie eine Nachricht, die eingeschränkte Tools erfordert.
     - Verifizieren Sie, dass der Agent verweigerte Tools nicht verwenden kann.
+
   </Step>
   <Step title="Logs überwachen">
     ```bash
@@ -376,15 +378,18 @@ Nach der Konfiguration von Sandbox und Tools für mehrere Agenten:
   <Accordion title="Agent wird trotz `mode: 'all'` nicht in die Sandbox gesetzt">
     - Prüfen Sie, ob es ein globales `agents.defaults.sandbox.mode` gibt, das dies überschreibt.
     - Agentenspezifische Konfiguration hat Vorrang, setzen Sie also `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Tools trotz Deny-Liste weiterhin verfügbar">
     - Prüfen Sie die Reihenfolge der Tool-Filterung: global → Agent → Sandbox → Subagent.
     - Jede Ebene kann nur weiter einschränken, nicht wieder freigeben.
     - Verifizieren Sie mit Logs: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Container nicht pro Agent isoliert">
     - Setzen Sie `scope: "agent"` in der agentenspezifischen Sandbox-Konfiguration.
     - Standard ist `"session"`, wodurch ein Container pro Sitzung erstellt wird.
+
   </Accordion>
 </AccordionGroup>
 

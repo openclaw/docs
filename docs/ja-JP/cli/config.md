@@ -56,6 +56,7 @@ openclaw config validate --json
     - `anyOf` / `oneOf` / `allOf` の分岐にも、一致するフィールドドキュメントが存在する場合、同じドキュメントメタデータが継承されます。
     - ランタイムマニフェストを読み込める場合、ベストエフォートのライブ Plugin + チャネル schema メタデータ。
     - 現在の config が無効な場合でも、問題なく使えるフォールバック schema。
+
   </Accordion>
   <Accordion title="関連するランタイム RPC">
     `config.schema.lookup` は、正規化された 1 つの config パスに対して、浅い schema ノード（`title`、`description`、`type`、`enum`、`const`、一般的な境界）、一致した UI ヒントメタデータ、および直下の子要約を返します。Control UI やカスタムクライアントで、パススコープのドリルダウンに使用してください。
@@ -191,15 +192,18 @@ openclaw config set secrets.providers.vaultfile \
   <Accordion title="共通フラグ">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Env provider (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>`（繰り返し指定可能）
+
   </Accordion>
   <Accordion title="File provider (--provider-source file)">
     - `--provider-path <path>`（必須）
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Exec provider (--provider-source exec)">
     - `--provider-command <path>`（必須）
@@ -212,6 +216,7 @@ openclaw config set secrets.providers.vaultfile \
     - `--provider-trusted-dir <path>`（繰り返し指定可能）
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - コマンド副作用を避けるため、ドライラン中は exec SecretRef チェックはデフォルトでスキップされます。
     - exec SecretRef チェックを有効にするには、`--dry-run` とともに `--allow-exec` を使用してください（これにより provider コマンドが実行される可能性があります）。
     - `--allow-exec` はドライラン専用であり、`--dry-run` なしで使用するとエラーになります。
+
   </Accordion>
   <Accordion title="--dry-run --json のフィールド">
     `--dry-run --json` は機械可読なレポートを出力します。
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: 参照された provider/ref を現在解決できません（env var の不足、無効なファイルポインタ、exec provider の失敗、または provider/source の不一致）。
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: ドライランで exec ref がスキップされました。exec の解決可能性検証が必要な場合は `--allow-exec` を付けて再実行してください。
     - バッチモードでは、失敗したエントリを修正してから、書き込む前に `--dry-run` を再実行してください。
+
   </Accordion>
 </AccordionGroup>
 

@@ -41,6 +41,7 @@ Rozwiązywanie problemów: [Zadania harmonogramowane](/pl/automation/cron-jobs#t
     - Używaj lekkiego kontekstu bootstrap, jeśli uruchomienia Heartbeat potrzebują tylko `HEARTBEAT.md`.
     - Włącz izolowane sesje, aby uniknąć wysyłania pełnej historii rozmowy przy każdym Heartbeat.
     - Ogranicz Heartbeat do aktywnych godzin (czas lokalny).
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Użyj `accountId`, aby wskazać konkretne konto w kanałach wielokontowych, taki
   - `main` (domyślnie): główna sesja agenta.
   - Jawny klucz sesji (skopiowany z `openclaw sessions --json` albo z [CLI sesji](/pl/cli/sessions)).
   - Formaty kluczy sesji: zobacz [Sesje](/pl/concepts/session) i [Grupy](/pl/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: dostarczaj do ostatnio użytego zewnętrznego kanału.
   - jawny kanał: dowolny skonfigurowany kanał lub identyfikator Pluginu, na przykład `discord`, `matrix`, `telegram` albo `whatsapp`.
   - `none` (domyślnie): uruchom Heartbeat, ale **nie dostarczaj** go na zewnątrz.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Kontroluje zachowanie dostarczania direct/DM. `allow`: zezwalaj na dostarczanie Heartbeat do direct/DM. `block`: wycisz dostarczanie direct/DM (`reason=dm-blocked`).
@@ -274,6 +277,7 @@ Użyj `accountId`, aby wskazać konkretne konto w kanałach wielokontowych, taki
   - Dowolny identyfikator IANA (np. `America/New_York`): używany bezpośrednio; jeśli jest nieprawidłowy, wraca do zachowania `"user"` opisanego wyżej.
   - `start` i `end` nie mogą być równe dla aktywnego okna; równe wartości są traktowane jako okno o zerowej szerokości (zawsze poza oknem).
   - Poza aktywnym oknem Heartbeat są pomijane aż do następnego tyknięcia wewnątrz okna.
+
 </ParamField>
 
 ## Zachowanie dostarczania
@@ -286,16 +290,19 @@ Użyj `accountId`, aby wskazać konkretne konto w kanałach wielokontowych, taki
     - Dostarczanie Heartbeat domyślnie zezwala na cele direct/DM. Ustaw `directPolicy: "block"`, aby wyciszyć wysyłki do celów bezpośrednich, jednocześnie nadal uruchamiając turę Heartbeat.
     - Jeśli główna kolejka jest zajęta, Heartbeat jest pomijany i ponawiany później.
     - Jeśli `target` nie rozwiązuje się do żadnego zewnętrznego celu, uruchomienie nadal następuje, ale żadna wiadomość wychodząca nie jest wysyłana.
+
   </Accordion>
   <Accordion title="Widoczność i zachowanie pomijania">
     - Jeśli `showOk`, `showAlerts` i `useIndicator` są wszystkie wyłączone, uruchomienie jest pomijane z góry jako `reason=alerts-disabled`.
     - Jeśli wyłączone jest tylko dostarczanie alertów, OpenClaw nadal może uruchomić Heartbeat, zaktualizować znaczniki czasu należnych zadań, przywrócić znacznik czasu bezczynności sesji i wyciszyć zewnętrzny ładunek alertu.
     - Jeśli rozwiązany cel Heartbeat obsługuje wskaźnik pisania, OpenClaw pokazuje pisanie, gdy uruchomienie Heartbeat jest aktywne. Używa to tego samego celu, do którego Heartbeat wysłałby wynik czatu, i jest wyłączane przez `typingMode: "never"`.
+
   </Accordion>
   <Accordion title="Cykl życia sesji i audyt">
     - Odpowiedzi zawierające wyłącznie Heartbeat **nie** utrzymują sesji przy życiu. Metadane Heartbeat mogą aktualizować wiersz sesji, ale wygaśnięcie bezczynności używa `lastInteractionAt` z ostatniej prawdziwej wiadomości użytkownika/kanału, a wygaśnięcie dzienne używa `sessionStartedAt`.
     - Control UI i historia WebChat ukrywają prompty Heartbeat oraz potwierdzenia zawierające tylko OK. Bazowy transkrypt sesji nadal może zawierać te tury na potrzeby audytu/odtwarzania.
     - Odłączone [zadania w tle](/pl/automation/tasks) mogą kolejkować zdarzenie systemowe i wybudzać Heartbeat, gdy główna sesja powinna szybko coś zauważyć. To wybudzenie nie sprawia, że uruchomienie Heartbeat staje się zadaniem w tle.
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - Treść spoza zadań w `HEARTBEAT.md` jest zachowywana i dołączana jako dodatkowy kontekst po liście należnych zadań.
     - Znaczniki czasu ostatniego uruchomienia zadań są przechowywane w stanie sesji (`heartbeatTaskState`), więc interwały przetrwają zwykłe restarty.
     - Znaczniki czasu zadań są przesuwane dopiero po tym, jak uruchomienie Heartbeat zakończy normalną ścieżkę odpowiedzi. Pominięte uruchomienia `empty-heartbeat-file` / `no-tasks-due` nie oznaczają zadań jako ukończonych.
+
   </Accordion>
 </AccordionGroup>
 

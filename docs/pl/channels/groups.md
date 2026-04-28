@@ -32,6 +32,7 @@ Inaczej mówiąc: nadawcy z listy dozwolonych mogą uruchomić OpenClaw, wzmiank
 - **Dostęp do DM** jest kontrolowany przez `*.allowFrom`.
 - **Dostęp do grup** jest kontrolowany przez `*.groupPolicy` + listy dozwolonych (`*.groups`, `*.groupAllowFrom`).
 - **Wyzwalanie odpowiedzi** jest kontrolowane przez bramkowanie wzmianek (`requireMention`, `/activation`).
+
 </Note>
 
 Szybki przepływ (co dzieje się z wiadomością grupową):
@@ -56,6 +57,7 @@ Domyślnie OpenClaw priorytetyzuje normalne zachowanie czatu i zachowuje konteks
   <Accordion title="Bieżące zachowanie jest specyficzne dla kanału">
     - Niektóre kanały już stosują filtrowanie oparte na nadawcy dla kontekstu uzupełniającego w określonych ścieżkach (na przykład inicjalizacja wątków Slack, wyszukiwanie odpowiedzi/wątków Matrix).
     - Inne kanały nadal przekazują kontekst cytatu/odpowiedzi/przekazania tak, jak został odebrany.
+
   </Accordion>
   <Accordion title="Kierunek utwardzania (planowany)">
     - `contextVisibility: "all"` (domyślnie) zachowuje obecne zachowanie zgodne z odebranymi danymi.
@@ -231,6 +233,7 @@ Kontroluje sposób obsługi wiadomości grupowych/pokojów dla każdego kanału:
     - Lista dozwolonych Telegram może dopasowywać identyfikatory użytkowników (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) lub nazwy użytkowników (`"@alice"` albo `"alice"`); prefiksy są niewrażliwe na wielkość liter.
     - Wartością domyślną jest `groupPolicy: "allowlist"`; jeśli lista dozwolonych grup jest pusta, wiadomości grupowe są blokowane.
     - Bezpieczeństwo wykonania: gdy blok dostawcy całkowicie nie istnieje (`channels.<provider>` nieobecne), polityka grup przechodzi w tryb fail-closed (zwykle `allowlist`) zamiast dziedziczyć `channels.defaults.groupPolicy`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ Odpowiedź na wiadomość bota liczy się jako niejawna wzmianka, gdy kanał obs
     - Grupy, w których dozwolone są ciche odpowiedzi, traktują czyste puste tury modelu lub tury zawierające wyłącznie rozumowanie jako ciche, równoważne `NO_REPLY`. Czaty bezpośrednie nadal traktują puste odpowiedzi jako nieudaną turę agenta.
     - Wartości domyślne Discord znajdują się w `channels.discord.guilds."*"` (można nadpisywać dla poszczególnych serwerów/kanałów).
     - Kontekst historii grupy jest opakowywany jednolicie we wszystkich kanałach i obejmuje **tylko oczekujące** wiadomości (pominięte z powodu bramkowania wzmianek); użyj `messages.groupChat.historyLimit` dla globalnej wartości domyślnej oraz `channels.<channel>.historyLimit` (lub `channels.<channel>.accounts.*.historyLimit`) dla nadpisań. Ustaw `0`, aby wyłączyć.
+
   </Accordion>
 </AccordionGroup>
 

@@ -58,6 +58,7 @@ SecretRef divalidasi hanya pada permukaan yang aktif secara efektif.
         - `gateway.remote.token` aktif ketika autentikasi token dapat menang dan tidak ada env/auth token yang dikonfigurasi.
         - `gateway.remote.password` aktif hanya ketika autentikasi password dapat menang dan tidak ada env/auth password yang dikonfigurasi.
     - SecretRef `gateway.auth.token` tidak aktif untuk resolusi autentikasi startup ketika `OPENCLAW_GATEWAY_TOKEN` diatur, karena input env token menang untuk runtime tersebut.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ Definisikan provider di bawah `secrets.providers`:
   <Accordion title="Provider env">
     - Allowlist opsional melalui `allowlist`.
     - Nilai env yang hilang/kosong menggagalkan resolusi.
+
   </Accordion>
   <Accordion title="Provider file">
     - Membaca file lokal dari `path`.
@@ -173,6 +175,7 @@ Definisikan provider di bawah `secrets.providers`:
     - `mode: "singleValue"` mengharapkan ref id `"value"` dan mengembalikan isi file.
     - Path harus lolos pemeriksaan kepemilikan/izin.
     - Catatan fail-closed Windows: jika verifikasi ACL tidak tersedia untuk sebuah path, resolusi gagal. Hanya untuk path tepercaya, atur `allowInsecurePath: true` pada provider tersebut untuk melewati pemeriksaan keamanan path.
+
   </Accordion>
   <Accordion title="Provider exec">
     - Menjalankan path biner absolut yang dikonfigurasi, tanpa shell.

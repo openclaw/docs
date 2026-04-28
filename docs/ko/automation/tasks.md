@@ -115,6 +115,7 @@ x-i18n:
     - Heartbeat 턴 — 메인 세션, [Heartbeat](/ko/gateway/heartbeat) 참조
     - 일반 대화형 채팅 턴
     - 직접 `/command` 응답
+
   </Accordion>
 </AccordionGroup>
 

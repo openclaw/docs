@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="봇이 메시지에 응답하지 않음">
     - **접근 제어 확인:** 본인 사용자 ID가 `allowFrom`에 있는지 확인하거나, 테스트를 위해 `allowFrom`을 임시로 제거하고 `allowedRoles: ["all"]`로 설정하세요.
     - **봇이 채널에 있는지 확인:** 봇은 `channel`에 지정된 채널에 참여해야 합니다.
+
   </Accordion>
   <Accordion title="토큰 문제">
     “Failed to connect” 또는 인증 오류가 발생하는 경우:

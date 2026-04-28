@@ -37,35 +37,42 @@ tool の `react` アクションを使って、メッセージに絵文字リア
   <Accordion title="Discord と Slack">
     - 空の `emoji` は、そのメッセージ上の bot のすべてのリアクションを削除します。
     - `remove: true` は指定された絵文字だけを削除します。
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - 空の `emoji` は、そのメッセージ上の app のリアクションを削除します。
     - `remove: true` は指定された絵文字だけを削除します。
+
   </Accordion>
 
   <Accordion title="Telegram">
     - 空の `emoji` は bot のリアクションを削除します。
     - `remove: true` でもリアクションは削除されますが、tool 検証のために空でない `emoji` が引き続き必要です。
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - 空の `emoji` は bot リアクションを削除します。
     - `remove: true` は内部的に空の絵文字へマップされます（それでも tool call には `emoji` が必要です）。
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - 空でない `emoji` が必要です。
     - `remove: true` はその特定の絵文字リアクションを削除します。
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - `add`, `remove`, `list` アクションを持つ `feishu_reaction` tool を使います。
     - add/remove には `emoji_type` が必要で、remove にはさらに `reaction_id` が必要です。
+
   </Accordion>
 
   <Accordion title="Signal">
     - 受信リアクション通知は `channels.signal.reactionNotifications` で制御されます: `"off"` で無効、`"own"`（デフォルト）でユーザーが bot メッセージにリアクションしたときにイベントを発行し、`"all"` ですべてのリアクションに対してイベントを発行します。
+
   </Accordion>
 </AccordionGroup>
 

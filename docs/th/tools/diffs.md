@@ -198,6 +198,7 @@ x-i18n:
       - `fileQuality: "hq"`: สูงสุด 14 MP (14,000,000 rendered pixels)
       - `fileQuality: "print"`: สูงสุด 24 MP (24,000,000 rendered pixels)
       - PDF ยังมีขีดจำกัดสูงสุด 50 หน้า
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ asset ของ viewer:
     - จำกัดอัตราการ miss จากระยะไกลเมื่อเปิดใช้การเข้าถึงระยะไกล:
       - ล้มเหลวได้ 40 ครั้งต่อ 60 วินาที
       - lockout 60 วินาที (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="การเสริมความแข็งแรงของการเรนเดอร์ไฟล์">
     - การกำหนดเส้นทางคำขอของเบราว์เซอร์สำหรับ screenshot เป็นแบบ deny-by-default
     - อนุญาตเฉพาะ asset ของ viewer ในเครื่องจาก `http://127.0.0.1/plugins/diffs/assets/*`
     - บล็อกคำขอเครือข่ายภายนอก
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ asset ของ viewer:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Fallback ของแพลตฟอร์ม">
     fallback สำหรับการค้นหาคำสั่ง/path ตามแพลตฟอร์ม
@@ -456,6 +460,7 @@ asset ของ viewer:
     - `Invalid baseUrl: ...` — ใช้ origin แบบ `http(s)` พร้อม path แบบเลือกได้ และไม่มี query/hash
     - `{field} exceeds maximum size (...)` — ลดขนาด payload
     - การปฏิเสธ patch ขนาดใหญ่ — ลดจำนวนไฟล์ใน patch หรือจำนวนบรรทัดรวม
+
   </Accordion>
   <Accordion title="การเข้าถึง Viewer">
     - ค่าเริ่มต้นของ URL ของ viewer จะ resolve เป็น `127.0.0.1`
@@ -468,6 +473,7 @@ asset ของ viewer:
       - ควรใช้ `mode: "file"` หรือ `mode: "both"` หากคุณต้องการเพียงไฟล์แนบ หรือ
       - เปิด `security.allowRemoteViewer` อย่างตั้งใจ และตั้งค่า `viewerBaseUrl` ของ Plugin หรือส่ง `baseUrl` ของ proxy/public เมื่อคุณต้องการ URL ของ viewer ที่แชร์ได้
     - เปิด `security.allowRemoteViewer` เฉพาะเมื่อคุณตั้งใจให้มีการเข้าถึง viewer จากภายนอก
+
   </Accordion>
   <Accordion title="แถวของบรรทัดที่ไม่เปลี่ยนแปลงไม่มีปุ่มขยาย">
     สิ่งนี้อาจเกิดขึ้นได้กับอินพุตแบบ patch เมื่อ patch ไม่ได้มีบริบทที่ขยายได้ติดมาด้วย นี่เป็นพฤติกรรมที่คาดไว้และไม่ได้บ่งชี้ว่า viewer มีปัญหา
@@ -476,6 +482,7 @@ asset ของ viewer:
     - อาร์ติแฟกต์หมดอายุเพราะ TTL
     - token หรือ path ถูกเปลี่ยน
     - cleanup ลบข้อมูลเก่าทิ้งแล้ว
+
   </Accordion>
 </AccordionGroup>
 

@@ -297,6 +297,7 @@ Padrão: `tree` (sessão atual + sessões geradas por ela, como subagentes).
     - `agent`: qualquer sessão pertencente ao id do agente atual (pode incluir outros usuários se você executar sessões por remetente sob o mesmo id de agente).
     - `all`: qualquer sessão. O direcionamento entre agentes ainda exige `tools.agentToAgent`.
     - Restrição de sandbox: quando a sessão atual está em sandbox e `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, a visibilidade é forçada para `tree` mesmo que `tools.sessions.visibility="all"`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -328,6 +329,7 @@ Controla o suporte a anexos inline para `sessions_spawn`.
     - Entradas Base64 são validadas com verificações estritas de alfabeto/preenchimento e uma proteção de tamanho antes da decodificação.
     - As permissões de arquivo são `0700` para diretórios e `0600` para arquivos.
     - A limpeza segue a política `cleanup`: `delete` sempre remove anexos; `keep` os mantém somente quando `retainOnSessionKeep: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ O OpenClaw usa o catálogo de modelos integrado. Adicione provedores personaliza
       - `contextTokens` de modelos correspondentes preserva um limite explícito de runtime quando presente; use-o para limitar o contexto efetivo sem alterar os metadados nativos do modelo.
       - Use `models.mode: "replace"` quando quiser que a configuração reescreva completamente `models.json`.
       - A persistência de marcadores é autoritativa pela origem: os marcadores são gravados a partir do snapshot ativo da configuração de origem (pré-resolução), não dos valores secretos resolvidos em runtime.
+
   </Accordion>
 </AccordionGroup>
 
@@ -431,6 +434,7 @@ O OpenClaw usa o catálogo de modelos integrado. Adicione provedores personaliza
     - `models.mode`: comportamento do catálogo de provedores (`merge` ou `replace`).
     - `models.providers`: mapa de provedores personalizados indexado por id de provedor.
       - Edições seguras: use `openclaw config set models.providers.<id> '<json>' --strict-json --merge` ou `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` para atualizações aditivas. `config set` recusa substituições destrutivas a menos que você passe `--replace`.
+
   </Accordion>
   <Accordion title="Conexão e autenticação do provedor">
     - `models.providers.*.api`: adaptador de requisição (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` etc).
@@ -440,6 +444,7 @@ O OpenClaw usa o catálogo de modelos integrado. Adicione provedores personaliza
     - `models.providers.*.authHeader`: força o transporte da credencial no header `Authorization` quando necessário.
     - `models.providers.*.baseUrl`: URL base da API upstream.
     - `models.providers.*.headers`: headers estáticos extras para roteamento de proxy/tenant.
+
   </Accordion>
   <Accordion title="Substituições de transporte de requisição">
     `models.providers.*.request`: substituições de transporte para requisições HTTP do provedor de modelos.
@@ -457,6 +462,7 @@ O OpenClaw usa o catálogo de modelos integrado. Adicione provedores personaliza
     - `models.providers.*.models.*.contextTokens`: limite opcional de contexto em runtime. Use isso quando quiser um orçamento efetivo de contexto menor que o `contextWindow` nativo do modelo; `openclaw models list` mostra ambos os valores quando diferem.
     - `models.providers.*.models.*.compat.supportsDeveloperRole`: dica opcional de compatibilidade. Para `api: "openai-completions"` com `baseUrl` não nativa não vazia (host diferente de `api.openai.com`), o OpenClaw força isso para `false` em runtime. `baseUrl` vazio/omitido mantém o comportamento padrão do OpenAI.
     - `models.providers.*.models.*.compat.requiresStringContent`: dica opcional de compatibilidade para endpoints de chat compatíveis com OpenAI que aceitam somente string. Quando `true`, o OpenClaw achata arrays `messages[].content` de texto puro em strings simples antes de enviar a requisição.
+
   </Accordion>
   <Accordion title="Descoberta do Amazon Bedrock">
     - `plugins.entries.amazon-bedrock.config.discovery`: raiz das configurações de descoberta automática do Bedrock.
@@ -466,6 +472,7 @@ O OpenClaw usa o catálogo de modelos integrado. Adicione provedores personaliza
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: intervalo de polling para atualização da descoberta.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: fallback de janela de contexto para modelos descobertos.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: fallback de tokens máximos de saída para modelos descobertos.
+
   </Accordion>
 </AccordionGroup>
 

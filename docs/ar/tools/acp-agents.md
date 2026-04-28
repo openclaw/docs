@@ -63,6 +63,7 @@ runtime المضمّنة `agentRuntime.id: "codex"`؛ بينما يملك ACP
     - قد يتم جلب محولات harness الهدف (Codex وClaude وما إلى ذلك) عند الطلب باستخدام `npx` في أول مرة تستخدمها فيها.
     - لا تزال مصادقة المورد مطلوبة على المضيف لتلك harness.
     - إذا لم يكن لدى المضيف npm أو وصول إلى الشبكة، فسيفشل جلب المحولات في التشغيل الأول حتى يتم تسخين الذاكرات المؤقتة مسبقًا أو تثبيت المحول بطريقة أخرى.
+
   </Accordion>
   <Accordion title="المتطلبات الأساسية لوقت التشغيل">
     يطلق ACP عملية harness خارجية حقيقية. يملك OpenClaw التوجيه،
@@ -152,6 +153,7 @@ runtime المضمّنة `agentRuntime.id: "codex"`؛ بينما يملك ACP
     - يقوم `cancel` بإجهاض الدور النشط عندما تدعم الواجهة الخلفية الإلغاء؛ لكنه لا يحذف الربط أو بيانات الجلسة الوصفية.
     - ينهي `close` جلسة ACP من منظور OpenClaw ويزيل الربط. وقد تحتفظ harness مع ذلك بسجلها upstream الخاص إذا كانت تدعم الاستئناف.
     - تصبح عمال runtime الخاملون مؤهلين للتنظيف بعد `acp.runtime.ttlMinutes`؛ وتبقى بيانات الجلسات الوصفية المخزنة متاحة لـ `/acp sessions`.
+
   </Accordion>
   <Accordion title="قواعد التوجيه الأصلية لـ Codex">
     المشغلات الطبيعية باللغة التي ينبغي أن تُوجَّه إلى **Plugin Codex
@@ -181,6 +183,7 @@ runtime المضمّنة `agentRuntime.id: "codex"`؛ بينما يملك ACP
     - `openai/*` مع `agentRuntime.id: "codex"` — runtime مضمّنة أصلية لـ Codex app-server.
     - `/codex ...` — تحكم أصلي في محادثة Codex.
     - `/acp ...` أو `runtime: "acp"` — تحكم صريح في ACP/acpx.
+
   </Accordion>
   <Accordion title="مشغلات ACP-routing باللغة الطبيعية">
     المشغلات التي ينبغي أن تُوجَّه إلى ACP runtime:
@@ -279,6 +282,7 @@ app-server الأصلي** لربط/التحكم في محادثات Codex عند
     - في Discord، لا يكون `spawnAcpSessions` مطلوبًا إلا عندما يحتاج OpenClaw إلى إنشاء child thread من أجل `--thread auto|here` — وليس من أجل `--bind here`.
     - إذا أنشأت spawn إلى ACP agent مختلفة من دون `--cwd`، يرث OpenClaw **مساحة عمل الوكيل المستهدف** افتراضيًا. أما المسارات الموروثة المفقودة (`ENOENT`/`ENOTDIR`) فتعود إلى افتراضي الواجهة الخلفية؛ بينما تظهر أخطاء الوصول الأخرى (مثل `EACCES`) كأخطاء spawn.
     - تبقى أوامر إدارة Gateway محلية في المحادثات المرتبطة — إذ يتعامل OpenClaw مع أوامر `/acp ...` حتى عندما يُوجَّه نص المتابعة العادي إلى جلسة ACP المرتبطة؛ كما يبقى `/status` و`/unfocus` محليين أيضًا كلما كان التعامل مع الأوامر مفعّلًا لهذا السطح.
+
   </Accordion>
   <Accordion title="الجلسات المرتبطة بالـ thread">
     عندما تكون روابط الـ thread مفعلة لمحول القناة:
@@ -306,6 +310,7 @@ app-server الأصلي** لربط/التحكم في محادثات Codex عند
     - أي محول قناة يعرّض قدرة ربط الجلسة/الـ thread.
     - الدعم المضمّن الحالي: **Discord** ‏threads/channels، و**Telegram** ‏topics ‏(forum topics في المجموعات/supergroups وDM topics).
     - يمكن لقنوات Plugins إضافة الدعم من خلال واجهة الربط نفسها.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,22 +331,23 @@ app-server الأصلي** لربط/التحكم في محادثات Codex عند
 - **Forum topic في Telegram:** ‏`match.channel="telegram"` + ‏`match.peer.id="<chatId>:topic:<topicId>"`
 - **رسالة مباشرة/مجموعة في BlueBubbles:** ‏`match.channel="bluebubbles"` + ‏`match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. ويفضَّل `chat_id:*` أو `chat_identifier:*` للروابط المستقرة للمجموعات.
 - **رسالة مباشرة/مجموعة في iMessage:** ‏`match.channel="imessage"` + ‏`match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`. ويفضَّل `chat_id:*` للروابط المستقرة للمجموعات.
+
 </ParamField>
-  <ParamField path="bindings[].agentId" type="string">
+<ParamField path="bindings[].agentId" type="string">
   معرّف وكيل OpenClaw المالك.
-  </ParamField>
-  <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
+</ParamField>
+<ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
   تجاوز ACP اختياري.
-  </ParamField>
-  <ParamField path="bindings[].acp.label" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.label" type="string">
   تسمية اختيارية موجّهة للمشغّل.
-  </ParamField>
-  <ParamField path="bindings[].acp.cwd" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.cwd" type="string">
   دليل عمل اختياري لـ runtime.
-  </ParamField>
-  <ParamField path="bindings[].acp.backend" type="string">
+</ParamField>
+<ParamField path="bindings[].acp.backend" type="string">
   تجاوز اختياري للواجهة الخلفية.
-  </ParamField>
+</ParamField>
 
 ### الإعدادات الافتراضية لـ runtime لكل وكيل
 
@@ -715,6 +721,7 @@ OpenClaw sandbox.
 - سياسة sandbox في OpenClaw **لا** تغلف تنفيذ ACP harness.
 - لا يزال OpenClaw يفرض بوابات ميزات ACP، والوكلاء المسموح بهم، وملكية الجلسة، وروابط القنوات، وسياسة التسليم في Gateway.
 - استخدم `runtime: "subagent"` للأعمال الأصلية الخاصة بـ OpenClaw التي تُفرض عليها sandbox.
+
 </Warning>
 
 القيود الحالية:

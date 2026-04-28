@@ -51,6 +51,7 @@ openclaw gateway run
     - การ bind ออกนอก loopback โดยไม่มี auth จะถูกบล็อก (มาตรการความปลอดภัย)
     - `SIGUSR1` จะทริกเกอร์การรีสตาร์ตภายในโปรเซสเมื่อได้รับอนุญาต (`commands.restart` เปิดใช้เป็นค่าเริ่มต้น; ตั้ง `commands.restart: false` เพื่อบล็อกการรีสตาร์ตแบบ manual ขณะที่ gateway tool/config apply/update ยังอนุญาตอยู่)
     - ตัวจัดการ `SIGINT`/`SIGTERM` จะหยุดโปรเซส gateway แต่จะไม่คืนค่าสถานะ terminal แบบกำหนดเองใด ๆ หากคุณครอบ CLI ด้วย TUI หรืออินพุต raw-mode ให้คืนค่าสถานะ terminal ก่อนออก
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ openclaw gateway run
     - ค่าเริ่มต้น: แบบอ่านได้โดยมนุษย์ (มีสีใน TTY)
     - `--json`: JSON แบบอ่านได้โดยเครื่อง (ไม่มี styling/spinner)
     - `--no-color` (หรือ `NO_COLOR=1`): ปิด ANSI แต่ยังคง layout แบบมนุษย์อ่านได้
+
   </Tab>
   <Tab title="ตัวเลือกที่ใช้ร่วมกัน">
     - `--url <url>`: URL WebSocket ของ Gateway
@@ -136,6 +138,7 @@ openclaw gateway run
     - `--password <password>`: รหัสผ่านของ Gateway
     - `--timeout <ms>`: timeout/budget (แตกต่างกันไปตามแต่ละคำสั่ง)
     - `--expect-final`: รอการตอบกลับแบบ "final" (การเรียกเอเจนต์)
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="ความเป็นส่วนตัวและพฤติกรรมของ bundle">
     - ระเบียนจะเก็บ metadata เชิงปฏิบัติการ: ชื่อเหตุการณ์, จำนวน, ขนาดไบต์, ค่าการอ่านหน่วยความจำ, สถานะ queue/session, ชื่อ channel/plugin และสรุป session ที่ปกปิดข้อมูลแล้ว โดยจะไม่เก็บข้อความแชต, เนื้อหา Webhook, output ของ tool, request หรือ response แบบดิบ, tokens, cookies, ค่า secrets, hostnames หรือ session id แบบดิบ ตั้ง `diagnostics.enabled: false` เพื่อปิดตัวบันทึกนี้ทั้งหมด
     - เมื่อ Gateway ออกแบบ fatal, เกิด shutdown timeout หรือเริ่มต้นใหม่ล้มเหลว OpenClaw จะเขียน snapshot การวินิจฉัยแบบเดียวกันไปที่ `~/.openclaw/logs/stability/openclaw-stability-*.json` เมื่อมีเหตุการณ์อยู่ในตัวบันทึก ตรวจสอบ bundle ใหม่สุดได้ด้วย `openclaw gateway stability --bundle latest`; `--limit`, `--type` และ `--since-seq` ใช้กับผลลัพธ์จาก bundle ได้เช่นกัน
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - ใช้ `--require-rpc` ใน scripts และระบบอัตโนมัติ เมื่อบริการที่รับฟังการเชื่อมต่อเพียงอย่างเดียวไม่เพียงพอ และคุณต้องการให้การเรียก RPC ระดับ read-scope ทำงานได้ปกติด้วย
     - `--deep` จะเพิ่มการสแกนแบบ best-effort สำหรับการติดตั้ง launchd/systemd/schtasks เพิ่มเติม เมื่อพบบริการลักษณะ gateway หลายตัว ผลลัพธ์แบบมนุษย์อ่านได้จะแสดงคำแนะนำสำหรับการ cleanup และเตือนว่าโดยทั่วไปแล้วแต่ละเครื่องควรรัน gateway เพียงตัวเดียว
     - ผลลัพธ์แบบมนุษย์อ่านได้จะมี file log path ที่ resolve แล้ว พร้อม snapshot ของ path/ความถูกต้องของ config ระหว่าง CLI กับ service เพื่อช่วยวินิจฉัยปัญหา profile หรือ state-dir drift
+
   </Accordion>
   <Accordion title="การตรวจสอบ auth-drift ของ Linux systemd">
     - สำหรับการติดตั้ง Linux systemd การตรวจสอบ service auth drift จะอ่านค่าทั้ง `Environment=` และ `EnvironmentFile=` จาก unit (รวมถึง `%h`, paths ที่มีเครื่องหมายคำพูด, หลายไฟล์ และไฟล์ทางเลือกที่ขึ้นต้นด้วย `-`)
     - การตรวจสอบ drift จะ resolve SecretRefs ของ `gateway.auth.token` โดยใช้ runtime env ที่รวมกันแล้ว (env จากคำสั่ง service ก่อน แล้วจึง fallback ไปที่ process env)
     - หาก token auth ไม่ได้เปิดใช้งานจริง (มี `gateway.auth.mode` แบบ explicit เป็น `password`/`none`/`trusted-proxy` หรือไม่ได้ตั้ง mode และ password อาจมีผลเหนือกว่า โดยไม่มี candidate ของ token ที่ใช้งานได้) การตรวจสอบ token-drift จะข้ามการ resolve token จาก config
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read` หมายความว่าการเชื่อมต่อสำเร็จ แต่ RPC ระดับ read-scope ถูกจำกัด ซึ่งจะถูกรายงานเป็นการเข้าถึงแบบ **degraded** ไม่ใช่ความล้มเหลวทั้งหมด
     - เช่นเดียวกับ `gateway status`, probe จะใช้ auth ของอุปกรณ์ที่แคชไว้เดิม แต่จะไม่สร้างตัวตนอุปกรณ์ครั้งแรกหรือ pairing state ใหม่
     - exit code จะเป็น non-zero ก็ต่อเมื่อไม่มีเป้าหมายที่ probe แล้วเข้าถึงได้เลย
+
   </Accordion>
   <Accordion title="ผลลัพธ์ JSON">
     ระดับบนสุด:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: เข้าถึงได้มากกว่าหนึ่งเป้าหมาย; สิ่งนี้ไม่ปกตินัก เว้นแต่คุณตั้งใจรัน profiles แบบแยก เช่น rescue bot
     - `auth_secretref_unresolved`: auth SecretRef ที่ตั้งค่าไว้ไม่สามารถ resolve ได้สำหรับเป้าหมายที่ล้มเหลว
     - `probe_scope_limited`: การเชื่อมต่อ WebSocket สำเร็จ แต่ read probe ถูกจำกัดเพราะไม่มี `operator.read`
+
   </Accordion>
 </AccordionGroup>
 
@@ -434,6 +442,7 @@ openclaw gateway uninstall
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
     - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
     - `gateway uninstall|start|stop|restart`: `--json`
+
   </Accordion>
   <Accordion title="หมายเหตุเกี่ยวกับการติดตั้ง service และวงจรชีวิต">
     - `gateway install` รองรับ `--port`, `--runtime`, `--token`, `--force`, `--json`
@@ -444,6 +453,7 @@ openclaw gateway uninstall
     - ใน inferred auth mode, `OPENCLAW_GATEWAY_PASSWORD` ที่มีเฉพาะใน shell จะไม่ผ่อนปรนข้อกำหนด token ของ install; ให้ใช้ config แบบคงอยู่ (`gateway.auth.password` หรือ config `env`) เมื่อติดตั้ง managed service
     - หากตั้งค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` และไม่ได้ตั้ง `gateway.auth.mode`, install จะถูกบล็อกจนกว่าจะตั้ง mode แบบ explicit
     - คำสั่งเกี่ยวกับวงจรชีวิตรองรับ `--json` สำหรับการเขียนสคริปต์
+
   </Accordion>
 </AccordionGroup>
 
@@ -490,6 +500,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - CLI จะสแกน `local.` รวมถึงโดเมน wide-area ที่ตั้งค่าไว้เมื่อมีการเปิดใช้งาน
 - `wsUrl` ในผลลัพธ์ JSON ถูกคำนวณจาก endpoint ของ service ที่ resolve แล้ว ไม่ใช่จากคำใบ้แบบ TXT-only เช่น `lanHost` หรือ `tailnetDns`
 - บน mDNS ของ `local.`, `sshPort` และ `cliPath` จะถูก broadcast ก็ต่อเมื่อ `discovery.mdns.mode` เป็น `full` ส่วน wide-area DNS-SD จะยังเขียน `cliPath`; ขณะที่ `sshPort` ยังคงเป็นค่าไม่บังคับเช่นกัน
+
 </Note>
 
 ## ที่เกี่ยวข้อง

@@ -210,6 +210,7 @@ Pilih permukaan provider Anda dan ikuti langkah setup.
     - `step-3.5-flash-2603` saat ini hanya ditampilkan pada `stepfun-plan`.
     - Satu alur auth menulis profile yang cocok dengan region untuk `stepfun` dan `stepfun-plan`, sehingga kedua permukaan dapat ditemukan bersama.
     - Gunakan `openclaw models list` dan `openclaw models set <provider/model>` untuk memeriksa atau mengganti model.
+
   </Accordion>
 </AccordionGroup>
 

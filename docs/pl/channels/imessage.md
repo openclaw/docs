@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - domyślny wzorzec katalogu głównego: `/Users/*/Library/Messages/Attachments`
     - SCP używa ścisłego sprawdzania klucza hosta (`StrictHostKeyChecking=yes`)
     - rozmiar multimediów wychodzących używa `channels.imessage.mediaMaxMb` (domyślnie 16 MB)
+
   </Accordion>
 
   <Accordion title="Dzielenie wiadomości wychodzących na fragmenty">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - tryb dzielenia na fragmenty: `channels.imessage.chunkMode`
       - `length` (domyślnie)
       - `newline` (dzielenie najpierw według akapitów)
+
   </Accordion>
 
   <Accordion title="Formaty adresowania">

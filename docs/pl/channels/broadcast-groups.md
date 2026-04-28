@@ -175,6 +175,7 @@ Kontroluj sposób przetwarzania wiadomości przez agentów:
     - Wszyscy wymienieni agenci przetwarzają wiadomość.
     - Każdy agent ma własny klucz sesji i odizolowany kontekst.
     - Agenci przetwarzają równolegle (domyślnie) albo sekwencyjnie.
+
   </Step>
   <Step title="Jeśli nie znajduje się na liście rozgłaszania">
     Obowiązuje zwykłe trasowanie (pierwsze pasujące powiązanie).

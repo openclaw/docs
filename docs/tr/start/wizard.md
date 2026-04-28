@@ -60,9 +60,11 @@ API anahtarı gerektirirken bazıları gerektirmez. Bunu daha sonra da
     - DM yalıtımı varsayılanı: yerel ilk katılım, ayarlı değilse `session.dmScope: "per-channel-peer"` yazar. Ayrıntılar: [CLI Kurulum Başvurusu](/tr/start/wizard-cli-reference#outputs-and-internals)
     - Tailscale açığa çıkarma **Kapalı**
     - Telegram + WhatsApp DM'leri varsayılan olarak **allowlist** olur (telefon numaranız sorulacaktır)
+
   </Tab>
   <Tab title="Advanced (tam denetim)">
     - Her adımı açığa çıkarır (mod, çalışma alanı, gateway, kanallar, daemon, Skills).
+
   </Tab>
 </Tabs>
 

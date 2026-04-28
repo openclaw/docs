@@ -187,6 +187,7 @@ Les modèles GLM sont disponibles sous la forme `zai/<model>` (exemple : `zai/gl
     - Z.AI utilise l’authentification Bearer avec votre clé API.
     - L’option d’onboarding `zai-api-key` détecte automatiquement le point de terminaison Z.AI correspondant à partir du préfixe de la clé.
     - Utilisez les options régionales explicites (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) lorsque vous souhaitez forcer une surface API spécifique.
+
   </Accordion>
 </AccordionGroup>
 

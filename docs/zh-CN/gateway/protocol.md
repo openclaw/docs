@@ -256,6 +256,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `system-event` 追加一个系统事件，并可更新/广播在线状态上下文。
     - `last-heartbeat` 返回最新持久化的 heartbeat 事件。
     - `set-heartbeats` 切换 Gateway 网关上的 heartbeat 处理。
+
   </Accordion>
 
   <Accordion title="模型和用量">
@@ -266,6 +267,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `sessions.usage` 返回每个会话的用量摘要。
     - `sessions.usage.timeseries` 返回单个会话的时序用量数据。
     - `sessions.usage.logs` 返回单个会话的用量日志条目。
+
   </Accordion>
 
   <Accordion title="渠道和登录辅助">
@@ -276,11 +278,13 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `push.test` 向已注册的 iOS 节点发送测试 APNs 推送。
     - `voicewake.get` 返回存储的唤醒词触发器。
     - `voicewake.set` 更新唤醒词触发器并广播变更。
+
   </Accordion>
 
   <Accordion title="消息和日志">
     - `send` 是 chat runner 之外、用于面向渠道/账户/线程目标发送的直接出站投递 RPC。
     - `logs.tail` 返回已配置的 Gateway 网关文件日志 tail，并带有 cursor/limit 和最大字节数控制。
+
   </Accordion>
 
   <Accordion title="Talk 和 TTS">
@@ -292,6 +296,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `tts.enable` 和 `tts.disable` 切换 TTS 偏好设置状态。
     - `tts.setProvider` 更新首选 TTS 提供商。
     - `tts.convert` 执行一次性文本转语音转换。
+
   </Accordion>
 
   <Accordion title="Secrets、配置、更新和向导">
@@ -306,6 +311,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `update.run` 运行 Gateway 网关更新流程，并仅在更新本身成功时安排重启。
     - `update.status` 返回最新缓存的更新重启哨兵信息，并在可用时包含重启后的运行版本。
     - `wizard.start`、`wizard.next`、`wizard.status` 和 `wizard.cancel` 通过 WS RPC 暴露新手引导向导。
+
   </Accordion>
 
   <Accordion title="智能体和工作区辅助">
@@ -314,6 +320,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `agents.files.list`、`agents.files.get` 和 `agents.files.set` 管理为某个智能体暴露的 bootstrap 工作区文件。
     - `agent.identity.get` 返回某个智能体或会话的生效助手身份。
     - `agent.wait` 等待一次运行完成，并在可用时返回终态快照。
+
   </Accordion>
 
   <Accordion title="会话控制">
@@ -330,6 +337,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `sessions.reset`、`sessions.delete` 和 `sessions.compact` 执行会话维护。
     - `sessions.get` 返回完整存储的会话行。
     - 聊天执行仍使用 `chat.history`、`chat.send`、`chat.abort` 和 `chat.inject`。`chat.history` 已为 UI 客户端做显示规范化：内联指令标签会从可见文本中移除，纯文本工具调用 XML 负载（包括 `<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>` 以及被截断的工具调用块）和泄露的 ASCII/全角模型控制令牌会被移除，纯静默令牌的助手行（例如精确的 `NO_REPLY` / `no_reply`）会被省略，而超大行可能会被占位符替换。
+
   </Accordion>
 
   <Accordion title="设备配对和设备令牌">
@@ -337,6 +345,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `device.pair.approve`、`device.pair.reject` 和 `device.pair.remove` 管理设备配对记录。
     - `device.token.rotate` 在已批准角色和调用方作用域边界内轮换配对设备令牌。
     - `device.token.revoke` 在已批准角色和调用方作用域边界内吊销配对设备令牌。
+
   </Accordion>
 
   <Accordion title="节点配对、调用和待处理工作">
@@ -349,6 +358,7 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `node.canvas.capability.refresh` 刷新有作用域限制的 canvas 能力令牌。
     - `node.pending.pull` 和 `node.pending.ack` 是已连接节点队列 API。
     - `node.pending.enqueue` 和 `node.pending.drain` 为离线/断开连接的节点管理持久待处理工作。
+
   </Accordion>
 
   <Accordion title="审批方法族">
@@ -357,11 +367,13 @@ Gateway 网关将这些视为**声明**，并在服务端执行 allowlist 限制
     - `exec.approvals.get` 和 `exec.approvals.set` 管理 Gateway 网关 exec 审批策略快照。
     - `exec.approvals.node.get` 和 `exec.approvals.node.set` 通过节点中继命令管理节点本地 exec 审批策略。
     - `plugin.approval.request`、`plugin.approval.list`、`plugin.approval.waitDecision` 和 `plugin.approval.resolve` 涵盖插件定义的审批流程。
+
   </Accordion>
 
   <Accordion title="自动化、Skills 和工具">
     - 自动化：`wake` 安排立即或下一次 heartbeat 的唤醒文本注入；`cron.list`、`cron.status`、`cron.add`、`cron.update`、`cron.remove`、`cron.run`、`cron.runs` 管理计划工作。
     - Skills 和工具：`commands.list`、`skills.*`、`tools.catalog`、`tools.effective`。
+
   </Accordion>
 </AccordionGroup>
 

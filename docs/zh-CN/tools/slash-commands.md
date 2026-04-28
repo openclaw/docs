@@ -137,6 +137,7 @@ x-i18n:
     - `/session idle <duration|off>` 和 `/session max-age <duration|off>` 管理线程绑定过期时间。
     - `/export-session [path]` 将当前会话导出为 HTML。别名：`/export`。
     - `/export-trajectory [path]` 为当前会话导出 JSONL [trajectory bundle](/zh-CN/tools/trajectory)。别名：`/trajectory`。
+
   </Accordion>
   <Accordion title="模型和运行控制">
     - `/think <level>` 设置思考级别。可选项来自活动模型的提供商配置；常见级别为 `off`、`minimal`、`low`、`medium` 和 `high`，而 `xhigh`、`adaptive`、`max` 或二元 `on` 等自定义级别仅在支持时可用。别名：`/thinking`、`/t`。
@@ -149,6 +150,7 @@ x-i18n:
     - `/model [name|#|status]` 显示或设置模型。
     - `/models [provider] [page] [limit=<n>|size=<n>|all]` 列出提供商，或列出某个提供商的模型。
     - `/queue <mode>` 管理队列行为（`steer`、`interrupt`、`followup`、`collect`、`steer-backlog`），以及如 `debounce:2s cap:25 drop:summarize` 之类的选项。
+
   </Accordion>
   <Accordion title="发现和状态">
     - `/help` 显示简要帮助摘要。
@@ -160,12 +162,14 @@ x-i18n:
     - `/context [list|detail|json]` 说明上下文是如何组装的。
     - `/whoami` 显示你的发送者 ID。别名：`/id`。
     - `/usage off|tokens|full|cost` 控制每次响应的使用情况页脚，或打印本地成本摘要。
+
   </Accordion>
   <Accordion title="Skills、允许名单、批准">
     - `/skill <name> [input]` 按名称运行一个 skill。
     - `/allowlist [list|add|remove] ...` 管理允许名单条目。仅文本。
     - `/approve <id> <decision>` 处理 exec 批准提示。
     - `/btw <question>` 在不改变未来会话上下文的情况下提出一个附带问题。参见 [BTW](/zh-CN/tools/btw)。
+
   </Accordion>
   <Accordion title="子智能体和 ACP">
     - `/subagents list|kill|log|info|send|steer|spawn` 管理当前会话的子智能体运行。
@@ -175,6 +179,7 @@ x-i18n:
     - `/agents` 列出当前会话中线程绑定的智能体。
     - `/kill <id|#|all>` 中止一个或所有正在运行的子智能体。
     - `/steer <id|#> <message>` 向正在运行的子智能体发送引导。别名：`/tell`。
+
   </Accordion>
   <Accordion title="仅限所有者的写入和管理">
     - `/config show|get|set|unset` 读取或写入 `openclaw.json`。仅限所有者。需要 `commands.config: true`。
@@ -183,6 +188,7 @@ x-i18n:
     - `/debug show|set|unset|reset` 管理仅运行时的配置覆盖。仅限所有者。需要 `commands.debug: true`。
     - `/restart` 在启用时重启 OpenClaw。默认：启用；设置 `commands.restart: false` 可禁用。
     - `/send on|off|inherit` 设置发送策略。仅限所有者。
+
   </Accordion>
   <Accordion title="语音、TTS、渠道控制">
     - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` 控制 TTS。参见 [TTS](/zh-CN/tools/tts)。
@@ -190,6 +196,7 @@ x-i18n:
     - `/bash <command>` 运行主机 shell 命令。仅文本。别名：`! <command>`。需要 `commands.bash: true` 以及 `tools.elevated` 允许名单。
     - `!poll [sessionId]` 检查后台 bash 作业。
     - `!stop [sessionId]` 停止后台 bash 作业。
+
   </Accordion>
 </AccordionGroup>
 
@@ -247,11 +254,13 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
     - `/restart` 默认启用；设置 `commands.restart: false` 可禁用。
     - `/plugins install <spec>` 接受与 `openclaw plugins install` 相同的插件规格：本地路径/归档、npm 包，或 `clawhub:<pkg>`。
     - `/plugins enable|disable` 会更新插件配置，并可能提示需要重启。
+
   </Accordion>
   <Accordion title="渠道特定行为">
     - 仅 Discord 的原生命令：`/vc join|leave|status` 控制语音频道（不提供文本形式）。`join` 需要 guild 和选定的语音/舞台频道。需要 `channels.discord.voice` 和原生命令。
     - Discord 线程绑定命令（`/focus`、`/unfocus`、`/agents`、`/session idle`、`/session max-age`）要求有效启用线程绑定（`session.threadBindings.enabled` 和/或 `channels.discord.threadBindings.enabled`）。
     - ACP 命令参考和运行时行为：参见 [ACP agents](/zh-CN/tools/acp-agents)。
+
   </Accordion>
   <Accordion title="verbose / trace / fast / reasoning 安全性">
     - `/verbose` 用于调试和提供额外可见性；在正常使用中请保持**关闭**。
@@ -260,6 +269,7 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
     - `/fast` 是提供商特定的：OpenAI/OpenAI Codex 会将其映射到原生 Responses 端点上的 `service_tier=priority`，而直接向公共 Anthropic 发起的请求，包括发送到 `api.anthropic.com` 的 OAuth 身份验证流量，则会映射为 `service_tier=auto` 或 `standard_only`。参见 [OpenAI](/zh-CN/providers/openai) 和 [Anthropic](/zh-CN/providers/anthropic)。
     - 相关时仍会显示工具失败摘要，但详细失败文本仅在 `/verbose` 为 `on` 或 `full` 时包含。
     - `/reasoning`、`/verbose` 和 `/trace` 在群组场景中存在风险：它们可能暴露你本不打算公开的内部推理、工具输出或插件诊断信息。建议保持关闭，尤其是在群聊中。
+
   </Accordion>
   <Accordion title="模型切换">
     - `/model` 会立即持久化新的会话模型。
@@ -267,6 +277,7 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
     - 如果某次运行已经处于活动状态，OpenClaw 会将实时切换标记为待处理，并仅在一个干净的重试点重启到新模型。
     - 如果工具活动或回复输出已经开始，则待处理切换可能会一直排队，直到稍后的重试机会或下一次用户轮次。
     - 在本地 TUI 中，`/crestodian [request]` 会从普通智能体 TUI 返回到 Crestodian。这与消息渠道救援模式分开，也不会授予远程配置权限。
+
   </Accordion>
   <Accordion title="快速路径和内联快捷方式">
     - **快速路径：** 来自允许名单发送者的纯命令消息会被立即处理（绕过队列 + 模型）。
@@ -275,6 +286,7 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
       - 示例：`hey /status` 会触发一条状态回复，而剩余文本会继续经过正常流程。
     - 当前包括：`/help`、`/commands`、`/status`、`/whoami`（`/id`）。
     - 未授权的纯命令消息会被静默忽略，内联 `/...` 标记则会被当作普通文本处理。
+
   </Accordion>
   <Accordion title="Skill 命令和原生参数">
     - **Skill 命令：** `user-invocable` Skills 会作为斜杠命令暴露。名称会被清洗为 `a-z0-9_`（最多 32 个字符）；冲突会附加数字后缀（例如 `_2`）。
@@ -283,6 +295,7 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
       - Skills 可选择声明 `command-dispatch: tool`，以将命令直接路由到某个工具（确定性，无模型参与）。
       - 示例：`/prose`（OpenProse 插件）——参见 [OpenProse](/zh-CN/prose)。
     - **原生命令参数：** Discord 对动态选项使用自动补全（当你省略必填参数时也会使用按钮菜单）。当某条命令支持可选值且你省略参数时，Telegram 和 Slack 会显示按钮菜单。动态选项会根据目标会话模型解析，因此像 `/think` 级别这样的模型特定选项会遵循该会话的 `/model` 覆盖项。
+
   </Accordion>
 </AccordionGroup>
 
@@ -420,6 +433,7 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
 - `/plugins list` 和 `/plugins show` 会基于当前工作区和磁盘上的配置执行真实的插件发现。
 - `/plugins enable|disable` 仅更新插件配置；它不会安装或卸载插件。
 - 在启用/禁用更改后，请重启 Gateway 网关以应用这些更改。
+
 </Note>
 
 ## 界面说明
@@ -432,6 +446,7 @@ Docking 只会更改活动会话路由。它不会创建渠道账号、授予访
       - Slack：`agent:<agentId>:slack:slash:<userId>`（前缀可通过 `channels.slack.slashCommand.sessionPrefix` 配置）
       - Telegram：`telegram:slash:<userId>`（通过 `CommandTargetSessionKey` 定位到聊天会话）
     - **`/stop`** 以当前活动聊天会话为目标，因此它可以中止当前运行。
+
   </Accordion>
   <Accordion title="Slack 细节">
     `channels.slack.slashCommand` 仍然支持单个 `/openclaw` 风格命令。如果你启用了 `commands.native`，则必须为每个内置命令在 Slack 中创建一个斜杠命令（名称与 `/help` 中的一致）。Slack 的命令参数菜单以临时的 Block Kit 按钮形式提供。

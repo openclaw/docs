@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="Bot nie odpowiada na wiadomości">
     - **Sprawdź kontrolę dostępu:** Upewnij się, że Twój identyfikator użytkownika znajduje się w `allowFrom`, albo tymczasowo usuń `allowFrom` i ustaw `allowedRoles: ["all"]`, aby przetestować.
     - **Sprawdź, czy bot jest na kanale:** Bot musi dołączyć do kanału określonego w `channel`.
+
   </Accordion>
   <Accordion title="Problemy z tokenem">
     „Nie udało się połączyć” lub błędy uwierzytelniania:

@@ -153,6 +153,7 @@ Claude-4.6-Modelle verwenden in OpenClaw standardmäßig `adaptive` Thinking, we
 Verwandte Anthropic-Dokumentation:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## Prompt Caching
@@ -215,6 +216,7 @@ OpenClaw unterstützt das Feature Prompt Caching von Anthropic für API-Key-Auth
     - Anthropic-Claude-Modelle auf Bedrock (`amazon-bedrock/*anthropic.claude*`) akzeptieren konfiguriertes `cacheRetention` als Durchreichung.
     - Nicht-Anthropic-Bedrock-Modelle werden zur Laufzeit auf `cacheRetention: "none"` gezwungen.
     - Intelligente Standardwerte für API-Keys setzen außerdem `cacheRetention: "short"` für Claude-on-Bedrock-Referenzen, wenn kein expliziter Wert gesetzt ist.
+
   </Accordion>
 </AccordionGroup>
 
@@ -247,6 +249,7 @@ OpenClaw unterstützt das Feature Prompt Caching von Anthropic für API-Key-Auth
     - Wird nur für direkte Anfragen an `api.anthropic.com` eingefügt. Proxy-Routen lassen `service_tier` unverändert.
     - Explizite Parameter `serviceTier` oder `service_tier` überschreiben `/fast`, wenn beide gesetzt sind.
     - Bei Accounts ohne Priority-Tier-Kapazität kann `service_tier: "auto"` zu `standard` aufgelöst werden.
+
     </Note>
 
   </Accordion>

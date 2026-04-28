@@ -184,6 +184,7 @@ cd openclaw-ansible
     - Assicurati prima di poter accedere tramite VPN Tailscale
     - L'accesso SSH (porta 22) è sempre consentito
     - Il Gateway è accessibile solo tramite Tailscale per progettazione
+
   </Accordion>
   <Accordion title="Il servizio non si avvia">
     ```bash

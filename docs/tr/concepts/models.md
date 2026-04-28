@@ -57,6 +57,7 @@ OpenClaw modelleri şu sırayla seçer:
     - `agents.defaults.musicGenerationModel`, paylaşılan müzik üretim yeteneği tarafından kullanılır. Atlanırsa `music_generate` yine de kimlik doğrulama destekli bir sağlayıcı varsayılanını çıkarabilir. Önce geçerli varsayılan sağlayıcıyı, sonra kayıtlı kalan müzik üretim sağlayıcılarını sağlayıcı kimliği sırasıyla dener. Belirli bir sağlayıcı/model ayarlarsanız, o sağlayıcının kimlik doğrulamasını/API anahtarını da yapılandırın.
     - `agents.defaults.videoGenerationModel`, paylaşılan video üretim yeteneği tarafından kullanılır. Atlanırsa `video_generate` yine de kimlik doğrulama destekli bir sağlayıcı varsayılanını çıkarabilir. Önce geçerli varsayılan sağlayıcıyı, sonra kayıtlı kalan video üretim sağlayıcılarını sağlayıcı kimliği sırasıyla dener. Belirli bir sağlayıcı/model ayarlarsanız, o sağlayıcının kimlik doğrulamasını/API anahtarını da yapılandırın.
     - Ajan başına varsayılanlar, `agents.list[].model` artı bindings üzerinden `agents.defaults.model` değerini geçersiz kılabilir (bkz. [Çoklu ajan yönlendirme](/tr/concepts/multi-agent)).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Bu, normal bir yanıt oluşturulmadan **önce** gerçekleşir; bu nedenle mesaj 
 - Modeli `agents.defaults.models` içine eklemek veya
 - İzin listesini temizlemek (`agents.defaults.models` değerini kaldırmak) veya
 - `/model list` içinden bir model seçmek.
+
 </Warning>
 
 Örnek izin listesi yapılandırması:
@@ -157,6 +159,7 @@ Yeniden başlatmadan geçerli oturum için model değiştirebilirsiniz:
     - Discord'da `/model` ve `/models`, sağlayıcı ve model açılır listeleri ile bir Gönder adımı içeren etkileşimli bir seçici açar.
     - `/models add` artık kullanımdan kaldırılmıştır ve sohbetten model kaydetmek yerine kullanımdan kaldırma mesajı döndürür.
     - `/model <#>`, o seçiciden seçim yapar.
+
   </Accordion>
   <Accordion title="Kalıcılık ve canlı değiştirme">
     - `/model`, yeni oturum seçimini anında kalıcı hale getirir.
@@ -164,6 +167,7 @@ Yeniden başlatmadan geçerli oturum için model değiştirebilirsiniz:
     - Bir çalışma zaten etkinse OpenClaw canlı değişikliği beklemede olarak işaretler ve yalnızca temiz bir yeniden deneme noktasında yeni modele yeniden başlar.
     - Araç etkinliği veya yanıt çıktısı zaten başladıysa bekleyen değişiklik daha sonraki bir yeniden deneme fırsatına veya sonraki kullanıcı dönüşüne kadar kuyrukta kalabilir.
     - `/model status` ayrıntılı görünümdür (kimlik doğrulama adayları ve yapılandırılmışsa sağlayıcı uç nokta `baseUrl` + `api` modu).
+
   </Accordion>
   <Accordion title="Ref ayrıştırma">
     - Model referansları **ilk** `/` karakterinden bölünerek ayrıştırılır. `/model <ref>` yazarken `provider/model` kullanın.
@@ -233,6 +237,7 @@ Varsayılan olarak yapılandırılmış modelleri gösterir. Yararlı bayraklar:
     - Otomasyon için `--check` kullanın (eksik/süresi dolmuşsa çıkış `1`, süresi dolmak üzereyse `2`).
     - Canlı kimlik doğrulama kontrolleri için `--probe` kullanın; sonda satırları auth profillerinden, ortam kimlik bilgilerinden veya `models.json` dosyasından gelebilir.
     - Açık `auth.order.<provider>` kayıtlı bir profili atlıyorsa sonda, bunu denemek yerine `excluded_by_auth_order` bildirir. Kimlik doğrulama varsa ancak o sağlayıcı için sondalanabilir bir model çözümlenemiyorsa sonda `status: no_model` bildirir.
+
   </Accordion>
 </AccordionGroup>
 

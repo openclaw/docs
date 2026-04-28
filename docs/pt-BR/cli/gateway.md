@@ -51,6 +51,7 @@ openclaw gateway run
     - Bind além de loopback sem autenticação é bloqueado (barreira de segurança).
     - `SIGUSR1` aciona uma reinicialização no processo quando autorizado (`commands.restart` vem ativado por padrão; defina `commands.restart: false` para bloquear reinicialização manual, enquanto apply/update da ferramenta/configuração do gateway continuam permitidos).
     - Handlers de `SIGINT`/`SIGTERM` param o processo do gateway, mas não restauram qualquer estado personalizado do terminal. Se você encapsular a CLI com uma TUI ou entrada em modo raw, restaure o terminal antes de sair.
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ Todos os comandos de consulta usam RPC por WebSocket.
     - Padrão: legível para humanos (colorido em TTY).
     - `--json`: JSON legível por máquina (sem estilo/spinner).
     - `--no-color` (ou `NO_COLOR=1`): desativa ANSI, mantendo o layout humano.
+
   </Tab>
   <Tab title="Opções compartilhadas">
     - `--url <url>`: URL WebSocket do Gateway.
@@ -136,6 +138,7 @@ Todos os comandos de consulta usam RPC por WebSocket.
     - `--password <password>`: senha do Gateway.
     - `--timeout <ms>`: timeout/orçamento (varia por comando).
     - `--expect-final`: aguarda uma resposta “final” (chamadas de agente).
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="Privacidade e comportamento do bundle">
     - Os registros mantêm metadados operacionais: nomes de eventos, contagens, tamanhos em bytes, leituras de memória, estado de fila/sessão, nomes de canal/Plugin e resumos de sessão com dados redigidos. Eles não mantêm texto de chat, corpos de Webhook, saídas de ferramentas, corpos brutos de requisição ou resposta, tokens, cookies, valores secretos, nomes de host ou ids brutos de sessão. Defina `diagnostics.enabled: false` para desativar completamente o registrador.
     - Em saídas fatais do Gateway, timeouts de encerramento e falhas de inicialização após reinício, o OpenClaw grava o mesmo snapshot diagnóstico em `~/.openclaw/logs/stability/openclaw-stability-*.json` quando o registrador tiver eventos. Inspecione o bundle mais recente com `openclaw gateway stability --bundle latest`; `--limit`, `--type` e `--since-seq` também se aplicam à saída do bundle.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - Use `--require-rpc` em scripts e automação quando um serviço em escuta não for suficiente e você também precisar que chamadas RPC com escopo de leitura estejam saudáveis.
     - `--deep` adiciona uma varredura em melhor esforço para instalações adicionais de launchd/systemd/schtasks. Quando vários serviços parecidos com gateway são detectados, a saída legível para humanos imprime dicas de limpeza e avisa que a maioria das configurações deve executar um gateway por máquina.
     - A saída legível para humanos inclui o caminho resolvido do arquivo de log mais o snapshot dos caminhos/validade da configuração da CLI versus do serviço para ajudar a diagnosticar divergência de perfil ou state-dir.
+
   </Accordion>
   <Accordion title="Verificações de desvio de autenticação do systemd no Linux">
     - Em instalações Linux com systemd, as verificações de desvio de autenticação do serviço leem valores `Environment=` e `EnvironmentFile=` da unit (incluindo `%h`, caminhos entre aspas, múltiplos arquivos e arquivos opcionais com `-`).
     - As verificações de desvio resolvem SecretRefs de `gateway.auth.token` usando o env de runtime mesclado (env do comando do serviço primeiro, depois fallback para env do processo).
     - Se a autenticação por token não estiver efetivamente ativa (modo explícito `gateway.auth.mode` igual a `password`/`none`/`trusted-proxy`, ou modo não definido em que senha pode prevalecer e nenhum candidato a token pode prevalecer), as verificações de desvio de token ignoram a resolução do token de configuração.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read` significa que a conexão foi bem-sucedida, mas o RPC com escopo de leitura está limitado. Isso é relatado como acessibilidade **degradada**, não como falha total.
     - Assim como `gateway status`, a sonda reutiliza autenticação de dispositivo em cache existente, mas não cria identidade de dispositivo nem estado de pareamento na primeira vez.
     - O código de saída é diferente de zero apenas quando nenhum alvo sondado está acessível.
+
   </Accordion>
   <Accordion title="Saída JSON">
     Nível superior:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: mais de um alvo estava acessível; isso é incomum, a menos que você execute intencionalmente perfis isolados, como um bot de resgate.
     - `auth_secretref_unresolved`: um SecretRef de autenticação configurado não pôde ser resolvido para um alvo que falhou.
     - `probe_scope_limited`: a conexão WebSocket foi bem-sucedida, mas a sonda de leitura ficou limitada pela falta de `operator.read`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -434,6 +442,7 @@ openclaw gateway uninstall
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
     - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
     - `gateway uninstall|start|stop|restart`: `--json`
+
   </Accordion>
   <Accordion title="Observações sobre instalação e ciclo de vida do serviço">
     - `gateway install` oferece suporte a `--port`, `--runtime`, `--token`, `--force`, `--json`.
@@ -444,6 +453,7 @@ openclaw gateway uninstall
     - No modo de autenticação inferido, `OPENCLAW_GATEWAY_PASSWORD` apenas no shell não flexibiliza os requisitos de token de instalação; use configuração durável (`gateway.auth.password` ou `env` de configuração) ao instalar um serviço gerenciado.
     - Se `gateway.auth.token` e `gateway.auth.password` estiverem ambos configurados e `gateway.auth.mode` não estiver definido, a instalação será bloqueada até que o modo seja definido explicitamente.
     - Comandos de ciclo de vida aceitam `--json` para scripting.
+
   </Accordion>
 </AccordionGroup>
 
@@ -490,6 +500,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - A CLI procura em `local.` mais o domínio wide-area configurado quando houver um ativado.
 - `wsUrl` na saída JSON é derivado do endpoint de serviço resolvido, não de dicas somente TXT como `lanHost` ou `tailnetDns`.
 - Em mDNS `local.`, `sshPort` e `cliPath` só são anunciados quando `discovery.mdns.mode` é `full`. O DNS-SD wide-area ainda grava `cliPath`; `sshPort` continua opcional ali também.
+
 </Note>
 
 ## Relacionado

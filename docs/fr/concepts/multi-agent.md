@@ -244,11 +244,13 @@ Les liaisons sont **déterministes** et **la plus spécifique l’emporte** :
   <Accordion title="Départage et sémantique AND">
     - Si plusieurs liaisons correspondent dans le même niveau, la première dans l’ordre de configuration l’emporte.
     - Si une liaison définit plusieurs champs de correspondance (par exemple `peer` + `guildId`), tous les champs spécifiés sont requis (sémantique `AND`).
+
   </Accordion>
   <Accordion title="Détail du périmètre de compte">
     - Une liaison qui omet `accountId` correspond uniquement au compte par défaut.
     - Utilisez `accountId: "*"` pour un secours à l’échelle du canal sur tous les comptes.
     - Si vous ajoutez ensuite la même liaison pour le même agent avec un identifiant de compte explicite, OpenClaw fait évoluer la liaison existante limitée au canal vers un périmètre de compte au lieu de la dupliquer.
+
   </Accordion>
 </AccordionGroup>
 

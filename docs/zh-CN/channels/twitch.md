@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="机器人不响应消息">
     - **检查访问控制：** 确认你的用户 ID 在 `allowFrom` 中，或临时移除 `allowFrom` 并设置 `allowedRoles: ["all"]` 进行测试。
     - **检查机器人是否在频道中：** 机器人必须加入 `channel` 中指定的频道。
+
   </Accordion>
   <Accordion title="令牌问题">
     “Failed to connect” 或认证错误：

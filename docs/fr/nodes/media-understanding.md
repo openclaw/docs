@@ -68,6 +68,7 @@ Si la compréhension échoue ou est désactivée, **le flux de réponse continue
       - politique `attachments` (`mode`, `maxAttachments`, `prefer`)
       - `scope` (filtrage facultatif par canal/chatType/clé de session)
     - `tools.media.concurrency` : nombre maximal d’exécutions simultanées par capacité (par défaut **2**).
+
   </Accordion>
 </AccordionGroup>
 
@@ -164,6 +165,7 @@ Valeurs recommandées :
     - Si un modèle principal Gateway/WebChat est text-only, les pièces jointes image sont conservées comme références déportées `media://inbound/*` afin que les outils image/PDF ou le modèle d’image configuré puissent toujours les inspecter au lieu de perdre la pièce jointe.
     - Les requêtes explicites `openclaw infer image describe --model <provider/model>` sont différentes : elles exécutent directement ce provider/modèle compatible image, y compris les références Ollama comme `ollama/qwen2.5vl:7b`.
     - Si `<capability>.enabled: true` mais qu’aucun modèle n’est configuré, OpenClaw essaie le **modèle de réponse actif** lorsque son fournisseur prend en charge cette capacité.
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +266,7 @@ Pour les entrées CLI, **définissez `capabilities` explicitement** pour éviter
 
 - La compréhension d’image `minimax` et `minimax-portal` provient du provider média `MiniMax-VL-01` détenu par le Plugin.
 - Le catalogue texte MiniMax intégré démarre encore en text-only ; des entrées explicites `models.providers.minimax` matérialisent des références de chat M2.7 compatibles image.
+
 </Note>
 
 ## Recommandations de sélection de modèle
@@ -297,6 +300,7 @@ Lorsque `mode: "all"`, les sorties sont étiquetées `[Image 1/2]`, `[Audio 2/2]
     - Ce chemin d’extraction des pièces jointes omet volontairement la longue bannière `SECURITY NOTICE:` afin d’éviter d’alourdir le prompt média ; les marqueurs de frontière et les métadonnées restent toutefois présents.
     - Si un fichier n’a pas de texte extractible, OpenClaw injecte `[No extractable text]`.
     - Si un PDF retombe sur des images de pages rendues dans ce chemin, le prompt média conserve l’espace réservé `[PDF content rendered to images; images not forwarded to model]` car cette étape d’extraction de pièces jointes transmet des blocs de texte, pas les images PDF rendues.
+
   </Accordion>
 </AccordionGroup>
 

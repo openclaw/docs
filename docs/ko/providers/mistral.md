@@ -165,6 +165,7 @@ OpenClaw는 Voice Call이 Twilio 미디어 프레임을 직접 전달할 수 있
     - Provider base URL 기본값은 `https://api.mistral.ai/v1`입니다.
     - 온보딩 기본 모델은 `mistral/mistral-large-latest`입니다.
     - Z.AI는 API key를 사용한 Bearer 인증을 사용합니다.
+
   </Accordion>
 </AccordionGroup>
 

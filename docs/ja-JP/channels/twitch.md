@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="ボットがメッセージに応答しない">
     - **アクセス制御を確認:** あなたの user ID が `allowFrom` に含まれていることを確認するか、テストのために一時的に `allowFrom` を削除して `allowedRoles: ["all"]` を設定してください。
     - **ボットがチャネルに参加していることを確認:** ボットは `channel` で指定したチャネルに参加している必要があります。
+
   </Accordion>
   <Accordion title="token の問題">
     「Failed to connect」または認証エラーの場合:

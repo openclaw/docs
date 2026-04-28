@@ -62,9 +62,11 @@ openclaw agents add <name>
     - افتراضي عزل الرسائل المباشرة: يكتب onboarding المحلي `session.dmScope: "per-channel-peer"` عندما لا يكون مضبوطًا. التفاصيل: [مرجع إعداد CLI](/ar/start/wizard-cli-reference#outputs-and-internals)
     - تعريض Tailscale **معطل**
     - تستخدم الرسائل المباشرة في Telegram + WhatsApp افتراضيًا **allowlist** ‏(وسيُطلب منك رقم هاتفك)
+
   </Tab>
   <Tab title="Advanced ‏(تحكم كامل)">
     - يكشف كل خطوة (الوضع، ومساحة العمل، وgateway، والقنوات، وdaemon، وSkills).
+
   </Tab>
 </Tabs>
 

@@ -38,6 +38,7 @@ x-i18n:
         - الصق [manifest المثال](#manifest-and-scope-checklist) أدناه ثم تابع الإنشاء
         - أنشئ **App-Level Token** (`xapp-...`) مع `connections:write`
         - ثبّت التطبيق وانسخ **Bot Token** (`xoxb-...`) المعروض
+
       </Step>
 
       <Step title="اضبط OpenClaw">
@@ -623,6 +624,7 @@ manifest الأساسي (Socket Mode الافتراضي):
     - يفعّل `channels.slack.chunkMode="newline"` التقسيم بحسب الفقرات أولًا
     - تستخدم عمليات إرسال الملفات واجهات Slack upload API ويمكن أن تتضمن ردودًا داخل السلسلة (`thread_ts`)
     - يتبع الحد الأقصى للوسائط الصادرة قيمة `channels.slack.mediaMaxMb` عند ضبطها؛ وإلا فإن عمليات الإرسال عبر القناة تستخدم القيم الافتراضية حسب نوع MIME من مسار الوسائط
+
   </Accordion>
 
   <Accordion title="أهداف التسليم">

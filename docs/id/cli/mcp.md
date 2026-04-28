@@ -72,6 +72,7 @@ Gunakan [`openclaw acp`](/id/cli/acp) sebagai gantinya saat OpenClaw harus meng-
     - titik masuk agen sekali jalan seperti `openclaw agent` dan `openclaw infer model run` memensiunkan runtime MCP bawaan apa pun yang mereka buka saat balasan selesai, sehingga eksekusi skrip berulang tidak menumpuk proses anak stdio MCP
     - server MCP stdio yang diluncurkan oleh OpenClaw (bawaan atau dikonfigurasi pengguna) dimatikan sebagai pohon proses saat shutdown, sehingga subproses anak yang dimulai oleh server tidak bertahan setelah klien stdio induk keluar
     - menghapus atau mereset sesi akan melepaskan klien MCP sesi tersebut melalui jalur cleanup runtime bersama, sehingga tidak ada koneksi stdio yang tertinggal yang terikat ke sesi yang dihapus
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ Tipe event saat ini:
 - antrean hanya langsung; dimulai saat bridge MCP dimulai
 - `events_poll` dan `events_wait` tidak memutar ulang riwayat Gateway yang lebih lama dengan sendirinya
 - backlog tahan lama harus dibaca dengan `messages_read`
+
 </Warning>
 
 ### Notifikasi saluran Claude
@@ -367,6 +369,7 @@ Definisi yang disimpan tersebut ditujukan untuk runtime yang nanti diluncurkan a
     - adapter runtime memutuskan bentuk transport mana yang benar-benar mereka dukung pada waktu eksekusi
     - Pi tersemat mengekspos tool MCP yang dikonfigurasi dalam profil tool `coding` dan `messaging` normal; `minimal` tetap menyembunyikannya, dan `tools.deny: ["bundle-mcp"]` menonaktifkannya secara eksplisit
     - runtime MCP bawaan dengan cakupan sesi dibersihkan setelah `mcp.sessionIdleTtlMs` milidetik waktu idle (default 10 menit; set `0` untuk menonaktifkan) dan eksekusi tersemat sekali jalan membersihkannya pada akhir eksekusi
+
   </Accordion>
 </AccordionGroup>
 

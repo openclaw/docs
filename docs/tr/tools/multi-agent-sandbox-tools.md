@@ -232,6 +232,7 @@ Filtreleme sırası şöyledir:
     - `agents.list[].tools.sandbox.tools` ayarlanmışsa, o agent için `tools.sandbox.tools` değerinin yerini alır.
     - `agents.list[].tools.profile` ayarlanmışsa, o agent için `tools.profile` değerini geçersiz kılar.
     - Sağlayıcı tool anahtarları `provider` (ör. `google-antigravity`) veya `provider/model` (ör. `openai/gpt-5.4`) biçimlerini kabul eder.
+
   </Accordion>
   <Accordion title="Boş izin listesi davranışı">
     Bu zincirdeki herhangi bir açık izin listesi, çalıştırmayı çağrılabilir tool olmadan bırakırsa, OpenClaw prompt'u modele göndermeden önce durur. Bu kasıtlıdır: `agents.list[].tools.allow: ["query_db"]` gibi eksik bir tool ile yapılandırılmış bir agent, `query_db` kaydeden Plugin etkinleştirilene kadar sessizce yalnızca metin tabanlı bir agent olarak devam etmemeli, belirgin şekilde başarısız olmalıdır.
@@ -360,6 +361,7 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; bun
   <Step title="Tool kısıtlamalarını test edin">
     - Kısıtlı tool'lar gerektiren bir mesaj gönderin.
     - Agent'ın reddedilmiş tool'ları kullanamadığını doğrulayın.
+
   </Step>
   <Step title="Günlükleri izleyin">
     ```bash
@@ -376,15 +378,18 @@ Eski `agent.*` yapılandırmaları `openclaw doctor` tarafından taşınır; bun
   <Accordion title="`mode: 'all'` olmasına rağmen agent sandbox içinde değil">
     - Bunu geçersiz kılan genel bir `agents.defaults.sandbox.mode` olup olmadığını kontrol edin.
     - Agent'a özgü yapılandırma önceliklidir, bu yüzden `agents.list[].sandbox.mode: "all"` ayarlayın.
+
   </Accordion>
   <Accordion title="Reddetme listesine rağmen tool'lar hâlâ kullanılabiliyor">
     - Tool filtreleme sırasını kontrol edin: genel → agent → sandbox → alt agent.
     - Her seviye yalnızca daha da kısıtlayabilir, geri veremez.
     - Günlüklerle doğrulayın: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Container agent başına izole değil">
     - Agent'a özgü sandbox yapılandırmasında `scope: "agent"` ayarlayın.
     - Varsayılan `"session"` değeridir ve oturum başına bir container oluşturur.
+
   </Accordion>
 </AccordionGroup>
 

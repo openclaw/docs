@@ -82,12 +82,14 @@ istekte bulunan sohbete son bir tamamlanma güncellemesi gönderir.
     - Tamamlandığında alt agent, istekte bulunan sohbet kanalına bir özet/sonuç iletisi duyurur.
     - Tamamlanma itme tabanlıdır. Bir kez başlatıldıktan sonra, bitmesini beklemek için döngü içinde `/subagents list`, `sessions_list` veya `sessions_history` yoklaması yapmayın; durumu yalnızca hata ayıklama veya müdahale için gerektiğinde inceleyin.
     - Tamamlandığında OpenClaw, duyuru temizleme akışı devam etmeden önce, o alt agent oturumu tarafından açılan izlenen tarayıcı sekmelerini/süreçlerini elinden gelen en iyi şekilde kapatır.
+
   </Accordion>
   <Accordion title="Elle başlatma teslim dayanıklılığı">
     - OpenClaw önce kararlı bir idempotency anahtarı ile doğrudan `agent` teslimini dener.
     - Doğrudan teslim başarısız olursa, kuyruk yönlendirmesine geri döner.
     - Kuyruk yönlendirme hâlâ kullanılamıyorsa, duyuru son vazgeçmeden önce kısa bir üstel backoff ile yeniden denenir.
     - Tamamlama teslimi çözümlenmiş istek sahibi rotasını korur: kullanılabilir olduğunda iş parçacığına bağlı veya konuşmaya bağlı tamamlama rotaları kazanır; tamamlama kaynağı yalnızca bir kanal sağlıyorsa OpenClaw, doğrudan teslimin yine çalışabilmesi için eksik hedef/hesap bilgisini istek sahibinin çözülmüş rota bilgisinden (`lastChannel` / `lastTo` / `lastAccountId`) doldurur.
+
   </Accordion>
   <Accordion title="Tamamlama aktarım meta verisi">
     İstekte bulunan oturuma yapılan tamamlama aktarımı, çalışma zamanında üretilen
@@ -105,6 +107,7 @@ istekte bulunan sohbete son bir tamamlanma güncellemesi gönderir.
     - `/subagents spawn` tek seferlik moddur (`mode: "run"`). Kalıcı iş parçacığına bağlı oturumlar için `thread: true` ve `mode: "session"` ile `sessions_spawn` kullanın.
     - ACP harness oturumları için (Claude Code, Gemini CLI, OpenCode veya açıkça Codex ACP/acpx), tool bu çalışma zamanını ilan ettiğinde `runtime: "acp"` ile `sessions_spawn` kullanın. Tamamlamaları veya agent'tan agent'a döngüleri hata ayıklarken [ACP teslim modeli](/tr/tools/acp-agents#delivery-model) sayfasına bakın. `codex` Plugin etkin olduğunda, kullanıcı açıkça ACP/acpx istemedikçe Codex sohbet/iş parçacığı denetimi ACP yerine `/codex ...` tercih etmelidir.
     - ACP etkinleştirilene, istekte bulunan sandbox içinde olmayana ve `acpx` gibi bir arka uç Plugin yüklenene kadar OpenClaw `runtime: "acp"` seçeneğini gizler. `runtime: "acp"`, harici bir ACP harness kimliği veya `runtime.type="acp"` olan bir `agents.list[]` girdisi bekler; `agents_list` içindeki normal OpenClaw yapılandırma agent'ları için varsayılan alt agent çalışma zamanını kullanın.
+
   </Accordion>
 </AccordionGroup>
 

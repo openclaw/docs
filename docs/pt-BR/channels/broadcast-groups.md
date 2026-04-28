@@ -175,6 +175,7 @@ Controle como os agentes processam mensagens:
     - Todos os agentes listados processam a mensagem.
     - Cada agente tem sua própria chave de sessão e contexto isolado.
     - Os agentes processam em paralelo (padrão) ou sequencialmente.
+
   </Step>
   <Step title="Se não estiver na lista de transmissão">
     O roteamento normal se aplica (primeiro binding correspondente).

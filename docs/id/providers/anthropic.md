@@ -155,6 +155,7 @@ Override per pesan dengan `/think:<level>` atau di parameter model:
 Dokumentasi Anthropic terkait:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## Caching prompt
@@ -217,6 +218,7 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
     - Model Anthropic Claude di Bedrock (`amazon-bedrock/*anthropic.claude*`) menerima pass-through `cacheRetention` saat dikonfigurasi.
     - Model Bedrock non-Anthropic dipaksa ke `cacheRetention: "none"` saat runtime.
     - Default cerdas kunci API juga mengisi `cacheRetention: "short"` untuk ref Claude-on-Bedrock saat tidak ada nilai eksplisit yang ditetapkan.
+
   </Accordion>
 </AccordionGroup>
 
@@ -249,6 +251,7 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
     - Hanya disuntikkan untuk permintaan `api.anthropic.com` langsung. Rute proxy membiarkan `service_tier` tidak berubah.
     - Parameter `serviceTier` atau `service_tier` yang eksplisit akan mengoverride `/fast` saat keduanya ditetapkan.
     - Pada akun tanpa kapasitas Priority Tier, `service_tier: "auto"` dapat diresolusikan menjadi `standard`.
+
     </Note>
 
   </Accordion>

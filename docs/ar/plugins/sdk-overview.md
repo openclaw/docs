@@ -25,6 +25,7 @@ Plugin SDK هو العقد المعرّف بالأنواع بين Plugins وال
 - Plugin قناة؟ راجع [Plugins القنوات](/ar/plugins/sdk-channel-plugins).
 - Plugin مزود؟ راجع [Plugins المزودين](/ar/plugins/sdk-provider-plugins).
 - Plugin أداة أو خطاف دورة حياة؟ راجع [خطافات Plugin](/ar/plugins/hooks).
+
 </Tip>
 
 ## اصطلاح الاستيراد

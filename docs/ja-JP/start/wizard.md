@@ -57,9 +57,11 @@ CLIオンボーディングには、Brave、DuckDuckGo、Exa、Firecrawl、Gemin
     - DM分離のデフォルト: ローカルオンボーディングでは、未設定時に `session.dmScope: "per-channel-peer"` を書き込む。詳細: [CLI Setup Reference](/ja-JP/start/wizard-cli-reference#outputs-and-internals)
     - Tailscale公開 **オフ**
     - Telegram + WhatsApp DM のデフォルトは **allowlist**（電話番号の入力を求められる）
+
   </Tab>
   <Tab title="Advanced（完全制御）">
     - すべてのステップ（mode、workspace、gateway、channels、daemon、skills）を公開する。
+
   </Tab>
 </Tabs>
 

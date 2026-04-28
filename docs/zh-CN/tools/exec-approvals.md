@@ -111,6 +111,7 @@ x-i18n:
   - `deny` — 阻止所有主机执行请求。
   - `allowlist` — 仅允许允许列表中的命令。
   - `full` — 允许所有内容（等同于 elevated）。
+
 </ParamField>
 
 ### `exec.ask`
@@ -119,6 +120,7 @@ x-i18n:
   - `off` — 从不提示。
   - `on-miss` — 仅在允许列表不匹配时提示。
   - `always` — 对每条命令都提示。当生效的询问模式为 `always` 时，`allow-always` 的持久信任**不会**抑制提示。
+
 </ParamField>
 
 ### `askFallback`
@@ -129,6 +131,7 @@ x-i18n:
 - `deny` — 阻止。
 - `allowlist` — 仅在允许列表匹配时允许。
 - `full` — 允许。
+
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
@@ -168,6 +171,7 @@ YOLO 是默认的主机行为，除非你明确收紧它：
 - YOLO 选择主机执行**如何**获批：`security=full` 加 `ask=off`。
 - 在 YOLO 模式下，OpenClaw **不会**在已配置的主机执行策略之上额外添加单独的启发式命令混淆审批门控或脚本预检拒绝层。
 - `auto` 不会让沙箱会话可以免费覆盖为网关路由。允许从 `auto` 发起按次调用的 `host=node` 请求；只有在没有激活沙箱运行时时，才允许从 `auto` 发起 `host=gateway`。如需稳定的非 auto 默认值，请设置 `tools.exec.host` 或显式使用 `/exec host=...`。
+
 </Warning>
 
 公开其自身非交互权限模式的 CLI 支持提供商可以遵循此策略。当 OpenClaw 的请求执行策略为 YOLO 时，Claude CLI 会添加 `--permission-mode bypassPermissions`。你可以通过 `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` 下的显式 Claude 参数覆盖该后端行为——例如 `--permission-mode default`、`acceptEdits` 或 `bypassPermissions`。
@@ -237,6 +241,7 @@ EOF
 - `openclaw exec-policy` 不会同步节点审批。
 - `openclaw exec-policy set --host node` 会被拒绝。
 - 节点执行审批会在运行时从节点获取，因此面向节点的更新必须使用 `openclaw approvals --node ...`。
+
 </Note>
 
 ### 仅当前会话的快捷方式
@@ -278,6 +283,7 @@ EOF
 - 这是一个**隐式的便捷允许列表**，独立于手动路径允许列表条目。
 - 它适用于 Gateway 网关与节点处于同一信任边界内的受信任操作员环境。
 - 如果你需要严格的显式信任，请保持 `autoAllowSkills: false`，并仅使用手动路径允许列表条目。
+
 </Warning>
 
 ## 安全二进制与审批转发

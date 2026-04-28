@@ -126,6 +126,7 @@ Together をデフォルト動画プロバイダーとして使うには:
     - モデルが表示されない場合は、Gateway プロセスに対して正しい
       環境に API キーが設定されていることを確認してください。
     - model ref は `together/<model-id>` 形式です。
+
   </Accordion>
 </AccordionGroup>
 

@@ -44,14 +44,17 @@ x-i18n:
       - 仅配置
       - 配置 + 凭证 + 会话
       - 完整重置（同时移除工作区）
+
   </Step>
   <Step title="模型和认证">
     - 完整选项矩阵见 [认证和模型选项](#auth-and-model-options)。
+
   </Step>
   <Step title="工作区">
     - 默认是 `~/.openclaw/workspace`（可配置）。
     - 会生成首次运行引导流程所需的工作区文件。
     - 工作区布局：参见 [智能体工作区](/zh-CN/concepts/agent-workspace)。
+
   </Step>
   <Step title="Gateway 网关">
     - 会提示你设置端口、绑定、认证模式和 Tailscale 暴露方式。
@@ -65,6 +68,7 @@ x-i18n:
       - 不能与 `--gateway-token` 同时使用。
     - 仅当你完全信任所有本地进程时，才应禁用认证。
     - 非 loopback 绑定仍然需要认证。
+
   </Step>
   <Step title="渠道">
     - [WhatsApp](/zh-CN/channels/whatsapp)：可选 QR 登录
@@ -76,6 +80,7 @@ x-i18n:
     - [BlueBubbles](/zh-CN/channels/bluebubbles)：推荐用于 iMessage；服务器 URL + 密码 + webhook
     - [iMessage](/zh-CN/channels/imessage)：旧版 `imsg` CLI 路径 + 数据库访问
     - 私信安全：默认使用配对。第一次私信会发送一个代码；通过 `openclaw pairing approve <channel> <code>` 批准，或使用允许列表。
+
   </Step>
   <Step title="守护进程安装">
     - macOS：LaunchAgent
@@ -87,18 +92,22 @@ x-i18n:
       - 如果任务创建被拒绝，OpenClaw 会回退到按用户的 Startup 文件夹登录项，并立即启动 Gateway 网关。
       - 仍优先推荐 Scheduled Task，因为它能提供更好的监督器状态信息。
     - 运行时选择：Node（推荐；WhatsApp 和 Telegram 必需）。不推荐 Bun。
+
   </Step>
   <Step title="健康检查">
     - 启动 Gateway 网关（如有需要）并运行 `openclaw health`。
     - `openclaw status --deep` 会把实时 Gateway 网关健康探测加入状态输出中，包括在支持时的渠道探测。
+
   </Step>
   <Step title="Skills">
     - 读取可用的 Skills 并检查要求。
     - 让你选择 node 管理器：npm、pnpm 或 bun。
     - 安装可选依赖（其中一些在 macOS 上使用 Homebrew）。
+
   </Step>
   <Step title="完成">
     - 显示摘要和后续步骤，包括 iOS、Android 和 macOS 应用选项。
+
   </Step>
 </Steps>
 
@@ -125,6 +134,7 @@ x-i18n:
 - 设备发现提示：
   - macOS：Bonjour（`dns-sd`）
   - Linux：Avahi（`avahi-browse`）
+
 </Note>
 
 ## 认证和模型选项

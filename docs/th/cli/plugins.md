@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - shorthand ของ GitHub repo เช่น `owner/repo`
     - URL ของ GitHub repo เช่น `https://github.com/owner/repo`
     - git URL
+
   </Tab>
   <Tab title="กฎของ remote marketplace">
     สำหรับ remote marketplaces ที่โหลดจาก GitHub หรือ git รายการ Plugin ต้องอยู่ภายใน repo ของ marketplace ที่ clone มา OpenClaw ยอมรับ source แบบ relative path จาก repo นั้น และจะปฏิเสธแหล่ง Plugin จาก manifest ระยะไกลที่เป็น HTTP(S), absolute-path, git, GitHub และแหล่งอื่นที่ไม่ใช่ path

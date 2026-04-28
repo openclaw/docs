@@ -25,6 +25,7 @@ Referensi untuk **provider LLM/model** (bukan chat channel seperti WhatsApp/Tele
     - Helper CLI: `openclaw onboard`, `openclaw models list`, `openclaw models set <provider/model>`.
     - `models.providers.*.models[].contextWindow` adalah metadata model native; `contextTokens` adalah batas runtime efektif.
     - Aturan fallback, probe cooldown, dan persistensi override sesi: [Model failover](/id/concepts/model-failover).
+
   </Accordion>
   <Accordion title="Pemisahan provider/runtime OpenAI">
     Rute keluarga OpenAI bersifat spesifik prefix:
@@ -76,6 +77,7 @@ Daftar lengkap hook provider-SDK dan contoh bundled-plugin ada di [Provider plug
     - Permintaan dicoba ulang dengan key berikutnya hanya pada respons rate-limit (misalnya `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, atau pesan batas penggunaan berkala).
     - Kegagalan non-rate-limit langsung gagal; tidak ada rotasi key yang dicoba.
     - Saat semua key kandidat gagal, error final dikembalikan dari percobaan terakhir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ Dalam pemilih model onboarding/configure, pilihan auth Volcengine memprioritaska
     - `volcengine/kimi-k2-5-260127` (Kimi K2.5)
     - `volcengine/glm-4-7-251222` (GLM 4.7)
     - `volcengine/deepseek-v3-2-251201` (DeepSeek V3.2 128K)
+
   </Tab>
   <Tab title="Model coding (volcengine-plan)">
     - `volcengine-plan/ark-code-latest`
@@ -428,6 +431,7 @@ Dalam pemilih model onboarding/configure, pilihan auth Volcengine memprioritaska
     - `volcengine-plan/kimi-k2.5`
     - `volcengine-plan/kimi-k2-thinking`
     - `volcengine-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -457,6 +461,7 @@ Dalam pemilih model onboarding/configure, pilihan auth BytePlus memprioritaskan 
     - `byteplus/seed-1-8-251228` (Seed 1.8)
     - `byteplus/kimi-k2-5-260127` (Kimi K2.5)
     - `byteplus/glm-4-7-251222` (GLM 4.7)
+
   </Tab>
   <Tab title="Model coding (byteplus-plan)">
     - `byteplus-plan/ark-code-latest`
@@ -464,6 +469,7 @@ Dalam pemilih model onboarding/configure, pilihan auth BytePlus memprioritaskan 
     - `byteplus-plan/kimi-k2.5`
     - `byteplus-plan/kimi-k2-thinking`
     - `byteplus-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -669,6 +675,7 @@ Contoh (kompatibel OpenAI):
     - Untuk kontrol chat-template vLLM, atur `agents.defaults.models["provider/model"].params.chat_template_kwargs`. OpenClaw secara otomatis mengirim `enable_thinking: false` dan `force_nonempty_content: true` untuk `vllm/nemotron-3-*` saat tingkat thinking sesi nonaktif.
     - Jika `baseUrl` kosong/tidak diisi, OpenClaw mempertahankan perilaku OpenAI default (yang me-resolve ke `api.openai.com`).
     - Demi keamanan, `compat.supportsDeveloperRole: true` yang eksplisit tetap dioverride pada endpoint `openai-completions` non-native.
+
   </Accordion>
 </AccordionGroup>
 

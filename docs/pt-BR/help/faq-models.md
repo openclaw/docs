@@ -102,6 +102,7 @@ x-i18n:
     - Essas implantações podem ser diferentes e mudar ao longo do tempo; não há uma recomendação fixa de provider.
     - Verifique a configuração atual em tempo de execução em cada gateway com `openclaw models status`.
     - Para agentes sensíveis à segurança/com ferramentas habilitadas, use o modelo de geração mais recente e mais robusto disponível.
+
   </Accordion>
 
   <Accordion title="Como troco de modelo em tempo real (sem reiniciar)?">

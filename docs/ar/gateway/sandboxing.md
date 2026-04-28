@@ -32,6 +32,7 @@ x-i18n:
     - يكون وصول المراقبة عبر noVNC محميًا بكلمة مرور افتراضيًا؛ ويصدر OpenClaw عنوان URL برمز مميز قصير العمر يخدم صفحة bootstrap محلية ويفتح noVNC مع كلمة المرور في جزء URL fragment ‏(وليس في سجلات query/header).
     - يسمح `agents.defaults.sandbox.browser.allowHostControl` للجلسات داخل sandbox باستهداف متصفح المضيف صراحةً.
     - تتحكم قوائم السماح الاختيارية في `target: "custom"`: ‏`allowedControlUrls` و`allowedControlHosts` و`allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ x-i18n:
     - عند أول استخدام بعد الإنشاء أو إعادة الإنشاء، يقوم OpenClaw ببذر مساحة العمل البعيدة مرة واحدة من مساحة العمل المحلية.
     - بعد ذلك، تعمل `exec` و`read` و`write` و`edit` و`apply_patch` وقراءات وسائط المطالبات وتجهيز الوسائط الواردة مباشرةً على مساحة العمل البعيدة عبر SSH.
     - لا يزامن OpenClaw التغييرات البعيدة مرة أخرى إلى مساحة العمل المحلية تلقائيًا.
+
   </Accordion>
   <Accordion title="مواد المصادقة">
     - `identityFile` و`certificateFile` و`knownHostsFile`: استخدم الملفات المحلية الموجودة ومررها عبر تكوين OpenSSH.
     - `identityData` و`certificateData` و`knownHostsData`: استخدم سلاسل مضمنة أو SecretRefs. يقوم OpenClaw بحلها عبر لقطة وقت التشغيل العادية للأسرار، ويكتبها في ملفات مؤقتة بأذونات `0600`، ويحذفها عند انتهاء جلسة SSH.
     - إذا تم تعيين كل من `*File` و`*Data` للعنصر نفسه، فإن `*Data` يفوز لتلك الجلسة من SSH.
+
   </Accordion>
   <Accordion title="نتائج remote-canonical">
     هذا نموذج **remote-canonical**. تصبح مساحة العمل البعيدة عبر SSH هي حالة sandbox الحقيقية بعد البذر الأولي.
@@ -205,11 +208,13 @@ x-i18n:
     - يطلب OpenClaw من OpenShell تكوين SSH خاصًا بـ sandbox عبر `openshell sandbox ssh-config <name>`.
     - يكتب core تكوين SSH هذا في ملف مؤقت، ويفتح جلسة SSH، ويعيد استخدام جسر نظام الملفات البعيد نفسه المستخدم مع `backend: "ssh"`.
     - في وضع `mirror` فقط تختلف دورة الحياة: مزامنة من المحلي إلى البعيد قبل exec، ثم مزامنة عكسية بعد exec.
+
   </Accordion>
   <Accordion title="قيود OpenShell الحالية">
     - متصفح sandbox غير مدعوم بعد
     - `sandbox.docker.binds` غير مدعوم على الواجهة الخلفية OpenShell
     - لا تزال مفاتيح وقت التشغيل الخاصة بـ Docker ضمن `sandbox.docker.*` تنطبق فقط على الواجهة الخلفية Docker
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ x-i18n:
 - يجب أن تكون الربوط الحساسة (الأسرار، ومفاتيح SSH، وبيانات اعتماد الخدمات) `:ro` ما لم تكن هناك حاجة مطلقة.
 - اجمعها مع `workspaceAccess: "ro"` إذا كنت تحتاج فقط إلى وصول قراءة إلى مساحة العمل؛ إذ تظل أوضاع الربط مستقلة.
 - راجع [Sandbox مقابل سياسة الأدوات مقابل Elevated](/ar/gateway/sandbox-vs-tool-policy-vs-elevated) لمعرفة كيفية تفاعل الربوط مع سياسة الأدوات وexec المرتفع.
+
 </Warning>
 
 ## الصور والإعداد
@@ -423,6 +429,7 @@ x-i18n:
     - يتم حظر `network: "host"`.
     - يتم حظر `network: "container:<id>"` افتراضيًا (بسبب خطر تجاوز الانضمام إلى مساحة الأسماء).
     - تجاوز break-glass: ‏`agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ x-i18n:
     - يمنع `readOnlyRoot: true` عمليات الكتابة؛ اضبط `readOnlyRoot: false` أو أنشئ صورة مخصصة.
     - يجب أن يكون `user` هو root لعمليات تثبيت الحزم (احذف `user` أو اضبط `user: "0:0"`).
     - لا يرث sandbox exec قيمة `process.env` الخاصة بالمضيف. استخدم `agents.defaults.sandbox.docker.env` ‏(أو صورة مخصصة) لمفاتيح API الخاصة بـ Skills.
+
   </Accordion>
 </AccordionGroup>
 

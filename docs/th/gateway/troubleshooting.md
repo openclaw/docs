@@ -133,6 +133,7 @@ openclaw logs --follow
     - `messages[...].content: invalid type: sequence, expected a string` → backend ปฏิเสธ content parts แบบมีโครงสร้างของ Chat Completions วิธีแก้: ตั้ง `models.providers.<provider>.models[].compat.requiresStringContent: true`
     - direct tiny requests สำเร็จ แต่ OpenClaw agent runs ล้มเหลวด้วย backend/model crashes (เช่น Gemma บนบาง build ของ `inferrs`) → transport ของ OpenClaw น่าจะถูกต้องแล้ว; backend เป็นฝ่ายล้มเหลวกับรูปแบบพรอมป์ต์ที่ใหญ่กว่าของ agent runtime
     - ความล้มเหลวลดลงหลังปิด tools แต่ยังไม่หาย → tool schemas เป็นส่วนหนึ่งของแรงกดดัน แต่ปัญหาที่เหลือยังคงเป็นข้อจำกัดของโมเดล/เซิร์ฟเวอร์ต้นทางหรือเป็นบั๊กของ backend
+
   </Accordion>
   <Accordion title="ตัวเลือกในการแก้ไข">
     1. ตั้ง `compat.requiresStringContent: true` สำหรับ backends ของ Chat Completions ที่รองรับเฉพาะ string
@@ -209,6 +210,7 @@ openclaw gateway status --json
     - `too many failed authentication attempts (retry later)` จากไคลเอนต์ loopback ที่มี browser origin → ความล้มเหลวซ้ำจาก `Origin` ที่ถูก normalize เดียวกันนั้นจะถูกล็อกชั่วคราว; localhost origin อื่นจะใช้ bucket แยกกัน
     - `unauthorized` ซ้ำหลังจากการลองใหม่นั้น → shared token/device token drift; รีเฟรช config ของ token และอนุมัติใหม่/หมุนเวียน device token หากจำเป็น
     - `gateway connect failed:` → host/port/url เป้าหมายไม่ถูกต้อง
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,6 +290,7 @@ openclaw gateway status --deep   # สแกนบริการระดับ
     - `refusing to bind gateway ... without auth` → bind แบบ non-loopback โดยไม่มีเส้นทาง gateway auth ที่ถูกต้อง (token/password หรือ trusted-proxy ตามที่กำหนดค่าไว้)
     - `another gateway instance is already listening` / `EADDRINUSE` → พอร์ตชนกัน
     - `Other gateway-like services detected (best effort)` → มี launchd/systemd/schtasks units ที่ค้างเก่าหรือทำงานขนานอยู่ การตั้งค่าส่วนใหญ่ควรมีหนึ่ง gateway ต่อหนึ่งเครื่อง; หากคุณต้องการมากกว่าหนึ่งจริง ๆ ให้แยกพอร์ต + config/state/workspace ดู [/gateway#multiple-gateways-same-host](/th/gateway#multiple-gateways-same-host)
+
   </Accordion>
 </AccordionGroup>
 
@@ -323,6 +326,7 @@ openclaw doctor
     - config ที่ active ถูกกู้คืนจากสำเนา last-known-good ที่ผ่านการตรวจสอบล่าสุด
     - เทิร์นถัดไปของ main-agent จะได้รับคำเตือนไม่ให้เขียนทับ config ที่ถูกปฏิเสธแบบไม่พิจารณา
     - หากปัญหาการตรวจสอบทั้งหมดอยู่ภายใต้ `plugins.entries.<id>...` OpenClaw จะไม่กู้คืนทั้งไฟล์ ความล้มเหลวเฉพาะระดับ Plugin จะยังคงแสดงชัด ขณะที่การตั้งค่าผู้ใช้ส่วนอื่นที่ไม่เกี่ยวข้องยังคงอยู่ใน config ที่ active
+
   </Accordion>
   <Accordion title="ตรวจสอบและซ่อมแซม">
     ```bash
@@ -339,6 +343,7 @@ openclaw doctor
     - `Config write rejected:` → การเขียนพยายามตัดรูปแบบที่จำเป็น ทำให้ไฟล์เล็กลงมาก หรือพยายามบันทึก config ที่ไม่ถูกต้อง
     - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` หรือ `size-drop-vs-last-good:*` → ตอน startup ไฟล์ปัจจุบันถูกมองว่าโดน clobber เพราะสูญเสียฟิลด์หรือขนาดเมื่อเทียบกับสำเนา last-known-good
     - `Config last-known-good promotion skipped` → candidate มี placeholders ของ secret ที่ถูกปกปิดแล้ว เช่น `***`
+
   </Accordion>
   <Accordion title="ตัวเลือกในการแก้ไข">
     1. คง config ที่ active ซึ่งถูกกู้คืนไว้ หากมันถูกต้องแล้ว
@@ -442,6 +447,7 @@ openclaw logs --follow
     - `heartbeat skipped` พร้อม `reason=no-tasks-due` → `HEARTBEAT.md` มีบล็อก `tasks:` แต่ไม่มีงานใดถึงกำหนดใน tick นี้
     - `heartbeat: unknown accountId` → account id สำหรับเป้าหมายการส่ง Heartbeat ไม่ถูกต้อง
     - `heartbeat skipped` พร้อม `reason=dm-blocked` → เป้าหมาย Heartbeat resolve ไปยังปลายทางแบบ DM ขณะที่ `agents.defaults.heartbeat.directPolicy` (หรือการแทนที่รายเอเจนต์) ถูกตั้งเป็น `block`
+
   </Accordion>
 </AccordionGroup>
 
@@ -510,12 +516,14 @@ openclaw doctor
     - `browser.cdpUrl must be http(s) or ws(s)` → CDP URL ที่กำหนดใช้ scheme ที่ไม่รองรับ เช่น `file:` หรือ `ftp:`
     - `browser.cdpUrl has invalid port` → CDP URL ที่กำหนดมีพอร์ตไม่ถูกต้องหรืออยู่นอกช่วง
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → การติดตั้ง gateway ปัจจุบันไม่มี runtime dependency `playwright-core` ของ bundled browser plugin ให้รัน `openclaw doctor --fix` แล้วรีสตาร์ต gateway จากนั้น ARIA snapshots และภาพหน้าจอพื้นฐานของหน้าอาจยังใช้ได้ แต่การนำทาง, AI snapshots, ภาพหน้าจอองค์ประกอบด้วย CSS selector และการส่งออก PDF จะยังใช้งานไม่ได้
+
   </Accordion>
   <Accordion title="ลายเซ็นของ Chrome MCP / existing-session">
     - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session ยังแนบกับ browser data dir ที่เลือกไม่ได้ ให้เปิดหน้า inspect ของเบราว์เซอร์ เปิดใช้ remote debugging คงเบราว์เซอร์ไว้ อนุมัติพรอมป์ต์การ attach ครั้งแรก แล้วลองใหม่ หากไม่จำเป็นต้องใช้สถานะที่ล็อกอินไว้ ให้ใช้ profile `openclaw` ที่ระบบจัดการให้
     - `No Chrome tabs found for profile="user"` → profile สำหรับการ attach ของ Chrome MCP ไม่มีแท็บ Chrome ในเครื่องที่เปิดอยู่
     - `Remote CDP for profile "<name>" is not reachable` → remote CDP endpoint ที่กำหนดค่าไว้ไม่สามารถเข้าถึงได้จากโฮสต์ของ gateway
     - `Browser attachOnly is enabled ... not reachable` หรือ `Browser attachOnly is enabled and CDP websocket ... is not reachable` → profile แบบ attach-only ไม่มีเป้าหมายที่เข้าถึงได้ หรือ HTTP endpoint ตอบกลับแล้วแต่ยังเปิด CDP WebSocket ไม่ได้
+
   </Accordion>
   <Accordion title="ลายเซ็นของ element / screenshot / upload">
     - `fullPage is not supported for element screenshots` → คำขอภาพหน้าจอผสม `--full-page` กับ `--ref` หรือ `--element`
@@ -527,6 +535,7 @@ openclaw doctor
     - `existing-session evaluate does not support timeoutMs overrides.` → ให้ละ `timeoutMs` สำหรับ `act:evaluate` บน `profile="user"` / Chrome MCP existing-session profiles หรือใช้ managed/CDP browser profile หากต้องการ custom timeout
     - `response body is not supported for existing-session profiles yet.` → `responsebody` ยังต้องใช้ managed browser หรือ raw CDP profile
     - stale viewport / dark-mode / locale / offline overrides บน profiles แบบ attach-only หรือ remote CDP → รัน `openclaw browser stop --browser-profile <name>` เพื่อปิด active control session และปล่อยสถานะ emulation ของ Playwright/CDP โดยไม่ต้องรีสตาร์ต gateway ทั้งหมด
+
   </Accordion>
 </AccordionGroup>
 

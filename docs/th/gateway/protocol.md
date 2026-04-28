@@ -285,6 +285,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `system-event` จะต่อท้าย system event และสามารถอัปเดต/กระจายบริบท presence ได้
     - `last-heartbeat` คืนค่าเหตุการณ์ Heartbeat ล่าสุดที่บันทึกไว้
     - `set-heartbeats` เปิด/ปิดการประมวลผล Heartbeat บน gateway
+
   </Accordion>
 
   <Accordion title="โมเดลและการใช้งาน">
@@ -295,6 +296,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `sessions.usage` คืนค่าสรุปการใช้งานต่อเซสชัน
     - `sessions.usage.timeseries` คืนค่า timeseries การใช้งานสำหรับหนึ่งเซสชัน
     - `sessions.usage.logs` คืนค่า usage log entries สำหรับหนึ่งเซสชัน
+
   </Accordion>
 
   <Accordion title="Channels และตัวช่วยการเข้าสู่ระบบ">
@@ -305,11 +307,13 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `push.test` ส่ง APNs push ทดสอบไปยังโหนด iOS ที่ลงทะเบียนไว้
     - `voicewake.get` คืนค่า wake-word triggers ที่เก็บไว้
     - `voicewake.set` อัปเดต wake-word triggers และกระจายการเปลี่ยนแปลง
+
   </Accordion>
 
   <Accordion title="การส่งข้อความและ logs">
     - `send` คือ outbound-delivery RPC โดยตรง สำหรับการส่งแบบระบุ channel/account/thread-target ภายนอก chat runner
     - `logs.tail` คืนค่า file-log tail ของ gateway ที่กำหนดไว้ พร้อมตัวควบคุม cursor/limit และขนาดไบต์สูงสุด
+
   </Accordion>
 
   <Accordion title="Talk และ TTS">
@@ -321,6 +325,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `tts.enable` และ `tts.disable` เปิด/ปิดสถานะการตั้งค่า TTS
     - `tts.setProvider` อัปเดต TTS provider ที่ต้องการ
     - `tts.convert` รันการแปลงข้อความเป็นเสียงแบบครั้งเดียว
+
   </Accordion>
 
   <Accordion title="Secrets, config, update และ wizard">
@@ -334,6 +339,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `config.schema.lookup` คืนค่า payload สำหรับการ lookup แบบกำหนดขอบเขตด้วยพาธสำหรับหนึ่งพาธของ config: normalized path, schema node แบบตื้น, hint ที่ตรงกัน + `hintPath` และสรุปลูกโดยตรงสำหรับ UI/CLI แบบเจาะลึก schema nodes ของ lookup จะคงเอกสารที่ผู้ใช้มองเห็นได้และฟิลด์การตรวจสอบทั่วไป (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, ขอบเขตเชิงตัวเลข/สตริง/อาร์เรย์/อ็อบเจ็กต์ และแฟล็กอย่าง `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`) ส่วน child summaries จะเปิดเผย `key`, `path` ที่ normalize แล้ว, `type`, `required`, `hasChildren` พร้อม `hint` / `hintPath` ที่ตรงกัน
     - `update.run` จะรัน flow การอัปเดต gateway และกำหนดเวลารีสตาร์ตเฉพาะเมื่อการอัปเดตเองสำเร็จ
     - `wizard.start`, `wizard.next`, `wizard.status` และ `wizard.cancel` เปิดให้ใช้ onboarding wizard ผ่าน WS RPC
+
   </Accordion>
 
   <Accordion title="ตัวช่วยสำหรับเอเจนต์และ workspace">
@@ -342,6 +348,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `agents.files.list`, `agents.files.get` และ `agents.files.set` ใช้จัดการไฟล์ bootstrap workspace ที่เปิดให้เอเจนต์ใช้งาน
     - `agent.identity.get` คืนค่าตัวตนผู้ช่วยที่มีผลจริงสำหรับเอเจนต์หรือเซสชัน
     - `agent.wait` รอให้การรันเสร็จสิ้น และคืนค่า terminal snapshot เมื่อมี
+
   </Accordion>
 
   <Accordion title="การควบคุมเซสชัน">
@@ -358,6 +365,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `sessions.reset`, `sessions.delete` และ `sessions.compact` ใช้ดูแลรักษาเซสชัน
     - `sessions.get` คืนค่าแถวเซสชันที่เก็บไว้ทั้งหมด
     - การทำงานของแชทยังคงใช้ `chat.history`, `chat.send`, `chat.abort` และ `chat.inject` โดย `chat.history` ถูก normalize เพื่อการแสดงผลสำหรับไคลเอนต์ UI: inline directive tags จะถูกตัดออกจากข้อความที่มองเห็นได้, payload ของ plain-text tool-call XML (รวมถึง `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` และบล็อก tool-call ที่ถูกตัดทอน) และ model control tokens แบบ ASCII/full-width ที่รั่วออกมาจะถูกตัดออก, แถวของผู้ช่วยที่เป็น silent-token ล้วน ๆ เช่น `NO_REPLY` / `no_reply` แบบตรงตัวจะถูกละไว้, และแถวที่ใหญ่เกินไปอาจถูกแทนที่ด้วย placeholders
+
   </Accordion>
 
   <Accordion title="การจับคู่อุปกรณ์และ device tokens">
@@ -365,6 +373,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `device.pair.approve`, `device.pair.reject` และ `device.pair.remove` ใช้จัดการ records การจับคู่อุปกรณ์
     - `device.token.rotate` หมุนเวียน paired device token ภายในขอบเขต role ที่อนุมัติและขอบเขต scope ของผู้เรียก
     - `device.token.revoke` เพิกถอน paired device token ภายในขอบเขต role ที่อนุมัติและขอบเขต scope ของผู้เรียก
+
   </Accordion>
 
   <Accordion title="การจับคู่ Node, invoke และงานที่รอดำเนินการ">
@@ -377,6 +386,7 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `node.canvas.capability.refresh` รีเฟรช tokens ของ canvas-capability แบบกำหนดขอบเขต
     - `node.pending.pull` และ `node.pending.ack` คือ connected-node queue APIs
     - `node.pending.enqueue` และ `node.pending.drain` ใช้จัดการงานค้างแบบถาวรสำหรับ nodes ที่ offline/disconnected
+
   </Accordion>
 
   <Accordion title="ตระกูลการอนุมัติ">
@@ -385,11 +395,13 @@ broadcast events แบบ WebSocket ที่เซิร์ฟเวอร์ 
     - `exec.approvals.get` และ `exec.approvals.set` ใช้จัดการ snapshots ของนโยบายการอนุมัติ exec ของ gateway
     - `exec.approvals.node.get` และ `exec.approvals.node.set` ใช้จัดการนโยบายการอนุมัติ exec ในเครื่องของ node ผ่านคำสั่ง node relay
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` และ `plugin.approval.resolve` ครอบคลุม flows การอนุมัติที่กำหนดโดย Plugin
+
   </Accordion>
 
   <Accordion title="ระบบอัตโนมัติ Skills และเครื่องมือ">
     - ระบบอัตโนมัติ: `wake` กำหนดเวลาการ inject ข้อความปลุกแบบทันทีหรือใน Heartbeat ถัดไป; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` ใช้จัดการงานตามกำหนดเวลา
     - Skills และเครื่องมือ: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`
+
   </Accordion>
 </AccordionGroup>
 

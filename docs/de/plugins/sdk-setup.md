@@ -307,6 +307,7 @@ Gebündelte Workspace-Kanäle, die setup-sichere Exporte in Sidecar-Modulen halt
     - Der Kanal ist deaktiviert, benötigt aber Setup-/Onboarding-Oberflächen.
     - Der Kanal ist aktiviert, aber nicht konfiguriert.
     - Verzögertes Laden ist aktiviert (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Was `setupEntry` registrieren muss">
     - Das Kanal-Plugin-Objekt (über `defineSetupPluginEntry`).
@@ -321,6 +322,7 @@ Gebündelte Workspace-Kanäle, die setup-sichere Exporte in Sidecar-Modulen halt
     - Hintergrunddienste.
     - Schwere Laufzeit-Importe (Krypto, SDKs).
     - Gateway-Methoden, die erst nach dem Start benötigt werden.
+
   </Accordion>
 </AccordionGroup>
 

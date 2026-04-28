@@ -145,6 +145,7 @@ la découverte de Plugin au lieu de revenir silencieusement aux chemins source.
   <Accordion title="Plugins mémoire">
     - `memory-core` — recherche mémoire intégrée (par défaut via `plugins.slots.memory`)
     - `memory-lancedb` — mémoire long terme installée à la demande avec auto-recall/capture (définissez `plugins.slots.memory = "memory-lancedb"`)
+
   </Accordion>
 
   <Accordion title="Fournisseurs vocaux (activés par défaut)">
@@ -154,6 +155,7 @@ la découverte de Plugin au lieu de revenir silencieusement aux chemins source.
   <Accordion title="Autres">
     - `browser` — plugin navigateur intégré pour l’outil navigateur, la CLI `openclaw browser`, la méthode Gateway `browser.request`, le runtime navigateur, et le service de contrôle de navigateur par défaut (activé par défaut ; désactivez-le avant de le remplacer)
     - `copilot-proxy` — pont VS Code Copilot Proxy (désactivé par défaut)
+
   </Accordion>
 </AccordionGroup>
 
@@ -199,6 +201,7 @@ ou utilisez `openclaw gateway restart` contre la Gateway en cours d’exécution
   - **Désactivé** : le Plugin existe mais les règles d’activation l’ont désactivé. La configuration est conservée.
   - **Manquant** : la configuration référence un id de Plugin que la découverte n’a pas trouvé.
   - **Invalide** : le Plugin existe mais sa configuration ne correspond pas au schéma déclaré.
+
 </Accordion>
 
 ## Découverte et priorité

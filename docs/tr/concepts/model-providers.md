@@ -25,6 +25,7 @@ x-i18n:
     - CLI yardımcıları: `openclaw onboard`, `openclaw models list`, `openclaw models set <provider/model>`.
     - `models.providers.*.models[].contextWindow` yerel model meta verisidir; `contextTokens` etkin çalışma zamanı sınırıdır.
     - Geri dönüş kuralları, cooldown probları ve oturum geçersiz kılma kalıcılığı: [Model failover](/tr/concepts/model-failover).
+
   </Accordion>
   <Accordion title="OpenAI sağlayıcı/çalışma zamanı ayrımı">
     OpenAI ailesi rotaları önek bazında ayrılır:
@@ -76,6 +77,7 @@ Sağlayıcı çalışma zamanı `capabilities`, paylaşılan runner meta verisid
     - İstekler yalnızca hız sınırı yanıtlarında sonraki anahtarla yeniden denenir (örneğin `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` veya periyodik kullanım sınırı mesajları).
     - Hız sınırı dışındaki hatalar hemen başarısız olur; anahtar döndürme denenmez.
     - Tüm aday anahtarlar başarısız olduğunda, son hata son denemeden döndürülür.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ Onboarding/configure model seçicilerinde, Volcengine auth seçimi hem `volcengi
     - `volcengine/kimi-k2-5-260127` (Kimi K2.5)
     - `volcengine/glm-4-7-251222` (GLM 4.7)
     - `volcengine/deepseek-v3-2-251201` (DeepSeek V3.2 128K)
+
   </Tab>
   <Tab title="Coding modelleri (volcengine-plan)">
     - `volcengine-plan/ark-code-latest`
@@ -428,6 +431,7 @@ Onboarding/configure model seçicilerinde, Volcengine auth seçimi hem `volcengi
     - `volcengine-plan/kimi-k2.5`
     - `volcengine-plan/kimi-k2-thinking`
     - `volcengine-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -457,6 +461,7 @@ Onboarding/configure model seçicilerinde, BytePlus auth seçimi hem `byteplus/*
     - `byteplus/seed-1-8-251228` (Seed 1.8)
     - `byteplus/kimi-k2-5-260127` (Kimi K2.5)
     - `byteplus/glm-4-7-251222` (GLM 4.7)
+
   </Tab>
   <Tab title="Coding modelleri (byteplus-plan)">
     - `byteplus-plan/ark-code-latest`
@@ -464,6 +469,7 @@ Onboarding/configure model seçicilerinde, BytePlus auth seçimi hem `byteplus/*
     - `byteplus-plan/kimi-k2.5`
     - `byteplus-plan/kimi-k2-thinking`
     - `byteplus-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -669,6 +675,7 @@ Ayrıntılar için bkz. [/providers/sglang](/tr/providers/sglang).
     - vLLM chat-template denetimleri için `agents.defaults.models["provider/model"].params.chat_template_kwargs` ayarlayın. OpenClaw, oturum thinking seviyesi kapalı olduğunda `vllm/nemotron-3-*` için otomatik olarak `enable_thinking: false` ve `force_nonempty_content: true` gönderir.
     - `baseUrl` boşsa/atlanmışsa OpenClaw varsayılan OpenAI davranışını korur (bu da `api.openai.com` adresine çözülür).
     - Güvenlik için, açık bir `compat.supportsDeveloperRole: true` değeri bile yerel olmayan `openai-completions` uç noktalarında yine geçersiz kılınır.
+
   </Accordion>
 </AccordionGroup>
 

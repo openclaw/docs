@@ -44,14 +44,17 @@ Uzak host üzerinde hiçbir şey kurmaz veya değiştirmez.
       - Yalnızca yapılandırma
       - Yapılandırma + kimlik bilgileri + oturumlar
       - Tam sıfırlama (çalışma alanını da kaldırır)
+
   </Step>
   <Step title="Model ve auth">
     - Tam seçenek matrisi [Auth ve model seçenekleri](#auth-and-model-options) bölümündedir.
+
   </Step>
   <Step title="Çalışma alanı">
     - Varsayılan `~/.openclaw/workspace` (yapılandırılabilir).
     - İlk çalıştırma bootstrap ritüeli için gereken çalışma alanı dosyalarını hazırlar.
     - Çalışma alanı düzeni: [Agent workspace](/tr/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Port, bind, auth modu ve tailscale sunumu için sorular sorar.
@@ -65,6 +68,7 @@ Uzak host üzerinde hiçbir şey kurmaz veya değiştirmez.
       - `--gateway-token` ile birlikte kullanılamaz.
     - Auth'u yalnızca tüm yerel süreçlere tamamen güveniyorsanız devre dışı bırakın.
     - Loopback olmayan bind'lerde auth yine de gereklidir.
+
   </Step>
   <Step title="Kanallar">
     - [WhatsApp](/tr/channels/whatsapp): isteğe bağlı QR girişi
@@ -88,18 +92,22 @@ Uzak host üzerinde hiçbir şey kurmaz veya değiştirmez.
       - Görev oluşturma reddedilirse, OpenClaw kullanıcı başına Startup klasörü oturum açma öğesine geri döner ve gateway'i hemen başlatır.
       - Scheduled Task'lar daha iyi supervisor durumu sağladıkları için tercih edilir.
     - Çalışma zamanı seçimi: Node (önerilen; WhatsApp ve Telegram için gereklidir). Bun önerilmez.
+
   </Step>
   <Step title="Sağlık kontrolü">
     - Gateway'i başlatır (gerekirse) ve `openclaw health` çalıştırır.
     - `openclaw status --deep`, desteklendiğinde kanal probları dahil canlı gateway sağlık probunu durum çıktısına ekler.
+
   </Step>
   <Step title="Skills">
     - Kullanılabilir Skills'i okur ve gereksinimleri kontrol eder.
     - Düğüm yöneticisi seçmenizi sağlar: npm, pnpm veya bun.
     - İsteğe bağlı bağımlılıkları kurar (bazıları macOS'ta Homebrew kullanır).
+
   </Step>
   <Step title="Bitir">
     - iOS, Android ve macOS uygulama seçenekleri dahil özet ve sonraki adımlar.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Ayarladıklarınız:
 - Keşif ipuçları:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Auth ve model seçenekleri

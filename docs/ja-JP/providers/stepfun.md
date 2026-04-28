@@ -210,6 +210,7 @@ Step Plan（`stepfun-plan`）:
     - `step-3.5-flash-2603` は現在 `stepfun-plan` でのみ公開されています。
     - 単一の認証フローが、`stepfun` と `stepfun-plan` の両方に対してリージョン一致のprofileを書き込むため、両方のサーフェスを一緒に検出できます。
     - モデルを確認または切り替えるには `openclaw models list` と `openclaw models set <provider/model>` を使ってください。
+
   </Accordion>
 </AccordionGroup>
 

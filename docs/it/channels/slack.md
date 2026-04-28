@@ -38,6 +38,7 @@ Pronto per la produzione per DM e canali tramite integrazioni dell'app Slack. La
         - incolla il [manifest di esempio](#manifest-and-scope-checklist) qui sotto e continua per creare l'app
         - genera un **App-Level Token** (`xapp-...`) con `connections:write`
         - installa l'app e copia il **Bot Token** (`xoxb-...`) mostrato
+
       </Step>
 
       <Step title="Configura OpenClaw">
@@ -624,6 +625,7 @@ Note:
     - `channels.slack.chunkMode="newline"` abilita la suddivisione con priorità ai paragrafi
     - gli invii di file usano le API di upload Slack e possono includere risposte nel thread (`thread_ts`)
     - il limite dei media in uscita segue `channels.slack.mediaMaxMb` quando configurato; altrimenti gli invii del canale usano i valori predefiniti per tipo MIME dalla pipeline media
+
   </Accordion>
 
   <Accordion title="Destinazioni di consegna">

@@ -147,6 +147,7 @@ l'installazione e il rilevamento dei plugin invece di eseguire silenziosamente i
   <Accordion title="Plugin di memoria">
     - `memory-core` — ricerca di memoria inclusa (predefinita tramite `plugins.slots.memory`)
     - `memory-lancedb` — memoria a lungo termine installata su richiesta con auto-recall/acquisizione automatica (imposta `plugins.slots.memory = "memory-lancedb"`)
+
   </Accordion>
 
   <Accordion title="Provider vocali (abilitati per impostazione predefinita)">
@@ -156,6 +157,7 @@ l'installazione e il rilevamento dei plugin invece di eseguire silenziosamente i
   <Accordion title="Altro">
     - `browser` — plugin browser incluso per lo strumento browser, la CLI `openclaw browser`, il metodo gateway `browser.request`, il runtime browser e il servizio di controllo browser predefinito (abilitato per impostazione predefinita; disabilitalo prima di sostituirlo)
     - `copilot-proxy` — bridge VS Code Copilot Proxy (disabilitato per impostazione predefinita)
+
   </Accordion>
 </AccordionGroup>
 
@@ -205,6 +207,7 @@ oppure usa `openclaw gateway restart` sul Gateway in esecuzione.
   - **Disabled**: il plugin esiste ma le regole di abilitazione lo hanno disattivato. La configurazione viene preservata.
   - **Missing**: la configurazione fa riferimento a un id plugin che il rilevamento non ha trovato.
   - **Invalid**: il plugin esiste ma la sua configurazione non corrisponde allo schema dichiarato.
+
 </Accordion>
 
 ## Rilevamento e precedenza

@@ -232,6 +232,7 @@ El orden de filtrado es:
     - Si `agents.list[].tools.sandbox.tools` está establecido, reemplaza a `tools.sandbox.tools` para ese agente.
     - Si `agents.list[].tools.profile` está establecido, reemplaza a `tools.profile` para ese agente.
     - Las claves de herramientas del proveedor aceptan `provider` (por ejemplo, `google-antigravity`) o `provider/model` (por ejemplo, `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Comportamiento de una lista de permitidos vacía">
     Si alguna lista de permitidos explícita en esa cadena deja la ejecución sin herramientas invocables, OpenClaw se detiene antes de enviar el prompt al modelo. Esto es intencional: un agente configurado con una herramienta inexistente como `agents.list[].tools.allow: ["query_db"]` debe fallar de forma explícita hasta que esté habilitado el plugin que registra `query_db`, y no continuar como un agente solo de texto.
@@ -360,6 +361,7 @@ Después de configurar el sandbox multiagente y las herramientas:
   <Step title="Probar restricciones de herramientas">
     - Envía un mensaje que requiera herramientas restringidas.
     - Verifica que el agente no pueda usar herramientas denegadas.
+
   </Step>
   <Step title="Supervisar registros">
     ```bash
@@ -376,15 +378,18 @@ Después de configurar el sandbox multiagente y las herramientas:
   <Accordion title="El agente no está en sandbox a pesar de `mode: 'all'`">
     - Comprueba si hay un `agents.defaults.sandbox.mode` global que lo reemplace.
     - La configuración específica del agente tiene prioridad, así que establece `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="Las herramientas siguen disponibles a pesar de la lista deny">
     - Comprueba el orden de filtrado de herramientas: global → agente → sandbox → subagente.
     - Cada nivel solo puede restringir más, no volver a conceder acceso.
     - Verifica con los registros: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="El contenedor no está aislado por agente">
     - Establece `scope: "agent"` en la configuración de sandbox específica del agente.
     - El valor predeterminado es `"session"`, que crea un contenedor por sesión.
+
   </Accordion>
 </AccordionGroup>
 

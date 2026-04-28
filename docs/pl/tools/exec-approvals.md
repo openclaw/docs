@@ -124,6 +124,7 @@ Przykładowy schemat:
   - `deny` — blokuje wszystkie żądania host exec.
   - `allowlist` — zezwala tylko na polecenia z listy dozwolonych.
   - `full` — zezwala na wszystko (odpowiednik elevated).
+
 </ParamField>
 
 ### `exec.ask`
@@ -132,6 +133,7 @@ Przykładowy schemat:
   - `off` — nigdy nie wyświetla promptu.
   - `on-miss` — wyświetla prompt tylko wtedy, gdy lista dozwolonych nie pasuje.
   - `always` — wyświetla prompt przy każdym poleceniu. Trwałe zaufanie `allow-always` **nie** wyłącza promptów, gdy efektywny tryb ask to `always`.
+
 </ParamField>
 
 ### `askFallback`
@@ -142,6 +144,7 @@ Przykładowy schemat:
 - `deny` — blokuje.
 - `allowlist` — zezwala tylko wtedy, gdy pasuje lista dozwolonych.
 - `full` — zezwala.
+
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
@@ -188,6 +191,7 @@ YOLO jest domyślnym zachowaniem hosta, chyba że jawnie je zaostrzysz:
 - YOLO wybiera **jak** host exec jest zatwierdzany: `security=full` plus `ask=off`.
 - W trybie YOLO OpenClaw **nie** dodaje osobnej heurystycznej bramki zatwierdzenia dla zaciemniania poleceń ani warstwy odrzucania skryptów przed uruchomieniem ponad skonfigurowaną zasadę host exec.
 - `auto` nie czyni routingu do gateway darmowym nadpisaniem z sesji działającej w sandboxie. Żądanie per wywołanie `host=node` jest dozwolone z `auto`; `host=gateway` jest dozwolone z `auto` tylko wtedy, gdy nie jest aktywne środowisko wykonawcze sandbox. Aby uzyskać stabilne domyślne ustawienie inne niż auto, ustaw `tools.exec.host` lub użyj jawnie `/exec host=...`.
+
 </Warning>
 
 Dostawcy oparci na CLI, którzy udostępniają własny tryb nieinteraktywnych uprawnień,
@@ -266,6 +270,7 @@ EOF
 - `openclaw exec-policy` nie synchronizuje zatwierdzeń node.
 - `openclaw exec-policy set --host node` jest odrzucane.
 - Zatwierdzenia exec node są pobierane z node w czasie działania, więc aktualizacje kierowane do node muszą używać `openclaw approvals --node ...`.
+
 </Note>
 
 ### Skrót tylko dla sesji
@@ -318,6 +323,7 @@ Skills. Wyłącz to, jeśli chcesz ściśle ręcznych list dozwolonych.
 - To **domyślna wygodna lista dozwolonych**, oddzielna od ręcznych wpisów listy dozwolonych ścieżek.
 - Jest przeznaczona dla środowisk zaufanych operatorów, w których Gateway i node znajdują się w tej samej granicy zaufania.
 - Jeśli wymagasz ściśle jawnego zaufania, pozostaw `autoAllowSkills: false` i używaj wyłącznie ręcznych wpisów listy dozwolonych ścieżek.
+
 </Warning>
 
 ## Safe bins i przekazywanie zatwierdzeń

@@ -198,6 +198,7 @@ Aksi belirtilmedikçe tüm alanlar isteğe bağlıdır.
       - `fileQuality: "hq"`: en fazla 14 MP (14,000,000 işlenmiş piksel).
       - `fileQuality: "print"`: en fazla 24 MP (24,000,000 işlenmiş piksel).
       - PDF ayrıca en fazla 50 sayfa ile sınırlıdır.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ URL oluşturma davranışı:
     - Uzak erişim etkin olduğunda uzak miss kısıtlaması:
       - 60 saniyede 40 başarısızlık
       - 60 saniyelik kilitleme (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Dosya işleme sertleştirme">
     - Ekran görüntüsü tarayıcı istek yönlendirmesi varsayılan olarak deny kullanır.
     - Yalnızca `http://127.0.0.1/plugins/diffs/assets/*` altındaki yerel görüntüleyici varlıklarına izin verilir.
     - Dış ağ istekleri engellenir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ URL oluşturma davranışı:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Platform fallback">
     Platform komutu/yolu keşfi fallback'i.
@@ -456,6 +460,7 @@ Chrome, Chromium, Edge veya Brave kurarak ya da yukarıdaki çalıştırılabili
     - `Invalid baseUrl: ...` — isteğe bağlı yol içeren `http(s)` origin kullanın, query/hash kullanmayın.
     - `{field} exceeds maximum size (...)` — payload boyutunu azaltın.
     - Büyük patch reddi — patch dosya sayısını veya toplam satır sayısını azaltın.
+
   </Accordion>
   <Accordion title="Görüntüleyici erişilebilirliği">
     - Görüntüleyici URL'si varsayılan olarak `127.0.0.1` adresine çözülür.
@@ -468,6 +473,7 @@ Chrome, Chromium, Edge veya Brave kurarak ya da yukarıdaki çalıştırılabili
       - yalnızca eke ihtiyacınız varsa `mode: "file"` veya `mode: "both"` tercih edin, ya da
       - paylaşılabilir bir görüntüleyici URL'sine ihtiyacınız varsa bilinçli olarak `security.allowRemoteViewer` etkinleştirin ve Plugin `viewerBaseUrl` ayarlayın veya proxy/genel `baseUrl` geçin
     - `security.allowRemoteViewer` özelliğini yalnızca dış görüntüleyici erişimi amaçladığınızda etkinleştirin.
+
   </Accordion>
   <Accordion title="Değişmemiş satırlar satırında genişlet düğmesi yok">
     Bu, patch girdisi için patch genişletilebilir bağlam taşımadığında olabilir. Bu beklenen davranıştır ve görüntüleyici hatasına işaret etmez.
@@ -476,6 +482,7 @@ Chrome, Chromium, Edge veya Brave kurarak ya da yukarıdaki çalıştırılabili
     - Yapıt TTL nedeniyle süresi doldu.
     - Token veya yol değişti.
     - Temizleme bayat verileri kaldırdı.
+
   </Accordion>
 </AccordionGroup>
 

@@ -72,6 +72,7 @@ x-i18n:
     - จุดเริ่มต้นของเอเจนต์แบบ one-shot เช่น `openclaw agent` และ `openclaw infer model run` จะเลิกใช้ bundled MCP runtimes ใดๆ ที่เปิดขึ้นเมื่อคำตอบเสร็จสมบูรณ์ ดังนั้นการรันสคริปต์ซ้ำๆ จะไม่สะสม stdio MCP child processes
     - เซิร์ฟเวอร์ stdio MCP ที่ OpenClaw เปิดขึ้น (ทั้งแบบ bundled หรือผู้ใช้กำหนดค่าเอง) จะถูกปิดลงเป็น process tree ตอน shutdown ดังนั้น child subprocesses ที่เซิร์ฟเวอร์เริ่มไว้จะไม่คงอยู่หลังจาก parent stdio client ออกไปแล้ว
     - การลบหรือรีเซ็ตเซสชันจะ dispose ไคลเอนต์ MCP ของเซสชันนั้นผ่านเส้นทาง cleanup ของ runtime ที่ใช้ร่วมกัน ดังนั้นจะไม่มีการเชื่อมต่อ stdio ที่ค้างอยู่ผูกกับเซสชันที่ถูกลบ
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ x-i18n:
 - คิวนี้เป็นแบบสดเท่านั้น; มันเริ่มเมื่อ MCP bridge เริ่มทำงาน
 - `events_poll` และ `events_wait` จะไม่เล่นซ้ำประวัติ Gateway ที่เก่ากว่าด้วยตัวเอง
 - หากต้องการ backlog แบบคงทนควรอ่านด้วย `messages_read`
+
 </Warning>
 
 ### การแจ้งเตือน Claude channel
@@ -367,6 +369,7 @@ smoke นี้จะ:
     - runtime adapters จะเป็นผู้ตัดสินใจเองตอนรันจริงว่ารองรับรูปแบบ transport ใดบ้าง
     - Pi แบบฝังตัวจะเปิดเผย MCP tools ที่กำหนดค่าไว้ในโปรไฟล์เครื่องมือ `coding` และ `messaging` ตามปกติ; โปรไฟล์ `minimal` ยังซ่อนไว้อยู่ และ `tools.deny: ["bundle-mcp"]` จะปิดใช้งานอย่างชัดเจน
     - bundled MCP runtimes แบบผูกกับเซสชันจะถูกเก็บกวาดหลังจากไม่มีการใช้งานเป็นเวลา `mcp.sessionIdleTtlMs` มิลลิวินาที (ค่าเริ่มต้น 10 นาที; ตั้ง `0` เพื่อปิดใช้งาน) และการรันแบบฝังตัวชนิด one-shot จะทำความสะอาดเมื่อจบการรัน
+
   </Accordion>
 </AccordionGroup>
 

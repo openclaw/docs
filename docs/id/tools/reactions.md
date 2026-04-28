@@ -36,35 +36,42 @@ dengan aksi `react`. Perilaku reaksi berbeda-beda menurut channel.
   <Accordion title="Discord dan Slack">
     - `emoji` kosong menghapus semua reaksi bot pada pesan itu.
     - `remove: true` hanya menghapus emoji yang ditentukan.
+
   </Accordion>
 
   <Accordion title="Google Chat">
     - `emoji` kosong menghapus reaksi aplikasi pada pesan itu.
     - `remove: true` hanya menghapus emoji yang ditentukan.
+
   </Accordion>
 
   <Accordion title="Telegram">
     - `emoji` kosong menghapus reaksi bot.
     - `remove: true` juga menghapus reaksi tetapi tetap memerlukan `emoji` yang tidak kosong untuk validasi tool.
+
   </Accordion>
 
   <Accordion title="WhatsApp">
     - `emoji` kosong menghapus reaksi bot.
     - `remove: true` dipetakan ke emoji kosong secara internal (tetap memerlukan `emoji` dalam pemanggilan tool).
+
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - Memerlukan `emoji` yang tidak kosong.
     - `remove: true` menghapus reaksi emoji tertentu tersebut.
+
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - Gunakan tool `feishu_reaction` dengan aksi `add`, `remove`, dan `list`.
     - Add/remove memerlukan `emoji_type`; remove juga memerlukan `reaction_id`.
+
   </Accordion>
 
   <Accordion title="Signal">
     - Notifikasi reaksi masuk dikendalikan oleh `channels.signal.reactionNotifications`: `"off"` menonaktifkannya, `"own"` (default) memancarkan peristiwa saat pengguna bereaksi pada pesan bot, dan `"all"` memancarkan peristiwa untuk semua reaksi.
+
   </Accordion>
 </AccordionGroup>
 

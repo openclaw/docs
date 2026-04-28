@@ -51,6 +51,7 @@ openclaw gateway run
     - Kimlik doğrulama olmadan loopback ötesine bağlanma engellenir (güvenlik korkuluğu).
     - `SIGUSR1`, yetkili olduğunda süreç içi yeniden başlatmayı tetikler (`commands.restart` varsayılan olarak etkindir; elle yeniden başlatmayı engellemek için `commands.restart: false` ayarlayın; gateway tool/config apply/update ise izinli kalır).
     - `SIGINT`/`SIGTERM` işleyicileri gateway sürecini durdurur, ancak özel terminal durumunu geri yüklemez. CLI'yi bir TUI veya raw-mode girdiyle sarıyorsanız, çıkıştan önce terminali geri yükleyin.
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ Tüm sorgu komutları WebSocket RPC kullanır.
     - Varsayılan: insan tarafından okunabilir (TTY'de renkli).
     - `--json`: makine tarafından okunabilir JSON (stil/spinner yok).
     - `--no-color` (veya `NO_COLOR=1`): insan düzenini korurken ANSI'yi devre dışı bırak.
+
   </Tab>
   <Tab title="Paylaşılan seçenekler">
     - `--url <url>`: Gateway WebSocket URL'si.
@@ -136,6 +138,7 @@ Tüm sorgu komutları WebSocket RPC kullanır.
     - `--password <password>`: Gateway parolası.
     - `--timeout <ms>`: zaman aşımı/bütçe (komuta göre değişir).
     - `--expect-final`: "final" bir yanıt bekle (aracı çağrıları).
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="Gizlilik ve paket davranışı">
     - Kayıtlar operasyonel meta verileri tutar: olay adları, sayılar, bayt boyutları, bellek okumaları, kuyruk/oturum durumu, kanal/Plugin adları ve sansürlenmiş oturum özetleri. Sohbet metnini, Webhook gövdelerini, araç çıktılarını, ham istek veya yanıt gövdelerini, belirteçleri, çerezleri, gizli değerleri, ana makine adlarını veya ham oturum kimliklerini tutmazlar. Kaydediciyi tamamen devre dışı bırakmak için `diagnostics.enabled: false` ayarlayın.
     - Ölümcül Gateway çıkışlarında, kapanış zaman aşımlarında ve yeniden başlatma başlangıç hatalarında OpenClaw, kaydedicide olay varsa aynı tanılama anlık görüntüsünü `~/.openclaw/logs/stability/openclaw-stability-*.json` konumuna yazar. En yeni paketi `openclaw gateway stability --bundle latest` ile inceleyin; `--limit`, `--type` ve `--since-seq` paket çıktısına da uygulanır.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - Dinleyen bir hizmetin yeterli olmadığı ve okuma kapsamlı RPC çağrılarının da sağlıklı olması gerektiği betikler ve otomasyonlarda `--require-rpc` kullanın.
     - `--deep`, ek launchd/systemd/schtasks kurulumları için en iyi çabayla tarama ekler. Birden fazla gateway benzeri hizmet algılandığında, insan tarafından okunabilir çıktı temizlik ipuçları yazdırır ve çoğu kurulumun makine başına bir gateway çalıştırması gerektiği konusunda uyarır.
     - İnsan tarafından okunabilir çıktı, profil veya durum dizini kaymasını tanılamaya yardımcı olmak için çözümlenmiş dosya günlük yolunu ve CLI ile hizmet yapılandırma yolları/geçerlilik anlık görüntüsünü içerir.
+
   </Accordion>
   <Accordion title="Linux systemd auth-drift denetimleri">
     - Linux systemd kurulumlarında hizmet auth drift denetimleri, birimden hem `Environment=` hem `EnvironmentFile=` değerlerini okur (`%h`, tırnaklı yollar, birden fazla dosya ve isteğe bağlı `-` dosyaları dahil).
     - Drift denetimleri, birleştirilmiş çalışma zamanı env kullanarak `gateway.auth.token` SecretRef'lerini çözümler (önce hizmet komutu env, sonra süreç env geri dönüşü).
     - Belirteç kimlik doğrulaması fiilen etkin değilse (açık `gateway.auth.mode` değeri `password`/`none`/`trusted-proxy` ise veya mod ayarsız olup parolanın kazanabildiği ve hiçbir belirteç adayının kazanamadığı durumlarda), belirteç drift denetimleri yapılandırma belirteci çözümlemesini atlar.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - `Read probe: limited - missing scope: operator.read`, bağlantının başarılı olduğu ancak okuma kapsamlı RPC'nin sınırlı olduğu anlamına gelir. Bu, tam hata olarak değil **bozulmuş** erişilebilirlik olarak bildirilir.
     - `gateway status` gibi prob da mevcut önbelleğe alınmış cihaz kimlik doğrulamasını yeniden kullanır, ancak ilk kullanım cihaz kimliği veya eşleştirme durumu oluşturmaz.
     - Çıkış kodu yalnızca prob edilen hedeflerin hiçbiri erişilebilir değilse sıfır olmayan olur.
+
   </Accordion>
   <Accordion title="JSON çıktısı">
     Üst düzey:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: birden fazla hedef erişilebilirdi; kurtarma botu gibi izole profilleri kasıtlı olarak çalıştırmıyorsanız bu alışılmadıktır.
     - `auth_secretref_unresolved`: yapılandırılmış bir auth SecretRef, başarısız bir hedef için çözümlenemedi.
     - `probe_scope_limited`: WebSocket bağlantısı başarılı oldu, ancak okuma probu eksik `operator.read` nedeniyle sınırlıydı.
+
   </Accordion>
 </AccordionGroup>
 
@@ -434,6 +442,7 @@ openclaw gateway uninstall
     - `gateway status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
     - `gateway install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
     - `gateway uninstall|start|stop|restart`: `--json`
+
   </Accordion>
   <Accordion title="Hizmet kurulumu ve yaşam döngüsü notları">
     - `gateway install`, `--port`, `--runtime`, `--token`, `--force`, `--json` destekler.
@@ -444,6 +453,7 @@ openclaw gateway uninstall
     - Çıkarımsal kimlik doğrulama modunda yalnızca kabukta bulunan `OPENCLAW_GATEWAY_PASSWORD`, kurulum belirteç gereksinimlerini gevşetmez; yönetilen bir hizmet kurarken kalıcı yapılandırma (`gateway.auth.password` veya config `env`) kullanın.
     - Hem `gateway.auth.token` hem `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarsızsa, mod açıkça ayarlanana kadar kurulum engellenir.
     - Yaşam döngüsü komutları betikleme için `--json` kabul eder.
+
   </Accordion>
 </AccordionGroup>
 
@@ -490,6 +500,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - CLI, `local.` artı etkinse yapılandırılmış geniş alan etki alanını tarar.
 - JSON çıktısındaki `wsUrl`, `lanHost` veya `tailnetDns` gibi yalnızca TXT ipuçlarından değil, çözümlenmiş hizmet uç noktasından türetilir.
 - `local.` mDNS üzerinde `sshPort` ve `cliPath`, yalnızca `discovery.mdns.mode` değeri `full` olduğunda yayınlanır. Geniş alan DNS-SD yine de `cliPath` yazar; `sshPort` orada da isteğe bağlı kalır.
+
 </Note>
 
 ## İlgili

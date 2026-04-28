@@ -41,6 +41,7 @@ Solución de problemas: [Tareas programadas](/es/automation/cron-jobs#troublesho
     - Usa contexto bootstrap ligero si las ejecuciones de Heartbeat solo necesitan `HEARTBEAT.md`.
     - Habilita sesiones aisladas para evitar enviar el historial completo de conversación en cada Heartbeat.
     - Restringe Heartbeat a horas activas (hora local).
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Usa `accountId` para dirigir a una cuenta específica en canales multicuenta com
   - `main` (predeterminado): sesión principal del agente.
   - Clave de sesión explícita (copia desde `openclaw sessions --json` o la [CLI de sesiones](/es/cli/sessions)).
   - Formatos de clave de sesión: consulta [Sesiones](/es/concepts/session) y [Grupos](/es/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: entrega al último canal externo usado.
   - canal explícito: cualquier canal configurado o id de Plugin, por ejemplo `discord`, `matrix`, `telegram` o `whatsapp`.
   - `none` (predeterminado): ejecuta Heartbeat pero **no entrega** externamente.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Controla el comportamiento de entrega directa/DM. `allow`: permite entrega de Heartbeat en directo/DM. `block`: suprime la entrega directa/DM (`reason=dm-blocked`).
@@ -274,6 +277,7 @@ Usa `accountId` para dirigir a una cuenta específica en canales multicuenta com
   - Cualquier identificador IANA (por ejemplo `America/New_York`): se usa directamente; si no es válido, recurre al comportamiento `"user"` anterior.
   - `start` y `end` no deben ser iguales para una ventana activa; valores iguales se tratan como ancho cero (siempre fuera de la ventana).
   - Fuera de la ventana activa, Heartbeat se omite hasta el siguiente tick dentro de la ventana.
+
 </ParamField>
 
 ## Comportamiento de entrega
@@ -286,16 +290,19 @@ Usa `accountId` para dirigir a una cuenta específica en canales multicuenta com
     - Las entregas de Heartbeat permiten destinos directos/DM por defecto. Establece `directPolicy: "block"` para suprimir envíos a destinos directos mientras sigue ejecutándose el turno de Heartbeat.
     - Si la cola principal está ocupada, Heartbeat se omite y se reintenta más tarde.
     - Si `target` no se resuelve a ningún destino externo, la ejecución igualmente ocurre, pero no se envía ningún mensaje saliente.
+
   </Accordion>
   <Accordion title="Visibilidad y comportamiento de omisión">
     - Si `showOk`, `showAlerts` y `useIndicator` están todos deshabilitados, la ejecución se omite desde el principio como `reason=alerts-disabled`.
     - Si solo la entrega de alertas está deshabilitada, OpenClaw aún puede ejecutar Heartbeat, actualizar marcas de tiempo de tareas vencidas, restaurar la marca de tiempo de inactividad de la sesión y suprimir la carga útil de alerta saliente.
     - Si el destino resuelto de Heartbeat admite escritura, OpenClaw muestra escritura mientras la ejecución de Heartbeat está activa. Esto usa el mismo destino al que Heartbeat enviaría la salida de chat, y se deshabilita con `typingMode: "never"`.
+
   </Accordion>
   <Accordion title="Ciclo de vida de sesión y auditoría">
     - Las respuestas solo de Heartbeat **no** mantienen viva la sesión. Los metadatos de Heartbeat pueden actualizar la fila de la sesión, pero la expiración por inactividad usa `lastInteractionAt` del último mensaje real de usuario/canal, y la expiración diaria usa `sessionStartedAt`.
     - El historial de la UI de control y WebChat oculta los prompts de Heartbeat y los acuses solo-OK. La transcripción subyacente de la sesión puede seguir conteniendo esos turnos para auditoría/reproducción.
     - Las [tareas en segundo plano](/es/automation/tasks) desacopladas pueden poner en cola un evento del sistema y despertar a Heartbeat cuando la sesión principal deba notar algo rápidamente. Ese despertar no convierte la ejecución de Heartbeat en una tarea en segundo plano.
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - El contenido que no es tarea en `HEARTBEAT.md` se conserva y se anexa como contexto adicional después de la lista de tareas vencidas.
     - Las marcas de tiempo de última ejecución de tareas se almacenan en el estado de la sesión (`heartbeatTaskState`), por lo que los intervalos sobreviven a reinicios normales.
     - Las marcas de tiempo de tareas solo avanzan después de que una ejecución de Heartbeat completa su ruta normal de respuesta. Las ejecuciones omitidas `empty-heartbeat-file` / `no-tasks-due` no marcan tareas como completadas.
+
   </Accordion>
 </AccordionGroup>
 

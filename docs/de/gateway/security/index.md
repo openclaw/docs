@@ -301,6 +301,7 @@ Produktionsumgebungen deaktiviert.
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="Alle Schlüssel `dangerous*` / `dangerously*` im Konfigurationsschema">

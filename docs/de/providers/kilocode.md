@@ -125,6 +125,7 @@ erkannte Modelle vor dem statischen Fallback-Katalog zusammen. Der gebündelte F
     - Wenn die Modellerkennung beim Start fehlschlägt, fällt OpenClaw auf den gebündelten statischen Katalog zurück, der `kilocode/kilo/auto` enthält.
     - Bestätigen Sie, dass Ihr API-Key gültig ist und dass in Ihrem Kilo-Konto die gewünschten Modelle aktiviert sind.
     - Wenn das Gateway als Daemon läuft, stellen Sie sicher, dass `KILOCODE_API_KEY` diesem Prozess zur Verfügung steht (zum Beispiel in `~/.openclaw/.env` oder über `env.shellEnv`).
+
   </Accordion>
 </AccordionGroup>
 

@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="บอตไม่ตอบข้อความ">
     - **ตรวจสอบการควบคุมการเข้าถึง:** ตรวจสอบให้แน่ใจว่า user ID ของคุณอยู่ใน `allowFrom` หรือทดลองเอา `allowFrom` ออกชั่วคราวแล้วตั้ง `allowedRoles: ["all"]` เพื่อทดสอบ
     - **ตรวจสอบว่าบอตอยู่ในช่องแล้ว:** บอตต้องเข้าร่วมช่องที่ระบุไว้ใน `channel`
+
   </Accordion>
   <Accordion title="ปัญหาเกี่ยวกับ token">
     เกิดข้อผิดพลาด "Failed to connect" หรือข้อผิดพลาดการยืนยันตัวตน:

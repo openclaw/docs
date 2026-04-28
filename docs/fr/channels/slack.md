@@ -38,6 +38,7 @@ Prêt pour la production pour les messages privés et les canaux via les intégr
         - collez l’[exemple de manifeste](#manifest-and-scope-checklist) ci-dessous et poursuivez la création
         - générez un **App-Level Token** (`xapp-...`) avec `connections:write`
         - installez l’application et copiez le **Bot Token** (`xoxb-...`) affiché
+
       </Step>
 
       <Step title="Configurer OpenClaw">
@@ -623,6 +624,7 @@ Remarques :
     - `channels.slack.chunkMode="newline"` active un découpage privilégiant d’abord les paragraphes
     - les envois de fichiers utilisent les API de téléversement Slack et peuvent inclure des réponses dans les fils (`thread_ts`)
     - le plafond de média sortant suit `channels.slack.mediaMaxMb` lorsqu’il est configuré ; sinon, les envois du canal utilisent les valeurs par défaut par type MIME du pipeline média
+
   </Accordion>
 
   <Accordion title="Cibles de livraison">

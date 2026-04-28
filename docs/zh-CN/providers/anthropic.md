@@ -149,6 +149,7 @@ Anthropic 当前的公开文档：
 相关 Anthropic 文档：
 - [自适应思考](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [扩展思考](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## 提示缓存
@@ -211,6 +212,7 @@ OpenClaw 支持 Anthropic 针对 API key 认证提供的提示缓存功能。
     - Bedrock 上的 Anthropic Claude 模型（`amazon-bedrock/*anthropic.claude*`）在配置时接受 `cacheRetention` 透传。
     - 非 Anthropic 的 Bedrock 模型会在运行时被强制设为 `cacheRetention: "none"`。
     - 当未设置显式值时，API key 智能默认值也会为 Claude-on-Bedrock 引用填入 `cacheRetention: "short"`。
+
   </Accordion>
 </AccordionGroup>
 
@@ -243,6 +245,7 @@ OpenClaw 支持 Anthropic 针对 API key 认证提供的提示缓存功能。
     - 仅注入到直连 `api.anthropic.com` 的请求中。代理路由会保持 `service_tier` 不变。
     - 当同时设置时，显式的 `serviceTier` 或 `service_tier` 参数会覆盖 `/fast`。
     - 对于没有 Priority Tier 容量的账户，`service_tier: "auto"` 可能会解析为 `standard`。
+
     </Note>
 
   </Accordion>

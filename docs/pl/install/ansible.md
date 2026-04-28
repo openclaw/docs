@@ -184,6 +184,7 @@ Jest to operacja idempotentna i bezpieczna do wielokrotnego uruchamiania.
     - Upewnij się najpierw, że masz dostęp przez Tailscale VPN
     - Dostęp SSH (port 22) jest zawsze dozwolony
     - Gateway jest celowo dostępny tylko przez Tailscale
+
   </Accordion>
   <Accordion title="Usługa nie chce się uruchomić">
     ```bash

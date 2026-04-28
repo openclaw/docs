@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - eine GitHub-Repo-Kurzform wie `owner/repo`
     - eine GitHub-Repo-URL wie `https://github.com/owner/repo`
     - eine git-URL
+
   </Tab>
   <Tab title="Regeln für entfernte Marketplace">
     Für entfernte Marketplace, die aus GitHub oder git geladen werden, müssen Plugin-Einträge innerhalb des geklonten Marketplace-Repositorys bleiben. OpenClaw akzeptiert relative Pfadquellen aus diesem Repository und lehnt HTTP(S)-, absolute Pfad-, git-, GitHub- und andere Nicht-Pfad-Plugin-Quellen aus entfernten Manifesten ab.

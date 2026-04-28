@@ -33,6 +33,7 @@ x-i18n:
       - 設定のみ
       - 設定 + 認証情報 + session
       - 完全リセット（workspace も削除）
+
   </Step>
   <Step title="モデル/認証">
     - **Anthropic API キー**: 存在すれば `ANTHROPIC_API_KEY` を使い、なければキーの入力を求め、daemon で使えるよう保存します。
@@ -83,6 +84,7 @@ x-i18n:
     - デフォルトは `~/.openclaw/workspace`（設定可能）です。
     - エージェント bootstrap ritual に必要な workspace ファイルをシードします。
     - 完全な workspace レイアウト + バックアップガイド: [Agent workspace](/ja-JP/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Port、bind、auth mode、Tailscale 公開。
@@ -98,6 +100,7 @@ x-i18n:
       - `--gateway-token` とは併用できません。
     - すべてのローカルプロセスを完全に信頼している場合にのみ認証を無効化してください。
     - 非 loopback bind では引き続き認証が必要です。
+
   </Step>
   <Step title="Channels">
     - [WhatsApp](/ja-JP/channels/whatsapp): 任意の QR ログイン。
@@ -109,12 +112,14 @@ x-i18n:
     - [BlueBubbles](/ja-JP/channels/bluebubbles): **iMessage には推奨**。server URL + password + webhook。
     - [iMessage](/ja-JP/channels/imessage): レガシー `imsg` CLI パス + DB アクセス。
     - DM セキュリティ: デフォルトはペアリングです。最初の DM はコードを送信します。`openclaw pairing approve <channel> <code>` で承認するか、allowlist を使います。
+
   </Step>
   <Step title="Web 検索">
     - Brave、DuckDuckGo、Exa、Firecrawl、Gemini、Grok、Kimi、MiniMax Search、Ollama Web Search、Perplexity、SearXNG、Tavily などのサポート対象プロバイダーを選択します（またはスキップします）。
     - API バックのプロバイダーでは、クイックセットアップのために環境変数または既存設定を使えます。キーレスのプロバイダーでは、それぞれのプロバイダー固有の前提条件を使います。
     - `--skip-search` でスキップします。
     - 後で設定する場合: `openclaw configure --section web`。
+
   </Step>
   <Step title="Daemon インストール">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ x-i18n:
     - token 認証で token が必要かつ `gateway.auth.token` が SecretRef 管理されている場合、daemon インストールはそれを検証しますが、解決済みの平文 token 値を supervisor service 環境メタデータに永続保存しません。
     - token 認証で token が必要かつ設定済み token SecretRef が未解決の場合、daemon インストールは実行可能なガイダンス付きでブロックされます。
     - `gateway.auth.token` と `gateway.auth.password` の両方が設定されていて、`gateway.auth.mode` が未設定の場合、mode が明示的に設定されるまで daemon インストールはブロックされます。
+
   </Step>
   <Step title="ヘルスチェック">
     - 必要に応じて Gateway を起動し、`openclaw health` を実行します。
     - ヒント: `openclaw status --deep` は、サポートされる場合は channel probe を含むライブ gateway health probe を status 出力に追加します（到達可能な gateway が必要です）。
+
   </Step>
   <Step title="Skills（推奨）">
     - 利用可能な Skills を読み取り、要件を確認します。
     - node manager として **npm / pnpm** を選択できます（bun は推奨されません）。
     - 任意の依存関係をインストールします（一部は macOS で Homebrew を使います）。
+
   </Step>
   <Step title="完了">
     - 追加機能向けの iOS/Android/macOS アプリを含む、要約と次のステップ。
+
   </Step>
 </Steps>
 

@@ -93,6 +93,7 @@ Dreaming은 또한 `DREAMS.md`에 서술형 **Dream Diary**를 유지합니다. 
     - `memory rem-backfill --path ...`는 되돌릴 수 있는 근거 기반 diary 항목을 `DREAMS.md`에 기록합니다.
     - `memory rem-backfill --path ... --stage-short-term`는 정상 deep 단계가 이미 사용하는 동일한 단기 증거 저장소에 근거 기반 지속 후보를 준비합니다.
     - `memory rem-backfill --rollback` 및 `--rollback-short-term`는 일반 diary 항목이나 활성 단기 recall은 건드리지 않고 이러한 준비된 backfill 아티팩트를 제거합니다.
+
   </Accordion>
 </AccordionGroup>
 

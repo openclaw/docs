@@ -68,6 +68,7 @@ Gateway가 같은 컴퓨터에서 실행 중이라면 다음을 여세요.
 - `gateway.auth.allowTailscale: true`이고 Tailscale identity가 검증되며 브라우저가 device identity를 제시하면, Tailscale Serve는 Control UI operator 세션에서 pairing 왕복 과정을 건너뛸 수 있습니다.
 - 직접 Tailnet bind, LAN 브라우저 연결, device identity가 없는 브라우저 프로필은 여전히 명시적 승인이 필요합니다.
 - 각 브라우저 프로필은 고유한 device ID를 생성하므로, 브라우저를 바꾸거나 브라우저 데이터를 지우면 다시 pairing해야 합니다.
+
 </Note>
 
 ## 개인 identity (브라우저 로컬)
@@ -96,18 +97,21 @@ Control UI는 처음 로드될 때 브라우저 locale을 기반으로 스스로
     - Gateway WS를 통해 모델과 채팅 (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`)
     - 브라우저에서 WebRTC를 통해 OpenAI Realtime에 직접 연결해 Talk 모드 사용. Gateway는 `talk.realtime.session`으로 짧은 수명의 Realtime client secret을 발급하고, 브라우저는 마이크 오디오를 직접 OpenAI로 전송하며 `openclaw_agent_consult` 도구 호출은 더 큰 구성형 OpenClaw 모델을 위해 `chat.send`를 통해 다시 릴레이합니다.
     - Chat에서 도구 호출 + 라이브 도구 출력 카드 스트리밍(에이전트 이벤트)
+
   </Accordion>
   <Accordion title="채널, 인스턴스, 세션, Dreams">
     - Channels: 기본 제공 및 번들/외부 Plugin channel 상태, QR 로그인, channel별 config (`channels.status`, `web.login.*`, `config.patch`)
     - Instances: presence 목록 + 새로 고침 (`system-presence`)
     - Sessions: 목록 + 세션별 모델/thinking/fast/verbose/trace/reasoning 재정의 (`sessions.list`, `sessions.patch`)
     - Dreams: Dreaming 상태, 활성화/비활성화 토글, Dream Diary 읽기 (`doctor.memory.status`, `doctor.memory.dreamDiary`, `config.patch`)
+
   </Accordion>
   <Accordion title="Cron, Skills, 노드, exec 승인">
     - Cron 작업: 목록/추가/편집/실행/활성화/비활성화 + 실행 기록 (`cron.*`)
     - Skills: 상태, 활성화/비활성화, 설치, API key 업데이트 (`skills.*`)
     - Nodes: 목록 + capability (`node.list`)
     - Exec 승인: `exec host=gateway/node`에 대한 gateway 또는 node allowlist + ask 정책 편집 (`exec.approvals.*`)
+
   </Accordion>
   <Accordion title="구성">
     - `~/.openclaw/openclaw.json` 보기/편집 (`config.get`, `config.set`)
@@ -118,11 +122,13 @@ Control UI는 처음 로드될 때 브라우저 locale을 기반으로 스스로
     - 스냅샷이 raw 텍스트로 안전하게 왕복할 수 없으면, Control UI는 Form 모드를 강제하고 해당 스냅샷에 대해 Raw 모드를 비활성화합니다.
     - Raw JSON editor의 "Reset to saved"는 평탄화된 스냅샷을 다시 렌더링하는 대신 raw로 작성된 형태(포맷, 주석, `$include` 레이아웃)를 유지하므로, 스냅샷이 안전하게 왕복 가능한 경우 외부 편집 내용이 reset 후에도 살아남습니다.
     - 구조화된 SecretRef 객체 값은 실수로 객체가 문자열로 손상되는 것을 방지하기 위해 폼 텍스트 입력에서 읽기 전용으로 렌더링됩니다.
+
   </Accordion>
   <Accordion title="디버그, 로그, 업데이트">
     - Debug: 상태/헬스/모델 스냅샷 + 이벤트 로그 + 수동 RPC 호출 (`status`, `health`, `models.list`)
     - Logs: 필터/내보내기 기능이 있는 gateway 파일 로그 실시간 tail (`logs.tail`)
     - Update: 패키지/git 업데이트 + 재시작 실행 (`update.run`) 및 재시작 보고서
+
   </Accordion>
   <Accordion title="Cron 작업 패널 참고">
     - 격리된 작업의 경우 전달 기본값은 요약 알림입니다. 내부 전용 실행을 원하면 none으로 바꿀 수 있습니다.
@@ -133,6 +139,7 @@ Control UI는 처음 로드될 때 브라우저 locale을 기반으로 스스로
     - 폼 검증은 필드별 오류와 함께 인라인으로 동작하며, 잘못된 값이 있으면 수정할 때까지 저장 버튼이 비활성화됩니다.
     - 전용 bearer token을 보내려면 `cron.webhookToken`을 설정하세요. 생략하면 Webhook은 auth header 없이 전송됩니다.
     - deprecated 폴백: `notify: true`가 저장된 레거시 작업은 마이그레이션 전까지 여전히 `cron.webhook`을 사용할 수 있습니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -149,6 +156,7 @@ Control UI는 처음 로드될 때 브라우저 locale을 기반으로 스스로
     - `chat.inject`는 세션 transcript에 assistant note를 추가하고 UI 전용 업데이트를 위해 `chat` 이벤트를 브로드캐스트합니다(에이전트 실행 없음, channel 전달 없음).
     - 채팅 헤더의 모델 및 thinking 선택기는 `sessions.patch`를 통해 활성 세션에 즉시 patch됩니다. 이들은 한 턴 전용 전송 옵션이 아니라 지속적인 세션 재정의입니다.
     - 최신 Gateway 세션 사용량 보고가 높은 컨텍스트 압박을 보여주면, 채팅 입력 영역은 context notice를 표시하고, 권장 Compaction 수준에서는 일반 세션 Compaction 경로를 실행하는 compact 버튼을 표시합니다. 오래된 토큰 스냅샷은 Gateway가 새 사용량을 다시 보고할 때까지 숨겨집니다.
+
   </Accordion>
   <Accordion title="Talk 모드 (브라우저 WebRTC)">
     Talk 모드는 브라우저 WebRTC 세션을 지원하는 등록된 실시간 음성 provider를 사용합니다. `talk.provider: "openai"`와 `talk.providers.openai.apiKey`로 OpenAI를 구성하거나 Voice Call 실시간 provider config를 재사용하세요. 브라우저는 표준 OpenAI API key를 받지 않고 ephemeral Realtime client secret만 받습니다. Google Live 실시간 음성은 백엔드 Voice Call 및 Google Meet 브리지에서는 지원되지만, 이 브라우저 WebRTC 경로에서는 아직 지원되지 않습니다. Realtime 세션 프롬프트는 Gateway가 구성하며, `talk.realtime.session`은 호출자 제공 지침 재정의를 허용하지 않습니다.
@@ -161,11 +169,13 @@ Control UI는 처음 로드될 때 브라우저 locale을 기반으로 스스로
     - 실행 중에는 일반 후속 메시지가 큐에 들어갑니다. 큐에 있는 메시지의 **Steer**를 클릭하면 그 후속 메시지가 현재 실행 중인 턴에 주입됩니다.
     - `/stop`을 입력하거나(또는 `stop`, `stop action`, `stop run`, `stop openclaw`, `please stop` 같은 독립형 abort 구문) 대역 외 중지를 수행합니다.
     - `chat.abort`는 `{ sessionKey }`(`runId` 없이)를 지원하며, 해당 세션의 모든 활성 실행을 중지합니다.
+
   </Accordion>
   <Accordion title="Abort 부분 보존">
     - 실행이 중단되면, 부분적인 assistant 텍스트가 UI에 계속 표시될 수 있습니다.
     - Gateway는 버퍼링된 출력이 존재할 때 중단된 부분 assistant 텍스트를 transcript 기록에 저장합니다.
     - 저장된 항목에는 abort 메타데이터가 포함되므로 transcript 소비자는 abort 부분 출력과 정상 완료 출력을 구분할 수 있습니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -322,6 +332,7 @@ assistant 메시지는 `[embed ...]` shortcode를 사용해 호스팅된 웹 콘
     - 성공적인 trusted-proxy 인증은 device identity 없이도 **operator** Control UI 세션을 허용할 수 있습니다.
     - 이는 node-role Control UI 세션에는 확장되지 않습니다.
     - 같은 호스트의 loopback reverse proxy는 여전히 trusted-proxy 인증을 만족하지 않습니다. [Trusted proxy auth](/ko/gateway/trusted-proxy-auth)를 참고하세요.
+
   </Accordion>
 </AccordionGroup>
 
@@ -408,6 +419,7 @@ Control UI는 정적 파일이며, WebSocket 대상은 구성 가능하고 HTTP 
     - Gateway 시작 시 유효 런타임 bind와 포트를 기준으로 `http://localhost:<port>` 및 `http://127.0.0.1:<port>` 같은 로컬 origin을 자동 추가할 수 있지만, 원격 브라우저 origin은 여전히 명시적으로 추가해야 합니다.
     - `gateway.controlUi.allowedOrigins: ["*"]`는 엄격히 통제된 로컬 테스트가 아닌 경우 사용하지 마세요. 이것은 "현재 사용 중인 호스트와 일치"가 아니라 "모든 브라우저 origin 허용"을 의미합니다.
     - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true`는 Host-header origin 폴백 모드를 활성화하지만, 이는 위험한 보안 모드입니다.
+
   </Accordion>
 </AccordionGroup>
 

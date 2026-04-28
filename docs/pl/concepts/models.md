@@ -57,6 +57,7 @@ OpenClaw wybiera modele w tej kolejności:
     - `agents.defaults.musicGenerationModel` jest używany przez współdzieloną funkcję generowania muzyki. Jeśli nie jest ustawiony, `music_generate` nadal może wywnioskować domyślnego dostawcę opartego na uwierzytelnianiu. Najpierw próbuje bieżącego domyślnego dostawcy, potem pozostałych zarejestrowanych dostawców generowania muzyki w kolejności identyfikatorów dostawców. Jeśli ustawisz konkretnego dostawcę/model, skonfiguruj też uwierzytelnianie/klucz API tego dostawcy.
     - `agents.defaults.videoGenerationModel` jest używany przez współdzieloną funkcję generowania wideo. Jeśli nie jest ustawiony, `video_generate` nadal może wywnioskować domyślnego dostawcę opartego na uwierzytelnianiu. Najpierw próbuje bieżącego domyślnego dostawcy, potem pozostałych zarejestrowanych dostawców generowania wideo w kolejności identyfikatorów dostawców. Jeśli ustawisz konkretnego dostawcę/model, skonfiguruj też uwierzytelnianie/klucz API tego dostawcy.
     - Domyślne ustawienia per agent mogą nadpisywać `agents.defaults.model` przez `agents.list[].model` wraz z powiązaniami (zobacz [Multi-agent routing](/pl/concepts/multi-agent)).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Dzieje się to **przed** wygenerowaniem zwykłej odpowiedzi, więc może sprawia
 - Dodaniu modelu do `agents.defaults.models`, albo
 - Wyczyszczeniu allowlisty (usunięciu `agents.defaults.models`), albo
 - Wybraniu modelu z `/model list`.
+
 </Warning>
 
 Przykładowa konfiguracja allowlisty:
@@ -157,6 +159,7 @@ Możesz przełączać modele dla bieżącej sesji bez restartu:
     - Na Discord `/model` i `/models` otwierają interaktywny selektor z listami rozwijanymi dostawcy i modelu oraz krokiem Submit.
     - `/models add` jest wycofane i teraz zwraca komunikat o wycofaniu zamiast rejestrować modele z czatu.
     - `/model <#>` wybiera z tego selektora.
+
   </Accordion>
   <Accordion title="Trwałość i przełączanie na żywo">
     - `/model` natychmiast zapisuje nowy wybór sesji.
@@ -164,6 +167,7 @@ Możesz przełączać modele dla bieżącej sesji bez restartu:
     - Jeśli uruchomienie jest już aktywne, OpenClaw oznacza przełączenie na żywo jako oczekujące i restartuje się do nowego modelu dopiero w czystym punkcie ponowienia.
     - Jeśli aktywność narzędzia lub generowanie odpowiedzi już się rozpoczęły, oczekujące przełączenie może pozostać w kolejce do późniejszej okazji ponowienia albo do następnej tury użytkownika.
     - `/model status` to widok szczegółowy (kandydaci uwierzytelniania oraz, gdy skonfigurowano, `baseUrl` endpointu dostawcy + tryb `api`).
+
   </Accordion>
   <Accordion title="Parsowanie odwołań">
     - Odwołania do modeli są parsowane przez podział po **pierwszym** `/`. Używaj `provider/model` przy wpisywaniu `/model <ref>`.
@@ -233,6 +237,7 @@ Pokazuje rozwiązany model główny, fallbacki, model obrazu oraz przegląd uwie
     - Użyj `--check` do automatyzacji (kod wyjścia `1` przy braku/wygaśnięciu, `2` przy zbliżającym się wygaśnięciu).
     - Użyj `--probe` do aktywnych kontroli uwierzytelniania; wiersze prób mogą pochodzić z profili uwierzytelniania, poświadczeń env lub `models.json`.
     - Jeśli jawne `auth.order.<provider>` pomija zapisany profil, próba raportuje `excluded_by_auth_order` zamiast go testować. Jeśli uwierzytelnianie istnieje, ale nie da się rozwiązać modelu możliwego do sondowania dla tego dostawcy, próba raportuje `status: no_model`.
+
   </Accordion>
 </AccordionGroup>
 

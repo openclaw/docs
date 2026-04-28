@@ -135,11 +135,13 @@ ClawHub 默认开放——任何人都可以上传 Skills，但发布者的 GitH
     - 必须填写并记录举报原因。
     - 每位用户同时最多可有 20 个有效举报。
     - 被超过 3 位不同用户举报的 Skills 默认会被自动隐藏。
+
   </Accordion>
   <Accordion title="审核">
     - 审核员可以查看隐藏的 Skills、取消隐藏、删除它们，或封禁用户。
     - 滥用举报功能可能导致账号被封禁。
     - 有兴趣成为审核员？请到 OpenClaw Discord 中联系审核员或维护者。
+
   </Accordion>
 </AccordionGroup>
 
@@ -360,6 +362,7 @@ ClawHub 默认开放——任何人都可以上传 Skills，但发布者的 GitH
     - 每次发布都会创建一个新的 **semver** `SkillVersion`。
     - 标签（如 `latest`）指向某个版本；移动标签可让你回滚。
     - 变更日志按版本附加，在同步或发布更新时可以为空。
+
   </Accordion>
   <Accordion title="本地更改与注册表版本">
     更新会使用内容哈希将本地 Skill 内容与注册表版本进行比较。如果本地文件与任何已发布版本都不匹配，CLI 会在覆盖前询问（或在非交互式运行中要求使用 `--force`）。
@@ -370,6 +373,7 @@ ClawHub 默认开放——任何人都可以上传 Skills，但发布者的 GitH
   <Accordion title="存储和锁文件">
     - 已安装的 Skills 会记录在 workdir 下的 `.clawhub/lock.json` 中。
     - 认证令牌会存储在 ClawHub CLI 配置文件中（可通过 `CLAWHUB_CONFIG_PATH` 覆盖）。
+
   </Accordion>
   <Accordion title="遥测（安装计数）">
     当你在已登录状态下运行 `clawhub sync` 时，CLI 会发送一个最小快照以计算安装计数。你可以完全禁用此功能：

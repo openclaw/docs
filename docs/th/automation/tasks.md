@@ -114,6 +114,7 @@ Tasks **ไม่ได้**มาแทนที่เซสชัน งาน
     - Heartbeat turn — main-session; ดู [Heartbeat](/th/gateway/heartbeat)
     - แชตโต้ตอบแบบปกติ
     - การตอบกลับ `/command` โดยตรง
+
   </Accordion>
 </AccordionGroup>
 

@@ -97,6 +97,7 @@ Los comandos slash nativos son de activación opcional. Cuando se habilitan, Ope
     - Para configuraciones con varias cuentas, `commands` puede establecerse en el nivel superior o en `channels.mattermost.accounts.<id>.commands` (los valores de la cuenta sustituyen los campos de nivel superior).
     - Los callbacks de comandos se validan con los tokens por comando que Mattermost devuelve cuando OpenClaw registra comandos `oc_*`.
     - Los callbacks slash fallan de forma cerrada cuando el registro falló, el inicio fue parcial o el token del callback no coincide con uno de los comandos registrados.
+
   </Accordion>
   <Accordion title="Requisito de accesibilidad">
     El endpoint de callback debe ser accesible desde el servidor de Mattermost.
@@ -291,11 +292,13 @@ Habilítalo mediante `channels.mattermost.streaming`:
     - `block` usa fragmentos de borrador de estilo añadido dentro de la publicación de vista previa.
     - `progress` muestra una vista previa de estado mientras genera y solo publica la respuesta final al completarse.
     - `off` deshabilita el streaming de vista previa.
+
   </Accordion>
   <Accordion title="Notas de comportamiento del streaming">
     - Si el stream no puede finalizarse en su lugar (por ejemplo, si la publicación se eliminó a mitad del stream), OpenClaw recurre a enviar una nueva publicación final para que la respuesta nunca se pierda.
     - Las cargas solo de razonamiento se suprimen de las publicaciones del canal, incluido el texto que llega como cita en bloque `> Reasoning:`. Establece `/reasoning on` para ver el razonamiento en otras superficies; la publicación final de Mattermost mantiene solo la respuesta.
     - Consulta [Streaming](/es/concepts/streaming#preview-streaming-modes) para la matriz de mapeo de canales.
+
   </Accordion>
 </AccordionGroup>
 
@@ -369,6 +372,7 @@ Cuando un usuario hace clic en un botón:
     - Los callbacks de botones usan verificación HMAC-SHA256 (automática, no requiere configuración).
     - Mattermost elimina los datos de callback de sus respuestas de API (función de seguridad), por lo que todos los botones se eliminan al hacer clic; no es posible una eliminación parcial.
     - Los ID de acciones que contienen guiones o guiones bajos se sanean automáticamente (limitación de enrutamiento de Mattermost).
+
   </Accordion>
   <Accordion title="Configuración y accesibilidad">
     - `channels.mattermost.capabilities`: array de cadenas de capacidad. Añade `"inlineButtons"` para habilitar la descripción de la herramienta de botones en el prompt del sistema del agente.
@@ -377,6 +381,7 @@ Cuando un usuario hace clic en un botón:
     - Si se omite `interactions.callbackBaseUrl`, OpenClaw deriva la URL de callback a partir de `gateway.customBindHost` + `gateway.port`, y luego recurre a `http://localhost:<port>`.
     - Regla de accesibilidad: la URL de callback del botón debe ser accesible desde el servidor de Mattermost. `localhost` solo funciona cuando Mattermost y OpenClaw se ejecutan en el mismo host o espacio de nombres de red.
     - Si tu destino de callback es privado, de tailnet o interno, añade su host/dominio a `ServiceSettings.AllowedUntrustedInternalConnections` de Mattermost.
+
   </Accordion>
 </AccordionGroup>
 
@@ -472,6 +477,7 @@ context = {**ctx, "_token": token}
     - Firma siempre **todos** los campos del contexto (menos `_token`). El Gateway elimina `_token` y luego firma todo lo que queda. Firmar un subconjunto provoca un fallo silencioso de verificación.
     - Usa `sort_keys=True`; el Gateway ordena las claves antes de firmar, y Mattermost puede reordenar los campos del contexto al almacenar la carga.
     - Deriva el secreto a partir del token del bot (determinista), no de bytes aleatorios. El secreto debe ser el mismo en el proceso que crea los botones y en el Gateway que verifica.
+
   </Accordion>
 </AccordionGroup>
 
@@ -507,6 +513,7 @@ Mattermost admite varias cuentas en `channels.mattermost.accounts`:
   <Accordion title="Errores de autenticación o de varias cuentas">
     - Comprueba el token del bot, la URL base y si la cuenta está habilitada.
     - Problemas con varias cuentas: las variables de entorno solo se aplican a la cuenta `default`.
+
   </Accordion>
   <Accordion title="Fallan los comandos slash nativos">
     - `Unauthorized: invalid command token.`: OpenClaw no aceptó el token del callback. Causas típicas:
@@ -516,6 +523,7 @@ Mattermost admite varias cuentas en `channels.mattermost.accounts`:
       - el Gateway se reinició sin reactivar los comandos slash
     - Si los comandos slash nativos dejan de funcionar, revisa los logs en busca de `mattermost: failed to register slash commands` o `mattermost: native slash commands enabled but no commands could be registered`.
     - Si se omite `callbackUrl` y los logs advierten que el callback se resolvió a `http://127.0.0.1:18789/...`, probablemente esa URL solo sea accesible cuando Mattermost se ejecuta en el mismo host o espacio de nombres de red que OpenClaw. En su lugar, establece un `commands.callbackUrl` explícito y accesible externamente.
+
   </Accordion>
   <Accordion title="Problemas con botones">
     - Los botones aparecen como cuadros blancos: el agente puede estar enviando datos de botones mal formados. Comprueba que cada botón tenga los campos `text` y `callback_data`.
@@ -525,6 +533,7 @@ Mattermost admite varias cuentas en `channels.mattermost.accounts`:
     - El Gateway registra `missing _token in context`: el campo `_token` no está en el contexto del botón. Asegúrate de incluirlo al construir la carga de integración.
     - La confirmación muestra un ID sin procesar en lugar del nombre del botón: `context.action_id` no coincide con el `id` del botón. Establece ambos con el mismo valor saneado.
     - El agente no conoce los botones: añade `capabilities: ["inlineButtons"]` a la configuración del canal Mattermost.
+
   </Accordion>
 </AccordionGroup>
 

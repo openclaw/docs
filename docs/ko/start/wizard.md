@@ -55,9 +55,11 @@ CLI 온보딩에는 Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniM
     - DM 격리 기본값: 로컬 온보딩은 설정되지 않은 경우 `session.dmScope: "per-channel-peer"`를 기록합니다. 자세한 내용: [CLI 설정 참조](/ko/start/wizard-cli-reference#outputs-and-internals)
     - Tailscale 노출 **끄기**
     - Telegram + WhatsApp DM 기본값은 **allowlist** (전화번호를 묻는 프롬프트가 표시됨)
+
   </Tab>
   <Tab title="Advanced (전체 제어)">
     - 모든 단계(mode, workspace, gateway, channels, daemon, skills)를 노출합니다.
+
   </Tab>
 </Tabs>
 

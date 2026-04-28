@@ -68,6 +68,7 @@ Jeśli rozumienie zawiedzie albo jest wyłączone, **przepływ odpowiedzi jest k
       - polityka `attachments` (`mode`, `maxAttachments`, `prefer`)
       - `scope` (opcjonalne bramkowanie według channel/chatType/session key)
     - `tools.media.concurrency`: maksymalna liczba równoczesnych uruchomień możliwości (domyślnie **2**).
+
   </Accordion>
 </AccordionGroup>
 
@@ -164,6 +165,7 @@ Zalecane ustawienia domyślne:
     - Jeśli primary model Gateway/WebChat jest tylko tekstowy, załączniki obrazów są zachowywane jako referencje offloaded `media://inbound/*`, aby narzędzia obraz/PDF lub skonfigurowany image model nadal mogły je sprawdzić zamiast tracić załącznik.
     - Jawne żądania `openclaw infer image describe --model <provider/model>` są inne: uruchamiają bezpośrednio ten dostawcę/model zdolny do obsługi obrazów, w tym referencje Ollama takie jak `ollama/qwen2.5vl:7b`.
     - Jeśli `<capability>.enabled: true`, ale nie skonfigurowano modeli, OpenClaw próbuje **aktywnego modelu odpowiedzi**, gdy dostawca obsługuje tę możliwość.
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +266,7 @@ Dla wpisów CLI **ustaw `capabilities` jawnie**, aby uniknąć zaskakujących do
 
 - Rozumienie obrazów `minimax` i `minimax-portal` pochodzi z dostawcy multimediów `MiniMax-VL-01` należącego do pluginu.
 - Dołączony katalog tekstowy MiniMax nadal zaczyna jako tylko tekstowy; jawne wpisy `models.providers.minimax` materializują referencje czatu M2.7 zdolne do obsługi obrazów.
+
 </Note>
 
 ## Wskazówki dotyczące wyboru modeli
@@ -297,6 +300,7 @@ Gdy `mode: "all"`, wyniki są oznaczane jako `[Image 1/2]`, `[Audio 2/2]` itd.
     - Ta ścieżka ekstrakcji załączników celowo pomija długi baner `SECURITY NOTICE:`, aby nie rozdymać promptu multimedialnego; znaczniki granic i metadane nadal jednak pozostają.
     - Jeśli plik nie ma tekstu nadającego się do wyodrębnienia, OpenClaw wstrzykuje `[No extractable text]`.
     - Jeśli PDF na tej ścieżce przechodzi awaryjnie do renderowanych obrazów stron, prompt multimedialny zachowuje placeholder `[PDF content rendered to images; images not forwarded to model]`, ponieważ ten krok ekstrakcji załączników przekazuje bloki tekstowe, a nie renderowane obrazy PDF.
+
   </Accordion>
 </AccordionGroup>
 

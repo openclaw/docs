@@ -124,6 +124,7 @@ provider 선택, failover 동작은 [비디오 생성](/ko/tools/video-generatio
     - 모델이 나타나지 않으면, API 키가 Gateway 프로세스에 맞는
       환경에 설정되었는지 확인하세요.
     - 모델 참조 형식은 `together/<model-id>`입니다.
+
   </Accordion>
 </AccordionGroup>
 

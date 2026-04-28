@@ -289,6 +289,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `system-event` hängt ein Systemereignis an und kann den Presence-Kontext aktualisieren/broadcasten.
     - `last-heartbeat` gibt das zuletzt persistent gespeicherte Heartbeat-Ereignis zurück.
     - `set-heartbeats` schaltet die Heartbeat-Verarbeitung auf dem Gateway um.
+
   </Accordion>
 
   <Accordion title="Modelle und Nutzung">
@@ -299,6 +300,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `sessions.usage` gibt Nutzungszusammenfassungen pro Sitzung zurück.
     - `sessions.usage.timeseries` gibt Zeitreihen der Nutzung für eine Sitzung zurück.
     - `sessions.usage.logs` gibt Nutzungslokaleinträge für eine Sitzung zurück.
+
   </Accordion>
 
   <Accordion title="Kanäle und Login-Helfer">
@@ -309,11 +311,13 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `push.test` sendet einen APNs-Test-Push an einen registrierten iOS-Node.
     - `voicewake.get` gibt die gespeicherten Wake-Word-Trigger zurück.
     - `voicewake.set` aktualisiert Wake-Word-Trigger und broadcastet die Änderung.
+
   </Accordion>
 
   <Accordion title="Nachrichten und Logs">
     - `send` ist die direkte RPC für ausgehende Zustellung an Kanal-/Konto-/Thread-Ziele außerhalb des Chat-Runners.
     - `logs.tail` gibt das konfigurierte Gateway-Dateilog-Tail mit Cursor-/Limit- und Max-Byte-Steuerung zurück.
+
   </Accordion>
 
   <Accordion title="Talk und TTS">
@@ -325,6 +329,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `tts.enable` und `tts.disable` schalten den TTS-Präferenzstatus um.
     - `tts.setProvider` aktualisiert den bevorzugten TTS-Provider.
     - `tts.convert` führt eine einmalige Text-zu-Sprache-Konvertierung aus.
+
   </Accordion>
 
   <Accordion title="Secrets, Konfiguration, Update und Assistent">
@@ -338,6 +343,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `config.schema.lookup` gibt eine pfadbezogene Lookup-Payload für einen Konfigurationspfad zurück: normalisierter Pfad, ein flacher Schemaknoten, passender Hint + `hintPath` sowie Zusammenfassungen der unmittelbaren Kindknoten für Drill-down in UI/CLI. Lookup-Schemaknoten behalten die benutzerseitige Dokumentation und gängige Validierungsfelder (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, numerische/String-/Array-/Objektgrenzen und Flags wie `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Kindzusammenfassungen stellen `key`, normalisierten `path`, `type`, `required`, `hasChildren` sowie den passenden `hint` / `hintPath` bereit.
     - `update.run` führt den Gateway-Update-Ablauf aus und plant einen Neustart nur dann, wenn das Update selbst erfolgreich war.
     - `wizard.start`, `wizard.next`, `wizard.status` und `wizard.cancel` stellen den Onboarding-Assistenten über WS RPC bereit.
+
   </Accordion>
 
   <Accordion title="Agenten- und Workspace-Helfer">
@@ -346,6 +352,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `agents.files.list`, `agents.files.get` und `agents.files.set` verwalten die Bootstrap-Workspace-Dateien, die für einen Agenten bereitgestellt werden.
     - `agent.identity.get` gibt die effektive Assistenten-Identität für einen Agenten oder eine Sitzung zurück.
     - `agent.wait` wartet, bis ein Lauf beendet ist, und gibt den terminalen Snapshot zurück, wenn verfügbar.
+
   </Accordion>
 
   <Accordion title="Sitzungssteuerung">
@@ -362,6 +369,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `sessions.reset`, `sessions.delete` und `sessions.compact` führen Sitzungswartung aus.
     - `sessions.get` gibt die vollständige gespeicherte Sitzungszeile zurück.
     - Die Chat-Ausführung verwendet weiterhin `chat.history`, `chat.send`, `chat.abort` und `chat.inject`. `chat.history` ist für UI-Clients anzeige-normalisiert: Inline-Direktiv-Tags werden aus sichtbarem Text entfernt, XML-Payloads von Tool-Aufrufen im Klartext (einschließlich `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` und gekürzter Tool-Call-Blöcke) sowie durchgesickerte ASCII-/vollbreite Modell-Steuer-Tokens werden entfernt, reine stille Assistant-Zeilen wie exaktes `NO_REPLY` / `no_reply` werden ausgelassen, und übergroße Zeilen können durch Platzhalter ersetzt werden.
+
   </Accordion>
 
   <Accordion title="Gerätekopplung und Gerätetokens">
@@ -369,6 +377,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `device.pair.approve`, `device.pair.reject` und `device.pair.remove` verwalten Gerätekopplungs-Datensätze.
     - `device.token.rotate` rotiert ein gepaartes Gerätetoken innerhalb seiner genehmigten Rolle und der Bereichsgrenzen des Aufrufers.
     - `device.token.revoke` widerruft ein gepaartes Gerätetoken innerhalb seiner genehmigten Rolle und der Bereichsgrenzen des Aufrufers.
+
   </Accordion>
 
   <Accordion title="Node-Kopplung, Invoke und ausstehende Arbeit">
@@ -381,6 +390,7 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `node.canvas.capability.refresh` aktualisiert bereichsgebundene Canvas-Fähigkeitstokens.
     - `node.pending.pull` und `node.pending.ack` sind die Queue-APIs für verbundene Nodes.
     - `node.pending.enqueue` und `node.pending.drain` verwalten dauerhafte ausstehende Arbeit für offline/getrennte Nodes.
+
   </Accordion>
 
   <Accordion title="Genehmigungsfamilien">
@@ -389,11 +399,13 @@ Aufzählung von `src/gateway/server-methods/*.ts`.
     - `exec.approvals.get` und `exec.approvals.set` verwalten Snapshots der Gateway-Exec-Genehmigungsrichtlinie.
     - `exec.approvals.node.get` und `exec.approvals.node.set` verwalten die node-lokale Exec-Genehmigungsrichtlinie über Node-Relay-Befehle.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` und `plugin.approval.resolve` decken von Plugins definierte Genehmigungsabläufe ab.
+
   </Accordion>
 
   <Accordion title="Automatisierung, Skills und Tools">
     - Automatisierung: `wake` plant das Einspeisen eines unmittelbaren oder beim nächsten Heartbeat erfolgenden Wake-Textes; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` verwalten geplante Arbeit.
     - Skills und Tools: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

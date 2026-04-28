@@ -133,6 +133,7 @@ Achten Sie auf Folgendes:
     - `messages[...].content: invalid type: sequence, expected a string` → Backend lehnt strukturierte Inhalte für Chat-Completions ab. Behebung: Setzen Sie `models.providers.<provider>.models[].compat.requiresStringContent: true`.
     - direkte kleine Anfragen funktionieren, aber OpenClaw-Agent-Läufe schlagen mit Backend-/Modellabstürzen fehl (zum Beispiel Gemma auf einigen `inferrs`-Builds) → Der OpenClaw-Transport ist wahrscheinlich bereits korrekt; das Backend schlägt bei der größeren Prompt-Form der Agent-Laufzeit fehl.
     - Fehler werden seltener, nachdem Tools deaktiviert wurden, verschwinden aber nicht → Tool-Schemas haben zum Druck beigetragen, aber das verbleibende Problem ist weiterhin eine Begrenzung des Upstream-Modells/Servers oder ein Backend-Fehler.
+
   </Accordion>
   <Accordion title="Behebungsoptionen">
     1. Setzen Sie `compat.requiresStringContent: true` für string-only-Backends von Chat Completions.
@@ -209,6 +210,7 @@ Achten Sie auf Folgendes:
     - `too many failed authentication attempts (retry later)` von einem loopback-Client mit Browser-Origin → wiederholte Fehler von demselben normalisierten `Origin` werden vorübergehend gesperrt; ein anderer localhost-Origin verwendet einen separaten Bucket.
     - wiederholt `unauthorized` nach diesem Wiederholungsversuch → Drift bei gemeinsamem Token/Geräte-Token; aktualisieren Sie die Token-Konfiguration und genehmigen/rotieren Sie das Geräte-Token bei Bedarf erneut.
     - `gateway connect failed:` → falscher Host/Port/falsches URL-Ziel.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,6 +290,7 @@ Achten Sie auf Folgendes:
     - `refusing to bind gateway ... without auth` → Bindung ohne loopback ohne gültigen Gateway-Authentifizierungspfad (Token/Passwort oder, falls konfiguriert, trusted-proxy).
     - `another gateway instance is already listening` / `EADDRINUSE` → Portkonflikt.
     - `Other gateway-like services detected (best effort)` → veraltete oder parallele launchd-/systemd-/schtasks-Units existieren. In den meisten Setups sollte es nur ein Gateway pro Maschine geben; wenn Sie wirklich mehr als eines benötigen, isolieren Sie Ports + Konfiguration/Zustand/Workspace. Siehe [/gateway#multiple-gateways-same-host](/de/gateway#multiple-gateways-same-host).
+
   </Accordion>
 </AccordionGroup>
 
@@ -323,6 +326,7 @@ Achten Sie auf Folgendes:
     - Die aktive Konfiguration wurde aus der zuletzt validierten letzten bekannten funktionierenden Kopie wiederhergestellt.
     - Der nächste Turn des Haupt-Agenten wird gewarnt, die abgelehnte Konfiguration nicht blind neu zu schreiben.
     - Wenn alle Validierungsprobleme unter `plugins.entries.<id>...` lagen, würde OpenClaw nicht die gesamte Datei wiederherstellen. Plugin-lokale Fehler bleiben laut sichtbar, während nicht zusammenhängende Benutzereinstellungen in der aktiven Konfiguration erhalten bleiben.
+
   </Accordion>
   <Accordion title="Prüfen und reparieren">
     ```bash
@@ -339,6 +343,7 @@ Achten Sie auf Folgendes:
     - `Config write rejected:` → der Schreibvorgang hätte versucht, erforderliche Form zu entfernen, die Datei stark zu verkleinern oder eine ungültige Konfiguration zu persistieren.
     - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good` oder `size-drop-vs-last-good:*` → beim Start wurde die aktuelle Datei als überschrieben behandelt, weil Felder oder Größe im Vergleich zum zuletzt bekannten funktionierenden Backup fehlten.
     - `Config last-known-good promotion skipped` → der Kandidat enthielt redigierte Secret-Platzhalter wie `***`.
+
   </Accordion>
   <Accordion title="Behebungsoptionen">
     1. Behalten Sie die wiederhergestellte aktive Konfiguration bei, wenn sie korrekt ist.
@@ -442,6 +447,7 @@ Achten Sie auf Folgendes:
     - `heartbeat skipped` mit `reason=no-tasks-due` → `HEARTBEAT.md` enthält einen Block `tasks:`, aber keine der Aufgaben ist bei diesem Tick fällig.
     - `heartbeat: unknown accountId` → ungültige Konto-ID für das Heartbeat-Zustellziel.
     - `heartbeat skipped` mit `reason=dm-blocked` → Heartbeat-Ziel wurde zu einem DM-artigen Ziel aufgelöst, während `agents.defaults.heartbeat.directPolicy` (oder die agentbezogene Überschreibung) auf `block` gesetzt ist.
+
   </Accordion>
 </AccordionGroup>
 
@@ -510,12 +516,14 @@ Achten Sie auf Folgendes:
     - `browser.cdpUrl must be http(s) or ws(s)` → die konfigurierte CDP-URL verwendet ein nicht unterstütztes Schema wie `file:` oder `ftp:`.
     - `browser.cdpUrl has invalid port` → die konfigurierte CDP-URL hat einen ungültigen oder außerhalb des zulässigen Bereichs liegenden Port.
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → der aktuellen Gateway-Installation fehlt die Laufzeitabhängigkeit `playwright-core` des gebündelten Browser-Plugins; führen Sie `openclaw doctor --fix` aus und starten Sie dann das Gateway neu. ARIA-Snapshots und einfache Seitenscreenshots können weiterhin funktionieren, aber Navigation, KI-Snapshots, Element-Screenshots über CSS-Selektoren und PDF-Export bleiben nicht verfügbar.
+
   </Accordion>
   <Accordion title="Signaturen von Chrome MCP / existing-session">
     - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session konnte noch nicht an das ausgewählte Browser-Datenverzeichnis angehängt werden. Öffnen Sie die Browser-Inspect-Seite, aktivieren Sie Remote-Debugging, lassen Sie den Browser geöffnet, genehmigen Sie die erste Aufforderung zum Anhängen und versuchen Sie es dann erneut. Wenn ein angemeldeter Zustand nicht erforderlich ist, bevorzugen Sie das verwaltete Profil `openclaw`.
     - `No Chrome tabs found for profile="user"` → das Chrome-MCP-Attach-Profil hat keine offenen lokalen Chrome-Tabs.
     - `Remote CDP for profile "<name>" is not reachable` → der konfigurierte entfernte CDP-Endpunkt ist vom Gateway-Host aus nicht erreichbar.
     - `Browser attachOnly is enabled ... not reachable` oder `Browser attachOnly is enabled and CDP websocket ... is not reachable` → das Profil nur zum Anhängen hat kein erreichbares Ziel, oder der HTTP-Endpunkt hat geantwortet, aber das CDP-WebSocket konnte trotzdem nicht geöffnet werden.
+
   </Accordion>
   <Accordion title="Signaturen für Element / Screenshot / Upload">
     - `fullPage is not supported for element screenshots` → Screenshot-Anfrage mischt `--full-page` mit `--ref` oder `--element`.
@@ -527,6 +535,7 @@ Achten Sie auf Folgendes:
     - `existing-session evaluate does not support timeoutMs overrides.` → lassen Sie `timeoutMs` für `act:evaluate` bei Profilen `profile="user"` / Chrome-MCP-existing-session weg oder verwenden Sie ein verwaltetes/CDP-Browser-Profil, wenn ein benutzerdefiniertes Timeout erforderlich ist.
     - `response body is not supported for existing-session profiles yet.` → `responsebody` erfordert weiterhin ein verwaltetes Browser- oder rohes CDP-Profil.
     - veraltete Überschreibungen für Viewport / Dark Mode / Locale / Offline auf Profilen nur zum Anhängen oder entfernten CDP-Profilen → führen Sie `openclaw browser stop --browser-profile <name>` aus, um die aktive Kontrollsitzung zu schließen und den Emulationszustand von Playwright/CDP freizugeben, ohne das gesamte Gateway neu zu starten.
+
   </Accordion>
 </AccordionGroup>
 

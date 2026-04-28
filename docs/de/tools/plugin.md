@@ -146,6 +146,7 @@ Plugin-Discovery fehlschlagen, statt stillschweigend auf Quellpfade zurückzufal
   <Accordion title="Memory-Plugins">
     - `memory-core` — gebündelte Memory-Suche (Standard über `plugins.slots.memory`)
     - `memory-lancedb` — bei Bedarf installierbarer Langzeitspeicher mit automatischem Recall/Capture (setzen Sie `plugins.slots.memory = "memory-lancedb"`)
+
   </Accordion>
 
   <Accordion title="Sprach-Provider (standardmäßig aktiviert)">
@@ -155,6 +156,7 @@ Plugin-Discovery fehlschlagen, statt stillschweigend auf Quellpfade zurückzufal
   <Accordion title="Weitere">
     - `browser` — gebündeltes Browser-Plugin für das Browser-Tool, die CLI `openclaw browser`, die Gateway-Methode `browser.request`, die Browser-Laufzeit und den Standard-Browser-Control-Service (standardmäßig aktiviert; vor dem Ersetzen deaktivieren)
     - `copilot-proxy` — VS Code Copilot Proxy Bridge (standardmäßig deaktiviert)
+
   </Accordion>
 </AccordionGroup>
 
@@ -204,6 +206,7 @@ oder verwenden Sie `openclaw gateway restart` für das laufende Gateway.
   - **Deaktiviert**: Plugin existiert, aber Aktivierungsregeln haben es ausgeschaltet. Die Konfiguration bleibt erhalten.
   - **Fehlend**: Die Konfiguration verweist auf eine Plugin-ID, die Discovery nicht gefunden hat.
   - **Ungültig**: Plugin existiert, aber seine Konfiguration entspricht nicht dem deklarierten Schema.
+
 </Accordion>
 
 ## Discovery und Priorität

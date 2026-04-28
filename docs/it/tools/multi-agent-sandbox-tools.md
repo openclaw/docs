@@ -232,6 +232,7 @@ L'ordine di filtraggio è:
     - Se `agents.list[].tools.sandbox.tools` è impostato, sostituisce `tools.sandbox.tools` per quell'agente.
     - Se `agents.list[].tools.profile` è impostato, sovrascrive `tools.profile` per quell'agente.
     - Le chiavi dei tool del provider accettano sia `provider` (ad esempio `google-antigravity`) sia `provider/model` (ad esempio `openai/gpt-5.4`).
+
   </Accordion>
   <Accordion title="Comportamento di allowlist vuota">
     Se una allowlist esplicita in quella catena lascia l'esecuzione senza tool richiamabili, OpenClaw si ferma prima di inviare il prompt al modello. Questo è intenzionale: un agente configurato con un tool mancante come `agents.list[].tools.allow: ["query_db"]` dovrebbe fallire in modo evidente finché non viene abilitato il plugin che registra `query_db`, non continuare come agente solo testo.
@@ -360,6 +361,7 @@ Dopo aver configurato sandbox e tool multi-agente:
   <Step title="Testa le restrizioni dei tool">
     - Invia un messaggio che richieda tool con restrizioni.
     - Verifica che l'agente non possa usare i tool negati.
+
   </Step>
   <Step title="Monitora i log">
     ```bash
@@ -376,15 +378,18 @@ Dopo aver configurato sandbox e tool multi-agente:
   <Accordion title="L'agente non usa la sandbox nonostante `mode: 'all'`">
     - Controlla se esiste `agents.defaults.sandbox.mode` globale che lo sovrascrive.
     - La configurazione specifica dell'agente ha precedenza, quindi imposta `agents.list[].sandbox.mode: "all"`.
+
   </Accordion>
   <Accordion title="I tool sono ancora disponibili nonostante la deny list">
     - Controlla l'ordine di filtraggio dei tool: globale → agente → sandbox → subagent.
     - Ogni livello può solo restringere ulteriormente, non restituire accesso.
     - Verifica con i log: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="Il container non è isolato per agente">
     - Imposta `scope: "agent"` nella configurazione della sandbox specifica dell'agente.
     - Il valore predefinito è `"session"`, che crea un container per sessione.
+
   </Accordion>
 </AccordionGroup>
 

@@ -126,6 +126,7 @@ la sélection du fournisseur et le comportement de basculement.
     - Si les modèles n’apparaissent pas, confirmez que la clé API est définie dans le bon
       environnement pour votre processus Gateway.
     - Les références de modèle utilisent la forme `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

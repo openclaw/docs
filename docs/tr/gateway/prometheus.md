@@ -136,6 +136,7 @@ Yol Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese
     - ham sağlayıcı istek kimlikleri (yalnızca geçerliyse sınırlı karmalar span'lerde bulunur — metriklerde asla)
     - oturum anahtarları ve oturum kimlikleri
     - host adları, dosya yolları, gizli değerler
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ OpenClaw her iki yüzeyi de bağımsız olarak destekler. Bunlardan birini, ikis
     - Normal Gateway kimlik doğrulaması üzerinden doğrulanır.
     - Yüzey yalnızca metriklerden oluşur (iz veya günlük yoktur).
     - Zaten Prometheus + Grafana üzerinde standartlaşmış yığınlar için en uygunudur.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - **Push** modeli: OpenClaw, bir toplayıcıya veya OTLP uyumlu arka uca OTLP/HTTP gönderir.
     - Yüzey metrikler, izler ve günlükleri içerir.
     - Her ikisine de ihtiyaç duyduğunuzda bir OpenTelemetry Collector (`prometheus` veya `prometheusremotewrite` dışa aktarıcısı) üzerinden Prometheus'a köprü kurar.
     - Tam katalog için bkz. [OpenTelemetry dışa aktarma](/tr/gateway/opentelemetry).
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ OpenClaw her iki yüzeyi de bağımsız olarak destekler. Bunlardan birini, ikis
     - Yapılandırmada `diagnostics.enabled: true` değerini kontrol edin.
     - `openclaw plugins list --enabled` ile Plugin'in etkin ve yüklü olduğunu doğrulayın.
     - Biraz trafik oluşturun; sayaçlar ve histogramlar ancak en az bir olaydan sonra satır yayar.
+
   </Accordion>
   <Accordion title="401 / yetkisiz">
     Uç nokta Gateway operatör kapsamını gerektirir (`auth: "gateway"` ve `gatewayRuntimeScopeSurface: "trusted-operator"`). Prometheus'un diğer herhangi bir Gateway operatör yolu için kullandığı aynı token'ı veya parolayı kullanın. Herkese açık kimlik doğrulamasız kip yoktur.

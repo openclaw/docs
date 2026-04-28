@@ -32,6 +32,7 @@ To nie jest idealna granica bezpieczeństwa, ale w istotny sposób ogranicza dos
     - Dostęp obserwatora noVNC jest domyślnie chroniony hasłem; OpenClaw emituje krótkotrwały URL z tokenem, który serwuje lokalną stronę bootstrap i otwiera noVNC z hasłem w fragmencie URL, a nie w logach query/header.
     - `agents.defaults.sandbox.browser.allowHostControl` pozwala sesjom sandboxowanym jawnie kierować się do przeglądarki hosta.
     - Opcjonalne listy dozwolonych ograniczają `target: "custom"`: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ Użyj `backend: "ssh"`, gdy chcesz, aby OpenClaw sandboxował `exec`, narzędzia
     - Przy pierwszym użyciu po utworzeniu lub odtworzeniu OpenClaw jednorazowo zasiewa ten zdalny workspace z lokalnego workspace.
     - Następnie `exec`, `read`, `write`, `edit`, `apply_patch`, odczyty mediów promptów i etapowanie mediów przychodzących działają bezpośrednio na zdalnym workspace przez SSH.
     - OpenClaw nie synchronizuje automatycznie zmian zdalnych z powrotem do lokalnego workspace.
+
   </Accordion>
   <Accordion title="Materiał uwierzytelniający">
     - `identityFile`, `certificateFile`, `knownHostsFile`: używają istniejących plików lokalnych i przekazują je przez konfigurację OpenSSH.
     - `identityData`, `certificateData`, `knownHostsData`: używają ciągów inline lub SecretRefs. OpenClaw rozwiązuje je przez zwykłą migawkę środowiska wykonawczego sekretów, zapisuje do plików tymczasowych z `0600` i usuwa, gdy sesja SSH się kończy.
     - Jeśli dla tego samego elementu ustawiono zarówno `*File`, jak i `*Data`, dla tej sesji SSH wygrywa `*Data`.
+
   </Accordion>
   <Accordion title="Konsekwencje modelu zdalnie kanonicznego">
     To model **zdalnie kanoniczny**. Zdalny workspace SSH staje się rzeczywistym stanem sandboxu po początkowym zasianiu.
@@ -205,11 +208,13 @@ Tryby OpenShell:
     - OpenClaw prosi OpenShell o konfigurację SSH specyficzną dla sandboxu przez `openshell sandbox ssh-config <name>`.
     - Core zapisuje tę konfigurację SSH do pliku tymczasowego, otwiera sesję SSH i ponownie używa tego samego zdalnego mostka systemu plików co `backend: "ssh"`.
     - Tylko w trybie `mirror` cykl życia jest inny: synchronizacja lokalnego do zdalnego przed exec, a potem synchronizacja z powrotem po exec.
+
   </Accordion>
   <Accordion title="Aktualne ograniczenia OpenShell">
     - sandbox przeglądarki nie jest jeszcze obsługiwany
     - `sandbox.docker.binds` nie jest obsługiwane na backendzie OpenShell
     - Knoby środowiska uruchomieniowego specyficzne dla Dockera pod `sandbox.docker.*` nadal dotyczą tylko backendu Docker
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ Przykład (źródło tylko do odczytu + dodatkowy katalog danych):
 - Wrażliwe montowania (sekrety, klucze SSH, poświadczenia usług) powinny być `:ro`, chyba że jest to absolutnie konieczne.
 - Połącz to z `workspaceAccess: "ro"`, jeśli potrzebujesz tylko dostępu do odczytu workspace; tryby bindów pozostają niezależne.
 - Zobacz [Sandbox vs Tool Policy vs Elevated](/pl/gateway/sandbox-vs-tool-policy-vs-elevated), aby zrozumieć, jak bindy współdziałają z polityką narzędzi i elevated exec.
+
 </Warning>
 
 ## Obrazy i konfiguracja
@@ -423,6 +429,7 @@ Domyślnie kontenery sandboxu Docker działają **bez sieci**. Nadpisz to przez 
     - `network: "host"` jest blokowane.
     - `network: "container:<id>"` jest domyślnie blokowane (ryzyko obejścia przez dołączanie do przestrzeni nazw).
     - Awaryjne nadpisanie: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ W przypadku wdrożeń Gateway Docker `scripts/docker/setup.sh` może zbootstrapo
     - `readOnlyRoot: true` uniemożliwia zapisy; ustaw `readOnlyRoot: false` albo przygotuj własny obraz.
     - `user` musi być rootem dla instalacji pakietów (pomiń `user` albo ustaw `user: "0:0"`).
     - Sandbox exec **nie** dziedziczy hostowego `process.env`. Użyj `agents.defaults.sandbox.docker.env` (albo niestandardowego obrazu) dla kluczy API Skills.
+
   </Accordion>
 </AccordionGroup>
 

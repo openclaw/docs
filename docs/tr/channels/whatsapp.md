@@ -366,6 +366,7 @@ Bağlantılı kendi numarası `allowFrom` içinde de yer alıyorsa, WhatsApp ken
     - varsayılan parça sınırı: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - `newline` modu paragraf sınırlarını (boş satırlar) tercih eder, ardından uzunluk açısından güvenli parçalamaya geri döner
+
   </Accordion>
 
   <Accordion title="Giden medya davranışı">
@@ -378,6 +379,7 @@ Bağlantılı kendi numarası `allowFrom` içinde de yer alıyorsa, WhatsApp ken
     - hareketli GIF oynatımı, video gönderimlerinde `gifPlayback: true` ile desteklenir
     - çoklu medya yanıt yükleri gönderilirken başlıklar ilk medya öğesine uygulanır; ancak PTT sesli notları sesi önce ve görünür metni ayrı gönderir, çünkü WhatsApp istemcileri sesli not başlıklarını tutarlı şekilde işlemez
     - medya kaynağı HTTP(S), `file://` veya yerel yollar olabilir
+
   </Accordion>
 
   <Accordion title="Medya boyutu sınırları ve geri dönüş davranışı">
@@ -386,6 +388,7 @@ Bağlantılı kendi numarası `allowFrom` içinde de yer alıyorsa, WhatsApp ken
     - hesap başına geçersiz kılmalar `channels.whatsapp.accounts.<accountId>.mediaMaxMb` kullanır
     - görseller sınırlara uyması için otomatik olarak optimize edilir (yeniden boyutlandırma/kalite taraması)
     - medya gönderimi başarısız olduğunda, ilk öğe geri dönüşü yanıtı sessizce düşürmek yerine metin uyarısı gönderir
+
   </Accordion>
 </AccordionGroup>
 
@@ -470,12 +473,14 @@ Davranış notları:
     - hesap kimlikleri `channels.whatsapp.accounts` içinden gelir
     - varsayılan hesap seçimi: varsa `default`, aksi halde ilk yapılandırılmış hesap kimliği (sıralı)
     - hesap kimlikleri arama için dahili olarak normalize edilir
+
   </Accordion>
 
   <Accordion title="Kimlik bilgisi yolları ve eski sürüm uyumluluğu">
     - mevcut kimlik doğrulama yolu: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - yedek dosya: `creds.json.bak`
     - `~/.openclaw/credentials/` içindeki eski varsayılan kimlik doğrulama, varsayılan hesap akışları için hâlâ tanınır/taşınır
+
   </Accordion>
 
   <Accordion title="Çıkış davranışı">

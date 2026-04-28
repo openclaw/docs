@@ -277,6 +277,7 @@ Gardez les endpoints de hook derrière loopback, tailnet ou un proxy inverse de 
 - Conservez `hooks.allowRequestSessionKey=false`, sauf si vous avez besoin de sessions choisies par l'appelant.
 - Si vous activez `hooks.allowRequestSessionKey`, définissez aussi `hooks.allowedSessionKeyPrefixes` pour contraindre les formes autorisées des clés de session.
 - Les charges utiles des hooks sont enveloppées dans des limites de sécurité par défaut.
+
 </Warning>
 
 ## Intégration Gmail PubSub
@@ -379,6 +380,7 @@ Remarque sur la surcharge de modèle :
 - Si le modèle est autorisé, ce fournisseur/modèle exact est transmis à l'exécution de l'agent isolé.
 - S'il n'est pas autorisé, cron émet un avertissement et revient à la sélection du modèle d'agent/par défaut de la tâche.
 - Les chaînes de secours configurées s'appliquent toujours, mais une simple surcharge `--model` sans liste de secours explicite par tâche ne bascule plus vers le modèle principal de l'agent comme cible de nouvelle tentative silencieuse supplémentaire.
+
 </Note>
 
 ## Configuration
@@ -438,6 +440,7 @@ openclaw doctor
     - Confirmez que la Gateway s'exécute en continu.
     - Pour les planifications `cron`, vérifiez le fuseau horaire (`--tz`) par rapport au fuseau horaire de l'hôte.
     - `reason: not-due` dans la sortie d'exécution signifie que l'exécution manuelle a été vérifiée avec `openclaw cron run <jobId> --due` et que la tâche n'était pas encore due.
+
   </Accordion>
   <Accordion title="Cron s'est déclenché mais il n'y a pas eu de livraison">
     - Le mode de livraison `none` signifie qu'aucun envoi de secours par l'exécuteur n'est attendu. L'agent peut toujours envoyer directement avec l'outil `message` lorsqu'une route de chat est disponible.
@@ -446,16 +449,19 @@ openclaw doctor
     - Les erreurs d'authentification du canal (`unauthorized`, `Forbidden`) signifient que la livraison a été bloquée par les identifiants.
     - Si l'exécution isolée ne renvoie que le jeton silencieux (`NO_REPLY` / `no_reply`), OpenClaw supprime la livraison sortante directe ainsi que le chemin de résumé mis en file d'attente de secours ; rien n'est donc renvoyé dans le chat.
     - Si l'agent doit lui-même envoyer un message à l'utilisateur, vérifiez que la tâche a une route utilisable (`channel: "last"` avec un chat précédent, ou un canal/une cible explicite).
+
   </Accordion>
   <Accordion title="Cron ou Heartbeat semble empêcher le basculement de style /new">
     - La fraîcheur de réinitialisation quotidienne et d'inactivité n'est pas basée sur `updatedAt` ; voir [Gestion de session](/fr/concepts/session#session-lifecycle).
     - Les réveils cron, les exécutions Heartbeat, les notifications exec et la gestion interne de la gateway peuvent mettre à jour la ligne de session pour le routage/statut, mais ils ne prolongent pas `sessionStartedAt` ou `lastInteractionAt`.
     - Pour les anciennes lignes créées avant l'existence de ces champs, OpenClaw peut récupérer `sessionStartedAt` à partir de l'en-tête de session JSONL de la transcription lorsque le fichier est encore disponible. Les anciennes lignes d'inactivité sans `lastInteractionAt` utilisent cette heure de début récupérée comme base d'inactivité.
+
   </Accordion>
   <Accordion title="Pièges liés au fuseau horaire">
     - Cron sans `--tz` utilise le fuseau horaire de l'hôte de la gateway.
     - Les planifications `at` sans fuseau horaire sont traitées comme UTC.
     - `activeHours` de Heartbeat utilise la résolution du fuseau horaire configuré.
+
   </Accordion>
 </AccordionGroup>
 

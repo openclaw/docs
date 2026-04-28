@@ -308,6 +308,7 @@ Les canaux intégrés de l’espace de travail qui conservent des exports sûrs 
     - Le canal est désactivé mais a besoin des surfaces de setup/intégration guidée.
     - Le canal est activé mais non configuré.
     - Le chargement différé est activé (`deferConfiguredChannelFullLoadUntilAfterListen`).
+
   </Accordion>
   <Accordion title="Ce que setupEntry doit enregistrer">
     - L’objet Plugin de canal (via `defineSetupPluginEntry`).
@@ -322,6 +323,7 @@ Les canaux intégrés de l’espace de travail qui conservent des exports sûrs 
     - Services d’arrière-plan.
     - Imports runtime lourds (crypto, SDK).
     - Méthodes Gateway nécessaires uniquement après le démarrage.
+
   </Accordion>
 </AccordionGroup>
 

@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - UI protokol güncelliği denetimi (protokol şeması daha yeniyse Control UI'yi yeniden derler).
     - Sağlık denetimi + yeniden başlatma istemi.
     - Skills durum özeti (uygun/eksik/engelli) ve Plugin durumu.
+
   </Accordion>
   <Accordion title="Yapılandırma ve geçişler">
     - Eski değerler için yapılandırma normalleştirmesi.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - Eski Plugin manifest sözleşme anahtarı geçişi (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - Eski Cron depo geçişi (`jobId`, `schedule.cron`, üst düzey delivery/payload alanları, payload `provider`, basit `notify: true` Webhook geri dönüş işleri).
     - Eski ajan runtime-policy geçişi `agents.defaults.agentRuntime` ve `agents.list[].agentRuntime` alanlarına.
+
   </Accordion>
   <Accordion title="Durum ve bütünlük">
     - Oturum kilit dosyası incelemesi ve eski kilit temizliği.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - Yerelde çalışırken yapılandırma dosyası izin denetimleri (`chmod 600`).
     - Model kimlik doğrulama sağlığı: OAuth süre sonunu denetler, süresi dolmak üzere olan belirteçleri yenileyebilir ve auth-profile bekleme süresi/devre dışı durumlarını bildirir.
     - Ek çalışma alanı dizini tespiti (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, hizmetler ve supervisor'lar">
     - Sandbox etkin olduğunda sandbox imajı onarımı.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Supervisor yapılandırma denetimi (launchd/systemd/schtasks) ve isteğe bağlı onarım.
     - Gateway çalışma zamanı en iyi uygulama denetimleri (Node ve Bun, sürüm yöneticisi yolları).
     - Gateway port çakışması tanılaması (varsayılan `18789`).
+
   </Accordion>
   <Accordion title="Kimlik doğrulama, güvenlik ve eşleştirme">
     - Açık DM ilkeleri için güvenlik uyarıları.
     - Yerel belirteç modu için Gateway kimlik doğrulama denetimleri (belirteç kaynağı yoksa belirteç oluşturmayı önerir; token SecretRef yapılandırmalarının üzerine yazmaz).
     - Cihaz eşleştirme sorun tespiti (bekleyen ilk eşleştirme istekleri, bekleyen rol/kapsam yükseltmeleri, eski yerel cihaz-belirteci önbellek sapması ve eşleştirilmiş kayıt auth sapması).
+
   </Accordion>
   <Accordion title="Çalışma alanı ve kabuk">
     - Linux'ta systemd linger denetimi.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - Bellek araması embedding sağlayıcı hazırlık denetimi (yerel model, uzak API anahtarı veya QMD ikili dosyası).
     - Kaynak kurulumu denetimleri (pnpm workspace uyumsuzluğu, eksik UI varlıkları, eksik tsx ikili dosyası).
     - Güncellenmiş yapılandırma + sihirbaz meta verisi yazar.
+
   </Accordion>
 </AccordionGroup>
 

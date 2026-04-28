@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - نمط الجذر الافتراضي: `/Users/*/Library/Messages/Attachments`
     - يستخدم SCP التحقق الصارم من مفتاح المضيف (`StrictHostKeyChecking=yes`)
     - يستخدم حجم الوسائط الصادرة `channels.imessage.mediaMaxMb` (الافتراضي 16 MB)
+
   </Accordion>
 
   <Accordion title="تجزئة الرسائل الصادرة">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - وضع التجزئة: `channels.imessage.chunkMode`
       - `length` (افتراضي)
       - `newline` (تقسيم يبدأ بالفقرات)
+
   </Accordion>
 
   <Accordion title="تنسيقات العنونة">

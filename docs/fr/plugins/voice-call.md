@@ -164,12 +164,14 @@ la configuration exacte manquante du fournisseur lorsqu’ils sont utilisés.
     - Avec l’offre gratuite ngrok, définissez `publicUrl` sur l’URL ngrok exacte ; la vérification de signature est toujours appliquée.
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` autorise les Webhooks Twilio avec des signatures invalides **uniquement** lorsque `tunnel.provider="ngrok"` et que `serve.bind` est en boucle locale (agent local ngrok). Développement local uniquement.
     - Les URL ngrok gratuites peuvent changer ou ajouter un comportement interstitiel ; si `publicUrl` dérive, les signatures Twilio échouent. En production : préférez un domaine stable ou un funnel Tailscale.
+
   </Accordion>
   <Accordion title="Plafonds de connexion en continu">
     - `streaming.preStartTimeoutMs` ferme les sockets qui n’envoient jamais de trame `start` valide.
     - `streaming.maxPendingConnections` limite le total des sockets pré-démarrage non authentifiés.
     - `streaming.maxPendingConnectionsPerIp` limite les sockets pré-démarrage non authentifiés par IP source.
     - `streaming.maxConnections` limite le total des sockets de flux multimédia ouverts (en attente + actifs).
+
   </Accordion>
   <Accordion title="Migrations de configuration héritée">
     Les anciennes configurations utilisant `provider: "log"`, `twilio.from`, ou les anciennes

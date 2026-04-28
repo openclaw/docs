@@ -129,11 +129,13 @@ ClawHub jest domyślnie otwarty — każdy może przesyłać Skills, ale konto G
     - Powody zgłoszeń są wymagane i zapisywane.
     - Każdy użytkownik może mieć jednocześnie maksymalnie 20 aktywnych zgłoszeń.
     - Skills z więcej niż 3 unikalnymi zgłoszeniami są domyślnie automatycznie ukrywane.
+
   </Accordion>
   <Accordion title="Moderacja">
     - Moderatorzy mogą przeglądać ukryte Skills, przywracać ich widoczność, usuwać je lub banować użytkowników.
     - Nadużywanie funkcji zgłaszania może skutkować banem konta.
     - Chcesz zostać moderatorem? Zapytaj na Discord OpenClaw i skontaktuj się z moderatorem lub maintainerem.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +328,7 @@ Opublikowane pakiety powinny dostarczać **zbudowany JavaScript** i wskazywać `
     - Każda publikacja tworzy nową wersję **semver** `SkillVersion`.
     - Tagi (takie jak `latest`) wskazują na wersję; przesuwanie tagów pozwala cofać zmiany.
     - Changelogi są dołączane do każdej wersji i mogą być puste przy synchronizacji lub publikowaniu aktualizacji.
+
   </Accordion>
   <Accordion title="Zmiany lokalne vs wersje rejestru">
     Aktualizacje porównują lokalną zawartość Skill z wersjami w rejestrze przy użyciu skrótu treści. Jeśli lokalne pliki nie pasują do żadnej opublikowanej wersji, CLI pyta przed nadpisaniem (albo wymaga `--force` w trybie nieinteraktywnym).
@@ -336,6 +339,7 @@ Opublikowane pakiety powinny dostarczać **zbudowany JavaScript** i wskazywać `
   <Accordion title="Przechowywanie i plik blokady">
     - Zainstalowane Skills są zapisywane w `.clawhub/lock.json` w workdir.
     - Tokeny uwierzytelniania są przechowywane w pliku konfiguracji CLI ClawHub (nadpisanie przez `CLAWHUB_CONFIG_PATH`).
+
   </Accordion>
   <Accordion title="Telemetry (liczba instalacji)">
     Gdy uruchamiasz `clawhub sync` po zalogowaniu, CLI wysyła minimalny zrzut do obliczania liczby instalacji. Możesz całkowicie to wyłączyć:

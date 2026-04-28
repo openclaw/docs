@@ -51,6 +51,7 @@ openclaw gateway run
     - يُحظر الربط خارج loopback من دون مصادقة (حاجز أمان).
     - يؤدي `SIGUSR1` إلى إعادة تشغيل داخل العملية عند السماح بذلك (تكون `commands.restart` مفعلة افتراضيًا؛ اضبط `commands.restart: false` لمنع إعادة التشغيل اليدوية، مع بقاء gateway tool/config apply/update مسموحًا).
     - تؤدي معالجات `SIGINT`/`SIGTERM` إلى إيقاف عملية Gateway، لكنها لا تستعيد أي حالة طرفية مخصصة. إذا كنت تغلف CLI بواجهة TUI أو بإدخال raw-mode، فاستعد الطرفية قبل الخروج.
+
   </Accordion>
 </AccordionGroup>
 
@@ -129,6 +130,7 @@ openclaw gateway run
     - الافتراضي: قابل للقراءة البشرية (وملوّن في TTY).
     - `--json`: JSON قابل للقراءة آليًا (من دون تنسيق/مؤشر دوران).
     - `--no-color` (أو `NO_COLOR=1`): تعطيل ANSI مع الإبقاء على التخطيط البشري.
+
   </Tab>
   <Tab title="الخيارات المشتركة">
     - `--url <url>`: عنوان URL لـ WebSocket الخاص بـ Gateway.
@@ -136,6 +138,7 @@ openclaw gateway run
     - `--password <password>`: كلمة مرور Gateway.
     - `--timeout <ms>`: المهلة/الميزانية (تختلف حسب الأمر).
     - `--expect-final`: انتظار استجابة "نهائية" (لاستدعاءات الوكيل).
+
   </Tab>
 </Tabs>
 
@@ -200,6 +203,7 @@ openclaw gateway stability --json
   <Accordion title="الخصوصية وسلوك bundle">
     - تحتفظ السجلات ببيانات تشغيلية وصفية: أسماء الأحداث، والأعداد، وأحجام البايتات، وقراءات الذاكرة، وحالة queue/session، وأسماء القنوات/Plugins، وملخصات الجلسات المحجوبة. وهي لا تحتفظ بنصوص الدردشة، أو أجسام Webhook، أو مخرجات الأدوات، أو أجسام الطلبات أو الاستجابات الخام، أو الرموز المميزة، أو Cookies، أو القيم السرية، أو أسماء المضيفين، أو معرّفات الجلسات الخام. اضبط `diagnostics.enabled: false` لتعطيل المسجل بالكامل.
     - عند الخروج القاتل لـ Gateway، أو مهلات الإيقاف، أو إخفاقات بدء التشغيل بعد إعادة التشغيل، يكتب OpenClaw اللقطة التشخيصية نفسها إلى `~/.openclaw/logs/stability/openclaw-stability-*.json` عندما يحتوي المسجل على أحداث. افحص أحدث bundle باستخدام `openclaw gateway stability --bundle latest`؛ كما تنطبق `--limit` و`--type` و`--since-seq` على مخرجات bundle.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,11 +292,13 @@ openclaw gateway status --require-rpc
     - استخدم `--require-rpc` في البرامج النصية وعمليات الأتمتة عندما لا يكفي وجود خدمة تستمع وتحتاج أيضًا إلى أن تكون استدعاءات RPC ذات نطاق القراءة سليمة.
     - يضيف `--deep` فحصًا بأفضل جهد لخدمات launchd/systemd/schtasks الإضافية. وعند اكتشاف عدة خدمات شبيهة بـ Gateway، تطبع المخرجات البشرية تلميحات للتنظيف وتحذّر من أن معظم الإعدادات يجب أن تشغّل Gateway واحدًا لكل جهاز.
     - تتضمن المخرجات البشرية مسار سجل الملفات بعد حله بالإضافة إلى لقطة لمسارات وصلاحية تكوين CLI مقابل الخدمة للمساعدة في تشخيص انجراف الملف الشخصي أو state-dir.
+
   </Accordion>
   <Accordion title="فحوصات انجراف المصادقة لـ systemd على Linux">
     - في تثبيتات systemd على Linux، تقرأ فحوصات انجراف مصادقة الخدمة قيم `Environment=` و`EnvironmentFile=` من الوحدة (بما في ذلك `%h`، والمسارات بين علامتَي اقتباس، والملفات المتعددة، والملفات الاختيارية ذات البادئة `-`).
     - تحل فحوصات الانجراف قيم SecretRef الخاصة بـ `gateway.auth.token` باستخدام بيئة التشغيل المدمجة (بيئة أوامر الخدمة أولًا، ثم الرجوع إلى بيئة العملية).
     - إذا لم تكن مصادقة الرمز المميز مفعلة فعليًا (مع `gateway.auth.mode` صريح بقيمة `password` أو `none` أو `trusted-proxy`، أو مع وضع غير مضبوط حيث قد تفوز كلمة المرور ولا يوجد مرشح رمز مميز يمكن أن يفوز)، فإن فحوصات انجراف الرمز المميز تتخطى حل رمز التكوين المميز.
+
   </Accordion>
 </AccordionGroup>
 
@@ -326,6 +332,7 @@ openclaw gateway probe --json
     - تعني `Read probe: limited - missing scope: operator.read` أن الاتصال نجح لكن RPC ذات نطاق القراءة كانت محدودة. ويُبلّغ عن ذلك على أنه إمكانية وصول **متدهورة**، وليس فشلًا كاملًا.
     - مثل `gateway status`، يعيد الفحص استخدام مصادقة الجهاز المخزنة مؤقتًا، لكنه لا ينشئ هوية جهاز لأول مرة أو حالة اقتران.
     - تكون قيمة رمز الخروج غير صفرية فقط عندما لا يكون أي هدف تم فحصه قابلًا للوصول.
+
   </Accordion>
   <Accordion title="مخرجات JSON">
     المستوى الأعلى:
@@ -356,6 +363,7 @@ openclaw gateway probe --json
     - `multiple_gateways`: أمكن الوصول إلى أكثر من هدف واحد؛ وهذا غير معتاد ما لم تكن تشغّل عمدًا ملفات تعريف معزولة، مثل rescue bot.
     - `auth_secretref_unresolved`: تعذر حل قيمة SecretRef مهيأة للمصادقة لهدف فاشل.
     - `probe_scope_limited`: نجح اتصال WebSocket، لكن فحص القراءة كان محدودًا بسبب غياب `operator.read`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -434,6 +442,7 @@ openclaw gateway uninstall
     - `gateway status`: ‏`--url` و`--token` و`--password` و`--timeout` و`--no-probe` و`--require-rpc` و`--deep` و`--json`
     - `gateway install`: ‏`--port` و`--runtime <node|bun>` و`--token` و`--force` و`--json`
     - `gateway uninstall|start|stop|restart`: ‏`--json`
+
   </Accordion>
   <Accordion title="ملاحظات تثبيت الخدمة ودورة الحياة">
     - يدعم `gateway install` الخيارات `--port` و`--runtime` و`--token` و`--force` و`--json`.
@@ -444,6 +453,7 @@ openclaw gateway uninstall
     - في وضع المصادقة المستنتج، لا يؤدي `OPENCLAW_GATEWAY_PASSWORD` الخاص بالصدفة فقط إلى تخفيف متطلبات رمز التثبيت المميز؛ استخدم تكوينًا دائمًا (`gateway.auth.password` أو `env` في التكوين) عند تثبيت خدمة مُدارة.
     - إذا كان كل من `gateway.auth.token` و`gateway.auth.password` مهيأين وكانت `gateway.auth.mode` غير مضبوطة، فسيُحظر التثبيت حتى يتم ضبط الوضع صراحةً.
     - تقبل أوامر دورة الحياة الخيار `--json` لأغراض البرمجة النصية.
+
   </Accordion>
 </AccordionGroup>
 
@@ -490,6 +500,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 - يفحص CLI ‏`local.` بالإضافة إلى النطاق واسع النطاق المهيأ عندما يكون مفعّلًا.
 - تُشتق `wsUrl` في مخرجات JSON من نقطة نهاية الخدمة بعد حلها، وليس من التلميحات القائمة على TXT فقط مثل `lanHost` أو `tailnetDns`.
 - في mDNS الخاص بـ `local.`، لا يتم بث `sshPort` و`cliPath` إلا عندما يكون `discovery.mdns.mode` مضبوطًا على `full`. ومع ذلك، يظل Wide-Area DNS-SD يكتب `cliPath`؛ كما يظل `sshPort` اختياريًا هناك أيضًا.
+
 </Note>
 
 ## ذو صلة

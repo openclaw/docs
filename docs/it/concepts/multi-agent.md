@@ -244,11 +244,13 @@ I binding sono **deterministici** e vale il **più specifico**:
   <Accordion title="Spareggio e semantica AND">
     - Se più binding corrispondono nello stesso livello, vince il primo nell'ordine di configurazione.
     - Se un binding imposta più campi di corrispondenza (ad esempio `peer` + `guildId`), tutti i campi specificati sono richiesti (semantica `AND`).
+
   </Accordion>
   <Accordion title="Dettaglio dell'ambito account">
     - Un binding che omette `accountId` corrisponde solo all'account predefinito.
     - Usa `accountId: "*"` per un fallback a livello di canale su tutti gli account.
     - Se in seguito aggiungi lo stesso binding per lo stesso agente con un ID account esplicito, OpenClaw aggiorna il binding esistente solo-canale all'ambito account invece di duplicarlo.
+
   </Accordion>
 </AccordionGroup>
 

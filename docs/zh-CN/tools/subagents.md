@@ -68,12 +68,14 @@ x-i18n:
     - 完成后，子智能体会将摘要/结果消息通告回请求者聊天渠道。
     - 完成是基于推送的。派生后，**不要**仅仅为了等待完成而循环轮询 `/subagents list`、`sessions_list` 或 `sessions_history`；只有在调试或干预时，才按需检查状态。
     - 完成时，OpenClaw 会尽最大努力在通告清理流程继续前，关闭该子智能体会话打开并被跟踪的浏览器标签页/进程。
+
   </Accordion>
   <Accordion title="手动派生的投递韧性">
     - OpenClaw 会先尝试使用稳定的幂等键进行直接 `agent` 投递。
     - 如果直接投递失败，则回退到队列路由。
     - 如果队列路由仍不可用，则在最终放弃前，使用短时指数退避重试通告。
     - 完成投递会保留已解析的请求者路由：在线程绑定或会话绑定的完成路由可用时优先使用；如果完成来源只提供渠道，OpenClaw 会从请求者会话的已解析路由（`lastChannel` / `lastTo` / `lastAccountId`）中补齐缺失的目标/账号，以便直接投递仍然可用。
+
   </Accordion>
   <Accordion title="完成交接元数据">
     回传给请求者会话的完成交接内容，是运行时生成的内部上下文（不是用户编写的文本），其中包括：
@@ -90,6 +92,7 @@ x-i18n:
     - `/subagents spawn` 是一次性模式（`mode: "run"`）。对于持久的线程绑定会话，请使用带 `thread: true` 和 `mode: "session"` 的 `sessions_spawn`。
     - 对于 ACP harness 会话（Claude Code、Gemini CLI、OpenCode，或显式的 Codex ACP/acpx），当工具公开该运行时时，请使用带 `runtime: "acp"` 的 `sessions_spawn`。在调试完成投递或智能体间循环时，请参阅 [ACP 投递模型](/zh-CN/tools/acp-agents#delivery-model)。当 `codex` 插件启用时，Codex 聊天/线程控制应优先使用 `/codex ...` 而不是 ACP，除非用户明确要求 ACP/acpx。
     - 只有在 ACP 已启用、请求者未处于沙箱隔离中，且已加载 `acpx` 等后端插件时，OpenClaw 才会显示 `runtime: "acp"`。`runtime: "acp"` 需要一个外部 ACP harness id，或一个 `runtime.type="acp"` 的 `agents.list[]` 条目；对于来自 `agents_list` 的普通 OpenClaw 配置智能体，请使用默认的子智能体运行时。
+
   </Accordion>
 </AccordionGroup>
 

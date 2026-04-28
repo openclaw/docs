@@ -289,6 +289,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `system-event` dopisuje zdarzenie systemowe i może aktualizować/emitować kontekst presence.
     - `last-heartbeat` zwraca najnowsze utrwalone zdarzenie Heartbeat.
     - `set-heartbeats` przełącza przetwarzanie Heartbeat na gateway.
+
   </Accordion>
 
   <Accordion title="Modele i użycie">
@@ -299,6 +300,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `sessions.usage` zwraca podsumowania użycia per sesja.
     - `sessions.usage.timeseries` zwraca szereg czasowy użycia dla jednej sesji.
     - `sessions.usage.logs` zwraca wpisy logów użycia dla jednej sesji.
+
   </Accordion>
 
   <Accordion title="Kanały i helpery logowania">
@@ -309,11 +311,13 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `push.test` wysyła testowy push APNs do zarejestrowanego Node iOS.
     - `voicewake.get` zwraca zapisane wyzwalacze wake-word.
     - `voicewake.set` aktualizuje wyzwalacze wake-word i emituje zmianę.
+
   </Accordion>
 
   <Accordion title="Wiadomości i logi">
     - `send` to bezpośrednie wychodzące RPC dostarczania dla wysyłek celowanych na kanał/konto/wątek poza runnerem czatu.
     - `logs.tail` zwraca skonfigurowany tail logu plikowego gateway z kontrolą kursora/limitu i maksymalnej liczby bajtów.
+
   </Accordion>
 
   <Accordion title="Talk i TTS">
@@ -325,6 +329,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `tts.enable` i `tts.disable` przełączają stan preferencji TTS.
     - `tts.setProvider` aktualizuje preferowanego dostawcę TTS.
     - `tts.convert` wykonuje jednorazową konwersję text-to-speech.
+
   </Accordion>
 
   <Accordion title="Sekrety, konfiguracja, aktualizacja i kreator">
@@ -338,6 +343,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `config.schema.lookup` zwraca ładunek wyszukiwania ograniczony do ścieżki dla jednej ścieżki konfiguracji: znormalizowaną ścieżkę, płytki węzeł schematu, dopasowaną wskazówkę + `hintPath` oraz podsumowania bezpośrednich dzieci dla UI/CLI typu drill-down. Węzły schematu z lookup zachowują dokumentację widoczną dla użytkownika i typowe pola walidacji (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, granice liczb/ciągów/tablic/obiektów oraz flagi takie jak `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Podsumowania dzieci ujawniają `key`, znormalizowaną `path`, `type`, `required`, `hasChildren` oraz dopasowane `hint` / `hintPath`.
     - `update.run` uruchamia przepływ aktualizacji gateway i planuje restart tylko wtedy, gdy sama aktualizacja się powiedzie.
     - `wizard.start`, `wizard.next`, `wizard.status` i `wizard.cancel` udostępniają kreator onboardingu przez WS RPC.
+
   </Accordion>
 
   <Accordion title="Helpery agentów i workspace">
@@ -346,6 +352,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `agents.files.list`, `agents.files.get` i `agents.files.set` zarządzają plikami bootstrap workspace udostępnianymi dla agenta.
     - `agent.identity.get` zwraca efektywną tożsamość asystenta dla agenta lub sesji.
     - `agent.wait` czeka na zakończenie uruchomienia i zwraca końcowy snapshot, gdy jest dostępny.
+
   </Accordion>
 
   <Accordion title="Sterowanie sesją">
@@ -362,6 +369,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `sessions.reset`, `sessions.delete` i `sessions.compact` wykonują utrzymanie sesji.
     - `sessions.get` zwraca pełny zapisany wiersz sesji.
     - Wykonywanie czatu nadal używa `chat.history`, `chat.send`, `chat.abort` i `chat.inject`. `chat.history` jest znormalizowane do wyświetlania dla klientów UI: inline tagi dyrektyw są usuwane z widocznego tekstu, ładunki XML wywołań narzędzi w postaci zwykłego tekstu (w tym `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` oraz ucięte bloki wywołań narzędzi) i wyciekłe tokeny sterujące modelu ASCII/full-width są usuwane, czyste wiersze asystenta z cichym tokenem, takie jak dokładne `NO_REPLY` / `no_reply`, są pomijane, a zbyt duże wiersze mogą być zastępowane placeholderami.
+
   </Accordion>
 
   <Accordion title="Parowanie urządzeń i tokeny urządzeń">
@@ -369,6 +377,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `device.pair.approve`, `device.pair.reject` i `device.pair.remove` zarządzają rekordami parowania urządzeń.
     - `device.token.rotate` rotuje token sparowanego urządzenia w granicach jego zatwierdzonej roli i zakresów wywołującego.
     - `device.token.revoke` unieważnia token sparowanego urządzenia w granicach jego zatwierdzonej roli i zakresów wywołującego.
+
   </Accordion>
 
   <Accordion title="Parowanie Node, invoke i oczekująca praca">
@@ -381,6 +390,7 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `node.canvas.capability.refresh` odświeża tokeny canvas-capability ograniczone zakresem.
     - `node.pending.pull` i `node.pending.ack` to API kolejki połączonego Node.
     - `node.pending.enqueue` i `node.pending.drain` zarządzają trwałą oczekującą pracą dla offline/rozłączonych Node.
+
   </Accordion>
 
   <Accordion title="Rodziny zatwierdzeń">
@@ -389,11 +399,13 @@ wyliczenie `src/gateway/server-methods/*.ts`.
     - `exec.approvals.get` i `exec.approvals.set` zarządzają snapshotami polityki zatwierdzeń exec gateway.
     - `exec.approvals.node.get` i `exec.approvals.node.set` zarządzają lokalną polityką zatwierdzeń exec Node przez polecenia relay Node.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` i `plugin.approval.resolve` obejmują przepływy zatwierdzeń zdefiniowane przez Plugin.
+
   </Accordion>
 
   <Accordion title="Automatyzacja, Skills i narzędzia">
     - Automatyzacja: `wake` planuje natychmiastowe lub przy następnym Heartbeat wstrzyknięcie tekstu wybudzenia; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` zarządzają zaplanowaną pracą.
     - Skills i narzędzia: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

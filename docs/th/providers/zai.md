@@ -175,6 +175,7 @@ Z.AI คือแพลตฟอร์ม API สำหรับโมเดล 
     - Z.AI ใช้ Bearer auth ร่วมกับ API key ของคุณ
     - ตัวเลือกการตั้งค่าเริ่มต้น `zai-api-key` จะตรวจจับ endpoint ของ Z.AI ที่ตรงกันจากคำนำหน้าของคีย์โดยอัตโนมัติ
     - ใช้ตัวเลือกตามภูมิภาคแบบระบุชัดเจน (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) เมื่อคุณต้องการบังคับใช้พื้นผิว API ที่เฉพาะเจาะจง
+
   </Accordion>
 </AccordionGroup>
 

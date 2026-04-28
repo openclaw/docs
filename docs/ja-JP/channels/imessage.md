@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - デフォルトのルートパターン: `/Users/*/Library/Messages/Attachments`
     - SCP は厳格な host-key チェックを使用します（`StrictHostKeyChecking=yes`）
     - 送信メディアサイズには `channels.imessage.mediaMaxMb` を使用します（デフォルト 16 MB）
+
   </Accordion>
 
   <Accordion title="送信チャンク化">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - チャンクモード: `channels.imessage.chunkMode`
       - `length`（デフォルト）
       - `newline`（段落優先の分割）
+
   </Accordion>
 
   <Accordion title="アドレス指定形式">

@@ -86,12 +86,14 @@ macOS/Linux/WSL üzerinde çoğu etkileşimli kurulum için önerilir.
   <Step title="OpenClaw'ı kur">
     - `npm` yöntemi (varsayılan): genel npm kurulumu
     - `git` yöntemi: depoyu clone/update eder, bağımlılıkları pnpm ile kurar, build alır, sonra `~/.local/bin/openclaw` konumuna wrapper kurar
+
   </Step>
   <Step title="Kurulum sonrası görevler">
     - Yüklü bir gateway hizmetini best-effort olarak yeniler (`openclaw gateway install --force`, sonra restart)
     - Yükseltmelerde ve git kurulumlarında `openclaw doctor --non-interactive` çalıştırır (best effort)
     - Uygun olduğunda onboarding dener (TTY mevcut, onboarding devre dışı değil ve bootstrap/config denetimleri geçiyorsa)
     - Varsayılan olarak `SHARP_IGNORE_GLOBAL_LIBVIPS=1` ayarlar
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ ayrıca aynı önek akışı altında git checkout kurulumlarını destekler.
   <Step title="OpenClaw'ı önek altına kur">
     - `npm` yöntemi (varsayılan): önek altına npm ile kurar, sonra wrapper'ı `<prefix>/bin/openclaw` konumuna yazar
     - `git` yöntemi: bir checkout'u clone/update eder (varsayılan `~/openclaw`) ve yine wrapper'ı `<prefix>/bin/openclaw` konumuna yazar
+
   </Step>
   <Step title="Yüklü gateway hizmetini yenile">
     Aynı önekten yüklenmiş bir gateway hizmeti zaten varsa, betik
@@ -293,11 +296,13 @@ ayrıca aynı önek akışı altında git checkout kurulumlarını destekler.
   <Step title="OpenClaw'ı kur">
     - `npm` yöntemi (varsayılan): seçili `-Tag` kullanılarak genel npm kurulumu
     - `git` yöntemi: depoyu clone/update eder, pnpm ile kurulum/build yapar ve wrapper'ı `%USERPROFILE%\.local\bin\openclaw.cmd` konumuna kurar
+
   </Step>
   <Step title="Kurulum sonrası görevler">
     - Mümkün olduğunda gerekli bin dizinini kullanıcı PATH'ine ekler
     - Yüklü bir gateway hizmetini best-effort olarak yeniler (`openclaw gateway install --force`, sonra restart)
     - Yükseltmelerde ve git kurulumlarında `openclaw doctor --non-interactive` çalıştırır (best effort)
+
   </Step>
   <Step title="Hataları işle">
     `iwr ... | iex` ve scriptblock kurulumları, mevcut PowerShell oturumunu kapatmadan sonlandırıcı hata bildirir. Doğrudan `powershell -File` / `pwsh -File` kurulumları ise otomasyon için yine sıfır olmayan kodla çıkar.

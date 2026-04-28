@@ -75,12 +75,14 @@ recall 뷰에는 `sessions_history`를 사용하세요. 원시 전체 transcript
     - 완료 시 하위 에이전트는 요청자 채팅 채널에 요약/결과 메시지를 다시 알립니다.
     - 완료는 푸시 기반입니다. 한번 생성되면 완료를 기다리기 위해 `/subagents list`, `sessions_list`, `sessions_history`를 루프로 폴링하지 마세요. 디버깅이나 개입을 위해 필요할 때만 상태를 확인하세요.
     - 완료 시 OpenClaw는 announce cleanup 흐름이 계속되기 전에 해당 하위 에이전트 세션이 연 추적된 브라우저 탭/프로세스를 best-effort 방식으로 닫습니다.
+
   </Accordion>
   <Accordion title="수동 spawn 전달 복원력">
     - OpenClaw는 먼저 안정적인 idempotency key를 사용해 직접 `agent` 전달을 시도합니다.
     - 직접 전달이 실패하면 큐 라우팅으로 폴백합니다.
     - 큐 라우팅도 사용할 수 없으면 최종 포기 전까지 짧은 지수 백오프로 announce를 재시도합니다.
     - 완료 전달은 확인된 요청자 경로를 유지합니다. 가능한 경우 스레드 바인딩 또는 대화 바인딩 완료 경로가 우선하며, 완료 원점이 채널만 제공하는 경우 OpenClaw는 요청자 세션의 확인된 경로(`lastChannel` / `lastTo` / `lastAccountId`)에서 누락된 대상/계정을 채워 직접 전달이 계속 가능하게 합니다.
+
   </Accordion>
   <Accordion title="완료 handoff 메타데이터">
     요청자 세션으로의 완료 handoff는 런타임에서 생성되는
@@ -98,6 +100,7 @@ recall 뷰에는 `sessions_history`를 사용하세요. 원시 전체 transcript
     - `/subagents spawn`은 일회성 모드(`mode: "run"`)입니다. 영구적인 스레드 바인딩 세션에는 `thread: true`와 `mode: "session"`을 사용한 `sessions_spawn`을 사용하세요.
     - ACP harness 세션(Claude Code, Gemini CLI, OpenCode, 또는 명시적 Codex ACP/acpx)의 경우 도구가 해당 런타임을 광고하면 `runtime: "acp"`와 함께 `sessions_spawn`을 사용하세요. 완료 또는 에이전트 간 루프를 디버깅할 때는 [ACP 전달 모델](/ko/tools/acp-agents#delivery-model)을 참조하세요. `codex` Plugin이 활성화된 경우 Codex 채팅/스레드 제어는 사용자가 ACP/acpx를 명시적으로 요청하지 않는 한 ACP보다 `/codex ...`를 우선해야 합니다.
     - ACP가 활성화되고, 요청자가 샌드박스되지 않았으며, `acpx` 같은 백엔드 Plugin이 로드되기 전까지 OpenClaw는 `runtime: "acp"`를 숨깁니다. `runtime: "acp"`는 외부 ACP harness id 또는 `runtime.type="acp"`인 `agents.list[]` 항목을 기대합니다. `agents_list`의 일반 OpenClaw config 에이전트에는 기본 하위 에이전트 런타임을 사용하세요.
+
   </Accordion>
 </AccordionGroup>
 

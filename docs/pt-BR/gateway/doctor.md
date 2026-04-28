@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - Verificação de atualização do protocolo da UI (recompila a Control UI quando o schema do protocolo é mais novo).
     - Verificação de integridade + prompt para reinicialização.
     - Resumo de status de Skills (elegível/ausente/bloqueado) e status de plugin.
+
   </Accordion>
   <Accordion title="Configuração e migrações">
     - Normalização da configuração para valores legados.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - Migração de chaves legadas de contrato de manifesto de plugin (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - Migração do armazenamento Cron legado (`jobId`, `schedule.cron`, campos de entrega/payload de nível superior, `provider` do payload, jobs simples de fallback de Webhook com `notify: true`).
     - Migração da política legada de runtime de agente para `agents.defaults.agentRuntime` e `agents.list[].agentRuntime`.
+
   </Accordion>
   <Accordion title="Estado e integridade">
     - Inspeção de arquivos de bloqueio de sessão e limpeza de locks obsoletos.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - Verificações de permissões do arquivo de configuração (chmod 600) ao executar localmente.
     - Integridade de autenticação do modelo: verifica expiração do OAuth, pode atualizar tokens prestes a expirar e relata estados de cooldown/desativação de perfil de autenticação.
     - Detecção de diretório extra de workspace (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, serviços e supervisores">
     - Reparo de imagem de sandbox quando o sandboxing está ativado.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - Auditoria de configuração de supervisor (launchd/systemd/schtasks) com reparo opcional.
     - Verificações de melhores práticas de runtime do Gateway (Node vs Bun, caminhos de gerenciador de versão).
     - Diagnóstico de colisão de porta do Gateway (padrão `18789`).
+
   </Accordion>
   <Accordion title="Auth, segurança e pareamento">
     - Avisos de segurança para políticas de DM abertas.
     - Verificações de autenticação do Gateway para modo de token local (oferece geração de token quando não existe uma fonte de token; não sobrescreve configs de SecretRef de token).
     - Detecção de problemas de pareamento de dispositivo (solicitações pendentes de primeiro pareamento, upgrades pendentes de função/escopo, desvio obsoleto do cache local de token de dispositivo e desvio de autenticação de registro pareado).
+
   </Accordion>
   <Accordion title="Workspace e shell">
     - Verificação de linger do systemd no Linux.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - Verificação de prontidão do provedor de embeddings para busca em memória (modelo local, chave remota de API ou binário QMD).
     - Verificações de instalação a partir do código-fonte (incompatibilidade de workspace pnpm, assets ausentes da UI, binário tsx ausente).
     - Grava configuração atualizada + metadados do assistente.
+
   </Accordion>
 </AccordionGroup>
 

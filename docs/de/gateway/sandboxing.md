@@ -32,6 +32,7 @@ Dies ist keine perfekte Sicherheitsgrenze, aber es begrenzt Dateisystem- und Pro
     - Der Zugriff für noVNC-Beobachter ist standardmäßig passwortgeschützt; OpenClaw erzeugt eine kurzlebige Token-URL, die eine lokale Bootstrap-Seite ausliefert und noVNC mit Passwort im URL-Fragment öffnet (nicht in Query-/Header-Logs).
     - `agents.defaults.sandbox.browser.allowHostControl` erlaubt es Sitzungen in der Sandbox, explizit den Host-Browser anzusprechen.
     - Optionale Allowlists steuern `target: "custom"`: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ Verwenden Sie `backend: "ssh"`, wenn OpenClaw `exec`, Datei-Tools und Medien-Les
     - Bei der ersten Nutzung nach dem Erstellen oder Neuerstellen seedet OpenClaw diesen Remote-Workspace einmal aus dem lokalen Workspace.
     - Danach laufen `exec`, `read`, `write`, `edit`, `apply_patch`, Medien-Lesevorgänge im Prompt und das Staging eingehender Medien direkt gegen den Remote-Workspace über SSH.
     - OpenClaw synchronisiert Remote-Änderungen nicht automatisch zurück in den lokalen Workspace.
+
   </Accordion>
   <Accordion title="Authentifizierungsmaterial">
     - `identityFile`, `certificateFile`, `knownHostsFile`: vorhandene lokale Dateien verwenden und über die OpenSSH-Konfiguration weiterreichen.
     - `identityData`, `certificateData`, `knownHostsData`: Inline-Strings oder SecretRefs verwenden. OpenClaw löst sie über den normalen Snapshot der Secrets-Laufzeit auf, schreibt sie mit `0600` in temporäre Dateien und löscht sie, wenn die SSH-Sitzung endet.
     - Wenn für dasselbe Element sowohl `*File` als auch `*Data` gesetzt sind, gewinnt `*Data` für diese SSH-Sitzung.
+
   </Accordion>
   <Accordion title="Konsequenzen des Remote-kanonischen Modells">
     Dies ist ein **Remote-kanonisches** Modell. Der Remote-Workspace über SSH wird nach dem ersten Seeding zum tatsächlichen Zustand der Sandbox.
@@ -205,11 +208,13 @@ OpenShell-Modi:
     - OpenClaw fordert bei OpenShell über `openshell sandbox ssh-config <name>` eine Sandbox-spezifische SSH-Konfiguration an.
     - Der Kern schreibt diese SSH-Konfiguration in eine temporäre Datei, öffnet die SSH-Sitzung und verwendet dieselbe Remote-Dateisystem-Bridge erneut, die auch bei `backend: "ssh"` verwendet wird.
     - Nur im Modus `mirror` unterscheidet sich der Lebenszyklus: lokal vor `exec` nach remote synchronisieren, danach zurück synchronisieren.
+
   </Accordion>
   <Accordion title="Aktuelle Einschränkungen von OpenShell">
     - Browser in der Sandbox wird noch nicht unterstützt
     - `sandbox.docker.binds` wird im OpenShell-Backend nicht unterstützt
     - Docker-spezifische Laufzeitoptionen unter `sandbox.docker.*` gelten weiterhin nur für das Docker-Backend
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ Beispiel (schreibgeschützte Quelle + ein zusätzliches Datenverzeichnis):
 - Sensitive Mounts (Secrets, SSH-Schlüssel, Service-Zugangsdaten) sollten `:ro` sein, sofern nicht absolut notwendig.
 - Kombinieren Sie dies mit `workspaceAccess: "ro"`, wenn Sie nur Lesezugriff auf den Workspace benötigen; Bind-Modi bleiben unabhängig.
 - Siehe [Sandbox vs Tool Policy vs Elevated](/de/gateway/sandbox-vs-tool-policy-vs-elevated), wie Binds mit Tool-Richtlinie und erhöhtem Exec zusammenwirken.
+
 </Warning>
 
 ## Images und Setup
@@ -423,6 +429,7 @@ Standardmäßig laufen Docker-Sandbox-Container **ohne Netzwerk**. Überschreibe
     - `network: "host"` ist blockiert.
     - `network: "container:<id>"` ist standardmäßig blockiert (Risiko durch Umgehung per Namespace-Join).
     - Break-Glass-Override: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ Pfade:
     - `readOnlyRoot: true` verhindert Schreibvorgänge; setzen Sie `readOnlyRoot: false` oder erstellen Sie ein benutzerdefiniertes Image.
     - `user` muss Root sein für Paketinstallationen (lassen Sie `user` weg oder setzen Sie `user: "0:0"`).
     - Sandbox-Exec übernimmt nicht `process.env` des Hosts. Verwenden Sie `agents.defaults.sandbox.docker.env` (oder ein benutzerdefiniertes Image) für API-Schlüssel von Skills.
+
   </Accordion>
 </AccordionGroup>
 

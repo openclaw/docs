@@ -40,6 +40,7 @@ x-i18n:
         - **Cloud + Local** — مضيف Ollama محلي بالإضافة إلى نماذج سحابية تُوجَّه عبر ذلك المضيف
         - **Cloud only** — نماذج Ollama مستضافة عبر `https://ollama.com`
         - **Local only** — نماذج محلية فقط
+
       </Step>
       <Step title="اختر نموذجًا">
         يطلب `Cloud only` القيمة `OLLAMA_API_KEY` ويقترح افتراضيات سحابية مستضافة. أما `Cloud + Local` و`Local only` فيطلبان عنوان Ollama الأساسي، ويكتشفان النماذج المتاحة، ويقومان بسحب النموذج المحلي المحدد تلقائيًا إذا لم يكن متاحًا بعد. كما يتحقق `Cloud + Local` أيضًا مما إذا كان مضيف Ollama هذا قد سجّل الدخول من أجل الوصول السحابي.
@@ -79,6 +80,7 @@ x-i18n:
         - **Cloud + Local**: ثبّت Ollama، وسجّل الدخول باستخدام `ollama signin`، ووجّه الطلبات السحابية عبر ذلك المضيف
         - **Cloud only**: استخدم `https://ollama.com` مع `OLLAMA_API_KEY`
         - **Local only**: ثبّت Ollama من [ollama.com/download](https://ollama.com/download)
+
       </Step>
       <Step title="اسحب نموذجًا محليًا (للوضع المحلي فقط)">
         ```bash

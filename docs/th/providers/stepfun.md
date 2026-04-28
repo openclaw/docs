@@ -210,6 +210,7 @@ Step Plan (`stepfun-plan`):
     - ปัจจุบัน `step-3.5-flash-2603` เปิดเผยเฉพาะบน `stepfun-plan`
     - โฟลว์ auth เดียวจะเขียนโปรไฟล์ที่ตรงกับ region สำหรับทั้ง `stepfun` และ `stepfun-plan` ดังนั้นจึงสามารถค้นพบทั้งสองพื้นผิวพร้อมกันได้
     - ใช้ `openclaw models list` และ `openclaw models set <provider/model>` เพื่อตรวจสอบหรือสลับโมเดล
+
   </Accordion>
 </AccordionGroup>
 

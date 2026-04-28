@@ -297,6 +297,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
     - `agent`: ทุกเซสชันที่อยู่ภายใต้ agent id ปัจจุบัน (อาจรวมผู้ใช้อื่นหากคุณรันเซสชันแยกตามผู้ส่งภายใต้ agent id เดียวกัน)
     - `all`: ทุกเซสชัน การกำหนดเป้าหมายข้ามเอเจนต์ยังคงต้องใช้ `tools.agentToAgent`
     - การบีบขอบเขตจาก sandbox: เมื่อเซสชันปัจจุบันอยู่ใน sandbox และ `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, ระบบจะบังคับ visibility เป็น `tree` แม้ `tools.sessions.visibility="all"` ก็ตาม
+
   </Accordion>
 </AccordionGroup>
 
@@ -328,6 +329,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
     - อินพุตแบบ Base64 จะถูกตรวจสอบด้วยการตรวจตัวอักษร/padding อย่างเข้มงวดและมีตัวป้องกันขนาดก่อน decode
     - สิทธิ์ไฟล์คือ `0700` สำหรับไดเรกทอรี และ `0600` สำหรับไฟล์
     - การ cleanup เป็นไปตามนโยบาย `cleanup`: `delete` จะลบ attachments เสมอ; `keep` จะเก็บไว้ก็ต่อเมื่อ `retainOnSessionKeep: true`
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
       - ค่า `contextTokens` ของ model ที่ตรงกันจะคง runtime cap แบบ explicit ไว้เมื่อมีอยู่; ใช้สิ่งนี้เพื่อจำกัด effective context โดยไม่ต้องเปลี่ยน metadata ดั้งเดิมของ model
       - ใช้ `models.mode: "replace"` เมื่อคุณต้องการให้คอนฟิกเขียน `models.json` ทับทั้งหมด
       - การคงค่า marker ยึดตามแหล่งที่มาเป็นหลัก: markers จะถูกเขียนจาก snapshot คอนฟิกของแหล่งที่มาที่ใช้งานอยู่ (ก่อนการ resolve) ไม่ใช่จากค่า runtime secret ที่ resolve แล้ว
+
   </Accordion>
 </AccordionGroup>
 
@@ -431,6 +434,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     - `models.mode`: พฤติกรรมของ provider catalog (`merge` หรือ `replace`)
     - `models.providers`: แมป custom provider ที่มีคีย์เป็น provider id
       - การแก้ไขอย่างปลอดภัย: ใช้ `openclaw config set models.providers.<id> '<json>' --strict-json --merge` หรือ `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` สำหรับการอัปเดตแบบ additive `config set` จะปฏิเสธการแทนที่แบบทำลายข้อมูล เว้นแต่คุณจะส่ง `--replace`
+
   </Accordion>
   <Accordion title="การเชื่อมต่อและ auth ของ provider">
     - `models.providers.*.api`: request adapter (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` เป็นต้น)
@@ -440,6 +444,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     - `models.providers.*.authHeader`: บังคับส่ง credential ใน `Authorization` header เมื่อจำเป็น
     - `models.providers.*.baseUrl`: base URL ของ upstream API
     - `models.providers.*.headers`: static headers เพิ่มเติมสำหรับการกำหนดเส้นทาง proxy/tenant
+
   </Accordion>
   <Accordion title="overrides ของ request transport">
     `models.providers.*.request`: overrides ของ transport สำหรับ HTTP requests ของ model-provider
@@ -457,6 +462,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     - `models.providers.*.models.*.contextTokens`: runtime context cap แบบเลือกได้ ใช้เมื่อต้องการ effective context budget ที่เล็กกว่า `contextWindow` ดั้งเดิมของ model; `openclaw models list` จะแสดงทั้งสองค่าเมื่อแตกต่างกัน
     - `models.providers.*.models.*.compat.supportsDeveloperRole`: compatibility hint แบบเลือกได้ สำหรับ `api: "openai-completions"` ร่วมกับ `baseUrl` ที่ไม่ใช่ native และไม่ว่าง (host ไม่ใช่ `api.openai.com`) OpenClaw จะบังคับให้ค่านี้เป็น `false` ระหว่าง runtime ส่วน `baseUrl` ที่ว่าง/ไม่ระบุจะคงพฤติกรรม OpenAI ปกติไว้
     - `models.providers.*.models.*.compat.requiresStringContent`: compatibility hint แบบเลือกได้สำหรับ chat endpoints ที่เข้ากันได้กับ OpenAI และรองรับเฉพาะสตริง เมื่อเป็น `true` OpenClaw จะ flatten อาร์เรย์ `messages[].content` ที่เป็นข้อความล้วนให้เป็นสตริงธรรมดาก่อนส่ง request
+
   </Accordion>
   <Accordion title="การค้นพบ Amazon Bedrock">
     - `plugins.entries.amazon-bedrock.config.discovery`: รากการตั้งค่า auto-discovery ของ Bedrock
@@ -466,6 +472,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: ช่วงเวลาการ polling เพื่อรีเฟรช discovery
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: context window fallback สำหรับ models ที่ค้นพบ
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: max output tokens fallback สำหรับ models ที่ค้นพบ
+
   </Accordion>
 </AccordionGroup>
 

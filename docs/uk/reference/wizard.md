@@ -32,6 +32,7 @@ x-i18n:
       - Лише конфігурація
       - Конфігурація + облікові дані + сесії
       - Повний reset (також видаляє workspace)
+
   </Step>
   <Step title="Модель/Auth">
     - **API-ключ Anthropic**: використовує `ANTHROPIC_API_KEY`, якщо він є, або запитує ключ, а потім зберігає його для використання daemon.
@@ -82,6 +83,7 @@ x-i18n:
     - Типово `~/.openclaw/workspace` (можна налаштувати).
     - Ініціалізує файли workspace, потрібні для bootstrap ritual агента.
     - Повну структуру workspace і посібник із резервного копіювання див. у [Agent workspace](/uk/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Порт, bind, режим auth, доступ через Tailscale.
@@ -97,6 +99,7 @@ x-i18n:
       - Не можна поєднувати з `--gateway-token`.
     - Вимикайте auth лише якщо повністю довіряєте кожному локальному процесу.
     - Bind не на loopback усе одно потребує auth.
+
   </Step>
   <Step title="Канали">
     - [WhatsApp](/uk/channels/whatsapp): необов’язковий вхід через QR.
@@ -108,12 +111,14 @@ x-i18n:
     - [BlueBubbles](/uk/channels/bluebubbles): **рекомендовано для iMessage**; URL сервера + пароль + webhook.
     - [iMessage](/uk/channels/imessage): застарілий шлях CLI `imsg` + доступ до БД.
     - Безпека DM: типово використовується pairing. Перший DM надсилає код; схваліть через `openclaw pairing approve <channel> <code>` або використовуйте allowlist.
+
   </Step>
   <Step title="Вебпошук">
     - Виберіть підтримуваного постачальника, наприклад Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG або Tavily (або пропустіть).
     - Постачальники з API можуть використовувати env vars або наявну конфігурацію для швидкого налаштування; постачальники без ключів використовують специфічні для них передумови.
     - Пропустити можна через `--skip-search`.
     - Налаштувати пізніше: `openclaw configure --section web`.
+
   </Step>
   <Step title="Установлення daemon">
     - macOS: LaunchAgent
@@ -125,18 +130,22 @@ x-i18n:
     - Якщо auth токеном потребує токен, а `gateway.auth.token` керується через SecretRef, установлення daemon перевіряє його, але не зберігає розв’язане відкрите значення токена в метаданих середовища сервісу supervisor.
     - Якщо auth токеном потребує токен, а налаштований SecretRef токена не розв’язується, установлення daemon блокується з практичними вказівками.
     - Якщо налаштовано і `gateway.auth.token`, і `gateway.auth.password`, а `gateway.auth.mode` не задано, установлення daemon блокується, доки режим не буде явно встановлено.
+
   </Step>
   <Step title="Перевірка працездатності">
     - Запускає Gateway (за потреби) і виконує `openclaw health`.
     - Порада: `openclaw status --deep` додає live-probe працездатності gateway до виводу status, зокрема probe каналів, коли це підтримується (потребує доступного gateway).
+
   </Step>
   <Step title="Skills (рекомендовано)">
     - Читає доступні Skills і перевіряє вимоги.
     - Дозволяє вибрати менеджер node: **npm / pnpm** (bun не рекомендовано).
     - Установлює необов’язкові залежності (деякі використовують Homebrew на macOS).
+
   </Step>
   <Step title="Завершення">
     - Підсумок + наступні кроки, зокрема застосунки iOS/Android/macOS для додаткових можливостей.
+
   </Step>
 </Steps>
 

@@ -25,6 +25,7 @@ référence pour **quoi importer** et **ce que vous pouvez enregistrer**.
 - Plugin de canal ? Voir [Plugins de canal](/fr/plugins/sdk-channel-plugins).
 - Plugin de fournisseur ? Voir [Plugins de fournisseur](/fr/plugins/sdk-provider-plugins).
 - Plugin d’outil ou de Hook de cycle de vie ? Voir [Plugin hooks](/fr/plugins/hooks).
+
 </Tip>
 
 ## Convention d’import

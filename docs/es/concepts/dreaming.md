@@ -93,6 +93,7 @@ También existe una vía de relleno histórico fundamentado para trabajo de revi
     - `memory rem-backfill --path ...` escribe entradas de diario fundamentadas y reversibles en `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` prepara candidatos duraderos fundamentados en el mismo almacén de evidencia a corto plazo que ya usa la fase Deep normal.
     - `memory rem-backfill --rollback` y `--rollback-short-term` eliminan esos artefactos de relleno preparados sin tocar las entradas normales del diario ni la recuperación activa normal a corto plazo.
+
   </Accordion>
 </AccordionGroup>
 

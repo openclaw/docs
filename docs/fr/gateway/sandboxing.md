@@ -32,6 +32,7 @@ Ce n’est pas une frontière de sécurité parfaite, mais cela limite matériel
     - L’accès observateur noVNC est protégé par mot de passe par défaut ; OpenClaw émet une URL à token de courte durée qui sert une page d’amorçage locale et ouvre noVNC avec le mot de passe dans le fragment d’URL (pas dans les journaux query/header).
     - `agents.defaults.sandbox.browser.allowHostControl` permet aux sessions sandboxées de cibler explicitement le navigateur de l’hôte.
     - Des listes d’autorisation facultatives contrôlent `target: "custom"` : `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ Utilisez `backend: "ssh"` lorsque vous voulez qu’OpenClaw sandboxe `exec`, les
     - À la première utilisation après création ou recréation, OpenClaw ensemence une fois cet espace de travail distant à partir de l’espace de travail local.
     - Ensuite, `exec`, `read`, `write`, `edit`, `apply_patch`, les lectures média de prompt et la préparation des médias entrants s’exécutent directement sur l’espace de travail distant via SSH.
     - OpenClaw ne synchronise pas automatiquement les changements distants vers l’espace de travail local.
+
   </Accordion>
   <Accordion title="Matériel d’authentification">
     - `identityFile`, `certificateFile`, `knownHostsFile` : utiliser des fichiers locaux existants et les transmettre via la configuration OpenSSH.
     - `identityData`, `certificateData`, `knownHostsData` : utiliser des chaînes en ligne ou SecretRef. OpenClaw les résout via l’instantané d’exécution normal des secrets, les écrit dans des fichiers temporaires avec `0600`, puis les supprime à la fin de la session SSH.
     - Si `*File` et `*Data` sont tous deux définis pour le même élément, `*Data` l’emporte pour cette session SSH.
+
   </Accordion>
   <Accordion title="Conséquences du modèle canonique distant">
     Il s’agit d’un modèle **canonique distant**. L’espace de travail SSH distant devient le véritable état du sandbox après l’ensemencement initial.
@@ -205,11 +208,13 @@ Modes OpenShell :
     - OpenClaw demande à OpenShell une configuration SSH spécifique au sandbox via `openshell sandbox ssh-config <name>`.
     - Le noyau écrit cette configuration SSH dans un fichier temporaire, ouvre la session SSH, et réutilise le même pont de système de fichiers distant que celui utilisé par `backend: "ssh"`.
     - En mode `mirror`, seul le cycle de vie diffère : synchroniser du local vers le distant avant `exec`, puis resynchroniser après `exec`.
+
   </Accordion>
   <Accordion title="Limites actuelles d’OpenShell">
     - le navigateur sandboxé n’est pas encore pris en charge
     - `sandbox.docker.binds` n’est pas pris en charge sur le backend OpenShell
     - les réglages d’exécution spécifiques à Docker sous `sandbox.docker.*` s’appliquent toujours uniquement au backend Docker
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ Exemple (source en lecture seule + répertoire de données supplémentaire) :
 - Les montages sensibles (secrets, clés SSH, identifiants de service) devraient être en `:ro` sauf nécessité absolue.
 - Combinez avec `workspaceAccess: "ro"` si vous n’avez besoin que d’un accès en lecture à l’espace de travail ; les modes de montage bind restent indépendants.
 - Voir [Sandbox vs Tool Policy vs Elevated](/fr/gateway/sandbox-vs-tool-policy-vs-elevated) pour savoir comment les montages bind interagissent avec la politique d’outils et `exec` élevé.
+
 </Warning>
 
 ## Images et configuration
@@ -423,6 +429,7 @@ Par défaut, les conteneurs sandbox Docker s’exécutent **sans réseau**. Remp
     - `network: "host"` est bloqué.
     - `network: "container:<id>"` est bloqué par défaut (risque de contournement par jointure de namespace).
     - Remplacement break-glass : `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ Chemins :
     - `readOnlyRoot: true` empêche les écritures ; définissez `readOnlyRoot: false` ou intégrez une image personnalisée.
     - `user` doit être root pour les installations de paquets (omettez `user` ou définissez `user: "0:0"`).
     - Le sandbox `exec` n’hérite **pas** du `process.env` de l’hôte. Utilisez `agents.defaults.sandbox.docker.env` (ou une image personnalisée) pour les clés API des Skills.
+
   </Accordion>
 </AccordionGroup>
 

@@ -172,6 +172,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - скорочення GitHub-репозиторію, наприклад `owner/repo`
     - URL GitHub-репозиторію, наприклад `https://github.com/owner/repo`
     - git URL
+
   </Tab>
   <Tab title="Правила віддаленого marketplace">
     Для віддалених marketplace, завантажених із GitHub або git, записи плагінів мають залишатися всередині клонованого репозиторію marketplace. OpenClaw приймає джерела відносних шляхів із цього репозиторію та відхиляє HTTP(S), абсолютні шляхи, git, GitHub та інші джерела плагінів, що не є шляхами, із віддалених маніфестів.

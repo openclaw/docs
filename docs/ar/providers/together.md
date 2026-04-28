@@ -127,6 +127,7 @@ openclaw onboard --non-interactive \
     - إذا لم تكن النماذج تظهر، فتأكد من أن مفتاح API مضبوط في البيئة
       الصحيحة لعملية Gateway الخاصة بك.
     - تستخدم مراجع النماذج الشكل `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

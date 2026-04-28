@@ -67,12 +67,14 @@ x-i18n:
     - 完了時、サブエージェントは要求元チャットチャネルへ summary/result メッセージを通知します。
     - 完了はプッシュベースです。spawn 後は、完了待ちのためだけに `/subagents list`、`sessions_list`、`sessions_history` をループでポーリングしないでください。status の確認は、デバッグや介入が必要なときにだけ行ってください。
     - 完了時、OpenClaw はそのサブエージェント session が開いた追跡済み browser tab/process を、通知 cleanup フローが続行する前にベストエフォートで閉じます。
+
   </Accordion>
   <Accordion title="手動 spawn の配信耐性">
     - OpenClaw はまず安定した idempotency key 付きで直接 `agent` 配信を試みます。
     - 直接配信に失敗した場合は、queue routing にフォールバックします。
     - queue routing も利用できない場合、通知は短い指数バックオフで再試行され、その後最終的に断念します。
     - 完了配信では、解決済みの要求元ルートを維持します。利用可能な場合は、thread-bound または conversation-bound の完了ルートが優先されます。完了 origin が channel しか提供しない場合、OpenClaw は要求元 session の解決済みルート（`lastChannel` / `lastTo` / `lastAccountId`）から不足している target/account を補うため、直接配信が引き続き機能します。
+
   </Accordion>
   <Accordion title="完了ハンドオフメタデータ">
     要求元 session への完了ハンドオフは、ランタイム生成の内部コンテキストであり、ユーザー作成テキストではありません。内容は次のとおりです。
@@ -89,6 +91,7 @@ x-i18n:
     - `/subagents spawn` は one-shot モード（`mode: "run"`）です。永続的な thread-bound session には、`thread: true` と `mode: "session"` を付けた `sessions_spawn` を使ってください。
     - ACP ハーネス session（Claude Code、Gemini CLI、OpenCode、または明示的な Codex ACP/acpx）では、tool がその runtime を公開している場合に `runtime: "acp"` を付けた `sessions_spawn` を使ってください。完了や agent-to-agent ループのデバッグ時は [ACP delivery model](/ja-JP/tools/acp-agents#delivery-model) を参照してください。`codex` Plugin が有効な場合、Codex の chat/thread 制御では、ユーザーが明示的に ACP/acpx を要求しない限り、ACP より `/codex ...` を優先すべきです。
     - OpenClaw は、ACP が有効で、要求元が sandbox 化されておらず、`acpx` のような backend Plugin がロードされている場合にのみ `runtime: "acp"` を表示します。`runtime: "acp"` は外部 ACP ハーネス id、または `runtime.type="acp"` を持つ `agents.list[]` エントリを想定しています。`agents_list` の通常の OpenClaw config agent にはデフォルトのサブエージェント runtime を使用してください。
+
   </Accordion>
 </AccordionGroup>
 

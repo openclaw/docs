@@ -184,6 +184,7 @@ Cette opération est idempotente et peut être exécutée en toute sécurité pl
     - Assurez-vous d’abord de pouvoir accéder via le VPN Tailscale
     - L’accès SSH (port 22) est toujours autorisé
     - La gateway n’est accessible que via Tailscale, par conception
+
   </Accordion>
   <Accordion title="Le service ne démarre pas">
     ```bash

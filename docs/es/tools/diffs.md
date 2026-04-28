@@ -198,6 +198,7 @@ Todos los campos son opcionales salvo que se indique lo contrario.
       - `fileQuality: "hq"`: máximo 14 MP (14,000,000 píxeles renderizados).
       - `fileQuality: "print"`: máximo 24 MP (24,000,000 píxeles renderizados).
       - El PDF también tiene un máximo de 50 páginas.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Reglas de `baseUrl`:
     - Limitación de errores remotos cuando el acceso remoto está habilitado:
       - 40 fallos por 60 segundos
       - bloqueo de 60 segundos (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Protección reforzada del renderizado de archivos">
     - El enrutamiento de solicitudes del navegador de capturas de pantalla se deniega de forma predeterminada.
     - Solo se permiten recursos locales del visor desde `http://127.0.0.1/plugins/diffs/assets/*`.
     - Las solicitudes de red externas se bloquean.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Orden de resolución:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Respaldo de plataforma">
     Respaldo de detección de comando/ruta de la plataforma.
@@ -456,6 +460,7 @@ Solución: instala Chrome, Chromium, Edge o Brave, o configura una de las opcion
     - `Invalid baseUrl: ...` — usa un origen `http(s)` con ruta opcional, sin query/hash.
     - `{field} exceeds maximum size (...)` — reduce el tamaño de la carga.
     - Rechazo por patch grande — reduce la cantidad de archivos del patch o el total de líneas.
+
   </Accordion>
   <Accordion title="Accesibilidad del visor">
     - La URL del visor se resuelve a `127.0.0.1` de forma predeterminada.
@@ -468,6 +473,7 @@ Solución: instala Chrome, Chromium, Edge o Brave, o configura una de las opcion
       - prefiere `mode: "file"` o `mode: "both"` cuando solo necesites un archivo adjunto, o
       - habilita intencionalmente `security.allowRemoteViewer` y configura `viewerBaseUrl` del Plugin o pasa un `baseUrl` de proxy/público cuando necesites una URL de visor compartible
     - Habilita `security.allowRemoteViewer` solo cuando quieras acceso externo al visor.
+
   </Accordion>
   <Accordion title="La fila de líneas sin modificar no tiene botón para expandir">
     Esto puede ocurrir con entrada de patch cuando el patch no contiene contexto expandible. Esto es un comportamiento esperado y no indica un fallo del visor.
@@ -476,6 +482,7 @@ Solución: instala Chrome, Chromium, Edge o Brave, o configura una de las opcion
     - El artefacto venció por TTL.
     - El token o la ruta cambiaron.
     - La limpieza eliminó datos obsoletos.
+
   </Accordion>
 </AccordionGroup>
 

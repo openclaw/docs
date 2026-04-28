@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - pattern della radice predefinita: `/Users/*/Library/Messages/Attachments`
     - SCP usa il controllo rigoroso della chiave host (`StrictHostKeyChecking=yes`)
     - la dimensione dei media in uscita usa `channels.imessage.mediaMaxMb` (predefinito 16 MB)
+
   </Accordion>
 
   <Accordion title="Suddivisione del testo in uscita">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - modalità di suddivisione: `channels.imessage.chunkMode`
       - `length` (predefinito)
       - `newline` (suddivisione prima per paragrafi)
+
   </Accordion>
 
   <Accordion title="Formati di indirizzamento">

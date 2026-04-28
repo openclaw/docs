@@ -175,6 +175,7 @@ Aracıların mesajları nasıl işleyeceğini kontrol edin:
     - Listelenen tüm aracılar mesajı işler.
     - Her aracının kendi oturum anahtarı ve yalıtılmış bağlamı vardır.
     - Aracılar paralel (varsayılan) veya sıralı olarak işler.
+
   </Step>
   <Step title="Yayın listesinde değilse">
     Normal yönlendirme uygulanır (eşleşen ilk bağlama).

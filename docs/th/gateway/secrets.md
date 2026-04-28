@@ -58,6 +58,7 @@ SecretRefs จะถูกตรวจสอบเฉพาะบนพื้น
         - `gateway.remote.token` จะใช้งานจริงเมื่อ token auth มีโอกาสชนะและไม่มี env/auth token ถูกกำหนดไว้
         - `gateway.remote.password` จะใช้งานจริงเฉพาะเมื่อ password auth มีโอกาสชนะและไม่มี env/auth password ถูกกำหนดไว้
     - SecretRef ของ `gateway.auth.token` จะไม่ใช้งานสำหรับการ resolve auth ตอน startup เมื่อมีการตั้ง `OPENCLAW_GATEWAY_TOKEN` เพราะ token จาก env จะชนะสำหรับ runtime นั้น
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ SecretRefs จะถูกตรวจสอบเฉพาะบนพื้น
   <Accordion title="Env provider">
     - มี allowlist แบบเลือกได้ผ่าน `allowlist`
     - ค่า env ที่ไม่มีหรือว่างจะทำให้การ resolve ล้มเหลว
+
   </Accordion>
   <Accordion title="File provider">
     - อ่านไฟล์ local จาก `path`
@@ -173,6 +175,7 @@ SecretRefs จะถูกตรวจสอบเฉพาะบนพื้น
     - `mode: "singleValue"` คาดหวัง ref id เป็น `"value"` และส่งคืนเนื้อหาของไฟล์
     - path ต้องผ่านการตรวจสอบ ownership/permissions
     - หมายเหตุ fail-closed บน Windows: หากไม่สามารถตรวจสอบ ACL สำหรับ path ได้ การ resolve จะล้มเหลว สำหรับ paths ที่เชื่อถือได้เท่านั้น ให้ตั้ง `allowInsecurePath: true` บน provider นั้นเพื่อข้ามการตรวจสอบความปลอดภัยของ path
+
   </Accordion>
   <Accordion title="Exec provider">
     - รัน binary path แบบสัมบูรณ์ที่กำหนดไว้ โดยไม่ผ่าน shell

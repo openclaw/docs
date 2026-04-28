@@ -57,6 +57,7 @@ OpenClawは次の順序でmodelを選択します。
     - `agents.defaults.musicGenerationModel` は共有music-generation capabilityで使われます。省略した場合でも、`music_generate` はauth対応のprovider defaultを推論できます。まず現在のdefault providerを試し、その後、残りの登録済みmusic-generation providerをprovider-id順に試します。特定のprovider/modelを設定する場合は、そのproviderのauth/API keyも設定してください。
     - `agents.defaults.videoGenerationModel` は共有video-generation capabilityで使われます。省略した場合でも、`video_generate` はauth対応のprovider defaultを推論できます。まず現在のdefault providerを試し、その後、残りの登録済みvideo-generation providerをprovider-id順に試します。特定のprovider/modelを設定する場合は、そのproviderのauth/API keyも設定してください。
     - agentごとのdefaultは、`agents.list[].model` とbindingによって `agents.defaults.model` を上書きできます（[Multi-agent routing](/ja-JP/concepts/multi-agent)を参照）。
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - modelを `agents.defaults.models` に追加する
 - allowlistをクリアする（`agents.defaults.models` を削除する）
 - `/model list` からmodelを選ぶ
+
 </Warning>
 
 allowlist configの例:
@@ -157,6 +159,7 @@ allowlist configの例:
     - Discordでは、`/model` と `/models` は、providerとmodelのドロップダウンにSubmitステップを加えた対話型pickerを開きます。
     - `/models add` は非推奨で、chatからmodelを登録する代わりに非推奨メッセージを返すようになりました。
     - `/model <#>` はそのpickerから選択します。
+
   </Accordion>
   <Accordion title="永続化とライブ切り替え">
     - `/model` は新しいsession選択を即座に永続化します。
@@ -164,6 +167,7 @@ allowlist configの例:
     - すでにrunがアクティブな場合、OpenClawはライブ切り替えを保留としてマークし、クリーンなretry pointでのみ新しいmodelへ再起動します。
     - すでにtool activityやreply outputが始まっている場合、保留中の切り替えは、後のretry機会または次のuser turnまでキューされたままになることがあります。
     - `/model status` は詳細ビューです（auth candidate、および設定されている場合はprovider endpointの `baseUrl` + `api` mode）。
+
   </Accordion>
   <Accordion title="ref parsing">
     - model refは**最初の** `/` で分割して解析されます。`/model <ref>` を入力するときは `provider/model` を使ってください。
@@ -233,6 +237,7 @@ openclaw models image-fallbacks clear
     - automationには `--check` を使ってください（不足/期限切れでexit `1`、期限間近で `2`）。
     - ライブauth確認には `--probe` を使ってください。probe rowはauth profile、env credential、または `models.json` から来ることがあります。
     - 明示的な `auth.order.<provider>` が保存済みprofileを省略している場合、probeはそれを試す代わりに `excluded_by_auth_order` を報告します。authは存在するが、そのprovider向けにprobe可能なmodelを解決できない場合、probeは `status: no_model` を報告します。
+
   </Accordion>
 </AccordionGroup>
 

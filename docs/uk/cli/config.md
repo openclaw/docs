@@ -56,6 +56,7 @@ openclaw config validate --json
     - Гілки `anyOf` / `oneOf` / `allOf` також успадковують ті самі документаційні метадані, якщо існує відповідна документація поля.
     - Метадані схеми live Plugin + channel у режимі best-effort, коли можна завантажити runtime-маніфести.
     - Коректну резервну схему, навіть якщо поточна конфігурація невалідна.
+
   </Accordion>
   <Accordion title="Пов’язаний runtime RPC">
     `config.schema.lookup` повертає один нормалізований шлях конфігурації з поверхневим вузлом схеми (`title`, `description`, `type`, `enum`, `const`, типові обмеження), зіставленими метаданими підказок UI та зведеннями безпосередніх дочірніх елементів. Використовуйте це для деталізації в межах шляху в Control UI або власних клієнтах.
@@ -191,15 +192,18 @@ openclaw config set secrets.providers.vaultfile \
   <Accordion title="Загальні прапорці">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Провайдер env (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (можна повторювати)
+
   </Accordion>
   <Accordion title="Провайдер file (--provider-source file)">
     - `--provider-path <path>` (обов’язково)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Провайдер exec (--provider-source exec)">
     - `--provider-command <path>` (обов’язково)
@@ -212,6 +216,7 @@ openclaw config set secrets.providers.vaultfile \
     - `--provider-trusted-dir <path>` (можна повторювати)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - Перевірки SecretRef exec типово пропускаються під час dry-run, щоб уникнути побічних ефектів виконання команд.
     - Використовуйте `--allow-exec` з `--dry-run`, щоб увімкнути перевірки SecretRef exec (це може виконувати команди провайдера).
     - `--allow-exec` працює лише для dry-run і повертає помилку, якщо використовується без `--dry-run`.
+
   </Accordion>
   <Accordion title="Поля --dry-run --json">
     `--dry-run --json` виводить машиночитаний звіт:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: на цей момент не вдається розв’язати вказаний provider/ref (відсутня змінна середовища, недійсний вказівник на файл, збій провайдера exec або невідповідність provider/source).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run пропустив ref exec; повторно запустіть із `--allow-exec`, якщо вам потрібна перевірка можливості розв’язання exec.
     - Для пакетного режиму виправте записи, що завершилися помилкою, і повторно запустіть `--dry-run` перед записом.
+
   </Accordion>
 </AccordionGroup>
 

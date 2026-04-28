@@ -133,6 +133,7 @@ Cari:
     - `messages[...].content: invalid type: sequence, expected a string` → backend menolak bagian konten Chat Completions yang terstruktur. Perbaikan: atur `models.providers.<provider>.models[].compat.requiresStringContent: true`.
     - permintaan kecil langsung berhasil, tetapi eksekusi agen OpenClaw gagal dengan crash backend/model (misalnya Gemma pada beberapa build `inferrs`) → transport OpenClaw kemungkinan sudah benar; backend gagal pada bentuk prompt runtime agen yang lebih besar.
     - kegagalan berkurang setelah tools dinonaktifkan tetapi tidak hilang → schema tool merupakan bagian dari tekanan, tetapi masalah yang tersisa tetap merupakan keterbatasan model/server upstream atau bug backend.
+
   </Accordion>
   <Accordion title="Opsi perbaikan">
     1. Atur `compat.requiresStringContent: true` untuk backend Chat Completions yang hanya mendukung string.
@@ -209,6 +210,7 @@ Cari:
     - `too many failed authentication attempts (retry later)` dari klien loopback origin browser → kegagalan berulang dari `Origin` yang sama dan telah dinormalisasi itu dikunci sementara; origin localhost lain menggunakan bucket terpisah.
     - `unauthorized` berulang setelah percobaan ulang tersebut → drift shared token/device token; segarkan config token dan setujui/rotasi ulang token device jika perlu.
     - `gateway connect failed:` → target host/port/url salah.
+
   </Accordion>
 </AccordionGroup>
 
@@ -288,6 +290,7 @@ Cari:
     - `refusing to bind gateway ... without auth` → bind non-loopback tanpa jalur auth gateway yang valid (token/password, atau trusted-proxy jika dikonfigurasi).
     - `another gateway instance is already listening` / `EADDRINUSE` → konflik port.
     - `Other gateway-like services detected (best effort)` → unit launchd/systemd/schtasks yang basi atau paralel masih ada. Sebagian besar penyiapan sebaiknya mempertahankan satu gateway per mesin; jika Anda memang membutuhkan lebih dari satu, isolasikan port + config/status/workspace. Lihat [/gateway#multiple-gateways-same-host](/id/gateway#multiple-gateways-same-host).
+
   </Accordion>
 </AccordionGroup>
 
@@ -323,6 +326,7 @@ Cari:
     - Config aktif dipulihkan dari salinan last-known-good yang terakhir tervalidasi.
     - Giliran agen utama berikutnya diperingatkan agar tidak menulis ulang config yang ditolak secara membabi buta.
     - Jika semua masalah validasi berada di bawah `plugins.entries.<id>...`, OpenClaw tidak akan memulihkan seluruh file. Kegagalan lokal Plugin tetap terdengar jelas sementara pengaturan pengguna lain yang tidak terkait tetap berada dalam config aktif.
+
   </Accordion>
   <Accordion title="Periksa dan perbaiki">
     ```bash
@@ -339,6 +343,7 @@ Cari:
     - `Config write rejected:` → penulisan mencoba menghapus bentuk yang diperlukan, menyusutkan file secara tajam, atau menyimpan config yang tidak valid.
     - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good`, atau `size-drop-vs-last-good:*` → startup memperlakukan file saat ini sebagai clobbered karena kehilangan field atau ukuran dibanding backup last-known-good.
     - `Config last-known-good promotion skipped` → kandidat berisi placeholder secret yang disamarkan seperti `***`.
+
   </Accordion>
   <Accordion title="Opsi perbaikan">
     1. Pertahankan config aktif yang telah dipulihkan jika memang sudah benar.
@@ -442,6 +447,7 @@ Cari:
     - `heartbeat skipped` dengan `reason=no-tasks-due` → `HEARTBEAT.md` berisi blok `tasks:`, tetapi tidak ada tugas yang jatuh tempo pada tick ini.
     - `heartbeat: unknown accountId` → id akun tidak valid untuk target pengiriman Heartbeat.
     - `heartbeat skipped` dengan `reason=dm-blocked` → target Heartbeat di-resolve ke tujuan bergaya DM sementara `agents.defaults.heartbeat.directPolicy` (atau override per agen) diatur ke `block`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -510,12 +516,14 @@ Cari:
     - `browser.cdpUrl must be http(s) or ws(s)` → URL CDP yang dikonfigurasi menggunakan skema yang tidak didukung seperti `file:` atau `ftp:`.
     - `browser.cdpUrl has invalid port` → URL CDP yang dikonfigurasi memiliki port yang buruk atau di luar rentang.
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → instalasi gateway saat ini tidak memiliki dependensi runtime `playwright-core` milik Plugin browser bawaan; jalankan `openclaw doctor --fix`, lalu restart gateway. Snapshot ARIA dan screenshot halaman dasar mungkin tetap berfungsi, tetapi navigasi, snapshot AI, screenshot elemen selector CSS, dan ekspor PDF tetap tidak tersedia.
+
   </Accordion>
   <Accordion title="Tanda tangan Chrome MCP / existing-session">
     - `Could not find DevToolsActivePort for chrome` → existing-session Chrome MCP belum dapat attach ke direktori data browser yang dipilih. Buka halaman inspect browser, aktifkan remote debugging, biarkan browser tetap terbuka, setujui prompt attach pertama, lalu coba lagi. Jika status login tidak diperlukan, utamakan profil terkelola `openclaw`.
     - `No Chrome tabs found for profile="user"` → profil attach Chrome MCP tidak memiliki tab Chrome lokal yang terbuka.
     - `Remote CDP for profile "<name>" is not reachable` → endpoint CDP remote yang dikonfigurasi tidak dapat dijangkau dari host gateway.
     - `Browser attachOnly is enabled ... not reachable` atau `Browser attachOnly is enabled and CDP websocket ... is not reachable` → profil attach-only tidak memiliki target yang dapat dijangkau, atau endpoint HTTP menjawab tetapi WebSocket CDP tetap tidak dapat dibuka.
+
   </Accordion>
   <Accordion title="Tanda tangan elemen / screenshot / upload">
     - `fullPage is not supported for element screenshots` → permintaan screenshot mencampur `--full-page` dengan `--ref` atau `--element`.
@@ -527,6 +535,7 @@ Cari:
     - `existing-session evaluate does not support timeoutMs overrides.` → hilangkan `timeoutMs` untuk `act:evaluate` pada profil `profile="user"` / Chrome MCP existing-session, atau gunakan profil browser terkelola/CDP saat timeout kustom diperlukan.
     - `response body is not supported for existing-session profiles yet.` → `responsebody` masih memerlukan browser terkelola atau profil CDP mentah.
     - override viewport / dark-mode / locale / offline yang basi pada profil attach-only atau CDP remote → jalankan `openclaw browser stop --browser-profile <name>` untuk menutup sesi kontrol aktif dan melepaskan status emulasi Playwright/CDP tanpa me-restart seluruh gateway.
+
   </Accordion>
 </AccordionGroup>
 

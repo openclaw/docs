@@ -64,6 +64,7 @@ Ollama provider 配置使用 `baseUrl` 作为规范键名。OpenClaw 也接受 `
         - **Cloud + Local** — 本地 Ollama 主机，加上通过该主机路由的云模型
         - **Cloud only** — 通过 `https://ollama.com` 使用托管的 Ollama 模型
         - **Local only** — 仅使用本地模型
+
       </Step>
       <Step title="选择一个模型">
         `Cloud only` 会提示输入 `OLLAMA_API_KEY`，并建议使用托管云默认模型。`Cloud + Local` 和 `Local only` 会要求填写 Ollama base URL，发现可用模型，并在所选本地模型尚不可用时自动拉取它。当 Ollama 报告已安装的 `:latest` 标签（例如 `gemma4:latest`）时，设置界面只会显示这个已安装模型一次，而不会同时显示 `gemma4` 和 `gemma4:latest`，也不会再次拉取不带标签的别名。`Cloud + Local` 还会检查该 Ollama 主机是否已登录以启用云访问。
@@ -103,6 +104,7 @@ Ollama provider 配置使用 `baseUrl` 作为规范键名。OpenClaw 也接受 `
         - **Cloud + Local**：安装 Ollama，使用 `ollama signin` 登录，并通过该主机路由云请求
         - **Cloud only**：使用 `https://ollama.com` 并配合 `OLLAMA_API_KEY`
         - **Local only**：从 [ollama.com/download](https://ollama.com/download) 安装 Ollama
+
       </Step>
       <Step title="拉取本地模型（仅本地）">
         ```bash

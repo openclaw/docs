@@ -73,6 +73,7 @@ Aktuelle OpenClaw-Releases bündeln BlueBubbles, daher benötigen normale paketi
 - Legen Sie immer ein Webhook-Passwort fest.
 - Webhook-Authentifizierung ist immer erforderlich. OpenClaw lehnt BlueBubbles-Webhook-Anfragen ab, sofern sie kein Passwort/keine GUID enthalten, das/die mit `channels.bluebubbles.password` übereinstimmt (zum Beispiel `?password=<password>` oder `x-password`), unabhängig von der local loopback-/Proxy-Topologie.
 - Die Passwortauthentifizierung wird geprüft, bevor vollständige Webhook-Bodys gelesen/geparst werden.
+
 </Warning>
 
 ## Messages.app aktiv halten (VM-/Headless-Setups)
@@ -184,10 +185,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - Kopplung ist der Standard-Tokenaustausch. Details: [Kopplung](/de/channels/pairing)
+
   </Tab>
   <Tab title="Groups">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (Standard: `allowlist`).
     - `channels.bluebubbles.groupAllowFrom` steuert, wer in Gruppen Trigger auslösen kann, wenn `allowlist` gesetzt ist.
+
   </Tab>
 </Tabs>
 
@@ -400,6 +403,7 @@ BlueBubbles unterstützt erweiterte Nachrichtenaktionen, wenn sie in der Konfigu
     - **upload-file**: Medien/Dateien senden (`to`, `buffer`, `filename`, `asVoice`).
       - Sprachnotizen: Setzen Sie `asVoice: true` mit **MP3**- oder **CAF**-Audio, um als iMessage-Sprachnachricht zu senden. BlueBubbles konvertiert MP3 → CAF beim Senden von Sprachnotizen.
     - Legacy-Alias: `sendAttachment` funktioniert weiterhin, aber `upload-file` ist der kanonische Aktionsname.
+
   </Accordion>
 </AccordionGroup>
 
@@ -480,6 +484,7 @@ Die beiden Webhooks treffen bei OpenClaw in den meisten Setups mit einem Abstand
     - **Zusätzliche Latenz für DM-Steuerbefehle.** Wenn das Flag aktiviert ist, warten DM-Steuerbefehlsnachrichten (wie `Dump`, `Save` usw.) nun bis zum Debounce-Fenster, bevor sie gesendet werden, falls ein Payload-Webhook folgt. Befehle in Gruppenchats werden weiterhin sofort gesendet.
     - **Zusammengeführte Ausgabe ist begrenzt** — zusammengeführter Text ist auf 4000 Zeichen mit einem expliziten Marker `…[truncated]` begrenzt; Anhänge sind auf 20 begrenzt; Quelleinträge sind auf 10 begrenzt (darüber hinaus bleiben der erste und der neueste erhalten). Jede Quell-`messageId` erreicht weiterhin die Inbound-Deduplizierung, sodass eine spätere MessagePoller-Wiedergabe eines einzelnen Ereignisses als Duplikat erkannt wird.
     - **Opt-in, pro Kanal.** Andere Kanäle (Telegram, WhatsApp, Slack, …) sind nicht betroffen.
+
   </Tab>
 </Tabs>
 
@@ -558,6 +563,7 @@ Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
     - `channels.bluebubbles.serverUrl`: Basis-URL der BlueBubbles-REST-API.
     - `channels.bluebubbles.password`: API-Passwort.
     - `channels.bluebubbles.webhookPath`: Pfad des Webhook-Endpunkts (Standard: `/bluebubbles-webhook`).
+
   </Accordion>
   <Accordion title="Zugriffsrichtlinie">
     - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (Standard: `pairing`).
@@ -566,6 +572,7 @@ Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
     - `channels.bluebubbles.groupAllowFrom`: Allowlist für Gruppenabsender.
     - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: Unter macOS unbenannte Gruppenteilnehmer optional nach erfolgreichem Gating aus lokalen Contacts anreichern. Standard: `false`.
     - `channels.bluebubbles.groups`: Konfiguration pro Gruppe (`requireMention` usw.).
+
   </Accordion>
   <Accordion title="Zustellung und Chunking">
     - `channels.bluebubbles.sendReadReceipts`: Lesebestätigungen senden (Standard: `true`).
@@ -573,6 +580,7 @@ Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
     - `channels.bluebubbles.textChunkLimit`: Größe ausgehender Chunks in Zeichen (Standard: 4000).
     - `channels.bluebubbles.sendTimeoutMs`: Timeout pro Anfrage in ms für ausgehende Textsendungen über `/api/v1/message/text` (Standard: 30000). Erhöhen Sie den Wert bei macOS-26-Setups, bei denen Private-API-iMessage-Sendungen im iMessage-Framework 60+ Sekunden hängen können; zum Beispiel `45000` oder `60000`. Probes, Chat-Lookups, Reaktionen, Bearbeitungen und Health-Checks behalten derzeit den kürzeren Standardwert von 10 s; eine Erweiterung auf Reaktionen und Bearbeitungen ist als Folgearbeit geplant. Kontoabhängige Überschreibung: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
     - `channels.bluebubbles.chunkMode`: `length` (Standard) teilt nur bei Überschreitung von `textChunkLimit`; `newline` teilt an Leerzeilen (Absatzgrenzen) vor dem Chunking nach Länge.
+
   </Accordion>
   <Accordion title="Medien und Verlauf">
     - `channels.bluebubbles.mediaMaxMb`: Medienobergrenze für eingehende/ausgehende Medien in MB (Standard: 8).
@@ -580,10 +588,12 @@ Vollständige Konfiguration: [Konfiguration](/de/gateway/configuration)
     - `channels.bluebubbles.coalesceSameSenderDms`: Aufeinanderfolgende DM-Webhooks desselben Absenders zu einem Agent-Turn zusammenführen, damit Apples Split-Send von Text+URL als einzelne Nachricht ankommt (Standard: `false`). Siehe [Split-Send-DMs zusammenfassen](#coalescing-split-send-dms-command--url-in-one-composition) für Szenarien, Fenstertuning und Abwägungen. Erweitert das standardmäßige Inbound-Debounce-Fenster von 500 ms auf 2500 ms, wenn es ohne explizites `messages.inbound.byChannel.bluebubbles` aktiviert wird.
     - `channels.bluebubbles.historyLimit`: Maximale Anzahl von Gruppennachrichten für den Kontext (0 deaktiviert).
     - `channels.bluebubbles.dmHistoryLimit`: Verlaufslimit für DMs.
+
   </Accordion>
   <Accordion title="Aktionen und Konten">
     - `channels.bluebubbles.actions`: Bestimmte Aktionen aktivieren/deaktivieren.
     - `channels.bluebubbles.accounts`: Multi-Konto-Konfiguration.
+
   </Accordion>
 </AccordionGroup>
 

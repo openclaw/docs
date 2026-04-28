@@ -125,6 +125,7 @@ zawiera `kilocode/kilo/auto` (`Kilo Auto`) z `input: ["text", "image"]`,
     - Jeśli wykrywanie modeli nie powiedzie się przy starcie, OpenClaw wraca do dołączonego statycznego katalogu zawierającego `kilocode/kilo/auto`.
     - Potwierdź, że Twój klucz API jest prawidłowy i że konto Kilo ma włączone pożądane modele.
     - Gdy Gateway działa jako daemon, upewnij się, że `KILOCODE_API_KEY` jest dostępny dla tego procesu (na przykład w `~/.openclaw/.env` lub przez `env.shellEnv`).
+
   </Accordion>
 </AccordionGroup>
 

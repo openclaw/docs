@@ -86,12 +86,14 @@ OpenClaw 提供三个安装脚本，由 `openclaw.ai` 提供。
   <Step title="安装 OpenClaw">
     - `npm` 方法（默认）：全局 npm 安装
     - `git` 方法：克隆/更新仓库，使用 pnpm 安装依赖、构建，然后在 `~/.local/bin/openclaw` 安装包装脚本
+
   </Step>
   <Step title="安装后任务">
     - 尽力刷新已加载的 Gateway 网关服务（`openclaw gateway install --force`，然后重启）
     - 在升级和 git 安装时运行 `openclaw doctor --non-interactive`（尽力执行）
     - 在适当情况下尝试运行新手引导（有 TTY、未禁用 onboarding，且 bootstrap/配置检查通过）
     - 默认设置 `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ OpenClaw 提供三个安装脚本，由 `openclaw.ai` 提供。
   <Step title="在前缀下安装 OpenClaw">
     - `npm` 方法（默认）：使用 npm 安装到该前缀下，然后将包装脚本写入 `<prefix>/bin/openclaw`
     - `git` 方法：克隆/更新一个 checkout（默认 `~/openclaw`），并仍将包装脚本写入 `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="刷新已加载的 Gateway 网关服务">
     如果某个 Gateway 网关服务已从相同前缀加载，脚本会运行
@@ -293,11 +296,13 @@ OpenClaw 提供三个安装脚本，由 `openclaw.ai` 提供。
   <Step title="安装 OpenClaw">
     - `npm` 方法（默认）：使用所选 `-Tag` 进行全局 npm 安装
     - `git` 方法：克隆/更新仓库，使用 pnpm 安装/构建，并在 `%USERPROFILE%\.local\bin\openclaw.cmd` 安装包装脚本
+
   </Step>
   <Step title="安装后任务">
     - 在可能的情况下，将所需的 bin 目录添加到用户 PATH
     - 尽力刷新已加载的 Gateway 网关服务（`openclaw gateway install --force`，然后重启）
     - 在升级和 git 安装时运行 `openclaw doctor --non-interactive`（尽力执行）
+
   </Step>
   <Step title="处理失败">
     `iwr ... | iex` 和 scriptblock 安装会报告终止性错误，但不会关闭当前 PowerShell 会话。直接使用 `powershell -File` / `pwsh -File` 的安装方式仍会以非零退出码结束，以便自动化处理。

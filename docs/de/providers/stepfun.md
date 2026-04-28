@@ -211,6 +211,7 @@ Wählen Sie Ihre Provider-Oberfläche und folgen Sie den Setup-Schritten.
     - `step-3.5-flash-2603` wird derzeit nur auf `stepfun-plan` bereitgestellt.
     - Ein einzelner Auth-Flow schreibt zur Region passende Profile für `stepfun` und `stepfun-plan`, sodass beide Oberflächen gemeinsam entdeckt werden können.
     - Verwenden Sie `openclaw models list` und `openclaw models set <provider/model>`, um Modelle zu prüfen oder zu wechseln.
+
   </Accordion>
 </AccordionGroup>
 

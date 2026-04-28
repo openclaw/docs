@@ -58,6 +58,7 @@ SecretRef są walidowane tylko na efektywnie aktywnych powierzchniach.
         - `gateway.remote.token` jest aktywny, gdy auth tokenem może wygrać i nie skonfigurowano tokenu env/auth.
         - `gateway.remote.password` jest aktywny tylko wtedy, gdy auth hasłem może wygrać i nie skonfigurowano hasła env/auth.
     - SecretRef `gateway.auth.token` jest nieaktywny dla rozstrzygania auth przy starcie, gdy ustawione jest `OPENCLAW_GATEWAY_TOKEN`, ponieważ wejście tokenu env wygrywa dla tego runtime.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ Zdefiniuj providerów w `secrets.providers`:
   <Accordion title="Provider env">
     - Opcjonalna allowlista przez `allowlist`.
     - Brakujące/puste wartości env powodują błąd rozwiązywania.
+
   </Accordion>
   <Accordion title="Provider file">
     - Odczytuje plik lokalny ze `path`.
@@ -173,6 +175,7 @@ Zdefiniuj providerów w `secrets.providers`:
     - `mode: "singleValue"` oczekuje identyfikatora ref `"value"` i zwraca zawartość pliku.
     - Ścieżka musi przejść kontrole właściciela/uprawnień.
     - Uwaga fail-closed dla Windows: jeśli weryfikacja ACL nie jest dostępna dla ścieżki, rozwiązywanie kończy się błędem. Tylko dla zaufanych ścieżek ustaw `allowInsecurePath: true` dla tego providera, aby ominąć kontrole bezpieczeństwa ścieżki.
+
   </Accordion>
   <Accordion title="Provider exec">
     - Uruchamia skonfigurowaną bezwzględną ścieżkę binarki, bez powłoki.

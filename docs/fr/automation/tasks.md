@@ -114,6 +114,7 @@ Toutes les exécutions d’agent ne créent pas une tâche. Les tours Heartbeat 
     - Tours Heartbeat — session principale ; voir [Heartbeat](/fr/gateway/heartbeat)
     - Tours de chat interactif normaux
     - Réponses directes à `/command`
+
   </Accordion>
 </AccordionGroup>
 

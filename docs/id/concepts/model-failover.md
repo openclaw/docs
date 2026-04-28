@@ -226,6 +226,7 @@ OpenClaw membangun daftar kandidat dari `provider/model` yang saat ini diminta d
     - Jika run saat ini sudah berada pada fallback yang dikonfigurasi dalam keluarga provider yang sama, OpenClaw tetap menggunakan rantai terkonfigurasi penuh.
     - Jika run saat ini berada pada provider yang berbeda dari config dan model saat ini belum menjadi bagian dari rantai fallback yang dikonfigurasi, OpenClaw tidak menambahkan fallback terkonfigurasi yang tidak terkait dari provider lain.
     - Saat run dimulai dari override, primary yang dikonfigurasi ditambahkan di akhir agar rantai dapat kembali ke default normal setelah kandidat sebelumnya habis.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ OpenClaw membangun daftar kandidat dari `provider/model` yang saat ini diminta d
     - disabled karena billing
     - `LiveSessionModelSwitchError`, yang dinormalisasi ke jalur failover agar model persisten yang stale tidak membuat loop retry luar
     - error lain yang tidak dikenali saat masih ada kandidat tersisa
+
   </Tab>
   <Tab title="Tidak berlanjut pada">
     - abort eksplisit yang tidak berbentuk timeout/failover
     - error context overflow yang seharusnya tetap berada di dalam logika compaction/retry (misalnya `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model`, atau `ollama error: context length exceeded`)
     - error unknown terakhir ketika tidak ada kandidat tersisa
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Saat setiap profil auth untuk suatu provider sudah berada dalam cooldown, OpenCl
     - Kandidat primary dapat diprobe mendekati kedaluwarsa cooldown, dengan throttle per provider.
     - Sibling fallback pada provider yang sama dapat dicoba meskipun sedang cooldown ketika kegagalannya terlihat transien (`rate_limit`, `overloaded`, atau unknown). Ini terutama relevan ketika rate limit berskala model dan model sibling mungkin langsung pulih.
     - Probe cooldown transien dibatasi satu kali per provider per fallback run agar satu provider tidak menahan fallback lintas provider.
+
   </Accordion>
 </AccordionGroup>
 

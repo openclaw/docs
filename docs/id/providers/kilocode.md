@@ -123,6 +123,7 @@ menyertakan `kilocode/kilo/auto` (`Kilo Auto`) dengan `input: ["text", "image"]`
     - Jika penemuan model gagal saat startup, OpenClaw fallback ke katalog statis bawaan yang berisi `kilocode/kilo/auto`.
     - Pastikan kunci API Anda valid dan akun Kilo Anda mengaktifkan model yang diinginkan.
     - Saat Gateway berjalan sebagai daemon, pastikan `KILOCODE_API_KEY` tersedia untuk proses tersebut (misalnya di `~/.openclaw/.env` atau melalui `env.shellEnv`).
+
   </Accordion>
 </AccordionGroup>
 

@@ -244,11 +244,13 @@ openclaw agents list --bindings
   <Accordion title="فك التعادل ودلالات AND">
     - إذا طابقت عدة bindings في المستوى نفسه، فالأولى حسب ترتيب config هي التي تفوز.
     - إذا ضبط binding عدة حقول مطابقة (مثل `peer` + `guildId`)، فكل الحقول المحددة مطلوبة (دلالات `AND`).
+
   </Accordion>
   <Accordion title="تفاصيل نطاق الحساب">
     - يطابق binding الذي يحذف `accountId` الحساب الافتراضي فقط.
     - استخدم `accountId: "*"` كبديل احتياطي على مستوى القناة عبر جميع الحسابات.
     - إذا أضفت لاحقًا binding نفسها للوكيل نفسه مع معرّف حساب صريح، فسيقوم OpenClaw بترقية binding الحالية الخاصة بالقناة فقط إلى نطاق خاص بالحساب بدلًا من تكرارها.
+
   </Accordion>
 </AccordionGroup>
 

@@ -38,6 +38,7 @@ Siap produksi untuk DM dan channel melalui integrasi aplikasi Slack. Mode defaul
         - tempel [manifest contoh](#manifest-and-scope-checklist) di bawah ini lalu lanjutkan untuk membuat
         - buat **App-Level Token** (`xapp-...`) dengan `connections:write`
         - pasang aplikasi lalu salin **Bot Token** (`xoxb-...`) yang ditampilkan
+
       </Step>
 
       <Step title="Configure OpenClaw">
@@ -624,6 +625,7 @@ Catatan:
     - `channels.slack.chunkMode="newline"` mengaktifkan pemisahan dengan paragraf sebagai prioritas utama
     - pengiriman file menggunakan API upload Slack dan dapat menyertakan balasan thread (`thread_ts`)
     - batas media keluar mengikuti `channels.slack.mediaMaxMb` saat dikonfigurasi; jika tidak, pengiriman channel menggunakan default berbasis jenis MIME dari pipeline media
+
   </Accordion>
 
   <Accordion title="Delivery targets">

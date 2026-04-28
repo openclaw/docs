@@ -38,6 +38,7 @@ x-i18n:
         - วาง [manifest ตัวอย่าง](#manifest-and-scope-checklist) จากด้านล่างและดำเนินการสร้างต่อ
         - สร้าง **App-Level Token** (`xapp-...`) พร้อมสิทธิ์ `connections:write`
         - ติดตั้งแอปและคัดลอก **Bot Token** (`xoxb-...`) ที่แสดง
+
       </Step>
 
       <Step title="กำหนดค่า OpenClaw">
@@ -619,6 +620,7 @@ manifest พื้นฐาน (ค่าเริ่มต้นของ Socke
     - `channels.slack.chunkMode="newline"` เปิดใช้การแยกโดยยึดตามย่อหน้าก่อน
     - การส่งไฟล์ใช้ API อัปโหลดของ Slack และสามารถรวมการตอบกลับในเธรด (`thread_ts`) ได้
     - ขีดจำกัดสื่อขาออกจะอิงตาม `channels.slack.mediaMaxMb` หากกำหนดไว้; มิฉะนั้นการส่งผ่านช่องทางจะใช้ค่าเริ่มต้นตามชนิด MIME จาก media pipeline
+
   </Accordion>
 
   <Accordion title="เป้าหมายการส่ง">

@@ -33,6 +33,7 @@ Untuk ringkasan tingkat tinggi, lihat [Onboarding (CLI)](/id/start/wizard).
       - Hanya config
       - Config + kredensial + sesi
       - Reset penuh (juga menghapus workspace)
+
   </Step>
   <Step title="Model/Auth">
     - **Anthropic API key**: menggunakan `ANTHROPIC_API_KEY` jika ada atau meminta key, lalu menyimpannya untuk penggunaan daemon.
@@ -83,6 +84,7 @@ Untuk ringkasan tingkat tinggi, lihat [Onboarding (CLI)](/id/start/wizard).
     - Default `~/.openclaw/workspace` (dapat dikonfigurasi).
     - Menyiapkan file workspace yang dibutuhkan untuk ritual bootstrap agen.
     - Tata letak workspace penuh + panduan cadangan: [Agent workspace](/id/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Port, bind, mode auth, eksposur tailscale.
@@ -98,6 +100,7 @@ Untuk ringkasan tingkat tinggi, lihat [Onboarding (CLI)](/id/start/wizard).
       - Tidak dapat digabungkan dengan `--gateway-token`.
     - Nonaktifkan auth hanya jika Anda sepenuhnya memercayai setiap proses lokal.
     - Bind non‑loopback tetap memerlukan auth.
+
   </Step>
   <Step title="Channels">
     - [WhatsApp](/id/channels/whatsapp): login QR opsional.
@@ -109,12 +112,14 @@ Untuk ringkasan tingkat tinggi, lihat [Onboarding (CLI)](/id/start/wizard).
     - [BlueBubbles](/id/channels/bluebubbles): **direkomendasikan untuk iMessage**; URL server + password + webhook.
     - [iMessage](/id/channels/imessage): path `imsg` CLI lama + akses DB.
     - Keamanan DM: default adalah pairing. DM pertama mengirim kode; setujui melalui `openclaw pairing approve <channel> <code>` atau gunakan allowlist.
+
   </Step>
   <Step title="Pencarian web">
     - Pilih provider yang didukung seperti Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, atau Tavily (atau lewati).
     - Provider berbasis API dapat menggunakan variabel env atau config yang sudah ada untuk penyiapan cepat; provider tanpa key menggunakan prasyarat khusus providernya.
     - Lewati dengan `--skip-search`.
     - Konfigurasikan nanti: `openclaw configure --section web`.
+
   </Step>
   <Step title="Instal daemon">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ Untuk ringkasan tingkat tinggi, lihat [Onboarding (CLI)](/id/start/wizard).
     - Jika auth token memerlukan token dan `gateway.auth.token` dikelola SecretRef, instalasi daemon memvalidasinya tetapi tidak menyimpan nilai token plaintext yang telah di-resolve ke metadata lingkungan layanan supervisor.
     - Jika auth token memerlukan token dan token SecretRef yang dikonfigurasi tidak dapat di-resolve, instalasi daemon diblokir dengan panduan yang dapat ditindaklanjuti.
     - Jika `gateway.auth.token` dan `gateway.auth.password` keduanya dikonfigurasi dan `gateway.auth.mode` tidak disetel, instalasi daemon diblokir sampai mode disetel secara eksplisit.
+
   </Step>
   <Step title="Pemeriksaan kesehatan">
     - Memulai Gateway (jika perlu) dan menjalankan `openclaw health`.
     - Tip: `openclaw status --deep` menambahkan probe kesehatan gateway live ke output status, termasuk probe kanal saat didukung (memerlukan gateway yang dapat dijangkau).
+
   </Step>
   <Step title="Skills (direkomendasikan)">
     - Membaca Skills yang tersedia dan memeriksa persyaratan.
     - Memungkinkan Anda memilih manajer Node: **npm / pnpm** (bun tidak direkomendasikan).
     - Menginstal dependensi opsional (sebagian menggunakan Homebrew di macOS).
+
   </Step>
   <Step title="Selesai">
     - Ringkasan + langkah berikutnya, termasuk aplikasi iOS/Android/macOS untuk fitur tambahan.
+
   </Step>
 </Steps>
 

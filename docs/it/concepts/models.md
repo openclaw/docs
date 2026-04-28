@@ -57,6 +57,7 @@ OpenClaw seleziona i modelli in questo ordine:
     - `agents.defaults.musicGenerationModel` viene usato dalla capability condivisa di generazione musicale. Se omesso, `music_generate` può comunque dedurre un valore predefinito del provider supportato da auth. Prova prima il provider predefinito corrente, poi i restanti provider di generazione musicale registrati in ordine di provider-id. Se imposti un provider/modello specifico, configura anche auth/API key di quel provider.
     - `agents.defaults.videoGenerationModel` viene usato dalla capability condivisa di generazione video. Se omesso, `video_generate` può comunque dedurre un valore predefinito del provider supportato da auth. Prova prima il provider predefinito corrente, poi i restanti provider di generazione video registrati in ordine di provider-id. Se imposti un provider/modello specifico, configura anche auth/API key di quel provider.
     - I valori predefiniti per agente possono sovrascrivere `agents.defaults.model` tramite `agents.list[].model` più i binding (vedi [Instradamento multi-agente](/it/concepts/multi-agent)).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Questo avviene **prima** che venga generata una normale risposta, quindi il mess
 - Aggiungere il modello a `agents.defaults.models`, oppure
 - Cancellare l'allowlist (rimuovere `agents.defaults.models`), oppure
 - Scegliere un modello da `/model list`.
+
 </Warning>
 
 Esempio di configurazione dell'allowlist:
@@ -157,6 +159,7 @@ Puoi cambiare modello per la sessione corrente senza riavviare:
     - Su Discord, `/model` e `/models` aprono un selettore interattivo con menu a discesa per provider e modello più un passaggio Submit.
     - `/models add` è deprecato e ora restituisce un messaggio di deprecazione invece di registrare modelli dalla chat.
     - `/model <#>` seleziona da quel selettore.
+
   </Accordion>
   <Accordion title="Persistenza e cambio live">
     - `/model` persiste immediatamente la nuova selezione di sessione.
@@ -164,6 +167,7 @@ Puoi cambiare modello per la sessione corrente senza riavviare:
     - Se un'esecuzione è già attiva, OpenClaw contrassegna un cambio live come in sospeso e riavvia nel nuovo modello solo in un punto di retry pulito.
     - Se l'attività dei tool o l'output della risposta sono già iniziati, il cambio in sospeso può restare in coda fino a una successiva opportunità di retry o al turno utente seguente.
     - `/model status` è la vista dettagliata (candidati auth e, quando configurati, `baseUrl` dell'endpoint provider + modalità `api`).
+
   </Accordion>
   <Accordion title="Parsing dei ref">
     - I ref del modello vengono analizzati dividendo sul **primo** `/`. Usa `provider/model` quando digiti `/model <ref>`.
@@ -233,6 +237,7 @@ Mostra il modello primario risolto, i fallback, il modello immagine e una panora
     - Usa `--check` per l'automazione (exit `1` quando mancante/scaduto, `2` quando in scadenza).
     - Usa `--probe` per controlli auth live; le righe probe possono provenire da profili auth, credenziali env o `models.json`.
     - Se `auth.order.<provider>` esplicito omette un profilo memorizzato, la probe riporta `excluded_by_auth_order` invece di provarlo. Se l'auth esiste ma non è possibile risolvere alcun modello probeable per quel provider, la probe riporta `status: no_model`.
+
   </Accordion>
 </AccordionGroup>
 

@@ -184,6 +184,7 @@ Ini idempoten dan aman dijalankan beberapa kali.
     - Pastikan Anda dapat mengakses melalui VPN Tailscale terlebih dahulu
     - Akses SSH (port 22) selalu diizinkan
     - Gateway hanya dapat diakses melalui Tailscale sesuai desain
+
   </Accordion>
   <Accordion title="Layanan tidak mau mulai">
     ```bash

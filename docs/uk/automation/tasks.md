@@ -118,6 +118,7 @@ x-i18n:
     - Ходи Heartbeat — основна сесія; див. [Heartbeat](/uk/gateway/heartbeat)
     - Звичайні ходи інтерактивного чату
     - Прямі відповіді `/command`
+
   </Accordion>
 </AccordionGroup>
 

@@ -33,6 +33,7 @@ x-i18n:
       - التهيئة فقط
       - التهيئة + بيانات الاعتماد + الجلسات
       - إعادة تعيين كاملة (تزيل مساحة العمل أيضًا)
+
   </Step>
   <Step title="النموذج/المصادقة">
     - **مفتاح API لـ Anthropic**: يستخدم `ANTHROPIC_API_KEY` إن كان موجودًا أو يطلب منك مفتاحًا، ثم يحفظه لاستخدام daemon.
@@ -83,6 +84,7 @@ x-i18n:
     - الافتراضي هو `~/.openclaw/workspace` (قابل للتهيئة).
     - يزرع ملفات مساحة العمل اللازمة لطقس تمهيد الوكيل.
     - تخطيط مساحة العمل الكامل + دليل النسخ الاحتياطي: [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - المنفذ، والربط، ووضع المصادقة، وتعريض Tailscale.
@@ -98,6 +100,7 @@ x-i18n:
       - لا يمكن دمجه مع `--gateway-token`.
     - عطّل المصادقة فقط إذا كنت تثق تمامًا بكل عملية محلية.
     - ما تزال الروابط غير loopback تتطلب مصادقة.
+
   </Step>
   <Step title="القنوات">
     - [WhatsApp](/ar/channels/whatsapp): تسجيل دخول QR اختياري.
@@ -109,12 +112,14 @@ x-i18n:
     - [BlueBubbles](/ar/channels/bluebubbles): **موصى به لـ iMessage**؛ عنوان URL للخادم + كلمة المرور + Webhook.
     - [iMessage](/ar/channels/imessage): مسار `imsg` CLI القديم + الوصول إلى قاعدة البيانات.
     - أمان الرسائل المباشرة: الافتراضي هو الإقران. ترسل أول رسالة مباشرة رمزًا؛ وافق عليه عبر `openclaw pairing approve <channel> <code>` أو استخدم قوائم السماح.
+
   </Step>
   <Step title="البحث على الويب">
     - اختر موفّرًا مدعومًا مثل Brave أو DuckDuckGo أو Exa أو Firecrawl أو Gemini أو Grok أو Kimi أو MiniMax Search أو Ollama Web Search أو Perplexity أو SearXNG أو Tavily (أو تخطَّ ذلك).
     - يمكن للموفّرين المعتمدين على API استخدام متغيرات البيئة أو التهيئة الحالية للإعداد السريع؛ أما الموفّرون الذين لا يحتاجون إلى مفتاح فيستخدمون متطلباتهم الخاصة بكل موفّر بدلًا من ذلك.
     - التخطي باستخدام `--skip-search`.
     - التهيئة لاحقًا: `openclaw configure --section web`.
+
   </Step>
   <Step title="تثبيت daemon">
     - macOS: ‏LaunchAgent
@@ -126,18 +131,22 @@ x-i18n:
     - إذا كانت مصادقة الرمز تتطلب رمزًا وكان `gateway.auth.token` مُدارًا عبر SecretRef، فإن تثبيت daemon يتحقق منه لكنه لا يحفظ قيم الرموز النصية الصريحة المحلولة في بيانات بيئة خدمة المشرف.
     - إذا كانت مصادقة الرمز تتطلب رمزًا وكان SecretRef المضبوط للرمز غير محلول، فيتم حظر تثبيت daemon مع إرشادات قابلة للتنفيذ.
     - إذا كان كل من `gateway.auth.token` و`gateway.auth.password` مضبوطين وكان `gateway.auth.mode` غير معيّن، فيتم حظر تثبيت daemon حتى يتم تعيين الوضع صراحةً.
+
   </Step>
   <Step title="فحص السلامة">
     - يبدأ Gateway ‏(عند الحاجة) ويشغّل `openclaw health`.
     - نصيحة: يضيف `openclaw status --deep` فحص سلامة Gateway المباشر إلى مخرجات الحالة، بما في ذلك فحوصات القنوات عندما تكون مدعومة (يتطلب Gateway يمكن الوصول إليه).
+
   </Step>
   <Step title="Skills ‏(موصى بها)">
     - يقرأ Skills المتاحة ويفحص المتطلبات.
     - يتيح لك اختيار مدير Node: ‏**npm / pnpm** ‏(لا يُنصح بـ bun).
     - يثبّت التبعيات الاختيارية (يستخدم بعضها Homebrew على macOS).
+
   </Step>
   <Step title="الانتهاء">
     - ملخص + الخطوات التالية، بما في ذلك تطبيقات iOS/Android/macOS لميزات إضافية.
+
   </Step>
 </Steps>
 

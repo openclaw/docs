@@ -198,6 +198,7 @@ Tous les champs sont facultatifs sauf indication contraire.
       - `fileQuality: "hq"` : 14 MP max (14 000 000 pixels rendus).
       - `fileQuality: "print"` : 24 MP max (24 000 000 pixels rendus).
       - Le PDF a également une limite de 50 pages.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Règles de `baseUrl` :
     - Limitation des échecs distants lorsque l’accès distant est activé :
       - 40 échecs par 60 secondes
       - verrouillage de 60 secondes (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Renforcement du rendu de fichier">
     - Le routage des requêtes du navigateur de capture d’écran est refusé par défaut.
     - Seules les ressources locales du visualiseur provenant de `http://127.0.0.1/plugins/diffs/assets/*` sont autorisées.
     - Les requêtes réseau externes sont bloquées.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Ordre de résolution :
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Solution de secours par plateforme">
     Solution de secours via découverte de commande/chemin selon la plateforme.
@@ -456,6 +460,7 @@ Corrigez cela en installant Chrome, Chromium, Edge ou Brave, ou en définissant 
     - `Invalid baseUrl: ...` — utilisez une origine `http(s)` avec chemin facultatif, sans requête ni hash.
     - `{field} exceeds maximum size (...)` — réduisez la taille de la charge utile.
     - Rejet de patch volumineux — réduisez le nombre de fichiers du patch ou le nombre total de lignes.
+
   </Accordion>
   <Accordion title="Accessibilité du visualiseur">
     - L’URL du visualiseur pointe par défaut vers `127.0.0.1`.
@@ -468,6 +473,7 @@ Corrigez cela en installant Chrome, Chromium, Edge ou Brave, ou en définissant 
       - préférez `mode: "file"` ou `mode: "both"` lorsque vous avez seulement besoin d’une pièce jointe, ou
       - activez intentionnellement `security.allowRemoteViewer` et définissez le Plugin `viewerBaseUrl` ou transmettez un `baseUrl` proxy/public lorsque vous avez besoin d’une URL de visualiseur partageable
     - Activez `security.allowRemoteViewer` uniquement lorsque vous prévoyez un accès externe au visualiseur.
+
   </Accordion>
   <Accordion title="La ligne des lignes non modifiées n’a pas de bouton de développement">
     Cela peut arriver avec une entrée patch lorsque le patch ne contient pas de contexte développable. C’est un comportement attendu et cela n’indique pas un échec du visualiseur.
@@ -476,6 +482,7 @@ Corrigez cela en installant Chrome, Chromium, Edge ou Brave, ou en définissant 
     - L’artefact a expiré en raison du TTL.
     - Le jeton ou le chemin a été modifié.
     - Le nettoyage a supprimé des données périmées.
+
   </Accordion>
 </AccordionGroup>
 

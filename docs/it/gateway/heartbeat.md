@@ -41,6 +41,7 @@ Risoluzione dei problemi: [Attività pianificate](/it/automation/cron-jobs#troub
     - Usa un contesto bootstrap leggero se le esecuzioni heartbeat hanno bisogno solo di `HEARTBEAT.md`.
     - Abilita sessioni isolate per evitare di inviare l'intera cronologia della conversazione a ogni heartbeat.
     - Limita gli heartbeat alle ore attive (ora locale).
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Usa `accountId` per indirizzare un account specifico su canali multi-account com
   - `main` (predefinito): sessione principale dell'agente.
   - Chiave di sessione esplicita (copiala da `openclaw sessions --json` o dalla [CLI sessions](/it/cli/sessions)).
   - Formati della chiave di sessione: vedi [Sessioni](/it/concepts/session) e [Gruppi](/it/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: consegna all'ultimo canale esterno usato.
   - canale esplicito: qualsiasi canale configurato o id Plugin, per esempio `discord`, `matrix`, `telegram` o `whatsapp`.
   - `none` (predefinito): esegue l'heartbeat ma **non lo consegna** esternamente.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Controlla il comportamento di consegna diretta/DM. `allow`: consente la consegna heartbeat diretta/DM. `block`: sopprime la consegna diretta/DM (`reason=dm-blocked`).
@@ -274,6 +277,7 @@ Usa `accountId` per indirizzare un account specifico su canali multi-account com
   - Qualsiasi identificatore IANA (ad es. `America/New_York`): viene usato direttamente; se non è valido, si usa come fallback il comportamento `"user"` sopra.
   - `start` ed `end` non devono essere uguali per una finestra attiva; valori uguali sono trattati come ampiezza zero (sempre fuori dalla finestra).
   - Fuori dalla finestra attiva, gli heartbeat vengono saltati fino al tick successivo all'interno della finestra.
+
 </ParamField>
 
 ## Comportamento di consegna
@@ -286,16 +290,19 @@ Usa `accountId` per indirizzare un account specifico su canali multi-account com
     - Le consegne heartbeat consentono i target diretti/DM per impostazione predefinita. Imposta `directPolicy: "block"` per sopprimere gli invii verso target diretti pur continuando a eseguire il turno heartbeat.
     - Se la queue principale è occupata, l'heartbeat viene saltato e ritentato più tardi.
     - Se `target` non si risolve in alcuna destinazione esterna, l'esecuzione avviene comunque ma non viene inviato alcun messaggio in uscita.
+
   </Accordion>
   <Accordion title="Visibilità e comportamento di salto">
     - Se `showOk`, `showAlerts` e `useIndicator` sono tutti disabilitati, l'esecuzione viene saltata subito con `reason=alerts-disabled`.
     - Se è disabilitata solo la consegna degli avvisi, OpenClaw può comunque eseguire l'heartbeat, aggiornare i timestamp delle attività dovute, ripristinare il timestamp idle della sessione e sopprimere il payload esterno dell'avviso.
     - Se il target heartbeat risolto supporta l'indicatore di digitazione, OpenClaw mostra che sta digitando mentre l'esecuzione heartbeat è attiva. Questo usa lo stesso target a cui l'heartbeat invierebbe l'output chat ed è disabilitato da `typingMode: "never"`.
+
   </Accordion>
   <Accordion title="Ciclo di vita della sessione e audit">
     - Le risposte solo-heartbeat **non** mantengono viva la sessione. I metadati heartbeat possono aggiornare la riga della sessione, ma la scadenza per inattività usa `lastInteractionAt` dell'ultimo messaggio reale utente/canale, e la scadenza giornaliera usa `sessionStartedAt`.
     - La cronologia di Control UI e WebChat nasconde i prompt heartbeat e gli acknowledgment solo-OK. Il transcript di sessione sottostante può comunque contenere quei turni per audit/replay.
     - Le [attività in background](/it/automation/tasks) scollegate possono accodare un evento di sistema e risvegliare Heartbeat quando la sessione principale dovrebbe notare qualcosa rapidamente. Questo risveglio non trasforma l'esecuzione heartbeat in un'attività in background.
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - Il contenuto non-task di `HEARTBEAT.md` viene preservato e aggiunto come contesto aggiuntivo dopo l'elenco delle attività dovute.
     - I timestamp dell'ultima esecuzione delle attività sono memorizzati nello stato della sessione (`heartbeatTaskState`), quindi gli intervalli sopravvivono ai normali riavvii.
     - I timestamp delle attività vengono avanzati solo dopo che un'esecuzione heartbeat completa il normale percorso di risposta. Le esecuzioni saltate `empty-heartbeat-file` / `no-tasks-due` non contrassegnano le attività come completate.
+
   </Accordion>
 </AccordionGroup>
 

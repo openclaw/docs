@@ -61,9 +61,11 @@ API 密钥，而另一些则无需密钥。你也可以稍后通过
     - 私信隔离默认值：本地新手引导会在未设置时写入 `session.dmScope: "per-channel-peer"`。详情请参见：[CLI 设置参考](/zh-CN/start/wizard-cli-reference#outputs-and-internals)
     - Tailscale 暴露 **关闭**
     - Telegram + WhatsApp 私信默认使用 **allowlist**（会提示你输入电话号码）
+
   </Tab>
   <Tab title="Advanced（完全控制）">
     - 暴露每个步骤（模式、工作区、gateway、渠道、守护进程、Skills）。
+
   </Tab>
 </Tabs>
 

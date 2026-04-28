@@ -73,6 +73,7 @@ Rilis OpenClaw saat ini menyertakan BlueBubbles, jadi build paket normal tidak m
 - Selalu tetapkan kata sandi webhook.
 - Autentikasi webhook selalu wajib. OpenClaw menolak permintaan webhook BlueBubbles kecuali menyertakan password/guid yang cocok dengan `channels.bluebubbles.password` (misalnya `?password=<password>` atau `x-password`), terlepas dari topologi loopback/proxy.
 - Autentikasi kata sandi diperiksa sebelum membaca/mengurai seluruh isi webhook.
+
 </Warning>
 
 ## Menjaga Messages.app tetap aktif (penyiapan VM / headless)
@@ -184,10 +185,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - Pairing adalah pertukaran token default. Detail: [Pairing](/id/channels/pairing)
+
   </Tab>
   <Tab title="Groups">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (default: `allowlist`).
     - `channels.bluebubbles.groupAllowFrom` mengontrol siapa yang dapat memicu di grup saat `allowlist` disetel.
+
   </Tab>
 </Tabs>
 
@@ -400,6 +403,7 @@ BlueBubbles mendukung tindakan pesan lanjutan saat diaktifkan dalam konfigurasi:
     - **upload-file**: Kirim media/file (`to`, `buffer`, `filename`, `asVoice`).
       - Memo suara: setel `asVoice: true` dengan audio **MP3** atau **CAF** untuk mengirim sebagai pesan suara iMessage. BlueBubbles mengonversi MP3 → CAF saat mengirim memo suara.
     - Alias lama: `sendAttachment` masih berfungsi, tetapi `upload-file` adalah nama tindakan kanonis.
+
   </Accordion>
 </AccordionGroup>
 
@@ -480,6 +484,7 @@ Kedua webhook tiba di OpenClaw dengan jeda ~0,8-2,0 dtk pada sebagian besar peny
     - **Latensi tambahan untuk perintah kontrol DM.** Dengan flag aktif, pesan perintah kontrol DM (seperti `Dump`, `Save`, dll.) kini menunggu hingga jendela debounce sebelum dikirim, untuk berjaga-jaga jika webhook payload akan datang. Perintah chat grup tetap dikirim instan.
     - **Output gabungan dibatasi** — teks gabungan dibatasi hingga 4000 karakter dengan penanda `…[truncated]` yang eksplisit; lampiran dibatasi hingga 20; entri sumber dibatasi hingga 10 (entri pertama-plus-terbaru dipertahankan setelah itu). Setiap `messageId` sumber tetap mencapai inbound-dedupe sehingga replay MessagePoller berikutnya dari setiap peristiwa individual dikenali sebagai duplikat.
     - **Opt-in, per kanal.** Kanal lain (Telegram, WhatsApp, Slack, …) tidak terpengaruh.
+
   </Tab>
 </Tabs>
 
@@ -558,6 +563,7 @@ Konfigurasi lengkap: [Configuration](/id/gateway/configuration)
     - `channels.bluebubbles.serverUrl`: URL dasar REST API BlueBubbles.
     - `channels.bluebubbles.password`: Kata sandi API.
     - `channels.bluebubbles.webhookPath`: Jalur endpoint webhook (default: `/bluebubbles-webhook`).
+
   </Accordion>
   <Accordion title="Kebijakan akses">
     - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (default: `pairing`).
@@ -566,6 +572,7 @@ Konfigurasi lengkap: [Configuration](/id/gateway/configuration)
     - `channels.bluebubbles.groupAllowFrom`: allowlist pengirim grup.
     - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: Di macOS, secara opsional memperkaya peserta grup yang tidak bernama dari Contacts lokal setelah penyaringan lolos. Default: `false`.
     - `channels.bluebubbles.groups`: Konfigurasi per grup (`requireMention`, dll.).
+
   </Accordion>
   <Accordion title="Pengiriman dan pemecahan">
     - `channels.bluebubbles.sendReadReceipts`: Kirim tanda baca (default: `true`).
@@ -573,6 +580,7 @@ Konfigurasi lengkap: [Configuration](/id/gateway/configuration)
     - `channels.bluebubbles.textChunkLimit`: Ukuran potongan keluar dalam karakter (default: 4000).
     - `channels.bluebubbles.sendTimeoutMs`: Timeout per permintaan dalam md untuk pengiriman teks keluar melalui `/api/v1/message/text` (default: 30000). Naikkan pada penyiapan macOS 26 saat pengiriman iMessage Private API dapat macet selama 60+ detik di dalam framework iMessage; misalnya `45000` atau `60000`. Probe, lookup chat, reaksi, edit, dan pemeriksaan kesehatan saat ini tetap memakai default 10 dtk yang lebih pendek; perluasan cakupan ke reaksi dan edit direncanakan sebagai tindak lanjut. Override per akun: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
     - `channels.bluebubbles.chunkMode`: `length` (default) hanya memecah saat melebihi `textChunkLimit`; `newline` memecah pada baris kosong (batas paragraf) sebelum pemecahan berdasarkan panjang.
+
   </Accordion>
   <Accordion title="Media dan riwayat">
     - `channels.bluebubbles.mediaMaxMb`: Batas media masuk/keluar dalam MB (default: 8).
@@ -580,10 +588,12 @@ Konfigurasi lengkap: [Configuration](/id/gateway/configuration)
     - `channels.bluebubbles.coalesceSameSenderDms`: Gabungkan webhook DM berurutan dari pengirim yang sama menjadi satu giliran agen agar split-send teks+URL Apple tiba sebagai satu pesan (default: `false`). Lihat [Menggabungkan DM split-send](#coalescing-split-send-dms-command--url-in-one-composition) untuk skenario, penyetelan jendela, dan trade-off. Melebarkan jendela debounce masuk default dari 500 md menjadi 2500 md saat diaktifkan tanpa `messages.inbound.byChannel.bluebubbles` eksplisit.
     - `channels.bluebubbles.historyLimit`: Maks pesan grup untuk konteks (0 menonaktifkan).
     - `channels.bluebubbles.dmHistoryLimit`: Batas riwayat DM.
+
   </Accordion>
   <Accordion title="Tindakan dan akun">
     - `channels.bluebubbles.actions`: Aktifkan/nonaktifkan tindakan tertentu.
     - `channels.bluebubbles.accounts`: Konfigurasi multi-akun.
+
   </Accordion>
 </AccordionGroup>
 

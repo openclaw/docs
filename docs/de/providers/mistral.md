@@ -166,6 +166,7 @@ passende `sampleRate` nur dann, wenn Ihr Upstream-Stream bereits rohes PCM ist.
     - Die Base-URL des Providers ist standardmäßig `https://api.mistral.ai/v1`.
     - Das Standardmodell im Onboarding ist `mistral/mistral-large-latest`.
     - Z.AI verwendet Bearer-Authentifizierung mit Ihrem API-Schlüssel.
+
   </Accordion>
 </AccordionGroup>
 

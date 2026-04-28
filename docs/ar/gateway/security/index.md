@@ -309,6 +309,7 @@ OpenClaw هو منتج وتجربة في آنٍ واحد: فأنت توصل سل
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="كل المفاتيح `dangerous*` / `dangerously*` في مخطط الإعدادات">

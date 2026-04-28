@@ -72,6 +72,7 @@ Zamiast tego użyj [`openclaw acp`](/pl/cli/acp), gdy OpenClaw ma sam hostować 
     - jednorazowe punkty wejścia agenta, takie jak `openclaw agent` i `openclaw infer model run`, wycofują wszelkie dołączone runtime’y MCP, które otwierają, gdy odpowiedź zostanie ukończona, dzięki czemu powtarzane uruchomienia skryptowe nie gromadzą potomnych procesów stdio MCP
     - serwery stdio MCP uruchamiane przez OpenClaw (dołączone lub skonfigurowane przez użytkownika) są zamykane jako drzewo procesów podczas wyłączania, więc podprocesy potomne uruchomione przez serwer nie przetrwają po wyjściu nadrzędnego klienta stdio
     - usunięcie lub zresetowanie sesji zwalnia klientów MCP tej sesji przez współdzieloną ścieżkę czyszczenia runtime’u, więc nie pozostają żadne wiszące połączenia stdio powiązane z usuniętą sesją
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ Bieżące typy zdarzeń:
 - kolejka działa tylko na żywo; zaczyna się w momencie uruchomienia mostu MCP
 - `events_poll` i `events_wait` same z siebie nie odtwarzają starszej historii Gateway
 - trwały backlog należy odczytywać przez `messages_read`
+
 </Warning>
 
 ### Powiadomienia kanału Claude
@@ -367,6 +369,7 @@ Te zapisane definicje są przeznaczone dla runtime’ów, które OpenClaw urucha
     - adaptery runtime decydują podczas wykonywania, które kształty transportu faktycznie obsługują
     - osadzone Pi udostępnia skonfigurowane narzędzia MCP w normalnych profilach narzędzi `coding` i `messaging`; `minimal` nadal je ukrywa, a `tools.deny: ["bundle-mcp"]` wyłącza je jawnie
     - dołączone runtime’y MCP o zakresie sesji są zbierane po `mcp.sessionIdleTtlMs` milisekundach bezczynności (domyślnie 10 minut; ustaw `0`, aby wyłączyć), a jednorazowe osadzone uruchomienia czyszczą je po zakończeniu działania
+
   </Accordion>
 </AccordionGroup>
 

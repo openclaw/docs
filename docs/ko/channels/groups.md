@@ -32,6 +32,7 @@ OpenClaw는 사용자의 자체 메시징 계정에서 "동작"합니다. 별도
 - **DM 접근**은 `*.allowFrom`으로 제어됩니다.
 - **그룹 접근**은 `*.groupPolicy` + 허용 목록(`*.groups`, `*.groupAllowFrom`)으로 제어됩니다.
 - **응답 트리거링**은 멘션 게이팅(`requireMention`, `/activation`)으로 제어됩니다.
+
 </Note>
 
 빠른 흐름(그룹 메시지에 일어나는 일):
@@ -56,6 +57,7 @@ otherwise -> reply
   <Accordion title="현재 동작은 채널별로 다릅니다">
     - 일부 채널은 특정 경로에서 보조 컨텍스트에 대해 이미 발신자 기반 필터링을 적용합니다(예: Slack 스레드 시드, Matrix 답장/스레드 조회).
     - 다른 채널은 여전히 인용/답장/전달 컨텍스트를 수신된 그대로 전달합니다.
+
   </Accordion>
   <Accordion title="강화 방향(계획됨)">
     - `contextVisibility: "all"`(기본값)은 현재의 수신된 그대로의 동작을 유지합니다.
@@ -231,6 +233,7 @@ otherwise -> reply
     - Telegram 허용 목록은 사용자 ID(`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) 또는 사용자 이름(`"@alice"` 또는 `"alice"`)과 일치할 수 있습니다. 접두사는 대소문자를 구분하지 않습니다.
     - 기본값은 `groupPolicy: "allowlist"`이며, 그룹 허용 목록이 비어 있으면 그룹 메시지는 차단됩니다.
     - 런타임 안전성: provider 블록이 완전히 누락된 경우(`channels.<provider>` 없음), 그룹 정책은 `channels.defaults.groupPolicy`를 상속하는 대신 실패 시 차단 모드(일반적으로 `allowlist`)로 대체됩니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ otherwise -> reply
     - 무음 응답이 허용된 그룹에서는, 내용이 비어 있거나 추론 전용인 모델 턴은 `NO_REPLY`와 동일한 무음으로 처리됩니다. 다이렉트 채팅에서는 여전히 빈 응답을 실패한 에이전트 턴으로 처리합니다.
     - Discord 기본값은 `channels.discord.guilds."*"`에 있습니다(guild/channel별 재정의 가능).
     - 그룹 기록 컨텍스트는 채널 전반에서 일관되게 래핑되며 **보류 중인 항목만** 포함합니다(멘션 게이팅 때문에 건너뛴 메시지). 전역 기본값에는 `messages.groupChat.historyLimit`를, 재정의에는 `channels.<channel>.historyLimit`(또는 `channels.<channel>.accounts.*.historyLimit`)를 사용하세요. 비활성화하려면 `0`으로 설정하세요.
+
   </Accordion>
 </AccordionGroup>
 

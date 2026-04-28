@@ -103,6 +103,7 @@ x-i18n:
     - 이러한 배포는 서로 다를 수 있고 시간에 따라 바뀔 수 있으며, 고정된 provider 권장 사항은 없습니다.
     - 각 Gateway의 현재 런타임 설정은 `openclaw models status`로 확인하세요.
     - 보안에 민감하거나 도구가 활성화된 agent에는 사용 가능한 최신 세대의 가장 강력한 모델을 사용하세요.
+
   </Accordion>
 
   <Accordion title="재시작 없이 즉시 모델을 전환하려면 어떻게 하나요?">

@@ -41,6 +41,7 @@ Pemecahan masalah: [Tugas Terjadwal](/id/automation/cron-jobs#troubleshooting)
     - Gunakan konteks bootstrap ringan jika eksekusi heartbeat hanya memerlukan `HEARTBEAT.md`.
     - Aktifkan sesi terisolasi agar tidak mengirim riwayat percakapan penuh pada setiap heartbeat.
     - Batasi heartbeat ke jam aktif (waktu lokal).
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada saluran multi-akun sepe
   - `main` (default): sesi utama agen.
   - Key sesi eksplisit (salin dari `openclaw sessions --json` atau [CLI sesi](/id/cli/sessions)).
   - Format key sesi: lihat [Sessions](/id/concepts/session) dan [Groups](/id/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: kirim ke saluran eksternal terakhir yang digunakan.
   - saluran eksplisit: saluran atau id Plugin apa pun yang dikonfigurasi, misalnya `discord`, `matrix`, `telegram`, atau `whatsapp`.
   - `none` (default): jalankan heartbeat tetapi **jangan kirim** secara eksternal.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Mengontrol perilaku pengiriman langsung/DM. `allow`: izinkan pengiriman heartbeat langsung/DM. `block`: tekan pengiriman langsung/DM (`reason=dm-blocked`).
@@ -274,6 +277,7 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada saluran multi-akun sepe
   - Pengenal IANA apa pun (mis. `America/New_York`): digunakan secara langsung; jika tidak valid, fallback ke perilaku `"user"` di atas.
   - `start` dan `end` tidak boleh sama untuk jendela aktif; nilai yang sama diperlakukan sebagai lebar nol (selalu di luar jendela).
   - Di luar jendela aktif, heartbeat dilewati sampai tick berikutnya di dalam jendela.
+
 </ParamField>
 
 ## Perilaku pengiriman
@@ -286,16 +290,19 @@ Gunakan `accountId` untuk menargetkan akun tertentu pada saluran multi-akun sepe
     - Pengiriman heartbeat mengizinkan target langsung/DM secara default. Set `directPolicy: "block"` untuk menekan pengiriman target langsung sambil tetap menjalankan giliran heartbeat.
     - Jika antrean utama sibuk, heartbeat dilewati dan dicoba ulang nanti.
     - Jika `target` tidak di-resolve ke tujuan eksternal mana pun, eksekusi tetap terjadi tetapi tidak ada pesan keluar yang dikirim.
+
   </Accordion>
   <Accordion title="Visibilitas dan perilaku lewati">
     - Jika `showOk`, `showAlerts`, dan `useIndicator` semuanya dinonaktifkan, eksekusi dilewati sejak awal sebagai `reason=alerts-disabled`.
     - Jika hanya pengiriman alert yang dinonaktifkan, OpenClaw tetap dapat menjalankan heartbeat, memperbarui timestamp tugas yang jatuh tempo, memulihkan timestamp idle sesi, dan menekan payload alert keluar.
     - Jika target heartbeat yang di-resolve mendukung typing, OpenClaw menampilkan typing saat eksekusi heartbeat aktif. Ini menggunakan target yang sama dengan target pengiriman output obrolan heartbeat, dan dinonaktifkan oleh `typingMode: "never"`.
+
   </Accordion>
   <Accordion title="Siklus hidup sesi dan audit">
     - Balasan yang hanya berupa heartbeat **tidak** menjaga sesi tetap hidup. Metadata heartbeat dapat memperbarui baris sesi, tetapi kedaluwarsa idle menggunakan `lastInteractionAt` dari pesan pengguna/saluran nyata terakhir, dan kedaluwarsa harian menggunakan `sessionStartedAt`.
     - Riwayat UI Kontrol dan WebChat menyembunyikan prompt heartbeat dan acknowledgment yang hanya berisi OK. Transkrip sesi yang mendasarinya tetap dapat memuat giliran-giliran tersebut untuk audit/replay.
     - [Tugas latar belakang](/id/automation/tasks) yang terlepas dapat mengantrikan event sistem dan membangunkan heartbeat saat sesi utama harus segera menyadari sesuatu. Wake tersebut tidak membuat eksekusi heartbeat menjadi tugas latar belakang.
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - Konten non-tugas dalam `HEARTBEAT.md` dipertahankan dan ditambahkan sebagai konteks tambahan setelah daftar tugas jatuh tempo.
     - Timestamp terakhir dijalankan untuk tugas disimpan dalam status sesi (`heartbeatTaskState`), sehingga interval tetap bertahan melewati restart normal.
     - Timestamp tugas hanya dimajukan setelah eksekusi heartbeat menyelesaikan jalur balasan normalnya. Eksekusi `empty-heartbeat-file` / `no-tasks-due` yang dilewati tidak menandai tugas sebagai selesai.
+
   </Accordion>
 </AccordionGroup>
 

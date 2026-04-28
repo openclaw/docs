@@ -126,6 +126,7 @@ tool `video_generate` ที่ใช้ร่วมกันด้วย
     - หาก model ไม่ปรากฏ ให้ยืนยันว่า API key ถูกตั้งค่าไว้ในสภาพแวดล้อมที่ถูกต้อง
       สำหรับ process ของ Gateway ของคุณ
     - ref ของ model ใช้รูปแบบ `together/<model-id>`
+
   </Accordion>
 </AccordionGroup>
 

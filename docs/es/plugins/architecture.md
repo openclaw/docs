@@ -407,12 +407,14 @@ El efecto práctico es que OpenClaw sabe, por adelantado, qué Plugin controla q
     - controlados por el núcleo
     - reutilizables por varios Plugins
     - consumibles por canales/funciones sin conocimiento del proveedor
+
   </Tab>
   <Tab title="Malos contratos">
     - política específica de proveedor oculta en el núcleo
     - vías de escape ad hoc de un solo Plugin que omiten el registro
     - código de canal que entra directamente en una implementación de proveedor
     - objetos de runtime ad hoc que no forman parte de `OpenClawPluginApi` ni de `api.runtime`
+
   </Tab>
 </Tabs>
 
@@ -428,6 +430,7 @@ Implicaciones:
 - un Plugin nativo puede registrar herramientas, controladores de red, hooks y servicios
 - un fallo de un Plugin nativo puede hacer caer o desestabilizar el gateway
 - un Plugin nativo malicioso equivale a ejecución arbitraria de código dentro del proceso de OpenClaw
+
 </Warning>
 
 Los bundles compatibles son más seguros por defecto porque OpenClaw actualmente los trata como paquetes de metadatos/contenido. En las versiones actuales, eso significa sobre todo Skills incluidas.
@@ -443,6 +446,7 @@ Para nombres de paquetes incluidos del workspace, mantén el id del Plugin ancla
 - Un Plugin del workspace con el mismo id que un Plugin incluido sombrea intencionadamente la copia incluida cuando ese Plugin del workspace está habilitado/en allowlist.
 - Esto es normal y útil para desarrollo local, pruebas de parches y hotfixes.
 - La confianza de Plugin incluido se resuelve a partir de la instantánea de la fuente —el manifiesto y el código en disco en el momento de la carga— y no a partir de metadatos de instalación. Un registro de instalación corrupto o sustituido no puede ampliar silenciosamente la superficie de confianza de un Plugin incluido más allá de lo que afirma la fuente real.
+
 </Note>
 
 ## Límite de exportación

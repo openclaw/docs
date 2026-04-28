@@ -150,11 +150,13 @@ penyalahgunaan tanpa menghalangi kontributor yang sah.
     - Alasan pelaporan wajib diisi dan dicatat.
     - Setiap pengguna dapat memiliki hingga 20 laporan aktif dalam satu waktu.
     - Skill dengan lebih dari 3 laporan unik disembunyikan otomatis secara default.
+
   </Accordion>
   <Accordion title="Moderasi">
     - Moderator dapat melihat skill tersembunyi, menampilkannya kembali, menghapusnya, atau memblokir pengguna.
     - Penyalahgunaan fitur pelaporan dapat berujung pada pemblokiran akun.
     - Tertarik menjadi moderator? Tanyakan di Discord OpenClaw dan hubungi moderator atau maintainer.
+
   </Accordion>
 </AccordionGroup>
 
@@ -354,6 +356,7 @@ pemuatan plugin.
     - Setiap publikasi membuat `SkillVersion` **semver** baru.
     - Tag (seperti `latest`) menunjuk ke sebuah versi; memindahkan tag memungkinkan Anda melakukan rollback.
     - Changelog dilampirkan per versi dan dapat kosong saat sinkronisasi atau memublikasikan pembaruan.
+
   </Accordion>
   <Accordion title="Perubahan lokal vs versi registri">
     Pembaruan membandingkan konten skill lokal dengan versi registri menggunakan
@@ -370,6 +373,7 @@ pemuatan plugin.
   <Accordion title="Penyimpanan dan lockfile">
     - Skill yang terinstal dicatat dalam `.clawhub/lock.json` di bawah workdir Anda.
     - Token autentikasi disimpan di file konfigurasi CLI ClawHub (timpa melalui `CLAWHUB_CONFIG_PATH`).
+
   </Accordion>
   <Accordion title="Telemetri (jumlah instalasi)">
     Saat Anda menjalankan `clawhub sync` dalam keadaan login, CLI mengirim snapshot minimal

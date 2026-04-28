@@ -86,12 +86,14 @@ Zalecany do większości interaktywnych instalacji na macOS/Linux/WSL.
   <Step title="Instalacja OpenClaw">
     - metoda `npm` (domyślna): globalna instalacja npm
     - metoda `git`: klonuje/aktualizuje repozytorium, instaluje zależności przez pnpm, buduje, a następnie instaluje wrapper w `~/.local/bin/openclaw`
+
   </Step>
   <Step title="Zadania po instalacji">
     - Odświeża załadowaną usługę Gateway w trybie best effort (`openclaw gateway install --force`, a następnie restart)
     - Uruchamia `openclaw doctor --non-interactive` przy aktualizacjach i instalacjach git (best effort)
     - Próbuje wykonać onboarding, gdy jest to właściwe (dostępne TTY, onboarding nie jest wyłączony, a kontrole bootstrap/config przechodzą)
     - Domyślnie ustawia `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ a także instalacje z checkoutu git w tym samym przepływie opartym o prefiks.
   <Step title="Instalacja OpenClaw pod prefiksem">
     - metoda `npm` (domyślna): instaluje pod prefiksem przez npm, a następnie zapisuje wrapper do `<prefix>/bin/openclaw`
     - metoda `git`: klonuje/aktualizuje checkout (domyślnie `~/openclaw`) i nadal zapisuje wrapper do `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="Odświeżanie załadowanej usługi Gateway">
     Jeśli usługa Gateway jest już załadowana z tego samego prefiksu, skrypt uruchamia
@@ -293,11 +296,13 @@ a także instalacje z checkoutu git w tym samym przepływie opartym o prefiks.
   <Step title="Instalacja OpenClaw">
     - metoda `npm` (domyślna): globalna instalacja npm z użyciem wybranego `-Tag`
     - metoda `git`: klonuje/aktualizuje repozytorium, instaluje/buduje przez pnpm i instaluje wrapper w `%USERPROFILE%\.local\bin\openclaw.cmd`
+
   </Step>
   <Step title="Zadania po instalacji">
     - Dodaje wymagany katalog bin do użytkownika PATH, gdy to możliwe
     - Odświeża załadowaną usługę Gateway w trybie best effort (`openclaw gateway install --force`, a następnie restart)
     - Uruchamia `openclaw doctor --non-interactive` przy aktualizacjach i instalacjach git (best effort)
+
   </Step>
   <Step title="Obsługa błędów">
     Instalacje `iwr ... | iex` i scriptblock zgłaszają błąd kończący bez zamykania bieżącej sesji PowerShell. Bezpośrednie instalacje `powershell -File` / `pwsh -File` nadal kończą się kodem różnym od zera na potrzeby automatyzacji.

@@ -74,6 +74,7 @@ allowlist degli agenti decidono quali skill un agente può effettivamente usare.
     - Imposta `agents.list[].skills: []` per non avere skill.
     - Una lista `agents.list[].skills` non vuota è l'insieme **finale** per quell'agente — non viene unita ai default.
     - L'allowlist effettiva si applica alla costruzione del prompt, al rilevamento dei comandi slash delle skill, alla sincronizzazione della sandbox e agli snapshot delle skill.
+
   </Accordion>
 </AccordionGroup>
 
@@ -283,10 +284,12 @@ metadata:
     - Le installazioni Node rispettano `skills.install.nodeManager` in `openclaw.json` (predefinito: npm; opzioni: npm/pnpm/yarn/bun). Questo influisce solo sulle installazioni delle skill; il runtime del Gateway dovrebbe comunque restare Node — Bun non è consigliato per WhatsApp/Telegram.
     - La selezione dell'installer supportata da Gateway è guidata dalle preferenze: quando le specifiche di installazione combinano più tipi, OpenClaw preferisce Homebrew quando `skills.install.preferBrew` è abilitato e `brew` esiste, poi `uv`, poi il gestore node configurato, quindi altri fallback come `go` o `download`.
     - Se ogni specifica di installazione è `download`, OpenClaw mostra tutte le opzioni di download invece di comprimerle in un unico installer preferito.
+
   </Accordion>
   <Accordion title="Dettagli per installer">
     - **Installazioni Go:** se `go` manca e `brew` è disponibile, il gateway installa prima Go tramite Homebrew e imposta `GOBIN` sulla directory `bin` di Homebrew quando possibile.
     - **Installazioni download:** `url` (obbligatorio), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (predefinito: automatico quando viene rilevato un archivio), `stripComponents`, `targetDir` (predefinito: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

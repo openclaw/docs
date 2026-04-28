@@ -33,6 +33,7 @@ Para una descripción general de alto nivel, consulta [Incorporación (CLI)](/es
       - Solo configuración
       - Configuración + credenciales + sesiones
       - Reinicio completo (también elimina el espacio de trabajo)
+
   </Step>
   <Step title="Modelo/Autenticación">
     - **Clave de API de Anthropic**: usa `ANTHROPIC_API_KEY` si está presente o solicita una clave, luego la guarda para uso del daemon.
@@ -83,6 +84,7 @@ Para una descripción general de alto nivel, consulta [Incorporación (CLI)](/es
     - Valor predeterminado `~/.openclaw/workspace` (configurable).
     - Inicializa los archivos de espacio de trabajo necesarios para el ritual de arranque del agente.
     - Diseño completo del espacio de trabajo + guía de copia de seguridad: [Espacio de trabajo del agente](/es/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Puerto, bind, modo de autenticación, exposición por Tailscale.
@@ -98,6 +100,7 @@ Para una descripción general de alto nivel, consulta [Incorporación (CLI)](/es
       - No se puede combinar con `--gateway-token`.
     - Desactiva la autenticación solo si confías plenamente en todos los procesos locales.
     - Los binds que no son loopback siguen requiriendo autenticación.
+
   </Step>
   <Step title="Canales">
     - [WhatsApp](/es/channels/whatsapp): inicio de sesión por QR opcional.
@@ -109,12 +112,14 @@ Para una descripción general de alto nivel, consulta [Incorporación (CLI)](/es
     - [BlueBubbles](/es/channels/bluebubbles): **recomendado para iMessage**; URL del servidor + contraseña + webhook.
     - [iMessage](/es/channels/imessage): ruta heredada de CLI `imsg` + acceso a BD.
     - Seguridad de DM: el valor predeterminado es emparejamiento. El primer DM envía un código; apruébalo con `openclaw pairing approve <channel> <code>` o usa listas permitidas.
+
   </Step>
   <Step title="Búsqueda web">
     - Elige un proveedor compatible como Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG o Tavily (o sáltalo).
     - Los proveedores con API pueden usar variables de entorno o configuración existente para una configuración rápida; los proveedores sin clave usan en su lugar sus requisitos previos específicos.
     - Omítelo con `--skip-search`.
     - Configúralo después: `openclaw configure --section web`.
+
   </Step>
   <Step title="Instalación del daemon">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ Para una descripción general de alto nivel, consulta [Incorporación (CLI)](/es
     - Si la autenticación por token requiere un token y `gateway.auth.token` está administrado por SecretRef, la instalación del daemon lo valida pero no persiste valores resueltos de token en texto sin formato en los metadatos del entorno del servicio del supervisor.
     - Si la autenticación por token requiere un token y el token SecretRef configurado no está resuelto, se bloquea la instalación del daemon con instrucciones útiles.
     - Si tanto `gateway.auth.token` como `gateway.auth.password` están configurados y `gateway.auth.mode` no está establecido, se bloquea la instalación del daemon hasta que el modo se configure explícitamente.
+
   </Step>
   <Step title="Comprobación de estado">
     - Inicia el Gateway (si es necesario) y ejecuta `openclaw health`.
     - Consejo: `openclaw status --deep` añade el sondeo de estado del gateway en vivo a la salida de estado, incluidas las sondas de canales cuando son compatibles (requiere un gateway accesible).
+
   </Step>
   <Step title="Skills (recomendado)">
     - Lee las Skills disponibles y comprueba los requisitos.
     - Te permite elegir un gestor de Node: **npm / pnpm** (bun no es recomendable).
     - Instala dependencias opcionales (algunas usan Homebrew en macOS).
+
   </Step>
   <Step title="Finalizar">
     - Resumen + siguientes pasos, incluidas las apps para iOS/Android/macOS para funciones adicionales.
+
   </Step>
 </Steps>
 

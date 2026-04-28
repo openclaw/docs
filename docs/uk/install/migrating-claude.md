@@ -55,6 +55,7 @@ OpenClaw імпортує локальний стан Claude через вбуд
   <Accordion title="Інструкції та пам’ять">
     - Вміст проєктних `CLAUDE.md` і `.claude/CLAUDE.md` копіюється або додається до `AGENTS.md` у workspace агента OpenClaw.
     - Вміст користувацького `~/.claude/CLAUDE.md` додається до `USER.md` у workspace.
+
   </Accordion>
   <Accordion title="Сервери MCP">
     Визначення серверів MCP імпортуються з проєктного `.mcp.json`, Claude Code `~/.claude.json` і Claude Desktop `claude_desktop_config.json`, якщо вони присутні.
@@ -62,6 +63,7 @@ OpenClaw імпортує локальний стан Claude через вбуд
   <Accordion title="Skills і команди">
     - Claude Skills із файлом `SKILL.md` копіюються до каталогу Skills у workspace OpenClaw.
     - Markdown-файли команд Claude у `.claude/commands/` або `~/.claude/commands/` перетворюються на Skills OpenClaw з `disable-model-invocation: true`.
+
   </Accordion>
 </AccordionGroup>
 

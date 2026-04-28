@@ -310,6 +310,7 @@ OpenClaw розділяє дві концепції:
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="Усі ключі `dangerous*` / `dangerously*` у схемі конфігурації">

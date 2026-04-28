@@ -44,14 +44,17 @@ Er installiert oder verändert nichts auf dem Remote-Host.
       - Nur Konfiguration
       - Konfiguration + Zugangsdaten + Sitzungen
       - Vollständiges Zurücksetzen (entfernt auch den Workspace)
+
   </Step>
   <Step title="Modell und Auth">
     - Die vollständige Optionsmatrix finden Sie unter [Auth- und Modelloptionen](#auth-and-model-options).
+
   </Step>
   <Step title="Workspace">
     - Standard ist `~/.openclaw/workspace` (konfigurierbar).
     - Legt Workspace-Dateien an, die für das Bootstrap-Ritual beim ersten Start benötigt werden.
     - Workspace-Layout: [Agent workspace](/de/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Fragt Port, Bind, Auth-Modus und Tailscale-Exposition ab.
@@ -65,6 +68,7 @@ Er installiert oder verändert nichts auf dem Remote-Host.
       - Kann nicht mit `--gateway-token` kombiniert werden.
     - Deaktivieren Sie Auth nur, wenn Sie jedem lokalen Prozess vollständig vertrauen.
     - Auch bei Nicht-Loopback-Binds bleibt Auth erforderlich.
+
   </Step>
   <Step title="Channels">
     - [WhatsApp](/de/channels/whatsapp): optionaler QR-Login
@@ -88,18 +92,22 @@ Er installiert oder verändert nichts auf dem Remote-Host.
       - Wenn das Erstellen der Aufgabe verweigert wird, fällt OpenClaw auf ein benutzerspezifisches Startup-Ordner-Login-Element zurück und startet das Gateway sofort.
       - Aufgaben in der Aufgabenplanung bleiben bevorzugt, weil sie einen besseren Supervisor-Status bieten.
     - Laufzeitauswahl: Node (empfohlen; erforderlich für WhatsApp und Telegram). Bun wird nicht empfohlen.
+
   </Step>
   <Step title="Health Check">
     - Startet das Gateway (falls nötig) und führt `openclaw health` aus.
     - `openclaw status --deep` fügt die Live-Gateway-Health-Probe zur Statusausgabe hinzu, einschließlich Channel-Probes, sofern unterstützt.
+
   </Step>
   <Step title="Skills">
     - Liest verfügbare Skills und prüft Anforderungen.
     - Lässt Sie den Node-Manager auswählen: npm, pnpm oder bun.
     - Installiert optionale Abhängigkeiten (einige verwenden Homebrew unter macOS).
+
   </Step>
   <Step title="Abschluss">
     - Zusammenfassung und nächste Schritte, einschließlich Optionen für iOS-, Android- und macOS-Apps.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Was Sie festlegen:
 - Hinweise zur Erkennung:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Auth- und Modelloptionen

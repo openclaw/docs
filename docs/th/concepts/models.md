@@ -57,6 +57,7 @@ OpenClaw เลือก models ตามลำดับนี้:
     - `agents.defaults.musicGenerationModel` ใช้โดยความสามารถสร้างเพลงแบบใช้ร่วมกัน หากไม่กำหนด `music_generate` ยังสามารถอนุมานค่าเริ่มต้นของผู้ให้บริการที่มี auth รองรับได้ โดยจะลองผู้ให้บริการค่าเริ่มต้นปัจจุบันก่อน จากนั้นจึงลองผู้ให้บริการสร้างเพลงที่ลงทะเบียนไว้ที่เหลือตามลำดับ provider-id หากคุณกำหนด provider/model แบบเฉพาะ ให้กำหนด auth/API key ของผู้ให้บริการนั้นด้วย
     - `agents.defaults.videoGenerationModel` ใช้โดยความสามารถสร้างวิดีโอแบบใช้ร่วมกัน หากไม่กำหนด `video_generate` ยังสามารถอนุมานค่าเริ่มต้นของผู้ให้บริการที่มี auth รองรับได้ โดยจะลองผู้ให้บริการค่าเริ่มต้นปัจจุบันก่อน จากนั้นจึงลองผู้ให้บริการสร้างวิดีโอที่ลงทะเบียนไว้ที่เหลือตามลำดับ provider-id หากคุณกำหนด provider/model แบบเฉพาะ ให้กำหนด auth/API key ของผู้ให้บริการนั้นด้วย
     - ค่าเริ่มต้นต่อเอเจนต์สามารถ override `agents.defaults.model` ได้ผ่าน `agents.list[].model` ร่วมกับ bindings (ดู [Multi-agent routing](/th/concepts/multi-agent))
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - เพิ่ม model นั้นเข้าไปใน `agents.defaults.models` หรือ
 - ล้าง allowlist (เอา `agents.defaults.models` ออก) หรือ
 - เลือก model จาก `/model list`
+
 </Warning>
 
 ตัวอย่างคอนฟิก allowlist:
@@ -157,6 +159,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
     - บน Discord, `/model` และ `/models` จะเปิดตัวเลือกแบบโต้ตอบที่มี dropdown สำหรับผู้ให้บริการและ model พร้อมขั้นตอน Submit
     - `/models add` เลิกใช้แล้ว และตอนนี้จะส่งกลับข้อความเลิกใช้แทนการลงทะเบียน models จากแชต
     - `/model <#>` ใช้เลือกจากตัวเลือกนั้น
+
   </Accordion>
   <Accordion title="การคงค่าและการสลับแบบสด">
     - `/model` จะบันทึกการเลือกเซสชันใหม่ทันที
@@ -164,6 +167,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
     - หากมีการรันที่กำลังทำงานอยู่แล้ว OpenClaw จะทำเครื่องหมายการสลับแบบสดว่าเป็น pending และจะรีสตาร์ตไปยัง model ใหม่เฉพาะที่จุด retry ที่สะอาดเท่านั้น
     - หากกิจกรรมของ tool หรือการส่งออกคำตอบเริ่มขึ้นแล้ว การสลับที่ pending อาจค้างอยู่จนกว่าจะมีโอกาส retry ภายหลังหรือถึง user turn ถัดไป
     - `/model status` คือมุมมองแบบละเอียด (auth candidates และเมื่อกำหนดค่าไว้แล้ว รวมถึง provider endpoint `baseUrl` + โหมด `api`)
+
   </Accordion>
   <Accordion title="การ parse ref">
     - model refs จะถูก parse โดยแยกที่ `/` **ตัวแรก** ใช้ `provider/model` เมื่อพิมพ์ `/model <ref>`
@@ -233,6 +237,7 @@ openclaw models image-fallbacks clear
     - ใช้ `--check` สำหรับงานอัตโนมัติ (exit `1` เมื่อขาดหาย/หมดอายุ, `2` เมื่อใกล้หมดอายุ)
     - ใช้ `--probe` สำหรับการตรวจสอบ auth แบบสด; แถว probe อาจมาจาก auth profiles, env credentials หรือ `models.json`
     - หาก `auth.order.<provider>` แบบ explicit ไม่รวม stored profile, probe จะรายงาน `excluded_by_auth_order` แทนการลองใช้ หากมี auth อยู่แต่ไม่สามารถ resolve model ที่ probe ได้สำหรับผู้ให้บริการนั้น probe จะรายงาน `status: no_model`
+
   </Accordion>
 </AccordionGroup>
 

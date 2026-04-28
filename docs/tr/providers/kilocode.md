@@ -123,6 +123,7 @@ keşfedilen modelleri statik yedek kataloğun önüne birleştirir. Paketlenmiş
     - Model keşfi başlangıçta başarısız olursa OpenClaw, `kilocode/kilo/auto` içeren paketlenmiş statik kataloğa geri döner.
     - API anahtarınızın geçerli olduğunu ve Kilo hesabınızda istenen modellerin etkin olduğunu doğrulayın.
     - Gateway bir daemon olarak çalışıyorsa, `KILOCODE_API_KEY` değişkeninin bu süreç için kullanılabilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
+
   </Accordion>
 </AccordionGroup>
 

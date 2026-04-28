@@ -138,6 +138,7 @@ Le catalogue de repli intégré inclut les références Chutes actuelles :
     - La découverte par clé API et par OAuth utilise le même ID de fournisseur `chutes`.
     - Les modèles Chutes sont enregistrés sous la forme `chutes/<model-id>`.
     - Si la découverte échoue au démarrage, le catalogue statique intégré est utilisé automatiquement.
+
   </Accordion>
 </AccordionGroup>
 

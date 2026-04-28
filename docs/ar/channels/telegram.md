@@ -212,6 +212,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
       - ضع معرّفات مجموعات Telegram أو supergroup السالبة مثل `-1001234567890` ضمن `channels.telegram.groups`.
       - ضع معرّفات مستخدمي Telegram مثل `8734062810` ضمن `groupAllowFrom` عندما تريد تقييد الأشخاص داخل مجموعة مسموح بها الذين يمكنهم تشغيل الـ bot.
       - استخدم `groupAllowFrom: ["*"]` فقط عندما تريد أن يتمكن أي عضو في مجموعة مسموح بها من التحدث إلى الـ bot.
+
     </Warning>
 
   </Tab>

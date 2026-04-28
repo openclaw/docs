@@ -102,6 +102,7 @@ x-i18n:
 - สำหรับการตั้งค่า proxy แบบ loopback บนโฮสต์เดียวกัน ให้ใช้ auth แบบ token/password แทน หรือกำหนดเส้นทางผ่านที่อยู่ trusted proxy ที่ไม่ใช่ loopback ซึ่ง OpenClaw ตรวจสอบได้
 - การติดตั้งใช้งาน Control UI ที่ไม่ใช่ loopback ยังคงต้องตั้งค่า `gateway.controlUi.allowedOrigins` แบบชัดเจน
 - **หลักฐานจาก forwarded-header มีสิทธิ์เหนือกว่าความเป็น loopback ภายในเครื่อง** หากคำขอมาถึงผ่าน loopback แต่มี header `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` ที่ชี้ไปยังต้นทางที่ไม่ใช่ภายในเครื่อง หลักฐานนั้นจะทำให้คำกล่าวอ้างว่าเป็น loopback ใช้ไม่ได้ คำขอนั้นจะถูกถือว่าเป็นคำขอระยะไกลสำหรับการจับคู่, trusted-proxy auth และการควบคุมด้วย device-identity ของ Control UI วิธีนี้ช่วยป้องกันไม่ให้ proxy แบบ loopback บนโฮสต์เดียวกันฟอก forwarded-header identity ให้ผ่าน trusted-proxy auth ได้
+
 </Warning>
 
 ### ข้อมูลอ้างอิงการตั้งค่า

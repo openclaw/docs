@@ -137,6 +137,7 @@ Il catalogo fallback incluso contiene gli attuali riferimenti Chutes:
     - Il discovery con chiave API e quello OAuth usano entrambi lo stesso id provider `chutes`.
     - I modelli Chutes vengono registrati come `chutes/<model-id>`.
     - Se il discovery fallisce all'avvio, viene usato automaticamente il catalogo statico incluso.
+
   </Accordion>
 </AccordionGroup>
 

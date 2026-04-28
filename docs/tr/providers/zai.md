@@ -186,6 +186,7 @@ GLM modelleri `zai/<model>` olarak kullanılabilir (örnek: `zai/glm-5`). Varsay
     - Z.AI, API anahtarınızla Bearer auth kullanır.
     - `zai-api-key` onboarding seçeneği, eşleşen Z.AI uç noktasını anahtar önekinden otomatik algılar.
     - Belirli bir API yüzeyini zorlamak istediğinizde açık bölgesel seçenekleri (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) kullanın.
+
   </Accordion>
 </AccordionGroup>
 

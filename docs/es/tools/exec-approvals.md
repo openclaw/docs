@@ -124,6 +124,7 @@ Ejemplo de esquema:
   - `deny` — bloquea todas las solicitudes de exec del host.
   - `allowlist` — permite solo comandos en la lista de permitidos.
   - `full` — permite todo (equivalente a elevación).
+
 </ParamField>
 
 ### `exec.ask`
@@ -132,6 +133,7 @@ Ejemplo de esquema:
   - `off` — no muestra prompts nunca.
   - `on-miss` — muestra prompt solo cuando la lista de permitidos no coincide.
   - `always` — muestra prompt en cada comando. La confianza duradera `allow-always` **no** suprime prompts cuando el modo ask efectivo es `always`.
+
 </ParamField>
 
 ### `askFallback`
@@ -142,6 +144,7 @@ Ejemplo de esquema:
 - `deny` — bloquea.
 - `allowlist` — permite solo si la lista de permitidos coincide.
 - `full` — permite.
+
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
@@ -189,6 +192,7 @@ YOLO es el comportamiento predeterminado del host salvo que lo endurezcas explí
 - YOLO elige **cómo** se aprueba el exec del host: `security=full` más `ask=off`.
 - En modo YOLO, OpenClaw **no** añade una compuerta separada de aprobación heurística de ofuscación de comandos ni una capa de rechazo previo de scripts encima de la política configurada de exec del host.
 - `auto` no hace que el enrutamiento al gateway sea una sobrescritura libre desde una sesión en sandbox. Una solicitud por llamada `host=node` está permitida desde `auto`; `host=gateway` solo se permite desde `auto` cuando no hay ningún runtime de sandbox activo. Para un valor predeterminado estable que no sea auto, establece `tools.exec.host` o usa `/exec host=...` explícitamente.
+
 </Warning>
 
 Los proveedores respaldados por CLI que exponen su propio modo de permisos no interactivo
@@ -267,6 +271,7 @@ EOF
 - `openclaw exec-policy` no sincroniza aprobaciones del nodo.
 - `openclaw exec-policy set --host node` se rechaza.
 - Las aprobaciones de exec del nodo se obtienen del nodo en runtime, por lo que las actualizaciones dirigidas al nodo deben usar `openclaw approvals --node ...`.
+
 </Note>
 
 ### Atajo solo de sesión
@@ -317,6 +322,7 @@ lista de binarios del Skill. Desactívalo si quieres listas de permitidos manual
 - Esta es una **lista implícita de conveniencia**, separada de las entradas manuales de lista de permitidos por ruta.
 - Está pensada para entornos de operador de confianza donde Gateway y nodo están dentro del mismo límite de confianza.
 - Si necesitas confianza estricta y explícita, mantén `autoAllowSkills: false` y usa solo entradas manuales de lista de permitidos por ruta.
+
 </Warning>
 
 ## Binarios seguros y reenvío de aprobaciones

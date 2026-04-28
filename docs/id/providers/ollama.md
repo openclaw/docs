@@ -40,6 +40,7 @@ Pilih metode penyiapan dan mode yang Anda inginkan.
         - **Cloud + Local** — host Ollama lokal plus model cloud yang dirutekan melalui host tersebut
         - **Cloud only** — model Ollama yang di-host melalui `https://ollama.com`
         - **Local only** — hanya model lokal
+
       </Step>
       <Step title="Pilih model">
         `Cloud only` meminta `OLLAMA_API_KEY` dan menyarankan default cloud yang di-host. `Cloud + Local` dan `Local only` meminta URL dasar Ollama, menemukan model yang tersedia, dan otomatis melakukan pull untuk model lokal yang dipilih jika model itu belum tersedia. `Cloud + Local` juga memeriksa apakah host Ollama tersebut sudah login untuk akses cloud.
@@ -79,6 +80,7 @@ Pilih metode penyiapan dan mode yang Anda inginkan.
         - **Cloud + Local**: instal Ollama, login dengan `ollama signin`, dan rutekan permintaan cloud melalui host tersebut
         - **Cloud only**: gunakan `https://ollama.com` dengan `OLLAMA_API_KEY`
         - **Local only**: instal Ollama dari [ollama.com/download](https://ollama.com/download)
+
       </Step>
       <Step title="Pull model lokal (khusus lokal)">
         ```bash

@@ -68,6 +68,7 @@ Setelah disetujui, perangkat akan diingat dan tidak memerlukan persetujuan ulang
 - Tailscale Serve dapat melewati alur pairing bolak-balik untuk sesi operator UI Kontrol saat `gateway.auth.allowTailscale: true`, identitas Tailscale terverifikasi, dan browser menampilkan identitas perangkatnya.
 - Bind Tailnet langsung, koneksi browser LAN, dan profil browser tanpa identitas perangkat tetap memerlukan persetujuan eksplisit.
 - Setiap profil browser menghasilkan ID perangkat unik, sehingga berganti browser atau menghapus data browser akan memerlukan pairing ulang.
+
 </Note>
 
 ## Identitas personal (lokal browser)
@@ -96,18 +97,21 @@ UI Kontrol dapat melokalkan dirinya sendiri pada pemuatan pertama berdasarkan lo
     - Chat dengan model melalui Gateway WS (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`).
     - Bicara ke OpenAI Realtime langsung dari browser melalui WebRTC. Gateway membuat Realtime client secret berumur pendek dengan `talk.realtime.session`; browser mengirim audio mikrofon langsung ke OpenAI dan meneruskan panggilan tool `openclaw_agent_consult` kembali melalui `chat.send` untuk model OpenClaw terkonfigurasi yang lebih besar.
     - Stream panggilan tool + kartu output tool live di Chat (event agen).
+
   </Accordion>
   <Accordion title="Kanal, instance, sesi, dream">
     - Kanal: status kanal bawaan plus kanal plugin bundled/eksternal, login QR, dan konfigurasi per kanal (`channels.status`, `web.login.*`, `config.patch`).
     - Instance: daftar presence + refresh (`system-presence`).
     - Sesi: daftar + penimpaan model/thinking/fast/verbose/trace/reasoning per sesi (`sessions.list`, `sessions.patch`).
     - Dream: status Dreaming, toggle aktif/nonaktif, dan pembaca Dream Diary (`doctor.memory.status`, `doctor.memory.dreamDiary`, `config.patch`).
+
   </Accordion>
   <Accordion title="Cron, Skills, Node, persetujuan exec">
     - Job Cron: daftar/tambah/edit/jalankan/aktifkan/nonaktifkan + riwayat eksekusi (`cron.*`).
     - Skills: status, aktifkan/nonaktifkan, instal, pembaruan API key (`skills.*`).
     - Node: daftar + kapabilitas (`node.list`).
     - Persetujuan exec: edit allowlist gateway atau node + kebijakan ask untuk `exec host=gateway/node` (`exec.approvals.*`).
+
   </Accordion>
   <Accordion title="Konfigurasi">
     - Lihat/edit `~/.openclaw/openclaw.json` (`config.get`, `config.set`).
@@ -118,11 +122,13 @@ UI Kontrol dapat melokalkan dirinya sendiri pada pemuatan pertama berdasarkan lo
     - Jika sebuah snapshot tidak dapat melakukan raw round-trip dengan aman, UI Kontrol memaksa mode Form dan menonaktifkan mode Raw untuk snapshot tersebut.
     - "Reset to saved" pada editor Raw JSON mempertahankan bentuk yang ditulis secara raw (formatting, komentar, tata letak `$include`) alih-alih merender ulang snapshot yang diratakan, sehingga edit eksternal tetap bertahan saat reset jika snapshot dapat melakukan raw round-trip dengan aman.
     - Nilai objek Structured SecretRef dirender read-only dalam input teks form untuk mencegah kerusakan objek-ke-string yang tidak disengaja.
+
   </Accordion>
   <Accordion title="Debug, log, pembaruan">
     - Debug: snapshot status/health/models + log event + panggilan RPC manual (`status`, `health`, `models.list`).
     - Log: tail live log file gateway dengan filter/ekspor (`logs.tail`).
     - Pembaruan: jalankan pembaruan package/git + restart (`update.run`) dengan laporan restart.
+
   </Accordion>
   <Accordion title="Catatan panel job Cron">
     - Untuk job terisolasi, delivery default adalah mengumumkan ringkasan. Anda dapat menggantinya ke none jika ingin eksekusi internal saja.
@@ -133,6 +139,7 @@ UI Kontrol dapat melokalkan dirinya sendiri pada pemuatan pertama berdasarkan lo
     - Validasi form bersifat inline dengan error per field; nilai yang tidak valid menonaktifkan tombol simpan sampai diperbaiki.
     - Tetapkan `cron.webhookToken` untuk mengirim bearer token khusus; jika dihilangkan, Webhook dikirim tanpa header auth.
     - Fallback yang sudah deprecated: job legacy tersimpan dengan `notify: true` masih dapat menggunakan `cron.webhook` sampai dimigrasikan.
+
   </Accordion>
 </AccordionGroup>
 
@@ -149,6 +156,7 @@ UI Kontrol dapat melokalkan dirinya sendiri pada pemuatan pertama berdasarkan lo
     - `chat.inject` menambahkan catatan asisten ke transkrip sesi dan menyiarkan event `chat` untuk pembaruan khusus UI (tanpa eksekusi agen, tanpa pengiriman kanal).
     - Pemilih model dan thinking di header chat langsung mem-patch sesi aktif melalui `sessions.patch`; itu adalah penimpaan sesi persisten, bukan opsi kirim satu giliran saja.
     - Saat laporan penggunaan sesi Gateway yang baru menunjukkan tekanan konteks tinggi, area composer chat menampilkan pemberitahuan konteks dan, pada level Compaction yang direkomendasikan, tombol compact yang menjalankan jalur Compaction sesi normal. Snapshot token yang basi disembunyikan sampai Gateway kembali melaporkan penggunaan baru.
+
   </Accordion>
   <Accordion title="Mode Talk (WebRTC browser)">
     Mode Talk menggunakan penyedia suara realtime terdaftar yang mendukung sesi WebRTC browser. Konfigurasikan OpenAI dengan `talk.provider: "openai"` plus `talk.providers.openai.apiKey`, atau gunakan kembali konfigurasi penyedia realtime Voice Call. Browser tidak pernah menerima API key OpenAI standar; browser hanya menerima Realtime client secret yang ephemeral. Suara realtime Google Live didukung untuk Voice Call backend dan bridge Google Meet, tetapi belum untuk jalur WebRTC browser ini. Prompt sesi Realtime dirakit oleh Gateway; `talk.realtime.session` tidak menerima penimpaan instruksi yang disediakan pemanggil.
@@ -161,11 +169,13 @@ UI Kontrol dapat melokalkan dirinya sendiri pada pemuatan pertama berdasarkan lo
     - Saat sebuah eksekusi aktif, tindak lanjut normal akan masuk antrean. Klik **Steer** pada pesan yang diantrikan untuk menyuntikkan tindak lanjut itu ke giliran yang sedang berjalan.
     - Ketik `/stop` (atau frasa abort mandiri seperti `stop`, `stop action`, `stop run`, `stop openclaw`, `please stop`) untuk melakukan abort out-of-band.
     - `chat.abort` mendukung `{ sessionKey }` (tanpa `runId`) untuk meng-abort semua eksekusi aktif pada sesi tersebut.
+
   </Accordion>
   <Accordion title="Retensi parsial abort">
     - Saat sebuah eksekusi di-abort, teks asisten parsial masih dapat ditampilkan di UI.
     - Gateway menyimpan teks asisten parsial yang di-abort ke riwayat transkrip saat output yang dibuffer tersedia.
     - Entri yang disimpan menyertakan metadata abort agar konsumen transkrip dapat membedakan parsial abort dari output penyelesaian normal.
+
   </Accordion>
 </AccordionGroup>
 
@@ -322,6 +332,7 @@ Pengecualian yang didokumentasikan:
     - Auth trusted-proxy yang berhasil dapat mengizinkan sesi UI Kontrol **operator** tanpa identitas perangkat.
     - Ini **tidak** berlaku untuk sesi UI Kontrol dengan role node.
     - Reverse proxy loopback host yang sama tetap tidak memenuhi auth trusted-proxy; lihat [Auth trusted proxy](/id/gateway/trusted-proxy-auth).
+
   </Accordion>
 </AccordionGroup>
 
@@ -408,6 +419,7 @@ UI Kontrol adalah file statis; target WebSocket dapat dikonfigurasi dan bisa ber
     - Startup Gateway dapat men-seed origin lokal seperti `http://localhost:<port>` dan `http://127.0.0.1:<port>` dari bind dan port runtime yang efektif, tetapi origin browser remote tetap memerlukan entri eksplisit.
     - Jangan gunakan `gateway.controlUi.allowedOrigins: ["*"]` kecuali untuk pengujian lokal yang dikontrol ketat. Ini berarti mengizinkan origin browser apa pun, bukan "cocokkan host apa pun yang saya gunakan."
     - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` mengaktifkan mode fallback origin Host-header, tetapi ini adalah mode keamanan yang berbahaya.
+
   </Accordion>
 </AccordionGroup>
 

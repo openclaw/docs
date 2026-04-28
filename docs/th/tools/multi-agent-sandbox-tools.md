@@ -232,6 +232,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     - หากตั้งค่า `agents.list[].tools.sandbox.tools` ระบบจะใช้ค่านี้แทน `tools.sandbox.tools` สำหรับเอเจนต์นั้น
     - หากตั้งค่า `agents.list[].tools.profile` ระบบจะ override `tools.profile` สำหรับเอเจนต์นั้น
     - คีย์เครื่องมือของผู้ให้บริการรองรับทั้ง `provider` (เช่น `google-antigravity`) หรือ `provider/model` (เช่น `openai/gpt-5.4`)
+
   </Accordion>
   <Accordion title="พฤติกรรมเมื่อ allowlist ว่าง">
     หาก allowlist แบบระบุชัดเจนใด ๆ ในสายโซ่นั้นทำให้ไม่มีเครื่องมือที่เรียกใช้ได้เหลืออยู่เลย OpenClaw จะหยุดก่อนส่งพร้อมต์ไปยังโมเดล นี่เป็นพฤติกรรมที่ตั้งใจไว้: เอเจนต์ที่กำหนดค่าด้วยเครื่องมือที่ไม่มีอยู่ เช่น `agents.list[].tools.allow: ["query_db"]` ควรล้มเหลวอย่างชัดเจนจนกว่าจะเปิดใช้ Plugin ที่ลงทะเบียน `query_db` ไม่ใช่ทำงานต่อไปในฐานะเอเจนต์ข้อความล้วน
@@ -360,6 +361,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="ทดสอบข้อจำกัดของเครื่องมือ">
     - ส่งข้อความที่ต้องใช้เครื่องมือที่ถูกจำกัด
     - ตรวจสอบว่าเอเจนต์ไม่สามารถใช้เครื่องมือที่ถูกปฏิเสธได้
+
   </Step>
   <Step title="ติดตาม logs">
     ```bash
@@ -376,15 +378,18 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Accordion title="เอเจนต์ไม่เข้า sandbox แม้ตั้ง `mode: 'all'`">
     - ตรวจสอบว่ามี `agents.defaults.sandbox.mode` แบบ global ที่ override อยู่หรือไม่
     - การกำหนดค่าเฉพาะเอเจนต์มีลำดับความสำคัญสูงกว่า ดังนั้นให้ตั้ง `agents.list[].sandbox.mode: "all"`
+
   </Accordion>
   <Accordion title="เครื่องมือยังใช้งานได้ทั้งที่อยู่ใน deny list">
     - ตรวจสอบลำดับการกรองเครื่องมือ: global → agent → sandbox → subagent
     - แต่ละระดับทำได้เพียงจำกัดเพิ่ม ไม่สามารถคืนสิทธิ์กลับได้
     - ตรวจสอบผ่าน logs: `[tools] filtering tools for agent:${agentId}`
+
   </Accordion>
   <Accordion title="คอนเทนเนอร์ไม่ถูกแยกต่อเอเจนต์">
     - ตั้ง `scope: "agent"` ในการกำหนดค่า sandbox เฉพาะเอเจนต์
     - ค่าเริ่มต้นคือ `"session"` ซึ่งจะสร้างหนึ่งคอนเทนเนอร์ต่อหนึ่งเซสชัน
+
   </Accordion>
 </AccordionGroup>
 

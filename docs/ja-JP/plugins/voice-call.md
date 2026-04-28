@@ -146,12 +146,14 @@ Twilio、Telnyx、Plivo では、セットアップは **公開到達可能な W
     - ngrok 無料枠では、正確な ngrok URL を `publicUrl` に設定してください。署名検証は常に強制されます。
     - `tunnel.allowNgrokFreeTierLoopbackBypass: true` は、`tunnel.provider="ngrok"` かつ `serve.bind` が loopback（ngrok ローカル agent）の場合にのみ、無効な署名を持つ Twilio Webhook を許可します。ローカル開発専用です。
     - ngrok 無料枠の URL は変わったり、インタースティシャル動作が追加されたりすることがあります。`publicUrl` がずれると Twilio 署名は失敗します。本番では、安定したドメインまたは Tailscale funnel を推奨します。
+
   </Accordion>
   <Accordion title="ストリーミング接続数の上限">
     - `streaming.preStartTimeoutMs` は、有効な `start` フレームを一度も送らないソケットを閉じます。
     - `streaming.maxPendingConnections` は、認証前の pre-start ソケット総数を制限します。
     - `streaming.maxPendingConnectionsPerIp` は、送信元 IP ごとの認証前 pre-start ソケット数を制限します。
     - `streaming.maxConnections` は、開いているメディアストリームソケット総数（pending + active）を制限します。
+
   </Accordion>
   <Accordion title="旧式 config の移行">
     `provider: "log"`、`twilio.from`、または旧式の `streaming.*` OpenAI キーを使う古い config は `openclaw doctor --fix` によって書き換えられます。ランタイムフォールバックは現時点では古い voice-call キーも受け付けますが、書き換え経路は `openclaw doctor --fix` であり、互換 shim は一時的なものです。

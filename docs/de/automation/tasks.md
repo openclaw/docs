@@ -115,6 +115,7 @@ Nicht jeder Agent-Lauf erstellt eine Aufgabe. Heartbeat-Durchläufe und normaler
     - Heartbeat-Durchläufe — Hauptsitzung; siehe [Heartbeat](/de/gateway/heartbeat)
     - Normale interaktive Chat-Durchläufe
     - Direkte `/command`-Antworten
+
   </Accordion>
 </AccordionGroup>
 

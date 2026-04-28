@@ -407,12 +407,14 @@ Pratik etkisi şudur: OpenClaw, hangi yüzeyin hangi Plugin'e ait olduğunu en b
     - core sahibi
     - birden çok Plugin tarafından yeniden kullanılabilir
     - sağlayıcı bilgisi olmadan kanallar/özellikler tarafından tüketilebilir
+
   </Tab>
   <Tab title="Kötü sözleşmeler">
     - core içinde gizlenmiş sağlayıcıya özgü ilke
     - kayıt defterini atlayan bir defalık Plugin kaçış kapıları
     - kanal kodunun doğrudan bir sağlayıcı uygulamasına uzanması
     - `OpenClawPluginApi` veya `api.runtime` parçası olmayan doğaçlama çalışma zamanı nesneleri
+
   </Tab>
 </Tabs>
 
@@ -428,6 +430,7 @@ Sonuçlar:
 - yerel bir Plugin; tools, ağ işleyicileri, hook'lar ve hizmetler kaydedebilir
 - yerel bir Plugin hatası gateway'i çökertebilir veya kararsızlaştırabilir
 - kötü niyetli bir yerel Plugin, OpenClaw süreci içinde keyfi kod yürütmeye denktir
+
 </Warning>
 
 Uyumlu bundle'lar varsayılan olarak daha güvenlidir; çünkü OpenClaw şu anda onları metadata/içerik paketleri olarak ele alır. Mevcut sürümlerde bu çoğunlukla paketlenmiş Skills anlamına gelir.
@@ -443,6 +446,7 @@ Paketlenmiş workspace paket adları için Plugin kimliğini npm adına bağlı 
 - Paketlenmiş bir Plugin ile aynı kimliğe sahip bir workspace Plugin'i, etkinse/allowlist'e alınmışsa paketlenmiş kopyayı bilinçli olarak gölgeler.
 - Bu, yerel geliştirme, yama testi ve hotfix'ler için normal ve kullanışlıdır.
 - Paketlenmiş Plugin güveni, kurulum metadata'sından değil, kaynak anlık görüntüsünden — yükleme anındaki disk üzerindeki manifest ve koddan — çözülür. Bozulmuş veya ikame edilmiş bir kurulum kaydı, paketlenmiş bir Plugin'in güven yüzeyini gerçek kaynağın iddia ettiğinin ötesinde sessizce genişletemez.
+
 </Note>
 
 ## Dışa aktarma sınırı

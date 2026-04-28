@@ -32,6 +32,7 @@ OpenClawは、影響範囲を減らすために**sandbox backend内でtoolを実
     - noVNC observer accessはデフォルトでpassword保護されています。OpenClawは短命token URLを発行し、ローカルbootstrap pageを提供して、URL fragment内のpassword付きでnoVNCを開きます（query/header logには残りません）。
     - `agents.defaults.sandbox.browser.allowHostControl` により、sandbox化sessionが明示的にhost browserを対象にできます。
     - 任意のallowlistにより、`target: "custom"` を制限できます: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`。
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ OpenClawに任意のSSHアクセス可能machine上で `exec`、file tool、medi
     - 作成または再作成後の初回利用時に、ローカルworkspaceからそのremote workspaceへ一度だけseedします。
     - その後、`exec`、`read`、`write`、`edit`、`apply_patch`、prompt media read、受信media stagingは、SSH経由でそのremote workspaceに対して直接実行されます。
     - OpenClawはremote変更をローカルworkspaceへ自動syncしません。
+
   </Accordion>
   <Accordion title="認証material">
     - `identityFile`, `certificateFile`, `knownHostsFile`: 既存のローカルfileを使い、OpenSSH config経由で渡します。
     - `identityData`, `certificateData`, `knownHostsData`: inline文字列またはSecretRefを使います。OpenClawは通常のsecret runtime snapshot経由でこれらを解決し、`0600` でtemp fileに書き出し、SSH session終了時に削除します。
     - 同じ項目に対して `*File` と `*Data` の両方が設定されている場合、そのSSH sessionでは `*Data` が優先されます。
+
   </Accordion>
   <Accordion title="remote-canonicalの影響">
     これは**remote-canonical** modelです。最初のseed後は、remote SSH workspaceが実際のsandbox stateになります。
@@ -205,11 +208,13 @@ OpenShell mode:
     - OpenClawは、`openshell sandbox ssh-config <name>` を通じて、sandbox固有のSSH configをOpenShellに要求します。
     - CoreはそのSSH configをtemp fileに書き込み、SSH sessionを開き、`backend: "ssh"` と同じremote filesystem bridgeを再利用します。
     - `mirror` modeではlifecycleのみが異なります。exec前にlocalからremoteへsyncし、exec後にsyncして戻します。
+
   </Accordion>
   <Accordion title="現在のOpenShell制限">
     - sandbox browserはまだサポートされていません
     - `sandbox.docker.binds` はOpenShell backendではサポートされません
     - `sandbox.docker.*` 配下のDocker固有runtime knobは、引き続きDocker backendにのみ適用されます
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ OpenShell backendでは:
 - 機密mount（secret、SSH key、service credential）は、絶対に必要でない限り `:ro` にすべきです。
 - workspaceへのread accessしか必要ないなら、`workspaceAccess: "ro"` と組み合わせてください。bind mode自体は独立しています。
 - bindがtool policyおよびelevated execとどう相互作用するかについては、[Sandbox vs Tool Policy vs Elevated](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated)を参照してください。
+
 </Warning>
 
 ## imageとセットアップ
@@ -423,6 +429,7 @@ OpenShell backendでは:
     - `network: "host"` はブロックされます。
     - `network: "container:<id>"` はデフォルトでブロックされます（namespace joinバイパスの危険）。
     - 緊急時override: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`。
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ path:
     - `readOnlyRoot: true` は書き込みを防ぎます。`readOnlyRoot: false` を設定するか、custom imageを焼いてください。
     - package installには `user` がrootである必要があります（`user` を省略するか、`user: "0:0"` を設定）。
     - sandbox execはhostの `process.env` を継承しません。SkillのAPI keyには `agents.defaults.sandbox.docker.env`（またはcustom image）を使ってください。
+
   </Accordion>
 </AccordionGroup>
 

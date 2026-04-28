@@ -175,6 +175,7 @@ Contrôlez la manière dont les agents traitent les messages :
     - Tous les agents listés traitent le message.
     - Chaque agent dispose de sa propre clé de session et d’un contexte isolé.
     - Les agents traitent en parallèle (par défaut) ou de manière séquentielle.
+
   </Step>
   <Step title="Si absent de la liste de diffusion">
     Le routage normal s’applique (premier binding correspondant).

@@ -136,6 +136,7 @@ Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [Op
     - ID permintaan provider mentah (hanya hash terbatas, bila berlaku, pada span — tidak pernah pada metrik)
     - kunci sesi dan ID sesi
     - hostname, path file, nilai secret
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ OpenClaw mendukung kedua permukaan ini secara independen. Anda dapat menjalankan
     - Diautentikasi melalui autentikasi Gateway normal.
     - Permukaannya hanya metrik (tanpa trace atau log).
     - Paling cocok untuk stack yang sudah distandardisasi pada Prometheus + Grafana.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - Model **push**: OpenClaw mengirim OTLP/HTTP ke kolektor atau backend yang kompatibel dengan OTLP.
     - Permukaannya mencakup metrik, trace, dan log.
     - Menjembatani ke Prometheus melalui OpenTelemetry Collector (exporter `prometheus` atau `prometheusremotewrite`) saat Anda memerlukan keduanya.
     - Lihat [OpenTelemetry export](/id/gateway/opentelemetry) untuk katalog lengkapnya.
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ OpenClaw mendukung kedua permukaan ini secara independen. Anda dapat menjalankan
     - Periksa `diagnostics.enabled: true` di konfigurasi.
     - Pastikan Plugin aktif dan dimuat dengan `openclaw plugins list --enabled`.
     - Hasilkan beberapa traffic; counter dan histogram hanya mengeluarkan baris setelah setidaknya satu peristiwa.
+
   </Accordion>
   <Accordion title="401 / unauthorized">
     Endpoint ini memerlukan cakupan operator Gateway (`auth: "gateway"` dengan `gatewayRuntimeScopeSurface: "trusted-operator"`). Gunakan token atau password yang sama seperti yang digunakan Prometheus untuk rute operator Gateway lainnya. Tidak ada mode publik tanpa autentikasi.

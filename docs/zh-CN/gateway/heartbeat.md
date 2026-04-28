@@ -41,6 +41,7 @@ x-i18n:
     - 如果心跳运行只需要 `HEARTBEAT.md`，请使用轻量级引导上下文。
     - 启用隔离会话，避免每次心跳都发送完整对话历史。
     - 将心跳限制在活跃时段（本地时间）内。
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ x-i18n:
   - `main`（默认）：智能体主会话。
   - 显式会话键（从 `openclaw sessions --json` 或 [sessions CLI](/zh-CN/cli/sessions) 复制）。
   - 会话键格式：请参阅[会话](/zh-CN/concepts/session)和[群组](/zh-CN/channels/groups)。
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`：投递到最后使用的外部渠道。
   - 显式渠道：任何已配置的渠道或插件 id，例如 `discord`、`matrix`、`telegram` 或 `whatsapp`。
   - `none`（默认）：运行心跳但**不向外部投递**。
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   控制直接/私信投递行为。`allow`：允许直接/私信心跳投递。`block`：抑制直接/私信投递（`reason=dm-blocked`）。
@@ -274,6 +277,7 @@ x-i18n:
   - 任意 IANA 标识符（例如 `America/New_York`）：直接使用；如果无效，则回退到上面的 `"user"` 行为。
   - 对于活跃窗口，`start` 和 `end` 不能相等；相等值会被视为零宽度（始终在窗口之外）。
   - 在活跃窗口之外，心跳会被跳过，直到窗口内的下一个触发点。
+
 </ParamField>
 
 ## 投递行为
@@ -286,16 +290,19 @@ x-i18n:
     - 心跳投递默认允许直接/私信目标。设置 `directPolicy: "block"` 可在仍然运行心跳轮次的同时抑制直接目标发送。
     - 如果主队列繁忙，心跳会被跳过并稍后重试。
     - 如果 `target` 未解析出外部目标，运行仍会发生，但不会发送出站消息。
+
   </Accordion>
   <Accordion title="Visibility and skip behavior">
     - 如果 `showOk`、`showAlerts` 和 `useIndicator` 全部禁用，运行会预先被跳过，原因是 `reason=alerts-disabled`。
     - 如果只禁用了警报投递，OpenClaw 仍可运行心跳、更新到期任务时间戳、恢复会话空闲时间戳，并抑制向外发送的警报载荷。
     - 如果解析出的心跳目标支持正在输入状态，OpenClaw 会在心跳运行活跃时显示正在输入。这会使用心跳原本要发送聊天输出的同一目标，并且会被 `typingMode: "never"` 禁用。
+
   </Accordion>
   <Accordion title="Session lifecycle and audit">
     - 仅心跳回复**不会**让会话保持活跃。心跳元数据可能会更新会话行，但空闲过期使用来自上一条真实用户/渠道消息的 `lastInteractionAt`，每日过期使用 `sessionStartedAt`。
     - Control UI 和 WebChat 历史会隐藏心跳提示和仅 OK 的确认。底层会话转录仍可包含这些轮次，以用于审计/重放。
     - 分离的[后台任务](/zh-CN/automation/tasks)可以入队一个系统事件，并在主会话应尽快注意到某些内容时唤醒心跳。该唤醒不会使心跳运行成为后台任务。
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - `HEARTBEAT.md` 中的非任务内容会被保留，并作为额外上下文附加在到期任务列表之后。
     - 任务上次运行时间戳会存储在会话状态（`heartbeatTaskState`）中，因此间隔可以在正常重启后保留。
     - 任务时间戳只会在心跳运行完成其正常回复路径后推进。被跳过的 `empty-heartbeat-file` / `no-tasks-due` 运行不会将任务标记为已完成。
+
   </Accordion>
 </AccordionGroup>
 

@@ -86,12 +86,14 @@ Direkomendasikan untuk sebagian besar instalasi interaktif di macOS/Linux/WSL.
   <Step title="Instal OpenClaw">
     - Metode `npm` (default): instalasi npm global
     - Metode `git`: clone/perbarui repo, instal dependensi dengan pnpm, build, lalu instal wrapper di `~/.local/bin/openclaw`
+
   </Step>
   <Step title="Tugas pasca-instalasi">
     - Me-refresh layanan gateway yang sedang dimuat secara best-effort (`openclaw gateway install --force`, lalu restart)
     - Menjalankan `openclaw doctor --non-interactive` pada upgrade dan instalasi git (best effort)
     - Mencoba onboarding bila sesuai (TTY tersedia, onboarding tidak dinonaktifkan, dan pemeriksaan bootstrap/config lolos)
     - Menggunakan default `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ secara default, ditambah instalasi checkout git dalam alur prefix yang sama.
   <Step title="Instal OpenClaw di bawah prefix">
     - Metode `npm` (default): menginstal di bawah prefix dengan npm, lalu menulis wrapper ke `<prefix>/bin/openclaw`
     - Metode `git`: clone/perbarui checkout (default `~/openclaw`) dan tetap menulis wrapper ke `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="Refresh layanan gateway yang dimuat">
     Jika layanan gateway sudah dimuat dari prefix yang sama, skrip menjalankan
@@ -293,11 +296,13 @@ secara default, ditambah instalasi checkout git dalam alur prefix yang sama.
   <Step title="Instal OpenClaw">
     - Metode `npm` (default): instalasi npm global menggunakan `-Tag` yang dipilih
     - Metode `git`: clone/perbarui repo, install/build dengan pnpm, dan instal wrapper di `%USERPROFILE%\.local\bin\openclaw.cmd`
+
   </Step>
   <Step title="Tugas pasca-instalasi">
     - Menambahkan direktori bin yang diperlukan ke PATH pengguna bila memungkinkan
     - Me-refresh layanan gateway yang sedang dimuat secara best-effort (`openclaw gateway install --force`, lalu restart)
     - Menjalankan `openclaw doctor --non-interactive` pada upgrade dan instalasi git (best effort)
+
   </Step>
   <Step title="Menangani kegagalan">
     Instalasi `iwr ... | iex` dan scriptblock melaporkan terminating error tanpa menutup sesi PowerShell saat ini. Instalasi langsung `powershell -File` / `pwsh -File` tetap keluar dengan status non-zero untuk otomatisasi.

@@ -259,6 +259,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `system-event`는 시스템 이벤트를 추가하고 presence 컨텍스트를 업데이트/브로드캐스트할 수 있습니다.
     - `last-heartbeat`는 가장 최근에 저장된 Heartbeat 이벤트를 반환합니다.
     - `set-heartbeats`는 Gateway에서 Heartbeat 처리를 토글합니다.
+
   </Accordion>
 
   <Accordion title="모델 및 사용량">
@@ -269,6 +270,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `sessions.usage`는 세션별 사용량 요약을 반환합니다.
     - `sessions.usage.timeseries`는 하나의 세션에 대한 시계열 사용량을 반환합니다.
     - `sessions.usage.logs`는 하나의 세션에 대한 사용량 로그 항목을 반환합니다.
+
   </Accordion>
 
   <Accordion title="채널 및 로그인 helper">
@@ -279,11 +281,13 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `push.test`는 등록된 iOS node로 테스트 APNs 푸시를 전송합니다.
     - `voicewake.get`은 저장된 wake-word trigger를 반환합니다.
     - `voicewake.set`은 wake-word trigger를 업데이트하고 변경 사항을 브로드캐스트합니다.
+
   </Accordion>
 
   <Accordion title="메시징 및 로그">
     - `send`는 chat runner 외부에서 채널/계정/스레드 대상 전송을 위한 직접 발신 전달 RPC입니다.
     - `logs.tail`은 cursor/limit 및 최대 바이트 제어와 함께 구성된 Gateway 파일 로그 tail을 반환합니다.
+
   </Accordion>
 
   <Accordion title="Talk 및 TTS">
@@ -295,6 +299,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `tts.enable` 및 `tts.disable`은 TTS 기본 설정 상태를 토글합니다.
     - `tts.setProvider`는 선호 TTS provider를 업데이트합니다.
     - `tts.convert`는 일회성 텍스트 음성 변환을 실행합니다.
+
   </Accordion>
 
   <Accordion title="Secret, 구성, 업데이트, 마법사">
@@ -308,6 +313,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `config.schema.lookup`은 하나의 구성 경로에 대한 경로 범위 조회 페이로드를 반환합니다: 정규화된 경로, 얕은 스키마 노드, 일치한 hint + `hintPath`, 그리고 UI/CLI drill-down을 위한 즉시 하위 요약입니다. 조회 스키마 노드는 사용자 대상 문서와 일반적인 검증 필드(`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, 숫자/문자열/배열/객체 한계, 그리고 `additionalProperties`, `deprecated`, `readOnly`, `writeOnly` 같은 플래그)를 유지합니다. 하위 요약은 `key`, 정규화된 `path`, `type`, `required`, `hasChildren`, 그리고 일치한 `hint` / `hintPath`를 노출합니다.
     - `update.run`은 Gateway 업데이트 흐름을 실행하고 업데이트 자체가 성공한 경우에만 재시작을 예약합니다.
     - `wizard.start`, `wizard.next`, `wizard.status`, `wizard.cancel`은 온보딩 마법사를 WS RPC로 노출합니다.
+
   </Accordion>
 
   <Accordion title="에이전트 및 워크스페이스 helper">
@@ -316,6 +322,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `agents.files.list`, `agents.files.get`, `agents.files.set`은 에이전트에 노출되는 bootstrap 워크스페이스 파일을 관리합니다.
     - `agent.identity.get`은 에이전트 또는 세션의 유효한 어시스턴트 identity를 반환합니다.
     - `agent.wait`는 실행이 끝날 때까지 기다리고, 가능하면 종료 스냅샷을 반환합니다.
+
   </Accordion>
 
   <Accordion title="세션 제어">
@@ -332,6 +339,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `sessions.reset`, `sessions.delete`, `sessions.compact`는 세션 유지보수를 수행합니다.
     - `sessions.get`은 전체 저장된 세션 행을 반환합니다.
     - 채팅 실행은 여전히 `chat.history`, `chat.send`, `chat.abort`, `chat.inject`를 사용합니다. `chat.history`는 UI 클라이언트를 위해 표시 정규화됩니다. 인라인 directive 태그는 표시 텍스트에서 제거되고, 일반 텍스트 도구 호출 XML 페이로드(`\<tool_call>...\</tool_call>`, `\<function_call>...\</function_call>`, `\<tool_calls>...\</tool_calls>`, `\<function_calls>...\</function_calls>`, 잘린 도구 호출 블록 포함)와 누출된 ASCII/전각 모델 제어 token은 제거되며, 정확히 `NO_REPLY` / `no_reply`인 순수 silent-token 어시스턴트 행은 생략되고, 너무 큰 행은 placeholder로 대체될 수 있습니다.
+
   </Accordion>
 
   <Accordion title="Device pairing 및 device token">
@@ -339,6 +347,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `device.pair.approve`, `device.pair.reject`, `device.pair.remove`는 device pairing 레코드를 관리합니다.
     - `device.token.rotate`는 승인된 role 및 호출자 scope 범위 내에서 페어링된 device token을 교체합니다.
     - `device.token.revoke`는 승인된 role 및 호출자 scope 범위 내에서 페어링된 device token을 폐기합니다.
+
   </Accordion>
 
   <Accordion title="Node pairing, invoke, 및 대기 작업">
@@ -351,6 +360,7 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `node.canvas.capability.refresh`는 범위가 지정된 canvas capability token을 새로 고칩니다.
     - `node.pending.pull` 및 `node.pending.ack`는 연결된 node 큐 API입니다.
     - `node.pending.enqueue` 및 `node.pending.drain`은 오프라인/연결 해제된 node의 내구성 있는 대기 작업을 관리합니다.
+
   </Accordion>
 
   <Accordion title="승인 계열">
@@ -359,11 +369,13 @@ Gateway는 이를 **claim**으로 취급하고 서버 측 allowlist를 강제합
     - `exec.approvals.get` 및 `exec.approvals.set`은 Gateway exec 승인 정책 스냅샷을 관리합니다.
     - `exec.approvals.node.get` 및 `exec.approvals.node.set`은 node relay 명령을 통해 node 로컬 exec 승인 정책을 관리합니다.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision`, `plugin.approval.resolve`는 Plugin 정의 승인 흐름을 다룹니다.
+
   </Accordion>
 
   <Accordion title="자동화, Skills, 및 도구">
     - 자동화: `wake`는 즉시 또는 다음 Heartbeat 시점 wake 텍스트 주입을 예약합니다. `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs`는 예약 작업을 관리합니다.
     - Skills 및 도구: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

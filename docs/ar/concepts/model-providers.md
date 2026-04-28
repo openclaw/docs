@@ -25,6 +25,7 @@ x-i18n:
     - مساعدات CLI: `openclaw onboard`، و`openclaw models list`، و`openclaw models set <provider/model>`.
     - تمثل `models.providers.*.models[].contextWindow` بيانات model الوصفية الأصلية؛ أما `contextTokens` فهو الحد الفعال في وقت التشغيل.
     - قواعد fallback، وprobes التهدئة، واستمرار تجاوزات الجلسة: [Model failover](/ar/concepts/model-failover).
+
   </Accordion>
   <Accordion title="تقسيم provider/runtime في OpenAI">
     تكون مسارات عائلة OpenAI خاصة بالبادئة:
@@ -76,6 +77,7 @@ x-i18n:
     - تُعاد محاولة الطلبات باستخدام المفتاح التالي فقط عند استجابات حد المعدل (مثل `429` أو `rate_limit` أو `quota` أو `resource exhausted` أو `Too many concurrent requests` أو `ThrottlingException` أو `concurrency limit reached` أو `workers_ai ... quota limit exceeded` أو رسائل حدود الاستخدام الدورية).
     - تفشل الإخفاقات غير المرتبطة بحد المعدل فورًا؛ ولا تتم محاولة تدوير المفاتيح.
     - عندما تفشل كل المفاتيح المرشحة، يُعاد الخطأ النهائي من آخر محاولة.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ x-i18n:
     - `volcengine/kimi-k2-5-260127` ‏(Kimi K2.5)
     - `volcengine/glm-4-7-251222` ‏(GLM 4.7)
     - `volcengine/deepseek-v3-2-251201` ‏(DeepSeek V3.2 128K)
+
   </Tab>
   <Tab title="Models البرمجة (`volcengine-plan`)">
     - `volcengine-plan/ark-code-latest`
@@ -428,6 +431,7 @@ x-i18n:
     - `volcengine-plan/kimi-k2.5`
     - `volcengine-plan/kimi-k2-thinking`
     - `volcengine-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -457,6 +461,7 @@ x-i18n:
     - `byteplus/seed-1-8-251228` ‏(Seed 1.8)
     - `byteplus/kimi-k2-5-260127` ‏(Kimi K2.5)
     - `byteplus/glm-4-7-251222` ‏(GLM 4.7)
+
   </Tab>
   <Tab title="Models البرمجة (`byteplus-plan`)">
     - `byteplus-plan/ark-code-latest`
@@ -464,6 +469,7 @@ x-i18n:
     - `byteplus-plan/kimi-k2.5`
     - `byteplus-plan/kimi-k2-thinking`
     - `byteplus-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -669,6 +675,7 @@ export SGLANG_API_KEY="sglang-local"
     - بالنسبة إلى عناصر التحكم `chat-template` في vLLM، اضبط `agents.defaults.models["provider/model"].params.chat_template_kwargs`. يرسل OpenClaw تلقائيًا `enable_thinking: false` و`force_nonempty_content: true` إلى `vllm/nemotron-3-*` عندما يكون مستوى التفكير في الجلسة معطّلًا.
     - إذا كانت `baseUrl` فارغة/محذوفة، يحتفظ OpenClaw بسلوك OpenAI الافتراضي (الذي يُحل إلى `api.openai.com`).
     - ولأسباب تتعلق بالأمان، يتم مع ذلك تجاوز القيمة الصريحة `compat.supportsDeveloperRole: true` على نقاط النهاية غير الأصلية `openai-completions`.
+
   </Accordion>
 </AccordionGroup>
 

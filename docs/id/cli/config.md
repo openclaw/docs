@@ -56,6 +56,7 @@ Cetak JSON schema yang dihasilkan untuk `openclaw.json` ke stdout sebagai JSON.
     - Cabang `anyOf` / `oneOf` / `allOf` juga mewarisi metadata dokumen yang sama saat dokumentasi field yang cocok tersedia.
     - Metadata schema Plugin + channel live secara best-effort saat manifest runtime dapat dimuat.
     - Schema fallback yang bersih bahkan saat config saat ini tidak valid.
+
   </Accordion>
   <Accordion title="RPC runtime terkait">
     `config.schema.lookup` mengembalikan satu path config yang dinormalisasi dengan node schema dangkal (`title`, `description`, `type`, `enum`, `const`, batas umum), metadata hint UI yang cocok, dan ringkasan child langsung. Gunakan ini untuk drill-down dengan cakupan path di Control UI atau klien kustom.
@@ -191,15 +192,18 @@ Target builder provider harus menggunakan `secrets.providers.<alias>` sebagai pa
   <Accordion title="Flag umum">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Provider env (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (dapat diulang)
+
   </Accordion>
   <Accordion title="Provider file (--provider-source file)">
     - `--provider-path <path>` (wajib)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Provider exec (--provider-source exec)">
     - `--provider-command <path>` (wajib)
@@ -212,6 +216,7 @@ Target builder provider harus menggunakan `secrets.providers.<alias>` sebagai pa
     - `--provider-trusted-dir <path>` (dapat diulang)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - Pemeriksaan SecretRef exec dilewati secara default selama dry-run untuk menghindari efek samping perintah.
     - Gunakan `--allow-exec` dengan `--dry-run` untuk ikut menjalankan pemeriksaan SecretRef exec (ini dapat mengeksekusi perintah provider).
     - `--allow-exec` hanya untuk dry-run dan akan menghasilkan error jika digunakan tanpa `--dry-run`.
+
   </Accordion>
   <Accordion title="Field --dry-run --json">
     `--dry-run --json` mencetak laporan yang dapat dibaca mesin:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: provider/ref yang dirujuk saat ini tidak dapat di-resolve (variabel env hilang, pointer file tidak valid, kegagalan provider exec, atau ketidakcocokan provider/source).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run melewati ref exec; jalankan ulang dengan `--allow-exec` jika Anda memerlukan validasi resolvabilitas exec.
     - Untuk mode batch, perbaiki entri yang gagal lalu jalankan ulang `--dry-run` sebelum menulis.
+
   </Accordion>
 </AccordionGroup>
 

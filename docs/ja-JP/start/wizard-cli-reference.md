@@ -45,14 +45,17 @@ x-i18n:
       - 設定のみ
       - 設定 + 認証情報 + セッション
       - フルリセット（ワークスペースも削除）
+
   </Step>
   <Step title="モデルと認証">
     - 完全なオプション一覧は [認証とモデルのオプション](#auth-and-model-options) にあります。
+
   </Step>
   <Step title="ワークスペース">
     - デフォルトは `~/.openclaw/workspace`（変更可能）。
     - 初回実行のブートストラップ手順に必要なワークスペースファイルを配置します。
     - ワークスペース構成: [Agent workspace](/ja-JP/concepts/agent-workspace)。
+
   </Step>
   <Step title="Gateway">
     - ポート、bind、auth mode、Tailscale 公開について確認します。
@@ -66,6 +69,7 @@ x-i18n:
       - `--gateway-token` とは併用できません。
     - すべてのローカルプロセスを完全に信頼している場合にのみ、auth を無効にしてください。
     - 非 loopback bind では、引き続き auth が必要です。
+
   </Step>
   <Step title="チャネル">
     - [WhatsApp](/ja-JP/channels/whatsapp): 任意の QR ログイン
@@ -77,6 +81,7 @@ x-i18n:
     - [BlueBubbles](/ja-JP/channels/bluebubbles): iMessage に推奨。サーバー URL + password + Webhook
     - [iMessage](/ja-JP/channels/imessage): レガシー `imsg` CLI パス + DB アクセス
     - DM セキュリティ: デフォルトは pairing です。最初の DM でコードが送信されます。`openclaw pairing approve <channel> <code>` で承認するか、allowlist を使ってください。
+
   </Step>
   <Step title="デーモンのインストール">
     - macOS: LaunchAgent
@@ -88,18 +93,22 @@ x-i18n:
       - タスク作成が拒否された場合、OpenClaw はユーザーごとの Startup フォルダのログイン項目にフォールバックし、すぐに Gateway を起動します。
       - Supervisor の状態確認がより良いため、Scheduled Task が引き続き推奨です。
     - ランタイム選択: Node（推奨。WhatsApp と Telegram では必須）。Bun は推奨されません。
+
   </Step>
   <Step title="ヘルスチェック">
     - 必要に応じて Gateway を起動し、`openclaw health` を実行します。
     - `openclaw status --deep` は、サポートされている場合はチャネルプローブを含むライブ Gateway ヘルスプローブをステータス出力に追加します。
+
   </Step>
   <Step title="Skills">
     - 利用可能な Skills を読み取り、要件を確認します。
     - node manager として npm、pnpm、bun を選択できます。
     - 任意の依存関係をインストールします（一部は macOS で Homebrew を使用します）。
+
   </Step>
   <Step title="完了">
     - iOS、Android、macOS アプリのオプションを含むサマリーと次のステップを表示します。
+
   </Step>
 </Steps>
 
@@ -126,6 +135,7 @@ Control UI アセットが欠けている場合、ウィザードはそれらの
 - 検出のヒント:
   - macOS: Bonjour（`dns-sd`）
   - Linux: Avahi（`avahi-browse`）
+
 </Note>
 
 ## 認証とモデルのオプション

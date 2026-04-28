@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - فحص حداثة بروتوكول واجهة المستخدم (يعيد بناء Control UI عندما يكون مخطط البروتوكول أحدث).
     - فحص الصحة + مطالبة بإعادة التشغيل.
     - ملخص حالة Skills (مؤهلة/مفقودة/محجوبة) وحالة Plugins.
+
   </Accordion>
   <Accordion title="الإعدادات والترحيلات">
     - تطبيع الإعدادات للقيم القديمة.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - ترحيل مفاتيح عقود plugin manifest القديمة (`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - ترحيل مخزن Cron القديم (`jobId`, `schedule.cron`, وحقول delivery/payload من المستوى الأعلى، و`provider` داخل payload، ووظائف fallback الخاصة بـ Webhook البسيطة من نوع `notify: true`).
     - ترحيل سياسة بيئة تشغيل الوكيل القديمة إلى `agents.defaults.agentRuntime` و`agents.list[].agentRuntime`.
+
   </Accordion>
   <Accordion title="الحالة والسلامة">
     - فحص ملفات قفل الجلسات وتنظيف الأقفال القديمة.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - فحوصات أذونات ملف الإعدادات (`chmod 600`) عند التشغيل محليًا.
     - صحة مصادقة النموذج: يفحص انتهاء صلاحية OAuth، ويمكنه تحديث الرموز التي قاربت على الانتهاء، ويبلغ عن حالات cooldown/disabled لملف تعريف المصادقة.
     - اكتشاف دليل مساحة عمل إضافي (`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway والخدمات وsupervisors">
     - إصلاح صورة sandbox عندما يكون sandboxing مفعّلًا.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - تدقيق إعدادات supervisor (launchd/systemd/schtasks) مع إصلاح اختياري.
     - فحوصات أفضل ممارسات وقت تشغيل Gateway (Node مقابل Bun، ومسارات version manager).
     - تشخيصات تعارض منفذ Gateway (الافتراضي `18789`).
+
   </Accordion>
   <Accordion title="المصادقة والأمان والإقران">
     - تحذيرات أمان لسياسات DM المفتوحة.
     - فحوصات مصادقة Gateway لوضع الرمز المحلي (يوفر إنشاء token عند عدم وجود مصدر token؛ ولا يستبدل إعدادات token SecretRef).
     - اكتشاف مشكلات إقران الأجهزة (طلبات الإقران الأولى المعلقة، وترقيات الدور/النطاق المعلقة، وانحراف cache المحلي القديم لرمز الجهاز، وانحراف المصادقة في السجل المقترن).
+
   </Accordion>
   <Accordion title="مساحة العمل وshell">
     - فحص systemd linger على Linux.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - فحص جهوزية موفّر embedding الخاص ببحث الذاكرة (نموذج محلي، أو مفتاح API بعيد، أو binary خاص بـ QMD).
     - فحوصات تثبيت المصدر (عدم تطابق pnpm workspace، أو أصول UI مفقودة، أو binary مفقود لـ tsx).
     - كتابة الإعدادات المحدّثة + بيانات المعالج الوصفية.
+
   </Accordion>
 </AccordionGroup>
 

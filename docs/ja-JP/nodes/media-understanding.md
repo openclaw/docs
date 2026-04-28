@@ -69,6 +69,7 @@ vendor 固有のメディア動作は vendor Plugin によって登録され、O
       - `attachments` ポリシー（`mode`、`maxAttachments`、`prefer`）
       - `scope`（任意。channel/chatType/session key によるゲート）
     - `tools.media.concurrency`: capability 実行の最大同時数（デフォルト **2**）。
+
   </Accordion>
 </AccordionGroup>
 
@@ -165,6 +166,7 @@ vendor 固有のメディア動作は vendor Plugin によって登録され、O
     - Gateway/WebChat の primary model が text-only の場合、画像添付は offloaded な `media://inbound/*` ref として保持されるため、画像/PDF ツールや設定済み image model が添付を失わずに引き続き調査できます。
     - 明示的な `openclaw infer image describe --model <provider/model>` リクエストは別です。これは、その image-capable provider/model を直接実行します。`ollama/qwen2.5vl:7b` のような Ollama ref も含みます。
     - `<capability>.enabled: true` だが model が設定されていない場合、OpenClaw は、その provider が capability をサポートしていれば **active な reply model** を試します。
+
   </Accordion>
 </AccordionGroup>
 
@@ -297,6 +299,7 @@ capability ごとの `attachments` は、どの添付を処理するかを制御
     - この添付抽出経路では、メディアプロンプトが膨らみすぎないように、長い `SECURITY NOTICE:` バナーを意図的に省略します。ただし、境界マーカーとメタデータ自体は残ります。
     - ファイルに抽出可能なテキストがない場合、OpenClaw は `[No extractable text]` を注入します。
     - PDF がこの経路でレンダリング済みページ画像にフォールバックした場合、メディアプロンプトには `[PDF content rendered to images; images not forwarded to model]` というプレースホルダーが残ります。これは、この添付抽出ステップがレンダリング済み PDF 画像ではなくテキストブロックを転送するためです。
+
   </Accordion>
 </AccordionGroup>
 

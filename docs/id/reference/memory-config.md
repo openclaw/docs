@@ -546,6 +546,7 @@ Untuk perilaku konseptual dan slash command, lihat [Dreaming](/id/concepts/dream
 - Dreaming menulis status mesin ke `memory/.dreams/`.
 - Dreaming menulis output naratif yang dapat dibaca manusia ke `DREAMS.md` (atau `dreams.md` yang sudah ada).
 - Kebijakan dan ambang fase light/deep/REM adalah perilaku internal, bukan konfigurasi yang menghadap pengguna.
+
 </Note>
 
 ## Terkait

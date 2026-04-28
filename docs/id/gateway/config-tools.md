@@ -297,6 +297,7 @@ Default: `tree` (sesi saat ini + sesi yang di-spawn olehnya, seperti subagen).
     - `agent`: sesi apa pun yang dimiliki oleh id agen saat ini (dapat mencakup pengguna lain jika Anda menjalankan sesi per-pengirim di bawah id agen yang sama).
     - `all`: sesi apa pun. Penargetan lintas agen tetap memerlukan `tools.agentToAgent`.
     - Clamp sandbox: saat sesi saat ini di-sandbox dan `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, visibilitas dipaksa ke `tree` meskipun `tools.sessions.visibility="all"`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -328,6 +329,7 @@ Mengendalikan dukungan lampiran inline untuk `sessions_spawn`.
     - Input Base64 divalidasi dengan pemeriksaan alfabet/padding yang ketat dan guard ukuran sebelum decode.
     - Izin file adalah `0700` untuk direktori dan `0600` untuk file.
     - Cleanup mengikuti kebijakan `cleanup`: `delete` selalu menghapus lampiran; `keep` mempertahankannya hanya saat `retainOnSessionKeep: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ OpenClaw menggunakan katalog model bawaan. Tambahkan provider kustom melalui `mo
       - `contextTokens` model yang cocok mempertahankan batas runtime eksplisit bila ada; gunakan ini untuk membatasi konteks efektif tanpa mengubah metadata model native.
       - Gunakan `models.mode: "replace"` saat Anda ingin config menulis ulang `models.json` sepenuhnya.
       - Persistensi marker bersifat source-authoritative: marker ditulis dari snapshot config sumber aktif (sebelum resolusi), bukan dari nilai secret runtime yang sudah di-resolve.
+
   </Accordion>
 </AccordionGroup>
 
@@ -431,6 +434,7 @@ OpenClaw menggunakan katalog model bawaan. Tambahkan provider kustom melalui `mo
     - `models.mode`: perilaku katalog provider (`merge` atau `replace`).
     - `models.providers`: peta provider kustom yang diberi key berdasarkan ID provider.
       - Pengeditan aman: gunakan `openclaw config set models.providers.<id> '<json>' --strict-json --merge` atau `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` untuk pembaruan aditif. `config set` menolak penggantian destruktif kecuali Anda memberikan `--replace`.
+
   </Accordion>
   <Accordion title="Koneksi dan auth provider">
     - `models.providers.*.api`: adapter permintaan (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, dll).
@@ -440,6 +444,7 @@ OpenClaw menggunakan katalog model bawaan. Tambahkan provider kustom melalui `mo
     - `models.providers.*.authHeader`: paksa transport kredensial di header `Authorization` saat diperlukan.
     - `models.providers.*.baseUrl`: base URL API upstream.
     - `models.providers.*.headers`: header statis tambahan untuk routing proxy/tenant.
+
   </Accordion>
   <Accordion title="Override transport permintaan">
     `models.providers.*.request`: override transport untuk permintaan HTTP model-provider.
@@ -457,6 +462,7 @@ OpenClaw menggunakan katalog model bawaan. Tambahkan provider kustom melalui `mo
     - `models.providers.*.models.*.contextTokens`: batas konteks runtime opsional. Gunakan ini saat Anda menginginkan anggaran konteks efektif yang lebih kecil daripada `contextWindow` native model; `openclaw models list` menampilkan kedua nilai saat berbeda.
     - `models.providers.*.models.*.compat.supportsDeveloperRole`: petunjuk kompatibilitas opsional. Untuk `api: "openai-completions"` dengan `baseUrl` non-native yang tidak kosong (host bukan `api.openai.com`), OpenClaw memaksa ini menjadi `false` saat runtime. `baseUrl` yang kosong/tidak ada mempertahankan perilaku default OpenAI.
     - `models.providers.*.models.*.compat.requiresStringContent`: petunjuk kompatibilitas opsional untuk endpoint chat kompatibel OpenAI yang hanya menerima string. Saat `true`, OpenClaw meratakan array `messages[].content` teks murni menjadi string biasa sebelum mengirim permintaan.
+
   </Accordion>
   <Accordion title="Discovery Amazon Bedrock">
     - `plugins.entries.amazon-bedrock.config.discovery`: root pengaturan auto-discovery Bedrock.
@@ -466,6 +472,7 @@ OpenClaw menggunakan katalog model bawaan. Tambahkan provider kustom melalui `mo
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: interval polling untuk refresh discovery.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: context window fallback untuk model yang ditemukan.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: token output maksimum fallback untuk model yang ditemukan.
+
   </Accordion>
 </AccordionGroup>
 

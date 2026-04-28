@@ -226,6 +226,7 @@ O OpenClaw constrói a lista de candidatos a partir do `provider/model` solicita
     - Se a execução atual já estiver em um fallback configurado na mesma família de provedores, o OpenClaw continua usando a cadeia configurada completa.
     - Se a execução atual estiver em um provedor diferente do da configuração e esse modelo atual ainda não fizer parte da cadeia de fallback configurada, o OpenClaw não acrescentará fallbacks configurados não relacionados de outro provedor.
     - Quando a execução começou a partir de uma substituição, o primário configurado é acrescentado no final para que a cadeia possa se estabilizar de volta no padrão normal quando os candidatos anteriores forem esgotados.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ O OpenClaw constrói a lista de candidatos a partir do `provider/model` solicita
     - desabilitações por cobrança
     - `LiveSessionModelSwitchError`, que é normalizado em um caminho de failover para que um modelo persistido obsoleto não crie um loop externo de retry
     - outros erros não reconhecidos quando ainda restam candidatos
+
   </Tab>
   <Tab title="Não continua em">
     - abortos explícitos que não têm formato de timeout/failover
     - erros de estouro de contexto que devem permanecer dentro da lógica de Compaction/retry (por exemplo `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` ou `ollama error: context length exceeded`)
     - um erro desconhecido final quando não restam candidatos
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Quando todos os perfis de autenticação de um provedor já estão em período d
     - O candidato primário pode ser sondado perto do vencimento do período de espera, com uma limitação por provedor.
     - Candidatos irmãos de fallback no mesmo provedor podem ser tentados apesar do período de espera quando a falha parecer transitória (`rate_limit`, `overloaded` ou desconhecida). Isso é especialmente relevante quando um limite de taxa tem escopo de modelo e um modelo irmão ainda pode se recuperar imediatamente.
     - Sondagens transitórias em período de espera são limitadas a uma por provedor por execução de fallback, para que um único provedor não atrase o fallback entre provedores.
+
   </Accordion>
 </AccordionGroup>
 

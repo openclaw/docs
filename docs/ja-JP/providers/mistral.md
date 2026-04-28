@@ -169,6 +169,7 @@ Mistral realtime STT のデフォルトを 8 kHz の `pcm_mulaw` にしていま
     - Provider base URL のデフォルトは `https://api.mistral.ai/v1` です。
     - オンボーディングのデフォルトモデルは `mistral/mistral-large-latest` です。
     - Z.AI は API キーによる Bearer 認証を使用します。
+
   </Accordion>
 </AccordionGroup>
 

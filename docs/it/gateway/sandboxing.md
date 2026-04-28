@@ -32,6 +32,7 @@ Questo non è un confine di sicurezza perfetto, ma limita in modo sostanziale l'
     - L'accesso osservatore noVNC è protetto da password per impostazione predefinita; OpenClaw emette un URL token a breve durata che serve una pagina bootstrap locale e apre noVNC con la password nel fragment dell'URL (non nei log di query/header).
     - `agents.defaults.sandbox.browser.allowHostControl` consente alle sessioni in sandbox di puntare esplicitamente al browser host.
     - Allowlist facoltative regolano `target: "custom"`: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -144,11 +145,13 @@ Usa `backend: "ssh"` quando vuoi che OpenClaw metta in sandbox `exec`, strumenti
     - Al primo utilizzo dopo create o recreate, OpenClaw inizializza quel workspace remoto dal workspace locale una sola volta.
     - Dopo di ciò, `exec`, `read`, `write`, `edit`, `apply_patch`, letture media del prompt e staging dei media in ingresso vengono eseguiti direttamente sul workspace remoto via SSH.
     - OpenClaw non sincronizza automaticamente le modifiche remote di ritorno al workspace locale.
+
   </Accordion>
   <Accordion title="Materiale di autenticazione">
     - `identityFile`, `certificateFile`, `knownHostsFile`: usano file locali esistenti e li passano tramite la configurazione OpenSSH.
     - `identityData`, `certificateData`, `knownHostsData`: usano stringhe inline o SecretRef. OpenClaw li risolve tramite il normale snapshot runtime dei segreti, li scrive in file temporanei con `0600` e li elimina quando termina la sessione SSH.
     - Se sia `*File` sia `*Data` sono impostati per lo stesso elemento, `*Data` ha la precedenza per quella sessione SSH.
+
   </Accordion>
   <Accordion title="Conseguenze del modello canonico remoto">
     Questo è un modello **canonico remoto**. Il workspace remoto SSH diventa il vero stato della sandbox dopo il seed iniziale.
@@ -205,11 +208,13 @@ Modalità OpenShell:
     - OpenClaw chiede a OpenShell la configurazione SSH specifica della sandbox tramite `openshell sandbox ssh-config <name>`.
     - Il core scrive quella configurazione SSH in un file temporaneo, apre la sessione SSH e riusa lo stesso bridge del filesystem remoto usato da `backend: "ssh"`.
     - In modalità `mirror` cambia solo il ciclo di vita: sincronizza da locale a remoto prima di exec, poi sincronizza indietro dopo exec.
+
   </Accordion>
   <Accordion title="Limitazioni attuali di OpenShell">
     - il browser in sandbox non è ancora supportato
     - `sandbox.docker.binds` non è supportato nel backend OpenShell
     - i parametri runtime specifici Docker sotto `sandbox.docker.*` continuano ad applicarsi solo al backend Docker
+
   </Accordion>
 </AccordionGroup>
 
@@ -356,6 +361,7 @@ Esempio (sorgente in sola lettura + directory dati aggiuntiva):
 - I mount sensibili (segreti, chiavi SSH, credenziali di servizio) dovrebbero essere `:ro` salvo necessità assoluta.
 - Combina con `workspaceAccess: "ro"` se ti serve solo accesso in lettura al workspace; le modalità dei bind restano indipendenti.
 - Vedi [Sandbox vs Tool Policy vs Elevated](/it/gateway/sandbox-vs-tool-policy-vs-elevated) per capire come i bind interagiscono con la tool policy e l'exec elevato.
+
 </Warning>
 
 ## Immagini e setup
@@ -423,6 +429,7 @@ Per impostazione predefinita, i container Docker sandbox vengono eseguiti **senz
     - `network: "host"` è bloccato.
     - `network: "container:<id>"` è bloccato per impostazione predefinita (rischio di bypass del namespace join).
     - Override break-glass: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -446,6 +453,7 @@ Percorsi:
     - `readOnlyRoot: true` impedisce le scritture; imposta `readOnlyRoot: false` oppure crea un'immagine personalizzata.
     - `user` deve essere root per le installazioni di pacchetti (ometti `user` oppure imposta `user: "0:0"`).
     - L'exec sandbox non eredita `process.env` dell'host. Usa `agents.defaults.sandbox.docker.env` (oppure un'immagine personalizzata) per le chiavi API delle Skills.
+
   </Accordion>
 </AccordionGroup>
 

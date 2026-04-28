@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - UI 协议新鲜度检查（当协议 schema 更新时重建 Control UI）。
     - 健康检查 + 重启提示。
     - Skills 状态摘要（可用/缺失/受阻）和插件状态。
+
   </Accordion>
   <Accordion title="配置和迁移">
     - 对旧版值进行配置规范化。
@@ -94,6 +95,7 @@ cat ~/.openclaw/openclaw.json
     - 旧版 cron 存储迁移（`jobId`、`schedule.cron`、顶层 delivery/payload 字段、payload `provider`、简单的 `notify: true` webhook 回退任务）。
     - 旧版 agent 运行时策略迁移到 `agents.defaults.agentRuntime` 和 `agents.list[].agentRuntime`。
     - 当插件已启用时，清理陈旧的插件配置；当 `plugins.enabled=false` 时，陈旧的插件引用会被视为惰性隔离配置并予以保留。
+
   </Accordion>
   <Accordion title="状态和完整性">
     - 会话锁文件检查和过期锁清理。
@@ -102,6 +104,7 @@ cat ~/.openclaw/openclaw.json
     - 本地运行时的配置文件权限检查（`chmod 600`）。
     - 模型 auth 健康检查：检查 OAuth 过期情况，可以刷新即将过期的令牌，并报告 auth-profile 的冷却/禁用状态。
     - 额外工作区目录检测（`~/openclaw`）。
+
   </Accordion>
   <Accordion title="Gateway 网关、服务和 supervisor">
     - 在启用沙箱隔离时修复沙箱镜像。
@@ -113,11 +116,13 @@ cat ~/.openclaw/openclaw.json
     - 清理在安装或更新期间捕获 shell `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` 值的 Gateway 网关服务内嵌代理环境。
     - Gateway 网关运行时最佳实践检查（Node 对比 Bun、版本管理器路径）。
     - Gateway 网关端口冲突诊断（默认 `18789`）。
+
   </Accordion>
   <Accordion title="Auth、安全和配对">
     - 针对开放私信策略的安全警告。
     - 针对本地 token 模式的 Gateway 网关 auth 检查（在没有 token 来源时提供生成 token；不会覆盖 token SecretRef 配置）。
     - 设备配对问题检测（待处理的首次配对请求、待处理的角色/作用域升级、陈旧的本地设备 token 缓存漂移，以及已配对记录的 auth 漂移）。
+
   </Accordion>
   <Accordion title="工作区和 shell">
     - Linux 上的 systemd linger 检查。
@@ -126,6 +131,7 @@ cat ~/.openclaw/openclaw.json
     - Memory 搜索嵌入提供商就绪情况检查（本地模型、远程 API 密钥或 QMD 二进制文件）。
     - 源码安装检查（pnpm 工作区不匹配、缺少 UI 资源、缺少 tsx 二进制文件）。
     - 写入更新后的配置 + 向导元数据。
+
   </Accordion>
 </AccordionGroup>
 

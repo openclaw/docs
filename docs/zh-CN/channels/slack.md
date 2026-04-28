@@ -38,6 +38,7 @@ x-i18n:
         - 粘贴下面的[示例清单](#manifest-and-scope-checklist)，然后继续创建
         - 生成一个带有 `connections:write` 权限的 **App-Level Token**（`xapp-...`）
         - 安装应用，并复制显示的 **Bot Token**（`xoxb-...`）
+
       </Step>
 
       <Step title="配置 OpenClaw">
@@ -621,6 +622,7 @@ Slack 操作由 `channels.slack.actions.*` 控制。
     - `channels.slack.chunkMode="newline"` 启用优先按段落拆分
     - 文件发送使用 Slack 上传 API，并可包含线程回复（`thread_ts`）
     - 出站媒体上限在配置了 `channels.slack.mediaMaxMb` 时遵循该值；否则渠道发送使用媒体管道中的 MIME 类型默认值
+
   </Accordion>
 
   <Accordion title="发送目标">

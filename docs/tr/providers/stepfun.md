@@ -210,6 +210,7 @@ Sağlayıcı yüzeyinizi seçin ve kurulum adımlarını izleyin.
     - `step-3.5-flash-2603` şu anda yalnızca `stepfun-plan` üzerinde açığa çıkar.
     - Tek bir auth akışı, hem `stepfun` hem de `stepfun-plan` için bölgeyle eşleşen profiller yazar; böylece iki yüzey birlikte keşfedilebilir.
     - Modelleri incelemek veya değiştirmek için `openclaw models list` ve `openclaw models set <provider/model>` kullanın.
+
   </Accordion>
 </AccordionGroup>
 

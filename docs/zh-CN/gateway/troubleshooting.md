@@ -138,6 +138,7 @@ openclaw logs --follow
     - `incomplete turn detected ... stopReason=stop payloads=0` → 后端完成了 Chat Completions 请求，但这一轮没有返回用户可见的 assistant 文本。OpenClaw 会对可安全重放的空 OpenAI 兼容轮次重试一次；若持续失败，通常意味着后端正在输出空内容/非文本内容，或抑制最终答案文本。
     - 直接的小请求成功，但 OpenClaw 智能体运行因后端/模型崩溃而失败（例如某些 `inferrs` 构建中的 Gemma）→ OpenClaw 传输层很可能已经正确；失败的是后端在处理更大的 Agent Runtimes 提示词形态时的能力。
     - 禁用工具后失败有所减少但未消失 → 工具 schema 是压力来源之一，但剩余问题仍然是上游模型/服务器容量限制或后端缺陷。
+
   </Accordion>
   <Accordion title="修复选项">
     1. 对仅支持字符串内容的 Chat Completions 后端，设置 `compat.requiresStringContent: true`。
@@ -214,6 +215,7 @@ openclaw gateway status --json
     - 浏览器来源的 loopback 客户端出现 `too many failed authentication attempts (retry later)` → 来自同一归一化 `Origin` 的重复失败会被暂时锁定；另一个 localhost 来源会使用单独的桶。
     - 在该重试之后仍反复出现 `unauthorized` → 共享令牌/设备令牌发生漂移；如有需要，刷新令牌配置并重新批准/轮换设备令牌。
     - `gateway connect failed:` → 主机/端口/URL 目标错误。
+
   </Accordion>
 </AccordionGroup>
 
@@ -295,6 +297,7 @@ openclaw gateway status --deep   # 也扫描系统级服务
     - `Other gateway-like services detected (best effort)` → 存在过时或并行的 launchd/systemd/schtasks 单元。大多数配置每台机器只应保留一个 Gateway 网关；如果你确实需要多个，请隔离端口 + 配置/状态/工作区。参见 [/gateway#multiple-gateways-same-host](/zh-CN/gateway#multiple-gateways-same-host)。
     - Doctor 中出现 `System-level OpenClaw gateway service detected` → 存在 systemd 系统单元，而用户级服务缺失。在允许 Doctor 安装用户服务之前，请先移除或禁用重复项；如果系统单元就是预期的管理器，则设置 `OPENCLAW_SERVICE_REPAIR_POLICY=external`。
     - `Gateway service port does not match current gateway config` → 已安装的管理器仍固定旧的 `--port`。运行 `openclaw doctor --fix` 或 `openclaw gateway install --force`，然后重启 Gateway 网关服务。
+
   </Accordion>
 </AccordionGroup>
 
@@ -330,6 +333,7 @@ openclaw doctor
     - 活动配置已从最后一次通过验证的最后已知正常副本中恢复。
     - 下一次主智能体轮次会收到警告，不要盲目重写被拒绝的配置。
     - 如果所有验证问题都在 `plugins.entries.<id>...` 下，OpenClaw 不会恢复整个文件。插件局部失败会保持显式报错，而无关的用户设置仍保留在活动配置中。
+
   </Accordion>
   <Accordion title="检查和修复">
     ```bash
@@ -346,6 +350,7 @@ openclaw doctor
     - `Config write rejected:` → 该写入试图删除必需结构、明显缩小文件，或持久化无效配置。
     - `missing-meta-vs-last-good`、`gateway-mode-missing-vs-last-good` 或 `size-drop-vs-last-good:*` → 启动时将当前文件视为被覆盖，因为与最后已知正常备份相比它丢失了字段或体积变小。
     - `Config last-known-good promotion skipped` → 候选配置中包含 `***` 之类已脱敏的密钥占位符。
+
   </Accordion>
   <Accordion title="修复选项">
     1. 如果恢复后的活动配置正确，就保留它。
@@ -449,6 +454,7 @@ openclaw logs --follow
     - `heartbeat skipped` 且 `reason=no-tasks-due` → `HEARTBEAT.md` 包含 `tasks:` 块，但在这次 tick 中没有任务到期。
     - `heartbeat: unknown accountId` → 心跳投递目标的账号 id 无效。
     - `heartbeat skipped` 且 `reason=dm-blocked` → 心跳目标被解析为私信风格目的地，而 `agents.defaults.heartbeat.directPolicy`（或每个智能体的覆盖配置）被设置为 `block`。
+
   </Accordion>
 </AccordionGroup>
 
@@ -517,12 +523,14 @@ openclaw doctor
     - `browser.cdpUrl must be http(s) or ws(s)` → 配置的 CDP URL 使用了不受支持的协议，例如 `file:` 或 `ftp:`。
     - `browser.cdpUrl has invalid port` → 配置的 CDP URL 端口错误或超出范围。
     - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → 当前 Gateway 网关安装缺少内置浏览器插件所需的 `playwright-core` 运行时依赖；请运行 `openclaw doctor --fix`，然后重启 Gateway 网关。ARIA 快照和基础页面截图仍然可用，但导航、AI 快照、基于 CSS 选择器的元素截图以及 PDF 导出仍不可用。
+
   </Accordion>
   <Accordion title="Chrome MCP / existing-session 特征">
     - `Could not find DevToolsActivePort for chrome` → Chrome MCP existing-session 尚无法附加到所选浏览器数据目录。请打开浏览器检查页面，启用远程调试，保持浏览器打开，批准第一次附加提示，然后重试。如果不需要已登录状态，优先使用受管的 `openclaw` 配置文件。
     - `No Chrome tabs found for profile="user"` → Chrome MCP 附加配置文件没有打开的本地 Chrome 标签页。
     - `Remote CDP for profile "<name>" is not reachable` → 从 Gateway 网关主机无法访问配置的远程 CDP 端点。
     - `Browser attachOnly is enabled ... not reachable` 或 `Browser attachOnly is enabled and CDP websocket ... is not reachable` → 仅附加配置文件没有可访问目标，或者 HTTP 端点虽有响应，但 CDP WebSocket 仍无法打开。
+
   </Accordion>
   <Accordion title="元素 / 截图 / 上传特征">
     - `fullPage is not supported for element screenshots` → 截图请求将 `--full-page` 与 `--ref` 或 `--element` 混用。
@@ -534,6 +542,7 @@ openclaw doctor
     - `existing-session evaluate does not support timeoutMs overrides.` → 对 `profile="user"` / Chrome MCP existing-session 配置文件上的 `act:evaluate`，请省略 `timeoutMs`，或者在需要自定义超时时使用受管/CDP 浏览器配置文件。
     - `response body is not supported for existing-session profiles yet.` → `responsebody` 目前仍需要受管浏览器或原始 CDP 配置文件。
     - attach-only 或远程 CDP 配置文件上的视口 / 深色模式 / 区域设置 / 离线覆盖状态陈旧 → 运行 `openclaw browser stop --browser-profile <name>`，关闭当前活动控制会话并释放 Playwright/CDP 模拟状态，而无需重启整个 Gateway 网关。
+
   </Accordion>
 </AccordionGroup>
 

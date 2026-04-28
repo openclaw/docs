@@ -168,6 +168,7 @@ pueda reenviar directamente los marcos multimedia de Twilio. Usa `encoding: "pcm
     - La URL base del proveedor es, de forma predeterminada, `https://api.mistral.ai/v1`.
     - El modelo predeterminado de incorporación es `mistral/mistral-large-latest`.
     - Z.AI usa autenticación Bearer con tu clave de API.
+
   </Accordion>
 </AccordionGroup>
 

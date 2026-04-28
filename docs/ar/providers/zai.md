@@ -187,6 +187,7 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
     - تستخدم Z.AI مصادقة Bearer مع مفتاح API الخاص بك.
     - يكتشف خيار الإعداد الأوّلي `zai-api-key` نقطة نهاية Z.AI المطابقة تلقائيًا من بادئة المفتاح.
     - استخدم الخيارات الإقليمية الصريحة (`zai-coding-global` و`zai-coding-cn` و`zai-global` و`zai-cn`) عندما تريد فرض سطح API محدد.
+
   </Accordion>
 </AccordionGroup>
 

@@ -212,6 +212,7 @@ curl "https://api.telegram.org/bot<bot_token>/getUpdates"
       - ให้นำ Telegram group หรือ supergroup chat ID ติดลบ เช่น `-1001234567890` ไปไว้ใต้ `channels.telegram.groups`
       - ให้นำ Telegram user ID เช่น `8734062810` ไปไว้ใต้ `groupAllowFrom` เมื่อคุณต้องการจำกัดว่าคนใดภายในกลุ่มที่ได้รับอนุญาตสามารถเรียกใช้บอตได้
       - ใช้ `groupAllowFrom: ["*"]` เฉพาะเมื่อคุณต้องการให้สมาชิกคนใดก็ได้ของกลุ่มที่ได้รับอนุญาตสามารถคุยกับบอตได้
+
     </Warning>
 
   </Tab>

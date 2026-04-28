@@ -151,11 +151,13 @@ gli abusi senza bloccare i contributori legittimi.
     - I motivi della segnalazione sono obbligatori e vengono registrati.
     - Ogni utente può avere fino a 20 segnalazioni attive contemporaneamente.
     - Le Skills con più di 3 segnalazioni uniche vengono nascoste automaticamente per impostazione predefinita.
+
   </Accordion>
   <Accordion title="Moderazione">
     - I moderatori possono vedere le Skills nascoste, renderle nuovamente visibili, eliminarle o bannare utenti.
     - L'abuso della funzione di segnalazione può comportare il ban dell'account.
     - Ti interessa diventare moderatore? Chiedi nel Discord di OpenClaw e contatta un moderatore o maintainer.
+
   </Accordion>
 </AccordionGroup>
 
@@ -354,6 +356,7 @@ runtime compilati evitano la compilazione runtime di TypeScript nei percorsi di 
     - Ogni pubblicazione crea una nuova `SkillVersion` **semver**.
     - I tag (come `latest`) puntano a una versione; spostare i tag consente il rollback.
     - I changelog sono allegati per versione e possono essere vuoti durante la sincronizzazione o la pubblicazione di aggiornamenti.
+
   </Accordion>
   <Accordion title="Modifiche locali vs versioni del registro">
     Gli aggiornamenti confrontano il contenuto locale della Skill con le versioni del registro usando un
@@ -370,6 +373,7 @@ runtime compilati evitano la compilazione runtime di TypeScript nei percorsi di 
   <Accordion title="Archiviazione e lockfile">
     - Le Skills installate sono registrate in `.clawhub/lock.json` sotto la tua workdir.
     - I token di autenticazione sono archiviati nel file di configurazione della CLI ClawHub (override tramite `CLAWHUB_CONFIG_PATH`).
+
   </Accordion>
   <Accordion title="Telemetria (conteggi di installazione)">
     Quando esegui `clawhub sync` mentre sei connesso, la CLI invia uno snapshot minimo

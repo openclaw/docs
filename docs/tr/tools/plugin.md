@@ -146,6 +146,7 @@ Plugin keşfinde başarısız olur.
   <Accordion title="Bellek Plugin'leri">
     - `memory-core` — paketlenmiş bellek araması (varsayılan olarak `plugins.slots.memory` üzerinden)
     - `memory-lancedb` — otomatik geri çağırma/yakalama ile isteğe bağlı kurulan uzun vadeli bellek (`plugins.slots.memory = "memory-lancedb"` ayarlayın)
+
   </Accordion>
 
   <Accordion title="Konuşma sağlayıcıları (varsayılan olarak etkin)">
@@ -155,6 +156,7 @@ Plugin keşfinde başarısız olur.
   <Accordion title="Diğer">
     - `browser` — tarayıcı aracı, `openclaw browser` CLI, `browser.request` gateway yöntemi, tarayıcı çalışma zamanı ve varsayılan tarayıcı denetim hizmeti için paketlenmiş tarayıcı Plugin'i (varsayılan olarak etkin; yerine başka birini koymadan önce devre dışı bırakın)
     - `copilot-proxy` — VS Code Copilot Proxy bridge'i (varsayılan olarak devre dışı)
+
   </Accordion>
 </AccordionGroup>
 
@@ -205,6 +207,7 @@ kullanın.
   - **Disabled**: Plugin vardır ama etkinleştirme kuralları onu kapatmıştır. Yapılandırma korunur.
   - **Missing**: yapılandırma, keşfin bulamadığı bir Plugin kimliğine başvurur.
   - **Invalid**: Plugin vardır ama yapılandırması bildirilen şemayla eşleşmez.
+
 </Accordion>
 
 ## Keşif ve öncelik

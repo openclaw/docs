@@ -546,6 +546,7 @@ Informacje o zachowaniu koncepcyjnym i poleceniach slash znajdziesz w [Dreaming]
 - Dreaming zapisuje stan maszyny w `memory/.dreams/`.
 - Dreaming zapisuje czytelne dla człowieka narracyjne dane wyjściowe do `DREAMS.md` (lub istniejącego `dreams.md`).
 - Zasady i progi faz light/deep/REM są zachowaniem wewnętrznym, a nie konfiguracją dostępną dla użytkownika.
+
 </Note>
 
 ## Powiązane

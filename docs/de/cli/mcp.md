@@ -72,6 +72,7 @@ Verwenden Sie stattdessen [`openclaw acp`](/de/cli/acp), wenn OpenClaw die Codin
     - einmalige Agent-Einstiegspunkte wie `openclaw agent` und `openclaw infer model run` beenden alle gebündelten MCP-Laufzeiten, die sie öffnen, sobald die Antwort abgeschlossen ist, sodass wiederholte skriptgesteuerte Läufe keine stdio-MCP-Kindprozesse ansammeln
     - von OpenClaw gestartete stdio-MCP-Server (gebündelt oder benutzerkonfiguriert) werden beim Herunterfahren als Prozessbaum beendet, sodass vom Server gestartete Kind-Subprozesse nach dem Beenden des übergeordneten stdio-Clients nicht weiterlaufen
     - beim Löschen oder Zurücksetzen einer Sitzung werden die MCP-Clients dieser Sitzung über den gemeinsamen Laufzeit-Bereinigungspfad entsorgt, sodass keine verbleibenden stdio-Verbindungen an eine entfernte Sitzung gebunden bleiben
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ Aktuelle Ereignistypen:
 - die Warteschlange gilt nur für Live-Ereignisse; sie beginnt, wenn die MCP-Bridge startet
 - `events_poll` und `events_wait` spielen älteren Gateway-Verlauf nicht selbstständig erneut ab
 - dauerhafter Rückstand sollte mit `messages_read` gelesen werden
+
 </Warning>
 
 ### Claude-Kanalbenachrichtigungen
@@ -367,6 +369,7 @@ Diese gespeicherten Definitionen sind für Laufzeiten gedacht, die OpenClaw spä
     - Laufzeitadapter entscheiden zur Ausführungszeit, welche Transportformen sie tatsächlich unterstützen
     - eingebettetes Pi stellt konfigurierte MCP-Tools in normalen Tool-Profilen für `coding` und `messaging` bereit; `minimal` blendet sie weiterhin aus, und `tools.deny: ["bundle-mcp"]` deaktiviert sie ausdrücklich
     - gebündelte MCP-Laufzeiten mit Sitzungsbereich werden nach `mcp.sessionIdleTtlMs` Millisekunden Leerlauf beendet (standardmäßig 10 Minuten; setzen Sie `0`, um dies zu deaktivieren), und einmalige eingebettete Läufe bereinigen sie am Ende des Laufs
+
   </Accordion>
 </AccordionGroup>
 

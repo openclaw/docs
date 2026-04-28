@@ -56,6 +56,7 @@ openclaw config validate --json
     - 当存在匹配字段文档时，`anyOf` / `oneOf` / `allOf` 分支也会继承相同的文档元数据。
     - 当能够加载运行时清单时，尽力提供实时的插件 + 渠道 schema 元数据。
     - 即使当前配置无效，也会提供一个干净的后备 schema。
+
   </Accordion>
   <Accordion title="相关运行时 RPC">
     `config.schema.lookup` 会返回一个规范化的配置路径、一个浅层 schema 节点（`title`、`description`、`type`、`enum`、`const`、常见边界）、匹配的 UI 提示元数据，以及直接子项摘要。可将它用于 Control UI 或自定义客户端中的按路径范围逐层深入查看。
@@ -191,15 +192,18 @@ openclaw config set secrets.providers.vaultfile \
   <Accordion title="通用标志">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>`（`file`、`exec`）
+
   </Accordion>
   <Accordion title="Env 提供商（--provider-source env）">
     - `--provider-allowlist <ENV_VAR>`（可重复）
+
   </Accordion>
   <Accordion title="文件提供商（--provider-source file）">
     - `--provider-path <path>`（必需）
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Exec 提供商（--provider-source exec）">
     - `--provider-command <path>`（必需）
@@ -212,6 +216,7 @@ openclaw config set secrets.providers.vaultfile \
     - `--provider-trusted-dir <path>`（可重复）
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - 为避免命令副作用，试运行期间默认跳过 Exec SecretRef 检查。
     - 将 `--allow-exec` 与 `--dry-run` 一起使用，可选择启用 exec SecretRef 检查（这可能会执行提供商命令）。
     - `--allow-exec` 仅适用于试运行；如果未配合 `--dry-run` 使用，则会报错。
+
   </Accordion>
   <Accordion title="--dry-run --json 字段">
     `--dry-run --json` 会输出机器可读报告：
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`：当前无法解析所引用的 provider/ref（缺少环境变量、文件指针无效、exec provider 失败，或 provider/source 不匹配）。
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`：试运行跳过了 exec refs；如果你需要验证 exec 可解析性，请使用 `--allow-exec` 重新运行。
     - 对于批量模式，请修复失败的条目，并在写入前重新运行 `--dry-run`。
+
   </Accordion>
 </AccordionGroup>
 

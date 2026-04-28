@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="Bot tidak merespons pesan">
     - **Periksa kontrol akses:** Pastikan ID pengguna Anda ada dalam `allowFrom`, atau hapus sementara `allowFrom` dan atur `allowedRoles: ["all"]` untuk pengujian.
     - **Periksa bahwa bot ada di channel:** Bot harus bergabung ke channel yang ditentukan dalam `channel`.
+
   </Accordion>
   <Accordion title="Masalah token">
     "Failed to connect" atau error autentikasi:

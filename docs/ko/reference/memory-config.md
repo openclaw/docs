@@ -546,6 +546,7 @@ Dreaming은 예약된 단일 스윕으로 실행되며 내부 light/deep/REM 단
 - Dreaming은 머신 상태를 `memory/.dreams/`에 기록합니다.
 - Dreaming은 사람이 읽을 수 있는 서사형 출력을 `DREAMS.md`(또는 기존 `dreams.md`)에 기록합니다.
 - light/deep/REM 단계 정책과 임계값은 내부 동작이며 사용자 대상 구성이 아닙니다.
+
 </Note>
 
 ## 관련 항목

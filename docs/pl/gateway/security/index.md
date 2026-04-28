@@ -289,6 +289,7 @@ produkcji pozostaw je nieustawione.
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="Wszystkie klucze `dangerous*` / `dangerously*` w schemacie konfiguracji">

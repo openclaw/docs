@@ -154,6 +154,7 @@ Mesaj başına `/think:<level>` ile veya model parametrelerinde geçersiz kılı
 İlgili Anthropic belgeleri:
 - [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+
 </Note>
 
 ## İstem önbellekleme
@@ -216,6 +217,7 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic’in istem önbelle
     - Bedrock üzerindeki Anthropic Claude modelleri (`amazon-bedrock/*anthropic.claude*`) yapılandırıldığında `cacheRetention` aktarımını kabul eder.
     - Anthropic dışı Bedrock modelleri çalışma zamanında zorla `cacheRetention: "none"` yapılır.
     - API anahtarı akıllı varsayılanları, açık bir değer ayarlanmadığında Claude-on-Bedrock referansları için `cacheRetention: "short"` değerini de başlangıç olarak ayarlar.
+
   </Accordion>
 </AccordionGroup>
 
@@ -248,6 +250,7 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic’in istem önbelle
     - Yalnızca doğrudan `api.anthropic.com` isteklerine enjekte edilir. Proxy rotaları `service_tier` alanını dokunmadan bırakır.
     - Hem açık `serviceTier` hem de `service_tier` parametreleri ayarlanmışsa, bunlar `/fast` ayarını geçersiz kılar.
     - Priority Tier kapasitesi olmayan hesaplarda `service_tier: "auto"` değeri `standard` olarak çözülebilir.
+
     </Note>
 
   </Accordion>

@@ -58,6 +58,7 @@ SecretRef’ler yalnızca fiilen etkin yüzeylerde doğrulanır.
         - `gateway.remote.token`, token auth kazanabiliyorsa ve env/auth token yapılandırılmamışsa etkindir.
         - `gateway.remote.password`, yalnızca parola auth kazanabiliyorsa ve env/auth password yapılandırılmamışsa etkindir.
     - `OPENCLAW_GATEWAY_TOKEN` ayarlıysa, `gateway.auth.token` SecretRef’i başlangıç auth çözümlemesi için etkin değildir; çünkü env token girdisi bu çalışma zamanında önceliklidir.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
   <Accordion title="Env sağlayıcısı">
     - `allowlist` ile isteğe bağlı izin listesi.
     - Eksik/boş env değerleri çözümlemeyi başarısız kılar.
+
   </Accordion>
   <Accordion title="File sağlayıcısı">
     - `path` içinden yerel dosya okur.
@@ -173,6 +175,7 @@ Sağlayıcıları `secrets.providers` altında tanımlayın:
     - `mode: "singleValue"`, ref id olarak `"value"` bekler ve dosya içeriğini döndürür.
     - Yol, sahiplik/izin kontrollerinden geçmelidir.
     - Windows fail-closed notu: bir yol için ACL doğrulaması kullanılamıyorsa çözümleme başarısız olur. Yalnızca güvenilen yollar için bu sağlayıcıda `allowInsecurePath: true` ayarlayarak yol güvenlik kontrollerini atlayın.
+
   </Accordion>
   <Accordion title="Exec sağlayıcısı">
     - Yapılandırılmış mutlak ikili yolunu çalıştırır, shell kullanmaz.

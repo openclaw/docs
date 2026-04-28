@@ -198,6 +198,7 @@ Alle Felder sind optional, sofern nicht anders angegeben.
       - `fileQuality: "hq"`: maximal 14 MP (14.000.000 gerenderte Pixel).
       - `fileQuality: "print"`: maximal 24 MP (24.000.000 gerenderte Pixel).
       - PDF hat außerdem ein Maximum von 50 Seiten.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Regeln für `baseUrl`:
     - Drosselung bei Remote-Fehlschlägen, wenn Remote-Zugriff aktiviert ist:
       - 40 Fehlschläge pro 60 Sekunden
       - 60 Sekunden Sperrung (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Härtung beim Datei-Rendering">
     - Request-Routing des Screenshot-Browsers ist standardmäßig deny-by-default.
     - Nur lokale Viewer-Assets aus `http://127.0.0.1/plugins/diffs/assets/*` sind erlaubt.
     - Externe Netzwerkanfragen werden blockiert.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Reihenfolge der Auflösung:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Plattform-Fallback">
     Fallback zur Erkennung von Plattformbefehl/-pfad.
@@ -456,6 +460,7 @@ Beheben Sie dies, indem Sie Chrome, Chromium, Edge oder Brave installieren oder 
     - `Invalid baseUrl: ...` — verwenden Sie einen `http(s)`-Ursprung mit optionalem Pfad, ohne Query/Hash.
     - `{field} exceeds maximum size (...)` — reduzieren Sie die Größe der Nutzlast.
     - Ablehnung eines großen Patches — reduzieren Sie die Dateianzahl oder die Gesamtzahl der Zeilen im Patch.
+
   </Accordion>
   <Accordion title="Zugänglichkeit des Viewers">
     - Die Viewer-URL wird standardmäßig zu `127.0.0.1` aufgelöst.
@@ -468,6 +473,7 @@ Beheben Sie dies, indem Sie Chrome, Chromium, Edge oder Brave installieren oder 
       - bevorzugen Sie `mode: "file"` oder `mode: "both"`, wenn Sie nur einen Anhang benötigen, oder
       - aktivieren Sie absichtlich `security.allowRemoteViewer` und setzen Sie `viewerBaseUrl` des Plugins oder übergeben Sie ein Proxy-/öffentliches `baseUrl`, wenn Sie eine teilbare Viewer-URL benötigen
     - Aktivieren Sie `security.allowRemoteViewer` nur, wenn Sie externen Viewer-Zugriff beabsichtigen.
+
   </Accordion>
   <Accordion title="Zeile für unveränderte Zeilen hat keinen Expand-Button">
     Dies kann bei Patch-Eingaben passieren, wenn der Patch keinen erweiterbaren Kontext enthält. Das ist erwartetes Verhalten und weist nicht auf einen Fehler des Viewers hin.
@@ -476,6 +482,7 @@ Beheben Sie dies, indem Sie Chrome, Chromium, Edge oder Brave installieren oder 
     - Artefakt aufgrund der TTL abgelaufen.
     - Token oder Pfad wurde geändert.
     - Bereinigung hat veraltete Daten entfernt.
+
   </Accordion>
 </AccordionGroup>
 

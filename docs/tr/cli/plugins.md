@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - `owner/repo` gibi bir GitHub repo kısaltması
     - `https://github.com/owner/repo` gibi bir GitHub repo URL'si
     - bir git URL'si
+
   </Tab>
   <Tab title="Uzak marketplace kuralları">
     GitHub veya git'ten yüklenen uzak marketplace'lerde Plugin girdileri klonlanan marketplace repo'su içinde kalmalıdır. OpenClaw bu repo'dan göreli yol kaynaklarını kabul eder ve uzak manifest'lerden HTTP(S), mutlak yol, git, GitHub ve diğer yol dışı Plugin kaynaklarını reddeder.

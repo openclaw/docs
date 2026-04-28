@@ -284,6 +284,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `system-event` menambahkan peristiwa sistem dan dapat memperbarui/menyiarkan konteks presence.
     - `last-heartbeat` mengembalikan peristiwa heartbeat persisten terbaru.
     - `set-heartbeats` mengaktifkan atau menonaktifkan pemrosesan heartbeat pada gateway.
+
   </Accordion>
 
   <Accordion title="Model dan penggunaan">
@@ -294,6 +295,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `sessions.usage` mengembalikan ringkasan penggunaan per sesi.
     - `sessions.usage.timeseries` mengembalikan timeseries penggunaan untuk satu sesi.
     - `sessions.usage.logs` mengembalikan entri log penggunaan untuk satu sesi.
+
   </Accordion>
 
   <Accordion title="Channel dan helper login">
@@ -304,11 +306,13 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `push.test` mengirim APNs push uji ke node iOS yang terdaftar.
     - `voicewake.get` mengembalikan trigger wake-word yang tersimpan.
     - `voicewake.set` memperbarui trigger wake-word dan menyiarkan perubahannya.
+
   </Accordion>
 
   <Accordion title="Pesan dan log">
     - `send` adalah RPC pengiriman keluar langsung untuk pengiriman yang ditargetkan ke channel/akun/thread di luar chat runner.
     - `logs.tail` mengembalikan tail log file gateway yang dikonfigurasi dengan kontrol cursor/limit dan max-byte.
+
   </Accordion>
 
   <Accordion title="Talk dan TTS">
@@ -320,6 +324,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `tts.enable` dan `tts.disable` mengaktifkan/menonaktifkan status preferensi TTS.
     - `tts.setProvider` memperbarui provider TTS yang dipilih.
     - `tts.convert` menjalankan konversi teks-ke-ucapan sekali jalan.
+
   </Accordion>
 
   <Accordion title="Secret, config, update, dan wizard">
@@ -333,6 +338,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `config.schema.lookup` mengembalikan payload lookup berscope path untuk satu path config: path yang dinormalisasi, node skema dangkal, hint yang cocok + `hintPath`, dan ringkasan anak langsung untuk drill-down UI/CLI. Node skema lookup mempertahankan dokumentasi yang menghadap pengguna dan field validasi umum (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, batas numerik/string/array/objek, dan flag seperti `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Ringkasan anak mengekspos `key`, `path` yang dinormalisasi, `type`, `required`, `hasChildren`, plus `hint` / `hintPath` yang cocok.
     - `update.run` menjalankan alur update gateway dan menjadwalkan restart hanya saat update itu sendiri berhasil.
     - `wizard.start`, `wizard.next`, `wizard.status`, dan `wizard.cancel` mengekspos wizard onboarding melalui WS RPC.
+
   </Accordion>
 
   <Accordion title="Helper agen dan workspace">
@@ -341,6 +347,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `agents.files.list`, `agents.files.get`, dan `agents.files.set` mengelola file workspace bootstrap yang diekspos untuk agen.
     - `agent.identity.get` mengembalikan identitas asisten efektif untuk agen atau sesi.
     - `agent.wait` menunggu eksekusi selesai dan mengembalikan snapshot terminal saat tersedia.
+
   </Accordion>
 
   <Accordion title="Kontrol sesi">
@@ -357,6 +364,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `sessions.reset`, `sessions.delete`, dan `sessions.compact` melakukan pemeliharaan sesi.
     - `sessions.get` mengembalikan baris sesi tersimpan lengkap.
     - Eksekusi chat tetap menggunakan `chat.history`, `chat.send`, `chat.abort`, dan `chat.inject`. `chat.history` dinormalisasi untuk tampilan klien UI: tag direktif inline dihapus dari teks yang terlihat, payload XML panggilan tool teks biasa (termasuk `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>`, dan blok panggilan tool yang terpotong) serta token kontrol model ASCII/full-width yang bocor dihapus, baris asisten token-senyap murni seperti `NO_REPLY` / `no_reply` yang persis sama dihilangkan, dan baris yang terlalu besar dapat diganti dengan placeholder.
+
   </Accordion>
 
   <Accordion title="Pairing perangkat dan device token">
@@ -364,6 +372,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `device.pair.approve`, `device.pair.reject`, dan `device.pair.remove` mengelola catatan pairing perangkat.
     - `device.token.rotate` merotasi token perangkat berpasangan dalam batas role yang disetujui dan scope pemanggilnya.
     - `device.token.revoke` mencabut token perangkat berpasangan dalam batas role yang disetujui dan scope pemanggilnya.
+
   </Accordion>
 
   <Accordion title="Pairing node, invoke, dan pekerjaan tertunda">
@@ -376,6 +385,7 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `node.canvas.capability.refresh` me-refresh token canvas-capability yang dibatasi scope.
     - `node.pending.pull` dan `node.pending.ack` adalah API antrean connected-node.
     - `node.pending.enqueue` dan `node.pending.drain` mengelola pekerjaan tertunda yang tahan lama untuk node offline/terputus.
+
   </Accordion>
 
   <Accordion title="Keluarga approval">
@@ -384,11 +394,13 @@ discovery konservatif yang dibangun dari `src/gateway/server-methods-list.ts` pl
     - `exec.approvals.get` dan `exec.approvals.set` mengelola snapshot kebijakan approval exec gateway.
     - `exec.approvals.node.get` dan `exec.approvals.node.set` mengelola kebijakan approval exec lokal node melalui perintah relay node.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision`, dan `plugin.approval.resolve` mencakup alur approval yang didefinisikan plugin.
+
   </Accordion>
 
   <Accordion title="Otomatisasi, Skills, dan tool">
     - Otomatisasi: `wake` menjadwalkan injeksi teks wake langsung atau heartbeat berikutnya; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` mengelola pekerjaan terjadwal.
     - Skills dan tool: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

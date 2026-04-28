@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="Bot mesajlara yanıt vermiyor">
     - **Erişim denetimini kontrol edin:** Kullanıcı kimliğinizin `allowFrom` içinde olduğundan emin olun veya test için geçici olarak `allowFrom` değerini kaldırıp `allowedRoles: ["all"]` ayarlayın.
     - **Botun kanalda olduğunu kontrol edin:** Bot, `channel` içinde belirtilen kanala katılmış olmalıdır.
+
   </Accordion>
   <Accordion title="Token sorunları">
     "Failed to connect" veya kimlik doğrulama hataları:

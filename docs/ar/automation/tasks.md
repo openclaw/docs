@@ -119,6 +119,7 @@ x-i18n:
     - أدوار Heartbeat — الجلسة الرئيسية؛ راجع [Heartbeat](/ar/gateway/heartbeat)
     - أدوار الدردشة التفاعلية العادية
     - استجابات `/command` المباشرة
+
   </Accordion>
 </AccordionGroup>
 

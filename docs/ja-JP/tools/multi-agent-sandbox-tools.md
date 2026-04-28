@@ -232,6 +232,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     - `agents.list[].tools.sandbox.tools` が設定されている場合、そのエージェントでは `tools.sandbox.tools` を置き換えます。
     - `agents.list[].tools.profile` が設定されている場合、そのエージェントでは `tools.profile` を上書きします。
     - provider ツールキーは、`provider`（例: `google-antigravity`）または `provider/model`（例: `openai/gpt-5.4`）のどちらも受け付けます。
+
   </Accordion>
   <Accordion title="空の allowlist の挙動">
     そのチェーン内の明示的な allowlist によって呼び出し可能なツールが 1 つも残らなくなった場合、OpenClaw はモデルに prompt を送信する前に停止します。これは意図的な動作です。たとえば `agents.list[].tools.allow: ["query_db"]` のように未登録ツールが設定されたエージェントは、`query_db` を登録する plugin が有効になるまで、テキスト専用エージェントとして継続するのではなく、明確に失敗するべきだからです。
@@ -360,6 +361,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="ツール制限をテスト">
     - 制限されたツールを必要とするメッセージを送信します。
     - エージェントが拒否されたツールを使えないことを確認します。
+
   </Step>
   <Step title="ログを監視">
     ```bash
@@ -376,15 +378,18 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Accordion title="`mode: 'all'` なのにエージェントがサンドボックス化されない">
     - それを上書きするグローバルな `agents.defaults.sandbox.mode` がないか確認してください。
     - エージェント固有の設定が優先されるため、`agents.list[].sandbox.mode: "all"` を設定してください。
+
   </Accordion>
   <Accordion title="deny list があるのにツールがまだ利用可能">
     - ツールのフィルタリング順序を確認してください: global → agent → sandbox → subagent。
     - 各レベルは、再許可ではなく追加制限のみ可能です。
     - ログ `[tools] filtering tools for agent:${agentId}` で確認してください。
+
   </Accordion>
   <Accordion title="コンテナがエージェントごとに分離されない">
     - エージェント固有のサンドボックス設定で `scope: "agent"` を設定してください。
     - デフォルトは `"session"` で、セッションごとに 1 つのコンテナを作成します。
+
   </Accordion>
 </AccordionGroup>
 

@@ -44,14 +44,17 @@ Mode ini tidak menginstal atau memodifikasi apa pun di host remote.
       - Hanya konfigurasi
       - Konfigurasi + kredensial + sesi
       - Reset penuh (juga menghapus workspace)
+
   </Step>
   <Step title="Model dan autentikasi">
     - Matriks opsi lengkap ada di [Opsi auth dan model](#auth-and-model-options).
+
   </Step>
   <Step title="Workspace">
     - Default `~/.openclaw/workspace` (dapat dikonfigurasi).
     - Menyiapkan file workspace yang diperlukan untuk ritual bootstrap saat pertama kali dijalankan.
     - Tata letak workspace: [Workspace agent](/id/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Meminta port, bind, mode auth, dan eksposur Tailscale.
@@ -65,6 +68,7 @@ Mode ini tidak menginstal atau memodifikasi apa pun di host remote.
       - Tidak dapat digabungkan dengan `--gateway-token`.
     - Nonaktifkan auth hanya jika Anda sepenuhnya memercayai setiap proses lokal.
     - Bind non-loopback tetap memerlukan auth.
+
   </Step>
   <Step title="Channel">
     - [WhatsApp](/id/channels/whatsapp): login QR opsional
@@ -88,18 +92,22 @@ Mode ini tidak menginstal atau memodifikasi apa pun di host remote.
       - Jika pembuatan task ditolak, OpenClaw akan menggunakan fallback item login folder Startup per pengguna dan langsung memulai gateway.
       - Scheduled Task tetap lebih disukai karena menyediakan status supervisor yang lebih baik.
     - Pemilihan runtime: Node (direkomendasikan; wajib untuk WhatsApp dan Telegram). Bun tidak direkomendasikan.
+
   </Step>
   <Step title="Pemeriksaan kesehatan">
     - Memulai gateway (jika perlu) dan menjalankan `openclaw health`.
     - `openclaw status --deep` menambahkan probe kesehatan gateway langsung ke output status, termasuk probe channel bila didukung.
+
   </Step>
   <Step title="Skills">
     - Membaca Skills yang tersedia dan memeriksa persyaratan.
     - Memungkinkan Anda memilih node manager: npm, pnpm, atau bun.
     - Menginstal dependensi opsional (beberapa menggunakan Homebrew di macOS).
+
   </Step>
   <Step title="Selesai">
     - Ringkasan dan langkah berikutnya, termasuk opsi aplikasi iOS, Android, dan macOS.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Yang Anda atur:
 - Petunjuk penemuan:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Opsi auth dan model

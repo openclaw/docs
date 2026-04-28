@@ -58,6 +58,7 @@ Les SecretRefs ne sont validées que sur les surfaces effectivement actives.
         - `gateway.remote.token` est actif lorsque l’authentification par jeton peut l’emporter et qu’aucun jeton env/auth n’est configuré.
         - `gateway.remote.password` n’est actif que lorsque l’authentification par mot de passe peut l’emporter et qu’aucun mot de passe env/auth n’est configuré.
     - La SecretRef `gateway.auth.token` est inactive pour la résolution d’authentification au démarrage lorsque `OPENCLAW_GATEWAY_TOKEN` est défini, car l’entrée du jeton env l’emporte pour ce runtime.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ Définissez les fournisseurs sous `secrets.providers` :
   <Accordion title="Fournisseur env">
     - Liste d’autorisations facultative via `allowlist`.
     - Les valeurs env manquantes/vides font échouer la résolution.
+
   </Accordion>
   <Accordion title="Fournisseur file">
     - Lit un fichier local depuis `path`.
@@ -173,6 +175,7 @@ Définissez les fournisseurs sous `secrets.providers` :
     - `mode: "singleValue"` attend l’identifiant de référence `"value"` et renvoie le contenu du fichier.
     - Le chemin doit passer les vérifications de propriété/autorisations.
     - Remarque fail-closed Windows : si la vérification ACL n’est pas disponible pour un chemin, la résolution échoue. Pour les chemins de confiance uniquement, définissez `allowInsecurePath: true` sur ce fournisseur pour contourner les vérifications de sécurité du chemin.
+
   </Accordion>
   <Accordion title="Fournisseur exec">
     - Exécute le chemin binaire absolu configuré, sans shell.

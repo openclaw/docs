@@ -285,6 +285,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `system-event` aggiunge un evento di sistema e può aggiornare/trasmettere il contesto di presenza.
     - `last-heartbeat` restituisce l'ultimo evento Heartbeat persistito.
     - `set-heartbeats` attiva o disattiva l'elaborazione Heartbeat sul gateway.
+
   </Accordion>
 
   <Accordion title="Modelli e utilizzo">
@@ -295,6 +296,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `sessions.usage` restituisce riepiloghi di utilizzo per sessione.
     - `sessions.usage.timeseries` restituisce serie temporali di utilizzo per una sessione.
     - `sessions.usage.logs` restituisce voci di log di utilizzo per una sessione.
+
   </Accordion>
 
   <Accordion title="Canali e helper di login">
@@ -305,11 +307,13 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `push.test` invia un push APNs di test a un node iOS registrato.
     - `voicewake.get` restituisce i trigger di wake-word memorizzati.
     - `voicewake.set` aggiorna i trigger di wake-word e trasmette la modifica.
+
   </Accordion>
 
   <Accordion title="Messaggistica e log">
     - `send` è la RPC di consegna diretta in uscita per invii mirati a canale/account/thread al di fuori del runner chat.
     - `logs.tail` restituisce la coda del file di log del gateway configurato con controlli di cursore/limite e byte massimi.
+
   </Accordion>
 
   <Accordion title="Talk e TTS">
@@ -321,6 +325,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `tts.enable` e `tts.disable` attivano e disattivano lo stato delle preferenze TTS.
     - `tts.setProvider` aggiorna il provider TTS preferito.
     - `tts.convert` esegue una conversione text-to-speech una tantum.
+
   </Accordion>
 
   <Accordion title="Segreti, configurazione, aggiornamento e procedura guidata">
@@ -334,6 +339,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `config.schema.lookup` restituisce un payload di lookup limitato a un percorso per un percorso di configurazione: percorso normalizzato, un nodo di schema superficiale, hint corrispondente + `hintPath` e riepiloghi immediati dei figli per approfondimento UI/CLI. I nodi di schema di lookup mantengono la documentazione rivolta all'utente e i campi di validazione comuni (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, limiti numerici/stringa/array/oggetto e flag come `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). I riepiloghi dei figli espongono `key`, `path` normalizzato, `type`, `required`, `hasChildren`, più `hint` / `hintPath` corrispondenti.
     - `update.run` esegue il flusso di aggiornamento del gateway e pianifica un riavvio solo quando l'aggiornamento stesso è riuscito.
     - `wizard.start`, `wizard.next`, `wizard.status` e `wizard.cancel` espongono la procedura guidata di onboarding tramite WS RPC.
+
   </Accordion>
 
   <Accordion title="Helper per agente e workspace">
@@ -342,6 +348,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `agents.files.list`, `agents.files.get` e `agents.files.set` gestiscono i file bootstrap del workspace esposti per un agente.
     - `agent.identity.get` restituisce l'identità effettiva dell'assistente per un agente o una sessione.
     - `agent.wait` attende che un'esecuzione termini e restituisce lo snapshot terminale quando disponibile.
+
   </Accordion>
 
   <Accordion title="Controllo delle sessioni">
@@ -358,6 +365,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `sessions.reset`, `sessions.delete` e `sessions.compact` eseguono la manutenzione della sessione.
     - `sessions.get` restituisce l'intera riga di sessione memorizzata.
     - L'esecuzione della chat continua a usare `chat.history`, `chat.send`, `chat.abort` e `chat.inject`. `chat.history` è normalizzato per la visualizzazione per i client UI: i tag di direttiva inline vengono rimossi dal testo visibile, i payload XML di chiamata strumento in testo semplice (inclusi `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` e i blocchi di chiamata strumento troncati) e i token di controllo del modello trapelati ASCII/a larghezza piena vengono rimossi, le righe dell'assistente composte solo dal token silenzioso come `NO_REPLY` / `no_reply` esatto vengono omesse e le righe sovradimensionate possono essere sostituite con placeholder.
+
   </Accordion>
 
   <Accordion title="Abbinamento device e device token">
@@ -365,6 +373,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `device.pair.approve`, `device.pair.reject` e `device.pair.remove` gestiscono i record di abbinamento dei device.
     - `device.token.rotate` ruota un token di device abbinato entro i limiti del ruolo approvato e dello scope del chiamante.
     - `device.token.revoke` revoca un token di device abbinato entro i limiti del ruolo approvato e dello scope del chiamante.
+
   </Accordion>
 
   <Accordion title="Abbinamento node, invoke e lavoro in sospeso">
@@ -377,6 +386,7 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `node.canvas.capability.refresh` aggiorna i token di capacità canvas limitati all'ambito.
     - `node.pending.pull` e `node.pending.ack` sono le API di coda per node connessi.
     - `node.pending.enqueue` e `node.pending.drain` gestiscono il lavoro in sospeso durevole per node offline/disconnessi.
+
   </Accordion>
 
   <Accordion title="Famiglie di approvazione">
@@ -385,11 +395,13 @@ discovery costruito da `src/gateway/server-methods-list.ts` più gli export dei 
     - `exec.approvals.get` e `exec.approvals.set` gestiscono gli snapshot della policy di approvazione exec del gateway.
     - `exec.approvals.node.get` e `exec.approvals.node.set` gestiscono la policy di approvazione exec locale del node tramite comandi relay del node.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` e `plugin.approval.resolve` coprono i flussi di approvazione definiti dai Plugin.
+
   </Accordion>
 
   <Accordion title="Automazione, Skills e strumenti">
     - Automazione: `wake` pianifica un'iniezione di testo di riattivazione immediata o al prossimo Heartbeat; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` gestiscono il lavoro pianificato.
     - Skills e strumenti: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

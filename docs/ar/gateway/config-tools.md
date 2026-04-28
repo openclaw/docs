@@ -297,6 +297,7 @@ x-i18n:
     - `agent`: أي جلسة تتبع معرّف الوكيل الحالي (وقد يشمل ذلك مستخدمين آخرين إذا كنت تشغّل جلسات لكل مرسل تحت معرّف الوكيل نفسه).
     - `all`: أي جلسة. ولا يزال الاستهداف عبر الوكلاء يتطلب `tools.agentToAgent`.
     - قيد sandbox: عندما تكون الجلسة الحالية ضمن sandbox ويكون `agents.defaults.sandbox.sessionToolsVisibility="spawned"`، تُفرَض الرؤية على `tree` حتى إذا كانت `tools.sessions.visibility="all"`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -328,6 +329,7 @@ x-i18n:
     - يتم التحقق من مدخلات Base64 باستخدام فحوصات صارمة للأبجدية/الحشو وحاجز لحجم ما قبل فك الترميز.
     - تكون أذونات الملفات `0700` للأدلة و`0600` للملفات.
     - تتبع عملية التنظيف سياسة `cleanup`: يقوم `delete` دائمًا بإزالة المرفقات؛ بينما يحتفظ `keep` بها فقط عندما تكون `retainOnSessionKeep: true`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ x-i18n:
       - يحافظ `contextTokens` المتطابق في النموذج على حد وقت تشغيل صريح عند وجوده؛ استخدمه لتقييد السياق الفعلي من دون تغيير البيانات الوصفية الأصلية للنموذج.
       - استخدم `models.mode: "replace"` عندما تريد أن يعيد التكوين كتابة `models.json` بالكامل.
       - يكون استمرار العلامات خاضعًا لسلطة المصدر: إذ تُكتب العلامات من لقطة تكوين المصدر النشط (قبل الحل)، وليس من قيم الأسرار المحلولة وقت التشغيل.
+
   </Accordion>
 </AccordionGroup>
 
@@ -431,6 +434,7 @@ x-i18n:
     - `models.mode`: سلوك كتالوج المزوّد (`merge` أو `replace`).
     - `models.providers`: خريطة مزوّدين مخصصين مفهرسة حسب معرّف المزوّد.
       - تعديلات آمنة: استخدم `openclaw config set models.providers.<id> '<json>' --strict-json --merge` أو `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` للتحديثات الإضافية. يرفض `config set` الاستبدالات المدمّرة ما لم تمرر `--replace`.
+
   </Accordion>
   <Accordion title="اتصال المزوّد والمصادقة">
     - `models.providers.*.api`: مهايئ الطلب (`openai-completions` أو `openai-responses` أو `anthropic-messages` أو `google-generative-ai`، إلخ).
@@ -440,6 +444,7 @@ x-i18n:
     - `models.providers.*.authHeader`: فرض نقل بيانات الاعتماد داخل ترويسة `Authorization` عند الحاجة.
     - `models.providers.*.baseUrl`: عنوان URL الأساسي لـ API upstream.
     - `models.providers.*.headers`: ترويسات ثابتة إضافية لتوجيه proxy/tenant.
+
   </Accordion>
   <Accordion title="تجاوزات نقل الطلب">
     `models.providers.*.request`: تجاوزات النقل لطلبات HTTP الخاصة بمزوّد النموذج.
@@ -457,6 +462,7 @@ x-i18n:
     - `models.providers.*.models.*.contextTokens`: حد سياق اختياري لوقت التشغيل. استخدمه عندما تريد ميزانية سياق فعلية أصغر من `contextWindow` الأصلية للنموذج؛ ويعرض `openclaw models list` القيمتين كلتيهما عندما تختلفان.
     - `models.providers.*.models.*.compat.supportsDeveloperRole`: تلميح توافق اختياري. بالنسبة إلى `api: "openai-completions"` مع `baseUrl` غير فارغ وغير أصلي (مضيف ليس `api.openai.com`)، يفرض OpenClaw هذه القيمة إلى `false` وقت التشغيل. أما `baseUrl` الفارغ/المحذوف فيُبقي سلوك OpenAI الافتراضي.
     - `models.providers.*.models.*.compat.requiresStringContent`: تلميح توافق اختياري لنقاط نهاية الدردشة OpenAI-compatible التي تدعم النصوص فقط. عندما تكون `true`، يقوم OpenClaw بتسطيح مصفوفات `messages[].content` النصية البحتة إلى سلاسل نصية عادية قبل إرسال الطلب.
+
   </Accordion>
   <Accordion title="اكتشاف Amazon Bedrock">
     - `plugins.entries.amazon-bedrock.config.discovery`: جذر إعدادات الاكتشاف التلقائي لـ Bedrock.
@@ -466,6 +472,7 @@ x-i18n:
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: فترة polling لتحديث الاكتشاف.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: نافذة السياق الاحتياطية للنماذج المكتشفة.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: الحد الاحتياطي الأقصى لرموز الإخراج للنماذج المكتشفة.
+
   </Accordion>
 </AccordionGroup>
 

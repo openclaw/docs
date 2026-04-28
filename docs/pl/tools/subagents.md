@@ -82,12 +82,14 @@ czatu zgłaszającego po zakończeniu działania.
     - Po zakończeniu pod-agent ogłasza wiadomość z podsumowaniem/wynikiem z powrotem na kanale czatu zgłaszającego.
     - Zakończenie jest oparte na push. Po uruchomieniu **nie** odpytywaj w pętli `/subagents list`, `sessions_list` ani `sessions_history` tylko po to, by czekać na zakończenie; sprawdzaj stan tylko na żądanie w celach debugowania lub interwencji.
     - Po zakończeniu OpenClaw podejmuje najlepszą możliwą próbę zamknięcia śledzonych kart przeglądarki/procesów otwartych przez tę sesję pod-agenta, zanim przepływ cleanup ogłoszenia będzie kontynuowany.
+
   </Accordion>
   <Accordion title="Odporność dostarczania przy ręcznym uruchomieniu">
     - OpenClaw najpierw próbuje bezpośredniego dostarczenia `agent` przy użyciu stabilnego klucza idempotencji.
     - Jeśli bezpośrednie dostarczenie się nie powiedzie, przełącza się na routing przez kolejkę.
     - Jeśli routing przez kolejkę nadal nie jest dostępny, ogłoszenie jest ponawiane z krótkim wykładniczym backoffem przed ostatecznym poddaniem.
     - Dostarczenie zakończenia zachowuje rozstrzygniętą trasę zgłaszającego: trasy zakończenia powiązane z wątkiem lub konwersacją mają pierwszeństwo, gdy są dostępne; jeśli źródło zakończenia podaje tylko kanał, OpenClaw uzupełnia brakujący target/konto z rozstrzygniętej trasy sesji zgłaszającego (`lastChannel` / `lastTo` / `lastAccountId`), aby bezpośrednie dostarczenie nadal działało.
+
   </Accordion>
   <Accordion title="Metadane przekazania zakończenia">
     Przekazanie zakończenia do sesji zgłaszającego to wewnętrzny kontekst
@@ -105,6 +107,7 @@ czatu zgłaszającego po zakończeniu działania.
     - `/subagents spawn` to tryb jednorazowy (`mode: "run"`). W przypadku trwałych sesji powiązanych z wątkiem użyj `sessions_spawn` z `thread: true` i `mode: "session"`.
     - W przypadku sesji harness ACP (Claude Code, Gemini CLI, OpenCode lub jawny Codex ACP/acpx) użyj `sessions_spawn` z `runtime: "acp"`, gdy narzędzie ogłasza to środowisko wykonawcze. Zobacz [Model dostarczania ACP](/pl/tools/acp-agents#delivery-model) podczas debugowania zakończeń lub pętli agent-do-agenta. Gdy Plugin `codex` jest włączony, sterowanie czatem/wątkiem Codex powinno preferować `/codex ...` zamiast ACP, chyba że użytkownik wyraźnie poprosi o ACP/acpx.
     - OpenClaw ukrywa `runtime: "acp"` do czasu włączenia ACP, gdy zgłaszający nie jest sandboxowany i gdy załadowany jest Plugin backendu taki jak `acpx`. `runtime: "acp"` oczekuje zewnętrznego identyfikatora harness ACP albo wpisu `agents.list[]` z `runtime.type="acp"`; dla zwykłych agentów konfiguracyjnych OpenClaw z `agents_list` użyj domyślnego środowiska wykonawczego pod-agenta.
+
   </Accordion>
 </AccordionGroup>
 

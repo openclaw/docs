@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - اختصار مستودع GitHub مثل `owner/repo`
     - عنوان URL لمستودع GitHub مثل `https://github.com/owner/repo`
     - عنوان URL لـ git
+
   </Tab>
   <Tab title="قواعد Marketplace البعيدة">
     بالنسبة إلى marketplaces البعيدة المحملة من GitHub أو git، يجب أن تبقى إدخالات Plugin داخل مستودع marketplace المستنسخ. يقبل OpenClaw مصادر المسارات النسبية من ذلك المستودع ويرفض HTTP(S) والمسار المطلق وgit وGitHub وغيرها من مصادر Plugin غير المعتمدة على المسار من البيانات البعيدة.

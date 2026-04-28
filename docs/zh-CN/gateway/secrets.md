@@ -58,6 +58,7 @@ SecretRef 仅会在实际上处于活动状态的表面上进行验证。
         - 当 token 认证可能获胜且未配置 env/auth token 时，`gateway.remote.token` 处于活动状态。
         - 仅当 password 认证可能获胜且未配置 env/auth password 时，`gateway.remote.password` 才处于活动状态。
     - 当设置了 `OPENCLAW_GATEWAY_TOKEN` 时，`gateway.auth.token` SecretRef 对启动认证解析而言是非活动的，因为该运行时会优先使用 env token 输入。
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ SecretRef 仅会在实际上处于活动状态的表面上进行验证。
   <Accordion title="Env 提供商">
     - 可通过 `allowlist` 设置可选允许列表。
     - 缺失/为空的 env 值会导致解析失败。
+
   </Accordion>
   <Accordion title="File 提供商">
     - 从 `path` 读取本地文件。
@@ -173,6 +175,7 @@ SecretRef 仅会在实际上处于活动状态的表面上进行验证。
     - `mode: "singleValue"` 期望引用 id 为 `"value"`，并返回文件内容。
     - 路径必须通过所有权/权限检查。
     - Windows 失败即关闭说明：如果某个路径无法进行 ACL 验证，则解析失败。仅对受信任路径，可在该提供商上设置 `allowInsecurePath: true` 以绕过路径安全检查。
+
   </Accordion>
   <Accordion title="Exec 提供商">
     - 运行已配置的绝对二进制路径，不经过 shell。

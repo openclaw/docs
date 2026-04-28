@@ -198,6 +198,7 @@ x-i18n:
       - `fileQuality: "hq"`: 최대 14 MP(렌더링 픽셀 14,000,000개).
       - `fileQuality: "print"`: 최대 24 MP(렌더링 픽셀 24,000,000개).
       - PDF는 최대 50페이지 제한도 있습니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ URL 구성 동작:
     - 원격 액세스가 활성화된 경우 원격 실패 요청 제한:
       - 60초당 실패 40회
       - 60초 잠금 (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="파일 렌더링 강화">
     - 스크린샷 브라우저 요청 라우팅은 기본적으로 거부됩니다.
     - `http://127.0.0.1/plugins/diffs/assets/*`의 로컬 뷰어 에셋만 허용됩니다.
     - 외부 네트워크 요청은 차단됩니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ URL 구성 동작:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="플랫폼 fallback">
     플랫폼 명령/경로 검색 fallback.
@@ -456,6 +460,7 @@ Chrome, Chromium, Edge 또는 Brave를 설치하거나, 위의 실행 파일 경
     - `Invalid baseUrl: ...` — query/hash 없이 선택적 경로가 포함된 `http(s)` origin을 사용하세요.
     - `{field} exceeds maximum size (...)` — 페이로드 크기를 줄이세요.
     - 큰 patch 거부 — patch 파일 수 또는 전체 줄 수를 줄이세요.
+
   </Accordion>
   <Accordion title="뷰어 접근성">
     - 뷰어 URL은 기본적으로 `127.0.0.1`로 확인됩니다.
@@ -468,6 +473,7 @@ Chrome, Chromium, Edge 또는 Brave를 설치하거나, 위의 실행 파일 경
       - 첨부 파일만 필요하다면 `mode: "file"` 또는 `mode: "both"`를 우선 사용하거나
       - 공유 가능한 뷰어 URL이 필요하다면 `security.allowRemoteViewer`를 의도적으로 활성화하고 Plugin `viewerBaseUrl`을 설정하거나 프록시/공개 `baseUrl`을 전달하세요.
     - 외부 뷰어 액세스가 실제로 필요한 경우에만 `security.allowRemoteViewer`를 활성화하세요.
+
   </Accordion>
   <Accordion title="변경되지 않은 줄 행에 확장 버튼이 없음">
     patch 입력에서 patch가 확장 가능한 컨텍스트를 포함하지 않으면 이런 현상이 발생할 수 있습니다. 이는 예상된 동작이며 뷰어 실패를 의미하지 않습니다.
@@ -476,6 +482,7 @@ Chrome, Chromium, Edge 또는 Brave를 설치하거나, 위의 실행 파일 경
     - TTL 만료로 아티팩트가 만료되었습니다.
     - 토큰 또는 경로가 변경되었습니다.
     - 정리 과정에서 오래된 데이터가 제거되었습니다.
+
   </Accordion>
 </AccordionGroup>
 

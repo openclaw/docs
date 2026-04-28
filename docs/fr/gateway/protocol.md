@@ -285,6 +285,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `system-event` ajoute un événement système et peut mettre à jour/diffuser le contexte de présence.
     - `last-heartbeat` renvoie le dernier événement Heartbeat persisté.
     - `set-heartbeats` active ou désactive le traitement des Heartbeat sur la Gateway.
+
   </Accordion>
 
   <Accordion title="Modèles et utilisation">
@@ -295,6 +296,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `sessions.usage` renvoie des résumés d’utilisation par session.
     - `sessions.usage.timeseries` renvoie la série temporelle d’utilisation pour une session.
     - `sessions.usage.logs` renvoie les entrées de journal d’utilisation pour une session.
+
   </Accordion>
 
   <Accordion title="Canaux et assistants de connexion">
@@ -305,11 +307,13 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `push.test` envoie un push APNs de test à un nœud iOS enregistré.
     - `voicewake.get` renvoie les déclencheurs de mot d’activation stockés.
     - `voicewake.set` met à jour les déclencheurs de mot d’activation et diffuse le changement.
+
   </Accordion>
 
   <Accordion title="Messagerie et journaux">
     - `send` est la RPC directe de remise sortante pour les envois ciblés canal/compte/fil en dehors du moteur de chat.
     - `logs.tail` renvoie la fin du journal de fichier Gateway configuré avec contrôles de curseur/limite et d’octets max.
+
   </Accordion>
 
   <Accordion title="Talk et TTS">
@@ -321,6 +325,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `tts.enable` et `tts.disable` activent ou désactivent l’état des préférences TTS.
     - `tts.setProvider` met à jour le fournisseur TTS préféré.
     - `tts.convert` exécute une conversion texte-parole ponctuelle.
+
   </Accordion>
 
   <Accordion title="Secrets, configuration, mise à jour et assistant">
@@ -334,6 +339,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `config.schema.lookup` renvoie une charge utile de recherche limitée à un chemin pour un chemin de configuration : chemin normalisé, nœud de schéma superficiel, indice correspondant + `hintPath`, et résumés des enfants immédiats pour l’exploration UI/CLI. Les nœuds de schéma de recherche conservent la documentation orientée utilisateur et les champs de validation courants (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, bornes numériques/chaînes/tableaux/objets, et indicateurs comme `additionalProperties`, `deprecated`, `readOnly`, `writeOnly`). Les résumés enfants exposent `key`, `path` normalisé, `type`, `required`, `hasChildren`, ainsi que le `hint` / `hintPath` correspondant.
     - `update.run` exécute le flux de mise à jour de la Gateway et planifie un redémarrage uniquement si la mise à jour elle-même a réussi.
     - `wizard.start`, `wizard.next`, `wizard.status` et `wizard.cancel` exposent l’assistant d’intégration via WS RPC.
+
   </Accordion>
 
   <Accordion title="Assistants pour agents et espaces de travail">
@@ -342,6 +348,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `agents.files.list`, `agents.files.get` et `agents.files.set` gèrent les fichiers bootstrap d’espace de travail exposés pour un agent.
     - `agent.identity.get` renvoie l’identité effective de l’assistant pour un agent ou une session.
     - `agent.wait` attend la fin d’une exécution et renvoie l’instantané terminal lorsqu’il est disponible.
+
   </Accordion>
 
   <Accordion title="Contrôle de session">
@@ -358,6 +365,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `sessions.reset`, `sessions.delete` et `sessions.compact` effectuent la maintenance des sessions.
     - `sessions.get` renvoie la ligne complète de session stockée.
     - L’exécution de chat utilise toujours `chat.history`, `chat.send`, `chat.abort` et `chat.inject`. `chat.history` est normalisé pour l’affichage pour les clients UI : les balises de directive en ligne sont supprimées du texte visible, les charges utiles XML d’appel d’outil en texte brut (y compris `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` et les blocs d’appel d’outil tronqués) ainsi que les jetons de contrôle du modèle ASCII/full-width divulgués sont supprimés, les lignes d’assistant composées uniquement de jetons silencieux comme `NO_REPLY` / `no_reply` exacts sont omises, et les lignes surdimensionnées peuvent être remplacées par des espaces réservés.
+
   </Accordion>
 
   <Accordion title="Appairage des appareils et jetons d’appareil">
@@ -365,6 +373,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `device.pair.approve`, `device.pair.reject` et `device.pair.remove` gèrent les enregistrements d’appairage d’appareil.
     - `device.token.rotate` fait tourner un jeton d’appareil appairé dans les limites de son rôle approuvé et de la portée de l’appelant.
     - `device.token.revoke` révoque un jeton d’appareil appairé dans les limites de son rôle approuvé et de la portée de l’appelant.
+
   </Accordion>
 
   <Accordion title="Appairage de nœuds, invoke et travail en attente">
@@ -377,6 +386,7 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `node.canvas.capability.refresh` actualise les jetons de capacité canvas limités à une portée.
     - `node.pending.pull` et `node.pending.ack` sont les API de file d’attente pour nœud connecté.
     - `node.pending.enqueue` et `node.pending.drain` gèrent le travail durable en attente pour les nœuds hors ligne/déconnectés.
+
   </Accordion>
 
   <Accordion title="Familles d’approbation">
@@ -385,11 +395,13 @@ découverte conservative construite à partir de `src/gateway/server-methods-lis
     - `exec.approvals.get` et `exec.approvals.set` gèrent les instantanés de politique d’approbation exec de la Gateway.
     - `exec.approvals.node.get` et `exec.approvals.node.set` gèrent la politique locale d’approbation exec d’un nœud via des commandes de relais de nœud.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` et `plugin.approval.resolve` couvrent les flux d’approbation définis par des plugins.
+
   </Accordion>
 
   <Accordion title="Automatisation, Skills et outils">
     - Automatisation : `wake` planifie une injection immédiate ou au prochain Heartbeat de texte de réveil ; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` gèrent le travail planifié.
     - Skills et outils : `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
+
   </Accordion>
 </AccordionGroup>
 

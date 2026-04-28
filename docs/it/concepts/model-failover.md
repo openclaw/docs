@@ -226,6 +226,7 @@ OpenClaw costruisce l'elenco dei candidati a partire da `provider/model` attualm
     - Se l'esecuzione corrente è già su un fallback configurato nella stessa famiglia di provider, OpenClaw continua a usare l'intera catena configurata.
     - Se l'esecuzione corrente è su un provider diverso dalla configurazione e quel modello corrente non fa già parte della catena di fallback configurata, OpenClaw non aggiunge fallback configurati non correlati da un altro provider.
     - Quando l'esecuzione è iniziata da un override, il primary configurato viene aggiunto in fondo così la catena può assestarsi di nuovo sul normale valore predefinito una volta esauriti i candidati precedenti.
+
   </Accordion>
 </AccordionGroup>
 
@@ -240,11 +241,13 @@ OpenClaw costruisce l'elenco dei candidati a partire da `provider/model` attualm
     - disabilitazioni per billing
     - `LiveSessionModelSwitchError`, che viene normalizzato in un percorso di failover così un modello persistito obsoleto non crea un loop di retry esterno
     - altri errori non riconosciuti quando ci sono ancora candidati rimanenti
+
   </Tab>
   <Tab title="Non continua in caso di">
     - interruzioni esplicite che non hanno forma da timeout/failover
     - errori di overflow del contesto che devono restare all'interno della logica di Compaction/retry (ad esempio `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` o `ollama error: context length exceeded`)
     - un errore finale sconosciuto quando non restano candidati
+
   </Tab>
 </Tabs>
 
@@ -259,6 +262,7 @@ Quando ogni profilo di autenticazione per un provider è già in cooldown, OpenC
     - Il candidato primary può essere sondato vicino alla scadenza del cooldown, con un throttle per provider.
     - I sibling di fallback sullo stesso provider possono essere tentati nonostante il cooldown quando il fallimento sembra transitorio (`rate_limit`, `overloaded` o sconosciuto). Questo è particolarmente rilevante quando un rate limit ha scope sul modello e un modello sibling può comunque recuperare immediatamente.
     - I probe di cooldown transitori sono limitati a uno per provider per esecuzione di fallback così un singolo provider non rallenta il fallback cross-provider.
+
   </Accordion>
 </AccordionGroup>
 

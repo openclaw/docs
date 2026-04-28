@@ -34,6 +34,7 @@ Troubleshooting: [Scheduled Tasks](/automation/cron-jobs#troubleshooting)
     - Use lightweight bootstrap context if heartbeat runs only need `HEARTBEAT.md`.
     - Enable isolated sessions to avoid sending full conversation history each heartbeat.
     - Restrict heartbeats to active hours (local time).
+
   </Step>
 </Steps>
 
@@ -232,14 +233,16 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 <ParamField path="session" type="string">
   Optional session key for heartbeat runs.
 
-  - `main` (default): agent main session.
-  - Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
-  - Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
+- `main` (default): agent main session.
+- Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
+- Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
+
 </ParamField>
 <ParamField path="target" type="string">
-  - `last`: deliver to the last used external channel.
-  - explicit channel: any configured channel or plugin id, for example `discord`, `matrix`, `telegram`, or `whatsapp`.
-  - `none` (default): run the heartbeat but **do not deliver** externally.
+- `last`: deliver to the last used external channel.
+- explicit channel: any configured channel or plugin id, for example `discord`, `matrix`, `telegram`, or `whatsapp`.
+- `none` (default): run the heartbeat but **do not deliver** externally.
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   Controls direct/DM delivery behavior. `allow`: allow direct/DM heartbeat delivery. `block`: suppress direct/DM delivery (`reason=dm-blocked`).
@@ -262,11 +265,12 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 <ParamField path="activeHours" type="object">
   Restricts heartbeat runs to a time window. Object with `start` (HH:MM, inclusive; use `00:00` for start-of-day), `end` (HH:MM exclusive; `24:00` allowed for end-of-day), and optional `timezone`.
 
-  - Omitted or `"user"`: uses your `agents.defaults.userTimezone` if set, otherwise falls back to the host system timezone.
-  - `"local"`: always uses the host system timezone.
-  - Any IANA identifier (e.g. `America/New_York`): used directly; if invalid, falls back to the `"user"` behavior above.
-  - `start` and `end` must not be equal for an active window; equal values are treated as zero-width (always outside the window).
-  - Outside the active window, heartbeats are skipped until the next tick inside the window.
+- Omitted or `"user"`: uses your `agents.defaults.userTimezone` if set, otherwise falls back to the host system timezone.
+- `"local"`: always uses the host system timezone.
+- Any IANA identifier (e.g. `America/New_York`): used directly; if invalid, falls back to the `"user"` behavior above.
+- `start` and `end` must not be equal for an active window; equal values are treated as zero-width (always outside the window).
+- Outside the active window, heartbeats are skipped until the next tick inside the window.
+
 </ParamField>
 
 ## Delivery behavior
@@ -279,16 +283,19 @@ Use `accountId` to target a specific account on multi-account channels like Tele
     - Heartbeat deliveries allow direct/DM targets by default. Set `directPolicy: "block"` to suppress direct-target sends while still running the heartbeat turn.
     - If the main queue is busy, the heartbeat is skipped and retried later.
     - If `target` resolves to no external destination, the run still happens but no outbound message is sent.
+
   </Accordion>
   <Accordion title="Visibility and skip behavior">
     - If `showOk`, `showAlerts`, and `useIndicator` are all disabled, the run is skipped up front as `reason=alerts-disabled`.
     - If only alert delivery is disabled, OpenClaw can still run the heartbeat, update due-task timestamps, restore the session idle timestamp, and suppress the outward alert payload.
     - If the resolved heartbeat target supports typing, OpenClaw shows typing while the heartbeat run is active. This uses the same target the heartbeat would send chat output to, and it is disabled by `typingMode: "never"`.
+
   </Accordion>
   <Accordion title="Session lifecycle and audit">
     - Heartbeat-only replies do **not** keep the session alive. Heartbeat metadata may update the session row, but idle expiry uses `lastInteractionAt` from the last real user/channel message, and daily expiry uses `sessionStartedAt`.
     - Control UI and WebChat history hide heartbeat prompts and OK-only acknowledgments. The underlying session transcript can still contain those turns for audit/replay.
     - Detached [background tasks](/automation/tasks) can enqueue a system event and wake heartbeat when the main session should notice something quickly. That wake does not make the heartbeat run a background task.
+
   </Accordion>
 </AccordionGroup>
 
@@ -403,6 +410,7 @@ tasks:
     - Non-task content in `HEARTBEAT.md` is preserved and appended as additional context after the due-task list.
     - Task last-run timestamps are stored in session state (`heartbeatTaskState`), so intervals survive normal restarts.
     - Task timestamps are only advanced after a heartbeat run completes its normal reply path. Skipped `empty-heartbeat-file` / `no-tasks-due` runs do not mark tasks as completed.
+
   </Accordion>
 </AccordionGroup>
 

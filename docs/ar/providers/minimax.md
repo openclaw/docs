@@ -433,6 +433,7 @@ search API.
     - يطبع OpenClaw استخدام MiniMax coding-plan بنفس عرض `% المتبقي` المستخدم لدى providers الآخرين. فحقولا MiniMax الخام `usage_percent` / `usagePercent` يمثلان الحصة المتبقية، لا الحصة المستهلكة، لذلك يعكسهما OpenClaw. وتفوز الحقول القائمة على العدّ عند وجودها.
     - عندما تُعيد API القيمة `model_remains`، يفضّل OpenClaw إدخال chat-model، ويشتق تسمية النافذة من `start_time` / `end_time` عند الحاجة، ويتضمن اسم model المحددة في تسمية الخطة بحيث يسهل تمييز نوافذ coding-plan.
     - تتعامل لقطات الاستخدام مع `minimax` و`minimax-cn` و`minimax-portal` على أنها سطح الحصة نفسه لـ MiniMax، وتفضّل OAuth المخزنة الخاصة بـ MiniMax قبل الرجوع إلى مفاتيح env الخاصة بـ Coding Plan.
+
   </Accordion>
 </AccordionGroup>
 

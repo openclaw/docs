@@ -118,6 +118,7 @@ Qianfan هي منصة MaaS من Baidu، وتوفّر **API موحّدًا** يو
     - تأكد من أن مفتاح API يبدأ بـ `bce-v3/ALTAK-` وأن الوصول إلى Qianfan API مفعّل له في وحدة تحكم Baidu Cloud.
     - إذا لم تُدرج النماذج، فتأكد من أن خدمة Qianfan مفعلة في حسابك.
     - تكون Base URL الافتراضية هي `https://qianfan.baidubce.com/v2`. لا تغيّرها إلا إذا كنت تستخدم نقطة نهاية أو proxy مخصصًا.
+
   </Accordion>
 </AccordionGroup>
 

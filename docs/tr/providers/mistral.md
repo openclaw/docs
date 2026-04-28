@@ -168,6 +168,7 @@ Twilio medya karelerini doğrudan iletebilir. `encoding: "pcm_s16le"` ve buna uy
     - Sağlayıcı temel URL’si varsayılan olarak `https://api.mistral.ai/v1` değeridir.
     - İlk kurulum varsayılan modeli `mistral/mistral-large-latest`’tir.
     - Z.AI, API anahtarınızla Bearer kimlik doğrulaması kullanır.
+
   </Accordion>
 </AccordionGroup>
 

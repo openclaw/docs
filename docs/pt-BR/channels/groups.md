@@ -32,6 +32,7 @@ Tradução: remetentes na allowlist podem acionar o OpenClaw mencionando-o.
 - **Acesso por DM** é controlado por `*.allowFrom`.
 - **Acesso em grupos** é controlado por `*.groupPolicy` + allowlists (`*.groups`, `*.groupAllowFrom`).
 - **Disparo de respostas** é controlado pelo controle por menções (`requireMention`, `/activation`).
+
 </Note>
 
 Fluxo rápido (o que acontece com uma mensagem em grupo):
@@ -56,6 +57,7 @@ Por padrão, o OpenClaw prioriza o comportamento normal de chat e mantém o cont
   <Accordion title="O comportamento atual é específico de cada canal">
     - Alguns canais já aplicam filtragem baseada em remetente para contexto suplementar em caminhos específicos (por exemplo, inicialização de thread no Slack, buscas de resposta/thread no Matrix).
     - Outros canais ainda repassam o contexto de citação/resposta/encaminhamento como foi recebido.
+
   </Accordion>
   <Accordion title="Direção de endurecimento (planejada)">
     - `contextVisibility: "all"` (padrão) mantém o comportamento atual como recebido.
@@ -231,6 +233,7 @@ Controle como mensagens de grupo/sala são tratadas por canal:
     - A allowlist do Telegram pode corresponder a IDs de usuário (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) ou nomes de usuário (`"@alice"` ou `"alice"`); os prefixos não diferenciam maiúsculas de minúsculas.
     - O padrão é `groupPolicy: "allowlist"`; se sua allowlist de grupos estiver vazia, mensagens de grupo serão bloqueadas.
     - Segurança em tempo de execução: quando um bloco de provider está completamente ausente (`channels.<provider>` ausente), a política de grupo recai para um modo fail-closed (normalmente `allowlist`) em vez de herdar `channels.defaults.groupPolicy`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -299,6 +302,7 @@ Responder a uma mensagem do bot conta como uma menção implícita quando o cana
     - Grupos em que respostas silenciosas são permitidas tratam turnos do modelo vazios limpos ou apenas de raciocínio como silenciosos, equivalentes a `NO_REPLY`. Chats diretos ainda tratam respostas vazias como uma falha do turno do agente.
     - Os padrões do Discord ficam em `channels.discord.guilds."*"` (substituíveis por guild/canal).
     - O contexto do histórico de grupo é encapsulado de forma uniforme entre canais e é **somente pendente** (mensagens ignoradas devido ao controle por menções); use `messages.groupChat.historyLimit` para o padrão global e `channels.<channel>.historyLimit` (ou `channels.<channel>.accounts.*.historyLimit`) para substituições. Defina `0` para desativar.
+
   </Accordion>
 </AccordionGroup>
 

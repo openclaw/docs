@@ -184,6 +184,7 @@ cd openclaw-ansible
     - まずTailscale VPN経由でアクセスできることを確認してください
     - SSHアクセス（ポート22）は常に許可されています
     - gatewayは設計上、Tailscale経由でのみアクセス可能です
+
   </Accordion>
   <Accordion title="serviceが起動しない">
     ```bash

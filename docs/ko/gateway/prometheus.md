@@ -136,6 +136,7 @@ Content type은 표준 Prometheus exposition 형식인 `text/plain; version=0.0.
     - 원시 provider 요청 ID(해당하는 경우 span에는 제한된 해시만 존재할 수 있으나, 메트릭에는 절대 없음)
     - 세션 키와 세션 ID
     - 호스트 이름, 파일 경로, 비밀 값
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ OpenClaw는 두 표면을 독립적으로 모두 지원합니다. 둘 중 하나
     - 일반 Gateway 인증을 통해 인증됩니다.
     - 표면은 메트릭만 포함합니다(트레이스 또는 로그 없음).
     - 이미 Prometheus + Grafana를 표준으로 사용하는 스택에 가장 적합합니다.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - **Push** 모델: OpenClaw가 collector 또는 OTLP 호환 백엔드로 OTLP/HTTP를 전송합니다.
     - 표면에는 메트릭, 트레이스, 로그가 포함됩니다.
     - 둘 다 필요할 때 OpenTelemetry Collector의 `prometheus` 또는 `prometheusremotewrite` exporter를 통해 Prometheus로 브리지할 수 있습니다.
     - 전체 카탈로그는 [OpenTelemetry export](/ko/gateway/opentelemetry)를 참고하세요.
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ OpenClaw는 두 표면을 독립적으로 모두 지원합니다. 둘 중 하나
     - config에서 `diagnostics.enabled: true`를 확인하세요.
     - `openclaw plugins list --enabled`로 Plugin이 활성화되어 로드되었는지 확인하세요.
     - 약간의 트래픽을 발생시키세요. counter와 histogram은 적어도 한 번 이벤트가 발생한 뒤에만 라인을 출력합니다.
+
   </Accordion>
   <Accordion title="401 / unauthorized">
     이 엔드포인트는 Gateway operator 범위(`auth: "gateway"`, `gatewayRuntimeScopeSurface: "trusted-operator"`)를 요구합니다. Prometheus가 다른 Gateway operator 경로에 사용하는 것과 동일한 token 또는 password를 사용하세요. 공개 무인증 모드는 없습니다.

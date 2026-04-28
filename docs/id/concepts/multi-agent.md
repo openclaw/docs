@@ -244,11 +244,13 @@ Binding bersifat **deterministik** dan **yang paling spesifik menang**:
   <Accordion title="Tie-breaking dan semantik AND">
     - Jika beberapa binding cocok di tingkat yang sama, yang pertama dalam urutan config menang.
     - Jika sebuah binding menetapkan beberapa field pencocokan (misalnya `peer` + `guildId`), semua field yang ditentukan wajib cocok (semantik `AND`).
+
   </Accordion>
   <Accordion title="Detail cakupan akun">
     - Binding yang menghilangkan `accountId` hanya cocok dengan akun default.
     - Gunakan `accountId: "*"` untuk fallback tingkat kanal di semua akun.
     - Jika nantinya Anda menambahkan binding yang sama untuk agen yang sama dengan id akun eksplisit, OpenClaw akan meningkatkan binding khusus kanal yang ada menjadi bercakupan akun alih-alih menduplikasinya.
+
   </Accordion>
 </AccordionGroup>
 

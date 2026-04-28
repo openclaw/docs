@@ -210,6 +210,7 @@ Step Plan (`stepfun-plan`):
     - `step-3.5-flash-2603` наразі доступна лише в `stepfun-plan`.
     - Один потік автентифікації записує профілі з відповідним регіоном як для `stepfun`, так і для `stepfun-plan`, тож обидві поверхні можна виявляти разом.
     - Використовуйте `openclaw models list` і `openclaw models set <provider/model>`, щоб переглядати або перемикати моделі.
+
   </Accordion>
 </AccordionGroup>
 

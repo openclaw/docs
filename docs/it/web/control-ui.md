@@ -68,6 +68,7 @@ Una volta approvato, il dispositivo viene ricordato e non richiederà una nuova 
 - Tailscale Serve può saltare il passaggio di associazione per le sessioni operatore della UI di controllo quando `gateway.auth.allowTailscale: true`, l'identità Tailscale è verificata e il browser presenta la propria identità dispositivo.
 - I bind diretti Tailnet, le connessioni browser LAN e i profili browser senza identità dispositivo richiedono comunque un'approvazione esplicita.
 - Ogni profilo browser genera un ID dispositivo univoco, quindi cambiare browser o cancellare i dati del browser richiederà una nuova associazione.
+
 </Note>
 
 ## Identità personale (locale al browser)
@@ -96,18 +97,21 @@ La UI di controllo può localizzarsi al primo caricamento in base alla lingua de
     - Chat con il modello tramite Gateway WS (`chat.history`, `chat.send`, `chat.abort`, `chat.inject`).
     - Talk con OpenAI Realtime direttamente dal browser tramite WebRTC. Il Gateway genera un secret client Realtime di breve durata con `talk.realtime.session`; il browser invia l'audio del microfono direttamente a OpenAI e inoltra le chiamate allo strumento `openclaw_agent_consult` tramite `chat.send` per il modello OpenClaw configurato più grande.
     - Streaming delle chiamate agli strumenti + schede di output live degli strumenti nella Chat (eventi agente).
+
   </Accordion>
   <Accordion title="Canali, istanze, sessioni, sogni">
     - Canali: stato dei canali integrati più quelli bundled/esterni dei Plugin, login QR e configurazione per canale (`channels.status`, `web.login.*`, `config.patch`).
     - Istanze: elenco presenza + refresh (`system-presence`).
     - Sessioni: elenco + override per sessione di modello/thinking/fast/verbose/trace/reasoning (`sessions.list`, `sessions.patch`).
     - Sogni: stato di Dreaming, interruttore abilita/disabilita e lettore Dream Diary (`doctor.memory.status`, `doctor.memory.dreamDiary`, `config.patch`).
+
   </Accordion>
   <Accordion title="Cron, skills, node, approvazioni exec">
     - Job Cron: elenco/aggiunta/modifica/esecuzione/abilitazione/disabilitazione + cronologia esecuzioni (`cron.*`).
     - Skills: stato, abilita/disabilita, installazione, aggiornamenti delle chiavi API (`skills.*`).
     - Node: elenco + capacità (`node.list`).
     - Approvazioni exec: modifica di allowlist gateway o node + ask policy per `exec host=gateway/node` (`exec.approvals.*`).
+
   </Accordion>
   <Accordion title="Configurazione">
     - Visualizza/modifica `~/.openclaw/openclaw.json` (`config.get`, `config.set`).
@@ -118,11 +122,13 @@ La UI di controllo può localizzarsi al primo caricamento in base alla lingua de
     - Se uno snapshot non può fare round-trip sicuro del testo raw, la UI di controllo forza la modalità Form e disabilita la modalità Raw per quello snapshot.
     - L'editor Raw JSON "Reset to saved" conserva la forma authored raw (formattazione, commenti, layout `$include`) invece di rieseguire il rendering di uno snapshot flatten, così le modifiche esterne sopravvivono a un reset quando lo snapshot può fare round-trip sicuro.
     - I valori oggetto Structured SecretRef vengono renderizzati in sola lettura negli input di testo del modulo per prevenire corruzioni accidentali da oggetto a stringa.
+
   </Accordion>
   <Accordion title="Debug, log, aggiornamento">
     - Debug: snapshot stato/salute/modelli + log eventi + chiamate RPC manuali (`status`, `health`, `models.list`).
     - Log: tail live dei log file del gateway con filtro/esportazione (`logs.tail`).
     - Aggiornamento: esegui un aggiornamento package/git + riavvio (`update.run`) con report di riavvio.
+
   </Accordion>
   <Accordion title="Note del pannello job Cron">
     - Per i job isolati, il recapito usa come predefinito il riepilogo annunciato. Puoi passare a none se vuoi esecuzioni solo interne.
@@ -133,6 +139,7 @@ La UI di controllo può localizzarsi al primo caricamento in base alla lingua de
     - La validazione del modulo è inline con errori a livello campo; i valori non validi disabilitano il pulsante di salvataggio finché non vengono corretti.
     - Imposta `cron.webhookToken` per inviare un bearer token dedicato; se omesso, il webhook viene inviato senza header di autenticazione.
     - Fallback deprecato: i job legacy memorizzati con `notify: true` possono ancora usare `cron.webhook` fino alla migrazione.
+
   </Accordion>
 </AccordionGroup>
 
@@ -149,6 +156,7 @@ La UI di controllo può localizzarsi al primo caricamento in base alla lingua de
     - `chat.inject` aggiunge una nota dell'assistente alla trascrizione della sessione e trasmette un evento `chat` per aggiornamenti solo UI (nessuna esecuzione agente, nessun recapito canale).
     - I selettori modello e thinking dell'intestazione chat applicano una patch immediata alla sessione attiva tramite `sessions.patch`; sono override persistenti della sessione, non opzioni di invio per un solo turno.
     - Quando i nuovi report di utilizzo della sessione Gateway mostrano alta pressione di contesto, l'area del composer chat mostra un avviso di contesto e, ai livelli di Compaction consigliati, un pulsante di compattazione che esegue il normale percorso di compattazione della sessione. Gli snapshot token obsoleti vengono nascosti finché il Gateway non riporta di nuovo un utilizzo aggiornato.
+
   </Accordion>
   <Accordion title="Modalità Talk (WebRTC del browser)">
     La modalità Talk usa un provider vocale realtime registrato che supporta sessioni WebRTC del browser. Configura OpenAI con `talk.provider: "openai"` più `talk.providers.openai.apiKey`, oppure riusa la configurazione del provider realtime di Voice Call. Il browser non riceve mai la chiave API OpenAI standard; riceve solo il secret client Realtime effimero. La voce realtime Google Live è supportata per Voice Call backend e bridge Google Meet, ma non ancora per questo percorso WebRTC del browser. Il prompt di sessione Realtime viene assemblato dal Gateway; `talk.realtime.session` non accetta override di istruzioni forniti dal chiamante.
@@ -161,11 +169,13 @@ La UI di controllo può localizzarsi al primo caricamento in base alla lingua de
     - Mentre un'esecuzione è attiva, i normali messaggi successivi vengono accodati. Fai clic su **Steer** su un messaggio in coda per iniettare quel messaggio successivo nel turno in esecuzione.
     - Digita `/stop` (o frasi autonome di interruzione come `stop`, `stop action`, `stop run`, `stop openclaw`, `please stop`) per interrompere fuori banda.
     - `chat.abort` supporta `{ sessionKey }` (senza `runId`) per interrompere tutte le esecuzioni attive di quella sessione.
+
   </Accordion>
   <Accordion title="Conservazione parziale dopo interruzione">
     - Quando un'esecuzione viene interrotta, il testo parziale dell'assistente può comunque essere mostrato nella UI.
     - Il Gateway conserva nella cronologia della trascrizione il testo parziale dell'assistente interrotto quando esiste output bufferizzato.
     - Le voci conservate includono metadati di interruzione così i consumer della trascrizione possono distinguere i parziali interrotti dall'output di completamento normale.
+
   </Accordion>
 </AccordionGroup>
 
@@ -322,6 +332,7 @@ Eccezioni documentate:
     - Un'autenticazione trusted-proxy riuscita può ammettere sessioni **operatore** della UI di controllo senza identità del dispositivo.
     - Questo **non** si estende alle sessioni della UI di controllo con ruolo node.
     - I reverse proxy loopback sullo stesso host continuano a non soddisfare l'autenticazione trusted-proxy; vedi [Autenticazione trusted proxy](/it/gateway/trusted-proxy-auth).
+
   </Accordion>
 </AccordionGroup>
 
@@ -408,6 +419,7 @@ La UI di controllo è composta da file statici; la destinazione WebSocket è con
     - L'avvio del Gateway può inizializzare origini locali come `http://localhost:<port>` e `http://127.0.0.1:<port>` dal bind e dalla porta runtime effettivi, ma le origini browser remote richiedono comunque voci esplicite.
     - Non usare `gateway.controlUi.allowedOrigins: ["*"]` se non per test locali strettamente controllati. Significa consentire qualsiasi origine browser, non "corrispondi a qualunque host io stia usando".
     - `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` abilita la modalità fallback dell'origine basata su header Host, ma è una modalità di sicurezza pericolosa.
+
   </Accordion>
 </AccordionGroup>
 

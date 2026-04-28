@@ -86,12 +86,14 @@ Recomendado para la mayoría de las instalaciones interactivas en macOS/Linux/WS
   <Step title="Instalar OpenClaw">
     - método `npm` (predeterminado): instalación global con npm
     - método `git`: clona/actualiza el repo, instala dependencias con pnpm, compila y luego instala el wrapper en `~/.local/bin/openclaw`
+
   </Step>
   <Step title="Tareas posteriores a la instalación">
     - Actualiza un servicio de gateway cargado con mejor esfuerzo (`openclaw gateway install --force`, luego reinicio)
     - Ejecuta `openclaw doctor --non-interactive` en actualizaciones e instalaciones con git (mejor esfuerzo)
     - Intenta el onboarding cuando corresponde (TTY disponible, onboarding no deshabilitado y las comprobaciones de bootstrap/configuración pasan)
     - Usa por defecto `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ por defecto, además de instalaciones desde checkout de git dentro del mismo flu
   <Step title="Instalar OpenClaw bajo el prefijo">
     - método `npm` (predeterminado): instala bajo el prefijo con npm y luego escribe el wrapper en `<prefix>/bin/openclaw`
     - método `git`: clona/actualiza un checkout (predeterminado `~/openclaw`) y sigue escribiendo el wrapper en `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="Actualizar servicio de gateway cargado">
     Si ya hay un servicio de gateway cargado desde ese mismo prefijo, el script ejecuta
@@ -293,11 +296,13 @@ por defecto, además de instalaciones desde checkout de git dentro del mismo flu
   <Step title="Instalar OpenClaw">
     - método `npm` (predeterminado): instalación global con npm usando `-Tag` seleccionado
     - método `git`: clona/actualiza el repo, instala/compila con pnpm e instala el wrapper en `%USERPROFILE%\.local\bin\openclaw.cmd`
+
   </Step>
   <Step title="Tareas posteriores a la instalación">
     - Agrega el directorio bin necesario al PATH del usuario cuando es posible
     - Actualiza un servicio de gateway cargado con mejor esfuerzo (`openclaw gateway install --force`, luego reinicio)
     - Ejecuta `openclaw doctor --non-interactive` en actualizaciones e instalaciones con git (mejor esfuerzo)
+
   </Step>
   <Step title="Manejar fallos">
     `iwr ... | iex` y las instalaciones con scriptblock informan un error terminante sin cerrar la sesión actual de PowerShell. Las instalaciones directas con `powershell -File` / `pwsh -File` siguen saliendo con código distinto de cero para automatización.

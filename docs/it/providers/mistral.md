@@ -168,6 +168,7 @@ possa inoltrare direttamente i frame multimediali di Twilio. Usa `encoding: "pcm
     - La base URL del provider usa per impostazione predefinita `https://api.mistral.ai/v1`.
     - Il modello predefinito dell'onboarding è `mistral/mistral-large-latest`.
     - Z.AI usa autenticazione Bearer con la tua chiave API.
+
   </Accordion>
 </AccordionGroup>
 

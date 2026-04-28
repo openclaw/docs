@@ -620,6 +620,7 @@ Dreaming 作为一次计划中的完整扫描运行，并将内部的 light/deep
 - Dreaming 会将人类可读的叙事输出写入 `DREAMS.md`（或现有的 `dreams.md`）。
 - `dreaming.model` 使用现有插件子智能体信任门控；在启用它之前，请先设置 `plugins.entries.memory-core.subagent.allowModelOverride: true`。
 - light/deep/REM 阶段策略和阈值属于内部行为，不是面向用户的配置。
+
 </Note>
 
 ## 相关内容

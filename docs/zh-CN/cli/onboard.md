@@ -187,6 +187,7 @@ openclaw onboard --non-interactive \
     - `quickstart`：最少提示，自动生成 Gateway 网关令牌。
     - `manual`：完整提示端口、绑定和认证（`advanced` 的别名）。
     - `import`：运行检测到的迁移提供商，预览计划，然后在确认后应用。
+
   </Accordion>
   <Accordion title="提供商预筛选">
     当某个认证选择暗示了首选提供商时，新手引导会将默认模型和 allowlist 选择器预筛选到该提供商。对于 Volcengine 和 BytePlus（国际版），这也会匹配 coding-plan 变体（`volcengine-plan/*`、`byteplus-plan/*`）。
@@ -206,6 +207,7 @@ openclaw onboard --non-interactive \
     - 最快开始首次聊天：`openclaw dashboard`（Control UI，无需设置渠道）。
     - 自定义提供商：连接任何兼容 OpenAI 或 Anthropic 的端点，包括未列出的托管提供商。使用 Unknown 可自动检测。
     - 如果检测到 Hermes 状态，新手引导会提供迁移流程。使用 [迁移](/zh-CN/cli/migrate) 获取 dry-run 计划、覆盖模式、报告和精确映射。
+
   </Accordion>
 </AccordionGroup>
 

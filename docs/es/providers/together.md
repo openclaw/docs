@@ -126,6 +126,7 @@ la selección de proveedor y el comportamiento de conmutación por error.
     - Si los modelos no aparecen, confirma que la clave API esté definida en el
       entorno correcto para tu proceso Gateway.
     - Las referencias de modelo usan la forma `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

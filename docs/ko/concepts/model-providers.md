@@ -25,6 +25,7 @@ x-i18n:
     - CLI 헬퍼: `openclaw onboard`, `openclaw models list`, `openclaw models set <provider/model>`.
     - `models.providers.*.models[].contextWindow`는 네이티브 모델 메타데이터이며, `contextTokens`는 유효 런타임 상한입니다.
     - fallback 규칙, cooldown probe, 세션 override 지속성: [Model failover](/ko/concepts/model-failover).
+
   </Accordion>
   <Accordion title="OpenAI provider/런타임 분리">
     OpenAI 계열 경로는 prefix별로 구분됩니다.
@@ -76,6 +77,7 @@ Provider 런타임 `capabilities`는 공유 runner 메타데이터입니다(prov
     - 요청은 rate-limit 응답에서만 다음 키로 재시도됩니다(예: `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, 또는 주기적인 usage-limit 메시지).
     - rate-limit이 아닌 실패는 즉시 실패하며 키 회전은 시도되지 않습니다.
     - 모든 후보 키가 실패하면 마지막 시도의 최종 오류가 반환됩니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ Volcano Engine (화산엔진)은 중국에서 Doubao 및 기타 모델에 대한
     - `volcengine/kimi-k2-5-260127` (Kimi K2.5)
     - `volcengine/glm-4-7-251222` (GLM 4.7)
     - `volcengine/deepseek-v3-2-251201` (DeepSeek V3.2 128K)
+
   </Tab>
   <Tab title="코딩 모델 (volcengine-plan)">
     - `volcengine-plan/ark-code-latest`
@@ -428,6 +431,7 @@ Volcano Engine (화산엔진)은 중국에서 Doubao 및 기타 모델에 대한
     - `volcengine-plan/kimi-k2.5`
     - `volcengine-plan/kimi-k2-thinking`
     - `volcengine-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -457,6 +461,7 @@ BytePlus ARK는 국제 사용자를 위해 Volcano Engine과 동일한 모델에
     - `byteplus/seed-1-8-251228` (Seed 1.8)
     - `byteplus/kimi-k2-5-260127` (Kimi K2.5)
     - `byteplus/glm-4-7-251222` (GLM 4.7)
+
   </Tab>
   <Tab title="코딩 모델 (byteplus-plan)">
     - `byteplus-plan/ark-code-latest`
@@ -464,6 +469,7 @@ BytePlus ARK는 국제 사용자를 위해 Volcano Engine과 동일한 모델에
     - `byteplus-plan/kimi-k2.5`
     - `byteplus-plan/kimi-k2-thinking`
     - `byteplus-plan/glm-4.7`
+
   </Tab>
 </Tabs>
 
@@ -669,6 +675,7 @@ export SGLANG_API_KEY="sglang-local"
     - vLLM chat-template 제어에는 `agents.defaults.models["provider/model"].params.chat_template_kwargs`를 설정하세요. 세션 thinking level이 꺼져 있을 때 OpenClaw는 `vllm/nemotron-3-*`에 대해 자동으로 `enable_thinking: false` 및 `force_nonempty_content: true`를 보냅니다.
     - `baseUrl`이 비어 있거나 생략되면 OpenClaw는 기본 OpenAI 동작을 유지합니다(`api.openai.com`으로 해석됨).
     - 안전을 위해 명시적인 `compat.supportsDeveloperRole: true`도 네이티브가 아닌 `openai-completions` 엔드포인트에서는 여전히 override됩니다.
+
   </Accordion>
 </AccordionGroup>
 

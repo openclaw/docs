@@ -176,6 +176,7 @@ GLM モデルは `zai/<model>` として利用できます（例: `zai/glm-5`）
     - Z.AI は API キーを使った Bearer auth を使用します。
     - `zai-api-key` のオンボーディング選択肢は、キーの接頭辞から一致する Z.AI エンドポイントを自動検出します。
     - 特定の API サーフェスを強制したい場合は、明示的なリージョン選択肢（`zai-coding-global`、`zai-coding-cn`、`zai-global`、`zai-cn`）を使用してください。
+
   </Accordion>
 </AccordionGroup>
 

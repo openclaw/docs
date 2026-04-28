@@ -38,6 +38,7 @@ x-i18n:
         - вставте [приклад маніфесту](#manifest-and-scope-checklist) нижче та продовжте створення
         - згенеруйте **App-Level Token** (`xapp-...`) з `connections:write`
         - встановіть застосунок і скопіюйте показаний **Bot Token** (`xoxb-...`)
+
       </Step>
 
       <Step title="Налаштуйте OpenClaw">
@@ -626,6 +627,7 @@ openclaw gateway
     - `channels.slack.chunkMode="newline"` вмикає розбиття спочатку за абзацами
     - надсилання файлів використовує API завантаження Slack і може включати відповіді в треді (`thread_ts`)
     - обмеження вихідних медіа визначається `channels.slack.mediaMaxMb`, якщо налаштовано; інакше надсилання в канали використовує типові значення MIME-kind з медіапайплайна
+
   </Accordion>
 
   <Accordion title="Цілі доставки">

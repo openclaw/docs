@@ -371,6 +371,7 @@ openclaw pairing approve whatsapp <CODE>
     - الحد الافتراضي للتجزئة: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
     - يفضّل وضع `newline` حدود الفقرات (الأسطر الفارغة)، ثم يعود إلى التجزئة الآمنة حسب الطول
+
   </Accordion>
 
   <Accordion title="سلوك الوسائط الصادرة">
@@ -383,6 +384,7 @@ openclaw pairing approve whatsapp <CODE>
     - يدعم تشغيل GIF المتحرك عبر `gifPlayback: true` عند إرسال الفيديو
     - تُطبَّق التسميات التوضيحية على أول عنصر وسائط عند إرسال حمولات رد متعددة الوسائط، باستثناء أن ملاحظات PTT الصوتية ترسل الصوت أولًا والنص المرئي بشكل منفصل لأن تطبيقات WhatsApp لا تعرض تسميات الملاحظات الصوتية بشكل متسق
     - يمكن أن يكون مصدر الوسائط HTTP(S) أو `file://` أو مسارات محلية
+
   </Accordion>
 
   <Accordion title="حدود حجم الوسائط وسلوك الرجوع">
@@ -391,6 +393,7 @@ openclaw pairing approve whatsapp <CODE>
     - تستخدم التجاوزات لكل حساب `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
     - تُحسَّن الصور تلقائيًا (إعادة تحجيم/تمرير على الجودة) لتلائم الحدود
     - عند فشل إرسال الوسائط، يرسل الرجوع الخاص بالعنصر الأول تحذيرًا نصيًا بدلًا من إسقاط الرد بصمت
+
   </Accordion>
 </AccordionGroup>
 
@@ -475,12 +478,14 @@ openclaw pairing approve whatsapp <CODE>
     - تأتي معرّفات الحسابات من `channels.whatsapp.accounts`
     - اختيار الحساب الافتراضي: `default` إذا كان موجودًا، وإلا أول معرّف حساب مهيأ (بعد الفرز)
     - تُطبَّع معرّفات الحسابات داخليًا لأغراض البحث
+
   </Accordion>
 
   <Accordion title="مسارات بيانات الاعتماد والتوافق مع الإصدارات القديمة">
     - مسار المصادقة الحالي: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - ملف النسخ الاحتياطي: `creds.json.bak`
     - لا يزال يتم التعرف على المصادقة الافتراضية القديمة في `~/.openclaw/credentials/` وترحيلها لتدفقات الحساب الافتراضي
+
   </Accordion>
 
   <Accordion title="سلوك تسجيل الخروج">

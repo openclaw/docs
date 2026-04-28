@@ -142,6 +142,7 @@ OpenClaw 可识别两种插件格式：
   <Accordion title="其他">
     - `browser` — 用于浏览器工具、`openclaw browser` CLI、`browser.request` gateway 方法、浏览器运行时以及默认浏览器控制服务的内置浏览器插件（默认启用；如需替换，请先禁用）
     - `copilot-proxy` — VS Code Copilot Proxy 桥接（默认禁用）
+
   </Accordion>
 </AccordionGroup>
 
@@ -185,6 +186,7 @@ OpenClaw 可识别两种插件格式：
   - **已禁用**：插件存在，但启用规则将其关闭。配置会被保留。
   - **缺失**：配置引用了一个插件 id，但插件发现没有找到它。
   - **无效**：插件存在，但其配置与声明的 schema 不匹配。Gateway 网关启动时只会跳过该插件；`openclaw doctor --fix` 可以通过禁用该条目并移除其配置负载来隔离无效条目。
+
 </Accordion>
 
 ## 发现与优先级

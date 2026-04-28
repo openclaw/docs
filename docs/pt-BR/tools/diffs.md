@@ -198,6 +198,7 @@ Todos os campos são opcionais, salvo indicação em contrário.
       - `fileQuality: "hq"`: máximo de 14 MP (14.000.000 pixels renderizados).
       - `fileQuality: "print"`: máximo de 24 MP (24.000.000 pixels renderizados).
       - PDF também tem máximo de 50 páginas.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Regras de `baseUrl`:
     - Limitação de tentativas remotas quando o acesso remoto está habilitado:
       - 40 falhas por 60 segundos
       - bloqueio de 60 segundos (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Endurecimento da renderização de arquivo">
     - O roteamento de requisições do navegador de screenshot é deny-by-default.
     - Apenas assets locais do visualizador de `http://127.0.0.1/plugins/diffs/assets/*` são permitidos.
     - Requisições de rede externas são bloqueadas.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Ordem de resolução:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Fallback de plataforma">
     Fallback de descoberta por comando/caminho da plataforma.
@@ -456,6 +460,7 @@ Corrija instalando Chrome, Chromium, Edge ou Brave, ou definindo uma das opçõe
     - `Invalid baseUrl: ...` — use origem `http(s)` com caminho opcional, sem query/hash.
     - `{field} exceeds maximum size (...)` — reduza o tamanho da carga.
     - Rejeição de patch grande — reduza a contagem de arquivos do patch ou o total de linhas.
+
   </Accordion>
   <Accordion title="Acessibilidade do visualizador">
     - A URL do visualizador resolve para `127.0.0.1` por padrão.
@@ -468,6 +473,7 @@ Corrija instalando Chrome, Chromium, Edge ou Brave, ou definindo uma das opçõe
       - prefira `mode: "file"` ou `mode: "both"` quando você só precisar de um anexo, ou
       - habilite intencionalmente `security.allowRemoteViewer` e defina `viewerBaseUrl` no plugin ou passe um `baseUrl` de proxy/público quando precisar de uma URL de visualizador compartilhável
     - Habilite `security.allowRemoteViewer` somente quando você pretende permitir acesso externo ao visualizador.
+
   </Accordion>
   <Accordion title="A linha de linhas não modificadas não tem botão de expandir">
     Isso pode acontecer para entrada de patch quando o patch não carrega contexto expansível. Esse é o comportamento esperado e não indica falha do visualizador.
@@ -476,6 +482,7 @@ Corrija instalando Chrome, Chromium, Edge ou Brave, ou definindo uma das opçõe
     - O artefato expirou devido ao TTL.
     - O token ou caminho foi alterado.
     - A limpeza removeu dados obsoletos.
+
   </Accordion>
 </AccordionGroup>
 

@@ -85,6 +85,7 @@ openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 
 - Live-команди Node надходять із того, що Node оголошує під час connect після застосування глобальної політики команд Node Gateway (`gateway.nodes.allowCommands` і `denyCommands`).
 - Політика allow і ask для `system.run` на рівні окремого Node зберігається на Node у `exec.approvals.node.*`, а не в записі сполучення.
+
 </Warning>
 
 ## Керування доступом до команд Node (2026.3.31+)

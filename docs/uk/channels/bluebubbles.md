@@ -73,6 +73,7 @@ x-i18n:
 - Завжди задавайте пароль Webhook.
 - Автентифікація Webhook завжди обов’язкова. OpenClaw відхиляє запити Webhook BlueBubbles, якщо вони не містять пароль/guid, що відповідає `channels.bluebubbles.password` (наприклад `?password=<password>` або `x-password`), незалежно від топології loopback/проксі.
 - Автентифікація за паролем перевіряється до читання/розбору повних тіл Webhook.
+
 </Warning>
 
 ## Підтримання Messages.app активним (VM / headless-налаштування)
@@ -184,10 +185,12 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - Сполучення — це типовий обмін токенами. Докладніше: [Сполучення](/uk/channels/pairing)
+
   </Tab>
   <Tab title="Групи">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (типово: `allowlist`).
     - `channels.bluebubbles.groupAllowFrom` визначає, хто може запускати в групах, коли встановлено `allowlist`.
+
   </Tab>
 </Tabs>
 
@@ -400,6 +403,7 @@ BlueBubbles підтримує розширені дії з повідомлен
     - **upload-file**: надсилання медіа/файлів (`to`, `buffer`, `filename`, `asVoice`).
       - Голосові повідомлення: задайте `asVoice: true` з аудіо **MP3** або **CAF**, щоб надіслати його як голосове повідомлення iMessage. BlueBubbles перетворює MP3 → CAF під час надсилання голосових повідомлень.
     - Застарілий псевдонім: `sendAttachment` усе ще працює, але `upload-file` — це канонічна назва дії.
+
   </Accordion>
 </AccordionGroup>
 
@@ -480,6 +484,7 @@ OpenClaw може показувати _короткі_ ідентифікато
     - **Додаткова затримка для керувальних команд у DM.** Якщо прапорець увімкнено, повідомлення керувальних команд у DM (наприклад `Dump`, `Save` тощо) тепер чекають до завершення вікна дебаунсу перед відправленням, на випадок якщо надійде Webhook із payload. Команди в групових чатах зберігають миттєве відправлення.
     - **Об’єднаний вихід має обмеження** — об’єднаний текст обмежується 4000 символами з явним маркером `…[truncated]`; вкладення — 20; записи джерела — 10 (понад це зберігаються перший і останній). Кожен вихідний `messageId` усе одно потрапляє до inbound-dedupe, тож пізніше повторне відтворення будь-якої окремої події через MessagePoller розпізнається як дублікат.
     - **Увімкнення за бажанням, для окремого каналу.** Інші канали (Telegram, WhatsApp, Slack, …) не зачіпаються.
+
   </Tab>
 </Tabs>
 
@@ -558,6 +563,7 @@ OpenClaw може показувати _короткі_ ідентифікато
     - `channels.bluebubbles.serverUrl`: базовий URL REST API BlueBubbles.
     - `channels.bluebubbles.password`: пароль API.
     - `channels.bluebubbles.webhookPath`: шлях кінцевої точки Webhook (типово: `/bluebubbles-webhook`).
+
   </Accordion>
   <Accordion title="Політика доступу">
     - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (типово: `pairing`).
@@ -566,6 +572,7 @@ OpenClaw може показувати _короткі_ ідентифікато
     - `channels.bluebubbles.groupAllowFrom`: allowlist відправників груп.
     - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: на macOS необов’язково збагачувати безіменних учасників груп із локальних Contacts після проходження фільтрів. Типово: `false`.
     - `channels.bluebubbles.groups`: конфігурація для кожної групи (`requireMention` тощо).
+
   </Accordion>
   <Accordion title="Доставка та розбиття на частини">
     - `channels.bluebubbles.sendReadReceipts`: надсилати сповіщення про прочитання (типово: `true`).
@@ -573,6 +580,7 @@ OpenClaw може показувати _короткі_ ідентифікато
     - `channels.bluebubbles.textChunkLimit`: розмір вихідних частин у символах (типово: 4000).
     - `channels.bluebubbles.sendTimeoutMs`: тайм-аут одного запиту в мс для надсилання вихідного тексту через `/api/v1/message/text` (типово: 30000). Збільшуйте на системах macOS 26, де надсилання iMessage через Private API може зависати на 60+ секунд усередині фреймворку iMessage; наприклад `45000` або `60000`. Проби, пошук чатів, реакції, редагування та перевірки стану наразі зберігають коротший типовий тайм-аут 10 с; розширення цього покриття на реакції та редагування заплановано окремим продовженням. Перевизначення для облікового запису: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
     - `channels.bluebubbles.chunkMode`: `length` (типово) розбиває лише при перевищенні `textChunkLimit`; `newline` розбиває за порожніми рядками (межами абзаців) перед розбиттям за довжиною.
+
   </Accordion>
   <Accordion title="Медіа та історія">
     - `channels.bluebubbles.mediaMaxMb`: ліміт вхідних/вихідних медіа в MB (типово: 8).
@@ -580,10 +588,12 @@ OpenClaw може показувати _короткі_ ідентифікато
     - `channels.bluebubbles.coalesceSameSenderDms`: об’єднувати послідовні Webhook DM від одного відправника в один хід агента, щоб розділене Apple надсилання текст+URL надходило як одне повідомлення (типово: `false`). Див. [Об’єднання розділених надсилань у DM](#coalescing-split-send-dms-command--url-in-one-composition) щодо сценаріїв, налаштування вікна та компромісів. Розширює типове вікно дебаунсу вхідних повідомлень з 500 ms до 2500 ms, якщо увімкнено без явного `messages.inbound.byChannel.bluebubbles`.
     - `channels.bluebubbles.historyLimit`: максимальна кількість групових повідомлень для контексту (0 вимикає).
     - `channels.bluebubbles.dmHistoryLimit`: ліміт історії DM.
+
   </Accordion>
   <Accordion title="Дії та облікові записи">
     - `channels.bluebubbles.actions`: увімкнення/вимкнення окремих дій.
     - `channels.bluebubbles.accounts`: конфігурація кількох облікових записів.
+
   </Accordion>
 </AccordionGroup>
 

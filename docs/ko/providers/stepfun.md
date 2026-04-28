@@ -210,6 +210,7 @@ provider 표면을 선택한 뒤 설정 단계를 따르세요.
     - `step-3.5-flash-2603`은 현재 `stepfun-plan`에서만 노출됩니다.
     - 단일 인증 흐름이 `stepfun`과 `stepfun-plan` 모두에 대해 리전에 맞는 profile을 기록하므로, 두 표면을 함께 discovery할 수 있습니다.
     - 모델 확인 또는 전환에는 `openclaw models list`와 `openclaw models set <provider/model>`을 사용하세요.
+
   </Accordion>
 </AccordionGroup>
 

@@ -56,6 +56,7 @@ openclaw config validate --json
     - `anyOf` / `oneOf` / `allOf` dalları da, eşleşen alan belgeleri mevcut olduğunda aynı belge meta verilerini devralır.
     - Çalışma zamanı manifestleri yüklenebildiğinde, en iyi çaba esaslı canlı Plugin + kanal şema meta verileri.
     - Geçerli yapılandırma geçersiz olsa bile temiz bir yedek şema.
+
   </Accordion>
   <Accordion title="İlgili çalışma zamanı RPC">
     `config.schema.lookup`, tek bir normalize edilmiş yapılandırma yolunu; sığ bir şema düğümü (`title`, `description`, `type`, `enum`, `const`, yaygın sınırlar), eşleşen UI ipucu meta verileri ve doğrudan alt özetlerle birlikte döndürür. Bunu, Control UI veya özel istemcilerde yol kapsamlı ayrıntılı inceleme için kullanın.
@@ -191,15 +192,18 @@ Sağlayıcı oluşturucu hedefleri, yol olarak `secrets.providers.<alias>` kulla
   <Accordion title="Yaygın bayraklar">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Env sağlayıcısı (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (tekrarlanabilir)
+
   </Accordion>
   <Accordion title="Dosya sağlayıcısı (--provider-source file)">
     - `--provider-path <path>` (zorunlu)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Exec sağlayıcısı (--provider-source exec)">
     - `--provider-command <path>` (zorunlu)
@@ -212,6 +216,7 @@ Sağlayıcı oluşturucu hedefleri, yol olarak `secrets.providers.<alias>` kulla
     - `--provider-trusted-dir <path>` (tekrarlanabilir)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - Exec SecretRef kontrolleri, komut yan etkilerinden kaçınmak için dry-run sırasında varsayılan olarak atlanır.
     - Exec SecretRef kontrollerine açıkça izin vermek için `--dry-run` ile birlikte `--allow-exec` kullanın (bu, sağlayıcı komutlarını çalıştırabilir).
     - `--allow-exec` yalnızca dry-run içindir ve `--dry-run` olmadan kullanılırsa hata verir.
+
   </Accordion>
   <Accordion title="--dry-run --json alanları">
     `--dry-run --json`, makine tarafından okunabilir bir rapor yazdırır:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: başvurulan sağlayıcı/ref şu anda çözümlenemiyor (eksik ortam değişkeni, geçersiz dosya işaretçisi, exec sağlayıcı hatası veya sağlayıcı/kaynak uyumsuzluğu).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run, exec ref'leri atladı; exec çözümlenebilirlik doğrulamasına ihtiyacınız varsa `--allow-exec` ile yeniden çalıştırın.
     - Toplu kip için, başarısız girdileri düzeltin ve yazmadan önce `--dry-run` ile yeniden çalıştırın.
+
   </Accordion>
 </AccordionGroup>
 

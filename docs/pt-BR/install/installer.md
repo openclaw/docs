@@ -86,12 +86,14 @@ Recomendado para a maioria das instalações interativas em macOS/Linux/WSL.
   <Step title="Instalar OpenClaw">
     - método `npm` (padrão): instalação global via npm
     - método `git`: clona/atualiza o repositório, instala dependências com pnpm, compila e depois instala o wrapper em `~/.local/bin/openclaw`
+
   </Step>
   <Step title="Tarefas pós-instalação">
     - Atualiza um serviço de gateway já carregado em modo best-effort (`openclaw gateway install --force`, depois restart)
     - Executa `openclaw doctor --non-interactive` em upgrades e instalações por git (best effort)
     - Tenta fazer onboarding quando apropriado (TTY disponível, onboarding não desativado e verificações de bootstrap/config aprovadas)
     - Usa por padrão `SHARP_IGNORE_GLOBAL_LIBVIPS=1`
+
   </Step>
 </Steps>
 
@@ -200,6 +202,7 @@ via npm por padrão, além de instalações por checkout git no mesmo fluxo de p
   <Step title="Instalar OpenClaw sob o prefixo">
     - método `npm` (padrão): instala sob o prefixo com npm e depois grava o wrapper em `<prefix>/bin/openclaw`
     - método `git`: clona/atualiza um checkout (padrão `~/openclaw`) e ainda grava o wrapper em `<prefix>/bin/openclaw`
+
   </Step>
   <Step title="Atualizar serviço de gateway carregado">
     Se um serviço de gateway já estiver carregado a partir desse mesmo prefixo, o script executa
@@ -293,11 +296,13 @@ via npm por padrão, além de instalações por checkout git no mesmo fluxo de p
   <Step title="Instalar OpenClaw">
     - método `npm` (padrão): instalação global via npm usando a `-Tag` selecionada
     - método `git`: clona/atualiza o repositório, instala/compila com pnpm e instala o wrapper em `%USERPROFILE%\.local\bin\openclaw.cmd`
+
   </Step>
   <Step title="Tarefas pós-instalação">
     - Adiciona o diretório bin necessário ao PATH do usuário quando possível
     - Atualiza um serviço de gateway já carregado em modo best-effort (`openclaw gateway install --force`, depois restart)
     - Executa `openclaw doctor --non-interactive` em upgrades e instalações git (best effort)
+
   </Step>
   <Step title="Tratar falhas">
     Instalações com `iwr ... | iex` e scriptblock relatam um erro de término sem fechar a sessão atual do PowerShell. Instalações diretas com `powershell -File` / `pwsh -File` ainda saem com código diferente de zero para automação.

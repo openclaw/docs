@@ -117,6 +117,7 @@ endpoint と API キーの背後で多くのモデルへリクエストをルー
     - API キーが `bce-v3/ALTAK-` で始まり、Baidu Cloud console で Qianfan API アクセスが有効になっていることを確認してください。
     - モデルが一覧に出ない場合は、アカウントで Qianfan サービスが有効化されていることを確認してください。
     - デフォルト base URL は `https://qianfan.baidubce.com/v2` です。カスタム endpoint または proxy を使う場合にのみ変更してください。
+
   </Accordion>
 </AccordionGroup>
 

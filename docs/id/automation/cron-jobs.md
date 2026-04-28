@@ -277,6 +277,7 @@ Simpan endpoint hook di balik loopback, tailnet, atau reverse proxy tepercaya.
 - Pertahankan `hooks.allowRequestSessionKey=false` kecuali Anda memerlukan sesi yang dipilih pemanggil.
 - Jika Anda mengaktifkan `hooks.allowRequestSessionKey`, atur juga `hooks.allowedSessionKeyPrefixes` untuk membatasi bentuk session key yang diizinkan.
 - Payload hook dibungkus dengan batas keamanan secara default.
+
 </Warning>
 
 ## Integrasi Gmail PubSub
@@ -379,6 +380,7 @@ Catatan override model:
 - Jika model diizinkan, provider/model yang tepat itu akan diteruskan ke eksekusi agen terisolasi.
 - Jika tidak diizinkan, cron memperingatkan dan kembali ke pemilihan model agen/default milik job.
 - Rantai fallback yang dikonfigurasi tetap berlaku, tetapi override `--model` biasa tanpa daftar fallback per-job yang eksplisit tidak lagi diteruskan ke primary agen sebagai target percobaan ulang tambahan diam-diam.
+
 </Note>
 
 ## Config
@@ -438,6 +440,7 @@ openclaw doctor
     - Pastikan Gateway berjalan terus-menerus.
     - Untuk jadwal `cron`, verifikasi zona waktu (`--tz`) terhadap zona waktu host.
     - `reason: not-due` dalam output eksekusi berarti eksekusi manual diperiksa dengan `openclaw cron run <jobId> --due` dan job belum jatuh tempo.
+
   </Accordion>
   <Accordion title="Cron berjalan tetapi tidak ada pengiriman">
     - Mode pengiriman `none` berarti tidak ada pengiriman fallback runner yang diharapkan. Agen masih dapat mengirim langsung dengan alat `message` saat rute chat tersedia.
@@ -446,16 +449,19 @@ openclaw doctor
     - Error auth kanal (`unauthorized`, `Forbidden`) berarti pengiriman diblokir oleh kredensial.
     - Jika eksekusi terisolasi hanya mengembalikan token senyap (`NO_REPLY` / `no_reply`), OpenClaw menekan pengiriman outbound langsung dan juga menekan jalur ringkasan antrean fallback, sehingga tidak ada yang diposting kembali ke chat.
     - Jika agen seharusnya mengirim pesan ke pengguna sendiri, periksa bahwa job memiliki rute yang dapat digunakan (`channel: "last"` dengan chat sebelumnya, atau channel/target eksplisit).
+
   </Accordion>
   <Accordion title="Cron atau heartbeat tampaknya mencegah rollover gaya /new">
     - Kesegaran reset harian dan idle tidak didasarkan pada `updatedAt`; lihat [Manajemen sesi](/id/concepts/session#session-lifecycle).
     - Wakeup cron, eksekusi heartbeat, notifikasi exec, dan pembukuan gateway dapat memperbarui baris sesi untuk routing/status, tetapi tidak memperpanjang `sessionStartedAt` atau `lastInteractionAt`.
     - Untuk baris lama yang dibuat sebelum field tersebut ada, OpenClaw dapat memulihkan `sessionStartedAt` dari header sesi transcript JSONL ketika file masih tersedia. Baris idle lama tanpa `lastInteractionAt` menggunakan waktu mulai yang dipulihkan itu sebagai baseline idle.
+
   </Accordion>
   <Accordion title="Hal-hal yang perlu diperhatikan terkait zona waktu">
     - Cron tanpa `--tz` menggunakan zona waktu host gateway.
     - Jadwal `at` tanpa zona waktu diperlakukan sebagai UTC.
     - Heartbeat `activeHours` menggunakan resolusi zona waktu yang dikonfigurasi.
+
   </Accordion>
 </AccordionGroup>
 

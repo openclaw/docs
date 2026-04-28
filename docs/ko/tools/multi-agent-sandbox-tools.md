@@ -232,6 +232,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     - `agents.list[].tools.sandbox.tools`가 설정되면 해당 에이전트에 대해 `tools.sandbox.tools`를 대체합니다.
     - `agents.list[].tools.profile`이 설정되면 해당 에이전트에 대해 `tools.profile`을 재정의합니다.
     - provider 도구 키는 `provider`(예: `google-antigravity`) 또는 `provider/model`(예: `openai/gpt-5.4`)을 받을 수 있습니다.
+
   </Accordion>
   <Accordion title="빈 allowlist 동작">
     해당 체인의 어떤 명시적 allowlist라도 실행 결과 호출 가능한 도구가 하나도 남지 않게 만들면, OpenClaw는 모델에 프롬프트를 제출하기 전에 중단합니다. 이는 의도된 동작입니다. `agents.list[].tools.allow: ["query_db"]`처럼 존재하지 않는 도구로 구성된 에이전트는 `query_db`를 등록하는 Plugin이 활성화될 때까지 크게 실패해야 하며, 텍스트 전용 에이전트로 계속 실행되면 안 됩니다.
@@ -352,6 +353,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="도구 제한 테스트">
     - 제한된 도구가 필요한 메시지를 보냅니다.
     - 에이전트가 거부된 도구를 사용할 수 없는지 확인합니다.
+
   </Step>
   <Step title="로그 모니터링">__OC_I18N_900012__  </Step>
 </Steps>
@@ -364,15 +366,18 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Accordion title="`mode: 'all'`인데도 에이전트가 샌드박스되지 않음">
     - 이를 재정의하는 전역 `agents.defaults.sandbox.mode`가 있는지 확인하세요.
     - 에이전트별 config가 우선하므로 `agents.list[].sandbox.mode: "all"`을 설정하세요.
+
   </Accordion>
   <Accordion title="deny 목록이 있는데도 도구를 여전히 사용할 수 있음">
     - 도구 필터링 순서를 확인하세요: 전역 → 에이전트 → 샌드박스 → 하위 에이전트.
     - 각 단계는 더 제한만 할 수 있고, 다시 허용할 수는 없습니다.
     - 로그로 확인하세요: `[tools] filtering tools for agent:${agentId}`.
+
   </Accordion>
   <Accordion title="컨테이너가 에이전트별로 격리되지 않음">
     - 에이전트별 샌드박스 config에서 `scope: "agent"`를 설정하세요.
     - 기본값은 `"session"`이며 세션당 컨테이너 하나를 만듭니다.
+
   </Accordion>
 </AccordionGroup>
 

@@ -44,14 +44,17 @@ Non installa né modifica nulla sull'host remoto.
       - Solo configurazione
       - Configurazione + credenziali + sessioni
       - Reimpostazione completa (rimuove anche il workspace)
+
   </Step>
   <Step title="Modello e autenticazione">
     - La matrice completa delle opzioni è in [Opzioni di autenticazione e modello](#auth-and-model-options).
+
   </Step>
   <Step title="Workspace">
     - Predefinito `~/.openclaw/workspace` (configurabile).
     - Inizializza i file del workspace necessari per il rituale di bootstrap della prima esecuzione.
     - Layout del workspace: [Workspace dell'agente](/it/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Richiede porta, bind, modalità auth ed esposizione Tailscale.
@@ -65,6 +68,7 @@ Non installa né modifica nulla sull'host remoto.
       - Non può essere combinato con `--gateway-token`.
     - Disabilita l'autenticazione solo se ti fidi completamente di ogni processo locale.
     - I bind non-loopback richiedono comunque autenticazione.
+
   </Step>
   <Step title="Canali">
     - [WhatsApp](/it/channels/whatsapp): login QR opzionale
@@ -88,18 +92,22 @@ Non installa né modifica nulla sull'host remoto.
       - Se la creazione del task viene negata, OpenClaw ripiega su un elemento di login per utente nella cartella Startup e avvia immediatamente il Gateway.
       - Le Scheduled Task restano preferibili perché forniscono uno stato del supervisore migliore.
     - Selezione del runtime: Node (consigliato; richiesto per WhatsApp e Telegram). Bun non è consigliato.
+
   </Step>
   <Step title="Controllo di integrità">
     - Avvia il Gateway (se necessario) ed esegue `openclaw health`.
     - `openclaw status --deep` aggiunge la probe di integrità del Gateway live all'output di stato, incluse le probe dei canali quando supportate.
+
   </Step>
   <Step title="Skills">
     - Legge le Skills disponibili e verifica i requisiti.
     - Ti permette di scegliere il gestore Node: npm, pnpm o bun.
     - Installa dipendenze facoltative (alcune usano Homebrew su macOS).
+
   </Step>
   <Step title="Fine">
     - Riepilogo e passaggi successivi, incluse le opzioni per le app iOS, Android e macOS.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Cosa imposti:
 - Suggerimenti di discovery:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Opzioni di autenticazione e modello

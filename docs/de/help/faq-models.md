@@ -102,6 +102,7 @@ x-i18n:
     - Diese Deployments können sich unterscheiden und sich im Lauf der Zeit ändern; es gibt keine feste Provider-Empfehlung.
     - Prüfen Sie die aktuelle Laufzeiteinstellung auf jedem Gateway mit `openclaw models status`.
     - Verwenden Sie für sicherheitssensible Agenten bzw. Agenten mit Tools das stärkste verfügbare Modell der neuesten Generation.
+
   </Accordion>
 
   <Accordion title="Wie wechsle ich Modelle im laufenden Betrieb (ohne Neustart)?">

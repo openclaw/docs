@@ -187,6 +187,7 @@ I modelli GLM sono disponibili come `zai/<model>` (esempio: `zai/glm-5`). Il rif
     - Z.AI usa autenticazione Bearer con la tua chiave API.
     - L'opzione di onboarding `zai-api-key` rileva automaticamente dal prefisso della chiave l'endpoint Z.AI corrispondente.
     - Usa le opzioni regionali esplicite (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) quando vuoi forzare una specifica superficie API.
+
   </Accordion>
 </AccordionGroup>
 

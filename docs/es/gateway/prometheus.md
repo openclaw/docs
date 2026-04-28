@@ -136,6 +136,7 @@ Para trazas, logs, envío OTLP y atributos semánticos GenAI de OpenTelemetry, c
     - IDs sin procesar de solicitudes del proveedor (solo hashes acotados, cuando corresponde, en spans; nunca en métricas)
     - claves de sesión e IDs de sesión
     - nombres de host, rutas de archivo, valores secretos
+
   </Accordion>
 </AccordionGroup>
 
@@ -180,12 +181,14 @@ OpenClaw admite ambas superficies de forma independiente. Puedes usar una, ambas
     - Autenticado mediante la autenticación normal del Gateway.
     - La superficie es solo de métricas (sin trazas ni logs).
     - Ideal para stacks ya estandarizados en Prometheus + Grafana.
+
   </Tab>
   <Tab title="diagnostics-otel">
     - Modelo **push**: OpenClaw envía OTLP/HTTP a un recopilador o backend compatible con OTLP.
     - La superficie incluye métricas, trazas y logs.
     - Se conecta con Prometheus mediante un OpenTelemetry Collector (exportador `prometheus` o `prometheusremotewrite`) cuando necesitas ambos.
     - Consulta [Exportación de OpenTelemetry](/es/gateway/opentelemetry) para ver el catálogo completo.
+
   </Tab>
 </Tabs>
 
@@ -196,6 +199,7 @@ OpenClaw admite ambas superficies de forma independiente. Puedes usar una, ambas
     - Comprueba `diagnostics.enabled: true` en la configuración.
     - Confirma que el Plugin está habilitado y cargado con `openclaw plugins list --enabled`.
     - Genera algo de tráfico; los contadores e histogramas solo emiten líneas después de al menos un evento.
+
   </Accordion>
   <Accordion title="401 / unauthorized">
     El endpoint requiere el alcance de operador del Gateway (`auth: "gateway"` con `gatewayRuntimeScopeSurface: "trusted-operator"`). Usa el mismo token o contraseña que Prometheus use para cualquier otra ruta de operador del Gateway. No existe un modo público sin autenticación.

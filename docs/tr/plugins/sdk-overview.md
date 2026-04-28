@@ -25,6 +25,7 @@ Plugin SDK, plugin'ler ile core arasındaki türlendirilmiş sözleşmedir. Bu s
 - Kanal plugin'i mi? [Kanal plugin'leri](/tr/plugins/sdk-channel-plugins) sayfasına bakın.
 - Sağlayıcı plugin'i mi? [Sağlayıcı plugin'leri](/tr/plugins/sdk-provider-plugins) sayfasına bakın.
 - Araç veya yaşam döngüsü kancası plugin'i mi? [Plugin kancaları](/tr/plugins/hooks) sayfasına bakın.
+
 </Tip>
 
 ## İçe aktarma kuralı

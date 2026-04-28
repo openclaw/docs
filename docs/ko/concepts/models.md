@@ -57,6 +57,7 @@ OpenClaw는 다음 순서로 모델을 선택합니다.
     - `agents.defaults.musicGenerationModel`은 공용 음악 생성 capability에서 사용됩니다. 생략해도 `music_generate`는 인증이 있는 provider 기본값을 추론할 수 있습니다. 현재 기본 provider를 먼저 시도한 다음, provider id 순서로 나머지 등록된 음악 생성 provider를 시도합니다. 특정 provider/모델을 설정하는 경우 해당 provider의 인증/API 키도 구성하세요.
     - `agents.defaults.videoGenerationModel`은 공용 비디오 생성 capability에서 사용됩니다. 생략해도 `video_generate`는 인증이 있는 provider 기본값을 추론할 수 있습니다. 현재 기본 provider를 먼저 시도한 다음, provider id 순서로 나머지 등록된 비디오 생성 provider를 시도합니다. 특정 provider/모델을 설정하는 경우 해당 provider의 인증/API 키도 구성하세요.
     - 에이전트별 기본값은 `agents.list[].model`과 바인딩을 통해 `agents.defaults.model`을 재정의할 수 있습니다([다중 에이전트 라우팅](/ko/concepts/multi-agent) 참조).
+
   </Accordion>
 </AccordionGroup>
 
@@ -123,6 +124,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
 - 모델을 `agents.defaults.models`에 추가하거나
 - 허용 목록을 비우거나(`agents.defaults.models` 제거)
 - `/model list`에서 모델을 선택하는 것입니다.
+
 </Warning>
 
 허용 목록 config 예시:
@@ -157,6 +159,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
     - Discord에서는 `/model`과 `/models`가 provider와 모델 드롭다운, 그리고 제출 단계가 포함된 대화형 선택기를 엽니다.
     - `/models add`는 더 이상 권장되지 않으며, 이제 채팅에서 모델을 등록하는 대신 더 이상 권장되지 않는다는 메시지를 반환합니다.
     - `/model <#>`는 해당 선택기에서 선택합니다.
+
   </Accordion>
   <Accordion title="지속성 및 라이브 전환">
     - `/model`은 새 세션 선택을 즉시 저장합니다.
@@ -164,6 +167,7 @@ Model "provider/model" is not allowed. Use /model to list available models.
     - 실행이 이미 활성 상태라면 OpenClaw는 라이브 전환을 보류 상태로 표시하고, 정리된 재시도 지점에서만 새 모델로 다시 시작합니다.
     - 도구 활동이나 응답 출력이 이미 시작된 경우, 보류된 전환은 이후 재시도 기회나 다음 사용자 턴까지 대기 상태로 남을 수 있습니다.
     - `/model status`는 자세한 보기입니다(인증 후보, 그리고 구성된 경우 provider endpoint `baseUrl` + `api` mode).
+
   </Accordion>
   <Accordion title="Ref 파싱">
     - 모델 ref는 **첫 번째** `/`를 기준으로 분리해 파싱합니다. `/model <ref>`를 입력할 때는 `provider/model` 형식을 사용하세요.
@@ -233,6 +237,7 @@ openclaw models image-fallbacks clear
     - 자동화에는 `--check`를 사용하세요(누락/만료 시 종료 코드 `1`, 만료 임박 시 `2`).
     - 실제 인증 검사는 `--probe`를 사용하세요. 프로브 행은 인증 프로필, env 자격 증명, 또는 `models.json`에서 올 수 있습니다.
     - 명시적 `auth.order.<provider>`가 저장된 프로필을 생략하면, 프로브는 이를 시도하는 대신 `excluded_by_auth_order`를 보고합니다. 인증은 있지만 해당 provider에 대해 프로브 가능한 모델을 확인할 수 없으면 프로브는 `status: no_model`을 보고합니다.
+
   </Accordion>
 </AccordionGroup>
 

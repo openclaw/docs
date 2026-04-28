@@ -282,6 +282,7 @@ openclaw channels status --probe
   <Accordion title="الروبوت لا يستجيب للرسائل">
     - **تحقق من التحكم في الوصول:** تأكد من أن معرّف المستخدم الخاص بك موجود في `allowFrom`، أو أزل `allowFrom` مؤقتًا واضبط `allowedRoles: ["all"]` للاختبار.
     - **تحقق من وجود الروبوت في القناة:** يجب أن ينضم الروبوت إلى القناة المحددة في `channel`.
+
   </Accordion>
   <Accordion title="مشكلات الرمز">
     أخطاء "Failed to connect" أو أخطاء المصادقة:

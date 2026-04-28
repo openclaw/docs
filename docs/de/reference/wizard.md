@@ -33,6 +33,7 @@ Eine allgemeine Übersicht finden Sie unter [Onboarding (CLI)](/de/start/wizard)
       - Nur Konfiguration
       - Konfiguration + Zugangsdaten + Sitzungen
       - Vollständiges Zurücksetzen (entfernt auch den Workspace)
+
   </Step>
   <Step title="Modell/Auth">
     - **Anthropic-API-Key**: verwendet `ANTHROPIC_API_KEY`, falls vorhanden, oder fragt nach einem Key und speichert ihn dann für die Daemon-Nutzung.
@@ -83,6 +84,7 @@ Eine allgemeine Übersicht finden Sie unter [Onboarding (CLI)](/de/start/wizard)
     - Standard ist `~/.openclaw/workspace` (konfigurierbar).
     - Legt die Workspace-Dateien an, die für das Bootstrap-Ritual des Agenten benötigt werden.
     - Vollständiges Workspace-Layout + Backup-Anleitung: [Agent-Workspace](/de/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - Port, Bind, Auth-Modus, Tailscale-Exposition.
@@ -98,6 +100,7 @@ Eine allgemeine Übersicht finden Sie unter [Onboarding (CLI)](/de/start/wizard)
       - Kann nicht mit `--gateway-token` kombiniert werden.
     - Deaktivieren Sie Auth nur, wenn Sie jedem lokalen Prozess vollständig vertrauen.
     - Nicht-loopback-Binds erfordern weiterhin Authentifizierung.
+
   </Step>
   <Step title="Channels">
     - [WhatsApp](/de/channels/whatsapp): optionaler QR-Login.
@@ -109,12 +112,14 @@ Eine allgemeine Übersicht finden Sie unter [Onboarding (CLI)](/de/start/wizard)
     - [BlueBubbles](/de/channels/bluebubbles): **empfohlen für iMessage**; Server-URL + Passwort + Webhook.
     - [iMessage](/de/channels/imessage): Legacy-`imsg`-CLI-Pfad + DB-Zugriff.
     - DM-Sicherheit: Standard ist Pairing. Die erste DM sendet einen Code; genehmigen Sie ihn mit `openclaw pairing approve <channel> <code>` oder verwenden Sie Allowlists.
+
   </Step>
   <Step title="Websuche">
     - Wählen Sie einen unterstützten Provider wie Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG oder Tavily (oder überspringen Sie ihn).
     - API-gestützte Provider können Umgebungsvariablen oder vorhandene Konfiguration für ein schnelles Setup verwenden; Provider ohne Key verwenden stattdessen ihre providerspezifischen Voraussetzungen.
     - Mit `--skip-search` überspringen.
     - Später konfigurieren: `openclaw configure --section web`.
+
   </Step>
   <Step title="Daemon-Installation">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ Eine allgemeine Übersicht finden Sie unter [Onboarding (CLI)](/de/start/wizard)
     - Wenn Token-Auth ein Token erfordert und `gateway.auth.token` durch SecretRef verwaltet wird, validiert die Daemon-Installation es, speichert aber keine aufgelösten Klartext-Tokenwerte in den Umgebungsmetadaten des Supervisor-Dienstes.
     - Wenn Token-Auth ein Token erfordert und die konfigurierte Token-SecretRef nicht aufgelöst ist, wird die Daemon-Installation mit umsetzbaren Hinweisen blockiert.
     - Wenn sowohl `gateway.auth.token` als auch `gateway.auth.password` konfiguriert sind und `gateway.auth.mode` nicht gesetzt ist, wird die Daemon-Installation blockiert, bis der Modus explizit festgelegt wird.
+
   </Step>
   <Step title="Health Check">
     - Startet das Gateway (falls nötig) und führt `openclaw health` aus.
     - Tipp: `openclaw status --deep` fügt der Statusausgabe die Live-Gateway-Health-Probe hinzu, einschließlich Channel-Probes, wenn unterstützt (erfordert ein erreichbares Gateway).
+
   </Step>
   <Step title="Skills (empfohlen)">
     - Liest die verfügbaren Skills und prüft die Anforderungen.
     - Lässt Sie einen Node-Manager wählen: **npm / pnpm** (Bun nicht empfohlen).
     - Installiert optionale Abhängigkeiten (einige verwenden Homebrew unter macOS).
+
   </Step>
   <Step title="Abschluss">
     - Zusammenfassung + nächste Schritte, einschließlich iOS-/Android-/macOS-Apps für zusätzliche Funktionen.
+
   </Step>
 </Steps>
 

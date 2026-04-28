@@ -58,6 +58,7 @@ SecretRef는 실질적으로 활성인 표면에서만 검증됩니다.
         - `gateway.remote.token`은 token auth가 우선될 수 있고 env/auth token이 구성되지 않았을 때 활성입니다.
         - `gateway.remote.password`는 password auth가 우선될 수 있고 env/auth password가 구성되지 않았을 때만 활성입니다.
     - `gateway.auth.token` SecretRef는 `OPENCLAW_GATEWAY_TOKEN`이 설정된 경우 시작 auth 해석에서는 비활성입니다. 해당 런타임에서는 env token 입력이 우선하기 때문입니다.
+
   </Accordion>
 </AccordionGroup>
 
@@ -166,6 +167,7 @@ provider는 `secrets.providers` 아래에 정의합니다.
   <Accordion title="Env provider">
     - `allowlist`를 통한 선택적 허용 목록 지원
     - 누락되었거나 비어 있는 env 값은 해석 실패 처리
+
   </Accordion>
   <Accordion title="File provider">
     - `path`에서 로컬 파일을 읽습니다
@@ -173,6 +175,7 @@ provider는 `secrets.providers` 아래에 정의합니다.
     - `mode: "singleValue"`는 ref id `"value"`를 기대하며 파일 내용을 반환합니다
     - 경로는 소유권/권한 검사를 통과해야 합니다
     - Windows fail-closed 참고: 경로의 ACL 검증을 사용할 수 없으면 해석이 실패합니다. 신뢰할 수 있는 경로에 대해서만, 경로 보안 검사를 우회하려면 해당 provider에 `allowInsecurePath: true`를 설정하세요.
+
   </Accordion>
   <Accordion title="Exec provider">
     - 구성된 절대 binary 경로를 shell 없이 실행합니다

@@ -72,6 +72,7 @@ x-i18n:
     - `openclaw agent` 和 `openclaw infer model run` 这类一次性智能体入口点，会在回复完成后关闭它们打开的所有内置 MCP 运行时，因此重复的脚本化运行不会累积 stdio MCP 子进程
     - 由 OpenClaw 启动的 stdio MCP 服务器（无论是内置还是用户配置）会在关闭时作为进程树一并终止，因此服务器启动的子进程不会在父级 stdio 客户端退出后继续存活
     - 删除或重置会话会通过共享运行时清理路径释放该会话的 MCP 客户端，因此不会遗留绑定到已移除会话的 stdio 连接
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ x-i18n:
 - 该队列仅用于实时事件；它从 MCP 桥接器启动时开始
 - `events_poll` 和 `events_wait` 本身不会回放较早的 Gateway 网关历史
 - 持久化积压内容应通过 `messages_read` 读取
+
 </Warning>
 
 ### Claude 渠道通知
@@ -367,6 +369,7 @@ pnpm test:docker:mcp-channels
     - 运行时适配器会在执行时决定它们实际支持哪些传输形式
     - 内置 Pi 会在常规 `coding` 和 `messaging` 工具配置中暴露已配置的 MCP 工具；`minimal` 仍会隐藏它们，而 `tools.deny: ["bundle-mcp"]` 会显式禁用它们
     - 会话范围的内置 MCP 运行时会在空闲 `mcp.sessionIdleTtlMs` 毫秒后被回收（默认 10 分钟；设为 `0` 可禁用），一次性内置运行则会在运行结束时清理它们
+
   </Accordion>
 </AccordionGroup>
 

@@ -93,6 +93,7 @@ Dreaming також веде наративний **Dream Diary** у `DREAMS.md`
     - `memory rem-backfill --path ...` записує оборотні обґрунтовані записи щоденника в `DREAMS.md`.
     - `memory rem-backfill --path ... --stage-short-term` готує обґрунтованих довготривалих кандидатів у тому самому сховищі короткострокових доказів, яке вже використовує звичайна фаза Deep.
     - `memory rem-backfill --rollback` і `--rollback-short-term` видаляють ці підготовлені артефакти backfill, не торкаючись звичайних записів щоденника чи активного короткострокового recall.
+
   </Accordion>
 </AccordionGroup>
 

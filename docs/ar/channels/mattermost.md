@@ -97,6 +97,7 @@ x-i18n:
     - في إعدادات الحسابات المتعددة، يمكن تعيين `commands` على المستوى الأعلى أو ضمن `channels.mattermost.accounts.<id>.commands` (قيم الحساب تتجاوز الحقول ذات المستوى الأعلى).
     - يتم التحقق من استدعاءات الأوامر عبر الرموز المميزة الخاصة بكل أمر التي يعيدها Mattermost عندما يسجل OpenClaw أوامر `oc_*`.
     - تُغلق استدعاءات أوامر الشرطة المائلة تلقائيًا عند الفشل إذا فشل التسجيل، أو كان بدء التشغيل جزئيًا، أو لم يتطابق رمز callback المميز مع أحد الأوامر المسجلة.
+
   </Accordion>
   <Accordion title="متطلب إمكانية الوصول">
     يجب أن تكون نقطة نهاية callback قابلة للوصول من خادم Mattermost.
@@ -291,11 +292,13 @@ x-i18n:
     - يستخدم `block` أجزاء مسودة بأسلوب الإلحاق داخل منشور المعاينة.
     - يعرض `progress` معاينة للحالة أثناء التوليد ثم ينشر الإجابة النهائية فقط عند الاكتمال.
     - يعطّل `off` بث المعاينة.
+
   </Accordion>
   <Accordion title="ملاحظات سلوك البث">
     - إذا تعذر إنهاء البث في مكانه (مثلًا إذا حُذف المنشور أثناء البث)، يعود OpenClaw إلى إرسال منشور نهائي جديد حتى لا تضيع الإجابة أبدًا.
     - تُحجب الحمولة الخاصة بالتفكير فقط من منشورات القنوات، بما في ذلك النص الذي يصل على هيئة blockquote `> Reasoning:`. اضبط `/reasoning on` لرؤية التفكير في أسطح أخرى؛ ويحتفظ المنشور النهائي في Mattermost بالإجابة فقط.
     - راجع [Streaming](/ar/concepts/streaming#preview-streaming-modes) للاطلاع على مصفوفة ربط القنوات.
+
   </Accordion>
 </AccordionGroup>
 
@@ -369,6 +372,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
     - تستخدم استدعاءات الأزرار تحقق HMAC-SHA256 (تلقائي، ولا حاجة إلى إعدادات).
     - يزيل Mattermost بيانات callback من استجابات API الخاصة به (ميزة أمان)، لذلك تُزال جميع الأزرار عند النقر — ولا يمكن الإزالة الجزئية.
     - تُنظَّف معرّفات الإجراءات التي تحتوي على واصلات أو شرطات سفلية تلقائيًا (بسبب قيود التوجيه في Mattermost).
+
   </Accordion>
   <Accordion title="التكوين وإمكانية الوصول">
     - `channels.mattermost.capabilities`: مصفوفة من سلاسل الإمكانات. أضف `"inlineButtons"` لتمكين وصف أداة الأزرار في مطالبة النظام الخاصة بالوكيل.
@@ -377,6 +381,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
     - إذا تم حذف `interactions.callbackBaseUrl`، فسيشتق OpenClaw URL الاستدعاء من `gateway.customBindHost` و`gateway.port`، ثم يعود إلى `http://localhost:<port>`.
     - قاعدة إمكانية الوصول: يجب أن يكون URL استدعاء الزر قابلًا للوصول من خادم Mattermost. لا يعمل `localhost` إلا عندما يعمل Mattermost وOpenClaw على المضيف نفسه/ضمن مساحة اسم الشبكة نفسها.
     - إذا كان هدف callback خاصًا أو tailnet أو داخليًا، فأضف مضيفه/نطاقه إلى `ServiceSettings.AllowedUntrustedInternalConnections` في Mattermost.
+
   </Accordion>
 </AccordionGroup>
 
@@ -472,6 +477,7 @@ context = {**ctx, "_token": token}
     - وقّع دائمًا **جميع** حقول السياق (باستثناء `_token`). يزيل Gateway الحقل `_token` ثم يوقّع كل ما تبقى. يؤدي توقيع مجموعة فرعية فقط إلى فشل صامت في التحقق.
     - استخدم `sort_keys=True` — إذ يرتب Gateway المفاتيح قبل التوقيع، وقد يعيد Mattermost ترتيب حقول السياق عند تخزين الحمولة.
     - اشتق السر من رمز bot المميز (بشكل حتمي)، وليس من بايتات عشوائية. يجب أن يكون السر هو نفسه عبر العملية التي تنشئ الأزرار وGateway الذي يتحقق منها.
+
   </Accordion>
 </AccordionGroup>
 
@@ -507,6 +513,7 @@ context = {**ctx, "_token": token}
   <Accordion title="أخطاء المصادقة أو الحسابات المتعددة">
     - تحقق من رمز bot المميز وURL الأساسي وما إذا كان الحساب ممكّنًا.
     - مشكلات الحسابات المتعددة: تنطبق متغيرات البيئة فقط على الحساب `default`.
+
   </Accordion>
   <Accordion title="فشل أوامر الشرطة المائلة الأصلية">
     - `Unauthorized: invalid command token.`: لم يقبل OpenClaw رمز callback المميز. ومن الأسباب المعتادة:
@@ -516,6 +523,7 @@ context = {**ctx, "_token": token}
       - أُعيد تشغيل Gateway من دون إعادة تفعيل أوامر الشرطة المائلة
     - إذا توقفت أوامر الشرطة المائلة الأصلية عن العمل، فتحقق من السجلات بحثًا عن `mattermost: failed to register slash commands` أو `mattermost: native slash commands enabled but no commands could be registered`.
     - إذا تم حذف `callbackUrl` وحذرت السجلات من أن callback تم حله إلى `http://127.0.0.1:18789/...`، فمن المحتمل أن يكون هذا العنوان قابلًا للوصول فقط عندما يعمل Mattermost على المضيف نفسه/ضمن مساحة اسم الشبكة نفسها التي يعمل فيها OpenClaw. اضبط بدلًا من ذلك `commands.callbackUrl` صريحًا وقابلًا للوصول خارجيًا.
+
   </Accordion>
   <Accordion title="مشكلات الأزرار">
     - تظهر الأزرار كمربعات بيضاء: قد يكون الوكيل يرسل بيانات أزرار غير صحيحة. تحقق من أن كل زر يحتوي على الحقلين `text` و`callback_data`.
@@ -525,6 +533,7 @@ context = {**ctx, "_token": token}
     - يسجل Gateway `missing _token in context`: الحقل `_token` غير موجود في سياق الزر. تأكد من تضمينه عند إنشاء حمولة integration.
     - يعرض التأكيد معرّفًا خامًا بدلًا من اسم الزر: `context.action_id` لا يطابق `id` الخاص بالزر. اضبط القيمتين على نفس القيمة المنظفة.
     - الوكيل لا يعرف الأزرار: أضف `capabilities: ["inlineButtons"]` إلى تكوين قناة Mattermost.
+
   </Accordion>
 </AccordionGroup>
 

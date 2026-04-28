@@ -103,6 +103,7 @@ x-i18n:
     - Queste distribuzioni possono differire e cambiare nel tempo; non esiste una raccomandazione fissa sul provider.
     - Controlla l'impostazione runtime corrente su ogni Gateway con `openclaw models status`.
     - Per agenti sensibili alla sicurezza/con Tools abilitati, usa il modello più potente e di ultima generazione disponibile.
+
   </Accordion>
 
   <Accordion title="Come cambio modello al volo (senza riavviare)?">

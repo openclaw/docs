@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - типовий шаблон кореневого каталогу: `/Users/*/Library/Messages/Attachments`
     - SCP використовує сувору перевірку ключа хоста (`StrictHostKeyChecking=yes`)
     - для розміру вихідних медіа використовується `channels.imessage.mediaMaxMb` (типово 16 MB)
+
   </Accordion>
 
   <Accordion title="Outbound chunking">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - режим поділу на частини: `channels.imessage.chunkMode`
       - `length` (типово)
       - `newline` (спочатку поділ за абзацами)
+
   </Accordion>
 
   <Accordion title="Addressing formats">

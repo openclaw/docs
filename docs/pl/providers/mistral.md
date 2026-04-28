@@ -167,6 +167,7 @@ pasującego `sampleRate` tylko wtedy, gdy upstreamowy strumień jest już surowy
     - Domyślny `baseUrl` dostawcy to `https://api.mistral.ai/v1`.
     - Domyślny model w onboardingu to `mistral/mistral-large-latest`.
     - z.ai używa auth Bearer z twoim kluczem API.
+
   </Accordion>
 </AccordionGroup>
 

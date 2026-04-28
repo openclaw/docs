@@ -289,10 +289,12 @@ metadata:
     - การติดตั้งแบบ node จะยึดตาม `skills.install.nodeManager` ใน `openclaw.json` (ค่าเริ่มต้น: npm; ตัวเลือก: npm/pnpm/yarn/bun) ค่านี้มีผลเฉพาะกับการติดตั้ง Skill; ส่วน runtime ของ Gateway ควรยังคงเป็น Node — ไม่แนะนำ Bun สำหรับ WhatsApp/Telegram
     - การเลือกตัวติดตั้งแบบ Gateway-backed เป็นแบบอิงความชอบ: เมื่อสเปกการติดตั้งมีหลายชนิดผสมกัน OpenClaw จะเลือก Homebrew ก่อนเมื่อเปิดใช้ `skills.install.preferBrew` และมี `brew`, จากนั้น `uv`, จากนั้น node manager ที่ตั้งค่าไว้ แล้วจึงเป็น fallback อื่น เช่น `go` หรือ `download`
     - หากสเปกการติดตั้งทุกตัวเป็น `download`, OpenClaw จะเปิดเผยตัวเลือกดาวน์โหลดทั้งหมดแทนที่จะยุบเหลือ installer ที่ต้องการเพียงตัวเดียว
+
   </Accordion>
   <Accordion title="รายละเอียดต่อชนิดตัวติดตั้ง">
     - **การติดตั้งแบบ Go:** หากไม่มี `go` และมี `brew`, gateway จะติดตั้ง Go ผ่าน Homebrew ก่อน และตั้ง `GOBIN` ไปที่ `bin` ของ Homebrew เมื่อทำได้
     - **การติดตั้งแบบ Download:** `url` (จำเป็น), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (ค่าเริ่มต้น: auto เมื่อตรวจพบว่าเป็น archive), `stripComponents`, `targetDir` (ค่าเริ่มต้น: `~/.openclaw/tools/<skillKey>`)
+
   </Accordion>
 </AccordionGroup>
 

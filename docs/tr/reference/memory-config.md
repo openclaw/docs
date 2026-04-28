@@ -546,6 +546,7 @@ Kavramsal davranış ve slash komutları için bkz. [Dreaming](/tr/concepts/drea
 - Dreaming, makine durumunu `memory/.dreams/` içine yazar.
 - Dreaming, insan tarafından okunabilir anlatı çıktısını `DREAMS.md` içine (veya mevcutsa `dreams.md` içine) yazar.
 - Light/deep/REM aşama ilkesi ve eşikleri dahili davranıştır, kullanıcıya dönük yapılandırma değildir.
+
 </Note>
 
 ## İlgili

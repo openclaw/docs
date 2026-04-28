@@ -198,6 +198,7 @@ Tutti i campi sono facoltativi salvo diversa indicazione.
       - `fileQuality: "hq"`: massimo 14 MP (14.000.000 pixel renderizzati).
       - `fileQuality: "print"`: massimo 24 MP (24.000.000 pixel renderizzati).
       - Il PDF ha anche un massimo di 50 pagine.
+
   </Accordion>
 </AccordionGroup>
 
@@ -413,11 +414,13 @@ Regole di `baseUrl`:
     - Limitazione dei tentativi falliti remoti quando l'accesso remoto è abilitato:
       - 40 errori in 60 secondi
       - blocco di 60 secondi (`429 Too Many Requests`)
+
   </Accordion>
   <Accordion title="Protezione del rendering dei file">
     - L'instradamento delle richieste del browser per gli screenshot è deny-by-default.
     - Sono consentiti solo gli asset locali del viewer da `http://127.0.0.1/plugins/diffs/assets/*`.
     - Le richieste di rete esterne sono bloccate.
+
   </Accordion>
 </AccordionGroup>
 
@@ -435,6 +438,7 @@ Ordine di risoluzione:
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`
     - `BROWSER_EXECUTABLE_PATH`
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
+
   </Step>
   <Step title="Fallback della piattaforma">
     Fallback di rilevamento di comandi/percorsi della piattaforma.
@@ -456,6 +460,7 @@ Correggi installando Chrome, Chromium, Edge o Brave, oppure impostando una delle
     - `Invalid baseUrl: ...` — usa un'origine `http(s)` con percorso facoltativo, senza query/hash.
     - `{field} exceeds maximum size (...)` — riduci la dimensione del payload.
     - Rifiuto di patch grandi — riduci il numero di file della patch o il totale delle righe.
+
   </Accordion>
   <Accordion title="Accessibilità del viewer">
     - L'URL del viewer viene risolto in `127.0.0.1` per impostazione predefinita.
@@ -468,6 +473,7 @@ Correggi installando Chrome, Chromium, Edge o Brave, oppure impostando una delle
       - preferisci `mode: "file"` o `mode: "both"` quando ti serve solo un allegato, oppure
       - abilita intenzionalmente `security.allowRemoteViewer` e imposta il `viewerBaseUrl` del Plugin o passa un `baseUrl` proxy/pubblico quando ti serve un URL del viewer condivisibile
     - Abilita `security.allowRemoteViewer` solo quando intendi consentire l'accesso esterno al viewer.
+
   </Accordion>
   <Accordion title="La riga delle linee non modificate non ha il pulsante di espansione">
     Questo può accadere con input patch quando la patch non contiene contesto espandibile. È un comportamento previsto e non indica un guasto del viewer.
@@ -476,6 +482,7 @@ Correggi installando Chrome, Chromium, Edge o Brave, oppure impostando una delle
     - Artefatto scaduto per TTL.
     - Token o percorso modificati.
     - La pulizia ha rimosso dati obsoleti.
+
   </Accordion>
 </AccordionGroup>
 

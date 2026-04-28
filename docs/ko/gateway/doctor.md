@@ -81,6 +81,7 @@ cat ~/.openclaw/openclaw.json
     - UI 프로토콜 최신성 점검(프로토콜 스키마가 더 최신이면 Control UI 재빌드).
     - 상태 점검 + 재시작 프롬프트.
     - Skills 상태 요약(적격/누락/차단) 및 Plugin 상태.
+
   </Accordion>
   <Accordion title="Config 및 마이그레이션">
     - 레거시 값에 대한 config 정규화.
@@ -93,6 +94,7 @@ cat ~/.openclaw/openclaw.json
     - 레거시 Plugin manifest contract 키 마이그레이션(`speechProviders`, `realtimeTranscriptionProviders`, `realtimeVoiceProviders`, `mediaUnderstandingProviders`, `imageGenerationProviders`, `videoGenerationProviders`, `webFetchProviders`, `webSearchProviders` → `contracts`).
     - 레거시 Cron 저장소 마이그레이션(`jobId`, `schedule.cron`, 최상위 delivery/payload 필드, payload `provider`, 단순 `notify: true` Webhook 대체 작업).
     - 레거시 agent runtime-policy를 `agents.defaults.agentRuntime` 및 `agents.list[].agentRuntime`로 마이그레이션.
+
   </Accordion>
   <Accordion title="State 및 무결성">
     - 세션 잠금 파일 검사 및 오래된 잠금 정리.
@@ -101,6 +103,7 @@ cat ~/.openclaw/openclaw.json
     - 로컬 실행 시 config 파일 권한 점검(`chmod 600`).
     - 모델 인증 상태: OAuth 만료 점검, 만료 예정 토큰 새로고침 가능, auth-profile cooldown/비활성화 상태 보고.
     - 추가 workspace 디렉터리 감지(`~/openclaw`).
+
   </Accordion>
   <Accordion title="Gateway, 서비스 및 supervisor">
     - 샌드박싱이 활성화된 경우 샌드박스 이미지 복구.
@@ -111,11 +114,13 @@ cat ~/.openclaw/openclaw.json
     - supervisor config 감사(launchd/systemd/schtasks) 및 선택적 복구.
     - Gateway 런타임 모범 사례 점검(Node vs Bun, version-manager 경로).
     - Gateway 포트 충돌 진단(기본값 `18789`).
+
   </Accordion>
   <Accordion title="인증, 보안 및 페어링">
     - 열린 DM 정책에 대한 보안 경고.
     - 로컬 토큰 모드용 Gateway 인증 점검(토큰 소스가 없을 때 토큰 생성 제안, token SecretRef config는 덮어쓰지 않음).
     - 디바이스 페어링 문제 감지(보류 중인 최초 페어 요청, 보류 중인 역할/범위 업그레이드, 오래된 로컬 device-token 캐시 드리프트, 페어링된 기록의 auth 드리프트).
+
   </Accordion>
   <Accordion title="작업공간 및 셸">
     - Linux의 systemd linger 점검.
@@ -124,6 +129,7 @@ cat ~/.openclaw/openclaw.json
     - 메모리 검색 임베딩 provider 준비 상태 점검(로컬 모델, 원격 API 키 또는 QMD 바이너리).
     - 소스 설치 점검(pnpm workspace 불일치, 누락된 UI 자산, 누락된 tsx 바이너리).
     - 업데이트된 config + wizard 메타데이터 쓰기.
+
   </Accordion>
 </AccordionGroup>
 

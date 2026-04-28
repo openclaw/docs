@@ -150,11 +150,13 @@ abusos sem bloquear contribuidores legítimos.
     - Motivos de denúncia são obrigatórios e registrados.
     - Cada usuário pode ter até 20 denúncias ativas ao mesmo tempo.
     - Skills com mais de 3 denúncias únicas ficam automaticamente ocultas por padrão.
+
   </Accordion>
   <Accordion title="Moderação">
     - Moderadores podem ver Skills ocultas, reexibi-las, excluí-las ou banir usuários.
     - O abuso do recurso de denúncia pode resultar em banimento da conta.
     - Tem interesse em se tornar moderador? Pergunte no Discord do OpenClaw e entre em contato com um moderador ou maintainer.
+
   </Accordion>
 </AccordionGroup>
 
@@ -354,6 +356,7 @@ nos caminhos de carregamento de plugin.
     - Cada publicação cria uma nova `SkillVersion` **semver**.
     - Tags (como `latest`) apontam para uma versão; mover tags permite rollback.
     - Changelogs são anexados por versão e podem estar vazios ao sincronizar ou publicar atualizações.
+
   </Accordion>
   <Accordion title="Mudanças locais vs versões do registro">
     As atualizações comparam o conteúdo local da Skill com as versões do registro usando um
@@ -370,6 +373,7 @@ nos caminhos de carregamento de plugin.
   <Accordion title="Armazenamento e lockfile">
     - As Skills instaladas são registradas em `.clawhub/lock.json` no seu diretório de trabalho.
     - Tokens de autenticação são armazenados no arquivo de configuração da CLI do ClawHub (substituível via `CLAWHUB_CONFIG_PATH`).
+
   </Accordion>
   <Accordion title="Telemetria (contagem de instalações)">
     Quando você executa `clawhub sync` autenticado, a CLI envia um snapshot mínimo

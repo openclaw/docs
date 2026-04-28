@@ -292,10 +292,12 @@ metadata:
     - تحترم تثبيتات Node القيمة `skills.install.nodeManager` في `openclaw.json` (الافتراضي: npm؛ الخيارات: npm/pnpm/yarn/bun). يؤثر هذا فقط في تثبيتات Skills؛ ويجب أن يظل وقت تشغيل Gateway هو Node — ولا يُنصح باستخدام Bun مع WhatsApp/Telegram.
     - يعتمد اختيار أداة التثبيت المدعوم من Gateway على التفضيل: عندما تمزج مواصفات التثبيت بين أنواع متعددة، يفضّل OpenClaw Homebrew عندما يكون `skills.install.preferBrew` مفعّلًا ويكون `brew` موجودًا، ثم `uv`، ثم مدير node المكوَّن، ثم البدائل الأخرى مثل `go` أو `download`.
     - إذا كانت كل مواصفات التثبيت من نوع `download`، يعرض OpenClaw جميع خيارات التنزيل بدلًا من اختزالها إلى أداة تثبيت مفضلة واحدة.
+
   </Accordion>
   <Accordion title="تفاصيل كل أداة تثبيت">
     - **تثبيتات Go:** إذا لم يكن `go` موجودًا وكان `brew` متاحًا، يقوم Gateway بتثبيت Go عبر Homebrew أولًا ويعيّن `GOBIN` إلى `bin` الخاص بـ Homebrew عند الإمكان.
     - **تثبيتات التنزيل:** `url` (مطلوب)، و`archive` (`tar.gz` | `tar.bz2` | `zip`)، و`extract` (الافتراضي: تلقائي عند اكتشاف أرشيف)، و`stripComponents`، و`targetDir` (الافتراضي: `~/.openclaw/tools/<skillKey>`).
+
   </Accordion>
 </AccordionGroup>
 

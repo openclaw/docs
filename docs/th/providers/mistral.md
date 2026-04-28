@@ -168,6 +168,7 @@ OpenClaw ตั้งค่าเริ่มต้นของ Mistral realtime
     - base URL ของ provider มีค่าเริ่มต้นเป็น `https://api.mistral.ai/v1`
     - โมเดลเริ่มต้นสำหรับ onboarding คือ `mistral/mistral-large-latest`
     - Z.AI ใช้ Bearer auth กับ API key ของคุณ
+
   </Accordion>
 </AccordionGroup>
 

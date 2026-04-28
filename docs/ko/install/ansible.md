@@ -184,6 +184,7 @@ cd openclaw-ansible
     - 먼저 Tailscale VPN을 통해 액세스할 수 있는지 확인하세요
     - SSH 액세스(포트 22)는 항상 허용됩니다
     - Gateway는 설계상 Tailscale을 통해서만 액세스할 수 있습니다
+
   </Accordion>
   <Accordion title="서비스가 시작되지 않습니다">
     ```bash

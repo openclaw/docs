@@ -44,14 +44,17 @@ x-i18n:
       - เฉพาะ config
       - Config + credentials + sessions
       - รีเซ็ตทั้งหมด (ลบ workspace ด้วย)
+
   </Step>
   <Step title="โมเดลและ auth">
     - ตัวเลือกทั้งหมดอยู่ใน [Auth and model options](#auth-and-model-options)
+
   </Step>
   <Step title="Workspace">
     - ค่าเริ่มต้นคือ `~/.openclaw/workspace` (กำหนดค่าได้)
     - สร้างไฟล์ workspace ที่จำเป็นสำหรับ first-run bootstrap ritual
     - เลย์เอาต์ของ workspace: [Agent workspace](/th/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - จะถามหา port, bind, auth mode และการเปิดเผยผ่าน tailscale
@@ -65,6 +68,7 @@ x-i18n:
       - ใช้ร่วมกับ `--gateway-token` ไม่ได้
     - ปิด auth เฉพาะเมื่อคุณเชื่อถือทุก process ในเครื่องอย่างสมบูรณ์
     - bind แบบ non-loopback ยังคงต้องใช้ auth
+
   </Step>
   <Step title="Channels">
     - [WhatsApp](/th/channels/whatsapp): การเข้าสู่ระบบด้วย QR แบบเลือกใช้
@@ -88,18 +92,22 @@ x-i18n:
       - หากการสร้าง task ถูกปฏิเสธ OpenClaw จะ fallback ไปใช้ login item ใน Startup folder แบบต่อผู้ใช้ และเริ่ม Gateway ทันที
       - Scheduled Tasks ยังเป็นตัวเลือกที่แนะนำกว่า เพราะให้สถานะ supervisor ที่ดีกว่า
     - การเลือก runtime: Node (แนะนำ; จำเป็นสำหรับ WhatsApp และ Telegram) ไม่แนะนำให้ใช้ Bun
+
   </Step>
   <Step title="การตรวจสอบสถานะสุขภาพ">
     - เริ่ม Gateway (หากจำเป็น) และรัน `openclaw health`
     - `openclaw status --deep` จะเพิ่ม live gateway health probe ลงในผลลัพธ์สถานะ รวมถึง channel probes เมื่อรองรับ
+
   </Step>
   <Step title="Skills">
     - อ่าน Skills ที่มีอยู่และตรวจสอบข้อกำหนด
     - ให้คุณเลือก node manager: npm, pnpm หรือ bun
     - ติดตั้ง dependencies แบบ optional (บางรายการใช้ Homebrew บน macOS)
+
   </Step>
   <Step title="เสร็จสิ้น">
     - สรุปและขั้นตอนถัดไป รวมถึงตัวเลือกแอป iOS, Android และ macOS
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ x-i18n:
 - คำใบ้สำหรับการค้นหา:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## ตัวเลือก auth และโมเดล

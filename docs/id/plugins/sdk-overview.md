@@ -25,6 +25,7 @@ referensi untuk **apa yang harus diimpor** dan **apa yang dapat Anda daftarkan**
 - Plugin saluran? Lihat [Plugin saluran](/id/plugins/sdk-channel-plugins).
 - Plugin provider? Lihat [Plugin provider](/id/plugins/sdk-provider-plugins).
 - Plugin hook tool atau lifecycle? Lihat [Hook Plugin](/id/plugins/hooks).
+
 </Tip>
 
 ## Konvensi import

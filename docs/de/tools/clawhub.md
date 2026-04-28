@@ -148,11 +148,13 @@ Missbrauch, ohne legitime Mitwirkende zu blockieren.
     - Meldegründe sind erforderlich und werden protokolliert.
     - Jeder Benutzer kann gleichzeitig bis zu 20 aktive Meldungen haben.
     - Skills mit mehr als 3 eindeutigen Meldungen werden standardmäßig automatisch ausgeblendet.
+
   </Accordion>
   <Accordion title="Moderation">
     - Moderatoren können ausgeblendete Skills anzeigen, sie wieder einblenden, löschen oder Benutzer sperren.
     - Missbrauch der Meldefunktion kann zu Kontosperrungen führen.
     - Sie möchten Moderator werden? Fragen Sie im OpenClaw Discord und kontaktieren Sie einen Moderator oder Maintainer.
+
   </Accordion>
 </AccordionGroup>
 
@@ -352,6 +354,7 @@ in Plugin-Ladepfaden.
     - Jede Veröffentlichung erstellt eine neue **Semver**-`SkillVersion`.
     - Tags (wie `latest`) verweisen auf eine Version; durch das Verschieben von Tags können Sie ein Rollback durchführen.
     - Changelogs werden pro Version angehängt und können beim Synchronisieren oder Veröffentlichen von Aktualisierungen leer sein.
+
   </Accordion>
   <Accordion title="Lokale Änderungen vs. Registry-Versionen">
     Aktualisierungen vergleichen den lokalen Skill-Inhalt mithilfe eines
@@ -368,6 +371,7 @@ in Plugin-Ladepfaden.
   <Accordion title="Speicher und Lockfile">
     - Installierte Skills werden in `.clawhub/lock.json` unter Ihrem Arbeitsverzeichnis erfasst.
     - Auth-Token werden in der Konfigurationsdatei der ClawHub CLI gespeichert (überschreibbar über `CLAWHUB_CONFIG_PATH`).
+
   </Accordion>
   <Accordion title="Telemetrie (Installationszahlen)">
     Wenn Sie `clawhub sync` im angemeldeten Zustand ausführen, sendet die CLI einen minimalen

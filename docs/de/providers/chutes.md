@@ -138,6 +138,7 @@ Der gebündelte Fallback-Katalog enthält aktuelle Chutes-Referenzen:
     - Discovery mit API key und OAuth verwendet beide dieselbe Provider-ID `chutes`.
     - Chutes-Modelle werden als `chutes/<model-id>` registriert.
     - Wenn die Discovery beim Start fehlschlägt, wird automatisch der gebündelte statische Katalog verwendet.
+
   </Accordion>
 </AccordionGroup>
 

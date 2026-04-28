@@ -33,6 +33,7 @@ x-i18n:
       - 구성만
       - 구성 + 자격 증명 + 세션
       - 전체 reset(워크스페이스도 제거)
+
   </Step>
   <Step title="모델/인증">
     - **Anthropic API key**: 있으면 `ANTHROPIC_API_KEY`를 사용하고, 없으면 키를 묻고, 이후 daemon에서 사용할 수 있도록 저장합니다.
@@ -83,6 +84,7 @@ x-i18n:
     - 기본값은 `~/.openclaw/workspace`입니다(구성 가능).
     - 에이전트 bootstrap ritual에 필요한 워크스페이스 파일을 시드합니다.
     - 전체 워크스페이스 레이아웃 + 백업 가이드: [Agent workspace](/ko/concepts/agent-workspace)
+
   </Step>
   <Step title="Gateway">
     - 포트, bind, 인증 모드, Tailscale 노출.
@@ -98,6 +100,7 @@ x-i18n:
       - `--gateway-token`과 함께 사용할 수 없습니다.
     - 모든 로컬 프로세스를 완전히 신뢰하는 경우에만 인증을 비활성화하세요.
     - loopback이 아닌 bind에도 여전히 인증이 필요합니다.
+
   </Step>
   <Step title="채널">
     - [WhatsApp](/ko/channels/whatsapp): 선택적 QR 로그인.
@@ -109,12 +112,14 @@ x-i18n:
     - [BlueBubbles](/ko/channels/bluebubbles): **iMessage에 권장**; 서버 URL + 비밀번호 + webhook.
     - [iMessage](/ko/channels/imessage): 레거시 `imsg` CLI 경로 + DB 접근.
     - DM 보안: 기본값은 pairing입니다. 첫 DM은 코드를 전송하며, `openclaw pairing approve <channel> <code>`로 승인하거나 허용 목록을 사용할 수 있습니다.
+
   </Step>
   <Step title="웹 검색">
     - Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily 같은 지원되는 provider를 선택하세요(또는 건너뛰기).
     - API 기반 provider는 빠른 설정을 위해 env var 또는 기존 구성을 사용할 수 있고, 키가 없는 provider는 provider별 전제 조건을 사용합니다.
     - `--skip-search`로 건너뛸 수 있습니다.
     - 나중에 구성: `openclaw configure --section web`.
+
   </Step>
   <Step title="Daemon 설치">
     - macOS: LaunchAgent
@@ -126,18 +131,22 @@ x-i18n:
     - token auth에 token이 필요하고 `gateway.auth.token`이 SecretRef로 관리되는 경우, daemon 설치는 이를 검증하지만 해석된 평문 token 값을 supervisor 서비스 환경 메타데이터에 유지하지는 않습니다.
     - token auth에 token이 필요하고 구성된 token SecretRef가 해석되지 않으면, daemon 설치는 실행 가능한 안내와 함께 차단됩니다.
     - `gateway.auth.token`과 `gateway.auth.password`가 모두 구성되어 있지만 `gateway.auth.mode`가 설정되지 않은 경우, mode를 명시적으로 설정할 때까지 daemon 설치가 차단됩니다.
+
   </Step>
   <Step title="상태 점검">
     - 필요 시 Gateway를 시작하고 `openclaw health`를 실행합니다.
     - 팁: `openclaw status --deep`는 상태 출력에 라이브 gateway 상태 프로브를 추가하며, 지원되는 경우 채널 프로브도 포함합니다(도달 가능한 gateway 필요).
+
   </Step>
   <Step title="Skills (권장)">
     - 사용 가능한 Skills를 읽고 요구 사항을 확인합니다.
     - 노드 매니저를 선택하게 합니다: **npm / pnpm** (bun은 권장되지 않음).
     - 선택적 의존성을 설치합니다(일부는 macOS에서 Homebrew 사용).
+
   </Step>
   <Step title="마침">
     - 추가 기능을 위한 iOS/Android/macOS 앱을 포함한 요약 + 다음 단계.
+
   </Step>
 </Steps>
 

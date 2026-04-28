@@ -56,6 +56,7 @@ Gibt das generierte JSON-Schema für `openclaw.json` als JSON auf stdout aus.
     - Auch `anyOf`-/`oneOf`-/`allOf`-Zweige übernehmen dieselben Dokumentationsmetadaten, wenn passende Felddokumentation vorhanden ist.
     - Best-Effort-Live-Schemametadaten für Plugins und Kanäle, wenn Laufzeit-Manifeste geladen werden können.
     - Ein sauberes Fallback-Schema, selbst wenn die aktuelle Konfiguration ungültig ist.
+
   </Accordion>
   <Accordion title="Zugehörige Runtime-RPC">
     `config.schema.lookup` gibt einen normalisierten Konfigurationspfad mit einem flachen Schemaknoten (`title`, `description`, `type`, `enum`, `const`, gängige Grenzen), passenden UI-Hinweismetadaten und Zusammenfassungen der direkten Kindknoten zurück. Verwenden Sie dies für pfadbezogene Drill-downs in der Control UI oder in benutzerdefinierten Clients.
@@ -191,15 +192,18 @@ Provider-Builder-Ziele müssen `secrets.providers.<alias>` als Pfad verwenden.
   <Accordion title="Gemeinsame Flags">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
+
   </Accordion>
   <Accordion title="Env-Provider (--provider-source env)">
     - `--provider-allowlist <ENV_VAR>` (wiederholbar)
+
   </Accordion>
   <Accordion title="File-Provider (--provider-source file)">
     - `--provider-path <path>` (erforderlich)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
+
   </Accordion>
   <Accordion title="Exec-Provider (--provider-source exec)">
     - `--provider-command <path>` (erforderlich)
@@ -212,6 +216,7 @@ Provider-Builder-Ziele müssen `secrets.providers.<alias>` als Pfad verwenden.
     - `--provider-trusted-dir <path>` (wiederholbar)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
+
   </Accordion>
 </AccordionGroup>
 
@@ -264,6 +269,7 @@ openclaw config set channels.discord.token \
     - Exec-SecretRef-Prüfungen werden während `dry-run` standardmäßig übersprungen, um Seiteneffekte durch Befehle zu vermeiden.
     - Verwenden Sie `--allow-exec` zusammen mit `--dry-run`, um Exec-SecretRef-Prüfungen zu aktivieren (dies kann Provider-Befehle ausführen).
     - `--allow-exec` ist nur für `dry-run` vorgesehen und erzeugt einen Fehler, wenn es ohne `--dry-run` verwendet wird.
+
   </Accordion>
   <Accordion title="Felder von --dry-run --json">
     `--dry-run --json` gibt einen maschinenlesbaren Bericht aus:
@@ -355,6 +361,7 @@ openclaw config set channels.discord.token \
     - `SecretRef assignment(s) could not be resolved`: Der referenzierte Provider/Ref kann derzeit nicht aufgelöst werden (fehlende Env-Variable, ungültiger Datei-Zeiger, Fehler beim Exec-Provider oder Nichtübereinstimmung von Provider/Quelle).
     - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: Dry-run hat Exec-Refs übersprungen; führen Sie den Befehl erneut mit `--allow-exec` aus, wenn Sie die Auflösbarkeitsvalidierung für Exec benötigen.
     - Im Batch-Modus: korrigieren Sie fehlerhafte Einträge und führen Sie `--dry-run` erneut aus, bevor Sie schreiben.
+
   </Accordion>
 </AccordionGroup>
 

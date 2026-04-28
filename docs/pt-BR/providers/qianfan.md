@@ -118,6 +118,7 @@ A ref de modelo incluída por padrão é `qianfan/deepseek-v3.2`. Você só prec
     - Certifique-se de que sua chave de API começa com `bce-v3/ALTAK-` e que o acesso à API do Qianfan está habilitado no console do Baidu Cloud.
     - Se os modelos não estiverem listados, confirme que sua conta tem o serviço Qianfan ativado.
     - A base URL padrão é `https://qianfan.baidubce.com/v2`. Só a altere se você usar um endpoint ou proxy personalizado.
+
   </Accordion>
 </AccordionGroup>
 

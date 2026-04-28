@@ -125,6 +125,7 @@ i modelli rilevati prima del catalogo statico di fallback. Il fallback bundled i
     - Se il rilevamento del modello fallisce all'avvio, OpenClaw usa come fallback il catalogo statico bundled che contiene `kilocode/kilo/auto`.
     - Conferma che la tua chiave API sia valida e che il tuo account Kilo abbia abilitati i modelli desiderati.
     - Quando il Gateway viene eseguito come demone, assicurati che `KILOCODE_API_KEY` sia disponibile a quel processo (ad esempio in `~/.openclaw/.env` o tramite `env.shellEnv`).
+
   </Accordion>
 </AccordionGroup>
 

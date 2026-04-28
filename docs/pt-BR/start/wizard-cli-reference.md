@@ -44,14 +44,17 @@ Ele não instala nem modifica nada no host remoto.
       - Apenas configuração
       - Configuração + credenciais + sessões
       - Redefinição completa (também remove o workspace)
+
   </Step>
   <Step title="Modelo e autenticação">
     - A matriz completa de opções está em [Opções de autenticação e modelo](#auth-and-model-options).
+
   </Step>
   <Step title="Workspace">
     - Padrão `~/.openclaw/workspace` (configurável).
     - Preenche arquivos do workspace necessários para o ritual de bootstrap da primeira execução.
     - Layout do workspace: [Workspace do agente](/pt-BR/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Solicita porta, bind, modo de autenticação e exposição por Tailscale.
@@ -65,6 +68,7 @@ Ele não instala nem modifica nada no host remoto.
       - Não pode ser combinado com `--gateway-token`.
     - Desative a autenticação apenas se você confiar totalmente em todos os processos locais.
     - Binds fora de loopback ainda exigem autenticação.
+
   </Step>
   <Step title="Canais">
     - [WhatsApp](/pt-BR/channels/whatsapp): login opcional por QR
@@ -88,18 +92,22 @@ Ele não instala nem modifica nada no host remoto.
       - Se a criação da tarefa for negada, o OpenClaw usa como fallback um item de login por usuário na pasta Startup e inicia o gateway imediatamente.
       - Scheduled Tasks continuam sendo preferíveis porque fornecem melhor status de supervisor.
     - Seleção de runtime: Node (recomendado; obrigatório para WhatsApp e Telegram). Bun não é recomendado.
+
   </Step>
   <Step title="Verificação de integridade">
     - Inicia o gateway (se necessário) e executa `openclaw health`.
     - `openclaw status --deep` adiciona a probe de integridade do gateway ao vivo à saída de status, incluindo probes de canal quando compatível.
+
   </Step>
   <Step title="Skills">
     - Lê as Skills disponíveis e verifica os requisitos.
     - Permite escolher o gerenciador Node: npm, pnpm ou bun.
     - Instala dependências opcionais (algumas usam Homebrew no macOS).
+
   </Step>
   <Step title="Finalizar">
     - Resumo e próximos passos, incluindo opções de app para iOS, Android e macOS.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ O que você define:
 - Dicas de descoberta:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Opções de autenticação e modelo

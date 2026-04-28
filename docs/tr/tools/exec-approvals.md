@@ -109,6 +109,7 @@ Onaylar, yürütmenin yapıldığı ana makinede yerel bir JSON dosyasında tutu
   - `deny` — tüm ana makine yürütme isteklerini engeller.
   - `allowlist` — yalnızca izin listesindeki komutlara izin verir.
   - `full` — her şeye izin verir (yükseltilmiş ile eşdeğer).
+
 </ParamField>
 
 ### `exec.ask`
@@ -117,6 +118,7 @@ Onaylar, yürütmenin yapıldığı ana makinede yerel bir JSON dosyasında tutu
   - `off` — asla sorma.
   - `on-miss` — yalnızca izin listesi eşleşmediğinde sor.
   - `always` — her komutta sor. Dayanıklı `allow-always` güveni, etkili sorma modu `always` olduğunda istemleri **bastırmaz**.
+
 </ParamField>
 
 ### `askFallback`
@@ -127,6 +129,7 @@ Onaylar, yürütmenin yapıldığı ana makinede yerel bir JSON dosyasında tutu
 - `deny` — engelle.
 - `allowlist` — yalnızca izin listesi eşleşirse izin ver.
 - `full` — izin ver.
+
 </ParamField>
 
 ### `tools.exec.strictInlineEval`
@@ -166,6 +169,7 @@ Siz açıkça sıkılaştırmadıkça YOLO, varsayılan ana makine davranışıd
 - YOLO, ana makine yürütmesinin **nasıl** onaylandığını seçer: `security=full` artı `ask=off`.
 - YOLO modunda OpenClaw, yapılandırılmış ana makine yürütme politikasının üstüne ayrı bir sezgisel komut gizleme onay geçidi veya betik ön kontrol reddetme katmanı eklemez.
 - `auto`, sandbox içindeki bir oturumdan gateway yönlendirmesini serbest bir geçersiz kılma yapmaz. Çağrı başına `host=node` isteğine `auto` üzerinden izin verilir; `host=gateway` isteğine ise yalnızca etkin bir sandbox çalışma zamanı yoksa `auto` üzerinden izin verilir. Kararlı bir `auto` dışı varsayılan için `tools.exec.host` ayarlayın veya `/exec host=...` komutunu açıkça kullanın.
+
 </Warning>
 
 Kendi etkileşimsiz izin modunu sunan CLI tabanlı sağlayıcılar bu politikayı izleyebilir. Claude CLI, OpenClaw'ın istenen yürütme politikası YOLO olduğunda `--permission-mode bypassPermissions` ekler. Bu arka uç davranışını `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` altında açık Claude argümanlarıyla geçersiz kılın — örneğin `--permission-mode default`, `acceptEdits` veya `bypassPermissions`.
@@ -235,6 +239,7 @@ EOF
 - `openclaw exec-policy`, node onaylarını eşzamanlamaz.
 - `openclaw exec-policy set --host node` reddedilir.
 - Node yürütme onayları çalışma zamanında node'dan alınır, bu nedenle node hedefli güncellemeler `openclaw approvals --node ...` kullanmalıdır.
+
 </Note>
 
 ### Yalnızca oturum kısayolu
@@ -277,6 +282,7 @@ Her izin listesi girdisi şunları izler:
 - Bu, el ile yol izin listesi girdilerinden ayrı **örtük bir kolaylık izin listesidir**.
 - Gateway ile node'un aynı güven sınırında olduğu güvenilir operatör ortamları için tasarlanmıştır.
 - Sıkı açık güven gerektiriyorsanız `autoAllowSkills: false` kullanın ve yalnızca el ile yol izin listesi girdileri kullanın.
+
 </Warning>
 
 ## Güvenli ikili dosyalar ve onay iletme

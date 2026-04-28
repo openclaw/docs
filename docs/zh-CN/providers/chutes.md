@@ -134,6 +134,7 @@ OpenClaw 为内置 Chutes 目录注册了三个便捷别名：
     - API 密钥和 OAuth 发现都使用相同的 `chutes` provider id。
     - Chutes 模型会注册为 `chutes/<model-id>`。
     - 如果启动时发现失败，会自动使用内置静态目录。
+
   </Accordion>
 </AccordionGroup>
 

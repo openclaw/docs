@@ -72,6 +72,7 @@ OpenClaw가 코딩 런타임 자체를 호스팅하고 에이전트 세션을 Op
     - `openclaw agent`, `openclaw infer model run` 같은 일회성 에이전트 진입점은 응답이 완료되면 자신이 연 번들 MCP 런타임을 종료하므로, 반복 스크립트 실행 시 stdio MCP 하위 프로세스가 누적되지 않습니다
     - OpenClaw가 시작한 stdio MCP 서버(번들 또는 사용자 구성)는 종료 시 프로세스 트리 단위로 정리되므로, 부모 stdio 클라이언트가 종료된 뒤에도 서버가 시작한 하위 프로세스가 살아남지 않습니다
     - 세션을 삭제하거나 재설정하면 공유 런타임 정리 경로를 통해 해당 세션의 MCP 클라이언트도 함께 해제되므로, 제거된 세션에 연결된 stdio 연결이 남지 않습니다
+
   </Accordion>
 </AccordionGroup>
 
@@ -210,6 +211,7 @@ OpenClaw가 코딩 런타임 자체를 호스팅하고 에이전트 세션을 Op
 - 큐는 라이브 전용이며, MCP 브리지가 시작될 때 시작됩니다
 - `events_poll`과 `events_wait`는 오래된 Gateway 히스토리를 자체적으로 재생하지 않습니다
 - 영구 backlog는 `messages_read`로 읽어야 합니다
+
 </Warning>
 
 ### Claude 채널 알림
@@ -367,6 +369,7 @@ pnpm test:docker:mcp-channels
     - 런타임 어댑터는 실행 시점에 실제로 지원하는 transport 형태를 결정합니다
     - 내장 Pi는 구성된 MCP 도구를 일반 `coding` 및 `messaging` 도구 프로필에 노출합니다. `minimal`은 여전히 이를 숨기며, `tools.deny: ["bundle-mcp"]`는 이를 명시적으로 비활성화합니다
     - 세션 범위 번들 MCP 런타임은 유휴 시간이 `mcp.sessionIdleTtlMs`밀리초를 넘으면 회수됩니다(기본값 10분, 비활성화하려면 `0`). 일회성 내장 실행은 실행 종료 시 이를 정리합니다
+
   </Accordion>
 </AccordionGroup>
 

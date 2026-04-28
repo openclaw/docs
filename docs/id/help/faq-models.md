@@ -102,6 +102,7 @@ x-i18n:
     - Deployment ini bisa berbeda dan dapat berubah seiring waktu; tidak ada rekomendasi provider yang tetap.
     - Periksa pengaturan runtime saat ini pada masing-masing gateway dengan `openclaw models status`.
     - Untuk agen yang sensitif terhadap keamanan/menggunakan tool, gunakan model generasi terbaru terkuat yang tersedia.
+
   </Accordion>
 
   <Accordion title="Bagaimana cara mengganti model secara langsung (tanpa restart)?">

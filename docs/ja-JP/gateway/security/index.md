@@ -310,6 +310,7 @@ node-role の Control UI セッションには拡張されません。
     - `hooks.mappings[<index>].allowUnsafeExternalContent=true`
     - `tools.exec.applyPatch.workspaceOnly=false`
     - `plugins.entries.acpx.config.permissionMode=approve-all`
+
   </Accordion>
 
   <Accordion title="設定スキーマ内のすべての `dangerous*` / `dangerously*` キー">

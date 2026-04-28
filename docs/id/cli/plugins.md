@@ -161,6 +161,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
     - singkatan repo GitHub seperti `owner/repo`
     - URL repo GitHub seperti `https://github.com/owner/repo`
     - URL git
+
   </Tab>
   <Tab title="Aturan marketplace remote">
     Untuk marketplace remote yang dimuat dari GitHub atau git, entri Plugin harus tetap berada di dalam repo marketplace yang di-clone. OpenClaw menerima sumber path relatif dari repo tersebut dan menolak sumber Plugin HTTP(S), absolute-path, git, GitHub, dan sumber non-path lainnya dari manifest remote.

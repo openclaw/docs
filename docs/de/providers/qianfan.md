@@ -117,6 +117,7 @@ Die standardmäßig gebündelte Modell-Ref ist `qianfan/deepseek-v3.2`. Sie müs
     - Stellen Sie sicher, dass Ihr API-Schlüssel mit `bce-v3/ALTAK-` beginnt und in der Baidu-Cloud-Konsole Zugriff auf die Qianfan-API aktiviert hat.
     - Wenn keine Modelle aufgelistet werden, prüfen Sie, ob Ihr Konto den Qianfan-Dienst aktiviert hat.
     - Die Standard-Base-URL ist `https://qianfan.baidubce.com/v2`. Ändern Sie sie nur, wenn Sie einen benutzerdefinierten Endpunkt oder Proxy verwenden.
+
   </Accordion>
 </AccordionGroup>
 

@@ -164,12 +164,14 @@ Gateway، ثم أعد تشغيل Gateway لتحميله.
     - في المستوى المجاني من ngrok، اضبط `publicUrl` على عنوان URL الدقيق الخاص بـ ngrok؛ إذ يُفرض التحقق من التوقيع دائمًا.
     - يسمح `tunnel.allowNgrokFreeTierLoopbackBypass: true` بـ Webhooks من Twilio ذات التوقيعات غير الصالحة **فقط** عندما تكون `tunnel.provider="ngrok"` و`serve.bind` هي local loopback (وكيل ngrok المحلي). للتطوير المحلي فقط.
     - قد تتغير عناوين URL الخاصة بالمستوى المجاني من Ngrok أو تضيف سلوكًا وسيطًا؛ وإذا انحرف `publicUrl`، فسيفشل التحقق من توقيعات Twilio. في الإنتاج: يُفضَّل استخدام نطاق ثابت أو funnel عبر Tailscale.
+
   </Accordion>
   <Accordion title="حدود اتصالات البث">
     - يقوم `streaming.preStartTimeoutMs` بإغلاق المقابس التي لا ترسل إطار `start` صالحًا مطلقًا.
     - يضع `streaming.maxPendingConnections` حدًا إجماليًا للمقابس غير الموثقة قبل البدء.
     - يضع `streaming.maxPendingConnectionsPerIp` حدًا للمقابس غير الموثقة قبل البدء لكل عنوان IP مصدر.
     - يضع `streaming.maxConnections` حدًا إجماليًا للمقابس المفتوحة لتدفق الوسائط (المعلّقة + النشطة).
+
   </Accordion>
   <Accordion title="ترحيلات الإعدادات القديمة">
     تُعاد كتابة الإعدادات الأقدم التي تستخدم `provider: "log"`، أو `twilio.from`، أو مفاتيح OpenAI القديمة الخاصة بـ `streaming.*` بواسطة `openclaw doctor --fix`.

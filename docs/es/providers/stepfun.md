@@ -210,6 +210,7 @@ Elige la superficie de proveedor y sigue los pasos de configuración.
     - `step-3.5-flash-2603` actualmente solo está expuesto en `stepfun-plan`.
     - Un único flujo de autenticación escribe perfiles coincidentes con la región para `stepfun` y `stepfun-plan`, de modo que ambas superficies puedan descubrirse juntas.
     - Usa `openclaw models list` y `openclaw models set <provider/model>` para inspeccionar o cambiar modelos.
+
   </Accordion>
 </AccordionGroup>
 

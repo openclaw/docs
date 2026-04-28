@@ -56,6 +56,7 @@ OpenClaw 通过内置的迁移提供商导入 Hermes 状态。该提供商会在
   <Accordion title="模型配置">
     - 来自 Hermes `config.yaml` 的默认模型选择。
     - 来自 `providers` 和 `custom_providers` 的已配置模型提供商及自定义 OpenAI 兼容端点。
+
   </Accordion>
   <Accordion title="MCP 服务器">
     来自 `mcp_servers` 或 `mcp.servers` 的 MCP 服务器定义。
@@ -63,6 +64,7 @@ OpenClaw 通过内置的迁移提供商导入 Hermes 状态。该提供商会在
   <Accordion title="工作区文件">
     - `SOUL.md` 和 `AGENTS.md` 会复制到 OpenClaw 智能体工作区。
     - `memories/MEMORY.md` 和 `memories/USER.md` 会**追加**到对应的 OpenClaw 记忆文件中，而不是覆盖它们。
+
   </Accordion>
   <Accordion title="记忆配置">
     OpenClaw 文件记忆的默认记忆配置。像 Honcho 这样的外部记忆提供商会被记录为归档项或手动审查项，以便你有意识地迁移它们。

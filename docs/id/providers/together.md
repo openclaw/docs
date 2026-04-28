@@ -126,6 +126,7 @@ pemilihan penyedia, dan perilaku failover.
     - Jika model tidak muncul, pastikan kunci API ditetapkan di
       environment yang benar untuk proses Gateway Anda.
     - Ref model menggunakan format `together/<model-id>`.
+
   </Accordion>
 </AccordionGroup>
 

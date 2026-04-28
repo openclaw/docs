@@ -82,12 +82,14 @@ chat peminta saat proses selesai.
     - Saat selesai, sub-agent mengumumkan pesan ringkasan/hasil kembali ke channel chat peminta.
     - Penyelesaian bersifat berbasis push. Setelah di-spawn, **jangan** melakukan polling `/subagents list`, `sessions_list`, atau `sessions_history` dalam loop hanya untuk menunggu proses selesai; periksa status hanya sesuai kebutuhan untuk debugging atau intervensi.
     - Saat selesai, OpenClaw akan melakukan upaya terbaik untuk menutup tab browser/proses terlacak yang dibuka oleh sesi sub-agent tersebut sebelum alur pembersihan pengumuman dilanjutkan.
+
   </Accordion>
   <Accordion title="Ketahanan pengiriman spawn manual">
     - OpenClaw mencoba pengiriman `agent` langsung terlebih dahulu dengan kunci idempotensi yang stabil.
     - Jika pengiriman langsung gagal, sistem akan menggunakan fallback ke perutean antrean.
     - Jika perutean antrean masih belum tersedia, pengumuman akan dicoba ulang dengan exponential backoff singkat sebelum akhirnya menyerah.
     - Pengiriman penyelesaian mempertahankan rute peminta yang telah di-resolve: rute penyelesaian yang terikat thread atau terikat percakapan akan diprioritaskan jika tersedia; jika origin penyelesaian hanya menyediakan channel, OpenClaw akan mengisi target/akun yang hilang dari rute hasil resolve sesi peminta (`lastChannel` / `lastTo` / `lastAccountId`) agar pengiriman langsung tetap berfungsi.
+
   </Accordion>
   <Accordion title="Metadata handoff penyelesaian">
     Handoff penyelesaian ke sesi peminta adalah konteks internal yang dihasilkan saat runtime
@@ -105,6 +107,7 @@ chat peminta saat proses selesai.
     - `/subagents spawn` adalah mode sekali jalan (`mode: "run"`). Untuk sesi persisten yang terikat thread, gunakan `sessions_spawn` dengan `thread: true` dan `mode: "session"`.
     - Untuk sesi harness ACP (Claude Code, Gemini CLI, OpenCode, atau Codex ACP/acpx eksplisit), gunakan `sessions_spawn` dengan `runtime: "acp"` saat tool mengiklankan runtime tersebut. Lihat [Model pengiriman ACP](/id/tools/acp-agents#delivery-model) saat men-debug penyelesaian atau loop agent-ke-agent. Saat plugin `codex` diaktifkan, kontrol chat/thread Codex sebaiknya memprioritaskan `/codex ...` daripada ACP kecuali pengguna secara eksplisit meminta ACP/acpx.
     - OpenClaw menyembunyikan `runtime: "acp"` sampai ACP diaktifkan, peminta tidak berada dalam sandbox, dan plugin backend seperti `acpx` dimuat. `runtime: "acp"` mengharapkan id harness ACP eksternal, atau entri `agents.list[]` dengan `runtime.type="acp"`; gunakan runtime sub-agent default untuk agent konfigurasi OpenClaw normal dari `agents_list`.
+
   </Accordion>
 </AccordionGroup>
 

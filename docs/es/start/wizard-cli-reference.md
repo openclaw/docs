@@ -44,14 +44,17 @@ No instala ni modifica nada en el host remoto.
       - Solo configuración
       - Configuración + credenciales + sesiones
       - Restablecimiento completo (también elimina el workspace)
+
   </Step>
   <Step title="Modelo y autenticación">
     - La matriz completa de opciones está en [Opciones de autenticación y modelo](#auth-and-model-options).
+
   </Step>
   <Step title="Workspace">
     - Valor predeterminado `~/.openclaw/workspace` (configurable).
     - Inicializa los archivos del workspace necesarios para el ritual de arranque de la primera ejecución.
     - Estructura del workspace: [Workspace del agente](/es/concepts/agent-workspace).
+
   </Step>
   <Step title="Gateway">
     - Solicita puerto, bind, modo de autenticación y exposición mediante Tailscale.
@@ -65,6 +68,7 @@ No instala ni modifica nada en el host remoto.
       - No se puede combinar con `--gateway-token`.
     - Desactiva la autenticación solo si confías plenamente en todos los procesos locales.
     - Los binds fuera de loopback siguen requiriendo autenticación.
+
   </Step>
   <Step title="Canales">
     - [WhatsApp](/es/channels/whatsapp): inicio de sesión QR opcional
@@ -88,18 +92,22 @@ No instala ni modifica nada en el host remoto.
       - Si se deniega la creación de la tarea, OpenClaw recurre a un elemento de inicio de sesión por usuario en la carpeta de Inicio e inicia el gateway inmediatamente.
       - Las Tareas Programadas siguen siendo preferibles porque proporcionan mejor estado del supervisor.
     - Selección del tiempo de ejecución: Node (recomendado; obligatorio para WhatsApp y Telegram). Bun no se recomienda.
+
   </Step>
   <Step title="Comprobación de estado">
     - Inicia el gateway (si es necesario) y ejecuta `openclaw health`.
     - `openclaw status --deep` añade la sonda de estado en vivo del gateway a la salida de estado, incluidas las sondas de canal cuando son compatibles.
+
   </Step>
   <Step title="Skills">
     - Lee las Skills disponibles y comprueba los requisitos.
     - Te permite elegir el gestor de Node: npm, pnpm o bun.
     - Instala dependencias opcionales (algunas usan Homebrew en macOS).
+
   </Step>
   <Step title="Finalizar">
     - Resumen y siguientes pasos, incluidas opciones de apps para iOS, Android y macOS.
+
   </Step>
 </Steps>
 
@@ -126,6 +134,7 @@ Lo que configuras:
 - Pistas de detección:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
+
 </Note>
 
 ## Opciones de autenticación y modelo

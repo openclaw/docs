@@ -297,6 +297,7 @@ Varsayılan: `tree` (geçerli oturum + onun tarafından oluşturulan oturumlar, 
     - `agent`: geçerli ajan kimliğine ait herhangi bir oturum (aynı ajan kimliği altında gönderen başına oturumlar çalıştırıyorsanız diğer kullanıcıları içerebilir).
     - `all`: herhangi bir oturum. Ajanlar arası hedefleme yine de `tools.agentToAgent` gerektirir.
     - Sandbox kıstırması: geçerli oturum sandbox'lıysa ve `agents.defaults.sandbox.sessionToolsVisibility="spawned"` ise, `tools.sessions.visibility="all"` olsa bile görünürlük `tree` olmaya zorlanır.
+
   </Accordion>
 </AccordionGroup>
 
@@ -328,6 +329,7 @@ Varsayılan: `tree` (geçerli oturum + onun tarafından oluşturulan oturumlar, 
     - Base64 girdileri, sıkı alfabe/dolgu denetimleri ve kod çözme öncesi boyut korumasıyla doğrulanır.
     - Dosya izinleri dizinler için `0700`, dosyalar için `0600` olur.
     - Temizleme `cleanup` ilkesini izler: `delete` ekleri her zaman kaldırır; `keep`, bunları yalnızca `retainOnSessionKeep: true` olduğunda korur.
+
   </Accordion>
 </AccordionGroup>
 
@@ -421,6 +423,7 @@ OpenClaw, yerleşik model kataloğunu kullanır. Yapılandırmada veya `~/.openc
       - Eşleşen model `contextTokens`, mevcutsa açık çalışma zamanı sınırını korur; yerel model meta verisini değiştirmeden etkin bağlamı sınırlamak için bunu kullanın.
       - Yapılandırmanın `models.json` dosyasını tamamen yeniden yazmasını istediğinizde `models.mode: "replace"` kullanın.
       - İşaretçi kalıcılığı kaynak açısından yetkilidir: işaretçiler çözümlenmiş çalışma zamanı gizli değerlerinden değil, etkin kaynak yapılandırma anlık görüntüsünden (çözümleme öncesi) yazılır.
+
   </Accordion>
 </AccordionGroup>
 
@@ -431,6 +434,7 @@ OpenClaw, yerleşik model kataloğunu kullanır. Yapılandırmada veya `~/.openc
     - `models.mode`: sağlayıcı katalog davranışı (`merge` veya `replace`).
     - `models.providers`: sağlayıcı kimliğiyle anahtarlanan özel sağlayıcı eşlemesi.
       - Güvenli düzenlemeler: eklemeli güncellemeler için `openclaw config set models.providers.<id> '<json>' --strict-json --merge` veya `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` kullanın. `config set`, `--replace` geçmediğiniz sürece yıkıcı değiştirmeleri reddeder.
+
   </Accordion>
   <Accordion title="Sağlayıcı bağlantısı ve kimlik doğrulama">
     - `models.providers.*.api`: istek bağdaştırıcısı (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` vb).
@@ -440,6 +444,7 @@ OpenClaw, yerleşik model kataloğunu kullanır. Yapılandırmada veya `~/.openc
     - `models.providers.*.authHeader`: gerektiğinde kimlik bilgisi taşınmasını `Authorization` başlığında zorlar.
     - `models.providers.*.baseUrl`: üst akış API base URL'si.
     - `models.providers.*.headers`: proxy/tenant yönlendirmesi için ek statik başlıklar.
+
   </Accordion>
   <Accordion title="İstek taşıma geçersiz kılmaları">
     `models.providers.*.request`: model-sağlayıcı HTTP istekleri için taşıma geçersiz kılmaları.
@@ -457,6 +462,7 @@ OpenClaw, yerleşik model kataloğunu kullanır. Yapılandırmada veya `~/.openc
     - `models.providers.*.models.*.contextTokens`: isteğe bağlı çalışma zamanı bağlam sınırı. Modelin yerel `contextWindow` değerinden daha küçük bir etkin bağlam bütçesi istiyorsanız bunu kullanın; `openclaw models list`, farklı olduklarında her iki değeri de gösterir.
     - `models.providers.*.models.*.compat.supportsDeveloperRole`: isteğe bağlı uyumluluk ipucu. `api: "openai-completions"` ile boş olmayan yerel olmayan bir `baseUrl` için (`api.openai.com` olmayan host), OpenClaw çalışma zamanında bunu `false` yapmaya zorlar. Boş/atlanmış `baseUrl`, varsayılan OpenAI davranışını korur.
     - `models.providers.*.models.*.compat.requiresStringContent`: yalnızca dizgi kabul eden OpenAI uyumlu sohbet uç noktaları için isteğe bağlı uyumluluk ipucu. `true` olduğunda OpenClaw, isteği göndermeden önce saf metin `messages[].content` dizilerini düz dizgilere indirger.
+
   </Accordion>
   <Accordion title="Amazon Bedrock keşfi">
     - `plugins.entries.amazon-bedrock.config.discovery`: Bedrock otomatik keşif ayarları kökü.
@@ -466,6 +472,7 @@ OpenClaw, yerleşik model kataloğunu kullanır. Yapılandırmada veya `~/.openc
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: keşif yenilemesi için yoklama aralığı.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: keşfedilen modeller için geri dönüş bağlam penceresi.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: keşfedilen modeller için geri dönüş en yüksek çıktı token'ı.
+
   </Accordion>
 </AccordionGroup>
 

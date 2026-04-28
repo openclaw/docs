@@ -41,6 +41,7 @@ Heartbeatはスケジュールされたmain-sessionターンであり、[backgro
     - Heartbeat実行で `HEARTBEAT.md` しか必要ない場合は軽量bootstrap contextを使います。
     - 各Heartbeatで完全な会話履歴を送らないようにするには分離sessionを有効化します。
     - Heartbeatをアクティブな時間帯（ローカル時刻）に制限します。
+
   </Step>
 </Steps>
 
@@ -242,11 +243,13 @@ Telegramのような複数アカウントチャンネルで特定アカウント
   - `main`（デフォルト）: agent main session。
   - 明示的なsessionキー（`openclaw sessions --json` または [sessions CLI](/ja-JP/cli/sessions) から取得）。
   - sessionキー形式: [Sessions](/ja-JP/concepts/session) と [Groups](/ja-JP/channels/groups) を参照。
+
 </ParamField>
 <ParamField path="target" type="string">
   - `last`: 最後に使った外部チャンネルへ配信。
   - 明示的なチャンネル: 設定済みの任意のチャンネルまたはPlugin id。たとえば `discord`、`matrix`、`telegram`、`whatsapp`。
   - `none`（デフォルト）: Heartbeatは実行しますが、外部には**配信しません**。
+
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
   direct/DM配信動作を制御します。`allow`: direct/DM Heartbeat配信を許可。`block`: direct/DM配信を抑制（`reason=dm-blocked`）。
@@ -274,6 +277,7 @@ Telegramのような複数アカウントチャンネルで特定アカウント
   - 任意のIANA識別子（例: `America/New_York`）: それを直接使います。無効な場合は上記の `"user"` 動作にフォールバックします。
   - `start` と `end` は、アクティブなウィンドウにするには同じであってはいけません。同じ値は幅0として扱われます（常にウィンドウ外）。
   - アクティブウィンドウ外では、Heartbeatは次にウィンドウ内に入るtickまでスキップされます。
+
 </ParamField>
 
 ## 配信動作
@@ -286,16 +290,19 @@ Telegramのような複数アカウントチャンネルで特定アカウント
     - Heartbeat配信はデフォルトでdirect/DMターゲットを許可します。directターゲットへの送信を抑制しつつHeartbeatターン自体は実行するには `directPolicy: "block"` を設定します。
     - main queueがビジーの場合、Heartbeatはスキップされ、後で再試行されます。
     - `target` が外部宛先なしに解決された場合でも、実行自体は行われますが送信メッセージは送られません。
+
   </Accordion>
   <Accordion title="可視性とスキップ動作">
     - `showOk`、`showAlerts`、`useIndicator` がすべて無効な場合、実行は事前に `reason=alerts-disabled` でスキップされます。
     - アラート配信だけが無効な場合でも、OpenClawはHeartbeatを実行し、due-task timestampを更新し、session idle timestampを復元し、外向きアラートpayloadを抑制できます。
     - 解決されたHeartbeatターゲットが入力中表示をサポートしている場合、Heartbeat実行中はOpenClawが入力中表示を出します。これはHeartbeatがチャット出力を送るのと同じターゲットを使い、`typingMode: "never"` で無効化されます。
+
   </Accordion>
   <Accordion title="sessionライフサイクルと監査">
     - Heartbeat専用の返信は**sessionを存続させません**。Heartbeat metadataがsession rowを更新することはありますが、idle expiryは最後の実ユーザー/チャンネルメッセージの `lastInteractionAt` を使い、daily expiryは `sessionStartedAt` を使います。
     - Control UIとWebChat履歴では、HeartbeatプロンプトとOKのみのacknowledgmentは非表示になります。基礎のsession transcriptには、監査/再生のためにそれらのターンが残ることがあります。
     - 切り離された [background tasks](/ja-JP/automation/tasks) は、system eventをキューし、main sessionが何かにすぐ気づくべき場合にHeartbeatを起こせます。このwakeによってHeartbeat実行がbackground taskになるわけではありません。
+
   </Accordion>
 </AccordionGroup>
 
@@ -410,6 +417,7 @@ tasks:
     - `HEARTBEAT.md` 内のtask以外の内容は保持され、due-task一覧の後に追加コンテキストとして追記されます。
     - taskの最終実行timestampはsession state（`heartbeatTaskState`）に保存されるため、通常の再起動をまたいでもintervalが維持されます。
     - task timestampは、Heartbeat実行が通常の返信経路を完了した後にだけ進められます。`empty-heartbeat-file` / `no-tasks-due` でスキップされた実行では、task完了扱いになりません。
+
   </Accordion>
 </AccordionGroup>
 

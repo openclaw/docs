@@ -313,6 +313,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
       - 默认根路径模式：`/Users/*/Library/Messages/Attachments`
     - SCP 使用严格的主机密钥检查（`StrictHostKeyChecking=yes`）
     - 出站媒体大小使用 `channels.imessage.mediaMaxMb`（默认 16 MB）
+
   </Accordion>
 
   <Accordion title="出站分块">
@@ -320,6 +321,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - 分块模式：`channels.imessage.chunkMode`
       - `length`（默认）
       - `newline`（优先按段落拆分）
+
   </Accordion>
 
   <Accordion title="寻址格式">
