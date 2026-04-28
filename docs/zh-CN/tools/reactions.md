@@ -13,7 +13,7 @@ x-i18n:
   source_path: tools/reactions.md
   workflow: 15
 ---
-<!-- i18n-cache-bust: 2026-04-28T06:30:00Z -->
+{/* i18n-cache-bust: 2026-04-28T06:30:00Z */}
 
 智能体可以使用带有 `react` 动作的 `message`
 工具，在消息上添加或移除 emoji 表情回应。不同渠道中的表情回应行为有所不同。
