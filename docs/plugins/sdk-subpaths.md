@@ -25,6 +25,7 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
 | `plugin-sdk/testing`                 | Broad compatibility barrel for legacy plugin tests; prefer focused test subpaths for new extension tests                                               |
 | `plugin-sdk/plugin-test-api`         | Minimal `OpenClawPluginApi` mock builder for direct plugin registration unit tests                                                                     |
 | `plugin-sdk/channel-test-helpers`    | Channel account lifecycle, directory, send-config, runtime mock, hook, and generic channel contract test helpers                                       |
+| `plugin-sdk/channel-target-testing`  | Shared channel target-resolution error-case test suite                                                                                                 |
 | `plugin-sdk/plugin-test-contracts`   | Plugin registration, package manifest, public artifact, runtime API, import side-effect, and direct import contract helpers                            |
 | `plugin-sdk/plugin-test-runtime`     | Plugin runtime, registry, provider-registration, setup-wizard, and runtime task-flow fixtures for tests                                                |
 | `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, web-search/fetch, and wizard contract helpers                                                     |
@@ -270,6 +271,7 @@ For the plugin authoring guide, see [Plugin SDK overview](/plugins/sdk-overview)
     | `plugin-sdk/testing` | Broad compatibility barrel for legacy plugin tests. New extension tests should import focused SDK subpaths such as `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/test-env`, or `plugin-sdk/test-fixtures` instead |
     | `plugin-sdk/plugin-test-api` | Minimal `createTestPluginApi` helper for direct plugin registration unit tests without importing repo test helper bridges |
     | `plugin-sdk/channel-test-helpers` | Channel-oriented test helpers for generic actions/setup/status contracts, directory assertions, account startup lifecycle, send-config threading, runtime mocks, status issues, outbound delivery, and hook registration |
+    | `plugin-sdk/channel-target-testing` | Shared target-resolution error-case suite for channel tests |
     | `plugin-sdk/plugin-test-contracts` | Plugin package, registration, public artifact, direct import, runtime API, and import side-effect contract helpers |
     | `plugin-sdk/provider-test-contracts` | Provider runtime, auth, discovery, onboard, catalog, wizard, web-search/fetch, and stream contract helpers |
     | `plugin-sdk/test-fixtures` | Generic CLI runtime capture, sandbox context, skill writer, agent-message, system-event, terminal-text, chunking, auth-token, and typed-case fixtures |
