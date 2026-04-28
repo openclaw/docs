@@ -202,6 +202,12 @@ Cron-driven runs also expose `ctx.jobId` (the originating cron job id) so
 plugin hooks can scope metrics, side effects, or state to a specific scheduled
 job.
 
+`agent_end` is an observation hook and runs fire-and-forget after the turn. The
+hook runner applies a 30 second timeout so a wedged plugin or embedding
+endpoint cannot leave the hook promise pending forever. A timeout is logged and
+OpenClaw continues; it does not cancel plugin-owned network work unless the
+plugin also uses its own abort signal.
+
 Use `model_call_started` and `model_call_ended` for provider-call telemetry
 that should not receive raw prompts, history, responses, headers, request
 bodies, or provider request IDs. These hooks include stable metadata such as
