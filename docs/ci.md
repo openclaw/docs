@@ -214,10 +214,13 @@ builds the private QA runtime and compares the mock GPT-5.5 and Opus 4.6
 agentic packs. The `QA-Lab - All Lanes` workflow runs nightly on `main` and on
 manual dispatch; it fans out the mock parity gate, live Matrix lane, and live
 Telegram and Discord lanes as parallel jobs. The live jobs use the
-`qa-live-shared` environment, and Telegram/Discord use Convex leases. Matrix
-uses `--profile fast` for scheduled and release gates, adding `--fail-fast` only
-when the checked-out CLI supports it. The CLI default and manual workflow input
-remain `all`; manual `matrix_profile=all`
+`qa-live-shared` environment, and Telegram/Discord use Convex leases. Release
+checks run Matrix and Telegram live transport lanes with the deterministic mock
+provider so the channel contract is isolated from live model latency; provider
+connectivity is covered by the separate live model, native provider, and Docker
+provider suites. Matrix uses `--profile fast` for scheduled and release gates,
+adding `--fail-fast` only when the checked-out CLI supports it. The CLI default
+and manual workflow input remain `all`; manual `matrix_profile=all`
 dispatch always shards full Matrix coverage into `transport`, `media`,
 `e2ee-smoke`, `e2ee-deep`, and `e2ee-cli` jobs. `OpenClaw Release Checks` also
 runs the release-critical QA Lab lanes before release approval; its QA parity
