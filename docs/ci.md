@@ -52,6 +52,14 @@ The native live media shards run in
 live suites on normal Blacksmith runners, because container jobs are the wrong
 place to launch nested Docker tests.
 
+Docker-backed live model/backend shards use a separate shared
+`ghcr.io/openclaw/openclaw-live-test:<sha>` image per selected commit. The live
+release workflow builds and pushes that image once, then the Docker live model,
+gateway, CLI backend, ACP bind, and Codex harness shards run with
+`OPENCLAW_SKIP_DOCKER_BUILD=1`. If those shards rebuild the full source Docker
+target independently, the release run is misconfigured and will waste the wall
+clock on duplicate image builds.
+
 `OpenClaw Release Checks` uses the trusted workflow ref to resolve the selected
 ref once into a `release-package-under-test` tarball, then passes that artifact
 to both the live/E2E release-path Docker workflow and the package acceptance
@@ -216,9 +224,12 @@ manual dispatch; it fans out the mock parity gate, live Matrix lane, and live
 Telegram and Discord lanes as parallel jobs. The live jobs use the
 `qa-live-shared` environment, and Telegram/Discord use Convex leases. Release
 checks run Matrix and Telegram live transport lanes with the deterministic mock
-provider so the channel contract is isolated from live model latency; provider
-connectivity is covered by the separate live model, native provider, and Docker
-provider suites. Matrix uses `--profile fast` for scheduled and release gates,
+provider and mock-qualified models (`mock-openai/gpt-5.5` and
+`mock-openai/gpt-5.5-alt`) so the channel contract is isolated from live model
+latency and normal provider-plugin startup. The live transport gateway also
+disables memory search because QA parity covers memory behavior separately;
+provider connectivity is covered by the separate live model, native provider,
+and Docker provider suites. Matrix uses `--profile fast` for scheduled and release gates,
 adding `--fail-fast` only when the checked-out CLI supports it. The CLI default
 and manual workflow input remain `all`; manual `matrix_profile=all`
 dispatch always shards full Matrix coverage into `transport`, `media`,
