@@ -912,6 +912,11 @@ Default slash command settings:
     When those buttons are present, they are the primary approval UX; OpenClaw
     should only include a manual `/approve` command when the tool result says
     chat approvals are unavailable or manual approval is the only path.
+    If the Discord native approval runtime is not active, OpenClaw keeps the
+    local deterministic `/approve <id> <decision>` prompt visible. If the
+    runtime is active but a native card cannot be delivered to any target,
+    OpenClaw sends a same-chat fallback notice with the exact `/approve`
+    command from the pending approval.
 
     Gateway auth and approval resolution follow the shared Gateway client contract (`plugin:` IDs resolve through `plugin.approval.resolve`; other IDs through `exec.approval.resolve`). Approvals expire after 30 minutes by default.
 
