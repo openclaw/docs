@@ -300,11 +300,10 @@ jobs:
               || true
           }
 
-          skip_stale_source() {
+          warn_if_source_moved() {
             current_source_sha="$(remote_source_sha)"
             if [ -n "$current_source_sha" ] && [ "$current_source_sha" != "$SOURCE_SHA" ]; then
-              echo "Skipping ${LOCALE} translation for stale source ${SOURCE_SHA}; origin/main has ${current_source_sha}."
-              exit 0
+              echo "Source moved from ${SOURCE_SHA} to ${current_source_sha} while translating ${LOCALE}; committing finished locale output and letting the next run refresh changed source hashes."
             fi
           }
 
@@ -314,7 +313,7 @@ jobs:
           fi
 
           if git fetch origin main:refs/remotes/origin/main; then
-            skip_stale_source
+            warn_if_source_moved
           fi
 
           git config user.name "openclaw-docs-i18n[bot]"
@@ -323,7 +322,7 @@ jobs:
           git commit -m "chore(i18n): refresh ${LOCALE} translations"
           for attempt in 1 2 3 4 5; do
             if git fetch origin main:refs/remotes/origin/main; then
-              skip_stale_source
+              warn_if_source_moved
               if git rebase origin/main && git push origin HEAD:main; then
                 exit 0
               fi
