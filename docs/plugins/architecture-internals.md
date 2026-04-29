@@ -96,10 +96,13 @@ must become visible on the next explicit metadata read or snapshot rebuild.
 The safe metadata fast path is explicit object ownership, not a hidden cache.
 Gateway startup hot paths should pass the current `PluginMetadataSnapshot`, the
 derived `PluginLookUpTable`, or an explicit manifest registry through the call
-chain. Config validation, startup auto-enable, plugin bootstrap, setup lookup,
-and provider selection can reuse those objects while they represent the current
-config and plugin inventory. When that input changes, rebuild and replace the
-snapshot instead of mutating it or keeping historical copies.
+chain. Config validation, startup auto-enable, plugin bootstrap, and provider
+selection can reuse those objects while they represent the current config and
+plugin inventory. Setup lookup still reconstructs manifest metadata on demand
+unless the specific setup path receives an explicit manifest registry; keep that
+as a cold-path fallback rather than adding hidden lookup caches. When the input
+changes, rebuild and replace the snapshot instead of mutating it or keeping
+historical copies.
 Views over the active plugin registry and bundled channel bootstrap helpers
 should be recomputed from the current registry/root. Short-lived maps are fine
 inside one call to dedupe work or guard reentry; they must not become process
