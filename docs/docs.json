@@ -1155,6 +1155,7 @@
                       "concepts/memory-honcho",
                       "concepts/memory-search",
                       "concepts/active-memory",
+                      "concepts/commitments",
                       "concepts/dreaming"
                     ]
                   },
@@ -1626,6 +1627,7 @@
                       "cli/hooks",
                       "cli/infer",
                       "cli/memory",
+                      "cli/commitments",
                       "cli/message",
                       "cli/models",
                       "cli/sessions",
@@ -2624,6 +2626,7 @@
                       "zh-TW/concepts/memory-honcho",
                       "zh-TW/concepts/memory-search",
                       "zh-TW/concepts/active-memory",
+                      "zh-TW/concepts/commitments",
                       "zh-TW/concepts/dreaming"
                     ]
                   },
@@ -3095,6 +3098,7 @@
                       "zh-TW/cli/hooks",
                       "zh-TW/cli/infer",
                       "zh-TW/cli/memory",
+                      "zh-TW/cli/commitments",
                       "zh-TW/cli/message",
                       "zh-TW/cli/models",
                       "zh-TW/cli/sessions",
@@ -3478,6 +3482,7 @@
                       "ja-JP/concepts/memory-honcho",
                       "ja-JP/concepts/memory-search",
                       "ja-JP/concepts/active-memory",
+                      "ja-JP/concepts/commitments",
                       "ja-JP/concepts/dreaming"
                     ]
                   },
@@ -3949,6 +3954,7 @@
                       "ja-JP/cli/hooks",
                       "ja-JP/cli/infer",
                       "ja-JP/cli/memory",
+                      "ja-JP/cli/commitments",
                       "ja-JP/cli/message",
                       "ja-JP/cli/models",
                       "ja-JP/cli/sessions",
@@ -4332,6 +4338,7 @@
                       "es/concepts/memory-honcho",
                       "es/concepts/memory-search",
                       "es/concepts/active-memory",
+                      "es/concepts/commitments",
                       "es/concepts/dreaming"
                     ]
                   },
@@ -4803,6 +4810,7 @@
                       "es/cli/hooks",
                       "es/cli/infer",
                       "es/cli/memory",
+                      "es/cli/commitments",
                       "es/cli/message",
                       "es/cli/models",
                       "es/cli/sessions",
@@ -5186,6 +5194,7 @@
                       "pt-BR/concepts/memory-honcho",
                       "pt-BR/concepts/memory-search",
                       "pt-BR/concepts/active-memory",
+                      "pt-BR/concepts/commitments",
                       "pt-BR/concepts/dreaming"
                     ]
                   },
@@ -5657,6 +5666,7 @@
                       "pt-BR/cli/hooks",
                       "pt-BR/cli/infer",
                       "pt-BR/cli/memory",
+                      "pt-BR/cli/commitments",
                       "pt-BR/cli/message",
                       "pt-BR/cli/models",
                       "pt-BR/cli/sessions",
@@ -6040,6 +6050,7 @@
                       "ko/concepts/memory-honcho",
                       "ko/concepts/memory-search",
                       "ko/concepts/active-memory",
+                      "ko/concepts/commitments",
                       "ko/concepts/dreaming"
                     ]
                   },
@@ -6511,6 +6522,7 @@
                       "ko/cli/hooks",
                       "ko/cli/infer",
                       "ko/cli/memory",
+                      "ko/cli/commitments",
                       "ko/cli/message",
                       "ko/cli/models",
                       "ko/cli/sessions",
@@ -6894,6 +6906,7 @@
                       "de/concepts/memory-honcho",
                       "de/concepts/memory-search",
                       "de/concepts/active-memory",
+                      "de/concepts/commitments",
                       "de/concepts/dreaming"
                     ]
                   },
@@ -7365,6 +7378,7 @@
                       "de/cli/hooks",
                       "de/cli/infer",
                       "de/cli/memory",
+                      "de/cli/commitments",
                       "de/cli/message",
                       "de/cli/models",
                       "de/cli/sessions",
@@ -7748,6 +7762,7 @@
                       "fr/concepts/memory-honcho",
                       "fr/concepts/memory-search",
                       "fr/concepts/active-memory",
+                      "fr/concepts/commitments",
                       "fr/concepts/dreaming"
                     ]
                   },
@@ -8219,6 +8234,7 @@
                       "fr/cli/hooks",
                       "fr/cli/infer",
                       "fr/cli/memory",
+                      "fr/cli/commitments",
                       "fr/cli/message",
                       "fr/cli/models",
                       "fr/cli/sessions",
@@ -8602,6 +8618,7 @@
                       "ar/concepts/memory-honcho",
                       "ar/concepts/memory-search",
                       "ar/concepts/active-memory",
+                      "ar/concepts/commitments",
                       "ar/concepts/dreaming"
                     ]
                   },
@@ -9073,6 +9090,7 @@
                       "ar/cli/hooks",
                       "ar/cli/infer",
                       "ar/cli/memory",
+                      "ar/cli/commitments",
                       "ar/cli/message",
                       "ar/cli/models",
                       "ar/cli/sessions",
@@ -9456,6 +9474,7 @@
                       "it/concepts/memory-honcho",
                       "it/concepts/memory-search",
                       "it/concepts/active-memory",
+                      "it/concepts/commitments",
                       "it/concepts/dreaming"
                     ]
                   },
@@ -9927,6 +9946,7 @@
                       "it/cli/hooks",
                       "it/cli/infer",
                       "it/cli/memory",
+                      "it/cli/commitments",
                       "it/cli/message",
                       "it/cli/models",
                       "it/cli/sessions",
@@ -10310,6 +10330,7 @@
                       "vi/concepts/memory-honcho",
                       "vi/concepts/memory-search",
                       "vi/concepts/active-memory",
+                      "vi/concepts/commitments",
                       "vi/concepts/dreaming"
                     ]
                   },
@@ -10781,6 +10802,7 @@
                       "vi/cli/hooks",
                       "vi/cli/infer",
                       "vi/cli/memory",
+                      "vi/cli/commitments",
                       "vi/cli/message",
                       "vi/cli/models",
                       "vi/cli/sessions",
@@ -11164,6 +11186,7 @@
                       "nl/concepts/memory-honcho",
                       "nl/concepts/memory-search",
                       "nl/concepts/active-memory",
+                      "nl/concepts/commitments",
                       "nl/concepts/dreaming"
                     ]
                   },
@@ -11635,6 +11658,7 @@
                       "nl/cli/hooks",
                       "nl/cli/infer",
                       "nl/cli/memory",
+                      "nl/cli/commitments",
                       "nl/cli/message",
                       "nl/cli/models",
                       "nl/cli/sessions",
@@ -12018,6 +12042,7 @@
                       "fa/concepts/memory-honcho",
                       "fa/concepts/memory-search",
                       "fa/concepts/active-memory",
+                      "fa/concepts/commitments",
                       "fa/concepts/dreaming"
                     ]
                   },
@@ -12489,6 +12514,7 @@
                       "fa/cli/hooks",
                       "fa/cli/infer",
                       "fa/cli/memory",
+                      "fa/cli/commitments",
                       "fa/cli/message",
                       "fa/cli/models",
                       "fa/cli/sessions",
@@ -12872,6 +12898,7 @@
                       "tr/concepts/memory-honcho",
                       "tr/concepts/memory-search",
                       "tr/concepts/active-memory",
+                      "tr/concepts/commitments",
                       "tr/concepts/dreaming"
                     ]
                   },
@@ -13343,6 +13370,7 @@
                       "tr/cli/hooks",
                       "tr/cli/infer",
                       "tr/cli/memory",
+                      "tr/cli/commitments",
                       "tr/cli/message",
                       "tr/cli/models",
                       "tr/cli/sessions",
@@ -13726,6 +13754,7 @@
                       "uk/concepts/memory-honcho",
                       "uk/concepts/memory-search",
                       "uk/concepts/active-memory",
+                      "uk/concepts/commitments",
                       "uk/concepts/dreaming"
                     ]
                   },
@@ -14197,6 +14226,7 @@
                       "uk/cli/hooks",
                       "uk/cli/infer",
                       "uk/cli/memory",
+                      "uk/cli/commitments",
                       "uk/cli/message",
                       "uk/cli/models",
                       "uk/cli/sessions",
@@ -14580,6 +14610,7 @@
                       "id/concepts/memory-honcho",
                       "id/concepts/memory-search",
                       "id/concepts/active-memory",
+                      "id/concepts/commitments",
                       "id/concepts/dreaming"
                     ]
                   },
@@ -15051,6 +15082,7 @@
                       "id/cli/hooks",
                       "id/cli/infer",
                       "id/cli/memory",
+                      "id/cli/commitments",
                       "id/cli/message",
                       "id/cli/models",
                       "id/cli/sessions",
@@ -15434,6 +15466,7 @@
                       "pl/concepts/memory-honcho",
                       "pl/concepts/memory-search",
                       "pl/concepts/active-memory",
+                      "pl/concepts/commitments",
                       "pl/concepts/dreaming"
                     ]
                   },
@@ -15905,6 +15938,7 @@
                       "pl/cli/hooks",
                       "pl/cli/infer",
                       "pl/cli/memory",
+                      "pl/cli/commitments",
                       "pl/cli/message",
                       "pl/cli/models",
                       "pl/cli/sessions",
@@ -16288,6 +16322,7 @@
                       "th/concepts/memory-honcho",
                       "th/concepts/memory-search",
                       "th/concepts/active-memory",
+                      "th/concepts/commitments",
                       "th/concepts/dreaming"
                     ]
                   },
@@ -16759,6 +16794,7 @@
                       "th/cli/hooks",
                       "th/cli/infer",
                       "th/cli/memory",
+                      "th/cli/commitments",
                       "th/cli/message",
                       "th/cli/models",
                       "th/cli/sessions",
