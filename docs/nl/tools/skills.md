@@ -77,6 +77,7 @@ bepalen welke Skills een agent daadwerkelijk kan gebruiken.
     - Een niet-lege `agents.list[].skills`-lijst is de **definitieve** set voor die
       agent — deze wordt niet samengevoegd met standaardwaarden.
     - De effectieve allowlist wordt toegepast op promptopbouw, ontdekking van Skill-slashcommando's, sandbox-synchronisatie en Skill-snapshots.
+
   </Accordion>
 </AccordionGroup>
 
