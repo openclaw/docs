@@ -1,0 +1,20 @@
+name: Translate vi
+
+on:
+  repository_dispatch:
+    types:
+      - translate-vi-release
+  schedule:
+    - cron: "17 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: vi
+      locale_slug: vi
+    secrets: inherit

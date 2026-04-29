@@ -1,0 +1,20 @@
+name: Translate nl
+
+on:
+  repository_dispatch:
+    types:
+      - translate-nl-release
+  schedule:
+    - cron: "47 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: nl
+      locale_slug: nl
+    secrets: inherit

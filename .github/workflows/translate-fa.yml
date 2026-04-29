@@ -1,0 +1,20 @@
+name: Translate fa
+
+on:
+  repository_dispatch:
+    types:
+      - translate-fa-release
+  schedule:
+    - cron: "17 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: fa
+      locale_slug: fa
+    secrets: inherit

@@ -1,0 +1,20 @@
+name: Translate zh-TW
+
+on:
+  repository_dispatch:
+    types:
+      - translate-zh-tw-release
+  schedule:
+    - cron: "47 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: zh-TW
+      locale_slug: zh-tw
+    secrets: inherit
