@@ -2,48 +2,52 @@
 read_when:
     - Вам потрібна підтримка Zalo Personal (неофіційна) в OpenClaw
     - Ви налаштовуєте або розробляєте Plugin zalouser
-summary: 'Plugin Zalo Personal: вхід через QR + обмін повідомленнями через нативний zca-js (встановлення Plugin + конфігурація каналу + інструмент)'
-title: Plugin Zalo Personal
+summary: 'Zalo Personal Plugin: вхід за QR-кодом + обмін повідомленнями через нативний zca-js (встановлення Plugin + конфігурація каналу + інструмент)'
+title: Особистий Plugin Zalo
 x-i18n:
-    generated_at: "2026-04-27T06:27:44Z"
-    model: gpt-5.4
+    generated_at: "2026-04-29T05:40:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a9fc40683980ea73cb0b547d9e327f18e100ed9b6646512d9755934d19a48b9c
+    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
     source_path: plugins/zalouser.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Zalo Personal (Plugin)
+# Zalo Personal (plugin)
 
-Підтримка Zalo Personal для OpenClaw через Plugin, що використовує нативний `zca-js` для автоматизації звичайного особистого акаунта Zalo.
+Підтримка Zalo Personal для OpenClaw через plugin із використанням нативного `zca-js` для автоматизації звичайного облікового запису користувача Zalo.
 
 <Warning>
-Неофіційна автоматизація може призвести до призупинення або блокування акаунта. Використовуйте на власний ризик.
+Неофіційна автоматизація може призвести до призупинення або блокування облікового запису. Використовуйте на власний ризик.
 </Warning>
 
 ## Назва
 
-Id каналу — `zalouser`, щоб явно показати, що це автоматизація **особистого акаунта користувача Zalo** (неофіційна). `zalo` зарезервовано для можливої майбутньої офіційної інтеграції з API Zalo.
+ID каналу — `zalouser`, щоб явно вказати, що це автоматизує **особистий обліковий запис користувача Zalo** (неофіційно). Ми залишаємо `zalo` зарезервованим для потенційної майбутньої інтеграції з офіційним API Zalo.
 
 ## Де це працює
 
-Цей Plugin працює **всередині процесу Gateway**.
+Цей plugin працює **всередині процесу Gateway**.
 
-Якщо ви використовуєте віддалений Gateway, установіть/налаштуйте його на **комп’ютері, де запущено Gateway**, а потім перезапустіть Gateway.
+Якщо ви використовуєте віддалений Gateway, установіть і налаштуйте його на **машині, де запущено Gateway**, а потім перезапустіть Gateway.
 
-Зовнішній CLI-бінарник `zca`/`openzca` не потрібен.
+Зовнішній бінарний файл CLI `zca`/`openzca` не потрібен.
 
 ## Встановлення
 
-### Варіант A: встановлення з npm
+### Варіант A: установлення з npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
+Якщо npm повідомляє, що пакет, який належить OpenClaw, застарілий, ця версія пакета походить
+зі старішої зовнішньої лінійки пакетів; використовуйте поточну пакетовану збірку OpenClaw або
+шлях до локальної папки, доки не буде опубліковано новіший пакет npm.
+
 Після цього перезапустіть Gateway.
 
-### Варіант B: встановлення з локальної папки (dev)
+### Варіант B: установлення з локальної папки (розробка)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -55,7 +59,7 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ## Конфігурація
 
-Конфігурація каналу розміщується в `channels.zalouser` (а не в `plugins.entries.*`):
+Конфігурація каналу розміщується в `channels.zalouser` (не в `plugins.entries.*`):
 
 ```json5
 {
@@ -88,5 +92,5 @@ openclaw directory peers list --channel zalouser --query "name"
 
 ## Пов’язане
 
-- [Створення Plugin](/uk/plugins/building-plugins)
-- [Спільнотні Plugin](/uk/plugins/community)
+- [Створення plugins](/uk/plugins/building-plugins)
+- [Спільнотні plugins](/uk/plugins/community)
