@@ -92,6 +92,10 @@ backends registered by setup-api without blocking legacy plugins.
 OpenClaw does not cache plugin discovery results or direct manifest registry
 data behind wall-clock windows. Installs, manifest edits, and load-path changes
 must become visible on the next explicit metadata read or snapshot rebuild.
+The manifest file parser may keep a bounded file-signature cache keyed by the
+opened manifest path, inode, size, and timestamps; that cache only avoids
+re-parsing unchanged bytes and must not cache discovery, registry, owner, or
+policy answers.
 
 The safe metadata fast path is explicit object ownership, not a hidden cache.
 Gateway startup hot paths should pass the current `PluginMetadataSnapshot`, the
