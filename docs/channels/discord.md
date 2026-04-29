@@ -1105,12 +1105,6 @@ openclaw logs --follow
 
     Discord does not apply a channel-owned timeout to queued agent turns. Message listeners hand off immediately, and queued Discord runs preserve per-session ordering until the session/tool/runtime lifecycle completes or aborts the work.
 
-    Deprecated compatibility setting:
-
-    - `channels.discord.inboundWorker.runTimeoutMs`
-    - `channels.discord.accounts.<accountId>.inboundWorker.runTimeoutMs`
-    - ignored by current Discord message handling
-
 ```json5
 {
   channels: {
@@ -1187,7 +1181,6 @@ Primary reference: [Configuration reference - Discord](/gateway/config-channels#
 - policy: `groupPolicy`, `dm.*`, `guilds.*`, `guilds.*.channels.*`
 - command: `commands.native`, `commands.useAccessGroups`, `configWrites`, `slashCommand.*`
 - event queue: `eventQueue.listenerTimeout` (listener budget), `eventQueue.maxQueueSize`, `eventQueue.maxConcurrency`
-- deprecated compatibility: `inboundWorker.runTimeoutMs` (ignored)
 - gateway metadata: `gatewayInfoTimeoutMs`
 - reply/history: `replyToMode`, `historyLimit`, `dmHistoryLimit`, `dms.*.historyLimit`
 - delivery: `textChunkLimit`, `chunkMode`, `maxLinesPerMessage`
