@@ -2,59 +2,59 @@
 read_when:
     - Ви бачите попередження OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED
     - Ви бачите попередження OPENCLAW_EXTENSION_API_DEPRECATED
-    - Ви використовували api.registerEmbeddedExtensionFactory до версії OpenClaw 2026.4.25
+    - Ви використовували api.registerEmbeddedExtensionFactory до OpenClaw 2026.4.25
     - Ви оновлюєте Plugin до сучасної архітектури Plugin
-    - Ви підтримуєте зовнішній Plugin для OpenClaw
+    - Ви підтримуєте зовнішній Plugin OpenClaw
 sidebarTitle: Migrate to SDK
 summary: Перехід із застарілого шару зворотної сумісності на сучасний Plugin SDK
 title: Міграція Plugin SDK
 x-i18n:
-    generated_at: "2026-04-29T11:23:04Z"
+    generated_at: "2026-04-29T13:54:54Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0ef5d3c435d84060bfd0e68fc32a7b2df196cd1cee20512cf793c024df0bfdc2
+    source_hash: fbc2569e5116d168151c34b31392df87be2b30f67de7303552c9164205716f07
     source_path: plugins/sdk-migration.md
     workflow: 16
 ---
 
 OpenClaw перейшов від широкого шару зворотної сумісності до сучасної архітектури Plugin
-із вузькими, задокументованими імпортами. Якщо ваш Plugin було створено до
+з вузькими, задокументованими імпортами. Якщо ваш plugin було створено до
 нової архітектури, цей посібник допоможе вам виконати міграцію.
 
 ## Що змінюється
 
-Стара система Plugin надавала дві широко відкриті поверхні, які дозволяли Plugin імпортувати
+Стара система plugin надавала дві дуже відкриті поверхні, які дозволяли plugin імпортувати
 все потрібне з однієї точки входу:
 
 - **`openclaw/plugin-sdk/compat`** — єдиний імпорт, який повторно експортував десятки
-  допоміжних функцій. Його було введено, щоб підтримати роботу старіших Plugin на основі хуків, поки
-  створювалася нова архітектура Plugin.
-- **`openclaw/plugin-sdk/infra-runtime`** — широкий barrel runtime-допоміжних функцій, який
-  змішував системні події, стан Heartbeat, черги доставки, допоміжні функції fetch/proxy,
-  файлові допоміжні функції, типи схвалень і непов’язані утиліти.
-- **`openclaw/plugin-sdk/config-runtime`** — широкий barrel сумісності конфігурації,
-  який і далі містить застарілі прямі допоміжні функції завантаження/запису під час міграційного
+  допоміжних функцій. Його було введено, щоб старі plugin на основі хуків продовжували працювати, поки
+  будувалася нова архітектура plugin.
+- **`openclaw/plugin-sdk/infra-runtime`** — широкий runtime-барель допоміжних засобів, який
+  змішував системні події, стан heartbeat, черги доставки, допоміжні засоби fetch/proxy,
+  файлові допоміжні засоби, типи схвалення й непов’язані утиліти.
+- **`openclaw/plugin-sdk/config-runtime`** — широкий барель сумісності конфігурації,
+  який досі містить застарілі прямі допоміжні засоби завантаження/запису під час міграційного
   вікна.
-- **`openclaw/extension-api`** — міст, який давав Plugin прямий доступ до
-  допоміжних функцій на боці хоста, як-от вбудований runner агента.
-- **`api.registerEmbeddedExtensionFactory(...)`** — вилучений хук bundled
-  розширення лише для Pi, який міг спостерігати події embedded-runner, такі як
+- **`openclaw/extension-api`** — міст, який надавав plugin прямий доступ до
+  допоміжних засобів на боці хоста, як-от вбудований runner агента.
+- **`api.registerEmbeddedExtensionFactory(...)`** — видалений хук лише для Pi у вбудованому
+  plugin, який міг спостерігати за подіями embedded-runner, такими як
   `tool_result`.
 
 Широкі поверхні імпорту тепер **застарілі**. Вони все ще працюють під час виконання,
-але нові Plugin не повинні їх використовувати, а наявні Plugin мають мігрувати до того,
-як наступний major release їх вилучить. API реєстрації embedded extension factory лише для Pi
-вилучено; натомість використовуйте middleware результатів інструментів.
+але нові plugin не повинні їх використовувати, а наявні plugin мають виконати міграцію до того,
+як наступний major-реліз їх видалить. API реєстрації embedded extension factory
+лише для Pi було видалено; натомість використовуйте middleware результатів інструментів.
 
-OpenClaw не вилучає й не переінтерпретовує задокументовану поведінку Plugin у тій самій
-зміні, яка вводить заміну. Критичні зміни контракту спершу мають пройти через
-адаптер сумісності, діагностику, документацію та вікно deprecation.
-Це стосується імпортів SDK, полів manifest, setup APIs, хуків і поведінки
+OpenClaw не видаляє й не переінтерпретовує задокументовану поведінку plugin у тій самій
+зміні, яка вводить заміну. Зміни контракту, що ламають сумісність, спочатку мають пройти
+через адаптер сумісності, діагностику, документацію та вікно застарівання.
+Це стосується імпортів SDK, полів маніфесту, API налаштування, хуків і поведінки
 runtime-реєстрації.
 
 <Warning>
-  Шар зворотної сумісності буде вилучено в майбутньому major release.
-  Plugin, які досі імпортують із цих поверхонь, зламаються, коли це станеться.
+  Шар зворотної сумісності буде видалено в майбутньому major-релізі.
+  Plugin, які досі імпортують із цих поверхонь, перестануть працювати, коли це станеться.
   Реєстрації embedded extension factory лише для Pi вже більше не завантажуються.
 </Warning>
 
@@ -63,70 +63,69 @@ runtime-реєстрації.
 Старий підхід спричиняв проблеми:
 
 - **Повільний запуск** — імпорт однієї допоміжної функції завантажував десятки непов’язаних модулів
-- **Циклічні залежності** — широкі повторні експорти спрощували створення циклів імпортів
+- **Циклічні залежності** — широкі повторні експорти спрощували створення циклів імпорту
 - **Нечітка поверхня API** — не було способу зрозуміти, які експорти стабільні, а які внутрішні
 
-Сучасний plugin SDK це виправляє: кожен шлях імпорту (`openclaw/plugin-sdk/\<subpath\>`)
+Сучасний SDK plugin це виправляє: кожен шлях імпорту (`openclaw/plugin-sdk/\<subpath\>`)
 є невеликим, самодостатнім модулем із чітким призначенням і задокументованим контрактом.
 
-Застарілі provider convenience seams для bundled channels також вилучено.
-Channel-branded допоміжні seams були приватними скороченнями monorepo, а не стабільними
-контрактами Plugin. Натомість використовуйте вузькі generic SDK subpaths. Усередині bundled
-plugin workspace тримайте provider-owned допоміжні функції у власному `api.ts` або
-`runtime-api.ts` цього Plugin.
+Застарілі provider convenience seams для вбудованих каналів також видалено.
+Допоміжні seams із брендингом каналу були приватними скороченнями mono-repo, а не стабільними
+контрактами plugin. Натомість використовуйте вузькі загальні підшляхи SDK. Усередині робочої області
+вбудованого plugin тримайте допоміжні засоби, що належать provider, у власному `api.ts` або
+`runtime-api.ts` цього plugin.
 
-Поточні приклади bundled providers:
+Поточні приклади вбудованих provider:
 
-- Anthropic тримає специфічні для Claude stream-допоміжні функції у власному seam `api.ts` /
+- Anthropic тримає допоміжні засоби потоків, специфічні для Claude, у власному seam `api.ts` /
   `contract-api.ts`
-- OpenAI тримає provider builders, default-model helpers і realtime provider
-  builders у власному `api.ts`
-- OpenRouter тримає provider builder і onboarding/config helpers у власному
+- OpenAI тримає builders provider, допоміжні засоби моделей за замовчуванням і builders realtime provider
+  у власному `api.ts`
+- OpenRouter тримає builder provider і допоміжні засоби onboarding/config у власному
   `api.ts`
 
 ## Політика сумісності
 
-Для зовнішніх Plugin робота із сумісністю виконується в такому порядку:
+Для зовнішніх plugin робота із сумісністю відбувається в такому порядку:
 
 1. додати новий контракт
-2. залишити стару поведінку, підключену через адаптер сумісності
-3. видавати діагностику або попередження, яке називає старий шлях і заміну
+2. залишити стару поведінку, під’єднану через адаптер сумісності
+3. вивести діагностику або попередження, яке називає старий шлях і заміну
 4. покрити обидва шляхи тестами
-5. задокументувати deprecation і шлях міграції
-6. вилучати лише після оголошеного міграційного вікна, зазвичай у major release
+5. задокументувати застарівання та шлях міграції
+6. видаляти лише після оголошеного міграційного вікна, зазвичай у major-релізі
 
 Maintainers можуть перевірити поточну чергу міграції за допомогою
 `pnpm plugins:boundary-report`. Використовуйте `pnpm plugins:boundary-report:summary` для
-компактних підрахунків, `--owner <id>` для одного Plugin або власника сумісності, і
+стислих підрахунків, `--owner <id>` для одного plugin або власника сумісності, і
 `pnpm plugins:boundary-report:ci`, коли CI gate має падати через прострочені
-записи сумісності, cross-owner reserved SDK imports або unused reserved SDK
-subpaths. Звіт групує застарілі
-записи сумісності за датою вилучення, підраховує локальні посилання в code/docs,
-показує cross-owner reserved SDK imports і підсумовує приватний
-memory-host SDK bridge, щоб cleanup сумісності залишався явним, а не
-покладався на ad hoc пошуки. Reserved SDK subpaths повинні мати tracked owner usage;
-unused reserved helper exports слід вилучати з публічного SDK.
+записи сумісності, міжвласницькі зарезервовані імпорти SDK або невикористані зарезервовані підшляхи SDK.
+Звіт групує застарілі
+записи сумісності за датою видалення, рахує локальні посилання в коді/документації,
+показує міжвласницькі зарезервовані імпорти SDK і підсумовує приватний
+міст SDK memory-host, щоб cleanup сумісності залишався явним, а не
+покладався на ad hoc пошуки. Зарезервовані підшляхи SDK повинні мати відстежене використання власником;
+невикористані зарезервовані helper exports слід видалити з публічного SDK.
 
-Якщо поле manifest усе ще приймається, authors Plugin можуть продовжувати ним користуватися, доки
-документація й діагностика не скажуть інакше. Новий код має віддавати перевагу задокументованій
-заміні, але наявні Plugin не повинні ламатися під час звичайних minor
-releases.
+Якщо поле маніфесту досі приймається, автори plugin можуть продовжувати його використовувати, доки
+документація й діагностика не скажуть інше. Новий код має віддавати перевагу задокументованій
+заміні, але наявні plugin не повинні ламатися під час звичайних minor-релізів.
 
 ## Як виконати міграцію
 
 <Steps>
-  <Step title="Мігруйте runtime helper-и завантаження/запису конфігурації">
-    Bundled Plugin мають припинити безпосередньо викликати
+  <Step title="Перенесіть runtime-допоміжні засоби завантаження/запису конфігурації">
+    Вбудовані plugin мають припинити прямі виклики
     `api.runtime.config.loadConfig()` і
-    `api.runtime.config.writeConfigFile(...)`. Віддавайте перевагу конфігурації, яку вже було
-    передано в активний шлях виклику. Довгоживучі handlers, яким потрібен
-    поточний snapshot процесу, можуть використовувати `api.runtime.config.current()`. Довгоживучі
-    agent tools мають використовувати `ctx.getRuntimeConfig()` з контексту інструмента всередині
+    `api.runtime.config.writeConfigFile(...)`. Віддавайте перевагу конфігурації, яку
+    вже було передано в активний шлях виклику. Довготривалі handlers, яким потрібен
+    поточний snapshot процесу, можуть використовувати `api.runtime.config.current()`. Довготривалі
+    інструменти агента мають використовувати `ctx.getRuntimeConfig()` контексту інструмента всередині
     `execute`, щоб інструмент, створений до запису конфігурації, все одно бачив оновлену
-    runtime config.
+    runtime-конфігурацію.
 
-    Записи конфігурації мають проходити через транзакційні helper-и й обирати
-    after-write policy:
+    Записи конфігурації мають проходити через транзакційні допоміжні засоби й вибирати
+    політику після запису:
 
     ```typescript
     await api.runtime.config.mutateConfigFile({
@@ -137,49 +136,49 @@ releases.
     });
     ```
 
-    Використовуйте `afterWrite: { mode: "restart", reason: "..." }`, коли caller знає,
-    що зміна потребує чистого перезапуску Gateway, і
-    `afterWrite: { mode: "none", reason: "..." }` лише тоді, коли caller володіє
-    follow-up і свідомо хоче приглушити reload planner.
-    Результати мутації містять типізований summary `followUp` для тестів і logging;
-    Gateway залишається відповідальним за застосування або планування перезапуску.
-    `loadConfig` і `writeConfigFile` залишаються застарілими helper-ами сумісності
-    для зовнішніх Plugin під час міграційного вікна й один раз попереджають із
-    compatibility code `runtime-config-load-write`. Bundled Plugin і runtime-код репозиторію
+    Використовуйте `afterWrite: { mode: "restart", reason: "..." }`, коли викликач знає,
+    що зміна потребує чистого перезапуску gateway, і
+    `afterWrite: { mode: "none", reason: "..." }` лише тоді, коли викликач володіє
+    подальшою дією й навмисно хоче придушити reload planner.
+    Результати мутації містять типізований підсумок `followUp` для тестів і логування;
+    gateway залишається відповідальним за застосування або планування перезапуску.
+    `loadConfig` і `writeConfigFile` залишаються застарілими допоміжними засобами сумісності
+    для зовнішніх plugin протягом міграційного вікна й попереджають один раз із
+    кодом сумісності `runtime-config-load-write`. Вбудовані plugin і runtime-код репозиторію
     захищені scanner guardrails у
     `pnpm check:deprecated-internal-config-api` і
-    `pnpm check:no-runtime-action-load-config`: нове production використання Plugin
-    одразу падає, прямі записи конфігурації падають, gateway server methods мають використовувати
-    request runtime snapshot, runtime channel send/action/client helpers
-    мають отримувати конфігурацію зі своєї межі, а довгоживучі runtime modules мають
-    нуль дозволених ambient викликів `loadConfig()`.
+    `pnpm check:no-runtime-action-load-config`: нове production-використання plugin
+    відразу падає, прямі записи конфігурації падають, методи gateway server мають використовувати
+    runtime snapshot запиту, runtime channel send/action/client helpers
+    мають отримувати конфігурацію зі своєї межі, а довготривалі runtime-модулі мають
+    нуль дозволених ambient-викликів `loadConfig()`.
 
-    Новий код Plugin також має уникати імпорту широкого
+    Новий код plugin також має уникати імпорту широкого
     compatibility barrel `openclaw/plugin-sdk/config-runtime`. Використовуйте вузький
-    SDK subpath, що відповідає завданню:
+    підшлях SDK, що відповідає завданню:
 
     | Потреба | Імпорт |
     | --- | --- |
-    | Типи конфігурації, такі як `OpenClawConfig` | `openclaw/plugin-sdk/config-types` |
-    | Already-loaded config assertions і plugin-entry config lookup | `openclaw/plugin-sdk/plugin-config-runtime` |
+    | Типи конфігурації, як-от `OpenClawConfig` | `openclaw/plugin-sdk/config-types` |
+    | Assertions уже завантаженої конфігурації та пошук plugin-entry config | `openclaw/plugin-sdk/plugin-config-runtime` |
     | Читання поточного runtime snapshot | `openclaw/plugin-sdk/runtime-config-snapshot` |
     | Записи конфігурації | `openclaw/plugin-sdk/config-mutation` |
-    | Helper-и session store | `openclaw/plugin-sdk/session-store-runtime` |
-    | Markdown table config | `openclaw/plugin-sdk/markdown-table-runtime` |
-    | Runtime helper-и group policy | `openclaw/plugin-sdk/runtime-group-policy` |
-    | Secret input resolution | `openclaw/plugin-sdk/secret-input-runtime` |
-    | Model/session overrides | `openclaw/plugin-sdk/model-session-runtime` |
+    | Допоміжні засоби session store | `openclaw/plugin-sdk/session-store-runtime` |
+    | Конфігурація таблиці Markdown | `openclaw/plugin-sdk/markdown-table-runtime` |
+    | Runtime-допоміжні засоби group policy | `openclaw/plugin-sdk/runtime-group-policy` |
+    | Розв’язання secret input | `openclaw/plugin-sdk/secret-input-runtime` |
+    | Перевизначення model/session | `openclaw/plugin-sdk/model-session-runtime` |
 
-    Bundled Plugin та їхні тести захищені scanner-ами від широкого
-    barrel, щоб imports і mocks залишалися локальними до потрібної їм поведінки. Широкий
-    barrel усе ще існує для зовнішньої сумісності, але новий код не повинен
-    від нього залежати.
+    Вбудовані plugin та їхні тести scanner-guarded проти широкого
+    barrel, щоб імпорти й mocks залишалися локальними до потрібної їм поведінки. Широкий
+    barrel досі існує для зовнішньої сумісності, але новий код не повинен
+    залежати від нього.
 
   </Step>
 
-  <Step title="Мігруйте Pi tool-result extensions на middleware">
-    Bundled Plugin мають замінити Pi-only
-    `api.registerEmbeddedExtensionFactory(...)` tool-result handlers на
+  <Step title="Перенесіть Pi tool-result extensions на middleware">
+    Вбудовані plugin мають замінити обробники tool-result
+    `api.registerEmbeddedExtensionFactory(...)` лише для Pi на
     runtime-neutral middleware.
 
     ```typescript
@@ -191,7 +190,7 @@ releases.
     });
     ```
 
-    Водночас оновіть manifest Plugin:
+    Одночасно оновіть маніфест plugin:
 
     ```json
     {
@@ -201,39 +200,39 @@ releases.
     }
     ```
 
-    Зовнішні Plugin не можуть реєструвати tool-result middleware, бо воно може
-    переписувати high-trust output інструмента до того, як модель його побачить.
+    Зовнішні plugin не можуть реєструвати tool-result middleware, бо воно може
+    переписувати високодовірений output інструмента до того, як його побачить модель.
 
   </Step>
 
-  <Step title="Мігруйте approval-native handlers на capability facts">
-    Approval-capable channel Plugin тепер expose native approval behavior через
-    `approvalCapability.nativeRuntime` плюс shared runtime-context registry.
+  <Step title="Перенесіть approval-native handlers на capability facts">
+    Plugin каналів із підтримкою approvals тепер відкривають native approval behavior через
+    `approvalCapability.nativeRuntime` плюс спільний runtime-context registry.
 
     Ключові зміни:
 
     - Замініть `approvalCapability.handler.loadRuntime(...)` на
       `approvalCapability.nativeRuntime`
-    - Перенесіть approval-specific auth/delivery зі старого wiring `plugin.auth` /
+    - Перенесіть специфічні для approval auth/delivery зі старого wiring `plugin.auth` /
       `plugin.approvals` на `approvalCapability`
-    - `ChannelPlugin.approvals` вилучено з публічного contract channel-plugin;
-      перенесіть delivery/native/render fields на `approvalCapability`
-    - `plugin.auth` залишається лише для channel login/logout flows; approval auth
+    - `ChannelPlugin.approvals` видалено з публічного контракту channel-plugin;
+      перенесіть поля delivery/native/render на `approvalCapability`
+    - `plugin.auth` залишається лише для flows login/logout каналу; approval auth
       hooks там більше не читаються core
-    - Реєструйте channel-owned runtime objects, як-от clients, tokens або Bolt
+    - Реєструйте runtime-об’єкти, що належать каналу, як-от clients, tokens або Bolt
       apps, через `openclaw/plugin-sdk/channel-runtime-context`
-    - Не надсилайте plugin-owned reroute notices із native approval handlers;
-      core тепер володіє routed-elsewhere notices з фактичних delivery results
-    - Передаючи `channelRuntime` у `createChannelManager(...)`, надайте
-      справжню поверхню `createPluginRuntime().channel`. Часткові stubs відхиляються.
+    - Не надсилайте notices reroute, що належать plugin, із native approval handlers;
+      core тепер володіє notices routed-elsewhere з фактичних результатів доставки
+    - Під час передавання `channelRuntime` у `createChannelManager(...)` надайте
+      справжню surface `createPluginRuntime().channel`. Часткові stubs відхиляються.
 
-    Див. `/plugins/sdk-channel-plugins` для поточного layout approval capability.
+    Див. `/plugins/sdk-channel-plugins` для поточної структури approval capability.
 
   </Step>
 
   <Step title="Перевірте fallback-поведінку Windows wrapper">
-    Якщо ваш Plugin використовує `openclaw/plugin-sdk/windows-spawn`, нерозв’язані Windows
-    `.cmd`/`.bat` wrappers тепер fail closed, якщо ви явно не передасте
+    Якщо ваш plugin використовує `openclaw/plugin-sdk/windows-spawn`, нерозв’язані Windows
+    wrappers `.cmd`/`.bat` тепер fail closed, якщо ви явно не передасте
     `allowShellFallback: true`.
 
     ```typescript
@@ -249,13 +248,13 @@ releases.
     });
     ```
 
-    Якщо ваш caller не покладається свідомо на shell fallback, не встановлюйте
+    Якщо ваш викликач не покладається навмисно на shell fallback, не встановлюйте
     `allowShellFallback` і натомість обробіть thrown error.
 
   </Step>
 
   <Step title="Знайдіть застарілі імпорти">
-    Пошукайте у своєму Plugin імпорти з будь-якої застарілої поверхні:
+    Пошукайте у своєму plugin імпорти з будь-якої застарілої поверхні:
 
     ```bash
     grep -r "plugin-sdk/compat" my-plugin/
@@ -266,8 +265,8 @@ releases.
 
   </Step>
 
-  <Step title="Замініть на вузькі імпорти">
-    Кожен експорт зі старої поверхні відповідає конкретному сучасному шляху імпорту:
+  <Step title="Замініть вузькими імпортами">
+    Кожен експорт зі старої поверхні відповідає певному сучасному шляху імпорту:
 
     ```typescript
     // Before (deprecated backwards-compatibility layer)
@@ -283,7 +282,7 @@ releases.
     import { resolveControlCommandGate } from "openclaw/plugin-sdk/command-auth";
     ```
 
-    Для host-side helper-ів використовуйте injected plugin runtime замість прямого імпорту:
+    Для допоміжних засобів на боці хоста використовуйте injected plugin runtime замість прямого імпорту:
 
     ```typescript
     // Before (deprecated extension-api bridge)
@@ -294,9 +293,9 @@ releases.
     const result = await api.runtime.agent.runEmbeddedPiAgent({ sessionId, prompt });
     ```
 
-    Той самий шаблон застосовується до інших застарілих допоміжних засобів мосту:
+    Та сама схема застосовується до інших застарілих допоміжних функцій мосту:
 
-    | Старий import | Сучасний відповідник |
+    | Старий імпорт | Сучасний еквівалент |
     | --- | --- |
     | `resolveAgentDir` | `api.runtime.agent.resolveAgentDir` |
     | `resolveAgentWorkspaceDir` | `api.runtime.agent.resolveAgentWorkspaceDir` |
@@ -304,48 +303,48 @@ releases.
     | `resolveThinkingDefault` | `api.runtime.agent.resolveThinkingDefault` |
     | `resolveAgentTimeoutMs` | `api.runtime.agent.resolveAgentTimeoutMs` |
     | `ensureAgentWorkspace` | `api.runtime.agent.ensureAgentWorkspace` |
-    | допоміжні засоби сховища сесій | `api.runtime.agent.session.*` |
+    | допоміжні функції сховища сеансів | `api.runtime.agent.session.*` |
 
   </Step>
 
   <Step title="Замініть широкі імпорти infra-runtime">
-    `openclaw/plugin-sdk/infra-runtime` усе ще існує для зовнішньої
-    сумісності, але новий код має імпортувати цільову поверхню допоміжних засобів,
-    яка йому справді потрібна:
+    `openclaw/plugin-sdk/infra-runtime` досі існує для зовнішньої
+    сумісності, але новий код має імпортувати сфокусовану поверхню допоміжних функцій, яка
+    йому фактично потрібна:
 
-    | Потреба | Import |
+    | Потреба | Імпорт |
     | --- | --- |
-    | Допоміжні засоби черги системних подій | `openclaw/plugin-sdk/system-event-runtime` |
-    | Допоміжні засоби подій Heartbeat і видимості | `openclaw/plugin-sdk/heartbeat-runtime` |
-    | Очищення черги очікуваної доставки | `openclaw/plugin-sdk/delivery-queue-runtime` |
+    | Допоміжні функції черги системних подій | `openclaw/plugin-sdk/system-event-runtime` |
+    | Допоміжні функції подій Heartbeat і видимості | `openclaw/plugin-sdk/heartbeat-runtime` |
+    | Спорожнення черги очікуваних доставок | `openclaw/plugin-sdk/delivery-queue-runtime` |
     | Телеметрія активності каналу | `openclaw/plugin-sdk/channel-activity-runtime` |
     | Кеші дедуплікації в пам'яті | `openclaw/plugin-sdk/dedupe-runtime` |
-    | Безпечні допоміжні засоби для шляхів локальних файлів/медіа | `openclaw/plugin-sdk/file-access-runtime` |
-    | Fetch з урахуванням диспетчера | `openclaw/plugin-sdk/runtime-fetch` |
-    | Допоміжні засоби проксі та захищеного fetch | `openclaw/plugin-sdk/fetch-runtime` |
-    | Типи політики диспетчера SSRF | `openclaw/plugin-sdk/ssrf-dispatcher` |
+    | Допоміжні функції безпечних локальних шляхів до файлів/медіа | `openclaw/plugin-sdk/file-access-runtime` |
+    | Dispatcher-aware fetch | `openclaw/plugin-sdk/runtime-fetch` |
+    | Допоміжні функції проксі та захищеного fetch | `openclaw/plugin-sdk/fetch-runtime` |
+    | Типи політик диспетчера SSRF | `openclaw/plugin-sdk/ssrf-dispatcher` |
     | Типи запиту/вирішення затвердження | `openclaw/plugin-sdk/approval-runtime` |
-    | Допоміжні засоби payload відповіді затвердження та команд | `openclaw/plugin-sdk/approval-reply-runtime` |
-    | Допоміжні засоби форматування помилок | `openclaw/plugin-sdk/error-runtime` |
+    | Допоміжні функції корисного навантаження відповіді затвердження та команд | `openclaw/plugin-sdk/approval-reply-runtime` |
+    | Допоміжні функції форматування помилок | `openclaw/plugin-sdk/error-runtime` |
     | Очікування готовності транспорту | `openclaw/plugin-sdk/transport-ready-runtime` |
-    | Допоміжні засоби безпечних токенів | `openclaw/plugin-sdk/secure-random-runtime` |
-    | Обмежена конкурентність асинхронних завдань | `openclaw/plugin-sdk/concurrency-runtime` |
+    | Допоміжні функції безпечних токенів | `openclaw/plugin-sdk/secure-random-runtime` |
+    | Обмежена конкурентність асинхронних задач | `openclaw/plugin-sdk/concurrency-runtime` |
     | Числове приведення | `openclaw/plugin-sdk/number-runtime` |
-    | Локальний для процесу асинхронний lock | `openclaw/plugin-sdk/async-lock-runtime` |
-    | Файлові locks | `openclaw/plugin-sdk/file-lock` |
+    | Процесно-локальне асинхронне блокування | `openclaw/plugin-sdk/async-lock-runtime` |
+    | Файлові блокування | `openclaw/plugin-sdk/file-lock` |
 
-    Вбудовані Plugin-и захищено сканером від `infra-runtime`, тож код репозиторію
-    не може регресувати до широкого barrel.
+    Для вбудованих plugins scanner захищає від `infra-runtime`, тому код репозиторію
+    не може повернутися до широкого barrel.
 
   </Step>
 
-  <Step title="Мігруйте допоміжні засоби маршрутів каналів">
+  <Step title="Мігруйте допоміжні функції маршрутів каналів">
     Новий код маршрутів каналів має використовувати `openclaw/plugin-sdk/channel-route`.
-    Старі назви ключа маршруту та порівнюваної цілі залишаються псевдонімами
-    сумісності протягом вікна міграції, але нові Plugin-и мають використовувати
-    назви маршрутів, які безпосередньо описують поведінку:
+    Старі назви route-key і comparable-target залишаються сумісними
+    псевдонімами під час міграційного вікна, але нові plugins мають використовувати назви маршрутів,
+    які прямо описують поведінку:
 
-    | Старий допоміжний засіб | Сучасний допоміжний засіб |
+    | Стара допоміжна функція | Сучасна допоміжна функція |
     | --- | --- |
     | `channelRouteIdentityKey(...)` | `channelRouteDedupeKey(...)` |
     | `channelRouteKey(...)` | `channelRouteCompactKey(...)` |
@@ -355,11 +354,11 @@ releases.
     | `comparableChannelTargetsMatch(...)` | `channelRouteTargetsMatchExact(...)` |
     | `comparableChannelTargetsShareRoute(...)` | `channelRouteTargetsShareConversation(...)` |
 
-    Сучасні допоміжні засоби маршрутів узгоджено нормалізують `{ channel, to, accountId, threadId }`
-    для нативних затверджень, приглушення відповідей, вхідної дедуплікації,
-    доставки Cron і маршрутизації сесій. Якщо ваш Plugin має власну граматику цілі,
+    Сучасні допоміжні функції маршрутів узгоджено нормалізують `{ channel, to, accountId, threadId }`
+    для нативних затверджень, приглушення відповідей, дедуплікації вхідних повідомлень,
+    доставки cron і маршрутизації сеансів. Якщо ваш plugin має власну граматику цільових об'єктів,
     використовуйте `resolveChannelRouteTargetWithParser(...)`, щоб адаптувати цей
-    parser до того самого контракту цілі маршруту.
+    парсер до того самого контракту цільового об'єкта маршруту.
 
   </Step>
 
@@ -371,212 +370,211 @@ releases.
   </Step>
 </Steps>
 
-## Довідник шляхів import
+## Довідник шляхів імпорту
 
   <Accordion title="Common import path table">
   | Шлях імпорту | Призначення | Ключові експорти |
   | --- | --- | --- |
-  | `plugin-sdk/plugin-entry` | Канонічний допоміжний засіб входу plugin | `definePluginEntry` |
-  | `plugin-sdk/core` | Застарілий парасольковий реекспорт для визначень/побудовників входів каналів | `defineChannelPluginEntry`, `createChatChannelPlugin` |
+  | `plugin-sdk/plugin-entry` | Канонічний помічник точки входу Plugin | `definePluginEntry` |
+  | `plugin-sdk/core` | Застарілий загальний реекспорт для визначень/будівників точок входу каналу | `defineChannelPluginEntry`, `createChatChannelPlugin` |
   | `plugin-sdk/config-schema` | Експорт кореневої схеми конфігурації | `OpenClawSchema` |
-  | `plugin-sdk/provider-entry` | Допоміжний засіб входу для одного провайдера | `defineSingleProviderPluginEntry` |
-  | `plugin-sdk/channel-core` | Сфокусовані визначення та побудовники входів каналів | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-  | `plugin-sdk/setup` | Спільні допоміжні засоби майстра налаштування | Запити списку дозволених, побудовники стану налаштування |
-  | `plugin-sdk/setup-runtime` | Допоміжні засоби runtime під час налаштування | Безпечні для імпорту адаптери патчів налаштування, допоміжні засоби приміток пошуку, `promptResolvedAllowFrom`, `splitSetupEntries`, делеговані проксі налаштування |
-  | `plugin-sdk/setup-adapter-runtime` | Допоміжні засоби адаптера налаштування | `createEnvPatchedAccountSetupAdapter` |
-  | `plugin-sdk/setup-tools` | Допоміжні засоби інструментів налаштування | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-  | `plugin-sdk/account-core` | Допоміжні засоби для кількох облікових записів | Допоміжні засоби списку облікових записів/конфігурації/шлюзу дій |
-  | `plugin-sdk/account-id` | Допоміжні засоби ID облікового запису | `DEFAULT_ACCOUNT_ID`, нормалізація ID облікового запису |
-  | `plugin-sdk/account-resolution` | Допоміжні засоби пошуку облікового запису | Допоміжні засоби пошуку облікового запису + типового fallback |
-  | `plugin-sdk/account-helpers` | Вузькі допоміжні засоби облікового запису | Допоміжні засоби списку облікових записів/дій облікового запису |
-  | `plugin-sdk/channel-setup` | Адаптери майстра налаштування | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, плюс `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
-  | `plugin-sdk/channel-pairing` | Примітиви створення пари через DM | `createChannelPairingController` |
-  | `plugin-sdk/channel-reply-pipeline` | Префікс відповіді, індикація введення та зв’язування доставки джерела | `createChannelReplyPipeline`, `resolveChannelSourceReplyDeliveryMode` |
+  | `plugin-sdk/provider-entry` | Помічник точки входу для одного провайдера | `defineSingleProviderPluginEntry` |
+  | `plugin-sdk/channel-core` | Сфокусовані визначення й будівники точок входу каналу | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
+  | `plugin-sdk/setup` | Спільні помічники майстра налаштування | Запити списку дозволених, будівники стану налаштування |
+  | `plugin-sdk/setup-runtime` | Runtime-помічники часу налаштування | Безпечні для імпорту адаптери патчів налаштування, помічники приміток пошуку, `promptResolvedAllowFrom`, `splitSetupEntries`, делеговані проксі налаштування |
+  | `plugin-sdk/setup-adapter-runtime` | Помічники адаптера налаштування | `createEnvPatchedAccountSetupAdapter` |
+  | `plugin-sdk/setup-tools` | Помічники інструментів налаштування | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
+  | `plugin-sdk/account-core` | Помічники кількох облікових записів | Помічники списку облікових записів/конфігурації/шлюзу дій |
+  | `plugin-sdk/account-id` | Помічники ID облікового запису | `DEFAULT_ACCOUNT_ID`, нормалізація ID облікового запису |
+  | `plugin-sdk/account-resolution` | Помічники пошуку облікового запису | Помічники пошуку облікового запису та резервного варіанта за замовчуванням |
+  | `plugin-sdk/account-helpers` | Вузькі помічники облікових записів | Помічники списку облікових записів/дій з обліковим записом |
+  | `plugin-sdk/channel-setup` | Адаптери майстра налаштування | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, а також `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
+  | `plugin-sdk/channel-pairing` | Примітиви парування DM | `createChannelPairingController` |
+  | `plugin-sdk/channel-reply-pipeline` | Префікс відповіді, введення тексту та зв’язування доставки джерела | `createChannelReplyPipeline`, `resolveChannelSourceReplyDeliveryMode` |
   | `plugin-sdk/channel-config-helpers` | Фабрики адаптерів конфігурації | `createHybridChannelConfigAdapter` |
-  | `plugin-sdk/channel-config-schema` | Побудовники схем конфігурації | Спільні примітиви схеми конфігурації каналів і лише загальний побудовник |
-  | `plugin-sdk/bundled-channel-config-schema` | Вбудовані схеми конфігурації | Лише вбудовані plugins, підтримувані OpenClaw; нові plugins мають визначати локальні для plugin схеми |
-  | `plugin-sdk/channel-config-schema-legacy` | Застарілі вбудовані схеми конфігурації | Лише псевдонім сумісності; використовуйте `plugin-sdk/bundled-channel-config-schema` для підтримуваних вбудованих plugins |
-  | `plugin-sdk/telegram-command-config` | Допоміжні засоби конфігурації команд Telegram | Нормалізація назв команд, обрізання описів, перевірка дублікатів/конфліктів |
-  | `plugin-sdk/channel-policy` | Розв’язання політики груп/DM | `resolveChannelGroupRequireMention` |
-  | `plugin-sdk/channel-lifecycle` | Допоміжні засоби стану облікового запису та життєвого циклу чернеткового потоку | `createAccountStatusSink`, допоміжні засоби фіналізації попереднього перегляду чернетки |
-  | `plugin-sdk/inbound-envelope` | Допоміжні засоби вхідного конверта | Спільні допоміжні засоби маршруту + побудовника конверта |
-  | `plugin-sdk/inbound-reply-dispatch` | Допоміжні засоби вхідної відповіді | Спільні допоміжні засоби запису та диспетчеризації |
-  | `plugin-sdk/messaging-targets` | Розбір цілі повідомлення | Допоміжні засоби розбору/зіставлення цілі |
-  | `plugin-sdk/outbound-media` | Допоміжні засоби вихідних медіа | Спільне завантаження вихідних медіа |
-  | `plugin-sdk/outbound-send-deps` | Допоміжні засоби залежностей вихідного надсилання | Легкий пошук `resolveOutboundSendDep` без імпорту повного вихідного runtime |
-  | `plugin-sdk/outbound-runtime` | Допоміжні засоби вихідного runtime | Допоміжні засоби вихідної доставки, делегата ідентичності/надсилання, сесії, форматування та планування payload |
-  | `plugin-sdk/thread-bindings-runtime` | Допоміжні засоби прив’язки потоків | Допоміжні засоби життєвого циклу прив’язки потоків і адаптера |
-  | `plugin-sdk/agent-media-payload` | Застарілі допоміжні засоби payload медіа | Побудовник payload медіа агента для застарілих макетів полів |
-  | `plugin-sdk/channel-runtime` | Застарілий shim сумісності | Лише утиліти runtime каналів для застарілої сумісності |
+  | `plugin-sdk/channel-config-schema` | Будівники схем конфігурації | Лише спільні примітиви схеми конфігурації каналу та загальний будівник |
+  | `plugin-sdk/bundled-channel-config-schema` | Схеми конфігурації в комплекті | Лише підтримувані OpenClaw Plugin у комплекті; нові Plugin мають визначати локальні для Plugin схеми |
+  | `plugin-sdk/channel-config-schema-legacy` | Застарілі схеми конфігурації в комплекті | Лише сумісний псевдонім; використовуйте `plugin-sdk/bundled-channel-config-schema` для підтримуваних Plugin у комплекті |
+  | `plugin-sdk/telegram-command-config` | Помічники конфігурації команд Telegram | Нормалізація назв команд, обрізання описів, перевірка дублікатів/конфліктів |
+  | `plugin-sdk/channel-policy` | Визначення політики групи/DM | `resolveChannelGroupRequireMention` |
+  | `plugin-sdk/channel-lifecycle` | Помічники стану облікового запису та життєвого циклу потоку чернетки | `createAccountStatusSink`, помічники фіналізації попереднього перегляду чернетки |
+  | `plugin-sdk/inbound-envelope` | Помічники вхідного конверта | Спільні помічники маршруту й будівника конверта |
+  | `plugin-sdk/inbound-reply-dispatch` | Помічники вхідної відповіді | Спільні помічники запису й диспетчеризації |
+  | `plugin-sdk/messaging-targets` | Розбір цілі повідомлення | Помічники розбору/зіставлення цілі |
+  | `plugin-sdk/outbound-media` | Помічники вихідних медіа | Спільне завантаження вихідних медіа |
+  | `plugin-sdk/outbound-send-deps` | Помічники залежностей вихідного надсилання | Легкий пошук `resolveOutboundSendDep` без імпорту повного вихідного runtime |
+  | `plugin-sdk/outbound-runtime` | Помічники вихідного runtime | Помічники вихідної доставки, делегата ідентичності/надсилання, сеансу, форматування та планування payload |
+  | `plugin-sdk/thread-bindings-runtime` | Помічники прив’язки потоку | Помічники життєвого циклу й адаптера прив’язки потоку |
+  | `plugin-sdk/agent-media-payload` | Помічники застарілих payload медіа | Будівник payload медіа агента для застарілих макетів полів |
+  | `plugin-sdk/channel-runtime` | Застаріла сумісна прокладка | Лише утиліти runtime застарілого каналу |
   | `plugin-sdk/channel-send-result` | Типи результатів надсилання | Типи результатів відповіді |
-  | `plugin-sdk/runtime-store` | Постійне сховище plugin | `createPluginRuntimeStore` |
-  | `plugin-sdk/runtime` | Широкі допоміжні засоби runtime | Допоміжні засоби runtime/логування/резервного копіювання/встановлення plugin |
-  | `plugin-sdk/runtime-env` | Вузькі допоміжні засоби середовища runtime | Допоміжні засоби логера/середовища runtime, тайм-ауту, повтору та backoff |
-  | `plugin-sdk/plugin-runtime` | Спільні допоміжні засоби runtime plugin | Допоміжні засоби команд/plugin hooks/http/інтерактивності plugin |
-  | `plugin-sdk/hook-runtime` | Допоміжні засоби конвеєра hooks | Спільні допоміжні засоби конвеєра Webhook/внутрішніх hooks |
-  | `plugin-sdk/lazy-runtime` | Ліниві допоміжні засоби runtime | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
-  | `plugin-sdk/process-runtime` | Допоміжні засоби процесів | Спільні допоміжні засоби exec |
-  | `plugin-sdk/cli-runtime` | Допоміжні засоби runtime CLI | Форматування команд, очікування, допоміжні засоби версій |
-  | `plugin-sdk/gateway-runtime` | Допоміжні засоби Gateway | Допоміжні засоби клієнта Gateway і патчів стану каналу |
-  | `plugin-sdk/config-runtime` | Застарілий shim сумісності конфігурації | Надавайте перевагу `config-types`, `plugin-config-runtime`, `runtime-config-snapshot` і `config-mutation` |
-  | `plugin-sdk/telegram-command-config` | Допоміжні засоби команд Telegram | Стабільні щодо fallback допоміжні засоби перевірки команд Telegram, коли поверхня вбудованого контракту Telegram недоступна |
-  | `plugin-sdk/approval-runtime` | Допоміжні засоби запитів схвалення | Payload схвалення exec/plugin, допоміжні засоби можливостей/профілю схвалення, маршрутизація/допоміжні засоби runtime нативного схвалення та форматування структурованого шляху відображення схвалення |
-  | `plugin-sdk/approval-auth-runtime` | Допоміжні засоби авторизації схвалення | Визначення approver, авторизація дії в тому самому чаті |
-  | `plugin-sdk/approval-client-runtime` | Допоміжні засоби клієнта схвалення | Допоміжні засоби профілю/фільтра нативного схвалення exec |
-  | `plugin-sdk/approval-delivery-runtime` | Допоміжні засоби доставки схвалень | Адаптери можливостей/доставки нативного схвалення |
-  | `plugin-sdk/approval-gateway-runtime` | Допоміжні засоби Gateway схвалень | Спільний допоміжний засіб розв’язання Gateway схвалень |
-  | `plugin-sdk/approval-handler-adapter-runtime` | Допоміжні засоби адаптера схвалення | Легкі допоміжні засоби завантаження адаптера нативного схвалення для гарячих точок входу каналів |
-  | `plugin-sdk/approval-handler-runtime` | Допоміжні засоби обробника схвалення | Ширші допоміжні засоби runtime обробника схвалення; надавайте перевагу вужчим швам адаптера/Gateway, коли їх достатньо |
-  | `plugin-sdk/approval-native-runtime` | Допоміжні засоби цілі схвалення | Допоміжні засоби прив’язки цілі/облікового запису нативного схвалення |
-  | `plugin-sdk/approval-reply-runtime` | Допоміжні засоби відповіді на схвалення | Допоміжні засоби payload відповіді на схвалення exec/plugin |
-  | `plugin-sdk/channel-runtime-context` | Допоміжні засоби runtime-контексту каналу | Загальні допоміжні засоби реєстрації/отримання/спостереження runtime-контексту каналу |
-  | `plugin-sdk/security-runtime` | Допоміжні засоби безпеки | Спільні допоміжні засоби довіри, шлюзування DM, зовнішнього вмісту та збирання секретів |
-  | `plugin-sdk/ssrf-policy` | Допоміжні засоби політики SSRF | Допоміжні засоби списку дозволених хостів і політики приватної мережі |
-  | `plugin-sdk/ssrf-runtime` | Допоміжні засоби runtime SSRF | Pinned-dispatcher, захищений fetch, допоміжні засоби політики SSRF |
-  | `plugin-sdk/system-event-runtime` | Допоміжні засоби системних подій | `enqueueSystemEvent`, `peekSystemEventEntries` |
-  | `plugin-sdk/heartbeat-runtime` | Допоміжні засоби Heartbeat | Допоміжні засоби подій Heartbeat і видимості |
-  | `plugin-sdk/delivery-queue-runtime` | Допоміжні засоби черги доставки | `drainPendingDeliveries` |
-  | `plugin-sdk/channel-activity-runtime` | Допоміжні засоби активності каналу | `recordChannelActivity` |
-  | `plugin-sdk/dedupe-runtime` | Допоміжні засоби дедуплікації | In-memory кеші дедуплікації |
-  | `plugin-sdk/file-access-runtime` | Допоміжні засоби доступу до файлів | Допоміжні засоби безпечних локальних шляхів файлів/медіа |
-  | `plugin-sdk/transport-ready-runtime` | Допоміжні засоби готовності транспорту | `waitForTransportReady` |
-  | `plugin-sdk/collection-runtime` | Допоміжні засоби обмеженого кешу | `pruneMapToMaxSize` |
-  | `plugin-sdk/diagnostic-runtime` | Допоміжні засоби діагностичного шлюзування | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
-  | `plugin-sdk/error-runtime` | Допоміжні засоби форматування помилок | `formatUncaughtError`, `isApprovalNotFoundError`, допоміжні засоби графа помилок |
-  | `plugin-sdk/fetch-runtime` | Допоміжні засоби обгорнутого fetch/proxy | `resolveFetch`, допоміжні засоби proxy, допоміжні засоби опцій EnvHttpProxyAgent |
-  | `plugin-sdk/host-runtime` | Допоміжні засоби нормалізації хостів | `normalizeHostname`, `normalizeScpRemoteHost` |
-  | `plugin-sdk/retry-runtime` | Допоміжні засоби повторів | `RetryConfig`, `retryAsync`, засоби виконання політик |
+  | `plugin-sdk/runtime-store` | Постійне сховище Plugin | `createPluginRuntimeStore` |
+  | `plugin-sdk/runtime` | Широкі runtime-помічники | Помічники runtime/логування/резервного копіювання/встановлення Plugin |
+  | `plugin-sdk/runtime-env` | Вузькі помічники runtime-середовища | Помічники логера/runtime-середовища, тайм-ауту, повтору та backoff |
+  | `plugin-sdk/plugin-runtime` | Спільні runtime-помічники Plugin | Помічники команд/хуків/http/інтерактивних функцій Plugin |
+  | `plugin-sdk/hook-runtime` | Помічники конвеєра хуків | Спільні помічники конвеєра Webhook/внутрішніх хуків |
+  | `plugin-sdk/lazy-runtime` | Помічники лінивого runtime | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
+  | `plugin-sdk/process-runtime` | Помічники процесів | Спільні помічники exec |
+  | `plugin-sdk/cli-runtime` | Runtime-помічники CLI | Форматування команд, очікування, помічники версій |
+  | `plugin-sdk/gateway-runtime` | Помічники Gateway | Клієнт Gateway, помічник запуску готовності циклу подій і помічники патчів стану каналу |
+  | `plugin-sdk/config-runtime` | Застаріла сумісна прокладка конфігурації | Надавайте перевагу `config-types`, `plugin-config-runtime`, `runtime-config-snapshot` і `config-mutation` |
+  | `plugin-sdk/telegram-command-config` | Помічники команд Telegram | Стабільні щодо fallback помічники перевірки команд Telegram, коли поверхня контракту Telegram у комплекті недоступна |
+  | `plugin-sdk/approval-runtime` | Помічники запитів підтвердження | Payload підтвердження exec/Plugin, помічники можливостей/профілю підтвердження, нативна маршрутизація/ runtime підтвердження та форматування шляху структурованого відображення підтвердження |
+  | `plugin-sdk/approval-auth-runtime` | Помічники авторизації підтвердження | Визначення затверджувача, авторизація дій у тому самому чаті |
+  | `plugin-sdk/approval-client-runtime` | Помічники клієнта підтвердження | Нативні помічники профілю/фільтра підтвердження exec |
+  | `plugin-sdk/approval-delivery-runtime` | Помічники доставки підтвердження | Нативні адаптери можливостей/доставки підтвердження |
+  | `plugin-sdk/approval-gateway-runtime` | Помічники Gateway підтвердження | Спільний помічник визначення Gateway для підтвердження |
+  | `plugin-sdk/approval-handler-adapter-runtime` | Помічники адаптера підтвердження | Легкі помічники завантаження нативного адаптера підтвердження для гарячих точок входу каналу |
+  | `plugin-sdk/approval-handler-runtime` | Помічники обробника підтвердження | Ширші runtime-помічники обробника підтвердження; надавайте перевагу вужчим адаптерним/Gateway межам, коли їх достатньо |
+  | `plugin-sdk/approval-native-runtime` | Помічники цілі підтвердження | Нативні помічники прив’язки цілі/облікового запису підтвердження |
+  | `plugin-sdk/approval-reply-runtime` | Помічники відповіді підтвердження | Помічники payload відповіді підтвердження exec/Plugin |
+  | `plugin-sdk/channel-runtime-context` | Помічники runtime-контексту каналу | Загальні помічники реєстрації/отримання/спостереження runtime-контексту каналу |
+  | `plugin-sdk/security-runtime` | Помічники безпеки | Спільні помічники довіри, шлюзу DM, зовнішнього вмісту та збору секретів |
+  | `plugin-sdk/ssrf-policy` | Помічники політики SSRF | Помічники списку дозволених хостів і політики приватної мережі |
+  | `plugin-sdk/ssrf-runtime` | Runtime-помічники SSRF | Закріплений диспетчер, захищений fetch, помічники політики SSRF |
+  | `plugin-sdk/system-event-runtime` | Помічники системних подій | `enqueueSystemEvent`, `peekSystemEventEntries` |
+  | `plugin-sdk/heartbeat-runtime` | Помічники Heartbeat | Помічники подій Heartbeat і видимості |
+  | `plugin-sdk/delivery-queue-runtime` | Помічники черги доставки | `drainPendingDeliveries` |
+  | `plugin-sdk/channel-activity-runtime` | Помічники активності каналу | `recordChannelActivity` |
+  | `plugin-sdk/dedupe-runtime` | Помічники дедуплікації | In-memory кеші дедуплікації |
+  | `plugin-sdk/file-access-runtime` | Помічники доступу до файлів | Помічники безпечних шляхів локальних файлів/медіа |
+  | `plugin-sdk/transport-ready-runtime` | Помічники готовності транспорту | `waitForTransportReady` |
+  | `plugin-sdk/collection-runtime` | Помічники обмеженого кешу | `pruneMapToMaxSize` |
+  | `plugin-sdk/diagnostic-runtime` | Помічники діагностичного шлюзу | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
+  | `plugin-sdk/error-runtime` | Помічники форматування помилок | `formatUncaughtError`, `isApprovalNotFoundError`, помічники графа помилок |
+  | `plugin-sdk/fetch-runtime` | Помічники обгорнутого fetch/proxy | `resolveFetch`, помічники proxy, помічники опцій EnvHttpProxyAgent |
+  | `plugin-sdk/host-runtime` | Помічники нормалізації хоста | `normalizeHostname`, `normalizeScpRemoteHost` |
+  | `plugin-sdk/retry-runtime` | Помічники повторів | `RetryConfig`, `retryAsync`, виконавці політик |
   | `plugin-sdk/allow-from` | Форматування списку дозволених | `formatAllowFromLowercase` |
-  | `plugin-sdk/allowlist-resolution` | Зіставлення введення списку дозволених | `mapAllowlistResolutionInputs` |
-  | `plugin-sdk/command-auth` | Допоміжні засоби шлюзування команд і командної поверхні | `resolveControlCommandGate`, допоміжні засоби авторизації відправника, допоміжні засоби реєстру команд, зокрема форматування меню динамічних аргументів |
+  | `plugin-sdk/allowlist-resolution` | Мапінг вводу списку дозволених | `mapAllowlistResolutionInputs` |
+  | `plugin-sdk/command-auth` | Помічники шлюзу команд і командної поверхні | `resolveControlCommandGate`, помічники авторизації відправника, помічники реєстру команд, зокрема форматування меню динамічних аргументів |
   | `plugin-sdk/command-status` | Рендерери стану/довідки команд | `buildCommandsMessage`, `buildCommandsMessagePaginated`, `buildHelpMessage` |
-  | `plugin-sdk/secret-input` | Розбір секретного введення | Допоміжні засоби секретного введення |
-  | `plugin-sdk/webhook-ingress` | Допоміжні засоби запитів Webhook | Утиліти цілей Webhook |
-  | `plugin-sdk/webhook-request-guards` | Допоміжні засоби захисту тіла Webhook | Допоміжні засоби читання/обмеження тіла запиту |
-  | `plugin-sdk/reply-runtime` | Спільний runtime відповідей | Вхідна диспетчеризація, Heartbeat, планувальник відповідей, chunking |
-  | `plugin-sdk/reply-dispatch-runtime` | Вузькі допоміжні засоби диспетчеризації відповідей | Фіналізація, диспетчеризація провайдера та допоміжні засоби міток розмов |
-  | `plugin-sdk/reply-history` | Допоміжні засоби історії відповідей | `buildHistoryContext`, `buildPendingHistoryContextFromMap`, `recordPendingHistoryEntry`, `clearHistoryEntriesIfEnabled` |
+  | `plugin-sdk/secret-input` | Розбір вводу секретів | Помічники вводу секретів |
+  | `plugin-sdk/webhook-ingress` | Помічники запитів Webhook | Утиліти цілі Webhook |
+  | `plugin-sdk/webhook-request-guards` | Помічники захисту тіла Webhook | Помічники читання/обмеження тіла запиту |
+  | `plugin-sdk/reply-runtime` | Спільний runtime відповідей | Вхідна диспетчеризація, Heartbeat, планувальник відповідей, поділ на частини |
+  | `plugin-sdk/reply-dispatch-runtime` | Вузькі помічники диспетчеризації відповідей | Фіналізація, диспетчеризація провайдера та помічники міток розмов |
+  | `plugin-sdk/reply-history` | Помічники історії відповідей | `buildHistoryContext`, `buildPendingHistoryContextFromMap`, `recordPendingHistoryEntry`, `clearHistoryEntriesIfEnabled` |
   | `plugin-sdk/reply-reference` | Планування посилань відповіді | `createReplyReferencePlanner` |
-  | `plugin-sdk/reply-chunking` | Допоміжні засоби фрагментів відповіді | Допоміжні засоби chunking тексту/markdown |
-  | `plugin-sdk/session-store-runtime` | Допоміжні засоби сховища сесій | Шлях сховища + допоміжні засоби updated-at |
-  | `plugin-sdk/state-paths` | Допоміжні засоби шляхів стану | Допоміжні засоби каталогів стану та OAuth |
-  | `plugin-sdk/routing` | Допоміжні засоби маршрутизації/ключа сесії | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, допоміжні засоби нормалізації ключа сесії |
-  | `plugin-sdk/status-helpers` | Допоміжні засоби стану каналу | Побудовники підсумку стану каналу/облікового запису, типові значення runtime-state, допоміжні засоби метаданих проблем |
-  | `plugin-sdk/target-resolver-runtime` | Допоміжні засоби розв’язувача цілей | Спільні допоміжні засоби розв’язувача цілей |
-  | `plugin-sdk/string-normalization-runtime` | Допоміжні засоби нормалізації рядків | Допоміжні засоби нормалізації slug/рядків |
-  | `plugin-sdk/request-url` | Допоміжні засоби URL запиту | Витягувати рядкові URL з подібних до запиту вхідних даних |
-  | `plugin-sdk/run-command` | Допоміжні засоби команд із таймінгом | Засіб запуску команд із таймінгом і нормалізованими stdout/stderr |
-  | `plugin-sdk/param-readers` | Зчитувачі параметрів | Спільні зчитувачі параметрів інструментів/CLI |
-  | `plugin-sdk/tool-payload` | Витяг payload інструменту | Витягувати нормалізовані payload з об’єктів результату інструменту |
-  | `plugin-sdk/tool-send` | Витяг надсилання інструменту | Витягувати канонічні поля цілі надсилання з аргументів інструменту |
+  | `plugin-sdk/reply-chunking` | Помічники частин відповіді | Помічники поділу тексту/markdown на частини |
+  | `plugin-sdk/session-store-runtime` | Помічники сховища сеансів | Помічники шляху сховища та updated-at |
+  | `plugin-sdk/state-paths` | Помічники шляхів стану | Помічники каталогів стану та OAuth |
+  | `plugin-sdk/routing` | Помічники маршрутизації/session-key | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, помічники нормалізації session-key |
+  | `plugin-sdk/status-helpers` | Помічники стану каналу | Будівники зведень стану каналу/облікового запису, стандартні значення runtime-стану, помічники метаданих проблем |
+  | `plugin-sdk/target-resolver-runtime` | Помічники розпізнавача цілі | Спільні помічники розпізнавача цілі |
+  | `plugin-sdk/string-normalization-runtime` | Помічники нормалізації рядків | Помічники нормалізації slug/рядків |
+  | `plugin-sdk/request-url` | Помічники URL запиту | Видобування рядкових URL з подібних до запиту вхідних даних |
+  | `plugin-sdk/run-command` | Помічники команд із таймером | Виконавець команд із таймером і нормалізованими stdout/stderr |
+  | `plugin-sdk/param-readers` | Читачі параметрів | Спільні читачі параметрів інструментів/CLI |
+  | `plugin-sdk/tool-payload` | Видобування payload інструмента | Видобування нормалізованих payload з об’єктів результатів інструмента |
+  | `plugin-sdk/tool-send` | Видобування надсилання інструмента | Видобування канонічних полів цілі надсилання з аргументів інструмента |
   | `plugin-sdk/temp-path` | Помічники тимчасових шляхів | Спільні помічники шляхів для тимчасових завантажень |
-  | `plugin-sdk/logging-core` | Помічники журналювання | Помічники журналера підсистем і редагування конфіденційних даних |
+  | `plugin-sdk/logging-core` | Помічники журналювання | Помічники підсистемного журналювання та редагування |
   | `plugin-sdk/markdown-table-runtime` | Помічники Markdown-таблиць | Помічники режиму Markdown-таблиць |
-  | `plugin-sdk/reply-payload` | Типи відповідей на повідомлення | Типи payload відповіді |
-  | `plugin-sdk/provider-setup` | Керовані помічники налаштування локальних/самостійно розміщених провайдерів | Помічники виявлення/конфігурації самостійно розміщених провайдерів |
-  | `plugin-sdk/self-hosted-provider-setup` | Спеціалізовані помічники налаштування OpenAI-сумісних самостійно розміщених провайдерів | Ті самі помічники виявлення/конфігурації самостійно розміщених провайдерів |
-  | `plugin-sdk/provider-auth-runtime` | Помічники runtime-автентифікації провайдерів | Помічники runtime-визначення API-ключів |
-  | `plugin-sdk/provider-auth-api-key` | Помічники налаштування API-ключів провайдера | Помічники onboarding/запису профілю для API-ключів |
-  | `plugin-sdk/provider-auth-result` | Помічники auth-result провайдера | Стандартний builder OAuth auth-result |
+  | `plugin-sdk/reply-payload` | Типи відповідей на повідомлення | Типи корисного навантаження відповіді |
+  | `plugin-sdk/provider-setup` | Добірні помічники налаштування локальних/самостійно розгорнутих провайдерів | Помічники виявлення/налаштування самостійно розгорнутих провайдерів |
+  | `plugin-sdk/self-hosted-provider-setup` | Спеціалізовані помічники налаштування OpenAI-сумісних самостійно розгорнутих провайдерів | Ті самі помічники виявлення/налаштування самостійно розгорнутих провайдерів |
+  | `plugin-sdk/provider-auth-runtime` | Помічники автентифікації провайдера під час виконання | Помічники визначення API-ключа під час виконання |
+  | `plugin-sdk/provider-auth-api-key` | Помічники налаштування API-ключа провайдера | Помічники онбордингу API-ключа/запису профілю |
+  | `plugin-sdk/provider-auth-result` | Помічники результату автентифікації провайдера | Стандартний збирач результату автентифікації OAuth |
   | `plugin-sdk/provider-auth-login` | Помічники інтерактивного входу провайдера | Спільні помічники інтерактивного входу |
   | `plugin-sdk/provider-selection-runtime` | Помічники вибору провайдера | Вибір налаштованого або автоматичного провайдера та об’єднання сирої конфігурації провайдера |
   | `plugin-sdk/provider-env-vars` | Помічники env-var провайдера | Помічники пошуку env-var автентифікації провайдера |
-  | `plugin-sdk/provider-model-shared` | Спільні помічники моделей/відтворення провайдера | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, спільні builders політик відтворення, помічники provider-endpoint і помічники нормалізації model-id |
-  | `plugin-sdk/provider-catalog-shared` | Спільні помічники каталогу провайдерів | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-  | `plugin-sdk/provider-onboard` | Патчі onboarding провайдера | Помічники onboarding-конфігурації |
-  | `plugin-sdk/provider-http` | HTTP-помічники провайдера | Загальні помічники можливостей HTTP/endpoint провайдера, зокрема помічники multipart form для транскрипції аудіо |
-  | `plugin-sdk/provider-web-fetch` | Помічники web-fetch провайдера | Помічники реєстрації/кешу web-fetch провайдера |
+  | `plugin-sdk/provider-model-shared` | Спільні помічники моделі/відтворення провайдера | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, спільні збирачі політик відтворення, помічники кінцевих точок провайдера та помічники нормалізації model-id |
+  | `plugin-sdk/provider-catalog-shared` | Спільні помічники каталогу провайдера | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
+  | `plugin-sdk/provider-onboard` | Патчі онбордингу провайдера | Помічники конфігурації онбордингу |
+  | `plugin-sdk/provider-http` | Помічники HTTP провайдера | Загальні помічники можливостей HTTP/кінцевих точок провайдера, зокрема помічники multipart-форми для аудіотранскрипції |
+  | `plugin-sdk/provider-web-fetch` | Помічники web-fetch провайдера | Помічники реєстрації/кешу провайдера web-fetch |
   | `plugin-sdk/provider-web-search-config-contract` | Помічники конфігурації web-search провайдера | Вузькі помічники конфігурації/облікових даних web-search для провайдерів, яким не потрібне підключення plugin-enable |
-  | `plugin-sdk/provider-web-search-contract` | Помічники контракту web-search провайдера | Вузькі помічники контракту конфігурації/облікових даних web-search, як-от `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` і scoped setters/getters облікових даних |
-  | `plugin-sdk/provider-web-search` | Помічники web-search провайдера | Помічники реєстрації/кешу/runtime web-search провайдера |
-  | `plugin-sdk/provider-tools` | Помічники сумісності інструментів/схем провайдера | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, очищення схеми Gemini + діагностика та помічники сумісності xAI, як-от `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
+  | `plugin-sdk/provider-web-search-contract` | Помічники контракту web-search провайдера | Вузькі помічники контракту конфігурації/облікових даних web-search, як-от `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` і обмежені за областю сетери/гетери облікових даних |
+  | `plugin-sdk/provider-web-search` | Помічники web-search провайдера | Помічники реєстрації/кешу/середовища виконання провайдера web-search |
+  | `plugin-sdk/provider-tools` | Помічники сумісності інструментів/схем провайдера | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, очищення схем Gemini + діагностика, а також помічники сумісності xAI, як-от `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
   | `plugin-sdk/provider-usage` | Помічники використання провайдера | `fetchClaudeUsage`, `fetchGeminiUsage`, `fetchGithubCopilotUsage` та інші помічники використання провайдера |
-  | `plugin-sdk/provider-stream` | Помічники wrapper потоку провайдера | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, типи stream wrapper і спільні помічники wrapper для Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
-  | `plugin-sdk/provider-transport-runtime` | Помічники транспорту провайдера | Помічники нативного транспорту провайдера, як-от guarded fetch, перетворення транспортних повідомлень і writable transport event streams |
-  | `plugin-sdk/keyed-async-queue` | Впорядкована асинхронна черга | `KeyedAsyncQueue` |
-  | `plugin-sdk/media-runtime` | Спільні помічники медіа | Помічники отримання/перетворення/збереження медіа, визначення розмірів відео на основі ffprobe та builders медіа payload |
-  | `plugin-sdk/media-generation-runtime` | Спільні помічники генерації медіа | Спільні помічники failover, вибір кандидатів і повідомлення про відсутні моделі для генерації зображень/відео/музики |
-  | `plugin-sdk/media-understanding` | Помічники розуміння медіа | Типи провайдера розуміння медіа, а також provider-facing експорти помічників зображень/аудіо |
-  | `plugin-sdk/text-runtime` | Спільні помічники тексту | Видалення видимого для асистента тексту, помічники рендерингу/розбиття на фрагменти/таблиць Markdown, помічники редагування конфіденційних даних, помічники directive-tag, утиліти safe-text і пов’язані помічники тексту/журналювання |
-  | `plugin-sdk/text-chunking` | Помічники розбиття тексту на фрагменти | Помічник розбиття вихідного тексту на фрагменти |
-  | `plugin-sdk/speech` | Помічники мовлення | Типи провайдера мовлення, а також provider-facing помічники директив, реєстру, валідації та OpenAI-сумісний builder TTS |
+  | `plugin-sdk/provider-stream` | Помічники обгорток потоку провайдера | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, типи обгорток потоку та спільні помічники обгорток Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
+  | `plugin-sdk/provider-transport-runtime` | Помічники транспорту провайдера | Нативні помічники транспорту провайдера, як-от захищений fetch, перетворення транспортних повідомлень і записувані потоки транспортних подій |
+  | `plugin-sdk/keyed-async-queue` | Упорядкована асинхронна черга | `KeyedAsyncQueue` |
+  | `plugin-sdk/media-runtime` | Спільні помічники медіа | Помічники отримання/перетворення/збереження медіа, визначення розмірів відео на основі ffprobe та збирачі корисного навантаження медіа |
+  | `plugin-sdk/media-generation-runtime` | Спільні помічники генерації медіа | Спільні помічники відмовостійкості, вибір кандидатів і повідомлення про відсутню модель для генерації зображень/відео/музики |
+  | `plugin-sdk/media-understanding` | Помічники розуміння медіа | Типи провайдера розуміння медіа плюс експорти помічників зображень/аудіо для провайдерів |
+  | `plugin-sdk/text-runtime` | Спільні помічники тексту | Вилучення видимого для асистента тексту, помічники рендерингу/поділу на частини/таблиць Markdown, помічники редагування, помічники directive-tag, утиліти безпечного тексту та пов’язані помічники тексту/журналювання |
+  | `plugin-sdk/text-chunking` | Помічники поділу тексту на частини | Помічник поділу вихідного тексту на частини |
+  | `plugin-sdk/speech` | Помічники мовлення | Типи провайдера мовлення плюс помічники директив, реєстру й валідації для провайдерів, а також OpenAI-сумісний збирач TTS |
   | `plugin-sdk/speech-core` | Спільне ядро мовлення | Типи провайдера мовлення, реєстр, директиви, нормалізація |
-  | `plugin-sdk/realtime-transcription` | Помічники транскрипції в реальному часі | Типи провайдера, помічники реєстру та спільний помічник WebSocket-сесії |
-  | `plugin-sdk/realtime-voice` | Помічники голосу в реальному часі | Типи провайдера, помічники реєстру/визначення та помічники bridge-сесій |
-  | `plugin-sdk/image-generation` | Помічники генерації зображень | Типи провайдера генерації зображень, а також помічники asset/data URL для зображень і OpenAI-сумісний builder провайдера зображень |
-  | `plugin-sdk/image-generation-core` | Спільне ядро генерації зображень | Типи генерації зображень, failover, автентифікація та помічники реєстру |
+  | `plugin-sdk/realtime-transcription` | Помічники транскрипції в реальному часі | Типи провайдера, помічники реєстру та спільний помічник сеансу WebSocket |
+  | `plugin-sdk/realtime-voice` | Помічники голосу в реальному часі | Типи провайдера, помічники реєстру/визначення та помічники мостових сеансів |
+  | `plugin-sdk/image-generation` | Помічники генерації зображень | Типи провайдера генерації зображень плюс помічники ресурсів зображень/data URL і OpenAI-сумісний збирач провайдера зображень |
+  | `plugin-sdk/image-generation-core` | Спільне ядро генерації зображень | Типи генерації зображень, відмовостійкість, автентифікація та помічники реєстру |
   | `plugin-sdk/music-generation` | Помічники генерації музики | Типи провайдера/запиту/результату генерації музики |
-  | `plugin-sdk/music-generation-core` | Спільне ядро генерації музики | Типи генерації музики, помічники failover, пошук провайдера та розбір model-ref |
+  | `plugin-sdk/music-generation-core` | Спільне ядро генерації музики | Типи генерації музики, помічники відмовостійкості, пошук провайдера та розбір model-ref |
   | `plugin-sdk/video-generation` | Помічники генерації відео | Типи провайдера/запиту/результату генерації відео |
-  | `plugin-sdk/video-generation-core` | Спільне ядро генерації відео | Типи генерації відео, помічники failover, пошук провайдера та розбір model-ref |
-  | `plugin-sdk/interactive-runtime` | Помічники інтерактивних відповідей | Нормалізація/зведення payload інтерактивної відповіді |
-  | `plugin-sdk/channel-config-primitives` | Примітиви конфігурації каналу | Вузькі примітиви config-schema каналу |
+  | `plugin-sdk/video-generation-core` | Спільне ядро генерації відео | Типи генерації відео, помічники відмовостійкості, пошук провайдера та розбір model-ref |
+  | `plugin-sdk/interactive-runtime` | Помічники інтерактивної відповіді | Нормалізація/скорочення корисного навантаження інтерактивної відповіді |
+  | `plugin-sdk/channel-config-primitives` | Примітиви конфігурації каналу | Вузькі примітиви схеми конфігурації каналу |
   | `plugin-sdk/channel-config-writes` | Помічники запису конфігурації каналу | Помічники авторизації запису конфігурації каналу |
   | `plugin-sdk/channel-plugin-common` | Спільна преамбула каналу | Спільні експорти преамбули Plugin каналу |
-  | `plugin-sdk/channel-status` | Помічники статусу каналу | Спільні помічники snapshot/summary статусу каналу |
+  | `plugin-sdk/channel-status` | Помічники стану каналу | Спільні помічники знімка/зведення стану каналу |
   | `plugin-sdk/allowlist-config-edit` | Помічники конфігурації allowlist | Помічники редагування/читання конфігурації allowlist |
-  | `plugin-sdk/group-access` | Помічники групового доступу | Спільні помічники рішень щодо групового доступу |
-  | `plugin-sdk/direct-dm` | Помічники прямих DM | Спільні помічники автентифікації/guard для прямих DM |
-  | `plugin-sdk/extension-shared` | Спільні помічники extension | Примітиви помічників passive-channel/status та ambient proxy |
+  | `plugin-sdk/group-access` | Помічники доступу до груп | Спільні помічники рішень щодо доступу до груп |
+  | `plugin-sdk/direct-dm` | Помічники Direct-DM | Спільні помічники автентифікації/захисту Direct-DM |
+  | `plugin-sdk/extension-shared` | Спільні помічники розширення | Примітиви пасивного каналу/стану та помічників ambient proxy |
   | `plugin-sdk/webhook-targets` | Помічники цілей Webhook | Реєстр цілей Webhook і помічники встановлення маршрутів |
-  | `plugin-sdk/webhook-path` | Помічники шляху Webhook | Помічники нормалізації шляху Webhook |
+  | `plugin-sdk/webhook-path` | Помічники шляхів Webhook | Помічники нормалізації шляхів Webhook |
   | `plugin-sdk/web-media` | Спільні помічники вебмедіа | Помічники завантаження віддалених/локальних медіа |
-  | `plugin-sdk/zod` | Реекспорт Zod | Реекспортований `zod` для споживачів SDK плагінів |
-  | `plugin-sdk/memory-core` | Вбудовані помічники memory-core | Поверхня помічників менеджера/конфігурації/файлів/CLI пам’яті |
-  | `plugin-sdk/memory-core-engine-runtime` | Runtime-фасад рушія пам’яті | Runtime-фасад індексу/пошуку пам’яті |
-  | `plugin-sdk/memory-core-host-engine-foundation` | Базовий рушій хоста пам’яті | Експорти базового рушія хоста пам’яті |
-  | `plugin-sdk/memory-core-host-engine-embeddings` | Рушій embeddings хоста пам’яті | Контракти embeddings пам’яті, доступ до реєстру, локальний провайдер і загальні batch/remote помічники; конкретні віддалені провайдери живуть у власних plugins |
-  | `plugin-sdk/memory-core-host-engine-qmd` | Рушій QMD хоста пам’яті | Експорти рушія QMD хоста пам’яті |
+  | `plugin-sdk/zod` | Повторний експорт Zod | Повторно експортований `zod` для споживачів SDK Plugin |
+  | `plugin-sdk/memory-core` | Вбудовані помічники memory-core | Поверхня помічників менеджера пам’яті/конфігурації/файлів/CLI |
+  | `plugin-sdk/memory-core-engine-runtime` | Фасад середовища виконання рушія пам’яті | Фасад середовища виконання індексу/пошуку пам’яті |
+  | `plugin-sdk/memory-core-host-engine-foundation` | Foundation-рушій хоста пам’яті | Експорти foundation-рушія хоста пам’яті |
+  | `plugin-sdk/memory-core-host-engine-embeddings` | Рушій embedding хоста пам’яті | Контракти embedding пам’яті, доступ до реєстру, локальний провайдер і загальні помічники batch/remote; конкретні віддалені провайдери містяться у своїх власних plugins |
+  | `plugin-sdk/memory-core-host-engine-qmd` | QMD-рушій хоста пам’яті | Експорти QMD-рушія хоста пам’яті |
   | `plugin-sdk/memory-core-host-engine-storage` | Рушій сховища хоста пам’яті | Експорти рушія сховища хоста пам’яті |
   | `plugin-sdk/memory-core-host-multimodal` | Мультимодальні помічники хоста пам’яті | Мультимодальні помічники хоста пам’яті |
   | `plugin-sdk/memory-core-host-query` | Помічники запитів хоста пам’яті | Помічники запитів хоста пам’яті |
   | `plugin-sdk/memory-core-host-secret` | Помічники секретів хоста пам’яті | Помічники секретів хоста пам’яті |
   | `plugin-sdk/memory-core-host-events` | Помічники журналу подій хоста пам’яті | Помічники журналу подій хоста пам’яті |
-  | `plugin-sdk/memory-core-host-status` | Помічники статусу хоста пам’яті | Помічники статусу хоста пам’яті |
-  | `plugin-sdk/memory-core-host-runtime-cli` | CLI runtime хоста пам’яті | CLI runtime-помічники хоста пам’яті |
-  | `plugin-sdk/memory-core-host-runtime-core` | Core runtime хоста пам’яті | Core runtime-помічники хоста пам’яті |
-  | `plugin-sdk/memory-core-host-runtime-files` | Помічники файлів/runtime хоста пам’яті | Помічники файлів/runtime хоста пам’яті |
-  | `plugin-sdk/memory-host-core` | Псевдонім core runtime хоста пам’яті | Vendor-neutral псевдонім для core runtime-помічників хоста пам’яті |
-  | `plugin-sdk/memory-host-events` | Псевдонім журналу подій хоста пам’яті | Vendor-neutral псевдонім для помічників журналу подій хоста пам’яті |
-  | `plugin-sdk/memory-host-files` | Псевдонім файлів/runtime хоста пам’яті | Vendor-neutral псевдонім для помічників файлів/runtime хоста пам’яті |
-  | `plugin-sdk/memory-host-markdown` | Помічники керованого Markdown | Спільні помічники managed-markdown для суміжних із пам’яттю plugins |
-  | `plugin-sdk/memory-host-search` | Фасад пошуку active memory | Лінивий runtime-фасад search-manager active-memory |
-  | `plugin-sdk/memory-host-status` | Псевдонім статусу хоста пам’яті | Vendor-neutral псевдонім для помічників статусу хоста пам’яті |
-  | `plugin-sdk/testing` | Тестові утиліти | Застарілий широкий barrel сумісності; надавайте перевагу сфокусованим тестовим підшляхам, як-от `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/channel-target-testing`, `plugin-sdk/test-env` і `plugin-sdk/test-fixtures` |
+  | `plugin-sdk/memory-core-host-status` | Помічники стану хоста пам’яті | Помічники стану хоста пам’яті |
+  | `plugin-sdk/memory-core-host-runtime-cli` | Середовище виконання CLI хоста пам’яті | Помічники середовища виконання CLI хоста пам’яті |
+  | `plugin-sdk/memory-core-host-runtime-core` | Середовище виконання ядра хоста пам’яті | Помічники середовища виконання ядра хоста пам’яті |
+  | `plugin-sdk/memory-core-host-runtime-files` | Помічники файлів/середовища виконання хоста пам’яті | Помічники файлів/середовища виконання хоста пам’яті |
+  | `plugin-sdk/memory-host-core` | Псевдонім середовища виконання ядра хоста пам’яті | Вендорно-нейтральний псевдонім для помічників середовища виконання ядра хоста пам’яті |
+  | `plugin-sdk/memory-host-events` | Псевдонім журналу подій хоста пам’яті | Вендорно-нейтральний псевдонім для помічників журналу подій хоста пам’яті |
+  | `plugin-sdk/memory-host-files` | Псевдонім файлів/середовища виконання хоста пам’яті | Вендорно-нейтральний псевдонім для помічників файлів/середовища виконання хоста пам’яті |
+  | `plugin-sdk/memory-host-markdown` | Помічники керованого Markdown | Спільні помічники керованого Markdown для plugins, суміжних із пам’яттю |
+  | `plugin-sdk/memory-host-search` | Фасад пошуку active memory | Лінивий фасад середовища виконання менеджера пошуку active-memory |
+  | `plugin-sdk/memory-host-status` | Псевдонім стану хоста пам’яті | Вендорно-нейтральний псевдонім для помічників стану хоста пам’яті |
+  | `plugin-sdk/testing` | Тестові утиліти | Застарілий широкий barrel сумісності; віддавайте перевагу сфокусованим тестовим підшляхам, як-от `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/channel-target-testing`, `plugin-sdk/test-env` і `plugin-sdk/test-fixtures` |
 </Accordion>
 
-Ця таблиця навмисно містить спільну підмножину для міграції, а не повну
-поверхню SDK. Повний список із 200+ точок входу міститься в
+Ця таблиця навмисно є спільною підмножиною міграції, а не повною
+поверхнею SDK. Повний список із 200+ точок входу міститься в
 `scripts/lib/plugin-sdk-entrypoints.json`.
 
-Зарезервовані допоміжні межі вбудованих Plugin вилучено з карти експортів
-публічного SDK, окрім явно задокументованих фасадів сумісності, як-от
+Зарезервовані допоміжні межі bundled-Plugin вилучено з публічної мапи
+експортів SDK, окрім явно задокументованих фасадів сумісності, як-от
 застарілий shim `plugin-sdk/discord`, збережений для опублікованого пакета
 `@openclaw/discord@2026.3.13`. Специфічні для власника допоміжні засоби
-містяться всередині пакета Plugin, якому вони належать; спільна поведінка хоста
-має проходити через загальні контракти SDK, як-от
-`plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` і
-`plugin-sdk/plugin-config-runtime`.
+розміщуються всередині пакета Plugin-власника; спільна поведінка host має
+проходити через загальні контракти SDK, як-от `plugin-sdk/gateway-runtime`,
+`plugin-sdk/security-runtime` і `plugin-sdk/plugin-config-runtime`.
 
-Використовуйте найвужчий імпорт, що відповідає завданню. Якщо не можете знайти
-експорт, перевірте джерело в `src/plugin-sdk/` або запитайте супровідників, який
-загальний контракт має ним володіти.
+Використовуйте найвужчий import, що відповідає завданню. Якщо ви не можете
+знайти export, перевірте джерело в `src/plugin-sdk/` або запитайте
+maintainers, який загальний контракт має ним володіти.
 
-## Активні застарілі елементи
+## Активні застарілі API
 
-Вужчі застарілі елементи, що застосовуються до plugin SDK, контракту
-провайдера, runtime-поверхні та маніфесту. Кожен із них усе ще працює сьогодні,
-але буде вилучений у майбутньому мажорному випуску. Запис під кожним елементом
-зіставляє старий API з його канонічною заміною.
+Вужчі застарілі API, що застосовуються в SDK Plugin, контракті провайдера,
+runtime-поверхні та manifest. Кожен із них досі працює сьогодні, але буде
+вилучений у майбутньому major release. Запис під кожним пунктом зіставляє
+старий API з його канонічною заміною.
 
 <AccordionGroup>
-  <Accordion title="command-auth help builders → command-status">
+  <Accordion title="допоміжні збирачі довідки command-auth → command-status">
     **Старе (`openclaw/plugin-sdk/command-auth`)**: `buildCommandsMessage`,
     `buildCommandsMessagePaginated`, `buildHelpMessage`.
 
     **Нове (`openclaw/plugin-sdk/command-status`)**: ті самі сигнатури, ті самі
-    експорти — просто імпортовані з вужчого підшляху. `command-auth`
-    реекспортує їх як сумісні заглушки.
+    exports — просто import із вужчого subpath. `command-auth`
+    повторно експортує їх як compat stubs.
 
     ```typescript
     // Before
@@ -588,97 +586,97 @@ releases.
 
   </Accordion>
 
-  <Accordion title="Mention gating helpers → resolveInboundMentionDecision">
+  <Accordion title="допоміжні засоби mention gating → resolveInboundMentionDecision">
     **Старе**: `resolveInboundMentionRequirement({ facts, policy })` і
     `shouldDropInboundForMention(...)` з
     `openclaw/plugin-sdk/channel-inbound` або
     `openclaw/plugin-sdk/channel-mention-gating`.
 
     **Нове**: `resolveInboundMentionDecision({ facts, policy })` — повертає
-    єдиний об’єкт рішення замість двох окремих викликів.
+    один об'єкт рішення замість двох розділених викликів.
 
-    Нижчі за ланцюжком channel plugins (Slack, Discord, Matrix, MS Teams) уже
-    перейшли.
+    Нижчі channel Plugin (Slack, Discord, Matrix, MS Teams) уже перейшли.
 
   </Accordion>
 
-  <Accordion title="Channel runtime shim and channel actions helpers">
+  <Accordion title="shim runtime каналу та допоміжні засоби дій каналу">
     `openclaw/plugin-sdk/channel-runtime` є shim сумісності для старіших
-    channel plugins. Не імпортуйте його з нового коду; використовуйте
-    `openclaw/plugin-sdk/channel-runtime-context` для реєстрації runtime-об’єктів.
+    channel Plugin. Не імпортуйте його з нового коду; використовуйте
+    `openclaw/plugin-sdk/channel-runtime-context` для реєстрації runtime
+    objects.
 
     Допоміжні засоби `channelActions*` у `openclaw/plugin-sdk/channel-actions`
-    застаріли разом із raw-експортами channel "actions". Натомість виставляйте
-    можливості через семантичну поверхню `presentation` — channel plugins
-    оголошують, що вони рендерять (картки, кнопки, випадаючі списки), а не які
-    raw-назви дій вони приймають.
+    застарілі разом із сирими exports каналу "actions". Натомість розкривайте
+    capabilities через семантичну поверхню `presentation` — channel Plugin
+    оголошують, що вони рендерять (cards, buttons, selects), а не які сирі
+    імена actions приймають.
 
   </Accordion>
 
-  <Accordion title="Web search provider tool() helper → createTool() on the plugin">
-    **Старе**: фабрика `tool()` з `openclaw/plugin-sdk/provider-web-search`.
+  <Accordion title="допоміжний tool() провайдера вебпошуку → createTool() у Plugin">
+    **Старе**: factory `tool()` з `openclaw/plugin-sdk/provider-web-search`.
 
-    **Нове**: реалізуйте `createTool(...)` безпосередньо в provider plugin.
-    OpenClaw більше не потребує допоміжного засобу SDK для реєстрації обгортки
-    інструмента.
+    **Нове**: реалізуйте `createTool(...)` безпосередньо в provider Plugin.
+    OpenClaw більше не потребує допоміжного засобу SDK для реєстрації tool wrapper.
 
   </Accordion>
 
-  <Accordion title="Plaintext channel envelopes → BodyForAgent">
+  <Accordion title="plaintext channel envelopes → BodyForAgent">
     **Старе**: `formatInboundEnvelope(...)` (і
-    `ChannelMessageForAgent.channelEnvelope`) для створення плаского plaintext
-    prompt envelope з вхідних channel-повідомлень.
+    `ChannelMessageForAgent.channelEnvelope`) для побудови плоского plaintext prompt
+    envelope з inbound channel messages.
 
-    **Нове**: `BodyForAgent` плюс структуровані блоки контексту користувача.
-    Channel plugins додають routing-метадані (thread, topic, reply-to, reactions)
-    як типізовані поля замість конкатенації їх у prompt-рядок. Допоміжний засіб
-    `formatAgentEnvelope(...)` усе ще підтримується для синтезованих envelope,
-    звернених до assistant, але вхідні plaintext envelopes поступово виводяться.
+    **Нове**: `BodyForAgent` плюс структуровані блоки user-context. Channel
+    Plugin додають routing metadata (thread, topic, reply-to, reactions) як
+    типізовані поля замість конкатенації їх у prompt string. Допоміжний засіб
+    `formatAgentEnvelope(...)` досі підтримується для synthesized
+    assistant-facing envelopes, але inbound plaintext envelopes поступово
+    виводяться з ужитку.
 
     Зачеплені області: `inbound_claim`, `message_received` і будь-який
-    користувацький channel plugin, який постобробляв текст `channelEnvelope`.
+    користувацький channel Plugin, що постобробляв текст `channelEnvelope`.
 
   </Accordion>
 
-  <Accordion title="Provider discovery types → provider catalog types">
-    Чотири псевдоніми типів discovery тепер є тонкими обгортками над типами
-    catalog-era:
+  <Accordion title="типи provider discovery → типи provider catalog">
+    Чотири aliases типів discovery тепер є тонкими wrappers над типами
+    catalog-епохи:
 
-    | Старий псевдонім          | Новий тип                 |
+    | Старий alias              | Новий тип                 |
     | ------------------------- | ------------------------- |
     | `ProviderDiscoveryOrder`  | `ProviderCatalogOrder`    |
     | `ProviderDiscoveryContext`| `ProviderCatalogContext`  |
     | `ProviderDiscoveryResult` | `ProviderCatalogResult`   |
     | `ProviderPluginDiscovery` | `ProviderPluginCatalog`   |
 
-    Плюс застарілий статичний набір `ProviderCapabilities` — provider plugins
+    Плюс legacy статичний bag `ProviderCapabilities` — provider Plugin
     мають використовувати явні provider hooks, як-от `buildReplayPolicy`,
-    `normalizeToolSchemas` і `wrapStreamFn`, замість статичного об’єкта.
+    `normalizeToolSchemas` і `wrapStreamFn`, замість статичного об'єкта.
 
   </Accordion>
 
-  <Accordion title="Thinking policy hooks → resolveThinkingProfile">
+  <Accordion title="hooks політики thinking → resolveThinkingProfile">
     **Старе** (три окремі hooks у `ProviderThinkingPolicy`):
     `isBinaryThinking(ctx)`, `supportsXHighThinking(ctx)` і
     `resolveDefaultThinkingLevel(ctx)`.
 
-    **Нове**: єдиний `resolveThinkingProfile(ctx)`, що повертає
-    `ProviderThinkingProfile` з канонічним `id`, необов’язковим `label` і
-    ранжованим списком рівнів. OpenClaw автоматично понижує застарілі збережені
-    значення за рангом профілю.
+    **Нове**: один `resolveThinkingProfile(ctx)`, що повертає
+    `ProviderThinkingProfile` з канонічним `id`, необов'язковим `label` і
+    ранжованим списком levels. OpenClaw автоматично понижує застарілі
+    збережені значення за rank профілю.
 
-    Реалізуйте один hook замість трьох. Застарілі hooks працюють протягом вікна
-    застарівання, але не компонуються з результатом профілю.
+    Реалізуйте один hook замість трьох. Legacy hooks продовжують працювати
+    протягом вікна застарівання, але не компонуються з результатом профілю.
 
   </Accordion>
 
-  <Accordion title="External OAuth provider fallback → contracts.externalAuthProviders">
+  <Accordion title="fallback зовнішнього OAuth provider → contracts.externalAuthProviders">
     **Старе**: реалізація `resolveExternalOAuthProfiles(...)` без оголошення
-    провайдера в маніфесті Plugin.
+    провайдера в plugin manifest.
 
-    **Нове**: оголосіть `contracts.externalAuthProviders` у маніфесті Plugin
+    **Нове**: оголосіть `contracts.externalAuthProviders` у plugin manifest
     **і** реалізуйте `resolveExternalAuthProfiles(...)`. Старий шлях "auth
-    fallback" видає попередження під час виконання й буде вилучений.
+    fallback" виводить попередження під час runtime і буде вилучений.
 
     ```json
     {
@@ -690,19 +688,19 @@ releases.
 
   </Accordion>
 
-  <Accordion title="Provider env-var lookup → setup.providers[].envVars">
-    **Старе** поле маніфесту: `providerAuthEnvVars: { anthropic: ["ANTHROPIC_API_KEY"] }`.
+  <Accordion title="пошук env-var провайдера → setup.providers[].envVars">
+    **Старе** поле manifest: `providerAuthEnvVars: { anthropic: ["ANTHROPIC_API_KEY"] }`.
 
     **Нове**: віддзеркальте той самий пошук env-var у `setup.providers[].envVars`
-    у маніфесті. Це об’єднує env-метадані setup/status в одному місці й уникає
-    запуску runtime Plugin лише для відповіді на env-var lookup.
+    у manifest. Це консолідує setup/status env metadata в одному місці та
+    уникає запуску plugin runtime лише для відповіді на env-var lookups.
 
-    `providerAuthEnvVars` залишається підтримуваним через адаптер сумісності,
-    доки не завершиться вікно застарівання.
+    `providerAuthEnvVars` залишається підтримуваним через adapter сумісності,
+    доки не закриється вікно застарівання.
 
   </Accordion>
 
-  <Accordion title="Memory plugin registration → registerMemoryCapability">
+  <Accordion title="реєстрація memory Plugin → registerMemoryCapability">
     **Старе**: три окремі виклики —
     `api.registerMemoryPromptSection(...)`,
     `api.registerMemoryFlushPlan(...)`,
@@ -711,32 +709,32 @@ releases.
     **Нове**: один виклик в API memory-state —
     `registerMemoryCapability(pluginId, { promptBuilder, flushPlanResolver, runtime })`.
 
-    Ті самі слоти, один виклик реєстрації. Додаткові допоміжні засоби пам’яті
+    Ті самі slots, один реєстраційний виклик. Additive memory helpers
     (`registerMemoryPromptSupplement`, `registerMemoryCorpusSupplement`,
     `registerMemoryEmbeddingProvider`) не зачеплені.
 
   </Accordion>
 
-  <Accordion title="Subagent session messages types renamed">
-    Два застарілі псевдоніми типів досі експортуються з `src/plugins/runtime/types.ts`:
+  <Accordion title="типи subagent session messages перейменовано">
+    Два legacy aliases типів досі експортуються з `src/plugins/runtime/types.ts`:
 
     | Старе                         | Нове                            |
     | ----------------------------- | ------------------------------- |
     | `SubagentReadSessionParams`   | `SubagentGetSessionMessagesParams` |
     | `SubagentReadSessionResult`   | `SubagentGetSessionMessagesResult` |
 
-    Runtime-метод `readSession` застарів на користь `getSessionMessages`. Та сама
-    сигнатура; старий метод викликає новий.
+    Runtime-метод `readSession` застарілий на користь
+    `getSessionMessages`. Та сама сигнатура; старий метод викликає новий.
 
   </Accordion>
 
   <Accordion title="runtime.tasks.flow → runtime.tasks.managedFlows">
-    **Старе**: `runtime.tasks.flow` (однина) повертав live-аксесор task-flow.
+    **Старе**: `runtime.tasks.flow` (однина) повертав live task-flow accessor.
 
     **Нове**: `runtime.tasks.managedFlows` зберігає managed TaskFlow mutation
-    runtime для plugins, які створюють, оновлюють, скасовують або запускають
-    дочірні завдання з flow. Використовуйте `runtime.tasks.flows`, коли Plugin
-    потребує лише DTO-based читання.
+    runtime для Plugin, які створюють, оновлюють, скасовують або запускають
+    child tasks із flow. Використовуйте `runtime.tasks.flows`, коли Plugin
+    потребує лише DTO-based reads.
 
     ```typescript
     // Before
@@ -747,18 +745,17 @@ releases.
 
   </Accordion>
 
-  <Accordion title="Embedded extension factories → agent tool-result middleware">
-    Розглянуто вище в "Як мігрувати → Мігруйте розширення Pi tool-result на
+  <Accordion title="embedded extension factories → agent tool-result middleware">
+    Розглянуто вище в "Як мігрувати → Мігруйте Pi tool-result extensions на
     middleware". Додано тут для повноти: вилучений шлях лише для Pi
     `api.registerEmbeddedExtensionFactory(...)` замінено на
-    `api.registerAgentToolResultMiddleware(...)` з явним списком runtime у
-    `contracts.agentToolResultMiddleware`.
+    `api.registerAgentToolResultMiddleware(...)` з явним списком runtime
+    у `contracts.agentToolResultMiddleware`.
   </Accordion>
 
-  <Accordion title="OpenClawSchemaType alias → OpenClawConfig">
-    `OpenClawSchemaType`, реекспортований з `openclaw/plugin-sdk`, тепер є
-    однорядковим псевдонімом для `OpenClawConfig`. Надавайте перевагу
-    канонічній назві.
+  <Accordion title="alias OpenClawSchemaType → OpenClawConfig">
+    `OpenClawSchemaType`, повторно експортований з `openclaw/plugin-sdk`, тепер є
+    однорядковим alias для `OpenClawConfig`. Надавайте перевагу канонічній назві.
 
     ```typescript
     // Before
@@ -771,39 +768,39 @@ releases.
 </AccordionGroup>
 
 <Note>
-Застарілі елементи рівня Plugin (всередині вбудованих channel/provider plugins
-у `extensions/`) відстежуються у власних barrel-файлах `api.ts` і
-`runtime-api.ts`. Вони не впливають на контракти сторонніх plugins і не
-перелічені тут. Якщо ви напряму використовуєте локальний barrel вбудованого
-Plugin, перед оновленням прочитайте коментарі про застарівання в цьому barrel.
+Застарілі API рівня extension (усередині bundled channel/provider Plugin під
+`extensions/`) відстежуються у власних barrels `api.ts` і `runtime-api.ts`.
+Вони не впливають на контракти сторонніх Plugin і не перелічені тут. Якщо ви
+споживаєте local barrel bundled Plugin напряму, прочитайте коментарі про
+застарівання в цьому barrel перед оновленням.
 </Note>
 
 ## Графік вилучення
 
 | Коли                   | Що відбувається                                                        |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Зараз**              | Застарілі поверхні видають runtime-попередження                         |
-| **Наступний мажорний випуск** | Застарілі поверхні буде вилучено; plugins, які досі їх використовують, не працюватимуть |
+| **Зараз**              | Застарілі поверхні виводять runtime warnings                            |
+| **Наступний major release** | Застарілі поверхні буде вилучено; Plugin, які досі їх використовують, завершаться помилкою |
 
-Усі core plugins уже мігровано. Зовнішні plugins мають мігрувати до наступного
-мажорного випуску.
+Усі core Plugin уже мігровано. Зовнішні Plugin мають мігрувати до наступного
+major release.
 
-## Тимчасове приглушення попереджень
+## Тимчасове придушення попереджень
 
-Установіть ці змінні середовища, поки працюєте над міграцією:
+Установіть ці environment variables, поки працюєте над міграцією:
 
 ```bash
 OPENCLAW_SUPPRESS_PLUGIN_SDK_COMPAT_WARNING=1 openclaw gateway run
 OPENCLAW_SUPPRESS_EXTENSION_API_WARNING=1 openclaw gateway run
 ```
 
-Це тимчасовий аварійний обхід, а не постійне рішення.
+Це тимчасовий аварійний шлях, а не постійне рішення.
 
-## Пов’язане
+## Пов'язане
 
 - [Початок роботи](/uk/plugins/building-plugins) — створіть свій перший Plugin
-- [Огляд SDK](/uk/plugins/sdk-overview) — повний довідник імпортів підшляхів
-- [Channel Plugins](/uk/plugins/sdk-channel-plugins) — створення channel plugins
-- [Provider Plugins](/uk/plugins/sdk-provider-plugins) — створення provider plugins
-- [Внутрішня будова Plugin](/uk/plugins/architecture) — поглиблений огляд архітектури
-- [Маніфест Plugin](/uk/plugins/manifest) — довідник схеми маніфесту
+- [Огляд SDK](/uk/plugins/sdk-overview) — повний довідник import за subpath
+- [Channel Plugins](/uk/plugins/sdk-channel-plugins) — створення channel Plugin
+- [Provider Plugins](/uk/plugins/sdk-provider-plugins) — створення provider Plugin
+- [Внутрішня архітектура Plugin](/uk/plugins/architecture) — глибокий розбір архітектури
+- [Plugin Manifest](/uk/plugins/manifest) — довідник схеми manifest
