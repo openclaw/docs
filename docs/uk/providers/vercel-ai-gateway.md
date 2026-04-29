@@ -1,31 +1,31 @@
 ---
 read_when:
     - Ви хочете використовувати Vercel AI Gateway з OpenClaw
-    - Вам потрібна env var API-ключа або варіант автентифікації в CLI
-summary: Налаштування Vercel AI Gateway (auth + вибір моделі)
-title: Vercel AI Gateway
+    - Потрібна змінна середовища ключа API або вибір автентифікації CLI
+summary: Налаштування Vercel AI Gateway (автентифікація + вибір моделі)
+title: Gateway Vercel AI
 x-i18n:
-    generated_at: "2026-04-23T21:08:35Z"
-    model: gpt-5.4
+    generated_at: "2026-04-29T11:17:06Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
+    source_hash: c3bbe498a04c2073020fcfbbe68cb506eca4c52c3274e4eca6ab7e6893fcfa56
     source_path: providers/vercel-ai-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
 [Vercel AI Gateway](https://vercel.com/ai-gateway) надає уніфікований API для
-доступу до сотень моделей через один endpoint.
+доступу до сотень моделей через одну кінцеву точку.
 
 | Властивість   | Значення                         |
 | ------------- | -------------------------------- |
-| Provider      | `vercel-ai-gateway`              |
-| Auth          | `AI_GATEWAY_API_KEY`             |
+| Провайдер     | `vercel-ai-gateway`              |
+| Автентифікація | `AI_GATEWAY_API_KEY`             |
 | API           | сумісний з Anthropic Messages    |
-| Каталог моделей | автовиявлення через `/v1/models` |
+| Каталог моделей | автоматично виявляється через `/v1/models` |
 
 <Tip>
 OpenClaw автоматично виявляє каталог Gateway `/v1/models`, тому
-`/models vercel-ai-gateway` містить актуальні refs моделей, такі як
+`/models vercel-ai-gateway` містить поточні посилання на моделі, як-от
 `vercel-ai-gateway/openai/gpt-5.5` і
 `vercel-ai-gateway/moonshotai/kimi-k2.6`.
 </Tip>
@@ -33,15 +33,15 @@ OpenClaw автоматично виявляє каталог Gateway `/v1/model
 ## Початок роботи
 
 <Steps>
-  <Step title="Задайте API-ключ">
-    Запустіть онбординг і виберіть варіант автентифікації AI Gateway:
+  <Step title="Установіть ключ API">
+    Запустіть початкове налаштування й виберіть опцію автентифікації AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice ai-gateway-api-key
     ```
 
   </Step>
-  <Step title="Установіть типову модель">
+  <Step title="Установіть модель за замовчуванням">
     Додайте модель до конфігурації OpenClaw:
 
     ```json5
@@ -55,7 +55,7 @@ OpenClaw автоматично виявляє каталог Gateway `/v1/model
     ```
 
   </Step>
-  <Step title="Переконайтеся, що модель доступна">
+  <Step title="Перевірте, що модель доступна">
     ```bash
     openclaw models list --provider vercel-ai-gateway
     ```
@@ -64,7 +64,7 @@ OpenClaw автоматично виявляє каталог Gateway `/v1/model
 
 ## Неінтерактивний приклад
 
-Для сценарних або CI-конфігурацій передайте всі значення в командному рядку:
+Для скриптів або налаштувань CI передайте всі значення в командному рядку:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -73,44 +73,53 @@ openclaw onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
-## Скорочений запис model ID
+## Скорочення ID моделі
 
-OpenClaw приймає скорочені refs моделей Vercel Claude і нормалізує їх під час
-runtime:
+OpenClaw приймає скорочені посилання на моделі Vercel Claude і нормалізує їх під час
+виконання:
 
-| Скорочений ввід                     | Нормалізований model ref                      |
+| Скорочене введення                  | Нормалізоване посилання на модель             |
 | ----------------------------------- | --------------------------------------------- |
 | `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
 | `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
 
 <Tip>
-Ви можете використовувати у конфігурації як скорочений варіант, так і повністю
-кваліфікований model ref. OpenClaw автоматично розв’язує канонічну форму.
+Ви можете використовувати у своїй конфігурації як скорочення, так і повністю
+кваліфіковане посилання на модель. OpenClaw автоматично визначає канонічну форму.
 </Tip>
 
 ## Розширена конфігурація
 
 <AccordionGroup>
-  <Accordion title="Змінна середовища для daemon-процесів">
-    Якщо Gateway OpenClaw працює як daemon (launchd/systemd), переконайтеся, що
+  <Accordion title="Змінна середовища для процесів демона">
+    Якщо OpenClaw Gateway працює як демон (launchd/systemd), переконайтеся, що
     `AI_GATEWAY_API_KEY` доступний цьому процесу.
 
     <Warning>
-    Ключ, заданий лише в `~/.profile`, не буде видимий для daemon launchd/systemd,
-    якщо це середовище не імпортовано явно. Установіть ключ у
-    `~/.openclaw/.env` або через `env.shellEnv`, щоб процес gateway міг
+    Ключ, заданий лише в `~/.profile`, не буде видимий для демона launchd/systemd,
+    якщо це середовище не імпортовано явно. Задайте ключ у
+    `~/.openclaw/.env` або через `env.shellEnv`, щоб процес Gateway міг
     його прочитати.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Маршрутизація provider">
-    Vercel AI Gateway маршрутизує запити до upstream provider на основі префікса model
-    ref. Наприклад, `vercel-ai-gateway/anthropic/claude-opus-4.6` маршрутизується
-    через Anthropic, тоді як `vercel-ai-gateway/openai/gpt-5.5` маршрутизується через
-    OpenAI, а `vercel-ai-gateway/moonshotai/kimi-k2.6` — через
+  <Accordion title="Маршрутизація провайдера">
+    Vercel AI Gateway спрямовує запити до вихідного провайдера на основі префікса
+    посилання на модель. Наприклад, `vercel-ai-gateway/anthropic/claude-opus-4.6` спрямовується
+    через Anthropic, тоді як `vercel-ai-gateway/openai/gpt-5.5` спрямовується через
+    OpenAI, а `vercel-ai-gateway/moonshotai/kimi-k2.6` спрямовується через
     MoonshotAI. Ваш єдиний `AI_GATEWAY_API_KEY` обробляє автентифікацію для всіх
-    upstream provider.
+    вихідних провайдерів.
+  </Accordion>
+  <Accordion title="Рівні мислення">
+    Параметри `/think` відповідають довіреним префіксам вихідних моделей, коли OpenClaw знає
+    контракт вихідного провайдера. `vercel-ai-gateway/anthropic/...` використовує
+    профіль мислення Claude, зокрема адаптивні значення за замовчуванням для моделей Claude 4.6.
+    `vercel-ai-gateway/openai/gpt-5.4`, `gpt-5.5` і посилання в стилі Codex надають
+    `/think xhigh` так само, як прямі провайдери OpenAI/OpenAI Codex. Інші
+    просторово іменовані посилання зберігають звичайні рівні міркування, якщо їхні метадані
+    каталогу не оголошують більше.
   </Accordion>
 </AccordionGroup>
 
@@ -118,9 +127,9 @@ runtime:
 
 <CardGroup cols={2}>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір provider, refs моделей і поведінки failover.
+    Вибір провайдерів, посилань на моделі та поведінки відмовостійкості.
   </Card>
-  <Card title="Усунення проблем" href="/uk/help/troubleshooting" icon="wrench">
-    Загальне усунення проблем і FAQ.
+  <Card title="Усунення несправностей" href="/uk/help/troubleshooting" icon="wrench">
+    Загальне усунення несправностей і поширені запитання.
   </Card>
 </CardGroup>
