@@ -1,60 +1,65 @@
 ---
 read_when:
-    - 更改自动回复执行或并发设置
-summary: 序列化入站自动回复运行的命令队列设计
+    - 更改自动回复的执行方式或并发设置
+    - 解释 /queue 模式或消息引导行为
+summary: 自动回复队列模式、默认值和按会话覆盖设置
 title: 命令队列
 x-i18n:
-    generated_at: "2026-04-28T19:41:16Z"
+    generated_at: "2026-04-29T21:52:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8ed2bd9fad7f35f124b99c570703ddd075c742391061a977323c28feaf3ab508
+    source_hash: 59d14a2b8e1b8d5bc1433c0f052869efed42912c9b85cdd79e518633d9919729
     source_path: concepts/queue.md
     workflow: 16
 ---
 
-我们通过一个很小的进程内队列，对入站自动回复运行（所有渠道）进行序列化，防止多个智能体运行相互冲突，同时仍允许在不同会话之间进行安全并行。
+我们通过一个很小的进程内队列来串行化入站自动回复运行（所有渠道），防止多个智能体运行相互冲突，同时仍允许跨会话的安全并行。
 
 ## 原因
 
-- 自动回复运行可能很昂贵（LLM 调用），并且当多个入站消息几乎同时到达时可能发生冲突。
-- 序列化可避免竞争共享资源（会话文件、日志、CLI stdin），并降低触发上游速率限制的概率。
+- 自动回复运行可能开销很高（LLM 调用），并且当多条入站消息短时间内到达时可能发生冲突。
+- 串行化可以避免争抢共享资源（会话文件、日志、CLI 标准输入），并降低触发上游速率限制的概率。
 
-## 工作原理
+## 工作方式
 
-- 一个感知通道的 FIFO 队列会按通道排空，并带有可配置的并发上限（未配置通道默认 1；main 默认 4，subagent 默认 8）。
-- `runEmbeddedPiAgent` 按**会话键**（通道 `session:<key>`）入队，以保证每个会话同一时间只有一个活跃运行。
-- 然后，每个会话运行会被排入一个**全局通道**（默认 `main`），因此整体并行度受 `agents.defaults.maxConcurrent` 限制。
-- 启用详细日志时，如果排队运行在启动前等待超过约 2s，会发出一条简短通知。
-- 输入中指示器仍会在入队时立即触发（如果渠道支持），因此在等待轮到我们期间，用户体验保持不变。
+- 感知 lane 的 FIFO 队列按可配置的并发上限排空每个 lane（未配置的 lane 默认为 1；main 默认为 4，subagent 为 8）。
+- `runEmbeddedPiAgent` 按**会话键**（lane `session:<key>`）入队，以保证每个会话只有一个活跃运行。
+- 每个会话运行随后会被排入一个**全局 lane**（默认是 `main`），因此整体并行度受 `agents.defaults.maxConcurrent` 限制。
+- 启用详细日志时，如果已排队的运行在启动前等待超过约 2 秒，会发出一条简短提示。
+- 输入状态指示器仍会在入队时立即触发（渠道支持时），因此用户体验在等待轮次时不会改变。
 
-## 队列模式（按渠道）
+## 默认值
 
-入站消息可以引导当前运行、等待后续轮次，或两者都做：
+未设置时，所有入站渠道界面使用：
 
-- `steer`：立即注入当前运行（在下一个工具边界后取消待处理的工具调用）。如果不是流式传输，则回退到 followup。
-- `followup`：在当前运行结束后，为下一次智能体轮次入队。
-- `collect`：将所有排队消息合并为**单个**后续轮次（默认）。如果消息目标是不同渠道/线程，则会单独排空以保留路由。
-- `steer-backlog`（也称为 `steer+backlog`）：现在引导，**同时**保留消息用于后续轮次。
-- `interrupt`（旧版）：中止该会话中的活跃运行，然后运行最新消息。
+- `mode: "steer"`
+- `debounceMs: 500`
+- `cap: 20`
+- `drop: "summarize"`
+
+`steer` 是默认值，因为它可以让活跃模型轮次保持响应，而无需启动第二个会话运行。如果当前运行不能接受 steering，OpenClaw 会回退到 followup 队列条目。
+
+## 队列模式
+
+入站消息可以 steer 当前运行、等待后续轮次，或两者都做：
+
+- `steer`：向活跃 Pi 运行排入一条 steering 消息。Pi 会在**当前助手轮次完成执行其工具调用之后**、下一次 LLM 调用之前递送它。如果运行没有处于活跃流式传输状态，或 steering 不可用，OpenClaw 会回退到 followup 队列条目。
+- `followup`：在当前运行结束后，为后续智能体轮次将每条消息入队。
+- `collect`：在静默窗口后，将已排队的消息合并为**单个** followup 轮次。如果消息面向不同渠道/线程，它们会分别排空以保留路由。
+- `steer-backlog`（也称为 `steer+backlog`）：现在 steer，**并且**为 followup 轮次保留同一条消息。
+- `interrupt`（旧版）：中止该会话的活跃运行，然后运行最新消息。
 - `queue`（旧版别名）：与 `steer` 相同。
 
-Steer-backlog 表示你可能会在被引导的运行之后获得一个后续响应，因此
-流式传输界面可能看起来像重复响应。如果你想要
-每条入站消息对应一个响应，请优先使用 `collect`/`steer`。
-发送 `/queue collect` 作为独立命令（按会话），或设置 `messages.queue.byChannel.discord: "collect"`。
+Steer-backlog 意味着你可能会在 steered 运行之后得到 followup 响应，因此流式传输界面看起来可能像重复响应。如果你希望每条入站消息只有一个响应，请优先使用 `collect`/`steer`。
 
-默认值（配置中未设置时）：
-
-- 所有界面 → `collect`
-
-通过 `messages.queue` 进行全局配置或按渠道配置：
+通过 `messages.queue` 进行全局或按渠道配置：
 
 ```json5
 {
   messages: {
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: { discord: "collect" },
@@ -65,36 +70,48 @@ Steer-backlog 表示你可能会在被引导的运行之后获得一个后续响
 
 ## 队列选项
 
-选项适用于 `followup`、`collect` 和 `steer-backlog`（也适用于回退到 followup 的 `steer`）：
+选项适用于 `followup`、`collect` 和 `steer-backlog`（以及 `steer` 回退到 followup 时）：
 
-- `debounceMs`：等待安静后再启动后续轮次（防止“继续，继续”）。
-- `cap`：每个会话的最大排队消息数。
-- `drop`：溢出策略（`old`、`new`、`summarize`）。
+- `debounceMs`：排空已排队 followup 前的静默窗口。裸数字表示毫秒；`/queue` 选项接受单位 `ms`、`s`、`m`、`h` 和 `d`。
+- `cap`：每个会话的最大排队消息数。小于 `1` 的值会被忽略。
+- `drop: "summarize"`：默认值。按需丢弃最旧的队列条目，保留紧凑摘要，并将它们作为合成 followup 提示注入。
+- `drop: "old"`：按需丢弃最旧的队列条目，不保留摘要。
+- `drop: "new"`：当队列已满时拒绝最新消息。
 
-Summarize 会保留一份被丢弃消息的简短项目符号列表，并将其作为合成后续提示注入。
-默认值：`debounceMs: 1000`、`cap: 20`、`drop: summarize`。
+默认值：`debounceMs: 500`、`cap: 20`、`drop: summarize`。
 
-## 按会话覆盖
+## 优先级
 
-- 发送 `/queue <mode>` 作为独立命令，以保存当前会话的模式。
-- 选项可以组合：`/queue collect debounce:2s cap:25 drop:summarize`
+对于模式选择，OpenClaw 按以下顺序解析：
+
+1. 内联或已存储的每会话 `/queue` 覆盖。
+2. `messages.queue.byChannel.<channel>`。
+3. `messages.queue.mode`。
+4. 默认 `steer`。
+
+对于选项，内联或已存储的 `/queue` 选项优先于配置。然后会应用渠道特定 debounce（`messages.queue.debounceMsByChannel`）、插件 debounce 默认值、全局 `messages.queue` 选项以及内置默认值。`cap` 和 `drop` 是全局/会话选项，不是按渠道配置键。
+
+## 每会话覆盖
+
+- 发送 `/queue <mode>` 作为独立命令，为当前会话存储模式。
+- 选项可以组合：`/queue collect debounce:0.5s cap:25 drop:summarize`
 - `/queue default` 或 `/queue reset` 会清除会话覆盖。
 
 ## 范围和保证
 
 - 适用于所有使用 Gateway 网关回复管线的入站渠道上的自动回复智能体运行（WhatsApp web、Telegram、Slack、Discord、Signal、iMessage、webchat 等）。
-- 默认通道（`main`）对于入站 + 主心跳在整个进程内生效；设置 `agents.defaults.maxConcurrent` 可允许多个会话并行。
-- 可能存在其他通道（例如 `cron`、`cron-nested`、`nested`、`subagent`），因此后台任务可以并行运行，而不会阻塞入站回复。隔离的 cron 智能体轮次会占用一个 `cron` 槽位，而其内部智能体执行使用 `cron-nested`；两者都使用 `cron.maxConcurrentRuns`。共享的非 cron `nested` 流程保留自身的通道行为。这些分离运行会作为[后台任务](/zh-CN/automation/tasks)进行跟踪。
-- 按会话通道保证同一时间只有一个智能体运行会触碰给定会话。
-- 没有外部依赖或后台工作线程；纯 TypeScript + promises。
+- 默认 lane（`main`）在入站 + main heartbeats 中是进程范围的；设置 `agents.defaults.maxConcurrent` 可允许多个会话并行运行。
+- 可能存在其他 lane（例如 `cron`、`cron-nested`、`nested`、`subagent`），因此后台作业可以并行运行，而不会阻塞入站回复。隔离的 cron 智能体轮次会在其内部智能体执行使用 `cron-nested` 时持有一个 `cron` slot；两者都使用 `cron.maxConcurrentRuns`。共享的非 cron `nested` 流程保留自身的 lane 行为。这些分离的运行会作为[后台任务](/zh-CN/automation/tasks)被跟踪。
+- 每会话 lane 保证同一时间只有一个智能体运行会触碰给定会话。
+- 没有外部依赖或后台 worker 线程；纯 TypeScript + promises。
 
 ## 故障排除
 
-- 如果命令看起来卡住，请启用详细日志，并查找“queued for …ms”行以确认队列正在排空。
+- 如果命令看起来卡住，请启用详细日志，并查找“queued for …ms”行，以确认队列正在排空。
 - 如果你需要队列深度，请启用详细日志并观察队列计时行。
-- 启用诊断时，超过 `diagnostics.stuckSessionWarnMs` 仍停留在 `processing` 的会话会记录卡住会话警告。默认情况下，活跃的嵌入式运行、活跃的回复操作和活跃的通道任务只会发出警告；没有活跃会话工作的陈旧启动记账可以释放受影响的会话通道，使排队工作继续排空。
+- 启用诊断时，超过 `diagnostics.stuckSessionWarnMs` 后仍保持 `processing` 的会话会记录 stuck-session 警告。默认情况下，活跃 embedded 运行、活跃回复操作和活跃 lane 任务仍仅发出警告；如果启动时的过期 bookkeeping 没有活跃会话工作，可以释放受影响的会话 lane，使已排队工作继续排空。
 
-## 相关内容
+## 相关
 
 - [会话管理](/zh-CN/concepts/session)
 - [重试策略](/zh-CN/concepts/retry)

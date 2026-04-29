@@ -1,20 +1,20 @@
 ---
 read_when:
-    - 了解如何配置 OpenClaw
+    - 学习如何配置 OpenClaw
     - 正在查找配置示例
     - 首次设置 OpenClaw
-summary: 常见 OpenClaw 设置的符合模式的配置示例
+summary: 适用于常见 OpenClaw 设置的、符合模式定义的配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-04-29T10:51:08Z"
+    generated_at: "2026-04-29T21:53:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 82e0a721fdddd5f115df78211fea5405569ce3e8fb01ccab8daa0d545d39503d
+    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-下面的示例与当前配置架构保持一致。完整参考和逐字段说明，请参阅[配置](/zh-CN/gateway/configuration)。
+以下示例与当前配置 schema 保持一致。完整参考和每个字段的说明，请参阅[配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
@@ -27,9 +27,9 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json`，然后你就可以从该号码向机器人发送私信。
+保存到 `~/.openclaw/openclaw.json` 后，你就可以从该号码向 bot 发送私信。
 
-### 推荐入门配置
+### 推荐起步配置
 
 ```json5
 {
@@ -59,7 +59,7 @@ x-i18n:
 
 ## 扩展示例（主要选项）
 
-> JSON5 允许你使用注释和尾随逗号。常规 JSON 也可以使用。
+> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以使用。
 
 ```json5
 {
@@ -118,18 +118,18 @@ x-i18n:
       visibleReplies: "message_tool", // normal final replies stay private in groups/channels
     },
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
-        telegram: "collect",
-        discord: "collect",
-        slack: "collect",
-        signal: "collect",
-        imessage: "collect",
-        webchat: "collect",
+        whatsapp: "steer",
+        telegram: "steer",
+        discord: "steer",
+        slack: "steer",
+        signal: "steer",
+        imessage: "steer",
+        webchat: "steer",
       },
     },
   },
@@ -491,7 +491,7 @@ x-i18n:
 
 - `agents.defaults.skills` 是共享基线。
 - `agents.list[].skills` 会为单个智能体替换该基线。
-- 当某个智能体不应看到任何 Skills 时，使用 `skills: []`。
+- 当智能体不应看到任何 Skills 时，使用 `skills: []`。
 
 ### 多平台设置
 
@@ -516,7 +516,7 @@ x-i18n:
 
 ### 可信节点网络自动批准
 
-除非你控制网络路径，否则请保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确 CIDR 或 IP 来启用首次节点设备自动批准：
+除非你控制网络路径，否则请保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP，为首次节点设备启用自动批准：
 
 ```json5
 {
@@ -530,11 +530,11 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它只适用于没有请求作用域的全新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或公钥升级仍然需要手动批准。
+未设置时，此功能保持关闭。它仅适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及 role、scope、metadata 或 public-key 升级仍需要手动批准。
 
 ### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以向你的 bot 发送私信（`allowFrom` 中有多个条目、批准了多人的配对，或使用 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
+如果不止一个人可以向你的机器人发送私信（`allowFrom` 中有多个条目、多个用户的配对批准，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -559,9 +559,9 @@ x-i18n:
 ```
 
 对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认优先使用 ID。
-只有在你明确接受风险时，才为每个渠道启用直接可变的名称/邮箱/nick 匹配：`dangerouslyAllowNameMatching: true`。
+只有在你明确接受该风险时，才为各渠道启用 `dangerouslyAllowNameMatching: true`，以允许直接使用可变的名称/电子邮件/昵称进行匹配。
 
-### Anthropic API 密钥 + MiniMax 回退
+### Anthropic API key + MiniMax 回退
 
 ```json5
 {
@@ -595,7 +595,7 @@ x-i18n:
 }
 ```
 
-### 工作 bot（受限访问）
+### 工作机器人（受限访问）
 
 ```json5
 {
@@ -620,7 +620,7 @@ x-i18n:
 }
 ```
 
-### 仅使用本地模型
+### 仅本地模型
 
 ```json5
 {
@@ -654,9 +654,9 @@ x-i18n:
 
 ## 提示
 
-- 如果你设置了 `dmPolicy: "open"`，匹配的 `allowFrom` 列表必须包含 `"*"`。
+- 如果你设置了 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
 - 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
-- 可稍后添加的可选部分：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
+- 稍后可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
 - 请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
 
 ## 相关内容
