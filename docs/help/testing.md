@@ -391,6 +391,10 @@ Think of the suites as “increasing realism” (and increasing flakiness/cost):
   - Runs in CI
   - No real keys required
   - Should be fast and stable
+  - Resolver and public-surface loader tests must prove broad `api.js` and
+    `runtime-api.js` fallback behavior with generated tiny plugin fixtures, not
+    real bundled plugin source APIs. Real plugin API loads belong in
+    plugin-owned contract/integration suites.
 
 <AccordionGroup>
   <Accordion title="Projects, shards, and scoped lanes">
