@@ -1,40 +1,40 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: จัดการ sandbox runtimes และตรวจสอบนโยบาย sandbox ที่มีผลจริง
-title: CLI ของ Sandbox
+summary: จัดการรันไทม์แซนด์บ็อกซ์และตรวจสอบนโยบายแซนด์บ็อกซ์ที่มีผลบังคับใช้
+title: CLI แซนด์บ็อกซ์
 x-i18n:
-    generated_at: "2026-04-24T09:04:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:44:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f2b5835968faac0a8243fd6eadfcecb51b211fe7b346454e215312b1b6d5e65
+    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
     source_path: cli/sandbox.md
-    workflow: 15
+    workflow: 16
 ---
 
-จัดการ sandbox runtimes สำหรับการรันเอเจนต์แบบแยกส่วน
+จัดการรันไทม์แซนด์บ็อกซ์สำหรับการทำงานของเอเจนต์แบบแยกโดดเดี่ยว
 
 ## ภาพรวม
 
-OpenClaw สามารถรันเอเจนต์ใน sandbox runtimes แบบแยกส่วนเพื่อความปลอดภัย คำสั่ง `sandbox` ช่วยให้คุณตรวจสอบและสร้าง runtimes เหล่านั้นใหม่หลังการอัปเดตหรือการเปลี่ยนแปลงคอนฟิก
+OpenClaw สามารถเรียกใช้เอเจนต์ในรันไทม์แซนด์บ็อกซ์แบบแยกโดดเดี่ยวเพื่อความปลอดภัยได้ คำสั่ง `sandbox` ช่วยให้คุณตรวจสอบและสร้างรันไทม์เหล่านั้นใหม่หลังการอัปเดตหรือการเปลี่ยนแปลงการกำหนดค่า
 
-ปัจจุบันโดยทั่วไปหมายถึง:
+โดยทั่วไปในปัจจุบัน หมายถึง:
 
-- คอนเทนเนอร์ Docker sandbox
-- SSH sandbox runtimes เมื่อ `agents.defaults.sandbox.backend = "ssh"`
-- OpenShell sandbox runtimes เมื่อ `agents.defaults.sandbox.backend = "openshell"`
+- คอนเทนเนอร์แซนด์บ็อกซ์ของ Docker
+- รันไทม์แซนด์บ็อกซ์ของ SSH เมื่อ `agents.defaults.sandbox.backend = "ssh"`
+- รันไทม์แซนด์บ็อกซ์ของ OpenShell เมื่อ `agents.defaults.sandbox.backend = "openshell"`
 
-สำหรับ `ssh` และ OpenShell `remote` การสร้างใหม่สำคัญกว่ากรณี Docker:
+สำหรับ `ssh` และ OpenShell `remote` การสร้างใหม่มีความสำคัญมากกว่าการใช้ Docker:
 
-- workspace ระยะไกลเป็นข้อมูลหลักหลังจากการ seed ครั้งแรก
-- `openclaw sandbox recreate` จะลบ workspace ระยะไกลหลักนั้นสำหรับขอบเขตที่เลือก
-- การใช้งานครั้งถัดไปจะ seed ใหม่อีกครั้งจาก workspace ในเครื่องปัจจุบัน
+- พื้นที่ทำงานระยะไกลเป็นแหล่งข้อมูลหลักหลังจาก seed ครั้งแรก
+- `openclaw sandbox recreate` จะลบพื้นที่ทำงานระยะไกลหลักนั้นสำหรับขอบเขตที่เลือก
+- การใช้งานครั้งถัดไปจะ seed อีกครั้งจากพื้นที่ทำงานภายในเครื่องปัจจุบัน
 
 ## คำสั่ง
 
 ### `openclaw sandbox explain`
 
-ตรวจสอบโหมด/scope/การเข้าถึง workspace ของ sandbox ที่**มีผลจริง** นโยบายเครื่องมือของ sandbox และ elevated gates (พร้อมเส้นทางคีย์คอนฟิกสำหรับการแก้ไข)
+ตรวจสอบโหมด/ขอบเขต/การเข้าถึงพื้นที่ทำงานของแซนด์บ็อกซ์ที่มีผลใช้งานจริง นโยบายเครื่องมือแซนด์บ็อกซ์ และเกตแบบยกระดับสิทธิ์ พร้อมเส้นทางคีย์การกำหนดค่าสำหรับแก้ไข
 
 ```bash
 openclaw sandbox explain
@@ -45,74 +45,76 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-แสดง sandbox runtimes ทั้งหมดพร้อมสถานะและคอนฟิก
+แสดงรายการรันไทม์แซนด์บ็อกซ์ทั้งหมดพร้อมสถานะและการกำหนดค่า
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # แสดงเฉพาะคอนเทนเนอร์เบราว์เซอร์
-openclaw sandbox list --json     # เอาต์พุต JSON
+openclaw sandbox list --browser  # List only browser containers
+openclaw sandbox list --json     # JSON output
 ```
 
 **เอาต์พุตประกอบด้วย:**
 
-- ชื่อและสถานะของ runtime
-- backend (`docker`, `openshell` เป็นต้น)
-- ป้ายกำกับคอนฟิกและว่าตรงกับคอนฟิกปัจจุบันหรือไม่
+- ชื่อรันไทม์และสถานะ
+- แบ็กเอนด์ (`docker`, `openshell` ฯลฯ)
+- ป้ายกำกับการกำหนดค่า และตรงกับการกำหนดค่าปัจจุบันหรือไม่
 - อายุ (เวลาตั้งแต่สร้าง)
 - เวลาว่าง (เวลาตั้งแต่ใช้งานครั้งล่าสุด)
 - เซสชัน/เอเจนต์ที่เกี่ยวข้อง
 
 ### `openclaw sandbox recreate`
 
-ลบ sandbox runtimes เพื่อบังคับให้สร้างใหม่ด้วยคอนฟิกที่อัปเดตแล้ว
+ลบรันไทม์แซนด์บ็อกซ์เพื่อบังคับให้สร้างใหม่ด้วยการกำหนดค่าที่อัปเดตแล้ว
 
 ```bash
-openclaw sandbox recreate --all                # สร้างคอนเทนเนอร์ทั้งหมดใหม่
-openclaw sandbox recreate --session main       # เซสชันที่ระบุ
-openclaw sandbox recreate --agent mybot        # เอเจนต์ที่ระบุ
-openclaw sandbox recreate --browser            # เฉพาะคอนเทนเนอร์เบราว์เซอร์
-openclaw sandbox recreate --all --force        # ข้ามการยืนยัน
+openclaw sandbox recreate --all                # Recreate all containers
+openclaw sandbox recreate --session main       # Specific session
+openclaw sandbox recreate --agent mybot        # Specific agent
+openclaw sandbox recreate --browser            # Only browser containers
+openclaw sandbox recreate --all --force        # Skip confirmation
 ```
 
 **ตัวเลือก:**
 
-- `--all`: สร้างคอนเทนเนอร์ sandbox ทั้งหมดใหม่
-- `--session <key>`: สร้างคอนเทนเนอร์สำหรับเซสชันที่ระบุใหม่
-- `--agent <id>`: สร้างคอนเทนเนอร์สำหรับเอเจนต์ที่ระบุใหม่
-- `--browser`: สร้างเฉพาะคอนเทนเนอร์เบราว์เซอร์ใหม่
-- `--force`: ข้ามข้อความยืนยัน
+- `--all`: สร้างคอนเทนเนอร์แซนด์บ็อกซ์ทั้งหมดใหม่
+- `--session <key>`: สร้างคอนเทนเนอร์ใหม่สำหรับเซสชันเฉพาะ
+- `--agent <id>`: สร้างคอนเทนเนอร์ใหม่สำหรับเอเจนต์เฉพาะ
+- `--browser`: สร้างใหม่เฉพาะคอนเทนเนอร์เบราว์เซอร์
+- `--force`: ข้ามพรอมต์ยืนยัน
 
-**สำคัญ:** Runtime จะถูกสร้างใหม่โดยอัตโนมัติเมื่อมีการใช้งานเอเจนต์ในครั้งถัดไป
+<Note>
+รันไทม์จะถูกสร้างใหม่โดยอัตโนมัติเมื่อใช้งานเอเจนต์ในครั้งถัดไป
+</Note>
 
 ## กรณีการใช้งาน
 
-### หลังอัปเดต Docker image
+### หลังอัปเดตอิมเมจ Docker
 
 ```bash
-# ดึง image ใหม่
+# Pull new image
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# อัปเดตคอนฟิกให้ใช้ image ใหม่
-# แก้ไขคอนฟิก: agents.defaults.sandbox.docker.image (หรือ agents.list[].sandbox.docker.image)
+# Update config to use new image
+# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
 
-# สร้างคอนเทนเนอร์ใหม่
+# Recreate containers
 openclaw sandbox recreate --all
 ```
 
-### หลังเปลี่ยนคอนฟิก sandbox
+### หลังเปลี่ยนการกำหนดค่าแซนด์บ็อกซ์
 
 ```bash
-# แก้ไขคอนฟิก: agents.defaults.sandbox.* (หรือ agents.list[].sandbox.*)
+# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
 
-# สร้างใหม่เพื่อใช้คอนฟิกใหม่
+# Recreate to apply new config
 openclaw sandbox recreate --all
 ```
 
-### หลังเปลี่ยนเป้าหมาย SSH หรือข้อมูลรับรองความถูกต้อง SSH
+### หลังเปลี่ยนเป้าหมาย SSH หรือข้อมูลรับรอง SSH
 
 ```bash
-# แก้ไขคอนฟิก:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -122,13 +124,13 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-สำหรับ backend `ssh` หลัก การสร้างใหม่จะลบ remote workspace root ตามขอบเขต
-บนเป้าหมาย SSH การรันครั้งถัดไปจะ seed ใหม่อีกครั้งจาก workspace ในเครื่อง
+สำหรับแบ็กเอนด์หลัก `ssh` การสร้างใหม่จะลบรากพื้นที่ทำงานระยะไกลรายขอบเขต
+บนเป้าหมาย SSH การรันครั้งถัดไปจะ seed อีกครั้งจากพื้นที่ทำงานภายในเครื่อง
 
-### หลังเปลี่ยน source, policy หรือ mode ของ OpenShell
+### หลังเปลี่ยนแหล่งที่มา นโยบาย หรือโหมดของ OpenShell
 
 ```bash
-# แก้ไขคอนฟิก:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -137,40 +139,41 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-สำหรับโหมด OpenShell `remote` การสร้างใหม่จะลบ remote workspace หลัก
-สำหรับขอบเขตนั้น การรันครั้งถัดไปจะ seed ใหม่อีกครั้งจาก workspace ในเครื่อง
+สำหรับโหมด OpenShell `remote` การสร้างใหม่จะลบพื้นที่ทำงานระยะไกลหลัก
+สำหรับขอบเขตนั้น การรันครั้งถัดไปจะ seed อีกครั้งจากพื้นที่ทำงานภายในเครื่อง
 
 ### หลังเปลี่ยน setupCommand
 
 ```bash
 openclaw sandbox recreate --all
-# หรือเฉพาะเอเจนต์เดียว:
+# or just one agent:
 openclaw sandbox recreate --agent family
 ```
 
-### สำหรับเอเจนต์ที่ระบุเท่านั้น
+### สำหรับเอเจนต์เฉพาะเท่านั้น
 
 ```bash
-# อัปเดตเฉพาะคอนเทนเนอร์ของเอเจนต์เดียว
+# Update only one agent's containers
 openclaw sandbox recreate --agent alfred
 ```
 
-## ทำไมจึงจำเป็น?
+## เหตุผลที่จำเป็นต้องใช้
 
-**ปัญหา:** เมื่อคุณอัปเดตคอนฟิก sandbox:
+เมื่อคุณอัปเดตการกำหนดค่าแซนด์บ็อกซ์:
 
-- runtimes ที่มีอยู่จะยังคงทำงานด้วยการตั้งค่าเก่า
-- runtimes จะถูกล้างทิ้งหลังไม่มีการใช้งาน 24 ชั่วโมงเท่านั้น
-- เอเจนต์ที่ใช้งานเป็นประจำจะทำให้ runtimes เก่ายังคงอยู่ได้ไม่มีกำหนด
+- รันไทม์ที่มีอยู่จะยังคงทำงานด้วยการตั้งค่าเดิม
+- รันไทม์จะถูกล้างเฉพาะหลังไม่มีการใช้งาน 24 ชั่วโมง
+- เอเจนต์ที่ใช้งานเป็นประจำจะคงรันไทม์เดิมไว้ได้ไม่มีกำหนด
 
-**วิธีแก้:** ใช้ `openclaw sandbox recreate` เพื่อบังคับลบ runtimes เก่า จากนั้นระบบจะสร้างใหม่โดยอัตโนมัติด้วยการตั้งค่าปัจจุบันเมื่อจำเป็นครั้งถัดไป
+ใช้ `openclaw sandbox recreate` เพื่อบังคับลบรันไทม์เดิม รันไทม์เหล่านั้นจะถูกสร้างใหม่โดยอัตโนมัติด้วยการตั้งค่าปัจจุบันเมื่อจำเป็นต้องใช้ครั้งถัดไป
 
-เคล็ดลับ: ควรใช้ `openclaw sandbox recreate` แทนการล้างแบบ manual ตาม backend
-โดยตรง เพราะคำสั่งนี้ใช้ runtime registry ของ Gateway และหลีกเลี่ยงความไม่ตรงกันเมื่อ scope/session keys เปลี่ยนแปลง
+<Tip>
+ควรใช้ `openclaw sandbox recreate` แทนการล้างข้อมูลเฉพาะแบ็กเอนด์ด้วยตนเอง คำสั่งนี้ใช้รีจิสทรีรันไทม์ของ Gateway และหลีกเลี่ยงความไม่ตรงกันเมื่อขอบเขตหรือคีย์เซสชันเปลี่ยนไป
+</Tip>
 
 ## การกำหนดค่า
 
-การตั้งค่า sandbox อยู่ใน `~/.openclaw/openclaw.json` ภายใต้ `agents.defaults.sandbox` (override รายเอเจนต์อยู่ใน `agents.list[].sandbox`):
+การตั้งค่าแซนด์บ็อกซ์อยู่ใน `~/.openclaw/openclaw.json` ภายใต้ `agents.defaults.sandbox` (การ override รายเอเจนต์อยู่ใน `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -183,11 +186,11 @@ openclaw sandbox recreate --agent alfred
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... ตัวเลือก Docker เพิ่มเติม
+          // ... more Docker options
         },
         "prune": {
-          "idleHours": 24, // ล้างทิ้งอัตโนมัติหลังว่าง 24 ชม.
-          "maxAgeDays": 7, // ล้างทิ้งอัตโนมัติหลัง 7 วัน
+          "idleHours": 24, // Auto-prune after 24h idle
+          "maxAgeDays": 7, // Auto-prune after 7 days
         },
       },
     },
@@ -197,7 +200,7 @@ openclaw sandbox recreate --agent alfred
 
 ## ที่เกี่ยวข้อง
 
-- [เอกสารอ้างอิง CLI](/th/cli)
-- [Sandboxing](/th/gateway/sandboxing)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [การใช้แซนด์บ็อกซ์](/th/gateway/sandboxing)
 - [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)
-- [Doctor](/th/gateway/doctor) — ตรวจสอบการตั้งค่า sandbox
+- [Doctor](/th/gateway/doctor): ตรวจสอบการตั้งค่าแซนด์บ็อกซ์

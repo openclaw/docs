@@ -1,40 +1,33 @@
 ---
 read_when:
-    - คุณต้องการค้นหาปลั๊กอิน OpenClaw จากบุคคลที่สาม
+    - คุณต้องการค้นหา Plugin ของ OpenClaw จากบุคคลที่สาม
     - คุณต้องการเผยแพร่หรือแสดงรายการ Plugin ของคุณเอง
-summary: 'ปลั๊กอิน OpenClaw ที่ชุมชนดูแลร่วมกัน: เรียกดู ติดตั้ง และส่งปลั๊กอินของคุณเอง'
-title: ปลั๊กอินชุมชน
+summary: 'Plugin OpenClaw ที่ดูแลโดยชุมชน: เรียกดู ติดตั้ง และส่ง Plugin ของคุณเอง'
+title: Plugin ของชุมชน
 x-i18n:
-    generated_at: "2026-04-26T11:36:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:05:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3af2f0be5e5e75fe26a58576e6f44bce52a1ff8d597f86cafd8fb893f6c6b8f4
+    source_hash: 9685aaf141b739a2a745a6184201ac86689e4284bec6eb068ffbd0d53fb4ecf1
     source_path: plugins/community.md
-    workflow: 15
+    workflow: 16
 ---
 
-ปลั๊กอินชุมชนคือแพ็กเกจจากบุคคลที่สามที่ขยาย OpenClaw ด้วย
-channels, tools, providers หรือความสามารถอื่น ๆ ปลั๊กอินเหล่านี้ถูกสร้างและดูแลรักษา
-โดยชุมชน เผยแพร่บน [ClawHub](/th/tools/clawhub) หรือ npm และ
-ติดตั้งได้ด้วยคำสั่งเดียว
+Plugin ชุมชนคือแพ็กเกจจากบุคคลที่สามที่ขยาย OpenClaw ด้วยช่องทาง เครื่องมือ ผู้ให้บริการ หรือความสามารถอื่นๆ ใหม่ สร้างและดูแลโดยชุมชน โดยปกติเผยแพร่บน [ClawHub](/th/tools/clawhub) และติดตั้งได้ด้วยคำสั่งเดียว npm ยังคงเป็นทางเลือกสำรองที่รองรับสำหรับแพ็กเกจที่ยังไม่ได้ย้ายไป ClawHub
 
-ClawHub คือพื้นผิวการค้นพบหลักอย่างเป็นทางการสำหรับปลั๊กอินชุมชน อย่าเปิด
-PR เฉพาะ docs เพียงเพื่อเพิ่มปลั๊กอินของคุณที่นี่เพื่อให้ค้นพบได้ง่ายขึ้น; ให้เผยแพร่บน
-ClawHub แทน
+ClawHub คือพื้นที่ค้นพบอย่างเป็นทางการสำหรับ Plugin ชุมชน อย่าเปิด PR เฉพาะเอกสารเพียงเพื่อเพิ่ม Plugin ของคุณที่นี่ให้ค้นพบได้ง่ายขึ้น ให้เผยแพร่บน ClawHub แทน
 
 ```bash
 openclaw plugins install <package-name>
 ```
 
-OpenClaw จะตรวจสอบ ClawHub ก่อน และ fallback ไปยัง npm โดยอัตโนมัติ
+OpenClaw ตรวจสอบ ClawHub ก่อน และย้อนกลับไปใช้ npm โดยอัตโนมัติ
 
-## ปลั๊กอินที่แสดงรายการ
+## Plugin ที่อยู่ในรายการ
 
 ### Apify
 
-ดึงข้อมูลจากเว็บไซต์ใดก็ได้ด้วยตัวดึงข้อมูลสำเร็จรูปกว่า 20,000 รายการ ให้เอเจนต์ของคุณ
-ดึงข้อมูลจาก Instagram, Facebook, TikTok, YouTube, Google Maps, Google
-Search, เว็บไซต์อีคอมเมิร์ซ และอื่น ๆ ได้ เพียงแค่สั่ง
+ดึงข้อมูลจากเว็บไซต์ใดก็ได้ด้วยสเครเปอร์สำเร็จรูปกว่า 20,000 รายการ ให้เอเจนต์ของคุณดึงข้อมูลจาก Instagram, Facebook, TikTok, YouTube, Google Maps, Google Search, เว็บไซต์อีคอมเมิร์ซ และอื่นๆ ได้ เพียงแค่สั่งถาม
 
 - **npm:** `@apify/apify-openclaw-plugin`
 - **repo:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
@@ -45,9 +38,7 @@ openclaw plugins install @apify/apify-openclaw-plugin
 
 ### Codex App Server Bridge
 
-บริดจ์ OpenClaw แบบอิสระสำหรับการสนทนา Codex App Server ผูกแชทเข้ากับ
-เธรด Codex พูดคุยกับมันด้วยข้อความธรรมดา และควบคุมมันด้วย
-คำสั่งที่เป็นธรรมชาติสำหรับแชทสำหรับ resume, planning, review, การเลือกโมเดล, Compaction และอื่น ๆ
+บริดจ์ OpenClaw อิสระสำหรับบทสนทนา Codex App Server ผูกแชตเข้ากับเธรด Codex พูดคุยด้วยข้อความธรรมดา และควบคุมด้วยคำสั่งแบบเนทีฟของแชตสำหรับการดำเนินการต่อ การวางแผน การรีวิว การเลือกโมเดล Compaction และอื่นๆ
 
 - **npm:** `openclaw-codex-app-server`
 - **repo:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
@@ -58,8 +49,7 @@ openclaw plugins install openclaw-codex-app-server
 
 ### DingTalk
 
-การเชื่อมต่อ enterprise robot โดยใช้โหมด Stream รองรับข้อความ รูปภาพ และ
-ข้อความไฟล์ผ่านไคลเอนต์ DingTalk ใดก็ได้
+การผสานรวมโรบอตองค์กรโดยใช้โหมด Stream รองรับข้อความ รูปภาพ และข้อความไฟล์ผ่านไคลเอนต์ DingTalk ใดก็ได้
 
 - **npm:** `@largezhou/ddingtalk`
 - **repo:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
@@ -70,9 +60,7 @@ openclaw plugins install @largezhou/ddingtalk
 
 ### Lossless Claw (LCM)
 
-Plugin การจัดการบริบทแบบไม่สูญเสียสำหรับ OpenClaw การสรุปการสนทนาแบบ
-อิง DAG พร้อม Compaction แบบ incremental — รักษาความเที่ยงตรงของบริบททั้งหมด
-ไว้ขณะลดการใช้โทเค็น
+Plugin Lossless Context Management สำหรับ OpenClaw การสรุปบทสนทนาแบบอิง DAG พร้อม Compaction แบบเพิ่มทีละส่วน รักษาความเที่ยงตรงของบริบทเต็มรูปแบบไว้พร้อมลดการใช้โทเคน
 
 - **npm:** `@martian-engineering/lossless-claw`
 - **repo:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
@@ -83,8 +71,7 @@ openclaw plugins install @martian-engineering/lossless-claw
 
 ### Opik
 
-Plugin อย่างเป็นทางการที่ส่งออก agent traces ไปยัง Opik ตรวจสอบพฤติกรรมของเอเจนต์
-ต้นทุน โทเค็น ข้อผิดพลาด และอื่น ๆ
+Plugin อย่างเป็นทางการที่ส่งออก trace ของเอเจนต์ไปยัง Opik ตรวจสอบพฤติกรรมเอเจนต์ ค่าใช้จ่าย โทเคน ข้อผิดพลาด และอื่นๆ
 
 - **npm:** `@opik/opik-openclaw`
 - **repo:** [github.com/comet-ml/opik-openclaw](https://github.com/comet-ml/opik-openclaw)
@@ -95,9 +82,7 @@ openclaw plugins install @opik/opik-openclaw
 
 ### Prometheus Avatar
 
-มอบอวาตาร์ Live2D ให้เอเจนต์ OpenClaw ของคุณพร้อม lip-sync แบบเรียลไทม์ การแสดงออกทางอารมณ์
-และ text-to-speech มีเครื่องมือสำหรับครีเอเตอร์สำหรับการสร้างแอสเซ็ต AI
-และการปรับใช้ไปยัง Prometheus Marketplace ได้ในคลิกเดียว ปัจจุบันอยู่ในช่วงอัลฟา
+มอบอวตาร Live2D ให้เอเจนต์ OpenClaw ของคุณ พร้อมลิปซิงก์แบบเรียลไทม์ การแสดงอารมณ์ และการแปลงข้อความเป็นเสียง รวมเครื่องมือสำหรับผู้สร้างเพื่อสร้างแอสเซ็ตด้วย AI และปรับใช้ไปยัง Prometheus Marketplace ได้ในคลิกเดียว ขณะนี้อยู่ในระยะอัลฟา
 
 - **npm:** `@prometheusavatar/openclaw-plugin`
 - **repo:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
@@ -108,13 +93,9 @@ openclaw plugins install @prometheusavatar/openclaw-plugin
 
 ### QQbot
 
-เชื่อมต่อ OpenClaw เข้ากับ QQ ผ่าน QQ Bot API รองรับแชทส่วนตัว การพูดถึงในกลุ่ม
-ข้อความในแชนแนล และสื่อสมบูรณ์แบบต่าง ๆ รวมถึงเสียง รูปภาพ วิดีโอ
-และไฟล์
+เชื่อมต่อ OpenClaw กับ QQ ผ่าน QQ Bot API รองรับแชตส่วนตัว การกล่าวถึงในกลุ่ม ข้อความช่องทาง และสื่อแบบ rich media รวมถึงเสียง รูปภาพ วิดีโอ และไฟล์
 
-รุ่น OpenClaw ปัจจุบันรวม QQ Bot มาให้แล้ว ใช้การตั้งค่าที่รวมมาให้ใน
-[QQ Bot](/th/channels/qqbot) สำหรับการติดตั้งทั่วไป; ติดตั้ง Plugin ภายนอกนี้เฉพาะ
-เมื่อคุณตั้งใจต้องการแพ็กเกจสแตนด์อโลนที่ดูแลโดย Tencent เท่านั้น
+OpenClaw รุ่นปัจจุบันรวม QQ Bot มาให้แล้ว ใช้การตั้งค่าที่รวมมาใน [QQ Bot](/th/channels/qqbot) สำหรับการติดตั้งทั่วไป ติดตั้ง Plugin ภายนอกนี้เฉพาะเมื่อคุณตั้งใจต้องการแพ็กเกจแบบสแตนด์อโลนที่ Tencent ดูแลเท่านั้น
 
 - **npm:** `@tencent-connect/openclaw-qqbot`
 - **repo:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
@@ -125,10 +106,7 @@ openclaw plugins install @tencent-connect/openclaw-qqbot
 
 ### wecom
 
-Plugin แชนแนล WeCom สำหรับ OpenClaw โดยทีม Tencent WeCom ขับเคลื่อนด้วย
-การเชื่อมต่อ WebSocket แบบ persistent ของ WeCom Bot โดยรองรับ
-ข้อความโดยตรงและแชทกลุ่ม การตอบกลับแบบสตรีม การส่งข้อความเชิงรุก การประมวลผลรูปภาพ/ไฟล์ การจัดรูปแบบ Markdown
-การควบคุมการเข้าถึงในตัว และ Skills สำหรับเอกสาร/การประชุม/การส่งข้อความ
+Plugin ช่องทาง WeCom สำหรับ OpenClaw โดยทีม Tencent WeCom ขับเคลื่อนด้วยการเชื่อมต่อถาวร WeCom Bot WebSocket รองรับข้อความโดยตรงและแชตกลุ่ม การตอบกลับแบบสตรีม การส่งข้อความเชิงรุก การประมวลผลรูปภาพ/ไฟล์ การจัดรูปแบบ Markdown การควบคุมการเข้าถึงในตัว และ Skills ด้านเอกสาร/การประชุม/การส่งข้อความ
 
 - **npm:** `@wecom/wecom-openclaw-plugin`
 - **repo:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
@@ -137,48 +115,56 @@ Plugin แชนแนล WeCom สำหรับ OpenClaw โดยทีม T
 openclaw plugins install @wecom/wecom-openclaw-plugin
 ```
 
-## ส่งปลั๊กอินของคุณ
+### Yuanbao
 
-เรายินดีต้อนรับปลั๊กอินชุมชนที่มีประโยชน์ มีเอกสารกำกับ และปลอดภัยต่อการใช้งาน
+Plugin ช่องทาง Yuanbao สำหรับ OpenClaw โดยทีม Tencent Yuanbao ขับเคลื่อนด้วยการเชื่อมต่อถาวร WebSocket รองรับข้อความโดยตรงและแชตกลุ่ม การตอบกลับแบบสตรีม การส่งข้อความเชิงรุก การประมวลผลรูปภาพ/ไฟล์/เสียง/วิดีโอ การจัดรูปแบบ Markdown การควบคุมการเข้าถึงในตัว และเมนูคำสั่งแบบ slash
+
+- **npm:** `openclaw-plugin-yuanbao`
+- **repo:** [github.com/YuanbaoTeam/yuanbao-openclaw-plugin](https://github.com/YuanbaoTeam/yuanbao-openclaw-plugin)
+
+```bash
+openclaw plugins install openclaw-plugin-yuanbao
+```
+
+## ส่ง Plugin ของคุณ
+
+เรายินดีรับ Plugin ชุมชนที่มีประโยชน์ มีเอกสารประกอบ และปลอดภัยในการใช้งาน
 
 <Steps>
   <Step title="เผยแพร่ไปยัง ClawHub หรือ npm">
-    ปลั๊กอินของคุณต้องติดตั้งได้ผ่าน `openclaw plugins install \<package-name\>`.
-    เผยแพร่ไปยัง [ClawHub](/th/tools/clawhub) (แนะนำ) หรือ npm
-    ดู [การสร้าง Plugins](/th/plugins/building-plugins) สำหรับคู่มือฉบับเต็ม
+    Plugin ของคุณต้องติดตั้งได้ผ่าน `openclaw plugins install \<package-name\>`
+    เผยแพร่ไปยัง [ClawHub](/th/tools/clawhub) เว้นแต่คุณจำเป็นต้องเผยแพร่
+    ผ่าน npm เท่านั้นโดยเฉพาะ
+    ดู [การสร้าง Plugin](/th/plugins/building-plugins) สำหรับคู่มือฉบับเต็ม
 
   </Step>
 
   <Step title="โฮสต์บน GitHub">
-    ซอร์สโค้ดต้องอยู่ในรีโพสาธารณะพร้อมเอกสารการตั้งค่าและตัวติดตาม
-    ปัญหา
+    ซอร์สโค้ดต้องอยู่ในรีโพสาธารณะที่มีเอกสารการตั้งค่าและตัวติดตามปัญหา
 
   </Step>
 
-  <Step title="ใช้ PR ของ docs เฉพาะเมื่อมีการเปลี่ยนแปลงเอกสารต้นทาง">
-    คุณไม่จำเป็นต้องมี PR ของ docs เพียงเพื่อทำให้ปลั๊กอินของคุณค้นพบได้ง่ายขึ้น ให้เผยแพร่
-    บน ClawHub แทน
+  <Step title="ใช้ PR เอกสารเฉพาะสำหรับการเปลี่ยนแปลงเอกสารซอร์ส">
+    คุณไม่จำเป็นต้องเปิด PR เอกสารเพียงเพื่อทำให้ Plugin ของคุณค้นพบได้ง่ายขึ้น ให้เผยแพร่บน ClawHub แทน
 
-    เปิด PR ของ docs เฉพาะเมื่อเอกสารต้นทางของ OpenClaw ต้องการ
-    การเปลี่ยนแปลงเนื้อหาจริง เช่น การแก้ไขคำแนะนำในการติดตั้ง หรือการเพิ่มเอกสารข้ามรีโพ
-    ที่ควรอยู่ในชุดเอกสารหลัก
+    เปิด PR เอกสารเฉพาะเมื่อเอกสารซอร์สของ OpenClaw ต้องมีการเปลี่ยนแปลงเนื้อหาจริง เช่น แก้ไขคำแนะนำการติดตั้ง หรือเพิ่มเอกสารข้ามรีโพที่ควรอยู่ในชุดเอกสารหลัก
 
   </Step>
 </Steps>
 
 ## เกณฑ์คุณภาพ
 
-| ข้อกำหนด                 | เหตุผล                                         |
-| ------------------------ | ---------------------------------------------- |
-| เผยแพร่บน ClawHub หรือ npm | ผู้ใช้ต้องสามารถใช้ `openclaw plugins install` ได้ |
-| รีโพ GitHub แบบสาธารณะ   | การตรวจสอบซอร์ส การติดตามปัญหา ความโปร่งใส       |
-| เอกสารการตั้งค่าและการใช้งาน | ผู้ใช้ต้องรู้วิธีกำหนดค่า                        |
-| การดูแลรักษาอย่างต่อเนื่อง   | มีการอัปเดตล่าสุดหรือจัดการปัญหาอย่างตอบสนองได้    |
+| ข้อกำหนด                 | เหตุผล                                           |
+| --------------------------- | --------------------------------------------- |
+| เผยแพร่บน ClawHub หรือ npm | ผู้ใช้ต้องการให้ `openclaw plugins install` ใช้งานได้ |
+| รีโพ GitHub สาธารณะ          | การตรวจสอบซอร์ส การติดตามปัญหา ความโปร่งใส   |
+| เอกสารการตั้งค่าและการใช้งาน        | ผู้ใช้ต้องรู้วิธีกำหนดค่า        |
+| การดูแลอย่างต่อเนื่อง          | การอัปเดตล่าสุดหรือการจัดการปัญหาที่ตอบสนองรวดเร็ว   |
 
-wrapper ที่ทำแบบผิวเผิน ความเป็นเจ้าของที่ไม่ชัดเจน หรือแพ็กเกจที่ไม่มีการดูแลรักษา อาจไม่ได้รับการอนุมัติ
+ตัวห่อแบบลงแรงน้อย ความเป็นเจ้าของที่ไม่ชัดเจน หรือแพ็กเกจที่ไม่ได้รับการดูแลอาจถูกปฏิเสธ
 
 ## ที่เกี่ยวข้อง
 
-- [ติดตั้งและกำหนดค่า Plugins](/th/tools/plugin) — วิธีติดตั้ง Plugin ใดก็ได้
-- [การสร้าง Plugins](/th/plugins/building-plugins) — สร้างของคุณเอง
+- [ติดตั้งและกำหนดค่า Plugin](/th/tools/plugin) — วิธีติดตั้ง Plugin ใดก็ได้
+- [การสร้าง Plugin](/th/plugins/building-plugins) — สร้างของคุณเอง
 - [Plugin Manifest](/th/plugins/manifest) — schema ของ manifest

@@ -1,20 +1,20 @@
 ---
 read_when:
-- Working on reactions in any channel
-- การทำความเข้าใจว่าการรีแอ็กด้วยอีโมจิแตกต่างกันอย่างไรในแต่ละแพลตฟอร์ม
-summary: semantics ของเครื่องมือรีแอ็กชันข้ามทุกช่องทางที่รองรับ
-title: รีแอ็กชัน
+    - การทำงานกับรีแอ็กชันในทุกช่องทาง
+    - ทำความเข้าใจว่ารีแอ็กชันอีโมจิแตกต่างกันอย่างไรในแต่ละแพลตฟอร์ม
+summary: ความหมายเชิงพฤติกรรมของเครื่องมือแสดงปฏิกิริยาในทุกช่องทางที่รองรับ
+title: ปฏิกิริยา
 x-i18n:
-  generated_at: '2026-04-24T09:38:16Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
-  source_path: tools/reactions.md
-  workflow: 15
+    generated_at: "2026-04-30T10:21:33Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
+    source_path: tools/reactions.md
+    workflow: 16
 ---
 
 เอเจนต์สามารถเพิ่มและลบรีแอ็กชันอีโมจิบนข้อความได้โดยใช้เครื่องมือ `message`
-ร่วมกับ action `react` พฤติกรรมของรีแอ็กชันจะแตกต่างกันไปตามแต่ละช่องทาง
+พร้อมแอ็กชัน `react` พฤติกรรมของรีแอ็กชันจะแตกต่างกันไปตามช่องทางและการส่งผ่านข้อมูล
 
 ## วิธีการทำงาน
 
@@ -26,65 +26,65 @@ x-i18n:
 }
 ```
 
-- `emoji` จำเป็นเมื่อเพิ่มรีแอ็กชัน
-- ตั้ง `emoji` เป็นสตริงว่าง (`""`) เพื่อลบรีแอ็กชันของบอต
-- ตั้ง `remove: true` เพื่อลบอีโมจิที่ระบุ (ต้องใช้ `emoji` ที่ไม่ว่าง)
+- ต้องระบุ `emoji` เมื่อเพิ่มรีแอ็กชัน
+- ตั้งค่า `emoji` เป็นสตริงว่าง (`""`) เพื่อลบรีแอ็กชันของบอต
+- ตั้งค่า `remove: true` เพื่อลบอีโมจิที่ระบุ (ต้องใช้ `emoji` ที่ไม่ว่าง)
 
 ## พฤติกรรมตามช่องทาง
 
 <AccordionGroup>
-  <Accordion title="Discord และ Slack">
-    - `emoji` ว่างจะลบรีแอ็กชันทั้งหมดของบอตบนข้อความนั้น
+  <Accordion title="Discord and Slack">
+    - `emoji` ที่ว่างจะลบรีแอ็กชันทั้งหมดของบอตบนข้อความ
     - `remove: true` จะลบเฉพาะอีโมจิที่ระบุ
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - `emoji` ว่างจะลบรีแอ็กชันของแอปบนข้อความนั้น
+    - `emoji` ที่ว่างจะลบรีแอ็กชันของแอปบนข้อความ
     - `remove: true` จะลบเฉพาะอีโมจิที่ระบุ
 
   </Accordion>
 
   <Accordion title="Telegram">
-    - `emoji` ว่างจะลบรีแอ็กชันของบอต
-    - `remove: true` ก็ใช้ลบรีแอ็กชันเช่นกัน แต่ยังต้องใช้ `emoji` ที่ไม่ว่างสำหรับการตรวจสอบของเครื่องมือ
+    - `emoji` ที่ว่างจะลบรีแอ็กชันของบอต
+    - `remove: true` จะลบรีแอ็กชันเช่นกัน แต่ยังต้องใช้ `emoji` ที่ไม่ว่างเพื่อให้ผ่านการตรวจสอบความถูกต้องของเครื่องมือ
 
   </Accordion>
 
   <Accordion title="WhatsApp">
-    - `emoji` ว่างจะลบรีแอ็กชันของบอต
-    - `remove: true` จะถูกแมปภายในให้เป็นอีโมจิว่าง (แต่ยังต้องมี `emoji` ในการเรียกเครื่องมือ)
+    - `emoji` ที่ว่างจะลบรีแอ็กชันของบอต
+    - `remove: true` จะถูกแมปเป็นอีโมจิว่างภายใน (ยังต้องระบุ `emoji` ในการเรียกเครื่องมือ)
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - ต้องใช้ `emoji` ที่ไม่ว่าง
-    - `remove: true` จะลบรีแอ็กชันของอีโมจินั้นโดยเฉพาะ
+    - `remove: true` จะลบรีแอ็กชันอีโมจินั้นโดยเฉพาะ
 
   </Accordion>
 
   <Accordion title="Feishu/Lark">
-    - ใช้เครื่องมือ `feishu_reaction` พร้อม action `add`, `remove` และ `list`
-    - การเพิ่ม/ลบต้องใช้ `emoji_type`; ส่วนการลบยังต้องใช้ `reaction_id` ด้วย
+    - ใช้เครื่องมือ `feishu_reaction` พร้อมแอ็กชัน `add`, `remove` และ `list`
+    - การเพิ่ม/ลบต้องใช้ `emoji_type`; การลบยังต้องใช้ `reaction_id` ด้วย
 
   </Accordion>
 
   <Accordion title="Signal">
-    - การแจ้งเตือนรีแอ็กชันขาเข้าถูกควบคุมโดย `channels.signal.reactionNotifications`: `"off"` จะปิด, `"own"` (ค่าปริยาย) จะปล่อย event เมื่อผู้ใช้รีแอ็กกับข้อความของบอต และ `"all"` จะปล่อย event สำหรับรีแอ็กชันทั้งหมด
+    - การแจ้งเตือนรีแอ็กชันขาเข้าถูกควบคุมโดย `channels.signal.reactionNotifications`: `"off"` จะปิดใช้งาน, `"own"` (ค่าเริ่มต้น) จะส่งอีเวนต์เมื่อผู้ใช้รีแอ็กชันต่อข้อความของบอต และ `"all"` จะส่งอีเวนต์สำหรับรีแอ็กชันทั้งหมด
 
   </Accordion>
 </AccordionGroup>
 
 ## ระดับรีแอ็กชัน
 
-คอนฟิก `reactionLevel` รายช่องทางจะควบคุมว่าเอเจนต์ใช้รีแอ็กชันในวงกว้างแค่ไหน โดยค่าทั่วไปคือ `off`, `ack`, `minimal` หรือ `extensive`
+การตั้งค่า `reactionLevel` รายช่องทางควบคุมว่าเอเจนต์ใช้รีแอ็กชันกว้างเพียงใด โดยทั่วไปค่าจะเป็น `off`, `ack`, `minimal` หรือ `extensive`
 
 - [Telegram reactionLevel](/th/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/th/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-ตั้ง `reactionLevel` บนแต่ละช่องทางเพื่อปรับว่าเอเจนต์จะรีแอ็กกับข้อความบนแต่ละแพลตฟอร์มอย่างกระตือรือร้นเพียงใด
+ตั้งค่า `reactionLevel` ในแต่ละช่องทางเพื่อปรับว่าเอเจนต์จะรีแอ็กชันต่อข้อความบนแต่ละแพลตฟอร์มอย่างกระตือรือร้นเพียงใด
 
 ## ที่เกี่ยวข้อง
 
-- [Agent Send](/th/tools/agent-send) — เครื่องมือ `message` ที่รวม `react` ไว้
-- [Channels](/th/channels) — การกำหนดค่าเฉพาะของแต่ละช่องทาง
+- [Agent Send](/th/tools/agent-send) — เครื่องมือ `message` ที่มี `react`
+- [Channels](/th/channels) — การตั้งค่าเฉพาะช่องทาง

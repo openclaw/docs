@@ -1,45 +1,47 @@
 ---
 read_when:
-    - คุณรัน openclaw โดยไม่ใส่คำสั่งใด ๆ และต้องการทำความเข้าใจ Crestodian
-    - คุณต้องการวิธีที่ปลอดภัยแบบไม่ต้องใช้ config เพื่อตรวจสอบหรือซ่อมแซม OpenClaw
+    - คุณเรียกใช้ openclaw โดยไม่มีคำสั่ง และต้องการทำความเข้าใจ Crestodian
+    - คุณต้องมีวิธีที่ปลอดภัยสำหรับกรณีไม่มีไฟล์กำหนดค่าในการตรวจสอบหรือซ่อมแซม OpenClaw
     - คุณกำลังออกแบบหรือเปิดใช้โหมดกู้คืนสำหรับช่องทางข้อความ
-summary: ข้อมูลอ้างอิง CLI และโมเดลความปลอดภัยสำหรับ Crestodian ตัวช่วยตั้งค่าและซ่อมแซมแบบปลอดภัยโดยไม่ต้องใช้ config
+summary: เอกสารอ้างอิง CLI และโมเดลความปลอดภัยสำหรับ Crestodian ตัวช่วยตั้งค่าและซ่อมแซมแบบปลอดภัยโดยไม่ต้องมีคอนฟิก
 title: Crestodian
 x-i18n:
-    generated_at: "2026-04-26T11:25:40Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:42:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: aafa46de3c2df2ec4b0b16a0955bb9afc76df92d5ebb928077bb5007118e037c
+    source_hash: e09331a5303120e9044ae147426ad17caeed35f092b316506ca8e4e3a1c55157
     source_path: cli/crestodian.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw crestodian`
 
-Crestodian คือผู้ช่วยสำหรับการตั้งค่า การซ่อมแซม และการกำหนดค่าแบบโลคัลของ OpenClaw โดยถูกออกแบบมาให้ยังเข้าถึงได้เมื่อเส้นทางเอเจนต์ปกติเสียหาย
+Crestodian คือเครื่องมือช่วยตั้งค่า ซ่อมแซม และกำหนดค่าภายในเครื่องของ OpenClaw ออกแบบมาให้ยังเข้าถึงได้เมื่อเส้นทาง agent ปกติเสียหาย
 
-การรัน `openclaw` โดยไม่ใส่คำสั่งจะเริ่ม Crestodian ในเทอร์มินัลแบบโต้ตอบ การรัน `openclaw crestodian` จะเริ่มผู้ช่วยตัวเดียวกันนี้แบบระบุชัดเจน
+การรัน `openclaw` โดยไม่ระบุคำสั่งจะเริ่ม Crestodian ในเทอร์มินัลแบบโต้ตอบ
+การรัน `openclaw crestodian` จะเริ่มเครื่องมือช่วยเดียวกันอย่างชัดเจน
 
 ## สิ่งที่ Crestodian แสดง
 
-เมื่อเริ่มต้น Crestodian แบบโต้ตอบจะเปิด TUI shell เดียวกับที่ใช้โดย
-`openclaw tui` แต่ใช้แบ็กเอนด์แชตของ Crestodian บันทึกแชตจะเริ่มต้นด้วยคำทักทายสั้น ๆ:
+เมื่อเริ่มทำงาน Crestodian แบบโต้ตอบจะเปิดเชลล์ TUI เดียวกับที่ใช้โดย
+`openclaw tui` พร้อมแบ็กเอนด์แชตของ Crestodian บันทึกแชตเริ่มด้วยคำทักทายสั้น ๆ:
 
 - ควรเริ่ม Crestodian เมื่อใด
-- โมเดลหรือเส้นทาง deterministic planner ที่ Crestodian กำลังใช้งานจริง
-- ความถูกต้องของ config และเอเจนต์ค่าเริ่มต้น
-- ความสามารถในการเข้าถึง Gateway จากการ probe ครั้งแรกตอนเริ่มต้น
-- การดีบักขั้นถัดไปที่ Crestodian ทำได้
+- เส้นทางโมเดลหรือตัววางแผนแบบกำหนดได้ที่ Crestodian ใช้อยู่จริง
+- ความถูกต้องของ config และ agent เริ่มต้น
+- การเข้าถึง Gateway จากการตรวจสอบครั้งแรกตอนเริ่มทำงาน
+- การดำเนินการดีบักถัดไปที่ Crestodian สามารถทำได้
 
-มันจะไม่ dump secrets หรือโหลดคำสั่ง CLI ของ Plugin เพียงเพื่อเริ่มต้น TUI ยังคงมี header, บันทึกแชต, status line, footer, autocomplete และตัวควบคุม editor ตามปกติ
+เครื่องมือนี้จะไม่ทิ้ง secrets หรือโหลดคำสั่ง CLI ของ Plugin เพียงเพื่อเริ่มทำงาน TUI
+ยังคงมีส่วนหัวปกติ บันทึกแชต บรรทัดสถานะ ส่วนท้าย การเติมคำอัตโนมัติ
+และตัวควบคุมตัวแก้ไข
 
-ใช้ `status` เพื่อดูรายการข้อมูลแบบละเอียด ซึ่งรวมถึง path ของ config, path ของ docs/source, local CLI probes, การมีอยู่ของ API key, agents, model และรายละเอียดของ Gateway
+ใช้ `status` สำหรับรายการโดยละเอียดที่มีพาธ config, พาธ docs/source,
+การตรวจสอบ CLI ภายในเครื่อง, การมีอยู่ของคีย์ API, agents, โมเดล และรายละเอียด Gateway
 
-Crestodian ใช้การค้นหา reference ของ OpenClaw แบบเดียวกับเอเจนต์ปกติ ใน Git checkout
-มันจะชี้ตัวเองไปยัง `docs/` แบบโลคัลและ source tree แบบโลคัล ในการติดตั้งแพ็กเกจจาก npm
-มันจะใช้เอกสาร docs ที่มาพร้อมแพ็กเกจและลิงก์ไปยัง
-[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw) พร้อมคำแนะนำแบบชัดเจน
-ให้ตรวจสอบ source ทุกครั้งเมื่อ docs ไม่เพียงพอ
+Crestodian ใช้การค้นพบข้อมูลอ้างอิง OpenClaw แบบเดียวกับ agents ปกติ ใน Git checkout
+เครื่องมือจะชี้ตัวเองไปที่ `docs/` ภายในเครื่องและแผนผังซอร์สภายในเครื่อง ในการติดตั้งแพ็กเกจ npm เครื่องมือจะใช้เอกสารแพ็กเกจที่รวมมาและลิงก์ไปยัง
+[https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw) พร้อมคำแนะนำชัดเจนให้ตรวจสอบซอร์สเมื่อเอกสารยังไม่เพียงพอ
 
 ## ตัวอย่าง
 
@@ -63,7 +65,6 @@ doctor
 doctor fix
 validate config
 setup
-setup workspace ~/Projects/work
 setup workspace ~/Projects/work model openai/gpt-5.5
 config set gateway.port 19001
 config set-ref gateway.auth.token env OPENCLAW_GATEWAY_TOKEN
@@ -79,62 +80,62 @@ audit
 quit
 ```
 
-## การเริ่มต้นอย่างปลอดภัย
+## การเริ่มทำงานอย่างปลอดภัย
 
-เส้นทางการเริ่มต้นของ Crestodian ถูกทำให้เล็กอย่างตั้งใจ มันสามารถทำงานได้เมื่อ:
+เส้นทางเริ่มทำงานของ Crestodian ตั้งใจให้มีขนาดเล็ก เครื่องมือนี้สามารถทำงานได้เมื่อ:
 
 - ไม่มี `openclaw.json`
 - `openclaw.json` ไม่ถูกต้อง
-- Gateway ล่ม
-- การลงทะเบียนคำสั่ง Plugin ใช้งานไม่ได้
-- ยังไม่ได้กำหนดค่าเอเจนต์ใดเลย
+- Gateway ไม่ทำงาน
+- การลงทะเบียนคำสั่ง Plugin ไม่พร้อมใช้งาน
+- ยังไม่ได้กำหนดค่า agent ใด ๆ
 
-`openclaw --help` และ `openclaw --version` ยังคงใช้เส้นทางแบบเร็วปกติ
-ส่วน `openclaw` แบบไม่โต้ตอบจะออกพร้อมข้อความสั้น ๆ แทนการพิมพ์
-root help เพราะผลิตภัณฑ์แบบไม่ใส่คำสั่งคือ Crestodian
+`openclaw --help` และ `openclaw --version` ยังคงใช้เส้นทางด่วนปกติ
+`openclaw` แบบไม่โต้ตอบจะออกด้วยข้อความสั้น ๆ แทนการพิมพ์วิธีใช้ระดับ root
+เพราะผลิตภัณฑ์เมื่อไม่ระบุคำสั่งคือ Crestodian
 
-## การดำเนินการและการอนุมัติ
+## การดำเนินงานและการอนุมัติ
 
-Crestodian ใช้การดำเนินการแบบกำหนดชนิด แทนการแก้ไข config แบบ ad hoc
+Crestodian ใช้การดำเนินงานแบบมีชนิดแทนการแก้ไข config แบบเฉพาะหน้า
 
-การดำเนินการแบบอ่านอย่างเดียวสามารถรันได้ทันที:
+การดำเนินงานแบบอ่านอย่างเดียวสามารถรันได้ทันที:
 
 - แสดงภาพรวม
 - แสดงรายการ agents
-- แสดงสถานะ model/backend
+- แสดงสถานะโมเดล/แบ็กเอนด์
 - รันการตรวจสอบ status หรือ health
 - ตรวจสอบการเข้าถึง Gateway
 - รัน doctor โดยไม่มีการแก้ไขแบบโต้ตอบ
-- ตรวจสอบความถูกต้องของ config
-- แสดง path ของ audit log
+- ตรวจสอบ config
+- แสดงพาธ audit-log
 
-การดำเนินการแบบคงอยู่ต้องได้รับการอนุมัติผ่านบทสนทนาในโหมดโต้ตอบ เว้นแต่
+การดำเนินงานที่คงอยู่ต้องได้รับการอนุมัติผ่านการสนทนาในโหมดโต้ตอบ เว้นแต่
 คุณจะส่ง `--yes` สำหรับคำสั่งโดยตรง:
 
 - เขียน config
 - รัน `config set`
 - ตั้งค่า SecretRef ที่รองรับผ่าน `config set-ref`
 - รัน setup/onboarding bootstrap
-- เปลี่ยน model ค่าเริ่มต้น
+- เปลี่ยนโมเดลเริ่มต้น
 - เริ่ม หยุด หรือรีสตาร์ต Gateway
 - สร้าง agents
-- รันการซ่อมแซมของ doctor ที่เขียนทับ config หรือ state
+- รันการซ่อมแซม doctor ที่เขียน config หรือ state ใหม่
 
-การเขียนที่ถูกนำไปใช้แล้วจะถูกบันทึกไว้ที่:
+การเขียนที่ถูกนำไปใช้จะถูกบันทึกใน:
 
 ```text
 ~/.openclaw/audit/crestodian.jsonl
 ```
 
-การค้นหาจะไม่ถูก audit จะบันทึกเฉพาะการดำเนินการและการเขียนที่ถูกนำไปใช้แล้วเท่านั้น
+การค้นพบจะไม่ถูก audit เฉพาะการดำเนินงานและการเขียนที่ถูกนำไปใช้เท่านั้นที่ถูกบันทึก
 
-`openclaw onboard --modern` จะเริ่ม Crestodian เป็นตัวอย่าง onboarding แบบสมัยใหม่
-ส่วน `openclaw onboard` แบบปกติจะยังคงเรียก onboarding แบบคลาสสิก
+`openclaw onboard --modern` เริ่ม Crestodian เป็นตัวอย่างการ onboarding สมัยใหม่
+`openclaw onboard` แบบธรรมดายังคงรัน onboarding แบบคลาสสิก
 
-## Setup Bootstrap
+## Setup bootstrap
 
-`setup` คือ onboarding bootstrap แบบ chat-first มันจะเขียนผ่าน
-การดำเนินการ config แบบกำหนดชนิดเท่านั้น และจะขอการอนุมัติก่อน
+`setup` คือ onboarding bootstrap แบบเน้นแชตก่อน เครื่องมือนี้เขียนผ่านการดำเนินงาน
+config แบบมีชนิดเท่านั้น และขออนุมัติก่อน
 
 ```text
 setup
@@ -142,44 +143,44 @@ setup workspace ~/Projects/work
 setup workspace ~/Projects/work model openai/gpt-5.5
 ```
 
-เมื่อยังไม่มีการตั้งค่า model, setup จะเลือก backend แรกที่ใช้งานได้ตามลำดับนี้
-และจะแจ้งคุณว่ามันเลือกอะไร:
+เมื่อยังไม่ได้กำหนดค่าโมเดล setup จะเลือกแบ็กเอนด์แรกที่ใช้ได้ตามลำดับนี้
+และบอกคุณว่าเลือกอะไร:
 
-- model แบบ explicit ที่มีอยู่เดิม หากตั้งค่าไว้แล้ว
+- โมเดลที่ระบุไว้อย่างชัดเจนที่มีอยู่ หากกำหนดค่าไว้แล้ว
 - `OPENAI_API_KEY` -> `openai/gpt-5.5`
 - `ANTHROPIC_API_KEY` -> `anthropic/claude-opus-4-7`
 - Claude Code CLI -> `claude-cli/claude-opus-4-7`
 - Codex CLI -> `codex-cli/gpt-5.5`
 
-หากไม่มีสิ่งใดใช้งานได้ setup ก็จะยังเขียน workspace ค่าเริ่มต้น และปล่อยให้
-model ไม่มีค่าอยู่ ติดตั้งหรือล็อกอินเข้า Codex/Claude Code หรือเปิดเผย
+หากไม่มีรายการใดพร้อมใช้งาน setup จะยังคงเขียน workspace เริ่มต้นและปล่อยให้
+โมเดลยังไม่ได้ตั้งค่า ติดตั้งหรือเข้าสู่ระบบ Codex/Claude Code หรือเปิดเผย
 `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` แล้วรัน setup อีกครั้ง
 
-## Planner ที่ใช้โมเดลช่วย
+## ตัววางแผนที่มีโมเดลช่วย
 
-Crestodian จะเริ่มต้นในโหมด deterministic เสมอ สำหรับคำสั่งคลุมเครือที่
-deterministic parser ไม่เข้าใจ Crestodian แบบโลคัลสามารถทำ planner turn
-แบบจำกัดได้หนึ่งครั้งผ่านเส้นทาง runtime ปกติของ OpenClaw โดยจะใช้
-model ของ OpenClaw ที่ตั้งค่าไว้ก่อน หากยังไม่มี model ที่ตั้งค่าไว้และใช้งานได้
-ก็สามารถ fallback ไปใช้ runtime แบบโลคัลที่มีอยู่บนเครื่องแล้วได้:
+Crestodian จะเริ่มในโหมดกำหนดได้เสมอ สำหรับคำสั่งคลุมเครือที่
+parser แบบกำหนดได้ไม่เข้าใจ Crestodian ภายในเครื่องสามารถทำรอบตัววางแผนแบบจำกัดหนึ่งครั้ง
+ผ่านเส้นทาง runtime ปกติของ OpenClaw โดยจะใช้โมเดล OpenClaw ที่กำหนดค่าไว้ก่อน
+หากยังไม่มีโมเดลที่กำหนดค่าไว้ซึ่งใช้ได้ เครื่องมือสามารถถอยกลับไปใช้ runtime ภายในเครื่อง
+ที่มีอยู่แล้วบนเครื่องได้:
 
 - Claude Code CLI: `claude-cli/claude-opus-4-7`
-- Codex app-server harness: `openai/gpt-5.5` พร้อม `agentRuntime.id: "codex"`
+- Codex app-server harness: `openai/gpt-5.5` with `agentRuntime.id: "codex"`
 - Codex CLI: `codex-cli/gpt-5.5`
 
-planner ที่ใช้โมเดลช่วยไม่สามารถแก้ไข config โดยตรงได้ มันต้องแปล
-คำขอให้เป็นหนึ่งในคำสั่งแบบกำหนดชนิดของ Crestodian ก่อน จากนั้นจึงใช้กฎ
-การอนุมัติและการ audit ตามปกติ Crestodian จะแสดง model ที่ใช้และคำสั่ง
-ที่ตีความได้ก่อนจะรันสิ่งใดก็ตาม planner turn แบบ fallback ที่ไม่ใช้ config
-จะเป็นแบบชั่วคราว ปิด tools ใน runtime ที่รองรับ และใช้ workspace/session ชั่วคราว
+ตัววางแผนที่มีโมเดลช่วยไม่สามารถเปลี่ยนแปลง config ได้โดยตรง ต้องแปล
+คำขอให้เป็นหนึ่งในคำสั่งแบบมีชนิดของ Crestodian จากนั้นกฎการอนุมัติและ
+audit ปกติจะมีผล Crestodian จะพิมพ์โมเดลที่ใช้และคำสั่งที่ตีความได้
+ก่อนที่จะรันสิ่งใด ๆ รอบตัววางแผนสำรองแบบไม่มี config เป็นแบบชั่วคราว
+ปิดเครื่องมือเมื่อ runtime รองรับ และใช้ workspace/session ชั่วคราว
 
-โหมดกู้คืนผ่านช่องทางข้อความจะไม่ใช้ planner ที่ใช้โมเดลช่วย การกู้คืนจากระยะไกล
-จะคงเป็น deterministic เพื่อไม่ให้เส้นทางเอเจนต์ปกติที่เสียหายหรือถูกเจาะระบบ
-ถูกใช้เป็นตัวแก้ไข config ได้
+โหมดกู้คืนผ่านช่องทางข้อความไม่ใช้ตัววางแผนที่มีโมเดลช่วย การกู้คืนระยะไกล
+ยังคงกำหนดได้ เพื่อไม่ให้เส้นทาง agent ปกติที่เสียหายหรือถูกยึดครอง
+ถูกใช้เป็นตัวแก้ไข config
 
-## การสลับไปยังเอเจนต์
+## การสลับไปยัง agent
 
-ใช้ตัวเลือกแบบภาษาธรรมชาติเพื่อออกจาก Crestodian และเปิด TUI ปกติ:
+ใช้ตัวเลือกภาษาธรรมชาติเพื่อออกจาก Crestodian และเปิด TUI ปกติ:
 
 ```text
 talk to agent
@@ -187,10 +188,10 @@ talk to work agent
 switch to main agent
 ```
 
-`openclaw tui`, `openclaw chat` และ `openclaw terminal` จะยังคงเปิด
-TUI ของเอเจนต์ปกติโดยตรง โดยไม่เริ่ม Crestodian
+`openclaw tui`, `openclaw chat` และ `openclaw terminal` ยังคงเปิด
+agent TUI ปกติโดยตรง คำสั่งเหล่านี้ไม่เริ่ม Crestodian
 
-หลังจากสลับเข้า TUI ปกติแล้ว ให้ใช้ `/crestodian` เพื่อกลับไปที่ Crestodian
+หลังจากสลับเข้า TUI ปกติแล้ว ใช้ `/crestodian` เพื่อกลับไปยัง Crestodian
 คุณสามารถใส่คำขอต่อเนื่องได้:
 
 ```text
@@ -198,59 +199,59 @@ TUI ของเอเจนต์ปกติโดยตรง โดยไม
 /crestodian restart gateway
 ```
 
-การสลับเอเจนต์ภายใน TUI จะทิ้ง breadcrumb ไว้ว่า `/crestodian` ใช้งานได้
+การสลับ agent ภายใน TUI จะทิ้ง breadcrumb ไว้ว่า `/crestodian` พร้อมใช้งาน
 
 ## โหมดกู้คืนผ่านข้อความ
 
-โหมดกู้คืนผ่านข้อความคือ entrypoint ของ Crestodian สำหรับช่องทางข้อความ
-ใช้สำหรับกรณีที่เอเจนต์ปกติของคุณใช้งานไม่ได้ แต่ช่องทางที่เชื่อถือได้ เช่น WhatsApp
+โหมดกู้คืนผ่านข้อความคือ entrypoint ผ่านช่องทางข้อความสำหรับ Crestodian ใช้สำหรับ
+กรณีที่ agent ปกติของคุณตายแล้ว แต่ช่องทางที่เชื่อถือได้ เช่น WhatsApp
 ยังคงรับคำสั่งได้
 
 คำสั่งข้อความที่รองรับ:
 
 - `/crestodian <request>`
 
-ลำดับการทำงานของผู้ปฏิบัติการ:
+ขั้นตอนของผู้ปฏิบัติงาน:
 
 ```text
-คุณ ใน DM ของเจ้าของที่เชื่อถือได้: /crestodian status
-OpenClaw: โหมดกู้คืน Crestodian Gateway เข้าถึงได้: ไม่ได้ Config ถูกต้อง: ไม่
-คุณ: /crestodian restart gateway
-OpenClaw: แผน: รีสตาร์ต Gateway ตอบกลับด้วย /crestodian yes เพื่อนำไปใช้
-คุณ: /crestodian yes
-OpenClaw: นำไปใช้แล้ว เขียนรายการ audit แล้ว
+You, in a trusted owner DM: /crestodian status
+OpenClaw: Crestodian rescue mode. Gateway reachable: no. Config valid: no.
+You: /crestodian restart gateway
+OpenClaw: Plan: restart the Gateway. Reply /crestodian yes to apply.
+You: /crestodian yes
+OpenClaw: Applied. Audit entry written.
 ```
 
-การสร้างเอเจนต์สามารถเข้าคิวได้จาก local prompt หรือโหมดกู้คืนเช่นกัน:
+การสร้าง agent ยังสามารถจัดคิวจากพรอมป์ภายในเครื่องหรือโหมดกู้คืนได้:
 
 ```text
 create agent work workspace ~/Projects/work model openai/gpt-5.5
 /crestodian create agent work workspace ~/Projects/work
 ```
 
-โหมดกู้คืนจากระยะไกลเป็นพื้นผิวสำหรับผู้ดูแลระบบ ต้องปฏิบัติต่อมันเหมือน
-การซ่อมแซม config จากระยะไกล ไม่ใช่เหมือนแชตปกติ
+โหมดกู้คืนระยะไกลเป็นพื้นผิว admin ต้องปฏิบัติกับมันเหมือนการซ่อมแซม
+config ระยะไกล ไม่ใช่เหมือนแชตปกติ
 
-ข้อตกลงด้านความปลอดภัยสำหรับการกู้คืนจากระยะไกล:
+สัญญาความปลอดภัยสำหรับการกู้คืนระยะไกล:
 
-- ปิดใช้งานเมื่อ sandboxing ทำงานอยู่ หาก agent/session ใดถูก sandbox
-  Crestodian ต้องปฏิเสธการกู้คืนจากระยะไกล และอธิบายว่าต้องซ่อมแซมผ่าน CLI แบบโลคัล
-- สถานะที่มีผลตามค่าเริ่มต้นคือ `auto`: อนุญาตการกู้คืนจากระยะไกลเฉพาะในการทำงานแบบ YOLO ที่เชื่อถือได้
-  ซึ่ง runtime มีอำนาจแบบโลคัลที่ไม่ถูก sandbox อยู่แล้ว
-- ต้องระบุตัวตนเจ้าของอย่างชัดเจน Rescue ต้องไม่ยอมรับกฎผู้ส่งแบบ wildcard
-  นโยบายกลุ่มแบบเปิด Webhook ที่ไม่ยืนยันตัวตน หรือช่องทางนิรนาม
-- โดยค่าเริ่มต้นอนุญาตเฉพาะ DM ของเจ้าของ การกู้คืนในกลุ่ม/ช่องทางต้องเปิดใช้อย่างชัดเจน
-- การกู้คืนจากระยะไกลไม่สามารถเปิด TUI แบบโลคัล หรือสลับไปเป็นเซสชันเอเจนต์แบบโต้ตอบได้
-  ให้ใช้ `openclaw` แบบโลคัลสำหรับการส่งต่องานไปยังเอเจนต์
-- การเขียนแบบคงอยู่ยังคงต้องได้รับการอนุมัติ แม้จะอยู่ในโหมดกู้คืน
-- audit ทุกการดำเนินการกู้คืนที่ถูกนำไปใช้ การกู้คืนผ่านช่องทางข้อความจะบันทึก channel,
-  account, sender และ metadata ของ source-address การดำเนินการที่เปลี่ยน config
-  จะบันทึก hash ของ config ก่อนและหลังด้วย
-- ห้าม echo secrets เด็ดขาด การตรวจสอบ SecretRef ควรรายงานความพร้อมใช้งาน ไม่ใช่ค่า
-- หาก Gateway ยังทำงานอยู่ ให้ใช้การดำเนินการแบบกำหนดชนิดของ Gateway ก่อน
-  หาก Gateway ตาย ให้ใช้เฉพาะพื้นผิวการซ่อมแซมแบบโลคัลขั้นต่ำที่ไม่ขึ้นกับ agent loop ปกติ
+- ปิดใช้งานเมื่อ sandboxing ทำงานอยู่ หาก agent/session อยู่ใน sandbox
+  Crestodian ต้องปฏิเสธการกู้คืนระยะไกลและอธิบายว่าจำเป็นต้องซ่อมแซมผ่าน CLI ภายในเครื่อง
+- สถานะที่มีผลโดยค่าเริ่มต้นคือ `auto`: อนุญาตการกู้คืนระยะไกลเฉพาะในการทำงาน YOLO
+  ที่เชื่อถือได้ ซึ่ง runtime มีอำนาจภายในเครื่องแบบไม่ถูก sandbox อยู่แล้ว
+- ต้องมีตัวตนเจ้าของที่ระบุชัดเจน Rescue ต้องไม่ยอมรับกฎผู้ส่งแบบ wildcard
+  นโยบายกลุ่มเปิด webhooks ที่ไม่ได้ยืนยันตัวตน หรือช่องทางนิรนาม
+- โดยค่าเริ่มต้น เฉพาะ DM ของเจ้าของเท่านั้น การกู้คืนในกลุ่ม/ช่องทางต้อง opt-in อย่างชัดเจน
+- การกู้คืนระยะไกลไม่สามารถเปิด TUI ภายในเครื่องหรือสลับเข้าสู่ session agent
+  แบบโต้ตอบ ใช้ `openclaw` ภายในเครื่องสำหรับการส่งต่อไปยัง agent
+- การเขียนที่คงอยู่ยังคงต้องได้รับการอนุมัติ แม้ในโหมดกู้คืน
+- Audit ทุกการดำเนินงานกู้คืนที่ถูกนำไปใช้ การกู้คืนผ่านช่องทางข้อความจะบันทึก metadata
+  ของช่องทาง บัญชี ผู้ส่ง และ source-address การดำเนินงานที่เปลี่ยน config ยังบันทึก
+  hash ของ config ก่อนและหลังด้วย
+- ห้ามสะท้อน secrets การตรวจสอบ SecretRef ควรรายงานความพร้อมใช้งาน ไม่ใช่ค่า
+- หาก Gateway ยังทำงาน ให้ใช้การดำเนินงานแบบมีชนิดของ Gateway หาก Gateway
+  ตาย ให้ใช้เฉพาะพื้นผิวซ่อมแซมภายในเครื่องขั้นต่ำที่ไม่พึ่งพา loop ของ agent ปกติ
 
-รูปแบบ config:
+รูปทรง config:
 
 ```jsonc
 {
@@ -263,49 +264,49 @@ create agent work workspace ~/Projects/work model openai/gpt-5.5
 }
 ```
 
-`enabled` ควรรับค่า:
+`enabled` ควรยอมรับ:
 
 - `"auto"`: ค่าเริ่มต้น อนุญาตเฉพาะเมื่อ runtime ที่มีผลเป็น YOLO และ
   sandboxing ปิดอยู่
-- `false`: ไม่อนุญาตการกู้คืนผ่านช่องทางข้อความเลย
-- `true`: อนุญาตการกู้คืนอย่างชัดเจนเมื่อผ่านการตรวจสอบ owner/channel แล้ว
-  แต่ยังต้องไม่ข้ามการปฏิเสธจาก sandboxing
+- `false`: ไม่อนุญาตการกู้คืนผ่านช่องทางข้อความ
+- `true`: อนุญาต rescue อย่างชัดเจนเมื่อการตรวจสอบเจ้าของ/ช่องทางผ่าน
+  แต่ยังต้องไม่ข้ามการปฏิเสธ sandboxing
 
-ท่าที YOLO ค่าเริ่มต้นของ `"auto"` คือ:
+ท่าทาง YOLO `"auto"` เริ่มต้นคือ:
 
 - sandbox mode resolve เป็น `off`
 - `tools.exec.security` resolve เป็น `full`
 - `tools.exec.ask` resolve เป็น `off`
 
-การกู้คืนจากระยะไกลครอบคลุมโดย Docker lane:
+การกู้คืนระยะไกลครอบคลุมโดย Docker lane:
 
 ```bash
 pnpm test:docker:crestodian-rescue
 ```
 
-configless local planner fallback ครอบคลุมโดย:
+ตัววางแผนสำรองภายในเครื่องแบบไม่มี config ครอบคลุมโดย:
 
 ```bash
 pnpm test:docker:crestodian-planner
 ```
 
-การตรวจสอบ smoke ของพื้นผิวคำสั่งผ่านช่องทางแบบ live ที่เลือกเปิด จะตรวจสอบ `/crestodian status`
-รวมถึงรอบการอนุมัติแบบคงอยู่ผ่าน rescue handler:
+smoke แบบ opt-in สำหรับพื้นผิวคำสั่งช่องทาง live ตรวจสอบ `/crestodian status` พร้อม
+approval roundtrip ที่คงอยู่ผ่านตัวจัดการ rescue:
 
 ```bash
 pnpm test:live:crestodian-rescue-channel
 ```
 
-การตั้งค่าใหม่แบบไม่ใช้ config ผ่าน Crestodian ครอบคลุมโดย:
+การ setup แบบไม่มี config สดใหม่ผ่าน Crestodian ครอบคลุมโดย:
 
 ```bash
 pnpm test:docker:crestodian-first-run
 ```
 
-lane นี้จะเริ่มจาก state dir ว่าง ส่ง `openclaw` เปล่าไปยัง Crestodian
-ตั้งค่า model ค่าเริ่มต้น สร้างเอเจนต์เพิ่มอีกหนึ่งตัว กำหนดค่า Discord ผ่านการเปิดใช้ Plugin
-พร้อม token SecretRef ตรวจสอบ config และตรวจสอบ audit log QA Lab ยังมี
-scenario ที่อิงกับ repo สำหรับ Ring 0 flow เดียวกันด้วย:
+lane นั้นเริ่มด้วย state dir ว่างเปล่า route `openclaw` เปล่าไปยัง Crestodian
+ตั้งค่าโมเดลเริ่มต้น สร้าง agent เพิ่มเติม กำหนดค่า Discord ผ่านการเปิดใช้งาน
+Plugin พร้อม token SecretRef ตรวจสอบ config และตรวจสอบ audit log QA Lab
+ยังมี scenario ที่อิง repo สำหรับ flow Ring 0 เดียวกัน:
 
 ```bash
 pnpm openclaw qa suite --scenario crestodian-ring-zero-setup

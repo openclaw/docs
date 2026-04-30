@@ -1,33 +1,33 @@
 ---
 read_when:
-    - คุณต้องการทริกเกอร์หรือขับเคลื่อน TaskFlow จากระบบภายนอก
-    - คุณกำลังกำหนดค่า Plugin webhooks ที่มาพร้อมกัน
-summary: 'Plugin Webhooks: ingress ของ TaskFlow ที่ยืนยันตัวตนแล้วสำหรับระบบอัตโนมัติภายนอกที่เชื่อถือได้'
-title: Plugin Webhooks
+    - คุณต้องการเรียกใช้หรือควบคุมการทำงานของ TaskFlows จากระบบภายนอก
+    - คุณกำลังกำหนดค่า Plugin Webhook ที่รวมมาให้
+summary: 'Plugin Webhooks: ช่องทางขาเข้า TaskFlow ที่ผ่านการยืนยันตัวตนสำหรับระบบอัตโนมัติภายนอกที่เชื่อถือได้'
+title: Plugin Webhook
 x-i18n:
-    generated_at: "2026-04-24T09:26:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:10:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
+    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
     source_path: plugins/webhooks.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Webhooks (Plugin)
+# Webhook (Plugin)
 
-Plugin Webhooks จะเพิ่ม route HTTP ที่ยืนยันตัวตนแล้ว ซึ่งผูกระบบอัตโนมัติภายนอกเข้ากับ TaskFlow ของ OpenClaw
+Plugin Webhooks เพิ่มเส้นทาง HTTP ที่ผ่านการยืนยันตัวตน ซึ่งผูกระบบอัตโนมัติภายนอกเข้ากับ OpenClaw TaskFlows
 
-ใช้เมื่อคุณต้องการให้ระบบที่เชื่อถือได้ เช่น Zapier, n8n, งาน CI หรือบริการภายใน สร้างและขับเคลื่อน TaskFlow ที่มีการจัดการ โดยไม่ต้องเขียน Plugin แบบกำหนดเองก่อน
+ใช้เมื่อคุณต้องการให้ระบบที่เชื่อถือได้ เช่น Zapier, n8n, งาน CI หรือบริการภายใน สร้างและขับเคลื่อน TaskFlows ที่มีการจัดการโดยไม่ต้องเขียน Plugin แบบกำหนดเองก่อน
 
-## ตำแหน่งที่รัน
+## ทำงานที่ไหน
 
-Plugin Webhooks จะรันอยู่ภายใน process ของ Gateway
+Plugin Webhooks ทำงานภายในกระบวนการ Gateway
 
-หาก Gateway ของคุณรันอยู่บนอีกเครื่องหนึ่ง ให้ติดตั้งและกำหนดค่า Plugin บนโฮสต์ Gateway นั้น แล้วรีสตาร์ต Gateway
+หาก Gateway ของคุณทำงานบนเครื่องอื่น ให้ติดตั้งและกำหนดค่า Plugin บนโฮสต์ Gateway นั้น แล้วรีสตาร์ต Gateway
 
-## กำหนดค่า route
+## กำหนดค่าเส้นทาง
 
-ตั้งค่า config ใต้ `plugins.entries.webhooks.config`:
+ตั้งค่าการกำหนดค่าภายใต้ `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -56,40 +56,40 @@ Plugin Webhooks จะรันอยู่ภายใน process ของ Gat
 }
 ```
 
-ฟิลด์ของ route:
+ฟิลด์ของเส้นทาง:
 
 - `enabled`: ไม่บังคับ ค่าเริ่มต้นคือ `true`
 - `path`: ไม่บังคับ ค่าเริ่มต้นคือ `/plugins/webhooks/<routeId>`
-- `sessionKey`: session ที่จำเป็นซึ่งเป็นเจ้าของ TaskFlow ที่ถูกผูกไว้
+- `sessionKey`: เซสชันที่จำเป็น ซึ่งเป็นเจ้าของ TaskFlows ที่ผูกไว้
 - `secret`: shared secret หรือ SecretRef ที่จำเป็น
-- `controllerId`: ไม่บังคับ controller id สำหรับ managed flow ที่ถูกสร้าง
-- `description`: ไม่บังคับ หมายเหตุสำหรับผู้ดูแลระบบ
+- `controllerId`: id ของคอนโทรลเลอร์ที่ไม่บังคับ สำหรับโฟลว์ที่มีการจัดการซึ่งสร้างขึ้น
+- `description`: บันทึกสำหรับผู้ปฏิบัติงานที่ไม่บังคับ
 
 อินพุต `secret` ที่รองรับ:
 
 - สตริงธรรมดา
-- SecretRef ที่มี `source: "env" | "file" | "exec"`
+- SecretRef พร้อม `source: "env" | "file" | "exec"`
 
-หาก route ที่อิง secret ไม่สามารถ resolve secret ได้ตอนเริ่มต้น Plugin จะข้าม route นั้นและบันทึกคำเตือนไว้ แทนที่จะเปิดเผย endpoint ที่ใช้งานไม่ได้
+หากเส้นทางที่ใช้ secret ไม่สามารถ resolve secret ได้ตอนเริ่มต้น Plugin จะข้ามเส้นทางนั้นและบันทึกคำเตือนแทนการเปิดเผย endpoint ที่เสีย
 
 ## โมเดลความปลอดภัย
 
-แต่ละ route ได้รับความเชื่อถือให้ทำงานด้วยสิทธิ์ TaskFlow ของ `sessionKey` ที่กำหนดไว้
+แต่ละเส้นทางได้รับความไว้วางใจให้ดำเนินการด้วยสิทธิ์ TaskFlow ของ `sessionKey` ที่กำหนดค่าไว้
 
-นั่นหมายความว่า route สามารถตรวจสอบและเปลี่ยนแปลง TaskFlow ที่เป็นของ session นั้นได้ ดังนั้นคุณควร:
+ซึ่งหมายความว่าเส้นทางสามารถตรวจสอบและเปลี่ยนแปลง TaskFlows ที่เซสชันนั้นเป็นเจ้าของได้ ดังนั้นคุณควร:
 
-- ใช้ secret ที่คาดเดายากและไม่ซ้ำกันสำหรับแต่ละ route
-- ควรใช้ secret reference แทน secret แบบ plaintext ที่ใส่ตรง ๆ
-- ผูก route กับ session ที่แคบที่สุดเท่าที่เหมาะกับเวิร์กโฟลว์
-- เปิดเผยเฉพาะพาธ Webhook ที่คุณต้องการจริง ๆ
+- ใช้ secret ที่แข็งแรงและไม่ซ้ำกันสำหรับแต่ละเส้นทาง
+- เลือกใช้การอ้างอิง secret แทน secret แบบข้อความล้วนที่เขียนไว้โดยตรง
+- ผูกเส้นทางกับเซสชันที่แคบที่สุดซึ่งเหมาะกับเวิร์กโฟลว์
+- เปิดเผยเฉพาะเส้นทาง Webhook ที่คุณต้องใช้
 
-Plugin นี้ใช้:
+Plugin ใช้:
 
-- การยืนยันตัวตนด้วย shared secret
-- ตัวป้องกันขนาด request body และ timeout
+- การยืนยันตัวตนด้วย shared-secret
+- การป้องกันขนาดเนื้อหาคำขอและ timeout
 - การจำกัดอัตราแบบ fixed-window
-- การจำกัดจำนวน request ที่กำลังประมวลผล
-- การเข้าถึง TaskFlow ที่ผูกกับเจ้าของผ่าน `api.runtime.taskFlow.bindSession(...)`
+- การจำกัดคำขอที่กำลังดำเนินการ
+- การเข้าถึง TaskFlow ที่ผูกกับเจ้าของผ่าน `api.runtime.tasks.managedFlows.bindSession(...)`
 
 ## รูปแบบคำขอ
 
@@ -107,9 +107,9 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -d '{"action":"create_flow","goal":"Review inbound queue"}'
 ```
 
-## action ที่รองรับ
+## แอ็กชันที่รองรับ
 
-ปัจจุบัน Plugin รองรับค่า `action` ใน JSON ดังนี้:
+ปัจจุบัน Plugin ยอมรับค่า JSON `action` เหล่านี้:
 
 - `create_flow`
 - `get_flow`
@@ -127,7 +127,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ### `create_flow`
 
-สร้าง TaskFlow ที่มีการจัดการสำหรับ session ที่ route ผูกไว้
+สร้าง TaskFlow ที่มีการจัดการสำหรับเซสชันที่ผูกกับเส้นทาง
 
 ตัวอย่าง:
 
@@ -142,9 +142,9 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ### `run_task`
 
-สร้างงานย่อยที่มีการจัดการภายใน TaskFlow ที่มีการจัดการอยู่แล้ว
+สร้างงานลูกที่มีการจัดการภายใน TaskFlow ที่มีการจัดการซึ่งมีอยู่แล้ว
 
-runtime ที่อนุญาตคือ:
+รันไทม์ที่อนุญาตคือ:
 
 - `subagent`
 - `acp`
@@ -163,7 +163,7 @@ runtime ที่อนุญาตคือ:
 
 ## รูปแบบการตอบกลับ
 
-การตอบกลับที่สำเร็จจะคืนค่า:
+การตอบกลับที่สำเร็จจะส่งคืน:
 
 ```json
 {
@@ -173,7 +173,7 @@ runtime ที่อนุญาตคือ:
 }
 ```
 
-คำขอที่ถูกปฏิเสธจะคืนค่า:
+คำขอที่ถูกปฏิเสธจะส่งคืน:
 
 ```json
 {
@@ -185,10 +185,10 @@ runtime ที่อนุญาตคือ:
 }
 ```
 
-Plugin นี้จงใจล้างเมทาดาทาของ owner/session ออกจากการตอบกลับของ Webhook
+Plugin จงใจลบข้อมูลเมตาของเจ้าของ/เซสชันออกจากการตอบกลับ Webhook
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [Plugin runtime SDK](/th/plugins/sdk-runtime)
+- [SDK รันไทม์ของ Plugin](/th/plugins/sdk-runtime)
 - [ภาพรวม hooks และ Webhook](/th/automation/hooks)
-- [CLI webhooks](/th/cli/webhooks)
+- [Webhook ของ CLI](/th/cli/webhooks)

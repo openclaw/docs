@@ -1,88 +1,88 @@
 ---
 read_when:
     - การตั้งค่า OpenClaw บน Oracle Cloud
-    - กำลังมองหาโฮสติ้ง VPS ราคาประหยัดสำหรับ OpenClaw
-    - ต้องการให้ OpenClaw ทำงานตลอด 24/7 บนเซิร์ฟเวอร์ขนาดเล็ก
+    - มองหาโฮสติ้ง VPS ราคาประหยัดสำหรับ OpenClaw
+    - ต้องการใช้งาน OpenClaw ตลอด 24/7 บนเซิร์ฟเวอร์ขนาดเล็ก
 summary: OpenClaw บน Oracle Cloud (Always Free ARM)
 title: Oracle Cloud (แพลตฟอร์ม)
 x-i18n:
-    generated_at: "2026-04-24T09:22:41Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:04:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 18b2e55d330457e18bc94f1e7d7744a3cc3b0c0ce99654a61e9871c21e2c3e35
+    source_hash: d86af91bd924ad08535a21fa481ce551e8c19f1a6cd82b61c335da7a068a09f0
     source_path: platforms/oracle.md
-    workflow: 15
+    workflow: 16
 ---
 
 # OpenClaw บน Oracle Cloud (OCI)
 
 ## เป้าหมาย
 
-รัน OpenClaw Gateway แบบถาวรบน ARM tier แบบ **Always Free** ของ Oracle Cloud
+เรียกใช้ OpenClaw Gateway แบบถาวรบนระดับ ARM **Always Free** ของ Oracle Cloud
 
-Free tier ของ Oracle อาจเหมาะกับ OpenClaw มาก (โดยเฉพาะถ้าคุณมีบัญชี OCI อยู่แล้ว) แต่ก็มาพร้อมกับข้อแลกเปลี่ยน:
+ระดับฟรีของ Oracle อาจเหมาะกับ OpenClaw มาก (โดยเฉพาะถ้าคุณมีบัญชี OCI อยู่แล้ว) แต่มีข้อแลกเปลี่ยนบางอย่าง:
 
-- สถาปัตยกรรม ARM (ส่วนใหญ่ใช้งานได้ แต่บางไบนารีอาจรองรับเฉพาะ x86)
-- ความพร้อมของทรัพยากรและการสมัครใช้งานอาจมีความจุกจิก
+- สถาปัตยกรรม ARM (ส่วนใหญ่ใช้งานได้ แต่ไบนารีบางตัวอาจมีเฉพาะ x86)
+- ความจุและการสมัครใช้งานอาจไม่ราบรื่นนัก
 
 ## การเปรียบเทียบค่าใช้จ่าย (2026)
 
-| ผู้ให้บริการ | แผน            | สเปก                  | ราคา/เดือน | หมายเหตุ              |
-| ------------- | -------------- | --------------------- | ---------- | --------------------- |
-| Oracle Cloud  | Always Free ARM | สูงสุด 4 OCPU, RAM 24GB | $0         | ARM, ทรัพยากรจำกัด   |
-| Hetzner       | CX22           | 2 vCPU, RAM 4GB       | ~ $4       | ตัวเลือกแบบเสียเงินที่ถูกที่สุด |
-| DigitalOcean  | Basic          | 1 vCPU, RAM 1GB       | $6         | UI ใช้ง่าย, เอกสารดี |
-| Vultr         | Cloud Compute  | 1 vCPU, RAM 1GB       | $6         | มีหลายโลเคชัน        |
-| Linode        | Nanode         | 1 vCPU, RAM 1GB       | $5         | ปัจจุบันเป็นส่วนหนึ่งของ Akamai |
+| ผู้ให้บริการ | แผน | สเปก | ราคา/เดือน | หมายเหตุ |
+| ------------ | --------------- | ---------------------- | -------- | --------------------- |
+| Oracle Cloud | Always Free ARM | สูงสุด 4 OCPU, RAM 24GB | $0 | ARM, ความจุจำกัด |
+| Hetzner | CX22 | 2 vCPU, RAM 4GB | ~ $4 | ตัวเลือกแบบเสียเงินที่ถูกที่สุด |
+| DigitalOcean | Basic | 1 vCPU, RAM 1GB | $6 | UI ใช้ง่าย, เอกสารดี |
+| Vultr | Cloud Compute | 1 vCPU, RAM 1GB | $6 | มีหลายตำแหน่งที่ตั้ง |
+| Linode | Nanode | 1 vCPU, RAM 1GB | $5 | ตอนนี้เป็นส่วนหนึ่งของ Akamai |
 
 ---
 
 ## ข้อกำหนดเบื้องต้น
 
-- บัญชี Oracle Cloud ([สมัครใช้งาน](https://www.oracle.com/cloud/free/)) — ดู [คู่มือสมัครใช้งานจากชุมชน](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) หากพบปัญหา
-- บัญชี Tailscale (ใช้ฟรีที่ [tailscale.com](https://tailscale.com))
-- เวลาประมาณ 30 นาที
+- บัญชี Oracle Cloud ([สมัครใช้งาน](https://www.oracle.com/cloud/free/)) — ดู [คู่มือสมัครใช้งานจากชุมชน](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) หากคุณพบปัญหา
+- บัญชี Tailscale (ฟรีที่ [tailscale.com](https://tailscale.com))
+- ประมาณ 30 นาที
 
-## 1) สร้าง OCI Instance
+## 1) สร้างอินสแตนซ์ OCI
 
 1. เข้าสู่ระบบ [Oracle Cloud Console](https://cloud.oracle.com/)
 2. ไปที่ **Compute → Instances → Create Instance**
 3. กำหนดค่า:
-   - **Name:** `openclaw`
-   - **Image:** Ubuntu 24.04 (aarch64)
+   - **ชื่อ:** `openclaw`
+   - **อิมเมจ:** Ubuntu 24.04 (aarch64)
    - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
    - **OCPUs:** 2 (หรือสูงสุด 4)
-   - **Memory:** 12 GB (หรือสูงสุด 24 GB)
-   - **Boot volume:** 50 GB (ใช้ฟรีได้สูงสุด 200 GB)
-   - **SSH key:** เพิ่ม public key ของคุณ
+   - **หน่วยความจำ:** 12 GB (หรือสูงสุด 24 GB)
+   - **Boot volume:** 50 GB (ฟรีสูงสุด 200 GB)
+   - **คีย์ SSH:** เพิ่มคีย์สาธารณะของคุณ
 4. คลิก **Create**
-5. จดบันทึก public IP address
+5. จดที่อยู่ IP สาธารณะไว้
 
-**เคล็ดลับ:** หากการสร้าง instance ล้มเหลวพร้อมข้อความ "Out of capacity" ให้ลอง availability domain อื่น หรือลองใหม่ภายหลัง ทรัพยากรของ free tier มีจำกัด
+**เคล็ดลับ:** หากการสร้างอินสแตนซ์ล้มเหลวด้วยข้อความ "Out of capacity" ให้ลอง availability domain อื่น หรือลองใหม่ภายหลัง ความจุของระดับฟรีมีจำกัด
 
-## 2) เชื่อมต่อและอัปเดตระบบ
+## 2) เชื่อมต่อและอัปเดต
 
 ```bash
-# เชื่อมต่อผ่าน public IP
+# Connect via public IP
 ssh ubuntu@YOUR_PUBLIC_IP
 
-# อัปเดตระบบ
+# Update system
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y build-essential
 ```
 
-**หมายเหตุ:** ต้องใช้ `build-essential` สำหรับการคอมไพล์ dependency บางตัวบน ARM
+**หมายเหตุ:** จำเป็นต้องใช้ `build-essential` สำหรับการคอมไพล์ ARM ของ dependency บางรายการ
 
-## 3) กำหนดค่าผู้ใช้และ hostname
+## 3) กำหนดค่าผู้ใช้และชื่อโฮสต์
 
 ```bash
-# ตั้งค่า hostname
+# Set hostname
 sudo hostnamectl set-hostname openclaw
 
-# ตั้งรหัสผ่านให้ผู้ใช้ ubuntu
+# Set password for ubuntu user
 sudo passwd ubuntu
 
-# เปิดใช้ lingering (ให้ user service ทำงานต่อหลังออกจากระบบ)
+# Enable lingering (keeps user services running after logout)
 sudo loginctl enable-linger ubuntu
 ```
 
@@ -93,7 +93,7 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up --ssh --hostname=openclaw
 ```
 
-การตั้งค่านี้จะเปิดใช้ Tailscale SSH ทำให้คุณเชื่อมต่อผ่าน `ssh openclaw` ได้จากทุกอุปกรณ์ใน tailnet ของคุณ โดยไม่ต้องใช้ public IP
+วิธีนี้เปิดใช้ Tailscale SSH เพื่อให้คุณเชื่อมต่อผ่าน `ssh openclaw` ได้จากอุปกรณ์ใดก็ได้บน tailnet ของคุณ — ไม่ต้องใช้ IP สาธารณะ
 
 ตรวจสอบ:
 
@@ -101,7 +101,7 @@ sudo tailscale up --ssh --hostname=openclaw
 tailscale status
 ```
 
-**ตั้งแต่นี้ไป ให้เชื่อมต่อผ่าน Tailscale:** `ssh ubuntu@openclaw` (หรือใช้ Tailscale IP)
+**จากนี้ไป ให้เชื่อมต่อผ่าน Tailscale:** `ssh ubuntu@openclaw` (หรือใช้ IP ของ Tailscale)
 
 ## 5) ติดตั้ง OpenClaw
 
@@ -110,113 +110,113 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 source ~/.bashrc
 ```
 
-เมื่อมีคำถาม "How do you want to hatch your bot?" ให้เลือก **"Do this later"**
+เมื่อระบบถามว่า "How do you want to hatch your bot?" ให้เลือก **"Do this later"**
 
-> หมายเหตุ: หากพบปัญหา ARM-native build ให้เริ่มจากติดตั้ง system package ก่อน (เช่น `sudo apt install -y build-essential`) ก่อนค่อยพิจารณาใช้ Homebrew
+> หมายเหตุ: หากคุณพบปัญหาการ build แบบ ARM-native ให้เริ่มจากแพ็กเกจระบบ (เช่น `sudo apt install -y build-essential`) ก่อนจะใช้ Homebrew
 
 ## 6) กำหนดค่า Gateway (loopback + token auth) และเปิดใช้ Tailscale Serve
 
-ใช้ token auth เป็นค่าเริ่มต้น เพราะคาดเดาพฤติกรรมได้ง่ายและไม่ต้องเปิดใช้ flag “insecure auth” ใน Control UI
+ใช้ token auth เป็นค่าเริ่มต้น วิธีนี้คาดเดาได้และไม่ต้องใช้แฟล็ก “insecure auth” ใด ๆ ของ Control UI
 
 ```bash
-# ให้ Gateway เป็นแบบ private ภายใน VM
+# Keep the Gateway private on the VM
 openclaw config set gateway.bind loopback
 
-# บังคับให้ Gateway + Control UI ต้องยืนยันตัวตน
+# Require auth for the Gateway + Control UI
 openclaw config set gateway.auth.mode token
 openclaw doctor --generate-gateway-token
 
-# เปิดเผยผ่าน Tailscale Serve (HTTPS + เข้าถึงได้จาก tailnet)
+# Expose over Tailscale Serve (HTTPS + tailnet access)
 openclaw config set gateway.tailscale.mode serve
 openclaw config set gateway.trustedProxies '["127.0.0.1"]'
 
 systemctl --user restart openclaw-gateway.service
 ```
 
-`gateway.trustedProxies=["127.0.0.1"]` ในที่นี้ใช้เฉพาะกับการจัดการ forwarded-IP/local-client ของ local Tailscale Serve proxy เท่านั้น **ไม่ใช่** `gateway.auth.mode: "trusted-proxy"` เส้นทางของ diff viewer ในการตั้งค่านี้ยังคงมีพฤติกรรม fail-closed: คำขอ viewer แบบ raw `127.0.0.1` ที่ไม่มี forwarded proxy headers อาจตอบกลับว่า `Diff not found` ใช้ `mode=file` / `mode=both` สำหรับไฟล์แนบ หรือเปิดใช้ remote viewers โดยตั้งใจและกำหนด `plugins.entries.diffs.config.viewerBaseUrl` (หรือส่ง proxy `baseUrl`) หากคุณต้องการลิงก์ viewer ที่แชร์ได้
+`gateway.trustedProxies=["127.0.0.1"]` ในที่นี้ใช้เฉพาะสำหรับการจัดการ forwarded-IP/local-client ของพร็อกซี Tailscale Serve ภายในเครื่องเท่านั้น และ **ไม่ใช่** `gateway.auth.mode: "trusted-proxy"` เส้นทาง diff viewer จะยังคงมีพฤติกรรมแบบ fail-closed ในการตั้งค่านี้: คำขอ viewer แบบดิบจาก `127.0.0.1` ที่ไม่มี forwarded proxy headers อาจส่งคืน `Diff not found` ใช้ `mode=file` / `mode=both` สำหรับไฟล์แนบ หรือเปิดใช้ remote viewers โดยตั้งใจและตั้งค่า `plugins.entries.diffs.config.viewerBaseUrl` (หรือส่งพร็อกซี `baseUrl`) หากคุณต้องการลิงก์ viewer ที่แชร์ได้
 
-## 7) ตรวจสอบการทำงาน
+## 7) ตรวจสอบ
 
 ```bash
-# ตรวจสอบเวอร์ชัน
+# Check version
 openclaw --version
 
-# ตรวจสอบสถานะ daemon
+# Check daemon status
 systemctl --user status openclaw-gateway.service
 
-# ตรวจสอบ Tailscale Serve
+# Check Tailscale Serve
 tailscale serve status
 
-# ทดสอบการตอบสนองในเครื่อง
+# Test local response
 curl http://localhost:18789
 ```
 
 ## 8) ล็อกดาวน์ความปลอดภัยของ VCN
 
-เมื่อทุกอย่างทำงานได้แล้ว ให้ล็อกดาวน์ VCN เพื่อบล็อกทราฟฟิกทั้งหมด ยกเว้น Tailscale Virtual Cloud Network ของ OCI ทำหน้าที่เป็นไฟร์วอลล์ที่ขอบเครือข่าย — ทราฟฟิกจะถูกบล็อกก่อนถึง instance ของคุณ
+เมื่อทุกอย่างทำงานแล้ว ให้ล็อกดาวน์ VCN เพื่อบล็อกทราฟฟิกทั้งหมด ยกเว้น Tailscale Virtual Cloud Network ของ OCI ทำหน้าที่เป็นไฟร์วอลล์ที่ขอบเครือข่าย — ทราฟฟิกจะถูกบล็อกก่อนถึงอินสแตนซ์ของคุณ
 
 1. ไปที่ **Networking → Virtual Cloud Networks** ใน OCI Console
 2. คลิก VCN ของคุณ → **Security Lists** → Default Security List
-3. **ลบ** ingress rule ทั้งหมด ยกเว้น:
+3. **ลบ** กฎ ingress ทั้งหมด ยกเว้น:
    - `0.0.0.0/0 UDP 41641` (Tailscale)
-4. คง egress rule เริ่มต้นไว้ (อนุญาต outbound ทั้งหมด)
+4. คงกฎ egress เริ่มต้นไว้ (อนุญาต outbound ทั้งหมด)
 
-การตั้งค่านี้จะบล็อก SSH ที่พอร์ต 22, HTTP, HTTPS และทุกอย่างอื่นที่ขอบเครือข่าย ตั้งแต่นี้ไป คุณจะเชื่อมต่อได้ผ่าน Tailscale เท่านั้น
+วิธีนี้จะบล็อก SSH บนพอร์ต 22, HTTP, HTTPS และทุกอย่างอื่นที่ขอบเครือข่าย จากนี้ไป คุณจะเชื่อมต่อได้ผ่าน Tailscale เท่านั้น
 
 ---
 
 ## เข้าถึง Control UI
 
-จากอุปกรณ์ใดก็ได้ในเครือข่าย Tailscale ของคุณ:
+จากอุปกรณ์ใดก็ได้บนเครือข่าย Tailscale ของคุณ:
 
 ```
 https://openclaw.<tailnet-name>.ts.net/
 ```
 
-แทนที่ `<tailnet-name>` ด้วยชื่อ tailnet ของคุณ (ดูได้จาก `tailscale status`)
+แทนที่ `<tailnet-name>` ด้วยชื่อ tailnet ของคุณ (ดูได้ใน `tailscale status`)
 
-ไม่ต้องใช้ SSH tunnel Tailscale มีให้ดังนี้:
+ไม่ต้องใช้ SSH tunnel Tailscale ให้สิ่งต่อไปนี้:
 
-- การเข้ารหัส HTTPS (certificate อัตโนมัติ)
-- การยืนยันตัวตนผ่าน Tailscale identity
-- การเข้าถึงจากทุกอุปกรณ์ใน tailnet ของคุณ (แล็ปท็อป โทรศัพท์ ฯลฯ)
+- การเข้ารหัส HTTPS (ใบรับรองอัตโนมัติ)
+- การยืนยันตัวตนผ่านข้อมูลประจำตัว Tailscale
+- การเข้าถึงจากอุปกรณ์ใดก็ได้บน tailnet ของคุณ (แล็ปท็อป, โทรศัพท์ ฯลฯ)
 
 ---
 
-## ความปลอดภัย: VCN + Tailscale (baseline ที่แนะนำ)
+## ความปลอดภัย: VCN + Tailscale (ค่าพื้นฐานที่แนะนำ)
 
-เมื่อ VCN ถูกล็อกดาวน์แล้ว (เปิดเฉพาะ UDP 41641) และ Gateway bind กับ loopback คุณจะได้ defense-in-depth ที่แข็งแรง: ทราฟฟิกสาธารณะถูกบล็อกที่ขอบเครือข่าย และการเข้าถึงระดับผู้ดูแลจะเกิดขึ้นผ่าน tailnet ของคุณ
+เมื่อ VCN ถูกล็อกดาวน์ (เปิดเฉพาะ UDP 41641) และ Gateway ผูกกับ loopback คุณจะได้การป้องกันหลายชั้นที่แข็งแรง: ทราฟฟิกสาธารณะถูกบล็อกที่ขอบเครือข่าย และการเข้าถึงสำหรับผู้ดูแลระบบเกิดขึ้นผ่าน tailnet ของคุณ
 
-การตั้งค่านี้มักทำให้ **ไม่จำเป็น** ต้องมี host-based firewall rule เพิ่มเติมเพียงเพื่อหยุดการ brute force SSH จากอินเทอร์เน็ตทั้งหมด — แต่คุณยังควรอัปเดต OS ให้ล่าสุด รัน `openclaw security audit` และตรวจสอบว่าคุณไม่ได้เผลอเปิดฟังบน public interface
+การตั้งค่านี้มักลด _ความจำเป็น_ ในการมีกฎไฟร์วอลล์ระดับโฮสต์เพิ่มเติมเพื่อหยุดการ brute force SSH จากทั่วอินเทอร์เน็ตโดยเฉพาะ — แต่คุณยังควรอัปเดต OS ให้สม่ำเสมอ, เรียกใช้ `openclaw security audit`, และตรวจสอบว่าคุณไม่ได้เผลอฟังอยู่บนอินเทอร์เฟซสาธารณะ
 
-### มีการป้องกันอยู่แล้ว
+### ได้รับการป้องกันแล้ว
 
-| ขั้นตอนแบบดั้งเดิม | จำเป็นหรือไม่? | เหตุผล                                                                       |
-| ------------------ | --------------- | ---------------------------------------------------------------------------- |
-| UFW firewall       | ไม่             | VCN บล็อกก่อนที่ทราฟฟิกจะถึง instance                                       |
-| fail2ban           | ไม่             | ไม่มี brute force หากพอร์ต 22 ถูกบล็อกที่ VCN                              |
-| sshd hardening     | ไม่             | Tailscale SSH ไม่ได้ใช้ sshd                                                |
-| Disable root login | ไม่             | Tailscale ใช้ Tailscale identity ไม่ใช่ system user                         |
-| SSH key-only auth  | ไม่             | Tailscale ยืนยันตัวตนผ่าน tailnet ของคุณ                                     |
-| IPv6 hardening     | โดยทั่วไปไม่จำเป็น | ขึ้นอยู่กับการตั้งค่า VCN/subnet ของคุณ; ให้ตรวจสอบสิ่งที่ถูกกำหนด/เปิดเผยจริง |
+| ขั้นตอนแบบดั้งเดิม | จำเป็นหรือไม่ | เหตุผล |
+| ------------------ | ----------- | ---------------------------------------------------------------------------- |
+| ไฟร์วอลล์ UFW | ไม่ | VCN บล็อกก่อนที่ทราฟฟิกจะถึงอินสแตนซ์ |
+| fail2ban | ไม่ | ไม่มี brute force หากพอร์ต 22 ถูกบล็อกที่ VCN |
+| การทำให้ sshd แข็งแรงขึ้น | ไม่ | Tailscale SSH ไม่ใช้ sshd |
+| ปิดการเข้าสู่ระบบ root | ไม่ | Tailscale ใช้ข้อมูลประจำตัว Tailscale ไม่ใช่ผู้ใช้ระบบ |
+| SSH key-only auth | ไม่ | Tailscale ยืนยันตัวตนผ่าน tailnet ของคุณ |
+| การทำให้ IPv6 แข็งแรงขึ้น | โดยปกติไม่ | ขึ้นอยู่กับการตั้งค่า VCN/subnet ของคุณ; ตรวจสอบสิ่งที่ถูกกำหนด/เปิดเผยจริง |
 
 ### ยังแนะนำให้ทำ
 
-- **สิทธิ์ของ credential:** `chmod 700 ~/.openclaw`
+- **สิทธิ์ของข้อมูลประจำตัว:** `chmod 700 ~/.openclaw`
 - **Security audit:** `openclaw security audit`
-- **การอัปเดตระบบ:** รัน `sudo apt update && sudo apt upgrade` เป็นประจำ
-- **ติดตาม Tailscale:** ตรวจสอบอุปกรณ์ใน [Tailscale admin console](https://login.tailscale.com/admin)
+- **การอัปเดตระบบ:** `sudo apt update && sudo apt upgrade` เป็นประจำ
+- **ตรวจสอบ Tailscale:** ตรวจทานอุปกรณ์ใน [Tailscale admin console](https://login.tailscale.com/admin)
 
 ### ตรวจสอบสถานะความปลอดภัย
 
 ```bash
-# ยืนยันว่าไม่มี public port ที่กำลังฟังอยู่
+# Confirm no public ports listening
 sudo ss -tlnp | grep -v '127.0.0.1\|::1'
 
-# ยืนยันว่า Tailscale SSH ทำงานอยู่
+# Verify Tailscale SSH is active
 tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
 
-# ทางเลือก: ปิด sshd ทั้งหมด
+# Optional: disable sshd entirely
 sudo systemctl disable --now ssh
 ```
 
@@ -224,10 +224,10 @@ sudo systemctl disable --now ssh
 
 ## ทางเลือกสำรอง: SSH Tunnel
 
-หาก Tailscale Serve ใช้งานไม่ได้ ให้ใช้ SSH tunnel:
+หาก Tailscale Serve ไม่ทำงาน ให้ใช้ SSH tunnel:
 
 ```bash
-# จากเครื่อง local ของคุณ (ผ่าน Tailscale)
+# From your local machine (via Tailscale)
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 ```
 
@@ -235,27 +235,27 @@ ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 
 ---
 
-## การแก้ไขปัญหา
+## การแก้ปัญหา
 
-### การสร้าง instance ล้มเหลว ("Out of capacity")
+### การสร้างอินสแตนซ์ล้มเหลว ("Out of capacity")
 
-Free tier ARM instance เป็นที่นิยม ลองทำดังนี้:
+อินสแตนซ์ ARM ระดับฟรีได้รับความนิยม ลองทำดังนี้:
 
 - ใช้ availability domain อื่น
-- ลองใหม่ในช่วงนอกเวลาใช้งานหนาแน่น (เช้ามืด)
-- ใช้ตัวกรอง "Always Free" ตอนเลือก shape
+- ลองใหม่ในช่วงเวลาที่ใช้งานน้อย (เช้าตรู่)
+- ใช้ตัวกรอง "Always Free" เมื่อเลือก shape
 
-### Tailscale เชื่อมต่อไม่ได้
+### Tailscale ไม่เชื่อมต่อ
 
 ```bash
-# ตรวจสอบสถานะ
+# Check status
 sudo tailscale status
 
-# ยืนยันตัวตนใหม่
+# Re-authenticate
 sudo tailscale up --ssh --hostname=openclaw --reset
 ```
 
-### Gateway เริ่มทำงานไม่ได้
+### Gateway ไม่เริ่มทำงาน
 
 ```bash
 openclaw gateway status
@@ -263,37 +263,37 @@ openclaw doctor --non-interactive
 journalctl --user -u openclaw-gateway.service -n 50
 ```
 
-### ไม่สามารถเข้าถึง Control UI ได้
+### เข้าถึง Control UI ไม่ได้
 
 ```bash
-# ตรวจสอบว่า Tailscale Serve กำลังทำงานอยู่
+# Verify Tailscale Serve is running
 tailscale serve status
 
-# ตรวจสอบว่า gateway กำลังฟังอยู่
+# Check gateway is listening
 curl http://localhost:18789
 
-# รีสตาร์ตหากจำเป็น
+# Restart if needed
 systemctl --user restart openclaw-gateway.service
 ```
 
 ### ปัญหาไบนารี ARM
 
-บางเครื่องมืออาจไม่มี build สำหรับ ARM ตรวจสอบดังนี้:
+เครื่องมือบางตัวอาจไม่มี build สำหรับ ARM ตรวจสอบ:
 
 ```bash
-uname -m  # ควรแสดง aarch64
+uname -m  # Should show aarch64
 ```
 
-แพ็กเกจ npm ส่วนใหญ่ทำงานได้ดี สำหรับไบนารี ให้มองหารุ่น `linux-arm64` หรือ `aarch64`
+แพ็กเกจ npm ส่วนใหญ่ใช้งานได้ดี สำหรับไบนารี ให้มองหา release แบบ `linux-arm64` หรือ `aarch64`
 
 ---
 
-## การคงอยู่ของข้อมูล
+## ความคงอยู่ของข้อมูล
 
-สถานะทั้งหมดจะอยู่ใน:
+สถานะทั้งหมดอยู่ใน:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` ของแต่ละ agent, state ของ channel/provider และข้อมูล session
-- `~/.openclaw/workspace/` — workspace (`SOUL.md`, memory, artifacts)
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` ต่อ agent, สถานะ channel/provider, และข้อมูล session
+- `~/.openclaw/workspace/` — workspace (SOUL.md, memory, artifacts)
 
 สำรองข้อมูลเป็นระยะ:
 
@@ -305,8 +305,8 @@ openclaw backup create
 
 ## ที่เกี่ยวข้อง
 
-- [การเข้าถึง Gateway จากระยะไกล](/th/gateway/remote) — รูปแบบการเข้าถึงระยะไกลอื่น ๆ
+- [การเข้าถึง Gateway จากระยะไกล](/th/gateway/remote) — รูปแบบการเข้าถึงจากระยะไกลอื่น ๆ
 - [การผสานรวม Tailscale](/th/gateway/tailscale) — เอกสาร Tailscale ฉบับเต็ม
-- [การกำหนดค่า Gateway](/th/gateway/configuration) — ตัวเลือก config ทั้งหมด
+- [การกำหนดค่า Gateway](/th/gateway/configuration) — ตัวเลือกการกำหนดค่าทั้งหมด
 - [คู่มือ DigitalOcean](/th/install/digitalocean) — หากคุณต้องการแบบเสียเงิน + สมัครง่ายกว่า
-- [คู่มือ Hetzner](/th/install/hetzner) — ทางเลือกแบบ Docker
+- [คู่มือ Hetzner](/th/install/hetzner) — ทางเลือกที่ใช้ Docker

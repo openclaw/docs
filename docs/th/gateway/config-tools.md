@@ -1,44 +1,44 @@
 ---
 read_when:
-    - การกำหนดค่านโยบาย, allowlists หรือฟีเจอร์ทดลองของ `tools.*`
-    - การลงทะเบียน custom providers หรือการ override base URLs
-    - การตั้งค่า endpoints แบบโฮสต์เองที่เข้ากันได้กับ OpenAI
+    - การกำหนดค่านโยบาย `tools.*`, รายการอนุญาต หรือฟีเจอร์ทดลอง
+    - การลงทะเบียนผู้ให้บริการแบบกำหนดเองหรือการแทนที่ URL พื้นฐาน
+    - การตั้งค่าปลายทางที่โฮสต์ด้วยตนเองที่เข้ากันได้กับ OpenAI
 sidebarTitle: Tools and custom providers
-summary: การกำหนดค่า tools (นโยบาย, experimental toggles, tools ที่มีผู้ให้บริการรองรับ) และการตั้งค่า custom provider/base-URL
-title: การกำหนดค่า — tools และ custom providers
+summary: การกำหนดค่าเครื่องมือ (นโยบาย, ตัวเลือกเปิด/ปิดเชิงทดลอง, เครื่องมือที่รองรับโดยผู้ให้บริการ) และการตั้งค่าผู้ให้บริการ/URL ฐานแบบกำหนดเอง
+title: การกำหนดค่า — เครื่องมือและผู้ให้บริการแบบกำหนดเอง
 x-i18n:
-    generated_at: "2026-04-26T11:29:13Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:51:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ef030940b155224e614675a85c7a81567fd3a493e5ec1c25c5956d49cbc11b86
+    source_hash: 1790c92ecaf822c837326d8e22e9d72cc44e5d4cc0bcc00c154ba5160975002a
     source_path: gateway/config-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-คีย์คอนฟิก `tools.*` และการตั้งค่า custom provider / base-URL สำหรับคีย์คอนฟิกระดับบนสุดอื่นๆ เช่น agents, channels และคีย์อื่นๆ ดู [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)
+`tools.*` คีย์การกำหนดค่าและการตั้งค่าผู้ให้บริการแบบกำหนดเอง / base-URL สำหรับเอเจนต์ ช่องทาง และคีย์การกำหนดค่าระดับบนสุดอื่นๆ โปรดดู [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)
 
-## Tools
+## เครื่องมือ
 
-### โปรไฟล์ของ tool
+### โปรไฟล์เครื่องมือ
 
-`tools.profile` ใช้กำหนด allowlist พื้นฐานก่อน `tools.allow`/`tools.deny`:
+`tools.profile` ตั้งค่า allowlist พื้นฐานก่อน `tools.allow`/`tools.deny`:
 
 <Note>
-local onboarding จะตั้งค่าเริ่มต้นของคอนฟิก local ใหม่เป็น `tools.profile: "coding"` เมื่อยังไม่ได้ตั้งค่าไว้ (โปรไฟล์แบบ explicit ที่มีอยู่เดิมจะยังคงไว้)
+การเริ่มต้นใช้งานภายในเครื่องจะตั้งค่าเริ่มต้นของการกำหนดค่าภายในเครื่องใหม่เป็น `tools.profile: "coding"` เมื่อไม่ได้ตั้งค่าไว้ (โปรไฟล์ที่ระบุไว้อย่างชัดเจนอยู่แล้วจะถูกคงไว้)
 </Note>
 
-| โปรไฟล์     | รวม                                                                                                                             |
+| โปรไฟล์    | รวม                                                                                                                            |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `minimal`   | `session_status` เท่านั้น                                                                                                       |
+| `minimal`   | เฉพาะ `session_status`                                                                                                         |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `video_generate` |
 | `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                       |
-| `full`      | ไม่มีข้อจำกัด (เหมือนกับไม่ตั้งค่า)                                                                                              |
+| `full`      | ไม่มีข้อจำกัด (เหมือนกับไม่ได้ตั้งค่า)                                                                                         |
 
-### กลุ่มของ tool
+### กลุ่มเครื่องมือ
 
-| กลุ่ม              | Tools                                                                                                                   |
+| กลุ่ม              | เครื่องมือ                                                                                                               |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` ยอมรับเป็น alias ของ `exec`)                                                 |
+| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` ยอมรับให้เป็น alias ของ `exec`)                                             |
 | `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                  |
 | `group:sessions`   | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status` |
 | `group:memory`     | `memory_search`, `memory_get`                                                                                           |
@@ -49,11 +49,11 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 | `group:nodes`      | `nodes`                                                                                                                 |
 | `group:agents`     | `agents_list`                                                                                                           |
 | `group:media`      | `image`, `image_generate`, `video_generate`, `tts`                                                                      |
-| `group:openclaw`   | built-in tools ทั้งหมด (ไม่รวม provider plugins)                                                                        |
+| `group:openclaw`   | เครื่องมือในตัวทั้งหมด (ไม่รวม Plugin ของผู้ให้บริการ)                                                                 |
 
 ### `tools.allow` / `tools.deny`
 
-นโยบาย allow/deny ของ tool แบบ global (`deny` มีผลเหนือกว่า) ไม่สนตัวพิมพ์เล็กใหญ่ และรองรับ wildcard `*` มีผลแม้จะปิด Docker sandbox อยู่ก็ตาม
+นโยบายอนุญาต/ปฏิเสธเครื่องมือทั่วทั้งระบบ (การปฏิเสธมีผลเหนือกว่า) ไม่สนตัวพิมพ์เล็กใหญ่ รองรับ wildcard `*` ใช้บังคับแม้เมื่อ Docker sandbox ปิดอยู่
 
 ```json5
 {
@@ -63,7 +63,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 
 ### `tools.byProvider`
 
-จำกัด tools เพิ่มเติมสำหรับผู้ให้บริการหรือ models บางรายการ ลำดับคือ: โปรไฟล์พื้นฐาน → โปรไฟล์ของผู้ให้บริการ → allow/deny
+จำกัดเครื่องมือเพิ่มเติมสำหรับผู้ให้บริการหรือโมเดลที่ระบุ ลำดับ: โปรไฟล์พื้นฐาน → โปรไฟล์ผู้ให้บริการ → อนุญาต/ปฏิเสธ
 
 ```json5
 {
@@ -79,7 +79,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 
 ### `tools.elevated`
 
-ควบคุมการเข้าถึง `exec` แบบ elevated นอก sandbox:
+ควบคุมการเข้าถึง exec แบบยกระดับนอก sandbox:
 
 ```json5
 {
@@ -95,9 +95,9 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 }
 ```
 
-- override ต่อเอเจนต์ (`agents.list[].tools.elevated`) สามารถจำกัดเพิ่มได้เท่านั้น
-- `/elevated on|off|ask|full` จะบันทึกสถานะแยกตามเซสชัน; inline directives มีผลกับข้อความเดียว
-- `exec` แบบ elevated จะข้าม sandboxing และใช้ escape path ที่กำหนดค่าไว้ (`gateway` เป็นค่าเริ่มต้น หรือ `node` เมื่อเป้าหมายของ exec คือ `node`)
+- การ override รายเอเจนต์ (`agents.list[].tools.elevated`) ทำได้เพียงจำกัดเพิ่มเติมเท่านั้น
+- `/elevated on|off|ask|full` เก็บสถานะเป็นรายเซสชัน; คำสั่งกำกับแบบ inline มีผลกับข้อความเดียว
+- `exec` แบบยกระดับจะข้าม sandboxing และใช้เส้นทาง escape ที่กำหนดค่าไว้ (`gateway` เป็นค่าเริ่มต้น หรือ `node` เมื่อเป้าหมาย exec คือ `node`)
 
 ### `tools.exec`
 
@@ -121,7 +121,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 
 ### `tools.loopDetection`
 
-การตรวจความปลอดภัยสำหรับ tool loop จะ **ปิดใช้งานเป็นค่าเริ่มต้น** ตั้งค่า `enabled: true` เพื่อเปิดใช้งานการตรวจจับ สามารถกำหนดการตั้งค่าแบบ global ใน `tools.loopDetection` และ override ต่อเอเจนต์ได้ที่ `agents.list[].tools.loopDetection`
+การตรวจสอบความปลอดภัยของลูปเครื่องมือถูก **ปิดใช้งานโดยค่าเริ่มต้น** ตั้งค่า `enabled: true` เพื่อเปิดใช้การตรวจจับ สามารถกำหนดการตั้งค่าแบบทั่วทั้งระบบใน `tools.loopDetection` และ override รายเอเจนต์ที่ `agents.list[].tools.loopDetection`
 
 ```json5
 {
@@ -143,29 +143,29 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 ```
 
 <ParamField path="historySize" type="number">
-  จำนวนประวัติการเรียก tool สูงสุดที่เก็บไว้สำหรับการวิเคราะห์ loop
+  จำนวนประวัติการเรียกเครื่องมือสูงสุดที่เก็บไว้สำหรับการวิเคราะห์ลูป
 </ParamField>
 <ParamField path="warningThreshold" type="number">
-  ค่า threshold ของรูปแบบซ้ำแบบไม่มีความคืบหน้าที่ใช้สำหรับการเตือน
+  เกณฑ์ของรูปแบบที่ทำซ้ำโดยไม่มีความคืบหน้าสำหรับคำเตือน
 </ParamField>
 <ParamField path="criticalThreshold" type="number">
-  ค่า threshold ที่สูงกว่าสำหรับการบล็อก critical loops ที่เกิดซ้ำ
+  เกณฑ์การทำซ้ำที่สูงกว่าสำหรับบล็อกลูปวิกฤต
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
-  ค่า threshold สำหรับหยุดแบบ hard stop เมื่อการรันใดๆ ไม่มีความคืบหน้า
+  เกณฑ์หยุดทันทีสำหรับการรันใดๆ ที่ไม่มีความคืบหน้า
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
-  เตือนเมื่อมีการเรียก tool เดิม/args เดิมซ้ำ
+  เตือนเมื่อมีการเรียกเครื่องมือเดียวกัน/อาร์กิวเมนต์เดียวกันซ้ำ
 </ParamField>
 <ParamField path="detectors.knownPollNoProgress" type="boolean">
-  เตือน/บล็อกเมื่อเป็น poll tools ที่รู้จัก (`process.poll`, `command_status` ฯลฯ)
+  เตือน/บล็อกสำหรับเครื่องมือ poll ที่รู้จัก (`process.poll`, `command_status` ฯลฯ)
 </ParamField>
 <ParamField path="detectors.pingPong" type="boolean">
-  เตือน/บล็อกเมื่อเกิดรูปแบบคู่สลับไปมาที่ไม่มีความคืบหน้า
+  เตือน/บล็อกเมื่อมีรูปแบบคู่ที่สลับกันโดยไม่มีความคืบหน้า
 </ParamField>
 
 <Warning>
-หาก `warningThreshold >= criticalThreshold` หรือ `criticalThreshold >= globalCircuitBreakerThreshold` การตรวจสอบจะล้มเหลว
+หาก `warningThreshold >= criticalThreshold` หรือ `criticalThreshold >= globalCircuitBreakerThreshold` การตรวจสอบความถูกต้องจะล้มเหลว
 </Warning>
 
 ### `tools.web`
@@ -176,14 +176,14 @@ local onboarding จะตั้งค่าเริ่มต้นของค
     web: {
       search: {
         enabled: true,
-        apiKey: "brave_api_key", // หรือ BRAVE_API_KEY env
+        apiKey: "brave_api_key", // or BRAVE_API_KEY env
         maxResults: 5,
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
       },
       fetch: {
         enabled: true,
-        provider: "firecrawl", // ไม่บังคับ; ไม่ระบุเพื่อใช้ auto-detect
+        provider: "firecrawl", // optional; omit for auto-detect
         maxChars: 50000,
         maxCharsCap: 50000,
         maxResponseBytes: 2000000,
@@ -200,7 +200,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 
 ### `tools.media`
 
-กำหนดค่าความสามารถทำความเข้าใจสื่อขาเข้า (ภาพ/เสียง/วิดีโอ):
+กำหนดค่าการทำความเข้าใจสื่อขาเข้า (รูปภาพ/เสียง/วิดีโอ):
 
 ```json5
 {
@@ -208,7 +208,7 @@ local onboarding จะตั้งค่าเริ่มต้นของค
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // opt-in: ส่งงานเพลง/วิดีโอ async ที่เสร็จแล้วไปยัง channel โดยตรง
+        directSend: false, // opt-in: send finished async music/video directly to the channel
       },
       audio: {
         enabled: true,
@@ -222,6 +222,11 @@ local onboarding จะตั้งค่าเริ่มต้นของค
           { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] },
         ],
       },
+      image: {
+        enabled: true,
+        timeoutSeconds: 180,
+        models: [{ provider: "ollama", model: "gemma4:26b", timeoutSeconds: 300 }],
+      },
       video: {
         enabled: true,
         maxBytes: 52428800,
@@ -233,29 +238,30 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 ```
 
 <AccordionGroup>
-  <Accordion title="ฟิลด์ของรายการ media model">
-    **รายการผู้ให้บริการ** (`type: "provider"` หรือไม่ระบุ):
+  <Accordion title="Media model entry fields">
+    **รายการ Provider** (`type: "provider"` หรือเว้นไว้):
 
-    - `provider`: id ของผู้ให้บริการ API (`openai`, `anthropic`, `google`/`gemini`, `groq` เป็นต้น)
-    - `model`: override ของ model id
-    - `profile` / `preferredProfile`: การเลือก profile ใน `auth-profiles.json`
+    - `provider`: id ของผู้ให้บริการ API (`openai`, `anthropic`, `google`/`gemini`, `groq` ฯลฯ)
+    - `model`: ระบุ id ของโมเดลทับค่าเดิม
+    - `profile` / `preferredProfile`: การเลือกโปรไฟล์ `auth-profiles.json`
 
     **รายการ CLI** (`type: "cli"`):
 
     - `command`: ไฟล์ปฏิบัติการที่จะรัน
-    - `args`: args แบบ templated (รองรับ `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}` เป็นต้น)
+    - `args`: อาร์กิวเมนต์แบบเทมเพลต (รองรับ `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}` ฯลฯ; `openclaw doctor --fix` จะย้าย placeholder `{input}` ที่เลิกใช้แล้วไปเป็น `{{MediaPath}}`)
 
     **ฟิลด์ทั่วไป:**
 
-    - `capabilities`: รายการแบบเลือกได้ (`image`, `audio`, `video`) ค่าเริ่มต้น: `openai`/`anthropic`/`minimax` → image, `google` → image+audio+video, `groq` → audio
-    - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: overrides ต่อรายการ
-    - หากล้มเหลวจะ fallback ไปยังรายการถัดไป
+    - `capabilities`: รายการที่ไม่บังคับ (`image`, `audio`, `video`) ค่าเริ่มต้น: `openai`/`anthropic`/`minimax` → รูปภาพ, `google` → รูปภาพ+เสียง+วิดีโอ, `groq` → เสียง
+    - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: ค่าทับรายรายการ
+    - `tools.media.image.timeoutSeconds` และรายการ `timeoutSeconds` ของโมเดลรูปภาพที่ตรงกันจะมีผลด้วยเมื่อเอเจนต์เรียกเครื่องมือ `image` แบบชัดเจน
+    - เมื่อเกิดความล้มเหลว จะย้อนกลับไปใช้รายการถัดไป
 
-    auth ของผู้ให้บริการเป็นไปตามลำดับมาตรฐาน: `auth-profiles.json` → env vars → `models.providers.*.apiKey`
+    การตรวจสอบสิทธิ์ของ Provider ทำตามลำดับมาตรฐาน: `auth-profiles.json` → env vars → `models.providers.*.apiKey`
 
-    **ฟิลด์ async completion:**
+    **ฟิลด์การทำงานเสร็จแบบอะซิงโครนัส:**
 
-    - `asyncCompletion.directSend`: เมื่อเป็น `true`, งาน `music_generate` และ `video_generate` แบบ async ที่เสร็จสมบูรณ์จะพยายามส่งไปยัง channel โดยตรงก่อน ค่าเริ่มต้น: `false` (เส้นทางเดิมแบบปลุก requester-session/ส่งผ่าน model)
+    - `asyncCompletion.directSend`: เมื่อเป็น `true` งาน `music_generate` และ `video_generate` แบบอะซิงโครนัสที่เสร็จแล้วจะพยายามส่งตรงไปยังช่องทางก่อน ค่าเริ่มต้น: `false` (เส้นทางเดิมแบบปลุกเซสชันผู้ร้องขอ/ส่งมอบผ่านโมเดล)
 
   </Accordion>
 </AccordionGroup>
@@ -275,9 +281,9 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 
 ### `tools.sessions`
 
-ควบคุมว่า session ใดบ้างที่สามารถถูกกำหนดเป้าหมายได้ด้วย session tools (`sessions_list`, `sessions_history`, `sessions_send`)
+ควบคุมว่าเซสชันใดสามารถเป็นเป้าหมายของเครื่องมือเซสชัน (`sessions_list`, `sessions_history`, `sessions_send`) ได้
 
-ค่าเริ่มต้น: `tree` (เซสชันปัจจุบัน + เซสชันที่ถูก spawn โดยมัน เช่น subagents)
+ค่าเริ่มต้น: `tree` (เซสชันปัจจุบัน + เซสชันที่ถูกสร้างโดยเซสชันนี้ เช่น subagents)
 
 ```json5
 {
@@ -291,30 +297,30 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 ```
 
 <AccordionGroup>
-  <Accordion title="ขอบเขตการมองเห็น">
-    - `self`: เฉพาะ session key ปัจจุบันเท่านั้น
-    - `tree`: เซสชันปัจจุบัน + เซสชันที่ถูก spawn โดยเซสชันปัจจุบัน (subagents)
-    - `agent`: ทุกเซสชันที่อยู่ภายใต้ agent id ปัจจุบัน (อาจรวมผู้ใช้อื่นหากคุณรันเซสชันแยกตามผู้ส่งภายใต้ agent id เดียวกัน)
-    - `all`: ทุกเซสชัน การกำหนดเป้าหมายข้ามเอเจนต์ยังคงต้องใช้ `tools.agentToAgent`
-    - การบีบขอบเขตจาก sandbox: เมื่อเซสชันปัจจุบันอยู่ใน sandbox และ `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, ระบบจะบังคับ visibility เป็น `tree` แม้ `tools.sessions.visibility="all"` ก็ตาม
+  <Accordion title="Visibility scopes">
+    - `self`: เฉพาะคีย์เซสชันปัจจุบัน
+    - `tree`: เซสชันปัจจุบัน + เซสชันที่ถูกสร้างโดยเซสชันปัจจุบัน (subagents)
+    - `agent`: เซสชันใดก็ตามที่เป็นของ id เอเจนต์ปัจจุบัน (อาจรวมผู้ใช้อื่นได้หากคุณรันเซสชันแยกตามผู้ส่งภายใต้ id เอเจนต์เดียวกัน)
+    - `all`: เซสชันใดก็ได้ การกำหนดเป้าหมายข้ามเอเจนต์ยังต้องใช้ `tools.agentToAgent`
+    - การจำกัดของ sandbox: เมื่อเซสชันปัจจุบันอยู่ใน sandbox และ `agents.defaults.sandbox.sessionToolsVisibility="spawned"` visibility จะถูกบังคับเป็น `tree` แม้ว่า `tools.sessions.visibility="all"` ก็ตาม
 
   </Accordion>
 </AccordionGroup>
 
 ### `tools.sessions_spawn`
 
-ควบคุมการรองรับ inline attachments สำหรับ `sessions_spawn`
+ควบคุมการรองรับไฟล์แนบแบบอินไลน์สำหรับ `sessions_spawn`
 
 ```json5
 {
   tools: {
     sessions_spawn: {
       attachments: {
-        enabled: false, // opt-in: ตั้งเป็น true เพื่ออนุญาต inline file attachments
-        maxTotalBytes: 5242880, // รวมทุกไฟล์ได้สูงสุด 5 MB
+        enabled: false, // opt-in: set true to allow inline file attachments
+        maxTotalBytes: 5242880, // 5 MB total across all files
         maxFiles: 50,
-        maxFileBytes: 1048576, // สูงสุด 1 MB ต่อไฟล์
-        retainOnSessionKeep: false, // เก็บ attachments ไว้เมื่อ cleanup="keep"
+        maxFileBytes: 1048576, // 1 MB per file
+        retainOnSessionKeep: false, // keep attachments when cleanup="keep"
       },
     },
   },
@@ -322,13 +328,13 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 ```
 
 <AccordionGroup>
-  <Accordion title="หมายเหตุเกี่ยวกับ attachments">
-    - attachments รองรับเฉพาะ `runtime: "subagent"` เท่านั้น ส่วน ACP runtime จะปฏิเสธ
-    - ไฟล์จะถูกสร้างเป็นรูปธรรมใน child workspace ที่ `.openclaw/attachments/<uuid>/` พร้อม `.manifest.json`
-    - เนื้อหาของ attachment จะถูก redacted ออกจากการบันทึก transcript โดยอัตโนมัติ
-    - อินพุตแบบ Base64 จะถูกตรวจสอบด้วยการตรวจตัวอักษร/padding อย่างเข้มงวดและมีตัวป้องกันขนาดก่อน decode
-    - สิทธิ์ไฟล์คือ `0700` สำหรับไดเรกทอรี และ `0600` สำหรับไฟล์
-    - การ cleanup เป็นไปตามนโยบาย `cleanup`: `delete` จะลบ attachments เสมอ; `keep` จะเก็บไว้ก็ต่อเมื่อ `retainOnSessionKeep: true`
+  <Accordion title="Attachment notes">
+    - ไฟล์แนบรองรับเฉพาะ `runtime: "subagent"` เท่านั้น runtime ของ ACP จะปฏิเสธไฟล์แนบเหล่านี้
+    - ไฟล์จะถูกสร้างเป็นวัตถุใน workspace ลูกที่ `.openclaw/attachments/<uuid>/` พร้อม `.manifest.json`
+    - เนื้อหาไฟล์แนบจะถูกปกปิดจากการคงอยู่ของทรานสคริปต์โดยอัตโนมัติ
+    - อินพุต Base64 จะถูกตรวจสอบด้วยการตรวจสอบตัวอักษร/การ padding อย่างเข้มงวด และมีตัวป้องกันขนาดก่อนถอดรหัส
+    - สิทธิ์ไฟล์คือ `0700` สำหรับไดเรกทอรีและ `0600` สำหรับไฟล์
+    - การล้างข้อมูลทำตามนโยบาย `cleanup`: `delete` จะลบไฟล์แนบเสมอ; `keep` จะเก็บไว้เฉพาะเมื่อ `retainOnSessionKeep: true`
 
   </Accordion>
 </AccordionGroup>
@@ -337,21 +343,21 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 
 ### `tools.experimental`
 
-แฟลกของ built-in tools แบบทดลอง ค่าเริ่มต้นคือปิด เว้นแต่จะมีการใช้กฎ auto-enable สำหรับ strict-agentic GPT-5
+แฟล็กเครื่องมือในตัวแบบทดลอง ปิดเป็นค่าเริ่มต้น เว้นแต่มีกฎเปิดใช้อัตโนมัติสำหรับ GPT-5 แบบ strict-agentic
 
 ```json5
 {
   tools: {
     experimental: {
-      planTool: true, // เปิดใช้ update_plan แบบทดลอง
+      planTool: true, // enable experimental update_plan
     },
   },
 }
 ```
 
-- `planTool`: เปิดใช้ tool แบบมีโครงสร้าง `update_plan` สำหรับการติดตามงานหลายขั้นตอนที่ไม่ใช่งานเล็กน้อย
-- ค่าเริ่มต้น: `false` เว้นแต่ `agents.defaults.embeddedPi.executionContract` (หรือ override ต่อเอเจนต์) ถูกตั้งเป็น `"strict-agentic"` สำหรับการรัน GPT-5 family ของ OpenAI หรือ OpenAI Codex ตั้ง `true` เพื่อบังคับเปิดใช้งานนอกขอบเขตนั้น หรือ `false` เพื่อคงปิดไว้แม้สำหรับการรัน strict-agentic GPT-5
-- เมื่อเปิดใช้งาน system prompt จะเพิ่มคำแนะนำการใช้งานด้วย เพื่อให้โมเดลใช้มันเฉพาะกับงานที่มีสาระสำคัญ และให้มีขั้นตอน `in_progress` ได้มากสุดเพียงหนึ่งขั้นตอน
+- `planTool`: เปิดใช้เครื่องมือ `update_plan` แบบมีโครงสร้างสำหรับติดตามงานหลายขั้นตอนที่ไม่ใช่งานง่าย ๆ
+- ค่าเริ่มต้น: `false` เว้นแต่ตั้งค่า `agents.defaults.embeddedPi.executionContract` (หรือการเขียนทับรายเอเจนต์) เป็น `"strict-agentic"` สำหรับการรัน OpenAI หรือ OpenAI Codex ตระกูล GPT-5 ตั้งค่าเป็น `true` เพื่อบังคับเปิดเครื่องมือนอกขอบเขตนั้น หรือ `false` เพื่อปิดไว้แม้กับการรัน GPT-5 แบบ strict-agentic
+- เมื่อเปิดใช้ พรอมป์ระบบจะเพิ่มคำแนะนำการใช้งานด้วย เพื่อให้โมเดลใช้เฉพาะกับงานขนาดใหญ่ และคงไว้ไม่เกินหนึ่งขั้นตอนเป็น `in_progress`
 
 ### `agents.defaults.subagents`
 
@@ -371,16 +377,16 @@ local onboarding จะตั้งค่าเริ่มต้นของค
 }
 ```
 
-- `model`: model ค่าเริ่มต้นสำหรับ sub-agents ที่ถูก spawn หากไม่กำหนด sub-agents จะสืบทอด model ของผู้เรียก
-- `allowAgents`: allowlist ค่าเริ่มต้นของ target agent ids สำหรับ `sessions_spawn` เมื่อเอเจนต์ผู้ร้องขอไม่ได้ตั้งค่า `subagents.allowAgents` ของตัวเอง (`["*"]` = อะไรก็ได้; ค่าเริ่มต้น: เอเจนต์เดียวกันเท่านั้น)
-- `runTimeoutSeconds`: timeout ค่าเริ่มต้น (วินาที) สำหรับ `sessions_spawn` เมื่อการเรียก tool ไม่ได้ระบุ `runTimeoutSeconds` ค่า `0` หมายถึงไม่มี timeout
-- นโยบาย tool ต่อ subagent: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`
+- `model`: โมเดลเริ่มต้นสำหรับเอเจนต์ย่อยที่ถูกสร้าง หากไม่ระบุ เอเจนต์ย่อยจะสืบทอดโมเดลของผู้เรียก
+- `allowAgents`: allowlist เริ่มต้นของรหัสเอเจนต์ปลายทางสำหรับ `sessions_spawn` เมื่อเอเจนต์ผู้ร้องขอไม่ได้ตั้งค่า `subagents.allowAgents` ของตัวเอง (`["*"]` = ใดก็ได้; ค่าเริ่มต้น: เฉพาะเอเจนต์เดียวกัน)
+- `runTimeoutSeconds`: timeout เริ่มต้น (วินาที) สำหรับ `sessions_spawn` เมื่อการเรียกเครื่องมือไม่ระบุ `runTimeoutSeconds` ค่า `0` หมายถึงไม่มี timeout
+- นโยบายเครื่องมือต่อเอเจนต์ย่อย: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`
 
 ---
 
-## custom providers และ base URLs
+## ผู้ให้บริการแบบกำหนดเองและ URL ฐาน
 
-OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom providers ผ่าน `models.providers` ในคอนฟิก หรือ `~/.openclaw/agents/<agentId>/agent/models.json`
+OpenClaw ใช้แค็ตตาล็อกโมเดลในตัว เพิ่มผู้ให้บริการแบบกำหนดเองผ่าน `models.providers` ใน config หรือ `~/.openclaw/agents/<agentId>/agent/models.json`
 
 ```json5
 {
@@ -410,76 +416,85 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
 ```
 
 <AccordionGroup>
-  <Accordion title="ลำดับความสำคัญของ auth และ merge">
-    - ใช้ `authHeader: true` + `headers` สำหรับความต้องการ auth แบบกำหนดเอง
-    - override รากคอนฟิกของเอเจนต์ด้วย `OPENCLAW_AGENT_DIR` (หรือ `PI_CODING_AGENT_DIR` ซึ่งเป็น environment variable alias แบบเดิม)
-    - ลำดับความสำคัญของ merge สำหรับ provider IDs ที่ตรงกัน:
-      - ค่า `baseUrl` ที่ไม่ว่างใน `models.json` ของเอเจนต์จะมีผลเหนือกว่า
-      - ค่า `apiKey` ที่ไม่ว่างของเอเจนต์จะมีผลเหนือกว่าเฉพาะเมื่อผู้ให้บริการนั้นไม่ได้ถูกจัดการแบบ SecretRef ในบริบท config/auth-profile ปัจจุบัน
-      - ค่า `apiKey` ของผู้ให้บริการที่ถูกจัดการแบบ SecretRef จะถูกรีเฟรชจาก source markers (`ENV_VAR_NAME` สำหรับ env refs, `secretref-managed` สำหรับ file/exec refs) แทนการเก็บ secrets ที่ resolve แล้ว
-      - ค่า header ของผู้ให้บริการที่ถูกจัดการแบบ SecretRef จะถูกรีเฟรชจาก source markers (`secretref-env:ENV_VAR_NAME` สำหรับ env refs, `secretref-managed` สำหรับ file/exec refs)
-      - `apiKey`/`baseUrl` ของเอเจนต์ที่ว่างหรือไม่มีอยู่จะ fallback ไปที่ `models.providers` ในคอนฟิก
-      - ค่า `contextWindow`/`maxTokens` ของ model ที่ตรงกันจะใช้ค่าที่สูงกว่าระหว่างคอนฟิกแบบ explicit และค่า catalog แบบ implicit
-      - ค่า `contextTokens` ของ model ที่ตรงกันจะคง runtime cap แบบ explicit ไว้เมื่อมีอยู่; ใช้สิ่งนี้เพื่อจำกัด effective context โดยไม่ต้องเปลี่ยน metadata ดั้งเดิมของ model
-      - ใช้ `models.mode: "replace"` เมื่อคุณต้องการให้คอนฟิกเขียน `models.json` ทับทั้งหมด
-      - การคงค่า marker ยึดตามแหล่งที่มาเป็นหลัก: markers จะถูกเขียนจาก snapshot คอนฟิกของแหล่งที่มาที่ใช้งานอยู่ (ก่อนการ resolve) ไม่ใช่จากค่า runtime secret ที่ resolve แล้ว
+  <Accordion title="Auth and merge precedence">
+    - ใช้ `authHeader: true` + `headers` สำหรับความต้องการการยืนยันตัวตนแบบกำหนดเอง
+    - เขียนทับราก config ของเอเจนต์ด้วย `OPENCLAW_AGENT_DIR` (หรือ `PI_CODING_AGENT_DIR` ซึ่งเป็น alias ตัวแปรสภาพแวดล้อมเดิม)
+    - ลำดับความสำคัญของการ merge สำหรับ ID ผู้ให้บริการที่ตรงกัน:
+      - ค่า `baseUrl` ของ `models.json` ในเอเจนต์ที่ไม่ว่างจะมีผลเหนือกว่า
+      - ค่า `apiKey` ของเอเจนต์ที่ไม่ว่างจะมีผลเหนือกว่าเฉพาะเมื่อผู้ให้บริการนั้นไม่ได้ถูกจัดการด้วย SecretRef ในบริบท config/auth-profile ปัจจุบัน
+      - ค่า `apiKey` ของผู้ให้บริการที่จัดการด้วย SecretRef จะถูกรีเฟรชจากมาร์กเกอร์แหล่งที่มา (`ENV_VAR_NAME` สำหรับ env refs, `secretref-managed` สำหรับ file/exec refs) แทนการคง secret ที่ resolve แล้วไว้
+      - ค่า header ของผู้ให้บริการที่จัดการด้วย SecretRef จะถูกรีเฟรชจากมาร์กเกอร์แหล่งที่มา (`secretref-env:ENV_VAR_NAME` สำหรับ env refs, `secretref-managed` สำหรับ file/exec refs)
+      - `apiKey`/`baseUrl` ของเอเจนต์ที่ว่างหรือขาดหายจะ fallback ไปยัง `models.providers` ใน config
+      - `contextWindow`/`maxTokens` ของโมเดลที่ตรงกันจะใช้ค่าที่สูงกว่าระหว่าง config ที่ระบุชัดเจนกับค่าจากแค็ตตาล็อกโดยนัย
+      - `contextTokens` ของโมเดลที่ตรงกันจะรักษา runtime cap ที่ระบุชัดเจนเมื่อมีอยู่ ใช้ค่านี้เพื่อจำกัดบริบทที่มีผลโดยไม่เปลี่ยน metadata ดั้งเดิมของโมเดล
+      - ใช้ `models.mode: "replace"` เมื่อคุณต้องการให้ config เขียน `models.json` ใหม่ทั้งหมด
+      - การคงมาร์กเกอร์ไว้ยึดแหล่งที่มาเป็นหลัก: มาร์กเกอร์ถูกเขียนจาก snapshot config แหล่งที่มาที่ใช้งานอยู่ (ก่อน resolution) ไม่ใช่จากค่า secret runtime ที่ resolve แล้ว
 
   </Accordion>
 </AccordionGroup>
 
-### รายละเอียดฟิลด์ของ provider
+### รายละเอียดฟิลด์ของผู้ให้บริการ
 
 <AccordionGroup>
-  <Accordion title="catalog ระดับบนสุด">
-    - `models.mode`: พฤติกรรมของ provider catalog (`merge` หรือ `replace`)
-    - `models.providers`: แมป custom provider ที่มีคีย์เป็น provider id
-      - การแก้ไขอย่างปลอดภัย: ใช้ `openclaw config set models.providers.<id> '<json>' --strict-json --merge` หรือ `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` สำหรับการอัปเดตแบบ additive `config set` จะปฏิเสธการแทนที่แบบทำลายข้อมูล เว้นแต่คุณจะส่ง `--replace`
+  <Accordion title="Top-level catalog">
+    - `models.mode`: พฤติกรรมแค็ตตาล็อกผู้ให้บริการ (`merge` หรือ `replace`)
+    - `models.providers`: แผนที่ผู้ให้บริการแบบกำหนดเองที่ใช้รหัสผู้ให้บริการเป็น key
+      - การแก้ไขที่ปลอดภัย: ใช้ `openclaw config set models.providers.<id> '<json>' --strict-json --merge` หรือ `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` สำหรับการอัปเดตแบบเพิ่มเข้าไป `config set` จะปฏิเสธการแทนที่แบบทำลายข้อมูล เว้นแต่คุณส่ง `--replace`
 
   </Accordion>
-  <Accordion title="การเชื่อมต่อและ auth ของ provider">
-    - `models.providers.*.api`: request adapter (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` เป็นต้น)
-    - `models.providers.*.apiKey`: credential ของ provider (ควรใช้ SecretRef/env substitution)
-    - `models.providers.*.auth`: กลยุทธ์ auth (`api-key`, `token`, `oauth`, `aws-sdk`)
-    - `models.providers.*.injectNumCtxForOpenAICompat`: สำหรับ Ollama + `openai-completions` ให้ inject `options.num_ctx` เข้าไปใน request (ค่าเริ่มต้น: `true`)
-    - `models.providers.*.authHeader`: บังคับส่ง credential ใน `Authorization` header เมื่อจำเป็น
-    - `models.providers.*.baseUrl`: base URL ของ upstream API
-    - `models.providers.*.headers`: static headers เพิ่มเติมสำหรับการกำหนดเส้นทาง proxy/tenant
+  <Accordion title="Provider connection and auth">
+    - `models.providers.*.api`: adapter คำขอ (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai` ฯลฯ) สำหรับ backend `/v1/chat/completions` ที่โฮสต์เอง เช่น MLX, vLLM, SGLang และเซิร์ฟเวอร์ local ส่วนใหญ่ที่เข้ากันได้กับ OpenAI ให้ใช้ `openai-completions` ผู้ให้บริการแบบกำหนดเองที่มี `baseUrl` แต่ไม่มี `api` จะใช้ค่าเริ่มต้นเป็น `openai-completions`; ตั้งค่า `openai-responses` เฉพาะเมื่อ backend รองรับ `/v1/responses`
+    - `models.providers.*.apiKey`: credential ของผู้ให้บริการ (แนะนำให้ใช้ SecretRef/env substitution)
+    - `models.providers.*.auth`: กลยุทธ์การยืนยันตัวตน (`api-key`, `token`, `oauth`, `aws-sdk`)
+    - `models.providers.*.contextWindow`: หน้าต่างบริบทดั้งเดิมเริ่มต้นสำหรับโมเดลภายใต้ผู้ให้บริการนี้ เมื่อรายการโมเดลไม่ได้ตั้งค่า `contextWindow`
+    - `models.providers.*.contextTokens`: runtime context cap ที่มีผลเริ่มต้นสำหรับโมเดลภายใต้ผู้ให้บริการนี้ เมื่อรายการโมเดลไม่ได้ตั้งค่า `contextTokens`
+    - `models.providers.*.maxTokens`: output-token cap เริ่มต้นสำหรับโมเดลภายใต้ผู้ให้บริการนี้ เมื่อรายการโมเดลไม่ได้ตั้งค่า `maxTokens`
+    - `models.providers.*.timeoutSeconds`: timeout คำขอ HTTP ของโมเดลต่อผู้ให้บริการแบบเลือกได้ หน่วยเป็นวินาที รวมถึงการเชื่อมต่อ, header, body และการจัดการยกเลิกคำขอทั้งหมด
+    - `models.providers.*.injectNumCtxForOpenAICompat`: สำหรับ Ollama + `openai-completions` ให้ฉีด `options.num_ctx` ลงในคำขอ (ค่าเริ่มต้น: `true`)
+    - `models.providers.*.authHeader`: บังคับส่ง credential ใน header `Authorization` เมื่อจำเป็น
+    - `models.providers.*.baseUrl`: URL ฐานของ API upstream
+    - `models.providers.*.headers`: header คงที่เพิ่มเติมสำหรับ proxy/tenant routing
 
   </Accordion>
-  <Accordion title="overrides ของ request transport">
-    `models.providers.*.request`: overrides ของ transport สำหรับ HTTP requests ของ model-provider
+  <Accordion title="Request transport overrides">
+    `models.providers.*.request`: การเขียนทับ transport สำหรับคำขอ HTTP ของผู้ให้บริการโมเดล
 
-    - `request.headers`: headers เพิ่มเติม (merge กับค่าเริ่มต้นของ provider) รองรับค่าแบบ SecretRef
-    - `request.auth`: override ของกลยุทธ์ auth โหมดที่รองรับ: `"provider-default"` (ใช้ auth แบบ built-in ของ provider), `"authorization-bearer"` (พร้อม `token`), `"header"` (พร้อม `headerName`, `value`, และ `prefix` แบบเลือกได้)
-    - `request.proxy`: override ของ HTTP proxy โหมดที่รองรับ: `"env-proxy"` (ใช้ env vars `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (พร้อม `url`) ทั้งสองโหมดยอมรับ sub-object `tls` แบบเลือกได้
-    - `request.tls`: override ของ TLS สำหรับการเชื่อมต่อโดยตรง ฟิลด์: `ca`, `cert`, `key`, `passphrase` (ทั้งหมดรองรับ SecretRef), `serverName`, `insecureSkipVerify`
-    - `request.allowPrivateNetwork`: เมื่อเป็น `true` อนุญาต HTTPS ไปยัง `baseUrl` เมื่อ DNS resolve ไปยัง private, CGNAT หรือช่วงลักษณะใกล้เคียง ผ่านตัวป้องกัน HTTP fetch ของ provider (operator ต้อง opt in สำหรับ trusted self-hosted endpoints ที่เข้ากันได้กับ OpenAI) ส่วน WebSocket จะใช้ `request` เดียวกันสำหรับ headers/TLS แต่ไม่ใช้ fetch SSRF gate นั้น ค่าเริ่มต้น `false`
-
-  </Accordion>
-  <Accordion title="รายการ model catalog">
-    - `models.providers.*.models`: รายการ explicit ของ provider model catalog
-    - `models.providers.*.models.*.contextWindow`: metadata ของ native model context window
-    - `models.providers.*.models.*.contextTokens`: runtime context cap แบบเลือกได้ ใช้เมื่อต้องการ effective context budget ที่เล็กกว่า `contextWindow` ดั้งเดิมของ model; `openclaw models list` จะแสดงทั้งสองค่าเมื่อแตกต่างกัน
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`: compatibility hint แบบเลือกได้ สำหรับ `api: "openai-completions"` ร่วมกับ `baseUrl` ที่ไม่ใช่ native และไม่ว่าง (host ไม่ใช่ `api.openai.com`) OpenClaw จะบังคับให้ค่านี้เป็น `false` ระหว่าง runtime ส่วน `baseUrl` ที่ว่าง/ไม่ระบุจะคงพฤติกรรม OpenAI ปกติไว้
-    - `models.providers.*.models.*.compat.requiresStringContent`: compatibility hint แบบเลือกได้สำหรับ chat endpoints ที่เข้ากันได้กับ OpenAI และรองรับเฉพาะสตริง เมื่อเป็น `true` OpenClaw จะ flatten อาร์เรย์ `messages[].content` ที่เป็นข้อความล้วนให้เป็นสตริงธรรมดาก่อนส่ง request
+    - `request.headers`: header เพิ่มเติม (merge กับค่าเริ่มต้นของผู้ให้บริการ) ค่ารองรับ SecretRef
+    - `request.auth`: การเขียนทับกลยุทธ์การยืนยันตัวตน โหมด: `"provider-default"` (ใช้การยืนยันตัวตนในตัวของผู้ให้บริการ), `"authorization-bearer"` (พร้อม `token`), `"header"` (พร้อม `headerName`, `value`, `prefix` แบบเลือกได้)
+    - `request.proxy`: การเขียนทับ HTTP proxy โหมด: `"env-proxy"` (ใช้ตัวแปร env `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (พร้อม `url`) ทั้งสองโหมดยอมรับ sub-object `tls` แบบเลือกได้
+    - `request.tls`: การเขียนทับ TLS สำหรับการเชื่อมต่อโดยตรง ฟิลด์: `ca`, `cert`, `key`, `passphrase` (ทั้งหมดรองรับ SecretRef), `serverName`, `insecureSkipVerify`
+    - `request.allowPrivateNetwork`: เมื่อเป็น `true` อนุญาต HTTPS ไปยัง `baseUrl` เมื่อ DNS resolve เป็นช่วง private, CGNAT หรือช่วงที่คล้ายกัน ผ่าน guard การ fetch HTTP ของผู้ให้บริการ (การ opt-in ของผู้ดำเนินการสำหรับ endpoint ที่โฮสต์เองซึ่งเชื่อถือได้และเข้ากันได้กับ OpenAI) URL stream ของผู้ให้บริการโมเดลแบบ loopback เช่น `localhost`, `127.0.0.1` และ `[::1]` จะได้รับอนุญาตโดยอัตโนมัติ เว้นแต่ตั้งค่านี้เป็น `false` อย่างชัดเจน; โฮสต์ LAN, tailnet และ private DNS ยังต้อง opt-in WebSocket ใช้ `request` เดียวกันสำหรับ header/TLS แต่ไม่ใช้ fetch SSRF gate นั้น ค่าเริ่มต้น `false`
 
   </Accordion>
-  <Accordion title="การค้นพบ Amazon Bedrock">
+  <Accordion title="Model catalog entries">
+    - `models.providers.*.models`: รายการแค็ตตาล็อกโมเดลของผู้ให้บริการที่ระบุชัดเจน
+    - `models.providers.*.models.*.input`: modality อินพุตของโมเดล ใช้ `["text"]` สำหรับโมเดล text-only และ `["text", "image"]` สำหรับโมเดลภาพ/vision ดั้งเดิม ไฟล์แนบรูปภาพจะถูกฉีดเข้าไปในรอบของเอเจนต์เฉพาะเมื่อโมเดลที่เลือกถูกทำเครื่องหมายว่ารองรับรูปภาพ
+    - `models.providers.*.models.*.contextWindow`: metadata หน้าต่างบริบทดั้งเดิมของโมเดล ค่านี้เขียนทับ `contextWindow` ระดับผู้ให้บริการสำหรับโมเดลนั้น
+    - `models.providers.*.models.*.contextTokens`: runtime context cap แบบเลือกได้ ค่านี้เขียนทับ `contextTokens` ระดับผู้ให้บริการ ใช้เมื่อคุณต้องการงบประมาณบริบทที่มีผลเล็กกว่า `contextWindow` ดั้งเดิมของโมเดล; `openclaw models list` จะแสดงทั้งสองค่าเมื่อแตกต่างกัน
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`: compatibility hint แบบเลือกได้ สำหรับ `api: "openai-completions"` ที่มี `baseUrl` ที่ไม่ว่างและไม่ใช่ native (host ไม่ใช่ `api.openai.com`) OpenClaw จะบังคับค่านี้เป็น `false` ขณะ runtime `baseUrl` ที่ว่าง/ละไว้จะคงพฤติกรรม OpenAI เริ่มต้น
+    - `models.providers.*.models.*.compat.requiresStringContent`: compatibility hint แบบเลือกได้สำหรับ chat endpoint แบบ string-only ที่เข้ากันได้กับ OpenAI เมื่อเป็น `true` OpenClaw จะ flatten อาร์เรย์ `messages[].content` ที่เป็นข้อความล้วนให้เป็น string ธรรมดาก่อนส่งคำขอ
+
+  </Accordion>
+  <Accordion title="Amazon Bedrock discovery">
     - `plugins.entries.amazon-bedrock.config.discovery`: รากการตั้งค่า auto-discovery ของ Bedrock
-    - `plugins.entries.amazon-bedrock.config.discovery.enabled`: เปิด/ปิด implicit discovery
-    - `plugins.entries.amazon-bedrock.config.discovery.region`: AWS region สำหรับ discovery
-    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: ตัวกรอง provider-id แบบเลือกได้สำหรับการค้นพบแบบเจาะจง
-    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: ช่วงเวลาการ polling เพื่อรีเฟรช discovery
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: context window fallback สำหรับ models ที่ค้นพบ
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: max output tokens fallback สำหรับ models ที่ค้นพบ
+    - `plugins.entries.amazon-bedrock.config.discovery.enabled`: เปิด/ปิดการค้นหาโดยนัย
+    - `plugins.entries.amazon-bedrock.config.discovery.region`: ภูมิภาค AWS สำหรับ discovery
+    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: ตัวกรอง provider-id แบบเลือกได้สำหรับ discovery แบบเจาะจง
+    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: ช่วงเวลาการ polling สำหรับรีเฟรช discovery
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: หน้าต่างบริบท fallback สำหรับโมเดลที่ค้นพบ
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: max output tokens แบบ fallback สำหรับโมเดลที่ค้นพบ
 
   </Accordion>
 </AccordionGroup>
 
-### ตัวอย่าง provider
+การ onboard ผู้ให้บริการแบบกำหนดเองแบบโต้ตอบจะอนุมานอินพุตรูปภาพสำหรับ ID โมเดล vision ที่พบบ่อย เช่น GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V และ GLM-4V และข้ามคำถามเพิ่มเติมสำหรับตระกูลที่ทราบว่าเป็น text-only ID โมเดลที่ไม่รู้จักยังคงถามเรื่องการรองรับรูปภาพ การ onboard แบบไม่โต้ตอบใช้การอนุมานเดียวกัน; ส่ง `--custom-image-input` เพื่อบังคับ metadata ที่รองรับรูปภาพ หรือ `--custom-text-input` เพื่อบังคับ metadata แบบ text-only
+
+### ตัวอย่างผู้ให้บริการ
 
 <AccordionGroup>
-  <Accordion title="Cerebras (GLM 4.6 / 4.7)">
+  <Accordion title="Cerebras (GLM 4.7 / GPT OSS)">
+    Plugin ผู้ให้บริการ `cerebras` ที่รวมมาให้สามารถกำหนดค่านี้ผ่าน `openclaw onboard --auth-choice cerebras-api-key` ใช้ config ผู้ให้บริการที่ระบุชัดเจนเฉพาะเมื่อเขียนทับค่าเริ่มต้น
+
     ```json5
     {
       env: { CEREBRAS_API_KEY: "sk-..." },
@@ -487,11 +502,11 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
         defaults: {
           model: {
             primary: "cerebras/zai-glm-4.7",
-            fallbacks: ["cerebras/zai-glm-4.6"],
+            fallbacks: ["cerebras/gpt-oss-120b"],
           },
           models: {
             "cerebras/zai-glm-4.7": { alias: "GLM 4.7 (Cerebras)" },
-            "cerebras/zai-glm-4.6": { alias: "GLM 4.6 (Cerebras)" },
+            "cerebras/gpt-oss-120b": { alias: "GPT OSS 120B (Cerebras)" },
           },
         },
       },
@@ -504,7 +519,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
             api: "openai-completions",
             models: [
               { id: "zai-glm-4.7", name: "GLM 4.7 (Cerebras)" },
-              { id: "zai-glm-4.6", name: "GLM 4.6 (Cerebras)" },
+              { id: "gpt-oss-120b", name: "GPT OSS 120B (Cerebras)" },
             ],
           },
         },
@@ -512,7 +527,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    ใช้ `cerebras/zai-glm-4.7` สำหรับ Cerebras; ใช้ `zai/glm-4.7` สำหรับ Z.AI โดยตรง
+    ใช้ `cerebras/zai-glm-4.7` สำหรับ Cerebras; `zai/glm-4.7` สำหรับ Z.AI โดยตรง
 
   </Accordion>
   <Accordion title="Kimi Coding">
@@ -528,13 +543,13 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    ผู้ให้บริการแบบเข้ากันได้กับ Anthropic ที่มีมาในระบบ ทางลัด: `openclaw onboard --auth-choice kimi-code-api-key`
+    เข้ากันได้กับ Anthropic และเป็นผู้ให้บริการในตัว Shortcut: `openclaw onboard --auth-choice kimi-code-api-key`.
 
   </Accordion>
-  <Accordion title="Local models (LM Studio)">
-    ดู [Local Models](/th/gateway/local-models) สรุปสั้นๆ: รัน local model ขนาดใหญ่ผ่าน LM Studio Responses API บนฮาร์ดแวร์จริงจัง; และคง hosted models ที่ merge แล้วไว้เพื่อใช้เป็น fallback
+  <Accordion title="โมเดลในเครื่อง (LM Studio)">
+    ดู [โมเดลในเครื่อง](/th/gateway/local-models) สรุปสั้น ๆ: รันโมเดลในเครื่องขนาดใหญ่ผ่าน LM Studio Responses API บนฮาร์ดแวร์จริงจัง; เก็บโมเดลแบบโฮสต์ไว้แบบผสานเพื่อใช้เป็น fallback.
   </Accordion>
-  <Accordion title="MiniMax M2.7 (direct)">
+  <Accordion title="MiniMax M2.7 (โดยตรง)">
     ```json5
     {
       agents: {
@@ -569,7 +584,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    ตั้งค่า `MINIMAX_API_KEY` ทางลัด: `openclaw onboard --auth-choice minimax-global-api` หรือ `openclaw onboard --auth-choice minimax-cn-api` โดยค่าเริ่มต้น model catalog จะมีเฉพาะ M2.7 เท่านั้น บนเส้นทางการสตรีมแบบเข้ากันได้กับ Anthropic OpenClaw จะปิด MiniMax thinking เป็นค่าเริ่มต้น เว้นแต่คุณจะตั้ง `thinking` เองอย่างชัดเจน `/fast on` หรือ `params.fastMode: true` จะเขียน `MiniMax-M2.7` ใหม่เป็น `MiniMax-M2.7-highspeed`
+    ตั้งค่า `MINIMAX_API_KEY` ทางลัด: `openclaw onboard --auth-choice minimax-global-api` หรือ `openclaw onboard --auth-choice minimax-cn-api` แค็ตตาล็อกโมเดลมีค่าเริ่มต้นเป็น M2.7 เท่านั้น บนเส้นทางสตรีมมิงที่เข้ากันได้กับ Anthropic, OpenClaw จะปิดการคิดของ MiniMax เป็นค่าเริ่มต้น เว้นแต่คุณจะตั้งค่า `thinking` เองอย่างชัดเจน `/fast on` หรือ `params.fastMode: true` จะเขียน `MiniMax-M2.7` ใหม่เป็น `MiniMax-M2.7-highspeed`
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -606,9 +621,9 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    สำหรับ endpoint ในจีน: `baseUrl: "https://api.moonshot.cn/v1"` หรือ `openclaw onboard --auth-choice moonshot-api-key-cn`
+    สำหรับ endpoint ของจีน: `baseUrl: "https://api.moonshot.cn/v1"` หรือ `openclaw onboard --auth-choice moonshot-api-key-cn`
 
-    endpoints ของ Moonshot แบบเนทีฟประกาศความเข้ากันได้ของการใช้งานแบบสตรีมมิงบน transport `openai-completions` แบบใช้ร่วมกัน และ OpenClaw อิงสิ่งนั้นจากความสามารถของ endpoint แทนที่จะอิงจาก built-in provider id เพียงอย่างเดียว
+    endpoint ของ Moonshot แบบ native ประกาศความเข้ากันได้ของการใช้งานสตรีมมิงบน transport `openai-completions` ที่ใช้ร่วมกัน และ OpenClaw อ้างอิงความสามารถของ endpoint แทนที่จะอ้างอิงเฉพาะ id ของ provider ในตัวเท่านั้น
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -623,7 +638,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    ตั้งค่า `OPENCODE_API_KEY` (หรือ `OPENCODE_ZEN_API_KEY`) ใช้ refs แบบ `opencode/...` สำหรับ Zen catalog หรือ refs แบบ `opencode-go/...` สำหรับ Go catalog ทางลัด: `openclaw onboard --auth-choice opencode-zen` หรือ `openclaw onboard --auth-choice opencode-go`
+    ตั้งค่า `OPENCODE_API_KEY` (หรือ `OPENCODE_ZEN_API_KEY`) ใช้ refs `opencode/...` สำหรับแค็ตตาล็อก Zen หรือ refs `opencode-go/...` สำหรับแค็ตตาล็อก Go ทางลัด: `openclaw onboard --auth-choice opencode-zen` หรือ `openclaw onboard --auth-choice opencode-go`
 
   </Accordion>
   <Accordion title="Synthetic (เข้ากันได้กับ Anthropic)">
@@ -660,7 +675,7 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    base URL ควรไม่รวม `/v1` (ไคลเอนต์ของ Anthropic จะต่อท้ายให้อัตโนมัติ) ทางลัด: `openclaw onboard --auth-choice synthetic-api-key`
+    Base URL ควรละ `/v1` (ไคลเอนต์ Anthropic จะต่อท้ายให้) ทางลัด: `openclaw onboard --auth-choice synthetic-api-key`
 
   </Accordion>
   <Accordion title="Z.AI (GLM-4.7)">
@@ -675,11 +690,11 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
     }
     ```
 
-    ตั้งค่า `ZAI_API_KEY` โดย `z.ai/*` และ `z-ai/*` เป็น aliases ที่ยอมรับได้ ทางลัด: `openclaw onboard --auth-choice zai-api-key`
+    ตั้งค่า `ZAI_API_KEY` `z.ai/*` และ `z-ai/*` เป็น alias ที่ยอมรับได้ ทางลัด: `openclaw onboard --auth-choice zai-api-key`
 
     - endpoint ทั่วไป: `https://api.z.ai/api/paas/v4`
-    - endpoint สำหรับงานโค้ด (ค่าเริ่มต้น): `https://api.z.ai/api/coding/paas/v4`
-    - สำหรับ endpoint ทั่วไป ให้กำหนด custom provider พร้อม override base URL
+    - endpoint สำหรับการเขียนโค้ด (ค่าเริ่มต้น): `https://api.z.ai/api/coding/paas/v4`
+    - สำหรับ endpoint ทั่วไป ให้กำหนด provider แบบกำหนดเองพร้อมการ override Base URL
 
   </Accordion>
 </AccordionGroup>
@@ -690,5 +705,5 @@ OpenClaw ใช้ model catalog แบบ built-in เพิ่ม custom provi
 
 - [การกำหนดค่า — agents](/th/gateway/config-agents)
 - [การกำหนดค่า — channels](/th/gateway/config-channels)
-- [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference) — คีย์ระดับบนสุดอื่นๆ
-- [Tools และ plugins](/th/tools)
+- [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference) — คีย์ระดับบนอื่น ๆ
+- [เครื่องมือและ plugins](/th/tools)

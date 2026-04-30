@@ -1,36 +1,37 @@
 ---
 read_when:
-    - คุณต้องการ API key เดียวสำหรับ LLM หลายตัว
-    - คุณต้องการรัน model ผ่าน Kilo Gateway ใน OpenClaw
-summary: ใช้ API แบบรวมศูนย์ของ Kilo Gateway เพื่อเข้าถึง model จำนวนมากใน OpenClaw
+    - คุณต้องการคีย์เอพีไอเพียงคีย์เดียวสำหรับโมเดลภาษาขนาดใหญ่หลายตัว
+    - คุณต้องการเรียกใช้โมเดลผ่าน Kilo Gateway ใน OpenClaw
+summary: ใช้ API แบบรวมศูนย์ของ Kilo Gateway เพื่อเข้าถึงโมเดลจำนวนมากใน OpenClaw
 title: Kilocode
 x-i18n:
-    generated_at: "2026-04-24T09:28:14Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:11:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: aa3c29e7b39b1dfb049444c7ef2759555bb3f94479622d58fa2aa8fd6389d01f
+    source_hash: c51012b94d4b720795356b67c8482ae7ee0b37d401689e923be0b7732d77c4aa
     source_path: providers/kilocode.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Kilo Gateway
 
-Kilo Gateway ให้บริการ **API แบบรวมศูนย์** ที่ส่งต่อคำขอไปยัง model จำนวนมากผ่าน endpoint และ API key เดียว โดยเข้ากันได้กับ OpenAI ดังนั้น OpenAI SDK ส่วนใหญ่จึงใช้งานได้เพียงเปลี่ยน base URL
+Kilo Gateway ให้ **API แบบรวมศูนย์** ที่กำหนดเส้นทางคำขอไปยังโมเดลจำนวนมากเบื้องหลัง
+endpoint และคีย์ API เดียว โดยเข้ากันได้กับ OpenAI ดังนั้น OpenAI SDK ส่วนใหญ่จึงใช้งานได้ด้วยการเปลี่ยน URL ฐาน
 
-| คุณสมบัติ | ค่า                               |
-| -------- | --------------------------------- |
-| Provider | `kilocode`                        |
-| Auth     | `KILOCODE_API_KEY`                |
-| API      | เข้ากันได้กับ OpenAI              |
-| Base URL | `https://api.kilo.ai/api/gateway/` |
+| คุณสมบัติ | ค่า                                |
+| -------- | ---------------------------------- |
+| ผู้ให้บริการ | `kilocode`                         |
+| การยืนยันตัวตน | `KILOCODE_API_KEY`                 |
+| API      | เข้ากันได้กับ OpenAI                  |
+| URL ฐาน | `https://api.kilo.ai/api/gateway/` |
 
 ## เริ่มต้นใช้งาน
 
 <Steps>
   <Step title="สร้างบัญชี">
-    ไปที่ [app.kilo.ai](https://app.kilo.ai) ลงชื่อเข้าใช้หรือสร้างบัญชี จากนั้นไปที่ API Keys และสร้างคีย์ใหม่
+    ไปที่ [app.kilo.ai](https://app.kilo.ai) ลงชื่อเข้าใช้หรือสร้างบัญชี จากนั้นไปที่คีย์ API แล้วสร้างคีย์ใหม่
   </Step>
-  <Step title="รัน onboarding">
+  <Step title="เรียกใช้การเริ่มต้นใช้งาน">
     ```bash
     openclaw onboard --auth-choice kilocode-api-key
     ```
@@ -42,40 +43,48 @@ Kilo Gateway ให้บริการ **API แบบรวมศูนย์
     ```
 
   </Step>
-  <Step title="ตรวจสอบว่า model พร้อมใช้งาน">
+  <Step title="ตรวจสอบว่าโมเดลพร้อมใช้งาน">
     ```bash
     openclaw models list --provider kilocode
     ```
   </Step>
 </Steps>
 
-## model เริ่มต้น
+## โมเดลค่าเริ่มต้น
 
-model เริ่มต้นคือ `kilocode/kilo/auto` ซึ่งเป็น model แบบ smart-routing ที่เป็นของ provider และถูกจัดการโดย Kilo Gateway
+โมเดลค่าเริ่มต้นคือ `kilocode/kilo/auto` ซึ่งเป็นโมเดลการกำหนดเส้นทางอัจฉริยะ
+ที่ผู้ให้บริการเป็นเจ้าของและจัดการโดย Kilo Gateway
 
 <Note>
-OpenClaw ปฏิบัติต่อ `kilocode/kilo/auto` เป็น ref เริ่มต้นที่เสถียร แต่ไม่ได้เผยแพร่การแมประหว่างงานกับ model ต้นทางที่มีซอร์สรองรับสำหรับเส้นทางนี้ การกำหนดเส้นทางต้นทางจริงที่อยู่เบื้องหลัง `kilocode/kilo/auto` เป็นสิ่งที่ Kilo Gateway เป็นเจ้าของ ไม่ได้ถูกฮาร์ดโค้ดไว้ใน OpenClaw
+OpenClaw ถือว่า `kilocode/kilo/auto` เป็น ref ค่าเริ่มต้นที่เสถียร แต่ไม่ได้
+เผยแพร่การแมปจากงานไปยังโมเดลต้นทางที่มีแหล่งข้อมูลรองรับสำหรับเส้นทางนั้น การกำหนดเส้นทาง
+ต้นทางที่แน่นอนเบื้องหลัง `kilocode/kilo/auto` เป็นของ Kilo Gateway ไม่ได้
+ฝังตายตัวใน OpenClaw
 </Note>
 
 ## แคตตาล็อกในตัว
 
-OpenClaw จะค้นหา model ที่พร้อมใช้งานจาก Kilo Gateway แบบไดนามิกเมื่อเริ่มต้นระบบ ใช้ `/models kilocode` เพื่อดูรายการ model ทั้งหมดที่พร้อมใช้งานกับบัญชีของคุณ
+OpenClaw ค้นหาโมเดลที่พร้อมใช้งานจาก Kilo Gateway แบบไดนามิกเมื่อเริ่มทำงาน ใช้
+`/models kilocode` เพื่อดูรายชื่อโมเดลทั้งหมดที่บัญชีของคุณใช้งานได้
 
-model ใดก็ตามที่พร้อมใช้งานบน gateway สามารถใช้ได้ด้วย prefix `kilocode/`:
+โมเดลใดๆ ที่พร้อมใช้งานบน Gateway สามารถใช้กับคำนำหน้า `kilocode/` ได้:
 
-| Model ref                              | หมายเหตุ                          |
+| ref ของโมเดล                           | หมายเหตุ                           |
 | -------------------------------------- | ---------------------------------- |
-| `kilocode/kilo/auto`                   | ค่าเริ่มต้น — smart routing       |
-| `kilocode/anthropic/claude-sonnet-4`   | Anthropic ผ่าน Kilo               |
-| `kilocode/openai/gpt-5.5`              | OpenAI ผ่าน Kilo                  |
-| `kilocode/google/gemini-3-pro-preview` | Google ผ่าน Kilo                  |
-| ...and many more                       | ใช้ `/models kilocode` เพื่อแสดงทั้งหมด |
+| `kilocode/kilo/auto`                   | ค่าเริ่มต้น — การกำหนดเส้นทางอัจฉริยะ |
+| `kilocode/anthropic/claude-sonnet-4`   | Anthropic ผ่าน Kilo                |
+| `kilocode/openai/gpt-5.5`              | OpenAI ผ่าน Kilo                   |
+| `kilocode/google/gemini-3-pro-preview` | Google ผ่าน Kilo                   |
+| ...และอีกมากมาย                        | ใช้ `/models kilocode` เพื่อแสดงทั้งหมด |
 
 <Tip>
-ตอนเริ่มต้นระบบ OpenClaw จะ query `GET https://api.kilo.ai/api/gateway/models` และรวม model ที่ค้นพบได้ไว้ก่อนแคตตาล็อก fallback แบบ static แคตตาล็อก fallback ที่มาพร้อมกันจะมี `kilocode/kilo/auto` (`Kilo Auto`) อยู่เสมอ พร้อม `input: ["text", "image"]`, `reasoning: true`, `contextWindow: 1000000` และ `maxTokens: 128000`
+เมื่อเริ่มทำงาน OpenClaw จะเรียก `GET https://api.kilo.ai/api/gateway/models` และผสาน
+โมเดลที่ค้นพบไว้ก่อนแคตตาล็อกสำรองแบบคงที่ แคตตาล็อกสำรองที่รวมมาให้จะมี
+`kilocode/kilo/auto` (`Kilo Auto`) เสมอ พร้อม `input: ["text", "image"]`,
+`reasoning: true`, `contextWindow: 1000000` และ `maxTokens: 128000`
 </Tip>
 
-## ตัวอย่าง config
+## ตัวอย่างการกำหนดค่า
 
 ```json5
 {
@@ -89,33 +98,33 @@ model ใดก็ตามที่พร้อมใช้งานบน gate
 ```
 
 <AccordionGroup>
-  <Accordion title="Transport และความเข้ากันได้">
-    Kilo Gateway ถูกอธิบายไว้ในซอร์สว่าเข้ากันได้กับ OpenRouter ดังนั้นจึงยังคงอยู่บนเส้นทาง
-    แบบ proxy-style ที่เข้ากันได้กับ OpenAI แทนการจัดรูปคำขอแบบ native ของ OpenAI
+  <Accordion title="การขนส่งและความเข้ากันได้">
+    Kilo Gateway มีเอกสารในซอร์สว่าเข้ากันได้กับ OpenRouter ดังนั้นจึงอยู่บน
+    เส้นทางแบบพร็อกซีที่เข้ากันได้กับ OpenAI แทนการจัดรูปคำขอ OpenAI แบบเนทีฟ
 
-    - ref ของ Kilo ที่รองรับโดย Gemini จะยังคงอยู่บนเส้นทาง proxy-Gemini ดังนั้น OpenClaw
-      จะคงการทำ sanitation ของ Gemini thought-signature ไว้ โดยไม่เปิดใช้
-      native Gemini replay validation หรือ bootstrap rewrites
-    - Kilo Gateway ใช้ Bearer token พร้อม API key ของคุณอยู่เบื้องหลัง
+    - Kilo refs ที่รองรับด้วย Gemini จะยังอยู่บนเส้นทาง proxy-Gemini ดังนั้น OpenClaw จึงคง
+      การทำความสะอาดลายเซ็นความคิดของ Gemini ไว้ที่นั่น โดยไม่เปิดใช้การตรวจสอบ replay ของ Gemini
+      แบบเนทีฟหรือการเขียน bootstrap ใหม่
+    - Kilo Gateway ใช้โทเค็น Bearer ร่วมกับคีย์ API ของคุณเบื้องหลัง
 
   </Accordion>
 
-  <Accordion title="ตัวครอบ stream และ reasoning">
-    ตัวครอบ stream แบบใช้ร่วมกันของ Kilo จะเพิ่ม provider app header และ normalize
-    payload reasoning ของ proxy สำหรับ ref ของ model แบบ concrete ที่รองรับ
+  <Accordion title="ตัวห่อหุ้มสตรีมและการให้เหตุผล">
+    ตัวห่อหุ้มสตรีมที่ใช้ร่วมกันของ Kilo จะเพิ่มส่วนหัวแอปของผู้ให้บริการและทำให้
+    payload การให้เหตุผลของพร็อกซีเป็นมาตรฐานสำหรับ ref ของโมเดลที่ระบุซึ่งรองรับ
 
     <Warning>
-    `kilocode/kilo/auto` และ hint อื่น ๆ ที่ไม่รองรับ proxy-reasoning จะข้ามการ inject
-    reasoning หากคุณต้องการรองรับ reasoning ให้ใช้ ref ของ model แบบ concrete เช่น
+    `kilocode/kilo/auto` และ hint อื่นๆ ที่ไม่รองรับ proxy-reasoning จะข้ามการฉีดข้อมูลการให้เหตุผล
+    หากคุณต้องการการรองรับการให้เหตุผล ให้ใช้ ref ของโมเดลที่ระบุ เช่น
     `kilocode/anthropic/claude-sonnet-4`
     </Warning>
 
   </Accordion>
 
   <Accordion title="การแก้ไขปัญหา">
-    - หากการค้นหา model ล้มเหลวตอนเริ่มต้นระบบ OpenClaw จะ fallback ไปใช้แคตตาล็อก static ที่มาพร้อมกันซึ่งมี `kilocode/kilo/auto`
-    - ตรวจสอบว่า API key ของคุณถูกต้อง และบัญชี Kilo ของคุณเปิดใช้งาน model ที่ต้องการแล้ว
-    - เมื่อ Gateway รันเป็น daemon ให้แน่ใจว่า process นั้นเข้าถึง `KILOCODE_API_KEY` ได้ (เช่นใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv`)
+    - หากการค้นหาโมเดลล้มเหลวเมื่อเริ่มทำงาน OpenClaw จะย้อนกลับไปใช้แคตตาล็อกคงที่ที่รวมมาให้ ซึ่งมี `kilocode/kilo/auto`
+    - ยืนยันว่าคีย์ API ของคุณถูกต้อง และบัญชี Kilo ของคุณเปิดใช้โมเดลที่ต้องการแล้ว
+    - เมื่อ Gateway ทำงานเป็น daemon ให้ตรวจสอบว่า `KILOCODE_API_KEY` พร้อมใช้งานสำหรับโปรเซสนั้น (เช่น ใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv`)
 
   </Accordion>
 </AccordionGroup>
@@ -123,13 +132,13 @@ model ใดก็ตามที่พร้อมใช้งานบน gate
 ## ที่เกี่ยวข้อง
 
 <CardGroup cols={2}>
-  <Card title="การเลือก model" href="/th/concepts/model-providers" icon="layers">
-    การเลือก provider, ref ของ model และพฤติกรรม failover
+  <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
+    การเลือกผู้ให้บริการ ref ของโมเดล และพฤติกรรมการสลับไปใช้ระบบสำรองเมื่อเกิดข้อผิดพลาด
   </Card>
-  <Card title="ข้อมูลอ้างอิงการกำหนดค่า" href="/th/gateway/configuration-reference" icon="gear">
-    ข้อมูลอ้างอิงการกำหนดค่า OpenClaw แบบเต็ม
+  <Card title="เอกสารอ้างอิงการกำหนดค่า" href="/th/gateway/configuration-reference" icon="gear">
+    เอกสารอ้างอิงการกำหนดค่า OpenClaw ฉบับสมบูรณ์
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">
-    แดชบอร์ด Kilo Gateway, API key และการจัดการบัญชี
+    แดชบอร์ด Kilo Gateway คีย์ API และการจัดการบัญชี
   </Card>
 </CardGroup>

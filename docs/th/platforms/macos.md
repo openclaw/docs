@@ -1,47 +1,47 @@
 ---
 read_when:
     - การพัฒนาฟีเจอร์ของแอป macOS
-    - การเปลี่ยนวงจรชีวิตของ Gateway หรือการเชื่อม Node บน macOS
-summary: แอปคู่หู OpenClaw บน macOS (แถบเมนู + โบรกเกอร์ Gateway)
+    - การเปลี่ยนวงจรชีวิตของ Gateway หรือการบริดจ์ Node บน macOS
+summary: แอปคู่หู OpenClaw สำหรับ macOS (แถบเมนู + โบรกเกอร์ Gateway)
 title: แอป macOS
 x-i18n:
-    generated_at: "2026-04-25T13:52:27Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:04:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 852c93694ebb4ac083b9a44c2e4d6e40274e6e7f3aa6fa664a8eba1a82aaf5b1
+    source_hash: 2ed98cd4865f2117728d4349c9be99d9c2e20f4d86a77c80f5ba0b5520eb81cd
     source_path: platforms/macos.md
-    workflow: 15
+    workflow: 16
 ---
 
-แอป macOS คือ **แอปคู่หูบนแถบเมนู** สำหรับ OpenClaw มันเป็นเจ้าของสิทธิ์ต่าง ๆ
-จัดการ/เชื่อมต่อกับ Gateway ในเครื่อง (launchd หรือ manual) และเปิดเผย
-ความสามารถเฉพาะของ macOS ให้กับ agent ในรูปแบบ node
+แอป macOS คือ **ตัวคู่หูบนแถบเมนู** สำหรับ OpenClaw แอปนี้ดูแลสิทธิ์,
+จัดการ/เชื่อมต่อกับ Gateway ภายในเครื่อง (launchd หรือแบบแมนนวล) และเปิดเผยความสามารถของ macOS
+ให้เอเจนต์ใช้งานในฐานะ node
 
-## สิ่งที่มันทำ
+## ทำอะไรได้บ้าง
 
-- แสดงการแจ้งเตือนแบบเนทีฟและสถานะในแถบเมนู
-- เป็นเจ้าของพรอมป์ TCC (Notifications, Accessibility, Screen Recording, Microphone,
+- แสดงการแจ้งเตือนและสถานะเนทีฟในแถบเมนู
+- ดูแลพรอมป์ TCC (Notifications, Accessibility, Screen Recording, Microphone,
   Speech Recognition, Automation/AppleScript)
-- รันหรือเชื่อมต่อกับ Gateway (ในเครื่องหรือระยะไกล)
+- รันหรือเชื่อมต่อกับ Gateway (ภายในเครื่องหรือระยะไกล)
 - เปิดเผยเครื่องมือเฉพาะ macOS (Canvas, Camera, Screen Recording, `system.run`)
-- เริ่มบริการ local node host ในโหมด **remote** (launchd) และหยุดมันในโหมด **local**
-- เลือกได้ว่าจะโฮสต์ **PeekabooBridge** สำหรับ UI automation
-- ติดตั้ง CLI แบบ global (`openclaw`) ตามคำขอผ่าน npm, pnpm หรือ bun (แอปจะเลือก npm ก่อน จากนั้น pnpm แล้วจึง bun; Node ยังคงเป็น runtime ที่แนะนำสำหรับ Gateway)
+- เริ่มบริการโฮสต์ node ภายในเครื่องในโหมด **remote** (launchd) และหยุดบริการในโหมด **local**
+- สามารถโฮสต์ **PeekabooBridge** สำหรับระบบอัตโนมัติของ UI ได้
+- ติดตั้ง CLI ส่วนกลาง (`openclaw`) ตามคำขอผ่าน npm, pnpm หรือ bun (แอปจะเลือก npm ก่อน ตามด้วย pnpm แล้วจึง bun; Node ยังคงเป็นรันไทม์ Gateway ที่แนะนำ)
 
 ## โหมด local เทียบกับ remote
 
-- **Local** (ค่าเริ่มต้น): แอปจะเชื่อมต่อกับ Gateway ในเครื่องที่กำลังรันอยู่หากมี;
-  มิฉะนั้นจะเปิดใช้บริการ launchd ผ่าน `openclaw gateway install`
-- **Remote**: แอปจะเชื่อมต่อกับ Gateway ผ่าน SSH/Tailscale และจะไม่เริ่ม
-  โปรเซสในเครื่องเลย
-  แอปจะเริ่ม **บริการ node host** ในเครื่อง เพื่อให้ Gateway ระยะไกลเข้าถึง Mac เครื่องนี้ได้
-  แอปจะไม่ spawn Gateway เป็น child process
-  ตอนนี้การค้นหา Gateway จะให้ความสำคัญกับชื่อ Tailscale MagicDNS มากกว่า raw tailnet IP
-  ดังนั้นแอป Mac จะกู้คืนการเชื่อมต่อได้เชื่อถือได้มากขึ้นเมื่อ tailnet IP เปลี่ยน
+- **Local** (ค่าเริ่มต้น): แอปจะเชื่อมต่อกับ Gateway ภายในเครื่องที่กำลังทำงานอยู่ถ้ามี;
+  มิฉะนั้นจะเปิดใช้งานบริการ launchd ผ่าน `openclaw gateway install`
+- **Remote**: แอปเชื่อมต่อกับ Gateway ผ่าน SSH/Tailscale และจะไม่เริ่ม
+  โปรเซสภายในเครื่อง
+  แอปเริ่ม **บริการโฮสต์ node** ภายในเครื่องเพื่อให้ Gateway ระยะไกลเข้าถึง Mac เครื่องนี้ได้
+  แอปไม่ได้ spawn Gateway เป็นโปรเซสลูก
+  ตอนนี้การค้นหา Gateway จะเลือกชื่อ Tailscale MagicDNS ก่อน IP tailnet แบบดิบ
+  เพื่อให้แอป Mac กู้คืนได้เสถียรกว่าเมื่อ IP tailnet เปลี่ยน
 
 ## การควบคุม Launchd
 
-แอปจะจัดการ LaunchAgent รายผู้ใช้ชื่อ `ai.openclaw.gateway`
+แอปจัดการ LaunchAgent รายผู้ใช้ที่มีป้ายกำกับ `ai.openclaw.gateway`
 (หรือ `ai.openclaw.<profile>` เมื่อใช้ `--profile`/`OPENCLAW_PROFILE`; `com.openclaw.*` แบบเดิมยังคง unload ได้)
 
 ```bash
@@ -49,28 +49,28 @@ launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-ให้แทน label ด้วย `ai.openclaw.<profile>` เมื่อต้องรันโปรไฟล์แบบมีชื่อ
+แทนที่ป้ายกำกับด้วย `ai.openclaw.<profile>` เมื่อรันโปรไฟล์ที่มีชื่อ
 
-หากยังไม่ได้ติดตั้ง LaunchAgent ให้เปิดใช้งานจากแอป หรือรัน
+หากยังไม่ได้ติดตั้ง LaunchAgent ให้เปิดใช้งานจากแอปหรือรัน
 `openclaw gateway install`
 
 ## ความสามารถของ Node (mac)
 
-แอป macOS จะแสดงตัวเองเป็น node คำสั่งที่ใช้บ่อย:
+แอป macOS แสดงตัวเองเป็น node คำสั่งทั่วไป:
 
 - Canvas: `canvas.present`, `canvas.navigate`, `canvas.eval`, `canvas.snapshot`, `canvas.a2ui.*`
 - Camera: `camera.snap`, `camera.clip`
 - Screen: `screen.snapshot`, `screen.record`
 - System: `system.run`, `system.notify`
 
-node จะรายงานแผนที่ `permissions` เพื่อให้ agents ตัดสินใจได้ว่าอะไรได้รับอนุญาต
+node รายงานแมป `permissions` เพื่อให้เอเจนต์ตัดสินใจได้ว่าอนุญาตอะไรบ้าง
 
-บริการ Node + app IPC:
+บริการ Node + IPC ของแอป:
 
-- เมื่อบริการ headless node host กำลังทำงาน (โหมด remote) มันจะเชื่อมต่อกับ Gateway WS ในฐานะ node
-- `system.run` จะทำงานในแอป macOS (บริบท UI/TCC) ผ่าน local Unix socket; พรอมป์และเอาต์พุตจะอยู่ในแอป
+- เมื่อบริการโฮสต์ node แบบไม่มี UI กำลังทำงาน (โหมด remote) บริการจะเชื่อมต่อกับ Gateway WS เป็น node
+- `system.run` ทำงานในแอป macOS (บริบท UI/TCC) ผ่าน Unix socket ภายในเครื่อง; พรอมป์ + เอาต์พุตจะอยู่ในแอป
 
-แผนภาพ (SCI):
+ไดอะแกรม (SCI):
 
 ```
 Gateway -> Node Service (WS)
@@ -79,10 +79,10 @@ Gateway -> Node Service (WS)
              Mac App (UI + TCC + system.run)
 ```
 
-## Exec approvals (`system.run`)
+## การอนุมัติการรันคำสั่ง (system.run)
 
-`system.run` ถูกควบคุมโดย **Exec approvals** ในแอป macOS (Settings → Exec approvals)
-ค่าด้านความปลอดภัย + ask + allowlist ถูกเก็บไว้ในเครื่อง Mac ที่:
+`system.run` ถูกควบคุมโดย **การอนุมัติ Exec** ในแอป macOS (Settings → Exec approvals)
+การตั้งค่าความปลอดภัย + การถาม + allowlist จะถูกจัดเก็บภายในเครื่องบน Mac ที่:
 
 ```
 ~/.openclaw/exec-approvals.json
@@ -109,59 +109,59 @@ Gateway -> Node Service (WS)
 
 หมายเหตุ:
 
-- รายการ `allowlist` เป็นรูปแบบ glob สำหรับพาธไบนารีที่ resolve แล้ว หรือเป็นชื่อคำสั่งแบบเปล่าสำหรับคำสั่งที่เรียกผ่าน PATH
-- ข้อความคำสั่ง shell แบบดิบที่มีไวยากรณ์ควบคุมหรือขยายค่าของ shell (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) จะถือว่าไม่ตรงกับ allowlist และต้องได้รับการอนุมัติอย่างชัดเจน (หรือเพิ่ม shell binary นั้นลงใน allowlist)
+- รายการ `allowlist` เป็นรูปแบบ glob สำหรับพาธไบนารีที่ resolve แล้ว หรือชื่อคำสั่งเปล่า ๆ สำหรับคำสั่งที่เรียกผ่าน PATH
+- ข้อความคำสั่ง shell ดิบที่มีไวยากรณ์ควบคุมหรือขยายของ shell (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) จะถูกถือว่าไม่ตรงกับ allowlist และต้องได้รับการอนุมัติอย่างชัดเจน (หรือเพิ่มไบนารี shell ลงใน allowlist)
 - การเลือก “Always Allow” ในพรอมป์จะเพิ่มคำสั่งนั้นลงใน allowlist
-- การเขียนทับ environment ของ `system.run` จะถูกกรอง (ลบ `PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`) แล้วจึง merge เข้ากับ environment ของแอป
-- สำหรับ shell wrapper (`bash|sh|zsh ... -c/-lc`) การเขียนทับ environment ระดับคำขอจะถูกลดเหลือ allowlist แบบชัดเจนขนาดเล็ก (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`)
-- สำหรับการตัดสินใจ allow-always ในโหมด allowlist wrapper ที่เป็น known dispatch (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) จะบันทึกพาธ executable ด้านในแทนพาธของ wrapper หากไม่สามารถ unwrap ได้อย่างปลอดภัย จะไม่มีการบันทึกรายการ allowlist ให้อัตโนมัติ
+- การ override สภาพแวดล้อมของ `system.run` จะถูกกรอง (ทิ้ง `PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`) แล้วจึงผสานกับสภาพแวดล้อมของแอป
+- สำหรับ wrapper ของ shell (`bash|sh|zsh ... -c/-lc`) การ override สภาพแวดล้อมตามขอบเขตคำขอจะถูกลดให้เหลือ allowlist ขนาดเล็กที่ระบุชัดเจน (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`)
+- สำหรับการตัดสินใจแบบ allow-always ในโหมด allowlist wrapper สำหรับ dispatch ที่รู้จัก (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) จะบันทึกพาธ executable ภายในแทนพาธ wrapper หาก unwrap ได้ไม่ปลอดภัย จะไม่มีการบันทึกรายการ allowlist โดยอัตโนมัติ
 
 ## Deep links
 
-แอปจะลงทะเบียน URL scheme `openclaw://` สำหรับการกระทำในเครื่อง
+แอปลงทะเบียนสคีมา URL `openclaw://` สำหรับการทำงานภายในเครื่อง
 
 ### `openclaw://agent`
 
-ทริกเกอร์คำขอ Gateway `agent`
+ทริกเกอร์คำขอ `agent` ของ Gateway
 __OC_I18N_900004__
-query parameters:
+พารามิเตอร์ query:
 
 - `message` (จำเป็น)
 - `sessionKey` (ไม่บังคับ)
 - `thinking` (ไม่บังคับ)
 - `deliver` / `to` / `channel` (ไม่บังคับ)
 - `timeoutSeconds` (ไม่บังคับ)
-- `key` (ไม่บังคับ สำหรับโหมด unattended)
+- `key` (คีย์โหมด unattended ไม่บังคับ)
 
 ความปลอดภัย:
 
-- หากไม่มี `key` แอปจะขอการยืนยัน
-- หากไม่มี `key` แอปจะบังคับใช้ขีดจำกัดข้อความสั้นสำหรับพรอมป์ยืนยัน และจะเพิกเฉยต่อ `deliver` / `to` / `channel`
-- หากมี `key` ที่ถูกต้อง การรันจะเป็นแบบ unattended (ออกแบบมาสำหรับระบบอัตโนมัติส่วนตัว)
+- หากไม่มี `key` แอปจะถามเพื่อยืนยัน
+- หากไม่มี `key` แอปจะบังคับใช้ขีดจำกัดข้อความสั้นสำหรับพรอมป์ยืนยัน และจะละเว้น `deliver` / `to` / `channel`
+- เมื่อมี `key` ที่ถูกต้อง การรันจะเป็นแบบ unattended (ออกแบบมาสำหรับระบบอัตโนมัติส่วนตัว)
 
-## flow การเริ่มต้นใช้งาน (โดยทั่วไป)
+## โฟลว์เริ่มต้นใช้งาน (ทั่วไป)
 
 1. ติดตั้งและเปิด **OpenClaw.app**
-2. ทำรายการสิทธิ์ (TCC prompts) ให้ครบ
-3. ตรวจสอบว่าโหมด **Local** ทำงานอยู่ และ Gateway กำลังรัน
-4. ติดตั้ง CLI หากคุณต้องการใช้งานผ่านเทอร์มินัล
+2. ทำรายการตรวจสอบสิทธิ์ให้ครบ (พรอมป์ TCC)
+3. ตรวจให้แน่ใจว่าโหมด **Local** ทำงานอยู่และ Gateway กำลังทำงาน
+4. ติดตั้ง CLI หากต้องการเข้าถึงผ่านเทอร์มินัล
 
-## ตำแหน่ง state dir (macOS)
+## ตำแหน่งไดเรกทอรีสถานะ (macOS)
 
-หลีกเลี่ยงการวาง state dir ของ OpenClaw ไว้ใน iCloud หรือโฟลเดอร์ที่ซิงค์กับคลาวด์อื่น ๆ
-พาธที่มีระบบซิงค์อาจเพิ่มเวลาแฝง และบางครั้งทำให้เกิด race ของ file-lock/sync สำหรับ
+หลีกเลี่ยงการวางไดเรกทอรีสถานะของ OpenClaw ใน iCloud หรือโฟลเดอร์อื่นที่ซิงก์กับคลาวด์
+พาธที่มีระบบซิงก์รองรับอาจเพิ่มเวลาแฝง และบางครั้งทำให้เกิด race จากการล็อกไฟล์/การซิงก์สำหรับ
 เซสชันและข้อมูลรับรอง
 
-แนะนำให้ใช้พาธสถานะในเครื่องที่ไม่ซิงค์ เช่น:
+ควรใช้พาธสถานะภายในเครื่องที่ไม่ซิงก์ เช่น:
 __OC_I18N_900005__
-หาก `openclaw doctor` ตรวจพบว่าสถานะอยู่ใต้:
+หาก `openclaw doctor` ตรวจพบสถานะภายใต้:
 
 - `~/Library/Mobile Documents/com~apple~CloudDocs/...`
 - `~/Library/CloudStorage/...`
 
-ระบบจะเตือนและแนะนำให้ย้ายกลับไปยังพาธในเครื่อง
+จะแจ้งเตือนและแนะนำให้ย้ายกลับไปยังพาธภายในเครื่อง
 
-## เวิร์กโฟลว์การ build และพัฒนา (เนทีฟ)
+## เวิร์กโฟลว์ build และ dev (เนทีฟ)
 
 - `cd apps/macos && swift build`
 - `swift run OpenClaw` (หรือ Xcode)
@@ -169,51 +169,51 @@ __OC_I18N_900005__
 
 ## ดีบักการเชื่อมต่อ Gateway (macOS CLI)
 
-ใช้ debug CLI เพื่อทดสอบการจับมือ Gateway WebSocket และตรรกะการค้นหาเดียวกับที่แอป macOS ใช้ โดยไม่ต้องเปิดแอป
+ใช้ CLI สำหรับดีบักเพื่อทดสอบตรรกะ handshake และการค้นหา Gateway WebSocket
+แบบเดียวกับที่แอป macOS ใช้ โดยไม่ต้องเปิดแอป
 __OC_I18N_900006__
-ตัวเลือกของ connect:
+ตัวเลือก Connect:
 
-- `--url <ws://host:port>`: เขียนทับ config
-- `--mode <local|remote>`: resolve จาก config (ค่าเริ่มต้น: จาก config หรือ local)
-- `--probe`: บังคับทำ health probe ใหม่
+- `--url <ws://host:port>`: override config
+- `--mode <local|remote>`: resolve จาก config (ค่าเริ่มต้น: config หรือ local)
+- `--probe`: บังคับ health probe ใหม่
 - `--timeout <ms>`: timeout ของคำขอ (ค่าเริ่มต้น: `15000`)
-- `--json`: เอาต์พุตแบบมีโครงสร้างสำหรับการเปรียบเทียบ diff
+- `--json`: เอาต์พุตแบบมีโครงสร้างสำหรับ diff
 
-ตัวเลือกของ discovery:
+ตัวเลือก Discovery:
 
-- `--include-local`: รวม gateways ที่ปกติจะถูกกรองว่าเป็น “local”
-- `--timeout <ms>`: หน้าต่างเวลารวมของการค้นหา (ค่าเริ่มต้น: `2000`)
-- `--json`: เอาต์พุตแบบมีโครงสร้างสำหรับการเปรียบเทียบ diff
+- `--include-local`: รวม Gateway ที่จะถูกกรองเป็น “local”
+- `--timeout <ms>`: หน้าต่างเวลาค้นหาโดยรวม (ค่าเริ่มต้น: `2000`)
+- `--json`: เอาต์พุตแบบมีโครงสร้างสำหรับ diff
 
-เคล็ดลับ: เปรียบเทียบกับ `openclaw gateway discover --json` เพื่อดูว่า
-ไปป์ไลน์การค้นหาของแอป macOS (`local.` บวกโดเมน wide-area ที่กำหนดไว้ พร้อม fallback ของ
-wide-area และ Tailscale Serve) ต่างจาก
-การค้นหาแบบ `dns-sd` ของ Node CLI หรือไม่
+<Tip>
+เปรียบเทียบกับ `openclaw gateway discover --json` เพื่อดูว่า pipeline การค้นหาของแอป macOS (`local.` รวมกับโดเมน wide-area ที่กำหนดค่าไว้ พร้อม fallback ของ wide-area และ Tailscale Serve) แตกต่างจากการค้นหาของ Node CLI ที่อิง `dns-sd` หรือไม่
+</Tip>
 
-## โครงสร้างการเชื่อมต่อระยะไกล (SSH tunnels)
+## ระบบเชื่อมต่อระยะไกล (อุโมงค์ SSH)
 
-เมื่อแอป macOS ทำงานในโหมด **Remote** มันจะเปิด SSH tunnel เพื่อให้คอมโพเนนต์ UI ในเครื่อง
-สามารถสื่อสารกับ Gateway ระยะไกลได้ราวกับอยู่บน localhost
+เมื่อแอป macOS ทำงานในโหมด **Remote** แอปจะเปิดอุโมงค์ SSH เพื่อให้คอมโพเนนต์ UI ภายในเครื่อง
+คุยกับ Gateway ระยะไกลได้เหมือนอยู่บน localhost
 
-### Control tunnel (พอร์ต Gateway WebSocket)
+### อุโมงค์ควบคุม (พอร์ต Gateway WebSocket)
 
 - **วัตถุประสงค์:** health checks, status, Web Chat, config และการเรียก control-plane อื่น ๆ
-- **พอร์ต local:** พอร์ตของ Gateway (ค่าเริ่มต้น `18789`), คงที่เสมอ
-- **พอร์ต remote:** พอร์ต Gateway เดียวกันบนโฮสต์ระยะไกล
-- **พฤติกรรม:** ไม่มี local port แบบสุ่ม; แอปจะใช้ tunnel เดิมที่ยังดีอยู่
-  หรือรีสตาร์ตใหม่หากจำเป็น
-- **รูปแบบ SSH:** `ssh -N -L <local>:127.0.0.1:<remote>` พร้อมตัวเลือก BatchMode +
-  ExitOnForwardFailure + keepalive
-- **การรายงาน IP:** SSH tunnel ใช้ loopback ดังนั้น gateway จะมองเห็น IP ของ node
-  เป็น `127.0.0.1` ใช้การขนส่งแบบ **Direct (ws/wss)** หากคุณต้องการให้
-  IP ของไคลเอนต์จริงปรากฏ (ดู [macOS remote access](/th/platforms/mac/remote))
+- **พอร์ตภายในเครื่อง:** พอร์ต Gateway (ค่าเริ่มต้น `18789`) คงที่เสมอ
+- **พอร์ตระยะไกล:** พอร์ต Gateway เดียวกันบนโฮสต์ระยะไกล
+- **พฤติกรรม:** ไม่มีพอร์ตภายในเครื่องแบบสุ่ม; แอปจะใช้อุโมงค์ที่มีอยู่และยังดีอยู่ซ้ำ
+  หรือรีสตาร์ทหากจำเป็น
+- **รูปแบบ SSH:** `ssh -N -L <local>:127.0.0.1:<remote>` พร้อม BatchMode +
+  ExitOnForwardFailure + ตัวเลือก keepalive
+- **การรายงาน IP:** อุโมงค์ SSH ใช้ loopback ดังนั้น Gateway จะเห็น IP ของ node
+  เป็น `127.0.0.1` ใช้ทรานสปอร์ต **Direct (ws/wss)** หากต้องการให้ IP ไคลเอนต์จริง
+  ปรากฏ (ดู [การเข้าถึง macOS ระยะไกล](/th/platforms/mac/remote))
 
-สำหรับขั้นตอนการตั้งค่า ดู [macOS remote access](/th/platforms/mac/remote) สำหรับรายละเอียด
-ของโปรโตคอล ดู [Gateway protocol](/th/gateway/protocol)
+สำหรับขั้นตอนการตั้งค่า ดู [การเข้าถึง macOS ระยะไกล](/th/platforms/mac/remote) สำหรับรายละเอียดโปรโตคอล
+ดู [โปรโตคอล Gateway](/th/gateway/protocol)
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [Gateway runbook](/th/gateway)
+- [รันบุ๊ก Gateway](/th/gateway)
 - [Gateway (macOS)](/th/platforms/mac/bundled-gateway)
-- [macOS permissions](/th/platforms/mac/permissions)
+- [สิทธิ์ macOS](/th/platforms/mac/permissions)
 - [Canvas](/th/platforms/mac/canvas)

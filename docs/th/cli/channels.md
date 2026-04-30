@@ -1,28 +1,28 @@
 ---
 read_when:
-    - คุณต้องการเพิ่ม/ลบบัญชีช่องทาง (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix)
-    - คุณต้องการตรวจสอบสถานะช่องทางหรือดูบันทึกช่องทางแบบต่อท้าย
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw channels` (บัญชี, สถานะ, เข้าสู่ระบบ/ออกจากระบบ, บันทึก)
+    - คุณต้องการเพิ่ม/ลบบัญชีช่องทาง (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix)
+    - คุณต้องการตรวจสอบสถานะช่องทางหรือดูบันทึกช่องทางแบบต่อเนื่อง
+summary: คู่มืออ้างอิง CLI สำหรับ `openclaw channels` (บัญชี, สถานะ, เข้าสู่ระบบ/ออกจากระบบ, บันทึก)
 title: ช่องทาง
 x-i18n:
-    generated_at: "2026-04-26T12:24:35Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 73c44ccac8996d2700d8c912d29e1ea08898128427ae10ff2e35b6ed422e45d1
+    source_hash: 6fc3c5983114c17e0e7284450aa161b658312c05864db65e09d6d764e357cd1f
     source_path: cli/channels.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw channels`
 
-จัดการบัญชีช่องทางแชตและสถานะรันไทม์ของช่องทางเหล่านั้นบน Gateway
+จัดการบัญชีช่องทางแชตและสถานะรันไทม์บน Gateway
 
 เอกสารที่เกี่ยวข้อง:
 
-- คู่มือช่องทาง: [Channels](/th/channels/index)
-- การกำหนดค่า Gateway: [Configuration](/th/gateway/configuration)
+- คู่มือช่องทาง: [ช่องทาง](/th/channels)
+- การกำหนดค่า Gateway: [การกำหนดค่า](/th/gateway/configuration)
 
-## คำสั่งที่ใช้บ่อย
+## คำสั่งทั่วไป
 
 ```bash
 openclaw channels list
@@ -33,18 +33,18 @@ openclaw channels resolve --channel slack "#general" "@jane"
 openclaw channels logs --channel all
 ```
 
-## สถานะ / ความสามารถ / แก้ชื่อเป็น ID / บันทึก
+## สถานะ / ความสามารถ / แปลงชื่อ / บันทึก
 
 - `channels status`: `--probe`, `--timeout <ms>`, `--json`
-- `channels capabilities`: `--channel <name>`, `--account <id>` (ใช้ได้เฉพาะเมื่อมี `--channel`), `--target <dest>`, `--timeout <ms>`, `--json`
+- `channels capabilities`: `--channel <name>`, `--account <id>` (ใช้ได้เฉพาะกับ `--channel`), `--target <dest>`, `--timeout <ms>`, `--json`
 - `channels resolve`: `<entries...>`, `--channel <name>`, `--account <id>`, `--kind <auto|user|group>`, `--json`
 - `channels logs`: `--channel <name|all>`, `--lines <n>`, `--json`
 
-`channels status --probe` คือเส้นทางแบบสด: บน gateway ที่เข้าถึงได้ คำสั่งนี้จะเรียกใช้
-`probeAccount` และการตรวจสอบ `auditAccount` ที่เป็นตัวเลือกสำหรับแต่ละบัญชี ดังนั้นผลลัพธ์อาจมี
-สถานะของ transport พร้อมผลการตรวจสอบ เช่น `works`, `probe failed`, `audit ok` หรือ `audit failed`
-หาก gateway ไม่สามารถเข้าถึงได้ `channels status` จะย้อนกลับไปใช้สรุปตาม config เท่านั้น
-แทนผลลัพธ์จากการตรวจสอบแบบสด
+`channels status --probe` คือเส้นทางแบบสด: บน Gateway ที่เข้าถึงได้ คำสั่งนี้จะรันการตรวจสอบ
+`probeAccount` รายบัญชี และการตรวจสอบ `auditAccount` เพิ่มเติมถ้ามี ดังนั้นเอาต์พุตอาจมีสถานะ
+การขนส่งพร้อมผลการตรวจ เช่น `works`, `probe failed`, `audit ok` หรือ `audit failed`
+ถ้าเข้าถึง Gateway ไม่ได้ `channels status` จะถอยกลับไปใช้สรุปจากการกำหนดค่าเท่านั้น
+แทนเอาต์พุตการตรวจแบบสด
 
 ## เพิ่ม / ลบบัญชี
 
@@ -54,62 +54,63 @@ openclaw channels add --channel nostr --private-key "$NOSTR_PRIVATE_KEY"
 openclaw channels remove --channel telegram --delete
 ```
 
-เคล็ดลับ: `openclaw channels add --help` จะแสดงแฟล็กเฉพาะของแต่ละช่องทาง (token, private key, app token, signal-cli paths เป็นต้น)
+<Tip>
+`openclaw channels add --help` แสดงแฟล็กรายช่องทาง (โทเค็น, คีย์ส่วนตัว, โทเค็นแอป, พาธ signal-cli และอื่นๆ)
+</Tip>
 
-พื้นผิวการเพิ่มแบบไม่โต้ตอบที่พบบ่อยประกอบด้วย:
+พื้นผิวการเพิ่มแบบไม่โต้ตอบที่ใช้ทั่วไป ได้แก่:
 
-- ช่องทางแบบ bot-token: `--token`, `--bot-token`, `--app-token`, `--token-file`
-- ฟิลด์ transport ของ Signal/iMessage: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
-- ฟิลด์ของ Google Chat: `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`
-- ฟิลด์ของ Matrix: `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit`
-- ฟิลด์ของ Nostr: `--private-key`, `--relay-urls`
-- ฟิลด์ของ Tlon: `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`
-- `--use-env` สำหรับการยืนยันตัวตนบัญชีเริ่มต้นที่อิง env ในกรณีที่รองรับ
+- ช่องทาง bot-token: `--token`, `--bot-token`, `--app-token`, `--token-file`
+- ฟิลด์การขนส่ง Signal/iMessage: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
+- ฟิลด์ Google Chat: `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`
+- ฟิลด์ Matrix: `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit`
+- ฟิลด์ Nostr: `--private-key`, `--relay-urls`
+- ฟิลด์ Tlon: `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`
+- `--use-env` สำหรับการยืนยันตัวตนของบัญชีเริ่มต้นที่รองรับโดย env เมื่อรองรับ
 
-หาก Plugin ของช่องทางต้องได้รับการติดตั้งระหว่างคำสั่งเพิ่มที่ขับเคลื่อนด้วยแฟล็ก OpenClaw จะใช้แหล่งติดตั้งเริ่มต้นของช่องทางนั้นโดยไม่เปิดพรอมป์ต์ติดตั้ง Plugin แบบโต้ตอบ
+ถ้าจำเป็นต้องติดตั้ง Plugin ช่องทางระหว่างคำสั่งเพิ่มที่ขับเคลื่อนด้วยแฟล็ก OpenClaw จะใช้แหล่งติดตั้งเริ่มต้นของช่องทางโดยไม่เปิดพรอมป์ติดตั้ง Plugin แบบโต้ตอบ
 
-เมื่อคุณเรียกใช้ `openclaw channels add` โดยไม่ใส่แฟล็ก วิซาร์ดแบบโต้ตอบอาจถามข้อมูลต่อไปนี้:
+เมื่อคุณรัน `openclaw channels add` โดยไม่มีแฟล็ก วิซาร์ดแบบโต้ตอบอาจถาม:
 
-- ID บัญชีสำหรับแต่ละช่องทางที่เลือก
-- ชื่อที่ใช้แสดงผลซึ่งเป็นตัวเลือกสำหรับบัญชีเหล่านั้น
+- id บัญชีต่อช่องทางที่เลือก
+- ชื่อที่แสดงแบบไม่บังคับสำหรับบัญชีเหล่านั้น
 - `Bind configured channel accounts to agents now?`
 
-หากคุณยืนยันที่จะ bind ทันที วิซาร์ดจะถามว่า agent ใดควรเป็นเจ้าของบัญชีช่องทางที่กำหนดค่าไว้แต่ละบัญชี และจะเขียนการ bind เส้นทางแบบกำหนดขอบเขตต่อบัญชี
+ถ้าคุณยืนยันให้ผูกตอนนี้ วิซาร์ดจะถามว่า agent ใดควรเป็นเจ้าของบัญชีช่องทางแต่ละบัญชีที่กำหนดค่าไว้ และจะเขียนการผูกการกำหนดเส้นทางแบบจำกัดขอบเขตตามบัญชี
 
-คุณยังสามารถจัดการกฎการกำหนดเส้นทางเดียวกันนี้ในภายหลังได้ด้วย `openclaw agents bindings`, `openclaw agents bind` และ `openclaw agents unbind` (ดู [agents](/th/cli/agents))
+คุณยังสามารถจัดการกฎการกำหนดเส้นทางเดียวกันภายหลังด้วย `openclaw agents bindings`, `openclaw agents bind` และ `openclaw agents unbind` (ดู [agents](/th/cli/agents))
 
-เมื่อคุณเพิ่มบัญชีที่ไม่ใช่บัญชีเริ่มต้นให้กับช่องทางที่ยังใช้การตั้งค่าระดับบนสุดแบบบัญชีเดียว OpenClaw จะยกระดับค่าระดับบนสุดที่กำหนดขอบเขตต่อบัญชีไปไว้ในแผนที่บัญชีของช่องทางนั้นก่อนเขียนบัญชีใหม่ สำหรับช่องทางส่วนใหญ่ ค่าเหล่านั้นจะอยู่ใน `channels.<channel>.accounts.default` แต่ช่องทางที่มาพร้อมระบบสามารถคงบัญชีที่ถูกยกระดับซึ่งตรงกันและมีอยู่เดิมไว้ได้แทน Matrix เป็นตัวอย่างปัจจุบัน: หากมีบัญชีที่มีชื่ออยู่แล้วหนึ่งบัญชี หรือ `defaultAccount` ชี้ไปยังบัญชีที่มีชื่อซึ่งมีอยู่แล้ว การยกระดับจะคงบัญชีนั้นไว้แทนการสร้าง `accounts.default` ใหม่
+เมื่อคุณเพิ่มบัญชีที่ไม่ใช่ค่าเริ่มต้นไปยังช่องทางที่ยังใช้การตั้งค่าระดับบนสุดแบบบัญชีเดียว OpenClaw จะเลื่อนค่าระดับบนสุดแบบจำกัดขอบเขตตามบัญชีเข้าไปในแมปบัญชีของช่องทางก่อนเขียนบัญชีใหม่ ช่องทางส่วนใหญ่จะวางค่าเหล่านั้นใน `channels.<channel>.accounts.default` แต่ช่องทางที่บันเดิลมาสามารถคงบัญชีที่เลื่อนขั้นและตรงกันที่มีอยู่แทนได้ Matrix คือตัวอย่างปัจจุบัน: ถ้ามีบัญชีที่ตั้งชื่อไว้แล้วหนึ่งบัญชี หรือ `defaultAccount` ชี้ไปยังบัญชีที่ตั้งชื่อไว้และมีอยู่ การเลื่อนขั้นจะคงบัญชีนั้นไว้แทนการสร้าง `accounts.default` ใหม่
 
-พฤติกรรมการกำหนดเส้นทางยังคงสอดคล้องกัน:
+พฤติกรรมการกำหนดเส้นทางยังคงสอดคล้อง:
 
-- การ bind แบบอิงช่องทางอย่างเดียวที่มีอยู่เดิม (ไม่มี `accountId`) จะยังคงจับคู่กับบัญชีเริ่มต้น
-- `channels add` จะไม่สร้างหรือเขียนทับการ bind โดยอัตโนมัติในโหมดไม่โต้ตอบ
-- การตั้งค่าแบบโต้ตอบสามารถเพิ่มการ bind แบบกำหนดขอบเขตต่อบัญชีได้ตามต้องการ
+- การผูกที่มีอยู่แบบระบุเฉพาะช่องทางเท่านั้น (ไม่มี `accountId`) ยังคงจับคู่กับบัญชีเริ่มต้น
+- `channels add` จะไม่สร้างหรือเขียนการผูกใหม่โดยอัตโนมัติในโหมดไม่โต้ตอบ
+- การตั้งค่าแบบโต้ตอบสามารถเพิ่มการผูกแบบจำกัดขอบเขตตามบัญชีได้ถ้าเลือก
 
-หาก config ของคุณอยู่ในสถานะผสมอยู่แล้ว (มีบัญชีที่ตั้งชื่อไว้ และยังมีค่าระดับบนสุดแบบบัญชีเดียวถูกตั้งค่าอยู่) ให้รัน `openclaw doctor --fix` เพื่อย้ายค่าที่กำหนดขอบเขตต่อบัญชีไปยังบัญชีที่ถูกยกระดับซึ่งเลือกไว้สำหรับช่องทางนั้น สำหรับช่องทางส่วนใหญ่จะยกระดับไปยัง `accounts.default`; ส่วน Matrix สามารถคงเป้าหมายที่มีชื่อ/ค่าเริ่มต้นที่มีอยู่เดิมไว้ได้แทน
+ถ้าการกำหนดค่าของคุณอยู่ในสถานะผสมอยู่แล้ว (มีบัญชีที่ตั้งชื่อไว้ และยังตั้งค่าระดับบนสุดแบบบัญชีเดียวอยู่) ให้รัน `openclaw doctor --fix` เพื่อย้ายค่าแบบจำกัดขอบเขตตามบัญชีเข้าไปยังบัญชีที่เลื่อนขั้นซึ่งเลือกไว้สำหรับช่องทางนั้น ช่องทางส่วนใหญ่จะเลื่อนขั้นเข้าไปใน `accounts.default`; Matrix สามารถคงเป้าหมายที่ตั้งชื่อไว้/ค่าเริ่มต้นที่มีอยู่แทนได้
 
-## เข้าสู่ระบบ / ออกจากระบบ (แบบโต้ตอบ)
+## เข้าสู่ระบบและออกจากระบบ (แบบโต้ตอบ)
 
 ```bash
 openclaw channels login --channel whatsapp
 openclaw channels logout --channel whatsapp
 ```
 
-หมายเหตุ:
-
 - `channels login` รองรับ `--verbose`
-- `channels login` / `logout` สามารถอนุมานช่องทางได้เมื่อมีการกำหนดค่าเป้าหมายการเข้าสู่ระบบที่รองรับไว้เพียงรายการเดียว
+- `channels login` และ `logout` สามารถอนุมานช่องทางได้เมื่อมีเป้าหมายการเข้าสู่ระบบที่รองรับที่กำหนดค่าไว้เพียงรายการเดียว
+- รัน `channels login` จากเทอร์มินัลบนโฮสต์ Gateway Agent `exec` จะบล็อกโฟลว์เข้าสู่ระบบแบบโต้ตอบนี้; ควรใช้เครื่องมือเข้าสู่ระบบแบบเนทีฟของช่องทางสำหรับ agent เช่น `whatsapp_login` จากแชตเมื่อพร้อมใช้งาน
 
-## การแก้ปัญหา
+## การแก้ไขปัญหา
 
-- รัน `openclaw status --deep` เพื่อทำการตรวจสอบแบบครอบคลุม
-- ใช้ `openclaw doctor` สำหรับการแก้ไขแบบมีคำแนะนำ
-- `openclaw channels list` แสดง `Claude: HTTP 403 ... user:profile` → สแนปช็อตการใช้งานต้องใช้ scope `user:profile` ใช้ `--no-usage` หรือระบุคีย์เซสชัน claude.ai (`CLAUDE_WEB_SESSION_KEY` / `CLAUDE_WEB_COOKIE`) หรือยืนยันตัวตนใหม่ผ่าน Claude CLI
-- `openclaw channels status` จะย้อนกลับไปใช้สรุปตาม config เท่านั้นเมื่อ gateway ไม่สามารถเข้าถึงได้ หากมีการกำหนดค่าข้อมูลรับรองของช่องทางที่รองรับผ่าน SecretRef แต่ไม่พร้อมใช้งานในเส้นทางคำสั่งปัจจุบัน ระบบจะรายงานบัญชีนั้นว่าได้รับการกำหนดค่าแล้วพร้อมหมายเหตุสถานะลดทอน แทนการแสดงว่าไม่ได้กำหนดค่า
+- รัน `openclaw status --deep` เพื่อการตรวจแบบกว้าง
+- ใช้ `openclaw doctor` เพื่อแก้ไขตามคำแนะนำ
+- `openclaw channels list` พิมพ์ `Claude: HTTP 403 ... user:profile` → สแนปช็อตการใช้งานต้องมีขอบเขต `user:profile` ใช้ `--no-usage` หรือระบุคีย์เซสชัน claude.ai (`CLAUDE_WEB_SESSION_KEY` / `CLAUDE_WEB_COOKIE`) หรือยืนยันตัวตนใหม่ผ่าน Claude CLI
+- `openclaw channels status` ถอยกลับไปใช้สรุปจากการกำหนดค่าเท่านั้นเมื่อเข้าถึง Gateway ไม่ได้ ถ้าข้อมูลประจำตัวของช่องทางที่รองรับถูกกำหนดค่าผ่าน SecretRef แต่ไม่พร้อมใช้งานในพาธคำสั่งปัจจุบัน ระบบจะรายงานบัญชีนั้นว่ากำหนดค่าแล้วพร้อมหมายเหตุแบบลดระดับ แทนการแสดงว่ายังไม่ได้กำหนดค่า
 
-## การตรวจสอบความสามารถ
+## การตรวจความสามารถ
 
-ดึงคำใบ้ความสามารถของผู้ให้บริการ (intents/scopes หากมี) พร้อมการรองรับฟีเจอร์แบบคงที่:
+ดึงคำใบ้ความสามารถของผู้ให้บริการ (intents/scopes เมื่อพร้อมใช้งาน) พร้อมการรองรับฟีเจอร์แบบคงที่:
 
 ```bash
 openclaw channels capabilities
@@ -118,14 +119,14 @@ openclaw channels capabilities --channel discord --target channel:123
 
 หมายเหตุ:
 
-- `--channel` เป็นตัวเลือก; ไม่ต้องระบุหากต้องการแสดงทุกช่องทาง (รวมถึงส่วนขยาย)
-- `--account` ใช้ได้เฉพาะเมื่อมี `--channel`
-- `--target` รับ `channel:<id>` หรือ ID ช่องทางแบบตัวเลขล้วน และใช้ได้กับ Discord เท่านั้น
-- การตรวจสอบขึ้นอยู่กับผู้ให้บริการ: Discord intents + สิทธิ์ของช่องทางแบบตัวเลือก; Slack bot + user scopes; Telegram bot flags + webhook; Signal daemon version; Microsoft Teams app token + Graph roles/scopes (มีคำอธิบายกำกับในกรณีที่ทราบ) ช่องทางที่ไม่มีการตรวจสอบจะแสดง `Probe: unavailable`
+- `--channel` เป็นตัวเลือก; ละไว้เพื่อแสดงทุกช่องทาง (รวมถึงส่วนขยาย)
+- `--account` ใช้ได้เฉพาะกับ `--channel`
+- `--target` รับ `channel:<id>` หรือ id ช่องทางแบบตัวเลขดิบ และใช้กับ Discord เท่านั้น
+- การตรวจเป็นแบบเฉพาะผู้ให้บริการ: Discord intents + สิทธิ์ช่องทางเพิ่มเติมถ้ามี; ขอบเขตบอท + ผู้ใช้ของ Slack; แฟล็กบอท + Webhook ของ Telegram; เวอร์ชันดีมอน Signal; โทเค็นแอป Microsoft Teams + บทบาท/ขอบเขต Graph (มีคำอธิบายกำกับเมื่อทราบ) ช่องทางที่ไม่มีการตรวจจะรายงาน `Probe: unavailable`
 
-## แก้ชื่อเป็น ID
+## แปลงชื่อเป็น ID
 
-แปลงชื่อช่องทาง/ผู้ใช้เป็น ID โดยใช้ไดเรกทอรีของผู้ให้บริการ:
+แปลงชื่อช่องทาง/ผู้ใช้เป็น ID โดยใช้ไดเรกทอรีผู้ให้บริการ:
 
 ```bash
 openclaw channels resolve --channel slack "#general" "@jane"
@@ -135,11 +136,11 @@ openclaw channels resolve --channel matrix "Project Room"
 
 หมายเหตุ:
 
-- ใช้ `--kind user|group|auto` เพื่อบังคับชนิดของเป้าหมาย
-- การแปลงจะให้ความสำคัญกับรายการที่ยังใช้งานอยู่เมื่อมีหลายรายการใช้ชื่อเดียวกัน
-- `channels resolve` เป็นแบบอ่านอย่างเดียว หากบัญชีที่เลือกถูกกำหนดค่าผ่าน SecretRef แต่ข้อมูลรับรองนั้นไม่พร้อมใช้งานในเส้นทางคำสั่งปัจจุบัน คำสั่งจะส่งคืนผลลัพธ์ที่ไม่สามารถแปลงได้แบบลดทอนพร้อมหมายเหตุ แทนการยกเลิกทั้งการทำงาน
+- ใช้ `--kind user|group|auto` เพื่อบังคับประเภทเป้าหมาย
+- การแปลงจะให้ความสำคัญกับรายการที่ใช้งานอยู่เมื่อมีหลายรายการใช้ชื่อเดียวกัน
+- `channels resolve` เป็นแบบอ่านอย่างเดียว ถ้าบัญชีที่เลือกถูกกำหนดค่าผ่าน SecretRef แต่ข้อมูลประจำตัวนั้นไม่พร้อมใช้งานในพาธคำสั่งปัจจุบัน คำสั่งจะคืนผลลัพธ์ที่ยังแปลงไม่ได้แบบลดระดับพร้อมหมายเหตุ แทนการยกเลิกการรันทั้งหมด
 
 ## ที่เกี่ยวข้อง
 
-- [CLI reference](/th/cli)
-- [ภาพรวม Channels](/th/channels)
+- [อ้างอิง CLI](/th/cli)
+- [ภาพรวมช่องทาง](/th/channels)

@@ -1,26 +1,26 @@
 ---
 read_when:
-    - คุณต้องการ Agents แบบแยกจากกันหลายตัว (เวิร์กสเปซ + การกำหนดเส้นทาง + การยืนยันตัวตน)
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw agents` (`list`/`add`/`delete`/`bindings`/`bind`/`unbind`/`set identity`)
-title: Agents
+    - คุณต้องการเอเจนต์ที่แยกกันหลายตัว (พื้นที่ทำงาน + การกำหนดเส้นทาง + การยืนยันตัวตน)
+summary: คู่มืออ้างอิง CLI สำหรับ `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
+title: เอเจนต์
 x-i18n:
-    generated_at: "2026-04-25T13:43:24Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fcd0698f0821f9444e84cd82fe78ee46071447fb4c3cada6d1a98b5130147691
+    source_hash: 46742a890a57cb1035a053f14fe574044e4a3d7dcc04812cd11c633bd808819b
     source_path: cli/agents.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw agents`
 
-จัดการ Agents แบบแยกจากกัน (เวิร์กสเปซ + การยืนยันตัวตน + การกำหนดเส้นทาง)
+จัดการเอเจนต์ที่แยกกัน (พื้นที่ทำงาน + การยืนยันตัวตน + การกำหนดเส้นทาง)
 
 ที่เกี่ยวข้อง:
 
-- การกำหนดเส้นทางแบบหลาย Agents: [Multi-Agent Routing](/th/concepts/multi-agent)
-- เวิร์กสเปซของ Agent: [Agent workspace](/th/concepts/agent-workspace)
-- การกำหนดค่าการมองเห็น Skills: [Skills config](/th/tools/skills-config)
+- [การกำหนดเส้นทางแบบหลายเอเจนต์](/th/concepts/multi-agent)
+- [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)
+- [การกำหนดค่า Skills](/th/tools/skills-config): การกำหนดค่าการมองเห็น Skills
 
 ## ตัวอย่าง
 
@@ -39,12 +39,9 @@ openclaw agents delete work
 
 ## การผูกการกำหนดเส้นทาง
 
-ใช้การผูกการกำหนดเส้นทางเพื่อปักหมุดทราฟฟิกขาเข้าจากช่องทางให้ไปยัง Agent ที่ระบุ
+ใช้การผูกการกำหนดเส้นทางเพื่อปักหมุดทราฟฟิกช่องทางขาเข้าไปยังเอเจนต์ที่ระบุ
 
-หากคุณต้องการให้แต่ละ Agent มองเห็น Skills แตกต่างกันด้วย ให้กำหนดค่า
-`agents.defaults.skills` และ `agents.list[].skills` ใน `openclaw.json` ดู
-[Skills config](/th/tools/skills-config) และ
-[Configuration Reference](/th/gateway/config-agents#agents-defaults-skills)
+หากคุณต้องการให้แต่ละเอเจนต์เห็น Skills ต่างกันด้วย ให้กำหนดค่า `agents.defaults.skills` และ `agents.list[].skills` ใน `openclaw.json` ดู [การกำหนดค่า Skills](/th/tools/skills-config) และ [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/config-agents#agents-defaults-skills)
 
 แสดงรายการการผูก:
 
@@ -60,27 +57,27 @@ openclaw agents bindings --json
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-หากคุณละ `accountId` (`--bind <channel>`) OpenClaw จะ resolve ค่านั้นจากค่าเริ่มต้นของช่องทางและ hook การตั้งค่า Plugin เมื่อมีให้ใช้งาน
+หากคุณละเว้น `accountId` (`--bind <channel>`) OpenClaw จะค้นหาจากค่าเริ่มต้นของช่องทางและฮุกการตั้งค่า Plugin เมื่อพร้อมใช้งาน
 
-หากคุณละ `--agent` สำหรับ `bind` หรือ `unbind` OpenClaw จะใช้ Agent เริ่มต้นปัจจุบันเป็นเป้าหมาย
+หากคุณละเว้น `--agent` สำหรับ `bind` หรือ `unbind` OpenClaw จะกำหนดเป้าหมายเป็นเอเจนต์เริ่มต้นปัจจุบัน
 
-### พฤติกรรมของขอบเขตการผูก
+### พฤติกรรมขอบเขตการผูก
 
 - การผูกที่ไม่มี `accountId` จะตรงกับบัญชีเริ่มต้นของช่องทางเท่านั้น
-- `accountId: "*"` คือ fallback ระดับช่องทาง (ทุกบัญชี) และมีความเฉพาะเจาะจงน้อยกว่าการผูกบัญชีแบบระบุชัด
-- หาก Agent เดียวกันมีการผูกช่องทางที่ตรงกันอยู่แล้วโดยไม่มี `accountId` และต่อมาคุณผูกด้วย `accountId` แบบระบุชัดหรือแบบ resolve แล้ว OpenClaw จะอัปเกรดการผูกเดิมนั้นในตำแหน่งเดิมแทนการเพิ่มรายการซ้ำ
+- `accountId: "*"` คือทางเลือกสำรองระดับทั้งช่องทาง (ทุกบัญชี) และมีความเฉพาะเจาะจงน้อยกว่าการผูกบัญชีแบบระบุชัดเจน
+- หากเอเจนต์เดียวกันมีการผูกช่องทางที่ตรงกันโดยไม่มี `accountId` อยู่แล้ว และภายหลังคุณผูกด้วย `accountId` ที่ระบุชัดเจนหรือค้นหาได้ OpenClaw จะอัปเกรดการผูกเดิมนั้นในที่เดิมแทนการเพิ่มรายการซ้ำ
 
 ตัวอย่าง:
 
 ```bash
-# การผูกระดับช่องทางเริ่มต้น
+# initial channel-only binding
 openclaw agents bind --agent work --bind telegram
 
-# ภายหลังอัปเกรดเป็นการผูกระดับบัญชี
+# later upgrade to account-scoped binding
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-หลังจากอัปเกรดแล้ว การกำหนดเส้นทางสำหรับการผูกนั้นจะอยู่ในขอบเขต `telegram:ops` หากคุณต้องการการกำหนดเส้นทางสำหรับบัญชีเริ่มต้นด้วย ให้เพิ่มอย่างชัดเจน (เช่น `--bind telegram:default`)
+หลังการอัปเกรด การกำหนดเส้นทางสำหรับการผูกนั้นจะถูกจำกัดขอบเขตไว้ที่ `telegram:ops` หากคุณต้องการการกำหนดเส้นทางสำหรับบัญชีเริ่มต้นด้วย ให้เพิ่มอย่างชัดเจน (เช่น `--bind telegram:default`)
 
 ลบการผูก:
 
@@ -89,20 +86,20 @@ openclaw agents unbind --agent work --bind telegram:ops
 openclaw agents unbind --agent work --all
 ```
 
-`unbind` รับได้อย่างใดอย่างหนึ่งระหว่าง `--all` หรือค่า `--bind` ตั้งแต่หนึ่งค่าขึ้นไป แต่ไม่รับทั้งสองแบบพร้อมกัน
+`unbind` รับได้ทั้ง `--all` หรือค่า `--bind` หนึ่งค่าหรือมากกว่า แต่ไม่รับทั้งสองแบบพร้อมกัน
 
 ## พื้นผิวคำสั่ง
 
 ### `agents`
 
-การรัน `openclaw agents` โดยไม่มีคำสั่งย่อย เทียบเท่ากับ `openclaw agents list`
+การเรียกใช้ `openclaw agents` โดยไม่มีคำสั่งย่อยเทียบเท่ากับ `openclaw agents list`
 
 ### `agents list`
 
 ตัวเลือก:
 
 - `--json`
-- `--bindings`: รวมกฎการกำหนดเส้นทางทั้งหมด ไม่ใช่เฉพาะจำนวน/สรุประดับ Agent
+- `--bindings`: รวมกฎการกำหนดเส้นทางแบบเต็ม ไม่ใช่เฉพาะจำนวน/สรุปรายเอเจนต์เท่านั้น
 
 ### `agents add [name]`
 
@@ -111,15 +108,20 @@ openclaw agents unbind --agent work --all
 - `--workspace <dir>`
 - `--model <id>`
 - `--agent-dir <dir>`
-- `--bind <channel[:accountId]>` (ใช้ซ้ำได้)
+- `--bind <channel[:accountId]>` (ทำซ้ำได้)
 - `--non-interactive`
 - `--json`
 
 หมายเหตุ:
 
-- หากส่งแฟล็กของ add แบบระบุชัดใด ๆ คำสั่งจะเปลี่ยนไปใช้เส้นทางแบบไม่โต้ตอบ
-- โหมดไม่โต้ตอบต้องมีทั้งชื่อ Agent และ `--workspace`
-- `main` เป็นชื่อสงวนและไม่สามารถใช้เป็น id ของ Agent ใหม่ได้
+- การส่งแฟล็กเพิ่มแบบชัดเจนใดๆ จะสลับคำสั่งเข้าสู่เส้นทางแบบไม่โต้ตอบ
+- โหมดไม่โต้ตอบต้องมีทั้งชื่อเอเจนต์และ `--workspace`
+- `main` ถูกสงวนไว้และไม่สามารถใช้เป็น id ของเอเจนต์ใหม่ได้
+- ในโหมดโต้ตอบ การตั้งต้นการยืนยันตัวตนจะคัดลอกเฉพาะโปรไฟล์สแตติกที่พกพาได้
+  (`api_key` และ `token` แบบสแตติกโดยค่าเริ่มต้น) โปรไฟล์ OAuth refresh-token จะยังคง
+  ใช้ได้เฉพาะผ่านการสืบทอดแบบอ่านทะลุจากที่เก็บเอเจนต์ `main` จริง
+  หากเอเจนต์เริ่มต้นที่กำหนดค่าไว้ไม่ใช่ `main` ให้ลงชื่อเข้าใช้แยกต่างหากสำหรับโปรไฟล์ OAuth
+  บนเอเจนต์ใหม่
 
 ### `agents bindings`
 
@@ -132,16 +134,16 @@ openclaw agents unbind --agent work --all
 
 ตัวเลือก:
 
-- `--agent <id>` (ค่าเริ่มต้นคือ Agent เริ่มต้นปัจจุบัน)
-- `--bind <channel[:accountId]>` (ใช้ซ้ำได้)
+- `--agent <id>` (ค่าเริ่มต้นคือเอเจนต์เริ่มต้นปัจจุบัน)
+- `--bind <channel[:accountId]>` (ทำซ้ำได้)
 - `--json`
 
 ### `agents unbind`
 
 ตัวเลือก:
 
-- `--agent <id>` (ค่าเริ่มต้นคือ Agent เริ่มต้นปัจจุบัน)
-- `--bind <channel[:accountId]>` (ใช้ซ้ำได้)
+- `--agent <id>` (ค่าเริ่มต้นคือเอเจนต์เริ่มต้นปัจจุบัน)
+- `--bind <channel[:accountId]>` (ทำซ้ำได้)
 - `--all`
 - `--json`
 
@@ -155,29 +157,29 @@ openclaw agents unbind --agent work --all
 หมายเหตุ:
 
 - ไม่สามารถลบ `main` ได้
-- หากไม่มี `--force` จะต้องมีการยืนยันแบบโต้ตอบ
-- ไดเรกทอรีเวิร์กสเปซ สถานะ Agent และทรานสคริปต์เซสชันจะถูกย้ายไปที่ Trash ไม่ได้ถูกลบถาวร
-- หากเวิร์กสเปซของ Agent อื่นเป็นพาธเดียวกัน อยู่ภายในเวิร์กสเปซนี้ หรือมีเวิร์กสเปซนี้อยู่ภายใน
-  เวิร์กสเปซจะถูกรักษาไว้ และ `--json` จะรายงาน `workspaceRetained`,
+- หากไม่มี `--force` ต้องยืนยันแบบโต้ตอบ
+- ไดเรกทอรีพื้นที่ทำงาน สถานะเอเจนต์ และทรานสคริปต์เซสชันจะถูกย้ายไปยังถังขยะ ไม่ใช่ลบถาวร
+- หากพื้นที่ทำงานของเอเจนต์อื่นเป็นพาธเดียวกัน อยู่ภายในพื้นที่ทำงานนี้ หรือมีพื้นที่ทำงานนี้อยู่ภายใน
+  พื้นที่ทำงานจะถูกเก็บไว้ และ `--json` จะรายงาน `workspaceRetained`,
   `workspaceRetainedReason` และ `workspaceSharedWith`
 
-## ไฟล์ Identity
+## ไฟล์ข้อมูลประจำตัว
 
-แต่ละเวิร์กสเปซของ Agent สามารถมี `IDENTITY.md` ที่รูทของเวิร์กสเปซได้:
+พื้นที่ทำงานของแต่ละเอเจนต์สามารถมี `IDENTITY.md` ที่รูทของพื้นที่ทำงาน:
 
-- ตัวอย่างพาธ: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` จะอ่านจากรูทของเวิร์กสเปซ (หรือ `--identity-file` ที่ระบุชัด)
+- พาธตัวอย่าง: `~/.openclaw/workspace/IDENTITY.md`
+- `set-identity --from-identity` อ่านจากรูทของพื้นที่ทำงาน (หรือ `--identity-file` ที่ระบุชัดเจน)
 
-พาธ avatar จะ resolve เทียบกับรูทของเวิร์กสเปซ
+พาธอวาตาร์จะถูกค้นหาโดยอิงจากรูทของพื้นที่ทำงาน
 
-## ตั้งค่า identity
+## ตั้งค่าข้อมูลประจำตัว
 
-`set-identity` จะเขียนฟิลด์ลงใน `agents.list[].identity`:
+`set-identity` เขียนฟิลด์ลงใน `agents.list[].identity`:
 
 - `name`
 - `theme`
 - `emoji`
-- `avatar` (พาธสัมพันธ์กับเวิร์กสเปซ, URL แบบ http(s), หรือ data URI)
+- `avatar` (พาธสัมพัทธ์กับพื้นที่ทำงาน, URL http(s) หรือ data URI)
 
 ตัวเลือก:
 
@@ -193,9 +195,9 @@ openclaw agents unbind --agent work --all
 
 หมายเหตุ:
 
-- สามารถใช้ `--agent` หรือ `--workspace` เพื่อเลือก Agent เป้าหมายได้
-- หากคุณใช้ `--workspace` และมีหลาย Agents ใช้เวิร์กสเปซเดียวกัน คำสั่งจะล้มเหลวและขอให้คุณส่ง `--agent`
-- เมื่อไม่มีการระบุฟิลด์ identity อย่างชัดเจน คำสั่งจะอ่านข้อมูล identity จาก `IDENTITY.md`
+- สามารถใช้ `--agent` หรือ `--workspace` เพื่อเลือกเอเจนต์เป้าหมาย
+- หากคุณพึ่งพา `--workspace` และมีหลายเอเจนต์ใช้พื้นที่ทำงานนั้นร่วมกัน คำสั่งจะล้มเหลวและขอให้คุณส่ง `--agent`
+- เมื่อไม่ได้ระบุฟิลด์ข้อมูลประจำตัวอย่างชัดเจน คำสั่งจะอ่านข้อมูลประจำตัวจาก `IDENTITY.md`
 
 โหลดจาก `IDENTITY.md`:
 
@@ -203,7 +205,7 @@ openclaw agents unbind --agent work --all
 openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 ```
 
-เขียนทับฟิลด์แบบระบุชัด:
+แทนที่ฟิลด์อย่างชัดเจน:
 
 ```bash
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
@@ -231,6 +233,6 @@ openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --ava
 
 ## ที่เกี่ยวข้อง
 
-- [CLI reference](/th/cli)
-- [Multi-Agent Routing](/th/concepts/multi-agent)
-- [Agent workspace](/th/concepts/agent-workspace)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [การกำหนดเส้นทางแบบหลายเอเจนต์](/th/concepts/multi-agent)
+- [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)

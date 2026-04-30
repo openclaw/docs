@@ -2,71 +2,76 @@
 read_when: You want multiple isolated agents (workspaces + auth) in one gateway process.
 sidebarTitle: Multi-agent routing
 status: active
-summary: 'การกำหนดเส้นทางหลายเอเจนต์: เอเจนต์แบบแยกขาด บัญชีช่องทาง และการผูก'
-title: การกำหนดเส้นทางหลายเอเจนต์
+summary: 'การกำหนดเส้นทางแบบหลายเอเจนต์: เอเจนต์ที่แยกจากกัน, บัญชีช่องทาง, และการผูก'
+title: การกำหนดเส้นทางแบบหลายเอเจนต์
 x-i18n:
-    generated_at: "2026-04-26T11:28:02Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:47:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 845149ac1076d4746cc5038bd4444c2fc6117710f724b8cabdc31dc9ef6abbe8
+    source_hash: 67adea74d5f97feff3f816cc4c34c9429e7659289013e5a7c7623bd185a50a31
     source_path: concepts/multi-agent.md
-    workflow: 15
+    workflow: 16
 ---
 
-รันเอเจนต์แบบ _isolated_ หลายตัว — แต่ละตัวมี workspace, ไดเรกทอรีสถานะ (`agentDir`) และประวัติเซสชันของตัวเอง — พร้อมกับบัญชีช่องทางหลายบัญชี (เช่น WhatsApp สองบัญชี) ภายใน Gateway ที่กำลังรันอยู่หนึ่งตัว ข้อความขาเข้าจะถูกกำหนดเส้นทางไปยังเอเจนต์ที่ถูกต้องผ่าน bindings
+เรียกใช้เอเจนต์แบบ_แยกอิสระ_หลายตัว โดยแต่ละตัวมีพื้นที่ทำงาน ไดเรกทอรีสถานะ (`agentDir`) และประวัติเซสชันของตัวเอง พร้อมกับบัญชีช่องทางหลายบัญชี (เช่น WhatsApp สองบัญชี) ใน Gateway ที่กำลังทำงานหนึ่งตัว ข้อความขาเข้าจะถูกกำหนดเส้นทางไปยังเอเจนต์ที่ถูกต้องผ่านการผูก
 
-**เอเจนต์** ในที่นี้หมายถึงขอบเขต persona เต็มรูปแบบ: ไฟล์ workspace, auth profile, model registry และ session store `agentDir` คือไดเรกทอรีสถานะบนดิสก์ที่เก็บ config ต่อเอเจนต์นี้ไว้ที่ `~/.openclaw/agents/<agentId>/` ส่วน **binding** จะจับคู่บัญชีช่องทาง (เช่น workspace ของ Slack หรือหมายเลข WhatsApp) ไปยังเอเจนต์ตัวใดตัวหนึ่งเหล่านั้น
+**เอเจนต์** ในที่นี้คือขอบเขตแบบเต็มต่อหนึ่งบุคลิก: ไฟล์พื้นที่ทำงาน โปรไฟล์การยืนยันตัวตน รีจิสทรีโมเดล และที่เก็บเซสชัน `agentDir` คือไดเรกทอรีสถานะบนดิสก์ที่เก็บการกำหนดค่าต่อเอเจนต์นี้ไว้ที่ `~/.openclaw/agents/<agentId>/` **การผูก** จะจับคู่บัญชีช่องทาง (เช่น พื้นที่ทำงาน Slack หรือหมายเลข WhatsApp) กับเอเจนต์หนึ่งในเหล่านั้น
 
-## "หนึ่งเอเจนต์" คืออะไร
+## "เอเจนต์หนึ่งตัว" คืออะไร?
 
-**เอเจนต์** คือสมองที่มีขอบเขตครบถ้วนและมีของตัวเองดังนี้:
+**เอเจนต์** คือสมองที่มีขอบเขตครบถ้วนพร้อมสิ่งเหล่านี้ของตัวเอง:
 
-- **Workspace** (ไฟล์, AGENTS.md/SOUL.md/USER.md, บันทึกภายในเครื่อง, กฎ persona)
-- **ไดเรกทอรีสถานะ** (`agentDir`) สำหรับ auth profile, model registry และ config ต่อเอเจนต์
-- **Session store** (ประวัติแชต + สถานะการกำหนดเส้นทาง) ภายใต้ `~/.openclaw/agents/<agentId>/sessions`
+- **พื้นที่ทำงาน** (ไฟล์, AGENTS.md/SOUL.md/USER.md, โน้ตในเครื่อง, กฎบุคลิก)
+- **ไดเรกทอรีสถานะ** (`agentDir`) สำหรับโปรไฟล์การยืนยันตัวตน รีจิสทรีโมเดล และการกำหนดค่าต่อเอเจนต์
+- **ที่เก็บเซสชัน** (ประวัติแชต + สถานะการกำหนดเส้นทาง) ภายใต้ `~/.openclaw/agents/<agentId>/sessions`
 
-Auth profile เป็นแบบ **ต่อเอเจนต์** แต่ละเอเจนต์จะอ่านจากไฟล์ของตัวเองที่:
+โปรไฟล์การยืนยันตัวตนเป็นแบบ**ต่อเอเจนต์** แต่ละเอเจนต์อ่านจากของตัวเอง:
 
 ```text
 ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
 ```
 
 <Note>
-`sessions_history` เป็นเส้นทางเรียกคืนข้ามเซสชันที่ปลอดภัยกว่าที่นี่เช่นกัน: มันจะคืนมุมมองที่ถูกจำกัดและผ่านการ sanitize แล้ว ไม่ใช่การดัมป์ transcript ดิบ การเรียกคืนฝั่ง assistant จะลบแท็ก thinking, โครง `<relevant-memories>`, payload XML ของ tool-call แบบข้อความล้วน (รวมถึง `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` และบล็อก tool-call ที่ถูกตัดทอน), โครง tool-call ที่ถูกลดระดับ, model control token แบบ ASCII/ฟูลวิธที่รั่วออกมา และ XML tool-call ของ MiniMax ที่ผิดรูปแบบ ออกก่อนขั้นตอน redaction/truncation
+`sessions_history` เป็นเส้นทางการเรียกคืนข้ามเซสชันที่ปลอดภัยกว่าที่นี่เช่นกัน: มันส่งคืนมุมมองที่มีขอบเขตและผ่านการทำให้ปลอดภัยแล้ว ไม่ใช่การดัมป์ทรานสคริปต์ดิบ การเรียกคืนของผู้ช่วยจะลบแท็กการคิด โครง scaffolding ของ `<relevant-memories>` เพย์โหลด XML การเรียกเครื่องมือแบบข้อความล้วน (รวมถึง `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` และบล็อกการเรียกเครื่องมือที่ถูกตัดทอน) โครง scaffolding การเรียกเครื่องมือที่ถูกลดระดับ โทเค็นควบคุมโมเดลแบบ ASCII/เต็มความกว้างที่รั่วไหล และ XML การเรียกเครื่องมือ MiniMax ที่ผิดรูปแบบ ก่อนการปกปิด/ตัดทอน
 </Note>
 
 <Warning>
-ข้อมูลรับรองของเอเจนต์หลักจะ **ไม่** ถูกแชร์โดยอัตโนมัติ อย่านำ `agentDir` เดียวกันมาใช้ซ้ำข้ามเอเจนต์ (จะทำให้ auth/session ชนกัน) หากคุณต้องการแชร์ข้อมูลรับรอง ให้คัดลอก `auth-profiles.json` ไปยัง `agentDir` ของเอเจนต์อีกตัว
+ห้ามใช้ `agentDir` ซ้ำข้ามเอเจนต์ (ทำให้เกิดการชนกันของการยืนยันตัวตน/เซสชัน) เอเจนต์
+สามารถอ่านทะลุไปยังโปรไฟล์การยืนยันตัวตนของเอเจนต์เริ่มต้น/หลักได้เมื่อไม่มี
+โปรไฟล์ในเครื่อง แต่ OpenClaw จะไม่โคลนโทเค็นรีเฟรช OAuth ไปยัง
+ที่เก็บเอเจนต์รอง หากคุณต้องการบัญชี OAuth อิสระ ให้ลงชื่อเข้าจาก
+เอเจนต์นั้น หากคุณคัดลอกข้อมูลรับรองด้วยตนเอง ให้คัดลอกเฉพาะโปรไฟล์ `api_key` หรือ `token`
+แบบคงที่ที่ย้ายได้เท่านั้น
 </Warning>
 
-Skills จะถูกโหลดจาก workspace ของแต่ละเอเจนต์รวมถึงรากที่แชร์ร่วมกัน เช่น `~/.openclaw/skills` จากนั้นจะถูกกรองตาม allowlist ของ Skills ที่มีผลจริงของเอเจนต์เมื่อมีการกำหนดค่าไว้ ใช้ `agents.defaults.skills` สำหรับค่าเริ่มต้นร่วมกัน และ `agents.list[].skills` สำหรับการแทนที่รายเอเจนต์ ดู [Skills: per-agent vs shared](/th/tools/skills#per-agent-vs-shared-skills) และ [Skills: agent skill allowlists](/th/tools/skills#agent-skill-allowlists)
+Skills จะถูกโหลดจากพื้นที่ทำงานของแต่ละเอเจนต์ รวมถึงรากที่ใช้ร่วมกัน เช่น `~/.openclaw/skills` จากนั้นจะถูกกรองด้วยรายการอนุญาต Skills ของเอเจนต์ที่มีผลเมื่อกำหนดค่าไว้ ใช้ `agents.defaults.skills` สำหรับฐานร่วม และ `agents.list[].skills` สำหรับการแทนที่ต่อเอเจนต์ ดู [Skills: ต่อเอเจนต์เทียบกับแบบใช้ร่วมกัน](/th/tools/skills#per-agent-vs-shared-skills) และ [Skills: รายการอนุญาต Skills ของเอเจนต์](/th/tools/skills#agent-skill-allowlists)
 
-Gateway สามารถโฮสต์ได้ทั้ง **หนึ่งเอเจนต์** (ค่าเริ่มต้น) หรือ **หลายเอเจนต์** แบบเคียงข้างกัน
+Gateway สามารถโฮสต์**เอเจนต์หนึ่งตัว** (ค่าเริ่มต้น) หรือ**เอเจนต์หลายตัว** เคียงข้างกันได้
 
 <Note>
-**หมายเหตุเรื่อง Workspace:** workspace ของแต่ละเอเจนต์คือ **cwd เริ่มต้น** ไม่ใช่ sandbox แบบเข้มงวด พาธแบบ relative จะ resolve ภายใน workspace แต่พาธแบบ absolute ยังสามารถเข้าถึงตำแหน่งอื่นบนโฮสต์ได้ เว้นแต่จะเปิดใช้ sandboxing ดู [Sandboxing](/th/gateway/sandboxing)
+**หมายเหตุพื้นที่ทำงาน:** พื้นที่ทำงานของแต่ละเอเจนต์คือ **cwd เริ่มต้น** ไม่ใช่ sandbox แบบแข็ง พาธสัมพัทธ์จะ resolve ภายในพื้นที่ทำงาน แต่พาธสัมบูรณ์สามารถเข้าถึงตำแหน่งอื่นบนโฮสต์ได้ เว้นแต่จะเปิดใช้ sandboxing ดู [Sandboxing](/th/gateway/sandboxing)
 </Note>
 
-## พาธ (แผนที่อย่างย่อ)
+## พาธ (แผนที่แบบเร็ว)
 
-- Config: `~/.openclaw/openclaw.json` (หรือ `OPENCLAW_CONFIG_PATH`)
+- การกำหนดค่า: `~/.openclaw/openclaw.json` (หรือ `OPENCLAW_CONFIG_PATH`)
 - ไดเรกทอรีสถานะ: `~/.openclaw` (หรือ `OPENCLAW_STATE_DIR`)
-- Workspace: `~/.openclaw/workspace` (หรือ `~/.openclaw/workspace-<agentId>`)
-- Agent dir: `~/.openclaw/agents/<agentId>/agent` (หรือ `agents.list[].agentDir`)
-- Sessions: `~/.openclaw/agents/<agentId>/sessions`
+- พื้นที่ทำงาน: `~/.openclaw/workspace` (หรือ `~/.openclaw/workspace-<agentId>`)
+- ไดเรกทอรีเอเจนต์: `~/.openclaw/agents/<agentId>/agent` (หรือ `agents.list[].agentDir`)
+- เซสชัน: `~/.openclaw/agents/<agentId>/sessions`
 
 ### โหมดเอเจนต์เดียว (ค่าเริ่มต้น)
 
-หากคุณไม่ทำอะไร OpenClaw จะรันเอเจนต์เดียว:
+หากคุณไม่ทำอะไร OpenClaw จะเรียกใช้เอเจนต์หนึ่งตัว:
 
 - `agentId` มีค่าเริ่มต้นเป็น **`main`**
-- Sessions จะใช้คีย์เป็น `agent:main:<mainKey>`
-- Workspace มีค่าเริ่มต้นเป็น `~/.openclaw/workspace` (หรือ `~/.openclaw/workspace-<profile>` เมื่อมีการตั้ง `OPENCLAW_PROFILE`)
+- เซสชันจะถูก key เป็น `agent:main:<mainKey>`
+- พื้นที่ทำงานมีค่าเริ่มต้นเป็น `~/.openclaw/workspace` (หรือ `~/.openclaw/workspace-<profile>` เมื่อตั้งค่า `OPENCLAW_PROFILE`)
 - สถานะมีค่าเริ่มต้นเป็น `~/.openclaw/agents/main/agent`
 
 ## ตัวช่วยเอเจนต์
 
-ใช้วิซาร์ดเอเจนต์เพื่อเพิ่มเอเจนต์แบบ isolated ใหม่:
+ใช้วิซาร์ดเอเจนต์เพื่อเพิ่มเอเจนต์แบบแยกอิสระใหม่:
 
 ```bash
 openclaw agents add work
@@ -83,35 +88,35 @@ openclaw agents list --bindings
 ## เริ่มต้นอย่างรวดเร็ว
 
 <Steps>
-  <Step title="สร้าง workspace ของแต่ละเอเจนต์">
-    ใช้วิซาร์ดหรือสร้าง workspace เองด้วยตนเอง:
+  <Step title="สร้างพื้นที่ทำงานของแต่ละเอเจนต์">
+    ใช้วิซาร์ดหรือสร้างพื้นที่ทำงานด้วยตนเอง:
 
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    แต่ละเอเจนต์จะมี workspace ของตัวเองพร้อม `SOUL.md`, `AGENTS.md` และ `USER.md` แบบไม่บังคับ รวมถึง `agentDir` และ session store เฉพาะภายใต้ `~/.openclaw/agents/<agentId>`
+    แต่ละเอเจนต์จะได้พื้นที่ทำงานของตัวเองพร้อม `SOUL.md`, `AGENTS.md` และ `USER.md` ที่ไม่บังคับ รวมถึง `agentDir` เฉพาะและที่เก็บเซสชันภายใต้ `~/.openclaw/agents/<agentId>`
 
   </Step>
   <Step title="สร้างบัญชีช่องทาง">
-    สร้างหนึ่งบัญชีต่อหนึ่งเอเจนต์บนช่องทางที่คุณต้องการ:
+    สร้างหนึ่งบัญชีต่อเอเจนต์บนช่องทางที่คุณต้องการ:
 
-    - Discord: หนึ่งบอตต่อหนึ่งเอเจนต์ เปิด Message Content Intent แล้วคัดลอกโทเค็นของแต่ละตัว
-    - Telegram: หนึ่งบอตต่อหนึ่งเอเจนต์ผ่าน BotFather แล้วคัดลอกโทเค็นของแต่ละตัว
-    - WhatsApp: ลิงก์หมายเลขโทรศัพท์แต่ละหมายเลขตามบัญชี
+    - Discord: หนึ่งบอตต่อเอเจนต์ เปิดใช้ Message Content Intent แล้วคัดลอกแต่ละโทเค็น
+    - Telegram: หนึ่งบอตต่อเอเจนต์ผ่าน BotFather แล้วคัดลอกแต่ละโทเค็น
+    - WhatsApp: เชื่อมโยงแต่ละหมายเลขโทรศัพท์ต่อบัญชี
 
     ```bash
     openclaw channels login --channel whatsapp --account work
     ```
 
-    ดูคู่มือของแต่ละช่องทาง: [Discord](/th/channels/discord), [Telegram](/th/channels/telegram), [WhatsApp](/th/channels/whatsapp)
+    ดูคู่มือช่องทาง: [Discord](/th/channels/discord), [Telegram](/th/channels/telegram), [WhatsApp](/th/channels/whatsapp)
 
   </Step>
-  <Step title="เพิ่มเอเจนต์ บัญชี และ bindings">
-    เพิ่มเอเจนต์ภายใต้ `agents.list`, เพิ่มบัญชีช่องทางภายใต้ `channels.<channel>.accounts` และเชื่อมกันด้วย `bindings` (ดูตัวอย่างด้านล่าง)
+  <Step title="เพิ่มเอเจนต์ บัญชี และการผูก">
+    เพิ่มเอเจนต์ภายใต้ `agents.list` บัญชีช่องทางภายใต้ `channels.<channel>.accounts` และเชื่อมต่อด้วย `bindings` (ตัวอย่างด้านล่าง)
   </Step>
-  <Step title="รีสตาร์ตและตรวจสอบ">
+  <Step title="รีสตาร์ทและตรวจสอบ">
     ```bash
     openclaw gateway restart
     openclaw agents list --bindings
@@ -120,19 +125,19 @@ openclaw agents list --bindings
   </Step>
 </Steps>
 
-## หลายเอเจนต์ = หลายคน หลายบุคลิก
+## เอเจนต์หลายตัว = หลายคน หลายบุคลิก
 
-เมื่อมี **หลายเอเจนต์** แต่ละ `agentId` จะกลายเป็น **persona ที่แยกขาดอย่างสมบูรณ์**:
+ด้วย**เอเจนต์หลายตัว** แต่ละ `agentId` จะกลายเป็น**บุคลิกที่แยกอิสระเต็มรูปแบบ**:
 
-- **หมายเลขโทรศัพท์/บัญชีที่ต่างกัน** (ตาม `accountId` ของแต่ละช่องทาง)
-- **บุคลิกที่ต่างกัน** (ตามไฟล์ workspace ของเอเจนต์ เช่น `AGENTS.md` และ `SOUL.md`)
-- **auth + sessions แยกกัน** (ไม่มีการปะปนกัน เว้นแต่จะเปิดใช้งานโดยชัดเจน)
+- **หมายเลขโทรศัพท์/บัญชีที่แตกต่างกัน** (`accountId` ต่อช่องทาง)
+- **บุคลิกที่แตกต่างกัน** (ไฟล์พื้นที่ทำงานต่อเอเจนต์ เช่น `AGENTS.md` และ `SOUL.md`)
+- **การยืนยันตัวตน + เซสชันแยกกัน** (ไม่มีการคุยข้าม เว้นแต่จะเปิดใช้โดยชัดเจน)
 
-สิ่งนี้ทำให้ **หลายคน** สามารถใช้ Gateway เซิร์ฟเวอร์ตัวเดียวร่วมกันได้ โดยที่ "สมอง" AI และข้อมูลของแต่ละคนยังแยกออกจากกัน
+สิ่งนี้ทำให้**หลายคน**ใช้เซิร์ฟเวอร์ Gateway เดียวร่วมกันได้ โดยยังแยก "สมอง" AI และข้อมูลของแต่ละคนออกจากกัน
 
-## การค้นหา QMD memory ข้ามเอเจนต์
+## การค้นหาหน่วยความจำ QMD ข้ามเอเจนต์
 
-หากเอเจนต์หนึ่งควรค้น transcript ของเซสชัน QMD ของอีกเอเจนต์ ให้เพิ่ม collection เพิ่มเติมไว้ภายใต้ `agents.list[].memorySearch.qmd.extraCollections` ใช้ `agents.defaults.memorySearch.qmd.extraCollections` เฉพาะเมื่อคุณต้องการให้ทุกเอเจนต์สืบทอด collection transcript ที่แชร์ร่วมกันเหมือนกัน
+หากเอเจนต์หนึ่งควรค้นหาทรานสคริปต์เซสชัน QMD ของเอเจนต์อื่น ให้เพิ่มคอลเลกชันเพิ่มเติมภายใต้ `agents.list[].memorySearch.qmd.extraCollections` ใช้ `agents.defaults.memorySearch.qmd.extraCollections` เฉพาะเมื่อทุกเอเจนต์ควรสืบทอดคอลเลกชันทรานสคริปต์ที่ใช้ร่วมกันชุดเดียวกัน
 
 ```json5
 {
@@ -151,7 +156,7 @@ openclaw agents list --bindings
         workspace: "~/workspaces/main",
         memorySearch: {
           qmd: {
-            extraCollections: [{ path: "notes" }], // resolve ภายใน workspace -> collection ชื่อ "notes-main"
+            extraCollections: [{ path: "notes" }], // resolves inside workspace -> collection named "notes-main"
           },
         },
       },
@@ -165,14 +170,14 @@ openclaw agents list --bindings
 }
 ```
 
-พาธของ collection เพิ่มเติมสามารถแชร์ข้ามเอเจนต์ได้ แต่ชื่อ collection จะยังคงชัดเจนเมื่อพาธอยู่นอก workspace ของเอเจนต์ พาธที่อยู่ภายใน workspace จะยังคงอยู่ในขอบเขตของเอเจนต์ จึงทำให้แต่ละเอเจนต์มีชุดการค้นหา transcript ของตัวเอง
+พาธคอลเลกชันเพิ่มเติมสามารถใช้ร่วมกันข้ามเอเจนต์ได้ แต่ชื่อคอลเลกชันจะยังคงระบุชัดเจนเมื่อพาธอยู่นอกพื้นที่ทำงานของเอเจนต์ พาธภายในพื้นที่ทำงานยังคงอยู่ในขอบเขตเอเจนต์ เพื่อให้แต่ละเอเจนต์เก็บชุดการค้นหาทรานสคริปต์ของตัวเอง
 
-## หนึ่งหมายเลข WhatsApp หลายคน (แยก DM)
+## หมายเลข WhatsApp หนึ่งหมายเลข หลายคน (แยก DM)
 
-คุณสามารถกำหนดเส้นทาง **DM ของ WhatsApp ที่ต่างกัน** ไปยังเอเจนต์ต่างกันได้ ขณะที่ยังใช้ **บัญชี WhatsApp เดียว** โดยจับคู่จาก E.164 ของผู้ส่ง (เช่น `+15551234567`) ด้วย `peer.kind: "direct"` การตอบกลับจะยังออกมาจากหมายเลข WhatsApp เดิม (ไม่มีตัวตนผู้ส่งแยกรายเอเจนต์)
+คุณสามารถกำหนดเส้นทาง**ข้อความส่วนตัว WhatsApp ที่ต่างกัน**ไปยังเอเจนต์ต่างกันได้ ขณะยังคงใช้**บัญชี WhatsApp เดียว** จับคู่ตามผู้ส่ง E.164 (เช่น `+15551234567`) ด้วย `peer.kind: "direct"` การตอบกลับยังมาจากหมายเลข WhatsApp เดิม (ไม่มีตัวตนผู้ส่งแยกตามเอเจนต์)
 
 <Note>
-แชตแบบ direct จะถูกรวมเป็น **main session key** ของเอเจนต์ ดังนั้นการแยกขาดอย่างแท้จริงจึงต้องใช้ **หนึ่งเอเจนต์ต่อหนึ่งคน**
+แชตโดยตรงจะยุบไปยัง**คีย์เซสชันหลัก**ของเอเจนต์ ดังนั้นการแยกอิสระจริงต้องใช้**หนึ่งเอเจนต์ต่อหนึ่งคน**
 </Note>
 
 ตัวอย่าง:
@@ -206,22 +211,22 @@ openclaw agents list --bindings
 
 หมายเหตุ:
 
-- การควบคุมการเข้าถึง DM เป็นแบบ **ส่วนกลางต่อบัญชี WhatsApp** (pairing/allowlist) ไม่ใช่ต่อเอเจนต์
-- สำหรับกลุ่มที่แชร์ร่วมกัน ให้ผูกกลุ่มนั้นเข้ากับเอเจนต์หนึ่งตัว หรือใช้ [Broadcast groups](/th/channels/broadcast-groups)
+- การควบคุมการเข้าถึง DM เป็นแบบ**ทั่วทั้งบัญชี WhatsApp** (การจับคู่/รายการอนุญาต) ไม่ใช่ต่อเอเจนต์
+- สำหรับกลุ่มที่ใช้ร่วมกัน ให้ผูกกลุ่มกับเอเจนต์หนึ่งตัว หรือใช้ [กลุ่มกระจายข้อความ](/th/channels/broadcast-groups)
 
 ## กฎการกำหนดเส้นทาง (ข้อความเลือกเอเจนต์อย่างไร)
 
-Bindings เป็นแบบ **กำหนดแน่นอน** และ **เฉพาะเจาะจงที่สุดชนะ**:
+การผูกเป็นแบบ**กำหนดแน่นอน** และ**รายการที่เฉพาะเจาะจงที่สุดชนะ**:
 
 <Steps>
-  <Step title="peer match">
-    DM/group/channel id ที่ตรงกันแบบเป๊ะ
+  <Step title="จับคู่ peer">
+    ID ของ DM/กลุ่ม/ช่องทางแบบตรงกันเป๊ะ
   </Step>
-  <Step title="parentPeer match">
-    การสืบทอดของเธรด
+  <Step title="จับคู่ parentPeer">
+    การสืบทอดเธรด
   </Step>
   <Step title="guildId + roles">
-    การกำหนดเส้นทางตาม role ของ Discord
+    การกำหนดเส้นทางตามบทบาท Discord
   </Step>
   <Step title="guildId">
     Discord
@@ -229,36 +234,36 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
   <Step title="teamId">
     Slack
   </Step>
-  <Step title="accountId match for a channel">
-    fallback รายบัญชี
+  <Step title="จับคู่ accountId สำหรับช่องทาง">
+    fallback ต่อบัญชี
   </Step>
-  <Step title="Channel-level match">
+  <Step title="จับคู่ระดับช่องทาง">
     `accountId: "*"`
   </Step>
-  <Step title="Default agent">
-    fallback ไปที่ `agents.list[].default` มิฉะนั้นใช้รายการแรกในลิสต์ ค่าเริ่มต้น: `main`
+  <Step title="เอเจนต์เริ่มต้น">
+    fallback ไปยัง `agents.list[].default` มิฉะนั้นใช้ รายการแรก ค่าเริ่มต้น: `main`
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="กติกาตัดสินเมื่อเสมอและความหมายแบบ AND">
-    - หากมีหลาย binding ตรงกันใน tier เดียวกัน ตัวแรกตามลำดับใน config จะชนะ
-    - หาก binding หนึ่งกำหนดหลายฟิลด์สำหรับ match (เช่น `peer` + `guildId`) ทุกฟิลด์ที่ระบุจะต้องตรงกันทั้งหมด (ความหมายแบบ `AND`)
+  <Accordion title="การตัดสินกรณีเสมอและความหมายแบบ AND">
+    - หากมีหลายการผูกที่ตรงกันในลำดับชั้นเดียวกัน รายการแรกตามลำดับใน config จะชนะ
+    - หากการผูกตั้งค่าฟิลด์การจับคู่หลายฟิลด์ (เช่น `peer` + `guildId`) ฟิลด์ที่ระบุทั้งหมดจำเป็นต้องตรงกัน (ความหมายแบบ `AND`)
 
   </Accordion>
   <Accordion title="รายละเอียดขอบเขตบัญชี">
-    - binding ที่ละ `accountId` จะจับคู่เฉพาะบัญชีเริ่มต้นเท่านั้น
-    - ใช้ `accountId: "*"` สำหรับ fallback ระดับช่องทางข้ามทุกบัญชี
-    - หากภายหลังคุณเพิ่ม binding เดียวกันสำหรับเอเจนต์เดิมโดยใช้ account id แบบ explicit, OpenClaw จะอัปเกรด binding เดิมที่เป็นระดับช่องทางให้เป็นแบบมีขอบเขตบัญชี แทนที่จะสร้างรายการซ้ำ
+    - การผูกที่ละ `accountId` จะจับคู่เฉพาะบัญชีเริ่มต้นเท่านั้น
+    - ใช้ `accountId: "*"` สำหรับ fallback ครอบคลุมทั้งช่องทางในทุกบัญชี
+    - หากภายหลังคุณเพิ่มการผูกเดียวกันสำหรับเอเจนต์เดียวกันพร้อม ID บัญชีแบบชัดเจน OpenClaw จะอัปเกรดการผูกเฉพาะช่องทางที่มีอยู่ให้เป็นแบบมีขอบเขตบัญชีแทนที่จะทำซ้ำ
 
   </Accordion>
 </AccordionGroup>
 
-## หลายบัญชี / หลายหมายเลขโทรศัพท์
+## หลายบัญชี / หมายเลขโทรศัพท์
 
-ช่องทางที่รองรับ **หลายบัญชี** (เช่น WhatsApp) ใช้ `accountId` เพื่อระบุแต่ละการล็อกอิน แต่ละ `accountId` สามารถกำหนดเส้นทางไปยังเอเจนต์คนละตัวได้ จึงทำให้เซิร์ฟเวอร์หนึ่งเครื่องโฮสต์หมายเลขโทรศัพท์หลายหมายเลขได้โดยไม่ทำให้เซสชันปะปนกัน
+ช่องทางที่รองรับ**หลายบัญชี** (เช่น WhatsApp) ใช้ `accountId` เพื่อระบุการเข้าสู่ระบบแต่ละครั้ง แต่ละ `accountId` สามารถกำหนดเส้นทางไปยังเอเจนต์คนละตัวได้ ดังนั้นเซิร์ฟเวอร์หนึ่งตัวจึงโฮสต์หมายเลขโทรศัพท์หลายหมายเลขได้โดยไม่ผสมเซสชันกัน
 
-หากคุณต้องการบัญชีเริ่มต้นระดับช่องทางเมื่อไม่มีการระบุ `accountId` ให้ตั้ง `channels.<channel>.defaultAccount` (ไม่บังคับ) หากไม่ตั้ง OpenClaw จะ fallback ไปใช้ `default` หากมี มิฉะนั้นจะใช้ account id ตัวแรกที่กำหนดไว้ (ตามลำดับที่จัดเรียง)
+หากคุณต้องการบัญชีเริ่มต้นทั้งช่องทางเมื่อไม่ได้ระบุ `accountId` ให้ตั้งค่า `channels.<channel>.defaultAccount` (ไม่บังคับ) เมื่อไม่ได้ตั้งค่า OpenClaw จะ fallback ไปยัง `default` หากมี มิฉะนั้นใช้ ID บัญชีที่กำหนดค่าไว้รายการแรก (เรียงลำดับแล้ว)
 
 ช่องทางทั่วไปที่รองรับรูปแบบนี้ ได้แก่:
 
@@ -268,16 +273,16 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
 
 ## แนวคิด
 
-- `agentId`: หนึ่ง "สมอง" (workspace, auth ต่อเอเจนต์, session store ต่อเอเจนต์)
-- `accountId`: อินสแตนซ์บัญชีช่องทางหนึ่งตัว (เช่น บัญชี WhatsApp `"personal"` เทียบกับ `"biz"`)
-- `binding`: กำหนดเส้นทางข้อความขาเข้าไปยัง `agentId` โดยใช้ `(channel, accountId, peer)` และอาจรวม guild/team id ด้วย
-- แชตแบบ direct จะถูกรวมเป็น `agent:<agentId>:<mainKey>` (ค่า "main" ต่อเอเจนต์; `session.mainKey`)
+- `agentId`: "สมอง" หนึ่งชุด (พื้นที่ทำงาน, การยืนยันตัวตนต่อเอเจนต์, ที่เก็บเซสชันต่อเอเจนต์)
+- `accountId`: อินสแตนซ์บัญชีช่องทางหนึ่งชุด (เช่น บัญชี WhatsApp `"personal"` เทียบกับ `"biz"`)
+- `binding`: กำหนดเส้นทางข้อความขาเข้าไปยัง `agentId` ตาม `(channel, accountId, peer)` และ ID ของ guild/team ที่ไม่บังคับ
+- แชตโดยตรงจะยุบเป็น `agent:<agentId>:<mainKey>` ("หลัก" ต่อเอเจนต์; `session.mainKey`)
 
-## ตัวอย่างตามแพลตฟอร์ม
+## ตัวอย่างแพลตฟอร์ม
 
 <AccordionGroup>
-  <Accordion title="บอต Discord แยกต่อเอเจนต์">
-    บัญชีบอต Discord แต่ละตัวจะจับคู่กับ `accountId` ที่ไม่ซ้ำกัน ผูกแต่ละบัญชีเข้ากับเอเจนต์หนึ่งตัว และคง allowlist แยกตามบอต
+  <Accordion title="บอต Discord ต่อเอเจนต์">
+    แต่ละบัญชีบอต Discord จะจับคู่กับ `accountId` ที่ไม่ซ้ำกัน ผูกแต่ละบัญชีกับเอเจนต์ และเก็บรายการอนุญาตแยกตามบอต
 
     ```json5
     {
@@ -321,11 +326,11 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
     }
     ```
 
-    - เชิญแต่ละบอตเข้าสู่ guild และเปิด Message Content Intent
-    - โทเค็นอยู่ใน `channels.discord.accounts.<id>.token` (บัญชีเริ่มต้นสามารถใช้ `DISCORD_BOT_TOKEN`)
+    - เชิญบอทแต่ละตัวเข้ากิลด์และเปิดใช้งาน Message Content Intent
+    - โทเค็นอยู่ใน `channels.discord.accounts.<id>.token` (บัญชีเริ่มต้นสามารถใช้ `DISCORD_BOT_TOKEN` ได้)
 
   </Accordion>
-  <Accordion title="บอต Telegram แยกต่อเอเจนต์">
+  <Accordion title="บอท Telegram ต่อ agent">
     ```json5
     {
       agents: {
@@ -356,12 +361,12 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
     }
     ```
 
-    - สร้างหนึ่งบอตต่อหนึ่งเอเจนต์ด้วย BotFather แล้วคัดลอกโทเค็นของแต่ละตัว
-    - โทเค็นอยู่ใน `channels.telegram.accounts.<id>.botToken` (บัญชีเริ่มต้นสามารถใช้ `TELEGRAM_BOT_TOKEN`)
+    - สร้างบอทหนึ่งตัวต่อ agent ด้วย BotFather แล้วคัดลอกแต่ละโทเค็น
+    - โทเค็นอยู่ใน `channels.telegram.accounts.<id>.botToken` (บัญชีเริ่มต้นสามารถใช้ `TELEGRAM_BOT_TOKEN` ได้)
 
   </Accordion>
-  <Accordion title="หมายเลข WhatsApp แยกต่อเอเจนต์">
-    ลิงก์แต่ละบัญชีก่อนเริ่ม gateway:
+  <Accordion title="หมายเลข WhatsApp ต่อ agent">
+    เชื่อมโยงแต่ละบัญชีก่อนเริ่ม Gateway:
 
     ```bash
     openclaw channels login --channel whatsapp --account personal
@@ -390,12 +395,12 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
         ],
       },
 
-      // การกำหนดเส้นทางแบบกำหนดแน่นอน: รายการที่ตรงก่อนชนะ (เรียงจากเฉพาะเจาะจงที่สุดก่อน)
+      // Deterministic routing: first match wins (most-specific first).
       bindings: [
         { agentId: "home", match: { channel: "whatsapp", accountId: "personal" } },
         { agentId: "work", match: { channel: "whatsapp", accountId: "biz" } },
 
-        // การแทนที่ราย peer แบบไม่บังคับ (ตัวอย่าง: ส่งกลุ่มหนึ่งไปยังเอเจนต์ work)
+        // Optional per-peer override (example: send a specific group to work agent).
         {
           agentId: "work",
           match: {
@@ -406,7 +411,7 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
         },
       ],
 
-      // ปิดไว้ตามค่าเริ่มต้น: การส่งข้อความระหว่างเอเจนต์ต้องเปิดใช้งานและใส่ allowlist อย่างชัดเจน
+      // Off by default: agent-to-agent messaging must be explicitly enabled + allowlisted.
       tools: {
         agentToAgent: {
           enabled: false,
@@ -418,11 +423,11 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
         whatsapp: {
           accounts: {
             personal: {
-              // การแทนที่แบบไม่บังคับ ค่าเริ่มต้น: ~/.openclaw/credentials/whatsapp/personal
+              // Optional override. Default: ~/.openclaw/credentials/whatsapp/personal
               // authDir: "~/.openclaw/credentials/whatsapp/personal",
             },
             biz: {
-              // การแทนที่แบบไม่บังคับ ค่าเริ่มต้น: ~/.openclaw/credentials/whatsapp/biz
+              // Optional override. Default: ~/.openclaw/credentials/whatsapp/biz
               // authDir: "~/.openclaw/credentials/whatsapp/biz",
             },
           },
@@ -434,11 +439,11 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
   </Accordion>
 </AccordionGroup>
 
-## รูปแบบที่พบบ่อย
+## รูปแบบทั่วไป
 
 <Tabs>
-  <Tab title="WhatsApp รายวัน + Telegram สำหรับงานเชิงลึก">
-    แยกตามช่องทาง: กำหนดเส้นทาง WhatsApp ไปยังเอเจนต์ที่เร็วสำหรับใช้งานประจำวัน และ Telegram ไปยังเอเจนต์ Opus
+  <Tab title="WhatsApp รายวัน + งานเชิงลึกบน Telegram">
+    แยกตามช่องทาง: ส่ง WhatsApp ไปยัง agent สำหรับการใช้งานประจำวันที่รวดเร็ว และส่ง Telegram ไปยัง agent Opus
 
     ```json5
     {
@@ -467,12 +472,12 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
 
     หมายเหตุ:
 
-    - หากคุณมีหลายบัญชีสำหรับช่องทางเดียวกัน ให้เพิ่ม `accountId` เข้าไปใน binding (เช่น `{ channel: "whatsapp", accountId: "personal" }`)
-    - หากต้องการกำหนดเส้นทาง DM/กลุ่มเดียวไปยัง Opus โดยให้ที่เหลือยังอยู่กับ chat ให้เพิ่ม binding แบบ `match.peer` สำหรับ peer นั้น; peer match จะชนะกฎระดับช่องทางเสมอ
+    - หากคุณมีหลายบัญชีสำหรับช่องทางหนึ่ง ให้เพิ่ม `accountId` ใน binding (เช่น `{ channel: "whatsapp", accountId: "personal" }`)
+    - หากต้องการส่ง DM/กลุ่มเดียวไปยัง Opus โดยให้ที่เหลือยังอยู่บน chat ให้เพิ่ม binding `match.peer` สำหรับ peer นั้น การจับคู่ peer จะชนะกฎทั้งช่องทางเสมอ
 
   </Tab>
-  <Tab title="ช่องทางเดียวกัน แต่มี peer หนึ่งตัวไปที่ Opus">
-    ให้ WhatsApp อยู่กับเอเจนต์ที่เร็ว แต่กำหนดเส้นทาง DM หนึ่งรายการไปยัง Opus:
+  <Tab title="ช่องทางเดียวกัน ส่งหนึ่ง peer ไปยัง Opus">
+    ให้ WhatsApp อยู่บน agent ที่รวดเร็ว แต่ส่งหนึ่ง DM ไปยัง Opus:
 
     ```json5
     {
@@ -502,11 +507,11 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
     }
     ```
 
-    peer binding จะชนะเสมอ ดังนั้นให้วางไว้เหนือกฎระดับช่องทาง
+    binding ของ peer จะชนะเสมอ ดังนั้นให้วางไว้เหนือกฎทั้งช่องทาง
 
   </Tab>
-  <Tab title="เอเจนต์ครอบครัวที่ผูกกับกลุ่ม WhatsApp">
-    ผูกเอเจนต์ครอบครัวโดยเฉพาะเข้ากับกลุ่ม WhatsApp กลุ่มเดียว พร้อม mention gating และนโยบายเครื่องมือที่เข้มขึ้น:
+  <Tab title="agent ครอบครัวที่ผูกกับกลุ่ม WhatsApp">
+    ผูก agent สำหรับครอบครัวโดยเฉพาะกับกลุ่ม WhatsApp กลุ่มเดียว พร้อมการกั้นด้วยการกล่าวถึงและนโยบายเครื่องมือที่เข้มงวดยิ่งขึ้น:
 
     ```json5
     {
@@ -553,15 +558,15 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
 
     หมายเหตุ:
 
-    - รายการ allow/deny ของเครื่องมือคือ **tools** ไม่ใช่ Skills หาก Skill ต้องรันไบนารี ให้ตรวจสอบว่าอนุญาต `exec` และมีไบนารีนั้นอยู่ใน sandbox
-    - หากต้องการ gating ที่เข้มงวดยิ่งขึ้น ให้ตั้ง `agents.list[].groupChat.mentionPatterns` และคงการเปิดใช้ allowlist ของกลุ่มไว้สำหรับช่องทางนั้น
+    - รายการอนุญาต/ปฏิเสธเครื่องมือคือ **เครื่องมือ** ไม่ใช่ Skills หาก skill ต้องเรียกใช้ไบนารี ให้ตรวจสอบว่าอนุญาต `exec` และไบนารีนั้นมีอยู่ใน sandbox
+    - สำหรับการกั้นที่เข้มงวดยิ่งขึ้น ให้ตั้งค่า `agents.list[].groupChat.mentionPatterns` และเปิดใช้งาน allowlist ของกลุ่มสำหรับช่องทางไว้
 
   </Tab>
 </Tabs>
 
-## การกำหนดค่า sandbox และเครื่องมือรายเอเจนต์
+## การกำหนดค่า sandbox และเครื่องมือต่อ agent
 
-แต่ละเอเจนต์สามารถมีข้อจำกัด sandbox และเครื่องมือของตัวเองได้:
+agent แต่ละตัวสามารถมี sandbox และข้อจำกัดเครื่องมือของตนเองได้:
 
 ```js
 {
@@ -571,24 +576,24 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
         id: "personal",
         workspace: "~/.openclaw/workspace-personal",
         sandbox: {
-          mode: "off",  // ไม่มี sandbox สำหรับเอเจนต์ส่วนตัว
+          mode: "off",  // No sandbox for personal agent
         },
-        // ไม่มีข้อจำกัดเครื่องมือ - ใช้ได้ทุกเครื่องมือ
+        // No tool restrictions - all tools available
       },
       {
         id: "family",
         workspace: "~/.openclaw/workspace-family",
         sandbox: {
-          mode: "all",     // อยู่ใน sandbox เสมอ
-          scope: "agent",  // หนึ่งคอนเทนเนอร์ต่อหนึ่งเอเจนต์
+          mode: "all",     // Always sandboxed
+          scope: "agent",  // One container per agent
           docker: {
-            // การตั้งค่าแบบครั้งเดียวหลังสร้างคอนเทนเนอร์
+            // Optional one-time setup after container creation
             setupCommand: "apt-get update && apt-get install -y git curl",
           },
         },
         tools: {
-          allow: ["read"],                    // อนุญาตเฉพาะเครื่องมือ read
-          deny: ["exec", "write", "edit", "apply_patch"],    // ปฏิเสธเครื่องมืออื่น
+          allow: ["read"],                    // Only read tool
+          deny: ["exec", "write", "edit", "apply_patch"],    // Deny others
         },
       },
     ],
@@ -597,25 +602,25 @@ Bindings เป็นแบบ **กำหนดแน่นอน** และ *
 ```
 
 <Note>
-`setupCommand` อยู่ภายใต้ `sandbox.docker` และจะรันหนึ่งครั้งตอนสร้างคอนเทนเนอร์ การแทนที่ `sandbox.docker.*` รายเอเจนต์จะถูกละเลยเมื่อ scope ที่ resolve แล้วเป็น `"shared"`
+`setupCommand` อยู่ใต้ `sandbox.docker` และรันหนึ่งครั้งเมื่อสร้างคอนเทนเนอร์ การแทนที่ `sandbox.docker.*` ต่อ agent จะถูกละเว้นเมื่อ scope ที่ resolve ได้คือ `"shared"`
 </Note>
 
 **ประโยชน์:**
 
-- **การแยกด้านความปลอดภัย**: จำกัดเครื่องมือสำหรับเอเจนต์ที่ไม่น่าเชื่อถือ
-- **การควบคุมทรัพยากร**: ทำ sandbox เฉพาะบางเอเจนต์ ขณะที่เอเจนต์อื่นยังทำงานบนโฮสต์
-- **นโยบายที่ยืดหยุ่น**: สิทธิ์ต่างกันได้ในแต่ละเอเจนต์
+- **การแยกด้านความปลอดภัย**: จำกัดเครื่องมือสำหรับ agent ที่ไม่น่าเชื่อถือ
+- **การควบคุมทรัพยากร**: sandbox เฉพาะ agent บางตัว ขณะที่ให้ตัวอื่นอยู่บนโฮสต์
+- **นโยบายที่ยืดหยุ่น**: สิทธิ์แตกต่างกันตาม agent
 
 <Note>
-`tools.elevated` เป็นแบบ **ส่วนกลาง** และอิงตามผู้ส่ง; ไม่สามารถกำหนดค่ารายเอเจนต์ได้ หากคุณต้องการขอบเขตรายเอเจนต์ ให้ใช้ `agents.list[].tools` เพื่อปฏิเสธ `exec` สำหรับการกำหนดเป้าหมายในกลุ่ม ให้ใช้ `agents.list[].groupChat.mentionPatterns` เพื่อให้ @mention แมปไปยังเอเจนต์ที่ตั้งใจไว้ได้อย่างชัดเจน
+`tools.elevated` เป็นแบบ **global** และอิงตามผู้ส่ง ไม่สามารถกำหนดค่าต่อ agent ได้ หากคุณต้องการขอบเขตต่อ agent ให้ใช้ `agents.list[].tools` เพื่อปฏิเสธ `exec` สำหรับการกำหนดเป้าหมายกลุ่ม ให้ใช้ `agents.list[].groupChat.mentionPatterns` เพื่อให้ @mentions map ไปยัง agent ที่ต้องการได้อย่างชัดเจน
 </Note>
 
-ดู [sandbox และเครื่องมือหลายเอเจนต์](/th/tools/multi-agent-sandbox-tools) สำหรับตัวอย่างแบบละเอียด
+ดู [sandbox และเครื่องมือแบบหลาย agent](/th/tools/multi-agent-sandbox-tools) สำหรับตัวอย่างโดยละเอียด
 
 ## ที่เกี่ยวข้อง
 
-- [เอเจนต์ ACP](/th/tools/acp-agents) — การรัน coding harness ภายนอก
-- [การกำหนดเส้นทางช่องทาง](/th/channels/channel-routing) — วิธีที่ข้อความถูกกำหนดเส้นทางไปยังเอเจนต์
-- [Presence](/th/concepts/presence) — presence และความพร้อมใช้งานของเอเจนต์
-- [เซสชัน](/th/concepts/session) — การแยกเซสชันและการกำหนดเส้นทาง
-- [Sub-agents](/th/tools/subagents) — การสร้างการรันเอเจนต์เบื้องหลัง
+- [agent ACP](/th/tools/acp-agents) — การรันชุดเครื่องมือเขียนโค้ดภายนอก
+- [การกำหนดเส้นทางช่องทาง](/th/channels/channel-routing) — วิธีที่ข้อความถูกกำหนดเส้นทางไปยัง agent
+- [Presence](/th/concepts/presence) — presence และความพร้อมใช้งานของ agent
+- [Session](/th/concepts/session) — การแยก session และการกำหนดเส้นทาง
+- [Sub-agents](/th/tools/subagents) — การ spawn การรัน agent เบื้องหลัง

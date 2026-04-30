@@ -1,25 +1,25 @@
 ---
 read_when:
-    - การตรวจสอบความครอบคลุมของข้อมูลรับรอง SecretRef
-    - การตรวจสอบว่าข้อมูลรับรองมีสิทธิ์สำหรับ `secrets configure` หรือ `secrets apply` หรือไม่
-    - การตรวจสอบว่าเหตุใดข้อมูลรับรองจึงอยู่นอกพื้นผิวที่รองรับ
-summary: พื้นผิวข้อมูลรับรอง SecretRef แบบ canonical ที่รองรับและไม่รองรับ
-title: พื้นผิวข้อมูลรับรอง SecretRef
+    - การตรวจสอบความครอบคลุมของข้อมูลประจำตัว SecretRef
+    - การตรวจสอบว่าข้อมูลรับรองเข้าเกณฑ์สำหรับ `secrets configure` หรือ `secrets apply` หรือไม่
+    - ตรวจสอบว่าเหตุใดข้อมูลรับรองจึงอยู่นอกขอบเขตที่รองรับ
+summary: ขอบเขตข้อมูลประจำตัว SecretRef แบบมาตรฐานที่รองรับเทียบกับที่ไม่รองรับ
+title: ส่วนติดต่อข้อมูลประจำตัว SecretRef
 x-i18n:
-    generated_at: "2026-04-26T11:41:14Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:15:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6ffdf545e954f8d73d18adfeb196d9092bf346bd86648f09314bad2a0f40bb6c
+    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
     source_path: reference/secretref-credential-surface.md
-    workflow: 15
+    workflow: 16
 ---
 
-หน้านี้กำหนดพื้นผิวข้อมูลรับรอง SecretRef แบบ canonical
+หน้านี้กำหนดพื้นผิวข้อมูลรับรอง SecretRef มาตรฐานอ้างอิง
 
 เจตนาของขอบเขต:
 
-- อยู่ในขอบเขต: ข้อมูลรับรองที่ผู้ใช้จัดเตรียมเองอย่างเคร่งครัด ซึ่ง OpenClaw ไม่ได้สร้างหรือหมุนเวียนให้
-- อยู่นอกขอบเขต: ข้อมูลรับรองที่ถูกสร้างระหว่างรันไทม์หรือมีการหมุนเวียน วัสดุ OAuth refresh และอาร์ติแฟกต์ลักษณะคล้ายเซสชัน
+- อยู่ในขอบเขต: ข้อมูลรับรองที่ผู้ใช้จัดเตรียมให้โดยตรง ซึ่ง OpenClaw ไม่ได้ออกให้หรือหมุนเวียน
+- อยู่นอกขอบเขต: ข้อมูลรับรองที่ออกให้ขณะรันหรือมีการหมุนเวียน, วัสดุรีเฟรช OAuth และสิ่งประดิษฐ์ที่คล้ายเซสชัน
 
 ## ข้อมูลรับรองที่รองรับ
 
@@ -47,6 +47,7 @@ x-i18n:
 - `talk.providers.*.apiKey`
 - `messages.tts.providers.*.apiKey`
 - `tools.web.fetch.firecrawl.apiKey`
+- `plugins.entries.acpx.config.mcpServers.*.env.*`
 - `plugins.entries.brave.config.webSearch.apiKey`
 - `plugins.entries.exa.config.webSearch.apiKey`
 - `plugins.entries.google.config.webSearch.apiKey`
@@ -56,6 +57,8 @@ x-i18n:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.tts.providers.*.apiKey`
+- `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
 - `gateway.auth.password`
 - `gateway.auth.token`
@@ -107,8 +110,8 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` ผ่าน `serviceAccountRef` ระดับเดียวกัน (ข้อยกเว้นเพื่อความเข้ากันได้)
-- `channels.googlechat.accounts.*.serviceAccount` ผ่าน `serviceAccountRef` ระดับเดียวกัน (ข้อยกเว้นเพื่อความเข้ากันได้)
+- `channels.googlechat.serviceAccount` ผ่านพี่น้อง `serviceAccountRef` (ข้อยกเว้นด้านความเข้ากันได้)
+- `channels.googlechat.accounts.*.serviceAccount` ผ่านพี่น้อง `serviceAccountRef` (ข้อยกเว้นด้านความเข้ากันได้)
 
 ### เป้าหมาย `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -119,22 +122,22 @@ x-i18n:
 
 หมายเหตุ:
 
-- เป้าหมายแผนของโปรไฟล์การยืนยันตัวตนต้องใช้ `agentId`
-- รายการแผนจะกำหนดเป้าหมายไปที่ `profiles.*.key` / `profiles.*.token` และเขียน ref ระดับเดียวกัน (`keyRef` / `tokenRef`)
-- ref ของโปรไฟล์การยืนยันตัวตนถูกรวมอยู่ในการ resolve ระหว่างรันไทม์และความครอบคลุมของการตรวจสอบ
-- ใน `openclaw.json` SecretRef ต้องใช้ structured object เช่น `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` สตริง marker แบบเดิม `secretref-env:<ENV_VAR>` จะถูกปฏิเสธบน path ข้อมูลรับรอง SecretRef; ให้เรียก `openclaw doctor --fix` เพื่อย้าย marker ที่ถูกต้อง
-- ตัวป้องกันนโยบาย OAuth: `auth.profiles.<id>.mode = "oauth"` ไม่สามารถใช้ร่วมกับอินพุต SecretRef สำหรับโปรไฟล์นั้นได้ การเริ่มต้น/รีโหลดและการ resolve โปรไฟล์การยืนยันตัวตนจะล้มเหลวทันทีเมื่อมีการละเมิดนโยบายนี้
-- สำหรับผู้ให้บริการโมเดลที่จัดการด้วย SecretRef รายการ `agents/*/agent/models.json` ที่ถูกสร้างขึ้นจะคงค่า marker ที่ไม่เป็นความลับไว้ (ไม่ใช่ค่าความลับที่ถูก resolve แล้ว) สำหรับพื้นผิว `apiKey`/header
-- การคงค่า marker ถือซอร์สเป็นหลัก: OpenClaw จะเขียน marker จาก snapshot config ของซอร์สที่ใช้งานอยู่ (ก่อน resolve) ไม่ใช่จากค่าความลับของรันไทม์ที่ถูก resolve แล้ว
+- เป้าหมายแผนของโปรไฟล์ auth ต้องมี `agentId`
+- รายการแผนกำหนดเป้าหมาย `profiles.*.key` / `profiles.*.token` และเขียนค่าอ้างอิงพี่น้อง (`keyRef` / `tokenRef`)
+- ค่าอ้างอิงของโปรไฟล์ auth ถูกรวมไว้ในการแปลงค่าขณะรันและความครอบคลุมของการตรวจสอบ
+- ใน `openclaw.json` SecretRefs ต้องใช้ออบเจ็กต์แบบมีโครงสร้าง เช่น `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` สตริงมาร์กเกอร์เดิม `secretref-env:<ENV_VAR>` จะถูกปฏิเสธบนพาธข้อมูลรับรอง SecretRef; เรียกใช้ `openclaw doctor --fix` เพื่อย้ายมาร์กเกอร์ที่ถูกต้อง
+- ตัวป้องกันนโยบาย OAuth: `auth.profiles.<id>.mode = "oauth"` ไม่สามารถใช้ร่วมกับอินพุต SecretRef สำหรับโปรไฟล์นั้นได้ การเริ่มต้น/โหลดซ้ำและการแปลงค่าโปรไฟล์ auth จะล้มเหลวทันทีเมื่อละเมิดนโยบายนี้
+- สำหรับผู้ให้บริการโมเดลที่จัดการด้วย SecretRef รายการ `agents/*/agent/models.json` ที่สร้างขึ้นจะคงมาร์กเกอร์ที่ไม่ใช่ความลับไว้ (ไม่ใช่ค่าความลับที่แปลงแล้ว) สำหรับพื้นผิว `apiKey`/ส่วนหัว
+- การคงมาร์กเกอร์ยึดแหล่งที่มาเป็นอำนาจหลัก: OpenClaw เขียนมาร์กเกอร์จากสแนปช็อตการกำหนดค่าแหล่งที่มาที่ใช้งานอยู่ (ก่อนการแปลงค่า) ไม่ใช่จากค่าความลับขณะรันที่แปลงแล้ว
 - สำหรับการค้นหาเว็บ:
-  - ในโหมดผู้ให้บริการแบบระบุชัดเจน (ตั้งค่า `tools.web.search.provider`) จะมีเพียงคีย์ของผู้ให้บริการที่เลือกเท่านั้นที่ทำงานอยู่
-  - ในโหมดอัตโนมัติ (ไม่ได้ตั้งค่า `tools.web.search.provider`) จะมีเพียงคีย์ของผู้ให้บริการตัวแรกที่ resolve ได้ตามลำดับความสำคัญเท่านั้นที่ทำงานอยู่
-  - ในโหมดอัตโนมัติ ref ของผู้ให้บริการที่ไม่ได้ถูกเลือกจะถือว่าไม่ทำงานจนกว่าจะถูกเลือก
-  - path ผู้ให้บริการแบบเดิม `tools.web.search.*` ยังคง resolve ได้ในช่วงหน้าต่างความเข้ากันได้ แต่พื้นผิว SecretRef แบบ canonical คือ `plugins.entries.<plugin>.config.webSearch.*`
+  - ในโหมดผู้ให้บริการแบบระบุชัดเจน (ตั้งค่า `tools.web.search.provider`) จะมีเฉพาะคีย์ของผู้ให้บริการที่เลือกเท่านั้นที่ใช้งานอยู่
+  - ในโหมดอัตโนมัติ (ไม่ได้ตั้งค่า `tools.web.search.provider`) จะมีเฉพาะคีย์ผู้ให้บริการตัวแรกที่แปลงค่าได้ตามลำดับความสำคัญเท่านั้นที่ใช้งานอยู่
+  - ในโหมดอัตโนมัติ ค่าอ้างอิงของผู้ให้บริการที่ไม่ได้เลือกจะถือว่าไม่ทำงานจนกว่าจะถูกเลือก
+  - พาธผู้ให้บริการเดิม `tools.web.search.*` ยังแปลงค่าได้ในช่วงเวลาความเข้ากันได้ แต่พื้นผิว SecretRef มาตรฐานอ้างอิงคือ `plugins.entries.<plugin>.config.webSearch.*`
 
 ## ข้อมูลรับรองที่ไม่รองรับ
 
-ข้อมูลรับรองที่อยู่นอกขอบเขตประกอบด้วย:
+ข้อมูลรับรองที่อยู่นอกขอบเขตรวมถึง:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -152,9 +155,9 @@ x-i18n:
 
 เหตุผล:
 
-- ข้อมูลรับรองเหล่านี้เป็นประเภทที่ถูกสร้าง มีการหมุนเวียน มีภาระของเซสชัน หรือมีความคงทนแบบ OAuth ซึ่งไม่สอดคล้องกับการ resolve SecretRef ภายนอกแบบอ่านอย่างเดียว
+- ข้อมูลรับรองเหล่านี้เป็นคลาสที่ออกให้, หมุนเวียน, มีเซสชันประกอบ หรือคงทนสำหรับ OAuth ซึ่งไม่เข้ากับการแปลงค่า SecretRef ภายนอกแบบอ่านอย่างเดียว
 
 ## ที่เกี่ยวข้อง
 
-- [การจัดการ Secrets](/th/gateway/secrets)
-- [ความหมายของข้อมูลรับรองการยืนยันตัวตน](/th/auth-credential-semantics)
+- [การจัดการความลับ](/th/gateway/secrets)
+- [ความหมายเชิงข้อมูลรับรอง Auth](/th/auth-credential-semantics)

@@ -1,71 +1,73 @@
 ---
 read_when:
-    - คุณต้องการระบบอัตโนมัติแบบขับเคลื่อนด้วยเหตุการณ์สำหรับ `/new`, `/reset`, `/stop` และเหตุการณ์ในวงจรชีวิตของเอเจนต์
-    - คุณต้องการสร้าง ติดตั้ง หรือดีบัก hooks
-summary: 'Hooks: ระบบอัตโนมัติแบบขับเคลื่อนด้วยเหตุการณ์สำหรับคำสั่งและเหตุการณ์ในวงจรชีวิต'
-title: Hooks
+    - คุณต้องการระบบอัตโนมัติที่ขับเคลื่อนด้วยเหตุการณ์สำหรับ /new, /reset, /stop และเหตุการณ์วงจรชีวิตของเอเจนต์
+    - คุณต้องการสร้าง ติดตั้ง หรือดีบักฮุก
+summary: 'ฮุก: ระบบอัตโนมัติแบบขับเคลื่อนด้วยเหตุการณ์สำหรับคำสั่งและเหตุการณ์วงจรชีวิต'
+title: ฮุก
 x-i18n:
-    generated_at: "2026-04-26T11:22:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:34:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cf40a64449347ef750b4b0e0a83b80e2e8fdef87d92daa71f028d2bf6a3d3d22
+    source_hash: a6c567ab79fbff8228d174816e9fb4613f0544ea15a99b5917190a4066af0f57
     source_path: automation/hooks.md
-    workflow: 15
+    workflow: 16
 ---
 
-hooks คือสคริปต์ขนาดเล็กที่ทำงานเมื่อมีบางอย่างเกิดขึ้นภายใน Gateway ระบบสามารถค้นพบ hooks ได้จากไดเรกทอรีต่างๆ และตรวจสอบได้ด้วย `openclaw hooks` Gateway จะโหลด internal hooks ก็ต่อเมื่อคุณเปิดใช้งาน hooks หรือกำหนดค่าอย่างน้อยหนึ่งรายการของ hook entry, hook pack, legacy handler หรือไดเรกทอรี hook เพิ่มเติม
+ฮุกคือสคริปต์ขนาดเล็กที่ทำงานเมื่อมีบางสิ่งเกิดขึ้นภายใน Gateway ฮุกสามารถถูกค้นพบจากไดเรกทอรีและตรวจสอบด้วย `openclaw hooks` ได้ Gateway จะโหลดฮุกภายในหลังจากคุณเปิดใช้งานฮุก หรือกำหนดค่ารายการฮุกอย่างน้อยหนึ่งรายการ ชุดฮุก ตัวจัดการแบบเดิม หรือไดเรกทอรีฮุกเพิ่มเติมเท่านั้น
 
-ใน OpenClaw มี hooks อยู่สองประเภท:
+ฮุกใน OpenClaw มีสองชนิด:
 
-- **Internal hooks** (หน้านี้): ทำงานภายใน Gateway เมื่อเกิดเหตุการณ์ของเอเจนต์ เช่น `/new`, `/reset`, `/stop` หรือเหตุการณ์ในวงจรชีวิต
+- **ฮุกภายใน** (หน้านี้): ทำงานภายใน Gateway เมื่อเหตุการณ์ของเอเจนต์เกิดขึ้น เช่น `/new`, `/reset`, `/stop` หรือเหตุการณ์วงจรชีวิต
 - **Webhooks**: ปลายทาง HTTP ภายนอกที่ให้ระบบอื่นทริกเกอร์งานใน OpenClaw ได้ ดู [Webhooks](/th/automation/cron-jobs#webhooks)
 
-hooks ยังสามารถถูกรวมมาใน plugins ได้ด้วย `openclaw hooks list` จะแสดงทั้ง hooks แบบสแตนด์อโลนและ hooks ที่จัดการโดย plugin
+ฮุกยังสามารถถูกบันเดิลไว้ภายใน plugins ได้ด้วย `openclaw hooks list` จะแสดงทั้งฮุกแบบสแตนด์อโลนและฮุกที่จัดการโดย Plugin
 
 ## เริ่มต้นอย่างรวดเร็ว
 
 ```bash
-# แสดงรายการ hooks ที่พร้อมใช้งาน
+# List available hooks
 openclaw hooks list
 
-# เปิดใช้งาน hook
+# Enable a hook
 openclaw hooks enable session-memory
 
-# ตรวจสอบสถานะ hook
+# Check hook status
 openclaw hooks check
 
-# ดูข้อมูลโดยละเอียด
+# Get detailed information
 openclaw hooks info session-memory
 ```
 
 ## ประเภทเหตุการณ์
 
-| เหตุการณ์                | เวลาที่ทริกเกอร์                              |
-| ------------------------ | --------------------------------------------- |
-| `command:new`            | มีการออกคำสั่ง `/new`                         |
-| `command:reset`          | มีการออกคำสั่ง `/reset`                       |
-| `command:stop`           | มีการออกคำสั่ง `/stop`                        |
-| `command`                | เหตุการณ์คำสั่งใดๆ (ตัวฟังทั่วไป)              |
-| `session:compact:before` | ก่อนที่ Compaction จะสรุปประวัติ              |
-| `session:compact:after`  | หลังจาก Compaction เสร็จสมบูรณ์               |
-| `session:patch`          | เมื่อมีการแก้ไขพร็อพเพอร์ตีของเซสชัน         |
-| `agent:bootstrap`        | ก่อนฉีดไฟล์ bootstrap ของ workspace           |
-| `gateway:startup`        | หลังจาก channels เริ่มทำงานและโหลด hooks แล้ว |
-| `message:received`       | ข้อความขาเข้าจาก channel ใดๆ                 |
-| `message:transcribed`    | หลังการถอดเสียงเสียงพูดเสร็จสมบูรณ์          |
-| `message:preprocessed`   | หลังจากประมวลผลสื่อและทำความเข้าใจลิงก์ครบแล้ว |
-| `message:sent`           | ส่งข้อความขาออกสำเร็จแล้ว                    |
+| เหตุการณ์                 | เวลาที่ทริกเกอร์                                           |
+| ------------------------ | ---------------------------------------------------------- |
+| `command:new`            | มีการออกคำสั่ง `/new`                                     |
+| `command:reset`          | มีการออกคำสั่ง `/reset`                                   |
+| `command:stop`           | มีการออกคำสั่ง `/stop`                                    |
+| `command`                | เหตุการณ์คำสั่งใดๆ (ตัวฟังทั่วไป)                         |
+| `session:compact:before` | ก่อนที่ Compaction จะสรุปประวัติ                          |
+| `session:compact:after`  | หลังจาก Compaction เสร็จสิ้น                              |
+| `session:patch`          | เมื่อคุณสมบัติของเซสชันถูกแก้ไข                           |
+| `agent:bootstrap`        | ก่อนที่จะฉีดไฟล์บูตสแตรปของเวิร์กสเปซ                      |
+| `gateway:startup`        | หลังจากช่องทางเริ่มทำงานและโหลดฮุกแล้ว                    |
+| `gateway:shutdown`       | เมื่อการปิด Gateway เริ่มต้น                               |
+| `gateway:pre-restart`    | ก่อนการรีสตาร์ต Gateway ที่คาดไว้                          |
+| `message:received`       | ข้อความขาเข้าจากช่องทางใดๆ                                |
+| `message:transcribed`    | หลังจากการถอดเสียงเสร็จสิ้น                               |
+| `message:preprocessed`   | หลังจากการประมวลผลสื่อและลิงก์ล่วงหน้าเสร็จสิ้นหรือถูกข้าม |
+| `message:sent`           | ส่งข้อความขาออกแล้ว                                       |
 
-## การเขียน hooks
+## การเขียนฮุก
 
-### โครงสร้างของ hook
+### โครงสร้างฮุก
 
-แต่ละ hook เป็นไดเรกทอรีที่มีสองไฟล์:
+แต่ละฮุกคือไดเรกทอรีที่มีไฟล์สองไฟล์:
 
 ```
 my-hook/
-├── HOOK.md          # ข้อมูลเมตา + เอกสารประกอบ
-└── handler.ts       # การติดตั้งใช้งาน handler
+├── HOOK.md          # Metadata + documentation
+└── handler.ts       # Handler implementation
 ```
 
 ### รูปแบบ HOOK.md
@@ -73,29 +75,29 @@ my-hook/
 ```markdown
 ---
 name: my-hook
-description: "คำอธิบายสั้นๆ ว่า hook นี้ทำอะไร"
+description: "Short description of what this hook does"
 metadata:
   { "openclaw": { "emoji": "🔗", "events": ["command:new"], "requires": { "bins": ["node"] } } }
 ---
 
 # My Hook
 
-ใส่เอกสารประกอบโดยละเอียดที่นี่
+Detailed documentation goes here.
 ```
 
-**ฟิลด์ข้อมูลเมตา** (`metadata.openclaw`):
+**ฟิลด์เมทาดาทา** (`metadata.openclaw`):
 
-| ฟิลด์      | คำอธิบาย                                              |
-| ---------- | ----------------------------------------------------- |
-| `emoji`    | อีโมจิที่ใช้แสดงใน CLI                                |
-| `events`   | อาร์เรย์ของเหตุการณ์ที่ต้องการรับฟัง                  |
-| `export`   | named export ที่จะใช้ (ค่าเริ่มต้นคือ `"default"`)    |
-| `os`       | แพลตฟอร์มที่ต้องใช้ (เช่น `["darwin", "linux"]`)      |
-| `requires` | `bins`, `anyBins`, `env` หรือพาธ `config` ที่จำเป็น   |
-| `always`   | ข้ามการตรวจสอบคุณสมบัติการใช้งาน (boolean)           |
-| `install`  | วิธีการติดตั้ง                                         |
+| ฟิลด์       | คำอธิบาย                                             |
+| ---------- | ---------------------------------------------------- |
+| `emoji`    | อีโมจิที่แสดงสำหรับ CLI                              |
+| `events`   | อาร์เรย์ของเหตุการณ์ที่จะฟัง                         |
+| `export`   | named export ที่จะใช้ (ค่าเริ่มต้นคือ `"default"`)   |
+| `os`       | แพลตฟอร์มที่จำเป็น (เช่น `["darwin", "linux"]`)      |
+| `requires` | พาธ `bins`, `anyBins`, `env` หรือ `config` ที่จำเป็น |
+| `always`   | ข้ามการตรวจสอบคุณสมบัติการใช้งาน (บูลีน)            |
+| `install`  | วิธีการติดตั้ง                                       |
 
-### การติดตั้งใช้งาน handler
+### การติดตั้งใช้งานตัวจัดการ
 
 ```typescript
 const handler = async (event) => {
@@ -104,70 +106,72 @@ const handler = async (event) => {
   }
 
   console.log(`[my-hook] New command triggered`);
-  // ตรรกะของคุณที่นี่
+  // Your logic here
 
-  // จะส่งข้อความถึงผู้ใช้ด้วยก็ได้
+  // Optionally send message to user
   event.messages.push("Hook executed!");
 };
 
 export default handler;
 ```
 
-แต่ละ event จะประกอบด้วย: `type`, `action`, `sessionKey`, `timestamp`, `messages` (push เพื่อส่งถึงผู้ใช้) และ `context` (ข้อมูลเฉพาะของ event) บริบทของ plugin hook สำหรับเอเจนต์และเครื่องมือยังอาจมี `trace` ซึ่งเป็นบริบทการติดตามวินิจฉัยแบบอ่านอย่างเดียวที่เข้ากันได้กับ W3C โดย plugins สามารถส่งต่อเข้า structured logs เพื่อทำ OTEL correlation ได้
+แต่ละเหตุการณ์มี: `type`, `action`, `sessionKey`, `timestamp`, `messages` (push เพื่อส่งให้ผู้ใช้) และ `context` (ข้อมูลเฉพาะเหตุการณ์) บริบทฮุกของเอเจนต์และ Plugin เครื่องมือยังอาจมี `trace` ซึ่งเป็นบริบทการติดตามวินิจฉัยแบบอ่านอย่างเดียวที่เข้ากันได้กับ W3C ซึ่ง plugins อาจส่งต่อไปยังบันทึกแบบมีโครงสร้างเพื่อการเชื่อมโยง OTEL
 
-### ไฮไลต์ของ event context
+### ไฮไลต์บริบทเหตุการณ์
 
 **เหตุการณ์คำสั่ง** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`
 
-**เหตุการณ์ข้อความ** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (ข้อมูลเฉพาะผู้ให้บริการรวมถึง `senderId`, `senderName`, `guildId`)
+**เหตุการณ์ข้อความ** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (ข้อมูลเฉพาะผู้ให้บริการ รวมถึง `senderId`, `senderName`, `guildId`)
 
 **เหตุการณ์ข้อความ** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`
 
 **เหตุการณ์ข้อความ** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`
 
-**เหตุการณ์ข้อความ** (`message:preprocessed`): `context.bodyForAgent` (เนื้อหาสุดท้ายที่ได้รับการเสริมข้อมูลแล้ว), `context.from`, `context.channelId`
+**เหตุการณ์ข้อความ** (`message:preprocessed`): `context.bodyForAgent` (เนื้อหาสุดท้ายที่เสริมข้อมูลแล้ว), `context.from`, `context.channelId`
 
-**เหตุการณ์ bootstrap** (`agent:bootstrap`): `context.bootstrapFiles` (อาร์เรย์ที่แก้ไขได้), `context.agentId`
+**เหตุการณ์บูตสแตรป** (`agent:bootstrap`): `context.bootstrapFiles` (อาร์เรย์ที่แก้ไขได้), `context.agentId`
 
-**เหตุการณ์ session patch** (`session:patch`): `context.sessionEntry`, `context.patch` (เฉพาะฟิลด์ที่เปลี่ยน), `context.cfg` มีเพียงไคลเอนต์ที่มีสิทธิพิเศษเท่านั้นที่ทริกเกอร์ patch events ได้
+**เหตุการณ์แพตช์เซสชัน** (`session:patch`): `context.sessionEntry`, `context.patch` (เฉพาะฟิลด์ที่เปลี่ยนแปลง), `context.cfg` เฉพาะไคลเอนต์ที่มีสิทธิ์พิเศษเท่านั้นที่ทริกเกอร์เหตุการณ์แพตช์ได้
 
-**เหตุการณ์ Compaction**: `session:compact:before` มี `messageCount`, `tokenCount` ส่วน `session:compact:after` จะเพิ่ม `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`
+**เหตุการณ์ Compaction**: `session:compact:before` มี `messageCount`, `tokenCount` `session:compact:after` เพิ่ม `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`
 
-`command:stop` ใช้สังเกตว่าผู้ใช้ออกคำสั่ง `/stop`; นี่คือวงจรชีวิตของการยกเลิก/คำสั่ง ไม่ใช่จุดกั้นการปิดงานขั้นสุดท้ายของเอเจนต์ plugins ที่ต้องการตรวจสอบคำตอบสุดท้ายตามธรรมชาติและขอให้เอเจนต์ทำอีกหนึ่งรอบ ควรใช้ typed plugin hook `before_agent_finalize` แทน ดู [Plugin hooks](/th/plugins/hooks)
+`command:stop` สังเกตว่าผู้ใช้ออกคำสั่ง `/stop`; นี่คือวงจรชีวิตของการยกเลิก/คำสั่ง ไม่ใช่เกตการสรุปงานของเอเจนต์ Plugins ที่ต้องตรวจสอบคำตอบสุดท้ายตามธรรมชาติและขอให้เอเจนต์ทำอีกหนึ่งรอบควรใช้ฮุก Plugin แบบมีชนิด `before_agent_finalize` แทน ดู [ฮุก Plugin](/th/plugins/hooks)
 
-## การค้นพบ hook
+**เหตุการณ์วงจรชีวิตของ Gateway**: `gateway:shutdown` มี `reason` และ `restartExpectedMs` และทริกเกอร์เมื่อการปิด Gateway เริ่มต้น `gateway:pre-restart` มีบริบทเดียวกัน แต่จะทริกเกอร์เฉพาะเมื่อการปิดเป็นส่วนหนึ่งของการรีสตาร์ตที่คาดไว้และมีการระบุค่า `restartExpectedMs` แบบจำกัดเท่านั้น ระหว่างการปิด การรอฮุกวงจรชีวิตแต่ละรายการเป็นแบบพยายามให้ดีที่สุดและถูกจำกัดเวลา เพื่อให้การปิดดำเนินต่อไปหากตัวจัดการค้าง
 
-ระบบจะค้นพบ hooks จากไดเรกทอรีเหล่านี้ โดยเรียงลำดับจากลำดับความสำคัญในการแทนที่ที่ต่ำไปสูง:
+## การค้นพบฮุก
 
-1. **Bundled hooks**: มาพร้อมกับ OpenClaw
-2. **Plugin hooks**: hooks ที่รวมอยู่ใน plugins ที่ติดตั้งแล้ว
-3. **Managed hooks**: `~/.openclaw/hooks/` (ติดตั้งโดยผู้ใช้ ใช้ร่วมกันข้าม workspaces) ไดเรกทอรีเพิ่มเติมจาก `hooks.internal.load.extraDirs` จะมีลำดับความสำคัญระดับเดียวกัน
-4. **Workspace hooks**: `<workspace>/hooks/` (ต่อเอเจนต์หนึ่งตัว ปิดใช้งานเป็นค่าเริ่มต้นจนกว่าจะเปิดใช้งานอย่างชัดเจน)
+ฮุกถูกค้นพบจากไดเรกทอรีเหล่านี้ ตามลำดับความสำคัญของการแทนที่จากน้อยไปมาก:
 
-Workspace hooks สามารถเพิ่มชื่อ hook ใหม่ได้ แต่ไม่สามารถแทนที่ bundled, managed หรือ plugin-provided hooks ที่ใช้ชื่อเดียวกันได้
+1. **ฮุกที่บันเดิลมาให้**: มาพร้อมกับ OpenClaw
+2. **ฮุก Plugin**: ฮุกที่บันเดิลไว้ภายใน plugins ที่ติดตั้งแล้ว
+3. **ฮุกที่จัดการแล้ว**: `~/.openclaw/hooks/` (ติดตั้งโดยผู้ใช้ ใช้ร่วมกันระหว่างเวิร์กสเปซ) ไดเรกทอรีเพิ่มเติมจาก `hooks.internal.load.extraDirs` ใช้ความสำคัญระดับนี้ร่วมกัน
+4. **ฮุกของเวิร์กสเปซ**: `<workspace>/hooks/` (ต่อเอเจนต์ ปิดใช้งานโดยค่าเริ่มต้นจนกว่าจะเปิดใช้งานอย่างชัดเจน)
 
-Gateway จะข้ามการค้นพบ internal hooks ตอนเริ่มต้นจนกว่าจะมีการกำหนดค่า internal hooks เปิดใช้ bundled หรือ managed hook ด้วย `openclaw hooks enable <name>`, ติดตั้ง hook pack หรือกำหนด `hooks.internal.enabled=true` เพื่อ opt in เมื่อคุณเปิดใช้ named hook หนึ่งรายการ Gateway จะโหลดเฉพาะ handler ของ hook นั้น ส่วน `hooks.internal.enabled=true`, ไดเรกทอรี hook เพิ่มเติม และ legacy handlers จะเป็นการ opt in เข้าสู่การค้นพบแบบกว้าง
+ฮุกของเวิร์กสเปซสามารถเพิ่มชื่อฮุกใหม่ได้ แต่ไม่สามารถแทนที่ฮุกที่บันเดิลมาให้ ฮุกที่จัดการแล้ว หรือฮุกที่ plugins จัดเตรียมไว้ซึ่งมีชื่อเดียวกันได้
 
-### Hook packs
+Gateway จะข้ามการค้นพบฮุกภายในเมื่อเริ่มต้นจนกว่าจะมีการกำหนดค่าฮุกภายใน เปิดใช้งานฮุกที่บันเดิลมาให้หรือฮุกที่จัดการแล้วด้วย `openclaw hooks enable <name>` ติดตั้งชุดฮุก หรือกำหนด `hooks.internal.enabled=true` เพื่อเลือกใช้งาน เมื่อคุณเปิดใช้งานฮุกที่มีชื่อหนึ่งรายการ Gateway จะโหลดเฉพาะตัวจัดการของฮุกนั้น; `hooks.internal.enabled=true`, ไดเรกทอรีฮุกเพิ่มเติม และตัวจัดการแบบเดิมจะเลือกใช้การค้นพบแบบกว้าง
 
-Hook packs คือแพ็กเกจ npm ที่ export hooks ผ่าน `openclaw.hooks` ใน `package.json` ติดตั้งด้วย:
+### ชุดฮุก
+
+ชุดฮุกคือแพ็กเกจ npm ที่ export ฮุกผ่าน `openclaw.hooks` ใน `package.json` ติดตั้งด้วย:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-สเปก npm รองรับเฉพาะ registry เท่านั้น (ชื่อแพ็กเกจ + เวอร์ชันแบบระบุแน่นอนหรือ dist-tag แบบเลือกได้) ไม่รองรับและจะถูกปฏิเสธสำหรับสเปกแบบ Git/URL/file และ semver ranges
+สเปก Npm เป็นแบบรีจิสทรีเท่านั้น (ชื่อแพ็กเกจ + เวอร์ชันตรงตัวหรือ dist-tag ที่ไม่บังคับ) สเปก Git/URL/file และช่วง semver จะถูกปฏิเสธ
 
-## Bundled hooks
+## ฮุกที่มาพร้อมระบบ
 
-| Hook                  | เหตุการณ์                       | สิ่งที่ทำ                                                  |
-| --------------------- | ------------------------------ | ---------------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset` | บันทึกบริบทเซสชันไปยัง `<workspace>/memory/`               |
-| bootstrap-extra-files | `agent:bootstrap`              | ฉีดไฟล์ bootstrap เพิ่มเติมจากรูปแบบ glob                  |
-| command-logger        | `command`                      | บันทึกทุกคำสั่งลงใน `~/.openclaw/logs/commands.log`        |
-| boot-md               | `gateway:startup`              | รัน `BOOT.md` เมื่อ gateway เริ่มทำงาน                     |
+| ฮุก                   | เหตุการณ์                       | สิ่งที่ทำ                                             |
+| --------------------- | ------------------------------ | ----------------------------------------------------- |
+| session-memory        | `command:new`, `command:reset` | บันทึกบริบทเซสชันไปยัง `<workspace>/memory/`         |
+| bootstrap-extra-files | `agent:bootstrap`              | แทรกไฟล์ bootstrap เพิ่มเติมจากรูปแบบ glob           |
+| command-logger        | `command`                      | บันทึกคำสั่งทั้งหมดไปยัง `~/.openclaw/logs/commands.log` |
+| boot-md               | `gateway:startup`              | เรียกใช้ `BOOT.md` เมื่อ Gateway เริ่มทำงาน          |
 
-เปิดใช้งาน bundled hook ใดก็ได้:
+เปิดใช้งานฮุกที่มาพร้อมระบบใดก็ได้:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -175,13 +179,13 @@ openclaw hooks enable <hook-name>
 
 <a id="session-memory"></a>
 
-### รายละเอียดของ session-memory
+### รายละเอียด session-memory
 
-ดึงข้อความล่าสุด 15 รายการของผู้ใช้/ผู้ช่วย สร้าง slug ชื่อไฟล์ที่สื่อความหมายผ่าน LLM และบันทึกไปยัง `<workspace>/memory/YYYY-MM-DD-slug.md` ต้องมีการกำหนดค่า `workspace.dir`
+ดึงข้อความผู้ใช้/ผู้ช่วย 15 รายการล่าสุด สร้าง slug ชื่อไฟล์เชิงพรรณนาด้วย LLM และบันทึกไปยัง `<workspace>/memory/YYYY-MM-DD-slug.md` โดยใช้วันที่ภายในเครื่องของโฮสต์ ต้องกำหนดค่า `workspace.dir` ไว้
 
 <a id="bootstrap-extra-files"></a>
 
-### ค่ากำหนดของ bootstrap-extra-files
+### การกำหนดค่า bootstrap-extra-files
 
 ```json
 {
@@ -198,28 +202,28 @@ openclaw hooks enable <hook-name>
 }
 ```
 
-พาธจะอ้างอิงสัมพันธ์กับ workspace ระบบจะโหลดเฉพาะ bootstrap basenames ที่รู้จักเท่านั้น (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`)
+พาธจะถูกแก้ไขโดยอิงจากเวิร์กสเปซ โหลดเฉพาะ basename ของ bootstrap ที่รู้จักเท่านั้น (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`)
 
 <a id="command-logger"></a>
 
-### รายละเอียดของ command-logger
+### รายละเอียด command-logger
 
-บันทึกทุก slash command ลงใน `~/.openclaw/logs/commands.log`
+บันทึก slash command ทุกคำสั่งไปยัง `~/.openclaw/logs/commands.log`
 
 <a id="boot-md"></a>
 
-### รายละเอียดของ boot-md
+### รายละเอียด boot-md
 
-รัน `BOOT.md` จาก workspace ที่ใช้งานอยู่เมื่อ gateway เริ่มต้น
+เรียกใช้ `BOOT.md` จากเวิร์กสเปซที่ใช้งานอยู่เมื่อ Gateway เริ่มทำงาน
 
-## Plugin hooks
+## ฮุกของ Plugin
 
-Plugins สามารถลงทะเบียน typed hooks ผ่าน Plugin SDK เพื่อผสานการทำงานได้ลึกขึ้น:
-สกัดกั้นการเรียกใช้เครื่องมือ แก้ไข prompt ควบคุมการไหลของข้อความ และอื่นๆ
-ใช้ plugin hooks เมื่อคุณต้องการ `before_tool_call`, `before_agent_reply`,
-`before_install` หรือ hooks ในวงจรชีวิตใน process อื่นๆ
+Plugin สามารถลงทะเบียนฮุกที่มีชนิดกำกับผ่าน Plugin SDK เพื่อการผสานการทำงานที่ลึกขึ้น:
+การดักจับการเรียกเครื่องมือ การแก้ไข prompt การควบคุมลำดับข้อความ และอื่นๆ
+ใช้ฮุกของ plugin เมื่อคุณต้องการ `before_tool_call`, `before_agent_reply`,
+`before_install` หรือฮุกวงจรชีวิตแบบ in-process อื่นๆ
 
-สำหรับข้อมูลอ้างอิง plugin hook แบบครบถ้วน ดู [Plugin hooks](/th/plugins/hooks)
+ดูเอกสารอ้างอิงฮุกของ plugin ฉบับสมบูรณ์ได้ที่ [ฮุกของ Plugin](/th/plugins/hooks)
 
 ## การกำหนดค่า
 
@@ -237,7 +241,7 @@ Plugins สามารถลงทะเบียน typed hooks ผ่าน P
 }
 ```
 
-ตัวแปรสภาพแวดล้อมต่อ hook:
+ตัวแปรสภาพแวดล้อมแยกตามฮุก:
 
 ```json
 {
@@ -254,7 +258,7 @@ Plugins สามารถลงทะเบียน typed hooks ผ่าน P
 }
 ```
 
-ไดเรกทอรี hook เพิ่มเติม:
+ไดเรกทอรีฮุกเพิ่มเติม:
 
 ```json
 {
@@ -269,63 +273,63 @@ Plugins สามารถลงทะเบียน typed hooks ผ่าน P
 ```
 
 <Note>
-ยังรองรับรูปแบบคอนฟิกอาร์เรย์ `hooks.internal.handlers` แบบเดิมเพื่อความเข้ากันได้ย้อนหลัง แต่ hooks ใหม่ควรใช้ระบบแบบอิงการค้นพบ
+รูปแบบการกำหนดค่าอาร์เรย์ `hooks.internal.handlers` แบบเดิมยังรองรับอยู่เพื่อความเข้ากันได้ย้อนหลัง แต่ฮุกใหม่ควรใช้ระบบแบบ discovery-based
 </Note>
 
-## ข้อมูลอ้างอิง CLI
+## เอกสารอ้างอิง CLI
 
 ```bash
-# แสดง hooks ทั้งหมด (เพิ่ม --eligible, --verbose หรือ --json ได้)
+# List all hooks (add --eligible, --verbose, or --json)
 openclaw hooks list
 
-# แสดงข้อมูลโดยละเอียดของ hook
+# Show detailed info about a hook
 openclaw hooks info <hook-name>
 
-# แสดงสรุปคุณสมบัติการใช้งาน
+# Show eligibility summary
 openclaw hooks check
 
-# เปิด/ปิดใช้งาน
+# Enable/disable
 openclaw hooks enable <hook-name>
 openclaw hooks disable <hook-name>
 ```
 
 ## แนวทางปฏิบัติที่ดีที่สุด
 
-- **ให้ handlers ทำงานเร็วเสมอ** hooks จะทำงานระหว่างการประมวลผลคำสั่ง สำหรับงานหนักให้ fire-and-forget ด้วย `void processInBackground(event)`
-- **จัดการข้อผิดพลาดอย่างเหมาะสม** ครอบการทำงานที่เสี่ยงด้วย try/catch; อย่า throw เพื่อให้ handlers อื่นยังทำงานต่อได้
-- **กรองเหตุการณ์ตั้งแต่เนิ่นๆ** คืนค่าทันทีหาก type/action ของ event ไม่เกี่ยวข้อง
-- **ใช้คีย์เหตุการณ์แบบเฉพาะเจาะจง** ให้ใช้ `"events": ["command:new"]` แทน `"events": ["command"]` เพื่อลด overhead
+- **ทำให้ handler ทำงานเร็ว** ฮุกจะทำงานระหว่างการประมวลผลคำสั่ง ให้ส่งงานหนักไปทำแบบ fire-and-forget ด้วย `void processInBackground(event)`
+- **จัดการข้อผิดพลาดอย่างนุ่มนวล** ครอบการดำเนินการที่มีความเสี่ยงด้วย try/catch; อย่า throw เพื่อให้ handler อื่นๆ ทำงานต่อได้
+- **กรองเหตุการณ์ตั้งแต่เนิ่นๆ** คืนค่าทันทีหากชนิด/การกระทำของเหตุการณ์ไม่เกี่ยวข้อง
+- **ใช้คีย์เหตุการณ์ที่เฉพาะเจาะจง** ควรใช้ `"events": ["command:new"]` แทน `"events": ["command"]` เพื่อลด overhead
 
-## การแก้ปัญหา
+## การแก้ไขปัญหา
 
-### ไม่พบ hook
+### ไม่พบฮุก
 
 ```bash
-# ตรวจสอบโครงสร้างไดเรกทอรี
+# Verify directory structure
 ls -la ~/.openclaw/hooks/my-hook/
-# ควรแสดง: HOOK.md, handler.ts
+# Should show: HOOK.md, handler.ts
 
-# แสดง hooks ที่ค้นพบทั้งหมด
+# List all discovered hooks
 openclaw hooks list
 ```
 
-### hook ไม่มีคุณสมบัติการใช้งาน
+### ฮุกไม่เข้าเกณฑ์
 
 ```bash
 openclaw hooks info my-hook
 ```
 
-ตรวจสอบว่าไม่มีไบนารีที่ขาดหายไป (PATH), ตัวแปรสภาพแวดล้อม, ค่าคอนฟิก หรือความเข้ากันได้ของระบบปฏิบัติการ
+ตรวจสอบ binary ที่ขาดหายไป (PATH), ตัวแปรสภาพแวดล้อม, ค่าการกำหนดค่า หรือความเข้ากันได้ของ OS
 
-### hook ไม่ทำงาน
+### ฮุกไม่ทำงาน
 
-1. ตรวจสอบว่า hook เปิดใช้งานอยู่: `openclaw hooks list`
-2. รีสตาร์ต process ของ gateway เพื่อให้ hooks โหลดใหม่
-3. ตรวจสอบบันทึกของ gateway: `./scripts/clawlog.sh | grep hook`
+1. ตรวจสอบว่าฮุกเปิดใช้งานอยู่: `openclaw hooks list`
+2. รีสตาร์ทกระบวนการ Gateway ของคุณเพื่อให้ฮุกโหลดใหม่
+3. ตรวจสอบบันทึก Gateway: `./scripts/clawlog.sh | grep hook`
 
 ## ที่เกี่ยวข้อง
 
-- [ข้อมูลอ้างอิง CLI: hooks](/th/cli/hooks)
-- [Webhooks](/th/automation/cron-jobs#webhooks)
-- [Plugin hooks](/th/plugins/hooks) — plugin lifecycle hooks ภายใน process
-- [Configuration](/th/gateway/configuration-reference#hooks)
+- [ข้อมูลอ้างอิง CLI: ฮุก](/th/cli/hooks)
+- [Webhook](/th/automation/cron-jobs#webhooks)
+- [ฮุกของ Plugin](/th/plugins/hooks) — ฮุกวงจรชีวิตของ Plugin ภายในโปรเซส
+- [การกำหนดค่า](/th/gateway/configuration-reference#hooks)

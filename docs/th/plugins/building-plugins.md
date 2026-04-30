@@ -1,62 +1,63 @@
 ---
 read_when:
-- You want to create a new OpenClaw plugin
-- คุณต้องการคู่มือเริ่มต้นอย่างรวดเร็วสำหรับการพัฒนา Plugin
-- คุณกำลังเพิ่มช่องทาง ผู้ให้บริการ tool หรือความสามารถอื่นใหม่ให้กับ OpenClaw
+    - คุณต้องการสร้าง Plugin ใหม่ของ OpenClaw
+    - คุณต้องการคู่มือเริ่มต้นใช้งานอย่างรวดเร็วสำหรับการพัฒนา Plugin
+    - คุณกำลังเพิ่มช่องทาง ผู้ให้บริการ เครื่องมือ หรือความสามารถอื่นใหม่ให้กับ OpenClaw
 sidebarTitle: Getting Started
-summary: สร้าง Plugin OpenClaw แรกของคุณในไม่กี่นาที
+summary: สร้าง Plugin OpenClaw แรกของคุณได้ในไม่กี่นาที
 title: การสร้าง Plugin
 x-i18n:
-  generated_at: '2026-04-25T13:52:46Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 69c7ffb65750fd0c1fa786600c55a371dace790b8b1034fa42f4b80f5f7146df
-  source_path: plugins/building-plugins.md
-  workflow: 15
+    generated_at: "2026-04-30T10:04:26Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 321f8870d0ce3be8dece21b07815eda6859dcb00941d9181d913b95f3d74d230
+    source_path: plugins/building-plugins.md
+    workflow: 16
 ---
 
-Plugins ขยายความสามารถของ OpenClaw ด้วยความสามารถใหม่ ๆ: ช่องทาง, ผู้ให้บริการโมเดล,
-เสียงพูด, การถอดเสียงแบบ realtime, เสียงแบบ realtime, การเข้าใจสื่อ, การสร้างภาพ,
-การสร้างวิดีโอ, web fetch, web search, agent tools หรือการรวมกันแบบใดก็ได้
+Plugin ขยาย OpenClaw ด้วยความสามารถใหม่ๆ: ช่องทาง, ผู้ให้บริการโมเดล,
+เสียงพูด, การถอดเสียงแบบเรียลไทม์, เสียงแบบเรียลไทม์, การทำความเข้าใจสื่อ, การสร้างภาพ,
+การสร้างวิดีโอ, การดึงข้อมูลจากเว็บ, การค้นหาเว็บ, เครื่องมือเอเจนต์ หรือการผสมผสานใดๆ
+ของความสามารถเหล่านี้
 
-คุณไม่จำเป็นต้องเพิ่ม Plugin ของคุณเข้าไปใน repository ของ OpenClaw เผยแพร่ไปยัง
-[ClawHub](/th/tools/clawhub) หรือ npm แล้วผู้ใช้ติดตั้งด้วย
-`openclaw plugins install <package-name>` OpenClaw จะลองใช้ ClawHub ก่อนและ
-fallback ไปที่ npm โดยอัตโนมัติ
+คุณไม่จำเป็นต้องเพิ่ม Plugin ของคุณลงใน repository ของ OpenClaw เผยแพร่ไปยัง
+[ClawHub](/th/tools/clawhub) แล้วผู้ใช้ติดตั้งด้วย
+`openclaw plugins install <package-name>` OpenClaw จะลอง ClawHub ก่อน และ
+fallback ไปยัง npm โดยอัตโนมัติสำหรับ package ที่ยังใช้การแจกจ่ายผ่าน npm อยู่
 
 ## ข้อกำหนดเบื้องต้น
 
-- Node >= 22 และ package manager (npm หรือ pnpm)
+- Node >= 22 และตัวจัดการ package (npm หรือ pnpm)
 - คุ้นเคยกับ TypeScript (ESM)
-- สำหรับ plugins ภายใน repo: clone repository แล้วและรัน `pnpm install` แล้ว
+- สำหรับ Plugin ใน repo: clone repository แล้วและทำ `pnpm install` เสร็จแล้ว
 
-## Plugin แบบไหน?
+## Plugin ประเภทใด?
 
 <CardGroup cols={3}>
-  <Card title="Channel plugin" icon="messages-square" href="/th/plugins/sdk-channel-plugins">
-    เชื่อมต่อ OpenClaw เข้ากับแพลตฟอร์มส่งข้อความ (Discord, IRC ฯลฯ)
+  <Card title="Plugin ช่องทาง" icon="messages-square" href="/th/plugins/sdk-channel-plugins">
+    เชื่อมต่อ OpenClaw กับแพลตฟอร์มส่งข้อความ (Discord, IRC เป็นต้น)
   </Card>
-  <Card title="Provider plugin" icon="cpu" href="/th/plugins/sdk-provider-plugins">
-    เพิ่มผู้ให้บริการโมเดล (LLM, proxy หรือ custom endpoint)
+  <Card title="Plugin ผู้ให้บริการ" icon="cpu" href="/th/plugins/sdk-provider-plugins">
+    เพิ่มผู้ให้บริการโมเดล (LLM, proxy หรือ endpoint แบบกำหนดเอง)
   </Card>
-  <Card title="Tool / hook plugin" icon="wrench" href="/th/plugins/hooks">
-    ลงทะเบียน agent tools, event hooks หรือ services — ดูต่อด้านล่าง
+  <Card title="Plugin เครื่องมือ / hook" icon="wrench" href="/th/plugins/hooks">
+    ลงทะเบียนเครื่องมือเอเจนต์, event hook หรือบริการ — อ่านต่อด้านล่าง
   </Card>
 </CardGroup>
 
-สำหรับ channel plugin ที่ไม่รับประกันว่าจะติดตั้งอยู่เมื่อ onboarding/setup
-กำลังทำงาน ให้ใช้ `createOptionalChannelSetupSurface(...)` จาก
-`openclaw/plugin-sdk/channel-setup` มันจะสร้าง setup adapter + wizard แบบคู่
-ที่ประกาศข้อกำหนดเรื่องการติดตั้งและ fail closed สำหรับการเขียน config จริง
-จนกว่าจะติดตั้ง plugin แล้ว
+สำหรับ Plugin ช่องทางที่ไม่รับประกันว่าจะถูกติดตั้งเมื่อการ onboarding/setup
+ทำงาน ให้ใช้ `createOptionalChannelSetupSurface(...)` จาก
+`openclaw/plugin-sdk/channel-setup` ซึ่งจะสร้างคู่ setup adapter + wizard
+ที่ประกาศข้อกำหนดการติดตั้ง และปิดกั้นอย่างปลอดภัยสำหรับการเขียน config จริง
+จนกว่า Plugin จะถูกติดตั้ง
 
-## เริ่มต้นอย่างรวดเร็ว: tool plugin
+## เริ่มต้นอย่างรวดเร็ว: Plugin เครื่องมือ
 
-ตัวอย่างนี้จะสร้าง Plugin ขั้นต่ำที่ลงทะเบียน agent tool หนึ่งตัว Channel
-และ provider plugins มีคู่มือเฉพาะแยกต่างหากซึ่งลิงก์ไว้ด้านบน
+คำแนะนำนี้สร้าง Plugin ขั้นต่ำที่ลงทะเบียนเครื่องมือเอเจนต์ Plugin ช่องทาง
+และ Plugin ผู้ให้บริการมีคู่มือเฉพาะที่ลิงก์ไว้ด้านบน
 
 <Steps>
-  <Step title="สร้างแพ็กเกจและ manifest">
+  <Step title="สร้าง package และ manifest">
     <CodeGroup>
     ```json package.json
     {
@@ -82,6 +83,9 @@ fallback ไปที่ npm โดยอัตโนมัติ
       "id": "my-plugin",
       "name": "My Plugin",
       "description": "Adds a custom tool to OpenClaw",
+      "activation": {
+        "onStartup": true
+      },
       "configSchema": {
         "type": "object",
         "additionalProperties": false
@@ -90,9 +94,11 @@ fallback ไปที่ npm โดยอัตโนมัติ
     ```
     </CodeGroup>
 
-    ทุก Plugin ต้องมี manifest แม้ว่าจะไม่มี config ก็ตาม ดู
-    [Manifest](/th/plugins/manifest) สำหรับ schema แบบเต็ม snippets การเผยแพร่ไปยัง ClawHub แบบ canonical
-    อยู่ใน `docs/snippets/plugin-publish/`
+    Plugin ทุกตัวต้องมี manifest แม้จะไม่มี config และ Plugin ทุกตัวควร
+    ประกาศ `activation.onStartup` อย่างตั้งใจ เครื่องมือที่ลงทะเบียนตอน runtime ต้องมี
+    การ import ตอนเริ่มต้น ดังนั้นตัวอย่างนี้จึงตั้งค่าเป็น `true` ดู
+    [Manifest](/th/plugins/manifest) สำหรับ schema ฉบับเต็ม snippet สำหรับเผยแพร่ไปยัง ClawHub
+    ที่เป็น canonical อยู่ใน `docs/snippets/plugin-publish/`
 
   </Step>
 
@@ -120,15 +126,15 @@ fallback ไปที่ npm โดยอัตโนมัติ
     });
     ```
 
-    `definePluginEntry` ใช้สำหรับ plugins ที่ไม่ใช่ channel สำหรับ channels ให้ใช้
-    `defineChannelPluginEntry` — ดู [Channel Plugins](/th/plugins/sdk-channel-plugins)
-    สำหรับตัวเลือกของ entry point แบบเต็ม ดู [Entry Points](/th/plugins/sdk-entrypoints)
+    `definePluginEntry` ใช้สำหรับ Plugin ที่ไม่ใช่ช่องทาง สำหรับช่องทาง ให้ใช้
+    `defineChannelPluginEntry` — ดู [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins)
+    สำหรับตัวเลือก entry point ทั้งหมด ดู [Entry Point](/th/plugins/sdk-entrypoints)
 
   </Step>
 
   <Step title="ทดสอบและเผยแพร่">
 
-    **External plugins:** validate และเผยแพร่ด้วย ClawHub จากนั้นติดตั้ง:
+    **Plugin ภายนอก:** validate และเผยแพร่ด้วย ClawHub แล้วติดตั้ง:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -136,10 +142,11 @@ fallback ไปที่ npm โดยอัตโนมัติ
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    OpenClaw จะตรวจสอบ ClawHub ก่อน npm เช่นกันสำหรับสเปกแพ็กเกจแบบเปล่าอย่าง
-    `@myorg/openclaw-my-plugin`
+    OpenClaw ยังตรวจสอบ ClawHub ก่อน npm สำหรับ spec ของ package แบบ bare เช่น
+    `@myorg/openclaw-my-plugin`; npm ยังคงเป็น fallback สำหรับ package ที่
+    ยังไม่ได้ย้ายไป ClawHub
 
-    **In-repo plugins:** วางไว้ใต้ tree ของ bundled plugin workspace — ระบบจะค้นพบอัตโนมัติ
+    **Plugin ใน repo:** วางไว้ใต้ workspace tree ของ Plugin ที่ bundled — จะถูกค้นพบโดยอัตโนมัติ
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -150,71 +157,72 @@ fallback ไปที่ npm โดยอัตโนมัติ
 
 ## ความสามารถของ Plugin
 
-Plugin เดียวสามารถลงทะเบียนความสามารถได้หลายรายการผ่านออบเจ็กต์ `api`:
+Plugin เดียวสามารถลงทะเบียนความสามารถจำนวนเท่าใดก็ได้ผ่าน object `api`:
 
-| ความสามารถ           | เมธอดการลงทะเบียน                            | คู่มือแบบละเอียด                                                                 |
-| -------------------- | --------------------------------------------- | --------------------------------------------------------------------------------- |
-| Text inference (LLM) | `api.registerProvider(...)`                   | [Provider Plugins](/th/plugins/sdk-provider-plugins)                                 |
-| CLI inference backend | `api.registerCliBackend(...)`                | [CLI Backends](/th/gateway/cli-backends)                                             |
-| Channel / messaging  | `api.registerChannel(...)`                    | [Channel Plugins](/th/plugins/sdk-channel-plugins)                                   |
-| Speech (TTS/STT)     | `api.registerSpeechProvider(...)`             | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Realtime transcription | `api.registerRealtimeTranscriptionProvider(...)` | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Realtime voice       | `api.registerRealtimeVoiceProvider(...)`      | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Media understanding  | `api.registerMediaUnderstandingProvider(...)` | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Image generation     | `api.registerImageGenerationProvider(...)`    | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Music generation     | `api.registerMusicGenerationProvider(...)`    | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Video generation     | `api.registerVideoGenerationProvider(...)`    | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Web fetch            | `api.registerWebFetchProvider(...)`           | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Web search           | `api.registerWebSearchProvider(...)`          | [Provider Plugins](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)   |
-| Tool-result middleware | `api.registerAgentToolResultMiddleware(...)` | [ภาพรวม SDK](/th/plugins/sdk-overview#registration-api)                             |
-| Agent tools          | `api.registerTool(...)`                       | ด้านล่าง                                                                          |
-| Custom commands      | `api.registerCommand(...)`                    | [Entry Points](/th/plugins/sdk-entrypoints)                                          |
-| Plugin hooks         | `api.on(...)`                                 | [Plugin hooks](/th/plugins/hooks)                                                    |
-| Internal event hooks | `api.registerHook(...)`                       | [Entry Points](/th/plugins/sdk-entrypoints)                                          |
-| HTTP routes          | `api.registerHttpRoute(...)`                  | [Internals](/th/plugins/architecture-internals#gateway-http-routes)                  |
-| CLI subcommands      | `api.registerCli(...)`                        | [Entry Points](/th/plugins/sdk-entrypoints)                                          |
+| ความสามารถ             | วิธีลงทะเบียน                              | คู่มือโดยละเอียด                                                                  |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| การอนุมานข้อความ (LLM)   | `api.registerProvider(...)`                      | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins)                               |
+| backend การอนุมาน CLI  | `api.registerCliBackend(...)`                    | [CLI Backend](/th/gateway/cli-backends)                                           |
+| ช่องทาง / การส่งข้อความ    | `api.registerChannel(...)`                       | [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins)                                 |
+| เสียงพูด (TTS/STT)       | `api.registerSpeechProvider(...)`                | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การถอดเสียงแบบเรียลไทม์ | `api.registerRealtimeTranscriptionProvider(...)` | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| เสียงแบบเรียลไทม์         | `api.registerRealtimeVoiceProvider(...)`         | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การทำความเข้าใจสื่อ    | `api.registerMediaUnderstandingProvider(...)`    | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การสร้างภาพ       | `api.registerImageGenerationProvider(...)`       | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การสร้างเพลง       | `api.registerMusicGenerationProvider(...)`       | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การสร้างวิดีโอ       | `api.registerVideoGenerationProvider(...)`       | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การดึงข้อมูลจากเว็บ              | `api.registerWebFetchProvider(...)`              | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| การค้นหาเว็บ             | `api.registerWebSearchProvider(...)`             | [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| middleware ผลลัพธ์เครื่องมือ | `api.registerAgentToolResultMiddleware(...)`     | [ภาพรวม SDK](/th/plugins/sdk-overview#registration-api)                          |
+| เครื่องมือเอเจนต์            | `api.registerTool(...)`                          | ด้านล่าง                                                                           |
+| คำสั่งแบบกำหนดเอง        | `api.registerCommand(...)`                       | [Entry Point](/th/plugins/sdk-entrypoints)                                        |
+| hook ของ Plugin           | `api.on(...)`                                    | [hook ของ Plugin](/th/plugins/hooks)                                                  |
+| hook เหตุการณ์ภายใน   | `api.registerHook(...)`                          | [Entry Point](/th/plugins/sdk-entrypoints)                                        |
+| route HTTP            | `api.registerHttpRoute(...)`                     | [ภายในระบบ](/th/plugins/architecture-internals#gateway-http-routes)                |
+| subcommand ของ CLI        | `api.registerCli(...)`                           | [Entry Point](/th/plugins/sdk-entrypoints)                                        |
 
-สำหรับ registration API แบบเต็ม ดู [ภาพรวม SDK](/th/plugins/sdk-overview#registration-api)
+สำหรับ API การลงทะเบียนทั้งหมด ดู [ภาพรวม SDK](/th/plugins/sdk-overview#registration-api)
 
-Bundled plugins สามารถใช้ `api.registerAgentToolResultMiddleware(...)` เมื่อ
-ต้องการเขียนผลลัพธ์ของ tool ใหม่แบบ async ก่อนที่โมเดลจะเห็นเอาต์พุต ให้ประกาศ
-runtimes เป้าหมายใน `contracts.agentToolResultMiddleware` เช่น
-`["pi", "codex"]` นี่คือ seam ที่เชื่อถือได้สำหรับ bundled-plugin; external
-plugins ควรเลือกใช้ Plugin hooks ปกติของ OpenClaw เว้นแต่ OpenClaw จะขยาย
-นโยบายความเชื่อถือแบบ explicit สำหรับความสามารถนี้ในอนาคต
+Plugin ที่ bundled สามารถใช้ `api.registerAgentToolResultMiddleware(...)` เมื่อ
+ต้องการเขียนผลลัพธ์ของเครื่องมือใหม่แบบ async ก่อนที่โมเดลจะเห็น output ประกาศ
+runtime เป้าหมายใน `contracts.agentToolResultMiddleware` เช่น
+`["pi", "codex"]` นี่เป็น seam ของ Plugin ที่ bundled และเชื่อถือได้; Plugin
+ภายนอกควรเลือกใช้ hook ของ Plugin OpenClaw ตามปกติ เว้นแต่ OpenClaw จะเพิ่ม
+นโยบายความเชื่อถือที่ชัดเจนสำหรับความสามารถนี้
 
-หาก Plugin ของคุณลงทะเบียน custom gateway RPC methods ให้คงไว้ภายใต้
-prefix เฉพาะของ plugin namespaces สำหรับ admin ของ core (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) ยังคงสงวนไว้และจะ resolve ไปยัง
-`operator.admin` เสมอ แม้ plugin จะร้องขอ scope ที่แคบกว่าก็ตาม
+หาก Plugin ของคุณลงทะเบียนเมธอด RPC ของ Gateway แบบกำหนดเอง ให้เก็บไว้บน
+prefix เฉพาะของ Plugin namespace สำหรับ admin ใน core (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) ยังคงถูกสงวนไว้และ resolve เป็น
+`operator.admin` เสมอ แม้ว่า Plugin จะขอ scope ที่แคบกว่าก็ตาม
 
 ความหมายของ hook guard ที่ควรจำไว้:
 
-- `before_tool_call`: `{ block: true }` เป็นแบบสิ้นสุดและจะหยุด handlers ที่มีลำดับความสำคัญต่ำกว่า
-- `before_tool_call`: `{ block: false }` จะถูกมองว่าไม่มีการตัดสินใจ
-- `before_tool_call`: `{ requireApproval: true }` จะหยุดการทำงานของ agent ชั่วคราวและแจ้งให้ผู้ใช้อนุมัติผ่าน exec approval overlay, ปุ่มบน Telegram, interactions ของ Discord หรือคำสั่ง `/approve` บนทุกช่องทาง
-- `before_install`: `{ block: true }` เป็นแบบสิ้นสุดและจะหยุด handlers ที่มีลำดับความสำคัญต่ำกว่า
-- `before_install`: `{ block: false }` จะถูกมองว่าไม่มีการตัดสินใจ
-- `message_sending`: `{ cancel: true }` เป็นแบบสิ้นสุดและจะหยุด handlers ที่มีลำดับความสำคัญต่ำกว่า
-- `message_sending`: `{ cancel: false }` จะถูกมองว่าไม่มีการตัดสินใจ
-- `message_received`: ให้ใช้ฟิลด์ `threadId` ที่มี type เมื่อคุณต้องการการกำหนดเส้นทาง inbound thread/topic เก็บ `metadata` ไว้สำหรับส่วนเสริมเฉพาะช่องทาง
-- `message_sending`: ให้ใช้ฟิลด์การกำหนดเส้นทางแบบมี type อย่าง `replyToId` / `threadId` แทนคีย์ metadata เฉพาะช่องทาง
+- `before_tool_call`: `{ block: true }` เป็น terminal และหยุด handler ที่มี priority ต่ำกว่า
+- `before_tool_call`: `{ block: false }` จะถือว่าไม่มีการตัดสินใจ
+- `before_tool_call`: `{ requireApproval: true }` จะหยุดการทำงานของเอเจนต์ชั่วคราวและแจ้งผู้ใช้ให้อนุมัติผ่าน exec approval overlay, ปุ่ม Telegram, interaction ของ Discord หรือคำสั่ง `/approve` บนช่องทางใดก็ได้
+- `before_install`: `{ block: true }` เป็น terminal และหยุด handler ที่มี priority ต่ำกว่า
+- `before_install`: `{ block: false }` จะถือว่าไม่มีการตัดสินใจ
+- `message_sending`: `{ cancel: true }` เป็น terminal และหยุด handler ที่มี priority ต่ำกว่า
+- `message_sending`: `{ cancel: false }` จะถือว่าไม่มีการตัดสินใจ
+- `message_received`: เลือกใช้ฟิลด์ typed `threadId` เมื่อคุณต้องการ routing ของ thread/topic ขาเข้า เก็บ `metadata` ไว้สำหรับข้อมูลเสริมเฉพาะช่องทาง
+- `message_sending`: เลือกใช้ฟิลด์ routing แบบ typed `replyToId` / `threadId` แทน key metadata เฉพาะช่องทาง
 
-คำสั่ง `/approve` รองรับทั้ง exec และ plugin approvals พร้อม bounded fallback: เมื่อไม่พบ exec approval id OpenClaw จะลอง id เดิมผ่าน plugin approvals อีกครั้ง การส่งต่อ plugin approval สามารถกำหนดค่าแยกได้ผ่าน `approvals.plugin` ใน config
+คำสั่ง `/approve` จัดการทั้งการอนุมัติของ exec และ Plugin ด้วย fallback แบบมีขอบเขต: เมื่อไม่พบ exec approval id, OpenClaw จะลอง id เดิมซ้ำผ่านการอนุมัติของ Plugin การส่งต่อการอนุมัติของ Plugin สามารถกำหนดค่าแยกต่างหากผ่าน `approvals.plugin` ใน config
 
-หากโครงสร้าง approval แบบกำหนดเองของคุณต้องตรวจจับ bounded fallback กรณีเดียวกัน ให้ใช้
-`isApprovalNotFoundError` จาก `openclaw/plugin-sdk/error-runtime`
-แทนการจับคู่สตริงของการหมดอายุ approval ด้วยตนเอง
+หาก plumbing การอนุมัติแบบกำหนดเองต้องตรวจจับกรณี fallback แบบมีขอบเขตเดียวกันนี้
+ให้เลือกใช้ `isApprovalNotFoundError` จาก `openclaw/plugin-sdk/error-runtime`
+แทนการจับคู่ string หมดอายุของการอนุมัติด้วยตนเอง
 
-ดู [Plugin hooks](/th/plugins/hooks) สำหรับตัวอย่างและข้อมูลอ้างอิงของ hooks
+ดู [hook ของ Plugin](/th/plugins/hooks) สำหรับตัวอย่างและข้อมูลอ้างอิงของ hook
 
-## การลงทะเบียน agent tools
+## การลงทะเบียนเครื่องมือเอเจนต์
 
-Tools คือฟังก์ชันแบบมี type ที่ LLM สามารถเรียกใช้ได้ สามารถเป็นแบบ required (พร้อมใช้งานเสมอ) หรือ optional (ผู้ใช้ต้องเลือกเปิดเอง):
+เครื่องมือคือฟังก์ชันที่มี type ซึ่ง LLM สามารถเรียกได้ โดยอาจเป็นแบบจำเป็น (พร้อมใช้งานเสมอ)
+หรือเป็นแบบ optional (ผู้ใช้ opt-in):
 
 ```typescript
 register(api) {
-  // Required tool — พร้อมใช้งานเสมอ
+  // Required tool — always available
   api.registerTool({
     name: "my_tool",
     description: "Do a thing",
@@ -224,7 +232,7 @@ register(api) {
     },
   });
 
-  // Optional tool — ผู้ใช้ต้องเพิ่มใน allowlist
+  // Optional tool — user must add to allowlist
   api.registerTool(
     {
       name: "workflow_tool",
@@ -239,7 +247,7 @@ register(api) {
 }
 ```
 
-ผู้ใช้เปิดใช้ optional tools ใน config:
+ผู้ใช้เปิดใช้เครื่องมือ optional ใน config:
 
 ```json5
 {
@@ -247,88 +255,88 @@ register(api) {
 }
 ```
 
-- ชื่อ tool ต้องไม่ชนกับ core tools (หากชน ระบบจะข้าม)
-- ใช้ `optional: true` สำหรับ tools ที่มี side effects หรือต้องใช้ไบนารีเพิ่มเติม
-- ผู้ใช้สามารถเปิดใช้ tools ทั้งหมดจาก plugin เดียวได้โดยเพิ่ม plugin id ลงใน `tools.allow`
+- ชื่อเครื่องมือต้องไม่ชนกับเครื่องมือของ core (conflict จะถูกข้าม)
+- เครื่องมือที่มี object การลงทะเบียนผิดรูปแบบ รวมถึงขาด `parameters` จะถูกข้ามและรายงานใน diagnostics ของ Plugin แทนที่จะทำให้การรันเอเจนต์ล้มเหลว
+- ใช้ `optional: true` สำหรับเครื่องมือที่มี side effect หรือข้อกำหนด binary เพิ่มเติม
+- ผู้ใช้สามารถเปิดใช้เครื่องมือทั้งหมดจาก Plugin หนึ่งตัวได้โดยเพิ่ม id ของ Plugin ลงใน `tools.allow`
 
-## แนวทางการ import
+## ข้อปฏิบัติในการ import
 
-ให้ import จากพาธย่อยที่เฉพาะเจาะจงของ `openclaw/plugin-sdk/<subpath>` เสมอ:
+ให้ import จาก path แบบเจาะจง `openclaw/plugin-sdk/<subpath>` เสมอ:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 
-// ไม่ถูกต้อง: root แบบรวมทั้งหมด (เลิกใช้แล้ว และจะถูกลบออก)
+// Wrong: monolithic root (deprecated, will be removed)
 import { ... } from "openclaw/plugin-sdk";
 ```
 
-สำหรับข้อมูลอ้างอิงของ subpath แบบเต็ม ดู [ภาพรวม SDK](/th/plugins/sdk-overview)
+สำหรับข้อมูลอ้างอิง subpath ฉบับเต็ม โปรดดู [ภาพรวม SDK](/th/plugins/sdk-overview)
 
-ภายใน Plugin ของคุณ ให้ใช้ local barrel files (`api.ts`, `runtime-api.ts`) สำหรับ
-internal imports — อย่า import plugin ของตัวเองผ่าน SDK path ของมัน
+ภายใน Plugin ของคุณ ให้ใช้ไฟล์ barrel ภายในเครื่อง (`api.ts`, `runtime-api.ts`) สำหรับ
+การ import ภายใน ห้าม import Plugin ของคุณเองผ่านพาธ SDK ของมัน
 
-สำหรับ provider plugins ให้เก็บ helper ที่เฉพาะกับ provider ไว้ใน package-root
-barrels เหล่านั้น เว้นแต่ seam นั้นจะเป็นแบบทั่วไปจริง ๆ ตัวอย่าง bundled ปัจจุบัน:
+สำหรับ Plugin ผู้ให้บริการ ให้เก็บตัวช่วยเฉพาะผู้ให้บริการไว้ใน barrel ที่ package-root
+เหล่านั้น เว้นแต่ว่า seam นั้นจะเป็นแบบทั่วไปจริงๆ ตัวอย่างที่มาพร้อมปัจจุบัน:
 
-- Anthropic: wrappers สำหรับ Claude stream และ helpers สำหรับ `service_tier` / beta
-- OpenAI: builders ของ provider, helpers สำหรับ default-model, realtime providers
-- OpenRouter: builder ของ provider พร้อม helpers สำหรับ onboarding/config
+- Anthropic: wrapper สตรีม Claude และตัวช่วย `service_tier` / beta
+- OpenAI: builder ผู้ให้บริการ, ตัวช่วยโมเดลเริ่มต้น, ผู้ให้บริการแบบเรียลไทม์
+- OpenRouter: builder ผู้ให้บริการ รวมถึงตัวช่วย onboarding/config
 
-หาก helper ใดมีประโยชน์เฉพาะภายใน bundled provider package เดียว ให้เก็บไว้บน
-package-root seam ของ package นั้น แทนที่จะย้ายขึ้นไปไว้ใน `openclaw/plugin-sdk/*`
+หากตัวช่วยมีประโยชน์เฉพาะภายในแพ็กเกจผู้ให้บริการที่มาพร้อมเพียงหนึ่งรายการ ให้เก็บไว้บน
+seam ที่ package-root นั้น แทนที่จะยกระดับเข้าไปใน `openclaw/plugin-sdk/*`
 
-ยังมี helper seams ที่สร้างขึ้นบางส่วนใน `openclaw/plugin-sdk/<bundled-id>` สำหรับ
-การบำรุงรักษา bundled-plugin และความเข้ากันได้ เช่น
-`plugin-sdk/feishu-setup` หรือ `plugin-sdk/zalo-setup` ให้ถือว่าสิ่งเหล่านี้เป็น
-surfaces ที่สงวนไว้ ไม่ใช่รูปแบบเริ่มต้นสำหรับ third-party plugins ใหม่
+seam ตัวช่วย `openclaw/plugin-sdk/<bundled-id>` บางรายการที่สร้างขึ้นยังคงมีอยู่สำหรับ
+การบำรุงรักษา Plugin ที่มาพร้อม เมื่อมีการติดตามการใช้งานของเจ้าของ ให้ถือว่าสิ่งเหล่านั้นเป็น
+พื้นผิวที่สงวนไว้ ไม่ใช่รูปแบบเริ่มต้นสำหรับ Plugin บุคคลที่สามใหม่
 
-## เช็กลิสต์ก่อนส่ง
+## รายการตรวจสอบก่อนส่ง
 
-<Check>**package.json** มี metadata ของ `openclaw` ถูกต้อง</Check>
-<Check>มี **openclaw.plugin.json** manifest และถูกต้อง</Check>
-<Check>Entry point ใช้ `defineChannelPluginEntry` หรือ `definePluginEntry`</Check>
-<Check>imports ทั้งหมดใช้พาธ `plugin-sdk/<subpath>` ที่เฉพาะเจาะจง</Check>
-<Check>internal imports ใช้ local modules ไม่ใช่ SDK self-imports</Check>
+<Check>**package.json** มีเมทาดาทา `openclaw` ที่ถูกต้อง</Check>
+<Check>มี manifest **openclaw.plugin.json** และถูกต้อง</Check>
+<Check>จุดเข้าใช้งานใช้ `defineChannelPluginEntry` หรือ `definePluginEntry`</Check>
+<Check>การ import ทั้งหมดใช้พาธ `plugin-sdk/<subpath>` ที่เฉพาะเจาะจง</Check>
+<Check>การ import ภายในใช้โมดูลภายในเครื่อง ไม่ใช่การ self-import ผ่าน SDK</Check>
 <Check>การทดสอบผ่าน (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` ผ่าน (สำหรับ plugins ภายใน repo)</Check>
+<Check>`pnpm check` ผ่าน (Plugin ภายใน repo)</Check>
 
-## การทดสอบ Beta Release
+## การทดสอบรุ่น beta
 
-1. ติดตาม release tags บน GitHub ของ [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) และสมัครผ่าน `Watch` > `Releases` Beta tags จะมีลักษณะเช่น `v2026.3.N-beta.1` คุณยังสามารถเปิดการแจ้งเตือนสำหรับบัญชี OpenClaw บน X อย่างเป็นทางการ [@openclaw](https://x.com/openclaw) เพื่อรับประกาศ release ได้
-2. ทดสอบ Plugin ของคุณกับ beta tag ทันทีที่มันปรากฏขึ้น ช่วงเวลาก่อน stable โดยทั่วไปมีเพียงไม่กี่ชั่วโมง
-3. โพสต์ในเธรดของ Plugin ของคุณในช่อง `plugin-forum` บน Discord หลังจากทดสอบแล้ว โดยระบุว่า `all good` หรืออธิบายสิ่งที่พัง หากคุณยังไม่มีเธรด ให้สร้างขึ้นมา
-4. หากมีบางอย่างพัง ให้เปิดหรืออัปเดต issue ที่มีชื่อ `Beta blocker: <plugin-name> - <summary>` และใส่ป้ายกำกับ `beta-blocker` วางลิงก์ issue ไว้ในเธรดของคุณ
-5. เปิด PR ไปที่ `main` โดยตั้งชื่อ `fix(<plugin-id>): beta blocker - <summary>` และลิงก์ issue ไว้ทั้งใน PR และในเธรด Discord ของคุณ ผู้ร่วมพัฒนาไม่สามารถติดป้ายกำกับ PR ได้ ดังนั้นชื่อ PR จึงเป็นสัญญาณฝั่ง PR สำหรับ maintainers และระบบอัตโนมัติ blocker ที่มี PR จะถูก merge; blocker ที่ไม่มีอาจยังถูกปล่อยออกไป anyway Maintainers จะติดตามเธรดเหล่านี้ระหว่างการทดสอบ beta
-6. ความเงียบหมายถึงผ่าน หากคุณพลาดช่วงเวลานั้น การแก้ไขของคุณก็มักจะไปลงในรอบถัดไป
+1. เฝ้าดูแท็ก release ของ GitHub บน [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) และสมัครรับข้อมูลผ่าน `Watch` > `Releases` แท็ก beta จะมีลักษณะเช่น `v2026.3.N-beta.1` คุณยังสามารถเปิดการแจ้งเตือนสำหรับบัญชี X ทางการของ OpenClaw [@openclaw](https://x.com/openclaw) เพื่อรับประกาศ release ได้ด้วย
+2. ทดสอบ Plugin ของคุณกับแท็ก beta ทันทีที่ปรากฏ ช่วงเวลาก่อน stable โดยทั่วไปมีเพียงไม่กี่ชั่วโมง
+3. โพสต์ในเธรดของ Plugin ของคุณในช่อง Discord `plugin-forum` หลังทดสอบ โดยระบุ `all good` หรือสิ่งที่พัง หากยังไม่มีเธรด ให้สร้างเธรดหนึ่งรายการ
+4. หากมีบางอย่างพัง ให้เปิดหรืออัปเดต issue ชื่อ `Beta blocker: <plugin-name> - <summary>` และใส่ป้ายกำกับ `beta-blocker` วางลิงก์ issue ไว้ในเธรดของคุณ
+5. เปิด PR ไปยัง `main` ชื่อ `fix(<plugin-id>): beta blocker - <summary>` และลิงก์ issue ทั้งใน PR และเธรด Discord ของคุณ ผู้ร่วมพัฒนาไม่สามารถใส่ป้ายกำกับ PR ได้ ดังนั้นชื่อจึงเป็นสัญญาณฝั่ง PR สำหรับผู้ดูแลและระบบอัตโนมัติ blocker ที่มี PR จะถูก merge; blocker ที่ไม่มี PR อาจถูกปล่อยไปอยู่ดี ผู้ดูแลจะเฝ้าดูเธรดเหล่านี้ระหว่างการทดสอบ beta
+6. ความเงียบหมายถึงผ่าน หากคุณพลาดช่วงเวลานี้ การแก้ไขของคุณมีแนวโน้มจะเข้าในรอบถัดไป
 
 ## ขั้นตอนถัดไป
 
 <CardGroup cols={2}>
-  <Card title="Channel Plugins" icon="messages-square" href="/th/plugins/sdk-channel-plugins">
-    สร้าง channel plugin สำหรับการส่งข้อความ
+  <Card title="Plugin ช่องทาง" icon="messages-square" href="/th/plugins/sdk-channel-plugins">
+    สร้าง Plugin ช่องทางการรับส่งข้อความ
   </Card>
-  <Card title="Provider Plugins" icon="cpu" href="/th/plugins/sdk-provider-plugins">
-    สร้าง provider plugin สำหรับโมเดล
+  <Card title="Plugin ผู้ให้บริการ" icon="cpu" href="/th/plugins/sdk-provider-plugins">
+    สร้าง Plugin ผู้ให้บริการโมเดล
   </Card>
-  <Card title="SDK Overview" icon="book-open" href="/th/plugins/sdk-overview">
-    import map และเอกสารอ้างอิง registration API
+  <Card title="ภาพรวม SDK" icon="book-open" href="/th/plugins/sdk-overview">
+    แผนที่ import และข้อมูลอ้างอิง API การลงทะเบียน
   </Card>
-  <Card title="Runtime Helpers" icon="settings" href="/th/plugins/sdk-runtime">
-    TTS, search, subagent ผ่าน api.runtime
+  <Card title="ตัวช่วยรันไทม์" icon="settings" href="/th/plugins/sdk-runtime">
+    TTS, การค้นหา, subagent ผ่าน api.runtime
   </Card>
-  <Card title="Testing" icon="test-tubes" href="/th/plugins/sdk-testing">
-    utilities และรูปแบบสำหรับการทดสอบ
+  <Card title="การทดสอบ" icon="test-tubes" href="/th/plugins/sdk-testing">
+    ยูทิลิตีและรูปแบบการทดสอบ
   </Card>
-  <Card title="Plugin Manifest" icon="file-json" href="/th/plugins/manifest">
-    เอกสารอ้างอิง schema ของ manifest แบบเต็ม
+  <Card title="Manifest ของ Plugin" icon="file-json" href="/th/plugins/manifest">
+    ข้อมูลอ้างอิง schema ของ manifest ฉบับเต็ม
   </Card>
 </CardGroup>
 
 ## ที่เกี่ยวข้อง
 
-- [Plugin Architecture](/th/plugins/architecture) — เจาะลึกสถาปัตยกรรมภายใน
-- [SDK Overview](/th/plugins/sdk-overview) — เอกสารอ้างอิง Plugin SDK
-- [Manifest](/th/plugins/manifest) — รูปแบบ manifest ของ plugin
-- [Channel Plugins](/th/plugins/sdk-channel-plugins) — การสร้าง channel plugins
-- [Provider Plugins](/th/plugins/sdk-provider-plugins) — การสร้าง provider plugins
+- [สถาปัตยกรรม Plugin](/th/plugins/architecture) — เจาะลึกสถาปัตยกรรมภายใน
+- [ภาพรวม SDK](/th/plugins/sdk-overview) — ข้อมูลอ้างอิง SDK ของ Plugin
+- [Manifest](/th/plugins/manifest) — รูปแบบ manifest ของ Plugin
+- [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins) — การสร้าง Plugin ช่องทาง
+- [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins) — การสร้าง Plugin ผู้ให้บริการ

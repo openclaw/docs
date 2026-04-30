@@ -1,36 +1,36 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: การตั้งค่า SSH tunnel สำหรับให้ OpenClaw.app เชื่อมต่อกับ gateway ระยะไกล
-title: การตั้งค่า gateway ระยะไกล
+summary: การตั้งค่าอุโมงค์ SSH สำหรับ OpenClaw.app ที่เชื่อมต่อกับ Gateway ระยะไกล
+title: การตั้งค่า Gateway ระยะไกล
 x-i18n:
-    generated_at: "2026-04-24T09:12:13Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:54:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
+    source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
     source_path: gateway/remote-gateway-readme.md
-    workflow: 15
+    workflow: 16
 ---
 
-> เนื้อหานี้ถูกรวมเข้าไว้ใน [การเข้าถึงระยะไกล](/th/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) แล้ว โปรดดูหน้านั้นสำหรับคู่มือปัจจุบัน
+> เนื้อหานี้ถูกรวมเข้าไปใน [การเข้าถึงระยะไกล](/th/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent) แล้ว ดูหน้านั้นสำหรับคู่มือปัจจุบัน
 
-# การรัน OpenClaw.app ด้วย Gateway ระยะไกล
+# การเรียกใช้ OpenClaw.app ด้วย Gateway ระยะไกล
 
-OpenClaw.app ใช้ SSH tunneling เพื่อเชื่อมต่อกับ gateway ระยะไกล คู่มือนี้จะแสดงวิธีตั้งค่า
+OpenClaw.app ใช้การสร้างอุโมงค์ SSH เพื่อเชื่อมต่อกับ Gateway ระยะไกล คู่มือนี้แสดงวิธีตั้งค่า
 
 ## ภาพรวม
 
 ```mermaid
 flowchart TB
-    subgraph Client["เครื่องไคลเอนต์"]
+    subgraph Client["Client Machine"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(พอร์ตโลคัล)"]
+        B["ws://127.0.0.1:18789\n(local port)"]
         T["SSH Tunnel"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["เครื่องระยะไกล"]
+    subgraph Remote["Remote Machine"]
         direction TB
         C["Gateway WebSocket"]
         D["ws://127.0.0.1:18789"]
@@ -40,60 +40,60 @@ flowchart TB
     T --> C
 ```
 
-## การตั้งค่าแบบรวดเร็ว
+## การตั้งค่าอย่างรวดเร็ว
 
-### ขั้นตอนที่ 1: เพิ่ม SSH Config
+### ขั้นตอนที่ 1: เพิ่มการตั้งค่า SSH
 
-แก้ไข `~/.ssh/config` และเพิ่ม:
+แก้ไข `~/.ssh/config` แล้วเพิ่ม:
 
 ```ssh
 Host remote-gateway
-    HostName <REMOTE_IP>          # เช่น 172.27.187.184
-    User <REMOTE_USER>            # เช่น jefferson
+    HostName <REMOTE_IP>          # e.g., 172.27.187.184
+    User <REMOTE_USER>            # e.g., jefferson
     LocalForward 18789 127.0.0.1:18789
     IdentityFile ~/.ssh/id_rsa
 ```
 
 แทนที่ `<REMOTE_IP>` และ `<REMOTE_USER>` ด้วยค่าของคุณ
 
-### ขั้นตอนที่ 2: คัดลอก SSH Key
+### ขั้นตอนที่ 2: คัดลอกคีย์ SSH
 
-คัดลอก public key ของคุณไปยังเครื่องระยะไกล (ใส่รหัสผ่านหนึ่งครั้ง):
+คัดลอกคีย์สาธารณะของคุณไปยังเครื่องระยะไกล (ป้อนรหัสผ่านหนึ่งครั้ง):
 
 ```bash
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-### ขั้นตอนที่ 3: กำหนดค่า auth ของ Remote Gateway
+### ขั้นตอนที่ 3: กำหนดค่าการตรวจสอบสิทธิ์ Gateway ระยะไกล
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-ใช้ `gateway.remote.password` แทน หาก remote gateway ของคุณใช้ auth แบบรหัสผ่าน
-`OPENCLAW_GATEWAY_TOKEN` ยังคงใช้เป็น shell-level override ได้ แต่การตั้งค่า remote-client
-แบบถาวรคือ `gateway.remote.token` / `gateway.remote.password`
+ใช้ `gateway.remote.password` แทนหาก Gateway ระยะไกลของคุณใช้การตรวจสอบสิทธิ์ด้วยรหัสผ่าน
+`OPENCLAW_GATEWAY_TOKEN` ยังคงใช้ได้ในฐานะการ override ระดับ shell แต่การตั้งค่า
+ไคลเอนต์ระยะไกลแบบถาวรคือ `gateway.remote.token` / `gateway.remote.password`
 
-### ขั้นตอนที่ 4: เริ่ม SSH Tunnel
+### ขั้นตอนที่ 4: เริ่มอุโมงค์ SSH
 
 ```bash
 ssh -N remote-gateway &
 ```
 
-### ขั้นตอนที่ 5: รีสตาร์ต OpenClaw.app
+### ขั้นตอนที่ 5: รีสตาร์ท OpenClaw.app
 
 ```bash
 # Quit OpenClaw.app (⌘Q), then reopen:
 open /path/to/OpenClaw.app
 ```
 
-ตอนนี้แอปจะเชื่อมต่อกับ remote gateway ผ่าน SSH tunnel
+ตอนนี้แอปจะเชื่อมต่อกับ Gateway ระยะไกลผ่านอุโมงค์ SSH
 
 ---
 
-## ให้ Tunnel เริ่มอัตโนมัติเมื่อเข้าสู่ระบบ
+## เริ่มอุโมงค์อัตโนมัติเมื่อเข้าสู่ระบบ
 
-หากต้องการให้ SSH tunnel เริ่มอัตโนมัติเมื่อคุณเข้าสู่ระบบ ให้สร้าง Launch Agent
+หากต้องการให้อุโมงค์ SSH เริ่มโดยอัตโนมัติเมื่อคุณเข้าสู่ระบบ ให้สร้าง Launch Agent
 
 ### สร้างไฟล์ PLIST
 
@@ -126,32 +126,32 @@ open /path/to/OpenClaw.app
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-ตอนนี้ tunnel จะ:
+ตอนนี้อุโมงค์จะ:
 
-- เริ่มอัตโนมัติเมื่อคุณเข้าสู่ระบบ
-- รีสตาร์ตหากล่ม
-- ทำงานอยู่เบื้องหลังต่อไป
+- เริ่มโดยอัตโนมัติเมื่อคุณเข้าสู่ระบบ
+- รีสตาร์ทหากขัดข้อง
+- ทำงานต่อไปในพื้นหลัง
 
-หมายเหตุสำหรับระบบเดิม: หากมี `com.openclaw.ssh-tunnel` LaunchAgent แบบเก่าค้างอยู่ ให้ลบทิ้ง
+หมายเหตุสำหรับระบบเดิม: ลบ LaunchAgent `com.openclaw.ssh-tunnel` ที่อาจเหลืออยู่ หากมี
 
 ---
 
 ## การแก้ไขปัญหา
 
-**ตรวจสอบว่า tunnel กำลังทำงานอยู่หรือไม่:**
+**ตรวจสอบว่าอุโมงค์กำลังทำงานอยู่หรือไม่:**
 
 ```bash
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
 ```
 
-**รีสตาร์ต tunnel:**
+**รีสตาร์ทอุโมงค์:**
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-**หยุด tunnel:**
+**หยุดอุโมงค์:**
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
@@ -159,16 +159,16 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 ---
 
-## วิธีการทำงาน
+## วิธีทำงาน
 
-| องค์ประกอบ | สิ่งที่ทำ |
+| องค์ประกอบ                         | ทำอะไร                                            |
 | ------------------------------------ | ------------------------------------------------------------ |
-| `LocalForward 18789 127.0.0.1:18789` | ส่งต่อพอร์ตโลคัล 18789 ไปยังพอร์ตระยะไกล 18789 |
-| `ssh -N` | SSH โดยไม่รันคำสั่งระยะไกล (มีไว้สำหรับส่งต่อพอร์ตเท่านั้น) |
-| `KeepAlive` | รีสตาร์ต tunnel อัตโนมัติหากล่ม |
-| `RunAtLoad` | เริ่ม tunnel เมื่อโหลด agent |
+| `LocalForward 18789 127.0.0.1:18789` | ส่งต่อพอร์ตภายในเครื่อง 18789 ไปยังพอร์ตระยะไกล 18789 |
+| `ssh -N`                             | SSH โดยไม่เรียกใช้คำสั่งระยะไกล (ทำเฉพาะการส่งต่อพอร์ต) |
+| `KeepAlive`                          | รีสตาร์ทอุโมงค์โดยอัตโนมัติหากขัดข้อง |
+| `RunAtLoad`                          | เริ่มอุโมงค์เมื่อ agent โหลด |
 
-OpenClaw.app จะเชื่อมต่อไปยัง `ws://127.0.0.1:18789` บนเครื่องไคลเอนต์ของคุณ SSH tunnel จะส่งต่อการเชื่อมต่อนั้นไปยังพอร์ต 18789 บนเครื่องระยะไกลที่ Gateway กำลังทำงานอยู่
+OpenClaw.app เชื่อมต่อกับ `ws://127.0.0.1:18789` บนเครื่องไคลเอนต์ของคุณ อุโมงค์ SSH จะส่งต่อการเชื่อมต่อนั้นไปยังพอร์ต 18789 บนเครื่องระยะไกลที่ Gateway กำลังทำงานอยู่
 
 ## ที่เกี่ยวข้อง
 

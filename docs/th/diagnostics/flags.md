@@ -1,25 +1,25 @@
 ---
 read_when:
-    - คุณต้องการ log ดีบักแบบเจาะจงโดยไม่เพิ่มระดับ logging แบบโกลบอล
-    - คุณต้องการเก็บ log เฉพาะระบบย่อยสำหรับการซัพพอร์ต
-summary: แฟล็ก diagnostics สำหรับ log ดีบักแบบเจาะจง
-title: แฟล็ก diagnostics
+    - คุณต้องใช้ล็อกดีบักแบบเจาะจง โดยไม่เพิ่มระดับการบันทึกล็อกทั่วทั้งระบบ
+    - คุณต้องเก็บบันทึกล็อกเฉพาะระบบย่อยเพื่อส่งให้ฝ่ายสนับสนุน
+summary: แฟล็กการวินิจฉัยสำหรับบันทึกการดีบักแบบเจาะจง
+title: แฟล็กการวินิจฉัย
 x-i18n:
-    generated_at: "2026-04-24T09:08:32Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:49:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
+    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
     source_path: diagnostics/flags.md
-    workflow: 15
+    workflow: 16
 ---
 
-แฟล็ก diagnostics ช่วยให้คุณเปิด log ดีบักแบบเจาะจงได้โดยไม่ต้องเปิด verbose logging ทุกที่ แฟล็กเหล่านี้เป็นแบบเลือกใช้เองและจะไม่มีผลเว้นแต่ระบบย่อยจะตรวจสอบมัน
+แฟล็กการวินิจฉัยช่วยให้คุณเปิดใช้บันทึกดีบักเฉพาะจุดได้โดยไม่ต้องเปิดการบันทึกแบบละเอียดทุกที่ แฟล็กเป็นแบบเลือกใช้ และจะไม่มีผลเว้นแต่ระบบย่อยจะตรวจสอบแฟล็กเหล่านั้น
 
 ## วิธีการทำงาน
 
-- แฟล็กเป็นสตริง (ไม่สนตัวพิมพ์เล็กใหญ่)
-- คุณสามารถเปิดใช้แฟล็กได้ในการกำหนดค่าหรือผ่าน env override
-- รองรับ wildcard:
+- แฟล็กเป็นสตริง (ไม่คำนึงถึงตัวพิมพ์ใหญ่-เล็ก)
+- คุณสามารถเปิดใช้แฟล็กใน config หรือผ่านการแทนที่ด้วย env ได้
+- รองรับไวลด์การ์ด:
   - `telegram.*` ตรงกับ `telegram.http`
   - `*` เปิดใช้ทุกแฟล็ก
 
@@ -43,39 +43,76 @@ x-i18n:
 }
 ```
 
-รีสตาร์ท gateway หลังจากเปลี่ยนแฟล็ก
+รีสตาร์ต gateway หลังจากเปลี่ยนแฟล็ก
 
-## Env override (ใช้ครั้งเดียว)
+## การแทนที่ด้วย env (ครั้งเดียว)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-ปิดทุกแฟล็ก:
+ปิดใช้ทุกแฟล็ก:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
 ```
 
-## log จะไปที่ใด
+## อาร์ติแฟกต์ไทม์ไลน์
 
-แฟล็กจะส่ง log ไปยังไฟล์ diagnostics log มาตรฐาน โดยค่าเริ่มต้น:
+แฟล็ก `timeline` จะเขียนเหตุการณ์เวลาเริ่มต้นและรันไทม์แบบมีโครงสร้างสำหรับ
+ชุดทดสอบ QA ภายนอก:
+
+```bash
+OPENCLAW_DIAGNOSTICS=timeline \
+OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
+openclaw gateway run
+```
+
+คุณยังสามารถเปิดใช้ใน config ได้ด้วย:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["timeline"]
+  }
+}
+```
+
+พาธไฟล์ไทม์ไลน์ยังคงมาจาก
+`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` เมื่อเปิดใช้ `timeline` จาก
+config เท่านั้น ช่วงการโหลด config ที่เร็วที่สุดจะไม่ถูกปล่อยออกมา เพราะ OpenClaw ยัง
+ไม่ได้อ่าน config; ช่วงการเริ่มต้นถัดมาจะใช้แฟล็กจาก config
+
+`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` และ
+`OPENCLAW_DIAGNOSTICS=*` จะเปิดใช้ไทม์ไลน์ด้วย เพราะค่าเหล่านี้เปิดใช้ทุก
+แฟล็กการวินิจฉัย ควรใช้ `timeline` เมื่อคุณต้องการเฉพาะอาร์ติแฟกต์เวลา
+JSONL
+
+เรคคอร์ดไทม์ไลน์ใช้เอนเวโลป `openclaw.diagnostics.v1` เหตุการณ์อาจรวมถึง
+รหัสโปรเซส ชื่อเฟส ชื่อช่วง ระยะเวลา รหัส Plugin จำนวน dependency
+ตัวอย่างความหน่วงของ event loop ชื่อการทำงานของ provider สถานะการออกของ child process
+และชื่อ/ข้อความข้อผิดพลาดระหว่างเริ่มต้น ให้ถือว่าไฟล์ไทม์ไลน์เป็นอาร์ติแฟกต์การวินิจฉัย
+ในเครื่อง; ตรวจสอบก่อนแชร์ออกนอกเครื่องของคุณ
+
+## ตำแหน่งของบันทึก
+
+แฟล็กจะปล่อยบันทึกไปยังไฟล์บันทึกการวินิจฉัยมาตรฐาน โดยค่าเริ่มต้น:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-หากคุณตั้งค่า `logging.file` ให้ใช้พาธนั้นแทน log เป็น JSONL (หนึ่งออบเจ็กต์ JSON ต่อหนึ่งบรรทัด) การปกปิดข้อมูลยังคงใช้ตาม `logging.redactSensitive`
+หากคุณตั้งค่า `logging.file` ให้ใช้พาธนั้นแทน บันทึกเป็น JSONL (หนึ่งออบเจ็กต์ JSON ต่อบรรทัด) การปกปิดข้อมูลยังคงใช้ตาม `logging.redactSensitive`
 
-## ดึง log
+## แยกบันทึกออกมา
 
-เลือกไฟล์ log ล่าสุด:
+เลือกไฟล์บันทึกล่าสุด:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-กรองหา diagnostics ของ Telegram HTTP:
+กรองการวินิจฉัย HTTP ของ Telegram:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
@@ -91,11 +128,11 @@ tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 
 ## หมายเหตุ
 
-- หากตั้งค่า `logging.level` สูงกว่า `warn` log เหล่านี้อาจถูกระงับ ค่าเริ่มต้น `info` ใช้งานได้
-- แฟล็กสามารถเปิดทิ้งไว้ได้อย่างปลอดภัย; มันมีผลเฉพาะกับปริมาณ log ของระบบย่อยที่ระบุ
-- ใช้ [/logging](/th/logging) เพื่อเปลี่ยนปลายทาง log ระดับ และการปกปิดข้อมูล
+- หาก `logging.level` ถูกตั้งสูงกว่า `warn` บันทึกเหล่านี้อาจถูกระงับ ค่าเริ่มต้น `info` ใช้ได้ดี
+- ปล่อยให้แฟล็กเปิดไว้ได้อย่างปลอดภัย; แฟล็กมีผลต่อปริมาณบันทึกของระบบย่อยที่ระบุเท่านั้น
+- ใช้ [/logging](/th/logging) เพื่อเปลี่ยนปลายทาง ระดับ และการปกปิดข้อมูลของบันทึก
 
 ## ที่เกี่ยวข้อง
 
-- [Gateway diagnostics](/th/gateway/diagnostics)
-- [การแก้ไขปัญหา Gateway](/th/gateway/troubleshooting)
+- [การวินิจฉัย Gateway](/th/gateway/diagnostics)
+- [การแก้ปัญหา Gateway](/th/gateway/troubleshooting)

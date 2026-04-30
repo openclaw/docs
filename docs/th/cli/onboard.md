@@ -1,28 +1,40 @@
 ---
 read_when:
-    - คุณต้องการการตั้งค่าแบบมีคำแนะนำสำหรับ Gateway, workspace, auth, ช่องทาง และ Skills
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw onboard` (การเริ่มต้นใช้งานแบบโต้ตอบ)
-title: Onboard
+    - คุณต้องการการตั้งค่าแบบมีคำแนะนำสำหรับ Gateway, พื้นที่ทำงาน, การยืนยันตัวตน, ช่องทาง และ Skills
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw onboard` (การเริ่มต้นใช้งานแบบโต้ตอบ)
+title: เริ่มต้นใช้งาน
 x-i18n:
-    generated_at: "2026-04-25T13:44:54Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:44:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 234c308ea554195df1bd880bda7e30770e926af059740458d056e4a909aaeb07
+    source_hash: 583310458b2e2bc8ddc1513112c960520d972716be0c33e4177d0db30e896504
     source_path: cli/onboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw onboard`
 
-Onboard แบบโต้ตอบสำหรับการตั้งค่า Gateway ภายในเครื่องหรือระยะไกล
+การเริ่มต้นใช้งานแบบโต้ตอบสำหรับการตั้งค่า Gateway ภายในเครื่องหรือระยะไกล
 
 ## คู่มือที่เกี่ยวข้อง
 
-- ศูนย์รวม Onboarding ของ CLI: [Onboarding (CLI)](/th/start/wizard)
-- ภาพรวม Onboarding: [Onboarding Overview](/th/start/onboarding-overview)
-- ข้อมูลอ้างอิง Onboarding ของ CLI: [CLI Setup Reference](/th/start/wizard-cli-reference)
-- ระบบอัตโนมัติของ CLI: [CLI Automation](/th/start/wizard-cli-automation)
-- Onboarding บน macOS: [Onboarding (macOS App)](/th/start/onboarding)
+<CardGroup cols={2}>
+  <Card title="ศูนย์รวมการเริ่มต้นใช้งาน CLI" href="/th/start/wizard" icon="rocket">
+    คำแนะนำทีละขั้นตอนของโฟลว์ CLI แบบโต้ตอบ
+  </Card>
+  <Card title="ภาพรวมการเริ่มต้นใช้งาน" href="/th/start/onboarding-overview" icon="map">
+    วิธีที่การเริ่มต้นใช้งาน OpenClaw ทำงานร่วมกัน
+  </Card>
+  <Card title="ข้อมูลอ้างอิงการตั้งค่า CLI" href="/th/start/wizard-cli-reference" icon="book">
+    เอาต์พุต รายละเอียดภายใน และพฤติกรรมในแต่ละขั้นตอน
+  </Card>
+  <Card title="การทำงานอัตโนมัติของ CLI" href="/th/start/wizard-cli-automation" icon="terminal">
+    แฟล็กแบบไม่โต้ตอบและการตั้งค่าด้วยสคริปต์
+  </Card>
+  <Card title="การเริ่มต้นใช้งานแอป macOS" href="/th/start/onboarding" icon="apple">
+    โฟลว์การเริ่มต้นใช้งานสำหรับแอปแถบเมนู macOS
+  </Card>
+</CardGroup>
 
 ## ตัวอย่าง
 
@@ -31,19 +43,22 @@ openclaw onboard
 openclaw onboard --modern
 openclaw onboard --flow quickstart
 openclaw onboard --flow manual
+openclaw onboard --flow import
+openclaw onboard --import-from hermes --import-source ~/.hermes
 openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--modern` จะเริ่มพรีวิว Onboarding แบบสนทนาของ Crestodian หากไม่ใช้
-`--modern`, `openclaw onboard` จะใช้โฟลว์ Onboarding แบบคลาสสิกต่อไป
+`--flow import` ใช้ผู้ให้บริการการย้ายข้อมูลที่ Plugin เป็นเจ้าของ เช่น Hermes โดยจะทำงานกับการตั้งค่า OpenClaw ใหม่เท่านั้น หากมี config, credentials, sessions หรือไฟล์ workspace memory/identity อยู่แล้ว ให้รีเซ็ตหรือเลือกการตั้งค่าใหม่ก่อนนำเข้า
 
-สำหรับปลายทาง `ws://` แบบข้อความล้วนในเครือข่ายส่วนตัว (เฉพาะเครือข่ายที่เชื่อถือได้เท่านั้น) ให้ตั้งค่า
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ใน environment ของกระบวนการ Onboarding
-ไม่มีค่าที่เทียบเท่าใน `openclaw.json` สำหรับ break-glass
-ฝั่งไคลเอนต์ของการขนส่งนี้
+`--modern` เริ่มพรีวิวการเริ่มต้นใช้งานแบบสนทนาของ Crestodian หากไม่มี
+`--modern`, `openclaw onboard` จะคงโฟลว์การเริ่มต้นใช้งานแบบคลาสสิกไว้
 
-Custom provider แบบไม่โต้ตอบ:
+สำหรับเป้าหมาย `ws://` แบบข้อความธรรมดาบนเครือข่ายส่วนตัว (เฉพาะเครือข่ายที่เชื่อถือได้) ให้ตั้งค่า
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ในสภาพแวดล้อมของกระบวนการเริ่มต้นใช้งาน
+ไม่มีรายการเทียบเท่าใน `openclaw.json` สำหรับการทำ break-glass ของการขนส่งฝั่งไคลเอ็นต์นี้
+
+ผู้ให้บริการแบบกำหนดเองที่ไม่โต้ตอบ:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -52,12 +67,14 @@ openclaw onboard --non-interactive \
   --custom-model-id "foo-large" \
   --custom-api-key "$CUSTOM_API_KEY" \
   --secret-input-mode plaintext \
-  --custom-compatibility openai
+  --custom-compatibility openai \
+  --custom-image-input
 ```
 
-`--custom-api-key` เป็นตัวเลือกเสริมในโหมดไม่โต้ตอบ หากไม่ระบุ Onboarding จะตรวจสอบ `CUSTOM_API_KEY`
+`--custom-api-key` เป็นตัวเลือกในโหมดไม่โต้ตอบ หากละไว้ การเริ่มต้นใช้งานจะตรวจสอบ `CUSTOM_API_KEY`
+OpenClaw ทำเครื่องหมาย ID โมเดล vision ทั่วไปว่าใช้งานรูปภาพได้โดยอัตโนมัติ ส่ง `--custom-image-input` สำหรับ ID vision แบบกำหนดเองที่ไม่รู้จัก หรือ `--custom-text-input` เพื่อบังคับ metadata แบบข้อความเท่านั้น
 
-LM Studio ยังรองรับแฟล็กคีย์เฉพาะ provider ในโหมดไม่โต้ตอบด้วย:
+LM Studio ยังรองรับแฟล็กคีย์เฉพาะผู้ให้บริการในโหมดไม่โต้ตอบด้วย:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -78,9 +95,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` มีค่าเริ่มต้นเป็น `http://127.0.0.1:11434` `--custom-model-id` เป็นตัวเลือกเสริม; หากไม่ระบุ Onboarding จะใช้ค่าเริ่มต้นที่ Ollama แนะนำ คุณยังสามารถใช้ model ID ของคลาวด์ เช่น `kimi-k2.5:cloud` ได้ที่นี่
+`--custom-base-url` มีค่าเริ่มต้นเป็น `http://127.0.0.1:11434` `--custom-model-id` เป็นตัวเลือก หากละไว้ การเริ่มต้นใช้งานจะใช้ค่าเริ่มต้นที่ Ollama แนะนำ ID โมเดลบนคลาวด์ เช่น `kimi-k2.5:cloud` ก็ใช้ได้ที่นี่เช่นกัน
 
-จัดเก็บคีย์ของ provider เป็น ref แทนข้อความล้วน:
+จัดเก็บคีย์ผู้ให้บริการเป็น refs แทนข้อความธรรมดา:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -89,26 +106,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-เมื่อใช้ `--secret-input-mode ref`, Onboarding จะเขียน ref ที่อ้างอิง env แทนค่าคีย์แบบข้อความล้วน
-สำหรับ provider ที่รองรับ auth-profile ระบบจะเขียนรายการ `keyRef`; สำหรับ custom provider ระบบจะเขียน `models.providers.<id>.apiKey` เป็น env ref (ตัวอย่างเช่น `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`)
+เมื่อใช้ `--secret-input-mode ref` การเริ่มต้นใช้งานจะเขียน refs ที่อิง env แทนค่าคีย์แบบข้อความธรรมดา
+สำหรับผู้ให้บริการที่อิง auth-profile สิ่งนี้จะเขียนรายการ `keyRef`; สำหรับผู้ให้บริการแบบกำหนดเอง สิ่งนี้จะเขียน `models.providers.<id>.apiKey` เป็น env ref (เช่น `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`)
 
-ข้อกำหนดของโหมด `ref` แบบไม่โต้ตอบ:
+สัญญาของโหมด `ref` แบบไม่โต้ตอบ:
 
-- ตั้งค่า env var ของ provider ใน environment ของกระบวนการ Onboarding (ตัวอย่างเช่น `OPENAI_API_KEY`)
-- อย่าส่งแฟล็กคีย์แบบอินไลน์ (ตัวอย่างเช่น `--openai-api-key`) เว้นแต่ env var นั้นจะถูกตั้งค่าไว้ด้วย
-- หากส่งแฟล็กคีย์แบบอินไลน์โดยไม่มี env var ที่จำเป็น Onboarding จะล้มเหลวทันทีพร้อมคำแนะนำ
+- ตั้งค่า env var ของผู้ให้บริการในสภาพแวดล้อมของกระบวนการเริ่มต้นใช้งาน (เช่น `OPENAI_API_KEY`)
+- อย่าส่งแฟล็กคีย์แบบ inline (เช่น `--openai-api-key`) เว้นแต่ env var นั้นจะถูกตั้งค่าไว้ด้วย
+- หากส่งแฟล็กคีย์แบบ inline โดยไม่มี env var ที่จำเป็น การเริ่มต้นใช้งานจะล้มเหลวทันทีพร้อมคำแนะนำ
 
-ตัวเลือก token ของ Gateway ในโหมดไม่โต้ตอบ:
+ตัวเลือกโทเค็น Gateway ในโหมดไม่โต้ตอบ:
 
-- `--gateway-auth token --gateway-token <token>` จะจัดเก็บ token แบบข้อความล้วน
-- `--gateway-auth token --gateway-token-ref-env <name>` จะจัดเก็บ `gateway.auth.token` เป็น env SecretRef
+- `--gateway-auth token --gateway-token <token>` จัดเก็บโทเค็นแบบข้อความธรรมดา
+- `--gateway-auth token --gateway-token-ref-env <name>` จัดเก็บ `gateway.auth.token` เป็น env SecretRef
 - `--gateway-token` และ `--gateway-token-ref-env` ใช้ร่วมกันไม่ได้
-- `--gateway-token-ref-env` ต้องมี env var ที่ไม่ว่างใน environment ของกระบวนการ Onboarding
-- เมื่อใช้ `--install-daemon`, หาก token auth ต้องใช้ token ระบบจะตรวจสอบ token ของ Gateway ที่จัดการด้วย SecretRef แต่จะไม่จัดเก็บค่า plaintext ที่ resolve แล้วลงใน metadata ของ environment ของบริการ supervisor
-- เมื่อใช้ `--install-daemon`, หากโหมด token ต้องใช้ token และ SecretRef ของ token ที่กำหนดไว้ยัง resolve ไม่ได้ Onboarding จะปิดการทำงานแบบ fail-closed พร้อมคำแนะนำในการแก้ไข
-- เมื่อใช้ `--install-daemon`, หากมีการกำหนดทั้ง `gateway.auth.token` และ `gateway.auth.password` และไม่ได้ตั้งค่า `gateway.auth.mode` ระบบจะบล็อกการติดตั้งจนกว่าจะตั้งค่าโหมดอย่างชัดเจน
-- Onboarding ภายในเครื่องจะเขียน `gateway.mode="local"` ลงใน config หากไฟล์ config ภายหลังไม่มี `gateway.mode` ให้ถือว่าเป็นความเสียหายของ config หรือการแก้ไขด้วยตนเองที่ไม่สมบูรณ์ ไม่ใช่ทางลัดโหมด local ที่ถูกต้อง
-- `--allow-unconfigured` เป็น escape hatch ของ runtime Gateway แยกต่างหาก ไม่ได้หมายความว่า Onboarding สามารถละเว้น `gateway.mode` ได้
+- `--gateway-token-ref-env` ต้องมี env var ที่ไม่ว่างในสภาพแวดล้อมของกระบวนการเริ่มต้นใช้งาน
+- เมื่อใช้ `--install-daemon` หากการยืนยันตัวตนด้วยโทเค็นต้องใช้โทเค็น โทเค็น gateway ที่จัดการด้วย SecretRef จะถูกตรวจสอบความถูกต้องแต่จะไม่ถูกคงอยู่เป็นข้อความธรรมดาที่ resolve แล้วใน metadata สภาพแวดล้อมของบริการ supervisor
+- เมื่อใช้ `--install-daemon` หากโหมดโทเค็นต้องใช้โทเค็นและ SecretRef โทเค็นที่กำหนดค่าไว้ไม่สามารถ resolve ได้ การเริ่มต้นใช้งานจะล้มเหลวแบบปิดพร้อมคำแนะนำการแก้ไข
+- เมื่อใช้ `--install-daemon` หากทั้ง `gateway.auth.token` และ `gateway.auth.password` ถูกกำหนดค่าไว้ และไม่ได้ตั้งค่า `gateway.auth.mode` การเริ่มต้นใช้งานจะบล็อกการติดตั้งจนกว่าจะตั้งค่าโหมดอย่างชัดเจน
+- การเริ่มต้นใช้งานภายในเครื่องจะเขียน `gateway.mode="local"` ลงใน config หากไฟล์ config ภายหลังไม่มี `gateway.mode` ให้ถือว่านั่นเป็นความเสียหายของ config หรือการแก้ไขด้วยตนเองที่ไม่สมบูรณ์ ไม่ใช่ทางลัดโหมด local ที่ถูกต้อง
+- `--allow-unconfigured` เป็นทางหนีฉุกเฉินของ runtime ของ Gateway แยกต่างหาก ไม่ได้หมายความว่าการเริ่มต้นใช้งานสามารถละเว้น `gateway.mode` ได้
 
 ตัวอย่าง:
 
@@ -122,35 +139,36 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-การตรวจสุขภาพของ Gateway ภายในเครื่องแบบไม่โต้ตอบ:
+สุขภาพของ gateway ภายในเครื่องแบบไม่โต้ตอบ:
 
-- หากคุณไม่ส่ง `--skip-health`, Onboarding จะรอจนกว่า Gateway ภายในเครื่องจะเข้าถึงได้ก่อนจึงจะออกสำเร็จ
-- `--install-daemon` จะเริ่มเส้นทางการติดตั้ง Gateway แบบจัดการก่อน หากไม่ใช้ คุณต้องมี Gateway ภายในเครื่องที่กำลังทำงานอยู่แล้ว เช่น `openclaw gateway run`
+- เว้นแต่คุณจะส่ง `--skip-health` การเริ่มต้นใช้งานจะรอจนกว่า gateway ภายในเครื่องจะเข้าถึงได้ก่อนที่จะออกสำเร็จ
+- `--install-daemon` เริ่มเส้นทางการติดตั้ง gateway ที่มีการจัดการก่อน หากไม่มีแฟล็กนี้ คุณต้องมี gateway ภายในเครื่องที่ทำงานอยู่แล้ว เช่น `openclaw gateway run`
 - หากคุณต้องการเพียงการเขียน config/workspace/bootstrap ในระบบอัตโนมัติ ให้ใช้ `--skip-health`
-- หากคุณจัดการไฟล์ workspace เอง ให้ส่ง `--skip-bootstrap` เพื่อตั้งค่า `agents.defaults.skipBootstrap: true` และข้ามการสร้าง `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` และ `BOOTSTRAP.md`
-- บน Windows แบบเนทีฟ `--install-daemon` จะพยายามใช้ Scheduled Tasks ก่อน และจะ fallback ไปใช้รายการเริ่มต้นเมื่อเข้าสู่ระบบในโฟลเดอร์ Startup แบบต่อผู้ใช้หากการสร้าง task ถูกปฏิเสธ
+- หากคุณจัดการไฟล์ workspace ด้วยตัวเอง ให้ส่ง `--skip-bootstrap` เพื่อตั้งค่า `agents.defaults.skipBootstrap: true` และข้ามการสร้าง `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, และ `BOOTSTRAP.md`
+- บน Windows แบบ native, `--install-daemon` จะลอง Scheduled Tasks ก่อน และ fallback ไปยังรายการเข้าสู่ระบบในโฟลเดอร์ Startup ต่อผู้ใช้ หากการสร้าง task ถูกปฏิเสธ
 
-พฤติกรรมของ Onboarding แบบโต้ตอบเมื่อใช้โหมด reference:
+พฤติกรรมการเริ่มต้นใช้งานแบบโต้ตอบด้วยโหมดอ้างอิง:
 
-- เลือก **Use secret reference** เมื่อระบบถาม
+- เลือก **ใช้การอ้างอิงลับ** เมื่อมีข้อความแจ้ง
 - จากนั้นเลือกอย่างใดอย่างหนึ่ง:
   - ตัวแปรสภาพแวดล้อม
-  - secret provider ที่กำหนดค่าไว้ (`file` หรือ `exec`)
-- Onboarding จะทำการตรวจสอบ preflight อย่างรวดเร็วก่อนบันทึก ref
-  - หากการตรวจสอบล้มเหลว Onboarding จะแสดงข้อผิดพลาดและให้คุณลองใหม่ได้
+  - ผู้ให้บริการความลับที่กำหนดค่าไว้ (`file` หรือ `exec`)
+- การเริ่มต้นใช้งานจะทำการตรวจสอบ preflight อย่างรวดเร็วก่อนบันทึก ref
+  - หากการตรวจสอบล้มเหลว การเริ่มต้นใช้งานจะแสดงข้อผิดพลาดและให้คุณลองใหม่
 
-ตัวเลือกปลายทาง Z.AI แบบไม่โต้ตอบ:
+### ตัวเลือก endpoint ของ Z.AI แบบไม่โต้ตอบ
 
-หมายเหตุ: ตอนนี้ `--auth-choice zai-api-key` จะตรวจจับปลายทาง Z.AI ที่ดีที่สุดสำหรับคีย์ของคุณโดยอัตโนมัติ (ให้ความสำคัญกับ general API ที่ใช้ `zai/glm-5.1`)
-หากคุณต้องการปลายทาง GLM Coding Plan โดยเฉพาะ ให้เลือก `zai-coding-global` หรือ `zai-coding-cn`
+<Note>
+`--auth-choice zai-api-key` ตรวจหา endpoint ของ Z.AI ที่ดีที่สุดสำหรับคีย์ของคุณโดยอัตโนมัติ (ให้ความสำคัญกับ API ทั่วไปที่ใช้ `zai/glm-5.1`) หากคุณต้องการ endpoint ของ GLM Coding Plan โดยเฉพาะ ให้เลือก `zai-coding-global` หรือ `zai-coding-cn`
+</Note>
 
 ```bash
-# การเลือกปลายทางโดยไม่ต้องมี prompt
+# Promptless endpoint selection
 openclaw onboard --non-interactive \
   --auth-choice zai-coding-global \
   --zai-api-key "$ZAI_API_KEY"
 
-# ตัวเลือกปลายทาง Z.AI อื่น:
+# Other Z.AI endpoint choices:
 # --auth-choice zai-coding-cn
 # --auth-choice zai-global
 # --auth-choice zai-cn
@@ -164,21 +182,38 @@ openclaw onboard --non-interactive \
   --mistral-api-key "$MISTRAL_API_KEY"
 ```
 
-หมายเหตุเกี่ยวกับโฟลว์:
+## หมายเหตุของโฟลว์
 
-- `quickstart`: prompt น้อยที่สุด, สร้าง token ของ Gateway อัตโนมัติ
-- `manual`: prompt แบบเต็มสำหรับ port/bind/auth (alias ของ `advanced`)
-- เมื่อ auth choice บ่งชี้ provider ที่ต้องการ Onboarding จะกรองตัวเลือกโมเดลเริ่มต้นและ allowlist ล่วงหน้าให้เหลือเฉพาะ provider นั้น สำหรับ Volcengine และ BytePlus จะรวมตัวแปร coding-plan ด้วย
-  (`volcengine-plan/*`, `byteplus-plan/*`)
-- หากตัวกรอง provider ที่ต้องการยังไม่พบโมเดลที่โหลดอยู่ ระบบจะ fallback ไปใช้แค็ตตาล็อกที่ไม่กรองแทนที่จะปล่อยให้ตัวเลือกว่าง
-- ในขั้นตอน web-search บาง provider อาจทริกเกอร์ prompt ติดตามผลเฉพาะ provider:
-  - **Grok** อาจเสนอการตั้งค่า `x_search` แบบเลือกได้ โดยใช้ `XAI_API_KEY` เดียวกัน และตัวเลือกโมเดล `x_search`
-  - **Kimi** อาจถามภูมิภาค API ของ Moonshot (`api.moonshot.ai` เทียบกับ `api.moonshot.cn`) และโมเดลค้นหาเว็บ Kimi เริ่มต้น
-- พฤติกรรมขอบเขต DM ของ Onboarding ภายในเครื่อง: [CLI Setup Reference](/th/start/wizard-cli-reference#outputs-and-internals)
-- แชตแรกที่เร็วที่สุด: `openclaw dashboard` (Control UI, ไม่ต้องตั้งค่าช่องทาง)
-- Custom Provider: เชื่อมต่อปลายทางที่เข้ากันได้กับ OpenAI หรือ Anthropic ใดก็ได้ รวมถึง provider แบบโฮสต์ที่ไม่ได้อยู่ในรายการ ใช้ Unknown เพื่อตรวจจับอัตโนมัติ
+<AccordionGroup>
+  <Accordion title="ประเภทโฟลว์">
+    - `quickstart`: ข้อความแจ้งขั้นต่ำ สร้างโทเค็น gateway โดยอัตโนมัติ
+    - `manual`: ข้อความแจ้งแบบเต็มสำหรับ port, bind, และ auth (นามแฝงของ `advanced`)
+    - `import`: เรียกใช้ผู้ให้บริการการย้ายข้อมูลที่ตรวจพบ แสดงตัวอย่างแผน แล้วนำไปใช้หลังการยืนยัน
 
-## คำสั่งติดตามผลที่ใช้บ่อย
+  </Accordion>
+  <Accordion title="การกรองผู้ให้บริการล่วงหน้า">
+    เมื่อ auth choice สื่อถึงผู้ให้บริการที่ต้องการ การเริ่มต้นใช้งานจะกรองตัวเลือก default-model และ allowlist ล่วงหน้าให้เหลือเฉพาะผู้ให้บริการนั้น สำหรับ Volcengine และ BytePlus สิ่งนี้ยังจับคู่กับ variants ของ coding-plan (`volcengine-plan/*`, `byteplus-plan/*`) ด้วย
+
+    หากตัวกรองผู้ให้บริการที่ต้องการยังไม่ให้โมเดลที่โหลดแล้ว การเริ่มต้นใช้งานจะ fallback ไปยัง catalog ที่ไม่ถูกกรองแทนการปล่อยให้ตัวเลือกว่างเปล่า
+
+  </Accordion>
+  <Accordion title="ข้อความแจ้งติดตามผลของ web-search">
+    ผู้ให้บริการ web-search บางรายเรียกใช้ข้อความแจ้งติดตามผลเฉพาะผู้ให้บริการ:
+
+    - **Grok** สามารถเสนอการตั้งค่า `x_search` แบบตัวเลือกด้วย `XAI_API_KEY` เดียวกันและตัวเลือกโมเดล `x_search`
+    - **Kimi** สามารถถามภูมิภาค Moonshot API (`api.moonshot.ai` เทียบกับ `api.moonshot.cn`) และโมเดล web-search เริ่มต้นของ Kimi
+
+  </Accordion>
+  <Accordion title="พฤติกรรมอื่นๆ">
+    - พฤติกรรมขอบเขต DM ของการเริ่มต้นใช้งานภายในเครื่อง: [ข้อมูลอ้างอิงการตั้งค่า CLI](/th/start/wizard-cli-reference#outputs-and-internals)
+    - แชตแรกที่เร็วที่สุด: `openclaw dashboard` (Control UI, ไม่ต้องตั้งค่าช่องทาง)
+    - ผู้ให้บริการแบบกำหนดเอง: เชื่อมต่อ endpoint ใดก็ได้ที่เข้ากันได้กับ OpenAI หรือ Anthropic รวมถึงผู้ให้บริการแบบ hosted ที่ไม่ได้ระบุไว้ ใช้ Unknown เพื่อตรวจหาอัตโนมัติ
+    - หากตรวจพบสถานะ Hermes การเริ่มต้นใช้งานจะเสนอโฟลว์การย้ายข้อมูล ใช้ [ย้ายข้อมูล](/th/cli/migrate) สำหรับแผน dry-run, โหมด overwrite, รายงาน และการแมปที่แน่นอน
+
+  </Accordion>
+</AccordionGroup>
+
+## คำสั่งติดตามผลทั่วไป
 
 ```bash
 openclaw configure
@@ -186,5 +221,5 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` ไม่ได้หมายความว่าเป็นโหมดไม่โต้ตอบ ใช้ `--non-interactive` สำหรับสคริปต์
+`--json` ไม่ได้หมายถึงโหมดไม่โต้ตอบ ใช้ `--non-interactive` สำหรับสคริปต์
 </Note>

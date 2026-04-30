@@ -1,23 +1,23 @@
 ---
 read_when:
-    - คุณกำลังทำ onboarding แบบอัตโนมัติในสคริปต์หรือ CI
-    - คุณต้องการตัวอย่างแบบไม่โต้ตอบสำหรับผู้ให้บริการเฉพาะราย
+    - คุณกำลังทำให้การเริ่มต้นใช้งานเป็นอัตโนมัติในสคริปต์หรือ CI
+    - คุณต้องการตัวอย่างแบบไม่โต้ตอบสำหรับผู้ให้บริการเฉพาะ
 sidebarTitle: CLI automation
-summary: การทำ onboarding และการตั้งค่าเอเจนต์แบบสคริปต์สำหรับ CLI ของ OpenClaw
+summary: การเริ่มต้นใช้งานแบบสคริปต์และการตั้งค่าเอเจนต์สำหรับ OpenClaw CLI
 title: การทำงานอัตโนมัติของ CLI
 x-i18n:
-    generated_at: "2026-04-26T11:41:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:17:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
+    source_hash: 6a169abafa682e99d2cd89dbcc9a738790d7fdfa7ba204f415baac35d6df4a2f
     source_path: start/wizard-cli-automation.md
-    workflow: 15
+    workflow: 16
 ---
 
-ใช้ `--non-interactive` เพื่อทำ `openclaw onboard` แบบอัตโนมัติ
+ใช้ `--non-interactive` เพื่อทำให้ `openclaw onboard` ทำงานอัตโนมัติ
 
 <Note>
-`--json` ไม่ได้หมายถึงโหมดไม่โต้ตอบโดยอัตโนมัติ สำหรับสคริปต์ให้ใช้ `--non-interactive` (และ `--workspace`)
+`--json` ไม่ได้หมายถึงโหมดแบบไม่โต้ตอบ ใช้ `--non-interactive` (และ `--workspace`) สำหรับสคริปต์
 </Note>
 
 ## ตัวอย่างพื้นฐานแบบไม่โต้ตอบ
@@ -38,13 +38,13 @@ openclaw onboard --non-interactive \
 
 เพิ่ม `--json` เพื่อรับสรุปที่เครื่องอ่านได้
 
-ใช้ `--skip-bootstrap` เมื่อระบบอัตโนมัติของคุณเตรียมไฟล์ workspace ไว้ล่วงหน้าแล้ว และไม่ต้องการให้ onboarding สร้างไฟล์ bootstrap เริ่มต้น
+ใช้ `--skip-bootstrap` เมื่อระบบอัตโนมัติของคุณเตรียมไฟล์พื้นที่ทำงานไว้ล่วงหน้า และไม่ต้องการให้ onboarding สร้างไฟล์ bootstrap เริ่มต้น
 
-ใช้ `--secret-input-mode ref` เพื่อจัดเก็บ ref ที่อิงกับ env ลงใน auth profile แทนการเก็บค่าแบบ plaintext
-การเลือกแบบโต้ตอบระหว่าง env ref กับ ref ของผู้ให้บริการที่กำหนดค่าไว้ (`file` หรือ `exec`) มีให้ใช้ในโฟลว์ onboarding
+ใช้ `--secret-input-mode ref` เพื่อจัดเก็บการอ้างอิงที่รองรับด้วย env ในโปรไฟล์การรับรองความถูกต้องแทนค่าข้อความธรรมดา
+การเลือกแบบโต้ตอบระหว่างการอ้างอิง env และการอ้างอิงผู้ให้บริการที่กำหนดค่าไว้ (`file` หรือ `exec`) มีให้ใช้ในโฟลว์ onboarding
 
-ในโหมด `ref` แบบไม่โต้ตอบ ต้องตั้งค่า env var ของผู้ให้บริการไว้ใน process environment
-ขณะนี้การส่งแฟล็กคีย์แบบ inline โดยไม่มี env var ที่ตรงกันจะล้มเหลวทันที
+ในโหมด `ref` แบบไม่โต้ตอบ ต้องตั้งค่าตัวแปร env ของผู้ให้บริการในสภาพแวดล้อมของกระบวนการ
+การส่งแฟล็กคีย์แบบอินไลน์โดยไม่มีตัวแปร env ที่ตรงกันจะล้มเหลวทันที
 
 ตัวอย่าง:
 
@@ -59,7 +59,7 @@ openclaw onboard --non-interactive \
 ## ตัวอย่างเฉพาะผู้ให้บริการ
 
 <AccordionGroup>
-  <Accordion title="ตัวอย่าง Anthropic API key">
+  <Accordion title="ตัวอย่างคีย์ Anthropic API">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -150,7 +150,7 @@ openclaw onboard --non-interactive \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
-    สลับเป็น `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` สำหรับ catalog ของ Go
+    เปลี่ยนเป็น `--auth-choice opencode-go --opencode-go-api-key "$OPENCODE_API_KEY"` สำหรับแค็ตตาล็อก Go
   </Accordion>
   <Accordion title="ตัวอย่าง Ollama">
     ```bash
@@ -173,13 +173,15 @@ openclaw onboard --non-interactive \
       --custom-api-key "$CUSTOM_API_KEY" \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
+      --custom-image-input \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` เป็นตัวเลือกเสริม หากไม่ระบุ onboarding จะตรวจสอบ `CUSTOM_API_KEY`
+    `--custom-api-key` เป็นตัวเลือก หากละไว้ onboarding จะตรวจสอบ `CUSTOM_API_KEY`
+    OpenClaw ทำเครื่องหมาย ID โมเดล vision ทั่วไปว่าใช้งานรูปภาพได้โดยอัตโนมัติ เพิ่ม `--custom-image-input` สำหรับ ID vision แบบกำหนดเองที่ไม่รู้จัก หรือ `--custom-text-input` เพื่อบังคับ metadata แบบข้อความเท่านั้น
 
-    ตัวแปรแบบ ref-mode:
+    ตัวแปรโหมด ref:
 
     ```bash
     export CUSTOM_API_KEY="your-key"
@@ -191,6 +193,7 @@ openclaw onboard --non-interactive \
       --secret-input-mode ref \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
+      --custom-image-input \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
@@ -200,13 +203,13 @@ openclaw onboard --non-interactive \
   </Accordion>
 </AccordionGroup>
 
-setup-token ของ Anthropic ยังคงพร้อมใช้งานในฐานะเส้นทางโทเค็น onboarding ที่รองรับ แต่ขณะนี้ OpenClaw จะให้ความสำคัญกับการใช้ Claude CLI ซ้ำเมื่อมีอยู่
-สำหรับ production ควรใช้ Anthropic API key
+setup-token ของ Anthropic ยังคงมีให้ใช้เป็นเส้นทางโทเค็น onboarding ที่รองรับ แต่ตอนนี้ OpenClaw ต้องการนำ Claude CLI กลับมาใช้เมื่อพร้อมใช้งาน
+สำหรับการใช้งานจริง ให้ใช้คีย์ Anthropic API เป็นหลัก
 
 ## เพิ่มเอเจนต์อีกตัว
 
-ใช้ `openclaw agents add <name>` เพื่อสร้างเอเจนต์แยกต่างหากพร้อม workspace,
-sessions และ auth profiles ของตัวเอง การรันโดยไม่มี `--workspace` จะเปิด wizard
+ใช้ `openclaw agents add <name>` เพื่อสร้างเอเจนต์แยกต่างหากที่มีพื้นที่ทำงาน,
+เซสชัน และโปรไฟล์การรับรองความถูกต้องของตัวเอง การรันโดยไม่มี `--workspace` จะเปิดตัวช่วยตั้งค่า
 
 ```bash
 openclaw agents add work \
@@ -217,7 +220,7 @@ openclaw agents add work \
   --json
 ```
 
-สิ่งที่จะถูกตั้งค่า:
+สิ่งที่ตั้งค่า:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -225,8 +228,8 @@ openclaw agents add work \
 
 หมายเหตุ:
 
-- workspace เริ่มต้นจะใช้รูปแบบ `~/.openclaw/workspace-<agentId>`
-- เพิ่ม `bindings` เพื่อกำหนดเส้นทางข้อความขาเข้า (wizard สามารถทำสิ่งนี้ได้)
+- พื้นที่ทำงานเริ่มต้นใช้รูปแบบ `~/.openclaw/workspace-<agentId>`
+- เพิ่ม `bindings` เพื่อกำหนดเส้นทางข้อความขาเข้า (ตัวช่วยตั้งค่าสามารถทำสิ่งนี้ได้)
 - แฟล็กแบบไม่โต้ตอบ: `--model`, `--agent-dir`, `--bind`, `--non-interactive`
 
 ## เอกสารที่เกี่ยวข้อง

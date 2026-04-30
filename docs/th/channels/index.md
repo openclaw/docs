@@ -1,60 +1,66 @@
 ---
 read_when:
-    - คุณต้องการเลือกช่องทางแชตสำหรับ OpenClaw
-    - คุณต้องการภาพรวมอย่างรวดเร็วของแพลตฟอร์มรับส่งข้อความที่รองรับ
+    - คุณต้องการเลือกช่องทางแชทสำหรับ OpenClaw
+    - คุณต้องการดูภาพรวมอย่างรวดเร็วของแพลตฟอร์มการรับส่งข้อความที่รองรับ
 summary: แพลตฟอร์มรับส่งข้อความที่ OpenClaw สามารถเชื่อมต่อได้
-title: ช่องทางแชต
+title: ช่องทางแชท
 x-i18n:
-    generated_at: "2026-04-25T13:41:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:36:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e97818dce89ea06a60f2cccd0cc8a78cba48d66ea39e4769f2b583690a4f75d0
+    source_hash: b58a1f1a0500419015985500a301d9f8ee4fa3a67b11e30561cabe2dc57b5049
     source_path: channels/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw สามารถคุยกับคุณได้บนแอปแชตใดก็ได้ที่คุณใช้อยู่แล้ว แต่ละช่องทางเชื่อมต่อผ่าน Gateway
-รองรับข้อความตัวอักษรทุกช่องทาง ส่วนสื่อและการตอบสนองจะแตกต่างกันไปตามแต่ละช่องทาง
+OpenClaw สามารถคุยกับคุณบนแอปแชตใดก็ได้ที่คุณใช้อยู่แล้ว แต่ละช่องทางเชื่อมต่อผ่าน Gateway
+รองรับข้อความในทุกที่ ส่วนสื่อและรีแอ็กชันจะแตกต่างกันไปตามช่องทาง
 
-## หมายเหตุเกี่ยวกับการส่งข้อความ
+## หมายเหตุการส่ง
 
-- การตอบกลับใน Telegram ที่มีไวยากรณ์ภาพแบบ markdown เช่น `![alt](url)` จะถูกแปลงเป็นการตอบกลับแบบสื่อในเส้นทางขาออกสุดท้ายเมื่อเป็นไปได้
-- DM แบบหลายคนใน Slack จะถูกส่งต่อเป็นแชตกลุ่ม ดังนั้นนโยบายกลุ่ม พฤติกรรมของการ mention และกฎของเซสชันกลุ่มจะมีผลกับการสนทนา MPIM
-- การตั้งค่า WhatsApp เป็นแบบติดตั้งเมื่อมีการใช้งาน: ขั้นตอนเริ่มต้นใช้งานอาจแสดงโฟลว์การตั้งค่าก่อนที่ dependency ของรันไทม์ Baileys จะถูกเตรียมไว้ และ Gateway จะโหลดรันไทม์ของ WhatsApp ก็ต่อเมื่อช่องทางนั้นถูกใช้งานจริงเท่านั้น
+- การตอบกลับของ Telegram ที่มีไวยากรณ์รูปภาพแบบ markdown เช่น `![alt](url)`
+  จะถูกแปลงเป็นการตอบกลับแบบสื่อในเส้นทางขาออกขั้นสุดท้ายเมื่อทำได้
+- DM หลายคนของ Slack จะถูกกำหนดเส้นทางเป็นแชตกลุ่ม ดังนั้นนโยบายกลุ่ม พฤติกรรมการกล่าวถึง
+  และกฎเซสชันกลุ่มจะมีผลกับการสนทนา MPIM
+- การตั้งค่า WhatsApp เป็นแบบติดตั้งเมื่อต้องการ: onboarding สามารถแสดงโฟลว์การตั้งค่าก่อน
+  ที่ runtime dependencies ของ Baileys จะถูกจัดเตรียม และ Gateway จะโหลด runtime ของ WhatsApp
+  เฉพาะเมื่อช่องทางนั้นเปิดใช้งานจริงเท่านั้น
 
 ## ช่องทางที่รองรับ
 
-- [BlueBubbles](/th/channels/bluebubbles) — **แนะนำสำหรับ iMessage**; ใช้ REST API ของเซิร์ฟเวอร์ BlueBubbles บน macOS พร้อมการรองรับฟีเจอร์ครบถ้วน (Plugin ที่รวมมาให้; แก้ไข ยกเลิกส่ง เอฟเฟกต์ รีแอ็กชัน การจัดการกลุ่ม — การแก้ไขยังใช้งานไม่ได้บน macOS 26 Tahoe ในขณะนี้)
-- [Discord](/th/channels/discord) — Discord Bot API + Gateway; รองรับเซิร์ฟเวอร์ ช่อง และ DM
+- [BlueBubbles](/th/channels/bluebubbles) — **แนะนำสำหรับ iMessage**; ใช้ REST API ของเซิร์ฟเวอร์ BlueBubbles บน macOS พร้อมการรองรับฟีเจอร์เต็มรูปแบบ (Plugin ที่รวมมาให้; แก้ไข, ยกเลิกส่ง, เอฟเฟกต์, รีแอ็กชัน, การจัดการกลุ่ม — ขณะนี้การแก้ไขเสียอยู่บน macOS 26 Tahoe)
+- [Discord](/th/channels/discord) — Discord Bot API + Gateway; รองรับเซิร์ฟเวอร์ ช่องทาง และ DM
 - [Feishu](/th/channels/feishu) — บอต Feishu/Lark ผ่าน WebSocket (Plugin ที่รวมมาให้)
-- [Google Chat](/th/channels/googlechat) — แอป Google Chat API ผ่าน HTTP webhook
-- [iMessage (legacy)](/th/channels/imessage) — การเชื่อมต่อ macOS แบบเดิมผ่าน imsg CLI (เลิกใช้งานแล้ว สำหรับการตั้งค่าใหม่ให้ใช้ BlueBubbles)
-- [IRC](/th/channels/irc) — เซิร์ฟเวอร์ IRC แบบดั้งเดิม; ช่อง + DM พร้อมตัวควบคุมการจับคู่/allowlist
+- [Google Chat](/th/channels/googlechat) — แอป Google Chat API ผ่าน HTTP Webhook
+- [iMessage (legacy)](/th/channels/imessage) — การผสานรวม macOS แบบเดิมผ่าน imsg CLI (เลิกใช้แล้ว ใช้ BlueBubbles สำหรับการตั้งค่าใหม่)
+- [IRC](/th/channels/irc) — เซิร์ฟเวอร์ IRC แบบคลาสสิก; ช่องทาง + DM พร้อมการควบคุมการจับคู่/allowlist
 - [LINE](/th/channels/line) — บอต LINE Messaging API (Plugin ที่รวมมาให้)
 - [Matrix](/th/channels/matrix) — โปรโตคอล Matrix (Plugin ที่รวมมาให้)
-- [Mattermost](/th/channels/mattermost) — Bot API + WebSocket; ช่อง กลุ่ม DM (Plugin ที่รวมมาให้)
-- [Microsoft Teams](/th/channels/msteams) — Bot Framework; รองรับระดับองค์กร (Plugin ที่รวมมาให้)
-- [Nextcloud Talk](/th/channels/nextcloud-talk) — แชตที่โฮสต์เองผ่าน Nextcloud Talk (Plugin ที่รวมมาให้)
+- [Mattermost](/th/channels/mattermost) — Bot API + WebSocket; ช่องทาง กลุ่ม DM (Plugin ที่รวมมาให้)
+- [Microsoft Teams](/th/channels/msteams) — Bot Framework; รองรับองค์กร (Plugin ที่รวมมาให้)
+- [Nextcloud Talk](/th/channels/nextcloud-talk) — แชตแบบโฮสต์เองผ่าน Nextcloud Talk (Plugin ที่รวมมาให้)
 - [Nostr](/th/channels/nostr) — DM แบบกระจายศูนย์ผ่าน NIP-04 (Plugin ที่รวมมาให้)
-- [QQ Bot](/th/channels/qqbot) — QQ Bot API; แชตส่วนตัว แชตกลุ่ม และสื่อแบบสมบูรณ์ (Plugin ที่รวมมาให้)
+- [QQ Bot](/th/channels/qqbot) — QQ Bot API; แชตส่วนตัว แชตกลุ่ม และสื่อแบบ rich media (Plugin ที่รวมมาให้)
 - [Signal](/th/channels/signal) — signal-cli; เน้นความเป็นส่วนตัว
 - [Slack](/th/channels/slack) — Bolt SDK; แอปสำหรับ workspace
 - [Synology Chat](/th/channels/synology-chat) — Synology NAS Chat ผ่าน Webhook ขาออก+ขาเข้า (Plugin ที่รวมมาให้)
 - [Telegram](/th/channels/telegram) — Bot API ผ่าน grammY; รองรับกลุ่ม
-- [Tlon](/th/channels/tlon) — เมสเซนเจอร์ที่ใช้ Urbit (Plugin ที่รวมมาให้)
+- [Tlon](/th/channels/tlon) — เมสเซนเจอร์ที่อิง Urbit (Plugin ที่รวมมาให้)
 - [Twitch](/th/channels/twitch) — แชต Twitch ผ่านการเชื่อมต่อ IRC (Plugin ที่รวมมาให้)
-- [Voice Call](/th/plugins/voice-call) — โทรศัพท์ผ่าน Plivo หรือ Twilio (Plugin ติดตั้งแยกต่างหาก)
+- [Voice Call](/th/plugins/voice-call) — โทรศัพท์ผ่าน Plivo หรือ Twilio (Plugin ที่ติดตั้งแยกต่างหาก)
 - [WebChat](/th/web/webchat) — UI ของ Gateway WebChat ผ่าน WebSocket
-- [WeChat](/th/channels/wechat) — Plugin บอต Tencent iLink ผ่านการเข้าสู่ระบบด้วย QR; รองรับเฉพาะแชตส่วนตัว (Plugin ภายนอก)
+- [WeChat](/th/channels/wechat) — Plugin Tencent iLink Bot ผ่านการเข้าสู่ระบบด้วย QR; แชตส่วนตัวเท่านั้น (Plugin ภายนอก)
 - [WhatsApp](/th/channels/whatsapp) — ได้รับความนิยมมากที่สุด; ใช้ Baileys และต้องจับคู่ด้วย QR
+- [Yuanbao](/th/channels/yuanbao) — บอต Tencent Yuanbao (Plugin ภายนอก)
 - [Zalo](/th/channels/zalo) — Zalo Bot API; เมสเซนเจอร์ยอดนิยมของเวียดนาม (Plugin ที่รวมมาให้)
 - [Zalo Personal](/th/channels/zalouser) — บัญชีส่วนตัว Zalo ผ่านการเข้าสู่ระบบด้วย QR (Plugin ที่รวมมาให้)
 
 ## หมายเหตุ
 
-- ช่องทางสามารถทำงานพร้อมกันได้; ตั้งค่าหลายช่องทางได้ และ OpenClaw จะกำหนดเส้นทางตามแต่ละแชต
-- การตั้งค่าที่เร็วที่สุดมักจะเป็น **Telegram** (โทเค็นบอตแบบง่าย) ส่วน WhatsApp ต้องจับคู่ด้วย QR และจัดเก็บสถานะไว้บนดิสก์มากกว่า
-- พฤติกรรมของกลุ่มแตกต่างกันไปตามแต่ละช่องทาง; ดู [Groups](/th/channels/groups)
-- มีการบังคับใช้การจับคู่ DM และ allowlist เพื่อความปลอดภัย; ดู [Security](/th/gateway/security)
-- การแก้ปัญหา: [การแก้ปัญหาช่องทาง](/th/channels/troubleshooting)
-- ผู้ให้บริการ model มีเอกสารแยกต่างหาก; ดู [Model Providers](/th/providers/models)
+- ช่องทางต่าง ๆ สามารถทำงานพร้อมกันได้; ตั้งค่าหลายช่องทาง แล้ว OpenClaw จะกำหนดเส้นทางตามแชต
+- การตั้งค่าที่เร็วที่สุดโดยทั่วไปคือ **Telegram** (โทเค็นบอตแบบง่าย) WhatsApp ต้องจับคู่ด้วย QR และ
+  จัดเก็บสถานะบนดิสก์มากกว่า
+- พฤติกรรมกลุ่มแตกต่างกันไปตามช่องทาง; ดู [กลุ่ม](/th/channels/groups)
+- การจับคู่ DM และ allowlist ถูกบังคับใช้เพื่อความปลอดภัย; ดู [ความปลอดภัย](/th/gateway/security)
+- การแก้ไขปัญหา: [การแก้ไขปัญหาช่องทาง](/th/channels/troubleshooting)
+- ผู้ให้บริการโมเดลมีเอกสารแยกต่างหาก; ดู [ผู้ให้บริการโมเดล](/th/providers/models)

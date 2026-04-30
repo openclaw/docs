@@ -1,23 +1,23 @@
 ---
 read_when:
-    - การขนส่งของ channel แสดงว่าเชื่อมต่อแล้ว แต่การตอบกลับล้มเหลว
-    - คุณต้องตรวจสอบเฉพาะของ channel ก่อนลงลึกไปยังเอกสารของ provider
-summary: การแก้ปัญหาระดับ channel แบบรวดเร็ว พร้อมรูปแบบความล้มเหลวเฉพาะของแต่ละ channel และวิธีแก้ไข
-title: การแก้ปัญหา channel
+    - ทรานสปอร์ตของช่องทางระบุว่าเชื่อมต่อแล้ว แต่การตอบกลับล้มเหลว
+    - คุณต้องตรวจสอบเฉพาะช่องทางก่อนอ่านเอกสารเชิงลึกของผู้ให้บริการ
+summary: การแก้ไขปัญหาระดับช่องทางอย่างรวดเร็ว พร้อมสัญญาณบ่งชี้ความล้มเหลวและวิธีแก้ไขของแต่ละช่องทาง
+title: การแก้ไขปัญหาช่องทาง
 x-i18n:
-    generated_at: "2026-04-24T09:00:23Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ae605835c3566958341b11d8bdfc3cd4cb4656142bb2953933d06ed6018a483f
+    source_hash: 6024f2ae0a058b2296758c237c912a5cd8ea6bbafea33cc201690cc081efcbee
     source_path: channels/troubleshooting.md
-    workflow: 15
+    workflow: 16
 ---
 
-ใช้หน้านี้เมื่อ channel เชื่อมต่อได้ แต่พฤติกรรมทำงานไม่ถูกต้อง
+ใช้หน้านี้เมื่อ channel เชื่อมต่อแล้ว แต่ลักษณะการทำงานไม่ถูกต้อง
 
-## ลำดับคำสั่งตรวจสอบ
+## ลำดับคำสั่ง
 
-ให้รันคำสั่งเหล่านี้ตามลำดับก่อน:
+รันคำสั่งเหล่านี้ตามลำดับก่อน:
 
 ```bash
 openclaw status
@@ -27,115 +27,117 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-สถานะพื้นฐานที่ปกติ:
+ค่าพื้นฐานที่ปกติ:
 
 - `Runtime: running`
 - `Connectivity probe: ok`
-- `Capability: read-only`, `write-capable` หรือ `admin-capable`
-- การ probe ของ channel แสดงว่าการขนส่งเชื่อมต่อแล้ว และในกรณีที่รองรับ จะแสดง `works` หรือ `audit ok`
+- `Capability: read-only`, `write-capable`, หรือ `admin-capable`
+- การตรวจสอบ channel แสดงว่า transport เชื่อมต่อแล้ว และเมื่อรองรับ จะแสดง `works` หรือ `audit ok`
 
 ## WhatsApp
 
-### รูปแบบความล้มเหลวของ WhatsApp
+### สัญญาณความล้มเหลวของ WhatsApp
 
-| อาการ                          | จุดตรวจสอบที่เร็วที่สุด                           | วิธีแก้ไข                                             |
-| ------------------------------ | ------------------------------------------------ | ----------------------------------------------------- |
-| เชื่อมต่อแล้วแต่ไม่มีการตอบ DM | `openclaw pairing list whatsapp`                 | อนุมัติผู้ส่งหรือเปลี่ยน DM policy/allowlist         |
-| ข้อความกลุ่มถูกเพิกเฉย        | ตรวจสอบ `requireMention` + รูปแบบ mention ใน config | mention บอทหรือผ่อนนโยบาย mention สำหรับกลุ่มนั้น |
-| หลุดการเชื่อมต่อ/วนล็อกอินใหม่แบบสุ่ม | `openclaw channels status --probe` + logs        | ล็อกอินใหม่และตรวจสอบว่าไดเรกทอรี credentials ปกติ |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| ------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| เชื่อมต่อแล้วแต่ไม่มีการตอบกลับ DM | `openclaw pairing list whatsapp` | อนุมัติผู้ส่ง หรือเปลี่ยนนโยบาย/allowlist ของ DM |
+| ข้อความกลุ่มถูกละเว้น | ตรวจสอบ `requireMention` + รูปแบบการ mention ใน config | mention บอต หรือผ่อนคลายนโยบายการ mention สำหรับกลุ่มนั้น |
+| การเข้าสู่ระบบด้วย QR หมดเวลาด้วย 408 | ตรวจสอบ env `HTTPS_PROXY` / `HTTP_PROXY` ของ gateway | ตั้งค่า proxy ที่เข้าถึงได้ ใช้ `NO_PROXY` เฉพาะสำหรับการ bypass |
+| การตัดการเชื่อมต่อ/วนเข้าสู่ระบบใหม่แบบสุ่ม | `openclaw channels status --probe` + logs | การ reconnect ล่าสุดจะถูกทำเครื่องหมายแม้ตอนนี้จะเชื่อมต่ออยู่ ดู logs, รีสตาร์ท gateway แล้ว relink หากยังคง flapping ต่อไป |
 
-การแก้ปัญหาแบบเต็ม: [WhatsApp troubleshooting](/th/channels/whatsapp#troubleshooting)
+การแก้ปัญหาแบบเต็ม: [การแก้ปัญหา WhatsApp](/th/channels/whatsapp#troubleshooting)
 
 ## Telegram
 
-### รูปแบบความล้มเหลวของ Telegram
+### สัญญาณความล้มเหลวของ Telegram
 
-| อาการ                                | จุดตรวจสอบที่เร็วที่สุด                           | วิธีแก้ไข                                                                                                                   |
-| ------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| มี `/start` แต่ไม่มี flow ตอบกลับที่ใช้งานได้ | `openclaw pairing list telegram`                 | อนุมัติ pairing หรือเปลี่ยน DM policy                                                                                      |
-| บอทออนไลน์แต่กลุ่มเงียบ              | ตรวจสอบข้อกำหนด mention และ privacy mode ของบอท | ปิด privacy mode เพื่อให้มองเห็นในกลุ่ม หรือ mention บอท                                                                  |
-| ส่งข้อความล้มเหลวพร้อมข้อผิดพลาดเครือข่าย | ตรวจสอบ logs สำหรับความล้มเหลวของ Telegram API call | แก้ DNS/IPv6/proxy routing ไปยัง `api.telegram.org`                                                                         |
-| polling ค้างหรือ reconnect ช้า       | `openclaw logs --follow` สำหรับ polling diagnostics | อัปเกรด; หากการรีสตาร์ตเป็น false positive ให้ปรับ `pollingStallThresholdMs` แต่หากค้างต่อเนื่องยังชี้ไปที่ proxy/DNS/IPv6 |
-| `setMyCommands` ถูกปฏิเสธตอนเริ่มต้นระบบ | ตรวจสอบ logs สำหรับ `BOT_COMMANDS_TOO_MUCH`      | ลดจำนวนคำสั่ง Telegram จาก plugin/Skills/คำสั่งกำหนดเอง หรือปิด native menus                                               |
-| อัปเกรดแล้ว allowlist บล็อกคุณ        | `openclaw security audit` และ config allowlists  | รัน `openclaw doctor --fix` หรือแทนที่ `@username` ด้วย sender ID แบบตัวเลข                                                |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| ------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `/start` แต่ไม่มี flow ตอบกลับที่ใช้งานได้ | `openclaw pairing list telegram` | อนุมัติ pairing หรือเปลี่ยนนโยบาย DM |
+| บอตออนไลน์แต่กลุ่มยังเงียบ | ตรวจสอบข้อกำหนดการ mention และโหมดความเป็นส่วนตัวของบอต | ปิดโหมดความเป็นส่วนตัวเพื่อให้มองเห็นในกลุ่ม หรือ mention บอต |
+| ส่งล้มเหลวพร้อมข้อผิดพลาดเครือข่าย | ตรวจสอบ logs สำหรับความล้มเหลวในการเรียก Telegram API | แก้ DNS/IPv6/proxy routing ไปยัง `api.telegram.org` |
+| ตอนเริ่มต้นรายงานว่า `getMe returned 401` | ตรวจสอบแหล่งที่มาของ token ที่กำหนดค่าไว้ | คัดลอกใหม่หรือสร้าง token ของ BotFather ใหม่ แล้วอัปเดต `botToken`, `tokenFile`, หรือ default-account `TELEGRAM_BOT_TOKEN` |
+| Polling ค้างหรือ reconnect ช้า | `openclaw logs --follow` สำหรับ diagnostics ของ polling | อัปเกรด หากการรีสตาร์ทเป็นผลบวกลวง ให้ปรับ `pollingStallThresholdMs` การค้างต่อเนื่องยังคงชี้ไปที่ proxy/DNS/IPv6 |
+| `setMyCommands` ถูกปฏิเสธตอนเริ่มต้น | ตรวจสอบ logs สำหรับ `BOT_COMMANDS_TOO_MUCH` | ลดคำสั่ง Telegram ของ plugin/skill/custom หรือปิด native menus |
+| อัปเกรดแล้ว allowlist บล็อกคุณ | `openclaw security audit` และ allowlists ใน config | รัน `openclaw doctor --fix` หรือแทนที่ `@username` ด้วย ID ผู้ส่งแบบตัวเลข |
 
-การแก้ปัญหาแบบเต็ม: [Telegram troubleshooting](/th/channels/telegram#troubleshooting)
+การแก้ปัญหาแบบเต็ม: [การแก้ปัญหา Telegram](/th/channels/telegram#troubleshooting)
 
 ## Discord
 
-### รูปแบบความล้มเหลวของ Discord
+### สัญญาณความล้มเหลวของ Discord
 
-| อาการ                        | จุดตรวจสอบที่เร็วที่สุด                  | วิธีแก้ไข                                                |
-| ---------------------------- | --------------------------------------- | -------------------------------------------------------- |
-| บอทออนไลน์แต่ไม่ตอบใน guild | `openclaw channels status --probe`      | อนุญาต guild/channel และตรวจสอบ message content intent  |
-| ข้อความกลุ่มถูกเพิกเฉย       | ตรวจสอบ logs สำหรับ mention gating drops | mention บอทหรือตั้ง `requireMention: false` สำหรับ guild/channel |
-| ไม่มีการตอบ DM               | `openclaw pairing list discord`         | อนุมัติ DM pairing หรือปรับ DM policy                    |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| ------------------------------- | ----------------------------------- | --------------------------------------------------------- |
+| บอตออนไลน์แต่ไม่มีการตอบกลับใน guild | `openclaw channels status --probe` | อนุญาต guild/channel และตรวจสอบ message content intent |
+| ข้อความกลุ่มถูกละเว้น | ตรวจสอบ logs สำหรับการ drop จาก mention gating | mention บอต หรือกำหนด `requireMention: false` ของ guild/channel |
+| ไม่มีการตอบกลับ DM | `openclaw pairing list discord` | อนุมัติ DM pairing หรือปรับนโยบาย DM |
 
-การแก้ปัญหาแบบเต็ม: [Discord troubleshooting](/th/channels/discord#troubleshooting)
+การแก้ปัญหาแบบเต็ม: [การแก้ปัญหา Discord](/th/channels/discord#troubleshooting)
 
 ## Slack
 
-### รูปแบบความล้มเหลวของ Slack
+### สัญญาณความล้มเหลวของ Slack
 
-| อาการ                                   | จุดตรวจสอบที่เร็วที่สุด                | วิธีแก้ไข                                                                                                                                               |
-| --------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| socket mode เชื่อมต่อแล้วแต่ไม่ตอบกลับ | `openclaw channels status --probe`   | ตรวจสอบ app token + bot token และ scopes ที่จำเป็น; ดูค่า `botTokenStatus` / `appTokenStatus = configured_unavailable` ในการตั้งค่าแบบ SecretRef-backed |
-| DMs ถูกบล็อก                            | `openclaw pairing list slack`        | อนุมัติ pairing หรือผ่อน DM policy                                                                                                                     |
-| ข้อความใน channel ถูกเพิกเฉย            | ตรวจสอบ `groupPolicy` และ channel allowlist | อนุญาต channel หรือเปลี่ยนนโยบายเป็น `open`                                                                                                      |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| -------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Socket mode เชื่อมต่อแล้วแต่ไม่มีการตอบสนอง | `openclaw channels status --probe` | ตรวจสอบ app token + bot token และ scopes ที่จำเป็น เฝ้าดู `botTokenStatus` / `appTokenStatus = configured_unavailable` บนการตั้งค่าที่รองรับด้วย SecretRef |
+| DM ถูกบล็อก | `openclaw pairing list slack` | อนุมัติ pairing หรือผ่อนคลายนโยบาย DM |
+| ข้อความใน channel ถูกละเว้น | ตรวจสอบ `groupPolicy` และ channel allowlist | อนุญาต channel หรือเปลี่ยนนโยบายเป็น `open` |
 
-การแก้ปัญหาแบบเต็ม: [Slack troubleshooting](/th/channels/slack#troubleshooting)
+การแก้ปัญหาแบบเต็ม: [การแก้ปัญหา Slack](/th/channels/slack#troubleshooting)
 
 ## iMessage และ BlueBubbles
 
-### รูปแบบความล้มเหลวของ iMessage และ BlueBubbles
+### สัญญาณความล้มเหลวของ iMessage และ BlueBubbles
 
-| อาการ                           | จุดตรวจสอบที่เร็วที่สุด                                                  | วิธีแก้ไข                                           |
-| ------------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------- |
-| ไม่มีเหตุการณ์ขาเข้า             | ตรวจสอบการเข้าถึง webhook/server และสิทธิ์ของแอป                      | แก้ไข URL ของ webhook หรือสถานะเซิร์ฟเวอร์ BlueBubbles |
-| ส่งได้แต่รับไม่ได้บน macOS      | ตรวจสอบสิทธิ์ความเป็นส่วนตัวของ macOS สำหรับ Messages automation      | ให้สิทธิ์ TCC ใหม่และรีสตาร์ต process ของ channel    |
-| ผู้ส่ง DM ถูกบล็อก              | `openclaw pairing list imessage` หรือ `openclaw pairing list bluebubbles` | อนุมัติ pairing หรืออัปเดต allowlist               |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| -------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------- |
+| ไม่มี event ขาเข้า | ตรวจสอบการเข้าถึง webhook/server และสิทธิ์ของแอป | แก้ URL ของ webhook หรือสถานะ server ของ BlueBubbles |
+| ส่งได้แต่รับไม่ได้บน macOS | ตรวจสอบสิทธิ์ความเป็นส่วนตัวของ macOS สำหรับ automation ของ Messages | ให้สิทธิ์ TCC ใหม่ แล้วรีสตาร์ทกระบวนการ channel |
+| ผู้ส่ง DM ถูกบล็อก | `openclaw pairing list imessage` หรือ `openclaw pairing list bluebubbles` | อนุมัติ pairing หรืออัปเดต allowlist |
 
 การแก้ปัญหาแบบเต็ม:
 
-- [iMessage troubleshooting](/th/channels/imessage#troubleshooting)
-- [BlueBubbles troubleshooting](/th/channels/bluebubbles#troubleshooting)
+- [การแก้ปัญหา iMessage](/th/channels/imessage#troubleshooting)
+- [การแก้ปัญหา BlueBubbles](/th/channels/bluebubbles#troubleshooting)
 
 ## Signal
 
-### รูปแบบความล้มเหลวของ Signal
+### สัญญาณความล้มเหลวของ Signal
 
-| อาการ                           | จุดตรวจสอบที่เร็วที่สุด             | วิธีแก้ไข                                                |
-| ------------------------------- | ---------------------------------- | -------------------------------------------------------- |
-| daemon เข้าถึงได้แต่บอทเงียบ    | `openclaw channels status --probe` | ตรวจสอบ URL/บัญชีของ `signal-cli` daemon และโหมดรับข้อความ |
-| DM ถูกบล็อก                     | `openclaw pairing list signal`     | อนุมัติผู้ส่งหรือปรับ DM policy                          |
-| การตอบในกลุ่มไม่ถูกทริกเกอร์    | ตรวจสอบ group allowlist และรูปแบบ mention | เพิ่มผู้ส่ง/กลุ่มหรือผ่อน gating                     |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| ------------------------------- | ------------------------------------------ | -------------------------------------------------------- |
+| Daemon เข้าถึงได้แต่บอตเงียบ | `openclaw channels status --probe` | ตรวจสอบ URL/account ของ daemon `signal-cli` และ receive mode |
+| DM ถูกบล็อก | `openclaw pairing list signal` | อนุมัติผู้ส่ง หรือปรับนโยบาย DM |
+| การตอบกลับกลุ่มไม่ถูก trigger | ตรวจสอบ group allowlist และรูปแบบการ mention | เพิ่มผู้ส่ง/กลุ่ม หรือผ่อนคลาย gating |
 
-การแก้ปัญหาแบบเต็ม: [Signal troubleshooting](/th/channels/signal#troubleshooting)
+การแก้ปัญหาแบบเต็ม: [การแก้ปัญหา Signal](/th/channels/signal#troubleshooting)
 
 ## QQ Bot
 
-### รูปแบบความล้มเหลวของ QQ Bot
+### สัญญาณความล้มเหลวของ QQ Bot
 
-| อาการ                           | จุดตรวจสอบที่เร็วที่สุด                    | วิธีแก้ไข                                                          |
-| ------------------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
-| บอทตอบว่า "gone to Mars"        | ตรวจสอบ `appId` และ `clientSecret` ใน config | ตั้งค่า credentials หรือรีสตาร์ต gateway                           |
-| ไม่มีข้อความขาเข้า               | `openclaw channels status --probe`        | ตรวจสอบ credentials บน QQ Open Platform                           |
-| เสียงไม่ถูกถอดเสียง              | ตรวจสอบ config ของ provider STT           | กำหนดค่า `channels.qqbot.stt` หรือ `tools.media.audio`             |
-| ข้อความเชิงรุกส่งไม่ถึง          | ตรวจสอบข้อกำหนด interaction ของแพลตฟอร์ม QQ | QQ อาจบล็อกข้อความที่บอทเริ่มส่งเองหากไม่มี interaction ล่าสุด |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| ------------------------------- | ------------------------------------------- | --------------------------------------------------------------- |
+| บอตตอบว่า "ไปดาวอังคารแล้ว" | ตรวจสอบ `appId` และ `clientSecret` ใน config | ตั้งค่า credentials หรือรีสตาร์ท gateway |
+| ไม่มีข้อความขาเข้า | `openclaw channels status --probe` | ตรวจสอบ credentials บน QQ Open Platform |
+| เสียงไม่ได้รับการถอดความ | ตรวจสอบ config ของผู้ให้บริการ STT | กำหนดค่า `channels.qqbot.stt` หรือ `tools.media.audio` |
+| ข้อความเชิงรุกไม่มาถึง | ตรวจสอบข้อกำหนดการโต้ตอบของแพลตฟอร์ม QQ | QQ อาจบล็อกข้อความที่บอตเริ่มก่อน หากไม่มีการโต้ตอบล่าสุด |
 
-การแก้ปัญหาแบบเต็ม: [QQ Bot troubleshooting](/th/channels/qqbot#troubleshooting)
+การแก้ปัญหาแบบเต็ม: [การแก้ปัญหา QQ Bot](/th/channels/qqbot#troubleshooting)
 
 ## Matrix
 
-### รูปแบบความล้มเหลวของ Matrix
+### สัญญาณความล้มเหลวของ Matrix
 
-| อาการ                                 | จุดตรวจสอบที่เร็วที่สุด                  | วิธีแก้ไข                                                                      |
-| ------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------ |
-| ล็อกอินแล้วแต่ไม่สนใจข้อความในห้อง     | `openclaw channels status --probe`      | ตรวจสอบ `groupPolicy`, room allowlist และ mention gating                      |
-| DMs ไม่ถูกประมวลผล                    | `openclaw pairing list matrix`          | อนุมัติผู้ส่งหรือปรับ DM policy                                               |
-| ห้องที่เข้ารหัสล้มเหลว                | `openclaw matrix verify status`         | ยืนยันอุปกรณ์ใหม่อีกครั้ง แล้วตรวจสอบ `openclaw matrix verify backup status` |
-| การกู้คืนแบ็กอัปค้าง/เสีย              | `openclaw matrix verify backup status`  | รัน `openclaw matrix verify backup restore` หรือรันใหม่พร้อม recovery key     |
-| cross-signing/bootstrap ดูผิดปกติ      | `openclaw matrix verify bootstrap`      | ซ่อมสถานะ secret storage, cross-signing และ backup ในรอบเดียว                 |
+| อาการ | การตรวจสอบที่เร็วที่สุด | วิธีแก้ |
+| ----------------------------------- | -------------------------------------- | ------------------------------------------------------------------------- |
+| เข้าสู่ระบบแล้วแต่ละเว้นข้อความใน room | `openclaw channels status --probe` | ตรวจสอบ `groupPolicy`, room allowlist และ mention gating |
+| DM ไม่ถูกประมวลผล | `openclaw pairing list matrix` | อนุมัติผู้ส่ง หรือปรับนโยบาย DM |
+| rooms ที่เข้ารหัสล้มเหลว | `openclaw matrix verify status` | ยืนยันอุปกรณ์อีกครั้ง แล้วตรวจสอบ `openclaw matrix verify backup status` |
+| การ restore backup ค้างอยู่/เสียหาย | `openclaw matrix verify backup status` | รัน `openclaw matrix verify backup restore` หรือรันใหม่พร้อม recovery key |
+| Cross-signing/bootstrap ดูผิดปกติ | `openclaw matrix verify bootstrap` | ซ่อม secret storage, cross-signing และสถานะ backup ในรอบเดียว |
 
 การตั้งค่าและ config แบบเต็ม: [Matrix](/th/channels/matrix)
 
@@ -143,4 +145,4 @@ openclaw channels status --probe
 
 - [Pairing](/th/channels/pairing)
 - [Channel routing](/th/channels/channel-routing)
-- [Gateway troubleshooting](/th/gateway/troubleshooting)
+- [การแก้ปัญหา Gateway](/th/gateway/troubleshooting)

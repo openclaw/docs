@@ -1,107 +1,107 @@
 ---
 read_when:
     - การผสานรวมเครื่องมือที่คาดหวัง OpenAI Chat Completions
-summary: เปิดเผยปลายทาง HTTP `/v1/chat/completions` ที่เข้ากันได้กับ OpenAI จาก Gateway
-title: OpenAI chat completions
+summary: เปิดให้ใช้งานเอนด์พอยต์ HTTP /v1/chat/completions ที่เข้ากันได้กับ OpenAI จาก Gateway
+title: การเติมข้อความแชทให้สมบูรณ์ของ OpenAI
 x-i18n:
-    generated_at: "2026-04-25T13:48:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:53:58Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9a2f45abfc0aef8f73ab909bc3007de4078177214e5e0e5cf27a4c6ad0918172
+    source_hash: 9a19f9d9d6d8ce6d605f8af5324ae3eb0c100c167609341c8dfb569970b0b2c9
     source_path: gateway/openai-http-api.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gateway ของ OpenClaw สามารถให้บริการปลายทาง Chat Completions ขนาดเล็กที่เข้ากันได้กับ OpenAI
+Gateway ของ OpenClaw สามารถให้บริการปลายทาง Chat Completions ขนาดเล็กที่เข้ากันได้กับ OpenAI ได้
 
-ปลายทางนี้ **ปิดใช้งานเป็นค่าเริ่มต้น** ต้องเปิดใช้ในการกำหนดค่าก่อน
+ปลายทางนี้ **ปิดใช้งานตามค่าเริ่มต้น** เปิดใช้งานใน config ก่อน
 
 - `POST /v1/chat/completions`
-- ใช้พอร์ตเดียวกับ Gateway (มัลติเพล็กซ์ WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
+- พอร์ตเดียวกับ Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/v1/chat/completions`
 
-เมื่อเปิดใช้พื้นผิว HTTP ที่เข้ากันได้กับ OpenAI ของ Gateway แล้ว ระบบจะให้บริการด้วย:
+เมื่อเปิดใช้งานพื้นผิว HTTP ที่เข้ากันได้กับ OpenAI ของ Gateway แล้ว พื้นผิวนี้จะให้บริการด้วย:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/responses`
 
-ภายใต้ระบบ คำขอจะถูกรันเป็นการรัน Agent ของ Gateway ตามปกติ (เส้นทางโค้ดเดียวกับ `openclaw agent`) ดังนั้นการกำหนดเส้นทาง/สิทธิ์/การกำหนดค่าจึงตรงกับ Gateway ของคุณ
+ภายใต้ระบบ คำขอจะถูกดำเนินการเป็นการรันเอเจนต์ Gateway ปกติ (codepath เดียวกับ `openclaw agent`) ดังนั้นการกำหนดเส้นทาง/สิทธิ์/config จะตรงกับ Gateway ของคุณ
 
 ## การยืนยันตัวตน
 
 ใช้การกำหนดค่าการยืนยันตัวตนของ Gateway
 
-เส้นทางการยืนยันตัวตน HTTP ที่ใช้บ่อย:
+เส้นทางการยืนยันตัวตน HTTP ที่พบบ่อย:
 
-- การยืนยันตัวตนด้วย shared secret (`gateway.auth.mode="token"` หรือ `"password"`):
+- การยืนยันตัวตนด้วย shared-secret (`gateway.auth.mode="token"` หรือ `"password"`):
   `Authorization: Bearer <token-or-password>`
-- การยืนยันตัวตน HTTP แบบมี identity ที่เชื่อถือได้ (`gateway.auth.mode="trusted-proxy"`):
-  ส่งผ่าน proxy ที่รองรับ identity ตามที่กำหนด และให้มัน inject
-  identity header ที่จำเป็น
-- การยืนยันตัวตนแบบ open สำหรับ private ingress (`gateway.auth.mode="none"`):
-  ไม่ต้องใช้ auth header
+- การยืนยันตัวตน HTTP ที่มีข้อมูลระบุตัวตนที่เชื่อถือได้ (`gateway.auth.mode="trusted-proxy"`):
+  กำหนดเส้นทางผ่านพร็อกซีที่รับรู้ตัวตนซึ่งกำหนดค่าไว้ และให้พร็อกซีนั้นฉีด
+  ส่วนหัวข้อมูลระบุตัวตนที่จำเป็น
+- การยืนยันตัวตนแบบเปิดบน private-ingress (`gateway.auth.mode="none"`):
+  ไม่ต้องใช้ส่วนหัวการยืนยันตัวตน
 
 หมายเหตุ:
 
 - เมื่อ `gateway.auth.mode="token"` ให้ใช้ `gateway.auth.token` (หรือ `OPENCLAW_GATEWAY_TOKEN`)
 - เมื่อ `gateway.auth.mode="password"` ให้ใช้ `gateway.auth.password` (หรือ `OPENCLAW_GATEWAY_PASSWORD`)
-- เมื่อ `gateway.auth.mode="trusted-proxy"` คำขอ HTTP ต้องมาจาก
-  trusted proxy source แบบ non-loopback ที่กำหนดไว้; proxy แบบ loopback บนโฮสต์เดียวกัน
-  ไม่ผ่านเงื่อนไขของโหมดนี้
-- หากมีการกำหนด `gateway.auth.rateLimit` และเกิดความล้มเหลวด้านการยืนยันตัวตนมากเกินไป ปลายทางจะส่งกลับ `429` พร้อม `Retry-After`
+- เมื่อ `gateway.auth.mode="trusted-proxy"` คำขอ HTTP ต้องมาจากแหล่ง
+  พร็อกซีที่เชื่อถือได้ซึ่งกำหนดค่าไว้; พร็อกซี local loopback บนโฮสต์เดียวกันต้องกำหนด
+  `gateway.auth.trustedProxy.allowLoopback = true` อย่างชัดเจน
+- หากมีการกำหนดค่า `gateway.auth.rateLimit` และเกิดความล้มเหลวในการยืนยันตัวตนมากเกินไป ปลายทางจะส่งคืน `429` พร้อม `Retry-After`
 
 ## ขอบเขตความปลอดภัย (สำคัญ)
 
-ให้ถือว่าปลายทางนี้เป็นพื้นผิว **การเข้าถึงระดับ operator แบบเต็ม** สำหรับอินสแตนซ์ gateway นี้
+ให้ถือว่าปลายทางนี้เป็นพื้นผิวที่มี **สิทธิ์เข้าถึงระดับผู้ควบคุมเต็มรูปแบบ** สำหรับอินสแตนซ์ Gateway
 
-- bearer auth ผ่าน HTTP ที่นี่ไม่ใช่โมเดลขอบเขตแบบแคบต่อผู้ใช้
-- token/password ของ Gateway ที่ใช้ได้กับปลายทางนี้ควรถูกมองว่าเป็นข้อมูลรับรองของ owner/operator
-- คำขอจะวิ่งผ่านเส้นทาง Agent ของ control plane เดียวกับการกระทำของ operator ที่เชื่อถือได้
-- ไม่มีขอบเขตเครื่องมือแยกต่างหากแบบ non-owner/per-user บนปลายทางนี้; เมื่อผู้เรียกผ่านการยืนยันตัวตนของ Gateway ได้แล้ว OpenClaw จะถือว่าผู้เรียกนั้นเป็น operator ที่เชื่อถือได้สำหรับ gateway นี้
-- สำหรับโหมดการยืนยันตัวตนแบบ shared secret (`token` และ `password`) ปลายทางจะกู้คืนค่าเริ่มต้น operator แบบเต็มตามปกติ แม้ว่าผู้เรียกจะส่ง header `x-openclaw-scopes` ที่แคบกว่ามาก็ตาม
-- โหมด HTTP แบบมี identity ที่เชื่อถือได้ (ตัวอย่างเช่น trusted proxy auth หรือ `gateway.auth.mode="none"`) จะยอมรับ `x-openclaw-scopes` เมื่อมี header นี้ และมิฉะนั้นจะ fallback ไปยังชุด scope operator เริ่มต้นตามปกติ
-- หากนโยบายของ Agent เป้าหมายอนุญาตเครื่องมือที่อ่อนไหว ปลายทางนี้ก็สามารถใช้เครื่องมือเหล่านั้นได้
-- ควรเก็บปลายทางนี้ไว้บน loopback/tailnet/private ingress เท่านั้น; อย่าเปิดเผยออกสู่อินเทอร์เน็ตสาธารณะโดยตรง
+- การยืนยันตัวตน HTTP bearer ที่นี่ไม่ใช่โมเดลขอบเขตต่อผู้ใช้แบบจำกัด
+- token/password ของ Gateway ที่ถูกต้องสำหรับปลายทางนี้ควรถูกปฏิบัติเหมือนข้อมูลประจำตัวของเจ้าของ/ผู้ควบคุม
+- คำขอรันผ่านเส้นทางเอเจนต์ control-plane เดียวกับการกระทำของผู้ควบคุมที่เชื่อถือได้
+- ไม่มีขอบเขตเครื่องมือแบบแยกสำหรับผู้ที่ไม่ใช่เจ้าของ/ต่อผู้ใช้บนปลายทางนี้; เมื่อผู้เรียกผ่านการยืนยันตัวตน Gateway ที่นี่ OpenClaw จะถือว่าผู้เรียกนั้นเป็นผู้ควบคุมที่เชื่อถือได้สำหรับ Gateway นี้
+- สำหรับโหมดการยืนยันตัวตนแบบ shared-secret (`token` และ `password`) ปลายทางจะกู้คืนค่าเริ่มต้นของผู้ควบคุมเต็มรูปแบบตามปกติ แม้ว่าผู้เรียกจะส่งส่วนหัว `x-openclaw-scopes` ที่แคบกว่ามา
+- โหมด HTTP ที่มีข้อมูลระบุตัวตนที่เชื่อถือได้ (เช่น การยืนยันตัวตนผ่านพร็อกซีที่เชื่อถือได้ หรือ `gateway.auth.mode="none"`) จะเคารพ `x-openclaw-scopes` เมื่อมีอยู่ และมิฉะนั้นจะ fallback ไปยังชุดขอบเขตค่าเริ่มต้นของผู้ควบคุมตามปกติ
+- หากนโยบายเอเจนต์เป้าหมายอนุญาตเครื่องมือที่ละเอียดอ่อน ปลายทางนี้สามารถใช้เครื่องมือเหล่านั้นได้
+- ให้ปลายทางนี้อยู่บน loopback/tailnet/private ingress เท่านั้น; อย่าเปิดเผยโดยตรงต่ออินเทอร์เน็ตสาธารณะ
 
 เมทริกซ์การยืนยันตัวตน:
 
 - `gateway.auth.mode="token"` หรือ `"password"` + `Authorization: Bearer ...`
   - พิสูจน์การครอบครอง shared gateway operator secret
-  - ไม่สนใจ `x-openclaw-scopes` ที่แคบกว่า
-  - กู้คืนชุด scope operator เริ่มต้นแบบเต็ม:
+  - เพิกเฉยต่อ `x-openclaw-scopes` ที่แคบกว่า
+  - กู้คืนชุดขอบเขตผู้ควบคุมค่าเริ่มต้นแบบเต็ม:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - ถือว่าเทิร์นแชตบนปลายทางนี้เป็นเทิร์นจากผู้ส่งแบบ owner
-- โหมด HTTP แบบมี identity ที่เชื่อถือได้ (ตัวอย่างเช่น trusted proxy auth หรือ `gateway.auth.mode="none"` บน private ingress)
-  - ยืนยันตัวตนของ identity ภายนอกหรือขอบเขต deployment ที่เชื่อถือได้
-  - ยอมรับ `x-openclaw-scopes` เมื่อมี header นี้
-  - fallback ไปยังชุด scope operator เริ่มต้นตามปกติเมื่อไม่มี header
-  - จะสูญเสียความหมายแบบ owner เฉพาะเมื่อผู้เรียกจำกัด scope ลงอย่างชัดเจนและไม่ระบุ `operator.admin`
+  - ถือว่า chat turns บนปลายทางนี้เป็น owner-sender turns
+- โหมด HTTP ที่มีข้อมูลระบุตัวตนที่เชื่อถือได้ (เช่น การยืนยันตัวตนผ่านพร็อกซีที่เชื่อถือได้ หรือ `gateway.auth.mode="none"` บน private ingress)
+  - ยืนยันตัวตนของอัตลักษณ์ภายนอกหรือขอบเขตการปรับใช้ที่เชื่อถือได้บางอย่าง
+  - เคารพ `x-openclaw-scopes` เมื่อมีส่วนหัวอยู่
+  - fallback ไปยังชุดขอบเขตผู้ควบคุมค่าเริ่มต้นตามปกติเมื่อไม่มีส่วนหัว
+  - จะสูญเสียความหมายของเจ้าของเฉพาะเมื่อผู้เรียกจำกัดขอบเขตอย่างชัดเจนและละเว้น `operator.admin`
 
-ดู [Security](/th/gateway/security) และ [Remote access](/th/gateway/remote)
+ดู [ความปลอดภัย](/th/gateway/security) และ [การเข้าถึงระยะไกล](/th/gateway/remote)
 
-## สัญญา model แบบ agent-first
+## สัญญาโมเดลแบบเอเจนต์เป็นหลัก
 
-OpenClaw มองฟิลด์ `model` ของ OpenAI เป็น **เป้าหมายของ Agent** ไม่ใช่ id ของโมเดลผู้ให้บริการแบบดิบ
+OpenClaw ถือว่าฟิลด์ `model` ของ OpenAI เป็น **เป้าหมายเอเจนต์** ไม่ใช่ id โมเดลของผู้ให้บริการแบบดิบ
 
-- `model: "openclaw"` จะกำหนดเส้นทางไปยัง Agent เริ่มต้นที่กำหนดไว้
-- `model: "openclaw/default"` ก็จะกำหนดเส้นทางไปยัง Agent เริ่มต้นที่กำหนดไว้เช่นกัน
-- `model: "openclaw/<agentId>"` จะกำหนดเส้นทางไปยัง Agent ที่ระบุ
+- `model: "openclaw"` กำหนดเส้นทางไปยังเอเจนต์ค่าเริ่มต้นที่กำหนดค่าไว้
+- `model: "openclaw/default"` ก็กำหนดเส้นทางไปยังเอเจนต์ค่าเริ่มต้นที่กำหนดค่าไว้เช่นกัน
+- `model: "openclaw/<agentId>"` กำหนดเส้นทางไปยังเอเจนต์เฉพาะ
 
-request header แบบไม่บังคับ:
+ส่วนหัวคำขอที่ไม่บังคับ:
 
-- `x-openclaw-model: <provider/model-or-bare-id>` เขียนทับโมเดลแบ็กเอนด์สำหรับ Agent ที่เลือก
-- `x-openclaw-agent-id: <agentId>` ยังรองรับในฐานะการเขียนทับเพื่อความเข้ากันได้
-- `x-openclaw-session-key: <sessionKey>` ควบคุมการกำหนดเส้นทางเซสชันแบบเต็ม
-- `x-openclaw-message-channel: <channel>` ตั้งค่าบริบท synthetic ingress channel สำหรับ prompt และนโยบายที่รับรู้ช่องทาง
+- `x-openclaw-model: <provider/model-or-bare-id>` แทนที่โมเดล backend สำหรับเอเจนต์ที่เลือก
+- `x-openclaw-agent-id: <agentId>` ยังคงรองรับเป็นการแทนที่เพื่อความเข้ากันได้
+- `x-openclaw-session-key: <sessionKey>` ควบคุมการกำหนดเส้นทาง session อย่างสมบูรณ์
+- `x-openclaw-message-channel: <channel>` ตั้งค่าบริบท synthetic ingress channel สำหรับพรอมป์และนโยบายที่รับรู้ช่องทาง
 
-ยังยอมรับ compatibility alias:
+alias เพื่อความเข้ากันได้ที่ยังยอมรับ:
 
 - `model: "openclaw:<agentId>"`
 - `model: "agent:<agentId>"`
 
-## การเปิดใช้ปลายทาง
+## การเปิดใช้งานปลายทาง
 
 ตั้งค่า `gateway.http.endpoints.chatCompletions.enabled` เป็น `true`:
 
@@ -117,7 +117,7 @@ request header แบบไม่บังคับ:
 }
 ```
 
-## การปิดใช้ปลายทาง
+## การปิดใช้งานปลายทาง
 
 ตั้งค่า `gateway.http.endpoints.chatCompletions.enabled` เป็น `false`:
 
@@ -133,59 +133,59 @@ request header แบบไม่บังคับ:
 }
 ```
 
-## พฤติกรรมของเซสชัน
+## พฤติกรรมของ session
 
-โดยค่าเริ่มต้น ปลายทางนี้จะ **stateless ต่อคำขอ** (มีการสร้าง session key ใหม่ทุกครั้งที่เรียก)
+ตามค่าเริ่มต้น ปลายทางนี้เป็นแบบ **stateless ต่อคำขอ** (มีการสร้าง session key ใหม่ในแต่ละการเรียก)
 
-หากคำขอมีสตริง `user` ของ OpenAI อยู่ด้วย Gateway จะสร้าง session key ที่เสถียรจากค่านั้น เพื่อให้การเรียกซ้ำสามารถใช้เซสชันของ Agent ร่วมกันได้
+หากคำขอมีสตริง `user` ของ OpenAI อยู่ Gateway จะ derive session key ที่เสถียรจากค่านั้น เพื่อให้การเรียกซ้ำสามารถแชร์ session ของเอเจนต์ได้
 
-## ทำไมพื้นผิวนี้จึงสำคัญ
+## เหตุผลที่พื้นผิวนี้สำคัญ
 
 นี่คือชุดความเข้ากันได้ที่ให้ประโยชน์สูงสุดสำหรับ frontend และเครื่องมือแบบ self-hosted:
 
 - การตั้งค่า Open WebUI, LobeChat และ LibreChat ส่วนใหญ่คาดหวัง `/v1/models`
 - ระบบ RAG จำนวนมากคาดหวัง `/v1/embeddings`
-- ไคลเอนต์แชต OpenAI ที่มีอยู่มักเริ่มต้นได้ด้วย `/v1/chat/completions`
-- ไคลเอนต์ที่เป็น agent-native มากขึ้นเรื่อย ๆ มักเลือกใช้ `/v1/responses`
+- ไคลเอนต์แชต OpenAI ที่มีอยู่มักเริ่มต้นด้วย `/v1/chat/completions` ได้
+- ไคลเอนต์ที่เป็น agent-native มากขึ้นเรื่อย ๆ มักต้องการ `/v1/responses`
 
-## รายการโมเดลและการกำหนดเส้นทางของ Agent
+## รายการโมเดลและการกำหนดเส้นทางเอเจนต์
 
 <AccordionGroup>
-  <Accordion title="`/v1/models` ส่งกลับอะไร?">
-    รายการเป้าหมาย Agent ของ OpenClaw
+  <Accordion title="What does `/v1/models` return?">
+    รายการเป้าหมายเอเจนต์ของ OpenClaw
 
-    id ที่ส่งกลับคือ `openclaw`, `openclaw/default` และรายการ `openclaw/<agentId>`
-    ใช้มันโดยตรงเป็นค่า `model` ของ OpenAI ได้
-
-  </Accordion>
-  <Accordion title="`/v1/models` แสดง Agents หรือ sub-agents?">
-    มันแสดงรายการเป้าหมาย Agent ระดับบนสุด ไม่ใช่โมเดลผู้ให้บริการแบ็กเอนด์ และไม่ใช่ sub-agents
-
-    sub-agents ยังคงเป็นโทโพโลยีการรันภายใน และจะไม่แสดงเป็น pseudo-models
+    id ที่ส่งคืนคือรายการ `openclaw`, `openclaw/default` และ `openclaw/<agentId>`
+    ใช้ค่าเหล่านี้โดยตรงเป็นค่า `model` ของ OpenAI
 
   </Accordion>
-  <Accordion title="ทำไมจึงมี `openclaw/default`?">
-    `openclaw/default` คือ alias ที่เสถียรสำหรับ Agent เริ่มต้นที่กำหนดไว้
+  <Accordion title="Does `/v1/models` list agents or sub-agents?">
+    รายการนี้แสดงเป้าหมายเอเจนต์ระดับบนสุด ไม่ใช่โมเดลผู้ให้บริการ backend และไม่ใช่ sub-agent
 
-    นั่นหมายความว่าไคลเอนต์สามารถใช้ id ที่คาดเดาได้เพียงตัวเดียวต่อไปได้ แม้ว่า id จริงของ Agent เริ่มต้นจะเปลี่ยนไปตาม environment
+    sub-agent ยังคงเป็นโทโพโลยีการดำเนินการภายใน ไม่ปรากฏเป็น pseudo-model
 
   </Accordion>
-  <Accordion title="จะเขียนทับโมเดลแบ็กเอนด์ได้อย่างไร?">
+  <Accordion title="Why is `openclaw/default` included?">
+    `openclaw/default` คือ alias ที่เสถียรสำหรับเอเจนต์ค่าเริ่มต้นที่กำหนดค่าไว้
+
+    หมายความว่าไคลเอนต์สามารถใช้ id ที่คาดเดาได้ค่าเดียวต่อไป แม้ว่า id ของเอเจนต์ค่าเริ่มต้นจริงจะเปลี่ยนระหว่างสภาพแวดล้อม
+
+  </Accordion>
+  <Accordion title="How do I override the backend model?">
     ใช้ `x-openclaw-model`
 
     ตัวอย่าง:
     `x-openclaw-model: openai/gpt-5.4`
     `x-openclaw-model: gpt-5.5`
 
-    หากคุณไม่ระบุ Agent ที่เลือกจะรันด้วยการเลือกโมเดลตามการกำหนดค่าปกติของมัน
+    หากคุณละเว้นส่วนนี้ เอเจนต์ที่เลือกจะรันด้วยตัวเลือกโมเดลที่กำหนดค่าปกติของมัน
 
   </Accordion>
-  <Accordion title="embeddings เข้ากับสัญญานี้อย่างไร?">
-    `/v1/embeddings` ใช้ id `model` แบบเป้าหมาย Agent เดียวกัน
+  <Accordion title="How do embeddings fit this contract?">
+    `/v1/embeddings` ใช้ id `model` แบบเป้าหมายเอเจนต์เดียวกัน
 
     ใช้ `model: "openclaw/default"` หรือ `model: "openclaw/<agentId>"`
     เมื่อคุณต้องการโมเดล embedding เฉพาะ ให้ส่งใน `x-openclaw-model`
-    หากไม่มี header นี้ คำขอจะถูกส่งผ่านไปยังการตั้งค่า embedding ปกติของ Agent ที่เลือก
+    หากไม่มีส่วนหัวนั้น คำขอจะถูกส่งผ่านไปยังการตั้งค่า embedding ปกติของเอเจนต์ที่เลือก
 
   </Accordion>
 </AccordionGroup>
@@ -195,32 +195,32 @@ request header แบบไม่บังคับ:
 ตั้งค่า `stream: true` เพื่อรับ Server-Sent Events (SSE):
 
 - `Content-Type: text/event-stream`
-- แต่ละบรรทัดของ event จะเป็น `data: <json>`
+- แต่ละบรรทัด event คือ `data: <json>`
 - สตรีมจบด้วย `data: [DONE]`
 
-## การตั้งค่า Open WebUI อย่างรวดเร็ว
+## การตั้งค่า Open WebUI แบบเร็ว
 
-สำหรับการเชื่อมต่อ Open WebUI แบบพื้นฐาน:
+สำหรับการเชื่อมต่อ Open WebUI พื้นฐาน:
 
-- Base URL: `http://127.0.0.1:18789/v1`
-- Base URL สำหรับ Docker บน macOS: `http://host.docker.internal:18789/v1`
-- API key: bearer token ของ Gateway ของคุณ
-- Model: `openclaw/default`
+- URL ฐาน: `http://127.0.0.1:18789/v1`
+- URL ฐานของ Docker บน macOS: `http://host.docker.internal:18789/v1`
+- คีย์ API: bearer token ของ Gateway ของคุณ
+- โมเดล: `openclaw/default`
 
 พฤติกรรมที่คาดหวัง:
 
 - `GET /v1/models` ควรแสดง `openclaw/default`
-- Open WebUI ควรใช้ `openclaw/default` เป็น id ของ chat model
-- หากคุณต้องการแบ็กเอนด์ provider/model เฉพาะสำหรับ Agent นั้น ให้ตั้งค่าโมเดลเริ่มต้นตามปกติของ Agent หรือตั้ง `x-openclaw-model`
+- Open WebUI ควรใช้ `openclaw/default` เป็น id โมเดลแชต
+- หากคุณต้องการผู้ให้บริการ/โมเดล backend เฉพาะสำหรับเอเจนต์นั้น ให้ตั้งค่าโมเดลค่าเริ่มต้นปกติของเอเจนต์ หรือส่ง `x-openclaw-model`
 
-การทดสอบแบบรวดเร็ว:
+smoke แบบเร็ว:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-หากคำสั่งนี้ส่งกลับ `openclaw/default` การตั้งค่า Open WebUI ส่วนใหญ่จะเชื่อมต่อได้ด้วย base URL และ token เดียวกัน
+หากค่านั้นส่งคืน `openclaw/default` การตั้งค่า Open WebUI ส่วนใหญ่จะเชื่อมต่อได้ด้วย URL ฐานและ token เดียวกัน
 
 ## ตัวอย่าง
 
@@ -279,12 +279,12 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
 
 หมายเหตุ:
 
-- `/v1/models` ส่งกลับเป้าหมาย Agent ของ OpenClaw ไม่ใช่ catalog ของผู้ให้บริการแบบดิบ
-- `openclaw/default` มีอยู่เสมอ เพื่อให้ id ที่เสถียรเพียงตัวเดียวใช้ได้ข้าม environment
-- การเขียนทับ provider/model ของแบ็กเอนด์ควรอยู่ใน `x-openclaw-model` ไม่ใช่ในฟิลด์ `model` ของ OpenAI
-- `/v1/embeddings` รองรับ `input` ทั้งแบบสตริงหรืออาร์เรย์ของสตริง
+- `/v1/models` ส่งคืนเป้าหมายเอเจนต์ของ OpenClaw ไม่ใช่แค็ตตาล็อกผู้ให้บริการแบบดิบ
+- `openclaw/default` มีอยู่เสมอ เพื่อให้ id ที่เสถียรหนึ่งค่าสามารถใช้ได้ข้ามสภาพแวดล้อม
+- การแทนที่ผู้ให้บริการ/โมเดล backend อยู่ใน `x-openclaw-model` ไม่ใช่ฟิลด์ `model` ของ OpenAI
+- `/v1/embeddings` รองรับ `input` เป็นสตริงหรืออาร์เรย์ของสตริง
 
 ## ที่เกี่ยวข้อง
 
-- [Configuration reference](/th/gateway/configuration-reference)
+- [เอกสารอ้างอิงการกำหนดค่า](/th/gateway/configuration-reference)
 - [OpenAI](/th/providers/openai)

@@ -1,27 +1,27 @@
 ---
 read_when:
-    - คุณต้องการอ่านหรือแก้ไข config แบบไม่โต้ตอบ
+    - คุณต้องการอ่านหรือแก้ไขการกำหนดค่าแบบไม่โต้ตอบ
 sidebarTitle: Config
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw config` (`get`/`set`/`unset`/`file`/`schema`/`validate`)
-title: Config
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw config` (get/set/patch/unset/file/schema/validate)
+title: การกำหนดค่า
 x-i18n:
-    generated_at: "2026-04-26T11:25:32Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:57Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7871ee03a1da6ab5d0881ace7579ce101a89e9f9d05d1a720ff34fd31fa12a9d
+    source_hash: f1f55c4b932d469cb9112d9f55b66f0ff88dbe066250651df7a0a753060a223d
     source_path: cli/config.md
-    workflow: 15
+    workflow: 16
 ---
 
-ตัวช่วย Config สำหรับการแก้ไขแบบไม่โต้ตอบใน `openclaw.json`: อ่าน/ตั้งค่า/ยกเลิกการตั้งค่า/ไฟล์/schema/validate ค่าตามพาธ และพิมพ์ไฟล์ config ที่กำลังใช้งานอยู่ เรียกใช้โดยไม่ระบุ subcommand เพื่อเปิดตัวช่วยตั้งค่า (เช่นเดียวกับ `openclaw configure`)
+ตัวช่วยการตั้งค่าสำหรับการแก้ไขแบบไม่โต้ตอบใน `openclaw.json`: get/set/patch/unset/file/schema/validate ค่าตามพาธและพิมพ์ไฟล์การตั้งค่าที่ใช้งานอยู่ รันโดยไม่มีคำสั่งย่อยเพื่อเปิดตัวช่วยตั้งค่า (เหมือนกับ `openclaw configure`)
 
 ## ตัวเลือกระดับราก
 
 <ParamField path="--section <section>" type="string">
-  ตัวกรองส่วนการตั้งค่าแบบมีคำแนะนำที่ใช้ซ้ำได้เมื่อคุณรัน `openclaw config` โดยไม่มี subcommand
+  ตัวกรองส่วน guided-setup ที่ระบุซ้ำได้เมื่อคุณรัน `openclaw config` โดยไม่มีคำสั่งย่อย
 </ParamField>
 
-ส่วนแบบมีคำแนะนำที่รองรับ: `workspace`, `model`, `web`, `gateway`, `daemon`, `channels`, `plugins`, `skills`, `health`
+ส่วน guided ที่รองรับ: `workspace`, `model`, `web`, `gateway`, `daemon`, `channels`, `plugins`, `skills`, `health`
 
 ## ตัวอย่าง
 
@@ -38,6 +38,7 @@ openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
 openclaw config set secrets.providers.vaultfile --provider-source file --provider-path /etc/openclaw/secrets.json --provider-mode json
+openclaw config patch --file ./openclaw.patch.json5 --dry-run
 openclaw config unset plugins.entries.brave.config.webSearch.apiKey
 openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN --dry-run
 openclaw config validate
@@ -50,16 +51,16 @@ openclaw config validate --json
 
 <AccordionGroup>
   <Accordion title="สิ่งที่รวมอยู่">
-    - schema ของ root config ปัจจุบัน พร้อมฟิลด์สตริง `$schema` ที่ระดับรากสำหรับเครื่องมือในตัวแก้ไข
-    - เมทาดาต้าเอกสาร `title` และ `description` ของฟิลด์ที่ใช้โดย Control UI
-    - โหนดแบบ object ซ้อน, wildcard (`*`) และรายการในอาร์เรย์ (`[]`) จะสืบทอดเมทาดาต้า `title` / `description` เดียวกันเมื่อมีเอกสารประกอบของฟิลด์ที่ตรงกัน
-    - สาขา `anyOf` / `oneOf` / `allOf` ก็สืบทอดเมทาดาต้าเอกสารเดียวกันด้วยเมื่อมีเอกสารประกอบของฟิลด์ที่ตรงกัน
-    - เมทาดาต้า schema ของ Plugin + channel แบบสดเท่าที่ทำได้ เมื่อสามารถโหลด manifest ของ runtime ได้
-    - schema fallback ที่สะอาดแม้ config ปัจจุบันจะไม่ถูกต้อง
+    - สคีมาการตั้งค่าระดับรากปัจจุบัน พร้อมฟิลด์สตริง `$schema` ระดับรากสำหรับเครื่องมือแก้ไข
+    - เมตาดาต้าเอกสารของฟิลด์ `title` และ `description` ที่ Control UI ใช้
+    - โหนดอ็อบเจ็กต์ซ้อน, wildcard (`*`), และรายการอาร์เรย์ (`[]`) สืบทอดเมตาดาต้า `title` / `description` เดียวกันเมื่อมีเอกสารฟิลด์ที่ตรงกัน
+    - สาขา `anyOf` / `oneOf` / `allOf` สืบทอดเมตาดาต้าเอกสารเดียวกันด้วยเมื่อมีเอกสารฟิลด์ที่ตรงกัน
+    - เมตาดาต้าสคีมา Plugin + ช่องทางแบบ live เท่าที่ทำได้ เมื่อสามารถโหลด runtime manifests ได้
+    - สคีมาสำรองที่สะอาดแม้การตั้งค่าปัจจุบันไม่ถูกต้อง
 
   </Accordion>
-  <Accordion title="RPC ของ runtime ที่เกี่ยวข้อง">
-    `config.schema.lookup` จะคืนค่าพาธ config แบบ normalized หนึ่งพาธ พร้อมโหนด schema แบบตื้น (`title`, `description`, `type`, `enum`, `const`, ขอบเขตทั่วไป), เมทาดาต้า UI hint ที่ตรงกัน และสรุปลูกโดยตรง ใช้สำหรับการเจาะลึกแบบกำหนดขอบเขตตามพาธใน Control UI หรือไคลเอนต์แบบกำหนดเอง
+  <Accordion title="RPC runtime ที่เกี่ยวข้อง">
+    `config.schema.lookup` ส่งคืนพาธการตั้งค่าที่ทำให้เป็นมาตรฐานหนึ่งพาธพร้อมโหนดสคีมาแบบตื้น (`title`, `description`, `type`, `enum`, `const`, ขอบเขตทั่วไป), เมตาดาต้าคำใบ้ UI ที่ตรงกัน และสรุปลูกระดับถัดไป ใช้สำหรับการเจาะลึกแบบจำกัดพาธใน Control UI หรือไคลเอนต์แบบกำหนดเอง
   </Accordion>
 </AccordionGroup>
 
@@ -67,7 +68,7 @@ openclaw config validate --json
 openclaw config schema
 ```
 
-ส่งผลลัพธ์ไปยังไฟล์เมื่อคุณต้องการตรวจสอบหรือตรวจสอบความถูกต้องด้วยเครื่องมืออื่น:
+ส่งผ่าน pipe ไปยังไฟล์เมื่อคุณต้องการตรวจสอบหรือตรวจสอบความถูกต้องด้วยเครื่องมืออื่น:
 
 ```bash
 openclaw config schema > openclaw.schema.json
@@ -75,14 +76,14 @@ openclaw config schema > openclaw.schema.json
 
 ### พาธ
 
-พาธใช้รูปแบบ dot หรือ bracket:
+พาธใช้สัญกรณ์จุดหรือวงเล็บ:
 
 ```bash
 openclaw config get agents.defaults.workspace
 openclaw config get agents.list[0].id
 ```
 
-ใช้ดัชนีรายการเอเจนต์เพื่อกำหนดเป้าหมายเอเจนต์ที่เฉพาะเจาะจง:
+ใช้ดัชนีรายการ agent เพื่อระบุ agent เฉพาะ:
 
 ```bash
 openclaw config get agents.list
@@ -91,7 +92,7 @@ openclaw config set agents.list[1].tools.exec.node "node-id-or-name"
 
 ## ค่า
 
-ค่าจะถูกแยกวิเคราะห์เป็น JSON5 เมื่อทำได้; มิฉะนั้นจะถือเป็นสตริง ใช้ `--strict-json` เพื่อบังคับให้แยกวิเคราะห์เป็น JSON5 โดย `--json` ยังรองรับอยู่ในฐานะชื่อเรียกเดิม
+ค่าจะถูกแยกวิเคราะห์เป็น JSON5 เมื่อทำได้ มิฉะนั้นจะถูกถือว่าเป็นสตริง ใช้ `--strict-json` เพื่อกำหนดให้ต้องแยกวิเคราะห์ JSON5 `--json` ยังคงรองรับเป็น alias รุ่นเก่า
 
 ```bash
 openclaw config set agents.defaults.heartbeat.every "0m"
@@ -99,20 +100,20 @@ openclaw config set gateway.port 19001 --strict-json
 openclaw config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
-`config get <path> --json` จะพิมพ์ค่าดิบเป็น JSON แทนข้อความที่จัดรูปแบบสำหรับเทอร์มินัล
+`config get <path> --json` พิมพ์ค่าดิบเป็น JSON แทนข้อความที่จัดรูปแบบสำหรับเทอร์มินัล
 
 <Note>
-การกำหนดค่า object จะเขียนทับพาธเป้าหมายตามค่าเริ่มต้น พาธ map/list ที่ได้รับการป้องกันซึ่งมักเก็บรายการที่ผู้ใช้เพิ่มเอง เช่น `agents.defaults.models`, `models.providers`, `models.providers.<id>.models`, `plugins.entries` และ `auth.profiles` จะปฏิเสธการเขียนทับที่ทำให้รายการเดิมหายไป เว้นแต่คุณจะส่ง `--replace`
+การกำหนดอ็อบเจ็กต์จะแทนที่พาธเป้าหมายตามค่าเริ่มต้น พาธ map/list ที่ได้รับการป้องกันซึ่งมักเก็บรายการที่ผู้ใช้เพิ่ม เช่น `agents.defaults.models`, `models.providers`, `models.providers.<id>.models`, `plugins.entries`, และ `auth.profiles` จะปฏิเสธการแทนที่ที่จะลบรายการที่มีอยู่ เว้นแต่คุณจะส่ง `--replace`
 </Note>
 
-ใช้ `--merge` เมื่อต้องการเพิ่มรายการลงใน map เหล่านั้น:
+ใช้ `--merge` เมื่อเพิ่มรายการไปยัง map เหล่านั้น:
 
 ```bash
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
-ใช้ `--replace` เฉพาะเมื่อคุณตั้งใจให้ค่าที่ระบุกลายเป็นค่าเป้าหมายทั้งหมดโดยสมบูรณ์
+ใช้ `--replace` เฉพาะเมื่อคุณตั้งใจให้ค่าที่ให้มากลายเป็นค่าเป้าหมายทั้งหมด
 
 ## โหมดของ `config set`
 
@@ -132,8 +133,8 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
       --ref-id DISCORD_BOT_TOKEN
     ```
   </Tab>
-  <Tab title="โหมดตัวสร้าง Provider">
-    โหมดตัวสร้าง Provider กำหนดเป้าหมายได้เฉพาะพาธ `secrets.providers.<alias>` เท่านั้น:
+  <Tab title="โหมดตัวสร้างผู้ให้บริการ">
+    โหมดตัวสร้างผู้ให้บริการระบุเป้าหมายได้เฉพาะพาธ `secrets.providers.<alias>` เท่านั้น:
 
     ```bash
     openclaw config set secrets.providers.vault \
@@ -167,12 +168,68 @@ openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Ll
 </Tabs>
 
 <Warning>
-การกำหนดค่า SecretRef จะถูกปฏิเสธบนพื้นผิว runtime-mutable ที่ไม่รองรับ (เช่น `hooks.token`, `commands.ownerDisplaySecret`, โทเค็น Webhook สำหรับ Discord thread-binding และ WhatsApp creds JSON) ดู [พื้นผิวข้อมูลรับรอง SecretRef](/th/reference/secretref-credential-surface)
+การกำหนด SecretRef จะถูกปฏิเสธบนพื้นผิว runtime-mutable ที่ไม่รองรับ (เช่น `hooks.token`, `commands.ownerDisplaySecret`, โทเค็น Webhook การผูกเธรดของ Discord และ JSON ข้อมูลรับรองของ WhatsApp) ดู [พื้นผิวข้อมูลรับรอง SecretRef](/th/reference/secretref-credential-surface)
 </Warning>
 
-การแยกวิเคราะห์แบบแบตช์จะใช้ payload ของแบตช์ (`--batch-json`/`--batch-file`) เป็นแหล่งข้อมูลจริงเสมอ `--strict-json` / `--json` จะไม่เปลี่ยนพฤติกรรมการแยกวิเคราะห์แบบแบตช์
+การแยกวิเคราะห์แบตช์ใช้ payload ของแบตช์ (`--batch-json`/`--batch-file`) เป็นแหล่งความจริงเสมอ `--strict-json` / `--json` ไม่เปลี่ยนพฤติกรรมการแยกวิเคราะห์แบตช์
 
-โหมด JSON path/value ยังคงรองรับทั้ง SecretRef และ Provider:
+## `config patch`
+
+ใช้ `config patch` เมื่อคุณต้องการวางหรือ pipe แพตช์ที่มีรูปทรงเหมือนการตั้งค่า แทนการรันคำสั่ง `config set` ตามพาธจำนวนมาก อินพุตเป็นอ็อบเจ็กต์ JSON5 อ็อบเจ็กต์จะ merge แบบเรียกซ้ำ, อาร์เรย์และค่าสเกลาร์จะแทนที่ค่าเป้าหมาย และ `null` จะลบพาธเป้าหมาย
+
+```bash
+openclaw config patch --file ./openclaw.patch.json5 --dry-run
+openclaw config patch --file ./openclaw.patch.json5
+```
+
+คุณยังสามารถ pipe แพตช์ผ่าน stdin ได้ ซึ่งมีประโยชน์สำหรับสคริปต์ตั้งค่าระยะไกล:
+
+```bash
+ssh openclaw-host 'openclaw config patch --stdin --dry-run' < ./openclaw.patch.json5
+ssh openclaw-host 'openclaw config patch --stdin' < ./openclaw.patch.json5
+```
+
+ตัวอย่างแพตช์:
+
+```json5
+{
+  channels: {
+    slack: {
+      enabled: true,
+      mode: "socket",
+      botToken: { source: "env", provider: "default", id: "SLACK_BOT_TOKEN" },
+      appToken: { source: "env", provider: "default", id: "SLACK_APP_TOKEN" },
+      groupPolicy: "open",
+      requireMention: false,
+    },
+    discord: {
+      enabled: true,
+      token: { source: "env", provider: "default", id: "DISCORD_BOT_TOKEN" },
+      dmPolicy: "disabled",
+      dm: { enabled: false },
+      groupPolicy: "allowlist",
+    },
+  },
+  agents: {
+    defaults: {
+      model: { primary: "openai/gpt-5.5" },
+      models: {
+        "openai/gpt-5.5": { params: { fastMode: true } },
+      },
+    },
+  },
+}
+```
+
+ใช้ `--replace-path <path>` เมื่ออ็อบเจ็กต์หรืออาร์เรย์หนึ่งต้องกลายเป็นค่าที่ให้มาอย่างตรงตัว แทนที่จะถูกแพตช์แบบเรียกซ้ำ:
+
+```bash
+openclaw config patch --file ./discord.patch.json5 --replace-path 'channels.discord.guilds["123"].channels'
+```
+
+`--dry-run` รันการตรวจสอบสคีมาและการแก้ค่า SecretRef ได้โดยไม่เขียน Exec-backed SecretRefs จะถูกข้ามตามค่าเริ่มต้นระหว่าง dry-run; เพิ่ม `--allow-exec` เมื่อคุณตั้งใจให้ dry-run เรียกใช้คำสั่งของผู้ให้บริการ
+
+โหมดพาธ/ค่า JSON ยังคงรองรับทั้ง SecretRefs และผู้ให้บริการ:
 
 ```bash
 openclaw config set channels.discord.token \
@@ -184,43 +241,43 @@ openclaw config set secrets.providers.vaultfile \
   --strict-json
 ```
 
-## แฟล็กตัวสร้าง Provider
+## แฟล็กตัวสร้างผู้ให้บริการ
 
-เป้าหมายของตัวสร้าง Provider ต้องใช้ `secrets.providers.<alias>` เป็นพาธ
+เป้าหมายของตัวสร้างผู้ให้บริการต้องใช้ `secrets.providers.<alias>` เป็นพาธ
 
 <AccordionGroup>
-  <Accordion title="แฟล็กร่วม">
+  <Accordion title="แฟล็กทั่วไป">
     - `--provider-source <env|file|exec>`
     - `--provider-timeout-ms <ms>` (`file`, `exec`)
 
   </Accordion>
-  <Accordion title="Env provider (--provider-source env)">
-    - `--provider-allowlist <ENV_VAR>` (ใช้ซ้ำได้)
+  <Accordion title="ผู้ให้บริการ Env (--provider-source env)">
+    - `--provider-allowlist <ENV_VAR>` (ระบุซ้ำได้)
 
   </Accordion>
-  <Accordion title="File provider (--provider-source file)">
+  <Accordion title="ผู้ให้บริการไฟล์ (--provider-source file)">
     - `--provider-path <path>` (จำเป็น)
     - `--provider-mode <singleValue|json>`
     - `--provider-max-bytes <bytes>`
     - `--provider-allow-insecure-path`
 
   </Accordion>
-  <Accordion title="Exec provider (--provider-source exec)">
+  <Accordion title="ผู้ให้บริการ Exec (--provider-source exec)">
     - `--provider-command <path>` (จำเป็น)
-    - `--provider-arg <arg>` (ใช้ซ้ำได้)
+    - `--provider-arg <arg>` (ระบุซ้ำได้)
     - `--provider-no-output-timeout-ms <ms>`
     - `--provider-max-output-bytes <bytes>`
     - `--provider-json-only`
-    - `--provider-env <KEY=VALUE>` (ใช้ซ้ำได้)
-    - `--provider-pass-env <ENV_VAR>` (ใช้ซ้ำได้)
-    - `--provider-trusted-dir <path>` (ใช้ซ้ำได้)
+    - `--provider-env <KEY=VALUE>` (ระบุซ้ำได้)
+    - `--provider-pass-env <ENV_VAR>` (ระบุซ้ำได้)
+    - `--provider-trusted-dir <path>` (ระบุซ้ำได้)
     - `--provider-allow-insecure-path`
     - `--provider-allow-symlink-command`
 
   </Accordion>
 </AccordionGroup>
 
-ตัวอย่าง exec provider แบบ hardened:
+ตัวอย่างผู้ให้บริการ exec ที่เสริมความปลอดภัย:
 
 ```bash
 openclaw config set secrets.providers.vault \
@@ -236,7 +293,7 @@ openclaw config set secrets.providers.vault \
 
 ## Dry run
 
-ใช้ `--dry-run` เพื่อตรวจสอบความถูกต้องของการเปลี่ยนแปลงโดยไม่เขียนลง `openclaw.json`
+ใช้ `--dry-run` เพื่อตรวจสอบการเปลี่ยนแปลงโดยไม่เขียน `openclaw.json`
 
 ```bash
 openclaw config set channels.discord.token \
@@ -262,30 +319,30 @@ openclaw config set channels.discord.token \
 
 <AccordionGroup>
   <Accordion title="พฤติกรรมของ dry-run">
-    - โหมดตัวสร้าง: เรียกใช้การตรวจสอบความสามารถในการ resolve ของ SecretRef สำหรับ ref/provider ที่เปลี่ยนแปลง
-    - โหมด JSON (`--strict-json`, `--json` หรือโหมดแบตช์): เรียกใช้การตรวจสอบ schema พร้อมกับการตรวจสอบความสามารถในการ resolve ของ SecretRef
-    - การตรวจสอบนโยบายจะทำงานด้วยสำหรับพื้นผิวเป้าหมาย SecretRef ที่ไม่รองรับซึ่งรู้จักอยู่แล้ว
-    - การตรวจสอบนโยบายจะประเมิน config ทั้งหมดหลังการเปลี่ยนแปลง ดังนั้นการเขียน object ระดับแม่ (เช่น การตั้งค่า `hooks` เป็น object) จะไม่สามารถหลบเลี่ยงการตรวจสอบพื้นผิวที่ไม่รองรับได้
-    - การตรวจสอบ SecretRef แบบ exec จะถูกข้ามตามค่าเริ่มต้นระหว่าง dry-run เพื่อหลีกเลี่ยงผลข้างเคียงจากคำสั่ง
-    - ใช้ `--allow-exec` ร่วมกับ `--dry-run` เพื่อเลือกเปิดการตรวจสอบ SecretRef แบบ exec (การทำเช่นนี้อาจรันคำสั่งของ provider)
-    - `--allow-exec` ใช้ได้เฉพาะกับ dry-run และจะเกิดข้อผิดพลาดหากใช้โดยไม่มี `--dry-run`
+    - โหมดตัวสร้าง: รันการตรวจสอบการแก้ค่า SecretRef ได้สำหรับ refs/ผู้ให้บริการที่เปลี่ยนแปลง
+    - โหมด JSON (`--strict-json`, `--json`, หรือโหมดแบตช์): รันการตรวจสอบสคีมาพร้อมการตรวจสอบการแก้ค่า SecretRef ได้
+    - การตรวจสอบนโยบายจะรันสำหรับพื้นผิวเป้าหมาย SecretRef ที่ทราบว่าไม่รองรับด้วย
+    - การตรวจสอบนโยบายประเมินการตั้งค่าหลังการเปลี่ยนแปลงทั้งหมด ดังนั้นการเขียนอ็อบเจ็กต์แม่ (เช่น ตั้งค่า `hooks` เป็นอ็อบเจ็กต์) จึงไม่สามารถหลีกเลี่ยงการตรวจสอบพื้นผิวที่ไม่รองรับได้
+    - การตรวจสอบ Exec SecretRef จะถูกข้ามตามค่าเริ่มต้นระหว่าง dry-run เพื่อหลีกเลี่ยงผลข้างเคียงจากคำสั่ง
+    - ใช้ `--allow-exec` ร่วมกับ `--dry-run` เพื่อเลือกใช้การตรวจสอบ Exec SecretRef (สิ่งนี้อาจเรียกใช้คำสั่งของผู้ให้บริการ)
+    - `--allow-exec` ใช้ได้เฉพาะ dry-run และจะเกิดข้อผิดพลาดหากใช้โดยไม่มี `--dry-run`
 
   </Accordion>
-  <Accordion title="ฟิลด์ของ --dry-run --json">
-    `--dry-run --json` จะพิมพ์รายงานที่อ่านได้ด้วยเครื่อง:
+  <Accordion title="ฟิลด์ --dry-run --json">
+    `--dry-run --json` พิมพ์รายงานที่เครื่องอ่านได้:
 
     - `ok`: dry-run ผ่านหรือไม่
-    - `operations`: จำนวนการกำหนดค่าที่ถูกประเมิน
-    - `checks`: การตรวจสอบ schema/ความสามารถในการ resolve ได้รันหรือไม่
-    - `checks.resolvabilityComplete`: การตรวจสอบความสามารถในการ resolve รันจนเสร็จสมบูรณ์หรือไม่ (เป็น false เมื่อข้าม exec refs)
-    - `refsChecked`: จำนวน ref ที่ถูก resolve จริงระหว่าง dry-run
-    - `skippedExecRefs`: จำนวน exec ref ที่ถูกข้ามเพราะไม่ได้ตั้ง `--allow-exec`
-    - `errors`: ความล้มเหลวของ schema/ความสามารถในการ resolve แบบมีโครงสร้างเมื่อ `ok=false`
+    - `operations`: จำนวนการกำหนดค่าที่ประเมิน
+    - `checks`: การตรวจสอบสคีมา/การแก้ค่าได้ถูกรันหรือไม่
+    - `checks.resolvabilityComplete`: การตรวจสอบการแก้ค่าได้รันจนเสร็จสมบูรณ์หรือไม่ (เป็น false เมื่อ exec refs ถูกข้าม)
+    - `refsChecked`: จำนวน refs ที่แก้ค่าจริงระหว่าง dry-run
+    - `skippedExecRefs`: จำนวน exec refs ที่ถูกข้ามเพราะไม่ได้ตั้งค่า `--allow-exec`
+    - `errors`: ความล้มเหลวของสคีมา/การแก้ค่าได้แบบมีโครงสร้างเมื่อ `ok=false`
 
   </Accordion>
 </AccordionGroup>
 
-### รูปแบบผลลัพธ์ JSON
+### รูปทรงเอาต์พุต JSON
 
 ```json5
 {
@@ -304,7 +361,7 @@ openclaw config set channels.discord.token \
     {
       kind: "schema" | "resolvability",
       message: string,
-      ref?: string, // มีอยู่สำหรับข้อผิดพลาดด้าน resolvability
+      ref?: string, // present for resolvability errors
     },
   ],
 }
@@ -328,7 +385,7 @@ openclaw config set channels.discord.token \
     }
     ```
   </Tab>
-  <Tab title="ตัวอย่างเมื่อไม่สำเร็จ">
+  <Tab title="ตัวอย่างเมื่อล้มเหลว">
     ```json
     {
       "ok": false,
@@ -345,7 +402,7 @@ openclaw config set channels.discord.token \
       "errors": [
         {
           "kind": "resolvability",
-          "message": "Error: ยังไม่ได้ตั้งค่าตัวแปรสภาพแวดล้อม \"MISSING_TEST_SECRET\"",
+          "message": "Error: Environment variable \"MISSING_TEST_SECRET\" is not set.",
           "ref": "env:default:MISSING_TEST_SECRET"
         }
       ]
@@ -355,25 +412,25 @@ openclaw config set channels.discord.token \
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="หาก dry-run ไม่สำเร็จ">
-    - `config schema validation failed`: รูปร่าง config หลังการเปลี่ยนแปลงของคุณไม่ถูกต้อง; แก้ไขพาธ/ค่า หรือรูปร่าง object ของ provider/ref
-    - `Config policy validation failed: unsupported SecretRef usage`: ย้ายข้อมูลรับรองนั้นกลับไปใช้การป้อนแบบ plaintext/string และใช้ SecretRef เฉพาะบนพื้นผิวที่รองรับเท่านั้น
-    - `SecretRef assignment(s) could not be resolved`: provider/ref ที่อ้างอิงอยู่ไม่สามารถ resolve ได้ในขณะนี้ (ตัวแปร env หายไป, file pointer ไม่ถูกต้อง, exec provider ล้มเหลว, หรือ provider/source ไม่ตรงกัน)
-    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run ข้าม exec refs; รันใหม่ด้วย `--allow-exec` หากคุณต้องการตรวจสอบความสามารถในการ resolve ของ exec
-    - สำหรับโหมดแบตช์ ให้แก้ไขรายการที่ล้มเหลวและรัน `--dry-run` อีกครั้งก่อนเขียนจริง
+  <Accordion title="หาก dry-run ล้มเหลว">
+    - `config schema validation failed`: รูปร่าง config หลังการเปลี่ยนแปลงของคุณไม่ถูกต้อง แก้ path/value หรือรูปร่างออบเจ็กต์ provider/ref
+    - `Config policy validation failed: unsupported SecretRef usage`: ย้าย credential นั้นกลับไปเป็นอินพุต plaintext/string และใช้ SecretRefs เฉพาะบนพื้นผิวที่รองรับเท่านั้น
+    - `SecretRef assignment(s) could not be resolved`: provider/ref ที่อ้างอิงไม่สามารถ resolve ได้ในขณะนี้ (env var ขาดหาย, file pointer ไม่ถูกต้อง, exec provider ล้มเหลว หรือ provider/source ไม่ตรงกัน)
+    - `Dry run note: skipped <n> exec SecretRef resolvability check(s)`: dry-run ข้าม exec refs ไป ให้รันใหม่พร้อม `--allow-exec` หากคุณต้องตรวจสอบ exec resolvability
+    - สำหรับโหมด batch ให้แก้รายการที่ล้มเหลวแล้วรัน `--dry-run` ใหม่ก่อนเขียน
 
   </Accordion>
 </AccordionGroup>
 
 ## ความปลอดภัยในการเขียน
 
-`openclaw config set` และตัวเขียน config อื่นที่ OpenClaw เป็นเจ้าของ จะตรวจสอบ config ทั้งหมดหลังการเปลี่ยนแปลงก่อนบันทึกลงดิสก์ หาก payload ใหม่ไม่ผ่านการตรวจสอบ schema หรือดูเหมือนเป็นการเขียนทับแบบทำลายล้าง config ที่กำลังใช้งานจะไม่ถูกแตะต้อง และ payload ที่ถูกปฏิเสธจะถูกบันทึกไว้ข้าง ๆ เป็น `openclaw.json.rejected.*`
+`openclaw config set` และตัวเขียน config อื่น ๆ ที่ OpenClaw เป็นเจ้าของจะตรวจสอบ config ทั้งหมดหลังการเปลี่ยนแปลงก่อน commit ลงดิสก์ หาก payload ใหม่ไม่ผ่านการตรวจสอบ schema หรือดูเหมือนเป็นการเขียนทับที่ทำลายข้อมูล config ที่ใช้งานอยู่จะไม่ถูกแตะต้อง และ payload ที่ถูกปฏิเสธจะถูกบันทึกไว้ข้าง ๆ ในชื่อ `openclaw.json.rejected.*`
 
 <Warning>
-พาธ config ที่กำลังใช้งานต้องเป็นไฟล์ปกติ เลย์เอาต์ `openclaw.json` ที่เป็น symlink ไม่รองรับสำหรับการเขียน; ให้ใช้ `OPENCLAW_CONFIG_PATH` เพื่อชี้ไปยังไฟล์จริงโดยตรงแทน
+path ของ config ที่ใช้งานอยู่ต้องเป็นไฟล์ปกติ layout ของ `openclaw.json` ที่เป็น symlink ไม่รองรับการเขียน ให้ใช้ `OPENCLAW_CONFIG_PATH` เพื่อชี้ตรงไปยังไฟล์จริงแทน
 </Warning>
 
-ควรใช้การเขียนผ่าน CLI สำหรับการแก้ไขเล็กน้อย:
+ควรใช้ CLI เขียนสำหรับการแก้ไขเล็ก ๆ:
 
 ```bash
 openclaw config set gateway.reload.mode hybrid --dry-run
@@ -381,7 +438,7 @@ openclaw config set gateway.reload.mode hybrid
 openclaw config validate
 ```
 
-หากการเขียนถูกปฏิเสธ ให้ตรวจสอบ payload ที่บันทึกไว้และแก้ไขรูปร่าง config ทั้งหมด:
+หากการเขียนถูกปฏิเสธ ให้ตรวจสอบ payload ที่บันทึกไว้และแก้รูปร่าง config ทั้งหมด:
 
 ```bash
 CONFIG="$(openclaw config file)"
@@ -389,29 +446,29 @@ ls -lt "$CONFIG".rejected.* 2>/dev/null | head
 openclaw config validate
 ```
 
-ยังคงอนุญาตให้เขียนโดยตรงผ่านตัวแก้ไขได้ แต่ Gateway ที่กำลังรันจะถือว่าค่าเหล่านั้นไม่น่าเชื่อถือจนกว่าจะตรวจสอบผ่าน การแก้ไขโดยตรงที่ไม่ถูกต้องอาจถูกกู้คืนจากสำเนาสำรองที่ดีล่าสุดระหว่างการเริ่มต้นระบบหรือ hot reload ดู [การแก้ไขปัญหา Gateway](/th/gateway/troubleshooting#gateway-restored-last-known-good-config)
+ยังอนุญาตให้เขียนโดยตรงผ่าน editor ได้ แต่ Gateway ที่กำลังทำงานจะถือว่าไม่น่าเชื่อถือจนกว่าจะตรวจสอบผ่าน การแก้ไขโดยตรงที่ไม่ถูกต้องสามารถกู้คืนจาก backup last-known-good ระหว่าง startup หรือ hot reload ได้ ดู [การแก้ปัญหา Gateway](/th/gateway/troubleshooting#gateway-restored-last-known-good-config)
 
-การกู้คืนทั้งไฟล์สงวนไว้สำหรับ config ที่เสียหายทั้งระบบ เช่น ข้อผิดพลาดการ parse, ความล้มเหลวของ schema ระดับราก, ความล้มเหลวของ legacy migration หรือความล้มเหลวผสมระหว่าง Plugin และ root หากการตรวจสอบล้มเหลวเฉพาะภายใต้ `plugins.entries.<id>...` OpenClaw จะคง `openclaw.json` ที่กำลังใช้งานไว้และรายงานปัญหาเฉพาะของ Plugin แทนการกู้คืน `.last-good` วิธีนี้ช่วยป้องกันไม่ให้การเปลี่ยนแปลง schema ของ Plugin หรือความไม่ตรงกันของ `minHostVersion` ย้อนคืนการตั้งค่าผู้ใช้ที่ไม่เกี่ยวข้อง เช่น models, providers, auth profiles, channels, การเปิดเผย Gateway, tools, memory, browser หรือ config ของ Cron
+การกู้คืนทั้งไฟล์สงวนไว้สำหรับ config ที่เสียในระดับรวม เช่น parse errors, root-level schema failures, legacy migration failures หรือความล้มเหลวปะปนกันของ plugin และ root หาก validation ล้มเหลวเฉพาะใต้ `plugins.entries.<id>...` OpenClaw จะเก็บ `openclaw.json` ที่ใช้งานอยู่ไว้ตามเดิมและรายงานปัญหาเฉพาะ plugin แทนการกู้คืน `.last-good` วิธีนี้ป้องกันไม่ให้การเปลี่ยนแปลง schema ของ plugin หรือ `minHostVersion` ที่เหลื่อมกัน rollback การตั้งค่าผู้ใช้อื่นที่ไม่เกี่ยวข้อง เช่น models, providers, auth profiles, channels, gateway exposure, tools, memory, browser หรือ cron config
 
 ## คำสั่งย่อย
 
-- `config file`: พิมพ์พาธไฟล์ config ที่กำลังใช้งานอยู่ (resolve จาก `OPENCLAW_CONFIG_PATH` หรือจากตำแหน่งค่าเริ่มต้น) พาธนี้ควรเป็นชื่อของไฟล์ปกติ ไม่ใช่ symlink
+- `config file`: พิมพ์ path ของไฟล์ config ที่ใช้งานอยู่ (resolve จาก `OPENCLAW_CONFIG_PATH` หรือ location เริ่มต้น) path ควรเป็นไฟล์ปกติ ไม่ใช่ symlink
 
-รีสตาร์ต Gateway หลังจากแก้ไข
+Restart gateway หลังการแก้ไข
 
-## ตรวจสอบความถูกต้อง
+## Validate
 
-ตรวจสอบ config ปัจจุบันกับ schema ที่ใช้งานอยู่โดยไม่ต้องเริ่ม Gateway
+Validate config ปัจจุบันกับ schema ที่ใช้งานอยู่โดยไม่เริ่ม gateway
 
 ```bash
 openclaw config validate
 openclaw config validate --json
 ```
 
-หลังจาก `openclaw config validate` ผ่านแล้ว คุณสามารถใช้ TUI ภายในเครื่องเพื่อให้อเอเจนต์แบบฝังตัวเปรียบเทียบ config ที่กำลังใช้งานกับเอกสาร ขณะเดียวกันคุณตรวจสอบแต่ละการเปลี่ยนแปลงจากเทอร์มินัลเดียวกันได้:
+หลังจาก `openclaw config validate` ผ่านแล้ว คุณสามารถใช้ TUI แบบ local เพื่อให้ agent ที่ฝังอยู่เปรียบเทียบ config ที่ใช้งานอยู่กับเอกสาร ขณะที่คุณ validate การเปลี่ยนแปลงแต่ละรายการจาก terminal เดียวกัน:
 
 <Note>
-หากการตรวจสอบล้มเหลวอยู่แล้ว ให้เริ่มจาก `openclaw configure` หรือ `openclaw doctor --fix` `openclaw chat` จะไม่ข้ามตัวป้องกัน config ที่ไม่ถูกต้อง
+หาก validation ล้มเหลวอยู่แล้ว ให้เริ่มด้วย `openclaw configure` หรือ `openclaw doctor --fix` `openclaw chat` ไม่ข้าม invalid-config guard
 </Note>
 
 ```bash
@@ -427,24 +484,24 @@ openclaw chat
 !openclaw doctor
 ```
 
-ลูปการซ่อมแซมทั่วไป:
+loop การซ่อมแซมทั่วไป:
 
 <Steps>
   <Step title="เปรียบเทียบกับเอกสาร">
-    ขอให้เอเจนต์เปรียบเทียบ config ปัจจุบันของคุณกับหน้าเอกสารที่เกี่ยวข้อง และเสนอการแก้ไขที่เล็กที่สุด
+    ขอให้ agent เปรียบเทียบ config ปัจจุบันของคุณกับหน้าเอกสารที่เกี่ยวข้อง และแนะนำการแก้ไขที่เล็กที่สุด
   </Step>
   <Step title="ใช้การแก้ไขแบบเจาะจง">
     ใช้การแก้ไขแบบเจาะจงด้วย `openclaw config set` หรือ `openclaw configure`
   </Step>
-  <Step title="ตรวจสอบใหม่">
-    รัน `openclaw config validate` อีกครั้งหลังจากแต่ละการเปลี่ยนแปลง
+  <Step title="Validate อีกครั้ง">
+    รัน `openclaw config validate` อีกครั้งหลังการเปลี่ยนแปลงแต่ละรายการ
   </Step>
   <Step title="Doctor สำหรับปัญหา runtime">
-    หากการตรวจสอบผ่านแล้วแต่ runtime ยังไม่สมบูรณ์ ให้รัน `openclaw doctor` หรือ `openclaw doctor --fix` เพื่อรับความช่วยเหลือด้านการย้ายข้อมูลและการซ่อมแซม
+    หาก validation ผ่านแต่ runtime ยังไม่ปกติ ให้รัน `openclaw doctor` หรือ `openclaw doctor --fix` เพื่อขอความช่วยเหลือด้าน migration และการซ่อมแซม
   </Step>
 </Steps>
 
 ## ที่เกี่ยวข้อง
 
 - [ข้อมูลอ้างอิง CLI](/th/cli)
-- [Configuration](/th/gateway/configuration)
+- [การกำหนดค่า](/th/gateway/configuration)

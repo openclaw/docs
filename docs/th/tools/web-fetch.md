@@ -1,29 +1,29 @@
 ---
 read_when:
-    - คุณต้องการดึง URL และสกัดเนื้อหาที่อ่านได้
-    - คุณต้องการกำหนดค่า `web_fetch` หรือ Firecrawl fallback ของมัน
-    - คุณต้องการทำความเข้าใจข้อจำกัดและการแคชของ `web_fetch`
+    - คุณต้องการดึงข้อมูลจาก URL และแยกเนื้อหาที่อ่านได้
+    - คุณต้องกำหนดค่า web_fetch หรือ Firecrawl ซึ่งเป็นทางเลือกสำรองของมัน
+    - คุณต้องการทำความเข้าใจขีดจำกัดและการแคชของ web_fetch
 sidebarTitle: Web Fetch
-summary: เครื่องมือ `web_fetch` -- HTTP fetch พร้อมการสกัดเนื้อหาที่อ่านได้
-title: Web fetch
+summary: เครื่องมือ web_fetch -- การดึงข้อมูลผ่าน HTTP พร้อมการแยกเนื้อหาที่อ่านได้
+title: การดึงข้อมูลจากเว็บ
 x-i18n:
-    generated_at: "2026-04-24T09:39:22Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:23:14Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
+    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
     source_path: tools/web-fetch.md
-    workflow: 15
+    workflow: 16
 ---
 
-เครื่องมือ `web_fetch` ทำ HTTP GET แบบปกติและสกัดเนื้อหาที่อ่านได้
-(HTML เป็น markdown หรือข้อความ) โดย **ไม่** รัน JavaScript
+เครื่องมือ `web_fetch` ทำ HTTP GET แบบธรรมดาและแยกเนื้อหาที่อ่านได้
+(HTML เป็น markdown หรือข้อความ) โดยจะ **ไม่** เรียกใช้ JavaScript.
 
-สำหรับเว็บไซต์ที่พึ่งพา JS มากหรือหน้าที่ป้องกันด้วยการล็อกอิน ให้ใช้
-[Web Browser](/th/tools/browser) แทน
+สำหรับไซต์ที่พึ่งพา JS อย่างมากหรือหน้าที่ป้องกันด้วยการเข้าสู่ระบบ ให้ใช้
+[เว็บเบราว์เซอร์](/th/tools/browser) แทน.
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-`web_fetch` **เปิดใช้งานโดยค่าเริ่มต้น** -- ไม่ต้องกำหนดค่าใดๆ เอเจนต์สามารถ
+`web_fetch` **เปิดใช้งานตามค่าเริ่มต้น** -- ไม่ต้องกำหนดค่า Agent สามารถ
 เรียกใช้ได้ทันที:
 
 ```javascript
@@ -33,54 +33,58 @@ await web_fetch({ url: "https://example.com/article" });
 ## พารามิเตอร์ของเครื่องมือ
 
 <ParamField path="url" type="string" required>
-URL ที่จะดึง รองรับเฉพาะ `http(s)`
+URL ที่จะดึงข้อมูล รองรับเฉพาะ `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
-รูปแบบเอาต์พุตหลังการสกัดเนื้อหาหลัก
+รูปแบบผลลัพธ์หลังการแยกเนื้อหาหลัก.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-ตัดเอาต์พุตให้เหลือจำนวนอักขระเท่านี้
+ตัดผลลัพธ์ให้เหลือจำนวนอักขระเท่านี้.
 </ParamField>
 
-## วิธีการทำงาน
+## วิธีทำงาน
 
 <Steps>
   <Step title="ดึงข้อมูล">
-    ส่ง HTTP GET พร้อม User-Agent แบบคล้าย Chrome และส่วนหัว `Accept-Language`
-    บล็อก hostname แบบ private/internal และตรวจสอบ redirects ซ้ำอีกครั้ง
+    ส่ง HTTP GET พร้อม User-Agent แบบ Chrome และส่วนหัว `Accept-Language`.
+    บล็อกชื่อโฮสต์ส่วนตัว/ภายใน และตรวจสอบการเปลี่ยนเส้นทางอีกครั้ง.
   </Step>
-  <Step title="สกัด">
-    รัน Readability (การสกัดเนื้อหาหลัก) กับ HTML response
+  <Step title="แยกเนื้อหา">
+    เรียกใช้ Readability (การแยกเนื้อหาหลัก) กับการตอบกลับ HTML.
   </Step>
   <Step title="Fallback (ไม่บังคับ)">
     หาก Readability ล้มเหลวและมีการกำหนดค่า Firecrawl ไว้ จะลองใหม่ผ่าน
-    Firecrawl API พร้อมโหมดหลบเลี่ยงบอต
+    API ของ Firecrawl ด้วยโหมดหลบเลี่ยงบอต.
   </Step>
   <Step title="แคช">
-    ผลลัพธ์จะถูกแคชไว้ 15 นาที (กำหนดค่าได้) เพื่อลดการดึง
-    URL เดิมซ้ำ
+    ผลลัพธ์จะถูกแคชไว้ 15 นาที (กำหนดค่าได้) เพื่อลดการดึงข้อมูล
+    URL เดิมซ้ำ.
   </Step>
 </Steps>
 
-## Config
+## การกำหนดค่า
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        enabled: true, // ค่าเริ่มต้น: true
-        provider: "firecrawl", // ไม่บังคับ; ละไว้เพื่อให้ตรวจจับอัตโนมัติ
-        maxChars: 50000, // จำนวนอักขระสูงสุดของเอาต์พุต
-        maxCharsCap: 50000, // เพดานสูงสุดแบบบังคับสำหรับพารามิเตอร์ maxChars
-        maxResponseBytes: 2000000, // ขนาดดาวน์โหลดสูงสุดก่อนถูกตัดทอน
+        enabled: true, // default: true
+        provider: "firecrawl", // optional; omit for auto-detect
+        maxChars: 50000, // max output chars
+        maxCharsCap: 50000, // hard cap for maxChars param
+        maxResponseBytes: 2000000, // max download size before truncation
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        readability: true, // ใช้การสกัดด้วย Readability
+        readability: true, // use Readability extraction
         userAgent: "Mozilla/5.0 ...", // override User-Agent
+        ssrfPolicy: {
+          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+        },
       },
     },
   },
@@ -89,15 +93,15 @@ URL ที่จะดึง รองรับเฉพาะ `http(s)`
 
 ## Firecrawl fallback
 
-หากการสกัดด้วย Readability ล้มเหลว `web_fetch` สามารถ fallback ไปใช้
-[Firecrawl](/th/tools/firecrawl) เพื่อหลบเลี่ยงบอตและสกัดข้อมูลได้ดีขึ้น:
+หากการแยกเนื้อหาด้วย Readability ล้มเหลว `web_fetch` สามารถ fallback ไปยัง
+[Firecrawl](/th/tools/firecrawl) เพื่อหลบเลี่ยงบอตและแยกเนื้อหาได้ดีขึ้น:
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // ไม่บังคับ; ละไว้เพื่อให้ตรวจจับอัตโนมัติจากข้อมูลรับรองที่มีอยู่
+        provider: "firecrawl", // optional; omit for auto-detect from available credentials
       },
     },
   },
@@ -107,10 +111,10 @@ URL ที่จะดึง รองรับเฉพาะ `http(s)`
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // ไม่บังคับหากมีการตั้ง FIRECRAWL_API_KEY ไว้
+            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // ระยะเวลาแคช (1 วัน)
+            maxAgeMs: 86400000, // cache duration (1 day)
             timeoutSeconds: 60,
           },
         },
@@ -120,45 +124,49 @@ URL ที่จะดึง รองรับเฉพาะ `http(s)`
 }
 ```
 
-`plugins.entries.firecrawl.config.webFetch.apiKey` รองรับอ็อบเจ็กต์ SecretRef
-config แบบเดิม `tools.web.fetch.firecrawl.*` จะถูกย้ายให้อัตโนมัติโดย `openclaw doctor --fix`
+`plugins.entries.firecrawl.config.webFetch.apiKey` รองรับออบเจ็กต์ SecretRef.
+การกำหนดค่าเดิม `tools.web.fetch.firecrawl.*` จะถูกย้ายโดยอัตโนมัติด้วย `openclaw doctor --fix`.
 
 <Note>
-  หากเปิดใช้ Firecrawl และ SecretRef ของมันยัง resolve ไม่ได้โดยไม่มี
-  env fallback ของ `FIRECRAWL_API_KEY` การเริ่มต้น gateway จะล้มเหลวทันที
+  หากเปิดใช้งาน Firecrawl และ SecretRef ของ Firecrawl ยังแก้ค่าไม่ได้โดยไม่มี
+  env fallback `FIRECRAWL_API_KEY` การเริ่มต้น gateway จะล้มเหลวอย่างรวดเร็ว.
 </Note>
 
 <Note>
   การ override `baseUrl` ของ Firecrawl ถูกจำกัดอย่างเข้มงวด: ต้องใช้ `https://` และ
-  โฮสต์ Firecrawl อย่างเป็นทางการ (`api.firecrawl.dev`) เท่านั้น
+  โฮสต์ Firecrawl อย่างเป็นทางการ (`api.firecrawl.dev`).
 </Note>
 
-พฤติกรรมของ runtime ปัจจุบัน:
+พฤติกรรม runtime ปัจจุบัน:
 
-- `tools.web.fetch.provider` ใช้เลือกผู้ให้บริการ fallback ของการดึงอย่างชัดเจน
-- หากละ `provider` ไว้ OpenClaw จะตรวจจับ web-fetch
-  provider ตัวแรกที่พร้อมใช้งานจากข้อมูลรับรองที่มีอยู่โดยอัตโนมัติ ปัจจุบันผู้ให้บริการแบบ bundled คือ Firecrawl
-- หากปิดใช้ Readability `web_fetch` จะข้ามไปยัง
-  provider fallback ที่เลือกไว้ทันที หากไม่มี provider พร้อมใช้งาน จะล้มเหลวแบบ fail closed
+- `tools.web.fetch.provider` เลือกผู้ให้บริการ fetch fallback อย่างชัดเจน.
+- หากละเว้น `provider` OpenClaw จะตรวจจับผู้ให้บริการ web-fetch รายแรกที่พร้อมใช้งาน
+  จาก credentials ที่มีโดยอัตโนมัติ ปัจจุบันผู้ให้บริการที่มาพร้อมระบบคือ Firecrawl.
+- หากปิดใช้งาน Readability `web_fetch` จะข้ามตรงไปยัง
+  provider fallback ที่เลือก หากไม่มี provider ที่พร้อมใช้งาน จะล้มเหลวแบบปิด.
 
-## ข้อจำกัดและความปลอดภัย
+## ขีดจำกัดและความปลอดภัย
 
-- `maxChars` จะถูกบีบให้อยู่ภายใต้ `tools.web.fetch.maxCharsCap`
-- response body ถูกจำกัดด้วย `maxResponseBytes` ก่อนการ parse; response
-  ที่ใหญ่เกินไปจะถูกตัดทอนพร้อมคำเตือน
-- hostname แบบ private/internal จะถูกบล็อก
-- redirects จะถูกตรวจสอบและจำกัดด้วย `maxRedirects`
-- `web_fetch` เป็นแบบ best-effort -- บางเว็บไซต์ต้องใช้ [Web Browser](/th/tools/browser)
+- `maxChars` จะถูกจำกัดไว้ที่ `tools.web.fetch.maxCharsCap`
+- เนื้อหาการตอบกลับถูกจำกัดที่ `maxResponseBytes` ก่อนแยกวิเคราะห์; การตอบกลับที่ใหญ่เกินไป
+  จะถูกตัดพร้อมคำเตือน
+- ชื่อโฮสต์ส่วนตัว/ภายในจะถูกบล็อก
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` และ
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` เป็น opt-in แบบจำกัด
+  สำหรับสแตกพร็อกซี fake-IP ที่เชื่อถือได้เท่านั้น; เว้นว่างไว้เว้นแต่พร็อกซีของคุณจะเป็นเจ้าของ
+  ช่วงสังเคราะห์เหล่านั้นและบังคับใช้นโยบายปลายทางของตนเอง
+- การเปลี่ยนเส้นทางจะถูกตรวจสอบและจำกัดด้วย `maxRedirects`
+- `web_fetch` เป็นความพยายามให้ดีที่สุด -- บางไซต์ต้องใช้ [เว็บเบราว์เซอร์](/th/tools/browser)
 
 ## โปรไฟล์เครื่องมือ
 
-หากคุณใช้ tool profiles หรือ allowlists ให้เพิ่ม `web_fetch` หรือ `group:web`:
+หากคุณใช้โปรไฟล์เครื่องมือหรือ allowlist ให้เพิ่ม `web_fetch` หรือ `group:web`:
 
 ```json5
 {
   tools: {
     allow: ["web_fetch"],
-    // หรือ: allow: ["group:web"]  (รวม web_fetch, web_search และ x_search)
+    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
   },
 }
 ```
@@ -166,5 +174,5 @@ config แบบเดิม `tools.web.fetch.firecrawl.*` จะถูกย้
 ## ที่เกี่ยวข้อง
 
 - [Web Search](/th/tools/web) -- ค้นหาเว็บด้วยผู้ให้บริการหลายราย
-- [Web Browser](/th/tools/browser) -- ระบบอัตโนมัติของเบราว์เซอร์เต็มรูปแบบสำหรับเว็บไซต์ที่พึ่งพา JS มาก
+- [เว็บเบราว์เซอร์](/th/tools/browser) -- ระบบอัตโนมัติเบราว์เซอร์เต็มรูปแบบสำหรับไซต์ที่พึ่งพา JS อย่างมาก
 - [Firecrawl](/th/tools/firecrawl) -- เครื่องมือค้นหาและ scrape ของ Firecrawl

@@ -1,20 +1,20 @@
 ---
 read_when:
-    - คุณต้องการแสดงรายการเซสชันที่จัดเก็บไว้และดูความเคลื่อนไหวล่าสุด
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw sessions` (แสดงรายการเซสชันที่จัดเก็บไว้และการใช้งาน)
+    - คุณต้องการแสดงรายการเซสชันที่จัดเก็บไว้และดูกิจกรรมล่าสุด
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw sessions` (แสดงรายการเซสชันที่จัดเก็บไว้ + การใช้งาน)
 title: เซสชัน
 x-i18n:
-    generated_at: "2026-04-24T09:04:16Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:44:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
+    source_hash: 9fea2014f538b00a27fa0078391a421843052333c5bcfc8100fced515eed0004
     source_path: cli/sessions.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw sessions`
 
-แสดงรายการเซสชันบทสนทนาที่จัดเก็บไว้
+แสดงรายการเซสชันการสนทนาที่จัดเก็บไว้
 
 ```bash
 openclaw sessions
@@ -27,15 +27,28 @@ openclaw sessions --json
 
 การเลือกขอบเขต:
 
-- ค่าเริ่มต้น: คลังเก็บของ agent เริ่มต้นที่กำหนดไว้
-- `--verbose`: บันทึกแบบละเอียด
-- `--agent <id>`: คลังเก็บของ agent ที่กำหนดไว้หนึ่งรายการ
-- `--all-agents`: รวมทุกคลังเก็บของ agent ที่กำหนดไว้
-- `--store <path>`: path ของคลังเก็บที่ระบุชัดเจน (ห้ามใช้ร่วมกับ `--agent` หรือ `--all-agents`)
+- ค่าเริ่มต้น: ที่เก็บเอเจนต์เริ่มต้นที่กำหนดค่าไว้
+- `--verbose`: การบันทึกรายละเอียดแบบละเอียด
+- `--agent <id>`: ที่เก็บเอเจนต์ที่กำหนดค่าไว้หนึ่งรายการ
+- `--all-agents`: รวมที่เก็บเอเจนต์ที่กำหนดค่าไว้ทั้งหมด
+- `--store <path>`: เส้นทางที่เก็บแบบระบุชัดเจน (ใช้ร่วมกับ `--agent` หรือ `--all-agents` ไม่ได้)
 
-`openclaw sessions --all-agents` จะอ่านคลังเก็บของ agent ที่กำหนดไว้ การค้นหาเซสชันของ Gateway และ ACP
-ครอบคลุมกว้างกว่า: ยังรวมคลังเก็บที่พบบนดิสก์เท่านั้นภายใต้ราก `agents/` เริ่มต้น หรือราก `session.store` ที่เป็น template ด้วย
-คลังเก็บที่ค้นพบเหล่านั้นต้อง resolve ไปยังไฟล์ `sessions.json` แบบไฟล์ปกติภายในรากของ agent; symlink และ paths ที่อยู่นอกรากจะถูกข้าม
+ส่งออกบันเดิล trajectory สำหรับเซสชันที่จัดเก็บไว้:
+
+```bash
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
+```
+
+นี่คือเส้นทางคำสั่งที่คำสั่ง slash `/export-trajectory` ใช้หลังจาก
+เจ้าของอนุมัติคำขอ exec แล้ว ไดเรกทอรีเอาต์พุตจะถูก resolve
+ภายใน `.openclaw/trajectory-exports/` ใต้ workspace ที่เลือกเสมอ
+
+`openclaw sessions --all-agents` อ่านที่เก็บเอเจนต์ที่กำหนดค่าไว้ การค้นพบเซสชันของ Gateway และ ACP
+มีขอบเขตกว้างกว่า: รวมถึงที่เก็บแบบมีเฉพาะบนดิสก์ที่พบใต้
+ราก `agents/` เริ่มต้นหรือราก `session.store` แบบเทมเพลตด้วย ที่เก็บ
+ที่ค้นพบเหล่านั้นต้อง resolve เป็นไฟล์ `sessions.json` ปกติภายใน
+รากของเอเจนต์; symlink และเส้นทางที่อยู่นอกรากจะถูกข้าม
 
 ตัวอย่าง JSON:
 
@@ -58,9 +71,9 @@ openclaw sessions --json
 }
 ```
 
-## การดูแลทำความสะอาด
+## การบำรุงรักษา Cleanup
 
-รันการดูแลรักษาทันที (แทนที่จะรอรอบการเขียนครั้งถัดไป):
+เรียกใช้การบำรุงรักษาตอนนี้ (แทนการรอรอบการเขียนถัดไป):
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -73,17 +86,17 @@ openclaw sessions cleanup --json
 
 `openclaw sessions cleanup` ใช้การตั้งค่า `session.maintenance` จาก config:
 
-- หมายเหตุเรื่องขอบเขต: `openclaw sessions cleanup` ดูแลเฉพาะคลังเก็บเซสชัน/ทรานสคริปต์เท่านั้น ไม่ได้ลบ log การรัน Cron (`cron/runs/<jobId>.jsonl`) ซึ่งจัดการโดย `cron.runLog.maxBytes` และ `cron.runLog.keepLines` ใน [การกำหนดค่า Cron](/th/automation/cron-jobs#configuration) และอธิบายไว้ใน [การดูแล Cron](/th/automation/cron-jobs#maintenance)
+- หมายเหตุเกี่ยวกับขอบเขต: `openclaw sessions cleanup` บำรุงรักษาที่เก็บเซสชัน ทรานสคริปต์ และ sidecar ของ trajectory โดยจะไม่ตัดแต่งบันทึกการรัน Cron (`cron/runs/<jobId>.jsonl`) ซึ่งจัดการโดย `cron.runLog.maxBytes` และ `cron.runLog.keepLines` ใน [การกำหนดค่า Cron](/th/automation/cron-jobs#configuration) และอธิบายไว้ใน [การบำรุงรักษา Cron](/th/automation/cron-jobs#maintenance)
 
-- `--dry-run`: ดูตัวอย่างว่าจะมีรายการใดถูกลบ/จำกัดจำนวนเท่าใดโดยไม่เขียนจริง
-  - ในโหมดข้อความ dry-run จะแสดงตารางการดำเนินการรายเซสชัน (`Action`, `Key`, `Age`, `Model`, `Flags`) เพื่อให้คุณเห็นว่าจะเก็บอะไรไว้และลบอะไร
-- `--enforce`: บังคับใช้การดูแลรักษาแม้ `session.maintenance.mode` จะเป็น `warn`
-- `--fix-missing`: ลบรายการที่ไฟล์ทรานสคริปต์หายไป แม้ว่าตามปกติรายการนั้นจะยังไม่เก่าหรือเกินจำนวนก็ตาม
-- `--active-key <key>`: ปกป้อง active key ที่ระบุไม่ให้ถูกลบออกเพราะข้อจำกัดงบประมาณดิสก์
-- `--agent <id>`: รัน cleanup สำหรับคลังเก็บของ agent ที่กำหนดไว้หนึ่งรายการ
-- `--all-agents`: รัน cleanup สำหรับคลังเก็บของ agent ที่กำหนดไว้ทั้งหมด
-- `--store <path>`: รันกับไฟล์ `sessions.json` ที่ระบุ
-- `--json`: พิมพ์สรุปเป็น JSON เมื่อใช้ `--all-agents` ผลลัพธ์จะรวมสรุปรายคลังเก็บหนึ่งรายการต่อคลังเก็บ
+- `--dry-run`: แสดงตัวอย่างจำนวนรายการที่จะถูกตัดแต่ง/จำกัดโดยไม่เขียนข้อมูล
+  - ในโหมดข้อความ dry-run จะแสดงตารางการดำเนินการต่อเซสชัน (`Action`, `Key`, `Age`, `Model`, `Flags`) เพื่อให้คุณดูได้ว่าอะไรจะถูกเก็บไว้เทียบกับถูกลบออก
+- `--enforce`: ใช้การบำรุงรักษาแม้เมื่อ `session.maintenance.mode` เป็น `warn`
+- `--fix-missing`: ลบรายการที่ไม่มีไฟล์ทรานสคริปต์ แม้ว่าปกติแล้วยังไม่ควรถูกนำออกด้วยอายุ/จำนวนก็ตาม
+- `--active-key <key>`: ปกป้องคีย์ที่ใช้งานอยู่ที่ระบุจากการถูกขับออกด้วยงบดิสก์
+- `--agent <id>`: เรียก cleanup สำหรับที่เก็บเอเจนต์ที่กำหนดค่าไว้หนึ่งรายการ
+- `--all-agents`: เรียก cleanup สำหรับที่เก็บเอเจนต์ที่กำหนดค่าไว้ทั้งหมด
+- `--store <path>`: เรียกกับไฟล์ `sessions.json` ที่ระบุ
+- `--json`: พิมพ์สรุป JSON เมื่อใช้กับ `--all-agents` เอาต์พุตจะรวมสรุปหนึ่งรายการต่อที่เก็บ
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -115,9 +128,9 @@ openclaw sessions cleanup --json
 
 ที่เกี่ยวข้อง:
 
-- Config ของเซสชัน: [เอกสารอ้างอิงการกำหนดค่า](/th/gateway/config-agents#session)
+- Config ของเซสชัน: [ข้อมูลอ้างอิงการกำหนดค่า](/th/gateway/config-agents#session)
 
 ## ที่เกี่ยวข้อง
 
-- [เอกสารอ้างอิง CLI](/th/cli)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
 - [การจัดการเซสชัน](/th/concepts/session)

@@ -2,61 +2,60 @@
 read_when:
     - คุณต้องการใช้ Qwen กับ OpenClaw
     - คุณเคยใช้ Qwen OAuth มาก่อน
-summary: ใช้ Qwen Cloud ผ่าน qwen provider แบบ bundled ของ OpenClaw
+summary: ใช้ Qwen Cloud ผ่านผู้ให้บริการ qwen ที่มาพร้อมกับ OpenClaw
 title: Qwen
 x-i18n:
-    generated_at: "2026-04-24T09:29:27Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:13:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3601722ed12e7e0441ec01e6a9e6b205a39a7ecfb599e16dad3bbfbdbf34ee83
+    source_hash: 898a7ef1f071c838f3bd877632dd06cf0e6112adfa2833895280f99642df56e6
     source_path: providers/qwen.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
 
-**Qwen OAuth ถูกนำออกแล้ว** การผสานรวม OAuth แบบฟรี
-(`qwen-portal`) ที่ใช้ endpoint ของ `portal.qwen.ai` ไม่พร้อมใช้งานอีกต่อไป
+**Qwen OAuth ถูกนำออกแล้ว** การผสานรวม OAuth ระดับฟรี
+(`qwen-portal`) ที่ใช้ปลายทาง `portal.qwen.ai` ไม่พร้อมใช้งานอีกต่อไป
 ดู [Issue #49557](https://github.com/openclaw/openclaw/issues/49557) สำหรับ
-ข้อมูลเบื้องหลัง
+ภูมิหลัง
 
 </Warning>
 
-ตอนนี้ OpenClaw ถือว่า Qwen เป็น provider แบบ bundled ชั้นหนึ่งด้วย canonical id
-`qwen` provider แบบ bundled นี้กำหนดเป้าหมายไปที่ endpoint ของ Qwen Cloud / Alibaba DashScope และ
-Coding Plan และยังคงให้ `modelstudio` id แบบ legacy ใช้งานได้ในฐานะ
-alias เพื่อความเข้ากันได้
+ขณะนี้ OpenClaw ถือว่า Qwen เป็นผู้ให้บริการแบบบันเดิลระดับหลัก โดยมีรหัสมาตรฐาน
+`qwen` ผู้ให้บริการแบบบันเดิลนี้มุ่งไปที่ปลายทาง Qwen Cloud / Alibaba DashScope และ
+Coding Plan และยังคงให้รหัสเดิม `modelstudio` ใช้งานได้ในฐานะนามแฝงเพื่อความเข้ากันได้
 
-- Provider: `qwen`
-- ตัวแปร env ที่แนะนำ: `QWEN_API_KEY`
-- รองรับด้วยเพื่อความเข้ากันได้: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
+- ผู้ให้บริการ: `qwen`
+- ตัวแปรสภาพแวดล้อมที่แนะนำ: `QWEN_API_KEY`
+- ยอมรับเพื่อความเข้ากันได้ด้วย: `MODELSTUDIO_API_KEY`, `DASHSCOPE_API_KEY`
 - รูปแบบ API: เข้ากันได้กับ OpenAI
 
 <Tip>
-หากคุณต้องการ `qwen3.6-plus` ให้เลือกใช้ endpoint แบบ **Standard (pay-as-you-go)**
-เนื่องจากการรองรับ Coding Plan อาจตามหลังแค็ตตาล็อกสาธารณะ
+หากคุณต้องการ `qwen3.6-plus` ให้ใช้ปลายทาง **Standard (pay-as-you-go)** เป็นหลัก
+การรองรับ Coding Plan อาจตามหลังแค็ตตาล็อกสาธารณะ
 </Tip>
 
 ## เริ่มต้นใช้งาน
 
-เลือกรูปแบบแพ็กเกจของคุณแล้วทำตามขั้นตอนการตั้งค่า
+เลือกประเภทแผนของคุณและทำตามขั้นตอนการตั้งค่า
 
 <Tabs>
-  <Tab title="Coding Plan (การสมัครใช้งาน)">
-    **เหมาะสำหรับ:** การเข้าถึงแบบสมัครสมาชิกผ่าน Qwen Coding Plan
+  <Tab title="Coding Plan (การสมัครสมาชิก)">
+    **เหมาะที่สุดสำหรับ:** การเข้าถึงแบบสมัครสมาชิกผ่าน Qwen Coding Plan
 
     <Steps>
-      <Step title="รับ API key ของคุณ">
-        สร้างหรือคัดลอก API key จาก [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys)
+      <Step title="รับคีย์ API ของคุณ">
+        สร้างหรือคัดลอกคีย์ API จาก [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys)
       </Step>
-      <Step title="เรียกใช้ onboarding">
-        สำหรับ endpoint แบบ **Global**:
+      <Step title="เรียกใช้การเริ่มต้นใช้งาน">
+        สำหรับปลายทาง **Global**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key
         ```
 
-        สำหรับ endpoint แบบ **China**:
+        สำหรับปลายทาง **China**:
 
         ```bash
         openclaw onboard --auth-choice qwen-api-key-cn
@@ -81,28 +80,30 @@ alias เพื่อความเข้ากันได้
     </Steps>
 
     <Note>
-    `modelstudio-*` auth-choice id และ `modelstudio/...` model ref แบบ legacy ยังคง
-    ใช้งานได้ในฐานะ alias เพื่อความเข้ากันได้ แต่โฟลว์การตั้งค่าใหม่ควรเลือกใช้
-    `qwen-*` auth-choice id และ `qwen/...` model ref แบบ canonical
+    รหัส auth-choice เดิม `modelstudio-*` และการอ้างอิงโมเดล `modelstudio/...` ยังคง
+    ใช้งานได้ในฐานะนามแฝงเพื่อความเข้ากันได้ แต่โฟลว์การตั้งค่าใหม่ควรใช้รหัส auth-choice
+    มาตรฐาน `qwen-*` และการอ้างอิงโมเดล `qwen/...` เป็นหลัก หากคุณกำหนดรายการ
+    `models.providers.modelstudio` แบบกำหนดเองที่ตรงทั้งหมดพร้อมค่า `api` อื่น
+    ผู้ให้บริการแบบกำหนดเองนั้นจะเป็นเจ้าของการอ้างอิง `modelstudio/...` แทนนามแฝงเพื่อความเข้ากันได้ของ Qwen
     </Note>
 
   </Tab>
 
-  <Tab title="Standard (pay-as-you-go)">
-    **เหมาะสำหรับ:** การเข้าถึงแบบจ่ายตามการใช้งานผ่าน Standard Model Studio endpoint รวมถึงโมเดลอย่าง `qwen3.6-plus` ที่อาจไม่มีใน Coding Plan
+  <Tab title="Standard (จ่ายตามการใช้งาน)">
+    **เหมาะที่สุดสำหรับ:** การเข้าถึงแบบจ่ายตามการใช้งานผ่านปลายทาง Standard Model Studio รวมถึงโมเดลอย่าง `qwen3.6-plus` ที่อาจไม่มีให้ใช้บน Coding Plan
 
     <Steps>
-      <Step title="รับ API key ของคุณ">
-        สร้างหรือคัดลอก API key จาก [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys)
+      <Step title="รับคีย์ API ของคุณ">
+        สร้างหรือคัดลอกคีย์ API จาก [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys)
       </Step>
-      <Step title="เรียกใช้ onboarding">
-        สำหรับ endpoint แบบ **Global**:
+      <Step title="เรียกใช้การเริ่มต้นใช้งาน">
+        สำหรับปลายทาง **Global**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key
         ```
 
-        สำหรับ endpoint แบบ **China**:
+        สำหรับปลายทาง **China**:
 
         ```bash
         openclaw onboard --auth-choice qwen-standard-api-key-cn
@@ -127,64 +128,73 @@ alias เพื่อความเข้ากันได้
     </Steps>
 
     <Note>
-    `modelstudio-*` auth-choice id และ `modelstudio/...` model ref แบบ legacy ยังคง
-    ใช้งานได้ในฐานะ alias เพื่อความเข้ากันได้ แต่โฟลว์การตั้งค่าใหม่ควรเลือกใช้
-    `qwen-*` auth-choice id และ `qwen/...` model ref แบบ canonical
+    รหัส auth-choice เดิม `modelstudio-*` และการอ้างอิงโมเดล `modelstudio/...` ยังคง
+    ใช้งานได้ในฐานะนามแฝงเพื่อความเข้ากันได้ แต่โฟลว์การตั้งค่าใหม่ควรใช้รหัส auth-choice
+    มาตรฐาน `qwen-*` และการอ้างอิงโมเดล `qwen/...` เป็นหลัก หากคุณกำหนดรายการ
+    `models.providers.modelstudio` แบบกำหนดเองที่ตรงทั้งหมดพร้อมค่า `api` อื่น
+    ผู้ให้บริการแบบกำหนดเองนั้นจะเป็นเจ้าของการอ้างอิง `modelstudio/...` แทนนามแฝงเพื่อความเข้ากันได้ของ Qwen
     </Note>
 
   </Tab>
 </Tabs>
 
-## ประเภทแพ็กเกจและ endpoint
+## ประเภทแผนและปลายทาง
 
-| Plan                       | Region | Auth choice                | Endpoint                                         |
+| แผน                       | ภูมิภาค | ตัวเลือกการตรวจสอบสิทธิ์                | ปลายทาง                                         |
 | -------------------------- | ------ | -------------------------- | ------------------------------------------------ |
-| Standard (pay-as-you-go)   | China  | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
-| Standard (pay-as-you-go)   | Global | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan (subscription) | China  | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
-| Coding Plan (subscription) | Global | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
+| Standard (จ่ายตามการใช้งาน)   | China  | `qwen-standard-api-key-cn` | `dashscope.aliyuncs.com/compatible-mode/v1`      |
+| Standard (จ่ายตามการใช้งาน)   | Global | `qwen-standard-api-key`    | `dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| Coding Plan (การสมัครสมาชิก) | China  | `qwen-api-key-cn`          | `coding.dashscope.aliyuncs.com/v1`               |
+| Coding Plan (การสมัครสมาชิก) | Global | `qwen-api-key`             | `coding-intl.dashscope.aliyuncs.com/v1`          |
 
-provider จะเลือก endpoint โดยอัตโนมัติตาม auth choice ของคุณ ตัวเลือกแบบ canonical
-ใช้ตระกูล `qwen-*`; ส่วน `modelstudio-*` คงไว้เพื่อความเข้ากันได้เท่านั้น
-คุณสามารถ override ได้ด้วย `baseUrl` แบบกำหนดเองในคอนฟิก
+ผู้ให้บริการจะเลือกปลายทางโดยอัตโนมัติตามตัวเลือกการตรวจสอบสิทธิ์ของคุณ ตัวเลือกมาตรฐาน
+ใช้ตระกูล `qwen-*`; `modelstudio-*` ยังคงมีไว้เพื่อความเข้ากันได้เท่านั้น
+คุณสามารถแทนที่ด้วย `baseUrl` แบบกำหนดเองในคอนฟิกได้
 
 <Tip>
-**จัดการ key:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
+**จัดการคีย์:** [home.qwencloud.com/api-keys](https://home.qwencloud.com/api-keys) |
 **เอกสาร:** [docs.qwencloud.com](https://docs.qwencloud.com/developer-guides/getting-started/introduction)
 </Tip>
 
 ## แค็ตตาล็อกในตัว
 
-ขณะนี้ OpenClaw มาพร้อมกับแค็ตตาล็อก Qwen แบบ bundled ดังต่อไปนี้ แค็ตตาล็อกที่กำหนดค่าไว้
-รับรู้ endpoint: การกำหนดค่า Coding Plan จะละเว้นโมเดลที่ทราบว่าใช้ได้
-เฉพาะบน Standard endpoint
+ปัจจุบัน OpenClaw จัดส่งแค็ตตาล็อก Qwen แบบบันเดิลนี้ แค็ตตาล็อกที่กำหนดค่าไว้
+รับรู้ปลายทาง: คอนฟิก Coding Plan จะละเว้นโมเดลที่ทราบว่าใช้งานได้เฉพาะบน
+ปลายทาง Standard
 
-| Model ref                   | Input       | Context   | Notes                                              |
+| การอ้างอิงโมเดล                   | อินพุต       | บริบท   | หมายเหตุ                                              |
 | --------------------------- | ----------- | --------- | -------------------------------------------------- |
-| `qwen/qwen3.5-plus`         | text, image | 1,000,000 | โมเดลเริ่มต้น                                      |
-| `qwen/qwen3.6-plus`         | text, image | 1,000,000 | ควรใช้ Standard endpoint เมื่อคุณต้องการโมเดลนี้    |
-| `qwen/qwen3-max-2026-01-23` | text        | 262,144   | สายผลิตภัณฑ์ Qwen Max                             |
-| `qwen/qwen3-coder-next`     | text        | 262,144   | สำหรับโค้ด                                         |
-| `qwen/qwen3-coder-plus`     | text        | 1,000,000 | สำหรับโค้ด                                         |
-| `qwen/MiniMax-M2.5`         | text        | 1,000,000 | เปิดใช้ reasoning                                  |
-| `qwen/glm-5`                | text        | 202,752   | GLM                                                |
-| `qwen/glm-4.7`              | text        | 202,752   | GLM                                                |
-| `qwen/kimi-k2.5`            | text, image | 262,144   | Moonshot AI ผ่าน Alibaba                           |
+| `qwen/qwen3.5-plus`         | ข้อความ, รูปภาพ | 1,000,000 | โมเดลเริ่มต้น                                      |
+| `qwen/qwen3.6-plus`         | ข้อความ, รูปภาพ | 1,000,000 | ใช้ปลายทาง Standard เป็นหลักเมื่อคุณต้องการโมเดลนี้ |
+| `qwen/qwen3-max-2026-01-23` | ข้อความ        | 262,144   | สาย Qwen Max                                      |
+| `qwen/qwen3-coder-next`     | ข้อความ        | 262,144   | การเขียนโค้ด                                             |
+| `qwen/qwen3-coder-plus`     | ข้อความ        | 1,000,000 | การเขียนโค้ด                                             |
+| `qwen/MiniMax-M2.5`         | ข้อความ        | 1,000,000 | เปิดใช้การให้เหตุผล                                  |
+| `qwen/glm-5`                | ข้อความ        | 202,752   | GLM                                                |
+| `qwen/glm-4.7`              | ข้อความ        | 202,752   | GLM                                                |
+| `qwen/kimi-k2.5`            | ข้อความ, รูปภาพ | 262,144   | Moonshot AI ผ่าน Alibaba                            |
 
 <Note>
-ความพร้อมใช้งานยังอาจแตกต่างกันตาม endpoint และแพ็กเกจการเรียกเก็บเงิน แม้ว่าโมเดลนั้น
-จะมีอยู่ในแค็ตตาล็อกแบบ bundled ก็ตาม
+ความพร้อมใช้งานยังอาจแตกต่างกันตามปลายทางและแผนการเรียกเก็บเงิน แม้ว่าโมเดลจะ
+มีอยู่ในแค็ตตาล็อกแบบบันเดิลก็ตาม
 </Note>
 
-## ส่วนเสริมแบบหลายสื่อ
+## การควบคุมการคิด
 
-plugin `qwen` ยังเปิดเผยความสามารถแบบหลายสื่อบน endpoint DashScope แบบ **Standard**
-(ไม่ใช่ endpoint ของ Coding Plan):
+สำหรับโมเดล Qwen Cloud ที่เปิดใช้การให้เหตุผล ผู้ให้บริการแบบบันเดิลจะจับคู่ระดับ
+การคิดของ OpenClaw กับแฟล็กคำขอระดับบนสุด `enable_thinking` ของ DashScope การปิดใช้
+การคิดจะส่ง `enable_thinking: false`; ระดับการคิดอื่นจะส่ง
+`enable_thinking: true`
 
-- **ความเข้าใจวิดีโอ** ผ่าน `qwen-vl-max-latest`
+## ส่วนเสริมมัลติโหมด
+
+Plugin `qwen` ยังเปิดเผยความสามารถมัลติโหมดบนปลายทาง DashScope **Standard**
+ด้วย (ไม่ใช่ปลายทาง Coding Plan):
+
+- **การทำความเข้าใจวิดีโอ** ผ่าน `qwen-vl-max-latest`
 - **การสร้างวิดีโอ Wan** ผ่าน `wan2.6-t2v` (ค่าเริ่มต้น), `wan2.6-i2v`, `wan2.6-r2v`, `wan2.6-r2v-flash`, `wan2.7-r2v`
 
-หากต้องการใช้ Qwen เป็น provider วิดีโอเริ่มต้น:
+หากต้องการใช้ Qwen เป็นผู้ให้บริการวิดีโอเริ่มต้น:
 
 ```json5
 {
@@ -197,86 +207,92 @@ plugin `qwen` ยังเปิดเผยความสามารถแบ
 ```
 
 <Note>
-ดู [การสร้างวิดีโอ](/th/tools/video-generation) สำหรับพารามิเตอร์ของเครื่องมือที่ใช้ร่วมกัน การเลือก provider และพฤติกรรม failover
+ดู [การสร้างวิดีโอ](/th/tools/video-generation) สำหรับพารามิเตอร์เครื่องมือร่วม การเลือกผู้ให้บริการ และพฤติกรรมการสลับเมื่อเกิดความล้มเหลว
 </Note>
 
 ## การกำหนดค่าขั้นสูง
 
 <AccordionGroup>
-  <Accordion title="ความเข้าใจภาพและวิดีโอ">
-    bundled Qwen plugin จะลงทะเบียนความเข้าใจสื่อสำหรับภาพและวิดีโอ
-    บน endpoint DashScope แบบ **Standard** (ไม่ใช่ endpoint ของ Coding Plan)
+  <Accordion title="การทำความเข้าใจรูปภาพและวิดีโอ">
+    Plugin Qwen แบบบันเดิลลงทะเบียนการทำความเข้าใจสื่อสำหรับรูปภาพและวิดีโอ
+    บนปลายทาง DashScope **Standard** (ไม่ใช่ปลายทาง Coding Plan)
 
-    | Property      | Value                 |
+    | คุณสมบัติ      | ค่า                 |
     | ------------- | --------------------- |
-    | Model         | `qwen-vl-max-latest`  |
-    | อินพุตที่รองรับ | Images, video       |
+    | โมเดล         | `qwen-vl-max-latest`  |
+    | อินพุตที่รองรับ | รูปภาพ, วิดีโอ       |
 
-    ความเข้าใจสื่อจะ resolve อัตโนมัติจาก auth Qwen ที่กำหนดค่าไว้ — ไม่
-    ต้องมีคอนฟิกเพิ่มเติม โปรดตรวจสอบให้แน่ใจว่าคุณใช้
-    endpoint แบบ Standard (pay-as-you-go) เพื่อรองรับ media understanding
+    การทำความเข้าใจสื่อจะถูกแก้ไขโดยอัตโนมัติจากการตรวจสอบสิทธิ์ Qwen ที่กำหนดค่าไว้ โดยไม่
+    ต้องมีคอนฟิกเพิ่มเติม ตรวจสอบให้แน่ใจว่าคุณใช้ปลายทาง Standard (จ่ายตามการใช้งาน)
+    สำหรับการรองรับการทำความเข้าใจสื่อ
 
   </Accordion>
 
   <Accordion title="ความพร้อมใช้งานของ Qwen 3.6 Plus">
-    `qwen3.6-plus` พร้อมใช้งานบน endpoint Model Studio แบบ Standard (pay-as-you-go):
+    `qwen3.6-plus` พร้อมใช้งานบนปลายทาง Standard (จ่ายตามการใช้งาน) Model Studio:
 
     - China: `dashscope.aliyuncs.com/compatible-mode/v1`
     - Global: `dashscope-intl.aliyuncs.com/compatible-mode/v1`
 
-    หาก endpoint ของ Coding Plan ส่งคืนข้อผิดพลาด "unsupported model" สำหรับ
-    `qwen3.6-plus` ให้สลับไปใช้ Standard (pay-as-you-go) แทนคู่
-    endpoint/key ของ Coding Plan
+    หากปลายทาง Coding Plan ส่งคืนข้อผิดพลาด "unsupported model" สำหรับ
+    `qwen3.6-plus` ให้เปลี่ยนไปใช้ Standard (จ่ายตามการใช้งาน) แทนคู่ปลายทาง/คีย์
+    ของ Coding Plan
+
+    แค็ตตาล็อก Qwen แบบบันเดิลของ OpenClaw ไม่ประกาศ `qwen3.6-plus` บนปลายทาง Coding
+    Plan แต่รายการ `qwen/qwen3.6-plus` ที่กำหนดค่าไว้อย่างชัดเจนภายใต้
+    `models.providers.qwen.models` จะได้รับการเคารพบน baseUrl ของ Coding Plan เพื่อให้คุณ
+    เลือกใช้โมเดลนั้นได้หาก Aliyun เปิดใช้งานให้กับการสมัครสมาชิกของคุณ
+    API ต้นทางยังคงเป็นผู้ตัดสินใจว่าการเรียกจะสำเร็จหรือไม่
 
   </Accordion>
 
   <Accordion title="แผนความสามารถ">
-    plugin `qwen` กำลังถูกวางตำแหน่งให้เป็นที่รวมของผู้จำหน่ายสำหรับพื้นผิว Qwen
-    Cloud แบบเต็ม ไม่ใช่เฉพาะโมเดลสำหรับโค้ด/ข้อความเท่านั้น
+    Plugin `qwen` กำลังถูกวางตำแหน่งให้เป็นบ้านของผู้จำหน่ายสำหรับพื้นผิว Qwen
+    Cloud ทั้งหมด ไม่ใช่แค่โมเดลการเขียนโค้ด/ข้อความ
 
-    - **โมเดลข้อความ/แชต:** bundled แล้วตอนนี้
-    - **การเรียกเครื่องมือ, structured output, thinking:** รับสืบทอดจาก transport ที่เข้ากันได้กับ OpenAI
-    - **การสร้างภาพ:** วางแผนไว้ที่ชั้น provider-plugin
-    - **ความเข้าใจภาพ/วิดีโอ:** bundled แล้วตอนนี้บน Standard endpoint
-    - **เสียงพูด/เสียง:** วางแผนไว้ที่ชั้น provider-plugin
-    - **Memory embeddings/reranking:** วางแผนผ่านพื้นผิว embedding adapter
-    - **การสร้างวิดีโอ:** bundled แล้วตอนนี้ผ่านความสามารถ video-generation ที่ใช้ร่วมกัน
+    - **โมเดลข้อความ/แชต:** บันเดิลแล้วในขณะนี้
+    - **การเรียกเครื่องมือ, เอาต์พุตแบบมีโครงสร้าง, การคิด:** สืบทอดจากทรานสปอร์ตที่เข้ากันได้กับ OpenAI
+    - **การสร้างรูปภาพ:** วางแผนไว้ที่เลเยอร์ provider-plugin
+    - **การทำความเข้าใจรูปภาพ/วิดีโอ:** บันเดิลแล้วในขณะนี้บนปลายทาง Standard
+    - **เสียงพูด/เสียง:** วางแผนไว้ที่เลเยอร์ provider-plugin
+    - **การฝัง/การจัดอันดับใหม่ของหน่วยความจำ:** วางแผนผ่านพื้นผิวอะแดปเตอร์ embedding
+    - **การสร้างวิดีโอ:** บันเดิลแล้วในขณะนี้ผ่านความสามารถการสร้างวิดีโอร่วม
 
   </Accordion>
 
   <Accordion title="รายละเอียดการสร้างวิดีโอ">
-    สำหรับการสร้างวิดีโอ OpenClaw จะแมปภูมิภาค Qwen ที่กำหนดค่าไว้ไปยังโฮสต์
+    สำหรับการสร้างวิดีโอ OpenClaw จะจับคู่ภูมิภาค Qwen ที่กำหนดค่าไว้กับโฮสต์
     DashScope AIGC ที่ตรงกันก่อนส่งงาน:
 
     - Global/Intl: `https://dashscope-intl.aliyuncs.com`
     - China: `https://dashscope.aliyuncs.com`
 
     ซึ่งหมายความว่า `models.providers.qwen.baseUrl` ปกติที่ชี้ไปยังโฮสต์ Qwen
-    แบบ Coding Plan หรือ Standard ก็ยังคงทำให้การสร้างวิดีโอใช้ endpoint วิดีโอ DashScope ตามภูมิภาค
-    ที่ถูกต้องได้
+    ของ Coding Plan หรือ Standard ยังคงทำให้การสร้างวิดีโออยู่บนปลายทางวิดีโอ DashScope
+    ประจำภูมิภาคที่ถูกต้อง
 
-    ข้อจำกัดการสร้างวิดีโอของ Qwen แบบ bundled ในปัจจุบัน:
+    ขีดจำกัดการสร้างวิดีโอ Qwen แบบบันเดิลในปัจจุบัน:
 
-    - ได้สูงสุด **1** วิดีโอผลลัพธ์ต่อคำขอ
-    - ได้สูงสุด **1** ภาพอินพุต
-    - ได้สูงสุด **4** วิดีโออินพุต
-    - ระยะเวลาได้สูงสุด **10 วินาที**
+    - วิดีโอเอาต์พุตสูงสุด **1** รายการต่อคำขอ
+    - รูปภาพอินพุตสูงสุด **1** รายการ
+    - วิดีโออินพุตสูงสุด **4** รายการ
+    - ระยะเวลาสูงสุด **10 วินาที**
     - รองรับ `size`, `aspectRatio`, `resolution`, `audio` และ `watermark`
-    - โหมดภาพ/วิดีโออ้างอิงในปัจจุบันต้องใช้ **URL แบบ remote http(s)** เท่านั้น
-      ระบบจะปฏิเสธพาธไฟล์ในเครื่องล่วงหน้า เนื่องจาก endpoint วิดีโอของ DashScope ไม่
-      รองรับการอัปโหลด local buffer สำหรับข้อมูลอ้างอิงเหล่านั้น
+    - โหมดรูปภาพ/วิดีโออ้างอิงในขณะนี้ต้องใช้ **URL http(s) ระยะไกล** พาธ
+      ไฟล์ภายในเครื่องจะถูกปฏิเสธตั้งแต่ต้น เพราะปลายทางวิดีโอ DashScope ไม่
+      รับบัฟเฟอร์ภายในเครื่องที่อัปโหลดสำหรับการอ้างอิงเหล่านั้น
 
   </Accordion>
 
   <Accordion title="ความเข้ากันได้ของการใช้งานแบบสตรีมมิง">
-    endpoint Model Studio แบบเนทีฟประกาศความเข้ากันได้ของการใช้งานสตรีมมิงบน
-    transport `openai-completions` ที่ใช้ร่วมกัน ตอนนี้ OpenClaw พิจารณาจาก
-    ความสามารถของ endpoint ดังนั้น custom provider id ที่เข้ากันได้กับ DashScope และชี้ไปยัง
-    โฮสต์เนทีฟเดียวกันจะรับพฤติกรรม streaming-usage แบบเดียวกัน แทนที่จะ
-    ต้องใช้ provider id `qwen` แบบในตัวโดยเฉพาะ
+    ปลายทาง Model Studio แบบเนทีฟประกาศความเข้ากันได้ของการใช้งานแบบสตรีมมิงบน
+    ทรานสปอร์ตร่วม `openai-completions` ขณะนี้ OpenClaw อ้างอิงจากความสามารถของปลายทาง
+    ดังนั้นรหัสผู้ให้บริการแบบกำหนดเองที่เข้ากันได้กับ DashScope ซึ่งมุ่งไปยังโฮสต์เนทีฟ
+    เดียวกันจะสืบทอดพฤติกรรมการใช้งานแบบสตรีมมิงเดียวกัน แทนที่จะต้องใช้รหัสผู้ให้บริการ `qwen`
+    ในตัวโดยเฉพาะ
 
-    ความเข้ากันได้ของ native-streaming usage ใช้กับทั้งโฮสต์ Coding Plan และ
-    โฮสต์ Standard แบบเข้ากันได้กับ DashScope:
+    ความเข้ากันได้ของการใช้งานแบบสตรีมมิงเนทีฟใช้กับทั้งโฮสต์ Coding Plan และ
+    โฮสต์ที่เข้ากันได้กับ Standard DashScope:
 
     - `https://coding.dashscope.aliyuncs.com/v1`
     - `https://coding-intl.dashscope.aliyuncs.com/v1`
@@ -285,18 +301,18 @@ plugin `qwen` ยังเปิดเผยความสามารถแบ
 
   </Accordion>
 
-  <Accordion title="ภูมิภาคของ endpoint แบบหลายสื่อ">
-    พื้นผิวแบบหลายสื่อ (ความเข้าใจวิดีโอและการสร้างวิดีโอ Wan) ใช้
-    endpoint DashScope แบบ **Standard** ไม่ใช่ endpoint ของ Coding Plan:
+  <Accordion title="ภูมิภาคปลายทางมัลติโหมด">
+    พื้นผิวมัลติโหมด (การทำความเข้าใจวิดีโอและการสร้างวิดีโอ Wan) ใช้ปลายทาง DashScope
+    **Standard** ไม่ใช่ปลายทาง Coding Plan:
 
-    - Global/Intl Standard base URL: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
-    - China Standard base URL: `https://dashscope.aliyuncs.com/compatible-mode/v1`
+    - URL ฐาน Standard ของ Global/Intl: `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`
+    - URL ฐาน Standard ของ China: `https://dashscope.aliyuncs.com/compatible-mode/v1`
 
   </Accordion>
 
-  <Accordion title="การตั้งค่า environment และ daemon">
-    หาก Gateway ทำงานเป็น daemon (launchd/systemd) โปรดตรวจสอบให้แน่ใจว่า `QWEN_API_KEY` ถูก
-    ส่งให้ process นั้นด้วย (เช่น ใน `~/.openclaw/.env` หรือผ่าน
+  <Accordion title="การตั้งค่าสภาพแวดล้อมและดีมอน">
+    หาก Gateway ทำงานเป็นดีมอน (launchd/systemd) ตรวจสอบให้แน่ใจว่า `QWEN_API_KEY`
+    พร้อมใช้งานสำหรับกระบวนการนั้น (เช่น ใน `~/.openclaw/.env` หรือผ่าน
     `env.shellEnv`)
   </Accordion>
 </AccordionGroup>
@@ -305,13 +321,13 @@ plugin `qwen` ยังเปิดเผยความสามารถแบ
 
 <CardGroup cols={2}>
   <Card title="การเลือกโมเดล" href="/th/concepts/model-providers" icon="layers">
-    การเลือก provider, model ref และพฤติกรรม failover
+    การเลือกผู้ให้บริการ การอ้างอิงโมเดล และพฤติกรรมการสลับไปใช้ตัวสำรอง
   </Card>
   <Card title="การสร้างวิดีโอ" href="/th/tools/video-generation" icon="video">
-    พารามิเตอร์ของเครื่องมือวิดีโอที่ใช้ร่วมกันและการเลือก provider
+    พารามิเตอร์เครื่องมือวิดีโอที่ใช้ร่วมกันและการเลือกผู้ให้บริการ
   </Card>
   <Card title="Alibaba (ModelStudio)" href="/th/providers/alibaba" icon="cloud">
-    provider ModelStudio แบบ legacy และหมายเหตุการย้ายระบบ
+    ผู้ให้บริการ ModelStudio แบบเดิมและหมายเหตุการย้ายข้อมูล
   </Card>
   <Card title="การแก้ไขปัญหา" href="/th/help/troubleshooting" icon="wrench">
     การแก้ไขปัญหาทั่วไปและคำถามที่พบบ่อย
