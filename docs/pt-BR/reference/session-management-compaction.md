@@ -1,43 +1,43 @@
 ---
 read_when:
-    - Você precisa depurar IDs de sessão, JSONL de transcrições ou campos de sessions.json
-    - Você está alterando o comportamento de Compaction automática ou adicionando tarefas de manutenção “pré-Compaction”
+    - Você precisa depurar IDs de sessão, JSONL de transcrição ou campos de sessions.json
+    - Você está alterando o comportamento de compactação automática ou adicionando manutenção “pré-compactação”
     - Você quer implementar limpezas de memória ou turnos silenciosos do sistema
-summary: 'Análise aprofundada: armazenamento de sessões + transcrições, ciclo de vida e detalhes internos de (auto)Compaction'
-title: Análise aprofundada do gerenciamento de sessões
+summary: 'Aprofundamento: armazenamento de sessões + transcrições, ciclo de vida e funcionamento interno de (auto)Compaction'
+title: Aprofundamento no gerenciamento de sessões
 x-i18n:
-    generated_at: "2026-04-30T10:07:46Z"
+    generated_at: "2026-04-30T16:30:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1e9785723ebf9b5411440a8f3b2885a50d659f669811ba749c431a2b3aeed700
+    source_hash: 5a6a7031cebd90d27784a32a0d0378ea9959249389d209f0745395f90b8a0df9
     source_path: reference/session-management-compaction.md
     workflow: 16
 ---
 
 OpenClaw gerencia sessões de ponta a ponta nestas áreas:
 
-- **Roteamento de sessão** (como mensagens recebidas são mapeadas para um `sessionKey`)
+- **Roteamento de sessão** (como mensagens recebidas são mapeadas para uma `sessionKey`)
 - **Armazenamento de sessão** (`sessions.json`) e o que ele rastreia
-- **Persistência de transcrição** (`*.jsonl`) e sua estrutura
-- **Higiene de transcrição** (ajustes específicos de provedor antes das execuções)
-- **Limites de contexto** (janela de contexto versus tokens rastreados)
-- **Compaction** (manual e autocompactação) e onde conectar trabalho pré-Compaction
+- **Persistência de transcritos** (`*.jsonl`) e sua estrutura
+- **Higiene de transcritos** (correções específicas de provedor antes das execuções)
+- **Limites de contexto** (janela de contexto vs tokens rastreados)
+- **Compaction** (manual e auto-compaction) e onde conectar trabalho pré-compaction
 - **Manutenção silenciosa** (gravações de memória que não devem produzir saída visível ao usuário)
 
-Se você quiser uma visão geral de nível mais alto primeiro, comece por:
+Se quiser primeiro uma visão geral de nível mais alto, comece com:
 
 - [Gerenciamento de sessão](/pt-BR/concepts/session)
 - [Compaction](/pt-BR/concepts/compaction)
 - [Visão geral de memória](/pt-BR/concepts/memory)
 - [Busca de memória](/pt-BR/concepts/memory-search)
 - [Poda de sessão](/pt-BR/concepts/session-pruning)
-- [Higiene de transcrição](/pt-BR/reference/transcript-hygiene)
+- [Higiene de transcritos](/pt-BR/reference/transcript-hygiene)
 
 ---
 
 ## Fonte da verdade: o Gateway
 
-OpenClaw é projetado em torno de um único **processo Gateway** que possui o estado da sessão.
+O OpenClaw foi projetado em torno de um único **processo Gateway** que é dono do estado de sessão.
 
 - UIs (app macOS, Control UI web, TUI) devem consultar o Gateway para listas de sessões e contagens de tokens.
 - No modo remoto, os arquivos de sessão ficam no host remoto; “verificar seus arquivos locais do Mac” não refletirá o que o Gateway está usando.
@@ -46,59 +46,59 @@ OpenClaw é projetado em torno de um único **processo Gateway** que possui o es
 
 ## Duas camadas de persistência
 
-OpenClaw persiste sessões em duas camadas:
+O OpenClaw persiste sessões em duas camadas:
 
 1. **Armazenamento de sessão (`sessions.json`)**
    - Mapa chave/valor: `sessionKey -> SessionEntry`
-   - Pequeno, mutável, seguro de editar (ou excluir entradas)
+   - Pequeno, mutável, seguro para editar (ou excluir entradas)
    - Rastreia metadados de sessão (id da sessão atual, última atividade, alternâncias, contadores de tokens etc.)
 
-2. **Transcrição (`<sessionId>.jsonl`)**
-   - Transcrição somente anexável com estrutura em árvore (entradas têm `id` + `parentId`)
-   - Armazena a conversa real + chamadas de ferramentas + resumos de Compaction
-   - Usada para reconstruir o contexto do modelo para turnos futuros
-   - Grandes checkpoints de depuração pré-Compaction são ignorados quando a transcrição
-     ativa excede o limite de tamanho de checkpoint, evitando uma segunda cópia gigante
+2. **Transcrito (`<sessionId>.jsonl`)**
+   - Transcrito somente anexável com estrutura em árvore (entradas têm `id` + `parentId`)
+   - Armazena a conversa real + chamadas de ferramenta + resumos de Compaction
+   - Usado para reconstruir o contexto do modelo em turnos futuros
+   - Grandes checkpoints de depuração pré-Compaction são ignorados quando o transcrito
+     ativo excede o limite de tamanho de checkpoint, evitando uma segunda cópia gigante
      `.checkpoint.*.jsonl`.
 
 ---
 
 ## Locais em disco
 
-Por agente, no host do Gateway:
+Por agente, no host Gateway:
 
 - Armazenamento: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- Transcrições: `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
+- Transcritos: `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
   - Sessões de tópico do Telegram: `.../<sessionId>-topic-<threadId>.jsonl`
 
-OpenClaw resolve isso via `src/config/sessions.ts`.
+O OpenClaw resolve isso via `src/config/sessions.ts`.
 
 ---
 
 ## Manutenção do armazenamento e controles de disco
 
-A persistência de sessão tem controles automáticos de manutenção (`session.maintenance`) para `sessions.json`, artefatos de transcrição e arquivos auxiliares de trajetória:
+A persistência de sessão tem controles automáticos de manutenção (`session.maintenance`) para `sessions.json`, artefatos de transcrito e sidecars de trajetória:
 
 - `mode`: `warn` (padrão) ou `enforce`
-- `pruneAfter`: limite de idade para entradas obsoletas (padrão `30d`)
+- `pruneAfter`: corte de idade de entrada obsoleta (padrão `30d`)
 - `maxEntries`: limita entradas em `sessions.json` (padrão `500`)
-- `resetArchiveRetention`: retenção para arquivos de transcrição `*.reset.<timestamp>` (padrão: igual a `pruneAfter`; `false` desabilita a limpeza)
+- `resetArchiveRetention`: retenção para arquivos de transcrito `*.reset.<timestamp>` (padrão: igual a `pruneAfter`; `false` desativa a limpeza)
 - `maxDiskBytes`: orçamento opcional do diretório de sessões
 - `highWaterBytes`: alvo opcional após a limpeza (padrão `80%` de `maxDiskBytes`)
 
-Gravações normais do Gateway agrupam a limpeza de `maxEntries` para limites de tamanho de produção, então um armazenamento pode exceder brevemente o limite configurado antes que a próxima limpeza de marca d’água alta o regrave de volta para baixo. `openclaw sessions cleanup --enforce` ainda aplica o limite configurado imediatamente.
+Gravações normais do Gateway agrupam a limpeza de `maxEntries` para limites de tamanho de produção, então um armazenamento pode exceder brevemente o limite configurado antes que a próxima limpeza de marca alta o regrave para baixo. `openclaw sessions cleanup --enforce` ainda aplica o limite configurado imediatamente.
 
-OpenClaw não cria mais backups automáticos de rotação `sessions.json.bak.*` durante gravações do Gateway. A chave legada `session.maintenance.rotateBytes` é ignorada, e `openclaw doctor --fix` a remove de configurações antigas.
+O OpenClaw não cria mais backups automáticos de rotação `sessions.json.bak.*` durante gravações do Gateway. A chave legada `session.maintenance.rotateBytes` é ignorada e `openclaw doctor --fix` a remove de configurações antigas.
 
 Ordem de aplicação para limpeza de orçamento de disco (`mode: "enforce"`):
 
-1. Remova primeiro os artefatos arquivados mais antigos, transcrições órfãs ou trajetórias órfãs.
-2. Se ainda estiver acima do alvo, remova as entradas de sessão mais antigas e seus arquivos de transcrição/trajetória.
+1. Remova primeiro os artefatos arquivados mais antigos, transcritos órfãos ou trajetórias órfãs.
+2. Se ainda estiver acima do alvo, expulse as entradas de sessão mais antigas e seus arquivos de transcrito/trajetória.
 3. Continue até que o uso esteja em ou abaixo de `highWaterBytes`.
 
-Em `mode: "warn"`, OpenClaw relata possíveis remoções, mas não modifica o armazenamento/arquivos.
+Em `mode: "warn"`, o OpenClaw relata possíveis expulsões, mas não altera o armazenamento/arquivos.
 
-Execute manutenção sob demanda:
+Execute a manutenção sob demanda:
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -109,24 +109,24 @@ openclaw sessions cleanup --enforce
 
 ## Sessões Cron e logs de execução
 
-Execuções Cron isoladas também criam entradas de sessão/transcrições, e elas têm controles de retenção dedicados:
+Execuções cron isoladas também criam entradas/transcritos de sessão, e elas têm controles dedicados de retenção:
 
-- `cron.sessionRetention` (padrão `24h`) remove sessões antigas de execução Cron isolada do armazenamento de sessões (`false` desabilita).
-- `cron.runLog.maxBytes` + `cron.runLog.keepLines` podam arquivos `~/.openclaw/cron/runs/<jobId>.jsonl` (padrões: `2_000_000` bytes e `2000` linhas).
+- `cron.sessionRetention` (padrão `24h`) remove sessões antigas de execução cron isolada do armazenamento de sessão (`false` desativa).
+- `cron.runLog.maxBytes` + `cron.runLog.keepLines` removem arquivos `~/.openclaw/cron/runs/<jobId>.jsonl` (padrões: `2_000_000` bytes e `2000` linhas).
 
-Quando o Cron força a criação de uma nova sessão de execução isolada, ele sanitiza a entrada de sessão
-`cron:<jobId>` anterior antes de gravar a nova linha. Ele carrega preferências seguras
-como configurações de pensamento/rápido/detalhado, rótulos e substituições explícitas
-de modelo/autenticação selecionadas pelo usuário. Ele descarta contexto ambiente de conversa, como
-roteamento de canal/grupo, política de envio ou fila, elevação, origem e vínculo de runtime
-ACP, para que uma nova execução isolada não possa herdar entrega obsoleta ou
-autoridade de runtime de uma execução mais antiga.
+Quando o cron força a criação de uma nova sessão de execução isolada, ele sanitiza a entrada de sessão
+`cron:<jobId>` anterior antes de gravar a nova linha. Ele carrega preferências
+seguras, como configurações de thinking/fast/verbose, rótulos e substituições explícitas
+de modelo/autenticação selecionadas pelo usuário. Ele descarta contexto de conversa ambiente,
+como roteamento de canal/grupo, política de envio ou fila, elevação, origem e vínculo de runtime
+ACP, para que uma nova execução isolada não possa herdar autoridade obsoleta de entrega ou
+runtime de uma execução antiga.
 
 ---
 
 ## Chaves de sessão (`sessionKey`)
 
-Um `sessionKey` identifica _em qual compartimento de conversa_ você está (roteamento + isolamento).
+Uma `sessionKey` identifica _em qual balde de conversa_ você está (roteamento + isolamento).
 
 Padrões comuns:
 
@@ -134,7 +134,7 @@ Padrões comuns:
 - Grupo: `agent:<agentId>:<channel>:group:<id>`
 - Sala/canal (Discord/Slack): `agent:<agentId>:<channel>:channel:<id>` ou `...:room:<id>`
 - Cron: `cron:<job.id>`
-- Webhook: `hook:<uuid>` (a menos que substituído)
+- Webhook: `hook:<uuid>` (a menos que seja substituído)
 
 As regras canônicas estão documentadas em [/concepts/session](/pt-BR/concepts/session).
 
@@ -142,15 +142,15 @@ As regras canônicas estão documentadas em [/concepts/session](/pt-BR/concepts/
 
 ## IDs de sessão (`sessionId`)
 
-Cada `sessionKey` aponta para um `sessionId` atual (o arquivo de transcrição que continua a conversa).
+Cada `sessionKey` aponta para uma `sessionId` atual (o arquivo de transcrito que continua a conversa).
 
-Regras práticas:
+Regras gerais:
 
-- **Reset** (`/new`, `/reset`) cria um novo `sessionId` para esse `sessionKey`.
-- **Reset diário** (padrão 4:00 AM no horário local do host do gateway) cria um novo `sessionId` na próxima mensagem após o limite de reset.
-- **Expiração por inatividade** (`session.reset.idleMinutes` ou legado `session.idleMinutes`) cria um novo `sessionId` quando uma mensagem chega após a janela de inatividade. Quando diário + inatividade estão configurados, vence o que expirar primeiro.
-- **Eventos do sistema** (Heartbeat, despertares Cron, notificações de exec, escrituração do gateway) podem modificar a linha da sessão, mas não estendem a validade do reset diário/por inatividade. A rolagem de reset descarta avisos de evento do sistema enfileirados para a sessão anterior antes que o prompt novo seja criado.
-- **Proteção contra fork do pai da thread** (`session.parentForkMaxTokens`, padrão `100000`) ignora o fork da transcrição pai quando a sessão pai já está grande demais; a nova thread começa limpa. Defina `0` para desabilitar.
+- **Redefinição** (`/new`, `/reset`) cria uma nova `sessionId` para essa `sessionKey`.
+- **Redefinição diária** (padrão 4:00 AM no horário local do host gateway) cria uma nova `sessionId` na próxima mensagem após o limite de redefinição.
+- **Expiração por inatividade** (`session.reset.idleMinutes` ou legado `session.idleMinutes`) cria uma nova `sessionId` quando uma mensagem chega após a janela de inatividade. Quando diária + inatividade estão configuradas, vence o que expirar primeiro.
+- **Eventos do sistema** (Heartbeat, despertares cron, notificações exec, contabilidade do gateway) podem alterar a linha da sessão, mas não estendem a atualização de redefinição diária/por inatividade. A troca de redefinição descarta avisos de eventos do sistema enfileirados para a sessão anterior antes que o novo prompt seja construído.
+- **Guarda de bifurcação de pai de thread** (`session.parentForkMaxTokens`, padrão `100000`) ignora a bifurcação do transcrito pai quando a sessão pai já está grande demais; a nova thread começa do zero. Defina `0` para desativar.
 
 Detalhe de implementação: a decisão acontece em `initSessionState()` em `src/auto-reply/reply/session.ts`.
 
@@ -162,16 +162,16 @@ O tipo de valor do armazenamento é `SessionEntry` em `src/config/sessions.ts`.
 
 Campos principais (não exaustivo):
 
-- `sessionId`: id da transcrição atual (o nome do arquivo é derivado dele, a menos que `sessionFile` esteja definido)
-- `sessionStartedAt`: timestamp de início para o `sessionId` atual; a validade do reset diário
+- `sessionId`: id do transcrito atual (o nome do arquivo é derivado disso, a menos que `sessionFile` esteja definido)
+- `sessionStartedAt`: timestamp de início da `sessionId` atual; a atualização de redefinição diária
   usa isso. Linhas legadas podem derivá-lo do cabeçalho de sessão JSONL.
-- `lastInteractionAt`: timestamp da última interação real de usuário/canal; a validade do reset por inatividade
-  usa isso para que eventos de Heartbeat, Cron e exec não mantenham sessões
-  vivas. Linhas legadas sem este campo recorrem ao horário de início da sessão recuperado
-  para validade por inatividade.
+- `lastInteractionAt`: timestamp da última interação real de usuário/canal; a atualização de redefinição
+  por inatividade usa isso para que Heartbeat, cron e eventos exec não mantenham sessões
+  vivas. Linhas legadas sem este campo recaem para o horário de início de sessão recuperado
+  para atualização por inatividade.
 - `updatedAt`: timestamp da última mutação da linha do armazenamento, usado para listagem, poda e
-  escrituração. Ele não é a autoridade para validade de reset diário/por inatividade.
-- `sessionFile`: substituição opcional explícita do caminho da transcrição
+  contabilidade. Ele não é a autoridade para a atualização de redefinição diária/por inatividade.
+- `sessionFile`: substituição opcional explícita do caminho do transcrito
 - `chatType`: `direct | group | room` (ajuda UIs e política de envio)
 - `provider`, `subject`, `room`, `space`, `displayName`: metadados para rotulagem de grupo/canal
 - Alternâncias:
@@ -179,19 +179,19 @@ Campos principais (não exaustivo):
   - `sendPolicy` (substituição por sessão)
 - Seleção de modelo:
   - `providerOverride`, `modelOverride`, `authProfileOverride`
-- Contadores de tokens (melhor esforço / dependentes do provedor):
+- Contadores de tokens (melhor esforço / dependente do provedor):
   - `inputTokens`, `outputTokens`, `totalTokens`, `contextTokens`
-- `compactionCount`: quantas vezes a autocompactação foi concluída para esta chave de sessão
+- `compactionCount`: com que frequência a auto-compaction foi concluída para esta chave de sessão
 - `memoryFlushAt`: timestamp da última descarga de memória pré-Compaction
 - `memoryFlushCompactionCount`: contagem de Compaction quando a última descarga foi executada
 
-O armazenamento é seguro de editar, mas o Gateway é a autoridade: ele pode regravar ou reidratar entradas à medida que as sessões são executadas.
+É seguro editar o armazenamento, mas o Gateway é a autoridade: ele pode regravar ou reidratar entradas conforme as sessões são executadas.
 
 ---
 
-## Estrutura da transcrição (`*.jsonl`)
+## Estrutura do transcrito (`*.jsonl`)
 
-As transcrições são gerenciadas pelo `SessionManager` de `@mariozechner/pi-coding-agent`.
+Transcritos são gerenciados pelo `SessionManager` de `@mariozechner/pi-coding-agent`.
 
 O arquivo é JSONL:
 
@@ -201,65 +201,66 @@ O arquivo é JSONL:
 Tipos de entrada notáveis:
 
 - `message`: mensagens de usuário/assistente/toolResult
-- `custom_message`: mensagens injetadas por Plugin que _entram_ no contexto do modelo (podem ficar ocultas da UI)
-- `custom`: estado de Plugin que _não_ entra no contexto do modelo
-- `compaction`: resumo de Compaction persistido com `firstKeptEntryId` e `tokensBefore`
-- `branch_summary`: resumo persistido ao navegar por uma ramificação da árvore
+- `custom_message`: mensagens injetadas por extensão que _entram_ no contexto do modelo (podem ficar ocultas da UI)
+- `custom`: estado de extensão que _não_ entra no contexto do modelo
+- `compaction`: resumo persistido de Compaction com `firstKeptEntryId` e `tokensBefore`
+- `branch_summary`: resumo persistido ao navegar por um ramo da árvore
 
-OpenClaw intencionalmente **não** “corrige” transcrições; o Gateway usa `SessionManager` para lê-las/gravá-las.
+O OpenClaw intencionalmente **não** “corrige” transcritos; o Gateway usa `SessionManager` para lê-los/gravá-los.
 
 ---
 
-## Janelas de contexto versus tokens rastreados
+## Janelas de contexto vs tokens rastreados
 
 Dois conceitos diferentes importam:
 
-1. **Janela de contexto do modelo**: limite rígido por modelo (tokens visíveis para o modelo)
+1. **Janela de contexto do modelo**: limite rígido por modelo (tokens visíveis ao modelo)
 2. **Contadores do armazenamento de sessão**: estatísticas móveis gravadas em `sessions.json` (usadas para /status e dashboards)
 
-Se você está ajustando limites:
+Se você estiver ajustando limites:
 
 - A janela de contexto vem do catálogo de modelos (e pode ser substituída via configuração).
 - `contextTokens` no armazenamento é um valor de estimativa/relatório em runtime; não o trate como uma garantia estrita.
 
-Para mais, consulte [/token-use](/pt-BR/reference/token-use).
+Para saber mais, consulte [/token-use](/pt-BR/reference/token-use).
 
 ---
 
 ## Compaction: o que é
 
-Compaction resume a conversa mais antiga em uma entrada `compaction` persistida na transcrição e mantém mensagens recentes intactas.
+Compaction resume conversas antigas em uma entrada `compaction` persistida no transcrito e mantém mensagens recentes intactas.
 
 Após a Compaction, turnos futuros veem:
 
-- O resumo de Compaction
+- O resumo da Compaction
 - Mensagens após `firstKeptEntryId`
 
-Compaction é **persistente** (diferente da poda de sessão). Consulte [/concepts/session-pruning](/pt-BR/concepts/session-pruning).
+Compaction é **persistente** (ao contrário da poda de sessão). Consulte [/concepts/session-pruning](/pt-BR/concepts/session-pruning).
 
-## Limites de blocos de Compaction e pareamento de ferramentas
+## Limites de chunks de Compaction e pareamento de ferramentas
 
-Quando o OpenClaw divide uma transcrição longa em blocos de Compaction, ele mantém
+Quando o OpenClaw divide um transcrito longo em chunks de Compaction, ele mantém
 chamadas de ferramenta do assistente pareadas com suas entradas `toolResult` correspondentes.
 
-- Se a divisão por proporção de tokens cair entre uma chamada de ferramenta e seu resultado, o OpenClaw
+- Se a divisão por participação de tokens cair entre uma chamada de ferramenta e seu resultado, o OpenClaw
   desloca o limite para a mensagem de chamada de ferramenta do assistente em vez de separar
   o par.
-- Se um bloco final de resultados de ferramenta de outra forma empurraria o bloco para além do alvo,
-  o OpenClaw preserva esse bloco de ferramenta pendente e mantém intacta a cauda não resumida.
-- Blocos de chamada de ferramenta abortados/com erro não mantêm uma divisão pendente aberta.
+- Se um bloco final de resultado de ferramenta fosse empurrar o chunk acima do alvo,
+  o OpenClaw preserva esse bloco de ferramenta pendente e mantém a cauda não resumida
+  intacta.
+- Blocos de chamadas de ferramenta abortadas/com erro não mantêm uma divisão pendente aberta.
 
 ---
 
-## Quando a autocompactação acontece (runtime Pi)
+## Quando a auto-compaction acontece (runtime Pi)
 
-No agente Pi incorporado, a autocompactação é acionada em dois casos:
+No agente Pi incorporado, a auto-compaction é acionada em dois casos:
 
 1. **Recuperação de estouro**: o modelo retorna um erro de estouro de contexto
    (`request_too_large`, `context length exceeded`, `input exceeds the maximum
 number of tokens`, `input token count exceeds the maximum number of input
 tokens`, `input is too long for the model`, `ollama error: context length
-exceeded` e variantes semelhantes no formato de provedor) → compactar → tentar novamente.
+exceeded` e variantes similares no formato do provedor) → compacta → tenta novamente.
 2. **Manutenção por limite**: após um turno bem-sucedido, quando:
 
 `contextTokens > contextWindow - reserveTokens`
@@ -269,14 +270,28 @@ Onde:
 - `contextWindow` é a janela de contexto do modelo
 - `reserveTokens` é a folga reservada para prompts + a próxima saída do modelo
 
-Estas são semânticas do runtime Pi (OpenClaw consome os eventos, mas Pi decide quando compactar).
+Estas são semânticas de runtime Pi (o OpenClaw consome os eventos, mas o Pi decide quando compactar).
 
-OpenClaw também pode acionar uma Compaction local de pré-verificação antes de abrir a próxima
+O OpenClaw também pode acionar uma Compaction local prévia antes de abrir a próxima
 execução quando `agents.defaults.compaction.maxActiveTranscriptBytes` está definido e o
-arquivo de transcrição ativo atinge esse tamanho. Esta é uma proteção por tamanho de arquivo para custo
-de reabertura local, não arquivamento bruto: OpenClaw ainda executa a Compaction semântica normal,
-e ela exige `truncateAfterCompaction` para que o resumo compactado possa se tornar uma
-nova transcrição sucessora.
+arquivo de transcrito ativo atinge esse tamanho. Este é um guarda de tamanho de arquivo para
+custo de reabertura local, não arquivamento bruto: o OpenClaw ainda executa a Compaction semântica normal,
+e ela requer `truncateAfterCompaction` para que o resumo compactado possa se tornar um
+novo transcrito sucessor.
+
+Para execuções embarcadas no Pi, `agents.defaults.compaction.midTurnPrecheck.enabled: true`
+adiciona uma proteção opt-in para o ciclo de ferramentas. Depois que um resultado de ferramenta é anexado e antes da
+próxima chamada ao modelo, o OpenClaw estima a pressão do prompt usando a mesma lógica de orçamento de
+pré-verificação usada no início do turno. Se o contexto não couber mais, a proteção
+não faz Compaction dentro do hook `transformContext` do Pi. Ela emite um sinal estruturado de
+pré-verificação no meio do turno, interrompe o envio do prompt atual e permite que o
+loop de execução externo use o caminho de recuperação existente: truncar resultados de ferramentas grandes demais
+quando isso for suficiente, ou acionar o modo de Compaction configurado e tentar novamente. A
+opção vem desativada por padrão e funciona com os modos de Compaction `default` e `safeguard`,
+incluindo Compaction de safeguard apoiada por provedor.
+Isso é independente de `maxActiveTranscriptBytes`: a proteção por tamanho em bytes roda
+antes de um turno começar, enquanto a pré-verificação no meio do turno roda depois, no loop de ferramentas embarcado do Pi,
+após novos resultados de ferramentas terem sido anexados.
 
 ---
 
@@ -294,47 +309,51 @@ As configurações de Compaction do Pi ficam nas configurações do Pi:
 }
 ```
 
-OpenClaw também aplica um limite mínimo de segurança para execuções embutidas:
+O OpenClaw também aplica um piso de segurança para execuções embarcadas:
 
-- Se `compaction.reserveTokens < reserveTokensFloor`, o OpenClaw o aumenta.
-- O limite mínimo padrão é de `20000` tokens.
-- Defina `agents.defaults.compaction.reserveTokensFloor: 0` para desativar o limite mínimo.
-- Se ele já estiver mais alto, o OpenClaw não o altera.
+- Se `compaction.reserveTokens < reserveTokensFloor`, o OpenClaw aumenta esse valor.
+- O piso padrão é de `20000` tokens.
+- Defina `agents.defaults.compaction.reserveTokensFloor: 0` para desativar o piso.
+- Se ele já estiver mais alto, o OpenClaw não altera.
 - O `/compact` manual respeita um `agents.defaults.compaction.keepRecentTokens`
-  explícito e mantém o ponto de corte da cauda recente do Pi. Sem um orçamento
-  de manutenção explícito, a Compaction manual continua sendo um checkpoint rígido
-  e o contexto reconstruído começa a partir do novo resumo.
+  explícito e mantém o ponto de corte da cauda recente do Pi. Sem um orçamento de retenção explícito,
+  a Compaction manual continua sendo um checkpoint rígido, e o contexto reconstruído começa a partir
+  do novo resumo.
+- Defina `agents.defaults.compaction.midTurnPrecheck.enabled: true` para executar a
+  pré-verificação opcional do loop de ferramentas depois de novos resultados de ferramentas e antes da próxima chamada ao modelo. Isso é apenas um acionador; a geração do resumo ainda usa o caminho de
+  Compaction configurado. Ele é independente de `maxActiveTranscriptBytes`, que é uma
+  proteção por tamanho em bytes da transcrição ativa no início do turno.
 - Defina `agents.defaults.compaction.maxActiveTranscriptBytes` como um valor em bytes ou
-  uma string como `"20mb"` para executar a Compaction local antes de um turno quando a
-  transcrição ativa ficar grande. Essa proteção fica ativa somente quando
-  `truncateAfterCompaction` também está habilitado. Deixe sem definir ou defina `0` para
+  uma string como `"20mb"` para executar Compaction local antes de um turno quando a transcrição
+  ativa ficar grande. Essa proteção só fica ativa quando
+  `truncateAfterCompaction` também está habilitado. Deixe indefinido ou defina `0` para
   desativar.
 - Quando `agents.defaults.compaction.truncateAfterCompaction` está habilitado,
   o OpenClaw rotaciona a transcrição ativa para um JSONL sucessor compactado após a
   Compaction. A transcrição completa antiga permanece arquivada e vinculada a partir do
-  checkpoint de Compaction, em vez de ser reescrita no local.
+  checkpoint de Compaction, em vez de ser reescrita no próprio arquivo.
 
-Motivo: deixar margem suficiente para “tarefas de manutenção” de vários turnos (como gravações de memória) antes que a Compaction se torne inevitável.
+Motivo: deixar espaço suficiente para “tarefas de manutenção” de múltiplos turnos (como gravações de memória) antes que a Compaction se torne inevitável.
 
 Implementação: `ensurePiCompactionReserveTokens()` em `src/agents/pi-settings.ts`
 (chamado a partir de `src/agents/pi-embedded-runner.ts`).
 
 ---
 
-## Provedores plugáveis de Compaction
+## Provedores de Compaction plugáveis
 
-Plugins podem registrar um provedor de Compaction via `registerCompactionProvider()` na API do plugin. Quando `agents.defaults.compaction.provider` é definido como o id de um provedor registrado, a extensão de salvaguarda delega a sumarização a esse provedor em vez do pipeline integrado `summarizeInStages`.
+Plugins podem registrar um provedor de Compaction via `registerCompactionProvider()` na API de Plugin. Quando `agents.defaults.compaction.provider` é definido como o id de um provedor registrado, a extensão safeguard delega a sumarização a esse provedor em vez de usar o pipeline embutido `summarizeInStages`.
 
-- `provider`: id de um Plugin provedor de Compaction registrado. Deixe sem definir para a sumarização LLM padrão.
+- `provider`: id de um Plugin provedor de Compaction registrado. Deixe indefinido para sumarização LLM padrão.
 - Definir um `provider` força `mode: "safeguard"`.
-- Os provedores recebem as mesmas instruções de Compaction e a mesma política de preservação de identificadores do caminho integrado.
-- A salvaguarda ainda preserva o contexto de sufixo de turnos recentes e turnos divididos após a saída do provedor.
-- A sumarização integrada da salvaguarda redestila resumos anteriores com novas mensagens
+- Provedores recebem as mesmas instruções de Compaction e a mesma política de preservação de identificadores do caminho embutido.
+- O safeguard ainda preserva o contexto de sufixo de turnos recentes e turnos divididos após a saída do provedor.
+- A sumarização safeguard embutida redestila resumos anteriores com novas mensagens
   em vez de preservar o resumo anterior completo literalmente.
-- O modo de salvaguarda habilita auditorias de qualidade do resumo por padrão; defina
+- O modo safeguard habilita auditorias de qualidade de resumo por padrão; defina
   `qualityGuard.enabled: false` para ignorar o comportamento de tentar novamente em caso de saída malformada.
-- Se o provedor falhar ou retornar um resultado vazio, o OpenClaw recorre automaticamente à sumarização LLM integrada.
-- Sinais de aborto/timeout são relançados (não engolidos) para respeitar o cancelamento do chamador.
+- Se o provedor falhar ou retornar um resultado vazio, o OpenClaw volta automaticamente para a sumarização LLM embutida.
+- Sinais de abort/timeout são relançados (não engolidos) para respeitar o cancelamento pelo chamador.
 
 Fonte: `src/plugins/compaction-provider.ts`, `src/agents/pi-hooks/compaction-safeguard.ts`.
 
@@ -353,44 +372,44 @@ Você pode observar a Compaction e o estado da sessão via:
 
 ## Manutenção silenciosa (`NO_REPLY`)
 
-O OpenClaw oferece suporte a turnos “silenciosos” para tarefas em segundo plano em que o usuário não deve ver saída intermediária.
+O OpenClaw oferece suporte a turnos “silenciosos” para tarefas em segundo plano nas quais o usuário não deve ver saída intermediária.
 
 Convenção:
 
 - O assistente inicia sua saída com o token silencioso exato `NO_REPLY` /
-  `no_reply` para indicar “não entregar uma resposta ao usuário”.
+  `no_reply` para indicar “não entregue uma resposta ao usuário”.
 - O OpenClaw remove/suprime isso na camada de entrega.
 - A supressão por token silencioso exato não diferencia maiúsculas de minúsculas, então `NO_REPLY` e
   `no_reply` contam quando a carga inteira é apenas o token silencioso.
-- Isso é apenas para turnos reais em segundo plano/sem entrega; não é um atalho para
+- Isso é apenas para turnos verdadeiramente em segundo plano/sem entrega; não é um atalho para
   solicitações comuns e acionáveis do usuário.
 
 A partir de `2026.1.10`, o OpenClaw também suprime **streaming de rascunho/digitação** quando um
-fragmento parcial começa com `NO_REPLY`, para que operações silenciosas não vazem saída
-parcial no meio do turno.
+chunk parcial começa com `NO_REPLY`, para que operações silenciosas não vazem saída parcial
+no meio do turno.
 
 ---
 
 ## "Flush" de memória pré-Compaction (implementado)
 
-Objetivo: antes que a Compaction automática aconteça, executar um turno agentic silencioso que grave estado durável
+Objetivo: antes que a Compaction automática aconteça, executar um turno agêntico silencioso que grave estado durável
 em disco (por exemplo, `memory/YYYY-MM-DD.md` no workspace do agente) para que a Compaction não possa
 apagar contexto crítico.
 
-O OpenClaw usa a abordagem de **flush pré-limite**:
+O OpenClaw usa a abordagem de **flush antes do limiar**:
 
 1. Monitorar o uso de contexto da sessão.
-2. Quando ele ultrapassar um “limite suave” (abaixo do limite de Compaction do Pi), executar uma diretiva silenciosa
-   “gravar memória agora” para o agente.
+2. Quando ele cruza um “limiar suave” (abaixo do limiar de Compaction do Pi), executar uma diretiva silenciosa
+   “grave a memória agora” para o agente.
 3. Usar o token silencioso exato `NO_REPLY` / `no_reply` para que o usuário não veja
    nada.
 
 Configuração (`agents.defaults.compaction.memoryFlush`):
 
 - `enabled` (padrão: `true`)
-- `model` (sobrescrita opcional exata de provedor/modelo para o turno de flush, por exemplo `ollama/qwen3:8b`)
+- `model` (substituição opcional exata de provedor/modelo para o turno de flush, por exemplo `ollama/qwen3:8b`)
 - `softThresholdTokens` (padrão: `4000`)
-- `prompt` (mensagem de usuário para o turno de flush)
+- `prompt` (mensagem do usuário para o turno de flush)
 - `systemPrompt` (prompt de sistema extra anexado para o turno de flush)
 
 Observações:
@@ -398,30 +417,30 @@ Observações:
 - O prompt/prompt de sistema padrão inclui uma dica `NO_REPLY` para suprimir
   a entrega.
 - Quando `model` é definido, o turno de flush usa esse modelo sem herdar a
-  cadeia de fallback da sessão ativa, para que a manutenção somente local não
-  recaia silenciosamente em um modelo de conversa pago.
-- O flush é executado uma vez por ciclo de Compaction (rastreado em `sessions.json`).
-- O flush é executado apenas para sessões Pi embutidas (backends de CLI o ignoram).
+  cadeia de fallback da sessão ativa, de modo que a manutenção apenas local não faça fallback silencioso
+  para um modelo de conversa pago.
+- O flush roda uma vez por ciclo de Compaction (rastreado em `sessions.json`).
+- O flush roda apenas para sessões embarcadas do Pi (backends de CLI o ignoram).
 - O flush é ignorado quando o workspace da sessão é somente leitura (`workspaceAccess: "ro"` ou `"none"`).
-- Consulte [Memória](/pt-BR/concepts/memory) para o layout de arquivos do workspace e os padrões de gravação.
+- Consulte [Memória](/pt-BR/concepts/memory) para o layout de arquivos do workspace e os padrões de escrita.
 
-O Pi também expõe um hook `session_before_compact` na API da extensão, mas hoje a lógica de
-flush do OpenClaw fica no lado do Gateway.
+O Pi também expõe um hook `session_before_compact` na API da extensão, mas a lógica de
+flush do OpenClaw fica no lado do Gateway hoje.
 
 ---
 
 ## Checklist de solução de problemas
 
-- Chave de sessão errada? Comece com [/concepts/session](/pt-BR/concepts/session) e confirme o `sessionKey` em `/status`.
-- Incompatibilidade entre armazenamento e transcrição? Confirme o host do Gateway e o caminho do armazenamento a partir de `openclaw status`.
+- Chave de sessão incorreta? Comece com [/concepts/session](/pt-BR/concepts/session) e confirme o `sessionKey` em `/status`.
+- Incompatibilidade entre store e transcrição? Confirme o host do Gateway e o caminho do store a partir de `openclaw status`.
 - Spam de Compaction? Verifique:
   - janela de contexto do modelo (pequena demais)
   - configurações de Compaction (`reserveTokens` alto demais para a janela do modelo pode causar Compaction mais cedo)
   - inchaço de resultados de ferramentas: habilite/ajuste a poda de sessão
-- Turnos silenciosos vazando? Confirme que a resposta começa com `NO_REPLY` (token exato sem diferenciação de maiúsculas/minúsculas) e que você está em uma build que inclui a correção de supressão de streaming.
+- Turnos silenciosos vazando? Confirme que a resposta começa com `NO_REPLY` (token exato sem diferenciar maiúsculas/minúsculas) e que você está em uma build que inclui a correção de supressão de streaming.
 
-## Relacionado
+## Relacionados
 
 - [Gerenciamento de sessão](/pt-BR/concepts/session)
 - [Poda de sessão](/pt-BR/concepts/session-pruning)
-- [Motor de contexto](/pt-BR/concepts/context-engine)
+- [Mecanismo de contexto](/pt-BR/concepts/context-engine)
