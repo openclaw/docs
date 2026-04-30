@@ -74,6 +74,7 @@ Vaardigheids**locatie** en vaardigheids**zichtbaarheid** zijn afzonderlijke cont
     - Stel `agents.list[].skills: []` in voor geen vaardigheden.
     - Een niet-lege `agents.list[].skills`-lijst is de **definitieve** set voor die agent — deze wordt niet samengevoegd met defaults.
     - De effectieve allowlist geldt voor promptopbouw, ontdekking van slash-commands voor vaardigheden, sandbox-synchronisatie en vaardigheidssnapshots.
+
   </Accordion>
 </AccordionGroup>
 

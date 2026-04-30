@@ -74,6 +74,7 @@ Ta sama nazwa w wielu miejscach → wygrywa źródło o najwyższym pierwszeńst
     - Ustaw `agents.list[].skills: []`, aby nie mieć żadnych skills.
     - Niepusta lista `agents.list[].skills` jest **ostatecznym** zestawem dla tego agenta — nie jest scalana z wartościami domyślnymi.
     - Efektywna lista dozwolonych obowiązuje przy budowaniu promptu, wykrywaniu poleceń slash skill, synchronizacji sandboxa i migawkach skill.
+
   </Accordion>
 </AccordionGroup>
 

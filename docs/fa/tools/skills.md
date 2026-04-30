@@ -74,6 +74,7 @@ OpenClaw، Skills را از این منابع بارگذاری می‌کند، *
     - برای نداشتن هیچ Skill، مقدار `agents.list[].skills: []` را تنظیم کنید.
     - یک فهرست غیرخالی `agents.list[].skills` مجموعه **نهایی** برای آن عامل است — با پیش‌فرض‌ها ادغام نمی‌شود.
     - فهرست مجاز مؤثر در سراسر ساخت prompt، کشف slash-command مربوط به Skill، همگام‌سازی sandbox، و snapshotهای Skill اعمال می‌شود.
+
   </Accordion>
 </AccordionGroup>
 

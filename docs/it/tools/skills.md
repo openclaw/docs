@@ -76,6 +76,7 @@ Posizione/precedenza decide quale copia di una skill con lo stesso nome vince; l
     - Imposta `agents.list[].skills: []` per nessuna skill.
     - Un elenco `agents.list[].skills` non vuoto è l'insieme **finale** per quell'agente — non viene unito ai valori predefiniti.
     - L'allowlist effettiva si applica a creazione dei prompt, rilevamento degli slash-command delle skill, sincronizzazione sandbox e snapshot delle skill.
+
   </Accordion>
 </AccordionGroup>
 

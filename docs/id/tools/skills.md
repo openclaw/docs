@@ -74,6 +74,7 @@ Nama yang sama di beberapa tempat → sumber tertinggi yang menang. Workspace me
     - Tetapkan `agents.list[].skills: []` agar tidak ada skill.
     - Daftar `agents.list[].skills` yang tidak kosong adalah set **final** untuk agen tersebut — daftar itu tidak digabungkan dengan default.
     - Daftar izin efektif berlaku di seluruh pembuatan prompt, penemuan perintah slash skill, sinkronisasi sandbox, dan snapshot skill.
+
   </Accordion>
 </AccordionGroup>
 

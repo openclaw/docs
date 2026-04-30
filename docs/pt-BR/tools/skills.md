@@ -74,6 +74,7 @@ A **localização** da habilidade e a **visibilidade** da habilidade são contro
     - Defina `agents.list[].skills: []` para nenhuma habilidade.
     - Uma lista `agents.list[].skills` não vazia é o conjunto **final** para esse agente — ela não é mesclada com os padrões.
     - A lista de permissões efetiva se aplica à construção de prompts, descoberta de comandos slash de habilidades, sincronização de sandbox e snapshots de habilidades.
+
   </Accordion>
 </AccordionGroup>
 

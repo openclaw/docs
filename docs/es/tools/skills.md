@@ -75,6 +75,7 @@ La ubicación/precedencia decide qué copia de un skill con el mismo nombre gana
     - Define `agents.list[].skills: []` para no permitir Skills.
     - Una lista no vacía `agents.list[].skills` es el conjunto **final** para ese agente; no se combina con los valores predeterminados.
     - La lista de permitidos efectiva se aplica en la construcción del prompt, la detección de slash commands de Skills, la sincronización del sandbox y las instantáneas de Skills.
+
   </Accordion>
 </AccordionGroup>
 
