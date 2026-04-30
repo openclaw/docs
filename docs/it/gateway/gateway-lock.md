@@ -1,42 +1,44 @@
 ---
 read_when:
     - Esecuzione o debug del processo Gateway
-    - Analisi dell'applicazione dell'istanza singola
+    - Analisi del vincolo di istanza singola
 summary: Protezione singleton del Gateway tramite il bind del listener WebSocket
 title: Blocco del Gateway
 x-i18n:
-    generated_at: "2026-04-24T08:40:15Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:51:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f52405d1891470592cb2f9328421dc910c15f4fdc4d34d57c1fec8b322c753f
+    source_hash: fe61ff81106554e98de1ca04c213b76d230265cdf3e81b70897d2de00f6a0179
     source_path: gateway/gateway-lock.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Perché
 
-- Garantire che venga eseguita una sola istanza del gateway per porta base sullo stesso host; i gateway aggiuntivi devono usare profili isolati e porte univoche.
+- Garantire che venga eseguita una sola istanza del Gateway per porta base sullo stesso host; i Gateway aggiuntivi devono usare profili isolati e porte univoche.
 - Sopravvivere a crash/SIGKILL senza lasciare file di lock obsoleti.
 - Fallire rapidamente con un errore chiaro quando la porta di controllo è già occupata.
 
 ## Meccanismo
 
-- Il gateway esegue immediatamente il bind del listener WebSocket (predefinito `ws://127.0.0.1:18789`) all'avvio usando un listener TCP esclusivo.
+- Il Gateway acquisisce prima un file di lock per configurazione nella directory dei lock di stato e verifica la porta configurata alla ricerca di un listener esistente.
+- Se il proprietario del lock registrato non esiste più, la porta è libera o il lock è obsoleto, l'avvio rivendica il lock e continua.
+- Il Gateway associa quindi il listener HTTP/WebSocket (predefinito `ws://127.0.0.1:18789`) usando un listener TCP esclusivo.
 - Se il bind fallisce con `EADDRINUSE`, l'avvio genera `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- Il sistema operativo rilascia automaticamente il listener su qualsiasi uscita del processo, inclusi crash e SIGKILL — non è necessario alcun file di lock separato o passaggio di pulizia.
-- All'arresto, il gateway chiude il server WebSocket e il server HTTP sottostante per liberare rapidamente la porta.
+- All'arresto, il Gateway chiude il server HTTP/WebSocket e rimuove il file di lock.
 
-## Superficie di errore
+## Superficie degli errori
 
 - Se un altro processo occupa la porta, l'avvio genera `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
 - Gli altri errori di bind emergono come `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`.
 
 ## Note operative
 
-- Se la porta è occupata da _un altro_ processo, l'errore è lo stesso; libera la porta oppure scegli un'altra con `openclaw gateway --port <port>`.
-- L'app macOS mantiene comunque il proprio leggero controllo PID prima di generare il gateway; il lock runtime viene applicato tramite il bind WebSocket.
+- Se la porta è occupata da un _altro_ processo, l'errore è lo stesso; libera la porta o scegline un'altra con `openclaw gateway --port <port>`.
+- Sotto un supervisore di servizio, un nuovo processo Gateway che rileva un responder `/healthz` esistente e integro termina correttamente e lascia quel processo in controllo. Se il processo esistente non diventa mai integro, i tentativi sono limitati e l'avvio fallisce con un chiaro errore di lock invece di ripetersi all'infinito.
+- L'app macOS mantiene ancora la propria protezione PID leggera prima di avviare il Gateway; il lock di runtime è applicato dal file di lock più il bind HTTP/WebSocket.
 
 ## Correlati
 
-- [Multiple Gateways](/it/gateway/multiple-gateways) — esecuzione di più istanze con porte univoche
-- [Troubleshooting](/it/gateway/troubleshooting) — diagnosi di `EADDRINUSE` e conflitti di porta
+- [Più Gateway](/it/gateway/multiple-gateways) — esecuzione di più istanze con porte univoche
+- [Risoluzione dei problemi](/it/gateway/troubleshooting) — diagnosi di `EADDRINUSE` e dei conflitti di porta

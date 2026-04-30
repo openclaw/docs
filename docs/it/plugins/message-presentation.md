@@ -1,36 +1,35 @@
 ---
 read_when:
-    - Aggiunta o modifica del rendering di schede di messaggio, pulsanti o select
+    - Aggiunta o modifica del rendering di schede messaggio, pulsanti o menu di selezione
     - Creazione di un Plugin di canale che supporta messaggi in uscita avanzati
-    - Modifica della presentazione del message tool o delle capability di consegna
-    - Debug di regressioni specifiche del provider nel rendering di schede/blocchi/componenti
-summary: Schede di messaggio semantiche, pulsanti, select, testo di fallback e suggerimenti di consegna per i Plugin dei canali
+    - Modificare la presentazione dello strumento per i messaggi o le capacità di recapito
+    - Debug delle regressioni nel rendering di schede/blocchi/componenti specifici del provider
+summary: Schede di messaggio semantiche, pulsanti, menu di selezione, testo di fallback e suggerimenti di consegna per i Plugin di canale
 title: Presentazione dei messaggi
 x-i18n:
-    generated_at: "2026-04-24T08:52:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:04:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
+    source_hash: 23ef0eab890ee174c1433f72e84932a84a481f2bcf4b69bc793a2660ec94b10c
     source_path: plugins/message-presentation.md
-    workflow: 15
+    workflow: 16
 ---
 
-La presentazione dei messaggi è il contratto condiviso di OpenClaw per interfacce chat avanzate in uscita.
-Permette ad agenti, comandi CLI, flussi di approvazione e Plugin di descrivere una sola volta
-l'intento del messaggio, mentre ogni Plugin di canale rende la migliore forma nativa possibile.
+La presentazione dei messaggi è il contratto condiviso di OpenClaw per un'interfaccia chat in uscita ricca.
+Consente ad agenti, comandi CLI, flussi di approvazione e plugin di descrivere una sola volta
+l'intento del messaggio, mentre ogni plugin di canale esegue il rendering nella migliore forma nativa possibile.
 
-Usa presentation per una UI portabile dei messaggi:
+Usa la presentazione per un'interfaccia messaggio portabile:
 
 - sezioni di testo
-- piccolo testo di contesto/footer
+- piccolo testo di contesto/piè di pagina
 - divisori
 - pulsanti
-- menu select
+- menu di selezione
 - titolo e tono della scheda
 
-Non aggiungere nuovi campi nativi del provider condivisi come Discord `components`, Slack
-`blocks`, Telegram `buttons`, Teams `card` o Feishu `card` al message tool condiviso.
-Questi sono output di rendering gestiti dal Plugin di canale.
+Non aggiungere al tool messaggio condiviso nuovi campi nativi del provider come Discord `components`, Slack
+`blocks`, Telegram `buttons`, Teams `card` o Feishu `card`. Questi sono output del renderer di proprietà del plugin di canale.
 
 ## Contratto
 
@@ -84,21 +83,21 @@ type ReplyPayloadDelivery = {
 
 Semantica dei pulsanti:
 
-- `value` è un valore di azione applicativa reinstradato attraverso il
-  percorso di interazione esistente del canale quando il canale supporta controlli cliccabili.
+- `value` è un valore di azione dell'applicazione reinstradato tramite il percorso di interazione
+  esistente del canale quando il canale supporta controlli cliccabili.
 - `url` è un pulsante link. Può esistere senza `value`.
-- `label` è obbligatorio ed è usato anche nel fallback testuale.
-- `style` è indicativo. I renderer dovrebbero mappare gli stili non supportati a un valore
+- `label` è obbligatorio e viene usato anche nel fallback testuale.
+- `style` è indicativo. I renderer dovrebbero mappare gli stili non supportati su un valore
   predefinito sicuro, non far fallire l'invio.
 
-Semantica dei select:
+Semantica della selezione:
 
-- `options[].value` è il valore applicativo selezionato.
+- `options[].value` è il valore dell'applicazione selezionato.
 - `placeholder` è indicativo e può essere ignorato dai canali senza supporto nativo
-  per select.
-- Se un canale non supporta i select, il testo di fallback elenca le etichette.
+  per la selezione.
+- Se un canale non supporta le selezioni, il testo di fallback elenca le etichette.
 
-## Esempi di producer
+## Esempi di produttori
 
 Scheda semplice:
 
@@ -134,7 +133,7 @@ Pulsante link solo URL:
 }
 ```
 
-Menu select:
+Menu di selezione:
 
 ```json
 {
@@ -152,7 +151,7 @@ Menu select:
 }
 ```
 
-Invio CLI:
+Invio da CLI:
 
 ```bash
 openclaw message send --channel slack \
@@ -161,7 +160,7 @@ openclaw message send --channel slack \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
-Consegna con pin:
+Consegna fissata:
 
 ```bash
 openclaw message send --channel telegram \
@@ -170,7 +169,7 @@ openclaw message send --channel telegram \
   --pin
 ```
 
-Consegna con pin con JSON esplicito:
+Consegna fissata con JSON esplicito:
 
 ```json
 {
@@ -184,7 +183,7 @@ Consegna con pin con JSON esplicito:
 
 ## Contratto del renderer
 
-I Plugin di canale dichiarano il supporto al rendering sul loro adapter outbound:
+I plugin di canale dichiarano il supporto al rendering sul proprio adattatore in uscita:
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -208,87 +207,88 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-I campi delle capability sono volutamente semplici booleani. Descrivono ciò che il
-renderer può rendere interattivo, non ogni limite nativo della piattaforma. I renderer gestiscono comunque
-i limiti specifici della piattaforma come numero massimo di pulsanti, numero di blocchi e
+I campi di capability sono intenzionalmente semplici booleani. Descrivono cosa il
+renderer può rendere interattivo, non ogni limite della piattaforma nativa. I renderer restano
+responsabili dei limiti specifici della piattaforma, come numero massimo di pulsanti, numero di blocchi e
 dimensione della scheda.
 
 ## Flusso di rendering core
 
-Quando un `ReplyPayload` o un'azione di messaggio include `presentation`, il core:
+Quando un `ReplyPayload` o un'azione messaggio include `presentation`, il core:
 
-1. Normalizza il payload presentation.
-2. Risolve l'adapter outbound del canale di destinazione.
+1. Normalizza il payload di presentazione.
+2. Risolve l'adattatore in uscita del canale di destinazione.
 3. Legge `presentationCapabilities`.
-4. Chiama `renderPresentation` quando l'adapter può rendere il payload.
-5. Usa come fallback testo conservativo quando l'adapter è assente o non può rendere.
-6. Invia il payload risultante attraverso il normale percorso di consegna del canale.
-7. Applica metadati di consegna come `delivery.pin` dopo il primo messaggio
+4. Chiama `renderPresentation` quando l'adattatore può eseguire il rendering del payload.
+5. Ripiega su testo prudente quando l'adattatore è assente o non può eseguire il rendering.
+6. Invia il payload risultante tramite il normale percorso di consegna del canale.
+7. Applica i metadati di consegna come `delivery.pin` dopo il primo messaggio
    inviato con successo.
 
-Il core gestisce il comportamento di fallback così i producer possono restare agnostici rispetto al canale. I
-Plugin di canale gestiscono il rendering nativo e la gestione delle interazioni.
+Il core possiede il comportamento di fallback, così i produttori possono restare agnostici rispetto al canale. I plugin di canale
+possiedono rendering nativo e gestione delle interazioni.
 
 ## Regole di degradazione
 
-La presentation deve essere sicura da inviare anche su canali limitati.
+La presentazione deve essere sicura da inviare su canali limitati.
 
 Il testo di fallback include:
 
 - `title` come prima riga
-- blocchi `text` come paragrafi normali
+- blocchi `text` come normali paragrafi
 - blocchi `context` come righe di contesto compatte
 - blocchi `divider` come separatore visivo
 - etichette dei pulsanti, inclusi gli URL per i pulsanti link
-- etichette delle opzioni select
+- etichette delle opzioni di selezione
 
 I controlli nativi non supportati dovrebbero degradare invece di far fallire l'intero invio.
 Esempi:
 
 - Telegram con pulsanti inline disabilitati invia il fallback testuale.
-- Un canale senza supporto select elenca le opzioni select come testo.
-- Un pulsante solo URL diventa un pulsante link nativo oppure una riga URL di fallback.
-- I fallimenti facoltativi del pin non fanno fallire il messaggio consegnato.
+- Un canale senza supporto alla selezione elenca le opzioni di selezione come testo.
+- Un pulsante solo URL diventa un pulsante link nativo o una riga URL di fallback.
+- Gli errori di fissaggio opzionale non fanno fallire il messaggio consegnato.
 
-L'eccezione principale è `delivery.pin.required: true`; se il pin è richiesto come
-obbligatorio e il canale non può fissare il messaggio inviato, la consegna riporta un errore.
+L'eccezione principale è `delivery.pin.required: true`; se il fissaggio è richiesto come
+obbligatorio e il canale non può fissare il messaggio inviato, la consegna segnala un errore.
 
-## Mappatura dei provider
+## Mappatura provider
 
-Renderer integrati attuali:
+Renderer in bundle attuali:
 
-| Canale         | Destinazione di rendering nativa     | Note                                                                                                                                             |
-| -------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Discord        | Components e contenitori component   | Mantiene il legacy `channelData.discord.components` per i producer esistenti di payload nativi del provider, ma i nuovi invii condivisi dovrebbero usare `presentation`. |
-| Slack          | Block Kit                            | Mantiene il legacy `channelData.slack.blocks` per i producer esistenti di payload nativi del provider, ma i nuovi invii condivisi dovrebbero usare `presentation`.       |
-| Telegram       | Testo più tastiere inline            | Pulsanti/select richiedono capability di pulsanti inline per la superficie di destinazione; altrimenti viene usato il fallback testuale.        |
-| Mattermost     | Testo più props interattive          | Gli altri blocchi degradano in testo.                                                                                                            |
-| Microsoft Teams | Adaptive Cards                      | Il testo semplice `message` viene incluso con la scheda quando sono forniti entrambi.                                                            |
-| Feishu         | Schede interattive                   | L'header della scheda può usare `title`; il corpo evita di duplicare quel titolo.                                                                |
-| Canali plain   | Fallback testuale                    | Anche i canali senza renderer ricevono comunque output leggibile.                                                                                |
+| Canale          | Target di rendering nativo          | Note                                                                                                                                             |
+| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Componenti e contenitori di componenti | Preserva `channelData.discord.components` legacy per i produttori esistenti di payload nativi del provider, ma i nuovi invii condivisi dovrebbero usare `presentation`. |
+| Slack           | Block Kit                           | Preserva `channelData.slack.blocks` legacy per i produttori esistenti di payload nativi del provider, ma i nuovi invii condivisi dovrebbero usare `presentation`.       |
+| Telegram        | Testo più tastiere inline           | Pulsanti/selezioni richiedono la capability dei pulsanti inline per la superficie di destinazione; altrimenti viene usato il fallback testuale.                                         |
+| Mattermost      | Testo più proprietà interattive     | Gli altri blocchi degradano a testo.                                                                                                                     |
+| Microsoft Teams | Adaptive Cards                      | Il testo semplice `message` viene incluso con la scheda quando sono forniti entrambi.                                                                            |
+| Feishu          | Schede interattive                  | L'intestazione della scheda può usare `title`; il corpo evita di duplicare quel titolo.                                                                                  |
+| Canali semplici | Fallback testuale                   | I canali senza renderer ricevono comunque un output leggibile.                                                                                            |
 
-La compatibilità con payload nativi del provider è un'agevolazione transitoria per i
-producer di risposte esistenti. Non è un motivo per aggiungere nuovi campi nativi condivisi.
+La compatibilità dei payload nativi del provider è una facilitazione di transizione per i produttori
+di risposte esistenti. Non è un motivo per aggiungere nuovi campi nativi condivisi.
 
-## Presentation vs InteractiveReply
+## Presentazione rispetto a InteractiveReply
 
-`InteractiveReply` è il sottoinsieme interno più vecchio usato dagli helper di approvazione e interazione. Supporta:
+`InteractiveReply` è il vecchio sottoinsieme interno usato dagli helper di approvazione e interazione.
+Supporta:
 
 - testo
 - pulsanti
-- select
+- selezioni
 
-`MessagePresentation` è il contratto canonico condiviso di invio. Aggiunge:
+`MessagePresentation` è il contratto canonico di invio condiviso. Aggiunge:
 
-- title
-- tone
-- context
-- divider
+- titolo
+- tono
+- contesto
+- divisore
 - pulsanti solo URL
 - metadati di consegna generici tramite `ReplyPayload.delivery`
 
-Usa gli helper di `openclaw/plugin-sdk/interactive-runtime` quando fai bridging di
-codice più vecchio:
+Usa gli helper da `openclaw/plugin-sdk/interactive-runtime` quando colleghi codice
+più vecchio:
 
 ```ts
 import {
@@ -301,41 +301,42 @@ import {
 
 Il nuovo codice dovrebbe accettare o produrre direttamente `MessagePresentation`.
 
-## Delivery Pin
+## Fissaggio della consegna
 
-Il pin è comportamento di consegna, non presentation. Usa `delivery.pin` invece di
+Il fissaggio è un comportamento di consegna, non di presentazione. Usa `delivery.pin` invece di
 campi nativi del provider come `channelData.telegram.pin`.
 
 Semantica:
 
 - `pin: true` fissa il primo messaggio consegnato con successo.
-- `pin.notify` è predefinito `false`.
-- `pin.required` è predefinito `false`.
-- I fallimenti facoltativi del pin degradano e lasciano intatto il messaggio inviato.
-- I fallimenti obbligatori del pin fanno fallire la consegna.
-- I messaggi suddivisi in chunk fissano il primo chunk consegnato, non quello finale.
+- `pin.notify` ha valore predefinito `false`.
+- `pin.required` ha valore predefinito `false`.
+- Gli errori di fissaggio opzionale degradano e lasciano intatto il messaggio inviato.
+- Gli errori di fissaggio obbligatorio fanno fallire la consegna.
+- I messaggi suddivisi in chunk fissano il primo chunk consegnato, non il chunk finale.
 
-Le azioni manuali `pin`, `unpin` e `pins` sul messaggio esistono ancora per i
-messaggi esistenti, quando il provider supporta tali operazioni.
+Le azioni messaggio manuali `pin`, `unpin` e `pins` esistono ancora per messaggi
+esistenti dove il provider supporta tali operazioni.
 
-## Checklist per gli autori di Plugin
+## Checklist per autori di Plugin
 
 - Dichiara `presentation` da `describeMessageTool(...)` quando il canale può
-  rendere o degradare in sicurezza la presentation semantica.
-- Aggiungi `presentationCapabilities` all'adapter outbound runtime.
-- Implementa `renderPresentation` nel codice runtime, non nel codice
-  di setup del Plugin sul control plane.
-- Tieni le librerie UI native fuori dai percorsi caldi di setup/catalogo.
-- Mantieni nel renderer e nei test i limiti della piattaforma.
-- Aggiungi test di fallback per pulsanti non supportati, select, pulsanti URL, duplicazione title/text e invii misti `message` più `presentation`.
-- Aggiungi il supporto al delivery pin tramite `deliveryCapabilities.pin` e
+  eseguire il rendering o degradare in sicurezza la presentazione semantica.
+- Aggiungi `presentationCapabilities` all'adattatore in uscita del runtime.
+- Implementa `renderPresentation` nel codice runtime, non nel codice di configurazione
+  del Plugin del piano di controllo.
+- Tieni le librerie UI native fuori dai percorsi critici di setup/catalogo.
+- Preserva i limiti della piattaforma nel renderer e nei test.
+- Aggiungi test di fallback per pulsanti non supportati, selezioni, pulsanti URL, duplicazione titolo/testo
+  e invii misti `message` più `presentation`.
+- Aggiungi il supporto al fissaggio della consegna tramite `deliveryCapabilities.pin` e
   `pinDeliveredMessage` solo quando il provider può fissare l'id del messaggio inviato.
-- Non esporre nuovi campi nativi del provider per schede/blocchi/componenti/pulsanti attraverso
-  lo schema condiviso dell'azione di messaggio.
+- Non esporre nuovi campi scheda/blocco/componente/pulsante nativi del provider tramite
+  lo schema dell'azione messaggio condivisa.
 
-## Documentazione correlata
+## Documenti correlati
 
-- [Message CLI](/it/cli/message)
-- [Plugin SDK Overview](/it/plugins/sdk-overview)
-- [Plugin Architecture](/it/plugins/architecture-internals#message-tool-schemas)
-- [Channel Presentation Refactor Plan](/it/plan/ui-channels)
+- [CLI messaggi](/it/cli/message)
+- [Panoramica SDK Plugin](/it/plugins/sdk-overview)
+- [Architettura dei Plugin](/it/plugins/architecture-internals#message-tool-schemas)
+- [Piano di refactoring della presentazione dei canali](/it/plan/ui-channels)

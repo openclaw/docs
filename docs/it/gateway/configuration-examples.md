@@ -3,22 +3,22 @@ read_when:
     - Imparare a configurare OpenClaw
     - Cerchi esempi di configurazione
     - Configurare OpenClaw per la prima volta
-summary: Esempi di configurazione accurati rispetto allo schema per configurazioni OpenClaw comuni
+summary: Esempi di configurazione conformi allo schema per configurazioni OpenClaw comuni
 title: Esempi di configurazione
 x-i18n:
-    generated_at: "2026-04-25T13:46:20Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:50:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
+    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
     source_path: gateway/configuration-examples.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gli esempi qui sotto sono allineati con lo schema di configurazione corrente. Per il riferimento esaustivo e le note per singolo campo, vedi [Configurazione](/it/gateway/configuration).
+Gli esempi seguenti sono allineati allo schema di configurazione corrente. Per il riferimento completo e le note per ogni campo, consulta [Configurazione](/it/gateway/configuration).
 
 ## Avvio rapido
 
-### Minimo indispensabile
+### Minimo assoluto
 
 ```json5
 {
@@ -27,7 +27,7 @@ Gli esempi qui sotto sono allineati con lo schema di configurazione corrente. Pe
 }
 ```
 
-Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
+Salva in `~/.openclaw/openclaw.json` e potrai inviare un DM al bot da quel numero.
 
 ### Configurazione iniziale consigliata
 
@@ -48,16 +48,22 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
       groups: { "*": { requireMention: true } },
     },
   },
+  messages: {
+    visibleReplies: "automatic",
+    groupChat: {
+      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+    },
+  },
 }
 ```
 
 ## Esempio esteso (opzioni principali)
 
-> JSON5 ti consente di usare commenti e virgole finali. Anche il normale JSON va bene.
+> JSON5 consente di usare commenti e virgole finali. Funziona anche il normale JSON.
 
 ```json5
 {
-  // Ambiente + shell
+  // Environment + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -69,7 +75,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Metadati del profilo auth (i secret si trovano in auth-profiles.json)
+  // Auth profile metadata (secrets live in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -84,7 +90,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Identità
+  // Identity
   identity: {
     name: "Samantha",
     theme: "helpful sloth",
@@ -100,33 +106,30 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     redactSensitive: "tools",
   },
 
-  // Formattazione dei messaggi
+  // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
+    visibleReplies: "automatic",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
-  },
-
-  // Instradamento + coda
-  routing: {
     groupChat: {
-      mentionPatterns: ["@openclaw", "openclaw"],
       historyLimit: 50,
+      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
     },
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
-        telegram: "collect",
-        discord: "collect",
-        slack: "collect",
-        signal: "collect",
-        imessage: "collect",
-        webchat: "collect",
+        whatsapp: "steer",
+        telegram: "steer",
+        discord: "steer",
+        slack: "steer",
+        signal: "steer",
+        imessage: "steer",
+        webchat: "steer",
       },
     },
   },
@@ -139,7 +142,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Fallback CLI facoltativo (binario Whisper):
+          // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -152,10 +155,10 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Comportamento della sessione
+  // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // consigliato per inbox multiutente
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -170,10 +173,9 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // durata oppure false
-      maxDiskBytes: "500mb", // facoltativo
-      highWaterBytes: "400mb", // facoltativo (predefinito 80% di maxDiskBytes)
+      resetArchiveRetention: "30d", // duration or false
+      maxDiskBytes: "500mb", // optional
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -182,7 +184,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Canali
+  // Channels
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -234,7 +236,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Runtime dell'agente
+  // Agent runtime
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -251,9 +253,10 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // ereditato dagli agenti che omettono list[].skills
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
       blockStreamingBreak: "text_end",
@@ -276,7 +279,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (predefinito) | block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -291,7 +294,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferito rispetto al legacy perSession: true
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -310,15 +313,18 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
       {
         id: "main",
         default: true,
-        // eredita defaults.skills -> github, weather
-        thinkingDefault: "high", // override thinking per agente
-        reasoningDefault: "on", // visibilità reasoning per agente
-        fastModeDefault: false, // modalità fast per agente
+        // inherits defaults.skills -> github, weather
+        groupChat: {
+          mentionPatterns: ["@openclaw", "openclaw"],
+        },
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // nessuna Skills per questo agente
-        fastModeDefault: true, // questo agente è sempre in modalità fast
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -346,7 +352,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Provider di modelli personalizzati
+  // Custom model providers
   models: {
     mode: "merge",
     providers: {
@@ -372,11 +378,11 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Processi Cron
+  // Cron jobs
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2,
+    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -384,7 +390,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Webhook
+  // Webhooks
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -427,7 +433,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
     },
   },
 
-  // Gateway + rete
+  // Gateway + networking
   gateway: {
     mode: "local",
     port: 18789,
@@ -466,7 +472,7 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
 
 ## Pattern comuni
 
-### Baseline condivisa delle Skills con un override
+### Baseline di skill condivisa con una sostituzione
 
 ```json5
 {
@@ -483,8 +489,8 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
 }
 ```
 
-- `agents.defaults.skills` è la baseline condivisa.
-- `agents.list[].skills` sostituisce quella baseline per un agente.
+- `agents.defaults.skills` è la base condivisa.
+- `agents.list[].skills` sostituisce quella base per un agente.
 - Usa `skills: []` quando un agente non deve vedere alcuna Skills.
 
 ### Configurazione multipiattaforma
@@ -508,11 +514,11 @@ Salvalo in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero
 }
 ```
 
-### Approvazione automatica dei nodi sulla rete affidabile
+### Approvazione automatica della rete di nodi attendibili
 
-Mantieni manuale l'abbinamento dei dispositivi, a meno che tu non controlli il percorso di rete. Per una
-sottorete tailnet o di laboratorio dedicata, puoi abilitare l'approvazione automatica del dispositivo nodo
-al primo utilizzo con CIDR o IP esatti:
+Mantieni manuale l'associazione dei dispositivi a meno che tu non controlli il percorso di rete. Per un laboratorio dedicato
+o una subnet tailnet, puoi attivare l'approvazione automatica dei dispositivi nodo al primo utilizzo
+con CIDR o IP esatti:
 
 ```json5
 {
@@ -526,27 +532,27 @@ al primo utilizzo con CIDR o IP esatti:
 }
 ```
 
-Questo rimane disattivato se non impostato. Si applica solo al pairing iniziale `role: node` senza
-ambiti richiesti. I client operatore/browser e gli aggiornamenti di ruolo, ambito, metadati o
-chiave pubblica richiedono comunque approvazione manuale.
+Resta disattivata quando non è impostata. Si applica solo a nuove associazioni `role: node` senza
+ambiti richiesti. Client operatore/browser e aggiornamenti di ruolo, ambito, metadati o
+chiave pubblica richiedono comunque l'approvazione manuale.
 
-### Modalità DM sicura (inbox condivisa / DM multiutente)
+### Modalità DM sicura (posta in arrivo condivisa / DM multiutente)
 
-Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di pairing per più persone, o `dmPolicy: "open"`), abilita la **modalità DM sicura** così le DM di mittenti diversi non condividono un unico contesto per impostazione predefinita:
+Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di associazione per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** così i DM di mittenti diversi non condividono un unico contesto per impostazione predefinita:
 
 ```json5
 {
-  // Modalità DM sicura (consigliata per agenti DM multiutente o sensibili)
+  // Secure DM mode (recommended for multi-user or sensitive DM agents)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Esempio: inbox WhatsApp multiutente
+    // Example: WhatsApp multi-user inbox
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Esempio: inbox Discord multiutente
+    // Example: Discord multi-user inbox
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -556,8 +562,8 @@ Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, app
 }
 ```
 
-Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è basata prima sugli ID per impostazione predefinita.
-Abilita il matching diretto di nome/email/nick modificabili con `dangerouslyAllowNameMatching: true` del rispettivo canale solo se accetti esplicitamente questo rischio.
+Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è basata prima sull'ID per impostazione predefinita.
+Abilita la corrispondenza diretta mutabile per nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente quel rischio.
 
 ### Chiave API Anthropic + fallback MiniMax
 
@@ -652,12 +658,12 @@ Abilita il matching diretto di nome/email/nick modificabili con `dangerouslyAllo
 
 ## Suggerimenti
 
-- Se imposti `dmPolicy: "open"`, la lista `allowFrom` corrispondente deve includere `"*"`.
+- Se imposti `dmPolicy: "open"`, l'elenco `allowFrom` corrispondente deve includere `"*"`.
 - Gli ID dei provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
 - Sezioni facoltative da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Vedi [Provider](/it/providers) e [Risoluzione dei problemi](/it/gateway/troubleshooting) per note di configurazione più approfondite.
+- Consulta [Provider](/it/providers) e [Risoluzione dei problemi](/it/gateway/troubleshooting) per note di configurazione più approfondite.
 
 ## Correlati
 
-- [Riferimento della configurazione](/it/gateway/configuration-reference)
+- [Riferimento configurazione](/it/gateway/configuration-reference)
 - [Configurazione](/it/gateway/configuration)

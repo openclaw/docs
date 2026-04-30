@@ -1,156 +1,157 @@
 ---
 read_when:
-    - Implementazione o modifica della scoperta/pubblicità Bonjour
-    - Regolazione delle modalità di connessione remota (diretta vs SSH)
-    - Progettazione della scoperta e dell'abbinamento del Node per Node remoti
-summary: Scoperta del Node e trasporti (Bonjour, Tailscale, SSH) per trovare il gateway
-title: Scoperta e trasporti
+    - Implementazione o modifica del rilevamento/annuncio Bonjour
+    - Regolare le modalità di connessione remota (diretta vs SSH)
+    - Progettazione del rilevamento dei Node + abbinamento per i Node remoti
+summary: Individuazione dei Node e trasporti (Bonjour, Tailscale, SSH) per trovare il Gateway
+title: Rilevamento e trasporti
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-26T11:28:32Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 615be0f501470772c257beb8e798c522c108b09081a603f44218404277fdf269
-  source_path: gateway/discovery.md
-  workflow: 15
+    generated_at: "2026-04-30T08:51:23Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: c396e6e07808e2571c6d7f539922b94443adbf39339027e6e962596c6f13deaa
+    source_path: gateway/discovery.md
+    workflow: 16
 ---
 
-# Scoperta e trasporti
+# Discovery e trasporti
 
 OpenClaw ha due problemi distinti che in superficie sembrano simili:
 
-1. **Controllo remoto dell'operatore**: l'app menubar macOS che controlla un gateway in esecuzione altrove.
-2. **Abbinamento del Node**: iOS/Android (e Node futuri) che trovano un gateway e si abbinano in modo sicuro.
+1. **Controllo remoto dell'operatore**: l'app della barra dei menu di macOS che controlla un Gateway in esecuzione altrove.
+2. **Abbinamento dei Node**: iOS/Android (e Node futuri) che trovano un Gateway e si abbinano in modo sicuro.
 
-L'obiettivo di progettazione è mantenere tutta la scoperta/pubblicità di rete nel **Node Gateway** (`openclaw gateway`) e mantenere i client (app Mac, iOS) come consumatori.
+L'obiettivo di progettazione è mantenere tutta la discovery/advertising di rete nel **Node Gateway** (`openclaw gateway`) e mantenere i client (app Mac, iOS) come consumer.
 
 ## Termini
 
-- **Gateway**: un singolo processo gateway a lunga esecuzione che possiede lo stato (sessioni, abbinamento, registro Node) ed esegue i canali. La maggior parte delle configurazioni ne usa uno per host; sono possibili configurazioni isolate con più gateway.
-- **Gateway WS (control plane)**: l'endpoint WebSocket su `127.0.0.1:18789` per impostazione predefinita; può essere associato a LAN/tailnet tramite `gateway.bind`.
-- **Trasporto WS diretto**: un endpoint Gateway WS esposto su LAN/tailnet (senza SSH).
-- **Trasporto SSH (fallback)**: controllo remoto inoltrando `127.0.0.1:18789` tramite SSH.
-- **Legacy TCP bridge (rimosso)**: vecchio trasporto Node (vedi
-  [Protocollo Bridge](/it/gateway/bridge-protocol)); non viene più annunciato per la
-  scoperta e non fa più parte delle build attuali.
+- **Gateway**: un singolo processo Gateway a lunga esecuzione che possiede lo stato (sessioni, abbinamento, registro dei Node) ed esegue i canali. La maggior parte delle configurazioni ne usa uno per host; sono possibili configurazioni multi-Gateway isolate.
+- **Gateway WS (piano di controllo)**: l'endpoint WebSocket su `127.0.0.1:18789` per impostazione predefinita; può essere vincolato a LAN/tailnet tramite `gateway.bind`.
+- **Trasporto WS diretto**: un endpoint Gateway WS esposto verso LAN/tailnet (senza SSH).
+- **Trasporto SSH (fallback)**: controllo remoto tramite inoltro di `127.0.0.1:18789` su SSH.
+- **Bridge TCP legacy (rimosso)**: trasporto Node precedente (vedi
+  [Protocollo bridge](/it/gateway/bridge-protocol)); non viene più pubblicizzato per la
+  discovery e non fa più parte delle build attuali.
 
 Dettagli del protocollo:
 
 - [Protocollo Gateway](/it/gateway/protocol)
-- [Protocollo Bridge (legacy)](/it/gateway/bridge-protocol)
+- [Protocollo bridge (legacy)](/it/gateway/bridge-protocol)
 
-## Perché manteniamo sia il "diretto" sia SSH
+## Perché manteniamo sia "diretto" sia SSH
 
-- **WS diretto** offre la UX migliore sulla stessa rete e all'interno di una tailnet:
-  - auto-scoperta su LAN tramite Bonjour
-  - token di abbinamento + ACL gestiti dal gateway
-  - non richiede accesso shell; la superficie del protocollo può restare ristretta e verificabile
+- **WS diretto** offre la migliore UX sulla stessa rete e all'interno di una tailnet:
+  - discovery automatica sulla LAN tramite Bonjour
+  - token di abbinamento + ACL posseduti dal Gateway
+  - nessun accesso shell richiesto; la superficie del protocollo può restare ristretta e verificabile
 - **SSH** resta il fallback universale:
   - funziona ovunque tu abbia accesso SSH (anche tra reti non correlate)
-  - sopravvive ai problemi di multicast/mDNS
+  - resiste ai problemi multicast/mDNS
   - non richiede nuove porte in ingresso oltre a SSH
 
-## Input di scoperta (come i client apprendono dove si trova il gateway)
+## Input di discovery (come i client apprendono dove si trova il Gateway)
 
-### 1) Scoperta Bonjour / DNS-SD
+### 1) Discovery Bonjour / DNS-SD
 
-Il Bonjour multicast è best-effort e non attraversa le reti. OpenClaw può anche navigare lo
-stesso beacon gateway tramite un dominio DNS-SD wide-area configurato, quindi la scoperta può coprire:
+Bonjour multicast è best-effort e non attraversa le reti. OpenClaw può anche cercare lo
+stesso beacon Gateway tramite un dominio DNS-SD wide-area configurato, quindi la discovery può coprire:
 
 - `local.` sulla stessa LAN
-- un dominio unicast DNS-SD configurato per la scoperta tra reti
+- un dominio DNS-SD unicast configurato per la discovery tra reti
 
-Direzione del target:
+Direzione target:
 
-- Il **gateway** annuncia il suo endpoint WS tramite Bonjour.
-- I client navigano e mostrano un elenco “scegli un gateway”, poi memorizzano l'endpoint scelto.
+- Il **Gateway** pubblicizza il suo endpoint WS tramite Bonjour.
+- I client cercano e mostrano un elenco “scegli un Gateway”, quindi salvano l'endpoint scelto.
 
-Dettagli del beacon e risoluzione dei problemi: [Bonjour](/it/gateway/bonjour).
+Dettagli su troubleshooting e beacon: [Bonjour](/it/gateway/bonjour).
 
 #### Dettagli del beacon di servizio
 
 - Tipi di servizio:
-  - `_openclaw-gw._tcp` (beacon di trasporto del gateway)
+  - `_openclaw-gw._tcp` (beacon di trasporto Gateway)
 - Chiavi TXT (non segrete):
   - `role=gateway`
   - `transport=gateway`
-  - `displayName=<friendly name>` (friendly name configurato dall'operatore)
+  - `displayName=<friendly name>` (nome visualizzato configurato dall'operatore)
   - `lanHost=<hostname>.local`
   - `gatewayPort=18789` (Gateway WS + HTTP)
   - `gatewayTls=1` (solo quando TLS è abilitato)
   - `gatewayTlsSha256=<sha256>` (solo quando TLS è abilitato e l'impronta digitale è disponibile)
-  - `canvasPort=<port>` (porta host canvas; attualmente coincide con `gatewayPort` quando l'host canvas è abilitato)
-  - `tailnetDns=<magicdns>` (hint facoltativo; rilevato automaticamente quando Tailscale è disponibile)
-  - `sshPort=<port>` (solo modalità mDNS full; il DNS-SD wide-area può ometterlo, nel qual caso i valori predefiniti SSH restano `22`)
-  - `cliPath=<path>` (solo modalità mDNS full; il DNS-SD wide-area continua a scriverlo come hint per l'installazione remota)
+  - `canvasPort=<port>` (porta del canvas host; attualmente la stessa di `gatewayPort` quando il canvas host è abilitato)
+  - `tailnetDns=<magicdns>` (suggerimento opzionale; rilevato automaticamente quando Tailscale è disponibile)
+  - `sshPort=<port>` (solo modalità mDNS completa; DNS-SD wide-area può ometterlo, nel qual caso i valori predefiniti SSH restano a `22`)
+  - `cliPath=<path>` (solo modalità mDNS completa; DNS-SD wide-area lo scrive comunque come suggerimento per l'installazione remota)
 
 Note di sicurezza:
 
-- I record TXT di Bonjour/mDNS sono **non autenticati**. I client devono trattare i valori TXT solo come hint UX.
-- L'instradamento (host/porta) dovrebbe preferire l'**endpoint del servizio risolto** (SRV + A/AAAA) rispetto a `lanHost`, `tailnetDns` o `gatewayPort` forniti via TXT.
-- Il pinning TLS non deve mai consentire a un `gatewayTlsSha256` annunciato di sovrascrivere un pin memorizzato in precedenza.
-- I Node iOS/Android dovrebbero richiedere una conferma esplicita “fidati di questa fingerprint” prima di memorizzare un pin visto per la prima volta (verifica fuori banda) ogni volta che il percorso scelto è sicuro/basato su TLS.
+- I record TXT Bonjour/mDNS sono **non autenticati**. I client devono trattare i valori TXT solo come suggerimenti UX.
+- Il routing (host/porta) dovrebbe preferire l'**endpoint del servizio risolto** (SRV + A/AAAA) rispetto a `lanHost`, `tailnetDns` o `gatewayPort` forniti da TXT.
+- Il pinning TLS non deve mai consentire a un `gatewayTlsSha256` pubblicizzato di sovrascrivere un pin salvato in precedenza.
+- I Node iOS/Android dovrebbero richiedere una conferma esplicita “considera attendibile questa impronta digitale” prima di salvare un pin per la prima volta (verifica out-of-band) ogni volta che la route scelta è sicura/basata su TLS.
 
-Disabilitazione/override:
+Disabilitazione/sovrascrittura:
 
-- `OPENCLAW_DISABLE_BONJOUR=1` disabilita l'annuncio.
-- Docker Compose usa per impostazione predefinita `OPENCLAW_DISABLE_BONJOUR=1` perché le reti bridge di solito non trasportano il multicast mDNS in modo affidabile; usa `0` solo su host, macvlan o un'altra rete compatibile con mDNS.
-- `gateway.bind` in `~/.openclaw/openclaw.json` controlla la modalità bind del Gateway.
-- `OPENCLAW_SSH_PORT` sovrascrive la porta SSH annunciata quando viene emesso `sshPort`.
-- `OPENCLAW_TAILNET_DNS` pubblica un hint `tailnetDns` (MagicDNS).
-- `OPENCLAW_CLI_PATH` sovrascrive il percorso CLI annunciato.
+- `OPENCLAW_DISABLE_BONJOUR=1` disabilita l'advertising.
+- Quando `OPENCLAW_DISABLE_BONJOUR` non è impostato, Bonjour pubblicizza sugli host normali
+  e si disabilita automaticamente dentro i container rilevati. Usa `0` solo su host, macvlan
+  o un'altra rete compatibile con mDNS; usa `1` per forzare la disabilitazione.
+- `gateway.bind` in `~/.openclaw/openclaw.json` controlla la modalità di bind del Gateway.
+- `OPENCLAW_SSH_PORT` sovrascrive la porta SSH pubblicizzata quando viene emesso `sshPort`.
+- `OPENCLAW_TAILNET_DNS` pubblica un suggerimento `tailnetDns` (MagicDNS).
+- `OPENCLAW_CLI_PATH` sovrascrive il percorso CLI pubblicizzato.
 
 ### 2) Tailnet (tra reti)
 
 Per configurazioni in stile Londra/Vienna, Bonjour non aiuta. Il target “diretto” consigliato è:
 
-- nome Tailscale MagicDNS (preferito) o IP tailnet stabile.
+- nome MagicDNS Tailscale (preferito) o un IP tailnet stabile.
 
-Se il gateway riesce a rilevare di essere in esecuzione sotto Tailscale, pubblica `tailnetDns` come hint facoltativo per i client (inclusi i beacon wide-area).
+Se il Gateway riesce a rilevare che è in esecuzione sotto Tailscale, pubblica `tailnetDns` come suggerimento opzionale per i client (inclusi i beacon wide-area).
 
-L'app macOS ora preferisce i nomi MagicDNS agli IP Tailscale grezzi per la scoperta del gateway. Questo migliora l'affidabilità quando gli IP tailnet cambiano (ad esempio dopo riavvii del Node o riassegnazione CGNAT), perché i nomi MagicDNS si risolvono automaticamente all'IP corrente.
+L'app macOS ora preferisce i nomi MagicDNS agli IP Tailscale grezzi per la discovery del Gateway. Questo migliora l'affidabilità quando gli IP tailnet cambiano (ad esempio dopo riavvii dei Node o riassegnazione CGNAT), perché i nomi MagicDNS si risolvono automaticamente nell'IP corrente.
 
-Per l'abbinamento dei Node mobili, gli hint di scoperta non allentano la sicurezza del trasporto sui percorsi tailnet/pubblici:
+Per l'abbinamento dei Node mobili, i suggerimenti di discovery non allentano la sicurezza del trasporto su route tailnet/pubbliche:
 
-- iOS/Android richiedono comunque un percorso sicuro per la prima connessione tailnet/pubblica (`wss://` o Tailscale Serve/Funnel).
-- Un IP tailnet grezzo scoperto è un hint di instradamento, non un'autorizzazione a usare `ws://` remoto in chiaro.
-- Il collegamento diretto privato su LAN tramite `ws://` resta supportato.
-- Se vuoi il percorso Tailscale più semplice per i Node mobili, usa Tailscale Serve così che la scoperta e il codice di configurazione si risolvano entrambi sullo stesso endpoint MagicDNS sicuro.
+- iOS/Android richiedono comunque un percorso di connessione tailnet/pubblico sicuro per la prima volta (`wss://` o Tailscale Serve/Funnel).
+- Un IP tailnet grezzo scoperto è un suggerimento di routing, non un permesso per usare `ws://` remoto in chiaro.
+- La connessione diretta LAN privata `ws://` resta supportata.
+- Se vuoi il percorso Tailscale più semplice per i Node mobili, usa Tailscale Serve in modo che discovery e codice di configurazione si risolvano entrambi nello stesso endpoint MagicDNS sicuro.
 
 ### 3) Target manuale / SSH
 
-Quando non esiste un percorso diretto (o il diretto è disabilitato), i client possono sempre connettersi via SSH inoltrando la porta loopback del gateway.
+Quando non esiste una route diretta (o la modalità diretta è disabilitata), i client possono sempre connettersi tramite SSH inoltrando la porta Gateway di local loopback.
 
 Vedi [Accesso remoto](/it/gateway/remote).
 
-## Selezione del trasporto (policy client)
+## Selezione del trasporto (criterio del client)
 
-Comportamento client consigliato:
+Comportamento consigliato del client:
 
-1. Se è configurato un endpoint diretto abbinato ed è raggiungibile, usalo.
-2. Altrimenti, se la scoperta trova un gateway su `local.` o nel dominio wide-area configurato, offri una scelta “Usa questo gateway” con un tocco e salvalo come endpoint diretto.
-3. Altrimenti, se è configurato un DNS/IP tailnet, prova il diretto.
-   Per i Node mobili su percorsi tailnet/pubblici, diretto significa un endpoint sicuro, non `ws://` remoto in chiaro.
-4. Altrimenti, usa SSH come fallback.
+1. Se è configurato e raggiungibile un endpoint diretto abbinato, usalo.
+2. Altrimenti, se la discovery trova un Gateway su `local.` o sul dominio wide-area configurato, offri una scelta “Usa questo Gateway” con un tocco e salvala come endpoint diretto.
+3. Altrimenti, se è configurato un DNS/IP tailnet, prova il collegamento diretto.
+   Per i Node mobili su route tailnet/pubbliche, diretto significa un endpoint sicuro, non `ws://` remoto in chiaro.
+4. Altrimenti, ripiega su SSH.
 
 ## Abbinamento + autenticazione (trasporto diretto)
 
-Il gateway è la fonte di verità per l'ammissione di Node/client.
+Il Gateway è la fonte di verità per l'ammissione di Node/client.
 
-- Le richieste di abbinamento vengono create/approvate/rifiutate nel gateway (vedi [Abbinamento Gateway](/it/gateway/pairing)).
-- Il gateway applica:
+- Le richieste di abbinamento vengono create/approvate/rifiutate nel Gateway (vedi [Abbinamento Gateway](/it/gateway/pairing)).
+- Il Gateway applica:
   - autenticazione (token / coppia di chiavi)
-  - scope/ACL (il gateway non è un proxy grezzo verso ogni metodo)
-  - rate limit
+  - ambiti/ACL (il Gateway non è un proxy grezzo verso ogni metodo)
+  - limiti di frequenza
 
 ## Responsabilità per componente
 
-- **Gateway**: annuncia i beacon di scoperta, gestisce le decisioni di abbinamento e ospita l'endpoint WS.
-- **App macOS**: aiuta a scegliere un gateway, mostra i prompt di abbinamento e usa SSH solo come fallback.
-- **Node iOS/Android**: navigano Bonjour come comodità e si connettono al Gateway WS abbinato.
+- **Gateway**: pubblicizza beacon di discovery, possiede le decisioni di abbinamento e ospita l'endpoint WS.
+- **App macOS**: ti aiuta a scegliere un Gateway, mostra prompt di abbinamento e usa SSH solo come fallback.
+- **Node iOS/Android**: cercano Bonjour per comodità e si connettono al Gateway WS abbinato.
 
 ## Correlati
 
 - [Accesso remoto](/it/gateway/remote)
 - [Tailscale](/it/gateway/tailscale)
-- [Scoperta Bonjour](/it/gateway/bonjour)
+- [Discovery Bonjour](/it/gateway/bonjour)

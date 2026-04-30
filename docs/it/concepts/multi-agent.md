@@ -2,20 +2,20 @@
 read_when: You want multiple isolated agents (workspaces + auth) in one gateway process.
 sidebarTitle: Multi-agent routing
 status: active
-summary: 'Instradamento multi-agente: agenti isolati, account di canale e binding'
+summary: 'Routing multi-agente: agenti isolati, account di canale e associazioni'
 title: Instradamento multi-agente
 x-i18n:
-    generated_at: "2026-04-26T11:27:21Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:47:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 845149ac1076d4746cc5038bd4444c2fc6117710f724b8cabdc31dc9ef6abbe8
+    source_hash: 67adea74d5f97feff3f816cc4c34c9429e7659289013e5a7c7623bd185a50a31
     source_path: concepts/multi-agent.md
-    workflow: 15
+    workflow: 16
 ---
 
-Esegui più agenti _isolati_ — ciascuno con la propria area di lavoro, directory di stato (`agentDir`) e cronologia di sessione — più più account di canale (ad esempio due WhatsApp) in un unico Gateway in esecuzione. I messaggi in ingresso vengono instradati all'agente corretto tramite binding.
+Esegui più agenti _isolati_, ciascuno con la propria area di lavoro, directory di stato (`agentDir`) e cronologia di sessione, più account multipli di canale (ad esempio due WhatsApp) in un unico Gateway in esecuzione. I messaggi in ingresso vengono instradati all'agente corretto tramite associazioni.
 
-Un **agente** qui è l'intero ambito per-persona: file dell'area di lavoro, profili di autenticazione, registro dei modelli e archivio delle sessioni. `agentDir` è la directory di stato su disco che contiene questa configurazione per agente in `~/.openclaw/agents/<agentId>/`. Un **binding** mappa un account di canale (ad esempio un workspace Slack o un numero WhatsApp) a uno di questi agenti.
+Un **agente** qui è l'intero ambito per persona: file dell'area di lavoro, profili di autenticazione, registro dei modelli e archivio delle sessioni. `agentDir` è la directory di stato su disco che contiene questa configurazione per agente in `~/.openclaw/agents/<agentId>/`. Una **associazione** mappa un account di canale (ad esempio un'area di lavoro Slack o un numero WhatsApp) a uno di questi agenti.
 
 ## Che cos'è "un agente"?
 
@@ -32,19 +32,19 @@ I profili di autenticazione sono **per agente**. Ogni agente legge dal proprio:
 ```
 
 <Note>
-Anche qui `sessions_history` è il percorso più sicuro per il richiamo tra sessioni: restituisce una vista delimitata e sanificata, non un dump grezzo della trascrizione. Il richiamo dell'assistente rimuove i tag di pensiero, l'impalcatura `<relevant-memories>`, i payload XML delle chiamate agli strumenti in testo semplice (inclusi `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` e i blocchi di chiamata agli strumenti troncati), l'impalcatura degradata delle chiamate agli strumenti, i token di controllo del modello ASCII/a larghezza piena trapelati e l'XML malformato delle chiamate agli strumenti MiniMax prima della redazione/troncatura.
+`sessions_history` è anche qui il percorso più sicuro per il richiamo tra sessioni: restituisce una vista limitata e sanificata, non un dump grezzo della trascrizione. Il richiamo dell'assistente rimuove i tag di ragionamento, l'impalcatura `<relevant-memories>`, i payload XML in testo semplice delle chiamate agli strumenti (inclusi `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` e blocchi troncati di chiamate agli strumenti), l'impalcatura declassata delle chiamate agli strumenti, i token di controllo del modello ASCII/a larghezza piena trapelati e XML MiniMax malformato per chiamate agli strumenti prima di redazione/troncamento.
 </Note>
 
 <Warning>
-Le credenziali dell'agente principale **non** vengono condivise automaticamente. Non riutilizzare mai `agentDir` tra agenti (causa collisioni di autenticazione/sessione). Se vuoi condividere le credenziali, copia `auth-profiles.json` nell'`agentDir` dell'altro agente.
+Non riutilizzare mai `agentDir` tra agenti (causa collisioni di autenticazione/sessione). Gli agenti possono leggere i profili di autenticazione dell'agente predefinito/principale quando non hanno un profilo locale, ma OpenClaw non clona i token di aggiornamento OAuth nell'archivio dell'agente secondario. Se vuoi un account OAuth indipendente, accedi da quell'agente; se copi credenziali manualmente, copia solo profili statici portabili `api_key` o `token`.
 </Warning>
 
-Le Skills vengono caricate dall'area di lavoro di ciascun agente più radici condivise come `~/.openclaw/skills`, poi filtrate dalla allowlist effettiva delle skill dell'agente quando configurata. Usa `agents.defaults.skills` per una baseline condivisa e `agents.list[].skills` per la sostituzione per agente. Vedi [Skills: per-agent vs shared](/it/tools/skills#per-agent-vs-shared-skills) e [Skills: agent skill allowlists](/it/tools/skills#agent-skill-allowlists).
+Le Skills vengono caricate dall'area di lavoro di ogni agente più radici condivise come `~/.openclaw/skills`, poi filtrate dalla allowlist effettiva delle Skills dell'agente quando configurata. Usa `agents.defaults.skills` per una base condivisa e `agents.list[].skills` per la sostituzione per agente. Vedi [Skills: per agente vs condivise](/it/tools/skills#per-agent-vs-shared-skills) e [Skills: allowlist delle Skills degli agenti](/it/tools/skills#agent-skill-allowlists).
 
 Il Gateway può ospitare **un agente** (predefinito) o **molti agenti** affiancati.
 
 <Note>
-**Nota sull'area di lavoro:** l'area di lavoro di ciascun agente è la **cwd predefinita**, non una sandbox rigida. I percorsi relativi vengono risolti all'interno dell'area di lavoro, ma i percorsi assoluti possono raggiungere altre posizioni dell'host a meno che il sandboxing non sia abilitato. Vedi [Sandboxing](/it/gateway/sandboxing).
+**Nota sull'area di lavoro:** l'area di lavoro di ogni agente è la **cwd predefinita**, non una sandbox rigida. I percorsi relativi vengono risolti all'interno dell'area di lavoro, ma i percorsi assoluti possono raggiungere altre posizioni dell'host a meno che il sandboxing non sia abilitato. Vedi [Sandboxing](/it/gateway/sandboxing).
 </Note>
 
 ## Percorsi (mappa rapida)
@@ -59,20 +59,20 @@ Il Gateway può ospitare **un agente** (predefinito) o **molti agenti** affianca
 
 Se non fai nulla, OpenClaw esegue un singolo agente:
 
-- `agentId` assume come valore predefinito **`main`**.
-- Le sessioni sono indicate come `agent:main:<mainKey>`.
-- L'area di lavoro ha come valore predefinito `~/.openclaw/workspace` (o `~/.openclaw/workspace-<profile>` quando è impostato `OPENCLAW_PROFILE`).
-- Lo stato ha come valore predefinito `~/.openclaw/agents/main/agent`.
+- `agentId` è predefinito su **`main`**.
+- Le sessioni sono indicizzate come `agent:main:<mainKey>`.
+- L'area di lavoro è predefinita su `~/.openclaw/workspace` (o `~/.openclaw/workspace-<profile>` quando `OPENCLAW_PROFILE` è impostato).
+- Lo stato è predefinito su `~/.openclaw/agents/main/agent`.
 
-## Helper dell'agente
+## Helper agente
 
-Usa la procedura guidata degli agenti per aggiungere un nuovo agente isolato:
+Usa la procedura guidata dell'agente per aggiungere un nuovo agente isolato:
 
 ```bash
 openclaw agents add work
 ```
 
-Quindi aggiungi `bindings` (o lascia che la procedura guidata lo faccia) per instradare i messaggi in ingresso.
+Poi aggiungi `bindings` (o lascia che lo faccia la procedura guidata) per instradare i messaggi in ingresso.
 
 Verifica con:
 
@@ -83,22 +83,22 @@ openclaw agents list --bindings
 ## Avvio rapido
 
 <Steps>
-  <Step title="Crea l'area di lavoro di ciascun agente">
-    Usa la procedura guidata o crea manualmente le aree di lavoro:
+  <Step title="Crea l'area di lavoro di ogni agente">
+    Usa la procedura guidata o crea le aree di lavoro manualmente:
 
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    Ogni agente ottiene la propria area di lavoro con `SOUL.md`, `AGENTS.md` e `USER.md` facoltativo, più un `agentDir` dedicato e un archivio di sessione sotto `~/.openclaw/agents/<agentId>`.
+    Ogni agente ottiene la propria area di lavoro con `SOUL.md`, `AGENTS.md` e `USER.md` opzionale, più un `agentDir` dedicato e un archivio delle sessioni sotto `~/.openclaw/agents/<agentId>`.
 
   </Step>
-  <Step title="Crea gli account di canale">
-    Crea un account per agente sui canali che preferisci:
+  <Step title="Crea account di canale">
+    Crea un account per agente sui tuoi canali preferiti:
 
-    - Discord: un bot per agente, abilita Message Content Intent, copia ciascun token.
-    - Telegram: un bot per agente tramite BotFather, copia ciascun token.
+    - Discord: un bot per agente, abilita Message Content Intent, copia ogni token.
+    - Telegram: un bot per agente tramite BotFather, copia ogni token.
     - WhatsApp: collega ogni numero di telefono per account.
 
     ```bash
@@ -108,7 +108,7 @@ openclaw agents list --bindings
     Vedi le guide dei canali: [Discord](/it/channels/discord), [Telegram](/it/channels/telegram), [WhatsApp](/it/channels/whatsapp).
 
   </Step>
-  <Step title="Aggiungi agenti, account e binding">
+  <Step title="Aggiungi agenti, account e associazioni">
     Aggiungi gli agenti sotto `agents.list`, gli account di canale sotto `channels.<channel>.accounts` e collegali con `bindings` (esempi sotto).
   </Step>
   <Step title="Riavvia e verifica">
@@ -125,14 +125,14 @@ openclaw agents list --bindings
 Con **più agenti**, ogni `agentId` diventa una **persona completamente isolata**:
 
 - **Numeri di telefono/account diversi** (per canale `accountId`).
-- **Personalità diverse** (file per agente dell'area di lavoro come `AGENTS.md` e `SOUL.md`).
-- **Autenticazione + sessioni separate** (nessuna interferenza reciproca salvo abilitazione esplicita).
+- **Personalità diverse** (file dell'area di lavoro per agente come `AGENTS.md` e `SOUL.md`).
+- **Autenticazione + sessioni separate** (nessuna comunicazione incrociata a meno che non sia abilitata esplicitamente).
 
-Questo consente a **più persone** di condividere un unico server Gateway mantenendo isolati i propri "cervelli" IA e i propri dati.
+Questo consente a **più persone** di condividere un server Gateway mantenendo isolati i propri "cervelli" IA e dati.
 
-## Ricerca QMD in memoria tra agenti
+## Ricerca memoria QMD tra agenti
 
-Se un agente deve cercare nelle trascrizioni di sessione QMD di un altro agente, aggiungi raccolte extra sotto `agents.list[].memorySearch.qmd.extraCollections`. Usa `agents.defaults.memorySearch.qmd.extraCollections` solo quando ogni agente deve ereditare le stesse raccolte condivise di trascrizioni.
+Se un agente deve cercare nelle trascrizioni di sessione QMD di un altro agente, aggiungi raccolte extra sotto `agents.list[].memorySearch.qmd.extraCollections`. Usa `agents.defaults.memorySearch.qmd.extraCollections` solo quando ogni agente deve ereditare le stesse raccolte di trascrizioni condivise.
 
 ```json5
 {
@@ -151,7 +151,7 @@ Se un agente deve cercare nelle trascrizioni di sessione QMD di un altro agente,
         workspace: "~/workspaces/main",
         memorySearch: {
           qmd: {
-            extraCollections: [{ path: "notes" }], // risolto dentro l'area di lavoro -> raccolta chiamata "notes-main"
+            extraCollections: [{ path: "notes" }], // resolves inside workspace -> collection named "notes-main"
           },
         },
       },
@@ -165,14 +165,14 @@ Se un agente deve cercare nelle trascrizioni di sessione QMD di un altro agente,
 }
 ```
 
-Il percorso della raccolta extra può essere condiviso tra agenti, ma il nome della raccolta resta esplicito quando il percorso è esterno all'area di lavoro dell'agente. I percorsi dentro l'area di lavoro restano delimitati all'agente, così ciascun agente mantiene il proprio insieme di ricerca nelle trascrizioni.
+Il percorso della raccolta extra può essere condiviso tra agenti, ma il nome della raccolta resta esplicito quando il percorso è fuori dall'area di lavoro dell'agente. I percorsi dentro l'area di lavoro restano limitati all'agente, così ogni agente conserva il proprio set di ricerca delle trascrizioni.
 
-## Un numero WhatsApp, più persone (suddivisione DM)
+## Un numero WhatsApp, più persone (divisione dei DM)
 
-Puoi instradare **diversi DM WhatsApp** a agenti diversi pur restando su **un unico account WhatsApp**. La corrispondenza avviene sul mittente E.164 (come `+15551234567`) con `peer.kind: "direct"`. Le risposte continuano a provenire dallo stesso numero WhatsApp (nessuna identità mittente per agente).
+Puoi instradare **DM WhatsApp diversi** ad agenti diversi restando su **un solo account WhatsApp**. Abbina in base al mittente E.164 (come `+15551234567`) con `peer.kind: "direct"`. Le risposte provengono comunque dallo stesso numero WhatsApp (nessuna identità mittente per agente).
 
 <Note>
-Le chat dirette collassano nella **chiave di sessione principale** dell'agente, quindi un vero isolamento richiede **un agente per persona**.
+Le chat dirette collassano sulla **chiave di sessione principale** dell'agente, quindi il vero isolamento richiede **un agente per persona**.
 </Note>
 
 Esempio:
@@ -206,22 +206,22 @@ Esempio:
 
 Note:
 
-- Il controllo di accesso DM è **globale per account WhatsApp** (abbinamento/allowlist), non per agente.
-- Per gruppi condivisi, collega il gruppo a un agente oppure usa [Broadcast groups](/it/channels/broadcast-groups).
+- Il controllo di accesso ai DM è **globale per account WhatsApp** (abbinamento/allowlist), non per agente.
+- Per i gruppi condivisi, associa il gruppo a un agente o usa [Gruppi broadcast](/it/channels/broadcast-groups).
 
 ## Regole di instradamento (come i messaggi scelgono un agente)
 
-I binding sono **deterministici** e vale il **più specifico**:
+Le associazioni sono **deterministiche** e **vince la più specifica**:
 
 <Steps>
-  <Step title="Corrispondenza peer">
+  <Step title="corrispondenza peer">
     ID esatto di DM/gruppo/canale.
   </Step>
-  <Step title="Corrispondenza parentPeer">
+  <Step title="corrispondenza parentPeer">
     Ereditarietà del thread.
   </Step>
   <Step title="guildId + ruoli">
-    Instradamento ruoli Discord.
+    Instradamento per ruolo Discord.
   </Step>
   <Step title="guildId">
     Discord.
@@ -229,38 +229,38 @@ I binding sono **deterministici** e vale il **più specifico**:
   <Step title="teamId">
     Slack.
   </Step>
-  <Step title="Corrispondenza accountId per un canale">
+  <Step title="corrispondenza accountId per un canale">
     Fallback per account.
   </Step>
   <Step title="Corrispondenza a livello di canale">
     `accountId: "*"`.
   </Step>
   <Step title="Agente predefinito">
-    Fallback a `agents.list[].default`, altrimenti la prima voce della lista, predefinito: `main`.
+    Fallback a `agents.list[].default`, altrimenti prima voce della lista, predefinito: `main`.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Spareggio e semantica AND">
-    - Se più binding corrispondono nello stesso livello, vince il primo nell'ordine di configurazione.
-    - Se un binding imposta più campi di corrispondenza (ad esempio `peer` + `guildId`), tutti i campi specificati sono richiesti (semantica `AND`).
+  <Accordion title="Risoluzione dei pari merito e semantica AND">
+    - Se più associazioni corrispondono nello stesso livello, vince la prima nell'ordine di configurazione.
+    - Se un'associazione imposta più campi di corrispondenza (ad esempio `peer` + `guildId`), tutti i campi specificati sono obbligatori (semantica `AND`).
 
   </Accordion>
-  <Accordion title="Dettaglio dell'ambito account">
-    - Un binding che omette `accountId` corrisponde solo all'account predefinito.
+  <Accordion title="Dettaglio sull'ambito account">
+    - Un'associazione che omette `accountId` corrisponde solo all'account predefinito.
     - Usa `accountId: "*"` per un fallback a livello di canale su tutti gli account.
-    - Se in seguito aggiungi lo stesso binding per lo stesso agente con un ID account esplicito, OpenClaw aggiorna il binding esistente solo-canale all'ambito account invece di duplicarlo.
+    - Se in seguito aggiungi la stessa associazione per lo stesso agente con un id account esplicito, OpenClaw aggiorna l'associazione solo canale esistente rendendola limitata all'account invece di duplicarla.
 
   </Accordion>
 </AccordionGroup>
 
-## Più account / più numeri di telefono
+## Più account / numeri di telefono
 
-I canali che supportano **più account** (ad esempio WhatsApp) usano `accountId` per identificare ogni login. Ogni `accountId` può essere instradato a un agente diverso, così un server può ospitare più numeri di telefono senza mescolare le sessioni.
+I canali che supportano **più account** (ad esempio WhatsApp) usano `accountId` per identificare ogni accesso. Ogni `accountId` può essere instradato a un agente diverso, quindi un server può ospitare più numeri di telefono senza mescolare le sessioni.
 
-Se vuoi un account predefinito a livello di canale quando `accountId` viene omesso, imposta `channels.<channel>.defaultAccount` (facoltativo). Se non impostato, OpenClaw usa come fallback `default` se presente, altrimenti il primo ID account configurato (ordinato).
+Se vuoi un account predefinito a livello di canale quando `accountId` è omesso, imposta `channels.<channel>.defaultAccount` (opzionale). Quando non è impostato, OpenClaw ripiega su `default` se presente, altrimenti sul primo id account configurato (ordinato).
 
-I canali comuni che supportano questo schema includono:
+I canali comuni che supportano questo modello includono:
 
 - `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`
 - `irc`, `line`, `googlechat`, `mattermost`, `matrix`, `nextcloud-talk`
@@ -268,16 +268,16 @@ I canali comuni che supportano questo schema includono:
 
 ## Concetti
 
-- `agentId`: un "cervello" (area di lavoro, autenticazione per agente, archivio di sessione per agente).
-- `accountId`: un'istanza di account del canale (ad esempio account WhatsApp `"personal"` vs `"biz"`).
-- `binding`: instrada i messaggi in ingresso a un `agentId` tramite `(channel, accountId, peer)` e facoltativamente ID guild/team.
-- Le chat dirette collassano in `agent:<agentId>:<mainKey>` ("main" per agente; `session.mainKey`).
+- `agentId`: un "cervello" (area di lavoro, autenticazione per agente, archivio delle sessioni per agente).
+- `accountId`: un'istanza di account di canale (ad esempio account WhatsApp `"personal"` vs `"biz"`).
+- `binding`: instrada i messaggi in ingresso a un `agentId` tramite `(channel, accountId, peer)` e, facoltativamente, id guild/team.
+- Le chat dirette collassano su `agent:<agentId>:<mainKey>` ("main" per agente; `session.mainKey`).
 
 ## Esempi di piattaforma
 
 <AccordionGroup>
   <Accordion title="Bot Discord per agente">
-    Ogni account bot Discord è associato a un `accountId` univoco. Collega ciascun account a un agente e mantieni allowlist per bot.
+    Ogni account bot Discord viene mappato a un `accountId` univoco. Associa ogni account a un agente e mantieni allowlist per bot.
 
     ```json5
     {
@@ -321,11 +321,11 @@ I canali comuni che supportano questo schema includono:
     }
     ```
 
-    - Invita ogni bot nella guild e abilita Message Content Intent.
+    - Invita ciascun bot alla guild e abilita Message Content Intent.
     - I token risiedono in `channels.discord.accounts.<id>.token` (l'account predefinito può usare `DISCORD_BOT_TOKEN`).
 
   </Accordion>
-  <Accordion title="Bot Telegram per agente">
+  <Accordion title="Telegram bots per agent">
     ```json5
     {
       agents: {
@@ -360,7 +360,7 @@ I canali comuni che supportano questo schema includono:
     - I token risiedono in `channels.telegram.accounts.<id>.botToken` (l'account predefinito può usare `TELEGRAM_BOT_TOKEN`).
 
   </Accordion>
-  <Accordion title="Numeri WhatsApp per agente">
+  <Accordion title="WhatsApp numbers per agent">
     Collega ciascun account prima di avviare il gateway:
 
     ```bash
@@ -390,12 +390,12 @@ I canali comuni che supportano questo schema includono:
         ],
       },
 
-      // Instradamento deterministico: vince la prima corrispondenza (prima le più specifiche).
+      // Deterministic routing: first match wins (most-specific first).
       bindings: [
         { agentId: "home", match: { channel: "whatsapp", accountId: "personal" } },
         { agentId: "work", match: { channel: "whatsapp", accountId: "biz" } },
 
-        // Override facoltativo per peer (esempio: invia un gruppo specifico all'agente work).
+        // Optional per-peer override (example: send a specific group to work agent).
         {
           agentId: "work",
           match: {
@@ -406,7 +406,7 @@ I canali comuni che supportano questo schema includono:
         },
       ],
 
-      // Disattivato per impostazione predefinita: la messaggistica agente-agente deve essere abilitata esplicitamente + inserita in allowlist.
+      // Off by default: agent-to-agent messaging must be explicitly enabled + allowlisted.
       tools: {
         agentToAgent: {
           enabled: false,
@@ -418,11 +418,11 @@ I canali comuni che supportano questo schema includono:
         whatsapp: {
           accounts: {
             personal: {
-              // Override facoltativo. Predefinito: ~/.openclaw/credentials/whatsapp/personal
+              // Optional override. Default: ~/.openclaw/credentials/whatsapp/personal
               // authDir: "~/.openclaw/credentials/whatsapp/personal",
             },
             biz: {
-              // Override facoltativo. Predefinito: ~/.openclaw/credentials/whatsapp/biz
+              // Optional override. Default: ~/.openclaw/credentials/whatsapp/biz
               // authDir: "~/.openclaw/credentials/whatsapp/biz",
             },
           },
@@ -434,11 +434,11 @@ I canali comuni che supportano questo schema includono:
   </Accordion>
 </AccordionGroup>
 
-## Pattern comuni
+## Schemi comuni
 
 <Tabs>
-  <Tab title="WhatsApp quotidiano + Telegram lavoro profondo">
-    Suddividi per canale: instrada WhatsApp a un agente veloce per l'uso quotidiano e Telegram a un agente Opus.
+  <Tab title="WhatsApp daily + Telegram deep work">
+    Dividi per canale: instrada WhatsApp a un agente quotidiano veloce e Telegram a un agente Opus.
 
     ```json5
     {
@@ -446,13 +446,13 @@ I canali comuni che supportano questo schema includono:
         list: [
           {
             id: "chat",
-            name: "Quotidiano",
+            name: "Everyday",
             workspace: "~/.openclaw/workspace-chat",
             model: "anthropic/claude-sonnet-4-6",
           },
           {
             id: "opus",
-            name: "Lavoro profondo",
+            name: "Deep Work",
             workspace: "~/.openclaw/workspace-opus",
             model: "anthropic/claude-opus-4-6",
           },
@@ -468,10 +468,10 @@ I canali comuni che supportano questo schema includono:
     Note:
 
     - Se hai più account per un canale, aggiungi `accountId` al binding (per esempio `{ channel: "whatsapp", accountId: "personal" }`).
-    - Per instradare un singolo DM/gruppo a Opus mantenendo il resto su chat, aggiungi un binding `match.peer` per quel peer; le corrispondenze peer vincono sempre sulle regole estese all'intero canale.
+    - Per instradare un singolo DM/gruppo a Opus mantenendo il resto sulla chat, aggiungi un binding `match.peer` per quel peer; le corrispondenze peer hanno sempre la precedenza sulle regole estese all'intero canale.
 
   </Tab>
-  <Tab title="Stesso canale, un peer su Opus">
+  <Tab title="Same channel, one peer to Opus">
     Mantieni WhatsApp sull'agente veloce, ma instrada un DM a Opus:
 
     ```json5
@@ -480,13 +480,13 @@ I canali comuni che supportano questo schema includono:
         list: [
           {
             id: "chat",
-            name: "Quotidiano",
+            name: "Everyday",
             workspace: "~/.openclaw/workspace-chat",
             model: "anthropic/claude-sonnet-4-6",
           },
           {
             id: "opus",
-            name: "Lavoro profondo",
+            name: "Deep Work",
             workspace: "~/.openclaw/workspace-opus",
             model: "anthropic/claude-opus-4-6",
           },
@@ -502,11 +502,11 @@ I canali comuni che supportano questo schema includono:
     }
     ```
 
-    I binding peer vincono sempre, quindi tienili sopra la regola estesa all'intero canale.
+    I binding peer hanno sempre la precedenza, quindi tienili sopra la regola estesa all'intero canale.
 
   </Tab>
-  <Tab title="Agente famiglia collegato a un gruppo WhatsApp">
-    Collega un agente famiglia dedicato a un singolo gruppo WhatsApp, con filtro delle menzioni e un criterio strumenti più restrittivo:
+  <Tab title="Family agent bound to a WhatsApp group">
+    Associa un agente familiare dedicato a un singolo gruppo WhatsApp, con gating sulle menzioni e una policy degli strumenti più restrittiva:
 
     ```json5
     {
@@ -514,7 +514,7 @@ I canali comuni che supportano questo schema includono:
         list: [
           {
             id: "family",
-            name: "Famiglia",
+            name: "Family",
             workspace: "~/.openclaw/workspace-family",
             identity: { name: "Family Bot" },
             groupChat: {
@@ -553,15 +553,15 @@ I canali comuni che supportano questo schema includono:
 
     Note:
 
-    - Le liste allow/deny degli strumenti sono **strumenti**, non skill. Se una skill deve eseguire un binario, assicurati che `exec` sia consentito e che il binario esista nel sandbox.
-    - Per un filtro più rigido, imposta `agents.list[].groupChat.mentionPatterns` e mantieni abilitate le allowlist dei gruppi per il canale.
+    - Gli elenchi allow/deny degli strumenti sono **strumenti**, non Skills. Se una skill deve eseguire un binario, assicurati che `exec` sia consentito e che il binario esista nella sandbox.
+    - Per un gating più rigoroso, imposta `agents.list[].groupChat.mentionPatterns` e mantieni abilitate le allowlist di gruppo per il canale.
 
   </Tab>
 </Tabs>
 
 ## Configurazione sandbox e strumenti per agente
 
-Ogni agente può avere il proprio sandbox e le proprie restrizioni sugli strumenti:
+Ogni agente può avere la propria sandbox e le proprie restrizioni sugli strumenti:
 
 ```js
 {
@@ -571,24 +571,24 @@ Ogni agente può avere il proprio sandbox e le proprie restrizioni sugli strumen
         id: "personal",
         workspace: "~/.openclaw/workspace-personal",
         sandbox: {
-          mode: "off",  // Nessun sandbox per l'agente personale
+          mode: "off",  // No sandbox for personal agent
         },
-        // Nessuna restrizione sugli strumenti - tutti gli strumenti disponibili
+        // No tool restrictions - all tools available
       },
       {
         id: "family",
         workspace: "~/.openclaw/workspace-family",
         sandbox: {
-          mode: "all",     // Sempre in sandbox
-          scope: "agent",  // Un container per agente
+          mode: "all",     // Always sandboxed
+          scope: "agent",  // One container per agent
           docker: {
-            // Configurazione facoltativa una tantum dopo la creazione del container
+            // Optional one-time setup after container creation
             setupCommand: "apt-get update && apt-get install -y git curl",
           },
         },
         tools: {
-          allow: ["read"],                    // Solo strumento read
-          deny: ["exec", "write", "edit", "apply_patch"],    // Nega gli altri
+          allow: ["read"],                    // Only read tool
+          deny: ["exec", "write", "edit", "apply_patch"],    // Deny others
         },
       },
     ],
@@ -597,25 +597,25 @@ Ogni agente può avere il proprio sandbox e le proprie restrizioni sugli strumen
 ```
 
 <Note>
-`setupCommand` si trova sotto `sandbox.docker` e viene eseguito una sola volta alla creazione del container. Gli override per agente `sandbox.docker.*` vengono ignorati quando l'ambito risolto è `"shared"`.
+`setupCommand` risiede sotto `sandbox.docker` e viene eseguito una volta alla creazione del container. Gli override per agente `sandbox.docker.*` vengono ignorati quando lo scope risolto è `"shared"`.
 </Note>
 
 **Vantaggi:**
 
-- **Isolamento di sicurezza**: limita gli strumenti per agenti non affidabili.
-- **Controllo delle risorse**: usa il sandbox per agenti specifici mantenendo gli altri sull'host.
-- **Criteri flessibili**: permessi diversi per agente.
+- **Isolamento di sicurezza**: limita gli strumenti per agenti non attendibili.
+- **Controllo delle risorse**: esegui nella sandbox agenti specifici mantenendo gli altri sull'host.
+- **Policy flessibili**: autorizzazioni diverse per agente.
 
 <Note>
-`tools.elevated` è **globale** e basato sul mittente; non è configurabile per agente. Se ti servono confini per agente, usa `agents.list[].tools` per negare `exec`. Per il targeting dei gruppi, usa `agents.list[].groupChat.mentionPatterns` così le @mention si associano in modo pulito all'agente previsto.
+`tools.elevated` è **globale** e basato sul mittente; non è configurabile per agente. Se hai bisogno di confini per agente, usa `agents.list[].tools` per negare `exec`. Per il targeting nei gruppi, usa `agents.list[].groupChat.mentionPatterns` in modo che le @menzioni vengano mappate chiaramente all'agente previsto.
 </Note>
 
 Vedi [Sandbox e strumenti multi-agente](/it/tools/multi-agent-sandbox-tools) per esempi dettagliati.
 
 ## Correlati
 
-- [Agenti ACP](/it/tools/acp-agents) — esecuzione di harness di coding esterni
+- [Agenti ACP](/it/tools/acp-agents) — esecuzione di harness di codifica esterni
 - [Instradamento dei canali](/it/channels/channel-routing) — come i messaggi vengono instradati agli agenti
-- [Presenza](/it/concepts/presence) — presenza e disponibilità dell'agente
+- [Presence](/it/concepts/presence) — presenza e disponibilità degli agenti
 - [Sessione](/it/concepts/session) — isolamento e instradamento delle sessioni
-- [Subagenti](/it/tools/subagents) — avvio di esecuzioni di agenti in background
+- [Sotto-agenti](/it/tools/subagents) — avvio di esecuzioni di agenti in background

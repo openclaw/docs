@@ -1,22 +1,21 @@
 ---
 read_when:
     - Vuoi scegliere un provider di modelli
-    - Vuoi esempi rapidi di configurazione per auth LLM + selezione del modello
-summary: Provider di modelli (LLM) supportati da OpenClaw
-title: Avvio rapido dei provider di modelli
+    - Ti servono esempi rapidi di configurazione per l'autenticazione LLM + la selezione del modello
+summary: Fornitori di modelli (LLM) supportati da OpenClaw
+title: Guida rapida al provider di modelli
 x-i18n:
-    generated_at: "2026-04-24T08:57:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:09:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b824a664e0e7a7a5b0ea640ea7329ea3d1e3d12b85d9310231c76014b2ae01cc
+    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
     source_path: providers/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Provider di modelli
 
-OpenClaw può usare molti provider LLM. Scegline uno, autenticati, poi imposta il modello predefinito
-come `provider/model`.
+OpenClaw può usare molti provider LLM. Scegline uno, autenticalo, quindi imposta il modello predefinito come `provider/model`.
 
 ## Avvio rapido (due passaggi)
 
@@ -34,13 +33,14 @@ come `provider/model`.
 - [Alibaba Model Studio](/it/providers/alibaba)
 - [Amazon Bedrock](/it/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/it/providers/anthropic)
-- [BytePlus (International)](/it/concepts/model-providers#byteplus-international)
+- [BytePlus (internazionale)](/it/concepts/model-providers#byteplus-international)
 - [Chutes](/it/providers/chutes)
 - [ComfyUI](/it/providers/comfy)
 - [Cloudflare AI Gateway](/it/providers/cloudflare-ai-gateway)
+- [DeepInfra](/it/providers/deepinfra)
 - [fal](/it/providers/fal)
 - [Fireworks](/it/providers/fireworks)
-- [Modelli GLM](/it/providers/glm)
+- [modelli GLM](/it/providers/glm)
 - [MiniMax](/it/providers/minimax)
 - [Mistral](/it/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/it/providers/moonshot)
@@ -57,17 +57,16 @@ come `provider/model`.
 - [xAI](/it/providers/xai)
 - [Z.AI](/it/providers/zai)
 
-## Varianti provider bundled aggiuntive
+## Varianti aggiuntive di provider incluse
 
-- `anthropic-vertex` - supporto Anthropic implicito su Google Vertex quando sono disponibili credenziali Vertex; nessuna scelta auth separata nell'onboarding
+- `anthropic-vertex` - supporto Anthropic implicito su Google Vertex quando sono disponibili le credenziali Vertex; nessuna scelta di autenticazione separata durante l'onboarding
 - `copilot-proxy` - bridge locale VS Code Copilot Proxy; usa `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - flusso OAuth non ufficiale Gemini CLI; richiede un'installazione locale di `gemini` (`brew install gemini-cli` oppure `npm install -g @google/gemini-cli`); modello predefinito `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` oppure `openclaw models auth login --provider google-gemini-cli --set-default`
+- `google-gemini-cli` - flusso OAuth non ufficiale della CLI Gemini; richiede un'installazione locale di `gemini` (`brew install gemini-cli` o `npm install -g @google/gemini-cli`); modello predefinito `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` oppure `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Per il catalogo completo dei provider (xAI, Groq, Mistral, ecc.) e la configurazione avanzata,
-vedi [Provider di modelli](/it/concepts/model-providers).
+Per il catalogo completo dei provider (xAI, Groq, Mistral, ecc.) e la configurazione avanzata, consulta [Provider di modelli](/it/concepts/model-providers).
 
 ## Correlati
 
 - [Selezione del modello](/it/concepts/model-providers)
 - [Failover del modello](/it/concepts/model-failover)
-- [CLI models](/it/cli/models)
+- [CLI dei modelli](/it/cli/models)

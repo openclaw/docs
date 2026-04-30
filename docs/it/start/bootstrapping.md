@@ -1,49 +1,55 @@
 ---
 read_when:
     - Capire cosa succede alla prima esecuzione dell'agente
-    - Spiegare dove si trovano i file di bootstrap
-    - Debug dell'impostazione dell'identità di onboarding
+    - Spiegazione di dove risiedono i file di bootstrapping
+    - Risoluzione dei problemi della configurazione iniziale dell'identità
 sidebarTitle: Bootstrapping
-summary: Rituale di bootstrap dell'agente che inizializza i file dell'area di lavoro e dell'identità
-title: Bootstrap dell'agente
+summary: Rituale di bootstrap dell’agente che inizializza l’area di lavoro e i file di identità
+title: Inizializzazione dell'agente
 x-i18n:
-    generated_at: "2026-04-25T13:57:12Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:13:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 435eb2a14707623903ab7873774cc8d4489b960719cf6a525d547983f8338027
+    source_hash: de829f82016ae1e4dcd7714502ca8d11755556fed18b985a7e2bada4149a2d46
     source_path: start/bootstrapping.md
-    workflow: 15
+    workflow: 16
 ---
 
-Il bootstrapping è il rituale di **prima esecuzione** che prepara un workspace dell'agente e
-raccoglie i dettagli dell'identità. Avviene dopo l'onboarding, quando l'agente si avvia
+Il bootstrapping è il rituale di **primo avvio** che prepara un workspace dell’agente e
+raccoglie i dettagli dell’identità. Avviene dopo l’onboarding, quando l’agente si avvia
 per la prima volta.
 
 ## Cosa fa il bootstrapping
 
-Alla prima esecuzione dell'agente, OpenClaw esegue il bootstrapping del workspace (predefinito
+Al primo avvio dell’agente, OpenClaw esegue il bootstrapping del workspace (predefinito
 `~/.openclaw/workspace`):
 
 - Inizializza `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`.
 - Esegue un breve rituale di domande e risposte (una domanda alla volta).
-- Scrive identità + preferenze in `IDENTITY.md`, `USER.md`, `SOUL.md`.
+- Scrive identità e preferenze in `IDENTITY.md`, `USER.md`, `SOUL.md`.
 - Rimuove `BOOTSTRAP.md` al termine, così viene eseguito una sola volta.
+
+Per le esecuzioni con modelli embedded/locali, OpenClaw mantiene `BOOTSTRAP.md` fuori dal
+contesto di sistema privilegiato. Nel primo avvio interattivo principale, passa comunque
+il contenuto del file nel prompt utente, così i modelli che non chiamano in modo affidabile
+lo strumento `read` possono completare il rituale. Se l’esecuzione corrente non può accedere
+in sicurezza al workspace, l’agente riceve una nota di bootstrap limitata invece di un saluto generico.
 
 ## Saltare il bootstrapping
 
-Per saltarlo in un workspace già inizializzato, esegui `openclaw onboard --skip-bootstrap`.
+Per saltarlo per un workspace già preconfigurato, esegui `openclaw onboard --skip-bootstrap`.
 
 ## Dove viene eseguito
 
-Il bootstrapping viene sempre eseguito sull'**host del Gateway**. Se l'app macOS si connette a
-un Gateway remoto, il workspace e i file di bootstrapping si trovano su quella macchina remota.
+Il bootstrapping viene sempre eseguito sull’**host del gateway**. Se l’app macOS si connette a
+un Gateway remoto, il workspace e i file di bootstrapping risiedono su quella macchina remota.
 
 <Note>
-Quando il Gateway viene eseguito su un'altra macchina, modifica i file del workspace sull'host del gateway
-(ad esempio, `user@gateway-host:~/.openclaw/workspace`).
+Quando il Gateway viene eseguito su un’altra macchina, modifica i file del workspace sull’host del gateway
+(per esempio, `user@gateway-host:~/.openclaw/workspace`).
 </Note>
 
-## Documentazione correlata
+## Documenti correlati
 
-- Onboarding dell'app macOS: [Onboarding](/it/start/onboarding)
-- Struttura del workspace: [Workspace dell'agente](/it/concepts/agent-workspace)
+- Onboarding dell’app macOS: [Onboarding](/it/start/onboarding)
+- Layout del workspace: [Workspace dell’agente](/it/concepts/agent-workspace)

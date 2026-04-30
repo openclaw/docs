@@ -1,38 +1,38 @@
 ---
 read_when:
-    - Vuoi abilitare o configurare code_execution
-    - Vuoi analisi remota senza accesso alla shell locale
-    - Vuoi combinare x_search o web_search con analisi Python remota
+    - Si desidera abilitare o configurare code_execution
+    - Vuoi un'analisi remota senza accesso alla shell locale
+    - Vuoi combinare x_search o web_search con l'analisi Python remota
 summary: code_execution -- esegui analisi Python remota in sandbox con xAI
 title: Esecuzione del codice
 x-i18n:
-    generated_at: "2026-04-24T09:04:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:15:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
+    source_hash: fe635ec65aaf593a5bd63c139fbfc69e1ba3ea7c58c2bba639ec1ebd70dba1a9
     source_path: tools/code-execution.md
-    workflow: 15
+    workflow: 16
 ---
 
-`code_execution` esegue analisi Python remota in sandbox sull'API Responses di xAI.
+`code_execution` esegue analisi Python remote in sandbox sull'API Responses di xAI.
 Questo è diverso da [`exec`](/it/tools/exec) locale:
 
-- `exec` esegue comandi shell sulla tua macchina o sul tuo Node
+- `exec` esegue comandi shell sulla tua macchina o sul tuo nodo
 - `code_execution` esegue Python nella sandbox remota di xAI
 
 Usa `code_execution` per:
 
 - calcoli
-- tabulazione
+- tabulazioni
 - statistiche rapide
 - analisi in stile grafico
 - analizzare dati restituiti da `x_search` o `web_search`
 
-**Non** usarlo quando ti servono file locali, la tua shell, il tuo repo o dispositivi associati. Usa invece [`exec`](/it/tools/exec).
+**Non** usarlo quando hai bisogno di file locali, della tua shell, del tuo repo o di dispositivi associati. Usa [`exec`](/it/tools/exec) per quello.
 
 ## Configurazione
 
-Ti serve una chiave API xAI. Va bene una qualsiasi di queste:
+Ti serve una chiave API xAI. Va bene una qualunque di queste:
 
 - `XAI_API_KEY`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -63,34 +63,33 @@ Esempio:
 
 ## Come usarlo
 
-Chiedilo in modo naturale e rendi esplicita l'intenzione di analisi:
+Chiedi in modo naturale e rendi esplicita l'intenzione dell'analisi:
 
 ```text
-Usa code_execution per calcolare la media mobile a 7 giorni per questi numeri: ...
+Use code_execution to calculate the 7-day moving average for these numbers: ...
 ```
 
 ```text
-Usa x_search per trovare i post che menzionano OpenClaw questa settimana, poi usa code_execution per contarli per giorno.
+Use x_search to find posts mentioning OpenClaw this week, then use code_execution to count them by day.
 ```
 
 ```text
-Usa web_search per raccogliere gli ultimi benchmark AI, poi usa code_execution per confrontare le variazioni percentuali.
+Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-Internamente lo strumento accetta un solo parametro `task`, quindi l'agente dovrebbe inviare
-l'intera richiesta di analisi e tutti i dati inline in un unico prompt.
+Lo strumento accetta internamente un solo parametro `task`, quindi l'agent deve inviare la richiesta di analisi completa e tutti i dati inline in un unico prompt.
 
 ## Limiti
 
-- Questa è esecuzione remota xAI, non esecuzione di processi locali.
+- Questa è un'esecuzione remota di xAI, non un'esecuzione di processi locali.
 - Va trattata come analisi effimera, non come notebook persistente.
-- Non assumere accesso a file locali o al tuo workspace.
+- Non presumere l'accesso ai file locali o al tuo workspace.
 - Per dati X aggiornati, usa prima [`x_search`](/it/tools/web#x_search).
 
 ## Correlati
 
 - [Strumento Exec](/it/tools/exec)
-- [Approvazioni exec](/it/tools/exec-approvals)
+- [Approvazioni Exec](/it/tools/exec-approvals)
 - [Strumento apply_patch](/it/tools/apply-patch)
-- [Strumenti web](/it/tools/web)
+- [Strumenti Web](/it/tools/web)
 - [xAI](/it/providers/xai)

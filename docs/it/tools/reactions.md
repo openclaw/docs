@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Lavorare sulle reazioni in qualsiasi canale
-    - Capire come le reazioni emoji differiscono tra le piattaforme المختلفة
-summary: Semantica dello strumento delle reazioni su tutti i canali supportati
+    - Lavorare con le reazioni in qualsiasi canale
+    - Comprendere in che modo le reazioni emoji differiscono tra le piattaforme
+summary: Semantica dello strumento di reazione in tutti i canali supportati
 title: Reazioni
 x-i18n:
-    generated_at: "2026-04-24T09:07:43Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:17:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
     source_path: tools/reactions.md
-    workflow: 15
+    workflow: 16
 ---
 
-L'agente può aggiungere e rimuovere reazioni emoji ai messaggi usando lo strumento `message`
-con l'azione `react`. Il comportamento delle reazioni varia a seconda del canale.
+L'agente può aggiungere e rimuovere reazioni emoji sui messaggi usando lo strumento `message`
+con l'azione `react`. Il comportamento delle reazioni varia in base al canale e al trasporto.
 
-## Come funziona
+## Funzionamento
 
 ```json
 {
@@ -27,13 +27,13 @@ con l'azione `react`. Il comportamento delle reazioni varia a seconda del canale
 ```
 
 - `emoji` è obbligatorio quando si aggiunge una reazione.
-- Imposta `emoji` su una stringa vuota (`""`) per rimuovere la/e reazione/i del bot.
+- Imposta `emoji` su una stringa vuota (`""`) per rimuovere le reazioni del bot.
 - Imposta `remove: true` per rimuovere una specifica emoji (richiede `emoji` non vuoto).
 
 ## Comportamento per canale
 
 <AccordionGroup>
-  <Accordion title="Discord e Slack">
+  <Accordion title="Discord and Slack">
     - `emoji` vuoto rimuove tutte le reazioni del bot sul messaggio.
     - `remove: true` rimuove solo l'emoji specificata.
 
@@ -47,13 +47,13 @@ con l'azione `react`. Il comportamento delle reazioni varia a seconda del canale
 
   <Accordion title="Telegram">
     - `emoji` vuoto rimuove le reazioni del bot.
-    - `remove: true` rimuove anch'esso le reazioni ma richiede comunque un valore `emoji` non vuoto per la validazione dello strumento.
+    - `remove: true` rimuove anche le reazioni, ma richiede comunque un `emoji` non vuoto per la convalida dello strumento.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
     - `emoji` vuoto rimuove la reazione del bot.
-    - `remove: true` viene mappato internamente a emoji vuota (richiede comunque `emoji` nella chiamata dello strumento).
+    - `remove: true` viene mappato internamente a emoji vuoto (richiede comunque `emoji` nella chiamata allo strumento).
 
   </Accordion>
 
@@ -70,21 +70,21 @@ con l'azione `react`. Il comportamento delle reazioni varia a seconda del canale
   </Accordion>
 
   <Accordion title="Signal">
-    - Le notifiche delle reazioni in ingresso sono controllate da `channels.signal.reactionNotifications`: `"off"` le disattiva, `"own"` (predefinito) emette eventi quando gli utenti reagiscono ai messaggi del bot, e `"all"` emette eventi per tutte le reazioni.
+    - Le notifiche di reazione in ingresso sono controllate da `channels.signal.reactionNotifications`: `"off"` le disabilita, `"own"` (predefinito) emette eventi quando gli utenti reagiscono ai messaggi del bot e `"all"` emette eventi per tutte le reazioni.
 
   </Accordion>
 </AccordionGroup>
 
-## Livello di reazione
+## Livello delle reazioni
 
-La configurazione `reactionLevel` per canale controlla quanto ampiamente l'agente usa le reazioni. I valori sono tipicamente `off`, `ack`, `minimal` o `extensive`.
+La configurazione `reactionLevel` per canale controlla quanto ampiamente l'agente usa le reazioni. I valori sono in genere `off`, `ack`, `minimal` o `extensive`.
 
 - [Telegram reactionLevel](/it/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/it/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Imposta `reactionLevel` sui singoli canali per regolare quanto attivamente l'agente reagisce ai messaggi su ogni piattaforma.
+Imposta `reactionLevel` sui singoli canali per regolare quanto attivamente l'agente reagisce ai messaggi su ciascuna piattaforma.
 
 ## Correlati
 
-- [Agent Send](/it/tools/agent-send) — lo strumento `message` che include `react`
-- [Channels](/it/channels) — configurazione specifica del canale
+- [Invio agente](/it/tools/agent-send) — lo strumento `message` che include `react`
+- [Canali](/it/channels) — configurazione specifica del canale

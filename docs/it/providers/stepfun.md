@@ -1,72 +1,72 @@
 ---
 read_when:
-    - Vuoi i modelli StepFun in OpenClaw
-    - Hai bisogno di indicazioni per la configurazione di StepFun
+    - Vuoi utilizzare i modelli StepFun in OpenClaw
+    - Hai bisogno di indicazioni per configurare StepFun
 summary: Usare i modelli StepFun con OpenClaw
 title: StepFun
 x-i18n:
-    generated_at: "2026-04-24T08:58:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:10:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a5bc7904a07bed9f8c9bbbaabb9a7ab56e8f19924df9ec493a126a2685079486
+    source_hash: c9d43f6e8cda9703a0b9b82d079b282ed5c955676b99b946529582af230d8d10
     source_path: providers/stepfun.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw include un Plugin provider StepFun integrato con due ID provider:
+OpenClaw include un plugin provider StepFun integrato con due ID provider:
 
 - `stepfun` per l'endpoint standard
 - `stepfun-plan` per l'endpoint Step Plan
 
 <Warning>
-Standard e Step Plan sono **provider separati** con endpoint diversi e prefissi di riferimento del modello diversi (`stepfun/...` vs `stepfun-plan/...`). Usa una chiave China con gli endpoint `.com` e una chiave global con gli endpoint `.ai`.
+Standard e Step Plan sono **provider separati** con endpoint e prefissi di riferimento modello diversi (`stepfun/...` vs `stepfun-plan/...`). Usa una chiave Cina con gli endpoint `.com` e una chiave globale con gli endpoint `.ai`.
 </Warning>
 
-## Panoramica di regioni ed endpoint
+## Panoramica di area geografica ed endpoint
 
-| Endpoint  | China (`.com`)                         | Global (`.ai`)                        |
+| Endpoint  | Cina (`.com`)                         | Globale (`.ai`)                        |
 | --------- | -------------------------------------- | ------------------------------------- |
 | Standard  | `https://api.stepfun.com/v1`           | `https://api.stepfun.ai/v1`           |
 | Step Plan | `https://api.stepfun.com/step_plan/v1` | `https://api.stepfun.ai/step_plan/v1` |
 
-Variabile env auth: `STEPFUN_API_KEY`
+Variabile d'ambiente di autenticazione: `STEPFUN_API_KEY`
 
 ## Catalogo integrato
 
 Standard (`stepfun`):
 
-| Riferimento modello       | Contesto | Output massimo | Note                     |
-| ------------------------- | -------- | -------------- | ------------------------ |
-| `stepfun/step-3.5-flash`  | 262,144  | 65,536         | Modello standard predefinito |
+| Riferimento modello      | Contesto | Output massimo | Note                      |
+| ------------------------ | ------- | ---------- | ---------------------- |
+| `stepfun/step-3.5-flash` | 262,144 | 65,536     | Modello standard predefinito |
 
 Step Plan (`stepfun-plan`):
 
-| Riferimento modello                 | Contesto | Output massimo | Note                         |
-| ----------------------------------- | -------- | -------------- | ---------------------------- |
-| `stepfun-plan/step-3.5-flash`       | 262,144  | 65,536         | Modello Step Plan predefinito |
-| `stepfun-plan/step-3.5-flash-2603`  | 262,144  | 65,536         | Modello Step Plan aggiuntivo |
+| Riferimento modello                | Contesto | Output massimo | Note                              |
+| ---------------------------------- | ------- | ---------- | -------------------------- |
+| `stepfun-plan/step-3.5-flash`      | 262,144 | 65,536     | Modello Step Plan predefinito    |
+| `stepfun-plan/step-3.5-flash-2603` | 262,144 | 65,536     | Modello Step Plan aggiuntivo |
 
-## Per iniziare
+## Primi passi
 
-Scegli la superficie provider e segui i passaggi di configurazione.
+Scegli la superficie del provider e segui i passaggi di configurazione.
 
 <Tabs>
   <Tab title="Standard">
     **Ideale per:** uso generico tramite l'endpoint StepFun standard.
 
     <Steps>
-      <Step title="Scegli la regione dell'endpoint">
-        | Auth choice                      | Endpoint                         | Regione       |
+      <Step title="Scegli l'area geografica del tuo endpoint">
+        | Scelta di autenticazione       | Endpoint                         | Area geografica |
         | -------------------------------- | -------------------------------- | ------------- |
         | `stepfun-standard-api-key-intl`  | `https://api.stepfun.ai/v1`     | Internazionale |
-        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | China         |
+        | `stepfun-standard-api-key-cn`    | `https://api.stepfun.com/v1`    | Cina          |
       </Step>
       <Step title="Esegui l'onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-intl
         ```
 
-        Oppure per l'endpoint China:
+        Oppure per l'endpoint Cina:
 
         ```bash
         openclaw onboard --auth-choice stepfun-standard-api-key-cn
@@ -85,28 +85,28 @@ Scegli la superficie provider e segui i passaggi di configurazione.
       </Step>
     </Steps>
 
-    ### Riferimenti ai modelli
+    ### Riferimenti modello
 
     - Modello predefinito: `stepfun/step-3.5-flash`
 
   </Tab>
 
   <Tab title="Step Plan">
-    **Ideale per:** endpoint di reasoning Step Plan.
+    **Ideale per:** endpoint di ragionamento Step Plan.
 
     <Steps>
-      <Step title="Scegli la regione dell'endpoint">
-        | Auth choice                  | Endpoint                                | Regione       |
+      <Step title="Scegli l'area geografica del tuo endpoint">
+        | Scelta di autenticazione   | Endpoint                                | Area geografica |
         | ---------------------------- | --------------------------------------- | ------------- |
         | `stepfun-plan-api-key-intl`  | `https://api.stepfun.ai/step_plan/v1`  | Internazionale |
-        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | China         |
+        | `stepfun-plan-api-key-cn`    | `https://api.stepfun.com/step_plan/v1` | Cina          |
       </Step>
       <Step title="Esegui l'onboarding">
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-intl
         ```
 
-        Oppure per l'endpoint China:
+        Oppure per l'endpoint Cina:
 
         ```bash
         openclaw onboard --auth-choice stepfun-plan-api-key-cn
@@ -125,7 +125,7 @@ Scegli la superficie provider e segui i passaggi di configurazione.
       </Step>
     </Steps>
 
-    ### Riferimenti ai modelli
+    ### Riferimenti modello
 
     - Modello predefinito: `stepfun-plan/step-3.5-flash`
     - Modello alternativo: `stepfun-plan/step-3.5-flash-2603`
@@ -206,10 +206,10 @@ Scegli la superficie provider e segui i passaggi di configurazione.
   </Accordion>
 
   <Accordion title="Note">
-    - Il provider è incluso in OpenClaw, quindi non serve un passaggio separato di installazione del Plugin.
+    - Il provider è integrato in OpenClaw, quindi non è necessario un passaggio separato di installazione del plugin.
     - `step-3.5-flash-2603` è attualmente esposto solo su `stepfun-plan`.
-    - Un singolo flusso auth scrive profili con regione corrispondente sia per `stepfun` sia per `stepfun-plan`, così entrambe le superfici possono essere rilevate insieme.
-    - Usa `openclaw models list` e `openclaw models set <provider/model>` per ispezionare o cambiare i modelli.
+    - Un singolo flusso di autenticazione scrive profili corrispondenti all'area geografica per sia `stepfun` sia `stepfun-plan`, così entrambe le superfici possono essere scoperte insieme.
+    - Usa `openclaw models list` e `openclaw models set <provider/model>` per ispezionare o cambiare modelli.
 
   </Accordion>
 </AccordionGroup>
@@ -222,15 +222,15 @@ Per la panoramica più ampia dei provider, vedi [Provider di modelli](/it/concep
 
 <CardGroup cols={2}>
   <Card title="Selezione del modello" href="/it/concepts/model-providers" icon="layers">
-    Panoramica di tutti i provider, dei riferimenti ai modelli e del comportamento di failover.
+    Panoramica di tutti i provider, riferimenti modello e comportamento di failover.
   </Card>
-  <Card title="Riferimento della configurazione" href="/it/gateway/configuration-reference" icon="gear">
-    Schema completo della configurazione per provider, modelli e Plugin.
+  <Card title="Riferimento di configurazione" href="/it/gateway/configuration-reference" icon="gear">
+    Schema di configurazione completo per provider, modelli e plugin.
   </Card>
   <Card title="Selezione del modello" href="/it/concepts/models" icon="brain">
     Come scegliere e configurare i modelli.
   </Card>
-  <Card title="StepFun Platform" href="https://platform.stepfun.com" icon="globe">
-    Gestione della chiave API StepFun e documentazione.
+  <Card title="Piattaforma StepFun" href="https://platform.stepfun.com" icon="globe">
+    Gestione e documentazione delle chiavi API StepFun.
   </Card>
 </CardGroup>

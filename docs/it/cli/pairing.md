@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Stai usando DM in modalità pairing e devi approvare i mittenti
-summary: Riferimento CLI per `openclaw pairing` (approvare/elencare richieste di pairing)
-title: Pairing
+    - Stai usando DM in modalità di pairing e devi approvare i mittenti
+summary: Riferimento CLI per `openclaw pairing` (approva/elenca le richieste di associazione)
+title: Abbinamento
 x-i18n:
-    generated_at: "2026-04-24T08:34:41Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:44:42Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9e81dc407138e958e41d565b0addb600ad1ba5187627bb219f0b85b92bd112d1
+    source_hash: bffc70a8c08e298f42c8fbc2238fce06993572e72f333e87ad18dea3cf33fab5
     source_path: cli/pairing.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw pairing`
 
-Approva o ispeziona richieste di pairing DM (per i canali che supportano il pairing).
+Approva o ispeziona le richieste di associazione via DM (per i canali che supportano l'associazione).
 
 Correlati:
 
-- Flusso di pairing: [Pairing](/it/channels/pairing)
+- Flusso di associazione: [Associazione](/it/channels/pairing)
 
 ## Comandi
 
@@ -34,44 +34,51 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Elenca le richieste di pairing in sospeso per un canale.
+Elenca le richieste di associazione in sospeso per un canale.
 
 Opzioni:
 
-- `[channel]`: id canale posizionale
-- `--channel <channel>`: id canale esplicito
-- `--account <accountId>`: id account per canali multi-account
+- `[channel]`: id del canale posizionale
+- `--channel <channel>`: id del canale esplicito
+- `--account <accountId>`: id dell'account per canali multi-account
 - `--json`: output leggibile dalla macchina
 
 Note:
 
-- Se sono configurati più canali compatibili con il pairing, devi fornire un canale in forma posizionale o con `--channel`.
-- I canali di estensione sono consentiti purché l'id del canale sia valido.
+- Se sono configurati più canali che supportano l'associazione, devi fornire un canale, posizionalmente oppure con `--channel`.
+- I canali delle estensioni sono consentiti purché l'id del canale sia valido.
 
 ## `pairing approve`
 
-Approva un codice di pairing in sospeso e consente quel mittente.
+Approva un codice di associazione in sospeso e consenti quel mittente.
 
 Utilizzo:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` quando è configurato esattamente un canale compatibile con il pairing
+- `openclaw pairing approve <code>` quando è configurato esattamente un canale che supporta l'associazione
 
 Opzioni:
 
-- `--channel <channel>`: id canale esplicito
-- `--account <accountId>`: id account per canali multi-account
+- `--channel <channel>`: id del canale esplicito
+- `--account <accountId>`: id dell'account per canali multi-account
 - `--notify`: invia una conferma al richiedente sullo stesso canale
+
+Bootstrap del proprietario:
+
+- Se `commands.ownerAllowFrom` è vuoto quando approvi un codice di associazione, OpenClaw registra anche il mittente approvato come proprietario dei comandi, usando una voce con ambito di canale come `telegram:123456789`.
+- Questo esegue il bootstrap solo del primo proprietario. Le approvazioni di associazione successive non sostituiscono né espandono `commands.ownerAllowFrom`.
+- Il proprietario dei comandi è l'account dell'operatore umano autorizzato a eseguire comandi riservati al proprietario e ad approvare azioni pericolose come `/diagnostics`, `/export-trajectory`, `/config` e le approvazioni exec.
 
 ## Note
 
-- Input del canale: passalo in forma posizionale (`pairing list telegram`) o con `--channel <channel>`.
-- `pairing list` supporta `--account <accountId>` per i canali multi-account.
+- Input del canale: passalo posizionalmente (`pairing list telegram`) oppure con `--channel <channel>`.
+- `pairing list` supporta `--account <accountId>` per canali multi-account.
 - `pairing approve` supporta `--account <accountId>` e `--notify`.
-- Se è configurato un solo canale compatibile con il pairing, è consentito `pairing approve <code>`.
+- Se è configurato un solo canale che supporta l'associazione, `pairing approve <code>` è consentito.
+- Se hai approvato un mittente prima che esistesse questo bootstrap, esegui `openclaw doctor`; avvisa quando non è configurato alcun proprietario dei comandi e mostra il comando `openclaw config set commands.ownerAllowFrom ...` per risolvere il problema.
 
 ## Correlati
 
 - [Riferimento CLI](/it/cli)
-- [Channel pairing](/it/channels/pairing)
+- [Associazione dei canali](/it/channels/pairing)

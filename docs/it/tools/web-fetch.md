@@ -1,30 +1,30 @@
 ---
 read_when:
     - Vuoi recuperare un URL ed estrarre contenuto leggibile
-    - Ti serve configurare `web_fetch` o il suo fallback Firecrawl
-    - Vuoi capire i limiti e la cache di `web_fetch`
+    - È necessario configurare web_fetch o il relativo meccanismo di riserva Firecrawl
+    - Vuoi comprendere i limiti e la memorizzazione nella cache di web_fetch
 sidebarTitle: Web Fetch
-summary: Strumento `web_fetch` -- recupero HTTP con estrazione di contenuto leggibile
-title: Recupero web
+summary: strumento web_fetch -- recupero HTTP con estrazione di contenuto leggibile
+title: Recupero dal web
 x-i18n:
-    generated_at: "2026-04-24T09:08:56Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:19:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
+    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
     source_path: tools/web-fetch.md
-    workflow: 15
+    workflow: 16
 ---
 
-Lo strumento `web_fetch` esegue un semplice HTTP GET ed estrae contenuto leggibile
+Lo strumento `web_fetch` esegue una semplice richiesta HTTP GET ed estrae contenuto leggibile
 (da HTML a markdown o testo). **Non** esegue JavaScript.
 
-Per siti pesanti in JS o pagine protette da login, usa invece il
-[Web Browser](/it/tools/browser).
+Per siti molto basati su JS o pagine protette da login, usa invece il
+[Browser web](/it/tools/browser).
 
 ## Avvio rapido
 
-`web_fetch` è **abilitato per impostazione predefinita** -- non serve alcuna configurazione. L'agente può
-chiamarlo subito:
+`web_fetch` è **abilitato per impostazione predefinita** -- non è necessaria alcuna configurazione. L'agente può
+chiamarlo immediatamente:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -47,20 +47,20 @@ Tronca l'output a questo numero di caratteri.
 ## Come funziona
 
 <Steps>
-  <Step title="Recupero">
-    Invia un HTTP GET con uno User-Agent simile a Chrome e header `Accept-Language`.
-    Blocca hostname privati/interni e ricontrolla i redirect.
+  <Step title="Fetch">
+    Invia una richiesta HTTP GET con uno User-Agent simile a Chrome e un header
+    `Accept-Language`. Blocca hostname privati/interni e ricontrolla i reindirizzamenti.
   </Step>
-  <Step title="Estrazione">
+  <Step title="Extract">
     Esegue Readability (estrazione del contenuto principale) sulla risposta HTML.
   </Step>
-  <Step title="Fallback (facoltativo)">
-    Se Readability fallisce e Firecrawl è configurato, riprova tramite la
-    API Firecrawl con modalità di aggiramento bot.
+  <Step title="Fallback (optional)">
+    Se Readability non riesce e Firecrawl è configurato, riprova tramite l'API
+    Firecrawl con modalità di aggiramento dei bot.
   </Step>
   <Step title="Cache">
-    I risultati vengono messi in cache per 15 minuti (configurabile) per ridurre
-    recuperi ripetuti dello stesso URL.
+    I risultati vengono memorizzati nella cache per 15 minuti (configurabile) per ridurre i recuperi
+    ripetuti dello stesso URL.
   </Step>
 </Steps>
 
@@ -71,16 +71,20 @@ Tronca l'output a questo numero di caratteri.
   tools: {
     web: {
       fetch: {
-        enabled: true, // predefinito: true
-        provider: "firecrawl", // facoltativo; ometti per auto-rilevamento
-        maxChars: 50000, // massimo caratteri in output
-        maxCharsCap: 50000, // limite rigido per il parametro maxChars
-        maxResponseBytes: 2000000, // dimensione massima download prima del troncamento
+        enabled: true, // default: true
+        provider: "firecrawl", // optional; omit for auto-detect
+        maxChars: 50000, // max output chars
+        maxCharsCap: 50000, // hard cap for maxChars param
+        maxResponseBytes: 2000000, // max download size before truncation
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        readability: true, // usa estrazione Readability
-        userAgent: "Mozilla/5.0 ...", // override dello User-Agent
+        readability: true, // use Readability extraction
+        userAgent: "Mozilla/5.0 ...", // override User-Agent
+        ssrfPolicy: {
+          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+        },
       },
     },
   },
@@ -89,15 +93,15 @@ Tronca l'output a questo numero di caratteri.
 
 ## Fallback Firecrawl
 
-Se l'estrazione Readability fallisce, `web_fetch` può fare fallback a
-[Firecrawl](/it/tools/firecrawl) per aggiramento bot e migliore estrazione:
+Se l'estrazione Readability non riesce, `web_fetch` può ripiegare su
+[Firecrawl](/it/tools/firecrawl) per aggirare i bot e ottenere un'estrazione migliore:
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // facoltativo; ometti per auto-rilevamento dalle credenziali disponibili
+        provider: "firecrawl", // optional; omit for auto-detect from available credentials
       },
     },
   },
@@ -107,10 +111,10 @@ Se l'estrazione Readability fallisce, `web_fetch` può fare fallback a
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // facoltativo se FIRECRAWL_API_KEY è impostata
+            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // durata cache (1 giorno)
+            maxAgeMs: 86400000, // cache duration (1 day)
             timeoutSeconds: 60,
           },
         },
@@ -124,47 +128,51 @@ Se l'estrazione Readability fallisce, `web_fetch` può fare fallback a
 La configurazione legacy `tools.web.fetch.firecrawl.*` viene migrata automaticamente da `openclaw doctor --fix`.
 
 <Note>
-  Se Firecrawl è abilitato e il suo SecretRef non viene risolto senza
-  fallback env `FIRECRAWL_API_KEY`, l'avvio del gateway fallisce immediatamente.
+  Se Firecrawl è abilitato e il suo SecretRef non viene risolto senza fallback
+  dell'env `FIRECRAWL_API_KEY`, l'avvio del gateway fallisce rapidamente.
 </Note>
 
 <Note>
-  Gli override `baseUrl` di Firecrawl sono bloccati: devono usare `https://` e
-  l'host ufficiale Firecrawl (`api.firecrawl.dev`).
+  Gli override di `baseUrl` di Firecrawl sono bloccati: devono usare `https://` e
+  l'host ufficiale di Firecrawl (`api.firecrawl.dev`).
 </Note>
 
 Comportamento runtime attuale:
 
-- `tools.web.fetch.provider` seleziona esplicitamente il provider di fallback per il fetch.
-- Se `provider` è omesso, OpenClaw auto-rileva il primo provider web-fetch pronto
-  dalle credenziali disponibili. Oggi il provider integrato è Firecrawl.
-- Se Readability è disabilitato, `web_fetch` salta direttamente al fallback del
-  provider selezionato. Se nessun provider è disponibile, fallisce in modo chiuso.
+- `tools.web.fetch.provider` seleziona esplicitamente il provider di fallback per il recupero.
+- Se `provider` viene omesso, OpenClaw rileva automaticamente il primo provider web-fetch
+  pronto dalle credenziali disponibili. Oggi il provider incluso è Firecrawl.
+- Se Readability è disabilitato, `web_fetch` passa direttamente al fallback del
+  provider selezionato. Se non è disponibile alcun provider, fallisce in modo chiuso.
 
 ## Limiti e sicurezza
 
-- `maxChars` viene limitato a `tools.web.fetch.maxCharsCap`
-- Il body della risposta è limitato a `maxResponseBytes` prima del parsing; le risposte
-  troppo grandi vengono troncate con un avviso
-- Gli hostname privati/interni vengono bloccati
-- I redirect vengono controllati e limitati da `maxRedirects`
-- `web_fetch` è best-effort -- alcuni siti richiedono il [Web Browser](/it/tools/browser)
+- `maxChars` è limitato a `tools.web.fetch.maxCharsCap`
+- Il corpo della risposta è limitato a `maxResponseBytes` prima del parsing; le risposte
+  sovradimensionate vengono troncate con un avviso
+- Gli hostname privati/interni sono bloccati
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` e
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` sono opt-in ristretti
+  per stack proxy fake-IP attendibili; lasciali non impostati a meno che il tuo proxy possieda
+  quegli intervalli sintetici e applichi la propria policy di destinazione
+- I reindirizzamenti vengono controllati e limitati da `maxRedirects`
+- `web_fetch` è best-effort -- alcuni siti richiedono il [Browser web](/it/tools/browser)
 
-## Profili strumento
+## Profili degli strumenti
 
-Se usi profili strumento o allowlist, aggiungi `web_fetch` o `group:web`:
+Se usi profili degli strumenti o liste di elementi consentiti, aggiungi `web_fetch` o `group:web`:
 
 ```json5
 {
   tools: {
     allow: ["web_fetch"],
-    // oppure: allow: ["group:web"]  (include web_fetch, web_search e x_search)
+    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
   },
 }
 ```
 
 ## Correlati
 
-- [Web Search](/it/tools/web) -- ricerca sul web con più provider
-- [Web Browser](/it/tools/browser) -- automazione completa del browser per siti pesanti in JS
-- [Firecrawl](/it/tools/firecrawl) -- strumenti Firecrawl di ricerca e scraping
+- [Ricerca web](/it/tools/web) -- cerca sul web con più provider
+- [Browser web](/it/tools/browser) -- automazione completa del browser per siti molto basati su JS
+- [Firecrawl](/it/tools/firecrawl) -- strumenti Firecrawl per ricerca e scraping

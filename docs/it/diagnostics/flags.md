@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Ti servono log di debug mirati senza aumentare i livelli di log globali
-    - Ti serve acquisire log specifici del sottosistema per il supporto
-summary: Flag di diagnostica per log di debug mirati
+    - Sono necessari log di debug mirati senza aumentare i livelli di logging globali
+    - È necessario acquisire i log specifici del sottosistema per l'assistenza
+summary: Flag diagnostici per log di debug mirati
 title: Flag di diagnostica
 x-i18n:
-    generated_at: "2026-04-24T08:38:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:49:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
+    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
     source_path: diagnostics/flags.md
-    workflow: 15
+    workflow: 16
 ---
 
-I flag di diagnostica ti consentono di abilitare log di debug mirati senza attivare il logging verboso ovunque. I flag sono opt-in e non hanno alcun effetto a meno che un sottosistema non li controlli.
+I flag di diagnostica permettono di abilitare log di debug mirati senza attivare la registrazione dettagliata ovunque. I flag sono opt-in e non hanno effetto a meno che un sottosistema non li controlli.
 
 ## Come funziona
 
-- I flag sono stringhe (case-insensitive).
+- I flag sono stringhe (senza distinzione tra maiuscole e minuscole).
 - Puoi abilitare i flag nella configurazione o tramite un override env.
 - I caratteri jolly sono supportati:
   - `telegram.*` corrisponde a `telegram.http`
   - `*` abilita tutti i flag
 
-## Abilita tramite configurazione
+## Abilitazione tramite configurazione
 
 ```json
 {
@@ -51,13 +51,50 @@ Riavvia il Gateway dopo aver modificato i flag.
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Disattiva tutti i flag:
+Disabilita tutti i flag:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
 ```
 
-## Dove finiscono i log
+## Artefatti della timeline
+
+Il flag `timeline` scrive eventi strutturati di temporizzazione di avvio e runtime per
+harness QA esterni:
+
+```bash
+OPENCLAW_DIAGNOSTICS=timeline \
+OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
+openclaw gateway run
+```
+
+Puoi abilitarlo anche nella configurazione:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["timeline"]
+  }
+}
+```
+
+Il percorso del file della timeline proviene comunque da
+`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Quando `timeline` è abilitato solo dalla
+configurazione, gli span iniziali di caricamento della configurazione non vengono emessi perché OpenClaw
+non ha ancora letto la configurazione; gli span di avvio successivi usano il flag di configurazione.
+
+Anche `OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` e
+`OPENCLAW_DIAGNOSTICS=*` abilitano la timeline perché abilitano ogni
+flag di diagnostica. Preferisci `timeline` quando vuoi solo l'artefatto di temporizzazione
+JSONL.
+
+I record della timeline usano l'envelope `openclaw.diagnostics.v1`. Gli eventi possono includere
+ID di processo, nomi di fase, nomi di span, durate, ID di Plugin, conteggi delle dipendenze,
+campioni di ritardo dell'event loop, nomi di operazioni dei provider, stato di uscita dei processi figlio
+e nomi/messaggi degli errori di avvio. Tratta i file della timeline come artefatti di diagnostica
+locali; esaminali prima di condividerli fuori dalla tua macchina.
+
+## Dove vanno i log
 
 I flag emettono log nel file di log di diagnostica standard. Per impostazione predefinita:
 
@@ -65,9 +102,9 @@ I flag emettono log nel file di log di diagnostica standard. Per impostazione pr
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Se imposti `logging.file`, usa invece quel percorso. I log sono in formato JSONL (un oggetto JSON per riga). La redazione continua ad applicarsi in base a `logging.redactSensitive`.
+Se imposti `logging.file`, usa invece quel percorso. I log sono JSONL (un oggetto JSON per riga). La redazione si applica comunque in base a `logging.redactSensitive`.
 
-## Estrai i log
+## Estrarre i log
 
 Scegli il file di log più recente:
 
@@ -75,27 +112,27 @@ Scegli il file di log più recente:
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Filtra per la diagnostica HTTP di Telegram:
+Filtra la diagnostica HTTP di Telegram:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Oppure usa tail mentre riproduci il problema:
+Oppure segui il log durante la riproduzione:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Per i Gateway remoti, puoi anche usare `openclaw logs --follow` (vedi [/cli/logs](/it/cli/logs)).
+Per Gateway remoti, puoi anche usare `openclaw logs --follow` (vedi [/cli/logs](/it/cli/logs)).
 
 ## Note
 
-- Se `logging.level` è impostato su un valore più alto di `warn`, questi log possono essere soppressi. Il valore predefinito `info` va bene.
-- I flag sono sicuri da lasciare abilitati; influenzano solo il volume dei log per il sottosistema specifico.
-- Usa [/logging](/it/logging) per cambiare destinazioni dei log, livelli e redazione.
+- Se `logging.level` è impostato a un livello superiore a `warn`, questi log potrebbero essere soppressi. Il valore predefinito `info` va bene.
+- I flag possono essere lasciati abilitati in sicurezza; influiscono solo sul volume dei log per il sottosistema specifico.
+- Usa [/logging](/it/logging) per modificare destinazioni, livelli e redazione dei log.
 
 ## Correlati
 
-- [Diagnostica del Gateway](/it/gateway/diagnostics)
-- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)
+- [Diagnostica Gateway](/it/gateway/diagnostics)
+- [Risoluzione dei problemi Gateway](/it/gateway/troubleshooting)

@@ -1,40 +1,40 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Gestire i runtime sandbox e ispezionare i criteri sandbox effettivi
-title: CLI Sandbox
+summary: Gestisci gli ambienti di esecuzione isolati e ispeziona i criteri di isolamento effettivi
+title: CLI dell'ambiente isolato
 x-i18n:
-    generated_at: "2026-04-24T08:34:55Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:44:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f2b5835968faac0a8243fd6eadfcecb51b211fe7b346454e215312b1b6d5e65
+    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
     source_path: cli/sandbox.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gestire i runtime sandbox per l'esecuzione isolata degli agenti.
+Gestisci runtime sandbox per l'esecuzione isolata degli agenti.
 
 ## Panoramica
 
-OpenClaw può eseguire gli agenti in runtime sandbox isolati per motivi di sicurezza. I comandi `sandbox` ti aiutano a ispezionare e ricreare questi runtime dopo aggiornamenti o modifiche di configurazione.
+OpenClaw può eseguire agenti in runtime sandbox isolati per motivi di sicurezza. I comandi `sandbox` ti aiutano a ispezionare e ricreare quei runtime dopo aggiornamenti o modifiche alla configurazione.
 
-Oggi questo di solito significa:
+Oggi di solito questo significa:
 
-- contenitori sandbox Docker
-- runtime sandbox SSH quando `agents.defaults.sandbox.backend = "ssh"`
-- runtime sandbox OpenShell quando `agents.defaults.sandbox.backend = "openshell"`
+- Contenitori sandbox Docker
+- Runtime sandbox SSH quando `agents.defaults.sandbox.backend = "ssh"`
+- Runtime sandbox OpenShell quando `agents.defaults.sandbox.backend = "openshell"`
 
-Per `ssh` e OpenShell `remote`, la ricreazione è più importante che con Docker:
+Per `ssh` e OpenShell `remote`, ricreare è più importante che con Docker:
 
 - il workspace remoto è canonico dopo il seed iniziale
 - `openclaw sandbox recreate` elimina quel workspace remoto canonico per l'ambito selezionato
-- all'uso successivo viene eseguito di nuovo il seed dal workspace locale corrente
+- l'uso successivo lo inizializza di nuovo dal workspace locale corrente
 
 ## Comandi
 
 ### `openclaw sandbox explain`
 
-Ispeziona la modalità/l'ambito/l'accesso al workspace sandbox **effettivi**, i criteri degli strumenti sandbox e i gate elevati (con i percorsi delle chiavi di configurazione per la correzione).
+Ispeziona la modalità, l'ambito e l'accesso al workspace sandbox **effettivi**, la policy degli strumenti sandbox e i gate elevati (con percorsi delle chiavi di configurazione per la correzione).
 
 ```bash
 openclaw sandbox explain
@@ -45,74 +45,76 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Elenca tutti i runtime sandbox con il loro stato e la configurazione.
+Elenca tutti i runtime sandbox con il relativo stato e la configurazione.
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # Elenca solo i contenitori browser
-openclaw sandbox list --json     # Output JSON
+openclaw sandbox list --browser  # List only browser containers
+openclaw sandbox list --json     # JSON output
 ```
 
 **L'output include:**
 
 - Nome e stato del runtime
 - Backend (`docker`, `openshell`, ecc.)
-- Etichetta di configurazione e se corrisponde alla configurazione corrente
+- Etichetta della configurazione e se corrisponde alla configurazione corrente
 - Età (tempo dalla creazione)
 - Tempo di inattività (tempo dall'ultimo utilizzo)
 - Sessione/agente associato
 
 ### `openclaw sandbox recreate`
 
-Rimuove i runtime sandbox per forzarne la ricreazione con la configurazione aggiornata.
+Rimuovi i runtime sandbox per forzarne la ricreazione con la configurazione aggiornata.
 
 ```bash
-openclaw sandbox recreate --all                # Ricrea tutti i contenitori
-openclaw sandbox recreate --session main       # Sessione specifica
-openclaw sandbox recreate --agent mybot        # Agente specifico
-openclaw sandbox recreate --browser            # Solo contenitori browser
-openclaw sandbox recreate --all --force        # Salta la conferma
+openclaw sandbox recreate --all                # Recreate all containers
+openclaw sandbox recreate --session main       # Specific session
+openclaw sandbox recreate --agent mybot        # Specific agent
+openclaw sandbox recreate --browser            # Only browser containers
+openclaw sandbox recreate --all --force        # Skip confirmation
 ```
 
 **Opzioni:**
 
-- `--all`: ricrea tutti i contenitori sandbox
-- `--session <key>`: ricrea il contenitore per una sessione specifica
-- `--agent <id>`: ricrea i contenitori per un agente specifico
-- `--browser`: ricrea solo i contenitori browser
-- `--force`: salta la richiesta di conferma
+- `--all`: Ricrea tutti i contenitori sandbox
+- `--session <key>`: Ricrea il contenitore per una sessione specifica
+- `--agent <id>`: Ricrea i contenitori per un agente specifico
+- `--browser`: Ricrea solo i contenitori del browser
+- `--force`: Salta la richiesta di conferma
 
-**Importante:** i runtime vengono ricreati automaticamente al successivo utilizzo dell'agente.
+<Note>
+I runtime vengono ricreati automaticamente al successivo utilizzo dell'agente.
+</Note>
 
 ## Casi d'uso
 
 ### Dopo l'aggiornamento di un'immagine Docker
 
 ```bash
-# Scarica la nuova immagine
+# Pull new image
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# Aggiorna la configurazione per usare la nuova immagine
-# Modifica la configurazione: agents.defaults.sandbox.docker.image (o agents.list[].sandbox.docker.image)
+# Update config to use new image
+# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
 
-# Ricrea i contenitori
+# Recreate containers
 openclaw sandbox recreate --all
 ```
 
-### Dopo una modifica della configurazione sandbox
+### Dopo la modifica della configurazione sandbox
 
 ```bash
-# Modifica la configurazione: agents.defaults.sandbox.* (o agents.list[].sandbox.*)
+# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
 
-# Ricrea per applicare la nuova configurazione
+# Recreate to apply new config
 openclaw sandbox recreate --all
 ```
 
-### Dopo una modifica della destinazione SSH o del materiale di autenticazione SSH
+### Dopo la modifica della destinazione SSH o del materiale di autenticazione SSH
 
 ```bash
-# Modifica la configurazione:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -122,13 +124,13 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Per il backend core `ssh`, la ricreazione elimina la root del workspace remoto per ambito
-nella destinazione SSH. L'esecuzione successiva esegue di nuovo il seed dal workspace locale.
+Per il backend principale `ssh`, la ricreazione elimina la radice del workspace remoto per ambito
+sulla destinazione SSH. L'esecuzione successiva la inizializza di nuovo dal workspace locale.
 
-### Dopo una modifica della sorgente, dei criteri o della modalità di OpenShell
+### Dopo la modifica della sorgente, della policy o della modalità di OpenShell
 
 ```bash
-# Modifica la configurazione:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -138,35 +140,36 @@ openclaw sandbox recreate --all
 ```
 
 Per la modalità OpenShell `remote`, la ricreazione elimina il workspace remoto canonico
-per quell'ambito. L'esecuzione successiva esegue di nuovo il seed dal workspace locale.
+per quell'ambito. L'esecuzione successiva lo inizializza di nuovo dal workspace locale.
 
-### Dopo una modifica di setupCommand
+### Dopo la modifica di setupCommand
 
 ```bash
 openclaw sandbox recreate --all
-# oppure solo per un agente:
+# or just one agent:
 openclaw sandbox recreate --agent family
 ```
 
 ### Solo per un agente specifico
 
 ```bash
-# Aggiorna solo i contenitori di un agente
+# Update only one agent's containers
 openclaw sandbox recreate --agent alfred
 ```
 
-## Perché è necessario?
+## Perché è necessario
 
-**Problema:** quando aggiorni la configurazione sandbox:
+Quando aggiorni la configurazione sandbox:
 
-- i runtime esistenti continuano a essere eseguiti con le vecchie impostazioni
-- i runtime vengono rimossi solo dopo 24 ore di inattività
-- gli agenti usati regolarmente mantengono in vita i vecchi runtime indefinitamente
+- I runtime esistenti continuano a essere eseguiti con le vecchie impostazioni.
+- I runtime vengono rimossi solo dopo 24 ore di inattività.
+- Gli agenti usati regolarmente mantengono attivi i vecchi runtime a tempo indefinito.
 
-**Soluzione:** usa `openclaw sandbox recreate` per forzare la rimozione dei vecchi runtime. Verranno ricreati automaticamente con le impostazioni correnti quando serviranno di nuovo.
+Usa `openclaw sandbox recreate` per forzare la rimozione dei vecchi runtime. Vengono ricreati automaticamente con le impostazioni correnti quando servono di nuovo.
 
-Suggerimento: preferisci `openclaw sandbox recreate` invece della pulizia manuale specifica del backend.
-Usa il registro dei runtime del Gateway ed evita discrepanze quando cambiano chiavi di ambito/sessione.
+<Tip>
+Preferisci `openclaw sandbox recreate` alla pulizia manuale specifica del backend. Usa il registro dei runtime del Gateway ed evita disallineamenti quando cambiano l'ambito o le chiavi di sessione.
+</Tip>
 
 ## Configurazione
 
@@ -183,11 +186,11 @@ Le impostazioni sandbox si trovano in `~/.openclaw/openclaw.json` sotto `agents.
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... altre opzioni Docker
+          // ... more Docker options
         },
         "prune": {
-          "idleHours": 24, // Rimozione automatica dopo 24 ore di inattività
-          "maxAgeDays": 7, // Rimozione automatica dopo 7 giorni
+          "idleHours": 24, // Auto-prune after 24h idle
+          "maxAgeDays": 7, // Auto-prune after 7 days
         },
       },
     },
@@ -200,4 +203,4 @@ Le impostazioni sandbox si trovano in `~/.openclaw/openclaw.json` sotto `agents.
 - [Riferimento CLI](/it/cli)
 - [Sandboxing](/it/gateway/sandboxing)
 - [Workspace dell'agente](/it/concepts/agent-workspace)
-- [Doctor](/it/gateway/doctor) — controlla la configurazione sandbox
+- [Doctor](/it/gateway/doctor): verifica la configurazione sandbox.
