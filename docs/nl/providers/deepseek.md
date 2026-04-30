@@ -5,10 +5,10 @@ read_when:
 summary: DeepSeek instellen (authenticatie + modelselectie)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-29T23:09:44Z"
+    generated_at: "2026-04-30T16:29:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e84d989a7cba8d259779ac02293718050ce51efe6ce2bdbfacb9e22bbfd294ef
+    source_hash: 6fbc7bd4de14000eaa5c42b17eb8c9312321ed02ac1667e60774ead3f1749eb4
     source_path: providers/deepseek.md
     workflow: 16
 ---
@@ -25,23 +25,23 @@ x-i18n:
 ## Aan de slag
 
 <Steps>
-  <Step title="Get your API key">
+  <Step title="Haal je API-sleutel op">
     Maak een API-sleutel aan op [platform.deepseek.com](https://platform.deepseek.com/api_keys).
   </Step>
-  <Step title="Run onboarding">
+  <Step title="Voer onboarding uit">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    Dit vraagt om je API-sleutel en stelt `deepseek/deepseek-v4-flash` in als het standaardmodel.
+    Dit vraagt om je API-sleutel en stelt `deepseek/deepseek-v4-flash` in als standaardmodel.
 
   </Step>
-  <Step title="Verify models are available">
+  <Step title="Controleer of modellen beschikbaar zijn">
     ```bash
     openclaw models list --provider deepseek
     ```
 
-    Gebruik het volgende om de gebundelde statische catalogus te inspecteren zonder dat er een actieve Gateway nodig is:
+    Gebruik het volgende om de meegeleverde statische catalogus te inspecteren zonder een draaiende Gateway te vereisen:
 
     ```bash
     openclaw models list --all --provider deepseek
@@ -51,7 +51,7 @@ x-i18n:
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Non-interactive setup">
+  <Accordion title="Niet-interactieve installatie">
     Geef voor gescripte of headless installaties alle flags direct mee:
 
     ```bash
@@ -74,47 +74,49 @@ beschikbaar is voor dat proces (bijvoorbeeld in `~/.openclaw/.env` of via
 
 ## Ingebouwde catalogus
 
-| Model-ref                    | Naam              | Invoer | Context   | Max. uitvoer | Opmerkingen                                      |
-| ---------------------------- | ----------------- | ------ | --------- | ------------ | ------------------------------------------------ |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | tekst  | 1,000,000 | 384,000      | Standaardmodel; V4-oppervlak met thinking-mogelijkheid |
-| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | tekst  | 1,000,000 | 384,000      | V4-oppervlak met thinking-mogelijkheid          |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | tekst  | 131,072   | 8,192        | DeepSeek V3.2-oppervlak zonder thinking          |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | tekst  | 131,072   | 65,536       | V3.2-oppervlak met redenering ingeschakeld       |
+| Modelreferentie             | Naam              | Invoer | Context   | Maximale uitvoer | Opmerkingen                               |
+| --------------------------- | ----------------- | ------ | --------- | ---------------- | ----------------------------------------- |
+| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | text   | 1,000,000 | 384,000          | Standaardmodel; V4-oppervlak met thinking |
+| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | text   | 1,000,000 | 384,000          | V4-oppervlak met thinking                 |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text   | 131,072   | 8,192            | DeepSeek V3.2-oppervlak zonder thinking   |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text   | 131,072   | 65,536           | V3.2-oppervlak met redeneren              |
 
 <Tip>
 V4-modellen ondersteunen DeepSeeks `thinking`-besturing. OpenClaw speelt ook
 DeepSeek `reasoning_content` opnieuw af bij vervolgrondes, zodat thinking-sessies met tool
 calls kunnen doorgaan.
+Gebruik `/think xhigh` of `/think max` met DeepSeek V4-modellen om DeepSeeks
+maximale `reasoning_effort` aan te vragen.
 </Tip>
 
 ## Thinking en tools
 
 DeepSeek V4-thinking-sessies hebben een strikter replay-contract dan de meeste
 OpenAI-compatibele providers: nadat een ronde met thinking ingeschakeld tools gebruikt, verwacht DeepSeek
-dat opnieuw afgespeelde assistant-berichten uit die ronde
-`reasoning_content` bevatten bij vervolgverzoeken. OpenClaw handelt dit af binnen de
-DeepSeek Plugin, zodat normaal toolgebruik over meerdere rondes werkt met
+dat opnieuw afgespeelde assistentberichten uit die ronde `reasoning_content` bevatten
+bij vervolgverzoeken. OpenClaw handelt dit af binnen de
+DeepSeek-Plugin, zodat normaal toolgebruik over meerdere rondes werkt met
 `deepseek/deepseek-v4-flash` en `deepseek/deepseek-v4-pro`.
 
-Als je een bestaande sessie van een andere OpenAI-compatibele provider overschakelt naar een
-DeepSeek V4-model, hebben oudere assistant-rondes met tool-calls mogelijk geen native
-DeepSeek `reasoning_content`. OpenClaw vult dat ontbrekende veld aan bij opnieuw afgespeelde
-assistant-berichten voor DeepSeek V4-thinking-verzoeken, zodat de provider de
-geschiedenis kan accepteren zonder dat `/new` nodig is.
+Als je een bestaande sessie overschakelt van een andere OpenAI-compatibele provider naar een
+DeepSeek V4-model, hebben oudere assistent-rondes met tool calls mogelijk geen native
+DeepSeek `reasoning_content`. OpenClaw vult dat ontbrekende veld in bij opnieuw afgespeelde
+assistentberichten voor DeepSeek V4-thinking-verzoeken, zodat de provider
+de geschiedenis kan accepteren zonder `/new` te vereisen.
 
-Wanneer thinking is uitgeschakeld in OpenClaw (inclusief de UI-selectie **None**),
+Wanneer thinking is uitgeschakeld in OpenClaw (inclusief de UI-selectie **Geen**),
 stuurt OpenClaw DeepSeek `thinking: { type: "disabled" }` en verwijdert het opnieuw afgespeelde
 `reasoning_content` uit de uitgaande geschiedenis. Dit houdt sessies met uitgeschakelde thinking
 op het DeepSeek-pad zonder thinking.
 
 Gebruik `deepseek/deepseek-v4-flash` voor het standaard snelle pad. Gebruik
-`deepseek/deepseek-v4-pro` wanneer je het sterkere V4-model wilt en hogere kosten of latentie
-acceptabel zijn.
+`deepseek/deepseek-v4-pro` wanneer je het sterkere V4-model wilt en hogere
+kosten of latentie kunt accepteren.
 
 ## Live testen
 
-De directe live-modelsuite bevat DeepSeek V4 in de moderne modelset. Voer alleen
-de directe modelcontroles voor DeepSeek V4 als volgt uit:
+De directe live modelsuite bevat DeepSeek V4 in de moderne modelset. Voer
+alleen de directe modelcontroles voor DeepSeek V4 als volgt uit:
 
 ```bash
 OPENCLAW_LIVE_PROVIDERS=deepseek \
@@ -122,8 +124,8 @@ OPENCLAW_LIVE_MODELS="deepseek/deepseek-v4-flash,deepseek/deepseek-v4-pro" \
 pnpm test:live src/agents/models.profiles.live.test.ts
 ```
 
-Die livecontrole verifieert dat beide V4-modellen kunnen voltooien en dat vervolgrondes met thinking/tool
-de replay-payload behouden die DeepSeek vereist.
+Die live controle verifieert dat beide V4-modellen kunnen voltooien en dat thinking/tool-
+vervolgrondes de replay-payload behouden die DeepSeek vereist.
 
 ## Configuratievoorbeeld
 
@@ -141,10 +143,10 @@ de replay-payload behouden die DeepSeek vereist.
 ## Gerelateerd
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
-    Providers, model-refs en failover-gedrag kiezen.
+  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+    Providers, modelreferenties en failover-gedrag kiezen.
   </Card>
-  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
+  <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
     Volledige configuratiereferentie voor agents, modellen en providers.
   </Card>
 </CardGroup>

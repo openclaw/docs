@@ -2,26 +2,28 @@
 read_when:
     - Je wilt begrijpen hoe memory_search werkt
     - Je wilt een embeddingprovider kiezen
-    - Je wilt de zoekkwaliteit afstemmen
-summary: Hoe geheugenzoekopdrachten relevante notities vinden met embeddings en hybride informatieophaling
+    - Je wilt de zoekkwaliteit verfijnen
+summary: Hoe zoeken in het geheugen relevante notities vindt met inbeddingen en hybride opvraging
 title: Geheugen zoeken
 x-i18n:
-    generated_at: "2026-04-29T22:38:51Z"
+    generated_at: "2026-04-30T16:28:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e6c44d90f49a797bda01b9a575928c128a334f89ae14fc3620e65562a866aa9
+    source_hash: 7f40bbe32453a28070ffc67f19a4c06e2fe59a24237a2aef353f4b9b8260bcf2
     source_path: concepts/memory-search.md
     workflow: 16
 ---
 
-`memory_search` vindt relevante notities uit je geheugenbestanden, zelfs wanneer de
-bewoording afwijkt van de oorspronkelijke tekst. Het werkt door geheugen in kleine
-chunks te indexeren en die te doorzoeken met embeddings, trefwoorden of beide.
+`memory_search` zoekt relevante notities in je geheugenbestanden, zelfs wanneer de
+formulering afwijkt van de oorspronkelijke tekst. Dit werkt door geheugen in
+kleine chunks te indexeren en die te doorzoeken met embeddings, trefwoorden of
+beide.
 
 ## Snel aan de slag
 
-Als je een GitHub Copilot-abonnement, of een API-sleutel voor OpenAI, Gemini, Voyage of Mistral
-hebt geconfigureerd, werkt geheugenzoekopdracht automatisch. Een provider expliciet instellen:
+Als je een GitHub Copilot-abonnement, OpenAI, Gemini, Voyage of Mistral
+API-sleutel hebt geconfigureerd, werkt geheugenzoekfunctie automatisch. Om een
+provider expliciet in te stellen:
 
 ```json5
 {
@@ -35,29 +37,31 @@ hebt geconfigureerd, werkt geheugenzoekopdracht automatisch. Een provider explic
 }
 ```
 
-Voor configuraties met meerdere eindpunten kan `provider` ook een aangepaste
+Voor setups met meerdere endpoints kan `provider` ook een aangepaste
 `models.providers.<id>`-vermelding zijn, zoals `ollama-5080`, wanneer die provider
-`api: "ollama"` of een andere eigenaar van een embeddingadapter instelt.
+`api: "ollama"` of een andere eigenaar van een embedding-adapter instelt.
 
-Voor lokale embeddings zonder API-sleutel installeer je het optionele runtimepakket
-`node-llama-cpp` naast OpenClaw en gebruik je `provider: "local"`.
+Voor lokale embeddings zonder API-sleutel stel je `provider: "local"` in. Verpakte
+installaties behouden de native `node-llama-cpp` runtime in OpenClaw's beheerde
+pluginruntime-deps-boom; voer `openclaw doctor --fix` uit als die boom moet
+worden gerepareerd.
 
-Sommige OpenAI-compatibele embedding-eindpunten vereisen asymmetrische labels zoals
+Sommige OpenAI-compatibele embedding-endpoints vereisen asymmetrische labels zoals
 `input_type: "query"` voor zoekopdrachten en `input_type: "document"` of `"passage"`
 voor geïndexeerde chunks. Configureer die met `memorySearch.queryInputType` en
 `memorySearch.documentInputType`; zie de [referentie voor geheugenconfiguratie](/nl/reference/memory-config#provider-specific-config).
 
 ## Ondersteunde providers
 
-| Provider       | ID               | API-sleutel nodig | Opmerkingen                                               |
-| -------------- | ---------------- | ----------------- | --------------------------------------------------------- |
-| Bedrock        | `bedrock`        | Nee               | Automatisch gedetecteerd wanneer de AWS-credentialketen resolveert |
-| Gemini         | `gemini`         | Ja                | Ondersteunt indexering van afbeeldingen/audio             |
-| GitHub Copilot | `github-copilot` | Nee               | Automatisch gedetecteerd, gebruikt Copilot-abonnement     |
-| Local          | `local`          | Nee               | GGUF-model, download van ~0,6 GB                          |
+| Provider       | ID               | API-sleutel nodig | Opmerkingen                                                |
+| -------------- | ---------------- | ----------------- | ---------------------------------------------------------- |
+| Bedrock        | `bedrock`        | Nee               | Automatisch gedetecteerd wanneer de AWS-credentialketen wordt opgelost |
+| Gemini         | `gemini`         | Ja                | Ondersteunt indexering van afbeeldingen/audio              |
+| GitHub Copilot | `github-copilot` | Nee               | Automatisch gedetecteerd, gebruikt Copilot-abonnement      |
+| Local          | `local`          | Nee               | GGUF-model, download van ~0,6 GB                           |
 | Mistral        | `mistral`        | Ja                | Automatisch gedetecteerd                                  |
-| Ollama         | `ollama`         | Nee               | Lokaal, moet expliciet worden ingesteld                   |
-| OpenAI         | `openai`         | Ja                | Automatisch gedetecteerd, snel                            |
+| Ollama         | `ollama`         | Nee               | Lokaal, moet expliciet worden ingesteld                    |
+| OpenAI         | `openai`         | Ja                | Automatisch gedetecteerd, snel                             |
 | Voyage         | `voyage`         | Ja                | Automatisch gedetecteerd                                  |
 
 ## Hoe zoeken werkt
@@ -75,37 +79,38 @@ flowchart LR
     M --> R["Top Results"]
 ```
 
-- **Vectorzoekopdracht** vindt notities met vergelijkbare betekenis ("gateway host" komt overeen met
+- **Vectorzoekfunctie** vindt notities met een vergelijkbare betekenis ("gateway host" komt overeen met
   "de machine waarop OpenClaw draait").
-- **BM25-trefwoordzoekopdracht** vindt exacte overeenkomsten (ID's, foutstrings, configuratiesleutels).
+- **BM25-trefwoordzoekfunctie** vindt exacte overeenkomsten (ID's, foutstrings, configuratie
+  keys).
 
-Als slechts één pad beschikbaar is (geen embeddings of geen FTS), wordt alleen dat pad uitgevoerd.
+Als slechts één pad beschikbaar is (geen embeddings of geen FTS), draait het andere alleen.
 
-Wanneer embeddings niet beschikbaar zijn, gebruikt OpenClaw nog steeds lexicale ranking over FTS-resultaten in plaats van alleen terug te vallen op ruwe volgorde op basis van exacte overeenkomsten. Die gedegradeerde modus geeft chunks met sterkere dekking van zoektermen en relevante bestandspaden een hogere score, waardoor recall bruikbaar blijft, zelfs zonder `sqlite-vec` of een embeddingprovider.
+Wanneer embeddings niet beschikbaar zijn, gebruikt OpenClaw nog steeds lexicale rangschikking over FTS-resultaten in plaats van alleen terug te vallen op ruwe exacte-overeenkomstvolgorde. Die gedegradeerde modus versterkt chunks met sterkere dekking van zoektermen en relevante bestandspaden, waardoor recall ook zonder `sqlite-vec` of een embedding-provider nuttig blijft.
 
 ## Zoekkwaliteit verbeteren
 
 Twee optionele functies helpen wanneer je een grote notitiegeschiedenis hebt:
 
-### Temporale verzwakking
+### Tijdelijk verval
 
-Oude notities verliezen geleidelijk rankinggewicht, zodat recente informatie eerst naar voren komt.
-Met de standaardhalveringstijd van 30 dagen scoort een notitie van vorige maand op 50% van
-het oorspronkelijke gewicht. Evergreen-bestanden zoals `MEMORY.md` worden nooit verzwakt.
+Oude notities verliezen geleidelijk rangschikkingsgewicht, zodat recente informatie eerst naar voren komt.
+Met de standaardhalfwaardetijd van 30 dagen scoort een notitie van vorige maand op 50% van
+het oorspronkelijke gewicht. Tijdloze bestanden zoals `MEMORY.md` vervallen nooit.
 
 <Tip>
-Schakel temporale verzwakking in als je agent maanden aan dagelijkse notities heeft en verouderde
+Schakel tijdelijk verval in als je agent maanden aan dagelijkse notities heeft en verouderde
 informatie recente context blijft overtreffen.
 </Tip>
 
 ### MMR (diversiteit)
 
 Vermindert redundante resultaten. Als vijf notities allemaal dezelfde routerconfiguratie noemen, zorgt MMR
-ervoor dat de bovenste resultaten verschillende onderwerpen dekken in plaats van te herhalen.
+ervoor dat de topresultaten verschillende onderwerpen behandelen in plaats van te herhalen.
 
 <Tip>
-Schakel MMR in als `memory_search` bijna-duplicaatfragmenten uit
-verschillende dagelijkse notities blijft teruggeven.
+Schakel MMR in als `memory_search` steeds bijna-duplicaatfragmenten uit
+verschillende dagelijkse notities teruggeeft.
 </Tip>
 
 ### Beide inschakelen
@@ -130,31 +135,31 @@ verschillende dagelijkse notities blijft teruggeven.
 ## Multimodaal geheugen
 
 Met Gemini Embedding 2 kun je afbeeldingen en audiobestanden naast
-Markdown indexeren. Zoekopdrachten blijven tekst, maar ze matchen met visuele en audio-inhoud.
-Zie de [referentie voor geheugenconfiguratie](/nl/reference/memory-config) voor
-de installatie.
+Markdown indexeren. Zoekopdrachten blijven tekst, maar ze matchen met visuele en audio-
+inhoud. Zie de [referentie voor geheugenconfiguratie](/nl/reference/memory-config) voor
+installatie.
 
-## Zoekopdracht in sessiegeheugen
+## Sessiegeheugen zoeken
 
-Je kunt optioneel sessietranscripten indexeren, zodat `memory_search`
+Je kunt optioneel sessietranscripten indexeren zodat `memory_search`
 eerdere gesprekken kan herinneren. Dit is opt-in via
 `memorySearch.experimental.sessionMemory`. Zie de
 [configuratiereferentie](/nl/reference/memory-config) voor details.
 
-## Probleemoplossing
+## Problemen oplossen
 
 **Geen resultaten?** Voer `openclaw memory status` uit om de index te controleren. Als die leeg is, voer je
 `openclaw memory index --force` uit.
 
-**Alleen trefwoordovereenkomsten?** Je embeddingprovider is mogelijk niet geconfigureerd. Controleer
+**Alleen trefwoordovereenkomsten?** Je embedding-provider is mogelijk niet geconfigureerd. Controleer
 `openclaw memory status --deep`.
 
-**Time-out bij lokale embeddings?** `ollama`, `lmstudio` en `local` gebruiken standaard een langere
-inline batch-time-out. Als de host gewoon traag is, stel je
-`agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` in en voer je opnieuw
+**Lokale embeddings krijgen een time-out?** `ollama`, `lmstudio` en `local` gebruiken standaard een langere
+inline batch-time-out. Als de host gewoon traag is, stel dan
+`agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` in en voer opnieuw
 `openclaw memory index --force` uit.
 
-**CJK-tekst niet gevonden?** Bouw de FTS-index opnieuw op met
+**CJK-tekst niet gevonden?** Bouw de FTS-index opnieuw met
 `openclaw memory index --force`.
 
 ## Verder lezen

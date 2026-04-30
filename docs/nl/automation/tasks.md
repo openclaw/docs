@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Achtergrondwerk in uitvoering of onlangs voltooid inspecteren
-    - Afleveringsfouten opsporen voor losgekoppelde agentuitvoeringen
+    - Achtergrondwerk inspecteren dat bezig is of onlangs is voltooid
+    - Afleveringsfouten voor losgekoppelde agentuitvoeringen debuggen
     - Begrijpen hoe uitvoeringen op de achtergrond zich verhouden tot sessies, Cron en Heartbeat
 sidebarTitle: Background tasks
-summary: Tracking van achtergrondtaken voor ACP-uitvoeringen, subagenten, geïsoleerde Cron-taken en CLI-bewerkingen
+summary: Bijhouden van achtergrondtaken voor ACP-uitvoeringen, subagenten, geïsoleerde Cron-taken en CLI-bewerkingen
 title: Achtergrondtaken
 x-i18n:
-    generated_at: "2026-04-29T22:23:56Z"
+    generated_at: "2026-04-30T16:28:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4bbf74f3aeea532738b56b83cd2e1a0a3734bfd453da6636b8be985a28ccc027
+    source_hash: 999653c9360323d5135e33193c76458cba8c288227de46a6217f1ccbed2a6d34
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-Op zoek naar planning? Zie [Automatisering en taken](/nl/automation) om het juiste mechanisme te kiezen. Deze pagina is het activiteitenlogboek voor achtergrondwerk, niet de planner.
+Zoek je planning? Zie [Automatisering en taken](/nl/automation) om het juiste mechanisme te kiezen. Deze pagina is het activiteitenlogboek voor achtergrondwerk, niet de planner.
 </Note>
 
-Achtergrondtaken volgen werk dat **buiten je hoofdgesprekssessie** wordt uitgevoerd: ACP-runs, subagent-starts, geïsoleerde cron-jobuitvoeringen en door de CLI gestarte bewerkingen.
+Achtergrondtaken volgen werk dat **buiten je hoofdgesprekssessie** wordt uitgevoerd: ACP-runs, subagent-starts, geïsoleerde Cron-jobuitvoeringen en door de CLI gestarte bewerkingen.
 
-Taken vervangen sessies, cron-jobs of heartbeats **niet** — ze zijn het **activiteitenlogboek** dat vastlegt welk losgekoppeld werk is gebeurd, wanneer, en of het is geslaagd.
+Taken vervangen **geen** sessies, Cron-jobs of Heartbeats — ze zijn het **activiteitenlogboek** dat vastlegt welk losgekoppeld werk is gebeurd, wanneer, en of het is gelukt.
 
 <Note>
-Niet elke agent-run maakt een taak aan. Heartbeat-beurten en normale interactieve chat doen dat niet. Alle cron-uitvoeringen, ACP-starts, subagent-starts en CLI-agentcommando's doen dat wel.
+Niet elke agent-run maakt een taak aan. Heartbeat-beurten en normale interactieve chat doen dat niet. Alle Cron-uitvoeringen, ACP-starts, subagent-starts en CLI-agentcommando's doen dat wel.
 </Note>
 
 ## TL;DR
 
-- Taken zijn **records**, geen planners — cron en heartbeat bepalen _wanneer_ werk wordt uitgevoerd, taken volgen _wat er is gebeurd_.
-- ACP, subagents, alle cron-jobs en CLI-bewerkingen maken taken aan. Heartbeat-beurten doen dat niet.
+- Taken zijn **records**, geen planners — Cron en Heartbeat bepalen _wanneer_ werk wordt uitgevoerd, taken volgen _wat er is gebeurd_.
+- ACP, subagents, alle Cron-jobs en CLI-bewerkingen maken taken aan. Heartbeat-beurten doen dat niet.
 - Elke taak doorloopt `queued → running → terminal` (succeeded, failed, timed_out, cancelled of lost).
-- Cron-taken blijven actief zolang de cron-runtime nog eigenaar is van de job; als de
-  runtime-status in het geheugen verdwenen is, controleert taakonderhoud eerst de duurzame cron-
-  run-geschiedenis voordat een taak als verloren wordt gemarkeerd.
-- Voltooiing is push-gestuurd: losgekoppeld werk kan direct melden of de
-  aanvragersessie/heartbeat wekken wanneer het klaar is, dus statuspollinglussen hebben
+- Cron-taken blijven live zolang de Cron-runtime de job nog bezit; als de
+  in-memory runtimestatus verdwenen is, controleert taakonderhoud eerst de duurzame Cron-
+  runhistorie voordat een taak als lost wordt gemarkeerd.
+- Afronding is push-gestuurd: losgekoppeld werk kan direct melden of de
+  aanvragersessie/Heartbeat wekken wanneer het klaar is, dus statuspolling-loops hebben
   meestal de verkeerde vorm.
-- Geïsoleerde cron-runs en subagent-voltooiingen ruimen naar beste vermogen gevolgde browsertabbladen/processen voor hun kindsessie op voordat de laatste opschoningsboekhouding plaatsvindt.
-- Geïsoleerde cron-bezorging onderdrukt verouderde tussentijdse bovenliggende antwoorden terwijl afstammend subagent-werk nog wordt afgehandeld, en geeft de voorkeur aan uiteindelijke afstammende uitvoer wanneer die vóór bezorging binnenkomt.
-- Voltooiingsmeldingen worden direct aan een kanaal bezorgd of in de wachtrij gezet voor de volgende heartbeat.
-- `openclaw tasks list` toont alle taken; `openclaw tasks audit` brengt problemen naar voren.
+- Geïsoleerde Cron-runs en afrondingen van subagents proberen op best-effort-basis bijgehouden browsertabs/processen voor hun child-sessie op te ruimen vóór de definitieve opruimboekhouding.
+- Geïsoleerde Cron-bezorging onderdrukt verouderde tussentijdse bovenliggende antwoorden terwijl afstammend subagent-werk nog wordt afgehandeld, en geeft de voorkeur aan definitieve afstammende output wanneer die vóór bezorging binnenkomt.
+- Afrondingsmeldingen worden direct aan een kanaal bezorgd of in de wachtrij geplaatst voor de volgende Heartbeat.
+- `openclaw tasks list` toont alle taken; `openclaw tasks audit` brengt problemen naar boven.
 - Terminal-records worden 7 dagen bewaard en daarna automatisch opgeschoond.
 
-## Snel starten
+## Snelstart
 
 <Tabs>
   <Tab title="Weergeven en filteren">
@@ -85,7 +85,7 @@ Niet elke agent-run maakt een taak aan. Heartbeat-beurten en normale interactiev
     ```
 
   </Tab>
-  <Tab title="Taakstroom">
+  <Tab title="Taakflow">
     ```bash
     # Inspect TaskFlow state
     openclaw tasks flow list
@@ -97,23 +97,23 @@ Niet elke agent-run maakt een taak aan. Heartbeat-beurten en normale interactiev
 
 ## Wat een taak aanmaakt
 
-| Bron                   | Runtime-type | Wanneer een taakrecord wordt aangemaakt                | Standaard meldingsbeleid |
+| Bron                   | Runtimetype | Wanneer een taakrecord wordt aangemaakt                | Standaard meldingsbeleid |
 | ---------------------- | ------------ | ------------------------------------------------------ | ------------------------ |
-| ACP-achtergrondruns    | `acp`        | Een ACP-kindsessie starten                             | `done_only`              |
+| ACP-achtergrondruns    | `acp`        | Een child-ACP-sessie starten                           | `done_only`              |
 | Subagent-orkestratie   | `subagent`   | Een subagent starten via `sessions_spawn`              | `done_only`              |
-| Cron-jobs (alle typen) | `cron`       | Elke cron-uitvoering (hoofdsessie en geïsoleerd)       | `silent`                 |
-| CLI-bewerkingen        | `cli`        | `openclaw agent`-commando's die via de gateway lopen   | `silent`                 |
-| Agent-mediataken       | `cli`        | Sessiegebaseerde `video_generate`-runs                 | `silent`                 |
+| Cron-jobs (alle typen) | `cron`       | Elke Cron-uitvoering (hoofdsessie en geïsoleerd)       | `silent`                 |
+| CLI-bewerkingen        | `cli`        | `openclaw agent`-commando's die via de Gateway lopen   | `silent`                 |
+| Agent-mediajobs        | `cli`        | Sessie-ondersteunde `video_generate`-runs              | `silent`                 |
 
 <AccordionGroup>
-  <Accordion title="Meldingsstandaarden voor cron en media">
-    Cron-taken in de hoofdsessie gebruiken standaard het meldingsbeleid `silent` — ze maken records aan voor tracking, maar genereren geen meldingen. Geïsoleerde cron-taken gebruiken ook standaard `silent`, maar zijn zichtbaarder omdat ze in hun eigen sessie worden uitgevoerd.
+  <Accordion title="Meldingsstandaarden voor Cron en media">
+    Cron-taken in de hoofdsessie gebruiken standaard het meldingsbeleid `silent` — ze maken records aan voor tracking maar genereren geen meldingen. Geïsoleerde Cron-taken gebruiken ook standaard `silent`, maar zijn zichtbaarder omdat ze in hun eigen sessie draaien.
 
-    Sessiegebaseerde `video_generate`-runs gebruiken ook het meldingsbeleid `silent`. Ze maken nog steeds taakrecords aan, maar voltooiing wordt als interne wake teruggegeven aan de oorspronkelijke agentsessie, zodat de agent het vervolbericht kan schrijven en de voltooide video zelf kan bijvoegen. Als je kiest voor `tools.media.asyncCompletion.directSend`, proberen asynchrone `music_generate`- en `video_generate`-voltooiingen eerst directe kanaalbezorging voordat ze terugvallen op het wake-pad van de aanvragersessie.
+    Sessie-ondersteunde `video_generate`-runs gebruiken ook het meldingsbeleid `silent`. Ze maken nog steeds taakrecords aan, maar afronding wordt als interne wake teruggegeven aan de oorspronkelijke agentsessie, zodat de agent zelf het vervolgbericht kan schrijven en de voltooide video kan bijvoegen. Als je `tools.media.asyncCompletion.directSend` inschakelt, proberen async `music_generate`- en `video_generate`-afrondingen eerst directe kanaalbezorging voordat ze terugvallen op het wake-pad van de aanvragersessie.
 
   </Accordion>
-  <Accordion title="Vangrail voor gelijktijdige video_generate">
-    Terwijl een sessiegebaseerde `video_generate`-taak nog actief is, fungeert de tool ook als vangrail: herhaalde `video_generate`-aanroepen in dezelfde sessie retourneren de actieve taakstatus in plaats van een tweede gelijktijdige generatie te starten. Gebruik `action: "status"` wanneer je expliciet voortgang/status wilt opvragen vanaf de agentkant.
+  <Accordion title="Guardrail voor gelijktijdige video_generate">
+    Zolang een sessie-ondersteunde `video_generate`-taak nog actief is, werkt de tool ook als guardrail: herhaalde `video_generate`-aanroepen in diezelfde sessie geven de actieve taakstatus terug in plaats van een tweede gelijktijdige generatie te starten. Gebruik `action: "status"` wanneer je vanaf de agentkant een expliciete voortgangs-/statusopvraag wilt.
   </Accordion>
   <Accordion title="Wat geen taken aanmaakt">
     - Heartbeat-beurten — hoofdsessie; zie [Heartbeat](/nl/gateway/heartbeat)
@@ -137,58 +137,58 @@ stateDiagram-v2
     running --> lost : session gone > 5 min
 ```
 
-| Status      | Wat het betekent                                                          |
-| ----------- | -------------------------------------------------------------------------- |
-| `queued`    | Aangemaakt, wacht tot de agent start                                       |
-| `running`   | Agent-beurt wordt actief uitgevoerd                                        |
-| `succeeded` | Succesvol voltooid                                                         |
-| `failed`    | Voltooid met een fout                                                      |
-| `timed_out` | De geconfigureerde time-out is overschreden                                |
-| `cancelled` | Gestopt door de operator via `openclaw tasks cancel`                       |
+| Status      | Wat het betekent                                                         |
+| ----------- | ------------------------------------------------------------------------ |
+| `queued`    | Aangemaakt, wacht totdat de agent start                                  |
+| `running`   | Agent-beurt wordt actief uitgevoerd                                      |
+| `succeeded` | Succesvol voltooid                                                       |
+| `failed`    | Voltooid met een fout                                                    |
+| `timed_out` | Heeft de geconfigureerde time-out overschreden                           |
+| `cancelled` | Gestopt door de operator via `openclaw tasks cancel`                     |
 | `lost`      | De runtime verloor gezaghebbende onderliggende status na een respijtperiode van 5 minuten |
 
 Overgangen gebeuren automatisch — wanneer de gekoppelde agent-run eindigt, wordt de taakstatus bijgewerkt om daarmee overeen te komen.
 
-Voltooiing van agent-runs is gezaghebbend voor actieve taakrecords. Een succesvolle losgekoppelde run wordt afgerond als `succeeded`, gewone run-fouten worden afgerond als `failed`, en time-out- of afbreekuitkomsten worden afgerond als `timed_out`. Als een operator de taak al heeft geannuleerd, of de runtime al een sterkere terminal-status zoals `failed`, `timed_out` of `lost` heeft vastgelegd, verlaagt een later successignaal die terminal-status niet.
+Afronding van agent-runs is gezaghebbend voor actieve taakrecords. Een succesvolle losgekoppelde run wordt afgerond als `succeeded`, gewone runfouten worden afgerond als `failed`, en time-out- of afbreekuitkomsten worden afgerond als `timed_out`. Als een operator de taak al heeft geannuleerd, of de runtime al een sterkere terminal-status zoals `failed`, `timed_out` of `lost` heeft vastgelegd, verlaagt een later successignaal die terminal-status niet.
 
 `lost` is runtime-bewust:
 
-- ACP-taken: onderliggende metadata van de ACP-kindsessie is verdwenen.
-- Subagent-taken: de onderliggende kindsessie is verdwenen uit de doelagentopslag.
-- Cron-taken: de cron-runtime volgt de job niet langer als actief en duurzame
-  cron-run-geschiedenis toont geen terminal-resultaat voor die run. Offline CLI-
-  audit behandelt zijn eigen lege in-proces cron-runtime-status niet als gezaghebbend.
-- CLI-taken: geïsoleerde kindsessietaken gebruiken de kindsessie; chatgebaseerde
-  CLI-taken gebruiken in plaats daarvan de live run-context, zodat achterblijvende
-  kanaal-/groep-/directe sessierijen ze niet actief houden. Gateway-gebaseerde
-  `openclaw agent`-runs worden ook afgerond op basis van hun run-resultaat, zodat voltooide runs
+- ACP-taken: onderliggende ACP-child-sessiemetadata is verdwenen.
+- Subagent-taken: onderliggende child-sessie is verdwenen uit de doel-agentstore.
+- Cron-taken: de Cron-runtime volgt de job niet meer als actief en duurzame
+  Cron-runhistorie toont geen terminal-resultaat voor die run. Offline CLI-
+  audit behandelt zijn eigen lege in-process Cron-runtimestatus niet als gezaghebbend.
+- CLI-taken: geïsoleerde child-sessietaken gebruiken de child-sessie; chat-ondersteunde
+  CLI-taken gebruiken in plaats daarvan de live runcontext, dus achterblijvende
+  kanaal-/groep-/directe sessierijen houden ze niet in leven. Gateway-ondersteunde
+  `openclaw agent`-runs worden ook afgerond op basis van hun runresultaat, zodat voltooide runs
   niet actief blijven totdat de sweeper ze als `lost` markeert.
 
 ## Bezorging en meldingen
 
-Wanneer een taak een terminal-status bereikt, meldt OpenClaw dat aan je. Er zijn twee bezorgpaden:
+Wanneer een taak een terminal-status bereikt, meldt OpenClaw je dat. Er zijn twee bezorgpaden:
 
-**Directe bezorging** — als de taak een kanaaldoel heeft (de `requesterOrigin`), gaat het voltooiingsbericht rechtstreeks naar dat kanaal (Telegram, Discord, Slack, enz.). Voor subagent-voltooiingen behoudt OpenClaw ook gebonden thread-/topic-routering wanneer beschikbaar en kan het een ontbrekende `to` / account aanvullen vanuit de opgeslagen route van de aanvragersessie (`lastChannel` / `lastTo` / `lastAccountId`) voordat directe bezorging wordt opgegeven.
+**Directe bezorging** — als de taak een kanaaldoel heeft (de `requesterOrigin`), gaat het afrondingsbericht rechtstreeks naar dat kanaal (Telegram, Discord, Slack, enz.). Voor subagent-afrondingen behoudt OpenClaw ook gebonden thread-/topic-routering wanneer die beschikbaar is en kan het een ontbrekende `to` / account invullen vanuit de opgeslagen route van de aanvragersessie (`lastChannel` / `lastTo` / `lastAccountId`) voordat directe bezorging wordt opgegeven.
 
-**Sessiewachtrijbezorging** — als directe bezorging mislukt of er geen origin is ingesteld, wordt de update als systeemevent in de sessie van de aanvrager in de wachtrij gezet en verschijnt die bij de volgende heartbeat.
+**In sessie wachtrij geplaatste bezorging** — als directe bezorging mislukt of geen origin is ingesteld, wordt de update als systeemevent in de sessie van de aanvrager in de wachtrij geplaatst en verschijnt die bij de volgende Heartbeat.
 
 <Tip>
-Taakvoltooiing triggert een directe heartbeat-wake, zodat je het resultaat snel ziet — je hoeft niet te wachten op de volgende geplande heartbeat-tick.
+Taakafronding activeert een directe Heartbeat-wake zodat je het resultaat snel ziet — je hoeft niet te wachten op de volgende geplande Heartbeat-tick.
 </Tip>
 
-Dat betekent dat de gebruikelijke workflow push-gebaseerd is: start losgekoppeld werk één keer en laat de runtime je wekken of melden bij voltooiing. Poll de taakstatus alleen wanneer je debugging, interventie of een expliciete audit nodig hebt.
+Dat betekent dat de gebruikelijke workflow push-gebaseerd is: start losgekoppeld werk één keer en laat de runtime je vervolgens wekken of melden bij afronding. Poll taakstatus alleen wanneer je debugging, ingrijpen of een expliciete audit nodig hebt.
 
 ### Meldingsbeleid
 
 Bepaal hoeveel je over elke taak hoort:
 
-| Beleid                | Wat wordt bezorgd                                                     |
-| --------------------- | --------------------------------------------------------------------- |
+| Beleid                | Wat wordt bezorgd                                                       |
+| --------------------- | ---------------------------------------------------------------------- |
 | `done_only` (standaard) | Alleen terminal-status (succeeded, failed, enz.) — **dit is de standaard** |
-| `state_changes`       | Elke statusovergang en voortgangsupdate                               |
-| `silent`              | Helemaal niets                                                        |
+| `state_changes`       | Elke statusovergang en voortgangsupdate                                |
+| `silent`              | Helemaal niets                                                          |
 
-Wijzig het beleid terwijl een taak loopt:
+Wijzig het beleid terwijl een taak draait:
 
 ```bash
 openclaw tasks notify <lookup> state_changes
@@ -197,98 +197,99 @@ openclaw tasks notify <lookup> state_changes
 ## CLI-referentie
 
 <AccordionGroup>
-  <Accordion title="tasks list">
+  <Accordion title="taken weergeven">
     ```bash
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    Uitvoerkolommen: taak-ID, soort, status, bezorging, run-ID, kindsessie, samenvatting.
+    Uitvoerkolommen: Taak-ID, Soort, Status, Bezorging, Run-ID, Child-sessie, Samenvatting.
 
   </Accordion>
-  <Accordion title="tasks show">
+  <Accordion title="taken tonen">
     ```bash
     openclaw tasks show <lookup>
     ```
 
-    Het opzoektoken accepteert een taak-ID, run-ID of sessiesleutel. Toont het volledige record, inclusief timing, bezorgstatus, fout en terminal-samenvatting.
+    Het opzoektoken accepteert een taak-ID, run-ID of sessiesleutel. Toont het volledige record inclusief timing, bezorgstatus, fout en terminal-samenvatting.
 
   </Accordion>
-  <Accordion title="tasks cancel">
+  <Accordion title="taken annuleren">
     ```bash
     openclaw tasks cancel <lookup>
     ```
 
-    Voor ACP- en subagent-taken stopt dit de kindsessie. Voor door de CLI gevolgde taken wordt annulering vastgelegd in het taakregister (er is geen aparte runtime-handle voor een kind). De status gaat over naar `cancelled` en er wordt een bezorgmelding verzonden wanneer van toepassing.
+    Voor ACP- en subagent-taken doodt dit de child-sessie. Voor door CLI gevolgde taken wordt annulering vastgelegd in het taakregister (er is geen afzonderlijke child-runtimehandle). Status gaat over naar `cancelled` en er wordt een bezorgmelding gestuurd wanneer van toepassing.
 
   </Accordion>
-  <Accordion title="tasks notify">
+  <Accordion title="taken melden">
     ```bash
     openclaw tasks notify <lookup> <done_only|state_changes|silent>
     ```
   </Accordion>
-  <Accordion title="tasks audit">
+  <Accordion title="taken auditen">
     ```bash
     openclaw tasks audit [--json]
     ```
 
-    Brengt operationele problemen naar voren. Bevindingen verschijnen ook in `openclaw status` wanneer problemen worden gedetecteerd.
+    Brengt operationele problemen naar boven. Bevindingen verschijnen ook in `openclaw status` wanneer problemen worden gedetecteerd.
 
-    | Bevinding                 | Ernst      | Aanleiding                                                                                                            |
-    | ------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
-    | `stale_queued`            | warn       | Langer dan 10 minuten in wachtrij                                                                                     |
-    | `stale_running`           | error      | Langer dan 30 minuten actief                                                                                          |
-    | `lost`                    | warn/error | Runtime-ondersteund taakeigenaarschap is verdwenen; behouden verloren taken waarschuwen tot `cleanupAfter`, daarna worden het fouten |
-    | `delivery_failed`         | warn       | Bezorging mislukt en meldingsbeleid is niet `silent`                                                                  |
-    | `missing_cleanup`         | warn       | Terminale taak zonder opruimtijdstempel                                                                               |
-    | `inconsistent_timestamps` | warn       | Tijdlijnschending (bijvoorbeeld beëindigd voordat deze was gestart)                                                    |
+    | Bevinding                 | Ernst      | Trigger                                                                                                      |
+    | ------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
+    | `stale_queued`            | warn       | Meer dan 10 minuten in de wachtrij                                                                           |
+    | `stale_running`           | error      | Langer dan 30 minuten actief                                                                                 |
+    | `lost`                    | warn/error | Runtime-ondersteund taakeigendom is verdwenen; behouden verloren taken waarschuwen tot `cleanupAfter`, daarna worden ze fouten |
+    | `delivery_failed`         | warn       | Levering is mislukt en het meldingsbeleid is niet `silent`                                                   |
+    | `missing_cleanup`         | warn       | Terminale taak zonder opschoontijdstempel                                                                    |
+    | `inconsistent_timestamps` | warn       | Tijdlijnschending (bijvoorbeeld beëindigd vóór gestart)                                                      |
 
   </Accordion>
-  <Accordion title="takenonderhoud">
+  <Accordion title="taken onderhoud">
     ```bash
     openclaw tasks maintenance [--json]
     openclaw tasks maintenance --apply [--json]
     ```
 
-    Gebruik dit om reconciliatie, opruimstempeling en opschoning voor taken en Task Flow-status vooraf te bekijken of toe te passen.
+    Gebruik dit om reconciliatie, opschoonstempeling en snoeien voor taken en Task Flow-status vooraf te bekijken of toe te passen.
 
-    Reconciliatie is runtime-bewust:
+    Reconciliatie houdt rekening met de runtime:
 
-    - ACP-/subagent-taken controleren hun onderliggende child session.
-    - Cron-taken controleren of de cron-runtime de taak nog steeds bezit, en herstellen daarna de terminale status uit bewaarde cron-uitvoeringslogs/taakstatus voordat ze terugvallen op `lost`. Alleen het Gateway-proces is gezaghebbend voor de actieve cron-taakset in het geheugen; offline CLI-audit gebruikt duurzame geschiedenis maar markeert een cron-taak niet als verloren alleen omdat die lokale Set leeg is.
-    - Chat-ondersteunde CLI-taken controleren de eigenaar-live-runcontext, niet alleen de chat-sessierij.
+    - ACP-/subagenttaken controleren hun onderliggende child session.
+    - Subagenttaken waarvan de child session een tombstone voor herstart-herstel heeft, worden als verloren gemarkeerd in plaats van behandeld als herstelbare onderliggende sessies.
+    - Cron-taken controleren of de cron-runtime de taak nog bezit en herstellen daarna de terminale status uit bewaarde cron-uitvoeringslogs/taakstatus voordat ze terugvallen op `lost`. Alleen het Gateway-proces is gezaghebbend voor de actieve in-memory cron-taakset; een offline CLI-audit gebruikt duurzame geschiedenis maar markeert een cron-taak niet alleen als verloren omdat die lokale Set leeg is.
+    - Chat-ondersteunde CLI-taken controleren de eigenaar-live-uitvoeringscontext, niet alleen de chat-sessierij.
 
-    Voltooiingsopruiming is ook runtime-bewust:
+    Voltooiingsopschoning houdt ook rekening met de runtime:
 
-    - Subagent-voltooiing sluit best-effort bijgehouden browsertabs/processen voor de child session voordat meldingsopruiming verdergaat.
-    - Geisoleerde cron-voltooiing sluit best-effort bijgehouden browsertabs/processen voor de cron-sessie voordat de uitvoering volledig wordt afgebroken.
-    - Geisoleerde cron-bezorging wacht indien nodig opvolging door afstammende subagents af en onderdrukt verouderde tekst voor bovenliggende bevestiging in plaats van die aan te kondigen.
-    - Bezorging van subagent-voltooiing geeft de voorkeur aan de nieuwste zichtbare assistenttekst; als die leeg is, valt deze terug op opgeschoonde nieuwste tool-/toolResult-tekst, en uitvoeringen met alleen time-out-toolaanroepen kunnen worden ingeklapt tot een korte samenvatting van gedeeltelijke voortgang. Terminale mislukte uitvoeringen kondigen de foutstatus aan zonder vastgelegde antwoordtekst opnieuw af te spelen.
-    - Opruimfouten maskeren de echte taakuitkomst niet.
+    - Subagent-voltooiing sluit best-effort bijgehouden browsertabs/processen voor de child session voordat aankondigingsopschoning doorgaat.
+    - Geïsoleerde cron-voltooiing sluit best-effort bijgehouden browsertabs/processen voor de cron-sessie voordat de uitvoering volledig wordt afgebroken.
+    - Geïsoleerde cron-levering wacht waar nodig op vervolgacties van afstammende subagents en onderdrukt verouderde bevestigingstekst van de bovenliggende taak in plaats van die aan te kondigen.
+    - Levering van subagent-voltooiing geeft de voorkeur aan de nieuwste zichtbare assistenttekst; als die leeg is, valt deze terug op opgeschoonde nieuwste tool-/toolResult-tekst, en uitvoeringen met alleen een timeout op tool-calls kunnen worden samengevouwen tot een korte samenvatting van gedeeltelijke voortgang. Terminale mislukte uitvoeringen kondigen de foutstatus aan zonder vastgelegde antwoordtekst opnieuw af te spelen.
+    - Opschoonfouten verbergen de werkelijke taakuitkomst niet.
 
   </Accordion>
-  <Accordion title="tasks flow list | show | cancel">
+  <Accordion title="taken flow list | show | cancel">
     ```bash
     openclaw tasks flow list [--status <status>] [--json]
     openclaw tasks flow show <lookup> [--json]
     openclaw tasks flow cancel <lookup>
     ```
 
-    Gebruik deze wanneer de orchestrerende Task Flow is waar u om geeft, in plaats van een afzonderlijk achtergrondtaakrecord.
+    Gebruik deze wanneer de orkestrerende Task Flow belangrijker is dan één individuele achtergrondtaakrecord.
 
   </Accordion>
 </AccordionGroup>
 
 ## Chat-taakbord (`/tasks`)
 
-Gebruik `/tasks` in elke chatsessie om achtergrondtaken te zien die aan die sessie zijn gekoppeld. Het bord toont actieve en recent voltooide taken met runtime, status, timing en voortgangs- of foutdetails.
+Gebruik `/tasks` in een chatsessie om achtergrondtaken te bekijken die aan die sessie zijn gekoppeld. Het bord toont actieve en recent voltooide taken met runtime, status, timing en voortgangs- of foutdetails.
 
-Wanneer de huidige sessie geen zichtbare gekoppelde taken heeft, valt `/tasks` terug op agent-lokale taakaantallen, zodat u nog steeds een overzicht krijgt zonder details uit andere sessies te lekken.
+Wanneer de huidige sessie geen zichtbare gekoppelde taken heeft, valt `/tasks` terug op agentlokale taakaantallen, zodat je nog steeds een overzicht krijgt zonder details uit andere sessies te lekken.
 
-Gebruik voor het volledige operatorlogboek de CLI: `openclaw tasks list`.
+Gebruik de CLI voor het volledige operatorlogboek: `openclaw tasks list`.
 
 ## Statusintegratie (taakdruk)
 
-`openclaw status` bevat een taaksamenvatting in een oogopslag:
+`openclaw status` bevat een taakoverzicht in één oogopslag:
 
 ```
 Tasks: 3 queued · 2 running · 1 issues
@@ -296,11 +297,11 @@ Tasks: 3 queued · 2 running · 1 issues
 
 De samenvatting rapporteert:
 
-- **active** — aantal `queued` + `running`
-- **failures** — aantal `failed` + `timed_out` + `lost`
+- **actief** — aantal `queued` + `running`
+- **mislukkingen** — aantal `failed` + `timed_out` + `lost`
 - **byRuntime** — uitsplitsing per `acp`, `subagent`, `cron`, `cli`
 
-Zowel `/status` als de tool `session_status` gebruiken een opruimbewuste taaksnapshot: actieve taken krijgen de voorkeur, verouderde voltooide rijen worden verborgen en recente fouten verschijnen alleen wanneer er geen actief werk meer over is. Zo blijft de statuskaart gericht op wat nu belangrijk is.
+Zowel `/status` als de tool `session_status` gebruiken een opschoonbewuste taaksnapshot: actieve taken krijgen de voorkeur, verouderde voltooide rijen worden verborgen en recente mislukkingen verschijnen alleen wanneer er geen actief werk meer over is. Zo blijft de statuskaart gericht op wat nu belangrijk is.
 
 ## Opslag en onderhoud
 
@@ -312,66 +313,66 @@ Taakrecords blijven bewaard in SQLite op:
 $OPENCLAW_STATE_DIR/tasks/runs.sqlite
 ```
 
-Het register wordt bij het starten van de Gateway in het geheugen geladen en synchroniseert schrijfbewerkingen naar SQLite voor duurzaamheid over herstarts heen.
-De Gateway houdt het write-ahead-log van SQLite begrensd door SQLite's standaard
+Het register wordt bij het starten van de Gateway in het geheugen geladen en synchroniseert schrijfacties naar SQLite voor duurzaamheid tussen herstarts.
+De Gateway houdt het write-ahead log van SQLite begrensd door SQLite's standaard
 autocheckpoint-drempel plus periodieke en afsluitende `TRUNCATE`-checkpoints te gebruiken.
 
 ### Automatisch onderhoud
 
-Elke **60 seconden** draait een sweeper die vier dingen afhandelt:
+Een sweeper draait elke **60 seconden** en handelt vier dingen af:
 
 <Steps>
   <Step title="Reconciliatie">
-    Controleert of actieve taken nog steeds gezaghebbende runtime-ondersteuning hebben. ACP-/subagent-taken gebruiken child-session-status, cron-taken gebruiken actief-taakeigenaarschap en chat-ondersteunde CLI-taken gebruiken de eigenaar-runcontext. Als die onderliggende status langer dan 5 minuten verdwenen is, wordt de taak gemarkeerd als `lost`.
+    Controleert of actieve taken nog steeds gezaghebbende runtime-ondersteuning hebben. ACP-/subagenttaken gebruiken child-sessionstatus, cron-taken gebruiken eigendom van actieve taken en chat-ondersteunde CLI-taken gebruiken de eigenaar-uitvoeringscontext. Als die onderliggende status langer dan 5 minuten verdwenen is, wordt de taak als `lost` gemarkeerd.
   </Step>
   <Step title="ACP-sessieherstel">
-    Sluit terminale of verweesde parent-owned eenmalige ACP-sessies, en sluit verouderde terminale of verweesde persistente ACP-sessies alleen wanneer er geen actieve gespreksbinding meer over is.
+    Sluit terminale of verweesde, door de bovenliggende eigenaar beheerde eenmalige ACP-sessies, en sluit verouderde terminale of verweesde persistente ACP-sessies alleen wanneer er geen actieve gespreksbinding meer bestaat.
   </Step>
-  <Step title="Opruimstempeling">
-    Stelt een `cleanupAfter`-tijdstempel in op terminale taken (endedAt + 7 dagen). Tijdens de retentie verschijnen verloren taken nog steeds in audit als waarschuwingen; nadat `cleanupAfter` is verlopen of wanneer opruimmetadata ontbreken, zijn het fouten.
+  <Step title="Opschoonstempeling">
+    Zet een `cleanupAfter`-tijdstempel op terminale taken (endedAt + 7 dagen). Tijdens retentie verschijnen verloren taken nog steeds als waarschuwingen in audits; nadat `cleanupAfter` verloopt of wanneer opschoonmetadata ontbreken, zijn het fouten.
   </Step>
-  <Step title="Opschoning">
-    Verwijdert records na hun `cleanupAfter`-datum.
+  <Step title="Snoeien">
+    Verwijdert records waarvan de `cleanupAfter`-datum is verstreken.
   </Step>
 </Steps>
 
 <Note>
-**Retentie:** terminale taakrecords worden **7 dagen** bewaard en daarna automatisch opgeschoond. Geen configuratie nodig.
+**Retentie:** terminale taakrecords worden **7 dagen** bewaard en daarna automatisch gesnoeid. Geen configuratie nodig.
 </Note>
 
 ## Hoe taken zich verhouden tot andere systemen
 
 <AccordionGroup>
   <Accordion title="Taken en Task Flow">
-    [Task Flow](/nl/automation/taskflow) is de flow-orchestreringslaag boven achtergrondtaken. Een enkele flow kan gedurende zijn levensduur meerdere taken coordineren met beheerde of gespiegelde synchronisatiemodi. Gebruik `openclaw tasks` om afzonderlijke taakrecords te inspecteren en `openclaw tasks flow` om de orchestrerende flow te inspecteren.
+    [Task Flow](/nl/automation/taskflow) is de flow-orkestratielaag boven achtergrondtaken. Eén flow kan tijdens zijn levensduur meerdere taken coördineren met beheerde of gespiegeldesynchronisatiemodi. Gebruik `openclaw tasks` om individuele taakrecords te inspecteren en `openclaw tasks flow` om de orkestrerende flow te inspecteren.
 
     Zie [Task Flow](/nl/automation/taskflow) voor details.
 
   </Accordion>
   <Accordion title="Taken en cron">
-    Een cron-taak**definitie** staat in `~/.openclaw/cron/jobs.json`; runtime-uitvoeringsstatus staat ernaast in `~/.openclaw/cron/jobs-state.json`. **Elke** cron-uitvoering maakt een taakrecord aan — zowel hoofd-sessie als geisoleerd. Cron-taken in de hoofd-sessie gebruiken standaard het meldingsbeleid `silent`, zodat ze volgen zonder meldingen te genereren.
+    Een cron-taak**definitie** staat in `~/.openclaw/cron/jobs.json`; de uitvoeringsstatus tijdens runtime staat ernaast in `~/.openclaw/cron/jobs-state.json`. **Elke** cron-uitvoering maakt een taakrecord aan — zowel main-session als geïsoleerd. Main-session cron-taken gebruiken standaard het meldingsbeleid `silent`, zodat ze worden gevolgd zonder meldingen te genereren.
 
-    Zie [Cron Jobs](/nl/automation/cron-jobs).
+    Zie [Cron-taken](/nl/automation/cron-jobs).
 
   </Accordion>
-  <Accordion title="Taken en Heartbeat">
-    Heartbeat-uitvoeringen zijn hoofd-sessiebeurten — ze maken geen taakrecords aan. Wanneer een taak is voltooid, kan deze een Heartbeat-wake activeren zodat u het resultaat snel ziet.
+  <Accordion title="Taken en heartbeat">
+    Heartbeat-uitvoeringen zijn main-session beurten — ze maken geen taakrecords aan. Wanneer een taak voltooit, kan die een heartbeat-wake activeren zodat je het resultaat snel ziet.
 
     Zie [Heartbeat](/nl/gateway/heartbeat).
 
   </Accordion>
   <Accordion title="Taken en sessies">
-    Een taak kan verwijzen naar een `childSessionKey` (waar werk wordt uitgevoerd) en een `requesterSessionKey` (wie deze heeft gestart). Sessies zijn gesprekscontext; taken zijn activiteitsregistratie daarbovenop.
+    Een taak kan verwijzen naar een `childSessionKey` (waar het werk draait) en een `requesterSessionKey` (wie het heeft gestart). Sessies zijn gesprekscontext; taken zijn activiteitstracking daarbovenop.
   </Accordion>
-  <Accordion title="Taken en agent-uitvoeringen">
-    De `runId` van een taak koppelt naar de agent-uitvoering die het werk doet. Agent-levenscyclusgebeurtenissen (start, einde, fout) werken de taakstatus automatisch bij — u hoeft de levenscyclus niet handmatig te beheren.
+  <Accordion title="Taken en agentuitvoeringen">
+    De `runId` van een taak koppelt naar de agentuitvoering die het werk doet. Lifecycle-events van agents (start, einde, fout) werken automatisch de taakstatus bij — je hoeft de lifecycle niet handmatig te beheren.
   </Accordion>
 </AccordionGroup>
 
 ## Gerelateerd
 
-- [Automatisering en taken](/nl/automation) — alle automatiseringsmechanismen in een oogopslag
-- [CLI: Taken](/nl/cli/tasks) — CLI-opdrachtreferentie
-- [Heartbeat](/nl/gateway/heartbeat) — periodieke hoofd-sessiebeurten
+- [Automatisering en taken](/nl/automation) — alle automatiseringsmechanismen in één oogopslag
+- [CLI: Taken](/nl/cli/tasks) — CLI-commandoreferentie
+- [Heartbeat](/nl/gateway/heartbeat) — periodieke main-session beurten
 - [Geplande taken](/nl/automation/cron-jobs) — achtergrondwerk plannen
-- [Task Flow](/nl/automation/taskflow) — flow-orchestrering boven taken
+- [Task Flow](/nl/automation/taskflow) — flow-orkestratie boven taken
