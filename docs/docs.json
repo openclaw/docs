@@ -1177,7 +1177,8 @@
                   "concepts/messages",
                   "concepts/streaming",
                   "concepts/retry",
-                  "concepts/queue"
+                  "concepts/queue",
+                  "concepts/queue-steering"
                 ]
               }
             ]
@@ -2650,7 +2651,8 @@
                   "zh-TW/concepts/messages",
                   "zh-TW/concepts/streaming",
                   "zh-TW/concepts/retry",
-                  "zh-TW/concepts/queue"
+                  "zh-TW/concepts/queue",
+                  "zh-TW/concepts/queue-steering"
                 ]
               }
             ]
@@ -3508,7 +3510,8 @@
                   "ja-JP/concepts/messages",
                   "ja-JP/concepts/streaming",
                   "ja-JP/concepts/retry",
-                  "ja-JP/concepts/queue"
+                  "ja-JP/concepts/queue",
+                  "ja-JP/concepts/queue-steering"
                 ]
               }
             ]
@@ -4366,7 +4369,8 @@
                   "es/concepts/messages",
                   "es/concepts/streaming",
                   "es/concepts/retry",
-                  "es/concepts/queue"
+                  "es/concepts/queue",
+                  "es/concepts/queue-steering"
                 ]
               }
             ]
@@ -5224,7 +5228,8 @@
                   "pt-BR/concepts/messages",
                   "pt-BR/concepts/streaming",
                   "pt-BR/concepts/retry",
-                  "pt-BR/concepts/queue"
+                  "pt-BR/concepts/queue",
+                  "pt-BR/concepts/queue-steering"
                 ]
               }
             ]
@@ -6082,7 +6087,8 @@
                   "ko/concepts/messages",
                   "ko/concepts/streaming",
                   "ko/concepts/retry",
-                  "ko/concepts/queue"
+                  "ko/concepts/queue",
+                  "ko/concepts/queue-steering"
                 ]
               }
             ]
@@ -6940,7 +6946,8 @@
                   "de/concepts/messages",
                   "de/concepts/streaming",
                   "de/concepts/retry",
-                  "de/concepts/queue"
+                  "de/concepts/queue",
+                  "de/concepts/queue-steering"
                 ]
               }
             ]
@@ -7798,7 +7805,8 @@
                   "fr/concepts/messages",
                   "fr/concepts/streaming",
                   "fr/concepts/retry",
-                  "fr/concepts/queue"
+                  "fr/concepts/queue",
+                  "fr/concepts/queue-steering"
                 ]
               }
             ]
@@ -8656,7 +8664,8 @@
                   "ar/concepts/messages",
                   "ar/concepts/streaming",
                   "ar/concepts/retry",
-                  "ar/concepts/queue"
+                  "ar/concepts/queue",
+                  "ar/concepts/queue-steering"
                 ]
               }
             ]
@@ -9514,7 +9523,8 @@
                   "it/concepts/messages",
                   "it/concepts/streaming",
                   "it/concepts/retry",
-                  "it/concepts/queue"
+                  "it/concepts/queue",
+                  "it/concepts/queue-steering"
                 ]
               }
             ]
@@ -10372,7 +10382,8 @@
                   "vi/concepts/messages",
                   "vi/concepts/streaming",
                   "vi/concepts/retry",
-                  "vi/concepts/queue"
+                  "vi/concepts/queue",
+                  "vi/concepts/queue-steering"
                 ]
               }
             ]
@@ -11230,7 +11241,8 @@
                   "nl/concepts/messages",
                   "nl/concepts/streaming",
                   "nl/concepts/retry",
-                  "nl/concepts/queue"
+                  "nl/concepts/queue",
+                  "nl/concepts/queue-steering"
                 ]
               }
             ]
@@ -12088,7 +12100,8 @@
                   "tr/concepts/messages",
                   "tr/concepts/streaming",
                   "tr/concepts/retry",
-                  "tr/concepts/queue"
+                  "tr/concepts/queue",
+                  "tr/concepts/queue-steering"
                 ]
               }
             ]
@@ -12946,7 +12959,8 @@
                   "uk/concepts/messages",
                   "uk/concepts/streaming",
                   "uk/concepts/retry",
-                  "uk/concepts/queue"
+                  "uk/concepts/queue",
+                  "uk/concepts/queue-steering"
                 ]
               }
             ]
@@ -13804,7 +13818,8 @@
                   "id/concepts/messages",
                   "id/concepts/streaming",
                   "id/concepts/retry",
-                  "id/concepts/queue"
+                  "id/concepts/queue",
+                  "id/concepts/queue-steering"
                 ]
               }
             ]
@@ -14662,7 +14677,8 @@
                   "pl/concepts/messages",
                   "pl/concepts/streaming",
                   "pl/concepts/retry",
-                  "pl/concepts/queue"
+                  "pl/concepts/queue",
+                  "pl/concepts/queue-steering"
                 ]
               }
             ]
