@@ -1,81 +1,85 @@
 ---
 read_when:
-    - '`OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED` uyarısını görüyorsunuz'
-    - '`OPENCLAW_EXTENSION_API_DEPRECATED` uyarısını görüyorsunuz'
-    - OpenClaw 2026.4.25 öncesinde `api.registerEmbeddedExtensionFactory` kullandınız
-    - Bir Plugin'i modern Plugin mimarisine güncelliyorsunuz
-    - Harici bir OpenClaw Plugin'ini sürdürüyorsunuz
+    - OPENCLAW_PLUGIN_SDK_COMPAT_DEPRECATED uyarısını görüyorsunuz
+    - OPENCLAW_EXTENSION_API_DEPRECATED uyarısını görüyorsunuz
+    - OpenClaw 2026.4.25'ten önce api.registerEmbeddedExtensionFactory kullandınız
+    - Bir Plugin'i modern Plugin mimarisine geçiriyorsunuz
+    - Harici bir OpenClaw Plugin'in bakımını yapıyorsunuz
 sidebarTitle: Migrate to SDK
-summary: Eski geriye dönük uyumluluk katmanından modern Plugin SDK'ye geçiş
+summary: Eski geriye dönük uyumluluk katmanından modern Plugin SDK'ye geçiş yapın
 title: Plugin SDK geçişi
 x-i18n:
-    generated_at: "2026-04-26T11:36:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:37:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ecff17f6be8bcbc310eac24bf53348ec0f7dfc06cc94de5e3a38967031737ccb
+    source_hash: 00a1f95a33c50d5c69d7b4768858289365bf29ed069abb3f29218e03c597b4c6
     source_path: plugins/sdk-migration.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, geniş bir geriye dönük uyumluluk katmanından odaklı, belgelenmiş içe aktarmalara sahip modern bir Plugin
-mimarisine geçti. Plugin'iniz yeni mimariden önce oluşturulduysa,
-bu kılavuz geçiş yapmanıza yardımcı olur.
+OpenClaw geniş bir geriye dönük uyumluluk katmanından, odaklanmış ve belgelenmiş içe aktarmalara sahip modern bir Plugin
+mimarisine geçti. Plugin'iniz yeni mimariden önce oluşturulduysa, bu kılavuz geçiş yapmanıza yardımcı olur.
 
 ## Neler değişiyor
 
-Eski Plugin sistemi, Plugin'lerin
-ihtiyaç duydukları her şeyi tek bir giriş noktasından içe aktarmasına izin veren iki geniş yüzey sunuyordu:
+Eski Plugin sistemi, Plugin'lerin ihtiyaç duydukları her şeyi tek bir giriş noktasından içe aktarmasına
+izin veren iki tamamen açık yüzey sağlıyordu:
 
-- **`openclaw/plugin-sdk/compat`** — onlarca
-  yardımcının yeniden dışa aktarıldığı tek bir içe aktarma. Yeni Plugin mimarisi oluşturulurken
-  eski kanca tabanlı Plugin'lerin çalışmaya devam etmesini sağlamak için tanıtılmıştı.
-- **`openclaw/extension-api`** — Plugin'lere
-  gömülü ajan çalıştırıcısı gibi host tarafı yardımcılarına doğrudan erişim veren bir köprü.
-- **`api.registerEmbeddedExtensionFactory(...)`** — `tool_result`
-  gibi embedded-runner olaylarını gözlemleyebilen, kaldırılmış Pi-only bundled
-  extension kancası.
+- **`openclaw/plugin-sdk/compat`** — onlarca yardımcıyı yeniden dışa aktaran tek bir içe aktarma.
+  Yeni Plugin mimarisi oluşturulurken eski hook tabanlı Plugin'lerin çalışmaya devam etmesi için
+  tanıtılmıştı.
+- **`openclaw/plugin-sdk/infra-runtime`** — sistem olaylarını, Heartbeat durumunu, teslim kuyruklarını,
+  fetch/proxy yardımcılarını, dosya yardımcılarını, onay türlerini ve ilgisiz yardımcı programları
+  karıştıran geniş bir çalışma zamanı yardımcı barrel'ı.
+- **`openclaw/plugin-sdk/config-runtime`** — geçiş penceresi sırasında kullanımdan kaldırılmış doğrudan
+  yükleme/yazma yardımcılarını hâlâ taşıyan geniş bir yapılandırma uyumluluk barrel'ı.
+- **`openclaw/extension-api`** — Plugin'lere gömülü aracı çalıştırıcısı gibi ana taraf yardımcılarına
+  doğrudan erişim veren bir köprü.
+- **`api.registerEmbeddedExtensionFactory(...)`** — `tool_result` gibi gömülü çalıştırıcı olaylarını
+  gözlemleyebilen, kaldırılmış Pi'ye özgü paketli
+  eklenti hook'u.
 
-Bu geniş içe aktarma yüzeyleri artık **kullanımdan kaldırılmıştır**. Çalışma zamanında hâlâ çalışırlar,
-ancak yeni Plugin'ler bunları kullanmamalıdır ve mevcut Plugin'ler bir sonraki büyük sürümde kaldırılmadan önce geçiş yapmalıdır. Pi-only embedded extension factory
-kayıt API'si kaldırılmıştır; bunun yerine tool-result middleware kullanın.
+Geniş içe aktarma yüzeyleri artık **kullanımdan kaldırıldı**. Çalışma zamanında hâlâ çalışırlar,
+ancak yeni Plugin'ler bunları kullanmamalıdır ve mevcut Plugin'ler, bir sonraki ana sürüm bunları kaldırmadan önce
+geçiş yapmalıdır. Pi'ye özgü gömülü eklenti fabrikası
+kayıt API'si kaldırıldı; bunun yerine araç sonucu middleware'i kullanın.
 
-OpenClaw, bir yedek sunan aynı değişiklikte belgelenmiş Plugin davranışını kaldırmaz veya yeniden yorumlamaz.
-Bozucu sözleşme değişiklikleri önce bir uyumluluk bağdaştırıcısı, tanılama, belgeler ve
-bir kullanımdan kaldırma penceresinden geçmelidir.
-Bu; SDK içe aktarmaları, manifest alanları, kurulum API'leri, kancalar ve çalışma zamanı
-kayıt davranışı için de geçerlidir.
+OpenClaw, bir yedek getiren aynı değişiklik içinde belgelenmiş Plugin davranışını kaldırmaz veya yeniden yorumlamaz.
+Sözleşmeyi bozan değişiklikler önce
+bir uyumluluk bağdaştırıcısından, tanılardan, dokümantasyondan ve bir kullanımdan kaldırma penceresinden geçmelidir.
+Bu; SDK içe aktarmaları, manifest alanları, kurulum API'leri, hook'lar ve çalışma zamanı
+kayıt davranışı için geçerlidir.
 
 <Warning>
-  Geriye dönük uyumluluk katmanı gelecekteki bir büyük sürümde kaldırılacaktır.
-  Bu yüzeylerden hâlâ içe aktarma yapan Plugin'ler bu olduğunda kırılacaktır.
-  Pi-only embedded extension factory kayıtları artık zaten yüklenmiyor.
+  Geriye dönük uyumluluk katmanı gelecekteki bir ana sürümde kaldırılacak.
+  Bu yüzeylerden hâlâ içe aktarma yapan Plugin'ler, bu gerçekleştiğinde bozulacaktır.
+  Pi'ye özgü gömülü eklenti fabrikası kayıtları artık zaten yüklenmiyor.
 </Warning>
 
 ## Bu neden değişti
 
-Eski yaklaşım sorunlara neden oluyordu:
+Eski yaklaşım sorunlara neden oldu:
 
 - **Yavaş başlangıç** — tek bir yardımcıyı içe aktarmak onlarca ilgisiz modülü yüklüyordu
-- **Döngüsel bağımlılıklar** — geniş yeniden dışa aktarmalar içe aktarma döngüleri oluşturmayı kolaylaştırıyordu
-- **Belirsiz API yüzeyi** — hangi export'ların kararlı, hangilerinin dahili olduğunu söylemenin yolu yoktu
+- **Döngüsel bağımlılıklar** — geniş yeniden dışa aktarmalar, içe aktarma döngüleri oluşturmayı kolaylaştırıyordu
+- **Belirsiz API yüzeyi** — hangi dışa aktarmaların kararlı, hangilerinin dahili olduğunu anlamanın yolu yoktu
 
 Modern Plugin SDK bunu düzeltir: her içe aktarma yolu (`openclaw/plugin-sdk/\<subpath\>`)
-küçük, kendi içinde tamamlanmış, açık amaçlı ve belgelenmiş sözleşmeli bir modüldür.
+net bir amacı ve belgelenmiş sözleşmesi olan küçük, kendi kendine yeten bir modüldür.
 
-Bundled kanallar için eski sağlayıcı kolaylık dikişleri de kaldırıldı. `openclaw/plugin-sdk/slack`, `openclaw/plugin-sdk/discord`,
-`openclaw/plugin-sdk/signal`, `openclaw/plugin-sdk/whatsapp`,
-kanal markalı yardımcı dikişleri ve
-`openclaw/plugin-sdk/telegram-core` gibi içe aktarmalar, kararlı
-Plugin sözleşmeleri değil, özel mono-repo kısayollarıydı. Bunun yerine dar genel SDK alt yollarını kullanın. Bundled Plugin çalışma alanı içinde sağlayıcıya ait yardımcıları o Plugin'in kendi
-`api.ts` veya `runtime-api.ts` dosyasında tutun.
+Paketli kanallar için eski sağlayıcı kolaylık dikişleri de kaldırıldı.
+Kanal markalı yardımcı dikişler, kararlı
+Plugin sözleşmeleri değil, özel mono-repo kestirmeleriydi. Bunun yerine dar, genel SDK alt yollarını kullanın. Paketli
+Plugin çalışma alanı içinde, sağlayıcıya ait yardımcıları o Plugin'in kendi `api.ts` veya
+`runtime-api.ts` dosyasında tutun.
 
-Mevcut bundled sağlayıcı örnekleri:
+Güncel paketli sağlayıcı örnekleri:
 
 - Anthropic, Claude'a özgü akış yardımcılarını kendi `api.ts` /
   `contract-api.ts` dikişinde tutar
-- OpenAI, sağlayıcı oluşturucularını, varsayılan model yardımcılarını ve realtime provider
+- OpenAI, sağlayıcı oluşturucularını, varsayılan model yardımcılarını ve realtime sağlayıcı
   oluşturucularını kendi `api.ts` dosyasında tutar
-- OpenRouter, sağlayıcı oluşturucusunu ve onboarding/config yardımcılarını kendi
+- OpenRouter, sağlayıcı oluşturucusunu ve onboarding/yapılandırma yardımcılarını kendi
   `api.ts` dosyasında tutar
 
 ## Uyumluluk politikası
@@ -84,23 +88,96 @@ Harici Plugin'ler için uyumluluk çalışması şu sırayı izler:
 
 1. yeni sözleşmeyi ekle
 2. eski davranışı bir uyumluluk bağdaştırıcısı üzerinden bağlı tut
-3. eski yolu ve yerine geçeni adlandıran bir tanılama veya uyarı üret
-4. testlerde her iki yolu da kapsa
+3. eski yolu ve yerine kullanılacak yolu adlandıran bir tanı veya uyarı yayınla
+4. testlerde iki yolu da kapsa
 5. kullanımdan kaldırmayı ve geçiş yolunu belgele
-6. yalnızca duyurulan geçiş penceresinden sonra kaldır; bu genellikle büyük bir sürümdür
+6. yalnızca duyurulan geçiş penceresinden sonra, genellikle bir ana sürümde kaldır
 
-Bir manifest alanı hâlâ kabul ediliyorsa, Plugin yazarları
-belgeler ve tanılama aksi söyleyene kadar onu kullanmaya devam edebilir. Yeni kod belgelenmiş
-yerine geçeni tercih etmelidir, ancak mevcut Plugin'ler sıradan küçük sürümlerde
-kırılmamalıdır.
+Bakımcılar mevcut geçiş kuyruğunu
+`pnpm plugins:boundary-report` ile denetleyebilir. Kompakt sayımlar için
+`pnpm plugins:boundary-report:summary`, tek bir Plugin veya uyumluluk sahibi için `--owner <id>` ve
+bir CI kapısı süresi gelen uyumluluk kayıtları, sahipler arası ayrılmış SDK içe aktarmaları veya kullanılmayan ayrılmış SDK
+alt yolları nedeniyle başarısız olmalıysa
+`pnpm plugins:boundary-report:ci` kullanın. Rapor, kullanımdan kaldırılmış
+uyumluluk kayıtlarını kaldırma tarihine göre gruplar, yerel kod/dokümantasyon referanslarını sayar,
+sahipler arası ayrılmış SDK içe aktarmalarını yüzeye çıkarır ve özel
+memory-host SDK köprüsünü özetler; böylece uyumluluk temizliği geçici aramalara
+dayanmak yerine açık kalır. Ayrılmış SDK alt yollarının izlenen sahip kullanımı olmalıdır;
+kullanılmayan ayrılmış yardımcı dışa aktarmaları public SDK'den kaldırılmalıdır.
 
-## Nasıl geçiş yapılır
+Bir manifest alanı hâlâ kabul ediliyorsa, Plugin yazarları dokümantasyon ve tanılar aksini söyleyene kadar
+onu kullanmaya devam edebilir. Yeni kod belgelenmiş
+yerine kullanılacak yolu tercih etmelidir, ancak mevcut Plugin'ler olağan minor
+sürümler sırasında bozulmamalıdır.
+
+## Geçiş nasıl yapılır
 
 <Steps>
-  <Step title="Pi tool-result extension'larını middleware'e taşıyın">
-    Bundled Plugin'ler, Pi-only
-    `api.registerEmbeddedExtensionFactory(...)` tool-result işleyicilerini
-    çalışma zamanı nötr middleware ile değiştirmelidir.
+  <Step title="Çalışma zamanı yapılandırma yükleme/yazma yardımcılarını taşıyın">
+    Paketli Plugin'ler
+    `api.runtime.config.loadConfig()` ve
+    `api.runtime.config.writeConfigFile(...)` çağrılarını doğrudan yapmayı bırakmalıdır. Etkin çağrı yoluna
+    zaten geçirilmiş yapılandırmayı tercih edin. Geçerli süreç anlık görüntüsüne ihtiyaç duyan
+    uzun ömürlü işleyiciler `api.runtime.config.current()` kullanabilir. Uzun ömürlü
+    agent araçları, bir yapılandırma yazımından önce oluşturulmuş bir araç hâlâ yenilenmiş
+    çalışma zamanı yapılandırmasını görebilsin diye `execute` içinde araç bağlamının `ctx.getRuntimeConfig()` metodunu kullanmalıdır.
+
+    Yapılandırma yazmaları transactional yardımcılar üzerinden geçmeli ve bir
+    yazma sonrası politikası seçmelidir:
+
+    ```typescript
+    await api.runtime.config.mutateConfigFile({
+      afterWrite: { mode: "auto" },
+      mutate(draft) {
+        draft.plugins ??= {};
+      },
+    });
+    ```
+
+    Çağıran taraf değişikliğin temiz bir gateway yeniden başlatması gerektirdiğini bildiğinde
+    `afterWrite: { mode: "restart", reason: "..." }` kullanın ve
+    yalnızca çağıran taraf devamını üstleniyor ve yeniden yükleme planlayıcısını bilinçli olarak bastırmak istiyorsa
+    `afterWrite: { mode: "none", reason: "..." }` kullanın.
+    Mutasyon sonuçları testler ve günlükleme için tipli bir `followUp` özeti içerir;
+    gateway, yeniden başlatmayı uygulamak veya zamanlamakla sorumlu kalır.
+    `loadConfig` ve `writeConfigFile`, geçiş penceresi sırasında harici Plugin'ler için kullanımdan kaldırılmış uyumluluk
+    yardımcıları olarak kalır ve
+    `runtime-config-load-write` uyumluluk koduyla bir kez uyarır. Paketli Plugin'ler ve repo
+    çalışma zamanı kodu,
+    `pnpm check:deprecated-internal-config-api` ve
+    `pnpm check:no-runtime-action-load-config` içindeki tarayıcı korumalarıyla korunur: yeni production Plugin kullanımı
+    doğrudan başarısız olur, doğrudan yapılandırma yazmaları başarısız olur, gateway sunucu metotları
+    istek çalışma zamanı anlık görüntüsünü kullanmalıdır, çalışma zamanı kanal gönderme/action/client yardımcıları
+    yapılandırmayı kendi sınırlarından almalıdır ve uzun ömürlü çalışma zamanı modüllerinde
+    izin verilen ortam `loadConfig()` çağrısı sayısı sıfırdır.
+
+    Yeni Plugin kodu ayrıca geniş
+    `openclaw/plugin-sdk/config-runtime` uyumluluk barrel'ını içe aktarmaktan kaçınmalıdır. İşe uyan dar
+    SDK alt yolunu kullanın:
+
+    | İhtiyaç | İçe aktarma |
+    | --- | --- |
+    | `OpenClawConfig` gibi yapılandırma türleri | `openclaw/plugin-sdk/config-types` |
+    | Zaten yüklenmiş yapılandırma doğrulamaları ve Plugin giriş yapılandırma araması | `openclaw/plugin-sdk/plugin-config-runtime` |
+    | Geçerli çalışma zamanı anlık görüntüsü okumaları | `openclaw/plugin-sdk/runtime-config-snapshot` |
+    | Yapılandırma yazmaları | `openclaw/plugin-sdk/config-mutation` |
+    | Oturum deposu yardımcıları | `openclaw/plugin-sdk/session-store-runtime` |
+    | Markdown tablo yapılandırması | `openclaw/plugin-sdk/markdown-table-runtime` |
+    | Grup politikası çalışma zamanı yardımcıları | `openclaw/plugin-sdk/runtime-group-policy` |
+    | Gizli girdi çözümleme | `openclaw/plugin-sdk/secret-input-runtime` |
+    | Model/oturum geçersiz kılmaları | `openclaw/plugin-sdk/model-session-runtime` |
+
+    Paketli Plugin'ler ve testleri, geniş
+    barrel'a karşı tarayıcı korumalıdır; böylece içe aktarmalar ve mock'lar ihtiyaç duydukları davranışa yerel kalır. Geniş
+    barrel harici uyumluluk için hâlâ vardır, ancak yeni kod ona
+    bağımlı olmamalıdır.
+
+  </Step>
+
+  <Step title="Pi araç sonucu eklentilerini middleware'e taşıyın">
+    Paketli Plugin'ler, Pi'ye özgü
+    `api.registerEmbeddedExtensionFactory(...)` araç sonucu işleyicilerini
+    çalışma zamanından bağımsız middleware ile değiştirmelidir.
 
     ```typescript
     // Pi and Codex runtime dynamic tools
@@ -111,7 +188,7 @@ kırılmamalıdır.
     });
     ```
 
-    Aynı anda Plugin manifest'ini de güncelleyin:
+    Aynı anda Plugin manifestini güncelleyin:
 
     ```json
     {
@@ -121,42 +198,41 @@ kırılmamalıdır.
     }
     ```
 
-    Harici Plugin'ler tool-result middleware kaydedemez; çünkü bu,
-    model görmeden önce yüksek güvenli araç çıktısını yeniden yazabilir.
+    Harici Plugin'ler araç sonucu middleware'i kaydedemez, çünkü model görmeden önce
+    yüksek güvenli araç çıktısını yeniden yazabilir.
 
   </Step>
 
-  <Step title="Approval-native işleyicileri capability facts'a taşıyın">
-    Approval yetenekli kanal Plugin'leri artık yerel approval davranışını
-    `approvalCapability.nativeRuntime` ve paylaşılan çalışma zamanı bağlam kayıt defteri üzerinden sunar.
+  <Step title="Onaya özgü işleyicileri capability facts'e taşıyın">
+    Onay destekli kanal Plugin'leri artık native onay davranışını
+    `approvalCapability.nativeRuntime` ve paylaşılan çalışma zamanı bağlam kayıt defteri üzerinden açığa çıkarır.
 
     Temel değişiklikler:
 
     - `approvalCapability.handler.loadRuntime(...)` yerine
       `approvalCapability.nativeRuntime` kullanın
-    - Approval'a özgü auth/delivery mantığını eski `plugin.auth` /
-      `plugin.approvals` bağlantısından çıkarıp `approvalCapability` üzerine taşıyın
-    - `ChannelPlugin.approvals`, genel channel-plugin
-      sözleşmesinden kaldırılmıştır; delivery/native/render alanlarını `approvalCapability` üzerine taşıyın
-    - `plugin.auth`, yalnızca kanal login/logout akışları için kalır; approval auth
-      kancaları artık core tarafından okunmaz
+    - Onaya özgü kimlik doğrulama/teslimi eski `plugin.auth` /
+      `plugin.approvals` bağlantılarından çıkarıp `approvalCapability` üzerine taşıyın
+    - `ChannelPlugin.approvals` public kanal Plugin
+      sözleşmesinden kaldırıldı; delivery/native/render alanlarını `approvalCapability` üzerine taşıyın
+    - `plugin.auth` yalnızca kanal oturum açma/oturum kapatma akışları için kalır; buradaki onay kimlik doğrulama
+      hook'ları artık core tarafından okunmaz
     - İstemciler, token'lar veya Bolt
-      uygulamaları gibi kanala ait çalışma zamanı nesnelerini `openclaw/plugin-sdk/channel-runtime-context`
-      aracılığıyla kaydedin
-    - Yerel approval işleyicilerinden Plugin'e ait reroute bildirimleri göndermeyin;
-      core artık yönlendirme sonucu başka yere giden bildirimlerin sahibidir
+      uygulamaları gibi kanala ait çalışma zamanı nesnelerini `openclaw/plugin-sdk/channel-runtime-context` üzerinden kaydedin
+    - Native onay işleyicilerinden Plugin'e ait yeniden yönlendirme bildirimleri göndermeyin;
+      core artık gerçek teslim sonuçlarından gelen başka yere yönlendirilmiş bildirimlerin sahibidir
     - `createChannelManager(...)` içine `channelRuntime` geçirirken,
       gerçek bir `createPluginRuntime().channel` yüzeyi sağlayın. Kısmi stub'lar reddedilir.
 
-    Geçerli approval capability
-    düzeni için `/plugins/sdk-channel-plugins` sayfasına bakın.
+    Güncel onay capability
+    düzeni için `/plugins/sdk-channel-plugins` bölümüne bakın.
 
   </Step>
 
   <Step title="Windows wrapper fallback davranışını denetleyin">
-    Plugin'iniz `openclaw/plugin-sdk/windows-spawn` kullanıyorsa,
-    çözümlenmemiş Windows `.cmd`/`.bat` wrapper'ları artık siz açıkça
-    `allowShellFallback: true` geçmediğiniz sürece kapalı şekilde başarısız olur.
+    Plugin'iniz `openclaw/plugin-sdk/windows-spawn` kullanıyorsa, çözümlenmemiş Windows
+    `.cmd`/`.bat` wrapper'ları artık siz açıkça
+    `allowShellFallback: true` geçmedikçe kapalı şekilde başarısız olur.
 
     ```typescript
     // Before
@@ -171,23 +247,25 @@ kırılmamalıdır.
     });
     ```
 
-    Çağıranınız bilinçli olarak shell fallback'e dayanmıyorsa
+    Çağıran tarafınız shell fallback'e bilinçli olarak güvenmiyorsa,
     `allowShellFallback` ayarlamayın ve bunun yerine fırlatılan hatayı işleyin.
 
   </Step>
 
   <Step title="Kullanımdan kaldırılmış içe aktarmaları bulun">
-    Plugin'inizde bu kullanımdan kaldırılmış yüzeylerden yapılan içe aktarmaları arayın:
+    Plugin'inizde iki kullanımdan kaldırılmış yüzeyden herhangi birinden yapılan içe aktarmaları arayın:
 
     ```bash
     grep -r "plugin-sdk/compat" my-plugin/
+    grep -r "plugin-sdk/infra-runtime" my-plugin/
+    grep -r "plugin-sdk/config-runtime" my-plugin/
     grep -r "openclaw/extension-api" my-plugin/
     ```
 
   </Step>
 
-  <Step title="Odaklı içe aktarmalarla değiştirin">
-    Eski yüzeydeki her export, belirli bir modern içe aktarma yoluna eşlenir:
+  <Step title="Odaklanmış içe aktarmalarla değiştirin">
+    Eski yüzeydeki her dışa aktarma belirli bir modern içe aktarma yoluna eşlenir:
 
     ```typescript
     // Before (deprecated backwards-compatibility layer)
@@ -203,8 +281,7 @@ kırılmamalıdır.
     import { resolveControlCommandGate } from "openclaw/plugin-sdk/command-auth";
     ```
 
-    Host tarafı yardımcıları için doğrudan içe aktarmak yerine
-    enjekte edilen Plugin çalışma zamanını kullanın:
+    Ana taraf yardımcıları için doğrudan içe aktarma yerine enjekte edilen Plugin çalışma zamanını kullanın:
 
     ```typescript
     // Before (deprecated extension-api bridge)
@@ -215,9 +292,9 @@ kırılmamalıdır.
     const result = await api.runtime.agent.runEmbeddedPiAgent({ sessionId, prompt });
     ```
 
-    Aynı desen diğer eski köprü yardımcıları için de geçerlidir:
+    Aynı desen, diğer eski bridge yardımcıları için de geçerlidir:
 
-    | Eski içe aktarma | Modern karşılığı |
+    | Eski import | Modern eşdeğer |
     | --- | --- |
     | `resolveAgentDir` | `api.runtime.agent.resolveAgentDir` |
     | `resolveAgentWorkspaceDir` | `api.runtime.agent.resolveAgentWorkspaceDir` |
@@ -225,7 +302,62 @@ kırılmamalıdır.
     | `resolveThinkingDefault` | `api.runtime.agent.resolveThinkingDefault` |
     | `resolveAgentTimeoutMs` | `api.runtime.agent.resolveAgentTimeoutMs` |
     | `ensureAgentWorkspace` | `api.runtime.agent.ensureAgentWorkspace` |
-    | session store helpers | `api.runtime.agent.session.*` |
+    | oturum deposu yardımcıları | `api.runtime.agent.session.*` |
+
+  </Step>
+
+  <Step title="Geniş infra-runtime import’larını değiştirin">
+    `openclaw/plugin-sdk/infra-runtime` harici uyumluluk için hâlâ vardır,
+    ancak yeni kod gerçekten ihtiyaç duyduğu odaklı yardımcı yüzeyi import
+    etmelidir:
+
+    | İhtiyaç | Import |
+    | --- | --- |
+    | Sistem olay kuyruğu yardımcıları | `openclaw/plugin-sdk/system-event-runtime` |
+    | Heartbeat olayı ve görünürlük yardımcıları | `openclaw/plugin-sdk/heartbeat-runtime` |
+    | Bekleyen teslimat kuyruğu boşaltma | `openclaw/plugin-sdk/delivery-queue-runtime` |
+    | Kanal etkinliği telemetrisi | `openclaw/plugin-sdk/channel-activity-runtime` |
+    | Bellek içi tekilleştirme önbellekleri | `openclaw/plugin-sdk/dedupe-runtime` |
+    | Güvenli yerel dosya/medya yolu yardımcıları | `openclaw/plugin-sdk/file-access-runtime` |
+    | Dispatcher uyumlu fetch | `openclaw/plugin-sdk/runtime-fetch` |
+    | Proxy ve korumalı fetch yardımcıları | `openclaw/plugin-sdk/fetch-runtime` |
+    | SSRF dispatcher ilke türleri | `openclaw/plugin-sdk/ssrf-dispatcher` |
+    | Onay isteği/çözümleme türleri | `openclaw/plugin-sdk/approval-runtime` |
+    | Onay yanıtı yükü ve komut yardımcıları | `openclaw/plugin-sdk/approval-reply-runtime` |
+    | Hata biçimlendirme yardımcıları | `openclaw/plugin-sdk/error-runtime` |
+    | Aktarım hazır olma beklemeleri | `openclaw/plugin-sdk/transport-ready-runtime` |
+    | Güvenli token yardımcıları | `openclaw/plugin-sdk/secure-random-runtime` |
+    | Sınırlı eşzamansız görev eşzamanlılığı | `openclaw/plugin-sdk/concurrency-runtime` |
+    | Sayısal dönüştürme | `openclaw/plugin-sdk/number-runtime` |
+    | İşlem yerelinde eşzamansız kilit | `openclaw/plugin-sdk/async-lock-runtime` |
+    | Dosya kilitleri | `openclaw/plugin-sdk/file-lock` |
+
+    Paketle gelen Plugin’ler `infra-runtime` kullanımına karşı tarayıcıyla
+    korunur, bu yüzden repo kodu geniş barrel’a geri dönemez.
+
+  </Step>
+
+  <Step title="Kanal rota yardımcılarını taşıyın">
+    Yeni kanal rota kodu `openclaw/plugin-sdk/channel-route` kullanmalıdır.
+    Eski route-key ve comparable-target adları geçiş dönemi boyunca uyumluluk
+    alias’ları olarak kalır, ancak yeni Plugin’ler davranışı doğrudan açıklayan
+    rota adlarını kullanmalıdır:
+
+    | Eski yardımcı | Modern yardımcı |
+    | --- | --- |
+    | `channelRouteIdentityKey(...)` | `channelRouteDedupeKey(...)` |
+    | `channelRouteKey(...)` | `channelRouteCompactKey(...)` |
+    | `ComparableChannelTarget` | `ChannelRouteParsedTarget` |
+    | `resolveComparableTargetForChannel(...)` | `resolveRouteTargetForChannel(...)` |
+    | `resolveComparableTargetForLoadedChannel(...)` | `resolveRouteTargetForLoadedChannel(...)` |
+    | `comparableChannelTargetsMatch(...)` | `channelRouteTargetsMatchExact(...)` |
+    | `comparableChannelTargetsShareRoute(...)` | `channelRouteTargetsShareConversation(...)` |
+
+    Modern rota yardımcıları `{ channel, to, accountId, threadId }` değerlerini
+    yerel onaylar, yanıt bastırma, gelen tekilleştirme, cron teslimatı ve oturum
+    yönlendirmesi genelinde tutarlı biçimde normalleştirir. Plugin’iniz özel
+    hedef gramerine sahipse bu ayrıştırıcıyı aynı rota hedefi sözleşmesine
+    uyarlamak için `resolveChannelRouteTargetWithParser(...)` kullanın.
 
   </Step>
 
@@ -237,154 +369,164 @@ kırılmamalıdır.
   </Step>
 </Steps>
 
-## İçe aktarma yolu başvurusu
+## Import yolu referansı
 
-  <Accordion title="Yaygın içe aktarma yolu tablosu">
-  | İçe aktarma yolu | Amaç | Temel export'lar |
+  <Accordion title="Common import path table">
+  | İçe aktarma yolu | Amaç | Temel dışa aktarımlar |
   | --- | --- | --- |
   | `plugin-sdk/plugin-entry` | Kurallı Plugin giriş yardımcısı | `definePluginEntry` |
-  | `plugin-sdk/core` | Kanal giriş tanımları/oluşturucuları için eski şemsiye yeniden dışa aktarma | `defineChannelPluginEntry`, `createChatChannelPlugin` |
-  | `plugin-sdk/config-schema` | Kök yapılandırma şeması dışa aktarması | `OpenClawSchema` |
+  | `plugin-sdk/core` | Kanal giriş tanımları/oluşturucuları için eski şemsiye yeniden dışa aktarım | `defineChannelPluginEntry`, `createChatChannelPlugin` |
+  | `plugin-sdk/config-schema` | Kök yapılandırma şeması dışa aktarımı | `OpenClawSchema` |
   | `plugin-sdk/provider-entry` | Tek sağlayıcılı giriş yardımcısı | `defineSingleProviderPluginEntry` |
   | `plugin-sdk/channel-core` | Odaklı kanal giriş tanımları ve oluşturucuları | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-  | `plugin-sdk/setup` | Paylaşılan kurulum sihirbazı yardımcıları | Allowlist istemleri, kurulum durumu oluşturucuları |
-  | `plugin-sdk/setup-runtime` | Kurulum zamanı çalışma zamanı yardımcıları | Güvenli içe aktarmalı kurulum yama bağdaştırıcıları, lookup-note yardımcıları, `promptResolvedAllowFrom`, `splitSetupEntries`, devredilen kurulum proxy'leri |
-  | `plugin-sdk/setup-adapter-runtime` | Kurulum bağdaştırıcı yardımcıları | `createEnvPatchedAccountSetupAdapter` |
+  | `plugin-sdk/setup` | Paylaşılan kurulum sihirbazı yardımcıları | İzin listesi istemleri, kurulum durumu oluşturucuları |
+  | `plugin-sdk/setup-runtime` | Kurulum zamanı runtime yardımcıları | İçe aktarma açısından güvenli kurulum yaması bağdaştırıcıları, arama-notu yardımcıları, `promptResolvedAllowFrom`, `splitSetupEntries`, devredilmiş kurulum proxy'leri |
+  | `plugin-sdk/setup-adapter-runtime` | Kurulum bağdaştırıcısı yardımcıları | `createEnvPatchedAccountSetupAdapter` |
   | `plugin-sdk/setup-tools` | Kurulum araç yardımcıları | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-  | `plugin-sdk/account-core` | Çoklu hesap yardımcıları | Hesap listesi/yapılandırma/eylem-kapısı yardımcıları |
-  | `plugin-sdk/account-id` | Hesap kimliği yardımcıları | `DEFAULT_ACCOUNT_ID`, hesap kimliği normalleştirme |
-  | `plugin-sdk/account-resolution` | Hesap arama yardımcıları | Hesap arama + varsayılan yedek yardımcıları |
-  | `plugin-sdk/account-helpers` | Dar hesap yardımcıları | Hesap listesi/hesap eylemi yardımcıları |
+  | `plugin-sdk/account-core` | Çok hesaplı yardımcılar | Hesap listesi/yapılandırma/eylem kapısı yardımcıları |
+  | `plugin-sdk/account-id` | Hesap kimliği yardımcıları | `DEFAULT_ACCOUNT_ID`, hesap kimliği normalizasyonu |
+  | `plugin-sdk/account-resolution` | Hesap arama yardımcıları | Hesap arama + varsayılan yedeğe düşme yardımcıları |
+  | `plugin-sdk/account-helpers` | Dar kapsamlı hesap yardımcıları | Hesap listesi/hesap eylemi yardımcıları |
   | `plugin-sdk/channel-setup` | Kurulum sihirbazı bağdaştırıcıları | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, ayrıca `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
   | `plugin-sdk/channel-pairing` | DM eşleştirme ilkel öğeleri | `createChannelPairingController` |
-  | `plugin-sdk/channel-reply-pipeline` | Yanıt öneki + yazıyor bağlantısı | `createChannelReplyPipeline` |
-  | `plugin-sdk/channel-config-helpers` | Yapılandırma bağdaştırıcı fabrikaları | `createHybridChannelConfigAdapter` |
-  | `plugin-sdk/channel-config-schema` | Yapılandırma şeması oluşturucuları | Paylaşılan kanal yapılandırma şeması ilkel öğeleri; bundled-channel-named şema export'ları yalnızca eski uyumluluk içindir |
-  | `plugin-sdk/telegram-command-config` | Telegram komut yapılandırma yardımcıları | Komut adı normalleştirme, açıklama kırpma, yinelenen/çakışma doğrulaması |
-  | `plugin-sdk/channel-policy` | Grup/DM politikası çözümleme | `resolveChannelGroupRequireMention` |
-  | `plugin-sdk/channel-lifecycle` | Hesap durumu ve taslak akış yaşam döngüsü yardımcıları | `createAccountStatusSink`, taslak önizleme sonlandırma yardımcıları |
-  | `plugin-sdk/inbound-envelope` | Gelen zarf yardımcıları | Paylaşılan yönlendirme + zarf oluşturucu yardımcıları |
-  | `plugin-sdk/inbound-reply-dispatch` | Gelen yanıt yardımcıları | Paylaşılan kaydet ve dağıt yardımcıları |
+  | `plugin-sdk/channel-reply-pipeline` | Yanıt öneki, yazıyor durumu ve kaynak teslimatı kablolaması | `createChannelReplyPipeline`, `resolveChannelSourceReplyDeliveryMode` |
+  | `plugin-sdk/channel-config-helpers` | Yapılandırma bağdaştırıcısı fabrikaları ve DM erişim yardımcıları | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
+  | `plugin-sdk/channel-config-schema` | Yapılandırma şeması oluşturucuları | Yalnızca paylaşılan kanal yapılandırma şeması ilkel öğeleri ve genel oluşturucu |
+  | `plugin-sdk/bundled-channel-config-schema` | Paketlenmiş yapılandırma şemaları | Yalnızca OpenClaw tarafından sürdürülen paketlenmiş Plugin'ler; yeni Plugin'ler Plugin'e yerel şemalar tanımlamalıdır |
+  | `plugin-sdk/channel-config-schema-legacy` | Kullanımdan kaldırılmış paketlenmiş yapılandırma şemaları | Yalnızca uyumluluk takma adı; sürdürülen paketlenmiş Plugin'ler için `plugin-sdk/bundled-channel-config-schema` kullanın |
+  | `plugin-sdk/telegram-command-config` | Telegram komut yapılandırması yardımcıları | Komut adı normalizasyonu, açıklama kırpma, yinelenen/çakışan doğrulaması |
+  | `plugin-sdk/channel-policy` | Grup/DM ilkesi çözümleme | `resolveChannelGroupRequireMention` |
+  | `plugin-sdk/channel-lifecycle` | Hesap durumu ve taslak akış yaşam döngüsü yardımcıları | `createAccountStatusSink`, taslak önizlemesi sonlandırma yardımcıları |
+  | `plugin-sdk/inbound-envelope` | Gelen zarf yardımcıları | Paylaşılan rota + zarf oluşturucu yardımcıları |
+  | `plugin-sdk/inbound-reply-dispatch` | Gelen yanıt yardımcıları | Paylaşılan kaydet-ve-dağıt yardımcıları |
   | `plugin-sdk/messaging-targets` | Mesajlaşma hedefi ayrıştırma | Hedef ayrıştırma/eşleştirme yardımcıları |
   | `plugin-sdk/outbound-media` | Giden medya yardımcıları | Paylaşılan giden medya yükleme |
-  | `plugin-sdk/outbound-send-deps` | Giden gönderim bağımlılığı yardımcıları | Tam giden çalışma zamanını içe aktarmadan hafif `resolveOutboundSendDep` araması |
-  | `plugin-sdk/outbound-runtime` | Giden çalışma zamanı yardımcıları | Giden teslim, kimlik/gönderim temsilcisi, oturum, biçimlendirme ve yük planlama yardımcıları |
+  | `plugin-sdk/outbound-send-deps` | Giden gönderim bağımlılığı yardımcıları | Tam giden runtime'ı içe aktarmadan hafif `resolveOutboundSendDep` araması |
+  | `plugin-sdk/outbound-runtime` | Giden runtime yardımcıları | Giden teslimat, kimlik/gönderim devretme, oturum, biçimlendirme ve yük planlama yardımcıları |
   | `plugin-sdk/thread-bindings-runtime` | Konu bağlama yardımcıları | Konu bağlama yaşam döngüsü ve bağdaştırıcı yardımcıları |
-  | `plugin-sdk/agent-media-payload` | Eski medya yükü yardımcıları | Eski alan düzenleri için ajan medya yükü oluşturucusu |
-  | `plugin-sdk/channel-runtime` | Kullanımdan kaldırılmış uyumluluk shim'i | Yalnızca eski kanal çalışma zamanı yardımcıları |
+  | `plugin-sdk/agent-media-payload` | Eski medya yükü yardımcıları | Eski alan düzenleri için ajan medya yükü oluşturucu |
+  | `plugin-sdk/channel-runtime` | Kullanımdan kaldırılmış uyumluluk katmanı | Yalnızca eski kanal runtime yardımcı programları |
   | `plugin-sdk/channel-send-result` | Gönderim sonucu türleri | Yanıt sonucu türleri |
   | `plugin-sdk/runtime-store` | Kalıcı Plugin depolaması | `createPluginRuntimeStore` |
-  | `plugin-sdk/runtime` | Geniş çalışma zamanı yardımcıları | Çalışma zamanı/günlükleme/yedekleme/Plugin-kurulum yardımcıları |
-  | `plugin-sdk/runtime-env` | Dar çalışma zamanı ortam yardımcıları | Logger/çalışma zamanı ortamı, zaman aşımı, yeniden deneme ve backoff yardımcıları |
-  | `plugin-sdk/plugin-runtime` | Paylaşılan Plugin çalışma zamanı yardımcıları | Plugin komutları/kancaları/http/etkileşimli yardımcıları |
-  | `plugin-sdk/hook-runtime` | Kanca hattı yardımcıları | Paylaşılan Webhook/dahili kanca hattı yardımcıları |
-  | `plugin-sdk/lazy-runtime` | Tembel çalışma zamanı yardımcıları | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
+  | `plugin-sdk/runtime` | Geniş runtime yardımcıları | Runtime/günlükleme/yedekleme/Plugin yükleme yardımcıları |
+  | `plugin-sdk/runtime-env` | Dar kapsamlı runtime ortamı yardımcıları | Günlükleyici/runtime ortamı, zaman aşımı, yeniden deneme ve geri çekilme yardımcıları |
+  | `plugin-sdk/plugin-runtime` | Paylaşılan Plugin runtime yardımcıları | Plugin komutları/kancaları/http/etkileşimli yardımcılar |
+  | `plugin-sdk/hook-runtime` | Kanca işlem hattı yardımcıları | Paylaşılan Webhook/dahili kanca işlem hattı yardımcıları |
+  | `plugin-sdk/lazy-runtime` | Tembel runtime yardımcıları | `createLazyRuntimeModule`, `createLazyRuntimeMethod`, `createLazyRuntimeMethodBinder`, `createLazyRuntimeNamedExport`, `createLazyRuntimeSurface` |
   | `plugin-sdk/process-runtime` | Süreç yardımcıları | Paylaşılan exec yardımcıları |
-  | `plugin-sdk/cli-runtime` | CLI çalışma zamanı yardımcıları | Komut biçimlendirme, beklemeler, sürüm yardımcıları |
-  | `plugin-sdk/gateway-runtime` | Gateway yardımcıları | Gateway istemcisi ve kanal-durumu yama yardımcıları |
-  | `plugin-sdk/config-runtime` | Yapılandırma yardımcıları | Yapılandırma yükleme/yazma yardımcıları |
-  | `plugin-sdk/telegram-command-config` | Telegram komut yardımcıları | Bundled Telegram sözleşme yüzeyi mevcut olmadığında fallback-kararlı Telegram komut doğrulama yardımcıları |
-  | `plugin-sdk/approval-runtime` | Approval istem yardımcıları | Exec/Plugin approval yükü, approval capability/profile yardımcıları, yerel approval yönlendirme/çalışma zamanı yardımcıları ve yapılandırılmış approval görünüm yolu biçimlendirme |
-  | `plugin-sdk/approval-auth-runtime` | Approval auth yardımcıları | Onaylayan çözümleme, aynı sohbet eylem kimlik doğrulaması |
-  | `plugin-sdk/approval-client-runtime` | Approval istemci yardımcıları | Yerel exec approval profil/filtre yardımcıları |
-  | `plugin-sdk/approval-delivery-runtime` | Approval teslim yardımcıları | Yerel approval capability/delivery bağdaştırıcıları |
-  | `plugin-sdk/approval-gateway-runtime` | Approval gateway yardımcıları | Paylaşılan approval gateway çözümleme yardımcısı |
-  | `plugin-sdk/approval-handler-adapter-runtime` | Approval bağdaştırıcı yardımcıları | Sıcak kanal giriş noktaları için hafif yerel approval bağdaştırıcı yükleme yardımcıları |
-  | `plugin-sdk/approval-handler-runtime` | Approval işleyici yardımcıları | Daha geniş approval işleyici çalışma zamanı yardımcıları; dar bağdaştırıcı/gateway dikişleri yeterliyse onları tercih edin |
-  | `plugin-sdk/approval-native-runtime` | Approval hedef yardımcıları | Yerel approval hedef/hesap bağlama yardımcıları |
-  | `plugin-sdk/approval-reply-runtime` | Approval yanıt yardımcıları | Exec/Plugin approval yanıt yükü yardımcıları |
-  | `plugin-sdk/channel-runtime-context` | Kanal çalışma zamanı bağlamı yardımcıları | Genel kanal çalışma zamanı bağlamı register/get/watch yardımcıları |
-  | `plugin-sdk/security-runtime` | Güvenlik yardımcıları | Paylaşılan güven, DM sınırlaması, harici içerik ve sır toplama yardımcıları |
-  | `plugin-sdk/ssrf-policy` | SSRF politikası yardımcıları | Host izin listesi ve özel ağ politikası yardımcıları |
-  | `plugin-sdk/ssrf-runtime` | SSRF çalışma zamanı yardımcıları | Sabitlenmiş dispatcher, korumalı fetch, SSRF politikası yardımcıları |
+  | `plugin-sdk/cli-runtime` | CLI runtime yardımcıları | Komut biçimlendirme, beklemeler, sürüm yardımcıları |
+  | `plugin-sdk/gateway-runtime` | Gateway yardımcıları | Gateway istemcisi, olay döngüsü hazır başlatma yardımcısı ve kanal durumu yaması yardımcıları |
+  | `plugin-sdk/config-runtime` | Kullanımdan kaldırılmış yapılandırma uyumluluk katmanı | `config-types`, `plugin-config-runtime`, `runtime-config-snapshot` ve `config-mutation` tercih edin |
+  | `plugin-sdk/telegram-command-config` | Telegram komut yardımcıları | Paketlenmiş Telegram sözleşme yüzeyi kullanılamadığında yedeğe düşmesi kararlı Telegram komut doğrulama yardımcıları |
+  | `plugin-sdk/approval-runtime` | Onay istemi yardımcıları | Exec/Plugin onay yükü, onay yeteneği/profil yardımcıları, yerel onay yönlendirme/runtime yardımcıları ve yapılandırılmış onay görüntüleme yolu biçimlendirme |
+  | `plugin-sdk/approval-auth-runtime` | Onay yetkilendirme yardımcıları | Onaylayıcı çözümleme, aynı sohbet eylem yetkilendirmesi |
+  | `plugin-sdk/approval-client-runtime` | Onay istemcisi yardımcıları | Yerel exec onay profili/filtre yardımcıları |
+  | `plugin-sdk/approval-delivery-runtime` | Onay teslimatı yardımcıları | Yerel onay yeteneği/teslimat bağdaştırıcıları |
+  | `plugin-sdk/approval-gateway-runtime` | Onay Gateway yardımcıları | Paylaşılan onay Gateway çözümleme yardımcısı |
+  | `plugin-sdk/approval-handler-adapter-runtime` | Onay bağdaştırıcısı yardımcıları | Sıcak kanal giriş noktaları için hafif yerel onay bağdaştırıcısı yükleme yardımcıları |
+  | `plugin-sdk/approval-handler-runtime` | Onay işleyici yardımcıları | Daha geniş onay işleyici runtime yardımcıları; yeterli olduklarında daha dar bağdaştırıcı/Gateway sınırlarını tercih edin |
+  | `plugin-sdk/approval-native-runtime` | Onay hedefi yardımcıları | Yerel onay hedefi/hesap bağlama yardımcıları |
+  | `plugin-sdk/approval-reply-runtime` | Onay yanıtı yardımcıları | Exec/Plugin onay yanıtı yük yardımcıları |
+  | `plugin-sdk/channel-runtime-context` | Kanal runtime bağlamı yardımcıları | Genel kanal runtime bağlamı kaydet/al/izle yardımcıları |
+  | `plugin-sdk/security-runtime` | Güvenlik yardımcıları | Paylaşılan güven, DM geçitleme, harici içerik ve gizli bilgi toplama yardımcıları |
+  | `plugin-sdk/ssrf-policy` | SSRF ilkesi yardımcıları | Host izin listesi ve özel ağ ilkesi yardımcıları |
+  | `plugin-sdk/ssrf-runtime` | SSRF runtime yardımcıları | Sabitlenmiş dağıtıcı, korumalı fetch, SSRF ilkesi yardımcıları |
+  | `plugin-sdk/system-event-runtime` | Sistem olayı yardımcıları | `enqueueSystemEvent`, `peekSystemEventEntries` |
+  | `plugin-sdk/heartbeat-runtime` | Heartbeat yardımcıları | Heartbeat olayı ve görünürlük yardımcıları |
+  | `plugin-sdk/delivery-queue-runtime` | Teslimat kuyruğu yardımcıları | `drainPendingDeliveries` |
+  | `plugin-sdk/channel-activity-runtime` | Kanal etkinliği yardımcıları | `recordChannelActivity` |
+  | `plugin-sdk/dedupe-runtime` | Tekilleştirme yardımcıları | Bellek içi tekilleştirme önbellekleri |
+  | `plugin-sdk/file-access-runtime` | Dosya erişimi yardımcıları | Güvenli yerel dosya/medya yolu yardımcıları |
+  | `plugin-sdk/transport-ready-runtime` | Aktarım hazır olma yardımcıları | `waitForTransportReady` |
   | `plugin-sdk/collection-runtime` | Sınırlı önbellek yardımcıları | `pruneMapToMaxSize` |
-  | `plugin-sdk/diagnostic-runtime` | Tanılama sınırlama yardımcıları | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
+  | `plugin-sdk/diagnostic-runtime` | Tanılama geçitleme yardımcıları | `isDiagnosticFlagEnabled`, `isDiagnosticsEnabled` |
   | `plugin-sdk/error-runtime` | Hata biçimlendirme yardımcıları | `formatUncaughtError`, `isApprovalNotFoundError`, hata grafiği yardımcıları |
-  | `plugin-sdk/fetch-runtime` | Sarılmış fetch/proxy yardımcıları | `resolveFetch`, proxy yardımcıları |
-  | `plugin-sdk/host-runtime` | Host normalleştirme yardımcıları | `normalizeHostname`, `normalizeScpRemoteHost` |
-  | `plugin-sdk/retry-runtime` | Yeniden deneme yardımcıları | `RetryConfig`, `retryAsync`, politika çalıştırıcıları |
-  | `plugin-sdk/allow-from` | Allowlist biçimlendirme | `formatAllowFromLowercase` |
-  | `plugin-sdk/allowlist-resolution` | Allowlist girdi eşleme | `mapAllowlistResolutionInputs` |
-  | `plugin-sdk/command-auth` | Komut sınırlama ve komut yüzeyi yardımcıları | `resolveControlCommandGate`, gönderici-yetkilendirme yardımcıları, dinamik argüman menü biçimlendirme dahil komut kayıt defteri yardımcıları |
-  | `plugin-sdk/command-status` | Komut durumu/yardım oluşturucuları | `buildCommandsMessage`, `buildCommandsMessagePaginated`, `buildHelpMessage` |
-  | `plugin-sdk/secret-input` | Secret girdi ayrıştırma | Secret girdi yardımcıları |
-  | `plugin-sdk/webhook-ingress` | Webhook istek yardımcıları | Webhook hedef yardımcıları |
-  | `plugin-sdk/webhook-request-guards` | Webhook gövde koruma yardımcıları | İstek gövdesi okuma/sınır yardımcıları |
-  | `plugin-sdk/reply-runtime` | Paylaşılan yanıt çalışma zamanı | Gelen dağıtım, Heartbeat, yanıt planlayıcı, parçalama |
-  | `plugin-sdk/reply-dispatch-runtime` | Dar yanıt dağıtım yardımcıları | Sonlandırma, sağlayıcı dağıtımı ve konuşma etiketi yardımcıları |
+  | `plugin-sdk/fetch-runtime` | Sarmalanmış fetch/proxy yardımcıları | `resolveFetch`, proxy yardımcıları, EnvHttpProxyAgent seçenek yardımcıları |
+  | `plugin-sdk/host-runtime` | Host normalizasyonu yardımcıları | `normalizeHostname`, `normalizeScpRemoteHost` |
+  | `plugin-sdk/retry-runtime` | Yeniden deneme yardımcıları | `RetryConfig`, `retryAsync`, ilke çalıştırıcıları |
+  | `plugin-sdk/allow-from` | İzin listesi biçimlendirme | `formatAllowFromLowercase` |
+  | `plugin-sdk/allowlist-resolution` | İzin listesi giriş eşlemesi | `mapAllowlistResolutionInputs` |
+  | `plugin-sdk/command-auth` | Komut geçitleme ve komut yüzeyi yardımcıları | `resolveControlCommandGate`, gönderen yetkilendirme yardımcıları, dinamik argüman menüsü biçimlendirmesi dahil komut kayıt defteri yardımcıları |
+  | `plugin-sdk/command-status` | Komut durumu/yardım işleyicileri | `buildCommandsMessage`, `buildCommandsMessagePaginated`, `buildHelpMessage` |
+  | `plugin-sdk/secret-input` | Gizli bilgi girişi ayrıştırma | Gizli bilgi girişi yardımcıları |
+  | `plugin-sdk/webhook-ingress` | Webhook isteği yardımcıları | Webhook hedef yardımcı programları |
+  | `plugin-sdk/webhook-request-guards` | Webhook gövde koruması yardımcıları | İstek gövdesi okuma/sınır yardımcıları |
+  | `plugin-sdk/reply-runtime` | Paylaşılan yanıt runtime'ı | Gelen dağıtım, Heartbeat, yanıt planlayıcı, parçalama |
+  | `plugin-sdk/reply-dispatch-runtime` | Dar kapsamlı yanıt dağıtım yardımcıları | Sonlandırma, sağlayıcı dağıtımı ve konuşma etiketi yardımcıları |
   | `plugin-sdk/reply-history` | Yanıt geçmişi yardımcıları | `buildHistoryContext`, `buildPendingHistoryContextFromMap`, `recordPendingHistoryEntry`, `clearHistoryEntriesIfEnabled` |
   | `plugin-sdk/reply-reference` | Yanıt referansı planlama | `createReplyReferencePlanner` |
-  | `plugin-sdk/reply-chunking` | Yanıt parça yardımcıları | Metin/markdown parçalama yardımcıları |
-  | `plugin-sdk/session-store-runtime` | Oturum deposu yardımcıları | Depo yolu + updated-at yardımcıları |
-  | `plugin-sdk/state-paths` | Durum yolu yardımcıları | Durum ve OAuth dizin yardımcıları |
-  | `plugin-sdk/routing` | Yönlendirme/oturum anahtarı yardımcıları | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, oturum anahtarı normalleştirme yardımcıları |
-  | `plugin-sdk/status-helpers` | Kanal durum yardımcıları | Kanal/hesap durum özeti oluşturucuları, çalışma zamanı durumu varsayılanları, issue meta veri yardımcıları |
+  | `plugin-sdk/reply-chunking` | Yanıt parçası yardımcıları | Metin/markdown parçalama yardımcıları |
+  | `plugin-sdk/session-store-runtime` | Oturum deposu yardımcıları | Depo yolu + güncellenme zamanı yardımcıları |
+  | `plugin-sdk/state-paths` | Durum yolu yardımcıları | Durum ve OAuth dizini yardımcıları |
+  | `plugin-sdk/routing` | Yönlendirme/oturum anahtarı yardımcıları | `resolveAgentRoute`, `buildAgentSessionKey`, `resolveDefaultAgentBoundAccountId`, oturum anahtarı normalizasyon yardımcıları |
+  | `plugin-sdk/status-helpers` | Kanal durumu yardımcıları | Kanal/hesap durumu özeti oluşturucuları, runtime durumu varsayılanları, sorun meta veri yardımcıları |
   | `plugin-sdk/target-resolver-runtime` | Hedef çözümleyici yardımcıları | Paylaşılan hedef çözümleyici yardımcıları |
-  | `plugin-sdk/string-normalization-runtime` | String normalleştirme yardımcıları | Slug/string normalleştirme yardımcıları |
-  | `plugin-sdk/request-url` | İstek URL yardımcıları | İstek benzeri girdilerden string URL çıkarma |
-  | `plugin-sdk/run-command` | Zamanlanmış komut yardımcıları | Normalize stdout/stderr ile zamanlanmış komut çalıştırıcısı |
-  | `plugin-sdk/param-readers` | Param okuyucular | Yaygın araç/CLI param okuyucular |
-  | `plugin-sdk/tool-payload` | Araç yükü çıkarma | Araç sonuç nesnelerinden normalize yük çıkarma |
-  | `plugin-sdk/tool-send` | Araç gönderim çıkarma | Araç argümanlarından kurallı gönderim hedef alanlarını çıkarma |
+  | `plugin-sdk/string-normalization-runtime` | Dize normalizasyonu yardımcıları | Slug/dize normalizasyonu yardımcıları |
+  | `plugin-sdk/request-url` | İstek URL'si yardımcıları | İstek benzeri girişlerden dize URL'leri çıkarma |
+  | `plugin-sdk/run-command` | Zamanlanmış komut yardımcıları | Normalleştirilmiş stdout/stderr ile zamanlanmış komut çalıştırıcı |
+  | `plugin-sdk/param-readers` | Parametre okuyucuları | Yaygın araç/CLI parametre okuyucuları |
+  | `plugin-sdk/tool-payload` | Araç yükü çıkarımı | Araç sonucu nesnelerinden normalleştirilmiş yükleri çıkarır |
+  | `plugin-sdk/tool-send` | Araç gönderim çıkarımı | Araç argümanlarından kanonik gönderim hedefi alanlarını çıkarır |
   | `plugin-sdk/temp-path` | Geçici yol yardımcıları | Paylaşılan geçici indirme yolu yardımcıları |
-  | `plugin-sdk/logging-core` | Günlükleme yardımcıları | Alt sistem logger ve redaksiyon yardımcıları |
-  | `plugin-sdk/markdown-table-runtime` | Markdown tablo yardımcıları | Markdown tablo kipi yardımcıları |
-  | `plugin-sdk/reply-payload` | Mesaj yanıt türleri | Yanıt yükü türleri |
-  | `plugin-sdk/provider-setup` | Düzenlenmiş yerel/kendi host edilen sağlayıcı kurulum yardımcıları | Kendi host edilen sağlayıcı keşif/yapılandırma yardımcıları |
-  | `plugin-sdk/self-hosted-provider-setup` | Odaklı OpenAI uyumlu kendi host edilen sağlayıcı kurulum yardımcıları | Aynı kendi host edilen sağlayıcı keşif/yapılandırma yardımcıları |
-  | `plugin-sdk/provider-auth-runtime` | Sağlayıcı çalışma zamanı auth yardımcıları | Çalışma zamanı API anahtarı çözümleme yardımcıları |
-  | `plugin-sdk/provider-auth-api-key` | Sağlayıcı API anahtarı kurulum yardımcıları | API anahtarı onboarding/profil-yazma yardımcıları |
-  | `plugin-sdk/provider-auth-result` | Sağlayıcı auth-result yardımcıları | Standart OAuth auth-result oluşturucusu |
+  | `plugin-sdk/logging-core` | Günlükleme yardımcıları | Alt sistem günlükleyicisi ve redaksiyon yardımcıları |
+  | `plugin-sdk/markdown-table-runtime` | Markdown tablo yardımcıları | Markdown tablo modu yardımcıları |
+  | `plugin-sdk/reply-payload` | İleti yanıtı türleri | Yanıt yükü türleri |
+  | `plugin-sdk/provider-setup` | Derlenmiş yerel/kendi barındırmalı sağlayıcı kurulum yardımcıları | Kendi barındırmalı sağlayıcı keşif/yapılandırma yardımcıları |
+  | `plugin-sdk/self-hosted-provider-setup` | Odaklı OpenAI uyumlu kendi barındırmalı sağlayıcı kurulum yardımcıları | Aynı kendi barındırmalı sağlayıcı keşif/yapılandırma yardımcıları |
+  | `plugin-sdk/provider-auth-runtime` | Sağlayıcı çalışma zamanı kimlik doğrulama yardımcıları | Çalışma zamanı API anahtarı çözümleme yardımcıları |
+  | `plugin-sdk/provider-auth-api-key` | Sağlayıcı API anahtarı kurulum yardımcıları | API anahtarı ilk kurulum/profil yazma yardımcıları |
+  | `plugin-sdk/provider-auth-result` | Sağlayıcı kimlik doğrulama sonucu yardımcıları | Standart OAuth kimlik doğrulama sonucu oluşturucu |
   | `plugin-sdk/provider-auth-login` | Sağlayıcı etkileşimli giriş yardımcıları | Paylaşılan etkileşimli giriş yardımcıları |
-  | `plugin-sdk/provider-selection-runtime` | Sağlayıcı seçim yardımcıları | Yapılandırılmış-veya-otomatik sağlayıcı seçimi ve ham sağlayıcı yapılandırma birleştirme |
-  | `plugin-sdk/provider-env-vars` | Sağlayıcı env-var yardımcıları | Sağlayıcı auth env-var arama yardımcıları |
-  | `plugin-sdk/provider-model-shared` | Paylaşılan sağlayıcı model/replay yardımcıları | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, paylaşılan replay-policy oluşturucuları, provider-endpoint yardımcıları ve model-id normalleştirme yardımcıları |
-  | `plugin-sdk/provider-catalog-shared` | Paylaşılan sağlayıcı katalog yardımcıları | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-  | `plugin-sdk/provider-onboard` | Sağlayıcı onboarding yamaları | Onboarding yapılandırma yardımcıları |
-  | `plugin-sdk/provider-http` | Sağlayıcı HTTP yardımcıları | Ses dökümü multipart form yardımcıları dahil genel sağlayıcı HTTP/endpoint capability yardımcıları |
-  | `plugin-sdk/provider-web-fetch` | Sağlayıcı web-fetch yardımcıları | Web-fetch sağlayıcı kayıt/önbellek yardımcıları |
-  | `plugin-sdk/provider-web-search-config-contract` | Sağlayıcı web-search yapılandırma yardımcıları | Plugin-enable bağlantısına ihtiyaç duymayan sağlayıcılar için dar web-search yapılandırma/kimlik bilgisi yardımcıları |
-  | `plugin-sdk/provider-web-search-contract` | Sağlayıcı web-search sözleşme yardımcıları | `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` ve kapsamlı kimlik bilgisi ayarlayıcıları/alıcıları gibi dar web-search yapılandırma/kimlik bilgisi sözleşme yardımcıları |
-  | `plugin-sdk/provider-web-search` | Sağlayıcı web-search yardımcıları | Web-search sağlayıcı kayıt/önbellek/çalışma zamanı yardımcıları |
-  | `plugin-sdk/provider-tools` | Sağlayıcı araç/şema uyumluluk yardımcıları | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, Gemini şema temizleme + tanılama ve `resolveXaiModelCompatPatch` / `applyXaiModelCompat` gibi xAI uyumluluk yardımcıları |
+  | `plugin-sdk/provider-selection-runtime` | Sağlayıcı seçimi yardımcıları | Yapılandırılmış veya otomatik sağlayıcı seçimi ve ham sağlayıcı yapılandırması birleştirme |
+  | `plugin-sdk/provider-env-vars` | Sağlayıcı ortam değişkeni yardımcıları | Sağlayıcı kimlik doğrulama ortam değişkeni arama yardımcıları |
+  | `plugin-sdk/provider-model-shared` | Paylaşılan sağlayıcı model/yeniden oynatma yardımcıları | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, paylaşılan yeniden oynatma ilkesi oluşturucuları, sağlayıcı uç nokta yardımcıları ve model kimliği normalleştirme yardımcıları |
+  | `plugin-sdk/provider-catalog-shared` | Paylaşılan sağlayıcı katalog yardımcıları | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
+  | `plugin-sdk/provider-onboard` | Sağlayıcı ilk kurulum yamaları | İlk kurulum yapılandırma yardımcıları |
+  | `plugin-sdk/provider-http` | Sağlayıcı HTTP yardımcıları | Ses transkripsiyonu çok parçalı form yardımcıları dahil genel sağlayıcı HTTP/uç nokta yetenek yardımcıları |
+  | `plugin-sdk/provider-web-fetch` | Sağlayıcı web alma yardımcıları | Web alma sağlayıcı kayıt/önbellek yardımcıları |
+  | `plugin-sdk/provider-web-search-config-contract` | Sağlayıcı web arama yapılandırma yardımcıları | Plugin etkinleştirme bağlantısına gerek duymayan sağlayıcılar için dar web arama yapılandırma/kimlik bilgisi yardımcıları |
+  | `plugin-sdk/provider-web-search-contract` | Sağlayıcı web arama sözleşmesi yardımcıları | `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` ve kapsamlı kimlik bilgisi ayarlayıcıları/alıcıları gibi dar web arama yapılandırma/kimlik bilgisi sözleşmesi yardımcıları |
+  | `plugin-sdk/provider-web-search` | Sağlayıcı web arama yardımcıları | Web arama sağlayıcı kayıt/önbellek/çalışma zamanı yardımcıları |
+  | `plugin-sdk/provider-tools` | Sağlayıcı araç/şema uyumluluk yardımcıları | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, Gemini şema temizleme + tanılamalar ve `resolveXaiModelCompatPatch` / `applyXaiModelCompat` gibi xAI uyumluluk yardımcıları |
   | `plugin-sdk/provider-usage` | Sağlayıcı kullanım yardımcıları | `fetchClaudeUsage`, `fetchGeminiUsage`, `fetchGithubCopilotUsage` ve diğer sağlayıcı kullanım yardımcıları |
   | `plugin-sdk/provider-stream` | Sağlayıcı akış sarmalayıcı yardımcıları | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, akış sarmalayıcı türleri ve paylaşılan Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot sarmalayıcı yardımcıları |
-  | `plugin-sdk/provider-transport-runtime` | Sağlayıcı taşıma yardımcıları | Korumalı fetch, taşıma mesajı dönüşümleri ve yazılabilir taşıma olay akışları gibi yerel sağlayıcı taşıma yardımcıları |
-  | `plugin-sdk/keyed-async-queue` | Sıralı async kuyruk | `KeyedAsyncQueue` |
-  | `plugin-sdk/media-runtime` | Paylaşılan medya yardımcıları | Medya fetch/transform/store yardımcıları ile medya yükü oluşturucuları |
-  | `plugin-sdk/media-generation-runtime` | Paylaşılan medya üretim yardımcıları | Görsel/video/müzik üretimi için paylaşılan yedek yardımcıları, aday seçimi ve eksik model mesajlaşması |
-  | `plugin-sdk/media-understanding` | Medya anlama yardımcıları | Medya anlama sağlayıcı türleri ile sağlayıcıya dönük görsel/ses yardımcı export'ları |
-  | `plugin-sdk/text-runtime` | Paylaşılan metin yardımcıları | Asistanın görebildiği metin temizleme, markdown render/parçalama/tablo yardımcıları, redaksiyon yardımcıları, directive-tag yardımcıları, güvenli metin yardımcıları ve ilgili metin/günlükleme yardımcıları |
+  | `plugin-sdk/provider-transport-runtime` | Sağlayıcı taşıma yardımcıları | Korumalı fetch, taşıma ileti dönüşümleri ve yazılabilir taşıma olay akışları gibi yerel sağlayıcı taşıma yardımcıları |
+  | `plugin-sdk/keyed-async-queue` | Sıralı eşzamansız kuyruk | `KeyedAsyncQueue` |
+  | `plugin-sdk/media-runtime` | Paylaşılan medya yardımcıları | Medya alma/dönüştürme/depolama yardımcıları, ffprobe destekli video boyutu yoklama ve medya yükü oluşturucuları |
+  | `plugin-sdk/media-generation-runtime` | Paylaşılan medya oluşturma yardımcıları | Görüntü/video/müzik oluşturma için paylaşılan yük devretme yardımcıları, aday seçimi ve eksik model iletileri |
+  | `plugin-sdk/media-understanding` | Medya anlama yardımcıları | Medya anlama sağlayıcı türleri ve sağlayıcıya dönük görüntü/ses yardımcı dışa aktarımları |
+  | `plugin-sdk/text-runtime` | Paylaşılan metin yardımcıları | Asistana görünür metin temizleme, Markdown render/parçalama/tablo yardımcıları, redaksiyon yardımcıları, yönerge etiketi yardımcıları, güvenli metin yardımcı programları ve ilgili metin/günlükleme yardımcıları |
   | `plugin-sdk/text-chunking` | Metin parçalama yardımcıları | Giden metin parçalama yardımcısı |
-  | `plugin-sdk/speech` | Konuşma yardımcıları | Konuşma sağlayıcı türleri ile sağlayıcıya dönük directive, kayıt defteri ve doğrulama yardımcıları |
-  | `plugin-sdk/speech-core` | Paylaşılan konuşma çekirdeği | Konuşma sağlayıcı türleri, kayıt defteri, directive'ler, normalleştirme |
-  | `plugin-sdk/realtime-transcription` | Gerçek zamanlı döküm yardımcıları | Sağlayıcı türleri, kayıt defteri yardımcıları ve paylaşılan WebSocket oturum yardımcısı |
-  | `plugin-sdk/realtime-voice` | Gerçek zamanlı ses yardımcıları | Sağlayıcı türleri, kayıt defteri/çözümleme yardımcıları ve köprü oturum yardımcıları |
-  | `plugin-sdk/image-generation-core` | Paylaşılan görsel üretim çekirdeği | Görsel üretim türleri, yedekleme, auth ve kayıt defteri yardımcıları |
-  | `plugin-sdk/music-generation` | Müzik üretim yardımcıları | Müzik üretimi sağlayıcı/istek/sonuç türleri |
-  | `plugin-sdk/music-generation-core` | Paylaşılan müzik üretim çekirdeği | Müzik üretim türleri, yedek yardımcıları, sağlayıcı araması ve model-ref ayrıştırma |
-  | `plugin-sdk/video-generation` | Video üretim yardımcıları | Video üretimi sağlayıcı/istek/sonuç türleri |
-  | `plugin-sdk/video-generation-core` | Paylaşılan video üretim çekirdeği | Video üretim türleri, yedek yardımcıları, sağlayıcı araması ve model-ref ayrıştırma |
+  | `plugin-sdk/speech` | Konuşma yardımcıları | Konuşma sağlayıcı türleri ve sağlayıcıya dönük yönerge, kayıt defteri, doğrulama yardımcıları ve OpenAI uyumlu TTS oluşturucu |
+  | `plugin-sdk/speech-core` | Paylaşılan konuşma çekirdeği | Konuşma sağlayıcı türleri, kayıt defteri, yönergeler, normalleştirme |
+  | `plugin-sdk/realtime-transcription` | Gerçek zamanlı transkripsiyon yardımcıları | Sağlayıcı türleri, kayıt defteri yardımcıları ve paylaşılan WebSocket oturum yardımcısı |
+  | `plugin-sdk/realtime-voice` | Gerçek zamanlı ses yardımcıları | Sağlayıcı türleri, kayıt defteri/çözümleme yardımcıları ve köprü oturumu yardımcıları |
+  | `plugin-sdk/image-generation` | Görüntü oluşturma yardımcıları | Görüntü oluşturma sağlayıcı türleri ve görüntü varlığı/veri URL'si yardımcıları ile OpenAI uyumlu görüntü sağlayıcısı oluşturucu |
+  | `plugin-sdk/image-generation-core` | Paylaşılan görüntü oluşturma çekirdeği | Görüntü oluşturma türleri, yük devretme, kimlik doğrulama ve kayıt defteri yardımcıları |
+  | `plugin-sdk/music-generation` | Müzik oluşturma yardımcıları | Müzik oluşturma sağlayıcı/istek/sonuç türleri |
+  | `plugin-sdk/music-generation-core` | Paylaşılan müzik oluşturma çekirdeği | Müzik oluşturma türleri, yük devretme yardımcıları, sağlayıcı arama ve model başvurusu ayrıştırma |
+  | `plugin-sdk/video-generation` | Video oluşturma yardımcıları | Video oluşturma sağlayıcı/istek/sonuç türleri |
+  | `plugin-sdk/video-generation-core` | Paylaşılan video oluşturma çekirdeği | Video oluşturma türleri, yük devretme yardımcıları, sağlayıcı arama ve model başvurusu ayrıştırma |
   | `plugin-sdk/interactive-runtime` | Etkileşimli yanıt yardımcıları | Etkileşimli yanıt yükü normalleştirme/indirgeme |
-  | `plugin-sdk/channel-config-primitives` | Kanal yapılandırma ilkel öğeleri | Dar kanal config-schema ilkel öğeleri |
+  | `plugin-sdk/channel-config-primitives` | Kanal yapılandırma ilkelleri | Dar kanal yapılandırma şeması ilkelleri |
   | `plugin-sdk/channel-config-writes` | Kanal yapılandırma yazma yardımcıları | Kanal yapılandırma yazma yetkilendirme yardımcıları |
-  | `plugin-sdk/channel-plugin-common` | Paylaşılan kanal önsözü | Paylaşılan kanal Plugin önsöz export'ları |
-  | `plugin-sdk/channel-status` | Kanal durum yardımcıları | Paylaşılan kanal durum anlık görüntüsü/özeti yardımcıları |
-  | `plugin-sdk/allowlist-config-edit` | Allowlist yapılandırma yardımcıları | Allowlist yapılandırma düzenleme/okuma yardımcıları |
-  | `plugin-sdk/group-access` | Grup erişim yardımcıları | Paylaşılan grup erişim kararı yardımcıları |
-  | `plugin-sdk/direct-dm` | Doğrudan DM yardımcıları | Paylaşılan doğrudan DM auth/koruma yardımcıları |
-  | `plugin-sdk/extension-shared` | Paylaşılan extension yardımcıları | Pasif kanal/durum ve ortam proxy yardımcısı ilkel öğeleri |
-  | `plugin-sdk/webhook-targets` | Webhook hedef yardımcıları | Webhook hedef kayıt defteri ve route-install yardımcıları |
-  | `plugin-sdk/webhook-path` | Webhook yol yardımcıları | Webhook yol normalleştirme yardımcıları |
+  | `plugin-sdk/channel-plugin-common` | Paylaşılan kanal başlangıç bölümü | Paylaşılan kanal Plugin başlangıç dışa aktarımları |
+  | `plugin-sdk/channel-status` | Kanal durumu yardımcıları | Paylaşılan kanal durumu anlık görüntü/özet yardımcıları |
+  | `plugin-sdk/allowlist-config-edit` | İzin verilenler listesi yapılandırma yardımcıları | İzin verilenler listesi yapılandırma düzenleme/okuma yardımcıları |
+  | `plugin-sdk/group-access` | Grup erişimi yardımcıları | Paylaşılan grup erişimi karar yardımcıları |
+  | `plugin-sdk/direct-dm` | Doğrudan DM yardımcıları | Paylaşılan doğrudan DM kimlik doğrulama/koruma yardımcıları |
+  | `plugin-sdk/extension-shared` | Paylaşılan uzantı yardımcıları | Pasif kanal/durum ve ortam proxy yardımcı ilkelleri |
+  | `plugin-sdk/webhook-targets` | Webhook hedef yardımcıları | Webhook hedef kayıt defteri ve rota kurulum yardımcıları |
+  | `plugin-sdk/webhook-path` | Webhook yolu yardımcıları | Webhook yolu normalleştirme yardımcıları |
   | `plugin-sdk/web-media` | Paylaşılan web medya yardımcıları | Uzak/yerel medya yükleme yardımcıları |
-  | `plugin-sdk/zod` | Zod yeniden dışa aktarması | Plugin SDK tüketicileri için yeniden dışa aktarılan `zod` |
-  | `plugin-sdk/memory-core` | Bundled memory-core yardımcıları | Bellek yöneticisi/yapılandırma/dosya/CLI yardımcı yüzeyi |
-  | `plugin-sdk/memory-core-engine-runtime` | Bellek motoru çalışma zamanı yüzeyi | Bellek dizini/arama çalışma zamanı yüzeyi |
-  | `plugin-sdk/memory-core-host-engine-foundation` | Bellek host temel motoru | Bellek host temel motoru export'ları |
-  | `plugin-sdk/memory-core-host-engine-embeddings` | Bellek host gömme motoru | Bellek gömme sözleşmeleri, kayıt defteri erişimi, yerel sağlayıcı ve genel toplu/uzak yardımcıları; somut uzak sağlayıcılar kendilerine ait Plugin'lerde yaşar |
-  | `plugin-sdk/memory-core-host-engine-qmd` | Bellek host QMD motoru | Bellek host QMD motoru export'ları |
-  | `plugin-sdk/memory-core-host-engine-storage` | Bellek host depolama motoru | Bellek host depolama motoru export'ları |
-  | `plugin-sdk/memory-core-host-multimodal` | Bellek host çok kipli yardımcıları | Bellek host çok kipli yardımcıları |
+  | `plugin-sdk/zod` | Zod yeniden dışa aktarımı | Plugin SDK tüketicileri için yeniden dışa aktarılan `zod` |
+  | `plugin-sdk/memory-core` | Paketlenmiş memory-core yardımcıları | Bellek yöneticisi/yapılandırma/dosya/CLI yardımcı yüzeyi |
+  | `plugin-sdk/memory-core-engine-runtime` | Bellek motoru çalışma zamanı cephesi | Bellek dizin/arama çalışma zamanı cephesi |
+  | `plugin-sdk/memory-core-host-engine-foundation` | Bellek host temel motoru | Bellek host temel motoru dışa aktarımları |
+  | `plugin-sdk/memory-core-host-engine-embeddings` | Bellek host gömme motoru | Bellek gömme sözleşmeleri, kayıt defteri erişimi, yerel sağlayıcı ve genel toplu/uzak yardımcılar; somut uzak sağlayıcılar sahip oldukları Plugin'lerde bulunur |
+  | `plugin-sdk/memory-core-host-engine-qmd` | Bellek host QMD motoru | Bellek host QMD motoru dışa aktarımları |
+  | `plugin-sdk/memory-core-host-engine-storage` | Bellek host depolama motoru | Bellek host depolama motoru dışa aktarımları |
+  | `plugin-sdk/memory-core-host-multimodal` | Bellek host çok modlu yardımcıları | Bellek host çok modlu yardımcıları |
   | `plugin-sdk/memory-core-host-query` | Bellek host sorgu yardımcıları | Bellek host sorgu yardımcıları |
   | `plugin-sdk/memory-core-host-secret` | Bellek host secret yardımcıları | Bellek host secret yardımcıları |
   | `plugin-sdk/memory-core-host-events` | Bellek host olay günlüğü yardımcıları | Bellek host olay günlüğü yardımcıları |
@@ -392,54 +534,24 @@ kırılmamalıdır.
   | `plugin-sdk/memory-core-host-runtime-cli` | Bellek host CLI çalışma zamanı | Bellek host CLI çalışma zamanı yardımcıları |
   | `plugin-sdk/memory-core-host-runtime-core` | Bellek host çekirdek çalışma zamanı | Bellek host çekirdek çalışma zamanı yardımcıları |
   | `plugin-sdk/memory-core-host-runtime-files` | Bellek host dosya/çalışma zamanı yardımcıları | Bellek host dosya/çalışma zamanı yardımcıları |
-  | `plugin-sdk/memory-host-core` | Bellek host çekirdek çalışma zamanı takma adı | Bellek host çekirdek çalışma zamanı yardımcıları için sağlayıcıdan bağımsız takma ad |
-  | `plugin-sdk/memory-host-events` | Bellek host olay günlüğü takma adı | Bellek host olay günlüğü yardımcıları için sağlayıcıdan bağımsız takma ad |
-  | `plugin-sdk/memory-host-files` | Bellek host dosya/çalışma zamanı takma adı | Bellek host dosya/çalışma zamanı yardımcıları için sağlayıcıdan bağımsız takma ad |
-  | `plugin-sdk/memory-host-markdown` | Yönetilen markdown yardımcıları | Belleğe komşu Plugin'ler için paylaşılan yönetilen-markdown yardımcıları |
-  | `plugin-sdk/memory-host-search` | Active Memory arama yüzeyi | Tembel active-memory search-manager çalışma zamanı yüzeyi |
-  | `plugin-sdk/memory-host-status` | Bellek host durum takma adı | Bellek host durum yardımcıları için sağlayıcıdan bağımsız takma ad |
-  | `plugin-sdk/memory-lancedb` | Bundled memory-lancedb yardımcıları | Memory-lancedb yardımcı yüzeyi |
-  | `plugin-sdk/testing` | Test yardımcıları | Test yardımcıları ve mock'lar |
+  | `plugin-sdk/memory-host-core` | Bellek host çekirdek çalışma zamanı diğer adı | Bellek host çekirdek çalışma zamanı yardımcıları için sağlayıcıdan bağımsız diğer ad |
+  | `plugin-sdk/memory-host-events` | Bellek host olay günlüğü diğer adı | Bellek host olay günlüğü yardımcıları için sağlayıcıdan bağımsız diğer ad |
+  | `plugin-sdk/memory-host-files` | Bellek host dosya/çalışma zamanı diğer adı | Bellek host dosya/çalışma zamanı yardımcıları için sağlayıcıdan bağımsız diğer ad |
+  | `plugin-sdk/memory-host-markdown` | Yönetilen Markdown yardımcıları | Belleğe bitişik Plugin'ler için paylaşılan yönetilen Markdown yardımcıları |
+  | `plugin-sdk/memory-host-search` | Etkin bellek arama cephesi | Tembel etkin bellek arama yöneticisi çalışma zamanı cephesi |
+  | `plugin-sdk/memory-host-status` | Bellek host durum diğer adı | Bellek host durum yardımcıları için sağlayıcıdan bağımsız diğer ad |
+  | `plugin-sdk/testing` | Test yardımcı programları | Eski geniş uyumluluk barrel'i; `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/channel-target-testing`, `plugin-sdk/test-env` ve `plugin-sdk/test-fixtures` gibi odaklı test alt yollarını tercih edin |
 </Accordion>
 
-Bu tablo bilinçli olarak tam SDK
-yüzeyi değil, yaygın geçiş alt kümesidir. 200'den fazla giriş noktasının tam listesi
-`scripts/lib/plugin-sdk-entrypoints.json` içinde yer alır.
+Bu tablo özellikle tam SDK yüzeyi değil, ortak geçiş alt kümesidir. 200+ giriş noktasının tam listesi `scripts/lib/plugin-sdk-entrypoints.json` içinde yer alır.
 
-Bu liste hâlâ `plugin-sdk/feishu`, `plugin-sdk/feishu-setup`, `plugin-sdk/zalo`,
-`plugin-sdk/zalo-setup` ve `plugin-sdk/matrix*` gibi bazı bundled-Plugin yardımcı dikişlerini içerir. Bunlar bundled-Plugin bakımı ve uyumluluk için dışa aktarılmaya devam eder,
-ancak bilinçli olarak yaygın geçiş tablosunda
-yer almazlar ve yeni Plugin kodu için önerilen hedef değildir.
+Ayrılmış yerleşik-plugin yardımcı kesitleri, yayımlanmış `@openclaw/discord@2026.3.13` paketi için tutulan, kullanım dışı `plugin-sdk/discord` shim gibi açıkça belgelenmiş uyumluluk cepheleri dışında herkese açık SDK export map içinden kaldırılmıştır. Sahibe özgü yardımcılar sahip olan plugin paketi içinde yaşar; paylaşılan host davranışı `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` ve `plugin-sdk/plugin-config-runtime` gibi genel SDK sözleşmeleri üzerinden ilerlemelidir.
 
-Aynı kural aşağıdaki diğer bundled-helper aileleri için de geçerlidir:
+İşe uyan en dar import yolunu kullanın. Bir export bulamazsanız, `src/plugin-sdk/` içindeki kaynağı denetleyin veya hangi genel sözleşmenin onu sahiplenmesi gerektiğini bakımcılara sorun.
 
-- tarayıcı destek yardımcıları: `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support`
-- Matrix: `plugin-sdk/matrix*`
-- LINE: `plugin-sdk/line*`
-- IRC: `plugin-sdk/irc*`
-- bundled helper/Plugin yüzeyleri gibi `plugin-sdk/googlechat`,
-  `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles*`,
-  `plugin-sdk/mattermost*`, `plugin-sdk/msteams`,
-  `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`,
-  `plugin-sdk/twitch`,
-  `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`,
-  `plugin-sdk/diagnostics-otel`, `plugin-sdk/diagnostics-prometheus`,
-  `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/thread-ownership`
-  ve `plugin-sdk/voice-call`
+## Etkin kullanım dışı bırakmalar
 
-`plugin-sdk/github-copilot-token` şu anda dar token-helper
-yüzeyi `DEFAULT_COPILOT_API_BASE_URL`,
-`deriveCopilotApiBaseUrlFromToken` ve `resolveCopilotApiToken` öğelerini sunar.
-
-İşle eşleşen en dar içe aktarmayı kullanın. Bir export bulamazsanız,
-`src/plugin-sdk/` içindeki kaynağı kontrol edin veya Discord'da sorun.
-
-## Etkin kullanımdan kaldırmalar
-
-Plugin SDK, sağlayıcı sözleşmesi,
-çalışma zamanı yüzeyi ve manifest genelinde uygulanan daha dar kullanımdan kaldırmalar. Bunların her biri bugün hâlâ çalışır ancak
-gelecekteki bir büyük sürümde kaldırılacaktır. Her öğenin altındaki giriş, eski API'yi
-kurallı yerine geçenle eşler.
+Plugin SDK, provider sözleşmesi, çalışma zamanı yüzeyi ve manifest genelinde geçerli daha dar kullanım dışı bırakmalar. Her biri bugün hâlâ çalışır, ancak gelecekteki bir major sürümde kaldırılacaktır. Her öğenin altındaki giriş, eski API'yi kanonik yerine eşler.
 
 <AccordionGroup>
   <Accordion title="command-auth yardım oluşturucuları → command-status">
@@ -447,8 +559,8 @@ kurallı yerine geçenle eşler.
     `buildCommandsMessagePaginated`, `buildHelpMessage`.
 
     **Yeni (`openclaw/plugin-sdk/command-status`)**: aynı imzalar, aynı
-    export'lar — yalnızca daha dar alt yoldan içe aktarılır. `command-auth`
-    bunları uyumluluk stub'ları olarak yeniden dışa aktarır.
+    export'lar — yalnızca daha dar alt yoldan import edilir. `command-auth`
+    bunları uyumluluk stub'ları olarak yeniden export eder.
 
     ```typescript
     // Before
@@ -460,99 +572,99 @@ kurallı yerine geçenle eşler.
 
   </Accordion>
 
-  <Accordion title="Bahsetme sınırlama yardımcıları → resolveInboundMentionDecision">
-    **Eski**: `resolveInboundMentionRequirement({ facts, policy })` ve
-    `shouldDropInboundForMention(...)`,
-    `openclaw/plugin-sdk/channel-inbound` veya
-    `openclaw/plugin-sdk/channel-mention-gating` içinden.
+  <Accordion title="Bahsetme denetimi yardımcıları → resolveInboundMentionDecision">
+    **Eski**: `openclaw/plugin-sdk/channel-inbound` veya
+    `openclaw/plugin-sdk/channel-mention-gating` içinden
+    `resolveInboundMentionRequirement({ facts, policy })` ve
+    `shouldDropInboundForMention(...)`.
 
-    **Yeni**: `resolveInboundMentionDecision({ facts, policy })` — iki bölünmüş çağrı yerine
-    tek bir karar nesnesi döndürür.
+    **Yeni**: `resolveInboundMentionDecision({ facts, policy })` — iki ayrı
+    çağrı yerine tek bir karar nesnesi döndürür.
 
-    Alt akış kanal Plugin'leri (Slack, Discord, Matrix, Microsoft Teams) zaten
+    Downstream kanal plugin'leri (Slack, Discord, Matrix, MS Teams) zaten
     geçiş yaptı.
 
   </Accordion>
 
-  <Accordion title="Kanal çalışma zamanı shim'i ve kanal eylemleri yardımcıları">
-    `openclaw/plugin-sdk/channel-runtime`, eski
-    kanal Plugin'leri için bir uyumluluk shim'idir. Yeni kodda bunu içe aktarmayın;
-    çalışma zamanı nesnelerini kaydetmek için
-    `openclaw/plugin-sdk/channel-runtime-context` kullanın.
+  <Accordion title="Kanal çalışma zamanı shim'i ve kanal actions yardımcıları">
+    `openclaw/plugin-sdk/channel-runtime`, eski kanal plugin'leri için bir
+    uyumluluk shim'idir. Yeni koddan import etmeyin; çalışma zamanı
+    nesnelerini kaydetmek için `openclaw/plugin-sdk/channel-runtime-context`
+    kullanın.
 
-    `openclaw/plugin-sdk/channel-actions` içindeki `channelActions*` yardımcıları,
-    ham "actions" kanal export'ları ile birlikte kullanımdan kaldırılmıştır. Yetenekleri
-    bunun yerine anlamsal `presentation` yüzeyi üzerinden sunun — kanal Plugin'leri
-    hangi ham eylem adlarını kabul ettiklerini değil, neyi render ettiklerini
-    (kartlar, düğmeler, seçimler) bildirir.
+    `openclaw/plugin-sdk/channel-actions` içindeki `channelActions*`
+    yardımcıları, ham "actions" kanal export'larıyla birlikte kullanım dışıdır.
+    Yetenekleri bunun yerine anlamsal `presentation` yüzeyi üzerinden sunun —
+    kanal plugin'leri hangi ham action adlarını kabul ettiklerinden ziyade ne
+    render ettiklerini (kartlar, düğmeler, seçimler) bildirir.
 
   </Accordion>
 
-  <Accordion title="Web search provider tool() yardımcısı → Plugin üzerinde createTool()">
-    **Eski**: `openclaw/plugin-sdk/provider-web-search` içindeki `tool()` fabrikası.
+  <Accordion title="Web arama provider tool() yardımcısı → plugin üzerinde createTool()">
+    **Eski**: `openclaw/plugin-sdk/provider-web-search` içinden `tool()` fabrikası.
 
-    **Yeni**: `createTool(...)` işlevini doğrudan sağlayıcı Plugin üzerinde uygulayın.
-    OpenClaw artık araç sarmalayıcısını kaydetmek için SDK yardımcısına ihtiyaç duymuyor.
+    **Yeni**: `createTool(...)` öğesini doğrudan provider plugin üzerinde
+    uygulayın. OpenClaw, araç sarmalayıcısını kaydetmek için artık SDK
+    yardımcısına ihtiyaç duymaz.
 
   </Accordion>
 
   <Accordion title="Düz metin kanal zarfları → BodyForAgent">
-    **Eski**: gelen kanal mesajlarından düz bir düz metin istem
-    zarfı oluşturmak için `formatInboundEnvelope(...)` (ve
+    **Eski**: gelen kanal iletilerinden düz bir düz metin istem zarfı
+    oluşturmak için `formatInboundEnvelope(...)` (ve
     `ChannelMessageForAgent.channelEnvelope`).
 
     **Yeni**: `BodyForAgent` artı yapılandırılmış kullanıcı bağlamı blokları.
-    Kanal Plugin'leri yönlendirme meta verilerini (konu, başlık, yanıt verilen mesaj, reaksiyonlar)
-    istem string'ine eklemek yerine türlenmiş alanlar olarak ekler. `formatAgentEnvelope(...)`
-    yardımcısı sentezlenmiş asistan yüzlü zarflar için hâlâ desteklenir,
-    ancak gelen düz metin zarfları
-    aşamalı olarak kaldırılıyor.
+    Kanal plugin'leri yönlendirme meta verilerini (ileti dizisi, konu,
+    yanıt-hedefi, tepkiler) bir istem dizesine birleştirmek yerine tipli
+    alanlar olarak ekler. `formatAgentEnvelope(...)` yardımcısı, sentezlenmiş
+    asistan odaklı zarflar için hâlâ desteklenir, ancak gelen düz metin
+    zarfları kullanımdan çıkıyor.
 
     Etkilenen alanlar: `inbound_claim`, `message_received` ve
-    `channelEnvelope` metnini sonradan işleyen özel kanal Plugin'leri.
+    `channelEnvelope` metnini sonradan işleyen tüm özel kanal plugin'leri.
 
   </Accordion>
 
-  <Accordion title="Sağlayıcı keşif türleri → sağlayıcı katalog türleri">
-    Dört keşif türü takma adı artık
-    katalog dönemi türleri üzerinde ince sarmalayıcılardır:
+  <Accordion title="Provider keşif tipleri → provider katalog tipleri">
+    Dört keşif tip takma adı artık katalog dönemi tipleri üzerinde ince
+    sarmalayıcılardır:
 
-    | Eski takma ad            | Yeni tür                |
-    | ------------------------ | ----------------------- |
-    | `ProviderDiscoveryOrder`  | `ProviderCatalogOrder`    |
-    | `ProviderDiscoveryContext`| `ProviderCatalogContext`  |
-    | `ProviderDiscoveryResult` | `ProviderCatalogResult`   |
-    | `ProviderPluginDiscovery` | `ProviderPluginCatalog`   |
+    | Eski takma ad            | Yeni tip                  |
+    | ------------------------ | ------------------------- |
+    | `ProviderDiscoveryOrder` | `ProviderCatalogOrder`    |
+    | `ProviderDiscoveryContext`| `ProviderCatalogContext` |
+    | `ProviderDiscoveryResult` | `ProviderCatalogResult`  |
+    | `ProviderPluginDiscovery` | `ProviderPluginCatalog`  |
 
-    Ayrıca eski `ProviderCapabilities` statik çantası — sağlayıcı Plugin'leri
-    capability bilgilerini statik bir nesne yerine sağlayıcı çalışma zamanı sözleşmesi üzerinden
-    eklemelidir.
+    Ayrıca eski `ProviderCapabilities` statik torbası — provider plugin'leri
+    statik bir nesne yerine `buildReplayPolicy`, `normalizeToolSchemas` ve
+    `wrapStreamFn` gibi açık provider hook'ları kullanmalıdır.
 
   </Accordion>
 
-  <Accordion title="Thinking policy kancaları → resolveThinkingProfile">
-    **Eski** (`ProviderThinkingPolicy` üzerinde üç ayrı kanca):
+  <Accordion title="Düşünme ilkesi hook'ları → resolveThinkingProfile">
+    **Eski** (`ProviderThinkingPolicy` üzerinde üç ayrı hook):
     `isBinaryThinking(ctx)`, `supportsXHighThinking(ctx)` ve
     `resolveDefaultThinkingLevel(ctx)`.
 
-    **Yeni**: kurallı `id`, isteğe bağlı `label` ve
-    sıralı düzey listesi döndüren tek bir `resolveThinkingProfile(ctx)`,
-    yani `ProviderThinkingProfile`.
+    **Yeni**: kanonik `id`, isteğe bağlı `label` ve sıralı seviye listesini
+    içeren bir `ProviderThinkingProfile` döndüren tek bir
+    `resolveThinkingProfile(ctx)`. OpenClaw, bayat saklanan değerleri profil
+    sırasına göre otomatik olarak düşürür.
 
-    OpenClaw, saklanan bayat değerleri profil sırasına göre otomatik olarak düşürür.
-
-    Üç kanca yerine tek kanca uygulayın. Eski kancalar kullanımdan kaldırma penceresi boyunca
-    çalışmaya devam eder ancak profil sonucu ile bileştirilmez.
+    Üç yerine bir hook uygulayın. Eski hook'lar kullanım dışı bırakma penceresi
+    boyunca çalışmayı sürdürür, ancak profil sonucuyla birleştirilmez.
 
   </Accordion>
 
-  <Accordion title="Harici OAuth sağlayıcı yedeği → contracts.externalAuthProviders">
-    **Eski**: Plugin manifest'inde sağlayıcıyı bildirmeden
+  <Accordion title="Harici OAuth provider fallback'i → contracts.externalAuthProviders">
+    **Eski**: provider'ı plugin manifest içinde bildirmeden
     `resolveExternalOAuthProfiles(...)` uygulamak.
 
-    **Yeni**: Plugin manifest'inde `contracts.externalAuthProviders`
+    **Yeni**: plugin manifest içinde `contracts.externalAuthProviders`
     bildirin **ve** `resolveExternalAuthProfiles(...)` uygulayın. Eski "auth
-    fallback" yolu çalışma zamanında bir uyarı üretir ve kaldırılacaktır.
+    fallback" yolu çalışma zamanında uyarı verir ve kaldırılacaktır.
 
     ```json
     {
@@ -564,75 +676,78 @@ kurallı yerine geçenle eşler.
 
   </Accordion>
 
-  <Accordion title="Sağlayıcı env-var araması → setup.providers[].envVars">
+  <Accordion title="Provider env-var araması → setup.providers[].envVars">
     **Eski** manifest alanı: `providerAuthEnvVars: { anthropic: ["ANTHROPIC_API_KEY"] }`.
 
-    **Yeni**: aynı env-var aramasını manifest üzerindeki `setup.providers[].envVars`
-    alanına yansıtın. Bu, kurulum/durum env meta verilerini tek
-    yerde birleştirir ve yalnızca env-var
-    aramalarını yanıtlamak için Plugin çalışma zamanını başlatmayı önler.
+    **Yeni**: aynı env-var aramasını manifest üzerindeki
+    `setup.providers[].envVars` içine yansıtın. Bu, kurulum/durum env meta
+    verilerini tek yerde birleştirir ve yalnızca env-var aramalarını yanıtlamak
+    için plugin çalışma zamanını başlatmayı önler.
 
-    `providerAuthEnvVars`, kullanımdan kaldırma penceresi kapanana kadar
-    uyumluluk bağdaştırıcısı üzerinden desteklenmeye devam eder.
+    `providerAuthEnvVars`, kullanım dışı bırakma penceresi kapanana kadar bir
+    uyumluluk adaptörü üzerinden desteklenmeye devam eder.
 
   </Accordion>
 
-  <Accordion title="Bellek Plugin kaydı → registerMemoryCapability">
+  <Accordion title="Bellek plugin kaydı → registerMemoryCapability">
     **Eski**: üç ayrı çağrı —
     `api.registerMemoryPromptSection(...)`,
     `api.registerMemoryFlushPlan(...)`,
     `api.registerMemoryRuntime(...)`.
 
-    **Yeni**: bellek-durumu API'si üzerinde tek bir çağrı —
+    **Yeni**: bellek durumu API'sinde tek çağrı —
     `registerMemoryCapability(pluginId, { promptBuilder, flushPlanResolver, runtime })`.
 
-    Aynı yuvalar, tek kayıt çağrısı. Eklemeli bellek yardımcıları
+    Aynı slot'lar, tek kayıt çağrısı. Eklemeli bellek yardımcıları
     (`registerMemoryPromptSupplement`, `registerMemoryCorpusSupplement`,
     `registerMemoryEmbeddingProvider`) etkilenmez.
 
   </Accordion>
 
-  <Accordion title="Subagent session messages türleri yeniden adlandırıldı">
-    `src/plugins/runtime/types.ts` içinden hâlâ dışa aktarılan iki eski tür takma adı:
+  <Accordion title="Subagent oturum iletileri tipleri yeniden adlandırıldı">
+    `src/plugins/runtime/types.ts` içinden hâlâ export edilen iki eski tip
+    takma adı:
 
-    | Eski                        | Yeni                             |
-    | --------------------------- | -------------------------------- |
-    | `SubagentReadSessionParams` | `SubagentGetSessionMessagesParams` |
-    | `SubagentReadSessionResult` | `SubagentGetSessionMessagesResult` |
+    | Eski                          | Yeni                            |
+    | ----------------------------- | ------------------------------- |
+    | `SubagentReadSessionParams`   | `SubagentGetSessionMessagesParams` |
+    | `SubagentReadSessionResult`   | `SubagentGetSessionMessagesResult` |
 
-    Çalışma zamanı yöntemi `readSession`, artık
-    `getSessionMessages` lehine kullanımdan kaldırılmıştır. Aynı imza; eski yöntem yenisine
-    çağrı yapar.
+    Çalışma zamanı yöntemi `readSession`, `getSessionMessages` lehine kullanım
+    dışıdır. Aynı imza; eski yöntem yenisine çağrı aktarır.
 
   </Accordion>
 
-  <Accordion title="runtime.tasks.flow → runtime.tasks.flows">
-    **Eski**: `runtime.tasks.flow` (tekil), canlı bir TaskFlow erişimcisi döndürüyordu.
+  <Accordion title="runtime.tasks.flow → runtime.tasks.managedFlows">
+    **Eski**: `runtime.tasks.flow` (tekil) canlı bir task-flow erişimcisi
+    döndürüyordu.
 
-    **Yeni**: `runtime.tasks.flows` (çoğul), DTO tabanlı TaskFlow erişimi döndürür;
-    bu içe aktarma için güvenlidir ve tam görev çalışma zamanının
-    yüklenmesini gerektirmez.
+    **Yeni**: `runtime.tasks.managedFlows`, bir akıştan alt görevler oluşturan,
+    güncelleyen, iptal eden veya çalıştıran plugin'ler için yönetilen TaskFlow
+    mutasyon çalışma zamanını korur. Plugin yalnızca DTO tabanlı okumalara
+    ihtiyaç duyduğunda `runtime.tasks.flows` kullanın.
 
     ```typescript
     // Before
-    const flow = api.runtime.tasks.flow(ctx);
+    const flow = api.runtime.tasks.flow.fromToolContext(ctx);
     // After
-    const flows = api.runtime.tasks.flows(ctx);
+    const flow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
     ```
 
   </Accordion>
 
-  <Accordion title="Embedded extension factory'leri → ajan tool-result middleware">
-    Yukarıdaki "Nasıl geçiş yapılır → Pi tool-result extension'larını
-    middleware'e taşıyın" bölümünde kapsanmıştır. Tamlık için burada da yer alır: kaldırılmış Pi-only
-    `api.registerEmbeddedExtensionFactory(...)` yolu,
-    `contracts.agentToolResultMiddleware` içinde açık çalışma zamanı
-    listesi olan `api.registerAgentToolResultMiddleware(...)` ile değiştirilmiştir.
+  <Accordion title="Gömülü extension fabrikaları → agent tool-result middleware'i">
+    Yukarıdaki "Nasıl geçilir → Pi tool-result extension'larını middleware'e
+    geçirme" bölümünde ele alınmıştır. Tamlık için burada da yer alır:
+    kaldırılan yalnızca Pi'ye özgü `api.registerEmbeddedExtensionFactory(...)`
+    yolu, `contracts.agentToolResultMiddleware` içinde açık bir çalışma zamanı
+    listesiyle `api.registerAgentToolResultMiddleware(...)` ile değiştirilir.
   </Accordion>
 
   <Accordion title="OpenClawSchemaType takma adı → OpenClawConfig">
-    `openclaw/plugin-sdk` içinden yeniden dışa aktarılan `OpenClawSchemaType`,
-    artık `OpenClawConfig` için tek satırlık bir takma addır. Kurallı adı tercih edin.
+    `openclaw/plugin-sdk` içinden yeniden export edilen `OpenClawSchemaType`
+    artık `OpenClawConfig` için tek satırlık bir takma addır. Kanonik adı
+    tercih edin.
 
     ```typescript
     // Before
@@ -645,22 +760,23 @@ kurallı yerine geçenle eşler.
 </AccordionGroup>
 
 <Note>
-Extension düzeyindeki kullanımdan kaldırmalar (`extensions/` altındaki bundled kanal/sağlayıcı Plugin'leri içinde)
-kendi `api.ts` ve `runtime-api.ts`
-barrel dosyaları içinde izlenir. Bunlar üçüncü taraf Plugin sözleşmelerini etkilemez ve
-burada listelenmez. Bir bundled Plugin'in yerel barrel dosyasını doğrudan tüketiyorsanız,
-yükseltmeden önce o barrel içindeki kullanımdan kaldırma yorumlarını okuyun.
+Extension düzeyi kullanım dışı bırakmalar (`extensions/` altındaki yerleşik
+kanal/provider plugin'lerinin içinde), kendi `api.ts` ve `runtime-api.ts`
+barrel'ları içinde izlenir. Bunlar üçüncü taraf plugin sözleşmelerini
+etkilemez ve burada listelenmez. Yerleşik bir plugin'in yerel barrel'ını
+doğrudan tüketiyorsanız, yükseltmeden önce o barrel içindeki kullanım dışı
+bırakma yorumlarını okuyun.
 </Note>
 
 ## Kaldırma zaman çizelgesi
 
-| Ne zaman               | Ne olur                                                                |
-| ---------------------- | ---------------------------------------------------------------------- |
-| **Şimdi**              | Kullanımdan kaldırılmış yüzeyler çalışma zamanında uyarı üretir        |
-| **Bir sonraki büyük sürüm** | Kullanımdan kaldırılmış yüzeyler kaldırılır; bunları hâlâ kullanan Plugin'ler başarısız olur |
+| Ne zaman              | Ne olur                                                                 |
+| --------------------- | ----------------------------------------------------------------------- |
+| **Şimdi**             | Kullanım dışı yüzeyler çalışma zamanı uyarıları yayar                   |
+| **Sonraki major sürüm** | Kullanım dışı yüzeyler kaldırılacak; bunları hâlâ kullanan plugin'ler başarısız olacak |
 
-Tüm çekirdek Plugin'ler zaten geçirildi. Harici Plugin'ler
-bir sonraki büyük sürümden önce geçiş yapmalıdır.
+Tüm core plugin'ler zaten geçirilmiştir. Harici plugin'ler sonraki major
+sürümden önce geçiş yapmalıdır.
 
 ## Uyarıları geçici olarak bastırma
 
@@ -675,9 +791,9 @@ Bu geçici bir kaçış kapağıdır, kalıcı bir çözüm değildir.
 
 ## İlgili
 
-- [Başlarken](/tr/plugins/building-plugins) — ilk Plugin'inizi oluşturun
-- [SDK Genel Bakış](/tr/plugins/sdk-overview) — tam alt yol içe aktarma başvurusu
-- [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) — kanal Plugin'leri oluşturma
-- [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) — sağlayıcı Plugin'leri oluşturma
-- [Plugin İç Yapısı](/tr/plugins/architecture) — mimari derinlemesine inceleme
-- [Plugin Manifest](/tr/plugins/manifest) — manifest şeması başvurusu
+- [Başlarken](/tr/plugins/building-plugins) — ilk plugin'inizi oluşturun
+- [SDK Genel Bakış](/tr/plugins/sdk-overview) — tam alt yol import başvurusu
+- [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) — kanal plugin'leri oluşturma
+- [Provider Plugin'leri](/tr/plugins/sdk-provider-plugins) — provider plugin'leri oluşturma
+- [Plugin İç Yapısı](/tr/plugins/architecture) — mimariye derinlemesine bakış
+- [Plugin Manifest](/tr/plugins/manifest) — manifest şema başvurusu

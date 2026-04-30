@@ -1,100 +1,104 @@
 ---
 read_when:
-    - Düz `MEMORY.md` notlarının ötesinde kalıcı bilgi istiyorsunuz
-    - Paketle gelen memory-wiki Plugin'ini yapılandırıyorsunuz
+    - Basit MEMORY.md notlarının ötesinde kalıcı bilgi istiyorsunuz
+    - Birlikte gelen memory-wiki Plugin'i yapılandırıyorsunuz
     - wiki_search, wiki_get veya köprü modunu anlamak istiyorsunuz
-summary: 'memory-wiki: provenance, iddialar, panolar ve köprü modu içeren derlenmiş bilgi kasası'
-title: Bellek wiki'si
+summary: 'memory-wiki: köken bilgisi, iddialar, panolar ve köprü modu içeren derlenmiş bilgi kasası'
+title: Bellek vikisi
 x-i18n:
-    generated_at: "2026-04-24T09:21:52Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:35:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: d9b2637514878a87f57f1f7d19128f0a4f622852c1a25d632410cb679f081b8e
+    source_hash: 744d569f8b0c9b668ea54dc057f808544359eaae87d5557de2e6acd1b31acd89
     source_path: plugins/memory-wiki.md
-    workflow: 15
+    workflow: 16
 ---
 
-`memory-wiki`, dayanıklı belleği derlenmiş
-bir bilgi kasasına dönüştüren paketle gelen bir Plugin'dir.
+`memory-wiki`, kalıcı belleği derlenmiş bir bilgi kasasına dönüştüren paketlenmiş bir Plugin'dir.
 
-Etkin bellek Plugin'inin yerini **almaz**. Etkin bellek Plugin'i hâlâ
-geri çağırmaya, yükseltmeye, indekslemeye ve Dreaming'e sahiptir. `memory-wiki`, bunun yanında durur
-ve dayanıklı bilgiyi gezilebilir bir wiki'ye; deterministik sayfalar,
-yapılandırılmış iddialar, provenance, panolar ve makine tarafından okunabilir özetlerle derler.
+Aktif bellek Plugin'inin yerini **almaz**. Aktif bellek Plugin'i hâlâ
+geri çağırma, yükseltme, indeksleme ve dreaming işlemlerinden sorumludur. `memory-wiki` onun yanında
+durur ve kalıcı bilgiyi deterministik sayfalara, yapılandırılmış iddialara,
+köken bilgisine, panolara ve makine tarafından okunabilir özetlere sahip gezilebilir bir wikiye derler.
 
-Belleğin, bir Markdown dosyaları yığını gibi değil de
-daha çok bakımı yapılan bir bilgi katmanı gibi davranmasını istediğinizde kullanın.
+Belleğin bir Markdown dosyaları yığınından çok, bakımı yapılan bir bilgi katmanı gibi
+davranmasını istediğinizde bunu kullanın.
 
-## Ne ekler
+## Neler ekler
 
 - Deterministik sayfa düzenine sahip özel bir wiki kasası
-- Yalnızca düzyazı değil, yapılandırılmış iddia ve kanıt metadata'sı
-- Sayfa düzeyinde provenance, güven, çelişkiler ve açık sorular
+- Yalnızca düz metin değil, yapılandırılmış iddia ve kanıt meta verisi
+- Sayfa düzeyinde köken bilgisi, güven, çelişkiler ve açık sorular
 - Aracı/çalışma zamanı tüketicileri için derlenmiş özetler
 - Wiki'ye özgü search/get/apply/lint araçları
-- Etkin bellek Plugin'inden genel yapıtlara aktarma yapan isteğe bağlı köprü modu
-- İsteğe bağlı Obsidian uyumlu render modu ve CLI entegrasyonu
+- Aktif bellek Plugin'inden herkese açık yapıları içe aktaran isteğe bağlı köprü modu
+- İsteğe bağlı Obsidian dostu render modu ve CLI entegrasyonu
 
 ## Bellekle nasıl uyum sağlar
 
-Ayrımı şöyle düşünün:
+Ayrımı şöyle düşünebilirsiniz:
 
-| Katman                                                  | Sahibi olduğu şeyler                                                                            |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Etkin bellek Plugin'i (`memory-core`, QMD, Honcho vb.) | Geri çağırma, anlamsal arama, yükseltme, Dreaming, bellek çalışma zamanı                        |
-| `memory-wiki`                                           | Derlenmiş wiki sayfaları, provenance açısından zengin sentezler, panolar, wiki'ye özgü search/get/apply |
+| Katman                                                  | Sorumluluk                                                                                 |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Aktif bellek Plugin'i (`memory-core`, QMD, Honcho, vb.) | Geri çağırma, semantik arama, yükseltme, dreaming, bellek çalışma zamanı                   |
+| `memory-wiki`                                           | Derlenmiş wiki sayfaları, köken bilgisi zengin sentezler, panolar, wiki'ye özgü search/get/apply |
 
-Etkin bellek Plugin'i paylaşılan geri çağırma yapılarını açığa çıkarıyorsa OpenClaw,
-`memory_search corpus=all` ile tek geçişte
-her iki katmanı da arayabilir.
+Aktif bellek Plugin'i paylaşılan geri çağırma yapılarını açığa çıkarırsa, OpenClaw
+`memory_search corpus=all` ile her iki katmanda tek geçişte arama yapabilir.
 
-Wiki'ye özgü sıralamaya, provenance'a veya doğrudan sayfa erişimine ihtiyacınız olduğunda
-bunun yerine wiki'ye özgü yerel araçları kullanın.
+Wiki'ye özgü sıralama, köken bilgisi veya doğrudan sayfa erişimi gerektiğinde bunun yerine
+wiki'ye özgü araçları kullanın.
 
 ## Önerilen hibrit desen
 
 Yerel öncelikli kurulumlar için güçlü bir varsayılan şudur:
 
-- Geri çağırma ve geniş anlamsal arama için etkin bellek arka ucu olarak QMD
-- Dayanıklı sentezlenmiş bilgi sayfaları için `bridge` modunda `memory-wiki`
+- Geri çağırma ve geniş semantik arama için aktif bellek arka ucu olarak QMD
+- Kalıcı sentezlenmiş bilgi sayfaları için `bridge` modunda `memory-wiki`
 
-Bu ayrım iyi çalışır çünkü her katman odaklı kalır:
+Bu ayrım iyi çalışır çünkü her katman odağını korur:
 
-- QMD ham notları, oturum dışa aktarımlarını ve ek koleksiyonları aranabilir tutar
-- `memory-wiki` kararlı varlıkları, iddiaları, panoları ve kaynak sayfaları derler
+- QMD, ham notları, oturum dışa aktarımlarını ve ek koleksiyonları aranabilir tutar
+- `memory-wiki`, kararlı varlıkları, iddiaları, panoları ve kaynak sayfaları derler
 
 Pratik kural:
 
-- Bellek genelinde tek bir geniş geri çağırma geçişi istediğinizde `memory_search` kullanın
-- Provenance farkındalıklı wiki sonuçları istediğinizde `wiki_search` ve `wiki_get` kullanın
-- Paylaşılan aramanın her iki katmana yayılmasını istediğinizde `memory_search corpus=all` kullanın
+- bellek genelinde tek bir geniş geri çağırma geçişi istediğinizde `memory_search` kullanın
+- köken bilgisine duyarlı wiki sonuçları istediğinizde `wiki_search` ve `wiki_get` kullanın
+- paylaşılan aramanın her iki katmanı da kapsamasını istediğinizde `memory_search corpus=all` kullanın
 
-Köprü modu sıfır dışa aktarılmış yapı bildiriyorsa etkin bellek Plugin'i şu anda
-henüz genel köprü girdilerini açığa çıkarmıyordur. Önce `openclaw wiki doctor` çalıştırın,
-ardından etkin bellek Plugin'inin genel yapıları desteklediğini doğrulayın.
+Köprü modu sıfır dışa aktarılmış yapı bildirirse, aktif bellek Plugin'i
+şu anda herkese açık köprü girdilerini henüz açığa çıkarmıyordur. Önce `openclaw wiki doctor` çalıştırın,
+ardından aktif bellek Plugin'inin herkese açık yapıları desteklediğini doğrulayın.
+
+Köprü modu aktifken ve `bridge.readMemoryArtifacts` etkinleştirildiğinde,
+`openclaw wiki status`, `openclaw wiki doctor` ve `openclaw wiki bridge
+import` çalışan Gateway üzerinden okur. Bu, CLI köprü kontrollerini
+çalışma zamanı bellek Plugin'i bağlamıyla hizalı tutar. Köprü devre dışıysa veya yapı okumaları
+kapatılmışsa, bu komutlar yerel/çevrimdışı davranışlarını korur.
 
 ## Kasa modları
 
-`memory-wiki`, üç kasa modunu destekler:
+`memory-wiki` üç kasa modunu destekler:
 
 ### `isolated`
 
-Kendi kasası, kendi kaynakları, `memory-core`'a bağımlılık yok.
+Kendi kasası, kendi kaynakları, `memory-core` bağımlılığı yok.
 
-Wiki'nin kendi küratörlüğü yapılmış bilgi deposu olmasını istediğinizde bunu kullanın.
+Wiki'nin kendi seçilmiş bilgi deposu olmasını istediğinizde bunu kullanın.
 
 ### `bridge`
 
-Etkin bellek Plugin'inden genel bellek yapılarını ve bellek olaylarını
-genel Plugin SDK sınırları üzerinden okur.
+Aktif bellek Plugin'inden herkese açık bellek yapılarını ve bellek olaylarını
+herkese açık Plugin SDK sınırları üzerinden okur.
 
-Wiki'nin, özel Plugin iç işleyişine girmeden bellek Plugin'inin
-dışa aktarılan yapılarını derlemesini ve düzenlemesini istediğinizde bunu kullanın.
+Wiki'nin, özel Plugin iç yapılarına erişmeden bellek Plugin'inin
+dışa aktarılmış yapılarını derleyip düzenlemesini istediğinizde bunu kullanın.
 
 Köprü modu şunları indeksleyebilir:
 
-- dışa aktarılan bellek yapıları
-- Dreaming raporları
+- dışa aktarılmış bellek yapıları
+- dream raporları
 - günlük notlar
 - bellek kök dosyaları
 - bellek olay günlükleri
@@ -103,13 +107,13 @@ Köprü modu şunları indeksleyebilir:
 
 Yerel özel yollar için açık aynı makine kaçış kapısı.
 
-Bu mod bilinçli olarak deneyseldir ve taşınabilir değildir. Bunu yalnızca
-güven sınırını anladığınızda ve özellikle köprü modunun sağlayamadığı
-yerel dosya sistemi erişimine ihtiyaç duyduğunuzda kullanın.
+Bu mod özellikle deneysel ve taşınabilir değildir. Yalnızca güven sınırını
+anladığınızda ve köprü modunun sağlayamadığı yerel dosya sistemi erişimine
+özellikle ihtiyaç duyduğunuzda kullanın.
 
 ## Kasa düzeni
 
-Plugin, şöyle bir kasa başlatır:
+Plugin, kasayı şöyle başlatır:
 
 ```text
 <vault>/
@@ -127,17 +131,17 @@ Plugin, şöyle bir kasa başlatır:
   .openclaw-wiki/
 ```
 
-Yönetilen içerik üretilen blokların içinde kalır. İnsan not blokları korunur.
+Yönetilen içerik, oluşturulmuş blokların içinde kalır. İnsan notu blokları korunur.
 
 Ana sayfa grupları şunlardır:
 
-- `sources/` içe aktarılan ham malzeme ve köprü destekli sayfalar için
-- `entities/` dayanıklı şeyler, insanlar, sistemler, projeler ve nesneler için
-- `concepts/` fikirler, soyutlamalar, desenler ve ilkeler için
-- `syntheses/` derlenmiş özetler ve bakımı yapılan birleştirmeler için
-- `reports/` üretilen panolar için
+- içe aktarılmış ham materyal ve köprü destekli sayfalar için `sources/`
+- kalıcı şeyler, kişiler, sistemler, projeler ve nesneler için `entities/`
+- fikirler, soyutlamalar, desenler ve politikalar için `concepts/`
+- derlenmiş özetler ve bakımı yapılan toplu görünümler için `syntheses/`
+- oluşturulmuş panolar için `reports/`
 
-## Yapılandırılmış iddialar ve kanıtlar
+## Yapılandırılmış iddialar ve kanıt
 
 Sayfalar yalnızca serbest biçimli metin değil, yapılandırılmış `claims` frontmatter'ı taşıyabilir.
 
@@ -152,38 +156,110 @@ Her iddia şunları içerebilir:
 
 Kanıt girdileri şunları içerebilir:
 
+- `kind`
 - `sourceId`
 - `path`
 - `lines`
 - `weight`
+- `confidence`
+- `privacyTier`
 - `note`
 - `updatedAt`
 
-Wiki'yi pasif bir not
-dökümünden çok bir inanç katmanı gibi davranır hâle getiren şey budur. İddialar izlenebilir, puanlanabilir, itiraz edilebilir ve kaynaklara geri çözülebilir.
+Wiki'nin pasif bir not dökümünden çok bir inanç katmanı gibi davranmasını sağlayan şey budur.
+İddialar izlenebilir, puanlanabilir, tartışılabilir ve kaynaklara geri bağlanarak çözümlenebilir.
 
-## Derleme işlem hattı
+## Aracıya yönelik varlık meta verisi
 
-Derleme adımı wiki sayfalarını okur, özetleri normalize eder ve kararlı
-makineye dönük yapıları şu konumlara çıkarır:
+Varlık sayfaları, aracı kullanımı için yönlendirme meta verisi de taşıyabilir. Bu genel
+frontmatter'dır, bu yüzden kişiler, ekipler, sistemler, projeler veya başka herhangi bir
+varlık türü için çalışır.
+
+Yaygın alanlar şunları içerir:
+
+- `entityType`: örneğin `person`, `team`, `system` veya `project`
+- `canonicalId`: takma adlar ve içe aktarımlar genelinde kullanılan kararlı kimlik anahtarı
+- `aliases`: aynı sayfaya çözümlenmesi gereken adlar, kullanıcı adları veya etiketler
+- `privacyTier`: `public`, `local-private`, `sensitive` veya `confirm-before-use`
+- `bestUsedFor` / `notEnoughFor`: kompakt yönlendirme ipuçları
+- `lastRefreshedAt`: sayfa düzenleme zamanından ayrı kaynak yenileme zaman damgası
+- `personCard`: kullanıcı adları, sosyal profiller,
+  e-postalar, saat dilimi, kulvar, sorulacak konular, sorulmaması gerekenler, güven ve gizlilik içeren isteğe bağlı kişiye özgü yönlendirme kartı
+- `relationships`: hedef, tür, ağırlık,
+  güven, kanıt türü, gizlilik katmanı ve not içeren ilgili sayfalara tipli kenarlar
+
+Bir kişiler wikisi için aracı genellikle
+`reports/person-agent-directory.md` ile başlamalı, ardından kişi ayrıntılarını veya çıkarımsal gerçekleri kullanmadan önce
+`wiki_get` ile kişi sayfasını açmalıdır.
+
+Örnek:
+
+```yaml
+pageType: entity
+entityType: person
+id: entity.brad-groux
+canonicalId: maintainer.brad-groux
+aliases:
+  - Brad
+  - bgroux
+privacyTier: local-private
+bestUsedFor:
+  - Microsoft Teams and Azure routing
+notEnoughFor:
+  - legal approval
+lastRefreshedAt: "2026-04-29T00:00:00.000Z"
+personCard:
+  handles:
+    - "@bgroux"
+  socials:
+    - "https://x.example/bgroux"
+  emails:
+    - brad@example.com
+  timezone: America/Chicago
+  lane: Microsoft ecosystem
+  askFor:
+    - Teams rollout questions
+  avoidAskingFor:
+    - unrelated billing decisions
+  confidence: 0.8
+  privacyTier: confirm-before-use
+relationships:
+  - targetId: entity.alice
+    targetTitle: Alice
+    kind: collaborates-with
+    confidence: 0.7
+    evidenceKind: discrawl-stat
+claims:
+  - id: claim.brad.teams
+    text: Brad is useful for Microsoft Teams routing.
+    status: supported
+    confidence: 0.9
+    evidence:
+      - kind: maintainer-whois
+        sourceId: source.maintainers
+        privacyTier: local-private
+```
+
+## Derleme hattı
+
+Derleme adımı wiki sayfalarını okur, özetleri normalleştirir ve kararlı
+makineye yönelik yapıları şuraya yazar:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Bu özetler, aracıların ve çalışma zamanı kodunun Markdown
-sayfalarını kazımasına gerek kalmaması için vardır.
+Bu özetler, aracıların ve çalışma zamanı kodunun Markdown sayfalarını kazımasını gerektirmemek için vardır.
 
-Derlenmiş çıktı ayrıca şunları da besler:
+Derlenmiş çıktı ayrıca şunları destekler:
 
-- search/get akışları için ilk geçiş wiki indeksleme
-- sahip sayfalara geri claim-id çözümleme
-- sıkıştırılmış istem ekleri
-- rapor/pano üretimi
+- search/get akışları için ilk geçiş wiki indekslemesi
+- iddia kimliği aramasından sahip sayfalara geri bağlanma
+- kompakt istem ekleri
+- rapor/pano oluşturma
 
 ## Panolar ve sağlık raporları
 
-`render.createDashboards` etkin olduğunda derleme, `reports/`
-altında panoları sürdürür.
+`render.createDashboards` etkinleştirildiğinde, derleme `reports/` altında panoları korur.
 
 Yerleşik raporlar şunları içerir:
 
@@ -192,24 +268,32 @@ Yerleşik raporlar şunları içerir:
 - `reports/low-confidence.md`
 - `reports/claim-health.md`
 - `reports/stale-pages.md`
+- `reports/person-agent-directory.md`
+- `reports/relationship-graph.md`
+- `reports/provenance-coverage.md`
+- `reports/privacy-review.md`
 
 Bu raporlar şunları izler:
 
-- çelişki not kümelemeleri
-- yarışan iddia kümeleri
+- çelişki notu kümeleri
+- rekabet eden iddia kümeleri
 - yapılandırılmış kanıtı eksik iddialar
 - düşük güvenli sayfalar ve iddialar
-- bayat veya bilinmeyen tazelik
-- çözülmemiş sorular içeren sayfalar
+- bayat veya bilinmeyen güncellik
+- çözümlenmemiş soruları olan sayfalar
+- kişi/varlık yönlendirme kartları
+- yapılandırılmış ilişki kenarları
+- kanıt sınıfı kapsamı
+- kullanımdan önce inceleme gerektiren herkese açık olmayan gizlilik katmanları
 
 ## Arama ve getirme
 
-`memory-wiki`, iki arama arka ucunu destekler:
+`memory-wiki` iki arama arka ucunu destekler:
 
-- `shared`: kullanılabilir olduğunda paylaşılan bellek arama akışını kullanır
-- `local`: wiki'yi yerelde arar
+- `shared`: kullanılabilir olduğunda paylaşılan bellek arama akışını kullan
+- `local`: wikiyi yerel olarak ara
 
-Ayrıca üç corpus destekler:
+Ayrıca üç corpus'u destekler:
 
 - `wiki`
 - `memory`
@@ -217,16 +301,34 @@ Ayrıca üç corpus destekler:
 
 Önemli davranış:
 
-- `wiki_search` ve `wiki_get`, mümkün olduğunda ilk geçişte derlenmiş özetleri kullanır
-- claim kimlikleri sahip sayfaya geri çözülebilir
-- contested/stale/fresh iddialar sıralamayı etkiler
-- provenance etiketleri sonuçlara kadar yaşayabilir
+- `wiki_search` ve `wiki_get` mümkün olduğunda derlenmiş özetleri ilk geçiş olarak kullanır
+- iddia kimlikleri sahip sayfaya geri çözümlenebilir
+- tartışmalı/bayat/güncel iddialar sıralamayı etkiler
+- köken bilgisi etiketleri sonuçlarda kalabilir
+- arama modu kişi aramaya, soru yönlendirmeye, kaynak
+  kanıtına veya ham iddialara göre sıralamayı eğebilir
 
 Pratik kural:
 
-- Tek bir geniş geri çağırma geçişi için `memory_search corpus=all` kullanın
-- Wiki'ye özgü sıralama,
-  provenance veya sayfa düzeyinde inanç yapısı önemsediğinizde `wiki_search` + `wiki_get` kullanın
+- tek bir geniş geri çağırma geçişi için `memory_search corpus=all` kullanın
+- wiki'ye özgü sıralama,
+  köken bilgisi veya sayfa düzeyinde inanç yapısı önemliyse `wiki_search` + `wiki_get` kullanın
+
+Arama modları:
+
+- `auto`: dengeli varsayılan
+- `find-person`: kişiye benzeyen varlıkları, takma adları, kullanıcı adlarını, sosyal profilleri ve
+  kanonik kimlikleri öne çıkar
+- `route-question`: aracı kartlarını, sorulacak konu ipuçlarını, en uygun kullanım ipuçlarını ve
+  ilişki bağlamını öne çıkar
+- `source-evidence`: kaynak sayfaları ve yapılandırılmış kanıt meta verisini öne çıkar
+- `raw-claim`: eşleşen yapılandırılmış iddiaları öne çıkarır ve sonuçlarda iddia/kanıt
+  meta verisini döndürür
+
+Bir sonuç yapılandırılmış bir iddiayla eşleştiğinde, `wiki_search` ayrıntı yükünde
+`matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`,
+`evidenceKinds` ve `evidenceSourceIds` döndürebilir. Metin çıktısı
+mevcut olduğunda kompakt `Claim:` ve `Evidence:` satırlarını da içerir.
 
 ## Aracı araçları
 
@@ -238,33 +340,35 @@ Plugin şu araçları kaydeder:
 - `wiki_apply`
 - `wiki_lint`
 
-Yaptıkları şeyler:
+Ne yaparlar:
 
-- `wiki_status`: geçerli kasa modu, sağlık durumu, Obsidian CLI kullanılabilirliği
-- `wiki_search`: wiki sayfalarını ve yapılandırıldığında paylaşılan bellek corpus'larını arar
-- `wiki_get`: bir wiki sayfasını kimlik/yol ile okur veya paylaşılan bellek corpus'una geri döner
-- `wiki_apply`: serbest biçimli sayfa ameliyatı olmadan dar sentez/metadata mutasyonları
-- `wiki_lint`: yapısal kontroller, provenance boşlukları, çelişkiler, açık sorular
+- `wiki_status`: mevcut kasa modu, sağlık, Obsidian CLI kullanılabilirliği
+- `wiki_search`: wiki sayfalarında ve yapılandırıldığında paylaşılan bellek corpus'larında arama yapar;
+  kişi arama, soru yönlendirme, kaynak kanıtı veya ham
+  iddia ayrıntı incelemesi için `mode` kabul eder
+- `wiki_get`: bir wiki sayfasını id/yol ile okur veya paylaşılan bellek corpus'una geri döner
+- `wiki_apply`: serbest biçimli sayfa cerrahisi olmadan dar sentez/meta veri mutasyonları
+- `wiki_lint`: yapısal kontroller, köken bilgisi boşlukları, çelişkiler, açık sorular
 
-Plugin ayrıca dışlayıcı olmayan bir bellek corpus eki de kaydeder, böylece etkin bellek
+Plugin ayrıca dışlayıcı olmayan bir bellek corpus eki kaydeder, böylece aktif bellek
 Plugin'i corpus seçimini desteklediğinde paylaşılan
-`memory_search` ve `memory_get` wiki'ye ulaşabilir.
+`memory_search` ve `memory_get` wikiye erişebilir.
 
 ## İstem ve bağlam davranışı
 
-`context.includeCompiledDigestPrompt` etkin olduğunda bellek istem bölümleri,
-`agent-digest.json` içinden sıkıştırılmış derlenmiş bir anlık görüntü ekler.
+`context.includeCompiledDigestPrompt` etkinleştirildiğinde, bellek istem bölümleri
+`agent-digest.json` içinden kompakt bir derlenmiş anlık görüntü ekler.
 
-Bu anlık görüntü bilinçli olarak küçük ve yüksek sinyallidir:
+Bu anlık görüntü özellikle küçük ve yüksek sinyallidir:
 
-- yalnızca en üst sayfalar
-- yalnızca en üst iddialar
+- yalnızca en önemli sayfalar
+- yalnızca en önemli iddialar
 - çelişki sayısı
 - soru sayısı
-- güven/tazelik niteleyicileri
+- güven/güncellik niteleyicileri
 
-Bu katılımlıdır çünkü istem şeklini değiştirir ve çoğunlukla bağlam motorları
-veya bellek eklerini açıkça tüketen eski istem oluşturma için yararlıdır.
+Bu isteğe bağlıdır çünkü istem şeklini değiştirir ve esas olarak bellek eklerini açıkça tüketen bağlam
+motorları veya eski istem derleme için kullanışlıdır.
 
 ## Yapılandırma
 
@@ -320,22 +424,22 @@ Yapılandırmayı `plugins.entries.memory-wiki.config` altına koyun:
 }
 ```
 
-Temel geçişler:
+Anahtar geçişler:
 
 - `vaultMode`: `isolated`, `bridge`, `unsafe-local`
 - `vault.renderMode`: `native` veya `obsidian`
-- `bridge.readMemoryArtifacts`: etkin bellek Plugin'inin genel yapılarını içe aktarır
-- `bridge.followMemoryEvents`: köprü modunda olay günlüklerini dahil eder
+- `bridge.readMemoryArtifacts`: Active Memory Plugin herkese açık yapıtlarını içe aktar
+- `bridge.followMemoryEvents`: köprü modunda olay günlüklerini dahil et
 - `search.backend`: `shared` veya `local`
 - `search.corpus`: `wiki`, `memory` veya `all`
-- `context.includeCompiledDigestPrompt`: bellek istem bölümlerine sıkıştırılmış özet anlık görüntüsü ekler
-- `render.createBacklinks`: deterministik ilgili bloklar üretir
-- `render.createDashboards`: pano sayfaları üretir
+- `context.includeCompiledDigestPrompt`: bellek istemi bölümlerine kompakt özet anlık görüntüsü ekle
+- `render.createBacklinks`: deterministik ilgili bloklar oluştur
+- `render.createDashboards`: pano sayfaları oluştur
 
 ### Örnek: QMD + köprü modu
 
-Geri çağırma için QMD, bakımı yapılan
-bilgi katmanı için `memory-wiki` istediğinizde bunu kullanın:
+Hatırlama için QMD ve bakımı yapılan bir bilgi katmanı için `memory-wiki`
+istediğinizde bunu kullanın:
 
 ```json5
 {
@@ -367,15 +471,15 @@ bilgi katmanı için `memory-wiki` istediğinizde bunu kullanın:
 }
 ```
 
-Bu, şunları korur:
+Bu şunları korur:
 
-- Etkin bellek geri çağırmasından QMD sorumlu kalır
-- `memory-wiki`, derlenmiş sayfalara ve panolara odaklanır
-- Derlenmiş özet istemlerini kasıtlı olarak etkinleştirene kadar istem şekli değişmez
+- Active Memory hatırlamasından QMD sorumlu kalır
+- `memory-wiki` derlenmiş sayfalara ve panolara odaklanır
+- derlenmiş özet istemlerini bilerek etkinleştirene kadar istem biçimi değişmeden kalır
 
 ## CLI
 
-`memory-wiki`, ayrıca üst düzey bir CLI yüzeyi de açar:
+`memory-wiki` ayrıca üst düzey bir CLI yüzeyi sunar:
 
 ```bash
 openclaw wiki status
@@ -391,36 +495,36 @@ openclaw wiki bridge import
 openclaw wiki obsidian status
 ```
 
-Tam komut başvurusu için bkz. [CLI: wiki](/tr/cli/wiki).
+Tam komut referansı için bkz. [CLI: wiki](/tr/cli/wiki).
 
 ## Obsidian desteği
 
-`vault.renderMode`, `obsidian` olduğunda Plugin, Obsidian uyumlu
-Markdown yazar ve isteğe bağlı olarak resmi `obsidian` CLI'yi kullanabilir.
+`vault.renderMode`, `obsidian` olduğunda Plugin, Obsidian dostu
+Markdown yazar ve isteğe bağlı olarak resmi `obsidian` CLI aracını kullanabilir.
 
 Desteklenen iş akışları şunları içerir:
 
-- durum yoklaması
+- durum yoklama
 - kasa araması
 - bir sayfa açma
 - bir Obsidian komutu çağırma
 - günlük nota atlama
 
-Bu isteğe bağlıdır. Wiki, Obsidian olmadan da yerel modda çalışır.
+Bu isteğe bağlıdır. Wiki, Obsidian olmadan yerel modda çalışmaya devam eder.
 
 ## Önerilen iş akışı
 
-1. Geri çağırma/yükseltme/Dreaming için etkin bellek Plugin'inizi koruyun.
-2. `memory-wiki` etkinleştirin.
-3. Açıkça köprü modu istemediğiniz sürece `isolated` modla başlayın.
-4. Provenance önemli olduğunda `wiki_search` / `wiki_get` kullanın.
-5. Dar sentezler veya metadata güncellemeleri için `wiki_apply` kullanın.
+1. Hatırlama/yükseltme/Dreaming için Active Memory Plugin'inizi koruyun.
+2. `memory-wiki` özelliğini etkinleştirin.
+3. Açıkça köprü modu istemiyorsanız `isolated` moduyla başlayın.
+4. Kaynak bilgisi önemli olduğunda `wiki_search` / `wiki_get` kullanın.
+5. Dar kapsamlı sentezler veya meta veri güncellemeleri için `wiki_apply` kullanın.
 6. Anlamlı değişikliklerden sonra `wiki_lint` çalıştırın.
-7. Bayatlık/çelişki görünürlüğü istiyorsanız panoları açın.
+7. Eski/çelişkili bilgi görünürlüğü istiyorsanız panoları açın.
 
-## İlgili belgeler
+## İlgili dokümanlar
 
-- [Bellek Genel Bakışı](/tr/concepts/memory)
+- [Belleğe Genel Bakış](/tr/concepts/memory)
 - [CLI: memory](/tr/cli/memory)
 - [CLI: wiki](/tr/cli/wiki)
-- [Plugin SDK genel bakışı](/tr/plugins/sdk-overview)
+- [Plugin SDK genel bakış](/tr/plugins/sdk-overview)

@@ -1,68 +1,68 @@
 ---
 read_when:
-    - Yeni bir asistan örneğini kullanıma alma
-    - Güvenlik/izin etkilerini gözden geçirme
-summary: OpenClaw’ı kişisel asistan olarak çalıştırmaya yönelik uçtan uca kılavuz ve güvenlik uyarıları
+    - Yeni bir asistan örneğini kullanıma hazırlama
+    - Güvenlik/izin etkileri inceleniyor
+summary: OpenClaw'ı güvenlik uyarılarıyla kişisel asistan olarak çalıştırmak için uçtan uca kılavuz
 title: Kişisel asistan kurulumu
 x-i18n:
-    generated_at: "2026-04-25T13:57:47Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:46:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1647b78e8cf23a3a025969c52fbd8a73aed78df27698abf36bbf62045dc30e3b
+    source_hash: b0614272f9a2b30e0900c55b39a8bd6a2b71b9f5d5fbf0fe00c534b91193e6a0
     source_path: start/openclaw.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw ile kişisel bir asistan oluşturma
+# OpenClaw ile kişisel asistan oluşturma
 
-OpenClaw; Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo ve daha fazlasını AI ajanlarına bağlayan, self-hosted bir Gateway’dir. Bu kılavuz, “kişisel asistan” kurulumunu kapsar: her zaman açık AI asistanınız gibi davranan özel bir WhatsApp numarası.
+OpenClaw; Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo ve daha fazlasını AI ajanlarına bağlayan, kendi barındırdığınız bir Gateway'dir. Bu kılavuz "kişisel asistan" kurulumunu kapsar: her zaman açık AI asistanınız gibi davranan özel bir WhatsApp numarası.
 
 ## ⚠️ Önce güvenlik
 
-Bir ajanı şunları yapabilecek bir konuma yerleştiriyorsunuz:
+Bir ajanı şu konumlara getiriyorsunuz:
 
-- makinenizde komut çalıştırmak (araç politikanıza bağlı olarak)
-- çalışma alanınızdaki dosyaları okumak/yazmak
-- WhatsApp/Telegram/Discord/Mattermost ve diğer paketlenmiş kanallar üzerinden yeniden mesaj göndermek
+- makinenizde komut çalıştırma (araç politikanıza bağlı olarak)
+- çalışma alanınızdaki dosyaları okuma/yazma
+- WhatsApp/Telegram/Discord/Mattermost ve paketle gelen diğer kanallar üzerinden dışarı mesaj gönderme
 
-Muhafazakâr başlayın:
+Muhafazakar başlayın:
 
-- Her zaman `channels.whatsapp.allowFrom` ayarlayın (kişisel Mac’inizde asla herkese açık çalıştırmayın).
+- Her zaman `channels.whatsapp.allowFrom` ayarlayın (kişisel Mac'inizde dünyaya açık çalıştırmayın).
 - Asistan için özel bir WhatsApp numarası kullanın.
-- Heartbeat artık varsayılan olarak her 30 dakikada bir çalışır. Kuruluma güvenene kadar `agents.defaults.heartbeat.every: "0m"` ayarlayarak devre dışı bırakın.
+- Heartbeat'ler artık varsayılan olarak 30 dakikada bir çalışır. Kuruluma güvenene kadar `agents.defaults.heartbeat.every: "0m"` ayarlayarak devre dışı bırakın.
 
 ## Ön koşullar
 
-- OpenClaw kurulmuş ve ilk kurulumu tamamlanmış olmalı — bunu henüz yapmadıysanız [Başlarken](/tr/start/getting-started) bölümüne bakın
+- OpenClaw kurulmuş ve ilk kurulumu yapılmış olmalı — bunu henüz yapmadıysanız [Başlarken](/tr/start/getting-started) bölümüne bakın
 - Asistan için ikinci bir telefon numarası (SIM/eSIM/ön ödemeli)
 
 ## İki telefonlu kurulum (önerilir)
 
-İstediğiniz yapı şu:
+İstediğiniz yapı şudur:
 
 ```mermaid
 flowchart TB
-    A["<b>Telefonunuz (kişisel)<br></b><br>WhatsApp'ınız<br>+1-555-YOU"] -- message --> B["<b>İkinci Telefon (asistan)<br></b><br>Asistan WA<br>+1-555-ASSIST"]
-    B -- linked via QR --> C["<b>Mac'iniz (openclaw)<br></b><br>AI ajanı"]
+    A["<b>Your Phone (personal)<br></b><br>Your WhatsApp<br>+1-555-YOU"] -- message --> B["<b>Second Phone (assistant)<br></b><br>Assistant WA<br>+1-555-ASSIST"]
+    B -- linked via QR --> C["<b>Your Mac (openclaw)<br></b><br>AI agent"]
 ```
 
-Kişisel WhatsApp’ınızı OpenClaw’a bağlarsanız, size gelen her mesaj “ajan girdisi” olur. Bu çoğu zaman isteyeceğiniz şey değildir.
+Kişisel WhatsApp hesabınızı OpenClaw'a bağlarsanız, size gelen her mesaj “ajan girdisi” olur. Bu çoğu zaman istediğiniz şey değildir.
 
 ## 5 dakikalık hızlı başlangıç
 
-1. WhatsApp Web’i eşleyin (QR gösterir; asistan telefonuyla tarayın):
+1. WhatsApp Web'i eşleştirin (QR gösterilir; asistan telefonuyla tarayın):
 
 ```bash
 openclaw channels login
 ```
 
-2. Gateway’i başlatın (çalışır durumda bırakın):
+2. Gateway'i başlatın (çalışır durumda bırakın):
 
 ```bash
 openclaw gateway --port 18789
 ```
 
-3. `~/.openclaw/openclaw.json` içine minimal bir yapılandırma koyun:
+3. `~/.openclaw/openclaw.json` içine asgari bir yapılandırma koyun:
 
 ```json5
 {
@@ -71,24 +71,26 @@ openclaw gateway --port 18789
 }
 ```
 
-Şimdi allowlist’e alınmış telefonunuzdan asistan numarasına mesaj gönderin.
+Şimdi izin verilenler listesine eklediğiniz telefondan asistan numarasına mesaj gönderin.
 
-Onboarding tamamlandığında OpenClaw panoyu otomatik olarak açar ve temiz (token içermeyen) bir bağlantı yazdırır. Pano kimlik doğrulama isterse yapılandırılmış paylaşılan gizli anahtarı Control UI ayarlarına yapıştırın. Onboarding varsayılan olarak bir token kullanır (`gateway.auth.token`), ancak `gateway.auth.mode` değerini `password` olarak değiştirdiyseniz parola ile kimlik doğrulama da çalışır. Daha sonra yeniden açmak için: `openclaw dashboard`.
+İlk kurulum tamamlandığında OpenClaw panoyu otomatik açar ve temiz (token içermeyen) bir bağlantı yazdırır. Pano kimlik doğrulaması isterse, yapılandırılmış paylaşılan sırrı Control UI ayarlarına yapıştırın. İlk kurulum varsayılan olarak bir token (`gateway.auth.token`) kullanır, ancak `gateway.auth.mode` değerini `password` olarak değiştirdiyseniz parola kimlik doğrulaması da çalışır. Daha sonra tekrar açmak için: `openclaw dashboard`.
 
 ## Ajana bir çalışma alanı verin (AGENTS)
 
-OpenClaw, çalışma talimatlarını ve “hafızayı” çalışma alanı dizininden okur.
+OpenClaw, çalışma yönergelerini ve “belleği” çalışma alanı dizininden okur.
 
-Varsayılan olarak OpenClaw, ajan çalışma alanı olarak `~/.openclaw/workspace` kullanır ve bunu (başlangıç `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` ile birlikte) kurulum/ilk ajan çalıştırmasında otomatik olarak oluşturur. `BOOTSTRAP.md` yalnızca çalışma alanı yepyeniyse oluşturulur (sildikten sonra geri gelmemelidir). `MEMORY.md` isteğe bağlıdır (otomatik oluşturulmaz); mevcut olduğunda normal oturumlar için yüklenir. Alt ajan oturumları yalnızca `AGENTS.md` ve `TOOLS.md` dosyalarını enjekte eder.
+OpenClaw varsayılan olarak ajan çalışma alanı için `~/.openclaw/workspace` kullanır ve kurulumda/ilk ajan çalıştırmasında bunu (artı başlangıç `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) otomatik olarak oluşturur. `BOOTSTRAP.md` yalnızca çalışma alanı yepyeniyse oluşturulur (sildikten sonra geri gelmemelidir). `MEMORY.md` isteğe bağlıdır (otomatik oluşturulmaz); mevcut olduğunda normal oturumlar için yüklenir. Alt ajan oturumları yalnızca `AGENTS.md` ve `TOOLS.md` enjekte eder.
 
-İpucu: bu klasörü OpenClaw’ın “hafızası” gibi düşünün ve `AGENTS.md` + hafıza dosyalarınızın yedeklenmesi için onu bir git deposu yapın (tercihen özel). Git kuruluysa yepyeni çalışma alanları otomatik olarak başlatılır.
+<Tip>
+Bu klasörü OpenClaw'ın belleği gibi ele alın ve bir git deposu yapın (tercihen özel), böylece `AGENTS.md` ve bellek dosyalarınız yedeklenir. Git yüklüyse yepyeni çalışma alanları otomatik olarak başlatılır.
+</Tip>
 
 ```bash
 openclaw setup
 ```
 
 Tam çalışma alanı düzeni + yedekleme kılavuzu: [Ajan çalışma alanı](/tr/concepts/agent-workspace)
-Hafıza iş akışı: [Hafıza](/tr/concepts/memory)
+Bellek iş akışı: [Bellek](/tr/concepts/memory)
 
 İsteğe bağlı: `agents.defaults.workspace` ile farklı bir çalışma alanı seçin (`~` desteklenir).
 
@@ -102,7 +104,7 @@ Hafıza iş akışı: [Hafıza](/tr/concepts/memory)
 }
 ```
 
-Kendi çalışma alanı dosyalarınızı zaten bir depodan getiriyorsanız, bootstrap dosyası oluşturmayı tamamen devre dışı bırakabilirsiniz:
+Kendi çalışma alanı dosyalarınızı zaten bir depodan gönderiyorsanız, bootstrap dosyası oluşturmayı tamamen devre dışı bırakabilirsiniz:
 
 ```json5
 {
@@ -114,13 +116,13 @@ Kendi çalışma alanı dosyalarınızı zaten bir depodan getiriyorsanız, boot
 }
 ```
 
-## Bunu “bir asistana” dönüştüren yapılandırma
+## Bunu "bir asistana" dönüştüren yapılandırma
 
-OpenClaw varsayılan olarak iyi bir asistan kurulumu sunar, ancak genellikle şunları ayarlamak isteyeceksiniz:
+OpenClaw varsayılan olarak iyi bir asistan kurulumuyla gelir, ancak genelde şunları ayarlamak istersiniz:
 
-- [`SOUL.md`](/tr/concepts/soul) içindeki persona/talimatlar
+- [`SOUL.md`](/tr/concepts/soul) içindeki persona/yönergeler
 - düşünme varsayılanları (istenirse)
-- Heartbeat’ler (güvendiğinizde)
+- Heartbeat'ler (güvendikten sonra)
 
 Örnek:
 
@@ -132,7 +134,7 @@ OpenClaw varsayılan olarak iyi bir asistan kurulumu sunar, ancak genellikle şu
     workspace: "~/.openclaw/workspace",
     thinkingDefault: "high",
     timeoutSeconds: 1800,
-    // 0 ile başlayın; daha sonra etkinleştirin.
+    // Start with 0; enable later.
     heartbeat: { every: "0m" },
   },
   channels: {
@@ -160,24 +162,24 @@ OpenClaw varsayılan olarak iyi bir asistan kurulumu sunar, ancak genellikle şu
 }
 ```
 
-## Oturumlar ve hafıza
+## Oturumlar ve bellek
 
 - Oturum dosyaları: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
 - Oturum meta verileri (token kullanımı, son rota vb.): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (eski: `~/.openclaw/sessions/sessions.json`)
-- `/new` veya `/reset`, o sohbet için yeni bir oturum başlatır (`resetTriggers` ile yapılandırılabilir). Tek başına gönderilirse ajan, sıfırlamayı doğrulamak için kısa bir merhaba mesajı verir.
-- `/compact [instructions]`, oturum bağlamını sıkıştırır ve kalan bağlam bütçesini bildirir.
+- `/new` veya `/reset`, o sohbet için yeni bir oturum başlatır (`resetTriggers` üzerinden yapılandırılabilir). Tek başına gönderilirse OpenClaw modeli çağırmadan sıfırlamayı onaylar.
+- `/compact [instructions]` oturum bağlamını sıkıştırır ve kalan bağlam bütçesini bildirir.
 
-## Heartbeat’ler (proaktif mod)
+## Heartbeat'ler (proaktif mod)
 
-Varsayılan olarak OpenClaw, şu istemle her 30 dakikada bir bir Heartbeat çalıştırır:
+Varsayılan olarak OpenClaw, şu istemle her 30 dakikada bir Heartbeat çalıştırır:
 `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
 Devre dışı bırakmak için `agents.defaults.heartbeat.every: "0m"` ayarlayın.
 
-- `HEARTBEAT.md` mevcutsa ancak fiilen boşsa (yalnızca boş satırlar ve `# Heading` gibi markdown başlıkları içeriyorsa), OpenClaw API çağrılarını azaltmak için Heartbeat çalıştırmasını atlar.
-- Dosya eksikse Heartbeat yine de çalışır ve ne yapılacağına model karar verir.
-- Ajan `HEARTBEAT_OK` ile yanıt verirse (isteğe bağlı kısa dolgu ile; bkz. `agents.defaults.heartbeat.ackMaxChars`), OpenClaw o Heartbeat için dışa giden teslimatı bastırır.
-- Varsayılan olarak, DM tarzı `user:<id>` hedeflerine Heartbeat teslimatına izin verilir. Heartbeat çalıştırmalarını etkin tutarken doğrudan hedef teslimatını bastırmak için `agents.defaults.heartbeat.directPolicy: "block"` ayarlayın.
-- Heartbeat’ler tam ajan dönüşleri çalıştırır — daha kısa aralıklar daha fazla token tüketir.
+- `HEARTBEAT.md` varsa ancak fiilen boşsa (yalnızca boş satırlar ve `# Heading` gibi markdown başlıkları), OpenClaw API çağrılarını azaltmak için Heartbeat çalıştırmasını atlar.
+- Dosya eksikse Heartbeat yine çalışır ve model ne yapacağına karar verir.
+- Ajan `HEARTBEAT_OK` ile yanıt verirse (isteğe bağlı kısa dolgu ile; bkz. `agents.defaults.heartbeat.ackMaxChars`), OpenClaw o Heartbeat için dışa gönderimi bastırır.
+- Varsayılan olarak DM tarzı `user:<id>` hedeflerine Heartbeat teslimine izin verilir. Heartbeat çalıştırmalarını aktif tutarken doğrudan hedef teslimini bastırmak için `agents.defaults.heartbeat.directPolicy: "block"` ayarlayın.
+- Heartbeat'ler tam ajan turu çalıştırır — daha kısa aralıklar daha fazla token tüketir.
 
 ```json5
 {
@@ -187,38 +189,38 @@ Devre dışı bırakmak için `agents.defaults.heartbeat.every: "0m"` ayarlayın
 }
 ```
 
-## İçeri ve dışarı medya
+## Gelen ve giden medya
 
-Gelen ekler (görseller/sesler/belgeler), şablonlar aracılığıyla komutunuza aktarılabilir:
+Gelen ekler (görseller/ses/belgeler) şablonlar aracılığıyla komutunuza sunulabilir:
 
 - `{{MediaPath}}` (yerel geçici dosya yolu)
 - `{{MediaUrl}}` (sözde URL)
-- `{{Transcript}}` (ses dökümü etkinse)
+- `{{Transcript}}` (ses transkripsiyonu etkinse)
 
 Ajandan giden ekler: kendi satırında `MEDIA:<path-or-url>` ekleyin (boşluk yok). Örnek:
 
 ```
-İşte ekran görüntüsü.
+Here’s the screenshot.
 MEDIA:https://example.com/screenshot.png
 ```
 
-OpenClaw bunları ayıklar ve metnin yanında medya olarak gönderir.
+OpenClaw bunları çıkarır ve metnin yanında medya olarak gönderir.
 
-Yerel yol davranışı, ajanla aynı dosya okuma güven modeli izler:
+Yerel yol davranışı, ajanla aynı dosya okuma güven modelini izler:
 
-- `tools.fs.workspaceOnly` değeri `true` ise giden `MEDIA:` yerel yolları OpenClaw geçici kökü, medya önbelleği, ajan çalışma alanı yolları ve sandbox tarafından üretilen dosyalarla sınırlı kalır.
-- `tools.fs.workspaceOnly` değeri `false` ise giden `MEDIA:`, ajanın zaten okumasına izin verilen ana makine yerel dosyalarını kullanabilir.
-- Ana makine yerel gönderimleri yine de yalnızca medya ve güvenli belge türlerine izin verir (görseller, ses, video, PDF ve Office belgeleri). Düz metin ve sır benzeri dosyalar gönderilebilir medya olarak değerlendirilmez.
+- `tools.fs.workspaceOnly` `true` ise, giden `MEDIA:` yerel yolları OpenClaw geçici kökü, medya önbelleği, ajan çalışma alanı yolları ve sandbox tarafından oluşturulan dosyalarla sınırlı kalır.
+- `tools.fs.workspaceOnly` `false` ise, giden `MEDIA:` ajanın zaten okumasına izin verilen ana makine yerel dosyalarını kullanabilir.
+- Ana makine yerelinden gönderimler yine yalnızca medya ve güvenli belge türlerine izin verir (görseller, ses, video, PDF ve Office belgeleri). Düz metin ve sır gibi görünen dosyalar gönderilebilir medya olarak ele alınmaz.
 
-Bu, dosya sistemi politikanız bu okumalara zaten izin veriyorsa, çalışma alanı dışındaki oluşturulmuş görsellerin/dosyaların artık gönderilebileceği anlamına gelir; bunu yaparken rastgele ana makine metin eki sızdırmasını yeniden açmaz.
+Bu, çalışma alanı dışındaki oluşturulmuş görsellerin/dosyaların, fs politikanız bu okumaya zaten izin verdiğinde, rastgele ana makine metin eki dışa sızdırmasını yeniden açmadan artık gönderilebileceği anlamına gelir.
 
-## İşlemler kontrol listesi
+## İşletim kontrol listesi
 
 ```bash
-openclaw status          # yerel durum (kimlik bilgileri, oturumlar, kuyruğa alınmış olaylar)
-openclaw status --all    # tam teşhis (salt okunur, yapıştırılabilir)
-openclaw status --deep   # desteklendiğinde kanal problarıyla canlı sağlık probu için Gateway'e sorar
-openclaw health --json   # Gateway sağlık anlık görüntüsü (WS; varsayılan olarak yeni bir önbelleğe alınmış anlık görüntü döndürebilir)
+openclaw status          # local status (creds, sessions, queued events)
+openclaw status --all    # full diagnosis (read-only, pasteable)
+openclaw status --deep   # asks the gateway for a live health probe with channel probes when supported
+openclaw health --json   # gateway health snapshot (WS; default can return a fresh cached snapshot)
 ```
 
 Günlükler `/tmp/openclaw/` altında bulunur (varsayılan: `openclaw-YYYY-MM-DD.log`).
@@ -228,7 +230,7 @@ Günlükler `/tmp/openclaw/` altında bulunur (varsayılan: `openclaw-YYYY-MM-DD
 - WebChat: [WebChat](/tr/web/webchat)
 - Gateway işlemleri: [Gateway runbook](/tr/gateway)
 - Cron + uyandırmalar: [Cron işleri](/tr/automation/cron-jobs)
-- macOS menü çubuğu yardımcı uygulaması: [OpenClaw macOS uygulaması](/tr/platforms/macos)
+- macOS menü çubuğu eşlikçisi: [OpenClaw macOS uygulaması](/tr/platforms/macos)
 - iOS Node uygulaması: [iOS uygulaması](/tr/platforms/ios)
 - Android Node uygulaması: [Android uygulaması](/tr/platforms/android)
 - Windows durumu: [Windows (WSL2)](/tr/platforms/windows)
@@ -239,4 +241,4 @@ Günlükler `/tmp/openclaw/` altında bulunur (varsayılan: `openclaw-YYYY-MM-DD
 
 - [Başlarken](/tr/start/getting-started)
 - [Kurulum](/tr/start/setup)
-- [Kanal genel görünümü](/tr/channels)
+- [Kanallara genel bakış](/tr/channels)

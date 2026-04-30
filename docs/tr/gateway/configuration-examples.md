@@ -1,20 +1,20 @@
 ---
 read_when:
-    - OpenClaw'ın nasıl yapılandırılacağını öğrenme
-    - Yapılandırma örnekleri arama
+    - OpenClaw'ı yapılandırmayı öğrenme
+    - Yapılandırma örnekleri aranıyor
     - OpenClaw'ı ilk kez kurma
 summary: Yaygın OpenClaw kurulumları için şemaya uygun yapılandırma örnekleri
 title: Yapılandırma örnekleri
 x-i18n:
-    generated_at: "2026-04-25T13:46:24Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:20:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
+    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
     source_path: gateway/configuration-examples.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aşağıdaki örnekler, geçerli config şemasıyla uyumludur. Kapsamlı başvuru ve alan bazlı notlar için bkz. [Configuration](/tr/gateway/configuration).
+Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan bazlı notlar için bkz. [Yapılandırma](/tr/gateway/configuration).
 
 ## Hızlı başlangıç
 
@@ -27,15 +27,15 @@ Aşağıdaki örnekler, geçerli config şemasıyla uyumludur. Kapsamlı başvur
 }
 ```
 
-Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM gönderebilirsiniz.
+`~/.openclaw/openclaw.json` olarak kaydedin; botla bu numaradan DM üzerinden konuşabilirsiniz.
 
-### Önerilen başlangıç yapılandırması
+### Önerilen başlangıç
 
 ```json5
 {
   identity: {
     name: "Clawd",
-    theme: "yardımsever asistan",
+    theme: "helpful assistant",
     emoji: "🦞",
   },
   agent: {
@@ -48,16 +48,22 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
       groups: { "*": { requireMention: true } },
     },
   },
+  messages: {
+    visibleReplies: "automatic",
+    groupChat: {
+      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+    },
+  },
 }
 ```
 
 ## Genişletilmiş örnek (başlıca seçenekler)
 
-> JSON5, yorumlar ve sondaki virgülleri kullanmanıza izin verir. Normal JSON da çalışır.
+> JSON5 yorumları ve sondaki virgülleri kullanmanıza izin verir. Normal JSON da çalışır.
 
 ```json5
 {
-  // Ortam + kabuk
+  // Environment + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -69,7 +75,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Kimlik doğrulama profili meta verileri (secret'lar auth-profiles.json içinde yaşar)
+  // Auth profile metadata (secrets live in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -84,14 +90,14 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Kimlik
+  // Identity
   identity: {
     name: "Samantha",
-    theme: "yardımsever tembel hayvan",
+    theme: "helpful sloth",
     emoji: "🦥",
   },
 
-  // Günlükleme
+  // Logging
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -100,38 +106,35 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     redactSensitive: "tools",
   },
 
-  // Mesaj biçimlendirme
+  // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
+    visibleReplies: "automatic",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
-  },
-
-  // Yönlendirme + kuyruk
-  routing: {
     groupChat: {
-      mentionPatterns: ["@openclaw", "openclaw"],
       historyLimit: 50,
+      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
     },
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
-        telegram: "collect",
-        discord: "collect",
-        slack: "collect",
-        signal: "collect",
-        imessage: "collect",
-        webchat: "collect",
+        whatsapp: "steer",
+        telegram: "steer",
+        discord: "steer",
+        slack: "steer",
+        signal: "steer",
+        imessage: "steer",
+        webchat: "steer",
       },
     },
   },
 
-  // Araçlar
+  // Tooling
   tools: {
     media: {
       audio: {
@@ -139,7 +142,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // İsteğe bağlı CLI geri dönüşü (Whisper binary):
+          // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -152,10 +155,10 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Oturum davranışı
+  // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // çok kullanıcılı gelen kutuları için önerilir
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -170,10 +173,9 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // süre veya false
-      maxDiskBytes: "500mb", // isteğe bağlı
-      highWaterBytes: "400mb", // isteğe bağlı (varsayılan olarak maxDiskBytes değerinin %80'i)
+      resetArchiveRetention: "30d", // duration or false
+      maxDiskBytes: "500mb", // optional
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -182,7 +184,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Kanallar
+  // Channels
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -234,7 +236,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Aracı çalışma zamanı
+  // Agent runtime
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -251,9 +253,10 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // list[].skills değerini atlayan aracılar tarafından devralınır
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
       blockStreamingBreak: "text_end",
@@ -276,7 +279,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (varsayılan) | block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -291,7 +294,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // eski perSession: true yerine tercih edilir
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -310,15 +313,18 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
       {
         id: "main",
         default: true,
-        // defaults.skills değerini devralır -> github, weather
-        thinkingDefault: "high", // aracı başına düşünme geçersiz kılması
-        reasoningDefault: "on", // aracı başına akıl yürütme görünürlüğü
-        fastModeDefault: false, // aracı başına hızlı mod
+        // inherits defaults.skills -> github, weather
+        groupChat: {
+          mentionPatterns: ["@openclaw", "openclaw"],
+        },
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // bu aracı için Skills yok
-        fastModeDefault: true, // bu aracı her zaman hızlı çalışır
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -346,7 +352,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Özel model sağlayıcıları
+  // Custom model providers
   models: {
     mode: "merge",
     providers: {
@@ -372,11 +378,11 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Cron işleri
+  // Cron jobs
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2,
+    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -399,7 +405,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "Kimden: {{messages[0].from}}\nKonu: {{messages[0].subject}}",
+        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -427,7 +433,7 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
     },
   },
 
-  // Gateway + ağ
+  // Gateway + networking
   gateway: {
     mode: "local",
     port: 18789,
@@ -464,9 +470,9 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
 }
 ```
 
-## Yaygın desenler
+## Yaygın kalıplar
 
-### Tek geçersiz kılmalı paylaşılan Skills temeli
+### Tek geçersiz kılmayla paylaşılan skill temeli
 
 ```json5
 {
@@ -483,9 +489,9 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
 }
 ```
 
-- `agents.defaults.skills`, paylaşılan temel kümedir.
-- `agents.list[].skills`, bu temel kümeyi tek bir aracı için değiştirir.
-- Bir aracının hiç Skills görmemesi gerekiyorsa `skills: []` kullanın.
+- `agents.defaults.skills` paylaşılan temel yapılandırmadır.
+- `agents.list[].skills` bu temel yapılandırmayı tek bir ajan için değiştirir.
+- Bir ajanın hiç Skills görmemesi gerektiğinde `skills: []` kullanın.
 
 ### Çok platformlu kurulum
 
@@ -510,9 +516,9 @@ Bunu `~/.openclaw/openclaw.json` içine kaydedin; bu numaradan bota DM göndereb
 
 ### Güvenilir Node ağı otomatik onayı
 
-Ağ yolunu denetlemiyorsanız cihaz eşlemesini manuel bırakın. Ayrılmış bir
-laboratuvar veya tailnet alt ağı için, tam CIDR'ler veya IP'lerle ilk kez Node cihazı
-otomatik onayına katılabilirsiniz:
+Ağ yolunu kontrol etmediğiniz sürece cihaz eşleştirmeyi elle tutun. Ayrılmış bir
+laboratuvar veya tailnet alt ağı için, kesin CIDR'ler ya da IP'lerle ilk kez
+Node cihazı otomatik onayına katılabilirsiniz:
 
 ```json5
 {
@@ -526,27 +532,27 @@ otomatik onayına katılabilirsiniz:
 }
 ```
 
-Bu, ayarlanmadığında kapalı kalır. Yalnızca yeni `role: node` eşlemesine,
-istenen kapsam olmadığında uygulanır. Operatör/tarayıcı istemcileri ile rol, kapsam, meta veri
-veya açık anahtar yükseltmeleri yine manuel onay gerektirir.
+Bu, ayarlanmadığında kapalı kalır. Yalnızca istenen kapsam bulunmayan yeni
+`role: node` eşleştirmelerine uygulanır. Operatör/tarayıcı istemcileri ve rol,
+kapsam, meta veri veya açık anahtar yükseltmeleri hâlâ elle onay gerektirir.
 
 ### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
 
-Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden çok giriş, birden fazla kişi için eşleme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bağlamı paylaşmaması için **güvenli DM modu**nu etkinleştirin:
+Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
 
 ```json5
 {
-  // Güvenli DM modu (çok kullanıcılı veya hassas DM aracılar için önerilir)
+  // Secure DM mode (recommended for multi-user or sensitive DM agents)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Örnek: WhatsApp çok kullanıcılı gelen kutusu
+    // Example: WhatsApp multi-user inbox
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Örnek: Discord çok kullanıcılı gelen kutusu
+    // Example: Discord multi-user inbox
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -556,10 +562,10 @@ Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden ço
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için, gönderen yetkilendirmesi varsayılan olarak önce kimlik üzerinden yapılır.
-Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini yalnızca bu riski açıkça kabul ediyorsanız her kanalın `dangerouslyAllowNameMatching: true` ayarıyla etkinleştirin.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderen yetkilendirmesi varsayılan olarak önce ID'ye dayanır.
+Doğrudan değişebilir ad/e-posta/takma ad eşleştirmesini her kanalın `dangerouslyAllowNameMatching: true` ayarıyla yalnızca bu riski açıkça kabul ediyorsanız etkinleştirin.
 
-### Anthropic API anahtarı + MiniMax geri dönüşü
+### Anthropic API anahtarı + MiniMax yedeği
 
 ```json5
 {
@@ -599,7 +605,7 @@ Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini yalnızca bu r
 {
   identity: {
     name: "WorkBot",
-    theme: "profesyonel asistan",
+    theme: "professional assistant",
   },
   agent: {
     workspace: "~/work-openclaw",
@@ -636,7 +642,7 @@ Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini yalnızca bu r
         models: [
           {
             id: "my-local-model",
-            name: "Yerel Model",
+            name: "Local Model",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -653,11 +659,11 @@ Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini yalnızca bu r
 ## İpuçları
 
 - `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` içermelidir.
-- Sağlayıcı kimlikleri farklılık gösterir (telefon numaraları, kullanıcı kimlikleri, kanal kimlikleri). Biçimi doğrulamak için sağlayıcı belgelerine bakın.
-- Daha sonra eklenebilecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Daha ayrıntılı kurulum notları için bkz. [Providers](/tr/providers) ve [Troubleshooting](/tr/gateway/troubleshooting).
+- Sağlayıcı ID'leri farklılık gösterir (telefon numaraları, kullanıcı ID'leri, kanal ID'leri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
+- Daha sonra eklenecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Daha ayrıntılı kurulum notları için [Sağlayıcılar](/tr/providers) ve [Sorun Giderme](/tr/gateway/troubleshooting) bölümlerine bakın.
 
 ## İlgili
 
-- [Configuration reference](/tr/gateway/configuration-reference)
-- [Configuration](/tr/gateway/configuration)
+- [Yapılandırma referansı](/tr/gateway/configuration-reference)
+- [Yapılandırma](/tr/gateway/configuration)

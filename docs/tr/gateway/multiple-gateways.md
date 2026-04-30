@@ -1,19 +1,19 @@
 ---
 read_when:
     - Aynı makinede birden fazla Gateway çalıştırma
-    - Her Gateway için yalıtılmış yapılandırma/durum/portlara ihtiyacınız var
-summary: Tek bir host üzerinde birden fazla OpenClaw Gateway çalıştırma (yalıtım, portlar ve profiller)
-title: Birden fazla gateway
+    - Gateway başına yalıtılmış yapılandırma/durum/bağlantı noktaları gerekir
+summary: Tek bir ana makinede birden fazla OpenClaw Gateway çalıştırma (yalıtım, bağlantı noktaları ve profiller)
+title: Birden fazla Gateway
 x-i18n:
-    generated_at: "2026-04-25T13:47:55Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:23:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6477a16dc55b694cb73ad6b5140e94529071bad8fc2100ecca88daaa31f9c3c0
+    source_hash: 655f9ea5100813d5836f24eb47a5646443f83d70953efa64122633a5a1341002
     source_path: gateway/multiple-gateways.md
-    workflow: 15
+    workflow: 16
 ---
 
-Çoğu kurulum tek bir Gateway kullanmalıdır; çünkü tek bir Gateway birden fazla mesajlaşma bağlantısını ve ajanı yönetebilir. Daha güçlü yalıtım veya yedeklilik gerekiyorsa (ör. bir kurtarma botu), yalıtılmış profiller/portlarla ayrı Gateway'ler çalıştırın.
+Çoğu kurulum tek bir Gateway kullanmalıdır çünkü tek bir Gateway birden fazla mesajlaşma bağlantısını ve agent'ı yönetebilir. Daha güçlü izolasyon veya yedeklilik gerekiyorsa (ör. bir kurtarma botu), izole profiller/portlarla ayrı Gateway'ler çalıştırın.
 
 ## En çok önerilen kurulum
 
@@ -22,16 +22,16 @@ x-i18n:
 - ana botu varsayılan profilde tutun
 - kurtarma botunu `--profile rescue` ile çalıştırın
 - kurtarma hesabı için tamamen ayrı bir Telegram botu kullanın
-- kurtarma botunu `19789` gibi farklı bir temel portta tutun
+- kurtarma botunu `19789` gibi farklı bir taban portta tutun
 
-Bu, birincil bot çalışmıyorsa kurtarma botunun onu ayıklayabilmesi veya yapılandırma değişiklikleri uygulayabilmesi için ana bottan yalıtılmış kalmasını sağlar. Türetilmiş browser/canvas/CDP portlarının asla çakışmaması için temel portlar arasında en az 20 port bırakın.
+Bu, kurtarma botunu ana bottan izole tutar; böylece birincil bot kapalıysa hata ayıklayabilir veya yapılandırma değişiklikleri uygulayabilir. Türetilmiş tarayıcı/canvas/CDP portlarının asla çakışmaması için taban portlar arasında en az 20 port bırakın.
 
-## Kurtarma botu hızlı başlangıç
+## Kurtarma Botu Hızlı Başlangıç
 
-Başka bir şey yapmanız için güçlü bir nedeniniz yoksa bunu varsayılan yol olarak kullanın:
+Başka bir şey yapmak için güçlü bir nedeniniz yoksa bunu varsayılan yol olarak kullanın:
 
 ```bash
-# Kurtarma botu (ayrı Telegram botu, ayrı profil, port 19789)
+# Rescue bot (separate Telegram bot, separate profile, port 19789)
 openclaw --profile rescue onboard
 openclaw --profile rescue gateway install --port 19789
 ```
@@ -42,62 +42,58 @@ Ana botunuz zaten çalışıyorsa, genellikle ihtiyacınız olan tek şey budur.
 
 - ayrı Telegram bot token'ını kullanın
 - `rescue` profilini koruyun
-- ana bottan en az 20 daha yüksek bir temel port kullanın
+- ana bottan en az 20 daha yüksek bir taban port kullanın
 - zaten kendiniz yönetmiyorsanız varsayılan kurtarma çalışma alanını kabul edin
 
-İlk kurulum kurtarma hizmetini sizin için zaten kurduysa, son
-`gateway install` gerekmez.
+Onboarding kurtarma hizmetini sizin için zaten kurduysa, son `gateway install` gerekli değildir.
 
-## Bu neden çalışır
+## Bu neden çalışır?
 
-Kurtarma botu bağımsız kalır çünkü kendine ait şunları kullanır:
+Kurtarma botu bağımsız kalır çünkü kendine ait şunları vardır:
 
 - profil/yapılandırma
 - durum dizini
 - çalışma alanı
-- temel port (ve türetilmiş portlar)
+- taban port (artı türetilmiş portlar)
 - Telegram bot token'ı
 
 Çoğu kurulum için kurtarma profili adına tamamen ayrı bir Telegram botu kullanın:
 
-- yalnızca operatöre açık tutması kolaydır
-- ayrı bot token'ı ve kimliği vardır
+- yalnızca operatörlere özel tutması kolaydır
+- ayrı bot token'ı ve kimliği
 - ana botun kanal/uygulama kurulumundan bağımsızdır
-- ana bot bozulduğunda basit bir DM tabanlı kurtarma yoludur
+- ana bot bozulduğunda basit DM tabanlı kurtarma yolu sunar
 
-## `--profile rescue onboard` neyi değiştirir
+## `--profile rescue onboard` Neleri Değiştirir?
 
-`openclaw --profile rescue onboard` normal ilk kurulum akışını kullanır, ancak
-her şeyi ayrı bir profile yazar.
+`openclaw --profile rescue onboard` normal onboarding akışını kullanır, ancak her şeyi ayrı bir profile yazar.
 
-Pratikte bu, kurtarma botunun kendine ait şu öğelere sahip olduğu anlamına gelir:
+Pratikte bu, kurtarma botunun kendine ait şunları aldığı anlamına gelir:
 
 - yapılandırma dosyası
 - durum dizini
 - çalışma alanı (varsayılan olarak `~/.openclaw/workspace-rescue`)
 - yönetilen hizmet adı
 
-Bunun dışındaki istemler normal ilk kurulumla aynıdır.
+İstemler bunun dışında normal onboarding ile aynıdır.
 
 ## Genel çoklu Gateway kurulumu
 
-Yukarıdaki kurtarma botu düzeni en kolay varsayılandır, ancak aynı yalıtım
-deseni tek bir host üzerindeki herhangi bir Gateway çifti veya grubu için de çalışır.
+Yukarıdaki kurtarma botu düzeni en kolay varsayılandır, ancak aynı izolasyon modeli tek bir makinedeki herhangi bir Gateway çifti veya grubu için çalışır.
 
-Daha genel bir kurulum için, her ek Gateway'e kendi adlandırılmış profilini ve kendi
-temel portunu verin:
+Daha genel bir kurulum için her ek Gateway'e kendi adlandırılmış profilini ve kendi taban portunu verin:
 
 ```bash
-# ana (varsayılan profil)
+# main (default profile)
 openclaw setup
 openclaw gateway --port 18789
 
-# ek gateway
+# extra gateway
 openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-Her iki Gateway'in de adlandırılmış profil kullanmasını istiyorsanız, bu da çalışır:
+Her iki Gateway'in de adlandırılmış profiller kullanmasını istiyorsanız bu da çalışır:
 
 ```bash
 openclaw --profile main setup
@@ -107,18 +103,16 @@ openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-Hizmetler de aynı deseni izler:
+Hizmetler de aynı kalıbı izler:
 
 ```bash
 openclaw gateway install
 openclaw --profile ops gateway install --port 19789
 ```
 
-Yedek bir operatör hattı istediğinizde kurtarma botu hızlı başlangıcını kullanın. Farklı
-kanallar, kiracılar, çalışma alanları veya operasyonel roller için birden fazla uzun ömürlü Gateway istediğinizde
-genel profil desenini kullanın.
+Bir yedek operatör hattı istediğinizde kurtarma botu hızlı başlangıcını kullanın. Farklı kanallar, kiracılar, çalışma alanları veya operasyonel roller için uzun ömürlü birden fazla Gateway istediğinizde genel profil kalıbını kullanın.
 
-## Yalıtım kontrol listesi
+## İzolasyon kontrol listesi
 
 Bunları her Gateway örneği için benzersiz tutun:
 
@@ -126,28 +120,28 @@ Bunları her Gateway örneği için benzersiz tutun:
 - `OPENCLAW_STATE_DIR` — örnek başına oturumlar, kimlik bilgileri, önbellekler
 - `agents.defaults.workspace` — örnek başına çalışma alanı kökü
 - `gateway.port` (veya `--port`) — örnek başına benzersiz
-- türetilmiş browser/canvas/CDP portları
+- türetilmiş tarayıcı/canvas/CDP portları
 
 Bunlar paylaşılırsa yapılandırma yarışları ve port çakışmaları yaşarsınız.
 
-## Port eşleme (türetilmiş)
+## Port eşlemesi (türetilmiş)
 
-Temel port = `gateway.port` (veya `OPENCLAW_GATEWAY_PORT` / `--port`).
+Taban port = `gateway.port` (veya `OPENCLAW_GATEWAY_PORT` / `--port`).
 
-- browser denetim hizmeti portu = temel + 2 (yalnızca loopback)
-- canvas host, Gateway HTTP sunucusunda sunulur (`gateway.port` ile aynı port)
-- Browser profil CDP portları `browser.controlPort + 9 .. + 108` aralığından otomatik ayrılır
+- tarayıcı kontrol hizmeti portu = taban + 2 (yalnızca local loopback)
+- canvas host'u Gateway HTTP sunucusunda sunulur (`gateway.port` ile aynı port)
+- Tarayıcı profili CDP portları `browser.controlPort + 9 .. + 108` aralığından otomatik ayrılır
 
-Bunlardan herhangi birini yapılandırma veya ortam değişkeniyle geçersiz kılarsanız, her örnek için benzersiz tutmanız gerekir.
+Bunlardan herhangi birini yapılandırmada veya ortam değişkenlerinde geçersiz kılarsanız, her örnek için benzersiz tutmanız gerekir.
 
-## Browser/CDP notları (yaygın tuzak)
+## Tarayıcı/CDP notları (yaygın hata kaynağı)
 
-- Birden fazla örnekte `browser.cdpUrl` değerini aynı değerlere **sabitlemeyin**.
-- Her örneğin kendi browser denetim portuna ve kendi CDP aralığına ihtiyacı vardır (gateway portundan türetilir).
-- Açık CDP portlarına ihtiyacınız varsa, örnek başına `browser.profiles.<name>.cdpPort` ayarlayın.
+- `browser.cdpUrl` değerini birden fazla örnekte aynı değerlere **sabitlemeyin**.
+- Her örneğin kendi tarayıcı kontrol portuna ve CDP aralığına ihtiyacı vardır (gateway portundan türetilir).
+- Açık CDP portlarına ihtiyacınız varsa, örnek başına `browser.profiles.<name>.cdpPort` değerini ayarlayın.
 - Uzak Chrome: `browser.profiles.<name>.cdpUrl` kullanın (profil başına, örnek başına).
 
-## El ile ortam değişkeni örneği
+## Manuel env örneği
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
@@ -159,7 +153,7 @@ OPENCLAW_STATE_DIR=~/.openclaw-rescue \
 openclaw gateway --port 19789
 ```
 
-## Hızlı denetimler
+## Hızlı kontroller
 
 ```bash
 openclaw gateway status --deep
@@ -172,11 +166,11 @@ openclaw --profile rescue browser status
 
 Yorumlama:
 
-- `gateway status --deep`, eski kurulumlardan kalan bayat launchd/systemd/schtasks hizmetlerini yakalamaya yardımcı olur.
-- `gateway probe` içindeki `multiple reachable gateways detected` gibi uyarı metni, yalnızca kasıtlı olarak birden fazla yalıtılmış gateway çalıştırdığınızda beklenir.
+- `gateway status --deep`, eski kurulumlardan kalma bayat launchd/systemd/schtasks hizmetlerini yakalamaya yardımcı olur.
+- `multiple reachable gateways detected` gibi `gateway probe` uyarı metni yalnızca bilerek birden fazla izole gateway çalıştırdığınızda beklenir.
 
 ## İlgili
 
-- [Gateway çalışma kitabı](/tr/gateway)
-- [Gateway lock](/tr/gateway/gateway-lock)
+- [Gateway runbook](/tr/gateway)
+- [Gateway kilidi](/tr/gateway/gateway-lock)
 - [Yapılandırma](/tr/gateway/configuration)

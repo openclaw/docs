@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Bir URL’yi getirip okunabilir içerik çıkarmak istiyorsunuz
-    - '`web_fetch` veya Firecrawl geri dönüşünü yapılandırmanız gerekiyor'
-    - '`web_fetch` sınırlarını ve önbelleğini anlamak istiyorsunuz'
+    - Bir URL'yi getirip okunabilir içeriği çıkarmak istiyorsunuz
+    - web_fetch veya Firecrawl yedek mekanizmasını yapılandırmanız gerekir
+    - web_fetch sınırlarını ve önbelleğe almayı anlamak istiyorsunuz
 sidebarTitle: Web Fetch
-summary: '`web_fetch` aracı -- okunabilir içerik çıkarımıyla HTTP getirme'
-title: Web getirme
+summary: web_fetch aracı -- okunabilir içerik çıkarımıyla HTTP getirme
+title: Web'den getirme
 x-i18n:
-    generated_at: "2026-04-24T09:38:02Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:52:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
+    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
     source_path: tools/web-fetch.md
-    workflow: 15
+    workflow: 16
 ---
 
-`web_fetch` aracı düz bir HTTP GET yapar ve okunabilir içerik çıkarır
-(HTML’den Markdown’a veya metne). JavaScript **çalıştırmaz**.
+`web_fetch` aracı düz bir HTTP GET yapar ve okunabilir içeriği çıkarır
+(HTML'den markdown'a veya metne). JavaScript **çalıştırmaz**.
 
-JS ağırlıklı siteler veya giriş korumalı sayfalar için bunun yerine
-[Web Browser](/tr/tools/browser) kullanın.
+JS ağırlıklı siteler veya oturum açma korumalı sayfalar için bunun yerine
+[Web Tarayıcısı](/tr/tools/browser) kullanın.
 
 ## Hızlı başlangıç
 
-`web_fetch` varsayılan olarak **etkindir** -- yapılandırma gerekmez. Ajan bunu
+`web_fetch` **varsayılan olarak etkindir** -- yapılandırma gerekmez. Ajan bunu
 hemen çağırabilir:
 
 ```javascript
@@ -37,30 +37,31 @@ Getirilecek URL. Yalnızca `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
-Ana içerik çıkarımından sonraki çıktı biçimi.
+Ana içerik çıkarıldıktan sonraki çıktı biçimi.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Çıktıyı bu karakter sayısında kes.
+Çıktıyı bu kadar karakterle sınırlandırır.
 </ParamField>
 
 ## Nasıl çalışır
 
 <Steps>
-  <Step title="Getir">
-    Chrome benzeri bir User-Agent ve `Accept-Language`
-    üstbilgisi ile HTTP GET gönderir. Özel/dahili ana makine adlarını engeller ve yönlendirmeleri yeniden denetler.
+  <Step title="Fetch">
+    Chrome benzeri bir User-Agent ve `Accept-Language` başlığıyla HTTP GET
+    gönderir. Özel/dahili ana makine adlarını engeller ve yönlendirmeleri
+    yeniden denetler.
   </Step>
-  <Step title="Çıkar">
-    HTML yanıtında Readability (ana içerik çıkarımı) çalıştırır.
+  <Step title="Extract">
+    HTML yanıtı üzerinde Readability'yi (ana içerik çıkarma) çalıştırır.
   </Step>
-  <Step title="Geri dönüş (isteğe bağlı)">
-    Readability başarısız olursa ve Firecrawl yapılandırılmışsa,
-    bot aşma moduyla Firecrawl API üzerinden yeniden dener.
+  <Step title="Fallback (optional)">
+    Readability başarısız olursa ve Firecrawl yapılandırılmışsa, bot atlatma
+    moduyla Firecrawl API üzerinden yeniden dener.
   </Step>
-  <Step title="Önbellek">
-    Sonuçlar, aynı URL’nin tekrar tekrar
-    getirilmesini azaltmak için 15 dakika boyunca önbelleğe alınır (yapılandırılabilir).
+  <Step title="Cache">
+    Aynı URL'nin yinelenen getirmelerini azaltmak için sonuçlar 15 dakika
+    (yapılandırılabilir) önbelleğe alınır.
   </Step>
 </Steps>
 
@@ -71,33 +72,37 @@ Ana içerik çıkarımından sonraki çıktı biçimi.
   tools: {
     web: {
       fetch: {
-        enabled: true, // varsayılan: true
-        provider: "firecrawl", // isteğe bağlı; otomatik algılama için atlayın
-        maxChars: 50000, // maksimum çıktı karakteri
-        maxCharsCap: 50000, // maxChars parametresi için katı üst sınır
-        maxResponseBytes: 2000000, // kesmeden önce maksimum indirme boyutu
+        enabled: true, // default: true
+        provider: "firecrawl", // optional; omit for auto-detect
+        maxChars: 50000, // max output chars
+        maxCharsCap: 50000, // hard cap for maxChars param
+        maxResponseBytes: 2000000, // max download size before truncation
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        readability: true, // Readability çıkarımını kullan
-        userAgent: "Mozilla/5.0 ...", // User-Agent geçersiz kılma
+        readability: true, // use Readability extraction
+        userAgent: "Mozilla/5.0 ...", // override User-Agent
+        ssrfPolicy: {
+          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+        },
       },
     },
   },
 }
 ```
 
-## Firecrawl geri dönüşü
+## Firecrawl yedeği
 
-Readability çıkarımı başarısız olursa `web_fetch`,
-bot aşma ve daha iyi çıkarım için [Firecrawl](/tr/tools/firecrawl) aracına geri dönebilir:
+Readability çıkarımı başarısız olursa, `web_fetch` bot atlatma ve daha iyi
+çıkarım için [Firecrawl](/tr/tools/firecrawl) yedeğine geçebilir:
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // isteğe bağlı; mevcut kimlik bilgilerinden otomatik algılama için atlayın
+        provider: "firecrawl", // optional; omit for auto-detect from available credentials
       },
     },
   },
@@ -107,10 +112,10 @@ bot aşma ve daha iyi çıkarım için [Firecrawl](/tr/tools/firecrawl) aracına
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // FIRECRAWL_API_KEY ayarlıysa isteğe bağlı
+            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // önbellek süresi (1 gün)
+            maxAgeMs: 86400000, // cache duration (1 day)
             timeoutSeconds: 60,
           },
         },
@@ -121,50 +126,54 @@ bot aşma ve daha iyi çıkarım için [Firecrawl](/tr/tools/firecrawl) aracına
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey`, SecretRef nesnelerini destekler.
-Eski `tools.web.fetch.firecrawl.*` yapılandırması, `openclaw doctor --fix` tarafından otomatik taşınır.
+Eski `tools.web.fetch.firecrawl.*` yapılandırması `openclaw doctor --fix` tarafından otomatik olarak taşınır.
 
 <Note>
-  Firecrawl etkinse ve SecretRef çözümlenmemişse, ayrıca
-  `FIRECRAWL_API_KEY` ortam değişkeni geri dönüşü de yoksa, gateway başlangıcı hızlıca başarısız olur.
+  Firecrawl etkinse ve SecretRef'i çözümlenmemişse ve `FIRECRAWL_API_KEY` env
+  yedeği yoksa, Gateway başlatma hızlıca başarısız olur.
 </Note>
 
 <Note>
-  Firecrawl `baseUrl` geçersiz kılmaları kilitlidir: `https://` kullanmaları ve
-  resmi Firecrawl ana makinesini (`api.firecrawl.dev`) hedeflemeleri gerekir.
+  Firecrawl `baseUrl` geçersiz kılmaları kısıtlanmıştır: `https://` ve resmi
+  Firecrawl ana makinesini (`api.firecrawl.dev`) kullanmaları gerekir.
 </Note>
 
 Geçerli çalışma zamanı davranışı:
 
-- `tools.web.fetch.provider`, getirme geri dönüş sağlayıcısını açıkça seçer.
-- `provider` atlanırsa, OpenClaw mevcut kimlik bilgilerinden ilk hazır `web_fetch`
-  sağlayıcısını otomatik algılar. Bugün paketli sağlayıcı Firecrawl’dur.
-- Readability devre dışıysa `web_fetch` doğrudan seçili
-  sağlayıcı geri dönüşüne geçer. Kullanılabilir sağlayıcı yoksa kapalı biçimde başarısız olur.
+- `tools.web.fetch.provider`, getirme yedek sağlayıcısını açıkça seçer.
+- `provider` atlanırsa, OpenClaw kullanılabilir kimlik bilgilerinden ilk hazır
+  web getirme sağlayıcısını otomatik algılar. Bugün paketlenen sağlayıcı Firecrawl'dır.
+- Readability devre dışı bırakılmışsa, `web_fetch` doğrudan seçili sağlayıcı
+  yedeğine geçer. Kullanılabilir sağlayıcı yoksa güvenli biçimde başarısız olur.
 
 ## Sınırlar ve güvenlik
 
-- `maxChars`, `tools.web.fetch.maxCharsCap` değerine sıkıştırılır
+- `maxChars`, `tools.web.fetch.maxCharsCap` değerine sınırlandırılır
 - Yanıt gövdesi ayrıştırmadan önce `maxResponseBytes` ile sınırlandırılır; aşırı büyük
   yanıtlar bir uyarıyla kesilir
 - Özel/dahili ana makine adları engellenir
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` ve
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange`, güvenilen sahte IP
+  proxy yığınları için dar kapsamlı katılımlardır; proxy'niz bu sentetik aralıkların
+  sahibi değilse ve kendi hedef politikasını uygulamıyorsa bunları ayarsız bırakın
 - Yönlendirmeler denetlenir ve `maxRedirects` ile sınırlandırılır
-- `web_fetch` en iyi çaba esaslıdır -- bazı siteler [Web Browser](/tr/tools/browser) gerektirir
+- `web_fetch` en iyi çaba yaklaşımıyla çalışır -- bazı siteler [Web Tarayıcısı](/tr/tools/browser) gerektirir
 
 ## Araç profilleri
 
-Araç profilleri veya izin listeleri kullanıyorsanız `web_fetch` veya `group:web` ekleyin:
+Araç profilleri veya izin listeleri kullanıyorsanız `web_fetch` ya da `group:web` ekleyin:
 
 ```json5
 {
   tools: {
     allow: ["web_fetch"],
-    // veya: allow: ["group:web"]  (web_fetch, web_search ve x_search içerir)
+    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
   },
 }
 ```
 
 ## İlgili
 
-- [Web Search](/tr/tools/web) -- web’de birden çok sağlayıcıyla arama yapın
-- [Web Browser](/tr/tools/browser) -- JS ağırlıklı siteler için tam tarayıcı otomasyonu
+- [Web Arama](/tr/tools/web) -- birden fazla sağlayıcıyla web'de arama yapın
+- [Web Tarayıcısı](/tr/tools/browser) -- JS ağırlıklı siteler için tam tarayıcı otomasyonu
 - [Firecrawl](/tr/tools/firecrawl) -- Firecrawl arama ve kazıma araçları

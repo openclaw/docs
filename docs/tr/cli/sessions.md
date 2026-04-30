@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Saklanan oturumları listelemek ve son etkinliği görmek istiyorsunuz
-summary: '`openclaw sessions` için CLI başvurusu (saklanan oturumları + kullanımı listeleme)'
+    - Depolanan oturumları listelemek ve son etkinliği görmek istiyorsunuz
+summary: '`openclaw sessions` için CLI başvurusu (depolanan oturumları listeleme + kullanım)'
 title: Oturumlar
 x-i18n:
-    generated_at: "2026-04-24T09:03:49Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:14:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
+    source_hash: 9fea2014f538b00a27fa0078391a421843052333c5bcfc8100fced515eed0004
     source_path: cli/sessions.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw sessions`
 
-Saklanan konuşma oturumlarını listeleyin.
+Depolanan konuşma oturumlarını listeleyin.
 
 ```bash
 openclaw sessions
@@ -27,15 +27,22 @@ openclaw sessions --json
 
 Kapsam seçimi:
 
-- varsayılan: yapılandırılmış varsayılan aracı deposu
-- `--verbose`: ayrıntılı günlükleme
-- `--agent <id>`: yapılandırılmış tek bir aracı deposu
-- `--all-agents`: yapılandırılmış tüm aracı depolarını birleştir
-- `--store <path>`: açık depo yolu (`--agent` veya `--all-agents` ile birlikte kullanılamaz)
+- varsayılan: yapılandırılmış varsayılan ajan deposu
+- `--verbose`: ayrıntılı günlük kaydı
+- `--agent <id>`: tek bir yapılandırılmış ajan deposu
+- `--all-agents`: tüm yapılandırılmış ajan depolarını birleştir
+- `--store <path>`: açık depo yolu (`--agent` veya `--all-agents` ile birleştirilemez)
 
-`openclaw sessions --all-agents`, yapılandırılmış aracı depolarını okur. Gateway ve ACP
-oturum keşfi daha geniştir: varsayılan `agents/` kökü veya şablonlu bir `session.store` kökü altında bulunan yalnızca disk üzerindeki depoları da içerir. Bu
-keşfedilen depolar, aracı kökü içindeki normal `sessions.json` dosyalarına çözülmelidir; symlink'ler ve kök dışı yollar atlanır.
+Depolanan bir oturum için bir yörünge paketi dışa aktarın:
+
+```bash
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
+```
+
+Bu, sahip exec isteğini onayladıktan sonra `/export-trajectory` slash komutu tarafından kullanılan komut yoludur. Çıktı dizini her zaman seçilen çalışma alanının altında `.openclaw/trajectory-exports/` içinde çözümlenir.
+
+`openclaw sessions --all-agents`, yapılandırılmış ajan depolarını okur. Gateway ve ACP oturum keşfi daha geniştir: varsayılan `agents/` kökü veya şablonlu bir `session.store` kökü altında bulunan yalnızca diskteki depoları da içerir. Keşfedilen bu depolar, ajan kökünün içindeki normal `sessions.json` dosyalarına çözümlenmelidir; sembolik bağlantılar ve kök dışı yollar atlanır.
 
 JSON örnekleri:
 
@@ -58,9 +65,9 @@ JSON örnekleri:
 }
 ```
 
-## Temizleme bakımı
+## Temizlik bakımı
 
-Bir sonraki yazma döngüsünü beklemek yerine bakımı şimdi çalıştırın:
+Bakımı şimdi çalıştırın (sonraki yazma döngüsünü beklemek yerine):
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -73,17 +80,17 @@ openclaw sessions cleanup --json
 
 `openclaw sessions cleanup`, yapılandırmadaki `session.maintenance` ayarlarını kullanır:
 
-- Kapsam notu: `openclaw sessions cleanup` yalnızca oturum depoları/transcript'leri için bakım yapar. `cron.runLog.maxBytes` ve `cron.runLog.keepLines` ile [Cron configuration](/tr/automation/cron-jobs#configuration) altında yönetilen ve [Cron maintenance](/tr/automation/cron-jobs#maintenance) içinde açıklanan cron çalıştırma günlüklerini (`cron/runs/<jobId>.jsonl`) budamaz.
+- Kapsam notu: `openclaw sessions cleanup`, oturum depolarının, transkriptlerin ve yörünge yan dosyalarının bakımını yapar. [Cron yapılandırması](/tr/automation/cron-jobs#configuration) içinde `cron.runLog.maxBytes` ve `cron.runLog.keepLines` tarafından yönetilen ve [Cron bakımı](/tr/automation/cron-jobs#maintenance) içinde açıklanan cron çalışma günlüklerini (`cron/runs/<jobId>.jsonl`) budamaz.
 
-- `--dry-run`: yazmadan önce kaç girişin budanacağını/sınırlandırılacağını önizleyin.
-  - Metin modunda dry-run, neyin tutulacağını ve neyin kaldırılacağını görebilmeniz için oturum başına bir eylem tablosu (`Action`, `Key`, `Age`, `Model`, `Flags`) yazdırır.
-- `--enforce`: `session.maintenance.mode`, `warn` olduğunda bile bakımı uygula.
-- `--fix-missing`: transcript dosyaları eksik olan girdileri, normalde yaş/sayı nedeniyle henüz çıkmayacak olsalar bile kaldır.
+- `--dry-run`: yazmadan kaç girdinin budanacağını/sınırlanacağını önizleyin.
+  - Metin modunda dry-run, nelerin tutulacağını ve nelerin kaldırılacağını görebilmeniz için oturum başına bir eylem tablosu (`Action`, `Key`, `Age`, `Model`, `Flags`) yazdırır.
+- `--enforce`: `session.maintenance.mode` `warn` olsa bile bakımı uygula.
+- `--fix-missing`: transkript dosyaları eksik olan girdileri, normalde henüz yaş/sayı sınırına takılmayacak olsalar bile kaldır.
 - `--active-key <key>`: belirli bir etkin anahtarı disk bütçesi tahliyesinden koru.
-- `--agent <id>`: tek bir yapılandırılmış aracı deposu için temizleme çalıştır.
-- `--all-agents`: tüm yapılandırılmış aracı depoları için temizleme çalıştır.
+- `--agent <id>`: tek bir yapılandırılmış ajan deposu için temizlik çalıştır.
+- `--all-agents`: tüm yapılandırılmış ajan depoları için temizlik çalıştır.
 - `--store <path>`: belirli bir `sessions.json` dosyasına karşı çalıştır.
-- `--json`: bir JSON özeti yazdır. `--all-agents` ile çıktıda depo başına bir özet bulunur.
+- `--json`: bir JSON özeti yazdır. `--all-agents` ile çıktı, depo başına bir özet içerir.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -115,9 +122,9 @@ openclaw sessions cleanup --json
 
 İlgili:
 
-- Oturum yapılandırması: [Configuration reference](/tr/gateway/config-agents#session)
+- Oturum yapılandırması: [Yapılandırma başvurusu](/tr/gateway/config-agents#session)
 
 ## İlgili
 
-- [CLI reference](/tr/cli)
-- [Session management](/tr/concepts/session)
+- [CLI başvurusu](/tr/cli)
+- [Oturum yönetimi](/tr/concepts/session)

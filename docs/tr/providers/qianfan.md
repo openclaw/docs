@@ -1,38 +1,37 @@
 ---
 read_when:
     - Birçok LLM için tek bir API anahtarı istiyorsunuz
-    - Baidu Qianfan kurulum kılavuzuna ihtiyacınız var
-summary: OpenClaw'da birçok modele erişmek için Qianfan'ın birleşik API'sini kullanın
+    - Baidu Qianfan kurulum rehberliğine ihtiyacınız var
+summary: Qianfan'ın birleşik API'sini kullanarak OpenClaw'da birçok modele erişin
 title: Qianfan
 x-i18n:
-    generated_at: "2026-04-24T09:27:25Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 727236394f6581f5bdb2f557092c31ff7904e4a80b06f8adc07a1c51dcfb2ff1
+    source_hash: 6adfbad6c18bf2bcf93d9c56c51591c862ebb751ffd8183015fa2fc9566ce0af
     source_path: providers/qianfan.md
-    workflow: 15
+    workflow: 16
 ---
 
-Qianfan, Baidu'nun MaaS platformudur ve tek bir
-uç nokta ile API anahtarı arkasında birçok modele yönlendirme yapan **birleşik bir API** sağlar. OpenAI uyumludur, bu yüzden çoğu OpenAI SDK'sı yalnızca base URL değiştirilerek çalışır.
+Qianfan, Baidu'nun MaaS platformudur; istekleri tek bir endpoint ve API anahtarı arkasındaki birçok modele yönlendiren **birleşik bir API** sağlar. OpenAI uyumludur, bu nedenle çoğu OpenAI SDK'sı temel URL değiştirilerek çalışır.
 
-| Özellik   | Değer                             |
-| --------- | --------------------------------- |
+| Özellik | Değer                             |
+| -------- | --------------------------------- |
 | Sağlayıcı | `qianfan`                         |
-| Auth      | `QIANFAN_API_KEY`                 |
-| API       | OpenAI uyumlu                     |
-| Base URL  | `https://qianfan.baidubce.com/v2` |
+| Kimlik doğrulama | `QIANFAN_API_KEY`                 |
+| API      | OpenAI uyumlu                 |
+| Temel URL | `https://qianfan.baidubce.com/v2` |
 
-## Başlangıç
+## Başlarken
 
 <Steps>
-  <Step title="Bir Baidu Cloud hesabı oluşturun">
-    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) üzerinden kaydolun veya giriş yapın ve Qianfan API erişiminizin etkin olduğundan emin olun.
+  <Step title="Baidu Cloud hesabı oluşturun">
+    [Qianfan Console](https://console.bce.baidu.com/qianfan/ais/console/apiKey) üzerinden kaydolun veya oturum açın ve Qianfan API erişiminizin etkin olduğundan emin olun.
   </Step>
-  <Step title="Bir API anahtarı oluşturun">
-    Yeni bir uygulama oluşturun veya mevcut olanı seçin, ardından bir API anahtarı oluşturun. Anahtar biçimi `bce-v3/ALTAK-...` şeklindedir.
+  <Step title="API anahtarı oluşturun">
+    Yeni bir uygulama oluşturun veya mevcut bir uygulamayı seçin, ardından bir API anahtarı oluşturun. Anahtar biçimi `bce-v3/ALTAK-...` şeklindedir.
   </Step>
-  <Step title="Onboarding çalıştırın">
+  <Step title="Onboarding'i çalıştırın">
     ```bash
     openclaw onboard --auth-choice qianfan-api-key
     ```
@@ -46,13 +45,13 @@ uç nokta ile API anahtarı arkasında birçok modele yönlendirme yapan **birle
 
 ## Yerleşik katalog
 
-| Model ref                             | Girdi       | Bağlam  | Azami çıktı | Akıl yürütme | Notlar           |
-| ------------------------------------- | ----------- | ------- | ----------- | ------------ | ---------------- |
-| `qianfan/deepseek-v3.2`               | text        | 98,304  | 32,768      | Evet         | Varsayılan model |
-| `qianfan/ernie-5.0-thinking-preview`  | text, image | 119,000 | 64,000      | Evet         | Çok modlu        |
+| Model ref                            | Girdi       | Bağlam | Maks. çıktı | Akıl yürütme | Notlar         |
+| ------------------------------------ | ----------- | ------- | ---------- | --------- | ------------- |
+| `qianfan/deepseek-v3.2`              | metin        | 98,304  | 32,768     | Evet       | Varsayılan model |
+| `qianfan/ernie-5.0-thinking-preview` | metin, görüntü | 119,000 | 64,000     | Evet       | Çok modlu    |
 
 <Tip>
-Varsayılan paketlenmiş model ref'i `qianfan/deepseek-v3.2` şeklindedir. Özel bir base URL veya model meta verisine ihtiyaç duymadıkça yalnızca `models.providers.qianfan` değerini geçersiz kılmanız gerekir.
+Varsayılan paketlenmiş model ref değeri `qianfan/deepseek-v3.2` şeklindedir. Yalnızca özel bir temel URL'ye veya model meta verilerine ihtiyacınız olduğunda `models.providers.qianfan` değerini geçersiz kılmanız gerekir.
 </Tip>
 
 ## Yapılandırma örneği
@@ -100,23 +99,23 @@ Varsayılan paketlenmiş model ref'i `qianfan/deepseek-v3.2` şeklindedir. Özel
 ```
 
 <AccordionGroup>
-  <Accordion title="Taşıma katmanı ve uyumluluk">
-    Qianfan, yerel OpenAI istek şekillendirmesi yerine OpenAI uyumlu taşıma yolu üzerinden çalışır. Bu, standart OpenAI SDK özelliklerinin çalıştığı, ancak sağlayıcıya özgü parametrelerin iletilmeyebileceği anlamına gelir.
+  <Accordion title="Taşıma ve uyumluluk">
+    Qianfan, yerel OpenAI istek biçimlendirmesiyle değil, OpenAI uyumlu taşıma yolu üzerinden çalışır. Bu, standart OpenAI SDK özelliklerinin çalıştığı, ancak sağlayıcıya özgü parametrelerin iletilmeyebileceği anlamına gelir.
   </Accordion>
 
   <Accordion title="Katalog ve geçersiz kılmalar">
-    Paketlenmiş katalog şu anda `deepseek-v3.2` ve `ernie-5.0-thinking-preview` içerir. Yalnızca özel bir base URL veya model meta verisine ihtiyaç duyduğunuzda `models.providers.qianfan` ekleyin veya geçersiz kılın.
+    Paketlenmiş katalog şu anda `deepseek-v3.2` ve `ernie-5.0-thinking-preview` içerir. `models.providers.qianfan` değerini yalnızca özel bir temel URL'ye veya model meta verilerine ihtiyacınız olduğunda ekleyin ya da geçersiz kılın.
 
     <Note>
-    Model ref'leri `qianfan/` öneki kullanır (örneğin `qianfan/deepseek-v3.2`).
+    Model ref değerleri `qianfan/` önekini kullanır (örneğin `qianfan/deepseek-v3.2`).
     </Note>
 
   </Accordion>
 
   <Accordion title="Sorun giderme">
     - API anahtarınızın `bce-v3/ALTAK-` ile başladığından ve Baidu Cloud konsolunda Qianfan API erişiminin etkin olduğundan emin olun.
-    - Modeller listelenmiyorsa hesabınızda Qianfan hizmetinin etkinleştirildiğini doğrulayın.
-    - Varsayılan base URL `https://qianfan.baidubce.com/v2` şeklindedir. Bunu yalnızca özel bir uç nokta veya proxy kullanıyorsanız değiştirin.
+    - Modeller listelenmiyorsa, hesabınızda Qianfan hizmetinin etkinleştirildiğini doğrulayın.
+    - Varsayılan temel URL `https://qianfan.baidubce.com/v2` şeklindedir. Yalnızca özel bir endpoint veya proxy kullanıyorsanız değiştirin.
 
   </Accordion>
 </AccordionGroup>
@@ -125,13 +124,13 @@ Varsayılan paketlenmiş model ref'i `qianfan/deepseek-v3.2` şeklindedir. Özel
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
+    Sağlayıcıları, model ref değerlerini ve failover davranışını seçme.
   </Card>
-  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    Tam OpenClaw yapılandırma başvurusu.
+  <Card title="Yapılandırma referansı" href="/tr/gateway/configuration-reference" icon="gear">
+    Eksiksiz OpenClaw yapılandırma referansı.
   </Card>
-  <Card title="Ajan kurulumu" href="/tr/concepts/agent" icon="robot">
-    Ajan varsayılanlarını ve model atamalarını yapılandırma.
+  <Card title="Agent kurulumu" href="/tr/concepts/agent" icon="robot">
+    Agent varsayılanlarını ve model atamalarını yapılandırma.
   </Card>
   <Card title="Qianfan API belgeleri" href="https://cloud.baidu.com/doc/qianfan-api/s/3m7of64lb" icon="arrow-up-right-from-square">
     Resmi Qianfan API belgeleri.

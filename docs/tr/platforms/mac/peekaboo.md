@@ -1,44 +1,74 @@
 ---
 read_when:
-    - PeekabooBridge'i OpenClaw.app içinde barındırma
-    - Peekaboo'yu Swift Package Manager ile entegre etme
+    - PeekabooBridge'i OpenClaw.app'te barındırma
+    - Swift Package Manager ile Peekaboo Entegrasyonu
     - PeekabooBridge protokolünü/yollarını değiştirme
-summary: macOS UI otomasyonu için PeekabooBridge entegrasyonu
-title: Peekaboo bridge
+    - PeekabooBridge, Codex Computer Use ve cua-driver MCP arasında karar verme
+summary: macOS kullanıcı arayüzü otomasyonu için PeekabooBridge entegrasyonu
+title: Ce-ee köprüsü
 x-i18n:
-    generated_at: "2026-04-24T09:19:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:33:16Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3646f66551645733292fb183e0ff2c56697e7b24248ff7c32a0dc925431f6ba7
+    source_hash: 92effdd6cfe4002fff2b8cd1092999f837e93694acf110eaebd30648b0a6946e
     source_path: platforms/mac/peekaboo.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, yerel ve izin farkındalıklı bir UI otomasyon aracısı olarak **PeekabooBridge** barındırabilir. Bu, `peekaboo` CLI'nin macOS uygulamasının TCC izinlerini yeniden kullanırken UI otomasyonu sürmesini sağlar.
+OpenClaw, **PeekabooBridge**'i yerel, izinlere duyarlı bir UI otomasyon
+aracısı olarak barındırabilir. Bu, `peekaboo` CLI'nin macOS uygulamasının TCC
+izinlerini yeniden kullanırken UI otomasyonunu yürütmesini sağlar.
 
-## Bunun ne olduğu (ve olmadığı)
+## Bu nedir (ve ne değildir)
 
-- **Host**: OpenClaw.app, PeekabooBridge host'u olarak davranabilir.
-- **İstemci**: `peekaboo` CLI kullanın (ayrı bir `openclaw ui ...` yüzeyi yoktur).
-- **UI**: görsel bindirmeler Peekaboo.app içinde kalır; OpenClaw ince bir aracı host'tur.
+- **Host**: OpenClaw.app bir PeekabooBridge host'u olarak davranabilir.
+- **Client**: `peekaboo` CLI'yi kullanın (ayrı bir `openclaw ui ...` yüzeyi yoktur).
+- **UI**: görsel katmanlar Peekaboo.app içinde kalır; OpenClaw ince bir aracı host'tur.
+
+## Computer Use ile ilişkisi
+
+OpenClaw'ın üç masaüstü denetimi yolu vardır ve bunlar bilinçli olarak ayrı tutulur:
+
+- **PeekabooBridge host'u**: OpenClaw.app yerel PeekabooBridge soketini barındırabilir.
+  `peekaboo` CLI client olarak kalır ve ekran görüntüleri, tıklamalar,
+  menüler, iletişim kutuları, Dock eylemleri ve pencere yönetimi gibi Peekaboo
+  otomasyon ilkelleri için OpenClaw.app'in macOS izinlerini kullanır.
+- **Codex Computer Use**: paketle gelen `codex` Plugin'i Codex app-server'ı hazırlar,
+  Codex'in `computer-use` MCP sunucusunun kullanılabilir olduğunu doğrular ve
+  ardından Codex modu dönüşlerinde yerel masaüstü denetimi araç çağrılarını
+  Codex'in üstlenmesini sağlar. OpenClaw bu eylemleri PeekabooBridge üzerinden
+  proxy'lemez.
+- **Doğrudan `cua-driver` MCP**: OpenClaw, TryCua'nın upstream
+  `cua-driver mcp` sunucusunu normal bir MCP sunucusu olarak kaydedebilir. Bu,
+  aracıların Codex marketplace veya PeekabooBridge soketi üzerinden yönlendirme
+  yapmadan CUA driver'ın kendi şemalarına ve pid/pencere/öğe dizini iş akışına
+  erişmesini sağlar.
+
+Geniş macOS otomasyon yüzeyini ve OpenClaw.app'in izinlere duyarlı bridge host'unu
+istediğinizde Peekaboo kullanın. Bir Codex modu aracısının Codex'in yerel
+computer-use Plugin'ine dayanması gerektiğinde Codex Computer Use kullanın.
+CUA driver'ı herhangi bir OpenClaw tarafından yönetilen çalışma zamanına normal
+bir MCP sunucusu olarak açmak istediğinizde doğrudan `cua-driver mcp` kullanın.
 
 ## Bridge'i etkinleştirme
 
 macOS uygulamasında:
 
-- Settings → **Enable Peekaboo Bridge**
+- Ayarlar → **Peekaboo Bridge'i Etkinleştir**
 
-Etkinleştirildiğinde OpenClaw yerel bir UNIX socket sunucusu başlatır. Devre dışıysa host durdurulur ve `peekaboo`, mevcut diğer host'lara geri düşer.
+Etkinleştirildiğinde OpenClaw yerel bir UNIX soket sunucusu başlatır. Devre dışı
+bırakılırsa host durdurulur ve `peekaboo` diğer kullanılabilir host'lara geri döner.
 
-## İstemci keşif sırası
+## Client keşif sırası
 
-Peekaboo istemcileri genellikle host'ları şu sırayla dener:
+Peekaboo client'ları genellikle host'ları şu sırayla dener:
 
 1. Peekaboo.app (tam UX)
-2. Claude.app (kuruluysa)
+2. Claude.app (yüklüyse)
 3. OpenClaw.app (ince aracı)
 
-Hangi host'un etkin olduğunu ve hangi socket yolunun kullanıldığını görmek için `peekaboo bridge status --verbose` kullanın. Şununla geçersiz kılabilirsiniz:
+Hangi host'un etkin olduğunu ve hangi soket yolunun kullanıldığını görmek için
+`peekaboo bridge status --verbose` kullanın. Şununla geçersiz kılabilirsiniz:
 
 ```bash
 export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
@@ -46,23 +76,24 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## Güvenlik ve izinler
 
-- Bridge, **çağıran kod imzalarını** doğrular; TeamID izin listesi uygulanır
-  (Peekaboo host TeamID + OpenClaw uygulama TeamID).
-- İsteklerin zaman aşımı yaklaşık 10 saniyedir.
-- Gerekli izinler eksikse bridge, System Settings'i açmak yerine açık bir hata mesajı döndürür.
+- Bridge **çağıran kod imzalarını** doğrular; TeamID allowlist'i uygulanır
+  (Peekaboo host TeamID + OpenClaw app TeamID).
+- İstekler ~10 saniye sonra zaman aşımına uğrar.
+- Gerekli izinler eksikse bridge, System Settings'i başlatmak yerine açık bir
+  hata iletisi döndürür.
 
 ## Snapshot davranışı (otomasyon)
 
 Snapshot'lar bellekte saklanır ve kısa bir süre sonra otomatik olarak sona erer.
-Daha uzun saklama istiyorsanız istemciden yeniden yakalayın.
+Daha uzun saklama gerekiyorsa client'tan yeniden yakalayın.
 
 ## Sorun giderme
 
-- `peekaboo` “bridge client is not authorized” bildiriyorsa istemcinin
-  düzgün imzalandığından emin olun veya host'u yalnızca **debug** modunda
+- `peekaboo` “bridge client is not authorized” bildirirse client'ın düzgün
+  imzalandığından emin olun veya host'u yalnızca **debug** modunda
   `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` ile çalıştırın.
-- Hiç host bulunamazsa host uygulamalarından birini (Peekaboo.app veya OpenClaw.app)
-  açın ve izinlerin verildiğini doğrulayın.
+- Hiç host bulunamazsa host uygulamalarından birini açın (Peekaboo.app veya OpenClaw.app)
+  ve izinlerin verildiğini doğrulayın.
 
 ## İlgili
 

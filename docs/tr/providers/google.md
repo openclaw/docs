@@ -1,43 +1,43 @@
 ---
 read_when:
-    - Google Gemini modellerini OpenClaw ile kullanmak istiyorsunuz
-    - API anahtarı veya OAuth auth akışına ihtiyacınız var
-summary: Google Gemini kurulumu (API anahtarı + OAuth, görsel üretimi, medya anlama, TTS, web araması)
+    - OpenClaw ile Google Gemini modellerini kullanmak istiyorsunuz
+    - API anahtarına veya OAuth kimlik doğrulama akışına ihtiyacınız var
+summary: Google Gemini kurulumu (API anahtarı + OAuth, görüntü oluşturma, medya anlama, TTS, web araması)
 title: Google (Gemini)
 x-i18n:
-    generated_at: "2026-04-26T11:39:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 312c7a5bc433831d98d1d47c42c5cac6a4cd8d4948ddbf16f1ae11aaec7a0339
+    source_hash: ea4b53dcea10fef67920da3baca4c85325ee4d4da780fbf708b67bc618e064a6
     source_path: providers/google.md
-    workflow: 15
+    workflow: 16
 ---
 
-Google Plugin’i, Google AI Studio üzerinden Gemini modellerine erişim sağlar; ayrıca
-görsel üretimi, medya anlama (görsel/ses/video), metinden konuşma ve
-Gemini Grounding üzerinden web araması da sunar.
+Google Plugin'i, Google AI Studio üzerinden Gemini modellerine erişim, ayrıca
+görüntü üretimi, medya anlama (görüntü/ses/video), metinden konuşmaya dönüştürme ve
+Gemini Grounding aracılığıyla web araması sağlar.
 
 - Sağlayıcı: `google`
-- Auth: `GEMINI_API_KEY` veya `GOOGLE_API_KEY`
+- Kimlik doğrulama: `GEMINI_API_KEY` veya `GOOGLE_API_KEY`
 - API: Google Gemini API
 - Çalışma zamanı seçeneği: `agents.defaults.agentRuntime.id: "google-gemini-cli"`
-  Gemini CLI OAuth’ı yeniden kullanırken model başvurularını `google/*` olarak kanonik tutar.
+  model başvurularını `google/*` olarak kanonik tutarken Gemini CLI OAuth'u yeniden kullanır.
 
-## Başlangıç
+## Başlarken
 
-Tercih ettiğiniz auth yöntemini seçin ve kurulum adımlarını izleyin.
+Tercih ettiğiniz kimlik doğrulama yöntemini seçin ve kurulum adımlarını izleyin.
 
 <Tabs>
-  <Tab title="API anahtarı">
-    **En iyisi:** Google AI Studio üzerinden standart Gemini API erişimi.
+  <Tab title="API key">
+    **En uygun kullanım:** Google AI Studio üzerinden standart Gemini API erişimi.
 
     <Steps>
-      <Step title="Onboarding çalıştırın">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice gemini-api-key
         ```
 
-        Veya anahtarı doğrudan verin:
+        Veya anahtarı doğrudan iletin:
 
         ```bash
         openclaw onboard --non-interactive \
@@ -46,7 +46,7 @@ Tercih ettiğiniz auth yöntemini seçin ve kurulum adımlarını izleyin.
           --gemini-api-key "$GEMINI_API_KEY"
         ```
       </Step>
-      <Step title="Varsayılan model ayarlayın">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -57,7 +57,7 @@ Tercih ettiğiniz auth yöntemini seçin ve kurulum adımlarını izleyin.
         }
         ```
       </Step>
-      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider google
         ```
@@ -65,40 +65,39 @@ Tercih ettiğiniz auth yöntemini seçin ve kurulum adımlarını izleyin.
     </Steps>
 
     <Tip>
-    `GEMINI_API_KEY` ve `GOOGLE_API_KEY` ortam değişkenlerinin ikisi de kabul edilir. Zaten hangisini yapılandırdıysanız onu kullanın.
+    `GEMINI_API_KEY` ve `GOOGLE_API_KEY` ortam değişkenlerinin ikisi de kabul edilir. Zaten yapılandırmış olduğunuz hangisiyse onu kullanın.
     </Tip>
 
   </Tab>
 
   <Tab title="Gemini CLI (OAuth)">
-    **En iyisi:** ayrı bir API anahtarı yerine PKCE OAuth üzerinden mevcut bir Gemini CLI girişini yeniden kullanmak.
+    **En uygun kullanım:** ayrı bir API anahtarı yerine PKCE OAuth üzerinden mevcut bir Gemini CLI oturumunu yeniden kullanma.
 
     <Warning>
-    `google-gemini-cli` sağlayıcısı resmî olmayan bir entegrasyondur. Bazı kullanıcılar
-    OAuth’u bu şekilde kullanırken hesap kısıtlamaları bildirmektedir. Riski size aittir.
+    `google-gemini-cli` sağlayıcısı resmi olmayan bir entegrasyondur. Bazı kullanıcılar
+    OAuth'u bu şekilde kullanırken hesap kısıtlamaları bildirmektedir. Kullanım riski size aittir.
     </Warning>
 
     <Steps>
-      <Step title="Gemini CLI’yi kurun">
-        Yerel `gemini` komutu `PATH` üzerinde mevcut olmalıdır.
+      <Step title="Install the Gemini CLI">
+        Yerel `gemini` komutu `PATH` üzerinde kullanılabilir olmalıdır.
 
         ```bash
         # Homebrew
         brew install gemini-cli
 
-        # veya npm
+        # or npm
         npm install -g @google/gemini-cli
         ```
 
-        OpenClaw hem Homebrew kurulumlarını hem global npm kurulumlarını,
-        yaygın Windows/npm yerleşimleri dahil, destekler.
+        OpenClaw, yaygın Windows/npm düzenleri dahil olmak üzere hem Homebrew kurulumlarını hem de global npm kurulumlarını destekler.
       </Step>
-      <Step title="OAuth ile giriş yapın">
+      <Step title="Log in via OAuth">
         ```bash
         openclaw models auth login --provider google-gemini-cli --set-default
         ```
       </Step>
-      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider google
         ```
@@ -107,7 +106,9 @@ Tercih ettiğiniz auth yöntemini seçin ve kurulum adımlarını izleyin.
 
     - Varsayılan model: `google/gemini-3.1-pro-preview`
     - Çalışma zamanı: `google-gemini-cli`
-    - Takma ad: `gemini-cli`
+    - Diğer ad: `gemini-cli`
+
+    Gemini 3.1 Pro'nun Gemini API model kimliği `gemini-3.1-pro-preview` şeklindedir. OpenClaw kolaylık için daha kısa `google/gemini-3.1-pro` adını kabul eder ve sağlayıcı çağrılarından önce bunu normalleştirir.
 
     **Ortam değişkenleri:**
 
@@ -117,64 +118,64 @@ Tercih ettiğiniz auth yöntemini seçin ve kurulum adımlarını izleyin.
     (Veya `GEMINI_CLI_*` varyantları.)
 
     <Note>
-    Girişten sonra Gemini CLI OAuth istekleri başarısız olursa, Gateway ana makinesinde `GOOGLE_CLOUD_PROJECT` veya
+    Gemini CLI OAuth istekleri oturum açtıktan sonra başarısız olursa Gateway ana makinesinde `GOOGLE_CLOUD_PROJECT` veya
     `GOOGLE_CLOUD_PROJECT_ID` ayarlayın ve yeniden deneyin.
     </Note>
 
     <Note>
-    Tarayıcı akışı başlamadan önce giriş başarısız olursa, yerel `gemini`
-    komutunun kurulu ve `PATH` üzerinde olduğundan emin olun.
+    Tarayıcı akışı başlamadan önce oturum açma başarısız olursa yerel `gemini`
+    komutunun kurulu olduğundan ve `PATH` üzerinde bulunduğundan emin olun.
     </Note>
 
-    `google-gemini-cli/*` model başvuruları eski uyumluluk takma adlarıdır. Yeni
-    config’ler, yerel Gemini CLI yürütmesi istediklerinde `google/*` model başvurularını ve
-    `google-gemini-cli` çalışma zamanını kullanmalıdır.
+    `google-gemini-cli/*` model başvuruları eski uyumluluk diğer adlarıdır. Yeni
+    yapılandırmalar, yerel Gemini CLI yürütmesi istediklerinde `google/*` model başvurularını ve `google-gemini-cli`
+    çalışma zamanını kullanmalıdır.
 
   </Tab>
 </Tabs>
 
 ## Yetenekler
 
-| Yetenek               | Destek durumu                  |
-| --------------------- | ------------------------------ |
-| Sohbet tamamlamaları  | Evet                           |
-| Görsel üretimi        | Evet                           |
-| Müzik üretimi         | Evet                           |
-| Metinden konuşma      | Evet                           |
-| Realtime ses          | Evet (Google Live API)         |
-| Görsel anlama         | Evet                           |
-| Ses dökümü            | Evet                           |
-| Video anlama          | Evet                           |
-| Web araması (Grounding) | Evet                         |
-| Thinking/reasoning    | Evet (Gemini 2.5+ / Gemini 3+) |
-| Gemma 4 modelleri     | Evet                           |
+| Yetenek                | Desteklenir                  |
+| ---------------------- | ---------------------------- |
+| Sohbet tamamlamaları   | Evet                         |
+| Görüntü üretimi        | Evet                         |
+| Müzik üretimi          | Evet                         |
+| Metinden konuşmaya     | Evet                         |
+| Gerçek zamanlı ses     | Evet (Google Live API)       |
+| Görüntü anlama         | Evet                         |
+| Ses dökümü             | Evet                         |
+| Video anlama           | Evet                         |
+| Web araması (Grounding) | Evet                        |
+| Düşünme/akıl yürütme   | Evet (Gemini 2.5+ / Gemini 3+) |
+| Gemma 4 modelleri      | Evet                         |
 
 <Tip>
 Gemini 3 modelleri `thinkingBudget` yerine `thinkingLevel` kullanır. OpenClaw,
-Gemini 3, Gemini 3.1 ve `gemini-*-latest` takma adlarının reasoning denetimlerini
-`thinkingLevel` ile eşler; böylece varsayılan/düşük gecikmeli çalıştırmalar
-devre dışı `thinkingBudget` değerleri göndermez.
+Gemini 3, Gemini 3.1 ve `gemini-*-latest` diğer ad akıl yürütme denetimlerini
+`thinkingLevel` ile eşler; böylece varsayılan/düşük gecikmeli çalıştırmalar devre dışı
+`thinkingBudget` değerleri göndermez.
 
-`/think adaptive`, sabit bir OpenClaw seviyesi seçmek yerine Google’ın dinamik thinking davranışını korur. Gemini 3 ve Gemini 3.1 sabit bir `thinkingLevel` içermez;
-Google seviyeyi kendisi seçebilir; Gemini 2.5 ise Google’ın dinamik sentinel değeri olan
-`thinkingBudget: -1` gönderir.
+`/think adaptive`, sabit bir OpenClaw düzeyi seçmek yerine Google'ın dinamik düşünme semantiğini korur. Gemini 3 ve Gemini 3.1 sabit bir `thinkingLevel` kullanmaz; böylece
+Google düzeyi seçebilir. Gemini 2.5 ise Google'ın dinamik sentinel değerini
+`thinkingBudget: -1` olarak gönderir.
 
-Gemma 4 modelleri (örneğin `gemma-4-26b-a4b-it`) thinking modunu destekler. OpenClaw,
-Gemma 4 için `thinkingBudget` değerini desteklenen bir Google `thinkingLevel` değerine yeniden yazar.
-Thinking’i `off` olarak ayarlamak, bunu `MINIMAL`’a eşlemek yerine gerçekten devre dışı bırakılmış halde korur.
+Gemma 4 modelleri (örneğin `gemma-4-26b-a4b-it`) düşünme modunu destekler. OpenClaw,
+Gemma 4 için `thinkingBudget` değerini desteklenen bir Google `thinkingLevel` değerine dönüştürür.
+Düşünmeyi `off` olarak ayarlamak, `MINIMAL` değerine eşlemek yerine düşünmenin devre dışı kalmasını korur.
 </Tip>
 
-## Görsel üretimi
+## Görüntü üretimi
 
-Paketlenmiş `google` görsel üretim sağlayıcısı varsayılan olarak
-`google/gemini-3.1-flash-image-preview` kullanır.
+Birlikte gelen `google` görüntü üretimi sağlayıcısının varsayılanı
+`google/gemini-3.1-flash-image-preview` şeklindedir.
 
-- Ayrıca `google/gemini-3-pro-image-preview` de desteklenir
-- Üretim: istek başına en fazla 4 görsel
-- Düzenleme modu: etkin, en fazla 5 giriş görseli
+- `google/gemini-3-pro-image-preview` de desteklenir
+- Üretim: istek başına en fazla 4 görüntü
+- Düzenleme modu: etkin, en fazla 5 giriş görüntüsü
 - Geometri denetimleri: `size`, `aspectRatio` ve `resolution`
 
-Google’ı varsayılan görsel sağlayıcısı yapmak için:
+Google'ı varsayılan görüntü sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -189,20 +190,20 @@ Google’ı varsayılan görsel sağlayıcısı yapmak için:
 ```
 
 <Note>
-Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Image Generation](/tr/tools/image-generation) sayfasına bakın.
+Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Görüntü Üretimi](/tr/tools/image-generation) bölümüne bakın.
 </Note>
 
 ## Video üretimi
 
-Paketlenmiş `google` Plugin’i ayrıca paylaşılan
+Birlikte gelen `google` Plugin'i, paylaşılan
 `video_generate` aracı üzerinden video üretimini de kaydeder.
 
 - Varsayılan video modeli: `google/veo-3.1-fast-generate-preview`
-- Modlar: text-to-video, image-to-video ve tek video referans akışları
-- `aspectRatio`, `resolution` ve `audio` destekler
-- Geçerli süre sınırı: **4 ile 8 saniye**
+- Modlar: metinden videoya, görüntüden videoya ve tek videolu referans akışları
+- `aspectRatio`, `resolution` ve `audio` desteklenir
+- Geçerli süre sınırlaması: **4 ila 8 saniye**
 
-Google’ı varsayılan video sağlayıcısı yapmak için:
+Google'ı varsayılan video sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -217,22 +218,22 @@ Google’ı varsayılan video sağlayıcısı yapmak için:
 ```
 
 <Note>
-Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Video Generation](/tr/tools/video-generation) sayfasına bakın.
+Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Video Üretimi](/tr/tools/video-generation) bölümüne bakın.
 </Note>
 
 ## Müzik üretimi
 
-Paketlenmiş `google` Plugin’i ayrıca paylaşılan
+Birlikte gelen `google` Plugin'i, paylaşılan
 `music_generate` aracı üzerinden müzik üretimini de kaydeder.
 
 - Varsayılan müzik modeli: `google/lyria-3-clip-preview`
-- Ayrıca `google/lyria-3-pro-preview` de desteklenir
-- İstem denetimleri: `lyrics` ve `instrumental`
+- `google/lyria-3-pro-preview` de desteklenir
+- Prompt denetimleri: `lyrics` ve `instrumental`
 - Çıktı biçimi: varsayılan olarak `mp3`, ayrıca `google/lyria-3-pro-preview` üzerinde `wav`
-- Referans girdileri: en fazla 10 görsel
-- Oturum destekli çalıştırmalar, `action: "status"` dahil paylaşılan görev/durum akışı üzerinden ayrılır
+- Referans girdileri: en fazla 10 görüntü
+- Oturum destekli çalıştırmalar, `action: "status"` dahil olmak üzere paylaşılan görev/durum akışı üzerinden ayrılır
 
-Google’ı varsayılan müzik sağlayıcısı yapmak için:
+Google'ı varsayılan müzik sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -247,20 +248,20 @@ Google’ı varsayılan müzik sağlayıcısı yapmak için:
 ```
 
 <Note>
-Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Music Generation](/tr/tools/music-generation) sayfasına bakın.
+Paylaşılan araç parametreleri, sağlayıcı seçimi ve failover davranışı için [Müzik Üretimi](/tr/tools/music-generation) bölümüne bakın.
 </Note>
 
-## Metinden konuşma
+## Metinden konuşmaya
 
-Paketlenmiş `google` konuşma sağlayıcısı, Gemini API TTS yolunu
+Birlikte gelen `google` konuşma sağlayıcısı, Gemini API TTS yolunu
 `gemini-3.1-flash-tts-preview` ile kullanır.
 
 - Varsayılan ses: `Kore`
-- Auth: `messages.tts.providers.google.apiKey`, `models.providers.google.apiKey`, `GEMINI_API_KEY` veya `GOOGLE_API_KEY`
+- Kimlik doğrulama: `messages.tts.providers.google.apiKey`, `models.providers.google.apiKey`, `GEMINI_API_KEY` veya `GOOGLE_API_KEY`
 - Çıktı: normal TTS ekleri için WAV, sesli not hedefleri için Opus, Talk/telefon için PCM
-- Sesli not çıktısı: Google PCM, WAV içine sarılır ve `ffmpeg` ile 48 kHz Opus’a dönüştürülür
+- Sesli not çıktısı: Google PCM, WAV olarak sarılır ve `ffmpeg` ile 48 kHz Opus'a dönüştürülür
 
-Google’ı varsayılan TTS sağlayıcısı yapmak için:
+Google'ı varsayılan TTS sağlayıcısı olarak kullanmak için:
 
 ```json5
 {
@@ -272,7 +273,7 @@ Google’ı varsayılan TTS sağlayıcısı yapmak için:
         google: {
           model: "gemini-3.1-flash-tts-preview",
           voiceName: "Kore",
-          audioProfile: "Sakin bir tonla profesyonel konuş.",
+          audioProfile: "Speak professionally with a calm tone.",
         },
       },
     },
@@ -280,42 +281,44 @@ Google’ı varsayılan TTS sağlayıcısı yapmak için:
 }
 ```
 
-Gemini API TTS, stil denetimi için doğal dil istemi kullanır. Konuşulan metinden önce
-yeniden kullanılabilir bir stil istemi eklemek için `audioProfile` ayarlayın.
-İstem metniniz adlandırılmış bir konuşmacıya atıfta bulunuyorsa `speakerName` ayarlayın.
+Gemini API TTS, stil denetimi için doğal dil prompt'u kullanır. Konuşulacak metinden önce
+yeniden kullanılabilir bir stil prompt'u eklemek için `audioProfile` ayarlayın. Prompt metniniz adlandırılmış bir konuşmacıya atıfta bulunuyorsa
+`speakerName` ayarlayın.
 
-Gemini API TTS ayrıca metin içinde `[whispers]` veya `[laughs]` gibi
-ifade edici köşeli parantez ses etiketlerini de kabul eder. Etiketleri görünür sohbet yanıtının dışında tutup
-TTS’ye göndermek için bunları `[[tts:text]]...[[/tts:text]]`
-bloğu içine koyun:
+Gemini API TTS ayrıca metin içinde `[whispers]` veya `[laughs]` gibi anlatımlı köşeli parantez ses etiketlerini kabul eder. Etiketleri TTS'ye gönderirken görünür sohbet yanıtının dışında tutmak için
+bunları bir `[[tts:text]]...[[/tts:text]]`
+bloğunun içine koyun:
 
 ```text
-İşte temiz yanıt metni.
+Here is the clean reply text.
 
-[[tts:text]][whispers] İşte konuşulan sürüm.[[/tts:text]]
+[[tts:text]][whispers] Here is the spoken version.[[/tts:text]]
 ```
 
 <Note>
-Yalnızca Gemini API ile kısıtlanmış bir Google Cloud Console API anahtarı bu
+Gemini API ile sınırlandırılmış bir Google Cloud Console API anahtarı bu
 sağlayıcı için geçerlidir. Bu, ayrı Cloud Text-to-Speech API yolu değildir.
 </Note>
 
-## Realtime ses
+## Gerçek zamanlı ses
 
-Paketlenmiş `google` Plugin’i, Voice Call ve Google Meet gibi arka uç ses köprüleri için
-Gemini Live API destekli bir realtime ses sağlayıcısı kaydeder.
+Birlikte gelen `google` Plugin'i, Voice Call ve Google Meet gibi arka uç ses köprüleri için
+Gemini Live API destekli bir gerçek zamanlı ses sağlayıcısı kaydeder.
 
-| Ayar                  | Config yolu                                                          | Varsayılan                                                                             |
-| --------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Model                 | `plugins.entries.voice-call.config.realtime.providers.google.model`  | `gemini-2.5-flash-native-audio-preview-12-2025`                                       |
-| Ses                   | `...google.voice`                                                    | `Kore`                                                                                 |
-| Temperature           | `...google.temperature`                                              | (ayarlanmamış)                                                                         |
-| VAD başlangıç hassasiyeti | `...google.startSensitivity`                                     | (ayarlanmamış)                                                                         |
-| VAD bitiş hassasiyeti | `...google.endSensitivity`                                           | (ayarlanmamış)                                                                         |
-| Sessizlik süresi      | `...google.silenceDurationMs`                                        | (ayarlanmamış)                                                                         |
-| API anahtarı          | `...google.apiKey`                                                   | `models.providers.google.apiKey`, `GEMINI_API_KEY` veya `GOOGLE_API_KEY` değerlerine geri döner |
+| Ayar                  | Yapılandırma yolu                                                 | Varsayılan                                                                            |
+| --------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Model                 | `plugins.entries.voice-call.config.realtime.providers.google.model` | `gemini-2.5-flash-native-audio-preview-12-2025`                                     |
+| Ses                   | `...google.voice`                                                 | `Kore`                                                                                |
+| Sıcaklık              | `...google.temperature`                                           | (ayarlanmamış)                                                                        |
+| VAD başlangıç hassasiyeti | `...google.startSensitivity`                                  | (ayarlanmamış)                                                                        |
+| VAD bitiş hassasiyeti | `...google.endSensitivity`                                        | (ayarlanmamış)                                                                        |
+| Sessizlik süresi      | `...google.silenceDurationMs`                                     | (ayarlanmamış)                                                                        |
+| Etkinlik işleme       | `...google.activityHandling`                                      | Google varsayılanı, `start-of-activity-interrupts`                                   |
+| Sıra kapsamı          | `...google.turnCoverage`                                          | Google varsayılanı, `only-activity`                                                   |
+| Otomatik VAD'yi devre dışı bırak | `...google.automaticActivityDetectionDisabled`            | `false`                                                                               |
+| API anahtarı          | `...google.apiKey`                                                | `models.providers.google.apiKey`, `GEMINI_API_KEY` veya `GOOGLE_API_KEY` değerlerine geri döner |
 
-Örnek Voice Call realtime config’i:
+Örnek Voice Call gerçek zamanlı yapılandırması:
 
 ```json5
 {
@@ -331,6 +334,8 @@ Gemini Live API destekli bir realtime ses sağlayıcısı kaydeder.
               google: {
                 model: "gemini-2.5-flash-native-audio-preview-12-2025",
                 voice: "Kore",
+                activityHandling: "start-of-activity-interrupts",
+                turnCoverage: "only-activity",
               },
             },
           },
@@ -342,32 +347,42 @@ Gemini Live API destekli bir realtime ses sağlayıcısı kaydeder.
 ```
 
 <Note>
-Google Live API, bir WebSocket üzerinden çift yönlü ses ve function calling kullanır.
-OpenClaw, telefon/Meet köprü sesini Gemini’nin PCM Live API akışına uyarlar ve
-araç çağrılarını paylaşılan realtime ses sözleşmesi üzerinde tutar. Örnekleme değişikliği ihtiyacınız yoksa
-`temperature` değerini boş bırakın; OpenClaw pozitif olmayan değerleri atlar,
-çünkü Google Live `temperature: 0` için ses yerine transcript döndürebilir.
-Gemini API transcription, `languageCodes` olmadan etkinleştirilir; mevcut Google
-SDK bu API yolunda language-code ipuçlarını reddeder.
+Google Live API, bir WebSocket üzerinden çift yönlü ses ve işlev çağırma kullanır.
+OpenClaw, telefon/Meet köprü sesini Gemini'nin PCM Live API akışına uyarlar ve
+araç çağrılarını paylaşılan gerçek zamanlı ses sözleşmesinde tutar. Örnekleme
+değişikliklerine ihtiyaç duymadığınız sürece `temperature` değerini ayarlamayın;
+OpenClaw pozitif olmayan değerleri atlar çünkü Google Live, `temperature: 0` için
+ses olmadan dökümler döndürebilir. Gemini API dökümü `languageCodes` olmadan
+etkinleştirilir; mevcut Google SDK bu API yolunda dil kodu ipuçlarını reddeder.
 </Note>
 
 <Note>
-Control UI Talk tarayıcı oturumları hâlâ tarayıcı WebRTC oturum uygulaması olan bir realtime ses sağlayıcısı gerektirir. Bugün bu yol OpenAI Realtime’dır; Google sağlayıcısı arka uç realtime köprüleri içindir.
+Control UI Talk, kısıtlı tek kullanımlık token'larla Google Live tarayıcı
+oturumlarını destekler. Yalnızca arka uçta çalışan gerçek zamanlı ses
+sağlayıcıları, sağlayıcı kimlik bilgilerini Gateway üzerinde tutan genel Gateway
+aktarma taşıması üzerinden de çalışabilir.
 </Note>
+
+Bakımcı canlı doğrulaması için şunu çalıştırın:
+`OPENAI_API_KEY=... GEMINI_API_KEY=... node --import tsx scripts/dev/realtime-talk-live-smoke.ts`.
+Google ayağı, Control UI Talk tarafından kullanılan aynı kısıtlı Live API token
+şeklini üretir, tarayıcı WebSocket uç noktasını açar, başlangıç kurulum yükünü
+gönderir ve `setupComplete` için bekler.
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Doğrudan Gemini önbellek yeniden kullanımı">
-    Doğrudan Gemini API çalıştırmaları için (`api: "google-generative-ai"`), OpenClaw
-    yapılandırılmış bir `cachedContent` tanıtıcısını Gemini isteklerine geçirir.
+  <Accordion title="Doğrudan Gemini önbelleğini yeniden kullanma">
+    Doğrudan Gemini API çalıştırmalarında (`api: "google-generative-ai"`),
+    OpenClaw yapılandırılmış bir `cachedContent` tanıtıcısını Gemini isteklerine
+    iletir.
 
-    - Model başına veya genel parametreleri
-      `cachedContent` ya da eski `cached_content` ile yapılandırın
+    - Model başına veya genel parametreleri `cachedContent` ya da eski
+      `cached_content` ile yapılandırın
     - İkisi de varsa `cachedContent` kazanır
     - Örnek değer: `cachedContents/prebuilt-context`
-    - Gemini cache-hit kullanımı, upstream `cachedContentTokenCount`
-      değerinden OpenClaw `cacheRead` olarak normalleştirilir
+    - Gemini önbellek isabeti kullanımı, yukarı akış `cachedContentTokenCount`
+      değerinden OpenClaw `cacheRead` olarak normalize edilir
 
     ```json5
     {
@@ -388,21 +403,21 @@ Control UI Talk tarayıcı oturumları hâlâ tarayıcı WebRTC oturum uygulamas
   </Accordion>
 
   <Accordion title="Gemini CLI JSON kullanım notları">
-    `google-gemini-cli` OAuth sağlayıcısını kullanırken OpenClaw,
-    CLI JSON çıktısını şu şekilde normalleştirir:
+    `google-gemini-cli` OAuth sağlayıcısını kullanırken OpenClaw, CLI JSON
+    çıktısını şu şekilde normalize eder:
 
     - Yanıt metni CLI JSON `response` alanından gelir.
-    - CLI `usage` alanını boş bıraktığında kullanım bilgisi `stats` alanından geri alınır.
-    - `stats.cached`, OpenClaw `cacheRead` olarak normalleştirilir.
-    - `stats.input` eksikse OpenClaw, giriş token’larını
-      `stats.input_tokens - stats.cached` üzerinden türetir.
+    - CLI `usage` değerini boş bıraktığında kullanım `stats` değerine geri döner.
+    - `stats.cached`, OpenClaw `cacheRead` olarak normalize edilir.
+    - `stats.input` eksikse OpenClaw, giriş token'larını
+      `stats.input_tokens - stats.cached` değerinden türetir.
 
   </Accordion>
 
   <Accordion title="Ortam ve daemon kurulumu">
-    Gateway bir daemon (launchd/systemd) olarak çalışıyorsa, `GEMINI_API_KEY`
-    değerinin bu süreç için erişilebilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya
-    `env.shellEnv` üzerinden).
+    Gateway bir daemon (launchd/systemd) olarak çalışıyorsa `GEMINI_API_KEY`
+    değerinin bu süreç tarafından kullanılabildiğinden emin olun (örneğin,
+    `~/.openclaw/.env` içinde veya `env.shellEnv` üzerinden).
   </Accordion>
 </AccordionGroup>
 
@@ -410,15 +425,15 @@ Control UI Talk tarayıcı oturumları hâlâ tarayıcı WebRTC oturum uygulamas
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model başvurularını ve failover davranışını seçme.
+    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
   </Card>
-  <Card title="Görsel üretimi" href="/tr/tools/image-generation" icon="image">
+  <Card title="Görsel oluşturma" href="/tr/tools/image-generation" icon="image">
     Paylaşılan görsel aracı parametreleri ve sağlayıcı seçimi.
   </Card>
-  <Card title="Video üretimi" href="/tr/tools/video-generation" icon="video">
+  <Card title="Video oluşturma" href="/tr/tools/video-generation" icon="video">
     Paylaşılan video aracı parametreleri ve sağlayıcı seçimi.
   </Card>
-  <Card title="Müzik üretimi" href="/tr/tools/music-generation" icon="music">
+  <Card title="Müzik oluşturma" href="/tr/tools/music-generation" icon="music">
     Paylaşılan müzik aracı parametreleri ve sağlayıcı seçimi.
   </Card>
 </CardGroup>

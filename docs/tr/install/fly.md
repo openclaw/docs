@@ -1,47 +1,47 @@
 ---
 read_when:
     - OpenClaw'u Fly.io üzerinde dağıtma
-    - Fly volume'larını, secret'ları ve ilk çalıştırma yapılandırmasını ayarlama
-summary: Kalıcı depolama ve HTTPS ile OpenClaw için adım adım Fly.io dağıtımı
+    - Fly birimlerini, gizli değerlerini ve ilk çalıştırma yapılandırmasını ayarlama
+summary: OpenClaw için kalıcı depolama ve HTTPS ile adım adım Fly.io dağıtımı
 title: Fly.io
 x-i18n:
-    generated_at: "2026-04-26T11:33:41Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:29:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1fe13cb60aff6ee2159e1008d2af660b689d819d38893e9758c23e1edaf32e22
+    source_hash: 195a77c4cec439dc2b5030f5ee618274df76b16d878b8d16e65a754e4bd8072c
     source_path: install/fly.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Fly.io Dağıtımı
 
-**Amaç:** [Fly.io](https://fly.io) makinesi üzerinde kalıcı depolama, otomatik HTTPS ve Discord/kanal erişimiyle çalışan bir OpenClaw Gateway.
+**Hedef:** OpenClaw Gateway'in kalıcı depolama, otomatik HTTPS ve Discord/kanal erişimiyle bir [Fly.io](https://fly.io) makinesinde çalışması.
 
 ## Gerekenler
 
-- Yüklü [flyctl CLI](https://fly.io/docs/hands-on/install-flyctl/)
+- [flyctl CLI](https://fly.io/docs/hands-on/install-flyctl/) yüklü
 - Fly.io hesabı (ücretsiz katman yeterlidir)
-- Model auth: seçtiğiniz model sağlayıcısı için API anahtarı
+- Model kimlik doğrulaması: seçtiğiniz model sağlayıcısı için API anahtarı
 - Kanal kimlik bilgileri: Discord bot token'ı, Telegram token'ı vb.
 
-## Yeni başlayanlar için hızlı yol
+## Başlangıç için hızlı yol
 
-1. Repo'yu klonlayın → `fly.toml` dosyasını özelleştirin
-2. Uygulama + volume oluşturun → secret'ları ayarlayın
+1. Repoyu klonlayın → `fly.toml` dosyasını özelleştirin
+2. Uygulama + volume oluşturun → gizli değerleri ayarlayın
 3. `fly deploy` ile dağıtın
-4. Yapılandırma oluşturmak için SSH ile girin veya Control UI kullanın
+4. Yapılandırma oluşturmak için SSH ile bağlanın veya Control UI kullanın
 
 <Steps>
   <Step title="Fly uygulamasını oluşturun">
     ```bash
-    # Repo'yu klonlayın
+    # Clone the repo
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
 
-    # Yeni bir Fly uygulaması oluşturun (kendi adınızı seçin)
+    # Create a new Fly app (pick your own name)
     fly apps create my-openclaw
 
-    # Kalıcı bir volume oluşturun (genellikle 1GB yeterlidir)
+    # Create a persistent volume (1GB is usually enough)
     fly volumes create openclaw_data --size 1 --region iad
     ```
 
@@ -50,12 +50,12 @@ x-i18n:
   </Step>
 
   <Step title="fly.toml dosyasını yapılandırın">
-    `fly.toml` dosyasını uygulama adınıza ve gereksinimlerinize göre düzenleyin.
+    `fly.toml` dosyasını uygulama adınız ve gereksinimlerinizle eşleşecek şekilde düzenleyin.
 
-    **Güvenlik notu:** Varsayılan yapılandırma herkese açık bir URL sunar. Herkese açık IP olmadan güçlendirilmiş bir dağıtım için [Özel Dağıtım](#private-deployment-hardened) bölümüne bakın veya `fly.private.toml` kullanın.
+    **Güvenlik notu:** Varsayılan yapılandırma herkese açık bir URL sunar. Herkese açık IP olmayan sağlamlaştırılmış bir dağıtım için [Özel Dağıtım](#private-deployment-hardened) bölümüne bakın veya `fly.private.toml` kullanın.
 
     ```toml
-    app = "my-openclaw"  # Uygulama adınız
+    app = "my-openclaw"  # Your app name
     primary_region = "iad"
 
     [build]
@@ -89,37 +89,37 @@ x-i18n:
 
     **Temel ayarlar:**
 
-    | Ayar                           | Neden                                                                      |
-    | ------------------------------ | -------------------------------------------------------------------------- |
-    | `--bind lan`                   | Fly'ın proxy'sinin gateway'e ulaşabilmesi için `0.0.0.0` adresine bağlanır |
-    | `--allow-unconfigured`         | Yapılandırma dosyası olmadan başlatır (sonra oluşturacaksınız)             |
-    | `internal_port = 3000`         | Fly sağlık denetimleri için `--port 3000` (veya `OPENCLAW_GATEWAY_PORT`) ile eşleşmelidir |
-    | `memory = "2048mb"`            | 512MB çok küçüktür; 2GB önerilir                                           |
-    | `OPENCLAW_STATE_DIR = "/data"` | Durumu volume üzerinde kalıcı yapar                                        |
+    | Ayar                           | Neden                                                                       |
+    | ------------------------------ | --------------------------------------------------------------------------- |
+    | `--bind lan`                   | Fly'ın proxy'sinin gateway'e erişebilmesi için `0.0.0.0` adresine bağlar    |
+    | `--allow-unconfigured`         | Yapılandırma dosyası olmadan başlatır (sonra bir tane oluşturacaksınız)     |
+    | `internal_port = 3000`         | Fly sağlık kontrolleri için `--port 3000` (veya `OPENCLAW_GATEWAY_PORT`) ile eşleşmelidir |
+    | `memory = "2048mb"`            | 512 MB çok küçüktür; 2 GB önerilir                                          |
+    | `OPENCLAW_STATE_DIR = "/data"` | Durumu volume üzerinde kalıcı hale getirir                                  |
 
   </Step>
 
-  <Step title="Secret'ları ayarlayın">
+  <Step title="Gizli değerleri ayarlayın">
     ```bash
-    # Gerekli: Gateway token'ı (loopback dışı bağlama için)
+    # Required: Gateway token (for non-loopback binding)
     fly secrets set OPENCLAW_GATEWAY_TOKEN=$(openssl rand -hex 32)
 
-    # Model sağlayıcısı API anahtarları
+    # Model provider API keys
     fly secrets set ANTHROPIC_API_KEY=sk-ant-...
 
-    # İsteğe bağlı: Diğer sağlayıcılar
+    # Optional: Other providers
     fly secrets set OPENAI_API_KEY=sk-...
     fly secrets set GOOGLE_API_KEY=...
 
-    # Kanal token'ları
+    # Channel tokens
     fly secrets set DISCORD_BOT_TOKEN=MTQ...
     ```
 
     **Notlar:**
 
-    - Loopback dışı bağlamalar (`--bind lan`) geçerli bir gateway auth yolu gerektirir. Bu Fly.io örneği `OPENCLAW_GATEWAY_TOKEN` kullanır, ancak `gateway.auth.password` veya doğru yapılandırılmış loopback dışı `trusted-proxy` dağıtımı da bu gereksinimi karşılar.
-    - Bu token'ları parola gibi değerlendirin.
-    - Tüm API anahtarları ve token'lar için **yapılandırma dosyası yerine ortam değişkenlerini tercih edin**. Böylece secret'lar yanlışlıkla açığa çıkabilecek veya loglanabilecek `openclaw.json` dosyasının dışında kalır.
+    - local loopback olmayan bağlamalar (`--bind lan`) geçerli bir gateway kimlik doğrulama yolu gerektirir. Bu Fly.io örneği `OPENCLAW_GATEWAY_TOKEN` kullanır, ancak `gateway.auth.password` veya doğru yapılandırılmış local loopback olmayan bir `trusted-proxy` dağıtımı da gereksinimi karşılar.
+    - Bu token'lara parola gibi davranın.
+    - **Tüm API anahtarları ve token'lar için yapılandırma dosyası yerine env vars kullanmayı tercih edin.** Bu, gizli değerleri yanlışlıkla açığa çıkarılabilecek veya günlüklenebilecekleri `openclaw.json` dışında tutar.
 
   </Step>
 
@@ -128,7 +128,7 @@ x-i18n:
     fly deploy
     ```
 
-    İlk dağıtım Docker image'ını oluşturur (~2-3 dakika). Sonraki dağıtımlar daha hızlıdır.
+    İlk dağıtım Docker imajını oluşturur (~2-3 dakika). Sonraki dağıtımlar daha hızlıdır.
 
     Dağıtımdan sonra doğrulayın:
 
@@ -146,8 +146,8 @@ x-i18n:
 
   </Step>
 
-  <Step title="Yapılandırma dosyası oluşturun">
-    Uygun bir yapılandırma oluşturmak için makineye SSH ile girin:
+  <Step title="Yapılandırma dosyasını oluşturun">
+    Uygun bir yapılandırma oluşturmak için makineye SSH ile bağlanın:
 
     ```bash
     fly ssh console
@@ -216,19 +216,19 @@ x-i18n:
 
     **Not:** `OPENCLAW_STATE_DIR=/data` ile yapılandırma yolu `/data/openclaw.json` olur.
 
-    **Not:** `https://my-openclaw.fly.dev` değerini gerçek Fly uygulaması
-    origin'iniz ile değiştirin. Gateway başlangıcı, yapılandırma
-    var olmadan önce ilk açılışın ilerleyebilmesi için çalışma zamanı
-    `--bind` ve `--port` değerlerinden yerel Control UI origin'lerini tohumlar,
-    ancak Fly üzerinden tarayıcı erişimi için tam HTTPS origin'in yine de
-    `gateway.controlUi.allowedOrigins` içinde listelenmesi gerekir.
+    **Not:** `https://my-openclaw.fly.dev` değerini gerçek Fly uygulama
+    origin'inizle değiştirin. Gateway başlangıcı, yapılandırma oluşmadan önce ilk
+    açılışın ilerleyebilmesi için yerel Control UI origin'lerini çalışma zamanı
+    `--bind` ve `--port` değerlerinden oluşturur, ancak Fly üzerinden tarayıcı
+    erişimi yine de `gateway.controlUi.allowedOrigins` içinde listelenen tam
+    HTTPS origin'ini gerektirir.
 
-    **Not:** Discord token'ı şu kaynaklardan biriyle gelebilir:
+    **Not:** Discord token'ı iki yerden gelebilir:
 
-    - Ortam değişkeni: `DISCORD_BOT_TOKEN` (secret'lar için önerilir)
+    - Ortam değişkeni: `DISCORD_BOT_TOKEN` (gizli değerler için önerilir)
     - Yapılandırma dosyası: `channels.discord.token`
 
-    Ortam değişkeni kullanıyorsanız token'ı yapılandırmaya eklemeniz gerekmez. Gateway, `DISCORD_BOT_TOKEN` değerini otomatik olarak okur.
+    Env var kullanıyorsanız yapılandırmaya token eklemeniz gerekmez. Gateway `DISCORD_BOT_TOKEN` değerini otomatik olarak okur.
 
     Uygulamak için yeniden başlatın:
 
@@ -250,15 +250,15 @@ x-i18n:
 
     Veya `https://my-openclaw.fly.dev/` adresini ziyaret edin
 
-    Yapılandırılmış paylaşımlı secret ile kimlik doğrulayın. Bu kılavuz
-    `OPENCLAW_GATEWAY_TOKEN` içindeki gateway token'ını kullanır; parola auth'una geçtiyseniz
-    onun yerine o parolayı kullanın.
+    Yapılandırılmış paylaşılan gizli değerle kimlik doğrulaması yapın. Bu kılavuz
+    `OPENCLAW_GATEWAY_TOKEN` içindeki gateway token'ını kullanır; parola kimlik
+    doğrulamasına geçtiyseniz bunun yerine o parolayı kullanın.
 
-    ### Loglar
+    ### Günlükler
 
     ```bash
-    fly logs              # Canlı loglar
-    fly logs --no-tail    # Son loglar
+    fly logs              # Live logs
+    fly logs --no-tail    # Recent logs
     ```
 
     ### SSH Konsolu
@@ -276,17 +276,17 @@ x-i18n:
 
 Gateway `0.0.0.0` yerine `127.0.0.1` adresine bağlanıyor.
 
-**Düzeltme:** `fly.toml` içindeki process komutunuza `--bind lan` ekleyin.
+**Düzeltme:** `fly.toml` içindeki süreç komutunuza `--bind lan` ekleyin.
 
-### Health checks failing / connection refused
+### Sağlık kontrolleri başarısız / bağlantı reddedildi
 
-Fly, yapılandırılmış portta gateway'e ulaşamıyor.
+Fly, yapılandırılmış bağlantı noktasında gateway'e erişemiyor.
 
-**Düzeltme:** `internal_port` değerinin gateway portuyla eşleştiğinden emin olun (`--port 3000` veya `OPENCLAW_GATEWAY_PORT=3000` ayarlayın).
+**Düzeltme:** `internal_port` değerinin gateway bağlantı noktasıyla eşleştiğinden emin olun (`--port 3000` veya `OPENCLAW_GATEWAY_PORT=3000` ayarlayın).
 
-### OOM / Bellek Sorunları
+### OOM / Bellek sorunları
 
-Konteyner sürekli yeniden başlıyor veya sonlandırılıyor. Belirtiler: `SIGABRT`, `v8::internal::Runtime_AllocateInYoungGeneration` veya sessiz yeniden başlatmalar.
+Kapsayıcı sürekli yeniden başlıyor veya sonlandırılıyor. Belirtiler: `SIGABRT`, `v8::internal::Runtime_AllocateInYoungGeneration` veya sessiz yeniden başlatmalar.
 
 **Düzeltme:** `fly.toml` içinde belleği artırın:
 
@@ -301,13 +301,13 @@ Veya mevcut bir makineyi güncelleyin:
 fly machine update <machine-id> --vm-memory 2048 -y
 ```
 
-**Not:** 512MB çok küçüktür. 1GB çalışabilir ama yük altında veya ayrıntılı loglamayla OOM olabilir. **2GB önerilir.**
+**Not:** 512 MB çok küçüktür. 1 GB çalışabilir ancak yük altında veya ayrıntılı günlükleme ile OOM yaşayabilir. **2 GB önerilir.**
 
-### Gateway Kilit Sorunları
+### Gateway kilit sorunları
 
-Gateway "already running" hatalarıyla başlamayı reddediyor.
+Gateway "already running" hatalarıyla başlatılmayı reddediyor.
 
-Bu, konteyner yeniden başlarken PID kilit dosyasının volume üzerinde kalıcı olması nedeniyle olur.
+Bu, kapsayıcı yeniden başladığında ancak PID kilit dosyası volume üzerinde kaldığında olur.
 
 **Düzeltme:** Kilit dosyasını silin:
 
@@ -316,11 +316,11 @@ fly ssh console --command "rm -f /data/gateway.*.lock"
 fly machine restart <machine-id>
 ```
 
-Kilit dosyası `/data/gateway.*.lock` yolundadır (bir alt dizinde değil).
+Kilit dosyası `/data/gateway.*.lock` konumundadır (bir alt dizinde değil).
 
-### Yapılandırma Okunmuyor
+### Yapılandırma okunmuyor
 
-`--allow-unconfigured` yalnızca başlangıç korumasını atlar. `/data/openclaw.json` dosyasını oluşturmaz veya onarmaz; bu yüzden gerçek yapılandırmanızın var olduğundan ve normal bir yerel gateway başlangıcı istediğinizde `gateway.mode="local"` içerdiğinden emin olun.
+`--allow-unconfigured` yalnızca başlangıç korumasını atlar. `/data/openclaw.json` oluşturmaz veya onarmaz; bu nedenle gerçek yapılandırmanızın mevcut olduğundan ve normal bir yerel gateway başlatması istediğinizde `gateway.mode="local"` içerdiğinden emin olun.
 
 Yapılandırmanın var olduğunu doğrulayın:
 
@@ -328,15 +328,15 @@ Yapılandırmanın var olduğunu doğrulayın:
 fly ssh console --command "cat /data/openclaw.json"
 ```
 
-### SSH ile Yapılandırma Yazma
+### SSH üzerinden yapılandırma yazma
 
-`fly ssh console -C` komutu shell yönlendirmesini desteklemez. Yapılandırma dosyası yazmak için:
+`fly ssh console -C` komutu kabuk yönlendirmesini desteklemez. Yapılandırma dosyası yazmak için:
 
 ```bash
-# echo + tee kullanın (yerelden uzağa pipe)
+# Use echo + tee (pipe from local to remote)
 echo '{"your":"config"}' | fly ssh console -C "tee /data/openclaw.json"
 
-# Veya sftp kullanın
+# Or use sftp
 fly sftp shell
 > put /local/path/config.json /data/openclaw.json
 ```
@@ -347,81 +347,81 @@ fly sftp shell
 fly ssh console --command "rm /data/openclaw.json"
 ```
 
-### Durum Kalıcı Değil
+### Durum kalıcı olmuyor
 
-Yeniden başlatmadan sonra auth profillerini, kanal/sağlayıcı durumunu veya oturumları kaybediyorsanız,
-durum dizini konteyner dosya sistemine yazıyor demektir.
+Yeniden başlatmadan sonra kimlik doğrulama profillerini, kanal/sağlayıcı durumunu veya oturumları kaybediyorsanız,
+durum dizini kapsayıcı dosya sistemine yazıyor demektir.
 
-**Düzeltme:** `OPENCLAW_STATE_DIR=/data` değerinin `fly.toml` içinde ayarlı olduğundan emin olun ve yeniden dağıtın.
+**Düzeltme:** `fly.toml` içinde `OPENCLAW_STATE_DIR=/data` ayarlandığından emin olun ve yeniden dağıtın.
 
 ## Güncellemeler
 
 ```bash
-# Son değişiklikleri çekin
+# Pull latest changes
 git pull
 
-# Yeniden dağıtın
+# Redeploy
 fly deploy
 
-# Sağlığı denetleyin
+# Check health
 fly status
 fly logs
 ```
 
-### Makine Komutunu Güncelleme
+### Makine komutunu güncelleme
 
-Tam yeniden dağıtım olmadan başlangıç komutunu değiştirmeniz gerekirse:
+Tam yeniden dağıtım yapmadan başlangıç komutunu değiştirmeniz gerekiyorsa:
 
 ```bash
-# Makine kimliğini alın
+# Get machine ID
 fly machines list
 
-# Komutu güncelleyin
+# Update command
 fly machine update <machine-id> --command "node dist/index.js gateway --port 3000 --bind lan" -y
 
-# Veya bellek artırımıyla
+# Or with memory increase
 fly machine update <machine-id> --vm-memory 2048 --command "node dist/index.js gateway --port 3000 --bind lan" -y
 ```
 
-**Not:** `fly deploy` sonrasında makine komutu `fly.toml` içindekine sıfırlanabilir. Elle değişiklik yaptıysanız dağıtımdan sonra yeniden uygulayın.
+**Not:** `fly deploy` sonrasında makine komutu `fly.toml` içindeki değere sıfırlanabilir. Elle değişiklik yaptıysanız dağıtımdan sonra tekrar uygulayın.
 
-## Özel Dağıtım (Güçlendirilmiş)
+## Özel dağıtım (sağlamlaştırılmış)
 
-Varsayılan olarak Fly, herkese açık IP'ler ayırır ve gateway'inizi `https://your-app.fly.dev` adresinde erişilebilir yapar. Bu kullanışlıdır ancak dağıtımınızın internet tarayıcıları (Shodan, Censys vb.) tarafından keşfedilebilir olduğu anlamına gelir.
+Varsayılan olarak Fly herkese açık IP'ler ayırır ve gateway'inizi `https://your-app.fly.dev` adresinde erişilebilir kılar. Bu kullanışlıdır, ancak dağıtımınızın internet tarayıcıları (Shodan, Censys vb.) tarafından keşfedilebilir olduğu anlamına gelir.
 
-**Herkese açık görünürlüğü olmayan** güçlendirilmiş bir dağıtım için özel şablonu kullanın.
+**Herkese açık erişimi olmayan** sağlamlaştırılmış bir dağıtım için özel şablonu kullanın.
 
 ### Özel dağıtım ne zaman kullanılmalı
 
-- Yalnızca **giden** çağrılar/mesajlar yapıyorsanız (gelen Webhook yoksa)
-- Herhangi bir Webhook callback'i için **ngrok veya Tailscale** tünelleri kullanıyorsanız
-- Gateway'e tarayıcı yerine **SSH, proxy veya WireGuard** ile erişiyorsanız
-- Dağıtımınızın **internet tarayıcılarından gizli** olmasını istiyorsanız
+- Yalnızca **giden** çağrılar/mesajlar yapıyorsanız (gelen Webhook yok)
+- Herhangi bir Webhook geri çağrısı için **ngrok veya Tailscale** tünelleri kullanıyorsanız
+- Gateway'e tarayıcı yerine **SSH, proxy veya WireGuard** üzerinden erişiyorsanız
+- Dağıtımın **internet tarayıcılarından gizli** kalmasını istiyorsanız
 
 ### Kurulum
 
 Standart yapılandırma yerine `fly.private.toml` kullanın:
 
 ```bash
-# Özel yapılandırma ile dağıtın
+# Deploy with private config
 fly deploy -c fly.private.toml
 ```
 
 Veya mevcut bir dağıtımı dönüştürün:
 
 ```bash
-# Geçerli IP'leri listeleyin
+# List current IPs
 fly ips list -a my-openclaw
 
-# Herkese açık IP'leri bırakın
+# Release public IPs
 fly ips release <public-ipv4> -a my-openclaw
 fly ips release <public-ipv6> -a my-openclaw
 
-# Gelecekteki dağıtımların herkese açık IP'leri yeniden ayırmaması için özel yapılandırmaya geçin
-# ([http_service] bölümünü kaldırın veya özel şablonla dağıtın)
+# Switch to private config so future deploys don't re-allocate public IPs
+# (remove [http_service] or deploy with the private template)
 fly deploy -c fly.private.toml
 
-# Yalnızca özel IPv6 ayırın
+# Allocate private-only IPv6
 fly ips allocate-v6 --private -a my-openclaw
 ```
 
@@ -432,27 +432,27 @@ VERSION  IP                   TYPE             REGION
 v6       fdaa:x:x:x:x::x      private          global
 ```
 
-### Özel bir dağıtıma erişme
+### Özel dağıtıma erişme
 
-Herkese açık URL olmadığından şu yöntemlerden birini kullanın:
+Herkese açık URL olmadığı için şu yöntemlerden birini kullanın:
 
 **Seçenek 1: Yerel proxy (en basit)**
 
 ```bash
-# Yerel 3000 portunu uygulamaya iletin
+# Forward local port 3000 to the app
 fly proxy 3000:3000 -a my-openclaw
 
-# Ardından tarayıcıda http://localhost:3000 açın
+# Then open http://localhost:3000 in browser
 ```
 
 **Seçenek 2: WireGuard VPN**
 
 ```bash
-# WireGuard yapılandırması oluşturun (tek seferlik)
+# Create WireGuard config (one-time)
 fly wireguard create
 
-# WireGuard istemcisine içe aktarın, ardından dahili IPv6 ile erişin
-# Örnek: http://[fdaa:x:x:x:x::x]:3000
+# Import to WireGuard client, then access via internal IPv6
+# Example: http://[fdaa:x:x:x:x::x]:3000
 ```
 
 **Seçenek 3: Yalnızca SSH**
@@ -461,15 +461,15 @@ fly wireguard create
 fly ssh console -a my-openclaw
 ```
 
-### Özel dağıtım ile Webhook'lar
+### Özel dağıtımla Webhook'lar
 
-Herkese açık görünürlük olmadan Webhook callback'lerine (Twilio, Telnyx vb.) ihtiyacınız varsa:
+Herkese açık erişim olmadan webhook geri çağrılarına (Twilio, Telnyx vb.) ihtiyacınız varsa:
 
-1. **ngrok tüneli** - ngrok'u konteyner içinde veya sidecar olarak çalıştırın
-2. **Tailscale Funnel** - belirli yolları Tailscale üzerinden açığa çıkarın
-3. **Yalnızca giden** - bazı sağlayıcılar (Twilio) Webhook olmadan yalnızca giden çağrılarda sorunsuz çalışır
+1. **ngrok tüneli** - ngrok'u kapsayıcının içinde veya yan kapsayıcı olarak çalıştırın
+2. **Tailscale Funnel** - Belirli yolları Tailscale üzerinden erişime açın
+3. **Yalnızca giden** - Bazı sağlayıcılar (Twilio), webhook'lar olmadan giden çağrılar için sorunsuz çalışır
 
-ngrok ile örnek voice-call yapılandırması:
+ngrok ile örnek sesli arama yapılandırması:
 
 ```json5
 {
@@ -490,43 +490,43 @@ ngrok ile örnek voice-call yapılandırması:
 }
 ```
 
-ngrok tüneli konteyner içinde çalışır ve Fly uygulamasının kendisini açığa çıkarmadan herkese açık bir Webhook URL'si sağlar. İletilen host başlıklarının kabul edilmesi için `webhookSecurity.allowedHosts` değerini herkese açık tünel ana makine adına ayarlayın.
+ngrok tüneli kapsayıcının içinde çalışır ve Fly uygulamasının kendisini açığa çıkarmadan herkese açık bir webhook URL'si sağlar. İletilen ana makine üst bilgileri kabul edilsin diye `webhookSecurity.allowedHosts` değerini herkese açık tünel ana makine adına ayarlayın.
 
 ### Güvenlik avantajları
 
-| Boyut             | Herkese açık | Özel      |
-| ----------------- | ------------ | --------- |
-| İnternet tarayıcıları | Keşfedilebilir | Gizli     |
-| Doğrudan saldırılar | Mümkün      | Engelli   |
-| Control UI erişimi | Tarayıcı    | Proxy/VPN |
-| Webhook teslimi   | Doğrudan     | Tünel üzerinden |
+| Boyut             | Herkese açık  | Özel       |
+| ----------------- | ------------- | ---------- |
+| İnternet tarayıcıları | Keşfedilebilir | Gizli      |
+| Doğrudan saldırılar | Olası         | Engellenir |
+| Denetim arayüzü erişimi | Tarayıcı      | Proxy/VPN  |
+| Webhook teslimi   | Doğrudan      | Tünel üzerinden |
 
 ## Notlar
 
 - Fly.io **x86 mimarisi** kullanır (ARM değil)
 - Dockerfile her iki mimariyle de uyumludur
-- WhatsApp/Telegram onboarding için `fly ssh console` kullanın
-- Kalıcı veriler volume üzerinde `/data` içinde bulunur
-- Signal, Java + signal-cli gerektirir; özel bir image kullanın ve belleği 2GB+ seviyesinde tutun.
+- WhatsApp/Telegram ilk kurulum için `fly ssh console` kullanın
+- Kalıcı veriler `/data` konumundaki birimde bulunur
+- Signal, Java + signal-cli gerektirir; özel bir imaj kullanın ve belleği 2 GB+ tutun.
 
 ## Maliyet
 
-Önerilen yapılandırma ile (`shared-cpu-2x`, 2GB RAM):
+Önerilen yapılandırmayla (`shared-cpu-2x`, 2 GB RAM):
 
-- Kullanıma bağlı olarak yaklaşık aylık `$10-15`
-- Ücretsiz katman bir miktar kullanım hakkı içerir
+- Kullanıma bağlı olarak ayda yaklaşık 10-15 ABD doları
+- Ücretsiz katman belirli bir kota içerir
 
-Ayrıntılar için bkz. [Fly.io pricing](https://fly.io/docs/about/pricing/).
+Ayrıntılar için [Fly.io fiyatlandırmasına](https://fly.io/docs/about/pricing/) bakın.
 
 ## Sonraki adımlar
 
-- Mesajlaşma kanallarını ayarlayın: [Channels](/tr/channels)
-- Gateway'i yapılandırın: [Gateway configuration](/tr/gateway/configuration)
-- OpenClaw'u güncel tutun: [Updating](/tr/install/updating)
+- Mesajlaşma kanallarını ayarlayın: [Kanallar](/tr/channels)
+- Gateway'i yapılandırın: [Gateway yapılandırması](/tr/gateway/configuration)
+- OpenClaw'ı güncel tutun: [Güncelleme](/tr/install/updating)
 
 ## İlgili
 
-- [Install overview](/tr/install)
+- [Kurulum özeti](/tr/install)
 - [Hetzner](/tr/install/hetzner)
 - [Docker](/tr/install/docker)
-- [VPS hosting](/tr/vps)
+- [VPS barındırma](/tr/vps)

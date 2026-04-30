@@ -1,50 +1,57 @@
 ---
 read_when:
-    - İlk ajan çalıştırmasında neler olduğunu anlama
+    - İlk ajan çalıştırmasında neler olduğunu anlamak
     - Önyükleme dosyalarının nerede bulunduğunu açıklama
-    - İlk kurulum kimlik ayarını ayıklama
+    - İlk kurulum kimliği ayarında hata ayıklama
 sidebarTitle: Bootstrapping
-summary: Çalışma alanını ve kimlik dosyalarını tohumlayan ajan önyükleme ritüeli
-title: Ajan önyükleme
+summary: Çalışma alanını ve kimlik dosyalarını hazırlayan ajan önyükleme ritüeli
+title: Aracı önyüklemesi
 x-i18n:
-    generated_at: "2026-04-25T13:57:36Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:46:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 435eb2a14707623903ab7873774cc8d4489b960719cf6a525d547983f8338027
+    source_hash: de829f82016ae1e4dcd7714502ca8d11755556fed18b985a7e2bada4149a2d46
     source_path: start/bootstrapping.md
-    workflow: 15
+    workflow: 16
 ---
 
-Önyükleme, bir ajan çalışma alanını hazırlayan ve
-kimlik ayrıntılarını toplayan **ilk çalıştırma** ritüelidir. İlk kurulumdan sonra, ajan
-ilk kez başladığında gerçekleşir.
+Önyükleme, bir ajan çalışma alanını hazırlayan ve kimlik ayrıntılarını
+toplayan **ilk çalıştırma** sürecidir. İlk kurulumdan sonra, ajan ilk kez
+başladığında gerçekleşir.
 
-## Önyükleme ne yapar
+## Önyükleme ne yapar?
 
-İlk ajan çalıştırmasında OpenClaw çalışma alanını (varsayılan
-`~/.openclaw/workspace`) önyükler:
+İlk ajan çalıştırmasında OpenClaw çalışma alanını önyükler (varsayılan
+`~/.openclaw/workspace`):
 
-- `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md` dosyalarını tohumlar.
-- Kısa bir soru-cevap ritüeli çalıştırır (her seferinde bir soru).
-- Kimlik + tercihleri `IDENTITY.md`, `USER.md`, `SOUL.md` dosyalarına yazar.
+- `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md` dosyalarını oluşturur.
+- Kısa bir soru-cevap süreci yürütür (tek seferde bir soru).
+- Kimliği ve tercihleri `IDENTITY.md`, `USER.md`, `SOUL.md` dosyalarına yazar.
 - Bittiğinde `BOOTSTRAP.md` dosyasını kaldırır; böylece yalnızca bir kez çalışır.
+
+Gömülü/yerel model çalıştırmaları için OpenClaw, `BOOTSTRAP.md` dosyasını
+ayrıcalıklı sistem bağlamının dışında tutar. Birincil etkileşimli ilk
+çalıştırmada, `read` aracını güvenilir biçimde çağırmayan modellerin de süreci
+tamamlayabilmesi için dosya içeriklerini yine de kullanıcı isteminde geçirir.
+Geçerli çalıştırma çalışma alanına güvenli biçimde erişemiyorsa, ajan genel bir
+selamlama yerine sınırlı bir önyükleme notu alır.
 
 ## Önyüklemeyi atlama
 
-Önceden tohumlanmış bir çalışma alanı için bunu atlamak üzere `openclaw onboard --skip-bootstrap` çalıştırın.
+Önceden hazırlanmış bir çalışma alanı için bunu atlamak üzere `openclaw onboard --skip-bootstrap` komutunu çalıştırın.
 
-## Nerede çalışır
+## Nerede çalışır?
 
-Önyükleme her zaman **gateway host** üzerinde çalışır. macOS uygulaması
-uzak bir Gateway'e bağlanıyorsa, çalışma alanı ve önyükleme dosyaları bu uzak
-makinede bulunur.
+Önyükleme her zaman **gateway ana makinesinde** çalışır. macOS uygulaması uzak
+bir Gateway’e bağlanırsa, çalışma alanı ve önyükleme dosyaları o uzak makinede
+bulunur.
 
 <Note>
 Gateway başka bir makinede çalıştığında, çalışma alanı dosyalarını gateway
-host üzerinde düzenleyin (örneğin `user@gateway-host:~/.openclaw/workspace`).
+ana makinesinde düzenleyin (örneğin, `user@gateway-host:~/.openclaw/workspace`).
 </Note>
 
 ## İlgili belgeler
 
-- macOS uygulaması ilk kurulumu: [İlk kurulum](/tr/start/onboarding)
+- macOS uygulaması ilk kurulumu: [İlk Kurulum](/tr/start/onboarding)
 - Çalışma alanı düzeni: [Ajan çalışma alanı](/tr/concepts/agent-workspace)

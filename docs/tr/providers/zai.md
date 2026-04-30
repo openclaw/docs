@@ -1,39 +1,38 @@
 ---
 read_when:
-    - OpenClaw’da Z.AI / GLM modellerini istiyorsunuz
-    - Basit bir `ZAI_API_KEY` kurulumuna ihtiyacınız var
+    - OpenClaw’da Z.AI / GLM modellerini kullanmak istiyorsunuz
+    - Basit bir ZAI_API_KEY kurulumu gerekir
 summary: OpenClaw ile Z.AI (GLM modelleri) kullanın
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-26T11:39:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:42:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
+    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
     source_path: providers/zai.md
-    workflow: 15
+    workflow: 16
 ---
 
-Z.AI, **GLM** modelleri için API platformudur. GLM için REST API’ler sağlar ve
-kimlik doğrulama için API anahtarları kullanır. API anahtarınızı Z.AI konsolunda oluşturun. OpenClaw,
-bir Z.AI API anahtarıyla `zai` sağlayıcısını kullanır.
+Z.AI, **GLM** modelleri için API platformudur. GLM için REST API'leri sağlar ve kimlik doğrulama için API anahtarları kullanır.
+API anahtarınızı Z.AI konsolunda oluşturun. OpenClaw, Z.AI API anahtarıyla `zai` sağlayıcısını kullanır.
 
 - Sağlayıcı: `zai`
-- Auth: `ZAI_API_KEY`
-- API: Z.AI Chat Completions (Bearer auth)
+- Kimlik doğrulama: `ZAI_API_KEY`
+- API: Z.AI Chat Completions (Bearer kimlik doğrulaması)
 
-## Başlangıç
+## Başlarken
 
 <Tabs>
-  <Tab title="Uç noktayı otomatik algıla">
-    **En iyisi:** çoğu kullanıcı için. OpenClaw, eşleşen Z.AI uç noktasını anahtardan algılar ve doğru temel URL’yi otomatik olarak uygular.
+  <Tab title="Auto-detect endpoint">
+    **En uygun olduğu durum:** çoğu kullanıcı. OpenClaw, anahtardan eşleşen Z.AI uç noktasını algılar ve doğru temel URL'yi otomatik olarak uygular.
 
     <Steps>
-      <Step title="Onboarding çalıştırın">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Varsayılan model ayarlayın">
+      <Step title="Set a default model">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -41,7 +40,7 @@ bir Z.AI API anahtarıyla `zai` sağlayıcısını kullanır.
         }
         ```
       </Step>
-      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider zai
         ```
@@ -50,26 +49,26 @@ bir Z.AI API anahtarıyla `zai` sağlayıcısını kullanır.
 
   </Tab>
 
-  <Tab title="Açık bölgesel uç nokta">
-    **En iyisi:** belirli bir Coding Plan veya genel API yüzeyini zorlamak isteyen kullanıcılar için.
+  <Tab title="Explicit regional endpoint">
+    **En uygun olduğu durum:** belirli bir Coding Plan veya genel API yüzeyini zorunlu kılmak isteyen kullanıcılar.
 
     <Steps>
-      <Step title="Doğru onboarding seçimini yapın">
+      <Step title="Pick the right onboarding choice">
         ```bash
-        # Coding Plan Global (Coding Plan kullanıcıları için önerilir)
+        # Coding Plan Global (recommended for Coding Plan users)
         openclaw onboard --auth-choice zai-coding-global
 
-        # Coding Plan CN (Çin bölgesi)
+        # Coding Plan CN (China region)
         openclaw onboard --auth-choice zai-coding-cn
 
-        # Genel API
+        # General API
         openclaw onboard --auth-choice zai-global
 
-        # Genel API CN (Çin bölgesi)
+        # General API CN (China region)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Varsayılan model ayarlayın">
+      <Step title="Set a default model">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -77,7 +76,7 @@ bir Z.AI API anahtarıyla `zai` sağlayıcısını kullanır.
         }
         ```
       </Step>
-      <Step title="Modelin kullanılabilir olduğunu doğrulayın">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider zai
         ```
@@ -89,38 +88,39 @@ bir Z.AI API anahtarıyla `zai` sağlayıcısını kullanır.
 
 ## Yerleşik katalog
 
-OpenClaw şu anda paketlenmiş `zai` sağlayıcısını şu modellerle başlatır:
+OpenClaw şu anda birlikte gelen `zai` sağlayıcısını şunlarla başlatır:
 
-| Model başvurusu      | Notlar         |
-| -------------------- | -------------- |
+| Model ref'i         | Notlar          |
+| -------------------- | ------------- |
 | `zai/glm-5.1`        | Varsayılan model |
-| `zai/glm-5`          |                |
-| `zai/glm-5-turbo`    |                |
-| `zai/glm-5v-turbo`   |                |
-| `zai/glm-4.7`        |                |
-| `zai/glm-4.7-flash`  |                |
-| `zai/glm-4.7-flashx` |                |
-| `zai/glm-4.6`        |                |
-| `zai/glm-4.6v`       |                |
-| `zai/glm-4.5`        |                |
-| `zai/glm-4.5-air`    |                |
-| `zai/glm-4.5-flash`  |                |
-| `zai/glm-4.5v`       |                |
+| `zai/glm-5`          |               |
+| `zai/glm-5-turbo`    |               |
+| `zai/glm-5v-turbo`   |               |
+| `zai/glm-4.7`        |               |
+| `zai/glm-4.7-flash`  |               |
+| `zai/glm-4.7-flashx` |               |
+| `zai/glm-4.6`        |               |
+| `zai/glm-4.6v`       |               |
+| `zai/glm-4.5`        |               |
+| `zai/glm-4.5-air`    |               |
+| `zai/glm-4.5-flash`  |               |
+| `zai/glm-4.5v`       |               |
 
 <Tip>
-GLM modelleri `zai/<model>` olarak kullanılabilir (örnek: `zai/glm-5`). Varsayılan paketlenmiş model başvurusu `zai/glm-5.1`’dir.
+GLM modelleri `zai/<model>` olarak kullanılabilir (örnek: `zai/glm-5`). Varsayılan birlikte gelen model ref'i `zai/glm-5.1` değeridir.
 </Tip>
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Bilinmeyen GLM-5 modellerini ileri çözümleme">
-    Bilinmeyen `glm-5*` kimlikleri, kimlik
-    geçerli GLM-5 ailesi biçimiyle eşleştiğinde `glm-4.7` şablonundan sağlayıcı sahipliğinde meta veri sentezleyerek paketlenmiş sağlayıcı yolu üzerinde yine ileri çözümleme yapar.
+  <Accordion title="Forward-resolving unknown GLM-5 models">
+    Bilinmeyen `glm-5*` kimlikleri, kimlik mevcut GLM-5 ailesi biçimiyle
+    eşleştiğinde `glm-4.7` şablonundan sağlayıcıya ait meta veriler
+    sentezlenerek birlikte gelen sağlayıcı yolunda yine de ileriye dönük çözümlenir.
   </Accordion>
 
-  <Accordion title="Araç çağrısı akışı">
-    `tool_stream`, Z.AI araç çağrısı akışı için varsayılan olarak etkindir. Devre dışı bırakmak için:
+  <Accordion title="Tool-call streaming">
+    Z.AI araç çağrısı akışı için `tool_stream` varsayılan olarak etkindir. Devre dışı bırakmak için:
 
     ```json5
     {
@@ -138,13 +138,13 @@ GLM modelleri `zai/<model>` olarak kullanılabilir (örnek: `zai/glm-5`). Varsay
 
   </Accordion>
 
-  <Accordion title="Thinking ve korunmuş thinking">
-    Z.AI thinking, OpenClaw’ın `/think` denetimlerini izler. Thinking kapalıyken,
-    OpenClaw görünür metinden önce çıktı bütçesini `reasoning_content` üzerinde
-    harcayan yanıtları önlemek için `thinking: { type: "disabled" }` gönderir.
+  <Accordion title="Thinking and preserved thinking">
+    Z.AI düşünme davranışı OpenClaw'ın `/think` kontrollerini izler. Düşünme kapalıyken,
+    OpenClaw görünür metinden önce çıktı bütçesini `reasoning_content` üzerinde harcayan
+    yanıtları önlemek için `thinking: { type: "disabled" }` gönderir.
 
-    Korunmuş thinking isteğe bağlıdır; çünkü Z.AI tam geçmiş
-    `reasoning_content` değerinin yeniden oynatılmasını gerektirir ve bu da istem token’larını artırır. Bunu
+    Korunan düşünme isteğe bağlıdır, çünkü Z.AI tam geçmiş
+    `reasoning_content` içeriğinin yeniden oynatılmasını gerektirir; bu da istem token'larını artırır. Bunu
     model başına etkinleştirin:
 
     ```json5
@@ -161,31 +161,31 @@ GLM modelleri `zai/<model>` olarak kullanılabilir (örnek: `zai/glm-5`). Varsay
     }
     ```
 
-    Etkin olduğunda ve thinking açıksa OpenClaw,
-    `thinking: { type: "enabled", clear_thinking: false }` gönderir ve aynı OpenAI uyumlu transcript için önceki
-    `reasoning_content` değerlerini yeniden oynatır.
+    Etkinleştirildiğinde ve düşünme açıkken, OpenClaw
+    `thinking: { type: "enabled", clear_thinking: false }` gönderir ve aynı OpenAI uyumlu transkript için önceki
+    `reasoning_content` içeriğini yeniden oynatır.
 
-    İleri düzey kullanıcılar yine de tam sağlayıcı yükünü
-    `params.extra_body.thinking` ile geçersiz kılabilir.
-
-  </Accordion>
-
-  <Accordion title="Görsel anlama">
-    Paketlenmiş Z.AI Plugin’i görsel anlamayı kaydeder.
-
-    | Özellik      | Değer        |
-    | ------------ | ------------ |
-    | Model        | `glm-4.6v`   |
-
-    Görsel anlama, yapılandırılmış Z.AI auth’tan otomatik olarak çözülür — ek
-    config gerekmez.
+    Gelişmiş kullanıcılar, tam sağlayıcı yükünü
+    `params.extra_body.thinking` ile yine de geçersiz kılabilir.
 
   </Accordion>
 
-  <Accordion title="Auth ayrıntıları">
-    - Z.AI, API anahtarınızla Bearer auth kullanır.
-    - `zai-api-key` onboarding seçeneği, eşleşen Z.AI uç noktasını anahtar önekinden otomatik algılar.
-    - Belirli bir API yüzeyini zorlamak istediğinizde açık bölgesel seçenekleri (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) kullanın.
+  <Accordion title="Image understanding">
+    Birlikte gelen Z.AI Plugin, görüntü anlamayı kaydeder.
+
+    | Özellik      | Değer       |
+    | ------------- | ----------- |
+    | Model         | `glm-4.6v`  |
+
+    Görüntü anlama, yapılandırılmış Z.AI kimlik doğrulamasından otomatik olarak çözümlenir; ek
+    yapılandırma gerekmez.
+
+  </Accordion>
+
+  <Accordion title="Auth details">
+    - Z.AI, API anahtarınızla Bearer kimlik doğrulaması kullanır.
+    - `zai-api-key` onboarding seçeneği, anahtar önekinden eşleşen Z.AI uç noktasını otomatik olarak algılar.
+    - Belirli bir API yüzeyini zorunlu kılmak istediğinizde açık bölgesel seçenekleri (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) kullanın.
 
   </Accordion>
 </AccordionGroup>
@@ -193,10 +193,10 @@ GLM modelleri `zai/<model>` olarak kullanılabilir (örnek: `zai/glm-5`). Varsay
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="GLM model ailesi" href="/tr/providers/glm" icon="microchip">
-    GLM için model ailesine genel bakış.
+  <Card title="GLM model family" href="/tr/providers/glm" icon="microchip">
+    GLM için model ailesi genel bakışı.
   </Card>
-  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model başvurularını ve failover davranışını seçme.
+  <Card title="Model selection" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model ref'lerini ve yük devretme davranışını seçme.
   </Card>
 </CardGroup>

@@ -1,37 +1,28 @@
 ---
 read_when:
-    - Gateway WS istemcilerini uygulama veya güncelleme
-    - Protokol uyumsuzluklarını veya bağlantı hatalarını ayıklama
+    - Gateway WS istemcilerini uygulamak veya güncellemek
+    - Protokol uyuşmazlıklarında veya bağlantı hatalarında hata ayıklama
     - Protokol şemasını/modellerini yeniden oluşturma
-summary: 'Gateway WebSocket protokolü: handshake, çerçeveler, sürümleme'
+summary: 'Gateway WebSocket protokolü: el sıkışma, çerçeveler, sürümleme'
 title: Gateway protokolü
 x-i18n:
-    generated_at: "2026-04-26T11:30:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:24:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 01f873c7051f2a462cbefb50331e04edfdcedadeda8b3d7b7320ceb2462edccc
+    source_hash: c0d922e9b4b778c333873e551498b905461f30f944e809555b45669ae2f5c404
     source_path: gateway/protocol.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gateway WS protokolü, OpenClaw için **tek kontrol düzlemi + Node taşımasıdır**.
-Tüm istemciler (CLI, web UI, macOS uygulaması, iOS/Android Node'ları, headless
-Node'lar) WebSocket üzerinden bağlanır ve handshake sırasında
-**rollerini** + **kapsamlarını** bildirir.
+Gateway WS protokolü, OpenClaw için **tek denetim düzlemi + düğüm aktarımı**dır. Tüm istemciler (CLI, web UI, macOS uygulaması, iOS/Android düğümleri, başsız düğümler) WebSocket üzerinden bağlanır ve el sıkışma sırasında **rol** + **kapsam** bilgilerini bildirir.
 
-## Taşıma
+## Aktarım
 
-- WebSocket, JSON payload'lu metin çerçeveleri.
-- İlk çerçeve **zorunlu olarak** bir `connect` isteği olmalıdır.
-- Bağlantı öncesi çerçeveler 64 KiB ile sınırlıdır. Başarılı bir handshake'ten sonra istemciler
-  `hello-ok.policy.maxPayload` ve
-  `hello-ok.policy.maxBufferedBytes` sınırlarına uymalıdır. Tanılama etkinken,
-  aşırı büyük gelen çerçeveler ve yavaş giden tamponlar, gateway etkilenen çerçeveyi kapatmadan veya düşürmeden önce
-  `payload.large` olayları üretir. Bu olaylar
-  boyutları, sınırları, yüzeyleri ve güvenli neden kodlarını tutar. Mesaj
-  gövdesini, ek içeriklerini, ham çerçeve gövdesini, token'ları, cookie'leri veya secret değerlerini tutmazlar.
+- WebSocket, JSON yükleri içeren metin çerçeveleri.
+- İlk çerçeve **mutlaka** bir `connect` isteği olmalıdır.
+- Bağlantı öncesi çerçeveler 64 KiB ile sınırlıdır. Başarılı bir el sıkışmadan sonra istemciler `hello-ok.policy.maxPayload` ve `hello-ok.policy.maxBufferedBytes` sınırlarına uymalıdır. Tanılama etkinleştirildiğinde, aşırı büyük gelen çerçeveler ve yavaş giden tamponlar, Gateway etkilenen çerçeveyi kapatmadan veya düşürmeden önce `payload.large` olayları yayar. Bu olaylar boyutları, sınırları, yüzeyleri ve güvenli neden kodlarını tutar. Mesaj gövdesini, ek içeriklerini, ham çerçeve gövdesini, token’ları, çerezleri veya gizli değerleri tutmazlar.
 
-## Handshake (`connect`)
+## El Sıkışma (connect)
 
 Gateway → İstemci (bağlantı öncesi challenge):
 
@@ -91,6 +82,10 @@ Gateway → İstemci:
     "server": { "version": "…", "connId": "…" },
     "features": { "methods": ["…"], "events": ["…"] },
     "snapshot": { "…": "…" },
+    "auth": {
+      "role": "operator",
+      "scopes": ["operator.read", "operator.write"]
+    },
     "policy": {
       "maxPayload": 26214400,
       "maxBufferedBytes": 52428800,
@@ -100,13 +95,11 @@ Gateway → İstemci:
 }
 ```
 
-`server`, `features`, `snapshot` ve `policy`, şema tarafından zorunlu tutulur
-(`src/gateway/protocol/schema/frames.ts`). `canvasHostUrl` isteğe bağlıdır. `auth`,
-kullanılabildiğinde pazarlığı yapılan rolü/kapsamları bildirir ve gateway bir
-`deviceToken` verirse bunu da içerir.
+Gateway başlangıç yan görevlerini hâlâ tamamlarken, `connect` isteği `details.reason` değeri `"startup-sidecars"` olarak ayarlanmış ve `retryAfterMs` içeren yeniden denenebilir bir `UNAVAILABLE` hatası döndürebilir. İstemciler bu yanıtı nihai bir el sıkışma hatası olarak göstermemeli, genel bağlantı bütçeleri içinde yeniden denemelidir.
 
-Device token verilmediğinde `hello-ok.auth`, pazarlığı yapılan
-izinleri yine de bildirebilir:
+`server`, `features`, `snapshot` ve `policy` şema tarafından zorunlu kılınır (`src/gateway/protocol/schema/frames.ts`). `auth` da zorunludur ve üzerinde uzlaşılan rol/kapsamları bildirir. `canvasHostUrl` isteğe bağlıdır.
+
+Cihaz token’ı verilmediğinde, `hello-ok.auth` token alanları olmadan üzerinde uzlaşılan izinleri bildirir:
 
 ```json
 {
@@ -117,15 +110,9 @@ izinleri yine de bildirebilir:
 }
 ```
 
-Güvenilen aynı süreç içi backend istemcileri (`client.id: "gateway-client"`,
-`client.mode: "backend"`), paylaşılan gateway token/password ile
-kimlik doğruladıklarında doğrudan loopback bağlantılarında `device` alanını atlayabilir.
-Bu yol dahili kontrol düzlemi RPC'leri için ayrılmıştır ve bayat CLI/cihaz eşleştirme temellerinin
-subagent oturum güncellemeleri gibi yerel backend işlerini engellemesini önler. Uzak istemciler,
-tarayıcı kökenli istemciler, Node istemcileri ve açık device-token/device-identity
-istemcileri yine normal eşleştirme ve kapsam yükseltme denetimlerini kullanır.
+Güvenilen aynı işlem backend istemcileri (`client.id: "gateway-client"`, `client.mode: "backend"`), paylaşılan Gateway token’ı/parolası ile kimlik doğruladıklarında doğrudan loopback bağlantılarında `device` alanını atlayabilir. Bu yol dahili denetim düzlemi RPC’leri için ayrılmıştır ve eski CLI/cihaz eşleştirme temel değerlerinin alt ajan oturum güncellemeleri gibi yerel backend çalışmalarını engellemesini önler. Uzak istemciler, tarayıcı kaynaklı istemciler, düğüm istemcileri ve açık cihaz-token’ı/cihaz-kimliği istemcileri normal eşleştirme ve kapsam yükseltme kontrollerini kullanmaya devam eder.
 
-Bir device token verildiğinde `hello-ok` ayrıca şunu da içerir:
+Bir cihaz token’ı verildiğinde, `hello-ok` ayrıca şunu içerir:
 
 ```json
 {
@@ -137,8 +124,7 @@ Bir device token verildiğinde `hello-ok` ayrıca şunu da içerir:
 }
 ```
 
-Güvenilen bootstrap devri sırasında `hello-ok.auth`,
-`deviceTokens` içinde ek sınırlı rol girdileri de içerebilir:
+Güvenilen bootstrap devri sırasında, `hello-ok.auth` `deviceTokens` içinde ek sınırlı rol girdileri de içerebilir:
 
 ```json
 {
@@ -157,14 +143,9 @@ Güvenilen bootstrap devri sırasında `hello-ok.auth`,
 }
 ```
 
-Yerleşik Node/operator bootstrap akışı için birincil Node token'ı
-`scopes: []` olarak kalır ve devredilen herhangi bir operator token'ı bootstrap
-operator allowlist'i ile sınırlı kalır (`operator.approvals`, `operator.read`,
-`operator.talk.secrets`, `operator.write`). Bootstrap kapsam denetimleri rol önekli
-kalmaya devam eder: operator girdileri yalnızca operator isteklerini karşılar ve
-operator olmayan roller yine kendi rol önekleri altındaki kapsamlara ihtiyaç duyar.
+Yerleşik düğüm/operator bootstrap akışı için birincil düğüm token’ı `scopes: []` olarak kalır ve devredilen tüm operator token’ları bootstrap operator izin listesiyle sınırlı kalır (`operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`). Bootstrap kapsam kontrolleri rol önekli kalır: operator girdileri yalnızca operator isteklerini karşılar ve operator olmayan roller hâlâ kendi rol önekleri altında kapsam gerektirir.
 
-### Node örneği
+### Düğüm örneği
 
 ```json
 {
@@ -205,14 +186,14 @@ operator olmayan roller yine kendi rol önekleri altındaki kapsamlara ihtiyaç 
 - **Yanıt**: `{type:"res", id, ok, payload|error}`
 - **Olay**: `{type:"event", event, payload, seq?, stateVersion?}`
 
-Yan etki oluşturan yöntemler **idempotency key** gerektirir (şemaya bakın).
+Yan etki oluşturan yöntemler **idempotency anahtarları** gerektirir (şemaya bakın).
 
 ## Roller + kapsamlar
 
 ### Roller
 
-- `operator` = kontrol düzlemi istemcisi (CLI/UI/otomasyon).
-- `node` = yetenek barındırıcısı (camera/screen/canvas/system.run).
+- `operator` = denetim düzlemi istemcisi (CLI/UI/otomasyon).
+- `node` = yetenek konağı (camera/screen/canvas/system.run).
 
 ### Kapsamlar (operator)
 
@@ -225,185 +206,202 @@ Yaygın kapsamlar:
 - `operator.pairing`
 - `operator.talk.secrets`
 
-`includeSecrets: true` ile `talk.config`, `operator.talk.secrets`
-(veya `operator.admin`) gerektirir.
+`includeSecrets: true` ile `talk.config`, `operator.talk.secrets` (veya `operator.admin`) gerektirir.
 
-Plugin kayıtlı gateway RPC yöntemleri kendi operator kapsamlarını isteyebilir, ancak
-ayrılmış çekirdek yönetici önekleri (`config.*`, `exec.approvals.*`, `wizard.*`,
-`update.*`) her zaman `operator.admin` olarak çözülür.
+Plugin tarafından kaydedilen Gateway RPC yöntemleri kendi operator kapsamlarını isteyebilir, ancak ayrılmış çekirdek yönetici önekleri (`config.*`, `exec.approvals.*`, `wizard.*`, `update.*`) her zaman `operator.admin` olarak çözülür.
 
-Yöntem kapsamı yalnızca ilk kapıdır. `chat.send` üzerinden ulaşılan bazı slash komutları
-buna ek olarak daha sıkı komut düzeyi denetimleri uygular. Örneğin, kalıcı
-`/config set` ve `/config unset` yazmaları `operator.admin` gerektirir.
+Yöntem kapsamı yalnızca ilk kapıdır. `chat.send` üzerinden ulaşılan bazı slash komutları bunun üzerine daha sıkı komut düzeyi kontroller uygular. Örneğin, kalıcı `/config set` ve `/config unset` yazmaları `operator.admin` gerektirir.
 
-`node.pair.approve`, temel yöntem kapsamına ek olarak ek bir
-onay zamanı kapsam denetimine de sahiptir:
+`node.pair.approve`, temel yöntem kapsamının üzerine onay zamanında ek bir kapsam kontrolü de uygular:
 
 - komutsuz istekler: `operator.pairing`
-- exec olmayan Node komutları içeren istekler: `operator.pairing` + `operator.write`
-- `system.run`, `system.run.prepare` veya `system.which` içeren istekler:
-  `operator.pairing` + `operator.admin`
+- exec olmayan düğüm komutları içeren istekler: `operator.pairing` + `operator.write`
+- `system.run`, `system.run.prepare` veya `system.which` içeren istekler: `operator.pairing` + `operator.admin`
 
-### Yetenekler/komutlar/izinler (node)
+### Yetenekler/komutlar/izinler (düğüm)
 
-Node'lar bağlantı sırasında yetenek beyanlarını bildirir:
+Düğümler bağlantı sırasında yetenek iddialarını bildirir:
 
-- `caps`: yüksek düzey yetenek kategorileri.
-- `commands`: invoke için komut allowlist'i.
-- `permissions`: ayrıntılı açma/kapama bayrakları (ör. `screen.record`, `camera.capture`).
+- `caps`: üst düzey yetenek kategorileri.
+- `commands`: çağırma için komut izin listesi.
+- `permissions`: ayrıntılı anahtarlar (örn. `screen.record`, `camera.capture`).
 
-Gateway bunları **beyan** olarak ele alır ve sunucu tarafı allowlist'leri uygular.
+Gateway bunları **iddia** olarak ele alır ve sunucu tarafı izin listelerini uygular.
 
-## Presence
+## Varlık
 
 - `system-presence`, cihaz kimliğine göre anahtarlanmış girdiler döndürür.
-- Presence girdileri `deviceId`, `roles` ve `scopes` içerir; böylece UI'ler, bir cihaz
-  hem **operator** hem de **node** olarak bağlandığında bile cihaz başına tek bir satır gösterebilir.
+- Varlık girdileri `deviceId`, `roles` ve `scopes` içerir; böylece UI’lar bir cihaz hem **operator** hem de **node** olarak bağlandığında bile cihaz başına tek satır gösterebilir.
+- `node.list`, isteğe bağlı `lastSeenAtMs` ve `lastSeenReason` alanlarını içerir. Bağlı düğümler mevcut bağlantı zamanlarını `connect` nedeniyle `lastSeenAtMs` olarak bildirir; eşleştirilmiş düğümler, güvenilen bir düğüm olayı eşleştirme meta verilerini güncellediğinde kalıcı arka plan varlığı da bildirebilir.
 
-## Yayın olaylarının kapsamlandırılması
+### Düğüm arka plan alive olayı
 
-Sunucu tarafından itilen WebSocket yayın olayları kapsamla sınırlandırılır; böylece pairing kapsamlı veya yalnızca node oturumları oturum içeriğini pasif olarak alamaz.
+Düğümler, eşleştirilmiş bir düğümün arka plan uyanışı sırasında bağlı olarak işaretlenmeden canlı olduğunu kaydetmek için `event: "node.presence.alive"` ile `node.event` çağırabilir.
 
-- **Sohbet, ajan ve araç sonucu çerçeveleri** (akış halindeki `agent` olayları ve araç çağrısı sonuçları dâhil) en az `operator.read` gerektirir. `operator.read` olmayan oturumlar bu çerçeveleri tamamen atlar.
-- **Plugin tanımlı `plugin.*` yayınları**, plugin'in onları nasıl kaydettiğine bağlı olarak `operator.write` veya `operator.admin` ile sınırlandırılır.
-- **Durum ve taşıma olayları** (`heartbeat`, `presence`, `tick`, connect/disconnect yaşam döngüsü vb.) taşıma sağlığı her kimliği doğrulanmış oturum tarafından gözlemlenebilir kalsın diye sınırsız kalır.
-- **Bilinmeyen yayın olay aileleri**, kayıtlı bir işleyici bunları açıkça gevşetmedikçe varsayılan olarak kapsamla sınırlandırılır (kapalı hata verir).
+```json
+{
+  "event": "node.presence.alive",
+  "payloadJSON": "{\"trigger\":\"silent_push\",\"sentAtMs\":1737264000000,\"displayName\":\"Peter's iPhone\",\"version\":\"2026.4.28\",\"platform\":\"iOS 18.4.0\",\"deviceFamily\":\"iPhone\",\"modelIdentifier\":\"iPhone17,1\",\"pushTransport\":\"relay\"}"
+}
+```
 
-Her istemci bağlantısı kendi istemci başına sıra numarasını tutar; böylece yayınlar, farklı istemciler olay akışının kapsamla filtrelenmiş farklı alt kümelerini görse bile o sokette monoton sıralamayı korur.
+`trigger` kapalı bir enum’dur: `background`, `silent_push`, `bg_app_refresh`, `significant_location`, `manual` veya `connect`. Bilinmeyen trigger dizeleri kalıcılıktan önce Gateway tarafından `background` olarak normalleştirilir. Olay yalnızca kimliği doğrulanmış düğüm cihaz oturumları için kalıcıdır; cihazsız veya eşleştirilmemiş oturumlar `handled: false` döndürür.
+
+Başarılı gateway’ler yapılandırılmış bir sonuç döndürür:
+
+```json
+{
+  "ok": true,
+  "event": "node.presence.alive",
+  "handled": true,
+  "reason": "persisted"
+}
+```
+
+Daha eski gateway’ler `node.event` için hâlâ `{ "ok": true }` döndürebilir; istemciler bunu kalıcı varlık saklama olarak değil, onaylanmış bir RPC olarak değerlendirmelidir.
+
+## Yayın olayı kapsamlandırması
+
+Sunucu tarafından gönderilen WebSocket yayın olayları kapsam kapılıdır; böylece eşleştirme kapsamlı veya yalnızca düğüm oturumları oturum içeriğini pasif olarak almaz.
+
+- **Sohbet, ajan ve araç sonucu çerçeveleri** (akışlı `agent` olayları ve araç çağrısı sonuçları dahil) en az `operator.read` gerektirir. `operator.read` olmayan oturumlar bu çerçeveleri tamamen atlar.
+- **Plugin tanımlı `plugin.*` yayınları**, Plugin’in onları nasıl kaydettiğine bağlı olarak `operator.write` veya `operator.admin` ile kapılanır.
+- **Durum ve aktarım olayları** (`heartbeat`, `presence`, `tick`, bağlantı/bağlantı kesme yaşam döngüsü vb.) sınırsız kalır; böylece aktarım sağlığı her kimliği doğrulanmış oturum tarafından gözlemlenebilir kalır.
+- **Bilinmeyen yayın olayı aileleri**, kayıtlı bir işleyici açıkça gevşetmediği sürece varsayılan olarak kapsam kapılıdır (kapalı hata).
+
+Her istemci bağlantısı kendi istemci başına sıra numarasını tutar; böylece farklı istemciler olay akışının farklı kapsam-filtreli alt kümelerini görse bile yayınlar o sokette monoton sıralamayı korur.
 
 ## Yaygın RPC yöntem aileleri
 
-Genel WS yüzeyi, yukarıdaki handshake/auth örneklerinden daha geniştir. Bu,
-üretilmiş bir döküm değildir — `hello-ok.features.methods`, `src/gateway/server-methods-list.ts` ile yüklenmiş
-plugin/kanal yöntem export'larından oluşturulan muhafazakâr bir
-keşif listesidir. Bunu `src/gateway/server-methods/*.ts` için tam bir
-numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
+Genel WS yüzeyi yukarıdaki el sıkışma/kimlik doğrulama örneklerinden daha geniştir. Bu oluşturulmuş bir döküm değildir — `hello-ok.features.methods`, `src/gateway/server-methods-list.ts` ile yüklü Plugin/kanal yöntem dışa aktarımlarından oluşturulan muhafazakâr bir keşif listesidir. Bunu `src/gateway/server-methods/*.ts` için tam bir numaralandırma değil, özellik keşfi olarak değerlendirin.
 
 <AccordionGroup>
   <Accordion title="Sistem ve kimlik">
-    - `health`, önbelleğe alınmış veya taze yoklanmış gateway sağlık snapshot'ını döndürür.
-    - `diagnostics.stability`, son sınırlı tanılama kararlılık kaydedicisini döndürür. Olay adları, sayılar, bayt boyutları, bellek okumaları, kuyruk/oturum durumu, kanal/plugin adları ve oturum kimlikleri gibi operasyonel metadata'yı tutar. Sohbet metni, Webhook gövdeleri, araç çıktıları, ham istek veya yanıt gövdeleri, token'lar, cookie'ler veya secret değerlerini tutmaz. Operator read kapsamı gerekir.
-    - `status`, `/status` tarzı gateway özetini döndürür; hassas alanlar yalnızca admin kapsamlı operator istemcileri için eklenir.
-    - `gateway.identity.get`, relay ve eşleştirme akışlarında kullanılan gateway cihaz kimliğini döndürür.
-    - `system-presence`, bağlı operator/node cihazları için geçerli presence snapshot'ını döndürür.
-    - `system-event`, bir sistem olayı ekler ve presence bağlamını güncelleyebilir/yayınlayabilir.
-    - `last-heartbeat`, en son kalıcı Heartbeat olayını döndürür.
-    - `set-heartbeats`, gateway üzerinde Heartbeat işlemeyi açar/kapatır.
+    - `health`, önbelleğe alınmış veya yeni yoklanmış Gateway sağlık anlık görüntüsünü döndürür.
+    - `diagnostics.stability`, son sınırlı tanılama kararlılığı kaydedicisini döndürür. Olay adları, sayılar, bayt boyutları, bellek okumaları, kuyruk/oturum durumu, kanal/Plugin adları ve oturum kimlikleri gibi operasyonel meta verileri tutar. Sohbet metnini, webhook gövdelerini, araç çıktılarını, ham istek veya yanıt gövdelerini, token’ları, çerezleri veya gizli değerleri tutmaz. Operator okuma kapsamı gereklidir.
+    - `status`, `/status` tarzı Gateway özetini döndürür; hassas alanlar yalnızca admin kapsamlı operator istemcileri için dahil edilir.
+    - `gateway.identity.get`, relay ve eşleştirme akışları tarafından kullanılan Gateway cihaz kimliğini döndürür.
+    - `system-presence`, bağlı operator/düğüm cihazları için mevcut varlık anlık görüntüsünü döndürür.
+    - `system-event`, bir sistem olayı ekler ve varlık bağlamını güncelleyebilir/yayınlayabilir.
+    - `last-heartbeat`, son kalıcı heartbeat olayını döndürür.
+    - `set-heartbeats`, Gateway üzerinde heartbeat işlemeyi açıp kapatır.
 
   </Accordion>
 
   <Accordion title="Modeller ve kullanım">
-    - `models.list`, çalışma anında izin verilen model kataloğunu döndürür.
+    - `models.list`, çalışma zamanında izin verilen model kataloğunu döndürür. Seçici boyutundaki yapılandırılmış modeller için `{ "view": "configured" }` iletin (`agents.defaults.models` önce, ardından `models.providers.*.models`), tam katalog için `{ "view": "all" }` iletin.
     - `usage.status`, sağlayıcı kullanım pencerelerini/kalan kota özetlerini döndürür.
-    - `usage.cost`, bir tarih aralığı için toplu maliyet kullanım özetlerini döndürür.
-    - `doctor.memory.status`, etkin varsayılan ajan çalışma alanı için vektör bellek / embedding hazır olma durumunu döndürür.
+    - `usage.cost`, bir tarih aralığı için toplulaştırılmış maliyet kullanım özetlerini döndürür.
+    - `doctor.memory.status`, etkin varsayılan ajan çalışma alanı için vektör belleği / önbelleğe alınmış embedding hazır olma durumunu döndürür. Yalnızca çağıran açıkça canlı bir embedding sağlayıcı ping'i istediğinde `{ "probe": true }` veya `{ "deep": true }` iletin.
+    - `doctor.memory.remHarness`, uzak kontrol düzlemi istemcileri için sınırlı, salt okunur bir REM harness önizlemesi döndürür. Çalışma alanı yollarını, bellek parçacıklarını, işlenmiş temellendirilmiş markdown'u ve derin yükseltme adaylarını içerebilir; bu nedenle çağıranların `operator.read` iznine ihtiyacı vardır.
     - `sessions.usage`, oturum başına kullanım özetlerini döndürür.
-    - `sessions.usage.timeseries`, tek bir oturum için zaman serisi kullanımını döndürür.
-    - `sessions.usage.logs`, tek bir oturum için kullanım günlüğü girdilerini döndürür.
+    - `sessions.usage.timeseries`, bir oturum için zaman serisi kullanımını döndürür.
+    - `sessions.usage.logs`, bir oturum için kullanım günlüğü girdilerini döndürür.
 
   </Accordion>
 
-  <Accordion title="Kanallar ve giriş yardımcıları">
+  <Accordion title="Kanallar ve oturum açma yardımcıları">
     - `channels.status`, yerleşik + paketlenmiş kanal/plugin durum özetlerini döndürür.
-    - `channels.logout`, kanal çıkışı destekliyorsa belirli bir kanal/hesaptan çıkış yapar.
-    - `web.login.start`, geçerli QR destekli web kanal sağlayıcısı için bir QR/web giriş akışı başlatır.
-    - `web.login.wait`, bu QR/web giriş akışının tamamlanmasını bekler ve başarı durumunda kanalı başlatır.
-    - `push.test`, kayıtlı bir iOS Node'una test APNs push gönderir.
-    - `voicewake.get`, depolanan uyandırma sözcüğü tetikleyicilerini döndürür.
+    - `channels.logout`, kanal oturum kapatmayı destekliyorsa belirli bir kanaldan/hesaptan oturumu kapatır.
+    - `web.login.start`, geçerli QR özellikli web kanal sağlayıcısı için QR/web oturum açma akışını başlatır.
+    - `web.login.wait`, bu QR/web oturum açma akışının tamamlanmasını bekler ve başarılı olursa kanalı başlatır.
+    - `push.test`, kayıtlı bir iOS Node'una test APNs push'u gönderir.
+    - `voicewake.get`, saklanan uyandırma sözcüğü tetikleyicilerini döndürür.
     - `voicewake.set`, uyandırma sözcüğü tetikleyicilerini günceller ve değişikliği yayınlar.
 
   </Accordion>
 
   <Accordion title="Mesajlaşma ve günlükler">
-    - `send`, sohbet çalıştırıcısının dışında kanal/hesap/iş parçacığı hedefli gönderimler için doğrudan giden teslim RPC'sidir.
-    - `logs.tail`, imleç/sınır ve en yüksek bayt denetimleriyle yapılandırılmış gateway dosya günlüğü son kısmını döndürür.
+    - `send`, sohbet çalıştırıcısı dışında kanal/hesap/ileti dizisi hedefli gönderimler için doğrudan giden teslimat RPC'sidir.
+    - `logs.tail`, yapılandırılmış Gateway dosya günlüğü kuyruğunu imleç/sınır ve maksimum bayt kontrolleriyle döndürür.
 
   </Accordion>
 
-  <Accordion title="Talk ve TTS">
-    - `talk.config`, etkin Talk yapılandırma payload'ını döndürür; `includeSecrets`, `operator.talk.secrets` (veya `operator.admin`) gerektirir.
+  <Accordion title="Konuşma ve TTS">
+    - `talk.config`, etkili Talk yapılandırma payload'unu döndürür; `includeSecrets`, `operator.talk.secrets` (veya `operator.admin`) gerektirir.
     - `talk.mode`, WebChat/Control UI istemcileri için geçerli Talk modu durumunu ayarlar/yayınlar.
     - `talk.speak`, etkin Talk konuşma sağlayıcısı üzerinden konuşma sentezler.
-    - `tts.status`, TTS etkin durumunu, etkin sağlayıcıyı, fallback sağlayıcıları ve sağlayıcı yapılandırma durumunu döndürür.
+    - `tts.status`, TTS etkin durumunu, etkin sağlayıcıyı, yedek sağlayıcıları ve sağlayıcı yapılandırma durumunu döndürür.
     - `tts.providers`, görünür TTS sağlayıcı envanterini döndürür.
-    - `tts.enable` ve `tts.disable`, TTS tercih durumunu açar/kapatır.
+    - `tts.enable` ve `tts.disable`, TTS tercih durumunu açıp kapatır.
     - `tts.setProvider`, tercih edilen TTS sağlayıcısını günceller.
     - `tts.convert`, tek seferlik metinden konuşmaya dönüştürme çalıştırır.
 
   </Accordion>
 
-  <Accordion title="Gizli bilgiler, yapılandırma, güncelleme ve sihirbaz">
-    - `secrets.reload`, etkin SecretRef'leri yeniden çözümler ve çalışma zamanı secret durumunu yalnızca tam başarı durumunda değiştirir.
-    - `secrets.resolve`, belirli bir komut/hedef kümesi için komut hedefli secret atamalarını çözümler.
-    - `config.get`, geçerli yapılandırma snapshot'ını ve hash'ini döndürür.
-    - `config.set`, doğrulanmış bir yapılandırma payload'ı yazar.
+  <Accordion title="Sırlar, yapılandırma, güncelleme ve sihirbaz">
+    - `secrets.reload`, etkin SecretRef'leri yeniden çözer ve çalışma zamanı secret durumunu yalnızca tam başarıda değiştirir.
+    - `secrets.resolve`, belirli bir komut/hedef kümesi için komut hedefli secret atamalarını çözer.
+    - `config.get`, geçerli yapılandırma anlık görüntüsünü ve hash'i döndürür.
+    - `config.set`, doğrulanmış bir yapılandırma payload'u yazar.
     - `config.patch`, kısmi bir yapılandırma güncellemesini birleştirir.
-    - `config.apply`, tam yapılandırma payload'ını doğrular + değiştirir.
-    - `config.schema`, Control UI ve CLI araçları tarafından kullanılan canlı yapılandırma şeması payload'ını döndürür: şema, `uiHints`, sürüm ve üretim metadata'sı; çalışma zamanı bunu yükleyebiliyorsa plugin + kanal şeması metadata'sı da dâhil. Şema, eşleşen alan dokümantasyonu mevcut olduğunda iç içe nesne, wildcard, dizi öğesi ve `anyOf` / `oneOf` / `allOf` bileşim dalları dâhil olmak üzere UI'nin kullandığı etiketler ve yardım metninden türetilen alan `title` / `description` metadata'sını içerir.
-    - `config.schema.lookup`, tek bir yapılandırma yolu için yol kapsamlı lookup payload'ı döndürür: normalleştirilmiş yol, sığ bir şema düğümü, eşleşen hint + `hintPath` ve UI/CLI drill-down için anlık alt öğe özetleri. Lookup şema düğümleri kullanıcıya dönük dokümanları ve yaygın doğrulama alanlarını (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, sayısal/dize/dizi/nesne sınırları ve `additionalProperties`, `deprecated`, `readOnly`, `writeOnly` gibi bayraklar) korur. Alt öğe özetleri `key`, normalleştirilmiş `path`, `type`, `required`, `hasChildren` ile eşleşen `hint` / `hintPath` değerlerini açığa çıkarır.
-    - `update.run`, gateway güncelleme akışını çalıştırır ve yalnızca güncellemenin kendisi başarılı olduğunda yeniden başlatma planlar.
-    - `wizard.start`, `wizard.next`, `wizard.status` ve `wizard.cancel`, onboarding sihirbazını WS RPC üzerinden sunar.
+    - `config.apply`, tam yapılandırma payload'unu doğrular + değiştirir.
+    - `config.schema`, Control UI ve CLI araçları tarafından kullanılan canlı yapılandırma şeması payload'unu döndürür: şema, `uiHints`, sürüm ve üretim metadatası; çalışma zamanı yükleyebildiğinde plugin + kanal şeması metadatası dahil. Şema, eşleşen alan dokümantasyonu bulunduğunda iç içe nesne, joker karakter, dizi öğesi ve `anyOf` / `oneOf` / `allOf` bileşim dalları dahil olmak üzere UI tarafından kullanılan aynı etiketlerden ve yardım metninden türetilen alan `title` / `description` metadatasını içerir.
+    - `config.schema.lookup`, bir yapılandırma yolu için yol kapsamlı bir arama payload'u döndürür: normalize edilmiş yol, sığ bir şema düğümü, eşleşen ipucu + `hintPath` ve UI/CLI ayrıntıya inme için doğrudan alt özetler. Arama şeması düğümleri kullanıcıya yönelik dokümanları ve yaygın doğrulama alanlarını (`title`, `description`, `type`, `enum`, `const`, `format`, `pattern`, sayısal/dize/dizi/nesne sınırları ve `additionalProperties`, `deprecated`, `readOnly`, `writeOnly` gibi bayraklar) korur. Alt özetler `key`, normalize edilmiş `path`, `type`, `required`, `hasChildren` ile eşleşen `hint` / `hintPath` değerlerini sunar.
+    - `update.run`, Gateway güncelleme akışını çalıştırır ve yalnızca güncellemenin kendisi başarılı olduğunda yeniden başlatma zamanlar.
+    - `update.status`, mevcutsa yeniden başlatma sonrası çalışan sürüm dahil, en son önbelleğe alınmış güncelleme yeniden başlatma sentinel'ini döndürür.
+    - `wizard.start`, `wizard.next`, `wizard.status` ve `wizard.cancel`, başlangıç sihirbazını WS RPC üzerinden sunar.
 
   </Accordion>
 
   <Accordion title="Ajan ve çalışma alanı yardımcıları">
-    - `agents.list`, yapılandırılmış ajan girdilerini döndürür.
+    - `agents.list`, etkili model ve çalışma zamanı metadatası dahil yapılandırılmış ajan girdilerini döndürür.
     - `agents.create`, `agents.update` ve `agents.delete`, ajan kayıtlarını ve çalışma alanı bağlantılarını yönetir.
-    - `agents.files.list`, `agents.files.get` ve `agents.files.set`, bir ajan için açığa çıkarılan bootstrap çalışma alanı dosyalarını yönetir.
-    - `agent.identity.get`, bir ajan veya oturum için etkin asistan kimliğini döndürür.
-    - `agent.wait`, bir çalıştırmanın bitmesini bekler ve kullanılabildiğinde terminal snapshot'ını döndürür.
+    - `agents.files.list`, `agents.files.get` ve `agents.files.set`, bir ajan için sunulan bootstrap çalışma alanı dosyalarını yönetir.
+    - `agent.identity.get`, bir ajan veya oturum için etkili asistan kimliğini döndürür.
+    - `agent.wait`, bir çalıştırmanın bitmesini bekler ve mevcutsa son anlık görüntüyü döndürür.
 
   </Accordion>
 
-  <Accordion title="Oturum denetimi">
-    - `sessions.list`, geçerli oturum dizinini döndürür.
-    - `sessions.subscribe` ve `sessions.unsubscribe`, geçerli WS istemcisi için oturum değişikliği olay aboneliklerini açar/kapatır.
-    - `sessions.messages.subscribe` ve `sessions.messages.unsubscribe`, tek bir oturum için transkript/mesaj olay aboneliklerini açar/kapatır.
+  <Accordion title="Oturum kontrolü">
+    - `sessions.list`, bir ajan çalışma zamanı backend'i yapılandırıldığında satır başına `agentRuntime` metadatası dahil geçerli oturum dizinini döndürür.
+    - `sessions.subscribe` ve `sessions.unsubscribe`, geçerli WS istemcisi için oturum değişikliği olayı aboneliklerini açıp kapatır.
+    - `sessions.messages.subscribe` ve `sessions.messages.unsubscribe`, bir oturum için transkript/mesaj olayı aboneliklerini açıp kapatır.
     - `sessions.preview`, belirli oturum anahtarları için sınırlı transkript önizlemeleri döndürür.
-    - `sessions.resolve`, bir oturum hedefini çözümler veya kanonikleştirir.
+    - `sessions.resolve`, bir oturum hedefini çözer veya kanonikleştirir.
     - `sessions.create`, yeni bir oturum girdisi oluşturur.
     - `sessions.send`, mevcut bir oturuma mesaj gönderir.
-    - `sessions.steer`, etkin bir oturum için kes-ve-yönlendir varyantıdır.
-    - `sessions.abort`, bir oturum için etkin işi durdurur.
-    - `sessions.patch`, oturum metadata'sını/geçersiz kılmalarını günceller.
-    - `sessions.reset`, `sessions.delete` ve `sessions.compact`, oturum bakımı yapar.
-    - `sessions.get`, tam depolanmış oturum satırını döndürür.
-    - Sohbet yürütmesi hâlâ `chat.history`, `chat.send`, `chat.abort` ve `chat.inject` kullanır. `chat.history`, UI istemcileri için görüntüleme-normalleştirilmiştir: satır içi yönerge etiketleri görünür metinden çıkarılır, düz metin araç çağrısı XML payload'ları (`<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` ve kırpılmış araç çağrısı blokları dâhil) ve sızmış ASCII/tam genişlikli model kontrol token'ları çıkarılır, tam olarak `NO_REPLY` / `no_reply` olan salt sessiz-token asistan satırları atlanır ve aşırı büyük satırlar yer tutucularla değiştirilebilir.
+    - `sessions.steer`, etkin bir oturum için kesme-ve-yönlendirme varyantıdır.
+    - `sessions.abort`, bir oturum için etkin işi iptal eder. Çağıran, `key` ile birlikte isteğe bağlı `runId` iletebilir veya Gateway'in bir oturuma çözebildiği etkin çalıştırmalar için yalnızca `runId` iletebilir.
+    - `sessions.patch`, oturum metadatasını/geçersiz kılmalarını günceller ve çözümlenen kanonik modeli artı etkili `agentRuntime` değerini raporlar.
+    - `sessions.reset`, `sessions.delete` ve `sessions.compact`, oturum bakımını gerçekleştirir.
+    - `sessions.get`, saklanan tam oturum satırını döndürür.
+    - Sohbet yürütmesi hâlâ `chat.history`, `chat.send`, `chat.abort` ve `chat.inject` kullanır. `chat.history`, UI istemcileri için görüntüleme açısından normalize edilir: satır içi yönerge etiketleri görünür metinden çıkarılır, düz metin araç çağrısı XML payload'ları (`<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` ve kesilmiş araç çağrısı blokları dahil) ve sızmış ASCII/tam genişlikli model kontrol token'ları çıkarılır, tam `NO_REPLY` / `no_reply` gibi saf sessiz-token asistan satırları atlanır ve çok büyük satırlar yer tutucularla değiştirilebilir.
 
   </Accordion>
 
   <Accordion title="Cihaz eşleştirme ve cihaz token'ları">
     - `device.pair.list`, bekleyen ve onaylanmış eşleştirilmiş cihazları döndürür.
     - `device.pair.approve`, `device.pair.reject` ve `device.pair.remove`, cihaz eşleştirme kayıtlarını yönetir.
-    - `device.token.rotate`, eşleştirilmiş bir cihaz token'ını onaylı rolü ve çağıran kapsam sınırları içinde döndürür.
-    - `device.token.revoke`, eşleştirilmiş bir cihaz token'ını onaylı rolü ve çağıran kapsam sınırları içinde iptal eder.
+    - `device.token.rotate`, eşleştirilmiş bir cihaz token'ını onaylanmış rolü ve çağıran kapsamı sınırları içinde döndürür.
+    - `device.token.revoke`, eşleştirilmiş bir cihaz token'ını onaylanmış rolü ve çağıran kapsamı sınırları içinde iptal eder.
 
   </Accordion>
 
-  <Accordion title="Node eşleştirme, invoke ve bekleyen işler">
-    - `node.pair.request`, `node.pair.list`, `node.pair.approve`, `node.pair.reject` ve `node.pair.verify`, Node eşleştirme ve bootstrap doğrulamayı kapsar.
+  <Accordion title="Node eşleştirme, çağırma ve bekleyen iş">
+    - `node.pair.request`, `node.pair.list`, `node.pair.approve`, `node.pair.reject`, `node.pair.remove` ve `node.pair.verify`, Node eşleştirme ve bootstrap doğrulamasını kapsar.
     - `node.list` ve `node.describe`, bilinen/bağlı Node durumunu döndürür.
     - `node.rename`, eşleştirilmiş bir Node etiketini günceller.
     - `node.invoke`, bağlı bir Node'a komut iletir.
-    - `node.invoke.result`, bir invoke isteğinin sonucunu döndürür.
-    - `node.event`, Node kaynaklı olayları tekrar gateway'e taşır.
-    - `node.canvas.capability.refresh`, kapsamlı canvas yetenek token'larını yeniler.
-    - `node.pending.pull` ve `node.pending.ack`, bağlı Node kuyruğu API'leridir.
-    - `node.pending.enqueue` ve `node.pending.drain`, çevrimdışı/bağlantısı kesik Node'lar için kalıcı bekleyen işleri yönetir.
+    - `node.invoke.result`, bir çağırma isteği için sonucu döndürür.
+    - `node.event`, Node kaynaklı olayları Gateway'e geri taşır.
+    - `node.canvas.capability.refresh`, kapsamlı canvas yeteneği token'larını yeniler.
+    - `node.pending.pull` ve `node.pending.ack`, bağlı Node kuyruk API'leridir.
+    - `node.pending.enqueue` ve `node.pending.drain`, çevrimdışı/bağlantısı kesilmiş Node'lar için kalıcı bekleyen işi yönetir.
 
   </Accordion>
 
   <Accordion title="Onay aileleri">
-    - `exec.approval.request`, `exec.approval.get`, `exec.approval.list` ve `exec.approval.resolve`, tek seferlik exec onay isteklerini ve bekleyen onay lookup/replay işlemlerini kapsar.
-    - `exec.approval.waitDecision`, tek bir bekleyen exec onayı üzerinde bekler ve nihai kararı döndürür (veya zaman aşımında `null`).
-    - `exec.approvals.get` ve `exec.approvals.set`, gateway exec onay politikası snapshot'larını yönetir.
-    - `exec.approvals.node.get` ve `exec.approvals.node.set`, Node relay komutları aracılığıyla Node-yerel exec onay politikasını yönetir.
+    - `exec.approval.request`, `exec.approval.get`, `exec.approval.list` ve `exec.approval.resolve`, tek seferlik exec onay isteklerini ve bekleyen onay arama/yeniden oynatmayı kapsar.
+    - `exec.approval.waitDecision`, bekleyen bir exec onayını bekler ve nihai kararı döndürür (veya zaman aşımında `null`).
+    - `exec.approvals.get` ve `exec.approvals.set`, Gateway exec onay politikası anlık görüntülerini yönetir.
+    - `exec.approvals.node.get` ve `exec.approvals.node.set`, Node aktarma komutları üzerinden Node yerel exec onay politikasını yönetir.
     - `plugin.approval.request`, `plugin.approval.list`, `plugin.approval.waitDecision` ve `plugin.approval.resolve`, plugin tanımlı onay akışlarını kapsar.
 
   </Accordion>
 
-  <Accordion title="Otomasyon, Skills ve araçlar">
-    - Otomasyon: `wake`, hemen veya bir sonraki Heartbeat için metin enjeksiyonu planlar; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs`, planlanmış işleri yönetir.
+  <Accordion title="Otomasyon, skills ve araçlar">
+    - Otomasyon: `wake`, anlık veya sonraki heartbeat uyandırma metni enjeksiyonunu zamanlar; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` zamanlanmış işi yönetir.
     - Skills ve araçlar: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
 
   </Accordion>
@@ -411,19 +409,19 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
 
 ### Yaygın olay aileleri
 
-- `chat`: `chat.inject` ve diğer yalnızca transkript olan sohbet
-  olayları gibi UI sohbet güncellemeleri.
-- `session.message` ve `session.tool`: abone olunmuş bir oturum için
-  transkript/olay akışı güncellemeleri.
-- `sessions.changed`: oturum dizini veya metadata değişti.
-- `presence`: sistem presence snapshot güncellemeleri.
+- `chat`: `chat.inject` gibi UI sohbet güncellemeleri ve diğer yalnızca transkript sohbet
+  olayları.
+- `session.message` ve `session.tool`: abone olunan bir oturum için transkript/olay akışı
+  güncellemeleri.
+- `sessions.changed`: oturum dizini veya metadatası değişti.
+- `presence`: sistem presence anlık görüntüsü güncellemeleri.
 - `tick`: periyodik keepalive / canlılık olayı.
-- `health`: gateway sağlık snapshot güncellemesi.
-- `heartbeat`: Heartbeat olay akışı güncellemesi.
-- `cron`: Cron çalıştırma/iş değişiklik olayı.
-- `shutdown`: gateway kapanış bildirimi.
+- `health`: Gateway sağlık anlık görüntüsü güncellemesi.
+- `heartbeat`: heartbeat olay akışı güncellemesi.
+- `cron`: cron çalıştırma/iş değişikliği olayı.
+- `shutdown`: Gateway kapatma bildirimi.
 - `node.pair.requested` / `node.pair.resolved`: Node eşleştirme yaşam döngüsü.
-- `node.invoke.request`: Node invoke isteği yayını.
+- `node.invoke.request`: Node çağırma isteği yayını.
 - `device.pair.requested` / `device.pair.resolved`: eşleştirilmiş cihaz yaşam döngüsü.
 - `voicewake.changed`: uyandırma sözcüğü tetikleyici yapılandırması değişti.
 - `exec.approval.requested` / `exec.approval.resolved`: exec onay
@@ -433,67 +431,59 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
 
 ### Node yardımcı yöntemleri
 
-- Node'lar, otomatik izin denetimleri
-  için mevcut Skill çalıştırılabilir dosyaları listesini almak üzere `skills.bins` çağırabilir.
+- Node'lar, otomatik izin kontrolleri için geçerli skill yürütülebilirleri listesini almak üzere `skills.bins` çağırabilir.
 
-### Operator yardımcı yöntemleri
+### Operatör yardımcı yöntemleri
 
-- Operator'ler, bir ajan için çalışma zamanı
-  komut envanterini almak üzere `commands.list` (`operator.read`) çağırabilir.
-  - `agentId` isteğe bağlıdır; varsayılan ajan çalışma alanını okumak için atlayın.
-  - `scope`, birincil `name` hedefinin hangi yüzeyi kullandığını denetler:
-    - `text`, başında `/` olmadan birincil metin komut token'ını döndürür
+- Operatörler, bir ajan için çalışma zamanı komut envanterini almak üzere `commands.list` (`operator.read`) çağırabilir.
+  - `agentId` isteğe bağlıdır; varsayılan ajan çalışma alanını okumak için bunu atlayın.
+  - `scope`, birincil `name` değerinin hangi yüzeyi hedeflediğini denetler:
+    - `text`, baştaki `/` olmadan birincil metin komutu belirtecini döndürür
     - `native` ve varsayılan `both` yolu, varsa sağlayıcıya duyarlı yerel adları döndürür
   - `textAliases`, `/model` ve `/m` gibi tam slash takma adlarını taşır.
   - `nativeName`, varsa sağlayıcıya duyarlı yerel komut adını taşır.
-  - `provider` isteğe bağlıdır ve yalnızca yerel adlandırmayı ve yerel plugin
-    komut kullanılabilirliğini etkiler.
-  - `includeArgs=false`, seri hale getirilmiş argüman metadata'sını yanıttan çıkarır.
-- Operator'ler, bir
-  ajan için çalışma zamanı araç kataloğunu almak üzere `tools.catalog` (`operator.read`) çağırabilir. Yanıt, gruplanmış araçları ve kaynak metadata'sını içerir:
+  - `provider` isteğe bağlıdır ve yalnızca yerel adlandırmayı ve yerel plugin komutu kullanılabilirliğini etkiler.
+  - `includeArgs=false`, yanıttan serileştirilmiş argüman meta verilerini çıkarır.
+- Operatörler, bir ajan için çalışma zamanı araç kataloğunu almak üzere `tools.catalog` (`operator.read`) çağırabilir. Yanıt, gruplanmış araçları ve köken meta verilerini içerir:
   - `source`: `core` veya `plugin`
   - `pluginId`: `source="plugin"` olduğunda plugin sahibi
   - `optional`: bir plugin aracının isteğe bağlı olup olmadığı
-- Operator'ler, bir oturum için çalışma zamanı açısından etkin araç
-  envanterini almak üzere `tools.effective` (`operator.read`) çağırabilir.
+- Operatörler, bir oturum için çalışma zamanında etkin araç envanterini almak üzere `tools.effective` (`operator.read`) çağırabilir.
   - `sessionKey` zorunludur.
-  - Gateway, çağıran tarafından sağlanan auth veya teslim bağlamını kabul etmek yerine
-    güvenilir çalışma zamanı bağlamını sunucu tarafında oturumdan türetir.
-  - Yanıt oturum kapsamlıdır ve etkin konuşmanın şu anda neyi kullanabildiğini yansıtır;
-    çekirdek, plugin ve kanal araçları dâhil.
-- Operator'ler, bir ajan için görünür
-  Skill envanterini almak üzere `skills.status` (`operator.read`) çağırabilir.
-  - `agentId` isteğe bağlıdır; varsayılan ajan çalışma alanını okumak için atlayın.
-  - Yanıt; uygunluğu, eksik gereksinimleri, yapılandırma denetimlerini ve
-    ham secret değerlerini açığa çıkarmadan arındırılmış yükleme seçeneklerini içerir.
-- Operator'ler, ClawHub keşif metadata'sı için
-  `skills.search` ve `skills.detail` (`operator.read`) çağırabilir.
-- Operator'ler, `skills.install` (`operator.admin`) çağrısını iki modda kullanabilir:
-  - ClawHub modu: `{ source: "clawhub", slug, version?, force? }`, bir
-    Skill klasörünü varsayılan ajan çalışma alanı `skills/` dizinine yükler.
-  - Gateway yükleyici modu: `{ name, installId, dangerouslyForceUnsafeInstall?, timeoutMs? }`
-    gateway ana makinesinde beyan edilmiş bir `metadata.openclaw.install` eylemini çalıştırır.
-- Operator'ler, `skills.update` (`operator.admin`) çağrısını iki modda kullanabilir:
-  - ClawHub modu, varsayılan ajan çalışma alanındaki tek bir izlenen slug'ı veya tüm izlenen ClawHub yüklemelerini günceller.
-  - Config modu, `skills.entries.<skillKey>` altındaki `enabled`,
-    `apiKey` ve `env` gibi değerleri yamalar.
+  - Gateway, çağıranın sağladığı kimlik doğrulama veya teslimat bağlamını kabul etmek yerine güvenilir çalışma zamanı bağlamını sunucu tarafında oturumdan türetir.
+  - Yanıt oturum kapsamındadır ve çekirdek, plugin ve kanal araçları dahil olmak üzere etkin konuşmanın şu anda kullanabileceklerini yansıtır.
+- Operatörler, bir ajan için görünür yetenek envanterini almak üzere `skills.status` (`operator.read`) çağırabilir.
+  - `agentId` isteğe bağlıdır; varsayılan ajan çalışma alanını okumak için bunu atlayın.
+  - Yanıt, ham gizli değerleri açığa çıkarmadan uygunluğu, eksik gereksinimleri, yapılandırma denetimlerini ve temizlenmiş kurulum seçeneklerini içerir.
+- Operatörler, ClawHub keşif meta verileri için `skills.search` ve `skills.detail` (`operator.read`) çağırabilir.
+- Operatörler, iki modda `skills.install` (`operator.admin`) çağırabilir:
+  - ClawHub modu: `{ source: "clawhub", slug, version?, force? }`, varsayılan ajan çalışma alanındaki `skills/` dizinine bir yetenek klasörü kurar.
+  - Gateway kurucu modu: `{ name, installId, dangerouslyForceUnsafeInstall?, timeoutMs? }`, Gateway ana makinesinde bildirilmiş bir `metadata.openclaw.install` eylemi çalıştırır.
+- Operatörler, iki modda `skills.update` (`operator.admin`) çağırabilir:
+  - ClawHub modu, izlenen tek bir slug'ı veya varsayılan ajan çalışma alanındaki tüm izlenen ClawHub kurulumlarını günceller.
+  - Yapılandırma modu, `enabled`, `apiKey` ve `env` gibi `skills.entries.<skillKey>` değerlerini yamalar.
+
+### `models.list` görünümleri
+
+`models.list`, isteğe bağlı bir `view` parametresi kabul eder:
+
+- Atlanmış veya `"default"`: geçerli çalışma zamanı davranışı. `agents.defaults.models` yapılandırılmışsa yanıt izin verilen katalogdur; aksi halde yanıt tam Gateway kataloğudur.
+- `"configured"`: seçici boyutunda davranış. `agents.defaults.models` yapılandırılmışsa yine önceliklidir. Aksi halde yanıt, açık `models.providers.*.models` girişlerini kullanır ve yalnızca yapılandırılmış model satırları yoksa tam kataloğa geri döner.
+- `"all"`: `agents.defaults.models` değerini atlayarak tam Gateway kataloğu. Bunu normal model seçiciler için değil, tanılama ve keşif arayüzleri için kullanın.
 
 ## Exec onayları
 
-- Bir exec isteği onay gerektirdiğinde gateway, `exec.approval.requested` yayınlar.
-- Operator istemcileri `exec.approval.resolve` çağırarak çözümler (`operator.approvals` kapsamı gerekir).
-- `host=node` için `exec.approval.request`, `systemRunPlan` içermelidir (kanonik `argv`/`cwd`/`rawCommand`/session metadata). `systemRunPlan` içermeyen istekler reddedilir.
-- Onaydan sonra iletilen `node.invoke system.run` çağrıları, yetkili komut/cwd/oturum bağlamı olarak bu kanonik
-  `systemRunPlan` değerini yeniden kullanır.
-- Çağıran prepare ile son onaylı `system.run` iletimi arasında `command`, `rawCommand`, `cwd`, `agentId` veya
-  `sessionKey` değerlerini değiştirirse gateway, değiştirilmiş payload'a güvenmek yerine
-  çalıştırmayı reddeder.
+- Bir exec isteği onay gerektirdiğinde Gateway `exec.approval.requested` yayınlar.
+- Operatör istemcileri, `exec.approval.resolve` çağırarak çözümler (`operator.approvals` kapsamı gerekir).
+- `host=node` için `exec.approval.request`, `systemRunPlan` içermelidir (kanonik `argv`/`cwd`/`rawCommand`/oturum meta verileri). `systemRunPlan` eksik istekler reddedilir.
+- Onaydan sonra iletilen `node.invoke system.run` çağrıları, yetkili komut/cwd/oturum bağlamı olarak bu kanonik `systemRunPlan` değerini yeniden kullanır.
+- Bir çağıran, prepare ile nihai onaylı `system.run` iletimi arasında `command`, `rawCommand`, `cwd`, `agentId` veya `sessionKey` değerini değiştirirse Gateway, değiştirilmiş yük verisine güvenmek yerine çalıştırmayı reddeder.
 
-## Ajan teslim fallback'i
+## Ajan teslimat geri dönüşü
 
-- `agent` istekleri, giden teslim istemek için `deliver=true` içerebilir.
-- `bestEffortDeliver=false`, katı davranışı korur: çözümlenmemiş veya yalnızca dahili teslim hedefleri `INVALID_REQUEST` döndürür.
-- `bestEffortDeliver=true`, harici teslim edilebilir rota çözümlenemediğinde oturum-yalnız yürütmeye fallback'e izin verir (örneğin dahili/webchat oturumları veya belirsiz çok kanallı yapılandırmalar).
+- `agent` istekleri, giden teslimat istemek için `deliver=true` içerebilir.
+- `bestEffortDeliver=false` katı davranışı korur: çözülemeyen veya yalnızca dahili teslimat hedefleri `INVALID_REQUEST` döndürür.
+- `bestEffortDeliver=true`, harici olarak teslim edilebilir bir rota çözülemediğinde oturumla sınırlı yürütmeye geri dönüşe izin verir (örneğin dahili/webchat oturumları veya belirsiz çok kanallı yapılandırmalar).
 
 ## Sürümleme
 
@@ -506,144 +496,99 @@ numaralandırma olarak değil, özellik keşfi olarak değerlendirin.
 
 ### İstemci sabitleri
 
-`src/gateway/client.ts` içindeki referans istemci şu varsayılanları kullanır. Değerler
-protokol v3 boyunca kararlıdır ve üçüncü taraf istemciler için beklenen temeldir.
+`src/gateway/client.ts` içindeki referans istemci bu varsayılanları kullanır. Değerler protocol v3 genelinde kararlıdır ve üçüncü taraf istemciler için beklenen başlangıç temelidir.
 
-| Sabit                                     | Varsayılan                                           | Kaynak                                                     |
-| ----------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
-| `PROTOCOL_VERSION`                        | `3`                                                  | `src/gateway/protocol/schema/protocol-schemas.ts`          |
-| İstek zaman aşımı (RPC başına)            | `30_000` ms                                          | `src/gateway/client.ts` (`requestTimeoutMs`)               |
-| Ön kimlik doğrulama / connect-challenge zaman aşımı | `10_000` ms                               | `src/gateway/handshake-timeouts.ts` (clamp `250`–`10_000`) |
-| İlk yeniden bağlanma backoff'u            | `1_000` ms                                           | `src/gateway/client.ts` (`backoffMs`)                      |
-| En yüksek yeniden bağlanma backoff'u      | `30_000` ms                                          | `src/gateway/client.ts` (`scheduleReconnect`)              |
-| Device-token kapanışından sonra hızlı yeniden deneme clamp'i | `250` ms                             | `src/gateway/client.ts`                                    |
-| `terminate()` öncesi zorla durdurma bekleme süresi | `250` ms                                   | `FORCE_STOP_TERMINATE_GRACE_MS`                            |
-| `stopAndWait()` varsayılan zaman aşımı    | `1_000` ms                                           | `STOP_AND_WAIT_TIMEOUT_MS`                                 |
-| Varsayılan tick aralığı (`hello-ok` öncesi) | `30_000` ms                                        | `src/gateway/client.ts`                                    |
-| Tick zaman aşımı kapanışı                 | sessizlik `tickIntervalMs * 2` değerini aştığında kod `4000` | `src/gateway/client.ts`                           |
-| `MAX_PAYLOAD_BYTES`                       | `25 * 1024 * 1024` (25 MB)                           | `src/gateway/server-constants.ts`                          |
+| Sabit                                    | Varsayılan                                            | Kaynak                                                                                     |
+| ---------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `PROTOCOL_VERSION`                       | `3`                                                   | `src/gateway/protocol/schema/protocol-schemas.ts`                                          |
+| İstek zaman aşımı (RPC başına)           | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)                                               |
+| Ön kimlik doğrulama / connect-challenge zaman aşımı | `15_000` ms                                | `src/gateway/handshake-timeouts.ts` (config/env eşleştirilmiş sunucu/istemci bütçesini artırabilir) |
+| İlk yeniden bağlanma backoff'u           | `1_000` ms                                            | `src/gateway/client.ts` (`backoffMs`)                                                      |
+| En yüksek yeniden bağlanma backoff'u     | `30_000` ms                                           | `src/gateway/client.ts` (`scheduleReconnect`)                                              |
+| Device-token kapanışından sonra hızlı yeniden deneme sınırı | `250` ms                                | `src/gateway/client.ts`                                                                    |
+| `terminate()` öncesi zorla durdurma ek süresi | `250` ms                                          | `FORCE_STOP_TERMINATE_GRACE_MS`                                                            |
+| `stopAndWait()` varsayılan zaman aşımı   | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                                                 |
+| Varsayılan tick aralığı (`hello-ok` öncesi) | `30_000` ms                                        | `src/gateway/client.ts`                                                                    |
+| Tick zaman aşımı kapanışı                | sessizlik `tickIntervalMs * 2` değerini aştığında kod `4000` | `src/gateway/client.ts`                                                            |
+| `MAX_PAYLOAD_BYTES`                      | `25 * 1024 * 1024` (25 MB)                            | `src/gateway/server-constants.ts`                                                          |
 
-Sunucu etkin `policy.tickIntervalMs`, `policy.maxPayload`
-ve `policy.maxBufferedBytes` değerlerini `hello-ok` içinde ilan eder; istemciler
-handshake öncesi varsayılanlar yerine bu değerlere uymalıdır.
+Sunucu, etkin `policy.tickIntervalMs`, `policy.maxPayload` ve `policy.maxBufferedBytes` değerlerini `hello-ok` içinde duyurur; istemciler el sıkışma öncesi varsayılanlar yerine bu değerlere uymalıdır.
 
-## Auth
+## Kimlik doğrulama
 
-- Paylaşımlı secret gateway auth, yapılandırılmış auth moduna bağlı olarak
-  `connect.params.auth.token` veya
-  `connect.params.auth.password` kullanır.
-- Tailscale Serve
-  (`gateway.auth.allowTailscale: true`) veya loopback dışı
-  `gateway.auth.mode: "trusted-proxy"` gibi kimlik taşıyan modlar, connect auth denetimini
-  `connect.params.auth.*` yerine istek başlıklarından karşılar.
-- Private-ingress `gateway.auth.mode: "none"`, paylaşımlı secret connect auth'u
-  tamamen atlar; bu modu herkese açık/güvenilmeyen girişlerde açığa çıkarmayın.
-- Eşleştirmeden sonra Gateway, bağlantı
-  rolü + kapsamlarına göre sınırlı bir **device token** verir. Bu token
-  `hello-ok.auth.deviceToken` içinde döner ve istemci tarafından sonraki bağlantılar için
-  kalıcı olarak saklanmalıdır.
-- İstemciler, başarılı her
-  bağlantıdan sonra birincil `hello-ok.auth.deviceToken` değerini kalıcı olarak saklamalıdır.
-- Bu **depolanmış** device token ile yeniden bağlanırken, bu token için depolanmış
-  onaylı kapsam kümesi de yeniden kullanılmalıdır. Bu, zaten verilmiş
-  okuma/yoklama/durum erişimini korur ve yeniden bağlanmaların sessizce
-  daha dar örtük admin-only kapsama çökmesini önler.
-- İstemci tarafı connect auth birleştirmesi (`src/gateway/client.ts`
-  içindeki `selectConnectAuth`):
-  - `auth.password` bağımsızdır ve ayarlıysa her zaman iletilir.
-  - `auth.token` şu öncelik sırasına göre doldurulur: önce açık paylaşımlı token,
-    sonra açık bir `deviceToken`, sonra depolanmış cihaz başına token (`deviceId` + `role`
-    ile anahtarlanır).
-  - `auth.bootstrapToken`, yalnızca yukarıdakilerin hiçbiri bir
-    `auth.token` çözümlemediyse gönderilir. Paylaşımlı token veya çözümlenen herhangi bir device token bunu bastırır.
-  - Bir kerelik
-    `AUTH_TOKEN_MISMATCH` yeniden denemesinde depolanmış device token'ın otomatik yükseltilmesi yalnızca **güvenilir uç noktalar** için geçerlidir —
-    loopback veya pinlenmiş `tlsFingerprint` ile `wss://`.
-    Pinleme olmadan herkese açık `wss://` buna girmez.
-- Ek `hello-ok.auth.deviceTokens` girdileri bootstrap devralma token'larıdır.
-  Bunları yalnızca bağlantı, `wss://` veya loopback/yerel eşleştirme gibi
-  güvenilir bir taşıma üzerinde bootstrap auth kullandıysa kalıcı olarak saklayın.
-- Bir istemci açık bir `deviceToken` veya açık `scopes` sağlarsa, çağıran tarafından istenen
-  bu kapsam kümesi yetkili kalır; önbelleğe alınmış kapsamlar yalnızca
-  istemci depolanmış cihaz başına token'ı yeniden kullanıyorsa yeniden kullanılır.
-- Device token'lar `device.token.rotate` ve
-  `device.token.revoke` ile döndürülebilir/iptal edilebilir (`operator.pairing` kapsamı gerekir).
-- Token verme, döndürme ve iptal etme işlemleri o cihazın eşleştirme girdisinde
-  kaydedilmiş onaylı rol kümesiyle sınırlı kalır; token değişikliği
-  eşleştirme onayının hiç vermediği bir cihaz rolünü genişletemez veya hedefleyemez.
-- Eşleştirilmiş cihaz token oturumları için cihaz yönetimi, çağıranın ayrıca
-  `operator.admin` yetkisi yoksa kendine kapsamlıdır: admin olmayan çağıranlar yalnızca **kendi**
-  cihaz girdilerini kaldırabilir/iptal edebilir/döndürebilir.
-- `device.token.rotate` ve `device.token.revoke`, hedef operator
-  token kapsam kümesini çağıranın geçerli oturum kapsamlarına karşı da denetler.
-  Admin olmayan çağıranlar zaten ellerinde olandan daha geniş bir operator token'ı döndüremez veya iptal edemez.
-- Auth hataları `error.details.code` ile birlikte kurtarma ipuçları içerir:
+- Paylaşılan gizli Gateway kimlik doğrulaması, yapılandırılmış kimlik doğrulama moduna bağlı olarak `connect.params.auth.token` veya `connect.params.auth.password` kullanır.
+- Tailscale Serve (`gateway.auth.allowTailscale: true`) veya local loopback olmayan `gateway.auth.mode: "trusted-proxy"` gibi kimlik taşıyan modlar, connect kimlik doğrulama denetimini `connect.params.auth.*` yerine istek başlıklarından karşılar.
+- Özel giriş `gateway.auth.mode: "none"`, paylaşılan gizli connect kimlik doğrulamasını tamamen atlar; bu modu herkese açık/güvenilmeyen girişlerde açığa çıkarmayın.
+- Eşleştirmeden sonra Gateway, bağlantı rolü + kapsamlarıyla sınırlı bir **cihaz belirteci** verir. Bu belirteç `hello-ok.auth.deviceToken` içinde döndürülür ve istemci tarafından gelecekteki bağlantılar için kalıcı hale getirilmelidir.
+- İstemciler, başarılı her bağlantıdan sonra birincil `hello-ok.auth.deviceToken` değerini kalıcı hale getirmelidir.
+- Bu **saklanan** cihaz belirteciyle yeniden bağlanırken, o belirteç için saklanan onaylı kapsam kümesi de yeniden kullanılmalıdır. Bu, zaten verilmiş olan okuma/yoklama/durum erişimini korur ve yeniden bağlantıların sessizce daha dar bir örtük yalnızca yönetici kapsamına düşmesini önler.
+- İstemci tarafı connect kimlik doğrulaması derlemesi (`src/gateway/client.ts` içindeki `selectConnectAuth`):
+  - `auth.password` ortogonaldir ve ayarlandığında her zaman iletilir.
+  - `auth.token` öncelik sırasına göre doldurulur: önce açık paylaşılan belirteç, ardından açık bir `deviceToken`, ardından saklanan cihaz başına belirteç (`deviceId` + `role` ile anahtarlanır).
+  - `auth.bootstrapToken`, yalnızca yukarıdakilerin hiçbiri bir `auth.token` çözmediğinde gönderilir. Paylaşılan belirteç veya çözülen herhangi bir cihaz belirteci bunu bastırır.
+  - Tek seferlik `AUTH_TOKEN_MISMATCH` yeniden denemesinde saklanan cihaz belirtecinin otomatik yükseltilmesi yalnızca **güvenilir uç noktalarla** sınırlıdır: loopback veya sabitlenmiş `tlsFingerprint` içeren `wss://`. Sabitleme olmayan herkese açık `wss://` uygun değildir.
+- Ek `hello-ok.auth.deviceTokens` girişleri bootstrap devir belirteçleridir. Bunları yalnızca connect, `wss://` veya loopback/yerel eşleştirme gibi güvenilir bir aktarım üzerinde bootstrap kimlik doğrulaması kullandığında kalıcı hale getirin.
+- Bir istemci **açık** bir `deviceToken` veya açık `scopes` sağlarsa, çağıranın istediği kapsam kümesi yetkili kalır; önbelleğe alınmış kapsamlar yalnızca istemci saklanan cihaz başına belirteci yeniden kullandığında yeniden kullanılır.
+- Cihaz belirteçleri `device.token.rotate` ve `device.token.revoke` ile döndürülebilir/iptal edilebilir (`operator.pairing` kapsamı gerekir).
+- `device.token.rotate`, döndürme meta verilerini döndürür. Yedek taşıyıcı belirteci yalnızca aynı cihazdan, zaten o cihaz belirteciyle kimliği doğrulanmış çağrılar için yankılar; böylece yalnızca belirteç kullanan istemciler yeniden bağlanmadan önce yedeklerini kalıcı hale getirebilir. Paylaşılan/yönetici döndürmeleri taşıyıcı belirteci yankılamaz.
+- Belirteç verme, döndürme ve iptal etme, o cihazın eşleştirme girişinde kaydedilmiş onaylı rol kümesiyle sınırlı kalır; belirteç mutasyonu, eşleştirme onayının hiç vermediği bir cihaz rolünü genişletemez veya hedefleyemez.
+- Eşleştirilmiş cihaz belirteci oturumları için, çağıranda ayrıca `operator.admin` yoksa cihaz yönetimi kendi kapsamındadır: yönetici olmayan çağıranlar yalnızca **kendi** cihaz girişlerini kaldırabilir/iptal edebilir/döndürebilir.
+- `device.token.rotate` ve `device.token.revoke`, hedef operatör belirteci kapsam kümesini çağıranın geçerli oturum kapsamlarına göre de denetler. Yönetici olmayan çağıranlar, zaten sahip olduklarından daha geniş bir operatör belirtecini döndüremez veya iptal edemez.
+- Kimlik doğrulama hataları, `error.details.code` ve kurtarma ipuçlarını içerir:
   - `error.details.canRetryWithDeviceToken` (boolean)
   - `error.details.recommendedNextStep` (`retry_with_device_token`, `update_auth_configuration`, `update_auth_credentials`, `wait_then_retry`, `review_auth_configuration`)
 - `AUTH_TOKEN_MISMATCH` için istemci davranışı:
-  - Güvenilen istemciler önbelleğe alınmış cihaz başına token ile bir sınırlı yeniden deneme yapabilir.
-  - Bu yeniden deneme başarısız olursa istemciler otomatik yeniden bağlanma döngülerini durdurmalı ve operatör eylem kılavuzunu göstermelidir.
+  - Güvenilir istemciler, önbelleğe alınmış cihaz başına belirteçle sınırlı bir yeniden deneme girişiminde bulunabilir.
+  - Bu yeniden deneme başarısız olursa istemciler otomatik yeniden bağlanma döngülerini durdurmalı ve operatör eylemi yönergesini göstermelidir.
 
 ## Cihaz kimliği + eşleştirme
 
-- Node'lar, bir anahtar çifti fingerprint'inden türetilmiş kararlı bir cihaz kimliği (`device.id`)
-  eklemelidir.
-- Gateway'ler cihaz + rol başına token verir.
-- Yerel otomatik onay
-  etkin değilse yeni cihaz kimlikleri için eşleştirme onayı gerekir.
-- Eşleştirme otomatik onayı, doğrudan yerel loopback bağlantılarına odaklanır.
-- OpenClaw ayrıca güvenilen paylaşımlı secret yardımcı akışları için dar kapsamlı
-  bir backend/konteyner-yerel self-connect yoluna sahiptir.
-- Aynı ana makinedeki tailnet veya LAN bağlantıları yine de uzak kabul edilir ve
-  onay gerektirir.
-- WS istemcileri normalde `connect` sırasında `device` kimliği ekler (operator +
-  node). Cihazsız tek operator istisnaları açık güven yollarıdır:
-  - yalnızca localhost güvensiz HTTP uyumluluğu için `gateway.controlUi.allowInsecureAuth=true`.
-  - başarılı `gateway.auth.mode: "trusted-proxy"` operator Control UI auth'u.
+- Node'lar, anahtar çifti parmak izinden türetilen kararlı bir cihaz kimliği (`device.id`) içermelidir.
+- Gateway'ler cihaz + rol başına token yayınlar.
+- Yerel otomatik onay etkin değilse yeni cihaz kimlikleri için eşleştirme onayları gerekir.
+- Eşleştirme otomatik onayı, doğrudan local loopback bağlantılarına odaklanır.
+- OpenClaw ayrıca güvenilir paylaşılan gizli yardımcı akışları için dar bir backend/container-local kendi kendine bağlanma yoluna sahiptir.
+- Aynı ana bilgisayardaki tailnet veya LAN bağlantıları, eşleştirme için yine uzak olarak değerlendirilir ve onay gerektirir.
+- WS istemcileri normalde `connect` sırasında `device` kimliğini içerir (operatör + node). Cihazsız tek operatör istisnaları açık güven yollarıdır:
+  - Yalnızca localhost'a yönelik güvensiz HTTP uyumluluğu için `gateway.controlUi.allowInsecureAuth=true`.
+  - Başarılı `gateway.auth.mode: "trusted-proxy"` operatör Control UI kimlik doğrulaması.
   - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (son çare, ciddi güvenlik düşüşü).
-  - paylaşılan
-    gateway token/password ile kimlik doğrulanmış doğrudan loopback `gateway-client` backend RPC'leri.
-- Tüm bağlantılar sunucu tarafından sağlanan `connect.challenge` nonce'unu imzalamalıdır.
+  - Paylaşılan gateway token/parolasıyla kimliği doğrulanmış direct-loopback `gateway-client` backend RPC'leri.
+- Tüm bağlantılar, sunucunun sağladığı `connect.challenge` nonce değerini imzalamalıdır.
 
-### Cihaz auth taşıma tanılaması
+### Cihaz kimlik doğrulaması geçiş tanıları
 
-Hâlâ challenge öncesi imzalama davranışı kullanan eski istemciler için `connect`, artık
-`error.details.reason` içinde kararlı bir değerle `error.details.code` altında
-`DEVICE_AUTH_*` ayrıntı kodları döndürür.
+Hala challenge öncesi imzalama davranışını kullanan eski istemciler için `connect` artık kararlı bir `error.details.reason` ile `error.details.code` altında `DEVICE_AUTH_*` ayrıntı kodları döndürür.
 
-Yaygın taşıma hataları:
+Yaygın geçiş hataları:
 
-| Mesaj                       | details.code                     | details.reason           | Anlamı                                             |
+| Mesaj                       | details.code                     | details.reason           | Anlam                                              |
 | --------------------------- | -------------------------------- | ------------------------ | -------------------------------------------------- |
-| `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | İstemci `device.nonce` alanını atladı (veya boş gönderdi). |
-| `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | İstemci bayat/yanlış bir nonce ile imzaladı.       |
-| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | İmza payload'ı v2 payload ile eşleşmiyor.          |
-| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | İmzalı zaman damgası izin verilen kaymanın dışında. |
-| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id`, genel anahtar fingerprint'i ile eşleşmiyor. |
-| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | Genel anahtar biçimi/kanonikleştirme başarısız oldu. |
+| `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | İstemci `device.nonce` değerini atladı (veya boş gönderdi). |
+| `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | İstemci eski/yanlış nonce ile imzaladı.            |
+| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | İmza yükü v2 yüküyle eşleşmiyor.                   |
+| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | İmzalı zaman damgası izin verilen sapmanın dışında. |
+| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id`, açık anahtar parmak iziyle eşleşmiyor. |
+| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | Açık anahtar biçimi/standartlaştırması başarısız oldu. |
 
-Taşıma hedefi:
+Geçiş hedefi:
 
-- Her zaman `connect.challenge` bekleyin.
-- Sunucu nonce'unu içeren v2 payload'ı imzalayın.
-- Aynı nonce'u `connect.params.device.nonce` içinde gönderin.
-- Tercih edilen imza payload'ı, device/client/role/scopes/token/nonce alanlarına ek olarak `platform` ve `deviceFamily` bağlayan `v3`'tür.
-- Eski `v2` imzaları uyumluluk için kabul edilmeye devam eder, ancak eşleştirilmiş cihaz
-  metadata pinleme yine de yeniden bağlanmada komut politikasını denetler.
+- Her zaman `connect.challenge` değerini bekleyin.
+- Sunucu nonce değerini içeren v2 yükünü imzalayın.
+- Aynı nonce değerini `connect.params.device.nonce` içinde gönderin.
+- Tercih edilen imza yükü, cihaz/istemci/rol/kapsamlar/token/nonce alanlarına ek olarak `platform` ve `deviceFamily` değerlerini de bağlayan `v3` değeridir.
+- Eski `v2` imzaları uyumluluk için kabul edilmeye devam eder, ancak eşleştirilmiş cihaz metadata sabitlemesi yeniden bağlantıda komut politikasını denetlemeye devam eder.
 
-## TLS + pinleme
+## TLS + sabitleme
 
 - WS bağlantıları için TLS desteklenir.
-- İstemciler isteğe bağlı olarak gateway sertifika fingerprint'ini pinleyebilir (bkz. `gateway.tls`
-  yapılandırması artı `gateway.remote.tlsFingerprint` veya CLI `--tls-fingerprint`).
+- İstemciler isteğe bağlı olarak gateway sertifika parmak izini sabitleyebilir (`gateway.tls` yapılandırmasına ve `gateway.remote.tlsFingerprint` veya CLI `--tls-fingerprint` değerine bakın).
 
 ## Kapsam
 
-Bu protokol **tam gateway API'sini** (durum, kanallar, modeller, sohbet,
-ajan, oturumlar, Node'lar, onaylar vb.) açığa çıkarır. Tam yüzey
-`src/gateway/protocol/schema.ts` içindeki TypeBox şemalarıyla tanımlanır.
+Bu protokol **tam gateway API**'sini (durum, kanallar, modeller, sohbet, ajan, oturumlar, node'lar, onaylar vb.) açığa çıkarır. Kesin yüzey, `src/gateway/protocol/schema.ts` içindeki TypeBox şemaları tarafından tanımlanır.
 
 ## İlgili
 
-- [Bridge protocol](/tr/gateway/bridge-protocol)
-- [Gateway runbook](/tr/gateway)
+- [Köprü protokolü](/tr/gateway/bridge-protocol)
+- [Gateway çalışma kılavuzu](/tr/gateway)

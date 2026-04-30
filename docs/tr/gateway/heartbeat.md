@@ -1,46 +1,46 @@
 ---
 read_when:
-    - Heartbeat temposunu veya mesajlaşmayı ayarlama
+    - Heartbeat sıklığını veya mesajlaşmayı ayarlama
     - Zamanlanmış görevler için Heartbeat ile Cron arasında karar verme
 sidebarTitle: Heartbeat
 summary: Heartbeat yoklama mesajları ve bildirim kuralları
 title: Heartbeat
 x-i18n:
-    generated_at: "2026-04-26T11:29:22Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:22:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fe0d3e9c531062d90e8e24cb7795fed20bc0985c3eadc8ed367295fc2544d14e
+    source_hash: 2bafae7cafb9163015a112c074d36ab070c71d1d7ba1c7c0834e6720521f4275
     source_path: gateway/heartbeat.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-**Heartbeat mi Cron mu?** Hangisinin ne zaman kullanılacağına dair yönlendirme için bkz. [Otomasyon ve Görevler](/tr/automation).
+**Heartbeat mi Cron mu?** Her birini ne zaman kullanacağınıza dair rehberlik için [Otomasyon ve Görevler](/tr/automation) bölümüne bakın.
 </Note>
 
-Heartbeat, **periyodik aracı dönüşlerini** ana oturumda çalıştırır; böylece model size spam yapmadan dikkat gerektiren şeyleri öne çıkarabilir.
+Heartbeat, modelin sizi gereksiz mesajlarla meşgul etmeden dikkat gerektiren her şeyi ortaya çıkarabilmesi için ana oturumda **periyodik ajan dönüşleri** çalıştırır.
 
-Heartbeat, zamanlanmış bir ana oturum dönüşüdür — [arka plan görevi](/tr/automation/tasks) kaydı oluşturmaz. Görev kayıtları, ayrık işler içindir (ACP çalıştırmaları, alt aracılar, yalıtılmış Cron işleri).
+Heartbeat, zamanlanmış bir ana oturum dönüşüdür — [arka plan görevi](/tr/automation/tasks) kayıtları oluşturmaz. Görev kayıtları, ayrılmış işler içindir (ACP çalıştırmaları, alt ajanlar, yalıtılmış Cron işleri).
 
 Sorun giderme: [Zamanlanmış Görevler](/tr/automation/cron-jobs#troubleshooting)
 
-## Hızlı başlangıç (başlangıç düzeyi)
+## Hızlı başlangıç (başlangıç seviyesi)
 
 <Steps>
-  <Step title="Bir tempo seçin">
-    Heartbeat'i etkin bırakın (varsayılan `30m`, Anthropic OAuth/token kimlik doğrulaması için `1h`; buna Claude CLI yeniden kullanımı da dahildir) veya kendi temponuzu ayarlayın.
+  <Step title="Bir sıklık seçin">
+    Heartbeat'leri etkin bırakın (varsayılan `30m`; Claude CLI yeniden kullanımı dahil Anthropic OAuth/token kimlik doğrulaması için `1h`) veya kendi sıklığınızı ayarlayın.
   </Step>
   <Step title="HEARTBEAT.md ekleyin (isteğe bağlı)">
-    Aracı çalışma alanında küçük bir `HEARTBEAT.md` kontrol listesi veya `tasks:` bloğu oluşturun.
+    Ajan çalışma alanında küçük bir `HEARTBEAT.md` kontrol listesi veya `tasks:` bloğu oluşturun.
   </Step>
   <Step title="Heartbeat mesajlarının nereye gitmesi gerektiğine karar verin">
-    `target: "none"` varsayılandır; son kişiye yönlendirmek için `target: "last"` ayarlayın.
+    Varsayılan `target: "none"` değeridir; son kişiye yönlendirmek için `target: "last"` ayarlayın.
   </Step>
-  <Step title="İsteğe bağlı ince ayar">
-    - Şeffaflık için heartbeat akıl yürütme teslimini etkinleştirin.
-    - Heartbeat çalıştırmaları yalnızca `HEARTBEAT.md` gerektiriyorsa hafif bootstrap bağlamı kullanın.
-    - Her heartbeat'te tam konuşma geçmişini göndermemek için yalıtılmış oturumları etkinleştirin.
-    - Heartbeat'leri etkin saatlerle sınırlayın (yerel saat).
+  <Step title="İsteğe bağlı ayarlama">
+    - Şeffaflık için Heartbeat akıl yürütme teslimini etkinleştirin.
+    - Heartbeat çalıştırmaları yalnızca `HEARTBEAT.md` gerektiriyorsa hafif önyükleme bağlamı kullanın.
+    - Her Heartbeat'te tam konuşma geçmişini göndermekten kaçınmak için yalıtılmış oturumları etkinleştirin.
+    - Heartbeat'leri aktif saatlerle sınırlayın (yerel saat).
 
   </Step>
 </Steps>
@@ -53,12 +53,13 @@ Sorun giderme: [Zamanlanmış Görevler](/tr/automation/cron-jobs#troubleshootin
     defaults: {
       heartbeat: {
         every: "30m",
-        target: "last", // son kişiye açık teslim (varsayılan "none")
-        directPolicy: "allow", // varsayılan: doğrudan/DM hedeflerine izin ver; bastırmak için "block" ayarla
-        lightContext: true, // isteğe bağlı: bootstrap dosyalarından yalnızca HEARTBEAT.md ekle
-        isolatedSession: true, // isteğe bağlı: her çalıştırmada yeni oturum (konuşma geçmişi yok)
+        target: "last", // explicit delivery to last contact (default is "none")
+        directPolicy: "allow", // default: allow direct/DM targets; set "block" to suppress
+        lightContext: true, // optional: only inject HEARTBEAT.md from bootstrap files
+        isolatedSession: true, // optional: fresh session each run (no conversation history)
+        skipWhenBusy: true, // optional: also defer when subagent or nested lanes are busy
         // activeHours: { start: "08:00", end: "24:00" },
-        // includeReasoning: true, // isteğe bağlı: ayrı `Reasoning:` mesajını da gönder
+        // includeReasoning: true, // optional: send separate `Reasoning:` message too
       },
     },
   },
@@ -67,31 +68,32 @@ Sorun giderme: [Zamanlanmış Görevler](/tr/automation/cron-jobs#troubleshootin
 
 ## Varsayılanlar
 
-- Aralık: `30m` (veya Anthropic OAuth/token kimlik doğrulaması algılanan modsa `1h`; buna Claude CLI yeniden kullanımı da dahildir). `agents.defaults.heartbeat.every` veya aracı başına `agents.list[].heartbeat.every` ayarlayın; devre dışı bırakmak için `0m` kullanın.
-- İstem gövdesi (`agents.defaults.heartbeat.prompt` ile yapılandırılabilir): `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
-- Heartbeat istemi, kullanıcı mesajı olarak **aynen** gönderilir. Sistem istemi yalnızca varsayılan aracı için heartbeat etkinse ve çalıştırma dahili olarak işaretlenmişse bir "Heartbeat" bölümü içerir.
-- Heartbeat'ler `0m` ile devre dışı bırakıldığında, modelin yalnızca heartbeat'e özel talimatları görmemesi için normal çalıştırmalar da bootstrap bağlamından `HEARTBEAT.md` dosyasını çıkarır.
-- Etkin saatler (`heartbeat.activeHours`), yapılandırılmış saat diliminde kontrol edilir. Pencerenin dışında heartbeat'ler atlanır ve pencere içindeki bir sonraki tikte yeniden çalışır.
+- Aralık: `30m` (Claude CLI yeniden kullanımı dahil, algılanan kimlik doğrulama modu Anthropic OAuth/token auth olduğunda `1h`). `agents.defaults.heartbeat.every` veya ajan başına `agents.list[].heartbeat.every` ayarlayın; devre dışı bırakmak için `0m` kullanın.
+- İstem gövdesi (`agents.defaults.heartbeat.prompt` üzerinden yapılandırılabilir): `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
+- Heartbeat istemi, kullanıcı mesajı olarak **aynen** gönderilir. Sistem istemi yalnızca varsayılan ajan için Heartbeat'ler etkinleştirildiğinde bir "Heartbeat" bölümü içerir ve çalıştırma dahili olarak işaretlenir.
+- Heartbeat'ler `0m` ile devre dışı bırakıldığında, normal çalıştırmalar da modelin yalnızca Heartbeat'e özel talimatları görmemesi için önyükleme bağlamından `HEARTBEAT.md` dosyasını çıkarır.
+- Aktif saatler (`heartbeat.activeHours`) yapılandırılan saat diliminde kontrol edilir. Pencerenin dışında, Heartbeat'ler pencere içindeki bir sonraki tik'e kadar atlanır.
+- Heartbeat'ler, Cron işi aktif veya kuyrukta olduğunda otomatik olarak ertelenir. Ek yoğun kulvarlarda da (alt ajan veya iç içe komut işi) ertelemek için `heartbeat.skipWhenBusy: true` ayarlayın; bu, yerel Ollama ve diğer sınırlı tek çalışma zamanı barındırıcıları için kullanışlıdır.
 
-## Heartbeat istemi ne içindir
+## Heartbeat istemi ne içindir?
 
-Varsayılan istem kasıtlı olarak geniş tutulmuştur:
+Varsayılan istem bilinçli olarak geniş kapsamlıdır:
 
-- **Arka plan görevleri**: "Consider outstanding tasks", aracıya takipleri (gelen kutusu, takvim, hatırlatıcılar, sıradaki işler) gözden geçirmesini ve acil olanları öne çıkarmasını hatırlatır.
-- **İnsani kontrol**: "Checkup sometimes on your human during day time", ara sıra hafif bir "bir şeye ihtiyacın var mı?" mesajını teşvik eder; ancak yapılandırılmış yerel saat diliminizi kullanarak gece spam'ini önler (bkz. [Saat Dilimi](/tr/concepts/timezone)).
+- **Arka plan görevleri**: "Consider outstanding tasks", ajanı takip işleri (gelen kutusu, takvim, anımsatıcılar, kuyruktaki işler) gözden geçirmeye ve acil olan her şeyi ortaya çıkarmaya yönlendirir.
+- **İnsan kontrolü**: "Checkup sometimes on your human during day time", ara sıra hafif bir "bir şeye ihtiyacınız var mı?" mesajını teşvik eder, ancak yapılandırılmış yerel saat diliminizi kullanarak gece spam'inden kaçınır (bkz. [Saat Dilimi](/tr/concepts/timezone)).
 
-Heartbeat, tamamlanmış [arka plan görevlerine](/tr/automation/tasks) tepki verebilir, ancak heartbeat çalıştırmasının kendisi bir görev kaydı oluşturmaz.
+Heartbeat, tamamlanmış [arka plan görevlerine](/tr/automation/tasks) tepki verebilir, ancak Heartbeat çalıştırmasının kendisi bir görev kaydı oluşturmaz.
 
-Bir heartbeat'in çok belirli bir şey yapmasını istiyorsanız (ör. "Gmail PubSub istatistiklerini kontrol et" veya "Gateway sağlığını doğrula"), `agents.defaults.heartbeat.prompt` (veya `agents.list[].heartbeat.prompt`) ile özel bir gövde ayarlayın (aynen gönderilir).
+Bir Heartbeat'in çok belirli bir şey yapmasını istiyorsanız (ör. "Gmail PubSub istatistiklerini kontrol et" veya "Gateway sağlığını doğrula"), `agents.defaults.heartbeat.prompt` (veya `agents.list[].heartbeat.prompt`) değerini özel bir gövdeye ayarlayın (aynen gönderilir).
 
 ## Yanıt sözleşmesi
 
 - Dikkat gerektiren bir şey yoksa **`HEARTBEAT_OK`** ile yanıt verin.
-- Heartbeat çalıştırmaları sırasında OpenClaw, yanıtın **başında veya sonunda** göründüğünde `HEARTBEAT_OK` değerini bir onay olarak kabul eder. Kalan içerik **≤ `ackMaxChars`** (varsayılan: 300) ise belirteç çıkarılır ve yanıt bırakılır.
-- `HEARTBEAT_OK`, yanıtın **ortasında** görünürse özel olarak ele alınmaz.
+- Heartbeat çalıştırmaları sırasında OpenClaw, yanıtın **başında veya sonunda** göründüğünde `HEARTBEAT_OK` değerini bir onay olarak işler. Token çıkarılır ve kalan içerik **≤ `ackMaxChars`** ise yanıt düşürülür (varsayılan: 300).
+- `HEARTBEAT_OK` bir yanıtın **ortasında** görünürse özel olarak işlenmez.
 - Uyarılar için **`HEARTBEAT_OK` eklemeyin**; yalnızca uyarı metnini döndürün.
 
-Heartbeat dışında, bir mesajın başında/sonunda görülen başıboş `HEARTBEAT_OK` çıkarılır ve günlüğe yazılır; yalnızca `HEARTBEAT_OK` içeren bir mesaj bırakılır.
+Heartbeat dışında, bir mesajın başında/sonunda bulunan başıboş `HEARTBEAT_OK` çıkarılır ve günlüğe kaydedilir; yalnızca `HEARTBEAT_OK` olan bir mesaj düşürülür.
 
 ## Yapılandırma
 
@@ -100,16 +102,17 @@ Heartbeat dışında, bir mesajın başında/sonunda görülen başıboş `HEART
   agents: {
     defaults: {
       heartbeat: {
-        every: "30m", // varsayılan: 30m (0m devre dışı bırakır)
+        every: "30m", // default: 30m (0m disables)
         model: "anthropic/claude-opus-4-6",
-        includeReasoning: false, // varsayılan: false (mümkünse ayrı `Reasoning:` mesajı teslim et)
-        lightContext: false, // varsayılan: false; true, çalışma alanı bootstrap dosyalarından yalnızca HEARTBEAT.md dosyasını tutar
-        isolatedSession: false, // varsayılan: false; true, her heartbeat'i yeni bir oturumda çalıştırır (konuşma geçmişi yok)
-        target: "last", // varsayılan: none | seçenekler: last | none | <channel id> (çekirdek veya Plugin, ör. "bluebubbles")
-        to: "+15551234567", // isteğe bağlı kanala özgü geçersiz kılma
-        accountId: "ops-bot", // isteğe bağlı çok hesaplı kanal kimliği
+        includeReasoning: false, // default: false (deliver separate Reasoning: message when available)
+        lightContext: false, // default: false; true keeps only HEARTBEAT.md from workspace bootstrap files
+        isolatedSession: false, // default: false; true runs each heartbeat in a fresh session (no conversation history)
+        skipWhenBusy: false, // default: false; true also waits for subagent/nested lanes
+        target: "last", // default: none | options: last | none | <channel id> (core or plugin, e.g. "bluebubbles")
+        to: "+15551234567", // optional channel-specific override
+        accountId: "ops-bot", // optional multi-account channel id
         prompt: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
-        ackMaxChars: 300, // HEARTBEAT_OK sonrasında izin verilen en fazla karakter
+        ackMaxChars: 300, // max chars allowed after HEARTBEAT_OK
       },
     },
   },
@@ -118,17 +121,17 @@ Heartbeat dışında, bir mesajın başında/sonunda görülen başıboş `HEART
 
 ### Kapsam ve öncelik
 
-- `agents.defaults.heartbeat`, genel heartbeat davranışını ayarlar.
-- `agents.list[].heartbeat`, bunun üzerine birleştirilir; herhangi bir aracıda `heartbeat` bloğu varsa, heartbeat'i **yalnızca bu aracılar** çalıştırır.
+- `agents.defaults.heartbeat`, genel Heartbeat davranışını ayarlar.
+- `agents.list[].heartbeat` bunun üzerine birleştirilir; herhangi bir ajanda `heartbeat` bloğu varsa **yalnızca bu ajanlar** Heartbeat çalıştırır.
 - `channels.defaults.heartbeat`, tüm kanallar için görünürlük varsayılanlarını ayarlar.
 - `channels.<channel>.heartbeat`, kanal varsayılanlarını geçersiz kılar.
 - `channels.<channel>.accounts.<id>.heartbeat` (çok hesaplı kanallar), kanal başına ayarları geçersiz kılar.
 
-### Aracı başına heartbeat'ler
+### Ajan başına Heartbeat'ler
 
-Herhangi bir `agents.list[]` girdisi bir `heartbeat` bloğu içeriyorsa, heartbeat'i **yalnızca bu aracılar** çalıştırır. Aracı başına blok, `agents.defaults.heartbeat` üzerine birleştirilir (böylece ortak varsayılanları bir kez ayarlayıp aracı başına geçersiz kılabilirsiniz).
+Herhangi bir `agents.list[]` girdisi bir `heartbeat` bloğu içeriyorsa **yalnızca bu ajanlar** Heartbeat çalıştırır. Ajan başına blok, `agents.defaults.heartbeat` üzerine birleştirilir (böylece paylaşılan varsayılanları bir kez ayarlayıp ajan başına geçersiz kılabilirsiniz).
 
-Örnek: iki aracı var, heartbeat'i yalnızca ikinci aracı çalıştırıyor.
+Örnek: iki ajan; yalnızca ikinci ajan Heartbeat çalıştırır.
 
 ```json5
 {
@@ -136,7 +139,7 @@ Herhangi bir `agents.list[]` girdisi bir `heartbeat` bloğu içeriyorsa, heartbe
     defaults: {
       heartbeat: {
         every: "30m",
-        target: "last", // son kişiye açık teslim (varsayılan "none")
+        target: "last", // explicit delivery to last contact (default is "none")
       },
     },
     list: [
@@ -156,9 +159,9 @@ Herhangi bir `agents.list[]` girdisi bir `heartbeat` bloğu içeriyorsa, heartbe
 }
 ```
 
-### Etkin saatler örneği
+### Aktif saatler örneği
 
-Heartbeat'leri belirli bir saat diliminde mesai saatleriyle sınırlayın:
+Heartbeat'leri belirli bir saat dilimindeki iş saatleriyle sınırlayın:
 
 ```json5
 {
@@ -166,11 +169,11 @@ Heartbeat'leri belirli bir saat diliminde mesai saatleriyle sınırlayın:
     defaults: {
       heartbeat: {
         every: "30m",
-        target: "last", // son kişiye açık teslim (varsayılan "none")
+        target: "last", // explicit delivery to last contact (default is "none")
         activeHours: {
           start: "09:00",
           end: "22:00",
-          timezone: "America/New_York", // isteğe bağlı; ayarlıysa userTimezone, yoksa ana makine saat dilimi kullanılır
+          timezone: "America/New_York", // optional; uses your userTimezone if set, otherwise host tz
         },
       },
     },
@@ -178,17 +181,17 @@ Heartbeat'leri belirli bir saat diliminde mesai saatleriyle sınırlayın:
 }
 ```
 
-Bu pencerenin dışında (Doğu saatiyle sabah 9'dan önce veya akşam 10'dan sonra), heartbeat'ler atlanır. Pencere içindeki bir sonraki zamanlanmış tik normal şekilde çalışır.
+Bu pencerenin dışında (Doğu saatine göre sabah 9'dan önce veya akşam 10'dan sonra), Heartbeat'ler atlanır. Pencere içindeki bir sonraki zamanlanmış tik normal şekilde çalışır.
 
 ### 7/24 kurulum
 
-Heartbeat'lerin tüm gün çalışmasını istiyorsanız şu kalıplardan birini kullanın:
+Heartbeat'lerin tüm gün çalışmasını istiyorsanız bu kalıplardan birini kullanın:
 
-- `activeHours` alanını tamamen çıkarın (zaman penceresi kısıtlaması yoktur; varsayılan davranış budur).
-- Tüm günü kapsayan bir pencere ayarlayın: `activeHours: { start: "00:00", end: "24:00" }`.
+- `activeHours` değerini tamamen atlayın (zaman penceresi kısıtlaması yoktur; varsayılan davranış budur).
+- Tam gün penceresi ayarlayın: `activeHours: { start: "00:00", end: "24:00" }`.
 
 <Warning>
-Aynı `start` ve `end` zamanını ayarlamayın (örneğin `08:00` ile `08:00`). Bu, sıfır genişlikli pencere olarak değerlendirilir; bu yüzden heartbeat'ler her zaman atlanır.
+Aynı `start` ve `end` saatini ayarlamayın (örneğin `08:00` ile `08:00`). Bu, sıfır genişlikli pencere olarak değerlendirilir; bu yüzden Heartbeat'ler her zaman atlanır.
 </Warning>
 
 ### Çok hesaplı örnek
@@ -204,7 +207,7 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
         heartbeat: {
           every: "1h",
           target: "telegram",
-          to: "12345678:topic:42", // isteğe bağlı: belirli bir konuya/iş parçacığına yönlendir
+          to: "12345678:topic:42", // optional: route to a specific topic/thread
           accountId: "ops-bot",
         },
       },
@@ -229,86 +232,96 @@ Telegram gibi çok hesaplı kanallarda belirli bir hesabı hedeflemek için `acc
   Heartbeat çalıştırmaları için isteğe bağlı model geçersiz kılması (`provider/model`).
 </ParamField>
 <ParamField path="includeReasoning" type="boolean" default="false">
-  Etkin olduğunda, mümkünse ayrı `Reasoning:` mesajını da teslim eder (`/reasoning on` ile aynı biçim).
+  Etkinleştirildiğinde, mevcut olduğunda ayrı `Reasoning:` mesajını da teslim eder (`/reasoning on` ile aynı şekil).
 </ParamField>
 <ParamField path="lightContext" type="boolean" default="false">
-  true olduğunda, heartbeat çalıştırmaları hafif bootstrap bağlamı kullanır ve çalışma alanı bootstrap dosyalarından yalnızca `HEARTBEAT.md` dosyasını tutar.
+  True olduğunda, Heartbeat çalıştırmaları hafif önyükleme bağlamı kullanır ve çalışma alanı önyükleme dosyalarından yalnızca `HEARTBEAT.md` dosyasını tutar.
 </ParamField>
 <ParamField path="isolatedSession" type="boolean" default="false">
-  true olduğunda, her heartbeat önceki konuşma geçmişi olmadan yeni bir oturumda çalışır. Cron `sessionTarget: "isolated"` ile aynı yalıtım kalıbını kullanır. Heartbeat başına token maliyetini ciddi ölçüde azaltır. En yüksek tasarruf için `lightContext: true` ile birlikte kullanın. Teslim yönlendirmesi yine de ana oturum bağlamını kullanır.
+  True olduğunda, her Heartbeat önceki konuşma geçmişi olmadan yeni bir oturumda çalışır. Cron `sessionTarget: "isolated"` ile aynı yalıtım kalıbını kullanır. Heartbeat başına token maliyetini büyük ölçüde azaltır. Maksimum tasarruf için `lightContext: true` ile birleştirin. Teslimat yönlendirmesi yine de ana oturum bağlamını kullanır.
+</ParamField>
+<ParamField path="skipWhenBusy" type="boolean" default="false">
+  True olduğunda, Heartbeat çalıştırmaları ek yoğun kulvarlarda ertelenir: alt ajan veya iç içe komut işi. Cron kulvarları, bu bayrak olmasa bile Heartbeat'leri her zaman erteler; böylece yerel model barındırıcıları Cron ve Heartbeat istemlerini aynı anda çalıştırmaz.
 </ParamField>
 <ParamField path="session" type="string">
   Heartbeat çalıştırmaları için isteğe bağlı oturum anahtarı.
 
-  - `main` (varsayılan): aracı ana oturumu.
-  - Açık oturum anahtarı (`openclaw sessions --json` veya [sessions CLI](/tr/cli/sessions) çıktısından kopyalayın).
-  - Oturum anahtarı biçimleri: bkz. [Oturumlar](/tr/concepts/session) ve [Gruplar](/tr/channels/groups).
+- `main` (varsayılan): ajan ana oturumu.
+- Açık oturum anahtarı (`openclaw sessions --json` çıktısından veya [oturumlar CLI](/tr/cli/sessions) içinden kopyalayın).
+- Oturum anahtarı biçimleri: bkz. [Oturumlar](/tr/concepts/session) ve [Gruplar](/tr/channels/groups).
 
 </ParamField>
 <ParamField path="target" type="string">
-  - `last`: son kullanılan harici kanala teslim et.
-  - açık kanal: `discord`, `matrix`, `telegram` veya `whatsapp` gibi yapılandırılmış herhangi bir kanal veya Plugin kimliği.
-  - `none` (varsayılan): heartbeat'i çalıştır ama harici olarak **teslim etme**.
+- `last`: son kullanılan harici kanala teslim et.
+- açık kanal: yapılandırılmış herhangi bir kanal veya Plugin kimliği, örneğin `discord`, `matrix`, `telegram` veya `whatsapp`.
+- `none` (varsayılan): Heartbeat'i çalıştır ama harici olarak **teslim etme**.
 
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
-  Doğrudan/DM teslim davranışını kontrol eder. `allow`: doğrudan/DM heartbeat teslimine izin ver. `block`: doğrudan/DM teslimini bastır (`reason=dm-blocked`).
+  Doğrudan/DM teslim davranışını denetler. `allow`: doğrudan/DM Heartbeat teslimine izin verir. `block`: doğrudan/DM teslimini bastırır (`reason=dm-blocked`).
+
 </ParamField>
 <ParamField path="to" type="string">
-  İsteğe bağlı alıcı geçersiz kılması (kanala özgü kimlik; ör. WhatsApp için E.164 veya bir Telegram sohbet kimliği). Telegram konuları/iş parçacıkları için `<chatId>:topic:<messageThreadId>` kullanın.
+  İsteğe bağlı alıcı geçersiz kılması (kanala özgü kimlik, ör. WhatsApp için E.164 veya Telegram sohbet kimliği). Telegram konuları/iş parçacıkları için `<chatId>:topic:<messageThreadId>` kullanın.
+
 </ParamField>
 <ParamField path="accountId" type="string">
-  Çok hesaplı kanallar için isteğe bağlı hesap kimliği. `target: "last"` olduğunda, hesap kimliği hesapları destekliyorsa çözümlenen son kanala uygulanır; aksi halde yok sayılır. Hesap kimliği çözümlenen kanal için yapılandırılmış bir hesapla eşleşmezse teslim atlanır.
+  Çok hesaplı kanallar için isteğe bağlı hesap kimliği. `target: "last"` olduğunda, hesap kimliği hesapları destekliyorsa çözümlenen son kanala uygulanır; aksi takdirde yok sayılır. Hesap kimliği çözümlenen kanal için yapılandırılmış bir hesapla eşleşmezse teslimat atlanır.
+
 </ParamField>
 <ParamField path="prompt" type="string">
   Varsayılan istem gövdesini geçersiz kılar (birleştirilmez).
+
 </ParamField>
 <ParamField path="ackMaxChars" type="number" default="300">
-  Teslimden önce `HEARTBEAT_OK` sonrasında izin verilen en fazla karakter sayısı.
+  Teslimattan önce `HEARTBEAT_OK` sonrasında izin verilen maksimum karakter sayısı.
+
 </ParamField>
 <ParamField path="suppressToolErrorWarnings" type="boolean">
-  true olduğunda, heartbeat çalıştırmaları sırasında araç hata uyarısı yüklerini bastırır.
+  True olduğunda, Heartbeat çalıştırmaları sırasında araç hata uyarısı yüklerini bastırır.
+
 </ParamField>
 <ParamField path="activeHours" type="object">
-  Heartbeat çalıştırmalarını bir zaman penceresiyle sınırlar. `start` (HH:MM, dahil; gün başlangıcı için `00:00` kullanın), `end` (HH:MM hariç; gün sonu için `24:00` kullanılabilir) ve isteğe bağlı `timezone` içeren nesne.
+  Heartbeat çalıştırmalarını bir zaman aralığıyla sınırlar. `start` (HH:MM, dahil; gün başlangıcı için `00:00` kullanın), `end` (HH:MM hariç; gün sonu için `24:00` kullanılabilir) ve isteğe bağlı `timezone` içeren nesne.
 
-  - Atlanırsa veya `"user"` ise: ayarlıysa `agents.defaults.userTimezone` kullanılır, aksi halde ana makine sistem saat dilimine geri dönülür.
-  - `"local"`: her zaman ana makine sistem saat dilimini kullanır.
-  - Herhangi bir IANA tanımlayıcısı (ör. `America/New_York`): doğrudan kullanılır; geçersizse yukarıdaki `"user"` davranışına geri döner.
-  - `start` ve `end`, etkin bir pencere için eşit olmamalıdır; eşit değerler sıfır genişlik olarak değerlendirilir (her zaman pencerenin dışında).
-  - Etkin pencerenin dışında heartbeat'ler atlanır ve pencere içindeki bir sonraki tikte yeniden çalışır.
+- Atlanırsa veya `"user"` ise: ayarlanmışsa `agents.defaults.userTimezone` değerinizi kullanır, aksi halde ana sistem saat dilimine geri döner.
+- `"local"`: her zaman ana sistem saat dilimini kullanır.
+- Herhangi bir IANA tanımlayıcısı (örn. `America/New_York`): doğrudan kullanılır; geçersizse yukarıdaki `"user"` davranışına geri döner.
+- Etkin bir pencere için `start` ve `end` eşit olmamalıdır; eşit değerler sıfır genişlikli kabul edilir (her zaman pencerenin dışında).
+- Etkin pencerenin dışında, Heartbeat'ler pencere içindeki bir sonraki tike kadar atlanır.
 
 </ParamField>
 
 ## Teslim davranışı
 
 <AccordionGroup>
-  <Accordion title="Oturum ve hedef yönlendirme">
-    - Heartbeat'ler varsayılan olarak aracının ana oturumunda (`agent:<id>:<mainKey>`) veya `session.scope = "global"` olduğunda `global` içinde çalışır. Belirli bir kanal oturumuna (Discord/WhatsApp/vb.) geçersiz kılmak için `session` ayarlayın.
-    - `session` yalnızca çalıştırma bağlamını etkiler; teslim `target` ve `to` tarafından kontrol edilir.
-    - Belirli bir kanal/alıcıya teslim etmek için `target` + `to` ayarlayın. `target: "last"` ile teslim, o oturum için son harici kanalı kullanır.
-    - Heartbeat teslimleri varsayılan olarak doğrudan/DM hedeflerine izin verir. Heartbeat dönüşünü yine çalıştırırken doğrudan hedefli gönderimleri bastırmak için `directPolicy: "block"` ayarlayın.
-    - Ana kuyruk meşgulse heartbeat atlanır ve daha sonra yeniden denenir.
-    - `target` hiçbir harici hedefe çözümlenmezse çalıştırma yine gerçekleşir ancak dışa giden mesaj gönderilmez.
+  <Accordion title="Session and target routing">
+    - Heartbeat'ler varsayılan olarak ajanın ana oturumunda (`agent:<id>:<mainKey>`) veya `session.scope = "global"` olduğunda `global` içinde çalışır. Belirli bir kanal oturumuna (Discord/WhatsApp/vb.) geçmek için `session` ayarlayın.
+    - `session` yalnızca çalışma bağlamını etkiler; teslim `target` ve `to` tarafından denetlenir.
+    - Belirli bir kanala/alıcıya teslim etmek için `target` + `to` ayarlayın. `target: "last"` ile teslim, o oturum için son harici kanalı kullanır.
+    - Heartbeat teslimleri varsayılan olarak doğrudan/DM hedeflerine izin verir. Heartbeat turunu çalıştırmaya devam ederken doğrudan hedefli gönderimleri bastırmak için `directPolicy: "block"` ayarlayın.
+    - Ana kuyruk, hedef oturum hattı, cron hattı veya etkin bir cron işi meşgulse Heartbeat atlanır ve daha sonra yeniden denenir.
+    - `skipWhenBusy: true` ise, alt ajan ve iç içe hatlar da Heartbeat çalıştırmalarını erteler.
+    - `target` harici bir hedefe çözümlenmezse çalışma yine gerçekleşir, ancak giden mesaj gönderilmez.
 
   </Accordion>
-  <Accordion title="Görünürlük ve atlama davranışı">
-    - `showOk`, `showAlerts` ve `useIndicator` değerlerinin tümü devre dışıysa çalıştırma en başta `reason=alerts-disabled` ile atlanır.
-    - Yalnızca uyarı teslimi devre dışıysa OpenClaw yine de heartbeat'i çalıştırabilir, due-task zaman damgalarını güncelleyebilir, oturum boşta kalma zaman damgasını geri yükleyebilir ve dışa dönük uyarı yükünü bastırabilir.
-    - Çözümlenen heartbeat hedefi yazıyor göstergesini destekliyorsa OpenClaw, heartbeat çalıştırması etkinken yazıyor göstergesini gösterir. Bu, heartbeat'in sohbet çıktısını göndereceği aynı hedefi kullanır ve `typingMode: "never"` ile devre dışı bırakılır.
+  <Accordion title="Visibility and skip behavior">
+    - `showOk`, `showAlerts` ve `useIndicator` öğelerinin tümü devre dışıysa çalışma baştan `reason=alerts-disabled` olarak atlanır.
+    - Yalnızca uyarı teslimi devre dışıysa OpenClaw yine de Heartbeat'i çalıştırabilir, süresi gelen görev zaman damgalarını güncelleyebilir, oturum boşta zaman damgasını geri yükleyebilir ve dışa dönük uyarı yükünü bastırabilir.
+    - Çözümlenen Heartbeat hedefi yazmayı destekliyorsa, OpenClaw Heartbeat çalıştırması etkin olduğu sürece yazıyor durumunu gösterir. Bu, Heartbeat'in sohbet çıktısını göndereceği aynı hedefi kullanır ve `typingMode: "never"` tarafından devre dışı bırakılır.
 
   </Accordion>
-  <Accordion title="Oturum yaşam döngüsü ve denetim">
-    - Yalnızca heartbeat yanıtları oturumu canlı tutmaz. Heartbeat meta verileri oturum satırını güncelleyebilir, ancak boşta kalma süresi son gerçek kullanıcı/kanal mesajındaki `lastInteractionAt` değerini kullanır ve günlük sona erme `sessionStartedAt` kullanır.
-    - Control UI ve WebChat geçmişi heartbeat istemlerini ve yalnızca OK içeren onayları gizler. Alttaki oturum transkripti yine de denetim/yeniden oynatma için bu dönüşleri içerebilir.
-    - Ayrık [arka plan görevleri](/tr/automation/tasks), ana oturumun bir şeyi hızlıca fark etmesi gerektiğinde bir sistem olayı kuyruğa alabilir ve heartbeat'i uyandırabilir. Bu uyandırma heartbeat çalıştırmasını bir arka plan görevi yapmaz.
+  <Accordion title="Session lifecycle and audit">
+    - Yalnızca Heartbeat yanıtları oturumu canlı tutmaz. Heartbeat meta verileri oturum satırını güncelleyebilir, ancak boşta sona erme son gerçek kullanıcı/kanal mesajındaki `lastInteractionAt` değerini, günlük sona erme ise `sessionStartedAt` değerini kullanır.
+    - Control UI ve WebChat geçmişi Heartbeat istemlerini ve yalnızca OK onaylarını gizler. Alttaki oturum dökümü denetim/yeniden oynatma için bu turları yine de içerebilir.
+    - Ayrılmış [arka plan görevleri](/tr/automation/tasks), ana oturumun bir şeyi hızlıca fark etmesi gerektiğinde bir sistem olayını kuyruğa alabilir ve Heartbeat'i uyandırabilir. Bu uyandırma, Heartbeat çalışmasını bir arka plan görevi yapmaz.
 
   </Accordion>
 </AccordionGroup>
 
-## Görünürlük kontrolleri
+## Görünürlük denetimleri
 
-Varsayılan olarak `HEARTBEAT_OK` onayları bastırılırken uyarı içeriği teslim edilir. Bunu kanal veya hesap başına ayarlayabilirsiniz:
+Varsayılan olarak, uyarı içeriği teslim edilirken `HEARTBEAT_OK` onayları bastırılır. Bunu kanal başına veya hesap başına ayarlayabilirsiniz:
 
 ```yaml
 channels:
@@ -329,13 +342,13 @@ channels:
 
 Öncelik: hesap başına → kanal başına → kanal varsayılanları → yerleşik varsayılanlar.
 
-### Her bayrak ne yapar
+### Her bayrağın yaptığı
 
-- `showOk`: model yalnızca OK içeren bir yanıt döndürdüğünde `HEARTBEAT_OK` onayı gönderir.
+- `showOk`: model yalnızca OK yanıtı döndürdüğünde bir `HEARTBEAT_OK` onayı gönderir.
 - `showAlerts`: model OK olmayan bir yanıt döndürdüğünde uyarı içeriğini gönderir.
 - `useIndicator`: UI durum yüzeyleri için gösterge olayları yayar.
 
-Üçünün **tamamı** false ise OpenClaw heartbeat çalıştırmasını tamamen atlar (model çağrısı yok).
+**Üçü de** false ise OpenClaw Heartbeat çalıştırmasını tamamen atlar (model çağrısı yok).
 
 ### Kanal başına ve hesap başına örnekler
 
@@ -352,7 +365,7 @@ channels:
     accounts:
       ops:
         heartbeat:
-          showAlerts: false # yalnızca ops hesabı için uyarıları bastır
+          showAlerts: false # uyarıları yalnızca ops hesabı için bastır
   telegram:
     heartbeat:
       showOk: true
@@ -360,36 +373,36 @@ channels:
 
 ### Yaygın kalıplar
 
-| Hedef                                    | Yapılandırma                                                                              |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Varsayılan davranış (sessiz OK'ler, uyarılar açık) | _(yapılandırma gerekmez)_                                                         |
+| Hedef                                    | Config                                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Varsayılan davranış (sessiz OK'ler, uyarılar açık) | _(yapılandırma gerekmez)_                                                                     |
 | Tamamen sessiz (mesaj yok, gösterge yok) | `channels.defaults.heartbeat: { showOk: false, showAlerts: false, useIndicator: false }` |
 | Yalnızca gösterge (mesaj yok)            | `channels.defaults.heartbeat: { showOk: false, showAlerts: false, useIndicator: true }`  |
-| Yalnızca bir kanalda OK'ler              | `channels.telegram.heartbeat: { showOk: true }`                                           |
+| OK'ler yalnızca bir kanalda              | `channels.telegram.heartbeat: { showOk: true }`                                          |
 
 ## HEARTBEAT.md (isteğe bağlı)
 
-Çalışma alanında bir `HEARTBEAT.md` dosyası varsa, varsayılan istem aracıya bunu okumasını söyler. Bunu kendi "heartbeat kontrol listeniz" olarak düşünün: küçük, kararlı ve her 30 dakikada bir eklemek için güvenli.
+Çalışma alanında bir `HEARTBEAT.md` dosyası varsa, varsayılan istem ajana bunu okumasını söyler. Bunu "Heartbeat kontrol listeniz" olarak düşünün: küçük, kararlı ve her 30 dakikada bir dahil edilmesi güvenli.
 
-Normal çalıştırmalarda `HEARTBEAT.md`, yalnızca varsayılan aracı için heartbeat rehberliği etkin olduğunda eklenir. Heartbeat temposunu `0m` ile devre dışı bırakmak veya `includeSystemPromptSection: false` ayarlamak, bunu normal bootstrap bağlamından çıkarır.
+Normal çalıştırmalarda, `HEARTBEAT.md` yalnızca varsayılan ajan için Heartbeat rehberliği etkin olduğunda enjekte edilir. Heartbeat temposunu `0m` ile devre dışı bırakmak veya `includeSystemPromptSection: false` ayarlamak, bunu normal önyükleme bağlamından çıkarır.
 
-`HEARTBEAT.md` varsa ancak fiilen boşsa (yalnızca boş satırlar ve `# Heading` gibi markdown başlıkları), OpenClaw API çağrılarını tasarruf etmek için heartbeat çalıştırmasını atlar. Bu atlama `reason=empty-heartbeat-file` olarak bildirilir. Dosya eksikse heartbeat yine de çalışır ve model ne yapacağına karar verir.
+`HEARTBEAT.md` varsa ancak fiilen boşsa (yalnızca boş satırlar ve `# Heading` gibi markdown başlıkları), OpenClaw API çağrılarını azaltmak için Heartbeat çalıştırmasını atlar. Bu atlama `reason=empty-heartbeat-file` olarak raporlanır. Dosya yoksa Heartbeat yine çalışır ve model ne yapacağına karar verir.
 
-İstem şişmesini önlemek için bunu küçük tutun (kısa kontrol listesi veya hatırlatıcılar).
+İstem şişmesini önlemek için küçük tutun (kısa kontrol listesi veya hatırlatmalar).
 
 Örnek `HEARTBEAT.md`:
 
 ```md
-# Heartbeat kontrol listesi
+# Heartbeat checklist
 
-- Hızlı tarama: gelen kutularında acil bir şey var mı?
-- Gündüzse, bekleyen başka bir şey yoksa hafif bir kontrol yap.
-- Bir görev engelliyse, _neyin eksik olduğunu_ yaz ve bir dahaki sefer Peter'a sor.
+- Quick scan: anything urgent in inboxes?
+- If it's daytime, do a lightweight check-in if nothing else is pending.
+- If a task is blocked, write down _what is missing_ and ask Peter next time.
 ```
 
 ### `tasks:` blokları
 
-`HEARTBEAT.md`, heartbeat içindeki aralık tabanlı kontroller için küçük bir yapılandırılmış `tasks:` bloğunu da destekler.
+`HEARTBEAT.md`, Heartbeat'in kendi içinde aralık tabanlı kontroller için küçük bir yapılandırılmış `tasks:` bloğunu da destekler.
 
 Örnek:
 
@@ -403,76 +416,82 @@ tasks:
   interval: 2h
   prompt: "Check for upcoming meetings that need prep or follow-up."
 
-# Ek talimatlar
+# Additional instructions
 
-- Uyarıları kısa tut.
-- Tüm due görevlerden sonra dikkat gerektiren bir şey yoksa HEARTBEAT_OK ile yanıt ver.
+- Keep alerts short.
+- If nothing needs attention after all due tasks, reply HEARTBEAT_OK.
 ```
 
 <AccordionGroup>
-  <Accordion title="Davranış">
-    - OpenClaw, `tasks:` bloğunu ayrıştırır ve her görevi kendi `interval` değerine göre kontrol eder.
-    - O tik için heartbeat istemine yalnızca **zamanı gelen** görevler dahil edilir.
-    - Hiçbir görevin zamanı gelmemişse, boşa model çağrısı yapmamak için heartbeat tamamen atlanır (`reason=no-tasks-due`).
-    - `HEARTBEAT.md` içindeki görev olmayan içerik korunur ve zamanı gelen görev listesinden sonra ek bağlam olarak eklenir.
-    - Görev son çalıştırma zaman damgaları oturum durumunda (`heartbeatTaskState`) saklanır; bu nedenle aralıklar normal yeniden başlatmalarda korunur.
-    - Görev zaman damgaları yalnızca heartbeat çalıştırması normal yanıt yolunu tamamladıktan sonra ilerletilir. Atlanan `empty-heartbeat-file` / `no-tasks-due` çalıştırmaları görevleri tamamlanmış olarak işaretlemez.
+  <Accordion title="Behavior">
+    - OpenClaw `tasks:` bloğunu ayrıştırır ve her görevi kendi `interval` değerine göre denetler.
+    - O tik için Heartbeat istemine yalnızca **süresi gelen** görevler dahil edilir.
+    - Süresi gelen görev yoksa, boşa model çağrısını önlemek için Heartbeat tamamen atlanır (`reason=no-tasks-due`).
+    - `HEARTBEAT.md` içindeki görev dışı içerik korunur ve süresi gelen görev listesinden sonra ek bağlam olarak eklenir.
+    - Görev son çalıştırma zaman damgaları oturum durumunda (`heartbeatTaskState`) saklanır, bu yüzden aralıklar normal yeniden başlatmalardan etkilenmez.
+    - Görev zaman damgaları yalnızca bir Heartbeat çalıştırması normal yanıt yolunu tamamladıktan sonra ilerletilir. Atlanan `empty-heartbeat-file` / `no-tasks-due` çalıştırmaları görevleri tamamlandı olarak işaretlemez.
 
   </Accordion>
 </AccordionGroup>
 
-Görev modu, tek bir heartbeat dosyasında birkaç periyodik kontrolü tutmak istediğinizde ancak her tikte hepsi için ödeme yapmak istemediğinizde kullanışlıdır.
+Görev modu, tek bir Heartbeat dosyasının her tikte hepsi için ödeme yapmadan birkaç periyodik kontrol içermesini istediğinizde kullanışlıdır.
 
-### Aracı HEARTBEAT.md dosyasını güncelleyebilir mi?
+### Ajan HEARTBEAT.md dosyasını güncelleyebilir mi?
 
-Evet — eğer ondan isterseniz.
+Evet — isterseniz.
 
-`HEARTBEAT.md`, aracı çalışma alanındaki normal bir dosyadır; bu yüzden aracıya (normal sohbette) şuna benzer şeyler söyleyebilirsiniz:
+`HEARTBEAT.md`, ajan çalışma alanındaki normal bir dosyadır; bu yüzden ajana (normal bir sohbette) şuna benzer bir şey söyleyebilirsiniz:
 
-- "`HEARTBEAT.md` dosyasını günlük takvim kontrolü ekleyecek şekilde güncelle."
-- "`HEARTBEAT.md` dosyasını daha kısa ve gelen kutusu takiplerine odaklı olacak şekilde yeniden yaz."
+- "Günlük takvim kontrolü eklemek için `HEARTBEAT.md` dosyasını güncelle."
+- "`HEARTBEAT.md` dosyasını daha kısa olacak ve gelen kutusu takiplerine odaklanacak şekilde yeniden yaz."
 
-Bunun proaktif olarak gerçekleşmesini istiyorsanız heartbeat isteminize şu gibi açık bir satır da ekleyebilirsiniz: "Kontrol listesi bayatladığında, daha iyisiyle HEARTBEAT.md dosyasını güncelle."
+Bunun proaktif olarak gerçekleşmesini istiyorsanız Heartbeat isteminize şu gibi açık bir satır da ekleyebilirsiniz: "Kontrol listesi güncelliğini yitirirse HEARTBEAT.md dosyasını daha iyi bir listeyle güncelle."
 
 <Warning>
-`HEARTBEAT.md` içine sırlar (API anahtarları, telefon numaraları, özel token'lar) koymayın — istem bağlamının parçası haline gelir.
+`HEARTBEAT.md` içine sır koymayın (API anahtarları, telefon numaraları, özel tokenlar) — istem bağlamının parçası haline gelir.
 </Warning>
 
-## Manuel uyandırma (istek üzerine)
+## Manuel uyandırma (isteğe bağlı)
 
-Bir sistem olayı kuyruğa alabilir ve şu komutla anında heartbeat tetikleyebilirsiniz:
+Şununla bir sistem olayını kuyruğa alabilir ve anında Heartbeat tetikleyebilirsiniz:
 
 ```bash
 openclaw system event --text "Check for urgent follow-ups" --mode now
 ```
 
-Birden fazla aracıda `heartbeat` yapılandırılmışsa, manuel uyandırma bu aracı heartbeat'lerinin her birini hemen çalıştırır.
+Birden fazla ajanda `heartbeat` yapılandırılmışsa manuel uyandırma, bu ajan Heartbeat'lerinin her birini hemen çalıştırır.
 
 Bir sonraki zamanlanmış tiki beklemek için `--mode next-heartbeat` kullanın.
 
 ## Akıl yürütme teslimi (isteğe bağlı)
 
-Varsayılan olarak heartbeat'ler yalnızca son "yanıt" yükünü teslim eder.
+Varsayılan olarak Heartbeat'ler yalnızca nihai "yanıt" yükünü teslim eder.
 
 Şeffaflık istiyorsanız şunu etkinleştirin:
 
 - `agents.defaults.heartbeat.includeReasoning: true`
 
-Etkin olduğunda heartbeat'ler ayrıca `Reasoning:` önekli ayrı bir mesaj da teslim eder (`/reasoning on` ile aynı biçim). Bu, aracı birden çok oturumu/codex'i yönetirken size neden bildirim göndermeye karar verdiğini görmek istediğinizde yararlı olabilir — ancak isteyeceğinizden daha fazla dahili ayrıntı da sızdırabilir. Grup sohbetlerinde bunu kapalı tutmayı tercih edin.
+Etkinleştirildiğinde Heartbeat'ler, `Reasoning:` ile başlayan ayrı bir mesaj da teslim eder (`/reasoning on` ile aynı biçimde). Bu, ajan birden fazla oturumu/codex'i yönetirken ve size neden ping atmaya karar verdiğini görmek istediğinizde yararlı olabilir; ancak istediğinizden daha fazla iç ayrıntıyı da sızdırabilir. Grup sohbetlerinde kapalı tutmayı tercih edin.
 
 ## Maliyet farkındalığı
 
-Heartbeat'ler tam aracı dönüşleri çalıştırır. Daha kısa aralıklar daha fazla token tüketir. Maliyeti azaltmak için:
+Heartbeat'ler tam ajan turları çalıştırır. Daha kısa aralıklar daha fazla token tüketir. Maliyeti azaltmak için:
 
-- Tam konuşma geçmişini göndermekten kaçınmak için `isolatedSession: true` kullanın (~100K token'dan çalıştırma başına ~2-5K'ya düşer).
-- Bootstrap dosyalarını yalnızca `HEARTBEAT.md` ile sınırlamak için `lightContext: true` kullanın.
-- Daha ucuz bir `model` ayarlayın (ör. `ollama/llama3.2:1b`).
+- Tam konuşma geçmişini göndermekten kaçınmak için `isolatedSession: true` kullanın (çalıştırma başına yaklaşık 100K tokendan yaklaşık 2-5K tokene düşer).
+- Önyükleme dosyalarını yalnızca `HEARTBEAT.md` ile sınırlamak için `lightContext: true` kullanın.
+- Daha ucuz bir `model` ayarlayın (örn. `ollama/llama3.2:1b`).
 - `HEARTBEAT.md` dosyasını küçük tutun.
-- Yalnızca dahili durum güncellemeleri istiyorsanız `target: "none"` kullanın.
+- Yalnızca iç durum güncellemeleri istiyorsanız `target: "none"` kullanın.
+
+## Heartbeat sonrası bağlam taşması
+
+Bir Heartbeat daha küçük bir yerel model kullanıyorsa, örneğin 32k pencereli bir Ollama modeli, ve sonraki ana oturum turu bağlam taşması rapor ediyorsa, önceki Heartbeat'in oturumu Heartbeat modelinde bırakıp bırakmadığını kontrol edin. OpenClaw'ın sıfırlama mesajı, son çalışma zamanı modeli yapılandırılmış `heartbeat.model` ile eşleştiğinde bunu belirtir.
+
+Heartbeat'leri yeni bir oturumda çalıştırmak için `isolatedSession: true` kullanın, en küçük istem için bunu `lightContext: true` ile birleştirin veya paylaşılan oturum için yeterince büyük bağlam penceresine sahip bir Heartbeat modeli seçin.
 
 ## İlgili
 
-- [Otomasyon ve Görevler](/tr/automation) — tüm otomasyon mekanizmalarına bir bakış
-- [Arka Plan Görevleri](/tr/automation/tasks) — ayrık işlerin nasıl izlendiği
-- [Saat Dilimi](/tr/concepts/timezone) — saat diliminin heartbeat zamanlamasını nasıl etkilediği
-- [Sorun Giderme](/tr/automation/cron-jobs#troubleshooting) — otomasyon sorunlarını hata ayıklama
+- [Otomasyon ve Görevler](/tr/automation) — tüm otomasyon mekanizmaları bir bakışta
+- [Arka Plan Görevleri](/tr/automation/tasks) — ayrılmış işin nasıl izlendiği
+- [Saat Dilimi](/tr/concepts/timezone) — saat diliminin Heartbeat zamanlamasını nasıl etkilediği
+- [Sorun Giderme](/tr/automation/cron-jobs#troubleshooting) — otomasyon sorunlarını ayıklama

@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Yaygın kurulum, yükleme, onboarding veya çalışma zamanı destek sorularını yanıtlama
-    - Daha derin hata ayıklamadan önce kullanıcı tarafından bildirilen sorunları sınıflandırma
+    - Yaygın kurulum, yükleme, başlangıç süreci veya çalışma zamanı desteği sorularını yanıtlama
+    - Daha derin hata ayıklamaya geçmeden önce kullanıcıların bildirdiği sorunları ön değerlendirme
 summary: OpenClaw kurulumu, yapılandırması ve kullanımı hakkında sık sorulan sorular
 title: SSS
 x-i18n:
-    generated_at: "2026-04-24T09:12:57Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:26:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0ae635d7ade265e3e79d1f5489ae23034a341843bd784f68a985b18bee5bdf6f
+    source_hash: c09be6571e048b71e4e02288b22b51e70102872675dfc7bef133b955a06f6ac9
     source_path: help/faq.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anahtarları, model failover) için hızlı yanıtlar ve daha derin sorun giderme. Çalışma zamanı tanılamaları için bkz. [Sorun Giderme](/tr/gateway/troubleshooting). Tam yapılandırma başvurusu için bkz. [Yapılandırma](/tr/gateway/configuration).
+Hızlı yanıtlar ve gerçek dünya kurulumları için daha derin sorun giderme (yerel geliştirme, VPS, çok aracılı, OAuth/API anahtarları, model yük devretme). Çalışma zamanı tanılamaları için bkz. [Sorun giderme](/tr/gateway/troubleshooting). Tam yapılandırma referansı için bkz. [Yapılandırma](/tr/gateway/configuration).
 
-## Bir şey bozuksa ilk 60 saniye
+## Bir şey bozulduysa ilk 60 saniye
 
 1. **Hızlı durum (ilk kontrol)**
 
@@ -23,15 +23,15 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
    openclaw status
    ```
 
-   Hızlı yerel özet: OS + güncelleme, gateway/servis erişilebilirliği, ajanlar/oturumlar, sağlayıcı yapılandırması + çalışma zamanı sorunları (gateway erişilebilirse).
+   Hızlı yerel özet: OS + güncelleme, gateway/servis erişilebilirliği, aracılar/oturumlar, sağlayıcı yapılandırması + çalışma zamanı sorunları (gateway erişilebilir olduğunda).
 
-2. **Paylaşılabilir rapor (güvenle paylaşılabilir)**
+2. **Yapıştırılabilir rapor (paylaşması güvenli)**
 
    ```bash
    openclaw status --all
    ```
 
-   Salt okunur tanılama ve günlük sonu (token'lar sansürlenmiş).
+   Günlük sonuyla birlikte salt okunur tanılama (tokenlar redakte edilir).
 
 3. **Daemon + port durumu**
 
@@ -39,7 +39,7 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
    openclaw gateway status
    ```
 
-   Supervisor çalışma zamanı ile RPC erişilebilirliğini, yoklama hedef URL'sini ve servisin büyük olasılıkla hangi yapılandırmayı kullandığını gösterir.
+   Supervisor çalışma zamanı ile RPC erişilebilirliğini, yoklama hedef URL'sini ve servisin muhtemelen hangi yapılandırmayı kullandığını gösterir.
 
 4. **Derin yoklamalar**
 
@@ -47,10 +47,10 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
    openclaw status --deep
    ```
 
-   Desteklendiğinde kanal yoklamaları dahil olmak üzere canlı gateway sağlık yoklaması çalıştırır
+   Desteklendiğinde kanal yoklamaları dahil canlı bir gateway sağlık yoklaması çalıştırır
    (erişilebilir bir gateway gerektirir). Bkz. [Sağlık](/tr/gateway/health).
 
-5. **En son günlüğü izleyin**
+5. **En son günlüğü takip edin**
 
    ```bash
    openclaw logs --follow
@@ -62,7 +62,7 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
    tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
    ```
 
-   Dosya günlükleri servis günlüklerinden ayrıdır; bkz. [Günlükleme](/tr/logging) ve [Sorun Giderme](/tr/gateway/troubleshooting).
+   Dosya günlükleri servis günlüklerinden ayrıdır; bkz. [Günlükleme](/tr/logging) ve [Sorun giderme](/tr/gateway/troubleshooting).
 
 6. **Doctor'ı çalıştırın (onarımlar)**
 
@@ -70,100 +70,96 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
    openclaw doctor
    ```
 
-   Yapılandırmayı/durumu onarır veya geçirir + sağlık kontrolleri çalıştırır. Bkz. [Doctor](/tr/gateway/doctor).
+   Yapılandırmayı/durumu onarır/taşır + sağlık kontrolleri çalıştırır. Bkz. [Doctor](/tr/gateway/doctor).
 
 7. **Gateway anlık görüntüsü**
 
    ```bash
    openclaw health --json
-   openclaw health --verbose   # hatalarda hedef URL + yapılandırma yolunu gösterir
+   openclaw health --verbose   # hatalarda hedef URL'yi + yapılandırma yolunu gösterir
    ```
 
    Çalışan gateway'den tam bir anlık görüntü ister (yalnızca WS). Bkz. [Sağlık](/tr/gateway/health).
 
 ## Hızlı başlangıç ve ilk çalıştırma kurulumu
 
-İlk çalıştırma SSS'si — kurulum, onboarding, auth yolları, abonelikler, ilk hatalar —
-[İlk çalıştırma SSS](/tr/help/faq-first-run) sayfasında yer alır.
+İlk çalıştırma SSS'si — kurulum, ilk yapılandırma, kimlik doğrulama rotaları, abonelikler, ilk hatalar —
+[İlk çalıştırma SSS](/tr/help/faq-first-run) sayfasındadır.
 
 ## OpenClaw nedir?
 
 <AccordionGroup>
   <Accordion title="OpenClaw tek paragrafta nedir?">
-    OpenClaw, kendi cihazlarınızda çalıştırdığınız kişisel bir AI asistandır. Zaten kullandığınız mesajlaşma yüzeylerinde (WhatsApp, Telegram, Slack, Mattermost, Discord, Google Chat, Signal, iMessage, WebChat ve QQ Bot gibi paketlenmiş kanal Plugins'leri) yanıt verir ve desteklenen platformlarda ses + canlı Canvas da yapabilir. **Gateway** her zaman açık denetim düzlemidir; ürünün kendisi asistandır.
+    OpenClaw, kendi cihazlarınızda çalıştırdığınız kişisel bir AI asistanıdır. Zaten kullandığınız mesajlaşma yüzeylerinde (WhatsApp, Telegram, Slack, Mattermost, Discord, Google Chat, Signal, iMessage, WebChat ve QQ Bot gibi paketlenmiş kanal pluginleri) yanıt verir ve desteklenen platformlarda ses + canlı Canvas da yapabilir. **Gateway** her zaman açık kontrol düzlemidir; asistan ise üründür.
   </Accordion>
 
   <Accordion title="Değer önerisi">
-    OpenClaw, "yalnızca bir Claude sarmalayıcısı" değildir. Bu, yetenekli bir asistanı **kendi donanımınızda**, zaten kullandığınız sohbet uygulamaları üzerinden erişilebilir şekilde, durum bilgili oturumlar, bellek ve araçlarla çalıştırmanızı sağlayan **local-first bir denetim düzlemidir** — iş akışlarınızın denetimini barındırılan bir SaaS'a vermeden.
+    OpenClaw "sadece bir Claude sarmalayıcısı" değildir. Zaten kullandığınız sohbet uygulamalarından erişilebilen, durumlu oturumlar, bellek ve araçlarla **kendi donanımınızda** yetenekli bir asistan çalıştırmanızı sağlayan **yerel öncelikli bir kontrol düzlemidir**; iş akışlarınızın kontrolünü barındırılan bir SaaS'a devretmeniz gerekmez.
 
     Öne çıkanlar:
 
-    - **Cihazlarınız, veriniz:** Gateway'i istediğiniz yerde çalıştırın (Mac, Linux, VPS) ve
-      çalışma alanını + oturum geçmişini yerel tutun.
-    - **Gerçek kanallar, web sandbox'ı değil:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/vb,
+    - **Cihazlarınız, verileriniz:** Gateway'i istediğiniz yerde çalıştırın (Mac, Linux, VPS) ve çalışma alanı + oturum geçmişini yerel tutun.
+    - **Web sanal alanı değil, gerçek kanallar:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/vb,
       ayrıca desteklenen platformlarda mobil ses ve Canvas.
-    - **Modelden bağımsız:** Anthropic, OpenAI, MiniMax, OpenRouter vb. kullanın; ajan başına yönlendirme
-      ve failover ile.
-    - **Yalnızca yerel seçenek:** Yerel modeller çalıştırın, böylece isterseniz **tüm veriler cihazınızda kalabilir**.
-    - **Çoklu ajan yönlendirmesi:** Kanal, hesap veya görev başına ayrı ajanlar; her birinin kendi
-      çalışma alanı ve varsayılanları vardır.
-    - **Açık kaynak ve hacklenebilir:** Satıcı kilidine girmeden inceleyin, genişletin ve self-host edin.
+    - **Modelden bağımsız:** Aracı başına yönlendirme ve yük devretme ile Anthropic, OpenAI, MiniMax, OpenRouter vb. kullanın.
+    - **Yalnızca yerel seçenek:** İsterseniz **tüm veriler cihazınızda kalabilsin** diye yerel modeller çalıştırın.
+    - **Çok aracılı yönlendirme:** Her biri kendi çalışma alanı ve varsayılanlarına sahip kanal, hesap veya görev başına ayrı aracılar.
+    - **Açık kaynak ve kurcalanabilir:** Satıcı bağımlılığı olmadan inceleyin, genişletin ve kendi kendinize barındırın.
 
-    Belgeler: [Gateway](/tr/gateway), [Kanallar](/tr/channels), [Çoklu ajan](/tr/concepts/multi-agent),
+    Belgeler: [Gateway](/tr/gateway), [Kanallar](/tr/channels), [Çok aracılı](/tr/concepts/multi-agent),
     [Bellek](/tr/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Yeni kurdum - önce ne yapmalıyım?">
+  <Accordion title="Az önce kurdum - ilk olarak ne yapmalıyım?">
     İyi ilk projeler:
 
     - Bir web sitesi oluşturun (WordPress, Shopify veya basit bir statik site).
-    - Bir mobil uygulama prototipi yapın (taslak, ekranlar, API planı).
-    - Dosya ve klasörleri düzenleyin (temizlik, adlandırma, etiketleme).
+    - Bir mobil uygulama prototipi çıkarın (taslak, ekranlar, API planı).
+    - Dosya ve klasörleri düzenleyin (temizleme, adlandırma, etiketleme).
     - Gmail'i bağlayın ve özetleri veya takipleri otomatikleştirin.
 
-    Büyük görevleri de halledebilir, ancak bunları aşamalara böldüğünüzde ve
-    paralel iş için alt ajanlar kullandığınızda en iyi sonucu verir.
+    Büyük görevleri ele alabilir, ancak bunları aşamalara böldüğünüzde ve
+    paralel işler için alt aracılar kullandığınızda en iyi sonucu verir.
 
   </Accordion>
 
-  <Accordion title="OpenClaw için günlük hayattaki en önemli beş kullanım alanı nedir?">
+  <Accordion title="OpenClaw için en yaygın beş günlük kullanım alanı nedir?">
     Günlük kazanımlar genellikle şöyle görünür:
 
-    - **Kişisel brifingler:** gelen kutusu, takvim ve önemsediğiniz haberlerin özetleri.
-    - **Araştırma ve taslak hazırlama:** e-postalar veya belgeler için hızlı araştırma, özetler ve ilk taslaklar.
-    - **Hatırlatmalar ve takipler:** Cron veya Heartbeat ile çalışan dürtmeler ve kontrol listeleri.
+    - **Kişisel brifingler:** önemsediğiniz gelen kutusu, takvim ve haber özetleri.
+    - **Araştırma ve taslak oluşturma:** e-postalar veya belgeler için hızlı araştırma, özetler ve ilk taslaklar.
+    - **Hatırlatmalar ve takipler:** Cron veya Heartbeat güdümlü dürtmeler ve kontrol listeleri.
     - **Tarayıcı otomasyonu:** formları doldurma, veri toplama ve web görevlerini tekrarlama.
-    - **Cihazlar arası koordinasyon:** telefonunuzdan görev gönderin, Gateway bunu sunucuda çalıştırsın ve sonucu sohbette geri alın.
+    - **Cihazlar arası koordinasyon:** telefonunuzdan bir görev gönderin, Gateway'in bunu bir sunucuda çalıştırmasına izin verin ve sonucu sohbette geri alın.
 
   </Accordion>
 
-  <Accordion title="OpenClaw, bir SaaS için lead gen, outreach, reklamlar ve bloglarda yardımcı olabilir mi?">
-    Evet, **araştırma, nitelendirme ve taslak hazırlama** için. Siteleri tarayabilir, kısa listeler oluşturabilir,
-    potansiyel müşterileri özetleyebilir ve outreach veya reklam metni taslakları yazabilir.
+  <Accordion title="OpenClaw bir SaaS için müşteri adayı bulma, erişim, reklamlar ve bloglarda yardımcı olabilir mi?">
+    **Araştırma, nitelendirme ve taslak oluşturma** için evet. Siteleri tarayabilir, kısa listeler oluşturabilir,
+    potansiyel müşterileri özetleyebilir ve erişim veya reklam metni taslakları yazabilir.
 
-    **Outreach veya reklam çalıştırmaları** için insanı döngü içinde tutun. Spam yapmaktan kaçının, yerel yasalara ve
-    platform politikalarına uyun ve gönderilmeden önce her şeyi gözden geçirin. En güvenli desen,
-    OpenClaw'ın taslak hazırlaması ve sizin onaylamanızdır.
+    **Erişim veya reklam çalışmaları** için döngüde bir insan tutun. Spam'den kaçının, yerel yasalara ve
+    platform politikalarına uyun ve gönderilmeden önce her şeyi gözden geçirin. En güvenli kalıp,
+    OpenClaw'un taslak hazırlaması ve sizin onaylamanızdır.
 
     Belgeler: [Güvenlik](/tr/gateway/security).
 
   </Accordion>
 
   <Accordion title="Web geliştirme için Claude Code'a göre avantajları nelerdir?">
-    OpenClaw bir **kişisel asistan** ve koordinasyon katmanıdır, bir IDE ikamesi değildir. Depo içinde en hızlı doğrudan kodlama döngüsü için
-    Claude Code veya Codex kullanın. Kalıcı bellek, cihazlar arası erişim ve araç orkestrasyonu istediğinizde
-    OpenClaw kullanın.
+    OpenClaw bir **kişisel asistan** ve koordinasyon katmanıdır, IDE yerine geçmez. Bir repo içinde en hızlı doğrudan kodlama döngüsü için
+    Claude Code veya Codex kullanın. Kalıcı bellek, cihazlar arası erişim ve araç orkestrasyonu istediğinizde OpenClaw kullanın.
 
     Avantajlar:
 
     - Oturumlar arasında **kalıcı bellek + çalışma alanı**
     - **Çok platformlu erişim** (WhatsApp, Telegram, TUI, WebChat)
-    - **Araç orkestrasyonu** (tarayıcı, dosyalar, zamanlama, hook'lar)
-    - **Her zaman açık Gateway** (VPS'te çalıştırın, her yerden etkileşim kurun)
+    - **Araç orkestrasyonu** (tarayıcı, dosyalar, zamanlama, hooklar)
+    - **Her zaman açık Gateway** (bir VPS üzerinde çalıştırın, her yerden etkileşim kurun)
     - Yerel tarayıcı/ekran/kamera/exec için **Node'lar**
 
-    Vitrin: [https://openclaw.ai/showcase](https://openclaw.ai/showcase)
+    Gösterim: [https://openclaw.ai/showcase](https://openclaw.ai/showcase)
 
   </Accordion>
 </AccordionGroup>
@@ -171,69 +167,69 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 ## Skills ve otomasyon
 
 <AccordionGroup>
-  <Accordion title="Depoyu kirli tutmadan Skills'i nasıl özelleştiririm?">
-    Depo kopyasını düzenlemek yerine yönetilen geçersiz kılmaları kullanın. Değişikliklerinizi `~/.openclaw/skills/<name>/SKILL.md` içine koyun (veya `~/.openclaw/openclaw.json` içinde `skills.load.extraDirs` ile bir klasör ekleyin). Öncelik sırası `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → paketlenmiş → `skills.load.extraDirs` şeklindedir; bu yüzden yönetilen geçersiz kılmalar git'e dokunmadan yine paketlenmiş Skills'in önüne geçer. Skill'in genel olarak kurulu olmasını ama yalnızca bazı ajanlara görünmesini istiyorsanız ortak kopyayı `~/.openclaw/skills` içinde tutun ve görünürlüğü `agents.defaults.skills` ve `agents.list[].skills` ile denetleyin. Yalnızca yukarı akışa uygun düzenlemeler depoda yaşamalı ve PR olarak gönderilmelidir.
+  <Accordion title="Repoyu kirletmeden skills'i nasıl özelleştiririm?">
+    Repo kopyasını düzenlemek yerine yönetilen geçersiz kılmalar kullanın. Değişikliklerinizi `~/.openclaw/skills/<name>/SKILL.md` içine koyun (veya `~/.openclaw/openclaw.json` içinde `skills.load.extraDirs` ile bir klasör ekleyin). Öncelik sırası `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → paketlenmiş → `skills.load.extraDirs` şeklindedir; bu nedenle yönetilen geçersiz kılmalar git'e dokunmadan paketlenmiş skills'e göre yine üstün gelir. Skill'in küresel olarak kurulu olması ama yalnızca bazı aracılara görünmesi gerekiyorsa, paylaşılan kopyayı `~/.openclaw/skills` içinde tutun ve görünürlüğü `agents.defaults.skills` ile `agents.list[].skills` üzerinden kontrol edin. Yalnızca upstream'e uygun düzenlemeler repoda yaşamalı ve PR olarak çıkmalıdır.
   </Accordion>
 
-  <Accordion title="Skills'i özel bir klasörden yükleyebilir miyim?">
-    Evet. `~/.openclaw/openclaw.json` içinde `skills.load.extraDirs` ile ek dizinler ekleyin (en düşük öncelik). Varsayılan öncelik sırası `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → paketlenmiş → `skills.load.extraDirs` şeklindedir. `clawhub`, varsayılan olarak `./skills` içine kurar; OpenClaw bunu sonraki oturumda `<workspace>/skills` olarak değerlendirir. Skill yalnızca belirli ajanlara görünmeliyse bunu `agents.defaults.skills` veya `agents.list[].skills` ile eşleştirin.
+  <Accordion title="Özel bir klasörden skills yükleyebilir miyim?">
+    Evet. `~/.openclaw/openclaw.json` içinde `skills.load.extraDirs` aracılığıyla ek dizinler ekleyin (en düşük öncelik). Varsayılan öncelik `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → paketlenmiş → `skills.load.extraDirs` şeklindedir. `clawhub` varsayılan olarak `./skills` içine kurar; OpenClaw bir sonraki oturumda bunu `<workspace>/skills` olarak ele alır. Skill yalnızca belirli aracılara görünmeliyse, bunu `agents.defaults.skills` veya `agents.list[].skills` ile eşleştirin.
   </Accordion>
 
   <Accordion title="Farklı görevler için farklı modelleri nasıl kullanabilirim?">
-    Bugün desteklenen desenler şunlardır:
+    Bugün desteklenen kalıplar şunlardır:
 
-    - **Cron işleri**: yalıtılmış işler, iş başına `model` geçersiz kılması ayarlayabilir.
-    - **Alt ajanlar**: görevleri farklı varsayılan modellere sahip ayrı ajanlara yönlendirin.
+    - **Cron işleri**: yalıtılmış işler, iş başına bir `model` geçersiz kılması ayarlayabilir.
+    - **Alt aracılar**: görevleri farklı varsayılan modellere sahip ayrı aracılara yönlendirin.
     - **İsteğe bağlı geçiş**: geçerli oturum modelini istediğiniz zaman değiştirmek için `/model` kullanın.
 
-    Bkz. [Cron işleri](/tr/automation/cron-jobs), [Çoklu Ajan Yönlendirmesi](/tr/concepts/multi-agent) ve [Slash commands](/tr/tools/slash-commands).
+    Bkz. [Cron işleri](/tr/automation/cron-jobs), [Çok Aracılı Yönlendirme](/tr/concepts/multi-agent) ve [Eğik çizgi komutları](/tr/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Bot ağır işler yaparken donuyor. Bunu nasıl dışarı alırım?">
-    Uzun veya paralel görevler için **alt ajanlar** kullanın. Alt ajanlar kendi oturumlarında çalışır,
-    bir özet döndürür ve ana sohbetinizin yanıt verebilir kalmasını sağlar.
+  <Accordion title="Bot ağır iş yaparken donuyor. Bunu nasıl başka yere devrederim?">
+    Uzun veya paralel görevler için **alt aracılar** kullanın. Alt aracılar kendi oturumlarında çalışır,
+    bir özet döndürür ve ana sohbetinizin yanıt vermeye devam etmesini sağlar.
 
-    Botunuza "bu görev için bir alt ajan başlat" deyin veya `/subagents` kullanın.
-    Gateway'in şu anda ne yaptığını (ve meşgul olup olmadığını) görmek için sohbette `/status` kullanın.
+    Botunuzdan "bu görev için bir alt aracı oluşturmasını" isteyin veya `/subagents` kullanın.
+    Gateway'in o anda ne yaptığını (ve meşgul olup olmadığını) görmek için sohbette `/status` kullanın.
 
-    Token ipucu: uzun görevler ve alt ajanlar da token tüketir. Maliyet önemliyse
-    alt ajanlar için `agents.defaults.subagents.model` üzerinden daha ucuz bir model ayarlayın.
+    Token ipucu: uzun görevler ve alt aracılar token tüketir. Maliyet önemliyse, `agents.defaults.subagents.model` üzerinden
+    alt aracılar için daha ucuz bir model ayarlayın.
 
-    Belgeler: [Alt ajanlar](/tr/tools/subagents), [Arka Plan Görevleri](/tr/automation/tasks).
+    Belgeler: [Alt aracılar](/tr/tools/subagents), [Arka Plan Görevleri](/tr/automation/tasks).
 
   </Accordion>
 
-  <Accordion title="Discord'da konuya bağlı alt ajan oturumları nasıl çalışır?">
-    Konu bağlamalarını kullanın. Bir Discord konusunu alt ajana veya oturum hedefine bağlayabilirsiniz; böylece o konudaki takip mesajları bağlı oturumda kalır.
+  <Accordion title="Discord'da iş parçacığına bağlı alt aracı oturumları nasıl çalışır?">
+    İş parçacığı bağlamalarını kullanın. Bir Discord iş parçacığını bir alt aracıya veya oturum hedefine bağlayabilirsiniz; böylece o iş parçacığındaki takip mesajları bağlı oturumda kalır.
 
     Temel akış:
 
-    - `sessions_spawn` ile `thread: true` kullanarak başlatın (ve isteğe bağlı olarak kalıcı takip için `mode: "session"`).
+    - `thread: true` ile `sessions_spawn` kullanarak oluşturun (ve kalıcı takip için isteğe bağlı olarak `mode: "session"`).
     - Veya `/focus <target>` ile elle bağlayın.
     - Bağlama durumunu incelemek için `/agents` kullanın.
-    - Otomatik unfocus davranışını denetlemek için `/session idle <duration|off>` ve `/session max-age <duration|off>` kullanın.
-    - Konuyu ayırmak için `/unfocus` kullanın.
+    - Otomatik odaktan çıkarmayı kontrol etmek için `/session idle <duration|off>` ve `/session max-age <duration|off>` kullanın.
+    - İş parçacığını ayırmak için `/unfocus` kullanın.
 
     Gerekli yapılandırma:
 
-    - Genel varsayılanlar: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
+    - Küresel varsayılanlar: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
     - Discord geçersiz kılmaları: `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours`.
-    - Başlatmada otomatik bağlama: `channels.discord.threadBindings.spawnSubagentSessions: true` ayarlayın.
+    - Oluşturma sırasında otomatik bağlama: `channels.discord.threadBindings.spawnSubagentSessions: true` ayarlayın.
 
-    Belgeler: [Alt ajanlar](/tr/tools/subagents), [Discord](/tr/channels/discord), [Yapılandırma Başvurusu](/tr/gateway/configuration-reference), [Slash commands](/tr/tools/slash-commands).
+    Belgeler: [Alt aracılar](/tr/tools/subagents), [Discord](/tr/channels/discord), [Yapılandırma Referansı](/tr/gateway/configuration-reference), [Eğik çizgi komutları](/tr/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Bir alt ajan bitti, ama tamamlama güncellemesi yanlış yere gitti veya hiç gönderilmedi. Neyi kontrol etmeliyim?">
-    Önce çözümlenen istekçi yolunu kontrol edin:
+  <Accordion title="Bir alt aracı tamamlandı, ancak tamamlanma güncellemesi yanlış yere gitti veya hiç gönderilmedi. Neyi kontrol etmeliyim?">
+    Önce çözümlenen istek sahibi rotasını kontrol edin:
 
-    - Tamamlama modundaki alt ajan teslimi, varsa herhangi bir bağlı konu veya konuşma yolunu tercih eder.
-    - Tamamlama kökeni yalnızca bir kanal taşıyorsa OpenClaw, doğrudan teslim yine başarılı olabilsin diye istekçi oturumun saklanan yoluna (`lastChannel` / `lastTo` / `lastAccountId`) geri düşer.
-    - Ne bağlı yol ne de kullanılabilir bir saklı yol varsa doğrudan teslim başarısız olabilir ve sonuç sohbete hemen gönderilmek yerine kuyruklu oturum teslimine geri düşer.
-    - Geçersiz veya eski hedefler yine kuyruk fallback'ini veya nihai teslim başarısızlığını zorlayabilir.
-    - Child'ın son görünür asistan yanıtı tam olarak sessiz belirteç `NO_REPLY` / `no_reply` veya tam olarak `ANNOUNCE_SKIP` ise OpenClaw eski ilerlemeyi göndermek yerine bildirimi kasıtlı olarak bastırır.
-    - Child yalnızca araç çağrılarından sonra zaman aşımına uğradıysa bildirim, ham araç çıktısını yeniden oynatmak yerine bunu kısa bir kısmi ilerleme özeti olarak daraltabilir.
+    - Tamamlanma modundaki alt aracı teslimi, mevcutsa herhangi bir bağlı iş parçacığını veya konuşma rotasını tercih eder.
+    - Tamamlanma kaynağı yalnızca bir kanal taşıyorsa, OpenClaw doğrudan teslimatın yine de başarılı olabilmesi için istek sahibi oturumun saklanan rotasına (`lastChannel` / `lastTo` / `lastAccountId`) geri döner.
+    - Ne bağlı bir rota ne de kullanılabilir bir saklanan rota varsa, doğrudan teslimat başarısız olabilir ve sonuç sohbete hemen gönderilmek yerine kuyruğa alınmış oturum teslimatına geri döner.
+    - Geçersiz veya eski hedefler yine de kuyruğa geri dönüşü veya nihai teslimat hatasını zorlayabilir.
+    - Alt öğenin son görünür asistan yanıtı tam olarak sessiz token `NO_REPLY` / `no_reply` veya tam olarak `ANNOUNCE_SKIP` ise, OpenClaw eski önceki ilerlemeyi göndermek yerine duyuruyu kasıtlı olarak bastırır.
+    - Alt öğe yalnızca araç çağrılarından sonra zaman aşımına uğradıysa, duyuru ham araç çıktısını yeniden oynatmak yerine bunu kısa bir kısmi ilerleme özetine indirgeyebilir.
 
     Hata ayıklama:
 
@@ -241,19 +237,19 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     openclaw tasks show <runId-or-sessionKey>
     ```
 
-    Belgeler: [Alt ajanlar](/tr/tools/subagents), [Arka Plan Görevleri](/tr/automation/tasks), [Oturum Araçları](/tr/concepts/session-tool).
+    Belgeler: [Alt aracılar](/tr/tools/subagents), [Arka Plan Görevleri](/tr/automation/tasks), [Oturum Araçları](/tr/concepts/session-tool).
 
   </Accordion>
 
   <Accordion title="Cron veya hatırlatıcılar çalışmıyor. Neyi kontrol etmeliyim?">
-    Cron, Gateway süreci içinde çalışır. Gateway sürekli çalışmıyorsa
+    Cron, Gateway sürecinin içinde çalışır. Gateway sürekli çalışmıyorsa,
     zamanlanmış işler çalışmaz.
 
     Kontrol listesi:
 
-    - Cron'un etkin olduğunu doğrulayın (`cron.enabled`) ve `OPENCLAW_SKIP_CRON` ayarlı olmasın.
+    - Cron'un etkin olduğunu (`cron.enabled`) ve `OPENCLAW_SKIP_CRON` ayarlı olmadığını doğrulayın.
     - Gateway'in 7/24 çalıştığını kontrol edin (uyku/yeniden başlatma yok).
-    - İş için saat dilimi ayarlarını doğrulayın (`--tz` ile host saat dilimi karşılaştırması).
+    - İş için saat dilimi ayarlarını doğrulayın (`--tz` ile ana makine saat dilimi).
 
     Hata ayıklama:
 
@@ -266,17 +262,17 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
   </Accordion>
 
-  <Accordion title="Cron tetiklendi, ama kanala hiçbir şey gönderilmedi. Neden?">
+  <Accordion title="Cron tetiklendi, ancak kanala hiçbir şey gönderilmedi. Neden?">
     Önce teslim modunu kontrol edin:
 
-    - `--no-deliver` / `delivery.mode: "none"` ayarı, runner fallback gönderiminin beklenmediği anlamına gelir.
-    - Eksik veya geçersiz bildirim hedefi (`channel` / `to`), runner'ın giden teslimi atlaması anlamına gelir.
-    - Kanal auth hataları (`unauthorized`, `Forbidden`), runner'ın teslim etmeyi denediğini ama kimlik bilgilerinin bunu engellediğini gösterir.
-    - Sessiz yalıtılmış sonuç (`NO_REPLY` / `no_reply` yalnızca) kasıtlı olarak teslim edilemez kabul edilir; bu yüzden runner kuyruklu fallback teslimini de bastırır.
+    - `--no-deliver` / `delivery.mode: "none"` runner yedek gönderiminin beklenmediği anlamına gelir.
+    - Eksik veya geçersiz duyuru hedefi (`channel` / `to`), runner'ın dışa teslimi atladığı anlamına gelir.
+    - Kanal kimlik doğrulama hataları (`unauthorized`, `Forbidden`), runner'ın teslim etmeye çalıştığı ancak kimlik bilgilerinin bunu engellediği anlamına gelir.
+    - Sessiz yalıtılmış sonuç (yalnızca `NO_REPLY` / `no_reply`), kasıtlı olarak teslim edilemez kabul edilir; bu nedenle runner kuyruktaki yedek teslimi de bastırır.
 
-    Yalıtılmış Cron işleri için, bir sohbet yolu mevcut olduğunda ajan yine de `message`
-    aracıyla doğrudan gönderebilir. `--announce`, yalnızca ajanın zaten göndermediği
-    nihai metin için runner fallback yolunu kontrol eder.
+    Yalıtılmış cron işleri için, bir sohbet rotası kullanılabiliyorsa agent yine de `message`
+    aracıyla doğrudan gönderebilir. `--announce` yalnızca agent'ın zaten göndermediği
+    son metin için runner yedek yolunu kontrol eder.
 
     Hata ayıklama:
 
@@ -289,23 +285,23 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
   </Accordion>
 
-  <Accordion title="Yalıtılmış bir Cron çalıştırması neden model değiştirdi veya bir kez yeniden denedi?">
+  <Accordion title="Yalıtılmış bir cron çalıştırması neden model değiştirdi veya bir kez yeniden denedi?">
     Bu genellikle yinelenen zamanlama değil, canlı model değiştirme yoludur.
 
-    Yalıtılmış Cron, etkin
-    çalıştırma `LiveSessionModelSwitchError` fırlattığında çalışma zamanı model devrini kalıcılaştırabilir ve yeniden deneyebilir. Yeniden deneme, değiştirilen
-    sağlayıcıyı/modeli korur ve değişiklik yeni bir auth profile geçersiz kılması taşıyorsa Cron
-    bunu da yeniden denemeden önce kalıcılaştırır.
+    Yalıtılmış cron, etkin çalışma `LiveSessionModelSwitchError` fırlattığında
+    çalışma zamanı model devrini kalıcı hale getirip yeniden deneyebilir. Yeniden deneme,
+    değiştirilmiş provider/model değerini korur ve değişiklik yeni bir auth profile override
+    taşıdıysa cron yeniden denemeden önce bunu da kalıcı hale getirir.
 
     İlgili seçim kuralları:
 
-    - Uygun olduğunda önce Gmail hook model geçersiz kılması kazanır.
-    - Sonra iş başına `model`.
-    - Sonra saklanan herhangi bir Cron oturumu model geçersiz kılması.
-    - Sonra normal ajan/varsayılan model seçimi.
+    - Uygulanabilir olduğunda önce Gmail hook model override kazanır.
+    - Ardından iş başına `model`.
+    - Ardından depolanmış cron oturumu model override.
+    - Ardından normal agent/varsayılan model seçimi.
 
     Yeniden deneme döngüsü sınırlıdır. İlk deneme artı 2 değiştirme yeniden denemesinden sonra
-    Cron sonsuza kadar döngüye girmek yerine iptal eder.
+    cron sonsuza dek döngüye girmek yerine iptal eder.
 
     Hata ayıklama:
 
@@ -314,13 +310,13 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     openclaw tasks show <runId-or-sessionKey>
     ```
 
-    Belgeler: [Cron işleri](/tr/automation/cron-jobs), [Cron CLI](/tr/cli/cron).
+    Belgeler: [Cron işleri](/tr/automation/cron-jobs), [cron CLI](/tr/cli/cron).
 
   </Accordion>
 
-  <Accordion title="Linux'ta Skills'i nasıl kurarım?">
-    Yerel `openclaw skills` komutlarını kullanın veya Skills'i çalışma alanınıza bırakın. macOS Skills UI, Linux'ta mevcut değildir.
-    Skills'e [https://clawhub.ai](https://clawhub.ai) üzerinden göz atın.
+  <Accordion title="Linux üzerinde Skills nasıl kurarım?">
+    Yerel `openclaw skills` komutlarını kullanın veya skills öğelerini çalışma alanınıza bırakın. macOS Skills kullanıcı arayüzü Linux üzerinde kullanılamaz.
+    Skills öğelerine [https://clawhub.ai](https://clawhub.ai) adresinden göz atın.
 
     ```bash
     openclaw skills search "calendar"
@@ -333,39 +329,39 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     openclaw skills check
     ```
 
-    Yerel `openclaw skills install`, etkin çalışma alanı `skills/`
-    dizinine yazar. Ayrı `clawhub` CLI'yi yalnızca kendi Skills'inizi yayımlamak veya
-    senkronize etmek istiyorsanız kurun. Ajanlar arası paylaşılan kurulumlar için Skill'i
-    `~/.openclaw/skills` altına koyun ve hangi ajanların görebileceğini daraltmak istiyorsanız `agents.defaults.skills` veya
-    `agents.list[].skills` kullanın.
+    Yerel `openclaw skills install`, etkin çalışma alanındaki `skills/`
+    dizinine yazar. Ayrı `clawhub` CLI'yi yalnızca kendi skills öğelerinizi yayımlamak veya
+    senkronize etmek istiyorsanız kurun. Agent'lar arasında paylaşılan kurulumlar için skill öğesini
+    `~/.openclaw/skills` altına koyun ve hangi agent'ların bunu görebileceğini daraltmak istiyorsanız
+    `agents.defaults.skills` veya `agents.list[].skills` kullanın.
 
   </Accordion>
 
-  <Accordion title="OpenClaw görevleri zamanlanmış olarak veya arka planda sürekli çalıştırabilir mi?">
+  <Accordion title="OpenClaw görevleri zamanlamaya göre veya sürekli olarak arka planda çalıştırabilir mi?">
     Evet. Gateway zamanlayıcısını kullanın:
 
-    - Zamanlanmış veya yinelenen görevler için **Cron işleri** (yeniden başlatmalarda korunur).
-    - "Ana oturum" periyodik kontrolleri için **Heartbeat**.
-    - Özet gönderen veya sohbetlere teslim eden otonom ajanlar için **Yalıtılmış işler**.
+    - Zamanlanmış veya yinelenen görevler için **Cron işleri** (yeniden başlatmalar arasında kalıcıdır).
+    - "Ana oturum" dönemsel kontrolleri için **Heartbeat**.
+    - Özet gönderen veya sohbetlere teslim eden otonom agent'lar için **Yalıtılmış işler**.
 
     Belgeler: [Cron işleri](/tr/automation/cron-jobs), [Otomasyon ve Görevler](/tr/automation),
     [Heartbeat](/tr/gateway/heartbeat).
 
   </Accordion>
 
-  <Accordion title="Apple macOS'e özel Skills'i Linux'tan çalıştırabilir miyim?">
-    Doğrudan hayır. macOS Skills'leri `metadata.openclaw.os` ve gerekli ikili dosyalarla geçitlenir ve Skills yalnızca **Gateway host** üzerinde uygun olduğunda sistem isteminde görünür. Linux'ta `darwin`-yalnızca Skills'ler (`apple-notes`, `apple-reminders`, `things-mac` gibi), geçitlemeyi geçersiz kılmadıkça yüklenmez.
+  <Accordion title="Apple macOS'a özel skills öğelerini Linux'tan çalıştırabilir miyim?">
+    Doğrudan değil. macOS skills öğeleri `metadata.openclaw.os` ve gerekli ikili dosyalarla sınırlandırılır; skills yalnızca **Gateway host** üzerinde uygun olduklarında sistem prompt'unda görünür. Linux üzerinde `darwin`'e özel skills (`apple-notes`, `apple-reminders`, `things-mac` gibi), sınırlamayı override etmediğiniz sürece yüklenmez.
 
-    Desteklenen üç deseniniz var:
+    Desteklenen üç desen vardır:
 
-    **Seçenek A - Gateway'i Mac üzerinde çalıştırın (en kolayı).**
-    Gateway'i macOS ikili dosyalarının bulunduğu yerde çalıştırın, sonra Linux'tan [uzak modda](#gateway-ports-already-running-and-remote-mode) veya Tailscale üzerinden bağlanın. Skills normal yüklenir çünkü Gateway host'u macOS'tir.
+    **Seçenek A - Gateway'i Mac üzerinde çalıştırın (en basit).**
+    Gateway'i macOS ikili dosyalarının bulunduğu yerde çalıştırın, ardından Linux'tan [remote mode](#gateway-ports-already-running-and-remote-mode) ile veya Tailscale üzerinden bağlanın. Gateway host macOS olduğu için skills normal şekilde yüklenir.
 
-    **Seçenek B - macOS Node kullanın (SSH yok).**
-    Gateway'i Linux'ta çalıştırın, bir macOS Node'u (menü çubuğu uygulaması) eşleştirin ve Mac üzerinde **Node Run Commands** ayarını "Always Ask" veya "Always Allow" yapın. OpenClaw, gerekli ikili dosyalar Node üzerinde mevcut olduğunda macOS'e özel Skills'leri uygun kabul edebilir. Ajan bu Skills'leri `nodes` aracıyla çalıştırır. "Always Ask" seçerseniz, istemde "Always Allow" onayı bu komutu izin listesine ekler.
+    **Seçenek B - bir macOS node kullanın (SSH yok).**
+    Gateway'i Linux üzerinde çalıştırın, bir macOS node (menü çubuğu uygulaması) eşleştirin ve Mac üzerinde **Node Run Commands** ayarını "Always Ask" veya "Always Allow" yapın. OpenClaw, gerekli ikili dosyalar node üzerinde mevcut olduğunda macOS'a özel skills öğelerini uygun kabul edebilir. Agent bu skills öğelerini `nodes` aracı üzerinden çalıştırır. "Always Ask" seçerseniz, prompt'ta "Always Allow" onayı vermek bu komutu allowlist'e ekler.
 
     **Seçenek C - macOS ikili dosyalarını SSH üzerinden proxy'leyin (ileri düzey).**
-    Gateway'i Linux'ta tutun, ancak gerekli CLI ikili dosyalarının bir Mac üzerinde çalışan SSH sarmalayıcılarına çözümlenmesini sağlayın. Sonra Skill'i Linux'a izin verecek şekilde geçersiz kılın; böylece uygun kalır.
+    Gateway'i Linux üzerinde tutun, ancak gerekli CLI ikili dosyalarının Mac üzerinde çalışan SSH sarmalayıcılarına çözülmesini sağlayın. Ardından skill öğesinin uygun kalması için Linux'a izin verecek şekilde override edin.
 
     1. İkili dosya için bir SSH sarmalayıcısı oluşturun (örnek: Apple Notes için `memo`):
 
@@ -375,8 +371,8 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
        exec ssh -T user@mac-host /opt/homebrew/bin/memo "$@"
        ```
 
-    2. Sarmalayıcıyı Linux host üzerinde `PATH` içine koyun (örneğin `~/bin/memo`).
-    3. Skill meta verilerini (çalışma alanı veya `~/.openclaw/skills`) Linux'a izin verecek şekilde geçersiz kılın:
+    2. Sarmalayıcıyı Linux host üzerinde `PATH`'e koyun (örneğin `~/bin/memo`).
+    3. Linux'a izin vermek için skill metadata'sını (çalışma alanı veya `~/.openclaw/skills`) override edin:
 
        ```markdown
        ---
@@ -386,7 +382,7 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
        ---
        ```
 
-    4. Skills anlık görüntüsü yenilensin diye yeni bir oturum başlatın.
+    4. Skills snapshot'ının yenilenmesi için yeni bir oturum başlatın.
 
   </Accordion>
 
@@ -395,16 +391,16 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
     Seçenekler:
 
-    - **Özel Skill / Plugin:** güvenilir API erişimi için en iyisi (Notion/HeyGen ikisinin de API'si var).
-    - **Tarayıcı otomasyonu:** kod yazmadan çalışır ama daha yavaş ve daha kırılgandır.
+    - **Özel skill / plugin:** güvenilir API erişimi için en iyisi (Notion/HeyGen ikisinin de API'leri vardır).
+    - **Tarayıcı otomasyonu:** kod olmadan çalışır ancak daha yavaş ve daha kırılgandır.
 
-    İstemci başına bağlam tutmak istiyorsanız (ajans iş akışları), basit bir desen şudur:
+    Bağlamı müşteri başına tutmak istiyorsanız (ajans iş akışları), basit bir desen şudur:
 
-    - İstemci başına bir Notion sayfası (bağlam + tercihler + etkin iş).
-    - Ajanınızdan oturum başında o sayfayı getirmesini isteyin.
+    - Müşteri başına bir Notion sayfası (bağlam + tercihler + etkin çalışma).
+    - Agent'tan oturum başında bu sayfayı getirmesini isteyin.
 
-    Yerel bir entegrasyon istiyorsanız bir özellik isteği açın veya bu API'leri
-    hedefleyen bir Skill oluşturun.
+    Yerel bir entegrasyon istiyorsanız, bir özellik isteği açın veya bu API'leri
+    hedefleyen bir skill oluşturun.
 
     Skills kurun:
 
@@ -413,184 +409,185 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     openclaw skills update --all
     ```
 
-    Yerel kurulumlar etkin çalışma alanı `skills/` dizinine gider. Ajanlar arası paylaşılan Skills için bunları `~/.openclaw/skills/<name>/SKILL.md` içine yerleştirin. Yalnızca bazı ajanlar paylaşılan kurulumu görmeliyse `agents.defaults.skills` veya `agents.list[].skills` yapılandırın. Bazı Skills, Homebrew üzerinden kurulan ikili dosyalar bekler; Linux'ta bu Linuxbrew anlamına gelir (yukarıdaki Homebrew Linux SSS girdisine bakın). Bkz. [Skills](/tr/tools/skills), [Skills yapılandırması](/tr/tools/skills-config) ve [ClawHub](/tr/tools/clawhub).
+    Yerel kurulumlar etkin çalışma alanındaki `skills/` dizinine iner. Agent'lar arasında paylaşılan skills için bunları `~/.openclaw/skills/<name>/SKILL.md` konumuna yerleştirin. Yalnızca bazı agent'ların paylaşılan bir kurulumu görmesi gerekiyorsa `agents.defaults.skills` veya `agents.list[].skills` yapılandırın. Bazı skills Homebrew ile kurulmuş ikili dosyalar bekler; Linux üzerinde bu Linuxbrew anlamına gelir (yukarıdaki Homebrew Linux SSS girdisine bakın). Bkz. [Skills](/tr/tools/skills), [Skills yapılandırması](/tr/tools/skills-config) ve [ClawHub](/tr/tools/clawhub).
 
   </Accordion>
 
-  <Accordion title="Mevcut oturum açılmış Chrome'umu OpenClaw ile nasıl kullanırım?">
-    Chrome DevTools MCP üzerinden bağlanan yerleşik `user` browser profile'ını kullanın:
+  <Accordion title="Mevcut oturum açmış Chrome'umu OpenClaw ile nasıl kullanırım?">
+    Chrome DevTools MCP üzerinden bağlanan yerleşik `user` tarayıcı profilini kullanın:
 
     ```bash
     openclaw browser --browser-profile user tabs
     openclaw browser --browser-profile user snapshot
     ```
 
-    Özel bir ad istiyorsanız açık bir MCP profile'ı oluşturun:
+    Özel bir ad istiyorsanız, açık bir MCP profili oluşturun:
 
     ```bash
     openclaw browser create-profile --name chrome-live --driver existing-session
     openclaw browser --browser-profile chrome-live tabs
     ```
 
-    Bu yol yerel host browser'ı veya bağlı bir browser node'u kullanabilir. Gateway başka bir yerde çalışıyorsa ya browser makinesinde bir node host çalıştırın ya da uzak CDP kullanın.
+    Bu yol yerel host tarayıcısını veya bağlı bir tarayıcı node'unu kullanabilir. Gateway başka yerde çalışıyorsa, tarayıcı makinesinde bir node host çalıştırın ya da bunun yerine uzak CDP kullanın.
 
-    `existing-session` / `user` için mevcut sınırlamalar:
+    `existing-session` / `user` üzerindeki mevcut sınırlar:
 
-    - eylemler CSS-selector odaklı değil, ref odaklıdır
-    - yüklemeler `ref` / `inputRef` gerektirir ve şu anda aynı anda bir dosyayı destekler
-    - `responsebody`, PDF dışa aktarma, indirme yakalama ve toplu eylemler hâlâ yönetilen browser veya ham CDP profile'ı gerektirir
+    - eylemler CSS selector odaklı değil, ref odaklıdır
+    - yüklemeler `ref` / `inputRef` gerektirir ve şu anda tek seferde bir dosyayı destekler
+    - `responsebody`, PDF dışa aktarma, indirme yakalama ve toplu eylemler hâlâ yönetilen tarayıcı veya raw CDP profili gerektirir
 
   </Accordion>
 </AccordionGroup>
 
-## Sandboxing ve bellek
+## Sandbox ve bellek
 
 <AccordionGroup>
-  <Accordion title="Ayrı bir sandboxing belgesi var mı?">
-    Evet. Bkz. [Sandboxing](/tr/gateway/sandboxing). Docker'a özgü kurulum (Docker içinde tam gateway veya sandbox image'ları) için bkz. [Docker](/tr/install/docker).
+  <Accordion title="Özel bir sandboxing belgesi var mı?">
+    Evet. Bkz. [Sandboxing](/tr/gateway/sandboxing). Docker'a özel kurulum için (Docker içinde tam gateway veya sandbox imajları), bkz. [Docker](/tr/install/docker).
   </Accordion>
 
-  <Accordion title="Docker kısıtlı geliyor - tam özellikleri nasıl etkinleştiririm?">
-    Varsayılan image güvenlik önceliklidir ve `node` kullanıcısı olarak çalışır, bu yüzden
-    sistem paketleri, Homebrew veya paketlenmiş browser'lar içermez. Daha tam bir kurulum için:
+  <Accordion title="Docker sınırlı hissettiriyor - tüm özellikleri nasıl etkinleştiririm?">
+    Varsayılan imaj güvenlik önceliklidir ve `node` kullanıcısı olarak çalışır; bu yüzden
+    sistem paketlerini, Homebrew'ü veya paketlenmiş tarayıcıları içermez. Daha eksiksiz bir kurulum için:
 
-    - Önbellekler korunsun diye `/home/node` dizinini `OPENCLAW_HOME_VOLUME` ile kalıcı yapın.
-    - Sistem bağımlılıklarını `OPENCLAW_DOCKER_APT_PACKAGES` ile image içine gömün.
-    - Paketlenmiş CLI ile Playwright browser'larını kurun:
+    - Önbelleklerin kalıcı olması için `/home/node` öğesini `OPENCLAW_HOME_VOLUME` ile kalıcı hale getirin.
+    - Sistem bağımlılıklarını `OPENCLAW_DOCKER_APT_PACKAGES` ile imaja gömün.
+    - Paketlenmiş CLI aracılığıyla Playwright tarayıcılarını kurun:
       `node /app/node_modules/playwright-core/cli.js install chromium`
     - `PLAYWRIGHT_BROWSERS_PATH` ayarlayın ve yolun kalıcı olduğundan emin olun.
 
-    Belgeler: [Docker](/tr/install/docker), [Browser](/tr/tools/browser).
+    Belgeler: [Docker](/tr/install/docker), [Tarayıcı](/tr/tools/browser).
 
   </Accordion>
 
-  <Accordion title="DM'leri kişisel tutup grupları herkese açık/sandboxed tek ajanla yapabilir miyim?">
-    Evet — özel trafiğiniz **DM**, herkese açık trafiğiniz **grup** ise.
+  <Accordion title="DM'leri kişisel tutup grupları tek agent ile herkese açık/sandboxed yapabilir miyim?">
+    Evet - özel trafiğiniz **DM'ler** ve herkese açık trafiğiniz **gruplar** ise.
 
-    Grup/kanal oturumları (main olmayan anahtarlar) yapılandırılmış sandbox backend'inde çalışırken ana DM oturumunun host üzerinde kalması için `agents.defaults.sandbox.mode: "non-main"` kullanın. Bir backend seçmezseniz Docker varsayılan backend olur. Sonra sandboxed oturumlarda hangi araçların kullanılabildiğini `tools.sandbox.tools` ile kısıtlayın.
+    `agents.defaults.sandbox.mode: "non-main"` kullanın; böylece grup/kanal oturumları (ana olmayan anahtarlar) yapılandırılmış sandbox backend içinde çalışırken ana DM oturumu host üzerinde kalır. Bir backend seçmezseniz Docker varsayılan backend'dir. Ardından `tools.sandbox.tools` aracılığıyla sandboxed oturumlarda hangi araçların kullanılabilir olduğunu sınırlayın.
 
-    Kurulum adım adım anlatım + örnek yapılandırma: [Gruplar: kişisel DM'ler + herkese açık gruplar](/tr/channels/groups#pattern-personal-dms-public-groups-single-agent)
+    Kurulum adımları + örnek yapılandırma: [Gruplar: kişisel DM'ler + herkese açık gruplar](/tr/channels/groups#pattern-personal-dms-public-groups-single-agent)
 
-    Temel yapılandırma başvurusu: [Gateway yapılandırması](/tr/gateway/config-agents#agentsdefaultssandbox)
+    Temel yapılandırma referansı: [Gateway yapılandırması](/tr/gateway/config-agents#agentsdefaultssandbox)
 
   </Accordion>
 
   <Accordion title="Bir host klasörünü sandbox içine nasıl bağlarım?">
-    `agents.defaults.sandbox.docker.binds` değerini `["host:path:mode"]` olarak ayarlayın (ör. `"/home/user/src:/src:ro"`). Genel + ajan başına bind'ler birleşir; ajan başına bind'ler `scope: "shared"` olduğunda yok sayılır. Hassas her şey için `:ro` kullanın ve bind'lerin sandbox dosya sistemi duvarlarını by-pass ettiğini unutmayın.
+    `agents.defaults.sandbox.docker.binds` değerini `["host:path:mode"]` olarak ayarlayın (ör. `"/home/user/src:/src:ro"`). Genel + agent başına bind'lar birleştirilir; `scope: "shared"` olduğunda agent başına bind'lar yok sayılır. Hassas olan her şey için `:ro` kullanın ve bind'ların sandbox dosya sistemi duvarlarını aştığını unutmayın.
 
-    OpenClaw, bind kaynaklarını hem normalleştirilmiş yola hem de en derin mevcut atadan çözümlenen kanonik yola göre doğrular. Bu, son yol segmenti henüz mevcut olmasa bile symlink-parent kaçışlarının yine fail-closed olacağı ve izin verilen kök denetimlerinin symlink çözümlemesinden sonra da uygulanacağı anlamına gelir.
+    OpenClaw, bind kaynaklarını hem normalize edilmiş yola hem de en derin mevcut üst öğe üzerinden çözümlenen kanonik yola göre doğrular. Bu, son yol segmenti henüz mevcut olmasa bile symlink-parent kaçışlarının kapalı başarısız olacağı ve allowed-root kontrollerinin symlink çözümlemesinden sonra da uygulanacağı anlamına gelir.
 
-    Örnekler ve güvenlik notları için bkz. [Sandboxing](/tr/gateway/sandboxing#custom-bind-mounts) ve [Sandbox vs Tool Policy vs Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check).
+    Örnekler ve güvenlik notları için [Sandboxing](/tr/gateway/sandboxing#custom-bind-mounts) ve [Sandbox vs Tool Policy vs Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check) bölümlerine bakın.
 
   </Accordion>
 
   <Accordion title="Bellek nasıl çalışır?">
-    OpenClaw belleği, ajan çalışma alanındaki Markdown dosyalarından ibarettir:
+    OpenClaw belleği yalnızca agent çalışma alanındaki Markdown dosyalarıdır:
 
-    - `memory/YYYY-MM-DD.md` içindeki günlük notlar
-    - `MEMORY.md` içindeki özenle seçilmiş uzun vadeli notlar (yalnızca ana/özel oturumlar)
+    - `memory/YYYY-MM-DD.md` içinde günlük notlar
+    - `MEMORY.md` içinde düzenlenmiş uzun vadeli notlar (yalnızca ana/özel oturumlar)
 
-    OpenClaw ayrıca sessiz bir **Compaction öncesi bellek boşaltması** çalıştırır; bu, modele
-    otomatik Compaction'dan önce dayanıklı notlar yazmasını hatırlatır. Bu yalnızca çalışma alanı
+    OpenClaw ayrıca otomatik Compaction öncesinde modele kalıcı notlar yazmasını hatırlatmak için
+    **sessiz Compaction öncesi bellek boşaltma** çalıştırır. Bu yalnızca çalışma alanı
     yazılabilir olduğunda çalışır (salt okunur sandbox'lar bunu atlar). Bkz. [Bellek](/tr/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Bellek sürekli unutuyor. Nasıl kalıcı yaparım?">
-    Bota **gerçeği belleğe yazmasını** söyleyin. Uzun vadeli notlar `MEMORY.md` içine,
-    kısa vadeli bağlam `memory/YYYY-MM-DD.md` içine gitmelidir.
+  <Accordion title="Bellek sürekli bir şeyleri unutuyor. Kalıcı olmasını nasıl sağlarım?">
+    Bottan **olguyu belleğe yazmasını** isteyin. Uzun vadeli notlar `MEMORY.md` içinde,
+    kısa vadeli bağlam `memory/YYYY-MM-DD.md` içine gider.
 
-    Bu hâlâ geliştirdiğimiz bir alan. Modelle, anıları saklamasını hatırlatmak yardımcı olur;
-    ne yapacağını bilir. Hâlâ unutuyorsa Gateway'in her çalıştırmada aynı
+    Bu hâlâ geliştirdiğimiz bir alan. Modele anıları depolamasını hatırlatmak yardımcı olur;
+    ne yapacağını bilir. Unutmaya devam ederse, Gateway'in her çalıştırmada aynı
     çalışma alanını kullandığını doğrulayın.
 
-    Belgeler: [Bellek](/tr/concepts/memory), [Ajan çalışma alanı](/tr/concepts/agent-workspace).
+    Belgeler: [Bellek](/tr/concepts/memory), [Agent çalışma alanı](/tr/concepts/agent-workspace).
 
   </Accordion>
 
   <Accordion title="Bellek sonsuza kadar kalır mı? Sınırlar nelerdir?">
-    Bellek dosyaları diskte yaşar ve siz silene kadar kalır. Sınır model değil,
-    depolama alanınızdır. **Oturum bağlamı** yine modelin bağlam penceresi ile sınırlıdır;
-    bu yüzden uzun konuşmalar Compaction veya truncation yaşayabilir. İşte bu nedenle
-    bellek araması vardır — yalnızca ilgili parçaları yeniden bağlama çeker.
+    Bellek dosyaları diskte yaşar ve siz silene kadar kalıcıdır. Sınır model değil,
+    depolama alanınızdır. **Oturum bağlamı** ise hâlâ modelin bağlam penceresiyle sınırlıdır;
+    bu nedenle uzun konuşmalar compact edilebilir veya kesilebilir. Bellek aramasının var olma nedeni budur -
+    yalnızca ilgili parçaları tekrar bağlama çeker.
 
     Belgeler: [Bellek](/tr/concepts/memory), [Bağlam](/tr/concepts/context).
 
   </Accordion>
 
-  <Accordion title="Anlamsal bellek araması bir OpenAI API anahtarı gerektirir mi?">
-    Yalnızca **OpenAI embeddings** kullanıyorsanız. Codex OAuth, sohbet/tamamlamaları kapsar ve
-    embeddings erişimi vermez; bu yüzden **Codex ile oturum açmak (OAuth veya
-    Codex CLI girişi)** anlamsal bellek aramasına yardımcı olmaz. OpenAI embeddings
-    için yine gerçek bir API anahtarı gerekir (`OPENAI_API_KEY` veya `models.providers.openai.apiKey`).
+  <Accordion title="Anlamsal bellek araması OpenAI API anahtarı gerektirir mi?">
+    Yalnızca **OpenAI embeddings** kullanıyorsanız. Codex OAuth sohbet/tamamlamaları kapsar ve
+    embeddings erişimi **sağlamaz**, bu nedenle **Codex ile oturum açmak (OAuth veya
+    Codex CLI oturumu)** anlamsal bellek aramasına yardımcı olmaz. OpenAI embeddings
+    yine de gerçek bir API anahtarına ihtiyaç duyar (`OPENAI_API_KEY` veya `models.providers.openai.apiKey`).
 
-    Bir sağlayıcıyı açıkça ayarlamazsanız OpenClaw, bir API anahtarını çözümleyebildiğinde
-    otomatik olarak bir sağlayıcı seçer (auth profile'ları, `models.providers.*.apiKey` veya env değişkenleri).
-    Bir OpenAI anahtarı çözülürse OpenAI'yi, aksi halde bir Gemini anahtarı
-    çözülürse Gemini'yi, sonra Voyage'ı, sonra Mistral'ı tercih eder. Uzak bir anahtar
-    yoksa siz yapılandırana kadar bellek araması devre dışı kalır. Yapılandırılmış ve mevcut bir yerel model yolunuz varsa OpenClaw
-    `local` seçeneğini tercih eder. Açıkça
-    `memorySearch.provider = "ollama"` ayarladığınızda Ollama desteklenir.
+    Açıkça bir sağlayıcı ayarlamazsanız OpenClaw, bir API anahtarını çözümleyebildiğinde
+    otomatik olarak bir sağlayıcı seçer (auth profilleri, `models.providers.*.apiKey` veya env vars).
+    Bir OpenAI anahtarı çözümlenirse OpenAI'ı, aksi halde bir Gemini anahtarı
+    çözümlenirse Gemini'ı, sonra Voyage'ı, sonra Mistral'ı tercih eder. Uzak anahtar yoksa bellek
+    araması siz yapılandırana kadar devre dışı kalır. Yerel model yolu
+    yapılandırılmış ve mevcutsa OpenClaw
+    `local` tercih eder. Ollama, açıkça
+    `memorySearch.provider = "ollama"` ayarladığınızda desteklenir.
 
-    Yerel kalmak isterseniz `memorySearch.provider = "local"` ayarlayın (ve isteğe bağlı olarak
+    Yerel kalmayı tercih ederseniz `memorySearch.provider = "local"` ayarlayın (ve isteğe bağlı olarak
     `memorySearch.fallback = "none"`). Gemini embeddings istiyorsanız
     `memorySearch.provider = "gemini"` ayarlayın ve `GEMINI_API_KEY` (veya
     `memorySearch.remote.apiKey`) sağlayın. **OpenAI, Gemini, Voyage, Mistral, Ollama veya local** embedding
-    modellerini destekliyoruz — kurulum ayrıntıları için [Bellek](/tr/concepts/memory) bölümüne bakın.
+    modellerini destekliyoruz - kurulum ayrıntıları için [Bellek](/tr/concepts/memory) bölümüne bakın.
 
   </Accordion>
 </AccordionGroup>
 
-## Diske neler nereye yazılır
+## Diskte şeyler nerede bulunur
 
 <AccordionGroup>
   <Accordion title="OpenClaw ile kullanılan tüm veriler yerel olarak mı kaydedilir?">
-    Hayır — **OpenClaw'ın durumu yereldir**, ama **harici servisler onlara gönderdiğiniz şeyleri yine görür**.
+    Hayır - **OpenClaw'ın durumu yereldir**, ancak **dış hizmetler onlara gönderdiğiniz şeyleri yine de görür**.
 
-    - **Varsayılan olarak yerel:** oturumlar, bellek dosyaları, yapılandırma ve çalışma alanı Gateway host üzerinde yaşar
-      (`~/.openclaw` + çalışma alanı dizininiz).
-    - **Zorunlu olarak uzak:** model sağlayıcılarına (Anthropic/OpenAI/vb.) gönderdiğiniz mesajlar
+    - **Varsayılan olarak yerel:** oturumlar, bellek dosyaları, config ve workspace Gateway ana makinesinde bulunur
+      (`~/.openclaw` + workspace dizininiz).
+    - **Zorunluluktan uzak:** model sağlayıcılarına (Anthropic/OpenAI/vb.) gönderdiğiniz mesajlar
       onların API'lerine gider ve sohbet platformları (WhatsApp/Telegram/Slack/vb.) mesaj verilerini
       kendi sunucularında saklar.
-    - **Ayak izini siz kontrol edersiniz:** yerel modeller kullanmak istemleri makinenizde tutar, ancak kanal
-      trafiği yine kanalın sunucularından geçer.
+    - **Kapsamı siz kontrol edersiniz:** yerel modeller kullanmak istemleri makinenizde tutar, ancak kanal
+      trafiği yine de kanalın sunucularından geçer.
 
-    İlgili: [Ajan çalışma alanı](/tr/concepts/agent-workspace), [Bellek](/tr/concepts/memory).
+    İlgili: [Agent workspace](/tr/concepts/agent-workspace), [Bellek](/tr/concepts/memory).
 
   </Accordion>
 
   <Accordion title="OpenClaw verilerini nerede saklar?">
-    Her şey `$OPENCLAW_STATE_DIR` altında yaşar (varsayılan: `~/.openclaw`):
+    Her şey `$OPENCLAW_STATE_DIR` altında bulunur (varsayılan: `~/.openclaw`):
 
     | Yol                                                             | Amaç                                                               |
     | --------------------------------------------------------------- | ------------------------------------------------------------------ |
-    | `$OPENCLAW_STATE_DIR/openclaw.json`                             | Ana yapılandırma (JSON5)                                           |
-    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Eski OAuth içe aktarımı (ilk kullanımda auth profile'larına kopyalanır) |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profile'ları (OAuth, API anahtarları ve isteğe bağlı `keyRef`/`tokenRef`) |
-    | `$OPENCLAW_STATE_DIR/secrets.json`                              | `file` SecretRef sağlayıcıları için isteğe bağlı dosya destekli gizli bilgi payload'ı |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Eski uyumluluk dosyası (statik `api_key` girdileri temizlenir)     |
-    | `$OPENCLAW_STATE_DIR/credentials/`                              | Sağlayıcı durumu (ör. `whatsapp/<accountId>/creds.json`)           |
-    | `$OPENCLAW_STATE_DIR/agents/`                                   | Ajan başına durum (agentDir + oturumlar)                           |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Konuşma geçmişi ve durumu (ajan başına)                            |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Oturum meta verileri (ajan başına)                                 |
+    | `$OPENCLAW_STATE_DIR/openclaw.json`                             | Ana config (JSON5)                                                 |
+    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Eski OAuth içe aktarımı (ilk kullanımda auth profillerine kopyalanır) |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profilleri (OAuth, API anahtarları ve isteğe bağlı `keyRef`/`tokenRef`) |
+    | `$OPENCLAW_STATE_DIR/secrets.json`                              | `file` SecretRef sağlayıcıları için isteğe bağlı dosya destekli secret payload |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Eski uyumluluk dosyası (statik `api_key` girdileri temizlenir)      |
+    | `$OPENCLAW_STATE_DIR/credentials/`                              | Sağlayıcı durumu (örn. `whatsapp/<accountId>/creds.json`)           |
+    | `$OPENCLAW_STATE_DIR/agents/`                                   | Agent başına durum (agentDir + oturumlar)                          |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Konuşma geçmişi ve durumu (agent başına)                           |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Oturum meta verileri (agent başına)                                |
 
-    Eski tek ajan yolu: `~/.openclaw/agent/*` (`openclaw doctor` tarafından geçirilir).
+    Eski tek agent yolu: `~/.openclaw/agent/*` (`openclaw doctor` tarafından taşınır).
 
-    **Çalışma alanınız** (`AGENTS.md`, bellek dosyaları, Skills vb.) ayrıdır ve `agents.defaults.workspace` ile yapılandırılır (varsayılan: `~/.openclaw/workspace`).
+    **Workspace**'iniz (AGENTS.md, bellek dosyaları, skills vb.) ayrıdır ve `agents.defaults.workspace` üzerinden yapılandırılır (varsayılan: `~/.openclaw/workspace`).
 
   </Accordion>
 
-  <Accordion title="AGENTS.md / SOUL.md / USER.md / MEMORY.md nerede yaşamalı?">
-    Bu dosyalar `~/.openclaw` içinde değil, **ajan çalışma alanında** yaşar.
+  <Accordion title="AGENTS.md / SOUL.md / USER.md / MEMORY.md nerede bulunmalı?">
+    Bu dosyalar `~/.openclaw` içinde değil, **agent workspace** içinde bulunur.
 
-    - **Çalışma alanı (ajan başına)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
+    - **Workspace (agent başına)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
       `MEMORY.md`, `memory/YYYY-MM-DD.md`, isteğe bağlı `HEARTBEAT.md`.
       Küçük harfli kök `memory.md` yalnızca eski onarım girdisidir; `openclaw doctor --fix`
-      her iki dosya mevcut olduğunda bunu `MEMORY.md` içine birleştirebilir.
-    - **Durum dizini (`~/.openclaw`)**: yapılandırma, kanal/sağlayıcı durumu, auth profile'ları, oturumlar, günlükler
+      her iki dosya da varsa onu `MEMORY.md` içine birleştirebilir.
+    - **Durum dizini (`~/.openclaw`)**: config, kanal/sağlayıcı durumu, auth profilleri, oturumlar, günlükler
       ve paylaşılan Skills (`~/.openclaw/skills`).
 
-    Varsayılan çalışma alanı `~/.openclaw/workspace`'tir, şu yolla yapılandırılabilir:
+    Varsayılan workspace `~/.openclaw/workspace` şeklindedir, şu şekilde yapılandırılabilir:
 
     ```json5
     {
@@ -599,43 +596,42 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     ```
 
     Bot yeniden başlatmadan sonra "unutuyorsa", Gateway'in her başlatmada aynı
-    çalışma alanını kullandığını doğrulayın (ve unutmayın: uzak mod **yerel laptop'unuzun** değil,
-    **gateway host'unun** çalışma alanını kullanır).
+    workspace'i kullandığını doğrulayın (ve unutmayın: uzak mod, yerel dizüstü bilgisayarınızın değil
+    **gateway ana makinesinin** workspace'ini kullanır).
 
-    İpucu: dayanıklı bir davranış veya tercih istiyorsanız, sohbet geçmişine güvenmek yerine bottan bunu **AGENTS.md veya MEMORY.md içine yazmasını**
-    isteyin.
+    İpucu: kalıcı bir davranış veya tercih istiyorsanız sohbet geçmişine güvenmek yerine bottan bunu
+    **AGENTS.md veya MEMORY.md içine yazmasını** isteyin.
 
-    Bkz. [Ajan çalışma alanı](/tr/concepts/agent-workspace) ve [Bellek](/tr/concepts/memory).
+    Bkz. [Agent workspace](/tr/concepts/agent-workspace) ve [Bellek](/tr/concepts/memory).
 
   </Accordion>
 
   <Accordion title="Önerilen yedekleme stratejisi">
-    **Ajan çalışma alanınızı**, **özel** bir git deposuna koyun ve bunu özel bir yere
+    **Agent workspace**'inizi **özel** bir git deposuna koyun ve özel bir yerde
     yedekleyin (örneğin GitHub private). Bu, bellek + AGENTS/SOUL/USER
     dosyalarını yakalar ve asistanın "zihnini" daha sonra geri yüklemenizi sağlar.
 
-    `~/.openclaw` altındaki hiçbir şeyi commit etmeyin (kimlik bilgileri, oturumlar, token'lar veya şifrelenmiş gizli bilgi payload'ları).
-    Tam geri yükleme gerekiyorsa, çalışma alanını ve durum dizinini
-    ayrı ayrı yedekleyin (yukarıdaki taşıma sorusuna bakın).
+    `~/.openclaw` altındaki hiçbir şeyi commit etmeyin (kimlik bilgileri, oturumlar, token'lar veya şifreli secret payload'ları).
+    Tam geri yükleme gerekiyorsa hem workspace'i hem de durum dizinini
+    ayrı ayrı yedekleyin (yukarıdaki migration sorusuna bakın).
 
-    Belgeler: [Ajan çalışma alanı](/tr/concepts/agent-workspace).
+    Dokümanlar: [Agent workspace](/tr/concepts/agent-workspace).
 
   </Accordion>
 
   <Accordion title="OpenClaw'ı tamamen nasıl kaldırırım?">
-    Ayrı kılavuza bakın: [Kaldırma](/tr/install/uninstall).
+    Özel kılavuza bakın: [Kaldırma](/tr/install/uninstall).
   </Accordion>
 
-  <Accordion title="Ajanlar çalışma alanı dışında çalışabilir mi?">
-    Evet. Çalışma alanı, katı bir sandbox değil, **varsayılan cwd** ve bellek çıpasıdır.
-    Göreli yollar çalışma alanı içinde çözülür, ancak mutlak yollar başka
-    host konumlarına erişebilir; sandboxing etkin değilse. Yalıtım gerekiyorsa
-    [`agents.defaults.sandbox`](/tr/gateway/sandboxing) veya ajan başına sandbox ayarlarını kullanın. Bir
-    deponun varsayılan çalışma dizini olmasını istiyorsanız o ajanın
-    `workspace` değerini depo köküne yönlendirin. OpenClaw deposu yalnızca kaynak koddur; ajanın bilinçli olarak içinde çalışmasını istemiyorsanız
-    çalışma alanını ondan ayrı tutun.
+  <Accordion title="Agent'lar workspace dışında çalışabilir mi?">
+    Evet. Workspace **varsayılan cwd** ve bellek sabitleyicisidir, katı bir sandbox değildir.
+    Göreli yollar workspace içinde çözümlenir, ancak sandboxing etkin değilse mutlak yollar diğer
+    ana makine konumlarına erişebilir. İzolasyona ihtiyacınız varsa
+    [`agents.defaults.sandbox`](/tr/gateway/sandboxing) veya agent başına sandbox ayarlarını kullanın. Bir repo'nun varsayılan çalışma dizini olmasını
+    istiyorsanız o agent'ın `workspace` değerini repo köküne yönlendirin. OpenClaw deposu yalnızca kaynak koddur; agent'ın özellikle içinde çalışmasını istemiyorsanız
+    workspace'i ayrı tutun.
 
-    Örnek (depo varsayılan cwd olarak):
+    Örnek (repo varsayılan cwd olarak):
 
     ```json5
     {
@@ -650,29 +646,29 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
   </Accordion>
 
   <Accordion title="Uzak mod: oturum deposu nerede?">
-    Oturum durumu **gateway host'una** aittir. Uzak moddaysanız ilgilendiğiniz oturum deposu yerel laptop'unuzda değil, uzak makinededir. Bkz. [Oturum yönetimi](/tr/concepts/session).
+    Oturum durumu **gateway ana makinesine** aittir. Uzak moddaysanız, ilgilendiğiniz oturum deposu yerel dizüstü bilgisayarınızda değil, uzak makinededir. Bkz. [Oturum yönetimi](/tr/concepts/session).
   </Accordion>
 </AccordionGroup>
 
-## Yapılandırma temelleri
+## Config temelleri
 
 <AccordionGroup>
-  <Accordion title="Yapılandırma hangi biçimde? Nerede?">
-    OpenClaw, `$OPENCLAW_CONFIG_PATH` konumundan isteğe bağlı bir **JSON5** yapılandırması okur (varsayılan: `~/.openclaw/openclaw.json`):
+  <Accordion title="Config hangi formatta? Nerede bulunur?">
+    OpenClaw, `$OPENCLAW_CONFIG_PATH` konumundan isteğe bağlı bir **JSON5** config okur (varsayılan: `~/.openclaw/openclaw.json`):
 
     ```
     $OPENCLAW_CONFIG_PATH
     ```
 
-    Dosya yoksa güvenli sayılabilecek varsayılanları kullanır (varsayılan çalışma alanı olarak `~/.openclaw/workspace` dahil).
+    Dosya yoksa güvenli sayılabilecek varsayılanları kullanır (`~/.openclaw/workspace` varsayılan workspace'i dahil).
 
   </Accordion>
 
-  <Accordion title='gateway.bind: "lan" (veya "tailnet") ayarladım ve şimdi hiçbir şey dinlemiyor / UI unauthorized diyor'>
-    Loopback dışı bind'ler **geçerli bir gateway auth yolu** gerektirir. Pratikte bu şu anlama gelir:
+  <Accordion title='gateway.bind: "lan" (veya "tailnet") ayarladım ve artık hiçbir şey dinlemiyor / UI yetkisiz diyor'>
+    local loopback dışı bağlamalar **geçerli bir gateway auth yolu gerektirir**. Pratikte bunun anlamı:
 
-    - paylaşılan gizli bilgi auth'u: token veya parola
-    - doğru yapılandırılmış, loopback dışı, kimlik farkındalıklı ters proxy arkasında `gateway.auth.mode: "trusted-proxy"`
+    - shared-secret auth: token veya password
+    - doğru yapılandırılmış kimlik farkındalığı olan reverse proxy arkasında `gateway.auth.mode: "trusted-proxy"`
 
     ```json5
     {
@@ -688,32 +684,32 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
     Notlar:
 
-    - `gateway.remote.token` / `.password`, yerel gateway auth'unu tek başına etkinleştirmez.
-    - Yerel çağrı yolları, yalnızca `gateway.auth.*` ayarlı değilse fallback olarak `gateway.remote.*` kullanabilir.
-    - Parola auth'u için bunun yerine `gateway.auth.mode: "password"` ile birlikte `gateway.auth.password` (veya `OPENCLAW_GATEWAY_PASSWORD`) ayarlayın.
-    - `gateway.auth.token` / `gateway.auth.password` açıkça SecretRef ile yapılandırılmış ve çözümlenmemişse çözümleme fail-closed olur (uzak fallback bunu maskeleyemez).
-    - Paylaşılan gizli bilgi Control UI kurulumları, `connect.params.auth.token` veya `connect.params.auth.password` üzerinden kimlik doğrular (uygulama/UI ayarlarında saklanır). Tailscale Serve veya `trusted-proxy` gibi kimlik taşıyan modlar bunun yerine istek header'ları kullanır. Paylaşılan gizli bilgileri URL'lere koymaktan kaçının.
-    - `gateway.auth.mode: "trusted-proxy"` ile aynı host üzerindeki loopback ters proxy'ler yine de trusted-proxy auth'unu karşılamaz. Güvenilen proxy, yapılandırılmış loopback dışı bir kaynak olmalıdır.
+    - `gateway.remote.token` / `.password` tek başlarına yerel gateway auth'u etkinleştirmez.
+    - Yerel çağrı yolları yalnızca `gateway.auth.*` ayarlanmamışsa `gateway.remote.*` değerini fallback olarak kullanabilir.
+    - Password auth için bunun yerine `gateway.auth.mode: "password"` ve `gateway.auth.password` (veya `OPENCLAW_GATEWAY_PASSWORD`) ayarlayın.
+    - `gateway.auth.token` / `gateway.auth.password` SecretRef üzerinden açıkça yapılandırılmış ve çözümlenememişse çözümleme kapalı şekilde başarısız olur (remote fallback maskelemesi yoktur).
+    - Shared-secret Control UI kurulumları `connect.params.auth.token` veya `connect.params.auth.password` (uygulama/UI ayarlarında saklanır) üzerinden kimlik doğrular. Tailscale Serve veya `trusted-proxy` gibi kimlik taşıyan modlar bunun yerine istek header'larını kullanır. Shared secret'ları URL'lere koymaktan kaçının.
+    - `gateway.auth.mode: "trusted-proxy"` ile aynı ana makinedeki local loopback reverse proxy'leri açıkça `gateway.auth.trustedProxy.allowLoopback = true` ve `gateway.trustedProxies` içinde bir loopback girdisi gerektirir.
 
   </Accordion>
 
-  <Accordion title="Neden artık localhost'ta bir token'a ihtiyacım var?">
-    OpenClaw, loopback dahil varsayılan olarak gateway auth zorunluluğu uygular. Normal varsayılan yolda bu token auth anlamına gelir: açık bir auth yolu yapılandırılmamışsa gateway başlangıcı token moduna çözülür ve otomatik olarak bir tane üretip bunu `gateway.auth.token` içine kaydeder; bu yüzden **yerel WS istemcilerinin kimlik doğrulaması yapması gerekir**. Bu, diğer yerel süreçlerin Gateway'i çağırmasını engeller.
+  <Accordion title="Artık localhost üzerinde neden token'a ihtiyacım var?">
+    OpenClaw, local loopback dahil olmak üzere gateway auth'u varsayılan olarak zorunlu kılar. Normal varsayılan yolda bunun anlamı token auth'tur: açıkça yapılandırılmış bir auth yolu yoksa gateway başlangıcı token moduna çözümlenir ve bir token'ı otomatik üretip `gateway.auth.token` içine kaydeder, bu nedenle **yerel WS istemcileri kimlik doğrulamalıdır**. Bu, diğer yerel süreçlerin Gateway'i çağırmasını engeller.
 
-    Farklı bir auth yolu tercih ederseniz parola modunu (veya loopback dışı kimlik farkındalıklı ters proxy'ler için `trusted-proxy`) açıkça seçebilirsiniz. **Gerçekten** açık loopback istiyorsanız yapılandırmanızda `gateway.auth.mode: "none"` değerini açıkça ayarlayın. Doctor sizin için herhangi bir zamanda token oluşturabilir: `openclaw doctor --generate-gateway-token`.
-
-  </Accordion>
-
-  <Accordion title="Yapılandırmayı değiştirdikten sonra yeniden başlatmam gerekir mi?">
-    Gateway yapılandırmayı izler ve hot-reload destekler:
-
-    - `gateway.reload.mode: "hybrid"` (varsayılan): güvenli değişiklikleri hot-apply eder, kritik olanlar için yeniden başlatır
-    - `hot`, `restart`, `off` da desteklenir
+    Farklı bir auth yolu tercih ediyorsanız password modunu (veya kimlik farkındalığı olan reverse proxy'ler için `trusted-proxy`) açıkça seçebilirsiniz. local loopback'i **gerçekten** açık istiyorsanız config'inizde açıkça `gateway.auth.mode: "none"` ayarlayın. Doctor sizin için her zaman token üretebilir: `openclaw doctor --generate-gateway-token`.
 
   </Accordion>
 
-  <Accordion title="Komik CLI sloganlarını nasıl kapatırım?">
-    Yapılandırmada `cli.banner.taglineMode` ayarlayın:
+  <Accordion title="Config değiştirdikten sonra yeniden başlatmam gerekir mi?">
+    Gateway config'i izler ve hot-reload destekler:
+
+    - `gateway.reload.mode: "hybrid"` (varsayılan): güvenli değişiklikleri hot-apply yapar, kritik olanlar için yeniden başlatır
+    - `hot`, `restart`, `off` de desteklenir
+
+  </Accordion>
+
+  <Accordion title="Komik CLI sloganlarını nasıl devre dışı bırakırım?">
+    Config içinde `cli.banner.taglineMode` ayarlayın:
 
     ```json5
     {
@@ -725,24 +721,24 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     }
     ```
 
-    - `off`: slogan metnini gizler ama banner başlık/sürüm satırını korur.
-    - `default`: her zaman `All your chats, one OpenClaw.` kullanır.
+    - `off`: slogan metnini gizler ama banner başlığı/sürüm satırını korur.
+    - `default`: her seferinde `All your chats, one OpenClaw.` kullanır.
     - `random`: dönen komik/mevsimsel sloganlar (varsayılan davranış).
     - Hiç banner istemiyorsanız env `OPENCLAW_HIDE_BANNER=1` ayarlayın.
 
   </Accordion>
 
-  <Accordion title="Web aramasını (ve web fetch'i) nasıl etkinleştiririm?">
-    `web_fetch`, API anahtarı olmadan çalışır. `web_search`, seçtiğiniz
+  <Accordion title="Web aramasını (ve web getirmeyi) nasıl etkinleştiririm?">
+    `web_fetch` API anahtarı olmadan çalışır. `web_search` seçtiğiniz
     sağlayıcıya bağlıdır:
 
     - Brave, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Perplexity ve Tavily gibi API destekli sağlayıcılar normal API anahtarı kurulumlarını gerektirir.
-    - Ollama Web Search anahtarsızdır, ancak yapılandırılmış Ollama host'unuzu kullanır ve `ollama signin` gerektirir.
-    - DuckDuckGo anahtarsızdır, ama resmi olmayan HTML tabanlı bir entegrasyondur.
-    - SearXNG anahtarsız/self-hosted'dir; `SEARXNG_BASE_URL` veya `plugins.entries.searxng.config.webSearch.baseUrl` yapılandırın.
+    - Ollama Web Search anahtarsızdır, ancak yapılandırılmış Ollama ana makinenizi kullanır ve `ollama signin` gerektirir.
+    - DuckDuckGo anahtarsızdır, ancak resmi olmayan HTML tabanlı bir entegrasyondur.
+    - SearXNG anahtarsız/self-hosted'dır; `SEARXNG_BASE_URL` veya `plugins.entries.searxng.config.webSearch.baseUrl` yapılandırın.
 
     **Önerilen:** `openclaw configure --section web` çalıştırın ve bir sağlayıcı seçin.
-    Ortam değişkeni alternatifleri:
+    Ortam alternatifleri:
 
     - Brave: `BRAVE_API_KEY`
     - Exa: `EXA_API_KEY`
@@ -777,75 +773,75 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
             },
             fetch: {
               enabled: true,
-              provider: "firecrawl", // isteğe bağlı; otomatik algılama için belirtmeyin
+              provider: "firecrawl", // optional; omit for auto-detect
             },
           },
         },
     }
     ```
 
-    Sağlayıcıya özgü web-search yapılandırması artık `plugins.entries.<plugin>.config.webSearch.*` altında yaşar.
+    Sağlayıcıya özgü web arama yapılandırması artık `plugins.entries.<plugin>.config.webSearch.*` altında bulunur.
     Eski `tools.web.search.*` sağlayıcı yolları uyumluluk için geçici olarak hâlâ yüklenir, ancak yeni yapılandırmalarda kullanılmamalıdır.
-    Firecrawl web-fetch fallback yapılandırması `plugins.entries.firecrawl.config.webFetch.*` altında yaşar.
+    Firecrawl web getirme fallback yapılandırması `plugins.entries.firecrawl.config.webFetch.*` altında bulunur.
 
     Notlar:
 
     - İzin listeleri kullanıyorsanız `web_search`/`web_fetch`/`x_search` veya `group:web` ekleyin.
-    - `web_fetch` varsayılan olarak etkindir (açıkça devre dışı bırakılmadıkça).
-    - `tools.web.fetch.provider` belirtilmezse OpenClaw, kullanılabilir kimlik bilgilerinden ilk hazır fetch fallback sağlayıcısını otomatik algılar. Bugün paketlenmiş sağlayıcı Firecrawl'dur.
-    - Daemon'lar env değişkenlerini `~/.openclaw/.env` (veya servis ortamı) üzerinden okur.
+    - `web_fetch` varsayılan olarak etkindir (açıkça devre dışı bırakılmadığı sürece).
+    - `tools.web.fetch.provider` atlanırsa OpenClaw, kullanılabilir kimlik bilgilerinden ilk hazır getirme fallback sağlayıcısını otomatik algılar. Bugün paketle gelen sağlayıcı Firecrawl'dır.
+    - Artalan süreçleri env var'ları `~/.openclaw/.env` dosyasından (veya hizmet ortamından) okur.
 
     Belgeler: [Web araçları](/tr/tools/web).
 
   </Accordion>
 
-  <Accordion title="config.apply yapılandırmamı sildi. Nasıl kurtarırım ve bunu nasıl önlerim?">
-    `config.apply`, **tüm yapılandırmayı** değiştirir. Kısmi bir nesne gönderirseniz
-    diğer her şey kaldırılır.
+  <Accordion title="config.apply yapılandırmamı sildi. Bunu nasıl kurtarır ve önlerim?">
+    `config.apply` **tüm yapılandırmayı** değiştirir. Kısmi bir nesne gönderirseniz geri kalan
+    her şey kaldırılır.
 
-    Geçerli OpenClaw, birçok kazara clobber durumunu korur:
+    Mevcut OpenClaw birçok kazara ezmeyi önler:
 
-    - OpenClaw'a ait yapılandırma yazımları, yazmadan önce değişiklik sonrası tam yapılandırmayı doğrular.
-    - Geçersiz veya yıkıcı OpenClaw'a ait yazımlar reddedilir ve `openclaw.json.rejected.*` olarak kaydedilir.
-    - Doğrudan bir düzenleme başlangıcı veya hot reload'u bozarsa Gateway son bilinen iyi yapılandırmayı geri yükler ve reddedilen dosyayı `openclaw.json.clobbered.*` olarak kaydeder.
-    - Kurtarmadan sonra ana ajan bir başlangıç uyarısı alır; böylece bozuk yapılandırmayı yeniden körlemesine yazmaz.
+    - OpenClaw tarafından sahip olunan yapılandırma yazımları, yazmadan önce değişiklik sonrası tam yapılandırmayı doğrular.
+    - Geçersiz veya yıkıcı OpenClaw tarafından sahip olunan yazımlar reddedilir ve `openclaw.json.rejected.*` olarak kaydedilir.
+    - Doğrudan bir düzenleme başlatmayı veya sıcak yeniden yüklemeyi bozarsa Gateway, bilinen son iyi yapılandırmayı geri yükler ve reddedilen dosyayı `openclaw.json.clobbered.*` olarak kaydeder.
+    - Ana ajan, kurtarma sonrasında kötü yapılandırmayı körlemesine tekrar yazmaması için bir önyükleme uyarısı alır.
 
     Kurtarma:
 
-    - `openclaw logs --follow` içinde `Config auto-restored from last-known-good`, `Config write rejected:` veya `config reload restored last-known-good config` mesajlarını kontrol edin.
-    - Etkin yapılandırmanın yanında en yeni `openclaw.json.clobbered.*` veya `openclaw.json.rejected.*` dosyasını inceleyin.
-    - Etkin geri yüklenen yapılandırma çalışıyorsa bunu koruyun, ardından yalnızca amaçlanan anahtarları `openclaw config set` veya `config.patch` ile geri kopyalayın.
+    - `Config auto-restored from last-known-good`, `Config write rejected:` veya `config reload restored last-known-good config` için `openclaw logs --follow` çıktısını kontrol edin.
+    - Etkin yapılandırmanın yanındaki en yeni `openclaw.json.clobbered.*` veya `openclaw.json.rejected.*` dosyasını inceleyin.
+    - Çalışıyorsa etkin geri yüklenen yapılandırmayı koruyun, ardından yalnızca amaçlanan anahtarları `openclaw config set` veya `config.patch` ile geri kopyalayın.
     - `openclaw config validate` ve `openclaw doctor` çalıştırın.
-    - Son bilinen iyi veya reddedilen payload yoksa yedekten geri yükleyin veya `openclaw doctor`'ı yeniden çalıştırıp kanalları/modelleri yeniden yapılandırın.
-    - Bu beklenmedikse bir hata bildirimi açın ve son bilinen yapılandırmanızı veya herhangi bir yedeği ekleyin.
-    - Yerel bir kodlama ajanı çoğu zaman günlüklerden veya geçmişten çalışan bir yapılandırmayı yeniden kurabilir.
+    - Bilinen son iyi yapılandırmanız veya reddedilen yükünüz yoksa yedekten geri yükleyin ya da `openclaw doctor` komutunu yeniden çalıştırıp kanalları/modelleri yeniden yapılandırın.
+    - Bu beklenmedikse bir hata bildirimi açın ve bilinen son yapılandırmanızı veya herhangi bir yedeği ekleyin.
+    - Yerel bir kodlama ajanı çoğu zaman günlüklerden veya geçmişten çalışan bir yapılandırmayı yeniden oluşturabilir.
 
-    Önleme:
+    Bundan kaçınma:
 
     - Küçük değişiklikler için `openclaw config set` kullanın.
     - Etkileşimli düzenlemeler için `openclaw configure` kullanın.
-    - Tam yol veya alan şeklinden emin değilseniz önce `config.schema.lookup` kullanın; bu size sığ bir şema düğümü ve drill-down için doğrudan alt özetler döndürür.
+    - Tam bir yol veya alan şekli konusunda emin değilseniz önce `config.schema.lookup` kullanın; ayrıntıya inmek için sığ bir şema düğümü ve doğrudan alt özetleri döndürür.
     - Kısmi RPC düzenlemeleri için `config.patch` kullanın; `config.apply` yalnızca tam yapılandırma değişimi için kalsın.
-    - Bir ajan çalıştırmasından sahip-yalnızca `gateway` aracını kullanıyorsanız, bu araç yine de `tools.exec.ask` / `tools.exec.security` üzerine yazımları reddeder (aynı korumalı exec yollarına normalize olan eski `tools.bash.*` takma adları dahil).
+    - Bir ajan çalıştırmasından yalnızca sahiplerin kullanabildiği `gateway` aracını kullanıyorsanız, `tools.exec.ask` / `tools.exec.security` yazımlarını yine de reddeder (aynı korumalı exec yollarına normalize edilen eski `tools.bash.*` takma adları dahil).
 
-    Belgeler: [Config](/tr/cli/config), [Configure](/tr/cli/configure), [Gateway sorun giderme](/tr/gateway/troubleshooting#gateway-restored-last-known-good-config), [Doctor](/tr/gateway/doctor).
-
-  </Accordion>
-
-  <Accordion title="Cihazlar arasında uzmanlaşmış işçilerle merkezi bir Gateway'i nasıl çalıştırırım?">
-    Yaygın desen **bir Gateway** (ör. Raspberry Pi) artı **Node'lar** ve **ajanlar** şeklindedir:
-
-    - **Gateway (merkezi):** kanalları (Signal/WhatsApp), yönlendirmeyi ve oturumları sahiplenir.
-    - **Node'lar (cihazlar):** Mac/iOS/Android çevre birimi olarak bağlanır ve yerel araçları açar (`system.run`, `canvas`, `camera`).
-    - **Ajanlar (işçiler):** özel roller için ayrı zihinler/çalışma alanları (ör. "Hetzner ops", "Kişisel veriler").
-    - **Alt ajanlar:** paralellik istediğinizde ana bir ajandan arka plan işi başlatır.
-    - **TUI:** Gateway'e bağlanın ve ajanlar/oturumlar arasında geçiş yapın.
-
-    Belgeler: [Node'lar](/tr/nodes), [Uzak erişim](/tr/gateway/remote), [Çoklu Ajan Yönlendirmesi](/tr/concepts/multi-agent), [Alt ajanlar](/tr/tools/subagents), [TUI](/tr/web/tui).
+    Belgeler: [Yapılandırma](/tr/cli/config), [Yapılandır](/tr/cli/configure), [Gateway sorun giderme](/tr/gateway/troubleshooting#gateway-restored-last-known-good-config), [Doctor](/tr/gateway/doctor).
 
   </Accordion>
 
-  <Accordion title="OpenClaw browser headless çalışabilir mi?">
+  <Accordion title="Cihazlar arasında özelleşmiş işçilerle merkezi bir Gateway'i nasıl çalıştırırım?">
+    Yaygın desen **bir Gateway** (ör. Raspberry Pi) artı **Node'lar** ve **ajanlar** kullanmaktır:
+
+    - **Gateway (merkezi):** kanallara (Signal/WhatsApp), yönlendirmeye ve oturumlara sahiptir.
+    - **Node'lar (cihazlar):** Macs/iOS/Android çevre birimleri olarak bağlanır ve yerel araçları (`system.run`, `canvas`, `camera`) sunar.
+    - **Ajanlar (işçiler):** özel roller için ayrı beyinler/çalışma alanlarıdır (ör. "Hetzner operasyonları", "Kişisel veri").
+    - **Alt ajanlar:** paralellik istediğinizde bir ana ajandan arka plan işleri başlatır.
+    - **TUI:** Gateway'e bağlanır ve ajanlar/oturumlar arasında geçiş yapar.
+
+    Belgeler: [Node'lar](/tr/nodes), [Uzaktan erişim](/tr/gateway/remote), [Çok Ajanlı Yönlendirme](/tr/concepts/multi-agent), [Alt ajanlar](/tr/tools/subagents), [TUI](/tr/web/tui).
+
+  </Accordion>
+
+  <Accordion title="OpenClaw tarayıcısı başsız çalışabilir mi?">
     Evet. Bu bir yapılandırma seçeneğidir:
 
     ```json5
@@ -859,46 +855,46 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     }
     ```
 
-    Varsayılan `false`'dur (headful). Headless bazı sitelerde anti-bot kontrollerini tetiklemeye daha yatkındır. Bkz. [Browser](/tr/tools/browser).
+    Varsayılan `false` (görünür mod). Başsız mod bazı sitelerde anti-bot kontrollerini tetiklemeye daha yatkındır. Bkz. [Tarayıcı](/tr/tools/browser).
 
-    Headless **aynı Chromium motorunu** kullanır ve çoğu otomasyon için çalışır (formlar, tıklamalar, scraping, girişler). Ana farklar:
+    Başsız mod **aynı Chromium motorunu** kullanır ve çoğu otomasyon için çalışır (formlar, tıklamalar, kazıma, oturum açmalar). Temel farklar:
 
-    - Görünür browser penceresi yoktur (görsellere ihtiyacınız varsa ekran görüntüsü kullanın).
-    - Bazı siteler headless modda otomasyona karşı daha katıdır (CAPTCHA'lar, anti-bot).
-      Örneğin X/Twitter çoğu zaman headless oturumları engeller.
+    - Görünür tarayıcı penceresi yoktur (görseller gerekiyorsa ekran görüntüleri kullanın).
+    - Bazı siteler başsız modda otomasyona karşı daha katıdır (CAPTCHA'lar, anti-bot).
+      Örneğin X/Twitter sık sık başsız oturumları engeller.
 
   </Accordion>
 
-  <Accordion title="Browser kontrolü için Brave'i nasıl kullanırım?">
-    `browser.executablePath` değerini Brave ikili dosyanıza (veya herhangi bir Chromium tabanlı browser'a) ayarlayın ve Gateway'i yeniden başlatın.
-    Tam yapılandırma örnekleri için [Browser](/tr/tools/browser#use-brave-or-another-chromium-based-browser) bölümüne bakın.
+  <Accordion title="Tarayıcı kontrolü için Brave'i nasıl kullanırım?">
+    `browser.executablePath` değerini Brave ikili dosyanıza (veya Chromium tabanlı herhangi bir tarayıcıya) ayarlayın ve Gateway'i yeniden başlatın.
+    Tam yapılandırma örnekleri için [Tarayıcı](/tr/tools/browser#use-brave-or-another-chromium-based-browser) sayfasına bakın.
   </Accordion>
 </AccordionGroup>
 
-## Uzak gateway'ler ve Node'lar
+## Uzak Gateway'ler ve Node'lar
 
 <AccordionGroup>
-  <Accordion title="Komutlar Telegram, gateway ve Node'lar arasında nasıl yayılır?">
-    Telegram mesajları **gateway** tarafından işlenir. Gateway ajanı çalıştırır ve
-    yalnızca bir Node aracı gerektiğinde **Gateway WebSocket** üzerinden Node'ları çağırır:
+  <Accordion title="Komutlar Telegram, Gateway ve Node'lar arasında nasıl yayılır?">
+    Telegram iletileri **Gateway** tarafından işlenir. Gateway ajanı çalıştırır ve
+    ancak bir Node aracı gerektiğinde **Gateway WebSocket** üzerinden Node'ları çağırır:
 
     Telegram → Gateway → Ajan → `node.*` → Node → Gateway → Telegram
 
-    Node'lar gelen sağlayıcı trafiğini görmez; yalnızca node RPC çağrılarını alırlar.
+    Node'lar gelen sağlayıcı trafiğini görmez; yalnızca Node RPC çağrıları alırlar.
 
   </Accordion>
 
   <Accordion title="Gateway uzakta barındırılıyorsa ajanım bilgisayarıma nasıl erişebilir?">
-    Kısa cevap: **bilgisayarınızı Node olarak eşleştirin**. Gateway başka bir yerde çalışır, ancak
-    yerel makinenizde `node.*` araçlarını (ekran, kamera, sistem) Gateway WebSocket üzerinden çağırabilir.
+    Kısa cevap: **bilgisayarınızı bir Node olarak eşleştirin**. Gateway başka yerde çalışır, ancak
+    Gateway WebSocket üzerinden yerel makinenizdeki `node.*` araçlarını (ekran, kamera, sistem) çağırabilir.
 
     Tipik kurulum:
 
-    1. Gateway'i her zaman açık host üzerinde çalıştırın (VPS/ev sunucusu).
-    2. Gateway host'unu + bilgisayarınızı aynı tailnet üzerine koyun.
-    3. Gateway WS'nin erişilebilir olduğundan emin olun (tailnet bind veya SSH tüneli).
-    4. macOS uygulamasını yerelde açın ve **Remote over SSH** modunda (veya doğrudan tailnet ile)
-       bağlanın; böylece Node olarak kayıt olabilir.
+    1. Gateway'i her zaman açık ana makinede (VPS/ev sunucusu) çalıştırın.
+    2. Gateway ana makinesini ve bilgisayarınızı aynı tailnet'e koyun.
+    3. Gateway WS'nin erişilebilir olduğundan emin olun (tailnet bağlama veya SSH tüneli).
+    4. macOS uygulamasını yerelde açın ve **SSH üzerinden uzak** modda (veya doğrudan tailnet)
+       bağlanın; böylece node olarak kaydolabilir.
     5. Node'u Gateway üzerinde onaylayın:
 
        ```bash
@@ -906,26 +902,26 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
        openclaw devices approve <requestId>
        ```
 
-    Ayrı bir TCP köprüsü gerekmez; Node'lar Gateway WebSocket üzerinden bağlanır.
+    Ayrı bir TCP köprüsü gerekmez; node'lar Gateway WebSocket üzerinden bağlanır.
 
-    Güvenlik hatırlatması: bir macOS Node'u eşleştirmek o makinede `system.run` yetkisi verir. Yalnızca güvendiğiniz cihazları
-    eşleştirin ve [Güvenlik](/tr/gateway/security) bölümünü inceleyin.
+    Güvenlik hatırlatması: Bir macOS node'unu eşlemek, o makinede `system.run` çalıştırılmasına izin verir. Yalnızca
+    güvendiğiniz cihazları eşleyin ve [Güvenlik](/tr/gateway/security) bölümünü inceleyin.
 
     Belgeler: [Node'lar](/tr/nodes), [Gateway protokolü](/tr/gateway/protocol), [macOS uzak modu](/tr/platforms/mac/remote), [Güvenlik](/tr/gateway/security).
 
   </Accordion>
 
   <Accordion title="Tailscale bağlı ama yanıt alamıyorum. Şimdi ne yapmalıyım?">
-    Temelleri kontrol edin:
+    Temel noktaları kontrol edin:
 
-    - Gateway çalışıyor mu: `openclaw gateway status`
+    - Gateway çalışıyor: `openclaw gateway status`
     - Gateway sağlığı: `openclaw status`
     - Kanal sağlığı: `openclaw channels status`
 
-    Sonra auth ve yönlendirmeyi doğrulayın:
+    Ardından kimlik doğrulamayı ve yönlendirmeyi doğrulayın:
 
-    - Tailscale Serve kullanıyorsanız `gateway.auth.allowTailscale` ayarının doğru olduğundan emin olun.
-    - SSH tüneli üzerinden bağlanıyorsanız yerel tünelin açık olduğunu ve doğru porta işaret ettiğini doğrulayın.
+    - Tailscale Serve kullanıyorsanız, `gateway.auth.allowTailscale` değerinin doğru ayarlandığından emin olun.
+    - SSH tüneliyle bağlanıyorsanız, yerel tünelin açık olduğunu ve doğru bağlantı noktasını işaret ettiğini doğrulayın.
     - İzin listelerinizin (DM veya grup) hesabınızı içerdiğini doğrulayın.
 
     Belgeler: [Tailscale](/tr/gateway/tailscale), [Uzak erişim](/tr/gateway/remote), [Kanallar](/tr/channels).
@@ -933,81 +929,79 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
   </Accordion>
 
   <Accordion title="İki OpenClaw örneği birbiriyle konuşabilir mi (yerel + VPS)?">
-    Evet. Yerleşik bir "bottan bota" köprü yok, ama bunu birkaç
+    Evet. Yerleşik bir "bot'tan bot'a" köprüsü yoktur, ancak bunu birkaç
     güvenilir yolla bağlayabilirsiniz:
 
-    **En basiti:** her iki botun da erişebildiği normal bir sohbet kanalı kullanın (Telegram/Slack/WhatsApp).
-    Bot A'nın Bot B'ye mesaj göndermesini sağlayın, sonra Bot B normal şekilde yanıt versin.
+    **En basit:** Her iki botun da erişebildiği normal bir sohbet kanalı kullanın (Telegram/Slack/WhatsApp).
+    Bot A'nın Bot B'ye mesaj göndermesini sağlayın, ardından Bot B'nin her zamanki gibi yanıtlamasına izin verin.
 
-    **CLI köprüsü (genel):** diğer Gateway'i çağıran bir script çalıştırın:
-    `openclaw agent --message ... --deliver`, bunu diğer botun
-    dinlediği bir sohbeti hedefleyerek yapın. Botlardan biri uzak VPS üzerindeyse CLI'nizi
-    SSH/Tailscale üzerinden o uzak Gateway'e yönlendirin (bkz. [Uzak erişim](/tr/gateway/remote)).
+    **CLI köprüsü (genel):** Diğer botun
+    dinlediği bir sohbeti hedefleyerek diğer Gateway'i `openclaw agent --message ... --deliver` ile çağıran bir betik çalıştırın. Botlardan biri uzak bir VPS üzerindeyse, CLI'nizi SSH/Tailscale üzerinden o uzak Gateway'e
+    yönlendirin ([Uzak erişim](/tr/gateway/remote) bölümüne bakın).
 
-    Örnek desen (hedef Gateway'e erişebilen bir makineden çalıştırın):
+    Örnek kalıp (hedef Gateway'e erişebilen bir makineden çalıştırın):
 
     ```bash
     openclaw agent --message "Hello from local bot" --deliver --channel telegram --reply-to <chat-id>
     ```
 
-    İpucu: iki botun sonsuz döngüye girmemesi için bir koruma ekleyin (yalnızca mention, kanal
+    İpucu: İki botun sonsuz döngüye girmemesi için bir güvenlik sınırı ekleyin (yalnızca bahsetme, kanal
     izin listeleri veya "bot mesajlarına yanıt verme" kuralı).
 
-    Belgeler: [Uzak erişim](/tr/gateway/remote), [Agent CLI](/tr/cli/agent), [Ajan gönderimi](/tr/tools/agent-send).
+    Belgeler: [Uzak erişim](/tr/gateway/remote), [Agent CLI](/tr/cli/agent), [Agent gönderimi](/tr/tools/agent-send).
 
   </Accordion>
 
-  <Accordion title="Birden çok ajan için ayrı VPS'lere ihtiyacım var mı?">
-    Hayır. Tek bir Gateway, her birinin kendi çalışma alanı, model varsayılanları
-    ve yönlendirmesi olan birden çok ajan barındırabilir. Bu normal kurulumdur ve
-    ajan başına bir VPS çalıştırmaktan çok daha ucuz ve basittir.
+  <Accordion title="Birden fazla agent için ayrı VPS'lere ihtiyacım var mı?">
+    Hayır. Tek bir Gateway, her biri kendi çalışma alanına, model varsayılanlarına
+    ve yönlendirmesine sahip birden fazla agent barındırabilir. Bu normal kurulumdur ve agent başına
+    bir VPS çalıştırmaktan çok daha ucuz ve basittir.
 
-    Ayrı VPS'leri yalnızca sert yalıtıma (güvenlik sınırları) veya paylaşmak istemediğiniz çok
-    farklı yapılandırmalara ihtiyacınız olduğunda kullanın. Bunun dışında tek bir Gateway tutun ve
-    birden çok ajan veya alt ajan kullanın.
+    Ayrı VPS'leri yalnızca katı yalıtım (güvenlik sınırları) veya paylaşmak istemediğiniz çok
+    farklı yapılandırmalar gerektiğinde kullanın. Aksi halde tek bir Gateway kullanın ve
+    birden fazla agent veya alt agent kullanın.
 
   </Accordion>
 
-  <Accordion title="Kişisel laptop'umda bir Node kullanmanın, VPS'ten SSH kullanmaya göre bir avantajı var mı?">
-    Evet — Node'lar uzak bir Gateway'den laptop'unuza ulaşmanın birinci sınıf yoludur ve
-    shell erişiminden fazlasını açarlar. Gateway macOS/Linux üzerinde (Windows için WSL2 ile) çalışır ve
-    hafiftir (küçük bir VPS veya Raspberry Pi sınıfı kutu yeterlidir; 4 GB RAM bolca yeter), bu yüzden yaygın
-    bir kurulum her zaman açık bir host artı Node olarak laptop'unuzdur.
+  <Accordion title="VPS'ten SSH kullanmak yerine kişisel dizüstü bilgisayarımda node kullanmanın faydası var mı?">
+    Evet - node'lar uzak bir Gateway'den dizüstü bilgisayarınıza erişmenin birinci sınıf yoludur ve
+    shell erişiminden daha fazlasını açar. Gateway macOS/Linux üzerinde çalışır (Windows, WSL2 üzerinden) ve
+    hafiftir (küçük bir VPS veya Raspberry Pi sınıfı bir kutu yeterlidir; 4 GB RAM fazlasıyla yeterli), bu nedenle yaygın
+    kurulum, her zaman açık bir ana makine ve node olarak dizüstü bilgisayarınızdır.
 
-    - **Gelen SSH gerekmez.** Node'lar dışarı doğru Gateway WebSocket'e bağlanır ve cihaz eşleştirmesi kullanır.
-    - **Daha güvenli yürütme denetimleri.** `system.run`, o laptop üzerindeki Node izin listeleri/onayları ile geçitlenir.
-    - **Daha fazla cihaz aracı.** Node'lar `system.run`'a ek olarak `canvas`, `camera` ve `screen` açar.
-    - **Yerel browser otomasyonu.** Gateway'i VPS'te tutun, ama browser makinede bir node host üzerinden Chrome'u yerelde çalıştırın veya host üzerindeki yerel Chrome'a Chrome MCP ile bağlanın.
+    - **Gelen SSH gerekmez.** Node'lar Gateway WebSocket'e dışarı doğru bağlanır ve cihaz eşlemesi kullanır.
+    - **Daha güvenli yürütme denetimleri.** `system.run`, o dizüstü bilgisayardaki node izin listeleri/onaylarıyla sınırlandırılır.
+    - **Daha fazla cihaz aracı.** Node'lar `system.run` ek olarak `canvas`, `camera` ve `screen` sunar.
+    - **Yerel tarayıcı otomasyonu.** Gateway'i bir VPS üzerinde tutun, ancak Chrome'u dizüstü bilgisayardaki bir node ana makinesi üzerinden yerelde çalıştırın veya Chrome MCP aracılığıyla ana makinedeki yerel Chrome'a bağlanın.
 
-    SSH, ad hoc shell erişimi için uygundur; ancak Node'lar devam eden ajan iş akışları ve
+    SSH geçici shell erişimi için uygundur, ancak node'lar sürekli agent iş akışları ve
     cihaz otomasyonu için daha basittir.
 
-    Belgeler: [Node'lar](/tr/nodes), [Nodes CLI](/tr/cli/nodes), [Browser](/tr/tools/browser).
+    Belgeler: [Node'lar](/tr/nodes), [Node CLI](/tr/cli/nodes), [Tarayıcı](/tr/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Node'lar bir gateway servisi çalıştırır mı?">
-    Hayır. Bilinçli olarak yalıtılmış profiller çalıştırmıyorsanız **bir host üzerinde yalnızca bir gateway**
-    çalışmalıdır (bkz. [Birden çok gateway](/tr/gateway/multiple-gateways)). Node'lar gateway'e bağlanan çevre birimleridir
-    (iOS/Android Node'ları veya menü çubuğu uygulamasında macOS "node mode"). Headless node
-    host'ları ve CLI denetimi için bkz. [Node host CLI](/tr/cli/node).
+  <Accordion title="Node'lar gateway hizmeti çalıştırır mı?">
+    Hayır. Bilerek yalıtılmış profiller çalıştırmadığınız sürece ana makine başına yalnızca **bir gateway** çalışmalıdır ([Birden fazla gateway](/tr/gateway/multiple-gateways) bölümüne bakın). Node'lar gateway'e bağlanan çevre birimleridir
+    (iOS/Android node'ları veya menü çubuğu uygulamasında macOS "node modu"). Başsız node
+    ana makineleri ve CLI denetimi için [Node host CLI](/tr/cli/node) bölümüne bakın.
 
     `gateway`, `discovery` ve `canvasHost` değişiklikleri için tam yeniden başlatma gerekir.
 
   </Accordion>
 
-  <Accordion title="Yapılandırmayı uygulamak için bir API / RPC yolu var mı?">
+  <Accordion title="Yapılandırmayı uygulamak için API / RPC yolu var mı?">
     Evet.
 
-    - `config.schema.lookup`: yazmadan önce sığ şema düğümü, eşleşen UI ipucu ve doğrudan alt özetleriyle tek bir yapılandırma alt ağacını inceleyin
-    - `config.get`: geçerli anlık görüntüyü + hash'i al
-    - `config.patch`: güvenli kısmi güncelleme (çoğu RPC düzenlemesi için tercih edilir); mümkün olduğunda hot-reload yapar ve gerektiğinde yeniden başlatır
-    - `config.apply`: tam yapılandırmayı doğrular + değiştirir; mümkün olduğunda hot-reload yapar ve gerektiğinde yeniden başlatır
-    - Sahip-yalnızca `gateway` çalışma zamanı aracı yine de `tools.exec.ask` / `tools.exec.security` yeniden yazımlarını reddeder; eski `tools.bash.*` takma adları aynı korumalı exec yollarına normalize olur
+    - `config.schema.lookup`: Yazmadan önce bir yapılandırma alt ağacını sığ şema node'u, eşleşen UI ipucu ve doğrudan alt özetlerle inceleyin
+    - `config.get`: Geçerli anlık görüntüyü + hash'i alın
+    - `config.patch`: Güvenli kısmi güncelleme (çoğu RPC düzenlemesi için tercih edilir); mümkün olduğunda sıcak yeniden yükler ve gerektiğinde yeniden başlatır
+    - `config.apply`: Tam yapılandırmayı doğrulayın + değiştirin; mümkün olduğunda sıcak yeniden yükler ve gerektiğinde yeniden başlatır
+    - Yalnızca sahibin kullanabildiği `gateway` çalışma zamanı aracı hâlâ `tools.exec.ask` / `tools.exec.security` yeniden yazmayı reddeder; eski `tools.bash.*` diğer adları aynı korumalı exec yollarına normalleştirilir
 
   </Accordion>
 
-  <Accordion title="İlk kurulum için asgari makul yapılandırma">
+  <Accordion title="İlk kurulum için en küçük makul yapılandırma">
     ```json5
     {
       agents: { defaults: { workspace: "~/.openclaw/workspace" } },
@@ -1015,81 +1009,81 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     }
     ```
 
-    Bu, çalışma alanınızı ayarlar ve botu kimin tetikleyebileceğini kısıtlar.
+    Bu, çalışma alanınızı ayarlar ve botu kimlerin tetikleyebileceğini sınırlar.
 
   </Accordion>
 
   <Accordion title="Bir VPS üzerinde Tailscale'i nasıl kurar ve Mac'imden nasıl bağlanırım?">
-    Asgari adımlar:
+    En küçük adımlar:
 
-    1. **VPS üzerinde kurun + oturum açın**
+    1. **VPS üzerinde kurulum + oturum açma**
 
        ```bash
        curl -fsSL https://tailscale.com/install.sh | sh
        sudo tailscale up
        ```
 
-    2. **Mac'inize kurun + oturum açın**
+    2. **Mac'inizde kurulum + oturum açma**
        - Tailscale uygulamasını kullanın ve aynı tailnet'e giriş yapın.
     3. **MagicDNS'i etkinleştirin (önerilir)**
-       - Tailscale yönetici konsolunda MagicDNS'i etkinleştirin; böylece VPS kararlı bir ada sahip olur.
-    4. **Tailnet host adını kullanın**
+       - Tailscale yönetici konsolunda MagicDNS'i etkinleştirin; böylece VPS sabit bir ada sahip olur.
+    4. **Tailnet ana makine adını kullanın**
        - SSH: `ssh user@your-vps.tailnet-xxxx.ts.net`
        - Gateway WS: `ws://your-vps.tailnet-xxxx.ts.net:18789`
 
-    SSH olmadan Control UI istiyorsanız VPS üzerinde Tailscale Serve kullanın:
+    SSH olmadan Control UI kullanmak istiyorsanız VPS üzerinde Tailscale Serve kullanın:
 
     ```bash
     openclaw gateway --tailscale serve
     ```
 
-    Bu, gateway'i loopback'e bağlı tutar ve HTTPS'i Tailscale üzerinden açığa çıkarır. Bkz. [Tailscale](/tr/gateway/tailscale).
+    Bu, gateway'i loopback'e bağlı tutar ve HTTPS'i Tailscale üzerinden dışa açar. Bkz. [Tailscale](/tr/gateway/tailscale).
 
   </Accordion>
 
-  <Accordion title="Bir Mac Node'u uzak bir Gateway'e (Tailscale Serve) nasıl bağlarım?">
-    Serve, **Gateway Control UI + WS** açığa çıkarır. Node'lar aynı Gateway WS uç noktası üzerinden bağlanır.
+  <Accordion title="Bir Mac node'u uzak bir Gateway'e (Tailscale Serve) nasıl bağlarım?">
+    Serve, **Gateway Control UI + WS**'yi dışa açar. Node'lar aynı Gateway WS uç noktası üzerinden bağlanır.
 
     Önerilen kurulum:
 
     1. **VPS + Mac'in aynı tailnet üzerinde olduğundan emin olun**.
-    2. **macOS uygulamasını Uzak modda kullanın** (SSH hedefi tailnet host adı olabilir).
-       Uygulama Gateway portunu tüneller ve Node olarak bağlanır.
-    3. **Node'u** gateway üzerinde onaylayın:
+    2. **macOS uygulamasını Uzak modda kullanın** (SSH hedefi tailnet ana makine adı olabilir).
+       Uygulama Gateway portunu tüneller ve node olarak bağlanır.
+    3. Gateway üzerinde **node'u onaylayın**:
 
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Belgeler: [Gateway protokolü](/tr/gateway/protocol), [Discovery](/tr/gateway/discovery), [macOS uzak modu](/tr/platforms/mac/remote).
+    Dokümanlar: [Gateway protokolü](/tr/gateway/protocol), [Keşif](/tr/gateway/discovery), [macOS uzak modu](/tr/platforms/mac/remote).
 
   </Accordion>
 
-  <Accordion title="İkinci bir laptop'a mı kurmalıyım yoksa sadece bir Node mu eklemeliyim?">
-    İkinci laptop'ta yalnızca **yerel araçlara** (ekran/kamera/exec) ihtiyacınız varsa onu
-    **Node** olarak ekleyin. Bu, tek bir Gateway tutar ve yinelenen yapılandırmadan kaçınır. Yerel Node araçları
-    şu anda yalnızca macOS'ta vardır, ancak bunları başka işletim sistemlerine de genişletmeyi planlıyoruz.
+  <Accordion title="İkinci bir dizüstü bilgisayara kurmalı mıyım yoksa sadece bir node mu eklemeliyim?">
+    İkinci dizüstü bilgisayarda yalnızca **yerel araçlara** (ekran/kamera/exec) ihtiyacınız varsa onu
+    **node** olarak ekleyin. Bu, tek bir Gateway kullanır ve yinelenen yapılandırmayı önler. Yerel node araçları
+    şu anda yalnızca macOS içindir, ancak bunları diğer işletim sistemlerine genişletmeyi planlıyoruz.
 
-    Yalnızca **sert yalıtıma** veya tamamen ayrı iki bota ihtiyacınız olduğunda ikinci bir Gateway kurun.
+    Yalnızca **katı yalıtım** veya tamamen ayrı iki bot gerektiğinde ikinci bir Gateway kurun.
 
-    Belgeler: [Node'lar](/tr/nodes), [Nodes CLI](/tr/cli/nodes), [Birden çok gateway](/tr/gateway/multiple-gateways).
+    Dokümanlar: [Node'lar](/tr/nodes), [Node'lar CLI](/tr/cli/nodes), [Birden çok gateway](/tr/gateway/multiple-gateways).
 
   </Accordion>
 </AccordionGroup>
 
-## Env değişkenleri ve .env yükleme
+## Env vars ve .env yükleme
 
 <AccordionGroup>
   <Accordion title="OpenClaw ortam değişkenlerini nasıl yükler?">
-    OpenClaw, env değişkenlerini üst süreçten (shell, launchd/systemd, CI vb.) okur ve ek olarak şunları yükler:
+    OpenClaw env vars değerlerini üst süreçten (shell, launchd/systemd, CI vb.) okur ve ayrıca şunları yükler:
 
-    - geçerli çalışma dizinindeki `.env`
-    - `~/.openclaw/.env` içinden genel fallback `.env` (diğer adıyla `$OPENCLAW_STATE_DIR/.env`)
+    - geçerli çalışma dizininden `.env`
+    - `~/.openclaw/.env` konumundan global yedek `.env` (diğer adıyla `$OPENCLAW_STATE_DIR/.env`)
 
-    Hiçbir `.env` dosyası mevcut env değişkenlerini geçersiz kılmaz.
+    Hiçbir `.env` dosyası mevcut env vars değerlerini geçersiz kılmaz.
 
-    Yapılandırmada satır içi env değişkenleri de tanımlayabilirsiniz (yalnızca süreç env'inde eksikse uygulanır):
+    Yapılandırmada satır içi env vars da tanımlayabilirsiniz (yalnızca süreç env içinde eksikse uygulanır):
 
     ```json5
     {
@@ -1100,14 +1094,14 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     }
     ```
 
-    Tam öncelik ve kaynaklar için bkz. [/environment](/tr/help/environment).
+    Tam öncelik sırası ve kaynaklar için [/environment](/tr/help/environment) sayfasına bakın.
 
   </Accordion>
 
-  <Accordion title="Gateway'i servis üzerinden başlattım ve env değişkenlerim kayboldu. Şimdi ne olacak?">
+  <Accordion title="Gateway'i servis üzerinden başlattım ve env vars kayboldu. Şimdi ne yapmalıyım?">
     İki yaygın düzeltme:
 
-    1. Eksik anahtarları `~/.openclaw/.env` içine koyun; böylece servis shell env'inizi devralmasa bile bunlar alınır.
+    1. Eksik anahtarları `~/.openclaw/.env` içine koyun; böylece servis shell env'inizi devralmasa bile alınırlar.
     2. Shell içe aktarmayı etkinleştirin (isteğe bağlı kolaylık):
 
     ```json5
@@ -1121,18 +1115,18 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
     }
     ```
 
-    Bu, giriş shell'inizi çalıştırır ve yalnızca beklenen eksik anahtarları içe aktarır (asla geçersiz kılmaz). Env değişkeni karşılıkları:
+    Bu, login shell'inizi çalıştırır ve yalnızca eksik beklenen anahtarları içe aktarır (asla geçersiz kılmaz). Env var karşılıkları:
     `OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
 
   </Accordion>
 
-  <Accordion title='COPILOT_GITHUB_TOKEN ayarladım, ama model durumu "Shell env: off." gösteriyor. Neden?'>
-    `openclaw models status`, **shell env içe aktarmasının** etkin olup olmadığını bildirir. "Shell env: off"
-    ifadesi env değişkenlerinizin eksik olduğu anlamına gelmez — yalnızca OpenClaw'ın
-    giriş shell'inizi otomatik yüklemeyeceği anlamına gelir.
+  <Accordion title='COPILOT_GITHUB_TOKEN ayarladım, ama models status "Shell env: off." gösteriyor. Neden?'>
+    `openclaw models status`, **shell env içe aktarma** özelliğinin etkin olup olmadığını bildirir. "Shell env: off"
+    env vars değerlerinizin eksik olduğu anlamına **gelmez** - yalnızca OpenClaw'ın
+    login shell'inizi otomatik olarak yüklemeyeceği anlamına gelir.
 
-    Gateway servis olarak çalışıyorsa (launchd/systemd), shell
-    ortamınızı devralmaz. Bunu şu yollardan biriyle düzeltin:
+    Gateway bir servis (launchd/systemd) olarak çalışıyorsa shell
+    ortamınızı devralmaz. Şunlardan birini yaparak düzeltin:
 
     1. Token'ı `~/.openclaw/.env` içine koyun:
 
@@ -1140,16 +1134,16 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
        COPILOT_GITHUB_TOKEN=...
        ```
 
-    2. Veya shell içe aktarmayı etkinleştirin (`env.shellEnv.enabled: true`).
-    3. Veya bunu yapılandırmanızdaki `env` bloğuna ekleyin (yalnızca eksikse uygulanır).
+    2. Ya da shell içe aktarmayı etkinleştirin (`env.shellEnv.enabled: true`).
+    3. Ya da yapılandırmanızdaki `env` bloğuna ekleyin (yalnızca eksikse uygulanır).
 
-    Sonra gateway'i yeniden başlatın ve tekrar kontrol edin:
+    Ardından gateway'i yeniden başlatın ve tekrar kontrol edin:
 
     ```bash
     openclaw models status
     ```
 
-    Copilot token'ları `COPILOT_GITHUB_TOKEN` üzerinden okunur (`GH_TOKEN` / `GITHUB_TOKEN` da desteklenir).
+    Copilot token'ları `COPILOT_GITHUB_TOKEN` üzerinden okunur (ayrıca `GH_TOKEN` / `GITHUB_TOKEN`).
     Bkz. [/concepts/model-providers](/tr/concepts/model-providers) ve [/environment](/tr/help/environment).
 
   </Accordion>
@@ -1159,14 +1153,14 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
 <AccordionGroup>
   <Accordion title="Yeni bir konuşmayı nasıl başlatırım?">
-    `/new` veya `/reset` komutunu bağımsız bir mesaj olarak gönderin. Bkz. [Oturum yönetimi](/tr/concepts/session).
+    Bağımsız bir mesaj olarak `/new` veya `/reset` gönderin. Bkz. [Oturum yönetimi](/tr/concepts/session).
   </Accordion>
 
-  <Accordion title="Hiç /new göndermezsem oturumlar otomatik sıfırlanır mı?">
-    Oturumlar `session.idleMinutes` sonrasında sona erebilir, ancak bu varsayılan olarak **devre dışıdır** (varsayılan **0**).
-    Boşta kalma süresiyle sona ermeyi etkinleştirmek için bunu pozitif bir değere ayarlayın. Etkinleştirildiğinde, boşta kalma süresinden sonraki **sonraki**
-    mesaj o sohbet anahtarı için yeni bir oturum kimliği başlatır.
-    Bu, transkriptleri silmez — yalnızca yeni bir oturum başlatır.
+  <Accordion title="Hiç /new göndermesem oturumlar otomatik olarak sıfırlanır mı?">
+    Oturumlar `session.idleMinutes` sonrasında süresi dolabilir, ancak bu **varsayılan olarak devre dışıdır** (varsayılan **0**).
+    Boşta kalma süresinin dolmasını etkinleştirmek için pozitif bir değere ayarlayın. Etkinleştirildiğinde, boşta kalma süresinden sonraki **bir sonraki**
+    mesaj, o sohbet anahtarı için yeni bir session id başlatır.
+    Bu transkriptleri silmez - yalnızca yeni bir oturum başlatır.
 
     ```json5
     {
@@ -1178,41 +1172,41 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
   </Accordion>
 
-  <Accordion title="Bir OpenClaw örnekleri ekibi yapmanın bir yolu var mı (bir CEO ve birçok ajan)?">
-    Evet, **çoklu ajan yönlendirmesi** ve **alt ajanlar** aracılığıyla. Bir koordinatör
-    ajan ve kendi çalışma alanları ile modellerine sahip birkaç işçi ajan oluşturabilirsiniz.
+  <Accordion title="OpenClaw örneklerinden oluşan bir ekip (bir CEO ve birçok agent) oluşturmanın yolu var mı?">
+    Evet, **çok agent'lı yönlendirme** ve **alt agent'lar** ile. Bir koordinatör
+    agent ve kendi çalışma alanları ile modellerine sahip birkaç worker agent oluşturabilirsiniz.
 
-    Bununla birlikte, bunu daha çok **eğlenceli bir deney** olarak görmek en iyisidir. Token açısından ağırdır ve çoğu zaman
-    ayrı oturumları olan tek bir bot kullanmaktan daha verimsizdir. Tipik model,
-    paralel işler için farklı oturumları olan, sizin konuştuğunuz tek bir bottur. Bu
-    bot gerektiğinde alt ajanlar da başlatabilir.
+    Bununla birlikte, bunu en iyi bir **eğlenceli deney** olarak görmek gerekir. Token kullanımı yoğundur ve çoğu zaman
+    ayrı oturumlara sahip tek bir bot kullanmaktan daha az verimlidir. Öngördüğümüz tipik model,
+    paralel çalışma için farklı oturumlara sahip, konuştuğunuz tek bir bottur. Bu
+    bot gerektiğinde alt agent'lar da oluşturabilir.
 
-    Belgeler: [Çoklu ajan yönlendirmesi](/tr/concepts/multi-agent), [Alt ajanlar](/tr/tools/subagents), [Agents CLI](/tr/cli/agents).
+    Dokümanlar: [Çok agent'lı yönlendirme](/tr/concepts/multi-agent), [Alt agent'lar](/tr/tools/subagents), [Agent'lar CLI](/tr/cli/agents).
 
   </Accordion>
 
   <Accordion title="Bağlam neden görevin ortasında kesildi? Bunu nasıl önlerim?">
     Oturum bağlamı model penceresiyle sınırlıdır. Uzun sohbetler, büyük araç çıktıları veya çok sayıda
-    dosya Compaction veya truncation tetikleyebilir.
+    dosya compaction ya da kesmeyi tetikleyebilir.
 
     Yardımcı olanlar:
 
     - Bottan geçerli durumu özetlemesini ve bir dosyaya yazmasını isteyin.
     - Uzun görevlerden önce `/compact`, konu değiştirirken `/new` kullanın.
-    - Önemli bağlamı çalışma alanında tutun ve bottan bunu yeniden okumasını isteyin.
-    - Uzun veya paralel işler için alt ajanlar kullanın; böylece ana sohbet daha küçük kalır.
+    - Önemli bağlamı çalışma alanında tutun ve bottan onu yeniden okumasını isteyin.
+    - Uzun veya paralel işler için alt agent'lar kullanın; böylece ana sohbet daha küçük kalır.
     - Bu sık oluyorsa daha büyük bağlam penceresine sahip bir model seçin.
 
   </Accordion>
 
-  <Accordion title="OpenClaw'ı tamamen nasıl sıfırlarım ama kurulu tutarım?">
-    Sıfırlama komutunu kullanın:
+  <Accordion title="OpenClaw'ı tamamen sıfırlayıp kurulu tutmayı nasıl yaparım?">
+    Reset komutunu kullanın:
 
     ```bash
     openclaw reset
     ```
 
-    Etkileşimsiz tam sıfırlama:
+    Etkileşimsiz tam reset:
 
     ```bash
     openclaw reset --scope full --yes --non-interactive
@@ -1226,16 +1220,16 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
 
     Notlar:
 
-    - Onboarding, mevcut bir yapılandırma görürse **Reset** de sunar. Bkz. [Onboarding (CLI)](/tr/start/wizard).
-    - Profiller kullandıysanız (`--profile` / `OPENCLAW_PROFILE`), her durum dizinini sıfırlayın (varsayılanlar `~/.openclaw-<profile>` şeklindedir).
-    - Geliştirme sıfırlaması: `openclaw gateway --dev --reset` (yalnızca geliştirme; geliştirme yapılandırmasını + kimlik bilgilerini + oturumları + çalışma alanını siler).
+    - Onboarding, mevcut bir yapılandırma görürse **Reset** seçeneğini de sunar. Bkz. [Onboarding (CLI)](/tr/start/wizard).
+    - Profiller kullandıysanız (`--profile` / `OPENCLAW_PROFILE`), her state dir'i sıfırlayın (varsayılanlar `~/.openclaw-<profile>`).
+    - Geliştirme reset'i: `openclaw gateway --dev --reset` (yalnızca geliştirme; geliştirme yapılandırmasını + kimlik bilgilerini + oturumları + çalışma alanını siler).
 
   </Accordion>
 
-  <Accordion title='"context too large" hataları alıyorum - nasıl sıfırlarım veya sıkıştırırım?'>
-    Şunlardan birini kullanın:
+  <Accordion title='"context too large" hataları alıyorum - nasıl reset veya compact yaparım?'>
+    Bunlardan birini kullanın:
 
-    - **Compact** (konuşmayı korur ama eski turları özetler):
+    - **Compact** (konuşmayı tutar ama eski turları özetler):
 
       ```
       /compact
@@ -1250,52 +1244,52 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
       /reset
       ```
 
-    Bu olmaya devam ediyorsa:
+    Devam ederse:
 
     - Eski araç çıktısını kırpmak için **oturum budamayı** (`agents.defaults.contextPruning`) etkinleştirin veya ayarlayın.
     - Daha büyük bağlam penceresine sahip bir model kullanın.
 
-    Belgeler: [Compaction](/tr/concepts/compaction), [Oturum budama](/tr/concepts/session-pruning), [Oturum yönetimi](/tr/concepts/session).
+    Dokümanlar: [Compaction](/tr/concepts/compaction), [Oturum budama](/tr/concepts/session-pruning), [Oturum yönetimi](/tr/concepts/session).
 
   </Accordion>
 
-  <Accordion title='Neden "LLM request rejected: messages.content.tool_use.input field required" hatası görüyorum?'>
-    Bu bir sağlayıcı doğrulama hatasıdır: model, gerekli
-    `input` olmadan bir `tool_use` bloğu üretti. Genellikle oturum geçmişinin eski veya bozuk olduğu anlamına gelir (çoğu zaman uzun konulardan
-    veya bir araç/şema değişikliğinden sonra).
+  <Accordion title='Neden "LLM request rejected: messages.content.tool_use.input field required" görüyorum?'>
+    Bu bir sağlayıcı doğrulama hatasıdır: model, gerekli `input` olmadan bir `tool_use` bloğu üretti.
+    Genellikle oturum geçmişinin bayat veya bozulmuş olduğu anlamına gelir (çoğunlukla uzun thread'lerden
+    ya da bir araç/şema değişikliğinden sonra).
 
     Düzeltme: `/new` ile yeni bir oturum başlatın (bağımsız mesaj).
 
   </Accordion>
 
-  <Accordion title="Neden her 30 dakikada bir Heartbeat mesajları alıyorum?">
-    Heartbeat'ler varsayılan olarak her **30 dakikada** bir çalışır (**OAuth auth** kullanırken **1 saat**). Bunları ayarlayın veya devre dışı bırakın:
+  <Accordion title="Neden her 30 dakikada bir heartbeat mesajları alıyorum?">
+    Heartbeat'ler varsayılan olarak her **30m** çalışır (OAuth auth kullanırken **1h**). Ayarlayın veya devre dışı bırakın:
 
     ```json5
     {
       agents: {
         defaults: {
           heartbeat: {
-            every: "2h", // veya devre dışı bırakmak için "0m"
+            every: "2h", // or "0m" to disable
           },
         },
       },
     }
     ```
 
-    `HEARTBEAT.md` varsa ama etkin olarak boşsa (yalnızca boş satırlar ve
-    `# Heading` gibi markdown başlıkları içeriyorsa), OpenClaw API çağrılarını korumak için Heartbeat çalıştırmasını atlar.
-    Dosya eksikse Heartbeat yine çalışır ve model ne yapacağına karar verir.
+    `HEARTBEAT.md` mevcutsa ama etkili biçimde boşsa (yalnızca boş satırlar ve `# Heading` gibi markdown
+    başlıkları), OpenClaw API çağrılarını azaltmak için heartbeat çalıştırmasını atlar.
+    Dosya eksikse heartbeat yine çalışır ve model ne yapılacağına karar verir.
 
-    Ajan başına geçersiz kılmalar `agents.list[].heartbeat` kullanır. Belgeler: [Heartbeat](/tr/gateway/heartbeat).
+    Agent başına geçersiz kılmalar `agents.list[].heartbeat` kullanır. Dokümanlar: [Heartbeat](/tr/gateway/heartbeat).
 
   </Accordion>
 
-  <Accordion title='Bir WhatsApp grubuna bir "bot hesabı" eklemem gerekiyor mu?'>
-    Hayır. OpenClaw **kendi hesabınızda** çalışır; yani siz gruptaysanız OpenClaw da onu görebilir.
+  <Accordion title='Bir WhatsApp grubuna "bot account" eklemem gerekir mi?'>
+    Hayır. OpenClaw **kendi hesabınızda** çalışır, bu yüzden gruptaysanız OpenClaw onu görebilir.
     Varsayılan olarak, gönderenlere izin verene kadar grup yanıtları engellenir (`groupPolicy: "allowlist"`).
 
-    Grup yanıtlarını yalnızca **siz** tetikleyebilin istiyorsanız:
+    Yalnızca **sizin** grup yanıtlarını tetikleyebilmenizi istiyorsanız:
 
     ```json5
     {
@@ -1311,107 +1305,107 @@ Gerçek dünya kurulumları (yerel geliştirme, VPS, çoklu ajan, OAuth/API anah
   </Accordion>
 
   <Accordion title="Bir WhatsApp grubunun JID'sini nasıl alırım?">
-    Seçenek 1 (en hızlı): günlükleri izleyin ve grupta bir test mesajı gönderin:
+    Seçenek 1 (en hızlı): log'ları izleyin ve grupta bir test mesajı gönderin:
 
     ```bash
     openclaw logs --follow --json
     ```
 
-    `@g.us` ile biten `chatId` (veya `from`) alanını arayın, örneğin:
+    `@g.us` ile biten `chatId` (veya `from`) değerini arayın, örneğin:
     `1234567890-1234567890@g.us`.
 
-    Seçenek 2 (zaten yapılandırılmış/izin listesine alınmışsa): yapılandırmadan grupları listeleyin:
+    Seçenek 2 (zaten yapılandırılmış/allowlist'e alınmışsa): grupları yapılandırmadan listeleyin:
 
     ```bash
     openclaw directory groups list --channel whatsapp
     ```
 
-    Belgeler: [WhatsApp](/tr/channels/whatsapp), [Directory](/tr/cli/directory), [Logs](/tr/cli/logs).
+    Dokümanlar: [WhatsApp](/tr/channels/whatsapp), [Directory](/tr/cli/directory), [Log'lar](/tr/cli/logs).
 
   </Accordion>
 
-  <Accordion title="OpenClaw neden grupta yanıt vermiyor?">
+  <Accordion title="OpenClaw neden bir grupta yanıt vermiyor?">
     İki yaygın neden:
 
-    - Mention geçitlemesi açık (varsayılan). Botu @mention ile etiketlemelisiniz (veya `mentionPatterns` ile eşleşmelidir).
-    - `channels.whatsapp.groups` ayarını `"*"` olmadan yapılandırdınız ve grup izin listesinde değil.
+    - Mention gating açık (varsayılan). Bota @mention yapmalısınız (veya `mentionPatterns` ile eşleşmelisiniz).
+    - `channels.whatsapp.groups` yapılandırdınız ama `"*"` yok ve grup allowlist'e alınmamış.
 
     Bkz. [Gruplar](/tr/channels/groups) ve [Grup mesajları](/tr/channels/group-messages).
 
   </Accordion>
 
-  <Accordion title="Gruplar/konular DM'lerle bağlam paylaşır mı?">
-    Doğrudan sohbetler varsayılan olarak ana oturuma çöker. Gruplar/kanallar kendi oturum anahtarlarına sahiptir ve Telegram konuları / Discord konuları ayrı oturumlardır. Bkz. [Gruplar](/tr/channels/groups) ve [Grup mesajları](/tr/channels/group-messages).
+  <Accordion title="Gruplar/thread'ler DM'lerle bağlam paylaşır mı?">
+    Doğrudan sohbetler varsayılan olarak ana oturuma daraltılır. Gruplar/kanallar kendi oturum anahtarlarına sahiptir ve Telegram konuları / Discord thread'leri ayrı oturumlardır. Bkz. [Gruplar](/tr/channels/groups) ve [Grup mesajları](/tr/channels/group-messages).
   </Accordion>
 
-  <Accordion title="Kaç çalışma alanı ve ajan oluşturabilirim?">
-    Sabit sınır yok. Onlarcası (hatta yüzlercesi) sorun olmaz, ama şunlara dikkat edin:
+  <Accordion title="Kaç çalışma alanı ve agent oluşturabilirim?">
+    Katı sınırlar yok. Onlarca (hatta yüzlerce) sorun değildir, ancak şunlara dikkat edin:
 
-    - **Disk büyümesi:** oturumlar + transkriptler `~/.openclaw/agents/<agentId>/sessions/` altında yaşar.
-    - **Token maliyeti:** daha fazla ajan, daha fazla eşzamanlı model kullanımı demektir.
-    - **Operasyon yükü:** ajan başına auth profile'ları, çalışma alanları ve kanal yönlendirmesi.
+    - **Disk büyümesi:** oturumlar + transkriptler `~/.openclaw/agents/<agentId>/sessions/` altında bulunur.
+    - **Token maliyeti:** daha fazla agent, daha fazla eşzamanlı model kullanımı demektir.
+    - **Operasyon yükü:** agent başına auth profilleri, çalışma alanları ve kanal yönlendirme.
 
     İpuçları:
 
-    - Ajan başına tek bir **etkin** çalışma alanı tutun (`agents.defaults.workspace`).
+    - Agent başına bir **aktif** çalışma alanı tutun (`agents.defaults.workspace`).
     - Disk büyürse eski oturumları budayın (JSONL veya store girdilerini silin).
-    - Başıboş çalışma alanlarını ve profil uyumsuzluklarını görmek için `openclaw doctor` kullanın.
+    - Sahipsiz çalışma alanlarını ve profil uyuşmazlıklarını bulmak için `openclaw doctor` kullanın.
 
   </Accordion>
 
-  <Accordion title="Aynı anda birden çok bot veya sohbet (Slack) çalıştırabilir miyim ve bunu nasıl kurmalıyım?">
-    Evet. Birden çok yalıtılmış ajan çalıştırmak ve gelen mesajları
-    kanal/hesap/eşe göre yönlendirmek için **Çoklu Ajan Yönlendirmesi** kullanın. Slack kanal olarak desteklenir ve belirli ajanlara bağlanabilir.
+  <Accordion title="Aynı anda birden fazla bot veya sohbet çalıştırabilir miyim (Slack) ve bunu nasıl kurmalıyım?">
+    Evet. Birden fazla yalıtılmış ajan çalıştırmak ve gelen mesajları
+    kanal/hesap/eş bazında yönlendirmek için **Çoklu Ajan Yönlendirme** kullanın. Slack bir kanal olarak desteklenir ve belirli ajanlara bağlanabilir.
 
-    Browser erişimi güçlüdür ama "insanın yapabildiği her şeyi yapar" anlamına gelmez — anti-bot, CAPTCHA'lar ve MFA
-    yine otomasyonu engelleyebilir. En güvenilir browser kontrolü için host üzerinde yerel Chrome MCP kullanın
-    veya browser'ı gerçekten çalıştıran makinede CDP kullanın.
+    Tarayıcı erişimi güçlüdür ancak "bir insanın yapabildiği her şeyi yapar" anlamına gelmez; bot karşıtı önlemler, CAPTCHA'lar ve MFA
+    otomasyonu yine de engelleyebilir. En güvenilir tarayıcı denetimi için ana makinede yerel Chrome MCP kullanın
+    veya tarayıcıyı gerçekten çalıştıran makinede CDP kullanın.
 
     En iyi uygulama kurulumu:
 
-    - Her zaman açık Gateway host'u (VPS/Mac mini).
-    - Rol başına bir ajan (bindings).
-    - Bu ajanlara bağlanmış Slack kanal(lar)ı.
-    - Gerektiğinde Chrome MCP veya bir Node üzerinden yerel browser.
+    - Her zaman açık Gateway ana makinesi (VPS/Mac mini).
+    - Rol başına bir ajan (bağlamalar).
+    - Bu ajanlara bağlı Slack kanalları.
+    - Gerektiğinde Chrome MCP veya bir düğüm üzerinden yerel tarayıcı.
 
-    Belgeler: [Çoklu Ajan Yönlendirmesi](/tr/concepts/multi-agent), [Slack](/tr/channels/slack),
-    [Browser](/tr/tools/browser), [Node'lar](/tr/nodes).
+    Belgeler: [Çoklu Ajan Yönlendirme](/tr/concepts/multi-agent), [Slack](/tr/channels/slack),
+    [Tarayıcı](/tr/tools/browser), [Düğümler](/tr/nodes).
 
   </Accordion>
 </AccordionGroup>
 
-## Modeller, failover ve auth profile'ları
+## Modeller, yük devretme ve kimlik doğrulama profilleri
 
-Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth profile'ları —
+Model Soru-Cevapları — varsayılanlar, seçim, takma adlar, geçiş, yük devretme, kimlik doğrulama profilleri —
 [Modeller SSS](/tr/help/faq-models) sayfasında yer alır.
 
-## Gateway: portlar, "zaten çalışıyor" ve uzak mod
+## Gateway: bağlantı noktaları, "zaten çalışıyor" ve uzak mod
 
 <AccordionGroup>
-  <Accordion title="Gateway hangi portu kullanır?">
-    `gateway.port`, tek birleştirilmiş WebSocket + HTTP portunu (Control UI, hook'lar vb.) kontrol eder.
+  <Accordion title="Gateway hangi bağlantı noktasını kullanır?">
+    `gateway.port`, WebSocket + HTTP (Control UI, hook'lar vb.) için tek çoğullanmış bağlantı noktasını denetler.
 
-    Öncelik:
+    Öncelik sırası:
 
     ```
-    --port > OPENCLAW_GATEWAY_PORT > gateway.port > varsayılan 18789
+    --port > OPENCLAW_GATEWAY_PORT > gateway.port > default 18789
     ```
 
   </Accordion>
 
-  <Accordion title='Neden openclaw gateway status "Runtime: running" ama "Connectivity probe: failed" diyor?'>
-    Çünkü "running", **supervisor'un** görünümüdür (launchd/systemd/schtasks). Connectivity probe ise CLI'nin gerçekten gateway WebSocket'e bağlanmayı denemesidir.
+  <Accordion title='openclaw gateway status neden "Runtime: running" ama "Connectivity probe: failed" diyor?'>
+    Çünkü "running", **gözetleyicinin** görünümüdür (launchd/systemd/schtasks). Bağlantı probu ise CLI'nin gerçekten Gateway WebSocket'e bağlanmasıdır.
 
     `openclaw gateway status` kullanın ve şu satırlara güvenin:
 
-    - `Probe target:` (yoklamanın gerçekten kullandığı URL)
-    - `Listening:` (portta gerçekte neyin bağlı olduğu)
-    - `Last gateway error:` (süreç hayattayken port dinlemiyorsa en yaygın kök neden)
+    - `Probe target:` (probun gerçekten kullandığı URL)
+    - `Listening:` (bağlantı noktasında gerçekten bağlı olan şey)
+    - `Last gateway error:` (süreç canlıyken ancak bağlantı noktası dinlemiyorken yaygın kök neden)
 
   </Accordion>
 
-  <Accordion title='Neden openclaw gateway status "Config (cli)" ve "Config (service)" farklı gösteriyor?'>
-    Servis bir yapılandırmayı çalıştırırken siz başka bir yapılandırma dosyasını düzenliyorsunuz (çoğunlukla bir `--profile` / `OPENCLAW_STATE_DIR` uyumsuzluğu).
+  <Accordion title='openclaw gateway status neden "Config (cli)" ve "Config (service)" değerlerini farklı gösteriyor?'>
+    Hizmet başka bir dosyayla çalışırken siz başka bir yapılandırma dosyasını düzenliyorsunuz (genellikle `--profile` / `OPENCLAW_STATE_DIR` uyumsuzluğu).
 
     Düzeltme:
 
@@ -1419,19 +1413,19 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     openclaw gateway install --force
     ```
 
-    Bunu, servisin kullanmasını istediğiniz aynı `--profile` / ortam ile çalıştırın.
+    Bunu hizmetin kullanmasını istediğiniz aynı `--profile` / ortamdan çalıştırın.
 
   </Accordion>
 
-  <Accordion title='"başka bir gateway örneği zaten dinliyor" ne anlama gelir?'>
-    OpenClaw çalışma zamanı kilidini, başlangıçta WebSocket dinleyicisini hemen bağlayarak uygular (varsayılan `ws://127.0.0.1:18789`). Bağlama `EADDRINUSE` ile başarısız olursa başka bir örneğin zaten dinlediğini belirten `GatewayLockError` fırlatır.
+  <Accordion title='"another gateway instance is already listening" ne anlama gelir?'>
+    OpenClaw, başlangıçta WebSocket dinleyicisini hemen bağlayarak bir çalışma zamanı kilidi uygular (varsayılan `ws://127.0.0.1:18789`). Bağlama `EADDRINUSE` ile başarısız olursa, başka bir örneğin zaten dinlediğini belirten `GatewayLockError` fırlatır.
 
-    Düzeltme: diğer örneği durdurun, portu boşaltın veya `openclaw gateway --port <port>` ile çalıştırın.
+    Düzeltme: diğer örneği durdurun, bağlantı noktasını serbest bırakın veya `openclaw gateway --port <port>` ile çalıştırın.
 
   </Accordion>
 
   <Accordion title="OpenClaw'ı uzak modda nasıl çalıştırırım (istemci başka yerdeki bir Gateway'e bağlanır)?">
-    `gateway.mode: "remote"` ayarlayın ve bir uzak WebSocket URL'sine yöneltin; isteğe bağlı olarak paylaşılan gizli bilgi uzak kimlik bilgileriyle birlikte:
+    `gateway.mode: "remote"` ayarlayın ve isteğe bağlı olarak paylaşılan gizli uzak kimlik bilgileriyle uzak bir WebSocket URL'sine yönlendirin:
 
     ```json5
     {
@@ -1448,90 +1442,90 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
     Notlar:
 
-    - `openclaw gateway`, yalnızca `gateway.mode` `local` olduğunda başlar (veya geçersiz kılma bayrağını geçerseniz).
+    - `openclaw gateway` yalnızca `gateway.mode` `local` olduğunda (veya geçersiz kılma bayrağını geçirdiğinizde) başlar.
     - macOS uygulaması yapılandırma dosyasını izler ve bu değerler değiştiğinde modları canlı olarak değiştirir.
-    - `gateway.remote.token` / `.password`, yalnızca istemci tarafı uzak kimlik bilgileridir; kendi başlarına yerel gateway auth'u etkinleştirmezler.
+    - `gateway.remote.token` / `.password` yalnızca istemci tarafı uzak kimlik bilgileridir; tek başlarına yerel Gateway kimlik doğrulamasını etkinleştirmezler.
 
   </Accordion>
 
   <Accordion title='Control UI "unauthorized" diyor (veya sürekli yeniden bağlanıyor). Şimdi ne yapmalıyım?'>
-    Gateway auth yolunuz ve UI'nin auth yöntemi eşleşmiyor.
+    Gateway kimlik doğrulama yolunuz ile UI'nin kimlik doğrulama yöntemi eşleşmiyor.
 
     Gerçekler (koddan):
 
-    - Control UI, token'ı mevcut tarayıcı sekmesi oturumu ve seçilen gateway URL'si için `sessionStorage` içinde tutar; böylece aynı sekmedeki yenilemeler, uzun ömürlü localStorage token kalıcılığını geri yüklemeden çalışmaya devam eder.
-    - `AUTH_TOKEN_MISMATCH` durumunda güvenilen istemciler, gateway yeniden deneme ipuçları döndürdüğünde (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`) önbelleğe alınmış cihaz token'ı ile sınırlı bir yeniden deneme yapabilir.
-    - Bu önbellekli token yeniden denemesi artık cihaz token'ı ile birlikte saklanan önbelleğe alınmış onaylı kapsamları yeniden kullanır. Açık `deviceToken` / açık `scopes` çağıranlar yine istenen kapsam kümesini korur; önbellekten devralmaz.
-    - Bu yeniden deneme yolu dışında bağlantı auth önceliği açık paylaşılan token/parola önce, sonra açık `deviceToken`, sonra saklanan cihaz token'ı, sonra bootstrap token'dır.
-    - Bootstrap token kapsam denetimleri rol önekli yapılır. Yerleşik bootstrap operatör izin listesi yalnızca operatör isteklerini karşılar; Node veya operatör olmayan diğer roller kendi rol önekleri altında kapsam gerektirir.
+    - Control UI, geçerli tarayıcı sekmesi oturumu ve seçilen Gateway URL'si için belirteci `sessionStorage` içinde tutar; böylece aynı sekme yenilemeleri, uzun ömürlü localStorage belirteç kalıcılığını geri yüklemeden çalışmaya devam eder.
+    - `AUTH_TOKEN_MISMATCH` durumunda, güvenilen istemciler Gateway yeniden deneme ipuçları döndürdüğünde (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`) önbelleğe alınmış bir cihaz belirteciyle sınırlandırılmış tek bir yeniden deneme girişiminde bulunabilir.
+    - Bu önbelleğe alınmış belirteç yeniden denemesi artık cihaz belirteciyle birlikte depolanan önbelleğe alınmış onaylı kapsamları yeniden kullanır. Açık `deviceToken` / açık `scopes` çağıranları, önbelleğe alınmış kapsamları devralmak yerine istenen kapsam kümesini korumaya devam eder.
+    - Bu yeniden deneme yolunun dışında, bağlantı kimlik doğrulama önceliği önce açık paylaşılan belirteç/parola, sonra açık `deviceToken`, sonra depolanan cihaz belirteci, sonra bootstrap belirtecidir.
+    - Bootstrap belirteci kapsam denetimleri rol öneklidir. Yerleşik bootstrap operatör izin listesi yalnızca operatör isteklerini karşılar; node veya operatör olmayan diğer rollerin hâlâ kendi rol önekleri altında kapsamlara ihtiyacı vardır.
 
     Düzeltme:
 
-    - En hızlısı: `openclaw dashboard` (dashboard URL'sini yazdırır + kopyalar, açmayı dener; headless ise SSH ipucu gösterir).
-    - Henüz token yoksa: `openclaw doctor --generate-gateway-token`.
-    - Uzak moddaysanız önce tünel kurun: `ssh -N -L 18789:127.0.0.1:18789 user@host`, sonra `http://127.0.0.1:18789/` açın.
-    - Paylaşılan gizli bilgi modu: `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` veya `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` ayarlayın, sonra Control UI ayarlarına eşleşen gizli bilgiyi yapıştırın.
-    - Tailscale Serve modu: `gateway.auth.allowTailscale` etkin olduğundan ve ham loopback/tailnet URL'si yerine Tailscale kimlik header'larını taşıyan Serve URL'sini açtığınızdan emin olun.
-    - Trusted-proxy modu: aynı host üzerindeki loopback proxy veya ham gateway URL'si değil, yapılandırılmış loopback dışı kimlik farkındalıklı proxy üzerinden geldiğinizden emin olun.
-    - Tek yeniden denemeden sonra uyumsuzluk sürerse eşleştirilmiş cihaz token'ını döndürün/yeniden onaylayın:
+    - En hızlısı: `openclaw dashboard` (pano URL'sini yazdırır + kopyalar, açmayı dener; başsızsa SSH ipucu gösterir).
+    - Henüz belirteciniz yoksa: `openclaw doctor --generate-gateway-token`.
+    - Uzaksa önce tünel açın: `ssh -N -L 18789:127.0.0.1:18789 user@host`, sonra `http://127.0.0.1:18789/` açın.
+    - Paylaşılan gizli mod: `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` veya `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD` ayarlayın, sonra eşleşen gizli değeri Control UI ayarlarına yapıştırın.
+    - Tailscale Serve modu: `gateway.auth.allowTailscale` etkin olduğundan ve Tailscale kimlik başlıklarını atlayan ham bir loopback/tailnet URL'si değil, Serve URL'sini açtığınızdan emin olun.
+    - Güvenilen proxy modu: ham bir Gateway URL'sinden değil, yapılandırılmış kimlik farkındalıklı proxy üzerinden geldiğinizden emin olun. Aynı ana makinedeki loopback proxy'leri için ayrıca `gateway.auth.trustedProxy.allowLoopback = true` gerekir.
+    - Tek yeniden denemeden sonra uyumsuzluk sürerse eşlenmiş cihaz belirtecini döndürün/yeniden onaylayın:
       - `openclaw devices list`
       - `openclaw devices rotate --device <id> --role operator`
-    - Bu rotate çağrısı reddedildi derse iki şeyi kontrol edin:
-      - eşleştirilmiş cihaz oturumları yalnızca **kendi** cihazlarını döndürebilir; ayrıca `operator.admin` yetkileri yoksa başkalarını döndüremez
-      - açık `--scope` değerleri çağıranın mevcut operatör kapsamlarını aşamaz
-    - Hâlâ takılıysa `openclaw status --all` çalıştırın ve [Sorun Giderme](/tr/gateway/troubleshooting) adımlarını izleyin. Auth ayrıntıları için bkz. [Dashboard](/tr/web/dashboard).
+    - Bu döndürme çağrısı reddedildiğini söylüyorsa iki şeyi kontrol edin:
+      - eşlenmiş cihaz oturumları, `operator.admin` yetkisine de sahip olmadıkları sürece yalnızca **kendi** cihazlarını döndürebilir
+      - açık `--scope` değerleri, çağıranın geçerli operatör kapsamlarını aşamaz
+    - Hâlâ takıldınız mı? `openclaw status --all` çalıştırın ve [Sorun Giderme](/tr/gateway/troubleshooting) adımlarını izleyin. Kimlik doğrulama ayrıntıları için [Pano](/tr/web/dashboard) sayfasına bakın.
 
   </Accordion>
 
-  <Accordion title="gateway.bind tailnet ayarladım ama bağlanamıyor ve hiçbir şey dinlemiyor">
-    `tailnet` bind, ağ arayüzlerinizden bir Tailscale IP'si seçer (100.64.0.0/10). Makine Tailscale üzerinde değilse (veya arayüz kapalıysa), bağlanacak bir şey yoktur.
+  <Accordion title="gateway.bind tailnet ayarladım ancak bağlanamıyor ve hiçbir şey dinlemiyor">
+    `tailnet` bağlaması, ağ arayüzlerinizden bir Tailscale IP'si seçer (100.64.0.0/10). Makine Tailscale üzerinde değilse (veya arayüz kapalıysa), bağlanacak hiçbir şey yoktur.
 
     Düzeltme:
 
-    - O host'ta Tailscale'i başlatın (100.x adresi olsun), veya
+    - Bu ana makinede Tailscale'i başlatın (böylece 100.x adresi olur) veya
     - `gateway.bind: "loopback"` / `"lan"` değerine geçin.
 
-    Not: `tailnet` açık bir seçimdir. `auto`, loopback'i tercih eder; yalnızca tailnet'e bağlı bir bind istediğinizde `gateway.bind: "tailnet"` kullanın.
+    Not: `tailnet` açıktır. `auto` loopback'i tercih eder; yalnızca tailnet bağlaması istediğinizde `gateway.bind: "tailnet"` kullanın.
 
   </Accordion>
 
-  <Accordion title="Aynı host üzerinde birden çok Gateway çalıştırabilir miyim?">
-    Genellikle hayır — tek bir Gateway birden çok mesajlaşma kanalını ve ajanı çalıştırabilir. Birden çok Gateway'i yalnızca yedeklilik (ör. kurtarma botu) veya sert yalıtım gerektiğinde kullanın.
+  <Accordion title="Aynı ana makinede birden fazla Gateway çalıştırabilir miyim?">
+    Genellikle hayır; bir Gateway birden fazla mesajlaşma kanalı ve ajan çalıştırabilir. Birden fazla Gateway'i yalnızca yedeklilik (ör. kurtarma botu) veya katı yalıtım gerektiğinde kullanın.
 
-    Evet, ama şunları yalıtmanız gerekir:
+    Evet, ancak yalıtmanız gerekir:
 
     - `OPENCLAW_CONFIG_PATH` (örnek başına yapılandırma)
     - `OPENCLAW_STATE_DIR` (örnek başına durum)
     - `agents.defaults.workspace` (çalışma alanı yalıtımı)
-    - `gateway.port` (benzersiz portlar)
+    - `gateway.port` (benzersiz bağlantı noktaları)
 
     Hızlı kurulum (önerilir):
 
-    - Örnek başına `openclaw --profile <name> ...` kullanın (otomatik olarak `~/.openclaw-<name>` oluşturur).
+    - Her örnek için `openclaw --profile <name> ...` kullanın (`~/.openclaw-<name>` otomatik oluşturulur).
     - Her profil yapılandırmasında benzersiz bir `gateway.port` ayarlayın (veya elle çalıştırmalar için `--port` geçin).
-    - Profil başına servis kurun: `openclaw --profile <name> gateway install`.
+    - Profil başına bir hizmet kurun: `openclaw --profile <name> gateway install`.
 
-    Profiller servis adlarına da sonek ekler (`ai.openclaw.<profile>`; eski `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
-    Tam kılavuz: [Birden çok gateway](/tr/gateway/multiple-gateways).
+    Profiller hizmet adlarına da sonek ekler (`ai.openclaw.<profile>`; eski `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
+    Tam kılavuz: [Birden fazla Gateway](/tr/gateway/multiple-gateways).
 
   </Accordion>
 
   <Accordion title='"invalid handshake" / code 1008 ne anlama gelir?'>
     Gateway bir **WebSocket sunucusudur** ve ilk mesajın
-    bir `connect` çerçevesi olmasını bekler. Farklı bir şey alırsa bağlantıyı
-    **code 1008** (politika ihlali) ile kapatır.
+    bir `connect` çerçevesi olmasını bekler. Başka bir şey alırsa, bağlantıyı
+    **code 1008** (ilke ihlali) ile kapatır.
 
     Yaygın nedenler:
 
-    - **HTTP** URL'sini normal tarayıcıda açtınız (`http://...`) ama WS istemcisi kullanmadınız.
-    - Yanlış portu veya yolu kullandınız.
-    - Bir proxy veya tünel auth header'larını sıyırdı ya da Gateway olmayan bir istek gönderdi.
+    - Bir WS istemcisi yerine tarayıcıda **HTTP** URL'sini açtınız (`http://...`).
+    - Yanlış bağlantı noktası veya yolu kullandınız.
+    - Bir proxy veya tünel kimlik doğrulama başlıklarını çıkardı ya da Gateway olmayan bir istek gönderdi.
 
     Hızlı düzeltmeler:
 
     1. WS URL'sini kullanın: `ws://<host>:18789` (veya HTTPS ise `wss://...`).
-    2. WS portunu normal bir tarayıcı sekmesinde açmayın.
-    3. Auth açıksa `connect` çerçevesine token/parolayı ekleyin.
+    2. WS bağlantı noktasını normal bir tarayıcı sekmesinde açmayın.
+    3. Kimlik doğrulama açıksa belirteci/parolayı `connect` çerçevesine ekleyin.
 
     CLI veya TUI kullanıyorsanız URL şöyle görünmelidir:
 
@@ -1556,23 +1550,23 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
     `logging.file` ile kararlı bir yol ayarlayabilirsiniz. Dosya günlük düzeyi `logging.level` ile denetlenir. Konsol ayrıntı düzeyi `--verbose` ve `logging.consoleLevel` ile denetlenir.
 
-    En hızlı günlük takibi:
+    En hızlı günlük izleme:
 
     ```bash
     openclaw logs --follow
     ```
 
-    Servis/supervisor günlükleri (gateway launchd/systemd ile çalışıyorsa):
+    Hizmet/gözetleyici günlükleri (Gateway launchd/systemd üzerinden çalıştığında):
 
     - macOS: `$OPENCLAW_STATE_DIR/logs/gateway.log` ve `gateway.err.log` (varsayılan: `~/.openclaw/logs/...`; profiller `~/.openclaw-<profile>/logs/...` kullanır)
     - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`
     - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`
 
-    Daha fazlası için bkz. [Sorun Giderme](/tr/gateway/troubleshooting).
+    Daha fazlası için [Sorun Giderme](/tr/gateway/troubleshooting) sayfasına bakın.
 
   </Accordion>
 
-  <Accordion title="Gateway servisini nasıl başlatırım/durdururum/yeniden başlatırım?">
+  <Accordion title="Gateway hizmetini nasıl başlatır/durdurur/yeniden başlatırım?">
     Gateway yardımcılarını kullanın:
 
     ```bash
@@ -1580,16 +1574,16 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     openclaw gateway restart
     ```
 
-    Gateway'i elle çalıştırıyorsanız `openclaw gateway --force` portu geri alabilir. Bkz. [Gateway](/tr/gateway).
+    Gateway'i elle çalıştırıyorsanız, `openclaw gateway --force` bağlantı noktasını geri alabilir. Bkz. [Gateway](/tr/gateway).
 
   </Accordion>
 
-  <Accordion title="Windows'ta terminalimi kapattım - OpenClaw'ı nasıl yeniden başlatırım?">
+  <Accordion title="Windows'ta terminalimi kapattım; OpenClaw'ı nasıl yeniden başlatırım?">
     **İki Windows kurulum modu** vardır:
 
     **1) WSL2 (önerilir):** Gateway Linux içinde çalışır.
 
-    PowerShell açın, WSL'ye girin, sonra yeniden başlatın:
+    PowerShell'i açın, WSL'ye girin, ardından yeniden başlatın:
 
     ```powershell
     wsl
@@ -1597,7 +1591,7 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     openclaw gateway restart
     ```
 
-    Servisi hiç kurmadıysanız ön planda başlatın:
+    Hizmeti hiç kurmadıysanız ön planda başlatın:
 
     ```bash
     openclaw gateway run
@@ -1605,25 +1599,25 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
     **2) Yerel Windows (önerilmez):** Gateway doğrudan Windows içinde çalışır.
 
-    PowerShell açın ve şunu çalıştırın:
+    PowerShell'i açın ve çalıştırın:
 
     ```powershell
     openclaw gateway status
     openclaw gateway restart
     ```
 
-    Elle çalıştırıyorsanız (servis yoksa) şunu kullanın:
+    Elle çalıştırıyorsanız (hizmet yoksa) şunu kullanın:
 
     ```powershell
     openclaw gateway run
     ```
 
-    Belgeler: [Windows (WSL2)](/tr/platforms/windows), [Gateway servis çalışma kitabı](/tr/gateway).
+    Belgeler: [Windows (WSL2)](/tr/platforms/windows), [Gateway hizmet çalıştırma kılavuzu](/tr/gateway).
 
   </Accordion>
 
-  <Accordion title="Gateway açık ama yanıtlar hiç gelmiyor. Neyi kontrol etmeliyim?">
-    Hızlı sağlık taraması ile başlayın:
+  <Accordion title="Gateway çalışıyor ama yanıtlar hiç gelmiyor. Neyi kontrol etmeliyim?">
+    Hızlı bir sağlık taramasıyla başlayın:
 
     ```bash
     openclaw status
@@ -1634,56 +1628,56 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
     Yaygın nedenler:
 
-    - Model auth'u **gateway host** üzerinde yüklenmemiş (bkz. `models status`).
-    - Kanal eşleştirmesi/izin listesi yanıtları engelliyor (kanal yapılandırması + günlükleri kontrol edin).
-    - WebChat/Dashboard doğru token olmadan açık.
+    - Model kimlik doğrulaması **gateway host** üzerinde yüklenmemiş (kontrol için `models status`).
+    - Kanal eşlemesi/izin listesi yanıtları engelliyor (kanal yapılandırmasını + günlükleri kontrol edin).
+    - WebChat/Pano doğru belirteç olmadan açık.
 
-    Uzaktaysanız tünel/Tailscale bağlantısının açık olduğunu ve
+    Uzakta iseniz tünel/Tailscale bağlantısının açık olduğunu ve
     Gateway WebSocket'e erişilebildiğini doğrulayın.
 
     Belgeler: [Kanallar](/tr/channels), [Sorun Giderme](/tr/gateway/troubleshooting), [Uzak erişim](/tr/gateway/remote).
 
   </Accordion>
 
-  <Accordion title='"Disconnected from gateway: no reason" - şimdi ne yapmalıyım?'>
-    Bu genellikle UI'nin WebSocket bağlantısını kaybettiği anlamına gelir. Şunları kontrol edin:
+  <Accordion title='"Disconnected from gateway: no reason" - şimdi ne yapmalı?'>
+    Bu genellikle UI'nin WebSocket bağlantısını kaybettiği anlamına gelir. Kontrol edin:
 
     1. Gateway çalışıyor mu? `openclaw gateway status`
     2. Gateway sağlıklı mı? `openclaw status`
     3. UI doğru token'a sahip mi? `openclaw dashboard`
-    4. Uzaktan bağlanıyorsanız tünel/Tailscale bağlantısı açık mı?
+    4. Uzaksa, tünel/Tailscale bağlantısı açık mı?
 
-    Sonra günlükleri izleyin:
+    Ardından günlükleri izle:
 
     ```bash
     openclaw logs --follow
     ```
 
-    Belgeler: [Dashboard](/tr/web/dashboard), [Uzak erişim](/tr/gateway/remote), [Sorun Giderme](/tr/gateway/troubleshooting).
+    Belgeler: [Pano](/tr/web/dashboard), [Uzaktan erişim](/tr/gateway/remote), [Sorun giderme](/tr/gateway/troubleshooting).
 
   </Accordion>
 
   <Accordion title="Telegram setMyCommands başarısız oluyor. Neyi kontrol etmeliyim?">
-    Günlükler ve kanal durumu ile başlayın:
+    Günlükler ve kanal durumuyla başlayın:
 
     ```bash
     openclaw channels status
     openclaw channels logs --channel telegram
     ```
 
-    Sonra hatayı eşleştirin:
+    Ardından hatayı eşleştirin:
 
-    - `BOT_COMMANDS_TOO_MUCH`: Telegram menüsünde çok fazla girdi var. OpenClaw zaten Telegram sınırına göre kırpıyor ve daha az komutla yeniden deniyor, ancak bazı menü girdilerinin yine de çıkarılması gerekiyor. Plugin/Skill/özel komutları azaltın veya menüye ihtiyacınız yoksa `channels.telegram.commands.native` seçeneğini devre dışı bırakın.
-    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!` veya benzeri ağ hataları: VPS üzerindeyseniz veya bir proxy arkasındaysanız `api.telegram.org` için giden HTTPS erişiminin ve DNS'in çalıştığını doğrulayın.
+    - `BOT_COMMANDS_TOO_MUCH`: Telegram menüsünde çok fazla giriş var. OpenClaw zaten Telegram sınırına göre kırpar ve daha az komutla yeniden dener, ancak bazı menü girişlerinin yine de kaldırılması gerekir. Plugin/beceri/özel komutları azaltın veya menüye ihtiyacınız yoksa `channels.telegram.commands.native` seçeneğini devre dışı bırakın.
+    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!` veya benzer ağ hataları: Bir VPS üzerindeyseniz ya da bir proxy arkasındaysanız, giden HTTPS'e izin verildiğini ve `api.telegram.org` için DNS'in çalıştığını doğrulayın.
 
-    Gateway uzaktaysa günlükleri Gateway host üzerinde incelediğinizden emin olun.
+    Gateway uzaksa, Gateway hostundaki günlüklere baktığınızdan emin olun.
 
     Belgeler: [Telegram](/tr/channels/telegram), [Kanal sorun giderme](/tr/channels/troubleshooting).
 
   </Accordion>
 
   <Accordion title="TUI çıktı göstermiyor. Neyi kontrol etmeliyim?">
-    Önce Gateway'e erişilebildiğini ve ajanın çalışabildiğini doğrulayın:
+    Önce Gateway'e erişilebildiğini ve aracının çalışabildiğini doğrulayın:
 
     ```bash
     openclaw status
@@ -1692,53 +1686,54 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     ```
 
     TUI içinde geçerli durumu görmek için `/status` kullanın. Bir sohbet
-    kanalında yanıt bekliyorsanız teslimin etkin olduğundan emin olun (`/deliver on`).
+    kanalında yanıt bekliyorsanız teslimatın etkin olduğundan emin olun (`/deliver on`).
 
-    Belgeler: [TUI](/tr/web/tui), [Slash commands](/tr/tools/slash-commands).
+    Belgeler: [TUI](/tr/web/tui), [Eğik çizgi komutları](/tr/tools/slash-commands).
 
   </Accordion>
 
   <Accordion title="Gateway'i tamamen durdurup sonra nasıl başlatırım?">
-    Servisi kurduysanız:
+    Hizmeti kurduysanız:
 
     ```bash
     openclaw gateway stop
     openclaw gateway start
     ```
 
-    Bu, **denetlenen servisi** durdurur/başlatır (macOS'ta launchd, Linux'ta systemd).
-    Gateway arka planda daemon olarak çalışıyorsa bunu kullanın.
+    Bu, **denetimli hizmeti** durdurur/başlatır (macOS'te launchd, Linux'ta systemd).
+    Gateway arka planda daemon olarak çalıştığında bunu kullanın.
 
-    Ön planda çalıştırıyorsanız Ctrl-C ile durdurun, sonra:
+    Ön planda çalıştırıyorsanız Ctrl-C ile durdurun, ardından:
 
     ```bash
     openclaw gateway run
     ```
 
-    Belgeler: [Gateway servis çalışma kitabı](/tr/gateway).
+    Belgeler: [Gateway hizmet çalıştırma kılavuzu](/tr/gateway).
 
   </Accordion>
 
-  <Accordion title="ELI5: openclaw gateway restart vs openclaw gateway">
-    - `openclaw gateway restart`: **arka plan servisini** yeniden başlatır (launchd/systemd).
-    - `openclaw gateway`: gateway'i bu terminal oturumu için **ön planda** çalıştırır.
+  <Accordion title="Beş yaşındaymışım gibi anlat: openclaw gateway restart ve openclaw gateway">
+    - `openclaw gateway restart`: **arka plan hizmetini** yeniden başlatır (launchd/systemd).
+    - `openclaw gateway`: bu terminal oturumu için Gateway'i **ön planda** çalıştırır.
 
-    Servisi kurduysanız gateway komutlarını kullanın. Tek seferlik, ön planda çalışma istediğinizde `openclaw gateway` kullanın.
+    Hizmeti kurduysanız gateway komutlarını kullanın. Tek seferlik, ön plan çalıştırması
+    istediğinizde `openclaw gateway` kullanın.
 
   </Accordion>
 
   <Accordion title="Bir şey başarısız olduğunda daha fazla ayrıntı almanın en hızlı yolu">
-    Daha fazla konsol ayrıntısı almak için Gateway'i `--verbose` ile başlatın. Sonra kanal auth, model yönlendirmesi ve RPC hataları için günlük dosyasını inceleyin.
+    Daha fazla konsol ayrıntısı almak için Gateway'i `--verbose` ile başlatın. Ardından kanal kimlik doğrulaması, model yönlendirme ve RPC hataları için günlük dosyasını inceleyin.
   </Accordion>
 </AccordionGroup>
 
 ## Medya ve ekler
 
 <AccordionGroup>
-  <Accordion title="Skill'im bir görsel/PDF üretti, ama hiçbir şey gönderilmedi">
-    Ajandan çıkan ekler bir `MEDIA:<path-or-url>` satırı içermelidir (kendi satırında). Bkz. [OpenClaw asistan kurulumu](/tr/start/openclaw) ve [Ajan gönderimi](/tr/tools/agent-send).
+  <Accordion title="Becerim bir görüntü/PDF oluşturdu, ancak hiçbir şey gönderilmedi">
+    Aracıdan giden ekler, kendi satırında bir `MEDIA:<path-or-url>` satırı içermelidir. Bkz. [OpenClaw asistan kurulumu](/tr/start/openclaw) ve [Aracı gönderimi](/tr/tools/agent-send).
 
-    CLI ile gönderim:
+    CLI ile gönderme:
 
     ```bash
     openclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
@@ -1747,11 +1742,11 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     Şunları da kontrol edin:
 
     - Hedef kanal giden medyayı destekliyor ve izin listeleri tarafından engellenmiyor.
-    - Dosya sağlayıcının boyut sınırları içinde (görseller en fazla 2048px'e yeniden boyutlandırılır).
-    - `tools.fs.workspaceOnly=true`, yerel yol gönderimlerini çalışma alanı, temp/media-store ve sandbox doğrulamalı dosyalarla sınırlar.
-    - `tools.fs.workspaceOnly=false`, ajanın zaten okuyabildiği host-yerel dosyaları `MEDIA:` ile göndermeye izin verir; ancak yalnızca medya + güvenli belge türleri için (görseller, ses, video, PDF ve Office belgeleri). Düz metin ve gizli bilgi benzeri dosyalar yine engellenir.
+    - Dosya, sağlayıcının boyut sınırları içinde (görüntüler en fazla 2048px olacak şekilde yeniden boyutlandırılır).
+    - `tools.fs.workspaceOnly=true`, yerel yol gönderimlerini çalışma alanı, temp/media-store ve sandbox tarafından doğrulanmış dosyalarla sınırlı tutar.
+    - `tools.fs.workspaceOnly=false`, `MEDIA:` ile aracının zaten okuyabildiği host-yerel dosyaların gönderilmesine izin verir, ancak yalnızca medya ve güvenli belge türleri için (görüntüler, ses, video, PDF ve Office belgeleri). Düz metin ve gizli bilgiye benzeyen dosyalar yine de engellenir.
 
-    Bkz. [Görseller](/tr/nodes/images).
+    Bkz. [Görüntüler](/tr/nodes/images).
 
   </Accordion>
 </AccordionGroup>
@@ -1760,41 +1755,41 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
 <AccordionGroup>
   <Accordion title="OpenClaw'ı gelen DM'lere açmak güvenli mi?">
-    Gelen DM'leri güvenilmeyen girdi olarak değerlendirin. Varsayılanlar riski azaltacak şekilde tasarlanmıştır:
+    Gelen DM'leri güvenilmeyen girdi olarak ele alın. Varsayılanlar riski azaltmak üzere tasarlanmıştır:
 
-    - DM destekli kanallarda varsayılan davranış **eşleştirme**dir:
+    - DM destekleyen kanallarda varsayılan davranış **eşleştirme**dir:
       - Bilinmeyen gönderenler bir eşleştirme kodu alır; bot mesajlarını işlemez.
       - Şununla onaylayın: `openclaw pairing approve --channel <channel> [--account <id>] <code>`
-      - Bekleyen istekler **kanal başına 3** ile sınırlıdır; bir kod gelmediyse `openclaw pairing list --channel <channel> [--account <id>]` ile kontrol edin.
-    - DM'leri herkese açık yapmak için açık bir opt-in gerekir (`dmPolicy: "open"` ve izin listesi `"*"`).
+      - Bekleyen istekler **kanal başına 3** ile sınırlıdır; bir kod gelmediyse `openclaw pairing list --channel <channel> [--account <id>]` komutunu kontrol edin.
+    - DM'leri herkese açık hale getirmek açıkça katılım gerektirir (`dmPolicy: "open"` ve izin listesi `"*"`).
 
-    Riskli DM politikalarını görmek için `openclaw doctor` çalıştırın.
+    Riskli DM ilkelerini ortaya çıkarmak için `openclaw doctor` çalıştırın.
 
   </Accordion>
 
-  <Accordion title="Prompt injection yalnızca herkese açık botlar için mi bir endişe?">
-    Hayır. Prompt injection, yalnızca botun size kimin DM attığıyla değil, **güvenilmeyen içerikle** ilgilidir.
-    Asistanınız harici içerik okuyorsa (web search/fetch, browser sayfaları, e-postalar,
-    belgeler, ekler, yapıştırılmış günlükler), bu içerik modele el koymaya çalışan yönergeler içerebilir.
-    Bu, **tek gönderen siz olsanız bile** olabilir.
+  <Accordion title="Komut istemi enjeksiyonu yalnızca herkese açık botlar için mi sorun?">
+    Hayır. Komut istemi enjeksiyonu, yalnızca bota kimin DM gönderebildiğiyle değil, **güvenilmeyen içerikle** ilgilidir.
+    Asistanınız harici içerik okuyorsa (web arama/getirme, tarayıcı sayfaları, e-postalar,
+    belgeler, ekler, yapıştırılan günlükler), bu içerik modeli ele geçirmeye çalışan
+    talimatlar içerebilir. Bu, **tek gönderen siz olsanız** bile gerçekleşebilir.
 
-    En büyük risk araçlar etkin olduğunda ortaya çıkar: model, siz adına
-    bağlam sızdırmaya veya araç çağırmaya kandırılabilir. Hasar alanını şunlarla azaltın:
+    En büyük risk araçlar etkin olduğundadır: model, bağlamı dışarı sızdırmaya veya sizin adınıza
+    araç çağırmaya kandırılabilir. Etki alanını azaltmak için:
 
-    - güvenilmeyen içeriği özetlemek için salt okunur veya araçları kapalı bir "okuyucu" ajan kullanmak
-    - araç etkin ajanlarda `web_search` / `web_fetch` / `browser` araçlarını kapalı tutmak
-    - çözümlenmiş dosya/belge metnini de güvenilmeyen kabul etmek: OpenResponses
-      `input_file` ve medya-ek çıkarımı, çıkarılan metni ham dosya metni olarak geçirmek yerine
-      açık harici içerik sınır işaretçileri içinde sarar
-    - sandboxing ve katı araç izin listeleri
+    - güvenilmeyen içeriği özetlemek üzere salt okunur veya araçları devre dışı bırakılmış bir "okuyucu" aracı kullanın
+    - araçları etkin aracılar için `web_search` / `web_fetch` / `browser` kapalı tutun
+    - çözümlenen dosya/belge metnini de güvenilmeyen olarak ele alın: OpenResponses
+      `input_file` ve medya eki çıkarma işlemi, ham dosya metnini geçirmek yerine çıkarılan metni
+      açık harici içerik sınır işaretçileriyle sarar
+    - sandbox ve katı araç izin listeleri kullanın
 
     Ayrıntılar: [Güvenlik](/tr/gateway/security).
 
   </Accordion>
 
-  <Accordion title="Botumun kendine ait bir e-postası, GitHub hesabı veya telefon numarası olmalı mı?">
+  <Accordion title="Botumun kendi e-postası, GitHub hesabı veya telefon numarası olmalı mı?">
     Evet, çoğu kurulum için. Botu ayrı hesaplar ve telefon numaralarıyla yalıtmak,
-    bir şeyler ters giderse hasar alanını azaltır. Bu ayrıca kişisel hesaplarınızı etkilemeden
+    bir şey ters giderse etki alanını azaltır. Bu ayrıca kişisel hesaplarınızı etkilemeden
     kimlik bilgilerini döndürmeyi veya erişimi iptal etmeyi kolaylaştırır.
 
     Küçük başlayın. Yalnızca gerçekten ihtiyacınız olan araçlara ve hesaplara erişim verin, gerekirse
@@ -1804,28 +1799,28 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
   </Accordion>
 
-  <Accordion title="Kısa mesajlarım üzerinde özerklik verebilir miyim ve bu güvenli mi?">
-    Kişisel mesajlarınız üzerinde tam özerklik **önermiyoruz**. En güvenli desen şudur:
+  <Accordion title="Metin mesajlarım üzerinde ona özerklik verebilir miyim ve bu güvenli mi?">
+    Kişisel mesajlarınız üzerinde tam özerklik önermiyoruz. En güvenli kalıp şudur:
 
-    - DM'leri **eşleştirme modunda** veya dar bir izin listesi içinde tutun.
-    - Sizin adınıza mesaj atmasını istiyorsanız **ayrı bir numara veya hesap** kullanın.
-    - Taslak hazırlatsın, sonra **göndermeden önce onaylayın**.
+    - DM'leri **eşleştirme modunda** veya dar bir izin listesinde tutun.
+    - Sizin adınıza mesaj göndermesini istiyorsanız **ayrı bir numara veya hesap** kullanın.
+    - Taslak oluşturmasına izin verin, ardından **göndermeden önce onaylayın**.
 
-    Deney yapmak isterseniz bunu özel bir hesapta yapın ve yalıtılmış tutun. Bkz.
+    Denemek istiyorsanız bunu ayrılmış bir hesapta yapın ve yalıtılmış tutun. Bkz.
     [Güvenlik](/tr/gateway/security).
 
   </Accordion>
 
   <Accordion title="Kişisel asistan görevleri için daha ucuz modeller kullanabilir miyim?">
-    Evet, **eğer** ajan yalnızca sohbet amaçlıysa ve girdi güvenilirse. Küçük katmanlar
-    yönerge ele geçirmeye daha yatkındır; bu yüzden bunları araç etkin ajanlar için
-    veya güvenilmeyen içerik okurken kullanmayın. Daha küçük bir model kullanmanız gerekiyorsa
+    Evet, aracının yalnızca sohbet yaptığı ve girdinin güvenilir olduğu durumda. Daha küçük katmanlar
+    talimat ele geçirmeye daha yatkındır, bu nedenle araçları etkin aracılar
+    veya güvenilmeyen içerik okunurken bunlardan kaçının. Daha küçük bir model kullanmanız gerekiyorsa
     araçları kilitleyin ve sandbox içinde çalıştırın. Bkz. [Güvenlik](/tr/gateway/security).
   </Accordion>
 
   <Accordion title="Telegram'da /start çalıştırdım ama eşleştirme kodu almadım">
-    Eşleştirme kodları **yalnızca** bilinmeyen bir gönderen bota mesaj attığında ve
-    `dmPolicy: "pairing"` etkin olduğunda gönderilir. `/start` tek başına kod üretmez.
+    Eşleştirme kodları **yalnızca** bilinmeyen bir gönderen bota mesaj gönderdiğinde ve
+    `dmPolicy: "pairing"` etkin olduğunda gönderilir. `/start` tek başına kod oluşturmaz.
 
     Bekleyen istekleri kontrol edin:
 
@@ -1833,13 +1828,13 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     openclaw pairing list telegram
     ```
 
-    Hemen erişim istiyorsanız gönderen kimliğinizi izin listesine alın veya o hesap için `dmPolicy: "open"`
+    Hemen erişim istiyorsanız gönderen kimliğinizi izin listesine ekleyin veya o hesap için `dmPolicy: "open"`
     ayarlayın.
 
   </Accordion>
 
-  <Accordion title="WhatsApp: kişilerime mesaj atar mı? Eşleştirme nasıl çalışır?">
-    Hayır. Varsayılan WhatsApp DM politikası **eşleştirme**dir. Bilinmeyen gönderenler yalnızca bir eşleştirme kodu alır ve mesajları **işlenmez**. OpenClaw yalnızca aldığı sohbetlere veya sizin tetiklediğiniz açık gönderimlere yanıt verir.
+  <Accordion title="WhatsApp: kişilerime mesaj gönderir mi? Eşleştirme nasıl çalışır?">
+    Hayır. Varsayılan WhatsApp DM ilkesi **eşleştirme**dir. Bilinmeyen gönderenler yalnızca bir eşleştirme kodu alır ve mesajları **işlenmez**. OpenClaw yalnızca aldığı sohbetlere veya sizin tetiklediğiniz açık gönderimlere yanıt verir.
 
     Eşleştirmeyi şununla onaylayın:
 
@@ -1853,19 +1848,19 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     openclaw pairing list whatsapp
     ```
 
-    Sihirbaz telefon numarası istemi: bu, kendi DM'lerinizin izinli olması için **izin listenizi/sahibinizi** ayarlamakta kullanılır. Otomatik gönderim için kullanılmaz. Kişisel WhatsApp numaranızda çalıştırıyorsanız bu numarayı kullanın ve `channels.whatsapp.selfChatMode` etkinleştirin.
+    Sihirbaz telefon numarası istemi: kendi DM'lerinize izin verilmesi için **izin listenizi/sahibinizi** ayarlamak amacıyla kullanılır. Otomatik gönderim için kullanılmaz. Kişisel WhatsApp numaranızda çalıştırıyorsanız o numarayı kullanın ve `channels.whatsapp.selfChatMode` seçeneğini etkinleştirin.
 
   </Accordion>
 </AccordionGroup>
 
-## Sohbet komutları, görevleri iptal etme ve "durmuyor"
+## Sohbet komutları, görevleri durdurma ve "durmuyor"
 
 <AccordionGroup>
-  <Accordion title="Dahili sistem mesajlarının sohbette görünmesini nasıl engellerim?">
-    Dahili veya araç mesajlarının çoğu yalnızca **verbose**, **trace** veya **reasoning** etkin olduğunda
+  <Accordion title="İç sistem mesajlarının sohbette görünmesini nasıl durdururum?">
+    Çoğu iç veya araç mesajı yalnızca o oturum için **verbose**, **trace** veya **reasoning** etkin olduğunda
     görünür.
 
-    Bunu gördüğünüz sohbette düzeltin:
+    Gördüğünüz sohbette düzeltin:
 
     ```
     /verbose off
@@ -1873,16 +1868,16 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     /reasoning off
     ```
 
-    Hâlâ gürültülüyse Control UI içinde oturum ayarlarını kontrol edin ve verbose
-    değerini **inherit** yapın. Ayrıca `verboseDefault` değeri yapılandırmada
-    `on` yapılmış bir bot profile'ı kullanmadığınızı doğrulayın.
+    Hâlâ gürültülüyse Control UI içindeki oturum ayarlarını kontrol edin ve verbose değerini
+    **inherit** olarak ayarlayın. Ayrıca yapılandırmada `verboseDefault` değeri
+    `on` olarak ayarlanmış bir bot profili kullanmadığınızı doğrulayın.
 
-    Belgeler: [Thinking ve verbose](/tr/tools/thinking), [Güvenlik](/tr/gateway/security#reasoning-verbose-output-in-groups).
+    Belgeler: [Düşünme ve verbose](/tr/tools/thinking), [Güvenlik](/tr/gateway/security#reasoning-verbose-output-in-groups).
 
   </Accordion>
 
   <Accordion title="Çalışan bir görevi nasıl durdurur/iptal ederim?">
-    Bunlardan herhangi birini **bağımsız mesaj** olarak gönderin (slash yok):
+    Bunlardan herhangi birini **tek başına mesaj** olarak gönderin (eğik çizgi yok):
 
     ```
     stop
@@ -1906,25 +1901,25 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     interrupt
     ```
 
-    Bunlar abort tetikleyicileridir (slash command değil).
+    Bunlar durdurma tetikleyicileridir (eğik çizgi komutları değil).
 
-    Arka plan süreçleri için (exec aracından gelenler), ajandan şunu çalıştırmasını isteyebilirsiniz:
+    Arka plan işlemleri için (exec aracından), aracıdan şunu çalıştırmasını isteyebilirsiniz:
 
     ```
     process action:kill sessionId:XXX
     ```
 
-    Slash command'lere genel bakış için bkz. [Slash commands](/tr/tools/slash-commands).
+    Eğik çizgi komutlarına genel bakış: bkz. [Eğik çizgi komutları](/tr/tools/slash-commands).
 
-    Çoğu komut, `/` ile başlayan **bağımsız** bir mesaj olarak gönderilmelidir; ancak birkaç kısayol (`/status` gibi) izin listesindeki gönderenler için satır içinde de çalışır.
+    Çoğu komut `/` ile başlayan **tek başına** mesaj olarak gönderilmelidir, ancak birkaç kısayol (`/status` gibi) izin listesindeki gönderenler için satır içinde de çalışır.
 
   </Accordion>
 
-  <Accordion title="Telegram'dan nasıl Discord mesajı gönderirim? (&quot;Cross-context messaging denied&quot;)">
+  <Accordion title='Telegram’dan Discord mesajı nasıl gönderirim? ("Bağlamlar arası mesajlaşma reddedildi")'>
     OpenClaw varsayılan olarak **sağlayıcılar arası** mesajlaşmayı engeller. Bir araç çağrısı
-    Telegram'a bağlıysa siz açıkça izin vermedikçe Discord'a göndermez.
+    Telegram'a bağlıysa, açıkça izin vermediğiniz sürece Discord'a göndermez.
 
-    Ajan için sağlayıcılar arası mesajlaşmayı etkinleştirin:
+    Aracı için sağlayıcılar arası mesajlaşmayı etkinleştirin:
 
     ```json5
     {
@@ -1939,20 +1934,21 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
     }
     ```
 
-    Yapılandırmayı düzenledikten sonra gateway'i yeniden başlatın.
+    Yapılandırmayı düzenledikten sonra Gateway'i yeniden başlatın.
 
   </Accordion>
 
-  <Accordion title='Bot neden art arda hızlı mesajları "görmezden geliyor" gibi hissettiriyor?'>
-    Kuyruk modu, yeni mesajların devam eden bir çalıştırma ile nasıl etkileştiğini denetler. Modları değiştirmek için `/queue` kullanın:
+  <Accordion title='Bot neden hızlı arka arkaya gelen mesajları "yok sayıyor" gibi hissettiriyor?'>
+    Kuyruk modu, yeni mesajların sürmekte olan bir çalıştırmayla nasıl etkileşime gireceğini kontrol eder. Modları değiştirmek için `/queue` kullanın:
 
-    - `steer` - yeni mesajlar geçerli görevi yeniden yönlendirir
+    - `steer` - geçerli çalıştırmadaki bir sonraki model sınırı için bekleyen tüm yönlendirmeleri kuyruğa alır
+    - `queue` - eski, teker teker yönlendirme
     - `followup` - mesajları teker teker çalıştırır
-    - `collect` - mesajları toplar ve bir kez yanıt verir (varsayılan)
-    - `steer-backlog` - şimdi yönlendirir, sonra birikeni işler
-    - `interrupt` - geçerli çalıştırmayı iptal eder ve yeniden başlatır
+    - `collect` - mesajları toplar ve bir kez yanıtlar
+    - `steer-backlog` - şimdi yönlendirir, ardından birikmiş işleri işler
+    - `interrupt` - geçerli çalıştırmayı iptal eder ve baştan başlar
 
-    Followup modları için `debounce:2s cap:25 drop:summarize` gibi seçenekler ekleyebilirsiniz.
+    Varsayılan mod `steer`'dır. Takip modları için `debounce:0.5s cap:25 drop:summarize` gibi seçenekler ekleyebilirsiniz. Bkz. [Komut kuyruğu](/tr/concepts/queue) ve [Yönlendirme kuyruğu](/tr/concepts/queue-steering).
 
   </Accordion>
 </AccordionGroup>
@@ -1961,16 +1957,16 @@ Model SSS'si — varsayılanlar, seçim, takma adlar, geçiş, failover, auth pr
 
 <AccordionGroup>
   <Accordion title='Anthropic için API anahtarıyla varsayılan model nedir?'>
-    OpenClaw'da kimlik bilgileri ve model seçimi birbirinden ayrıdır. `ANTHROPIC_API_KEY` ayarlamak (veya auth profile'larında bir Anthropic API anahtarı saklamak) kimlik doğrulamayı etkinleştirir, ancak gerçek varsayılan model, `agents.defaults.model.primary` içinde yapılandırdığınız şeydir (örneğin `anthropic/claude-sonnet-4-6` veya `anthropic/claude-opus-4-6`). `No credentials found for profile "anthropic:default"` görüyorsanız, bu Gateway'in çalışan ajan için beklenen `auth-profiles.json` içinde Anthropic kimlik bilgilerini bulamadığı anlamına gelir.
+    OpenClaw'da kimlik bilgileri ve model seçimi ayrıdır. `ANTHROPIC_API_KEY` ayarlamak (veya kimlik doğrulama profillerinde bir Anthropic API anahtarı saklamak) kimlik doğrulamayı etkinleştirir, ancak gerçek varsayılan model `agents.defaults.model.primary` içinde yapılandırdığınız modeldir (örneğin, `anthropic/claude-sonnet-4-6` veya `anthropic/claude-opus-4-6`). `No credentials found for profile "anthropic:default"` görürseniz, bu, Gateway'in çalışan aracı için beklenen `auth-profiles.json` içinde Anthropic kimlik bilgilerini bulamadığı anlamına gelir.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-Hâlâ takıldınız mı? [Discord](https://discord.com/invite/clawd) üzerinden sorun veya bir [GitHub discussion](https://github.com/openclaw/openclaw/discussions) açın.
+Hâlâ takıldınız mı? [Discord](https://discord.com/invite/clawd) üzerinden sorun veya bir [GitHub tartışması](https://github.com/openclaw/openclaw/discussions) açın.
 
 ## İlgili
 
-- [İlk çalıştırma SSS](/tr/help/faq-first-run) — yükleme, onboarding, auth, abonelikler, erken hatalar
-- [Modeller SSS](/tr/help/faq-models) — model seçimi, failover, auth profile'ları
-- [Sorun Giderme](/tr/help/troubleshooting) — belirti odaklı sınıflandırma
+- [İlk çalıştırma SSS](/tr/help/faq-first-run) — kurulum, ilk kullanım, kimlik doğrulama, abonelikler, erken hatalar
+- [Modeller SSS](/tr/help/faq-models) — model seçimi, yük devretme, kimlik doğrulama profilleri
+- [Sorun giderme](/tr/help/troubleshooting) — belirti odaklı triyaj

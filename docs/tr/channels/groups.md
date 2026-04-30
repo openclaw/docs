@@ -1,70 +1,106 @@
 ---
 read_when:
-    - Grup sohbeti davranışını veya bahsetme sınırlamasını değiştirme
+    - Grup sohbeti davranışını veya etiketleme koşulunu değiştirme
 sidebarTitle: Groups
-summary: Yüzeyler arasında grup sohbeti davranışı (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
+summary: Yüzeyler genelinde grup sohbeti davranışı (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
 title: Gruplar
 x-i18n:
-    generated_at: "2026-04-26T11:23:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:06:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 837055b3cd044ebe3ef9aefe29e36f6471f48025d32169c43b9c5b04a8ac639c
+    source_hash: 743dc1ce1a0e5dc5c6d66091854cdcbb8d2b8f7e06b5c1d13c272142265fc998
     source_path: channels/groups.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, grup sohbetlerini yüzeyler arasında tutarlı şekilde ele alır: Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo.
+OpenClaw grup sohbetlerini yüzeyler arasında tutarlı şekilde ele alır: Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo.
 
-## Başlangıç düzeyi giriş (2 dakika)
+## Başlangıç tanıtımı (2 dakika)
 
-OpenClaw, kendi mesajlaşma hesaplarınızda "yaşar". Ayrı bir WhatsApp bot kullanıcısı yoktur. **Siz** bir gruptaysanız, OpenClaw o grubu görebilir ve orada yanıt verebilir.
+OpenClaw kendi mesajlaşma hesaplarınızda "yaşar". Ayrı bir WhatsApp bot kullanıcısı yoktur. Bir grupta **siz** varsınız, OpenClaw o grubu görebilir ve orada yanıt verebilir.
 
 Varsayılan davranış:
 
 - Gruplar kısıtlıdır (`groupPolicy: "allowlist"`).
-- Bahsetme sınırlamasını açıkça devre dışı bırakmadığınız sürece yanıtlar bir bahsetme gerektirir.
+- Yanıtlar, mention gating'i açıkça devre dışı bırakmadığınız sürece bir bahsetme gerektirir.
+- Gruplardaki/kanallardaki normal final yanıtları varsayılan olarak gizlidir. Görünür oda çıktısı `message` aracını kullanır.
 
-Çevirisi: izin verilen gönderenler, OpenClaw'u ondan bahsederek tetikleyebilir.
+Çevirisi: allowlist'e alınmış gönderenler OpenClaw'u ondan bahsederek tetikleyebilir.
 
 <Note>
-**Kısaca**
+**Özet**
 
-- **DM erişimi** `*.allowFrom` tarafından kontrol edilir.
-- **Grup erişimi** `*.groupPolicy` + izin listeleri (`*.groups`, `*.groupAllowFrom`) tarafından kontrol edilir.
-- **Yanıt tetikleme** bahsetme sınırlaması (`requireMention`, `/activation`) tarafından kontrol edilir.
+- **DM erişimi** `*.allowFrom` ile denetlenir.
+- **Grup erişimi** `*.groupPolicy` + allowlist'ler (`*.groups`, `*.groupAllowFrom`) ile denetlenir.
+- **Yanıt tetikleme** mention gating (`requireMention`, `/activation`) ile denetlenir.
 
 </Note>
 
 Hızlı akış (bir grup mesajına ne olur):
 
 ```
-groupPolicy? disabled -> bırak
-groupPolicy? allowlist -> group allowed? no -> bırak
-requireMention? yes -> mentioned? no -> yalnızca bağlam için sakla
-otherwise -> yanıt ver
+groupPolicy? disabled -> drop
+groupPolicy? allowlist -> group allowed? no -> drop
+requireMention? yes -> mentioned? no -> store for context only
+otherwise -> reply
 ```
 
-## Bağlam görünürlüğü ve izin listeleri
+## Görünür yanıtlar
 
-Grup güvenliğinde iki farklı kontrol söz konusudur:
+Grup/kanal odaları için OpenClaw varsayılan olarak `messages.groupChat.visibleReplies: "message_tool"` kullanır.
+Bu, agent'ın yine de turn'ü işlediği ve bellek/oturum durumunu güncelleyebildiği, ancak normal final yanıtının otomatik olarak odaya geri gönderilmediği anlamına gelir. Görünür şekilde konuşmak için agent `message(action=send)` kullanır.
 
-- **Tetikleme yetkilendirmesi**: ajanı kimin tetikleyebileceği (`groupPolicy`, `groups`, `groupAllowFrom`, kanala özgü izin listeleri).
-- **Bağlam görünürlüğü**: modele hangi ek bağlamın enjekte edildiği (yanıt metni, alıntılar, konu geçmişi, iletilen meta veriler).
+Doğrudan sohbetler ve diğer tüm kaynak turn'leri için aynı yalnızca araçla görünür yanıt davranışını genel olarak uygulamak üzere `messages.visibleReplies: "message_tool"` kullanın. `messages.groupChat.visibleReplies`, grup/kanal odaları için daha spesifik override olarak kalır.
 
-Varsayılan olarak OpenClaw, normal sohbet davranışına öncelik verir ve bağlamı çoğunlukla alındığı şekilde tutar. Bu, izin listelerinin öncelikle eylemleri kimin tetikleyebileceğine karar verdiği, ancak alıntılanmış veya geçmişe ait her parçacık için evrensel bir sansür sınırı olmadığı anlamına gelir.
+Bu, çoğu lurk-mode turn için modeli `NO_REPLY` yanıtı vermeye zorlayan eski kalıbın yerini alır. Yalnızca araç modunda görünür hiçbir şey yapmamak, basitçe message aracını çağırmamak anlamına gelir.
+
+Agent yalnızca araç modunda çalışırken yazıyor göstergeleri yine de gönderilir. Bu turn'ler için varsayılan grup yazıyor modu "message"dan "instant"a yükseltilir, çünkü agent message aracını çağırıp çağırmayacağına karar vermeden önce normal assistant mesaj metni hiç olmayabilir. Açık yazıyor modu yapılandırması yine de önceliklidir.
+
+Grup/kanal odaları için eski otomatik final yanıtlarını geri yüklemek üzere:
+
+```json5
+{
+  messages: {
+    groupChat: {
+      visibleReplies: "automatic",
+    },
+  },
+}
+```
+
+Her kaynak sohbet için görünür çıktının message aracı üzerinden geçmesini zorunlu kılmak üzere:
+
+```json5
+{
+  messages: {
+    visibleReplies: "message_tool",
+  },
+}
+```
+
+Yerel slash komutları (Discord, Telegram ve yerel komut desteği olan diğer yüzeyler) `visibleReplies: "message_tool"` ayarını atlar ve kanalın yerel komut arayüzünün beklediği yanıtı alması için her zaman görünür şekilde yanıt verir. Bu yalnızca doğrulanmış yerel komut turn'leri için geçerlidir; metin olarak yazılan `/...` komutları ve sıradan sohbet turn'leri yapılandırılmış grup varsayılanını izlemeye devam eder.
+
+## Bağlam görünürlüğü ve allowlist'ler
+
+Grup güvenliğinde iki farklı denetim yer alır:
+
+- **Tetikleme yetkilendirmesi**: agent'ı kimlerin tetikleyebileceği (`groupPolicy`, `groups`, `groupAllowFrom`, kanala özgü allowlist'ler).
+- **Bağlam görünürlüğü**: modele hangi ek bağlamın enjekte edildiği (yanıt metni, alıntılar, thread geçmişi, iletilmiş metadata).
+
+Varsayılan olarak OpenClaw normal sohbet davranışına öncelik verir ve bağlamı çoğunlukla alındığı gibi tutar. Bu, allowlist'lerin esas olarak eylemleri kimin tetikleyebileceğine karar verdiği, alıntılanan veya geçmişe ait her snippet için evrensel bir redaction sınırı olmadığı anlamına gelir.
 
 <AccordionGroup>
-  <Accordion title="Mevcut davranış kanala özeldir">
-    - Bazı kanallar, belirli yollarda ek bağlam için zaten gönderici tabanlı filtreleme uygular (örneğin Slack konu başlangıcı, Matrix yanıt/konu aramaları).
-    - Diğer kanallar ise alıntı/yanıt/iletme bağlamını alındığı gibi aktarmaya devam eder.
+  <Accordion title="Geçerli davranış kanala özgüdür">
+    - Bazı kanallar belirli yollarda ek bağlam için gönderen tabanlı filtreleme zaten uygular (örneğin Slack thread seeding, Matrix yanıt/thread aramaları).
+    - Diğer kanallar ise alıntı/yanıt/iletme bağlamını alındığı gibi geçirmeye devam eder.
 
   </Accordion>
-  <Accordion title="Sıkılaştırma yönü (planlandı)">
-    - `contextVisibility: "all"` (varsayılan), mevcut alındığı gibi davranışı korur.
-    - `contextVisibility: "allowlist"` ek bağlamı izin verilen gönderenlerle sınırlar.
-    - `contextVisibility: "allowlist_quote"` ise `allowlist` artı tek bir açık alıntı/yanıt istisnasıdır.
+  <Accordion title="Sağlamlaştırma yönü (planlandı)">
+    - `contextVisibility: "all"` (varsayılan) mevcut alındığı gibi davranışı korur.
+    - `contextVisibility: "allowlist"` ek bağlamı allowlist'e alınmış gönderenlerle filtreler.
+    - `contextVisibility: "allowlist_quote"`, `allowlist` artı açık bir alıntı/yanıt istisnasıdır.
 
-    Bu sıkılaştırma modeli kanallar arasında tutarlı şekilde uygulanana kadar, yüzeye göre farklılıklar bekleyin.
+    Bu sağlamlaştırma modeli kanallar arasında tutarlı şekilde uygulanana kadar yüzeye göre farklılıklar bekleyin.
 
   </Accordion>
 </AccordionGroup>
@@ -73,39 +109,39 @@ Varsayılan olarak OpenClaw, normal sohbet davranışına öncelik verir ve bağ
 
 İstediğiniz şey...
 
-| Hedef                                        | Ayarlanacak değer                                        |
-| -------------------------------------------- | -------------------------------------------------------- |
-| Tüm gruplara izin ver ama yalnızca @mention ile yanıt ver | `groups: { "*": { requireMention: true } }`     |
-| Tüm grup yanıtlarını devre dışı bırak        | `groupPolicy: "disabled"`                                |
-| Yalnızca belirli gruplar                     | `groups: { "<group-id>": { ... } }` (`"*"` anahtarı olmadan) |
-| Gruplarda yalnızca siz tetikleyebilin        | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
+| Hedef                                        | Ayarlanacak değer                                           |
+| -------------------------------------------- | ---------------------------------------------------------- |
+| Tüm gruplara izin ver ama yalnızca @bahsetmelerde yanıtla | `groups: { "*": { requireMention: true } }`                |
+| Tüm grup yanıtlarını devre dışı bırak        | `groupPolicy: "disabled"`                                  |
+| Yalnızca belirli gruplar                     | `groups: { "<group-id>": { ... } }` (`"*"` anahtarı yok)   |
+| Gruplarda yalnızca siz tetikleyebilirsiniz   | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
 
 ## Oturum anahtarları
 
-- Grup oturumları `agent:<agentId>:<channel>:group:<id>` oturum anahtarlarını kullanır (oda/kanallar `agent:<agentId>:<channel>:channel:<id>` kullanır).
-- Telegram forum başlıkları, her başlığın kendi oturumu olması için grup kimliğine `:topic:<threadId>` ekler.
-- Doğrudan sohbetler ana oturumu kullanır (veya yapılandırılmışsa gönderici başına oturum).
-- Heartbeat, grup oturumları için atlanır.
+- Grup oturumları `agent:<agentId>:<channel>:group:<id>` oturum anahtarlarını kullanır (odalar/kanallar `agent:<agentId>:<channel>:channel:<id>` kullanır).
+- Telegram forum konuları, her konunun kendi oturumu olması için grup id'sine `:topic:<threadId>` ekler.
+- Doğrudan sohbetler ana oturumu kullanır (veya yapılandırıldıysa gönderen başına).
+- Grup oturumları için Heartbeat'ler atlanır.
 
 <a id="pattern-personal-dms-public-groups-single-agent"></a>
 
-## Kalıp: kişisel DM'ler + herkese açık gruplar (tek ajan)
+## Kalıp: kişisel DM'ler + herkese açık gruplar (tek agent)
 
-Evet — "kişisel" trafiğiniz **DM'ler**, "herkese açık" trafiğiniz ise **gruplar** ise bu iyi çalışır.
+Evet — "kişisel" trafiğiniz **DM'ler** ve "herkese açık" trafiğiniz **gruplar** ise bu iyi çalışır.
 
-Nedeni: tek ajan modunda, DM'ler genellikle **ana** oturum anahtarına (`agent:main:main`) düşerken, gruplar her zaman **ana olmayan** oturum anahtarlarını kullanır (`agent:main:<channel>:group:<id>`). `mode: "non-main"` ile sandbox etkinleştirirseniz, bu grup oturumları yapılandırılan sandbox arka ucunda çalışırken ana DM oturumunuz host üzerinde kalır. Bir arka uç seçmezseniz varsayılan Docker kullanılır.
+Neden: tek agent modunda DM'ler genellikle **ana** oturum anahtarına (`agent:main:main`) düşerken gruplar her zaman **ana olmayan** oturum anahtarları (`agent:main:<channel>:group:<id>`) kullanır. Sandboxing'i `mode: "non-main"` ile etkinleştirirseniz, bu grup oturumları yapılandırılmış sandbox backend'inde çalışır, ana DM oturumunuz ise host üzerinde kalır. Birini seçmezseniz Docker varsayılan backend'dir.
 
-Bu size tek bir ajan "beyni" (paylaşılan çalışma alanı + bellek) verir, ancak iki yürütme duruşu sağlar:
+Bu size tek bir agent "beyni" (paylaşılan çalışma alanı + bellek), ama iki yürütme duruşu verir:
 
 - **DM'ler**: tam araçlar (host)
 - **Gruplar**: sandbox + kısıtlı araçlar
 
 <Note>
-Gerçekten ayrı çalışma alanlarına/kişiliklere ihtiyacınız varsa ("kişisel" ve "herkese açık" trafik asla karışmamalıysa), ikinci bir ajan + bindings kullanın. Bkz. [Çoklu Ajan Yönlendirme](/tr/concepts/multi-agent).
+Gerçekten ayrı çalışma alanlarına/persona'lara ihtiyacınız varsa ("kişisel" ve "herkese açık" asla karışmamalı), ikinci bir agent + binding'ler kullanın. Bkz. [Çoklu Agent Yönlendirme](/tr/concepts/multi-agent).
 </Note>
 
 <Tabs>
-  <Tab title="DM'ler host üzerinde, gruplar sandbox içinde">
+  <Tab title="DM'ler host üzerinde, gruplar sandbox'ta">
     ```json5
     {
       agents: {
@@ -129,8 +165,8 @@ Gerçekten ayrı çalışma alanlarına/kişiliklere ihtiyacınız varsa ("kişi
     }
     ```
   </Tab>
-  <Tab title="Gruplar yalnızca izin verilen bir klasörü görsün">
-    "Host erişimi olmasın" yerine "gruplar yalnızca X klasörünü görebilsin" mi istiyorsunuz? `workspaceAccess: "none"` değerini koruyun ve yalnızca izin verilen yolları sandbox içine bağlayın:
+  <Tab title="Gruplar yalnızca allowlist'e alınmış bir klasörü görür">
+    "Gruplar host erişimi yok yerine yalnızca X klasörünü görebilsin" mi istiyorsunuz? `workspaceAccess: "none"` değerini koruyun ve yalnızca allowlist'e alınmış yolları sandbox içine mount edin:
 
     ```json5
     {
@@ -158,17 +194,17 @@ Gerçekten ayrı çalışma alanlarına/kişiliklere ihtiyacınız varsa ("kişi
 İlgili:
 
 - Yapılandırma anahtarları ve varsayılanlar: [Gateway yapılandırması](/tr/gateway/config-agents#agentsdefaultssandbox)
-- Bir aracın neden engellendiğini hata ayıklama: [Sandbox vs Tool Policy vs Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated)
+- Bir aracın neden engellendiğini debug etme: [Sandbox ve Araç Politikası ve Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated)
 - Bind mount ayrıntıları: [Sandboxing](/tr/gateway/sandboxing#custom-bind-mounts)
 
 ## Görünen etiketler
 
-- Kullanıcı arayüzü etiketleri, mevcutsa `displayName` kullanır ve `<channel>:<token>` biçiminde gösterilir.
-- `#room`, odalar/kanallar için ayrılmıştır; grup sohbetleri `g-<slug>` kullanır (küçük harf, boşluklar `-` olur, `#@+._-` korunur).
+- UI etiketleri mevcut olduğunda `<channel>:<token>` biçiminde formatlanan `displayName` kullanır.
+- `#room` odalar/kanallar için ayrılmıştır; grup sohbetleri `g-<slug>` kullanır (küçük harf, boşluklar -> `-`, `#@+._-` koru).
 
 ## Grup politikası
 
-Grup/oda mesajlarının kanal başına nasıl ele alınacağını kontrol edin:
+Grup/oda mesajlarının kanal başına nasıl ele alınacağını denetleyin:
 
 ```json5
 {
@@ -217,22 +253,22 @@ Grup/oda mesajlarının kanal başına nasıl ele alınacağını kontrol edin:
 
 | Politika      | Davranış                                                     |
 | ------------- | ------------------------------------------------------------ |
-| `"open"`      | Gruplar izin listelerini atlar; bahsetme sınırlaması yine de geçerlidir. |
+| `"open"`      | Gruplar allowlist'leri atlar; mention-gating yine de uygulanır. |
 | `"disabled"`  | Tüm grup mesajlarını tamamen engeller.                       |
-| `"allowlist"` | Yalnızca yapılandırılmış izin listesiyle eşleşen gruplara/odalara izin verir. |
+| `"allowlist"` | Yalnızca yapılandırılmış allowlist ile eşleşen gruplara/odalara izin verir. |
 
 <AccordionGroup>
-  <Accordion title="Kanala özgü notlar">
-    - `groupPolicy`, bahsetme sınırlamasından ayrıdır (bu özellik @mention gerektirir).
-    - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams/Zalo: `groupAllowFrom` kullanın (yedek: açık `allowFrom`).
-    - DM eşleştirme onayları (`*-allowFrom` mağaza girdileri) yalnızca DM erişimi için geçerlidir; grup gönderici yetkilendirmesi açık grup izin listelerine bağlı kalır.
-    - Discord: izin listesi `channels.discord.guilds.<id>.channels` kullanır.
-    - Slack: izin listesi `channels.slack.channels` kullanır.
-    - Matrix: izin listesi `channels.matrix.groups` kullanır. Oda kimliklerini veya takma adları tercih edin; katılınan oda adı araması en iyi çaba esasına dayanır ve çözülemeyen adlar çalışma zamanında yok sayılır. Gönderenleri kısıtlamak için `channels.matrix.groupAllowFrom` kullanın; oda başına `users` izin listeleri de desteklenir.
-    - Grup DM'leri ayrı olarak kontrol edilir (`channels.discord.dm.*`, `channels.slack.dm.*`).
-    - Telegram izin listesi kullanıcı kimlikleriyle (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) veya kullanıcı adlarıyla (`"@alice"` ya da `"alice"`) eşleşebilir; önekler büyük/küçük harfe duyarsızdır.
-    - Varsayılan `groupPolicy: "allowlist"` değeridir; grup izin listeniz boşsa grup mesajları engellenir.
-    - Çalışma zamanı güvenliği: bir sağlayıcı bloğu tamamen yoksa (`channels.<provider>` yoksa), grup politikası `channels.defaults.groupPolicy` değerini devralmak yerine başarısız olduğunda kapalı moda (genellikle `allowlist`) geri döner.
+  <Accordion title="Kanal başına notlar">
+    - `groupPolicy`, mention-gating'den ayrıdır (@bahsetmeleri gerektiren).
+    - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams/Zalo: `groupAllowFrom` kullanın (fallback: açık `allowFrom`).
+    - DM eşleştirme onayları (`*-allowFrom` store girdileri) yalnızca DM erişimine uygulanır; grup gönderen yetkilendirmesi grup allowlist'lerine açık şekilde bağlı kalır.
+    - Discord: allowlist `channels.discord.guilds.<id>.channels` kullanır.
+    - Slack: allowlist `channels.slack.channels` kullanır.
+    - Matrix: allowlist `channels.matrix.groups` kullanır. Oda ID'lerini veya alias'ları tercih edin; katılınan oda adı araması best-effort'tur ve çözümlenemeyen adlar runtime'da yok sayılır. Gönderenleri kısıtlamak için `channels.matrix.groupAllowFrom` kullanın; oda başına `users` allowlist'leri de desteklenir.
+    - Grup DM'leri ayrı denetlenir (`channels.discord.dm.*`, `channels.slack.dm.*`).
+    - Telegram allowlist kullanıcı ID'leriyle (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) veya kullanıcı adlarıyla (`"@alice"` veya `"alice"`) eşleşebilir; prefix'ler büyük/küçük harfe duyarsızdır.
+    - Varsayılan `groupPolicy: "allowlist"` değeridir; grup allowlist'iniz boşsa grup mesajları engellenir.
+    - Runtime güvenliği: bir provider bloğu tamamen eksik olduğunda (`channels.<provider>` yok), grup politikası `channels.defaults.groupPolicy` değerini devralmak yerine fail-closed moda (tipik olarak `allowlist`) döner.
 
   </Accordion>
 </AccordionGroup>
@@ -243,19 +279,19 @@ Hızlı zihinsel model (grup mesajları için değerlendirme sırası):
   <Step title="groupPolicy">
     `groupPolicy` (open/disabled/allowlist).
   </Step>
-  <Step title="Grup izin listeleri">
-    Grup izin listeleri (`*.groups`, `*.groupAllowFrom`, kanala özgü izin listesi).
+  <Step title="Grup allowlist'leri">
+    Grup allowlist'leri (`*.groups`, `*.groupAllowFrom`, kanala özgü allowlist).
   </Step>
-  <Step title="Bahsetme sınırlaması">
-    Bahsetme sınırlaması (`requireMention`, `/activation`).
+  <Step title="Mention gating">
+    Mention gating (`requireMention`, `/activation`).
   </Step>
 </Steps>
 
-## Bahsetme sınırlaması (varsayılan)
+## Mention gating (varsayılan)
 
-Aksi grup başına geçersiz kılınmadıkça grup mesajları bir bahsetme gerektirir. Varsayılanlar, her alt sistem altında `*.groups."*"` içinde yer alır.
+Grup mesajları, grup başına override edilmedikçe bir bahsetme gerektirir. Varsayılanlar alt sistem başına `*.groups."*"` altında bulunur.
 
-Bir bot mesajına yanıt vermek, kanal yanıt meta verilerini destekliyorsa örtük bir bahsetme sayılır. Bir bot mesajını alıntılamak da, alıntı meta verilerini sunan kanallarda örtük bir bahsetme sayılabilir. Mevcut yerleşik örnekler arasında Telegram, WhatsApp, Slack, Discord, Microsoft Teams ve ZaloUser bulunur.
+Bir bot mesajına yanıt vermek, kanal yanıt meta verilerini desteklediğinde örtük bir bahsetme sayılır. Bir bot mesajını alıntılamak da alıntı meta verilerini açığa çıkaran kanallarda örtük bir bahsetme sayılabilir. Mevcut yerleşik durumlar arasında Telegram, WhatsApp, Slack, Discord, Microsoft Teams ve ZaloUser bulunur.
 
 ```json5
 {
@@ -294,38 +330,39 @@ Bir bot mesajına yanıt vermek, kanal yanıt meta verilerini destekliyorsa ört
 ```
 
 <AccordionGroup>
-  <Accordion title="Bahsetme sınırlaması notları">
-    - `mentionPatterns`, büyük/küçük harfe duyarsız güvenli regex kalıplarıdır; geçersiz kalıplar ve güvenli olmayan iç içe tekrar biçimleri yok sayılır.
-    - Açık bahsetme sağlayan yüzeyler yine de geçer; kalıplar yedektir.
-    - Ajan başına geçersiz kılma: `agents.list[].groupChat.mentionPatterns` (birden fazla ajan aynı grubu paylaştığında yararlıdır).
-    - Bahsetme sınırlaması yalnızca bahsetme algılaması mümkün olduğunda uygulanır (yerel bahsetmeler veya `mentionPatterns` yapılandırılmışsa).
-    - Sessiz yanıta izin verilen gruplar, temiz boş veya yalnızca akıl yürütme içeren model dönüşlerini `NO_REPLY` ile eşdeğer şekilde sessiz kabul eder. Doğrudan sohbetler ise boş yanıtları yine başarısız bir ajan dönüşü olarak ele alır.
+  <Accordion title="Mention gating notes">
+    - `mentionPatterns` büyük/küçük harfe duyarsız güvenli regex desenleridir; geçersiz desenler ve güvenli olmayan iç içe yineleme biçimleri yoksayılır.
+    - Açık bahsetmeler sağlayan yüzeyler yine de geçer; desenler bir geri dönüştür.
+    - Ajan başına geçersiz kılma: `agents.list[].groupChat.mentionPatterns` (birden çok ajan bir grubu paylaştığında kullanışlıdır).
+    - Bahsetme geçidi yalnızca bahsetme algılaması mümkün olduğunda uygulanır (yerel bahsetmeler veya `mentionPatterns` yapılandırılmıştır).
+    - Grup sohbeti istem bağlamı, çözümlenmiş sessiz yanıt talimatını her turda taşır; çalışma alanı dosyaları `NO_REPLY` mekaniklerini yinelememelidir.
+    - Sessiz yanıtlara izin verilen gruplar, temiz boş veya yalnızca akıl yürütme içeren model turlarını `NO_REPLY` ile eşdeğer şekilde sessiz sayar. Doğrudan sohbetler bunu yalnızca doğrudan sessiz yanıtlara açıkça izin verildiğinde yapar; aksi halde boş yanıtlar başarısız ajan turları olarak kalır.
     - Discord varsayılanları `channels.discord.guilds."*"` içinde bulunur (guild/kanal başına geçersiz kılınabilir).
-    - Grup geçmişi bağlamı kanallar arasında tutarlı şekilde sarmalanır ve **yalnızca beklemedeki** durumlar içindir (bahsetme sınırlaması nedeniyle atlanan mesajlar); genel varsayılan için `messages.groupChat.historyLimit`, geçersiz kılmalar için `channels.<channel>.historyLimit` (veya `channels.<channel>.accounts.*.historyLimit`) kullanın. Devre dışı bırakmak için `0` ayarlayın.
+    - Grup geçmişi bağlamı kanallar arasında tek biçimde sarmalanır ve **yalnızca beklemede olan** iletileri içerir (bahsetme geçidi nedeniyle atlanan mesajlar); genel varsayılan için `messages.groupChat.historyLimit`, geçersiz kılmalar için `channels.<channel>.historyLimit` (veya `channels.<channel>.accounts.*.historyLimit`) kullanın. Devre dışı bırakmak için `0` ayarlayın.
 
   </Accordion>
 </AccordionGroup>
 
 ## Grup/kanal araç kısıtlamaları (isteğe bağlı)
 
-Bazı kanal yapılandırmaları, **belirli bir grup/oda/kanal içinde** hangi araçların kullanılabildiğini kısıtlamayı destekler.
+Bazı kanal yapılandırmaları, hangi araçların **belirli bir grup/oda/kanal içinde** kullanılabilir olduğunu kısıtlamayı destekler.
 
-- `tools`: tüm grup için araçlara izin verin/engelleyin.
-- `toolsBySender`: grup içindeki gönderici başına geçersiz kılmalar. Açık anahtar önekleri kullanın: `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` ve `"*"` joker karakteri. Eski öneksiz anahtarlar hâlâ kabul edilir ve yalnızca `id:` olarak eşleştirilir.
+- `tools`: tüm grup için araçlara izin verin/reddedin.
+- `toolsBySender`: grup içinde gönderen başına geçersiz kılmalar. Açık anahtar önekleri kullanın: `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` ve `"*"` joker karakteri. Eski öneksiz anahtarlar hâlâ kabul edilir ve yalnızca `id:` olarak eşleştirilir.
 
 Çözümleme sırası (en spesifik olan kazanır):
 
 <Steps>
-  <Step title="Grup toolsBySender">
+  <Step title="Group toolsBySender">
     Grup/kanal `toolsBySender` eşleşmesi.
   </Step>
-  <Step title="Grup tools">
+  <Step title="Group tools">
     Grup/kanal `tools`.
   </Step>
-  <Step title="Varsayılan toolsBySender">
+  <Step title="Default toolsBySender">
     Varsayılan (`"*"`) `toolsBySender` eşleşmesi.
   </Step>
-  <Step title="Varsayılan tools">
+  <Step title="Default tools">
     Varsayılan (`"*"`) `tools`.
   </Step>
 </Steps>
@@ -351,28 +388,28 @@ Bazı kanal yapılandırmaları, **belirli bir grup/oda/kanal içinde** hangi ar
 ```
 
 <Note>
-Grup/kanal araç kısıtlamaları, genel/ajan araç politikasına ek olarak uygulanır (engel yine kazanır). Bazı kanallar odalar/kanallar için farklı iç içe yerleşimler kullanır (ör. Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
+Grup/kanal araç kısıtlamaları, global/ajan araç ilkesine ek olarak uygulanır (ret yine de kazanır). Bazı kanallar odalar/kanallar için farklı iç içe yapı kullanır (ör. Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
 </Note>
 
 ## Grup izin listeleri
 
-`channels.whatsapp.groups`, `channels.telegram.groups` veya `channels.imessage.groups` yapılandırıldığında, anahtarlar grup izin listesi işlevi görür. Tüm gruplara izin verirken varsayılan bahsetme davranışını ayarlamaya devam etmek için `"*"` kullanın.
+`channels.whatsapp.groups`, `channels.telegram.groups` veya `channels.imessage.groups` yapılandırıldığında, anahtarlar grup izin listesi olarak davranır. Varsayılan bahsetme davranışını ayarlarken tüm gruplara izin vermek için `"*"` kullanın.
 
 <Warning>
-Yaygın karışıklık: DM eşleştirme onayı, grup yetkilendirmesi ile aynı şey değildir. DM eşleştirmesini destekleyen kanallarda eşleştirme deposu yalnızca DM'lerin kilidini açar. Grup komutları için yine de `groupAllowFrom` gibi yapılandırma izin listelerinden veya o kanal için belgelenmiş yapılandırma yedeğinden açık grup gönderici yetkilendirmesi gerekir.
+Yaygın karışıklık: DM eşleştirme onayı, grup yetkilendirmesiyle aynı değildir. DM eşleştirmeyi destekleyen kanallarda, eşleştirme deposu yalnızca DM'lerin kilidini açar. Grup komutları yine de `groupAllowFrom` gibi yapılandırma izin listelerinden veya o kanal için belgelenmiş yapılandırma geri dönüşünden açık grup gönderen yetkilendirmesi gerektirir.
 </Warning>
 
 Yaygın amaçlar (kopyala/yapıştır):
 
 <Tabs>
-  <Tab title="Tüm grup yanıtlarını devre dışı bırak">
+  <Tab title="Disable all group replies">
     ```json5
     {
       channels: { whatsapp: { groupPolicy: "disabled" } },
     }
     ```
   </Tab>
-  <Tab title="Yalnızca belirli gruplara izin ver (WhatsApp)">
+  <Tab title="Allow only specific groups (WhatsApp)">
     ```json5
     {
       channels: {
@@ -386,7 +423,7 @@ Yaygın amaçlar (kopyala/yapıştır):
     }
     ```
   </Tab>
-  <Tab title="Tüm gruplara izin ver ama bahsetme zorunlu olsun">
+  <Tab title="Allow all groups but require mention">
     ```json5
     {
       channels: {
@@ -397,7 +434,7 @@ Yaygın amaçlar (kopyala/yapıştır):
     }
     ```
   </Tab>
-  <Tab title="Yalnızca sahip tetikleyebilsin (WhatsApp)">
+  <Tab title="Owner-only triggers (WhatsApp)">
     ```json5
     {
       channels: {
@@ -412,14 +449,14 @@ Yaygın amaçlar (kopyala/yapıştır):
   </Tab>
 </Tabs>
 
-## Activation (yalnızca sahip)
+## Etkinleştirme (yalnızca sahip)
 
-Grup sahipleri, grup başına etkinleştirmeyi değiştirebilir:
+Grup sahipleri grup başına etkinleştirmeyi açıp kapatabilir:
 
 - `/activation mention`
 - `/activation always`
 
-Sahip, `channels.whatsapp.allowFrom` ile belirlenir (ayarlanmamışsa botun kendi E.164 değeri kullanılır). Komutu bağımsız bir mesaj olarak gönderin. Diğer yüzeyler şu anda `/activation` komutunu yok sayar.
+Sahip `channels.whatsapp.allowFrom` ile belirlenir (veya ayarlanmamışsa botun kendi E.164 değeriyle). Komutu bağımsız bir mesaj olarak gönderin. Diğer yüzeyler şu anda `/activation` komutunu yoksayar.
 
 ## Bağlam alanları
 
@@ -428,28 +465,28 @@ Grup gelen yükleri şunları ayarlar:
 - `ChatType=group`
 - `GroupSubject` (biliniyorsa)
 - `GroupMembers` (biliniyorsa)
-- `WasMentioned` (bahsetme sınırlaması sonucu)
-- Telegram forum başlıkları ayrıca `MessageThreadId` ve `IsForum` içerir.
+- `WasMentioned` (bahsetme geçidi sonucu)
+- Telegram forum konuları ayrıca `MessageThreadId` ve `IsForum` içerir.
 
 Kanala özgü notlar:
 
-- BlueBubbles, adsız macOS grup katılımcılarını `GroupMembers` doldurulmadan önce isteğe bağlı olarak yerel Contacts veritabanından zenginleştirebilir. Bu varsayılan olarak kapalıdır ve yalnızca normal grup sınırlaması geçildikten sonra çalışır.
+- BlueBubbles, `GroupMembers` doldurulmadan önce adlandırılmamış macOS grup katılımcılarını yerel Kişiler veritabanından isteğe bağlı olarak zenginleştirebilir. Bu varsayılan olarak kapalıdır ve yalnızca normal grup geçidi geçtikten sonra çalışır.
 
-Ajan sistem istemi, yeni bir grup oturumunun ilk dönüşünde bir grup girişi içerir. Bu giriş, modele bir insan gibi yanıt vermesini, Markdown tablolarından kaçınmasını, boş satırları en aza indirmesini, normal sohbet aralığını takip etmesini ve düz `\n` dizilerini yazmaktan kaçınmasını hatırlatır. Kanal kaynaklı grup adları ve katılımcı etiketleri, satır içi sistem talimatları olarak değil, çitlenmiş güvenilmeyen meta veriler olarak işlenir.
+Ajan sistem istemi, yeni bir grup oturumunun ilk turunda bir grup girişi içerir. Modele insan gibi yanıt vermesini, Markdown tablolarından kaçınmasını, boş satırları en aza indirmesini ve normal sohbet aralığını izlemesini, ayrıca düz `\n` dizileri yazmaktan kaçınmasını hatırlatır. Kanaldan kaynaklanan grup adları ve katılımcı etiketleri, satır içi sistem talimatları olarak değil, çitli güvenilmeyen meta veri olarak işlenir.
 
 ## iMessage ayrıntıları
 
-- Yönlendirme veya izin listesi için `chat_id:<id>` tercih edin.
+- Yönlendirirken veya izin listesine alırken `chat_id:<id>` tercih edin.
 - Sohbetleri listeleyin: `imsg chats --limit 20`.
 - Grup yanıtları her zaman aynı `chat_id` değerine geri gider.
 
 ## WhatsApp sistem istemleri
 
-Grup ve doğrudan istem çözümleme, joker karakter davranışı ve hesap geçersiz kılma semantiği dahil olmak üzere kurallı WhatsApp sistem istemi kuralları için bkz. [WhatsApp](/tr/channels/whatsapp#system-prompts).
+Grup ve doğrudan istem çözümlemesi, joker karakter davranışı ve hesap geçersiz kılma semantiği dahil olmak üzere kanonik WhatsApp sistem istemi kuralları için [WhatsApp](/tr/channels/whatsapp#system-prompts) bölümüne bakın.
 
 ## WhatsApp ayrıntıları
 
-Yalnızca WhatsApp davranışı için (geçmiş ekleme, bahsetme işleme ayrıntıları) bkz. [Grup mesajları](/tr/channels/group-messages).
+Yalnızca WhatsApp davranışı (geçmiş enjeksiyonu, bahsetme işleme ayrıntıları) için [Grup mesajları](/tr/channels/group-messages) bölümüne bakın.
 
 ## İlgili
 

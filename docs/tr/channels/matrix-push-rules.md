@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Self-hosted Synapse veya Tuwunel için sessiz Matrix akışını ayarlama
-    - Kullanıcılar her önizleme düzenlemesinde değil, yalnızca tamamlanmış bloklarda bildirim almak istiyor
-summary: Sessiz sonlandırılmış önizleme düzenlemeleri için alıcı başına Matrix push kuralları
-title: Sessiz önizlemeler için Matrix push kuralları
+    - Kendi barındırdığınız Synapse veya Tuwunel için Matrix sessiz akışını ayarlama
+    - Kullanıcılar her önizleme düzenlemesinde değil, yalnızca tamamlanan bloklarda bildirim almak ister
+summary: Alıcı başına Matrix push kuralları için sessiz, kesinleştirilmiş önizleme düzenlemeleri
+title: Sessiz önizlemeler için Matrix anlık bildirim kuralları
 x-i18n:
-    generated_at: "2026-04-24T08:58:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:07:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 07a8cf9a4041b63e13feb21ee2eb22909cb14931d6929bedf6b94315f7a270cf
+    source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
-    workflow: 15
+    workflow: 16
 ---
 
-`channels.matrix.streaming` değeri `"quiet"` olduğunda, OpenClaw tek bir önizleme olayını yerinde düzenler ve sonlandırılmış düzenlemeyi özel bir içerik bayrağıyla işaretler. Matrix istemcileri, yalnızca kullanıcı başına bir push kuralı bu bayrakla eşleşirse son düzenlemede bildirim gönderir. Bu sayfa, Matrix'i self-host eden ve bu kuralı her alıcı hesabı için kurmak isteyen operatörler içindir.
+`channels.matrix.streaming` `"quiet"` olduğunda, OpenClaw tek bir önizleme olayını yerinde düzenler ve sonlandırılmış düzenlemeyi özel bir içerik bayrağıyla işaretler. Matrix istemcileri, son düzenleme için yalnızca kullanıcı başına bir push kuralı bu bayrakla eşleşirse bildirim gösterir. Bu sayfa, Matrix'i kendi barındıran ve bu kuralı her alıcı hesabı için yüklemek isteyen operatörler içindir.
 
-Yalnızca standart Matrix bildirim davranışını istiyorsanız, `streaming: "partial"` kullanın veya akışı kapalı bırakın. Bkz. [Matrix channel setup](/tr/channels/matrix#streaming-previews).
+Yalnızca standart Matrix bildirim davranışını istiyorsanız `streaming: "partial"` kullanın veya streaming'i kapalı bırakın. Bkz. [Matrix kanal kurulumu](/tr/channels/matrix#streaming-previews).
 
 ## Önkoşullar
 
 - alıcı kullanıcı = bildirimi alması gereken kişi
 - bot kullanıcısı = yanıtı gönderen OpenClaw Matrix hesabı
 - aşağıdaki API çağrıları için alıcı kullanıcının erişim token'ını kullanın
-- push kuralındaki `sender` alanını bot kullanıcısının tam MXID'siyle eşleştirin
-- alıcı hesabında çalışan pusher'lar zaten mevcut olmalıdır — sessiz önizleme kuralları yalnızca normal Matrix push teslimi sağlıklı olduğunda çalışır
+- push kuralındaki `sender` değerini bot kullanıcısının tam MXID'siyle eşleştirin
+- alıcı hesabında çalışan pusher'lar zaten bulunmalıdır — sessiz önizleme kuralları yalnızca normal Matrix push teslimatı sağlıklı olduğunda çalışır
 
 ## Adımlar
 
@@ -43,7 +43,7 @@ Yalnızca standart Matrix bildirim davranışını istiyorsanız, `streaming: "p
   </Step>
 
   <Step title="Alıcının erişim token'ını alın">
-    Mümkünse mevcut bir istemci oturum token'ını yeniden kullanın. Yeni bir tane oluşturmak için:
+    Mümkünse mevcut bir istemci oturumu token'ını yeniden kullanın. Yeni bir tane oluşturmak için:
 
 ```bash
 curl -sS -X POST \
@@ -66,12 +66,12 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushers"
 ```
 
-Pusher dönmüyorsa, devam etmeden önce bu hesap için normal Matrix push teslimini düzeltin.
+Hiç pusher dönmezse, devam etmeden önce bu hesap için normal Matrix push teslimatını düzeltin.
 
   </Step>
 
-  <Step title="Override push kuralını kurun">
-    OpenClaw, sonlandırılmış yalnızca metin önizleme düzenlemelerini `content["com.openclaw.finalized_preview"] = true` ile işaretler. Bu işaretleyiciyle ve gönderen olarak bot MXID'siyle eşleşen bir kural kurun:
+  <Step title="Override push kuralını yükleyin">
+    OpenClaw, sonlandırılmış yalnızca metin önizleme düzenlemelerini `content["com.openclaw.finalized_preview"] = true` ile işaretler. Bu işaretleyiciyle birlikte gönderen olarak bot MXID'siyle eşleşen bir kural yükleyin:
 
 ```bash
 curl -sS -X PUT \
@@ -101,12 +101,12 @@ curl -sS -X PUT \
   }'
 ```
 
-    Çalıştırmadan önce şunları değiştirin:
+    Çalıştırmadan önce değiştirin:
 
     - `https://matrix.example.org`: homeserver temel URL'niz
     - `$USER_ACCESS_TOKEN`: alıcı kullanıcının erişim token'ı
-    - `openclaw-finalized-preview-botname`: alıcı başına bot başına benzersiz bir kural kimliği (desen: `openclaw-finalized-preview-<botname>`)
-    - `@bot:example.org`: alıcının değil, OpenClaw bot MXID'niz
+    - `openclaw-finalized-preview-botname`: bot başına ve alıcı başına benzersiz bir kural kimliği (kalıp: `openclaw-finalized-preview-<botname>`)
+    - `@bot:example.org`: alıcının değil, OpenClaw botunuzun MXID'si
 
   </Step>
 
@@ -118,7 +118,7 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Ardından akışlı bir yanıtı test edin. Sessiz modda oda sessiz bir taslak önizleme gösterir ve blok veya tur tamamlandığında bir kez bildirim gönderir.
+Ardından streamed bir yanıtı test edin. Sessiz modda oda sessiz bir taslak önizleme gösterir ve blok ya da tur tamamlandığında bir kez bildirim gönderir.
 
   </Step>
 </Steps>
@@ -127,29 +127,31 @@ Kuralı daha sonra kaldırmak için aynı kural URL'sine alıcının token'ıyla
 
 ## Çoklu bot notları
 
-Push kuralları `ruleId` ile anahtarlanır: aynı kimliğe karşı `PUT` işlemini yeniden çalıştırmak tek bir kuralı günceller. Aynı alıcıya bildirim gönderen birden fazla OpenClaw botu için, her bot için farklı bir gönderen eşleşmesiyle ayrı bir kural oluşturun.
+Push kuralları `ruleId` ile anahtarlanır: aynı kimliğe yeniden `PUT` çalıştırmak tek bir kuralı günceller. Aynı alıcıya bildirim gönderen birden fazla OpenClaw botu için, her bot adına ayrı bir gönderen eşleşmesiyle bir kural oluşturun.
 
-Yeni kullanıcı tanımlı `override` kuralları, varsayılan bastırma kurallarının önüne eklenir; bu nedenle ek bir sıralama parametresi gerekmez. Kural yalnızca yerinde sonlandırılabilen yalnızca metin önizleme düzenlemelerini etkiler; medya fallback'leri ve eski önizleme fallback'leri normal Matrix teslimini kullanır.
+Yeni kullanıcı tanımlı `override` kuralları varsayılan bastırma kurallarının önüne eklenir, bu yüzden ek bir sıralama parametresine gerek yoktur. Kural yalnızca yerinde sonlandırılabilen yalnızca metin önizleme düzenlemelerini etkiler; medya geri dönüşleri ve bayat önizleme geri dönüşleri normal Matrix teslimatını kullanır.
 
 ## Homeserver notları
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    Özel bir `homeserver.yaml` değişikliği gerekmez. Normal Matrix bildirimleri zaten bu kullanıcıya ulaşıyorsa, alıcı token'ı + yukarıdaki `pushrules` çağrısı ana kurulum adımıdır.
+    Özel bir `homeserver.yaml` değişikliği gerekmez. Normal Matrix bildirimleri bu kullanıcıya zaten ulaşıyorsa, yukarıdaki alıcı token'ı + `pushrules` çağrısı ana kurulum adımıdır.
 
-    Synapse'i bir reverse proxy veya worker'ların arkasında çalıştırıyorsanız, `/_matrix/client/.../pushrules/` yolunun Synapse'e doğru ulaştığından emin olun. Push teslimi ana süreç veya `synapse.app.pusher` / yapılandırılmış pusher worker'ları tarafından işlenir — bunların sağlıklı olduğundan emin olun.
+    Synapse'i bir ters proxy veya worker'ların arkasında çalıştırıyorsanız, `/_matrix/client/.../pushrules/` yolunun Synapse'e doğru şekilde ulaştığından emin olun. Push teslimatı ana işlem veya `synapse.app.pusher` / yapılandırılmış pusher worker'ları tarafından işlenir — bunların sağlıklı olduğundan emin olun.
+
+    Kural, 2023'te Synapse'e eklenen `event_property_is` push kuralı koşulunu (MSC3758, push kuralı v1.10) kullanır. Daha eski Synapse sürümleri `PUT pushrules/...` çağrısını kabul eder ancak koşulla sessizce hiç eşleşmez — sonlandırılmış bir önizleme düzenlemesinde bildirim gelmezse Synapse'i yükseltin.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    Synapse ile aynı akış; sonlandırılmış önizleme işaretleyicisi için Tuwunel'e özgü bir yapılandırma gerekmez.
+    Akış Synapse ile aynıdır; sonlandırılmış önizleme işaretleyicisi için Tuwunel'e özgü yapılandırma gerekmez.
 
-    Kullanıcı başka bir cihazda etkinken bildirimler kayboluyorsa, `suppress_push_when_active` etkin olup olmadığını kontrol edin. Tuwunel bu seçeneği 1.4.2 sürümünde (Eylül 2025) ekledi ve bir cihaz etkinken diğer cihazlara push'ları bilinçli olarak bastırabilir.
+    Kullanıcı başka bir cihazda aktifken bildirimler kayboluyorsa, `suppress_push_when_active` seçeneğinin etkin olup olmadığını kontrol edin. Tuwunel bu seçeneği 1.4.2 sürümünde (Eylül 2025) ekledi ve bir cihaz aktifken diğer cihazlara gönderilen push'ları kasıtlı olarak bastırabilir.
 
   </Accordion>
 </AccordionGroup>
 
 ## İlgili
 
-- [Matrix channel setup](/tr/channels/matrix)
-- [Streaming concepts](/tr/concepts/streaming)
+- [Matrix kanal kurulumu](/tr/channels/matrix)
+- [Streaming kavramları](/tr/concepts/streaming)

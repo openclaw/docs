@@ -1,128 +1,103 @@
 ---
 read_when:
     - Hangi özelliklerin ücretli API'leri çağırabileceğini anlamak istiyorsunuz
-    - Anahtarları, maliyetleri ve kullanım görünürlüğünü denetlemeniz gerekiyor
-    - '`/status` veya `/usage` maliyet raporlamasını açıklıyorsunuz'
+    - Anahtarları, maliyetleri ve kullanım görünürlüğünü denetlemeniz gerekir
+    - /status veya /usage maliyet raporlamasını açıklıyorsunuz
 summary: Nelerin para harcayabileceğini, hangi anahtarların kullanıldığını ve kullanımın nasıl görüntüleneceğini denetleyin
-title: API kullanımı ve maliyetler
+title: API kullanımı ve maliyetleri
 x-i18n:
-    generated_at: "2026-04-25T13:56:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:43:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2958c0961b46961d942a5bb6e7954eda6bf3d0f659ae0bffb390a8502e00ff38
+    source_hash: 5638007a77a93701ce4ed9139a6c4377c951e2d69941423c3e1b19b5bd52d5d5
     source_path: reference/api-usage-costs.md
-    workflow: 15
+    workflow: 16
 ---
 
 # API kullanımı ve maliyetler
 
-Bu belge, **API anahtarlarını kullanabilecek özellikleri** ve bunların maliyetlerinin nerede göründüğünü listeler. Odak noktası,
-sağlayıcı kullanımı veya ücretli API çağrıları üretebilen OpenClaw özellikleridir.
+Bu belge, **API anahtarlarını çağırabilen özellikleri** ve maliyetlerinin nerede göründüğünü listeler. OpenClaw içinde sağlayıcı kullanımı veya ücretli API çağrıları oluşturabilen özelliklere odaklanır.
 
 ## Maliyetlerin göründüğü yerler (sohbet + CLI)
 
-**Oturum başına maliyet özeti**
+**Oturum başına maliyet anlık görüntüsü**
 
-- `/status`, geçerli oturum modelini, bağlam kullanımını ve son yanıt belirteçlerini gösterir.
-- Model **API anahtarı kimlik doğrulaması** kullanıyorsa, `/status` son yanıt için **tahmini maliyeti** de gösterir.
-- Canlı oturum meta verileri seyrekse, `/status` en son transkript kullanım
-  girdisinden belirteç/önbellek sayaçlarını ve etkin çalışma zamanı model etiketini
-  geri kazanabilir. Mevcut sıfır olmayan canlı değerler yine de önceliklidir ve depolanan toplamlar eksik veya daha küçük olduğunda
-  istem boyutlu transkript toplamları üstün gelebilir.
+- `/status`, geçerli oturum modelini, bağlam kullanımını ve son yanıt tokenlarını gösterir.
+- Model **API anahtarı kimlik doğrulaması** kullanıyorsa `/status`, son yanıt için **tahmini maliyeti** de gösterir.
+- Canlı oturum meta verileri sınırlıysa `/status`, en son transkript kullanımı girdisinden token/cache sayaçlarını ve etkin çalışma zamanı model etiketini kurtarabilir. Mevcut sıfırdan büyük canlı değerler yine önceliklidir ve kayıtlı toplamlar eksik veya daha küçük olduğunda istem boyutundaki transkript toplamları öne geçebilir.
 
-**Mesaj başına maliyet alt bilgisi**
+**İleti başına maliyet alt bilgisi**
 
-- `/usage full`, her yanıta **tahmini maliyet** dahil bir kullanım alt bilgisi ekler (yalnızca API anahtarı).
-- `/usage tokens`, yalnızca belirteçleri gösterir; abonelik tarzı OAuth/token ve CLI akışları dolar maliyetini gizler.
-- Gemini CLI notu: CLI JSON çıktısı döndürdüğünde OpenClaw kullanımı
-  `stats` içinden okur, `stats.cached` değerini `cacheRead` olarak normalleştirir ve gerekirse giriş belirteçlerini
-  `stats.input_tokens - stats.cached` üzerinden türetir.
+- `/usage full`, her yanıta **tahmini maliyeti** de içeren bir kullanım alt bilgisi ekler (yalnızca API anahtarı).
+- `/usage tokens` yalnızca tokenları gösterir; abonelik tarzı OAuth/token ve CLI akışları dolar maliyetini gizler.
+- Gemini CLI notu: CLI JSON çıktısı döndürdüğünde OpenClaw kullanımı `stats` alanından okur, `stats.cached` değerini `cacheRead` olarak normalleştirir ve gerektiğinde giriş tokenlarını `stats.input_tokens - stats.cached` üzerinden türetir.
 
-Anthropic notu: Anthropic personeli bize OpenClaw tarzı Claude CLI kullanımına
-yeniden izin verildiğini söyledi; bu nedenle Anthropic yeni bir ilke yayımlamadığı sürece OpenClaw, Claude CLI yeniden kullanımını ve
-`claude -p` kullanımını bu entegrasyon için onaylı kabul eder.
-Anthropic yine de OpenClaw'un `/usage full` içinde gösterebileceği
-mesaj başına bir dolar tahmini sunmaz.
+Anthropic notu: Anthropic çalışanları bize OpenClaw tarzı Claude CLI kullanımına yeniden izin verildiğini söyledi; bu nedenle OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece bu entegrasyon için Claude CLI yeniden kullanımını ve `claude -p` kullanımını onaylanmış kabul eder. Anthropic hâlâ OpenClaw'un `/usage full` içinde gösterebileceği ileti başına dolar tahminini sağlamaz.
 
 **CLI kullanım pencereleri (sağlayıcı kotaları)**
 
-- `openclaw status --usage` ve `openclaw channels list`, sağlayıcı **kullanım pencerelerini**
-  gösterir (mesaj başına maliyet değil, kota anlık görüntüleri).
-- İnsan tarafından okunabilir çıktı, sağlayıcılar arasında `X% kaldı` biçimine normalize edilir.
-- Mevcut kullanım penceresi sağlayıcıları: Anthropic, GitHub Copilot, Gemini CLI,
-  OpenAI Codex, MiniMax, Xiaomi ve z.ai.
-- MiniMax notu: ham `usage_percent` / `usagePercent` alanları kalan
-  kotayı ifade eder, bu nedenle OpenClaw görüntülemeden önce bunları tersine çevirir. Varsa sayım tabanlı alanlar yine de önceliklidir.
-  Sağlayıcı `model_remains` döndürürse OpenClaw sohbet modeli girdisini tercih eder, gerekirse pencere etiketini zaman damgalarından türetir
-  ve plan etiketine model adını ekler.
-- Bu kota pencereleri için kullanım kimlik doğrulaması, mümkün olduğunda sağlayıcıya özgü kancalardan gelir;
-  aksi halde OpenClaw auth profile'lar, ortam değişkenleri veya yapılandırmadan eşleşen OAuth/API anahtarı
-  kimlik bilgilerine geri döner.
+- `openclaw status --usage` ve `openclaw channels list`, sağlayıcı **kullanım pencerelerini** gösterir (kota anlık görüntüleri; ileti başına maliyetler değil).
+- İnsan okunur çıktı, sağlayıcılar genelinde `X% left` biçimine normalleştirilir.
+- Geçerli kullanım penceresi sağlayıcıları: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi ve z.ai.
+- MiniMax notu: Ham `usage_percent` / `usagePercent` alanları kalan kotayı ifade eder; bu nedenle OpenClaw bunları gösterimden önce tersine çevirir. Sayı tabanlı alanlar mevcut olduğunda yine önceliklidir. Sağlayıcı `model_remains` döndürürse OpenClaw sohbet modeli girdisini tercih eder, gerektiğinde pencere etiketini zaman damgalarından türetir ve plan etiketine model adını ekler.
+- Bu kota pencereleri için kullanım kimlik doğrulaması, mevcut olduğunda sağlayıcıya özgü hook'lardan gelir; aksi halde OpenClaw auth profillerinden, ortamdan veya yapılandırmadan eşleşen OAuth/API anahtarı kimlik bilgilerine geri döner.
 
-Ayrıntılar ve örnekler için [Belirteç kullanımı ve maliyetler](/tr/reference/token-use) sayfasına bakın.
+Ayrıntılar ve örnekler için [Token kullanımı ve maliyetler](/tr/reference/token-use) bölümüne bakın.
 
-## Anahtarlar nasıl bulunur
+## Anahtarlar nasıl keşfedilir
 
 OpenClaw kimlik bilgilerini şuralardan alabilir:
 
-- **Auth profile'lar** (aracı başına, `auth-profiles.json` içinde saklanır).
-- **Ortam değişkenleri** (ör. `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
-- **Yapılandırma** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`,
-  `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`,
-  `talk.providers.*.apiKey`).
-- **Skills** (`skills.entries.<name>.apiKey`) anahtarları skill süreç ortamına aktarabilir.
+- **Auth profilleri** (ajan başına, `auth-profiles.json` içinde saklanır).
+- **Ortam değişkenleri** (örn. `OPENAI_API_KEY`, `BRAVE_API_KEY`, `FIRECRAWL_API_KEY`).
+- **Yapılandırma** (`models.providers.*.apiKey`, `plugins.entries.*.config.webSearch.apiKey`, `plugins.entries.firecrawl.config.webFetch.apiKey`, `memorySearch.*`, `talk.providers.*.apiKey`).
+- **Skills** (`skills.entries.<name>.apiKey`), anahtarları skill süreç ortamına dışa aktarabilir.
 
-## Anahtar harcayabilecek özellikler
+## Anahtar harcayabilen özellikler
 
-### 1) Çekirdek model yanıtları (sohbet + araçlar)
+### 1) Temel model yanıtları (sohbet + araçlar)
 
-Her yanıt veya araç çağrısı, **geçerli model sağlayıcısını** (OpenAI, Anthropic vb.) kullanır. Bu,
-kullanım ve maliyetin birincil kaynağıdır.
+Her yanıt veya araç çağrısı **geçerli model sağlayıcısını** kullanır (OpenAI, Anthropic vb.). Bu, kullanım ve maliyetin birincil kaynağıdır.
 
-Bu, OpenClaw'un yerel UI'si dışında yine de faturalandıran abonelik tarzı barındırılan sağlayıcıları da içerir;
-örneğin **OpenAI Codex**, **Alibaba Cloud Model Studio
-Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan** ve
-**Ek Kullanım** etkinleştirilmiş Anthropic OpenClaw Claude oturum açma yolu.
+Buna, maliyeti yine OpenClaw'un yerel kullanıcı arayüzü dışında faturalandırılan abonelik tarzı barındırılan sağlayıcılar da dahildir; örneğin **OpenAI Codex**, **Alibaba Cloud Model Studio Coding Plan**, **MiniMax Coding Plan**, **Z.AI / GLM Coding Plan** ve **Extra Usage** etkinleştirilmiş Anthropic'in OpenClaw Claude oturum açma yolu.
 
-Fiyatlandırma yapılandırması için [Modeller](/tr/providers/models), görüntüleme için [Belirteç kullanımı ve maliyetler](/tr/reference/token-use) sayfalarına bakın.
+Fiyatlandırma yapılandırması için [Modeller](/tr/providers/models), görüntüleme için [Token kullanımı ve maliyetler](/tr/reference/token-use) bölümüne bakın.
 
 ### 2) Medya anlama (ses/görüntü/video)
 
-Gelen medya, yanıt çalışmadan önce özetlenebilir/transkribe edilebilir. Bu, model/sağlayıcı API'lerini kullanır.
+Gelen medya, yanıt çalışmadan önce özetlenebilir veya yazıya dökülebilir. Bu, model/sağlayıcı API'lerini kullanır.
 
-- Ses: OpenAI / Groq / Deepgram / Google / Mistral.
-- Görüntü: OpenAI / OpenRouter / Anthropic / Google / MiniMax / Moonshot / Qwen / Z.AI.
+- Ses: OpenAI / Groq / Deepgram / DeepInfra / Google / Mistral.
+- Görüntü: OpenAI / OpenRouter / Anthropic / DeepInfra / Google / MiniMax / Moonshot / Qwen / Z.AI.
 - Video: Google / Qwen / Moonshot.
 
 Bkz. [Medya anlama](/tr/nodes/media-understanding).
 
-### 3) Görüntü ve video üretimi
+### 3) Görüntü ve video oluşturma
 
-Paylaşılan üretim yetenekleri de sağlayıcı anahtarlarını harcayabilir:
+Paylaşılan oluşturma yetenekleri de sağlayıcı anahtarlarını harcayabilir:
 
-- Görüntü üretimi: OpenAI / Google / fal / MiniMax
-- Video üretimi: Qwen
+- Görüntü oluşturma: OpenAI / Google / DeepInfra / fal / MiniMax
+- Video oluşturma: DeepInfra / Qwen
 
-`agents.defaults.imageGenerationModel` ayarlanmamışsa
-görüntü üretimi kimlik doğrulama destekli bir sağlayıcı varsayılanını çıkarabilir. Video üretimi şu anda
-`qwen/wan2.6-t2v` gibi açık bir `agents.defaults.videoGenerationModel` gerektirir.
+Görüntü oluşturma, `agents.defaults.imageGenerationModel` ayarlanmamışsa auth destekli bir sağlayıcı varsayılanını çıkarımlayabilir. Video oluşturma şu anda `qwen/wan2.6-t2v` gibi açık bir `agents.defaults.videoGenerationModel` gerektirir.
 
-Bkz. [Görüntü üretimi](/tr/tools/image-generation), [Qwen Cloud](/tr/providers/qwen),
-ve [Modeller](/tr/concepts/models).
+Bkz. [Görüntü oluşturma](/tr/tools/image-generation), [Qwen Cloud](/tr/providers/qwen) ve [Modeller](/tr/concepts/models).
 
-### 4) Bellek gömmeleri + anlamsal arama
+### 4) Bellek embedding'leri + semantik arama
 
-Anlamsal bellek araması, uzak sağlayıcılar için yapılandırıldığında **gömme API'lerini** kullanır:
+Semantik bellek araması, uzak sağlayıcılar için yapılandırıldığında **embedding API'lerini** kullanır:
 
-- `memorySearch.provider = "openai"` → OpenAI gömmeleri
-- `memorySearch.provider = "gemini"` → Gemini gömmeleri
-- `memorySearch.provider = "voyage"` → Voyage gömmeleri
-- `memorySearch.provider = "mistral"` → Mistral gömmeleri
-- `memorySearch.provider = "lmstudio"` → LM Studio gömmeleri (yerel/kendi barındırılan)
-- `memorySearch.provider = "ollama"` → Ollama gömmeleri (yerel/kendi barındırılan; genellikle barındırılan API faturalandırması yoktur)
-- Yerel gömmeler başarısız olursa isteğe bağlı olarak uzak sağlayıcıya geri dönüş
+- `memorySearch.provider = "openai"` → OpenAI embedding'leri
+- `memorySearch.provider = "gemini"` → Gemini embedding'leri
+- `memorySearch.provider = "voyage"` → Voyage embedding'leri
+- `memorySearch.provider = "mistral"` → Mistral embedding'leri
+- `memorySearch.provider = "deepinfra"` → DeepInfra embedding'leri
+- `memorySearch.provider = "lmstudio"` → LM Studio embedding'leri (yerel/kendi barındırmalı)
+- `memorySearch.provider = "ollama"` → Ollama embedding'leri (yerel/kendi barındırmalı; genellikle barındırılan API faturalandırması yoktur)
+- Yerel embedding'ler başarısız olursa isteğe bağlı olarak uzak bir sağlayıcıya geri dönme
 
-`memorySearch.provider = "local"` ile yerel kalabilirsiniz (API kullanımı yok).
+`memorySearch.provider = "local"` ile yerel tutabilirsiniz (API kullanımı yok).
 
 Bkz. [Bellek](/tr/concepts/memory).
 
@@ -137,55 +112,48 @@ Bkz. [Bellek](/tr/concepts/memory).
 - **Grok (xAI)**: `XAI_API_KEY` veya `plugins.entries.xai.config.webSearch.apiKey`
 - **Kimi (Moonshot)**: `KIMI_API_KEY`, `MOONSHOT_API_KEY` veya `plugins.entries.moonshot.config.webSearch.apiKey`
 - **MiniMax Search**: `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`, `MINIMAX_API_KEY` veya `plugins.entries.minimax.config.webSearch.apiKey`
-- **Ollama Web Search**: varsayılan olarak anahtar gerektirmez, ancak erişilebilir bir Ollama sunucusu ile `ollama signin` gerektirir; sunucu bunu gerektirdiğinde normal Ollama sağlayıcı bearer kimlik doğrulamasını da yeniden kullanabilir
+- **Ollama Web Search**: Erişilebilir, oturum açılmış yerel bir Ollama ana makinesi için anahtarsızdır; doğrudan `https://ollama.com` araması `OLLAMA_API_KEY` kullanır ve kimlik doğrulamasıyla korunan ana makineler normal Ollama sağlayıcı bearer auth bilgisini yeniden kullanabilir
 - **Perplexity Search API**: `PERPLEXITY_API_KEY`, `OPENROUTER_API_KEY` veya `plugins.entries.perplexity.config.webSearch.apiKey`
 - **Tavily**: `TAVILY_API_KEY` veya `plugins.entries.tavily.config.webSearch.apiKey`
-- **DuckDuckGo**: anahtarsız geri dönüş (API faturalandırması yok, ancak resmi değildir ve HTML tabanlıdır)
-- **SearXNG**: `SEARXNG_BASE_URL` veya `plugins.entries.searxng.config.webSearch.baseUrl` (anahtarsız/kendi barındırılan; barındırılan API faturalandırması yok)
+- **DuckDuckGo**: anahtarsız geri dönüş (API faturalandırması yoktur, ancak resmi değildir ve HTML tabanlıdır)
+- **SearXNG**: `SEARXNG_BASE_URL` veya `plugins.entries.searxng.config.webSearch.baseUrl` (anahtarsız/kendi barındırmalı; barındırılan API faturalandırması yoktur)
 
 Eski `tools.web.search.*` sağlayıcı yolları geçici uyumluluk shim'i üzerinden hâlâ yüklenir, ancak artık önerilen yapılandırma yüzeyi değildir.
 
-**Brave Search ücretsiz kredisi:** Her Brave planı, her ay yenilenen \$5
-ücretsiz kredi içerir. Search planı 1.000 istek başına \$5 olduğundan, bu kredi
-ek ücret olmadan ayda 1.000 isteği kapsar. Beklenmeyen ücretlerden kaçınmak için Brave panosunda
-kullanım sınırınızı ayarlayın.
+**Brave Search ücretsiz kredisi:** Her Brave planı, yenilenen \$5/ay ücretsiz kredi içerir. Search planı 1.000 istek başına \$5 tutarındadır; bu nedenle kredi, ayda 1.000 isteği ücretsiz karşılar. Beklenmeyen ücretlerden kaçınmak için kullanım limitinizi Brave panosunda ayarlayın.
 
 Bkz. [Web araçları](/tr/tools/web).
 
-### 5) Web getirme aracı (Firecrawl)
+### 5) Web fetch aracı (Firecrawl)
 
 `web_fetch`, bir API anahtarı mevcut olduğunda **Firecrawl** çağırabilir:
 
 - `FIRECRAWL_API_KEY` veya `plugins.entries.firecrawl.config.webFetch.apiKey`
 
-Firecrawl yapılandırılmamışsa araç, doğrudan getirmeye ve paketlenmiş `web-readability` pluginine geri döner (ücretli API yok).
-Yerel Readability çıkarmayı atlamak için `plugins.entries.web-readability.enabled` değerini devre dışı bırakın.
+Firecrawl yapılandırılmamışsa araç, doğrudan fetch ve birlikte gelen `web-readability` Plugin'ine geri döner (ücretli API yok). Yerel Readability çıkarımını atlamak için `plugins.entries.web-readability.enabled` değerini devre dışı bırakın.
 
 Bkz. [Web araçları](/tr/tools/web).
 
 ### 6) Sağlayıcı kullanım anlık görüntüleri (durum/sağlık)
 
-Bazı durum komutları, kota pencerelerini veya kimlik doğrulama sağlığını göstermek için **sağlayıcı kullanım uç noktalarını** çağırır.
-Bunlar genellikle düşük hacimli çağrılardır, ancak yine de sağlayıcı API'lerine istek gönderir:
+Bazı durum komutları, kota pencerelerini veya auth sağlığını göstermek için **sağlayıcı kullanım uç noktalarını** çağırır. Bunlar genellikle düşük hacimli çağrılardır, ancak yine de sağlayıcı API'lerine gider:
 
 - `openclaw status --usage`
 - `openclaw models status --json`
 
-Bkz. [Models CLI](/tr/cli/models).
+Bkz. [Modeller CLI](/tr/cli/models).
 
 ### 7) Compaction koruma özeti
 
-Compaction koruması, oturum geçmişini **geçerli modeli** kullanarak özetleyebilir; bu da
-çalıştığında sağlayıcı API'lerini çağırır.
+Compaction koruması, oturum geçmişini **geçerli modeli** kullanarak özetleyebilir; çalıştığında sağlayıcı API'lerini çağırır.
 
 Bkz. [Oturum yönetimi + Compaction](/tr/reference/session-management-compaction).
 
-### 8) Model tarama / yoklama
+### 8) Model taraması / yoklama
 
-`openclaw models scan`, OpenRouter modellerini yoklayabilir ve yoklama etkinleştirildiğinde
-`OPENROUTER_API_KEY` kullanır.
+`openclaw models scan`, OpenRouter modellerini yoklayabilir ve yoklama etkinleştirildiğinde `OPENROUTER_API_KEY` kullanır.
 
-Bkz. [Models CLI](/tr/cli/models).
+Bkz. [Modeller CLI](/tr/cli/models).
 
 ### 9) Talk (konuşma)
 
@@ -197,13 +165,12 @@ Bkz. [Talk modu](/tr/nodes/talk).
 
 ### 10) Skills (üçüncü taraf API'ler)
 
-Skills, `skills.entries.<name>.apiKey` içinde `apiKey` saklayabilir. Bir skill bu anahtarı harici
-API'ler için kullanıyorsa, skill sağlayıcısına göre maliyet oluşturabilir.
+Skills, `apiKey` değerini `skills.entries.<name>.apiKey` içinde saklayabilir. Bir skill bu anahtarı harici API'ler için kullanırsa skill'in sağlayıcısına göre maliyet doğurabilir.
 
 Bkz. [Skills](/tr/tools/skills).
 
 ## İlgili
 
-- [Belirteç kullanımı ve maliyetler](/tr/reference/token-use)
-- [İstem önbellekleme](/tr/reference/prompt-caching)
+- [Token kullanımı ve maliyetler](/tr/reference/token-use)
+- [İstem önbelleğe alma](/tr/reference/prompt-caching)
 - [Kullanım izleme](/tr/concepts/usage-tracking)

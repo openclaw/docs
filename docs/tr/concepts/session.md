@@ -2,46 +2,48 @@
 read_when:
     - Oturum yönlendirmesini ve yalıtımını anlamak istiyorsunuz
     - Çok kullanıcılı kurulumlar için DM kapsamını yapılandırmak istiyorsunuz
-    - Günlük veya boşta oturum sıfırlamalarında hata ayıklıyorsunuz
-summary: OpenClaw'ın konuşma oturumlarını nasıl yönettiği
+    - Günlük veya boşta kalma kaynaklı oturum sıfırlamalarında hata ayıklıyorsunuz
+summary: OpenClaw konuşma oturumlarını nasıl yönetir
 title: Oturum yönetimi
 x-i18n:
-    generated_at: "2026-04-26T11:27:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:18:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f36995997dc7eb612333c6bbfe6cd6c08dc22769ad0a7e47d15dbb4208e6113
+    source_hash: 2bbb8f8fddf8ac942bc24b8b94a6464ec31d0aee035bf367726d2112269095f4
     source_path: concepts/session.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw konuşmaları **oturumlar** halinde düzenler. Her mesaj, geldiği yere göre bir oturuma yönlendirilir -- DM'ler, grup sohbetleri, Cron görevleri vb.
+OpenClaw konuşmaları **oturumlar** halinde düzenler. Her mesaj, nereden geldiğine göre bir
+oturuma yönlendirilir: DM'ler, grup sohbetleri, cron işleri vb.
 
 ## Mesajlar nasıl yönlendirilir
 
 | Kaynak          | Davranış                  |
 | --------------- | ------------------------- |
 | Doğrudan mesajlar | Varsayılan olarak paylaşılan oturum |
-| Grup sohbetleri | Grup başına yalıtılmış    |
-| Odalar/kanallar | Oda başına yalıtılmış     |
-| Cron görevleri  | Çalıştırma başına yeni oturum |
-| Webhook'lar     | Hook başına yalıtılmış    |
+| Grup sohbetleri | Grup başına izole edilir |
+| Odalar/kanallar | Oda başına izole edilir |
+| Cron işleri     | Her çalıştırmada yeni oturum |
+| Webhook'lar     | Hook başına izole edilir |
 
-## DM yalıtımı
+## DM izolasyonu
 
-Varsayılan olarak tüm DM'ler süreklilik için tek bir oturumu paylaşır. Bu,
+Varsayılan olarak, süreklilik için tüm DM'ler tek bir oturumu paylaşır. Bu,
 tek kullanıcılı kurulumlar için uygundur.
 
 <Warning>
-Birden fazla kişi agent'ınıza mesaj gönderebiliyorsa DM yalıtımını etkinleştirin. Aksi halde tüm
-kullanıcılar aynı konuşma bağlamını paylaşır -- Alice'in özel mesajları Bob tarafından görülebilir.
+Birden fazla kişi aracınıza mesaj gönderebiliyorsa DM izolasyonunu etkinleştirin. Aksi halde tüm
+kullanıcılar aynı konuşma bağlamını paylaşır; Alice'in özel mesajları Bob tarafından
+görülebilir.
 </Warning>
 
-**Çözüm:**
+**Düzeltme:**
 
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // kanal + gönderen bazında yalıt
+    dmScope: "per-channel-peer", // isolate by channel + sender
   },
 }
 ```
@@ -49,60 +51,72 @@ kullanıcılar aynı konuşma bağlamını paylaşır -- Alice'in özel mesajlar
 Diğer seçenekler:
 
 - `main` (varsayılan) -- tüm DM'ler tek bir oturumu paylaşır.
-- `per-peer` -- gönderen bazında yalıtım (kanallar arasında).
-- `per-channel-peer` -- kanal + gönderen bazında yalıtım (önerilir).
-- `per-account-channel-peer` -- hesap + kanal + gönderen bazında yalıtım.
+- `per-peer` -- gönderene göre izole eder (kanallar arasında).
+- `per-channel-peer` -- kanal + gönderene göre izole eder (önerilir).
+- `per-account-channel-peer` -- hesap + kanal + gönderene göre izole eder.
 
 <Tip>
-Aynı kişi size birden çok kanaldan ulaşıyorsa, tek bir oturumu paylaşmaları için
-kimliklerini bağlamak amacıyla `session.identityLinks` kullanın.
+Aynı kişi size birden fazla kanaldan ulaşıyorsa, kimliklerini bağlamak için
+`session.identityLinks` kullanın; böylece tek bir oturumu paylaşırlar.
 </Tip>
+
+### Bağlı kanalları kenetleme
+
+Dock komutları, kullanıcının mevcut doğrudan sohbet oturumunun yanıt rotasını,
+yeni bir oturum başlatmadan başka bir bağlı kanala taşımasını sağlar. Örnekler, yapılandırma ve
+sorun giderme için [Kanal kenetleme](/tr/concepts/channel-docking) bölümüne bakın.
 
 Kurulumunuzu `openclaw security audit` ile doğrulayın.
 
 ## Oturum yaşam döngüsü
 
-Oturumlar, süreleri dolana kadar yeniden kullanılır:
+Oturumlar süresi dolana kadar yeniden kullanılır:
 
-- **Günlük sıfırlama** (varsayılan) -- gateway ana makinesinin yerel saatine göre sabah 4:00'te yeni oturum.
-  Günlük tazelik, daha sonraki metadata yazılarına değil, geçerli `sessionId`'nin
-  ne zaman başladığına göre belirlenir.
-- **Boşta sıfırlama** (isteğe bağlı) -- belirli bir hareketsizlik süresinden sonra yeni oturum. `session.reset.idleMinutes` ayarlayın.
-  Boşta tazelik, son gerçek kullanıcı/kanal etkileşimine göre belirlenir; bu yüzden Heartbeat, Cron ve exec sistem olayları
+- **Günlük sıfırlama** (varsayılan) -- Gateway ana makinesinde yerel saatle 04:00'te yeni oturum.
+  Günlük yenilik, daha sonraki meta veri yazımlarına değil, mevcut `sessionId` değerinin
+  ne zaman başladığına dayanır.
+- **Boşta sıfırlama** (isteğe bağlı) -- bir hareketsizlik süresinden sonra yeni oturum. 
+  `session.reset.idleMinutes` ayarlayın. Boşta kalma yeniliği son gerçek
+  kullanıcı/kanal etkileşimine dayanır; bu nedenle heartbeat, cron ve exec sistem olayları
   oturumu canlı tutmaz.
-- **Elle sıfırlama** -- sohbette `/new` veya `/reset` yazın. `/new <model>` modeli de değiştirir.
+- **Manuel sıfırlama** -- sohbette `/new` veya `/reset` yazın. `/new <model>` ayrıca
+  modeli değiştirir.
 
-Hem günlük hem boşta sıfırlama yapılandırıldığında, önce hangisinin süresi dolarsa o kazanır.
-Heartbeat, Cron, exec ve diğer sistem olayı turları oturum metadata'sı yazabilir,
-ancak bu yazılar günlük veya boşta sıfırlama tazeliğini uzatmaz. Sıfırlama
-oturumu devirdiğinde, eski oturuma ait kuyruktaki sistem olayı bildirimleri
-atılır; böylece bayat arka plan güncellemeleri yeni oturumdaki ilk istemin başına eklenmez.
+Hem günlük hem de boşta sıfırlamalar yapılandırıldığında, hangisinin süresi önce dolarsa o geçerli olur.
+Heartbeat, cron, exec ve diğer sistem olayı dönüşleri oturum meta verisi yazabilir,
+ancak bu yazımlar günlük veya boşta sıfırlama yeniliğini uzatmaz. Bir sıfırlama
+oturumu devrettiğinde, eski oturum için sıraya alınmış sistem olayı bildirimleri
+atılır; böylece eski arka plan güncellemeleri yeni oturumdaki ilk istemin başına eklenmez.
 
-Etkin bir sağlayıcıya ait CLI oturumuna sahip oturumlar örtük günlük varsayılan tarafından kesilmez.
-Bu oturumların bir zamanlayıcıya göre sona ermesi gerekiyorsa `/reset` kullanın veya `session.reset` değerini açıkça yapılandırın.
+Etkin, sağlayıcıya ait bir CLI oturumu olan oturumlar örtük
+günlük varsayılan tarafından kesilmez. Bu oturumların bir zamanlayıcıyla süresi dolmalıysa
+`/reset` kullanın veya `session.reset` değerini açıkça yapılandırın.
 
-## Durum nerede yaşar
+## Durum nerede tutulur
 
-Tüm oturum durumu **gateway** tarafından sahiplenilir. UI istemcileri, oturum verileri için gateway'i sorgular.
+Tüm oturum durumu **Gateway** tarafından sahiplenilir. UI istemcileri oturum verileri için Gateway'i
+sorgular.
 
 - **Depo:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- **Transkriptler:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
+- **Dökümler:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
 
 `sessions.json` ayrı yaşam döngüsü zaman damgaları tutar:
 
-- `sessionStartedAt`: geçerli `sessionId`'nin başladığı an; günlük sıfırlama bunu kullanır.
-- `lastInteractionAt`: boşta yaşam süresini uzatan son kullanıcı/kanal etkileşimi.
-- `updatedAt`: son depo satırı mutasyonu; listeleme ve budama için yararlıdır, ancak günlük/boşta sıfırlama tazeliği için belirleyici değildir.
+- `sessionStartedAt`: mevcut `sessionId` başladığı zaman; günlük sıfırlama bunu kullanır.
+- `lastInteractionAt`: boşta kalma ömrünü uzatan son kullanıcı/kanal etkileşimi.
+- `updatedAt`: son depo satırı mutasyonu; listeleme ve budama için yararlıdır, ancak
+  günlük/boşta sıfırlama yeniliği için yetkili kaynak değildir.
 
-`sessionStartedAt` bulunmayan eski satırlar, mümkün olduğunda transcript JSONL
-oturum üstbilgisinden çözülür. Daha eski bir satırda `lastInteractionAt` da yoksa,
-boşta tazelik daha sonraki muhasebe yazılarına değil, o oturumun başlangıç zamanına fallback yapar.
+`sessionStartedAt` içermeyen eski satırlar, mevcut olduğunda döküm JSONL
+oturum başlığından çözümlenir. Eski bir satırda `lastInteractionAt` da yoksa,
+boşta kalma yeniliği daha sonraki kayıt tutma yazımlarına değil, ilgili oturumun başlangıç
+zamanına geri döner.
 
 ## Oturum bakımı
 
-OpenClaw zamanla oturum depolamasını otomatik olarak sınırlar. Varsayılan olarak
-`warn` modunda çalışır (nelerin temizleneceğini raporlar). Otomatik temizlik için `session.maintenance.mode`
-değerini `"enforce"` olarak ayarlayın:
+OpenClaw zaman içinde oturum depolamasını otomatik olarak sınırlar. Varsayılan olarak
+`warn` modunda çalışır (neyin temizleneceğini raporlar). Otomatik temizlik için
+`session.maintenance.mode` değerini `"enforce"` olarak ayarlayın:
 
 ```json5
 {
@@ -116,28 +130,30 @@ değerini `"enforce"` olarak ayarlayın:
 }
 ```
 
-`openclaw sessions cleanup --dry-run` ile önizleme yapın.
+Üretim boyutundaki `maxEntries` sınırları için Gateway çalışma zamanı yazımları küçük bir üst eşik tamponu kullanır ve toplu işlemlerle yapılandırılmış sınıra geri temizler. Bu, her izole cron oturumunda tam depo temizliği çalıştırmayı önler. `openclaw sessions cleanup --enforce` sınırı hemen uygular.
+
+`openclaw sessions cleanup --dry-run` ile önizleyin.
 
 ## Oturumları inceleme
 
 - `openclaw status` -- oturum deposu yolu ve son etkinlik.
 - `openclaw sessions --json` -- tüm oturumlar (`--active <minutes>` ile filtreleyin).
-- Sohbette `/status` -- bağlam kullanımı, model ve anahtarlar.
-- `/context list` -- sistem isteminde neler olduğu.
+- Sohbette `/status` -- bağlam kullanımı, model ve geçişler.
+- `/context list` -- sistem isteminde nelerin olduğu.
 
 ## Daha fazla okuma
 
-- [Session Pruning](/tr/concepts/session-pruning) -- tool sonuçlarını kırpma
+- [Oturum budama](/tr/concepts/session-pruning) -- araç sonuçlarını kırpma
 - [Compaction](/tr/concepts/compaction) -- uzun konuşmaları özetleme
-- [Session Tools](/tr/concepts/session-tool) -- oturumlar arası çalışma için agent tool'ları
-- [Session Management Deep Dive](/tr/reference/session-management-compaction) --
-  depo şeması, transkriptler, gönderim ilkesi, origin metadata'sı ve gelişmiş config
-- [Multi-Agent](/tr/concepts/multi-agent) — agent'lar arasında yönlendirme ve oturum yalıtımı
-- [Background Tasks](/tr/automation/tasks) — ayrık işlerin oturum başvuruları içeren görev kayıtlarını nasıl oluşturduğu
-- [Channel Routing](/tr/channels/channel-routing) — gelen mesajların oturumlara nasıl yönlendirildiği
+- [Oturum araçları](/tr/concepts/session-tool) -- oturumlar arası çalışma için aracı araçları
+- [Oturum Yönetimi Derinlemesine İnceleme](/tr/reference/session-management-compaction) --
+  depo şeması, dökümler, gönderme ilkesi, kaynak meta verileri ve gelişmiş yapılandırma
+- [Çoklu aracı](/tr/concepts/multi-agent) — aracılar arasında yönlendirme ve oturum izolasyonu
+- [Arka Plan Görevleri](/tr/automation/tasks) — ayrılmış çalışmanın oturum referanslarıyla görev kayıtları oluşturma şekli
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — gelen mesajların oturumlara nasıl yönlendirildiği
 
 ## İlgili
 
-- [Session pruning](/tr/concepts/session-pruning)
-- [Session tools](/tr/concepts/session-tool)
-- [Command queue](/tr/concepts/queue)
+- [Oturum budama](/tr/concepts/session-pruning)
+- [Oturum araçları](/tr/concepts/session-tool)
+- [Komut kuyruğu](/tr/concepts/queue)

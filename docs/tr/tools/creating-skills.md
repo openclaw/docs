@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Çalışma alanınızda yeni bir özel Skill oluşturuyorsunuz
-    - '`SKILL.md` tabanlı Skills için hızlı bir başlangıç iş akışına ihtiyacınız var'
-summary: '`SKILL.md` ile özel çalışma alanı Skills’leri oluşturma ve test etme'
+    - Çalışma alanınızda yeni bir özel beceri oluşturuyorsunuz
+    - SKILL.md tabanlı Skills için hızlı bir başlangıç iş akışına ihtiyacınız var
+summary: Özel çalışma alanı Skills'lerini SKILL.md ile oluşturun ve test edin
 title: Skills oluşturma
 x-i18n:
-    generated_at: "2026-04-24T09:33:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:47:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
+    source_hash: 201718f4088f4243b0dabe12fb4fce4b8a7e64df9a4b7d651356ab4ae0dd3579
     source_path: tools/creating-skills.md
-    workflow: 15
+    workflow: 16
 ---
 
-Skills, ajana araçları nasıl ve ne zaman kullanacağını öğretir. Her Skill, YAML frontmatter ve Markdown talimatları içeren bir `SKILL.md` dosyası barındıran bir dizindir.
+Skills, araca araçların nasıl ve ne zaman kullanılacağını öğretir. Her skill, YAML frontmatter ve markdown yönergeleri içeren bir `SKILL.md` dosyası barındıran bir dizindir.
 
 Skills’in nasıl yüklendiği ve önceliklendirildiği için bkz. [Skills](/tr/tools/skills).
 
-## İlk Skill’inizi oluşturun
+## İlk skill’inizi oluşturun
 
 <Steps>
-  <Step title="Skill dizinini oluşturun">
+  <Step title="Skill dizinini oluştur">
     Skills çalışma alanınızda bulunur. Yeni bir klasör oluşturun:
 
     ```bash
@@ -29,39 +29,42 @@ Skills’in nasıl yüklendiği ve önceliklendirildiği için bkz. [Skills](/tr
 
   </Step>
 
-  <Step title="SKILL.md yazın">
-    Bu dizin içinde `SKILL.md` oluşturun. Frontmatter meta verileri tanımlar,
-    Markdown gövdesi ise ajan için talimatları içerir.
+  <Step title="SKILL.md yaz">
+    Bu dizinin içinde `SKILL.md` oluşturun. Frontmatter, metadata’yı tanımlar;
+    markdown gövdesi ise aracı için yönergeler içerir.
 
     ```markdown
     ---
-    name: hello_world
-    description: Merhaba diyen basit bir skill.
+    name: hello-world
+    description: A simple skill that says hello.
     ---
 
     # Hello World Skill
 
-    Kullanıcı bir selamlama istediğinde, `echo` aracını kullanarak
-    "Özel skill’inizden merhaba!" deyin.
+    When the user asks for a greeting, use the `echo` tool to say
+    "Hello from your custom skill!".
     ```
 
-  </Step>
-
-  <Step title="Araç ekleyin (isteğe bağlı)">
-    Frontmatter içinde özel araç şemaları tanımlayabilir veya ajanı
-    mevcut sistem araçlarını (`exec` veya `browser` gibi) kullanması için yönlendirebilirsiniz. Skills, belgeledikleri araçlarla birlikte Plugin’lerin içinde de
-    gönderilebilir.
+    Skill `name` için küçük harfler, rakamlar ve kısa çizgilerle hyphen-case
+    kullanın. Klasör adı ile frontmatter `name` değerini uyumlu tutun.
 
   </Step>
 
-  <Step title="Skill’i yükleyin">
-    OpenClaw’ın Skill’i algılaması için yeni bir oturum başlatın:
+  <Step title="Araçlar ekle (isteğe bağlı)">
+    Frontmatter içinde özel araç şemaları tanımlayabilir veya araca mevcut
+    sistem araçlarını (`exec` ya da `browser` gibi) kullanmasını söyleyebilirsiniz. Skills ayrıca
+    belgeledikleri araçlarla birlikte plugins içinde de gönderilebilir.
+
+  </Step>
+
+  <Step title="Skill’i yükle">
+    OpenClaw’ın skill’i algılaması için yeni bir oturum başlatın:
 
     ```bash
-    # Sohbet içinden
+    # From chat
     /new
 
-    # Veya gateway’i yeniden başlatın
+    # Or restart the gateway
     openclaw gateway restart
     ```
 
@@ -73,51 +76,51 @@ Skills’in nasıl yüklendiği ve önceliklendirildiği için bkz. [Skills](/tr
 
   </Step>
 
-  <Step title="Test edin">
+  <Step title="Test et">
     Skill’i tetiklemesi gereken bir mesaj gönderin:
 
     ```bash
     openclaw agent --message "give me a greeting"
     ```
 
-    Ya da ajanla sohbet edip bir selamlama isteyin.
+    Ya da yalnızca araçla sohbet edip bir selamlama isteyin.
 
   </Step>
 </Steps>
 
-## Skill meta veri referansı
+## Skill metadata referansı
 
 YAML frontmatter şu alanları destekler:
 
-| Alan                                | Gerekli | Açıklama                                    |
-| ----------------------------------- | ------- | ------------------------------------------- |
-| `name`                              | Evet    | Benzersiz tanımlayıcı (`snake_case`)        |
-| `description`                       | Evet    | Ajana gösterilen tek satırlık açıklama      |
-| `metadata.openclaw.os`              | Hayır   | OS filtresi (`["darwin"]`, `["linux"]` vb.) |
-| `metadata.openclaw.requires.bins`   | Hayır   | PATH üzerinde gerekli ikililer              |
-| `metadata.openclaw.requires.config` | Hayır   | Gerekli yapılandırma anahtarları            |
+| Alan                                | Zorunlu | Açıklama                                                     |
+| ----------------------------------- | ------- | ------------------------------------------------------------ |
+| `name`                              | Evet    | Küçük harfler, rakamlar ve kısa çizgiler kullanan benzersiz tanımlayıcı |
+| `description`                       | Evet    | Araca gösterilen tek satırlık açıklama                       |
+| `metadata.openclaw.os`              | Hayır   | İşletim sistemi filtresi (`["darwin"]`, `["linux"]` vb.)     |
+| `metadata.openclaw.requires.bins`   | Hayır   | PATH üzerinde gerekli ikili dosyalar                         |
+| `metadata.openclaw.requires.config` | Hayır   | Gerekli config anahtarları                                   |
 
 ## En iyi uygulamalar
 
-- **Kısa olun** — modele bir AI gibi nasıl davranacağını değil, _ne_ yapacağını söyleyin
-- **Önce güvenlik** — Skill’iniz `exec` kullanıyorsa, istemlerin güvenilmeyen girdilerden rastgele komut eklemeye izin vermediğinden emin olun
+- **Kısa ve öz olun** — modele bir yapay zeka olarak nasıl davranacağını değil, _ne_ yapacağını söyleyin
+- **Önce güvenlik** — skill’iniz `exec` kullanıyorsa, istemlerin güvenilmeyen girdiden rastgele komut enjeksiyonuna izin vermediğinden emin olun
 - **Yerelde test edin** — paylaşmadan önce test etmek için `openclaw agent --message "..."` kullanın
-- **ClawHub kullanın** — [ClawHub](https://clawhub.ai) üzerinde Skills’e göz atın ve katkıda bulunun
+- **ClawHub kullanın** — Skills’e [ClawHub](https://clawhub.ai) üzerinden göz atın ve katkıda bulunun
 
-## Skills nerede bulunur
+## Skills’in bulunduğu yerler
 
-| Konum                           | Öncelik   | Kapsam                  |
-| ------------------------------- | --------- | ----------------------- |
-| `\<workspace\>/skills/`         | En yüksek | Ajan başına             |
-| `\<workspace\>/.agents/skills/` | Yüksek    | Çalışma alanı ajanı başına |
-| `~/.agents/skills/`             | Orta      | Paylaşılan ajan profili |
-| `~/.openclaw/skills/`           | Orta      | Paylaşılan (tüm ajanlar) |
-| Paketli (OpenClaw ile gönderilir) | Düşük   | Genel                   |
-| `skills.load.extraDirs`         | En düşük  | Özel paylaşılan klasörler |
+| Konum                           | Öncelik    | Kapsam                    |
+| ------------------------------- | ---------- | ------------------------- |
+| `\<workspace\>/skills/`         | En yüksek  | Aracı başına              |
+| `\<workspace\>/.agents/skills/` | Yüksek     | Çalışma alanı aracı başına |
+| `~/.agents/skills/`             | Orta       | Paylaşılan aracı profili  |
+| `~/.openclaw/skills/`           | Orta       | Paylaşılan (tüm aracılar) |
+| Paketli (OpenClaw ile gönderilir) | Düşük    | Genel                     |
+| `skills.load.extraDirs`         | En düşük   | Özel paylaşılan klasörler |
 
 ## İlgili
 
-- [Skills referansı](/tr/tools/skills) — yükleme, öncelik ve geçitleme kuralları
-- [Skills yapılandırması](/tr/tools/skills-config) — `skills.*` yapılandırma şeması
-- [ClawHub](/tr/tools/clawhub) — herkese açık Skill kayıt defteri
-- [Plugin oluşturma](/tr/plugins/building-plugins) — Plugin’ler Skills içerebilir
+- [Skills referansı](/tr/tools/skills) — yükleme, öncelik ve kapılama kuralları
+- [Skills config](/tr/tools/skills-config) — `skills.*` config şeması
+- [ClawHub](/tr/tools/clawhub) — herkese açık skill kayıt yeri
+- [Plugin Oluşturma](/tr/plugins/building-plugins) — plugins skills gönderebilir

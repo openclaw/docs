@@ -1,41 +1,47 @@
 ---
 read_when:
-    - Control UI’da yardımcı çıktı işlemesini değiştirme
-    - '``[embed ...]``, ``MEDIA:``, yanıt veya ses sunum yönergelerinde hata ayıklama'
-summary: Gömüler, medya, ses ipuçları ve yanıtlar için zengin çıktı shortcode protokolü
+    - Kontrol kullanıcı arayüzünde asistan çıktısı işlemenin değiştirilmesi
+    - '`[embed ...]`, `MEDIA:`, yanıt veya ses sunumu yönergelerinde hata ayıklama'
+summary: Yerleştirmeler, medya, ses ipuçları ve yanıtlar için zengin çıktı kısa kod protokolü
 title: Zengin çıktı protokolü
 x-i18n:
-    generated_at: "2026-04-26T11:40:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:43:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3c62e41073196c2ff4867230af55469786fcfb29414f5cc5b7d38f6b1ffc3718
+    source_hash: 7c52a2f3a37e7a8d1237046edafc3e80c3199c01f890a1ef39662436590ef55d
     source_path: reference/rich-output-protocol.md
-    workflow: 15
+    workflow: 16
 ---
 
-Yardımcı çıktısı küçük bir teslim/işleme yönergesi kümesi taşıyabilir:
+Asistan çıktısı küçük bir teslim/görüntüleme yönergeleri kümesi taşıyabilir:
 
-- ek teslimi için `MEDIA:`
-- ses sunum ipuçları için `[[audio_as_voice]]`
-- yanıt meta verisi için `[[reply_to_current]]` / `[[reply_to:<id>]]`
-- Control UI zengin işlemesi için `[embed ...]`
+- Ek teslimi için `MEDIA:`
+- Ses sunumu ipuçları için `[[audio_as_voice]]`
+- Yanıt meta verileri için `[[reply_to_current]]` / `[[reply_to:<id>]]`
+- Control UI zengin görüntüleme için `[embed ...]`
 
-Uzak `MEDIA:` ekleri herkese açık `https:` URL’leri olmalıdır. Düz `http:`,
-loopback, link-local, private ve internal ana makine adları ek yönergeleri olarak yok sayılır;
-sunucu tarafı medya getiriciler yine de kendi ağ korumalarını uygular.
+Uzak `MEDIA:` ekleri herkese açık `https:` URL'leri olmalıdır. Düz `http:`,
+loopback, link-local, özel ve dahili ana makine adları ek yönergeleri olarak
+yok sayılır; sunucu tarafı medya getiricileri yine de kendi ağ korumalarını uygular.
 
-Bu yönergeler birbirinden ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim meta verisi olarak kalır; `[embed ...]` yalnızca web’e özgü zengin işleme yoludur.
-Güvenilen tool-result medyası da teslimden önce aynı `MEDIA:` / `[[audio_as_voice]]` ayrıştırıcısını kullanır; böylece metin araç çıktıları yine de bir ses ekini sesli not olarak işaretleyebilir.
+Düz Markdown görsel söz dizimi varsayılan olarak metin kalır. Markdown görsel
+yanıtlarını bilerek medya eklerine eşleyen kanallar, giden bağdaştırıcılarında
+bunu etkinleştirir; Telegram bunu yapar, böylece `![alt](url)` yine de bir medya
+yanıtına dönüşebilir.
 
-Block streaming etkin olduğunda `MEDIA:`, bir dönüş için tek teslim meta verisi olarak kalır.
-Aynı medya URL’si akışlı bir blokta gönderilir ve son yardımcı yükünde tekrar edilirse,
-OpenClaw eki bir kez teslim eder ve yineleneni son yükten çıkarır.
+Bu yönergeler ayrıdır. `MEDIA:` ve yanıt/ses etiketleri teslim meta verileri olarak kalır; `[embed ...]` yalnızca web'e yönelik zengin görüntüleme yoludur.
+Güvenilir araç sonucu medyası, teslimden önce aynı `MEDIA:` / `[[audio_as_voice]]` ayrıştırıcısını kullanır; bu nedenle metin araç çıktıları yine de bir ses ekini sesli not olarak işaretleyebilir.
+
+Blok akışı etkinleştirildiğinde, `MEDIA:` bir tur için tek teslimli meta veri
+olarak kalır. Aynı medya URL'si akışla gönderilen bir blokta gönderilir ve son
+asistan yükünde tekrarlanırsa, OpenClaw eki bir kez teslim eder ve yineleneni
+son yükten çıkarır.
 
 ## `[embed ...]`
 
-`[embed ...]`, Control UI için aracıya dönük tek zengin işleme sözdizimidir.
+`[embed ...]`, Control UI için ajanların kullanabileceği tek zengin görüntüleme söz dizimidir.
 
-Kendiliğinden kapanan örnek:
+Kendini kapatan örnek:
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -43,16 +49,16 @@ Kendiliğinden kapanan örnek:
 
 Kurallar:
 
-- `[view ...]`, yeni çıktı için artık geçerli değildir.
-- Embed shortcode’ları yalnızca yardımcı mesaj yüzeyinde işlenir.
-- Yalnızca URL destekli embed’ler işlenir. `ref="..."` veya `url="..."` kullanın.
-- Blok biçimli satır içi HTML embed shortcode’ları işlenmez.
-- Web UI, shortcode’u görünür metinden çıkarır ve embed’i satır içinde işler.
-- `MEDIA:`, embed takma adı değildir ve zengin embed işleme için kullanılmamalıdır.
+- `[view ...]` artık yeni çıktı için geçerli değildir.
+- Embed kısa kodları yalnızca asistan mesajı yüzeyinde görüntülenir.
+- Yalnızca URL destekli embed'ler görüntülenir. `ref="..."` veya `url="..."` kullanın.
+- Blok biçimli satır içi HTML embed kısa kodları görüntülenmez.
+- Web kullanıcı arayüzü kısa kodu görünür metinden çıkarır ve embed'i satır içinde görüntüler.
+- `MEDIA:` bir embed takma adı değildir ve zengin embed görüntüleme için kullanılmamalıdır.
 
-## Saklanan işleme biçimi
+## Saklanan görüntüleme biçimi
 
-Normalleştirilmiş/saklanan yardımcı içerik bloğu yapılandırılmış bir `canvas` öğesidir:
+Normalleştirilmiş/saklanan asistan içerik bloğu yapılandırılmış bir `canvas` öğesidir:
 
 ```json
 {
@@ -69,9 +75,9 @@ Normalleştirilmiş/saklanan yardımcı içerik bloğu yapılandırılmış bir 
 }
 ```
 
-Saklanan/işlenen zengin bloklar bu `canvas` biçimini doğrudan kullanır. `present_view` tanınmaz.
+Saklanan/görüntülenen zengin bloklar bu `canvas` biçimini doğrudan kullanır. `present_view` tanınmaz.
 
 ## İlgili
 
-- [RPC adapters](/tr/reference/rpc)
+- [RPC bağdaştırıcıları](/tr/reference/rpc)
 - [Typebox](/tr/concepts/typebox)

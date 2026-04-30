@@ -2,29 +2,29 @@
 read_when:
     - Prometheus, Grafana, VictoriaMetrics veya başka bir kazıyıcının OpenClaw Gateway metriklerini toplamasını istiyorsunuz
     - Panolar veya uyarılar için Prometheus metrik adlarına ve etiket politikasına ihtiyacınız var
-    - Bir OpenTelemetry toplayıcısı çalıştırmadan metrikler istiyorsunuz
+    - OpenTelemetry toplayıcısı çalıştırmadan metrikler istiyorsunuz
 sidebarTitle: Prometheus
-summary: OpenClaw tanılamalarını diagnostics-prometheus Plugin'i aracılığıyla Prometheus metin metrikleri olarak sunma
+summary: OpenClaw tanılama verilerini diagnostics-prometheus Plugin'i aracılığıyla Prometheus metin metrikleri olarak kullanıma açın
 title: Prometheus metrikleri
 x-i18n:
-    generated_at: "2026-04-26T11:30:30Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:24:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 29fd3e4658ceffe20f078e8e38b61c685ea9df518ca04ca34abf2085166eb481
+    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
     source_path: gateway/prometheus.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, birlikte gelen `diagnostics-prometheus` Plugin'i aracılığıyla tanılama metriklerini sunabilir. Güvenilir dahili tanılamaları dinler ve şu adreste bir Prometheus metin uç noktası oluşturur:
+OpenClaw, paketle birlikte gelen `diagnostics-prometheus` Plugin'i aracılığıyla tanılama metriklerini sunabilir. Güvenilir dahili tanılamaları dinler ve şu adreste Prometheus metin uç noktası oluşturur:
 
 ```text
 GET /api/diagnostics/prometheus
 ```
 
-İçerik türü `text/plain; version=0.0.4; charset=utf-8` şeklindedir; bu, standart Prometheus dışa aktarma biçimidir.
+İçerik türü, standart Prometheus sunum biçimi olan `text/plain; version=0.0.4; charset=utf-8` şeklindedir.
 
 <Warning>
-Yol Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese açık, kimlik doğrulamasız bir `/metrics` uç noktası olarak sunmayın. Kazımayı, diğer operatör API'leri için kullandığınız aynı kimlik doğrulama yolu üzerinden yapın.
+Rota Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese açık, kimliği doğrulanmamış bir `/metrics` uç noktası olarak sunmayın. Diğer operatör API'leri için kullandığınız aynı kimlik doğrulama yoluyla kazıyın.
 </Warning>
 
 İzler, günlükler, OTLP push ve OpenTelemetry GenAI anlamsal öznitelikleri için bkz. [OpenTelemetry dışa aktarma](/tr/gateway/opentelemetry).
@@ -57,10 +57,10 @@ Yol Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese
     </Tabs>
   </Step>
   <Step title="Gateway'i yeniden başlatın">
-    HTTP yolu Plugin başlangıcında kaydedilir, bu nedenle etkinleştirdikten sonra yeniden yükleyin.
+    HTTP rotası Plugin başlangıcında kaydedilir, bu nedenle etkinleştirdikten sonra yeniden yükleyin.
   </Step>
-  <Step title="Korumalı yolu kazıyın">
-    Operatör istemcilerinizin kullandığı aynı gateway kimlik doğrulamasını gönderin:
+  <Step title="Korunan rotayı kazıyın">
+    Operatör istemcilerinizin kullandığı aynı Gateway kimlik doğrulamasını gönderin:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -84,7 +84,7 @@ Yol Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese
 </Steps>
 
 <Note>
-`diagnostics.enabled: true` gereklidir. Bu olmadan Plugin yine HTTP yolunu kaydeder ancak hiçbir tanılama olayı dışa aktarıcıya akmaz, bu yüzden yanıt boştur.
+`diagnostics.enabled: true` gereklidir. Bu olmadan Plugin yine HTTP rotasını kaydeder, ancak dışa aktarıcıya hiçbir tanılama olayı akmaz; bu yüzden yanıt boş olur.
 </Note>
 
 ## Dışa aktarılan metrikler
@@ -106,36 +106,36 @@ Yol Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese
 | `openclaw_message_processed_duration_seconds` | histogram | `channel`, `outcome`, `reason`                                                            |
 | `openclaw_message_delivery_total`             | sayaç     | `channel`, `delivery_kind`, `error_category`, `outcome`                                   |
 | `openclaw_message_delivery_duration_seconds`  | histogram | `channel`, `delivery_kind`, `error_category`, `outcome`                                   |
-| `openclaw_queue_lane_size`                    | gauge     | `lane`                                                                                    |
+| `openclaw_queue_lane_size`                    | gösterge  | `lane`                                                                                    |
 | `openclaw_queue_lane_wait_seconds`            | histogram | `lane`                                                                                    |
 | `openclaw_session_state_total`                | sayaç     | `reason`, `state`                                                                         |
-| `openclaw_session_queue_depth`                | gauge     | `state`                                                                                   |
-| `openclaw_memory_bytes`                       | gauge     | `kind`                                                                                    |
+| `openclaw_session_queue_depth`                | gösterge  | `state`                                                                                   |
+| `openclaw_memory_bytes`                       | gösterge  | `kind`                                                                                    |
 | `openclaw_memory_rss_bytes`                   | histogram | yok                                                                                       |
 | `openclaw_memory_pressure_total`              | sayaç     | `level`, `reason`                                                                         |
 | `openclaw_telemetry_exporter_total`           | sayaç     | `exporter`, `reason`, `signal`, `status`                                                  |
 | `openclaw_prometheus_series_dropped_total`    | sayaç     | yok                                                                                       |
 
-## Etiket politikası
+## Etiket ilkesi
 
 <AccordionGroup>
   <Accordion title="Sınırlı, düşük kardinaliteli etiketler">
-    Prometheus etiketleri sınırlı ve düşük kardinalitelidir. Dışa aktarıcı; `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, mesaj kimlikleri, sohbet kimlikleri veya sağlayıcı istek kimlikleri gibi ham tanılama tanımlayıcılarını yaymaz.
+    Prometheus etiketleri sınırlı ve düşük kardinaliteli kalır. Dışa aktarıcı `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ileti kimlikleri, sohbet kimlikleri veya sağlayıcı istek kimlikleri gibi ham tanılama tanımlayıcıları yaymaz.
 
-    Etiket değerleri redakte edilir ve OpenClaw'ın düşük kardinaliteli karakter politikasına uymalıdır. Politikayı geçemeyen değerler, metriğe bağlı olarak `unknown`, `other` veya `none` ile değiştirilir.
+    Etiket değerleri gizlenir ve OpenClaw'ın düşük kardinaliteli karakter ilkesiyle eşleşmelidir. İlkeyi geçemeyen değerler, metriğe bağlı olarak `unknown`, `other` veya `none` ile değiştirilir.
 
   </Accordion>
   <Accordion title="Seri sınırı ve taşma muhasebesi">
-    Dışa aktarıcı, bellekte tutulan zaman serilerini sayaçlar, gauge'lar ve histogramlar dahil toplam **2048** seri ile sınırlar. Bu sınırın ötesindeki yeni seriler bırakılır ve her seferinde `openclaw_prometheus_series_dropped_total` bir artırılır.
+    Dışa aktarıcı, sayaçlar, göstergeler ve histogramlar genelinde bellekte tutulan zaman serilerini toplamda **2048** seriyle sınırlar. Bu sınırın ötesindeki yeni seriler düşürülür ve `openclaw_prometheus_series_dropped_total` her seferinde bir artar.
 
-    Yukarı akışta bir özniteliğin yüksek kardinaliteli değer sızdırdığına dair kesin bir sinyal olarak bu sayacı izleyin. Dışa aktarıcı sınırı asla otomatik olarak yükseltmez; artıyorsa sınırı devre dışı bırakmak yerine kaynağı düzeltin.
+    Bu sayacı, yukarı akıştaki bir özniteliğin yüksek kardinaliteli değerler sızdırdığına dair kesin bir sinyal olarak izleyin. Dışa aktarıcı sınırı hiçbir zaman otomatik olarak kaldırmaz; sayı yükselirse sınırı devre dışı bırakmak yerine kaynağı düzeltin.
 
   </Accordion>
   <Accordion title="Prometheus çıktısında asla görünmeyenler">
     - istem metni, yanıt metni, araç girdileri, araç çıktıları, sistem istemleri
-    - ham sağlayıcı istek kimlikleri (yalnızca geçerliyse sınırlı karmalar span'lerde bulunur — metriklerde asla)
+    - ham sağlayıcı istek kimlikleri (yalnızca uygun olduğu durumlarda izlerde sınırlı karmalar; metriklerde asla)
     - oturum anahtarları ve oturum kimlikleri
-    - host adları, dosya yolları, gizli değerler
+    - ana makine adları, dosya yolları, gizli değerler
 
   </Accordion>
 </AccordionGroup>
@@ -143,50 +143,50 @@ Yol Gateway kimlik doğrulamasını kullanır (operatör kapsamı). Bunu herkese
 ## PromQL tarifleri
 
 ```promql
-# Dakika başına token, sağlayıcıya göre bölünmüş
+# Tokens per minute, split by provider
 sum by (provider) (rate(openclaw_model_tokens_total[1m]))
 
-# Son bir saatte harcama (USD), modele göre
+# Spend (USD) over the last hour, by model
 sum by (model) (increase(openclaw_model_cost_usd_total[1h]))
 
-# 95. yüzdelik model çalışma süresi
+# 95th percentile model run duration
 histogram_quantile(
   0.95,
   sum by (le, provider, model)
     (rate(openclaw_run_duration_seconds_bucket[5m]))
 )
 
-# Kuyruk bekleme süresi SLO'su (95p 2s altı)
+# Queue wait time SLO (95p under 2s)
 histogram_quantile(
   0.95,
   sum by (le, lane) (rate(openclaw_queue_lane_wait_seconds_bucket[5m]))
 ) < 2
 
-# Bırakılan Prometheus serileri (kardinalite alarmı)
+# Dropped Prometheus series (cardinality alarm)
 increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Sağlayıcılar arası panolar için `gen_ai_client_token_usage` tercih edin: OpenTelemetry GenAI anlamsal kurallarını izler ve OpenClaw dışındaki GenAI hizmetlerinden gelen metriklerle tutarlıdır.
+Sağlayıcılar arası panolar için `gen_ai_client_token_usage` tercih edin: OpenTelemetry GenAI anlamsal kurallarını izler ve OpenClaw dışı GenAI hizmetlerinden gelen metriklerle tutarlıdır.
 </Tip>
 
-## Prometheus ve OpenTelemetry dışa aktarma arasında seçim
+## Prometheus ve OpenTelemetry dışa aktarma arasında seçim yapma
 
-OpenClaw her iki yüzeyi de bağımsız olarak destekler. Bunlardan birini, ikisini birden veya hiçbirini çalıştırabilirsiniz.
+OpenClaw her iki yüzeyi de bağımsız olarak destekler. Birini, ikisini birden veya hiçbirini çalıştırabilirsiniz.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - **Pull** modeli: Prometheus, `/api/diagnostics/prometheus` yolunu kazır.
+    - **Pull** modeli: Prometheus `/api/diagnostics/prometheus` adresini kazır.
     - Harici toplayıcı gerekmez.
-    - Normal Gateway kimlik doğrulaması üzerinden doğrulanır.
+    - Normal Gateway kimlik doğrulaması üzerinden kimliği doğrulanır.
     - Yüzey yalnızca metriklerden oluşur (iz veya günlük yoktur).
-    - Zaten Prometheus + Grafana üzerinde standartlaşmış yığınlar için en uygunudur.
+    - Prometheus + Grafana üzerinde zaten standartlaşmış yığınlar için en uygundur.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - **Push** modeli: OpenClaw, bir toplayıcıya veya OTLP uyumlu arka uca OTLP/HTTP gönderir.
-    - Yüzey metrikler, izler ve günlükleri içerir.
-    - Her ikisine de ihtiyaç duyduğunuzda bir OpenTelemetry Collector (`prometheus` veya `prometheusremotewrite` dışa aktarıcısı) üzerinden Prometheus'a köprü kurar.
+    - **Push** modeli: OpenClaw, OTLP/HTTP'yi bir toplayıcıya veya OTLP uyumlu arka uca gönderir.
+    - Yüzey metrikleri, izleri ve günlükleri içerir.
+    - İkisine de ihtiyaç duyduğunuzda bir OpenTelemetry Collector (`prometheus` veya `prometheusremotewrite` dışa aktarıcısı) üzerinden Prometheus'a köprü kurar.
     - Tam katalog için bkz. [OpenTelemetry dışa aktarma](/tr/gateway/opentelemetry).
 
   </Tab>
@@ -197,24 +197,24 @@ OpenClaw her iki yüzeyi de bağımsız olarak destekler. Bunlardan birini, ikis
 <AccordionGroup>
   <Accordion title="Boş yanıt gövdesi">
     - Yapılandırmada `diagnostics.enabled: true` değerini kontrol edin.
-    - `openclaw plugins list --enabled` ile Plugin'in etkin ve yüklü olduğunu doğrulayın.
-    - Biraz trafik oluşturun; sayaçlar ve histogramlar ancak en az bir olaydan sonra satır yayar.
+    - Plugin'in etkinleştirildiğini ve `openclaw plugins list --enabled` ile yüklendiğini doğrulayın.
+    - Biraz trafik oluşturun; sayaçlar ve histogramlar yalnızca en az bir olaydan sonra satır yayar.
 
   </Accordion>
   <Accordion title="401 / yetkisiz">
-    Uç nokta Gateway operatör kapsamını gerektirir (`auth: "gateway"` ve `gatewayRuntimeScopeSurface: "trusted-operator"`). Prometheus'un diğer herhangi bir Gateway operatör yolu için kullandığı aynı token'ı veya parolayı kullanın. Herkese açık kimlik doğrulamasız kip yoktur.
+    Uç nokta Gateway operatör kapsamını gerektirir (`auth: "gateway"` ve `gatewayRuntimeScopeSurface: "trusted-operator"`). Prometheus'un başka herhangi bir Gateway operatör rotası için kullandığı aynı belirteci veya parolayı kullanın. Herkese açık, kimliği doğrulanmamış mod yoktur.
   </Accordion>
-  <Accordion title="`openclaw_prometheus_series_dropped_total` artıyor">
-    Yeni bir öznitelik **2048** seri sınırını aşıyor. Son metriklerde beklenmedik derecede yüksek kardinaliteli bir etiketi inceleyin ve bunu kaynakta düzeltin. Dışa aktarıcı, etiketleri sessizce yeniden yazmak yerine bilinçli olarak yeni serileri bırakır.
+  <Accordion title="`openclaw_prometheus_series_dropped_total` yükseliyor">
+    Yeni bir öznitelik **2048** seri sınırını aşıyor. Beklenmedik şekilde yüksek kardinaliteli bir etiket için son metrikleri inceleyin ve kaynağında düzeltin. Dışa aktarıcı, etiketleri sessizce yeniden yazmak yerine yeni serileri bilerek düşürür.
   </Accordion>
   <Accordion title="Prometheus yeniden başlatmadan sonra bayat seriler gösteriyor">
-    Plugin durumu yalnızca bellekte tutar. Gateway yeniden başlatıldıktan sonra sayaçlar sıfıra döner ve gauge'lar bir sonraki bildirilen değerlerinden yeniden başlar. Sıfırlamaları temiz şekilde ele almak için PromQL `rate()` ve `increase()` kullanın.
+    Plugin durumu yalnızca bellekte tutar. Gateway yeniden başlatıldıktan sonra sayaçlar sıfıra döner ve göstergeler bir sonraki bildirilen değerlerinde yeniden başlar. Sıfırlamaları temiz şekilde ele almak için PromQL `rate()` ve `increase()` kullanın.
   </Accordion>
 </AccordionGroup>
 
 ## İlgili
 
-- [Diagnostics dışa aktarma](/tr/gateway/diagnostics) — destek paketleri için yerel diagnostics zip
-- [Sağlık ve hazır olma](/tr/gateway/health) — `/healthz` ve `/readyz` sondaları
-- [Günlükleme](/tr/logging) — dosya tabanlı günlükleme
+- [Tanılama dışa aktarma](/tr/gateway/diagnostics) — destek paketleri için yerel tanılama zip dosyası
+- [Sağlık ve hazır olma](/tr/gateway/health) — `/healthz` ve `/readyz` yoklamaları
+- [Günlük kaydı](/tr/logging) — dosya tabanlı günlük kaydı
 - [OpenTelemetry dışa aktarma](/tr/gateway/opentelemetry) — izler, metrikler ve günlükler için OTLP push

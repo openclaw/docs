@@ -1,65 +1,71 @@
 ---
 read_when:
-    - OpenClaw'ı bir LiteLLM proxy üzerinden yönlendirmek istiyorsunuz
-    - LiteLLM üzerinden maliyet takibi, günlükleme veya model yönlendirmeye ihtiyacınız var
+    - OpenClaw'u bir LiteLLM vekil sunucusu üzerinden yönlendirmek istiyorsunuz
+    - Maliyet takibine, günlüklemeye veya LiteLLM üzerinden model yönlendirmeye ihtiyacınız var
 summary: Birleşik model erişimi ve maliyet takibi için OpenClaw'ı LiteLLM Proxy üzerinden çalıştırın
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-26T11:39:20Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
+    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
     source_path: providers/litellm.md
-    workflow: 15
+    workflow: 16
 ---
 
-[LiteLLM](https://litellm.ai), 100+'den fazla model sağlayıcısına birleşik API sunan açık kaynaklı bir LLM gateway'dir. Merkezi maliyet takibi, günlükleme ve OpenClaw config'inizi değiştirmeden backend değiştirme esnekliği elde etmek için OpenClaw'ı LiteLLM üzerinden yönlendirin.
+[LiteLLM](https://litellm.ai), 100+ model sağlayıcısına birleşik API sunan açık kaynaklı bir LLM Gateway’idir. Merkezi maliyet takibi, günlükleme ve OpenClaw yapılandırmanızı değiştirmeden arka uçlar arasında geçiş esnekliği elde etmek için OpenClaw’ı LiteLLM üzerinden yönlendirin.
 
 <Tip>
 **OpenClaw ile LiteLLM neden kullanılır?**
 
-- **Maliyet takibi** — OpenClaw'ın tüm modellerde tam olarak ne kadar harcadığını görün
-- **Model yönlendirme** — Config değişikliği olmadan Claude, GPT-4, Gemini, Bedrock arasında geçiş yapın
+- **Maliyet takibi** — OpenClaw’ın tüm modellerde tam olarak ne harcadığını görün
+- **Model yönlendirme** — Yapılandırma değişiklikleri olmadan Claude, GPT-4, Gemini, Bedrock arasında geçiş yapın
 - **Sanal anahtarlar** — OpenClaw için harcama limitli anahtarlar oluşturun
 - **Günlükleme** — Hata ayıklama için tam istek/yanıt günlükleri
-- **Fallback'ler** — Birincil sağlayıcınız kapalıysa otomatik failover
+- **Geri dönüşler** — Birincil sağlayıcınız devre dışıysa otomatik yük devretme
 
 </Tip>
 
 ## Hızlı başlangıç
 
 <Tabs>
-  <Tab title="Onboarding (önerilir)">
+  <Tab title="Başlangıç kurulumu (önerilir)">
     **Şunun için en iyisi:** çalışan bir LiteLLM kurulumuna en hızlı yol.
 
     <Steps>
-      <Step title="Onboarding'i çalıştırın">
+      <Step title="Başlangıç kurulumunu çalıştırın">
         ```bash
         openclaw onboard --auth-choice litellm-api-key
+        ```
+
+        Uzak bir proxy’ye karşı etkileşimsiz kurulum için proxy URL’sini açıkça iletin:
+
+        ```bash
+        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
         ```
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="Elle kurulum">
-    **Şunun için en iyisi:** kurulum ve config üzerinde tam denetim.
+  <Tab title="Manuel kurulum">
+    **Şunun için en iyisi:** kurulum ve yapılandırma üzerinde tam denetim.
 
     <Steps>
-      <Step title="LiteLLM Proxy'yi başlatın">
+      <Step title="LiteLLM Proxy’yi başlatın">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="OpenClaw'ı LiteLLM'ye yönlendirin">
+      <Step title="OpenClaw’ı LiteLLM’e yönlendirin">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
 
         openclaw
         ```
 
-        Hepsi bu. OpenClaw artık LiteLLM üzerinden yönlenir.
+        Hepsi bu. OpenClaw artık LiteLLM üzerinden yönlendirilir.
       </Step>
     </Steps>
 
@@ -74,7 +80,7 @@ x-i18n:
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### Config dosyası
+### Yapılandırma dosyası
 
 ```json5
 {
@@ -115,11 +121,11 @@ export LITELLM_API_KEY="sk-litellm-key"
 
 ## Gelişmiş yapılandırma
 
-### Görsel oluşturma
+### Görsel üretimi
 
-LiteLLM, OpenAI uyumlu
-`/images/generations` ve `/images/edits` yolları üzerinden `image_generate` tool'unu da destekleyebilir. `agents.defaults.imageGenerationModel` altında bir LiteLLM görsel
-modeli yapılandırın:
+LiteLLM, OpenAI uyumlu `/images/generations` ve `/images/edits` rotaları üzerinden
+`image_generate` aracını da destekleyebilir. `agents.defaults.imageGenerationModel`
+altında bir LiteLLM görsel modeli yapılandırın:
 
 ```json5
 {
@@ -142,14 +148,14 @@ modeli yapılandırın:
 }
 ```
 
-`http://localhost:4000` gibi loopback LiteLLM URL'leri genel
-özel ağ geçersiz kılması olmadan çalışır. LAN üzerinde barındırılan bir proxy için
-`models.providers.litellm.request.allowPrivateNetwork: true` ayarlayın; çünkü API anahtarı
+`http://localhost:4000` gibi loopback LiteLLM URL’leri genel bir özel ağ
+geçersiz kılması olmadan çalışır. LAN’da barındırılan bir proxy için
+`models.providers.litellm.request.allowPrivateNetwork: true` ayarını yapın; çünkü API anahtarı
 yapılandırılmış proxy ana makinesine gönderilecektir.
 
 <AccordionGroup>
   <Accordion title="Sanal anahtarlar">
-    OpenClaw için harcama limitli özel bir anahtar oluşturun:
+    OpenClaw için harcama limitleri olan özel bir anahtar oluşturun:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -162,12 +168,12 @@ yapılandırılmış proxy ana makinesine gönderilecektir.
       }'
     ```
 
-    Oluşturulan anahtarı `LITELLM_API_KEY` olarak kullanın.
+    Üretilen anahtarı `LITELLM_API_KEY` olarak kullanın.
 
   </Accordion>
 
   <Accordion title="Model yönlendirme">
-    LiteLLM, model isteklerini farklı backend'lere yönlendirebilir. LiteLLM `config.yaml` dosyanızda yapılandırın:
+    LiteLLM, model isteklerini farklı arka uçlara yönlendirebilir. LiteLLM `config.yaml` dosyanızda yapılandırın:
 
     ```yaml
     model_list:
@@ -182,54 +188,54 @@ yapılandırılmış proxy ana makinesine gönderilecektir.
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    OpenClaw yine `claude-opus-4-6` ister — yönlendirmeyi LiteLLM yönetir.
+    OpenClaw `claude-opus-4-6` istemeye devam eder — yönlendirmeyi LiteLLM yönetir.
 
   </Accordion>
 
   <Accordion title="Kullanımı görüntüleme">
-    LiteLLM panosunu veya API'yi denetleyin:
+    LiteLLM’in panosunu veya API’sini kontrol edin:
 
     ```bash
-    # Anahtar bilgisi
+    # Key info
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # Harcama günlükleri
+    # Spend logs
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="Proxy davranış notları">
+  <Accordion title="Proxy davranışı notları">
     - LiteLLM varsayılan olarak `http://localhost:4000` üzerinde çalışır
-    - OpenClaw, LiteLLM'nin proxy tarzı OpenAI uyumlu `/v1`
+    - OpenClaw, LiteLLM’in proxy tarzı OpenAI uyumlu `/v1`
       uç noktası üzerinden bağlanır
-    - Yerel yalnızca-OpenAI istek biçimlendirmesi LiteLLM üzerinden uygulanmaz:
-      `service_tier` yok, Responses `store` yok, prompt-cache ipuçları yok ve
-      OpenAI reasoning-compat payload biçimlendirmesi yok
-    - Gizli OpenClaw attribution üstbilgileri (`originator`, `version`, `User-Agent`)
-      özel LiteLLM base URL'lerine enjekte edilmez
+    - Yerel OpenAI’ye özel istek biçimlendirmesi LiteLLM üzerinden uygulanmaz:
+      `service_tier` yok, Responses `store` yok, prompt cache ipuçları yok ve
+      OpenAI reasoning uyumluluk yükü biçimlendirmesi yok
+    - Gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`)
+      özel LiteLLM temel URL’lerine eklenmez
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Genel sağlayıcı yapılandırması ve failover davranışı için bkz. [Model Providers](/tr/concepts/model-providers).
+Genel sağlayıcı yapılandırması ve yük devretme davranışı için bkz. [Model Sağlayıcıları](/tr/concepts/model-providers).
 </Note>
 
 ## İlgili
 
 <CardGroup cols={2}>
-  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
-    Resmi LiteLLM dokümantasyonu ve API referansı.
+  <Card title="LiteLLM Belgeleri" href="https://docs.litellm.ai" icon="book">
+    Resmi LiteLLM belgeleri ve API başvurusu.
   </Card>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Tüm sağlayıcıların, model başvurularının ve failover davranışının genel görünümü.
+    Tüm sağlayıcılara, model referanslarına ve yük devretme davranışına genel bakış.
   </Card>
   <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
-    Tam config referansı.
+    Tam yapılandırma başvurusu.
   </Card>
   <Card title="Model seçimi" href="/tr/concepts/models" icon="brain">
-    Modeller nasıl seçilir ve yapılandırılır.
+    Modellerin nasıl seçileceği ve yapılandırılacağı.
   </Card>
 </CardGroup>

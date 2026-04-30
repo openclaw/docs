@@ -1,42 +1,45 @@
 ---
 read_when:
-    - Cloudflare AI Gateway'i OpenClaw ile kullanmak istiyorsunuz
-    - Hesap kimliğine, gateway kimliğine veya API anahtarı env değişkenine ihtiyacınız var
-summary: Cloudflare AI Gateway kurulumu (auth + model seçimi)
+    - OpenClaw ile Cloudflare AI Gateway kullanmak istiyorsunuz
+    - Hesap kimliği, Gateway kimliği veya API anahtarı ortam değişkeni gerekir.
+summary: Cloudflare AI Gateway kurulumu (kimlik doğrulama + model seçimi)
 title: Cloudflare AI Gateway
 x-i18n:
-    generated_at: "2026-04-24T09:25:35Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:39:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb10ef4bd92db88b2b3dac1773439ab2ba37916a72d1925995d74ef787fa1c8b
+    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
     source_path: providers/cloudflare-ai-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
-Cloudflare AI Gateway, sağlayıcı API'lerinin önünde yer alır ve analiz, önbellekleme ve denetimler eklemenize olanak tanır. Anthropic için OpenClaw, Gateway uç noktanız üzerinden Anthropic Messages API'yi kullanır.
+Cloudflare AI Gateway, sağlayıcı API'lerinin önünde yer alır ve analiz, önbelleğe alma ve denetimler eklemenizi sağlar. Anthropic için OpenClaw, Gateway uç noktanız üzerinden Anthropic Messages API'sini kullanır.
 
-| Özellik         | Değer                                                                                     |
-| --------------- | ----------------------------------------------------------------------------------------- |
-| Sağlayıcı       | `cloudflare-ai-gateway`                                                                   |
-| Base URL        | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
-| Varsayılan model| `cloudflare-ai-gateway/claude-sonnet-4-6`                                                 |
-| API anahtarı    | `CLOUDFLARE_AI_GATEWAY_API_KEY` (Gateway üzerinden yapılan istekler için sağlayıcı API anahtarınız) |
+| Özellik      | Değer                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| Sağlayıcı      | `cloudflare-ai-gateway`                                                                  |
+| Temel URL      | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
+| Varsayılan model | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| API anahtarı       | `CLOUDFLARE_AI_GATEWAY_API_KEY` (Gateway üzerinden yapılan istekler için sağlayıcı API anahtarınız) |
 
 <Note>
 Cloudflare AI Gateway üzerinden yönlendirilen Anthropic modelleri için sağlayıcı anahtarı olarak **Anthropic API anahtarınızı** kullanın.
 </Note>
 
-## Başlangıç
+Anthropic Messages modellerinde düşünme etkinleştirildiğinde OpenClaw, yükü Cloudflare AI Gateway üzerinden göndermeden önce sondaki asistan ön doldurma dönüşlerini kaldırır.
+Anthropic, genişletilmiş düşünme ile yanıt ön doldurmayı reddederken, sıradan düşünmesiz ön doldurma kullanılabilir kalır.
+
+## Başlarken
 
 <Steps>
   <Step title="Sağlayıcı API anahtarını ve Gateway ayrıntılarını ayarlayın">
-    Onboarding'i çalıştırın ve Cloudflare AI Gateway auth seçeneğini seçin:
+    İlk kurulumu çalıştırın ve Cloudflare AI Gateway kimlik doğrulama seçeneğini belirleyin:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Bu, hesap kimliğinizi, gateway kimliğinizi ve API anahtarınızı sorar.
+    Bu, hesap ID'nizi, gateway ID'nizi ve API anahtarınızı ister.
 
   </Step>
   <Step title="Varsayılan bir model ayarlayın">
@@ -62,7 +65,7 @@ Cloudflare AI Gateway üzerinden yönlendirilen Anthropic modelleri için sağla
 
 ## Etkileşimsiz örnek
 
-Script'lenmiş veya CI kurulumları için tüm değerleri komut satırından geçin:
+Betikli veya CI kurulumları için tüm değerleri komut satırında geçirin:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -76,8 +79,8 @@ openclaw onboard --non-interactive \
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Kimlik doğrulamalı gateway'ler">
-    Cloudflare içinde Gateway kimlik doğrulamasını etkinleştirdiyseniz `cf-aig-authorization` header'ını ekleyin. Bu, sağlayıcı API anahtarınıza **ek olarak** gerekir.
+  <Accordion title="Kimliği doğrulanmış gateway'ler">
+    Cloudflare'da Gateway kimlik doğrulamasını etkinleştirdiyseniz `cf-aig-authorization` üst bilgisini ekleyin. Bu, sağlayıcı API anahtarınıza **ek olarak** kullanılır.
 
     ```json5
     {
@@ -94,16 +97,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    `cf-aig-authorization` header'ı Cloudflare Gateway'in kendisiyle kimlik doğrular; sağlayıcı API anahtarı ise (örneğin Anthropic anahtarınız) yukarı akış sağlayıcıyla kimlik doğrular.
+    `cf-aig-authorization` üst bilgisi Cloudflare Gateway'in kendisiyle kimlik doğrular; sağlayıcı API anahtarı ise (örneğin Anthropic anahtarınız) yukarı akış sağlayıcısıyla kimlik doğrular.
     </Tip>
 
   </Accordion>
 
   <Accordion title="Ortam notu">
-    Gateway daemon olarak çalışıyorsa (launchd/systemd), `CLOUDFLARE_AI_GATEWAY_API_KEY` değerinin bu süreç için erişilebilir olduğundan emin olun.
+    Gateway bir daemon (launchd/systemd) olarak çalışıyorsa `CLOUDFLARE_AI_GATEWAY_API_KEY` değerinin bu işlem için kullanılabilir olduğundan emin olun.
 
     <Warning>
-    Anahtar yalnızca `~/.profile` içinde duruyorsa, bu ortam oraya da içe aktarılmadıkça launchd/systemd daemon'una yardımcı olmaz. Gateway sürecinin anahtarı okuyabilmesi için anahtarı `~/.openclaw/.env` içine veya `env.shellEnv` aracılığıyla ayarlayın.
+    Yalnızca `~/.profile` içinde bulunan bir anahtar, bu ortam oraya da içe aktarılmadıkça launchd/systemd daemon'ına yardımcı olmaz. Gateway işleminin anahtarı okuyabildiğinden emin olmak için anahtarı `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla ayarlayın.
     </Warning>
 
   </Accordion>
@@ -113,9 +116,9 @@ openclaw onboard --non-interactive \
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve failover davranışını seçme.
+    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
   </Card>
-  <Card title="Sorun Giderme" href="/tr/help/troubleshooting" icon="wrench">
+  <Card title="Sorun giderme" href="/tr/help/troubleshooting" icon="wrench">
     Genel sorun giderme ve SSS.
   </Card>
 </CardGroup>

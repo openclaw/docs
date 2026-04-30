@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Bağlantı/kimlik doğrulama sorunlarınız var ve yönlendirmeli düzeltmeler istiyorsunuz
-    - Güncelleme yaptınız ve bir sağlamlık denetimi istiyorsunuz
-summary: '`openclaw doctor` için CLI başvurusu (sağlık denetimleri + yönlendirmeli onarımlar)'
-title: Doctor
+    - Bağlantı/kimlik doğrulama sorunlarınız var ve rehberli düzeltmeler istiyorsunuz
+    - Güncelleme yaptınız ve temel bir doğrulama istiyorsunuz
+summary: '`openclaw doctor` için CLI referansı (sağlık kontrolleri + rehberli onarımlar)'
+title: Doktor
 x-i18n:
-    generated_at: "2026-04-26T11:26:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:12:14Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1e2c21765f8c287c8d2aa066004ac516566c76a455337c377cf282551619e92a
+    source_hash: 9985c84d23861dd9468a4659ee00519573fe6d540c436548da0a68067dbabc4c
     source_path: cli/doctor.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw doctor`
@@ -34,35 +34,39 @@ openclaw doctor --generate-gateway-token
 
 ## Seçenekler
 
-- `--no-workspace-suggestions`: çalışma alanı bellek/arama önerilerini devre dışı bırak
+- `--no-workspace-suggestions`: çalışma alanı belleği/arama önerilerini devre dışı bırak
 - `--yes`: sormadan varsayılanları kabul et
 - `--repair`: önerilen onarımları sormadan uygula
 - `--fix`: `--repair` için diğer ad
-- `--force`: gerektiğinde özel servis yapılandırmasının üzerine yazmak dahil agresif onarımlar uygula
+- `--force`: gerektiğinde özel servis yapılandırmasının üzerine yazmak dahil agresif onarımları uygula
 - `--non-interactive`: istemler olmadan çalıştır; yalnızca güvenli geçişler
-- `--generate-gateway-token`: bir Gateway token'ı üret ve yapılandır
+- `--generate-gateway-token`: Gateway belirteci oluştur ve yapılandır
 - `--deep`: ek Gateway kurulumları için sistem servislerini tara
 
 Notlar:
 
-- Etkileşimli istemler (anahtar zinciri/OAuth düzeltmeleri gibi) yalnızca stdin bir TTY olduğunda ve `--non-interactive` **ayarlanmamışsa** çalışır. Headless çalıştırmalar (Cron, Telegram, terminal yok) istemleri atlar.
-- Performans: etkileşimli olmayan `doctor` çalıştırmaları, headless sağlık denetimlerinin hızlı kalması için erken Plugin yüklemeyi atlar. Etkileşimli oturumlar ise bir denetim katkılarını gerektirdiğinde Plugin'leri tamamen yükler.
-- `--fix` (`--repair` için diğer ad), `~/.openclaw/openclaw.json.bak` dosyasına bir yedek yazar ve bilinmeyen yapılandırma anahtarlarını kaldırır; her kaldırmayı listeler.
-- Durum bütünlüğü denetimleri artık oturumlar dizinindeki sahipsiz transkript dosyalarını algılar ve alanı güvenli şekilde geri kazanmak için bunları `.deleted.<timestamp>` olarak arşivleyebilir.
-- Doctor ayrıca eski Cron iş şekilleri için `~/.openclaw/cron/jobs.json` dosyasını (veya `cron.store`) tarar ve zamanlayıcının çalışma zamanında otomatik normalleştirme yapmasına gerek kalmadan önce bunları yerinde yeniden yazabilir.
-- Doctor, paketlenmiş genel kurulumların içine yazmadan paketle birlikte gelen Plugin çalışma zamanı bağımlılıklarını onarır. Root sahipli npm kurulumları veya sertleştirilmiş systemd birimleri için `OPENCLAW_PLUGIN_STAGE_DIR` değerini `/var/lib/openclaw/plugin-runtime-deps` gibi yazılabilir bir dizine ayarlayın.
-- Başka bir denetleyici Gateway yaşam döngüsünün sahibi olduğunda `OPENCLAW_SERVICE_REPAIR_POLICY=external` ayarlayın. Doctor yine de Gateway/servis sağlığını bildirir ve servis dışı onarımları uygular, ancak servis kurma/başlatma/yeniden başlatma/bootstrap ve eski servis temizliğini atlar.
-- Doctor, eski düz Talk yapılandırmasını (`talk.voiceId`, `talk.modelId` ve benzerleri) otomatik olarak `talk.provider` + `talk.providers.<provider>` yapısına geçirir.
-- Yinelenen `doctor --fix` çalıştırmaları, tek fark nesne anahtarı sırası olduğunda artık Talk normalleştirmesini bildirmez/uygulamaz.
-- Doctor, bellek araması hazır olma denetimi içerir ve gömme kimlik bilgileri eksik olduğunda `openclaw configure --section model` önerebilir.
-- Sandbox modu etkin ama Docker kullanılamıyorsa doctor, düzeltme adımıyla birlikte yüksek sinyalli bir uyarı bildirir (`install Docker` veya `openclaw config set agents.defaults.sandbox.mode off`).
-- `gateway.auth.token`/`gateway.auth.password` SecretRef tarafından yönetiliyorsa ve mevcut komut yolunda kullanılamıyorsa doctor salt okunur bir uyarı bildirir ve düz metin geri dönüş kimlik bilgileri yazmaz.
-- Kanal SecretRef incelemesi bir düzeltme yolunda başarısız olursa doctor erken çıkmak yerine devam eder ve bir uyarı bildirir.
-- Telegram `allowFrom` kullanıcı adı otomatik çözümlemesi (`doctor --fix`), mevcut komut yolunda çözümlenebilir bir Telegram token'ı gerektirir. Token incelemesi kullanılamıyorsa doctor bir uyarı bildirir ve bu geçiş için otomatik çözümlemeyi atlar.
+- Etkileşimli istemler (anahtarlık/OAuth düzeltmeleri gibi) yalnızca stdin bir TTY olduğunda ve `--non-interactive` ayarlanmadığında çalışır. Başsız çalıştırmalar (cron, Telegram, terminal yok) istemleri atlar.
+- Performans: etkileşimsiz `doctor` çalıştırmaları, başsız sağlık denetimleri hızlı kalsın diye istekli Plugin yüklemesini atlar. Etkileşimli oturumlar, bir denetim katkılarını gerektirdiğinde Plugin'leri yine tamamen yükler.
+- `--fix` (`--repair` için diğer ad) `~/.openclaw/openclaw.json.bak` konumuna bir yedek yazar ve bilinmeyen yapılandırma anahtarlarını kaldırıp her kaldırmayı listeler.
+- Durum bütünlüğü denetimleri artık oturumlar dizinindeki sahipsiz konuşma dökümü dosyalarını algılar. Bunları `.deleted.<timestamp>` olarak arşivlemek etkileşimli onay gerektirir; `--fix`, `--yes` ve başsız çalıştırmalar bunları yerinde bırakır.
+- Doctor ayrıca eski cron işi biçimleri için `~/.openclaw/cron/jobs.json` (veya `cron.store`) dosyasını tarar ve zamanlayıcının çalışma zamanında bunları otomatik normalleştirmesi gerekmeden önce yerinde yeniden yazabilir.
+- Doctor, paketlenmiş global kurulumlara yazmadan eksik paketli Plugin çalışma zamanı bağımlılıklarını onarır. Root sahipli npm kurulumları veya sıkılaştırılmış systemd birimleri için `OPENCLAW_PLUGIN_STAGE_DIR` değerini `/var/lib/openclaw/plugin-runtime-deps` gibi yazılabilir bir dizine ayarlayın; bu değer `/opt/openclaw/plugin-runtime-deps:/var/lib/openclaw/plugin-runtime-deps` gibi bir yol listesi de olabilir; önceki kökler salt okunur arama katmanlarıdır ve son kök onarım hedefidir.
+- Doctor, eksik Plugin kimliklerini `plugins.allow`/`plugins.entries` içinden, ayrıca eşleşen kopuk kanal yapılandırmasını, Heartbeat hedeflerini ve kanal model geçersiz kılmalarını, Plugin keşfi sağlıklıyken kaldırarak bayat Plugin yapılandırmasını onarır.
+- Doctor, etkilenen `plugins.entries.<id>` girdisini devre dışı bırakıp geçersiz `config` yükünü kaldırarak geçersiz Plugin yapılandırmasını karantinaya alır. Gateway başlatma zaten yalnızca o bozuk Plugin'i atlar, böylece diğer Plugin'ler ve kanallar çalışmaya devam edebilir.
+- Gateway yaşam döngüsü başka bir denetleyici tarafından yönetildiğinde `OPENCLAW_SERVICE_REPAIR_POLICY=external` ayarlayın. Doctor yine Gateway/servis sağlığını raporlar ve servis dışı onarımları uygular, ancak servis kurma/başlatma/yeniden başlatma/önyükleme ve eski servis temizliğini atlar.
+- Linux'ta doctor etkin olmayan ek Gateway benzeri systemd birimlerini yok sayar ve onarım sırasında çalışan bir systemd Gateway servisi için komut/giriş noktası meta verilerini yeniden yazmaz. Etkin başlatıcıyı bilinçli olarak değiştirmek istediğinizde önce servisi durdurun veya `openclaw gateway install --force` kullanın.
+- Doctor, eski düz Talk yapılandırmasını (`talk.voiceId`, `talk.modelId` ve benzerleri) otomatik olarak `talk.provider` + `talk.providers.<provider>` biçimine geçirir.
+- Tek fark nesne anahtarı sırası olduğunda tekrarlanan `doctor --fix` çalıştırmaları artık Talk normalleştirmesini raporlamaz/uygulamaz.
+- Doctor bir bellek araması hazır olma denetimi içerir ve gömme kimlik bilgileri eksik olduğunda `openclaw configure --section model` önerebilir.
+- Doctor, hiçbir komut sahibi yapılandırılmadığında uyarır. Komut sahibi, yalnızca sahibin çalıştırabileceği komutları çalıştırmasına ve tehlikeli eylemleri onaylamasına izin verilen insan operatör hesabıdır. DM eşleştirme yalnızca birinin botla konuşmasına izin verir; ilk sahip önyüklemesi var olmadan önce bir göndericiyi onayladıysanız `commands.ownerAllowFrom` değerini açıkça ayarlayın.
+- Korumalı alan modu etkinse ancak Docker kullanılamıyorsa doctor, çözümle birlikte yüksek sinyalli bir uyarı bildirir (`install Docker` veya `openclaw config set agents.defaults.sandbox.mode off`).
+- `gateway.auth.token`/`gateway.auth.password` SecretRef tarafından yönetiliyorsa ve geçerli komut yolunda kullanılamıyorsa doctor salt okunur bir uyarı bildirir ve düz metin yedek kimlik bilgileri yazmaz.
+- Bir düzeltme yolunda kanal SecretRef incelemesi başarısız olursa doctor devam eder ve erken çıkmak yerine bir uyarı bildirir.
+- Telegram `allowFrom` kullanıcı adı otomatik çözümlemesi (`doctor --fix`), geçerli komut yolunda çözümlenebilir bir Telegram belirteci gerektirir. Belirteç incelemesi kullanılamıyorsa doctor bir uyarı bildirir ve o geçiş için otomatik çözümlemeyi atlar.
 
-## macOS: `launchctl` ortam geçersiz kılmaları
+## macOS: `launchctl` env geçersiz kılmaları
 
-Daha önce `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (veya `...PASSWORD`) çalıştırdıysanız bu değer yapılandırma dosyanızı geçersiz kılar ve kalıcı “unauthorized” hatalarına neden olabilir.
+Daha önce `launchctl setenv OPENCLAW_GATEWAY_TOKEN ...` (veya `...PASSWORD`) çalıştırdıysanız, bu değer yapılandırma dosyanızın önüne geçer ve kalıcı “yetkisiz” hatalarına neden olabilir.
 
 ```bash
 launchctl getenv OPENCLAW_GATEWAY_TOKEN
@@ -74,5 +78,5 @@ launchctl unsetenv OPENCLAW_GATEWAY_PASSWORD
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Gateway doctor](/tr/gateway/doctor)

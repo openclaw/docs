@@ -1,51 +1,51 @@
 ---
 read_when:
-    - OpenClaw'ın ana macOS ortamınızdan yalıtılmasını istiyorsanız
-    - Bir sandbox içinde iMessage entegrasyonu (BlueBubbles) istiyorsanız
-    - Kopyalayabileceğiniz, sıfırlanabilir bir macOS ortamı istiyorsanız
-    - Yerel ve barındırılan macOS VM seçeneklerini karşılaştırmak istiyorsanız
-summary: Yalıtım veya iMessage gerektiğinde OpenClaw'ı sandbox içindeki bir macOS VM'de çalıştırın (yerel veya barındırılan)
-title: macOS VM'ler
+    - OpenClaw'ın ana macOS ortamınızdan yalıtılmış olmasını istiyorsunuz
+    - Korumalı alanda iMessage entegrasyonu (BlueBubbles) istiyorsunuz
+    - Klonlayabileceğiniz sıfırlanabilir bir macOS ortamı istiyorsunuz
+    - Yerel ve barındırılan macOS VM seçeneklerini karşılaştırmak istiyorsunuz
+summary: Yalıtım veya iMessage gerektiğinde OpenClaw'ı korumalı alanlı bir macOS VM'de (yerel veya barındırılan) çalıştırın
+title: macOS sanal makineleri
 x-i18n:
-    generated_at: "2026-04-05T13:57:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:30:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b1f7c5691fd2686418ee25f2c38b1f9badd511daeef2906d21ad30fb523b013f
+    source_hash: 49cd3d420db02bcdb80378c3a91a1c1243e7be2012525c31de1dd49db397d560
     source_path: install/macos-vm.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw on macOS VM'ler (Sandboxing)
+# macOS VM'lerinde OpenClaw (Sandboxing)
 
 ## Önerilen varsayılan (çoğu kullanıcı)
 
-- Her zaman açık bir Ağ Geçidi ve düşük maliyet için **küçük bir Linux VPS**. Bkz. [VPS barındırma](/vps).
-- Tam denetim ve tarayıcı otomasyonu için **konut IP'si** istiyorsanız **ayrı donanım** (Mac mini veya Linux kutusu). Birçok site veri merkezi IP'lerini engeller; bu yüzden yerel tarama genellikle daha iyi çalışır.
-- **Hibrit:** Ağ Geçidi'ni ucuz bir VPS üzerinde tutun ve tarayıcı/UI otomasyonu gerektiğinde Mac'inizi bir **düğüm** olarak bağlayın. Bkz. [Düğümler](/nodes) ve [Ağ Geçidi remote](/gateway/remote).
+- Her zaman açık bir Gateway ve düşük maliyet için **küçük Linux VPS**. Bkz. [VPS barındırma](/tr/vps).
+- Tarayıcı otomasyonu için tam kontrol ve **konut IP'si** istiyorsanız **özel donanım** (Mac mini veya Linux kutusu). Birçok site veri merkezi IP'lerini engeller, bu nedenle yerel gezinme genellikle daha iyi çalışır.
+- **Hibrit:** Gateway'i ucuz bir VPS'te tutun ve tarayıcı/UI otomasyonuna ihtiyaç duyduğunuzda Mac'inizi **node** olarak bağlayın. Bkz. [Nodes](/tr/nodes) ve [Gateway uzak](/tr/gateway/remote).
 
-macOS VM kullanın; özellikle macOS'e özgü yeteneklere (iMessage/BlueBubbles) ihtiyaç duyduğunuzda veya günlük kullandığınız Mac'ten sıkı yalıtım istediğinizde.
+Yalnızca özellikle macOS'a özgü yeteneklere (iMessage/BlueBubbles) ihtiyaç duyduğunuzda veya günlük Mac'inizden sıkı yalıtım istediğinizde macOS VM kullanın.
 
 ## macOS VM seçenekleri
 
 ### Apple Silicon Mac'inizde yerel VM (Lume)
 
-Var olan Apple Silicon Mac'inizde [Lume](https://cua.ai/docs/lume) kullanarak OpenClaw'ı sandbox içindeki bir macOS VM'de çalıştırın.
+Mevcut Apple Silicon Mac'inizde [Lume](https://cua.ai/docs/lume) kullanarak OpenClaw'ı sandbox'lı bir macOS VM içinde çalıştırın.
 
 Bu size şunları sağlar:
 
-- Yalıtım içinde tam macOS ortamı (ana sisteminiz temiz kalır)
-- BlueBubbles üzerinden iMessage desteği (Linux/Windows'ta mümkün değildir)
-- VM'leri clone ederek anında sıfırlama
-- Ek donanım veya bulut maliyeti olmadan kullanım
+- Yalıtım içinde tam macOS ortamı (ana makineniz temiz kalır)
+- BlueBubbles üzerinden iMessage desteği (Linux/Windows'ta imkansız)
+- VM'leri klonlayarak anında sıfırlama
+- Ek donanım veya bulut maliyeti yok
 
 ### Barındırılan Mac sağlayıcıları (bulut)
 
-Bulutta macOS istiyorsanız, barındırılan Mac sağlayıcıları da çalışır:
+Bulutta macOS istiyorsanız barındırılan Mac sağlayıcıları da çalışır:
 
 - [MacStadium](https://www.macstadium.com/) (barındırılan Mac'ler)
-- Diğer barındırılan Mac sağlayıcıları da çalışır; onların VM + SSH dokümanlarını izleyin
+- Diğer barındırılan Mac sağlayıcıları da çalışır; onların VM + SSH belgelerini izleyin
 
-macOS VM'e SSH erişiminiz olduğunda aşağıdaki 6. adımdan devam edin.
+Bir macOS VM'ye SSH erişiminiz olduğunda aşağıdaki 6. adımdan devam edin.
 
 ---
 
@@ -53,7 +53,7 @@ macOS VM'e SSH erişiminiz olduğunda aşağıdaki 6. adımdan devam edin.
 
 1. Lume'u kurun
 2. `lume create openclaw --os macos --ipsw latest`
-3. Setup Assistant'ı tamamlayın, Remote Login (SSH) etkinleştirin
+3. Kurulum Yardımcısı'nı tamamlayın, Remote Login'i (SSH) etkinleştirin
 4. `lume run openclaw --no-display`
 5. SSH ile bağlanın, OpenClaw'ı kurun, kanalları yapılandırın
 6. Tamam
@@ -63,7 +63,7 @@ macOS VM'e SSH erişiminiz olduğunda aşağıdaki 6. adımdan devam edin.
 ## Gerekenler (Lume)
 
 - Apple Silicon Mac (M1/M2/M3/M4)
-- Ana sistemde macOS Sequoia veya daha yeni sürüm
+- Ana makinede macOS Sequoia veya daha yenisi
 - VM başına yaklaşık 60 GB boş disk alanı
 - Yaklaşık 20 dakika
 
@@ -75,7 +75,7 @@ macOS VM'e SSH erişiminiz olduğunda aşağıdaki 6. adımdan devam edin.
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/trycua/cua/main/libs/lume/scripts/install.sh)"
 ```
 
-`~/.local/bin` PATH içinde değilse:
+`~/.local/bin` PATH'inizde değilse:
 
 ```bash
 echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.zshrc && source ~/.zshrc
@@ -87,7 +87,7 @@ Doğrulayın:
 lume --version
 ```
 
-Dokümanlar: [Lume Installation](https://cua.ai/docs/lume/guide/getting-started/installation)
+Belgeler: [Lume Kurulumu](https://cua.ai/docs/lume/guide/getting-started/installation)
 
 ---
 
@@ -97,25 +97,27 @@ Dokümanlar: [Lume Installation](https://cua.ai/docs/lume/guide/getting-started/
 lume create openclaw --os macos --ipsw latest
 ```
 
-Bu komut macOS'u indirir ve VM'yi oluşturur. Bir VNC penceresi otomatik olarak açılır.
+Bu, macOS'u indirir ve VM'yi oluşturur. Bir VNC penceresi otomatik olarak açılır.
 
-Not: İndirme, bağlantınıza bağlı olarak biraz zaman alabilir.
+<Note>
+İndirme, bağlantınıza bağlı olarak biraz zaman alabilir.
+</Note>
 
 ---
 
-## 3) Setup Assistant'ı tamamlayın
+## 3) Kurulum Yardımcısı'nı tamamlayın
 
 VNC penceresinde:
 
-1. Dili ve bölgeyi seçin
+1. Dil ve bölge seçin
 2. Apple ID'yi atlayın (veya daha sonra iMessage istiyorsanız giriş yapın)
-3. Bir kullanıcı hesabı oluşturun (kullanıcı adı ve parolayı hatırlayın)
+3. Bir kullanıcı hesabı oluşturun (kullanıcı adını ve parolayı unutmayın)
 4. Tüm isteğe bağlı özellikleri atlayın
 
 Kurulum tamamlandıktan sonra SSH'yi etkinleştirin:
 
-1. System Settings → General → Sharing bölümünü açın
-2. "Remote Login" seçeneğini etkinleştirin
+1. System Settings → General → Sharing'i açın
+2. "Remote Login"i etkinleştirin
 
 ---
 
@@ -125,7 +127,7 @@ Kurulum tamamlandıktan sonra SSH'yi etkinleştirin:
 lume get openclaw
 ```
 
-IP adresini bulun (genellikle `192.168.64.x`).
+IP adresini arayın (genellikle `192.168.64.x`).
 
 ---
 
@@ -135,7 +137,7 @@ IP adresini bulun (genellikle `192.168.64.x`).
 ssh youruser@192.168.64.X
 ```
 
-`youruser` yerine oluşturduğunuz hesabı, IP yerine de VM'nizin IP'sini yazın.
+`youruser` yerine oluşturduğunuz hesabı, IP yerine VM'nizin IP'sini yazın.
 
 ---
 
@@ -148,7 +150,7 @@ npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-Model sağlayıcınızı (Anthropic, OpenAI vb.) ayarlamak için onboarding istemlerini izleyin.
+Model sağlayıcınızı (Anthropic, OpenAI vb.) ayarlamak için ilk kurulum istemlerini izleyin.
 
 ---
 
@@ -176,7 +178,7 @@ Kanallarınızı ekleyin:
 }
 ```
 
-Ardından WhatsApp'a giriş yapın (QR taratın):
+Ardından WhatsApp'a giriş yapın (QR tarayın):
 
 ```bash
 openclaw channels login
@@ -184,7 +186,7 @@ openclaw channels login
 
 ---
 
-## 8) VM'yi headless çalıştırın
+## 8) VM'yi ekransız çalıştırın
 
 VM'yi durdurun ve ekran olmadan yeniden başlatın:
 
@@ -193,7 +195,7 @@ lume stop openclaw
 lume run openclaw --no-display
 ```
 
-VM arka planda çalışır. OpenClaw'ın arka plan hizmeti ağ geçidini çalışır durumda tutar.
+VM arka planda çalışır. OpenClaw'ın daemon'u Gateway'in çalışmasını sürdürür.
 
 Durumu kontrol etmek için:
 
@@ -205,14 +207,14 @@ ssh youruser@192.168.64.X "openclaw status"
 
 ## Bonus: iMessage entegrasyonu
 
-Bu, macOS üzerinde çalıştırmanın en güçlü özelliğidir. iMessage'ı OpenClaw'a eklemek için [BlueBubbles](https://bluebubbles.app) kullanın.
+Bu, macOS'ta çalıştırmanın en önemli özelliğidir. OpenClaw'a iMessage eklemek için [BlueBubbles](https://bluebubbles.app) kullanın.
 
 VM içinde:
 
-1. BlueBubbles'ı bluebubbles.app üzerinden indirin
+1. BlueBubbles'ı bluebubbles.app adresinden indirin
 2. Apple ID'nizle giriş yapın
 3. Web API'yi etkinleştirin ve bir parola belirleyin
-4. BlueBubbles webhook'larını ağ geçidinize yönlendirin (örnek: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
+4. BlueBubbles webhooks'unu gateway'inize yönlendirin (örnek: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
 
 OpenClaw yapılandırmanıza ekleyin:
 
@@ -228,13 +230,13 @@ OpenClaw yapılandırmanıza ekleyin:
 }
 ```
 
-Ağ geçidini yeniden başlatın. Artık aracınız iMessage gönderebilir ve alabilir.
+Gateway'i yeniden başlatın. Artık agent'ınız iMessages gönderebilir ve alabilir.
 
 Tam kurulum ayrıntıları: [BlueBubbles kanalı](/tr/channels/bluebubbles)
 
 ---
 
-## Altın görüntü kaydedin
+## Altın imaj kaydedin
 
 Daha fazla özelleştirmeden önce temiz durumunuzun anlık görüntüsünü alın:
 
@@ -255,34 +257,34 @@ lume run openclaw --no-display
 
 ## 7/24 çalıştırma
 
-VM'yi şu yollarla açık tutun:
+VM'yi çalışır durumda tutmak için:
 
-- Mac'inizi prize takılı tutarak
-- System Settings → Energy Saver içinde uyku modunu devre dışı bırakarak
-- Gerekirse `caffeinate` kullanarak
+- Mac'inizi prize takılı tutun
+- System Settings → Energy Saver içinde uyku modunu devre dışı bırakın
+- Gerekirse `caffeinate` kullanın
 
-Gerçek anlamda her zaman açık kullanım için ayrı bir Mac mini veya küçük bir VPS düşünün. Bkz. [VPS barındırma](/vps).
+Gerçek anlamda her zaman açık kullanım için özel bir Mac mini veya küçük bir VPS düşünün. Bkz. [VPS barındırma](/tr/vps).
 
 ---
 
 ## Sorun giderme
 
-| Sorun                    | Çözüm                                                                                 |
-| ------------------------ | ------------------------------------------------------------------------------------- |
-| VM'ye SSH ile bağlanılamıyor | VM'nin System Settings bölümünde "Remote Login" seçeneğinin etkin olduğunu kontrol edin |
-| VM IP görünmüyor         | VM'nin tamamen açılmasını bekleyin, `lume get openclaw` komutunu tekrar çalıştırın     |
-| Lume komutu bulunamadı   | `~/.local/bin` yolunu PATH'inize ekleyin                                              |
-| WhatsApp QR taranmıyor   | `openclaw channels login` çalıştırırken ana sistemde değil, VM içinde oturum açtığınızdan emin olun |
+| Sorun                    | Çözüm                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| VM'ye SSH ile bağlanılamıyor | VM'nin System Settings içinde "Remote Login"in etkin olduğundan emin olun          |
+| VM IP'si görünmüyor      | VM'nin tamamen açılmasını bekleyin, `lume get openclaw` komutunu tekrar çalıştırın |
+| Lume komutu bulunamadı   | PATH'inize `~/.local/bin` ekleyin                                                  |
+| WhatsApp QR taranmıyor   | `openclaw channels login` çalıştırırken VM'de (ana makinede değil) oturum açtığınızdan emin olun |
 
 ---
 
-## İlgili dokümanlar
+## İlgili belgeler
 
-- [VPS barındırma](/vps)
-- [Düğümler](/nodes)
-- [Ağ Geçidi remote](/gateway/remote)
+- [VPS barındırma](/tr/vps)
+- [Nodes](/tr/nodes)
+- [Gateway uzak](/tr/gateway/remote)
 - [BlueBubbles kanalı](/tr/channels/bluebubbles)
-- [Lume Quickstart](https://cua.ai/docs/lume/guide/getting-started/quickstart)
-- [Lume CLI Reference](https://cua.ai/docs/lume/reference/cli-reference)
-- [Unattended VM Setup](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (ileri düzey)
-- [Docker Sandboxing](/install/docker) (alternatif yalıtım yaklaşımı)
+- [Lume Hızlı Başlangıç](https://cua.ai/docs/lume/guide/getting-started/quickstart)
+- [Lume CLI Başvurusu](https://cua.ai/docs/lume/reference/cli-reference)
+- [Katılımsız VM Kurulumu](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (ileri düzey)
+- [Docker Sandboxing](/tr/install/docker) (alternatif yalıtım yaklaşımı)

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Yerel OpenClaw Plugin'leri oluşturma veya hata ayıklama
+    - Yerel OpenClaw Plugin'lerini derleme veya hata ayıklama
     - Plugin yetenek modelini veya sahiplik sınırlarını anlama
-    - Plugin yükleme hattı veya kayıt defteri üzerinde çalışma
-    - Sağlayıcı çalışma zamanı hook'ları veya kanal Plugin'leri uygulama
+    - Plugin yükleme işlem hattı veya kayıt sistemi üzerinde çalışma
+    - Sağlayıcı çalışma zamanı hook'larını veya kanal Plugin'lerini uygulama
 sidebarTitle: Internals
-summary: 'Plugin iç yapısı: yetenek modeli, sahiplik, sözleşmeler, yükleme hattı ve çalışma zamanı yardımcıları'
+summary: 'Plugin iç işleyişi: yetenek modeli, sahiplik, sözleşmeler, yükleme hattı ve çalışma zamanı yardımcıları'
 title: Plugin iç yapısı
 x-i18n:
-    generated_at: "2026-04-26T11:35:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:33:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 16664d284a8bfbfcb9914bb012d1f36dfdd60406636d6bf4b011f76e886cb518
+    source_hash: 1516e0784a005af87a6c081d8027a1e2dc10445e47b6824488e9d9987bb96975
     source_path: plugins/architecture.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu, OpenClaw Plugin sistemi için **derin mimari referansıdır**. Uygulamalı kılavuzlar için aşağıdaki odaklı sayfalardan biriyle başlayın.
+Bu, OpenClaw Plugin sistemi için **derin mimari referansı**dır. Pratik kılavuzlar için aşağıdaki odaklanmış sayfalardan biriyle başlayın.
 
 <CardGroup cols={2}>
-  <Card title="Plugin'leri kurun ve kullanın" icon="plug" href="/tr/tools/plugin">
+  <Card title="Plugin'leri yükleme ve kullanma" icon="plug" href="/tr/tools/plugin">
     Plugin ekleme, etkinleştirme ve sorun giderme için son kullanıcı kılavuzu.
   </Card>
   <Card title="Plugin oluşturma" icon="rocket" href="/tr/plugins/building-plugins">
-    En küçük çalışan manifest ile ilk Plugin öğreticisi.
+    Çalışan en küçük manifest ile ilk Plugin öğreticisi.
   </Card>
   <Card title="Kanal Plugin'leri" icon="comments" href="/tr/plugins/sdk-channel-plugins">
     Bir mesajlaşma kanalı Plugin'i oluşturun.
@@ -32,157 +32,181 @@ Bu, OpenClaw Plugin sistemi için **derin mimari referansıdır**. Uygulamalı k
     Bir model sağlayıcı Plugin'i oluşturun.
   </Card>
   <Card title="SDK genel bakışı" icon="book" href="/tr/plugins/sdk-overview">
-    İçe aktarma eşlemi ve kayıt API referansı.
+    İçeri aktarma eşlemesi ve kayıt API referansı.
   </Card>
 </CardGroup>
 
 ## Genel yetenek modeli
 
-Yetenekler, OpenClaw içindeki genel **yerel Plugin** modelidir. Her yerel OpenClaw Plugin'i bir veya daha fazla yetenek türüne karşı kayıt olur:
+Yetenekler, OpenClaw içindeki herkese açık **yerel Plugin** modelidir. Her yerel OpenClaw Plugin'i bir veya daha fazla yetenek türüne göre kayıt yapar:
 
-| Yetenek               | Kayıt yöntemi                                   | Örnek Plugin'ler                    |
-| --------------------- | ----------------------------------------------- | ----------------------------------- |
-| Metin çıkarımı        | `api.registerProvider(...)`                     | `openai`, `anthropic`               |
-| CLI çıkarım backend'i | `api.registerCliBackend(...)`                   | `openai`, `anthropic`               |
-| Konuşma               | `api.registerSpeechProvider(...)`               | `elevenlabs`, `microsoft`           |
-| Gerçek zamanlı transkripsiyon | `api.registerRealtimeTranscriptionProvider(...)` | `openai`                    |
-| Gerçek zamanlı ses    | `api.registerRealtimeVoiceProvider(...)`        | `openai`                            |
-| Medya anlama          | `api.registerMediaUnderstandingProvider(...)`   | `openai`, `google`                  |
-| Görsel oluşturma      | `api.registerImageGenerationProvider(...)`      | `openai`, `google`, `fal`, `minimax` |
-| Müzik oluşturma       | `api.registerMusicGenerationProvider(...)`      | `google`, `minimax`                 |
-| Video oluşturma       | `api.registerVideoGenerationProvider(...)`      | `qwen`                              |
-| Web getirme           | `api.registerWebFetchProvider(...)`             | `firecrawl`                         |
-| Web arama             | `api.registerWebSearchProvider(...)`            | `google`                            |
-| Kanal / mesajlaşma    | `api.registerChannel(...)`                      | `msteams`, `matrix`                 |
-| Gateway keşfi         | `api.registerGatewayDiscoveryService(...)`      | `bonjour`                           |
+| Yetenek                 | Kayıt yöntemi                                    | Örnek Plugin'ler                     |
+| ----------------------- | ------------------------------------------------ | ------------------------------------ |
+| Metin çıkarımı          | `api.registerProvider(...)`                      | `openai`, `anthropic`                |
+| CLI çıkarım arka ucu    | `api.registerCliBackend(...)`                    | `openai`, `anthropic`                |
+| Konuşma                 | `api.registerSpeechProvider(...)`                | `elevenlabs`, `microsoft`            |
+| Gerçek zamanlı yazıya dökme | `api.registerRealtimeTranscriptionProvider(...)` | `openai`                             |
+| Gerçek zamanlı ses      | `api.registerRealtimeVoiceProvider(...)`         | `openai`                             |
+| Medya anlama            | `api.registerMediaUnderstandingProvider(...)`    | `openai`, `google`                   |
+| Görsel üretimi          | `api.registerImageGenerationProvider(...)`       | `openai`, `google`, `fal`, `minimax` |
+| Müzik üretimi           | `api.registerMusicGenerationProvider(...)`       | `google`, `minimax`                  |
+| Video üretimi           | `api.registerVideoGenerationProvider(...)`       | `qwen`                               |
+| Web getirme             | `api.registerWebFetchProvider(...)`              | `firecrawl`                          |
+| Web arama               | `api.registerWebSearchProvider(...)`             | `google`                             |
+| Kanal / mesajlaşma      | `api.registerChannel(...)`                       | `msteams`, `matrix`                  |
+| Gateway keşfi           | `api.registerGatewayDiscoveryService(...)`       | `bonjour`                            |
 
 <Note>
-Hiç yetenek kaydetmeyen ancak hook'lar, tools, keşif hizmetleri veya arka plan hizmetleri sağlayan bir Plugin, **eski hook-only** Plugin'dir. Bu kalıp hâlâ tam olarak desteklenir.
+Sıfır yetenek kaydeden ancak hook'lar, araçlar, keşif hizmetleri veya arka plan hizmetleri sağlayan bir Plugin, **eski yalnızca hook** Plugin'idir. Bu kalıp hâlâ tamamen desteklenir.
 </Note>
 
-### Dış uyumluluk duruşu
+### Dış uyumluluk yaklaşımı
 
-Yetenek modeli core içinde yerleşmiştir ve bugün paketlenmiş/yerel Plugin'ler tarafından kullanılmaktadır, ancak dış Plugin uyumluluğu hâlâ "dışa aktarılmışsa donmuştur" yaklaşımından daha sıkı bir çıta gerektirir.
+Yetenek modeli çekirdeğe dahil edilmiştir ve bugün paketlenmiş/yerel Plugin'ler tarafından kullanılır, ancak dış Plugin uyumluluğu hâlâ "dışa aktarılmışsa donmuştur" ifadesinden daha sıkı bir ölçüt gerektirir.
 
-| Plugin durumu                                    | Rehberlik                                                                                       |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| Mevcut dış Plugin'ler                            | Hook tabanlı entegrasyonları çalışır tutun; bu uyumluluk temel çizgisidir.                     |
-| Yeni paketlenmiş/yerel Plugin'ler                | Sağlayıcıya özgü iç erişimler veya yeni hook-only tasarımlar yerine açık yetenek kaydını tercih edin. |
-| Yetenek kaydını benimseyen dış Plugin'ler        | İzin verilir, ancak dokümanlar bunları kararlı olarak işaretlemedikçe yeteneğe özgü yardımcı yüzeyleri gelişen yüzeyler olarak değerlendirin. |
+| Plugin durumu                                    | Yönlendirme                                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Mevcut dış Plugin'ler                            | Hook tabanlı entegrasyonları çalışır tutun; uyumluluk temeli budur.                              |
+| Yeni paketlenmiş/yerel Plugin'ler                | Tedarikçiye özgü iç erişimler veya yeni yalnızca hook tasarımları yerine açık yetenek kaydını tercih edin. |
+| Yetenek kaydını benimseyen dış Plugin'ler        | İzin verilir, ancak dokümanlar kararlı olarak işaretlemedikçe yeteneğe özgü yardımcı yüzeyleri gelişen kabul edin. |
 
-Yetenek kaydı amaçlanan yöndür. Eski hook'lar, geçiş sırasında dış Plugin'ler için en güvenli kırılmasız yol olmaya devam eder. Dışa aktarılan yardımcı alt yolların hepsi eşit değildir — tesadüfi yardımcı dışa aktarımlar yerine dar kapsamlı, belgelenmiş sözleşmeleri tercih edin.
+Yetenek kaydı hedeflenen yöndür. Geçiş sırasında dış Plugin'ler için eski hook'lar en güvenli kırılmasız yol olmaya devam eder. Dışa aktarılmış yardımcı alt yolların hepsi eşit değildir — rastlantısal yardımcı dışa aktarımlar yerine dar, belgelenmiş sözleşmeleri tercih edin.
 
 ### Plugin biçimleri
 
-OpenClaw, yüklenen her Plugin'i statik metadata'ya değil, gerçek kayıt davranışına göre bir biçime sınıflandırır:
+OpenClaw, yüklenen her Plugin'i gerçek kayıt davranışına göre bir biçime sınıflandırır (yalnızca statik metadata'ya göre değil):
 
 <AccordionGroup>
   <Accordion title="plain-capability">
     Tam olarak bir yetenek türü kaydeder (örneğin `mistral` gibi yalnızca sağlayıcı olan bir Plugin).
   </Accordion>
   <Accordion title="hybrid-capability">
-    Birden çok yetenek türü kaydeder (örneğin `openai`, metin çıkarımı, konuşma, medya anlama ve görsel oluşturmanın sahibidir).
+    Birden çok yetenek türü kaydeder (örneğin `openai`, metin çıkarımı, konuşma, medya anlama ve görsel üretiminin sahibidir).
   </Accordion>
   <Accordion title="hook-only">
-    Yalnızca hook'lar kaydeder (türlenmiş veya özel), yetenek, tool, komut veya hizmet kaydetmez.
+    Yalnızca hook'lar kaydeder (türlü veya özel), yetenek, araç, komut ya da hizmet kaydetmez.
   </Accordion>
   <Accordion title="non-capability">
-    Tool, komut, hizmet veya route kaydeder ancak yetenek kaydetmez.
+    Araçlar, komutlar, hizmetler veya rotalar kaydeder ancak yetenek kaydetmez.
   </Accordion>
 </AccordionGroup>
 
-Bir Plugin'in biçimini ve yetenek dağılımını görmek için `openclaw plugins inspect <id>` kullanın. Ayrıntılar için bkz. [CLI referansı](/tr/cli/plugins#inspect).
+Bir Plugin'in biçimini ve yetenek dökümünü görmek için `openclaw plugins inspect <id>` kullanın. Ayrıntılar için [CLI referansı](/tr/cli/plugins#inspect) bölümüne bakın.
 
 ### Eski hook'lar
 
-`before_agent_start` hook'u, hook-only Plugin'ler için bir uyumluluk yolu olarak desteklenmeye devam eder. Eski gerçek dünya Plugin'leri hâlâ buna bağlıdır.
+`before_agent_start` hook'u, yalnızca hook Plugin'leri için uyumluluk yolu olarak desteklenmeye devam eder. Eski gerçek dünya Plugin'leri hâlâ buna bağlıdır.
 
 Yön:
 
-- çalışır durumda tutun
-- bunu eski olarak belgelendirin
-- model/sağlayıcı geçersiz kılma işleri için `before_model_resolve` tercih edin
-- istem mutasyonu işleri için `before_prompt_build` tercih edin
+- çalışır tutun
+- eski olarak belgeleyin
+- model/sağlayıcı geçersiz kılma işi için `before_model_resolve` tercih edin
+- prompt mutasyonu işi için `before_prompt_build` tercih edin
 - yalnızca gerçek kullanım düştükten ve fixture kapsamı geçiş güvenliğini kanıtladıktan sonra kaldırın
 
 ### Uyumluluk sinyalleri
 
 `openclaw doctor` veya `openclaw plugins inspect <id>` çalıştırdığınızda şu etiketlerden birini görebilirsiniz:
 
-| Sinyal                     | Anlamı                                                      |
-| -------------------------- | ----------------------------------------------------------- |
-| **config valid**           | Config düzgün ayrıştırılıyor ve Plugin'ler çözümleniyor     |
-| **compatibility advisory** | Plugin desteklenen ama daha eski bir kalıp kullanıyor (örn. `hook-only`) |
-| **legacy warning**         | Plugin, kullanımdan kaldırılmış olan `before_agent_start` kullanıyor |
-| **hard error**             | Config geçersiz veya Plugin yüklenemedi                     |
+| Sinyal                     | Anlam                                                        |
+| -------------------------- | ------------------------------------------------------------ |
+| **config valid**           | Config sorunsuz ayrıştırılır ve Plugin'ler çözümlenir        |
+| **compatibility advisory** | Plugin desteklenen ancak daha eski bir kalıp kullanır (örn. `hook-only`) |
+| **legacy warning**         | Plugin kullanımdan kaldırılmış olan `before_agent_start` kullanır |
+| **hard error**             | Config geçersizdir veya Plugin yüklenememiştir               |
 
-Ne `hook-only` ne de `before_agent_start` bugün Plugin'inizi bozmaz: `hook-only` bir tavsiyedir ve `before_agent_start` yalnızca bir uyarı tetikler. Bu sinyaller ayrıca `openclaw status --all` ve `openclaw plugins doctor` içinde de görünür.
+Ne `hook-only` ne de `before_agent_start` bugün Plugin'inizi kırar: `hook-only` danışma niteliğindedir ve `before_agent_start` yalnızca bir uyarı tetikler. Bu sinyaller `openclaw status --all` ve `openclaw plugins doctor` içinde de görünür.
 
-## Mimariye genel bakış
+## Mimari genel bakışı
 
 OpenClaw'ın Plugin sistemi dört katmandan oluşur:
 
 <Steps>
   <Step title="Manifest + keşif">
-    OpenClaw, yapılandırılmış yollardan, workspace köklerinden, genel Plugin köklerinden ve paketlenmiş Plugin'lerden aday Plugin'leri bulur. Keşif, önce yerel `openclaw.plugin.json` manifest'lerini ve desteklenen bundle manifest'lerini okur.
+    OpenClaw, yapılandırılmış yollardan, çalışma alanı köklerinden, global Plugin köklerinden ve paketlenmiş Plugin'lerden aday Plugin'leri bulur. Keşif önce yerel `openclaw.plugin.json` manifestlerini ve desteklenen paket manifestlerini okur.
   </Step>
   <Step title="Etkinleştirme + doğrulama">
-    Core, keşfedilmiş bir Plugin'in etkin mi, devre dışı mı, engellenmiş mi yoksa bellek gibi özel bir slot için seçilmiş mi olduğuna karar verir.
+    Çekirdek, keşfedilen bir Plugin'in etkin, devre dışı, engellenmiş ya da bellek gibi özel bir yuva için seçilmiş olup olmadığına karar verir.
   </Step>
   <Step title="Çalışma zamanı yükleme">
-    Yerel OpenClaw Plugin'leri jiti aracılığıyla süreç içinde yüklenir ve yetenekleri merkezi bir kayıt defterine kaydeder. Uyumlu bundle'lar, çalışma zamanı kodu içe aktarılmadan kayıt defteri kayıtlarına normalize edilir.
+    Yerel OpenClaw Plugin'leri jiti üzerinden süreç içinde yüklenir ve yetenekleri merkezi bir kayıt defterine kaydeder. Uyumlu paketler, çalışma zamanı kodu içeri aktarılmadan kayıt defteri kayıtlarına normalleştirilir.
   </Step>
   <Step title="Yüzey tüketimi">
-    OpenClaw'ın geri kalanı; tools, kanallar, sağlayıcı kurulumu, hook'lar, HTTP route'ları, CLI komutları ve hizmetleri açığa çıkarmak için kayıt defterini okur.
+    OpenClaw'ın geri kalanı araçları, kanalları, sağlayıcı kurulumunu, hook'ları, HTTP rotalarını, CLI komutlarını ve hizmetleri sunmak için kayıt defterini okur.
   </Step>
 </Steps>
 
-Özellikle Plugin CLI için kök komut keşfi iki aşamada bölünür:
+Özellikle Plugin CLI için kök komut keşfi iki aşamaya ayrılır:
 
-- ayrıştırma zamanı metadata'sı `registerCli(..., { descriptors: [...] })` içinden gelir
-- gerçek Plugin CLI modülü tembel kalabilir ve ilk çağrıda kaydolabilir
+- ayrıştırma zamanı metadata'sı `registerCli(..., { descriptors: [...] })` üzerinden gelir
+- gerçek Plugin CLI modülü lazy kalabilir ve ilk çağrıda kayıt yapabilir
 
-Bu, kök komut adlarının ayrıştırmadan önce OpenClaw tarafından ayrılmasını sağlarken Plugin sahipli CLI kodunu Plugin'in içinde tutar.
+Bu, Plugin'e ait CLI kodunu Plugin içinde tutarken OpenClaw'ın ayrıştırmadan önce kök komut adlarını ayırmasına yine de olanak tanır.
 
 Önemli tasarım sınırı:
 
-- manifest/config doğrulaması, Plugin kodu yürütülmeden **manifest/schema metadata'sından** çalışabilmelidir
-- yerel yetenek keşfi, etkinleştirmeyen bir kayıt defteri anlık görüntüsü oluşturmak için güvenilen Plugin giriş kodunu yükleyebilir
-- yerel çalışma zamanı davranışı, `api.registrationMode === "full"` ile Plugin modülünün `register(api)` yolundan gelir
+- manifest/config doğrulaması, Plugin kodu yürütülmeden **manifest/schema metadata'sı** üzerinden çalışmalıdır
+- yerel yetenek keşfi, etkinleştirme yapmayan bir kayıt defteri anlık görüntüsü oluşturmak için güvenilen Plugin giriş kodunu yükleyebilir
+- yerel çalışma zamanı davranışı, Plugin modülünün `api.registrationMode === "full"` olan `register(api)` yolundan gelir
 
-Bu ayrım, OpenClaw'ın tam çalışma zamanı etkin olmadan önce config'i doğrulamasına, eksik/devre dışı Plugin'leri açıklamasına ve UI/schema ipuçları oluşturmasına izin verir.
+Bu ayrım, OpenClaw'ın tam çalışma zamanı etkin olmadan önce config doğrulamasına, eksik/devre dışı Plugin'leri açıklamasına ve UI/schema ipuçları oluşturmasına olanak tanır.
+
+### Plugin metadata anlık görüntüsü ve arama tablosu
+
+Gateway başlangıcı, geçerli config anlık görüntüsü için bir `PluginMetadataSnapshot` oluşturur. Anlık görüntü yalnızca metadata içerir: kurulu Plugin dizinini, manifest kayıt defterini, manifest tanılarını, sahip haritalarını, bir Plugin kimliği normalleştiricisini ve manifest kayıtlarını saklar. Yüklenmiş Plugin modüllerini, sağlayıcı SDK'larını, paket içeriklerini veya çalışma zamanı dışa aktarımlarını tutmaz.
+
+Plugin farkındalıklı config doğrulaması, başlangıçta otomatik etkinleştirme ve Gateway Plugin önyüklemesi, manifest/dizin metadata'sını bağımsız olarak yeniden oluşturmak yerine bu anlık görüntüyü tüketir. `PluginLookUpTable` aynı anlık görüntüden türetilir ve geçerli çalışma zamanı config'i için başlangıç Plugin planını ekler.
+
+Başlangıçtan sonra Gateway, geçerli metadata anlık görüntüsünü değiştirilebilir bir çalışma zamanı ürünü olarak tutar. Tekrarlanan çalışma zamanı sağlayıcı keşfi, her sağlayıcı katalog geçişi için kurulu dizini ve manifest kayıt defterini yeniden oluşturmak yerine bu anlık görüntüyü ödünç alabilir. Gateway kapatıldığında, config/Plugin envanteri değiştiğinde ve kurulu dizin yazımlarında anlık görüntü temizlenir veya değiştirilir; uyumlu geçerli anlık görüntü yoksa çağıranlar soğuk manifest/dizin yoluna geri döner. Uyumluluk denetimleri, `plugins.load.paths` ve varsayılan ajan çalışma alanı gibi Plugin keşif köklerini içermelidir, çünkü çalışma alanı Plugin'leri metadata kapsamının parçasıdır.
+
+Anlık görüntü ve arama tablosu, tekrarlanan başlangıç kararlarını hızlı yolda tutar:
+
+- kanal sahipliği
+- ertelenmiş kanal başlangıcı
+- başlangıç Plugin kimlikleri
+- sağlayıcı ve CLI arka uç sahipliği
+- kurulum sağlayıcısı, komut takma adı, model kataloğu sağlayıcısı ve manifest sözleşmesi sahipliği
+- Plugin config schema ve kanal config schema doğrulaması
+- başlangıç otomatik etkinleştirme kararları
+
+Güvenlik sınırı mutasyon değil, anlık görüntü değiştirmedir. Config, Plugin envanteri, kurulum kayıtları veya kalıcı dizin ilkesi değiştiğinde anlık görüntüyü yeniden oluşturun. Bunu geniş, değiştirilebilir global kayıt defteri olarak ele almayın ve sınırsız geçmiş anlık görüntüler tutmayın. Çalışma zamanı Plugin yüklemesi metadata anlık görüntülerinden ayrı kalır; böylece eski çalışma zamanı durumu bir metadata cache'inin arkasına gizlenemez.
+
+Cache kuralı [Plugin mimarisi iç ayrıntıları](/tr/plugins/architecture-internals#plugin-cache-boundary) bölümünde belgelenmiştir: bir çağıran geçerli akış için açık bir anlık görüntü, arama tablosu veya manifest kayıt defteri tutmadıkça manifest ve keşif metadata'sı tazedir. Gizli metadata cache'leri ve duvar saati TTL'leri Plugin yüklemesinin parçası değildir. Yalnızca çalışma zamanı yükleyici, modül ve bağımlılık-artifakt cache'leri, kod veya kurulu artifaktlar gerçekten yüklendikten sonra kalıcı olabilir.
+
+Bazı soğuk yol çağıranları, bir Gateway `PluginLookUpTable` almak yerine manifest kayıt defterlerini kalıcı kurulu Plugin dizininden doğrudan yeniden oluşturur. Bu yol artık kayıt defterini istek üzerine yeniden oluşturur; bir çağıranda zaten varsa geçerli arama tablosunu veya açık bir manifest kayıt defterini çalışma zamanı akışları boyunca geçirmeyi tercih edin.
 
 ### Etkinleştirme planlaması
 
-Etkinleştirme planlaması denetim düzleminin bir parçasıdır. Çağıranlar, daha geniş çalışma zamanı kayıt defterlerini yüklemeden önce belirli bir komut, sağlayıcı, kanal, route, agent harness veya yetenek için hangi Plugin'lerin ilgili olduğunu sorabilir.
+Etkinleştirme planlaması kontrol düzleminin parçasıdır. Çağıranlar daha geniş çalışma zamanı kayıt defterlerini yüklemeden önce somut bir komut, sağlayıcı, kanal, rota, ajan çalışma düzeneği veya yetenek için hangi Plugin'lerin ilgili olduğunu sorabilir.
 
-Planlayıcı, mevcut manifest davranışını uyumlu tutar:
+Planlayıcı, geçerli manifest davranışını uyumlu tutar:
 
 - `activation.*` alanları açık planlayıcı ipuçlarıdır
-- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` ve hook'lar manifest sahipliği fallback'i olmaya devam eder
-- yalnızca kimlik döndüren planlayıcı API'si mevcut çağıranlar için erişilebilir olmaya devam eder
-- plan API'si neden etiketlerini bildirir; böylece tanılamalar açık ipuçlarını sahiplik fallback'inden ayırabilir
+- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` ve hook'lar manifest sahipliği geri dönüşü olarak kalır
+- yalnızca kimliklerden oluşan planlayıcı API'si mevcut çağıranlar için kullanılabilir kalır
+- plan API'si neden etiketlerini bildirir; böylece tanılar açık ipuçlarını sahiplik geri dönüşünden ayırt edebilir
 
 <Warning>
-`activation` alanını bir yaşam döngüsü hook'u veya `register(...)` yerine geçen bir yapı olarak değerlendirmeyin. Bu, yüklemeyi daraltmak için kullanılan metadata'dır. İlişkiyi zaten sahiplik alanları tanımlıyorsa onları tercih edin; `activation` değerini yalnızca ek planlayıcı ipuçları için kullanın.
+`activation` öğesini bir yaşam döngüsü hook'u veya `register(...)` yerine geçecek bir şey olarak ele almayın. Bu, yüklemeyi daraltmak için kullanılan metadatadır. İlişkiyi zaten açıklıyorlarsa sahiplik alanlarını tercih edin; `activation` öğesini yalnızca ek planlayıcı ipuçları için kullanın.
 </Warning>
 
-### Kanal Plugin'leri ve paylaşılan message tool'u
+### Channel Plugin'leri ve paylaşılan ileti aracı
 
-Kanal Plugin'lerinin normal sohbet eylemleri için ayrı bir gönder/düzenle/tepki tool'u kaydetmesi gerekmez. OpenClaw tek bir paylaşılan `message` tool'unu core içinde tutar ve kanal Plugin'leri bunun arkasındaki kanala özgü keşif ve yürütmenin sahibidir.
+Channel Plugin'lerinin normal sohbet eylemleri için ayrı bir gönderme/düzenleme/tepki verme aracı kaydetmesi gerekmez. OpenClaw core içinde tek bir paylaşılan `message` aracını tutar ve Channel Plugin'leri bunun arkasındaki kanala özgü keşif ve yürütmenin sahibidir.
 
 Geçerli sınır şudur:
 
-- core, paylaşılan `message` tool host'unun, istem bağlantısının, oturum/thread muhasebesinin ve yürütme dağıtımının sahibidir
-- kanal Plugin'leri kapsamlı eylem keşfinin, yetenek keşfinin ve kanala özgü tüm şema parçalarının sahibidir
-- kanal Plugin'leri, konuşma kimliklerinin thread kimliklerini nasıl kodladığı veya üst konuşmalardan nasıl devraldığı gibi sağlayıcıya özgü oturum konuşma dil bilgisinin sahibidir
-- kanal Plugin'leri nihai eylemi kendi eylem bağdaştırıcısı üzerinden yürütür
+- core, paylaşılan `message` araç host'unun, prompt bağlamasının, oturum/thread kayıtlarının ve yürütme dispatch'inin sahibidir
+- Channel Plugin'leri kapsamlı eylem keşfinin, capability keşfinin ve kanala özgü schema parçalarının sahibidir
+- Channel Plugin'leri, conversation id'lerinin thread id'lerini nasıl kodladığı veya üst conversation'lardan nasıl miras aldığı gibi sağlayıcıya özgü oturum conversation gramerinin sahibidir
+- Channel Plugin'leri son eylemi kendi action adapter'ları üzerinden yürütür
 
-Kanal Plugin'leri için SDK yüzeyi `ChannelMessageActionAdapter.describeMessageTool(...)` şeklindedir. Bu birleşik keşif çağrısı, bir Plugin'in görünür eylemlerini, yeteneklerini ve şema katkılarını birlikte döndürmesine izin verir; böylece bu parçalar birbirinden kopmaz.
+Channel Plugin'leri için SDK yüzeyi `ChannelMessageActionAdapter.describeMessageTool(...)` şeklindedir. Bu birleşik keşif çağrısı, bir Plugin'in görünür eylemlerini, capability'lerini ve schema katkılarını birlikte döndürmesine izin verir; böylece bu parçalar birbirinden sapmaz.
 
-Kanala özgü bir message-tool parametresi yerel yol veya uzak medya URL'si gibi bir medya kaynağı taşıdığında, Plugin ayrıca `describeMessageTool(...)` içinden `mediaSourceParams` döndürmelidir. Core, Plugin sahipli parametre adlarını sabit kodlamak yerine sandbox yol normalleştirmesi ve giden medya erişim ipuçlarını uygulamak için bu açık listeyi kullanır. Burada kanal genelinde tek düz liste yerine eylem kapsamlı eşlemeleri tercih edin; böylece profile-only bir medya parametresi `send` gibi ilgisiz eylemlerde normalize edilmez.
+Kanala özgü bir message-tool parametresi yerel bir yol veya uzak medya URL'si gibi bir medya kaynağı taşıdığında, Plugin ayrıca `describeMessageTool(...)` içinden `mediaSourceParams` döndürmelidir. Core, Plugin'e ait parametre adlarını hardcode etmeden sandbox yol normalizasyonu ve giden medya erişimi ipuçlarını uygulamak için bu açık listeyi kullanır. Burada kanal genelinde tek bir düz liste yerine eylem kapsamlı map'leri tercih edin; böylece yalnızca profile yönelik bir medya parametresi `send` gibi ilgisiz eylemlerde normalize edilmez.
 
-Core, bu keşif adımına çalışma zamanı kapsamını geçirir. Önemli alanlar şunlardır:
+Core, runtime kapsamını bu keşif adımına aktarır. Önemli alanlar şunlardır:
 
 - `accountId`
 - `currentChannelId`
@@ -191,106 +215,108 @@ Core, bu keşif adımına çalışma zamanı kapsamını geçirir. Önemli alanl
 - `sessionKey`
 - `sessionId`
 - `agentId`
-- güvenilen gelen `requesterSenderId`
+- güvenilir gelen `requesterSenderId`
 
-Bu, bağlama duyarlı Plugin'ler için önemlidir. Bir kanal; etkin hesaba, geçerli oda/thread/mesaja veya güvenilen isteyen kimliğine göre message eylemlerini gizleyebilir ya da açığa çıkarabilir; core `message` tool'unda kanala özgü dalları sabit kodlamadan.
+Bu, bağlama duyarlı Plugin'ler için önemlidir. Bir kanal, core `message` aracında kanala özgü branch'leri hardcode etmeden etkin hesaba, geçerli oda/thread/iletiye veya güvenilir requester kimliğine göre message eylemlerini gizleyebilir ya da gösterebilir.
 
-Bu nedenle gömülü çalıştırıcı yönlendirme değişiklikleri hâlâ Plugin işidir: çalıştırıcı, paylaşılan `message` tool'unun geçerli tur için doğru kanal sahipli yüzeyi açığa çıkarması amacıyla geçerli sohbet/oturum kimliğini Plugin keşif sınırına iletmekten sorumludur.
+Embedded-runner routing değişikliklerinin hâlâ Plugin işi olmasının nedeni budur: runner, geçerli sohbet/oturum kimliğini Plugin keşif sınırına iletmekten sorumludur; böylece paylaşılan `message` aracı geçerli tur için doğru kanal sahipli yüzeyi gösterir.
 
-Kanal sahipli yürütme yardımcıları için paketlenmiş Plugin'ler yürütme çalışma zamanını kendi extension modülleri içinde tutmalıdır. Core artık `src/agents/tools` altında Discord, Slack, Telegram veya WhatsApp mesaj eylemi çalışma zamanlarının sahibi değildir. Ayrı `plugin-sdk/*-action-runtime` alt yolları yayımlamıyoruz ve paketlenmiş Plugin'ler kendi yerel çalışma zamanı kodlarını doğrudan extension sahipli modüllerinden içe aktarmalıdır.
+Kanal sahipli yürütme yardımcıları için bundled Plugin'ler yürütme runtime'ını kendi extension modüllerinin içinde tutmalıdır. Core artık `src/agents/tools` altında Discord, Slack, Telegram veya WhatsApp message-action runtime'larının sahibi değildir. Ayrı `plugin-sdk/*-action-runtime` subpath'leri yayımlamıyoruz ve bundled Plugin'ler kendi yerel runtime kodlarını doğrudan extension sahipli modüllerinden import etmelidir.
 
-Aynı sınır genel olarak sağlayıcı adlı SDK yüzeyleri için de geçerlidir: core, Slack, Discord, Signal, WhatsApp veya benzeri extension'lar için kanala özgü kolaylık barrel'larını içe aktarmamalıdır. Core bir davranışa ihtiyaç duyuyorsa ya paketlenmiş Plugin'in kendi `api.ts` / `runtime-api.ts` barrel'ını tüketmeli ya da ihtiyacı paylaşılan SDK içinde dar kapsamlı genel bir yeteneğe yükseltmelidir.
+Aynı sınır genel olarak sağlayıcı adlı SDK seam'leri için de geçerlidir: core, Slack, Discord, Signal, WhatsApp veya benzer extension'lar için kanala özgü kolaylık barrel'larını import etmemelidir. Core bir davranışa ihtiyaç duyarsa ya bundled Plugin'in kendi `api.ts` / `runtime-api.ts` barrel'ını tüketmeli ya da ihtiyacı paylaşılan SDK içinde dar bir generic capability'ye yükseltmelidir.
+
+Bundled Plugin'ler de aynı kurala uyar. Bir bundled Plugin'in `runtime-api.ts` dosyası, kendi markalı `openclaw/plugin-sdk/<plugin-id>` facade'ını yeniden export etmemelidir. Bu markalı facade'lar dış Plugin'ler ve eski tüketiciler için uyumluluk shim'leri olarak kalır, ancak bundled Plugin'ler yerel export'ları ve `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` veya `openclaw/plugin-sdk/webhook-ingress` gibi dar generic SDK subpath'lerini kullanmalıdır. Mevcut bir dış ekosistem için uyumluluk sınırı gerektirmedikçe yeni kod Plugin id'ye özgü SDK facade'ları eklememelidir.
 
 Özellikle anketler için iki yürütme yolu vardır:
 
-- `outbound.sendPoll`, ortak anket modeline uyan kanallar için paylaşılan temel çizgidir
-- `actions.handleAction("poll")`, kanala özgü anket semantiği veya ek anket parametreleri için tercih edilen yoldur
+- `outbound.sendPoll`, ortak anket modeline uyan kanallar için paylaşılan baseline'dır
+- `actions.handleAction("poll")`, kanala özgü anket semantikleri veya ek anket parametreleri için tercih edilen yoldur
 
-Core artık paylaşılan anket ayrıştırmasını, Plugin anket dağıtımı eylemi reddettikten sonraya erteler; böylece Plugin sahipli anket işleyicileri, önce genel anket ayrıştırıcısı tarafından engellenmeden kanala özgü anket alanlarını kabul edebilir.
+Core artık paylaşılan anket ayrıştırmasını Plugin anket dispatch'i eylemi reddedene kadar erteler; böylece Plugin sahipli anket handler'ları önce generic anket parser'ı tarafından engellenmeden kanala özgü anket alanlarını kabul edebilir.
 
-Tam başlangıç sırası için bkz. [Plugin architecture internals](/tr/plugins/architecture-internals).
+Tam başlangıç sırası için bkz. [Plugin mimarisi iç yapıları](/tr/plugins/architecture-internals).
 
-## Yetenek sahiplik modeli
+## Capability sahiplik modeli
 
-OpenClaw, yerel bir Plugin'i ilgisiz entegrasyonlardan oluşan bir torba olarak değil, bir **şirketin** veya bir **özelliğin** sahiplik sınırı olarak ele alır.
+OpenClaw, native bir Plugin'i ilişkisiz entegrasyonlardan oluşan bir torba olarak değil, bir **şirket** veya bir **özellik** için sahiplik sınırı olarak ele alır.
 
 Bu şu anlama gelir:
 
 - bir şirket Plugin'i genellikle o şirketin OpenClaw'a dönük tüm yüzeylerinin sahibi olmalıdır
-- bir özellik Plugin'i genellikle tanıttığı özelliğin tam yüzeyinin sahibi olmalıdır
-- kanallar, sağlayıcı davranışını doğaçlama yeniden uygulamak yerine paylaşılan core yeteneklerini tüketmelidir
+- bir özellik Plugin'i genellikle tanıttığı tam özellik yüzeyinin sahibi olmalıdır
+- kanallar, sağlayıcı davranışını ad hoc yeniden uygulamak yerine paylaşılan core capability'lerini tüketmelidir
 
 <AccordionGroup>
-  <Accordion title="Sağlayıcı çoklu yetenek">
-    `openai`; metin çıkarımı, konuşma, gerçek zamanlı ses, medya anlama ve görsel oluşturmanın sahibidir. `google`; metin çıkarımının yanı sıra medya anlama, görsel oluşturma ve web aramanın sahibidir. `qwen`; metin çıkarımı ile birlikte medya anlama ve video oluşturmanın sahibidir.
+  <Accordion title="Vendor multi-capability">
+    `openai`, metin çıkarımı, konuşma, gerçek zamanlı ses, medya anlama ve görsel üretiminin sahibidir. `google`, metin çıkarımının yanı sıra medya anlama, görsel üretimi ve web aramanın sahibidir. `qwen`, metin çıkarımının yanı sıra medya anlama ve video üretiminin sahibidir.
   </Accordion>
-  <Accordion title="Sağlayıcı tek yetenek">
-    `elevenlabs` ve `microsoft` konuşmanın sahibidir; `firecrawl` web-getirmenin sahibidir; `minimax` / `mistral` / `moonshot` / `zai` medya-anlama backend'lerinin sahibidir.
+  <Accordion title="Vendor single-capability">
+    `elevenlabs` ve `microsoft` konuşmanın sahibidir; `firecrawl` web-fetch'in sahibidir; `minimax` / `mistral` / `moonshot` / `zai` medya anlama backend'lerinin sahibidir.
   </Accordion>
-  <Accordion title="Özellik Plugin'i">
-    `voice-call`; çağrı taşıması, tools, CLI, route'lar ve Twilio medya akışı köprülemesinin sahibidir, ancak sağlayıcı Plugin'leri doğrudan içe aktarmak yerine paylaşılan konuşma, gerçek zamanlı transkripsiyon ve gerçek zamanlı ses yeteneklerini tüketir.
+  <Accordion title="Feature plugin">
+    `voice-call` çağrı aktarımı, araçlar, CLI, route'lar ve Twilio media-stream köprülemesinin sahibidir, ancak vendor Plugin'lerini doğrudan import etmek yerine paylaşılan konuşma, gerçek zamanlı transcription ve gerçek zamanlı ses capability'lerini tüketir.
   </Accordion>
 </AccordionGroup>
 
-Amaçlanan son durum şudur:
+Hedeflenen son durum şudur:
 
-- OpenAI, metin modelleri, konuşma, görseller ve gelecekteki videoları kapsasa bile tek bir Plugin'de yaşar
-- başka bir sağlayıcı da kendi yüzey alanı için aynısını yapabilir
-- kanallar, hangi sağlayıcı Plugin'inin sağlayıcının sahibi olduğunu umursamaz; core tarafından açığa çıkarılan paylaşılan yetenek sözleşmesini tüketirler
+- OpenAI, metin modellerini, konuşmayı, görselleri ve gelecekteki videoyu kapsasa bile tek bir Plugin içinde yaşar
+- başka bir vendor kendi yüzey alanı için aynısını yapabilir
+- kanallar sağlayıcının hangi vendor Plugin'ine ait olduğuyla ilgilenmez; core tarafından açığa çıkarılan paylaşılan capability contract'ını tüketir
 
-Ana ayrım budur:
+Temel ayrım budur:
 
-- **Plugin** = sahiplik sınırı
-- **yetenek** = birden çok Plugin'in uygulayabildiği veya tüketebildiği core sözleşmesi
+- **plugin** = sahiplik sınırı
+- **capability** = birden çok Plugin'in uygulayabileceği veya tüketebileceği core contract
 
-Bu nedenle OpenClaw video gibi yeni bir alan eklediğinde ilk soru "hangi sağlayıcı video işlemeyi sabit kodlayacak?" değildir. İlk soru "core video yetenek sözleşmesi nedir?" olmalıdır. Bu sözleşme var olduktan sonra sağlayıcı Plugin'leri ona karşı kayıt olabilir ve kanal/özellik Plugin'leri onu tüketebilir.
+Yani OpenClaw video gibi yeni bir domain eklerse, ilk soru "hangi provider video handling'i hardcode etmeli?" değildir. İlk soru "core video capability contract'ı nedir?" olmalıdır. Bu contract var olduğunda, vendor Plugin'leri buna karşı register edebilir ve kanal/özellik Plugin'leri bunu tüketebilir.
 
-Yetenek henüz mevcut değilse doğru adım genellikle şudur:
+Capability henüz yoksa, doğru hamle genellikle şudur:
 
 <Steps>
-  <Step title="Yeteneği tanımla">
-    Eksik yeteneği core içinde tanımlayın.
+  <Step title="Capability'yi tanımlayın">
+    Eksik capability'yi core içinde tanımlayın.
   </Step>
-  <Step title="SDK üzerinden açığa çıkar">
-    Bunu Plugin API/çalışma zamanı üzerinden türlenmiş biçimde açığa çıkarın.
+  <Step title="SDK üzerinden açığa çıkarın">
+    Bunu Plugin API/runtime üzerinden typed şekilde açığa çıkarın.
   </Step>
-  <Step title="Tüketicileri bağla">
-    Kanalları/özellikleri bu yeteneğe karşı bağlayın.
+  <Step title="Tüketicileri bağlayın">
+    Kanalları/özellikleri bu capability'ye karşı bağlayın.
   </Step>
-  <Step title="Sağlayıcı uygulamaları">
-    Sağlayıcı Plugin'lerinin uygulamalar kaydetmesine izin verin.
+  <Step title="Vendor implementasyonları">
+    Vendor Plugin'lerinin implementasyon kaydetmesine izin verin.
   </Step>
 </Steps>
 
-Bu, sahipliği açık tutarken tek bir sağlayıcıya veya bir defalık Plugin'e özgü kod yoluna bağlı core davranışını önler.
+Bu, tek bir vendor'a veya tek seferlik Plugin'e özgü bir code path'e bağlı core davranışından kaçınırken sahipliği açık tutar.
 
-### Yetenek katmanlaması
+### Capability katmanlama
 
-Kodun nereye ait olduğuna karar verirken şu zihinsel modeli kullanın:
+Kodun nereye ait olduğuna karar verirken bu mental modeli kullanın:
 
 <Tabs>
-  <Tab title="Core yetenek katmanı">
-    Paylaşılan orkestrasyon, ilke, fallback, config birleştirme kuralları, teslim semantiği ve türlenmiş sözleşmeler.
+  <Tab title="Core capability katmanı">
+    Paylaşılan orchestration, policy, fallback, config merge kuralları, teslim semantikleri ve typed contract'lar.
   </Tab>
-  <Tab title="Sağlayıcı Plugin katmanı">
-    Sağlayıcıya özgü API'ler, kimlik doğrulama, model katalogları, konuşma sentezi, görsel oluşturma, gelecekteki video backend'leri, kullanım uç noktaları.
+  <Tab title="Vendor plugin katmanı">
+    Vendor'a özgü API'ler, auth, model katalogları, konuşma sentezi, görsel üretimi, gelecekteki video backend'leri, usage endpoint'leri.
   </Tab>
-  <Tab title="Kanal/özellik Plugin katmanı">
-    Core yeteneklerini tüketen ve bunları bir yüzeyde sunan Slack/Discord/voice-call/vb. entegrasyonu.
+  <Tab title="Channel/feature plugin katmanı">
+    Core capability'lerini tüketen ve bunları bir yüzeyde sunan Slack/Discord/voice-call/vb. entegrasyonu.
   </Tab>
 </Tabs>
 
-Örneğin TTS şu biçimi izler:
+Örneğin, TTS şu şekli izler:
 
-- core, yanıt zamanı TTS ilkesi, fallback sırası, tercihler ve kanal tesliminin sahibidir
-- `openai`, `elevenlabs` ve `microsoft` sentez uygulamalarının sahibidir
-- `voice-call`, telefon TTS çalışma zamanı yardımcısını tüketir
+- core, yanıt zamanı TTS policy'sinin, fallback sırasının, tercihlerin ve kanal tesliminin sahibidir
+- `openai`, `elevenlabs` ve `microsoft` sentez implementasyonlarının sahibidir
+- `voice-call`, telephony TTS runtime helper'ını tüketir
 
-Aynı kalıp gelecekteki yetenekler için de tercih edilmelidir.
+Gelecekteki capability'ler için de aynı pattern tercih edilmelidir.
 
-### Çoklu yetenekli şirket Plugin örneği
+### Multi-capability şirket Plugin örneği
 
-Bir şirket Plugin'i dışarıdan bakıldığında tutarlı hissettirmelidir. OpenClaw; modeller, konuşma, gerçek zamanlı transkripsiyon, gerçek zamanlı ses, medya anlama, görsel oluşturma, video oluşturma, web getirme ve web arama için paylaşılan sözleşmelere sahipse, bir sağlayıcı tüm yüzeylerinin sahibi tek bir yerde olabilir:
+Bir şirket Plugin'i dışarıdan bakıldığında tutarlı hissettirmelidir. OpenClaw modeller, konuşma, gerçek zamanlı transcription, gerçek zamanlı ses, medya anlama, görsel üretimi, video üretimi, web fetch ve web arama için paylaşılan contract'lara sahipse, bir vendor tüm yüzeylerinin sahibi tek bir yerde olabilir:
 
 ```ts
 import type { OpenClawPluginDefinition } from "openclaw/plugin-sdk/plugin-entry";
@@ -344,130 +370,119 @@ const plugin: OpenClawPluginDefinition = {
 export default plugin;
 ```
 
-Önemli olan tam yardımcı adları değildir. Biçim önemlidir:
+Önemli olan tam helper adları değildir. Önemli olan şekildir:
 
-- tek bir Plugin, sağlayıcı yüzeyinin sahibidir
-- core yine yetenek sözleşmelerinin sahibidir
-- kanallar ve özellik Plugin'leri sağlayıcı kodunu değil, `api.runtime.*` yardımcılarını tüketir
-- sözleşme testleri, Plugin'in sahip olduğunu iddia ettiği yetenekleri kaydettiğini doğrulayabilir
+- tek bir Plugin vendor yüzeyinin sahibidir
+- core yine de capability contract'larının sahibidir
+- kanallar ve özellik Plugin'leri vendor kodunu değil, `api.runtime.*` helper'larını tüketir
+- contract testleri, Plugin'in sahibi olduğunu iddia ettiği capability'leri kaydettiğini doğrulayabilir
 
-### Yetenek örneği: video anlama
+### Capability örneği: video anlama
 
-OpenClaw, görsel/ses/video anlamayı zaten tek bir paylaşılan yetenek olarak ele alır. Aynı sahiplik modeli burada da geçerlidir:
+OpenClaw zaten görsel/ses/video anlamayı tek bir paylaşılan capability olarak ele alır. Aynı sahiplik modeli burada da geçerlidir:
 
 <Steps>
-  <Step title="Core sözleşmeyi tanımlar">
-    Core, medya-anlama sözleşmesini tanımlar.
+  <Step title="Core contract'ı tanımlar">
+    Core, media-understanding contract'ını tanımlar.
   </Step>
-  <Step title="Sağlayıcı Plugin'leri kayıt olur">
-    Sağlayıcı Plugin'leri, uygun olduğu şekilde `describeImage`, `transcribeAudio` ve `describeVideo` kaydeder.
+  <Step title="Vendor Plugin'leri register eder">
+    Vendor Plugin'leri uygulanabilir olduğunda `describeImage`, `transcribeAudio` ve `describeVideo` kaydeder.
   </Step>
   <Step title="Tüketiciler paylaşılan davranışı kullanır">
-    Kanallar ve özellik Plugin'leri doğrudan sağlayıcı koduna bağlanmak yerine paylaşılan core davranışını tüketir.
+    Kanallar ve özellik Plugin'leri doğrudan vendor koduna bağlanmak yerine paylaşılan core davranışını tüketir.
   </Step>
 </Steps>
 
-Bu, bir sağlayıcının video varsayımlarını core içine gömmekten kaçınır. Plugin sağlayıcı yüzeyinin sahibidir; core ise yetenek sözleşmesi ve fallback davranışının sahibidir.
+Bu, tek bir provider'ın video varsayımlarını core içine gömmekten kaçınır. Plugin vendor yüzeyinin sahibidir; core capability contract'ının ve fallback davranışının sahibidir.
 
-Video oluşturma zaten aynı diziyi kullanır: core türlenmiş yetenek sözleşmesi ve çalışma zamanı yardımcısının sahibidir ve sağlayıcı Plugin'leri buna karşı `api.registerVideoGenerationProvider(...)` uygulamaları kaydeder.
+Video üretimi zaten aynı sırayı kullanır: core typed capability contract'ının ve runtime helper'ın sahibidir, vendor Plugin'leri ise buna karşı `api.registerVideoGenerationProvider(...)` implementasyonları kaydeder.
 
-Somut bir yaygınlaştırma denetim listesine mi ihtiyacınız var? Bkz. [Capability Cookbook](/tr/plugins/architecture).
+Somut bir rollout checklist mi gerekiyor? Bkz. [Capability Cookbook](/tr/plugins/architecture).
 
-## Sözleşmeler ve zorunlu uygulama
+## Contract'lar ve enforcement
 
-Plugin API yüzeyi, kasıtlı olarak `OpenClawPluginApi` içinde türlenmiş ve merkezileştirilmiştir. Bu sözleşme, desteklenen kayıt noktalarını ve bir Plugin'in güvenebileceği çalışma zamanı yardımcılarını tanımlar.
+Plugin API yüzeyi kasıtlı olarak typed ve `OpenClawPluginApi` içinde merkezi hale getirilmiştir. Bu contract, desteklenen registration point'leri ve bir Plugin'in güvenebileceği runtime helper'ları tanımlar.
 
 Bunun önemi:
 
-- Plugin yazarları tek bir kararlı iç standart elde eder
-- core, iki Plugin'in aynı sağlayıcı kimliğini kaydetmesi gibi yinelenen sahipliği reddedebilir
-- başlangıç, bozuk kayıt için uygulanabilir tanılamalar gösterebilir
-- sözleşme testleri, paketlenmiş Plugin sahipliğini zorunlu kılabilir ve sessiz kaymayı önleyebilir
+- Plugin yazarları tek bir stable iç standart elde eder
+- core, aynı provider id'yi register eden iki Plugin gibi yinelenen sahiplikleri reddedebilir
+- startup, hatalı biçimlendirilmiş registration için actionable diagnostics gösterebilir
+- contract testleri bundled-Plugin sahipliğini enforce edebilir ve sessiz drift'i önleyebilir
 
-Zorunlu uygulamanın iki katmanı vardır:
+İki enforcement katmanı vardır:
 
 <AccordionGroup>
-  <Accordion title="Çalışma zamanı kayıt zorlaması">
-    Plugin kayıt defteri, Plugin'ler yüklenirken kayıtları doğrular. Örnekler: yinelenen sağlayıcı kimlikleri, yinelenen konuşma sağlayıcısı kimlikleri ve bozuk kayıtlar tanımsız davranış yerine Plugin tanılamaları üretir.
+  <Accordion title="Çalışma zamanı kayıt yaptırım">
+    Plugin kayıt defteri, Plugin'ler yüklenirken kayıtları doğrular. Örnekler: yinelenen sağlayıcı kimlikleri, yinelenen konuşma sağlayıcısı kimlikleri ve hatalı biçimlendirilmiş kayıtlar, tanımsız davranış yerine Plugin tanılamaları üretir.
   </Accordion>
   <Accordion title="Sözleşme testleri">
-    Paketlenmiş Plugin'ler test çalıştırmaları sırasında sözleşme kayıt defterlerinde yakalanır; böylece OpenClaw sahipliği açıkça doğrulayabilir. Bugün bu; model sağlayıcıları, konuşma sağlayıcıları, web arama sağlayıcıları ve paketlenmiş kayıt sahipliği için kullanılır.
+    OpenClaw'ın sahipliği açıkça doğrulayabilmesi için paketlenmiş Plugin'ler test çalıştırmaları sırasında sözleşme kayıt defterlerinde yakalanır. Bugün bu; model sağlayıcıları, konuşma sağlayıcıları, web arama sağlayıcıları ve paketlenmiş kayıt sahipliği için kullanılır.
   </Accordion>
 </AccordionGroup>
 
-Pratik etkisi şudur: OpenClaw, hangi yüzeyin hangi Plugin'e ait olduğunu en baştan bilir. Bu, sahiplik zımni değil, beyan edilmiş, türlenmiş ve test edilebilir olduğu için core ile kanalların sorunsuz birleşmesini sağlar.
+Bunun pratik etkisi, OpenClaw'ın hangi yüzeyin hangi Plugin'e ait olduğunu en baştan bilmesidir. Bu, sahiplik örtük olmak yerine bildirilmiş, tiplendirilmiş ve test edilebilir olduğu için çekirdek ile kanalların sorunsuzca bileşmesini sağlar.
 
-### Bir sözleşmede ne bulunmalı
+### Bir sözleşmede neler olmalı
 
 <Tabs>
   <Tab title="İyi sözleşmeler">
-    - türlenmiş
+    - tiplendirilmiş
     - küçük
     - yeteneğe özgü
-    - core sahibi
-    - birden çok Plugin tarafından yeniden kullanılabilir
-    - sağlayıcı bilgisi olmadan kanallar/özellikler tarafından tüketilebilir
+    - çekirdek tarafından sahiplenilen
+    - birden fazla Plugin tarafından yeniden kullanılabilir
+    - satıcı bilgisi olmadan kanallar/özellikler tarafından tüketilebilir
 
   </Tab>
   <Tab title="Kötü sözleşmeler">
-    - core içinde gizlenmiş sağlayıcıya özgü ilke
-    - kayıt defterini atlayan bir defalık Plugin kaçış kapıları
-    - kanal kodunun doğrudan bir sağlayıcı uygulamasına uzanması
-    - `OpenClawPluginApi` veya `api.runtime` parçası olmayan doğaçlama çalışma zamanı nesneleri
+    - çekirdekte gizlenmiş satıcıya özgü ilke
+    - kayıt defterini atlayan tek seferlik Plugin kaçış yolları
+    - doğrudan bir satıcı uygulamasına erişen kanal kodu
+    - `OpenClawPluginApi` veya `api.runtime` parçası olmayan plansız çalışma zamanı nesneleri
 
   </Tab>
 </Tabs>
 
-Emin olmadığınızda soyutlama düzeyini yükseltin: önce yeteneği tanımlayın, sonra Plugin'lerin ona takılmasına izin verin.
+Emin değilseniz soyutlama düzeyini yükseltin: önce yeteneği tanımlayın, sonra Plugin'lerin buna bağlanmasına izin verin.
 
 ## Yürütme modeli
 
-Yerel OpenClaw Plugin'leri Gateway ile **aynı süreç içinde** çalışır. Sandbox içinde değildirler. Yüklenmiş bir yerel Plugin, core koduyla aynı süreç düzeyinde güven sınırına sahiptir.
+Yerel OpenClaw Plugin'leri Gateway ile **süreç içinde** çalışır. Sandbox'a alınmazlar. Yüklenmiş bir yerel Plugin, çekirdek kodla aynı süreç düzeyi güven sınırına sahiptir.
 
 <Warning>
-Sonuçlar:
-
-- yerel bir Plugin; tools, ağ işleyicileri, hook'lar ve hizmetler kaydedebilir
-- yerel bir Plugin hatası gateway'i çökertebilir veya kararsızlaştırabilir
-- kötü niyetli bir yerel Plugin, OpenClaw süreci içinde keyfi kod yürütmeye denktir
-
+Yerel Plugin sonuçları: Bir Plugin araçlar, ağ işleyicileri, hook'lar ve hizmetler kaydedebilir; bir Plugin hatası gateway'i çökertebilir veya kararsızlaştırabilir; kötü amaçlı bir yerel Plugin ise OpenClaw sürecinin içinde rastgele kod yürütmeyle eşdeğerdir.
 </Warning>
 
-Uyumlu bundle'lar varsayılan olarak daha güvenlidir; çünkü OpenClaw şu anda onları metadata/içerik paketleri olarak ele alır. Mevcut sürümlerde bu çoğunlukla paketlenmiş Skills anlamına gelir.
+Uyumlu paketler varsayılan olarak daha güvenlidir çünkü OpenClaw şu anda bunları meta veri/içerik paketleri olarak ele alır. Güncel sürümlerde bu çoğunlukla paketlenmiş Skills anlamına gelir.
 
-Paketlenmemiş Plugin'ler için allowlist'ler ve açık kurulum/yükleme yolları kullanın. Workspace Plugin'lerini üretim varsayılanları değil, geliştirme zamanı kodu olarak değerlendirin.
+Paketlenmemiş Plugin'ler için izin listeleri ve açık kurulum/yükleme yolları kullanın. Çalışma alanı Plugin'lerini üretim varsayılanları olarak değil, geliştirme zamanı kodu olarak ele alın.
 
-Paketlenmiş workspace paket adları için Plugin kimliğini npm adına bağlı tutun: varsayılan olarak `@openclaw/<id>` veya paket bilinçli olarak daha dar bir Plugin rolü açığa çıkarıyorsa `-provider`, `-plugin`, `-speech`, `-sandbox` veya `-media-understanding` gibi onaylı türlenmiş bir son ek kullanın.
+Paketlenmiş çalışma alanı paket adları için Plugin kimliğini npm adına sabitlenmiş tutun: varsayılan olarak `@openclaw/<id>` veya paket bilerek daha dar bir Plugin rolü sunuyorsa `-provider`, `-plugin`, `-speech`, `-sandbox` ya da `-media-understanding` gibi onaylı tiplendirilmiş bir sonek.
 
 <Note>
-**Güven notu:**
-
-- `plugins.allow`, **Plugin kimliklerine** güvenir; kaynak kökenine değil.
-- Paketlenmiş bir Plugin ile aynı kimliğe sahip bir workspace Plugin'i, etkinse/allowlist'e alınmışsa paketlenmiş kopyayı bilinçli olarak gölgeler.
-- Bu, yerel geliştirme, yama testi ve hotfix'ler için normal ve kullanışlıdır.
-- Paketlenmiş Plugin güveni, kurulum metadata'sından değil, kaynak anlık görüntüsünden — yükleme anındaki disk üzerindeki manifest ve koddan — çözülür. Bozulmuş veya ikame edilmiş bir kurulum kaydı, paketlenmiş bir Plugin'in güven yüzeyini gerçek kaynağın iddia ettiğinin ötesinde sessizce genişletemez.
-
+**Güven notu:** `plugins.allow`, kaynak kökenini değil **Plugin kimliklerini** güvenilir sayar. Paketlenmiş bir Plugin ile aynı kimliğe sahip bir çalışma alanı Plugin'i, bu çalışma alanı Plugin'i etkinleştirildiğinde/izin listesine alındığında bilinçli olarak paketlenmiş kopyanın yerine geçer. Bu normaldir ve yerel geliştirme, yama testi ve hızlı düzeltmeler için kullanışlıdır. Paketlenmiş Plugin güveni, kurulum meta verilerinden değil, yükleme zamanındaki kaynak anlık görüntüsünden — diskteki manifest ve koddan — çözümlenir. Bozulmuş veya yerine geçirilmiş bir kurulum kaydı, paketlenmiş bir Plugin'in güven yüzeyini gerçek kaynağın iddia ettiğinin ötesine sessizce genişletemez.
 </Note>
 
 ## Dışa aktarma sınırı
 
-OpenClaw, uygulama kolaylıklarını değil, yetenekleri dışa aktarır.
+OpenClaw, uygulama kolaylığı değil, yetenekler dışa aktarır.
 
-Yetenek kaydını genel tutun. Sözleşme dışı yardımcı dışa aktarımları kırpın:
+Yetenek kaydını herkese açık tutun. Sözleşme dışı yardımcı dışa aktarımları budayın:
 
 - paketlenmiş Plugin'e özgü yardımcı alt yollar
-- genel API olması amaçlanmayan çalışma zamanı altyapı alt yolları
-- sağlayıcıya özgü kolaylık yardımcıları
+- herkese açık API olarak amaçlanmayan çalışma zamanı tesisatı alt yolları
+- satıcıya özgü kolaylık yardımcıları
 - uygulama ayrıntısı olan kurulum/onboarding yardımcıları
 
-Bazı paketlenmiş Plugin yardımcı alt yolları, uyumluluk ve paketlenmiş Plugin bakımı için üretilmiş SDK dışa aktarma eşleminde hâlâ kalmaktadır. Mevcut örnekler arasında `plugin-sdk/feishu`, `plugin-sdk/feishu-setup`, `plugin-sdk/zalo`, `plugin-sdk/zalo-setup` ve çeşitli `plugin-sdk/matrix*` yüzeyleri bulunur. Bunları yeni üçüncü taraf Plugin'ler için önerilen SDK kalıbı olarak değil, ayrılmış uygulama ayrıntısı dışa aktarımları olarak değerlendirin.
+Ayrılmış paketlenmiş Plugin yardımcı alt yolları, oluşturulan SDK dışa aktarma haritasından emekli edilmiştir. Sahibe özgü yardımcıları sahip olan Plugin paketi içinde tutun; yalnızca yeniden kullanılabilir host davranışını `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` ve `plugin-sdk/plugin-config-runtime` gibi genel SDK sözleşmelerine yükseltin.
 
-## İç yapılar ve referans
+## İç yapılar ve başvuru
 
-Yükleme hattı, kayıt defteri modeli, sağlayıcı çalışma zamanı hook'ları, Gateway HTTP route'ları, message tool şemaları, kanal hedef çözümleme, sağlayıcı katalogları, bağlam motoru Plugin'leri ve yeni bir yetenek ekleme kılavuzu için bkz. [Plugin architecture internals](/tr/plugins/architecture-internals).
+Yükleme pipeline'ı, kayıt defteri modeli, sağlayıcı çalışma zamanı hook'ları, Gateway HTTP rotaları, ileti aracı şemaları, kanal hedef çözümleme, sağlayıcı katalogları, bağlam motoru Plugin'leri ve yeni bir yetenek ekleme kılavuzu için bkz. [Plugin mimarisi iç yapıları](/tr/plugins/architecture-internals).
 
 ## İlgili
 
 - [Plugin oluşturma](/tr/plugins/building-plugins)
-- [Plugin manifest](/tr/plugins/manifest)
+- [Plugin manifesti](/tr/plugins/manifest)
 - [Plugin SDK kurulumu](/tr/plugins/sdk-setup)

@@ -1,23 +1,23 @@
 ---
 read_when:
-    - OpenClaw'ı LM Studio üzerinden açık kaynak modellerle çalıştırmak istiyorsunuz
+    - OpenClaw'ı LM Studio aracılığıyla açık kaynak modellerle çalıştırmak istiyorsunuz
     - LM Studio'yu kurmak ve yapılandırmak istiyorsunuz
-summary: OpenClaw'ı LM Studio ile çalıştırın
+summary: OpenClaw'u LM Studio ile çalıştırın
 title: LM Studio
 x-i18n:
-    generated_at: "2026-04-24T09:26:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:47Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2077790173a8cb660409b64e199d2027dda7b5b55226a00eadb0cdc45061e3ce
+    source_hash: fe6d1feadf355579b244ab4187a8d3b8bad661a5605aed906eedf361d6fcae3f
     source_path: providers/lmstudio.md
-    workflow: 15
+    workflow: 16
 ---
 
-LM Studio, açık ağırlıklı modelleri kendi donanımınızda çalıştırmak için kullanımı kolay ama güçlü bir uygulamadır. llama.cpp (GGUF) veya MLX modellerini (Apple Silicon) çalıştırmanıza olanak tanır. GUI paketi veya headless daemon (`llmster`) olarak gelir. Ürün ve kurulum belgeleri için [lmstudio.ai](https://lmstudio.ai/) sayfasına bakın.
+LM Studio, kendi donanımınızda açık ağırlıklı modeller çalıştırmak için kullanıcı dostu ancak güçlü bir uygulamadır. llama.cpp (GGUF) veya MLX modellerini (Apple Silicon) çalıştırmanızı sağlar. GUI paketi veya başsız daemon (`llmster`) olarak gelir. Ürün ve kurulum belgeleri için [lmstudio.ai](https://lmstudio.ai/) adresine bakın.
 
 ## Hızlı başlangıç
 
-1. LM Studio'yu (masaüstü) veya `llmster`'ı (headless) kurun, sonra yerel sunucuyu başlatın:
+1. LM Studio’yu (masaüstü) veya `llmster`ı (başsız) yükleyin, ardından yerel sunucuyu başlatın:
 
 ```bash
 curl -fsSL https://lmstudio.ai/install.sh | bash
@@ -25,7 +25,7 @@ curl -fsSL https://lmstudio.ai/install.sh | bash
 
 2. Sunucuyu başlatın
 
-Masaüstü uygulamasını başlattığınızdan veya aşağıdaki komutu kullanarak daemon'ı çalıştırdığınızdan emin olun:
+Masaüstü uygulamayı başlattığınızdan veya daemon’ı aşağıdaki komutla çalıştırdığınızdan emin olun:
 
 ```bash
 lms daemon up
@@ -35,29 +35,25 @@ lms daemon up
 lms server start --port 1234
 ```
 
-Uygulamayı kullanıyorsanız sorunsuz bir deneyim için JIT'in etkin olduğundan emin olun. Daha fazlası için [LM Studio JIT and TTL guide](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict) sayfasına bakın.
+Uygulamayı kullanıyorsanız, sorunsuz bir deneyim için JIT’in etkin olduğundan emin olun. Daha fazla bilgi için [LM Studio JIT ve TTL kılavuzu](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict) sayfasına bakın.
 
-3. OpenClaw bir LM Studio token değeri gerektirir. `LM_API_TOKEN` ayarlayın:
+3. LM Studio kimlik doğrulaması etkinse `LM_API_TOKEN` ayarını yapın:
 
 ```bash
 export LM_API_TOKEN="your-lm-studio-api-token"
 ```
 
-LM Studio kimlik doğrulaması devre dışıysa boş olmayan herhangi bir token değeri kullanın:
+LM Studio kimlik doğrulaması devre dışıysa, etkileşimli OpenClaw kurulumu sırasında API anahtarını boş bırakabilirsiniz.
 
-```bash
-export LM_API_TOKEN="placeholder-key"
-```
+LM Studio kimlik doğrulaması kurulum ayrıntıları için [LM Studio Authentication](https://lmstudio.ai/docs/developer/core/authentication) sayfasına bakın.
 
-LM Studio auth kurulum ayrıntıları için [LM Studio Authentication](https://lmstudio.ai/docs/developer/core/authentication) sayfasına bakın.
-
-4. Onboarding'i çalıştırın ve `LM Studio` seçin:
+4. İlk kurulumu çalıştırın ve `LM Studio` seçeneğini belirleyin:
 
 ```bash
 openclaw onboard
 ```
 
-5. Onboarding içinde `Default model` isteminde LM Studio modelinizi seçin.
+5. İlk kurulumda, LM Studio modelinizi seçmek için `Default model` istemini kullanın.
 
 Bunu daha sonra da ayarlayabilir veya değiştirebilirsiniz:
 
@@ -65,13 +61,13 @@ Bunu daha sonra da ayarlayabilir veya değiştirebilirsiniz:
 openclaw models set lmstudio/qwen/qwen3.5-9b
 ```
 
-LM Studio model anahtarları `author/model-name` biçimini izler (ör. `qwen/qwen3.5-9b`). OpenClaw
-model ref'leri sağlayıcı adını öne ekler: `lmstudio/qwen/qwen3.5-9b`. Bir model için tam anahtarı
-`curl http://localhost:1234/api/v1/models` çalıştırıp `key` alanına bakarak bulabilirsiniz.
+LM Studio model anahtarları `author/model-name` biçimini izler (örn. `qwen/qwen3.5-9b`). OpenClaw
+model referansları sağlayıcı adını başa ekler: `lmstudio/qwen/qwen3.5-9b`. Bir modelin tam anahtarını
+`curl http://localhost:1234/api/v1/models` komutunu çalıştırıp `key` alanına bakarak bulabilirsiniz.
 
-## Etkileşimsiz onboarding
+## Etkileşimsiz ilk kurulum
 
-Kurulumu script ile yapmak istediğinizde (CI, sağlama, uzak önyükleme) etkileşimsiz onboarding kullanın:
+Kurulumu betiklemek istediğinizde (CI, kaynak hazırlama, uzaktan önyükleme) etkileşimsiz ilk kurulumu kullanın:
 
 ```bash
 openclaw onboard \
@@ -80,7 +76,7 @@ openclaw onboard \
   --auth-choice lmstudio
 ```
 
-Veya base URL ya da modeli API anahtarıyla belirtin:
+Ya da temel URL’yi, modeli ve isteğe bağlı API anahtarını belirtin:
 
 ```bash
 openclaw onboard \
@@ -92,28 +88,29 @@ openclaw onboard \
   --custom-model-id qwen/qwen3.5-9b
 ```
 
-`--custom-model-id`, LM Studio'nun döndürdüğü model anahtarını alır (ör. `qwen/qwen3.5-9b`), `lmstudio/`
-sağlayıcı öneki olmadan.
+`--custom-model-id`, `lmstudio/` sağlayıcı ön eki olmadan LM Studio tarafından döndürülen model anahtarını alır (örn. `qwen/qwen3.5-9b`).
 
-Etkileşimsiz onboarding, `--lmstudio-api-key` (veya env içinde `LM_API_TOKEN`) gerektirir.
-Kimlik doğrulamasız LM Studio sunucuları için boş olmayan herhangi bir token değeri çalışır.
+Kimliği doğrulanmış LM Studio sunucuları için `--lmstudio-api-key` geçirin veya `LM_API_TOKEN` ayarını yapın.
+Kimliği doğrulanmamış LM Studio sunucuları için anahtarı atlayın; OpenClaw yerel, gizli olmayan bir işaretleyici depolar.
 
-`--custom-api-key` uyumluluk için hâlâ desteklenir, ancak LM Studio için `--lmstudio-api-key` tercih edilir.
+`--custom-api-key` uyumluluk için desteklenmeye devam eder, ancak LM Studio için `--lmstudio-api-key` tercih edilir.
 
-Bu işlem `models.providers.lmstudio` yazar, varsayılan modeli
-`lmstudio/<custom-model-id>` olarak ayarlar ve `lmstudio:default` auth profile'ını yazar.
+Bu, `models.providers.lmstudio` değerini yazar ve varsayılan modeli
+`lmstudio/<custom-model-id>` olarak ayarlar. Bir API anahtarı sağladığınızda kurulum ayrıca
+`lmstudio:default` kimlik doğrulama profilini de yazar.
 
-Etkileşimli kurulum isteğe bağlı bir tercih edilen yükleme bağlam uzunluğu sorabilir ve bunu yapılandırmaya kaydettiği keşfedilen LM Studio modellerine uygular.
+Etkileşimli kurulum, isteğe bağlı tercih edilen yükleme bağlam uzunluğu için istem gösterebilir ve bunu yapılandırmaya kaydettiği keşfedilmiş LM Studio modellerinin tamamına uygular.
+LM Studio Plugin yapılandırması, model istekleri için yapılandırılmış LM Studio uç noktasına güvenir; buna loopback, LAN ve tailnet ana makineleri dahildir. `models.providers.lmstudio.request.allowPrivateNetwork: false` ayarını yaparak bundan çıkabilirsiniz.
 
 ## Yapılandırma
 
-### Akış kullanım uyumluluğu
+### Akış kullanımı uyumluluğu
 
-LM Studio akış kullanım uyumludur. OpenAI biçiminde bir
-`usage` nesnesi yaymadığında OpenClaw token sayılarını llama.cpp tarzı
-`timings.prompt_n` / `timings.predicted_n` meta verilerinden geri kazanır.
+LM Studio akış kullanımıyla uyumludur. OpenAI biçimli bir
+`usage` nesnesi yaymadığında, OpenClaw bunun yerine token sayılarını llama.cpp tarzı
+`timings.prompt_n` / `timings.predicted_n` meta verilerinden kurtarır.
 
-Aynı davranış şu OpenAI uyumlu yerel backend'lerde de geçerlidir:
+Aynı akış kullanımı davranışı şu OpenAI uyumlu yerel arka uçlar için de geçerlidir:
 
 - vLLM
 - SGLang
@@ -122,6 +119,13 @@ Aynı davranış şu OpenAI uyumlu yerel backend'lerde de geçerlidir:
 - Jan
 - TabbyAPI
 - text-generation-webui
+
+### Düşünme uyumluluğu
+
+LM Studio’nun `/api/v1/models` keşfi modele özgü akıl yürütme
+seçenekleri bildirdiğinde, OpenClaw bu yerel değerleri model uyumluluk meta verilerinde korur. `allowed_options: ["off", "on"]` duyuran ikili düşünme modelleri için
+OpenClaw, devre dışı düşünmeyi `off` değerine ve etkin `/think` seviyelerini `on` değerine eşler;
+`low` veya `medium` gibi yalnızca OpenAI’ye özgü değerler göndermez.
 
 ### Açık yapılandırma
 
@@ -152,16 +156,16 @@ Aynı davranış şu OpenAI uyumlu yerel backend'lerde de geçerlidir:
 
 ## Sorun giderme
 
-### LM Studio algılanmıyor
+### LM Studio algılanmadı
 
-LM Studio'nun çalıştığından ve `LM_API_TOKEN` ayarladığınızdan emin olun (kimlik doğrulamasız sunucular için boş olmayan herhangi bir token değeri çalışır):
+LM Studio’nun çalıştığından emin olun. Kimlik doğrulaması etkinse, `LM_API_TOKEN` ayarını da yapın:
 
 ```bash
-# Masaüstü uygulamasıyla başlatın veya headless:
+# Start via desktop app, or headless:
 lms server start --port 1234
 ```
 
-API'nin erişilebilir olduğunu doğrulayın:
+API’ye erişilebildiğini doğrulayın:
 
 ```bash
 curl http://localhost:1234/api/v1/models
@@ -169,15 +173,36 @@ curl http://localhost:1234/api/v1/models
 
 ### Kimlik doğrulama hataları (HTTP 401)
 
-Kurulum HTTP 401 bildiriyorsa API anahtarınızı doğrulayın:
+Kurulum HTTP 401 bildirirse API anahtarınızı doğrulayın:
 
-- `LM_API_TOKEN` değerinin LM Studio'da yapılandırılmış anahtarla eşleştiğini kontrol edin.
-- LM Studio auth kurulum ayrıntıları için [LM Studio Authentication](https://lmstudio.ai/docs/developer/core/authentication) sayfasına bakın.
-- Sunucunuz kimlik doğrulama gerektirmiyorsa `LM_API_TOKEN` için boş olmayan herhangi bir token değeri kullanın.
+- `LM_API_TOKEN` değerinin LM Studio’da yapılandırılan anahtarla eşleştiğini kontrol edin.
+- LM Studio kimlik doğrulaması kurulum ayrıntıları için [LM Studio Authentication](https://lmstudio.ai/docs/developer/core/authentication) sayfasına bakın.
+- Sunucunuz kimlik doğrulaması gerektirmiyorsa, kurulum sırasında anahtarı boş bırakın.
 
-### Just-in-time model yükleme
+### Tam zamanında model yükleme
 
-LM Studio, modellerin ilk istekte yüklendiği just-in-time (JIT) model yüklemeyi destekler. "Model not loaded" hatalarından kaçınmak için bunun etkin olduğundan emin olun.
+LM Studio, modellerin ilk istekte yüklendiği tam zamanında (JIT) model yüklemeyi destekler. 'Model not loaded' hatalarından kaçınmak için bunun etkin olduğundan emin olun.
+
+### LAN veya tailnet LM Studio ana makinesi
+
+LM Studio ana makinesinin erişilebilir adresini kullanın, `/v1` değerini koruyun ve LM Studio’nun o makinede loopback ötesine bağlandığından emin olun:
+
+```json5
+{
+  models: {
+    providers: {
+      lmstudio: {
+        baseUrl: "http://gpu-box.local:1234/v1",
+        apiKey: "lmstudio",
+        api: "openai-completions",
+        models: [{ id: "qwen/qwen3.5-9b" }],
+      },
+    },
+  },
+}
+```
+
+Genel OpenAI uyumlu sağlayıcıların aksine, `lmstudio` korumalı model istekleri için yapılandırılmış yerel/özel uç noktasına otomatik olarak güvenir. `localhost` veya `127.0.0.1` gibi özel loopback sağlayıcı kimliklerine de otomatik olarak güvenilir; LAN, tailnet veya özel DNS özel sağlayıcı kimlikleri için `models.providers.<id>.request.allowPrivateNetwork: true` değerini açıkça ayarlayın.
 
 ## İlgili
 

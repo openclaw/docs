@@ -1,56 +1,62 @@
 ---
 read_when:
     - Skills ekleme veya değiştirme
-    - Skill geçitlemesini, izin listelerini veya yükleme kurallarını değiştirme
-    - Skill önceliğini ve anlık görüntü davranışını anlama
+    - Beceri geçitlemesini, izin listelerini veya yükleme kurallarını değiştirme
+    - Beceri önceliğini ve anlık görüntü davranışını anlama
 sidebarTitle: Skills
-summary: 'Skills: yönetilen ve çalışma alanı, geçitleme kuralları, aracı izin listeleri ve yapılandırma bağlantıları'
+summary: 'Skills: yönetilen ile çalışma alanı arasındaki farklar, geçitleme kuralları, ajan izin listeleri ve yapılandırma bağlantıları'
 title: Skills
 x-i18n:
-    generated_at: "2026-04-26T11:43:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:50:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 19fd880e88051db9d4d9090a64123a2dc5a16a6211fa46879ddecaa86f25149c
+    source_hash: d7dd17f52119bf0a0bb197025070abb68f7667a7d22c3d5fa6ef2f666110a45a
     source_path: tools/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, aracıya araçları nasıl kullanacağını öğretmek için **[AgentSkills](https://agentskills.io)-uyumlu** skill klasörleri kullanır. Her skill, YAML frontmatter ve talimatlar içeren bir `SKILL.md` dosyası barındıran bir dizindir. OpenClaw paketlenmiş skill'leri ve isteğe bağlı yerel geçersiz kılmaları yükler, ardından bunları ortam, yapılandırma ve ikili dosya varlığına göre yükleme zamanında filtreler.
+OpenClaw, ajana araçları nasıl kullanacağını öğretmek için **[AgentSkills](https://agentskills.io) uyumlu** beceri
+klasörleri kullanır. Her beceri, YAML frontmatter ve talimatlar içeren
+bir `SKILL.md` barındıran dizindir. OpenClaw, paketle gelen becerileri ve
+isteğe bağlı yerel geçersiz kılmaları yükler; bunları yükleme sırasında
+ortama, yapılandırmaya ve ikili dosya varlığına göre filtreler.
 
 ## Konumlar ve öncelik
 
-OpenClaw skill'leri şu kaynaklardan yükler, **en yüksek öncelik önce gelecek şekilde**:
+OpenClaw becerileri şu kaynaklardan yükler, **en yüksek öncelik önce**:
 
-| #   | Kaynak               | Yol                              |
-| --- | -------------------- | -------------------------------- |
-| 1   | Çalışma alanı Skills | `<workspace>/skills`             |
-| 2   | Proje aracı Skills   | `<workspace>/.agents/skills`     |
-| 3   | Kişisel aracı Skills | `~/.agents/skills`               |
-| 4   | Yönetilen/yerel Skills | `~/.openclaw/skills`           |
-| 5   | Paketlenmiş Skills   | kurulumla birlikte gelir         |
-| 6   | Ek skill klasörleri  | `skills.load.extraDirs` (yapılandırma) |
+| #   | Kaynak                 | Yol                              |
+| --- | ---------------------- | -------------------------------- |
+| 1   | Çalışma alanı becerileri | `<workspace>/skills`             |
+| 2   | Proje ajanı becerileri | `<workspace>/.agents/skills`     |
+| 3   | Kişisel ajan becerileri | `~/.agents/skills`               |
+| 4   | Yönetilen/yerel beceriler | `~/.openclaw/skills`             |
+| 5   | Paketle gelen beceriler | kurulumla birlikte gelir         |
+| 6   | Ek beceri klasörleri   | `skills.load.extraDirs` (config) |
 
-Bir skill adı çakışırsa, en üstteki kaynak kazanır.
+Bir beceri adı çakışırsa, en yüksek kaynak kazanır.
 
-## Aracı başına ve paylaşılan Skills
+## Ajan bazında ve paylaşılan beceriler
 
-**Çok aracılı** kurulumlarda her aracının kendi çalışma alanı vardır:
+**Çok ajanlı** kurulumlarda her ajanın kendi çalışma alanı vardır:
 
-| Kapsam               | Yol                                         | Görünür olduğu yer            |
-| -------------------- | ------------------------------------------- | ----------------------------- |
-| Aracı başına         | `<workspace>/skills`                        | Yalnızca o aracı              |
-| Proje aracı          | `<workspace>/.agents/skills`                | Yalnızca o çalışma alanının aracısı |
-| Kişisel aracı        | `~/.agents/skills`                          | O makinedeki tüm aracılar     |
-| Paylaşılan yönetilen/yerel | `~/.openclaw/skills`                  | O makinedeki tüm aracılar     |
-| Paylaşılan ek dizinler | `skills.load.extraDirs` (en düşük öncelik) | O makinedeki tüm aracılar   |
+| Kapsam                 | Yol                                         | Şunlara görünür             |
+| ---------------------- | ------------------------------------------- | --------------------------- |
+| Ajan bazında           | `<workspace>/skills`                        | Yalnızca o ajan             |
+| Proje ajanı            | `<workspace>/.agents/skills`                | Yalnızca o çalışma alanının ajanı |
+| Kişisel ajan           | `~/.agents/skills`                          | O makinedeki tüm ajanlar    |
+| Paylaşılan yönetilen/yerel | `~/.openclaw/skills`                    | O makinedeki tüm ajanlar    |
+| Paylaşılan ek dizinler | `skills.load.extraDirs` (en düşük öncelik)  | O makinedeki tüm ajanlar    |
 
-Aynı ad birden çok yerde varsa → en üstteki kaynak kazanır. Çalışma alanı,
-proje aracısını; proje aracısı kişisel aracıyı; kişisel aracı yönetilen/yereli; yönetilen/yerel paketlenmişi; paketlenmiş de ek dizinleri geçersiz kılar.
+Birden çok yerde aynı ad → en yüksek kaynak kazanır. Çalışma alanı,
+proje ajanını; proje ajanı, kişisel ajanı; kişisel ajan, yönetilen/yereli;
+yönetilen/yerel, paketle geleni; paketle gelen de ek dizinleri geçer.
 
-## Aracı skill izin listeleri
+## Ajan beceri izin listeleri
 
-Skill **konumu** ile skill **görünürlüğü** ayrı denetimlerdir.
-Konum/öncelik, aynı adlı skill'in hangi kopyasının kazanacağını belirler; aracı izin listeleri ise bir aracının gerçekte hangi skill'leri kullanabileceğini belirler.
+Beceri **konumu** ve beceri **görünürlüğü** ayrı denetimlerdir.
+Konum/öncelik, aynı adlı bir becerinin hangi kopyasının kazanacağını belirler;
+ajan izin listeleri ise bir ajanın gerçekten hangi becerileri kullanabileceğini belirler.
 
 ```json5
 {
@@ -59,9 +65,9 @@ Konum/öncelik, aynı adlı skill'in hangi kopyasının kazanacağını belirler
       skills: ["github", "weather"],
     },
     list: [
-      { id: "writer" }, // github, weather'ı devralır
-      { id: "docs", skills: ["docs-search"] }, // varsayılanların yerine geçer
-      { id: "locked-down", skills: [] }, // skill yok
+      { id: "writer" }, // inherits github, weather
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "locked-down", skills: [] }, // no skills
     ],
   },
 }
@@ -69,64 +75,92 @@ Konum/öncelik, aynı adlı skill'in hangi kopyasının kazanacağını belirler
 
 <AccordionGroup>
   <Accordion title="İzin listesi kuralları">
-    - Varsayılan olarak sınırsız skill için `agents.defaults.skills` alanını atlayın.
-    - `agents.defaults.skills` değerini devralmak için `agents.list[].skills` alanını atlayın.
-    - Hiç skill olmaması için `agents.list[].skills: []` ayarlayın.
-    - Boş olmayan bir `agents.list[].skills` listesi, o aracı için **nihai** kümedir — varsayılanlarla birleştirilmez.
-    - Etkili izin listesi; istem oluşturma, skill eğik çizgi komutu keşfi, sandbox eşzamanlama ve skill anlık görüntüleri genelinde uygulanır.
-
+    - Varsayılan olarak sınırsız beceriler için `agents.defaults.skills` değerini atlayın.
+    - `agents.defaults.skills` değerini devralmak için `agents.list[].skills` değerini atlayın.
+    - Beceri olmaması için `agents.list[].skills: []` ayarlayın.
+    - Boş olmayan bir `agents.list[].skills` listesi, o ajan için **nihai** kümedir — varsayılanlarla birleştirilmez.
+    - Etkin izin listesi istem oluşturma, beceri slash komutu keşfi, sandbox eşitlemesi ve beceri anlık görüntüleri genelinde uygulanır.
   </Accordion>
 </AccordionGroup>
 
-## Plugin'ler ve Skills
+## Plugins ve beceriler
 
-Plugin'ler, `openclaw.plugin.json` içinde `skills` dizinlerini listeleyerek
-(kök Plugin dizinine göre göreli yollar) kendi skill'lerini gönderebilir.
-Plugin skill'leri, Plugin etkin olduğunda yüklenir. Bu, araç açıklamasına sığmayacak kadar uzun ama Plugin kurulu olduğunda her zaman kullanılabilir olması gereken araca özgü işletim kılavuzları için doğru yerdir — örneğin, tarayıcı Plugin çok adımlı tarayıcı denetimi için bir `browser-automation` skill'i gönderir.
+Plugins, `openclaw.plugin.json` içinde `skills` dizinlerini listeleyerek
+kendi becerilerini gönderebilir (yollar Plugin köküne görelidir). Plugin becerileri,
+Plugin etkinleştirildiğinde yüklenir. Bu, araç açıklaması için fazla uzun olan
+ancak Plugin kurulu olduğunda kullanılabilir olması gereken araca özgü
+işletim kılavuzları için doğru yerdir — örneğin tarayıcı
+Plugin, çok adımlı tarayıcı denetimi için bir `browser-automation` becerisi gönderir.
 
-Plugin skill dizinleri, `skills.load.extraDirs` ile aynı düşük öncelikli yolda birleştirilir; bu nedenle aynı adlı paketlenmiş, yönetilen, aracı veya çalışma alanı skill'i bunları geçersiz kılar. Bunları Plugin'in yapılandırma girdisindeki `metadata.openclaw.requires.config` ile geçitleyebilirsiniz.
+Plugin beceri dizinleri, `skills.load.extraDirs` ile aynı düşük öncelikli
+yola birleştirilir; bu nedenle aynı adlı paketle gelen, yönetilen, ajan veya
+çalışma alanı becerisi bunları geçersiz kılar. Bunları Plugin yapılandırma
+girişindeki `metadata.openclaw.requires.config` ile kapılayabilirsiniz.
 
-Keşif/yapılandırma için [Plugins](/tr/tools/plugin) ve bu skill'lerin öğrettiği araç yüzeyi için [Tools](/tr/tools) bölümlerine bakın.
+Keşif/yapılandırma için [Plugins](/tr/tools/plugin) bölümüne, bu becerilerin
+öğrettiği araç yüzeyi için [Araçlar](/tr/tools) bölümüne bakın.
 
 ## Skill Workshop
 
-İsteğe bağlı, deneysel **Skill Workshop** Plugin'i, aracı çalışması sırasında gözlemlenen yeniden kullanılabilir prosedürlerden çalışma alanı skill'leri oluşturabilir veya güncelleyebilir. Varsayılan olarak devre dışıdır ve `plugins.entries.skill-workshop` ile açıkça etkinleştirilmelidir.
+İsteğe bağlı, deneysel **Skill Workshop** Plugin, ajan çalışması sırasında
+gözlemlenen yeniden kullanılabilir prosedürlerden çalışma alanı becerileri
+oluşturabilir veya güncelleyebilir. Varsayılan olarak devre dışıdır ve
+`plugins.entries.skill-workshop` üzerinden açıkça etkinleştirilmelidir.
 
-Skill Workshop yalnızca `<workspace>/skills` içine yazar, üretilen içeriği tarar, bekleyen onayı veya otomatik güvenli yazmaları destekler, güvenli olmayan önerileri karantinaya alır ve başarılı yazmalardan sonra skill anlık görüntüsünü yenileyerek yeni skill'lerin Gateway yeniden başlatması olmadan kullanılabilir olmasını sağlar.
+Skill Workshop yalnızca `<workspace>/skills` içine yazar, oluşturulan
+içeriği tarar, bekleyen onayı veya otomatik güvenli yazmaları destekler,
+güvensiz önerileri karantinaya alır ve başarılı yazmalardan sonra beceri
+anlık görüntüsünü yeniler; böylece yeni beceriler Gateway yeniden başlatması
+olmadan kullanılabilir hale gelir.
 
-Bunu _"bir dahaki sefere GIF ilişkilendirmesini doğrula"_ gibi düzeltmeler veya medya QA kontrol listeleri gibi emek verilmiş iş akışları için kullanın. Bekleyen onayla başlayın; otomatik yazmaları yalnızca güvenilir çalışma alanlarında, önerilerini gözden geçirdikten sonra kullanın. Tam kılavuz: [Skill Workshop Plugin](/tr/plugins/skill-workshop).
+Bunu _"bir dahaki sefere GIF atfını doğrula"_ gibi düzeltmeler veya medya
+QA kontrol listeleri gibi zor kazanılmış iş akışları için kullanın. Bekleyen
+onayla başlayın; otomatik yazmaları yalnızca önerilerini inceledikten sonra
+güvenilir çalışma alanlarında kullanın. Tam kılavuz: [Skill Workshop Plugin](/tr/plugins/skill-workshop).
 
-## ClawHub (kurulum ve eşzamanlama)
+## ClawHub (kurulum ve eşitleme)
 
-[ClawHub](https://clawhub.ai), OpenClaw için herkese açık skill kayıt defteridir.
-Keşfetme/kurma/güncelleme için yerel `openclaw skills` komutlarını veya yayınlama/eşzamanlama iş akışları için ayrı `clawhub` CLI'ı kullanın. Tam kılavuz:
-[ClawHub](/tr/tools/clawhub).
+[ClawHub](https://clawhub.ai), OpenClaw için herkese açık beceri kayıt defteridir.
+Keşif/kurulum/güncelleme için yerel `openclaw skills` komutlarını veya
+yayınlama/eşitleme iş akışları için ayrı `clawhub` CLI aracını kullanın.
+Tam kılavuz: [ClawHub](/tr/tools/clawhub).
 
-| Eylem                               | Komut                                 |
-| ----------------------------------- | ------------------------------------- |
-| Bir skill'i çalışma alanına kur     | `openclaw skills install <skill-slug>` |
-| Kurulu tüm skill'leri güncelle      | `openclaw skills update --all`        |
-| Eşzamanla (tara + güncellemeleri yayımla) | `clawhub sync --all`            |
+| Eylem                                | Komut                                  |
+| ------------------------------------ | -------------------------------------- |
+| Çalışma alanına bir beceri kur       | `openclaw skills install <skill-slug>` |
+| Kurulu tüm becerileri güncelle       | `openclaw skills update --all`         |
+| Eşitle (tara + güncellemeleri yayımla) | `clawhub sync --all`                 |
 
-Yerel `openclaw skills install`, etkin çalışma alanı
-`skills/` dizinine kurar. Ayrı `clawhub` CLI da
-geçerli çalışma dizininiz altındaki `./skills` içine kurar (veya yapılandırılmış OpenClaw çalışma alanına geri döner). OpenClaw bunu bir sonraki oturumda
-`<workspace>/skills` olarak algılar.
+Yerel `openclaw skills install`, etkin çalışma alanı `skills/` dizinine
+kurulum yapar. Ayrı `clawhub` CLI de geçerli çalışma dizininizin altındaki
+`./skills` içine kurulum yapar (veya yapılandırılmış OpenClaw çalışma alanına
+geri döner). OpenClaw bunu bir sonraki oturumda `<workspace>/skills` olarak
+alır. Yapılandırılmış beceri kökleri, `skills/<group>/<skill>/SKILL.md`
+gibi tek bir gruplama düzeyini de destekler; böylece ilgili üçüncü taraf
+becerileri geniş özyinelemeli tarama olmadan paylaşılan bir klasör altında
+tutulabilir.
+
+ClawHub beceri sayfaları, kurulumdan önce en son güvenlik taraması durumunu
+VirusTotal, ClawScan ve statik analiz için tarayıcı ayrıntı sayfalarıyla
+birlikte gösterir. `openclaw skills install <slug>` yalnızca kurulum yolu
+olarak kalır; yayıncılar yanlış pozitifleri ClawHub panosu veya
+`clawhub skill rescan <slug>` üzerinden düzeltir.
 
 ## Güvenlik
 
 <Warning>
-Üçüncü taraf skill'leri **güvenilmeyen kod** olarak ele alın. Etkinleştirmeden önce okuyun.
-Güvenilmeyen girdiler ve riskli araçlar için sandbox içi çalıştırmaları tercih edin. Aracı tarafı denetimler için
+Üçüncü taraf becerileri **güvenilmeyen kod** olarak değerlendirin. Etkinleştirmeden
+önce okuyun. Güvenilmeyen girdiler ve riskli araçlar için sandbox içinde
+çalıştırmayı tercih edin. Ajan tarafı denetimler için
 [Sandboxing](/tr/gateway/sandboxing) bölümüne bakın.
 </Warning>
 
-- Çalışma alanı ve ek dizin skill keşfi yalnızca çözümlenmiş realpath'i yapılandırılmış kök içinde kalan skill köklerini ve `SKILL.md` dosyalarını kabul eder.
-- Gateway destekli skill bağımlılığı kurulumları (`skills.install`, ilk katılım ve Skills ayarları UI'ı), kurucu meta verilerini yürütmeden önce yerleşik tehlikeli kod tarayıcısını çalıştırır. `critical` bulgular, çağıran açıkça tehlikeli geçersiz kılmayı ayarlamadıkça varsayılan olarak engellenir; şüpheli bulgular ise yalnızca uyarı verir.
-- `openclaw skills install <slug>` farklıdır — bir ClawHub skill klasörünü çalışma alanına indirir ve yukarıdaki kurucu meta veri yolunu kullanmaz.
-- `skills.entries.*.env` ve `skills.entries.*.apiKey`, gizli bilgileri sandbox'a değil, o aracı sırası için **ana makine** sürecine enjekte eder. Gizli bilgileri istemlerin ve günlüklerin dışında tutun.
+- Çalışma alanı ve ek dizin beceri keşfi, yalnızca çözümlenen gerçek yolu yapılandırılmış kökün içinde kalan beceri köklerini ve `SKILL.md` dosyalarını kabul eder.
+- Gateway destekli beceri bağımlılığı kurulumları (`skills.install`, onboarding ve Skills ayarları UI), kurulum metaverilerini yürütmeden önce yerleşik tehlikeli kod tarayıcısını çalıştırır. Çağıran açıkça tehlikeli geçersiz kılmayı ayarlamadıkça `critical` bulgular varsayılan olarak engeller; şüpheli bulgular ise yine yalnızca uyarır.
+- `openclaw skills install <slug>` farklıdır — çalışma alanına bir ClawHub beceri klasörü indirir ve yukarıdaki kurulum metaverisi yolunu kullanmaz.
+- `skills.entries.*.env` ve `skills.entries.*.apiKey`, o ajan turu için gizli değerleri **host** sürecine enjekte eder (sandbox içine değil). Gizli değerleri istemlerden ve günlüklerden uzak tutun.
 
-Daha geniş bir tehdit modeli ve kontrol listeleri için [Security](/tr/gateway/security) bölümüne bakın.
+Daha geniş bir tehdit modeli ve kontrol listeleri için [Güvenlik](/tr/gateway/security) bölümüne bakın.
 
 ## SKILL.md biçimi
 
@@ -135,42 +169,46 @@ Daha geniş bir tehdit modeli ve kontrol listeleri için [Security](/tr/gateway/
 ```markdown
 ---
 name: image-lab
-description: Sağlayıcı destekli bir görsel iş akışı üzerinden görseller oluşturun veya düzenleyin
+description: Generate or edit images via a provider-backed image workflow
 ---
 ```
 
-OpenClaw, düzen/amaç için AgentSkills belirtimini izler. Gömülü aracının kullandığı ayrıştırıcı yalnızca **tek satırlık** frontmatter anahtarlarını destekler;
-`metadata`, **tek satırlık JSON nesnesi** olmalıdır. Skill klasörü yoluna başvurmak için talimatlarda `{baseDir}` kullanın.
+OpenClaw, düzen/amaç için AgentSkills belirtimini izler. Gömülü ajan
+tarafından kullanılan ayrıştırıcı yalnızca **tek satırlık** frontmatter
+anahtarlarını destekler; `metadata` bir **tek satırlık JSON nesnesi**
+olmalıdır. Talimatlarda beceri klasörü yoluna başvurmak için `{baseDir}`
+kullanın.
 
 ### İsteğe bağlı frontmatter anahtarları
 
 <ParamField path="homepage" type="string">
-  macOS Skills UI'ında "Website" olarak gösterilen URL. `metadata.openclaw.homepage` üzerinden de desteklenir.
+  macOS Skills UI içinde "Web sitesi" olarak gösterilen URL. `metadata.openclaw.homepage` üzerinden de desteklenir.
 </ParamField>
 <ParamField path="user-invocable" type="boolean" default="true">
-  `true` olduğunda skill, kullanıcı eğik çizgi komutu olarak gösterilir.
+  `true` olduğunda beceri, kullanıcı slash komutu olarak sunulur.
 </ParamField>
 <ParamField path="disable-model-invocation" type="boolean" default="false">
-  `true` olduğunda skill model isteminden çıkarılır (kullanıcı çağrısı ile yine kullanılabilir).
+  `true` olduğunda beceri, model isteminden çıkarılır (kullanıcı çağrısıyla yine kullanılabilir).
 </ParamField>
 <ParamField path="command-dispatch" type='"tool"'>
-  `tool` olarak ayarlandığında, eğik çizgi komutu modeli atlar ve doğrudan bir araca gönderilir.
+  `tool` olarak ayarlandığında slash komutu modeli atlar ve doğrudan bir araca gönderilir.
 </ParamField>
 <ParamField path="command-tool" type="string">
   `command-dispatch: tool` ayarlandığında çağrılacak araç adı.
 </ParamField>
 <ParamField path="command-arg-mode" type='"raw"' default="raw">
-  Araç gönderimi için ham argüman dizesini araca iletir (çekirdek ayrıştırma yok). Araç şu şekilde çağrılır: `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }`.
+  Araç gönderimi için ham argüman dizesini araca iletir (çekirdek ayrıştırma yok). Araç `{ command: "<raw args>", commandName: "<slash command>", skillName: "<skill name>" }` ile çağrılır.
 </ParamField>
 
-## Geçitleme (yükleme zamanı filtreleri)
+## Kapılama (yükleme zamanı filtreleri)
 
-OpenClaw, skill'leri `metadata` (tek satırlık JSON) kullanarak yükleme zamanında filtreler:
+OpenClaw, `metadata` (tek satırlık JSON) kullanarak becerileri yükleme
+zamanında filtreler:
 
 ```markdown
 ---
 name: image-lab
-description: Sağlayıcı destekli bir görsel iş akışı üzerinden görseller oluşturun veya düzenleyin
+description: Generate or edit images via a provider-backed image workflow
 metadata:
   {
     "openclaw":
@@ -185,16 +223,16 @@ metadata:
 `metadata.openclaw` altındaki alanlar:
 
 <ParamField path="always" type="boolean">
-  `true` olduğunda skill'i her zaman dahil et (diğer geçitleri atla).
+  `true` olduğunda beceriyi her zaman dahil et (diğer kapıları atla).
 </ParamField>
 <ParamField path="emoji" type="string">
-  macOS Skills UI'ı tarafından kullanılan isteğe bağlı emoji.
+  macOS Skills UI tarafından kullanılan isteğe bağlı emoji.
 </ParamField>
 <ParamField path="homepage" type="string">
-  macOS Skills UI'ında "Website" olarak gösterilen isteğe bağlı URL.
+  macOS Skills UI içinde "Web sitesi" olarak gösterilen isteğe bağlı URL.
 </ParamField>
 <ParamField path="os" type='"darwin" | "linux" | "win32"' >
-  İsteğe bağlı platform listesi. Ayarlanırsa, skill yalnızca bu işletim sistemlerinde uygun olur.
+  İsteğe bağlı platform listesi. Ayarlanırsa beceri yalnızca bu işletim sistemlerinde uygundur.
 </ParamField>
 <ParamField path="requires.bins" type="string[]">
   Her biri `PATH` üzerinde bulunmalıdır.
@@ -206,33 +244,37 @@ metadata:
   Ortam değişkeni bulunmalı veya yapılandırmada sağlanmalıdır.
 </ParamField>
 <ParamField path="requires.config" type="string[]">
-  Truthy olması gereken `openclaw.json` yolları listesi.
+  Doğru değerli olması gereken `openclaw.json` yollarının listesi.
 </ParamField>
 <ParamField path="primaryEnv" type="string">
-  `skills.entries.<name>.apiKey` ile ilişkilendirilen ortam değişkeni adı.
+  `skills.entries.<name>.apiKey` ile ilişkili ortam değişkeni adı.
 </ParamField>
 <ParamField path="install" type="object[]">
-  macOS Skills UI'ı tarafından kullanılan isteğe bağlı kurucu belirtimleri (brew/node/go/uv/download).
+  macOS Skills UI tarafından kullanılan isteğe bağlı kurulum belirtimleri (brew/node/go/uv/download).
 </ParamField>
 
-`metadata.openclaw` yoksa, skill her zaman uygundur (`always` etkin değilse ve paketlenmiş skill'ler için `skills.allowBundled` tarafından engellenmiyorsa).
+`metadata.openclaw` yoksa beceri her zaman uygundur (yapılandırmada devre dışı
+bırakılmadıkça veya paketle gelen beceriler için `skills.allowBundled`
+tarafından engellenmedikçe).
 
 <Note>
-Eski `metadata.clawdbot` blokları, `metadata.openclaw` yoksa hâlâ kabul edilir; böylece daha önce kurulmuş skill'ler bağımlılık geçitlerini ve kurucu ipuçlarını korur. Yeni ve güncellenmiş skill'ler `metadata.openclaw` kullanmalıdır.
+Eski `metadata.clawdbot` blokları, `metadata.openclaw` yokken hâlâ kabul edilir;
+böylece daha eski kurulu beceriler bağımlılık kapılarını ve kurulum ipuçlarını
+korur. Yeni ve güncellenmiş beceriler `metadata.openclaw` kullanmalıdır.
 </Note>
 
 ### Sandboxing notları
 
-- `requires.bins`, skill yükleme zamanında **ana makinede** kontrol edilir.
-- Bir aracı sandbox içindeyse, ikili dosya **kapsayıcının içinde de** bulunmalıdır. Bunu `agents.defaults.sandbox.docker.setupCommand` (veya özel bir imaj) üzerinden kurun. `setupCommand`, kapsayıcı oluşturulduktan sonra bir kez çalışır. Paket kurulumları ayrıca ağ çıkışı, yazılabilir bir kök FS ve sandbox içinde bir root kullanıcı gerektirir.
-- Örnek: `summarize` skill'i (`skills/summarize/SKILL.md`) orada çalışması için `summarize` CLI'ın sandbox kapsayıcısında bulunmasını gerektirir.
+- `requires.bins`, beceri yükleme zamanında **host** üzerinde denetlenir.
+- Bir ajan sandbox içindese, ikili dosya **konteynerin içinde** de bulunmalıdır. Bunu `agents.defaults.sandbox.docker.setupCommand` (veya özel bir imaj) ile kurun. `setupCommand`, konteyner oluşturulduktan sonra bir kez çalışır. Paket kurulumları ayrıca ağ çıkışı, yazılabilir kök FS ve sandbox içinde root kullanıcı gerektirir.
+- Örnek: `summarize` becerisi (`skills/summarize/SKILL.md`), orada çalışmak için sandbox konteynerinde `summarize` CLI aracına ihtiyaç duyar.
 
-### Kurucu belirtimleri
+### Kurulum belirtimleri
 
 ```markdown
 ---
 name: gemini
-description: Kodlama yardımı ve Google arama sorguları için Gemini CLI kullanın.
+description: Use Gemini CLI for coding assistance and Google search lookups.
 metadata:
   {
     "openclaw":
@@ -246,7 +288,7 @@ metadata:
               "kind": "brew",
               "formula": "gemini-cli",
               "bins": ["gemini"],
-              "label": "Gemini CLI'ı kur (brew)",
+              "label": "Install Gemini CLI (brew)",
             },
           ],
       },
@@ -255,26 +297,26 @@ metadata:
 ```
 
 <AccordionGroup>
-  <Accordion title="Kurucu seçimi kuralları">
-    - Birden fazla kurucu listelenmişse gateway tek bir tercih edilen seçeneği seçer (varsa brew, aksi takdirde node).
-    - Tüm kurucular `download` ise OpenClaw, mevcut yapıları görebilmeniz için her girdiyi listeler.
-    - Kurucu belirtimleri, seçenekleri platforma göre filtrelemek için `os: ["darwin"|"linux"|"win32"]` içerebilir.
-    - Node kurulumları, `openclaw.json` içindeki `skills.install.nodeManager` ayarına uyar (varsayılan: npm; seçenekler: npm/pnpm/yarn/bun). Bu yalnızca skill kurulumlarını etkiler; Gateway çalışma zamanı yine de Node olmalıdır — Bun, WhatsApp/Telegram için önerilmez.
-    - Gateway destekli kurucu seçimi tercih odaklıdır: kurucu belirtimleri türleri karıştırıyorsa OpenClaw, `skills.install.preferBrew` etkinken ve `brew` mevcutsa önce Homebrew'ı, sonra `uv`'yi, sonra yapılandırılmış node yöneticisini, ardından `go` veya `download` gibi diğer geri dönüşleri tercih eder.
-    - Her kurulum belirtimi `download` ise OpenClaw, tek bir tercih edilen kurucuya daraltmak yerine tüm indirme seçeneklerini gösterir.
+  <Accordion title="Yükleyici seçim kuralları">
+    - Birden fazla yükleyici listelenirse gateway tek bir tercih edilen seçenek seçer (varsa brew, aksi halde node).
+    - Tüm yükleyiciler `download` ise OpenClaw, mevcut artifaktları görebilmeniz için her girdiyi listeler.
+    - Yükleyici tanımları, seçenekleri platforma göre filtrelemek için `os: ["darwin"|"linux"|"win32"]` içerebilir.
+    - Node kurulumları, `openclaw.json` içindeki `skills.install.nodeManager` ayarına uyar (varsayılan: npm; seçenekler: npm/pnpm/yarn/bun). Bu yalnızca skill kurulumlarını etkiler; Gateway çalışma zamanı yine Node olmalıdır — Bun, WhatsApp/Telegram için önerilmez.
+    - Gateway destekli yükleyici seçimi tercih odaklıdır: kurulum tanımları türleri karıştırdığında OpenClaw, `skills.install.preferBrew` etkinse ve `brew` varsa önce Homebrew'i, sonra `uv`'yi, sonra yapılandırılan node yöneticisini, ardından `go` veya `download` gibi diğer yedekleri tercih eder.
+    - Her kurulum tanımı `download` ise OpenClaw, tek bir tercih edilen yükleyiciye indirgemek yerine tüm indirme seçeneklerini gösterir.
 
   </Accordion>
-  <Accordion title="Kurucu başına ayrıntılar">
-    - **Go kurulumları:** `go` yoksa ve `brew` varsa gateway önce Homebrew ile Go'yu kurar ve mümkün olduğunda `GOBIN` değerini Homebrew'ın `bin` dizinine ayarlar.
-    - **İndirme kurulumları:** `url` (zorunlu), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (varsayılan: arşiv algılanırsa otomatik), `stripComponents`, `targetDir` (varsayılan: `~/.openclaw/tools/<skillKey>`).
+  <Accordion title="Yükleyici başına ayrıntılar">
+    - **Go kurulumları:** `go` eksikse ve `brew` kullanılabiliyorsa gateway önce Homebrew üzerinden Go kurar ve mümkün olduğunda `GOBIN` değerini Homebrew'in `bin` dizinine ayarlar.
+    - **İndirme kurulumları:** `url` (zorunlu), `archive` (`tar.gz` | `tar.bz2` | `zip`), `extract` (varsayılan: arşiv algılandığında otomatik), `stripComponents`, `targetDir` (varsayılan: `~/.openclaw/tools/<skillKey>`).
 
   </Accordion>
 </AccordionGroup>
 
 ## Yapılandırma geçersiz kılmaları
 
-Paketlenmiş ve yönetilen skill'ler, `~/.openclaw/openclaw.json` içindeki
-`skills.entries` altında açılıp kapatılabilir ve ortam değerleri alabilir:
+Paketle gelen ve yönetilen skills, `~/.openclaw/openclaw.json` içindeki
+`skills.entries` altında açılıp kapatılabilir ve env değerleriyle beslenebilir:
 
 ```json5
 {
@@ -282,7 +324,7 @@ Paketlenmiş ve yönetilen skill'ler, `~/.openclaw/openclaw.json` içindeki
     entries: {
       "image-lab": {
         enabled: true,
-        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // veya düz metin dize
+        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // or plaintext string
         env: {
           GEMINI_API_KEY: "GEMINI_KEY_HERE",
         },
@@ -299,68 +341,76 @@ Paketlenmiş ve yönetilen skill'ler, `~/.openclaw/openclaw.json` içindeki
 ```
 
 <ParamField path="enabled" type="boolean">
-  `false`, skill paketlenmiş veya kurulu olsa bile onu devre dışı bırakır.
+  `false`, paketle gelmiş veya kurulmuş olsa bile skill'i devre dışı bırakır.
+  Paketle gelen `coding-agent` skill'i isteğe bağlıdır: agent'lara sunmadan önce
+  `skills.entries.coding-agent.enabled: true` ayarını yapın,
+  ardından `claude`, `codex`, `opencode` veya `pi` içinden birinin kurulu olduğundan ve
+  kendi CLI'ı için kimliğinin doğrulandığından emin olun.
 </ParamField>
 <ParamField path="apiKey" type='string | { source, provider, id }'>
-  `metadata.openclaw.primaryEnv` bildiren skill'ler için kolaylık sağlar. Düz metin veya SecretRef destekler.
+  `metadata.openclaw.primaryEnv` bildiren skills için kolaylık sağlar. Düz metni veya SecretRef'i destekler.
 </ParamField>
 <ParamField path="env" type="Record<string, string>">
   Yalnızca değişken süreçte zaten ayarlı değilse enjekte edilir.
 </ParamField>
 <ParamField path="config" type="object">
-  Özel skill başına alanlar için isteğe bağlı çanta. Özel anahtarlar burada bulunmalıdır.
+  Özel skill başına alanlar için isteğe bağlı torba. Özel anahtarlar burada bulunmalıdır.
 </ParamField>
 <ParamField path="allowBundled" type="string[]">
-  Yalnızca **paketlenmiş** skill'ler için isteğe bağlı izin listesi. Ayarlanırsa yalnızca listedeki paketlenmiş skill'ler uygun olur (yönetilen/çalışma alanı skill'leri etkilenmez).
+  Yalnızca **paketle gelen** skills için isteğe bağlı izin listesi. Ayarlanırsa yalnızca listedeki paketle gelen skills uygun olur (yönetilen/çalışma alanı skills etkilenmez).
 </ParamField>
 
-Skill adı tire içeriyorsa anahtarı tırnak içine alın (JSON5 tırnaklı
-anahtarlara izin verir). Yapılandırma anahtarları varsayılan olarak **skill adıyla**
-eşleşir — bir skill `metadata.openclaw.skillKey` tanımlıyorsa `skills.entries` altında o anahtarı kullanın.
+Skill adı kısa çizgiler içeriyorsa anahtarı tırnak içine alın (JSON5 tırnaklı
+anahtarlara izin verir). Yapılandırma anahtarları varsayılan olarak **skill adı** ile eşleşir — bir skill
+`metadata.openclaw.skillKey` tanımlıyorsa `skills.entries` altında bu anahtarı kullanın.
 
 <Note>
-OpenClaw içinde stok görsel oluşturma/düzenleme için paketlenmiş bir skill yerine
+OpenClaw içinde stok görsel oluşturma/düzenleme için paketle gelen bir skill yerine
 `agents.defaults.imageGenerationModel` ile çekirdek
 `image_generate` aracını kullanın. Buradaki skill örnekleri özel veya üçüncü taraf
 iş akışları içindir. Yerel görsel analizi için
 `agents.defaults.imageModel` ile `image` aracını kullanın. `openai/*`, `google/*`,
-`fal/*` veya başka bir sağlayıcıya özgü görsel modeli seçerseniz, o sağlayıcının
-kimlik doğrulamasını/API anahtarını da ekleyin.
+`fal/*` veya sağlayıcıya özgü başka bir görsel modeli seçerseniz o sağlayıcının
+kimlik doğrulama/API anahtarını da ekleyin.
 </Note>
 
 ## Ortam enjeksiyonu
 
-Bir aracı çalıştırması başladığında OpenClaw:
+Bir agent çalıştırması başladığında OpenClaw:
 
-1. Skill meta verilerini okur.
-2. `skills.entries.<key>.env` ve `skills.entries.<key>.apiKey` değerlerini `process.env` içine uygular.
-3. Sistem istemini **uygun** skill'lerle oluşturur.
-4. Çalıştırma bittikten sonra özgün ortamı geri yükler.
+1. Skill metadata'sını okur.
+2. `skills.entries.<key>.env` ve `skills.entries.<key>.apiKey` değerlerini `process.env` üzerine uygular.
+3. Sistem istemini **uygun** skills ile oluşturur.
+4. Çalıştırma sona erdikten sonra özgün ortamı geri yükler.
 
-Ortam enjeksiyonu, genel kabuk ortamı değil, **aracı çalıştırmasına
-özgüdür**.
+Ortam enjeksiyonu genel bir shell ortamı değil, **agent çalıştırmasıyla sınırlıdır**.
 
-Paketlenmiş `claude-cli` arka ucu için OpenClaw ayrıca aynı
-uygun anlık görüntüyü geçici bir Claude Code Plugin'i olarak somutlaştırır
-ve bunu `--plugin-dir` ile iletir. Claude Code daha sonra yerel skill çözücüsünü kullanabilir; OpenClaw ise öncelik, aracı başına izin listeleri, geçitleme ve
-`skills.entries.*` env/API anahtarı enjeksiyonuna sahip olmaya devam eder. Diğer CLI arka uçları yalnızca istem kataloğunu kullanır.
+Paketle gelen `claude-cli` arka ucu için OpenClaw aynı uygun anlık görüntüyü
+geçici bir Claude Code plugin'i olarak da somutlaştırır ve
+`--plugin-dir` ile geçirir. Claude Code daha sonra kendi yerel skill çözücüsünü kullanabilir;
+OpenClaw ise önceliği, agent başına izin listelerini, kapılamayı ve
+`skills.entries.*` env/API anahtarı enjeksiyonunu yönetmeye devam eder. Diğer CLI arka uçları yalnızca
+istem kataloğunu kullanır.
 
 ## Anlık görüntüler ve yenileme
 
-OpenClaw, bir oturum başladığında uygun skill'lerin **anlık görüntüsünü alır**
-ve aynı oturumdaki sonraki sıralar için bu listeyi yeniden kullanır. Skill'lerde veya yapılandırmada yapılan değişiklikler bir sonraki yeni oturumda etkili olur.
+OpenClaw, uygun skills için **bir oturum başladığında** anlık görüntü alır ve
+aynı oturumdaki sonraki turlarda bu listeyi yeniden kullanır. Skills veya yapılandırmadaki değişiklikler
+bir sonraki yeni oturumda etkili olur.
 
-Skill'ler iki durumda oturum ortasında yenilenebilir:
+Skills oturum ortasında iki durumda yenilenebilir:
 
-- Skills izleyicisi etkindir.
+- Skills watcher etkindir.
 - Yeni bir uygun uzak node görünür.
 
-Bunu bir **hot reload** gibi düşünün: yenilenen liste bir sonraki
-aracı sırasında alınır. Bu oturum için etkili aracı skill izin listesi değişirse, OpenClaw görünür skill'lerin geçerli aracıyla uyumlu kalması için anlık görüntüyü yeniler.
+Bunu bir **hot reload** olarak düşünün: yenilenen liste bir sonraki
+agent turunda alınır. Bu oturum için geçerli agent skill izin listesi değişirse
+OpenClaw anlık görüntüyü yeniler, böylece görünür skills mevcut agent ile uyumlu kalır.
 
-### Skills izleyicisi
+### Skills watcher
 
-Varsayılan olarak OpenClaw, skill klasörlerini izler ve `SKILL.md` dosyaları değiştiğinde skills anlık görüntüsünü artırır. `skills.load` altında yapılandırın:
+Varsayılan olarak OpenClaw skill klasörlerini izler ve `SKILL.md` dosyaları
+değiştiğinde skills anlık görüntüsünü artırır. `skills.load` altında yapılandırın:
 
 ```json5
 {
@@ -375,47 +425,54 @@ Varsayılan olarak OpenClaw, skill klasörlerini izler ve `SKILL.md` dosyaları 
 
 ### Uzak macOS node'ları (Linux gateway)
 
-Gateway Linux üzerinde çalışıyor ancak
-`system.run` izinli bir **macOS node** bağlıysa (yürütme onayları güvenliği `deny` olarak ayarlanmamışsa),
-OpenClaw gerekli ikili dosyalar o node üzerinde mevcut olduğunda yalnızca macOS'a özgü skill'leri uygun kabul edebilir. Aracının bu skill'leri `host=node` ile `exec` aracı üzerinden yürütmesi gerekir.
+Gateway Linux üzerinde çalışıyor ancak `system.run` izni verilmiş bir **macOS node'u**
+bağlıysa (Exec onayları güvenliği `deny` olarak ayarlanmamışsa),
+OpenClaw, gerekli ikili dosyalar o node üzerinde mevcut olduğunda yalnızca macOS skills'i uygun kabul edebilir.
+Agent bu skills'i `host=node` ile `exec` aracı üzerinden çalıştırmalıdır.
 
-Bu, node'un komut desteğini bildirmesine ve
-`system.which` veya `system.run` üzerinden bir ikili dosya yoklamasına dayanır.
-Çevrimdışı node'lar yalnızca uzak olan skill'leri görünür yapmaz. Bağlı bir node ikili dosya yoklamalarına yanıt vermeyi bırakırsa OpenClaw önbelleğe alınmış ikili eşleşmelerini temizler, böylece aracılar artık şu anda orada çalışamayacak skill'leri görmez.
+Bu, node'un komut desteğini raporlamasına ve `system.which` veya `system.run`
+üzerinden yapılan bir bin probe'a dayanır. Çevrimdışı node'lar **uzaklara özel** skills'i
+görünür yapmaz. Bağlı bir node bin probe'larına yanıt vermeyi bırakırsa
+OpenClaw, önbelleğe alınmış bin eşleşmelerini temizler; böylece agent'lar şu anda orada
+çalışamayan skills'i artık görmez.
 
 ## Token etkisi
 
-Skill'ler uygun olduğunda OpenClaw, kullanılabilir
-skill'lerin sıkıştırılmış bir XML listesini sistem istemine enjekte eder (`pi-coding-agent` içindeki `formatSkillsForPrompt` aracılığıyla). Maliyeti deterministiktir:
+Skills uygun olduğunda OpenClaw, mevcut skills'in kompakt bir XML listesini
+sistem istemine enjekte eder (`pi-coding-agent` içindeki `formatSkillsForPrompt`
+üzerinden). Maliyet deterministiktir:
 
 - **Temel ek yük** (yalnızca ≥1 skill olduğunda): 195 karakter.
-- **Skill başına:** 97 karakter + XML'den kaçırılmış `<name>`, `<description>` ve `<location>` değerlerinin uzunluğu.
+- **Skill başına:** 97 karakter + XML kaçışlı `<name>`, `<description>` ve `<location>` değerlerinin uzunluğu.
 
-Formül (karakter):
+Formül (karakterler):
 
 ```text
 total = 195 + Σ (97 + len(name_escaped) + len(description_escaped) + len(location_escaped))
 ```
 
-XML kaçırma, `& < > " '` karakterlerini varlıklara (`&amp;`, `&lt;` vb.)
-genişletir ve uzunluğu artırır. Token sayıları model tokenizer'ına göre değişir. Yaklaşık
-OpenAI tarzı tahmin ~4 karakter/token olduğundan **97 karakter ≈ 24 token** eder;
-buna gerçek alan uzunluklarınız da eklenir.
+XML kaçışlama `& < > " '` karakterlerini varlıklara (`&amp;`, `&lt;` vb.)
+genişleterek uzunluğu artırır. Token sayıları model tokenizer'ına göre değişir. Kabaca
+OpenAI tarzı bir tahmin ~4 karakter/token olduğundan **97 karakter ≈ 24 token** eder;
+buna skill başına gerçek alan uzunluklarınız eklenir.
 
-## Yönetilen Skills yaşam döngüsü
+## Yönetilen skills yaşam döngüsü
 
-OpenClaw, kurulumla birlikte (npm paketi veya OpenClaw.app) temel bir skill kümesini **paketlenmiş skill'ler** olarak gönderir. `~/.openclaw/skills`, yerel geçersiz kılmalar için vardır — örneğin, paketlenmiş kopyayı değiştirmeden bir skill'i sabitlemek veya yamalamak için. Çalışma alanı skill'leri kullanıcıya aittir ve ad çakışmalarında her ikisini de geçersiz kılar.
+OpenClaw, kurulumla (npm paketi veya OpenClaw.app) birlikte temel bir skills kümesini
+**paketle gelen skills** olarak gönderir. `~/.openclaw/skills`, yerel geçersiz kılmalar için vardır —
+örneğin paketle gelen kopyayı değiştirmeden bir skill'i sabitlemek veya yamamak için.
+Çalışma alanı skills kullanıcıya aittir ve ad çakışmalarında ikisinin de üzerine yazar.
 
 ## Daha fazla skill mi arıyorsunuz?
 
-[https://clawhub.ai](https://clawhub.ai) sitesine göz atın. Tam yapılandırma
-şeması: [Skills config](/tr/tools/skills-config).
+[https://clawhub.ai](https://clawhub.ai) adresine göz atın. Tam yapılandırma
+şeması: [Skills yapılandırması](/tr/tools/skills-config).
 
 ## İlgili
 
-- [ClawHub](/tr/tools/clawhub) — herkese açık skill kayıt defteri
-- [Creating skills](/tr/tools/creating-skills) — özel skill'ler oluşturma
-- [Plugins](/tr/tools/plugin) — Plugin sistemi genel bakışı
-- [Skill Workshop Plugin](/tr/plugins/skill-workshop) — aracı çalışmasından skill üretme
-- [Skills config](/tr/tools/skills-config) — skill yapılandırma başvurusu
-- [Slash commands](/tr/tools/slash-commands) — tüm kullanılabilir eğik çizgi komutları
+- [ClawHub](/tr/tools/clawhub) — herkese açık skills kayıt defteri
+- [Skill oluşturma](/tr/tools/creating-skills) — özel skills oluşturma
+- [Plugins](/tr/tools/plugin) — plugin sistemi genel bakışı
+- [Skill Workshop plugin](/tr/plugins/skill-workshop) — agent çalışmasından skills üretin
+- [Skills yapılandırması](/tr/tools/skills-config) — skill yapılandırması başvurusu
+- [Slash komutları](/tr/tools/slash-commands) — mevcut tüm slash komutları

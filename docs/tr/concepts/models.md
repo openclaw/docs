@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Models CLI'yi ekleme veya değiştirme (models list/set/scan/aliases/fallbacks)
-    - Model yedek davranışını veya seçim UX'ini değiştirme
-    - Model tarama sondalarını güncelleme (araçlar/görseller)
+    - Modeller CLI’si ekleme veya değiştirme (models list/set/scan/aliases/fallbacks)
+    - Model geri dönüş davranışını veya seçim kullanıcı deneyimini değiştirme
+    - Model tarama yoklamalarını güncelleme (araçlar/görseller)
 sidebarTitle: Models CLI
-summary: 'Models CLI: listele, ayarla, takma adlar, yedekler, tara, durum'
-title: Models CLI
+summary: 'Modeller CLI''si: listeleme, ayarlama, takma adlar, yedekler, tarama, durum'
+title: Modeller CLI
 x-i18n:
-    generated_at: "2026-04-26T11:27:47Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:17:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: d70dfb3f69532c6bfff5d8854ee7a5db3134e5ede3e1875410cea95072ca42a0
+    source_hash: 64b97ddfcc6f804044580dfc9a441d426f737e9e7d007d78b0b045a52068b34f
     source_path: concepts/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 <CardGroup cols={2}>
-  <Card title="Model yedekleme" href="/tr/concepts/model-failover">
-    Kimlik doğrulama profili döndürme, soğuma süreleri ve bunların yedeklerle nasıl etkileştiği.
+  <Card title="Model devretme" href="/tr/concepts/model-failover">
+    Auth profili rotasyonu, cooldown süreleri ve bunun fallback'lerle nasıl etkileştiği.
   </Card>
-  <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers">
-    Hızlı sağlayıcı genel bakışı ve örnekler.
+  <Card title="Model providers" href="/tr/concepts/model-providers">
+    Hızlı provider genel bakışı ve örnekler.
   </Card>
-  <Card title="Ajan çalışma zamanları" href="/tr/concepts/agent-runtimes">
-    Pi, Codex ve diğer ajan döngüsü çalışma zamanları.
+  <Card title="Agent runtime'ları" href="/tr/concepts/agent-runtimes">
+    PI, Codex ve diğer agent döngüsü runtime'ları.
   </Card>
-  <Card title="Yapılandırma başvurusu" href="/tr/gateway/config-agents#agent-defaults">
+  <Card title="Yapılandırma referansı" href="/tr/gateway/config-agents#agent-defaults">
     Model yapılandırma anahtarları.
   </Card>
 </CardGroup>
 
-Model referansları bir sağlayıcı ve model seçer. Genellikle düşük seviyeli ajan çalışma zamanını seçmezler. Örneğin `openai/gpt-5.5`, `agents.defaults.agentRuntime.id` değerine bağlı olarak normal OpenAI sağlayıcı yolu üzerinden veya Codex uygulama sunucusu çalışma zamanı üzerinden çalışabilir. Bkz. [Ajan çalışma zamanları](/tr/concepts/agent-runtimes).
+Model ref'leri bir provider ve model seçer. Genellikle düşük düzey agent runtime'ını seçmezler. Örneğin `openai/gpt-5.5`, `agents.defaults.agentRuntime.id` değerine bağlı olarak normal OpenAI provider yolu üzerinden veya Codex app-server runtime'ı üzerinden çalışabilir. Bkz. [Agent runtime'ları](/tr/concepts/agent-runtimes).
 
 ## Model seçimi nasıl çalışır
 
@@ -40,42 +40,53 @@ OpenClaw modelleri şu sırayla seçer:
   <Step title="Birincil model">
     `agents.defaults.model.primary` (veya `agents.defaults.model`).
   </Step>
-  <Step title="Yedekler">
+  <Step title="Fallback'ler">
     `agents.defaults.model.fallbacks` (sırayla).
   </Step>
-  <Step title="Sağlayıcı kimlik doğrulama yedeklemesi">
-    Kimlik doğrulama yedeklemesi, sonraki modele geçmeden önce bir sağlayıcının içinde gerçekleşir.
+  <Step title="Provider auth failover">
+    Auth failover, bir sonraki modele geçmeden önce provider içinde gerçekleşir.
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="İlgili model yüzeyleri">
-    - `agents.defaults.models`, OpenClaw'un kullanabildiği modellerin izin listesi/kataloğudur (artı takma adlar).
-    - `agents.defaults.imageModel`, **yalnızca** birincil model görsel kabul edemediğinde kullanılır.
-    - `agents.defaults.pdfModel`, `pdf` aracı tarafından kullanılır. Atlanırsa araç sırayla `agents.defaults.imageModel`, sonra çözümlenen oturum/varsayılan modele geri döner.
-    - `agents.defaults.imageGenerationModel`, paylaşılan görsel üretim yeteneği tarafından kullanılır. Atlanırsa `image_generate` yine de kimlik doğrulama destekli bir sağlayıcı varsayılanını çıkarabilir. Önce geçerli varsayılan sağlayıcıyı, sonra kayıtlı kalan görsel üretim sağlayıcılarını sağlayıcı kimliği sırasıyla dener. Belirli bir sağlayıcı/model ayarlarsanız, o sağlayıcının kimlik doğrulamasını/API anahtarını da yapılandırın.
-    - `agents.defaults.musicGenerationModel`, paylaşılan müzik üretim yeteneği tarafından kullanılır. Atlanırsa `music_generate` yine de kimlik doğrulama destekli bir sağlayıcı varsayılanını çıkarabilir. Önce geçerli varsayılan sağlayıcıyı, sonra kayıtlı kalan müzik üretim sağlayıcılarını sağlayıcı kimliği sırasıyla dener. Belirli bir sağlayıcı/model ayarlarsanız, o sağlayıcının kimlik doğrulamasını/API anahtarını da yapılandırın.
-    - `agents.defaults.videoGenerationModel`, paylaşılan video üretim yeteneği tarafından kullanılır. Atlanırsa `video_generate` yine de kimlik doğrulama destekli bir sağlayıcı varsayılanını çıkarabilir. Önce geçerli varsayılan sağlayıcıyı, sonra kayıtlı kalan video üretim sağlayıcılarını sağlayıcı kimliği sırasıyla dener. Belirli bir sağlayıcı/model ayarlarsanız, o sağlayıcının kimlik doğrulamasını/API anahtarını da yapılandırın.
-    - Ajan başına varsayılanlar, `agents.list[].model` artı bindings üzerinden `agents.defaults.model` değerini geçersiz kılabilir (bkz. [Çoklu ajan yönlendirme](/tr/concepts/multi-agent)).
+    - `agents.defaults.models`, OpenClaw'ın kullanabileceği modellerin allowlist/catalog listesidir (alias'larla birlikte).
+    - `agents.defaults.imageModel`, **yalnızca** birincil model görüntüleri kabul edemediğinde kullanılır.
+    - `agents.defaults.pdfModel`, `pdf` aracı tarafından kullanılır. Atlanırsa araç `agents.defaults.imageModel` değerine, ardından çözümlenmiş session/varsayılan modele fallback yapar.
+    - `agents.defaults.imageGenerationModel`, paylaşılan görüntü üretimi capability'si tarafından kullanılır. Atlanırsa `image_generate` yine de auth destekli bir provider varsayılanı çıkarımlayabilir. Önce geçerli varsayılan provider'ı, ardından kalan kayıtlı görüntü üretimi provider'larını provider-id sırasına göre dener. Belirli bir provider/model ayarlarsanız, o provider'ın auth/API key'ini de yapılandırın.
+    - `agents.defaults.musicGenerationModel`, paylaşılan müzik üretimi capability'si tarafından kullanılır. Atlanırsa `music_generate` yine de auth destekli bir provider varsayılanı çıkarımlayabilir. Önce geçerli varsayılan provider'ı, ardından kalan kayıtlı müzik üretimi provider'larını provider-id sırasına göre dener. Belirli bir provider/model ayarlarsanız, o provider'ın auth/API key'ini de yapılandırın.
+    - `agents.defaults.videoGenerationModel`, paylaşılan video üretimi capability'si tarafından kullanılır. Atlanırsa `video_generate` yine de auth destekli bir provider varsayılanı çıkarımlayabilir. Önce geçerli varsayılan provider'ı, ardından kalan kayıtlı video üretimi provider'larını provider-id sırasına göre dener. Belirli bir provider/model ayarlarsanız, o provider'ın auth/API key'ini de yapılandırın.
+    - Agent başına varsayılanlar, `agents.list[].model` ve binding'ler aracılığıyla `agents.defaults.model` değerini override edebilir (bkz. [Çok agent'lı yönlendirme](/tr/concepts/multi-agent)).
 
   </Accordion>
 </AccordionGroup>
 
+## Seçim kaynağı ve fallback davranışı
+
+Aynı `provider/model`, nereden geldiğine bağlı olarak farklı şeyler ifade edebilir:
+
+- Yapılandırılmış varsayılanlar (`agents.defaults.model.primary` ve agent'a özgü birinciller) normal başlangıç noktasıdır ve `agents.defaults.model.fallbacks` kullanır.
+- Otomatik fallback seçimleri geçici kurtarma durumudur. Bilinen sorunlu birincili önce yoklamadan sonraki turn'lerin fallback zincirini kullanmaya devam edebilmesi için `modelOverrideSource: "auto"` ile saklanırlar.
+- Kullanıcı session seçimleri kesindir. `/model`, model seçici, `session_status(model=...)` ve `sessions.patch`, `modelOverrideSource: "user"` saklar; seçilen provider/model erişilemezse OpenClaw başka bir yapılandırılmış modele geçmek yerine görünür şekilde başarısız olur.
+- Cron `--model` / payload `model`, iş başına bir birincildir. İş açık payload `fallbacks` sağlamadığı sürece yapılandırılmış fallback'leri kullanmaya devam eder (katı bir cron çalıştırması için `fallbacks: []` kullanın).
+- CLI default-model ve allowlist seçicileri, tam yerleşik catalog'u yüklemek yerine açık `models.providers.*.models` listesini göstererek `models.mode: "replace"` değerine uyar.
+- Control UI model seçicisi, Gateway'den yapılandırılmış model görünümünü ister: varsa `agents.defaults.models`, aksi halde açık `models.providers.*.models` ve kullanılabilir auth'a sahip provider'lar. Tam yerleşik catalog, `view: "all"` ile `models.list` veya `openclaw models list --all` gibi açık göz atma görünümleri için ayrılmıştır.
+
 ## Hızlı model politikası
 
-- Birincil modelinizi, sizin için erişilebilir en güçlü yeni nesil model olarak ayarlayın.
-- Maliyet/gecikme duyarlı görevler ve daha düşük riskli sohbetler için yedekler kullanın.
-- Araç etkin ajanlar veya güvenilmeyen girdiler için eski/zayıf model katmanlarından kaçının.
+- Birincilinizi erişiminiz olan en güçlü son nesil modele ayarlayın.
+- Maliyet/gecikmeye duyarlı görevler ve daha düşük riskli sohbet için fallback'ler kullanın.
+- Araç etkin agent'lar veya güvenilmeyen girdiler için daha eski/zayıf model katmanlarından kaçının.
 
-## İlk kurulum (önerilir)
+## Onboarding (önerilir)
 
-Yapılandırmayı elle düzenlemek istemiyorsanız ilk kurulumu çalıştırın:
+Yapılandırmayı elle düzenlemek istemiyorsanız onboarding çalıştırın:
 
 ```bash
 openclaw onboard
 ```
 
-Bu, **OpenAI Code (Codex) aboneliği** (OAuth) ve **Anthropic** (API anahtarı veya Claude CLI) dahil yaygın sağlayıcılar için model + kimlik doğrulamayı ayarlayabilir.
+**OpenAI Code (Codex) aboneliği** (OAuth) ve **Anthropic** (API key veya Claude CLI) dahil olmak üzere yaygın provider'lar için model + auth kurabilir.
 
 ## Yapılandırma anahtarları (genel bakış)
 
@@ -84,50 +95,56 @@ Bu, **OpenAI Code (Codex) aboneliği** (OAuth) ve **Anthropic** (API anahtarı v
 - `agents.defaults.pdfModel.primary` ve `agents.defaults.pdfModel.fallbacks`
 - `agents.defaults.imageGenerationModel.primary` ve `agents.defaults.imageGenerationModel.fallbacks`
 - `agents.defaults.videoGenerationModel.primary` ve `agents.defaults.videoGenerationModel.fallbacks`
-- `agents.defaults.models` (izin listesi + takma adlar + sağlayıcı parametreleri)
-- `models.providers` (`models.json` içine yazılan özel sağlayıcılar)
+- `agents.defaults.models` (allowlist + alias'lar + provider parametreleri)
+- `models.providers` (`models.json` içine yazılan özel provider'lar)
 
 <Note>
-Model referansları küçük harfe normalize edilir. `z.ai/*` gibi sağlayıcı takma adları `zai/*` olarak normalize edilir.
+Model ref'leri küçük harfe normalize edilir. `z.ai/*` gibi provider alias'ları `zai/*` olarak normalize edilir.
 
-OpenCode dahil sağlayıcı yapılandırma örnekleri [OpenCode](/tr/providers/opencode) içinde bulunur.
+Provider yapılandırma örnekleri (OpenCode dahil) [OpenCode](/tr/providers/opencode) içinde bulunur.
 </Note>
 
-### Güvenli izin listesi düzenlemeleri
+### Güvenli allowlist düzenlemeleri
 
-`agents.defaults.models` değerini elle güncellerken eklemeli yazımları kullanın:
+`agents.defaults.models` değerini elle güncellerken eklemeli yazmaları kullanın:
 
 ```bash
 openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 ```
 
 <AccordionGroup>
-  <Accordion title="Ezme koruması kuralları">
-    `openclaw config set`, model/sağlayıcı map'lerini kazara ezmeye karşı korur. `agents.defaults.models`, `models.providers` veya `models.providers.<id>.models` üzerine düz nesne ataması, mevcut girdileri kaldıracaksa reddedilir. Eklemeli değişiklikler için `--merge` kullanın; yalnızca sağlanan değerin hedefin tamamı olması gerektiğinde `--replace` kullanın.
+  <Accordion title="Clobber koruma kuralları">
+    `openclaw config set`, model/provider map'lerini yanlışlıkla üzerine yazılmaya karşı korur. `agents.defaults.models`, `models.providers` veya `models.providers.<id>.models` için düz bir nesne ataması, mevcut girdileri kaldıracaksa reddedilir. Eklemeli değişiklikler için `--merge` kullanın; `--replace` yalnızca sağlanan değer eksiksiz hedef değer olmalıysa kullanın.
 
-    Etkileşimli sağlayıcı kurulumu ve `openclaw configure --section model` de sağlayıcı kapsamlı seçimleri mevcut izin listesine birleştirir; böylece Codex, Ollama veya başka bir sağlayıcı eklemek ilgisiz model girdilerini düşürmez. Configure, sağlayıcı kimlik doğrulaması yeniden uygulandığında mevcut `agents.defaults.model.primary` değerini korur. `openclaw models auth login --provider <id> --set-default` ve `openclaw models set <model>` gibi açık varsayılan ayarlama komutları ise yine `agents.defaults.model.primary` değerini değiştirir.
+    Etkileşimli provider kurulumu ve `openclaw configure --section model` da provider kapsamlı seçimleri mevcut allowlist içine merge eder, böylece Codex, Ollama veya başka bir provider eklemek ilgisiz model girdilerini düşürmez. Configure, provider auth yeniden uygulandığında mevcut `agents.defaults.model.primary` değerini korur. `openclaw models auth login --provider <id> --set-default` ve `openclaw models set <model>` gibi açık varsayılan ayarlama komutları yine de `agents.defaults.model.primary` değerini değiştirir.
 
   </Accordion>
 </AccordionGroup>
 
-## "Modele izin verilmiyor" (ve yanıtlar neden durur)
+## "Modele izin verilmiyor" (ve yanıtların neden durduğu)
 
-`agents.defaults.models` ayarlanmışsa, `/model` ve oturum geçersiz kılmaları için **izin listesi** haline gelir. Kullanıcı bu izin listesinde olmayan bir modeli seçtiğinde OpenClaw şunu döndürür:
+`agents.defaults.models` ayarlanırsa, `/model` ve session override'ları için **allowlist** haline gelir. Bir kullanıcı bu allowlist içinde olmayan bir model seçtiğinde OpenClaw şunu döndürür:
 
 ```
 Model "provider/model" is not allowed. Use /model to list available models.
 ```
 
 <Warning>
-Bu, normal bir yanıt oluşturulmadan **önce** gerçekleşir; bu nedenle mesaj "yanıt vermemiş" gibi hissedilebilir. Çözüm şunlardan biridir:
+Bu, normal bir yanıt oluşturulmadan **önce** gerçekleşir, bu yüzden mesaj "yanıt vermedi" gibi hissettirebilir. Çözüm şunlardan biridir:
 
-- Modeli `agents.defaults.models` içine eklemek veya
-- İzin listesini temizlemek (`agents.defaults.models` değerini kaldırmak) veya
-- `/model list` içinden bir model seçmek.
+- Modeli `agents.defaults.models` içine ekleyin veya
+- Allowlist'i temizleyin (`agents.defaults.models` değerini kaldırın) veya
+- `/model list` içinden bir model seçin.
 
 </Warning>
 
-Örnek izin listesi yapılandırması:
+Yerel/GGUF modeller için tam provider önekli ref'i allowlist içinde saklayın;
+örneğin `ollama/gemma4:26b`, `lmstudio/Gemma4-26b-a4-it-gguf` veya
+`openclaw models list --provider <provider>` tarafından gösterilen tam
+provider/model. Allowlist etkin olduğunda çıplak yerel dosya adları veya
+görünen adlar yeterli değildir.
+
+Örnek allowlist yapılandırması:
 
 ```json5
 {
@@ -143,7 +160,7 @@ Bu, normal bir yanıt oluşturulmadan **önce** gerçekleşir; bu nedenle mesaj 
 
 ## Sohbette model değiştirme (`/model`)
 
-Yeniden başlatmadan geçerli oturum için model değiştirebilirsiniz:
+Geçerli session için modelleri yeniden başlatmadan değiştirebilirsiniz:
 
 ```
 /model
@@ -155,27 +172,28 @@ Yeniden başlatmadan geçerli oturum için model değiştirebilirsiniz:
 
 <AccordionGroup>
   <Accordion title="Seçici davranışı">
-    - `/model` (ve `/model list`) kompakt, numaralandırılmış bir seçicidir (model ailesi + kullanılabilir sağlayıcılar).
-    - Discord'da `/model` ve `/models`, sağlayıcı ve model açılır listeleri ile bir Gönder adımı içeren etkileşimli bir seçici açar.
-    - `/models add` artık kullanımdan kaldırılmıştır ve sohbetten model kaydetmek yerine kullanımdan kaldırma mesajı döndürür.
-    - `/model <#>`, o seçiciden seçim yapar.
+    - `/model` (ve `/model list`) kompakt, numaralı bir seçicidir (model ailesi + kullanılabilir provider'lar).
+    - Discord'da `/model` ve `/models`, provider ve model açılır menülerinin yanı sıra Submit adımı içeren etkileşimli bir seçici açar.
+    - `/models add` kullanım dışıdır ve artık sohbetten model kaydetmek yerine kullanım dışı bırakma mesajı döndürür.
+    - `/model <#>` o seçiciden seçim yapar.
 
   </Accordion>
   <Accordion title="Kalıcılık ve canlı değiştirme">
-    - `/model`, yeni oturum seçimini anında kalıcı hale getirir.
-    - Ajan boşta ise sonraki çalışma yeni modeli hemen kullanır.
-    - Bir çalışma zaten etkinse OpenClaw canlı değişikliği beklemede olarak işaretler ve yalnızca temiz bir yeniden deneme noktasında yeni modele yeniden başlar.
-    - Araç etkinliği veya yanıt çıktısı zaten başladıysa bekleyen değişiklik daha sonraki bir yeniden deneme fırsatına veya sonraki kullanıcı dönüşüne kadar kuyrukta kalabilir.
-    - `/model status` ayrıntılı görünümdür (kimlik doğrulama adayları ve yapılandırılmışsa sağlayıcı uç nokta `baseUrl` + `api` modu).
+    - `/model`, yeni session seçimini hemen kalıcı hale getirir.
+    - Agent boşta ise bir sonraki çalıştırma yeni modeli hemen kullanır.
+    - Bir çalıştırma zaten etkinse OpenClaw canlı değiştirmeyi beklemede olarak işaretler ve yalnızca temiz bir retry noktasında yeni modelle yeniden başlar.
+    - Araç etkinliği veya yanıt çıktısı zaten başladıysa bekleyen değiştirme daha sonraki bir retry fırsatına veya bir sonraki kullanıcı turn'üne kadar kuyrukta kalabilir.
+    - Kullanıcı tarafından seçilen `/model` ref'i o session için katıdır: seçilen provider/model erişilemezse yanıt, `agents.defaults.model.fallbacks` içinden sessizce yanıt vermek yerine görünür şekilde başarısız olur. Bu, yine de fallback zincirleri kullanabilen yapılandırılmış varsayılanlardan ve cron işi birincillerinden farklıdır.
+    - `/model status` ayrıntılı görünümdür (auth adayları ve yapılandırıldığında provider endpoint `baseUrl` + `api` modu).
 
   </Accordion>
   <Accordion title="Ref ayrıştırma">
-    - Model referansları **ilk** `/` karakterinden bölünerek ayrıştırılır. `/model <ref>` yazarken `provider/model` kullanın.
-    - Model kimliğinin kendisi `/` içeriyorsa (OpenRouter tarzı), sağlayıcı önekini eklemelisiniz (örnek: `/model openrouter/moonshotai/kimi-k2`).
-    - Sağlayıcıyı atlarsanız OpenClaw girdiyi şu sırayla çözümler:
-      1. takma ad eşleşmesi
-      2. tam aynı öneksiz model kimliği için tekil yapılandırılmış sağlayıcı eşleşmesi
-      3. yapılandırılmış varsayılan sağlayıcıya eski yedek geri dönüşü — bu sağlayıcı artık yapılandırılmış varsayılan modeli sunmuyorsa OpenClaw eski kaldırılmış-sağlayıcı varsayılanını göstermemek için bunun yerine ilk yapılandırılmış sağlayıcı/modele geri döner.
+    - Model ref'leri **ilk** `/` üzerinden bölünerek ayrıştırılır. `/model <ref>` yazarken `provider/model` kullanın.
+    - Model ID'sinin kendisi `/` içeriyorsa (OpenRouter tarzı), provider önekini eklemelisiniz (örnek: `/model openrouter/moonshotai/kimi-k2`).
+    - Provider'ı atlarsanız OpenClaw girdiyi şu sırayla çözer:
+      1. alias eşleşmesi
+      2. tam öneksiz model id için benzersiz yapılandırılmış-provider eşleşmesi
+      3. yapılandırılmış varsayılan provider'a kullanım dışı fallback — o provider artık yapılandırılmış varsayılan modeli sunmuyorsa OpenClaw, eski kaldırılmış-provider varsayılanını göstermemek için bunun yerine ilk yapılandırılmış provider/model değerine fallback yapar.
   </Accordion>
 </AccordionGroup>
 
@@ -208,16 +226,16 @@ openclaw models image-fallbacks clear
 
 ### `models list`
 
-Varsayılan olarak yapılandırılmış modelleri gösterir. Yararlı bayraklar:
+Varsayılan olarak yapılandırılmış/auth-kullanılabilir modelleri gösterir. Yararlı flag'ler:
 
 <ParamField path="--all" type="boolean">
-  Tam katalog. Kimlik doğrulama yapılandırılmadan önce birlikte gelen sağlayıcıya ait statik katalog satırlarını içerir; böylece yalnızca keşif amaçlı görünümler, eşleşen sağlayıcı kimlik bilgilerini ekleyene kadar kullanılamayan modelleri gösterebilir.
+  Tam catalog. Auth yapılandırılmadan önce paketli provider'a ait statik catalog satırlarını içerir, böylece yalnızca keşif amaçlı görünümler, eşleşen provider kimlik bilgilerini ekleyene kadar kullanılamayan modelleri gösterebilir.
 </ParamField>
 <ParamField path="--local" type="boolean">
-  Yalnızca yerel sağlayıcılar.
+  Yalnızca yerel provider'lar.
 </ParamField>
 <ParamField path="--provider <id>" type="string">
-  Sağlayıcı kimliğine göre filtreler, örneğin `moonshot`. Etkileşimli seçicilerdeki görünen etiketler kabul edilmez.
+  Provider id'ye göre filtrele, örneğin `moonshot`. Etkileşimli seçicilerdeki görüntüleme etiketleri kabul edilmez.
 </ParamField>
 <ParamField path="--plain" type="boolean">
   Satır başına bir model.
@@ -228,21 +246,21 @@ Varsayılan olarak yapılandırılmış modelleri gösterir. Yararlı bayraklar:
 
 ### `models status`
 
-Çözümlenen birincil modeli, yedekleri, görsel modelini ve yapılandırılmış sağlayıcıların kimlik doğrulama genel görünümünü gösterir. Ayrıca kimlik doğrulama deposunda bulunan profiller için OAuth sona erme durumunu da gösterir (varsayılan olarak 24 saat içinde uyarır). `--plain` yalnızca çözümlenen birincil modeli yazdırır.
+Çözümlenen birincil modeli, yedekleri, görsel modelini ve yapılandırılmış sağlayıcıların kimlik doğrulama özetini gösterir. Ayrıca auth deposunda bulunan profiller için OAuth süre dolumu durumunu da yüzeye çıkarır (varsayılan olarak 24 saat içinde uyarır). `--plain` yalnızca çözümlenen birincil modeli yazdırır.
 
 <AccordionGroup>
-  <Accordion title="Kimlik doğrulama ve sonda davranışı">
-    - OAuth durumu her zaman gösterilir (ve `--json` çıktısına dahil edilir). Yapılandırılmış bir sağlayıcının kimlik bilgisi yoksa `models status`, **Eksik kimlik doğrulama** bölümü yazdırır.
-    - JSON; `auth.oauth` (uyarı penceresi + profiller) ve `auth.providers` (ortam destekli kimlik bilgileri dahil sağlayıcı başına etkin kimlik doğrulama) içerir. `auth.oauth` yalnızca auth-store profil sağlığı içindir; yalnızca ortam kullanan sağlayıcılar burada görünmez.
+  <Accordion title="Kimlik doğrulama ve yoklama davranışı">
+    - OAuth durumu her zaman gösterilir (ve `--json` çıktısına dahil edilir). Yapılandırılmış bir sağlayıcının kimlik bilgileri yoksa, `models status` bir **Eksik kimlik doğrulama** bölümü yazdırır.
+    - JSON, `auth.oauth` (uyarı penceresi + profiller) ve `auth.providers` (env destekli kimlik bilgileri dahil sağlayıcı başına etkili kimlik doğrulama) içerir. `auth.oauth` yalnızca auth deposu profil sağlığıdır; yalnızca env kullanan sağlayıcılar burada görünmez.
     - Otomasyon için `--check` kullanın (eksik/süresi dolmuşsa çıkış `1`, süresi dolmak üzereyse `2`).
-    - Canlı kimlik doğrulama kontrolleri için `--probe` kullanın; sonda satırları auth profillerinden, ortam kimlik bilgilerinden veya `models.json` dosyasından gelebilir.
-    - Açık `auth.order.<provider>` kayıtlı bir profili atlıyorsa sonda, bunu denemek yerine `excluded_by_auth_order` bildirir. Kimlik doğrulama varsa ancak o sağlayıcı için sondalanabilir bir model çözümlenemiyorsa sonda `status: no_model` bildirir.
+    - Canlı kimlik doğrulama denetimleri için `--probe` kullanın; yoklama satırları auth profillerinden, env kimlik bilgilerinden veya `models.json` içinden gelebilir.
+    - Açık `auth.order.<provider>` depolanmış bir profili atlıyorsa, yoklama denemek yerine `excluded_by_auth_order` bildirir. Kimlik doğrulama varsa ancak bu sağlayıcı için yoklanabilir bir model çözümlenemiyorsa, yoklama `status: no_model` bildirir.
 
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Kimlik doğrulama seçimi sağlayıcıya/hesaba bağlıdır. Her zaman açık gateway host'ları için API anahtarları genellikle en öngörülebilir seçenektir; Claude CLI yeniden kullanımı ve mevcut Anthropic OAuth/token profilleri de desteklenir.
+Kimlik doğrulama seçimi sağlayıcıya/hesaba bağlıdır. Her zaman açık gateway hostları için API anahtarları genellikle en öngörülebilir seçenektir; Claude CLI yeniden kullanımı ve mevcut Anthropic OAuth/token profilleri de desteklenir.
 </Note>
 
 Örnek (Claude CLI):
@@ -254,10 +272,10 @@ openclaw models status
 
 ## Tarama (OpenRouter ücretsiz modelleri)
 
-`openclaw models scan`, OpenRouter'ın **ücretsiz model kataloğunu** inceler ve isteğe bağlı olarak modelleri araç ve görsel desteği için sondalayabilir.
+`openclaw models scan`, OpenRouter'ın **ücretsiz model kataloğunu** inceler ve isteğe bağlı olarak modelleri araç ve görsel desteği için yoklayabilir.
 
 <ParamField path="--no-probe" type="boolean">
-  Canlı sondaları atla (yalnızca meta veriler).
+  Canlı yoklamaları atla (yalnızca metadata).
 </ParamField>
 <ParamField path="--min-params <b>" type="number">
   En düşük parametre boyutu (milyar).
@@ -272,17 +290,17 @@ openclaw models status
   Yedek liste boyutu.
 </ParamField>
 <ParamField path="--set-default" type="boolean">
-  `agents.defaults.model.primary` değerini ilk seçime ayarlar.
+  `agents.defaults.model.primary` değerini ilk seçime ayarla.
 </ParamField>
 <ParamField path="--set-image" type="boolean">
-  `agents.defaults.imageModel.primary` değerini ilk görsel seçimine ayarlar.
+  `agents.defaults.imageModel.primary` değerini ilk görsel seçimine ayarla.
 </ParamField>
 
 <Note>
-OpenRouter `/models` kataloğu herkese açıktır; bu nedenle yalnızca meta veri taramaları anahtar olmadan ücretsiz adayları listeleyebilir. Sondalama ve çıkarım için yine de bir OpenRouter API anahtarı gerekir (kimlik doğrulama profillerinden veya `OPENROUTER_API_KEY` içinden). Kullanılabilir bir anahtar yoksa `openclaw models scan` yalnızca meta veri çıktısına geri döner ve yapılandırmayı değiştirmez. Yalnızca meta veri kipini açıkça istemek için `--no-probe` kullanın.
+OpenRouter `/models` kataloğu herkese açıktır, bu yüzden yalnızca metadata taramaları anahtar olmadan ücretsiz adayları listeleyebilir. Yoklama ve çıkarım hâlâ bir OpenRouter API anahtarı gerektirir (auth profillerinden veya `OPENROUTER_API_KEY` içinden). Anahtar yoksa, `openclaw models scan` yalnızca metadata çıktısına geri döner ve yapılandırmayı değiştirmeden bırakır. Yalnızca metadata modunu açıkça istemek için `--no-probe` kullanın.
 </Note>
 
-Tarama sonuçları şu ölçütlere göre sıralanır:
+Tarama sonuçları şuna göre sıralanır:
 
 1. Görsel desteği
 2. Araç gecikmesi
@@ -292,40 +310,40 @@ Tarama sonuçları şu ölçütlere göre sıralanır:
 Girdi:
 
 - OpenRouter `/models` listesi (`:free` filtresi)
-- Canlı sondalar, auth profillerinden veya `OPENROUTER_API_KEY` içinden OpenRouter API anahtarı gerektirir (bkz. [Ortam değişkenleri](/tr/help/environment))
+- Canlı yoklamalar auth profillerinden veya `OPENROUTER_API_KEY` içinden OpenRouter API anahtarı gerektirir (bkz. [Ortam değişkenleri](/tr/help/environment))
 - İsteğe bağlı filtreler: `--max-age-days`, `--min-params`, `--provider`, `--max-candidates`
-- İstek/sonda denetimleri: `--timeout`, `--concurrency`
+- İstek/yoklama denetimleri: `--timeout`, `--concurrency`
 
-Canlı sondalar bir TUI içinde çalıştığında, yedekleri etkileşimli olarak seçebilirsiniz. Etkileşimsiz kipte, varsayılanları kabul etmek için `--yes` geçin. Yalnızca meta veri sonuçları bilgilendirme amaçlıdır; `--set-default` ve `--set-image` canlı sondalar gerektirir, böylece OpenClaw kullanılamaz, anahtarsız bir OpenRouter modelini yapılandırmaz.
+Canlı yoklamalar bir TTY içinde çalıştığında, yedekleri etkileşimli olarak seçebilirsiniz. Etkileşimsiz modda, varsayılanları kabul etmek için `--yes` geçirin. Yalnızca metadata sonuçları bilgilendirme amaçlıdır; OpenClaw'ın kullanılamaz, anahtarsız bir OpenRouter modeli yapılandırmaması için `--set-default` ve `--set-image` canlı yoklamalar gerektirir.
 
-## Modeller kayıt defteri (`models.json`)
+## Model kayıt defteri (`models.json`)
 
-`models.providers` içindeki özel sağlayıcılar, ajan dizini altındaki `models.json` içine yazılır (varsayılan `~/.openclaw/agents/<agentId>/agent/models.json`). `models.mode`, `replace` olarak ayarlanmadığı sürece bu dosya varsayılan olarak birleştirilir.
+`models.providers` içindeki özel sağlayıcılar, agent dizini altında `models.json` dosyasına yazılır (varsayılan `~/.openclaw/agents/<agentId>/agent/models.json`). `models.mode` `replace` olarak ayarlanmadığı sürece bu dosya varsayılan olarak birleştirilir.
 
 <AccordionGroup>
-  <Accordion title="Birleştirme kipi önceliği">
-    Eşleşen sağlayıcı kimlikleri için birleştirme kipi önceliği:
+  <Accordion title="Birleştirme modu önceliği">
+    Eşleşen sağlayıcı kimlikleri için birleştirme modu önceliği:
 
-    - Ajan `models.json` içinde zaten bulunan boş olmayan `baseUrl` kazanır.
-    - Ajan `models.json` içindeki boş olmayan `apiKey`, yalnızca bu sağlayıcı geçerli yapılandırma/auth-profile bağlamında SecretRef tarafından yönetilmiyorsa kazanır.
-    - SecretRef tarafından yönetilen sağlayıcı `apiKey` değerleri, çözümlenmiş sırları kalıcılaştırmak yerine kaynak işaretleyicilerden (`env` ref'leri için `ENV_VAR_NAME`, `file`/`exec` ref'leri için `secretref-managed`) yenilenir.
-    - SecretRef tarafından yönetilen sağlayıcı başlık değerleri, kaynak işaretleyicilerden (`env` ref'leri için `secretref-env:ENV_VAR_NAME`, `file`/`exec` ref'leri için `secretref-managed`) yenilenir.
-    - Boş veya eksik ajan `apiKey`/`baseUrl` değerleri, yapılandırmadaki `models.providers` değerine geri döner.
+    - Agent `models.json` içinde zaten bulunan boş olmayan `baseUrl` kazanır.
+    - Agent `models.json` içindeki boş olmayan `apiKey`, yalnızca bu sağlayıcı mevcut yapılandırma/auth profili bağlamında SecretRef tarafından yönetilmiyorsa kazanır.
+    - SecretRef tarafından yönetilen sağlayıcı `apiKey` değerleri, çözümlenmiş sırları kalıcılaştırmak yerine kaynak işaretleyicilerden (env refleri için `ENV_VAR_NAME`, file/exec refleri için `secretref-managed`) yenilenir.
+    - SecretRef tarafından yönetilen sağlayıcı başlık değerleri kaynak işaretleyicilerden (env refleri için `secretref-env:ENV_VAR_NAME`, file/exec refleri için `secretref-managed`) yenilenir.
+    - Boş veya eksik agent `apiKey`/`baseUrl` değerleri, yapılandırma `models.providers` değerlerine geri döner.
     - Diğer sağlayıcı alanları yapılandırmadan ve normalize edilmiş katalog verilerinden yenilenir.
 
   </Accordion>
 </AccordionGroup>
 
 <Note>
-İşaretleyici kalıcılığı kaynak açısından yetkilidir: OpenClaw, çözümlenmiş çalışma zamanı gizli değerlerinden değil, etkin kaynak yapılandırma anlık görüntüsünden (çözümleme öncesi) işaretleyiciler yazar. Bu, `openclaw agent` gibi komut güdümlü yollar dahil, OpenClaw `models.json` dosyasını her yeniden oluşturduğunda geçerlidir.
+İşaretleyici kalıcılığı kaynak otoritelidir: OpenClaw, işaretleyicileri çözümlenmiş runtime sır değerlerinden değil, etkin kaynak yapılandırma snapshot'ından (çözümleme öncesi) yazar. Bu, `openclaw agent` gibi komutla yürütülen yollar dahil OpenClaw `models.json` dosyasını yeniden oluşturduğunda geçerlidir.
 </Note>
 
 ## İlgili
 
-- [Ajan çalışma zamanları](/tr/concepts/agent-runtimes) — Pi, Codex ve diğer ajan döngüsü çalışma zamanları
-- [Yapılandırma başvurusu](/tr/gateway/config-agents#agent-defaults) — model yapılandırma anahtarları
-- [Görsel üretimi](/tr/tools/image-generation) — görsel model yapılandırması
-- [Model yedeklemesi](/tr/concepts/model-failover) — yedek zincirleri
+- [Agent runtime'ları](/tr/concepts/agent-runtimes) — PI, Codex ve diğer agent döngüsü runtime'ları
+- [Yapılandırma referansı](/tr/gateway/config-agents#agent-defaults) — model yapılandırma anahtarları
+- [Görsel oluşturma](/tr/tools/image-generation) — görsel modeli yapılandırması
+- [Model yük devri](/tr/concepts/model-failover) — yedek zincirleri
 - [Model sağlayıcıları](/tr/concepts/model-providers) — sağlayıcı yönlendirme ve kimlik doğrulama
-- [Müzik üretimi](/tr/tools/music-generation) — müzik model yapılandırması
-- [Video üretimi](/tr/tools/video-generation) — video model yapılandırması
+- [Müzik oluşturma](/tr/tools/music-generation) — müzik modeli yapılandırması
+- [Video oluşturma](/tr/tools/video-generation) — video modeli yapılandırması

@@ -1,45 +1,45 @@
 ---
 read_when:
-    - OpenClaw'dan giden bir sesli arama başlatmak istiyorsunuz
-    - Sesli arama Plugin'ini yapılandırıyor veya geliştiriyorsunuz
-    - Telefon sisteminde gerçek zamanlı ses veya akış transkripsiyonuna ihtiyacınız var
+    - OpenClaw üzerinden giden bir sesli arama yapmak istiyorsunuz
+    - voice-call Plugin'ini yapılandırıyor veya geliştiriyorsunuz
+    - Telefon sistemlerinde gerçek zamanlı sese veya akışlı transkripsiyona ihtiyacınız var
 sidebarTitle: Voice call
-summary: İsteğe bağlı gerçek zamanlı ses ve akış transkripsiyonu ile Twilio, Telnyx veya Plivo üzerinden giden aramalar yapın ve gelen aramaları kabul edin
+summary: Twilio, Telnyx veya Plivo aracılığıyla giden sesli aramalar yapın ve gelen sesli aramaları kabul edin; isteğe bağlı gerçek zamanlı ses ve akış transkripsiyonu desteğiyle
 title: Sesli arama Plugin'i
 x-i18n:
-    generated_at: "2026-04-26T11:38:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:38:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 77b5e4b338b0c39c71accea7065af70fab695c8f34488ba0fbf7023f2f36f377
+    source_hash: 7976b84ce1ee6e29706e595a4a25337632b34a9bb8f7cecdee1d6f833a8ce932
     source_path: plugins/voice-call.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw için bir Plugin aracılığıyla sesli aramalar. Giden bildirimleri,
-çok dönüşlü konuşmaları, tam çift yönlü gerçek zamanlı sesi, akış
-transkripsiyonunu ve izin listesi ilkeleriyle gelen aramaları destekler.
+Bir Plugin aracılığıyla OpenClaw için sesli aramalar. Giden bildirimleri,
+çok turlu konuşmaları, tam çift yönlü gerçek zamanlı sesi, akışlı
+transkripsiyonu ve izin listesi politikalarıyla gelen aramaları destekler.
 
 **Geçerli sağlayıcılar:** `twilio` (Programmable Voice + Media Streams),
 `telnyx` (Call Control v2), `plivo` (Voice API + XML transfer + GetInput
-speech), `mock` (geliştirme/ağ yok).
+speech), `mock` (dev/ağ yok).
 
 <Note>
 Voice Call Plugin'i **Gateway sürecinin içinde** çalışır. Uzak bir
-Gateway kullanıyorsanız, Plugin'i Gateway'i çalıştıran makinede kurup
-yapılandırın, sonra Plugin'in yüklenmesi için Gateway'i yeniden başlatın.
+Gateway kullanıyorsanız, Plugin'i Gateway'i çalıştıran makineye kurup
+yapılandırın, ardından yüklenmesi için Gateway'i yeniden başlatın.
 </Note>
 
 ## Hızlı başlangıç
 
 <Steps>
-  <Step title="Plugin'i kurun">
+  <Step title="Plugin'i yükleyin">
     <Tabs>
-      <Tab title="npm'den (önerilen)">
+      <Tab title="npm'den">
         ```bash
         openclaw plugins install @openclaw/voice-call
         ```
       </Tab>
-      <Tab title="Yerel klasörden (geliştirme)">
+      <Tab title="Yerel klasörden (dev)">
         ```bash
         PLUGIN_SRC=./path/to/local/voice-call-plugin
         openclaw plugins install "$PLUGIN_SRC"
@@ -48,35 +48,38 @@ yapılandırın, sonra Plugin'in yüklenmesi için Gateway'i yeniden başlatın.
       </Tab>
     </Tabs>
 
-    Sonrasında Plugin'in yüklenmesi için Gateway'i yeniden başlatın.
+    npm, OpenClaw'a ait paketi kullanımdan kaldırılmış olarak bildirirse bu paket sürümü
+    daha eski bir harici paket serisindendir; daha yeni bir npm paketi yayımlanana kadar
+    güncel paketlenmiş bir OpenClaw derlemesi veya yerel klasör yolunu kullanın.
+
+    Ardından Plugin'in yüklenmesi için Gateway'i yeniden başlatın.
 
   </Step>
-  <Step title="Sağlayıcıyı ve Webhook'u yapılandırın">
-    Yapılandırmayı `plugins.entries.voice-call.config` altında ayarlayın
-    (tam şekil için aşağıdaki [Configuration](#configuration) bölümüne bakın).
-    En azından şunlar gerekir:
-    `provider`, sağlayıcı kimlik bilgileri, `fromNumber` ve herkese
-    açık şekilde erişilebilen bir Webhook URL'si.
+  <Step title="Sağlayıcıyı ve webhook'u yapılandırın">
+    Yapılandırmayı `plugins.entries.voice-call.config` altında ayarlayın (tam yapı için
+    aşağıdaki [Yapılandırma](#configuration) bölümüne bakın). En az şunlar gerekir:
+    `provider`, sağlayıcı kimlik bilgileri, `fromNumber` ve herkesçe erişilebilir
+    bir webhook URL'si.
   </Step>
   <Step title="Kurulumu doğrulayın">
     ```bash
     openclaw voicecall setup
     ```
 
-    Varsayılan çıktı sohbet günlüklerinde ve terminallerde okunabilir.
-    Plugin etkinleştirmesini, sağlayıcı kimlik bilgilerini, Webhook
-    erişimini ve yalnızca bir ses modunun (`streaming` veya `realtime`)
-    etkin olduğunu kontrol eder. Betikler için `--json` kullanın.
+    Varsayılan çıktı sohbet günlüklerinde ve terminallerde okunabilir. Plugin'in
+    etkinleştirilmesini, sağlayıcı kimlik bilgilerini, webhook erişimini ve yalnızca
+    bir ses modunun (`streaming` veya `realtime`) etkin olduğunu denetler. Betikler için
+    `--json` kullanın.
 
   </Step>
-  <Step title="Smoke test">
+  <Step title="Smoke testi">
     ```bash
     openclaw voicecall smoke
     openclaw voicecall smoke --to "+15555550123"
     ```
 
-    Her ikisi de varsayılan olarak kuru çalıştırmadır. Kısa bir giden
-    bildirim aramasını gerçekten başlatmak için `--yes` ekleyin:
+    İkisi de varsayılan olarak deneme çalıştırmasıdır. Kısa bir giden bildirim
+    aramasını gerçekten başlatmak için `--yes` ekleyin:
 
     ```bash
     openclaw voicecall smoke --to "+15555550123" --yes
@@ -86,20 +89,22 @@ yapılandırın, sonra Plugin'in yüklenmesi için Gateway'i yeniden başlatın.
 </Steps>
 
 <Warning>
-Twilio, Telnyx ve Plivo için kurulumun **herkese açık bir Webhook URL'sine**
-çözülmesi gerekir.
-`publicUrl`, tünel URL'si, Tailscale URL'si veya sunma geri dönüşü
-loopback'e ya da özel ağ alanına çözülürse, kurulum taşıyıcı Webhook'larını
-alamayan bir sağlayıcıyı başlatmak yerine başarısız olur.
+Twilio, Telnyx ve Plivo için kurulumun **herkesçe erişilebilir bir webhook URL'sine**
+çözülmesi gerekir. `publicUrl`, tünel URL'si, Tailscale URL'si veya sunma geri dönüşü
+loopback ya da özel ağ alanına çözümlenirse kurulum, taşıyıcı webhook'larını alamayacak
+bir sağlayıcı başlatmak yerine başarısız olur.
 </Warning>
 
 ## Yapılandırma
 
-`enabled: true` ise ancak seçilen sağlayıcı için kimlik bilgileri yoksa,
-Gateway başlangıcı eksik anahtarları içeren kurulumu tamamlanmamış bir uyarı
-günlüğe yazar ve çalışma zamanını başlatmayı atlar. Komutlar, RPC çağrıları
-ve ajan araçları kullanıldığında yine de tam olarak eksik sağlayıcı
-yapılandırmasını döndürür.
+`enabled: true` ise ancak seçilen sağlayıcının kimlik bilgileri eksikse,
+Gateway başlangıcı eksik anahtarlarla birlikte kurulum eksik uyarısı günlüğe yazar ve
+çalışma zamanını başlatmayı atlar. Komutlar, RPC çağrıları ve ajan araçları
+kullanıldığında yine de eksik sağlayıcı yapılandırmasını aynen döndürür.
+
+<Note>
+Voice-call kimlik bilgileri SecretRefs kabul eder. `plugins.entries.voice-call.config.twilio.authToken` ve `plugins.entries.voice-call.config.tts.providers.*.apiKey`, standart SecretRef yüzeyi üzerinden çözümlenir; bkz. [SecretRef kimlik bilgisi yüzeyi](/tr/reference/secretref-credential-surface).
+</Note>
 
 ```json5
 {
@@ -108,8 +113,8 @@ yapılandırmasını döndürür.
       "voice-call": {
         enabled: true,
         config: {
-          provider: "twilio", // veya "telnyx" | "plivo" | "mock"
-          fromNumber: "+15550001234", // veya Twilio için TWILIO_FROM_NUMBER
+          provider: "twilio", // or "telnyx" | "plivo" | "mock"
+          fromNumber: "+15550001234", // or TWILIO_FROM_NUMBER for Twilio
           toNumber: "+15550005678",
 
           twilio: {
@@ -119,8 +124,8 @@ yapılandırmasını döndürür.
           telnyx: {
             apiKey: "...",
             connectionId: "...",
-            // Mission Control Portal'dan Telnyx Webhook herkese açık anahtarı
-            // (Base64; TELNYX_PUBLIC_KEY ile de ayarlanabilir).
+            // Telnyx webhook public key from the Mission Control Portal
+            // (Base64; can also be set via TELNYX_PUBLIC_KEY).
             publicKey: "...",
           },
           plivo: {
@@ -128,19 +133,19 @@ yapılandırmasını döndürür.
             authToken: "...",
           },
 
-          // Webhook sunucusu
+          // Webhook server
           serve: {
             port: 3334,
             path: "/voice/webhook",
           },
 
-          // Webhook güvenliği (tüneller/proxy'ler için önerilir)
+          // Webhook security (recommended for tunnels/proxies)
           webhookSecurity: {
             allowedHosts: ["voice.example.com"],
             trustedProxyIPs: ["100.64.0.1"],
           },
 
-          // Herkese açık sunum (birini seçin)
+          // Public exposure (pick one)
           // publicUrl: "https://example.ngrok.app/voice/webhook",
           // tunnel: { provider: "ngrok" },
           // tailscale: { mode: "funnel", path: "/voice/webhook" },
@@ -149,8 +154,8 @@ yapılandırmasını döndürür.
             defaultMode: "notify", // notify | conversation
           },
 
-          streaming: { enabled: true /* Akış transkripsiyonu bölümüne bakın */ },
-          realtime: { enabled: false /* Gerçek zamanlı ses bölümüne bakın */ },
+          streaming: { enabled: true /* see Streaming transcription */ },
+          realtime: { enabled: false /* see Realtime voice */ },
         },
       },
     },
@@ -159,30 +164,29 @@ yapılandırmasını döndürür.
 ```
 
 <AccordionGroup>
-  <Accordion title="Sağlayıcı sunumu ve güvenlik notları">
-    - Twilio, Telnyx ve Plivo'nun tümü **herkese açık şekilde erişilebilir** bir Webhook URL'si gerektirir.
-    - `mock`, yerel bir geliştirme sağlayıcısıdır (ağ çağrısı yoktur).
-    - Telnyx, `skipSignatureVerification` true değilse `telnyx.publicKey` (veya `TELNYX_PUBLIC_KEY`) gerektirir.
-    - `skipSignatureVerification` yalnızca yerel testler içindir.
-    - ngrok ücretsiz katmanda `publicUrl` değerini tam ngrok URL'si olarak ayarlayın; imza doğrulaması her zaman zorunludur.
-    - `tunnel.allowNgrokFreeTierLoopbackBypass: true`, Twilio Webhook'larına **yalnızca** `tunnel.provider="ngrok"` ve `serve.bind` loopback olduğunda (ngrok yerel aracısı) geçersiz imzalarla izin verir. Yalnızca yerel geliştirme içindir.
-    - Ngrok ücretsiz katman URL'leri değişebilir veya araya giren davranış ekleyebilir; `publicUrl` kayarsa Twilio imzaları başarısız olur. Üretimde kararlı bir alan adı veya bir Tailscale funnel tercih edin.
+  <Accordion title="Sağlayıcı erişimi ve güvenlik notları">
+    - Twilio, Telnyx ve Plivo'nun tümü **herkesçe erişilebilir** bir webhook URL'si gerektirir.
+    - `mock`, yerel dev sağlayıcısıdır (ağ çağrısı yoktur).
+    - Telnyx, `skipSignatureVerification` true olmadığı sürece `telnyx.publicKey` (veya `TELNYX_PUBLIC_KEY`) gerektirir.
+    - `skipSignatureVerification` yalnızca yerel test içindir.
+    - ngrok ücretsiz katmanında `publicUrl` değerini tam ngrok URL'sine ayarlayın; imza doğrulama her zaman zorunlu tutulur.
+    - `tunnel.allowNgrokFreeTierLoopbackBypass: true`, geçersiz imzalı Twilio webhook'larına **yalnızca** `tunnel.provider="ngrok"` ve `serve.bind` loopback olduğunda izin verir (ngrok yerel ajanı). Yalnızca yerel dev.
+    - Ngrok ücretsiz katman URL'leri değişebilir veya ara sayfa davranışı ekleyebilir; `publicUrl` kayarsa Twilio imzaları başarısız olur. Üretim: kararlı bir alan adı veya Tailscale funnel tercih edin.
 
   </Accordion>
-  <Accordion title="Akış bağlantı sınırları">
-    - `streaming.preStartTimeoutMs`, geçerli bir `start` çerçevesi hiç göndermeyen soketleri kapatır.
-    - `streaming.maxPendingConnections`, kimliği doğrulanmamış başlangıç öncesi toplam soket sayısını sınırlar.
-    - `streaming.maxPendingConnectionsPerIp`, kaynak IP başına kimliği doğrulanmamış başlangıç öncesi soketleri sınırlar.
-    - `streaming.maxConnections`, toplam açık medya akışı soketi sayısını (bekleyen + etkin) sınırlar.
+  <Accordion title="Akış bağlantısı sınırları">
+    - `streaming.preStartTimeoutMs`, hiçbir zaman geçerli bir `start` karesi göndermeyen soketleri kapatır.
+    - `streaming.maxPendingConnections`, kimliği doğrulanmamış başlatma öncesi soketlerin toplamını sınırlar.
+    - `streaming.maxPendingConnectionsPerIp`, kaynak IP başına kimliği doğrulanmamış başlatma öncesi soketleri sınırlar.
+    - `streaming.maxConnections`, toplam açık medya akışı soketlerini sınırlar (bekleyen + etkin).
 
   </Accordion>
   <Accordion title="Eski yapılandırma geçişleri">
     `provider: "log"`, `twilio.from` veya eski
-    `streaming.*` OpenAI anahtarlarını kullanan daha eski yapılandırmalar,
-    `openclaw doctor --fix` tarafından yeniden yazılır.
-    Çalışma zamanı geri dönüşü şimdilik eski voice-call anahtarlarını kabul etmeye devam eder,
-    ancak yeniden yazma yolu `openclaw doctor --fix` komutudur ve uyumluluk katmanı
-    geçicidir.
+    `streaming.*` OpenAI anahtarlarını kullanan eski yapılandırmalar `openclaw doctor --fix`
+    tarafından yeniden yazılır. Çalışma zamanı geri dönüşü eski voice-call anahtarlarını
+    şimdilik hâlâ kabul eder, ancak yeniden yazma yolu `openclaw doctor --fix` ve
+    uyumluluk shim'i geçicidir.
 
     Otomatik geçirilen akış anahtarları:
 
@@ -197,41 +201,40 @@ yapılandırmasını döndürür.
 
 ## Gerçek zamanlı sesli konuşmalar
 
-`realtime`, canlı arama sesi için tam çift yönlü bir gerçek zamanlı ses
-sağlayıcısı seçer. Bu, sesi yalnızca gerçek zamanlı transkripsiyon
-sağlayıcılarına ileten `streaming` seçeneğinden ayrıdır.
+`realtime`, canlı arama sesi için tam çift yönlü bir gerçek zamanlı ses sağlayıcısı seçer.
+Bu, sesi yalnızca gerçek zamanlı transkripsiyon sağlayıcılarına ileten `streaming`den ayrıdır.
 
 <Warning>
-`realtime.enabled`, `streaming.enabled` ile birlikte kullanılamaz.
-Arama başına bir ses modu seçin.
+`realtime.enabled`, `streaming.enabled` ile birleştirilemez. Arama başına bir
+ses modu seçin.
 </Warning>
 
 Geçerli çalışma zamanı davranışı:
 
 - `realtime.enabled`, Twilio Media Streams için desteklenir.
-- `realtime.provider` isteğe bağlıdır. Ayarlanmazsa Voice Call, kaydedilmiş ilk gerçek zamanlı ses sağlayıcısını kullanır.
-- Paketlenmiş gerçek zamanlı ses sağlayıcıları: sağlayıcı Plugin'leri tarafından kaydedilen Google Gemini Live (`google`) ve OpenAI (`openai`).
-- Sağlayıcıya ait ham yapılandırma `realtime.providers.<providerId>` altında yer alır.
-- Voice Call, paylaşılan `openclaw_agent_consult` gerçek zamanlı aracını varsayılan olarak sunar. Arayan kişi daha derin akıl yürütme, güncel bilgi veya normal OpenClaw araçları istediğinde gerçek zamanlı model bunu çağırabilir.
-- `realtime.provider` kaydedilmemiş bir sağlayıcıyı işaret ediyorsa veya hiç gerçek zamanlı ses sağlayıcısı kaydedilmemişse, Voice Call bir uyarı günlüğe yazar ve tüm Plugin'i başarısız yapmak yerine gerçek zamanlı medyayı atlar.
-- Consult oturum anahtarları, mümkün olduğunda mevcut ses oturumunu yeniden kullanır; ardından arama sırasında takip consult çağrılarının bağlamı koruması için arayan/aranan telefon numarasına geri döner.
+- `realtime.provider` isteğe bağlıdır. Ayarlanmazsa Voice Call, kayıtlı ilk gerçek zamanlı ses sağlayıcısını kullanır.
+- Birlikte gelen gerçek zamanlı ses sağlayıcıları: Google Gemini Live (`google`) ve OpenAI (`openai`), kendi sağlayıcı Plugin'leri tarafından kaydedilir.
+- Sağlayıcıya ait ham yapılandırma `realtime.providers.<providerId>` altında bulunur.
+- Voice Call, paylaşılan `openclaw_agent_consult` gerçek zamanlı aracını varsayılan olarak sunar. Arayan daha derin akıl yürütme, güncel bilgi veya normal OpenClaw araçları istediğinde gerçek zamanlı model bunu çağırabilir.
+- `realtime.provider` kayıtlı olmayan bir sağlayıcıyı gösterirse veya hiç gerçek zamanlı ses sağlayıcısı kayıtlı değilse Voice Call, tüm Plugin'i başarısız kılmak yerine bir uyarı günlüğe yazar ve gerçek zamanlı medyayı atlar.
+- Danışma oturumu anahtarları, mevcut olduğunda var olan ses oturumunu yeniden kullanır; ardından arama sırasında takip danışma çağrılarının bağlamı koruması için arayan/aranan telefon numarasına geri döner.
 
-### Araç ilkesi
+### Araç politikası
 
-`realtime.toolPolicy`, consult çalıştırmasını denetler:
+`realtime.toolPolicy`, danışma çalıştırmasını denetler:
 
-| İlke             | Davranış                                                                                                                                |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `safe-read-only` | Consult aracını sunar ve normal ajanı `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` ve `memory_get` ile sınırlar. |
-| `owner`          | Consult aracını sunar ve normal ajanın olağan ajan araç ilkesini kullanmasına izin verir.                                              |
-| `none`           | Consult aracını sunmaz. Özel `realtime.tools` yine de gerçek zamanlı sağlayıcıya iletilir.                                             |
+| Politika         | Davranış                                                                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `safe-read-only` | Danışma aracını sunar ve normal ajanı `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` ve `memory_get` ile sınırlar. |
+| `owner`          | Danışma aracını sunar ve normal ajanın normal ajan araç politikasını kullanmasına izin verir.                                                      |
+| `none`           | Danışma aracını sunmaz. Özel `realtime.tools` yine de gerçek zamanlı sağlayıcıya geçirilir.                               |
 
 ### Gerçek zamanlı sağlayıcı örnekleri
 
 <Tabs>
   <Tab title="Google Gemini Live">
-    Varsayılanlar: API anahtarı `realtime.providers.google.apiKey`,
-    `GEMINI_API_KEY` veya `GOOGLE_GENERATIVE_AI_API_KEY`; model
+    Varsayılanlar: `realtime.providers.google.apiKey`,
+    `GEMINI_API_KEY` veya `GOOGLE_GENERATIVE_AI_API_KEY` üzerinden API anahtarı; model
     `gemini-2.5-flash-native-audio-preview-12-2025`; ses `Kore`.
 
     ```json5
@@ -246,7 +249,7 @@ Geçerli çalışma zamanı davranışı:
               realtime: {
                 enabled: true,
                 provider: "google",
-                instructions: "Kısa konuş. Daha derin araçları kullanmadan önce openclaw_agent_consult çağır.",
+                instructions: "Speak briefly. Call openclaw_agent_consult before using deeper tools.",
                 toolPolicy: "safe-read-only",
                 providers: {
                   google: {
@@ -287,23 +290,21 @@ Geçerli çalışma zamanı davranışı:
   </Tab>
 </Tabs>
 
-Sağlayıcıya özgü gerçek zamanlı ses seçenekleri için
-[Google provider](/tr/providers/google) ve
-[OpenAI provider](/tr/providers/openai) belgelerine bakın.
+Sağlayıcıya özgü gerçek zamanlı ses seçenekleri için [Google sağlayıcısı](/tr/providers/google) ve
+[OpenAI sağlayıcısı](/tr/providers/openai) bölümlerine bakın.
 
-## Akış transkripsiyonu
+## Akışlı transkripsiyon
 
-`streaming`, canlı arama sesi için bir gerçek zamanlı transkripsiyon
-sağlayıcısı seçer.
+`streaming`, canlı arama sesi için gerçek zamanlı bir transkripsiyon sağlayıcısı seçer.
 
 Geçerli çalışma zamanı davranışı:
 
-- `streaming.provider` isteğe bağlıdır. Ayarlanmazsa Voice Call, kaydedilmiş ilk gerçek zamanlı transkripsiyon sağlayıcısını kullanır.
-- Paketlenmiş gerçek zamanlı transkripsiyon sağlayıcıları: sağlayıcı Plugin'leri tarafından kaydedilen Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`) ve xAI (`xai`).
-- Sağlayıcıya ait ham yapılandırma `streaming.providers.<providerId>` altında yer alır.
-- `streaming.provider` kaydedilmemiş bir sağlayıcıyı işaret ediyorsa veya hiçbiri kaydedilmemişse, Voice Call bir uyarı günlüğe yazar ve tüm Plugin'i başarısız yapmak yerine medya akışını atlar.
+- `streaming.provider` isteğe bağlıdır. Ayarlanmazsa Voice Call, kayıtlı ilk gerçek zamanlı transkripsiyon sağlayıcısını kullanır.
+- Birlikte gelen gerçek zamanlı transkripsiyon sağlayıcıları: Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`) ve xAI (`xai`), kendi sağlayıcı Plugin'leri tarafından kaydedilir.
+- Sağlayıcıya ait ham yapılandırma `streaming.providers.<providerId>` altında bulunur.
+- `streaming.provider` kayıtlı olmayan bir sağlayıcıyı gösterirse veya hiçbiri kayıtlı değilse Voice Call, tüm Plugin'i başarısız kılmak yerine bir uyarı günlüğe yazar ve medya akışını atlar.
 
-### Akış sağlayıcısı örnekleri
+### Akış sağlayıcı örnekleri
 
 <Tabs>
   <Tab title="OpenAI">
@@ -323,7 +324,7 @@ Geçerli çalışma zamanı davranışı:
                 streamPath: "/voice/stream",
                 providers: {
                   openai: {
-                    apiKey: "sk-...", // OPENAI_API_KEY ayarlıysa isteğe bağlı
+                    apiKey: "sk-...", // optional if OPENAI_API_KEY is set
                     model: "gpt-4o-transcribe",
                     silenceDurationMs: 800,
                     vadThreshold: 0.5,
@@ -355,7 +356,7 @@ Geçerli çalışma zamanı davranışı:
                 streamPath: "/voice/stream",
                 providers: {
                   xai: {
-                    apiKey: "${XAI_API_KEY}", // XAI_API_KEY ayarlıysa isteğe bağlı
+                    apiKey: "${XAI_API_KEY}", // optional if XAI_API_KEY is set
                     endpointingMs: 800,
                     language: "en",
                   },
@@ -371,11 +372,9 @@ Geçerli çalışma zamanı davranışı:
   </Tab>
 </Tabs>
 
-## Aramalar için TTS
+## Çağrılar için TTS
 
-Voice Call, aramalarda akış konuşması için çekirdek `messages.tts`
-yapılandırmasını kullanır. Bunu Plugin yapılandırması altında
-**aynı şekille** geçersiz kılabilirsiniz — `messages.tts` ile derinlemesine birleştirilir.
+Voice Call, çağrılarda akış konuşması için çekirdek `messages.tts` yapılandırmasını kullanır. Bunu Plugin yapılandırmasının altında **aynı şekille** geçersiz kılabilirsiniz; `messages.tts` ile derin birleştirme yapılır.
 
 ```json5
 {
@@ -392,22 +391,22 @@ yapılandırmasını kullanır. Bunu Plugin yapılandırması altında
 ```
 
 <Warning>
-**Microsoft speech sesli aramalar için yok sayılır.** Telefon sesi PCM gerektirir;
-mevcut Microsoft aktarımı telefon için PCM çıktısını sunmaz.
+**Microsoft konuşma, sesli çağrılar için yoksayılır.** Telefon sesi PCM gerektirir;
+mevcut Microsoft aktarımı telefon PCM çıktısını sunmaz.
 </Warning>
 
 Davranış notları:
 
-- Plugin yapılandırması içindeki eski `tts.<provider>` anahtarları (`openai`, `elevenlabs`, `microsoft`, `edge`) `openclaw doctor --fix` ile onarılır; kaydedilmiş yapılandırma `tts.providers.<provider>` kullanmalıdır.
-- Twilio medya akışı etkin olduğunda çekirdek TTS kullanılır; aksi halde aramalar sağlayıcının yerel seslerine geri döner.
-- Bir Twilio medya akışı zaten etkinse, Voice Call `TwiML <Say>` kullanımına geri dönmez. Bu durumda telefon TTS kullanılamıyorsa, oynatma isteği iki oynatma yolunu karıştırmak yerine başarısız olur.
-- Telefon TTS ikincil bir sağlayıcıya geri düştüğünde, Voice Call hata ayıklama için sağlayıcı zinciriyle (`from`, `to`, `attempts`) birlikte bir uyarı günlüğe yazar.
-- Twilio barge-in veya akış sonlandırma bekleyen TTS kuyruğunu temizlediğinde, kuyruktaki oynatma istekleri arayanların oynatma tamamlanmasını bekleyip takılı kalması yerine sonuçlanır.
+- Plugin yapılandırması içindeki eski `tts.<provider>` anahtarları (`openai`, `elevenlabs`, `microsoft`, `edge`) `openclaw doctor --fix` tarafından onarılır; commit edilen yapılandırma `tts.providers.<provider>` kullanmalıdır.
+- Çekirdek TTS, Twilio medya akışı etkinleştirildiğinde kullanılır; aksi halde çağrılar sağlayıcıya özgü seslere geri döner.
+- Bir Twilio medya akışı zaten etkinse, Voice Call TwiML `<Say>` kullanımına geri dönmez. Bu durumda telefon TTS kullanılamıyorsa, oynatma isteği iki oynatma yolunu karıştırmak yerine başarısız olur.
+- Telefon TTS ikincil bir sağlayıcıya geri döndüğünde, Voice Call hata ayıklama için sağlayıcı zinciriyle (`from`, `to`, `attempts`) bir uyarı günlüğe yazar.
+- Twilio araya girme veya akış sonlandırma bekleyen TTS kuyruğunu temizlediğinde, kuyruktaki oynatma istekleri oynatma tamamlanmasını bekleyen arayanları askıda bırakmak yerine sonuçlanır.
 
 ### TTS örnekleri
 
 <Tabs>
-  <Tab title="Yalnızca çekirdek TTS">
+  <Tab title="Core TTS only">
 ```json5
 {
   messages: {
@@ -421,7 +420,7 @@ Davranış notları:
 }
 ```
   </Tab>
-  <Tab title="ElevenLabs ile geçersiz kıl (yalnızca aramalar)">
+  <Tab title="Override to ElevenLabs (calls only)">
 ```json5
 {
   plugins: {
@@ -445,7 +444,7 @@ Davranış notları:
 }
 ```
   </Tab>
-  <Tab title="OpenAI model geçersiz kılması (derin birleştirme)">
+  <Tab title="OpenAI model override (deep-merge)">
 ```json5
 {
   plugins: {
@@ -469,77 +468,66 @@ Davranış notları:
   </Tab>
 </Tabs>
 
-## Gelen aramalar
+## Gelen çağrılar
 
-Gelen arama ilkesi varsayılan olarak `disabled` durumundadır. Gelen aramaları etkinleştirmek için şunu ayarlayın:
+Gelen ilke varsayılan olarak `disabled` değerindedir. Gelen çağrıları etkinleştirmek için şunu ayarlayın:
 
 ```json5
 {
   inboundPolicy: "allowlist",
   allowFrom: ["+15550001234"],
-  inboundGreeting: "Merhaba! Nasıl yardımcı olabilirim?",
+  inboundGreeting: "Hello! How can I help?",
 }
 ```
 
 <Warning>
-`inboundPolicy: "allowlist"` düşük güvenceli bir arayan kimliği
-elemesidir. Plugin, sağlayıcının verdiği `From` değerini normalize eder ve
-bunu `allowFrom` ile karşılaştırır. Webhook doğrulaması sağlayıcı teslimini ve
-yük bütünlüğünü doğrular, ancak PSTN/VoIP arayan numara
-sahipliğini **kanıtlamaz**. `allowFrom` değerini güçlü arayan kimliği değil,
-arayan kimliği filtrelemesi olarak değerlendirin.
+`inboundPolicy: "allowlist"` düşük güvence sağlayan bir arayan kimliği filtresidir. Plugin, sağlayıcı tarafından sağlanan `From` değerini normalleştirir ve `allowFrom` ile karşılaştırır. Webhook doğrulaması sağlayıcı teslimini ve yük bütünlüğünü doğrular, ancak PSTN/VoIP arayan numarası sahipliğini **kanıtlamaz**. `allowFrom` değerini güçlü arayan kimliği olarak değil, arayan kimliği filtreleme olarak ele alın.
 </Warning>
 
 Otomatik yanıtlar ajan sistemini kullanır. `responseModel`,
-`responseSystemPrompt` ve `responseTimeoutMs` ile ayar yapın.
+`responseSystemPrompt` ve `responseTimeoutMs` ile ayarlayın.
 
-### Sesli çıktı sözleşmesi
+### Sözlü çıktı sözleşmesi
 
-Otomatik yanıtlar için Voice Call, sistem istemine katı bir sesli çıktı
-sözleşmesi ekler:
+Otomatik yanıtlar için Voice Call, sistem istemine katı bir sözlü çıktı sözleşmesi ekler:
 
 ```text
 {"spoken":"..."}
 ```
 
-Voice Call konuşma metnini savunmacı şekilde çıkarır:
+Voice Call konuşma metnini savunmalı biçimde çıkarır:
 
-- Akıl yürütme/hata içeriği olarak işaretlenmiş yükleri yok sayar.
-- Doğrudan JSON, çitlenmiş JSON veya satır içi `"spoken"` anahtarlarını ayrıştırır.
+- Akıl yürütme/hata içeriği olarak işaretlenen yükleri yoksayar.
+- Doğrudan JSON, çit içine alınmış JSON veya satır içi `"spoken"` anahtarlarını ayrıştırır.
 - Düz metne geri döner ve olası planlama/meta giriş paragraflarını kaldırır.
 
-Bu, sesli oynatmanın arayana dönük metne odaklanmasını sağlar ve
-planlama metninin sese sızmasını önler.
+Bu, sözlü oynatmanın arayana yönelik metne odaklanmasını sağlar ve planlama metninin sese sızmasını önler.
 
 ### Konuşma başlatma davranışı
 
-Giden `conversation` aramaları için ilk mesaj işleme, canlı
-oynatma durumuna bağlıdır:
+Giden `conversation` çağrıları için ilk mesaj işleme canlı oynatma durumuna bağlıdır:
 
-- Barge-in kuyruk temizleme ve otomatik yanıt yalnızca ilk karşılama aktif olarak konuşulurken bastırılır.
-- İlk oynatma başarısız olursa arama `listening` durumuna döner ve ilk mesaj yeniden deneme için kuyrukta kalır.
-- Twilio akışı için ilk oynatma, ek gecikme olmadan akış bağlantısında başlar.
-- Barge-in etkin oynatmayı durdurur ve kuyruktaki ancak henüz oynatılmayan Twilio TTS girdilerini temizler. Temizlenen girdiler atlandı olarak çözülür, böylece takip yanıt mantığı asla çalınmayacak sesi beklemeden devam edebilir.
-- Gerçek zamanlı sesli konuşmalar, gerçek zamanlı akışın kendi açılış dönüşünü kullanır. Voice Call, bu ilk mesaj için eski `<Say>` TwiML güncellemesi göndermez; böylece giden `<Connect><Stream>` oturumları bağlı kalır.
+- Araya girme kuyruğu temizleme ve otomatik yanıt yalnızca ilk karşılama etkin olarak konuşulurken bastırılır.
+- İlk oynatma başarısız olursa, çağrı `listening` durumuna döner ve ilk mesaj yeniden deneme için kuyrukta kalır.
+- Twilio akışı için ilk oynatma, akış bağlantısında ek gecikme olmadan başlar.
+- Araya girme etkin oynatmayı iptal eder ve kuyrukta olan ancak henüz oynatılmayan Twilio TTS girişlerini temizler. Temizlenen girişler atlanmış olarak çözülür, böylece takip yanıt mantığı hiç oynatılmayacak sesi beklemeden devam edebilir.
+- Gerçek zamanlı sesli konuşmalar, gerçek zamanlı akışın kendi açılış sırasını kullanır. Voice Call, bu ilk mesaj için eski bir `<Say>` TwiML güncellemesi göndermez, bu nedenle giden `<Connect><Stream>` oturumları bağlı kalır.
 
-### Twilio akış bağlantı kesilme toleransı
+### Twilio akış bağlantı kesme toleransı
 
-Bir Twilio medya akışının bağlantısı kesildiğinde Voice Call, aramayı
-otomatik sonlandırmadan önce **2000 ms** bekler:
+Bir Twilio medya akışının bağlantısı kesildiğinde, Voice Call çağrıyı otomatik sonlandırmadan önce **2000 ms** bekler:
 
-- Akış bu pencere sırasında yeniden bağlanırsa otomatik sonlandırma iptal edilir.
-- Tolerans süresinden sonra hiçbir akış yeniden kaydolmazsa, takılı etkin aramaları önlemek için arama sonlandırılır.
+- Akış bu süre içinde yeniden bağlanırsa, otomatik sonlandırma iptal edilir.
+- Tolerans süresinden sonra hiçbir akış yeniden kaydolmazsa, takılı kalmış etkin çağrıları önlemek için çağrı sonlandırılır.
 
-## Eski arama temizleyicisi
+## Eski çağrı temizleyici
 
-Hiçbir terminal Webhook'u almayan aramaları sonlandırmak için
-`staleCallReaperSeconds` kullanın (örneğin, hiç tamamlanmayan
-bildirim modlu aramalar). Varsayılan değer `0`'dır (devre dışı).
+Hiçbir zaman terminal Webhook almayan çağrıları sonlandırmak için `staleCallReaperSeconds` kullanın (örneğin, hiç tamamlanmayan bildirim modu çağrıları). Varsayılan değer `0` (devre dışı) şeklindedir.
 
 Önerilen aralıklar:
 
-- **Üretim:** bildirim tarzı akışlar için `120`–`300` saniye.
-- Normal aramaların bitmesini sağlamak için bu değeri **`maxDurationSeconds` değerinden yüksek** tutun. İyi bir başlangıç noktası `maxDurationSeconds + 30–60` saniyedir.
+- **Üretim:** Bildirim tarzı akışlar için `120`–`300` saniye.
+- Normal çağrıların tamamlanabilmesi için bu değeri **`maxDurationSeconds` değerinden yüksek** tutun. İyi bir başlangıç noktası `maxDurationSeconds + 30–60` saniyedir.
 
 ```json5
 {
@@ -558,28 +546,26 @@ bildirim modlu aramalar). Varsayılan değer `0`'dır (devre dışı).
 
 ## Webhook güvenliği
 
-Bir proxy veya tünel Gateway'in önünde durduğunda, Plugin
-imza doğrulaması için herkese açık URL'yi yeniden oluşturur. Bu seçenekler,
-hangi iletilmiş başlıklara güvenileceğini denetler:
+Gateway önünde bir proxy veya tünel bulunduğunda, Plugin imza doğrulaması için genel URL'yi yeniden oluşturur. Bu seçenekler hangi iletilen başlıklara güvenileceğini denetler:
 
 <ParamField path="webhookSecurity.allowedHosts" type="string[]">
-  İletme başlıklarındaki ana makineleri izin listesine alın.
+  İletme başlıklarından gelen ana makineleri izin listesine alır.
 </ParamField>
 <ParamField path="webhookSecurity.trustForwardingHeaders" type="boolean">
-  İzin listesi olmadan iletilmiş başlıklara güvenin.
+  İzin listesi olmadan iletilen başlıklara güvenir.
 </ParamField>
 <ParamField path="webhookSecurity.trustedProxyIPs" type="string[]">
-  İstek uzak IP'si listedekilerle eşleştiğinde yalnızca iletilmiş başlıklara güvenin.
+  Yalnızca istek uzak IP'si listeyle eşleştiğinde iletilen başlıklara güvenir.
 </ParamField>
 
 Ek korumalar:
 
-- Webhook **tekrar oynatma koruması** Twilio ve Plivo için etkindir. Yeniden oynatılmış geçerli Webhook istekleri onaylanır ama yan etkiler için atlanır.
-- Twilio konuşma dönüşleri `<Gather>` geri çağrılarında dönüş başına bir token içerir; bu nedenle eski/yeniden oynatılmış konuşma geri çağrıları daha yeni bekleyen bir transkript dönüşünü karşılayamaz.
-- Kimliği doğrulanmamış Webhook istekleri, sağlayıcının gerekli imza başlıkları eksikse gövde okunmadan önce reddedilir.
-- voice-call Webhook'u, imza doğrulamasından önce paylaşılan ön kimlik doğrulama gövde profilini (64 KB / 5 saniye) ve IP başına işlemde üst sınırı kullanır.
+- Webhook **yeniden oynatma koruması** Twilio ve Plivo için etkindir. Yeniden oynatılan geçerli Webhook istekleri onaylanır ancak yan etkiler için atlanır.
+- Twilio konuşma sıraları `<Gather>` geri çağrılarında sıra başına bir belirteç içerir, böylece eski/yeniden oynatılan konuşma geri çağrıları daha yeni bekleyen bir transkript sırasını karşılayamaz.
+- Kimliği doğrulanmamış Webhook istekleri, sağlayıcının gerekli imza başlıkları eksik olduğunda gövde okumalarından önce reddedilir.
+- voice-call Webhook'u, imza doğrulamasından önce paylaşılan ön kimlik doğrulama gövde profilini (64 KB / 5 saniye) ve IP başına eşzamanlı sınırı kullanır.
 
-Kararlı bir herkese açık ana makine ile örnek:
+Kararlı bir genel ana makineyle örnek:
 
 ```json5
 {
@@ -601,29 +587,27 @@ Kararlı bir herkese açık ana makine ile örnek:
 ## CLI
 
 ```bash
-openclaw voicecall call --to "+15555550123" --message "OpenClaw'dan merhaba"
-openclaw voicecall start --to "+15555550123"   # call için takma ad
-openclaw voicecall continue --call-id <id> --message "Sorunuz var mı?"
-openclaw voicecall speak --call-id <id> --message "Bir dakika"
+openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
+openclaw voicecall start --to "+15555550123"   # alias for call
+openclaw voicecall continue --call-id <id> --message "Any questions?"
+openclaw voicecall speak --call-id <id> --message "One moment"
 openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 openclaw voicecall status --call-id <id>
 openclaw voicecall tail
-openclaw voicecall latency                      # günlüklerden dönüş gecikmesini özetle
+openclaw voicecall latency                      # summarize turn latency from logs
 openclaw voicecall expose --mode funnel
 ```
 
-`latency`, varsayılan voice-call depolama yolundaki `calls.jsonl` dosyasını okur.
-Farklı bir günlüğü göstermek için `--file <path>`, analizi son N kayda
-sınırlandırmak için `--last <n>` kullanın (varsayılan 200). Çıktı, dönüş
-gecikmesi ve dinleme-bekleme süreleri için p50/p90/p99 değerlerini içerir.
+`latency`, varsayılan voice-call depolama yolundan `calls.jsonl` dosyasını okur.
+Farklı bir günlüğü göstermek için `--file <path>`, analizi son N kayıtla sınırlamak için `--last <n>` kullanın (varsayılan 200). Çıktı, sıra gecikmesi ve dinleme-bekleme süreleri için p50/p90/p99 içerir.
 
 ## Ajan aracı
 
 Araç adı: `voice_call`.
 
-| Eylem           | Argümanlar               |
-| ---------------- | ------------------------ |
+| Eylem           | Bağımsız değişkenler      |
+| --------------- | ------------------------- |
 | `initiate_call` | `message`, `to?`, `mode?` |
 | `continue_call` | `callId`, `message`       |
 | `speak_to_user` | `callId`, `message`       |
@@ -631,12 +615,12 @@ Araç adı: `voice_call`.
 | `end_call`      | `callId`                  |
 | `get_status`    | `callId`                  |
 
-Bu repo, `skills/voice-call/SKILL.md` içinde eşleşen bir Skills belgesi sunar.
+Bu repo `skills/voice-call/SKILL.md` konumunda eşleşen bir Skills belgesi sunar.
 
 ## Gateway RPC
 
-| Yöntem               | Argümanlar               |
-| -------------------- | ------------------------ |
+| Yöntem              | Bağımsız değişkenler      |
+| ------------------- | ------------------------- |
 | `voicecall.initiate` | `to?`, `message`, `mode?` |
 | `voicecall.continue` | `callId`, `message`       |
 | `voicecall.speak`    | `callId`, `message`       |
@@ -646,6 +630,6 @@ Bu repo, `skills/voice-call/SKILL.md` içinde eşleşen bir Skills belgesi sunar
 
 ## İlgili
 
-- [Talk mode](/tr/nodes/talk)
-- [Text-to-speech](/tr/tools/tts)
-- [Voice wake](/tr/nodes/voicewake)
+- [Konuşma modu](/tr/nodes/talk)
+- [Metinden konuşmaya](/tr/tools/tts)
+- [Sesle uyandırma](/tr/nodes/voicewake)

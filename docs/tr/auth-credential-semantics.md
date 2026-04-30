@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Auth profili çözümleme veya kimlik bilgisi yönlendirmesi üzerinde çalışılıyor
-    - Model kimlik doğrulama hataları veya profil sırası hata ayıklanıyor
-summary: Auth profilleri için kanonik kimlik bilgisi uygunluğu ve çözümleme semantiği
-title: Kimlik bilgisi semantiği
+    - Kimlik doğrulama profili çözümlemesi veya kimlik bilgisi yönlendirmesi üzerinde çalışma
+    - Model kimlik doğrulama hatalarında veya profil sıralamasında hata ayıklama
+summary: Kimlik doğrulama profilleri için kanonik kimlik bilgisi uygunluğu ve çözümleme semantiği
+title: Kimlik doğrulama bilgisi semantiği
 x-i18n:
-    generated_at: "2026-04-24T08:57:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:04:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b45da872b9ab177acbac08ce353b6ee31b6a068477ace52e5e5eda32a848d8bb
+    source_hash: 0525a71d3f08b7aa95e2f06acc6c23d87cd92d6b5fe4fc050ecf2b7caff84b3f
     source_path: auth-credential-semantics.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu belge, aşağıdaki yüzeylerde kullanılan kanonik kimlik bilgisi uygunluğu ve çözümleme semantiğini tanımlar:
+Bu belge, şu alanlarda kullanılan kanonik kimlik bilgisi uygunluğu ve çözümleme semantiğini tanımlar:
 
 - `resolveAuthProfileOrder`
 - `resolveApiKeyForProfile`
 - `models status --probe`
 - `doctor-auth`
 
-Amaç, seçim zamanındaki ve çalışma zamanındaki davranışın uyumlu kalmasını sağlamaktır.
+Amaç, seçim zamanı ve çalışma zamanı davranışını uyumlu tutmaktır.
 
-## Kararlı Probe Neden Kodları
+## Kararlı yoklama neden kodları
 
 - `ok`
 - `excluded_by_auth_order`
@@ -32,52 +32,69 @@ Amaç, seçim zamanındaki ve çalışma zamanındaki davranışın uyumlu kalma
 - `unresolved_ref`
 - `no_model`
 
-## Token Kimlik Bilgileri
+## Token kimlik bilgileri
 
-Token kimlik bilgileri (`type: "token"`), satır içi `token` ve/veya `tokenRef` destekler.
+Token kimlik bilgileri (`type: "token"`) satır içi `token` ve/veya `tokenRef` destekler.
 
 ### Uygunluk kuralları
 
-1. Hem `token` hem de `tokenRef` yoksa bir token profili uygun değildir.
+1. Bir token profili, hem `token` hem de `tokenRef` yoksa uygun değildir.
 2. `expires` isteğe bağlıdır.
-3. `expires` varsa, `0`'dan büyük sonlu bir sayı olmalıdır.
-4. `expires` geçersizse (`NaN`, `0`, negatif, sonlu değilse veya türü yanlışsa), profil `invalid_expires` ile uygun değildir.
+3. `expires` varsa, `0` değerinden büyük sonlu bir sayı olmalıdır.
+4. `expires` geçersizse (`NaN`, `0`, negatif, sonlu olmayan veya yanlış tür), profil `invalid_expires` ile uygun değildir.
 5. `expires` geçmişteyse, profil `expired` ile uygun değildir.
-6. `tokenRef`, `expires` doğrulamasını atlamaz.
+6. `tokenRef`, `expires` doğrulamasını atlatmaz.
 
 ### Çözümleme kuralları
 
-1. Çözücü semantiği, `expires` için uygunluk semantiğiyle eşleşir.
+1. Çözümleyici semantiği, `expires` için uygunluk semantiğiyle eşleşir.
 2. Uygun profiller için token materyali satır içi değerden veya `tokenRef` üzerinden çözümlenebilir.
-3. Çözümlenemeyen referanslar, `models status --probe` çıktısında `unresolved_ref` üretir.
+3. Çözümlenemeyen ref'ler, `models status --probe` çıktısında `unresolved_ref` üretir.
 
-## Açık Auth Sırası Filtreleme
+## Agent kopyalama taşınabilirliği
 
-- Bir sağlayıcı için `auth.order.<provider>` veya auth-store sıra geçersiz kılması ayarlandığında, `models status --probe` yalnızca o sağlayıcı için çözülmüş auth sıralamasında kalan profil kimliklerini probe eder.
-- Bu sağlayıcı için saklanan ancak açık sırada yer almayan bir profil daha sonra sessizce denenmez. Probe çıktısı bunu `reasonCode: excluded_by_auth_order` ve şu ayrıntıyla bildirir:
-  `Excluded by auth.order for this provider.`
+Agent kimlik doğrulama devralımı read-through çalışır. Bir agent'ın yerel profili yoksa, çalışma zamanında kendi `auth-profiles.json` dosyasına gizli materyal kopyalamadan varsayılan/ana agent deposundan profilleri çözümleyebilir.
 
-## Probe Hedefi Çözümleme
+`openclaw agents add` gibi açık kopyalama akışları şu taşınabilirlik ilkesini kullanır:
 
-- Probe hedefleri auth profillerinden, ortam kimlik bilgilerinden veya `models.json` dosyasından gelebilir.
-- Bir sağlayıcının kimlik bilgileri varsa ancak OpenClaw onun için probe edilebilir bir model adayı çözemiyorsa, `models status --probe` `reasonCode: no_model` ile `status: no_model` bildirir.
+- `api_key` profilleri, `copyToAgents: false` olmadığı sürece taşınabilirdir.
+- `token` profilleri, `copyToAgents: false` olmadığı sürece taşınabilirdir.
+- `oauth` profilleri varsayılan olarak taşınabilir değildir çünkü refresh token'ları tek kullanımlık veya rotasyona duyarlı olabilir.
+- Sağlayıcıya ait OAuth akışları, yalnızca refresh materyalini agent'lar arasında kopyalamanın güvenli olduğu bilindiğinde `copyToAgents: true` ile katılabilir.
+
+Taşınabilir olmayan profiller, hedef agent ayrı olarak oturum açıp kendi yerel profilini oluşturmadığı sürece read-through devralım yoluyla kullanılabilir kalır.
+
+## Açık kimlik doğrulama sırası filtreleme
+
+- Bir sağlayıcı için `auth.order.<provider>` veya auth-store sıra geçersiz kılması ayarlandığında, `models status --probe` yalnızca o sağlayıcı için çözümlenen kimlik doğrulama sırasında kalan profil kimliklerini yoklar.
+- Açık sıradan çıkarılan, o sağlayıcıya ait depolanmış bir profil daha sonra sessizce denenmez. Yoklama çıktısı bunu `reasonCode: excluded_by_auth_order` ve `Excluded by auth.order for this provider.` ayrıntısıyla bildirir.
+
+## Yoklama hedefi çözümleme
+
+- Yoklama hedefleri kimlik doğrulama profillerinden, ortam kimlik bilgilerinden veya `models.json` dosyasından gelebilir.
+- Bir sağlayıcının kimlik bilgileri varsa ancak OpenClaw onun için yoklanabilir bir model adayı çözümleyemiyorsa, `models status --probe` `reasonCode: no_model` ile `status: no_model` bildirir.
+
+## Harici CLI kimlik bilgisi keşfi
+
+- Harici CLI'lara ait yalnızca çalışma zamanı kimlik bilgileri, yalnızca sağlayıcı, çalışma zamanı veya kimlik doğrulama profili mevcut işlem kapsamındaysa ya da bu harici kaynak için depolanmış yerel bir profil zaten varsa keşfedilir.
+- Salt okunur/durum yolları `allowKeychainPrompt: false` geçirir; yalnızca dosya destekli harici CLI kimlik bilgilerini kullanır ve macOS Keychain sonuçlarını okumaz veya yeniden kullanmaz.
 
 ## OAuth SecretRef İlke Koruması
 
 - SecretRef girdisi yalnızca statik kimlik bilgileri içindir.
-- Bir profil kimlik bilgisi `type: "oauth"` ise, SecretRef nesneleri bu profilin kimlik bilgisi materyali için desteklenmez.
+- Bir profil kimlik bilgisi `type: "oauth"` ise, SecretRef nesneleri bu profil kimlik bilgisi materyali için desteklenmez.
 - `auth.profiles.<id>.mode` `"oauth"` ise, bu profil için SecretRef destekli `keyRef`/`tokenRef` girdisi reddedilir.
-- İhlaller, başlangıç/yeniden yükleme auth çözümleme yollarında kesin hatalardır.
+- İhlaller, başlatma/yeniden yükleme kimlik doğrulama çözümleme yollarında kesin hatadır.
 
-## Eski Sistemlerle Uyumlu Mesajlaşma
+## Eski Sürümle Uyumlu Mesajlaşma
 
-Betik uyumluluğu için, probe hataları şu ilk satırı değiştirmeden korur:
+Betik uyumluluğu için yoklama hataları şu ilk satırı değişmeden korur:
 
 `Auth profile credentials are missing or expired.`
 
-İnsan dostu ayrıntılar ve kararlı neden kodları sonraki satırlarda eklenebilir.
+İnsan dostu ayrıntı ve kararlı neden kodları sonraki satırlara eklenebilir.
 
 ## İlgili
 
-- [Secrets management](/tr/gateway/secrets)
-- [Auth storage](/tr/concepts/oauth)
+- [Gizli bilgiler yönetimi](/tr/gateway/secrets)
+- [Kimlik doğrulama depolaması](/tr/concepts/oauth)

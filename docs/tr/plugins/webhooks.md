@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Harici bir sistemden TaskFlow’ları tetiklemek veya yönlendirmek istiyorsunuz
-    - Paketlenmiş webhooks Plugin’ini yapılandırıyorsunuz
-summary: 'Webhooks Plugin: güvenilir harici otomasyon için kimliği doğrulanmış TaskFlow girişi'
-title: Webhooks Plugin’i
+    - Harici bir sistemden TaskFlow'ları tetiklemek veya yürütmek istiyorsunuz
+    - Birlikte gelen webhooks Plugin'ini yapılandırıyorsunuz
+summary: 'Webhooks Plugin''i: güvenilir harici otomasyon için kimliği doğrulanmış TaskFlow girişi'
+title: Webhook Plugin
 x-i18n:
-    generated_at: "2026-04-24T09:24:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:39:06Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
+    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
     source_path: plugins/webhooks.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Webhooks (Plugin)
+# Webhook'lar (Plugin)
 
-Webhooks Plugin’i, harici otomasyonu OpenClaw TaskFlow’larına bağlayan kimliği doğrulanmış HTTP yolları ekler.
+Webhooks Plugin'i, harici otomasyonu OpenClaw TaskFlow'larına bağlayan kimliği doğrulanmış HTTP rotaları ekler.
 
-Zapier, n8n, bir CI işi veya dahili bir servis gibi güvenilir bir sistemin, önce özel bir Plugin yazmadan yönetilen TaskFlow’lar oluşturmasını ve yönlendirmesini istediğinizde bunu kullanın.
+Önce özel bir Plugin yazmadan, Zapier, n8n, bir CI işi veya dahili bir hizmet gibi güvenilir bir sistemin yönetilen TaskFlow'lar oluşturmasını ve yürütmesini istediğinizde kullanın.
 
 ## Nerede çalışır
 
-Webhooks Plugin’i Gateway süreci içinde çalışır.
+Webhooks Plugin'i Gateway işleminin içinde çalışır.
 
-Gateway’iniz başka bir makinede çalışıyorsa, Plugin’i o Gateway ana makinesine kurup yapılandırın, ardından Gateway’i yeniden başlatın.
+Gateway'iniz başka bir makinede çalışıyorsa Plugin'i o Gateway ana makinesine kurup yapılandırın, ardından Gateway'i yeniden başlatın.
 
-## Yolları yapılandırma
+## Rotaları yapılandırma
 
 Yapılandırmayı `plugins.entries.webhooks.config` altında ayarlayın:
 
@@ -56,44 +56,44 @@ Yapılandırmayı `plugins.entries.webhooks.config` altında ayarlayın:
 }
 ```
 
-Yol alanları:
+Rota alanları:
 
-- `enabled`: isteğe bağlıdır, varsayılan olarak `true`
-- `path`: isteğe bağlıdır, varsayılan olarak `/plugins/webhooks/<routeId>`
-- `sessionKey`: bağlı TaskFlow’ların sahibi olan gerekli oturum
-- `secret`: gerekli paylaşılan sır veya SecretRef
+- `enabled`: isteğe bağlıdır, varsayılanı `true`
+- `path`: isteğe bağlıdır, varsayılanı `/plugins/webhooks/<routeId>`
+- `sessionKey`: bağlı TaskFlow'ların sahibi olan zorunlu oturum
+- `secret`: zorunlu paylaşılan gizli değer veya SecretRef
 - `controllerId`: oluşturulan yönetilen akışlar için isteğe bağlı denetleyici kimliği
 - `description`: isteğe bağlı operatör notu
 
 Desteklenen `secret` girdileri:
 
-- Düz metin dizgesi
-- `source: "env" | "file" | "exec"` içeren SecretRef
+- Düz dize
+- `source: "env" | "file" | "exec"` ile SecretRef
 
-Sır destekli bir yol başlangıçta sırrını çözemiyorsa, Plugin bozuk bir uç nokta açığa çıkarmak yerine o yolu atlar ve bir uyarı günlüğe kaydeder.
+Gizli değer destekli bir rota başlangıçta gizli değerini çözümleyemezse Plugin bozuk bir uç nokta açığa çıkarmak yerine o rotayı atlar ve bir uyarı kaydeder.
 
 ## Güvenlik modeli
 
-Her yol, yapılandırılmış `sessionKey` değerinin TaskFlow yetkisiyle hareket etmek üzere güvenilir kabul edilir.
+Her rota, yapılandırılmış `sessionKey` değerinin TaskFlow yetkisiyle hareket etmek üzere güvenilir kabul edilir.
 
-Bu, yolun o oturuma ait TaskFlow’ları inceleyebileceği ve değiştirebileceği anlamına gelir; bu nedenle şunları yapmalısınız:
+Bu, rotanın ilgili oturuma ait TaskFlow'ları inceleyip değiştirebileceği anlamına gelir; bu nedenle şunları yapmalısınız:
 
-- Her yol için güçlü ve benzersiz bir sır kullanın
-- Satır içi düz metin sırlar yerine sır başvurularını tercih edin
-- Yolları, iş akışına uyan en dar oturuma bağlayın
+- Her rota için güçlü ve benzersiz bir gizli değer kullanın
+- Satır içi düz metin gizli değerler yerine gizli değer referanslarını tercih edin
+- Rotaları iş akışına uyan en dar oturuma bağlayın
 - Yalnızca ihtiyaç duyduğunuz belirli Webhook yolunu açığa çıkarın
 
 Plugin şunları uygular:
 
-- Paylaşılan sır kimlik doğrulaması
+- Paylaşılan gizli değerle kimlik doğrulama
 - İstek gövdesi boyutu ve zaman aşımı korumaları
-- Sabit pencere hız sınırlaması
-- Devam eden istek sınırlandırması
-- `api.runtime.taskFlow.bindSession(...)` üzerinden sahip bağlı TaskFlow erişimi
+- Sabit pencereli hız sınırlama
+- Devam eden istek sınırlama
+- `api.runtime.tasks.managedFlows.bindSession(...)` üzerinden sahibe bağlı TaskFlow erişimi
 
 ## İstek biçimi
 
-Şunlarla `POST` istekleri gönderin:
+`POST` isteklerini şunlarla gönderin:
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` veya `x-openclaw-webhook-secret: <secret>`
@@ -127,7 +127,7 @@ Plugin şu anda şu JSON `action` değerlerini kabul eder:
 
 ### `create_flow`
 
-Yolun bağlı oturumu için yönetilen bir TaskFlow oluşturur.
+Rotanın bağlı oturumu için yönetilen bir TaskFlow oluşturur.
 
 Örnek:
 
@@ -144,7 +144,7 @@ Yolun bağlı oturumu için yönetilen bir TaskFlow oluşturur.
 
 Mevcut bir yönetilen TaskFlow içinde yönetilen bir alt görev oluşturur.
 
-İzin verilen çalışma zamanları:
+İzin verilen çalışma zamanları şunlardır:
 
 - `subagent`
 - `acp`
@@ -185,10 +185,10 @@ Reddedilen istekler şunu döndürür:
 }
 ```
 
-Plugin, sahip/oturum metaverilerini Webhook yanıtlarından kasıtlı olarak temizler.
+Plugin, Webhook yanıtlarından sahip/oturum üst verilerini bilinçli olarak temizler.
 
 ## İlgili belgeler
 
-- [Plugin runtime SDK](/tr/plugins/sdk-runtime)
-- [Hooks and webhooks overview](/tr/automation/hooks)
-- [CLI webhooks](/tr/cli/webhooks)
+- [Plugin çalışma zamanı SDK'sı](/tr/plugins/sdk-runtime)
+- [Hook'lar ve Webhook'lara genel bakış](/tr/automation/hooks)
+- [CLI Webhook'ları](/tr/cli/webhooks)

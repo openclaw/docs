@@ -1,20 +1,20 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Sandbox çalışma zamanlarını yönetin ve etkin sandbox politikasını inceleyin
-title: Sandbox CLI
+summary: Korumalı alan çalışma zamanlarını yönetin ve geçerli korumalı alan ilkesini inceleyin
+title: Korumalı Alan CLI
 x-i18n:
-    generated_at: "2026-04-24T09:03:30Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:14:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f2b5835968faac0a8243fd6eadfcecb51b211fe7b346454e215312b1b6d5e65
+    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
     source_path: cli/sandbox.md
-    workflow: 15
+    workflow: 16
 ---
 
 Yalıtılmış ajan yürütmesi için sandbox çalışma zamanlarını yönetin.
 
-## Genel bakış
+## Genel Bakış
 
 OpenClaw, güvenlik için ajanları yalıtılmış sandbox çalışma zamanlarında çalıştırabilir. `sandbox` komutları, güncellemelerden veya yapılandırma değişikliklerinden sonra bu çalışma zamanlarını incelemenize ve yeniden oluşturmanıza yardımcı olur.
 
@@ -26,15 +26,15 @@ Bugün bu genellikle şu anlama gelir:
 
 `ssh` ve OpenShell `remote` için yeniden oluşturma, Docker'a göre daha önemlidir:
 
-- ilk tohumlamadan sonra uzak çalışma alanı kanonik olur
-- `openclaw sandbox recreate`, seçilen kapsam için bu kanonik uzak çalışma alanını siler
-- sonraki kullanım bunu geçerli yerel çalışma alanından yeniden tohumlar
+- uzak çalışma alanı, ilk tohumlamadan sonra kanonik kaynaktır
+- `openclaw sandbox recreate`, seçili kapsam için bu kanonik uzak çalışma alanını siler
+- sonraki kullanım, mevcut yerel çalışma alanından yeniden tohumlar
 
 ## Komutlar
 
 ### `openclaw sandbox explain`
 
-**Etkin** sandbox modu/kapsamı/çalışma alanı erişimini, sandbox araç politikasını ve yükseltilmiş geçitleri (düzeltme için yapılandırma anahtarı yollarıyla birlikte) inceleyin.
+**Etkin** sandbox modunu/kapsamını/çalışma alanı erişimini, sandbox araç politikasını ve yükseltilmiş kapıları inceleyin (düzeltme yapılandırma anahtarı yollarıyla birlikte).
 
 ```bash
 openclaw sandbox explain
@@ -49,29 +49,29 @@ Tüm sandbox çalışma zamanlarını durumları ve yapılandırmalarıyla liste
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # Yalnızca tarayıcı container'larını listele
-openclaw sandbox list --json     # JSON çıktısı
+openclaw sandbox list --browser  # List only browser containers
+openclaw sandbox list --json     # JSON output
 ```
 
 **Çıktı şunları içerir:**
 
 - Çalışma zamanı adı ve durumu
-- Backend (`docker`, `openshell` vb.)
+- Arka uç (`docker`, `openshell` vb.)
 - Yapılandırma etiketi ve geçerli yapılandırmayla eşleşip eşleşmediği
-- Yaş (oluşturulmasından beri geçen süre)
-- Boşta kalma süresi (son kullanımdan beri geçen süre)
+- Yaş (oluşturulmasından bu yana geçen süre)
+- Boşta kalma süresi (son kullanımdan bu yana geçen süre)
 - İlişkili oturum/ajan
 
 ### `openclaw sandbox recreate`
 
-Güncellenmiş yapılandırmayla yeniden oluşturulmalarını zorlamak için sandbox çalışma zamanlarını kaldırın.
+Güncellenmiş yapılandırmayla yeniden oluşturmayı zorlamak için sandbox çalışma zamanlarını kaldırın.
 
 ```bash
-openclaw sandbox recreate --all                # Tüm container'ları yeniden oluştur
-openclaw sandbox recreate --session main       # Belirli oturum
-openclaw sandbox recreate --agent mybot        # Belirli ajan
-openclaw sandbox recreate --browser            # Yalnızca tarayıcı container'ları
-openclaw sandbox recreate --all --force        # Onayı atla
+openclaw sandbox recreate --all                # Recreate all containers
+openclaw sandbox recreate --session main       # Specific session
+openclaw sandbox recreate --agent mybot        # Specific agent
+openclaw sandbox recreate --browser            # Only browser containers
+openclaw sandbox recreate --all --force        # Skip confirmation
 ```
 
 **Seçenekler:**
@@ -82,37 +82,39 @@ openclaw sandbox recreate --all --force        # Onayı atla
 - `--browser`: Yalnızca tarayıcı container'larını yeniden oluştur
 - `--force`: Onay istemini atla
 
-**Önemli:** Çalışma zamanları, ajan bir sonraki kullanımında otomatik olarak yeniden oluşturulur.
+<Note>
+Çalışma zamanları, ajan bir sonraki kez kullanıldığında otomatik olarak yeniden oluşturulur.
+</Note>
 
 ## Kullanım durumları
 
-### Bir Docker image'ını güncelledikten sonra
+### Bir Docker imajını güncelledikten sonra
 
 ```bash
-# Yeni image'ı çek
+# Pull new image
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# Yeni image'ı kullanacak şekilde yapılandırmayı güncelle
-# Yapılandırmayı düzenle: agents.defaults.sandbox.docker.image (veya agents.list[].sandbox.docker.image)
+# Update config to use new image
+# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
 
-# Container'ları yeniden oluştur
+# Recreate containers
 openclaw sandbox recreate --all
 ```
 
 ### Sandbox yapılandırmasını değiştirdikten sonra
 
 ```bash
-# Yapılandırmayı düzenle: agents.defaults.sandbox.* (veya agents.list[].sandbox.*)
+# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
 
-# Yeni yapılandırmayı uygulamak için yeniden oluştur
+# Recreate to apply new config
 openclaw sandbox recreate --all
 ```
 
 ### SSH hedefini veya SSH kimlik doğrulama materyalini değiştirdikten sonra
 
 ```bash
-# Yapılandırmayı düzenle:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -122,12 +124,12 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Çekirdek `ssh` backend'i için yeniden oluşturma, SSH hedefindeki kapsam başına uzak çalışma alanı kökünü siler. Sonraki çalıştırma bunu yerel çalışma alanından yeniden tohumlar.
+Temel `ssh` arka ucu için yeniden oluşturma, SSH hedefindeki kapsam başına uzak çalışma alanı kökünü siler. Bir sonraki çalıştırma, bunu yerel çalışma alanından yeniden tohumlar.
 
 ### OpenShell kaynağını, politikasını veya modunu değiştirdikten sonra
 
 ```bash
-# Yapılandırmayı düzenle:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -136,39 +138,40 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-OpenShell `remote` modu için yeniden oluşturma, o kapsam için kanonik uzak çalışma alanını siler. Sonraki çalıştırma bunu yerel çalışma alanından yeniden tohumlar.
+OpenShell `remote` modu için yeniden oluşturma, o kapsamın kanonik uzak çalışma alanını siler. Bir sonraki çalıştırma, bunu yerel çalışma alanından yeniden tohumlar.
 
-### `setupCommand` değiştirdikten sonra
+### setupCommand değiştirildikten sonra
 
 ```bash
 openclaw sandbox recreate --all
-# veya yalnızca bir ajan:
+# or just one agent:
 openclaw sandbox recreate --agent family
 ```
 
 ### Yalnızca belirli bir ajan için
 
 ```bash
-# Yalnızca bir ajanın container'larını güncelle
+# Update only one agent's containers
 openclaw sandbox recreate --agent alfred
 ```
 
-## Bu neden gerekli?
+## Bu neden gereklidir
 
-**Sorun:** Sandbox yapılandırmasını güncellediğinizde:
+Sandbox yapılandırmasını güncellediğinizde:
 
-- Mevcut çalışma zamanları eski ayarlarla çalışmaya devam eder
-- Çalışma zamanları yalnızca 24 saatlik hareketsizlikten sonra budanır
-- Düzenli kullanılan ajanlar eski çalışma zamanlarını süresiz olarak canlı tutar
+- Mevcut çalışma zamanları eski ayarlarla çalışmaya devam eder.
+- Çalışma zamanları yalnızca 24 saatlik hareketsizlikten sonra temizlenir.
+- Düzenli kullanılan ajanlar eski çalışma zamanlarını süresiz olarak canlı tutar.
 
-**Çözüm:** Eski çalışma zamanlarını zorla kaldırmak için `openclaw sandbox recreate` kullanın. Bir sonraki ihtiyaç anında geçerli ayarlarla otomatik olarak yeniden oluşturulurlar.
+Eski çalışma zamanlarının kaldırılmasını zorlamak için `openclaw sandbox recreate` kullanın. Bunlar, bir sonraki ihtiyaç duyulduğunda geçerli ayarlarla otomatik olarak yeniden oluşturulur.
 
-İpucu: elle backend'e özgü temizlik yerine `openclaw sandbox recreate` tercih edin.
-Gateway'in çalışma zamanı kayıt defterini kullanır ve kapsam/oturum anahtarları değiştiğinde uyumsuzlukları önler.
+<Tip>
+Elle arka uca özgü temizlik yapmak yerine `openclaw sandbox recreate` tercih edin. Gateway'in çalışma zamanı kayıt defterini kullanır ve kapsam veya oturum anahtarları değiştiğinde uyumsuzluklardan kaçınır.
+</Tip>
 
 ## Yapılandırma
 
-Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` altında bulunur (ajan başına geçersiz kılmalar `agents.list[].sandbox` içine gider):
+Sandbox ayarları, `agents.defaults.sandbox` altında `~/.openclaw/openclaw.json` içinde bulunur (ajan başına geçersiz kılmalar `agents.list[].sandbox` içine gider):
 
 ```jsonc
 {
@@ -181,11 +184,11 @@ Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` 
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... daha fazla Docker seçeneği
+          // ... more Docker options
         },
         "prune": {
-          "idleHours": 24, // 24 saat boşta kaldıktan sonra otomatik budama
-          "maxAgeDays": 7, // 7 gün sonra otomatik budama
+          "idleHours": 24, // Auto-prune after 24h idle
+          "maxAgeDays": 7, // Auto-prune after 7 days
         },
       },
     },
@@ -198,4 +201,4 @@ Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` 
 - [CLI başvurusu](/tr/cli)
 - [Sandboxing](/tr/gateway/sandboxing)
 - [Ajan çalışma alanı](/tr/concepts/agent-workspace)
-- [Doctor](/tr/gateway/doctor) — sandbox kurulumunu kontrol eder
+- [Doctor](/tr/gateway/doctor): sandbox kurulumunu denetler.

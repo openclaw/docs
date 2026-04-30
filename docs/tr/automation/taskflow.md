@@ -1,42 +1,42 @@
 ---
 read_when:
-    - TaskFlow'un arka plan görevleriyle nasıl ilişkili olduğunu anlamak istiyorsunuz
-    - Sürüm notlarında veya belgelerde Task Flow ya da OpenClaw görev akışıyla karşılaşırsınız
-    - Dayanıklı akış durumunu incelemek veya yönetmek istiyorsunuz
-summary: Görev Akışı, arka plan görevlerinin üzerindeki akış orkestrasyon katmanı
+    - TaskFlow ile arka plan görevleri arasındaki ilişkiyi anlamak istiyorsunuz
+    - Sürüm notlarında veya dokümanlarda TaskFlow ya da openclaw tasks flow ile karşılaşırsınız
+    - Kalıcı akış durumunu incelemek veya yönetmek istiyorsunuz
+summary: TaskFlow, arka plan görevlerinin üzerindeki akış orkestrasyon katmanı
 title: Görev akışı
 x-i18n:
-    generated_at: "2026-04-25T13:41:10Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:05:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: de94ed672e492c7dac066e1a63f5600abecfea63828a92acca1b8caa041c5212
+    source_hash: 2ab261dea0ec3beb10b53c641bd188288cada5345aef6ddbbc8071d37eb57bdc
     source_path: automation/taskflow.md
-    workflow: 15
+    workflow: 16
 ---
 
-TaskFlow, [arka plan görevlerinin](/tr/automation/tasks) üzerinde yer alan akış orkestrasyon altyapısıdır. Kendi durumu, revizyon takibi ve senkronizasyon semantiği ile dayanıklı çok adımlı akışları yönetirken, tek tek görevler ayrık iş birimi olarak kalır.
+Görev Akışı, [arka plan görevlerinin](/tr/automation/tasks) üzerinde yer alan akış orkestrasyonu altyapısıdır. Tek tek görevler ayrılmış iş birimi olarak kalırken, kendi durumları, revizyon takibi ve eşitleme semantiklerine sahip dayanıklı çok adımlı akışları yönetir.
 
-## TaskFlow ne zaman kullanılmalı
+## Görev Akışı ne zaman kullanılır
 
-İş birden fazla sıralı veya dallanan adıma yayılıyorsa ve gateway yeniden başlatmaları arasında dayanıklı ilerleme takibi gerekiyorsa TaskFlow kullanın. Tek bir arka plan işlemi için düz bir [görev](/tr/automation/tasks) yeterlidir.
+İş birden çok sıralı veya dallanan adıma yayıldığında ve Gateway yeniden başlatmaları boyunca dayanıklı ilerleme takibine ihtiyaç duyduğunuzda Görev Akışı kullanın. Tekil arka plan işlemleri için düz bir [görev](/tr/automation/tasks) yeterlidir.
 
-| Senaryo                              | Kullanım              |
-| ------------------------------------ | --------------------- |
-| Tek arka plan işi                    | Düz görev             |
-| Çok adımlı işlem hattı (A sonra B sonra C) | TaskFlow (yönetilen)  |
-| Haricen oluşturulan görevleri gözlemleme | TaskFlow (yansıtılmış) |
-| Tek seferlik hatırlatıcı             | Cron işi              |
+| Senaryo                              | Kullanım                  |
+| ------------------------------------- | -------------------- |
+| Tekil arka plan işi                 | Düz görev           |
+| Çok adımlı işlem hattı (A sonra B sonra C) | Görev Akışı (yönetilen)  |
+| Harici oluşturulan görevleri gözlemle      | Görev Akışı (yansıtılan) |
+| Tek seferlik hatırlatıcı                     | Cron işi             |
 
 ## Güvenilir zamanlanmış iş akışı deseni
 
-Pazar istihbaratı brifingleri gibi yinelenen iş akışlarında, zamanlama, orkestrasyon ve güvenilirlik kontrollerini ayrı katmanlar olarak ele alın:
+Pazar istihbaratı brifingleri gibi yinelenen iş akışları için zamanlamayı, orkestrasyonu ve güvenilirlik kontrollerini ayrı katmanlar olarak ele alın:
 
-1. Zamanlama için [Scheduled Tasks](/tr/automation/cron-jobs) kullanın.
-2. İş akışı önceki bağlam üzerine kurulacaksa kalıcı bir cron oturumu kullanın.
+1. Zamanlama için [Zamanlanmış Görevler](/tr/automation/cron-jobs) kullanın.
+2. İş akışının önceki bağlam üzerine kurulması gerekiyorsa kalıcı bir cron oturumu kullanın.
 3. Deterministik adımlar, onay geçitleri ve sürdürme belirteçleri için [Lobster](/tr/tools/lobster) kullanın.
-4. Alt görevler, beklemeler, yeniden denemeler ve gateway yeniden başlatmaları boyunca çok adımlı çalışmayı izlemek için TaskFlow kullanın.
+4. Alt görevler, beklemeler, yeniden denemeler ve Gateway yeniden başlatmaları boyunca çok adımlı çalıştırmayı izlemek için Görev Akışı kullanın.
 
-Örnek cron yapısı:
+Örnek cron şekli:
 
 ```bash
 openclaw cron add \
@@ -50,9 +50,9 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Yinelenen iş akışının kasıtlı geçmişe, önceki çalışma özetlerine veya kalıcı bağlama ihtiyaç duyduğu durumlarda `isolated` yerine `session:<id>` kullanın. Her çalışmanın yeni başlaması ve gerekli tüm durumun iş akışında açık olması gerektiğinde `isolated` kullanın.
+Yinelenen iş akışının bilinçli geçmişe, önceki çalıştırma özetlerine veya kalıcı bağlama ihtiyacı olduğunda `isolated` yerine `session:<id>` kullanın. Her çalıştırmanın taze başlaması ve gerekli tüm durumun iş akışında açıkça belirtilmesi gerektiğinde `isolated` kullanın.
 
-İş akışının içinde, güvenilirlik kontrollerini LLM özetleme adımından önce koyun:
+İş akışı içinde güvenilirlik kontrollerini LLM özet adımından önce koyun:
 
 ```yaml
 name: market-intel-brief
@@ -75,15 +75,15 @@ steps:
     condition: $approve.approved
 ```
 
-Önerilen ön kontrol denetimleri:
+Önerilen ön kontrol kontrolleri:
 
-- Tarayıcı kullanılabilirliği ve profil seçimi; örneğin yönetilen durum için `openclaw` veya oturum açılmış bir Chrome oturumu gerektiğinde `user`. Bkz. [Browser](/tr/tools/browser).
+- Tarayıcı kullanılabilirliği ve profil seçimi; örneğin yönetilen durum için `openclaw` veya oturum açılmış bir Chrome oturumu gerektiğinde `user`. Bkz. [Tarayıcı](/tr/tools/browser).
 - Her kaynak için API kimlik bilgileri ve kota.
 - Gerekli uç noktalar için ağ erişilebilirliği.
-- Ajan için gerekli araçların etkinleştirilmiş olması; örneğin `lobster`, `browser` ve `llm-task`.
-- Ön kontrol hatalarının görünür olması için cron için hata hedefinin yapılandırılmış olması. Bkz. [Scheduled Tasks](/tr/automation/cron-jobs#delivery-and-output).
+- Ajan için etkinleştirilmiş gerekli araçlar, örneğin `lobster`, `browser` ve `llm-task`.
+- Ön kontrol hatalarının görünür olması için cron için yapılandırılmış hata hedefi. Bkz. [Zamanlanmış Görevler](/tr/automation/cron-jobs#delivery-and-output).
 
-Toplanan her öğe için önerilen veri kökeni alanları:
+Toplanan her öğe için önerilen veri kaynağı alanları:
 
 ```json
 {
@@ -95,38 +95,39 @@ Toplanan her öğe için önerilen veri kökeni alanları:
 }
 ```
 
-İş akışının, özetlemeden önce bayat öğeleri reddetmesini veya işaretlemesini sağlayın. LLM adımı yalnızca yapılandırılmış JSON almalı ve çıktısında `sourceUrl`, `retrievedAt` ve `asOf` alanlarını koruması istenmelidir. İş akışı içinde şema doğrulamalı bir model adımına ihtiyacınız olduğunda [LLM Task](/tr/tools/llm-task) kullanın.
+İş akışının özetlemeden önce öğeleri reddetmesini veya bayat olarak işaretlemesini sağlayın. LLM adımı yalnızca yapılandırılmış JSON almalı ve çıktısında `sourceUrl`, `retrievedAt` ve `asOf` değerlerini koruması istenmelidir. İş akışı içinde şema doğrulamalı bir model adımına ihtiyaç duyduğunuzda [LLM Görevi](/tr/tools/llm-task) kullanın.
 
-Yeniden kullanılabilir ekip veya topluluk iş akışları için CLI'ı, `.lobster` dosyalarını ve tüm kurulum notlarını bir skill veya plugin olarak paketleyin ve bunu [ClawHub](/tr/tools/clawhub) üzerinden yayımlayın. Plugin API'sinde gerekli genel bir yetenek eksik değilse, iş akışına özgü korkulukları bu pakette tutun.
+Yeniden kullanılabilir ekip veya topluluk iş akışları için CLI’yi, `.lobster` dosyalarını ve tüm kurulum notlarını bir skill veya Plugin olarak paketleyin ve [ClawHub](/tr/tools/clawhub) üzerinden yayımlayın. Plugin API’sinde gerekli genel bir yetenek eksik olmadığı sürece iş akışına özgü koruma kurallarını bu pakette tutun.
 
-## Senkronizasyon modları
+## Eşitleme modları
 
 ### Yönetilen mod
 
-TaskFlow yaşam döngüsünü uçtan uca sahiplenir. Görevleri akış adımları olarak oluşturur, tamamlanmalarını sağlar ve akış durumunu otomatik olarak ilerletir.
+Görev Akışı yaşam döngüsünü uçtan uca sahiplenir. Görevleri akış adımları olarak oluşturur, tamamlanana kadar yürütür ve akış durumunu otomatik olarak ilerletir.
 
-Örnek: (1) veri toplayan, (2) raporu oluşturan ve (3) teslim eden haftalık bir rapor akışı. TaskFlow her adımı bir arka plan görevi olarak oluşturur, tamamlanmasını bekler, ardından bir sonraki adıma geçer.
+Örnek: (1) veri toplayan, (2) raporu oluşturan ve (3) teslim eden haftalık rapor akışı. Görev Akışı her adımı arka plan görevi olarak oluşturur, tamamlanmasını bekler, sonra sonraki adıma geçer.
 
 ```
-Akış: weekly-report
-  Adım 1: gather-data     → görev oluşturuldu → başarılı
-  Adım 2: generate-report → görev oluşturuldu → başarılı
-  Adım 3: deliver         → görev oluşturuldu → çalışıyor
+Flow: weekly-report
+  Step 1: gather-data     → task created → succeeded
+  Step 2: generate-report → task created → succeeded
+  Step 3: deliver         → task created → running
 ```
 
-### Yansıtılmış mod
+### Yansıtılan mod
 
-TaskFlow haricen oluşturulmuş görevleri gözlemler ve görev oluşturmanın sahipliğini almadan akış durumunu senkronize tutar. Bu, görevler cron işleri, CLI komutları veya diğer kaynaklardan geldiğinde ve bunların ilerleyişini akış olarak birleşik bir görünümde görmek istediğinizde yararlıdır.
+Görev Akışı, harici oluşturulan görevleri gözlemler ve görev oluşturma sahipliğini üstlenmeden akış durumunu eşitlenmiş tutar. Bu, görevler cron işlerinden, CLI komutlarından veya başka kaynaklardan geldiğinde ve ilerlemelerini akış olarak birleşik bir görünümde görmek istediğinizde kullanışlıdır.
 
-Örnek: birlikte bir "sabah operasyonları" rutini oluşturan üç bağımsız cron işi. Yansıtılmış bir akış, ne zaman veya nasıl çalıştıklarını kontrol etmeden bunların toplu ilerleyişini izler.
+Örnek: birlikte bir "sabah operasyonları" rutini oluşturan üç bağımsız cron işi. Yansıtılan bir akış, ne zaman veya nasıl çalıştıklarını kontrol etmeden kolektif ilerlemelerini izler.
 
 ## Dayanıklı durum ve revizyon takibi
 
-Her akış kendi durumunu kalıcı olarak saklar ve gateway yeniden başlatmalarında ilerlemenin korunması için revizyonları izler. Revizyon takibi, birden fazla kaynağın aynı akışı eşzamanlı olarak ilerletmeye çalıştığı durumlarda çakışma tespitini mümkün kılar.
+Her akış kendi durumunu kalıcılaştırır ve revizyonları izler, böylece ilerleme Gateway yeniden başlatmalarından sonra korunur. Revizyon takibi, birden çok kaynak aynı akışı eşzamanlı olarak ilerletmeye çalıştığında çakışma algılamayı sağlar.
+Akış kayıt defteri, uzun süre çalışan Gateway’lerin sınırsız `registry.sqlite-wal` yan dosyalarını tutmaması için periyodik ve kapatma denetim noktaları dahil olmak üzere sınırlı write-ahead-log bakımıyla SQLite kullanır.
 
 ## İptal davranışı
 
-`openclaw tasks flow cancel`, akış üzerinde kalıcı bir iptal niyeti ayarlar. Akış içindeki etkin görevler iptal edilir ve yeni adımlar başlatılmaz. İptal niyeti yeniden başlatmalar arasında korunur; bu nedenle tüm alt görevler sonlanmadan önce gateway yeniden başlatılsa bile iptal edilmiş bir akış iptal edilmiş olarak kalır.
+`openclaw tasks flow cancel`, akış üzerinde kalıcı bir iptal niyeti ayarlar. Akış içindeki etkin görevler iptal edilir ve yeni adım başlatılmaz. İptal niyeti yeniden başlatmalar boyunca kalıcıdır, bu nedenle iptal edilen bir akış, tüm alt görevler sonlanmadan önce Gateway yeniden başlatılsa bile iptal edilmiş kalır.
 
 ## CLI komutları
 
@@ -141,19 +142,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| Komut                            | Açıklama                                      |
-| -------------------------------- | --------------------------------------------- |
-| `openclaw tasks flow list`       | İzlenen akışları durum ve senkronizasyon moduyla gösterir |
-| `openclaw tasks flow show <id>`  | Tek bir akışı akış kimliği veya arama anahtarıyla inceleyin |
-| `openclaw tasks flow cancel <id>` | Çalışan bir akışı ve etkin görevlerini iptal edin |
+| Komut                           | Açıklama                                   |
+| --------------------------------- | --------------------------------------------- |
+| `openclaw tasks flow list`        | İzlenen akışları durum ve eşitleme moduyla gösterir |
+| `openclaw tasks flow show <id>`   | Bir akışı akış kimliği veya arama anahtarıyla inceleyin     |
+| `openclaw tasks flow cancel <id>` | Çalışan bir akışı ve etkin görevlerini iptal edin    |
 
-## Akışlar görevlerle nasıl ilişkilidir
+## Akışların görevlerle ilişkisi
 
-Akışlar görevleri koordine eder, onların yerini almaz. Tek bir akış, yaşam döngüsü boyunca birden fazla arka plan görevini yönlendirebilir. Tekil görev kayıtlarını incelemek için `openclaw tasks`, orkestrasyonu yapan akışı incelemek için `openclaw tasks flow` kullanın.
+Akışlar görevleri koordine eder, onların yerini almaz. Tek bir akış, yaşam süresi boyunca birden çok arka plan görevini yürütebilir. Tek tek görev kayıtlarını incelemek için `openclaw tasks`, orkestrasyonu yapan akışı incelemek için `openclaw tasks flow` kullanın.
 
 ## İlgili
 
-- [Background Tasks](/tr/automation/tasks) — akışların koordine ettiği ayrık iş defteri
-- [CLI: tasks](/tr/cli/tasks) — `openclaw tasks flow` için CLI komut başvurusu
-- [Automation Overview](/tr/automation) — tüm otomasyon mekanizmalarına genel bakış
-- [Cron Jobs](/tr/automation/cron-jobs) — akışlara girdi sağlayabilen zamanlanmış işler
+- [Arka Plan Görevleri](/tr/automation/tasks) — akışların koordine ettiği ayrılmış iş defteri
+- [CLI: görevler](/tr/cli/tasks) — `openclaw tasks flow` için CLI komut başvurusu
+- [Otomasyona Genel Bakış](/tr/automation) — tüm otomasyon mekanizmalarına hızlı bakış
+- [Cron İşleri](/tr/automation/cron-jobs) — akışlara besleme yapabilecek zamanlanmış işler

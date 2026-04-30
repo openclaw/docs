@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Gateway günlüklerini uzaktan (SSH olmadan) takip etmeniz gerekiyor
+    - Gateway günlüklerini uzaktan izlemeniz gerekir (SSH olmadan)
     - Araçlar için JSON günlük satırları istiyorsunuz
-summary: '`openclaw logs` için CLI başvurusu (RPC üzerinden gateway günlüklerini takip etme)'
+summary: '`openclaw logs` için CLI başvurusu (RPC aracılığıyla Gateway günlüklerini izleme)'
 title: Günlükler
 x-i18n:
-    generated_at: "2026-04-24T09:02:44Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:13:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 94dddb9fd507c2f1d885c5cf92b78fd381355481317bf6f56b794afbd387f402
+    source_hash: 0f9268fefa4d0e54297fd12c5cef30a1465bd735ae6a36292c279a438285f2b8
     source_path: cli/logs.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw logs`
 
-RPC üzerinden Gateway dosya günlüklerini takip edin (uzak modda çalışır).
+Gateway dosya günlüklerini RPC üzerinden takip edin (uzak modda çalışır).
 
 İlgili:
 
@@ -25,11 +25,11 @@ RPC üzerinden Gateway dosya günlüklerini takip edin (uzak modda çalışır).
 ## Seçenekler
 
 - `--limit <n>`: döndürülecek en fazla günlük satırı sayısı (varsayılan `200`)
-- `--max-bytes <n>`: günlük dosyasından okunacak en fazla bayt sayısı (varsayılan `250000`)
+- `--max-bytes <n>`: günlük dosyasından okunacak en fazla bayt (varsayılan `250000`)
 - `--follow`: günlük akışını takip et
-- `--interval <ms>`: takip ederken sorgulama aralığı (varsayılan `1000`)
-- `--json`: satır sınırlı JSON olayları üret
-- `--plain`: biçemlendirilmiş biçimlendirme olmadan düz metin çıktısı
+- `--interval <ms>`: takip ederken yoklama aralığı (varsayılan `1000`)
+- `--json`: satırla sınırlandırılmış JSON olayları yay
+- `--plain`: stilli biçimlendirme olmadan düz metin çıktısı
 - `--no-color`: ANSI renklerini devre dışı bırak
 - `--local-time`: zaman damgalarını yerel saat diliminizde göster
 
@@ -38,11 +38,11 @@ RPC üzerinden Gateway dosya günlüklerini takip edin (uzak modda çalışır).
 `openclaw logs`, standart Gateway istemci bayraklarını da kabul eder:
 
 - `--url <url>`: Gateway WebSocket URL'si
-- `--token <token>`: Gateway belirteci
+- `--token <token>`: Gateway token'ı
 - `--timeout <ms>`: ms cinsinden zaman aşımı (varsayılan `30000`)
-- `--expect-final`: Gateway çağrısı aracı destekliyse son yanıtı bekle
+- `--expect-final`: Gateway çağrısı ajan destekli olduğunda nihai yanıtı bekle
 
-`--url` geçirdiğinizde CLI yapılandırma veya ortam kimlik bilgilerini otomatik uygulamaz. Hedef Gateway kimlik doğrulama gerektiriyorsa `--token` değerini açıkça ekleyin.
+`--url` geçirdiğinizde CLI, yapılandırmayı veya ortam kimlik bilgilerini otomatik uygulamaz. Hedef Gateway kimlik doğrulaması gerektiriyorsa `--token` değerini açıkça ekleyin.
 
 ## Örnekler
 
@@ -63,7 +63,7 @@ openclaw logs --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ## Notlar
 
 - Zaman damgalarını yerel saat diliminizde göstermek için `--local-time` kullanın.
-- Yerel loopback Gateway eşleştirme isterse, `openclaw logs` yapılandırılmış yerel günlük dosyasına otomatik olarak geri döner. Açık `--url` hedefleri bu geri dönüşü kullanmaz.
+- Örtük local loopback Gateway eşleştirme isterse, bağlantı sırasında kapanırsa veya `logs.tail` yanıtlamadan önce zaman aşımına uğrarsa, `openclaw logs` otomatik olarak yapılandırılmış Gateway dosya günlüğüne geri döner. Açık `--url` hedefleri bu geri dönüşü kullanmaz.
 
 ## İlgili
 

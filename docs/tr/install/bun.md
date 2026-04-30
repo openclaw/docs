@@ -1,40 +1,40 @@
 ---
 read_when:
     - En hızlı yerel geliştirme döngüsünü istiyorsunuz (bun + watch)
-    - Bun kurulum/yama/lifecycle script sorunlarıyla karşılaştınız
-summary: 'Bun iş akışı (deneysel): `pnpm` ile karşılaştırıldığında kurulum ve dikkat edilmesi gerekenler'
+    - Bun kurulum/yama/yaşam döngüsü betiği sorunlarıyla karşılaştınız
+summary: 'Bun iş akışı (deneysel): pnpm’e göre kurulumlar ve dikkat edilmesi gerekenler'
 title: Bun (deneysel)
 x-i18n:
-    generated_at: "2026-04-24T09:14:25Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:27:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
+    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
     source_path: install/bun.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-Bun, **Gateway çalışma zamanı için önerilmez** (WhatsApp ve Telegram ile bilinen sorunlar vardır). Üretim için Node kullanın.
+Bun, **Gateway çalışma zamanı için önerilmez** (WhatsApp ve Telegram ile bilinen sorunlar). Üretim için Node kullanın.
 </Warning>
 
-Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi hâlâ `pnpm`'dir; tamamen desteklenir ve belge araçları tarafından kullanılır. Bun, `pnpm-lock.yaml` dosyasını kullanamaz ve onu yok sayar.
+Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çalışma zamanıdır (`bun run ...`, `bun --watch ...`). Varsayılan paket yöneticisi, tam olarak desteklenen ve dokümantasyon araçları tarafından kullanılan `pnpm` olarak kalır. Bun, `pnpm-lock.yaml` dosyasını kullanamaz ve onu yok sayar.
 
 ## Kurulum
 
 <Steps>
-  <Step title="Bağımlılıkları kurun">
+  <Step title="Bağımlılıkları yükle">
     ```sh
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` gitignore kapsamında olduğundan depoda gereksiz değişiklik oluşmaz. Lockfile yazımını tamamen atlamak için:
+    `bun.lock` / `bun.lockb` gitignore kapsamındadır, bu nedenle repoda değişiklik gürültüsü oluşmaz. Lockfile yazımlarını tamamen atlamak için:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Derleyin ve test edin">
+  <Step title="Derle ve test et">
     ```sh
     bun run build
     bun run vitest run
@@ -42,14 +42,14 @@ Bun, TypeScript'i doğrudan çalıştırmak için isteğe bağlı bir yerel çal
   </Step>
 </Steps>
 
-## Lifecycle Script'leri
+## Yaşam döngüsü betikleri
 
-Bun, bağımlılık lifecycle script'lerini açıkça güvenilmedikçe engeller. Bu depo için yaygın olarak engellenen script'ler gerekli değildir:
+Bun, açıkça güvenilir olarak işaretlenmedikçe bağımlılık yaşam döngüsü betiklerini engeller. Bu repo için yaygın olarak engellenen betikler gerekli değildir:
 
-- `@whiskeysockets/baileys` `preinstall` -- Node major sürümünün >= 20 olduğunu kontrol eder (OpenClaw varsayılan olarak Node 24 kullanır ve şu anda `22.14+` olmak üzere Node 22 LTS'yi de destekler)
-- `protobufjs` `postinstall` -- uyumsuz sürüm şemaları hakkında uyarılar üretir (derleme artifaktı yoktur)
+- `@whiskeysockets/baileys` `preinstall` -- Node ana sürümünün >= 20 olduğunu denetler (OpenClaw varsayılan olarak Node 24 kullanır ve şu anda `22.14+` olan Node 22 LTS desteğini hâlâ sürdürür)
+- `protobufjs` `postinstall` -- uyumsuz sürüm şemaları hakkında uyarılar üretir (derleme çıktısı yok)
 
-Bu script'leri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız, onlara açıkça güvenin:
+Bu betikleri gerektiren bir çalışma zamanı sorunuyla karşılaşırsanız, onlara açıkça güven verin:
 
 ```sh
 bun pm trust @whiskeysockets/baileys protobufjs
@@ -57,10 +57,10 @@ bun pm trust @whiskeysockets/baileys protobufjs
 
 ## Dikkat edilmesi gerekenler
 
-Bazı script'ler hâlâ `pnpm`'yi sabit kodlar (örneğin `docs:build`, `ui:*`, `protocol:check`). Şimdilik bunları `pnpm` üzerinden çalıştırın.
+Bazı betikler hâlâ pnpm'i sabit kodlar (örneğin `docs:build`, `ui:*`, `protocol:check`). Şimdilik bunları pnpm üzerinden çalıştırın.
 
 ## İlgili
 
-- [Kuruluma genel bakış](/tr/install)
+- [Kurulum genel bakışı](/tr/install)
 - [Node.js](/tr/install/node)
 - [Güncelleme](/tr/install/updating)

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Pi entegrasyon kodu veya testleri üzerinde çalışılıyor
-    - Pi'ye özgü lint, typecheck ve canlı test akışlarını çalıştırma
-summary: 'Pi entegrasyonu için geliştirici iş akışı: derleme, test etme ve canlı doğrulama'
+    - Pi entegrasyon kodu veya testleri üzerinde çalışma
+    - Pi'ye özgü lint, tür denetimi ve canlı test akışlarını çalıştırma
+summary: 'Pi entegrasyonu için geliştirici iş akışı: derleme, test ve canlı doğrulama'
 title: Pi geliştirme iş akışı
 x-i18n:
-    generated_at: "2026-04-24T09:18:35Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:31:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
+    source_hash: 9c4025c8ed1a4dff0d8116440fd48f375264eb4cac06f71afebf8c05f3470ab4
     source_path: pi-dev.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu kılavuz, OpenClaw içindeki Pi entegrasyonu üzerinde çalışmak için makul bir iş akışını özetler.
+OpenClaw içinde Pi entegrasyonu üzerinde çalışmak için sağlıklı bir iş akışı.
 
-## Type Checking ve Linting
+## Tür denetimi ve linting
 
-- Varsayılan yerel geçit: `pnpm check`
-- Derleme çıktısını, paketlemeyi veya lazy-loading/module sınırlarını etkileyebilecek değişikliklerde derleme geçidi: `pnpm build`
-- Pi ağırlıklı değişiklikler için tam teslim geçidi: `pnpm check && pnpm test`
+- Varsayılan yerel doğrulama kapısı: `pnpm check`
+- Derleme kapısı: Değişiklik derleme çıktısını, paketlemeyi veya lazy-loading/modül sınırlarını etkileyebiliyorsa `pnpm build`
+- Pi ağırlıklı değişiklikler için tam landing kapısı: `pnpm check && pnpm test`
 
 ## Pi testlerini çalıştırma
 
@@ -35,13 +35,13 @@ pnpm test \
   "src/agents/pi-hooks/**/*.test.ts"
 ```
 
-Canlı sağlayıcı alıştırmasını da dahil etmek için:
+Canlı sağlayıcı denemesini dahil etmek için:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
 ```
 
-Bu, ana Pi unit paketlerini kapsar:
+Bu, ana Pi birim test paketlerini kapsar:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-embedded-*.test.ts`
@@ -50,40 +50,40 @@ Bu, ana Pi unit paketlerini kapsar:
 - `src/agents/pi-tool-definition-adapter.test.ts`
 - `src/agents/pi-hooks/*.test.ts`
 
-## Elle test etme
+## Manuel test
 
 Önerilen akış:
 
 - Gateway'i geliştirme modunda çalıştırın:
   - `pnpm gateway:dev`
-- Agent'i doğrudan tetikleyin:
+- Ajanı doğrudan tetikleyin:
   - `pnpm openclaw agent --message "Hello" --thinking low`
-- Etkileşimli hata ayıklama için TUI kullanın:
+- Etkileşimli hata ayıklama için TUI'yi kullanın:
   - `pnpm tui`
 
-Araç çağırma davranışı için bir `read` veya `exec` eylemi isteyin; böylece araç akışını ve payload işlemeyi görebilirsiniz.
+Araç çağrısı davranışı için, araç akışını ve yük işlemeyi görebilmek üzere bir `read` veya `exec` eylemi isteyin.
 
 ## Temiz başlangıç sıfırlaması
 
-Durum, OpenClaw durum dizini altında yaşar. Varsayılan `~/.openclaw` dizinidir. `OPENCLAW_STATE_DIR` ayarlıysa bunun yerine o dizini kullanın.
+Durum, OpenClaw durum dizini altında bulunur. Varsayılan değer `~/.openclaw` dizinidir. `OPENCLAW_STATE_DIR` ayarlanmışsa bunun yerine o dizini kullanın.
 
 Her şeyi sıfırlamak için:
 
 - Yapılandırma için `openclaw.json`
-- Model auth profilleri (API anahtarları + OAuth) için `agents/<agentId>/agent/auth-profiles.json`
-- Auth profil deposunun dışında yaşamaya devam eden sağlayıcı/kanal durumu için `credentials/`
-- Agent oturum geçmişi için `agents/<agentId>/sessions/`
+- Model kimlik doğrulama profilleri (API anahtarları + OAuth) için `agents/<agentId>/agent/auth-profiles.json`
+- Kimlik doğrulama profili deposunun dışında yaşamaya devam eden sağlayıcı/kanal durumu için `credentials/`
+- Ajan oturum geçmişi için `agents/<agentId>/sessions/`
 - Oturum dizini için `agents/<agentId>/sessions/sessions.json`
-- Eski yollar varsa `sessions/`
+- Eski yollar mevcutsa `sessions/`
 - Boş bir çalışma alanı istiyorsanız `workspace/`
 
-Yalnızca oturumları sıfırlamak istiyorsanız o agent için `agents/<agentId>/sessions/` dizinini silin. Auth'u korumak istiyorsanız `agents/<agentId>/agent/auth-profiles.json` dosyasını ve `credentials/` altındaki tüm sağlayıcı durumunu olduğu gibi bırakın.
+Yalnızca oturumları sıfırlamak istiyorsanız, ilgili ajan için `agents/<agentId>/sessions/` dizinini silin. Kimlik doğrulamayı korumak istiyorsanız `agents/<agentId>/agent/auth-profiles.json` dosyasını ve `credentials/` altındaki sağlayıcı durumlarını yerinde bırakın.
 
 ## Başvurular
 
-- [Testing](/tr/help/testing)
-- [Getting Started](/tr/start/getting-started)
+- [Test Etme](/tr/help/testing)
+- [Başlarken](/tr/start/getting-started)
 
 ## İlgili
 
-- [Pi integration architecture](/tr/pi)
+- [Pi entegrasyonu mimarisi](/tr/pi)

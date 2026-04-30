@@ -1,53 +1,63 @@
 ---
 read_when: Browser control fails on Linux, especially with snap Chromium
-summary: Linux'ta OpenClaw tarayıcı denetimi için Chrome/Brave/Edge/Chromium CDP başlatma sorunlarını düzeltin
-title: Tarayıcı sorun giderme
+summary: Linux'ta OpenClaw tarayıcı kontrolü için Chrome/Brave/Edge/Chromium CDP başlatma sorunlarını giderin
+title: Tarayıcı sorunlarını giderme
 x-i18n:
-    generated_at: "2026-04-26T11:41:28Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:46:47Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 69e5b42532af002af3d6a3ab21df7f82d2d62ce9f23b57a94cdb97e8ac65df3b
+    source_hash: d9a91ea42a8a600163bcf66ad398677175bd0c5186d3e1dddb629a55c2ea66ed
     source_path: tools/browser-linux-troubleshooting.md
-    workflow: 15
+    workflow: 16
 ---
 
-## Sorun: "Chrome CDP 18800 portunda başlatılamadı"
+## Sorun: "Failed to start Chrome CDP on port 18800"
 
-OpenClaw'ın tarayıcı denetim sunucusu, Chrome/Brave/Edge/Chromium'u şu hatayla başlatamıyor:
+OpenClaw'ın tarayıcı denetim sunucusu Chrome/Brave/Edge/Chromium başlatırken şu hatayla başarısız olur:
 
 ```
 {"error":"Error: Failed to start Chrome CDP on port 18800 for profile \"openclaw\"."}
 ```
 
-### Temel neden
+### Kök neden
 
-Ubuntu'da (ve birçok Linux dağıtımında), varsayılan Chromium kurulumu bir **snap paketi**dir. Snap'in AppArmor yalıtımı, OpenClaw'ın tarayıcı sürecini başlatma ve izleme biçimine müdahale eder.
+Ubuntu'da (ve birçok Linux dağıtımında), varsayılan Chromium kurulumu bir **snap paketi**dir. Snap'in AppArmor kısıtlaması, OpenClaw'ın tarayıcı sürecini başlatma ve izleme biçimiyle çakışır.
 
-`apt install chromium` komutu, snap'e yönlendiren bir sahte paket kurar:
+`apt install chromium` komutu, snap'e yönlendiren bir stub paket kurar:
 
 ```
 Note, selecting 'chromium-browser' instead of 'chromium'
 chromium-browser is already the newest version (2:1snap1-0ubuntu2).
 ```
 
-Bu, gerçek bir tarayıcı DEĞİLDİR — yalnızca bir sarmalayıcıdır.
+Bu gerçek bir tarayıcı DEĞİLDİR - yalnızca bir sarmalayıcıdır.
 
 Diğer yaygın Linux başlatma hataları:
 
-- `The profile appears to be in use by another Chromium process`, yönetilen profil dizininde eski `Singleton*` kilit dosyaları bulunduğu anlamına gelir. OpenClaw, kilit ölü bir süreci veya farklı bir ana makine sürecini işaret ediyorsa bu kilitleri kaldırır ve bir kez daha dener.
-- `Missing X server or $DISPLAY`, masaüstü oturumu olmayan bir ana makinede görünür bir tarayıcının açıkça istendiği anlamına gelir. Varsayılan olarak, yerel yönetilen profiller artık Linux'ta `DISPLAY` ve `WAYLAND_DISPLAY` ikisi de ayarlanmamışsa başsız moda geri döner. `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless: false` veya `browser.profiles.<name>.headless: false` ayarladıysanız, bu görünür mod geçersiz kılmasını kaldırın, `OPENCLAW_BROWSER_HEADLESS=1` ayarlayın, `Xvfb` başlatın, tek seferlik yönetilen bir başlatma için `openclaw browser start --headless` çalıştırın veya OpenClaw'ı gerçek bir masaüstü oturumunda çalıştırın.
+- `The profile appears to be in use by another Chromium process`, Chrome'un
+  yönetilen profil dizininde eski `Singleton*` kilit dosyaları bulduğu anlamına gelir. OpenClaw,
+  kilit ölü veya farklı bir ana makine sürecini gösterdiğinde bu kilitleri
+  kaldırır ve bir kez yeniden dener.
+- `Missing X server or $DISPLAY`, masaüstü oturumu olmayan bir ana makinede görünür bir tarayıcının açıkça
+  istendiği anlamına gelir. Varsayılan olarak, yerel yönetilen
+  profiller artık Linux'ta hem `DISPLAY` hem de
+  `WAYLAND_DISPLAY` ayarlı olmadığında headless moda geri döner. `OPENCLAW_BROWSER_HEADLESS=0`,
+  `browser.headless: false` veya `browser.profiles.<name>.headless: false` ayarladıysanız,
+  bu headed geçersiz kılmasını kaldırın, `OPENCLAW_BROWSER_HEADLESS=1` ayarlayın, `Xvfb` başlatın,
+  tek seferlik yönetilen başlatma için `openclaw browser start --headless` çalıştırın ya da
+  OpenClaw'ı gerçek bir masaüstü oturumunda çalıştırın.
 
-### Çözüm 1: Google Chrome kurun (önerilen)
+### Çözüm 1: Google Chrome Kurun (Önerilir)
 
-Snap ile yalıtılmamış resmi Google Chrome `.deb` paketini kurun:
+Snap tarafından sandbox'a alınmayan resmi Google Chrome `.deb` paketini kurun:
 
 ```bash
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo dpkg -i google-chrome-stable_current_amd64.deb
-sudo apt --fix-broken install -y  # bağımlılık hataları varsa
+sudo apt --fix-broken install -y  # if there are dependency errors
 ```
 
-Ardından OpenClaw yapılandırmanızı güncelleyin (`~/.openclaw/openclaw.json`):
+Ardından OpenClaw yapılandırmanızı (`~/.openclaw/openclaw.json`) güncelleyin:
 
 ```json
 {
@@ -60,7 +70,7 @@ Ardından OpenClaw yapılandırmanızı güncelleyin (`~/.openclaw/openclaw.json
 }
 ```
 
-### Çözüm 2: Snap Chromium'u yalnızca bağlanma moduyla kullanın
+### Çözüm 2: Snap Chromium'u Yalnızca Bağlanma Moduyla Kullanın
 
 Snap Chromium kullanmak zorundaysanız, OpenClaw'ı elle başlatılmış bir tarayıcıya bağlanacak şekilde yapılandırın:
 
@@ -86,7 +96,7 @@ chromium-browser --headless --no-sandbox --disable-gpu \
   about:blank &
 ```
 
-3. İsteğe bağlı olarak Chrome'u otomatik başlatmak için bir systemd kullanıcı hizmeti oluşturun:
+3. İsteğe bağlı olarak Chrome'u otomatik başlatmak için bir systemd kullanıcı servisi oluşturun:
 
 ```ini
 # ~/.config/systemd/user/openclaw-browser.service
@@ -105,9 +115,9 @@ WantedBy=default.target
 
 Şununla etkinleştirin: `systemctl --user enable --now openclaw-browser.service`
 
-### Tarayıcının çalıştığını doğrulama
+### Tarayıcının Çalıştığını Doğrulama
 
-Durumu kontrol edin:
+Durumu denetleyin:
 
 ```bash
 curl -s http://127.0.0.1:18791/ | jq '{running, pid, chosenBrowser}'
@@ -122,38 +132,50 @@ curl -s http://127.0.0.1:18791/tabs
 
 ### Yapılandırma başvurusu
 
-| Seçenek                          | Açıklama                                                             | Varsayılan                                                  |
-| -------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `browser.enabled`                | Tarayıcı denetimini etkinleştirir                                    | `true`                                                      |
-| `browser.executablePath`         | Chromium tabanlı tarayıcı ikilisinin yolu (Chrome/Brave/Edge/Chromium) | otomatik algılanır (Chromium tabanlıysa varsayılan tarayıcı tercih edilir) |
-| `browser.headless`               | GUI olmadan çalıştırır                                                | `false`                                                     |
-| `OPENCLAW_BROWSER_HEADLESS`      | Yerel yönetilen tarayıcı başsız modu için süreç başına geçersiz kılma | ayarlanmamış                                                |
-| `browser.noSandbox`              | `--no-sandbox` bayrağını ekler (bazı Linux kurulumları için gereklidir) | `false`                                                  |
-| `browser.attachOnly`             | Tarayıcıyı başlatmaz, yalnızca var olana bağlanır                     | `false`                                                     |
-| `browser.cdpPort`                | Chrome DevTools Protocol portu                                       | `18800`                                                     |
+| Seçenek                          | Açıklama                                                            | Varsayılan                                                  |
+| -------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `browser.enabled`                | Tarayıcı denetimini etkinleştir                                     | `true`                                                      |
+| `browser.executablePath`         | Chromium tabanlı tarayıcı ikili dosyasının yolu (Chrome/Brave/Edge/Chromium) | otomatik algılanır (Chromium tabanlıysa varsayılan tarayıcı tercih edilir) |
+| `browser.headless`               | GUI olmadan çalıştır                                                | `false`                                                     |
+| `OPENCLAW_BROWSER_HEADLESS`      | Yerel yönetilen tarayıcı headless modu için süreç başına geçersiz kılma | ayarlı değil                                                |
+| `browser.noSandbox`              | `--no-sandbox` bayrağını ekle (bazı Linux kurulumları için gereklidir) | `false`                                                     |
+| `browser.attachOnly`             | Tarayıcı başlatma, yalnızca mevcut olana bağlan                     | `false`                                                     |
+| `browser.cdpPort`                | Chrome DevTools Protocol bağlantı noktası                           | `18800`                                                     |
 | `browser.localLaunchTimeoutMs`   | Yerel yönetilen Chrome keşif zaman aşımı                            | `15000`                                                     |
 | `browser.localCdpReadyTimeoutMs` | Yerel yönetilen başlatma sonrası CDP hazır olma zaman aşımı         | `8000`                                                      |
 
-Raspberry Pi, eski VPS ana makineleri veya yavaş depolamada, Chrome'un CDP HTTP uç noktasını gösterebilmesi için daha fazla zamana ihtiyacı varsa `browser.localLaunchTimeoutMs` değerini artırın. Başlatma başarılı olduğu hâlde `openclaw browser start` hâlâ `not reachable after start` bildiriyorsa `browser.localCdpReadyTimeoutMs` değerini artırın. Değerler `120000` ms'ye kadar pozitif tamsayılar olmalıdır; geçersiz yapılandırma değerleri reddedilir.
+Raspberry Pi, eski VPS ana makineleri veya yavaş depolama üzerinde, Chrome'un CDP HTTP
+uç noktasını sunmak için daha fazla zamana ihtiyacı olduğunda
+`browser.localLaunchTimeoutMs` değerini artırın. Başlatma başarılı olduğu halde
+`openclaw browser start` hâlâ `not reachable after start` bildiriyorsa `browser.localCdpReadyTimeoutMs`
+değerini artırın. Değerler `120000` ms'ye kadar pozitif tam sayılar olmalıdır;
+geçersiz yapılandırma değerleri reddedilir.
 
 ### Sorun: "No Chrome tabs found for profile=\"user\""
 
-Bir `existing-session` / Chrome MCP profili kullanıyorsunuz. OpenClaw yerel Chrome'u görebiliyor, ancak bağlanmak için açık sekme yok.
+Bir `existing-session` / Chrome MCP profili kullanıyorsunuz. OpenClaw yerel Chrome'u görebiliyor,
+ancak bağlanılabilecek açık sekme yok.
 
 Düzeltme seçenekleri:
 
-1. **Yönetilen tarayıcıyı kullanın:** `openclaw browser start --browser-profile openclaw` (veya `browser.defaultProfile: "openclaw"` ayarlayın).
+1. **Yönetilen tarayıcıyı kullanın:** `openclaw browser start --browser-profile openclaw`
+   (veya `browser.defaultProfile: "openclaw"` ayarlayın).
 2. **Chrome MCP kullanın:** yerel Chrome'un en az bir açık sekmeyle çalıştığından emin olun, ardından `--browser-profile user` ile yeniden deneyin.
 
 Notlar:
 
-- `user` yalnızca ana makine içindir. Linux sunucuları, kapsayıcılar veya uzak ana makineler için CDP profillerini tercih edin.
-- `user` / diğer `existing-session` profilleri mevcut Chrome MCP sınırlarını korur: başvuru odaklı eylemler, tek dosya yükleme kancaları, iletişim kutusu zaman aşımı geçersiz kılmaları yok, `wait --load networkidle` yok ve `responsebody`, PDF dışa aktarma, indirme yakalama veya toplu eylemler yok.
+- `user` yalnızca ana makineye özgüdür. Linux sunucuları, container'lar veya uzak ana makineler için CDP profillerini tercih edin.
+- `user` / diğer `existing-session` profilleri mevcut Chrome MCP sınırlarını korur:
+  ref odaklı eylemler, tek dosya yükleme hook'ları, dialog zaman aşımı geçersiz kılmaları yok,
+  `wait --load networkidle` yok ve `responsebody`, PDF dışa aktarma, indirme
+  yakalama veya toplu eylemler yok.
 - Yerel `openclaw` profilleri `cdpPort`/`cdpUrl` değerlerini otomatik atar; bunları yalnızca uzak CDP için ayarlayın.
-- Uzak CDP profilleri `http://`, `https://`, `ws://` ve `wss://` kabul eder. `/json/version` keşfi için HTTP(S), tarayıcı hizmetiniz size doğrudan bir DevTools soket URL'si veriyorsa WS(S) kullanın.
+- Uzak CDP profilleri `http://`, `https://`, `ws://` ve `wss://` kabul eder.
+  `/json/version` keşfi için HTTP(S), tarayıcı
+  servisiniz doğrudan bir DevTools soket URL'si veriyorsa WS(S) kullanın.
 
 ## İlgili
 
 - [Tarayıcı](/tr/tools/browser)
-- [Tarayıcı girişi](/tr/tools/browser-login)
+- [Tarayıcı oturum açma](/tr/tools/browser-login)
 - [Tarayıcı WSL2 sorun giderme](/tr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

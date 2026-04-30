@@ -1,38 +1,35 @@
 ---
 read_when:
-    - OpenClaw günlüklemesine yeni başlayanlar için uygun bir genel bakışa ihtiyacınız var
-    - Günlük düzeylerini, biçimlerini veya redaksiyonu yapılandırmak istiyorsunuz
+    - OpenClaw günlükleme hakkında başlangıç seviyesindekiler için anlaşılır bir genel bakışa ihtiyacınız var
+    - Günlük düzeylerini, biçimlerini veya maskelemeyi yapılandırmak istiyorsunuz
     - Sorun gideriyorsunuz ve günlükleri hızlıca bulmanız gerekiyor
-summary: Dosya günlükleri, konsol çıktısı, CLI tailing ve Control UI Günlükler sekmesi
+summary: Dosya günlükleri, konsol çıktısı, CLI kuyruk takibi ve Control UI Günlükler sekmesi
 title: Günlükleme
 x-i18n:
-    generated_at: "2026-04-26T11:34:47Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:31:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6fa55caa65a2a06a757e37ad64c5fd030f958cf6827596db5c183c6c6db2ed9b
+    source_hash: 916fb03219d571f0302560a4cb6755940575c92fff0b4eab024b9dad53f841ce
     source_path: logging.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw'un iki ana günlük yüzeyi vardır:
+OpenClaw'ın iki ana günlük yüzeyi vardır:
 
 - Gateway tarafından yazılan **dosya günlükleri** (JSON satırları).
 - Terminallerde ve Gateway Debug UI'da gösterilen **konsol çıktısı**.
 
-Control UI içindeki **Logs** sekmesi gateway dosya günlüğünü tail eder. Bu sayfa
-günlüklerin nerede bulunduğunu, nasıl okunacağını ve günlük düzeyleri ile biçimlerinin nasıl yapılandırılacağını açıklar.
+Control UI **Logs** sekmesi gateway dosya günlüğünü takip eder. Bu sayfa günlüklerin nerede bulunduğunu, nasıl okunacağını ve günlük seviyeleri ile biçimlerinin nasıl yapılandırılacağını açıklar.
 
-## Günlükler nerede bulunur
+## Günlüklerin bulunduğu yer
 
-Varsayılan olarak Gateway, aşağıdaki konum altında dönen bir günlük dosyası yazar:
+Varsayılan olarak Gateway, dönen bir günlük dosyasını şuraya yazar:
 
 `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
 
 Tarih, gateway ana makinesinin yerel saat dilimini kullanır.
 
-Her dosya `logging.maxFileBytes` değerine ulaştığında döner (varsayılan: 100 MB).
-OpenClaw etkin dosyanın yanında `openclaw-YYYY-MM-DD.1.log` gibi beşe kadar numaralı arşiv tutar
-ve tanılamayı bastırmak yerine yeni bir etkin günlük dosyasına yazmaya devam eder.
+Her dosya `logging.maxFileBytes` değerine ulaştığında döner (varsayılan: 100 MB). OpenClaw, etkin dosyanın yanında en fazla beş numaralı arşiv tutar, örneğin `openclaw-YYYY-MM-DD.1.log`, ve tanılamaları bastırmak yerine yeni bir etkin günlüğe yazmaya devam eder.
 
 Bunu `~/.openclaw/openclaw.json` içinde geçersiz kılabilirsiniz:
 
@@ -46,9 +43,9 @@ Bunu `~/.openclaw/openclaw.json` içinde geçersiz kılabilirsiniz:
 
 ## Günlükler nasıl okunur
 
-### CLI: canlı tail (önerilir)
+### CLI: canlı takip (önerilir)
 
-Gateway günlük dosyasını RPC üzerinden tail etmek için CLI kullanın:
+Gateway günlük dosyasını RPC üzerinden takip etmek için CLI'ı kullanın:
 
 ```bash
 openclaw logs --follow
@@ -56,33 +53,30 @@ openclaw logs --follow
 
 Kullanışlı mevcut seçenekler:
 
-- `--local-time`: zaman damgalarını yerel saat diliminizde gösterir
+- `--local-time`: zaman damgalarını yerel saat diliminizde işler
 - `--url <url>` / `--token <token>` / `--timeout <ms>`: standart Gateway RPC bayrakları
-- `--expect-final`: ajan destekli RPC nihai yanıt bekleme bayrağı (paylaşılan istemci katmanı üzerinden burada kabul edilir)
+- `--expect-final`: agent destekli RPC son yanıt bekleme bayrağı (paylaşılan istemci katmanı üzerinden burada kabul edilir)
 
 Çıktı modları:
 
-- **TTY oturumları**: güzel, renkli, yapılandırılmış günlük satırları.
+- **TTY oturumları**: güzel biçimlendirilmiş, renklendirilmiş, yapılandırılmış günlük satırları.
 - **TTY olmayan oturumlar**: düz metin.
-- `--json`: satır sınırlı JSON (satır başına bir günlük olayı).
-- `--plain`: TTY oturumlarında düz metni zorlar.
+- `--json`: satırla ayrılmış JSON (satır başına bir günlük olayı).
+- `--plain`: TTY oturumlarında düz metni zorunlu kılar.
 - `--no-color`: ANSI renklerini devre dışı bırakır.
 
-Açık bir `--url` verdiğinizde CLI, yapılandırma veya
-ortam kimlik bilgilerini otomatik uygulamaz; hedef Gateway
-auth gerektiriyorsa `--token` değerini kendiniz ekleyin.
+Açık bir `--url` ilettiğinizde CLI, yapılandırma veya ortam kimlik bilgilerini otomatik olarak uygulamaz; hedef Gateway kimlik doğrulaması gerektiriyorsa `--token` değerini kendiniz ekleyin.
 
 JSON modunda CLI, `type` etiketli nesneler üretir:
 
-- `meta`: akış metadata'sı (dosya, imleç, boyut)
+- `meta`: akış meta verileri (dosya, imleç, boyut)
 - `log`: ayrıştırılmış günlük girdisi
-- `notice`: kırpma / döndürme ipuçları
+- `notice`: kesilme / döndürme ipuçları
 - `raw`: ayrıştırılmamış günlük satırı
 
-Yerel loopback Gateway eşleştirme isterse `openclaw logs`,
-yapılandırılmış yerel günlük dosyasına otomatik geri düşer. Açık `--url` hedefleri bu fallback'i kullanmaz.
+Örtük local loopback Gateway eşleştirme isterse, bağlantı sırasında kapanırsa veya `logs.tail` yanıt vermeden önce zaman aşımına uğrarsa `openclaw logs`, yapılandırılmış Gateway dosya günlüğüne otomatik olarak geri döner. Açık `--url` hedefleri bu geri dönüşü kullanmaz.
 
-Gateway'e ulaşılamıyorsa CLI, şunu çalıştırmanız için kısa bir ipucu yazdırır:
+Gateway erişilemezse CLI, şunu çalıştırmak için kısa bir ipucu yazdırır:
 
 ```bash
 openclaw doctor
@@ -90,12 +84,11 @@ openclaw doctor
 
 ### Control UI (web)
 
-Control UI'nin **Logs** sekmesi aynı dosyayı `logs.tail` kullanarak tail eder.
-Nasıl açılacağı için bkz. [/web/control-ui](/tr/web/control-ui).
+Control UI'nin **Logs** sekmesi aynı dosyayı `logs.tail` kullanarak takip eder. Nasıl açılacağını görmek için [/web/control-ui](/tr/web/control-ui) sayfasına bakın.
 
 ### Yalnızca kanal günlükleri
 
-Kanal etkinliğini (WhatsApp/Telegram/vb.) filtrelemek için şunu kullanın:
+Kanal etkinliğini filtrelemek için (WhatsApp/Telegram/vb) şunu kullanın:
 
 ```bash
 openclaw channels logs --channel whatsapp
@@ -105,26 +98,35 @@ openclaw channels logs --channel whatsapp
 
 ### Dosya günlükleri (JSONL)
 
-Günlük dosyasındaki her satır bir JSON nesnesidir. CLI ve Control UI bu
-girdileri ayrıştırarak yapılandırılmış çıktı (zaman, düzey, alt sistem, mesaj) gösterir.
+Günlük dosyasındaki her satır bir JSON nesnesidir. CLI ve Control UI, yapılandırılmış çıktıyı (saat, seviye, alt sistem, ileti) işlemek için bu girdileri ayrıştırır.
+
+Dosya günlüğü JSONL kayıtları, kullanılabilir olduğunda makine tarafından filtrelenebilir üst düzey alanlar da içerir:
+
+- `hostname`: gateway ana makine adı.
+- `message`: tam metin arama için düzleştirilmiş günlük iletisi metni.
+- `agent_id`: günlük çağrısı agent bağlamı taşıdığında etkin agent kimliği.
+- `session_id`: günlük çağrısı oturum bağlamı taşıdığında etkin oturum kimliği/anahtarı.
+- `channel`: günlük çağrısı kanal bağlamı taşıdığında etkin kanal.
+
+OpenClaw, özgün yapılandırılmış günlük argümanlarını bu alanların yanında korur; böylece numaralı tslog argüman anahtarlarını okuyan mevcut ayrıştırıcılar çalışmaya devam eder.
 
 ### Konsol çıktısı
 
-Konsol günlükleri **TTY farkındadır** ve okunabilirlik için biçimlendirilir:
+Konsol günlükleri **TTY uyumludur** ve okunabilirlik için biçimlendirilir:
 
 - Alt sistem önekleri (ör. `gateway/channels/whatsapp`)
-- Düzey renklendirmesi (`info`/`warn`/`error`)
+- Seviye renklendirme (info/warn/error)
 - İsteğe bağlı kompakt veya JSON modu
 
 Konsol biçimlendirmesi `logging.consoleStyle` tarafından denetlenir.
 
 ### Gateway WebSocket günlükleri
 
-`openclaw gateway`, RPC trafiği için WebSocket protokol günlüklemesine de sahiptir:
+`openclaw gateway`, RPC trafiği için WebSocket protokol günlüğüne de sahiptir:
 
 - normal mod: yalnızca ilginç sonuçlar (hatalar, ayrıştırma hataları, yavaş çağrılar)
 - `--verbose`: tüm istek/yanıt trafiği
-- `--ws-log auto|compact|full`: ayrıntılı gösterim stilini seçin
+- `--ws-log auto|compact|full`: ayrıntılı işleme stilini seçer
 - `--compact`: `--ws-log compact` için takma ad
 
 Örnekler:
@@ -135,9 +137,9 @@ openclaw gateway --verbose --ws-log compact
 openclaw gateway --verbose --ws-log full
 ```
 
-## Günlüklemeyi yapılandırma
+## Günlüğe kaydetmeyi yapılandırma
 
-Tüm günlükleme yapılandırması `~/.openclaw/openclaw.json` içinde `logging` altında bulunur.
+Tüm günlük yapılandırması `~/.openclaw/openclaw.json` içinde `logging` altında bulunur.
 
 ```json
 {
@@ -152,53 +154,61 @@ Tüm günlükleme yapılandırması `~/.openclaw/openclaw.json` içinde `logging
 }
 ```
 
-### Günlük düzeyleri
+### Günlük seviyeleri
 
-- `logging.level`: **dosya günlükleri** (JSONL) düzeyi.
-- `logging.consoleLevel`: **konsol** ayrıntı düzeyi.
+- `logging.level`: **dosya günlükleri** (JSONL) seviyesi.
+- `logging.consoleLevel`: **konsol** ayrıntı seviyesi.
 
-İkisini de **`OPENCLAW_LOG_LEVEL`** ortam değişkeni ile geçersiz kılabilirsiniz (ör. `OPENCLAW_LOG_LEVEL=debug`). Ortam değişkeni yapılandırma dosyasından önceliklidir, böylece `openclaw.json` dosyasını düzenlemeden tek bir çalıştırma için ayrıntıyı artırabilirsiniz. Ayrıca genel CLI seçeneği **`--log-level <level>`** da verebilirsiniz (örneğin `openclaw --log-level debug gateway run`); bu seçenek o komut için ortam değişkenini geçersiz kılar.
+İkisini de **`OPENCLAW_LOG_LEVEL`** ortam değişkeniyle geçersiz kılabilirsiniz (ör. `OPENCLAW_LOG_LEVEL=debug`). Ortam değişkeni yapılandırma dosyasına göre önceliklidir, böylece `openclaw.json` dosyasını düzenlemeden tek bir çalıştırma için ayrıntı seviyesini artırabilirsiniz. Ayrıca genel CLI seçeneği **`--log-level <level>`** değerini de iletebilirsiniz (örneğin, `openclaw --log-level debug gateway run`); bu, ilgili komut için ortam değişkenini geçersiz kılar.
 
-`--verbose` yalnızca konsol çıktısını ve WS günlük ayrıntısını etkiler; dosya günlük düzeylerini değiştirmez.
+`--verbose` yalnızca konsol çıktısını ve WS günlük ayrıntı düzeyini etkiler; dosya günlük seviyelerini değiştirmez.
+
+### İz korelasyonu
+
+Dosya günlükleri JSONL'dir. Bir günlük çağrısı geçerli bir tanılama iz bağlamı taşıdığında OpenClaw, iz alanlarını üst düzey JSON anahtarları olarak yazar (`traceId`, `spanId`, `parentSpanId`, `traceFlags`); böylece harici günlük işleyiciler satırı OTEL span'leri ve sağlayıcı `traceparent` yayılımıyla ilişkilendirebilir.
+
+Gateway HTTP istekleri ve Gateway WebSocket çerçeveleri dahili bir istek iz kapsamı oluşturur. Bu async kapsam içinde yayımlanan günlükler ve tanılama olayları, açık bir iz bağlamı iletmediklerinde istek izini devralır. Agent çalıştırma ve model çağrısı izleri etkin istek izinin çocukları olur; böylece yerel günlükler, tanılama anlık görüntüleri, OTEL span'leri ve güvenilir sağlayıcı `traceparent` başlıkları ham istek veya model içeriği günlüğe kaydedilmeden `traceId` ile birleştirilebilir.
+
+### Model çağrısı boyutu ve zamanlaması
+
+Model çağrısı tanılamaları, ham istem veya yanıt içeriğini yakalamadan sınırlı istek/yanıt ölçümleri kaydeder:
+
+- `requestPayloadBytes`: son model istek yükünün UTF-8 bayt boyutu
+- `responseStreamBytes`: akışa alınan model yanıt olaylarının UTF-8 bayt boyutu
+- `timeToFirstByteMs`: ilk akışa alınan yanıt olayından önce geçen süre
+- `durationMs`: toplam model çağrısı süresi
+
+Tanılama dışa aktarımı etkinleştirildiğinde bu alanlar tanılama anlık görüntüleri, model çağrısı Plugin kancaları ve OTEL model çağrısı span'leri/metrikleri için kullanılabilir.
 
 ### Konsol stilleri
 
 `logging.consoleStyle`:
 
-- `pretty`: kullanıcı dostu, renkli, zaman damgalı.
+- `pretty`: insan dostu, renkli, zaman damgalı.
 - `compact`: daha sıkı çıktı (uzun oturumlar için en iyisi).
-- `json`: satır başına JSON (günlük işleyicileri için).
+- `json`: satır başına JSON (günlük işleyiciler için).
 
 ### Redaksiyon
 
-Araç özetleri, konsola ulaşmadan önce hassas token'ları redakte edebilir:
+OpenClaw, hassas token'ları konsol çıktısına, dosya günlüklerine, OTLP günlük kayıtlarına, kalıcı oturum transkript metnine veya Control UI araç olayı yüklerine (araç başlangıç argümanları, kısmi/son sonuç yükleri, türetilmiş exec çıktısı ve yama özetleri) ulaşmadan önce redakte edebilir:
 
 - `logging.redactSensitive`: `off` | `tools` (varsayılan: `tools`)
-- `logging.redactPatterns`: varsayılan kümenin yerine geçecek regex dizeleri listesi
+- `logging.redactPatterns`: varsayılan kümeyi geçersiz kılacak regex dizeleri listesi. Özel desenler, Control UI araç yükleri için yerleşik varsayılanların üzerine uygulanır; bu nedenle desen eklemek, varsayılanların zaten yakaladığı değerlerin redaksiyonunu asla zayıflatmaz.
 
-Redaksiyon, **konsol çıktısı**, **stderr yönlendirmeli
-konsol tanılaması** ve **dosya günlükleri** için günlükleme sink'lerinde uygulanır. Dosya günlükleri JSONL olarak kalır, ancak eşleşen
-gizli değerler satır diske yazılmadan önce maskelenir.
+Dosya günlükleri ve oturum transkriptleri JSONL olarak kalır, ancak eşleşen gizli değerler satır veya ileti diske yazılmadan önce maskelenir. Redaksiyon en iyi çaba ilkesine dayanır: metin içeren ileti içeriğine ve günlük dizelerine uygulanır, her tanımlayıcıya veya ikili yük alanına değil.
 
-## Tanılama ve OpenTelemetry
+`logging.redactSensitive: "off"` yalnızca bu genel günlük/transkript politikasını devre dışı bırakır. OpenClaw, UI istemcilerine, destek paketlerine, tanılama gözlemcilerine, onay istemlerine veya agent araçlarına gösterilebilecek güvenlik sınırı yüklerini yine de redakte eder. Örnekler arasında Control UI araç çağrısı olayları, `sessions_history` çıktısı, tanılama destek dışa aktarımları, sağlayıcı hata gözlemleri, exec onay komutu gösterimi ve Gateway WebSocket protokol günlükleri bulunur. Özel `logging.redactPatterns`, bu yüzeylerde projeye özgü desenler eklemeye devam edebilir.
 
-Tanılama, model çalıştırmaları ve
-mesaj akışı telemetrisi (Webhooks, kuyruklama, oturum durumu) için yapılandırılmış, makine tarafından okunabilir olaylardır. Günlüklerin **yerine geçmezler** — metrikleri, izleri ve export'ları beslerler. Olaylar siz export etseniz de etmeseniz de süreç içinde üretilir.
+## Tanılamalar ve OpenTelemetry
 
-Birbirine bitişik iki yüzey:
+Tanılamalar, model çalıştırmaları ve ileti akışı telemetrisi (Webhook'lar, kuyruğa alma, oturum durumu) için yapılandırılmış, makine tarafından okunabilir olaylardır. Günlüklerin yerini **almazlar**; metrikleri, izleri ve dışa aktarıcıları beslerler. Olaylar, dışa aktarılıp aktarılmadıklarına bakılmaksızın işlem içinde yayımlanır.
 
-- **OpenTelemetry export** — metrikleri, izleri ve günlükleri OTLP/HTTP üzerinden
-  herhangi bir OpenTelemetry uyumlu collector veya arka uca gönderin (Grafana, Datadog,
-  Honeycomb, New Relic, Tempo vb.). Tam yapılandırma, sinyal kataloğu,
-  metric/span adları, ortam değişkenleri ve gizlilik modeli ayrı bir sayfada bulunur:
-  [OpenTelemetry export](/tr/gateway/opentelemetry).
-- **Tanılama bayrakları** — `logging.level` düzeyini yükseltmeden ek günlükleri
-  `logging.file` içine yönlendiren hedefli hata ayıklama günlüğü bayraklarıdır. Bayraklar büyük/küçük harfe duyarsızdır
-  ve joker karakterleri destekler (`telegram.*`, `*`). `diagnostics.flags`
-  altında veya `OPENCLAW_DIAGNOSTICS=...` env geçersiz kılması ile yapılandırın. Tam kılavuz:
-  [Diagnostics flags](/tr/diagnostics/flags).
+İki bitişik yüzey:
 
-Plugin'ler veya özel sink'ler için OTLP export olmadan tanılama olaylarını etkinleştirmek için:
+- **OpenTelemetry dışa aktarımı** — metrikleri, izleri ve günlükleri OTLP/HTTP üzerinden herhangi bir OpenTelemetry uyumlu toplayıcıya veya arka uca (Grafana, Datadog, Honeycomb, New Relic, Tempo, vb.) gönderin. Tam yapılandırma, sinyal kataloğu, metrik/span adları, ortam değişkenleri ve gizlilik modeli ayrılmış bir sayfada bulunur: [OpenTelemetry dışa aktarımı](/tr/gateway/opentelemetry).
+- **Tanılama bayrakları** — `logging.level` yükseltilmeden ek günlükleri `logging.file` konumuna yönlendiren hedefli debug günlük bayrakları. Bayraklar büyük/küçük harfe duyarsızdır ve joker karakterleri destekler (`telegram.*`, `*`). `diagnostics.flags` altında veya `OPENCLAW_DIAGNOSTICS=...` ortam geçersiz kılmasıyla yapılandırın. Tam kılavuz: [Tanılama bayrakları](/tr/diagnostics/flags).
+
+OTLP dışa aktarımı olmadan Plugin'ler veya özel hedefler için tanılama olaylarını etkinleştirmek üzere:
 
 ```json5
 {
@@ -206,18 +216,17 @@ Plugin'ler veya özel sink'ler için OTLP export olmadan tanılama olaylarını 
 }
 ```
 
-Bir collector'a OTLP export için bkz. [OpenTelemetry export](/tr/gateway/opentelemetry).
+Bir toplayıcıya OTLP dışa aktarımı için [OpenTelemetry dışa aktarımı](/tr/gateway/opentelemetry) sayfasına bakın.
 
 ## Sorun giderme ipuçları
 
-- **Gateway'e ulaşılamıyor mu?** Önce `openclaw doctor` çalıştırın.
-- **Günlükler boş mu?** Gateway'in çalıştığını ve
-  `logging.file` içindeki dosya yoluna yazdığını kontrol edin.
-- **Daha fazla ayrıntı mı gerekiyor?** `logging.level` değerini `debug` veya `trace` yapın ve yeniden deneyin.
+- **Gateway erişilebilir değil mi?** Önce `openclaw doctor` çalıştırın.
+- **Günlükler boş mu?** Gateway'in çalıştığını ve `logging.file` içindeki dosya yoluna yazdığını kontrol edin.
+- **Daha fazla ayrıntı mı gerekiyor?** `logging.level` değerini `debug` veya `trace` olarak ayarlayın ve yeniden deneyin.
 
 ## İlgili
 
-- [OpenTelemetry export](/tr/gateway/opentelemetry) — OTLP/HTTP export, metric/span kataloğu, gizlilik modeli
-- [Diagnostics flags](/tr/diagnostics/flags) — hedefli hata ayıklama günlüğü bayrakları
-- [Gateway logging internals](/tr/gateway/logging) — WS günlük stilleri, alt sistem önekleri ve konsol yakalama
-- [Configuration reference](/tr/gateway/configuration-reference#diagnostics) — tam `diagnostics.*` alan başvurusu
+- [OpenTelemetry dışa aktarımı](/tr/gateway/opentelemetry) — OTLP/HTTP dışa aktarımı, metrik/span kataloğu, gizlilik modeli
+- [Tanılama bayrakları](/tr/diagnostics/flags) — hedefli debug günlük bayrakları
+- [Gateway günlükleme iç yapısı](/tr/gateway/logging) — WS günlük stilleri, alt sistem önekleri ve konsol yakalama
+- [Yapılandırma referansı](/tr/gateway/configuration-reference#diagnostics) — tam `diagnostics.*` alan referansı

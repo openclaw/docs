@@ -1,42 +1,55 @@
 ---
 read_when:
-    - OpenClaw'ı yeni bir dizüstü bilgisayara/sunucuya taşıyorsunuz
-    - Oturumları, kimlik doğrulamayı ve kanal oturumlarını (WhatsApp vb.) korumak istiyorsunuz
-summary: Bir OpenClaw kurulumunu bir makineden diğerine taşıma (geçirme)
-title: Geçiş rehberi
+    - OpenClaw'u yeni bir dizüstü bilgisayara veya sunucuya taşıyorsunuz
+    - Başka bir ajan sisteminden geliyor ve durumu korumak istiyorsunuz
+    - Bir Plugin için yerinde yükseltme yapıyorsunuz
+summary: 'Geçiş merkezi: sistemler arası içe aktarmalar, makineden makineye taşımalar ve Plugin yükseltmeleri'
+title: Geçiş kılavuzu
 x-i18n:
-    generated_at: "2026-04-24T09:16:50Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:30:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2c14be563d1eb052726324678cf2784efffc2341aa17f662587fdabe1d8ec1e2
+    source_hash: e2a1dc86ed367a0b92cdc0d5189123bb045d327be944516f564dac723f324c97
     source_path: install/migrating.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw'ı Yeni Bir Makineye Geçirme
+OpenClaw üç migration yolunu destekler: başka bir agent sisteminden içe aktarma, mevcut bir kurulumu yeni bir makineye taşıma ve bir Plugin'i yerinde yükseltme.
 
-Bu rehber, onboarding işlemini yeniden yapmadan bir OpenClaw Gateway'i yeni bir makineye taşır.
+## Başka bir agent sisteminden içe aktarma
 
-## Neler Geçirilir
+Talimatları, MCP sunucularını, skills, model yapılandırmasını ve (isteğe bağlı) API anahtarlarını OpenClaw'a getirmek için birlikte gelen migration sağlayıcılarını kullanın. Planlar herhangi bir değişiklikten önce önizlenir, sırlar raporlarda redakte edilir ve uygulama, doğrulanmış bir yedeklemeyle desteklenir.
 
-**Durum dizinini** (varsayılan olarak `~/.openclaw/`) ve **çalışma alanınızı** kopyaladığınızda şunları korursunuz:
+<CardGroup cols={2}>
+  <Card title="Claude'dan geçiş" href="/tr/install/migrating-claude" icon="brain">
+    `CLAUDE.md`, MCP sunucuları, skills ve proje komutları dahil olmak üzere Claude Code ve Claude Desktop durumunu içe aktarın.
+  </Card>
+  <Card title="Hermes'ten geçiş" href="/tr/install/migrating-hermes" icon="feather">
+    Hermes yapılandırmasını, sağlayıcıları, MCP sunucularını, belleği, skills ve desteklenen `.env` anahtarlarını içe aktarın.
+  </Card>
+</CardGroup>
 
-- **Yapılandırma** -- `openclaw.json` ve tüm Gateway ayarları
-- **Kimlik doğrulama** -- ajan başına `auth-profiles.json` (API anahtarları + OAuth), ayrıca `credentials/` altındaki kanal/sağlayıcı durumu
-- **Oturumlar** -- konuşma geçmişi ve ajan durumu
-- **Kanal durumu** -- WhatsApp oturumu, Telegram oturumu vb.
-- **Çalışma alanı dosyaları** -- `MEMORY.md`, `USER.md`, Skills ve istemler
+CLI giriş noktası [`openclaw migrate`](/tr/cli/migrate). Onboarding, bilinen bir kaynak algıladığında migration da sunabilir (`openclaw onboard --flow import`).
+
+## OpenClaw'u yeni bir makineye taşıma
+
+Şunları korumak için **durum dizinini** (varsayılan olarak `~/.openclaw/`) ve **çalışma alanınızı** kopyalayın:
+
+- **Yapılandırma** — `openclaw.json` ve tüm Gateway ayarları.
+- **Kimlik doğrulama** — agent başına `auth-profiles.json` (API anahtarları ve OAuth) ile `credentials/` altındaki kanal veya sağlayıcı durumları.
+- **Oturumlar** — konuşma geçmişi ve agent durumu.
+- **Kanal durumu** — WhatsApp oturumu, Telegram oturumu ve benzerleri.
+- **Çalışma alanı dosyaları** — `MEMORY.md`, `USER.md`, skills ve istemler.
 
 <Tip>
-Durum dizini yolunuzu doğrulamak için eski makinede `openclaw status` çalıştırın.
-Özel profiller `~/.openclaw-<profile>/` kullanır veya `OPENCLAW_STATE_DIR` ile ayarlanmış bir yol kullanır.
+Durum dizini yolunuzu doğrulamak için eski makinede `openclaw status` çalıştırın. Özel profiller `~/.openclaw-<profile>/` veya `OPENCLAW_STATE_DIR` üzerinden ayarlanan bir yol kullanır.
 </Tip>
 
-## Geçiş Adımları
+### Migration adımları
 
 <Steps>
-  <Step title="Gateway'i durdurun ve yedek alın">
-    **Eski** makinede, dosyalar kopyalama sırasında değişmesin diye Gateway'i durdurun, ardından arşivleyin:
+  <Step title="Gateway'i durdurun ve yedekleyin">
+    **Eski** makinede, kopyalama sırasında dosyaların değişmemesi için Gateway'i durdurun, ardından arşivleyin:
 
     ```bash
     openclaw gateway stop
@@ -44,17 +57,16 @@ Durum dizini yolunuzu doğrulamak için eski makinede `openclaw status` çalış
     tar -czf openclaw-state.tgz .openclaw
     ```
 
-    Birden fazla profil kullanıyorsanız (ör. `~/.openclaw-work`), her birini ayrı ayrı arşivleyin.
+    Birden fazla profil kullanıyorsanız (örneğin `~/.openclaw-work`), her birini ayrı ayrı arşivleyin.
 
   </Step>
 
-  <Step title="Yeni makineye OpenClaw kurun">
-    Yeni makineye CLI'yi (ve gerekiyorsa Node'u) [kurun](/tr/install).
-    Onboarding'in yeni bir `~/.openclaw/` oluşturması sorun değildir -- birazdan bunun üzerine yazacaksınız.
+  <Step title="OpenClaw'u yeni makineye kurun">
+    Yeni makineye CLI'yi (ve gerekirse Node'u) [kurun](/tr/install). Onboarding'in yeni bir `~/.openclaw/` oluşturmasında sorun yoktur. Sonraki adımda bunun üzerine yazacaksınız.
   </Step>
 
   <Step title="Durum dizinini ve çalışma alanını kopyalayın">
-    Arşivi `scp`, `rsync -a` veya harici bir sürücü ile aktarın, ardından çıkarın:
+    Arşivi `scp`, `rsync -a` veya harici bir sürücü aracılığıyla aktarın, ardından çıkarın:
 
     ```bash
     cd ~
@@ -66,7 +78,7 @@ Durum dizini yolunuzu doğrulamak için eski makinede `openclaw status` çalış
   </Step>
 
   <Step title="Doctor çalıştırın ve doğrulayın">
-    Yeni makinede yapılandırma geçişlerini uygulamak ve hizmetleri onarmak için [Doctor](/tr/gateway/doctor) çalıştırın:
+    Yeni makinede, yapılandırma migration'larını uygulamak ve servisleri onarmak için [Doctor](/tr/gateway/doctor) çalıştırın:
 
     ```bash
     openclaw doctor
@@ -77,49 +89,48 @@ Durum dizini yolunuzu doğrulamak için eski makinede `openclaw status` çalış
   </Step>
 </Steps>
 
-## Yaygın Tuzaklar
+### Yaygın sorunlar
 
 <AccordionGroup>
-  <Accordion title="Profil veya state-dir uyuşmazlığı">
-    Eski Gateway `--profile` veya `OPENCLAW_STATE_DIR` kullanıyordu ama yenisi kullanmıyorsa
-    kanallar oturumu kapatılmış gibi görünür ve oturumlar boş olur.
-    Gateway'i geçirdiğiniz **aynı** profil veya state-dir ile başlatın, sonra `openclaw doctor` komutunu yeniden çalıştırın.
+  <Accordion title="Profil veya state-dir uyumsuzluğu">
+    Eski Gateway `--profile` veya `OPENCLAW_STATE_DIR` kullandıysa ve yenisi kullanmıyorsa, kanallar oturum kapatmış gibi görünür ve oturumlar boş olur. Gateway'i migrate ettiğiniz **aynı** profil veya state-dir ile başlatın, ardından `openclaw doctor` komutunu yeniden çalıştırın.
   </Accordion>
 
-  <Accordion title="Yalnızca openclaw.json dosyasını kopyalamak">
-    Yalnızca yapılandırma dosyası yeterli değildir. Model kimlik doğrulama profilleri
-    `agents/<agentId>/agent/auth-profiles.json` altında bulunur ve kanal/sağlayıcı durumu hâlâ
-    `credentials/` altında yaşar. Her zaman **tüm** durum dizinini geçirin.
+  <Accordion title="Yalnızca openclaw.json kopyalamak">
+    Yapılandırma dosyası tek başına yeterli değildir. Model kimlik doğrulama profilleri `agents/<agentId>/agent/auth-profiles.json` altında, kanal ve sağlayıcı durumu ise `credentials/` altında bulunur. Her zaman **tüm** durum dizinini migrate edin.
   </Accordion>
 
   <Accordion title="İzinler ve sahiplik">
-    Root olarak kopyaladıysanız veya kullanıcı değiştirdiyseniz Gateway kimlik bilgilerini okuyamayabilir.
-    Durum dizini ve çalışma alanının Gateway'i çalıştıran kullanıcıya ait olduğundan emin olun.
+    Root olarak kopyaladıysanız veya kullanıcı değiştirdiyseniz Gateway kimlik bilgilerini okuyamayabilir. Durum dizininin ve çalışma alanının Gateway'i çalıştıran kullanıcıya ait olduğundan emin olun.
   </Accordion>
 
   <Accordion title="Uzak mod">
-    UI'niz bir **uzak** Gateway'i işaret ediyorsa oturumlar ve çalışma alanı uzak ana bilgisayara aittir.
-    Yerel dizüstü bilgisayarınızı değil, Gateway ana bilgisayarının kendisini geçirin. Bkz. [SSS](/tr/help/faq#where-things-live-on-disk).
+    UI'niz **uzak** bir Gateway'e işaret ediyorsa, oturumların ve çalışma alanının sahibi uzak hosttur. Yerel dizüstü bilgisayarınızı değil, Gateway hostunun kendisini migrate edin. Bkz. [SSS](/tr/help/faq#where-things-live-on-disk).
   </Accordion>
 
-  <Accordion title="Yedeklerdeki gizli bilgiler">
-    Durum dizini kimlik doğrulama profilleri, kanal kimlik bilgileri ve diğer
-    sağlayıcı durumlarını içerir.
-    Yedekleri şifreli saklayın, güvensiz aktarım kanallarından kaçının ve açığa çıkma şüphesi varsa anahtarları döndürün.
+  <Accordion title="Yedeklerdeki sırlar">
+    Durum dizini kimlik doğrulama profilleri, kanal kimlik bilgileri ve diğer sağlayıcı durumlarını içerir. Yedekleri şifreli saklayın, güvenli olmayan aktarım kanallarından kaçının ve açığa çıktığından şüpheleniyorsanız anahtarları döndürün.
   </Accordion>
 </AccordionGroup>
 
-## Doğrulama Kontrol Listesi
+### Doğrulama kontrol listesi
 
 Yeni makinede şunları doğrulayın:
 
-- [ ] `openclaw status`, Gateway'in çalıştığını gösteriyor
-- [ ] Kanallar hâlâ bağlı (yeniden Pairing gerekmiyor)
-- [ ] Pano açılıyor ve mevcut oturumları gösteriyor
-- [ ] Çalışma alanı dosyaları (bellek, yapılandırmalar) mevcut
+- [ ] `openclaw status` Gateway'in çalıştığını gösteriyor.
+- [ ] Kanallar hâlâ bağlı (yeniden eşleştirme gerekmiyor).
+- [ ] Pano açılıyor ve mevcut oturumları gösteriyor.
+- [ ] Çalışma alanı dosyaları (bellek, yapılandırmalar) mevcut.
+
+## Bir Plugin'i yerinde yükseltme
+
+Yerinde Plugin yükseltmeleri aynı Plugin kimliğini ve yapılandırma anahtarlarını korur, ancak diskteki durumu mevcut düzene taşıyabilir. Plugin'e özel yükseltme kılavuzları kanallarının yanında bulunur:
+
+- [Matrix migration](/tr/channels/matrix-migration): şifrelenmiş durum kurtarma sınırları, otomatik anlık görüntü davranışı ve manuel kurtarma komutları.
 
 ## İlgili
 
-- [Kuruluma genel bakış](/tr/install)
-- [Matrix geçişi](/tr/install/migrating-matrix)
-- [Kaldırma](/tr/install/uninstall)
+- [`openclaw migrate`](/tr/cli/migrate): sistemler arası içe aktarmalar için CLI referansı.
+- [Kurulum genel bakışı](/tr/install): tüm kurulum yöntemleri.
+- [Doctor](/tr/gateway/doctor): migration sonrası sağlık kontrolü.
+- [Kaldırma](/tr/install/uninstall): OpenClaw'u temiz şekilde kaldırma.

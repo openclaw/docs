@@ -1,26 +1,26 @@
 ---
 read_when:
-    - code_execution'ı etkinleştirmek veya yapılandırmak istiyorsunuz
-    - Yerel shell erişimi olmadan uzak analiz istiyorsunuz
-    - x_search veya web_search'ü uzak Python analiziyle birleştirmek istiyorsunuz
-summary: code_execution -- xAI ile sandbox'lanmış uzak Python analizi çalıştırma
+    - code_execution özelliğini etkinleştirmek veya yapılandırmak istiyorsunuz
+    - Yerel kabuk erişimi olmadan uzaktan analiz istiyorsunuz
+    - x_search veya web_search ile uzak Python analizini birleştirmek istiyorsunuz
+summary: code_execution -- xAI ile korumalı alanda uzaktan Python analizi çalıştır
 title: Kod yürütme
 x-i18n:
-    generated_at: "2026-04-24T09:34:00Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:47:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
+    source_hash: fe635ec65aaf593a5bd63c139fbfc69e1ba3ea7c58c2bba639ec1ebd70dba1a9
     source_path: tools/code-execution.md
-    workflow: 15
+    workflow: 16
 ---
 
-`code_execution`, xAI'ın Responses API'si üzerinde sandbox'lanmış uzak Python analizi çalıştırır.
+`code_execution`, xAI'nin Responses API'sinde korumalı uzak Python analizi çalıştırır.
 Bu, yerel [`exec`](/tr/tools/exec) aracından farklıdır:
 
-- `exec`, makinenizde veya Node'unuzda shell komutları çalıştırır
-- `code_execution`, xAI'ın uzak sandbox'ında Python çalıştırır
+- `exec`, makinenizde veya node üzerinde kabuk komutları çalıştırır
+- `code_execution`, xAI'nin uzak korumalı alanında Python çalıştırır
 
-`code_execution` şu işler için kullanın:
+`code_execution` aracını şunlar için kullanın:
 
 - hesaplamalar
 - tablo oluşturma
@@ -28,12 +28,11 @@ Bu, yerel [`exec`](/tr/tools/exec) aracından farklıdır:
 - grafik tarzı analiz
 - `x_search` veya `web_search` tarafından döndürülen verileri analiz etme
 
-Yerel dosyalarınıza, shell'inize, deponuza veya eşleştirilmiş
-cihazlara ihtiyaç duyduğunuzda bunu kullanmayın. Bunun için [`exec`](/tr/tools/exec) kullanın.
+Yerel dosyalara, kabuğunuza, reponuza veya eşleştirilmiş cihazlara ihtiyacınız olduğunda bunu **kullanmayın**. Bunun için [`exec`](/tr/tools/exec) kullanın.
 
 ## Kurulum
 
-Bir xAI API anahtarına ihtiyacınız var. Şunlardan herhangi biri çalışır:
+Bir xAI API anahtarına ihtiyacınız vardır. Şunlardan herhangi biri çalışır:
 
 - `XAI_API_KEY`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -64,7 +63,7 @@ Bir xAI API anahtarına ihtiyacınız var. Şunlardan herhangi biri çalışır:
 
 ## Nasıl kullanılır
 
-Doğal konuşun ve analiz niyetini açıkça belirtin:
+Doğal şekilde sorun ve analiz amacını açıkça belirtin:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -78,20 +77,19 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-Araç dahili olarak tek bir `task` parametresi alır; bu yüzden ajan,
-tam analiz isteğini ve satır içi verileri tek bir istemde göndermelidir.
+Araç dahili olarak tek bir `task` parametresi alır, bu nedenle agent tam analiz isteğini ve satır içi verileri tek bir prompt içinde göndermelidir.
 
 ## Sınırlar
 
-- Bu, yerel süreç yürütmesi değil, uzak xAI yürütmesidir.
-- Bunu kalıcı bir notebook değil, geçici analiz olarak değerlendirin.
-- Yerel dosyalara veya çalışma alanınıza erişim olduğunu varsaymayın.
-- Yeni X verileri için önce [`x_search`](/tr/tools/web#x_search) kullanın.
+- Bu, yerel süreç yürütme değil, uzak xAI yürütmesidir.
+- Kalıcı bir notebook değil, geçici analiz olarak ele alınmalıdır.
+- Yerel dosyalara veya çalışma alanınıza erişimi olduğunu varsaymayın.
+- Güncel X verileri için önce [`x_search`](/tr/tools/web#x_search) kullanın.
 
 ## İlgili
 
 - [Exec aracı](/tr/tools/exec)
-- [Yürütme onayları](/tr/tools/exec-approvals)
+- [Exec onayları](/tr/tools/exec-approvals)
 - [apply_patch aracı](/tr/tools/apply-patch)
 - [Web araçları](/tr/tools/web)
 - [xAI](/tr/providers/xai)

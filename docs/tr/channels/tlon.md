@@ -1,57 +1,60 @@
 ---
 read_when:
-    - Tlon/Urbit kanal özellikleri üzerinde çalışıyorsunuz
-summary: Tlon/Urbit desteği durumu, yetenekleri ve yapılandırması
+    - Tlon/Urbit kanal özellikleri üzerinde çalışma
+summary: Tlon/Urbit destek durumu, yetenekleri ve yapılandırması
 title: Tlon
 x-i18n:
-    generated_at: "2026-04-24T09:00:05Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:09:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1ff92473a958a4cba355351a686431748ea801b1c640cc5873e8bdac8f37a53f
+    source_hash: bec632f946796a0ea4bceb5ad26f1ff1825c4304bf7252e9d2fd4d3889d36b52
     source_path: channels/tlon.md
-    workflow: 15
+    workflow: 16
 ---
 
-Tlon, Urbit üzerinde kurulu merkeziyetsiz bir mesajlaşma uygulamasıdır. OpenClaw, Urbit geminize bağlanabilir ve
-DM'lere ile grup sohbeti mesajlarına yanıt verebilir. Grup yanıtları varsayılan olarak bir @ mention gerektirir ve
-izin listeleri aracılığıyla daha da kısıtlanabilir.
+Tlon, Urbit üzerine inşa edilmiş merkeziyetsiz bir mesajlaşma uygulamasıdır. OpenClaw, Urbit geminize bağlanır ve
+DM'lere ve grup sohbeti mesajlarına yanıt verebilir. Grup yanıtları varsayılan olarak @ mention gerektirir ve
+allowlist'ler aracılığıyla daha da kısıtlanabilir.
 
-Durum: paketlenmiş Plugin. DM'ler, grup mention'ları, thread yanıtları, zengin metin biçimlendirme ve
-görsel yüklemeleri desteklenir. Tepkiler ve anketler henüz desteklenmemektedir.
+Durum: paketle gelen plugin. DM'ler, grup mention'ları, thread yanıtları, rich text biçimlendirmesi ve
+görsel yüklemeleri desteklenir. Reactions ve anketler henüz desteklenmez.
 
-## Paketlenmiş Plugin
+## Paketle gelen plugin
 
-Tlon, mevcut OpenClaw sürümlerinde paketlenmiş bir Plugin olarak gelir; bu nedenle normal paketlenmiş
-derlemelerde ayrı bir kurulum gerekmez.
+Tlon, güncel OpenClaw sürümlerinde paketle gelen bir plugin olarak gelir; bu nedenle normal paketlenmiş
+build'ler ayrı bir kurulum gerektirmez.
 
-Eski bir derleme veya Tlon'u hariç tutan özel bir kurulum kullanıyorsanız, bunu
-elle kurun:
+Daha eski bir build'deyseniz veya Tlon'u dışarıda bırakan özel bir kurulum kullanıyorsanız,
+yayımlandığında güncel bir npm paketi kurun:
 
-CLI ile kurulum (npm registry):
+CLI ile kurulum (npm registry, güncel bir paket mevcut olduğunda):
 
 ```bash
 openclaw plugins install @openclaw/tlon
 ```
 
-Yerel checkout (bir git reposundan çalıştırırken):
+npm, OpenClaw'a ait paketi deprecated olarak bildirirse, daha yeni bir npm paketi
+yayımlanana kadar güncel paketlenmiş bir OpenClaw build'i veya yerel checkout yolunu kullanın.
+
+Yerel checkout (bir git repo'sundan çalıştırırken):
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
 ```
 
-Ayrıntılar: [Plugins](/tr/tools/plugin)
+Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 
 ## Kurulum
 
-1. Tlon Plugin'inin kullanılabilir olduğundan emin olun.
-   - Mevcut paketlenmiş OpenClaw sürümleri bunu zaten içerir.
-   - Eski/özel kurulumlar yukarıdaki komutlarla bunu manuel olarak ekleyebilir.
-2. Gemi URL'nizi ve giriş kodunuzu toplayın.
+1. Tlon plugin'inin kullanılabilir olduğundan emin olun.
+   - Güncel paketlenmiş OpenClaw sürümleri bunu zaten paketle birlikte sunar.
+   - Daha eski/özel kurulumlar yukarıdaki komutlarla bunu elle ekleyebilir.
+2. Gemi URL'nizi ve oturum açma kodunuzu toplayın.
 3. `channels.tlon` yapılandırmasını yapın.
 4. Gateway'i yeniden başlatın.
 5. Bota DM gönderin veya bir grup kanalında ondan mention ile bahsedin.
 
-En düşük yapılandırma (tek hesap):
+Minimal yapılandırma (tek hesap):
 
 ```json5
 {
@@ -61,7 +64,7 @@ En düşük yapılandırma (tek hesap):
       ship: "~sampel-palnet",
       url: "https://your-ship-host",
       code: "lidlut-tabwed-pillex-ridrup",
-      ownerShip: "~your-main-ship", // önerilir: geminiz, her zaman izinlidir
+      ownerShip: "~your-main-ship", // recommended: your ship, always allowed
     },
   },
 }
@@ -69,9 +72,9 @@ En düşük yapılandırma (tek hesap):
 
 ## Özel/LAN gemileri
 
-Varsayılan olarak OpenClaw, SSRF koruması için özel/dahili ana bilgisayar adlarını ve IP aralıklarını engeller.
-Geminiz özel bir ağda çalışıyorsa (localhost, LAN IP'si veya dahili ana bilgisayar adı),
-açıkça katılmanız gerekir:
+OpenClaw, SSRF koruması için varsayılan olarak özel/dahili host adlarını ve IP aralıklarını engeller.
+Geminiz özel bir ağda çalışıyorsa (localhost, LAN IP veya dahili host adı),
+bunu açıkça etkinleştirmeniz gerekir:
 
 ```json5
 {
@@ -84,7 +87,7 @@ açıkça katılmanız gerekir:
 }
 ```
 
-Bu, şu tür URL'lere uygulanır:
+Bu, şu gibi URL'ler için geçerlidir:
 
 - `http://localhost:8080`
 - `http://192.168.x.x:8080`
@@ -95,7 +98,7 @@ SSRF korumalarını devre dışı bırakır.
 
 ## Grup kanalları
 
-Otomatik keşif varsayılan olarak etkindir. Kanalları manuel olarak da sabitleyebilirsiniz:
+Otomatik keşif varsayılan olarak etkindir. Kanalları elle sabitleyebilirsiniz:
 
 ```json5
 {
@@ -121,7 +124,7 @@ Otomatik keşfi devre dışı bırakın:
 
 ## Erişim denetimi
 
-DM izin listesi (boş = DM'lere izin verilmez, onay akışı için `ownerShip` kullanın):
+DM allowlist'i (boş = DM'lere izin verilmez, onay akışı için `ownerShip` kullanın):
 
 ```json5
 {
@@ -158,7 +161,7 @@ Grup yetkilendirmesi (varsayılan olarak kısıtlı):
 
 ## Sahip ve onay sistemi
 
-Yetkisiz kullanıcılar etkileşim kurmaya çalıştığında onay isteklerini almak için bir sahip gemisi ayarlayın:
+Yetkisiz kullanıcılar etkileşim kurmaya çalıştığında onay istekleri almak için bir sahip gemi ayarlayın:
 
 ```json5
 {
@@ -170,19 +173,19 @@ Yetkisiz kullanıcılar etkileşim kurmaya çalıştığında onay isteklerini a
 }
 ```
 
-Sahip gemisi **her yerde otomatik olarak yetkilidir** — DM davetleri otomatik kabul edilir ve
-kanal mesajlarına her zaman izin verilir. Sahibi `dmAllowlist` veya
-`defaultAuthorizedShips` içine eklemeniz gerekmez.
+Sahip gemi **her yerde otomatik olarak yetkilendirilir** — DM davetleri otomatik kabul edilir ve
+kanal mesajlarına her zaman izin verilir. Sahibi `dmAllowlist` veya `defaultAuthorizedShips` içine
+eklemeniz gerekmez.
 
-Ayarlandığında sahip, şu durumlar için DM bildirimleri alır:
+Ayarlandığında, sahip şu durumlar için DM bildirimleri alır:
 
-- İzin listesinde olmayan gemilerden gelen DM istekleri
-- Yetkilendirme olmayan kanallardaki mention'lar
-- Grup davet istekleri
+- Allowlist'te olmayan gemilerden gelen DM istekleri
+- Yetkilendirmesi olmayan kanallardaki mention'lar
+- Grup daveti istekleri
 
 ## Otomatik kabul ayarları
 
-DM davetlerini otomatik kabul etme (`dmAllowlist` içindeki gemiler için):
+DM davetlerini otomatik kabul et (`dmAllowlist` içindeki gemiler için):
 
 ```json5
 {
@@ -194,7 +197,7 @@ DM davetlerini otomatik kabul etme (`dmAllowlist` içindeki gemiler için):
 }
 ```
 
-Grup davetlerini otomatik kabul etme:
+Grup davetlerini otomatik kabul et:
 
 ```json5
 {
@@ -206,43 +209,43 @@ Grup davetlerini otomatik kabul etme:
 }
 ```
 
-## Teslim hedefleri (CLI/Cron)
+## Teslim hedefleri (CLI/cron)
 
-Bunları `openclaw message send` veya Cron teslimi ile kullanın:
+Bunları `openclaw message send` veya cron teslimiyle kullanın:
 
 - DM: `~sampel-palnet` veya `dm/~sampel-palnet`
 - Grup: `chat/~host-ship/channel` veya `group:~host-ship/channel`
 
-## Paketlenmiş Skill
+## Paketle gelen beceri
 
-Tlon Plugin'i, Tlon işlemlerine CLI erişimi sağlayan paketlenmiş bir Skill ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
-içerir:
+Tlon plugin'i, Tlon işlemlerine CLI erişimi sağlayan paketle gelen bir beceri
+([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill)) içerir:
 
 - **Kişiler**: profilleri al/güncelle, kişileri listele
 - **Kanallar**: listele, oluştur, mesaj gönder, geçmişi getir
 - **Gruplar**: listele, oluştur, üyeleri yönet
-- **DM'ler**: mesaj gönder, mesajlara tepki ver
-- **Tepkiler**: gönderilere ve DM'lere emoji tepkileri ekle/kaldır
-- **Ayarlar**: slash komutları aracılığıyla Plugin izinlerini yönet
+- **DM'ler**: mesaj gönder, mesajlara reaction ekle
+- **Reactions**: gönderilere ve DM'lere emoji reactions ekle/kaldır
+- **Ayarlar**: slash komutlarıyla plugin izinlerini yönet
 
-Plugin kurulduğunda Skill otomatik olarak kullanılabilir olur.
+Plugin kurulduğunda beceri otomatik olarak kullanılabilir olur.
 
 ## Yetenekler
 
-| Özellik         | Durum                                      |
-| --------------- | ------------------------------------------ |
-| Doğrudan mesajlar | ✅ Desteklenir                            |
-| Gruplar/kanallar | ✅ Desteklenir (varsayılan olarak mention ile sınırlı) |
-| Thread'ler      | ✅ Desteklenir (thread içinde otomatik yanıtlar) |
-| Zengin metin    | ✅ Markdown, Tlon biçimine dönüştürülür    |
-| Görseller       | ✅ Tlon depolamasına yüklenir              |
-| Tepkiler        | ✅ [paketlenmiş Skill](#bundled-skill) aracılığıyla |
-| Anketler        | ❌ Henüz desteklenmiyor                    |
-| Yerel komutlar  | ✅ Desteklenir (varsayılan olarak yalnızca sahip) |
+| Özellik          | Durum                                           |
+| ---------------- | ----------------------------------------------- |
+| Doğrudan mesajlar | ✅ Desteklenir                                  |
+| Gruplar/kanallar | ✅ Desteklenir (varsayılan olarak mention kapılı) |
+| Thread'ler       | ✅ Desteklenir (thread içinde otomatik yanıtlar) |
+| Rich text        | ✅ Markdown, Tlon formatına dönüştürülür         |
+| Görseller        | ✅ Tlon depolamasına yüklenir                    |
+| Reactions        | ✅ [paketle gelen beceri](#bundled-skill) ile    |
+| Anketler         | ❌ Henüz desteklenmez                           |
+| Yerel komutlar   | ✅ Desteklenir (varsayılan olarak yalnızca sahip) |
 
 ## Sorun giderme
 
-Önce bu sırayı çalıştırın:
+Önce şu merdiveni çalıştırın:
 
 ```bash
 openclaw status
@@ -253,43 +256,43 @@ openclaw doctor
 
 Yaygın hatalar:
 
-- **DM'ler yok sayılıyor**: gönderen `dmAllowlist` içinde değil ve onay akışı için `ownerShip` yapılandırılmamış.
-- **Grup mesajları yok sayılıyor**: kanal keşfedilmemiş veya gönderen yetkili değil.
-- **Bağlantı hataları**: gemi URL'sine erişilebildiğini kontrol edin; yerel gemiler için `allowPrivateNetwork` etkinleştirin.
-- **Kimlik doğrulama hataları**: giriş kodunun güncel olduğunu doğrulayın (kodlar döner).
+- **DM'ler yok sayılıyor**: gönderen `dmAllowlist` içinde değil ve onay akışı için yapılandırılmış `ownerShip` yok.
+- **Grup mesajları yok sayılıyor**: kanal keşfedilmemiş veya gönderen yetkilendirilmemiş.
+- **Bağlantı hataları**: gemi URL'sinin erişilebilir olduğunu kontrol edin; yerel gemiler için `allowPrivateNetwork` etkinleştirin.
+- **Kimlik doğrulama hataları**: oturum açma kodunun güncel olduğunu doğrulayın (kodlar döner).
 
-## Yapılandırma başvurusu
+## Yapılandırma referansı
 
-Tam yapılandırma: [Configuration](/tr/gateway/configuration)
+Tam yapılandırma: [Yapılandırma](/tr/gateway/configuration)
 
-Sağlayıcı seçenekleri:
+Provider seçenekleri:
 
-- `channels.tlon.enabled`: kanal başlangıcını etkinleştir/devre dışı bırak.
-- `channels.tlon.ship`: botun Urbit gemi adı (ör. `~sampel-palnet`).
-- `channels.tlon.url`: gemi URL'si (ör. `https://sampel-palnet.tlon.network`).
-- `channels.tlon.code`: gemi giriş kodu.
-- `channels.tlon.allowPrivateNetwork`: localhost/LAN URL'lerine izin ver (SSRF atlatma).
-- `channels.tlon.ownerShip`: onay sistemi için sahip gemi (her zaman yetkili).
+- `channels.tlon.enabled`: kanal başlatmayı etkinleştir/devre dışı bırak.
+- `channels.tlon.ship`: botun Urbit gemi adı (örn. `~sampel-palnet`).
+- `channels.tlon.url`: gemi URL'si (örn. `https://sampel-palnet.tlon.network`).
+- `channels.tlon.code`: gemi oturum açma kodu.
+- `channels.tlon.allowPrivateNetwork`: localhost/LAN URL'lerine izin ver (SSRF bypass).
+- `channels.tlon.ownerShip`: onay sistemi için sahip gemi (her zaman yetkilidir).
 - `channels.tlon.dmAllowlist`: DM göndermesine izin verilen gemiler (boş = hiçbiri).
-- `channels.tlon.autoAcceptDmInvites`: izin listesindeki gemilerden gelen DM'leri otomatik kabul et.
+- `channels.tlon.autoAcceptDmInvites`: allowlist'teki gemilerden gelen DM'leri otomatik kabul et.
 - `channels.tlon.autoAcceptGroupInvites`: tüm grup davetlerini otomatik kabul et.
 - `channels.tlon.autoDiscoverChannels`: grup kanallarını otomatik keşfet (varsayılan: true).
-- `channels.tlon.groupChannels`: manuel olarak sabitlenmiş kanal nest'leri.
-- `channels.tlon.defaultAuthorizedShips`: tüm kanallar için yetkili gemiler.
-- `channels.tlon.authorization.channelRules`: kanal başına kimlik doğrulama kuralları.
+- `channels.tlon.groupChannels`: elle sabitlenmiş kanal nest'leri.
+- `channels.tlon.defaultAuthorizedShips`: tüm kanallar için yetkilendirilmiş gemiler.
+- `channels.tlon.authorization.channelRules`: kanal başına auth kuralları.
 - `channels.tlon.showModelSignature`: mesajlara model adını ekle.
 
 ## Notlar
 
-- Grup yanıtları yanıt vermek için bir mention gerektirir (ör. `~your-bot-ship`).
-- Thread yanıtları: gelen mesaj bir thread içindeyse OpenClaw thread içinde yanıt verir.
-- Zengin metin: Markdown biçimlendirmesi (kalın, italik, kod, başlıklar, listeler) Tlon'un yerel biçimine dönüştürülür.
-- Görseller: URL'ler Tlon depolamasına yüklenir ve görsel blokları olarak gömülür.
+- Grup yanıtları, yanıt vermek için bir mention (örn. `~your-bot-ship`) gerektirir.
+- Thread yanıtları: gelen mesaj bir thread içindeyse OpenClaw thread içinde yanıtlar.
+- Rich text: Markdown biçimlendirmesi (bold, italic, code, başlıklar, listeler) Tlon'un native formatına dönüştürülür.
+- Görseller: URL'ler Tlon depolamasına yüklenir ve görsel blokları olarak embed edilir.
 
 ## İlgili
 
-- [Channels Overview](/tr/channels) — desteklenen tüm kanallar
-- [Pairing](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
-- [Groups](/tr/channels/groups) — grup sohbeti davranışı ve mention ile sınırlama
-- [Channel Routing](/tr/channels/channel-routing) — mesajlar için oturum yönlendirme
-- [Security](/tr/gateway/security) — erişim modeli ve sertleştirme
+- [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
+- [Eşleme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleme akışı
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve mention gating
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
+- [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma

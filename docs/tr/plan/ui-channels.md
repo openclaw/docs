@@ -1,65 +1,64 @@
 ---
 read_when:
-    - Kanal mesajı UI'sini, etkileşimli yükleri veya yerel kanal oluşturucularını yeniden düzenleme
-    - Mesaj aracı yeteneklerini, teslim ipuçlarını veya bağlamlar arası işaretleyicileri değiştirme
-    - Discord Carbon içe aktarma fan-out'unu veya kanal Plugin çalışma zamanı tembelliğini hata ayıklama
-summary: Anlamsal mesaj sunumunu kanalın yerel UI oluşturucularından ayırın.
+    - Kanal mesajı kullanıcı arayüzünü, etkileşimli veri yüklerini veya yerel kanal işleyicilerini yeniden düzenleme
+    - Mesaj aracı yeteneklerini, iletim ipuçlarını veya bağlamlar arası işaretleyicileri değiştirme
+    - Discord Carbon içe aktarma yayılımında veya kanal Plugin çalışma zamanı tembelliğinde hata ayıklama
+summary: Anlamsal mesaj sunumunu kanalın yerel kullanıcı arayüzü oluşturucularından ayırın.
 title: Kanal sunumu yeniden düzenleme planı
 x-i18n:
-    generated_at: "2026-04-24T09:18:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:31:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f983c4d14580e8a66744c7e5f23dd9846c11e926181a8441d60f346cec6d1eea
+    source_hash: 5608e7806a2a20e73ee82f1b1f0fcbbb4c865232df984d3d98b91e5b721998f5
     source_path: plan/ui-channels.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Durum
 
 Paylaşılan ajan, CLI, Plugin yeteneği ve giden teslim yüzeyleri için uygulandı:
 
-- `ReplyPayload.presentation`, anlamsal mesaj UI'sini taşır.
-- `ReplyPayload.delivery.pin`, gönderilen mesajı sabitleme isteklerini taşır.
-- Paylaşılan mesaj eylemleri, sağlayıcıya özgü `components`, `blocks`, `buttons` veya `card` yerine `presentation`, `delivery` ve `pin` açığa çıkarır.
-- Çekirdek, sunumu Plugin tarafından ilan edilen giden yetenekler üzerinden işler veya otomatik olarak yedek biçime düşürür.
-- Discord, Slack, Telegram, Mattermost, Microsoft Teams ve Feishu oluşturucuları genel sözleşmeyi tüketir.
-- Discord kanal denetim düzlemi kodu artık Carbon destekli UI container'larını içe aktarmıyor.
+- `ReplyPayload.presentation` anlamsal ileti kullanıcı arayüzünü taşır.
+- `ReplyPayload.delivery.pin` gönderilen ileti sabitleme isteklerini taşır.
+- Paylaşılan ileti eylemleri, sağlayıcıya özgü `components`, `blocks`, `buttons` veya `card` yerine `presentation`, `delivery` ve `pin` alanlarını sunar.
+- Core, Plugin tarafından bildirilen giden yetenekler üzerinden sunumu işler veya otomatik olarak daha basit bir biçime düşürür.
+- Discord, Slack, Telegram, Mattermost, MS Teams ve Feishu işleyicileri genel sözleşmeyi kullanır.
+- Discord kanal denetim düzlemi kodu artık Carbon destekli kullanıcı arayüzü kapsayıcılarını içe aktarmaz.
 
-Kanonik belgeler artık [Message Presentation](/tr/plugins/message-presentation) içinde bulunur.
-Bu planı tarihsel uygulama bağlamı olarak koruyun; sözleşme, oluşturucu
-veya geri düşme davranışı değişikliklerinde kanonik rehberi güncelleyin.
+Kanonik belgeler artık [İleti Sunumu](/tr/plugins/message-presentation) içinde yer alır.
+Bu planı tarihsel uygulama bağlamı olarak saklayın; sözleşme, işleyici veya yedek davranış değişiklikleri için kanonik kılavuzu güncelleyin.
 
 ## Sorun
 
-Kanal UI şu anda birbiriyle uyumsuz birkaç yüzeye bölünmüş durumda:
+Kanal kullanıcı arayüzü şu anda birbiriyle uyumsuz birkaç yüzeye bölünmüş durumda:
 
-- Çekirdek, `buildCrossContextComponents` üzerinden Discord biçimli bağlamlar arası bir oluşturucu hook'una sahip.
-- Discord `channel.ts`, `DiscordUiContainer` üzerinden yerel Carbon UI içe aktarabiliyor; bu da çalışma zamanı UI bağımlılıklarını kanal Plugin denetim düzlemine çekiyor.
-- Ajan ve CLI, Discord `components`, Slack `blocks`, Telegram veya Mattermost `buttons`, Teams veya Feishu `card` gibi yerel yük kaçış kapıları açığa çıkarıyor.
-- `ReplyPayload.channelData`, hem taşıma ipuçlarını hem de yerel UI zarflarını taşıyor.
-- Genel `interactive` modeli mevcut, ancak Discord, Slack, Teams, Feishu, LINE, Telegram ve Mattermost'un zaten kullandığı daha zengin düzenlerden daha dar.
+- Core, `buildCrossContextComponents` üzerinden Discord biçimli bir bağlamlar arası işleyici kancasına sahiptir.
+- Discord `channel.ts`, `DiscordUiContainer` üzerinden yerel Carbon kullanıcı arayüzünü içe aktarabilir; bu da çalışma zamanı kullanıcı arayüzü bağımlılıklarını kanal Plugin denetim düzlemine çeker.
+- Ajan ve CLI, Discord `components`, Slack `blocks`, Telegram veya Mattermost `buttons` ve Teams veya Feishu `card` gibi yerel yük kaçış yolları sunar.
+- `ReplyPayload.channelData` hem aktarım ipuçlarını hem de yerel kullanıcı arayüzü zarflarını taşır.
+- Genel `interactive` modeli vardır, ancak Discord, Slack, Teams, Feishu, LINE, Telegram ve Mattermost tarafından zaten kullanılan daha zengin düzenlerden daha dardır.
 
-Bu, çekirdeğin yerel UI biçimlerini bilmesine yol açıyor, Plugin çalışma zamanı tembelliğini zayıflatıyor ve ajanlara aynı mesaj niyetini ifade etmek için çok fazla sağlayıcıya özgü yol veriyor.
+Bu durum Core'un yerel kullanıcı arayüzü biçimlerinden haberdar olmasına neden olur, Plugin çalışma zamanı tembelliğini zayıflatır ve ajanlara aynı ileti amacını ifade etmek için gereğinden fazla sağlayıcıya özgü yol verir.
 
 ## Hedefler
 
-- Çekirdek, ilan edilmiş yeteneklerden bir mesaj için en iyi anlamsal sunuma karar verir.
-- Extension'lar yetenekleri ilan eder ve anlamsal sunumu yerel taşıma yüklerine dönüştürür.
-- Web Control UI, sohbetin yerel UI'sinden ayrı kalır.
-- Yerel kanal yükleri, paylaşılan ajan veya CLI mesaj yüzeyi üzerinden açığa çıkarılmaz.
-- Desteklenmeyen sunum özellikleri otomatik olarak en iyi metin gösterimine düşer.
-- Gönderilmiş mesajı sabitleme gibi teslim davranışları, sunum değil genel teslim meta verisidir.
+- Core, bildirilen yeteneklere göre bir ileti için en iyi anlamsal sunuma karar verir.
+- Eklentiler yetenekleri bildirir ve anlamsal sunumu yerel aktarım yüklerine işler.
+- Web Denetim Kullanıcı Arayüzü, sohbetin yerel kullanıcı arayüzünden ayrı kalır.
+- Yerel kanal yükleri, paylaşılan ajan veya CLI ileti yüzeyi üzerinden sunulmaz.
+- Desteklenmeyen sunum özellikleri otomatik olarak en iyi metin gösterimine düşürülür.
+- Gönderilen bir iletiyi sabitleme gibi teslim davranışları sunum değil, genel teslim meta verisidir.
 
-## Hedef Dışı Olanlar
+## Hedef olmayanlar
 
-- `buildCrossContextComponents` için geriye dönük uyumluluk shim'i yok.
-- `components`, `blocks`, `buttons` veya `card` için herkese açık yerel kaçış kapıları yok.
-- Çekirdekte kanala özgü yerel UI kütüphaneleri içe aktarımı yok.
-- Paketlenmiş kanallar için sağlayıcıya özgü SDK sınırları yok.
+- `buildCrossContextComponents` için geriye dönük uyumluluk uyarlama katmanı yoktur.
+- `components`, `blocks`, `buttons` veya `card` için herkese açık yerel kaçış yolları yoktur.
+- Core içinde kanala özgü yerel kullanıcı arayüzü kitaplıkları içe aktarılmaz.
+- Paketlenmiş kanallar için sağlayıcıya özgü SDK aralıkları yoktur.
 
-## Hedef Model
+## Hedef model
 
-`ReplyPayload` içine çekirdeğe ait bir `presentation` alanı ekleyin.
+`ReplyPayload` alanına Core tarafından sahip olunan bir `presentation` alanı ekleyin.
 
 ```ts
 type MessagePresentationTone = "neutral" | "info" | "success" | "warning" | "danger";
@@ -90,17 +89,17 @@ type MessagePresentationOption = {
 };
 ```
 
-Geçiş sırasında `interactive`, `presentation` alt kümesi hâline gelir:
+`interactive`, geçiş sırasında `presentation` alanının bir alt kümesi haline gelir:
 
-- `interactive` text bloğu, `presentation.blocks[].type = "text"` değerine eşlenir.
-- `interactive` buttons bloğu, `presentation.blocks[].type = "buttons"` değerine eşlenir.
-- `interactive` select bloğu, `presentation.blocks[].type = "select"` değerine eşlenir.
+- `interactive` metin bloğu `presentation.blocks[].type = "text"` değerine eşlenir.
+- `interactive` düğmeler bloğu `presentation.blocks[].type = "buttons"` değerine eşlenir.
+- `interactive` seçim bloğu `presentation.blocks[].type = "select"` değerine eşlenir.
 
-Harici ajan ve CLI şemaları artık `presentation` kullanır; `interactive`, mevcut yanıt üreticileri için iç eski ayrıştırma/oluşturma yardımcısı olarak kalır.
+Dış ajan ve CLI şemaları artık `presentation` kullanır; `interactive`, mevcut yanıt üreticileri için dahili bir eski ayrıştırıcı/işleme yardımcısı olarak kalır.
 
-## Teslim Meta Verisi
+## Teslim meta verileri
 
-UI olmayan gönderim davranışı için çekirdeğe ait bir `delivery` alanı ekleyin.
+Kullanıcı arayüzü olmayan gönderim davranışı için Core tarafından sahip olunan bir `delivery` alanı ekleyin.
 
 ```ts
 type ReplyPayloadDelivery = {
@@ -114,18 +113,18 @@ type ReplyPayloadDelivery = {
 };
 ```
 
-Anlambilim:
+Anlamlar:
 
-- `delivery.pin = true`, başarıyla teslim edilen ilk mesajı sabitle anlamına gelir.
-- `notify` varsayılan olarak `false` olur.
-- `required` varsayılan olarak `false` olur; desteklenmeyen kanallar veya başarısız sabitleme durumunda teslimat sürdürülerek otomatik olarak geri düşülür.
-- Mevcut mesajlar için elle `pin`, `unpin` ve `list-pins` mesaj eylemleri korunur.
+- `delivery.pin = true`, başarıyla teslim edilen ilk iletiyi sabitle anlamına gelir.
+- `notify` varsayılan olarak `false` değerindedir.
+- `required` varsayılan olarak `false` değerindedir; desteklenmeyen kanallar veya başarısız sabitleme, teslimi sürdürerek otomatik olarak daha basit bir davranışa düşer.
+- El ile yapılan `pin`, `unpin` ve `list-pins` ileti eylemleri mevcut iletiler için kalır.
 
-Mevcut Telegram ACP konu bağlaması, `channelData.telegram.pin = true` yerine `delivery.pin = true` konumuna taşınmalıdır.
+Mevcut Telegram ACP konu bağlaması `channelData.telegram.pin = true` değerinden `delivery.pin = true` değerine taşınmalıdır.
 
-## Çalışma Zamanı Yetenek Sözleşmesi
+## Çalışma zamanı yetenek sözleşmesi
 
-Sunum ve teslim oluşturma hook'larını denetim düzlemi kanal Plugin'ine değil, çalışma zamanı giden bağdaştırıcısına ekleyin.
+Sunum ve teslim işleme kancalarını denetim düzlemi kanal Plugin'ine değil, çalışma zamanı giden bağdaştırıcısına ekleyin.
 
 ```ts
 type ChannelPresentationCapabilities = {
@@ -163,102 +162,102 @@ type ChannelOutboundAdapter = {
 };
 ```
 
-Çekirdek davranışı:
+Core davranışı:
 
 - Hedef kanalı ve çalışma zamanı bağdaştırıcısını çözümle.
-- Sunum yeteneklerini sor.
-- Desteklenmeyen blokları oluşturmadan önce geri düşür.
+- Sunum yeteneklerini iste.
+- Desteklenmeyen blokları işlemeden önce daha basit biçime düşür.
 - `renderPresentation` çağır.
-- Oluşturucu yoksa sunumu metin yedeğine dönüştür.
+- İşleyici yoksa sunumu metin yedeğine dönüştür.
 - Başarılı gönderimden sonra, `delivery.pin` istenmiş ve destekleniyorsa `pinDeliveredMessage` çağır.
 
-## Kanal Eşleme
+## Kanal eşlemesi
 
 Discord:
 
-- `presentation` değerini yalnızca çalışma zamanına ait modüllerde components v2 ve Carbon container'larına dönüştür.
+- `presentation` alanını çalışma zamanına özel modüllerde components v2 ve Carbon kapsayıcılarına işle.
 - Vurgu rengi yardımcılarını hafif modüllerde tut.
 - Kanal Plugin denetim düzlemi kodundan `DiscordUiContainer` içe aktarımlarını kaldır.
 
 Slack:
 
-- `presentation` değerini Block Kit'e dönüştür.
+- `presentation` alanını Block Kit'e işle.
 - Ajan ve CLI `blocks` girdisini kaldır.
 
 Telegram:
 
-- text, context ve divider bloklarını metin olarak dönüştür.
-- Yapılandırılmışsa ve hedef yüzey için izinliyse actions ve select bloklarını satır içi klavyeler olarak dönüştür.
-- Satır içi düğmeler devre dışıysa metin yedeği kullan.
-- ACP konu sabitlemesini `delivery.pin` içine taşı.
+- Metin, bağlam ve ayırıcıları metin olarak işle.
+- Hedef yüzey için yapılandırıldığında ve izin verildiğinde eylemleri ve seçimi satır içi klavyeler olarak işle.
+- Satır içi düğmeler devre dışı olduğunda metin yedeğini kullan.
+- ACP konu sabitlemesini `delivery.pin` alanına taşı.
 
 Mattermost:
 
-- actions bloklarını, yapılandırılmışsa etkileşimli düğmelere dönüştür.
-- Diğer blokları metin yedeği olarak dönüştür.
+- Yapılandırıldığında eylemleri etkileşimli düğmeler olarak işle.
+- Diğer blokları metin yedeği olarak işle.
 
-Microsoft Teams:
+MS Teams:
 
-- `presentation` değerini Adaptive Cards'a dönüştür.
-- Elle pin/unpin/list-pins eylemlerini koru.
-- Hedef konuşma için Graph desteği güvenilir ise isteğe bağlı olarak `pinDeliveredMessage` uygula.
+- `presentation` alanını Adaptive Cards olarak işle.
+- El ile `pin`/`unpin`/`list-pins` eylemlerini koru.
+- Graph desteği hedef konuşma için güvenilirse isteğe bağlı olarak `pinDeliveredMessage` uygula.
 
 Feishu:
 
-- `presentation` değerini etkileşimli kartlara dönüştür.
-- Elle pin/unpin/list-pins eylemlerini koru.
-- API davranışı güvenilirse gönderilen mesaj sabitleme için isteğe bağlı olarak `pinDeliveredMessage` uygula.
+- `presentation` alanını etkileşimli kartlara işle.
+- El ile `pin`/`unpin`/`list-pins` eylemlerini koru.
+- API davranışı güvenilirse gönderilen ileti sabitleme için isteğe bağlı olarak `pinDeliveredMessage` uygula.
 
 LINE:
 
-- `presentation` değerini mümkün olduğunda Flex veya şablon mesajlara dönüştür.
-- Desteklenmeyen bloklar için metne geri düş.
-- LINE UI yüklerini `channelData` içinden kaldır.
+- `presentation` alanını mümkün olduğunda Flex veya şablon iletilerine işle.
+- Desteklenmeyen bloklar için metne geri dön.
+- LINE kullanıcı arayüzü yüklerini `channelData` alanından kaldır.
 
 Düz veya sınırlı kanallar:
 
-- Sunumu muhafazakâr biçimlendirme ile metne dönüştür.
+- Sunumu ölçülü biçimlendirmeyle metne dönüştür.
 
-## Yeniden Düzenleme Adımları
+## Yeniden düzenleme adımları
 
-1. `ui-colors.ts` dosyasını Carbon destekli UI'den ayıran ve `DiscordUiContainer` içe aktarımını `extensions/discord/src/channel.ts` dosyasından kaldıran Discord sürüm düzeltmesini yeniden uygulayın.
-2. `presentation` ve `delivery` alanlarını `ReplyPayload`, giden yük normalizasyonu, teslim özetleri ve hook yüklerine ekleyin.
-3. Dar bir SDK/çalışma zamanı alt yolunda `MessagePresentation` şeması ve ayrıştırıcı yardımcıları ekleyin.
-4. Mesaj yetenekleri `buttons`, `cards`, `components` ve `blocks` yerine anlamsal sunum yeteneklerini kullanın.
-5. Sunum oluşturma ve teslim sabitleme için çalışma zamanı giden bağdaştırıcı hook'ları ekleyin.
-6. Bağlamlar arası bileşen oluşturmayı `buildCrossContextPresentation` ile değiştirin.
-7. `src/infra/outbound/channel-adapters.ts` dosyasını silin ve `buildCrossContextComponents` değerini kanal Plugin türlerinden kaldırın.
-8. `maybeApplyCrossContextMarker` fonksiyonunu yerel parametreler yerine `presentation` ekleyecek şekilde değiştirin.
-9. Plugin-dispatch gönderim yollarını yalnızca anlamsal sunum ve teslim meta verisini tüketecek şekilde güncelleyin.
-10. Ajan ve CLI yerel yük parametrelerini kaldırın: `components`, `blocks`, `buttons` ve `card`.
-11. Yerel mesaj aracı şemaları oluşturan SDK yardımcılarını kaldırın ve bunları sunum şeması yardımcılarıyla değiştirin.
-12. `channelData` içinden UI/yerel zarfları kaldırın; kalan her alan gözden geçirilene kadar yalnızca taşıma meta verisini koruyun.
-13. Discord, Slack, Telegram, Mattermost, Microsoft Teams, Feishu ve LINE oluşturucularını taşıyın.
-14. Mesaj CLI, kanal sayfaları, Plugin SDK ve yetenek cookbook belgelerini güncelleyin.
-15. Discord ve etkilenen kanal giriş noktaları için içe aktarma fan-out profilini çalıştırın.
+1. `ui-colors.ts` dosyasını Carbon destekli kullanıcı arayüzünden ayıran ve `extensions/discord/src/channel.ts` içinden `DiscordUiContainer` kaldıran Discord sürüm düzeltmesini yeniden uygula.
+2. `ReplyPayload`, giden yük normalleştirme, teslim özetleri ve kanca yüklerine `presentation` ve `delivery` ekle.
+3. Dar bir SDK/çalışma zamanı alt yolunda `MessagePresentation` şeması ve ayrıştırıcı yardımcıları ekle.
+4. İleti yetenekleri olan `buttons`, `cards`, `components` ve `blocks` yerine anlamsal sunum yeteneklerini koy.
+5. Sunum işleme ve teslim sabitleme için çalışma zamanı giden bağdaştırıcı kancaları ekle.
+6. Bağlamlar arası bileşen oluşturmayı `buildCrossContextPresentation` ile değiştir.
+7. `src/infra/outbound/channel-adapters.ts` dosyasını sil ve kanal Plugin türlerinden `buildCrossContextComponents` kaldır.
+8. `maybeApplyCrossContextMarker` işlevini yerel parametreler yerine `presentation` ekleyecek şekilde değiştir.
+9. Plugin-dispatch gönderim yollarını yalnızca anlamsal sunum ve teslim meta verilerini kullanacak şekilde güncelle.
+10. Ajan ve CLI yerel yük parametrelerini kaldır: `components`, `blocks`, `buttons` ve `card`.
+11. Yerel ileti aracı şemaları oluşturan SDK yardımcılarını kaldır ve yerine sunum şeması yardımcılarını koy.
+12. Kullanıcı arayüzü/yerel zarfları `channelData` alanından kaldır; kalan her alan gözden geçirilene kadar yalnızca aktarım meta verilerini tut.
+13. Discord, Slack, Telegram, Mattermost, MS Teams, Feishu ve LINE işleyicilerini taşı.
+14. İleti CLI, kanal sayfaları, Plugin SDK ve yetenek yemek kitabı belgelerini güncelle.
+15. Discord ve etkilenen kanal giriş noktaları için içe aktarım yayılım profillemesi çalıştır.
 
-1-11 ile 13-14 adımları bu yeniden düzenlemede paylaşılan ajan, CLI, Plugin yeteneği ve giden bağdaştırıcı sözleşmeleri için uygulanmıştır. 12. adım, sağlayıcıya özel `channelData` taşıma zarfları için daha derin bir iç temizlik geçişi olarak kalmaktadır. 15. adım ise tür/test geçidi ötesinde nicel içe aktarma fan-out sayıları istiyorsak takip doğrulaması olarak kalmaktadır.
+1-11 ve 13-14. adımlar, paylaşılan ajan, CLI, Plugin yeteneği ve giden bağdaştırıcı sözleşmeleri için bu yeniden düzenlemede uygulandı. 12. adım, sağlayıcıya özel `channelData` aktarım zarfları için daha derin bir dahili temizlik geçişi olarak kalıyor. 15. adım, tür/test kapısının ötesinde nicel içe aktarım yayılım sayıları istiyorsak takip doğrulaması olarak kalıyor.
 
 ## Testler
 
-Şunları ekleyin veya güncelleyin:
+Ekle veya güncelle:
 
-- Sunum normalizasyon testleri.
-- Desteklenmeyen bloklar için sunum otomatik geri düşme testleri.
-- Plugin dispatch ve çekirdek teslim yolları için bağlamlar arası işaretleyici testleri.
-- Discord, Slack, Telegram, Mattermost, Microsoft Teams, Feishu, LINE ve metin yedeği için kanal oluşturma matris testleri.
-- Yerel alanların kaldırıldığını kanıtlayan mesaj aracı şeması testleri.
+- Sunum normalleştirme testleri.
+- Desteklenmeyen bloklar için sunum otomatik düşürme testleri.
+- Plugin dispatch ve Core teslim yolları için bağlamlar arası işaretleyici testleri.
+- Discord, Slack, Telegram, Mattermost, MS Teams, Feishu, LINE ve metin yedeği için kanal işleme matrisi testleri.
+- Yerel alanların kaldırıldığını kanıtlayan ileti aracı şema testleri.
 - Yerel bayrakların kaldırıldığını kanıtlayan CLI testleri.
-- Carbon'u kapsayan Discord giriş noktası içe aktarma tembelliği regresyonu.
-- Telegram ve genel geri düşmeyi kapsayan teslim sabitleme testleri.
+- Carbon'u kapsayan Discord giriş noktası içe aktarım tembelliği regresyonu.
+- Telegram ve genel yedeği kapsayan teslim sabitleme testleri.
 
-## Açık Sorular
+## Açık sorular
 
-- `delivery.pin`, ilk aşamada Discord, Slack, Microsoft Teams ve Feishu için mi uygulanmalı, yoksa önce yalnızca Telegram mı?
-- `delivery`, ileride `replyToId`, `replyToCurrent`, `silent` ve `audioAsVoice` gibi mevcut alanları da içine almalı mı, yoksa gönderim sonrası davranışlara odaklı mı kalmalı?
-- Sunum, görselleri veya dosya başvurularını doğrudan desteklemeli mi, yoksa medya şimdilik UI düzeninden ayrı mı kalmalı?
+- `delivery.pin` ilk geçişte Discord, Slack, MS Teams ve Feishu için de mi uygulanmalı, yoksa önce yalnızca Telegram mı?
+- `delivery` sonunda `replyToId`, `replyToCurrent`, `silent` ve `audioAsVoice` gibi mevcut alanları da içine almalı mı, yoksa gönderim sonrası davranışlara odaklı mı kalmalı?
+- Sunum doğrudan görselleri veya dosya referanslarını desteklemeli mi, yoksa medya şimdilik kullanıcı arayüzü düzeninden ayrı mı kalmalı?
 
 ## İlgili
 
 - [Kanallara genel bakış](/tr/channels)
-- [Mesaj sunumu](/tr/plugins/message-presentation)
+- [İleti sunumu](/tr/plugins/message-presentation)

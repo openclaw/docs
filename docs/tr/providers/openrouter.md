@@ -1,22 +1,23 @@
 ---
 read_when:
     - Birçok LLM için tek bir API anahtarı istiyorsunuz
-    - OpenClaw içinde modelleri OpenRouter üzerinden çalıştırmak istiyorsunuz
+    - OpenClaw'da OpenRouter üzerinden modeller çalıştırmak istiyorsunuz
     - Görüntü oluşturma için OpenRouter kullanmak istiyorsunuz
-summary: OpenClaw içinde birçok modele erişmek için OpenRouter'ın birleşik API'sini kullanma
+    - OpenRouter'ı video oluşturma için kullanmak istiyorsunuz
+summary: OpenClaw'da birçok modele erişmek için OpenRouter'ın birleşik API'sini kullanın
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-04-26T11:39:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:57Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5396b0a022746cf3dfc90fa2d0974ffe9798af1ac790e93d13398a9e622eceff
+    source_hash: 47206ce7279eb8a38f71b5c40d34646ad01df2cac25860b629951f9cec73270f
     source_path: providers/openrouter.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenRouter, istekleri tek bir uç nokta ve API anahtarı arkasında birçok modele yönlendiren **birleşik bir API** sağlar. OpenAI ile uyumludur, bu nedenle temel URL değiştirilerek çoğu OpenAI SDK'sı çalışır.
+OpenRouter, istekleri tek bir endpoint ve API anahtarının arkasında birçok modele yönlendiren **birleşik bir API** sağlar. OpenAI uyumludur, bu nedenle çoğu OpenAI SDK'sı temel URL değiştirilerek çalışır.
 
-## Başlangıç
+## Başlarken
 
 <Steps>
   <Step title="API anahtarınızı alın">
@@ -53,22 +54,19 @@ OpenRouter, istekleri tek bir uç nokta ve API anahtarı arkasında birçok mode
 ## Model referansları
 
 <Note>
-Model ref'leri `openrouter/<provider>/<model>` desenini izler. Kullanılabilir
-sağlayıcıların ve modellerin tam listesi için bkz. [/concepts/model-providers](/tr/concepts/model-providers).
+Model referansları `openrouter/<provider>/<model>` kalıbını izler. Kullanılabilir sağlayıcıların ve modellerin tam listesi için bkz. [/concepts/model-providers](/tr/concepts/model-providers).
 </Note>
 
-Paketlenmiş geri dönüş örnekleri:
+Birlikte gelen yedek örnekleri:
 
-| Model ref                            | Notlar                         |
-| ------------------------------------ | ------------------------------ |
-| `openrouter/auto`                    | OpenRouter otomatik yönlendirme |
-| `openrouter/moonshotai/kimi-k2.6`    | MoonshotAI üzerinden Kimi K2.6 |
-| `openrouter/openrouter/healer-alpha` | OpenRouter Healer Alpha rotası |
-| `openrouter/openrouter/hunter-alpha` | OpenRouter Hunter Alpha rotası |
+| Model referansı                  | Notlar                            |
+| --------------------------------- | --------------------------------- |
+| `openrouter/auto`                 | OpenRouter otomatik yönlendirmesi |
+| `openrouter/moonshotai/kimi-k2.6` | MoonshotAI üzerinden Kimi K2.6    |
 
 ## Görüntü oluşturma
 
-OpenRouter, `image_generate` aracı için de arka uç olabilir. `agents.defaults.imageGenerationModel` altında bir OpenRouter görüntü modeli kullanın:
+OpenRouter, `image_generate` aracını da destekleyebilir. `agents.defaults.imageGenerationModel` altında bir OpenRouter görüntü modeli kullanın:
 
 ```json5
 {
@@ -84,12 +82,30 @@ OpenRouter, `image_generate` aracı için de arka uç olabilir. `agents.defaults
 }
 ```
 
-OpenClaw, görüntü isteklerini `modalities: ["image", "text"]` ile OpenRouter'ın chat completions image API'sine gönderir. Gemini görüntü modelleri, OpenRouter'ın `image_config` alanı üzerinden desteklenen `aspectRatio` ve `resolution` ipuçlarını alır. Daha yavaş OpenRouter görüntü modelleri için `agents.defaults.imageGenerationModel.timeoutMs` kullanın; `image_generate` aracının çağrı başına `timeoutMs` parametresi yine önceliklidir.
+OpenClaw, görüntü isteklerini `modalities: ["image", "text"]` ile OpenRouter'ın sohbet tamamlama görüntü API'sine gönderir. Gemini görüntü modelleri, desteklenen `aspectRatio` ve `resolution` ipuçlarını OpenRouter'ın `image_config` alanı üzerinden alır. Daha yavaş OpenRouter görüntü modelleri için `agents.defaults.imageGenerationModel.timeoutMs` kullanın; `image_generate` aracının çağrı başına `timeoutMs` parametresi yine de önceliklidir.
+
+## Video oluşturma
+
+OpenRouter, asenkron `/videos` API'si üzerinden `video_generate` aracını da destekleyebilir. `agents.defaults.videoGenerationModel` altında bir OpenRouter video modeli kullanın:
+
+```json5
+{
+  env: { OPENROUTER_API_KEY: "sk-or-..." },
+  agents: {
+    defaults: {
+      videoGenerationModel: {
+        primary: "openrouter/google/veo-3.1-fast",
+      },
+    },
+  },
+}
+```
+
+OpenClaw, metinden videoya ve görüntüden videoya işleri OpenRouter'a gönderir, döndürülen `polling_url` değerini yoklar ve tamamlanan videoyu OpenRouter'ın `unsigned_urls` değerlerinden veya belgelenmiş iş içeriği endpoint'inden indirir. Referans görüntüler varsayılan olarak ilk/son kare görüntüleri olarak gönderilir; `reference_image` ile etiketlenen görüntüler OpenRouter giriş referansları olarak gönderilir. Birlikte gelen `google/veo-3.1-fast` varsayılanı, şu anda desteklenen 4/6/8 saniyelik süreleri, `720P`/`1080P` çözünürlükleri ve `16:9`/`9:16` en-boy oranlarını bildirir. Yukarı akış video oluşturma API'si şu anda metin ve görüntü referanslarını kabul ettiği için OpenRouter için videodan videoya kayıtlı değildir.
 
 ## Metinden konuşmaya
 
-OpenRouter, OpenAI ile uyumlu
-`/audio/speech` uç noktası üzerinden bir TTS sağlayıcısı olarak da kullanılabilir.
+OpenRouter, OpenAI uyumlu `/audio/speech` endpoint'i üzerinden TTS sağlayıcısı olarak da kullanılabilir.
 
 ```json5
 {
@@ -109,15 +125,13 @@ OpenRouter, OpenAI ile uyumlu
 }
 ```
 
-`messages.tts.providers.openrouter.apiKey` atlanırsa, TTS
-`models.providers.openrouter.apiKey`, ardından `OPENROUTER_API_KEY` değerini yeniden kullanır.
+`messages.tts.providers.openrouter.apiKey` atlanırsa TTS önce `models.providers.openrouter.apiKey` değerini, ardından `OPENROUTER_API_KEY` değerini yeniden kullanır.
 
 ## Kimlik doğrulama ve başlıklar
 
-OpenRouter, arka planda API anahtarınızla birlikte bir Bearer token kullanır.
+OpenRouter, perde arkasında API anahtarınızla bir Bearer token kullanır.
 
-Gerçek OpenRouter isteklerinde (`https://openrouter.ai/api/v1`), OpenClaw ayrıca
-OpenRouter'ın belgelenmiş uygulama ilişkilendirme başlıklarını da ekler:
+Gerçek OpenRouter isteklerinde (`https://openrouter.ai/api/v1`), OpenClaw ayrıca OpenRouter'ın belgelenmiş uygulama-atıf başlıklarını ekler:
 
 | Başlık                    | Değer                 |
 | ------------------------- | --------------------- |
@@ -126,40 +140,30 @@ OpenRouter'ın belgelenmiş uygulama ilişkilendirme başlıklarını da ekler:
 | `X-OpenRouter-Categories` | `cli-agent`           |
 
 <Warning>
-OpenRouter sağlayıcısını başka bir proxy'ye veya temel URL'ye yeniden yönlendirirseniz, OpenClaw
-bu OpenRouter'a özgü başlıkları veya Anthropic önbellek işaretleyicilerini **eklemez**.
+OpenRouter sağlayıcısını başka bir proxy'ye veya temel URL'ye yönlendirirseniz OpenClaw bu OpenRouter'a özgü başlıkları veya Anthropic önbellek işaretleyicilerini **eklemez**.
 </Warning>
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
   <Accordion title="Anthropic önbellek işaretleyicileri">
-    Doğrulanmış OpenRouter rotalarında, Anthropic model ref'leri OpenClaw'ın
-    sistem/geliştirici istem bloklarında daha iyi prompt-cache yeniden kullanımı
-    için kullandığı OpenRouter'a özgü Anthropic `cache_control` işaretleyicilerini korur.
+    Doğrulanmış OpenRouter rotalarında, Anthropic model referansları OpenClaw'ın system/developer istem bloklarında daha iyi istem önbelleği yeniden kullanımı için kullandığı OpenRouter'a özgü Anthropic `cache_control` işaretleyicilerini korur.
   </Accordion>
 
-  <Accordion title="Düşünme / akıl yürütme ekleme">
-    Desteklenen `auto` olmayan rotalarda OpenClaw, seçilen düşünme düzeyini
-    OpenRouter proxy akıl yürütme yüklerine eşler. Desteklenmeyen model ipuçları ve
-    `openrouter/auto` bu akıl yürütme eklemesini atlar.
+  <Accordion title="Düşünme / akıl yürütme enjeksiyonu">
+    Desteklenen `auto` dışı rotalarda OpenClaw, seçili düşünme düzeyini OpenRouter proxy akıl yürütme yüklerine eşler. Desteklenmeyen model ipuçları ve `openrouter/auto` bu akıl yürütme enjeksiyonunu atlar. Hunter Alpha da eski yapılandırılmış model referansları için proxy akıl yürütmeyi atlar, çünkü OpenRouter bu emekli rota için akıl yürütme alanlarında nihai yanıt metni döndürebilir.
   </Accordion>
 
-  <Accordion title="Yalnızca OpenAI istek şekillendirmesi">
-    OpenRouter yine proxy tarzı OpenAI uyumlu yol üzerinden çalışır, bu nedenle
-    `serviceTier`, Responses `store`,
-    OpenAI reasoning-compat yükleri ve prompt-cache ipuçları gibi yalnızca OpenAI'ye özgü doğal istek şekillendirmesi iletilmez.
+  <Accordion title="Yalnızca OpenAI istek biçimlendirmesi">
+    OpenRouter hâlâ proxy tarzı OpenAI uyumlu yoldan çalışır, bu nedenle `serviceTier`, Responses `store`, OpenAI akıl yürütme uyumluluk yükleri ve istem önbelleği ipuçları gibi yerel yalnızca OpenAI istek biçimlendirmesi iletilmez.
   </Accordion>
 
   <Accordion title="Gemini destekli rotalar">
-    Gemini destekli OpenRouter ref'leri proxy-Gemini yolunda kalır: OpenClaw
-    burada Gemini düşünce-imzası temizliğini sürdürür, ancak doğal Gemini
-    replay doğrulamasını veya bootstrap yeniden yazımlarını etkinleştirmez.
+    Gemini destekli OpenRouter referansları proxy-Gemini yolunda kalır: OpenClaw burada Gemini düşünce imzası temizliğini korur, ancak yerel Gemini yeniden oynatma doğrulamasını veya bootstrap yeniden yazımlarını etkinleştirmez.
   </Accordion>
 
   <Accordion title="Sağlayıcı yönlendirme meta verileri">
-    OpenRouter sağlayıcı yönlendirmesini model parametreleri altında iletirseniz, OpenClaw
-    bunu paylaşılan akış sarmalayıcıları çalışmadan önce OpenRouter yönlendirme meta verileri olarak iletir.
+    Model parametreleri altında OpenRouter sağlayıcı yönlendirmesi geçirirseniz OpenClaw bunu, paylaşılan akış sarmalayıcıları çalışmadan önce OpenRouter yönlendirme meta verisi olarak iletir.
   </Accordion>
 </AccordionGroup>
 
@@ -167,9 +171,9 @@ bu OpenRouter'a özgü başlıkları veya Anthropic önbellek işaretleyicilerin
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve yük devretme davranışını seçme.
+    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
   </Card>
-  <Card title="Yapılandırma referansı" href="/tr/gateway/configuration-reference" icon="gear">
-    Agent'lar, modeller ve sağlayıcılar için tam yapılandırma referansı.
+  <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
+    Agents, modeller ve sağlayıcılar için tam yapılandırma başvurusu.
   </Card>
 </CardGroup>
