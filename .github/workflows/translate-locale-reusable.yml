@@ -207,6 +207,7 @@ jobs:
                 --src en \
                 --mode doc \
                 --thinking xhigh \
+                --allow-partial \
                 --parallel 8 \
                 "${DOC_FILES[@]}"
             ); then
