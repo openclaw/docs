@@ -1,32 +1,32 @@
 ---
 read_when:
-    - OpenClaw에서 발신 음성 통화를 걸려고 합니다
-    - voice-call Plugin을 구성하거나 개발 중입니다
+    - OpenClaw에서 발신 음성 통화를 걸고 싶습니다
+    - 음성 통화 Plugin을 구성하거나 개발하고 있습니다
     - 전화 통신에서 실시간 음성 또는 스트리밍 전사가 필요합니다
 sidebarTitle: Voice call
-summary: Twilio, Telnyx 또는 Plivo를 통해 발신 음성 통화를 걸고 수신 통화를 받으며, 선택적으로 실시간 음성과 스트리밍 전사를 사용할 수 있습니다
-title: Voice call Plugin
+summary: Twilio, Telnyx 또는 Plivo를 통해 발신 음성 통화를 걸고 수신 음성 통화를 받으며, 선택적으로 실시간 음성과 스트리밍 전사를 지원합니다
+title: 음성 통화 Plugin
 x-i18n:
-    generated_at: "2026-04-26T11:37:02Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:45:14Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 77b5e4b338b0c39c71accea7065af70fab695c8f34488ba0fbf7023f2f36f377
+    source_hash: 7976b84ce1ee6e29706e595a4a25337632b34a9bb8f7cecdee1d6f833a8ce932
     source_path: plugins/voice-call.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw용 음성 통화 Plugin입니다. 발신 알림,
-다중 턴 대화, 완전 양방향 실시간 음성, 스트리밍
-전사, 허용 목록 정책이 있는 수신 통화를 지원합니다.
+Plugin을 통해 OpenClaw에 음성 통화를 제공합니다. 아웃바운드 알림,
+다중 턴 대화, 전이중 실시간 음성, 스트리밍
+전사, allowlist 정책을 사용한 인바운드 통화를 지원합니다.
 
-**현재 공급자:** `twilio` (Programmable Voice + Media Streams),
-`telnyx` (Call Control v2), `plivo` (Voice API + XML transfer + GetInput
-speech), `mock` (개발용/네트워크 없음).
+**현재 공급자:** `twilio`(Programmable Voice + Media Streams),
+`telnyx`(Call Control v2), `plivo`(Voice API + XML transfer + GetInput
+speech), `mock`(개발용/네트워크 없음).
 
 <Note>
-Voice Call Plugin은 **Gateway 프로세스 내부**에서 실행됩니다. 원격 Gateway를 사용하는 경우,
-Gateway가 실행 중인 머신에 Plugin을 설치하고 구성한 다음,
-Gateway를 다시 시작하여 Plugin을 로드하세요.
+Voice Call Plugin은 **Gateway 프로세스 내부에서** 실행됩니다. 원격 Gateway를
+사용하는 경우, Gateway를 실행하는 머신에 Plugin을 설치하고 구성한 다음,
+Gateway를 다시 시작해 로드하세요.
 </Note>
 
 ## 빠른 시작
@@ -34,7 +34,7 @@ Gateway를 다시 시작하여 Plugin을 로드하세요.
 <Steps>
   <Step title="Plugin 설치">
     <Tabs>
-      <Tab title="npm에서 설치(권장)">
+      <Tab title="npm에서 설치">
         ```bash
         openclaw plugins install @openclaw/voice-call
         ```
@@ -48,24 +48,27 @@ Gateway를 다시 시작하여 Plugin을 로드하세요.
       </Tab>
     </Tabs>
 
-    이후 Plugin이 로드되도록 Gateway를 다시 시작하세요.
+    npm이 OpenClaw 소유 패키지를 deprecated로 보고한다면, 해당 패키지 버전은
+    더 오래된 외부 패키지 트레인에서 온 것입니다. 더 최신 npm 패키지가 게시될 때까지
+    현재 패키징된 OpenClaw 빌드 또는 로컬 폴더 경로를 사용하세요.
+
+    이후 Gateway를 다시 시작해 Plugin이 로드되도록 하세요.
 
   </Step>
-  <Step title="공급자 및 Webhook 구성">
-    `plugins.entries.voice-call.config` 아래에 구성을 설정하세요(전체 형식은
-    아래 [구성](#configuration) 참조). 최소한 다음이 필요합니다:
-    `provider`, 공급자 자격 증명, `fromNumber`, 그리고 공개적으로
-    접근 가능한 Webhook URL.
+  <Step title="공급자와 Webhook 구성">
+    `plugins.entries.voice-call.config` 아래에 구성을 설정하세요(전체 구조는
+    아래 [구성](#configuration)을 참조). 최소한 `provider`, 공급자 자격 증명,
+    `fromNumber`, 공개적으로 접근 가능한 Webhook URL이 필요합니다.
   </Step>
   <Step title="설정 확인">
     ```bash
     openclaw voicecall setup
     ```
 
-    기본 출력은 채팅 로그와 터미널에서 읽기 쉽습니다. Plugin
-    활성화, 공급자 자격 증명, Webhook 노출, 그리고 오디오 모드가
-    하나만 활성화되었는지(`streaming` 또는 `realtime`)를 확인합니다.
-    스크립트에서는 `--json`을 사용하세요.
+    기본 출력은 채팅 로그와 터미널에서 읽기 쉽습니다. Plugin 활성화,
+    공급자 자격 증명, Webhook 노출, 그리고 오디오 모드(`streaming` 또는
+    `realtime`)가 하나만 활성 상태인지 확인합니다. 스크립트에는
+    `--json`을 사용하세요.
 
   </Step>
   <Step title="스모크 테스트">
@@ -74,8 +77,8 @@ Gateway를 다시 시작하여 Plugin을 로드하세요.
     openclaw voicecall smoke --to "+15555550123"
     ```
 
-    둘 다 기본적으로 드라이 런입니다. 실제로 짧은
-    발신 알림 전화를 걸려면 `--yes`를 추가하세요:
+    둘 다 기본적으로 드라이런입니다. 실제로 짧은 아웃바운드 알림 통화를
+    걸려면 `--yes`를 추가하세요.
 
     ```bash
     openclaw voicecall smoke --to "+15555550123" --yes
@@ -85,18 +88,22 @@ Gateway를 다시 시작하여 Plugin을 로드하세요.
 </Steps>
 
 <Warning>
-Twilio, Telnyx, Plivo의 경우 설정은 반드시 **공개 Webhook URL**로 확인되어야 합니다.
-`publicUrl`, 터널 URL, Tailscale URL 또는 serve 대체 경로가
-loopback 또는 사설 네트워크 공간으로 확인되면, 이동통신사 Webhook을
-받을 수 없는 공급자를 시작하는 대신 설정이 실패합니다.
+Twilio, Telnyx, Plivo의 경우 설정은 반드시 **공개 Webhook URL**로
+해석되어야 합니다. `publicUrl`, 터널 URL, Tailscale URL 또는 serve 대체값이
+loopback이나 사설 네트워크 공간으로 해석되면, 통신사 Webhook을 받을 수 없는
+공급자를 시작하는 대신 설정이 실패합니다.
 </Warning>
 
 ## 구성
 
-`enabled: true`인데 선택한 공급자에 자격 증명이 없으면,
-Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 남기고
-런타임 시작을 건너뜁니다. 명령, RPC 호출, 에이전트 도구는 사용 시
-정확히 누락된 공급자 구성을 계속 반환합니다.
+`enabled: true`이지만 선택한 공급자에 자격 증명이 없으면,
+Gateway 시작 시 누락된 키와 함께 설정 미완료 경고가 기록되고
+런타임 시작을 건너뜁니다. 명령, RPC 호출, 에이전트 도구는 사용 시에도
+누락된 공급자 구성을 정확히 반환합니다.
+
+<Note>
+음성 통화 자격 증명은 SecretRef를 허용합니다. `plugins.entries.voice-call.config.twilio.authToken` 및 `plugins.entries.voice-call.config.tts.providers.*.apiKey`는 표준 SecretRef 표면을 통해 해석됩니다. [SecretRef 자격 증명 표면](/ko/reference/secretref-credential-surface)을 참조하세요.
+</Note>
 
 ```json5
 {
@@ -105,8 +112,8 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
       "voice-call": {
         enabled: true,
         config: {
-          provider: "twilio", // 또는 "telnyx" | "plivo" | "mock"
-          fromNumber: "+15550001234", // 또는 Twilio의 경우 TWILIO_FROM_NUMBER
+          provider: "twilio", // or "telnyx" | "plivo" | "mock"
+          fromNumber: "+15550001234", // or TWILIO_FROM_NUMBER for Twilio
           toNumber: "+15550005678",
 
           twilio: {
@@ -116,8 +123,8 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
           telnyx: {
             apiKey: "...",
             connectionId: "...",
-            // Mission Control Portal의 Telnyx Webhook 공개 키
-            // (Base64, TELNYX_PUBLIC_KEY로도 설정 가능)
+            // Telnyx webhook public key from the Mission Control Portal
+            // (Base64; can also be set via TELNYX_PUBLIC_KEY).
             publicKey: "...",
           },
           plivo: {
@@ -125,19 +132,19 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
             authToken: "...",
           },
 
-          // Webhook 서버
+          // Webhook server
           serve: {
             port: 3334,
             path: "/voice/webhook",
           },
 
-          // Webhook 보안(터널/프록시에 권장)
+          // Webhook security (recommended for tunnels/proxies)
           webhookSecurity: {
             allowedHosts: ["voice.example.com"],
             trustedProxyIPs: ["100.64.0.1"],
           },
 
-          // 공개 노출(하나 선택)
+          // Public exposure (pick one)
           // publicUrl: "https://example.ngrok.app/voice/webhook",
           // tunnel: { provider: "ngrok" },
           // tailscale: { mode: "funnel", path: "/voice/webhook" },
@@ -146,8 +153,8 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
             defaultMode: "notify", // notify | conversation
           },
 
-          streaming: { enabled: true /* 스트리밍 전사 참조 */ },
-          realtime: { enabled: false /* 실시간 음성 참조 */ },
+          streaming: { enabled: true /* see Streaming transcription */ },
+          realtime: { enabled: false /* see Realtime voice */ },
         },
       },
     },
@@ -156,28 +163,28 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
 ```
 
 <AccordionGroup>
-  <Accordion title="공급자 노출 및 보안 참고">
+  <Accordion title="공급자 노출 및 보안 참고 사항">
     - Twilio, Telnyx, Plivo는 모두 **공개적으로 접근 가능한** Webhook URL이 필요합니다.
     - `mock`은 로컬 개발 공급자입니다(네트워크 호출 없음).
-    - Telnyx는 `skipSignatureVerification`이 true가 아닌 한 `telnyx.publicKey`(또는 `TELNYX_PUBLIC_KEY`)가 필요합니다.
+    - `skipSignatureVerification`이 true가 아닌 한 Telnyx에는 `telnyx.publicKey`(또는 `TELNYX_PUBLIC_KEY`)가 필요합니다.
     - `skipSignatureVerification`은 로컬 테스트 전용입니다.
-    - ngrok 무료 티어에서는 정확한 ngrok URL로 `publicUrl`을 설정하세요. 서명 검증은 항상 강제됩니다.
-    - `tunnel.allowNgrokFreeTierLoopbackBypass: true`는 `tunnel.provider="ngrok"`이고 `serve.bind`가 loopback(ngrok 로컬 에이전트)일 때에만 잘못된 서명의 Twilio Webhook을 허용합니다. 로컬 개발 전용입니다.
-    - Ngrok 무료 티어 URL은 변경되거나 중간 동작을 추가할 수 있습니다. `publicUrl`이 바뀌면 Twilio 서명이 실패합니다. 프로덕션에서는 안정적인 도메인이나 Tailscale funnel을 선호하세요.
+    - ngrok 무료 티어에서는 `publicUrl`을 정확한 ngrok URL로 설정하세요. 서명 검증은 항상 강제됩니다.
+    - `tunnel.allowNgrokFreeTierLoopbackBypass: true`는 `tunnel.provider="ngrok"`이고 `serve.bind`가 loopback(ngrok 로컬 에이전트)인 경우에만 잘못된 서명이 있는 Twilio Webhook을 허용합니다. 로컬 개발 전용입니다.
+    - Ngrok 무료 티어 URL은 변경되거나 중간 안내 동작이 추가될 수 있습니다. `publicUrl`이 달라지면 Twilio 서명이 실패합니다. 프로덕션에서는 안정적인 도메인이나 Tailscale funnel을 권장합니다.
 
   </Accordion>
-  <Accordion title="스트리밍 연결 상한">
-    - `streaming.preStartTimeoutMs`는 유효한 `start` 프레임을 보내지 않는 소켓을 닫습니다.
-    - `streaming.maxPendingConnections`는 인증되지 않은 시작 전 소켓의 총 수를 제한합니다.
+  <Accordion title="스트리밍 연결 한도">
+    - `streaming.preStartTimeoutMs`는 유효한 `start` 프레임을 전송하지 않는 소켓을 닫습니다.
+    - `streaming.maxPendingConnections`는 인증되지 않은 시작 전 소켓의 총수를 제한합니다.
     - `streaming.maxPendingConnectionsPerIp`는 소스 IP별 인증되지 않은 시작 전 소켓 수를 제한합니다.
-    - `streaming.maxConnections`는 열려 있는 미디어 스트림 소켓의 총 수(대기 중 + 활성)를 제한합니다.
+    - `streaming.maxConnections`는 열려 있는 미디어 스트림 소켓의 총수(대기 중 + 활성)를 제한합니다.
 
   </Accordion>
-  <Accordion title="레거시 config 마이그레이션">
+  <Accordion title="레거시 구성 마이그레이션">
     `provider: "log"`, `twilio.from`, 또는 레거시
     `streaming.*` OpenAI 키를 사용하는 이전 구성은 `openclaw doctor --fix`로
-    다시 작성됩니다. 런타임 대체 경로는 현재는 예전 voice-call 키를 계속 허용하지만,
-    재작성 경로는 `openclaw doctor --fix`이며 호환성 shim은
+    다시 작성됩니다. 런타임 대체 경로는 현재도 이전 voice-call 키를 허용하지만,
+    재작성 경로는 `openclaw doctor --fix`이고 호환성 shim은
     임시입니다.
 
     자동 마이그레이션되는 스트리밍 키:
@@ -193,41 +200,41 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
 
 ## 실시간 음성 대화
 
-`realtime`은 라이브 통화 오디오용 완전 양방향 실시간 음성 공급자를 선택합니다.
-이것은 오디오를 실시간 전사 공급자에게 전달만 하는 `streaming`과는 별개입니다.
+`realtime`은 실시간 통화 오디오를 위한 전이중 실시간 음성 공급자를 선택합니다.
+이는 오디오를 실시간 전사 공급자로만 전달하는 `streaming`과는 별개입니다.
 
 <Warning>
-`realtime.enabled`는 `streaming.enabled`와 함께 사용할 수 없습니다. 통화당
-하나의 오디오 모드만 선택하세요.
+`realtime.enabled`는 `streaming.enabled`와 함께 사용할 수 없습니다. 통화마다
+오디오 모드를 하나 선택하세요.
 </Warning>
 
 현재 런타임 동작:
 
 - `realtime.enabled`는 Twilio Media Streams에서 지원됩니다.
 - `realtime.provider`는 선택 사항입니다. 설정하지 않으면 Voice Call은 처음 등록된 실시간 음성 공급자를 사용합니다.
-- 번들 실시간 음성 공급자: Google Gemini Live (`google`)와 OpenAI (`openai`)이며, 공급자 Plugins에 의해 등록됩니다.
+- 번들된 실시간 음성 공급자: Google Gemini Live(`google`) 및 OpenAI(`openai`)이며, 각 공급자 Plugin이 등록합니다.
 - 공급자 소유 원시 구성은 `realtime.providers.<providerId>` 아래에 있습니다.
-- Voice Call은 기본적으로 공용 `openclaw_agent_consult` 실시간 도구를 노출합니다. 발신자가 더 깊은 추론, 현재 정보 또는 일반 OpenClaw 도구를 요청할 때 실시간 모델이 이를 호출할 수 있습니다.
-- `realtime.provider`가 등록되지 않은 공급자를 가리키거나 실시간 음성 공급자가 전혀 등록되지 않은 경우, Voice Call은 전체 Plugin을 실패시키는 대신 경고를 기록하고 실시간 미디어를 건너뜁니다.
-- Consult 세션 키는 가능하면 기존 음성 세션을 재사용하고, 그렇지 않으면 발신자/수신자 전화번호로 대체되므로 후속 consult 호출이 통화 중에도 컨텍스트를 유지합니다.
+- Voice Call은 기본적으로 공유 `openclaw_agent_consult` 실시간 도구를 노출합니다. 호출자가 더 깊은 추론, 최신 정보 또는 일반 OpenClaw 도구를 요청하면 실시간 모델이 이를 호출할 수 있습니다.
+- `realtime.provider`가 등록되지 않은 공급자를 가리키거나 실시간 음성 공급자가 전혀 등록되어 있지 않으면, Voice Call은 전체 Plugin을 실패시키는 대신 경고를 기록하고 실시간 미디어를 건너뜁니다.
+- consult 세션 키는 가능하면 기존 음성 세션을 재사용한 다음, 후속 consult 호출이 통화 중 컨텍스트를 유지하도록 발신자/수신자 전화번호로 대체됩니다.
 
 ### 도구 정책
 
 `realtime.toolPolicy`는 consult 실행을 제어합니다.
 
-| 정책             | 동작                                                                                                                                    |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `safe-read-only` | consult 도구를 노출하고 일반 에이전트를 `read`, `web_search`, `web_fetch`, `x_search`, `memory_search`, `memory_get`로 제한합니다. |
-| `owner`          | consult 도구를 노출하고 일반 에이전트가 일반 에이전트 도구 정책을 사용하도록 합니다.                                                   |
-| `none`           | consult 도구를 노출하지 않습니다. 사용자 지정 `realtime.tools`는 여전히 실시간 공급자에 전달됩니다.                                    |
+| 정책             | 동작                                                                                                                                     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `safe-read-only` | consult 도구를 노출하고 일반 에이전트를 `read`, `web_search`, `web_fetch`, `x_search`, `memory_search`, `memory_get`으로 제한합니다. |
+| `owner`          | consult 도구를 노출하고 일반 에이전트가 일반 에이전트 도구 정책을 사용하도록 허용합니다.                                                |
+| `none`           | consult 도구를 노출하지 않습니다. 사용자 지정 `realtime.tools`는 여전히 실시간 공급자에 전달됩니다.                                     |
 
 ### 실시간 공급자 예시
 
 <Tabs>
   <Tab title="Google Gemini Live">
-    기본값: `realtime.providers.google.apiKey`,
-    `GEMINI_API_KEY`, 또는 `GOOGLE_GENERATIVE_AI_API_KEY`의 API 키, 모델
-    `gemini-2.5-flash-native-audio-preview-12-2025`, 음성 `Kore`.
+    기본값: API 키는 `realtime.providers.google.apiKey`,
+    `GEMINI_API_KEY` 또는 `GOOGLE_GENERATIVE_AI_API_KEY`에서 가져옵니다. 모델은
+    `gemini-2.5-flash-native-audio-preview-12-2025`, 음성은 `Kore`입니다.
 
     ```json5
     {
@@ -282,26 +289,26 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
   </Tab>
 </Tabs>
 
-공급자별 실시간 음성 옵션은 [Google 공급자](/ko/providers/google)와
+공급자별 실시간 음성 옵션은 [Google 공급자](/ko/providers/google) 및
 [OpenAI 공급자](/ko/providers/openai)를 참조하세요.
 
 ## 스트리밍 전사
 
-`streaming`은 라이브 통화 오디오용 실시간 전사 공급자를 선택합니다.
+`streaming`은 실시간 통화 오디오를 위한 실시간 전사 공급자를 선택합니다.
 
 현재 런타임 동작:
 
 - `streaming.provider`는 선택 사항입니다. 설정하지 않으면 Voice Call은 처음 등록된 실시간 전사 공급자를 사용합니다.
-- 번들 실시간 전사 공급자: Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`), xAI (`xai`)이며, 공급자 Plugins에 의해 등록됩니다.
+- 번들된 실시간 전사 공급자: Deepgram(`deepgram`), ElevenLabs(`elevenlabs`), Mistral(`mistral`), OpenAI(`openai`), xAI(`xai`)이며, 각 공급자 Plugin이 등록합니다.
 - 공급자 소유 원시 구성은 `streaming.providers.<providerId>` 아래에 있습니다.
-- `streaming.provider`가 등록되지 않은 공급자를 가리키거나 아무 공급자도 등록되지 않은 경우, Voice Call은 전체 Plugin을 실패시키는 대신 경고를 기록하고 미디어 스트리밍을 건너뜁니다.
+- `streaming.provider`가 등록되지 않은 공급자를 가리키거나 등록된 공급자가 없으면, Voice Call은 전체 Plugin을 실패시키는 대신 경고를 기록하고 미디어 스트리밍을 건너뜁니다.
 
 ### 스트리밍 공급자 예시
 
 <Tabs>
   <Tab title="OpenAI">
     기본값: API 키 `streaming.providers.openai.apiKey` 또는
-    `OPENAI_API_KEY`, 모델 `gpt-4o-transcribe`, `silenceDurationMs: 800`,
+    `OPENAI_API_KEY`; 모델 `gpt-4o-transcribe`; `silenceDurationMs: 800`;
     `vadThreshold: 0.5`.
 
     ```json5
@@ -316,7 +323,7 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
                 streamPath: "/voice/stream",
                 providers: {
                   openai: {
-                    apiKey: "sk-...", // OPENAI_API_KEY가 설정되어 있으면 선택 사항
+                    apiKey: "sk-...", // optional if OPENAI_API_KEY is set
                     model: "gpt-4o-transcribe",
                     silenceDurationMs: 800,
                     vadThreshold: 0.5,
@@ -332,9 +339,9 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
 
   </Tab>
   <Tab title="xAI">
-    기본값: API 키 `streaming.providers.xai.apiKey` 또는 `XAI_API_KEY`,
-    엔드포인트 `wss://api.x.ai/v1/stt`, 인코딩 `mulaw`, 샘플 레이트 `8000`,
-    `endpointingMs: 800`, `interimResults: true`.
+    기본값: API 키 `streaming.providers.xai.apiKey` 또는 `XAI_API_KEY`;
+    엔드포인트 `wss://api.x.ai/v1/stt`; 인코딩 `mulaw`; 샘플 속도 `8000`;
+    `endpointingMs: 800`; `interimResults: true`.
 
     ```json5
     {
@@ -348,7 +355,7 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
                 streamPath: "/voice/stream",
                 providers: {
                   xai: {
-                    apiKey: "${XAI_API_KEY}", // XAI_API_KEY가 설정되어 있으면 선택 사항
+                    apiKey: "${XAI_API_KEY}", // optional if XAI_API_KEY is set
                     endpointingMs: 800,
                     language: "en",
                   },
@@ -366,9 +373,7 @@ Gateway 시작 시 누락된 키와 함께 setup-incomplete 경고를 로그에 
 
 ## 통화용 TTS
 
-Voice Call은 통화 중 스트리밍
-음성에 core `messages.tts` 구성을 사용합니다. Plugin config 아래에서
-**같은 형식**으로 이를 재정의할 수 있으며, `messages.tts`와 딥 머지됩니다.
+Voice Call은 통화에서 스트리밍 음성을 위해 핵심 `messages.tts` 구성을 사용합니다. Plugin 설정 아래에서 **동일한 형태**로 재정의할 수 있으며, 이 설정은 `messages.tts`와 깊은 병합됩니다.
 
 ```json5
 {
@@ -385,22 +390,21 @@ Voice Call은 통화 중 스트리밍
 ```
 
 <Warning>
-**Microsoft 음성은 음성 통화에서 무시됩니다.** 전화 통신 오디오에는 PCM이 필요하지만,
-현재 Microsoft 전송은 전화용 PCM 출력을 노출하지 않습니다.
+**Microsoft speech는 음성 통화에서 무시됩니다.** 전화 오디오에는 PCM이 필요하지만, 현재 Microsoft 전송은 전화 PCM 출력을 노출하지 않습니다.
 </Warning>
 
-동작 참고:
+동작 참고 사항:
 
-- Plugin config 내부의 레거시 `tts.<provider>` 키(`openai`, `elevenlabs`, `microsoft`, `edge`)는 `openclaw doctor --fix`에 의해 수정됩니다. 커밋되는 config는 `tts.providers.<provider>`를 사용해야 합니다.
-- Twilio 미디어 스트리밍이 활성화되면 core TTS가 사용되며, 그렇지 않으면 통화는 공급자 기본 음성으로 대체됩니다.
-- Twilio 미디어 스트림이 이미 활성 상태이면 Voice Call은 TwiML `<Say>`로 대체하지 않습니다. 해당 상태에서 전화용 TTS를 사용할 수 없으면 두 재생 경로를 섞는 대신 재생 요청이 실패합니다.
-- 전화용 TTS가 보조 공급자로 대체되면 Voice Call은 디버깅을 위해 공급자 체인(`from`, `to`, `attempts`)과 함께 경고를 기록합니다.
-- Twilio barge-in 또는 스트림 종료가 대기 중인 TTS 큐를 비우면, 큐에 있던 재생 요청은 발신자가 재생 완료를 기다리며 멈추지 않도록 정상적으로 종료됩니다.
+- Plugin 설정 안의 레거시 `tts.<provider>` 키(`openai`, `elevenlabs`, `microsoft`, `edge`)는 `openclaw doctor --fix`로 복구됩니다. 커밋되는 설정은 `tts.providers.<provider>`를 사용해야 합니다.
+- Twilio 미디어 스트리밍이 활성화되어 있으면 핵심 TTS가 사용됩니다. 그렇지 않으면 통화는 공급자 네이티브 음성으로 폴백됩니다.
+- Twilio 미디어 스트림이 이미 활성 상태이면 Voice Call은 TwiML `<Say>`로 폴백하지 않습니다. 이 상태에서 전화 TTS를 사용할 수 없으면 두 재생 경로를 혼합하는 대신 재생 요청이 실패합니다.
+- 전화 TTS가 보조 공급자로 폴백되면 Voice Call은 디버깅을 위해 공급자 체인(`from`, `to`, `attempts`)과 함께 경고를 기록합니다.
+- Twilio 끼어들기 또는 스트림 해제가 대기 중인 TTS 큐를 지우면, 큐에 있던 재생 요청은 재생 완료를 기다리는 호출자를 멈춘 채 두지 않고 완료 상태로 정리됩니다.
 
 ### TTS 예시
 
 <Tabs>
-  <Tab title="core TTS만 사용">
+  <Tab title="Core TTS only">
 ```json5
 {
   messages: {
@@ -414,7 +418,7 @@ Voice Call은 통화 중 스트리밍
 }
 ```
   </Tab>
-  <Tab title="ElevenLabs로 재정의(통화 전용)">
+  <Tab title="Override to ElevenLabs (calls only)">
 ```json5
 {
   plugins: {
@@ -438,7 +442,7 @@ Voice Call은 통화 중 스트리밍
 }
 ```
   </Tab>
-  <Tab title="OpenAI 모델 재정의(딥 머지)">
+  <Tab title="OpenAI model override (deep-merge)">
 ```json5
 {
   plugins: {
@@ -475,16 +479,10 @@ Voice Call은 통화 중 스트리밍
 ```
 
 <Warning>
-`inboundPolicy: "allowlist"`는 신뢰 수준이 낮은 발신자 ID 필터입니다. 이
-Plugin은 공급자가 제공한 `From` 값을 정규화한 뒤
-`allowFrom`과 비교합니다. Webhook 검증은 공급자 전달과
-페이로드 무결성을 인증하지만, PSTN/VoIP 발신 번호
-소유권까지 증명하지는 않습니다. `allowFrom`은 강한 발신자
-신원이 아니라 발신자 ID 필터링으로 취급하세요.
+`inboundPolicy: "allowlist"`는 낮은 보증 수준의 발신자 ID 검사입니다. Plugin은 공급자가 제공한 `From` 값을 정규화하고 `allowFrom`과 비교합니다. Webhook 검증은 공급자 전달과 페이로드 무결성을 인증하지만, PSTN/VoIP 발신자 번호 소유권을 **증명하지는 않습니다**. `allowFrom`은 강력한 발신자 신원이 아니라 발신자 ID 필터링으로 취급하세요.
 </Warning>
 
-자동 응답은 에이전트 시스템을 사용합니다. `responseModel`,
-`responseSystemPrompt`, `responseTimeoutMs`로 조정하세요.
+자동 응답은 에이전트 시스템을 사용합니다. `responseModel`, `responseSystemPrompt`, `responseTimeoutMs`로 조정하세요.
 
 ### 음성 출력 계약
 
@@ -494,42 +492,39 @@ Plugin은 공급자가 제공한 `From` 값을 정규화한 뒤
 {"spoken":"..."}
 ```
 
-Voice Call은 방어적으로 음성 텍스트를 추출합니다.
+Voice Call은 음성 텍스트를 방어적으로 추출합니다.
 
-- reasoning/error 콘텐츠로 표시된 페이로드는 무시합니다.
-- 직접 JSON, fenced JSON, 또는 인라인 `"spoken"` 키를 파싱합니다.
-- 일반 텍스트로 대체하고 계획/메타로 보이는 도입 문단은 제거합니다.
+- 추론/오류 콘텐츠로 표시된 페이로드를 무시합니다.
+- 직접 JSON, 펜스 처리된 JSON, 또는 인라인 `"spoken"` 키를 파싱합니다.
+- 일반 텍스트로 폴백하고 계획/메타 성격으로 보이는 도입 문단을 제거합니다.
 
-이렇게 하면 음성 재생이 발신자에게 들려줄 텍스트에 집중되고,
-계획 텍스트가 오디오로 유출되는 것을 방지할 수 있습니다.
+이를 통해 음성 재생은 발신자에게 들려줄 텍스트에 집중되며, 계획 텍스트가 오디오로 유출되는 것을 방지합니다.
 
 ### 대화 시작 동작
 
-발신 `conversation` 통화의 경우 첫 메시지 처리는 라이브
-재생 상태와 연결됩니다.
+발신 `conversation` 통화의 경우 첫 메시지 처리는 실시간 재생 상태와 연결됩니다.
 
-- barge-in 큐 비우기와 자동 응답은 초기 인사말이 실제로 재생 중일 때만 억제됩니다.
-- 초기 재생에 실패하면 통화는 `listening`으로 돌아가고 초기 메시지는 재시도를 위해 대기 상태로 유지됩니다.
+- 끼어들기 큐 지우기와 자동 응답은 초기 인사말이 실제로 말해지는 동안에만 억제됩니다.
+- 초기 재생이 실패하면 통화는 `listening`으로 돌아가고 초기 메시지는 재시도를 위해 큐에 남습니다.
 - Twilio 스트리밍의 초기 재생은 추가 지연 없이 스트림 연결 시 시작됩니다.
-- Barge-in은 활성 재생을 중단하고 아직 재생되지 않은 대기 중 Twilio TTS 항목을 비웁니다. 비워진 항목은 건너뜀으로 처리되므로 후속 응답 로직은 절대 재생되지 않을 오디오를 기다리지 않고 계속 진행할 수 있습니다.
-- 실시간 음성 대화는 실시간 스트림 자체의 시작 턴을 사용합니다. Voice Call은 해당 초기 메시지에 대해 레거시 `<Say>` TwiML 업데이트를 게시하지 않으므로, 발신 `<Connect><Stream>` 세션이 연결된 상태를 유지합니다.
+- 끼어들기는 활성 재생을 중단하고 아직 재생되지 않은 큐 대기 Twilio TTS 항목을 지웁니다. 지워진 항목은 건너뜀으로 resolve되므로 후속 응답 로직은 절대 재생되지 않을 오디오를 기다리지 않고 계속될 수 있습니다.
+- Realtime 음성 대화는 realtime 스트림 자체의 시작 턴을 사용합니다. Voice Call은 해당 초기 메시지에 대해 레거시 `<Say>` TwiML 업데이트를 게시하지 않으므로 발신 `<Connect><Stream>` 세션은 계속 연결된 상태로 유지됩니다.
 
 ### Twilio 스트림 연결 해제 유예
 
-Twilio 미디어 스트림이 연결 해제되면 Voice Call은
-통화를 자동 종료하기 전에 **2000 ms**를 기다립니다.
+Twilio 미디어 스트림의 연결이 해제되면 Voice Call은 통화를 자동 종료하기 전에 **2000 ms**를 기다립니다.
 
-- 그 시간 안에 스트림이 다시 연결되면 자동 종료가 취소됩니다.
-- 유예 기간 후에도 스트림이 다시 등록되지 않으면, 활성 통화가 멈춘 상태로 남지 않도록 통화를 종료합니다.
+- 해당 시간 동안 스트림이 다시 연결되면 자동 종료가 취소됩니다.
+- 유예 기간 이후에도 다시 등록되는 스트림이 없으면 멈춘 활성 통화를 방지하기 위해 통화가 종료됩니다.
 
 ## 오래된 통화 정리기
 
-최종 Webhook을 받지 못한 통화(예: 완료되지 않는 notify 모드 통화)를 종료하려면 `staleCallReaperSeconds`를 사용하세요. 기본값은 `0`(비활성화)입니다.
+종료 Webhook을 받지 못하는 통화(예: 완료되지 않는 알림 모드 통화)를 종료하려면 `staleCallReaperSeconds`를 사용하세요. 기본값은 `0`(비활성화)입니다.
 
 권장 범위:
 
-- **프로덕션:** notify 스타일 흐름에는 `120`–`300`초
-- 일반 통화가 끝날 수 있도록 이 값은 **`maxDurationSeconds`보다 크게** 유지하세요. 좋은 시작점은 `maxDurationSeconds + 30–60`초입니다.
+- **프로덕션:** 알림 스타일 흐름의 경우 `120`~`300`초.
+- 일반 통화가 끝날 수 있도록 이 값을 **`maxDurationSeconds`보다 높게** 유지하세요. 좋은 시작점은 `maxDurationSeconds + 30–60`초입니다.
 
 ```json5
 {
@@ -548,12 +543,10 @@ Twilio 미디어 스트림이 연결 해제되면 Voice Call은
 
 ## Webhook 보안
 
-프록시나 터널이 Gateway 앞에 있을 때, Plugin은
-서명 검증을 위해 공개 URL을 재구성합니다. 이 옵션들은
-어떤 전달 헤더를 신뢰할지 제어합니다.
+프록시나 터널이 Gateway 앞에 있을 때 Plugin은 서명 검증을 위해 공개 URL을 재구성합니다. 다음 옵션은 어떤 전달 헤더를 신뢰할지 제어합니다.
 
 <ParamField path="webhookSecurity.allowedHosts" type="string[]">
-  전달 헤더의 허용 목록 호스트.
+  전달 헤더의 호스트 허용 목록입니다.
 </ParamField>
 <ParamField path="webhookSecurity.trustForwardingHeaders" type="boolean">
   허용 목록 없이 전달 헤더를 신뢰합니다.
@@ -562,14 +555,14 @@ Twilio 미디어 스트림이 연결 해제되면 Voice Call은
   요청 원격 IP가 목록과 일치할 때만 전달 헤더를 신뢰합니다.
 </ParamField>
 
-추가 보호 기능:
+추가 보호:
 
-- Twilio 및 Plivo에 대해 Webhook **재생 공격 방지**가 활성화됩니다. 재생된 유효 Webhook 요청은 승인되지만 부작용은 건너뜁니다.
-- Twilio 대화 턴에는 `<Gather>` 콜백에 턴별 토큰이 포함되므로, 오래되었거나 재생된 음성 콜백이 새로운 대기 중 transcript 턴을 만족시킬 수 없습니다.
+- Webhook **재생 공격 보호**는 Twilio와 Plivo에서 활성화됩니다. 재생된 유효 Webhook 요청은 승인되지만 부작용은 건너뜁니다.
+- Twilio 대화 턴은 `<Gather>` 콜백에 턴별 토큰을 포함하므로, 오래되었거나 재생된 음성 콜백은 더 최신의 대기 중인 트랜스크립트 턴을 충족할 수 없습니다.
 - 인증되지 않은 Webhook 요청은 공급자에 필요한 서명 헤더가 없으면 본문을 읽기 전에 거부됩니다.
-- voice-call Webhook은 공유 pre-auth 본문 프로필(64 KB / 5초)과 서명 검증 전 IP별 동시 처리 상한을 사용합니다.
+- voice-call Webhook은 공유 사전 인증 본문 프로필(64 KB / 5초)과 서명 검증 전 IP별 진행 중 요청 상한을 사용합니다.
 
-안정적인 공개 호스트 예시:
+안정적인 공개 호스트를 사용하는 예시:
 
 ```json5
 {
@@ -592,27 +585,24 @@ Twilio 미디어 스트림이 연결 해제되면 Voice Call은
 
 ```bash
 openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
-openclaw voicecall start --to "+15555550123"   # call의 별칭
+openclaw voicecall start --to "+15555550123"   # alias for call
 openclaw voicecall continue --call-id <id> --message "Any questions?"
 openclaw voicecall speak --call-id <id> --message "One moment"
 openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 openclaw voicecall status --call-id <id>
 openclaw voicecall tail
-openclaw voicecall latency                      # 로그에서 턴 지연 시간 요약
+openclaw voicecall latency                      # summarize turn latency from logs
 openclaw voicecall expose --mode funnel
 ```
 
-`latency`는 기본 voice-call 저장 경로의 `calls.jsonl`을 읽습니다.
-다른 로그를 가리키려면 `--file <path>`를 사용하고, 마지막 N개 레코드만
-분석하려면 `--last <n>`을 사용하세요(기본값 200). 출력에는 턴 지연 시간과
-listen-wait 시간의 p50/p90/p99가 포함됩니다.
+`latency`는 기본 voice-call 저장소 경로에서 `calls.jsonl`을 읽습니다. 다른 로그를 가리키려면 `--file <path>`를 사용하고, 분석을 마지막 N개 레코드(기본값 200)로 제한하려면 `--last <n>`을 사용하세요. 출력에는 턴 지연 시간과 듣기 대기 시간의 p50/p90/p99가 포함됩니다.
 
 ## 에이전트 도구
 
 도구 이름: `voice_call`.
 
-| 동작            | 인수                      |
+| 작업            | 인수                      |
 | --------------- | ------------------------- |
 | `initiate_call` | `message`, `to?`, `mode?` |
 | `continue_call` | `callId`, `message`       |
@@ -621,7 +611,7 @@ listen-wait 시간의 p50/p90/p99가 포함됩니다.
 | `end_call`      | `callId`                  |
 | `get_status`    | `callId`                  |
 
-이 저장소는 `skills/voice-call/SKILL.md`에 일치하는 Skills 문서도 제공합니다.
+이 저장소는 `skills/voice-call/SKILL.md`에 일치하는 skill 문서를 함께 제공합니다.
 
 ## Gateway RPC
 
@@ -636,6 +626,6 @@ listen-wait 시간의 p50/p90/p99가 포함됩니다.
 
 ## 관련 항목
 
-- [Talk 모드](/ko/nodes/talk)
-- [텍스트 음성 변환](/ko/tools/tts)
-- [음성 웨이크](/ko/nodes/voicewake)
+- [Talk mode](/ko/nodes/talk)
+- [Text-to-speech](/ko/tools/tts)
+- [Voice wake](/ko/nodes/voicewake)

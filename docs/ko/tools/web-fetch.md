@@ -1,30 +1,30 @@
 ---
 read_when:
-    - URL을 가져와 읽을 수 있는 콘텐츠를 추출하려는 경우
-    - web_fetch 또는 해당 Firecrawl fallback을 구성해야 하는 경우
+    - URL을 가져와 읽기 쉬운 콘텐츠를 추출하려는 경우
+    - web_fetch 또는 그 Firecrawl 대체 수단을 구성해야 합니다
     - web_fetch 제한 사항과 캐싱을 이해하려는 경우
 sidebarTitle: Web Fetch
-summary: web_fetch 도구 -- 읽을 수 있는 콘텐츠 추출이 포함된 HTTP fetch
+summary: web_fetch 도구 -- 가독성 있는 콘텐츠 추출을 포함한 HTTP 가져오기
 title: 웹 가져오기
 x-i18n:
-    generated_at: "2026-04-24T06:43:11Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:56:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
+    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
     source_path: tools/web-fetch.md
-    workflow: 15
+    workflow: 16
 ---
 
 `web_fetch` 도구는 일반 HTTP GET을 수행하고 읽을 수 있는 콘텐츠를 추출합니다
-(HTML을 markdown 또는 text로 변환). JavaScript는 **실행하지 않습니다**.
+(HTML을 markdown 또는 텍스트로 변환). JavaScript는 **실행하지 않습니다**.
 
-JS가 많은 사이트나 로그인 보호 페이지의 경우
-[웹 브라우저](/ko/tools/browser)를 사용하세요.
+JS 의존도가 높은 사이트나 로그인으로 보호된 페이지에는 대신
+[Web Browser](/ko/tools/browser)를 사용하세요.
 
 ## 빠른 시작
 
-`web_fetch`는 **기본적으로 활성화**되어 있으므로 별도 구성이 필요 없습니다. 에이전트는
-즉시 이를 호출할 수 있습니다.
+`web_fetch`는 **기본적으로 활성화되어 있습니다** -- 구성이 필요하지 않습니다. 에이전트가
+즉시 호출할 수 있습니다.
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -33,53 +33,57 @@ await web_fetch({ url: "https://example.com/article" });
 ## 도구 매개변수
 
 <ParamField path="url" type="string" required>
-가져올 URL. `http(s)`만 지원합니다.
+가져올 URL입니다. `http(s)`만 지원합니다.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
-주요 콘텐츠 추출 후 출력 형식.
+주요 콘텐츠 추출 후의 출력 형식입니다.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-출력을 이 문자 수만큼 잘라냅니다.
+출력을 이 문자 수로 잘라냅니다.
 </ParamField>
 
-## 동작 방식
+## 작동 방식
 
 <Steps>
-  <Step title="가져오기">
-    Chrome 유사 User-Agent와 `Accept-Language`
-    헤더를 사용해 HTTP GET을 보냅니다. private/internal 호스트 이름은 차단하고 리디렉션도 다시 점검합니다.
+  <Step title="Fetch">
+    Chrome과 유사한 User-Agent와 `Accept-Language` 헤더로 HTTP GET을 보냅니다.
+    비공개/내부 호스트 이름을 차단하고 리디렉션을 다시 확인합니다.
   </Step>
-  <Step title="추출">
-    HTML 응답에 대해 Readability(주요 콘텐츠 추출)를 실행합니다.
+  <Step title="Extract">
+    HTML 응답에서 Readability(주요 콘텐츠 추출)를 실행합니다.
   </Step>
-  <Step title="대체(fallback, 선택 사항)">
-    Readability가 실패하고 Firecrawl이 구성되어 있으면,
-    bot-circumvention 모드로 Firecrawl API를 통해 다시 시도합니다.
+  <Step title="Fallback (optional)">
+    Readability가 실패하고 Firecrawl이 구성되어 있으면 봇 우회 모드로
+    Firecrawl API를 통해 다시 시도합니다.
   </Step>
-  <Step title="캐시">
-    같은 URL의 반복 fetch를 줄이기 위해 결과를 15분 동안 캐시합니다(구성 가능).
+  <Step title="Cache">
+    동일한 URL의 반복 fetch를 줄이기 위해 결과를 15분 동안(구성 가능) 캐시합니다.
   </Step>
 </Steps>
 
-## Config
+## 구성
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        enabled: true, // 기본값: true
-        provider: "firecrawl", // 선택 사항; 자동 감지를 원하면 생략
-        maxChars: 50000, // 최대 출력 문자 수
-        maxCharsCap: 50000, // maxChars 매개변수의 하드 상한
-        maxResponseBytes: 2000000, // 잘라내기 전 최대 다운로드 크기
+        enabled: true, // default: true
+        provider: "firecrawl", // optional; omit for auto-detect
+        maxChars: 50000, // max output chars
+        maxCharsCap: 50000, // hard cap for maxChars param
+        maxResponseBytes: 2000000, // max download size before truncation
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        readability: true, // Readability 추출 사용
-        userAgent: "Mozilla/5.0 ...", // User-Agent 재정의
+        readability: true, // use Readability extraction
+        userAgent: "Mozilla/5.0 ...", // override User-Agent
+        ssrfPolicy: {
+          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+        },
       },
     },
   },
@@ -88,15 +92,15 @@ await web_fetch({ url: "https://example.com/article" });
 
 ## Firecrawl fallback
 
-Readability 추출이 실패하면, `web_fetch`는
-bot-circumvention과 더 나은 추출을 위해 [Firecrawl](/ko/tools/firecrawl)로 fallback할 수 있습니다.
+Readability 추출이 실패하면 `web_fetch`는 봇 우회와 더 나은 추출을 위해
+[Firecrawl](/ko/tools/firecrawl)로 fallback할 수 있습니다.
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // 선택 사항; 사용 가능한 자격 증명에서 자동 감지를 원하면 생략
+        provider: "firecrawl", // optional; omit for auto-detect from available credentials
       },
     },
   },
@@ -106,10 +110,10 @@ bot-circumvention과 더 나은 추출을 위해 [Firecrawl](/ko/tools/firecrawl
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // FIRECRAWL_API_KEY가 설정되어 있으면 선택 사항
+            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // 캐시 기간 (1일)
+            maxAgeMs: 86400000, // cache duration (1 day)
             timeoutSeconds: 60,
           },
         },
@@ -120,50 +124,53 @@ bot-circumvention과 더 나은 추출을 위해 [Firecrawl](/ko/tools/firecrawl
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey`는 SecretRef 객체를 지원합니다.
-레거시 `tools.web.fetch.firecrawl.*` config는 `openclaw doctor --fix`가 자동 마이그레이션합니다.
+레거시 `tools.web.fetch.firecrawl.*` 구성은 `openclaw doctor --fix`에 의해 자동 마이그레이션됩니다.
 
 <Note>
-  Firecrawl이 활성화되어 있고 env의 `FIRECRAWL_API_KEY` fallback 없이
-  SecretRef가 확인되지 않으면, gateway 시작이 즉시 실패합니다.
+  Firecrawl이 활성화되어 있고 해당 SecretRef가 해결되지 않았으며
+  `FIRECRAWL_API_KEY` env fallback도 없으면 gateway 시작이 빠르게 실패합니다.
 </Note>
 
 <Note>
-  Firecrawl `baseUrl` 재정의는 엄격하게 제한됩니다. `https://`와
-  공식 Firecrawl 호스트(`api.firecrawl.dev`)를 사용해야 합니다.
+  Firecrawl `baseUrl` 재정의는 제한됩니다. `https://`와 공식 Firecrawl 호스트
+  (`api.firecrawl.dev`)를 사용해야 합니다.
 </Note>
 
 현재 런타임 동작:
 
-- `tools.web.fetch.provider`는 fetch fallback provider를 명시적으로 선택합니다.
-- `provider`를 생략하면, OpenClaw는 사용 가능한 자격 증명에서 준비된 첫 번째 web-fetch
-  provider를 자동 감지합니다. 현재 번들 provider는 Firecrawl입니다.
-- Readability가 비활성화되면 `web_fetch`는 선택된
-  provider fallback으로 바로 이동합니다. 사용 가능한 provider가 없으면 fail closed됩니다.
+- `tools.web.fetch.provider`는 fetch fallback 제공자를 명시적으로 선택합니다.
+- `provider`가 생략되면 OpenClaw는 사용 가능한 자격 증명에서 첫 번째 준비된 web-fetch
+  제공자를 자동 감지합니다. 현재 번들 제공자는 Firecrawl입니다.
+- Readability가 비활성화되어 있으면 `web_fetch`는 선택된 제공자 fallback으로 바로 넘어갑니다.
+  사용 가능한 제공자가 없으면 실패한 상태로 닫힙니다.
 
-## 제한 및 안전성
+## 제한 및 안전
 
-- `maxChars`는 `tools.web.fetch.maxCharsCap`으로 제한됩니다
-- 응답 본문은 파싱 전에 `maxResponseBytes`로 제한되며, 너무 큰
+- `maxChars`는 `tools.web.fetch.maxCharsCap`로 제한됩니다
+- 응답 본문은 파싱 전에 `maxResponseBytes`로 제한됩니다. 지나치게 큰
   응답은 경고와 함께 잘립니다
-- private/internal 호스트 이름은 차단됩니다
-- 리디렉션은 `maxRedirects`에 따라 점검되고 제한됩니다
-- `web_fetch`는 최선의 노력 방식입니다. 일부 사이트는 [웹 브라우저](/ko/tools/browser)가 필요합니다
+- 비공개/내부 호스트 이름은 차단됩니다
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange`와
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange`는 신뢰할 수 있는 fake-IP 프록시 스택을 위한 좁은 opt-in입니다. 프록시가
+  해당 합성 범위를 소유하고 자체 대상 정책을 적용하지 않는 한 설정하지 마세요
+- 리디렉션은 확인되며 `maxRedirects`로 제한됩니다
+- `web_fetch`는 최선의 노력 방식입니다 -- 일부 사이트에는 [Web Browser](/ko/tools/browser)가 필요합니다
 
 ## 도구 프로필
 
-도구 프로필이나 allowlist를 사용하는 경우 `web_fetch` 또는 `group:web`을 추가하세요.
+도구 프로필 또는 허용 목록을 사용하는 경우 `web_fetch` 또는 `group:web`을 추가하세요.
 
 ```json5
 {
   tools: {
     allow: ["web_fetch"],
-    // 또는: allow: ["group:web"]  (web_fetch, web_search, x_search 포함)
+    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
   },
 }
 ```
 
-## 관련
+## 관련 항목
 
-- [웹 검색](/ko/tools/web) -- 여러 provider로 웹 검색하기
-- [웹 브라우저](/ko/tools/browser) -- JS가 많은 사이트용 전체 브라우저 자동화
-- [Firecrawl](/ko/tools/firecrawl) -- Firecrawl 검색 및 스크래핑 도구
+- [Web Search](/ko/tools/web) -- 여러 제공자로 web 검색
+- [Web Browser](/ko/tools/browser) -- JS 의존도가 높은 사이트를 위한 전체 browser 자동화
+- [Firecrawl](/ko/tools/firecrawl) -- Firecrawl 검색 및 scrape 도구

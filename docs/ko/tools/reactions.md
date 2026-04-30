@@ -1,20 +1,20 @@
 ---
 read_when:
-    - 모든 채널에서 리액션 작업하기
-    - 플랫폼마다 이모지 리액션이 어떻게 다른지 이해하기
-summary: 지원되는 모든 채널에서의 reaction 도구 의미 체계
-title: 리액션
+    - 모든 채널에서 반응 처리하기
+    - 플랫폼마다 이모지 반응이 어떻게 다른지 이해하기
+summary: 지원되는 모든 채널에서의 반응 도구 의미 체계
+title: 반응
 x-i18n:
-    generated_at: "2026-04-24T06:41:40Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:55:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
     source_path: tools/reactions.md
-    workflow: 15
+    workflow: 16
 ---
 
-에이전트는 `message`
-도구의 `react` 작업을 사용해 메시지에 이모지 리액션을 추가하거나 제거할 수 있습니다. 리액션 동작은 채널마다 다릅니다.
+에이전트는 `react` 액션과 함께 `message`
+도구를 사용하여 메시지에 이모지 반응을 추가하고 제거할 수 있습니다. 반응 동작은 채널과 전송 방식에 따라 다릅니다.
 
 ## 작동 방식
 
@@ -26,65 +26,65 @@ x-i18n:
 }
 ```
 
-- 리액션을 추가할 때는 `emoji`가 필요합니다.
-- 봇의 리액션을 제거하려면 `emoji`를 빈 문자열(`""`)로 설정하세요.
-- 특정 이모지를 제거하려면 `remove: true`를 설정하세요(`emoji`는 비어 있지 않아야 함).
+- 반응을 추가할 때는 `emoji`가 필요합니다.
+- 봇의 반응을 제거하려면 `emoji`를 빈 문자열(`""`)로 설정합니다.
+- 특정 이모지를 제거하려면 `remove: true`를 설정합니다(비어 있지 않은 `emoji` 필요).
 
-## 채널별 동작
+## 채널 동작
 
 <AccordionGroup>
-  <Accordion title="Discord 및 Slack">
-    - 빈 `emoji`는 해당 메시지에서 봇의 모든 리액션을 제거합니다.
-    - `remove: true`는 지정한 이모지만 제거합니다.
+  <Accordion title="Discord and Slack">
+    - 빈 `emoji`는 메시지에 있는 봇의 모든 반응을 제거합니다.
+    - `remove: true`는 지정된 이모지만 제거합니다.
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - 빈 `emoji`는 메시지에서 앱의 리액션을 제거합니다.
-    - `remove: true`는 지정한 이모지만 제거합니다.
+    - 빈 `emoji`는 메시지에 있는 앱의 반응을 제거합니다.
+    - `remove: true`는 지정된 이모지만 제거합니다.
 
   </Accordion>
 
   <Accordion title="Telegram">
-    - 빈 `emoji`는 봇의 리액션을 제거합니다.
-    - `remove: true`도 리액션을 제거하지만, 도구 검증을 위해 여전히 비어 있지 않은 `emoji`가 필요합니다.
+    - 빈 `emoji`는 봇의 반응을 제거합니다.
+    - `remove: true`도 반응을 제거하지만, 도구 검증을 위해 비어 있지 않은 `emoji`가 여전히 필요합니다.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
-    - 빈 `emoji`는 봇 리액션을 제거합니다.
-    - `remove: true`는 내부적으로 빈 이모지로 매핑됩니다(여전히 도구 호출에는 `emoji`가 필요함).
+    - 빈 `emoji`는 봇 반응을 제거합니다.
+    - `remove: true`는 내부적으로 빈 이모지로 매핑됩니다(도구 호출에는 여전히 `emoji`가 필요함).
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - 비어 있지 않은 `emoji`가 필요합니다.
-    - `remove: true`는 해당 특정 이모지 리액션을 제거합니다.
+    - `remove: true`는 해당 특정 이모지 반응을 제거합니다.
 
   </Accordion>
 
   <Accordion title="Feishu/Lark">
-    - 작업 `add`, `remove`, `list`가 있는 `feishu_reaction` 도구를 사용하세요.
-    - 추가/제거에는 `emoji_type`이 필요하고, 제거에는 `reaction_id`도 필요합니다.
+    - `add`, `remove`, `list` 액션과 함께 `feishu_reaction` 도구를 사용합니다.
+    - 추가/제거에는 `emoji_type`이 필요하며, 제거에는 `reaction_id`도 필요합니다.
 
   </Accordion>
 
   <Accordion title="Signal">
-    - 인바운드 리액션 알림은 `channels.signal.reactionNotifications`로 제어됩니다. `"off"`는 이를 비활성화하고, `"own"`(기본값)은 사용자가 봇 메시지에 리액션할 때 이벤트를 발생시키며, `"all"`은 모든 리액션에 대해 이벤트를 발생시킵니다.
+    - 인바운드 반응 알림은 `channels.signal.reactionNotifications`로 제어됩니다. `"off"`는 이를 비활성화하고, `"own"`(기본값)은 사용자가 봇 메시지에 반응할 때 이벤트를 내보내며, `"all"`은 모든 반응에 대해 이벤트를 내보냅니다.
 
   </Accordion>
 </AccordionGroup>
 
-## 리액션 수준
+## 반응 수준
 
-채널별 `reactionLevel` 구성은 에이전트가 리액션을 얼마나 넓게 사용하는지 제어합니다. 값은 일반적으로 `off`, `ack`, `minimal`, `extensive`입니다.
+채널별 `reactionLevel` 설정은 에이전트가 반응을 얼마나 폭넓게 사용할지 제어합니다. 값은 일반적으로 `off`, `ack`, `minimal`, `extensive`입니다.
 
 - [Telegram reactionLevel](/ko/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/ko/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-각 채널에서 `reactionLevel`을 설정해 에이전트가 각 플랫폼의 메시지에 얼마나 적극적으로 리액션할지 조정하세요.
+각 플랫폼에서 에이전트가 메시지에 얼마나 적극적으로 반응할지 조정하려면 개별 채널에 `reactionLevel`을 설정합니다.
 
-## 관련
+## 관련 항목
 
-- [에이전트 전송](/ko/tools/agent-send) — `react`를 포함하는 `message` 도구
-- [채널](/ko/channels) — 채널별 구성
+- [에이전트 보내기](/ko/tools/agent-send) — `react`를 포함하는 `message` 도구
+- [채널](/ko/channels) — 채널별 설정

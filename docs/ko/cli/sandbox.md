@@ -1,40 +1,40 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: 샌드박스 런타임 관리 및 유효 샌드박스 정책 검사
+summary: 샌드박스 런타임을 관리하고 실제 적용되는 샌드박스 정책을 확인합니다
 title: 샌드박스 CLI
 x-i18n:
-    generated_at: "2026-04-24T06:08:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:24:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f2b5835968faac0a8243fd6eadfcecb51b211fe7b346454e215312b1b6d5e65
+    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
     source_path: cli/sandbox.md
-    workflow: 15
+    workflow: 16
 ---
 
-격리된 에이전트 실행을 위한 샌드박스 런타임을 관리합니다.
+Manage sandbox runtimes for isolated agent execution.
 
-## 개요
+## Overview
 
-OpenClaw는 보안을 위해 격리된 샌드박스 런타임에서 에이전트를 실행할 수 있습니다. `sandbox` 명령은 업데이트나 구성 변경 후 이러한 런타임을 검사하고 다시 만드는 데 도움을 줍니다.
+OpenClaw can run agents in isolated sandbox runtimes for security. The `sandbox` commands help you inspect and recreate those runtimes after updates or configuration changes.
 
-현재 이는 보통 다음을 의미합니다.
+Today that usually means:
 
-- Docker 샌드박스 컨테이너
-- `agents.defaults.sandbox.backend = "ssh"`일 때의 SSH 샌드박스 런타임
-- `agents.defaults.sandbox.backend = "openshell"`일 때의 OpenShell 샌드박스 런타임
+- Docker sandbox containers
+- SSH sandbox runtimes when `agents.defaults.sandbox.backend = "ssh"`
+- OpenShell sandbox runtimes when `agents.defaults.sandbox.backend = "openshell"`
 
-`ssh`와 OpenShell `remote`에서는 Docker보다 recreate가 더 중요합니다.
+For `ssh` and OpenShell `remote`, recreate matters more than with Docker:
 
-- 원격 워크스페이스는 초기 시드 후 정본입니다
-- `openclaw sandbox recreate`는 선택한 범위에 대해 그 정본 원격 워크스페이스를 삭제합니다
-- 다음 사용 시 현재 로컬 워크스페이스에서 다시 시드합니다
+- the remote workspace is canonical after the initial seed
+- `openclaw sandbox recreate` deletes that canonical remote workspace for the selected scope
+- next use seeds it again from the current local workspace
 
-## 명령
+## Commands
 
 ### `openclaw sandbox explain`
 
-**유효한** 샌드박스 모드/범위/워크스페이스 액세스, 샌드박스 도구 정책, 그리고 상향 권한 게이트를 검사합니다(fix-it 구성 키 경로 포함).
+Inspect the **effective** sandbox mode/scope/workspace access, sandbox tool policy, and elevated gates (with fix-it config key paths).
 
 ```bash
 openclaw sandbox explain
@@ -45,74 +45,76 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-상태와 구성이 포함된 모든 샌드박스 런타임을 나열합니다.
+List all sandbox runtimes with their status and configuration.
 
 ```bash
 openclaw sandbox list
-openclaw sandbox list --browser  # 브라우저 컨테이너만 나열
-openclaw sandbox list --json     # JSON 출력
+openclaw sandbox list --browser  # List only browser containers
+openclaw sandbox list --json     # JSON output
 ```
 
-**출력에는 다음이 포함됩니다.**
+**Output includes:**
 
-- 런타임 이름과 상태
-- 백엔드 (`docker`, `openshell` 등)
-- 구성 레이블 및 현재 구성과의 일치 여부
-- 사용 기간(생성 이후 경과 시간)
-- 유휴 시간(마지막 사용 이후 경과 시간)
-- 연결된 세션/에이전트
+- Runtime name and status
+- Backend (`docker`, `openshell`, etc.)
+- Config label and whether it matches current config
+- Age (time since creation)
+- Idle time (time since last use)
+- Associated session/agent
 
 ### `openclaw sandbox recreate`
 
-업데이트된 구성으로 다시 생성을 강제하기 위해 샌드박스 런타임을 제거합니다.
+Remove sandbox runtimes to force recreation with updated config.
 
 ```bash
-openclaw sandbox recreate --all                # 모든 컨테이너 재생성
-openclaw sandbox recreate --session main       # 특정 세션
-openclaw sandbox recreate --agent mybot        # 특정 에이전트
-openclaw sandbox recreate --browser            # 브라우저 컨테이너만
-openclaw sandbox recreate --all --force        # 확인 건너뛰기
+openclaw sandbox recreate --all                # Recreate all containers
+openclaw sandbox recreate --session main       # Specific session
+openclaw sandbox recreate --agent mybot        # Specific agent
+openclaw sandbox recreate --browser            # Only browser containers
+openclaw sandbox recreate --all --force        # Skip confirmation
 ```
 
-**옵션:**
+**Options:**
 
-- `--all`: 모든 샌드박스 컨테이너 재생성
-- `--session <key>`: 특정 세션용 컨테이너 재생성
-- `--agent <id>`: 특정 에이전트용 컨테이너 재생성
-- `--browser`: 브라우저 컨테이너만 재생성
-- `--force`: 확인 프롬프트 건너뛰기
+- `--all`: Recreate all sandbox containers
+- `--session <key>`: Recreate container for specific session
+- `--agent <id>`: Recreate containers for specific agent
+- `--browser`: Only recreate browser containers
+- `--force`: Skip confirmation prompt
 
-**중요:** 런타임은 다음에 에이전트를 사용할 때 자동으로 다시 생성됩니다.
+<Note>
+Runtimes are automatically recreated when the agent is next used.
+</Note>
 
-## 사용 사례
+## Use cases
 
-### Docker 이미지 업데이트 후
+### After updating a Docker image
 
 ```bash
-# 새 이미지 가져오기
+# Pull new image
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# 새 이미지를 사용하도록 구성 업데이트
-# 구성 편집: agents.defaults.sandbox.docker.image (또는 agents.list[].sandbox.docker.image)
+# Update config to use new image
+# Edit config: agents.defaults.sandbox.docker.image (or agents.list[].sandbox.docker.image)
 
-# 컨테이너 재생성
+# Recreate containers
 openclaw sandbox recreate --all
 ```
 
-### 샌드박스 구성 변경 후
+### After changing sandbox configuration
 
 ```bash
-# 구성 편집: agents.defaults.sandbox.* (또는 agents.list[].sandbox.*)
+# Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
 
-# 새 구성 적용을 위해 재생성
+# Recreate to apply new config
 openclaw sandbox recreate --all
 ```
 
-### SSH 대상 또는 SSH 인증 자료 변경 후
+### After changing SSH target or SSH auth material
 
 ```bash
-# 구성 편집:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -122,12 +124,13 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-핵심 `ssh` 백엔드의 경우 recreate는 SSH 대상의 범위별 원격 워크스페이스 루트를 삭제합니다. 다음 실행 시 로컬 워크스페이스에서 다시 시드합니다.
+For the core `ssh` backend, recreate deletes the per-scope remote workspace root
+on the SSH target. The next run seeds it again from the local workspace.
 
-### OpenShell 소스, 정책 또는 모드 변경 후
+### After changing OpenShell source, policy, or mode
 
 ```bash
-# 구성 편집:
+# Edit config:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -136,39 +139,41 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-OpenShell `remote` 모드의 경우 recreate는 해당 범위의 정본 원격 워크스페이스를 삭제합니다. 다음 실행 시 로컬 워크스페이스에서 다시 시드합니다.
+For OpenShell `remote` mode, recreate deletes the canonical remote workspace
+for that scope. The next run seeds it again from the local workspace.
 
-### setupCommand 변경 후
+### After changing setupCommand
 
 ```bash
 openclaw sandbox recreate --all
-# 또는 에이전트 하나만:
+# or just one agent:
 openclaw sandbox recreate --agent family
 ```
 
-### 특정 에이전트에만 적용
+### For a specific agent only
 
 ```bash
-# 에이전트 하나의 컨테이너만 업데이트
+# Update only one agent's containers
 openclaw sandbox recreate --agent alfred
 ```
 
-## 왜 이것이 필요한가요?
+## Why this is needed
 
-**문제:** 샌드박스 구성을 업데이트하면
+When you update sandbox configuration:
 
-- 기존 런타임은 이전 설정으로 계속 실행됩니다
-- 런타임은 24시간 비활성 후에만 정리됩니다
-- 자주 사용하는 에이전트는 이전 런타임을 무기한 유지합니다
+- Existing runtimes continue running with old settings.
+- Runtimes are only pruned after 24h of inactivity.
+- Regularly-used agents keep old runtimes alive indefinitely.
 
-**해결책:** `openclaw sandbox recreate`를 사용해 이전 런타임을 강제로 제거하세요. 다음에 필요할 때 현재 설정으로 자동 재생성됩니다.
+Use `openclaw sandbox recreate` to force removal of old runtimes. They are recreated automatically with current settings when next needed.
 
-팁: 수동 백엔드별 정리보다 `openclaw sandbox recreate`를 우선 사용하세요.
-이 명령은 Gateway의 런타임 레지스트리를 사용하므로 범위/세션 키가 바뀔 때 불일치를 피할 수 있습니다.
+<Tip>
+Prefer `openclaw sandbox recreate` over manual backend-specific cleanup. It uses the Gateway's runtime registry and avoids mismatches when scope or session keys change.
+</Tip>
 
-## 구성
+## Configuration
 
-샌드박스 설정은 `~/.openclaw/openclaw.json`의 `agents.defaults.sandbox` 아래에 있습니다(에이전트별 재정의는 `agents.list[].sandbox`에 둠).
+Sandbox settings live in `~/.openclaw/openclaw.json` under `agents.defaults.sandbox` (per-agent overrides go in `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -184,8 +189,8 @@ openclaw sandbox recreate --agent alfred
           // ... more Docker options
         },
         "prune": {
-          "idleHours": 24, // 24시간 유휴 후 자동 정리
-          "maxAgeDays": 7, // 7일 후 자동 정리
+          "idleHours": 24, // Auto-prune after 24h idle
+          "maxAgeDays": 7, // Auto-prune after 7 days
         },
       },
     },
@@ -193,9 +198,9 @@ openclaw sandbox recreate --agent alfred
 }
 ```
 
-## 관련
+## Related
 
-- [CLI 참조](/ko/cli)
-- [샌드박싱](/ko/gateway/sandboxing)
-- [에이전트 워크스페이스](/ko/concepts/agent-workspace)
-- [Doctor](/ko/gateway/doctor) — 샌드박스 설정 검사
+- [CLI reference](/ko/cli)
+- [Sandboxing](/ko/gateway/sandboxing)
+- [Agent workspace](/ko/concepts/agent-workspace)
+- [Doctor](/ko/gateway/doctor): checks sandbox setup.

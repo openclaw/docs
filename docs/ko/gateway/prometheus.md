@@ -1,40 +1,40 @@
 ---
 read_when:
     - Prometheus, Grafana, VictoriaMetrics 또는 다른 스크레이퍼가 OpenClaw Gateway 메트릭을 수집하도록 하려는 경우
-    - 대시보드 또는 알림을 위해 Prometheus 메트릭 이름과 라벨 정책이 필요한 경우
-    - OpenTelemetry collector를 실행하지 않고 메트릭을 사용하려는 경우
+    - 대시보드나 알림에 사용할 Prometheus 메트릭 이름과 레이블 정책이 필요합니다
+    - OpenTelemetry 수집기를 실행하지 않고 메트릭을 사용하려는 경우
 sidebarTitle: Prometheus
-summary: diagnostics-prometheus Plugin을 통해 OpenClaw 진단을 Prometheus 텍스트 메트릭으로 노출하기
+summary: diagnostics-prometheus Plugin을 통해 OpenClaw 진단을 Prometheus 텍스트 메트릭으로 노출
 title: Prometheus 메트릭
 x-i18n:
-    generated_at: "2026-04-26T11:30:02Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:32:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 29fd3e4658ceffe20f078e8e38b61c685ea9df518ca04ca34abf2085166eb481
+    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
     source_path: gateway/prometheus.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw는 번들된 `diagnostics-prometheus` Plugin을 통해 진단 메트릭을 노출할 수 있습니다. 이 Plugin은 신뢰된 내부 진단을 수신하고 다음 위치에 Prometheus 텍스트 엔드포인트를 렌더링합니다.
+OpenClaw는 번들된 `diagnostics-prometheus` Plugin을 통해 진단 메트릭을 노출할 수 있습니다. 신뢰할 수 있는 내부 진단을 수신하고 다음 위치에 Prometheus 텍스트 엔드포인트를 렌더링합니다:
 
 ```text
 GET /api/diagnostics/prometheus
 ```
 
-Content type은 표준 Prometheus exposition 형식인 `text/plain; version=0.0.4; charset=utf-8`입니다.
+콘텐츠 유형은 표준 Prometheus 노출 형식인 `text/plain; version=0.0.4; charset=utf-8`입니다.
 
 <Warning>
-이 경로는 Gateway 인증(operator 범위)을 사용합니다. 이를 공개된 인증 없는 `/metrics` 엔드포인트로 노출하지 마세요. 다른 operator API에 사용하는 것과 동일한 인증 경로를 통해 스크레이프하세요.
+이 라우트는 Gateway 인증(operator 범위)을 사용합니다. 공개 미인증 `/metrics` 엔드포인트로 노출하지 마세요. 다른 operator API에 사용하는 것과 동일한 인증 경로를 통해 스크레이프하세요.
 </Warning>
 
-트레이스, 로그, OTLP push, OpenTelemetry GenAI semantic attribute는 [OpenTelemetry export](/ko/gateway/opentelemetry)를 참고하세요.
+트레이스, 로그, OTLP 푸시, OpenTelemetry GenAI 의미론적 속성은 [OpenTelemetry 내보내기](/ko/gateway/opentelemetry)를 참조하세요.
 
 ## 빠른 시작
 
 <Steps>
   <Step title="Plugin 활성화">
     <Tabs>
-      <Tab title="Config">
+      <Tab title="구성">
         ```json5
         {
           plugins: {
@@ -56,11 +56,11 @@ Content type은 표준 Prometheus exposition 형식인 `text/plain; version=0.0.
       </Tab>
     </Tabs>
   </Step>
-  <Step title="Gateway 재시작">
-    HTTP 경로는 Plugin 시작 시 등록되므로, 활성화 후 다시 로드하세요.
+  <Step title="Gateway 다시 시작">
+    HTTP 라우트는 Plugin 시작 시 등록되므로, 활성화한 뒤 다시 로드하세요.
   </Step>
-  <Step title="보호된 경로 스크레이프">
-    operator 클라이언트가 사용하는 것과 동일한 gateway 인증을 전송하세요.
+  <Step title="보호된 라우트 스크레이프">
+    operator 클라이언트가 사용하는 것과 동일한 Gateway 인증을 보내세요:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -84,12 +84,12 @@ Content type은 표준 Prometheus exposition 형식인 `text/plain; version=0.0.
 </Steps>
 
 <Note>
-`diagnostics.enabled: true`가 필요합니다. 이것이 없으면 Plugin은 HTTP 경로를 등록하더라도 exporter로 진단 이벤트가 흐르지 않으므로 응답이 비어 있습니다.
+`diagnostics.enabled: true`가 필요합니다. 이 설정이 없으면 Plugin은 HTTP 라우트를 계속 등록하지만 진단 이벤트가 exporter로 흐르지 않아 응답이 비어 있습니다.
 </Note>
 
 ## 내보내는 메트릭
 
-| 메트릭                                        | 유형      | 라벨                                                                                      |
+| 메트릭                                        | 유형      | 레이블                                                                                    |
 | --------------------------------------------- | --------- | ----------------------------------------------------------------------------------------- |
 | `openclaw_run_completed_total`                | counter   | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
 | `openclaw_run_duration_seconds`               | histogram | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
@@ -116,78 +116,78 @@ Content type은 표준 Prometheus exposition 형식인 `text/plain; version=0.0.
 | `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
 | `openclaw_prometheus_series_dropped_total`    | counter   | 없음                                                                                      |
 
-## 라벨 정책
+## 레이블 정책
 
 <AccordionGroup>
-  <Accordion title="제한되고 낮은 카디널리티 라벨">
-    Prometheus 라벨은 제한되고 낮은 카디널리티를 유지합니다. exporter는 `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, 메시지 ID, chat ID, provider 요청 ID 같은 원시 진단 식별자를 내보내지 않습니다.
+  <Accordion title="제한된 낮은 카디널리티 레이블">
+    Prometheus 레이블은 제한되고 낮은 카디널리티를 유지합니다. exporter는 `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, 메시지 ID, 채팅 ID, provider 요청 ID 같은 원시 진단 식별자를 내보내지 않습니다.
 
-    라벨 값은 마스킹되며 OpenClaw의 낮은 카디널리티 문자 정책과 일치해야 합니다. 정책을 통과하지 못하는 값은 메트릭에 따라 `unknown`, `other`, `none`으로 대체됩니다.
+    레이블 값은 수정 처리되며 OpenClaw의 낮은 카디널리티 문자 정책과 일치해야 합니다. 정책을 통과하지 못한 값은 메트릭에 따라 `unknown`, `other` 또는 `none`으로 대체됩니다.
 
   </Accordion>
-  <Accordion title="시리즈 상한 및 초과 집계">
-    exporter는 counter, gauge, histogram을 모두 합쳐 메모리에 유지되는 시계열을 **2048**개로 제한합니다. 이 상한을 넘는 새 시리즈는 버려지며, 그때마다 `openclaw_prometheus_series_dropped_total`이 1씩 증가합니다.
+  <Accordion title="시리즈 한도 및 초과 계산">
+    exporter는 counter, gauge, histogram을 모두 합쳐 메모리에 보존하는 시계열을 **2048**개로 제한합니다. 이 한도를 초과하는 새 시리즈는 삭제되며, 그때마다 `openclaw_prometheus_series_dropped_total`이 1씩 증가합니다.
 
-    이 counter를 업스트림 attribute에서 높은 카디널리티 값이 새고 있다는 강한 신호로 관찰하세요. exporter는 상한을 자동으로 높이지 않습니다. 값이 증가한다면 상한을 끄는 대신 원인을 수정하세요.
+    이 counter를 상위 속성이 높은 카디널리티 값을 누출하고 있다는 강한 신호로 관찰하세요. exporter는 한도를 자동으로 올리지 않습니다. 값이 증가하면 한도를 비활성화하지 말고 소스에서 문제를 수정하세요.
 
   </Accordion>
   <Accordion title="Prometheus 출력에 절대 나타나지 않는 항목">
-    - 프롬프트 텍스트, 응답 텍스트, 도구 입력, 도구 출력, system prompt
-    - 원시 provider 요청 ID(해당하는 경우 span에는 제한된 해시만 존재할 수 있으나, 메트릭에는 절대 없음)
+    - 프롬프트 텍스트, 응답 텍스트, 도구 입력, 도구 출력, 시스템 프롬프트
+    - 원시 provider 요청 ID(해당하는 경우 span에는 제한된 해시만 포함되며, 메트릭에는 절대 포함되지 않음)
     - 세션 키와 세션 ID
     - 호스트 이름, 파일 경로, 비밀 값
 
   </Accordion>
 </AccordionGroup>
 
-## PromQL 예시
+## PromQL 레시피
 
 ```promql
-# 분당 토큰 수, provider별 분리
+# Tokens per minute, split by provider
 sum by (provider) (rate(openclaw_model_tokens_total[1m]))
 
-# 지난 1시간 동안의 비용(USD), model별
+# Spend (USD) over the last hour, by model
 sum by (model) (increase(openclaw_model_cost_usd_total[1h]))
 
-# 모델 실행 시간 95백분위수
+# 95th percentile model run duration
 histogram_quantile(
   0.95,
   sum by (le, provider, model)
     (rate(openclaw_run_duration_seconds_bucket[5m]))
 )
 
-# 큐 대기 시간 SLO (95p가 2초 미만)
+# Queue wait time SLO (95p under 2s)
 histogram_quantile(
   0.95,
   sum by (le, lane) (rate(openclaw_queue_lane_wait_seconds_bucket[5m]))
 ) < 2
 
-# 버려진 Prometheus 시리즈(카디널리티 경보)
+# Dropped Prometheus series (cardinality alarm)
 increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-교차-provider 대시보드에는 `gen_ai_client_token_usage`를 우선 사용하세요. 이 메트릭은 OpenTelemetry GenAI semantic convention을 따르며, OpenClaw가 아닌 다른 GenAI 서비스의 메트릭과도 일관됩니다.
+여러 provider를 아우르는 대시보드에는 `gen_ai_client_token_usage`를 선호하세요. OpenTelemetry GenAI 의미론적 규칙을 따르며 OpenClaw가 아닌 GenAI 서비스의 메트릭과 일관됩니다.
 </Tip>
 
-## Prometheus 내보내기와 OpenTelemetry export 중 선택하기
+## Prometheus와 OpenTelemetry 내보내기 중 선택
 
-OpenClaw는 두 표면을 독립적으로 모두 지원합니다. 둘 중 하나만 실행해도 되고, 둘 다 실행해도 되고, 둘 다 실행하지 않아도 됩니다.
+OpenClaw는 두 표면을 독립적으로 지원합니다. 둘 중 하나만 실행하거나, 둘 다 실행하거나, 둘 다 실행하지 않을 수 있습니다.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
     - **Pull** 모델: Prometheus가 `/api/diagnostics/prometheus`를 스크레이프합니다.
-    - 외부 collector가 필요 없습니다.
+    - 외부 collector가 필요하지 않습니다.
     - 일반 Gateway 인증을 통해 인증됩니다.
-    - 표면은 메트릭만 포함합니다(트레이스 또는 로그 없음).
-    - 이미 Prometheus + Grafana를 표준으로 사용하는 스택에 가장 적합합니다.
+    - 표면은 메트릭만 포함합니다(트레이스나 로그 없음).
+    - 이미 Prometheus + Grafana로 표준화된 스택에 가장 적합합니다.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - **Push** 모델: OpenClaw가 collector 또는 OTLP 호환 백엔드로 OTLP/HTTP를 전송합니다.
+    - **Push** 모델: OpenClaw가 collector 또는 OTLP 호환 백엔드로 OTLP/HTTP를 보냅니다.
     - 표면에는 메트릭, 트레이스, 로그가 포함됩니다.
-    - 둘 다 필요할 때 OpenTelemetry Collector의 `prometheus` 또는 `prometheusremotewrite` exporter를 통해 Prometheus로 브리지할 수 있습니다.
-    - 전체 카탈로그는 [OpenTelemetry export](/ko/gateway/opentelemetry)를 참고하세요.
+    - 둘 다 필요할 때 OpenTelemetry Collector(`prometheus` 또는 `prometheusremotewrite` exporter)를 통해 Prometheus로 연결합니다.
+    - 전체 카탈로그는 [OpenTelemetry 내보내기](/ko/gateway/opentelemetry)를 참조하세요.
 
   </Tab>
 </Tabs>
@@ -196,25 +196,25 @@ OpenClaw는 두 표면을 독립적으로 모두 지원합니다. 둘 중 하나
 
 <AccordionGroup>
   <Accordion title="응답 본문이 비어 있음">
-    - config에서 `diagnostics.enabled: true`를 확인하세요.
-    - `openclaw plugins list --enabled`로 Plugin이 활성화되어 로드되었는지 확인하세요.
-    - 약간의 트래픽을 발생시키세요. counter와 histogram은 적어도 한 번 이벤트가 발생한 뒤에만 라인을 출력합니다.
+    - 구성에서 `diagnostics.enabled: true`를 확인하세요.
+    - `openclaw plugins list --enabled`로 Plugin이 활성화되고 로드되었는지 확인하세요.
+    - 일부 트래픽을 생성하세요. counter와 histogram은 이벤트가 하나 이상 발생한 뒤에만 줄을 내보냅니다.
 
   </Accordion>
-  <Accordion title="401 / unauthorized">
-    이 엔드포인트는 Gateway operator 범위(`auth: "gateway"`, `gatewayRuntimeScopeSurface: "trusted-operator"`)를 요구합니다. Prometheus가 다른 Gateway operator 경로에 사용하는 것과 동일한 token 또는 password를 사용하세요. 공개 무인증 모드는 없습니다.
+  <Accordion title="401 / 인증되지 않음">
+    엔드포인트에는 Gateway operator 범위(`auth: "gateway"` 및 `gatewayRuntimeScopeSurface: "trusted-operator"`)가 필요합니다. Prometheus가 다른 Gateway operator 라우트에 사용하는 것과 동일한 토큰 또는 비밀번호를 사용하세요. 공개 미인증 모드는 없습니다.
   </Accordion>
-  <Accordion title="`openclaw_prometheus_series_dropped_total`이 증가 중">
-    새 attribute가 **2048** 시리즈 상한을 초과하고 있습니다. 최근 메트릭에서 예상보다 카디널리티가 높은 라벨을 찾아 소스에서 수정하세요. exporter는 라벨을 조용히 재작성하는 대신 의도적으로 새 시리즈를 버립니다.
+  <Accordion title="`openclaw_prometheus_series_dropped_total`이 증가함">
+    새 속성이 **2048**개 시리즈 한도를 초과하고 있습니다. 최근 메트릭에서 예상치 못하게 카디널리티가 높은 레이블을 검사하고 소스에서 수정하세요. exporter는 레이블을 조용히 다시 쓰는 대신 의도적으로 새 시리즈를 삭제합니다.
   </Accordion>
-  <Accordion title="재시작 후 Prometheus에 오래된 시리즈가 표시됨">
-    Plugin은 상태를 메모리에만 유지합니다. Gateway 재시작 후 counter는 0으로 재설정되고 gauge는 다음 보고 값에서 다시 시작합니다. 재설정을 깔끔하게 처리하려면 PromQL의 `rate()`와 `increase()`를 사용하세요.
+  <Accordion title="Gateway 재시작 후 Prometheus에 오래된 시리즈가 표시됨">
+    Plugin은 상태를 메모리에만 유지합니다. Gateway를 재시작하면 counter는 0으로 재설정되고 gauge는 다음에 보고되는 값에서 다시 시작됩니다. 재설정을 깔끔하게 처리하려면 PromQL `rate()`와 `increase()`를 사용하세요.
   </Accordion>
 </AccordionGroup>
 
 ## 관련 항목
 
-- [Diagnostics export](/ko/gateway/diagnostics) — 지원 번들용 로컬 diagnostics zip
-- [Health and readiness](/ko/gateway/health) — `/healthz` 및 `/readyz` probe
-- [Logging](/ko/logging) — 파일 기반 로깅
-- [OpenTelemetry export](/ko/gateway/opentelemetry) — 트레이스, 메트릭, 로그용 OTLP push
+- [진단 내보내기](/ko/gateway/diagnostics) — 지원 번들을 위한 로컬 진단 zip
+- [상태 및 준비성](/ko/gateway/health) — `/healthz` 및 `/readyz` probe
+- [로깅](/ko/logging) — 파일 기반 로깅
+- [OpenTelemetry 내보내기](/ko/gateway/opentelemetry) — 트레이스, 메트릭, 로그를 위한 OTLP 푸시

@@ -1,18 +1,18 @@
 ---
-summary: /gateway/authentication로 리디렉션
+summary: /gateway/authentication으로 리디렉션
 title: 인증 모니터링
 x-i18n:
-    generated_at: "2026-04-24T06:02:30Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:16:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a80b75d3f35d0255213907562a5ac0416d9bf9fe6f8026193bff07e2f33086a2
+    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
     source_path: automation/auth-monitoring.md
-    workflow: 15
+    workflow: 16
 ---
 
-이 페이지는 [인증](/ko/gateway/authentication)(으)로 이동했습니다. 인증 모니터링 문서는 [인증](/ko/gateway/authentication)에서 확인하세요.
+인증 모니터링은 [인증](/ko/gateway/authentication) 아래에 있습니다.
 
-## 관련
+## 관련 항목
 
 - [자동화 문제 해결](/ko/automation/cron-jobs)
-- [Hooks](/ko/automation/hooks)
+- [후크](/ko/automation/hooks)
