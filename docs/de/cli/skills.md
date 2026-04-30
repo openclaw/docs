@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Sie möchten sehen, welche Skills verfügbar und einsatzbereit sind.
-    - Sie möchten Skills aus ClawHub suchen, installieren oder aktualisieren.
-    - Sie möchten fehlende Binärdateien/Umgebungsvariablen/Konfigurationen für Skills debuggen.
-summary: CLI-Referenz für `openclaw skills` (suchen/installieren/aktualisieren/auflisten/info/prüfen)
+    - Sie möchten sehen, welche Skills verfügbar und einsatzbereit sind
+    - Sie möchten Skills aus ClawHub suchen, installieren oder aktualisieren
+    - Sie möchten fehlende Binärdateien/Umgebungsvariablen/Konfigurationen für Skills debuggen
+summary: CLI-Referenz für `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-04-24T06:32:49Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:47:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 31cd7647a15cd5df6cf5a2311e63bb11cc3aabfe8beefda7be57dc76adc509ea
+    source_hash: 5059bf04c68dabe289d2c376407a52989c970e3d16e7637a2c83f4e24ad6564c
     source_path: cli/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw skills`
@@ -32,34 +32,44 @@ openclaw skills search --limit 20 --json
 openclaw skills install <slug>
 openclaw skills install <slug> --version <version>
 openclaw skills install <slug> --force
+openclaw skills install <slug> --agent <id>
 openclaw skills update <slug>
 openclaw skills update --all
+openclaw skills update --all --agent <id>
 openclaw skills list
 openclaw skills list --eligible
 openclaw skills list --json
 openclaw skills list --verbose
+openclaw skills list --agent <id>
 openclaw skills info <name>
 openclaw skills info <name> --json
+openclaw skills info <name> --agent <id>
 openclaw skills check
 openclaw skills check --json
+openclaw skills check --agent <id>
 ```
 
 `search`/`install`/`update` verwenden ClawHub direkt und installieren in das aktive
-Workspace-Verzeichnis `skills/`. `list`/`info`/`check` prüfen weiterhin die lokalen
-Skills, die für den aktuellen Workspace und die aktuelle Konfiguration sichtbar sind.
+Verzeichnis `skills/` des Workspace. `list`/`info`/`check` prüfen weiterhin die lokalen
+Skills, die für den aktuellen Workspace und die aktuelle Konfiguration sichtbar sind. Workspace-gestützte Befehle
+lösen den Ziel-Workspace über `--agent <id>` auf, dann über das aktuelle Arbeitsverzeichnis,
+wenn es sich innerhalb eines konfigurierten Agent-Workspace befindet, und anschließend über den Standard-
+Agent.
 
-Dieser CLI-Befehl `install` lädt Skill-Ordner von ClawHub herunter. Gateway-gestützte
-Installationen von Skill-Abhängigkeiten, die beim Onboarding oder in den Skills-Einstellungen ausgelöst werden, verwenden stattdessen den separaten
-Anfragepfad `skills.install`.
+Dieser CLI-Befehl `install` lädt Skill-Ordner aus ClawHub herunter. Gateway-gestützte
+Installationen von Skill-Abhängigkeiten, die über das Onboarding oder die Skills-Einstellungen ausgelöst werden, verwenden stattdessen den
+separaten Anfragepfad `skills.install`.
 
 Hinweise:
 
-- `search [query...]` akzeptiert eine optionale Suchanfrage; lassen Sie sie weg, um den Standard-
-  Such-Feed von ClawHub zu durchsuchen.
+- `search [query...]` akzeptiert eine optionale Abfrage; lassen Sie sie weg, um den standardmäßigen
+  ClawHub-Suchfeed zu durchsuchen.
 - `search --limit <n>` begrenzt die zurückgegebenen Ergebnisse.
-- `install --force` überschreibt einen vorhandenen Workspace-Skill-Ordner für denselben
+- `install --force` überschreibt einen vorhandenen Skill-Ordner im Workspace für denselben
   Slug.
-- `update --all` aktualisiert nur verfolgte ClawHub-Installationen im aktiven Workspace.
+- `--agent <id>` zielt auf einen konfigurierten Agent-Workspace und überschreibt die Ableitung aus dem aktuellen
+  Arbeitsverzeichnis.
+- `update --all` aktualisiert nur nachverfolgte ClawHub-Installationen im aktiven Workspace.
 - `list` ist die Standardaktion, wenn kein Unterbefehl angegeben wird.
 - `list`, `info` und `check` schreiben ihre gerenderte Ausgabe nach stdout. Mit
   `--json` bedeutet das, dass die maschinenlesbare Nutzlast für Pipes

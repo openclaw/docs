@@ -1,40 +1,29 @@
 ---
 read_when:
     - Sie binden den synthetischen QA-Transport in einen lokalen oder CI-Testlauf ein
-    - Sie benötigen die Konfigurationsoberfläche des gebündelten qa-channel
-    - Sie arbeiten an der Ende-zu-Ende-QA-Automatisierung iteratively
-summary: Synthetisches Slack-ähnliches Channel-Plugin für deterministische OpenClaw-QA-Szenarien
-title: QA-Channel
+    - Sie benötigen die mitgelieferte qa-channel-Konfigurationsoberfläche
+    - Sie arbeiten iterativ an der End-to-End-QA-Automatisierung
+summary: Synthetisches Kanal-Plugin der Slack-Klasse für deterministische OpenClaw-QA-Szenarien
+title: QA-Kanal
 x-i18n:
-    generated_at: "2026-04-24T06:28:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:41:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
+    source_hash: e1de1f52da1a14c845cf2a536ddc6f36ab52ed6364f68d9ece32ce272e2a2f96
     source_path: channels/qa-channel.md
-    workflow: 15
+    workflow: 16
 ---
 
-`qa-channel` ist ein gebündelter synthetischer Nachrichtentransport für automatisierte OpenClaw-QA.
+`qa-channel` ist ein gebündelter synthetischer Nachrichtentransport für automatisierte OpenClaw-QA. Er ist kein Produktionskanal — er dient dazu, dieselbe Channel-Plugin-Grenze zu testen, die von echten Transporten verwendet wird, während der Zustand deterministisch und vollständig inspizierbar bleibt.
 
-Er ist kein Produktions-Channel. Er dient dazu, dieselbe Channel-Plugin-Grenze zu testen,
-die auch von echten Transporten verwendet wird, während der Zustand deterministisch und vollständig
-prüfbar bleibt.
+## Funktion
 
-## Was er heute leistet
-
-- Slack-ähnliche Zielgrammatik:
+- Slack-artige Zielgrammatik:
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- HTTP-gestützter synthetischer Bus für:
-  - Injektion eingehender Nachrichten
-  - Erfassung ausgehender Transkripte
-  - Thread-Erstellung
-  - Reaktionen
-  - Bearbeitungen
-  - Löschungen
-  - Such- und Leseaktionen
-- Gebündelter hostseitiger Self-Check-Runner, der einen Markdown-Bericht schreibt
+- HTTP-gestützter synthetischer Bus für das Einschleusen eingehender Nachrichten, das Erfassen ausgehender Transkripte, Thread-Erstellung, Reaktionen, Bearbeitungen, Löschungen sowie Such-/Leseaktionen.
+- Hostseitiger Self-Check-Runner, der einen Markdown-Bericht nach `.artifacts/qa-e2e/` schreibt.
 
 ## Konfiguration
 
@@ -52,68 +41,53 @@ prüfbar bleibt.
 }
 ```
 
-Unterstützte Kontoschlüssel:
+Kontoschlüssel:
 
-- `baseUrl`
-- `botUserId`
-- `botDisplayName`
-- `pollTimeoutMs`
-- `allowFrom`
-- `defaultTo`
-- `actions.messages`
-- `actions.reactions`
-- `actions.search`
-- `actions.threads`
+- `enabled` — Hauptschalter für dieses Konto.
+- `name` — optionale Anzeigebezeichnung.
+- `baseUrl` — URL des synthetischen Busses.
+- `botUserId` — Bot-Benutzer-ID im Matrix-Stil, die in der Zielgrammatik verwendet wird.
+- `botDisplayName` — Anzeigename für ausgehende Nachrichten.
+- `pollTimeoutMs` — Wartefenster für Long Polling. Ganzzahl zwischen 100 und 30000.
+- `allowFrom` — Absender-Allowlist (Benutzer-IDs oder `"*"`).
+- `defaultTo` — Fallback-Ziel, wenn keines angegeben wird.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — Tool-Freischaltung pro Aktion.
+
+Multi-Account-Schlüssel auf oberster Ebene:
+
+- `accounts` — Zuordnung benannter kontospezifischer Überschreibungen, indiziert nach Konto-ID.
+- `defaultAccount` — bevorzugte Konto-ID, wenn mehrere konfiguriert sind.
 
 ## Runner
 
-Aktueller vertikaler Slice:
+Hostseitiger Self-Check (schreibt einen Markdown-Bericht unter `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Dies wird jetzt über die gebündelte `qa-lab`-Erweiterung geleitet. Es startet den
-QA-Bus im Repository, bootet den gebündelten `qa-channel`-Runtime-Slice, führt einen deterministischen
-Self-Check aus und schreibt einen Markdown-Bericht unter `.artifacts/qa-e2e/`.
+Dies läuft über `qa-lab`, startet den QA-Bus im Repository, bootet das gebündelte `qa-channel`-Runtime-Slice und führt einen deterministischen Self-Check aus.
 
-Private Debugger-Benutzeroberfläche:
-
-```bash
-pnpm qa:lab:up
-```
-
-Dieser einzelne Befehl baut die QA-Site, startet den Docker-gestützten Gateway- + QA-Lab-Stack
-und gibt die QA-Lab-URL aus. Auf dieser Site können Sie Szenarien auswählen, die Modell-Lane wählen,
-einzelne Durchläufe starten und die Ergebnisse live beobachten.
-
-Vollständige repository-gestützte QA-Suite:
+Vollständige repo-gestützte Szenario-Suite:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Dadurch wird der private QA-Debugger unter einer lokalen URL gestartet, getrennt vom
-ausgelieferten Control-UI-Bundle.
+Führt Szenarien parallel gegen die QA-Gateway-Lane aus. Siehe [QA-Übersicht](/de/concepts/qa-e2e-automation) für Szenarien, Profile und Provider-Modi.
 
-## Umfang
+Docker-gestützte QA-Site (Gateway + QA-Lab-Debugger-UI in einem Stack):
 
-Der aktuelle Umfang ist absichtlich eng gehalten:
+```bash
+pnpm qa:lab:up
+```
 
-- Bus + Plugin-Transport
-- Threaded-Routing-Grammatik
-- Channel-eigene Nachrichtenaktionen
-- Markdown-Berichterstellung
-- Docker-gestützte QA-Site mit Ausführungssteuerung
+Baut die QA-Site, startet den Docker-gestützten Gateway- + QA-Lab-Stack und gibt die QA-Lab-URL aus. Von dort aus können Sie Szenarien auswählen, die Modell-Lane wählen, einzelne Läufe starten und Ergebnisse live verfolgen. Der QA-Lab-Debugger ist vom ausgelieferten Control-UI-Bundle getrennt.
 
-Spätere Arbeiten werden Folgendes hinzufügen:
+## Verwandte Themen
 
-- Ausführung über Anbieter-/Modell-Matrix
-- umfangreichere Szenarioerkennung
-- später OpenClaw-native Orchestrierung
-
-## Verwandt
-
-- [Pairing](/de/channels/pairing)
+- [QA-Übersicht](/de/concepts/qa-e2e-automation) — Gesamt-Stack, Transportadapter, Szenarioerstellung
+- [Matrix-QA](/de/concepts/qa-matrix) — Beispiel für einen Live-Transport-Runner, der einen echten Kanal steuert
+- [Kopplung](/de/channels/pairing)
 - [Gruppen](/de/channels/groups)
-- [Channel-Überblick](/de/channels)
+- [Channel-Übersicht](/de/channels)

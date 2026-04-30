@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Sie möchten einen Agent-Turn aus Skripten ausführen (optional mit Zustellung der Antwort).
-summary: CLI-Referenz für `openclaw agent` (einen Agent-Turn über das Gateway senden)
+    - Sie möchten eine Agentenrunde aus Skripten ausführen (optional eine Antwort zustellen)
+summary: CLI-Referenz für `openclaw agent` (einen Agenten-Turn über das Gateway senden)
 title: Agent
 x-i18n:
-    generated_at: "2026-04-25T13:42:50Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:43:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e06681ffbed56cb5be05c7758141e784eac8307ed3c6fc973f71534238b407e1
+    source_hash: b77668949040933c5281f2f183e48cc2593d09252470483b9ae38dcffd13d071
     source_path: cli/agent.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw agent`
 
-Einen Agent-Turn über das Gateway ausführen (für eingebettete Ausführung `--local` verwenden).
-Verwenden Sie `--agent <id>`, um direkt einen konfigurierten Agenten anzusprechen.
+Führen Sie einen Agentendurchlauf über das Gateway aus (verwenden Sie `--local` für eingebettet).
+Verwenden Sie `--agent <id>`, um direkt einen konfigurierten Agenten anzusteuern.
 
-Geben Sie mindestens einen Session-Selektor an:
+Übergeben Sie mindestens einen Sitzungsauswähler:
 
 - `--to <dest>`
 - `--session-id <id>`
@@ -25,23 +25,24 @@ Geben Sie mindestens einen Session-Selektor an:
 
 Verwandt:
 
-- Agent-Send-Tool: [Agent send](/de/tools/agent-send)
+- Tool zum Senden an Agenten: [Agent senden](/de/tools/agent-send)
 
 ## Optionen
 
 - `-m, --message <text>`: erforderlicher Nachrichtentext
-- `-t, --to <dest>`: Empfänger, der zur Ableitung des Session-Schlüssels verwendet wird
-- `--session-id <id>`: explizite Session-ID
+- `-t, --to <dest>`: Empfänger, der zum Ableiten des Sitzungsschlüssels verwendet wird
+- `--session-id <id>`: explizite Sitzungs-ID
 - `--agent <id>`: Agent-ID; überschreibt Routing-Bindungen
-- `--thinking <level>`: Thinking-Level des Agenten (`off`, `minimal`, `low`, `medium`, `high` sowie vom Anbieter unterstützte benutzerdefinierte Level wie `xhigh`, `adaptive` oder `max`)
-- `--verbose <on|off>`: Verbose-Level für die Session persistent speichern
-- `--channel <channel>`: Zustell-Channel; weglassen, um den Haupt-Session-Channel zu verwenden
-- `--reply-to <target>`: Überschreibung des Zustellziels
-- `--reply-channel <channel>`: Überschreibung des Zustell-Channels
-- `--reply-account <id>`: Überschreibung des Zustellkontos
+- `--model <id>`: Modellüberschreibung für diesen Lauf (`provider/model` oder Modell-ID)
+- `--thinking <level>`: Denkstufe des Agenten (`off`, `minimal`, `low`, `medium`, `high` sowie vom Provider unterstützte benutzerdefinierte Stufen wie `xhigh`, `adaptive` oder `max`)
+- `--verbose <on|off>`: ausführliche Stufe für die Sitzung dauerhaft speichern
+- `--channel <channel>`: Zustellungskanal; auslassen, um den Hauptkanal der Sitzung zu verwenden
+- `--reply-to <target>`: Überschreibung des Zustellungsziels
+- `--reply-channel <channel>`: Überschreibung des Zustellungskanals
+- `--reply-account <id>`: Überschreibung des Zustellungskontos
 - `--local`: den eingebetteten Agenten direkt ausführen (nach dem Vorladen der Plugin-Registry)
-- `--deliver`: die Antwort an den ausgewählten Channel/das ausgewählte Ziel zurücksenden
-- `--timeout <seconds>`: Agent-Timeout überschreiben (Standard 600 oder Konfigurationswert)
+- `--deliver`: die Antwort an den ausgewählten Kanal/das ausgewählte Ziel zurücksenden
+- `--timeout <seconds>`: Agenten-Timeout überschreiben (Standard 600 oder Konfigurationswert)
 - `--json`: JSON ausgeben
 
 ## Beispiele
@@ -49,6 +50,7 @@ Verwandt:
 ```bash
 openclaw agent --to +15555550123 --message "status update" --deliver
 openclaw agent --agent ops --message "Summarize logs"
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
 openclaw agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"
@@ -57,15 +59,18 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Hinweise
 
-- Der Gateway-Modus greift auf den eingebetteten Agenten zurück, wenn die Gateway-Anfrage fehlschlägt. Verwenden Sie `--local`, um die eingebettete Ausführung von vornherein zu erzwingen.
-- `--local` lädt dennoch zuerst die Plugin-Registry vor, sodass von Plugins bereitgestellte Anbieter, Tools und Channels auch bei eingebetteten Ausführungen verfügbar bleiben.
-- Jeder Aufruf von `openclaw agent` wird als einmaliger Lauf behandelt. Gebündelte oder benutzerkonfigurierte MCP-Server, die für diesen Lauf geöffnet werden, werden nach der Antwort wieder beendet, selbst wenn der Befehl den Gateway-Pfad verwendet, sodass `stdio`-MCP-Child-Prozesse zwischen skriptgesteuerten Aufrufen nicht aktiv bleiben.
-- `--channel`, `--reply-channel` und `--reply-account` beeinflussen die Antwortzustellung, nicht das Session-Routing.
-- `--json` hält stdout für die JSON-Antwort reserviert. Diagnosen zu Gateway, Plugin und eingebettetem Fallback werden an stderr weitergeleitet, damit Skripte stdout direkt parsen können.
-- Wenn dieser Befehl die Regenerierung von `models.json` auslöst, werden von SecretRef verwaltete Anbieter-Anmeldedaten als Nicht-Geheimnis-Markierungen persistent gespeichert (zum Beispiel Namen von Umgebungsvariablen, `secretref-env:ENV_VAR_NAME` oder `secretref-managed`), nicht als aufgelöster Klartext von Geheimnissen.
-- Markierungsschreibvorgänge sind von der Quelle autoritativ: OpenClaw speichert Markierungen aus dem aktiven Quellkonfigurations-Snapshot, nicht aus aufgelösten Laufzeit-Geheimniswerten.
+- Der Gateway-Modus fällt auf den eingebetteten Agenten zurück, wenn die Gateway-Anfrage fehlschlägt. Verwenden Sie `--local`, um die eingebettete Ausführung von Anfang an zu erzwingen.
+- `--local` lädt weiterhin zuerst die Plugin-Registry vor, sodass von Plugins bereitgestellte Provider, Tools und Kanäle während eingebetteter Läufe verfügbar bleiben.
+- `--local` und eingebettete Fallback-Läufe werden als einmalige Läufe behandelt. Gebündelte MCP-loopback-Ressourcen und warme Claude-stdio-Sitzungen, die für diesen lokalen Prozess geöffnet wurden, werden nach der Antwort beendet, sodass skriptgesteuerte Aufrufe keine lokalen Kindprozesse am Leben halten.
+- Gateway-gestützte Läufe belassen Gateway-eigene MCP-loopback-Ressourcen im laufenden Gateway-Prozess; ältere Clients senden möglicherweise weiterhin das historische Cleanup-Flag, aber das Gateway akzeptiert es aus Kompatibilitätsgründen als No-op.
+- `--channel`, `--reply-channel` und `--reply-account` wirken sich auf die Antwortzustellung aus, nicht auf das Sitzungsrouting.
+- `--json` hält stdout für die JSON-Antwort reserviert. Gateway-, Plugin- und Embedded-Fallback-Diagnosen werden an stderr geleitet, damit Skripte stdout direkt parsen können.
+- Embedded-Fallback-JSON enthält `meta.transport: "embedded"` und `meta.fallbackFrom: "gateway"`, damit Skripte Fallback-Läufe von Gateway-Läufen unterscheiden können.
+- Wenn das Gateway einen Agentenlauf akzeptiert, die CLI jedoch beim Warten auf die endgültige Antwort eine Zeitüberschreitung erreicht, verwendet der eingebettete Fallback eine neue explizite `gateway-fallback-*`-Sitzungs-/Lauf-ID und meldet `meta.fallbackReason: "gateway_timeout"` sowie die Fallback-Sitzungsfelder. Dadurch wird vermieden, mit der Gateway-eigenen Transkript-Sperre zu konkurrieren oder die ursprüngliche geroutete Konversationssitzung stillschweigend zu ersetzen.
+- Wenn dieser Befehl die Neugenerierung von `models.json` auslöst, werden von SecretRef verwaltete Provider-Anmeldedaten als nicht geheime Marker dauerhaft gespeichert (zum Beispiel Namen von Umgebungsvariablen, `secretref-env:ENV_VAR_NAME` oder `secretref-managed`), nicht als aufgelöster geheimer Klartext.
+- Marker-Schreibvorgänge sind quellautoritativ: OpenClaw speichert Marker aus dem aktiven Quellkonfigurations-Snapshot, nicht aus aufgelösten geheimen Laufzeitwerten.
 
 ## Verwandt
 
 - [CLI-Referenz](/de/cli)
-- [Agent-Laufzeit](/de/concepts/agent)
+- [Agentenlaufzeit](/de/concepts/agent)

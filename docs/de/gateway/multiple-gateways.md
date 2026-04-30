@@ -1,36 +1,36 @@
 ---
 read_when:
-    - Mehr als ein Gateway auf derselben Maschine ausführen
-    - Du benötigst isolierte Konfiguration/State/Ports pro Gateway.
-summary: Mehrere OpenClaw-Gateways auf einem Host ausführen (Isolierung, Ports und Profile)
+    - Mehr als ein Gateway auf demselben Rechner ausführen
+    - Sie benötigen getrennte Konfigurationen, Zustände und Ports pro Gateway
+summary: Mehrere OpenClaw Gateways auf einem Host ausführen (Isolation, Ports und Profile)
 title: Mehrere Gateways
 x-i18n:
-    generated_at: "2026-04-25T13:47:22Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:55:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6477a16dc55b694cb73ad6b5140e94529071bad8fc2100ecca88daaa31f9c3c0
+    source_hash: 655f9ea5100813d5836f24eb47a5646443f83d70953efa64122633a5a1341002
     source_path: gateway/multiple-gateways.md
-    workflow: 15
+    workflow: 16
 ---
 
-Die meisten Setups sollten ein Gateway verwenden, weil ein einzelnes Gateway mehrere Messaging-Verbindungen und Agenten verarbeiten kann. Wenn du stärkere Isolierung oder Redundanz benötigst (z. B. einen Rescue-Bot), führe separate Gateways mit isolierten Profilen/Ports aus.
+Die meisten Setups sollten einen Gateway verwenden, da ein einzelner Gateway mehrere Messaging-Verbindungen und Agents bedienen kann. Wenn Sie stärkere Isolation oder Redundanz benötigen (z. B. einen Rescue-Bot), führen Sie separate Gateways mit isolierten Profilen/Ports aus.
 
-## Beste empfohlene Einrichtung
+## Am besten empfohlenes Setup
 
 Für die meisten Benutzer ist das einfachste Rescue-Bot-Setup:
 
 - den Haupt-Bot im Standardprofil belassen
 - den Rescue-Bot mit `--profile rescue` ausführen
-- für das Rescue-Konto einen vollständig separaten Telegram-Bot verwenden
-- den Rescue-Bot auf einem anderen Basis-Port wie `19789` belassen
+- einen vollständig separaten Telegram-Bot für das Rescue-Konto verwenden
+- den Rescue-Bot auf einem anderen Basis-Port wie `19789` betreiben
 
 Dadurch bleibt der Rescue-Bot vom Haupt-Bot isoliert, sodass er debuggen oder
-Konfigurationsänderungen anwenden kann, wenn der primäre Bot ausgefallen ist. Lass mindestens 20 Ports Abstand zwischen
-den Basis-Ports, damit die abgeleiteten Browser-/Canvas-/CDP-Ports nie kollidieren.
+Konfigurationsänderungen anwenden kann, wenn der primäre Bot ausgefallen ist. Lassen Sie mindestens 20 Ports Abstand zwischen
+Basis-Ports, damit die abgeleiteten Browser-/Canvas-/CDP-Ports niemals kollidieren.
 
-## Schnellstart für den Rescue-Bot
+## Rescue-Bot-Schnellstart
 
-Verwende dies als Standardpfad, sofern du keinen triftigen Grund hast, etwas
+Verwenden Sie dies als Standardweg, sofern Sie keinen triftigen Grund haben, etwas
 anderes zu tun:
 
 ```bash
@@ -39,59 +39,55 @@ openclaw --profile rescue onboard
 openclaw --profile rescue gateway install --port 19789
 ```
 
-Wenn dein Haupt-Bot bereits läuft, ist das normalerweise alles, was du brauchst.
+Wenn Ihr Haupt-Bot bereits läuft, ist das normalerweise alles, was Sie benötigen.
 
 Während `openclaw --profile rescue onboard`:
 
-- verwende den separaten Telegram-Bot-Token
-- behalte das Profil `rescue`
-- verwende einen Basis-Port, der mindestens 20 höher als beim Haupt-Bot liegt
-- akzeptiere den Standard-Workspace für den Rescue-Bot, sofern du nicht bereits selbst einen verwaltest
+- verwenden Sie das separate Telegram-Bot-Token
+- behalten Sie das Profil `rescue` bei
+- verwenden Sie einen Basis-Port, der mindestens 20 höher ist als der des Haupt-Bots
+- akzeptieren Sie den standardmäßigen Rescue-Arbeitsbereich, sofern Sie nicht bereits selbst einen verwalten
 
-Wenn das Onboarding den Rescue-Dienst bereits für dich installiert hat, ist das abschließende
+Wenn das Onboarding den Rescue-Dienst bereits für Sie installiert hat, ist das abschließende
 `gateway install` nicht erforderlich.
 
 ## Warum das funktioniert
 
-Der Rescue-Bot bleibt unabhängig, weil er seine eigene:
+Der Rescue-Bot bleibt unabhängig, weil er Folgendes jeweils separat hat:
 
 - Profil/Konfiguration
-- State-Verzeichnis
-- Workspace
+- Statusverzeichnis
+- Arbeitsbereich
 - Basis-Port (plus abgeleitete Ports)
 - Telegram-Bot-Token
 
-hat.
+Für die meisten Setups verwenden Sie einen vollständig separaten Telegram-Bot für das Rescue-Profil:
 
-Für die meisten Setups solltest du für das Rescue-Profil einen vollständig separaten Telegram-Bot verwenden:
-
-- leicht als nur für Operatoren nutzbar zu halten
-- separater Bot-Token und eigene Identität
-- unabhängig von der Kanal-/App-Installation des Haupt-Bots
-- einfacher DM-basierter Wiederherstellungspfad, wenn der Haupt-Bot defekt ist
+- einfach auf Operatoren beschränkbar
+- separates Bot-Token und separate Identität
+- unabhängig von der Channel-/App-Installation des Haupt-Bots
+- einfacher DM-basierter Wiederherstellungsweg, wenn der Haupt-Bot defekt ist
 
 ## Was `--profile rescue onboard` ändert
 
-`openclaw --profile rescue onboard` verwendet den normalen Onboarding-Ablauf, aber es
-schreibt alles in ein separates Profil.
+`openclaw --profile rescue onboard` verwendet den normalen Onboarding-Ablauf, schreibt aber
+alles in ein separates Profil.
 
-In der Praxis bedeutet das, dass der Rescue-Bot seine eigene:
+In der Praxis bedeutet das, dass der Rescue-Bot Folgendes separat erhält:
 
 - Konfigurationsdatei
-- State-Verzeichnis
-- Workspace (standardmäßig `~/.openclaw/workspace-rescue`)
+- Statusverzeichnis
+- Arbeitsbereich (standardmäßig `~/.openclaw/workspace-rescue`)
 - Name des verwalteten Dienstes
 
-erhält.
-
-Die Prompts sind ansonsten dieselben wie beim normalen Onboarding.
+Die Eingabeaufforderungen sind ansonsten identisch mit dem normalen Onboarding.
 
 ## Allgemeines Multi-Gateway-Setup
 
-Das oben gezeigte Rescue-Bot-Layout ist der einfachste Standard, aber dasselbe Isolationsmuster
+Das oben beschriebene Rescue-Bot-Layout ist der einfachste Standard, aber dasselbe Isolationsmuster
 funktioniert für jedes Paar oder jede Gruppe von Gateways auf einem Host.
 
-Für ein allgemeineres Setup gib jedem zusätzlichen Gateway sein eigenes benanntes Profil und seinen
+Für ein allgemeineres Setup geben Sie jedem zusätzlichen Gateway ein eigenes benanntes Profil und seinen
 eigenen Basis-Port:
 
 ```bash
@@ -99,12 +95,12 @@ eigenen Basis-Port:
 openclaw setup
 openclaw gateway --port 18789
 
-# zusätzliches Gateway
+# zusätzlicher Gateway
 openclaw --profile ops setup
 openclaw --profile ops gateway --port 19789
 ```
 
-Wenn du möchtest, dass beide Gateways benannte Profile verwenden, funktioniert das ebenfalls:
+Wenn beide Gateways benannte Profile verwenden sollen, funktioniert das ebenfalls:
 
 ```bash
 openclaw --profile main setup
@@ -121,40 +117,40 @@ openclaw gateway install
 openclaw --profile ops gateway install --port 19789
 ```
 
-Verwende den Schnellstart für den Rescue-Bot, wenn du eine Fallback-Operator-Lane möchtest. Verwende das
-allgemeine Profilmuster, wenn du mehrere langlebige Gateways für
-verschiedene Kanäle, Mandanten, Workspaces oder operative Rollen möchtest.
+Verwenden Sie den Rescue-Bot-Schnellstart, wenn Sie eine Fallback-Operator-Spur benötigen. Verwenden Sie das
+allgemeine Profilmuster, wenn Sie mehrere langlebige Gateways für
+verschiedene Channels, Mandanten, Arbeitsbereiche oder Betriebsrollen benötigen.
 
 ## Isolations-Checkliste
 
-Halte diese Werte pro Gateway-Instanz eindeutig:
+Halten Sie diese Angaben pro Gateway-Instanz eindeutig:
 
 - `OPENCLAW_CONFIG_PATH` — Konfigurationsdatei pro Instanz
 - `OPENCLAW_STATE_DIR` — Sitzungen, Zugangsdaten, Caches pro Instanz
-- `agents.defaults.workspace` — Workspace-Root pro Instanz
+- `agents.defaults.workspace` — Arbeitsbereichsstamm pro Instanz
 - `gateway.port` (oder `--port`) — eindeutig pro Instanz
 - abgeleitete Browser-/Canvas-/CDP-Ports
 
-Wenn diese gemeinsam genutzt werden, bekommst du Konfigurations-Races und Portkonflikte.
+Wenn diese gemeinsam genutzt werden, treten Konfigurationsrennen und Portkonflikte auf.
 
-## Port-Zuordnung (abgeleitet)
+## Portzuordnung (abgeleitet)
 
 Basis-Port = `gateway.port` (oder `OPENCLAW_GATEWAY_PORT` / `--port`).
 
-- Port des Browser-Control-Service = Basis + 2 (nur local loopback)
+- Port des Browser-Steuerungsdienstes = Basis + 2 (nur local loopback)
 - Canvas-Host wird auf dem Gateway-HTTP-Server bereitgestellt (derselbe Port wie `gateway.port`)
-- Browser-Profil-CDP-Ports werden automatisch aus `browser.controlPort + 9 .. + 108` zugewiesen
+- CDP-Ports für Browserprofile werden automatisch aus `browser.controlPort + 9 .. + 108` zugewiesen
 
-Wenn du einen dieser Werte in der Konfiguration oder per env überschreibst, musst du ihn pro Instanz eindeutig halten.
+Wenn Sie eine dieser Angaben in der Konfiguration oder Umgebung überschreiben, müssen Sie sie pro Instanz eindeutig halten.
 
-## Hinweise zu Browser/CDP (häufige Stolperfalle)
+## Browser-/CDP-Hinweise (häufige Fehlerquelle)
 
-- **Pinne** `browser.cdpUrl` **nicht** auf dieselben Werte bei mehreren Instanzen.
-- Jede Instanz benötigt ihren eigenen Browser-Control-Port und eigenen CDP-Bereich (abgeleitet von ihrem Gateway-Port).
-- Wenn du explizite CDP-Ports benötigst, setze `browser.profiles.<name>.cdpPort` pro Instanz.
-- Remote-Chrome: verwende `browser.profiles.<name>.cdpUrl` (pro Profil, pro Instanz).
+- Setzen Sie `browser.cdpUrl` **nicht** auf mehreren Instanzen auf dieselben Werte fest.
+- Jede Instanz benötigt ihren eigenen Browser-Steuerungsport und CDP-Bereich (abgeleitet von ihrem Gateway-Port).
+- Wenn Sie explizite CDP-Ports benötigen, setzen Sie `browser.profiles.<name>.cdpPort` pro Instanz.
+- Remote Chrome: verwenden Sie `browser.profiles.<name>.cdpUrl` (pro Profil, pro Instanz).
 
-## Beispiel mit manuellen env vars
+## Manuelles Umgebungsbeispiel
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/main.json \
@@ -166,7 +162,7 @@ OPENCLAW_STATE_DIR=~/.openclaw-rescue \
 openclaw gateway --port 19789
 ```
 
-## Schnelle Prüfungen
+## Schnellprüfungen
 
 ```bash
 openclaw gateway status --deep
@@ -179,11 +175,11 @@ openclaw --profile rescue browser status
 
 Interpretation:
 
-- `gateway status --deep` hilft dabei, veraltete `launchd`-/`systemd`-/`schtasks`-Dienste aus älteren Installationen zu erkennen.
-- Warntext von `gateway probe` wie `multiple reachable gateways detected` ist nur dann erwartbar, wenn du absichtlich mehr als ein isoliertes Gateway ausführst.
+- `gateway status --deep` hilft, veraltete launchd-/systemd-/schtasks-Dienste aus älteren Installationen zu erkennen.
+- Warntext von `gateway probe` wie `multiple reachable gateways detected` wird nur erwartet, wenn Sie absichtlich mehr als einen isolierten Gateway ausführen.
 
-## Verwandt
+## Verwandte Themen
 
 - [Gateway-Runbook](/de/gateway)
-- [Gateway-Lock](/de/gateway/gateway-lock)
+- [Gateway-Sperre](/de/gateway/gateway-lock)
 - [Konfiguration](/de/gateway/configuration)

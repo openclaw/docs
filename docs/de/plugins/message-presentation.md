@@ -1,35 +1,37 @@
 ---
 read_when:
-    - Darstellung von Nachrichtenkarten, Buttons oder Auswahlen hinzufügen oder ändern
-    - Ein Kanal-Plugin erstellen, das Rich-Outbound-Nachrichten unterstützt
-    - Darstellung oder Zustellfunktionen des Nachrichtentools ändern
-    - Providerspezifische Regressionsfehler bei Karten-/Block-/Komponenten-Rendering debuggen
-summary: Semantische Nachrichtenkarten, Buttons, Auswahlen, Fallback-Text und Zustellhinweise für Kanal-Plugins
+    - Hinzufügen oder Ändern des Renderings von Nachrichtenkarten, Schaltflächen oder Auswahlelementen
+    - Erstellen eines Kanal-Plugins, das reichhaltige ausgehende Nachrichten unterstützt
+    - Ändern der Darstellung oder Zustellfunktionen des Nachrichtenwerkzeugs
+    - Debugging von Provider-spezifischen Rendering-Regressionen bei Karten/Blöcken/Komponenten
+summary: Semantische Nachrichtenkarten, Schaltflächen, Auswahlelemente, Fallback-Text und Zustellhinweise für Kanal-Plugins
 title: Nachrichtendarstellung
 x-i18n:
-    generated_at: "2026-04-24T06:50:11Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:06:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
+    source_hash: 23ef0eab890ee174c1433f72e84932a84a481f2bcf4b69bc793a2660ec94b10c
     source_path: plugins/message-presentation.md
-    workflow: 15
+    workflow: 16
 ---
 
-Die Nachrichtendarstellung ist OpenClaws gemeinsamer Vertrag für Rich-Outbound-Chat-UI.
-Damit können Agenten, CLI-Befehle, Genehmigungsabläufe und Plugins die Nachrichten-
-Absicht einmal beschreiben, während jedes Kanal-Plugin die bestmögliche native Form rendert.
+Nachrichtenpräsentation ist der gemeinsame Vertrag von OpenClaw für umfangreiche ausgehende Chat-UI.
+Sie ermöglicht Agenten, CLI-Befehlen, Freigabeabläufen und Plugins, die
+Nachrichtenabsicht einmal zu beschreiben, während jedes Kanal-Plugin die beste
+native Form rendert, die es darstellen kann.
 
-Verwenden Sie Presentation für portable Nachrichten-UI:
+Verwenden Sie Präsentation für portable Nachrichten-UI:
 
 - Textabschnitte
-- kleinen Kontext-/Footer-Text
-- Trenner
-- Buttons
+- kleiner Kontext-/Fußzeilentext
+- Trennlinien
+- Schaltflächen
 - Auswahlmenüs
 - Kartentitel und Tonalität
 
-Fügen Sie dem gemeinsamen Nachrichtentool keine neuen providernativen Felder wie Discord `components`, Slack
-`blocks`, Telegram `buttons`, Teams `card` oder Feishu `card` hinzu. Diese sind Renderer-Ausgaben im Besitz des Kanal-Plugins.
+Fügen Sie dem gemeinsamen Nachrichtentool keine neuen Provider-nativen Felder
+wie Discord `components`, Slack `blocks`, Telegram `buttons`, Teams `card` oder
+Feishu `card` hinzu. Das sind Renderer-Ausgaben, die dem Kanal-Plugin gehören.
 
 ## Vertrag
 
@@ -81,22 +83,25 @@ type ReplyPayloadDelivery = {
 };
 ```
 
-Semantik von Buttons:
+Schaltflächen-Semantik:
 
 - `value` ist ein Aktionswert der Anwendung, der über den vorhandenen
-  Interaktionspfad des Kanals zurückgeleitet wird, wenn der Kanal anklickbare Controls unterstützt.
-- `url` ist ein Link-Button. Er kann ohne `value` existieren.
+  Interaktionspfad des Kanals zurückgeleitet wird, wenn der Kanal klickbare
+  Steuerelemente unterstützt.
+- `url` ist eine Link-Schaltfläche. Sie kann ohne `value` existieren.
 - `label` ist erforderlich und wird auch im Text-Fallback verwendet.
-- `style` ist hinweisend. Renderer sollten nicht unterstützte Styles auf einen sicheren
-  Standard abbilden und das Senden nicht fehlschlagen lassen.
+- `style` ist eine Empfehlung. Renderer sollten nicht unterstützte Stile auf
+  einen sicheren Standard abbilden und den Versand nicht fehlschlagen lassen.
 
-Semantik von Auswahlmenüs:
+Auswahl-Semantik:
 
 - `options[].value` ist der ausgewählte Anwendungswert.
-- `placeholder` ist hinweisend und kann von Kanälen ohne native Unterstützung für Auswahlmenüs ignoriert werden.
-- Wenn ein Kanal Auswahlmenüs nicht unterstützt, listet der Fallback-Text die Labels auf.
+- `placeholder` ist eine Empfehlung und kann von Kanälen ohne native
+  Auswahlunterstützung ignoriert werden.
+- Wenn ein Kanal keine Auswahlfelder unterstützt, listet der Fallback-Text die
+  Beschriftungen auf.
 
-## Beispiele für Producer
+## Producer-Beispiele
 
 Einfache Karte:
 
@@ -118,7 +123,7 @@ Einfache Karte:
 }
 ```
 
-Reiner URL-Link-Button:
+Nur-URL-Link-Schaltfläche:
 
 ```json
 {
@@ -150,7 +155,7 @@ Auswahlmenü:
 }
 ```
 
-CLI-Send:
+CLI-Versand:
 
 ```bash
 openclaw message send --channel slack \
@@ -182,7 +187,7 @@ Angeheftete Zustellung mit explizitem JSON:
 
 ## Renderer-Vertrag
 
-Kanal-Plugins deklarieren Render-Unterstützung auf ihrem Outbound-Adapter:
+Kanal-Plugins deklarieren Render-Unterstützung in ihrem ausgehenden Adapter:
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -206,88 +211,95 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-Capability-Felder sind absichtlich einfache Booleans. Sie beschreiben, was der
-Renderer interaktiv machen kann, nicht jedes native Plattformlimit. Renderer bleiben weiterhin
-verantwortlich für plattformspezifische Grenzen wie maximale Anzahl von Buttons, Blöcken und
-Kartengröße.
+Capability-Felder sind absichtlich einfache boolesche Werte. Sie beschreiben,
+was der Renderer interaktiv machen kann, nicht jedes native Plattformlimit.
+Renderer besitzen weiterhin plattformspezifische Limits wie maximale Anzahl von
+Schaltflächen, Blockanzahl und Kartengröße.
 
-## Core-Render-Fluss
+## Core-Renderablauf
 
-Wenn ein `ReplyPayload` oder eine Nachrichtenaktion `presentation` enthält, führt Core Folgendes aus:
+Wenn ein `ReplyPayload` oder eine Nachrichtenaktion `presentation` enthält,
+führt Core Folgendes aus:
 
-1. Die Nutzlast von Presentation normalisieren.
-2. Den Outbound-Adapter des Zielkanals auflösen.
-3. `presentationCapabilities` lesen.
-4. `renderPresentation` aufrufen, wenn der Adapter die Nutzlast rendern kann.
-5. Auf konservativen Text zurückfallen, wenn der Adapter fehlt oder nicht rendern kann.
-6. Die resultierende Nutzlast über den normalen Kanalzustellpfad senden.
-7. Zustellmetadaten wie `delivery.pin` nach der ersten erfolgreichen
-   gesendeten Nachricht anwenden.
+1. Normalisiert die Präsentationsnutzlast.
+2. Löst den ausgehenden Adapter des Zielkanals auf.
+3. Liest `presentationCapabilities`.
+4. Ruft `renderPresentation` auf, wenn der Adapter die Nutzlast rendern kann.
+5. Fällt auf konservativen Text zurück, wenn der Adapter fehlt oder nicht
+   rendern kann.
+6. Sendet die resultierende Nutzlast über den normalen Zustellungspfad des
+   Kanals.
+7. Wendet Zustellungsmetadaten wie `delivery.pin` nach der ersten erfolgreich
+   gesendeten Nachricht an.
 
-Core besitzt das Fallback-Verhalten, damit Producer kanalagnostisch bleiben können. Kanal-
-Plugins besitzen das native Rendering und das Interaktions-Handling.
+Core besitzt das Fallback-Verhalten, damit Producer kanalunabhängig bleiben
+können. Kanal-Plugins besitzen natives Rendering und Interaktionsbehandlung.
 
-## Regeln für Degradation
+## Degradationsregeln
 
-Presentation muss sicher auf eingeschränkten Kanälen gesendet werden können.
+Präsentation muss auf eingeschränkten Kanälen sicher versendbar sein.
 
 Fallback-Text enthält:
 
 - `title` als erste Zeile
-- Blöcke `text` als normale Absätze
-- Blöcke `context` als kompakte Kontextzeilen
-- Blöcke `divider` als visuelle Trennung
-- Button-Labels, einschließlich URLs für Link-Buttons
-- Labels von Auswahloptionen
+- `text`-Blöcke als normale Absätze
+- `context`-Blöcke als kompakte Kontextzeilen
+- `divider`-Blöcke als visuelle Trennlinie
+- Schaltflächenbeschriftungen, einschließlich URLs für Link-Schaltflächen
+- Beschriftungen von Auswahloptionen
 
-Nicht unterstützte native Controls sollten degradieren, statt den gesamten Versand fehlschlagen zu lassen.
-Beispiele:
+Nicht unterstützte native Steuerelemente sollten degradiert werden, statt den
+gesamten Versand fehlschlagen zu lassen. Beispiele:
 
-- Telegram mit deaktivierten Inline-Buttons sendet Text-Fallback.
-- Ein Kanal ohne Unterstützung für Auswahlmenüs listet Auswahloptionen als Text auf.
-- Ein reiner URL-Button wird entweder zu einem nativen Link-Button oder zu einer Fallback-URL-Zeile.
-- Optionale Fehler beim Anheften lassen die gesendete Nachricht nicht fehlschlagen.
+- Telegram mit deaktivierten Inline-Schaltflächen sendet Text-Fallback.
+- Ein Kanal ohne Auswahlunterstützung listet Auswahloptionen als Text auf.
+- Eine Nur-URL-Schaltfläche wird entweder zu einer nativen Link-Schaltfläche
+  oder zu einer Fallback-URL-Zeile.
+- Optionale Fehler beim Anheften lassen die zugestellte Nachricht nicht
+  fehlschlagen.
 
 Die wichtigste Ausnahme ist `delivery.pin.required: true`; wenn Anheften als
-erforderlich angefordert wird und der Kanal die gesendete Nachricht nicht anheften kann, meldet die Zustellung einen Fehler.
+erforderlich angefordert wird und der Kanal die gesendete Nachricht nicht
+anheften kann, meldet die Zustellung einen Fehler.
 
 ## Provider-Zuordnung
 
 Aktuelle gebündelte Renderer:
 
-| Kanal           | Ziel für natives Rendering          | Hinweise                                                                                                                                           |
-| --------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Components und Component-Container  | Bewahrt das ältere `channelData.discord.components` für bestehende Producer providernativer Nutzlasten, aber neue gemeinsame Sends sollten `presentation` verwenden. |
-| Slack           | Block Kit                           | Bewahrt das ältere `channelData.slack.blocks` für bestehende Producer providernativer Nutzlasten, aber neue gemeinsame Sends sollten `presentation` verwenden. |
-| Telegram        | Text plus Inline-Keyboards          | Buttons/Auswahlmenüs erfordern Inline-Button-Fähigkeit für die Zieloberfläche; andernfalls wird Text-Fallback verwendet.                          |
-| Mattermost      | Text plus interaktive Props         | Andere Blöcke degradieren zu Text.                                                                                                                 |
-| Microsoft Teams | Adaptive Cards                      | Einfacher `message`-Text wird zusammen mit der Karte eingeschlossen, wenn beides bereitgestellt wird.                                             |
-| Feishu          | Interaktive Karten                  | Der Karten-Header kann `title` verwenden; der Body vermeidet die doppelte Verwendung dieses Titels.                                               |
-| Plain channels  | Text-Fallback                       | Auch Kanäle ohne Renderer erhalten weiterhin lesbare Ausgabe.                                                                                      |
+| Kanal           | Natives Render-Ziel                | Hinweise                                                                                                                                                                  |
+| --------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Komponenten und Komponentencontainer | Behält das ältere `channelData.discord.components` für bestehende Provider-native Nutzlast-Producer bei, neue gemeinsame Sendungen sollten jedoch `presentation` verwenden. |
+| Slack           | Block Kit                          | Behält das ältere `channelData.slack.blocks` für bestehende Provider-native Nutzlast-Producer bei, neue gemeinsame Sendungen sollten jedoch `presentation` verwenden.       |
+| Telegram        | Text plus Inline-Tastaturen        | Schaltflächen/Auswahlfelder erfordern Inline-Schaltflächen-Capability für die Zieloberfläche; andernfalls wird Text-Fallback verwendet.                                    |
+| Mattermost      | Text plus interaktive Props        | Andere Blöcke degradieren zu Text.                                                                                                                                        |
+| Microsoft Teams | Adaptive Cards                     | Einfacher `message`-Text wird in die Karte aufgenommen, wenn beides bereitgestellt wird.                                                                                  |
+| Feishu          | Interaktive Karten                 | Der Kartenkopf kann `title` verwenden; der Inhalt vermeidet, diesen Titel zu duplizieren.                                                                                 |
+| Einfache Kanäle | Text-Fallback                      | Kanäle ohne Renderer erhalten dennoch lesbare Ausgabe.                                                                                                                    |
 
-Kompatibilität mit providernativen Nutzlasten ist eine Übergangshilfe für bestehende
-Reply-Producer. Sie ist kein Grund, neue gemeinsame native Felder hinzuzufügen.
+Provider-native Nutzlastkompatibilität ist eine Übergangserleichterung für
+bestehende Reply-Producer. Sie ist kein Grund, neue gemeinsame native Felder
+hinzuzufügen.
 
-## Presentation vs InteractiveReply
+## Präsentation vs. InteractiveReply
 
-`InteractiveReply` ist die ältere interne Teilmenge, die von Genehmigungs- und Interaktions-
-Helpern verwendet wird. Sie unterstützt:
+`InteractiveReply` ist die ältere interne Teilmenge, die von Freigabe- und
+Interaktionshelfern verwendet wird. Sie unterstützt:
 
 - Text
-- Buttons
-- Auswahlmenüs
+- Schaltflächen
+- Auswahlfelder
 
-`MessagePresentation` ist der kanonische gemeinsame Send-Vertrag. Sie fügt hinzu:
+`MessagePresentation` ist der kanonische gemeinsame Versandvertrag. Es ergänzt:
 
 - Titel
 - Tonalität
 - Kontext
-- Trenner
-- reine URL-Buttons
-- generische Zustellmetadaten über `ReplyPayload.delivery`
+- Trennlinie
+- Nur-URL-Schaltflächen
+- generische Zustellungsmetadaten über `ReplyPayload.delivery`
 
-Verwenden Sie Helper aus `openclaw/plugin-sdk/interactive-runtime`, wenn Sie älteren
-Code überbrücken:
+Verwenden Sie Helfer aus `openclaw/plugin-sdk/interactive-runtime`, wenn Sie
+älteren Code überbrücken:
 
 ```ts
 import {
@@ -300,41 +312,46 @@ import {
 
 Neuer Code sollte `MessagePresentation` direkt akzeptieren oder erzeugen.
 
-## Zustellung mit Anheften
+## Zustellungsanheftung
 
-Anheften ist Zustellverhalten, nicht Presentation. Verwenden Sie `delivery.pin` statt
-providernativer Felder wie `channelData.telegram.pin`.
+Anheften ist Zustellungsverhalten, keine Präsentation. Verwenden Sie
+`delivery.pin` statt Provider-nativer Felder wie `channelData.telegram.pin`.
 
 Semantik:
 
 - `pin: true` heftet die erste erfolgreich zugestellte Nachricht an.
 - `pin.notify` ist standardmäßig `false`.
 - `pin.required` ist standardmäßig `false`.
-- Optionale Fehler beim Anheften degradieren und lassen die gesendete Nachricht intakt.
+- Optionale Fehler beim Anheften degradieren und lassen die gesendete Nachricht
+  intakt.
 - Erforderliche Fehler beim Anheften lassen die Zustellung fehlschlagen.
-- Bei gechunkten Nachrichten wird der erste zugestellte Chunk angeheftet, nicht der letzte Chunk.
+- Aufgeteilte Nachrichten heften das erste zugestellte Fragment an, nicht das
+  letzte Fragment.
 
-Manuelle Nachrichtenaktionen `pin`, `unpin` und `pins` existieren weiterhin für bestehende
-Nachrichten, bei denen der Provider diese Operationen unterstützt.
+Manuelle Nachrichtenaktionen `pin`, `unpin` und `pins` existieren weiterhin für
+bestehende Nachrichten, bei denen der Provider diese Operationen unterstützt.
 
 ## Checkliste für Plugin-Autoren
 
 - Deklarieren Sie `presentation` aus `describeMessageTool(...)`, wenn der Kanal
-  semantische Presentation rendern oder sicher degradieren kann.
-- Fügen Sie `presentationCapabilities` zum Runtime-Outbound-Adapter hinzu.
-- Implementieren Sie `renderPresentation` in Runtime-Code, nicht in Control-Plane-Plugin-
-  Setup-Code.
+  semantische Präsentation rendern oder sicher degradieren kann.
+- Fügen Sie `presentationCapabilities` zum ausgehenden Runtime-Adapter hinzu.
+- Implementieren Sie `renderPresentation` im Runtime-Code, nicht im
+  Control-Plane-Plugin-Einrichtungscode.
 - Halten Sie native UI-Bibliotheken aus heißen Setup-/Katalogpfaden heraus.
-- Bewahren Sie Plattformgrenzen im Renderer und in Tests.
-- Fügen Sie Fallback-Tests für nicht unterstützte Buttons, Auswahlmenüs, URL-Buttons, Doppelung von Titel/Text und gemischte Sends mit `message` plus `presentation` hinzu.
-- Fügen Sie Unterstützung für Anheften über `deliveryCapabilities.pin` und
-  `pinDeliveredMessage` nur hinzu, wenn der Provider die gesendete Nachrichten-ID anheften kann.
-- Stellen Sie keine neuen providernativen Felder für Karten/Blöcke/Komponenten/Buttons über das
-  gemeinsame Schema der Nachrichtenaktion bereit.
+- Bewahren Sie Plattformlimits im Renderer und in Tests.
+- Ergänzen Sie Fallback-Tests für nicht unterstützte Schaltflächen,
+  Auswahlfelder, URL-Schaltflächen, Titel-/Textduplizierung und gemischte
+  Sendungen mit `message` plus `presentation`.
+- Ergänzen Sie Unterstützung für Zustellungsanheftung über
+  `deliveryCapabilities.pin` und `pinDeliveredMessage` nur, wenn der Provider
+  die ID der gesendeten Nachricht anheften kann.
+- Legen Sie keine neuen Provider-nativen Karten-/Block-/Komponenten-/
+  Schaltflächenfelder über das gemeinsame Nachrichtenaktionsschema offen.
 
 ## Verwandte Dokumentation
 
-- [Message CLI](/de/cli/message)
-- [Plugin SDK Overview](/de/plugins/sdk-overview)
-- [Plugin Architecture](/de/plugins/architecture-internals#message-tool-schemas)
-- [Channel Presentation Refactor Plan](/de/plan/ui-channels)
+- [Nachrichten-CLI](/de/cli/message)
+- [Plugin-SDK-Überblick](/de/plugins/sdk-overview)
+- [Plugin-Architektur](/de/plugins/architecture-internals#message-tool-schemas)
+- [Refaktorierungsplan für Kanalpräsentation](/de/plan/ui-channels)

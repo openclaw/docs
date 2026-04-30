@@ -1,50 +1,49 @@
 ---
 read_when:
-    - Erklären, wie aus eingehenden Nachrichten Antworten werden
-    - Sitzungen, Warteschlangenmodi oder Streaming-Verhalten erläutern
-    - Sichtbarkeit des Denkprozesses und Auswirkungen auf die Nutzung dokumentieren
-summary: Nachrichtenfluss, Sitzungen, Warteschlangenbildung und Sichtbarkeit des Denkprozesses
+    - Erläuterung, wie eingehende Nachrichten zu Antworten werden
+    - Klärung von Sitzungen, Warteschlangenmodi oder Streaming-Verhalten
+    - Dokumentation der Sichtbarkeit von Schlussfolgerungen und der Auswirkungen auf die Nutzung
+summary: Nachrichtenfluss, Sitzungen, Warteschlangen und Sichtbarkeit des Schlussfolgerns
 title: Nachrichten
 x-i18n:
-    generated_at: "2026-04-26T11:27:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:49:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7b77d344ed0cab80566582f43127c91ec987e892eeed788aeb9988b377a96e06
+    source_hash: dcfcc995995516b627993755b255a779c681b4976d2d724c0c11e87875e37b1e
     source_path: concepts/messages.md
-    workflow: 15
+    workflow: 16
 ---
 
-Diese Seite fasst zusammen, wie OpenClaw eingehende Nachrichten, Sitzungen, Warteschlangenbildung,
-Streaming und die Sichtbarkeit des Denkprozesses verarbeitet.
+OpenClaw verarbeitet eingehende Nachrichten über eine Pipeline aus Sitzungsauflösung, Warteschlangen, Streaming, Tool-Ausführung und Reasoning-Sichtbarkeit. Diese Seite zeigt den Pfad von der eingehenden Nachricht bis zur Antwort.
 
-## Nachrichtenfluss (allgemein)
+## Nachrichtenfluss (übergeordnet)
 
 ```
-Eingehende Nachricht
-  -> Routing/Bindings -> Sitzungsschlüssel
-  -> Warteschlange (wenn ein Lauf aktiv ist)
-  -> Agent-Lauf (Streaming + Tools)
-  -> Ausgehende Antworten (Kanallimits + Chunking)
+Inbound message
+  -> routing/bindings -> session key
+  -> queue (if a run is active)
+  -> agent run (streaming + tools)
+  -> outbound replies (channel limits + chunking)
 ```
 
-Wichtige Stellschrauben befinden sich in der Konfiguration:
+Die wichtigsten Stellschrauben befinden sich in der Konfiguration:
 
-- `messages.*` für Präfixe, Warteschlangenbildung und Gruppenverhalten.
-- `agents.defaults.*` für Standardwerte für Block-Streaming und Chunking.
+- `messages.*` für Präfixe, Warteschlangen und Gruppenverhalten.
+- `agents.defaults.*` für Standardwerte zu Block-Streaming und Chunking.
 - Kanalüberschreibungen (`channels.whatsapp.*`, `channels.telegram.*` usw.) für Begrenzungen und Streaming-Schalter.
 
 Siehe [Konfiguration](/de/gateway/configuration) für das vollständige Schema.
 
 ## Deduplizierung eingehender Nachrichten
 
-Kanäle können dieselbe Nachricht nach Reconnects erneut zustellen. OpenClaw führt einen
-kurzlebigen Cache mit Schlüsseln nach Kanal/Konto/Peer/Sitzung/Nachrichten-ID, sodass doppelte
-Zustellungen keinen weiteren Agent-Lauf auslösen.
+Kanäle können dieselbe Nachricht nach Wiederverbindungen erneut zustellen. OpenClaw hält einen
+kurzlebigen Cache, der nach Kanal/Konto/Peer/Sitzung/Nachrichten-ID geschlüsselt ist, damit doppelte
+Zustellungen keinen weiteren Agentenlauf auslösen.
 
-## Debouncing eingehender Nachrichten
+## Entprellung eingehender Nachrichten
 
-Schnelle aufeinanderfolgende Nachrichten vom **gleichen Absender** können über `messages.inbound`
-zu einem einzigen Agent-Turn zusammengefasst werden. Debouncing ist auf Kanal + Konversation beschränkt
+Schnell aufeinanderfolgende Nachrichten vom **selben Absender** können über `messages.inbound` zu einem einzigen
+Agentenzug zusammengefasst werden. Die Entprellung gilt pro Kanal + Unterhaltung
 und verwendet die neueste Nachricht für Antwort-Threading/IDs.
 
 Konfiguration (globaler Standard + kanalbezogene Überschreibungen):
@@ -66,139 +65,150 @@ Konfiguration (globaler Standard + kanalbezogene Überschreibungen):
 
 Hinweise:
 
-- Debounce gilt für **reine Textnachrichten**; Medien/Anhänge werden sofort geleert.
-- Steuerbefehle umgehen Debouncing, damit sie eigenständig bleiben — **außer**, wenn ein Kanal sich explizit für DM-Zusammenfassung desselben Absenders anmeldet (z. B. [BlueBubbles `coalesceSameSenderDms`](/de/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), wo DM-Befehle innerhalb des Debounce-Fensters warten, damit eine Split-Send-Payload demselben Agent-Turn beitreten kann.
+- Die Entprellung gilt für **reine Textnachrichten**; Medien/Anhänge werden sofort gesendet.
+- Steuerbefehle umgehen die Entprellung, damit sie eigenständig bleiben — **außer** wenn ein Kanal ausdrücklich die Zusammenführung von DMs desselben Absenders aktiviert (z. B. [BlueBubbles `coalesceSameSenderDms`](/de/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)); dann warten DM-Befehle innerhalb des Entprellfensters, damit eine aufgeteilte Senden-Nutzlast demselben Agentenzug beitreten kann.
 
 ## Sitzungen und Geräte
 
 Sitzungen gehören dem Gateway, nicht den Clients.
 
-- Direkte Chats werden im Hauptsitzungsschlüssel des Agenten zusammengefasst.
+- Direktchats werden auf den Hauptsitzungsschlüssel des Agenten reduziert.
 - Gruppen/Kanäle erhalten eigene Sitzungsschlüssel.
-- Der Sitzungsspeicher und die Transkripte liegen auf dem Gateway-Host.
+- Sitzungsspeicher und Transkripte liegen auf dem Gateway-Host.
 
 Mehrere Geräte/Kanäle können derselben Sitzung zugeordnet werden, aber der Verlauf wird nicht vollständig
-an jeden Client zurücksynchronisiert. Empfehlung: Verwenden Sie für längere
-Unterhaltungen ein primäres Gerät, um divergierenden Kontext zu vermeiden. Die Control UI und TUI zeigen immer das
-vom Gateway gestützte Sitzungstranskript an und sind daher die maßgebliche Quelle.
+an jeden Client zurücksynchronisiert. Empfehlung: Verwenden Sie ein primäres Gerät für lange
+Unterhaltungen, um abweichenden Kontext zu vermeiden. Control UI und TUI zeigen immer das
+Gateway-gestützte Sitzungstranskript und sind daher die Quelle der Wahrheit.
 
 Details: [Sitzungsverwaltung](/de/concepts/session).
 
-## Tool-Ergebnis-Metadaten
+## Metadaten von Tool-Ergebnissen
 
-`content` eines Tool-Ergebnisses ist das modellseitig sichtbare Ergebnis. `details` eines Tool-Ergebnisses sind
-Laufzeitmetadaten für UI-Darstellung, Diagnose, Medienzustellung und Plugins.
+`content` eines Tool-Ergebnisses ist das für das Modell sichtbare Ergebnis. `details` eines Tool-Ergebnisses sind
+Laufzeitmetadaten für UI-Rendering, Diagnose, Medienzustellung und Plugins.
 
-OpenClaw hält diese Grenze ausdrücklich aufrecht:
+OpenClaw hält diese Grenze ausdrücklich ein:
 
-- `toolResult.details` wird vor Provider-Replay und Compaction-Eingaben entfernt.
+- `toolResult.details` wird vor Provider-Replay und Compaction-Eingabe entfernt.
 - Persistierte Sitzungstranskripte behalten nur begrenzte `details`; übergroße Metadaten
-  werden durch eine kompakte Zusammenfassung ersetzt, markiert mit `persistedDetailsTruncated: true`.
+  werden durch eine kompakte Zusammenfassung ersetzt, die mit `persistedDetailsTruncated: true` markiert ist.
 - Plugins und Tools sollten Text, den das Modell lesen muss, in `content` ablegen, nicht nur
   in `details`.
 
-## Eingehende Nachrichtentexte und Verlaufskontext
+## Eingehende Inhalte und Verlaufskontext
 
-OpenClaw trennt den **Prompt-Text** vom **Befehlstext**:
+OpenClaw trennt den **Prompt-Inhalt** vom **Befehlsinhalt**:
 
-- `Body`: Prompt-Text, der an den Agenten gesendet wird. Dies kann Kanal-Envelopes und
-  optionale Verlaufs-Wrapper enthalten.
-- `CommandBody`: roher Benutzertest für Direktiven-/Befehlsparsing.
+- `Body`: Prompt-Text, der an den Agenten gesendet wird. Dies kann Kanalumschläge und
+  optionale Verlaufswrapper enthalten.
+- `CommandBody`: unverarbeiteter Benutzertext für Direktiven-/Befehls-Parsing.
 - `RawBody`: Legacy-Alias für `CommandBody` (aus Kompatibilitätsgründen beibehalten).
 
-Wenn ein Kanal Verlauf liefert, verwendet er einen gemeinsamen Wrapper:
+Wenn ein Kanal Verlauf bereitstellt, verwendet er einen gemeinsamen Wrapper:
 
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-Für **nicht direkte Chats** (Gruppen/Kanäle/Räume) wird dem **aktuellen Nachrichtentext** das
-Absenderlabel vorangestellt (derselbe Stil wie bei Verlaufseinträgen). Dadurch bleiben Echtzeit- und eingereihte/Verlaufs-
-nachrichten im Agent-Prompt konsistent.
+Für **nicht direkte Chats** (Gruppen/Kanäle/Räume) wird dem **aktuellen Nachrichteninhalt** das
+Absenderlabel vorangestellt (im selben Stil wie Verlaufseinträge). Dadurch bleiben Echtzeit- und Warteschlangen-/Verlaufsnachrichten
+im Agenten-Prompt konsistent.
 
 Verlaufspuffer sind **nur ausstehend**: Sie enthalten Gruppennachrichten, die _keinen_
-Lauf ausgelöst haben (zum Beispiel durch Mention-Gating gefilterte Nachrichten), und **schließen** Nachrichten aus,
-die sich bereits im Sitzungstranskript befinden.
+Lauf ausgelöst haben (zum Beispiel erwähnungsgesteuerte Nachrichten), und **schließen** Nachrichten aus,
+die bereits im Sitzungstranskript stehen.
 
-Das Entfernen von Direktiven gilt nur für den Abschnitt der **aktuellen Nachricht**, damit der Verlauf
+Das Entfernen von Direktiven gilt nur für den Abschnitt **aktuelle Nachricht**, sodass der Verlauf
 intakt bleibt. Kanäle, die Verlauf wrappen, sollten `CommandBody` (oder
 `RawBody`) auf den ursprünglichen Nachrichtentext setzen und `Body` als kombinierten Prompt beibehalten.
-Verlaufspuffer sind konfigurierbar über `messages.groupChat.historyLimit` (globaler
-Standard) und kanalbezogene Überschreibungen wie `channels.slack.historyLimit` oder
-`channels.telegram.accounts.<id>.historyLimit` (`0` zum Deaktivieren).
+Verlaufspuffer sind über `messages.groupChat.historyLimit` (globaler Standard)
+und kanalbezogene Überschreibungen wie `channels.slack.historyLimit` oder
+`channels.telegram.accounts.<id>.historyLimit` konfigurierbar (zum Deaktivieren auf `0` setzen).
 
-## Warteschlangenbildung und Follow-ups
+## Warteschlangen und Follow-ups
 
-Wenn ein Lauf bereits aktiv ist, können eingehende Nachrichten eingereiht, in den
-aktuellen Lauf gelenkt oder für einen Follow-up-Turn gesammelt werden.
+Wenn bereits ein Lauf aktiv ist, können eingehende Nachrichten in eine Warteschlange gestellt, in den
+aktuellen Lauf gesteuert oder für einen Follow-up-Zug gesammelt werden.
 
 - Konfiguration über `messages.queue` (und `messages.queue.byChannel`).
-- Modi: `interrupt`, `steer`, `followup`, `collect` sowie Backlog-Varianten.
+- Der Standardmodus ist `steer`, mit einer Follow-up-Entprellung von 500 ms, wenn Steering auf
+  Zustellung per wartendem Follow-up zurückfällt.
+- Modi: `steer`, `followup`, `collect`, `steer-backlog`, `interrupt` und der
+  Legacy-Modus `queue`, der jeweils nur eine Nachricht verarbeitet.
 
-Details: [Warteschlangenbildung](/de/concepts/queue).
+Details: [Befehlswarteschlange](/de/concepts/queue) und [Steering-Warteschlange](/de/concepts/queue-steering).
+
+## Kanalzuständigkeit für Läufe
+
+Kanal-Plugins können die Reihenfolge bewahren, Eingaben entprellen und Transport-Backpressure anwenden,
+bevor eine Nachricht in die Sitzungswarteschlange eintritt. Sie sollten keinen
+separaten Timeout um den Agentenzug selbst erzwingen. Sobald eine Nachricht zu einer
+Sitzung geroutet wurde, wird lang laufende Arbeit durch Sitzung, Tool und Laufzeit-
+Lebenszyklus gesteuert, sodass alle Kanäle langsame Züge konsistent melden und sich davon erholen.
 
 ## Streaming, Chunking und Batching
 
 Block-Streaming sendet Teilantworten, während das Modell Textblöcke erzeugt.
-Chunking berücksichtigt Textlimits des Kanals und vermeidet das Aufteilen von eingefasstem Code.
+Chunking berücksichtigt Textlimits von Kanälen und vermeidet das Aufteilen von fenced Code.
 
 Wichtige Einstellungen:
 
-- `agents.defaults.blockStreamingDefault` (`on|off`, Standard aus)
+- `agents.defaults.blockStreamingDefault` (`on|off`, standardmäßig aus)
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
 - `agents.defaults.blockStreamingCoalesce` (Leerlauf-basiertes Batching)
 - `agents.defaults.humanDelay` (menschenähnliche Pause zwischen Blockantworten)
-- Kanalüberschreibungen: `*.blockStreaming` und `*.blockStreamingCoalesce` (Nicht-Telegram-Kanäle erfordern explizit `*.blockStreaming: true`)
+- Kanalüberschreibungen: `*.blockStreaming` und `*.blockStreamingCoalesce` (Nicht-Telegram-Kanäle benötigen ausdrücklich `*.blockStreaming: true`)
 
 Details: [Streaming + Chunking](/de/concepts/streaming).
 
-## Sichtbarkeit des Denkprozesses und Tokens
+## Reasoning-Sichtbarkeit und Tokens
 
-OpenClaw kann Modelldenken sichtbar machen oder ausblenden:
+OpenClaw kann Modell-Reasoning anzeigen oder verbergen:
 
 - `/reasoning on|off|stream` steuert die Sichtbarkeit.
-- Inhalte des Denkprozesses zählen weiterhin zur Token-Nutzung, wenn sie vom Modell erzeugt werden.
-- Telegram unterstützt das Streamen des Denkprozesses in die Entwurfsblase.
+- Reasoning-Inhalte zählen weiterhin zur Token-Nutzung, wenn sie vom Modell erzeugt werden.
+- Telegram unterstützt Reasoning-Streaming in die Entwurfsblase.
 
 Details: [Thinking + Reasoning-Direktiven](/de/tools/thinking) und [Token-Nutzung](/de/reference/token-use).
 
 ## Präfixe, Threading und Antworten
 
-Die Formatierung ausgehender Nachrichten ist zentral in `messages` organisiert:
+Die Formatierung ausgehender Nachrichten ist in `messages` zentralisiert:
 
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix` und `channels.<channel>.accounts.<id>.responsePrefix` (Kaskade für ausgehende Präfixe) sowie `channels.whatsapp.messagePrefix` (eingehendes WhatsApp-Präfix)
+- `messages.responsePrefix`, `channels.<channel>.responsePrefix` und `channels.<channel>.accounts.<id>.responsePrefix` (Kaskade ausgehender Präfixe), plus `channels.whatsapp.messagePrefix` (eingehendes WhatsApp-Präfix)
 - Antwort-Threading über `replyToMode` und kanalbezogene Standardwerte
 
-Details: [Konfiguration](/de/gateway/config-agents#messages) und die Kanaldokumentation.
+Details: [Konfiguration](/de/gateway/config-agents#messages) und Kanaldokumentation.
 
 ## Stille Antworten
 
-Das exakte stille Token `NO_REPLY` / `no_reply` bedeutet „keine für den Benutzer sichtbare Antwort zustellen“.
-Wenn ein Turn auch ausstehende Tool-Medien hat, etwa erzeugtes TTS-Audio, entfernt OpenClaw
-den stillen Text, stellt aber den Medienanhang trotzdem zu.
-OpenClaw löst dieses Verhalten nach Konversationstyp auf:
+Das genaue stille Token `NO_REPLY` / `no_reply` bedeutet „keine für Benutzer sichtbare Antwort zustellen“.
+Wenn ein Zug auch ausstehende Tool-Medien hat, etwa generiertes TTS-Audio, entfernt OpenClaw
+den stillen Text, stellt den Medienanhang aber dennoch zu.
+OpenClaw löst dieses Verhalten nach Unterhaltungstyp auf:
 
-- Direkte Konversationen erlauben standardmäßig keine Stille und schreiben eine reine stille
+- Direkte Unterhaltungen erlauben Stille standardmäßig nicht und schreiben eine reine stille
   Antwort in einen kurzen sichtbaren Fallback um.
-- Gruppen/Kanäle erlauben standardmäßig Stille.
-- Interne Orchestrierung erlaubt standardmäßig Stille.
+- Gruppen/Kanäle erlauben Stille standardmäßig.
+- Interne Orchestrierung erlaubt Stille standardmäßig.
 
-OpenClaw verwendet stille Antworten auch für interne Runner-Fehler, die auftreten,
-bevor in nicht direkten Chats überhaupt eine Assistentenantwort vorliegt, sodass Gruppen/Kanäle
-keinen Gateway-Fehlertext sehen. Direkte Chats zeigen standardmäßig kompakten Fehlertext;
-rohe Runner-Details werden nur angezeigt, wenn `/verbose` auf `on` oder `full` steht.
+OpenClaw verwendet stille Antworten außerdem für interne Runner-Fehler, die
+vor einer beliebigen Assistentenantwort in nicht direkten Chats auftreten, damit Gruppen/Kanäle keinen
+Gateway-Fehlerstandardtext sehen. Direkte Chats zeigen standardmäßig eine kompakte Fehlermeldung;
+unverarbeitete Runner-Details werden nur angezeigt, wenn `/verbose` auf `on` oder `full` steht.
 
 Standardwerte liegen unter `agents.defaults.silentReply` und
 `agents.defaults.silentReplyRewrite`; `surfaces.<id>.silentReply` und
-`surfaces.<id>.silentReplyRewrite` können sie pro Surface überschreiben.
+`surfaces.<id>.silentReplyRewrite` können sie pro Oberfläche überschreiben.
 
-Wenn die übergeordnete Sitzung einen oder mehrere ausstehende erzeugte Unteragent-Läufe hat,
-werden reine stille Antworten auf allen Surfaces verworfen, statt umgeschrieben zu werden, sodass die
-übergeordnete Sitzung still bleibt, bis das Abschlussereignis des Childs die tatsächliche Antwort zustellt.
+Wenn die übergeordnete Sitzung einen oder mehrere ausstehende erzeugte Subagentenläufe hat, werden reine
+stille Antworten auf allen Oberflächen verworfen, statt umgeschrieben zu werden, sodass die
+übergeordnete Sitzung ruhig bleibt, bis das Abschlussereignis des Kindes die echte Antwort liefert.
 
-## Verwandt
+## Verwandte Themen
 
-- [Streaming](/de/concepts/streaming) — Nachrichtenzustellung in Echtzeit
-- [Wiederholung](/de/concepts/retry) — Verhalten bei erneuter Nachrichtenzustellung
-- [Warteschlange](/de/concepts/queue) — Warteschlange der Nachrichtenverarbeitung
+- [Streaming](/de/concepts/streaming) — Echtzeit-Nachrichtenzustellung
+- [Retry](/de/concepts/retry) — Wiederholungsverhalten bei Nachrichtenzustellung
+- [Warteschlange](/de/concepts/queue) — Warteschlange für Nachrichtenverarbeitung
 - [Kanäle](/de/channels) — Integrationen für Messaging-Plattformen

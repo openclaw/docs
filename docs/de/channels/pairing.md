@@ -1,38 +1,43 @@
 ---
 read_when:
-    - Einrichten der Zugriffssteuerung für Direktnachrichten
-    - Koppeln eines neuen iOS-/Android-Node
-    - Prüfen der Sicherheitssituation von OpenClaw
-summary: 'Kopplungsübersicht: genehmigen, wer Ihnen Direktnachrichten senden darf + welche Nodes beitreten können'
+    - DM-Zugriffskontrolle einrichten
+    - Neuen iOS-/Android-Node koppeln
+    - Überprüfung der Sicherheitslage von OpenClaw
+summary: 'Pairing-Übersicht: Genehmigen Sie, wer Ihnen Direktnachrichten senden darf + welche Nodes beitreten dürfen'
 title: Kopplung
 x-i18n:
-    generated_at: "2026-04-26T11:23:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:41:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f9d28547baacce638347ce0062e3bc4f194704eb369b4ca45f7158d5e16cee93
+    source_hash: cfdcaf831aedb122ea85200518b8dc1c6f42eff365444dee6c4b740050b1ce26
     source_path: channels/pairing.md
-    workflow: 15
+    workflow: 16
 ---
 
-„Kopplung“ ist der explizite Schritt zur **Eigentümergenehmigung** in OpenClaw.
-Er wird an zwei Stellen verwendet:
+„Pairing“ ist OpenClaws expliziter Schritt zur Zugriffsfreigabe.
+Es wird an zwei Stellen verwendet:
 
 1. **DM-Kopplung** (wer mit dem Bot sprechen darf)
 2. **Node-Kopplung** (welche Geräte/Nodes dem Gateway-Netzwerk beitreten dürfen)
 
-Sicherheitskontext: [Security](/de/gateway/security)
+Sicherheitskontext: [Sicherheit](/de/gateway/security)
 
 ## 1) DM-Kopplung (eingehender Chat-Zugriff)
 
-Wenn ein Kanal mit der DM-Richtlinie `pairing` konfiguriert ist, erhalten unbekannte Absender einen kurzen Code und ihre Nachricht wird **nicht verarbeitet**, bis Sie sie genehmigen.
+Wenn ein Kanal mit der DM-Richtlinie `pairing` konfiguriert ist, erhalten unbekannte Absender einen kurzen Code, und ihre Nachricht wird **nicht verarbeitet**, bis Sie sie genehmigen.
 
-Die Standard-DM-Richtlinien sind dokumentiert unter: [Security](/de/gateway/security)
+Standard-DM-Richtlinien sind dokumentiert unter: [Sicherheit](/de/gateway/security)
 
-Kopplungscodes:
+`dmPolicy: "open"` ist nur dann öffentlich, wenn die wirksame DM-Zulassungsliste `"*"` enthält.
+Einrichtung und Validierung erfordern diesen Platzhalter für öffentlich offene Konfigurationen. Wenn vorhandener
+Zustand `open` mit konkreten `allowFrom`-Einträgen enthält, lässt die Laufzeit weiterhin
+nur diese Absender zu, und Genehmigungen im Pairing-Speicher erweitern den `open`-Zugriff nicht.
+
+Pairing-Codes:
 
 - 8 Zeichen, Großbuchstaben, keine mehrdeutigen Zeichen (`0O1I`).
-- **Laufen nach 1 Stunde ab**. Der Bot sendet die Kopplungsnachricht nur, wenn eine neue Anfrage erstellt wird (ungefähr einmal pro Stunde und Absender).
-- Ausstehende DM-Kopplungsanfragen sind standardmäßig auf **3 pro Kanal** begrenzt; zusätzliche Anfragen werden ignoriert, bis eine abläuft oder genehmigt wird.
+- **Laufen nach 1 Stunde ab**. Der Bot sendet die Pairing-Nachricht nur, wenn eine neue Anfrage erstellt wird (ungefähr einmal pro Stunde und Absender).
+- Ausstehende DM-Pairing-Anfragen sind standardmäßig auf **3 pro Kanal** begrenzt; zusätzliche Anfragen werden ignoriert, bis eine abläuft oder genehmigt wird.
 
 ### Einen Absender genehmigen
 
@@ -41,59 +46,70 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
+Wenn noch kein Befehlsinhaber konfiguriert ist, initialisiert die Genehmigung eines DM-Pairing-Codes auch
+`commands.ownerAllowFrom` mit dem genehmigten Absender, zum Beispiel `telegram:123456789`.
+Dadurch erhalten Ersteinrichtungen einen expliziten Inhaber für privilegierte Befehle und
+Exec-Genehmigungsaufforderungen. Nachdem ein Inhaber existiert, gewähren spätere Pairing-Genehmigungen nur DM-Zugriff; sie fügen keine weiteren Inhaber hinzu.
+
 Unterstützte Kanäle: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
 
-### Wo der Zustand gespeichert wird
+### Wo der Zustand gespeichert ist
 
 Gespeichert unter `~/.openclaw/credentials/`:
 
 - Ausstehende Anfragen: `<channel>-pairing.json`
-- Genehmigter Allowlist-Speicher:
+- Speicher für genehmigte Zulassungsliste:
   - Standardkonto: `<channel>-allowFrom.json`
   - Nicht-Standardkonto: `<channel>-<accountId>-allowFrom.json`
 
-Verhalten bei Kontoabgrenzung:
+Verhalten beim Konto-Scope:
 
-- Nicht-Standardkonten lesen/schreiben nur ihre abgegrenzte Allowlist-Datei.
-- Das Standardkonto verwendet die nicht abgegrenzte kanalbezogene Allowlist-Datei.
+- Nicht-Standardkonten lesen/schreiben nur ihre scoped Zulassungslistendatei.
+- Das Standardkonto verwendet die kanalbezogene, unscoped Zulassungslistendatei.
 
 Behandeln Sie diese Dateien als sensibel (sie steuern den Zugriff auf Ihren Assistenten).
 
-Wichtig: Dieser Speicher ist für DM-Zugriff. Gruppenautorisierung ist getrennt.
-Das Genehmigen eines DM-Kopplungscodes erlaubt diesem Absender nicht automatisch, Gruppenbefehle auszuführen oder den Bot in Gruppen zu steuern. Für Gruppenzugriff konfigurieren Sie die expliziten Gruppen-Allowlists des Kanals (zum Beispiel `groupAllowFrom`, `groups` oder kanalabhängig Überschreibungen pro Gruppe/pro Thema).
+<Note>
+Der Pairing-Zulassungslistenspeicher ist für DM-Zugriff vorgesehen. Gruppenautorisierung ist separat.
+Die Genehmigung eines DM-Pairing-Codes erlaubt diesem Absender nicht automatisch, Gruppenbefehle
+auszuführen oder den Bot in Gruppen zu steuern. Die Initialisierung des ersten Inhabers ist ein separater Konfigurationszustand
+in `commands.ownerAllowFrom`, und die Gruppenchat-Zustellung folgt weiterhin den
+Gruppen-Zulassungslisten des Kanals (zum Beispiel `groupAllowFrom`, `groups` oder je nach Kanal
+gruppen- oder themenspezifischen Überschreibungen).
+</Note>
 
-## 2) Node-Gerätekopplung (iOS-/Android-/macOS-/Headless-Nodes)
+## 2) Node-Gerätekopplung (iOS-/Android-/macOS-/headless Nodes)
 
-Nodes verbinden sich als **Geräte** mit `role: node` mit dem Gateway. Das Gateway
+Nodes verbinden sich mit dem Gateway als **Geräte** mit `role: node`. Das Gateway
 erstellt eine Gerätekopplungsanfrage, die genehmigt werden muss.
 
-### Über Telegram koppeln (empfohlen für iOS)
+### Kopplung über Telegram (für iOS empfohlen)
 
 Wenn Sie das Plugin `device-pair` verwenden, können Sie die erstmalige Gerätekopplung vollständig über Telegram durchführen:
 
-1. Senden Sie Ihrem Bot in Telegram die Nachricht: `/pair`
-2. Der Bot antwortet mit zwei Nachrichten: einer Anleitung und einer separaten Nachricht mit dem **Setup-Code** (in Telegram einfach zu kopieren/einzufügen).
-3. Öffnen Sie auf Ihrem Telefon die OpenClaw iOS-App → Einstellungen → Gateway.
-4. Fügen Sie den Setup-Code ein und stellen Sie die Verbindung her.
-5. Zurück in Telegram: `/pair pending` (prüfen Sie Anforderungs-IDs, Rolle und Scopes), dann genehmigen.
+1. Senden Sie Ihrem Bot in Telegram: `/pair`
+2. Der Bot antwortet mit zwei Nachrichten: einer Anleitungsnachricht und einer separaten **Einrichtungscode**-Nachricht (in Telegram leicht zu kopieren/einzufügen).
+3. Öffnen Sie auf Ihrem Telefon die OpenClaw-iOS-App → Einstellungen → Gateway.
+4. Fügen Sie den Einrichtungscode ein und verbinden Sie sich.
+5. Zurück in Telegram: `/pair pending` (Anfrage-IDs, Rolle und Scopes prüfen), dann genehmigen.
 
-Der Setup-Code ist eine base64-kodierte JSON-Nutzlast, die Folgendes enthält:
+Der Einrichtungscode ist eine base64-codierte JSON-Nutzlast, die Folgendes enthält:
 
 - `url`: die Gateway-WebSocket-URL (`ws://...` oder `wss://...`)
-- `bootstrapToken`: ein kurzlebiges Bootstrap-Token für ein einzelnes Gerät, das für den anfänglichen Kopplungs-Handshake verwendet wird
+- `bootstrapToken`: ein kurzlebiges Bootstrap-Token für ein einzelnes Gerät, das für den initialen Pairing-Handshake verwendet wird
 
-Dieses Bootstrap-Token trägt das eingebaute Bootstrap-Profil für die Kopplung:
+Dieses Bootstrap-Token trägt das integrierte Pairing-Bootstrap-Profil:
 
-- das primär übergebene `node`-Token bleibt `scopes: []`
-- jedes übergebene `operator`-Token bleibt auf die Bootstrap-Allowlist begrenzt:
+- Das primär übergebene `node`-Token bleibt bei `scopes: []`
+- Jedes übergebene `operator`-Token bleibt auf die Bootstrap-Zulassungsliste begrenzt:
   `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`
-- Prüfungen von Bootstrap-Scopes sind nach Rollen präfixiert, nicht ein einziger flacher Scope-Pool:
-  Operator-Scoped-Einträge erfüllen nur Operator-Anfragen, und Rollen, die keine Operatoren sind,
+- Bootstrap-Scope-Prüfungen sind rollenpräfixiert, nicht ein einziger flacher Scope-Pool:
+  Operator-Scope-Einträge erfüllen nur Operator-Anfragen, und Nicht-Operator-Rollen
   müssen weiterhin Scopes unter ihrem eigenen Rollenpräfix anfordern
-- spätere Token-Rotation/-Widerruf bleibt sowohl durch den genehmigten
-  Rollenvertrag des Geräts als auch durch die Operator-Scopes der aufrufenden Sitzung begrenzt
+- Spätere Token-Rotation/-Widerruf bleibt sowohl durch den genehmigten Rollenvertrag des Geräts
+  als auch durch die Operator-Scopes der aufrufenden Sitzung begrenzt
 
-Behandeln Sie den Setup-Code wie ein Passwort, solange er gültig ist.
+Behandeln Sie den Einrichtungscode wie ein Passwort, solange er gültig ist.
 
 ### Ein Node-Gerät genehmigen
 
@@ -103,20 +119,18 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-Wenn dasselbe Gerät es mit anderen Authentifizierungsdetails erneut versucht (zum Beispiel mit anderer
-Rolle/anderen Scopes/anderem öffentlichem Schlüssel), wird die vorherige ausstehende Anfrage ersetzt und eine neue
+Wenn dasselbe Gerät es mit anderen Authentifizierungsdetails erneut versucht (zum Beispiel anderer
+Rolle/Scopes/öffentlicher Schlüssel), wird die vorherige ausstehende Anfrage ersetzt und eine neue
 `requestId` erstellt.
 
-Wichtig: Ein bereits gekoppeltes Gerät erhält nicht stillschweigend umfassenderen Zugriff. Wenn es
-die Verbindung wiederherstellt und dabei mehr Scopes oder eine umfassendere Rolle anfordert, behält OpenClaw die
-bestehende Genehmigung unverändert bei und erstellt eine neue ausstehende Upgrade-Anfrage. Verwenden Sie
-`openclaw devices list`, um den aktuell genehmigten Zugriff mit dem neu
-angeforderten Zugriff zu vergleichen, bevor Sie genehmigen.
+<Note>
+Ein bereits gekoppeltes Gerät erhält nicht stillschweigend breiteren Zugriff. Wenn es sich erneut verbindet und mehr Scopes oder eine breitere Rolle anfordert, behält OpenClaw die bestehende Genehmigung unverändert bei und erstellt eine neue ausstehende Upgrade-Anfrage. Verwenden Sie `openclaw devices list`, um den aktuell genehmigten Zugriff mit dem neu angeforderten Zugriff zu vergleichen, bevor Sie genehmigen.
+</Note>
 
-### Optionale Auto-Genehmigung für vertrauenswürdige CIDR-Node
+### Optionale automatische Node-Genehmigung über vertrauenswürdige CIDR
 
-Die Gerätekopplung bleibt standardmäßig manuell. Für eng kontrollierte Node-Netzwerke
-können Sie die erstmalige automatische Genehmigung von Nodes mit expliziten CIDRs oder exakten IPs aktivieren:
+Gerätekopplung bleibt standardmäßig manuell. Für streng kontrollierte Node-Netzwerke
+können Sie die automatische Erstgenehmigung von Nodes mit expliziten CIDRs oder exakten IPs aktivieren:
 
 ```json5
 {
@@ -130,12 +144,12 @@ können Sie die erstmalige automatische Genehmigung von Nodes mit expliziten CID
 }
 ```
 
-Dies gilt nur für neue Kopplungsanfragen mit `role: node`, für die keine Scopes
-angefordert wurden. Operator-, Browser-, Control UI- und WebChat-Clients erfordern weiterhin eine manuelle
-Genehmigung. Änderungen an Rolle, Scope, Metadaten und öffentlichem Schlüssel erfordern weiterhin eine manuelle
+Dies gilt nur für neue `role: node`-Pairing-Anfragen ohne angeforderte
+Scopes. Operator-, Browser-, Control-UI- und WebChat-Clients erfordern weiterhin manuelle
+Genehmigung. Änderungen an Rolle, Scope, Metadaten und öffentlichem Schlüssel erfordern weiterhin manuelle
 Genehmigung.
 
-### Speicherung des Node-Kopplungszustands
+### Speicherung des Node-Pairing-Zustands
 
 Gespeichert unter `~/.openclaw/devices/`:
 
@@ -144,21 +158,21 @@ Gespeichert unter `~/.openclaw/devices/`:
 
 ### Hinweise
 
-- Die ältere API `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|rename`) ist ein
-  separater Gateway-eigener Kopplungsspeicher. WS-Nodes erfordern weiterhin Gerätekopplung.
-- Der Kopplungseintrag ist die dauerhafte Quelle der Wahrheit für genehmigte Rollen. Aktive
-  Geräte-Tokens bleiben auf diese genehmigte Rollenmenge begrenzt; ein verirrter Token-Eintrag
-  außerhalb der genehmigten Rollen schafft keinen neuen Zugriff.
+- Die ältere `node.pair.*`-API (CLI: `openclaw nodes pending|approve|reject|remove|rename`) ist ein
+  separater, Gateway-eigener Pairing-Speicher. WS-Nodes erfordern weiterhin Gerätekopplung.
+- Der Pairing-Datensatz ist die dauerhafte Quelle der Wahrheit für genehmigte Rollen. Aktive
+  Gerätetokens bleiben auf diese genehmigte Rollenmenge begrenzt; ein verwaister Token-Eintrag
+  außerhalb der genehmigten Rollen erzeugt keinen neuen Zugriff.
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- Sicherheitsmodell + Prompt Injection: [Security](/de/gateway/security)
-- Sicher aktualisieren (doctor ausführen): [Updating](/de/install/updating)
+- Sicherheitsmodell + Prompt-Injection: [Sicherheit](/de/gateway/security)
+- Sicher aktualisieren (doctor ausführen): [Aktualisieren](/de/install/updating)
 - Kanalkonfigurationen:
   - Telegram: [Telegram](/de/channels/telegram)
   - WhatsApp: [WhatsApp](/de/channels/whatsapp)
   - Signal: [Signal](/de/channels/signal)
   - BlueBubbles (iMessage): [BlueBubbles](/de/channels/bluebubbles)
-  - iMessage (Legacy): [iMessage](/de/channels/imessage)
+  - iMessage (legacy): [iMessage](/de/channels/imessage)
   - Discord: [Discord](/de/channels/discord)
   - Slack: [Slack](/de/channels/slack)

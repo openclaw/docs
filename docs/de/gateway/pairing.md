@@ -1,55 +1,56 @@
 ---
 read_when:
-    - Implementieren von Genehmigungen für Node-Kopplung ohne macOS-UI
-    - Hinzufügen von CLI-Abläufen zum Genehmigen von Remote-Nodes
-    - Erweitern des Gateway-Protokolls um Node-Verwaltung
-summary: Gateway-eigene Node-Kopplung (Option B) für iOS und andere Remote-Nodes
-title: Gateway-eigene Kopplung
+    - Implementierung von Node-Kopplungsfreigaben ohne macOS-Benutzeroberfläche
+    - Hinzufügen von CLI-Abläufen zur Genehmigung von Remote-Nodes
+    - Erweiterung des Gateway-Protokolls um Node-Verwaltung
+summary: Gateway-verwaltetes Node-Pairing (Option B) für iOS und andere Remote-Nodes
+title: Vom Gateway verwaltetes Pairing
 x-i18n:
-    generated_at: "2026-04-26T11:30:00Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:55:51Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 436391f7576b7285733eb4a8283b73d7b4c52f22b227dd915c09313cfec776bd
+    source_hash: 5c662b8f5c1bb44cfc306d42ae19ba1c8bc36e0d96130d730b322ee07e02cad8
     source_path: gateway/pairing.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bei der Gateway-eigenen Kopplung ist das **Gateway** die Quelle der Wahrheit dafür, welche Nodes
+Beim Gateway-verwalteten Pairing ist der **Gateway** die maßgebliche Quelle dafür, welche Nodes
 beitreten dürfen. UIs (macOS-App, zukünftige Clients) sind nur Frontends, die
 ausstehende Anfragen genehmigen oder ablehnen.
 
-**Wichtig:** WS-Nodes verwenden beim `connect` **Gerätekopplung** (Rolle `node`).
-`node.pair.*` ist ein separater Kopplungsspeicher und steuert den WS-Handshake **nicht**.
+**Wichtig:** WS-Nodes verwenden während `connect` das **Geräte-Pairing** (Rolle `node`).
+`node.pair.*` ist ein separater Pairing-Speicher und steuert **nicht** den WS-Handshake.
 Nur Clients, die explizit `node.pair.*` aufrufen, verwenden diesen Ablauf.
 
 ## Konzepte
 
-- **Ausstehende Anfrage**: Eine Node hat den Beitritt angefragt; Genehmigung erforderlich.
-- **Gekoppelte Node**: Genehmigte Node mit ausgegebenem Auth-Token.
-- **Transport**: Der WS-Endpunkt des Gateway leitet Anfragen weiter, entscheidet aber nicht
-  über die Mitgliedschaft. (Die Unterstützung für die ältere TCP-Bridge wurde entfernt.)
+- **Ausstehende Anfrage**: Ein Node hat den Beitritt angefragt; erfordert Genehmigung.
+- **Gekoppelter Node**: Genehmigter Node mit ausgestelltem Auth-Token.
+- **Transport**: Der Gateway-WS-Endpunkt leitet Anfragen weiter, entscheidet aber nicht über
+  die Mitgliedschaft. (Die Unterstützung für die veraltete TCP-Bridge wurde entfernt.)
 
-## So funktioniert die Kopplung
+## So funktioniert Pairing
 
-1. Eine Node verbindet sich mit dem Gateway-WS und fordert Kopplung an.
-2. Das Gateway speichert eine **ausstehende Anfrage** und sendet `node.pair.requested`.
+1. Ein Node verbindet sich mit dem Gateway-WS und fordert Pairing an.
+2. Der Gateway speichert eine **ausstehende Anfrage** und gibt `node.pair.requested` aus.
 3. Sie genehmigen oder lehnen die Anfrage ab (CLI oder UI).
-4. Bei Genehmigung gibt das Gateway ein **neues Token** aus (Tokens werden beim erneuten Koppeln rotiert).
-5. Die Node verbindet sich mit dem Token erneut und ist jetzt „gekoppelt“.
+4. Bei Genehmigung stellt der Gateway ein **neues Token** aus (Tokens werden beim erneuten Pairing rotiert).
+5. Der Node verbindet sich erneut mit dem Token und ist nun „gekoppelt“.
 
 Ausstehende Anfragen laufen automatisch nach **5 Minuten** ab.
 
-## CLI-Ablauf (headless-freundlich)
+## CLI-Workflow (headless-freundlich)
 
 ```bash
 openclaw nodes pending
 openclaw nodes approve <requestId>
 openclaw nodes reject <requestId>
 openclaw nodes status
+openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
-`nodes status` zeigt gekoppelte/verbundene Nodes und ihre Fähigkeiten.
+`nodes status` zeigt gekoppelte/verbundene Nodes und ihre Funktionen.
 
 ## API-Oberfläche (Gateway-Protokoll)
 
@@ -60,73 +61,76 @@ Ereignisse:
 
 Methoden:
 
-- `node.pair.request` — erstellt eine ausstehende Anfrage oder verwendet eine bestehende erneut.
-- `node.pair.list` — listet ausstehende + gekoppelte Nodes auf (`operator.pairing`).
-- `node.pair.approve` — genehmigt eine ausstehende Anfrage (gibt Token aus).
-- `node.pair.reject` — lehnt eine ausstehende Anfrage ab.
-- `node.pair.verify` — verifiziert `{ nodeId, token }`.
+- `node.pair.request` — eine ausstehende Anfrage erstellen oder wiederverwenden.
+- `node.pair.list` — ausstehende und gekoppelte Nodes auflisten (`operator.pairing`).
+- `node.pair.approve` — eine ausstehende Anfrage genehmigen (stellt Token aus).
+- `node.pair.reject` — eine ausstehende Anfrage ablehnen.
+- `node.pair.remove` — einen veralteten Eintrag eines gekoppelten Nodes entfernen.
+- `node.pair.verify` — `{ nodeId, token }` verifizieren.
 
 Hinweise:
 
 - `node.pair.request` ist pro Node idempotent: Wiederholte Aufrufe geben dieselbe
   ausstehende Anfrage zurück.
-- Wiederholte Anfragen für dieselbe ausstehende Node aktualisieren auch die gespeicherten Node-
-  Metadaten und den neuesten allowlist-basierten Snapshot deklarierter Befehle für die Sichtbarkeit des Operators.
-- Genehmigung erzeugt **immer** ein neues Token; von
-  `node.pair.request` wird niemals ein Token zurückgegeben.
-- Anfragen können `silent: true` als Hinweis für Auto-Genehmigungsabläufe enthalten.
+- Wiederholte Anfragen für denselben ausstehenden Node aktualisieren außerdem die gespeicherten
+  Node-Metadaten und den neuesten Allowlist-Snapshot deklarierter Befehle für die Operator-Sichtbarkeit.
+- Eine Genehmigung erzeugt **immer** ein neues Token; von `node.pair.request` wird nie ein Token zurückgegeben.
+- Anfragen können `silent: true` als Hinweis für automatische Genehmigungsabläufe enthalten.
 - `node.pair.approve` verwendet die deklarierten Befehle der ausstehenden Anfrage, um
   zusätzliche Genehmigungs-Scopes durchzusetzen:
   - Anfrage ohne Befehl: `operator.pairing`
   - Anfrage mit Nicht-Exec-Befehl: `operator.pairing` + `operator.write`
-  - Anfrage mit `system.run` / `system.run.prepare` / `system.which`:
+  - Anfrage für `system.run` / `system.run.prepare` / `system.which`:
     `operator.pairing` + `operator.admin`
 
-Wichtig:
-
-- Node-Kopplung ist ein Vertrauens-/Identitätsablauf plus Token-Ausgabe.
-- Sie fixiert **nicht** die aktive Node-Befehlsoberfläche pro Node.
-- Aktive Node-Befehle stammen aus dem, was die Node beim Verbinden deklariert, nachdem die
-  globale Node-Befehlsrichtlinie des Gateway (`gateway.nodes.allowCommands` /
-  `denyCommands`) angewendet wurde.
-- Die Allow-/Ask-Richtlinie pro Node für `system.run` liegt auf der Node in
-  `exec.approvals.node.*`, nicht im Kopplungseintrag.
-
-## Steuerung von Node-Befehlen (2026.3.31+)
-
 <Warning>
-**Breaking Change:** Ab `2026.3.31` sind Node-Befehle deaktiviert, bis die Node-Kopplung genehmigt ist. Gerätekopplung allein reicht nicht mehr aus, um deklarierte Node-Befehle verfügbar zu machen.
+Node-Pairing ist ein Vertrauens- und Identitätsablauf plus Token-Ausstellung. Es pinnt **nicht** die Live-Befehlsoberfläche des Nodes pro Node.
+
+- Live-Node-Befehle stammen aus dem, was der Node beim Verbinden deklariert, nachdem die globale Node-Befehlspolicy des Gateways (`gateway.nodes.allowCommands` und `denyCommands`) angewendet wurde.
+- Die Pro-Node-Policy für Zulassen und Nachfragen bei `system.run` liegt auf dem Node in `exec.approvals.node.*`, nicht im Pairing-Datensatz.
+
 </Warning>
 
-Wenn sich eine Node zum ersten Mal verbindet, wird automatisch eine Kopplung angefordert. Bis die Kopplungsanfrage genehmigt ist, werden alle ausstehenden Node-Befehle dieser Node gefiltert und nicht ausgeführt. Sobald durch die Kopplungsgenehmigung Vertrauen hergestellt ist, werden die deklarierten Befehle der Node vorbehaltlich der normalen Befehlsrichtlinie verfügbar.
+## Node-Befehlssteuerung (2026.3.31+)
+
+<Warning>
+**Breaking Change:** Ab `2026.3.31` sind Node-Befehle deaktiviert, bis das Node-Pairing genehmigt ist. Geräte-Pairing allein reicht nicht mehr aus, um deklarierte Node-Befehle verfügbar zu machen.
+</Warning>
+
+Wenn ein Node zum ersten Mal eine Verbindung herstellt, wird Pairing automatisch angefragt. Bis die Pairing-Anfrage genehmigt ist, werden alle ausstehenden Node-Befehle dieses Nodes gefiltert und nicht ausgeführt. Sobald durch die Pairing-Genehmigung Vertrauen hergestellt ist, werden die deklarierten Befehle des Nodes gemäß der normalen Befehlspolicy verfügbar.
 
 Das bedeutet:
 
-- Nodes, die sich zuvor darauf verlassen haben, dass allein die Gerätekopplung Befehle verfügbar macht, müssen nun die Node-Kopplung abschließen.
-- Vor der Genehmigung der Kopplung in die Warteschlange gestellte Befehle werden verworfen, nicht aufgeschoben.
+- Nodes, die zuvor allein auf Geräte-Pairing angewiesen waren, um Befehle verfügbar zu machen, müssen jetzt Node-Pairing abschließen.
+- Vor der Pairing-Genehmigung eingereihte Befehle werden verworfen, nicht zurückgestellt.
 
 ## Vertrauensgrenzen für Node-Ereignisse (2026.3.31+)
 
 <Warning>
-**Breaking Change:** Von Nodes ausgehende Läufe bleiben jetzt auf eine reduzierte vertrauenswürdige Oberfläche beschränkt.
+**Breaking Change:** Von Nodes ausgelöste Runs bleiben jetzt auf einer reduzierten vertrauenswürdigen Oberfläche.
 </Warning>
 
-Von Nodes ausgehende Zusammenfassungen und zugehörige Sitzungsereignisse sind auf die beabsichtigte vertrauenswürdige Oberfläche beschränkt. Benachrichtigungsgetriebene oder von Nodes ausgelöste Abläufe, die sich zuvor auf breiteren Host- oder Sitzungs-Tool-Zugriff stützten, müssen möglicherweise angepasst werden. Diese Härtung stellt sicher, dass Node-Ereignisse nicht in Tool-Zugriff auf Host-Ebene eskalieren können, der über die Vertrauensgrenze der Node hinausgeht.
+Von Nodes ausgelöste Zusammenfassungen und zugehörige Sitzungsereignisse sind auf die vorgesehene vertrauenswürdige Oberfläche beschränkt. Benachrichtigungsgetriebene oder von Nodes ausgelöste Abläufe, die zuvor auf breiteren Host- oder Sitzungs-Toolzugriff angewiesen waren, müssen möglicherweise angepasst werden. Diese Härtung stellt sicher, dass Node-Ereignisse nicht über die Vertrauensgrenze des Nodes hinaus zu Toolzugriff auf Host-Ebene eskalieren können.
 
-## Auto-Genehmigung (macOS-App)
+Dauerhafte Node-Präsenzaktualisierungen folgen derselben Identitätsgrenze. Das Ereignis `node.presence.alive` wird
+nur von authentifizierten Node-Gerätesitzungen akzeptiert und aktualisiert Pairing-Metadaten nur, wenn die
+Geräte-/Node-Identität bereits gekoppelt ist. Selbst deklarierte `client.id`-Werte reichen nicht aus, um
+den Zuletzt-gesehen-Status zu schreiben.
+
+## Automatische Genehmigung (macOS-App)
 
 Die macOS-App kann optional eine **stille Genehmigung** versuchen, wenn:
 
-- die Anfrage mit `silent` markiert ist und
+- die Anfrage als `silent` markiert ist, und
 - die App eine SSH-Verbindung zum Gateway-Host mit demselben Benutzer verifizieren kann.
 
-Wenn die stille Genehmigung fehlschlägt, wird auf die normale Aufforderung „Genehmigen/Ablehnen“ zurückgefallen.
+Wenn die stille Genehmigung fehlschlägt, fällt sie auf die normale Aufforderung „Genehmigen/Ablehnen“ zurück.
 
-## Auto-Genehmigung für vertrauenswürdige CIDR-Geräte
+## Automatische Gerätegenehmigung per vertrauenswürdigem CIDR
 
-WS-Gerätekopplung für `role: node` bleibt standardmäßig manuell. Für private
-Node-Netzwerke, bei denen das Gateway dem Netzwerkpfad bereits vertraut, können Operatoren
-dies mit expliziten CIDRs oder exakten IPs aktivieren:
+WS-Geräte-Pairing für `role: node` bleibt standardmäßig manuell. Für private
+Node-Netzwerke, bei denen der Gateway dem Netzwerkpfad bereits vertraut, können Operatoren
+sich mit expliziten CIDRs oder exakten IPs dafür entscheiden:
 
 ```json5
 {
@@ -143,41 +147,47 @@ dies mit expliziten CIDRs oder exakten IPs aktivieren:
 Sicherheitsgrenze:
 
 - Deaktiviert, wenn `gateway.nodes.pairing.autoApproveCidrs` nicht gesetzt ist.
-- Es gibt keinen pauschalen Auto-Genehmigungsmodus für LAN oder private Netzwerke.
-- Nur neue Gerätekopplung mit `role: node`, für die keine Scopes angefordert werden, ist zulässig.
-- Operator-, Browser-, Control UI- und WebChat-Clients bleiben manuell.
-- Upgrades von Rolle, Scope, Metadaten und öffentlichem Schlüssel bleiben manuell.
-- Headerpfade vertrauenswürdiger Proxys über Loopback auf demselben Host sind nicht zulässig, weil
-  dieser Pfad von lokalen Aufrufern gefälscht werden kann.
+- Es gibt keinen pauschalen LAN- oder Privatnetzwerk-Modus für automatische Genehmigung.
+- Nur frisches Geräte-Pairing mit `role: node` ohne angeforderte Scopes ist berechtigt.
+- Operator-, Browser-, Control-UI- und WebChat-Clients bleiben manuell.
+- Rollen-, Scope-, Metadaten- und Public-Key-Upgrades bleiben manuell.
+- Same-Host-local loopback-Pfade über vertrauenswürdige Proxy-Header sind nicht berechtigt, weil dieser
+  Pfad von lokalen Aufrufern gefälscht werden kann.
 
-## Auto-Genehmigung für Metadaten-Upgrades
+## Automatische Genehmigung von Metadaten-Upgrades
 
-Wenn sich ein bereits gekoppeltes Gerät nur mit nicht sensiblen Änderungen der Metadaten
+Wenn ein bereits gekoppeltes Gerät sich nur mit nicht sensiblen Metadatenänderungen
 erneut verbindet (zum Beispiel Anzeigename oder Hinweise zur Client-Plattform), behandelt OpenClaw
-dies als `metadata-upgrade`. Die stille Auto-Genehmigung ist eng begrenzt: Sie gilt nur
-für vertrauenswürdige lokale Wiederverbindungen ohne Browser, die bereits den Besitz lokaler
-oder gemeinsam genutzter Zugangsdaten nachgewiesen haben, einschließlich Wiederverbindungen nativer Apps auf demselben Host nach Änderungen der OS-Versionsmetadaten. Browser-/Control UI-Clients und Remote-Clients verwenden weiterhin den expliziten Ablauf zur erneuten Genehmigung. Scope-Upgrades (von read zu write/admin) und Änderungen des öffentlichen Schlüssels kommen **nicht** für die Auto-Genehmigung von Metadaten-Upgrades infrage —
+dies als `metadata-upgrade`. Die stille automatische Genehmigung ist eng begrenzt: Sie gilt nur
+für vertrauenswürdige lokale Nicht-Browser-Wiederverbindungen, die bereits Besitz lokaler
+oder gemeinsam genutzter Anmeldedaten nachgewiesen haben, einschließlich Same-Host-Wiederverbindungen nativer Apps nach
+Änderungen an OS-Versionsmetadaten. Browser-/Control-UI-Clients und Remote-Clients verwenden weiterhin
+den expliziten Ablauf zur erneuten Genehmigung. Scope-Upgrades (Lesen zu Schreiben/Admin) und
+Public-Key-Änderungen sind **nicht** für automatische Genehmigung von Metadaten-Upgrades berechtigt —
 sie bleiben explizite Anfragen zur erneuten Genehmigung.
 
-## QR-Kopplungshilfen
+## QR-Pairing-Helfer
 
-`/pair qr` rendert die Kopplungsnutzlast als strukturierte Medien, sodass mobile und
-browserbasierte Clients sie direkt scannen können.
+`/pair qr` rendert die Pairing-Nutzdaten als strukturierte Medien, damit Mobil- und
+Browser-Clients sie direkt scannen können.
 
-Beim Löschen eines Geräts werden auch alle veralteten ausstehenden Kopplungsanfragen für diese
-Geräte-ID bereinigt, sodass `nodes pending` nach einem Widerruf keine verwaisten Zeilen anzeigt.
+Das Löschen eines Geräts entfernt außerdem alle veralteten ausstehenden Pairing-Anfragen für diese
+Geräte-ID, sodass `nodes pending` nach einem Widerruf keine verwaisten Zeilen anzeigt.
 
 ## Lokalität und weitergeleitete Header
 
-Die Gateway-Kopplung behandelt eine Verbindung nur dann als Loopback, wenn sowohl der rohe Socket
-als auch mögliche Hinweise eines Upstream-Proxys übereinstimmen. Wenn eine Anfrage über Loopback eingeht, aber `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`-Header enthält,
-die auf einen nicht lokalen Ursprung verweisen, disqualifizieren diese Hinweise aus weitergeleiteten Headern die Behauptung einer Loopback-Lokalität. Der Kopplungspfad erfordert dann eine explizite Genehmigung, statt die Anfrage stillschweigend als Verbindung vom selben Host zu behandeln. Siehe
-[Trusted Proxy Auth](/de/gateway/trusted-proxy-auth) für die entsprechende Regel bei
-Operator-Auth.
+Gateway-Pairing behandelt eine Verbindung nur dann als loopback, wenn sowohl der rohe Socket
+als auch alle Upstream-Proxy-Nachweise übereinstimmen. Wenn eine Anfrage über loopback eintrifft, aber
+Header `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto` enthält,
+die auf einen nicht lokalen Ursprung verweisen, disqualifiziert dieser Forwarded-Header-Nachweis
+die Behauptung der loopback-Lokalität. Der Pairing-Pfad erfordert dann eine explizite Genehmigung,
+statt die Anfrage stillschweigend als Same-Host-Verbindung zu behandeln. Siehe
+[Vertrauenswürdige Proxy-Authentifizierung](/de/gateway/trusted-proxy-auth) für die entsprechende Regel bei
+Operator-Authentifizierung.
 
-## Speicherung (lokal, privat)
+## Speicher (lokal, privat)
 
-Der Kopplungszustand wird unter dem Gateway-Zustandsverzeichnis gespeichert (Standard `~/.openclaw`):
+Der Pairing-Status wird im Gateway-Statusverzeichnis gespeichert (Standard `~/.openclaw`):
 
 - `~/.openclaw/nodes/paired.json`
 - `~/.openclaw/nodes/pending.json`
@@ -186,17 +196,17 @@ Wenn Sie `OPENCLAW_STATE_DIR` überschreiben, wird der Ordner `nodes/` mit versc
 
 Sicherheitshinweise:
 
-- Tokens sind Secrets; behandeln Sie `paired.json` als sensibel.
+- Tokens sind Geheimnisse; behandeln Sie `paired.json` als sensibel.
 - Das Rotieren eines Tokens erfordert eine erneute Genehmigung (oder das Löschen des Node-Eintrags).
 
 ## Transportverhalten
 
 - Der Transport ist **zustandslos**; er speichert keine Mitgliedschaft.
-- Wenn das Gateway offline ist oder die Kopplung deaktiviert ist, können Nodes nicht gekoppelt werden.
-- Wenn sich das Gateway im Remote-Modus befindet, erfolgt die Kopplung trotzdem gegen den Speicher des Remote-Gateway.
+- Wenn der Gateway offline ist oder Pairing deaktiviert ist, können Nodes nicht gekoppelt werden.
+- Wenn der Gateway im Remote-Modus ist, erfolgt Pairing weiterhin gegen den Speicher des Remote-Gateways.
 
 ## Verwandt
 
-- [Kanal-Kopplung](/de/channels/pairing)
+- [Channel-Pairing](/de/channels/pairing)
 - [Nodes](/de/nodes)
-- [Devices CLI](/de/cli/devices)
+- [Geräte-CLI](/de/cli/devices)

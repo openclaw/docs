@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Sie möchten ein erstklassiges Sicherungsarchiv für den lokalen OpenClaw-Status.
-    - Sie möchten vor dem Zurücksetzen oder der Deinstallation eine Vorschau anzeigen, welche Pfade einbezogen würden.
-summary: CLI-Referenz für `openclaw backup` (lokale Backup-Archive erstellen)
+    - Sie möchten ein vollwertiges Sicherungsarchiv für den lokalen OpenClaw-Zustand
+    - Sie möchten vor dem Zurücksetzen oder der Deinstallation eine Vorschau sehen, welche Pfade einbezogen würden
+summary: CLI-Referenz für `openclaw backup` (lokale Sicherungsarchive erstellen)
 title: Sicherung
 x-i18n:
-    generated_at: "2026-04-24T06:30:27Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:44:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 88d83cf04c163d76658575aa6d90be1dd7379934fa2822a07e13311c4324f8fd
+    source_hash: 5c16f953bb32a1613181448f0e4c6ba8777383bce95bddc856dc7e1c3afe8550
     source_path: cli/backup.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw backup`
 
-Erstellen Sie ein lokales Sicherungsarchiv für OpenClaw-Status, Konfiguration, Auth-Profile, Kanal-/Provider-Zugangsdaten, Sitzungen und optional Workspaces.
+Erstellen Sie ein lokales Sicherungsarchiv für OpenClaw-Zustand, Konfiguration, Authentifizierungsprofile, Kanal-/Provider-Anmeldedaten, Sitzungen und optional Arbeitsbereiche.
 
 ```bash
 openclaw backup create
@@ -29,12 +29,12 @@ openclaw backup verify ./2026-03-09T00-00-00.000Z-openclaw-backup.tar.gz
 
 ## Hinweise
 
-- Das Archiv enthält eine Datei `manifest.json` mit den aufgelösten Quellpfaden und dem Archivlayout.
-- Die Standardausgabe ist ein mit Zeitstempel versehenes `.tar.gz`-Archiv im aktuellen Arbeitsverzeichnis.
-- Wenn sich das aktuelle Arbeitsverzeichnis innerhalb eines gesicherten Quellbaums befindet, verwendet OpenClaw als Standardort für das Archiv stattdessen Ihr Home-Verzeichnis.
-- Vorhandene Archivdateien werden niemals überschrieben.
-- Ausgabepfade innerhalb der Quellbäume für Status/Workspace werden abgelehnt, um Selbsteinbeziehung zu vermeiden.
-- `openclaw backup verify <archive>` validiert, dass das Archiv genau ein Root-Manifest enthält, lehnt Archivpfade im Traversal-Stil ab und prüft, dass jede im Manifest deklarierte Nutzlast im Tarball vorhanden ist.
+- Das Archiv enthält eine `manifest.json`-Datei mit den aufgelösten Quellpfaden und dem Archivlayout.
+- Die Standardausgabe ist ein zeitgestempeltes `.tar.gz`-Archiv im aktuellen Arbeitsverzeichnis.
+- Wenn sich das aktuelle Arbeitsverzeichnis innerhalb eines gesicherten Quellbaums befindet, verwendet OpenClaw für den Standardspeicherort des Archivs stattdessen Ihr Home-Verzeichnis.
+- Vorhandene Archivdateien werden nie überschrieben.
+- Ausgabepfade innerhalb der Quellbäume für Zustand/Arbeitsbereiche werden abgelehnt, um Selbsteinbeziehung zu vermeiden.
+- `openclaw backup verify <archive>` überprüft, dass das Archiv genau ein Root-Manifest enthält, lehnt Archivpfade im Traversal-Stil ab und prüft, dass alle im Manifest deklarierten Nutzdaten im Tarball vorhanden sind.
 - `openclaw backup create --verify` führt diese Validierung unmittelbar nach dem Schreiben des Archivs aus.
 - `openclaw backup create --only-config` sichert nur die aktive JSON-Konfigurationsdatei.
 
@@ -42,54 +42,60 @@ openclaw backup verify ./2026-03-09T00-00-00.000Z-openclaw-backup.tar.gz
 
 `openclaw backup create` plant Sicherungsquellen aus Ihrer lokalen OpenClaw-Installation:
 
-- Das vom lokalen Status-Resolver von OpenClaw zurückgegebene Statusverzeichnis, normalerweise `~/.openclaw`
-- Der aktive Pfad der Konfigurationsdatei
-- Das aufgelöste Verzeichnis `credentials/`, wenn es außerhalb des Statusverzeichnisses existiert
-- Workspace-Verzeichnisse, die aus der aktuellen Konfiguration ermittelt werden, sofern Sie nicht `--no-include-workspace` übergeben
+- Das Zustandsverzeichnis, das vom lokalen Zustandsauflöser von OpenClaw zurückgegeben wird, üblicherweise `~/.openclaw`
+- Der Pfad der aktiven Konfigurationsdatei
+- Das aufgelöste Verzeichnis `credentials/`, wenn es außerhalb des Zustandsverzeichnisses existiert
+- Arbeitsbereichsverzeichnisse, die aus der aktuellen Konfiguration ermittelt werden, es sei denn, Sie übergeben `--no-include-workspace`
 
-Modell-Auth-Profile sind bereits Teil des Statusverzeichnisses unter
-`agents/<agentId>/agent/auth-profiles.json` und werden daher normalerweise vom
-Sicherungseintrag für den Status abgedeckt.
+Modell-Authentifizierungsprofile sind bereits Teil des Zustandsverzeichnisses unter
+`agents/<agentId>/agent/auth-profiles.json`, daher werden sie normalerweise durch den
+Eintrag der Zustandssicherung abgedeckt.
 
-Wenn Sie `--only-config` verwenden, überspringt OpenClaw die Ermittlung von Status, Zugangsdatenverzeichnis und Workspaces und archiviert nur den aktiven Pfad der Konfigurationsdatei.
+Wenn Sie `--only-config` verwenden, überspringt OpenClaw Zustand, Anmeldedatenverzeichnis und Arbeitsbereichserkennung und archiviert nur den Pfad der aktiven Konfigurationsdatei.
 
 OpenClaw kanonisiert Pfade, bevor das Archiv erstellt wird. Wenn Konfiguration, das
-Zugangsdatenverzeichnis oder ein Workspace bereits innerhalb des Statusverzeichnisses liegen,
-werden sie nicht als separate Sicherungsquellen auf oberster Ebene dupliziert. Fehlende Pfade werden
+Anmeldedatenverzeichnis oder ein Arbeitsbereich bereits im Zustandsverzeichnis liegen,
+werden sie nicht als separate Sicherungsquellen der obersten Ebene dupliziert. Fehlende Pfade werden
 übersprungen.
 
-Die Archivnutzlast speichert Dateiinhalte aus diesen Quellbäumen, und die eingebettete `manifest.json` zeichnet die aufgelösten absoluten Quellpfade sowie das für jedes Asset verwendete Archivlayout auf.
+Die Archivnutzdaten speichern Dateiinhalte aus diesen Quellbäumen, und die eingebettete `manifest.json` zeichnet die aufgelösten absoluten Quellpfade sowie das für jedes Asset verwendete Archivlayout auf.
+
+Installierte Plugin-Quell- und Manifestdateien unter dem
+Baum `extensions/` des Zustandsverzeichnisses werden eingeschlossen, ihre verschachtelten
+Abhängigkeitsbäume `node_modules/` werden jedoch übersprungen. Diese Abhängigkeiten sind neu erstellbare Installationsartefakte; verwenden Sie nach dem Wiederherstellen eines Archivs `openclaw plugins update <id>` oder installieren Sie das Plugin
+mit `openclaw plugins install <spec> --force` erneut, wenn ein wiederhergestelltes Plugin
+fehlende Abhängigkeiten meldet.
 
 ## Verhalten bei ungültiger Konfiguration
 
-`openclaw backup` umgeht absichtlich die normale Konfigurationsvorprüfung, damit es auch bei der Wiederherstellung noch helfen kann. Da die Workspace-Ermittlung von einer gültigen Konfiguration abhängt, schlägt `openclaw backup create` jetzt sofort fehl, wenn die Konfigurationsdatei existiert, aber ungültig ist und die Workspace-Sicherung weiterhin aktiviert ist.
+`openclaw backup` umgeht absichtlich die normale Konfigurations-Vorprüfung, damit es bei der Wiederherstellung weiterhin helfen kann. Da die Arbeitsbereichserkennung von einer gültigen Konfiguration abhängt, schlägt `openclaw backup create` jetzt schnell fehl, wenn die Konfigurationsdatei existiert, aber ungültig ist und die Arbeitsbereichssicherung weiterhin aktiviert ist.
 
-Wenn Sie in dieser Situation dennoch eine teilweise Sicherung möchten, führen Sie stattdessen Folgendes aus:
+Wenn Sie in dieser Situation trotzdem eine Teilsicherung möchten, führen Sie erneut aus:
 
 ```bash
 openclaw backup create --no-include-workspace
 ```
 
-Dadurch bleiben Status, Konfiguration und das externe Zugangsdatenverzeichnis im Umfang enthalten, während
-die Workspace-Ermittlung vollständig übersprungen wird.
+Dadurch bleiben Zustand, Konfiguration und das externe Anmeldedatenverzeichnis im Umfang, während
+die Arbeitsbereichserkennung vollständig übersprungen wird.
 
-Wenn Sie nur eine Kopie der Konfigurationsdatei selbst benötigen, funktioniert `--only-config` auch dann, wenn die Konfiguration fehlerhaft ist, da dafür die Konfiguration nicht für die Workspace-Ermittlung geparst werden muss.
+Wenn Sie nur eine Kopie der Konfigurationsdatei selbst benötigen, funktioniert `--only-config` auch bei fehlerhaft formatierter Konfiguration, da es für die Arbeitsbereichserkennung nicht auf das Parsen der Konfiguration angewiesen ist.
 
 ## Größe und Leistung
 
-OpenClaw erzwingt keine integrierte maximale Sicherungsgröße und kein Größenlimit pro Datei.
+OpenClaw erzwingt keine integrierte maximale Sicherungsgröße und keine Größenbeschränkung pro Datei.
 
-Praktische Grenzen ergeben sich aus dem lokalen Rechner und dem Ziel-Dateisystem:
+Praktische Grenzen ergeben sich aus dem lokalen Computer und dem Zieldateisystem:
 
 - Verfügbarer Speicherplatz für das temporäre Schreiben des Archivs plus das endgültige Archiv
-- Zeit zum Durchlaufen großer Workspace-Bäume und zum Komprimieren in ein `.tar.gz`
-- Zeit zum erneuten Scannen des Archivs, wenn Sie `openclaw backup create --verify` verwenden oder `openclaw backup verify` ausführen
-- Verhalten des Dateisystems am Zielpfad. OpenClaw bevorzugt einen Veröffentlichungsschritt per Hardlink ohne Überschreiben und greift auf exklusives Kopieren zurück, wenn Hardlinks nicht unterstützt werden
+- Zeit, um große Arbeitsbereichsbäume zu durchlaufen und in ein `.tar.gz` zu komprimieren
+- Zeit, um das Archiv erneut zu prüfen, wenn Sie `openclaw backup create --verify` verwenden oder `openclaw backup verify` ausführen
+- Dateisystemverhalten am Zielpfad. OpenClaw bevorzugt einen Veröffentlichungsschritt ohne Überschreiben per Hardlink und fällt auf exklusives Kopieren zurück, wenn Hardlinks nicht unterstützt werden
 
-Große Workspaces sind normalerweise der Hauptfaktor für die Archivgröße. Wenn Sie eine kleinere oder schnellere Sicherung möchten, verwenden Sie `--no-include-workspace`.
+Große Arbeitsbereiche sind in der Regel der Haupttreiber der Archivgröße. Wenn Sie eine kleinere oder schnellere Sicherung möchten, verwenden Sie `--no-include-workspace`.
 
 Für das kleinste Archiv verwenden Sie `--only-config`.
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)

@@ -1,28 +1,40 @@
 ---
 read_when:
-    - Sie möchten eine geführte Einrichtung für Gateway, Workspace, Auth, Channels und Skills.
+    - Sie möchten eine geführte Einrichtung für Gateway, Arbeitsbereich, Authentifizierung, Kanäle und Skills
 summary: CLI-Referenz für `openclaw onboard` (interaktives Onboarding)
-title: Onboard
+title: Einrichten
 x-i18n:
-    generated_at: "2026-04-25T13:44:05Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:46:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 234c308ea554195df1bd880bda7e30770e926af059740458d056e4a909aaeb07
+    source_hash: 583310458b2e2bc8ddc1513112c960520d972716be0c33e4177d0db30e896504
     source_path: cli/onboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw onboard`
 
-Interaktives Onboarding für die lokale oder Remote-Gateway-Einrichtung.
+Interaktives Onboarding für die Einrichtung eines lokalen oder entfernten Gateway.
 
-## Verwandte Anleitungen
+## Zugehörige Anleitungen
 
-- CLI-Onboarding-Hub: [Onboarding (CLI)](/de/start/wizard)
-- Onboarding-Überblick: [Onboarding Overview](/de/start/onboarding-overview)
-- CLI-Onboarding-Referenz: [CLI Setup Reference](/de/start/wizard-cli-reference)
-- CLI-Automatisierung: [CLI Automation](/de/start/wizard-cli-automation)
-- macOS-Onboarding: [Onboarding (macOS App)](/de/start/onboarding)
+<CardGroup cols={2}>
+  <Card title="CLI-Onboarding-Hub" href="/de/start/wizard" icon="rocket">
+    Schritt-für-Schritt-Anleitung für den interaktiven CLI-Ablauf.
+  </Card>
+  <Card title="Onboarding-Überblick" href="/de/start/onboarding-overview" icon="map">
+    Wie das OpenClaw-Onboarding zusammenspielt.
+  </Card>
+  <Card title="CLI-Einrichtungsreferenz" href="/de/start/wizard-cli-reference" icon="book">
+    Ausgaben, Interna und Verhalten pro Schritt.
+  </Card>
+  <Card title="CLI-Automatisierung" href="/de/start/wizard-cli-automation" icon="terminal">
+    Nicht interaktive Flags und skriptgesteuerte Einrichtungen.
+  </Card>
+  <Card title="Onboarding der macOS-App" href="/de/start/onboarding" icon="apple">
+    Onboarding-Ablauf für die macOS-Menüleisten-App.
+  </Card>
+</CardGroup>
 
 ## Beispiele
 
@@ -31,19 +43,23 @@ openclaw onboard
 openclaw onboard --modern
 openclaw onboard --flow quickstart
 openclaw onboard --flow manual
+openclaw onboard --flow import
+openclaw onboard --import-from hermes --import-source ~/.hermes
 openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--modern` startet die Vorschau des dialogorientierten Crestodian-Onboardings. Ohne
-`--modern` verwendet `openclaw onboard` weiterhin den klassischen Onboarding-Ablauf.
+`--flow import` verwendet Plugin-eigene Migrations-Provider wie Hermes. Es wird nur für eine frische OpenClaw-Einrichtung ausgeführt. Wenn vorhandene Konfigurationen, Anmeldedaten, Sitzungen oder Dateien für Workspace-Speicher/Identität vorhanden sind, setzen Sie diese zurück oder wählen Sie vor dem Import eine frische Einrichtung.
 
-Für Klartext-`ws://`-Ziele in privaten Netzwerken (nur vertrauenswürdige Netzwerke) setzen Sie
+`--modern` startet die Vorschau des dialogbasierten Crestodian-Onboardings. Ohne
+`--modern` behält `openclaw onboard` den klassischen Onboarding-Ablauf bei.
+
+Für Klartext-Ziele mit `ws://` in privaten Netzwerken (nur vertrauenswürdige Netzwerke) setzen Sie
 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` in der Prozessumgebung des Onboardings.
-Es gibt kein Äquivalent in `openclaw.json` für diesen clientseitigen
-Break-Glass-Mechanismus beim Transport.
+Es gibt kein `openclaw.json`-Äquivalent für diesen clientseitigen Transport-
+Notfallmechanismus.
 
-Nicht interaktiver benutzerdefinierter Anbieter:
+Nicht interaktiver benutzerdefinierter Provider:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -52,12 +68,14 @@ openclaw onboard --non-interactive \
   --custom-model-id "foo-large" \
   --custom-api-key "$CUSTOM_API_KEY" \
   --secret-input-mode plaintext \
-  --custom-compatibility openai
+  --custom-compatibility openai \
+  --custom-image-input
 ```
 
 `--custom-api-key` ist im nicht interaktiven Modus optional. Wenn es weggelassen wird, prüft das Onboarding `CUSTOM_API_KEY`.
+OpenClaw markiert gängige Vision-Modell-IDs automatisch als bildfähig. Übergeben Sie `--custom-image-input` für unbekannte benutzerdefinierte Vision-IDs oder `--custom-text-input`, um reine Textmetadaten zu erzwingen.
 
-LM Studio unterstützt im nicht interaktiven Modus auch ein anbieterspezifisches Key-Flag:
+LM Studio unterstützt im nicht interaktiven Modus außerdem ein Provider-spezifisches Key-Flag:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -78,9 +96,9 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` hat standardmäßig den Wert `http://127.0.0.1:11434`. `--custom-model-id` ist optional; wenn es weggelassen wird, verwendet das Onboarding die von Ollama vorgeschlagenen Standardwerte. Cloud-Modell-IDs wie `kimi-k2.5:cloud` funktionieren hier ebenfalls.
+`--custom-base-url` verwendet standardmäßig `http://127.0.0.1:11434`. `--custom-model-id` ist optional. Wenn es weggelassen wird, verwendet das Onboarding die von Ollama vorgeschlagenen Standardwerte. Cloud-Modell-IDs wie `kimi-k2.5:cloud` funktionieren hier ebenfalls.
 
-Anbieter-Schlüssel als Referenzen statt als Klartext speichern:
+Provider-Keys als Referenzen statt als Klartext speichern:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -89,26 +107,26 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Mit `--secret-input-mode ref` schreibt das Onboarding env-gestützte Referenzen anstelle von Klartext-Schlüsselwerten.
-Für Anbieter mit Auth-Profil-Unterstützung werden dabei `keyRef`-Einträge geschrieben; für benutzerdefinierte Anbieter schreibt es `models.providers.<id>.apiKey` als env-Referenz (zum Beispiel `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+Mit `--secret-input-mode ref` schreibt das Onboarding umgebungsvariablenbasierte Referenzen statt Klartext-Key-Werten.
+Für Provider mit Auth-Profile-Hinterlegung schreibt dies `keyRef`-Einträge. Für benutzerdefinierte Provider schreibt dies `models.providers.<id>.apiKey` als Umgebungsvariablen-Referenz, zum Beispiel `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
 
-Vertragsbedingungen für den nicht interaktiven `ref`-Modus:
+Vertrag für den nicht interaktiven `ref`-Modus:
 
-- Setzen Sie die env-Variable des Anbieters in der Prozessumgebung des Onboardings (zum Beispiel `OPENAI_API_KEY`).
-- Übergeben Sie keine Inline-Key-Flags (zum Beispiel `--openai-api-key`), es sei denn, diese env-Variable ist ebenfalls gesetzt.
-- Wenn ein Inline-Key-Flag ohne die erforderliche env-Variable übergeben wird, schlägt das Onboarding sofort mit einem Hinweis fehl.
+- Setzen Sie die Provider-Umgebungsvariable in der Prozessumgebung des Onboardings, zum Beispiel `OPENAI_API_KEY`.
+- Übergeben Sie keine Inline-Key-Flags, zum Beispiel `--openai-api-key`, es sei denn, diese Umgebungsvariable ist ebenfalls gesetzt.
+- Wenn ein Inline-Key-Flag ohne die erforderliche Umgebungsvariable übergeben wird, schlägt das Onboarding sofort mit Hinweisen fehl.
 
-Optionen für Gateway-Token im nicht interaktiven Modus:
+Gateway-Token-Optionen im nicht interaktiven Modus:
 
 - `--gateway-auth token --gateway-token <token>` speichert ein Klartext-Token.
-- `--gateway-auth token --gateway-token-ref-env <name>` speichert `gateway.auth.token` als env-SecretRef.
+- `--gateway-auth token --gateway-token-ref-env <name>` speichert `gateway.auth.token` als Umgebungsvariablen-SecretRef.
 - `--gateway-token` und `--gateway-token-ref-env` schließen sich gegenseitig aus.
-- `--gateway-token-ref-env` erfordert eine nicht leere env-Variable in der Prozessumgebung des Onboardings.
-- Mit `--install-daemon` werden SecretRef-verwaltete Gateway-Tokens, wenn die Token-Authentifizierung ein Token erfordert, validiert, aber nicht als aufgelöster Klartext in den Umgebungsmetadaten des Supervisor-Service persistent gespeichert.
-- Mit `--install-daemon` schlägt das Onboarding geschlossen fehl und zeigt Abhilfehinweise an, wenn der Token-Modus ein Token erfordert und der konfigurierte Gateway-Token-SecretRef nicht aufgelöst ist.
-- Mit `--install-daemon` blockiert das Onboarding die Installation, wenn sowohl `gateway.auth.token` als auch `gateway.auth.password` konfiguriert sind und `gateway.auth.mode` nicht gesetzt ist, bis der Modus explizit festgelegt wird.
-- Lokales Onboarding schreibt `gateway.mode="local"` in die Konfiguration. Wenn in einer späteren Konfigurationsdatei `gateway.mode` fehlt, behandeln Sie dies als beschädigte Konfiguration oder unvollständige manuelle Bearbeitung, nicht als gültige Abkürzung für den lokalen Modus.
-- `--allow-unconfigured` ist ein separater Escape-Hatch für die Gateway-Laufzeit. Es bedeutet nicht, dass das Onboarding `gateway.mode` weglassen darf.
+- `--gateway-token-ref-env` erfordert eine nicht leere Umgebungsvariable in der Prozessumgebung des Onboardings.
+- Mit `--install-daemon` werden von SecretRef verwaltete Gateway-Tokens validiert, wenn Token-Authentifizierung ein Token erfordert, aber nicht als aufgelöster Klartext in den Umgebungsmetadaten des Supervisor-Dienstes persistiert.
+- Mit `--install-daemon` schlägt das Onboarding geschlossen mit Abhilfehinweisen fehl, wenn der Token-Modus ein Token erfordert und die konfigurierte Token-SecretRef nicht aufgelöst ist.
+- Mit `--install-daemon` blockiert das Onboarding die Installation, wenn sowohl `gateway.auth.token` als auch `gateway.auth.password` konfiguriert sind und `gateway.auth.mode` nicht gesetzt ist, bis der Modus explizit gesetzt wird.
+- Lokales Onboarding schreibt `gateway.mode="local"` in die Konfiguration. Wenn in einer späteren Konfigurationsdatei `gateway.mode` fehlt, behandeln Sie dies als Konfigurationsschaden oder unvollständige manuelle Bearbeitung, nicht als gültige Abkürzung für den lokalen Modus.
+- `--allow-unconfigured` ist ein separater Escape Hatch für die Gateway-Laufzeit. Es bedeutet nicht, dass das Onboarding `gateway.mode` weglassen darf.
 
 Beispiel:
 
@@ -122,35 +140,36 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Integritätsprüfung des lokalen Gateway im nicht interaktiven Modus:
+Nicht interaktive Integritätsprüfung des lokalen Gateway:
 
 - Sofern Sie nicht `--skip-health` übergeben, wartet das Onboarding auf ein erreichbares lokales Gateway, bevor es erfolgreich beendet wird.
-- `--install-daemon` startet zuerst den verwalteten Gateway-Installationspfad. Ohne diesen muss bereits ein lokales Gateway laufen, zum Beispiel `openclaw gateway run`.
-- Wenn Sie in der Automatisierung nur Schreibvorgänge für Konfiguration/Workspace/Bootstrap möchten, verwenden Sie `--skip-health`.
-- Wenn Sie Workspace-Dateien selbst verwalten, übergeben Sie `--skip-bootstrap`, um `agents.defaults.skipBootstrap: true` zu setzen und das Erstellen von `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` und `BOOTSTRAP.md` zu überspringen.
-- Unter nativem Windows versucht `--install-daemon` zuerst Scheduled Tasks und fällt auf einen Login-Eintrag im benutzerspezifischen Startup-Ordner zurück, wenn das Erstellen der Aufgabe verweigert wird.
+- `--install-daemon` startet zuerst den Installationspfad für das verwaltete Gateway. Ohne diese Option muss bereits ein lokales Gateway laufen, zum Beispiel `openclaw gateway run`.
+- Wenn Sie in der Automatisierung nur Konfigurations-, Workspace- und Bootstrap-Schreibvorgänge möchten, verwenden Sie `--skip-health`.
+- Wenn Sie Workspace-Dateien selbst verwalten, übergeben Sie `--skip-bootstrap`, um `agents.defaults.skipBootstrap: true` zu setzen und die Erstellung von `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` und `BOOTSTRAP.md` zu überspringen.
+- Unter nativem Windows versucht `--install-daemon` zuerst Scheduled Tasks und fällt auf ein Login-Element im benutzerspezifischen Startup-Ordner zurück, wenn die Task-Erstellung verweigert wird.
 
-Verhalten des interaktiven Onboardings mit Referenzmodus:
+Interaktives Onboarding-Verhalten mit Referenzmodus:
 
-- Wählen Sie auf Aufforderung **Use secret reference**.
+- Wählen Sie **Geheimnisreferenz verwenden**, wenn Sie dazu aufgefordert werden.
 - Wählen Sie dann entweder:
   - Umgebungsvariable
-  - Konfigurierter Secret-Anbieter (`file` oder `exec`)
-- Das Onboarding führt vor dem Speichern der Referenz eine schnelle Vorabprüfung durch.
-  - Wenn die Validierung fehlschlägt, zeigt das Onboarding den Fehler an und lässt Sie es erneut versuchen.
+  - Konfigurierter Geheimnis-Provider (`file` oder `exec`)
+- Das Onboarding führt vor dem Speichern der Referenz eine schnelle Preflight-Validierung durch.
+  - Wenn die Validierung fehlschlägt, zeigt das Onboarding den Fehler an und ermöglicht einen erneuten Versuch.
 
-Nicht interaktive Z.AI-Endpunktoptionen:
+### Nicht interaktive Z.AI-Endpunktauswahl
 
-Hinweis: `--auth-choice zai-api-key` erkennt jetzt automatisch den besten Z.AI-Endpunkt für Ihren Schlüssel (bevorzugt die allgemeine API mit `zai/glm-5.1`).
-Wenn Sie gezielt die Endpunkte von GLM Coding Plan verwenden möchten, wählen Sie `zai-coding-global` oder `zai-coding-cn`.
+<Note>
+`--auth-choice zai-api-key` erkennt automatisch den besten Z.AI-Endpunkt für Ihren Key (bevorzugt die allgemeine API mit `zai/glm-5.1`). Wenn Sie gezielt die GLM Coding Plan-Endpunkte möchten, wählen Sie `zai-coding-global` oder `zai-coding-cn`.
+</Note>
 
 ```bash
-# Endpunktauswahl ohne Prompt
+# Promptless endpoint selection
 openclaw onboard --non-interactive \
   --auth-choice zai-coding-global \
   --zai-api-key "$ZAI_API_KEY"
 
-# Weitere Z.AI-Endpunktoptionen:
+# Other Z.AI endpoint choices:
 # --auth-choice zai-coding-cn
 # --auth-choice zai-global
 # --auth-choice zai-cn
@@ -164,23 +183,36 @@ openclaw onboard --non-interactive \
   --mistral-api-key "$MISTRAL_API_KEY"
 ```
 
-Hinweise zum Ablauf:
+## Ablaufhinweise
 
-- `quickstart`: minimale Eingabeaufforderungen, erzeugt automatisch ein Gateway-Token.
-- `manual`: vollständige Eingabeaufforderungen für Port/Bind/Auth (Alias von `advanced`).
-- Wenn eine Auth-Auswahl einen bevorzugten Anbieter impliziert, filtert das Onboarding die Auswahlen für Standardmodell und Allowlist auf diesen Anbieter vor.
-  Für Volcengine und BytePlus schließt dies auch die Coding-Plan-Varianten ein
-  (`volcengine-plan/*`, `byteplus-plan/*`).
-- Wenn der Filter für bevorzugte Anbieter noch keine geladenen Modelle liefert, greift das Onboarding auf den ungefilterten Katalog zurück, statt die Auswahl leer zu lassen.
-- Im Schritt zur Websuche können einige Anbieter anbieterspezifische Folgeabfragen auslösen:
-  - **Grok** kann eine optionale `x_search`-Einrichtung mit demselben `XAI_API_KEY`
-    und einer `x_search`-Modellauswahl anbieten.
-  - **Kimi** kann nach der Moonshot-API-Region (`api.moonshot.ai` vs
-    `api.moonshot.cn`) und dem Standardmodell für die Kimi-Websuche fragen.
-- Verhalten des DM-Bereichs beim lokalen Onboarding: [CLI Setup Reference](/de/start/wizard-cli-reference#outputs-and-internals).
-- Schnellster erster Chat: `openclaw dashboard` (Control UI, keine Channel-Einrichtung).
-- Benutzerdefinierter Anbieter: Jeden mit OpenAI oder Anthropic kompatiblen Endpunkt verbinden,
-  einschließlich nicht aufgelisteter gehosteter Anbieter. Verwenden Sie Unknown zur automatischen Erkennung.
+<AccordionGroup>
+  <Accordion title="Ablauftypen">
+    - `quickstart`: minimale Eingabeaufforderungen, generiert automatisch ein Gateway-Token.
+    - `manual`: vollständige Eingabeaufforderungen für Port, Bind und Authentifizierung (Alias von `advanced`).
+    - `import`: führt einen erkannten Migrations-Provider aus, zeigt eine Vorschau des Plans an und wendet ihn nach Bestätigung an.
+
+  </Accordion>
+  <Accordion title="Provider-Vorfilterung">
+    Wenn eine Authentifizierungsauswahl einen bevorzugten Provider impliziert, filtert das Onboarding die Auswahl für Standardmodell und Allowlist vorab auf diesen Provider. Für Volcengine und BytePlus werden dabei auch die Coding-Plan-Varianten (`volcengine-plan/*`, `byteplus-plan/*`) berücksichtigt.
+
+    Wenn der bevorzugte Provider-Filter noch keine geladenen Modelle liefert, fällt das Onboarding auf den ungefilterten Katalog zurück, statt die Auswahl leer zu lassen.
+
+  </Accordion>
+  <Accordion title="Websuche-Folgefragen">
+    Einige Websuche-Provider lösen Provider-spezifische Folgefragen aus:
+
+    - **Grok** kann eine optionale `x_search`-Einrichtung mit demselben `XAI_API_KEY` und einer `x_search`-Modellauswahl anbieten.
+    - **Kimi** kann nach der Moonshot-API-Region (`api.moonshot.ai` vs. `api.moonshot.cn`) und dem Standardmodell für Kimi-Websuche fragen.
+
+  </Accordion>
+  <Accordion title="Weitere Verhaltensweisen">
+    - DM-Gültigkeitsbereich beim lokalen Onboarding: [CLI-Einrichtungsreferenz](/de/start/wizard-cli-reference#outputs-and-internals).
+    - Schnellster erster Chat: `openclaw dashboard` (Control UI, keine Channel-Einrichtung).
+    - Benutzerdefinierter Provider: Verbinden Sie einen beliebigen OpenAI- oder Anthropic-kompatiblen Endpunkt, einschließlich gehosteter Provider, die nicht aufgeführt sind. Verwenden Sie Unknown für die automatische Erkennung.
+    - Wenn ein Hermes-Status erkannt wird, bietet das Onboarding einen Migrationsablauf an. Verwenden Sie [Migrieren](/de/cli/migrate) für Dry-Run-Pläne, Überschreibmodus, Berichte und exakte Zuordnungen.
+
+  </Accordion>
+</AccordionGroup>
 
 ## Häufige Folgekommandos
 

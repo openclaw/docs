@@ -1,29 +1,28 @@
 ---
 read_when:
-    - Sie möchten einen Modellanbieter auswählen
+    - Sie möchten einen Modell-Provider auswählen
     - Sie benötigen einen schnellen Überblick über unterstützte LLM-Backends
-summary: Von OpenClaw unterstützte Modellanbieter (LLMs)
-title: Anbieterverzeichnis
+summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
+title: Provider-Verzeichnis
 x-i18n:
-    generated_at: "2026-04-26T11:38:01Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:10:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
+    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
     source_path: providers/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Modellanbieter
+# Modell-Provider
 
-OpenClaw kann viele LLM-Anbieter verwenden. Wählen Sie einen Anbieter aus,
-authentifizieren Sie sich und setzen Sie dann das Standardmodell als
-`provider/model`.
+OpenClaw kann viele LLM-Provider verwenden. Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie dann das
+Standardmodell als `provider/model` fest.
 
-Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/usw.)? Siehe [Kanäle](/de/channels).
+Suchen Sie die Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/usw.)? Siehe [Kanäle](/de/channels).
 
 ## Schnellstart
 
-1. Authentifizieren Sie sich beim Anbieter (normalerweise über `openclaw onboard`).
+1. Authentifizieren Sie sich beim Provider (normalerweise über `openclaw onboard`).
 2. Legen Sie das Standardmodell fest:
 
 ```json5
@@ -32,7 +31,7 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 }
 ```
 
-## Anbieter-Dokumentation
+## Provider-Dokumentation
 
 - [Alibaba Model Studio](/de/providers/alibaba)
 - [Amazon Bedrock](/de/providers/bedrock)
@@ -41,6 +40,7 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 - [Arcee AI (Trinity-Modelle)](/de/providers/arcee)
 - [Azure Speech](/de/providers/azure-speech)
 - [BytePlus (International)](/de/concepts/model-providers#byteplus-international)
+- [Cerebras](/de/providers/cerebras)
 - [Chutes](/de/providers/chutes)
 - [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway)
 - [ComfyUI](/de/providers/comfy)
@@ -49,20 +49,20 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 - [fal](/de/providers/fal)
 - [Fireworks](/de/providers/fireworks)
 - [GitHub Copilot](/de/providers/github-copilot)
-- [Gradium](/de/providers/gradium)
 - [GLM-Modelle](/de/providers/glm)
 - [Google (Gemini)](/de/providers/google)
+- [Gradium](/de/providers/gradium)
 - [Groq (LPU-Inferenz)](/de/providers/groq)
 - [Hugging Face (Inferenz)](/de/providers/huggingface)
 - [inferrs (lokale Modelle)](/de/providers/inferrs)
 - [Kilocode](/de/providers/kilocode)
-- [LiteLLM (einheitliches Gateway)](/de/providers/litellm)
+- [LiteLLM (vereinheitlichter Gateway)](/de/providers/litellm)
 - [LM Studio (lokale Modelle)](/de/providers/lmstudio)
 - [MiniMax](/de/providers/minimax)
 - [Mistral](/de/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/de/providers/moonshot)
 - [NVIDIA](/de/providers/nvidia)
-- [Ollama (Cloud- und lokale Modelle)](/de/providers/ollama)
+- [Ollama (Cloud + lokale Modelle)](/de/providers/ollama)
 - [OpenAI (API + Codex)](/de/providers/openai)
 - [OpenCode](/de/providers/opencode)
 - [OpenCode Go](/de/providers/opencode-go)
@@ -89,11 +89,11 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 ## Gemeinsame Übersichtsseiten
 
 - [Zusätzliche gebündelte Varianten](/de/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy und Gemini CLI OAuth
-- [Bildgenerierung](/de/tools/image-generation) - Gemeinsames Tool `image_generate`, Anbieterauswahl und Failover
-- [Musikgenerierung](/de/tools/music-generation) - Gemeinsames Tool `music_generate`, Anbieterauswahl und Failover
-- [Videogenerierung](/de/tools/video-generation) - Gemeinsames Tool `video_generate`, Anbieterauswahl und Failover
+- [Bildgenerierung](/de/tools/image-generation) - Gemeinsames `image_generate`-Tool, Provider-Auswahl und Failover
+- [Musikgenerierung](/de/tools/music-generation) - Gemeinsames `music_generate`-Tool, Provider-Auswahl und Failover
+- [Videogenerierung](/de/tools/video-generation) - Gemeinsames `video_generate`-Tool, Provider-Auswahl und Failover
 
-## Transkriptionsanbieter
+## Transkriptions-Provider
 
 - [Deepgram (Audiotranskription)](/de/providers/deepgram)
 - [ElevenLabs](/de/providers/elevenlabs#speech-to-text)
@@ -104,7 +104,7 @@ Suchen Sie nach Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/
 
 ## Community-Tools
 
-- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Zugangsdaten (prüfen Sie vor der Nutzung die Anthropic-Richtlinien/-Bedingungen)
+- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Zugangsdaten (prüfen Sie vor der Nutzung Anthropic-Richtlinien/-Bedingungen)
 
-Für den vollständigen Anbieterkatalog (xAI, Groq, Mistral usw.) und die erweiterte Konfiguration
-siehe [Modellanbieter](/de/concepts/model-providers).
+Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration finden Sie unter
+[Modell-Provider](/de/concepts/model-providers).

@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Sie möchten TaskFlow aus einem externen System auslösen oder steuern
-    - Sie konfigurieren das gebündelte Webhooks-Plugin
-summary: 'Webhooks-Plugin: authentifizierter TaskFlow-Eingang für vertrauenswürdige externe Automatisierung'
+    - Sie möchten TaskFlows von einem externen System aus auslösen oder steuern
+    - Sie konfigurieren das mitgelieferte Webhook-Plugin
+summary: 'Webhooks-Plugin: authentifizierter TaskFlow-Ingress für vertrauenswürdige externe Automatisierung'
 title: Webhooks-Plugin
 x-i18n:
-    generated_at: "2026-04-24T06:52:12Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:09:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
+    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
     source_path: plugins/webhooks.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Webhooks (Plugin)
 
 Das Webhooks-Plugin fügt authentifizierte HTTP-Routen hinzu, die externe
-Automatisierung an OpenClaw TaskFlow binden.
+Automatisierung an OpenClaw TaskFlows anbinden.
 
-Verwenden Sie es, wenn Sie ein vertrauenswürdiges System wie Zapier, n8n, einen CI-Job oder einen
-internen Dienst verwenden möchten, um verwaltete TaskFlows zu erstellen und zu steuern, ohne zuerst ein benutzerdefiniertes
-Plugin schreiben zu müssen.
+Verwenden Sie es, wenn ein vertrauenswürdiges System wie Zapier, n8n, ein CI-Job oder ein
+interner Dienst verwaltete TaskFlows erstellen und steuern soll, ohne zuerst ein eigenes
+Plugin zu schreiben.
 
-## Wo es läuft
+## Wo es ausgeführt wird
 
-Das Webhooks-Plugin läuft innerhalb des Gateway-Prozesses.
+Das Webhooks-Plugin läuft im Gateway-Prozess.
 
 Wenn Ihr Gateway auf einem anderen Rechner läuft, installieren und konfigurieren Sie das Plugin auf
-diesem Gateway-Host und starten Sie das Gateway dann neu.
+diesem Gateway-Host und starten Sie anschließend das Gateway neu.
 
 ## Routen konfigurieren
 
-Setzen Sie die Konfiguration unter `plugins.entries.webhooks.config`:
+Legen Sie die Konfiguration unter `plugins.entries.webhooks.config` fest:
 
 ```json5
 {
@@ -60,43 +60,43 @@ Setzen Sie die Konfiguration unter `plugins.entries.webhooks.config`:
 }
 ```
 
-Felder einer Route:
+Routenfelder:
 
-- `enabled`: optional, Standard ist `true`
-- `path`: optional, Standard ist `/plugins/webhooks/<routeId>`
-- `sessionKey`: erforderliche Sitzung, die die gebundenen TaskFlows besitzt
-- `secret`: erforderliches Shared Secret oder SecretRef
-- `controllerId`: optionale Controller-ID für erzeugte verwaltete Flows
-- `description`: optionale Anmerkung für Operatoren
+- `enabled`: optional, Standardwert ist `true`
+- `path`: optional, Standardwert ist `/plugins/webhooks/<routeId>`
+- `sessionKey`: erforderliche Sitzung, der die gebundenen TaskFlows gehören
+- `secret`: erforderliches gemeinsames Geheimnis oder SecretRef
+- `controllerId`: optionale Controller-ID für erstellte verwaltete Flows
+- `description`: optionaler Hinweis für Betreiber
 
 Unterstützte `secret`-Eingaben:
 
-- Einfache Zeichenfolge
+- Klartextzeichenfolge
 - SecretRef mit `source: "env" | "file" | "exec"`
 
-Wenn eine secretgestützte Route ihr Secret beim Start nicht auflösen kann, überspringt
-das Plugin diese Route und protokolliert eine Warnung, statt einen kaputten Endpunkt bereitzustellen.
+Wenn eine Route mit geheimnisgestützter Konfiguration ihr Geheimnis beim Start nicht auflösen kann, überspringt das Plugin
+diese Route und protokolliert eine Warnung, anstatt einen fehlerhaften Endpunkt offenzulegen.
 
 ## Sicherheitsmodell
 
-Jede Route gilt als vertrauenswürdig und handelt mit der TaskFlow-Befugnis ihres konfigurierten
-`sessionKey`.
+Jede Route gilt als vertrauenswürdig, mit der TaskFlow-Berechtigung ihres konfigurierten
+`sessionKey` zu handeln.
 
-Das bedeutet, dass die Route TaskFlows dieser Sitzung prüfen und verändern kann, daher
+Das bedeutet, dass die Route TaskFlows einsehen und ändern kann, die dieser Sitzung gehören. Daher
 sollten Sie:
 
-- ein starkes eindeutiges Secret pro Route verwenden
-- Secret-Referenzen gegenüber eingebetteten Klartext-Secrets bevorzugen
-- Routen an die engstmögliche Sitzung binden, die zum Workflow passt
-- nur den spezifischen Webhook-Pfad bereitstellen, den Sie benötigen
+- Ein starkes, eindeutiges Geheimnis pro Route verwenden
+- Geheimnisreferenzen gegenüber inline hinterlegten Klartextgeheimnissen bevorzugen
+- Routen an die engste Sitzung binden, die zum Workflow passt
+- Nur den spezifischen Webhook-Pfad verfügbar machen, den Sie benötigen
 
-Das Plugin wendet an:
+Das Plugin wendet Folgendes an:
 
-- Shared-Secret-Authentifizierung
+- Authentifizierung über gemeinsames Geheimnis
 - Schutzmechanismen für Größe und Timeout des Request-Bodys
-- Rate-Limiting mit festem Zeitfenster
-- Begrenzung gleichzeitig laufender Requests
-- sitzungsgebundenen TaskFlow-Zugriff über `api.runtime.taskFlow.bindSession(...)`
+- Rate Limiting mit festem Zeitfenster
+- Begrenzung laufender Requests
+- Eigentümergebundener TaskFlow-Zugriff über `api.runtime.tasks.managedFlows.bindSession(...)`
 
 ## Request-Format
 
@@ -134,7 +134,7 @@ Das Plugin akzeptiert derzeit diese JSON-`action`-Werte:
 
 ### `create_flow`
 
-Erstellt einen verwalteten TaskFlow für die an die Route gebundene Sitzung.
+Erstellt einen verwalteten TaskFlow für die gebundene Sitzung der Route.
 
 Beispiel:
 
@@ -149,9 +149,9 @@ Beispiel:
 
 ### `run_task`
 
-Erstellt eine verwaltete Child-Aufgabe innerhalb eines bestehenden verwalteten TaskFlow.
+Erstellt eine verwaltete untergeordnete Aufgabe in einem vorhandenen verwalteten TaskFlow.
 
-Erlaubte Laufzeiten sind:
+Zulässige Laufzeiten sind:
 
 - `subagent`
 - `acp`
@@ -168,9 +168,9 @@ Beispiel:
 }
 ```
 
-## Antwortform
+## Response-Form
 
-Erfolgreiche Antworten geben zurück:
+Erfolgreiche Responses geben Folgendes zurück:
 
 ```json
 {
@@ -180,7 +180,7 @@ Erfolgreiche Antworten geben zurück:
 }
 ```
 
-Abgelehnte Requests geben zurück:
+Abgelehnte Requests geben Folgendes zurück:
 
 ```json
 {
@@ -192,10 +192,10 @@ Abgelehnte Requests geben zurück:
 }
 ```
 
-Das Plugin bereinigt absichtlich Owner-/Sitzungsmetadaten aus Webhook-Antworten.
+Das Plugin entfernt bewusst Eigentümer- und Sitzungsmetadaten aus Webhook-Responses.
 
-## Verwandte Dokumente
+## Verwandte Dokumentation
 
-- [Plugin runtime SDK](/de/plugins/sdk-runtime)
-- [Hooks and webhooks overview](/de/automation/hooks)
-- [CLI webhooks](/de/cli/webhooks)
+- [Plugin-Laufzeit-SDK](/de/plugins/sdk-runtime)
+- [Übersicht über Hooks und Webhooks](/de/automation/hooks)
+- [CLI-Webhooks](/de/cli/webhooks)

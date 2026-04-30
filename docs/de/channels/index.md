@@ -1,65 +1,66 @@
 ---
 read_when:
-    - Sie möchten einen Chat-Channel für OpenClaw auswählen.
-    - Sie benötigen einen schnellen Überblick über unterstützte Messaging-Plattformen.
-summary: Messaging-Plattformen, mit denen OpenClaw verbunden werden kann
-title: Chat-Channels
+    - Sie möchten einen Chatkanal für OpenClaw auswählen
+    - Sie benötigen einen schnellen Überblick über unterstützte Messaging-Plattformen
+summary: Messaging-Plattformen, mit denen sich OpenClaw verbinden kann
+title: Chatkanäle
 x-i18n:
-    generated_at: "2026-04-25T13:41:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:39:58Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e97818dce89ea06a60f2cccd0cc8a78cba48d66ea39e4769f2b583690a4f75d0
+    source_hash: b58a1f1a0500419015985500a301d9f8ee4fa3a67b11e30561cabe2dc57b5049
     source_path: channels/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw kann mit Ihnen in jeder Chat-App sprechen, die Sie bereits verwenden. Jeder Channel wird über das Gateway verbunden.
-Text wird überall unterstützt; Medien und Reaktionen variieren je nach Channel.
+OpenClaw kann über jede Chat-App mit Ihnen sprechen, die Sie bereits verwenden. Jeder Kanal verbindet sich über das Gateway.
+Text wird überall unterstützt; Medien und Reaktionen variieren je nach Kanal.
 
 ## Hinweise zur Zustellung
 
 - Telegram-Antworten, die Markdown-Bildsyntax enthalten, etwa `![alt](url)`,
-  werden nach Möglichkeit im letzten ausgehenden Schritt in Medienantworten umgewandelt.
-- Slack-DMs mit mehreren Personen werden als Gruppenchats geleitet, daher gelten Gruppenrichtlinien, Mention-Verhalten
-  und Regeln für Gruppen-Sessions auch für MPIM-Unterhaltungen.
+  werden auf dem finalen ausgehenden Pfad nach Möglichkeit in Medienantworten umgewandelt.
+- Slack-DMs mit mehreren Personen werden als Gruppenchats geroutet, daher gelten Gruppenrichtlinien, Erwähnungsverhalten
+  und Regeln für Gruppensitzungen für MPIM-Unterhaltungen.
 - Die WhatsApp-Einrichtung erfolgt bei Bedarf: Das Onboarding kann den Einrichtungsablauf anzeigen, bevor
-  Baileys-Laufzeitabhängigkeiten bereitgestellt werden, und das Gateway lädt die WhatsApp-Laufzeit nur,
-  wenn der Channel tatsächlich aktiv ist.
+  Baileys-Laufzeitabhängigkeiten bereitgestellt sind, und das Gateway lädt die WhatsApp-Laufzeit
+  nur, wenn der Kanal tatsächlich aktiv ist.
 
-## Unterstützte Channels
+## Unterstützte Kanäle
 
-- [BlueBubbles](/de/channels/bluebubbles) — **Empfohlen für iMessage**; verwendet die REST-API des BlueBubbles-macOS-Servers mit vollständiger Funktionsunterstützung (gebündeltes Plugin; bearbeiten, zurückziehen, Effekte, Reaktionen, Gruppenverwaltung — Bearbeiten ist derzeit unter macOS 26 Tahoe defekt).
-- [Discord](/de/channels/discord) — Discord Bot API + Gateway; unterstützt Server, Channels und DMs.
+- [BlueBubbles](/de/channels/bluebubbles) — **Empfohlen für iMessage**; nutzt die REST API des BlueBubbles-macOS-Servers mit vollständiger Funktionsunterstützung (gebündeltes Plugin; Bearbeiten, Zurücknehmen, Effekte, Reaktionen, Gruppenverwaltung — Bearbeiten ist derzeit unter macOS 26 Tahoe defekt).
+- [Discord](/de/channels/discord) — Discord Bot API + Gateway; unterstützt Server, Kanäle und DMs.
 - [Feishu](/de/channels/feishu) — Feishu/Lark-Bot über WebSocket (gebündeltes Plugin).
 - [Google Chat](/de/channels/googlechat) — Google Chat API-App über HTTP-Webhook.
-- [iMessage (legacy)](/de/channels/imessage) — Alte macOS-Integration über imsg CLI (veraltet, verwenden Sie BlueBubbles für neue Setups).
-- [IRC](/de/channels/irc) — Klassische IRC-Server; Channels + DMs mit Pairing-/Allowlist-Kontrollen.
+- [iMessage (legacy)](/de/channels/imessage) — Legacy-macOS-Integration über imsg CLI (veraltet, verwenden Sie BlueBubbles für neue Einrichtungen).
+- [IRC](/de/channels/irc) — Klassische IRC-Server; Kanäle + DMs mit Kopplungs- und Allowlist-Steuerung.
 - [LINE](/de/channels/line) — LINE Messaging API-Bot (gebündeltes Plugin).
 - [Matrix](/de/channels/matrix) — Matrix-Protokoll (gebündeltes Plugin).
-- [Mattermost](/de/channels/mattermost) — Bot API + WebSocket; Channels, Gruppen, DMs (gebündeltes Plugin).
-- [Microsoft Teams](/de/channels/msteams) — Bot Framework; Unterstützung für Unternehmen (gebündeltes Plugin).
-- [Nextcloud Talk](/de/channels/nextcloud-talk) — Selbst gehosteter Chat über Nextcloud Talk (gebündeltes Plugin).
+- [Mattermost](/de/channels/mattermost) — Bot API + WebSocket; Kanäle, Gruppen, DMs (gebündeltes Plugin).
+- [Microsoft Teams](/de/channels/msteams) — Bot Framework; Unternehmensunterstützung (gebündeltes Plugin).
+- [Nextcloud Talk](/de/channels/nextcloud-talk) — Selbstgehosteter Chat über Nextcloud Talk (gebündeltes Plugin).
 - [Nostr](/de/channels/nostr) — Dezentrale DMs über NIP-04 (gebündeltes Plugin).
-- [QQ Bot](/de/channels/qqbot) — QQ Bot API; privater Chat, Gruppenchat und Rich Media (gebündeltes Plugin).
-- [Signal](/de/channels/signal) — signal-cli; auf Datenschutz ausgerichtet.
+- [QQ Bot](/de/channels/qqbot) — QQ Bot API; private Chats, Gruppenchats und Rich Media (gebündeltes Plugin).
+- [Signal](/de/channels/signal) — signal-cli; datenschutzorientiert.
 - [Slack](/de/channels/slack) — Bolt SDK; Workspace-Apps.
-- [Synology Chat](/de/channels/synology-chat) — Synology NAS Chat über ausgehende + eingehende Webhooks (gebündeltes Plugin).
+- [Synology Chat](/de/channels/synology-chat) — Synology NAS Chat über ausgehende+eingehende Webhooks (gebündeltes Plugin).
 - [Telegram](/de/channels/telegram) — Bot API über grammY; unterstützt Gruppen.
 - [Tlon](/de/channels/tlon) — Urbit-basierter Messenger (gebündeltes Plugin).
 - [Twitch](/de/channels/twitch) — Twitch-Chat über IRC-Verbindung (gebündeltes Plugin).
 - [Voice Call](/de/plugins/voice-call) — Telefonie über Plivo oder Twilio (Plugin, separat installiert).
 - [WebChat](/de/web/webchat) — Gateway-WebChat-UI über WebSocket.
-- [WeChat](/de/channels/wechat) — Tencent-iLink-Bot-Plugin über QR-Login; nur private Chats (externes Plugin).
-- [WhatsApp](/de/channels/whatsapp) — Am weitesten verbreitet; verwendet Baileys und erfordert QR-Pairing.
-- [Zalo](/de/channels/zalo) — Zalo Bot API; Vietnams beliebter Messenger (gebündeltes Plugin).
-- [Zalo Personal](/de/channels/zalouser) — Persönliches Zalo-Konto über QR-Login (gebündeltes Plugin).
+- [WeChat](/de/channels/wechat) — Tencent iLink Bot-Plugin über QR-Anmeldung; nur private Chats (externes Plugin).
+- [WhatsApp](/de/channels/whatsapp) — Am beliebtesten; nutzt Baileys und erfordert QR-Kopplung.
+- [Yuanbao](/de/channels/yuanbao) — Tencent Yuanbao-Bot (externes Plugin).
+- [Zalo](/de/channels/zalo) — Zalo Bot API; beliebter Messenger in Vietnam (gebündeltes Plugin).
+- [Zalo Personal](/de/channels/zalouser) — Persönliches Zalo-Konto über QR-Anmeldung (gebündeltes Plugin).
 
 ## Hinweise
 
-- Channels können gleichzeitig laufen; konfigurieren Sie mehrere, und OpenClaw leitet pro Chat weiter.
-- Die schnellste Einrichtung ist in der Regel **Telegram** (einfaches Bot-Token). WhatsApp erfordert QR-Pairing und
-  speichert mehr Status auf der Festplatte.
-- Das Gruppenverhalten variiert je nach Channel; siehe [Groups](/de/channels/groups).
-- DM-Pairing und Allowlists werden aus Sicherheitsgründen erzwungen; siehe [Security](/de/gateway/security).
-- Fehlerbehebung: [Channel-Fehlerbehebung](/de/channels/troubleshooting).
-- Modellanbieter sind separat dokumentiert; siehe [Model Providers](/de/providers/models).
+- Kanäle können gleichzeitig ausgeführt werden; konfigurieren Sie mehrere, und OpenClaw routet pro Chat.
+- Die schnellste Einrichtung ist normalerweise **Telegram** (einfaches Bot-Token). WhatsApp erfordert QR-Kopplung und
+  speichert mehr Zustand auf der Festplatte.
+- Das Gruppenverhalten variiert je nach Kanal; siehe [Gruppen](/de/channels/groups).
+- DM-Kopplung und Allowlists werden aus Sicherheitsgründen erzwungen; siehe [Sicherheit](/de/gateway/security).
+- Fehlerbehebung: [Kanal-Fehlerbehebung](/de/channels/troubleshooting).
+- Modell-Provider sind separat dokumentiert; siehe [Modell-Provider](/de/providers/models).

@@ -1,103 +1,104 @@
 ---
 read_when:
-    - Hinzufügen oder Ändern des Hintergrundverhaltens von Exec
-    - Fehleranalyse bei lang laufenden Exec-Aufgaben
+    - Hinzufügen oder Ändern des Verhaltens der Hintergrundausführung
+    - Debuggen lang laufender exec-Aufgaben
 summary: Exec-Ausführung im Hintergrund und Prozessverwaltung
-title: Exec im Hintergrund und Prozess-Tool
+title: Tool für Hintergrundausführung und Prozesse
 x-i18n:
-    generated_at: "2026-04-24T06:36:32Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:51:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c6dbf6fd0ee39a053fda0a910e95827e9d0e31dcdfbbf542b6ba5d1d63aa48dc
+    source_hash: 0df76d7a09184bf87f5568d800bcee683620a76c092f34451d987db4ef1a1eaf
     source_path: gateway/background-process.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Exec im Hintergrund + Process-Tool
+# Hintergrund-Exec + Process-Tool
 
-OpenClaw führt Shell-Befehle über das Tool `exec` aus und hält lang laufende Aufgaben im Speicher. Das Tool `process` verwaltet diese Hintergrundsitzungen.
+OpenClaw führt Shell-Befehle über das `exec`-Tool aus und hält lang laufende Aufgaben im Speicher. Das `process`-Tool verwaltet diese Hintergrundsitzungen.
 
-## exec-Tool
+## `exec`-Tool
 
 Wichtige Parameter:
 
 - `command` (erforderlich)
 - `yieldMs` (Standard 10000): nach dieser Verzögerung automatisch in den Hintergrund verschieben
-- `background` (bool): sofort im Hintergrund ausführen
-- `timeout` (Sekunden, Standard 1800): den Prozess nach diesem Zeitlimit beenden
-- `elevated` (bool): außerhalb der Sandbox ausführen, wenn der Elevated-Modus aktiviert/erlaubt ist (`gateway` standardmäßig oder `node`, wenn das Exec-Ziel `node` ist)
+- `background` (boolesch): sofort im Hintergrund ausführen
+- `timeout` (Sekunden, Standard `tools.exec.timeoutSec`): den Prozess nach dieser Zeitüberschreitung beenden; setzen Sie `timeout: 0` nur, um die Zeitüberschreitung für den Exec-Prozess für diesen Aufruf zu deaktivieren
+- `elevated` (boolesch): außerhalb der Sandbox ausführen, wenn der erhöhte Modus aktiviert/erlaubt ist (standardmäßig `gateway`, oder `node`, wenn das Exec-Ziel `node` ist)
 - Benötigen Sie ein echtes TTY? Setzen Sie `pty: true`.
 - `workdir`, `env`
 
 Verhalten:
 
-- Ausführungen im Vordergrund geben die Ausgabe direkt zurück.
-- Wenn in den Hintergrund verschoben (explizit oder durch Zeitüberschreitung), gibt das Tool `status: "running"` + `sessionId` und einen kurzen Tail zurück.
-- Die Ausgabe wird im Speicher behalten, bis die Sitzung abgefragt oder gelöscht wird.
-- Wenn das Tool `process` nicht erlaubt ist, wird `exec` synchron ausgeführt und ignoriert `yieldMs`/`background`.
-- Von Exec gestartete Befehle erhalten `OPENCLAW_SHELL=exec` für kontextbewusste Shell-/Profilregeln.
+- Vordergrundausführungen geben die Ausgabe direkt zurück.
+- Wenn in den Hintergrund verschoben (explizit oder durch Zeitüberschreitung), gibt das Tool `status: "running"` + `sessionId` und ein kurzes Ende der Ausgabe zurück.
+- Hintergrund- und `yieldMs`-Ausführungen erben `tools.exec.timeoutSec`, sofern der Aufruf kein explizites `timeout` bereitstellt.
+- Ausgabe wird im Speicher gehalten, bis die Sitzung abgefragt oder gelöscht wird.
+- Wenn das `process`-Tool nicht erlaubt ist, läuft `exec` synchron und ignoriert `yieldMs`/`background`.
+- Gestartete Exec-Befehle erhalten `OPENCLAW_SHELL=exec` für kontextbewusste Shell-/Profilregeln.
 - Für lang laufende Arbeit, die jetzt startet, starten Sie sie einmal und verlassen Sie sich auf das automatische
-  Completion-Wake, wenn es aktiviert ist und der Befehl Ausgabe erzeugt oder fehlschlägt.
-- Wenn das automatische Completion-Wake nicht verfügbar ist oder Sie eine Bestätigung bei leisem Erfolg
-  für einen Befehl benötigen, der sauber ohne Ausgabe beendet wurde, verwenden Sie `process`,
+  Abschluss-Wake, wenn es aktiviert ist und der Befehl Ausgabe erzeugt oder fehlschlägt.
+- Wenn das automatische Abschluss-Wake nicht verfügbar ist oder Sie eine Quiet-Success-
+  Bestätigung für einen Befehl benötigen, der ohne Ausgabe sauber beendet wurde, verwenden Sie `process`,
   um den Abschluss zu bestätigen.
-- Emulieren Sie Erinnerungen oder verzögerte Nachverfolgungen nicht mit `sleep`-Schleifen oder wiederholtem
+- Emulieren Sie Erinnerungen oder verzögerte Follow-ups nicht mit `sleep`-Schleifen oder wiederholtem
   Polling; verwenden Sie Cron für zukünftige Arbeit.
 
-## Bridging von Child-Prozessen
+## Child-Process-Bridging
 
-Wenn Sie lang laufende Child-Prozesse außerhalb der Tools exec/process starten (zum Beispiel CLI-Respawns oder Gateway-Helper), binden Sie den Bridge-Helper für Child-Prozesse an, damit Beendigungssignale weitergeleitet werden und Listener bei Exit/Fehler getrennt werden. Das vermeidet verwaiste Prozesse unter systemd und hält das Shutdown-Verhalten plattformübergreifend konsistent.
+Wenn Sie lang laufende Child-Prozesse außerhalb der Exec-/Process-Tools starten (zum Beispiel CLI-Neustarts oder Gateway-Helfer), hängen Sie den Child-Process-Bridge-Helfer an, damit Beendigungssignale weitergeleitet und Listener bei Exit/Fehler entfernt werden. Das vermeidet verwaiste Prozesse unter systemd und hält das Shutdown-Verhalten plattformübergreifend konsistent.
 
-Umgebungsüberschreibungen:
+Umgebungs-Overrides:
 
 - `PI_BASH_YIELD_MS`: Standard-Yield (ms)
 - `PI_BASH_MAX_OUTPUT_CHARS`: Ausgabeobergrenze im Speicher (Zeichen)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: ausstehende stdout-/stderr-Obergrenze pro Stream (Zeichen)
-- `PI_BASH_JOB_TTL_MS`: TTL für abgeschlossene Sitzungen (ms, begrenzt auf 1 Min.–3 Std.)
+- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: Obergrenze für ausstehendes stdout/stderr pro Stream (Zeichen)
+- `PI_BASH_JOB_TTL_MS`: TTL für abgeschlossene Sitzungen (ms, begrenzt auf 1m–3h)
 
 Konfiguration (bevorzugt):
 
 - `tools.exec.backgroundMs` (Standard 10000)
 - `tools.exec.timeoutSec` (Standard 1800)
 - `tools.exec.cleanupMs` (Standard 1800000)
-- `tools.exec.notifyOnExit` (Standard true): reiht ein Systemereignis ein + fordert Heartbeat an, wenn ein im Hintergrund ausgeführter Exec endet.
-- `tools.exec.notifyOnExitEmptySuccess` (Standard false): wenn true, werden auch Completion-Ereignisse für erfolgreiche im Hintergrund ausgeführte Runs ohne Ausgabe eingereiht.
+- `tools.exec.notifyOnExit` (Standard true): ein Systemereignis einreihen + Heartbeat anfordern, wenn ein in den Hintergrund verschobener Exec beendet wird.
+- `tools.exec.notifyOnExitEmptySuccess` (Standard false): wenn true, auch Abschlussereignisse für erfolgreiche Hintergrundausführungen einreihen, die keine Ausgabe erzeugt haben.
 
-## process-Tool
+## `process`-Tool
 
 Aktionen:
 
 - `list`: laufende + abgeschlossene Sitzungen
-- `poll`: neue Ausgabe für eine Sitzung auslesen (meldet auch den Exit-Status)
+- `poll`: neue Ausgabe für eine Sitzung leeren (meldet auch den Exit-Status)
 - `log`: die aggregierte Ausgabe lesen (unterstützt `offset` + `limit`)
 - `write`: stdin senden (`data`, optional `eof`)
-- `send-keys`: explizite Schlüsseltokens oder Bytes an eine PTY-gestützte Sitzung senden
+- `send-keys`: explizite Tastentokens oder Bytes an eine PTY-gestützte Sitzung senden
 - `submit`: Enter / Wagenrücklauf an eine PTY-gestützte Sitzung senden
-- `paste`: Literaltext senden, optional in den Bracketed-Paste-Modus eingeschlossen
+- `paste`: wörtlichen Text senden, optional in Bracketed-Paste-Modus eingeschlossen
 - `kill`: eine Hintergrundsitzung beenden
 - `clear`: eine abgeschlossene Sitzung aus dem Speicher entfernen
 - `remove`: beenden, wenn laufend, andernfalls löschen, wenn abgeschlossen
 
 Hinweise:
 
-- Nur in den Hintergrund verschobene Sitzungen werden im Speicher aufgelistet/persistiert.
+- Nur in den Hintergrund verschobene Sitzungen werden aufgelistet/im Speicher persistiert.
 - Sitzungen gehen bei einem Prozessneustart verloren (keine Persistenz auf Datenträger).
-- Sitzungslogs werden nur dann im Chat-Verlauf gespeichert, wenn Sie `process poll/log` ausführen und das Tool-Ergebnis aufgezeichnet wird.
-- `process` ist pro Agent begrenzt; es sieht nur Sitzungen, die von diesem Agenten gestartet wurden.
-- Verwenden Sie `poll` / `log` für Status, Logs, Bestätigung bei leisem Erfolg oder
-  Abschlussbestätigung, wenn das automatische Completion-Wake nicht verfügbar ist.
-- Verwenden Sie `write` / `send-keys` / `submit` / `paste` / `kill`, wenn Sie Eingaben
-  oder Eingriffe benötigen.
-- `process list` enthält einen abgeleiteten `name` (Befehlsverb + Ziel) für schnelle Übersichten.
+- Sitzungslogs werden nur im Chatverlauf gespeichert, wenn Sie `process poll/log` ausführen und das Tool-Ergebnis aufgezeichnet wird.
+- `process` ist pro Agent begrenzt; es sieht nur Sitzungen, die von diesem Agent gestartet wurden.
+- Verwenden Sie `poll` / `log` für Status, Logs, Quiet-Success-Bestätigung oder
+  Abschlussbestätigung, wenn das automatische Abschluss-Wake nicht verfügbar ist.
+- Verwenden Sie `write` / `send-keys` / `submit` / `paste` / `kill`, wenn Sie Eingabe
+  oder Intervention benötigen.
+- `process list` enthält einen abgeleiteten `name` (Befehlsverb + Ziel) für schnelle Scans.
 - `process log` verwendet zeilenbasiertes `offset`/`limit`.
-- Wenn sowohl `offset` als auch `limit` fehlen, gibt es die letzten 200 Zeilen zurück und enthält einen Paging-Hinweis.
-- Wenn `offset` angegeben wird und `limit` fehlt, gibt es von `offset` bis zum Ende zurück (nicht auf 200 begrenzt).
-- Polling dient dem bedarfsgesteuerten Status, nicht der Planung von Warteschleifen. Wenn die Arbeit
+- Wenn sowohl `offset` als auch `limit` ausgelassen werden, werden die letzten 200 Zeilen zurückgegeben und ein Paging-Hinweis eingeschlossen.
+- Wenn `offset` angegeben und `limit` ausgelassen wird, wird von `offset` bis zum Ende zurückgegeben (nicht auf 200 begrenzt).
+- Polling dient dem Status auf Abruf, nicht der Planung von Warteschleifen. Wenn die Arbeit
   später stattfinden soll, verwenden Sie stattdessen Cron.
 
 ## Beispiele
 
-Eine lang laufende Aufgabe ausführen und später abfragen:
+Eine lange Aufgabe ausführen und später abfragen:
 
 ```json
 { "tool": "exec", "command": "sleep 5 && echo done", "yieldMs": 1000 }
@@ -113,7 +114,7 @@ Sofort im Hintergrund starten:
 { "tool": "exec", "command": "npm run build", "background": true }
 ```
 
-Stdin senden:
+stdin senden:
 
 ```json
 { "tool": "process", "action": "write", "sessionId": "<id>", "data": "y\n" }
@@ -131,13 +132,13 @@ Aktuelle Zeile absenden:
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-Literaltext einfügen:
+Wörtlichen Text einfügen:
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
 ```
 
-## Verwandt
+## Verwandte Themen
 
 - [Exec-Tool](/de/tools/exec)
-- [Exec approvals](/de/tools/exec-approvals)
+- [Exec-Genehmigungen](/de/tools/exec-approvals)

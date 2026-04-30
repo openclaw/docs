@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Sie möchten das standardmäßige Memory-Backend verstehen.
-    - Sie möchten Embedding-Anbieter oder die Hybridsuche konfigurieren.
-summary: Das standardmäßige SQLite-basierte Memory-Backend mit Schlüsselwort-, Vektor- und Hybridsuche
-title: Integrierte Memory-Engine
+    - Sie möchten das standardmäßige Speicher-Backend verstehen
+    - Sie möchten Embedding-Provider oder die hybride Suche konfigurieren
+summary: Das standardmäßige SQLite-basierte Speicher-Backend mit Schlüsselwort-, Vektor- und Hybridsuche
+title: Integrierte Speicher-Engine
 x-i18n:
-    generated_at: "2026-04-25T13:44:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:48:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ccf0b70bd3ed4e2138ae1d811573f6920c95eb3f8117693b242732012779dc6
+    source_hash: aa1597a9a49a6f1124cedf49f6f5a4c336f76dd5998ced246affb9c2e8171f05
     source_path: concepts/memory-builtin.md
-    workflow: 15
+    workflow: 16
 ---
 
-Die integrierte Engine ist das standardmäßige Memory-Backend. Sie speichert Ihren Memory-Index in
-einer agent-spezifischen SQLite-Datenbank und benötigt keine zusätzlichen Abhängigkeiten für den Einstieg.
+Die integrierte Engine ist das standardmäßige Speicher-Backend. Sie speichert Ihren Speicherindex in
+einer SQLite-Datenbank pro Agent und benötigt für den Einstieg keine zusätzlichen Abhängigkeiten.
 
 ## Was sie bietet
 
-- **Schlüsselwortsuche** über FTS5-Volltextindizierung (BM25-Bewertung).
-- **Vektorsuche** über Embeddings von jedem unterstützten Anbieter.
+- **Schlüsselwortsuche** über FTS5-Volltextindizierung (BM25-Scoring).
+- **Vektorsuche** über Embeddings von jedem unterstützten Provider.
 - **Hybridsuche**, die beides für die besten Ergebnisse kombiniert.
 - **CJK-Unterstützung** über Trigramm-Tokenisierung für Chinesisch, Japanisch und Koreanisch.
-- **sqlite-vec-Beschleunigung** für Vektorabfragen in der Datenbank (optional).
+- **sqlite-vec-Beschleunigung** für Vektorabfragen innerhalb der Datenbank (optional).
 
 ## Erste Schritte
 
-Wenn Sie einen API-Schlüssel für OpenAI, Gemini, Voyage oder Mistral haben, erkennt die integrierte
+Wenn Sie einen API-Schlüssel für OpenAI, Gemini, Voyage, Mistral oder DeepInfra haben, erkennt die integrierte
 Engine ihn automatisch und aktiviert die Vektorsuche. Keine Konfiguration erforderlich.
 
-Um einen Anbieter explizit festzulegen:
+So legen Sie einen Provider explizit fest:
 
 ```json5
 {
@@ -43,10 +43,10 @@ Um einen Anbieter explizit festzulegen:
 }
 ```
 
-Ohne einen Embedding-Anbieter ist nur die Schlüsselwortsuche verfügbar.
+Ohne Embedding-Provider ist nur die Schlüsselwortsuche verfügbar.
 
-Um den integrierten lokalen Embedding-Anbieter zu erzwingen, installieren Sie das optionale
-`node-llama-cpp`-Laufzeitpaket neben OpenClaw und verweisen Sie dann `local.modelPath`
+Um den integrierten lokalen Embedding-Provider zu erzwingen, installieren Sie das optionale
+Runtime-Paket `node-llama-cpp` neben OpenClaw und verweisen Sie dann `local.modelPath`
 auf eine GGUF-Datei:
 
 ```json5
@@ -65,29 +65,32 @@ auf eine GGUF-Datei:
 }
 ```
 
-## Unterstützte Embedding-Anbieter
+## Unterstützte Embedding-Provider
 
-| Anbieter | ID        | Automatisch erkannt | Hinweise                            |
-| -------- | --------- | ------------------- | ----------------------------------- |
-| OpenAI   | `openai`  | Ja                  | Standard: `text-embedding-3-small`  |
-| Gemini   | `gemini`  | Ja                  | Unterstützt Multimodalität (Bild + Audio) |
-| Voyage   | `voyage`  | Ja                  |                                     |
-| Mistral  | `mistral` | Ja                  |                                     |
-| Ollama   | `ollama`  | Nein                | Lokal, explizit festlegen           |
-| Local    | `local`   | Ja (zuerst)         | Optionale `node-llama-cpp`-Laufzeit |
+| Provider  | ID          | Automatisch erkannt | Hinweise                             |
+| --------- | ----------- | ------------------- | ------------------------------------ |
+| OpenAI    | `openai`    | Ja                  | Standard: `text-embedding-3-small`   |
+| Gemini    | `gemini`    | Ja                  | Unterstützt multimodal (Bild + Audio) |
+| Voyage    | `voyage`    | Ja                  |                                      |
+| Mistral   | `mistral`   | Ja                  |                                      |
+| DeepInfra | `deepinfra` | Ja                  | Standard: `BAAI/bge-m3`              |
+| Ollama    | `ollama`    | Nein                | Lokal, explizit festlegen            |
+| Lokal     | `local`     | Ja (zuerst)         | Optionale `node-llama-cpp`-Runtime   |
 
-Die automatische Erkennung wählt den ersten Anbieter, dessen API-Schlüssel aufgelöst werden kann, in der
-angegebenen Reihenfolge. Setzen Sie `memorySearch.provider`, um dies zu überschreiben.
+Die automatische Erkennung wählt den ersten Provider aus, dessen API-Schlüssel aufgelöst werden kann, in der
+angezeigten Reihenfolge. Legen Sie `memorySearch.provider` fest, um dies zu überschreiben.
 
-## So funktioniert die Indizierung
+## Funktionsweise der Indizierung
 
-OpenClaw indiziert `MEMORY.md` und `memory/*.md` in Blöcke (~400 Token mit
-80-Token-Überlappung) und speichert sie in einer agent-spezifischen SQLite-Datenbank.
+OpenClaw indiziert `MEMORY.md` und `memory/*.md` in Chunks (~400 Tokens mit
+80-Token-Überlappung) und speichert sie in einer SQLite-Datenbank pro Agent.
 
-- **Index-Speicherort:** `~/.openclaw/memory/<agentId>.sqlite`
-- **Dateiüberwachung:** Änderungen an Memory-Dateien lösen eine entprellte Neuindizierung aus (1,5 s).
-- **Automatische Neuindizierung:** Wenn sich der Embedding-Anbieter, das Modell oder die Chunking-Konfiguration
-  ändert, wird der gesamte Index automatisch neu erstellt.
+- **Indexspeicherort:** `~/.openclaw/memory/<agentId>.sqlite`
+- **Speicherwartung:** SQLite-WAL-Sidecars werden durch regelmäßige und
+  Shutdown-Checkpoints begrenzt.
+- **Dateiüberwachung:** Änderungen an Speicherdateien lösen eine entprellte Neuindizierung aus (1,5 s).
+- **Automatische Neuindizierung:** Wenn sich der Embedding-Provider, das Modell oder die Chunking-Konfiguration
+  ändert, wird der gesamte Index automatisch neu aufgebaut.
 - **Neuindizierung bei Bedarf:** `openclaw memory index --force`
 
 <Info>
@@ -96,51 +99,52 @@ Sie können auch Markdown-Dateien außerhalb des Workspace mit
 [Konfigurationsreferenz](/de/reference/memory-config#additional-memory-paths).
 </Info>
 
-## Wann sie verwendet werden sollte
+## Wann verwenden
 
 Die integrierte Engine ist für die meisten Benutzer die richtige Wahl:
 
-- Funktioniert sofort ohne zusätzliche Abhängigkeiten.
+- Funktioniert ohne zusätzliche Abhängigkeiten sofort.
 - Beherrscht Schlüsselwort- und Vektorsuche gut.
-- Unterstützt alle Embedding-Anbieter.
-- Die Hybridsuche kombiniert das Beste beider Retrieval-Ansätze.
+- Unterstützt alle Embedding-Provider.
+- Hybridsuche kombiniert das Beste aus beiden Retrieval-Ansätzen.
 
-Erwägen Sie einen Wechsel zu [QMD](/de/concepts/memory-qmd), wenn Sie Reranking, Query
+Ziehen Sie einen Wechsel zu [QMD](/de/concepts/memory-qmd) in Betracht, wenn Sie Reranking oder Query
 Expansion benötigen oder Verzeichnisse außerhalb des Workspace indizieren möchten.
 
-Erwägen Sie [Honcho](/de/concepts/memory-honcho), wenn Sie sessionübergreifendes Memory mit
-automatischer Benutzermodellierung möchten.
+Ziehen Sie [Honcho](/de/concepts/memory-honcho) in Betracht, wenn Sie sitzungsübergreifenden Speicher mit
+automatischer Benutzermodellierung wünschen.
 
 ## Fehlerbehebung
 
-**Memory-Suche deaktiviert?** Prüfen Sie `openclaw memory status`. Wenn kein Anbieter
+**Speichersuche deaktiviert?** Prüfen Sie `openclaw memory status`. Wenn kein Provider
 erkannt wird, legen Sie einen explizit fest oder fügen Sie einen API-Schlüssel hinzu.
 
-**Lokaler Anbieter nicht erkannt?** Bestätigen Sie, dass der lokale Pfad existiert, und führen Sie aus:
+**Lokaler Provider nicht erkannt?** Bestätigen Sie, dass der lokale Pfad existiert, und führen Sie aus:
 
 ```bash
 openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Sowohl eigenständige CLI-Befehle als auch das Gateway verwenden dieselbe `local`-Anbieter-ID.
-Wenn der Anbieter auf `auto` gesetzt ist, werden lokale Embeddings nur dann zuerst berücksichtigt,
+Sowohl eigenständige CLI-Befehle als auch der Gateway verwenden dieselbe `local`-Provider-ID.
+Wenn der Provider auf `auto` gesetzt ist, werden lokale Embeddings nur zuerst berücksichtigt,
 wenn `memorySearch.local.modelPath` auf eine vorhandene lokale Datei verweist.
 
-**Veraltete Ergebnisse?** Führen Sie `openclaw memory index --force` aus, um den Index neu zu erstellen. Die Überwachung
-kann Änderungen in seltenen Randfällen verpassen.
+**Veraltete Ergebnisse?** Führen Sie `openclaw memory index --force` aus, um neu aufzubauen. Der Watcher
+kann Änderungen in seltenen Randfällen übersehen.
 
-**sqlite-vec wird nicht geladen?** OpenClaw greift automatisch auf Cosinus-Ähnlichkeit im Prozess zurück. Prüfen Sie die Logs auf den konkreten Ladefehler.
+**sqlite-vec wird nicht geladen?** OpenClaw fällt automatisch auf prozessinterne Kosinusähnlichkeit zurück.
+Prüfen Sie die Protokolle auf den konkreten Ladefehler.
 
 ## Konfiguration
 
-Für die Einrichtung von Embedding-Anbietern, die Feinabstimmung der Hybridsuche (Gewichte, MMR, zeitlicher
-Decay), Batch-Indizierung, multimodales Memory, sqlite-vec, zusätzliche Pfade und alle
-anderen Konfigurationsoptionen siehe die
-[Memory-Konfigurationsreferenz](/de/reference/memory-config).
+Informationen zur Einrichtung von Embedding-Providern, Abstimmung der Hybridsuche (Gewichtungen, MMR, zeitlicher
+Zerfall), Batch-Indizierung, multimodalem Speicher, sqlite-vec, zusätzlichen Pfaden und allen
+weiteren Konfigurationsoptionen finden Sie in der
+[Speicherkonfigurationsreferenz](/de/reference/memory-config).
 
 ## Verwandt
 
-- [Memory-Überblick](/de/concepts/memory)
-- [Memory-Suche](/de/concepts/memory-search)
-- [Active Memory](/de/concepts/active-memory)
+- [Speicherübersicht](/de/concepts/memory)
+- [Speichersuche](/de/concepts/memory-search)
+- [Active memory](/de/concepts/active-memory)

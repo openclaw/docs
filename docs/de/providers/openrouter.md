@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Sie möchten einen einzelnen API-Schlüssel für viele LLMs
+    - Sie möchten einen einzigen API-Schlüssel für viele LLMs
     - Sie möchten Modelle über OpenRouter in OpenClaw ausführen
-    - Sie möchten OpenRouter für die Bilderzeugung verwenden
+    - Sie möchten OpenRouter für die Bildgenerierung verwenden
+    - Sie möchten OpenRouter für die Videogenerierung verwenden
 summary: Verwenden Sie die einheitliche API von OpenRouter, um in OpenClaw auf viele Modelle zuzugreifen
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-04-25T18:21:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:11:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5396b0a022746cf3dfc90fa2d0974ffe9798af1ac790e93d13398a9e622eceff
+    source_hash: 47206ce7279eb8a38f71b5c40d34646ad01df2cac25860b629951f9cec73270f
     source_path: providers/openrouter.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenRouter bietet eine **einheitliche API**, die Anfragen über einen einzigen
-Endpunkt und API-Schlüssel an viele Modelle weiterleitet. Sie ist OpenAI-kompatibel, daher funktionieren die meisten OpenAI-SDKs durch Umstellen der Base-URL.
+OpenRouter stellt eine **einheitliche API** bereit, die Anfragen über einen einzigen
+Endpunkt und API-Schlüssel an viele Modelle weiterleitet. Sie ist OpenAI-kompatibel, sodass die meisten OpenAI-SDKs durch Wechsel der Basis-URL funktionieren.
 
 ## Erste Schritte
 
@@ -29,7 +30,7 @@ Endpunkt und API-Schlüssel an viele Modelle weiterleitet. Sie ist OpenAI-kompat
     ```
   </Step>
   <Step title="(Optional) Zu einem bestimmten Modell wechseln">
-    Beim Onboarding wird standardmäßig `openrouter/auto` gesetzt. Wählen Sie später ein konkretes Modell:
+    Beim Onboarding wird standardmäßig `openrouter/auto` verwendet. Wählen Sie später ein konkretes Modell aus:
 
     ```bash
     openclaw models set openrouter/<provider>/<model>
@@ -60,16 +61,14 @@ verfügbaren Provider und Modelle finden Sie unter [/concepts/model-providers](/
 
 Gebündelte Fallback-Beispiele:
 
-| Model ref                            | Notes                         |
-| ------------------------------------ | ----------------------------- |
-| `openrouter/auto`                    | OpenRouter automatisches Routing |
-| `openrouter/moonshotai/kimi-k2.6`    | Kimi K2.6 über MoonshotAI     |
-| `openrouter/openrouter/healer-alpha` | OpenRouter Healer Alpha-Route |
-| `openrouter/openrouter/hunter-alpha` | OpenRouter Hunter Alpha-Route |
+| Modellreferenz                   | Hinweise                     |
+| --------------------------------- | ---------------------------- |
+| `openrouter/auto`                 | Automatisches OpenRouter-Routing |
+| `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 über MoonshotAI    |
 
 ## Bilderzeugung
 
-OpenRouter kann auch das Werkzeug `image_generate` unterstützen. Verwenden Sie ein OpenRouter-Bildmodell unter `agents.defaults.imageGenerationModel`:
+OpenRouter kann auch das Tool `image_generate` unterstützen. Verwenden Sie ein OpenRouter-Bildmodell unter `agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -85,12 +84,38 @@ OpenRouter kann auch das Werkzeug `image_generate` unterstützen. Verwenden Sie 
 }
 ```
 
-OpenClaw sendet Bildanfragen an OpenRouters Chat-Completions-Bild-API mit `modalities: ["image", "text"]`. Gemini-Bildmodelle erhalten unterstützte Hinweise zu `aspectRatio` und `resolution` über OpenRouters `image_config`. Verwenden Sie `agents.defaults.imageGenerationModel.timeoutMs` für langsamere OpenRouter-Bildmodelle; der pro Aufruf gesetzte Parameter `timeoutMs` des Werkzeugs `image_generate` hat weiterhin Vorrang.
+OpenClaw sendet Bildanfragen mit `modalities: ["image", "text"]` an die Chat-Completions-Bild-API von OpenRouter. Gemini-Bildmodelle erhalten unterstützte Hinweise für `aspectRatio` und `resolution` über OpenRouters `image_config`. Verwenden Sie `agents.defaults.imageGenerationModel.timeoutMs` für langsamere OpenRouter-Bildmodelle; der `timeoutMs`-Parameter pro Aufruf des Tools `image_generate` hat weiterhin Vorrang.
+
+## Videoerzeugung
+
+OpenRouter kann auch das Tool `video_generate` über seine asynchrone `/videos`-API unterstützen. Verwenden Sie ein OpenRouter-Videomodell unter `agents.defaults.videoGenerationModel`:
+
+```json5
+{
+  env: { OPENROUTER_API_KEY: "sk-or-..." },
+  agents: {
+    defaults: {
+      videoGenerationModel: {
+        primary: "openrouter/google/veo-3.1-fast",
+      },
+    },
+  },
+}
+```
+
+OpenClaw übermittelt Text-zu-Video- und Bild-zu-Video-Aufträge an OpenRouter, fragt
+die zurückgegebene `polling_url` ab und lädt das abgeschlossene Video von
+OpenRouters `unsigned_urls` oder dem dokumentierten Inhaltsendpunkt für Aufträge herunter.
+Referenzbilder werden standardmäßig als Bilder für das erste/letzte Frame gesendet; Bilder,
+die mit `reference_image` markiert sind, werden als OpenRouter-Eingabereferenzen gesendet. Der
+gebündelte Standard `google/veo-3.1-fast` weist auf die derzeit unterstützten Dauern von 4/6/8
+Sekunden, `720P`/`1080P`-Auflösungen und `16:9`/`9:16`-Seitenverhältnisse hin. Video-zu-Video ist für OpenRouter nicht registriert, da die Upstream-API
+zur Videoerzeugung derzeit Text- und Bildreferenzen akzeptiert.
 
 ## Text-zu-Sprache
 
 OpenRouter kann auch als TTS-Provider über seinen OpenAI-kompatiblen
-Endpunkt `/audio/speech` verwendet werden.
+`/audio/speech`-Endpunkt verwendet werden.
 
 ```json5
 {
@@ -110,7 +135,7 @@ Endpunkt `/audio/speech` verwendet werden.
 }
 ```
 
-Wenn `messages.tts.providers.openrouter.apiKey` weggelassen wird, verwendet TTS stattdessen
+Wenn `messages.tts.providers.openrouter.apiKey` weggelassen wird, verwendet TTS erneut
 `models.providers.openrouter.apiKey` und danach `OPENROUTER_API_KEY`.
 
 ## Authentifizierung und Header
@@ -118,17 +143,17 @@ Wenn `messages.tts.providers.openrouter.apiKey` weggelassen wird, verwendet TTS 
 OpenRouter verwendet intern ein Bearer-Token mit Ihrem API-Schlüssel.
 
 Bei echten OpenRouter-Anfragen (`https://openrouter.ai/api/v1`) fügt OpenClaw außerdem
-die dokumentierten OpenRouter-Header für Anwendungszuordnung hinzu:
+die dokumentierten App-Attributions-Header von OpenRouter hinzu:
 
-| Header                    | Value                 |
+| Header                    | Wert                  |
 | ------------------------- | --------------------- |
 | `HTTP-Referer`            | `https://openclaw.ai` |
 | `X-OpenRouter-Title`      | `OpenClaw`            |
 | `X-OpenRouter-Categories` | `cli-agent`           |
 
 <Warning>
-Wenn Sie den OpenRouter-Provider auf einen anderen Proxy oder eine andere Base-URL umleiten, fügt OpenClaw
-diese OpenRouter-spezifischen Header und Anthropic-Cache-Markierungen **nicht** ein.
+Wenn Sie den OpenRouter-Provider auf einen anderen Proxy oder eine andere Basis-URL umstellen, fügt OpenClaw
+diese OpenRouter-spezifischen Header oder Anthropic-Cache-Markierungen **nicht** ein.
 </Warning>
 
 ## Erweiterte Konfiguration
@@ -142,19 +167,21 @@ diese OpenRouter-spezifischen Header und Anthropic-Cache-Markierungen **nicht** 
 
   <Accordion title="Thinking-/Reasoning-Injektion">
     Auf unterstützten Nicht-`auto`-Routen ordnet OpenClaw die ausgewählte Thinking-Stufe
-    OpenRouter-Proxy-Reasoning-Payloads zu. Nicht unterstützte Modellhinweise und
-    `openrouter/auto` überspringen diese Reasoning-Injektion.
+    den Reasoning-Payloads des OpenRouter-Proxys zu. Nicht unterstützte Modellhinweise und
+    `openrouter/auto` überspringen diese Reasoning-Injektion. Hunter Alpha überspringt außerdem
+    Proxy-Reasoning für veraltete konfigurierte Modellreferenzen, weil OpenRouter
+    für diese eingestellte Route endgültigen Antworttext in Reasoning-Feldern zurückgeben könnte.
   </Accordion>
 
-  <Accordion title="Nur für OpenAI geltende Anfrageformung">
-    OpenRouter läuft weiterhin über den proxyartigen OpenAI-kompatiblen Pfad, daher
-    werden ausschließlich native OpenAI-Anfrageformungen wie `serviceTier`, Responses-`store`,
-    OpenAI-Reasoning-Kompatibilitäts-Payloads und Prompt-Cache-Hinweise nicht weitergeleitet.
+  <Accordion title="Nur-OpenAI-Anfrageformung">
+    OpenRouter läuft weiterhin über den proxyartigen OpenAI-kompatiblen Pfad, sodass
+    native Nur-OpenAI-Anfrageformung wie `serviceTier`, Responses-`store`,
+    OpenAI-Reasoning-Kompatibilitätspayloads und Prompt-Cache-Hinweise nicht weitergeleitet werden.
   </Accordion>
 
   <Accordion title="Gemini-gestützte Routen">
-    OpenRouter-Referenzen, die auf Gemini basieren, bleiben auf dem Proxy-Gemini-Pfad: OpenClaw behält dort
-    die Bereinigung von Gemini-Thought-Signaturen bei, aktiviert aber keine native Gemini-
+    Gemini-gestützte OpenRouter-Referenzen bleiben auf dem Proxy-Gemini-Pfad: OpenClaw behält
+    dort die Bereinigung von Gemini-Gedankensignaturen bei, aktiviert aber keine native Gemini-
     Replay-Validierung oder Bootstrap-Umschreibungen.
   </Accordion>
 
@@ -164,13 +191,13 @@ diese OpenRouter-spezifischen Header und Anthropic-Cache-Markierungen **nicht** 
   </Accordion>
 </AccordionGroup>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
     Auswahl von Providern, Modellreferenzen und Failover-Verhalten.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständige Konfigurationsreferenz für Agenten, Modelle und Provider.
+    Vollständige Konfigurationsreferenz für Agents, Modelle und Provider.
   </Card>
 </CardGroup>

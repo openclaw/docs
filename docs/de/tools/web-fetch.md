@@ -1,30 +1,29 @@
 ---
 read_when:
     - Sie möchten eine URL abrufen und lesbare Inhalte extrahieren
-    - Sie müssen `web_fetch` oder dessen Firecrawl-Fallback konfigurieren
-    - Sie möchten die Limits und das Caching von `web_fetch` verstehen
+    - Sie müssen web_fetch oder den zugehörigen Firecrawl-Fallback konfigurieren
+    - Sie möchten die Limits und das Caching von web_fetch verstehen
 sidebarTitle: Web Fetch
-summary: Tool `web_fetch` -- HTTP-Fetch mit Extraktion lesbarer Inhalte
-title: Web-Fetch
+summary: web_fetch-Tool -- HTTP-Abruf mit Extraktion lesbarer Inhalte
+title: Web-Abruf
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T07:06:11Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
-  source_path: tools/web-fetch.md
-  workflow: 15
+    generated_at: "2026-04-30T07:21:01Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
+    source_path: tools/web-fetch.md
+    workflow: 16
 ---
 
-Das Tool `web_fetch` führt ein einfaches HTTP-GET aus und extrahiert lesbare Inhalte
+Das Tool `web_fetch` führt ein einfaches HTTP GET aus und extrahiert lesbare Inhalte
 (HTML zu Markdown oder Text). Es führt **kein** JavaScript aus.
 
 Für JS-lastige Websites oder login-geschützte Seiten verwenden Sie stattdessen den
-[Web Browser](/de/tools/browser).
+[Webbrowser](/de/tools/browser).
 
 ## Schnellstart
 
-`web_fetch` ist **standardmäßig aktiviert** -- es ist keine Konfiguration erforderlich. Der Agent kann
+`web_fetch` ist **standardmäßig aktiviert** -- keine Konfiguration erforderlich. Der Agent kann
 es sofort aufrufen:
 
 ```javascript
@@ -45,23 +44,23 @@ Ausgabeformat nach der Extraktion des Hauptinhalts.
 Ausgabe auf diese Anzahl von Zeichen kürzen.
 </ParamField>
 
-## Wie es funktioniert
+## Funktionsweise
 
 <Steps>
-  <Step title="Abrufen">
-    Sendet ein HTTP-GET mit einem Chrome-ähnlichen User-Agent und einem `Accept-Language`-
-    Header. Blockiert private/interne Hostnamen und prüft Redirects erneut.
+  <Step title="Fetch">
+    Sendet ein HTTP GET mit einem Chrome-ähnlichen User-Agent und einem
+    `Accept-Language`-Header. Blockiert private/interne Hostnamen und prüft Weiterleitungen erneut.
   </Step>
-  <Step title="Extrahieren">
-    Führt Readability (Extraktion des Hauptinhalts) auf der HTML-Antwort aus.
+  <Step title="Extract">
+    Führt Readability (Extraktion des Hauptinhalts) für die HTML-Antwort aus.
   </Step>
   <Step title="Fallback (optional)">
     Wenn Readability fehlschlägt und Firecrawl konfiguriert ist, wird über die
     Firecrawl-API mit Bot-Umgehungsmodus erneut versucht.
   </Step>
   <Step title="Cache">
-    Ergebnisse werden 15 Minuten lang gecacht (konfigurierbar), um wiederholte
-    Fetches derselben URL zu reduzieren.
+    Ergebnisse werden 15 Minuten lang zwischengespeichert (konfigurierbar), um wiederholte
+    Abrufe derselben URL zu reduzieren.
   </Step>
 </Steps>
 
@@ -72,16 +71,20 @@ Ausgabe auf diese Anzahl von Zeichen kürzen.
   tools: {
     web: {
       fetch: {
-        enabled: true, // Standard: true
-        provider: "firecrawl", // optional; für Auto-Erkennung weglassen
-        maxChars: 50000, // maximale Ausgabezeichen
-        maxCharsCap: 50000, // harte Obergrenze für den Parameter maxChars
-        maxResponseBytes: 2000000, // maximale Download-Größe vor Kürzung
+        enabled: true, // default: true
+        provider: "firecrawl", // optional; omit for auto-detect
+        maxChars: 50000, // max output chars
+        maxCharsCap: 50000, // hard cap for maxChars param
+        maxResponseBytes: 2000000, // max download size before truncation
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
-        readability: true, // Readability-Extraktion verwenden
-        userAgent: "Mozilla/5.0 ...", // User-Agent überschreiben
+        readability: true, // use Readability extraction
+        userAgent: "Mozilla/5.0 ...", // override User-Agent
+        ssrfPolicy: {
+          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+        },
       },
     },
   },
@@ -91,14 +94,14 @@ Ausgabe auf diese Anzahl von Zeichen kürzen.
 ## Firecrawl-Fallback
 
 Wenn die Readability-Extraktion fehlschlägt, kann `web_fetch` auf
-[Firecrawl](/de/tools/firecrawl) als Fallback zurückgreifen für Bot-Umgehung und bessere Extraktion:
+[Firecrawl](/de/tools/firecrawl) zurückfallen, um Bots zu umgehen und eine bessere Extraktion zu erzielen:
 
 ```json5
 {
   tools: {
     web: {
       fetch: {
-        provider: "firecrawl", // optional; für Auto-Erkennung anhand verfügbarer Credentials weglassen
+        provider: "firecrawl", // optional; omit for auto-detect from available credentials
       },
     },
   },
@@ -108,10 +111,10 @@ Wenn die Readability-Extraktion fehlschlägt, kann `web_fetch` auf
         enabled: true,
         config: {
           webFetch: {
-            apiKey: "fc-...", // optional, wenn FIRECRAWL_API_KEY gesetzt ist
+            apiKey: "fc-...", // optional if FIRECRAWL_API_KEY is set
             baseUrl: "https://api.firecrawl.dev",
             onlyMainContent: true,
-            maxAgeMs: 86400000, // Cache-Dauer (1 Tag)
+            maxAgeMs: 86400000, // cache duration (1 day)
             timeoutSeconds: 60,
           },
         },
@@ -122,50 +125,54 @@ Wenn die Readability-Extraktion fehlschlägt, kann `web_fetch` auf
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey` unterstützt SecretRef-Objekte.
-Die veraltete Konfiguration `tools.web.fetch.firecrawl.*` wird automatisch von `openclaw doctor --fix` migriert.
+Die veraltete Konfiguration `tools.web.fetch.firecrawl.*` wird von `openclaw doctor --fix` automatisch migriert.
 
 <Note>
-  Wenn Firecrawl aktiviert ist und sein SecretRef nicht aufgelöst werden kann und es keinen
-  Env-Fallback `FIRECRAWL_API_KEY` gibt, schlägt der Gateway-Start sofort fehl.
+  Wenn Firecrawl aktiviert ist und seine SecretRef nicht aufgelöst werden kann und es keinen
+  `FIRECRAWL_API_KEY`-Env-Fallback gibt, schlägt der Gateway-Start schnell fehl.
 </Note>
 
 <Note>
-  Overrides für Firecrawl-`baseUrl` sind eingeschränkt: Sie müssen `https://` verwenden und
-  den offiziellen Firecrawl-Host (`api.firecrawl.dev`).
+  Firecrawl-`baseUrl`-Überschreibungen sind eingeschränkt: Sie müssen `https://` und
+  den offiziellen Firecrawl-Host (`api.firecrawl.dev`) verwenden.
 </Note>
 
 Aktuelles Laufzeitverhalten:
 
 - `tools.web.fetch.provider` wählt den Fetch-Fallback-Provider explizit aus.
-- Wenn `provider` weggelassen wird, erkennt OpenClaw automatisch den ersten einsatzbereiten `web_fetch`-
-  Provider anhand verfügbarer Credentials. Heute ist Firecrawl der gebündelte Provider.
+- Wenn `provider` weggelassen wird, erkennt OpenClaw automatisch den ersten bereiten Web-Fetch-
+  Provider anhand verfügbarer Anmeldedaten. Derzeit ist der gebündelte Provider Firecrawl.
 - Wenn Readability deaktiviert ist, springt `web_fetch` direkt zum ausgewählten
-  Provider-Fallback. Wenn kein Provider verfügbar ist, schlägt es fail-closed fehl.
+  Provider-Fallback. Wenn kein Provider verfügbar ist, schlägt es geschlossen fehl.
 
 ## Limits und Sicherheit
 
 - `maxChars` wird auf `tools.web.fetch.maxCharsCap` begrenzt
-- Der Response-Body wird vor dem Parsen auf `maxResponseBytes` begrenzt; zu große
+- Der Antworttext wird vor dem Parsen auf `maxResponseBytes` begrenzt; übergroße
   Antworten werden mit einer Warnung gekürzt
 - Private/interne Hostnamen werden blockiert
-- Redirects werden geprüft und durch `maxRedirects` begrenzt
-- `web_fetch` ist Best Effort -- manche Websites benötigen den [Web Browser](/de/tools/browser)
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` und
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` sind enge Opt-ins
+  für vertrauenswürdige Fake-IP-Proxy-Stacks; lassen Sie sie nicht gesetzt, es sei denn, Ihr Proxy besitzt
+  diese synthetischen Bereiche und erzwingt seine eigene Zielrichtlinie
+- Weiterleitungen werden geprüft und durch `maxRedirects` begrenzt
+- `web_fetch` funktioniert nach bestem Bemühen -- einige Websites benötigen den [Webbrowser](/de/tools/browser)
 
 ## Tool-Profile
 
-Wenn Sie Tool-Profile oder Allowlists verwenden, fügen Sie `web_fetch` oder `group:web` hinzu:
+Wenn Sie Tool-Profile oder Allowlisten verwenden, fügen Sie `web_fetch` oder `group:web` hinzu:
 
 ```json5
 {
   tools: {
     allow: ["web_fetch"],
-    // oder: allow: ["group:web"]  (enthält web_fetch, web_search und x_search)
+    // or: allow: ["group:web"]  (includes web_fetch, web_search, and x_search)
   },
 }
 ```
 
-## Verwandt
+## Verwandte Themen
 
-- [Web Search](/de/tools/web) -- das Web mit mehreren Providern durchsuchen
-- [Web Browser](/de/tools/browser) -- vollständige Browser-Automatisierung für JS-lastige Websites
-- [Firecrawl](/de/tools/firecrawl) -- Search- und Scrape-Tools von Firecrawl
+- [Websuche](/de/tools/web) -- das Web mit mehreren Providern durchsuchen
+- [Webbrowser](/de/tools/browser) -- vollständige Browserautomatisierung für JS-lastige Websites
+- [Firecrawl](/de/tools/firecrawl) -- Firecrawl-Such- und Scrape-Tools

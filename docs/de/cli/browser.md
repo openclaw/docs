@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Sie verwenden `openclaw browser` und möchten Beispiele für häufige Aufgaben
-    - Sie möchten einen Browser steuern, der auf einem anderen Rechner über einen Node-Host läuft
+    - Sie verwenden `openclaw browser` und möchten Beispiele für gängige Aufgaben
+    - Sie möchten einen Browser steuern, der über einen Node-Host auf einem anderen Rechner läuft
     - Sie möchten sich über Chrome MCP mit Ihrem lokal angemeldeten Chrome verbinden
-summary: CLI-Referenz für `openclaw browser` (Lebenszyklus, Profile, Tabs, Aktionen, Status und Debugging)
+summary: CLI-Referenz für `openclaw browser` (Lebenszyklus, Profile, Tabs, Aktionen, Zustand und Debugging)
 title: Browser
 x-i18n:
-    generated_at: "2026-04-26T11:25:03Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:44:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b42511e841e768bfa4031463f213d78c67d5c63efb655a90f65c7e8c71da9881
+    source_hash: c7b5112c61e8289ab6a02bc30c9aefe640c053271f82197c0ee810b4a5efa580
     source_path: cli/browser.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw browser`
 
-Verwalten Sie die Browser-Steuerungsoberfläche von OpenClaw und führen Sie Browser-Aktionen aus (Lebenszyklus, Profile, Tabs, Snapshots, Screenshots, Navigation, Eingabe, Status-Emulation und Debugging).
+Verwalten Sie die Browser-Steuerungsoberfläche von OpenClaw und führen Sie Browser-Aktionen aus (Lebenszyklus, Profile, Tabs, Snapshots, Screenshots, Navigation, Eingabe, Zustandsemulation und Debugging).
 
 Verwandt:
 
@@ -26,10 +26,10 @@ Verwandt:
 
 - `--url <gatewayWsUrl>`: Gateway-WebSocket-URL (standardmäßig aus der Konfiguration).
 - `--token <token>`: Gateway-Token (falls erforderlich).
-- `--timeout <ms>`: Anfrage-Timeout (ms).
-- `--expect-final`: Auf eine endgültige Gateway-Antwort warten.
-- `--browser-profile <name>`: Ein Browser-Profil auswählen (Standard aus der Konfiguration).
-- `--json`: Maschinenlesbare Ausgabe (wo unterstützt).
+- `--timeout <ms>`: Anforderungs-Timeout (ms).
+- `--expect-final`: auf eine finale Gateway-Antwort warten.
+- `--browser-profile <name>`: ein Browser-Profil auswählen (Standard aus der Konfiguration).
+- `--json`: maschinenlesbare Ausgabe (wo unterstützt).
 
 ## Schnellstart (lokal)
 
@@ -44,7 +44,7 @@ Agenten können dieselbe Bereitschaftsprüfung mit `browser({ action: "doctor" }
 
 ## Schnelle Fehlerbehebung
 
-Wenn `start` mit `not reachable after start` fehlschlägt, beheben Sie zuerst die CDP-Bereitschaft. Wenn `start` und `tabs` erfolgreich sind, aber `open` oder `navigate` fehlschlägt, ist die Browser-Steuerungsebene funktionsfähig, und der Fehler liegt gewöhnlich an der SSRF-Richtlinie für Navigation.
+Wenn `start` mit `not reachable after start` fehlschlägt, prüfen Sie zuerst die CDP-Bereitschaft. Wenn `start` und `tabs` erfolgreich sind, aber `open` oder `navigate` fehlschlägt, ist die Browser-Steuerungsebene intakt und der Fehler liegt üblicherweise an der Navigations-SSRF-Richtlinie.
 
 Minimale Sequenz:
 
@@ -72,17 +72,16 @@ openclaw browser --browser-profile openclaw reset-profile
 Hinweise:
 
 - `doctor --deep` fügt eine Live-Snapshot-Prüfung hinzu. Das ist nützlich, wenn die grundlegende CDP-Bereitschaft grün ist, Sie aber einen Nachweis möchten, dass der aktuelle Tab inspiziert werden kann.
-- Für `attachOnly`- und Remote-CDP-Profile schließt `openclaw browser stop` die aktive Steuerungssitzung und entfernt temporäre Emulations-Overrides, auch wenn OpenClaw den Browser-Prozess nicht selbst gestartet hat.
-- Für lokal verwaltete Profile beendet `openclaw browser stop` den gestarteten Browser-Prozess.
-- `openclaw browser start --headless` gilt nur für diese Startanfrage und nur dann, wenn OpenClaw einen lokal verwalteten Browser startet. Es überschreibt weder `browser.headless` noch die Profilkonfiguration und hat bei einem bereits laufenden Browser keine Wirkung.
-- Auf Linux-Hosts ohne `DISPLAY` oder `WAYLAND_DISPLAY` laufen lokal verwaltete Profile automatisch headless, sofern nicht `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless=false` oder `browser.profiles.<name>.headless=false` ausdrücklich einen sichtbaren Browser anfordert.
+- Für `attachOnly`- und Remote-CDP-Profile schließt `openclaw browser stop` die aktive Steuerungssitzung und löscht temporäre Emulationsüberschreibungen, selbst wenn OpenClaw den Browser-Prozess nicht selbst gestartet hat.
+- Bei lokal verwalteten Profilen stoppt `openclaw browser stop` den gestarteten Browser-Prozess.
+- `openclaw browser start --headless` gilt nur für diese Startanforderung und nur, wenn OpenClaw einen lokal verwalteten Browser startet. Es schreibt `browser.headless` oder die Profilkonfiguration nicht um und hat bei einem bereits laufenden Browser keine Wirkung.
+- Auf Linux-Hosts ohne `DISPLAY` oder `WAYLAND_DISPLAY` laufen lokal verwaltete Profile automatisch im Headless-Modus, es sei denn, `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless=false` oder `browser.profiles.<name>.headless=false` fordert ausdrücklich einen sichtbaren Browser an.
 
 ## Wenn der Befehl fehlt
 
-Wenn `openclaw browser` ein unbekannter Befehl ist, prüfen Sie `plugins.allow` in
-`~/.openclaw/openclaw.json`.
+Wenn `openclaw browser` ein unbekannter Befehl ist, prüfen Sie `plugins.allow` in `~/.openclaw/openclaw.json`.
 
-Wenn `plugins.allow` vorhanden ist, muss das gebündelte Browser-Plugin ausdrücklich aufgeführt sein:
+Wenn `plugins.allow` vorhanden ist, führen Sie das gebündelte Browser-Plugin explizit auf, es sei denn, die Konfiguration hat bereits einen Root-`browser`-Block:
 
 ```json5
 {
@@ -92,17 +91,17 @@ Wenn `plugins.allow` vorhanden ist, muss das gebündelte Browser-Plugin ausdrüc
 }
 ```
 
-`browser.enabled=true` stellt den CLI-Unterbefehl nicht wieder her, wenn die Plugin-Allowlist `browser` ausschließt.
+Ein expliziter Root-`browser`-Block, zum Beispiel `browser.enabled=true` oder `browser.profiles.<name>`, aktiviert das gebündelte Browser-Plugin ebenfalls unter einer restriktiven Plugin-Allowlist.
 
 Verwandt: [Browser-Tool](/de/tools/browser#missing-browser-command-or-tool)
 
 ## Profile
 
-Profile sind benannte Routing-Konfigurationen für Browser. In der Praxis:
+Profile sind benannte Browser-Routing-Konfigurationen. In der Praxis:
 
-- `openclaw`: startet oder verbindet sich mit einer dedizierten, von OpenClaw verwalteten Chrome-Instanz (isoliertes User-Data-Verzeichnis).
+- `openclaw`: startet eine dedizierte von OpenClaw verwaltete Chrome-Instanz (isoliertes Benutzerdatenverzeichnis) oder hängt sich daran an.
 - `user`: steuert Ihre bestehende angemeldete Chrome-Sitzung über Chrome DevTools MCP.
-- Benutzerdefinierte CDP-Profile: verweisen auf einen lokalen oder entfernten CDP-Endpunkt.
+- benutzerdefinierte CDP-Profile: verweisen auf einen lokalen oder Remote-CDP-Endpunkt.
 
 ```bash
 openclaw browser profiles
@@ -131,14 +130,7 @@ openclaw browser focus docs
 openclaw browser close t1
 ```
 
-`tabs` gibt zuerst `suggestedTargetId` zurück, dann die stabile `tabId` wie `t1`,
-das optionale Label und die rohe `targetId`. Agenten sollten
-`suggestedTargetId` an `focus`, `close`, Snapshots und Aktionen zurückgeben. Sie können
-ein Label mit `open --label`, `tab new --label` oder `tab label` zuweisen; Labels,
-Tab-IDs, rohe Target-IDs und eindeutige Präfixe von Target-IDs werden alle akzeptiert.
-Wenn Chromium während einer Navigation oder eines Formular-Submit das zugrunde liegende rohe Target ersetzt,
-behält OpenClaw die stabile `tabId`/das Label am Ersatz-Tab bei, wenn die Übereinstimmung nachgewiesen werden kann. Rohe Target-IDs bleiben flüchtig; bevorzugen Sie
-`suggestedTargetId`.
+`tabs` gibt zuerst `suggestedTargetId` zurück, dann die stabile `tabId` wie `t1`, das optionale Label und die rohe `targetId`. Agenten sollten `suggestedTargetId` an `focus`, `close`, Snapshots und Aktionen zurückgeben. Sie können ein Label mit `open --label`, `tab new --label` oder `tab label` zuweisen; Labels, Tab-IDs, rohe Ziel-IDs und eindeutige Ziel-ID-Präfixe werden alle akzeptiert. Wenn Chromium das zugrunde liegende rohe Ziel während einer Navigation oder Formularübermittlung ersetzt, behält OpenClaw die stabile `tabId` bzw. das Label am Ersatztab, wenn die Zuordnung nachgewiesen werden kann. Rohe Ziel-IDs bleiben flüchtig; bevorzugen Sie `suggestedTargetId`.
 
 ## Snapshot / Screenshot / Aktionen
 
@@ -160,11 +152,10 @@ openclaw browser screenshot --labels
 
 Hinweise:
 
-- `--full-page` ist nur für Seitenerfassungen gedacht; es kann nicht mit `--ref`
-  oder `--element` kombiniert werden.
-- Profile vom Typ `existing-session` / `user` unterstützen Seiten-Screenshots und `--ref`-Screenshots aus der Snapshot-Ausgabe, aber keine CSS-`--element`-Screenshots.
-- `--labels` legt die aktuellen Snapshot-Refs über den Screenshot.
-- `snapshot --urls` hängt entdeckte Link-Ziele an KI-Snapshots an, damit Agenten direkte Navigationsziele auswählen können, statt nur anhand des Linktexts zu raten.
+- `--full-page` ist nur für Seitenerfassungen gedacht; es kann nicht mit `--ref` oder `--element` kombiniert werden.
+- `existing-session`-/`user`-Profile unterstützen Seiten-Screenshots und `--ref`-Screenshots aus Snapshot-Ausgaben, aber keine CSS-`--element`-Screenshots.
+- `--labels` blendet aktuelle Snapshot-Refs über dem Screenshot ein.
+- `snapshot --urls` hängt erkannte Linkziele an KI-Snapshots an, damit Agenten direkte Navigationsziele auswählen können, statt nur anhand des Linktexts zu raten.
 
 Navigieren/Klicken/Tippen (ref-basierte UI-Automatisierung):
 
@@ -183,9 +174,7 @@ openclaw browser wait --text "Done"
 openclaw browser evaluate --fn '(el) => el.textContent' --ref <ref>
 ```
 
-Aktionsantworten geben nach aktionsausgelöstem Seitenersatz die aktuelle rohe `targetId` zurück,
-wenn OpenClaw den Ersatz-Tab nachweisen kann. Skripte sollten für langlebige Workflows trotzdem
-`suggestedTargetId`/Labels speichern und weitergeben.
+Aktionsantworten geben die aktuelle rohe `targetId` nach einem durch eine Aktion ausgelösten Seitenersatz zurück, wenn OpenClaw den Ersatztab nachweisen kann. Skripte sollten für langlebige Workflows weiterhin `suggestedTargetId`/Labels speichern und übergeben.
 
 Datei- und Dialog-Helfer:
 
@@ -196,11 +185,9 @@ openclaw browser download <ref> report.pdf
 openclaw browser dialog --accept
 ```
 
-Verwaltete Chrome-Profile speichern gewöhnliche, durch Klick ausgelöste Downloads im OpenClaw-Downloadverzeichnis
-(`/tmp/openclaw/downloads` standardmäßig oder im konfigurierten temporären Wurzelverzeichnis).
-Verwenden Sie `waitfordownload` oder `download`, wenn der Agent auf eine bestimmte Datei warten und ihren Pfad zurückgeben muss; diese expliziten Waiter übernehmen den nächsten Download.
+Verwaltete Chrome-Profile speichern gewöhnliche per Klick ausgelöste Downloads im OpenClaw-Download-Verzeichnis (`/tmp/openclaw/downloads` standardmäßig oder im konfigurierten temporären Root). Verwenden Sie `waitfordownload` oder `download`, wenn der Agent auf eine bestimmte Datei warten und deren Pfad zurückgeben muss; diese expliziten Wartefunktionen besitzen den nächsten Download.
 
-## Status und Speicher
+## Zustand und Speicher
 
 Viewport + Emulation:
 
@@ -243,7 +230,7 @@ openclaw browser trace stop --out trace.zip
 
 ## Bestehendes Chrome über MCP
 
-Verwenden Sie das integrierte Profil `user`, oder erstellen Sie Ihr eigenes Profil vom Typ `existing-session`:
+Verwenden Sie das integrierte `user`-Profil oder erstellen Sie Ihr eigenes `existing-session`-Profil:
 
 ```bash
 openclaw browser --browser-profile user tabs
@@ -252,32 +239,30 @@ openclaw browser create-profile --name brave-live --driver existing-session --us
 openclaw browser --browser-profile chrome-live tabs
 ```
 
-Dieser Pfad ist nur für den Host gedacht. Für Docker, headless Server, Browserless oder andere Remote-Setups verwenden Sie stattdessen ein CDP-Profil.
+Dieser Pfad ist nur für den Host vorgesehen. Für Docker, Headless-Server, Browserless oder andere Remote-Setups verwenden Sie stattdessen ein CDP-Profil.
 
-Aktuelle Einschränkungen von `existing-session`:
+Aktuelle Einschränkungen von existing-session:
 
 - Snapshot-gesteuerte Aktionen verwenden Refs, keine CSS-Selektoren
-- `browser.actionTimeoutMs` setzt bei unterstützten `act`-Anfragen ohne angegebenes `timeoutMs` standardmäßig 60000 ms; `timeoutMs` pro Aufruf hat weiterhin Vorrang.
+- `browser.actionTimeoutMs` setzt unterstützte `act`-Anforderungen standardmäßig auf 60000 ms, wenn Aufrufer `timeoutMs` weglassen; `timeoutMs` pro Aufruf hat weiterhin Vorrang.
 - `click` ist nur Linksklick
 - `type` unterstützt `slowly=true` nicht
 - `press` unterstützt `delayMs` nicht
-- `hover`, `scrollintoview`, `drag`, `select`, `fill` und `evaluate` lehnen Timeout-Overrides pro Aufruf ab
+- `hover`, `scrollintoview`, `drag`, `select`, `fill` und `evaluate` lehnen Timeout-Überschreibungen pro Aufruf ab
 - `select` unterstützt nur einen Wert
 - `wait --load networkidle` wird nicht unterstützt
-- Datei-Uploads erfordern `--ref` / `--input-ref`, unterstützen kein CSS-
-  `--element` und unterstützen derzeit jeweils nur eine Datei
+- Datei-Uploads erfordern `--ref` / `--input-ref`, unterstützen kein CSS-`--element` und unterstützen derzeit jeweils nur eine Datei
 - Dialog-Hooks unterstützen `--timeout` nicht
 - Screenshots unterstützen Seitenerfassungen und `--ref`, aber kein CSS-`--element`
-- `responsebody`, Download-Abfangung, PDF-Export und Batch-Aktionen erfordern weiterhin
-  einen verwalteten Browser oder ein rohes CDP-Profil
+- `responsebody`, Download-Abfangung, PDF-Export und Batch-Aktionen erfordern weiterhin einen verwalteten Browser oder ein rohes CDP-Profil
 
-## Remote-Browsersteuerung (Node-Host-Proxy)
+## Remote-Browser-Steuerung (Node-Host-Proxy)
 
-Wenn das Gateway auf einem anderen Rechner als der Browser läuft, führen Sie einen **Node-Host** auf dem Rechner aus, auf dem Chrome/Brave/Edge/Chromium vorhanden ist. Das Gateway leitet Browser-Aktionen an diesen Node weiter (kein separater Server für Browsersteuerung erforderlich).
+Wenn der Gateway auf einer anderen Maschine läuft als der Browser, führen Sie einen **Node-Host** auf der Maschine aus, die Chrome/Brave/Edge/Chromium hat. Der Gateway leitet Browser-Aktionen an diesen Node weiter (kein separater Browser-Steuerungsserver erforderlich).
 
 Verwenden Sie `gateway.nodes.browser.mode`, um das automatische Routing zu steuern, und `gateway.nodes.browser.node`, um einen bestimmten Node festzulegen, wenn mehrere verbunden sind.
 
-Sicherheit + Remote-Setup: [Browser-Tool](/de/tools/browser), [Remote-Zugriff](/de/gateway/remote), [Tailscale](/de/gateway/tailscale), [Sicherheit](/de/gateway/security)
+Sicherheit + Remote-Einrichtung: [Browser-Tool](/de/tools/browser), [Remote-Zugriff](/de/gateway/remote), [Tailscale](/de/gateway/tailscale), [Sicherheit](/de/gateway/security)
 
 ## Verwandt
 

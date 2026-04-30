@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Tools aufrufen, ohne einen vollständigen Agenten-Turn auszuführen
-    - Automatisierungen erstellen, die die Durchsetzung von Tool-Richtlinien benötigen
+    - Tools aufrufen, ohne einen vollständigen Agenten-Durchlauf auszuführen
+    - Automatisierungen erstellen, die eine Durchsetzung von Tool-Richtlinien erfordern
 summary: Ein einzelnes Tool direkt über den Gateway-HTTP-Endpunkt aufrufen
-title: Tools-invoke-API
+title: Werkzeuge rufen die API auf
 x-i18n:
-    generated_at: "2026-04-24T06:40:22Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:57:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: edae245ca8b3eb2f4bd62fb9001ddfcb3086bec40ab976b5389b291023f6205e
+    source_hash: 7ba20b7471de76e7f6bccc4d7a3d72c00d9d7b9843ad4e74825685c992a33f1a
     source_path: gateway/tools-invoke-http-api.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Tools Invoke (HTTP)
+# Tools-Aufruf (HTTP)
 
-Das Gateway von OpenClaw stellt einen einfachen HTTP-Endpunkt bereit, um ein einzelnes Tool direkt aufzurufen. Er ist immer aktiviert und verwendet Gateway-Auth plus Tool-Richtlinie. Wie bei der OpenAI-kompatiblen Oberfläche `/v1/*` wird Bearer-Auth mit gemeinsamem Secret als vertrauenswürdiger Operator-Zugriff für das gesamte Gateway behandelt.
+Der Gateway von OpenClaw stellt einen einfachen HTTP-Endpunkt bereit, um ein einzelnes Tool direkt aufzurufen. Er ist immer aktiviert und verwendet Gateway-Authentifizierung sowie Tool-Richtlinien. Wie bei der OpenAI-kompatiblen `/v1/*`-Oberfläche wird Shared-Secret-Bearer-Authentifizierung als vertrauenswürdiger Operator-Zugriff für den gesamten Gateway behandelt.
 
 - `POST /tools/invoke`
-- Derselbe Port wie das Gateway (WS + HTTP-Multiplex): `http://<gateway-host>:<port>/tools/invoke`
+- Derselbe Port wie der Gateway (WS + HTTP-Multiplex): `http://<gateway-host>:<port>/tools/invoke`
 
-Die maximale Payload-Größe beträgt standardmäßig 2 MB.
+Die standardmäßige maximale Payload-Größe beträgt 2 MB.
 
 ## Authentifizierung
 
@@ -28,12 +28,12 @@ Verwendet die Gateway-Auth-Konfiguration.
 
 Gängige HTTP-Auth-Pfade:
 
-- Auth mit gemeinsamem Secret (`gateway.auth.mode="token"` oder `"password"`):
+- Shared-Secret-Auth (`gateway.auth.mode="token"` oder `"password"`):
   `Authorization: Bearer <token-or-password>`
-- vertrauenswürdige, identitätsführende HTTP-Auth (`gateway.auth.mode="trusted-proxy"`):
-  über den konfigurierten identitätsbewussten Proxy routen und ihn die
-  erforderlichen Identitäts-Header injizieren lassen
-- offene Auth über privaten Ingress (`gateway.auth.mode="none"`):
+- vertrauenswürdige identitätstragende HTTP-Auth (`gateway.auth.mode="trusted-proxy"`):
+  über den konfigurierten identitätsbewussten Proxy routen und die erforderlichen
+  Identitäts-Header von ihm einfügen lassen
+- offene Authentifizierung über privaten Ingress (`gateway.auth.mode="none"`):
   kein Auth-Header erforderlich
 
 Hinweise:
@@ -41,35 +41,35 @@ Hinweise:
 - Wenn `gateway.auth.mode="token"` gilt, verwenden Sie `gateway.auth.token` (oder `OPENCLAW_GATEWAY_TOKEN`).
 - Wenn `gateway.auth.mode="password"` gilt, verwenden Sie `gateway.auth.password` (oder `OPENCLAW_GATEWAY_PASSWORD`).
 - Wenn `gateway.auth.mode="trusted-proxy"` gilt, muss die HTTP-Anfrage von einer
-  konfigurierten vertrauenswürdigen Proxy-Quelle kommen, die nicht Loopback ist; Proxys mit
-  Loopback auf demselben Host erfüllen diesen Modus nicht.
-- Wenn `gateway.auth.rateLimit` konfiguriert ist und zu viele Auth-Fehler auftreten, gibt der Endpunkt `429` mit `Retry-After` zurück.
+  konfigurierten vertrauenswürdigen Proxy-Quelle stammen; Loopback-Proxys auf demselben Host erfordern explizit
+  `gateway.auth.trustedProxy.allowLoopback = true`.
+- Wenn `gateway.auth.rateLimit` konfiguriert ist und zu viele Auth-Fehlschläge auftreten, gibt der Endpunkt `429` mit `Retry-After` zurück.
 
 ## Sicherheitsgrenze (wichtig)
 
 Behandeln Sie diesen Endpunkt als Oberfläche mit **vollem Operator-Zugriff** für die Gateway-Instanz.
 
-- Bearer-HTTP-Auth ist hier kein enges Scope-Modell pro Benutzer.
-- Ein gültiges Gateway-Token/-Passwort für diesen Endpunkt sollte wie eine Eigentümer-/Operator-Anmeldedaten behandelt werden.
-- Für Auth-Modi mit gemeinsamem Secret (`token` und `password`) stellt der Endpunkt die normalen vollständigen Operator-Standardwerte wieder her, selbst wenn der Aufrufer einen engeren Header `x-openclaw-scopes` sendet.
-- Auth mit gemeinsamem Secret behandelt direkte Tool-Aufrufe auf diesem Endpunkt außerdem als Turns eines Eigentümer-Absenders.
-- Vertrauenswürdige identitätsführende HTTP-Modi (zum Beispiel Trusted-Proxy-Auth oder `gateway.auth.mode="none"` bei privatem Ingress) berücksichtigen `x-openclaw-scopes`, wenn vorhanden, und greifen andernfalls auf die normale Standardmenge von Operator-Scopes zurück.
+- HTTP-Bearer-Auth ist hier kein enges Scope-Modell pro Benutzer.
+- Ein gültiges Gateway-Token/-Passwort für diesen Endpunkt sollte wie ein Owner-/Operator-Zugangsdaten behandelt werden.
+- Für Shared-Secret-Auth-Modi (`token` und `password`) stellt der Endpunkt die normalen vollständigen Operator-Standardwerte wieder her, selbst wenn der Aufrufer einen engeren `x-openclaw-scopes`-Header sendet.
+- Shared-Secret-Auth behandelt außerdem direkte Tool-Aufrufe an diesem Endpunkt als Owner-Sender-Turns.
+- Vertrauenswürdige identitätstragende HTTP-Modi (zum Beispiel Trusted-Proxy-Auth oder `gateway.auth.mode="none"` auf einem privaten Ingress) berücksichtigen `x-openclaw-scopes`, wenn vorhanden, und fallen andernfalls auf den normalen Operator-Standard-Scope-Satz zurück.
 - Halten Sie diesen Endpunkt nur auf Loopback/Tailnet/privatem Ingress; setzen Sie ihn nicht direkt dem öffentlichen Internet aus.
 
 Auth-Matrix:
 
 - `gateway.auth.mode="token"` oder `"password"` + `Authorization: Bearer ...`
-  - beweist den Besitz des gemeinsam genutzten Gateway-Operator-Secrets
-  - ignoriert enger gefasste `x-openclaw-scopes`
-  - stellt die vollständige Standardmenge von Operator-Scopes wieder her:
+  - weist den Besitz des gemeinsamen Gateway-Operator-Secrets nach
+  - ignoriert engere `x-openclaw-scopes`
+  - stellt den vollständigen Standard-Operator-Scope-Satz wieder her:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - behandelt direkte Tool-Aufrufe auf diesem Endpunkt als Turns eines Eigentümer-Absenders
-- vertrauenswürdige identitätsführende HTTP-Modi (zum Beispiel Trusted-Proxy-Auth oder `gateway.auth.mode="none"` bei privatem Ingress)
+  - behandelt direkte Tool-Aufrufe an diesem Endpunkt als Owner-Sender-Turns
+- vertrauenswürdige identitätstragende HTTP-Modi (zum Beispiel Trusted-Proxy-Auth oder `gateway.auth.mode="none"` auf privatem Ingress)
   - authentifizieren eine äußere vertrauenswürdige Identität oder Deployment-Grenze
   - berücksichtigen `x-openclaw-scopes`, wenn der Header vorhanden ist
-  - greifen auf die normale Standardmenge von Operator-Scopes zurück, wenn der Header fehlt
-  - verlieren nur dann Eigentümer-Semantik, wenn der Aufrufer die Scopes explizit einschränkt und `operator.admin` weglässt
+  - fallen auf den normalen Operator-Standard-Scope-Satz zurück, wenn der Header fehlt
+  - verlieren Owner-Semantik nur, wenn der Aufrufer Scopes explizit einschränkt und `operator.admin` auslässt
 
 ## Request-Body
 
@@ -85,74 +85,74 @@ Auth-Matrix:
 
 Felder:
 
-- `tool` (string, erforderlich): Name des aufzurufenden Tools.
-- `action` (string, optional): wird in args abgebildet, wenn das Tool-Schema `action` unterstützt und die args-Payload dies ausgelassen hat.
-- `args` (object, optional): toolspezifische Argumente.
-- `sessionKey` (string, optional): Ziel-Sitzungsschlüssel. Wenn weggelassen oder `"main"`, verwendet das Gateway den konfigurierten Haupt-Sitzungsschlüssel (berücksichtigt `session.mainKey` und den Standardagenten oder `global` im globalen Scope).
-- `dryRun` (boolean, optional): für zukünftige Verwendung reserviert; derzeit ignoriert.
+- `tool` (String, erforderlich): Name des aufzurufenden Tools.
+- `action` (String, optional): wird in Args übernommen, wenn das Tool-Schema `action` unterstützt und die Args-Payload es ausgelassen hat.
+- `args` (Objekt, optional): toolspezifische Argumente.
+- `sessionKey` (String, optional): Ziel-Session-Schlüssel. Wenn ausgelassen oder `"main"`, verwendet der Gateway den konfigurierten Haupt-Session-Schlüssel (berücksichtigt `session.mainKey` und den Standard-Agent oder `global` im globalen Scope).
+- `dryRun` (Boolean, optional): für zukünftige Verwendung reserviert; derzeit ignoriert.
 
-## Verhalten von Richtlinie + Routing
+## Richtlinien- und Routing-Verhalten
 
-Die Verfügbarkeit von Tools wird durch dieselbe Richtlinienkette gefiltert, die auch von Gateway-Agenten verwendet wird:
+Die Tool-Verfügbarkeit wird durch dieselbe Richtlinienkette gefiltert, die von Gateway-Agenten verwendet wird:
 
 - `tools.profile` / `tools.byProvider.profile`
 - `tools.allow` / `tools.byProvider.allow`
 - `agents.<id>.tools.allow` / `agents.<id>.tools.byProvider.allow`
-- Gruppenrichtlinien (wenn der Sitzungsschlüssel einer Gruppe oder einem Channel zugeordnet ist)
-- Unteragenten-Richtlinie (wenn mit einem Unteragenten-Sitzungsschlüssel aufgerufen wird)
+- Gruppenrichtlinien (wenn der Session-Schlüssel einer Gruppe oder einem Kanal zugeordnet ist)
+- Subagent-Richtlinie (beim Aufruf mit einem Subagent-Session-Schlüssel)
 
-Wenn ein Tool durch die Richtlinie nicht erlaubt ist, gibt der Endpunkt **404** zurück.
+Wenn ein Tool durch Richtlinien nicht erlaubt ist, gibt der Endpunkt **404** zurück.
 
 Wichtige Hinweise zur Grenze:
 
-- Exec-Genehmigungen sind Operator-Guardrails, keine separate Autorisierungsgrenze für diesen HTTP-Endpunkt. Wenn ein Tool hier über Gateway-Auth + Tool-Richtlinie erreichbar ist, fügt `/tools/invoke` keine zusätzliche Genehmigungsaufforderung pro Aufruf hinzu.
-- Geben Sie Gateway-Bearer-Anmeldedaten nicht an nicht vertrauenswürdige Aufrufer weiter. Wenn Sie Trennung über Vertrauensgrenzen hinweg benötigen, betreiben Sie separate Gateways (und idealerweise separate OS-Benutzer/Hosts).
+- Exec-Genehmigungen sind Operator-Leitplanken, keine separate Autorisierungsgrenze für diesen HTTP-Endpunkt. Wenn ein Tool hier über Gateway-Auth + Tool-Richtlinie erreichbar ist, fügt `/tools/invoke` keinen zusätzlichen Genehmigungs-Prompt pro Aufruf hinzu.
+- Geben Sie Gateway-Bearer-Zugangsdaten nicht an nicht vertrauenswürdige Aufrufer weiter. Wenn Sie Trennung über Vertrauensgrenzen hinweg benötigen, betreiben Sie separate Gateways (und idealerweise separate OS-Benutzer/-Hosts).
 
-Gateway-HTTP wendet standardmäßig außerdem eine harte Deny-Liste an (selbst wenn die Sitzungsrichtlinie das Tool erlaubt):
+Gateway-HTTP wendet außerdem standardmäßig eine harte Sperrliste an (selbst wenn die Session-Richtlinie das Tool erlaubt):
 
 - `exec` — direkte Befehlsausführung (RCE-Oberfläche)
-- `spawn` — beliebige Erstellung von Kindprozessen (RCE-Oberfläche)
+- `spawn` — beliebige Erstellung von Child-Prozessen (RCE-Oberfläche)
 - `shell` — Shell-Befehlsausführung (RCE-Oberfläche)
-- `fs_write` — beliebige Dateimutation auf dem Host
+- `fs_write` — beliebige Dateiänderung auf dem Host
 - `fs_delete` — beliebiges Löschen von Dateien auf dem Host
 - `fs_move` — beliebiges Verschieben/Umbenennen von Dateien auf dem Host
-- `apply_patch` — Patch-Anwendung kann beliebige Dateien umschreiben
-- `sessions_spawn` — Sitzungsorchestrierung; Agenten remote zu starten ist RCE
-- `sessions_send` — sessionübergreifende Nachrichteninjektion
-- `cron` — persistente Kontrolloberfläche für Automatisierung
-- `gateway` — Gateway-Control-Plane; verhindert Rekonfiguration über HTTP
-- `nodes` — Node-Befehlsweiterleitung kann `system.run` auf gepaarten Hosts erreichen
-- `whatsapp_login` — interaktive Einrichtung mit QR-Scan im Terminal; hängt bei HTTP
+- `apply_patch` — Patch-Anwendung kann beliebige Dateien neu schreiben
+- `sessions_spawn` — Session-Orchestrierung; das entfernte Starten von Agenten ist RCE
+- `sessions_send` — nachrichtenübergreifende Injektion zwischen Sessions
+- `cron` — persistente Automatisierungs-Steuerungsebene
+- `gateway` — Gateway-Steuerungsebene; verhindert Rekonfiguration über HTTP
+- `nodes` — Node-Befehlsweiterleitung kann `system.run` auf gekoppelten Hosts erreichen
+- `whatsapp_login` — interaktive Einrichtung, die einen Terminal-QR-Scan erfordert; bleibt über HTTP hängen
 
-Sie können diese Deny-Liste über `gateway.tools` anpassen:
+Sie können diese Sperrliste über `gateway.tools` anpassen:
 
 ```json5
 {
   gateway: {
     tools: {
-      // Zusätzliche Tools, die über HTTP /tools/invoke blockiert werden
+      // Additional tools to block over HTTP /tools/invoke
       deny: ["browser"],
-      // Tools aus der Standard-Deny-Liste entfernen
+      // Remove tools from the default deny list
       allow: ["gateway"],
     },
   },
 }
 ```
 
-Damit Gruppenrichtlinien Kontext auflösen können, können Sie optional setzen:
+Um Gruppenrichtlinien beim Auflösen des Kontexts zu unterstützen, können Sie optional setzen:
 
 - `x-openclaw-message-channel: <channel>` (Beispiel: `slack`, `telegram`)
-- `x-openclaw-account-id: <accountId>` (wenn mehrere Konten existieren)
+- `x-openclaw-account-id: <accountId>` (wenn mehrere Konten vorhanden sind)
 
 ## Antworten
 
 - `200` → `{ ok: true, result }`
 - `400` → `{ ok: false, error: { type, message } }` (ungültige Anfrage oder Tool-Eingabefehler)
 - `401` → nicht autorisiert
-- `429` → Auth-ratenlimitiert (`Retry-After` gesetzt)
+- `429` → Auth ratenbegrenzt (`Retry-After` gesetzt)
 - `404` → Tool nicht verfügbar (nicht gefunden oder nicht allowlisted)
 - `405` → Methode nicht erlaubt
-- `500` → `{ ok: false, error: { type, message } }` (unerwarteter Fehler bei der Tool-Ausführung; bereinigte Meldung)
+- `500` → `{ ok: false, error: { type, message } }` (unerwarteter Tool-Ausführungsfehler; bereinigte Meldung)
 
 ## Beispiel
 

@@ -1,31 +1,26 @@
 ---
 read_when:
-    - Sie debuggen Ablehnungen von Anbieteranfragen, die mit der Struktur des Transkripts zusammenhängen
-    - Sie ändern die Bereinigung von Transkripten oder die Reparaturlogik für Tool-Aufrufe
-    - Sie untersuchen Abweichungen bei Tool-Call-IDs zwischen Anbietern
-summary: 'Referenz: anbieterspezifische Regeln zur Bereinigung und Reparatur von Transkripten'
+    - Sie debuggen Provider-Anfrageablehnungen, die mit der Transkriptstruktur zusammenhängen
+    - Sie ändern die Transkriptbereinigung oder die Reparaturlogik für Tool-Aufrufe
+    - Sie untersuchen Nichtübereinstimmungen bei Tool-Call-IDs über Provider hinweg
+summary: 'Referenz: Provider-spezifische Regeln zur Transkriptbereinigung und -reparatur'
 title: Transkript-Hygiene
 x-i18n:
-    generated_at: "2026-04-26T11:39:15Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:14:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e380be2b011afca5fedf89579e702c6d221d42e777c23bd766c8df07ff05ed18
+    source_hash: d95f065d87ce58019ff2e6cdd6801879404d3b4fa402d26fc6fed9d51966b0a1
     source_path: reference/transcript-hygiene.md
-    workflow: 15
+    workflow: 16
 ---
 
-Dieses Dokument beschreibt **anbieterspezifische Korrekturen**, die auf Transkripte vor einem Lauf
-(Erstellung des Modellkontexts) angewendet werden. Die meisten davon sind **In-Memory-**
-Anpassungen, die verwendet werden, um strenge Anbieteranforderungen zu erfüllen. Ein separater
-Reparaturdurchlauf für Sitzungsdateien kann vor dem Laden der Sitzung auch gespeichertes JSONL
-umschreiben, entweder durch das Entfernen fehlerhafter JSONL-Zeilen oder durch die Reparatur
-persistierter Turns, die syntaktisch gültig sind, aber bei der Wiederholung bekanntermaßen von
-einem Anbieter abgelehnt werden. Wenn eine Reparatur erfolgt, wird die Originaldatei neben der
-Sitzungsdatei gesichert.
+OpenClaw wendet vor einem Lauf (beim Erstellen des Modellkontexts) **Provider-spezifische Korrekturen** auf Transkripte an. Die meisten davon sind **In-Memory**-Anpassungen, die strenge Provider-Anforderungen erfüllen. Ein separater Reparaturdurchlauf für Sitzungsdateien kann außerdem gespeicherte JSONL-Daten umschreiben, bevor die Sitzung geladen wird, entweder indem fehlerhafte JSONL-Zeilen entfernt oder persistierte Turns repariert werden, die syntaktisch gültig sind, aber bekanntermaßen von einem
+Provider während der Wiedergabe abgelehnt werden. Wenn eine Reparatur erfolgt, wird die Originaldatei neben
+der Sitzungsdatei gesichert.
 
 Der Umfang umfasst:
 
-- Laufzeit-only-Prompt-Kontext außerhalb der für Benutzer sichtbaren Transkript-Turns
+- Reiner Laufzeit-Prompt-Kontext bleibt außerhalb benutzerseitig sichtbarer Transkript-Turns
 - Bereinigung von Tool-Call-IDs
 - Validierung von Tool-Call-Eingaben
 - Reparatur der Zuordnung von Tool-Ergebnissen
@@ -33,66 +28,70 @@ Der Umfang umfasst:
 - Bereinigung von Thought-Signaturen
 - Bereinigung von Thinking-Signaturen
 - Bereinigung von Bild-Payloads
-- Kennzeichnung der Herkunft von Benutzereingaben (für sitzungsübergreifend geroutete Prompts)
-- Reparatur leerer Fehler-Turns von Assistants für Bedrock-Converse-Replay
+- Bereinigung leerer Textblöcke vor der Provider-Wiedergabe
+- Provenienzkennzeichnung von Benutzereingaben (für zwischen Sitzungen weitergeleitete Prompts)
+- Reparatur leerer Assistant-Fehler-Turns für Bedrock-Converse-Wiedergabe
 
 Wenn Sie Details zur Transkriptspeicherung benötigen, siehe:
 
-- [Vertiefung zum Sitzungsmanagement und Compaction](/de/reference/session-management-compaction)
+- [Detaillierte Erläuterung der Sitzungsverwaltung](/de/reference/session-management-compaction)
 
 ---
 
 ## Globale Regel: Laufzeitkontext ist kein Benutzertranskript
 
 Laufzeit-/Systemkontext kann dem Modell-Prompt für einen Turn hinzugefügt werden, ist aber
-kein von Endbenutzern verfasster Inhalt. OpenClaw hält einen separaten Prompt-Textkörper mit
-Transkriptbezug für Gateway-Antworten, in die Warteschlange eingereihte Follow-ups, ACP, CLI
-und eingebettete Pi-Läufe vor. Gespeicherte sichtbare Benutzer-Turns verwenden diesen
-Transkript-Textkörper anstelle des mit Laufzeitkontext angereicherten Prompts.
+kein vom Endbenutzer verfasster Inhalt. OpenClaw hält einen separaten transkriptbezogenen
+Prompt-Text für Gateway-Antworten, eingereihte Folgeanfragen, ACP, CLI und eingebettete Pi-
+Läufe vor. Gespeicherte sichtbare Benutzer-Turns verwenden diesen Transkripttext anstelle des
+mit Laufzeitkontext angereicherten Prompts.
 
-Bei älteren Sitzungen, die Laufzeit-Wrapper bereits persistent gespeichert haben, wenden
-Gateway-History-Oberflächen vor der Rückgabe von Nachrichten an WebChat,
-TUI-, REST- oder SSE-Clients eine Darstellungsprojektion an.
+Für Legacy-Sitzungen, die bereits Laufzeit-Wrapper persistiert haben, wenden Gateway-Verlaufsoberflächen
+eine Anzeigeprojektion an, bevor Nachrichten an WebChat,
+TUI-, REST- oder SSE-Clients zurückgegeben werden.
 
 ---
 
 ## Wo dies ausgeführt wird
 
-Die gesamte Transkript-Hygiene ist im eingebetteten Runner zentralisiert:
+Die gesamte Transkripthygiene ist im eingebetteten Runner zentralisiert:
 
-- Auswahl der Richtlinie: `src/agents/transcript-policy.ts`
+- Richtlinienauswahl: `src/agents/transcript-policy.ts`
 - Anwendung von Bereinigung/Reparatur: `sanitizeSessionHistory` in `src/agents/pi-embedded-runner/replay-history.ts`
 
 Die Richtlinie verwendet `provider`, `modelApi` und `modelId`, um zu entscheiden, was angewendet wird.
 
-Getrennt von der Transkript-Hygiene werden Sitzungsdateien vor dem Laden repariert (falls nötig):
+Getrennt von der Transkripthygiene werden Sitzungsdateien (falls nötig) vor dem Laden repariert:
 
 - `repairSessionFileIfNeeded` in `src/agents/session-file-repair.ts`
-- Aufgerufen von `run/attempt.ts` und `compact.ts` (eingebetteter Runner)
+- Aufgerufen aus `run/attempt.ts` und `compact.ts` (eingebetteter Runner)
 
 ---
 
 ## Globale Regel: Bildbereinigung
 
-Bild-Payloads werden immer bereinigt, um eine anbieterseitige Ablehnung aufgrund von Größenlimits
-zu verhindern (Verkleinerung/Neukomprimierung zu großer Base64-Bilder).
+Bild-Payloads werden immer bereinigt, um Provider-seitige Ablehnungen aufgrund von Größenbeschränkungen
+zu verhindern (Herunterskalieren/Neukomprimieren übergroßer base64-Bilder).
 
-Dies hilft auch, den durch Bilder verursachten Token-Druck für vision-fähige Modelle zu kontrollieren.
-Kleinere Maximalabmessungen reduzieren im Allgemeinen den Token-Verbrauch; größere Abmessungen erhalten mehr Details.
+Dies hilft außerdem dabei, bildbedingten Token-Druck für vision-fähige Modelle zu steuern.
+Niedrigere Maximalabmessungen reduzieren im Allgemeinen die Token-Nutzung; höhere Abmessungen erhalten Details.
 
 Implementierung:
 
 - `sanitizeSessionMessagesImages` in `src/agents/pi-embedded-helpers/images.ts`
 - `sanitizeContentBlocksImages` in `src/agents/tool-images.ts`
 - Die maximale Bildseite ist über `agents.defaults.imageMaxDimensionPx` konfigurierbar (Standard: `1200`).
+- Leere Textblöcke werden entfernt, während dieser Durchlauf Wiedergabeinhalte durchläuft. Assistant-
+  Turns, die dadurch leer werden, werden aus der Wiedergabekopie entfernt; Benutzer- und Tool-Ergebnis-
+  Turns, die dadurch leer werden, erhalten einen nicht leeren Platzhalter für ausgelassene Inhalte.
 
 ---
 
-## Globale Regel: fehlerhafte Tool-Calls
+## Globale Regel: fehlerhafte Tool Calls
 
-Assistant-Tool-Call-Blöcke, bei denen sowohl `input` als auch `arguments` fehlen, werden entfernt,
-bevor der Modellkontext erstellt wird. Dadurch werden Anbieterablehnungen durch teilweise
-persistierte Tool-Calls verhindert (zum Beispiel nach einem Rate-Limit-Fehler).
+Assistant-Tool-Call-Blöcke, denen sowohl `input` als auch `arguments` fehlen, werden entfernt,
+bevor der Modellkontext erstellt wird. Dies verhindert Provider-Ablehnungen durch teilweise
+persistierte Tool Calls (zum Beispiel nach einem Rate-Limit-Fehler).
 
 Implementierung:
 
@@ -101,78 +100,89 @@ Implementierung:
 
 ---
 
-## Globale Regel: Herkunft sitzungsübergreifender Eingaben
+## Globale Regel: Provenienz von sitzungsübergreifenden Eingaben
 
 Wenn ein Agent über `sessions_send` einen Prompt in eine andere Sitzung sendet (einschließlich
-Schritten für Antworten/Ankündigungen von Agent zu Agent), speichert OpenClaw den erzeugten
-Benutzer-Turn mit:
+Agent-zu-Agent-Antwort-/Ankündigungsschritten), persistiert OpenClaw den erstellten Benutzer-Turn mit:
 
 - `message.provenance.kind = "inter_session"`
 
-Diese Metadaten werden beim Anhängen an das Transkript geschrieben und ändern nicht die Rolle
-(`role: "user"` bleibt aus Gründen der Anbieterkompatibilität erhalten). Leser des Transkripts
-können dies verwenden, um intern weitergeleitete Prompts nicht als von Endbenutzern verfasste
-Anweisungen zu behandeln.
+OpenClaw stellt außerdem demselben Turn eine Markierung `[Inter-session message ... isUser=false]`
+vor den weitergeleiteten Prompt-Text, damit der aktive Modellaufruf fremde Sitzungsausgabe von
+externen Endbenutzeranweisungen unterscheiden kann. Diese Markierung enthält, sofern verfügbar,
+die Quellsitzung, den Kanal und das Tool. Das Transkript verwendet aus Provider-Kompatibilitätsgründen weiterhin
+`role: "user"`, aber sowohl der sichtbare Text als auch die Provenienzmetadaten kennzeichnen den Turn
+als sitzungsübergreifende Daten.
 
-Beim Neuaufbau des Kontexts stellt OpenClaw diesen Benutzer-Turns außerdem In-Memory einen kurzen
-Marker `[Inter-session message]` voran, damit das Modell sie von externen Endbenutzeranweisungen
-unterscheiden kann.
+Beim Neuaufbau des Kontexts wendet OpenClaw dieselbe Markierung auf ältere persistierte
+sitzungsübergreifende Benutzer-Turns an, die nur Provenienzmetadaten haben.
 
 ---
 
-## Anbietermatrix (aktuelles Verhalten)
+## Provider-Matrix (aktuelles Verhalten)
 
 **OpenAI / OpenAI Codex**
 
 - Nur Bildbereinigung.
-- Entfernt verwaiste Reasoning-Signaturen (eigenständige Reasoning-Elemente ohne folgenden Content-Block) für OpenAI-Responses-/Codex-Transkripte und entfernt replayfähiges OpenAI-Reasoning nach einem Wechsel der Modellroute.
+- Verwaiste Reasoning-Signaturen (eigenständige Reasoning-Elemente ohne folgenden Inhaltsblock) für OpenAI-Responses-/Codex-Transkripte entfernen und wiedergabefähiges OpenAI-Reasoning nach einem Modellroutenwechsel entfernen.
+- Wiedergabefähige Payloads von OpenAI-Responses-Reasoning-Elementen beibehalten, einschließlich verschlüsselter Elemente mit leerer Zusammenfassung, damit manuelle/WebSocket-Wiedergabe den erforderlichen `rs_*`-Zustand mit Assistant-Ausgabeelementen gekoppelt hält.
 - Keine Bereinigung von Tool-Call-IDs.
-- Die Reparatur der Zuordnung von Tool-Ergebnissen kann echte passende Ausgaben verschieben und Codex-artige `aborted`-Ausgaben für fehlende Tool-Calls synthetisieren.
+- Die Reparatur der Tool-Ergebnis-Zuordnung kann echte passende Ausgaben verschieben und Codex-artige `aborted`-Ausgaben für fehlende Tool Calls synthetisieren.
 - Keine Turn-Validierung oder Neuordnung.
-- Fehlende Tool-Ausgaben der OpenAI-Responses-Familie werden als `aborted` synthetisiert, um der Codex-Replay-Normalisierung zu entsprechen.
+- Fehlende Tool-Ausgaben der OpenAI-Responses-Familie werden als `aborted` synthetisiert, um der Codex-Wiedergabenormalisierung zu entsprechen.
 - Kein Entfernen von Thought-Signaturen.
+
+**OpenAI-kompatibles Gemma 4**
+
+- Historische Assistant-Thinking-/Reasoning-Blöcke werden vor der Wiedergabe entfernt, damit lokale
+  OpenAI-kompatible Gemma-4-Server keine Reasoning-Inhalte aus früheren Turns erhalten.
+- Aktuelle Tool-Call-Fortsetzungen im selben Turn behalten den Assistant-Reasoning-Block
+  am Tool Call, bis das Tool-Ergebnis wiedergegeben wurde.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
-- Bereinigung von Tool-Call-IDs: strikt alphanumerisch.
-- Reparatur der Zuordnung von Tool-Ergebnissen und synthetische Tool-Ergebnisse.
-- Turn-Validierung (Gemini-artige Turn-Alternation).
-- Google-Turn-Reihenfolge-Fixup (stellt einen kleinen Bootstrap-Benutzer-Turn voran, wenn die History mit einem Assistant beginnt).
+- Bereinigung von Tool-Call-IDs: streng alphanumerisch.
+- Reparatur der Tool-Ergebnis-Zuordnung und synthetische Tool-Ergebnisse.
+- Turn-Validierung (Gemini-artige Turn-Alternierung).
+- Google-Turn-Reihenfolgekorrektur (einen kleinen Benutzer-Bootstrap voranstellen, wenn der Verlauf mit Assistant beginnt).
 - Antigravity Claude: Thinking-Signaturen normalisieren; unsignierte Thinking-Blöcke entfernen.
 
 **Anthropic / Minimax (Anthropic-kompatibel)**
 
-- Reparatur der Zuordnung von Tool-Ergebnissen und synthetische Tool-Ergebnisse.
-- Turn-Validierung (führt aufeinanderfolgende Benutzer-Turns zusammen, um strenge Alternation einzuhalten).
-- Thinking-Blöcke mit fehlenden, leeren oder nur aus Leerraum bestehenden Replay-Signaturen werden
-  vor der Anbieterkonvertierung entfernt. Wenn dadurch ein Assistant-Turn leer wird, behält OpenClaw
+- Reparatur der Tool-Ergebnis-Zuordnung und synthetische Tool-Ergebnisse.
+- Turn-Validierung (aufeinanderfolgende Benutzer-Turns zusammenführen, um strenge Alternierung zu erfüllen).
+- Nachgestellte Assistant-Prefill-Turns werden aus ausgehenden Anthropic-Messages-
+  Payloads entfernt, wenn Thinking aktiviert ist, einschließlich Cloudflare-AI-Gateway-Routen.
+- Thinking-Blöcke mit fehlenden, leeren oder nur aus Leerraum bestehenden Wiedergabesignaturen werden
+  vor der Provider-Konvertierung entfernt. Wenn dadurch ein Assistant-Turn leer wird, behält OpenClaw
   die Turn-Form mit nicht leerem Text für ausgelassenes Reasoning bei.
-- Ältere Assistant-Turns, die nur aus Thinking bestehen und entfernt werden müssen, werden durch
-  nicht leeren Text für ausgelassenes Reasoning ersetzt, damit Anbieteradapter den Replay-
+- Ältere reine Thinking-Assistant-Turns, die entfernt werden müssen, werden durch
+  nicht leeren Text für ausgelassenes Reasoning ersetzt, damit Provider-Adapter den Wiedergabe-
   Turn nicht verwerfen.
 
 **Amazon Bedrock (Converse API)**
 
-- Leere Fehler-Turns von Assistant-Streams werden vor dem Replay in einen nicht leeren Fallback-Textblock
+- Leere Assistant-Stream-Fehler-Turns werden vor der Wiedergabe zu einem nicht leeren Fallback-Textblock
   repariert. Bedrock Converse lehnt Assistant-Nachrichten mit `content: []` ab, daher werden
-  persistierte Assistant-Turns mit `stopReason: "error"` und leerem Inhalt auch auf dem Datenträger
-  vor dem Laden repariert.
-- Claude-Thinking-Blöcke mit fehlenden, leeren oder nur aus Leerraum bestehenden Replay-Signaturen werden
-  vor dem Converse-Replay entfernt. Wenn dadurch ein Assistant-Turn leer wird, behält OpenClaw
+  persistierte Assistant-Turns mit `stopReason: "error"` und leerem Inhalt außerdem
+  vor dem Laden auf der Festplatte repariert.
+- Assistant-Stream-Fehler-Turns, die nur leere Textblöcke enthalten, werden
+  aus der In-Memory-Wiedergabekopie entfernt, anstatt einen ungültigen leeren Block wiederzugeben.
+- Claude-Thinking-Blöcke mit fehlenden, leeren oder nur aus Leerraum bestehenden Wiedergabesignaturen werden
+  vor der Converse-Wiedergabe entfernt. Wenn dadurch ein Assistant-Turn leer wird, behält OpenClaw
   die Turn-Form mit nicht leerem Text für ausgelassenes Reasoning bei.
-- Ältere Assistant-Turns, die nur aus Thinking bestehen und entfernt werden müssen, werden durch
-  nicht leeren Text für ausgelassenes Reasoning ersetzt, damit das Converse-Replay die strenge
-  Turn-Form beibehält.
-- Replay filtert OpenClaw-Delivery-Mirror- und Gateway-injizierte Assistant-Turns.
-- Bildbereinigung wird über die globale Regel angewendet.
+- Ältere reine Thinking-Assistant-Turns, die entfernt werden müssen, werden durch
+  nicht leeren Text für ausgelassenes Reasoning ersetzt, damit die Converse-Wiedergabe die strenge Turn-Form beibehält.
+- Die Wiedergabe filtert OpenClaw-Delivery-Mirror- und Gateway-injizierte Assistant-Turns.
+- Bildbereinigung gilt gemäß der globalen Regel.
 
 **Mistral (einschließlich modell-ID-basierter Erkennung)**
 
-- Bereinigung von Tool-Call-IDs: strict9 (alphanumerische Länge 9).
+- Bereinigung von Tool-Call-IDs: strict9 (alphanumerisch, Länge 9).
 
 **OpenRouter Gemini**
 
-- Bereinigung von Thought-Signaturen: entfernt nicht-Base64-`thought_signature`-Werte (Base64 bleibt erhalten).
+- Bereinigung von Thought-Signaturen: nicht-base64-`thought_signature`-Werte entfernen (base64 beibehalten).
 
 **Alles andere**
 
@@ -182,23 +192,22 @@ unterscheiden kann.
 
 ## Historisches Verhalten (vor 2026.1.22)
 
-Vor dem Release 2026.1.22 wandte OpenClaw mehrere Ebenen der Transkript-Hygiene an:
+Vor dem Release 2026.1.22 wendete OpenClaw mehrere Ebenen der Transkripthygiene an:
 
 - Eine **transcript-sanitize extension** lief bei jedem Kontextaufbau und konnte:
-  - die Zuordnung von Tool-Verwendung/Tool-Ergebnissen reparieren.
-  - Tool-Call-IDs bereinigen (einschließlich eines nicht strikten Modus, der `_`/`-` beibehielt).
-- Der Runner führte außerdem anbieterspezifische Bereinigung durch, was Arbeit doppelte.
-- Zusätzliche Mutationen erfolgten außerhalb der Anbieterrichtlinie, darunter:
+  - Tool-Use-/Ergebnis-Zuordnung reparieren.
+  - Tool-Call-IDs bereinigen (einschließlich eines nicht strengen Modus, der `_`/`-` beibehielt).
+- Der Runner führte außerdem Provider-spezifische Bereinigung durch, was Arbeit duplizierte.
+- Zusätzliche Mutationen erfolgten außerhalb der Provider-Richtlinie, einschließlich:
   - Entfernen von `<final>`-Tags aus Assistant-Text vor der Persistierung.
-  - Entfernen leerer Fehler-Turns von Assistants.
-  - Kürzen von Assistant-Inhalten nach Tool-Calls.
+  - Entfernen leerer Assistant-Fehler-Turns.
+  - Kürzen von Assistant-Inhalten nach Tool Calls.
 
-Diese Komplexität verursachte anbieterübergreifende Regressionen (insbesondere bei der Zuordnung
-`call_id|fc_id` in `openai-responses`). Die Bereinigung in 2026.1.22 entfernte die Extension,
-zentralisierte die Logik im Runner und machte OpenAI jenseits der Bildbereinigung zu einem
-**No-Touch**-Pfad.
+Diese Komplexität verursachte providerübergreifende Regressionen (insbesondere bei der
+`call_id|fc_id`-Zuordnung von `openai-responses`). Die Bereinigung in 2026.1.22 entfernte die extension, zentralisierte
+die Logik im Runner und machte OpenAI über die Bildbereinigung hinaus **unangetastet**.
 
 ## Verwandt
 
-- [Sitzungsmanagement](/de/concepts/session)
-- [Sitzungsbereinigung](/de/concepts/session-pruning)
+- [Sitzungsverwaltung](/de/concepts/session)
+- [Sitzungsbeschneidung](/de/concepts/session-pruning)

@@ -1,19 +1,19 @@
 ---
-summary: Zu Task Flow weiterleiten
+summary: Weiterleitung zu Task Flow
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-24T06:26:23Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:38:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1de967044fe5b9996d5aa6d46d63e645d887a98f31bb6dae9ba66dd0eddd1d0e
+    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
     source_path: automation/clawflow.md
-    workflow: 15
+    workflow: 16
 ---
 
-ClawFlow wurde in [Task Flow](/de/automation/taskflow) umbenannt. Die aktuelle Dokumentation finden Sie unter [Task Flow](/de/automation/taskflow).
+ClawFlow wurde in [Task-Flow](/de/automation/taskflow) umbenannt.
 
 ## Verwandt
 
-- [Task Flow](/de/automation/taskflow)
+- [Task-Flow](/de/automation/taskflow)
 - [Daueraufträge](/de/automation/standing-orders)
 - [Hooks](/de/automation/hooks)

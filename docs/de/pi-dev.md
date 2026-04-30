@@ -1,29 +1,29 @@
 ---
 read_when:
-    - An Pi-Integrationscode oder -Tests arbeiten
+    - Arbeiten an Pi-Integrationscode oder -Tests
     - Pi-spezifische Lint-, Typecheck- und Live-Test-Abläufe ausführen
-summary: 'Entwickler-Workflow für die Pi-Integration: Build, Tests und Live-Validierung'
-title: Pi-Entwicklungs-Workflow
+summary: 'Entwickler-Workflow für die Pi-Integration: Erstellen, Testen und Live-Validierung'
+title: Pi-Entwicklungsworkflow
 x-i18n:
-    generated_at: "2026-04-24T06:46:38Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:02:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
+    source_hash: 9c4025c8ed1a4dff0d8116440fd48f375264eb4cac06f71afebf8c05f3470ab4
     source_path: pi-dev.md
-    workflow: 15
+    workflow: 16
 ---
 
-Dieser Leitfaden fasst einen sinnvollen Workflow für die Arbeit an der Pi-Integration in OpenClaw zusammen.
+Ein sinnvoller Workflow für die Arbeit an der Pi-Integration in OpenClaw.
 
-## Typecheck und Linting
+## Typprüfung und Linting
 
-- Standardmäßiges lokales Gate: `pnpm check`
-- Build-Gate: `pnpm build`, wenn die Änderung Build-Ausgabe, Packaging oder Lazy-Loading-/Modulgrenzen beeinflussen kann
-- Vollständiges Landing-Gate für Pi-lastige Änderungen: `pnpm check && pnpm test`
+- Standardmäßiger lokaler Gate: `pnpm check`
+- Build-Gate: `pnpm build`, wenn sich die Änderung auf Build-Ausgaben, Paketierung oder Lazy-Loading-/Modulgrenzen auswirken kann
+- Vollständiger Landing-Gate für Pi-lastige Änderungen: `pnpm check && pnpm test`
 
 ## Pi-Tests ausführen
 
-Führen Sie die Pi-fokussierte Testmenge direkt mit Vitest aus:
+Führen Sie die Pi-fokussierte Testsuite direkt mit Vitest aus:
 
 ```bash
 pnpm test \
@@ -35,13 +35,13 @@ pnpm test \
   "src/agents/pi-hooks/**/*.test.ts"
 ```
 
-Um die Live-Prüfung des Anbieters einzubeziehen:
+So schließen Sie die Live-Provider-Übung ein:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
 ```
 
-Damit werden die wichtigsten Pi-Unit-Suites abgedeckt:
+Dies deckt die wichtigsten Pi-Unit-Suites ab:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-embedded-*.test.ts`
@@ -54,36 +54,36 @@ Damit werden die wichtigsten Pi-Unit-Suites abgedeckt:
 
 Empfohlener Ablauf:
 
-- Gateway im Dev-Modus ausführen:
+- Führen Sie den Gateway im Entwicklungsmodus aus:
   - `pnpm gateway:dev`
-- Agenten direkt auslösen:
+- Lösen Sie den Agenten direkt aus:
   - `pnpm openclaw agent --message "Hello" --thinking low`
-- TUI für interaktives Debugging verwenden:
+- Verwenden Sie die TUI für interaktives Debugging:
   - `pnpm tui`
 
-Für das Verhalten von Tool-Aufrufen fordern Sie eine Aktion mit `read` oder `exec` an, damit Sie Tool-Streaming und Payload-Verarbeitung sehen können.
+Fordern Sie für Tool-Call-Verhalten eine `read`- oder `exec`-Aktion an, damit Sie Tool-Streaming und Payload-Verarbeitung sehen können.
 
-## Zurücksetzen auf einen sauberen Zustand
+## Zurücksetzen auf einen sauberen Ausgangszustand
 
-Der Zustand liegt unter dem OpenClaw-State-Verzeichnis. Standard ist `~/.openclaw`. Wenn `OPENCLAW_STATE_DIR` gesetzt ist, verwenden Sie stattdessen dieses Verzeichnis.
+Der Status befindet sich im OpenClaw-Statusverzeichnis. Standardmäßig ist das `~/.openclaw`. Wenn `OPENCLAW_STATE_DIR` gesetzt ist, verwenden Sie stattdessen dieses Verzeichnis.
 
-Um alles zurückzusetzen:
+So setzen Sie alles zurück:
 
 - `openclaw.json` für die Konfiguration
-- `agents/<agentId>/agent/auth-profiles.json` für Modell-Auth-Profile (API-Schlüssel + OAuth)
-- `credentials/` für Anbieter-/Channel-Zustand, der noch außerhalb des Auth-Profile-Store lebt
+- `agents/<agentId>/agent/auth-profiles.json` für Modell-Authentifizierungsprofile (API-Schlüssel + OAuth)
+- `credentials/` für Provider-/Kanalstatus, der sich noch außerhalb des Authentifizierungsprofil-Speichers befindet
 - `agents/<agentId>/sessions/` für den Sitzungsverlauf des Agenten
 - `agents/<agentId>/sessions/sessions.json` für den Sitzungsindex
-- `sessions/`, falls Legacy-Pfade existieren
-- `workspace/`, wenn Sie einen leeren Workspace möchten
+- `sessions/`, falls Legacy-Pfade vorhanden sind
+- `workspace/`, wenn Sie einen leeren Arbeitsbereich möchten
 
-Wenn Sie nur Sitzungen zurücksetzen möchten, löschen Sie `agents/<agentId>/sessions/` für diesen Agenten. Wenn Sie Auth beibehalten möchten, lassen Sie `agents/<agentId>/agent/auth-profiles.json` und jeglichen Anbieterzustand unter `credentials/` bestehen.
+Wenn Sie nur Sitzungen zurücksetzen möchten, löschen Sie `agents/<agentId>/sessions/` für diesen Agenten. Wenn Sie die Authentifizierung behalten möchten, lassen Sie `agents/<agentId>/agent/auth-profiles.json` und jeglichen Provider-Status unter `credentials/` unverändert.
 
 ## Referenzen
 
-- [Tests](/de/help/testing)
+- [Testen](/de/help/testing)
 - [Erste Schritte](/de/start/getting-started)
 
 ## Verwandt
 
-- [Pi-Integrationsarchitektur](/de/pi)
+- [Architektur der Pi-Integration](/de/pi)

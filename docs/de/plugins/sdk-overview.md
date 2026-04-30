@@ -1,148 +1,203 @@
 ---
 read_when:
-    - Sie müssen wissen, aus welchem SDK-Subpfad importiert werden soll.
-    - Sie möchten eine Referenz für alle Registrierungsmethoden in `OpenClawPluginApi`.
-    - Sie suchen nach einem bestimmten SDK-Export.
-sidebarTitle: SDK overview
-summary: Import-Map, Referenz der Registrierungs-API und SDK-Architektur
-title: Überblick über das Plugin SDK
+    - Sie müssen wissen, aus welchem SDK-Unterpfad Sie importieren müssen
+    - Sie möchten eine Referenz für alle Registrierungsmethoden der OpenClawPluginApi
+    - Sie suchen nach einem bestimmten SDK-Export
+sidebarTitle: Plugin SDK overview
+summary: Import-Map, Referenz zur Registrierungs-API und SDK-Architektur
+title: Übersicht über das Plugin SDK
 x-i18n:
-    generated_at: "2026-04-25T13:53:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:07:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 825efe8d9b2283734730348f9803e40cabaaa6399993648f4bb5822b20e588ee
+    source_hash: 1749ad99c55ffd14624b817aba963bd93ebe7976937138693177523bbe3aa88c
     source_path: plugins/sdk-overview.md
-    workflow: 15
+    workflow: 16
 ---
 
-Das Plugin SDK ist der typisierte Vertrag zwischen Plugins und dem Core. Diese Seite ist die
-Referenz dafür, **was importiert werden soll** und **was Sie registrieren können**.
+Das Plugin-SDK ist der typisierte Vertrag zwischen Plugins und Core. Diese Seite ist die
+Referenz dafür, **was Sie importieren** und **was Sie registrieren können**.
+
+<Note>
+  Diese Seite richtet sich an Plugin-Autoren, die `openclaw/plugin-sdk/*` innerhalb von
+  OpenClaw verwenden. Für externe Apps, Skripte, Dashboards, CI-Jobs und IDE-Erweiterungen,
+  die Agenten über den Gateway ausführen möchten, verwenden Sie stattdessen das
+  [OpenClaw App SDK](/de/concepts/openclaw-sdk) und das Paket `@openclaw/sdk`.
+</Note>
 
 <Tip>
-  Suchen Sie stattdessen nach einer How-to-Anleitung?
-
-- Erstes Plugin? Beginnen Sie mit [Building plugins](/de/plugins/building-plugins).
-- Channel-Plugin? Siehe [Channel plugins](/de/plugins/sdk-channel-plugins).
-- Provider-Plugin? Siehe [Provider plugins](/de/plugins/sdk-provider-plugins).
-- Tool- oder Lifecycle-Hook-Plugin? Siehe [Plugin hooks](/de/plugins/hooks).
-
+Suchen Sie stattdessen eine Anleitung? Beginnen Sie mit [Plugins erstellen](/de/plugins/building-plugins), verwenden Sie [Channel-Plugins](/de/plugins/sdk-channel-plugins) für Channel-Plugins, [Provider-Plugins](/de/plugins/sdk-provider-plugins) für Provider-Plugins und [Plugin-Hooks](/de/plugins/hooks) für Tool- oder Lifecycle-Hook-Plugins.
 </Tip>
 
-## Import-Konvention
+## Importkonvention
 
-Importieren Sie immer aus einem spezifischen Subpfad:
+Importieren Sie immer aus einem spezifischen Subpath:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
-Jeder Subpfad ist ein kleines, in sich geschlossenes Modul. Das hält den Start schnell und
-verhindert Probleme mit zirkulären Abhängigkeiten. Für channel-spezifische Entry-/Build-Helfer
-bevorzugen Sie `openclaw/plugin-sdk/channel-core`; behalten Sie `openclaw/plugin-sdk/core` für
-die breitere Dachoberfläche und gemeinsame Helfer wie
+Jeder Subpath ist ein kleines, eigenständiges Modul. Das hält den Start schnell und
+verhindert Probleme mit zirkulären Abhängigkeiten. Für channel-spezifische Entry-/Build-Hilfsfunktionen
+bevorzugen Sie `openclaw/plugin-sdk/channel-core`; verwenden Sie `openclaw/plugin-sdk/core` für
+die breitere Oberfläche und gemeinsame Hilfsfunktionen wie
 `buildChannelConfigSchema`.
 
-Für die Channel-Konfiguration veröffentlichen Sie das channel-eigene JSON-Schema über
-`openclaw.plugin.json#channelConfigs`. Der Subpfad `plugin-sdk/channel-config-schema`
-ist für gemeinsame Schema-Primitiven und den generischen Builder gedacht. Benannte Schema-Exporte
-für gebündelte Channels auf diesem Subpfad sind alte Kompatibilitätsexporte, kein Muster für neue Plugins.
+Für Channel-Konfigurationen veröffentlichen Sie das vom Channel verwaltete JSON-Schema über
+`openclaw.plugin.json#channelConfigs`. Der Subpath `plugin-sdk/channel-config-schema`
+ist für gemeinsame Schema-Primitiven und den generischen Builder vorgesehen. Die mit OpenClaw
+gebündelten Plugins verwenden `plugin-sdk/bundled-channel-config-schema` für beibehaltene
+Schemas gebündelter Channels. Veraltete Kompatibilitätsexporte bleiben in
+`plugin-sdk/channel-config-schema-legacy`; keiner der gebündelten Schema-Subpaths ist ein
+Muster für neue Plugins.
 
 <Warning>
-  Importieren Sie keine provider- oder channel-gebrandeten Convenience-Seams (zum Beispiel
+  Importieren Sie keine Provider- oder Channel-benannten Convenience-Seams (zum Beispiel
   `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`).
-  Gebündelte Plugins setzen generische SDK-Subpfade innerhalb ihrer eigenen `api.ts`- /
-  `runtime-api.ts`-Barrels zusammen; Core-Konsumenten sollten entweder diese pluginlokalen
-  Barrels verwenden oder einen schmalen generischen SDK-Vertrag hinzufügen, wenn ein Bedarf
-  wirklich kanalübergreifend ist.
+  Gebündelte Plugins kombinieren generische SDK-Subpaths innerhalb ihrer eigenen `api.ts`- /
+  `runtime-api.ts`-Barrels; Core-Consumer sollten entweder diese plugin-lokalen
+  Barrels verwenden oder einen schmalen generischen SDK-Vertrag hinzufügen, wenn ein Bedarf wirklich
+  channel-übergreifend ist.
 
-Eine kleine Gruppe von Hilfs-Seams für gebündelte Plugins (`plugin-sdk/feishu`,
-`plugin-sdk/zalo`, `plugin-sdk/matrix*` und ähnliche) erscheint weiterhin in der
-generierten Export-Map. Sie existieren nur für die Pflege gebündelter Plugins und sind
-keine empfohlenen Importpfade für neue Drittanbieter-Plugins.
+Ein kleiner Satz von Hilfs-Seams für gebündelte Plugins erscheint weiterhin in der generierten Export-Map,
+wenn dafür Owner-Nutzung nachverfolgt wird. Sie existieren nur für die Wartung gebündelter Plugins
+und sind keine empfohlenen Importpfade für neue Drittanbieter-Plugins.
+
+`openclaw/plugin-sdk/discord` und `openclaw/plugin-sdk/telegram-account` werden
+ebenfalls als veraltete Kompatibilitäts-Fassaden für nachverfolgte Owner-Nutzung beibehalten. Kopieren Sie
+diese Importpfade nicht in neue Plugins; verwenden Sie stattdessen injizierte Runtime-Hilfsfunktionen und
+generische Channel-SDK-Subpaths.
 </Warning>
 
-## Referenz der Subpfade
+## Subpath-Referenz
 
-Das Plugin SDK wird als Satz schmaler Subpfade bereitgestellt, gruppiert nach Bereichen (Plugin-
+Das Plugin-SDK wird als Satz schmaler Subpaths bereitgestellt, gruppiert nach Bereich (Plugin-
 Entry, Channel, Provider, Auth, Runtime, Capability, Memory und reservierte
-Hilfen für gebündelte Plugins). Den vollständigen Katalog — gruppiert und verlinkt — finden Sie unter
-[Plugin SDK subpaths](/de/plugins/sdk-subpaths).
+Hilfsfunktionen für gebündelte Plugins). Den vollständigen Katalog — gruppiert und verlinkt — finden Sie unter
+[Plugin-SDK-Subpaths](/de/plugins/sdk-subpaths).
 
-Die generierte Liste von über 200 Subpfaden befindet sich in `scripts/lib/plugin-sdk-entrypoints.json`.
+Die generierte Liste mit mehr als 200 Subpaths befindet sich in `scripts/lib/plugin-sdk-entrypoints.json`.
 
 ## Registrierungs-API
 
-Der Callback `register(api)` erhält ein Objekt `OpenClawPluginApi` mit diesen
+Der Callback `register(api)` erhält ein `OpenClawPluginApi`-Objekt mit diesen
 Methoden:
 
-### Registrierung von Capabilities
+### Capability-Registrierung
 
-| Methode                                          | Was sie registriert                    |
-| ------------------------------------------------ | -------------------------------------- |
-| `api.registerProvider(...)`                      | Textinferenz (LLM)                     |
+| Methode                                          | Was registriert wird                  |
+| ------------------------------------------------ | ------------------------------------- |
+| `api.registerProvider(...)`                      | Textinferenz (LLM)                    |
 | `api.registerAgentHarness(...)`                  | Experimenteller Low-Level-Agent-Executor |
-| `api.registerCliBackend(...)`                    | Lokales CLI-Inferenz-Backend           |
-| `api.registerChannel(...)`                       | Messaging-Channel                      |
-| `api.registerSpeechProvider(...)`                | Text-to-Speech / STT-Synthese          |
-| `api.registerRealtimeTranscriptionProvider(...)` | Streaming-Echtzeittranskription        |
-| `api.registerRealtimeVoiceProvider(...)`         | Duplex-Echtzeit-Sprachsessions         |
-| `api.registerMediaUnderstandingProvider(...)`    | Bild-/Audio-/Videoanalyse              |
-| `api.registerImageGenerationProvider(...)`       | Bilderzeugung                          |
-| `api.registerMusicGenerationProvider(...)`       | Musikgenerierung                       |
-| `api.registerVideoGenerationProvider(...)`       | Videogenerierung                       |
-| `api.registerWebFetchProvider(...)`              | Web-Fetch-/Scrape-Anbieter             |
-| `api.registerWebSearchProvider(...)`             | Websuche                               |
+| `api.registerCliBackend(...)`                    | Lokales CLI-Inferenz-Backend          |
+| `api.registerChannel(...)`                       | Messaging-Channel                     |
+| `api.registerSpeechProvider(...)`                | Text-to-Speech-/STT-Synthese          |
+| `api.registerRealtimeTranscriptionProvider(...)` | Streaming-Echtzeittranskription       |
+| `api.registerRealtimeVoiceProvider(...)`         | Duplex-Echtzeit-Sprachsitzungen       |
+| `api.registerMediaUnderstandingProvider(...)`    | Bild-/Audio-/Videoanalyse             |
+| `api.registerImageGenerationProvider(...)`       | Bilderzeugung                         |
+| `api.registerMusicGenerationProvider(...)`       | Musikerzeugung                        |
+| `api.registerVideoGenerationProvider(...)`       | Videoerzeugung                        |
+| `api.registerWebFetchProvider(...)`              | Web-Fetch-/Scrape-Provider            |
+| `api.registerWebSearchProvider(...)`             | Websuche                              |
 
 ### Tools und Befehle
 
-| Methode                         | Was sie registriert                            |
-| ------------------------------ | ---------------------------------------------- |
+| Methode                         | Was registriert wird                           |
+| ------------------------------- | --------------------------------------------- |
 | `api.registerTool(tool, opts?)` | Agent-Tool (erforderlich oder `{ optional: true }`) |
-| `api.registerCommand(def)`      | Benutzerdefinierter Befehl (umgeht das LLM)    |
+| `api.registerCommand(def)`      | Benutzerdefinierter Befehl (umgeht das LLM)   |
+
+Plugin-Befehle können `agentPromptGuidance` setzen, wenn der Agent einen kurzen,
+vom Befehl verwalteten Routing-Hinweis benötigt. Halten Sie diesen Text auf den Befehl selbst bezogen; fügen Sie
+keine Provider- oder Plugin-spezifischen Richtlinien zu Core-Prompt-Buildern hinzu.
 
 ### Infrastruktur
 
-| Methode                                        | Was sie registriert                     |
-| --------------------------------------------- | --------------------------------------- |
-| `api.registerHook(events, handler, opts?)`    | Ereignis-Hook                           |
-| `api.registerHttpRoute(params)`               | Gateway-HTTP-Endpunkt                   |
-| `api.registerGatewayMethod(name, handler)`    | Gateway-RPC-Methode                     |
-| `api.registerGatewayDiscoveryService(service)` | Lokalen Discovery-Advertiser für das Gateway |
-| `api.registerCli(registrar, opts?)`           | CLI-Unterbefehl                         |
-| `api.registerService(service)`                | Hintergrunddienst                       |
-| `api.registerInteractiveHandler(registration)` | Interaktiven Handler                    |
-| `api.registerAgentToolResultMiddleware(...)`  | Laufzeit-Middleware für Tool-Ergebnisse |
-| `api.registerMemoryPromptSupplement(builder)` | Additiver Prompt-Abschnitt nahe Memory  |
-| `api.registerMemoryCorpusSupplement(adapter)` | Additiver Such-/Lese-Korpus für Memory  |
+| Methode                                        | Was registriert wird                         |
+| ---------------------------------------------- | ------------------------------------------- |
+| `api.registerHook(events, handler, opts?)`     | Event-Hook                                  |
+| `api.registerHttpRoute(params)`                | Gateway-HTTP-Endpunkt                       |
+| `api.registerGatewayMethod(name, handler)`     | Gateway-RPC-Methode                         |
+| `api.registerGatewayDiscoveryService(service)` | Lokaler Gateway-Discovery-Advertiser        |
+| `api.registerCli(registrar, opts?)`            | CLI-Unterbefehl                             |
+| `api.registerService(service)`                 | Hintergrunddienst                           |
+| `api.registerInteractiveHandler(registration)` | Interaktiver Handler                        |
+| `api.registerAgentToolResultMiddleware(...)`   | Runtime-Tool-Result-Middleware              |
+| `api.registerMemoryPromptSupplement(builder)`  | Additiver Memory-naher Prompt-Abschnitt     |
+| `api.registerMemoryCorpusSupplement(adapter)`  | Additiver Memory-Such-/Lese-Corpus          |
+
+### Host-Hooks für Workflow-Plugins
+
+Host-Hooks sind die SDK-Seams für Plugins, die am Host-Lifecycle teilnehmen müssen,
+statt nur einen Provider, Channel oder ein Tool hinzuzufügen. Sie sind
+generische Verträge; Plan Mode kann sie verwenden, aber ebenso Approval-Workflows,
+Workspace-Policy-Gates, Hintergrundmonitore, Setup-Assistenten und UI-Companion-
+Plugins.
+
+| Methode                                                                  | Verwalteter Vertrag                                                               |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `api.registerSessionExtension(...)`                                      | Plugin-verwalteter, JSON-kompatibler Session-State, der über Gateway-Sitzungen projiziert wird |
+| `api.enqueueNextTurnInjection(...)`                                      | Dauerhafter Exactly-once-Kontext, der in den nächsten Agent-Turn für eine Sitzung injiziert wird |
+| `api.registerTrustedToolPolicy(...)`                                     | Gebündelte/vertrauenswürdige Pre-Plugin-Tool-Policy, die Tool-Parameter blockieren oder umschreiben kann |
+| `api.registerToolMetadata(...)`                                          | Tool-Katalog-Anzeigemetadaten, ohne die Tool-Implementierung zu ändern            |
+| `api.registerCommand(...)`                                               | Gescopte Plugin-Befehle; Befehlsergebnisse können `continueAgent: true` setzen    |
+| `api.registerControlUiDescriptor(...)`                                   | Control-UI-Beitragsdeskriptoren für Session-, Tool-, Run- oder Einstellungsoberflächen |
+| `api.registerRuntimeLifecycle(...)`                                      | Cleanup-Callbacks für Plugin-verwaltete Runtime-Ressourcen auf Reset-/Delete-/Reload-Pfaden |
+| `api.registerAgentEventSubscription(...)`                                | Bereinigte Event-Abonnements für Workflow-State und Monitore                      |
+| `api.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)` | Plugin-Scratch-State pro Run, der im terminalen Run-Lifecycle gelöscht wird       |
+| `api.registerSessionSchedulerJob(...)`                                   | Plugin-verwaltete Session-Scheduler-Job-Datensätze mit deterministischem Cleanup  |
+
+Die Verträge trennen Befugnisse bewusst:
+
+- Externe Plugins können Session-Erweiterungen, UI-Deskriptoren, Befehle, Tool-
+  Metadaten, Next-Turn-Injections und normale Hooks verwalten.
+- Trusted-Tool-Policies werden vor gewöhnlichen `before_tool_call`-Hooks ausgeführt und sind
+  nur gebündelt, weil sie an der Host-Sicherheitsrichtlinie teilnehmen.
+- Reservierte Befehls-Ownership ist nur gebündelt. Externe Plugins sollten ihre
+  eigenen Befehlsnamen oder Aliase verwenden.
+- `allowPromptInjection=false` deaktiviert Prompt-mutierende Hooks einschließlich
+  `agent_turn_prepare`, `before_prompt_build`, `heartbeat_prompt_contribution`,
+  Prompt-Feldern aus dem alten `before_agent_start` und
+  `enqueueNextTurnInjection`.
+
+Beispiele für Nicht-Plan-Consumer:
+
+| Plugin-Archetyp             | Verwendete Hooks                                                                                                                        |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Approval-Workflow            | Session-Erweiterung, Befehlsfortsetzung, Next-Turn-Injection, UI-Deskriptor                                                            |
+| Budget-/Workspace-Policy-Gate | Trusted-Tool-Policy, Tool-Metadaten, Session-Projektion                                                                                |
+| Hintergrund-Lifecycle-Monitor | Runtime-Lifecycle-Cleanup, Agent-Event-Abonnement, Session-Scheduler-Ownership/Cleanup, Heartbeat-Prompt-Beitrag, UI-Deskriptor       |
+| Setup- oder Onboarding-Assistent | Session-Erweiterung, gescopte Befehle, Control-UI-Deskriptor                                                                       |
 
 <Note>
   Reservierte Core-Admin-Namespaces (`config.*`, `exec.approvals.*`, `wizard.*`,
-  `update.*`) bleiben immer `operator.admin`, selbst wenn ein Plugin versucht, einer Gateway-Methode einen
-  engeren Scope zuzuweisen. Bevorzugen Sie plugin-spezifische Präfixe für
-  plugin-eigene Methoden.
+  `update.*`) bleiben immer `operator.admin`, selbst wenn ein Plugin versucht, einen
+  schmaleren Gateway-Methoden-Scope zuzuweisen. Bevorzugen Sie plugin-spezifische Präfixe für
+  plugin-verwaltete Methoden.
 </Note>
 
 <Accordion title="Wann Tool-Result-Middleware verwendet werden sollte">
   Gebündelte Plugins können `api.registerAgentToolResultMiddleware(...)` verwenden, wenn
-  sie ein Tool-Ergebnis nach der Ausführung und bevor die Laufzeit
-  dieses Ergebnis zurück an das Modell gibt, umschreiben müssen. Dies ist der vertrauenswürdige,
-  laufzeitneutrale Seam für asynchrone Output-Reducer wie tokenjuice.
+  sie ein Tool-Ergebnis nach der Ausführung und bevor die Runtime
+  dieses Ergebnis zurück ins Modell einspeist, umschreiben müssen. Dies ist der vertrauenswürdige Runtime-neutrale
+  Seam für asynchrone Output-Reducer wie tokenjuice.
 
 Gebündelte Plugins müssen `contracts.agentToolResultMiddleware` für jede
-zielgerichtete Laufzeit deklarieren, zum Beispiel `["pi", "codex"]`. Externe Plugins
+zielgerichtete Runtime deklarieren, zum Beispiel `["pi", "codex"]`. Externe Plugins
 können diese Middleware nicht registrieren; behalten Sie normale OpenClaw-Plugin-Hooks für Arbeit bei,
-die kein Timing für Tool-Ergebnisse vor dem Modell benötigt. Der alte eingebettete
-Pi-only-Registrierungspfad für Extension-Factories wurde entfernt.
+die kein Pre-Model-Tool-Result-Timing benötigt. Der alte Pi-only eingebettete
+Extension-Factory-Registrierungspfad wurde entfernt.
 </Accordion>
 
-### Registrierung für Gateway-Discovery
+### Gateway-Discovery-Registrierung
 
-`api.registerGatewayDiscoveryService(...)` ermöglicht es einem Plugin, das aktive
-Gateway auf einem lokalen Discovery-Transport wie mDNS/Bonjour zu veröffentlichen. OpenClaw ruft den
-Dienst beim Start des Gateway auf, wenn lokale Discovery aktiviert ist, übergibt die
-aktuellen Ports des Gateway und nicht geheime TXT-Hinweisdaten und ruft den zurückgegebenen
-Handler `stop` beim Herunterfahren des Gateway auf.
+`api.registerGatewayDiscoveryService(...)` ermöglicht einem Plugin, den aktiven
+Gateway über einen lokalen Discovery-Transport wie mDNS/Bonjour bekannt zu machen. OpenClaw ruft den
+Dienst während des Gateway-Starts auf, wenn lokale Discovery aktiviert ist, übergibt die
+aktuellen Gateway-Ports und nicht geheime TXT-Hinweisdaten und ruft den zurückgegebenen
+`stop`-Handler während des Gateway-Shutdowns auf.
 
 ```typescript
 api.registerGatewayDiscoveryService({
@@ -158,20 +213,21 @@ api.registerGatewayDiscoveryService({
 });
 ```
 
-Plugins für Gateway-Discovery dürfen veröffentlichte TXT-Werte nicht als Secrets oder
-Authentifizierung behandeln. Discovery ist ein Routing-Hinweis; Vertrauen liegt weiterhin bei Gateway-Auth und TLS-Pinning.
+Gateway-Discovery-Plugins dürfen veröffentlichte TXT-Werte nicht als Secrets oder
+Authentifizierung behandeln. Discovery ist ein Routing-Hinweis; Gateway-Authentifizierung und TLS-Pinning
+sind weiterhin für Vertrauen zuständig.
 
 ### CLI-Registrierungsmetadaten
 
 `api.registerCli(registrar, opts?)` akzeptiert zwei Arten von Metadaten auf oberster Ebene:
 
 - `commands`: explizite Befehlswurzeln, die dem Registrar gehören
-- `descriptors`: Parse-Time-Befehlsdeskriptoren für Root-CLI-Hilfe,
-  Routing und lazy CLI-Registrierung von Plugins
+- `descriptors`: Befehlsdeskriptoren zur Parse-Zeit, die für die Root-CLI-Hilfe,
+  Routing und Lazy-Registrierung der Plugin-CLI verwendet werden
 
-Wenn ein Plugin-Befehl im normalen Root-CLI-Pfad lazy geladen bleiben soll,
-geben Sie `descriptors` an, die jede Befehlswurzel oberster Ebene abdecken, die von diesem
-Registrar bereitgestellt wird.
+Wenn ein Plugin-Befehl im normalen Root-CLI-Pfad lazy-loaded bleiben soll,
+stellen Sie `descriptors` bereit, die jede Befehlswurzel auf oberster Ebene abdecken,
+die dieser Registrar verfügbar macht.
 
 ```typescript
 api.registerCli(
@@ -191,91 +247,95 @@ api.registerCli(
 );
 ```
 
-Verwenden Sie `commands` allein nur dann, wenn Sie keine lazy Root-CLI-Registrierung benötigen.
-Dieser eager Kompatibilitätspfad wird weiterhin unterstützt, installiert aber keine
-deskriptorbasierten Platzhalter für lazy Laden zur Parse-Zeit.
+Verwenden Sie `commands` allein nur, wenn Sie keine Lazy-Root-CLI-Registrierung benötigen.
+Dieser Eager-Kompatibilitätspfad bleibt unterstützt, installiert aber keine
+deskriptorbasierten Platzhalter für Lazy Loading zur Parse-Zeit.
 
-### Registrierung von CLI-Backends
+### CLI-Backend-Registrierung
 
 `api.registerCliBackend(...)` ermöglicht es einem Plugin, die Standardkonfiguration für ein lokales
 KI-CLI-Backend wie `codex-cli` zu besitzen.
 
-- Die Backend-`id` wird zum Anbieterpräfix in Modellreferenzen wie `codex-cli/gpt-5`.
-- Die Backend-`config` verwendet dieselbe Form wie `agents.defaults.cliBackends.<id>`.
-- Benutzerkonfiguration hat weiterhin Vorrang. OpenClaw merged `agents.defaults.cliBackends.<id>` über den
-  Plugin-Standard, bevor die CLI ausgeführt wird.
-- Verwenden Sie `normalizeConfig`, wenn ein Backend nach dem Merge Kompatibilitätsumschreibungen benötigt
-  (zum Beispiel zur Normalisierung alter Flag-Formen).
+- Die Backend-`id` wird zum Provider-Präfix in Modellreferenzen wie `codex-cli/gpt-5`.
+- Die Backend-`config` verwendet dieselbe Struktur wie `agents.defaults.cliBackends.<id>`.
+- Die Benutzerkonfiguration hat weiterhin Vorrang. OpenClaw führt `agents.defaults.cliBackends.<id>` über dem
+  Plugin-Standard zusammen, bevor die CLI ausgeführt wird.
+- Verwenden Sie `normalizeConfig`, wenn ein Backend nach dem Zusammenführen Kompatibilitätsumschreibungen benötigt
+  (zum Beispiel das Normalisieren alter Flag-Strukturen).
 
 ### Exklusive Slots
 
-| Methode                                    | Was sie registriert                                                                                                                                          |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `api.registerContextEngine(id, factory)`   | Context Engine (jeweils nur eine aktiv). Der Callback `assemble()` erhält `availableTools` und `citationsMode`, damit die Engine Prompt-Ergänzungen anpassen kann. |
-| `api.registerMemoryCapability(capability)` | Einheitliche Memory-Capability                                                                                                                                 |
-| `api.registerMemoryPromptSection(builder)` | Builder für Memory-Prompt-Abschnitte                                                                                                                          |
-| `api.registerMemoryFlushPlan(resolver)`    | Resolver für Memory-Flush-Pläne                                                                                                                               |
-| `api.registerMemoryRuntime(runtime)`       | Adapter für die Memory-Laufzeit                                                                                                                               |
+| Methode                                    | Was sie registriert                                                                                                                                              |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerContextEngine(id, factory)`   | Context-Engine (jeweils eine aktiv). Der `assemble()`-Callback erhält `availableTools` und `citationsMode`, damit die Engine Prompt-Ergänzungen anpassen kann. |
+| `api.registerMemoryCapability(capability)` | Einheitliche Memory-Capability                                                                                                                                   |
+| `api.registerMemoryPromptSection(builder)` | Builder für Memory-Prompt-Abschnitte                                                                                                                             |
+| `api.registerMemoryFlushPlan(resolver)`    | Resolver für Memory-Flush-Pläne                                                                                                                                  |
+| `api.registerMemoryRuntime(runtime)`       | Memory-Runtime-Adapter                                                                                                                                           |
 
 ### Memory-Embedding-Adapter
 
-| Methode                                        | Was sie registriert                                  |
-| --------------------------------------------- | ---------------------------------------------------- |
-| `api.registerMemoryEmbeddingProvider(adapter)` | Memory-Embedding-Adapter für das aktive Plugin       |
+| Methode                                        | Was sie registriert                              |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `api.registerMemoryEmbeddingProvider(adapter)` | Memory-Embedding-Adapter für das aktive Plugin   |
 
 - `registerMemoryCapability` ist die bevorzugte exklusive API für Memory-Plugins.
-- `registerMemoryCapability` kann auch `publicArtifacts.listArtifacts(...)` bereitstellen,
-  sodass Begleit-Plugins exportierte Memory-Artefakte über
-  `openclaw/plugin-sdk/memory-host-core` konsumieren können, statt in das private Layout eines bestimmten
-  Memory-Plugins einzugreifen.
+- `registerMemoryCapability` kann außerdem `publicArtifacts.listArtifacts(...)`
+  verfügbar machen, damit begleitende Plugins exportierte Memory-Artefakte über
+  `openclaw/plugin-sdk/memory-host-core` konsumieren können, statt auf das private Layout eines bestimmten
+  Memory-Plugins zuzugreifen.
 - `registerMemoryPromptSection`, `registerMemoryFlushPlan` und
-  `registerMemoryRuntime` sind exklusive, Legacy-kompatible APIs für Memory-Plugins.
-- `registerMemoryEmbeddingProvider` ermöglicht es dem aktiven Memory-Plugin, einen
-  oder mehrere Adapter-IDs für Embeddings zu registrieren (zum Beispiel `openai`, `gemini` oder eine
-  benutzerdefinierte, durch ein Plugin definierte ID).
+  `registerMemoryRuntime` sind Legacy-kompatible exklusive APIs für Memory-Plugins.
+- `MemoryFlushPlan.model` kann den Flush-Turn auf eine exakte `provider/model`-
+  Referenz wie `ollama/qwen3:8b` pinnen, ohne die aktive Fallback-
+  Kette zu erben.
+- `registerMemoryEmbeddingProvider` ermöglicht dem aktiven Memory-Plugin, eine
+  oder mehrere Embedding-Adapter-IDs zu registrieren (zum Beispiel `openai`, `gemini` oder eine benutzerdefinierte,
+  vom Plugin definierte ID).
 - Benutzerkonfigurationen wie `agents.defaults.memorySearch.provider` und
   `agents.defaults.memorySearch.fallback` werden gegen diese registrierten
   Adapter-IDs aufgelöst.
 
-### Ereignisse und Lebenszyklus
+### Events und Lebenszyklus
 
-| Methode                                      | Was sie tut                   |
-| ------------------------------------------- | ----------------------------- |
-| `api.on(hookName, handler, opts?)`          | Typisierter Lifecycle-Hook    |
-| `api.onConversationBindingResolved(handler)` | Callback für Conversation-Bindung |
+| Methode                                      | Was sie tut                       |
+| -------------------------------------------- | --------------------------------- |
+| `api.on(hookName, handler, opts?)`           | Typisierter Lebenszyklus-Hook     |
+| `api.onConversationBindingResolved(handler)` | Callback für Konversationsbindung |
 
-Siehe [Plugin hooks](/de/plugins/hooks) für Beispiele, häufige Hook-Namen und Guard-
+Siehe [Plugin-Hooks](/de/plugins/hooks) für Beispiele, gängige Hook-Namen und Guard-
 Semantik.
 
-### Hook-Entscheidungssemantik
+### Semantik von Hook-Entscheidungen
 
-- `before_tool_call`: Die Rückgabe von `{ block: true }` ist final. Sobald ein Handler dies setzt, werden Handler mit niedrigerer Priorität übersprungen.
-- `before_tool_call`: Die Rückgabe von `{ block: false }` wird als keine Entscheidung behandelt (genau wie das Weglassen von `block`), nicht als Überschreibung.
-- `before_install`: Die Rückgabe von `{ block: true }` ist final. Sobald ein Handler dies setzt, werden Handler mit niedrigerer Priorität übersprungen.
-- `before_install`: Die Rückgabe von `{ block: false }` wird als keine Entscheidung behandelt (genau wie das Weglassen von `block`), nicht als Überschreibung.
-- `reply_dispatch`: Die Rückgabe von `{ handled: true, ... }` ist final. Sobald ein Handler die Zustellung beansprucht, werden Handler mit niedrigerer Priorität und der standardmäßige Modell-Zustellungspfad übersprungen.
-- `message_sending`: Die Rückgabe von `{ cancel: true }` ist final. Sobald ein Handler dies setzt, werden Handler mit niedrigerer Priorität übersprungen.
-- `message_sending`: Die Rückgabe von `{ cancel: false }` wird als keine Entscheidung behandelt (genau wie das Weglassen von `cancel`), nicht als Überschreibung.
-- `message_received`: Verwenden Sie das typisierte Feld `threadId`, wenn Sie Routing für eingehende Threads/Themen benötigen. Behalten Sie `metadata` für channel-spezifische Extras.
-- `message_sending`: Verwenden Sie die typisierten Routing-Felder `replyToId` / `threadId`, bevor Sie auf channel-spezifische `metadata` zurückgreifen.
-- `gateway_start`: Verwenden Sie `ctx.config`, `ctx.workspaceDir` und `ctx.getCron?.()` für Gateway-eigenen Startstatus, statt sich auf interne Hooks `gateway:startup` zu verlassen.
+- `before_tool_call`: Das Zurückgeben von `{ block: true }` ist terminal. Sobald ein Handler es setzt, werden Handler mit niedrigerer Priorität übersprungen.
+- `before_tool_call`: Das Zurückgeben von `{ block: false }` wird als keine Entscheidung behandelt (wie das Weglassen von `block`), nicht als Überschreibung.
+- `before_install`: Das Zurückgeben von `{ block: true }` ist terminal. Sobald ein Handler es setzt, werden Handler mit niedrigerer Priorität übersprungen.
+- `before_install`: Das Zurückgeben von `{ block: false }` wird als keine Entscheidung behandelt (wie das Weglassen von `block`), nicht als Überschreibung.
+- `reply_dispatch`: Das Zurückgeben von `{ handled: true, ... }` ist terminal. Sobald ein Handler den Dispatch übernimmt, werden Handler mit niedrigerer Priorität und der Standardpfad für den Modell-Dispatch übersprungen.
+- `message_sending`: Das Zurückgeben von `{ cancel: true }` ist terminal. Sobald ein Handler es setzt, werden Handler mit niedrigerer Priorität übersprungen.
+- `message_sending`: Das Zurückgeben von `{ cancel: false }` wird als keine Entscheidung behandelt (wie das Weglassen von `cancel`), nicht als Überschreibung.
+- `message_received`: Verwenden Sie das typisierte Feld `threadId`, wenn Sie eingehendes Thread-/Topic-Routing benötigen. Behalten Sie `metadata` für kanalspezifische Extras bei.
+- `message_sending`: Verwenden Sie die typisierten Routing-Felder `replyToId` / `threadId`, bevor Sie auf kanalspezifische `metadata` zurückfallen.
+- `gateway_start`: Verwenden Sie `ctx.config`, `ctx.workspaceDir` und `ctx.getCron?.()` für Gateway-eigenen Startzustand, statt sich auf interne `gateway:startup`-Hooks zu verlassen.
+- `cron_changed`: Beobachten Sie Änderungen am Gateway-eigenen Cron-Lebenszyklus. Verwenden Sie `event.job?.state?.nextRunAtMs` und `ctx.getCron?.()`, wenn Sie externe Wake-Scheduler synchronisieren, und behalten Sie OpenClaw als Source of Truth für Fälligkeitsprüfungen und Ausführung bei.
 
-### Felder des API-Objekts
+### API-Objektfelder
 
-| Feld                     | Typ                       | Beschreibung                                                                                |
-| ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------- |
-| `api.id`                 | `string`                  | Plugin-ID                                                                                   |
-| `api.name`               | `string`                  | Anzeigename                                                                                 |
-| `api.version`            | `string?`                 | Plugin-Version (optional)                                                                   |
-| `api.description`        | `string?`                 | Plugin-Beschreibung (optional)                                                              |
-| `api.source`             | `string`                  | Pfad zur Plugin-Quelle                                                                      |
-| `api.rootDir`            | `string?`                 | Root-Verzeichnis des Plugins (optional)                                                     |
-| `api.config`             | `OpenClawConfig`          | Aktueller Konfigurations-Snapshot (aktiver In-Memory-Laufzeit-Snapshot, wenn verfügbar)    |
-| `api.pluginConfig`       | `Record<string, unknown>` | Plugin-spezifische Konfiguration aus `plugins.entries.<id>.config`                          |
-| `api.runtime`            | `PluginRuntime`           | [Runtime-Helfer](/de/plugins/sdk-runtime)                                                      |
-| `api.logger`             | `PluginLogger`            | Bereichsbezogener Logger (`debug`, `info`, `warn`, `error`)                                 |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Aktueller Lademodus; `"setup-runtime"` ist das leichte Vorstart-/Setup-Fenster vor dem vollständigen Entry |
-| `api.resolvePath(input)` | `(string) => string`      | Pfad relativ zur Plugin-Root auflösen                                                       |
+| Feld                     | Typ                       | Beschreibung                                                                                                   |
+| ------------------------ | ------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `api.id`                 | `string`                  | Plugin-ID                                                                                                      |
+| `api.name`               | `string`                  | Anzeigename                                                                                                    |
+| `api.version`            | `string?`                 | Plugin-Version (optional)                                                                                      |
+| `api.description`        | `string?`                 | Plugin-Beschreibung (optional)                                                                                 |
+| `api.source`             | `string`                  | Plugin-Quellpfad                                                                                               |
+| `api.rootDir`            | `string?`                 | Plugin-Stammverzeichnis (optional)                                                                             |
+| `api.config`             | `OpenClawConfig`          | Aktueller Konfigurations-Snapshot (aktiver In-Memory-Runtime-Snapshot, wenn verfügbar)                         |
+| `api.pluginConfig`       | `Record<string, unknown>` | Plugin-spezifische Konfiguration aus `plugins.entries.<id>.config`                                             |
+| `api.runtime`            | `PluginRuntime`           | [Runtime-Helper](/de/plugins/sdk-runtime)                                                                         |
+| `api.logger`             | `PluginLogger`            | Bereichsbezogener Logger (`debug`, `info`, `warn`, `error`)                                                    |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Aktueller Lademodus; `"setup-runtime"` ist das schlanke Start-/Setup-Fenster vor dem vollständigen Entry       |
+| `api.resolvePath(input)` | `(string) => string`      | Pfad relativ zur Plugin-Wurzel auflösen                                                                        |
 
 ## Interne Modulkonvention
 
@@ -283,10 +343,10 @@ Verwenden Sie innerhalb Ihres Plugins lokale Barrel-Dateien für interne Importe
 
 ```
 my-plugin/
-  api.ts            # Öffentliche Exporte für externe Konsumenten
-  runtime-api.ts    # Nur intern verwendete Runtime-Exporte
-  index.ts          # Entry-Point des Plugins
-  setup-entry.ts    # Leichter Entry nur für Setup (optional)
+  api.ts            # Public exports for external consumers
+  runtime-api.ts    # Internal-only runtime exports
+  index.ts          # Plugin entry point
+  setup-entry.ts    # Lightweight setup-only entry (optional)
 ```
 
 <Warning>
@@ -295,48 +355,51 @@ my-plugin/
   `./runtime-api.ts`. Der SDK-Pfad ist nur der externe Vertrag.
 </Warning>
 
-Öffentliche Oberflächen von per Facade geladenen gebündelten Plugins (`api.ts`, `runtime-api.ts`,
+Facade-geladene öffentliche Oberflächen gebündelter Plugins (`api.ts`, `runtime-api.ts`,
 `index.ts`, `setup-entry.ts` und ähnliche öffentliche Entry-Dateien) bevorzugen den
-aktiven Laufzeit-Konfigurations-Snapshot, wenn OpenClaw bereits läuft. Wenn noch kein Laufzeit-
-Snapshot existiert, greifen sie auf die auf der Festplatte aufgelöste Konfigurationsdatei zurück.
+aktiven Runtime-Konfigurations-Snapshot, wenn OpenClaw bereits läuft. Wenn noch kein Runtime-
+Snapshot existiert, fallen sie auf die aufgelöste Konfigurationsdatei auf der Festplatte zurück.
+Paketierte Facades gebündelter Plugins sollten über OpenClaws Plugin-
+Facade-Loader geladen werden; direkte Importe aus `dist/extensions/...` umgehen gestufte Runtime-
+Abhängigkeitsspiegel, die paketierte Installationen für Plugin-eigene Abhängigkeiten verwenden.
 
-Provider-Plugins können eine schmale pluginlokale Vertrags-Barrel-Datei bereitstellen, wenn ein
-Helper absichtlich anbieterspezifisch ist und noch nicht in einen generischen SDK-
-Subpfad gehört. Gebündelte Beispiele:
+Provider-Plugins können ein schmales Plugin-lokales Vertrags-Barrel verfügbar machen, wenn ein
+Helper absichtlich Provider-spezifisch ist und noch nicht in einen generischen SDK-
+Unterpfad gehört. Gebündelte Beispiele:
 
-- **Anthropic**: öffentlicher `api.ts`- / `contract-api.ts`-Seam für Claude-
-  Beta-Header und Stream-Helfer für `service_tier`.
+- **Anthropic**: öffentliche `api.ts`- / `contract-api.ts`-Schnittstelle für Claude-
+  Beta-Header und `service_tier`-Stream-Helper.
 - **`@openclaw/openai-provider`**: `api.ts` exportiert Provider-Builder,
-  Helfer für Standardmodelle und Builder für Echtzeit-Provider.
+  Standardmodell-Helper und Realtime-Provider-Builder.
 - **`@openclaw/openrouter-provider`**: `api.ts` exportiert den Provider-Builder
-  plus Helfer für Onboarding/Konfiguration.
+  sowie Onboarding-/Konfigurations-Helper.
 
 <Warning>
-  Produktionscode von Extensions sollte außerdem Importe aus `openclaw/plugin-sdk/<other-plugin>`
-  vermeiden. Wenn ein Helper wirklich gemeinsam genutzt wird, verschieben Sie ihn in einen neutralen SDK-Subpfad
+  Produktionscode von Plugins sollte ebenfalls Importe aus `openclaw/plugin-sdk/<other-plugin>`
+  vermeiden. Wenn ein Helper wirklich geteilt wird, heben Sie ihn in einen neutralen SDK-Unterpfad
   wie `openclaw/plugin-sdk/speech`, `.../provider-model-shared` oder eine andere
-  fähigkeitsorientierte Oberfläche, statt zwei Plugins miteinander zu koppeln.
+  capability-orientierte Oberfläche, statt zwei Plugins miteinander zu koppeln.
 </Warning>
 
 ## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="Entry-Points" icon="door-open" href="/de/plugins/sdk-entrypoints">
+  <Card title="Entry Points" icon="door-open" href="/de/plugins/sdk-entrypoints">
     Optionen für `definePluginEntry` und `defineChannelPluginEntry`.
   </Card>
-  <Card title="Runtime-Helfer" icon="gears" href="/de/plugins/sdk-runtime">
-    Vollständige Referenz des Namespace `api.runtime`.
+  <Card title="Runtime-Helper" icon="gears" href="/de/plugins/sdk-runtime">
+    Vollständige Referenz des `api.runtime`-Namespace.
   </Card>
   <Card title="Setup und Konfiguration" icon="sliders" href="/de/plugins/sdk-setup">
-    Packaging, Manifeste und Konfigurationsschemas.
+    Paketierung, Manifeste und Konfigurationsschemas.
   </Card>
-  <Card title="Testing" icon="vial" href="/de/plugins/sdk-testing">
+  <Card title="Tests" icon="vial" href="/de/plugins/sdk-testing">
     Test-Utilities und Lint-Regeln.
   </Card>
   <Card title="SDK-Migration" icon="arrows-turn-right" href="/de/plugins/sdk-migration">
     Migration von veralteten Oberflächen.
   </Card>
   <Card title="Plugin-Interna" icon="diagram-project" href="/de/plugins/architecture">
-    Tiefgehende Architektur und Fähigkeitsmodell.
+    Tiefgehende Architektur und Capability-Modell.
   </Card>
 </CardGroup>

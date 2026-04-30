@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Sie möchten `code_execution` aktivieren oder konfigurieren
-    - Sie möchten Remote-Analyse ohne lokalen Shell-Zugriff
-    - Sie möchten `x_search` oder `web_search` mit Remote-Python-Analyse kombinieren
-summary: '`code_execution` -- sandboxed Remote-Python-Analyse mit xAI ausführen'
+    - Sie möchten code_execution aktivieren oder konfigurieren
+    - Sie möchten Remote-Analysen ohne lokalen Shell-Zugriff
+    - Sie möchten x_search oder web_search mit Python-Analyse in einer Remote-Umgebung kombinieren
+summary: code_execution -- Sandbox-geschützte Remote-Python-Analyse mit xAI ausführen
 title: Codeausführung
 x-i18n:
-    generated_at: "2026-04-24T07:02:09Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:17:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
+    source_hash: fe635ec65aaf593a5bd63c139fbfc69e1ba3ea7c58c2bba639ec1ebd70dba1a9
     source_path: tools/code-execution.md
-    workflow: 15
+    workflow: 16
 ---
 
-`code_execution` führt sandboxed Remote-Python-Analyse über die Responses API von xAI aus.
+`code_execution` führt Python-Analysen in einer abgeschotteten Remote-Umgebung über die Responses API von xAI aus.
 Das unterscheidet sich von lokalem [`exec`](/de/tools/exec):
 
-- `exec` führt Shell-Befehle auf Ihrem Rechner oder Ihrer Node aus
+- `exec` führt Shell-Befehle auf Ihrem Rechner oder Node aus
 - `code_execution` führt Python in der Remote-Sandbox von xAI aus
 
 Verwenden Sie `code_execution` für:
@@ -26,14 +26,14 @@ Verwenden Sie `code_execution` für:
 - Tabellierung
 - schnelle Statistiken
 - diagrammartige Analysen
-- Analyse von Daten, die von `x_search` oder `web_search` zurückgegeben werden
+- die Analyse von Daten, die von `x_search` oder `web_search` zurückgegeben wurden
 
-Verwenden Sie es **nicht**, wenn Sie lokale Dateien, Ihre Shell, Ihr Repo oder gekoppelte
+Verwenden Sie es **nicht**, wenn Sie lokale Dateien, Ihre Shell, Ihr Repository oder gekoppelte
 Geräte benötigen. Verwenden Sie dafür [`exec`](/de/tools/exec).
 
 ## Einrichtung
 
-Sie benötigen einen xAI-API-Schlüssel. Jede dieser Möglichkeiten funktioniert:
+Sie benötigen einen xAI-API-Schlüssel. Jede dieser Optionen funktioniert:
 
 - `XAI_API_KEY`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -64,7 +64,7 @@ Beispiel:
 
 ## Verwendung
 
-Formulieren Sie natürlich und machen Sie die Analyseabsicht explizit:
+Fragen Sie natürlich und machen Sie die Analyseabsicht explizit:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -78,20 +78,20 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-Das Tool verwendet intern einen einzelnen Parameter `task`, daher sollte der Agent
-die vollständige Analyseanfrage und alle Inline-Daten in einem einzigen Prompt senden.
+Das Tool akzeptiert intern einen einzelnen `task`-Parameter, daher sollte der Agent
+die vollständige Analyseanfrage und alle Inline-Daten in einem Prompt senden.
 
-## Grenzen
+## Einschränkungen
 
-- Dies ist Remote-Ausführung über xAI, keine lokale Prozessausführung.
-- Es sollte als ephemere Analyse behandelt werden, nicht als persistentes Notebook.
-- Gehen Sie nicht davon aus, dass lokale Dateien oder Ihr Workspace zugänglich sind.
-- Für aktuelle X-Daten verwenden Sie zuerst [`x_search`](/de/tools/web#x_search).
+- Dies ist Remote-Ausführung bei xAI, keine lokale Prozessausführung.
+- Sie sollte als flüchtige Analyse behandelt werden, nicht als persistentes Notebook.
+- Gehen Sie nicht davon aus, dass Zugriff auf lokale Dateien oder Ihren Workspace besteht.
+- Verwenden Sie für aktuelle X-Daten zuerst [`x_search`](/de/tools/web#x_search).
 
 ## Verwandt
 
-- [Exec tool](/de/tools/exec)
-- [Exec approvals](/de/tools/exec-approvals)
-- [apply_patch tool](/de/tools/apply-patch)
-- [Web tools](/de/tools/web)
+- [Exec-Tool](/de/tools/exec)
+- [Exec-Genehmigungen](/de/tools/exec-approvals)
+- [apply_patch-Tool](/de/tools/apply-patch)
+- [Web-Tools](/de/tools/web)
 - [xAI](/de/providers/xai)

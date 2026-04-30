@@ -1,40 +1,46 @@
 ---
 read_when:
-    - Das Rendering der Assistentenausgabe in der Control UI ändern
-    - Debuggen von `[embed ...]`, `MEDIA:`, Antwort- oder Audio-Präsentationsdirektiven
-summary: Shortcode-Protokoll für Rich Output für Embeds, Medien, Audio-Hinweise und Antworten
-title: Rich-Output-Protokoll
+    - Darstellung der Assistentenausgabe in der Control UI ändern
+    - Debugging von `[embed ...]`, `MEDIA:`, Antwort- oder Audio-Präsentationsdirektiven
+summary: Shortcode-Protokoll für formatierte Ausgaben, Einbettungen, Medien, Audiohinweise und Antworten
+title: Protokoll für formatierte Ausgaben
 x-i18n:
-    generated_at: "2026-04-26T11:38:49Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:13:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3c62e41073196c2ff4867230af55469786fcfb29414f5cc5b7d38f6b1ffc3718
+    source_hash: 7c52a2f3a37e7a8d1237046edafc3e80c3199c01f890a1ef39662436590ef55d
     source_path: reference/rich-output-protocol.md
-    workflow: 15
+    workflow: 16
 ---
 
-Die Assistentenausgabe kann einen kleinen Satz von Zustellungs-/Render-Direktiven enthalten:
+Die Ausgabe des Assistant kann eine kleine Gruppe von Auslieferungs-/Darstellungsdirektiven enthalten:
 
-- `MEDIA:` für die Zustellung von Anhängen
-- `[[audio_as_voice]]` für Audio-Präsentationshinweise
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` für Antwort-Metadaten
-- `[embed ...]` für Rich Rendering in der Control UI
+- `MEDIA:` für die Auslieferung von Anhängen
+- `[[audio_as_voice]]` für Hinweise zur Audiopräsentation
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` für Antwortmetadaten
+- `[embed ...]` für erweiterte Darstellung in der Control UI
 
-Remote-Anhänge über `MEDIA:` müssen öffentliche `https:`-URLs sein. Normales `http:`,
-loopback, link-local, private und interne Hostnamen werden als Anhangsdirektiven ignoriert;
-serverseitige Media-Fetcher erzwingen weiterhin ihre eigenen Netzwerkschutzmechanismen.
+Remote-`MEDIA:`-Anhänge müssen öffentliche `https:`-URLs sein. Reines `http:`,
+Loopback, link-lokale, private und interne Hostnamen werden als Anhangs-
+direktiven ignoriert; serverseitige Medienabrufmechanismen erzwingen weiterhin
+ihre eigenen Netzwerkschutzmaßnahmen.
 
-Diese Direktiven sind getrennt. `MEDIA:` und Antwort-/Voice-Tags bleiben Zustellungsmetadaten; `[embed ...]` ist der reine Rich-Render-Pfad für das Web.
-Vertrauenswürdige Medien aus Tool-Ergebnissen verwenden vor der Zustellung denselben Parser für `MEDIA:` / `[[audio_as_voice]]`, sodass Textausgaben von Tools einen Audioanhang weiterhin als Sprachnotiz markieren können.
+Normale Markdown-Bildsyntax bleibt standardmäßig Text. Kanäle, die Markdown-
+Bildantworten absichtlich Medienanhängen zuordnen, aktivieren dies in ihrem
+ausgehenden Adapter; Telegram tut dies, sodass `![alt](url)` weiterhin zu einer
+Medienantwort werden kann.
 
-Wenn Block-Streaming aktiviert ist, bleibt `MEDIA:` Zustellungsmetadaten mit einmaliger Zustellung für einen
-Turn. Wenn dieselbe Medien-URL in einem gestreamten Block gesendet und in der endgültigen
-Assistenten-Payload wiederholt wird, stellt OpenClaw den Anhang einmal zu und entfernt das Duplikat
-aus der endgültigen Payload.
+Diese Direktiven sind voneinander getrennt. `MEDIA:` und Antwort-/Voice-Tags bleiben Auslieferungsmetadaten; `[embed ...]` ist der nur für das Web bestimmte Pfad für erweiterte Darstellung.
+Vertrauenswürdige Medien aus Tool-Ergebnissen verwenden vor der Auslieferung denselben `MEDIA:`-/`[[audio_as_voice]]`-Parser, sodass Textausgaben von Tools einen Audioanhang weiterhin als Sprachnachricht kennzeichnen können.
+
+Wenn Block-Streaming aktiviert ist, bleibt `MEDIA:` eine Metadatenangabe für
+eine einzelne Auslieferung in einem Turn. Wenn dieselbe Medien-URL in einem gestreamten Block gesendet und in der finalen
+Assistant-Nutzlast wiederholt wird, liefert OpenClaw den Anhang einmal aus und entfernt das Duplikat
+aus der finalen Nutzlast.
 
 ## `[embed ...]`
 
-`[embed ...]` ist die einzige agentseitige Rich-Render-Syntax für die Control UI.
+`[embed ...]` ist die einzige agentenseitige Syntax für erweiterte Darstellung in der Control UI.
 
 Selbstschließendes Beispiel:
 
@@ -45,15 +51,15 @@ Selbstschließendes Beispiel:
 Regeln:
 
 - `[view ...]` ist für neue Ausgaben nicht mehr gültig.
-- Embed-Shortcodes werden nur auf der Oberfläche für Assistentennachrichten gerendert.
-- Nur URL-gestützte Embeds werden gerendert. Verwenden Sie `ref="..."` oder `url="..."`.
-- Embed-Shortcodes im Blockformat mit Inline-HTML werden nicht gerendert.
-- Die Web-UI entfernt den Shortcode aus dem sichtbaren Text und rendert das Embed inline.
-- `MEDIA:` ist kein Alias für Embed und sollte nicht für Rich-Embed-Rendering verwendet werden.
+- Einbettungs-Shortcodes werden nur auf der Nachrichtenoberfläche des Assistant dargestellt.
+- Nur URL-basierte Einbettungen werden dargestellt. Verwenden Sie `ref="..."` oder `url="..."`.
+- Einbettungs-Shortcodes im Blockformat mit Inline-HTML werden nicht dargestellt.
+- Die Web-UI entfernt den Shortcode aus dem sichtbaren Text und stellt die Einbettung inline dar.
+- `MEDIA:` ist kein Alias für Einbettungen und sollte nicht für erweiterte Einbettungsdarstellung verwendet werden.
 
-## Gespeicherte Rendering-Form
+## Gespeicherte Darstellungsform
 
-Der normalisierte/gespeicherte Inhaltsblock des Assistenten ist ein strukturiertes Element `canvas`:
+Der normalisierte/gespeicherte Inhaltsblock des Assistant ist ein strukturiertes `canvas`-Element:
 
 ```json
 {
@@ -70,9 +76,9 @@ Der normalisierte/gespeicherte Inhaltsblock des Assistenten ist ein strukturiert
 }
 ```
 
-Gespeicherte/gerenderte Rich-Blöcke verwenden direkt diese Form `canvas`. `present_view` wird nicht erkannt.
+Gespeicherte/dargestellte Blöcke für erweiterte Darstellung verwenden diese `canvas`-Form direkt. `present_view` wird nicht erkannt.
 
-## Verwandt
+## Verwandte Themen
 
 - [RPC-Adapter](/de/reference/rpc)
 - [Typebox](/de/concepts/typebox)

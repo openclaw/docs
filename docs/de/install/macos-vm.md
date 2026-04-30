@@ -1,68 +1,68 @@
 ---
 read_when:
-    - Sie möchten OpenClaw von Ihrer Haupt-macOS-Umgebung isolieren
-    - Sie möchten iMessage-Integration (BlueBubbles) in einer Sandbox
+    - Sie möchten OpenClaw von Ihrer primären macOS-Umgebung isolieren
+    - Sie möchten eine iMessage-Integration (BlueBubbles) in einer Sandbox
     - Sie möchten eine zurücksetzbare macOS-Umgebung, die Sie klonen können
-    - Sie möchten lokale und gehostete macOS-VM-Optionen vergleichen
-summary: OpenClaw in einer sandboxed macOS-VM ausführen (lokal oder gehostet), wenn Sie Isolierung oder iMessage benötigen
+    - Sie möchten lokale mit gehosteten macOS-VM-Optionen vergleichen
+summary: Führen Sie OpenClaw in einer sandboxierten macOS-VM (lokal oder gehostet) aus, wenn Sie Isolierung oder iMessage benötigen
 title: macOS-VMs
 x-i18n:
-    generated_at: "2026-04-05T12:46:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:01:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b1f7c5691fd2686418ee25f2c38b1f9badd511daeef2906d21ad30fb523b013f
+    source_hash: 49cd3d420db02bcdb80378c3a91a1c1243e7be2012525c31de1dd49db397d560
     source_path: install/macos-vm.md
-    workflow: 15
+    workflow: 16
 ---
 
 # OpenClaw auf macOS-VMs (Sandboxing)
 
-## Empfohlener Standardfall (für die meisten Benutzer)
+## Empfohlener Standard (die meisten Benutzer)
 
-- **Kleiner Linux-VPS** für ein dauerhaft aktives Gateway und niedrige Kosten. Siehe [VPS hosting](/vps).
-- **Dedizierte Hardware** (Mac mini oder Linux-Rechner), wenn Sie volle Kontrolle und eine **Residential IP** für Browser-Automatisierung möchten. Viele Websites blockieren Rechenzentrums-IPs, daher funktioniert lokales Browsing oft besser.
-- **Hybrid:** Behalten Sie das Gateway auf einem günstigen VPS und verbinden Sie Ihren Mac als **Node**, wenn Sie Browser-/UI-Automatisierung benötigen. Siehe [Nodes](/nodes) und [Gateway remote](/gateway/remote).
+- **Kleiner Linux-VPS** für einen dauerhaft laufenden Gateway und niedrige Kosten. Siehe [VPS-Hosting](/de/vps).
+- **Dedizierte Hardware** (Mac mini oder Linux-Rechner), wenn Sie volle Kontrolle und eine **private IP-Adresse** für Browserautomatisierung möchten. Viele Websites blockieren Rechenzentrums-IPs, daher funktioniert lokales Browsen oft besser.
+- **Hybrid:** Betreiben Sie den Gateway auf einem günstigen VPS und verbinden Sie Ihren Mac als **Node**, wenn Sie Browser-/UI-Automatisierung benötigen. Siehe [Nodes](/de/nodes) und [Gateway remote](/de/gateway/remote).
 
-Verwenden Sie eine macOS-VM, wenn Sie gezielt Funktionen benötigen, die nur unter macOS verfügbar sind (iMessage/BlueBubbles), oder wenn Sie eine strikte Isolierung von Ihrem alltäglichen Mac wünschen.
+Verwenden Sie eine macOS-VM, wenn Sie ausdrücklich macOS-spezifische Funktionen (iMessage/BlueBubbles) benötigen oder eine strikte Isolation von Ihrem täglichen Mac wünschen.
 
-## Optionen für macOS-VMs
+## macOS-VM-Optionen
 
-### Lokale VM auf Ihrem Apple Silicon Mac (Lume)
+### Lokale VM auf Ihrem Apple-Silicon-Mac (Lume)
 
-Führen Sie OpenClaw in einer sandboxed macOS-VM auf Ihrem vorhandenen Apple Silicon Mac mit [Lume](https://cua.ai/docs/lume) aus.
+Führen Sie OpenClaw in einer sandboxed macOS-VM auf Ihrem vorhandenen Apple-Silicon-Mac mit [Lume](https://cua.ai/docs/lume) aus.
 
 Das bietet Ihnen:
 
 - Vollständige macOS-Umgebung in Isolation (Ihr Host bleibt sauber)
 - iMessage-Unterstützung über BlueBubbles (unter Linux/Windows unmöglich)
 - Sofortiges Zurücksetzen durch Klonen von VMs
-- Keine zusätzlichen Hardware- oder Cloud-Kosten
+- Keine zusätzliche Hardware- oder Cloud-Kosten
 
-### Gehostete Mac-Anbieter (Cloud)
+### Gehostete Mac-Provider (Cloud)
 
-Wenn Sie macOS in der Cloud möchten, funktionieren auch gehostete Mac-Anbieter:
+Wenn Sie macOS in der Cloud möchten, funktionieren gehostete Mac-Provider ebenfalls:
 
 - [MacStadium](https://www.macstadium.com/) (gehostete Macs)
-- Auch andere Anbieter gehosteter Macs funktionieren; folgen Sie deren Dokumentation zu VM + SSH
+- Andere gehostete Mac-Anbieter funktionieren ebenfalls; folgen Sie deren VM- und SSH-Dokumentation
 
-Sobald Sie SSH-Zugriff auf eine macOS-VM haben, fahren Sie unten mit Schritt 6 fort.
+Sobald Sie SSH-Zugriff auf eine macOS-VM haben, fahren Sie mit Schritt 6 unten fort.
 
 ---
 
-## Schnellpfad (Lume, erfahrene Benutzer)
+## Schneller Weg (Lume, erfahrene Benutzer)
 
 1. Lume installieren
 2. `lume create openclaw --os macos --ipsw latest`
-3. Setup Assistant abschließen, Remote Login (SSH) aktivieren
+3. Einrichtungsassistenten abschließen, Remote Login (SSH) aktivieren
 4. `lume run openclaw --no-display`
-5. Per SSH verbinden, OpenClaw installieren, Kanäle konfigurieren
+5. Per SSH anmelden, OpenClaw installieren, Kanäle konfigurieren
 6. Fertig
 
 ---
 
 ## Was Sie benötigen (Lume)
 
-- Apple Silicon Mac (M1/M2/M3/M4)
+- Apple-Silicon-Mac (M1/M2/M3/M4)
 - macOS Sequoia oder neuer auf dem Host
 - ~60 GB freier Speicherplatz pro VM
 - ~20 Minuten
@@ -75,51 +75,53 @@ Sobald Sie SSH-Zugriff auf eine macOS-VM haben, fahren Sie unten mit Schritt 6 f
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/trycua/cua/main/libs/lume/scripts/install.sh)"
 ```
 
-Falls `~/.local/bin` nicht in Ihrem PATH ist:
+Wenn `~/.local/bin` nicht in Ihrem PATH enthalten ist:
 
 ```bash
 echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Prüfen:
+Überprüfen:
 
 ```bash
 lume --version
 ```
 
-Dokumentation: [Lume Installation](https://cua.ai/docs/lume/guide/getting-started/installation)
+Dokumentation: [Lume-Installation](https://cua.ai/docs/lume/guide/getting-started/installation)
 
 ---
 
-## 2) Die macOS-VM erstellen
+## 2) macOS-VM erstellen
 
 ```bash
 lume create openclaw --os macos --ipsw latest
 ```
 
-Dadurch wird macOS heruntergeladen und die VM erstellt. Ein VNC-Fenster öffnet sich automatisch.
+Dies lädt macOS herunter und erstellt die VM. Ein VNC-Fenster öffnet sich automatisch.
 
-Hinweis: Der Download kann je nach Verbindung eine Weile dauern.
+<Note>
+Der Download kann je nach Verbindung eine Weile dauern.
+</Note>
 
 ---
 
-## 3) Setup Assistant abschließen
+## 3) Einrichtungsassistenten abschließen
 
 Im VNC-Fenster:
 
 1. Sprache und Region auswählen
-2. Apple ID überspringen (oder anmelden, wenn Sie später iMessage möchten)
-3. Ein Benutzerkonto erstellen (Benutzername und Passwort merken)
+2. Apple-ID überspringen (oder anmelden, wenn Sie iMessage später verwenden möchten)
+3. Benutzerkonto erstellen (Benutzername und Passwort merken)
 4. Alle optionalen Funktionen überspringen
 
-Nach Abschluss der Einrichtung SSH aktivieren:
+Nachdem die Einrichtung abgeschlossen ist, aktivieren Sie SSH:
 
-1. System Settings → General → Sharing öffnen
+1. Systemeinstellungen öffnen → Allgemein → Teilen
 2. "Remote Login" aktivieren
 
 ---
 
-## 4) Die IP-Adresse der VM abrufen
+## 4) IP-Adresse der VM abrufen
 
 ```bash
 lume get openclaw
@@ -129,13 +131,13 @@ Suchen Sie nach der IP-Adresse (normalerweise `192.168.64.x`).
 
 ---
 
-## 5) Per SSH auf die VM verbinden
+## 5) Per SSH in der VM anmelden
 
 ```bash
 ssh youruser@192.168.64.X
 ```
 
-Ersetzen Sie `youruser` durch das von Ihnen erstellte Konto und die IP durch die IP Ihrer VM.
+Ersetzen Sie `youruser` durch das Konto, das Sie erstellt haben, und die IP-Adresse durch die IP Ihrer VM.
 
 ---
 
@@ -148,7 +150,7 @@ npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-Folgen Sie den Onboarding-Prompts, um Ihren Modell-Provider einzurichten (Anthropic, OpenAI usw.).
+Folgen Sie den Onboarding-Eingabeaufforderungen, um Ihren Modell-Provider einzurichten (Anthropic, OpenAI usw.).
 
 ---
 
@@ -176,7 +178,7 @@ Fügen Sie Ihre Kanäle hinzu:
 }
 ```
 
-Dann bei WhatsApp anmelden (QR scannen):
+Melden Sie sich anschließend bei WhatsApp an (QR scannen):
 
 ```bash
 openclaw channels login
@@ -184,7 +186,7 @@ openclaw channels login
 
 ---
 
-## 8) Die VM headless ausführen
+## 8) VM headless ausführen
 
 Stoppen Sie die VM und starten Sie sie ohne Anzeige neu:
 
@@ -193,9 +195,9 @@ lume stop openclaw
 lume run openclaw --no-display
 ```
 
-Die VM läuft im Hintergrund. Der Daemon von OpenClaw hält das Gateway aktiv.
+Die VM läuft im Hintergrund. Der Daemon von OpenClaw hält den Gateway am Laufen.
 
-So prüfen Sie den Status:
+Status prüfen:
 
 ```bash
 ssh youruser@192.168.64.X "openclaw status"
@@ -205,16 +207,16 @@ ssh youruser@192.168.64.X "openclaw status"
 
 ## Bonus: iMessage-Integration
 
-Das ist das Killer-Feature beim Betrieb unter macOS. Verwenden Sie [BlueBubbles](https://bluebubbles.app), um iMessage zu OpenClaw hinzuzufügen.
+Dies ist das wichtigste Feature beim Betrieb auf macOS. Verwenden Sie [BlueBubbles](https://bluebubbles.app), um iMessage zu OpenClaw hinzuzufügen.
 
 Innerhalb der VM:
 
 1. BlueBubbles von bluebubbles.app herunterladen
-2. Mit Ihrer Apple ID anmelden
-3. Die Web API aktivieren und ein Passwort festlegen
-4. BlueBubbles-Webhooks auf Ihr Gateway verweisen lassen (Beispiel: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
+2. Mit Ihrer Apple-ID anmelden
+3. Web API aktivieren und ein Passwort festlegen
+4. BlueBubbles-Webhooks auf Ihren Gateway richten (Beispiel: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
 
-Zur OpenClaw-Konfiguration hinzufügen:
+Zu Ihrer OpenClaw-Konfiguration hinzufügen:
 
 ```json5
 {
@@ -228,15 +230,15 @@ Zur OpenClaw-Konfiguration hinzufügen:
 }
 ```
 
-Starten Sie das Gateway neu. Jetzt kann Ihr Agent iMessages senden und empfangen.
+Starten Sie den Gateway neu. Ihr Agent kann nun iMessages senden und empfangen.
 
-Vollständige Einrichtungsdetails: [BlueBubbles channel](/channels/bluebubbles)
+Vollständige Einrichtungsdetails: [BlueBubbles-Kanal](/de/channels/bluebubbles)
 
 ---
 
-## Ein Golden Image speichern
+## Golden Image speichern
 
-Bevor Sie weiter anpassen, erstellen Sie einen Snapshot Ihres sauberen Zustands:
+Erstellen Sie einen Snapshot Ihres sauberen Zustands, bevor Sie weitere Anpassungen vornehmen:
 
 ```bash
 lume stop openclaw
@@ -257,32 +259,32 @@ lume run openclaw --no-display
 
 Halten Sie die VM am Laufen, indem Sie:
 
-- Ihren Mac am Strom lassen
-- den Ruhezustand in System Settings → Energy Saver deaktivieren
-- bei Bedarf `caffeinate` verwenden
+- Ihren Mac am Strom angeschlossen lassen
+- Ruhezustand in Systemeinstellungen → Energie sparen deaktivieren
+- Bei Bedarf `caffeinate` verwenden
 
-Für echten Dauerbetrieb sollten Sie einen dedizierten Mac mini oder einen kleinen VPS in Betracht ziehen. Siehe [VPS hosting](/vps).
+Für echten Dauerbetrieb sollten Sie einen dedizierten Mac mini oder einen kleinen VPS in Betracht ziehen. Siehe [VPS-Hosting](/de/vps).
 
 ---
 
 ## Fehlerbehebung
 
-| Problem                     | Lösung                                                                                   |
-| --------------------------- | ---------------------------------------------------------------------------------------- |
-| Kein SSH-Zugriff auf die VM | Prüfen, ob "Remote Login" in den System Settings der VM aktiviert ist                    |
-| VM-IP wird nicht angezeigt  | Warten, bis die VM vollständig gestartet ist, dann `lume get openclaw` erneut ausführen |
-| Lume-Befehl nicht gefunden  | `~/.local/bin` zu Ihrem PATH hinzufügen                                                  |
-| WhatsApp-QR scannt nicht    | Sicherstellen, dass Sie beim Ausführen von `openclaw channels login` in der VM angemeldet sind (nicht auf dem Host) |
+| Problem                  | Lösung                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| SSH in die VM nicht möglich | Prüfen Sie, ob "Remote Login" in den Systemeinstellungen der VM aktiviert ist       |
+| VM-IP wird nicht angezeigt | Warten Sie, bis die VM vollständig gestartet ist, und führen Sie `lume get openclaw` erneut aus |
+| Lume-Befehl nicht gefunden | Fügen Sie `~/.local/bin` zu Ihrem PATH hinzu                                       |
+| WhatsApp-QR wird nicht gescannt | Stellen Sie sicher, dass Sie in der VM angemeldet sind (nicht auf dem Host), wenn Sie `openclaw channels login` ausführen |
 
 ---
 
 ## Verwandte Dokumentation
 
-- [VPS hosting](/vps)
-- [Nodes](/nodes)
-- [Gateway remote](/gateway/remote)
-- [BlueBubbles channel](/channels/bluebubbles)
-- [Lume Quickstart](https://cua.ai/docs/lume/guide/getting-started/quickstart)
-- [Lume CLI Reference](https://cua.ai/docs/lume/reference/cli-reference)
-- [Unattended VM Setup](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (erweitert)
-- [Docker Sandboxing](/install/docker) (alternativer Isolierungsansatz)
+- [VPS-Hosting](/de/vps)
+- [Nodes](/de/nodes)
+- [Gateway remote](/de/gateway/remote)
+- [BlueBubbles-Kanal](/de/channels/bluebubbles)
+- [Lume-Schnellstart](https://cua.ai/docs/lume/guide/getting-started/quickstart)
+- [Lume-CLI-Referenz](https://cua.ai/docs/lume/reference/cli-reference)
+- [Unbeaufsichtigte VM-Einrichtung](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (fortgeschritten)
+- [Docker-Sandboxing](/de/install/docker) (alternativer Isolationsansatz)

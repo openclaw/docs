@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Die macOS-Entwicklungsumgebung einrichten
-summary: Einrichtungsanleitung für Entwickler, die an der OpenClaw-macOS-App arbeiten
-title: macOS-Dev-Setup
+    - Einrichten der macOS-Entwicklungsumgebung
+summary: Einrichtungsleitfaden für Entwickler, die an der OpenClaw-macOS-App arbeiten
+title: macOS-Entwicklungssetup
 x-i18n:
-    generated_at: "2026-04-24T06:47:49Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:03:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 30f98b3249096fa1e125a7beb77562b7bd36e2c17f524f30a1c58de61bd04da0
+    source_hash: d0c494b7a214b6db2880ba02c512653c35dbcdf80805bee9777ec946412668e1
     source_path: platforms/mac/dev-setup.md
-    workflow: 15
+    workflow: 16
 ---
 
 # macOS-Entwickler-Setup
 
-Diese Anleitung beschreibt die notwendigen Schritte, um die OpenClaw-macOS-App aus dem Quellcode zu bauen und auszuführen.
+Erstellen Sie die OpenClaw-macOS-Anwendung aus dem Quellcode und führen Sie sie aus.
 
 ## Voraussetzungen
 
-Bevor Sie die App bauen, stellen Sie sicher, dass Folgendes installiert ist:
+Stellen Sie vor dem Erstellen der App sicher, dass Folgendes installiert ist:
 
-1. **Xcode 26.2+**: Erforderlich für Swift-Entwicklung.
-2. **Node.js 24 & pnpm**: Empfohlen für Gateway, CLI und Packaging-Skripte. Node 22 LTS, derzeit `22.14+`, bleibt aus Kompatibilitätsgründen unterstützt.
+1. **Xcode 26.2+**: Erforderlich für die Swift-Entwicklung.
+2. **Node.js 24 & pnpm**: Empfohlen für Gateway, CLI und Paketierungsskripte. Node 22 LTS, derzeit `22.14+`, wird aus Kompatibilitätsgründen weiterhin unterstützt.
 
 ## 1. Abhängigkeiten installieren
 
@@ -31,30 +31,30 @@ Installieren Sie die projektweiten Abhängigkeiten:
 pnpm install
 ```
 
-## 2. App bauen und paketieren
+## 2. App erstellen und paketieren
 
-Um die macOS-App zu bauen und in `dist/OpenClaw.app` zu paketieren, führen Sie aus:
+Um die macOS-App zu erstellen und als `dist/OpenClaw.app` zu paketieren, führen Sie Folgendes aus:
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Wenn Sie kein Apple-Developer-ID-Zertifikat haben, verwendet das Skript automatisch **Ad-hoc-Signing** (`-`).
+Wenn Sie kein Apple Developer ID-Zertifikat haben, verwendet das Skript automatisch **Ad-hoc-Signierung** (`-`).
 
-Für Dev-Run-Modi, Signing-Flags und Fehlerbehebung bei Team-ID-Problemen siehe das README der macOS-App:
+Informationen zu Entwicklungs-Ausführungsmodi, Signierungs-Flags und Fehlerbehebung zur Team-ID finden Sie in der README der macOS-App:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Hinweis**: Ad-hoc-signierte Apps können Sicherheitsabfragen auslösen. Wenn die App sofort mit „Abort trap 6“ abstürzt, siehe den Abschnitt [Fehlerbehebung](#fehlerbehebung).
+> **Hinweis**: Ad-hoc-signierte Apps können Sicherheitshinweise auslösen. Wenn die App sofort mit "Abort trap 6" abstürzt, lesen Sie den Abschnitt [Fehlerbehebung](#troubleshooting).
 
-## 3. Die CLI installieren
+## 3. CLI installieren
 
-Die macOS-App erwartet eine globale Installation der CLI `openclaw`, um Hintergrundaufgaben zu verwalten.
+Die macOS-App erwartet eine globale Installation der `openclaw`-CLI, um Hintergrundaufgaben zu verwalten.
 
-**Zur Installation (empfohlen):**
+**So installieren Sie sie (empfohlen):**
 
 1. Öffnen Sie die OpenClaw-App.
-2. Wechseln Sie zum Einstellungs-Tab **General**.
-3. Klicken Sie auf **„Install CLI“**.
+2. Wechseln Sie zum Einstellungstab **Allgemein**.
+3. Klicken Sie auf **"CLI installieren"**.
 
 Alternativ können Sie sie manuell installieren:
 
@@ -67,13 +67,13 @@ Für die Gateway-Laufzeit bleibt Node der empfohlene Weg.
 
 ## Fehlerbehebung
 
-### Build schlägt fehl: Nichtübereinstimmung von Toolchain oder SDK
+### Build schlägt fehl: Toolchain- oder SDK-Abweichung
 
 Der Build der macOS-App erwartet das neueste macOS-SDK und die Swift-6.2-Toolchain.
 
 **Systemabhängigkeiten (erforderlich):**
 
-- **Neueste in Software Update verfügbare macOS-Version** (erforderlich für Xcode-26.2-SDKs)
+- **Neueste in Software Update verfügbare macOS-Version** (erforderlich durch Xcode-26.2-SDKs)
 - **Xcode 26.2** (Swift-6.2-Toolchain)
 
 **Prüfungen:**
@@ -85,11 +85,11 @@ xcrun swift --version
 
 Wenn die Versionen nicht übereinstimmen, aktualisieren Sie macOS/Xcode und führen Sie den Build erneut aus.
 
-### App stürzt bei Erteilen von Berechtigungen ab
+### App stürzt beim Erteilen von Berechtigungen ab
 
-Wenn die App abstürzt, wenn Sie Zugriff auf **Spracherkennung** oder **Mikrofon** erlauben möchten, kann dies an einem beschädigten TCC-Cache oder einer nicht passenden Signatur liegen.
+Wenn die App abstürzt, wenn Sie versuchen, den Zugriff auf **Spracherkennung** oder **Mikrofon** zu erlauben, kann dies an einem beschädigten TCC-Cache oder einer Signaturabweichung liegen.
 
-**Lösung:**
+**Behebung:**
 
 1. Setzen Sie die TCC-Berechtigungen zurück:
 
@@ -97,23 +97,23 @@ Wenn die App abstürzt, wenn Sie Zugriff auf **Spracherkennung** oder **Mikrofon
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Wenn das nicht hilft, ändern Sie die `BUNDLE_ID` vorübergehend in [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), um einen „sauberen Neustart“ aus Sicht von macOS zu erzwingen.
+2. Wenn das fehlschlägt, ändern Sie die `BUNDLE_ID` vorübergehend in [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), um macOS zu einem "sauberen Ausgangszustand" zu zwingen.
 
-### Gateway bleibt dauerhaft bei „Starting...“
+### Gateway bleibt unbegrenzt bei "Wird gestartet..."
 
-Wenn der Gateway-Status auf „Starting...“ stehen bleibt, prüfen Sie, ob ein Zombie-Prozess den Port hält:
+Wenn der Gateway-Status bei "Wird gestartet..." bleibt, prüfen Sie, ob ein Zombie-Prozess den Port belegt:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Wenn Sie keinen LaunchAgent verwenden (Dev-Modus / manuelle Läufe), den Listener finden:
+# Wenn Sie keinen LaunchAgent verwenden (Entwicklungsmodus / manuelle Ausführungen), suchen Sie den Listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Wenn ein manueller Lauf den Port hält, stoppen Sie diesen Prozess (Ctrl+C). Als letztes Mittel beenden Sie die oben gefundene PID.
+Wenn eine manuelle Ausführung den Port belegt, stoppen Sie diesen Prozess (Ctrl+C). Als letzten Ausweg beenden Sie die PID, die Sie oben gefunden haben.
 
-## Verwandt
+## Verwandte Themen
 
-- [macOS app](/de/platforms/macos)
-- [Install overview](/de/install)
+- [macOS-App](/de/platforms/macos)
+- [Installationsübersicht](/de/install)

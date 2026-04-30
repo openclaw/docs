@@ -1,40 +1,40 @@
 ---
 read_when:
     - Sie möchten Groq mit OpenClaw verwenden
-    - Sie benötigen die API-Key-Env-Variable oder die CLI-Auth-Auswahl
-summary: Groq-Einrichtung (Auth + Modellauswahl)
+    - Sie benötigen die API-Schlüssel-Umgebungsvariable oder die Auswahl der CLI-Authentifizierung
+summary: Groq-Einrichtung (Authentifizierung + Modellauswahl)
 title: Groq
 x-i18n:
-    generated_at: "2026-04-24T06:54:03Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:10:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1c711297d42dea7fabe8ba941f75ef9dc82bd9b838f78d5dc4385210d9f65ade
+    source_hash: ed612471939e7ac5362f8236f179d38ae07f9076709ff55020c1790f7c56a6fa
     source_path: providers/groq.md
-    workflow: 15
+    workflow: 16
 ---
 
-[Groq](https://groq.com) bietet ultraschnelle Inferenz auf Open-Source-Modellen
-(Llama, Gemma, Mistral und mehr) mit benutzerdefinierter LPU-Hardware. OpenClaw verbindet sich
-über die OpenAI-kompatible API mit Groq.
+[Groq](https://groq.com) bietet ultraschnelle Inferenz für Open-Source-Modelle
+(Llama, Gemma, Mistral und weitere) mit spezieller LPU-Hardware. OpenClaw stellt
+über die OpenAI-kompatible API eine Verbindung zu Groq her.
 
 | Eigenschaft | Wert              |
 | ----------- | ----------------- |
 | Provider    | `groq`            |
-| Auth        | `GROQ_API_KEY`    |
+| Authentifizierung | `GROQ_API_KEY`    |
 | API         | OpenAI-kompatibel |
 
 ## Erste Schritte
 
 <Steps>
-  <Step title="Einen API-Key holen">
-    Erstellen Sie einen API-Key unter [console.groq.com/keys](https://console.groq.com/keys).
+  <Step title="API-Schlüssel abrufen">
+    Erstellen Sie einen API-Schlüssel unter [console.groq.com/keys](https://console.groq.com/keys).
   </Step>
-  <Step title="Den API-Key setzen">
+  <Step title="API-Schlüssel festlegen">
     ```bash
     export GROQ_API_KEY="gsk_..."
     ```
   </Step>
-  <Step title="Ein Standardmodell setzen">
+  <Step title="Standardmodell festlegen">
     ```json5
     {
       agents: {
@@ -47,7 +47,7 @@ x-i18n:
   </Step>
 </Steps>
 
-### Beispiel für die Konfigurationsdatei
+### Beispiel für eine Konfigurationsdatei
 
 ```json5
 {
@@ -62,8 +62,8 @@ x-i18n:
 
 ## Integrierter Katalog
 
-Groqs Modellkatalog ändert sich häufig. Führen Sie `openclaw models list | grep groq`
-aus, um die aktuell verfügbaren Modelle zu sehen, oder prüfen Sie
+Der Modellkatalog von Groq ändert sich häufig. Führen Sie `openclaw models list | grep groq`
+aus, um die derzeit verfügbaren Modelle anzuzeigen, oder prüfen Sie
 [console.groq.com/docs/models](https://console.groq.com/docs/models).
 
 | Modell                      | Hinweise                           |
@@ -74,16 +74,25 @@ aus, um die aktuell verfügbaren Modelle zu sehen, oder prüfen Sie
 | **Mixtral 8x7B**            | MoE-Architektur, starkes Reasoning |
 
 <Tip>
-Verwenden Sie `openclaw models list --provider groq` für die aktuellste Liste der
-auf Ihrem Konto verfügbaren Modelle.
+Verwenden Sie `openclaw models list --provider groq`, um die aktuellste Liste der
+für Ihr Konto verfügbaren Modelle zu erhalten.
 </Tip>
 
-## Audio-Transkription
+## Reasoning-Modelle
 
-Groq bietet außerdem schnelle Whisper-basierte Audio-Transkription. Wenn es als
-Provider für Medienverständnis konfiguriert ist, verwendet OpenClaw Groqs Modell
-`whisper-large-v3-turbo`, um Sprachnachrichten über die gemeinsame Oberfläche
-`tools.media.audio` zu transkribieren.
+OpenClaw ordnet seine gemeinsamen `/think`-Stufen den modellspezifischen
+`reasoning_effort`-Werten von Groq zu. Für `qwen/qwen3-32b` sendet deaktiviertes
+Denken `none` und aktiviertes Denken `default`. Für Groq GPT-OSS-Reasoning-Modelle
+sendet OpenClaw `low`, `medium` oder `high`; bei deaktiviertem Denken wird
+`reasoning_effort` ausgelassen, da diese Modelle keinen deaktivierten Wert
+unterstützen.
+
+## Audiotranskription
+
+Groq bietet außerdem schnelle Whisper-basierte Audiotranskription. Wenn Groq als
+Provider für Medienverständnis konfiguriert ist, verwendet OpenClaw das
+`whisper-large-v3-turbo`-Modell von Groq, um Sprachnachrichten über die gemeinsame
+`tools.media.audio`-Oberfläche zu transkribieren.
 
 ```json5
 {
@@ -98,42 +107,42 @@ Provider für Medienverständnis konfiguriert ist, verwendet OpenClaw Groqs Mode
 ```
 
 <AccordionGroup>
-  <Accordion title="Details zur Audio-Transkription">
+  <Accordion title="Details zur Audiotranskription">
     | Eigenschaft | Wert |
-    |-------------|------|
+    |----------|-------|
     | Gemeinsamer Konfigurationspfad | `tools.media.audio` |
     | Standard-Basis-URL | `https://api.groq.com/openai/v1` |
     | Standardmodell | `whisper-large-v3-turbo` |
-    | API-Endpoint | OpenAI-kompatibel `/audio/transcriptions` |
+    | API-Endpunkt | OpenAI-kompatibel `/audio/transcriptions` |
   </Accordion>
 
   <Accordion title="Hinweis zur Umgebung">
-    Wenn das Gateway als Daemon läuft (launchd/systemd), stellen Sie sicher, dass `GROQ_API_KEY`
+    Wenn der Gateway als Daemon ausgeführt wird (launchd/systemd), stellen Sie sicher, dass `GROQ_API_KEY`
     für diesen Prozess verfügbar ist (zum Beispiel in `~/.openclaw/.env` oder über
     `env.shellEnv`).
 
     <Warning>
-    Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für durch Daemon verwaltete
-    Gateway-Prozesse nicht sichtbar. Verwenden Sie `~/.openclaw/.env` oder die Konfiguration `env.shellEnv` für
-    dauerhafte Verfügbarkeit.
+    Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für vom Daemon verwaltete
+    Gateway-Prozesse nicht sichtbar. Verwenden Sie die Konfiguration `~/.openclaw/.env` oder
+    `env.shellEnv` für dauerhafte Verfügbarkeit.
     </Warning>
 
   </Accordion>
 </AccordionGroup>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Provider, Modell-Referenzen und Failover-Verhalten auswählen.
+    Provider, Modellreferenzen und Failover-Verhalten auswählen.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständiges Konfigurationsschema einschließlich Provider- und Audio-Einstellungen.
+    Vollständiges Konfigurationsschema einschließlich Provider- und Audioeinstellungen.
   </Card>
   <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
     Groq-Dashboard, API-Dokumentation und Preise.
   </Card>
   <Card title="Groq-Modellliste" href="https://console.groq.com/docs/models" icon="list">
-    Offizieller Groq-Modellkatalog.
+    Offizieller Modellkatalog von Groq.
   </Card>
 </CardGroup>

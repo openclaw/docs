@@ -1,46 +1,46 @@
 ---
 read_when:
-    - Sie benötigen detailliertes Verhalten für `openclaw onboard`
+    - Sie benötigen detaillierte Informationen zum Verhalten von openclaw onboard
     - Sie debuggen Onboarding-Ergebnisse oder integrieren Onboarding-Clients
 sidebarTitle: CLI reference
-summary: Vollständige Referenz für den CLI-Setup-Ablauf, die Einrichtung von Auth/Modellen, Ausgaben und Interna
-title: CLI-Setup-Referenz
+summary: Vollständige Referenz für den CLI-Einrichtungsablauf, die Auth-/Modell-Einrichtung, Ausgaben und Interna
+title: CLI-Einrichtungsreferenz
 x-i18n:
-    generated_at: "2026-04-25T18:22:18Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:15:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a967fd6734d8facaa732b40567c33e48434208bf861d102adc8a4ee042f13041
+    source_hash: 8d40a63ff27d6aaf4cda167ad0cdf3ad7c4f61ecf92d1cf51b5a0237b24917a7
     source_path: start/wizard-cli-reference.md
-    workflow: 15
+    workflow: 16
 ---
 
 Diese Seite ist die vollständige Referenz für `openclaw onboard`.
-Für die Kurzanleitung siehe [Onboarding (CLI)](/de/start/wizard).
+Die Kurz Anleitung finden Sie unter [Onboarding (CLI)](/de/start/wizard).
 
-## Was der Assistent tut
+## Was der Assistent macht
 
 Der lokale Modus (Standard) führt Sie durch:
 
-- Einrichtung von Modell und Auth (OAuth für OpenAI Code-Abonnement, Anthropic Claude CLI oder API-Schlüssel sowie Optionen für MiniMax, GLM, Ollama, Moonshot, StepFun und AI Gateway)
+- Modell- und Auth-Einrichtung (OpenAI Code-Abonnement-OAuth, Anthropic Claude CLI oder API-Schlüssel sowie Optionen für MiniMax, GLM, Ollama, Moonshot, StepFun und AI Gateway)
 - Workspace-Speicherort und Bootstrap-Dateien
-- Gateway-Einstellungen (Port, Bind, Auth, Tailscale)
-- Channels und Provider (Telegram, WhatsApp, Discord, Google Chat, Mattermost, Signal, BlueBubbles und andere gebündelte Channel-Plugins)
-- Daemon-Installation (LaunchAgent, systemd-User-Unit oder native Windows-Aufgabe in der Aufgabenplanung mit Fallback auf den Startup-Ordner)
-- Health Check
+- Gateway-Einstellungen (Port, Bind-Adresse, Auth, Tailscale)
+- Kanäle und Provider (Telegram, WhatsApp, Discord, Google Chat, Mattermost, Signal, BlueBubbles und andere mitgelieferte Kanal-Plugins)
+- Daemon-Installation (LaunchAgent, systemd-Benutzereinheit oder native Windows-Aufgabenplanung mit Startup-Ordner-Fallback)
+- Zustandsprüfung
 - Skills-Einrichtung
 
-Der Remote-Modus konfiguriert diesen Rechner so, dass er sich mit einem Gateway an einem anderen Ort verbindet.
-Er installiert oder verändert nichts auf dem Remote-Host.
+Der Remote-Modus konfiguriert diesen Computer so, dass er eine Verbindung zu einem Gateway an einem anderen Ort herstellt.
+Er installiert oder ändert nichts auf dem Remote-Host.
 
-## Details des lokalen Ablaufs
+## Details zum lokalen Ablauf
 
 <Steps>
   <Step title="Erkennung vorhandener Konfiguration">
-    - Falls `~/.openclaw/openclaw.json` existiert, wählen Sie Beibehalten, Ändern oder Zurücksetzen.
+    - Wenn `~/.openclaw/openclaw.json` vorhanden ist, wählen Sie Behalten, Ändern oder Zurücksetzen.
     - Ein erneutes Ausführen des Assistenten löscht nichts, sofern Sie nicht ausdrücklich Zurücksetzen wählen (oder `--reset` übergeben).
-    - CLI-`--reset` verwendet standardmäßig `config+creds+sessions`; verwenden Sie `--reset-scope full`, um zusätzlich den Workspace zu entfernen.
-    - Wenn die Konfiguration ungültig ist oder veraltete Schlüssel enthält, stoppt der Assistent und fordert Sie auf, vor dem Fortfahren `openclaw doctor` auszuführen.
-    - Beim Zurücksetzen wird `trash` verwendet und es werden folgende Bereiche angeboten:
+    - CLI `--reset` ist standardmäßig `config+creds+sessions`; verwenden Sie `--reset-scope full`, um auch den Workspace zu entfernen.
+    - Wenn die Konfiguration ungültig ist oder Legacy-Schlüssel enthält, stoppt der Assistent und fordert Sie auf, `openclaw doctor` auszuführen, bevor Sie fortfahren.
+    - Das Zurücksetzen verwendet `trash` und bietet folgende Bereiche:
       - Nur Konfiguration
       - Konfiguration + Zugangsdaten + Sitzungen
       - Vollständiges Zurücksetzen (entfernt auch den Workspace)
@@ -51,52 +51,52 @@ Er installiert oder verändert nichts auf dem Remote-Host.
 
   </Step>
   <Step title="Workspace">
-    - Standard ist `~/.openclaw/workspace` (konfigurierbar).
+    - Standard `~/.openclaw/workspace` (konfigurierbar).
     - Legt Workspace-Dateien an, die für das Bootstrap-Ritual beim ersten Start benötigt werden.
-    - Workspace-Layout: [Agent workspace](/de/concepts/agent-workspace).
+    - Workspace-Layout: [Agent-Workspace](/de/concepts/agent-workspace).
 
   </Step>
   <Step title="Gateway">
-    - Fragt Port, Bind, Auth-Modus und Tailscale-Exposition ab.
-    - Empfohlen: Lassen Sie Token-Auth auch bei loopback aktiviert, damit sich lokale WS-Clients authentifizieren müssen.
-    - Im Token-Modus bietet das interaktive Setup:
-      - **Plaintext-Token erzeugen/speichern** (Standard)
+    - Fragt Port, Bind-Adresse, Auth-Modus und Tailscale-Freigabe ab.
+    - Empfohlen: Lassen Sie Token-Auth auch für loopback aktiviert, damit lokale WS-Clients sich authentifizieren müssen.
+    - Im Token-Modus bietet die interaktive Einrichtung:
+      - **Klartext-Token generieren/speichern** (Standard)
       - **SecretRef verwenden** (Opt-in)
-    - Im Passwortmodus unterstützt das interaktive Setup ebenfalls die Speicherung als Plaintext oder SecretRef.
-    - Nicht interaktiver SecretRef-Pfad für Token: `--gateway-token-ref-env <ENV_VAR>`.
-      - Erfordert eine nicht leere Umgebungsvariable in der Umgebung des Onboarding-Prozesses.
+    - Im Passwortmodus unterstützt die interaktive Einrichtung ebenfalls Klartext- oder SecretRef-Speicherung.
+    - Nicht interaktiver Token-SecretRef-Pfad: `--gateway-token-ref-env <ENV_VAR>`.
+      - Erfordert eine nicht leere Umgebungsvariable in der Prozessumgebung des Onboardings.
       - Kann nicht mit `--gateway-token` kombiniert werden.
     - Deaktivieren Sie Auth nur, wenn Sie jedem lokalen Prozess vollständig vertrauen.
-    - Auch bei Nicht-Loopback-Binds bleibt Auth erforderlich.
+    - Nicht-loopback-Bind-Adressen erfordern weiterhin Auth.
 
   </Step>
-  <Step title="Channels">
-    - [WhatsApp](/de/channels/whatsapp): optionaler QR-Login
+  <Step title="Kanäle">
+    - [WhatsApp](/de/channels/whatsapp): optionale QR-Anmeldung
     - [Telegram](/de/channels/telegram): Bot-Token
     - [Discord](/de/channels/discord): Bot-Token
-    - [Google Chat](/de/channels/googlechat): JSON für Service-Account + Webhook-Audience
+    - [Google Chat](/de/channels/googlechat): Dienstkonto-JSON + Webhook-Zielgruppe
     - [Mattermost](/de/channels/mattermost): Bot-Token + Basis-URL
     - [Signal](/de/channels/signal): optionale Installation von `signal-cli` + Kontokonfiguration
-    - [BlueBubbles](/de/channels/bluebubbles): empfohlen für iMessage; Server-URL + Passwort + Webhook
-    - [iMessage](/de/channels/imessage): veralteter `imsg`-CLI-Pfad + DB-Zugriff
-    - DM-Sicherheit: Standard ist Pairing. Die erste DM sendet einen Code; Freigabe über
-      `openclaw pairing approve <channel> <code>` oder über Allowlists.
+    - [BlueBubbles](/de/channels/bluebubbles): für iMessage empfohlen; Server-URL + Passwort + Webhook
+    - [iMessage](/de/channels/imessage): Legacy-`imsg`-CLI-Pfad + DB-Zugriff
+    - DM-Sicherheit: Standard ist Pairing. Die erste DM sendet einen Code; genehmigen Sie ihn über
+      `openclaw pairing approve <channel> <code>` oder verwenden Sie Allowlists.
   </Step>
   <Step title="Daemon-Installation">
     - macOS: LaunchAgent
-      - Erfordert eine angemeldete Benutzersitzung; für Headless-Betrieb verwenden Sie einen benutzerdefinierten LaunchDaemon (nicht enthalten).
-    - Linux und Windows über WSL2: systemd-User-Unit
-      - Der Assistent versucht `loginctl enable-linger <user>`, damit das Gateway nach dem Abmelden weiterläuft.
-      - Möglicherweise wird sudo abgefragt (schreibt nach `/var/lib/systemd/linger`); zuerst wird es ohne sudo versucht.
-    - Natives Windows: zuerst Aufgabe in der Aufgabenplanung
-      - Wenn das Erstellen der Aufgabe verweigert wird, fällt OpenClaw auf ein benutzerspezifisches Startup-Ordner-Login-Element zurück und startet das Gateway sofort.
-      - Aufgaben in der Aufgabenplanung bleiben bevorzugt, weil sie einen besseren Supervisor-Status bieten.
-    - Laufzeitauswahl: Node (empfohlen; erforderlich für WhatsApp und Telegram). Bun wird nicht empfohlen.
+      - Erfordert eine angemeldete Benutzersitzung; für Headless verwenden Sie einen eigenen LaunchDaemon (nicht mitgeliefert).
+    - Linux und Windows über WSL2: systemd-Benutzereinheit
+      - Der Assistent versucht `loginctl enable-linger <user>`, damit das Gateway nach der Abmeldung weiterläuft.
+      - Fragt möglicherweise nach sudo (schreibt `/var/lib/systemd/linger`); er versucht es zuerst ohne sudo.
+    - Natives Windows: zuerst geplante Aufgabe
+      - Wenn die Aufgabenerstellung verweigert wird, fällt OpenClaw auf ein benutzerspezifisches Anmeldeelement im Startup-Ordner zurück und startet das Gateway sofort.
+      - Geplante Aufgaben bleiben bevorzugt, weil sie einen besseren Supervisor-Status bieten.
+    - Laufzeitauswahl: Node (empfohlen; für WhatsApp und Telegram erforderlich). Bun wird nicht empfohlen.
 
   </Step>
-  <Step title="Health Check">
+  <Step title="Zustandsprüfung">
     - Startet das Gateway (falls nötig) und führt `openclaw health` aus.
-    - `openclaw status --deep` fügt die Live-Gateway-Health-Probe zur Statusausgabe hinzu, einschließlich Channel-Probes, sofern unterstützt.
+    - `openclaw status --deep` fügt der Statusausgabe die Live-Gateway-Zustandsprüfung hinzu, einschließlich Kanalprüfungen, sofern unterstützt.
 
   </Step>
   <Step title="Skills">
@@ -113,25 +113,25 @@ Er installiert oder verändert nichts auf dem Remote-Host.
 
 <Note>
 Wenn keine GUI erkannt wird, gibt der Assistent SSH-Port-Forwarding-Anweisungen für die Control UI aus, statt einen Browser zu öffnen.
-Wenn Assets der Control UI fehlen, versucht der Assistent, sie zu bauen; der Fallback ist `pnpm ui:build` (installiert UI-Abhängigkeiten automatisch).
+Wenn Control-UI-Assets fehlen, versucht der Assistent, sie zu bauen; der Fallback ist `pnpm ui:build` (installiert UI-Abhängigkeiten automatisch).
 </Note>
 
-## Details des Remote-Modus
+## Details zum Remote-Modus
 
-Der Remote-Modus konfiguriert diesen Rechner so, dass er sich mit einem Gateway an einem anderen Ort verbindet.
+Der Remote-Modus konfiguriert diesen Computer so, dass er eine Verbindung zu einem Gateway an einem anderen Ort herstellt.
 
 <Info>
-Der Remote-Modus installiert oder verändert nichts auf dem Remote-Host.
+Der Remote-Modus installiert oder ändert nichts auf dem Remote-Host.
 </Info>
 
 Was Sie festlegen:
 
-- URL des Remote-Gateways (`ws://...`)
-- Token, falls das Remote-Gateway Auth erfordert (empfohlen)
+- Remote-Gateway-URL (`ws://...`)
+- Token, wenn Remote-Gateway-Auth erforderlich ist (empfohlen)
 
 <Note>
-- Wenn das Gateway nur auf loopback verfügbar ist, verwenden Sie SSH-Tunneling oder ein Tailnet.
-- Hinweise zur Erkennung:
+- Wenn das Gateway nur loopback verwendet, nutzen Sie SSH-Tunneling oder ein Tailnet.
+- Erkennungshinweise:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
 
@@ -146,70 +146,70 @@ Was Sie festlegen:
   <Accordion title="OpenAI Code-Abonnement (OAuth)">
     Browser-Ablauf; fügen Sie `code#state` ein.
 
-    Setzt `agents.defaults.model` auf `openai-codex/gpt-5.5`, wenn kein Modell gesetzt ist oder bereits zur OpenAI-Familie gehört.
+    Setzt `agents.defaults.model` auf `openai-codex/gpt-5.5`, wenn kein Modell festgelegt ist oder es bereits zur OpenAI-Familie gehört.
 
   </Accordion>
-  <Accordion title="OpenAI Code-Abonnement (Device Pairing)">
+  <Accordion title="OpenAI Code-Abonnement (Geräte-Pairing)">
     Browser-Pairing-Ablauf mit einem kurzlebigen Gerätecode.
 
-    Setzt `agents.defaults.model` auf `openai-codex/gpt-5.5`, wenn kein Modell gesetzt ist oder bereits zur OpenAI-Familie gehört.
+    Setzt `agents.defaults.model` auf `openai-codex/gpt-5.5`, wenn kein Modell festgelegt ist oder es bereits zur OpenAI-Familie gehört.
 
   </Accordion>
   <Accordion title="OpenAI-API-Schlüssel">
     Verwendet `OPENAI_API_KEY`, falls vorhanden, oder fragt nach einem Schlüssel und speichert die Zugangsdaten dann in Auth-Profilen.
 
-    Setzt `agents.defaults.model` auf `openai/gpt-5.5`, wenn kein Modell gesetzt ist, `openai/*` oder `openai-codex/*`.
+    Setzt `agents.defaults.model` auf `openai/gpt-5.5`, wenn kein Modell festgelegt ist, `openai/*` oder `openai-codex/*`.
 
   </Accordion>
-  <Accordion title="xAI (Grok)-API-Schlüssel">
-    Fragt nach `XAI_API_KEY` und konfiguriert xAI als Modell-Provider.
+  <Accordion title="xAI-(Grok-)API-Schlüssel">
+    Fragt `XAI_API_KEY` ab und konfiguriert xAI als Modell-Provider.
   </Accordion>
   <Accordion title="OpenCode">
-    Fragt nach `OPENCODE_API_KEY` (oder `OPENCODE_ZEN_API_KEY`) und lässt Sie zwischen dem Zen- oder Go-Katalog wählen.
-    Setup-URL: [opencode.ai/auth](https://opencode.ai/auth).
+    Fragt `OPENCODE_API_KEY` (oder `OPENCODE_ZEN_API_KEY`) ab und lässt Sie den Zen- oder Go-Katalog auswählen.
+    Einrichtungs-URL: [opencode.ai/auth](https://opencode.ai/auth).
   </Accordion>
   <Accordion title="API-Schlüssel (generisch)">
     Speichert den Schlüssel für Sie.
   </Accordion>
   <Accordion title="Vercel AI Gateway">
-    Fragt nach `AI_GATEWAY_API_KEY`.
-    Mehr Details: [Vercel AI Gateway](/de/providers/vercel-ai-gateway).
+    Fragt `AI_GATEWAY_API_KEY` ab.
+    Weitere Details: [Vercel AI Gateway](/de/providers/vercel-ai-gateway).
   </Accordion>
   <Accordion title="Cloudflare AI Gateway">
-    Fragt nach Konto-ID, Gateway-ID und `CLOUDFLARE_AI_GATEWAY_API_KEY`.
-    Mehr Details: [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway).
+    Fragt Konto-ID, Gateway-ID und `CLOUDFLARE_AI_GATEWAY_API_KEY` ab.
+    Weitere Details: [Cloudflare AI Gateway](/de/providers/cloudflare-ai-gateway).
   </Accordion>
   <Accordion title="MiniMax">
-    Die Konfiguration wird automatisch geschrieben. Der gehostete Standard ist `MiniMax-M2.7`; beim Setup mit API-Schlüssel wird
-    `minimax/...` verwendet, beim OAuth-Setup `minimax-portal/...`.
-    Mehr Details: [MiniMax](/de/providers/minimax).
+    Die Konfiguration wird automatisch geschrieben. Der gehostete Standard ist `MiniMax-M2.7`; die API-Schlüssel-Einrichtung verwendet
+    `minimax/...`, und die OAuth-Einrichtung verwendet `minimax-portal/...`.
+    Weitere Details: [MiniMax](/de/providers/minimax).
   </Accordion>
   <Accordion title="StepFun">
-    Die Konfiguration wird automatisch für StepFun Standard oder Step Plan auf chinesischen oder globalen Endpunkten geschrieben.
-    Standard umfasst derzeit `step-3.5-flash`, und Step Plan umfasst zusätzlich `step-3.5-flash-2603`.
-    Mehr Details: [StepFun](/de/providers/stepfun).
+    Die Konfiguration wird automatisch für StepFun Standard oder Step Plan auf China- oder globalen Endpunkten geschrieben.
+    Standard enthält derzeit `step-3.5-flash`, und Step Plan enthält außerdem `step-3.5-flash-2603`.
+    Weitere Details: [StepFun](/de/providers/stepfun).
   </Accordion>
   <Accordion title="Synthetic (Anthropic-kompatibel)">
-    Fragt nach `SYNTHETIC_API_KEY`.
-    Mehr Details: [Synthetic](/de/providers/synthetic).
+    Fragt `SYNTHETIC_API_KEY` ab.
+    Weitere Details: [Synthetic](/de/providers/synthetic).
   </Accordion>
   <Accordion title="Ollama (Cloud und lokale offene Modelle)">
     Fragt zuerst nach `Cloud + Local`, `Cloud only` oder `Local only`.
     `Cloud only` verwendet `OLLAMA_API_KEY` mit `https://ollama.com`.
-    In den hostgestützten Modi wird nach der Basis-URL gefragt (Standard `http://127.0.0.1:11434`), verfügbare Modelle werden erkannt und Standardwerte vorgeschlagen.
-    `Cloud + Local` prüft außerdem, ob dieser Ollama-Host für den Cloud-Zugriff angemeldet ist.
-    Mehr Details: [Ollama](/de/providers/ollama).
+    Die hostgestützten Modi fragen die Basis-URL ab (Standard `http://127.0.0.1:11434`), erkennen verfügbare Modelle und schlagen Standards vor.
+    `Cloud + Local` prüft außerdem, ob dieser Ollama-Host für Cloud-Zugriff angemeldet ist.
+    Weitere Details: [Ollama](/de/providers/ollama).
   </Accordion>
   <Accordion title="Moonshot und Kimi Coding">
-    Konfigurationen für Moonshot (Kimi K2) und Kimi Coding werden automatisch geschrieben.
-    Mehr Details: [Moonshot AI (Kimi + Kimi Coding)](/de/providers/moonshot).
+    Moonshot-(Kimi-K2-) und Kimi-Coding-Konfigurationen werden automatisch geschrieben.
+    Weitere Details: [Moonshot AI (Kimi + Kimi Coding)](/de/providers/moonshot).
   </Accordion>
   <Accordion title="Benutzerdefinierter Provider">
     Funktioniert mit OpenAI-kompatiblen und Anthropic-kompatiblen Endpunkten.
 
-    Das interaktive Onboarding unterstützt dieselben Auswahlmöglichkeiten für die Speicherung von API-Schlüsseln wie andere API-Key-Abläufe für Provider:
-    - **API-Schlüssel jetzt einfügen** (Plaintext)
-    - **Secret Reference verwenden** (env-Ref oder konfigurierte Provider-Ref mit Vorabvalidierung)
+    Interaktives Onboarding unterstützt dieselben Speicheroptionen für API-Schlüssel wie andere Provider-API-Schlüssel-Abläufe:
+    - **API-Schlüssel jetzt einfügen** (Klartext)
+    - **Geheime Referenz verwenden** (Env-Ref oder konfigurierte Provider-Ref, mit Preflight-Validierung)
 
     Nicht interaktive Flags:
     - `--auth-choice custom-api-key`
@@ -218,6 +218,7 @@ Was Sie festlegen:
     - `--custom-api-key` (optional; fällt auf `CUSTOM_API_KEY` zurück)
     - `--custom-provider-id` (optional)
     - `--custom-compatibility <openai|anthropic>` (optional; Standard `openai`)
+    - `--custom-image-input` / `--custom-text-input` (optional; überschreibt die abgeleitete Modelleingabefähigkeit)
 
   </Accordion>
   <Accordion title="Überspringen">
@@ -227,47 +228,48 @@ Was Sie festlegen:
 
 Modellverhalten:
 
-- Wählen Sie das Standardmodell aus den erkannten Optionen oder geben Sie Provider und Modell manuell ein.
-- Wenn das Onboarding mit einer Provider-Auth-Auswahl beginnt, bevorzugt der Modellwähler
-  automatisch diesen Provider. Bei Volcengine und BytePlus umfasst dieselbe Präferenz
-  auch deren Varianten für Coding-Pläne (`volcengine-plan/*`,
+- Standardmodell aus erkannten Optionen auswählen oder Provider und Modell manuell eingeben.
+- Das Onboarding für benutzerdefinierte Provider leitet Bildunterstützung für gängige Modell-IDs ab und fragt nur, wenn der Modellname unbekannt ist.
+- Wenn das Onboarding mit einer Provider-Auth-Auswahl startet, bevorzugt die Modellauswahl
+  diesen Provider automatisch. Für Volcengine und BytePlus stimmt dieselbe Präferenz
+  auch mit deren Coding-Plan-Varianten überein (`volcengine-plan/*`,
   `byteplus-plan/*`).
-- Falls dieser Filter für den bevorzugten Provider leer wäre, fällt der Wähler auf
-  den vollständigen Katalog zurück, statt gar keine Modelle anzuzeigen.
+- Wenn dieser bevorzugte Provider-Filter leer wäre, fällt die Auswahl auf
+  den vollständigen Katalog zurück, statt keine Modelle anzuzeigen.
 - Der Assistent führt eine Modellprüfung aus und warnt, wenn das konfigurierte Modell unbekannt ist oder Auth fehlt.
 
 Pfade für Zugangsdaten und Profile:
 
 - Auth-Profile (API-Schlüssel + OAuth): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Veralteter OAuth-Import: `~/.openclaw/credentials/oauth.json`
+- Legacy-OAuth-Import: `~/.openclaw/credentials/oauth.json`
 
 Speichermodus für Zugangsdaten:
 
-- Das Standardverhalten beim Onboarding speichert API-Schlüssel als Plaintext-Werte in Auth-Profilen.
-- `--secret-input-mode ref` aktiviert den Referenzmodus anstelle der Speicherung des Klartextschlüssels.
-  Im interaktiven Setup können Sie wählen zwischen:
-  - env-Variablen-Ref (zum Beispiel `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
-  - konfigurierter Provider-Ref (`file` oder `exec`) mit Provider-Alias + ID
-- Der interaktive Referenzmodus führt vor dem Speichern eine schnelle Vorabvalidierung durch.
-  - Env-Refs: validiert Variablennamen + nicht leeren Wert in der aktuellen Onboarding-Umgebung.
-  - Provider-Refs: validiert die Provider-Konfiguration und löst die angeforderte ID auf.
-  - Wenn die Vorabvalidierung fehlschlägt, zeigt das Onboarding den Fehler an und lässt Sie es erneut versuchen.
+- Das Standardverhalten des Onboardings speichert API-Schlüssel als Klartextwerte in Auth-Profilen.
+- `--secret-input-mode ref` aktiviert den Referenzmodus anstelle der Klartext-Schlüsselspeicherung.
+  In der interaktiven Einrichtung können Sie eines von beiden wählen:
+  - Umgebungsvariablen-Ref (zum Beispiel `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
+  - konfigurierte Provider-Ref (`file` oder `exec`) mit Provider-Alias + ID
+- Der interaktive Referenzmodus führt vor dem Speichern eine schnelle Preflight-Validierung aus.
+  - Env-Refs: validiert Variablenname + nicht leeren Wert in der aktuellen Onboarding-Umgebung.
+  - Provider-Refs: validiert Provider-Konfiguration und löst die angeforderte ID auf.
+  - Wenn Preflight fehlschlägt, zeigt das Onboarding den Fehler an und lässt Sie es erneut versuchen.
 - Im nicht interaktiven Modus ist `--secret-input-mode ref` nur env-gestützt.
-  - Setzen Sie die Provider-Umgebungsvariable in der Umgebung des Onboarding-Prozesses.
-  - Inline-Schlüssel-Flags (zum Beispiel `--openai-api-key`) setzen voraus, dass diese env-Variable gesetzt ist; andernfalls schlägt das Onboarding sofort fehl.
-  - Für benutzerdefinierte Provider speichert der nicht interaktive `ref`-Modus `models.providers.<id>.apiKey` als `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
-  - In diesem Fall für benutzerdefinierte Provider setzt `--custom-api-key` voraus, dass `CUSTOM_API_KEY` gesetzt ist; andernfalls schlägt das Onboarding sofort fehl.
-- Gateway-Auth-Zugangsdaten unterstützen im interaktiven Setup Auswahl zwischen Plaintext und SecretRef:
-  - Token-Modus: **Plaintext-Token erzeugen/speichern** (Standard) oder **SecretRef verwenden**.
-  - Passwortmodus: Plaintext oder SecretRef.
-- Nicht interaktiver SecretRef-Pfad für Token: `--gateway-token-ref-env <ENV_VAR>`.
-- Bestehende Plaintext-Setups funktionieren unverändert weiter.
+  - Setzen Sie die Provider-Umgebungsvariable in der Prozessumgebung des Onboardings.
+  - Inline-Schlüssel-Flags (zum Beispiel `--openai-api-key`) erfordern, dass diese Umgebungsvariable gesetzt ist; andernfalls schlägt das Onboarding schnell fehl.
+  - Für benutzerdefinierte Provider speichert der nicht interaktive Modus `ref` `models.providers.<id>.apiKey` als `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
+  - In diesem Fall eines benutzerdefinierten Providers erfordert `--custom-api-key`, dass `CUSTOM_API_KEY` gesetzt ist; andernfalls schlägt das Onboarding schnell fehl.
+- Gateway-Auth-Zugangsdaten unterstützen in der interaktiven Einrichtung Klartext- und SecretRef-Optionen:
+  - Token-Modus: **Klartext-Token generieren/speichern** (Standard) oder **SecretRef verwenden**.
+  - Passwortmodus: Klartext oder SecretRef.
+- Nicht interaktiver Token-SecretRef-Pfad: `--gateway-token-ref-env <ENV_VAR>`.
+- Vorhandene Klartext-Einrichtungen funktionieren unverändert weiter.
 
 <Note>
-Tipp für Headless- und Server-Umgebungen: Schließen Sie OAuth auf einem Rechner mit Browser ab und kopieren Sie dann
+Tipp für Headless- und Server-Betrieb: Schließen Sie OAuth auf einem Rechner mit Browser ab und kopieren Sie anschließend
 die `auth-profiles.json` dieses Agenten (zum Beispiel
 `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` oder den entsprechenden
-Pfad unter `$OPENCLAW_STATE_DIR/...`) auf den Gateway-Host. `credentials/oauth.json`
+`$OPENCLAW_STATE_DIR/...`-Pfad) auf den Gateway-Host. `credentials/oauth.json`
 ist nur eine veraltete Importquelle.
 </Note>
 
@@ -277,15 +279,15 @@ Typische Felder in `~/.openclaw/openclaw.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.skipBootstrap`, wenn `--skip-bootstrap` übergeben wird
-- `agents.defaults.model` / `models.providers` (wenn MiniMax ausgewählt wurde)
-- `tools.profile` (lokales Onboarding setzt dies standardmäßig auf `"coding"`, wenn es nicht gesetzt ist; vorhandene explizite Werte bleiben erhalten)
-- `gateway.*` (Modus, Bind, Auth, Tailscale)
-- `session.dmScope` (lokales Onboarding setzt dies standardmäßig auf `per-channel-peer`, wenn es nicht gesetzt ist; vorhandene explizite Werte bleiben erhalten)
+- `agents.defaults.model` / `models.providers` (wenn Minimax ausgewählt wurde)
+- `tools.profile` (lokales Onboarding verwendet standardmäßig `"coding"`, wenn nicht gesetzt; vorhandene explizite Werte bleiben erhalten)
+- `gateway.*` (mode, bind, auth, tailscale)
+- `session.dmScope` (lokales Onboarding setzt dies standardmäßig auf `per-channel-peer`, wenn nicht gesetzt; vorhandene explizite Werte bleiben erhalten)
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- Channel-Allowlists (Slack, Discord, Matrix, Microsoft Teams), wenn Sie sich während der Prompts dafür entscheiden (Namen werden nach Möglichkeit in IDs aufgelöst)
+- Kanal-Allowlists (Slack, Discord, Matrix, Microsoft Teams), wenn Sie während der Eingabeaufforderungen zustimmen (Namen werden nach Möglichkeit in IDs aufgelöst)
 - `skills.install.nodeManager`
   - Das Flag `setup --node-manager` akzeptiert `npm`, `pnpm` oder `bun`.
-  - Die manuelle Konfiguration kann später weiterhin `skills.install.nodeManager: "yarn"` setzen.
+  - Eine manuelle Konfiguration kann später weiterhin `skills.install.nodeManager: "yarn"` setzen.
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
 - `wizard.lastRunCommit`
@@ -294,12 +296,12 @@ Typische Felder in `~/.openclaw/openclaw.json`:
 
 `openclaw agents add` schreibt `agents.list[]` und optionale `bindings`.
 
-WhatsApp-Zugangsdaten liegen unter `~/.openclaw/credentials/whatsapp/<accountId>/`.
+WhatsApp-Anmeldedaten werden unter `~/.openclaw/credentials/whatsapp/<accountId>/` abgelegt.
 Sitzungen werden unter `~/.openclaw/agents/<agentId>/sessions/` gespeichert.
 
 <Note>
-Einige Channels werden als Plugins bereitgestellt. Wenn sie während des Setups ausgewählt werden, fordert der Assistent
-Sie auf, das Plugin (npm oder lokaler Pfad) vor der Channel-Konfiguration zu installieren.
+Einige Kanäle werden als Plugins bereitgestellt. Wenn sie während der Einrichtung ausgewählt werden, fordert der Assistent
+Sie auf, das Plugin (npm oder lokaler Pfad) vor der Kanalkonfiguration zu installieren.
 </Note>
 
 Gateway-Assistent-RPC:
@@ -309,18 +311,18 @@ Gateway-Assistent-RPC:
 - `wizard.cancel`
 - `wizard.status`
 
-Clients (macOS-App und Control UI) können Schritte rendern, ohne die Onboarding-Logik neu implementieren zu müssen.
+Clients (macOS-App und Control UI) können Schritte darstellen, ohne die Onboarding-Logik erneut zu implementieren.
 
-Verhalten beim Signal-Setup:
+Signal-Einrichtungsverhalten:
 
 - Lädt das passende Release-Asset herunter
 - Speichert es unter `~/.openclaw/tools/signal-cli/<version>/`
 - Schreibt `channels.signal.cliPath` in die Konfiguration
 - JVM-Builds erfordern Java 21
 - Native Builds werden verwendet, wenn verfügbar
-- Windows verwendet WSL2 und folgt dem Linux-`signal-cli`-Ablauf innerhalb von WSL
+- Windows verwendet WSL2 und folgt innerhalb von WSL dem Linux-signal-cli-Ablauf
 
-## Verwandte Dokumente
+## Zugehörige Dokumentation
 
 - Onboarding-Hub: [Onboarding (CLI)](/de/start/wizard)
 - Automatisierung und Skripte: [CLI-Automatisierung](/de/start/wizard-cli-automation)

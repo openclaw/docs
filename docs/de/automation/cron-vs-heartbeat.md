@@ -1,18 +1,18 @@
 ---
 summary: Weiterleitung zu /automation
-title: Cron vs. Heartbeat
+title: Cron im Vergleich zu Heartbeat
 x-i18n:
-    generated_at: "2026-04-24T06:26:21Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:38:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 453a70724ffc9aa76b6629458be3b8a2b91b4a72a5f1b3371be9b5aba4f90bcb
+    source_hash: 4a4951f926f9050a9bd33b338cf4cd1869d73b9c3e7222349ea8265b959f41b4
     source_path: automation/cron-vs-heartbeat.md
-    workflow: 15
+    workflow: 16
 ---
 
-Diese Seite wurde nach [Automatisierung & Aufgaben](/de/automation) verschoben. Unter [Automatisierung & Aufgaben](/de/automation) finden Sie den Entscheidungsleitfaden zum Vergleich von Cron und Heartbeat.
+Den Entscheidungsleitfaden zu Cron im Vergleich zu Heartbeat finden Sie unter [Automatisierung und Aufgaben](/de/automation).
 
-## Verwandt
+## Verwandte Themen
 
 - [Geplante Aufgaben](/de/automation/cron-jobs)
 - [Hintergrundaufgaben](/de/automation/tasks)

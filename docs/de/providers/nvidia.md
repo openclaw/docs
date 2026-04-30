@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Sie möchten Open Models in OpenClaw kostenlos verwenden
-    - Sie benötigen die Einrichtung von NVIDIA_API_KEY
-summary: NVIDIAs OpenAI-kompatible API in OpenClaw verwenden
+    - Sie möchten offene Modelle in OpenClaw kostenlos nutzen
+    - Sie müssen NVIDIA_API_KEY einrichten
+summary: Die OpenAI-kompatible API von NVIDIA in OpenClaw verwenden
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-04-24T06:54:56Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:11:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2d056be5be012be537ba5c4d5812ea15ec440e5a552b235854e2078064376192
+    source_hash: 297cc25cf5235bb51f3962c2a1b8799ca6544d57e701c42e9b1e1c7d881ad32b
     source_path: providers/nvidia.md
-    workflow: 15
+    workflow: 16
 ---
 
-NVIDIA bietet unter `https://integrate.api.nvidia.com/v1` eine OpenAI-kompatible API für
-Open Models kostenlos an. Authentifizieren Sie sich mit einem API-Schlüssel von
+NVIDIA stellt unter `https://integrate.api.nvidia.com/v1` eine OpenAI-kompatible API für
+offene Modelle kostenlos bereit. Authentifizieren Sie sich mit einem API-Schlüssel von
 [build.nvidia.com](https://build.nvidia.com/settings/api-keys).
 
 ## Erste Schritte
 
 <Steps>
-  <Step title="Ihren API-Schlüssel holen">
+  <Step title="API-Schlüssel abrufen">
     Erstellen Sie einen API-Schlüssel unter [build.nvidia.com](https://build.nvidia.com/settings/api-keys).
   </Step>
-  <Step title="Den Schlüssel exportieren und Onboarding ausführen">
+  <Step title="Schlüssel exportieren und Onboarding ausführen">
     ```bash
     export NVIDIA_API_KEY="nvapi-..."
-    openclaw onboard --auth-choice skip
+    openclaw onboard --auth-choice nvidia-api-key
     ```
   </Step>
-  <Step title="Ein NVIDIA-Modell setzen">
+  <Step title="NVIDIA-Modell festlegen">
     ```bash
     openclaw models set nvidia/nvidia/nemotron-3-super-120b-a12b
     ```
@@ -37,9 +37,16 @@ Open Models kostenlos an. Authentifizieren Sie sich mit einem API-Schlüssel von
 </Steps>
 
 <Warning>
-Wenn Sie statt der Umgebungsvariable `--token` übergeben, landet der Wert im Shell-Verlauf und in der
-`ps`-Ausgabe. Bevorzugen Sie möglichst die Umgebungsvariable `NVIDIA_API_KEY`.
+Wenn Sie `--nvidia-api-key` statt der Umgebungsvariable übergeben, landet der Wert im Shell-
+Verlauf und in der `ps`-Ausgabe. Verwenden Sie nach Möglichkeit die Umgebungsvariable
+`NVIDIA_API_KEY`.
 </Warning>
+
+Für die nicht interaktive Einrichtung können Sie den Schlüssel auch direkt übergeben:
+
+```bash
+openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
+```
 
 ## Konfigurationsbeispiel
 
@@ -64,45 +71,45 @@ Wenn Sie statt der Umgebungsvariable `--token` übergeben, landet der Wert im Sh
 
 ## Integrierter Katalog
 
-| Modell-Ref                                 | Name                         | Kontext | Max. Ausgabe |
-| ------------------------------------------ | ---------------------------- | ------- | ------------ |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192        |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192        |
-| `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192        |
-| `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192        |
+| Modellreferenz                            | Name                         | Kontext | Maximale Ausgabe |
+| ------------------------------------------ | ---------------------------- | ------- | ---------- |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192      |
+| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192      |
+| `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192      |
+| `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192      |
 
 ## Erweiterte Konfiguration
 
 <AccordionGroup>
-  <Accordion title="Verhalten bei automatischer Aktivierung">
+  <Accordion title="Verhalten beim automatischen Aktivieren">
     Der Provider wird automatisch aktiviert, wenn die Umgebungsvariable `NVIDIA_API_KEY` gesetzt ist.
     Über den Schlüssel hinaus ist keine explizite Provider-Konfiguration erforderlich.
   </Accordion>
 
   <Accordion title="Katalog und Preise">
-    Der gebündelte Katalog ist statisch. Die Kosten sind in der Quelle standardmäßig `0`, da NVIDIA
+    Der gebündelte Katalog ist statisch. Kosten sind im Quellcode standardmäßig auf `0` gesetzt, da NVIDIA
     derzeit kostenlosen API-Zugriff für die aufgeführten Modelle anbietet.
   </Accordion>
 
-  <Accordion title="OpenAI-kompatibler Endpunkt">
-    NVIDIA verwendet den Standard-Endpunkt `/v1` für Completions. Jedes OpenAI-kompatible
-    Tooling sollte mit der NVIDIA-Base-URL sofort funktionieren.
+  <Accordion title="OpenAI-kompatibler Endpoint">
+    NVIDIA verwendet den standardmäßigen `/v1`-Completions-Endpoint. Jede OpenAI-kompatible
+    Tooling sollte mit der NVIDIA-Basis-URL sofort funktionieren.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-NVIDIA-Modelle sind derzeit kostenlos nutzbar. Prüfen Sie
-[build.nvidia.com](https://build.nvidia.com/) auf den neuesten Stand zu Verfügbarkeit und
-Rate-Limit-Details.
+NVIDIA-Modelle können derzeit kostenlos genutzt werden. Prüfen Sie
+[build.nvidia.com](https://build.nvidia.com/) auf die aktuelle Verfügbarkeit und
+Details zu Rate Limits.
 </Tip>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Provider, Modell-Refs und Failover-Verhalten auswählen.
+    Provider, Modellreferenzen und Failover-Verhalten auswählen.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständige Konfigurationsreferenz für Agenten, Modelle und Provider.
+    Vollständige Konfigurationsreferenz für Agents, Modelle und Provider.
   </Card>
 </CardGroup>
