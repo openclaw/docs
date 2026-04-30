@@ -1,94 +1,94 @@
 ---
 read_when:
-    - Configurando fluxos de trabalho de agentes autônomos que são executados sem prompts por tarefa
-    - Definindo o que o agente pode fazer de forma independente versus o que precisa de aprovação humana
-    - Estruturando agentes com vários programas com limites claros e regras de escalonamento
+    - Configuração de fluxos de trabalho de agentes autônomos que são executados sem prompts por tarefa
+    - Definindo o que o agente pode fazer de forma independente em comparação com o que precisa de aprovação humana
+    - Estruturação de agentes multiprograma com limites claros e regras de escalonamento
 summary: Definir autoridade operacional permanente para programas de agentes autônomos
 title: Ordens permanentes
 x-i18n:
-    generated_at: "2026-04-25T13:40:56Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:34:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4a18777284a12e99b2e9f1ce660a0dc4d18ba5782d6a6a6673b495ab32b2d8cf
+    source_hash: ff895378cbd53f7e8058137389037ab40201ce2cdfb34c135f480dfef775919b
     source_path: automation/standing-orders.md
-    workflow: 15
+    workflow: 16
 ---
 
-As ordens permanentes concedem ao seu agente **autoridade operacional permanente** para programas definidos. Em vez de fornecer instruções de tarefas individuais a cada vez, você define programas com escopo, gatilhos e regras de escalonamento claros — e o agente executa de forma autônoma dentro desses limites.
+Ordens permanentes concedem ao seu agente **autoridade operacional permanente** para programas definidos. Em vez de fornecer instruções de tarefa individuais a cada vez, você define programas com escopo, acionadores e regras de escalonamento claros — e o agente executa autonomamente dentro desses limites.
 
-Essa é a diferença entre dizer ao seu assistente "envie o relatório semanal" toda sexta-feira e conceder autoridade permanente: "Você é responsável pelo relatório semanal. Compile-o toda sexta-feira, envie-o e só escale se algo parecer errado."
+Esta é a diferença entre dizer ao seu assistente "envie o relatório semanal" toda sexta-feira e conceder autoridade permanente: "Você é responsável pelo relatório semanal. Compile-o toda sexta-feira, envie-o e só escale se algo parecer errado."
 
-## Por que ordens permanentes?
+## Por que usar ordens permanentes
 
 **Sem ordens permanentes:**
 
-- Você precisa dar prompts ao agente para cada tarefa
+- Você precisa solicitar ao agente cada tarefa
 - O agente fica ocioso entre solicitações
-- O trabalho rotineiro é esquecido ou atrasado
+- Trabalho rotineiro é esquecido ou atrasado
 - Você se torna o gargalo
 
 **Com ordens permanentes:**
 
-- O agente executa de forma autônoma dentro de limites definidos
-- O trabalho rotineiro acontece no cronograma, sem necessidade de prompt
+- O agente executa autonomamente dentro de limites definidos
+- Trabalho rotineiro acontece no cronograma sem solicitação
 - Você só se envolve em exceções e aprovações
 - O agente preenche o tempo ocioso de forma produtiva
 
-## Como funcionam
+## Como elas funcionam
 
-As ordens permanentes são definidas nos arquivos do seu [workspace do agente](/pt-BR/concepts/agent-workspace). A abordagem recomendada é incluí-las diretamente em `AGENTS.md` (que é injetado automaticamente em toda sessão) para que o agente sempre as tenha no contexto. Para configurações maiores, você também pode colocá-las em um arquivo dedicado, como `standing-orders.md`, e referenciá-lo a partir de `AGENTS.md`.
+Ordens permanentes são definidas nos arquivos do seu [espaço de trabalho do agente](/pt-BR/concepts/agent-workspace). A abordagem recomendada é incluí-las diretamente em `AGENTS.md` (que é injetado automaticamente em todas as sessões), para que o agente sempre as tenha em contexto. Para configurações maiores, você também pode colocá-las em um arquivo dedicado, como `standing-orders.md`, e referenciá-lo a partir de `AGENTS.md`.
 
 Cada programa especifica:
 
 1. **Escopo** — o que o agente está autorizado a fazer
-2. **Gatilhos** — quando executar (cronograma, evento ou condição)
-3. **Portões de aprovação** — o que exige aprovação humana antes de agir
+2. **Acionadores** — quando executar (cronograma, evento ou condição)
+3. **Portões de aprovação** — o que exige aprovação humana antes da ação
 4. **Regras de escalonamento** — quando parar e pedir ajuda
 
-O agente carrega essas instruções em toda sessão por meio dos arquivos de bootstrap do workspace (consulte [Workspace do agente](/pt-BR/concepts/agent-workspace) para a lista completa de arquivos injetados automaticamente) e executa com base nelas, em conjunto com [jobs Cron](/pt-BR/automation/cron-jobs) para aplicação baseada em tempo.
+O agente carrega essas instruções em todas as sessões por meio dos arquivos de inicialização do espaço de trabalho (consulte [Espaço de trabalho do agente](/pt-BR/concepts/agent-workspace) para ver a lista completa de arquivos injetados automaticamente) e as executa, combinadas com [tarefas Cron](/pt-BR/automation/cron-jobs) para imposição baseada em tempo.
 
 <Tip>
-Coloque as ordens permanentes em `AGENTS.md` para garantir que sejam carregadas em toda sessão. O bootstrap do workspace injeta automaticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` e `MEMORY.md` — mas não arquivos arbitrários em subdiretórios.
+Coloque ordens permanentes em `AGENTS.md` para garantir que elas sejam carregadas em todas as sessões. A inicialização do espaço de trabalho injeta automaticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` e `MEMORY.md` — mas não arquivos arbitrários em subdiretórios.
 </Tip>
 
 ## Anatomia de uma ordem permanente
 
 ```markdown
-## Programa: Relatório semanal de status
+## Program: Weekly Status Report
 
-**Autoridade:** Compilar dados, gerar relatório, entregar às partes interessadas
-**Gatilho:** Toda sexta-feira às 16h (aplicado via job Cron)
-**Portão de aprovação:** Nenhum para relatórios padrão. Sinalize anomalias para revisão humana.
-**Escalonamento:** Se a fonte de dados estiver indisponível ou as métricas parecerem incomuns (>2σ da norma)
+**Authority:** Compile data, generate report, deliver to stakeholders
+**Trigger:** Every Friday at 4 PM (enforced via cron job)
+**Approval gate:** None for standard reports. Flag anomalies for human review.
+**Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
 
-### Etapas de execução
+### Execution steps
 
-1. Coletar métricas das fontes configuradas
-2. Comparar com a semana anterior e com as metas
-3. Gerar relatório em Reports/weekly/YYYY-MM-DD.md
-4. Entregar resumo pelo canal configurado
-5. Registrar a conclusão em Agent/Logs/
+1. Pull metrics from configured sources
+2. Compare to prior week and targets
+3. Generate report in Reports/weekly/YYYY-MM-DD.md
+4. Deliver summary via configured channel
+5. Log completion to Agent/Logs/
 
-### O que NÃO fazer
+### What NOT to do
 
-- Não envie relatórios para partes externas
-- Não modifique os dados de origem
-- Não pule a entrega se as métricas parecerem ruins — relate com precisão
+- Do not send reports to external parties
+- Do not modify source data
+- Do not skip delivery if metrics look bad — report accurately
 ```
 
-## Ordens permanentes + jobs Cron
+## Ordens permanentes mais tarefas Cron
 
-As ordens permanentes definem **o que** o agente está autorizado a fazer. Os [jobs Cron](/pt-BR/automation/cron-jobs) definem **quando** isso acontece. Eles funcionam juntos:
+Ordens permanentes definem **o que** o agente está autorizado a fazer. [Tarefas Cron](/pt-BR/automation/cron-jobs) definem **quando** isso acontece. Elas funcionam juntas:
 
 ```
-Ordem permanente: "Você é responsável pela triagem diária da caixa de entrada"
+Standing Order: "You own the daily inbox triage"
     ↓
-Job Cron (8h diariamente): "Execute a triagem da caixa de entrada conforme as ordens permanentes"
+Cron Job (8 AM daily): "Execute inbox triage per standing orders"
     ↓
-Agente: Lê as ordens permanentes → executa as etapas → relata os resultados
+Agent: Reads standing orders → executes steps → reports results
 ```
 
-O prompt do job Cron deve referenciar a ordem permanente em vez de duplicá-la:
+O prompt da tarefa Cron deve referenciar a ordem permanente em vez de duplicá-la:
 
 ```bash
 openclaw cron add \
@@ -104,154 +104,154 @@ openclaw cron add \
 
 ## Exemplos
 
-### Exemplo 1: Conteúdo e redes sociais (ciclo semanal)
+### Exemplo 1: conteúdo e redes sociais (ciclo semanal)
 
 ```markdown
-## Programa: Conteúdo e redes sociais
+## Program: Content & Social Media
 
-**Autoridade:** Redigir conteúdo, agendar publicações, compilar relatórios de engajamento
-**Portão de aprovação:** Todas as publicações exigem revisão do proprietário nos primeiros 30 dias, depois aprovação permanente
-**Gatilho:** Ciclo semanal (revisão na segunda-feira → rascunhos no meio da semana → resumo na sexta-feira)
+**Authority:** Draft content, schedule posts, compile engagement reports
+**Approval gate:** All posts require owner review for first 30 days, then standing approval
+**Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
 
-### Ciclo semanal
+### Weekly cycle
 
-- **Segunda-feira:** Revisar métricas da plataforma e engajamento do público
-- **Terça a quinta-feira:** Redigir posts para redes sociais, criar conteúdo para blog
-- **Sexta-feira:** Compilar resumo semanal de marketing → entregar ao proprietário
+- **Monday:** Review platform metrics and audience engagement
+- **Tuesday–Thursday:** Draft social posts, create blog content
+- **Friday:** Compile weekly marketing brief → deliver to owner
 
-### Regras de conteúdo
+### Content rules
 
-- A voz deve corresponder à marca (consulte `SOUL.md` ou o guia de voz da marca)
-- Nunca se identifique como IA em conteúdo voltado ao público
-- Inclua métricas quando disponíveis
-- Foque no valor para o público, não em autopromoção
+- Voice must match the brand (see SOUL.md or brand voice guide)
+- Never identify as AI in public-facing content
+- Include metrics when available
+- Focus on value to audience, not self-promotion
 ```
 
-### Exemplo 2: Operações financeiras (acionado por evento)
+### Exemplo 2: operações financeiras (acionadas por evento)
 
 ```markdown
-## Programa: Processamento financeiro
+## Program: Financial Processing
 
-**Autoridade:** Processar dados de transações, gerar relatórios, enviar resumos
-**Portão de aprovação:** Nenhum para análise. Recomendações exigem aprovação do proprietário.
-**Gatilho:** Novo arquivo de dados detectado OU ciclo mensal agendado
+**Authority:** Process transaction data, generate reports, send summaries
+**Approval gate:** None for analysis. Recommendations require owner approval.
+**Trigger:** New data file detected OR scheduled monthly cycle
 
-### Quando novos dados chegarem
+### When new data arrives
 
-1. Detectar novo arquivo no diretório de entrada designado
-2. Analisar e categorizar todas as transações
-3. Comparar com as metas de orçamento
-4. Sinalizar: itens incomuns, estouros de limite, novas cobranças recorrentes
-5. Gerar relatório no diretório de saída designado
-6. Entregar resumo ao proprietário pelo canal configurado
+1. Detect new file in designated input directory
+2. Parse and categorize all transactions
+3. Compare against budget targets
+4. Flag: unusual items, threshold breaches, new recurring charges
+5. Generate report in designated output directory
+6. Deliver summary to owner via configured channel
 
-### Regras de escalonamento
+### Escalation rules
 
-- Item único > $500: alerta imediato
-- Categoria > orçamento em 20%: sinalizar no relatório
-- Transação irreconhecível: pedir categorização ao proprietário
-- Processamento com falha após 2 tentativas: relatar falha, não adivinhar
+- Single item > $500: immediate alert
+- Category > budget by 20%: flag in report
+- Unrecognizable transaction: ask owner for categorization
+- Failed processing after 2 retries: report failure, do not guess
 ```
 
-### Exemplo 3: Monitoramento e alertas (contínuo)
+### Exemplo 3: monitoramento e alertas (contínuo)
 
 ```markdown
-## Programa: Monitoramento do sistema
+## Program: System Monitoring
 
-**Autoridade:** Verificar a integridade do sistema, reiniciar serviços, enviar alertas
-**Portão de aprovação:** Reinicie serviços automaticamente. Escale se a reinicialização falhar duas vezes.
-**Gatilho:** Todo ciclo de Heartbeat
+**Authority:** Check system health, restart services, send alerts
+**Approval gate:** Restart services automatically. Escalate if restart fails twice.
+**Trigger:** Every heartbeat cycle
 
-### Verificações
+### Checks
 
-- Endpoints de integridade do serviço respondendo
-- Espaço em disco acima do limite
-- Tarefas pendentes não obsoletas (>24 horas)
-- Canais de entrega operacionais
+- Service health endpoints responding
+- Disk space above threshold
+- Pending tasks not stale (>24 hours)
+- Delivery channels operational
 
-### Matriz de resposta
+### Response matrix
 
-| Condição         | Ação                     | Escalar?                 |
+| Condition        | Action                   | Escalate?                |
 | ---------------- | ------------------------ | ------------------------ |
-| Serviço fora do ar | Reiniciar automaticamente | Somente se falhar 2x     |
-| Espaço em disco < 10% | Alertar o proprietário   | Sim                      |
-| Tarefa obsoleta > 24h | Lembrar o proprietário   | Não                      |
-| Canal offline    | Registrar e tentar novamente no próximo ciclo | Se offline > 2 horas |
+| Service down     | Restart automatically    | Only if restart fails 2x |
+| Disk space < 10% | Alert owner              | Yes                      |
+| Stale task > 24h | Remind owner             | No                       |
+| Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## O padrão Executar-Verificar-Relatar
+## Padrão executar-verificar-relatar
 
-As ordens permanentes funcionam melhor quando combinadas com disciplina rigorosa de execução. Toda tarefa em uma ordem permanente deve seguir este ciclo:
+Ordens permanentes funcionam melhor quando combinadas com uma disciplina rigorosa de execução. Cada tarefa em uma ordem permanente deve seguir este ciclo:
 
 1. **Executar** — Faça o trabalho real (não apenas reconheça a instrução)
-2. **Verificar** — Confirme que o resultado está correto (arquivo existe, mensagem entregue, dados analisados)
+2. **Verificar** — Confirme que o resultado está correto (o arquivo existe, a mensagem foi entregue, os dados foram analisados)
 3. **Relatar** — Informe ao proprietário o que foi feito e o que foi verificado
 
 ```markdown
-### Regras de execução
+### Execution rules
 
-- Toda tarefa segue Executar-Verificar-Relatar. Sem exceções.
-- "Eu vou fazer isso" não é execução. Faça e depois relate.
-- "Concluído" sem verificação não é aceitável. Comprove.
-- Se a execução falhar: tente novamente uma vez com uma abordagem ajustada.
-- Se ainda falhar: relate a falha com diagnóstico. Nunca falhe em silêncio.
-- Nunca tente indefinidamente — máximo de 3 tentativas, depois escale.
+- Every task follows Execute-Verify-Report. No exceptions.
+- "I'll do that" is not execution. Do it, then report.
+- "Done" without verification is not acceptable. Prove it.
+- If execution fails: retry once with adjusted approach.
+- If still fails: report failure with diagnosis. Never silently fail.
+- Never retry indefinitely — 3 attempts max, then escalate.
 ```
 
-Esse padrão evita o modo de falha mais comum dos agentes: reconhecer uma tarefa sem concluí-la.
+Esse padrão evita o modo de falha mais comum do agente: reconhecer uma tarefa sem concluí-la.
 
-## Arquitetura com vários programas
+## Arquitetura multiprograma
 
-Para agentes que gerenciam várias áreas, organize as ordens permanentes como programas separados com limites claros:
+Para agentes que gerenciam várias áreas, organize ordens permanentes como programas separados com limites claros:
 
 ```markdown
-## Programa 1: [Domínio A] (Semanal)
+## Program 1: [Domain A] (Weekly)
 
 ...
 
-## Programa 2: [Domínio B] (Mensal + Sob demanda)
+## Program 2: [Domain B] (Monthly + On-Demand)
 
 ...
 
-## Programa 3: [Domínio C] (Conforme necessário)
+## Program 3: [Domain C] (As-Needed)
 
 ...
 
-## Regras de escalonamento (Todos os programas)
+## Escalation Rules (All Programs)
 
-- [Critérios comuns de escalonamento]
-- [Portões de aprovação que se aplicam a todos os programas]
+- [Common escalation criteria]
+- [Approval gates that apply across programs]
 ```
 
 Cada programa deve ter:
 
-- Seu próprio **ritmo de gatilho** (semanal, mensal, orientado por evento, contínuo)
+- Sua própria **cadência de acionamento** (semanal, mensal, orientada por eventos, contínua)
 - Seus próprios **portões de aprovação** (alguns programas precisam de mais supervisão do que outros)
 - **Limites** claros (o agente deve saber onde um programa termina e outro começa)
 
-## Boas práticas
+## Melhores práticas
 
 ### Faça
 
-- Comece com autoridade limitada e amplie à medida que a confiança cresce
+- Comece com autoridade restrita e expanda conforme a confiança aumenta
 - Defina portões de aprovação explícitos para ações de alto risco
-- Inclua seções de "O que NÃO fazer" — limites importam tanto quanto permissões
-- Combine com jobs Cron para execução confiável baseada em tempo
+- Inclua seções "O que NÃO fazer" — limites importam tanto quanto permissões
+- Combine com tarefas Cron para execução confiável baseada em tempo
 - Revise os logs do agente semanalmente para verificar se as ordens permanentes estão sendo seguidas
-- Atualize as ordens permanentes conforme suas necessidades evoluem — são documentos vivos
+- Atualize as ordens permanentes conforme suas necessidades evoluem — elas são documentos vivos
 
 ### Evite
 
-- Conceder ampla autoridade no primeiro dia ("faça o que achar melhor")
-- Pular regras de escalonamento — todo programa precisa de uma cláusula de "quando parar e perguntar"
+- Conceder autoridade ampla no primeiro dia ("faça o que você achar melhor")
+- Ignorar regras de escalonamento — todo programa precisa de uma cláusula de "quando parar e perguntar"
 - Presumir que o agente lembrará instruções verbais — coloque tudo no arquivo
 - Misturar assuntos em um único programa — programas separados para domínios separados
-- Esquecer de aplicar com jobs Cron — ordens permanentes sem gatilhos viram sugestões
+- Esquecer de impor com tarefas Cron — ordens permanentes sem acionadores viram sugestões
 
-## Relacionado
+## Relacionados
 
-- [Automação e tarefas](/pt-BR/automation) — todos os mecanismos de automação em um só lugar
-- [Jobs Cron](/pt-BR/automation/cron-jobs) — aplicação de agendamento para ordens permanentes
-- [Hooks](/pt-BR/automation/hooks) — scripts orientados por evento para eventos do ciclo de vida do agente
-- [Webhooks](/pt-BR/automation/cron-jobs#webhooks) — gatilhos de eventos HTTP de entrada
-- [Workspace do agente](/pt-BR/concepts/agent-workspace) — onde as ordens permanentes ficam, incluindo a lista completa de arquivos de bootstrap injetados automaticamente (`AGENTS.md`, `SOUL.md` etc.)
+- [Automação e tarefas](/pt-BR/automation): todos os mecanismos de automação em resumo.
+- [Tarefas Cron](/pt-BR/automation/cron-jobs): imposição de cronograma para ordens permanentes.
+- [Hooks](/pt-BR/automation/hooks): scripts orientados por eventos para eventos do ciclo de vida do agente.
+- [Webhooks](/pt-BR/automation/cron-jobs#webhooks): acionadores de eventos HTTP de entrada.
+- [Espaço de trabalho do agente](/pt-BR/concepts/agent-workspace): onde ficam as ordens permanentes, incluindo a lista completa de arquivos de inicialização injetados automaticamente (`AGENTS.md`, `SOUL.md` etc.).

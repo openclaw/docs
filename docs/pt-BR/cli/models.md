@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Você quer alterar os models padrão ou ver o status de autenticação do provedor
-    - Você quer verificar os models/providers disponíveis e depurar perfis de auth
-summary: Referência da CLI para `openclaw models` (`status`/`list`/`set`/`scan`, aliases, fallbacks, auth)
-title: Models
+    - Você quer alterar os modelos padrão ou visualizar o status de autenticação do provedor
+    - Você quer verificar os modelos/provedores disponíveis e depurar perfis de autenticação
+summary: Referência da CLI para `openclaw models` (status/list/set/scan, aliases, alternativas, autenticação)
+title: Modelos
 x-i18n:
-    generated_at: "2026-04-26T11:26:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:42:14Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a5acf5972251ee7aa22d1f9222f1a497822fb1f25f29f827702f8b37dda8dadf
+    source_hash: 95e2361989b583f7f52947dad1faaaba44dc6a5f58719cc2e83c13fce7c33adc
     source_path: cli/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw models`
 
-Descoberta, varredura e configuração de models (model padrão, fallbacks, perfis de auth).
+Descoberta, varredura e configuração de modelos (modelo padrão, alternativas, perfis de autenticação).
 
 Relacionado:
 
-- Providers + models: [Models](/pt-BR/providers/models)
-- Conceitos de seleção de model + comando de barra `/models`: [Conceito de Models](/pt-BR/concepts/models)
-- Configuração de auth do provider: [Primeiros passos](/pt-BR/start/getting-started)
+- Provedores + modelos: [Modelos](/pt-BR/providers/models)
+- Conceitos de seleção de modelo + comando de barra `/models`: [Conceito de modelos](/pt-BR/concepts/models)
+- Configuração de autenticação de provedor: [Primeiros passos](/pt-BR/start/getting-started)
 
 ## Comandos comuns
 
@@ -32,67 +32,77 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status` mostra o padrão/fallbacks resolvidos mais uma visão geral de auth.
-Quando instantâneos de uso do provider estão disponíveis, a seção de status de OAuth/API key inclui
-janelas de uso do provider e instantâneos de cota.
-Providers atuais com janela de uso: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
-Codex, MiniMax, Xiaomi e z.ai. O auth de uso vem de hooks específicos do provider
-quando disponíveis; caso contrário, o OpenClaw recorre à correspondência de
-credenciais OAuth/API key a partir de perfis de auth, env ou config.
-Na saída `--json`, `auth.providers` é a visão geral do provider com reconhecimento de env/config/store,
-enquanto `auth.oauth` é apenas a integridade de perfis do armazenamento de auth.
-Adicione `--probe` para executar probes de auth em tempo real em cada perfil de provider configurado.
-Os probes são solicitações reais (podem consumir tokens e acionar rate limits).
-Use `--agent <id>` para inspecionar o estado de model/auth de um agente configurado. Quando omitido,
-o comando usa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` se definidos; caso contrário, usa o
+`openclaw models status` mostra o padrão/as alternativas resolvidos, além de uma visão geral de autenticação.
+Quando snapshots de uso do provedor estão disponíveis, a seção de status OAuth/chave de API inclui
+janelas de uso do provedor e snapshots de cota.
+Provedores atuais de janela de uso: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
+Codex, MiniMax, Xiaomi e z.ai. A autenticação de uso vem de hooks específicos do provedor
+quando disponíveis; caso contrário, o OpenClaw recorre a credenciais OAuth/chave de API
+correspondentes de perfis de autenticação, env ou config.
+Na saída `--json`, `auth.providers` é a visão geral de provedores ciente de env/config/store,
+enquanto `auth.oauth` é apenas a integridade dos perfis do armazenamento de autenticação.
+Adicione `--probe` para executar sondagens de autenticação ao vivo em cada perfil de provedor configurado.
+Sondagens são solicitações reais (podem consumir tokens e acionar limites de taxa).
+Use `--agent <id>` para inspecionar o estado de modelo/autenticação de um agente configurado. Quando omitido,
+o comando usa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` se definido; caso contrário, usa o
 agente padrão configurado.
-As linhas de probe podem vir de perfis de auth, credenciais env ou `models.json`.
+Linhas de sondagem podem vir de perfis de autenticação, credenciais de env ou `models.json`.
 
 Observações:
 
 - `models set <model-or-alias>` aceita `provider/model` ou um alias.
-- `models list` é somente leitura: lê config, perfis de auth, estado de catálogo
-  existente e linhas de catálogo controladas pelo provider, mas não regrava
+- `models list` é somente leitura: ele lê a config, os perfis de autenticação, o estado de catálogo
+  existente e as linhas de catálogo pertencentes ao provedor, mas não reescreve
   `models.json`.
-- `models list --all --provider <id>` pode incluir linhas estáticas de catálogo controladas pelo provider
-  a partir de manifestos de Plugin ou metadados de catálogo de provider incluídos, mesmo quando
-  você ainda não se autenticou com esse provider. Essas linhas ainda aparecem como
-  indisponíveis até que um auth correspondente seja configurado.
-- `models list` mantém distintos os metadados nativos do model e os limites de runtime. Na
-  saída em tabela, `Ctx` mostra `contextTokens/contextWindow` quando um limite efetivo de runtime
+- A coluna `Auth` é em nível de provedor e somente leitura. Ela é calculada a partir de metadados
+  locais de perfil de autenticação, marcadores de env, chaves de provedor configuradas, marcadores de
+  provedor local, marcadores de env/perfil do AWS Bedrock e metadados de autenticação sintética de plugins;
+  ela não carrega o runtime do provedor, não lê segredos do keychain, não chama APIs do provedor
+  nem comprova a prontidão exata de execução por modelo.
+- `models list --all --provider <id>` pode incluir linhas estáticas de catálogo pertencentes ao provedor
+  vindas de manifests de plugin ou metadados de catálogo de provedor incluídos, mesmo quando você
+  ainda não se autenticou nesse provedor. Essas linhas ainda aparecem como
+  indisponíveis até que a autenticação correspondente seja configurada.
+- `models list --all` amplo mescla linhas de catálogo de manifest sobre linhas de registro
+  sem carregar hooks suplementares de runtime do provedor. Caminhos rápidos de manifest filtrados por provedor
+  usam apenas provedores marcados como `static`; provedores marcados como `refreshable`
+  permanecem baseados em registro/cache e acrescentam linhas de manifest como suplementos, enquanto
+  provedores marcados como `runtime` permanecem na descoberta por registro/runtime.
+- `models list` mantém metadados nativos de modelo e limites de runtime distintos. Na saída em tabela,
+  `Ctx` mostra `contextTokens/contextWindow` quando um limite efetivo de runtime
   difere da janela de contexto nativa; linhas JSON incluem `contextTokens`
-  quando um provider expõe esse limite.
-- `models list --provider <id>` filtra por id do provider, como `moonshot` ou
-  `openai-codex`. Ele não aceita rótulos de exibição de seletores interativos de provider,
+  quando um provedor expõe esse limite.
+- `models list --provider <id>` filtra por id de provedor, como `moonshot` ou
+  `openai-codex`. Ele não aceita rótulos de exibição de seletores interativos de provedor,
   como `Moonshot AI`.
-- As refs de model são analisadas separando no **primeiro** `/`. Se o ID do model incluir `/` (estilo OpenRouter), inclua o prefixo do provider (exemplo: `openrouter/moonshotai/kimi-k2`).
-- Se você omitir o provider, o OpenClaw resolve a entrada primeiro como um alias, depois
-  como uma correspondência única de provider configurado para aquele id exato de model, e só então
-  recorre ao provider padrão configurado com um aviso de descontinuação.
-  Se esse provider não expuser mais o model padrão configurado, o OpenClaw
-  recorre ao primeiro provider/model configurado em vez de exibir um
-  padrão obsoleto de provider removido.
-- `models status` pode mostrar `marker(<value>)` na saída de auth para placeholders não secretos (por exemplo `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) em vez de mascará-los como segredos.
+- Referências de modelo são analisadas dividindo no **primeiro** `/`. Se o ID do modelo incluir `/` (estilo OpenRouter), inclua o prefixo do provedor (exemplo: `openrouter/moonshotai/kimi-k2`).
+- Se você omitir o provedor, o OpenClaw resolve a entrada primeiro como um alias, depois
+  como uma correspondência única de provedor configurado para esse id de modelo exato, e só então
+  recorre ao provedor padrão configurado com um aviso de depreciação.
+  Se esse provedor não expuser mais o modelo padrão configurado, o OpenClaw
+  recorre ao primeiro provedor/modelo configurado em vez de expor um
+  padrão obsoleto de provedor removido.
+- `models status` pode mostrar `marker(<value>)` na saída de autenticação para placeholders não secretos (por exemplo `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) em vez de mascará-los como segredos.
 
-### `models scan`
+### Varredura de modelos
 
 `models scan` lê o catálogo público `:free` do OpenRouter e classifica candidatos para
-uso como fallback. O catálogo em si é público, então varreduras apenas de metadados não precisam
-de uma chave do OpenRouter.
+uso como alternativa. O catálogo em si é público, então varreduras somente de metadados não precisam de
+uma chave do OpenRouter.
 
-Por padrão, o OpenClaw tenta fazer probe de suporte a ferramentas e imagens com chamadas reais de model.
+Por padrão, o OpenClaw tenta sondar suporte a ferramentas e imagens com chamadas de modelo ao vivo.
 Se nenhuma chave do OpenRouter estiver configurada, o comando recorre à saída somente de metadados
-e explica que models `:free` ainda exigem `OPENROUTER_API_KEY` para
-probes e inferência.
+e explica que modelos `:free` ainda exigem `OPENROUTER_API_KEY` para
+sondagens e inferência.
 
 Opções:
 
-- `--no-probe` (somente metadados; sem busca de config/segredos)
+- `--no-probe` (somente metadados; sem consulta a config/segredos)
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
 - `--max-candidates <n>`
-- `--timeout <ms>` (timeout da solicitação do catálogo e por probe)
+- `--timeout <ms>` (solicitação de catálogo e tempo limite por sondagem)
 - `--concurrency <n>`
 - `--yes`
 - `--no-input`
@@ -100,25 +110,29 @@ Opções:
 - `--set-image`
 - `--json`
 
-`--set-default` e `--set-image` exigem probes em tempo real; resultados de varredura
-somente de metadados são informativos e não são aplicados à config.
+`--set-default` e `--set-image` exigem sondagens ao vivo; resultados de varredura somente de metadados
+são informativos e não são aplicados à config.
 
-### `models status`
+### Status de modelos
 
 Opções:
 
 - `--json`
 - `--plain`
-- `--check` (saída 1=expirado/ausente, 2=expirando)
-- `--probe` (probe em tempo real dos perfis de auth configurados)
-- `--probe-provider <name>` (faz probe de um provider)
-- `--probe-profile <id>` (repetível ou ids separados por vírgula)
+- `--check` (exit 1=expirado/ausente, 2=expirando)
+- `--probe` (sondagem ao vivo de perfis de autenticação configurados)
+- `--probe-provider <name>` (sondar um provedor)
+- `--probe-profile <id>` (repetir ou ids de perfil separados por vírgula)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
-- `--agent <id>` (id do agente configurado; substitui `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`)
+- `--agent <id>` (id de agente configurado; substitui `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`)
 
-Categorias de status do probe:
+`--json` mantém stdout reservado para o payload JSON. Diagnósticos de perfil de autenticação, provedor
+e inicialização são roteados para stderr para que scripts possam enviar stdout diretamente
+para ferramentas como `jq`.
+
+Buckets de status de sondagem:
 
 - `ok`
 - `auth`
@@ -129,24 +143,24 @@ Categorias de status do probe:
 - `unknown`
 - `no_model`
 
-Casos de detalhe/código de motivo do probe que você pode esperar:
+Casos esperados de detalhe/código de motivo da sondagem:
 
-- `excluded_by_auth_order`: existe um perfil armazenado, mas `auth.order.<provider>` explícito
-  o omitiu, então o probe relata a exclusão em vez de
+- `excluded_by_auth_order`: existe um perfil armazenado, mas
+  `auth.order.<provider>` explícito o omitiu, então a sondagem informa a exclusão em vez de
   tentar usá-lo.
 - `missing_credential`, `invalid_expires`, `expired`, `unresolved_ref`:
-  o perfil está presente, mas não está elegível/resolúvel.
-- `no_model`: existe auth do provider, mas o OpenClaw não conseguiu resolver um candidato de model
-  apto para probe nesse provider.
+  o perfil está presente, mas não é elegível/resolvível.
+- `no_model`: existe autenticação do provedor, mas o OpenClaw não conseguiu resolver um candidato
+  de modelo sondável para esse provedor.
 
-## Aliases + fallbacks
+## Aliases + alternativas
 
 ```bash
 openclaw models aliases list
 openclaw models fallbacks list
 ```
 
-## Perfis de auth
+## Perfis de autenticação
 
 ```bash
 openclaw models auth add
@@ -155,13 +169,13 @@ openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
-`models auth add` é o helper interativo de auth. Ele pode iniciar um fluxo de auth do provider
-(OAuth/API key) ou orientar você para colar manualmente um token, dependendo do
-provider escolhido.
+`models auth add` é o auxiliar interativo de autenticação. Ele pode iniciar um fluxo de autenticação
+do provedor (OAuth/chave de API) ou orientar você na colagem manual de token, dependendo do
+provedor escolhido.
 
-`models auth login` executa o fluxo de auth de um Plugin de provider (OAuth/API key). Use
-`openclaw plugins list` para ver quais providers estão instalados.
-Use `openclaw models auth --agent <id> <subcommand>` para gravar resultados de auth em um
+`models auth login` executa o fluxo de autenticação de um plugin de provedor (OAuth/chave de API). Use
+`openclaw plugins list` para ver quais provedores estão instalados.
+Use `openclaw models auth --agent <id> <subcommand>` para gravar resultados de autenticação em um
 armazenamento específico de agente configurado. A flag pai `--agent` é respeitada por
 `add`, `login`, `setup-token`, `paste-token` e `login-github-copilot`.
 
@@ -173,22 +187,22 @@ openclaw models auth login --provider openai-codex --set-default
 
 Observações:
 
-- `setup-token` e `paste-token` continuam sendo comandos genéricos de token para providers
-  que expõem métodos de auth por token.
-- `setup-token` exige um TTY interativo e executa o método de auth por token do provider
-  (usando por padrão o método `setup-token` daquele provider quando ele expõe
+- `setup-token` e `paste-token` permanecem comandos genéricos de token para provedores
+  que expõem métodos de autenticação por token.
+- `setup-token` exige um TTY interativo e executa o método de autenticação por token do provedor
+  (usando por padrão o método `setup-token` desse provedor quando ele expõe
   um).
 - `paste-token` aceita uma string de token gerada em outro lugar ou por automação.
 - `paste-token` exige `--provider`, solicita o valor do token e o grava
   no id de perfil padrão `<provider>:manual`, a menos que você passe
   `--profile-id`.
-- `paste-token --expires-in <duration>` armazena uma expiração absoluta do token a partir de uma
-  duração relativa como `365d` ou `12h`.
-- Observação sobre Anthropic: a equipe da Anthropic nos informou que o uso no estilo Claude CLI do OpenClaw é permitido novamente, então o OpenClaw trata a reutilização do Claude CLI e o uso de `claude -p` como autorizados para essa integração, a menos que a Anthropic publique uma nova política.
-- `setup-token` / `paste-token` da Anthropic continuam disponíveis como um caminho de token compatível do OpenClaw, mas o OpenClaw agora prefere a reutilização do Claude CLI e `claude -p` quando disponíveis.
+- `paste-token --expires-in <duration>` armazena uma expiração absoluta de token a partir de uma
+  duração relativa, como `365d` ou `12h`.
+- Observação sobre a Anthropic: a equipe da Anthropic nos informou que o uso da Claude CLI no estilo OpenClaw é permitido novamente, então o OpenClaw trata a reutilização da Claude CLI e o uso de `claude -p` como sancionados para esta integração, a menos que a Anthropic publique uma nova política.
+- Anthropic `setup-token` / `paste-token` permanecem disponíveis como um caminho de token OpenClaw compatível, mas o OpenClaw agora prefere reutilização da Claude CLI e `claude -p` quando disponíveis.
 
 ## Relacionado
 
 - [Referência da CLI](/pt-BR/cli)
-- [Seleção de model](/pt-BR/concepts/model-providers)
-- [Failover de model](/pt-BR/concepts/model-failover)
+- [Seleção de modelo](/pt-BR/concepts/model-providers)
+- [Failover de modelo](/pt-BR/concepts/model-failover)

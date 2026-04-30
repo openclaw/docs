@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Configurando streaming discreto do Matrix para Synapse ou Tuwunel auto-hospedado
-    - Os usuários querem notificações apenas nos blocos finalizados, não em cada edição de pré-visualização
-summary: Regras de push do Matrix por destinatário para edições discretas de pré-visualização finalizadas
-title: Regras de push do Matrix para pré-visualizações discretas
+    - Configurando o streaming silencioso do Matrix para Synapse ou Tuwunel auto-hospedados
+    - Os usuários querem notificações apenas quando os blocos forem concluídos, não a cada edição de pré-visualização
+summary: Regras de notificação push do Matrix por destinatário para edições finalizadas silenciosas de pré-visualização
+title: Regras de push do Matrix para pré-visualizações silenciosas
 x-i18n:
-    generated_at: "2026-04-24T05:41:52Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:36:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 07a8cf9a4041b63e13feb21ee2eb22909cb14931d6929bedf6b94315f7a270cf
+    source_hash: e2f037a50a85b350163c74cf6b9cce335ecaaa5cccc762124122ad6d0321a1fa
     source_path: channels/matrix-push-rules.md
-    workflow: 15
+    workflow: 16
 ---
 
-Quando `channels.matrix.streaming` é `"quiet"`, o OpenClaw edita um único evento de pré-visualização no lugar e marca a edição finalizada com uma flag de conteúdo personalizada. Clientes Matrix notificam apenas na edição final se uma regra de push por usuário corresponder a essa flag. Esta página é para operadores que auto-hospedam Matrix e querem instalar essa regra para cada conta destinatária.
+Quando `channels.matrix.streaming` é `"quiet"`, o OpenClaw edita um único evento de prévia no local e marca a edição finalizada com uma flag de conteúdo personalizada. Clientes Matrix notificam na edição final somente se uma regra de push por usuário corresponder a essa flag. Esta página é para operadores que hospedam o próprio Matrix e querem instalar essa regra para cada conta destinatária.
 
-Se você quiser apenas o comportamento padrão de notificações do Matrix, use `streaming: "partial"` ou deixe o streaming desativado. Consulte [Configuração do canal Matrix](/pt-BR/channels/matrix#streaming-previews).
+Se você quer apenas o comportamento padrão de notificação do Matrix, use `streaming: "partial"` ou deixe o streaming desativado. Consulte [Configuração do canal Matrix](/pt-BR/channels/matrix#streaming-previews).
 
 ## Pré-requisitos
 
 - usuário destinatário = a pessoa que deve receber a notificação
-- usuário do bot = a conta Matrix do OpenClaw que envia a resposta
+- usuário bot = a conta Matrix do OpenClaw que envia a resposta
 - use o token de acesso do usuário destinatário para as chamadas de API abaixo
-- faça `sender` na regra de push corresponder ao MXID completo do usuário do bot
-- a conta destinatária já deve ter pushers funcionando — regras de pré-visualização discreta só funcionam quando a entrega normal de push do Matrix está saudável
+- corresponda `sender` na regra de push ao MXID completo do usuário bot
+- a conta destinatária já deve ter pushers funcionais — regras de prévia silenciosa só funcionam quando a entrega normal de push do Matrix está saudável
 
 ## Etapas
 
 <Steps>
-  <Step title="Configurar pré-visualizações discretas">
+  <Step title="Configurar prévias silenciosas">
 
 ```json5
 {
@@ -43,7 +43,7 @@ Se você quiser apenas o comportamento padrão de notificações do Matrix, use 
   </Step>
 
   <Step title="Obter o token de acesso do destinatário">
-    Reutilize um token de sessão de cliente existente sempre que possível. Para gerar um novo:
+    Reutilize um token de sessão de cliente existente quando possível. Para gerar um novo:
 
 ```bash
 curl -sS -X POST \
@@ -71,7 +71,7 @@ Se nenhum pusher for retornado, corrija a entrega normal de push do Matrix para 
   </Step>
 
   <Step title="Instalar a regra de push de override">
-    O OpenClaw marca edições finalizadas de pré-visualização somente de texto com `content["com.openclaw.finalized_preview"] = true`. Instale uma regra que corresponda a esse marcador mais o MXID do bot como remetente:
+    O OpenClaw marca edições finalizadas de prévias somente texto com `content["com.openclaw.finalized_preview"] = true`. Instale uma regra que corresponda a esse marcador e ao MXID do bot como remetente:
 
 ```bash
 curl -sS -X PUT \
@@ -103,8 +103,8 @@ curl -sS -X PUT \
 
     Substitua antes de executar:
 
-    - `https://matrix.example.org`: URL base do seu homeserver
-    - `$USER_ACCESS_TOKEN`: token de acesso do usuário destinatário
+    - `https://matrix.example.org`: a URL base do seu homeserver
+    - `$USER_ACCESS_TOKEN`: o token de acesso do usuário destinatário
     - `openclaw-finalized-preview-botname`: um ID de regra exclusivo por bot por destinatário (padrão: `openclaw-finalized-preview-<botname>`)
     - `@bot:example.org`: o MXID do seu bot OpenClaw, não o do destinatário
 
@@ -118,7 +118,7 @@ curl -sS \
   "https://matrix.example.org/_matrix/client/v3/pushrules/global/override/openclaw-finalized-preview-botname"
 ```
 
-Em seguida, teste uma resposta com streaming. No modo quiet, a sala mostra um rascunho de pré-visualização discreto e notifica uma vez quando o bloco ou turno termina.
+Depois, teste uma resposta transmitida. No modo silencioso, a sala mostra uma prévia de rascunho silenciosa e notifica uma vez quando o bloco ou turno termina.
 
   </Step>
 </Steps>
@@ -127,24 +127,26 @@ Para remover a regra depois, use `DELETE` na mesma URL da regra com o token do d
 
 ## Observações sobre vários bots
 
-As regras de push são indexadas por `ruleId`: executar `PUT` novamente no mesmo ID atualiza uma única regra. Para vários bots OpenClaw notificando o mesmo destinatário, crie uma regra por bot com uma correspondência de remetente distinta.
+Regras de push são indexadas por `ruleId`: executar `PUT` novamente contra o mesmo ID atualiza uma única regra. Para vários bots OpenClaw notificando o mesmo destinatário, crie uma regra por bot com uma correspondência de remetente distinta.
 
-Novas regras `override` definidas pelo usuário são inseridas antes das regras padrão de supressão, então nenhum parâmetro extra de ordenação é necessário. A regra afeta apenas edições de pré-visualização somente de texto que podem ser finalizadas no lugar; fallbacks de mídia e fallbacks de pré-visualização obsoleta usam a entrega normal do Matrix.
+Novas regras `override` definidas pelo usuário são inseridas antes das regras padrão de supressão, portanto nenhum parâmetro extra de ordenação é necessário. A regra afeta apenas edições de prévia somente texto que podem ser finalizadas no local; fallbacks de mídia e fallbacks de prévia obsoleta usam a entrega normal do Matrix.
 
-## Observações sobre o homeserver
+## Observações sobre homeserver
 
 <AccordionGroup>
   <Accordion title="Synapse">
-    Nenhuma alteração especial em `homeserver.yaml` é necessária. Se as notificações normais do Matrix já chegam a este usuário, o token do destinatário + a chamada `pushrules` acima são a principal etapa de configuração.
+    Nenhuma alteração especial em `homeserver.yaml` é necessária. Se as notificações normais do Matrix já chegam a este usuário, o token do destinatário + a chamada `pushrules` acima é a principal etapa de configuração.
 
     Se você executa o Synapse atrás de um proxy reverso ou workers, garanta que `/_matrix/client/.../pushrules/` chegue corretamente ao Synapse. A entrega de push é tratada pelo processo principal ou por `synapse.app.pusher` / workers de pusher configurados — garanta que eles estejam saudáveis.
+
+    A regra usa a condição de regra de push `event_property_is` (MSC3758, regra de push v1.10), que foi adicionada ao Synapse em 2023. Versões mais antigas do Synapse aceitam a chamada `PUT pushrules/...`, mas silenciosamente nunca correspondem à condição — atualize o Synapse se nenhuma notificação chegar em uma edição de prévia finalizada.
 
   </Accordion>
 
   <Accordion title="Tuwunel">
-    Mesmo fluxo do Synapse; nenhuma configuração específica do Tuwunel é necessária para o marcador de pré-visualização finalizada.
+    Mesmo fluxo que o Synapse; nenhuma configuração específica do Tuwunel é necessária para o marcador de prévia finalizada.
 
-    Se as notificações desaparecerem enquanto o usuário estiver ativo em outro dispositivo, verifique se `suppress_push_when_active` está habilitado. O Tuwunel adicionou essa opção na versão 1.4.2 (setembro de 2025), e ela pode suprimir intencionalmente push para outros dispositivos enquanto um dispositivo estiver ativo.
+    Se as notificações desaparecerem enquanto o usuário estiver ativo em outro dispositivo, verifique se `suppress_push_when_active` está ativado. O Tuwunel adicionou essa opção na versão 1.4.2 (setembro de 2025), e ela pode suprimir intencionalmente pushes para outros dispositivos enquanto um dispositivo está ativo.
 
   </Accordion>
 </AccordionGroup>

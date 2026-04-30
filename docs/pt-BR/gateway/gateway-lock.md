@@ -1,42 +1,44 @@
 ---
 read_when:
-    - Executar ou depurar o processo do gateway
-    - Investigar imposição de instância única
+    - Executar ou depurar o processo do Gateway
+    - Investigando a imposição de instância única
 summary: Proteção singleton do Gateway usando o bind do listener WebSocket
 title: Bloqueio do Gateway
 x-i18n:
-    generated_at: "2026-04-24T05:51:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:48:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f52405d1891470592cb2f9328421dc910c15f4fdc4d34d57c1fec8b322c753f
+    source_hash: fe61ff81106554e98de1ca04c213b76d230265cdf3e81b70897d2de00f6a0179
     source_path: gateway/gateway-lock.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Por quê
 
-- Garantir que apenas uma instância do gateway seja executada por porta base no mesmo host; gateways adicionais devem usar perfis isolados e portas exclusivas.
+- Garantir que apenas uma instância do Gateway seja executada por porta base no mesmo host; Gateways adicionais devem usar perfis isolados e portas exclusivas.
 - Sobreviver a falhas/SIGKILL sem deixar arquivos de lock obsoletos.
 - Falhar rapidamente com um erro claro quando a porta de controle já estiver ocupada.
 
 ## Mecanismo
 
-- O gateway faz bind do listener WebSocket (padrão `ws://127.0.0.1:18789`) imediatamente na inicialização usando um listener TCP exclusivo.
-- Se o bind falhar com `EADDRINUSE`, a inicialização lança `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- O SO libera o listener automaticamente em qualquer saída do processo, inclusive falhas e SIGKILL — não é necessário nenhum arquivo de lock separado nem etapa de limpeza.
-- No desligamento, o gateway fecha o servidor WebSocket e o servidor HTTP subjacente para liberar a porta rapidamente.
+- O Gateway primeiro adquire um arquivo de lock por configuração sob o diretório de locks de estado e verifica a porta configurada em busca de um processo em escuta existente.
+- Se o proprietário registrado do lock não existir mais, a porta estiver livre ou o lock estiver obsoleto, a inicialização recupera o lock e continua.
+- O Gateway então associa o ouvinte HTTP/WebSocket (padrão `ws://127.0.0.1:18789`) usando uma escuta TCP exclusiva.
+- Se a associação falhar com `EADDRINUSE`, a inicialização lança `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
+- No encerramento, o Gateway fecha o servidor HTTP/WebSocket e remove o arquivo de lock.
 
 ## Superfície de erro
 
-- Se outro processo estiver ocupando a porta, a inicialização lança `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- Outras falhas de bind aparecem como `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`.
+- Se outro processo estiver segurando a porta, a inicialização lança `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
+- Outras falhas de associação aparecem como `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`.
 
-## Observações operacionais
+## Notas operacionais
 
 - Se a porta estiver ocupada por _outro_ processo, o erro é o mesmo; libere a porta ou escolha outra com `openclaw gateway --port <port>`.
-- O app macOS ainda mantém sua própria proteção leve por PID antes de iniciar o gateway; o lock de runtime é imposto pelo bind do WebSocket.
+- Sob um supervisor de serviço, um novo processo do Gateway que encontra um respondedor `/healthz` saudável existente sai com sucesso e deixa esse processo no controle. Se o processo existente nunca ficar saudável, as novas tentativas são limitadas e a inicialização falha com um erro de lock claro, em vez de entrar em loop para sempre.
+- O app macOS ainda mantém sua própria proteção leve por PID antes de iniciar o Gateway; o lock em tempo de execução é imposto pelo arquivo de lock mais a associação HTTP/WebSocket.
 
 ## Relacionado
 
-- [Múltiplos Gateways](/pt-BR/gateway/multiple-gateways) — executar várias instâncias com portas exclusivas
-- [Solução de problemas](/pt-BR/gateway/troubleshooting) — diagnosticar `EADDRINUSE` e conflitos de porta
+- [Múltiplos Gateways](/pt-BR/gateway/multiple-gateways) — executando várias instâncias com portas exclusivas
+- [Solução de problemas](/pt-BR/gateway/troubleshooting) — diagnosticando `EADDRINUSE` e conflitos de porta

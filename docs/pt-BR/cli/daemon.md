@@ -5,19 +5,19 @@ read_when:
 summary: Referência de CLI para `openclaw daemon` (alias legado para gerenciamento do serviço Gateway)
 title: Daemon
 x-i18n:
-    generated_at: "2026-04-24T05:44:57Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b492768b46c459b69cd3127c375e0c573db56c76572fdbf7b2b8eecb3e9835ce
+    source_hash: 51839f7cbc180cc0c43caa2d7e83cc2add7cbca40665f83f64e6ce9dde8574dd
     source_path: cli/daemon.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw daemon`
 
-Alias legado para comandos de gerenciamento do serviço Gateway.
+Alias legado para comandos de gerenciamento de serviço do Gateway.
 
-`openclaw daemon ...` é mapeado para a mesma superfície de controle de serviço que os comandos de serviço `openclaw gateway ...`.
+`openclaw daemon ...` mapeia para a mesma superfície de controle de serviço que os comandos de serviço `openclaw gateway ...`.
 
 ## Uso
 
@@ -47,17 +47,18 @@ openclaw daemon uninstall
 
 Observações:
 
-- `status` resolve SecretRefs de autenticação configurados para autenticação da probe quando possível.
-- Se um SecretRef de autenticação necessário não for resolvido neste caminho de comando, `daemon status --json` reporta `rpc.authWarning` quando a conectividade/autenticação da probe falha; passe `--token`/`--password` explicitamente ou resolva primeiro a origem do segredo.
-- Se a probe for bem-sucedida, avisos de auth-ref não resolvidos são suprimidos para evitar falsos positivos.
-- `status --deep` adiciona uma varredura de serviço em nível de sistema com melhor esforço. Quando encontra outros serviços semelhantes ao gateway, a saída legível por humanos imprime dicas de limpeza e avisa que um gateway por máquina ainda é a recomendação normal.
-- Em instalações Linux com systemd, as verificações de divergência de token em `status` incluem tanto fontes `Environment=` quanto `EnvironmentFile=` da unit.
-- As verificações de divergência resolvem SecretRefs de `gateway.auth.token` usando env de runtime mesclado (env do comando de serviço primeiro, depois fallback para env do processo).
-- Se a autenticação por token não estiver efetivamente ativa (modo explícito `gateway.auth.mode` como `password`/`none`/`trusted-proxy`, ou modo não definido em que password pode prevalecer e nenhum candidato de token pode prevalecer), as verificações de divergência de token ignoram a resolução do token da configuração.
-- Quando a autenticação por token exige um token e `gateway.auth.token` é gerenciado por SecretRef, `install` valida se o SecretRef pode ser resolvido, mas não persiste o token resolvido nos metadados de ambiente do serviço.
-- Se a autenticação por token exigir um token e o SecretRef de token configurado não puder ser resolvido, a instalação falha de forma fechada.
-- Se `gateway.auth.token` e `gateway.auth.password` estiverem ambos configurados e `gateway.auth.mode` não estiver definido, a instalação será bloqueada até que o modo seja definido explicitamente.
-- Se você executa intencionalmente vários gateways em um único host, isole portas, config/state e workspaces; consulte [/gateway#multiple-gateways-same-host](/pt-BR/gateway#multiple-gateways-same-host).
+- `status` resolve SecretRefs de autenticação configuradas para autenticação da verificação quando possível.
+- Se uma SecretRef de autenticação obrigatória não for resolvida neste caminho de comando, `daemon status --json` relata `rpc.authWarning` quando a conectividade/autenticação da verificação falha; passe `--token`/`--password` explicitamente ou resolva primeiro a origem do segredo.
+- Se a verificação for bem-sucedida, os avisos de referência de autenticação não resolvida são suprimidos para evitar falsos positivos.
+- `status --deep` adiciona uma varredura de serviço em nível de sistema, de melhor esforço. Quando encontra outros serviços semelhantes ao Gateway, a saída legível imprime dicas de limpeza e avisa que um Gateway por máquina ainda é a recomendação normal.
+- Em instalações systemd no Linux, as verificações de desvio de token de `status` incluem fontes de unidade `Environment=` e `EnvironmentFile=`.
+- As verificações de desvio resolvem SecretRefs de `gateway.auth.token` usando o ambiente de runtime mesclado (primeiro o ambiente do comando de serviço, depois o fallback para o ambiente do processo).
+- Se a autenticação por token não estiver efetivamente ativa (`gateway.auth.mode` explícito de `password`/`none`/`trusted-proxy`, ou modo não definido quando a senha pode prevalecer e nenhum candidato a token pode prevalecer), as verificações de desvio de token ignoram a resolução do token de configuração.
+- Quando a autenticação por token exige um token e `gateway.auth.token` é gerenciado por SecretRef, `install` valida que a SecretRef pode ser resolvida, mas não persiste o token resolvido nos metadados de ambiente do serviço.
+- Se a autenticação por token exigir um token e a SecretRef de token configurada não for resolvida, a instalação falhará de forma fechada.
+- Se `gateway.auth.token` e `gateway.auth.password` estiverem configurados e `gateway.auth.mode` não estiver definido, a instalação será bloqueada até que o modo seja definido explicitamente.
+- No macOS, `install` mantém plists de LaunchAgent acessíveis somente pelo proprietário e carrega valores de ambiente do serviço gerenciado por meio de um arquivo e wrapper acessíveis somente pelo proprietário, em vez de serializar chaves de API ou referências de ambiente de perfil de autenticação em `EnvironmentVariables`.
+- Se você executar intencionalmente vários Gateways em um host, isole portas, configuração/estado e workspaces; consulte [/gateway#multiple-gateways-same-host](/pt-BR/gateway#multiple-gateways-same-host).
 
 ## Prefira
 
@@ -65,5 +66,5 @@ Use [`openclaw gateway`](/pt-BR/cli/gateway) para a documentação e os exemplos
 
 ## Relacionado
 
-- [Referência de CLI](/pt-BR/cli)
-- [Runbook do Gateway](/pt-BR/gateway)
+- [Referência da CLI](/pt-BR/cli)
+- [Manual operacional do Gateway](/pt-BR/gateway)

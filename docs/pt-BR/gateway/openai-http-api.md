@@ -1,109 +1,109 @@
 ---
 read_when:
-    - Integrando ferramentas que esperam Chat Completions da OpenAI
-summary: Expor um endpoint HTTP `/v1/chat/completions` compatível com OpenAI a partir do Gateway
-title: chat completions da OpenAI
+    - Integrando ferramentas que esperam OpenAI Chat Completions
+summary: Exponha um endpoint HTTP /v1/chat/completions compatível com OpenAI a partir do Gateway
+title: Conclusões de chat da OpenAI
 x-i18n:
-    generated_at: "2026-04-25T13:47:21Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:50:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9a2f45abfc0aef8f73ab909bc3007de4078177214e5e0e5cf27a4c6ad0918172
+    source_hash: 9a19f9d9d6d8ce6d605f8af5324ae3eb0c100c167609341c8dfb569970b0b2c9
     source_path: gateway/openai-http-api.md
-    workflow: 15
+    workflow: 16
 ---
 
-O Gateway do OpenClaw pode servir um pequeno endpoint Chat Completions compatível com OpenAI.
+OpenClaw’s Gateway can serve a small OpenAI-compatible Chat Completions endpoint.
 
-Esse endpoint fica **desativado por padrão**. Ative-o primeiro na configuração.
+This endpoint is **disabled by default**. Enable it in config first.
 
 - `POST /v1/chat/completions`
-- Mesma porta do Gateway (multiplexação WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
+- Same port as the Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/v1/chat/completions`
 
-Quando a superfície HTTP compatível com OpenAI do Gateway está ativada, ela também serve:
+When the Gateway’s OpenAI-compatible HTTP surface is enabled, it also serves:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/responses`
 
-Internamente, as solicitações são executadas como uma execução normal de agente do Gateway (mesmo caminho de código de `openclaw agent`), então roteamento/permissões/configuração correspondem ao seu Gateway.
+Under the hood, requests are executed as a normal Gateway agent run (same codepath as `openclaw agent`), so routing/permissions/config match your Gateway.
 
-## Autenticação
+## Authentication
 
-Usa a configuração de autenticação do Gateway.
+Uses the Gateway auth configuration.
 
-Caminhos comuns de autenticação HTTP:
+Common HTTP auth paths:
 
-- autenticação por segredo compartilhado (`gateway.auth.mode="token"` ou `"password"`):
+- shared-secret auth (`gateway.auth.mode="token"` or `"password"`):
   `Authorization: Bearer <token-or-password>`
-- autenticação HTTP confiável com identidade (`gateway.auth.mode="trusted-proxy"`):
-  roteie pela proxy com reconhecimento de identidade configurada e deixe que ela injete os
-  cabeçalhos de identidade necessários
-- autenticação aberta em entrada privada (`gateway.auth.mode="none"`):
-  nenhum cabeçalho de autenticação é necessário
+- trusted identity-bearing HTTP auth (`gateway.auth.mode="trusted-proxy"`):
+  route through the configured identity-aware proxy and let it inject the
+  required identity headers
+- private-ingress open auth (`gateway.auth.mode="none"`):
+  no auth header required
 
-Observações:
+Notes:
 
-- Quando `gateway.auth.mode="token"`, use `gateway.auth.token` (ou `OPENCLAW_GATEWAY_TOKEN`).
-- Quando `gateway.auth.mode="password"`, use `gateway.auth.password` (ou `OPENCLAW_GATEWAY_PASSWORD`).
-- Quando `gateway.auth.mode="trusted-proxy"`, a solicitação HTTP deve vir de uma
-  origem de proxy confiável não-loopback configurada; proxies loopback no mesmo host não
-  satisfazem esse modo.
-- Se `gateway.auth.rateLimit` estiver configurado e ocorrerem muitas falhas de autenticação, o endpoint retorna `429` com `Retry-After`.
+- When `gateway.auth.mode="token"`, use `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`).
+- When `gateway.auth.mode="password"`, use `gateway.auth.password` (or `OPENCLAW_GATEWAY_PASSWORD`).
+- When `gateway.auth.mode="trusted-proxy"`, the HTTP request must come from a
+  configured trusted proxy source; same-host loopback proxies require explicit
+  `gateway.auth.trustedProxy.allowLoopback = true`.
+- If `gateway.auth.rateLimit` is configured and too many auth failures occur, the endpoint returns `429` with `Retry-After`.
 
-## Limite de segurança (importante)
+## Security boundary (important)
 
-Trate este endpoint como uma superfície de **acesso total de operador** para a instância do gateway.
+Treat this endpoint as a **full operator-access** surface for the gateway instance.
 
-- A autenticação bearer HTTP aqui não é um modelo de escopo restrito por usuário.
-- Um token/senha de Gateway válido para este endpoint deve ser tratado como uma credencial de proprietário/operador.
-- As solicitações passam pelo mesmo caminho de agente do plano de controle que ações confiáveis de operador.
-- Não há um limite separado de ferramenta para não proprietário/por usuário neste endpoint; assim que um chamador passa pela autenticação do Gateway aqui, o OpenClaw trata esse chamador como um operador confiável para este gateway.
-- Para modos de autenticação por segredo compartilhado (`token` e `password`), o endpoint restaura os padrões normais completos de operador mesmo que o chamador envie um cabeçalho `x-openclaw-scopes` mais restrito.
-- Modos HTTP confiáveis com identidade (por exemplo autenticação por proxy confiável ou `gateway.auth.mode="none"`) respeitam `x-openclaw-scopes` quando presente e, caso contrário, recorrem ao conjunto normal de escopos padrão de operador.
-- Se a política do agente de destino permitir ferramentas sensíveis, este endpoint poderá usá-las.
-- Mantenha este endpoint apenas em loopback/tailnet/entrada privada; não o exponha diretamente à internet pública.
+- HTTP bearer auth here is not a narrow per-user scope model.
+- A valid Gateway token/password for this endpoint should be treated like an owner/operator credential.
+- Requests run through the same control-plane agent path as trusted operator actions.
+- There is no separate non-owner/per-user tool boundary on this endpoint; once a caller passes Gateway auth here, OpenClaw treats that caller as a trusted operator for this gateway.
+- For shared-secret auth modes (`token` and `password`), the endpoint restores the normal full operator defaults even if the caller sends a narrower `x-openclaw-scopes` header.
+- Trusted identity-bearing HTTP modes (for example trusted proxy auth or `gateway.auth.mode="none"`) honor `x-openclaw-scopes` when present and otherwise fall back to the normal operator default scope set.
+- If the target agent policy allows sensitive tools, this endpoint can use them.
+- Keep this endpoint on loopback/tailnet/private ingress only; do not expose it directly to the public internet.
 
-Matriz de autenticação:
+Auth matrix:
 
-- `gateway.auth.mode="token"` ou `"password"` + `Authorization: Bearer ...`
-  - comprova posse do segredo compartilhado de operador do gateway
-  - ignora `x-openclaw-scopes` mais restritos
-  - restaura o conjunto completo padrão de escopos de operador:
+- `gateway.auth.mode="token"` or `"password"` + `Authorization: Bearer ...`
+  - proves possession of the shared gateway operator secret
+  - ignores narrower `x-openclaw-scopes`
+  - restores the full default operator scope set:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - trata turnos de chat neste endpoint como turnos de remetente proprietário
-- modos HTTP confiáveis com identidade (por exemplo autenticação por proxy confiável, ou `gateway.auth.mode="none"` em entrada privada)
-  - autenticam alguma identidade externa confiável ou limite de implantação
-  - respeitam `x-openclaw-scopes` quando o cabeçalho está presente
-  - recorrem ao conjunto normal padrão de escopos de operador quando o cabeçalho está ausente
-  - só perdem a semântica de proprietário quando o chamador restringe explicitamente os escopos e omite `operator.admin`
+  - treats chat turns on this endpoint as owner-sender turns
+- trusted identity-bearing HTTP modes (for example trusted proxy auth, or `gateway.auth.mode="none"` on private ingress)
+  - authenticate some outer trusted identity or deployment boundary
+  - honor `x-openclaw-scopes` when the header is present
+  - fall back to the normal operator default scope set when the header is absent
+  - only lose owner semantics when the caller explicitly narrows scopes and omits `operator.admin`
 
-Consulte [Security](/pt-BR/gateway/security) e [Remote access](/pt-BR/gateway/remote).
+See [Security](/pt-BR/gateway/security) and [Remote access](/pt-BR/gateway/remote).
 
-## Contrato de modelo agent-first
+## Agent-first model contract
 
-O OpenClaw trata o campo OpenAI `model` como um **alvo de agente**, não como um ID bruto de modelo do provedor.
+OpenClaw treats the OpenAI `model` field as an **agent target**, not a raw provider model id.
 
-- `model: "openclaw"` roteia para o agente padrão configurado.
-- `model: "openclaw/default"` também roteia para o agente padrão configurado.
-- `model: "openclaw/<agentId>"` roteia para um agente específico.
+- `model: "openclaw"` routes to the configured default agent.
+- `model: "openclaw/default"` also routes to the configured default agent.
+- `model: "openclaw/<agentId>"` routes to a specific agent.
 
-Cabeçalhos opcionais da solicitação:
+Optional request headers:
 
-- `x-openclaw-model: <provider/model-or-bare-id>` substitui o modelo de backend para o agente selecionado.
-- `x-openclaw-agent-id: <agentId>` continua sendo compatível como substituição de compatibilidade.
-- `x-openclaw-session-key: <sessionKey>` controla totalmente o roteamento de sessão.
-- `x-openclaw-message-channel: <channel>` define o contexto sintético do canal de entrada para prompts e políticas sensíveis a canal.
+- `x-openclaw-model: <provider/model-or-bare-id>` overrides the backend model for the selected agent.
+- `x-openclaw-agent-id: <agentId>` remains supported as a compatibility override.
+- `x-openclaw-session-key: <sessionKey>` fully controls session routing.
+- `x-openclaw-message-channel: <channel>` sets the synthetic ingress channel context for channel-aware prompts and policies.
 
-Aliases de compatibilidade ainda aceitos:
+Compatibility aliases still accepted:
 
 - `model: "openclaw:<agentId>"`
 - `model: "agent:<agentId>"`
 
-## Ativando o endpoint
+## Enabling the endpoint
 
-Defina `gateway.http.endpoints.chatCompletions.enabled` como `true`:
+Set `gateway.http.endpoints.chatCompletions.enabled` to `true`:
 
 ```json5
 {
@@ -117,9 +117,9 @@ Defina `gateway.http.endpoints.chatCompletions.enabled` como `true`:
 }
 ```
 
-## Desativando o endpoint
+## Disabling the endpoint
 
-Defina `gateway.http.endpoints.chatCompletions.enabled` como `false`:
+Set `gateway.http.endpoints.chatCompletions.enabled` to `false`:
 
 ```json5
 {
@@ -133,98 +133,98 @@ Defina `gateway.http.endpoints.chatCompletions.enabled` como `false`:
 }
 ```
 
-## Comportamento de sessão
+## Session behavior
 
-Por padrão, o endpoint é **sem estado por solicitação** (uma nova chave de sessão é gerada a cada chamada).
+By default the endpoint is **stateless per request** (a new session key is generated each call).
 
-Se a solicitação incluir uma string OpenAI `user`, o Gateway derivará dela uma chave de sessão estável, para que chamadas repetidas possam compartilhar uma sessão de agente.
+If the request includes an OpenAI `user` string, the Gateway derives a stable session key from it, so repeated calls can share an agent session.
 
-## Por que essa superfície importa
+## Why this surface matters
 
-Este é o conjunto de compatibilidade de maior impacto para frontends e ferramentas auto-hospedados:
+This is the highest-leverage compatibility set for self-hosted frontends and tooling:
 
-- A maioria das configurações de Open WebUI, LobeChat e LibreChat espera `/v1/models`.
-- Muitos sistemas RAG esperam `/v1/embeddings`.
-- Clientes de chat OpenAI existentes geralmente podem começar com `/v1/chat/completions`.
-- Clientes mais nativos de agente estão preferindo cada vez mais `/v1/responses`.
+- Most Open WebUI, LobeChat, and LibreChat setups expect `/v1/models`.
+- Many RAG systems expect `/v1/embeddings`.
+- Existing OpenAI chat clients can usually start with `/v1/chat/completions`.
+- More agent-native clients increasingly prefer `/v1/responses`.
 
-## Lista de modelos e roteamento de agente
+## Model list and agent routing
 
 <AccordionGroup>
-  <Accordion title="O que `/v1/models` retorna?">
-    Uma lista de alvos de agente do OpenClaw.
+  <Accordion title="What does `/v1/models` return?">
+    An OpenClaw agent-target list.
 
-    Os IDs retornados são entradas `openclaw`, `openclaw/default` e `openclaw/<agentId>`.
-    Use-os diretamente como valores OpenAI `model`.
-
-  </Accordion>
-  <Accordion title="`/v1/models` lista agentes ou subagentes?">
-    Ele lista alvos de agentes de nível superior, não modelos de provedor de backend nem subagentes.
-
-    Subagentes continuam sendo topologia interna de execução. Eles não aparecem como pseudo-modelos.
+    The returned ids are `openclaw`, `openclaw/default`, and `openclaw/<agentId>` entries.
+    Use them directly as OpenAI `model` values.
 
   </Accordion>
-  <Accordion title="Por que `openclaw/default` está incluído?">
-    `openclaw/default` é o alias estável para o agente padrão configurado.
+  <Accordion title="Does `/v1/models` list agents or sub-agents?">
+    It lists top-level agent targets, not backend provider models and not sub-agents.
 
-    Isso significa que clientes podem continuar usando um ID previsível mesmo se o ID real do agente padrão mudar entre ambientes.
+    Sub-agents remain internal execution topology. They do not appear as pseudo-models.
 
   </Accordion>
-  <Accordion title="Como substituo o modelo de backend?">
+  <Accordion title="Why is `openclaw/default` included?">
+    `openclaw/default` is the stable alias for the configured default agent.
+
+    That means clients can keep using one predictable id even if the real default agent id changes between environments.
+
+  </Accordion>
+  <Accordion title="How do I override the backend model?">
     Use `x-openclaw-model`.
 
-    Exemplos:
+    Examples:
     `x-openclaw-model: openai/gpt-5.4`
     `x-openclaw-model: gpt-5.5`
 
-    Se você o omitir, o agente selecionado será executado com sua escolha normal de modelo configurado.
+    If you omit it, the selected agent runs with its normal configured model choice.
 
   </Accordion>
-  <Accordion title="Como embeddings se encaixam nesse contrato?">
-    `/v1/embeddings` usa os mesmos IDs `model` de alvo de agente.
+  <Accordion title="How do embeddings fit this contract?">
+    `/v1/embeddings` uses the same agent-target `model` ids.
 
-    Use `model: "openclaw/default"` ou `model: "openclaw/<agentId>"`.
-    Quando precisar de um modelo específico de embeddings, envie-o em `x-openclaw-model`.
-    Sem esse cabeçalho, a solicitação passa para a configuração normal de embeddings do agente selecionado.
+    Use `model: "openclaw/default"` or `model: "openclaw/<agentId>"`.
+    When you need a specific embedding model, send it in `x-openclaw-model`.
+    Without that header, the request passes through to the selected agent's normal embedding setup.
 
   </Accordion>
 </AccordionGroup>
 
 ## Streaming (SSE)
 
-Defina `stream: true` para receber Server-Sent Events (SSE):
+Set `stream: true` to receive Server-Sent Events (SSE):
 
 - `Content-Type: text/event-stream`
-- Cada linha de evento é `data: <json>`
-- O stream termina com `data: [DONE]`
+- Each event line is `data: <json>`
+- Stream ends with `data: [DONE]`
 
-## Configuração rápida do Open WebUI
+## Open WebUI quick setup
 
-Para uma conexão básica com Open WebUI:
+For a basic Open WebUI connection:
 
 - Base URL: `http://127.0.0.1:18789/v1`
-- Base URL do Docker no macOS: `http://host.docker.internal:18789/v1`
-- Chave de API: seu token bearer do Gateway
-- Modelo: `openclaw/default`
+- Docker on macOS base URL: `http://host.docker.internal:18789/v1`
+- API key: your Gateway bearer token
+- Model: `openclaw/default`
 
-Comportamento esperado:
+Expected behavior:
 
-- `GET /v1/models` deve listar `openclaw/default`
-- O Open WebUI deve usar `openclaw/default` como ID de modelo de chat
-- Se você quiser um provider/model específico de backend para esse agente, defina o modelo padrão normal do agente ou envie `x-openclaw-model`
+- `GET /v1/models` should list `openclaw/default`
+- Open WebUI should use `openclaw/default` as the chat model id
+- If you want a specific backend provider/model for that agent, set the agent's normal default model or send `x-openclaw-model`
 
-Smoke rápido:
+Quick smoke:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Se isso retornar `openclaw/default`, a maioria das configurações de Open WebUI poderá se conectar com a mesma base URL e o mesmo token.
+If that returns `openclaw/default`, most Open WebUI setups can connect with the same base URL and token.
 
-## Exemplos
+## Examples
 
-Sem streaming:
+Non-streaming:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -236,7 +236,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Com streaming:
+Streaming:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/chat/completions \
@@ -250,21 +250,21 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Listar modelos:
+List models:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Buscar um modelo:
+Fetch one model:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Criar embeddings:
+Create embeddings:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -277,14 +277,14 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-Observações:
+Notes:
 
-- `/v1/models` retorna alvos de agente do OpenClaw, não catálogos brutos de provedores.
-- `openclaw/default` está sempre presente para que um ID estável funcione em todos os ambientes.
-- Substituições de provider/model de backend pertencem a `x-openclaw-model`, não ao campo OpenAI `model`.
-- `/v1/embeddings` oferece suporte a `input` como string ou matriz de strings.
+- `/v1/models` returns OpenClaw agent targets, not raw provider catalogs.
+- `openclaw/default` is always present so one stable id works across environments.
+- Backend provider/model overrides belong in `x-openclaw-model`, not the OpenAI `model` field.
+- `/v1/embeddings` supports `input` as a string or array of strings.
 
-## Relacionado
+## Related
 
 - [Configuration reference](/pt-BR/gateway/configuration-reference)
 - [OpenAI](/pt-BR/providers/openai)

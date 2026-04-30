@@ -1,40 +1,29 @@
 ---
 read_when:
-    - Você está conectando o transporte de QA sintético a uma execução de teste local ou de CI
-    - Você precisa da superfície de configuração do qa-channel empacotado
+    - Você está integrando o transporte sintético de QA a uma execução de teste local ou de CI
+    - Você precisa da superfície de configuração do qa-channel incluída
     - Você está iterando na automação de QA de ponta a ponta
-summary: Plugin de canal da classe Slack sintético para cenários determinísticos de QA do OpenClaw
+summary: Plugin sintético de canal do tipo Slack para cenários determinísticos de QA do OpenClaw
 title: Canal de QA
 x-i18n:
-    generated_at: "2026-04-24T05:42:21Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:37:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
+    source_hash: e1de1f52da1a14c845cf2a536ddc6f36ab52ed6364f68d9ece32ce272e2a2f96
     source_path: channels/qa-channel.md
-    workflow: 15
+    workflow: 16
 ---
 
-`qa-channel` é um transporte de mensagens sintético empacotado para QA automatizado do OpenClaw.
+`qa-channel` é um transporte sintético de mensagens incluído para QA automatizado do OpenClaw. Ele não é um canal de produção — existe para exercitar o mesmo limite de Plugin de canal usado por transportes reais, mantendo o estado determinístico e totalmente inspecionável.
 
-Não é um canal de produção. Ele existe para exercitar o mesmo limite de Plugin de canal
-usado por transportes reais, mantendo o estado determinístico e totalmente
-inspecionável.
+## O que ele faz
 
-## O que ele faz hoje
-
-- Gramática de destino da classe Slack:
+- Gramática de destino de classe Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- Barramento sintético com suporte a HTTP para:
-  - injeção de mensagens de entrada
-  - captura de transcrição de saída
-  - criação de thread
-  - reações
-  - edições
-  - exclusões
-  - ações de busca e leitura
-- Executor de autoverificação empacotado no lado do host que grava um relatório em Markdown
+- Barramento sintético baseado em HTTP para injeção de mensagens de entrada, captura de transcrições de saída, criação de threads, reações, edições, exclusões e ações de busca/leitura.
+- Executor de autoverificação no lado do host que grava um relatório Markdown em `.artifacts/qa-e2e/`.
 
 ## Configuração
 
@@ -52,69 +41,53 @@ inspecionável.
 }
 ```
 
-Chaves de conta compatíveis:
+Chaves da conta:
 
-- `baseUrl`
-- `botUserId`
-- `botDisplayName`
-- `pollTimeoutMs`
-- `allowFrom`
-- `defaultTo`
-- `actions.messages`
-- `actions.reactions`
-- `actions.search`
-- `actions.threads`
+- `enabled` — alternância principal para esta conta.
+- `name` — rótulo de exibição opcional.
+- `baseUrl` — URL do barramento sintético.
+- `botUserId` — ID de usuário do bot no estilo Matrix usado na gramática de destino.
+- `botDisplayName` — nome de exibição para mensagens de saída.
+- `pollTimeoutMs` — janela de espera de long-poll. Inteiro entre 100 e 30000.
+- `allowFrom` — lista de permissões de remetentes (IDs de usuário ou `"*"`).
+- `defaultTo` — destino de fallback quando nenhum é fornecido.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — controle de ferramentas por ação.
 
-## Executor
+Chaves de múltiplas contas no nível superior:
 
-Recorte vertical atual:
+- `accounts` — registro de substituições nomeadas por conta, indexadas por ID da conta.
+- `defaultAccount` — ID da conta preferida quando várias estão configuradas.
+
+## Executores
+
+Autoverificação no lado do host (grava um relatório Markdown em `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Agora isso é roteado pelo Plugin `qa-lab` empacotado. Ele inicia o
-barramento de QA no repositório, inicializa o recorte de runtime `qa-channel`
-empacotado, executa uma autoverificação determinística e grava um relatório em Markdown
-em `.artifacts/qa-e2e/`.
+Isso passa pelo `qa-lab`, inicia o barramento de QA dentro do repositório, inicializa a fatia de runtime do `qa-channel` incluído e executa uma autoverificação determinística.
 
-Interface privada de depuração:
-
-```bash
-pnpm qa:lab:up
-```
-
-Esse único comando compila o site de QA, inicia a pilha do Gateway com suporte a Docker + QA Lab
-e imprime a URL do QA Lab. Nesse site, você pode escolher cenários, selecionar
-a lane de modelo, iniciar execuções individuais e acompanhar os resultados ao vivo.
-
-Suíte completa de QA com suporte ao repositório:
+Suíte completa de cenários baseada no repositório:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Isso inicia o depurador privado de QA em uma URL local, separado do
-bundle da Control UI distribuída.
+Executa cenários em paralelo contra a faixa de Gateway de QA. Consulte [Visão geral de QA](/pt-BR/concepts/qa-e2e-automation) para cenários, perfis e modos de provedor.
 
-## Escopo
+Site de QA baseado em Docker (Gateway + interface de depuração do QA Lab em uma única pilha):
 
-O escopo atual é intencionalmente limitado:
+```bash
+pnpm qa:lab:up
+```
 
-- barramento + transporte de Plugin
-- gramática de roteamento com threads
-- ações de mensagem pertencentes ao canal
-- relatórios em Markdown
-- site de QA com suporte a Docker e controles de execução
-
-Trabalhos futuros adicionarão:
-
-- execução de matriz de provedor/modelo
-- descoberta de cenários mais rica
-- orquestração nativa do OpenClaw posteriormente
+Compila o site de QA, inicia a pilha de Gateway + QA Lab baseada em Docker e imprime a URL do QA Lab. A partir daí, você pode escolher cenários, selecionar a faixa do modelo, iniciar execuções individuais e acompanhar os resultados ao vivo. O depurador do QA Lab é separado do pacote de Control UI enviado.
 
 ## Relacionado
 
+- [Visão geral de QA](/pt-BR/concepts/qa-e2e-automation) — pilha geral, adaptadores de transporte, autoria de cenários
+- [QA do Matrix](/pt-BR/concepts/qa-matrix) — exemplo de executor de transporte ao vivo que controla um canal real
 - [Pareamento](/pt-BR/channels/pairing)
 - [Grupos](/pt-BR/channels/groups)
 - [Visão geral dos canais](/pt-BR/channels)

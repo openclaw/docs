@@ -1,62 +1,68 @@
 ---
 read_when:
     - Você está implantando o OpenClaw em uma VM na nuvem com Docker
-    - Você precisa do fluxo compartilhado de preparo binário, persistência e atualização
-summary: Etapas compartilhadas de runtime de VM Docker para hosts duradouros do Gateway OpenClaw
-title: Runtime de VM Docker
+    - Você precisa da geração do binário compartilhado, da persistência e do fluxo de atualização
+summary: Etapas de tempo de execução da VM Docker compartilhada para hosts do OpenClaw Gateway de longa duração
+title: Ambiente de execução da VM Docker
 x-i18n:
-    generated_at: "2026-04-24T05:57:02Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:54:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
+    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
     source_path: install/docker-vm-runtime.md
-    workflow: 15
+    workflow: 16
 ---
 
-Etapas compartilhadas de runtime para instalações Docker baseadas em VM, como GCP, Hetzner e provedores VPS semelhantes.
+Etapas compartilhadas de tempo de execução para instalações Docker baseadas em VM, como GCP, Hetzner e provedores VPS semelhantes.
 
-## Prepare os binários necessários na imagem
+## Inclua os binários necessários na imagem
 
 Instalar binários dentro de um contêiner em execução é uma armadilha.
-Tudo o que for instalado em runtime será perdido no reinício.
+Qualquer coisa instalada em tempo de execução será perdida na reinicialização.
 
-Todos os binários externos exigidos por Skills devem ser instalados no momento de build da imagem.
+Todos os binários externos exigidos por Skills devem ser instalados no momento da construção da imagem.
 
 Os exemplos abaixo mostram apenas três binários comuns:
 
-- `gog` para acesso ao Gmail
+- `gog` (de `gogcli`) para acesso ao Gmail
 - `goplaces` para Google Places
 - `wacli` para WhatsApp
 
-Esses são exemplos, não uma lista completa.
+Estes são exemplos, não uma lista completa.
 Você pode instalar quantos binários forem necessários usando o mesmo padrão.
 
-Se você adicionar novas Skills depois que dependam de binários adicionais, deverá:
+Se você adicionar novas Skills posteriormente que dependam de binários adicionais, deverá:
 
 1. Atualizar o Dockerfile
-2. Recompilar a imagem
+2. Reconstruir a imagem
 3. Reiniciar os contêineres
 
-**Exemplo de Dockerfile**
+**Dockerfile de exemplo**
 
 ```dockerfile
 FROM node:24-bookworm
 
 RUN apt-get update && apt-get install -y socat && rm -rf /var/lib/apt/lists/*
 
-# Exemplo de binário 1: CLI do Gmail
-RUN curl -L https://github.com/steipete/gog/releases/latest/download/gog_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/gog
+# Example binary 1: Gmail CLI (gogcli — installs as `gog`)
+# Copy the current Linux asset URL from https://github.com/steipete/gogcli/releases
+RUN curl -L https://github.com/steipete/gogcli/releases/latest/download/gogcli_linux_amd64.tar.gz \
+  | tar -xzO gog > /usr/local/bin/gog; \
+  chmod +x /usr/local/bin/gog
 
-# Exemplo de binário 2: CLI do Google Places
-RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/goplaces
+# Example binary 2: Google Places CLI
+# Copy the current Linux asset URL from https://github.com/steipete/goplaces/releases
+RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_linux_amd64.tar.gz \
+  | tar -xzO goplaces > /usr/local/bin/goplaces; \
+  chmod +x /usr/local/bin/goplaces
 
-# Exemplo de binário 3: CLI do WhatsApp
-RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/wacli
+# Example binary 3: WhatsApp CLI
+# Copy the current Linux asset URL from https://github.com/steipete/wacli/releases
+RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli-linux-amd64.tar.gz \
+  | tar -xzO wacli > /usr/local/bin/wacli; \
+  chmod +x /usr/local/bin/wacli
 
-# Adicione mais binários abaixo usando o mesmo padrão
+# Add more binaries below using the same pattern
 
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -77,10 +83,10 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-As URLs de download acima são para x86_64 (amd64). Para VMs baseadas em ARM (por exemplo Hetzner ARM, GCP Tau T2A), substitua as URLs de download pelas variantes ARM64 apropriadas na página de releases de cada ferramenta.
+As URLs acima são exemplos. Para VMs baseadas em ARM, escolha os assets `arm64`. Para builds reprodutíveis, fixe URLs de versões de lançamento.
 </Note>
 
-## Build e inicialização
+## Compile e inicie
 
 ```bash
 docker compose build
@@ -118,23 +124,24 @@ Saída esperada:
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## O que persiste e onde
+## O que persiste onde
 
-O OpenClaw é executado no Docker, mas o Docker não é a fonte de verdade.
-Todo estado de longa duração deve sobreviver a reinicializações, recompilações e reboots.
+O OpenClaw roda no Docker, mas o Docker não é a fonte da verdade.
+Todo estado de longa duração deve sobreviver a reinicializações, reconstruções e reinícios.
 
-| Componente         | Localização                       | Mecanismo de persistência | Observações                                                  |
-| ------------------ | --------------------------------- | ------------------------- | ------------------------------------------------------------ |
-| Configuração do Gateway | `/home/node/.openclaw/`       | Montagem de volume do host | Inclui `openclaw.json`, `.env`                               |
-| Perfis de autenticação de modelo | `/home/node/.openclaw/agents/` | Montagem de volume do host | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chaves de API) |
-| Configurações de Skill | `/home/node/.openclaw/skills/` | Montagem de volume do host | Estado no nível da Skill                                     |
-| Workspace do agente | `/home/node/.openclaw/workspace/` | Montagem de volume do host | Código e artefatos do agente                                 |
-| Sessão do WhatsApp | `/home/node/.openclaw/`           | Montagem de volume do host | Preserva o login por QR                                      |
-| Keyring do Gmail   | `/home/node/.openclaw/`           | Volume do host + senha     | Exige `GOG_KEYRING_PASSWORD`                                 |
-| Binários externos  | `/usr/local/bin/`                 | Imagem Docker              | Devem ser preparados no momento do build                     |
-| Runtime do Node    | Sistema de arquivos do contêiner  | Imagem Docker              | Recompilado a cada build da imagem                           |
-| Pacotes do SO      | Sistema de arquivos do contêiner  | Imagem Docker              | Não instale em runtime                                       |
-| Contêiner Docker   | Efêmero                           | Reinicializável            | Seguro de destruir                                           |
+| Componente             | Localização                              | Mecanismo de persistência | Observações                                                    |
+| ---------------------- | ---------------------------------------- | ------------------------- | -------------------------------------------------------------- |
+| Configuração do Gateway | `/home/node/.openclaw/`                  | Montagem de volume do host | Inclui `openclaw.json`, `.env`                                 |
+| Perfis de autenticação de modelo | `/home/node/.openclaw/agents/`           | Montagem de volume do host | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chaves de API) |
+| Configurações de Skills | `/home/node/.openclaw/skills/`           | Montagem de volume do host | Estado no nível de Skills                                      |
+| Workspace do agente     | `/home/node/.openclaw/workspace/`        | Montagem de volume do host | Código e artefatos do agente                                   |
+| Sessão do WhatsApp      | `/home/node/.openclaw/`                  | Montagem de volume do host | Preserva o login por QR                                        |
+| Keyring do Gmail        | `/home/node/.openclaw/`                  | Volume do host + senha     | Requer `GOG_KEYRING_PASSWORD`                                  |
+| Dependências de runtime do Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | Volume nomeado do Docker   | Dependências de plugins empacotados geradas e espelhos de runtime |
+| Binários externos       | `/usr/local/bin/`                        | Imagem Docker              | Devem ser incluídos no momento do build                        |
+| Runtime do Node         | Sistema de arquivos do contêiner         | Imagem Docker              | Reconstruído a cada build de imagem                            |
+| Pacotes do SO           | Sistema de arquivos do contêiner         | Imagem Docker              | Não instale em tempo de execução                               |
+| Contêiner Docker        | Efêmero                                  | Reiniciável                | Seguro destruir                                                |
 
 ## Atualizações
 
@@ -146,7 +153,7 @@ docker compose build
 docker compose up -d
 ```
 
-## Relacionado
+## Relacionados
 
 - [Docker](/pt-BR/install/docker)
 - [Podman](/pt-BR/install/podman)

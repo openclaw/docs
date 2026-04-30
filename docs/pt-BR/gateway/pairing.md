@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Implementando aprovações de emparelhamento de Node sem interface do macOS
-    - Adicionando fluxos de CLI para aprovar Nodes remotos
-    - Estendendo o protocolo do Gateway com gerenciamento de Nodes
-summary: Emparelhamento de Node controlado pelo Gateway (Opção B) para iOS e outros Nodes remotos
-title: Emparelhamento controlado pelo Gateway
+    - Implementando aprovações de pareamento de Node sem a interface do macOS
+    - Adicionando fluxos de CLI para aprovar nós remotos
+    - Estendendo o protocolo do Gateway com gerenciamento de Node
+summary: Pareamento de Node gerenciado pelo Gateway (Opção B) para iOS e outros Nodes remotos
+title: Pareamento gerenciado pelo Gateway
 x-i18n:
-    generated_at: "2026-04-26T11:29:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:50:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 436391f7576b7285733eb4a8283b73d7b4c52f22b227dd915c09313cfec776bd
+    source_hash: 5c662b8f5c1bb44cfc306d42ae19ba1c8bc36e0d96130d730b322ee07e02cad8
     source_path: gateway/pairing.md
-    workflow: 15
+    workflow: 16
 ---
 
-No emparelhamento controlado pelo Gateway, o **Gateway** é a fonte de verdade sobre quais Nodes
-têm permissão para entrar. UIs (app do macOS, clientes futuros) são apenas frontends que
+No emparelhamento controlado pelo Gateway, o **Gateway** é a fonte da verdade para quais Nodes
+têm permissão para entrar. UIs (app para macOS, clientes futuros) são apenas frontends que
 aprovam ou rejeitam solicitações pendentes.
 
 **Importante:** Nodes WS usam **emparelhamento de dispositivo** (função `node`) durante `connect`.
-`node.pair.*` é um armazenamento de emparelhamento separado e **não** controla o handshake de WS.
-Somente clientes que chamam explicitamente `node.pair.*` usam esse fluxo.
+`node.pair.*` é um armazenamento de emparelhamento separado e **não** bloqueia o handshake WS.
+Somente clientes que chamam explicitamente `node.pair.*` usam este fluxo.
 
 ## Conceitos
 
@@ -31,27 +31,28 @@ Somente clientes que chamam explicitamente `node.pair.*` usam esse fluxo.
 
 ## Como o emparelhamento funciona
 
-1. Um Node se conecta ao Gateway WS e solicita emparelhamento.
+1. Um Node se conecta ao WS do Gateway e solicita emparelhamento.
 2. O Gateway armazena uma **solicitação pendente** e emite `node.pair.requested`.
 3. Você aprova ou rejeita a solicitação (CLI ou UI).
-4. Na aprovação, o Gateway emite um **novo token** (tokens são rotacionados em novo emparelhamento).
+4. Na aprovação, o Gateway emite um **novo token** (tokens são rotacionados ao reemparelhar).
 5. O Node se reconecta usando o token e agora está “emparelhado”.
 
 Solicitações pendentes expiram automaticamente após **5 minutos**.
 
-## Fluxo de CLI (compatível com modo headless)
+## Fluxo de trabalho da CLI (adequado para headless)
 
 ```bash
 openclaw nodes pending
 openclaw nodes approve <requestId>
 openclaw nodes reject <requestId>
 openclaw nodes status
+openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name "Living Room iPad"
 ```
 
 `nodes status` mostra Nodes emparelhados/conectados e suas capacidades.
 
-## Superfície de API (protocolo do gateway)
+## Superfície da API (protocolo do Gateway)
 
 Eventos:
 
@@ -64,41 +65,40 @@ Métodos:
 - `node.pair.list` — lista Nodes pendentes + emparelhados (`operator.pairing`).
 - `node.pair.approve` — aprova uma solicitação pendente (emite token).
 - `node.pair.reject` — rejeita uma solicitação pendente.
+- `node.pair.remove` — remove uma entrada obsoleta de Node emparelhado.
 - `node.pair.verify` — verifica `{ nodeId, token }`.
 
-Observações:
+Notas:
 
 - `node.pair.request` é idempotente por Node: chamadas repetidas retornam a mesma
   solicitação pendente.
 - Solicitações repetidas para o mesmo Node pendente também atualizam os metadados
-  armazenados do Node e o snapshot mais recente dos comandos declarados permitidos por allowlist para visibilidade do operador.
-- A aprovação **sempre** gera um token novo; nenhum token é retornado por
+  armazenados do Node e o snapshot mais recente dos comandos declarados permitidos para visibilidade do operador.
+- A aprovação **sempre** gera um token novo; nenhum token jamais é retornado por
   `node.pair.request`.
-- Solicitações podem incluir `silent: true` como dica para fluxos de aprovação automática.
+- Solicitações podem incluir `silent: true` como uma dica para fluxos de aprovação automática.
 - `node.pair.approve` usa os comandos declarados da solicitação pendente para impor
-  escopos extras de aprovação:
-  - solicitação sem comando: `operator.pairing`
-  - solicitação de comando sem exec: `operator.pairing` + `operator.write`
+  escopos de aprovação extras:
+  - solicitação sem comandos: `operator.pairing`
+  - solicitação de comando não exec: `operator.pairing` + `operator.write`
   - solicitação `system.run` / `system.run.prepare` / `system.which`:
     `operator.pairing` + `operator.admin`
 
-Importante:
+<Warning>
+O emparelhamento de Node é um fluxo de confiança e identidade, além da emissão de token. Ele **não** fixa a superfície de comandos ativa do Node por Node.
 
-- O emparelhamento de Node é um fluxo de confiança/identidade mais emissão de token.
-- Ele **não** fixa a superfície de comandos ativa do Node por Node.
-- Os comandos ativos do Node vêm do que o Node declara ao conectar, depois que a
-  política global de comandos de Node do gateway (`gateway.nodes.allowCommands` /
-  `denyCommands`) é aplicada.
-- A política allow/ask por Node de `system.run` fica no próprio Node em
-  `exec.approvals.node.*`, não no registro de emparelhamento.
+- Comandos ativos do Node vêm do que o Node declara ao se conectar depois que a política global de comandos de Node do Gateway (`gateway.nodes.allowCommands` e `denyCommands`) é aplicada.
+- A política de permitir e perguntar de `system.run` por Node fica no Node em `exec.approvals.node.*`, não no registro de emparelhamento.
+
+</Warning>
 
 ## Controle de comandos de Node (2026.3.31+)
 
 <Warning>
-**Mudança incompatível:** A partir de `2026.3.31`, comandos de Node ficam desabilitados até que o emparelhamento do Node seja aprovado. Somente o emparelhamento de dispositivo não é mais suficiente para expor comandos declarados do Node.
+**Alteração incompatível:** A partir de `2026.3.31`, comandos de Node ficam desabilitados até que o emparelhamento de Node seja aprovado. O emparelhamento de dispositivo sozinho não é mais suficiente para expor comandos de Node declarados.
 </Warning>
 
-Quando um Node se conecta pela primeira vez, o emparelhamento é solicitado automaticamente. Até que a solicitação de emparelhamento seja aprovada, todos os comandos de Node pendentes desse Node são filtrados e não serão executados. Quando a confiança é estabelecida por meio da aprovação do emparelhamento, os comandos declarados do Node ficam disponíveis, sujeitos à política normal de comandos.
+Quando um Node se conecta pela primeira vez, o emparelhamento é solicitado automaticamente. Até que a solicitação de emparelhamento seja aprovada, todos os comandos pendentes desse Node são filtrados e não serão executados. Depois que a confiança é estabelecida por meio da aprovação do emparelhamento, os comandos declarados do Node ficam disponíveis sujeitos à política normal de comandos.
 
 Isso significa:
 
@@ -108,25 +108,30 @@ Isso significa:
 ## Limites de confiança de eventos de Node (2026.3.31+)
 
 <Warning>
-**Mudança incompatível:** Execuções originadas por Node agora permanecem em uma superfície confiável reduzida.
+**Alteração incompatível:** Execuções originadas por Node agora permanecem em uma superfície confiável reduzida.
 </Warning>
 
-Resumos originados por Node e eventos de sessão relacionados são restritos à superfície confiável pretendida. Fluxos acionados por notificação ou pelo Node que antes dependiam de acesso mais amplo a ferramentas de host ou sessão podem precisar de ajuste. Esse hardening garante que eventos de Node não possam escalar para acesso a ferramentas em nível de host além do que o limite de confiança do Node permite.
+Resumos originados por Node e eventos de sessão relacionados são restritos à superfície confiável pretendida. Fluxos acionados por notificações ou por Node que antes dependiam de acesso mais amplo a ferramentas de host ou sessão podem precisar de ajuste. Esse reforço garante que eventos de Node não possam escalar para acesso a ferramentas em nível de host além do que o limite de confiança do Node permite.
 
-## Aprovação automática (app do macOS)
+Atualizações duráveis de presença de Node seguem o mesmo limite de identidade. O evento `node.presence.alive` é
+aceito apenas de sessões autenticadas de dispositivo Node e atualiza metadados de emparelhamento somente quando a
+identidade dispositivo/Node já está emparelhada. Valores `client.id` autodeclarados não são suficientes para gravar
+estado de última visualização.
 
-O app do macOS pode opcionalmente tentar uma **aprovação silenciosa** quando:
+## Aprovação automática (app para macOS)
+
+O app para macOS pode opcionalmente tentar uma **aprovação silenciosa** quando:
 
 - a solicitação está marcada como `silent`, e
-- o app consegue verificar uma conexão SSH com o host do gateway usando o mesmo usuário.
+- o app consegue verificar uma conexão SSH ao host do Gateway usando o mesmo usuário.
 
-Se a aprovação silenciosa falhar, ele volta ao prompt normal “Aprovar/Rejeitar”.
+Se a aprovação silenciosa falhar, ele recorre ao prompt normal “Aprovar/Rejeitar”.
 
 ## Aprovação automática de dispositivo por CIDR confiável
 
-O emparelhamento de dispositivo WS para `role: node` continua manual por padrão. Para redes privadas
-de Node em que o Gateway já confia no caminho de rede, operadores podem fazer
-opt-in com CIDRs explícitos ou IPs exatos:
+O emparelhamento de dispositivo WS para `role: node` permanece manual por padrão. Para redes
+privadas de Nodes em que o Gateway já confia no caminho de rede, operadores podem
+optar por CIDRs explícitos ou IPs exatos:
 
 ```json5
 {
@@ -143,42 +148,42 @@ opt-in com CIDRs explícitos ou IPs exatos:
 Limite de segurança:
 
 - Desabilitado quando `gateway.nodes.pairing.autoApproveCidrs` não está definido.
-- Não existe modo geral de aprovação automática para LAN ou rede privada.
-- Somente emparelhamento inicial de dispositivo `role: node` sem escopos solicitados é elegível.
-- Clientes operator, browser, Control UI e WebChat continuam manuais.
-- Upgrades de função, escopo, metadados e chave pública continuam manuais.
-- Caminhos de header de proxy confiável em loopback no mesmo host não são elegíveis porque esse
+- Não existe modo de aprovação automática geral para LAN ou rede privada.
+- Somente emparelhamento novo de dispositivo `role: node` sem escopos solicitados é elegível.
+- Clientes operador, navegador, Control UI e WebChat permanecem manuais.
+- Atualizações de função, escopo, metadados e chave pública permanecem manuais.
+- Caminhos de cabeçalho de proxy confiável por loopback no mesmo host não são elegíveis porque esse
   caminho pode ser falsificado por chamadores locais.
 
-## Aprovação automática de upgrade de metadados
+## Aprovação automática de atualização de metadados
 
-Quando um dispositivo já emparelhado se reconecta com apenas mudanças não sensíveis
-de metadados (por exemplo, nome de exibição ou dicas de plataforma do cliente), o OpenClaw trata
-isso como um `metadata-upgrade`. A aprovação automática silenciosa é restrita: ela se aplica apenas
-a reconexões locais confiáveis que não sejam de navegador e que já tenham provado posse de credenciais locais
-ou compartilhadas, incluindo reconexões de app nativo no mesmo host após alterações de metadados de versão do SO.
-Clientes browser/Control UI e clientes remotos ainda usam o fluxo explícito de reaprovação.
-Upgrades de escopo (read para write/admin) e mudanças de chave pública **não** são elegíveis para aprovação automática de upgrade de metadados —
-eles continuam como solicitações explícitas de reaprovação.
+Quando um dispositivo já emparelhado se reconecta apenas com alterações de metadados não sensíveis
+(por exemplo, nome de exibição ou dicas de plataforma do cliente), o OpenClaw trata
+isso como um `metadata-upgrade`. A aprovação automática silenciosa é restrita: aplica-se apenas
+a reconexões locais confiáveis que não sejam de navegador e que já provaram posse de credenciais locais
+ou compartilhadas, incluindo reconexões de app nativo no mesmo host após alterações de metadados de versão do SO. Clientes navegador/Control UI e clientes remotos ainda
+usam o fluxo explícito de reaprovação. Atualizações de escopo (leitura para gravação/admin) e
+alterações de chave pública **não** são elegíveis para aprovação automática de metadata-upgrade —
+elas permanecem como solicitações explícitas de reaprovação.
 
 ## Auxiliares de emparelhamento por QR
 
-`/pair qr` renderiza a carga de emparelhamento como mídia estruturada para que clientes móveis e
+`/pair qr` renderiza a carga útil de emparelhamento como mídia estruturada para que clientes móveis e
 de navegador possam escaneá-la diretamente.
 
-Excluir um dispositivo também remove quaisquer solicitações pendentes obsoletas de emparelhamento para esse
-id de dispositivo, para que `nodes pending` não mostre linhas órfãs após uma revogação.
+Excluir um dispositivo também limpa quaisquer solicitações pendentes de emparelhamento obsoletas para esse
+id de dispositivo, de modo que `nodes pending` não mostra linhas órfãs após uma revogação.
 
-## Localidade e headers encaminhados
+## Localidade e cabeçalhos encaminhados
 
 O emparelhamento do Gateway trata uma conexão como loopback somente quando tanto o socket bruto
-quanto qualquer evidência de proxy upstream concordam. Se uma solicitação chegar em loopback mas
-carregar headers `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`
-que apontam para uma origem não local, essa evidência de header encaminhado desqualifica
-a alegação de localidade em loopback. O caminho de emparelhamento então requer aprovação explícita
-em vez de tratar silenciosamente a solicitação como uma conexão no mesmo host. Consulte
+quanto qualquer evidência de proxy upstream concordam. Se uma solicitação chega por loopback, mas
+carrega cabeçalhos `X-Forwarded-For` / `X-Forwarded-Host` / `X-Forwarded-Proto`
+que apontam para uma origem não local, essa evidência de cabeçalho encaminhado desqualifica
+a alegação de localidade loopback. O caminho de emparelhamento então requer aprovação explícita
+em vez de tratar silenciosamente a solicitação como uma conexão do mesmo host. Consulte
 [Autenticação de proxy confiável](/pt-BR/gateway/trusted-proxy-auth) para a regra equivalente em
-autenticação operator.
+autenticação de operador.
 
 ## Armazenamento (local, privado)
 
@@ -187,21 +192,21 @@ O estado de emparelhamento é armazenado no diretório de estado do Gateway (pad
 - `~/.openclaw/nodes/paired.json`
 - `~/.openclaw/nodes/pending.json`
 
-Se você substituir `OPENCLAW_STATE_DIR`, a pasta `nodes/` será movida junto com ele.
+Se você substituir `OPENCLAW_STATE_DIR`, a pasta `nodes/` se move junto.
 
-Observações de segurança:
+Notas de segurança:
 
 - Tokens são segredos; trate `paired.json` como sensível.
-- Rotacionar um token requer nova aprovação (ou exclusão da entrada do Node).
+- Rotacionar um token requer reaprovação (ou excluir a entrada do Node).
 
 ## Comportamento do transporte
 
 - O transporte é **sem estado**; ele não armazena associação.
-- Se o Gateway estiver offline ou o emparelhamento estiver desabilitado, Nodes não poderão emparelhar.
-- Se o Gateway estiver em modo remoto, o emparelhamento ainda acontece no armazenamento do Gateway remoto.
+- Se o Gateway estiver offline ou o emparelhamento estiver desabilitado, os Nodes não conseguem emparelhar.
+- Se o Gateway estiver em modo remoto, o emparelhamento ainda acontece contra o armazenamento do Gateway remoto.
 
-## Relacionado
+## Relacionados
 
-- [Emparelhamento de canal](/pt-BR/channels/pairing)
+- [Emparelhamento de canais](/pt-BR/channels/pairing)
 - [Nodes](/pt-BR/nodes)
 - [CLI de dispositivos](/pt-BR/cli/devices)

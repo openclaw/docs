@@ -1,37 +1,36 @@
 ---
 read_when: Connecting the macOS app to a remote gateway over SSH
-summary: Configuração de túnel SSH para o OpenClaw.app conectar-se a um gateway remoto
-title: Configuração de gateway remoto
+summary: Configuração de túnel SSH para conectar o OpenClaw.app a um Gateway remoto
+title: Configuração do Gateway remoto
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:53:13Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: cc5df551839db87a36be7c1b29023c687c418d13337075490436335a8bb1635d
-  source_path: gateway/remote-gateway-readme.md
-  workflow: 15
+    generated_at: "2026-04-30T09:50:40Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: fccc75e672bf3295c335fc4d2f610e9cbb3f1882edd12ffb9d009120291bd2d9
+    source_path: gateway/remote-gateway-readme.md
+    workflow: 16
 ---
 
-> Este conteúdo foi incorporado a [Acesso remoto](/pt-BR/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Consulte essa página para ver o guia atual.
+> Este conteúdo foi incorporado a [Acesso remoto](/pt-BR/gateway/remote#macos-persistent-ssh-tunnel-via-launchagent). Consulte essa página para o guia atual.
 
 # Executando o OpenClaw.app com um Gateway remoto
 
-O OpenClaw.app usa tunelamento SSH para se conectar a um gateway remoto. Este guia mostra como configurá-lo.
+O OpenClaw.app usa tunelamento SSH para se conectar a um Gateway remoto. Este guia mostra como configurá-lo.
 
 ## Visão geral
 
 ```mermaid
 flowchart TB
-    subgraph Client["Máquina cliente"]
+    subgraph Client["Client Machine"]
         direction TB
         A["OpenClaw.app"]
-        B["ws://127.0.0.1:18789\n(porta local)"]
-        T["Túnel SSH"]
+        B["ws://127.0.0.1:18789\n(local port)"]
+        T["SSH Tunnel"]
 
         A --> B
         B --> T
     end
-    subgraph Remote["Máquina remota"]
+    subgraph Remote["Remote Machine"]
         direction TB
         C["Gateway WebSocket"]
         D["ws://127.0.0.1:18789"]
@@ -43,21 +42,21 @@ flowchart TB
 
 ## Configuração rápida
 
-### Etapa 1: adicionar configuração SSH
+### Etapa 1: Adicionar configuração SSH
 
 Edite `~/.ssh/config` e adicione:
 
 ```ssh
 Host remote-gateway
-    HostName <REMOTE_IP>          # ex.: 172.27.187.184
-    User <REMOTE_USER>            # ex.: jefferson
+    HostName <REMOTE_IP>          # e.g., 172.27.187.184
+    User <REMOTE_USER>            # e.g., jefferson
     LocalForward 18789 127.0.0.1:18789
     IdentityFile ~/.ssh/id_rsa
 ```
 
 Substitua `<REMOTE_IP>` e `<REMOTE_USER>` pelos seus valores.
 
-### Etapa 2: copiar a chave SSH
+### Etapa 2: Copiar a chave SSH
 
 Copie sua chave pública para a máquina remota (digite a senha uma vez):
 
@@ -65,34 +64,34 @@ Copie sua chave pública para a máquina remota (digite a senha uma vez):
 ssh-copy-id -i ~/.ssh/id_rsa <REMOTE_USER>@<REMOTE_IP>
 ```
 
-### Etapa 3: configurar a autenticação do Gateway remoto
+### Etapa 3: Configurar a autenticação do Gateway remoto
 
 ```bash
 openclaw config set gateway.remote.token "<your-token>"
 ```
 
-Use `gateway.remote.password` em vez disso se o seu gateway remoto usar autenticação por senha.
-`OPENCLAW_GATEWAY_TOKEN` continua válido como substituição no nível do shell, mas a
-configuração durável do cliente remoto é `gateway.remote.token` / `gateway.remote.password`.
+Use `gateway.remote.password` como alternativa se o seu Gateway remoto usar autenticação por senha.
+`OPENCLAW_GATEWAY_TOKEN` ainda é válido como uma substituição no nível do shell, mas a configuração durável
+do cliente remoto é `gateway.remote.token` / `gateway.remote.password`.
 
-### Etapa 4: iniciar o túnel SSH
+### Etapa 4: Iniciar o túnel SSH
 
 ```bash
 ssh -N remote-gateway &
 ```
 
-### Etapa 5: reiniciar o OpenClaw.app
+### Etapa 5: Reiniciar o OpenClaw.app
 
 ```bash
-# Feche o OpenClaw.app (⌘Q) e abra novamente:
+# Quit OpenClaw.app (⌘Q), then reopen:
 open /path/to/OpenClaw.app
 ```
 
-O aplicativo agora se conectará ao gateway remoto por meio do túnel SSH.
+O aplicativo agora se conectará ao Gateway remoto por meio do túnel SSH.
 
 ---
 
-## Iniciar o túnel automaticamente no login
+## Iniciar o túnel automaticamente ao fazer login
 
 Para que o túnel SSH seja iniciado automaticamente quando você fizer login, crie um Launch Agent.
 
@@ -127,32 +126,32 @@ Salve isto como `~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist`:
 launchctl bootstrap gui/$UID ~/Library/LaunchAgents/ai.openclaw.ssh-tunnel.plist
 ```
 
-Agora o túnel irá:
+O túnel agora irá:
 
 - Iniciar automaticamente quando você fizer login
 - Reiniciar se falhar
-- Permanecer em execução em segundo plano
+- Continuar em execução em segundo plano
 
-Observação legada: remova qualquer LaunchAgent `com.openclaw.ssh-tunnel` remanescente, se existir.
+Observação legada: remova qualquer LaunchAgent `com.openclaw.ssh-tunnel` remanescente, se presente.
 
 ---
 
 ## Solução de problemas
 
-**Verificar se o túnel está em execução:**
+**Verifique se o túnel está em execução:**
 
 ```bash
 ps aux | grep "ssh -N remote-gateway" | grep -v grep
 lsof -i :18789
 ```
 
-**Reiniciar o túnel:**
+**Reinicie o túnel:**
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.ssh-tunnel
 ```
 
-**Parar o túnel:**
+**Pare o túnel:**
 
 ```bash
 launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
@@ -162,7 +161,7 @@ launchctl bootout gui/$UID/ai.openclaw.ssh-tunnel
 
 ## Como funciona
 
-| Component                            | O que faz                                                    |
+| Componente                           | O que ele faz                                                |
 | ------------------------------------ | ------------------------------------------------------------ |
 | `LocalForward 18789 127.0.0.1:18789` | Encaminha a porta local 18789 para a porta remota 18789      |
 | `ssh -N`                             | SSH sem executar comandos remotos (apenas encaminhamento de porta) |

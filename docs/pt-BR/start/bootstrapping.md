@@ -1,50 +1,56 @@
 ---
 read_when:
-    - Entender o que acontece na primeira execução do agente
-    - Explicar onde ficam os arquivos de inicialização
-    - Depurar a configuração de identidade do onboarding
+    - Entendendo o que acontece na primeira execução do agente
+    - Explicando onde ficam os arquivos de inicialização
+    - Depuração da configuração de identidade na integração inicial
 sidebarTitle: Bootstrapping
-summary: Ritual de inicialização do agente que prepara o workspace e os arquivos de identidade
+summary: Ritual de inicialização do agente que popula o espaço de trabalho e os arquivos de identidade
 title: Inicialização do agente
 x-i18n:
-    generated_at: "2026-04-25T13:55:52Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:09:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 435eb2a14707623903ab7873774cc8d4489b960719cf6a525d547983f8338027
+    source_hash: de829f82016ae1e4dcd7714502ca8d11755556fed18b985a7e2bada4149a2d46
     source_path: start/bootstrapping.md
-    workflow: 15
+    workflow: 16
 ---
 
-A inicialização é o ritual de **primeira execução** que prepara um workspace do agente e
-coleta detalhes de identidade. Ela acontece após o onboarding, quando o agente é iniciado
+A inicialização é o ritual de **primeira execução** que prepara um espaço de trabalho do agente e
+coleta detalhes de identidade. Ela acontece após a integração, quando o agente é iniciado
 pela primeira vez.
 
 ## O que a inicialização faz
 
-Na primeira execução do agente, o OpenClaw inicializa o workspace (padrão
+Na primeira execução do agente, o OpenClaw inicializa o espaço de trabalho (padrão
 `~/.openclaw/workspace`):
 
-- Prepara `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`.
+- Preenche `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`.
 - Executa um breve ritual de perguntas e respostas (uma pergunta por vez).
 - Grava identidade + preferências em `IDENTITY.md`, `USER.md`, `SOUL.md`.
-- Remove `BOOTSTRAP.md` ao terminar para que isso seja executado apenas uma vez.
+- Remove `BOOTSTRAP.md` ao finalizar, para que seja executado apenas uma vez.
 
-## Ignorar a inicialização
+Para execuções de modelos embutidos/locais, o OpenClaw mantém `BOOTSTRAP.md` fora do
+contexto de sistema privilegiado. Na primeira execução interativa principal, ele ainda passa
+o conteúdo do arquivo no prompt do usuário para que modelos que não chamam de forma confiável a ferramenta
+`read` possam concluir o ritual. Se a execução atual não puder acessar com segurança o
+espaço de trabalho, o agente recebe uma nota de inicialização limitada em vez de uma saudação genérica.
 
-Para ignorar isso em um workspace já preparado, execute `openclaw onboard --skip-bootstrap`.
+## Como pular a inicialização
+
+Para pular isso em um espaço de trabalho pré-preenchido, execute `openclaw onboard --skip-bootstrap`.
 
 ## Onde ela é executada
 
-A inicialização sempre é executada no **host do gateway**. Se o app do macOS se conectar a
-um Gateway remoto, o workspace e os arquivos de inicialização ficarão nessa máquina
+A inicialização sempre é executada no **host do Gateway**. Se o aplicativo macOS se conectar a
+um Gateway remoto, o espaço de trabalho e os arquivos de inicialização ficam nessa máquina
 remota.
 
 <Note>
-Quando o Gateway é executado em outra máquina, edite os arquivos do workspace no host do gateway
+Quando o Gateway é executado em outra máquina, edite os arquivos do espaço de trabalho no host do gateway
 (por exemplo, `user@gateway-host:~/.openclaw/workspace`).
 </Note>
 
-## Documentação relacionada
+## Documentos relacionados
 
-- Onboarding do app macOS: [Onboarding](/pt-BR/start/onboarding)
-- Layout do workspace: [Workspace do agente](/pt-BR/concepts/agent-workspace)
+- Integração do aplicativo macOS: [Integração](/pt-BR/start/onboarding)
+- Layout do espaço de trabalho: [Espaço de trabalho do agente](/pt-BR/concepts/agent-workspace)

@@ -1,84 +1,184 @@
 ---
 read_when:
-    - Você quer trabalhos agendados e acionamentos programados
-    - Você está depurando a execução e os logs do Cron
+    - Você quer tarefas agendadas e despertares
+    - Você está depurando a execução do Cron e os logs
 summary: Referência da CLI para `openclaw cron` (agendar e executar trabalhos em segundo plano)
 title: Cron
 x-i18n:
-    generated_at: "2026-04-26T11:25:36Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 55cadcf73550367d399b7ca78e842f12a8113f2ec8749f59dadf2bbb5f8417ae
+    source_hash: 03d79e0e2c71f673c900b84eb2beeab705662c1d016e1d0567323c8da73060bb
     source_path: cli/cron.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw cron`
 
-Gerencie trabalhos Cron para o agendador do Gateway.
+Gerencie tarefas Cron para o agendador do Gateway.
 
-Relacionado:
+<Tip>
+Execute `openclaw cron --help` para ver toda a superfície de comandos. Consulte [Tarefas Cron](/pt-BR/automation/cron-jobs) para o guia conceitual.
+</Tip>
 
-- Trabalhos Cron: [trabalhos Cron](/pt-BR/automation/cron-jobs)
+## Sessões
 
-Dica: execute `openclaw cron --help` para ver toda a superfície de comandos.
+`--session` aceita `main`, `isolated`, `current` ou `session:<id>`.
 
-Observação: `openclaw cron list` e `openclaw cron show <job-id>` exibem uma prévia da rota de entrega resolvida. Para `channel: "last"`, a prévia mostra se a rota foi resolvida a partir da sessão principal/atual ou se falhará de forma fechada.
+<AccordionGroup>
+  <Accordion title="Chaves de sessão">
+    - `main` vincula à sessão principal do agente.
+    - `isolated` cria uma transcrição nova e um id de sessão para cada execução.
+    - `current` vincula à sessão ativa no momento da criação.
+    - `session:<id>` fixa uma chave de sessão persistente explícita.
 
-Observação: trabalhos isolados criados com `cron add` usam `--announce` por padrão para entrega. Use `--no-deliver` para manter a saída interna. `--deliver` continua como um alias obsoleto para `--announce`.
+  </Accordion>
+  <Accordion title="Semântica de sessão isolada">
+    Execuções isoladas redefinem o contexto de conversa ambiente. Roteamento de canal e grupo, política de envio/fila, elevação, origem e vinculação de runtime ACP são redefinidos para a nova execução. Preferências seguras e substituições explícitas de modelo ou autenticação selecionadas pelo usuário podem ser mantidas entre execuções.
+  </Accordion>
+</AccordionGroup>
 
-Observação: a entrega de chat do Cron isolado é compartilhada. `--announce` é a entrega de fallback do executor para a resposta final; `--no-deliver` desativa esse fallback, mas não remove a ferramenta `message` do agente quando uma rota de chat está disponível.
+## Entrega
 
-Observação: trabalhos de execução única (`--at`) são excluídos após sucesso por padrão. Use `--keep-after-run` para mantê-los.
+`openclaw cron list` e `openclaw cron show <job-id>` pré-visualizam a rota de entrega resolvida. Para `channel: "last"`, a prévia mostra se a rota foi resolvida a partir da sessão principal ou atual, ou se falhará de forma fechada.
 
-Observação: `--session` oferece suporte a `main`, `isolated`, `current` e `session:<id>`. Use `current` para vincular à sessão ativa no momento da criação, ou `session:<id>` para uma chave de sessão persistente explícita.
+<Note>
+Tarefas `cron add` isoladas usam entrega `--announce` por padrão. Use `--no-deliver` para manter a saída interna. `--deliver` permanece como um alias obsoleto para `--announce`.
+</Note>
 
-Observação: `--session isolated` cria um novo transcript/id de sessão para cada execução. Preferências seguras e substituições explícitas de modelo/autenticação selecionadas pelo usuário podem ser mantidas, mas o contexto ambiente da conversa não: roteamento de canal/grupo, política de envio/fila, elevação, origem e binding de runtime do ACP são redefinidos para a nova execução isolada.
+### Propriedade da entrega
 
-Observação: para trabalhos CLI de execução única, datas/horas `--at` sem offset são tratadas como UTC, a menos que você também passe `--tz <iana>`, que interpreta esse horário local na timezone informada.
+A entrega de chat Cron isolada é compartilhada entre o agente e o executor:
 
-Observação: trabalhos recorrentes agora usam recuo exponencial de repetição após erros consecutivos (30s → 1m → 5m → 15m → 60m) e então retornam ao agendamento normal após a próxima execução bem-sucedida.
+- O agente pode enviar diretamente usando a ferramenta `message` quando uma rota de chat está disponível.
+- `announce` entrega como fallback a resposta final somente quando o agente não enviou diretamente ao destino resolvido.
+- `webhook` publica a carga finalizada em uma URL.
+- `none` desativa a entrega de fallback do executor.
 
-Observação: `openclaw cron run` agora retorna assim que a execução manual é colocada na fila para execução. Respostas bem-sucedidas incluem `{ ok: true, enqueued: true, runId }`; use `openclaw cron runs --id <job-id>` para acompanhar o resultado final.
+`--announce` é a entrega de fallback do executor para a resposta final. `--no-deliver` desativa esse fallback, mas não remove a ferramenta `message` do agente quando uma rota de chat está disponível.
 
-Observação: `openclaw cron run <job-id>` força a execução por padrão. Use `--due` para manter o comportamento antigo de "executar apenas se estiver vencido".
+Lembretes criados a partir de um chat ativo preservam o destino de entrega do chat ao vivo para entrega de anúncio por fallback. Chaves de sessão internas podem estar em minúsculas; não as use como fonte da verdade para IDs de provedores sensíveis a maiúsculas e minúsculas, como IDs de salas Matrix.
 
-Observação: execuções isoladas do Cron suprimem respostas obsoletas que sejam apenas de confirmação. Se o primeiro resultado for apenas uma atualização de status intermediária e nenhuma execução descendente de subagente for responsável pela resposta final, o Cron repete o prompt uma vez para obter o resultado real antes da entrega.
+### Entrega de falhas
 
-Observação: se uma execução isolada do Cron retornar apenas o token silencioso (`NO_REPLY` / `no_reply`), o Cron suprime tanto a entrega direta de saída quanto o caminho de resumo em fila de fallback, então nada é publicado de volta no chat.
+Notificações de falha são resolvidas nesta ordem:
 
-Observação: `cron add|edit --model ...` usa esse modelo permitido selecionado para o trabalho. Se o modelo não for permitido, o Cron avisa e faz fallback para a seleção de modelo do agente/padrão do trabalho. Cadeias de fallback configuradas ainda se aplicam, mas uma simples substituição de modelo sem uma lista explícita de fallback por trabalho não acrescenta mais o modelo primário do agente como um alvo extra oculto de repetição.
+1. `delivery.failureDestination` na tarefa.
+2. `cron.failureDestination` global.
+3. O destino de anúncio primário da tarefa (quando nenhum destino de falha explícito é definido).
 
-Observação: a precedência de modelo no Cron isolado é, primeiro, substituição de hook do Gmail, depois `--model` por trabalho, depois qualquer substituição de modelo de sessão-Cron armazenada e selecionada pelo usuário, e então a seleção normal do agente/padrão.
+<Note>
+Tarefas da sessão principal só podem usar `delivery.failureDestination` quando o modo de entrega primário é `webhook`. Tarefas isoladas o aceitam em todos os modos.
+</Note>
 
-Observação: o modo rápido do Cron isolado segue a seleção de modelo ativo resolvida. A configuração do modelo `params.fastMode` se aplica por padrão, mas uma substituição `fastMode` de sessão armazenada ainda tem prioridade sobre a configuração.
+Observação: execuções Cron isoladas tratam falhas de agente no nível da execução como erros de tarefa mesmo quando
+nenhuma carga de resposta é produzida, então falhas de modelo/provedor ainda incrementam contadores
+de erro e acionam notificações de falha.
 
-Observação: se uma execução isolada lançar `LiveSessionModelSwitchError`, o Cron persiste o provider/model alternado (e a substituição do perfil de autenticação alterado, quando presente) para a execução ativa antes de tentar novamente. O loop externo de repetição é limitado a 2 novas tentativas de troca após a tentativa inicial, e então aborta em vez de entrar em loop infinito.
+## Agendamento
 
-Observação: notificações de falha usam `delivery.failureDestination` primeiro, depois `cron.failureDestination` global e, por fim, fazem fallback para o alvo principal de anúncio do trabalho quando nenhum destino explícito de falha estiver configurado.
+### Tarefas de execução única
 
-Observação: retenção/poda é controlada na configuração:
+`--at <datetime>` agenda uma execução única. Datetimes sem deslocamento são tratados como UTC, a menos que você também passe `--tz <iana>`, que interpreta o horário de relógio na timezone fornecida.
 
-- `cron.sessionRetention` (padrão `24h`) remove sessões concluídas de execuções isoladas.
-- `cron.runLog.maxBytes` + `cron.runLog.keepLines` podam `~/.openclaw/cron/runs/<jobId>.jsonl`.
+<Note>
+Tarefas de execução única são excluídas após o sucesso por padrão. Use `--keep-after-run` para preservá-las.
+</Note>
 
-Observação de upgrade: se você tem trabalhos Cron antigos de antes do formato atual de entrega/armazenamento, execute `openclaw doctor --fix`. O Doctor agora normaliza campos legados do Cron (`jobId`, `schedule.cron`, campos de entrega de nível superior incluindo `threadId` legado, aliases de entrega `provider` do payload) e migra trabalhos simples de fallback de Webhook com `notify: true` para entrega explícita por Webhook quando `cron.webhook` está configurado.
+### Tarefas recorrentes
+
+Tarefas recorrentes usam backoff de nova tentativa exponencial após erros consecutivos: 30s, 1m, 5m, 15m, 60m. O agendamento volta ao normal após a próxima execução bem-sucedida.
+
+Execuções ignoradas são rastreadas separadamente de erros de execução. Elas não afetam o backoff de nova tentativa, mas `openclaw cron edit <job-id> --failure-alert-include-skipped` pode optar por incluir notificações repetidas de execuções ignoradas nos alertas de falha.
+
+Para tarefas isoladas que miram um provedor de modelo local configurado, o Cron executa uma pré-verificação leve do provedor antes de iniciar o turno do agente. Provedores `api: "ollama"` de loopback, rede privada e `.local` são sondados em `/api/tags`; provedores locais compatíveis com OpenAI, como vLLM, SGLang e LM Studio, são sondados em `/models`. Se o endpoint estiver inacessível, a execução é registrada como `skipped` e tentada novamente em um agendamento posterior; endpoints inativos correspondentes são armazenados em cache por 5 minutos para evitar que muitas tarefas sobrecarreguem o mesmo servidor local.
+
+Observação: definições de tarefas Cron ficam em `jobs.json`, enquanto o estado de runtime pendente fica em `jobs-state.json`. Se `jobs.json` for editado externamente, o Gateway recarrega agendamentos alterados e limpa slots pendentes obsoletos; reescritas apenas de formatação não limpam o slot pendente.
+
+### Execuções manuais
+
+`openclaw cron run` retorna assim que a execução manual é enfileirada. Respostas bem-sucedidas incluem `{ ok: true, enqueued: true, runId }`. Use `openclaw cron runs --id <job-id>` para acompanhar o resultado eventual.
+
+<Note>
+`openclaw cron run <job-id>` força a execução por padrão. Use `--due` para manter o comportamento antigo de "executar somente se estiver vencida".
+</Note>
+
+## Modelos
+
+`cron add|edit --model <ref>` seleciona um modelo permitido para a tarefa.
+
+<Warning>
+Se o modelo não for permitido ou não puder ser resolvido, o Cron falhará a execução com um erro de validação explícito em vez de usar como fallback o agente da tarefa ou a seleção de modelo padrão.
+</Warning>
+
+Cron `--model` é um **primário da tarefa**, não uma substituição de `/model` da sessão de chat. Isso significa:
+
+- Fallbacks de modelo configurados ainda se aplicam quando o modelo selecionado da tarefa falha.
+- `fallbacks` por carga de tarefa substitui a lista de fallback configurada quando presente.
+- Uma lista de fallback vazia por tarefa (`fallbacks: []` na carga/API da tarefa) torna a execução Cron estrita.
+- Quando uma tarefa tem `--model`, mas nenhuma lista de fallback está configurada, o OpenClaw passa uma substituição de fallback vazia explícita para que o primário do agente não seja anexado como um destino oculto de nova tentativa.
+
+### Precedência de modelo do Cron isolado
+
+O Cron isolado resolve o modelo ativo nesta ordem:
+
+1. Substituição de gancho do Gmail.
+2. `--model` por tarefa.
+3. Substituição de modelo de sessão Cron armazenada (quando o usuário selecionou uma).
+4. Seleção de agente ou modelo padrão.
+
+### Modo rápido
+
+O modo rápido do Cron isolado segue a seleção de modelo ao vivo resolvida. A configuração de modelo `params.fastMode` se aplica por padrão, mas uma substituição de sessão `fastMode` armazenada ainda vence a configuração.
+
+### Novas tentativas de troca de modelo ao vivo
+
+Se uma execução isolada lançar `LiveSessionModelSwitchError`, o Cron persiste o provedor e o modelo trocados (e a substituição de perfil de autenticação trocada quando presente) para a execução ativa antes de tentar novamente. O loop externo de novas tentativas é limitado a duas novas tentativas de troca após a tentativa inicial, então aborta em vez de entrar em loop para sempre.
+
+## Saída da execução e recusas
+
+### Supressão de confirmação obsoleta
+
+Turnos Cron isolados suprimem respostas obsoletas que são apenas confirmação. Se o primeiro resultado for apenas uma atualização de status intermediária e nenhuma execução de subagente descendente for responsável pela resposta eventual, o Cron solicita novamente uma vez o resultado real antes da entrega.
+
+### Supressão de token silencioso
+
+Se uma execução Cron isolada retornar somente o token silencioso (`NO_REPLY` ou `no_reply`), o Cron suprime tanto a entrega direta de saída quanto o caminho de resumo enfileirado de fallback, então nada é publicado de volta no chat.
+
+### Recusas estruturadas
+
+Execuções Cron isoladas preferem metadados estruturados de recusa de execução da execução embutida e, em seguida, usam como fallback marcadores de recusa conhecidos na saída final, como `SYSTEM_RUN_DENIED`, `INVALID_REQUEST` e frases de recusa de vinculação de aprovação.
+
+`cron list` e o histórico de execuções exibem o motivo da recusa em vez de relatar um comando bloqueado como `ok`.
+
+## Retenção
+
+Retenção e poda são controladas na configuração:
+
+- `cron.sessionRetention` (padrão `24h`) poda sessões concluídas de execução isolada.
+- `cron.runLog.maxBytes` e `cron.runLog.keepLines` podam `~/.openclaw/cron/runs/<jobId>.jsonl`.
+
+## Migração de tarefas antigas
+
+<Note>
+Se você tem tarefas Cron de antes do formato atual de entrega e armazenamento, execute `openclaw doctor --fix`. O Doctor normaliza campos Cron legados (`jobId`, `schedule.cron`, campos de entrega de nível superior incluindo `threadId` legado, aliases de entrega `provider` da carga) e migra tarefas simples de fallback de webhook `notify: true` para entrega de webhook explícita quando `cron.webhook` está configurado.
+</Note>
 
 ## Edições comuns
 
-Atualize configurações de entrega sem mudar a mensagem:
+Atualize configurações de entrega sem alterar a mensagem:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "123456789"
 ```
 
-Desative a entrega para um trabalho isolado:
+Desative a entrega para uma tarefa isolada:
 
 ```bash
 openclaw cron edit <job-id> --no-deliver
 ```
 
-Ative contexto de bootstrap leve para um trabalho isolado:
+Ative contexto leve de inicialização para uma tarefa isolada:
 
 ```bash
 openclaw cron edit <job-id> --light-context
@@ -90,7 +190,13 @@ Anuncie em um canal específico:
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
 ```
 
-Crie um trabalho isolado com contexto de bootstrap leve:
+Anuncie em um tópico de fórum do Telegram:
+
+```bash
+openclaw cron edit <job-id> --announce --channel telegram --to "-1001234567890" --thread-id 42
+```
+
+Crie uma tarefa isolada com contexto leve de inicialização:
 
 ```bash
 openclaw cron add \
@@ -102,17 +208,11 @@ openclaw cron add \
   --no-deliver
 ```
 
-`--light-context` se aplica apenas a trabalhos isolados de turno de agente. Para execuções Cron, o modo leve mantém o contexto de bootstrap vazio em vez de injetar o conjunto completo de bootstrap do workspace.
-
-Observação sobre propriedade da entrega:
-
-- A entrega de chat do Cron isolado é compartilhada. O agente pode enviar diretamente com a ferramenta `message` quando uma rota de chat estiver disponível.
-- `announce` entrega por fallback a resposta final apenas quando o agente não enviou diretamente para o alvo resolvido. `webhook` publica o payload finalizado em uma URL. `none` desativa a entrega de fallback do executor.
-- Lembretes criados a partir de um chat ativo preservam o alvo ativo de entrega do chat para entrega de anúncio de fallback. Chaves de sessão internas podem estar em minúsculas; não as use como fonte de verdade para IDs de provider sensíveis a maiúsculas/minúsculas, como IDs de sala do Matrix.
+`--light-context` aplica-se somente a tarefas de turno de agente isoladas. Para execuções Cron, o modo leve mantém o contexto de inicialização vazio em vez de injetar o conjunto completo de inicialização do workspace.
 
 ## Comandos comuns de administração
 
-Execução manual:
+Execução manual e inspeção:
 
 ```bash
 openclaw cron list
@@ -122,9 +222,9 @@ openclaw cron run <job-id> --due
 openclaw cron runs --id <job-id> --limit 50
 ```
 
-Entradas de `cron runs` incluem diagnósticos de entrega com o alvo Cron pretendido, o alvo resolvido, envios da ferramenta de mensagem, uso de fallback e estado entregue.
+Entradas de `cron runs` incluem diagnósticos de entrega com o destino Cron pretendido, o destino resolvido, envios pela ferramenta de mensagem, uso de fallback e estado entregue.
 
-Redefinição de alvo de agente/sessão:
+Redirecionamento de agente e sessão:
 
 ```bash
 openclaw cron edit <job-id> --agent ops
@@ -132,6 +232,8 @@ openclaw cron edit <job-id> --clear-agent
 openclaw cron edit <job-id> --session current
 openclaw cron edit <job-id> --session "session:daily-brief"
 ```
+
+`openclaw cron add` avisa quando `--agent` é omitido em tarefas de turno de agente e usa como fallback o agente padrão (`main`). Passe `--agent <id>` no momento da criação para fixar um agente específico.
 
 Ajustes de entrega:
 
@@ -141,12 +243,6 @@ openclaw cron edit <job-id> --best-effort-deliver
 openclaw cron edit <job-id> --no-best-effort-deliver
 openclaw cron edit <job-id> --no-deliver
 ```
-
-Observação sobre entrega de falha:
-
-- `delivery.failureDestination` é compatível com trabalhos isolados.
-- Trabalhos da sessão principal só podem usar `delivery.failureDestination` quando o modo principal de entrega é `webhook`.
-- Se você não definir nenhum destino de falha e o trabalho já anunciar em um canal, as notificações de falha reutilizam esse mesmo alvo de anúncio.
 
 ## Relacionado
 

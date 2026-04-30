@@ -3,119 +3,119 @@ read_when:
     - Você quer entender quais ferramentas o OpenClaw oferece
     - Você precisa configurar, permitir ou negar ferramentas
     - Você está decidindo entre ferramentas integradas, Skills e plugins
-summary: 'Visão geral de ferramentas e plugins do OpenClaw: o que o agente pode fazer e como estendê-lo'
+summary: 'Visão geral das ferramentas e dos plugins do OpenClaw: o que o agente pode fazer e como estendê-lo'
 title: Ferramentas e plugins
 x-i18n:
-    generated_at: "2026-04-26T11:38:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:11:53Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 47cc0e2de5688328f7c11fcf86c0a2262b488c277f48416f584f5c7913f750c4
+    source_hash: 62cde740188c224af03b4425c7f6dfca9a12f95603066db5925724fc6a07dcf0
     source_path: tools/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Tudo o que o agente faz além de gerar texto acontece por meio de **ferramentas**.
-As ferramentas são como o agente lê arquivos, executa comandos, navega na web, envia
+Tudo que o agente faz além de gerar texto acontece por meio de **ferramentas**.
+Ferramentas são como o agente lê arquivos, executa comandos, navega na web, envia
 mensagens e interage com dispositivos.
 
 ## Ferramentas, Skills e plugins
 
-O OpenClaw tem três camadas que funcionam juntas:
+O OpenClaw tem três camadas que trabalham juntas:
 
 <Steps>
   <Step title="Ferramentas são o que o agente chama">
     Uma ferramenta é uma função tipada que o agente pode invocar (por exemplo, `exec`, `browser`,
     `web_search`, `message`). O OpenClaw inclui um conjunto de **ferramentas integradas** e
-    plugins podem registrar outras adicionais.
+    plugins podem registrar outras.
 
-    O agente vê as ferramentas como definições estruturadas de função enviadas para a API do modelo.
+    O agente vê ferramentas como definições de função estruturadas enviadas para a API do modelo.
 
   </Step>
 
   <Step title="Skills ensinam ao agente quando e como">
-    Uma Skill é um arquivo markdown (`SKILL.md`) injetado no prompt do sistema.
+    Uma skill é um arquivo markdown (`SKILL.md`) injetado no prompt do sistema.
     Skills dão ao agente contexto, restrições e orientação passo a passo para
     usar ferramentas de forma eficaz. Skills ficam no seu workspace, em pastas compartilhadas
-    ou vêm dentro de plugins.
+    ou são incluídas dentro de plugins.
 
-    [Referência de Skills](/pt-BR/tools/skills) | [Criando Skills](/pt-BR/tools/creating-skills)
+    [Referência de Skills](/pt-BR/tools/skills) | [Criando skills](/pt-BR/tools/creating-skills)
 
   </Step>
 
   <Step title="Plugins empacotam tudo junto">
-    Um plugin é um pacote que pode registrar qualquer combinação de recursos:
-    canais, provedores de modelo, ferramentas, Skills, fala, transcrição em tempo real,
+    Um plugin é um pacote que pode registrar qualquer combinação de capacidades:
+    canais, provedores de modelo, ferramentas, skills, fala, transcrição em tempo real,
     voz em tempo real, compreensão de mídia, geração de imagem, geração de vídeo,
-    busca na web, pesquisa na web e mais. Alguns plugins são **core** (incluídos com
+    busca web, pesquisa web e mais. Alguns plugins são **centrais** (incluídos com
     o OpenClaw), outros são **externos** (publicados no npm pela comunidade).
 
-    [Instalar e configurar plugins](/pt-BR/tools/plugin) | [Criar o seu](/pt-BR/plugins/building-plugins)
+    [Instale e configure plugins](/pt-BR/tools/plugin) | [Crie o seu](/pt-BR/plugins/building-plugins)
 
   </Step>
 </Steps>
 
 ## Ferramentas integradas
 
-Estas ferramentas vêm com o OpenClaw e estão disponíveis sem instalar nenhum plugin:
+Estas ferramentas são incluídas com o OpenClaw e estão disponíveis sem instalar nenhum plugin:
 
-| Ferramenta                                 | O que ela faz                                                        | Página                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | Executa comandos de shell, gerencia processos em segundo plano       | [Exec](/pt-BR/tools/exec), [Aprovações do Exec](/pt-BR/tools/exec-approvals) |
-| `code_execution`                           | Executa análise remota em Python em sandbox                          | [Code Execution](/pt-BR/tools/code-execution)                      |
-| `browser`                                  | Controla um navegador Chromium (navegar, clicar, screenshot)         | [Browser](/pt-BR/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | Pesquisa na web, pesquisa posts no X, busca conteúdo de páginas      | [Web](/pt-BR/tools/web), [Web Fetch](/pt-BR/tools/web-fetch)             |
-| `read` / `write` / `edit`                  | E/S de arquivos no workspace                                         |                                                              |
-| `apply_patch`                              | Patches de arquivo com vários hunks                                  | [Apply Patch](/pt-BR/tools/apply-patch)                            |
-| `message`                                  | Envia mensagens em todos os canais                                   | [Agent Send](/pt-BR/tools/agent-send)                              |
-| `canvas`                                   | Controla o Canvas do Node (present, eval, snapshot)                  |                                                              |
-| `nodes`                                    | Descobre e direciona dispositivos pareados                           |                                                              |
-| `cron` / `gateway`                         | Gerencia trabalhos agendados; inspeciona, corrige, reinicia ou atualiza o Gateway |                                                              |
-| `image` / `image_generate`                 | Analisa ou gera imagens                                              | [Geração de imagem](/pt-BR/tools/image-generation)                 |
-| `music_generate`                           | Gera faixas musicais                                                 | [Geração de música](/pt-BR/tools/music-generation)                 |
-| `video_generate`                           | Gera vídeos                                                          | [Geração de vídeo](/pt-BR/tools/video-generation)                  |
-| `tts`                                      | Conversão pontual de texto para fala                                 | [TTS](/pt-BR/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Gerenciamento de sessão, status e orquestração de subagentes         | [Subagentes](/pt-BR/tools/subagents)                               |
-| `session_status`                           | Leitura leve no estilo `/status` e substituição do modelo da sessão  | [Ferramentas de sessão](/pt-BR/concepts/session-tool)              |
+| Ferramenta                                | O que faz                                                             | Página                                                       |
+| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `exec` / `process`                         | Executa comandos shell, gerencia processos em segundo plano           | [Exec](/pt-BR/tools/exec), [Aprovações de Exec](/pt-BR/tools/exec-approvals) |
+| `code_execution`                           | Executa análise Python remota em sandbox                              | [Execução de Código](/pt-BR/tools/code-execution)                  |
+| `browser`                                  | Controla um navegador Chromium (navegar, clicar, capturar tela)       | [Navegador](/pt-BR/tools/browser)                                  |
+| `web_search` / `x_search` / `web_fetch`    | Pesquisa na web, pesquisa posts do X, busca conteúdo de páginas       | [Web](/pt-BR/tools/web), [Busca Web](/pt-BR/tools/web-fetch)             |
+| `read` / `write` / `edit`                  | E/S de arquivos no workspace                                          |                                                              |
+| `apply_patch`                              | Patches de arquivo com múltiplos hunks                                | [Aplicar Patch](/pt-BR/tools/apply-patch)                          |
+| `message`                                  | Envia mensagens por todos os canais                                   | [Envio do Agente](/pt-BR/tools/agent-send)                         |
+| `canvas`                                   | Controla Canvas de Node (apresentar, avaliar, snapshot)               |                                                              |
+| `nodes`                                    | Descobre e direciona dispositivos pareados                            |                                                              |
+| `cron` / `gateway`                         | Gerencia tarefas agendadas; inspeciona, aplica patch, reinicia ou atualiza o Gateway |                                                              |
+| `image` / `image_generate`                 | Analisa ou gera imagens                                               | [Geração de Imagem](/pt-BR/tools/image-generation)                 |
+| `music_generate`                           | Gera faixas de música                                                 | [Geração de Música](/pt-BR/tools/music-generation)                 |
+| `video_generate`                           | Gera vídeos                                                           | [Geração de Vídeo](/pt-BR/tools/video-generation)                  |
+| `tts`                                      | Conversão pontual de texto em fala                                    | [TTS](/pt-BR/tools/tts)                                            |
+| `sessions_*` / `subagents` / `agents_list` | Gerenciamento de sessões, status e orquestração de subagentes         | [Subagentes](/pt-BR/tools/subagents)                               |
+| `session_status`                           | Retorno leve no estilo `/status` e substituição de modelo da sessão   | [Ferramentas de Sessão](/pt-BR/concepts/session-tool)              |
 
-Para trabalho com imagens, use `image` para análise e `image_generate` para geração ou edição. Se você usar `openai/*`, `google/*`, `fal/*` ou outro provedor de imagem não padrão, configure primeiro a autenticação/chave de API desse provedor.
+Para trabalho com imagens, use `image` para análise e `image_generate` para geração ou edição. Se você direcionar para `openai/*`, `google/*`, `fal/*` ou outro provedor de imagem não padrão, configure primeiro a autenticação/chave de API desse provedor.
 
-Para trabalho com música, use `music_generate`. Se você usar `google/*`, `minimax/*` ou outro provedor de música não padrão, configure primeiro a autenticação/chave de API desse provedor.
+Para trabalho com música, use `music_generate`. Se você direcionar para `google/*`, `minimax/*` ou outro provedor de música não padrão, configure primeiro a autenticação/chave de API desse provedor.
 
-Para trabalho com vídeo, use `video_generate`. Se você usar `qwen/*` ou outro provedor de vídeo não padrão, configure primeiro a autenticação/chave de API desse provedor.
+Para trabalho com vídeo, use `video_generate`. Se você direcionar para `qwen/*` ou outro provedor de vídeo não padrão, configure primeiro a autenticação/chave de API desse provedor.
 
-Para geração de áudio orientada por fluxo de trabalho, use `music_generate` quando um plugin como
-ComfyUI o registrar. Isso é separado de `tts`, que é texto para fala.
+Para geração de áudio orientada por workflow, use `music_generate` quando um plugin como
+ComfyUI o registrar. Isso é separado de `tts`, que é texto em fala.
 
-`session_status` é a ferramenta leve de status/leitura no grupo de sessões.
-Ela responde perguntas no estilo `/status` sobre a sessão atual e pode
+`session_status` é a ferramenta leve de status/retorno no grupo de sessões.
+Ela responde a perguntas no estilo `/status` sobre a sessão atual e pode
 opcionalmente definir uma substituição de modelo por sessão; `model=default` limpa essa
-substituição. Assim como `/status`, ela pode preencher contadores esparsos de token/cache e o
-rótulo do modelo de runtime ativo a partir da entrada de uso mais recente da transcrição.
+substituição. Como `/status`, ela pode preencher retrospectivamente contadores esparsos de tokens/cache e o
+rótulo do modelo de runtime ativo a partir da entrada mais recente de uso do transcript.
 
-`gateway` é a ferramenta de runtime apenas para o proprietário para operações do Gateway:
+`gateway` é a ferramenta de runtime exclusiva do proprietário para operações de Gateway:
 
-- `config.schema.lookup` para uma subárvore de configuração com escopo de caminho antes de edições
-- `config.get` para o snapshot atual da configuração + hash
+- `config.schema.lookup` para uma subárvore de configuração delimitada por caminho antes de edições
+- `config.get` para o snapshot + hash da configuração atual
 - `config.patch` para atualizações parciais de configuração com reinicialização
-- `config.apply` apenas para substituição completa da configuração
+- `config.apply` apenas para substituição completa de configuração
 - `update.run` para autoatualização explícita + reinicialização
 
 Para alterações parciais, prefira `config.schema.lookup` e depois `config.patch`. Use
-`config.apply` apenas quando você pretender substituir toda a configuração.
-Para documentação mais ampla de configuração, leia [Configuration](/pt-BR/gateway/configuration) e
-[Configuration reference](/pt-BR/gateway/configuration-reference).
+`config.apply` apenas quando você pretende substituir a configuração inteira.
+Para documentação de configuração mais ampla, leia [Configuração](/pt-BR/gateway/configuration) e
+[Referência de configuração](/pt-BR/gateway/configuration-reference).
 A ferramenta também se recusa a alterar `tools.exec.ask` ou `tools.exec.security`;
-aliases legados `tools.bash.*` são normalizados para os mesmos caminhos protegidos de exec.
+aliases legados `tools.bash.*` são normalizados para os mesmos caminhos exec protegidos.
 
 ### Ferramentas fornecidas por plugins
 
 Plugins podem registrar ferramentas adicionais. Alguns exemplos:
 
-- [Diffs](/pt-BR/tools/diffs) — visualizador e renderizador de diff
-- [LLM Task](/pt-BR/tools/llm-task) — etapa de LLM somente JSON para saída estruturada
-- [Lobster](/pt-BR/tools/lobster) — runtime de fluxo de trabalho tipado com aprovações retomáveis
-- [Geração de música](/pt-BR/tools/music-generation) — ferramenta compartilhada `music_generate` com provedores baseados em fluxo de trabalho
-- [OpenProse](/pt-BR/prose) — orquestração de fluxo de trabalho markdown-first
+- [Diffs](/pt-BR/tools/diffs) — visualizador e renderizador de diffs
+- [LLM Task](/pt-BR/tools/llm-task) — etapa LLM somente JSON para saída estruturada
+- [Lobster](/pt-BR/tools/lobster) — runtime de workflow tipado com aprovações retomáveis
+- [Geração de Música](/pt-BR/tools/music-generation) — ferramenta `music_generate` compartilhada com provedores baseados em workflow
+- [OpenProse](/pt-BR/prose) — orquestração de workflow com markdown em primeiro lugar
 - [Tokenjuice](/pt-BR/tools/tokenjuice) — compacta resultados ruidosos das ferramentas `exec` e `bash`
 
 ## Configuração de ferramentas
@@ -123,7 +123,7 @@ Plugins podem registrar ferramentas adicionais. Alguns exemplos:
 ### Listas de permissão e negação
 
 Controle quais ferramentas o agente pode chamar por meio de `tools.allow` / `tools.deny` na
-configuração. A negação sempre tem prioridade sobre a permissão.
+configuração. Negação sempre prevalece sobre permissão.
 
 ```json5
 {
@@ -134,41 +134,60 @@ configuração. A negação sempre tem prioridade sobre a permissão.
 }
 ```
 
-O OpenClaw falha de forma fechada quando uma lista de permissão explícita é resolvida sem ferramentas chamáveis.
+O OpenClaw falha fechado quando uma allowlist explícita não resolve para nenhuma ferramenta chamável.
 Por exemplo, `tools.allow: ["query_db"]` só funciona se um plugin carregado realmente
-registrar `query_db`. Se nenhuma ferramenta integrada, de plugin ou MCP integrado corresponder à
-lista de permissão, a execução para antes da chamada do modelo em vez de continuar como
-uma execução somente de texto que poderia alucinar resultados de ferramentas.
+registrar `query_db`. Se nenhuma ferramenta integrada, plugin ou MCP empacotada corresponder à
+allowlist, a execução para antes da chamada ao modelo em vez de continuar como uma
+execução somente texto que poderia alucinar resultados de ferramentas.
 
 ### Perfis de ferramentas
 
-`tools.profile` define uma lista de permissão base antes da aplicação de `allow`/`deny`.
+`tools.profile` define uma allowlist base antes de `allow`/`deny` ser aplicado.
 Substituição por agente: `agents.list[].tools.profile`.
 
-| Perfil      | O que inclui                                                                                                                                      |
+| Perfil      | O que inclui                                                                                                                                       |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Sem restrição (igual a não definido)                                                                                                              |
+| `full`      | Base irrestrita para acesso mais amplo de comando/controle; igual a deixar `tools.profile` sem definição                                          |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
 | `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
 | `minimal`   | Apenas `session_status`                                                                                                                           |
 
-`coding` inclui ferramentas leves de web (`web_search`, `web_fetch`, `x_search`)
-mas não a ferramenta completa de controle do navegador. A automação do navegador pode controlar sessões reais e perfis autenticados, então adicione-a explicitamente com
-`tools.alsoAllow: ["browser"]` ou uma substituição por agente em
+<Note>
+`tools.profile: "messaging"` é intencionalmente restrito para agentes focados em canais.
+Ele deixa de fora ferramentas mais amplas de comando/controle, como sistema de arquivos, runtime,
+navegador, canvas, nós, Cron e controle de Gateway. Use `tools.profile: "full"`
+como a base irrestrita para acesso mais amplo de comando/controle e depois reduza o
+acesso com `tools.allow` / `tools.deny` quando necessário.
+</Note>
+
+`coding` inclui ferramentas web leves (`web_search`, `web_fetch`, `x_search`),
+mas não a ferramenta completa de controle de navegador. Automação de navegador pode controlar
+sessões reais e perfis conectados, então adicione-a explicitamente com
+`tools.alsoAllow: ["browser"]` ou por agente com
 `agents.list[].tools.alsoAllow: ["browser"]`.
 
-Os perfis `coding` e `messaging` também permitem ferramentas MCP do bundle configuradas
-sob a chave de plugin `bundle-mcp`. Adicione `tools.deny: ["bundle-mcp"]` quando
+Os perfis `coding` e `messaging` também permitem ferramentas MCP empacotadas configuradas
+sob a chave de plugin `bundle-mcp`. Adicione `tools.deny: ["bundle-mcp"]` quando você
 quiser que um perfil mantenha suas ferramentas integradas normais, mas oculte todas as ferramentas MCP configuradas.
-O perfil `minimal` não inclui ferramentas MCP do bundle.
+O perfil `minimal` não inclui ferramentas MCP empacotadas.
+
+Exemplo (superfície de ferramentas mais ampla por padrão):
+
+```json5
+{
+  tools: {
+    profile: "full",
+  },
+}
+```
 
 ### Grupos de ferramentas
 
-Use abreviações `group:*` em listas de permissão/negação:
+Use atalhos `group:*` em listas de permissão/negação:
 
 | Grupo              | Ferramentas                                                                                               |
 | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` é aceito como alias para `exec`)                                   |
+| `group:runtime`    | exec, process, code_execution (`bash` é aceito como alias para `exec`)                                    |
 | `group:fs`         | read, write, edit, apply_patch                                                                            |
 | `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
 | `group:memory`     | memory_search, memory_get                                                                                 |
@@ -179,19 +198,19 @@ Use abreviações `group:*` em listas de permissão/negação:
 | `group:nodes`      | nodes                                                                                                     |
 | `group:agents`     | agents_list                                                                                               |
 | `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | Todas as ferramentas integradas do OpenClaw (exclui ferramentas de plugin)                               |
+| `group:openclaw`   | Todas as ferramentas integradas do OpenClaw (exclui ferramentas de Plugin)                                |
 
-`sessions_history` retorna uma visão de recuperação limitada e filtrada por segurança. Ela remove
-tags de raciocínio, o scaffolding de `<relevant-memories>`, payloads XML de chamada de ferramenta em texto simples
-(incluindo `<tool_call>...</tool_call>`,
+`sessions_history` retorna uma visualização de recuperação limitada e filtrada por segurança. Ele remove
+tags de raciocínio, estruturas de apoio `<relevant-memories>`, payloads XML
+de chamadas de ferramenta em texto simples (incluindo `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` e blocos truncados de chamada de ferramenta),
-scaffolding rebaixado de chamada de ferramenta, tokens de controle de modelo vazados em ASCII/largura total
-e XML malformado de chamada de ferramenta do MiniMax do texto do assistente, depois aplica
-redação/truncamento e possíveis placeholders de linha superdimensionada em vez de agir
-como um dump bruto da transcrição.
+`<function_calls>...</function_calls>` e blocos de chamadas de ferramenta truncados),
+estruturas de apoio de chamadas de ferramenta rebaixadas, tokens vazados de controle de modelo
+ASCII/largura total e XML de chamada de ferramenta MiniMax malformado do texto do assistente; em seguida, aplica
+redação/truncamento e possíveis placeholders para linhas grandes demais, em vez de atuar
+como um despejo bruto da transcrição.
 
-### Restrições específicas do provedor
+### Restrições específicas por provedor
 
 Use `tools.byProvider` para restringir ferramentas para provedores específicos sem
 alterar os padrões globais:

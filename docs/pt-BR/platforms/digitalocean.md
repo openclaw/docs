@@ -1,136 +1,136 @@
 ---
 read_when:
-    - Configurar o OpenClaw no DigitalOcean
+    - Configurando o OpenClaw na DigitalOcean
     - Procurando hospedagem VPS barata para OpenClaw
-summary: OpenClaw no DigitalOcean (opção simples de VPS paga)
+summary: OpenClaw na DigitalOcean (opção simples de VPS paga)
 title: DigitalOcean (plataforma)
 x-i18n:
-    generated_at: "2026-04-24T06:00:28Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:57:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c9d286f243f38ed910a3229f195be724f9f96481036380d8c8194ff298d39c87
+    source_hash: 13df486b81590d6350f4b33f5460069fee21881631970d5f4ae34f6ce956407e
     source_path: platforms/digitalocean.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw no DigitalOcean
+# OpenClaw na DigitalOcean
 
 ## Objetivo
 
-Executar um Gateway OpenClaw persistente no DigitalOcean por **US$6/mês** (ou US$4/mês com preço reservado).
+Execute um OpenClaw Gateway persistente na DigitalOcean por **US$ 6/mês** (ou US$ 4/mês com preço reservado).
 
-Se você quiser uma opção de US$0/mês e não se importar com ARM + configuração específica do provider, consulte o [guia Oracle Cloud](/pt-BR/install/oracle).
+Se você quiser uma opção de US$ 0/mês e não se importar com ARM + configuração específica do provedor, consulte o [guia da Oracle Cloud](/pt-BR/install/oracle).
 
 ## Comparação de custos (2026)
 
-| Provider     | Plano            | Especificações          | Preço/mês   | Observações                           |
-| ------------ | ---------------- | ----------------------- | ----------- | ------------------------------------- |
-| Oracle Cloud | Always Free ARM  | até 4 OCPU, 24GB RAM    | US$0        | ARM, capacidade limitada / peculiaridades de cadastro |
-| Hetzner      | CX22             | 2 vCPU, 4GB RAM         | €3,79 (~US$4) | Opção paga mais barata               |
-| DigitalOcean | Basic            | 1 vCPU, 1GB RAM         | US$6        | Interface simples, boa documentação   |
-| Vultr        | Cloud Compute    | 1 vCPU, 1GB RAM         | US$6        | Muitas localidades                    |
-| Linode       | Nanode           | 1 vCPU, 1GB RAM         | US$5        | Agora parte da Akamai                 |
+| Provedor     | Plano            | Especificações          | Preço/mês   | Observações                          |
+| ------------ | --------------- | ----------------------- | ----------- | ------------------------------------ |
+| Oracle Cloud | ARM Sempre gratuito | até 4 OCPU, 24 GB de RAM | US$ 0       | ARM, capacidade limitada / peculiaridades no cadastro |
+| Hetzner      | CX22            | 2 vCPU, 4 GB de RAM     | €3,79 (~US$ 4) | Opção paga mais barata               |
+| DigitalOcean | Basic           | 1 vCPU, 1 GB de RAM     | US$ 6       | UI fácil, boa documentação           |
+| Vultr        | Cloud Compute   | 1 vCPU, 1 GB de RAM     | US$ 6       | Muitas localidades                   |
+| Linode       | Nanode          | 1 vCPU, 1 GB de RAM     | US$ 5       | Agora parte da Akamai                |
 
-**Escolhendo um provider:**
+**Escolhendo um provedor:**
 
 - DigitalOcean: UX mais simples + configuração previsível (este guia)
-- Hetzner: boa relação preço/desempenho (consulte [guia Hetzner](/pt-BR/install/hetzner))
-- Oracle Cloud: pode sair por US$0/mês, mas é mais instável e apenas ARM (consulte [guia Oracle](/pt-BR/install/oracle))
+- Hetzner: bom preço/desempenho (consulte o [guia da Hetzner](/pt-BR/install/hetzner))
+- Oracle Cloud: pode ser US$ 0/mês, mas é mais instável e somente ARM (consulte o [guia da Oracle](/pt-BR/install/oracle))
 
 ---
 
 ## Pré-requisitos
 
-- Conta no DigitalOcean ([cadastro com US$200 de crédito grátis](https://m.do.co/c/signup))
+- Conta da DigitalOcean ([cadastre-se com US$ 200 de crédito grátis](https://m.do.co/c/signup))
 - Par de chaves SSH (ou disposição para usar autenticação por senha)
 - ~20 minutos
 
-## 1) Criar um Droplet
+## 1) Crie uma Droplet
 
 <Warning>
-Use uma imagem base limpa (Ubuntu 24.04 LTS). Evite imagens de terceiros do Marketplace com 1 clique, a menos que você tenha revisado os scripts de inicialização e os padrões de firewall.
+Use uma imagem base limpa (Ubuntu 24.04 LTS). Evite imagens de 1 clique de terceiros do Marketplace, a menos que você tenha revisado os scripts de inicialização e os padrões de firewall delas.
 </Warning>
 
-1. Entre no [DigitalOcean](https://cloud.digitalocean.com/)
+1. Entre na [DigitalOcean](https://cloud.digitalocean.com/)
 2. Clique em **Create → Droplets**
 3. Escolha:
-   - **Region:** a mais próxima de você (ou dos seus usuários)
-   - **Image:** Ubuntu 24.04 LTS
-   - **Size:** Basic → Regular → **US$6/mês** (1 vCPU, 1GB RAM, 25GB SSD)
-   - **Authentication:** chave SSH (recomendado) ou senha
+   - **Região:** A mais próxima de você (ou dos seus usuários)
+   - **Imagem:** Ubuntu 24.04 LTS
+   - **Tamanho:** Basic → Regular → **US$ 6/mês** (1 vCPU, 1 GB de RAM, 25 GB SSD)
+   - **Autenticação:** Chave SSH (recomendado) ou senha
 4. Clique em **Create Droplet**
 5. Anote o endereço IP
 
-## 2) Conectar via SSH
+## 2) Conecte via SSH
 
 ```bash
 ssh root@YOUR_DROPLET_IP
 ```
 
-## 3) Instalar o OpenClaw
+## 3) Instale o OpenClaw
 
 ```bash
-# Atualizar o sistema
+# Update system
 apt update && apt upgrade -y
 
-# Instalar Node.js 24
+# Install Node.js 24
 curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 apt install -y nodejs
 
-# Instalar OpenClaw
+# Install OpenClaw
 curl -fsSL https://openclaw.ai/install.sh | bash
 
-# Verificar
+# Verify
 openclaw --version
 ```
 
-## 4) Executar o onboarding
+## 4) Execute o onboarding
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-O assistente vai orientar você em:
+O assistente guiará você por:
 
-- Autenticação de modelo (chaves de API ou OAuth)
+- Autenticação do modelo (chaves de API ou OAuth)
 - Configuração de canais (Telegram, WhatsApp, Discord etc.)
 - Token do Gateway (gerado automaticamente)
 - Instalação do daemon (systemd)
 
-## 5) Verificar o Gateway
+## 5) Verifique o Gateway
 
 ```bash
-# Verificar status
+# Check status
 openclaw status
 
-# Verificar serviço
+# Check service
 systemctl --user status openclaw-gateway.service
 
-# Ver logs
+# View logs
 journalctl --user -u openclaw-gateway.service -f
 ```
 
-## 6) Acessar o Painel
+## 6) Acesse o painel
 
-O gateway faz bind em loopback por padrão. Para acessar a interface do Control:
+O Gateway se vincula ao loopback por padrão. Para acessar a Control UI:
 
-**Opção A: Túnel SSH (recomendado)**
+**Opção A: túnel SSH (recomendado)**
 
 ```bash
-# Da sua máquina local
+# From your local machine
 ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
 
-# Depois abra: http://localhost:18789
+# Then open: http://localhost:18789
 ```
 
 **Opção B: Tailscale Serve (HTTPS, somente loopback)**
 
 ```bash
-# No droplet
+# On the droplet
 curl -fsSL https://tailscale.com/install.sh | sh
 tailscale up
 
-# Configurar Gateway para usar Tailscale Serve
+# Configure Gateway to use Tailscale Serve
 openclaw config set gateway.tailscale.mode serve
 openclaw gateway restart
 ```
@@ -139,10 +139,10 @@ Abra: `https://<magicdns>/`
 
 Observações:
 
-- O Serve mantém o Gateway apenas em loopback e autentica o tráfego da interface do Control/WebSocket via cabeçalhos de identidade do Tailscale (a autenticação sem token pressupõe um host de gateway confiável; APIs HTTP não usam esses cabeçalhos do Tailscale e, em vez disso, seguem o modo normal de autenticação HTTP do gateway).
-- Para exigir credenciais explícitas de segredo compartilhado, defina `gateway.auth.allowTailscale: false` e use `gateway.auth.mode: "token"` ou `"password"`.
+- O Serve mantém o Gateway somente em loopback e autentica o tráfego da Control UI/WebSocket por meio de cabeçalhos de identidade do Tailscale (autenticação sem token presume um host de gateway confiável; APIs HTTP não usam esses cabeçalhos do Tailscale e, em vez disso, seguem o modo normal de autenticação HTTP do gateway).
+- Para exigir credenciais explícitas de segredo compartilhado em vez disso, defina `gateway.auth.allowTailscale: false` e use `gateway.auth.mode: "token"` ou `"password"`.
 
-**Opção C: Bind na tailnet (sem Serve)**
+**Opção C: vínculo à tailnet (sem Serve)**
 
 ```bash
 openclaw config set gateway.bind tailnet
@@ -151,7 +151,7 @@ openclaw gateway restart
 
 Abra: `http://<tailscale-ip>:18789` (token obrigatório).
 
-## 7) Conectar seus canais
+## 7) Conecte seus canais
 
 ### Telegram
 
@@ -164,18 +164,18 @@ openclaw pairing approve telegram <CODE>
 
 ```bash
 openclaw channels login whatsapp
-# Escaneie o QR code
+# Scan QR code
 ```
 
-Consulte [Canais](/pt-BR/channels) para outros providers.
+Consulte [Canais](/pt-BR/channels) para outros provedores.
 
 ---
 
-## Otimizações para 1GB de RAM
+## Otimizações para 1 GB de RAM
 
-O droplet de US$6 tem apenas 1GB de RAM. Para manter tudo funcionando com fluidez:
+A droplet de US$ 6 tem apenas 1 GB de RAM. Para manter tudo funcionando sem problemas:
 
-### Adicionar swap (recomendado)
+### Adicione swap (recomendado)
 
 ```bash
 fallocate -l 2G /swapfile
@@ -185,14 +185,14 @@ swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 ```
 
-### Usar um modelo mais leve
+### Use um modelo mais leve
 
-Se você estiver enfrentando OOMs, considere:
+Se você estiver encontrando OOMs, considere:
 
 - Usar modelos baseados em API (Claude, GPT) em vez de modelos locais
-- Definir `agents.defaults.model.primary` como um modelo menor
+- Definir `agents.defaults.model.primary` para um modelo menor
 
-### Monitorar memória
+### Monitore a memória
 
 ```bash
 free -h
@@ -205,10 +205,10 @@ htop
 
 Todo o estado fica em:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` por agente, estado de canal/provider e dados de sessão
-- `~/.openclaw/workspace/` — workspace (`SOUL.md`, memória etc.)
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` por agente, estado de canais/provedores e dados de sessão
+- `~/.openclaw/workspace/` — workspace (SOUL.md, memória etc.)
 
-Esses dados sobrevivem a reinicializações. Faça backup periodicamente:
+Eles sobrevivem a reinicializações. Faça backup periodicamente:
 
 ```bash
 openclaw backup create
@@ -216,16 +216,16 @@ openclaw backup create
 
 ---
 
-## Alternativa gratuita com Oracle Cloud
+## Alternativa gratuita da Oracle Cloud
 
-O Oracle Cloud oferece instâncias ARM **Always Free** significativamente mais poderosas do que qualquer opção paga aqui — por US$0/mês.
+A Oracle Cloud oferece instâncias ARM **Always Free** que são significativamente mais poderosas do que qualquer opção paga aqui — por US$ 0/mês.
 
-| O que você recebe | Especificações       |
-| ----------------- | -------------------- |
-| **4 OCPUs**       | ARM Ampere A1        |
-| **24GB RAM**      | Mais que suficiente  |
-| **200GB storage** | Volume em bloco      |
-| **Grátis para sempre** | Sem cobranças no cartão |
+| O que você recebe | Especificações         |
+| ----------------- | ---------------------- |
+| **4 OCPUs**       | ARM Ampere A1          |
+| **24 GB de RAM**  | Mais que suficiente    |
+| **200 GB de armazenamento** | Volume em bloco |
+| **Grátis para sempre** | Sem cobranças no cartão de crédito |
 
 **Ressalvas:**
 
@@ -238,7 +238,7 @@ Para o guia completo de configuração, consulte [Oracle Cloud](/pt-BR/install/o
 
 ## Solução de problemas
 
-### Gateway não inicia
+### O Gateway não inicia
 
 ```bash
 openclaw gateway status
@@ -256,18 +256,18 @@ kill <PID>
 ### Sem memória
 
 ```bash
-# Verificar memória
+# Check memory
 free -h
 
-# Adicionar mais swap
-# Ou atualizar para droplet de US$12/mês (2GB RAM)
+# Add more swap
+# Or upgrade to $12/mo droplet (2GB RAM)
 ```
 
 ---
 
-## Relacionado
+## Relacionados
 
-- [Guia Hetzner](/pt-BR/install/hetzner) — mais barato, mais potente
+- [Guia da Hetzner](/pt-BR/install/hetzner) — mais barato, mais poderoso
 - [Instalação com Docker](/pt-BR/install/docker) — configuração em contêiner
 - [Tailscale](/pt-BR/gateway/tailscale) — acesso remoto seguro
 - [Configuração](/pt-BR/gateway/configuration) — referência completa de configuração

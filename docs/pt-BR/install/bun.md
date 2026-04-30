@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Você quer o loop local de desenvolvimento mais rápido (bun + watch)
-    - Você encontrou problemas de instalação/patch/script de ciclo de vida com Bun
-summary: 'Fluxo de trabalho com Bun (experimental): instalações e pegadinhas vs pnpm'
+    - Você quer o loop de desenvolvimento local mais rápido (bun + watch)
+    - Você encontrou problemas com instalação, patches ou scripts de ciclo de vida do Bun
+summary: 'Fluxo de trabalho do Bun (experimental): instalações e pontos de atenção em comparação com pnpm'
 title: Bun (experimental)
 x-i18n:
-    generated_at: "2026-04-24T05:56:21Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:53:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
+    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
     source_path: install/bun.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-O Bun **não é recomendado para runtime de gateway** (problemas conhecidos com WhatsApp e Telegram). Use Node em produção.
+Bun **não é recomendado para runtime do Gateway** (problemas conhecidos com WhatsApp e Telegram). Use Node em produção.
 </Warning>
 
-O Bun é um runtime local opcional para executar TypeScript diretamente (`bun run ...`, `bun --watch ...`). O gerenciador de pacotes padrão continua sendo o `pnpm`, que tem suporte completo e é usado pelas ferramentas de documentação. O Bun não pode usar `pnpm-lock.yaml` e irá ignorá-lo.
+Bun é um runtime local opcional para executar TypeScript diretamente (`bun run ...`, `bun --watch ...`). O gerenciador de pacotes padrão continua sendo `pnpm`, que tem suporte completo e é usado pelo tooling da documentação. Bun não consegue usar `pnpm-lock.yaml` e vai ignorá-lo.
 
 ## Instalação
 
@@ -27,14 +27,14 @@ O Bun é um runtime local opcional para executar TypeScript diretamente (`bun ru
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` estão em `.gitignore`, então não há ruído no repositório. Para pular completamente gravações de lockfile:
+    `bun.lock` / `bun.lockb` são ignorados pelo git, então não há alterações no repositório. Para ignorar completamente a gravação de lockfiles:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Build e testes">
+  <Step title="Compilar e testar">
     ```sh
     bun run build
     bun run vitest run
@@ -44,9 +44,9 @@ O Bun é um runtime local opcional para executar TypeScript diretamente (`bun ru
 
 ## Scripts de ciclo de vida
 
-O Bun bloqueia scripts de ciclo de vida de dependências, a menos que eles sejam explicitamente confiáveis. Para este repositório, os scripts mais comumente bloqueados não são necessários:
+Bun bloqueia scripts de ciclo de vida de dependências, a menos que eles sejam explicitamente confiáveis. Para este repositório, os scripts comumente bloqueados não são necessários:
 
-- `@whiskeysockets/baileys` `preinstall` -- verifica se a versão principal do Node é >= 20 (o OpenClaw usa Node 24 por padrão e ainda oferece suporte ao Node 22 LTS, atualmente `22.14+`)
+- `@whiskeysockets/baileys` `preinstall` -- verifica a versão maior do Node >= 20 (OpenClaw usa Node 24 por padrão e ainda oferece suporte ao Node 22 LTS, atualmente `22.14+`)
 - `protobufjs` `postinstall` -- emite avisos sobre esquemas de versão incompatíveis (sem artefatos de build)
 
 Se você encontrar um problema de runtime que exija esses scripts, confie neles explicitamente:
@@ -55,12 +55,12 @@ Se você encontrar um problema de runtime que exija esses scripts, confie neles 
 bun pm trust @whiskeysockets/baileys protobufjs
 ```
 
-## Observações
+## Ressalvas
 
-Alguns scripts ainda usam pnpm fixamente (por exemplo `docs:build`, `ui:*`, `protocol:check`). Por enquanto, execute esses via pnpm.
+Alguns scripts ainda fixam pnpm (por exemplo, `docs:build`, `ui:*`, `protocol:check`). Execute esses via pnpm por enquanto.
 
 ## Relacionado
 
 - [Visão geral da instalação](/pt-BR/install)
 - [Node.js](/pt-BR/install/node)
-- [Atualizando](/pt-BR/install/updating)
+- [Atualização](/pt-BR/install/updating)
