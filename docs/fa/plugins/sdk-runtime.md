@@ -1,28 +1,28 @@
 ---
 read_when:
-    - باید کمک‌توابع هسته را از یک Plugin فراخوانی کنید (TTS، STT، تولید تصویر، جست‌وجوی وب، عامل فرعی، گره‌ها)
+    - باید توابع کمکی هسته را از یک Plugin فراخوانی کنید (TTS، STT، تولید تصویر، جست‌وجوی وب، عامل فرعی، گره‌ها)
     - می‌خواهید بدانید api.runtime چه چیزهایی را در دسترس قرار می‌دهد
-    - شما از کد Plugin به کمک‌گرهای پیکربندی، عامل یا رسانه دسترسی پیدا می‌کنید
+    - از کد Plugin به ابزارهای کمکی پیکربندی، عامل یا رسانه دسترسی پیدا می‌کنید
 sidebarTitle: Runtime helpers
-summary: api.runtime -- راهنماهای زمان اجرای تزریق‌شده که در دسترس Pluginها هستند
-title: توابع کمکی زمان اجرای Plugin
+summary: api.runtime -- توابع کمکی زمان اجرای تزریق‌شده که در دسترس Pluginها هستند
+title: کمک‌کننده‌های زمان اجرای Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:19:37Z"
+    generated_at: "2026-04-30T09:43:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 399e2433e272fe30e7451690a64826df8e30a064269b8d9a7aa2dd2b0c5688b8
+    source_hash: f2264090e062be9892a2bac7d313cad80a550f79b0bf0d74635bf6b80aea5060
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-مرجع شیء `api.runtime` که هنگام ثبت در هر plugin تزریق می‌شود. به‌جای import مستقیم داخلی‌های میزبان، از این helperها استفاده کنید.
+مرجع شیء `api.runtime` که هنگام ثبت در هر Plugin تزریق می‌شود. از این کمک‌تابع‌ها به‌جای وارد کردن مستقیم اجزای داخلی میزبان استفاده کنید.
 
 <CardGroup cols={2}>
-  <Card title="Channel plugins" href="/fa/plugins/sdk-channel-plugins">
-    راهنمای گام‌به‌گام که این helperها را در بستر channel plugins به‌کار می‌گیرد.
+  <Card title="Pluginهای کانال" href="/fa/plugins/sdk-channel-plugins">
+    راهنمای گام‌به‌گام که استفاده از این کمک‌تابع‌ها را در بستر Pluginهای کانال نشان می‌دهد.
   </Card>
-  <Card title="Provider plugins" href="/fa/plugins/sdk-provider-plugins">
-    راهنمای گام‌به‌گام که این helperها را در بستر provider plugins به‌کار می‌گیرد.
+  <Card title="Pluginهای ارائه‌دهنده" href="/fa/plugins/sdk-provider-plugins">
+    راهنمای گام‌به‌گام که استفاده از این کمک‌تابع‌ها را در بستر Pluginهای ارائه‌دهنده نشان می‌دهد.
   </Card>
 </CardGroup>
 
@@ -34,38 +34,38 @@ register(api) {
 
 ## بارگذاری و نوشتن پیکربندی
 
-پیکربندی‌ای را ترجیح دهید که از قبل به مسیر فراخوانی فعال پاس داده شده است، برای مثال `api.config` هنگام ثبت یا آرگومان `cfg` در callbackهای channel/provider. این کار باعث می‌شود به‌جای parse دوباره پیکربندی در مسیرهای داغ، یک snapshot فرایند در سراسر کار جریان داشته باشد.
+پیکربندی‌ای را ترجیح دهید که از قبل به مسیر فراخوانی فعال پاس داده شده است، برای مثال `api.config` هنگام ثبت یا آرگومان `cfg` در callbackهای کانال/ارائه‌دهنده. این کار به‌جای بازتجزیه پیکربندی در مسیرهای داغ، یک snapshot فرایند را در سراسر کار جاری نگه می‌دارد.
 
-فقط زمانی از `api.runtime.config.current()` استفاده کنید که یک handler بلندمدت به snapshot فعلی فرایند نیاز دارد و هیچ پیکربندی‌ای به آن تابع پاس داده نشده است. مقدار بازگشتی readonly است؛ پیش از ویرایش، آن را clone کنید یا از یک helper جهش استفاده کنید.
+از `api.runtime.config.current()` فقط وقتی استفاده کنید که یک handler بلندمدت به snapshot فعلی فرایند نیاز دارد و هیچ پیکربندی‌ای به آن تابع پاس داده نشده است. مقدار برگشتی فقط‌خواندنی است؛ پیش از ویرایش، آن را clone کنید یا از یک کمک‌تابع mutation استفاده کنید.
 
-factoryهای ابزار `ctx.runtimeConfig` به‌همراه `ctx.getRuntimeConfig()` دریافت می‌کنند. وقتی پیکربندی می‌تواند بعد از ایجاد تعریف ابزار تغییر کند، getter را داخل callback `execute` یک ابزار بلندمدت استفاده کنید.
+factoryهای ابزار، `ctx.runtimeConfig` به‌همراه `ctx.getRuntimeConfig()` را دریافت می‌کنند. وقتی پیکربندی ممکن است پس از ایجاد تعریف ابزار تغییر کند، از getter داخل callback `execute` یک ابزار بلندمدت استفاده کنید.
 
-تغییرات را با `api.runtime.config.mutateConfigFile(...)` یا `api.runtime.config.replaceConfigFile(...)` پایدار کنید. هر نوشتن باید یک policy صریح `afterWrite` انتخاب کند:
+تغییرات را با `api.runtime.config.mutateConfigFile(...)` یا `api.runtime.config.replaceConfigFile(...)` پایدار کنید. هر نوشتن باید یک سیاست صریح `afterWrite` انتخاب کند:
 
-- `afterWrite: { mode: "auto" }` تصمیم reload را به Gateway reload planner می‌سپارد.
-- `afterWrite: { mode: "restart", reason: "..." }` وقتی writer می‌داند hot reload ناامن است، restart تمیز را اجبار می‌کند.
+- `afterWrite: { mode: "auto" }` اجازه می‌دهد تصمیم بازبارگذاری Gateway را برنامه‌ریز بگیرد.
+- `afterWrite: { mode: "restart", reason: "..." }` وقتی نویسنده می‌داند hot reload امن نیست، یک restart تمیز را اجباری می‌کند.
 - `afterWrite: { mode: "none", reason: "..." }` فقط وقتی caller مالک پیگیری بعدی است، reload/restart خودکار را سرکوب می‌کند.
 
-helperهای جهش `afterWrite` به‌همراه یک خلاصه typed به نام `followUp` برمی‌گردانند تا callerها بتوانند log کنند یا تست کنند که آیا restart درخواست کرده‌اند یا نه. Gateway همچنان مالک این است که آن restart در عمل چه زمانی رخ دهد.
+کمک‌تابع‌های mutation، `afterWrite` به‌همراه یک خلاصه تایپ‌شده `followUp` برمی‌گردانند تا callerها بتوانند log کنند یا تست کنند که آیا restart درخواست کرده‌اند یا نه. Gateway همچنان مالک این است که آن restart واقعاً چه زمانی رخ می‌دهد.
 
-`api.runtime.config.loadConfig()` و `api.runtime.config.writeConfigFile(...)` helperهای سازگاری منسوخ‌شده زیر `runtime-config-load-write` هستند. آن‌ها در زمان runtime یک‌بار هشدار می‌دهند و برای plugins خارجی قدیمی در طول بازه مهاجرت در دسترس می‌مانند. plugins همراه نباید از آن‌ها استفاده کنند؛ اگر کد plugin آن‌ها را فراخوانی کند یا آن helperها را از زیرمسیرهای plugin SDK import کند، guardهای مرز پیکربندی fail می‌شوند.
+`api.runtime.config.loadConfig()` و `api.runtime.config.writeConfigFile(...)` کمک‌تابع‌های سازگاری منسوخ‌شده تحت `runtime-config-load-write` هستند. آن‌ها در زمان اجرا یک‌بار هشدار می‌دهند و در بازه مهاجرت برای Pluginهای خارجی قدیمی همچنان در دسترس می‌مانند. Pluginهای bundled نباید از آن‌ها استفاده کنند؛ اگر کد Plugin آن‌ها را فراخوانی کند یا آن کمک‌تابع‌ها را از subpathهای plugin SDK وارد کند، نگهبان‌های مرز پیکربندی fail می‌شوند.
 
 برای importهای مستقیم SDK، به‌جای barrel سازگاری گسترده
-`openclaw/plugin-sdk/config-runtime` از زیرمسیرهای متمرکز پیکربندی استفاده کنید: `config-types` برای
-types، `plugin-config-runtime` برای assertionهای پیکربندی ازقبل‌بارگذاری‌شده و lookup ورودی plugin،
+`openclaw/plugin-sdk/config-runtime` از subpathهای متمرکز پیکربندی استفاده کنید: `config-types` برای
+typeها، `plugin-config-runtime` برای assertionهای پیکربندی ازپیش‌بارگذاری‌شده و lookup ورودی Plugin،
 `runtime-config-snapshot` برای snapshotهای فعلی فرایند، و
-`config-mutation` برای نوشتن‌ها. تست‌های plugin همراه باید این زیرمسیرهای متمرکز را
-مستقیماً mock کنند، به‌جای آنکه barrel سازگاری گسترده را mock کنند.
+`config-mutation` برای نوشتن‌ها. تست‌های Pluginهای bundled باید همین subpathهای متمرکز را
+مستقیماً mock کنند، نه barrel سازگاری گسترده را.
 
-کد runtime داخلی OpenClaw نیز همین جهت را دارد: پیکربندی را یک‌بار در مرز CLI، Gateway یا فرایند load کنید، سپس آن مقدار را پاس دهید. نوشتن‌های جهش موفق، snapshot runtime فرایند را refresh می‌کنند و revision داخلی آن را جلو می‌برند؛ cacheهای بلندمدت باید به‌جای serialize کردن محلی پیکربندی، بر اساس کلید cache متعلق به runtime key شوند. ماژول‌های runtime بلندمدت برای فراخوانی‌های محیطی `loadConfig()` اسکنر zero-tolerance دارند؛ از یک `cfg` پاس‌داده‌شده، یک request `context.getRuntimeConfig()`، یا `getRuntimeConfig()` در یک مرز صریح فرایند استفاده کنید.
+کد runtime داخلی OpenClaw نیز همین جهت را دارد: پیکربندی را یک‌بار در مرز CLI، Gateway، یا فرایند load کنید، سپس همان مقدار را پاس دهید. نوشتن‌های mutation موفق، snapshot runtime فرایند را refresh می‌کنند و revision داخلی آن را جلو می‌برند؛ cacheهای بلندمدت باید به‌جای serializing پیکربندی به‌صورت محلی، بر اساس cache key متعلق به runtime key شوند. ماژول‌های runtime بلندمدت برای فراخوانی‌های ambient `loadConfig()` اسکنر zero-tolerance دارند؛ از `cfg` پاس‌داده‌شده، `context.getRuntimeConfig()` درخواست، یا `getRuntimeConfig()` در یک مرز صریح فرایند استفاده کنید.
 
-مسیرهای اجرای provider و channel باید از snapshot پیکربندی runtime فعال استفاده کنند، نه snapshot فایل که برای readback یا ویرایش پیکربندی برگردانده شده است. snapshotهای فایل مقادیر منبع مانند markerهای SecretRef را برای UI و نوشتن‌ها حفظ می‌کنند؛ callbackهای provider به نمای runtime حل‌شده نیاز دارند. وقتی ممکن است یک helper با snapshot منبع فعال یا snapshot runtime فعال فراخوانی شود، پیش از خواندن credentials از مسیر `selectApplicableRuntimeConfig()` عبور دهید.
+مسیرهای اجرای ارائه‌دهنده و کانال باید از snapshot پیکربندی runtime فعال استفاده کنند، نه snapshot فایل که برای readback یا ویرایش پیکربندی برگشته است. snapshotهای فایل مقادیر source مانند markerهای SecretRef را برای UI و نوشتن‌ها حفظ می‌کنند؛ callbackهای ارائه‌دهنده به نمای runtime resolved نیاز دارند. وقتی ممکن است یک کمک‌تابع با snapshot source فعال یا snapshot runtime فعال فراخوانی شود، پیش از خواندن credentials آن را از مسیر `selectApplicableRuntimeConfig()` عبور دهید.
 
 ## namespaceهای runtime
 
 <AccordionGroup>
   <Accordion title="api.runtime.agent">
-    هویت agent، دایرکتوری‌ها، و مدیریت session.
+    هویت Agent، دایرکتوری‌ها، و مدیریت session.
 
     ```typescript
     // Resolve the agent's working directory
@@ -109,15 +109,15 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    `runEmbeddedAgent(...)` helper خنثی برای شروع یک turn عادی OpenClaw agent از کد plugin است. از همان provider/model resolution و انتخاب agent-harness استفاده می‌کند که replyهای channel-triggered استفاده می‌کنند.
+    `runEmbeddedAgent(...)` کمک‌تابع خنثی برای شروع یک turn معمولی Agent OpenClaw از کد Plugin است. از همان resolution ارائه‌دهنده/مدل و انتخاب agent-harness استفاده می‌کند که replyهای triggerشده از کانال استفاده می‌کنند.
 
     `runEmbeddedPiAgent(...)` به‌عنوان alias سازگاری باقی می‌ماند.
 
-    `resolveThinkingPolicy(...)` سطح‌های thinking پشتیبانی‌شده provider/model و default اختیاری را برمی‌گرداند. provider plugins مالک profile ویژه model از طریق hookهای thinking خود هستند، بنابراین tool plugins باید به‌جای import یا تکرار فهرست‌های provider، این helper runtime را فراخوانی کنند.
+    `resolveThinkingPolicy(...)` سطح‌های thinking پشتیبانی‌شده و default اختیاری ارائه‌دهنده/مدل را برمی‌گرداند. Pluginهای ارائه‌دهنده از طریق hookهای thinking خود مالک profile خاص مدل هستند، بنابراین Pluginهای ابزار باید به‌جای وارد کردن یا تکرار فهرست‌های ارائه‌دهنده، این کمک‌تابع runtime را فراخوانی کنند.
 
-    `normalizeThinkingLevel(...)` متن کاربر مانند `on`، `x-high`، یا `extra high` را پیش از بررسی در برابر policy حل‌شده، به سطح ذخیره‌شده canonical تبدیل می‌کند.
+    `normalizeThinkingLevel(...)` متن کاربر مانند `on`، `x-high`، یا `extra high` را پیش از بررسی آن در برابر policy resolved، به سطح stored canonical تبدیل می‌کند.
 
-    helperهای **Session store** زیر `api.runtime.agent.session` هستند:
+    **کمک‌تابع‌های session store** زیر `api.runtime.agent.session` هستند:
 
     ```typescript
     const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -128,7 +128,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
-    ثابت‌های default model و provider:
+    ثابت‌های پیش‌فرض مدل و ارائه‌دهنده:
 
     ```typescript
     const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -137,7 +137,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    اجرای subagentهای پس‌زمینه را launch و manage کنید.
+    اجرای subagentهای پس‌زمینه را launch و مدیریت کنید.
 
     ```typescript
     // Start a subagent run
@@ -165,14 +165,14 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     ```
 
     <Warning>
-    overrideهای model (`provider`/`model`) به opt-in operator از طریق `plugins.entries.<id>.subagent.allowModelOverride: true` در پیکربندی نیاز دارند. plugins غیرقابل‌اعتماد همچنان می‌توانند subagent اجرا کنند، اما درخواست‌های override رد می‌شوند.
+    overrideهای مدل (`provider`/`model`) به opt-in اپراتور از طریق `plugins.entries.<id>.subagent.allowModelOverride: true` در پیکربندی نیاز دارند. Pluginهای untrusted همچنان می‌توانند subagent اجرا کنند، اما درخواست‌های override رد می‌شوند.
     </Warning>
 
-    `deleteSession(...)` می‌تواند sessionهایی را حذف کند که همان plugin از طریق `api.runtime.subagent.run(...)` ایجاد کرده است. حذف sessionهای دلخواه کاربر یا operator همچنان به درخواست Gateway با scope ادمین نیاز دارد.
+    `deleteSession(...)` می‌تواند sessionهایی را حذف کند که همان Plugin از طریق `api.runtime.subagent.run(...)` ایجاد کرده است. حذف sessionهای دلخواه کاربر یا اپراتور همچنان به یک درخواست Gateway با scope ادمین نیاز دارد.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    nodeهای متصل را فهرست کنید و از کد plugin بارگذاری‌شده در Gateway یا از فرمان‌های CLI plugin، یک فرمان node-host را invoke کنید. وقتی یک plugin مالک کار محلی روی یک دستگاه pair‌شده است، برای مثال یک browser یا audio bridge روی یک Mac دیگر، از این استفاده کنید.
+    nodeهای متصل را فهرست کنید و یک command میزبانی‌شده روی node را از کد Plugin بارگذاری‌شده توسط Gateway یا از commandهای CLI Plugin فراخوانی کنید. وقتی یک Plugin مالک کار محلی روی دستگاه pairشده است، برای مثال یک bridge مرورگر یا audio روی یک Mac دیگر، از این استفاده کنید.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -185,11 +185,13 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    داخل Gateway این runtime درون‌فرایندی است. در فرمان‌های CLI plugin، Gateway پیکربندی‌شده را از طریق RPC فراخوانی می‌کند، بنابراین فرمان‌هایی مانند `openclaw googlemeet recover-tab` می‌توانند nodeهای pair‌شده را از terminal inspect کنند. فرمان‌های Node همچنان از مسیر pairing عادی node در Gateway، allowlistهای فرمان، و handling فرمان محلی node عبور می‌کنند.
+    داخل Gateway این runtime درون‌فرایندی است. در commandهای CLI Plugin، Gateway پیکربندی‌شده را از طریق RPC فراخوانی می‌کند، بنابراین commandهایی مانند `openclaw googlemeet recover-tab` می‌توانند nodeهای pairشده را از terminal inspect کنند. commandهای Node همچنان از مسیر pairing معمول node در Gateway، allowlistهای command، policyهای node-invoke Plugin، و handling command محلی node عبور می‌کنند.
+
+    Pluginهایی که commandهای خطرناک node-host را expose می‌کنند باید با `api.registerNodeInvokePolicy(...)` یک policy node-invoke ثبت کنند. این policy در Gateway پس از بررسی‌های allowlist command و پیش از forward شدن command به node اجرا می‌شود، بنابراین فراخوانی‌های مستقیم `node.invoke` و ابزارهای سطح بالاتر Plugin مسیر enforcement یکسانی را share می‌کنند.
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    یک runtime مربوط به Task Flow را به یک کلید session موجود OpenClaw یا context ابزار مورداعتماد bind کنید، سپس بدون پاس دادن owner در هر فراخوانی، Task Flows را ایجاد و manage کنید.
+    یک runtime Task Flow را به یک session key موجود OpenClaw یا context ابزار trusted bind کنید، سپس بدون پاس دادن owner در هر call، Task Flowها را ایجاد و مدیریت کنید.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -216,7 +218,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    وقتی از لایه binding خود یک کلید session مورداعتماد OpenClaw دارید، از `bindSession({ sessionKey, requesterOrigin })` استفاده کنید. از ورودی خام کاربر bind نکنید.
+    وقتی از لایه binding خودتان یک session key معتبر OpenClaw دارید، از `bindSession({ sessionKey, requesterOrigin })` استفاده کنید. از input خام کاربر bind نکنید.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -242,11 +244,11 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    از پیکربندی core `messages.tts` و انتخاب provider استفاده می‌کند. buffer صوتی PCM + sample rate برمی‌گرداند.
+    از پیکربندی core `messages.tts` و انتخاب ارائه‌دهنده استفاده می‌کند. audio buffer PCM + sample rate را برمی‌گرداند.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
-    تحلیل تصویر، audio، و video.
+    تحلیل تصویر، صدا، و ویدیو.
 
     ```typescript
     // Describe an image
@@ -276,7 +278,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    وقتی هیچ خروجی‌ای تولید نشود (مثلاً ورودی skip شده باشد)، `{ text: undefined }` برمی‌گرداند.
+    وقتی هیچ خروجی‌ای تولید نشود، `{ text: undefined }` را برمی‌گرداند (برای مثال ورودی ردشده).
 
     <Info>
     `api.runtime.stt.transcribeAudioFile(...)` به‌عنوان نام مستعار سازگاری برای `api.runtime.mediaUnderstanding.transcribeAudioFile(...)` باقی می‌ماند.
@@ -335,9 +337,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    عکس فوری پیکربندی زمان اجرا و نوشتن‌های تراکنشی پیکربندی. ترجیح دهید از
-    پیکربندی‌ای استفاده کنید که از قبل به مسیر فراخوانی فعال پاس داده شده است؛ فقط زمانی از
-    `current()` استفاده کنید که handler مستقیماً به عکس فوری فرایند نیاز دارد.
+    تصویر لحظه‌ای پیکربندی runtime فعلی و نوشتن‌های تراکنشی پیکربندی. پیکربندی‌ای را ترجیح دهید که از قبل به مسیر فراخوانی فعال پاس داده شده است؛ فقط زمانی از `current()` استفاده کنید که handler مستقیما به تصویر لحظه‌ای فرایند نیاز داشته باشد.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -349,10 +349,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    `mutateConfigFile(...)` و `replaceConfigFile(...)` یک مقدار `followUp`
-    برمی‌گردانند، برای مثال `{ mode: "restart", requiresRestart: true, reason }`،
-    که نیت نویسنده را بدون گرفتن کنترل راه‌اندازی مجدد از
-    gateway ثبت می‌کند.
+    `mutateConfigFile(...)` و `replaceConfigFile(...)` مقدار `followUp` را برمی‌گردانند، برای مثال `{ mode: "restart", requiresRestart: true, reason }`، که قصد نویسنده را بدون گرفتن کنترل راه‌اندازی مجدد از Gateway ثبت می‌کند.
 
   </Accordion>
   <Accordion title="api.runtime.system">
@@ -389,7 +386,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    تفکیک احراز هویت مدل و ارائه‌دهنده.
+    حل احراز هویت مدل و ارائه‌دهنده.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -401,7 +398,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    تفکیک پوشه وضعیت و ذخیره‌سازی کلیددار مبتنی بر SQLite.
+    حل مسیر پوشه وضعیت و ذخیره‌سازی کلیددار مبتنی بر SQLite.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -417,10 +414,10 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     await store.clear();
     ```
 
-    ذخیره‌گاه‌های کلیددار پس از راه‌اندازی مجدد باقی می‌مانند و با شناسه Plugin متصل به زمان اجرا ایزوله می‌شوند. محدودیت‌ها: `maxEntries` برای هر namespace، ۱٬۰۰۰ ردیف زنده برای هر Plugin، مقدارهای JSON کمتر از 64KB، و انقضای اختیاری TTL.
+    ذخیره‌گاه‌های کلیددار پس از راه‌اندازی مجدد باقی می‌مانند و بر اساس شناسه Plugin وابسته به runtime ایزوله می‌شوند. محدودیت‌ها: `maxEntries` برای هر namespace، ۱٬۰۰۰ ردیف زنده برای هر Plugin، مقادیر JSON کمتر از ۶۴KB، و انقضای اختیاری TTL.
 
     <Warning>
-    فقط Pluginهای همراه در این انتشار.
+    در این انتشار فقط Pluginهای بسته‌بندی‌شده.
     </Warning>
 
   </Accordion>
@@ -435,9 +432,9 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    helperهای زمان اجرای ویژه کانال (وقتی یک Plugin کانال بارگذاری شده باشد، در دسترس هستند).
+    helperهای runtime مخصوص کانال (وقتی یک Plugin کانال بارگذاری شده باشد در دسترس است).
 
-    `api.runtime.channel.mentions` سطح مشترک سیاست mention ورودی برای Pluginهای کانال همراه است که از تزریق زمان اجرا استفاده می‌کنند:
+    `api.runtime.channel.mentions` سطح مشترک سیاست mention ورودی برای Pluginهای کانال بسته‌بندی‌شده‌ای است که از تزریق runtime استفاده می‌کنند:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -464,7 +461,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
 
-    helperهای mention موجود:
+    helperهای mention در دسترس:
 
     - `buildMentionRegexes`
     - `matchesMentionPatterns`
@@ -472,17 +469,17 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions` عمداً helperهای سازگاری قدیمی‌تر `resolveMentionGating*` را در معرض قرار نمی‌دهد. مسیر نرمال‌شده `{ facts, policy }` را ترجیح دهید.
+    `api.runtime.channel.mentions` عمدا helperهای سازگاری قدیمی‌تر `resolveMentionGating*` را در معرض استفاده قرار نمی‌دهد. مسیر نرمال‌شده `{ facts, policy }` را ترجیح دهید.
 
   </Accordion>
 </AccordionGroup>
 
-## ذخیره ارجاع‌های زمان اجرا
+## ذخیره‌سازی ارجاع‌های runtime
 
-برای ذخیره ارجاع زمان اجرا جهت استفاده خارج از callback مربوط به `register` از `createPluginRuntimeStore` استفاده کنید:
+از `createPluginRuntimeStore` برای ذخیره ارجاع runtime جهت استفاده بیرون از callback `register` استفاده کنید:
 
 <Steps>
-  <Step title="Create the store">
+  <Step title="ایجاد store">
     ```typescript
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
@@ -494,7 +491,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     ```
 
   </Step>
-  <Step title="Wire into the entry point">
+  <Step title="اتصال به نقطه ورود">
     ```typescript
     export default defineChannelPluginEntry({
       id: "my-plugin",
@@ -505,7 +502,7 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
     });
     ```
   </Step>
-  <Step title="Access from other files">
+  <Step title="دسترسی از فایل‌های دیگر">
     ```typescript
     export function getRuntime() {
       return store.getRuntime(); // throws if not initialized
@@ -520,12 +517,12 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
 </Steps>
 
 <Note>
-برای هویت runtime-store، `pluginId` را ترجیح دهید. فرم سطح پایین‌تر `key` برای موارد نامعمولی است که یک Plugin عمداً به بیش از یک اسلات زمان اجرا نیاز دارد.
+برای هویت runtime-store، `pluginId` را ترجیح دهید. شکل سطح پایین‌تر `key` برای موارد غیرمعمولی است که در آن‌ها یک Plugin عمدا به بیش از یک شیار runtime نیاز دارد.
 </Note>
 
-## سایر فیلدهای سطح بالای `api`
+## فیلدهای سطح بالای دیگر `api`
 
-فراتر از `api.runtime`، شیء API همچنین این موارد را فراهم می‌کند:
+فراتر از `api.runtime`، شیء API این موارد را نیز فراهم می‌کند:
 
 <ParamField path="api.id" type="string">
   شناسه Plugin.
@@ -534,23 +531,23 @@ types، `plugin-config-runtime` برای assertionهای پیکربندی ازق
   نام نمایشی Plugin.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  عکس فوری پیکربندی فعلی (در صورت موجود بودن، عکس فوری فعال زمان اجرا در حافظه).
+  تصویر لحظه‌ای پیکربندی فعلی (تصویر لحظه‌ای runtime درون‌حافظه‌ای فعال، وقتی در دسترس باشد).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  پیکربندی ویژه Plugin از `plugins.entries.<id>.config`.
+  پیکربندی مخصوص Plugin از `plugins.entries.<id>.config`.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
   logger محدوده‌دار (`debug`، `info`، `warn`، `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  حالت بارگذاری فعلی؛ `"setup-runtime"` پنجره سبک‌وزن راه‌اندازی/تنظیم پیش از ورود کامل است.
+  حالت بارگذاری فعلی؛ `"setup-runtime"` پنجره سبک startup/setup پیش از ورود کامل است.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  تفکیک یک مسیر نسبت به ریشه Plugin.
+  حل یک مسیر نسبت به ریشه Plugin.
 </ParamField>
 
 ## مرتبط
 
-- [درونی‌های Plugin](/fa/plugins/architecture) — مدل قابلیت و registry
+- [داخلیات Plugin](/fa/plugins/architecture) — مدل قابلیت و registry
 - [نقاط ورود SDK](/fa/plugins/sdk-entrypoints) — گزینه‌های `definePluginEntry`
 - [نمای کلی SDK](/fa/plugins/sdk-overview) — مرجع subpath

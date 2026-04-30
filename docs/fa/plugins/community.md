@@ -1,33 +1,33 @@
 ---
 read_when:
-    - می‌خواهید Plugin‌های شخص ثالث OpenClaw را پیدا کنید
-    - می‌خواهید Plugin خود را منتشر کنید یا در فهرست بیاورید
-summary: 'Plugin‌های OpenClaw نگهداری‌شده توسط جامعه: مرور، نصب، و ارسال Plugin خودتان'
+    - می‌خواهید Pluginهای شخص ثالث OpenClaw را پیدا کنید
+    - می‌خواهید Plugin خودتان را منتشر یا فهرست کنید
+summary: 'Plugin‌های OpenClaw که توسط جامعه نگه‌داری می‌شوند: مرور کنید، نصب کنید و Plugin خودتان را ارسال کنید'
 title: Plugin‌های جامعه
 x-i18n:
-    generated_at: "2026-04-29T23:14:29Z"
+    generated_at: "2026-04-30T09:39:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a54130fefc55042d53270e5f7f4b49a4aad715570743013fbfe06b0e2fa067d0
+    source_hash: 9685aaf141b739a2a745a6184201ac86689e4284bec6eb068ffbd0d53fb4ecf1
     source_path: plugins/community.md
     workflow: 16
 ---
 
-Pluginهای جامعه بسته‌های شخص ثالثی هستند که OpenClaw را با کانال‌ها، ابزارها، ارائه‌دهندگان یا قابلیت‌های دیگر گسترش می‌دهند. آن‌ها توسط جامعه ساخته و نگهداری می‌شوند، معمولا در [ClawHub](/fa/tools/clawhub) منتشر می‌شوند، و با یک فرمان قابل نصب هستند. npm همچنان برای بسته‌هایی که هنوز به ClawHub منتقل نشده‌اند، یک گزینه پشتیبان پشتیبانی‌شده است.
+Pluginهای جامعه بسته‌های شخص ثالثی هستند که OpenClaw را با کانال‌ها، ابزارها، ارائه‌دهنده‌ها یا قابلیت‌های دیگر گسترش می‌دهند. آن‌ها توسط جامعه ساخته و نگهداری می‌شوند، معمولا در [ClawHub](/fa/tools/clawhub) منتشر می‌شوند، و با یک فرمان قابل نصب هستند. npm برای بسته‌هایی که هنوز به ClawHub منتقل نشده‌اند، همچنان یک جایگزین پشتیبانی‌شده است.
 
-ClawHub سطح رسمی کشف برای Pluginهای جامعه است. صرفا برای افزودن Plugin خودتان به اینجا جهت دیده‌شدن، PR فقط-مستندات باز نکنید؛ در عوض آن را در ClawHub منتشر کنید.
+ClawHub سطح مرجع برای کشف Pluginهای جامعه است. صرفا برای افزودن Plugin خود به اینجا با هدف دیده‌شدن، PRهای فقط مستندات باز نکنید؛ در عوض آن را در ClawHub منتشر کنید.
 
 ```bash
 openclaw plugins install <package-name>
 ```
 
-OpenClaw ابتدا ClawHub را بررسی می‌کند و به‌صورت خودکار به npm برمی‌گردد.
+OpenClaw ابتدا ClawHub را بررسی می‌کند و به‌صورت خودکار به npm بازمی‌گردد.
 
 ## Pluginهای فهرست‌شده
 
 ### Apify
 
-داده‌ها را از هر وب‌سایتی با بیش از ۲۰٬۰۰۰ خزنده آماده استخراج کنید. به عامل خود اجازه دهید فقط با درخواست کردن، داده‌ها را از Instagram، Facebook، TikTok، YouTube، Google Maps، Google Search، سایت‌های تجارت الکترونیک و موارد بیشتر استخراج کند.
+داده‌ها را از هر وب‌سایتی با بیش از ۲۰٬۰۰۰ اسکرپر آماده استخراج کنید. به عامل خود اجازه دهید داده‌ها را از Instagram، Facebook، TikTok، YouTube، Google Maps، Google Search، سایت‌های تجارت الکترونیک و موارد بیشتر استخراج کند — فقط با درخواست کردن.
 
 - **npm:** `@apify/apify-openclaw-plugin`
 - **مخزن:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
@@ -49,7 +49,7 @@ openclaw plugins install openclaw-codex-app-server
 
 ### DingTalk
 
-یکپارچه‌سازی ربات سازمانی با استفاده از حالت Stream. از پیام‌های متنی، تصویری و فایل از طریق هر کلاینت DingTalk پشتیبانی می‌کند.
+یکپارچه‌سازی ربات سازمانی با استفاده از حالت Stream. از پیام‌های متنی، تصویری و فایلی از طریق هر کلاینت DingTalk پشتیبانی می‌کند.
 
 - **npm:** `@largezhou/ddingtalk`
 - **مخزن:** [github.com/largezhou/openclaw-dingtalk](https://github.com/largezhou/openclaw-dingtalk)
@@ -60,7 +60,7 @@ openclaw plugins install @largezhou/ddingtalk
 
 ### Lossless Claw (LCM)
 
-Plugin مدیریت زمینه بدون اتلاف برای OpenClaw. خلاصه‌سازی گفت‌وگو مبتنی بر DAG با Compaction افزایشی — دقت کامل زمینه را حفظ می‌کند و در عین حال مصرف توکن را کاهش می‌دهد.
+Plugin مدیریت زمینه بدون اتلاف برای OpenClaw. خلاصه‌سازی گفت‌وگو مبتنی بر DAG با Compaction افزایشی — وفاداری کامل زمینه را حفظ می‌کند و در عین حال مصرف توکن را کاهش می‌دهد.
 
 - **npm:** `@martian-engineering/lossless-claw`
 - **مخزن:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
@@ -82,7 +82,7 @@ openclaw plugins install @opik/opik-openclaw
 
 ### Prometheus Avatar
 
-به عامل OpenClaw خود یک آواتار Live2D با همگام‌سازی لب در زمان واقعی، بیان‌های احساسی و تبدیل متن به گفتار بدهید. شامل ابزارهای سازنده برای تولید دارایی‌های هوش مصنوعی و استقرار با یک کلیک در Prometheus Marketplace است. در حال حاضر در مرحله آلفا است.
+به عامل OpenClaw خود یک آواتار Live2D با همگام‌سازی لب در زمان واقعی، بیان‌های احساسی و تبدیل متن به گفتار بدهید. شامل ابزارهای سازنده برای تولید دارایی هوش مصنوعی و استقرار یک‌کلیکی در Prometheus Marketplace است. در حال حاضر در مرحله آلفا است.
 
 - **npm:** `@prometheusavatar/openclaw-plugin`
 - **مخزن:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
@@ -93,9 +93,9 @@ openclaw plugins install @prometheusavatar/openclaw-plugin
 
 ### QQbot
 
-OpenClaw را از طریق QQ Bot API به QQ متصل کنید. از چت‌های خصوصی، اشاره‌ها در گروه، پیام‌های کانال، و رسانه‌های غنی شامل صدا، تصویر، ویدیو و فایل پشتیبانی می‌کند.
+OpenClaw را از طریق QQ Bot API به QQ متصل کنید. از چت‌های خصوصی، اشاره‌های گروهی، پیام‌های کانال، و رسانه‌های غنی از جمله صدا، تصویر، ویدیو و فایل پشتیبانی می‌کند.
 
-نسخه‌های فعلی OpenClaw شامل QQ Bot هستند. برای نصب‌های معمول از راه‌اندازی همراه در [QQ Bot](/fa/channels/qqbot) استفاده کنید؛ این Plugin خارجی را فقط زمانی نصب کنید که عمدا بسته مستقل نگهداری‌شده توسط Tencent را می‌خواهید.
+نسخه‌های فعلی OpenClaw شامل QQ Bot هستند. برای نصب‌های معمول، از راه‌اندازی همراه در [QQ Bot](/fa/channels/qqbot) استفاده کنید؛ این Plugin خارجی را فقط زمانی نصب کنید که عمدا بسته مستقل نگهداری‌شده توسط Tencent را می‌خواهید.
 
 - **npm:** `@tencent-connect/openclaw-qqbot`
 - **مخزن:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
@@ -106,7 +106,7 @@ openclaw plugins install @tencent-connect/openclaw-qqbot
 
 ### wecom
 
-Plugin کانال WeCom برای OpenClaw از تیم Tencent WeCom. با اتصالات پایدار WeCom Bot WebSocket کار می‌کند و از پیام‌های مستقیم و چت‌های گروهی، پاسخ‌های جریانی، پیام‌رسانی پیش‌دستانه، پردازش تصویر/فایل، قالب‌بندی Markdown، کنترل دسترسی داخلی، و Skills مربوط به سند/جلسه/پیام‌رسانی پشتیبانی می‌کند.
+Plugin کانال WeCom برای OpenClaw توسط تیم Tencent WeCom. این Plugin با اتصالات پایدار WeCom Bot WebSocket کار می‌کند و از پیام‌های مستقیم و چت‌های گروهی، پاسخ‌های جریانی، پیام‌رسانی پیش‌دستانه، پردازش تصویر/فایل، قالب‌بندی Markdown، کنترل دسترسی داخلی، و Skills سند/جلسه/پیام‌رسانی پشتیبانی می‌کند.
 
 - **npm:** `@wecom/wecom-openclaw-plugin`
 - **مخزن:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
@@ -117,16 +117,16 @@ openclaw plugins install @wecom/wecom-openclaw-plugin
 
 ### Yuanbao
 
-Plugin کانال Yuanbao برای OpenClaw از تیم Tencent Yuanbao. با اتصالات پایدار WebSocket کار می‌کند و از پیام‌های مستقیم و چت‌های گروهی، پاسخ‌های جریانی، پیام‌رسانی پیش‌دستانه، پردازش تصویر/فایل/صدا/ویدیو، قالب‌بندی Markdown، کنترل دسترسی داخلی، و منوهای فرمان اسلش پشتیبانی می‌کند.
+Plugin کانال Yuanbao برای OpenClaw توسط تیم Tencent Yuanbao. این Plugin با اتصالات پایدار WebSocket کار می‌کند و از پیام‌های مستقیم و چت‌های گروهی، پاسخ‌های جریانی، پیام‌رسانی پیش‌دستانه، پردازش تصویر/فایل/صدا/ویدیو، قالب‌بندی Markdown، کنترل دسترسی داخلی، و منوهای فرمان اسلش پشتیبانی می‌کند.
 
 - **npm:** `openclaw-plugin-yuanbao`
-- **مخزن:** [github.com/yb-claw/openclaw-plugin-yuanbao](https://github.com/yb-claw/openclaw-plugin-yuanbao)
+- **مخزن:** [github.com/YuanbaoTeam/yuanbao-openclaw-plugin](https://github.com/YuanbaoTeam/yuanbao-openclaw-plugin)
 
 ```bash
 openclaw plugins install openclaw-plugin-yuanbao
 ```
 
-## ارسال Plugin خود
+## Plugin خود را ارسال کنید
 
 از Pluginهای جامعه که مفید، مستند و ایمن برای اجرا باشند استقبال می‌کنیم.
 
@@ -143,27 +143,27 @@ openclaw plugins install openclaw-plugin-yuanbao
 
   </Step>
 
-  <Step title="استفاده از PRهای مستندات فقط برای تغییرات مستندات منبع">
-    فقط برای قابل کشف کردن Plugin خودتان به PR مستندات نیاز ندارید. در عوض آن را در ClawHub منتشر کنید.
+  <Step title="از PRهای مستندات فقط برای تغییرهای مستندات منبع استفاده کنید">
+    فقط برای قابل کشف کردن Plugin خود به PR مستندات نیاز ندارید. در عوض آن را در ClawHub منتشر کنید.
 
-    فقط زمانی یک PR مستندات باز کنید که مستندات منبع OpenClaw به تغییر محتوایی واقعی نیاز داشته باشد، مانند اصلاح راهنمای نصب یا افزودن مستندات بین‌مخزنی که به مجموعه اصلی مستندات تعلق دارد.
+    فقط زمانی یک PR مستندات باز کنید که مستندات منبع OpenClaw به یک تغییر محتوایی واقعی نیاز داشته باشند، مانند اصلاح راهنمای نصب یا افزودن مستندات میان‌مخزنی که متعلق به مجموعه اصلی مستندات است.
 
   </Step>
 </Steps>
 
 ## معیار کیفیت
 
-| الزام                         | دلیل                                                     |
-| ----------------------------- | -------------------------------------------------------- |
-| منتشرشده در ClawHub یا npm    | کاربران باید بتوانند از `openclaw plugins install` استفاده کنند |
-| مخزن عمومی GitHub             | بازبینی منبع، پیگیری مسئله، شفافیت                       |
-| مستندات راه‌اندازی و استفاده  | کاربران باید بدانند چگونه آن را پیکربندی کنند            |
-| نگهداری فعال                  | به‌روزرسانی‌های اخیر یا رسیدگی پاسخ‌گو به مسئله‌ها       |
+| الزام                         | دلیل                                                  |
+| ----------------------------- | ----------------------------------------------------- |
+| منتشرشده در ClawHub یا npm    | کاربران نیاز دارند `openclaw plugins install` کار کند |
+| مخزن عمومی GitHub             | بازبینی منبع، ردیابی مسئله، شفافیت                   |
+| مستندات راه‌اندازی و استفاده | کاربران باید بدانند چگونه آن را پیکربندی کنند        |
+| نگهداری فعال                  | به‌روزرسانی‌های اخیر یا رسیدگی پاسخ‌گو به مسائل      |
 
-بسته‌های کم‌زحمت، مالکیت نامشخص، یا بسته‌های نگهداری‌نشده ممکن است رد شوند.
+رپرهای کم‌تلاش، مالکیت نامشخص، یا بسته‌های نگهداری‌نشده ممکن است رد شوند.
 
 ## مرتبط
 
 - [نصب و پیکربندی Pluginها](/fa/tools/plugin) — نحوه نصب هر Plugin
-- [ساخت Pluginها](/fa/plugins/building-plugins) — Plugin خودتان را بسازید
-- [مانیفست Plugin](/fa/plugins/manifest) — شمای مانیفست
+- [ساخت Pluginها](/fa/plugins/building-plugins) — مورد خودتان را بسازید
+- [مانیفست Plugin](/fa/plugins/manifest) — شِمای مانیفست

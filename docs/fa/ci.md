@@ -1,70 +1,203 @@
 ---
 read_when:
-    - باید بفهمید چرا یک کار CI اجرا شد یا اجرا نشد
-    - شما در حال عیب‌یابی بررسی‌های ناموفق GitHub Actions هستید
-summary: گراف کارهای CI، گیت‌های محدوده، و معادل‌های فرمان محلی
-title: خط لوله یکپارچه‌سازی مداوم
+    - باید بدانید چرا یک کار CI اجرا شد یا اجرا نشد
+    - شما در حال اشکال‌زدایی یک بررسی ناموفق GitHub Actions هستید
+    - شما در حال هماهنگی برای اجرای اعتبارسنجی انتشار یا اجرای مجدد آن هستید
+summary: گراف وظایف CI، دروازه‌های محدوده، چترهای انتشار، و معادل‌های فرمان‌های محلی
+title: خط لولهٔ CI
 x-i18n:
-    generated_at: "2026-04-30T00:06:28Z"
+    generated_at: "2026-04-30T09:34:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e8ebc01707b673ab866c584abdfa5ccb8064d580f3a250c60304c2d056d109dc
+    source_hash: a9c18f0801864ca1030aac9ea81117b011bd7936388984a1809ce3ae6e906e62
     source_path: ci.md
     workflow: 16
 ---
 
-CI در هر push به `main` و هر pull request اجرا می‌شود. از محدوده‌بندی هوشمند استفاده می‌کند تا وقتی فقط بخش‌های نامرتبط تغییر کرده‌اند، کارهای پرهزینه را رد کند. اجراهای دستی `workflow_dispatch` عمدا محدوده‌بندی هوشمند را دور می‌زنند و گراف کامل CI عادی را برای نامزدهای انتشار یا اعتبارسنجی گسترده پخش می‌کنند؛ مسیرهای Android برای اجراهای دستی مستقل از طریق `include_android` اختیاری هستند. مسیرهای prerelease مخصوص انتشار برای Pluginها در workflow جداگانه `Plugin Prerelease` قرار دارند و فقط از `Full Release Validation` یا dispatch دستی صریح اجرا می‌شوند.
+OpenClaw CI در هر push به `main` و هر pull request اجرا می‌شود. کار `preflight` diff را طبقه‌بندی می‌کند و وقتی فقط بخش‌های نامرتبط تغییر کرده باشند، laneهای پرهزینه را خاموش می‌کند. اجراهای دستی `workflow_dispatch` عمدا scoping هوشمند را دور می‌زنند و برای release candidateها و اعتبارسنجی گسترده، کل گراف را fan out می‌کنند. laneهای Android از طریق `include_android` به‌صورت opt-in باقی می‌مانند. پوشش Plugin مخصوص release در workflow جداگانه [`Plugin Prerelease`](#plugin-prerelease) قرار دارد و فقط از [`Full Release Validation`](#full-release-validation) یا یک dispatch دستی صریح اجرا می‌شود.
 
-شارد `check-dependencies` دستور `pnpm deadcode:dependencies` را اجرا می‌کند؛ یک گذر production فقط برای وابستگی‌های Knip که به آخرین نسخه Knip مورد استفاده آن اسکریپت سنجاق شده است، با غیرفعال بودن حداقل سن انتشار pnpm برای نصب `dlx`. همچنین `pnpm deadcode:unused-files` را اجرا می‌کند که یافته‌های فایل‌های استفاده‌نشده production از Knip را با `scripts/deadcode-unused-files.allowlist.mjs` مقایسه می‌کند. این محافظ وقتی یک PR فایل استفاده‌نشده جدید و بازبینی‌نشده‌ای اضافه کند یا پس از پاک‌سازی یک ورودی allowlist کهنه باقی بگذارد، شکست می‌خورد؛ در عین حال سطوح عمدی مربوط به Plugin پویا، تولیدشده، build، live-test و پل package را که Knip نمی‌تواند به‌صورت ایستا resolve کند، حفظ می‌کند.
+## نمای کلی pipeline
 
-`Full Release Validation` workflow چتری دستی برای «اجرای همه چیز پیش از انتشار» است. یک branch، tag یا commit SHA کامل می‌پذیرد، workflow دستی `CI` را با آن هدف dispatch می‌کند، `Plugin Prerelease` را برای اثبات مخصوص انتشارِ Plugin/package/static/Docker dispatch می‌کند، و `OpenClaw Release Checks` را برای install smoke، package acceptance، suiteهای مسیر انتشار Docker، live/E2E، OpenWebUI، برابری QA Lab، Matrix و مسیرهای Telegram dispatch می‌کند. همچنین وقتی یک spec package منتشرشده ارائه شود، می‌تواند workflow پس از انتشار `NPM Telegram Beta E2E` را اجرا کند. `release_profile=minimum|stable|full` گستره live/provider ارسال‌شده به release checks را کنترل می‌کند: `minimum` سریع‌ترین مسیرهای حیاتی انتشار OpenAI/core را نگه می‌دارد، `stable` مجموعه پایدار provider/backend را اضافه می‌کند، و `full` ماتریس گسترده advisory provider/media را اجرا می‌کند. چتر، شناسه‌های اجرای child dispatch‌شده را ثبت می‌کند، و job نهایی `Verify full validation` نتیجه‌های فعلی اجرای child را دوباره بررسی می‌کند و جدول‌های کندترین job را برای هر اجرای child پیوست می‌کند. اگر یک workflow فرزند دوباره اجرا شود و سبز شود، فقط job verifier والد را دوباره اجرا کنید تا نتیجه چتر و خلاصه زمان‌بندی تازه شود.
+| کار                              | هدف                                                                                      | زمان اجرا                       |
+| -------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `preflight`                      | تشخیص تغییرات فقط-مستندات، scopeهای تغییرکرده، extensionهای تغییرکرده، و ساخت manifest CI      | همیشه روی pushها و PRهای غیر-draft |
+| `security-scm-fast`              | تشخیص کلید خصوصی و audit workflow از طریق `zizmor`                                        | همیشه روی pushها و PRهای غیر-draft |
+| `security-dependency-audit`      | audit lockfile تولید بدون وابستگی در برابر advisoryهای npm                             | همیشه روی pushها و PRهای غیر-draft |
+| `security-fast`                  | aggregate الزامی برای کارهای امنیتی سریع                                                | همیشه روی pushها و PRهای غیر-draft |
+| `check-dependencies`             | عبور production Knip فقط برای dependency به‌علاوه guard allowlist فایل‌های استفاده‌نشده                    | تغییرات مرتبط با Node              |
+| `build-artifacts`                | ساخت `dist/`، Control UI، بررسی‌های artifact ساخته‌شده، و artifactهای downstream قابل استفاده‌مجدد          | تغییرات مرتبط با Node              |
+| `checks-fast-core`               | laneهای درستی‌سنجی سریع Linux مانند بررسی‌های bundled/plugin-contract/protocol                 | تغییرات مرتبط با Node              |
+| `checks-fast-contracts-channels` | بررسی‌های sharded قرارداد channel با نتیجه aggregate check پایدار                         | تغییرات مرتبط با Node              |
+| `checks-node-core-test`          | shardهای تست Core Node، به‌جز laneهای channel، bundled، contract، و extension             | تغییرات مرتبط با Node              |
+| `check`                          | معادل gate محلی اصلی به‌صورت sharded: typeهای prod، lint، guardها، typeهای تست، و smoke سخت‌گیرانه   | تغییرات مرتبط با Node              |
+| `check-additional`               | shardهای معماری، boundary، guardهای extension-surface، package-boundary، و gateway-watch | تغییرات مرتبط با Node              |
+| `build-smoke`                    | تست‌های smoke برای CLI ساخته‌شده و smoke حافظه startup                                               | تغییرات مرتبط با Node              |
+| `checks`                         | verifier برای تست‌های channel artifact ساخته‌شده                                                    | تغییرات مرتبط با Node              |
+| `checks-node-compat-node22`      | lane سازگاری build و smoke برای Node 22                                                   | dispatch دستی CI برای releaseها    |
+| `check-docs`                     | قالب‌بندی مستندات، lint، و بررسی لینک‌های شکسته                                                | تغییر مستندات                       |
+| `skills-python`                  | Ruff + pytest برای skills مبتنی بر Python                                                       | تغییرات مرتبط با skillهای Python      |
+| `checks-windows`                 | تست‌های مخصوص process/path در Windows به‌علاوه regressionهای specifier import runtime مشترک         | تغییرات مرتبط با Windows           |
+| `macos-node`                     | lane تست TypeScript در macOS با استفاده از artifactهای ساخته‌شده مشترک                                  | تغییرات مرتبط با macOS             |
+| `macos-swift`                    | lint، build، و تست‌های Swift برای app macOS                                               | تغییرات مرتبط با macOS             |
+| `android`                        | تست‌های unit Android برای هر دو flavor به‌علاوه یک build APK debug                                 | تغییرات مرتبط با Android           |
+| `test-performance-agent`         | بهینه‌سازی روزانه تست‌های کند Codex پس از فعالیت trusted                                    | موفقیت CI روی main یا dispatch دستی |
 
-برای بازیابی، `Full Release Validation` و `OpenClaw Release Checks` هر دو `rerun_group` را می‌پذیرند. برای یک نامزد انتشار از `all` استفاده کنید، برای فقط child کامل CI عادی از `ci`، برای هر child انتشار از `release-checks`، یا یک گروه انتشار محدودتر: `install-smoke`، `cross-os`، `live-e2e`، `package`، `qa`، `qa-parity`، `qa-live`، یا `npm-telegram` روی چتر. این کار rerun یک جعبه انتشار شکست‌خورده را پس از یک اصلاح متمرکز محدود نگه می‌دارد.
+## ترتیب fail-fast
 
-فرزند live/E2E انتشار، پوشش گسترده native `pnpm test:live` را حفظ می‌کند، اما آن را به‌جای یک job سریالی، به‌صورت شاردهای نام‌گذاری‌شده (`native-live-src-agents`، `native-live-src-gateway-core`، jobهای provider-filtered `native-live-src-gateway-profiles`، `native-live-src-gateway-backends`، `native-live-test`، `native-live-extensions-a-k`، `native-live-extensions-l-n`، `native-live-extensions-openai`، `native-live-extensions-o-z-other`، `native-live-extensions-xai`، شاردهای جداشده media audio/video، و شاردهای music با provider-filtered) از طریق `scripts/test-live-shard.mjs` اجرا می‌کند. این کار همان پوشش فایل را نگه می‌دارد و در عین حال rerun و عیب‌یابی شکست‌های کند provider زنده را آسان‌تر می‌کند. نام‌های شارد تجمعی `native-live-extensions-o-z`، `native-live-extensions-media` و `native-live-extensions-media-music` همچنان برای rerunهای دستی یک‌باره معتبر می‌مانند.
+1. `preflight` تصمیم می‌گیرد اصلا کدام laneها وجود داشته باشند. منطق `docs-scope` و `changed-scope` مرحله‌هایی داخل همین کار هستند، نه کارهای مستقل.
+2. `security-scm-fast`، `security-dependency-audit`، `security-fast`، `check`، `check-additional`، `check-docs`، و `skills-python` بدون انتظار برای کارهای سنگین‌تر artifact و platform matrix سریع fail می‌شوند.
+3. `build-artifacts` با laneهای سریع Linux هم‌پوشانی دارد تا مصرف‌کننده‌های downstream به‌محض آماده شدن build مشترک شروع شوند.
+4. laneهای سنگین‌تر platform و runtime بعد از آن fan out می‌شوند: `checks-fast-core`، `checks-fast-contracts-channels`، `checks-node-core-test`، `checks`، `checks-windows`، `macos-node`، `macos-swift`، و `android`.
 
-شاردهای native live media در `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04` اجرا می‌شوند که توسط workflow `Live Media Runner Image` ساخته می‌شود. آن image، `ffmpeg` و `ffprobe` را از پیش نصب می‌کند؛ jobهای media فقط binaryها را پیش از setup بررسی می‌کنند. suiteهای live متکی بر Docker را روی runnerهای عادی Blacksmith نگه دارید، چون container jobها محل نادرستی برای اجرای تست‌های Docker تو‌در‌تو هستند.
+GitHub ممکن است وقتی push جدیدتری روی همان PR یا ref `main` وارد می‌شود، کارهای superseded را به‌صورت `cancelled` علامت‌گذاری کند. این را noise در CI در نظر بگیرید، مگر اینکه جدیدترین اجرا برای همان ref نیز در حال fail شدن باشد. بررسی‌های aggregate shard از `!cancelled() && always()` استفاده می‌کنند تا همچنان failureهای عادی shard را گزارش کنند، اما پس از اینکه کل workflow قبلا superseded شده است، در صف نمانند. کلید concurrency خودکار CI نسخه‌گذاری شده است (`CI-v7-*`) تا یک zombie سمت GitHub در یک گروه صف قدیمی نتواند اجراهای جدیدتر main را برای مدت نامحدود مسدود کند. اجراهای دستی full-suite از `CI-manual-v1-*` استفاده می‌کنند و اجراهای در حال پیشرفت را cancel نمی‌کنند.
 
-شاردهای live model/backend متکی بر Docker از یک image مشترک جداگانه `ghcr.io/openclaw/openclaw-live-test:<sha>` برای هر commit انتخاب‌شده استفاده می‌کنند. workflow live release آن image را یک بار می‌سازد و push می‌کند، سپس شاردهای Docker live model، Gateway، CLI backend، ACP bind و Codex harness با `OPENCLAW_SKIP_DOCKER_BUILD=1` اجرا می‌شوند. اگر این شاردها هدف Docker کامل source را مستقل دوباره بسازند، اجرای انتشار بدپیکربندی شده است و زمان wall clock را روی ساخت‌های تکراری image هدر می‌دهد.
+## Scope و routing
 
-`OpenClaw Release Checks` از ref مطمئن workflow استفاده می‌کند تا ref انتخاب‌شده را یک بار به tarball `release-package-under-test` resolve کند، سپس آن artifact را هم به workflow Docker مسیر انتشار live/E2E و هم به شارد package acceptance پاس می‌دهد. این کار byteهای package را در جعبه‌های انتشار یکسان نگه می‌دارد و از repack کردن همان نامزد در چند job فرزند جلوگیری می‌کند.
+منطق scope در `scripts/ci-changed-scope.mjs` قرار دارد و با تست‌های unit در `src/scripts/ci-changed-scope.test.ts` پوشش داده شده است. dispatch دستی تشخیص changed-scope را skip می‌کند و باعث می‌شود manifest مربوط به preflight طوری رفتار کند که انگار هر بخش scoped تغییر کرده است.
 
-`Package Acceptance` workflow جانبی برای اعتبارسنجی یک artifact package بدون مسدود کردن workflow انتشار است. این workflow یک نامزد را از یک spec npm منتشرشده، یک `package_ref` مطمئن ساخته‌شده با harness انتخاب‌شده `workflow_ref`، یک URL tarball از نوع HTTPS با SHA-256، یا یک artifact tarball از اجرای دیگر GitHub Actions resolve می‌کند، آن را به‌عنوان `package-under-test` آپلود می‌کند، سپس scheduler Docker release/E2E را با آن tarball به‌جای repack کردن checkout workflow دوباره استفاده می‌کند. Profileها smoke، package، product، full و انتخاب‌های custom Docker lane را پوشش می‌دهند. profile `package` از پوشش Plugin آفلاین استفاده می‌کند تا اعتبارسنجی package منتشرشده وابسته به دسترس‌بودن live ClawHub نباشد. مسیر اختیاری Telegram از artifact `package-under-test` در workflow `NPM Telegram Beta E2E` دوباره استفاده می‌کند، و مسیر spec npm منتشرشده برای dispatchهای مستقل حفظ می‌شود.
+- **ویرایش‌های workflow CI** گراف Node CI به‌علاوه workflow linting را اعتبارسنجی می‌کنند، اما به‌تنهایی buildهای native مربوط به Windows، Android، یا macOS را اجباری نمی‌کنند؛ آن laneهای platform به تغییرات source مربوط به platform محدود می‌مانند.
+- **ویرایش‌های فقط routing در CI، ویرایش‌های fixture ارزان و منتخب core-test، و ویرایش‌های محدود helper/test-routing قرارداد Plugin** از یک مسیر سریع manifest فقط-Node استفاده می‌کنند: `preflight`، security، و یک task منفرد `checks-fast-core`. وقتی تغییر به سطح‌های routing یا helper که task سریع مستقیما exercise می‌کند محدود باشد، آن مسیر artifactهای build، سازگاری Node 22، قراردادهای channel، shardهای کامل core، shardهای bundled-plugin، و matrixهای guard اضافی را skip می‌کند.
+- **بررسی‌های Windows Node** به wrapperهای مخصوص process/path در Windows، helperهای runner برای npm/pnpm/UI، config package manager، و سطح‌های workflow CI که آن lane را اجرا می‌کنند محدود شده‌اند؛ تغییرات نامرتبط در source، Plugin، install-smoke، و فقط-تست روی laneهای Linux Node باقی می‌مانند.
 
-## پذیرش package
+کندترین خانواده‌های تست Node split یا balance شده‌اند تا هر کار بدون رزرو بیش‌ازحد runnerها کوچک بماند: قراردادهای channel به‌صورت سه shard وزنی اجرا می‌شوند، laneهای کوچک unit مربوط به core جفت شده‌اند، auto-reply به‌صورت چهار worker متوازن اجرا می‌شود (با subtree مربوط به reply که به shardهای agent-runner، dispatch، و commands/state-routing تقسیم شده است)، و configهای agentic مربوط به Gateway/Plugin به‌جای انتظار برای artifactهای ساخته‌شده، در سراسر کارهای موجود agentic Node فقط-source پخش شده‌اند. تست‌های گسترده browser، QA، media، و Pluginهای miscellaneous به‌جای catch-all مشترک Plugin از configهای اختصاصی Vitest خود استفاده می‌کنند. shardهای include-pattern ورودی‌های timing را با نام shard در CI ثبت می‌کنند، بنابراین `.artifacts/vitest-shard-timings.json` می‌تواند یک config کامل را از یک shard فیلترشده تشخیص دهد. `check-additional` کار compile/canary مربوط به package-boundary را کنار هم نگه می‌دارد و معماری topology runtime را از پوشش gateway watch جدا می‌کند؛ shard مربوط به boundary guard، guardهای مستقل کوچک خود را به‌صورت concurrent داخل یک کار اجرا می‌کند. Gateway watch، تست‌های channel، و shard مربوط به support-boundary در core پس از اینکه `dist/` و `dist-runtime/` از قبل ساخته شدند، به‌صورت concurrent داخل `build-artifacts` اجرا می‌شوند.
 
-از `Package Acceptance` وقتی استفاده کنید که پرسش این است: «آیا این package قابل نصب OpenClaw به‌عنوان محصول کار می‌کند؟» این با CI عادی متفاوت است: CI عادی درخت source را اعتبارسنجی می‌کند، در حالی که package acceptance یک tarball واحد را از طریق همان Docker E2E harness که کاربران پس از نصب یا به‌روزرسانی اجرا می‌کنند، اعتبارسنجی می‌کند.
+Android CI هم `testPlayDebugUnitTest` و هم `testThirdPartyDebugUnitTest` را اجرا می‌کند و سپس APK debug مربوط به Play را می‌سازد. flavor شخص ثالث source set یا manifest جداگانه ندارد؛ lane unit-test آن همچنان flavor را با flagهای BuildConfig مربوط به SMS/call-log compile می‌کند، در حالی که از یک کار تکراری packaging برای APK debug در هر push مرتبط با Android جلوگیری می‌کند.
 
-این workflow چهار job دارد:
+shard مربوط به `check-dependencies`، `pnpm deadcode:dependencies` (یک عبور production Knip فقط برای dependency که به آخرین نسخه Knip pin شده است، با minimum release age مربوط به pnpm که برای install از طریق `dlx` غیرفعال شده است) و `pnpm deadcode:unused-files` را اجرا می‌کند؛ دومی یافته‌های production unused-file در Knip را با `scripts/deadcode-unused-files.allowlist.mjs` مقایسه می‌کند. guard فایل استفاده‌نشده وقتی یک PR فایل استفاده‌نشده جدید و reviewنشده اضافه کند یا entry کهنه‌ای در allowlist باقی بگذارد fail می‌شود، در حالی که سطح‌های intentional dynamic Plugin، generated، build، live-test، و package bridge را که Knip نمی‌تواند به‌صورت static resolve کند حفظ می‌کند.
 
-1. `resolve_package`، `workflow_ref` را checkout می‌کند، یک نامزد package را resolve می‌کند، `.artifacts/docker-e2e-package/openclaw-current.tgz` را می‌نویسد، `.artifacts/docker-e2e-package/package-candidate.json` را می‌نویسد، هر دو را به‌عنوان artifact `package-under-test` آپلود می‌کند، و source، workflow ref، package ref، version، SHA-256 و profile را در خلاصه step در GitHub چاپ می‌کند.
-2. `docker_acceptance`، `openclaw-live-and-e2e-checks-reusable.yml` را با `ref=workflow_ref` و `package_artifact_name=package-under-test` فراخوانی می‌کند. workflow قابل استفاده مجدد آن artifact را دانلود می‌کند، موجودی tarball را اعتبارسنجی می‌کند، در صورت نیاز imageهای Docker با package-digest را آماده می‌کند، و مسیرهای Docker انتخاب‌شده را به‌جای pack کردن checkout workflow، علیه آن package اجرا می‌کند. وقتی یک profile چند `docker_lanes` هدفمند را انتخاب کند، workflow قابل استفاده مجدد package و imageهای مشترک را یک بار آماده می‌کند، سپس آن laneها را به‌صورت jobهای Docker هدفمند موازی با artifactهای منحصربه‌فرد پخش می‌کند.
-3. `package_telegram` به‌صورت اختیاری `NPM Telegram Beta E2E` را فراخوانی می‌کند. وقتی `telegram_mode` برابر `none` نباشد اجرا می‌شود و وقتی Package Acceptance یکی را resolve کرده باشد، همان artifact `package-under-test` را نصب می‌کند؛ dispatch مستقل Telegram همچنان می‌تواند یک spec npm منتشرشده را نصب کند.
-4. `summary` اگر resolve package، Docker acceptance یا مسیر اختیاری Telegram شکست خورده باشد، workflow را fail می‌کند.
+## Dispatchهای دستی
 
-منابع نامزد:
+dispatchهای دستی CI همان گراف کاری CI عادی را اجرا می‌کنند، اما هر lane scoped غیر-Android را forced on می‌کنند: shardهای Linux Node، shardهای bundled-plugin، قراردادهای channel، سازگاری Node 22، `check`، `check-additional`، build smoke، بررسی‌های docs، Python skills، Windows، macOS، و Control UI i18n. dispatchهای دستی standalone CI فقط با `include_android=true`، Android را اجرا می‌کنند؛ umbrella کامل release با پاس دادن `include_android=true`، Android را فعال می‌کند. بررسی‌های static مربوط به Plugin prerelease، shard فقط-release با نام `agentic-plugins`، sweep کامل batch مربوط به extension، و laneهای Docker مربوط به Plugin prerelease از CI مستثنا هستند. مجموعه prerelease مربوط به Docker فقط زمانی اجرا می‌شود که `Full Release Validation` workflow جداگانه `Plugin Prerelease` را با gate مربوط به release-validation فعال dispatch کند.
 
-- `source=npm`: فقط `openclaw@beta`، `openclaw@latest`، یا یک نسخه انتشار دقیق OpenClaw مانند `openclaw@2026.4.27-beta.2` را می‌پذیرد. از این برای پذیرش beta/stable منتشرشده استفاده کنید.
-- `source=ref`: یک branch، tag یا commit SHA کامل مطمئن `package_ref` را pack می‌کند. resolver، branchها/tagهای OpenClaw را fetch می‌کند، بررسی می‌کند commit انتخاب‌شده از تاریخچه branch مخزن یا یک tag انتشار قابل دسترسی باشد، deps را در یک worktree جداشده نصب می‌کند، و آن را با `scripts/package-openclaw-for-docker.mjs` pack می‌کند.
-- `source=url`: یک `.tgz` از HTTPS دانلود می‌کند؛ `package_sha256` الزامی است.
-- `source=artifact`: یک `.tgz` را از `artifact_run_id` و `artifact_name` دانلود می‌کند؛ `package_sha256` اختیاری است اما باید برای artifactهای به‌اشتراک‌گذاشته‌شده خارجی ارائه شود.
+اجراهای دستی از یک گروه concurrency یکتا استفاده می‌کنند تا full suite مربوط به release-candidate با push یا اجرای PR دیگری روی همان ref cancel نشود. input اختیاری `target_ref` به یک caller trusted اجازه می‌دهد آن گراف را روی یک branch، tag، یا commit SHA کامل اجرا کند، در حالی که از فایل workflow مربوط به dispatch ref منتخب استفاده می‌کند.
 
-`workflow_ref` و `package_ref` را جدا نگه دارید. `workflow_ref` کد workflow/harness مطمئنی است که تست را اجرا می‌کند. `package_ref`، commit منبعی است که وقتی `source=ref` باشد pack می‌شود. این اجازه می‌دهد harness تست فعلی، commitهای منبع مطمئن قدیمی‌تر را بدون اجرای منطق workflow قدیمی اعتبارسنجی کند.
+```bash
+gh workflow run ci.yml --ref release/YYYY.M.D
+gh workflow run ci.yml --ref main -f target_ref=<branch-or-sha> -f include_android=true
+gh workflow run full-release-validation.yml --ref main -f ref=<branch-or-sha>
+```
 
-Profileها به پوشش Docker نگاشت می‌شوند:
+## Runnerها
 
-- `smoke`: `npm-onboard-channel-agent`، `gateway-network`، `config-reload`
-- `package`: `npm-onboard-channel-agent`، `doctor-switch`، `update-channel-switch`، `bundled-channel-deps-compat`، `plugins-offline`، `plugin-update`
-- `product`: `package` به‌علاوه `mcp-channels`، `cron-mcp-cleanup`، `openai-web-search-minimal`، `openwebui`
-- `full`: قطعه‌های کامل مسیر انتشار Docker با OpenWebUI
-- `custom`: `docker_lanes` دقیق؛ وقتی `suite_profile=custom` باشد الزامی است
+| اجراکننده                           | کارها                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ubuntu-24.04`                   | `preflight`، کارهای امنیتی سریع و تجمیع‌ها (`security-scm-fast`، `security-dependency-audit`، `security-fast`)، بررسی‌های سریع پروتکل/قرارداد/باندل‌شده، بررسی‌های شاردشده قرارداد کانال، شاردهای `check` به‌جز lint، شاردها و تجمیع‌های `check-additional`، راستی‌آزمایی‌های تجمیعی آزمون Node، بررسی‌های مستندات، Skills پایتون، workflow-sanity، labeler، auto-response؛ پیش‌پرواز install-smoke نیز از Ubuntu میزبانی‌شده در GitHub استفاده می‌کند تا ماتریس Blacksmith بتواند زودتر در صف قرار گیرد |
+| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`، شاردهای سبک‌تر Pluginها، `checks-fast-core`، `checks-node-compat-node22`، `check-prod-types` و `check-test-types`                                                                                                                                                                                                                                                                                                                   |
+| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`، build-smoke، شاردهای آزمون Node روی لینوکس، شاردهای آزمون Pluginهای باندل‌شده، `android`                                                                                                                                                                                                                                                                                                                                                                           |
+| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint` (آن‌قدر به CPU حساس است که 8 vCPU بیش از مقداری که صرفه‌جویی کردند هزینه داشتند)؛ بیلدهای Docker برای install-smoke (زمان صف 32-vCPU بیش از مقداری که صرفه‌جویی کرد هزینه داشت)                                                                                                                                                                                                                                                                                                                     |
+| `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `blacksmith-6vcpu-macos-latest`  | `macos-node` روی `openclaw/openclaw`؛ فورک‌ها به `macos-latest` برمی‌گردند                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `blacksmith-12vcpu-macos-latest` | `macos-swift` روی `openclaw/openclaw`؛ فورک‌ها به `macos-latest` برمی‌گردند                                                                                                                                                                                                                                                                                                                                                                                                 |
 
-Release checks، Package Acceptance را با `source=ref`، `package_ref=<release-ref>`، `workflow_ref=<release workflow ref>`، `suite_profile=custom`، `docker_lanes='bundled-channel-deps-compat plugins-offline'` و `telegram_mode=mock-openai` فراخوانی می‌کند. قطعه‌های Docker مسیر انتشار، laneهای هم‌پوشان package/update/plugin را پوشش می‌دهند، در حالی که Package Acceptance اثبات bundled-channel compat بومی artifact، Plugin آفلاین و Telegram را علیه همان tarball package resolve‌شده نگه می‌دارد.
-Cross-OS release checks همچنان onboarding، installer و رفتار platform مختص OS را پوشش می‌دهد؛ اعتبارسنجی محصول package/update باید با Package Acceptance شروع شود. laneهای fresh مربوط به packaged و installer در Windows نیز بررسی می‌کنند که یک package نصب‌شده بتواند یک browser-control override را از یک مسیر خام مطلق Windows import کند. smoke مربوط به agent-turn در OpenAI cross-OS به‌صورت پیش‌فرض وقتی `OPENCLAW_CROSS_OS_OPENAI_MODEL` تنظیم شده باشد از آن استفاده می‌کند، وگرنه از `openai/gpt-5.4-mini` استفاده می‌کند، تا اثبات نصب و Gateway سریع و قطعی بماند. laneهای اختصاصی live provider/model همچنان مسیریابی گسترده‌تر model، از جمله پیش‌فرض‌های کندتر frontier، را پوشش می‌دهند.
+## معادل‌های محلی
 
-Package Acceptance پنجره‌های legacy-compatibility محدود برای packageهایی دارد که از قبل منتشر شده‌اند. packageهای تا `2026.4.25`، از جمله `2026.4.25-beta.*`، ممکن است از مسیر سازگاری برای ورودی‌های شناخته‌شده QA خصوصی در `dist/postinstall-inventory.json` استفاده کنند که به فایل‌های حذف‌شده از tarball اشاره می‌کنند؛ `doctor-switch` ممکن است زیرحالت persistence مربوط به `gateway install --wrapper` را وقتی package آن flag را expose نمی‌کند رد کند؛ `update-channel-switch` ممکن است `pnpm.patchedDependencies` مفقود را از fake git fixture مشتق‌شده از tarball prune کند و ممکن است `update.channel` persist‌شده مفقود را log کند؛ smokeهای Plugin ممکن است مکان‌های legacy install-record را بخوانند یا persistence مفقود marketplace install-record را بپذیرند؛ و `plugin-update` ممکن است migration metadata پیکربندی را اجازه دهد، در حالی که همچنان الزام می‌کند install record و رفتار no-reinstall بدون تغییر بمانند. package منتشرشده `2026.4.26` نیز ممکن است برای فایل‌های stamp مربوط به metadata ساخت محلی که قبلا منتشر شده بودند هشدار دهد. packageهای بعدی باید قراردادهای مدرن را برآورده کنند؛ همان شرایط به‌جای warn یا skip، fail می‌شوند.
+```bash
+pnpm changed:lanes                            # inspect the local changed-lane classifier for origin/main...HEAD
+pnpm check:changed                            # smart local check gate: changed typecheck/lint/guards by boundary lane
+pnpm check                                    # fast local gate: prod tsgo + sharded lint + parallel fast guards
+pnpm check:test-types
+pnpm check:timed                              # same gate with per-stage timings
+pnpm build:strict-smoke
+pnpm check:architecture
+pnpm test:gateway:watch-regression
+pnpm test                                     # vitest tests
+pnpm test:changed                             # cheap smart changed Vitest targets
+pnpm test:channels
+pnpm test:contracts:channels
+pnpm check:docs                               # docs format + lint + broken links
+pnpm build                                    # build dist when CI artifact/build-smoke lanes matter
+pnpm ci:timings                               # summarize the latest origin/main push CI run
+pnpm ci:timings:recent                        # compare recent successful main CI runs
+node scripts/ci-run-timings.mjs <run-id>      # summarize wall time, queue time, and slowest jobs
+node scripts/ci-run-timings.mjs --latest-main # ignore issue/comment noise and choose origin/main push CI
+node scripts/ci-run-timings.mjs --recent 10   # compare recent successful main CI runs
+pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json
+pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json
+```
 
-مثال‌ها:
+## اعتبارسنجی کامل انتشار
+
+`Full Release Validation` گردش‌کار چتری دستی برای «اجرای همه‌چیز پیش از انتشار» است. یک شاخه، تگ، یا SHA کامل کامیت را می‌پذیرد، گردش‌کار دستی `CI` را با همان هدف dispatch می‌کند، `Plugin Prerelease` را برای اثبات مخصوص انتشارِ Plugin/بسته/استاتیک/Docker dispatch می‌کند، و `OpenClaw Release Checks` را برای install smoke، پذیرش بسته، مجموعه‌های مسیر انتشار Docker، live/E2E، OpenWebUI، هم‌ترازی QA Lab، Matrix و مسیرهای Telegram dispatch می‌کند. همچنین وقتی مشخصه بسته منتشرشده ارائه شود، می‌تواند گردش‌کار پس از انتشار `NPM Telegram Beta E2E` را اجرا کند.
+
+`release_profile` گستره live/provider ارسال‌شده به بررسی‌های انتشار را کنترل می‌کند:
+
+- `minimum` سریع‌ترین مسیرهای حیاتی انتشار OpenAI/هسته را نگه می‌دارد.
+- `stable` مجموعه پایدار provider/backend را اضافه می‌کند.
+- `full` ماتریس گسترده advisory provider/media را اجرا می‌کند.
+
+این چتر شناسه اجراهای فرزند dispatch‌شده را ثبت می‌کند، و کار نهایی `Verify full validation` نتیجه‌های فعلی اجراهای فرزند را دوباره بررسی می‌کند و جدول‌های کندترین کارها را برای هر اجرای فرزند پیوست می‌کند. اگر یک گردش‌کار فرزند دوباره اجرا شود و سبز شود، فقط کار راستی‌آزمای والد را دوباره اجرا کنید تا نتیجه چتر و خلاصه زمان‌بندی به‌روزرسانی شود.
+
+برای بازیابی، هر دو `Full Release Validation` و `OpenClaw Release Checks` مقدار `rerun_group` را می‌پذیرند. برای یک نامزد انتشار از `all`، فقط برای فرزند CI کامل عادی از `ci`، برای هر فرزند انتشار از `release-checks`، یا از یک گروه محدودتر استفاده کنید: `install-smoke`، `cross-os`، `live-e2e`، `package`، `qa`، `qa-parity`، `qa-live`، یا `npm-telegram` روی چتر. این کار اجرای دوباره یک جعبه انتشار شکست‌خورده را پس از یک اصلاح متمرکز محدود نگه می‌دارد.
+
+`OpenClaw Release Checks` از ref مورد اعتماد گردش‌کار استفاده می‌کند تا ref انتخاب‌شده را یک‌بار به یک tarball با نام `release-package-under-test` resolve کند، سپس همان artifact را هم به گردش‌کار Docker مسیر انتشار live/E2E و هم به شارد پذیرش بسته می‌دهد. این کار بایت‌های بسته را در سراسر جعبه‌های انتشار یکسان نگه می‌دارد و از بسته‌بندی دوباره همان نامزد در چندین کار فرزند جلوگیری می‌کند.
+
+## شاردهای Live و E2E
+
+فرزند live/E2E انتشار پوشش گسترده بومی `pnpm test:live` را نگه می‌دارد، اما آن را به‌جای یک کار ترتیبی، به‌صورت شاردهای نام‌گذاری‌شده از طریق `scripts/test-live-shard.mjs` اجرا می‌کند:
+
+- `native-live-src-agents`
+- `native-live-src-gateway-core`
+- کارهای provider-filtered `native-live-src-gateway-profiles`
+- `native-live-src-gateway-backends`
+- `native-live-test`
+- `native-live-extensions-a-k`
+- `native-live-extensions-l-n`
+- `native-live-extensions-openai`
+- `native-live-extensions-o-z-other`
+- `native-live-extensions-xai`
+- شاردهای جداشده صوت/ویدئوی media و شاردهای موسیقی provider-filtered
+
+این کار همان پوشش فایل را حفظ می‌کند و در عین حال اجرای دوباره و عیب‌یابی شکست‌های کند providerهای live را آسان‌تر می‌کند. نام‌های شارد تجمیعی `native-live-extensions-o-z`، `native-live-extensions-media` و `native-live-extensions-media-music` برای اجرای دوباره دستی یک‌مرحله‌ای همچنان معتبر می‌مانند.
+
+شاردهای media بومی live در `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04` اجرا می‌شوند که توسط گردش‌کار `Live Media Runner Image` ساخته می‌شود. آن image از پیش `ffmpeg` و `ffprobe` را نصب می‌کند؛ کارهای media فقط پیش از راه‌اندازی، باینری‌ها را راستی‌آزمایی می‌کنند. مجموعه‌های live متکی به Docker را روی runnerهای عادی Blacksmith نگه دارید؛ کارهای container جای مناسبی برای راه‌اندازی آزمون‌های Docker تودرتو نیستند.
+
+شاردهای live مدل/backend متکی به Docker برای هر کامیت انتخاب‌شده از یک image مشترک جداگانه `ghcr.io/openclaw/openclaw-live-test:<sha>` استفاده می‌کنند. گردش‌کار انتشار live آن image را یک‌بار می‌سازد و push می‌کند، سپس شاردهای مدل live در Docker، Gateway، backend CLI، اتصال ACP، و harness کدکس با `OPENCLAW_SKIP_DOCKER_BUILD=1` اجرا می‌شوند. اگر این شاردها هدف کامل Docker منبع را مستقل دوباره بسازند، اجرای انتشار بد پیکربندی شده است و زمان دیواری را صرف بیلدهای تکراری image خواهد کرد.
+
+## پذیرش بسته
+
+وقتی پرسش این است که «آیا این بسته قابل نصب OpenClaw به‌عنوان یک محصول کار می‌کند؟» از `Package Acceptance` استفاده کنید. این با CI عادی فرق دارد: CI عادی درخت منبع را اعتبارسنجی می‌کند، در حالی که پذیرش بسته یک tarball منفرد را از طریق همان harness Docker E2E اعتبارسنجی می‌کند که کاربران پس از نصب یا به‌روزرسانی اجرا می‌کنند.
+
+### کارها
+
+1. `resolve_package`، `workflow_ref` را checkout می‌کند، یک نامزد بسته را resolve می‌کند، `.artifacts/docker-e2e-package/openclaw-current.tgz` را می‌نویسد، `.artifacts/docker-e2e-package/package-candidate.json` را می‌نویسد، هر دو را به‌عنوان artifact با نام `package-under-test` بارگذاری می‌کند، و منبع، ref گردش‌کار، ref بسته، نسخه، SHA-256، و profile را در خلاصه گام GitHub چاپ می‌کند.
+2. `docker_acceptance`، `openclaw-live-and-e2e-checks-reusable.yml` را با `ref=workflow_ref` و `package_artifact_name=package-under-test` فراخوانی می‌کند. گردش‌کار قابل استفاده مجدد آن artifact را دانلود می‌کند، inventory tarball را اعتبارسنجی می‌کند، در صورت نیاز imageهای Docker مربوط به package-digest را آماده می‌کند، و مسیرهای Docker انتخاب‌شده را به‌جای بسته‌بندی checkout گردش‌کار، در برابر آن بسته اجرا می‌کند. وقتی یک profile چند `docker_lanes` هدفمند را انتخاب می‌کند، گردش‌کار قابل استفاده مجدد بسته و imageهای مشترک را یک‌بار آماده می‌کند، سپس آن مسیرها را به‌صورت کارهای Docker هدفمند موازی با artifactهای یکتا fan out می‌کند.
+3. `package_telegram` به‌صورت اختیاری `NPM Telegram Beta E2E` را فراخوانی می‌کند. وقتی `telegram_mode` برابر `none` نباشد اجرا می‌شود و اگر Package Acceptance یک بسته را resolve کرده باشد، همان artifact با نام `package-under-test` را نصب می‌کند؛ dispatch مستقل Telegram همچنان می‌تواند یک مشخصه npm منتشرشده را نصب کند.
+4. اگر resolve بسته، پذیرش Docker، یا مسیر اختیاری Telegram شکست خورده باشد، `summary` گردش‌کار را fail می‌کند.
+
+### منابع نامزدها
+
+- `source=npm` فقط `openclaw@beta`، `openclaw@latest`، یا یک نسخه انتشار دقیق OpenClaw مانند `openclaw@2026.4.27-beta.2` را می‌پذیرد. از این گزینه برای پذیرش بتا/پایدار منتشرشده استفاده کنید.
+- `source=ref` یک شاخه، برچسب، یا SHA کامل کامیتِ مورد اعتماد `package_ref` را بسته‌بندی می‌کند. حل‌کننده شاخه‌ها/برچسب‌های OpenClaw را دریافت می‌کند، بررسی می‌کند که کامیت انتخاب‌شده از تاریخچه شاخه مخزن یا یک برچسب انتشار قابل دسترسی باشد، وابستگی‌ها را در یک worktree جداشده نصب می‌کند، و آن را با `scripts/package-openclaw-for-docker.mjs` بسته‌بندی می‌کند.
+- `source=url` یک `.tgz` از HTTPS دانلود می‌کند؛ `package_sha256` الزامی است.
+- `source=artifact` یک `.tgz` را از `artifact_run_id` و `artifact_name` دانلود می‌کند؛ `package_sha256` اختیاری است اما برای artifactهای به‌اشتراک‌گذاشته‌شده بیرونی باید ارائه شود.
+
+`workflow_ref` و `package_ref` را جدا نگه دارید. `workflow_ref` کد workflow/harness مورد اعتمادی است که آزمون را اجرا می‌کند. `package_ref` کامیت مبدأیی است که هنگام `source=ref` بسته‌بندی می‌شود. این کار به harness آزمون فعلی اجازه می‌دهد کامیت‌های مبدأ قدیمی‌ترِ مورد اعتماد را بدون اجرای منطق workflow قدیمی اعتبارسنجی کند.
+
+### پروفایل‌های مجموعه آزمون
+
+- `smoke` — `npm-onboard-channel-agent`، `gateway-network`، `config-reload`
+- `package` — `npm-onboard-channel-agent`، `doctor-switch`، `update-channel-switch`، `bundled-channel-deps-compat`، `plugins-offline`، `plugin-update`
+- `product` — `package` به‌علاوه `mcp-channels`، `cron-mcp-cleanup`، `openai-web-search-minimal`، `openwebui`
+- `full` — بخش‌های کامل مسیر انتشار Docker با OpenWebUI
+- `custom` — مقدار دقیق `docker_lanes`؛ وقتی `suite_profile=custom` باشد الزامی است
+
+پروفایل `package` از پوشش آفلاین Plugin استفاده می‌کند تا اعتبارسنجی بسته منتشرشده به دسترس‌بودن زنده ClawHub وابسته نباشد. مسیر اختیاری Telegram از artifact با نام `package-under-test` در `NPM Telegram Beta E2E` دوباره استفاده می‌کند، در حالی که مسیر مشخصه npm منتشرشده برای dispatchهای مستقل حفظ می‌شود.
+
+بررسی‌های انتشار Package Acceptance را با `source=ref`، `package_ref=<release-ref>`، `workflow_ref=<release workflow ref>`، `suite_profile=custom`، `docker_lanes='bundled-channel-deps-compat plugins-offline'`، و `telegram_mode=mock-openai` فراخوانی می‌کنند. بخش‌های Docker مسیر انتشار، مسیرهای هم‌پوشان package/update/plugin را پوشش می‌دهند؛ Package Acceptance سازگاری artifact-native کانال همراه، Plugin آفلاین، و اثبات Telegram را در برابر همان tarball بسته حل‌شده نگه می‌دارد. بررسی‌های انتشار Cross-OS همچنان onboarding، نصب‌کننده، و رفتارهای پلتفرمیِ مخصوص سیستم‌عامل را پوشش می‌دهند؛ اعتبارسنجی محصول package/update باید از Package Acceptance شروع شود. مسیرهای تازه Windows packaged و installer نیز بررسی می‌کنند که یک بسته نصب‌شده بتواند یک override کنترل مرورگر را از یک مسیر خام و مطلق Windows import کند. smoke چرخش عامل Cross-OS مربوط به OpenAI به‌طور پیش‌فرض وقتی `OPENCLAW_CROSS_OS_OPENAI_MODEL` تنظیم شده باشد از آن استفاده می‌کند، وگرنه از `openai/gpt-5.4-mini`، تا اثبات نصب و Gateway سریع و قطعی بماند.
+
+### بازه‌های سازگاری قدیمی
+
+Package Acceptance برای بسته‌های از پیش منتشرشده، بازه‌های سازگاری قدیمیِ محدود دارد. بسته‌ها تا `2026.4.25`، شامل `2026.4.25-beta.*`، می‌توانند از مسیر سازگاری استفاده کنند:
+
+- ورودی‌های QA خصوصی شناخته‌شده در `dist/postinstall-inventory.json` ممکن است به فایل‌های حذف‌شده از tarball اشاره کنند؛
+- `doctor-switch` ممکن است زیرمورد پایداری `gateway install --wrapper` را وقتی بسته آن flag را ارائه نمی‌کند رد کند؛
+- `update-channel-switch` ممکن است `pnpm.patchedDependencies`های مفقود را از fixture جعلی git مشتق‌شده از tarball حذف کند و ممکن است نبود `update.channel` پایدارشده را log کند؛
+- smokeهای Plugin ممکن است مکان‌های قدیمی install-record را بخوانند یا نبود پایداری install-record بازارچه را بپذیرند؛
+- `plugin-update` ممکن است مهاجرت فراداده پیکربندی را مجاز بداند، در حالی که همچنان الزام می‌کند install record و رفتار no-reinstall بدون تغییر بمانند.
+
+بسته منتشرشده `2026.4.26` نیز ممکن است برای فایل‌های stamp فراداده build محلی که از قبل ارسال شده بودند هشدار بدهد. بسته‌های بعدی باید قراردادهای مدرن را برآورده کنند؛ همان شرایط به‌جای هشدار یا ردشدن، شکست می‌خورند.
+
+### نمونه‌ها
 
 ```bash
 # Validate the current beta package with product-level coverage.
@@ -105,151 +238,152 @@ gh workflow run package-acceptance.yml \
   -f docker_lanes='install-e2e plugin-update'
 ```
 
-هنگام اشکال‌زدایی اجرای ناموفق پذیرش بسته، از خلاصه‌ی `resolve_package`
-شروع کنید تا منبع بسته، نسخه و SHA-256 را تأیید کنید. سپس اجرای فرزند
-`docker_acceptance` و آرتیفکت‌های Docker آن را بررسی کنید:
-`.artifacts/docker-tests/**/summary.json`، `failures.json`، لاگ‌های lane، زمان‌بندی‌های phase
-و دستورهای اجرای دوباره. به‌جای اجرای دوباره‌ی اعتبارسنجی کامل انتشار، ترجیحاً پروفایل بسته‌ی ناموفق یا
-laneهای دقیق Docker را دوباره اجرا کنید.
+هنگام اشکال‌زدایی اجرای ناموفق پذیرش بسته، از خلاصه `resolve_package` شروع کنید تا مبدأ بسته، نسخه، و SHA-256 را تأیید کنید. سپس اجرای فرزند `docker_acceptance` و artifactهای Docker آن را بررسی کنید: `.artifacts/docker-tests/**/summary.json`، `failures.json`، logهای مسیر، زمان‌بندی‌های مرحله، و فرمان‌های اجرای دوباره. به‌جای اجرای دوباره اعتبارسنجی کامل انتشار، اجرای دوباره پروفایل بسته ناموفق یا مسیرهای دقیق Docker را ترجیح دهید.
 
-QA Lab laneهای CI اختصاصی بیرون از workflow اصلی با scope هوشمند دارد.
-workflow `Parity gate` روی تغییرات PR مطابق و dispatch دستی اجرا می‌شود؛
-runtime خصوصی QA را می‌سازد و packهای agentic مربوط به mock GPT-5.5 و Opus 4.6 را
-مقایسه می‌کند. workflow `QA-Lab - All Lanes` هر شب روی `main` و با
-dispatch دستی اجرا می‌شود؛ gate برابری mock، lane زنده‌ی Matrix و laneهای زنده‌ی
-Telegram و Discord را به‌صورت jobهای موازی پخش می‌کند. jobهای زنده از محیط
-`qa-live-shared` استفاده می‌کنند، و Telegram/Discord از leaseهای Convex استفاده می‌کنند. بررسی‌های انتشار
-laneهای transport زنده‌ی Matrix و Telegram را با provider mock قطعی و مدل‌های واجد شرایط mock
-(`mock-openai/gpt-5.5` و
-`mock-openai/gpt-5.5-alt`) اجرا می‌کنند تا contract کانال از تأخیر مدل زنده
-و راه‌اندازی عادی provider-plugin جدا بماند. Gateway زنده‌ی transport همچنین
-جست‌وجوی memory را غیرفعال می‌کند، چون برابری QA رفتار memory را جداگانه پوشش می‌دهد؛
-اتصال provider توسط suiteهای جداگانه‌ی مدل زنده، provider بومی و provider Docker پوشش داده می‌شود. Matrix برای gateهای زمان‌بندی‌شده و انتشار از `--profile fast` استفاده می‌کند،
-و فقط وقتی CLI checkout شده از آن پشتیبانی کند، `--fail-fast` را اضافه می‌کند. پیش‌فرض CLI
-و ورودی workflow دستی همچنان `all` است؛ dispatch دستی `matrix_profile=all`
-همیشه پوشش کامل Matrix را به jobهای `transport`، `media`،
-`e2ee-smoke`، `e2ee-deep` و `e2ee-cli` shard می‌کند. `OpenClaw Release Checks` همچنین
-laneهای حیاتی انتشار QA Lab را پیش از تأیید انتشار اجرا می‌کند؛ gate برابری QA آن
-packهای candidate و baseline را به‌صورت jobهای lane موازی اجرا می‌کند، سپس
-هر دو آرتیفکت را در یک job گزارش کوچک دانلود می‌کند تا مقایسه‌ی نهایی برابری انجام شود.
-مسیر landing PR را پشت `Parity gate` قرار ندهید، مگر اینکه تغییر واقعاً
-runtime QA، برابری model-pack یا surfaceای را لمس کند که workflow برابری مالک آن است.
-برای اصلاحات عادی کانال، config، docs یا unit-test، آن را یک سیگنال اختیاری
-در نظر بگیرید و به شواهد CI/check دارای scope عمل کنید.
+## smoke نصب
 
-workflow `Duplicate PRs After Merge` یک workflow دستی نگه‌دارنده برای
-پاک‌سازی duplicate پس از land است. به‌صورت پیش‌فرض dry-run است و فقط PRهای صراحتاً
-فهرست‌شده را وقتی `apply=true` باشد می‌بندد. پیش از تغییر دادن GitHub، تأیید می‌کند که
-PR land شده merge شده است و هر duplicate یا issue ارجاع‌شده‌ی مشترک دارد
-یا hunkهای تغییر یافته‌ی هم‌پوشان.
+workflow جداگانه `Install Smoke` همان اسکریپت محدوده را از طریق job خودش با نام `preflight` دوباره استفاده می‌کند. این workflow پوشش smoke را به `run_fast_install_smoke` و `run_full_install_smoke` تقسیم می‌کند.
 
-workflow `CodeQL` عمداً یک scanner امنیتی narrow first-pass است،
-نه sweep کامل repository. اجراهای روزانه و دستی، کد workflowهای Actions
-به‌علاوه‌ی پرریسک‌ترین surfaceهای احراز هویت، secrets، sandbox، Cron و
-Gateway در JavaScript/TypeScript را با queryهای امنیتی high-precision زیر category
-`/codeql-critical-security/core-auth-secrets` scan می‌کنند. job
-channel-runtime-boundary به‌صورت جداگانه contractهای پیاده‌سازی کانال core
-به‌علاوه‌ی runtime کانال Plugin، Gateway، Plugin SDK، secrets و
-touchpointهای audit را زیر category `/codeql-critical-security/channel-runtime-boundary`
-scan می‌کند تا سیگنال امنیت کانال بتواند بدون گسترده‌تر کردن category پایه‌ی
-auth/secrets مقیاس بگیرد. job network-ssrf-boundary سطح‌های SSRF در core، parsing IP،
-network guard، web-fetch و سیاست SSRF در Plugin SDK را زیر category
-`/codeql-critical-security/network-ssrf-boundary` scan می‌کند تا سیگنال مرز اعتماد شبکه
-از baseline امنیتی auth/secrets جدا بماند.
-job mcp-process-tool-boundary سرورهای MCP، helperهای اجرای process،
-تحویل outbound و gateهای اجرای tool در agent را زیر category
-`/codeql-critical-security/mcp-process-tool-boundary` scan می‌کند تا سیگنال مرز command و
-tool از baseline احراز هویت/secrets و shard کیفیت غیرامنیتی MCP/process جدا بماند. job plugin-trust-boundary
-سطح‌های اعتماد نصب plugin، loader، manifest، registry، staging وابستگی runtime،
-source-loading، public-surface و contract بسته‌ی Plugin SDK
-را زیر category `/codeql-critical-security/plugin-trust-boundary` scan می‌کند تا سیگنال supply-chain و runtime-loading plugin
-از کد پیاده‌سازی pluginهای bundled و shard کیفیت غیرامنیتی plugin جدا بماند.
+- **مسیر سریع** برای pull requestهایی اجرا می‌شود که سطح‌های Docker/package، تغییرات package/manifest مربوط به Pluginهای همراه، یا سطح‌های Plugin/کانال/Gateway/Plugin SDK هسته را که jobهای Docker smoke تمرین می‌کنند لمس می‌کنند. تغییرات فقط-مبدأ در Plugin همراه، ویرایش‌های فقط-آزمون، و ویرایش‌های فقط-مستندات workerهای Docker را رزرو نمی‌کنند. مسیر سریع تصویر Dockerfile ریشه را یک‌بار build می‌کند، CLI را بررسی می‌کند، smoke مربوط به CLI حذف agents در shared-workspace را اجرا می‌کند، e2e کانتینری gateway-network را اجرا می‌کند، یک آرگومان build برای افزونه همراه را تأیید می‌کند، و پروفایل Docker محدودِ bundled-plugin را با timeout تجمیعی ۲۴۰ ثانیه‌ای برای فرمان اجرا می‌کند (هر اجرای Docker سناریو جداگانه capped می‌شود).
+- **مسیر کامل** نصب بسته QR و پوشش Docker/update نصب‌کننده را برای اجراهای زمان‌بندی‌شده شبانه، dispatchهای دستی، بررسی‌های انتشار workflow-call، و pull requestهایی نگه می‌دارد که واقعاً سطح‌های installer/package/Docker را لمس می‌کنند. در حالت کامل، install-smoke یک تصویر smoke مربوط به Dockerfile ریشه GHCR با target-SHA را آماده یا دوباره استفاده می‌کند، سپس نصب بسته QR، smokeهای Dockerfile/Gateway ریشه، smokeهای installer/update، و E2E سریع Docker مربوط به bundled-plugin را به‌عنوان jobهای جداگانه اجرا می‌کند تا کار نصب‌کننده پشت smokeهای تصویر ریشه منتظر نماند.
 
-workflow `CodeQL Android Critical Security` shard زمان‌بندی‌شده‌ی امنیت Android است.
-برای CodeQL اپ Android را به‌صورت دستی روی کوچک‌ترین label runner لینوکس Blacksmith
-که workflow sanity می‌پذیرد می‌سازد و نتایج را
-زیر category `/codeql-critical-security/android` آپلود می‌کند.
+pushهای `main`، شامل کامیت‌های merge، مسیر کامل را اجباری نمی‌کنند؛ وقتی منطق changed-scope روی یک push پوشش کامل درخواست کند، workflow smoke سریع Docker را نگه می‌دارد و smoke کامل نصب را به اعتبارسنجی شبانه یا انتشار واگذار می‌کند.
 
-workflow `CodeQL macOS Critical Security` shard هفتگی/دستی امنیت macOS است.
-برای CodeQL اپ macOS را به‌صورت دستی روی macOS Blacksmith می‌سازد،
-نتایج build وابستگی را از SARIF آپلودشده فیلتر می‌کند و نتایج را
-زیر category `/codeql-critical-security/macos` آپلود می‌کند. آن را بیرون از workflow پیش‌فرض روزانه نگه دارید
-چون build macOS حتی وقتی تمیز باشد runtime را غالب می‌کند.
+smoke کند image-provider مربوط به نصب global با Bun جداگانه با `run_bun_global_install_smoke` کنترل می‌شود. این مورد در زمان‌بندی شبانه و از workflow بررسی‌های انتشار اجرا می‌شود، و dispatchهای دستی `Install Smoke` می‌توانند آن را فعال کنند، اما pull requestها و pushهای `main` این کار را نمی‌کنند. آزمون‌های Docker مربوط به QR و نصب‌کننده Dockerfileهای install-focused خودشان را نگه می‌دارند.
 
-workflow `CodeQL Critical Quality` shard غیرامنیتی متناظر است. فقط queryهای کیفیت
-JavaScript/TypeScript با severity خطا و غیرامنیتی را
-روی surfaceهای narrow و ارزشمند روی runner کوچک‌تر لینوکس Blacksmith اجرا می‌کند. dispatch دستی آن
-`profile=all|plugin-sdk-package-contract|plugin-sdk-reply-runtime|provider-runtime-boundary|session-diagnostics-boundary` را می‌پذیرد؛
-پروفایل‌های narrow hookهای آموزشی/iteration برای اجرای یک shard کیفیت
-به‌صورت جداگانه بدون dispatch کردن بقیه‌ی workflow هستند.
-job
-core-auth-secrets آن کد مرز امنیتی auth، secrets، sandbox، Cron و Gateway
-را زیر category جداگانه‌ی `/codeql-critical-quality/core-auth-secrets`
-scan می‌کند. job config-boundary
-contractهای config schema، migration، normalization و IO را زیر
-category جداگانه‌ی `/codeql-critical-quality/config-boundary` scan می‌کند. job
-gateway-runtime-boundary schemaهای protocol Gateway و contractهای method سرور
-را زیر category جداگانه‌ی
-`/codeql-critical-quality/gateway-runtime-boundary` scan می‌کند. job
-channel-runtime-boundary contractهای پیاده‌سازی کانال core را زیر
-category جداگانه‌ی `/codeql-critical-quality/channel-runtime-boundary` scan می‌کند. job
-agent-runtime-boundary اجرای command، dispatch مدل/provider،
-dispatch و queueهای auto-reply، و contractهای runtime control-plane مربوط به ACP را زیر
-category جداگانه‌ی `/codeql-critical-quality/agent-runtime-boundary` scan می‌کند. job
-mcp-process-runtime-boundary سرورهای MCP و bridgeهای tool، helperهای
-supervision process و contractهای تحویل outbound را زیر category جداگانه‌ی
-`/codeql-critical-quality/mcp-process-runtime-boundary` scan می‌کند. job
-memory-runtime-boundary، SDK میزبان memory، facadeهای runtime حافظه،
-aliasهای memory Plugin SDK، glue فعال‌سازی runtime حافظه و commandهای doctor حافظه
-را زیر category جداگانه‌ی `/codeql-critical-quality/memory-runtime-boundary`
-scan می‌کند. job session-diagnostics-boundary internals صف reply،
-queueهای تحویل session، helperهای binding/delivery برای session outbound، surfaceهای
-event/log bundle تشخیصی و contractهای CLI مربوط به session doctor را زیر category جداگانه‌ی
-`/codeql-critical-quality/session-diagnostics-boundary` scan می‌کند. job
-plugin-sdk-reply-runtime dispatch پاسخ inbound در Plugin SDK، helperهای
-payload/chunking/runtime پاسخ، گزینه‌های پاسخ کانال، queueهای تحویل و
-helperهای binding مربوط به session/thread را زیر category جداگانه‌ی
-`/codeql-critical-quality/plugin-sdk-reply-runtime` scan می‌کند. job
-provider-runtime-boundary نرمال‌سازی catalog مدل، auth و discovery مربوط به provider،
-ثبت runtime provider، defaults/catalogهای provider و registryهای provider مربوط به
-web/search/fetch/embedding را زیر category جداگانه‌ی
-`/codeql-critical-quality/provider-runtime-boundary` scan می‌کند. job
-ui-control-plane bootstrap مربوط به Control UI، persistence محلی، جریان‌های کنترل Gateway
-و contractهای runtime مربوط به control-plane task را زیر category جداگانه‌ی
-`/codeql-critical-quality/ui-control-plane` scan می‌کند. job
-web-media-runtime-boundary contractهای runtime مربوط به web fetch/search در core، media IO، فهم رسانه،
-image-generation و media-generation را زیر
-category جداگانه‌ی `/codeql-critical-quality/web-media-runtime-boundary` scan می‌کند. job
-plugin-boundary contractهای loader، registry، public-surface و entrypointهای Plugin SDK
-را زیر category جداگانه‌ی `/codeql-critical-quality/plugin-boundary`
-scan می‌کند. job plugin-sdk-package-contract سورس Plugin SDK سمت بسته‌ی منتشرشده
-و helperهای contract بسته‌ی plugin را زیر category جداگانه‌ی
-`/codeql-critical-quality/plugin-sdk-package-contract` scan می‌کند. workflow را
-از امنیت جدا نگه دارید تا findingهای کیفیت بتوانند بدون پنهان کردن سیگنال امنیتی
-زمان‌بندی، اندازه‌گیری، غیرفعال یا گسترش داده شوند.
-گسترش CodeQL برای Swift، Python و pluginهای bundled فقط پس از آنکه پروفایل‌های narrow
-runtime و سیگنال پایدار پیدا کردند، باید دوباره به‌عنوان کار follow-up دارای scope یا shard شده اضافه شود.
+## Docker E2E محلی
 
-workflow `Docs Agent` یک lane نگه‌داری event-driven در Codex برای هم‌راستا نگه داشتن
-docs موجود با تغییرات تازه land شده است. schedule خالص ندارد: یک
-اجرای CI موفق push غیر-bot روی `main` می‌تواند آن را trigger کند، و dispatch دستی می‌تواند
-مستقیماً آن را اجرا کند. invocationهای workflow-run وقتی `main` جلوتر رفته باشد یا وقتی
-یک اجرای غیر-skipped دیگر Docs Agent در یک ساعت گذشته ایجاد شده باشد skip می‌شوند. وقتی اجرا می‌شود، محدوده‌ی commit را از SHA منبع غیر-skipped قبلی Docs Agent تا
-`main` فعلی review می‌کند، بنابراین یک اجرای ساعتی می‌تواند همه‌ی تغییرات main انباشته‌شده از
-آخرین pass docs را پوشش دهد.
+`pnpm test:docker:all` یک تصویر shared live-test را از قبل build می‌کند، OpenClaw را یک‌بار به‌عنوان tarball مربوط به npm بسته‌بندی می‌کند، و دو تصویر مشترک `scripts/e2e/Dockerfile` می‌سازد:
 
-workflow `Test Performance Agent` یک lane نگه‌داری event-driven در Codex
-برای testهای کند است. schedule خالص ندارد: یک اجرای CI موفق push غیر-bot روی
-`main` می‌تواند آن را trigger کند، اما اگر invocation workflow-run دیگری در آن روز UTC
-قبلاً اجرا شده یا در حال اجرا باشد skip می‌شود. dispatch دستی آن gate فعالیت روزانه
-را دور می‌زند. این lane یک گزارش کامل grouped Vitest performance برای suite کامل می‌سازد، به Codex اجازه می‌دهد
-فقط اصلاحات کوچک performance test با حفظ coverage انجام دهد نه refactorهای گسترده،
-سپس گزارش suite کامل را دوباره اجرا می‌کند و تغییراتی را که تعداد baseline testهای passing را کاهش دهند reject می‌کند. اگر baseline testهای failing داشته باشد، Codex فقط می‌تواند
-failureهای واضح را اصلاح کند و گزارش suite کامل پس از agent باید پیش از
-commit شدن هر چیزی pass شود. وقتی `main` پیش از land شدن push bot جلو می‌رود، lane
-patch اعتبارسنجی‌شده را rebase می‌کند، `pnpm check:changed` را دوباره اجرا می‌کند و push را retry می‌کند؛
-patchهای stale دارای conflict skip می‌شوند. از Ubuntu میزبانی‌شده در GitHub استفاده می‌کند تا action مربوط به Codex
-بتواند همان وضعیت ایمنی drop-sudo مانند docs agent را حفظ کند.
+- یک runner خام Node/Git برای مسیرهای installer/update/plugin-dependency؛
+- یک تصویر کاربردی که همان tarball را برای مسیرهای عملکردی معمول در `/app` نصب می‌کند.
+
+تعریف‌های مسیر Docker در `scripts/lib/docker-e2e-scenarios.mjs` قرار دارند، منطق planner در `scripts/lib/docker-e2e-plan.mjs` قرار دارد، و runner فقط plan انتخاب‌شده را اجرا می‌کند. زمان‌بند با `OPENCLAW_DOCKER_E2E_BARE_IMAGE` و `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE` تصویر هر مسیر را انتخاب می‌کند، سپس مسیرها را با `OPENCLAW_SKIP_DOCKER_BUILD=1` اجرا می‌کند.
+
+### تنظیم‌پذیرها
+
+| متغیر                                 | پیش‌فرض | هدف                                                                                          |
+| -------------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10      | تعداد slotهای main-pool برای مسیرهای معمول.                                                  |
+| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10      | تعداد slotهای tail-pool حساس به provider.                                                     |
+| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`       | 9       | سقف مسیر زنده هم‌زمان تا providerها throttle نکنند.                                           |
+| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10      | سقف مسیر نصب هم‌زمان npm.                                                                     |
+| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`    | 7       | سقف مسیر چندسرویسی هم‌زمان.                                                                   |
+| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000    | فاصله بین شروع مسیرها برای جلوگیری از طوفان create در daemon Docker؛ برای بدون فاصله `0` بگذارید. |
+| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`  | 7200000 | timeout fallback برای هر مسیر (۱۲۰ دقیقه)؛ مسیرهای زنده/tail انتخاب‌شده capهای سخت‌گیرانه‌تری دارند. |
+| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | unset   | `1` برنامه زمان‌بند را بدون اجرای مسیرها چاپ می‌کند.                                         |
+| `OPENCLAW_DOCKER_ALL_LANES`            | unset   | فهرست دقیق مسیرها با جداکننده کاما؛ smoke پاک‌سازی را رد می‌کند تا agents بتوانند یک مسیر ناموفق را بازتولید کنند. |
+
+مسیری که از cap مؤثر خود سنگین‌تر است همچنان می‌تواند از یک pool خالی شروع شود، سپس تا زمانی که ظرفیت را آزاد کند به‌تنهایی اجرا می‌شود. preflight تجمیعی محلی Docker را بررسی می‌کند، کانتینرهای OpenClaw E2E مانده را حذف می‌کند، وضعیت مسیرهای فعال را منتشر می‌کند، زمان‌بندی مسیرها را برای ترتیب longest-first پایدار می‌کند، و به‌طور پیش‌فرض پس از نخستین شکست، زمان‌بندی مسیرهای pooled جدید را متوقف می‌کند.
+
+### workflow زنده/E2E قابل استفاده مجدد
+
+workflow زنده/E2E قابل استفاده مجدد از `scripts/test-docker-all.mjs --plan-json` می‌پرسد چه پوشش package، نوع تصویر، تصویر زنده، مسیر، و credential لازم است. سپس `scripts/docker-e2e.mjs` آن plan را به خروجی‌ها و خلاصه‌های GitHub تبدیل می‌کند. این workflow یا OpenClaw را از طریق `scripts/package-openclaw-for-docker.mjs` بسته‌بندی می‌کند، یا یک artifact بسته مربوط به اجرای فعلی را دانلود می‌کند، یا یک artifact بسته را از `package_artifact_run_id` دانلود می‌کند؛ inventory tarball را اعتبارسنجی می‌کند؛ وقتی plan به مسیرهای package-installed نیاز داشته باشد، تصاویر Docker E2E خام/کاربردی GHCR با برچسب package-digest را از طریق کش لایه Docker در Blacksmith build و push می‌کند؛ و به‌جای build دوباره، ورودی‌های ارائه‌شده `docker_e2e_bare_image`/`docker_e2e_functional_image` یا تصاویر موجود package-digest را دوباره استفاده می‌کند. pullهای تصویر Docker با timeout محدود ۱۸۰ ثانیه‌ای برای هر تلاش دوباره امتحان می‌شوند تا stream گیرکرده registry/cache سریع retry شود، نه اینکه بیشتر مسیر بحرانی CI را مصرف کند.
+
+### بخش‌های مسیر انتشار
+
+پوشش Docker انتشار jobهای chunked کوچک‌تری را با `OPENCLAW_SKIP_DOCKER_BUILD=1` اجرا می‌کند تا هر بخش فقط نوع تصویر موردنیازش را pull کند و چندین مسیر را از طریق همان زمان‌بند وزن‌دار اجرا کند:
+
+- `OPENCLAW_DOCKER_ALL_PROFILE=release-path`
+- `OPENCLAW_DOCKER_ALL_CHUNK=core | package-update-openai | package-update-anthropic | package-update-core | plugins-runtime-plugins | plugins-runtime-services | plugins-runtime-install-a..h | bundled-channels`
+
+بخش‌های Docker در انتشار فعلی عبارت‌اند از `core`، `package-update-openai`، `package-update-anthropic`، `package-update-core`، `plugins-runtime-plugins`، `plugins-runtime-services`، از `plugins-runtime-install-a` تا `plugins-runtime-install-h`، `bundled-channels-core`، `bundled-channels-update-a`، `bundled-channels-update-discord`، `bundled-channels-update-b` و `bundled-channels-contracts`. بخش تجمیعی `bundled-channels` همچنان برای اجرای مجدد دستی و یک‌باره در دسترس است، و `plugins-runtime-core`، `plugins-runtime` و `plugins-integrations` همچنان نام‌های مستعار تجمیعی Plugin/runtime باقی می‌مانند. نام مستعار لِین `install-e2e` همچنان نام مستعار تجمیعی اجرای مجدد دستی برای هر دو لِین نصب‌کننده provider است. بخش `bundled-channels` به‌جای لِین سریالی همه‌چیزدر‌یکی `bundled-channel-deps`، لِین‌های تفکیک‌شده `bundled-channel-*` و `bundled-channel-update-*` را اجرا می‌کند.
+
+OpenWebUI زمانی که پوشش کامل مسیر انتشار آن را درخواست کند در `plugins-runtime-services` ادغام می‌شود، و فقط برای dispatchهای مخصوص OpenWebUI، یک بخش مستقل `openwebui` نگه می‌دارد. لِین‌های به‌روزرسانی bundled-channel برای شکست‌های گذرای شبکه npm یک بار دوباره تلاش می‌کنند.
+
+هر بخش، `.artifacts/docker-tests/` را همراه با لاگ‌های لِین، زمان‌بندی‌ها، `summary.json`، `failures.json`، زمان‌بندی فازها، JSON برنامه scheduler، جدول‌های لِین‌های کند، و فرمان‌های اجرای مجدد برای هر لِین بارگذاری می‌کند. ورودی `docker_lanes` در workflow، لِین‌های انتخاب‌شده را به‌جای کارهای بخش‌ها در برابر imageهای آماده‌شده اجرا می‌کند؛ این کار دیباگ لِین شکست‌خورده را به یک job هدفمند Docker محدود نگه می‌دارد و artifact بسته را برای آن اجرا آماده، دانلود، یا بازاستفاده می‌کند؛ اگر یک لِین انتخاب‌شده، لِین زنده Docker باشد، job هدفمند image تست زنده را برای آن اجرای مجدد به‌صورت محلی می‌سازد. فرمان‌های اجرای مجدد GitHub که برای هر لِین تولید می‌شوند، وقتی این مقادیر وجود داشته باشند، شامل `package_artifact_run_id`، `package_artifact_name` و ورودی‌های image آماده‌شده هستند، تا یک لِین شکست‌خورده بتواند از همان بسته و imageهای دقیق اجرای شکست‌خورده دوباره استفاده کند.
+
+```bash
+pnpm test:docker:rerun <run-id>      # دانلود artifactهای Docker و چاپ فرمان‌های اجرای مجدد هدفمند ترکیبی/برای هر لِین
+pnpm test:docker:timings <summary>   # خلاصه‌های مسیر بحرانی لِین کند و فاز
+```
+
+workflow زمان‌بندی‌شده live/E2E هر روز مجموعه کامل Docker مسیر انتشار را اجرا می‌کند.
+
+## پیش‌انتشار Plugin
+
+`Plugin Prerelease` پوشش محصول/بسته پرهزینه‌تری است، بنابراین یک workflow جداگانه است که توسط `Full Release Validation` یا یک operator صریح dispatch می‌شود. pull requestهای عادی، pushهای `main` و dispatchهای دستی مستقل CI آن مجموعه را خاموش نگه می‌دارند. این workflow تست‌های bundled plugin را میان هشت worker افزونه متوازن می‌کند؛ آن jobهای shard افزونه تا دو گروه تنظیمات Plugin را هم‌زمان با یک worker Vitest برای هر گروه و heap بزرگ‌تر Node اجرا می‌کنند تا batchهای Plugin با import سنگین jobهای اضافی CI ایجاد نکنند.
+
+## QA Lab
+
+QA Lab لِین‌های اختصاصی CI بیرون از workflow اصلی با محدوده هوشمند دارد.
+
+- workflow `Parity gate` روی تغییرات PR منطبق و dispatch دستی اجرا می‌شود؛ runtime خصوصی QA را می‌سازد و بسته‌های agentic شبیه‌سازی‌شده GPT-5.5 و Opus 4.6 را مقایسه می‌کند.
+- workflow `QA-Lab - All Lanes` هر شب روی `main` و با dispatch دستی اجرا می‌شود؛ mock parity gate، لِین زنده Matrix، و لِین‌های زنده Telegram و Discord را به‌صورت jobهای موازی fan out می‌کند. jobهای زنده از محیط `qa-live-shared` استفاده می‌کنند، و Telegram/Discord از leaseهای Convex استفاده می‌کنند.
+
+بررسی‌های انتشار لِین‌های transport زنده Matrix و Telegram را با provider شبیه‌سازی‌شده قطعی و مدل‌های واجد شرایط mock (`mock-openai/gpt-5.5` و `mock-openai/gpt-5.5-alt`) اجرا می‌کنند تا قرارداد channel از تأخیر مدل زنده و راه‌اندازی عادی provider-plugin جدا بماند. Gateway transport زنده جست‌وجوی memory را غیرفعال می‌کند، چون QA parity رفتار memory را جداگانه پوشش می‌دهد؛ اتصال provider توسط مجموعه‌های جداگانه مدل زنده، provider بومی و provider Docker پوشش داده می‌شود.
+
+Matrix برای gateهای زمان‌بندی‌شده و انتشار از `--profile fast` استفاده می‌کند و فقط زمانی `--fail-fast` را اضافه می‌کند که CLI checkoutشده از آن پشتیبانی کند. مقدار پیش‌فرض CLI و ورودی دستی workflow همچنان `all` است؛ dispatch دستی `matrix_profile=all` همیشه پوشش کامل Matrix را به jobهای `transport`، `media`، `e2ee-smoke`، `e2ee-deep` و `e2ee-cli` shard می‌کند.
+
+`OpenClaw Release Checks` همچنین لِین‌های حیاتی انتشار QA Lab را پیش از تأیید انتشار اجرا می‌کند؛ parity gate مربوط به QA، بسته‌های candidate و baseline را به‌عنوان jobهای موازی لِین اجرا می‌کند، سپس هر دو artifact را در یک job گزارش کوچک دانلود می‌کند تا مقایسه نهایی parity انجام شود.
+
+مسیر landing مربوط به PR را پشت `Parity gate` قرار ندهید، مگر اینکه تغییر واقعاً runtime مربوط به QA، parity بسته مدل، یا سطحی را که workflow parity مالک آن است لمس کند. برای اصلاحات عادی channel، تنظیمات، مستندات، یا unit-test، آن را به‌عنوان سیگنال اختیاری در نظر بگیرید و به‌جای آن شواهد محدوده‌دار CI/check را دنبال کنید.
+
+## CodeQL
+
+workflow `CodeQL` عمداً یک scanner امنیتی باریک و مرحله اول است، نه sweep کامل repository. اجراهای روزانه، دستی و guard مربوط به pull requestهای غیر draft، کد workflowهای Actions به‌علاوه پرریسک‌ترین سطح‌های JavaScript/TypeScript را با queryهای امنیتی با اطمینان بالا که به `security-severity` بالا/بحرانی فیلتر شده‌اند scan می‌کنند.
+
+guard مربوط به pull request سبک می‌ماند: فقط برای تغییرات زیر `.github/actions`، `.github/codeql`، `.github/workflows`، `packages` یا `src` شروع می‌شود، و همان ماتریس امنیتی با اطمینان بالا را مثل workflow زمان‌بندی‌شده اجرا می‌کند. CodeQL مربوط به Android و macOS خارج از پیش‌فرض‌های PR می‌مانند.
+
+### دسته‌بندی‌های امنیتی
+
+| دسته‌بندی                                         | سطح                                                                                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `/codeql-security-high/core-auth-secrets`         | Auth، secrets، sandbox، cron و baseline مربوط به Gateway                                                                               |
+| `/codeql-security-high/channel-runtime-boundary`  | قراردادهای پیاده‌سازی channel هسته به‌علاوه runtime مربوط به channel plugin، Gateway، Plugin SDK، secrets و نقاط تماس audit           |
+| `/codeql-security-high/network-ssrf-boundary`     | سطح‌های SSRF هسته، parsing آدرس IP، network guard، web-fetch و سیاست SSRF در Plugin SDK                                                |
+| `/codeql-security-high/mcp-process-tool-boundary` | serverهای MCP، helperهای اجرای process، outbound delivery و gateهای اجرای ابزار agent                                                  |
+| `/codeql-security-high/plugin-trust-boundary`     | سطح‌های اعتماد مربوط به نصب Plugin، loader، manifest، registry، staging وابستگی runtime، source-loading و قرارداد بسته Plugin SDK      |
+
+### shardهای امنیتی مخصوص پلتفرم
+
+- `CodeQL Android Critical Security` — shard زمان‌بندی‌شده امنیت Android. برنامه Android را برای CodeQL روی کوچک‌ترین runner لینوکسی Blacksmith که workflow sanity می‌پذیرد به‌صورت دستی می‌سازد. زیر `/codeql-critical-security/android` بارگذاری می‌کند.
+- `CodeQL macOS Critical Security` — shard امنیت macOS هفتگی/دستی. برنامه macOS را برای CodeQL روی Blacksmith macOS به‌صورت دستی می‌سازد، نتایج build وابستگی را از SARIF بارگذاری‌شده فیلتر می‌کند، و زیر `/codeql-critical-security/macos` بارگذاری می‌کند. خارج از پیش‌فرض‌های روزانه نگه داشته شده است، چون build مربوط به macOS حتی وقتی پاک باشد بر زمان اجرا غالب است.
+
+### دسته‌بندی‌های کیفیت بحرانی
+
+`CodeQL Critical Quality` shard غیرامنیتی متناظر است. فقط queryهای کیفیت JavaScript/TypeScript با severity خطا و غیرامنیتی را روی سطح‌های باریک و باارزش بالا در runner کوچک‌تر لینوکسی Blacksmith اجرا می‌کند. guard مربوط به pull request آن عمداً از پروفایل زمان‌بندی‌شده کوچک‌تر است: PRهای غیر draft فقط shardهای متناظر `agent-runtime-boundary`، `config-boundary`، `core-auth-secrets`، `channel-runtime-boundary`، `gateway-runtime-boundary`، `memory-runtime-boundary`، `mcp-process-runtime-boundary`، `provider-runtime-boundary`، `session-diagnostics-boundary`، `plugin-boundary`، `plugin-sdk-package-contract` و `plugin-sdk-reply-runtime` را برای تغییرات کد اجرای command/model/tool مربوط به agent و dispatch پاسخ، کد schema/migration/IO تنظیمات، کد auth/secrets/sandbox/security، channel هسته و runtime مربوط به bundled channel plugin، protocol/server-method مربوط به Gateway، چسب runtime/SDK مربوط به memory، MCP/process/outbound delivery، runtime/catalog مدل مربوط به provider، صف‌های diagnostics/delivery مربوط به session، loader مربوط به Plugin، قرارداد Plugin SDK/package، یا runtime پاسخ Plugin SDK اجرا می‌کنند. تغییرات تنظیمات CodeQL و workflow کیفیت، همه دوازده shard کیفیت PR را اجرا می‌کنند.
+
+dispatch دستی این موارد را می‌پذیرد:
+
+```
+profile=all|agent-runtime-boundary|config-boundary|core-auth-secrets|channel-runtime-boundary|gateway-runtime-boundary|memory-runtime-boundary|mcp-process-runtime-boundary|plugin-boundary|plugin-sdk-package-contract|plugin-sdk-reply-runtime|provider-runtime-boundary|session-diagnostics-boundary
+```
+
+پروفایل‌های باریک hookهای آموزش/iteration برای اجرای یک shard کیفیت به‌صورت جداگانه هستند.
+
+| دسته                                                | سطح                                                                                                                                                           |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/codeql-critical-quality/core-auth-secrets`            | کد مرز امنیتی احراز هویت، اسرار، سندباکس، Cron، و Gateway                                                                                                  |
+| `/codeql-critical-quality/config-boundary`              | قراردادهای شِما، مهاجرت، نرمال‌سازی، و ورودی/خروجی پیکربندی                                                                                                         |
+| `/codeql-critical-quality/gateway-runtime-boundary`     | شِماهای پروتکل Gateway و قراردادهای متدهای سرور                                                                                                              |
+| `/codeql-critical-quality/channel-runtime-boundary`     | قراردادهای پیاده‌سازی کانال هسته و Plugin کانال بسته‌بندی‌شده                                                                                                  |
+| `/codeql-critical-quality/agent-runtime-boundary`       | قراردادهای زمان اجرای اجرای فرمان، توزیع مدل/ارائه‌دهنده، توزیع و صف‌های پاسخ خودکار، و صفحه کنترل ACP                                               |
+| `/codeql-critical-quality/mcp-process-runtime-boundary` | سرورهای MCP و پل‌های ابزار، ابزارهای کمکی نظارت بر فرایند، و قراردادهای تحویل خروجی                                                                        |
+| `/codeql-critical-quality/memory-runtime-boundary`      | SDK میزبان حافظه، نماهای زمان اجرای حافظه، نام‌های مستعار SDK حافظه Plugin، چسب اتصال فعال‌سازی زمان اجرای حافظه، و فرمان‌های doctor حافظه                                    |
+| `/codeql-critical-quality/session-diagnostics-boundary` | بخش‌های داخلی صف پاسخ، صف‌های تحویل نشست، ابزارهای کمکی اتصال/تحویل نشست خروجی، سطوح بسته رویداد/لاگ تشخیصی، و قراردادهای CLI doctor نشست |
+| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | توزیع پاسخ ورودی SDK Plugin، ابزارهای کمکی payload/قطعه‌بندی/زمان اجرای پاسخ، گزینه‌های پاسخ کانال، صف‌های تحویل، و ابزارهای کمکی اتصال نشست/رشته             |
+| `/codeql-critical-quality/provider-runtime-boundary`    | نرمال‌سازی کاتالوگ مدل، احراز هویت و کشف ارائه‌دهنده، ثبت زمان اجرای ارائه‌دهنده، پیش‌فرض‌ها/کاتالوگ‌های ارائه‌دهنده، و رجیستری‌های وب/جست‌وجو/واکشی/embedding    |
+| `/codeql-critical-quality/ui-control-plane`             | راه‌اندازی رابط کاربری کنترل، ماندگاری محلی، جریان‌های کنترل Gateway، و قراردادهای زمان اجرای صفحه کنترل کار                                                          |
+| `/codeql-critical-quality/web-media-runtime-boundary`   | قراردادهای زمان اجرای واکشی/جست‌وجوی وب هسته، ورودی/خروجی رسانه، فهم رسانه، تولید تصویر، و تولید رسانه                                                    |
+| `/codeql-critical-quality/plugin-boundary`              | قراردادهای لودر، رجیستری، سطح عمومی، و نقطه ورود SDK Plugin                                                                                             |
+| `/codeql-critical-quality/plugin-sdk-package-contract`  | منبع SDK Plugin سمت بسته منتشرشده و ابزارهای کمکی قرارداد بسته Plugin                                                                                      |
+
+کیفیت جدا از امنیت می‌ماند تا یافته‌های کیفیت بتوانند بدون مبهم کردن سیگنال امنیتی زمان‌بندی، اندازه‌گیری، غیرفعال، یا گسترش داده شوند. گسترش CodeQL برای Swift، Python، و Pluginهای بسته‌بندی‌شده فقط پس از پایدار شدن زمان اجرا و سیگنال پروفایل‌های محدود، باید دوباره به‌عنوان کار پیگیری محدوده‌بندی‌شده یا شاردشده اضافه شود.
+
+## گردش‌کارهای نگهداری
+
+### Docs Agent
+
+گردش‌کار `Docs Agent` یک مسیر نگهداری رویدادمحور Codex برای همسو نگه داشتن مستندات موجود با تغییرات تازه لندشده است. برنامه زمان‌بندی خالص ندارد: یک اجرای CI موفق push غیرربات روی `main` می‌تواند آن را فعال کند، و dispatch دستی می‌تواند آن را مستقیما اجرا کند. فراخوانی‌های workflow-run وقتی `main` جلو رفته باشد یا وقتی اجرای Docs Agent غیرپرش‌شده دیگری در ساعت گذشته ایجاد شده باشد، رد می‌شوند. وقتی اجرا می‌شود، بازه commit از SHA منبع Docs Agent غیرپرش‌شده قبلی تا `main` فعلی را بررسی می‌کند، بنابراین یک اجرای ساعتی می‌تواند همه تغییرات main انباشته‌شده از آخرین گذر مستندات را پوشش دهد.
+
+### Test Performance Agent
+
+گردش‌کار `Test Performance Agent` یک مسیر نگهداری رویدادمحور Codex برای تست‌های کند است. برنامه زمان‌بندی خالص ندارد: یک اجرای CI موفق push غیرربات روی `main` می‌تواند آن را فعال کند، اما اگر فراخوانی workflow-run دیگری در آن روز UTC از قبل اجرا شده باشد یا در حال اجرا باشد، رد می‌شود. dispatch دستی این گیت فعالیت روزانه را دور می‌زند. این مسیر یک گزارش عملکرد Vitest گروه‌بندی‌شده برای کل مجموعه می‌سازد، به Codex اجازه می‌دهد به‌جای بازآرایی‌های گسترده فقط اصلاحات کوچک عملکرد تست را با حفظ پوشش انجام دهد، سپس گزارش کل مجموعه را دوباره اجرا می‌کند و تغییراتی را که تعداد تست‌های پاس‌شده baseline را کاهش دهند رد می‌کند. اگر baseline تست‌های ناموفق داشته باشد، Codex فقط می‌تواند شکست‌های واضح را اصلاح کند و گزارش کل مجموعه پس از عامل باید قبل از commit شدن هر چیزی پاس شود. وقتی `main` پیش از لند شدن push ربات جلو می‌رود، این مسیر patch اعتبارسنجی‌شده را rebase می‌کند، `pnpm check:changed` را دوباره اجرا می‌کند، و push را دوباره تلاش می‌کند؛ patchهای کهنه متعارض رد می‌شوند. از Ubuntu میزبانی‌شده در GitHub استفاده می‌کند تا اکشن Codex بتواند همان وضعیت ایمنی drop-sudo را مثل عامل مستندات حفظ کند.
+
+### PRهای تکراری پس از Merge
+
+گردش‌کار `Duplicate PRs After Merge` یک گردش‌کار دستی نگهدارنده برای پاک‌سازی تکراری‌ها پس از لند شدن است. به‌طور پیش‌فرض dry-run است و فقط وقتی `apply=true` باشد PRهای صراحتا فهرست‌شده را می‌بندد. پیش از تغییر GitHub، تأیید می‌کند که PR لندشده merge شده است و هر مورد تکراری یا issue ارجاع‌شده مشترک دارد یا hunkهای تغییر یافته هم‌پوشان دارد.
 
 ```bash
 gh workflow run duplicate-after-merge.yml \
@@ -258,127 +392,29 @@ gh workflow run duplicate-after-merge.yml \
   -f apply=true
 ```
 
-## نمای کلی job
+## گیت‌های بررسی محلی و مسیریابی تغییرات
 
-| کار | هدف | زمان اجرا |
-| -------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `preflight` | تشخیص تغییرات فقط مستندات، دامنه‌های تغییرکرده، extensionهای تغییرکرده، و ساخت manifest مربوط به CI | همیشه در pushها و PRهای غیر draft |
-| `security-scm-fast` | تشخیص کلید خصوصی و ممیزی workflow از طریق `zizmor` | همیشه در pushها و PRهای غیر draft |
-| `security-dependency-audit` | ممیزی lockfile تولیدی بدون وابستگی در برابر advisoryهای npm | همیشه در pushها و PRهای غیر draft |
-| `security-fast` | تجمیع الزامی برای کارهای امنیتی سریع | همیشه در pushها و PRهای غیر draft |
-| `build-artifacts` | ساخت `dist/`، رابط کاربری کنترل، بررسی‌های artifact ساخته‌شده، و artifactهای قابل استفاده مجدد برای مراحل پایین‌دستی | تغییرات مرتبط با Node |
-| `checks-fast-core` | laneهای سریع صحت‌سنجی Linux مانند بررسی‌های بسته‌بندی‌شده/قرارداد Plugin/protocol | تغییرات مرتبط با Node |
-| `checks-fast-contracts-channels` | بررسی‌های shardشده قرارداد کانال با نتیجه بررسی تجمیعی پایدار | تغییرات مرتبط با Node |
-| `checks-node-core-test` | shardهای تست هسته Node، به‌جز laneهای کانال، بسته‌بندی‌شده، قرارداد، و extension | تغییرات مرتبط با Node |
-| `check` | معادل shardشده gate محلی اصلی: typeهای تولید، lint، guardها، typeهای تست، و smoke سخت‌گیرانه | تغییرات مرتبط با Node |
-| `check-additional` | shardهای معماری، مرزها، guardهای سطح extension، مرز بسته، و gateway-watch | تغییرات مرتبط با Node |
-| `build-smoke` | تست‌های smoke مربوط به CLI ساخته‌شده و smoke حافظه راه‌اندازی | تغییرات مرتبط با Node |
-| `checks` | تأییدکننده تست‌های کانال artifact ساخته‌شده | تغییرات مرتبط با Node |
-| `checks-node-compat-node22` | lane ساخت و smoke سازگاری Node 22 | اجرای دستی CI برای انتشارها |
-| `check-docs` | بررسی‌های قالب‌بندی مستندات، lint، و لینک‌های خراب | مستندات تغییر کرده‌اند |
-| `skills-python` | Ruff + pytest برای Skills مبتنی بر Python | تغییرات مرتبط با Python-skill |
-| `checks-windows` | تست‌های مخصوص فرایند/مسیر در Windows به‌همراه regressionهای مشترک specifier واردسازی runtime | تغییرات مرتبط با Windows |
-| `macos-node` | lane تست TypeScript در macOS با استفاده از artifactهای ساخته‌شده مشترک | تغییرات مرتبط با macOS |
-| `macos-swift` | lint، ساخت، و تست‌های Swift برای برنامه macOS | تغییرات مرتبط با macOS |
-| `android` | تست‌های واحد Android برای هر دو flavor به‌همراه یک ساخت debug APK | تغییرات مرتبط با Android |
-| `test-performance-agent` | بهینه‌سازی روزانه تست‌های کند Codex پس از فعالیت قابل اعتماد | موفقیت CI اصلی یا اجرای دستی |
+منطق محلی مسیر تغییرات در `scripts/changed-lanes.mjs` قرار دارد و توسط `scripts/check-changed.mjs` اجرا می‌شود. آن گیت بررسی محلی نسبت به محدوده پلتفرم CI گسترده، درباره مرزهای معماری سخت‌گیرتر است:
 
-اجرای دستی CI همان گراف کار CI عادی را اجرا می‌کند، اما همه laneهای دامنه‌دار غیر Android را اجباری فعال می‌کند: shardهای Linux Node، shardهای Plugin بسته‌بندی‌شده، قراردادهای کانال، سازگاری Node 22، `check`، `check-additional`، smoke ساخت، بررسی‌های مستندات، Skills مربوط به Python، Windows، macOS، و i18n رابط کاربری کنترل. اجرای دستی مستقل CI فقط با `include_android=true`، Android را اجرا می‌کند؛ چتر انتشار کامل با پاس دادن `include_android=true`، Android را فعال می‌کند. بررسی‌های ایستای پیش‌انتشار Plugin، shard مخصوص انتشار `agentic-plugins`، sweep کامل دسته extension، و laneهای Docker پیش‌انتشار Plugin از CI حذف شده‌اند. مجموعه پیش‌انتشار Docker فقط زمانی اجرا می‌شود که `Full Release Validation`، workflow جداگانه `Plugin Prerelease` را با فعال بودن gate اعتبارسنجی انتشار اجرا کند. اجراهای دستی از یک گروه concurrency یکتا استفاده می‌کنند تا مجموعه کامل release-candidate با اجرای push یا PR دیگری روی همان ref لغو نشود. ورودی اختیاری `target_ref` به فراخوان قابل اعتماد اجازه می‌دهد آن گراف را روی یک branch، tag، یا commit SHA کامل اجرا کند، در حالی که از فایل workflow مربوط به ref اجرای انتخاب‌شده استفاده می‌شود.
+- تغییرات تولید هسته، typecheck تولید هسته و تست هسته به‌علاوه lint/guardهای هسته را اجرا می‌کنند؛
+- تغییرات فقط تست هسته، فقط typecheck تست هسته به‌علاوه lint هسته را اجرا می‌کنند؛
+- تغییرات تولید extension، typecheck تولید extension و تست extension به‌علاوه lint extension را اجرا می‌کنند؛
+- تغییرات فقط تست extension، typecheck تست extension به‌علاوه lint extension را اجرا می‌کنند؛
+- تغییرات SDK عمومی Plugin یا قرارداد plugin به typecheck extension گسترش می‌یابند چون extensionها به آن قراردادهای هسته وابسته‌اند (sweepهای Vitest برای extension همچنان کار تست صریح می‌مانند)؛
+- افزایش نسخه فقط metadata انتشار، بررسی‌های هدفمند نسخه/پیکربندی/وابستگی ریشه را اجرا می‌کند؛
+- تغییرات ناشناخته ریشه/پیکربندی برای ایمنی به همه مسیرهای بررسی fail می‌شوند.
 
-```bash
-gh workflow run ci.yml --ref release/YYYY.M.D
-gh workflow run ci.yml --ref main -f target_ref=<branch-or-sha> -f include_android=true
-gh workflow run full-release-validation.yml --ref main -f ref=<branch-or-sha>
-```
+مسیریابی محلی تست‌های تغییرکرده در `scripts/test-projects.test-support.mjs` قرار دارد و عمدا ارزان‌تر از `check:changed` است: ویرایش مستقیم تست‌ها خودشان را اجرا می‌کنند، ویرایش منبع نگاشت‌های صریح را ترجیح می‌دهد، سپس تست‌های هم‌سطح و وابسته‌های گراف import را. پیکربندی تحویل اتاق گروه مشترک یکی از نگاشت‌های صریح است: تغییرات در پیکربندی پاسخ قابل‌مشاهده گروه، حالت تحویل پاسخ منبع، یا prompt سیستمی ابزار پیام از مسیر تست‌های پاسخ هسته به‌علاوه regressionهای تحویل Discord و Slack عبور می‌کند تا تغییر پیش‌فرض مشترک پیش از نخستین push PR fail شود. فقط وقتی تغییر به‌اندازه‌ای در سطح harness گسترده است که مجموعه ارزان نگاشت‌شده proxy قابل‌اعتمادی نیست، از `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` استفاده کنید.
 
-## ترتیب fail-fast
+## اعتبارسنجی Testbox
 
-کارها طوری مرتب شده‌اند که بررسی‌های کم‌هزینه پیش از اجرای موارد پرهزینه شکست بخورند:
+Testbox را از ریشه repo اجرا کنید و برای اثبات گسترده، یک box تازه گرم‌شده را ترجیح دهید. پیش از صرف کردن یک گیت کند روی boxای که دوباره استفاده شده، منقضی شده، یا همین حالا sync غیرمنتظره بزرگی گزارش کرده است، ابتدا `pnpm testbox:sanity` را داخل box اجرا کنید.
 
-1. `preflight` تصمیم می‌گیرد که اساساً کدام laneها وجود داشته باشند. منطق `docs-scope` و `changed-scope` گام‌هایی داخل این کار هستند، نه کارهای مستقل.
-2. `security-scm-fast`، `security-dependency-audit`، `security-fast`، `check`، `check-additional`، `check-docs`، و `skills-python` بدون انتظار برای کارهای سنگین‌تر matrix مربوط به artifact و platform سریع شکست می‌خورند.
-3. `build-artifacts` با laneهای سریع Linux هم‌پوشانی دارد تا مصرف‌کنندگان پایین‌دستی به‌محض آماده شدن ساخت مشترک بتوانند شروع کنند.
-4. سپس laneهای سنگین‌تر platform و runtime منشعب می‌شوند: `checks-fast-core`، `checks-fast-contracts-channels`، `checks-node-core-test`، `checks`، `checks-windows`، `macos-node`، `macos-swift`، و `android`.
+وقتی فایل‌های ریشه لازم مانند `pnpm-lock.yaml` ناپدید شده باشند یا وقتی `git status --short` دست‌کم ۲۰۰ حذف tracked نشان دهد، بررسی sanity سریع fail می‌شود. این معمولا یعنی وضعیت sync ریموت کپی قابل‌اعتمادی از PR نیست؛ به‌جای debug کردن شکست تست محصول، آن box را متوقف کنید و یک box تازه گرم کنید. برای PRهای عمدی با حذف گسترده، برای آن اجرای sanity مقدار `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` را تنظیم کنید.
 
-منطق دامنه در `scripts/ci-changed-scope.mjs` قرار دارد و با تست‌های واحد در `src/scripts/ci-changed-scope.test.ts` پوشش داده می‌شود.
-اجرای دستی، تشخیص دامنه تغییرات را رد می‌کند و باعث می‌شود manifest پیش‌پرواز
-طوری عمل کند که انگار هر ناحیه دامنه‌دار تغییر کرده است.
-ویرایش‌های workflow مربوط به CI، گراف CI مربوط به Node به‌همراه lint کردن workflow را اعتبارسنجی می‌کنند، اما به‌تنهایی buildهای بومی Windows، Android یا macOS را اجباری نمی‌کنند؛ آن laneهای پلتفرمی همچنان به تغییرات سورس پلتفرم محدود می‌مانند.
-ویرایش‌های فقط مربوط به مسیریابی CI، برخی ویرایش‌های ارزان fixture تست هسته، و ویرایش‌های محدود helper/مسیر‌دهی تست قرارداد Plugin از مسیر سریع manifest فقط برای Node استفاده می‌کنند: پیش‌پرواز، امنیت، و یک وظیفه `checks-fast-core`. این مسیر وقتی فایل‌های تغییرکرده به سطح‌های مسیریابی یا helper محدود باشند که وظیفه سریع مستقیما آن‌ها را اجرا می‌کند، از artifactهای build، سازگاری Node 22، قراردادهای کانال، shardهای کامل هسته، shardهای Pluginهای همراه، و ماتریس‌های guard اضافی پرهیز می‌کند.
-بررسی‌های Windows Node به wrapperهای مخصوص فرایند/مسیر Windows، helperهای اجراکننده npm/pnpm/UI، پیکربندی package manager، و سطح‌های workflow مربوط به CI که آن lane را اجرا می‌کنند محدود هستند؛ تغییرات نامرتبط در سورس، Plugin، install-smoke، و تغییرات فقط تست روی laneهای Linux Node باقی می‌مانند تا یک worker 16-vCPU مربوط به Windows را برای پوششی که از قبل توسط shardهای تست عادی اجرا می‌شود رزرو نکنند.
-workflow جداگانه `install-smoke` همان اسکریپت دامنه را از طریق job خودش یعنی `preflight` دوباره استفاده می‌کند. این workflow پوشش smoke را به `run_fast_install_smoke` و `run_full_install_smoke` تقسیم می‌کند. Pull requestها مسیر سریع را برای سطح‌های Docker/package، تغییرات package/manifest مربوط به Plugin همراه، و سطح‌های Plugin/کانال/Gateway/Plugin SDK هسته که jobهای Docker smoke اجرا می‌کنند، اجرا می‌کنند. تغییرات فقط سورس در Plugin همراه، ویرایش‌های فقط تست، و ویرایش‌های فقط مستندات، workerهای Docker را رزرو نمی‌کنند. مسیر سریع، image مربوط به Dockerfile ریشه را یک‌بار build می‌کند، CLI را بررسی می‌کند، smoke مربوط به CLI برای حذف agents در shared-workspace را اجرا می‌کند، e2e مربوط به container gateway-network را اجرا می‌کند، یک build arg مربوط به extension همراه را تأیید می‌کند، و پروفایل Docker محدودِ Plugin همراه را با timeout تجمعی ۲۴۰ ثانیه‌ای برای command اجرا می‌کند، در حالی که اجرای Docker هر سناریو جداگانه محدود می‌شود. مسیر کامل، نصب QR package و پوشش Docker/update مربوط به installer را برای اجراهای برنامه‌ریزی‌شده شبانه، dispatchهای دستی، بررسی‌های انتشار workflow-call، و pull requestهایی نگه می‌دارد که واقعا سطح‌های installer/package/Docker را لمس می‌کنند. در حالت کامل، install-smoke یک image مربوط به smoke برای Dockerfile ریشه GHCR با SHA هدف را آماده یا دوباره استفاده می‌کند، سپس نصب QR package، smokeهای Dockerfile/Gateway ریشه، smokeهای installer/update، و Docker E2E سریع Plugin همراه را به‌عنوان jobهای جداگانه اجرا می‌کند تا کار installer پشت smokeهای image ریشه منتظر نماند. pushهای `main`، از جمله merge commitها، مسیر کامل را اجباری نمی‌کنند؛ وقتی منطق دامنه تغییرات روی یک push پوشش کامل را درخواست کند، workflow همان Docker smoke سریع را نگه می‌دارد و install smoke کامل را به اعتبارسنجی شبانه یا انتشار واگذار می‌کند. smoke کند image-provider برای نصب سراسری Bun به‌صورت جداگانه با `run_bun_global_install_smoke` کنترل می‌شود؛ این مورد در زمان‌بندی شبانه و از workflow بررسی‌های انتشار اجرا می‌شود، و dispatchهای دستی `install-smoke` می‌توانند آن را فعال کنند، اما pull requestها و pushهای `main` آن را اجرا نمی‌کنند. تست‌های QR و installer Docker، Dockerfileهای متمرکز بر نصب خودشان را حفظ می‌کنند. `test:docker:all` محلی یک image مشترک live-test را از قبل build می‌کند، OpenClaw را یک‌بار به‌عنوان tarball مربوط به npm بسته‌بندی می‌کند، و دو image مشترک `scripts/e2e/Dockerfile` می‌سازد: یک اجراکننده bare Node/Git برای laneهای installer/update/plugin-dependency و یک image کاربردی که همان tarball را برای laneهای عادی قابلیت‌ها در `/app` نصب می‌کند. تعریف‌های laneهای Docker در `scripts/lib/docker-e2e-scenarios.mjs` قرار دارند، منطق planner در `scripts/lib/docker-e2e-plan.mjs` قرار دارد، و runner فقط plan انتخاب‌شده را اجرا می‌کند. scheduler با `OPENCLAW_DOCKER_E2E_BARE_IMAGE` و `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE` برای هر lane image را انتخاب می‌کند، سپس laneها را با `OPENCLAW_SKIP_DOCKER_BUILD=1` اجرا می‌کند؛ تعداد پیش‌فرض slotهای main-pool یعنی ۱۰ را با `OPENCLAW_DOCKER_ALL_PARALLELISM` و تعداد slotهای tail-pool حساس به provider یعنی ۱۰ را با `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` تنظیم کنید. سقف laneهای سنگین به‌طور پیش‌فرض `OPENCLAW_DOCKER_ALL_LIVE_LIMIT=9`، `OPENCLAW_DOCKER_ALL_NPM_LIMIT=10`، و `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT=7` است تا laneهای npm install و چندسرویسی، Docker را بیش‌ازحد متعهد نکنند، در حالی که laneهای سبک‌تر همچنان slotهای در دسترس را پر می‌کنند. یک lane که از سقف‌های مؤثر سنگین‌تر است همچنان می‌تواند از یک pool خالی شروع شود، سپس تا زمان آزاد کردن ظرفیت به‌تنهایی اجرا می‌شود. شروع laneها به‌طور پیش‌فرض با فاصله ۲ ثانیه انجام می‌شود تا از موج ایجاد container توسط Docker daemon محلی جلوگیری شود؛ با `OPENCLAW_DOCKER_ALL_START_STAGGER_MS=0` یا مقدار میلی‌ثانیه‌ای دیگر آن را override کنید. aggregate محلی، Docker را پیش‌پرواز می‌کند، containerهای stale مربوط به OpenClaw E2E را حذف می‌کند، وضعیت laneهای فعال را منتشر می‌کند، زمان‌بندی laneها را برای ترتیب longest-first پایدار می‌کند، و از `OPENCLAW_DOCKER_ALL_DRY_RUN=1` برای بررسی scheduler پشتیبانی می‌کند. به‌طور پیش‌فرض پس از اولین failure، زمان‌بندی laneهای pooled جدید را متوقف می‌کند، و هر lane یک timeout پشتیبان ۱۲۰ دقیقه‌ای دارد که با `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS` قابل override است؛ برخی laneهای live/tail انتخاب‌شده از سقف‌های دقیق‌تر مخصوص هر lane استفاده می‌کنند. `OPENCLAW_DOCKER_ALL_LANES=<lane[,lane]>` laneهای دقیق scheduler را اجرا می‌کند، از جمله laneهای فقط انتشار مانند `install-e2e` و laneهای split مربوط به update همراه مانند `bundled-channel-update-acpx`، در حالی که cleanup smoke را رد می‌کند تا agents بتوانند یک lane failed را بازتولید کنند. workflow قابل استفاده مجدد live/E2E از `scripts/test-docker-all.mjs --plan-json` می‌پرسد کدام package، نوع image، live image، lane، و پوشش credential لازم است، سپس `scripts/docker-e2e.mjs` آن plan را به خروجی‌ها و خلاصه‌های GitHub تبدیل می‌کند. این workflow یا OpenClaw را از طریق `scripts/package-openclaw-for-docker.mjs` بسته‌بندی می‌کند، یا یک artifact package از اجرای فعلی را دانلود می‌کند، یا یک artifact package را از `package_artifact_run_id` دانلود می‌کند؛ inventory tarball را اعتبارسنجی می‌کند؛ وقتی plan به laneهای package-installed نیاز داشته باشد، imageهای bare/functional مربوط به GHCR Docker E2E را با tag مبتنی بر digest package از طریق cache لایه Docker در Blacksmith می‌سازد و push می‌کند؛ و به‌جای build دوباره، inputهای ارائه‌شده `docker_e2e_bare_image`/`docker_e2e_functional_image` یا imageهای موجود مبتنی بر digest package را دوباره استفاده می‌کند. pull کردن imageهای Docker با timeout محدود ۱۸۰ ثانیه‌ای برای هر تلاش retry می‌شود تا یک جریان گیرکرده registry/cache به‌جای مصرف بخش عمده مسیر بحرانی CI، سریع retry شود. workflow مربوط به `Package Acceptance` گیت سطح بالای package است: یک کاندید را از npm، یک `package_ref` مورد اعتماد، یک tarball مبتنی بر HTTPS به‌همراه SHA-256، یا artifact یک workflow قبلی resolve می‌کند، سپس همان artifact واحد `package-under-test` را به workflow قابل استفاده مجدد Docker E2E می‌دهد. این workflow، `workflow_ref` را از `package_ref` جدا نگه می‌دارد تا منطق فعلی پذیرش بتواند commitهای قدیمی‌تر مورد اعتماد را بدون checkout کردن کد workflow قدیمی اعتبارسنجی کند. بررسی‌های انتشار یک delta سفارشی Package Acceptance را برای ref هدف اجرا می‌کنند: سازگاری bundled-channel، fixtureهای Plugin آفلاین، و QA package مربوط به Telegram روی tarball resolve‌شده. مجموعه Docker مسیر انتشار، jobهای کوچک‌تر و chunkشده را با `OPENCLAW_SKIP_DOCKER_BUILD=1` اجرا می‌کند تا هر chunk فقط نوع image موردنیازش را pull کند و چندین lane را از طریق همان scheduler وزن‌دار اجرا کند (`OPENCLAW_DOCKER_ALL_PROFILE=release-path`، `OPENCLAW_DOCKER_ALL_CHUNK=core|package-update-openai|package-update-anthropic|package-update-core|plugins-runtime-plugins|plugins-runtime-services|plugins-runtime-install-a|plugins-runtime-install-b|plugins-runtime-install-c|plugins-runtime-install-d|plugins-runtime-install-e|plugins-runtime-install-f|plugins-runtime-install-g|plugins-runtime-install-h|bundled-channels`). وقتی پوشش کامل release-path آن را درخواست کند، OpenWebUI در `plugins-runtime-services` ادغام می‌شود، و فقط برای dispatchهای مختص OpenWebUI، chunk مستقل `openwebui` را نگه می‌دارد. نام‌های legacy aggregate chunk یعنی `package-update`، `plugins-runtime-core`، `plugins-runtime`، و `plugins-integrations` همچنان برای rerunهای دستی کار می‌کنند، اما workflow انتشار از chunkهای split استفاده می‌کند تا installer E2E و sweepهای install/uninstall مربوط به Pluginهای همراه بر مسیر بحرانی مسلط نشوند. alias lane یعنی `install-e2e` به‌عنوان alias aggregate rerun دستی برای هر دو lane installer provider باقی می‌ماند. chunk مربوط به `bundled-channels` به‌جای lane ترتیبی همه‌در‌یکی `bundled-channel-deps`، laneهای split `bundled-channel-*` و `bundled-channel-update-*` را اجرا می‌کند. هر chunk، `.artifacts/docker-tests/` را با logهای lane، زمان‌بندی‌ها، `summary.json`، `failures.json`، زمان‌بندی‌های فاز، JSON plan مربوط به scheduler، جدول‌های laneهای کند، و commandهای rerun مخصوص هر lane upload می‌کند. input مربوط به `docker_lanes` در workflow، laneهای انتخاب‌شده را روی imageهای آماده‌شده به‌جای jobهای chunk اجرا می‌کند، که debugging مربوط به lane failed را به یک job هدفمند Docker محدود نگه می‌دارد و artifact package را برای آن اجرا آماده، دانلود، یا دوباره استفاده می‌کند؛ اگر lane انتخاب‌شده یک live Docker lane باشد، job هدفمند، image مربوط به live-test را برای آن rerun به‌صورت محلی build می‌کند. commandهای rerun GitHub تولیدشده برای هر lane، وقتی آن مقدارها وجود داشته باشند، شامل `package_artifact_run_id`، `package_artifact_name`، و inputهای image آماده‌شده هستند، تا یک lane failed بتواند همان package و imageهای دقیق اجرای failed را دوباره استفاده کند. از `pnpm test:docker:rerun <run-id>` برای دانلود artifactهای Docker از یک اجرای GitHub و چاپ commandهای rerun هدفمند ترکیبی/مخصوص هر lane استفاده کنید؛ از `pnpm test:docker:timings <summary.json>` برای خلاصه‌های lane کند و مسیر بحرانی فاز استفاده کنید. workflow برنامه‌ریزی‌شده live/E2E هر روز مجموعه کامل release-path Docker را اجرا می‌کند. ماتریس update همراه بر اساس هدف update split شده است تا پاس‌های تکراری npm update و repair مربوط به doctor بتوانند همراه سایر بررسی‌های همراه shard شوند.
-
-chunkهای فعلی Docker انتشار عبارت‌اند از `core`، `package-update-openai`، `package-update-anthropic`، `package-update-core`، `plugins-runtime-plugins`، `plugins-runtime-services`، `plugins-runtime-install-a`، `plugins-runtime-install-b`، `plugins-runtime-install-c`، `plugins-runtime-install-d`، `plugins-runtime-install-e`، `plugins-runtime-install-f`، `plugins-runtime-install-g`، `plugins-runtime-install-h`، `bundled-channels-core`، `bundled-channels-update-a`، `bundled-channels-update-discord`، `bundled-channels-update-b`، و `bundled-channels-contracts`. chunk aggregate یعنی `bundled-channels` همچنان برای rerunهای دستی یک‌باره در دسترس است، و `plugins-runtime-core`، `plugins-runtime`، و `plugins-integrations` همچنان aliasهای aggregate مربوط به Plugin/runtime باقی می‌مانند، اما workflow انتشار از chunkهای split استفاده می‌کند تا smokeهای کانال، هدف‌های update، بررسی‌های runtime مربوط به Plugin، و sweepهای install/uninstall مربوط به Plugin همراه بتوانند موازی اجرا شوند. dispatchهای هدفمند `docker_lanes` نیز پس از یک مرحله آماده‌سازی مشترک package/image، چند lane انتخاب‌شده را به jobهای موازی split می‌کنند، و laneهای update مربوط به bundled-channel برای failureهای گذرای شبکه npm یک‌بار retry می‌شوند.
-
-منطق محلی خط تغییر‌یافته در `scripts/changed-lanes.mjs` قرار دارد و توسط `scripts/check-changed.mjs` اجرا می‌شود. این دروازه بررسی محلی درباره مرزهای معماری سخت‌گیرتر از دامنه گسترده پلتفرم CI است: تغییرات تولیدی هسته، typecheck تولیدی هسته و typecheck تست هسته به‌علاوه lint/guardهای هسته را اجرا می‌کنند؛ تغییرات فقط‌تستی هسته فقط typecheck تست هسته به‌علاوه lint هسته را اجرا می‌کنند؛ تغییرات تولیدی افزونه، typecheck تولیدی افزونه و typecheck تست افزونه به‌علاوه lint افزونه را اجرا می‌کنند؛ و تغییرات فقط‌تستی افزونه، typecheck تست افزونه به‌علاوه lint افزونه را اجرا می‌کنند. تغییرات عمومی Plugin SDK یا قرارداد Plugin به typecheck افزونه گسترش می‌یابند، چون افزونه‌ها به آن قراردادهای هسته وابسته‌اند، اما sweepهای Vitest افزونه کار تست صریح هستند. افزایش نسخه‌هایی که فقط فراداده انتشار را تغییر می‌دهند، بررسی‌های هدفمند نسخه/پیکربندی/وابستگی ریشه را اجرا می‌کنند. تغییرات ناشناخته ریشه/پیکربندی برای ایمنی به همه خط‌های بررسی می‌افتند.
-مسیر‌دهی محلی تست‌های تغییر‌یافته در `scripts/test-projects.test-support.mjs` قرار دارد و
-عمدا از `check:changed` ارزان‌تر است: ویرایش مستقیم تست‌ها خودشان را اجرا می‌کند،
-ویرایش منبع ابتدا نگاشت‌های صریح را ترجیح می‌دهد، سپس تست‌های هم‌سطح و وابستگان
-گراف import را. پیکربندی مشترک تحویل اتاق گروهی یکی از نگاشت‌های صریح است:
-تغییرات در پیکربندی پاسخ مرئی گروه، حالت تحویل پاسخ منبع، یا
-مسیر اعلان سیستمی message-tool از تست‌های پاسخ هسته به‌علاوه رگرسیون‌های تحویل Discord و
-Slack عبور می‌کنند تا تغییر پیش‌فرض مشترک پیش از نخستین push روابط عمومی شکست بخورد. از `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` فقط وقتی استفاده کنید که تغییر
-آن‌قدر در سطح harness گسترده باشد که مجموعه نگاشت‌شده ارزان نماینده قابل اعتمادی نباشد.
-
-برای اعتبارسنجی Testbox، از ریشه مخزن اجرا کنید و برای اثبات گسترده، یک box تازه گرم‌شده را ترجیح دهید. پیش از صرف زمان برای یک دروازه کند روی boxای که دوباره استفاده شده، منقضی شده، یا
-به‌تازگی همگام‌سازی غیرمنتظره بزرگی گزارش کرده است، ابتدا `pnpm testbox:sanity` را داخل
-box اجرا کنید. بررسی sanity وقتی فایل‌های ریشه ضروری مانند
-`pnpm-lock.yaml` ناپدید شده باشند یا وقتی `git status --short` دست‌کم ۲۰۰
-حذف ردیابی‌شده نشان دهد، سریع شکست می‌خورد. این معمولا یعنی وضعیت همگام‌سازی راه دور نسخه قابل اعتمادی
-از روابط عمومی نیست. به‌جای اشکال‌زدایی شکست تست محصول، آن box را متوقف کنید و یک مورد تازه را گرم کنید.
-برای روابط عمومی‌هایی که عمدا حذف‌های بزرگ دارند، برای آن اجرای sanity مقدار
-`OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` را تنظیم کنید. `pnpm
-testbox:run` همچنین فراخوانی محلی Blacksmith CLI را که بیش از پنج دقیقه بدون خروجی پس از همگام‌سازی در
-مرحله sync بماند، خاتمه می‌دهد. برای غیرفعال‌کردن آن guard مقدار
-`OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0` را تنظیم کنید، یا برای diffهای محلی غیرمعمول بزرگ از مقدار
-میلی‌ثانیه بزرگ‌تری استفاده کنید.
-
-dispatchهای دستی CI، `checks-node-compat-node22` را به‌عنوان پوشش سازگاری گسترده اجرا می‌کنند. Android برای CI دستی مستقل از طریق `include_android=true` اختیاری است و برای `Full Release Validation` همیشه فعال است. `Plugin Prerelease` پوشش محصول/بسته پرهزینه‌تری است، بنابراین یک workflow جداگانه است که توسط `Full Release Validation` یا یک اپراتور صریح dispatch می‌شود. روابط عمومی‌های عادی، pushهای `main`، و dispatchهای دستی مستقل CI آن مجموعه را خاموش نگه می‌دارند.
-
-کندترین خانواده‌های تست Node تقسیم یا متوازن شده‌اند تا هر job بدون رزرو بیش‌ازحد runnerها کوچک بماند: قراردادهای کانال به سه shard وزن‌دار اجرا می‌شوند، خط‌های کوچک unit هسته جفت می‌شوند، auto-reply به‌صورت چهار worker متوازن اجرا می‌شود که زیرشاخه reply به shardهای agent-runner، dispatch، و commands/state-routing تقسیم شده است، و پیکربندی‌های agentic gateway/plugin به‌جای انتظار برای artifactهای ساخته‌شده، میان jobهای agentic Node موجود که فقط منبع هستند پخش می‌شوند. تست‌های گسترده مرورگر، QA، رسانه، و Pluginهای متفرقه به‌جای catch-all مشترک Plugin از پیکربندی‌های اختصاصی Vitest خود استفاده می‌کنند. `Plugin Prerelease` تست‌های Pluginهای بسته‌بندی‌شده را میان هشت worker افزونه متوازن می‌کند؛ آن jobهای shard افزونه حداکثر دو گروه پیکربندی Plugin را هم‌زمان، با یک worker Vitest برای هر گروه و heap بزرگ‌تر Node اجرا می‌کنند تا دسته‌های Plugin سنگین از نظر import، jobهای اضافی CI ایجاد نکنند. خط گسترده agents از زمان‌بند مشترک موازی فایل Vitest استفاده می‌کند، چون تحت سلطه import/زمان‌بندی است نه متعلق به یک فایل تست کند واحد. `runtime-config` همراه با shard زیرساخت core-runtime اجرا می‌شود تا shard مشترک runtime مالک انتهای زمان اجرا نشود. shardهای include-pattern ورودی‌های زمان‌بندی را با نام shard در CI ثبت می‌کنند، بنابراین `.artifacts/vitest-shard-timings.json` می‌تواند یک پیکربندی کامل را از shard فیلترشده تشخیص دهد. `check-additional` کارهای compile/canary محدود به بسته را کنار هم نگه می‌دارد و معماری topology زمان اجرا را از پوشش gateway watch جدا می‌کند؛ shard guard مرزی، guardهای کوچک مستقل خود را هم‌زمان داخل یک job اجرا می‌کند. Gateway watch، تست‌های کانال، و shard مرز پشتیبانی هسته، پس از اینکه `dist/` و `dist-runtime/` از قبل ساخته شده‌اند، هم‌زمان داخل `build-artifacts` اجرا می‌شوند و نام‌های قدیمی check خود را به‌عنوان jobهای verifier سبک نگه می‌دارند، درحالی‌که از دو worker اضافی Blacksmith و یک صف دوم مصرف‌کننده artifact جلوگیری می‌کنند.
-CI مربوط به Android هم `testPlayDebugUnitTest` و هم `testThirdPartyDebugUnitTest` را اجرا می‌کند، سپس APK دیباگ Play را می‌سازد. flavor شخص ثالث source set یا manifest جداگانه‌ای ندارد؛ خط unit-test آن همچنان آن flavor را با flagهای BuildConfig مربوط به SMS/call-log کامپایل می‌کند، درحالی‌که از job بسته‌بندی APK دیباگ تکراری در هر push مرتبط با Android جلوگیری می‌کند.
-GitHub ممکن است وقتی push جدیدتری روی همان روابط عمومی یا ref `main` قرار می‌گیرد، jobهای superseded را به‌صورت `cancelled` علامت‌گذاری کند. این را نویز CI در نظر بگیرید، مگر اینکه جدیدترین اجرا برای همان ref نیز شکست بخورد. بررسی‌های aggregate shard از `!cancelled() && always()` استفاده می‌کنند تا همچنان شکست‌های عادی shard را گزارش کنند اما پس از اینکه کل workflow قبلا superseded شده است در صف قرار نگیرند.
-کلید هم‌زمانی خودکار CI نسخه‌گذاری شده است (`CI-v7-*`) تا یک zombie سمت GitHub در یک گروه صف قدیمی نتواند اجراهای جدیدتر main را نامحدود مسدود کند. اجراهای دستی full-suite از `CI-manual-v1-*` استفاده می‌کنند و اجراهای در حال انجام را لغو نمی‌کنند.
-
-## اجراکننده‌ها
-
-| اجراکننده                           | کارها                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ubuntu-24.04`                   | `preflight`، jobهای امنیتی سریع و aggregateها (`security-scm-fast`، `security-dependency-audit`، `security-fast`)، بررسی‌های سریع پروتکل/قرارداد/بسته‌بندی‌شده، بررسی‌های shardشده قرارداد کانال، shardهای `check` به‌جز lint، shardها و aggregateهای `check-additional`، verifierهای aggregate تست Node، بررسی‌های مستندات، Skills پایتون، workflow-sanity، labeler، auto-response؛ install-smoke preflight نیز از Ubuntu میزبانی‌شده توسط GitHub استفاده می‌کند تا ماتریس Blacksmith زودتر بتواند صف شود |
-| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`، shardهای افزونه با وزن کمتر، `checks-fast-core`، `checks-node-compat-node22`، `check-prod-types`، و `check-test-types`                                                                                                                                                                                                                                                                                                                   |
-| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`، build-smoke، shardهای تست Linux Node، shardهای تست Pluginهای بسته‌بندی‌شده، `android`                                                                                                                                                                                                                                                                                                                                                                           |
-| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint`، که همچنان آن‌قدر به CPU حساس است که ۸ vCPU بیش از آنچه صرفه‌جویی کند هزینه ایجاد می‌کند؛ buildهای Docker مربوط به install-smoke، جایی که زمان صف ۳۲-vCPU بیش از آنچه صرفه‌جویی کند هزینه ایجاد می‌کند                                                                                                                                                                                                                                                                                                     |
-| `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `blacksmith-6vcpu-macos-latest`  | `macos-node` روی `openclaw/openclaw`؛ forkها به `macos-latest` برمی‌گردند                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `blacksmith-12vcpu-macos-latest` | `macos-swift` روی `openclaw/openclaw`؛ forkها به `macos-latest` برمی‌گردند                                                                                                                                                                                                                                                                                                                                                                                                 |
-
-## معادل‌های محلی
-
-```bash
-pnpm changed:lanes   # inspect the local changed-lane classifier for origin/main...HEAD
-pnpm check:changed   # smart local check gate: changed typecheck/lint/guards by boundary lane
-pnpm check          # fast local gate: production tsgo + sharded lint + parallel fast guards
-pnpm check:test-types
-pnpm check:timed    # same gate with per-stage timings
-pnpm build:strict-smoke
-pnpm check:architecture
-pnpm test:gateway:watch-regression
-pnpm test           # vitest tests
-pnpm test:changed   # cheap smart changed Vitest targets
-pnpm test:channels
-pnpm test:contracts:channels
-pnpm check:docs     # docs format + lint + broken links
-pnpm build          # build dist when CI artifact/build-smoke lanes matter
-pnpm ci:timings                               # summarize the latest origin/main push CI run
-pnpm ci:timings:recent                        # compare recent successful main CI runs
-node scripts/ci-run-timings.mjs <run-id>      # summarize wall time, queue time, and slowest jobs
-node scripts/ci-run-timings.mjs --latest-main # ignore issue/comment noise and choose origin/main push CI
-node scripts/ci-run-timings.mjs --recent 10   # compare recent successful main CI runs
-pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json
-pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json
-```
+`pnpm testbox:run` همچنین فراخوانی محلی Blacksmith CLI را که بیش از پنج دقیقه بدون خروجی پس از sync در فاز sync بماند پایان می‌دهد. برای غیرفعال کردن آن guard مقدار `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0` را تنظیم کنید، یا برای diffهای محلی غیرعادی بزرگ از مقدار بزرگ‌تر به میلی‌ثانیه استفاده کنید.
 
 ## مرتبط
 
 - [نمای کلی نصب](/fa/install)
-- [کانال‌های انتشار](/fa/install/development-channels)
+- [کانال‌های توسعه](/fa/install/development-channels)
