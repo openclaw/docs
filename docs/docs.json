@@ -1127,7 +1127,6 @@
                   "concepts/agent",
                   "concepts/agent-loop",
                   "concepts/agent-runtimes",
-                  "concepts/openclaw-sdk",
                   "concepts/system-prompt",
                   "concepts/context",
                   "concepts/context-engine",
@@ -1220,7 +1219,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "plugins/sdk-overview",
                       "plugins/sdk-subpaths",
@@ -1702,6 +1701,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "reference/rpc",
+                  "concepts/openclaw-sdk",
                   "reference/openclaw-sdk-api-design",
                   "reference/device-models"
                 ]
@@ -2602,7 +2602,6 @@
                   "zh-TW/concepts/agent",
                   "zh-TW/concepts/agent-loop",
                   "zh-TW/concepts/agent-runtimes",
-                  "zh-TW/concepts/openclaw-sdk",
                   "zh-TW/concepts/system-prompt",
                   "zh-TW/concepts/context",
                   "zh-TW/concepts/context-engine",
@@ -2695,7 +2694,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "zh-TW/plugins/sdk-overview",
                       "zh-TW/plugins/sdk-subpaths",
@@ -3177,6 +3176,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "zh-TW/reference/rpc",
+                  "zh-TW/concepts/openclaw-sdk",
                   "zh-TW/reference/openclaw-sdk-api-design",
                   "zh-TW/reference/device-models"
                 ]
@@ -3462,7 +3462,6 @@
                   "ja-JP/concepts/agent",
                   "ja-JP/concepts/agent-loop",
                   "ja-JP/concepts/agent-runtimes",
-                  "ja-JP/concepts/openclaw-sdk",
                   "ja-JP/concepts/system-prompt",
                   "ja-JP/concepts/context",
                   "ja-JP/concepts/context-engine",
@@ -3555,7 +3554,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "ja-JP/plugins/sdk-overview",
                       "ja-JP/plugins/sdk-subpaths",
@@ -4037,6 +4036,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "ja-JP/reference/rpc",
+                  "ja-JP/concepts/openclaw-sdk",
                   "ja-JP/reference/openclaw-sdk-api-design",
                   "ja-JP/reference/device-models"
                 ]
@@ -4322,7 +4322,6 @@
                   "es/concepts/agent",
                   "es/concepts/agent-loop",
                   "es/concepts/agent-runtimes",
-                  "es/concepts/openclaw-sdk",
                   "es/concepts/system-prompt",
                   "es/concepts/context",
                   "es/concepts/context-engine",
@@ -4415,7 +4414,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "es/plugins/sdk-overview",
                       "es/plugins/sdk-subpaths",
@@ -4897,6 +4896,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "es/reference/rpc",
+                  "es/concepts/openclaw-sdk",
                   "es/reference/openclaw-sdk-api-design",
                   "es/reference/device-models"
                 ]
@@ -5182,7 +5182,6 @@
                   "pt-BR/concepts/agent",
                   "pt-BR/concepts/agent-loop",
                   "pt-BR/concepts/agent-runtimes",
-                  "pt-BR/concepts/openclaw-sdk",
                   "pt-BR/concepts/system-prompt",
                   "pt-BR/concepts/context",
                   "pt-BR/concepts/context-engine",
@@ -5275,7 +5274,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "pt-BR/plugins/sdk-overview",
                       "pt-BR/plugins/sdk-subpaths",
@@ -5757,6 +5756,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "pt-BR/reference/rpc",
+                  "pt-BR/concepts/openclaw-sdk",
                   "pt-BR/reference/openclaw-sdk-api-design",
                   "pt-BR/reference/device-models"
                 ]
@@ -6042,7 +6042,6 @@
                   "ko/concepts/agent",
                   "ko/concepts/agent-loop",
                   "ko/concepts/agent-runtimes",
-                  "ko/concepts/openclaw-sdk",
                   "ko/concepts/system-prompt",
                   "ko/concepts/context",
                   "ko/concepts/context-engine",
@@ -6135,7 +6134,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "ko/plugins/sdk-overview",
                       "ko/plugins/sdk-subpaths",
@@ -6617,6 +6616,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "ko/reference/rpc",
+                  "ko/concepts/openclaw-sdk",
                   "ko/reference/openclaw-sdk-api-design",
                   "ko/reference/device-models"
                 ]
@@ -6902,7 +6902,6 @@
                   "de/concepts/agent",
                   "de/concepts/agent-loop",
                   "de/concepts/agent-runtimes",
-                  "de/concepts/openclaw-sdk",
                   "de/concepts/system-prompt",
                   "de/concepts/context",
                   "de/concepts/context-engine",
@@ -6995,7 +6994,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "de/plugins/sdk-overview",
                       "de/plugins/sdk-subpaths",
@@ -7477,6 +7476,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "de/reference/rpc",
+                  "de/concepts/openclaw-sdk",
                   "de/reference/openclaw-sdk-api-design",
                   "de/reference/device-models"
                 ]
@@ -7762,7 +7762,6 @@
                   "fr/concepts/agent",
                   "fr/concepts/agent-loop",
                   "fr/concepts/agent-runtimes",
-                  "fr/concepts/openclaw-sdk",
                   "fr/concepts/system-prompt",
                   "fr/concepts/context",
                   "fr/concepts/context-engine",
@@ -7855,7 +7854,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "fr/plugins/sdk-overview",
                       "fr/plugins/sdk-subpaths",
@@ -8337,6 +8336,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "fr/reference/rpc",
+                  "fr/concepts/openclaw-sdk",
                   "fr/reference/openclaw-sdk-api-design",
                   "fr/reference/device-models"
                 ]
@@ -8622,7 +8622,6 @@
                   "ar/concepts/agent",
                   "ar/concepts/agent-loop",
                   "ar/concepts/agent-runtimes",
-                  "ar/concepts/openclaw-sdk",
                   "ar/concepts/system-prompt",
                   "ar/concepts/context",
                   "ar/concepts/context-engine",
@@ -8715,7 +8714,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "ar/plugins/sdk-overview",
                       "ar/plugins/sdk-subpaths",
@@ -9197,6 +9196,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "ar/reference/rpc",
+                  "ar/concepts/openclaw-sdk",
                   "ar/reference/openclaw-sdk-api-design",
                   "ar/reference/device-models"
                 ]
@@ -9482,7 +9482,6 @@
                   "it/concepts/agent",
                   "it/concepts/agent-loop",
                   "it/concepts/agent-runtimes",
-                  "it/concepts/openclaw-sdk",
                   "it/concepts/system-prompt",
                   "it/concepts/context",
                   "it/concepts/context-engine",
@@ -9575,7 +9574,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "it/plugins/sdk-overview",
                       "it/plugins/sdk-subpaths",
@@ -10057,6 +10056,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "it/reference/rpc",
+                  "it/concepts/openclaw-sdk",
                   "it/reference/openclaw-sdk-api-design",
                   "it/reference/device-models"
                 ]
@@ -10342,7 +10342,6 @@
                   "vi/concepts/agent",
                   "vi/concepts/agent-loop",
                   "vi/concepts/agent-runtimes",
-                  "vi/concepts/openclaw-sdk",
                   "vi/concepts/system-prompt",
                   "vi/concepts/context",
                   "vi/concepts/context-engine",
@@ -10435,7 +10434,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "vi/plugins/sdk-overview",
                       "vi/plugins/sdk-subpaths",
@@ -10917,6 +10916,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "vi/reference/rpc",
+                  "vi/concepts/openclaw-sdk",
                   "vi/reference/openclaw-sdk-api-design",
                   "vi/reference/device-models"
                 ]
@@ -11202,7 +11202,6 @@
                   "nl/concepts/agent",
                   "nl/concepts/agent-loop",
                   "nl/concepts/agent-runtimes",
-                  "nl/concepts/openclaw-sdk",
                   "nl/concepts/system-prompt",
                   "nl/concepts/context",
                   "nl/concepts/context-engine",
@@ -11295,7 +11294,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "nl/plugins/sdk-overview",
                       "nl/plugins/sdk-subpaths",
@@ -11777,6 +11776,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "nl/reference/rpc",
+                  "nl/concepts/openclaw-sdk",
                   "nl/reference/openclaw-sdk-api-design",
                   "nl/reference/device-models"
                 ]
@@ -12062,7 +12062,6 @@
                   "tr/concepts/agent",
                   "tr/concepts/agent-loop",
                   "tr/concepts/agent-runtimes",
-                  "tr/concepts/openclaw-sdk",
                   "tr/concepts/system-prompt",
                   "tr/concepts/context",
                   "tr/concepts/context-engine",
@@ -12155,7 +12154,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "tr/plugins/sdk-overview",
                       "tr/plugins/sdk-subpaths",
@@ -12637,6 +12636,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "tr/reference/rpc",
+                  "tr/concepts/openclaw-sdk",
                   "tr/reference/openclaw-sdk-api-design",
                   "tr/reference/device-models"
                 ]
@@ -12922,7 +12922,6 @@
                   "uk/concepts/agent",
                   "uk/concepts/agent-loop",
                   "uk/concepts/agent-runtimes",
-                  "uk/concepts/openclaw-sdk",
                   "uk/concepts/system-prompt",
                   "uk/concepts/context",
                   "uk/concepts/context-engine",
@@ -13015,7 +13014,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "uk/plugins/sdk-overview",
                       "uk/plugins/sdk-subpaths",
@@ -13497,6 +13496,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "uk/reference/rpc",
+                  "uk/concepts/openclaw-sdk",
                   "uk/reference/openclaw-sdk-api-design",
                   "uk/reference/device-models"
                 ]
@@ -13782,7 +13782,6 @@
                   "id/concepts/agent",
                   "id/concepts/agent-loop",
                   "id/concepts/agent-runtimes",
-                  "id/concepts/openclaw-sdk",
                   "id/concepts/system-prompt",
                   "id/concepts/context",
                   "id/concepts/context-engine",
@@ -13875,7 +13874,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "id/plugins/sdk-overview",
                       "id/plugins/sdk-subpaths",
@@ -14357,6 +14356,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "id/reference/rpc",
+                  "id/concepts/openclaw-sdk",
                   "id/reference/openclaw-sdk-api-design",
                   "id/reference/device-models"
                 ]
@@ -14642,7 +14642,6 @@
                   "pl/concepts/agent",
                   "pl/concepts/agent-loop",
                   "pl/concepts/agent-runtimes",
-                  "pl/concepts/openclaw-sdk",
                   "pl/concepts/system-prompt",
                   "pl/concepts/context",
                   "pl/concepts/context-engine",
@@ -14735,7 +14734,7 @@
                     ]
                   },
                   {
-                    "group": "SDK reference",
+                    "group": "Plugin SDK reference",
                     "pages": [
                       "pl/plugins/sdk-overview",
                       "pl/plugins/sdk-subpaths",
@@ -15217,6 +15216,7 @@
                 "group": "RPC and API",
                 "pages": [
                   "pl/reference/rpc",
+                  "pl/concepts/openclaw-sdk",
                   "pl/reference/openclaw-sdk-api-design",
                   "pl/reference/device-models"
                 ]
