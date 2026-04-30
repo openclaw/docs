@@ -2,23 +2,23 @@
 read_when:
     - memory_search'in nasıl çalıştığını anlamak istiyorsunuz
     - Bir gömme sağlayıcısı seçmek istiyorsunuz
-    - Arama kalitesine ince ayar yapmak istiyorsunuz
-summary: Bellek aramasının, gömmeler ve hibrit getirme kullanarak ilgili notları nasıl bulduğu
+    - Arama kalitesini ince ayarlamak istiyorsunuz
+summary: Bellek aramasının gömlemeler ve hibrit getirim kullanarak ilgili notları nasıl bulduğu
 title: Bellek araması
 x-i18n:
-    generated_at: "2026-04-30T09:16:32Z"
+    generated_at: "2026-04-30T16:27:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e6c44d90f49a797bda01b9a575928c128a334f89ae14fc3620e65562a866aa9
+    source_hash: 7f40bbe32453a28070ffc67f19a4c06e2fe59a24237a2aef353f4b9b8260bcf2
     source_path: concepts/memory-search.md
     workflow: 16
 ---
 
-`memory_search`, ifade özgün metinden farklı olsa bile bellek dosyalarınızdan ilgili notları bulur. Bunu belleği küçük parçalara dizinleyerek ve embedding’ler, anahtar sözcükler veya ikisini birden kullanarak arama yaparak gerçekleştirir.
+`memory_search`, ifade özgün metinden farklı olsa bile bellek dosyalarınızdan ilgili notları bulur. Bunu belleği küçük parçalara dizinleyerek ve bunlarda embedding'ler, anahtar sözcükler veya ikisini birden kullanarak arama yaparak gerçekleştirir.
 
 ## Hızlı başlangıç
 
-Bir GitHub Copilot aboneliğiniz ya da yapılandırılmış OpenAI, Gemini, Voyage veya Mistral API anahtarınız varsa bellek araması otomatik olarak çalışır. Bir sağlayıcıyı açıkça ayarlamak için:
+Yapılandırılmış bir GitHub Copilot aboneliğiniz, OpenAI, Gemini, Voyage veya Mistral API anahtarınız varsa bellek araması otomatik olarak çalışır. Bir sağlayıcıyı açıkça ayarlamak için:
 
 ```json5
 {
@@ -32,26 +32,26 @@ Bir GitHub Copilot aboneliğiniz ya da yapılandırılmış OpenAI, Gemini, Voya
 }
 ```
 
-Çok uç noktalı kurulumlar için `provider`, ilgili sağlayıcı `api: "ollama"` veya başka bir embedding bağdaştırıcısı sahibi ayarladığında `ollama-5080` gibi özel bir `models.providers.<id>` girdisi de olabilir.
+Çok uç noktalı kurulumlarda `provider`, bu sağlayıcı `api: "ollama"` veya başka bir embedding bağdaştırıcısı sahibi ayarladığında `ollama-5080` gibi özel bir `models.providers.<id>` girdisi de olabilir.
 
-API anahtarı olmayan yerel embedding’ler için isteğe bağlı `node-llama-cpp` çalışma zamanı paketini OpenClaw yanına kurun ve `provider: "local"` kullanın.
+API anahtarı olmadan yerel embedding'ler için `provider: "local"` ayarlayın. Paketlenmiş kurulumlar, yerel `node-llama-cpp` çalışma zamanını OpenClaw'un yönetilen Plugin runtime-deps ağacında tutar; bu ağacın onarılması gerekiyorsa `openclaw doctor --fix` komutunu çalıştırın.
 
-Bazı OpenAI uyumlu embedding uç noktaları, aramalar için `input_type: "query"` ve dizinlenmiş parçalar için `input_type: "document"` veya `"passage"` gibi asimetrik etiketler gerektirir. Bunları `memorySearch.queryInputType` ve `memorySearch.documentInputType` ile yapılandırın; bkz. [Bellek yapılandırma başvurusu](/tr/reference/memory-config#provider-specific-config).
+Bazı OpenAI uyumlu embedding uç noktaları, aramalar için `input_type: "query"` ve dizinlenmiş parçalar için `input_type: "document"` veya `"passage"` gibi asimetrik etiketler gerektirir. Bunları `memorySearch.queryInputType` ve `memorySearch.documentInputType` ile yapılandırın; [Bellek yapılandırma referansı](/tr/reference/memory-config#provider-specific-config) bölümüne bakın.
 
 ## Desteklenen sağlayıcılar
 
-| Sağlayıcı      | Kimlik          | API anahtarı gerekir | Notlar                                                   |
-| -------------- | ---------------- | ------------- | ---------------------------------------------------- |
-| Bedrock        | `bedrock`        | Hayır         | AWS kimlik bilgisi zinciri çözümlendiğinde otomatik algılanır |
-| Gemini         | `gemini`         | Evet          | Görsel/ses dizinlemeyi destekler                      |
-| GitHub Copilot | `github-copilot` | Hayır         | Otomatik algılanır, Copilot aboneliğini kullanır      |
-| Yerel          | `local`          | Hayır         | GGUF modeli, ~0,6 GB indirme                          |
-| Mistral        | `mistral`        | Evet          | Otomatik algılanır                                    |
-| Ollama         | `ollama`         | Hayır         | Yerel, açıkça ayarlanmalıdır                          |
-| OpenAI         | `openai`         | Evet          | Otomatik algılanır, hızlı                             |
-| Voyage         | `voyage`         | Evet          | Otomatik algılanır                                    |
+| Sağlayıcı      | ID               | API anahtarı gerekiyor | Notlar                                               |
+| -------------- | ---------------- | ---------------------- | ---------------------------------------------------- |
+| Bedrock        | `bedrock`        | Hayır                  | AWS kimlik bilgisi zinciri çözümlendiğinde otomatik algılanır |
+| Gemini         | `gemini`         | Evet                   | Görüntü/ses dizinlemeyi destekler                    |
+| GitHub Copilot | `github-copilot` | Hayır                  | Otomatik algılanır, Copilot aboneliğini kullanır     |
+| Local          | `local`          | Hayır                  | GGUF modeli, ~0,6 GB indirme                         |
+| Mistral        | `mistral`        | Evet                   | Otomatik algılanır                                   |
+| Ollama         | `ollama`         | Hayır                  | Yerel, açıkça ayarlanmalıdır                         |
+| OpenAI         | `openai`         | Evet                   | Otomatik algılanır, hızlı                            |
+| Voyage         | `voyage`         | Evet                   | Otomatik algılanır                                   |
 
-## Arama nasıl çalışır
+## Arama nasıl çalışır?
 
 OpenClaw iki getirme yolunu paralel olarak çalıştırır ve sonuçları birleştirir:
 
@@ -66,12 +66,12 @@ flowchart LR
     M --> R["Top Results"]
 ```
 
-- **Vektör araması**, benzer anlama sahip notları bulur ("gateway host", "OpenClaw çalıştıran makine" ile eşleşir).
-- **BM25 anahtar sözcük araması**, tam eşleşmeleri bulur (kimlikler, hata dizeleri, yapılandırma anahtarları).
+- **Vektör araması**, benzer anlamdaki notları bulur ("gateway host", "OpenClaw çalıştıran makine" ile eşleşir).
+- **BM25 anahtar sözcük araması**, tam eşleşmeleri bulur (ID'ler, hata dizeleri, yapılandırma anahtarları).
 
 Yalnızca bir yol kullanılabiliyorsa (embedding yoksa veya FTS yoksa), diğeri tek başına çalışır.
 
-Embedding’ler kullanılamadığında OpenClaw, yalnızca ham tam eşleşme sıralamasına dönmek yerine FTS sonuçları üzerinde sözcüksel sıralamayı kullanmaya devam eder. Bu düşürülmüş mod, daha güçlü sorgu terimi kapsamına ve ilgili dosya yollarına sahip parçaları öne çıkarır; bu da `sqlite-vec` veya bir embedding sağlayıcısı olmadan bile geri çağırmayı kullanışlı tutar.
+Embedding'ler kullanılamadığında OpenClaw, yalnızca ham tam eşleşme sıralamasına geri dönmek yerine FTS sonuçları üzerinde yine de sözcüksel sıralama kullanır. Bu azaltılmış mod, daha güçlü sorgu terimi kapsamına ve ilgili dosya yollarına sahip parçaları öne çıkarır; bu da `sqlite-vec` veya bir embedding sağlayıcısı olmadan bile hatırlamayı kullanışlı tutar.
 
 ## Arama kalitesini iyileştirme
 
@@ -79,18 +79,18 @@ Büyük bir not geçmişiniz olduğunda iki isteğe bağlı özellik yardımcı 
 
 ### Zamansal azalma
 
-Eski notlar sıralama ağırlığını kademeli olarak kaybeder, böylece güncel bilgiler önce öne çıkar. Varsayılan 30 günlük yarı ömürle, geçen aydan bir not özgün ağırlığının %50’siyle puanlanır. `MEMORY.md` gibi kalıcı dosyalara hiçbir zaman azalma uygulanmaz.
+Eski notlar sıralama ağırlığını kademeli olarak kaybeder, böylece güncel bilgiler önce görünür. Varsayılan 30 günlük yarı ömürle, geçen aya ait bir not özgün ağırlığının %50'siyle puanlanır. `MEMORY.md` gibi her zaman geçerli dosyalar hiçbir zaman azaltılmaz.
 
 <Tip>
-Temsilcinizin aylarca günlük notu varsa ve eskimiş bilgiler güncel bağlamın önüne geçmeye devam ediyorsa zamansal azalmayı etkinleştirin.
+Ajanınızın aylarca günlük notu varsa ve eski bilgiler güncel bağlamın önüne geçmeye devam ediyorsa zamansal azalmayı etkinleştirin.
 </Tip>
 
 ### MMR (çeşitlilik)
 
-Yinelenen sonuçları azaltır. Beş notun tamamı aynı yönlendirici yapılandırmasından söz ediyorsa MMR, üst sonuçların tekrar etmek yerine farklı konuları kapsamasını sağlar.
+Yinelenen sonuçları azaltır. Beş notun tümü aynı yönlendirici yapılandırmasından bahsediyorsa MMR, en üst sonuçların tekrar etmek yerine farklı konuları kapsamasını sağlar.
 
 <Tip>
-`memory_search` farklı günlük notlardan neredeyse yinelenen parçalar döndürmeye devam ediyorsa MMR’yi etkinleştirin.
+`memory_search` farklı günlük notlardan neredeyse aynı parçacıkları döndürmeye devam ediyorsa MMR'yi etkinleştirin.
 </Tip>
 
 ### İkisini de etkinleştirme
@@ -114,30 +114,30 @@ Yinelenen sonuçları azaltır. Beş notun tamamı aynı yönlendirici yapıland
 
 ## Çok modlu bellek
 
-Gemini Embedding 2 ile Markdown’ın yanı sıra görselleri ve ses dosyalarını da dizinleyebilirsiniz. Arama sorguları metin olarak kalır, ancak görsel ve ses içeriğiyle eşleşir. Kurulum için [Bellek yapılandırma başvurusu](/tr/reference/memory-config) bölümüne bakın.
+Gemini Embedding 2 ile Markdown'ın yanı sıra görüntü ve ses dosyalarını da dizinleyebilirsiniz. Arama sorguları metin olarak kalır, ancak görsel ve ses içeriğiyle eşleşir. Kurulum için [Bellek yapılandırma referansı](/tr/reference/memory-config) bölümüne bakın.
 
 ## Oturum belleği araması
 
-İsteğe bağlı olarak oturum dökümlerini dizinleyebilir, böylece `memory_search` önceki konuşmaları hatırlayabilir. Bu, `memorySearch.experimental.sessionMemory` üzerinden tercihli olarak etkinleştirilir. Ayrıntılar için [yapılandırma başvurusu](/tr/reference/memory-config) bölümüne bakın.
+`memory_search` daha önceki konuşmaları hatırlayabilsin diye oturum dökümlerini isteğe bağlı olarak dizinleyebilirsiniz. Bu, `memorySearch.experimental.sessionMemory` üzerinden isteğe bağlıdır. Ayrıntılar için [yapılandırma referansı](/tr/reference/memory-config) bölümüne bakın.
 
 ## Sorun giderme
 
-**Sonuç yok mu?** Dizini kontrol etmek için `openclaw memory status` çalıştırın. Boşsa `openclaw memory index --force` çalıştırın.
+**Sonuç yok mu?** Dizini kontrol etmek için `openclaw memory status` komutunu çalıştırın. Boşsa `openclaw memory index --force` komutunu çalıştırın.
 
-**Yalnızca anahtar sözcük eşleşmeleri mi var?** Embedding sağlayıcınız yapılandırılmamış olabilir. `openclaw memory status --deep` ile kontrol edin.
+**Yalnızca anahtar sözcük eşleşmeleri mi var?** Embedding sağlayıcınız yapılandırılmamış olabilir. `openclaw memory status --deep` komutunu kontrol edin.
 
-**Yerel embedding’lerde zaman aşımı mı oluyor?** `ollama`, `lmstudio` ve `local` varsayılan olarak daha uzun bir satır içi toplu işlem zaman aşımı kullanır. Konak yalnızca yavaşsa `agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` ayarlayın ve `openclaw memory index --force` komutunu yeniden çalıştırın.
+**Yerel embedding'ler zaman aşımına mı uğruyor?** `ollama`, `lmstudio` ve `local` varsayılan olarak daha uzun bir satır içi toplu işlem zaman aşımı kullanır. Host yalnızca yavaşsa `agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` değerini ayarlayın ve `openclaw memory index --force` komutunu yeniden çalıştırın.
 
 **CJK metni bulunamıyor mu?** FTS dizinini `openclaw memory index --force` ile yeniden oluşturun.
 
-## Ek okuma
+## Daha fazla okuma
 
-- [Active Memory](/tr/concepts/active-memory) -- etkileşimli sohbet oturumları için alt temsilci belleği
+- [Active Memory](/tr/concepts/active-memory) -- etkileşimli sohbet oturumları için alt ajan belleği
 - [Bellek](/tr/concepts/memory) -- dosya düzeni, arka uçlar, araçlar
-- [Bellek yapılandırma başvurusu](/tr/reference/memory-config) -- tüm yapılandırma düğmeleri
+- [Bellek yapılandırma referansı](/tr/reference/memory-config) -- tüm yapılandırma ayarları
 
 ## İlgili
 
 - [Bellek genel bakışı](/tr/concepts/memory)
-- [Active Memory](/tr/concepts/active-memory)
+- [Active memory](/tr/concepts/active-memory)
 - [Yerleşik bellek motoru](/tr/concepts/memory-builtin)
