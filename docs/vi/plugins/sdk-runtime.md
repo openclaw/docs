@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Bạn cần gọi các hàm trợ giúp lõi từ một Plugin (TTS, STT, tạo ảnh, tìm kiếm web, tác nhân con, nút)
+    - Bạn cần gọi các hàm trợ giúp lõi từ một Plugin (TTS, STT, tạo hình ảnh, tìm kiếm web, tác nhân con, các nút)
     - Bạn muốn hiểu api.runtime cung cấp những gì
-    - Bạn đang truy cập các trình trợ giúp cấu hình, tác tử hoặc phương tiện từ mã Plugin
+    - Bạn đang truy cập các hàm trợ giúp về cấu hình, tác tử hoặc phương tiện từ mã Plugin
 sidebarTitle: Runtime helpers
-summary: api.runtime -- các trình trợ giúp runtime được chèn, có sẵn cho Plugin
+summary: api.runtime -- các trình trợ giúp thời gian chạy được chèn vào có sẵn cho các Plugin
 title: Các trình trợ giúp thời gian chạy của Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:03:00Z"
+    generated_at: "2026-04-30T09:39:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 399e2433e272fe30e7451690a64826df8e30a064269b8d9a7aa2dd2b0c5688b8
+    source_hash: f2264090e062be9892a2bac7d313cad80a550f79b0bf0d74635bf6b80aea5060
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-Tài liệu tham khảo cho đối tượng `api.runtime` được chèn vào mọi Plugin trong quá trình đăng ký. Dùng các helper này thay vì nhập trực tiếp phần nội bộ của host.
+Tham chiếu cho đối tượng `api.runtime` được tiêm vào mọi Plugin trong quá trình đăng ký. Dùng các trình trợ giúp này thay vì nhập trực tiếp các thành phần nội bộ của máy chủ.
 
 <CardGroup cols={2}>
-  <Card title="Channel plugins" href="/vi/plugins/sdk-channel-plugins">
-    Hướng dẫn từng bước sử dụng các helper này trong ngữ cảnh cho Plugin kênh.
+  <Card title="Plugin kênh" href="/vi/plugins/sdk-channel-plugins">
+    Hướng dẫn từng bước sử dụng các trình trợ giúp này trong ngữ cảnh cho Plugin kênh.
   </Card>
-  <Card title="Provider plugins" href="/vi/plugins/sdk-provider-plugins">
-    Hướng dẫn từng bước sử dụng các helper này trong ngữ cảnh cho Plugin nhà cung cấp.
+  <Card title="Plugin nhà cung cấp" href="/vi/plugins/sdk-provider-plugins">
+    Hướng dẫn từng bước sử dụng các trình trợ giúp này trong ngữ cảnh cho Plugin nhà cung cấp.
   </Card>
 </CardGroup>
 
@@ -34,38 +34,37 @@ register(api) {
 
 ## Tải và ghi cấu hình
 
-Ưu tiên cấu hình đã được truyền vào luồng gọi đang hoạt động, ví dụ `api.config` trong quá trình đăng ký hoặc đối số `cfg` trên callback kênh/nhà cung cấp. Cách này giữ một snapshot tiến trình duy nhất chảy xuyên suốt công việc thay vì phân tích lại cấu hình trên các hot path.
+Ưu tiên cấu hình đã được truyền vào đường dẫn gọi đang hoạt động, ví dụ `api.config` trong quá trình đăng ký hoặc đối số `cfg` trên các callback kênh/nhà cung cấp. Điều này giữ cho một snapshot tiến trình duy nhất chảy xuyên suốt công việc thay vì phân tích lại cấu hình trên các đường dẫn nóng.
 
-Chỉ dùng `api.runtime.config.current()` khi một handler tồn tại lâu cần snapshot tiến trình hiện tại và không có cấu hình nào được truyền vào hàm đó. Giá trị trả về là readonly; hãy clone hoặc dùng helper mutation trước khi chỉnh sửa.
+Chỉ dùng `api.runtime.config.current()` khi một trình xử lý tồn tại lâu cần snapshot tiến trình hiện tại và không có cấu hình nào được truyền cho hàm đó. Giá trị trả về là chỉ đọc; hãy sao chép hoặc dùng trình trợ giúp đột biến trước khi chỉnh sửa.
 
-Factory công cụ nhận `ctx.runtimeConfig` cùng với `ctx.getRuntimeConfig()`. Dùng getter bên trong callback `execute` của công cụ tồn tại lâu khi cấu hình có thể thay đổi sau khi định nghĩa công cụ đã được tạo.
+Các factory công cụ nhận `ctx.runtimeConfig` cùng với `ctx.getRuntimeConfig()`. Dùng getter bên trong callback `execute` của một công cụ tồn tại lâu khi cấu hình có thể thay đổi sau khi định nghĩa công cụ đã được tạo.
 
-Lưu thay đổi bằng `api.runtime.config.mutateConfigFile(...)` hoặc `api.runtime.config.replaceConfigFile(...)`. Mỗi lần ghi phải chọn một chính sách `afterWrite` rõ ràng:
+Lưu các thay đổi bằng `api.runtime.config.mutateConfigFile(...)` hoặc `api.runtime.config.replaceConfigFile(...)`. Mỗi lần ghi phải chọn một chính sách `afterWrite` rõ ràng:
 
-- `afterWrite: { mode: "auto" }` để trình quyết định tải lại của Gateway quyết định.
-- `afterWrite: { mode: "restart", reason: "..." }` buộc khởi động lại sạch khi bên ghi biết hot reload không an toàn.
-- `afterWrite: { mode: "none", reason: "..." }` chỉ chặn tự động tải lại/khởi động lại khi bên gọi sở hữu bước theo dõi tiếp theo.
+- `afterWrite: { mode: "auto" }` để bộ quyết định tải lại của Gateway quyết định.
+- `afterWrite: { mode: "restart", reason: "..." }` buộc khởi động lại sạch khi trình ghi biết tải lại nóng không an toàn.
+- `afterWrite: { mode: "none", reason: "..." }` chỉ chặn tải lại/khởi động lại tự động khi bên gọi sở hữu bước theo dõi tiếp theo.
 
-Các helper mutation trả về `afterWrite` cùng một bản tóm tắt `followUp` có kiểu để bên gọi có thể ghi log hoặc kiểm thử liệu họ đã yêu cầu khởi động lại hay chưa. Gateway vẫn sở hữu thời điểm việc khởi động lại đó thực sự diễn ra.
+Các trình trợ giúp đột biến trả về `afterWrite` cùng với tóm tắt `followUp` có kiểu để bên gọi có thể ghi log hoặc kiểm thử liệu họ đã yêu cầu khởi động lại hay chưa. Gateway vẫn sở hữu thời điểm việc khởi động lại đó thực sự diễn ra.
 
-`api.runtime.config.loadConfig()` và `api.runtime.config.writeConfigFile(...)` là các helper tương thích đã ngừng khuyến nghị dưới `runtime-config-load-write`. Chúng cảnh báo một lần tại runtime và vẫn có sẵn cho các Plugin bên ngoài cũ trong thời gian chuyển đổi. Các Plugin được đóng gói không được dùng chúng; lớp bảo vệ ranh giới cấu hình sẽ lỗi nếu mã Plugin gọi chúng hoặc nhập các helper đó từ các đường dẫn con của SDK Plugin.
+`api.runtime.config.loadConfig()` và `api.runtime.config.writeConfigFile(...)` là các trình trợ giúp tương thích đã bị ngừng khuyến nghị dưới `runtime-config-load-write`. Chúng cảnh báo một lần khi chạy và vẫn khả dụng cho các Plugin bên ngoài cũ trong thời gian chuyển đổi. Các Plugin đi kèm không được dùng chúng; các guard ranh giới cấu hình sẽ thất bại nếu mã Plugin gọi chúng hoặc nhập các trình trợ giúp đó từ các đường dẫn con của SDK Plugin.
 
 Đối với các import SDK trực tiếp, dùng các đường dẫn con cấu hình tập trung thay vì barrel tương thích rộng
 `openclaw/plugin-sdk/config-runtime`: `config-types` cho
-type, `plugin-config-runtime` cho assertion cấu hình đã tải và tra cứu entry
-Plugin, `runtime-config-snapshot` cho snapshot tiến trình hiện tại, và
-`config-mutation` cho thao tác ghi. Kiểm thử Plugin được đóng gói nên mock trực tiếp các
-đường dẫn con tập trung này thay vì mock barrel tương thích rộng.
+kiểu, `plugin-config-runtime` cho các khẳng định cấu hình đã tải và tra cứu điểm vào Plugin,
+`runtime-config-snapshot` cho snapshot tiến trình hiện tại, và
+`config-mutation` cho thao tác ghi. Các bài kiểm thử Plugin đi kèm nên mock trực tiếp các đường dẫn con tập trung này thay vì mock barrel tương thích rộng.
 
-Mã runtime nội bộ của OpenClaw đi theo cùng hướng: tải cấu hình một lần tại ranh giới CLI, Gateway, hoặc tiến trình, rồi truyền giá trị đó xuyên suốt. Các lần ghi mutation thành công làm mới snapshot runtime của tiến trình và tăng revision nội bộ của nó; các cache tồn tại lâu nên dựa vào khóa cache do runtime sở hữu thay vì tự serialize cấu hình cục bộ. Các module runtime tồn tại lâu có bộ quét không khoan nhượng đối với các lệnh gọi `loadConfig()` xung quanh; hãy dùng một `cfg` được truyền vào, `context.getRuntimeConfig()` của request, hoặc `getRuntimeConfig()` tại một ranh giới tiến trình rõ ràng.
+Mã runtime nội bộ của OpenClaw đi theo cùng hướng: tải cấu hình một lần tại ranh giới CLI, Gateway hoặc tiến trình, rồi truyền giá trị đó xuyên suốt. Các lần ghi đột biến thành công làm mới snapshot runtime của tiến trình và tăng revision nội bộ của nó; các cache tồn tại lâu nên dựa vào khóa cache do runtime sở hữu thay vì tự tuần tự hóa cấu hình cục bộ. Các module runtime tồn tại lâu có bộ quét không khoan nhượng đối với các lệnh gọi `loadConfig()` môi trường xung quanh; hãy dùng `cfg` được truyền vào, `context.getRuntimeConfig()` của yêu cầu, hoặc `getRuntimeConfig()` tại một ranh giới tiến trình rõ ràng.
 
-Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot cấu hình runtime đang hoạt động, không phải snapshot tệp được trả về để đọc lại hoặc chỉnh sửa cấu hình. Snapshot tệp giữ nguyên các giá trị nguồn như marker SecretRef cho UI và thao tác ghi; callback nhà cung cấp cần chế độ xem runtime đã được phân giải. Khi một helper có thể được gọi với snapshot nguồn đang hoạt động hoặc snapshot runtime đang hoạt động, hãy đi qua `selectApplicableRuntimeConfig()` trước khi đọc thông tin đăng nhập.
+Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot cấu hình runtime đang hoạt động, không phải snapshot tệp được trả về để đọc lại hoặc chỉnh sửa cấu hình. Snapshot tệp giữ nguyên các giá trị nguồn như marker SecretRef cho UI và thao tác ghi; callback nhà cung cấp cần góc nhìn runtime đã được phân giải. Khi một trình trợ giúp có thể được gọi với snapshot nguồn đang hoạt động hoặc snapshot runtime đang hoạt động, hãy đi qua `selectApplicableRuntimeConfig()` trước khi đọc thông tin xác thực.
 
-## Namespace runtime
+## Không gian tên runtime
 
 <AccordionGroup>
   <Accordion title="api.runtime.agent">
-    Danh tính agent, thư mục, và quản lý phiên.
+    Danh tính Agent, thư mục và quản lý phiên.
 
     ```typescript
     // Resolve the agent's working directory
@@ -109,15 +108,15 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     });
     ```
 
-    `runEmbeddedAgent(...)` là helper trung lập để bắt đầu một lượt agent OpenClaw thông thường từ mã Plugin. Nó dùng cùng cơ chế phân giải nhà cung cấp/model và lựa chọn agent-harness như các phản hồi được kích hoạt từ kênh.
+    `runEmbeddedAgent(...)` là trình trợ giúp trung lập để bắt đầu một lượt Agent OpenClaw bình thường từ mã Plugin. Nó dùng cùng cách phân giải nhà cung cấp/mô hình và lựa chọn agent-harness như các phản hồi được kích hoạt bởi kênh.
 
     `runEmbeddedPiAgent(...)` vẫn là alias tương thích.
 
-    `resolveThinkingPolicy(...)` trả về các mức suy nghĩ được hỗ trợ của nhà cung cấp/model và giá trị mặc định tùy chọn. Plugin nhà cung cấp sở hữu hồ sơ theo model thông qua các hook suy nghĩ của chúng, nên Plugin công cụ nên gọi helper runtime này thay vì nhập hoặc nhân đôi danh sách nhà cung cấp.
+    `resolveThinkingPolicy(...)` trả về các cấp độ suy nghĩ được hỗ trợ của nhà cung cấp/mô hình và mặc định tùy chọn. Plugin nhà cung cấp sở hữu hồ sơ theo mô hình thông qua các hook suy nghĩ của chúng, vì vậy Plugin công cụ nên gọi trình trợ giúp runtime này thay vì nhập hoặc sao chép danh sách nhà cung cấp.
 
-    `normalizeThinkingLevel(...)` chuyển đổi văn bản người dùng như `on`, `x-high`, hoặc `extra high` thành mức lưu trữ chuẩn trước khi kiểm tra nó với chính sách đã phân giải.
+    `normalizeThinkingLevel(...)` chuyển văn bản người dùng như `on`, `x-high` hoặc `extra high` thành cấp độ được lưu trữ chuẩn tắc trước khi kiểm tra nó với chính sách đã phân giải.
 
-    **Helper kho phiên** nằm dưới `api.runtime.agent.session`:
+    **Trình trợ giúp kho phiên** nằm dưới `api.runtime.agent.session`:
 
     ```typescript
     const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -128,7 +127,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
-    Hằng số model và nhà cung cấp mặc định:
+    Hằng số mô hình và nhà cung cấp mặc định:
 
     ```typescript
     const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -137,7 +136,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.subagent">
-    Khởi chạy và quản lý các lần chạy subagent nền.
+    Khởi chạy và quản lý các lượt chạy subagent nền.
 
     ```typescript
     // Start a subagent run
@@ -165,14 +164,14 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     ```
 
     <Warning>
-    Ghi đè model (`provider`/`model`) yêu cầu operator bật tùy chọn qua `plugins.entries.<id>.subagent.allowModelOverride: true` trong cấu hình. Plugin không đáng tin cậy vẫn có thể chạy subagent, nhưng các yêu cầu ghi đè sẽ bị từ chối.
+    Ghi đè mô hình (`provider`/`model`) yêu cầu operator chọn tham gia qua `plugins.entries.<id>.subagent.allowModelOverride: true` trong cấu hình. Plugin không đáng tin cậy vẫn có thể chạy subagent, nhưng các yêu cầu ghi đè sẽ bị từ chối.
     </Warning>
 
-    `deleteSession(...)` có thể xóa các phiên được tạo bởi cùng Plugin thông qua `api.runtime.subagent.run(...)`. Việc xóa phiên tùy ý của người dùng hoặc operator vẫn cần một request Gateway có phạm vi admin.
+    `deleteSession(...)` có thể xóa các phiên được tạo bởi cùng Plugin thông qua `api.runtime.subagent.run(...)`. Việc xóa các phiên người dùng hoặc operator tùy ý vẫn yêu cầu một yêu cầu Gateway có phạm vi admin.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Liệt kê các node đã kết nối và gọi một lệnh do node-host cung cấp từ mã Plugin được Gateway tải hoặc từ lệnh CLI của Plugin. Dùng mục này khi Plugin sở hữu công việc cục bộ trên thiết bị đã ghép cặp, ví dụ một cầu nối trình duyệt hoặc âm thanh trên một máy Mac khác.
+    Liệt kê các node đã kết nối và gọi một lệnh node-host từ mã Plugin được Gateway tải hoặc từ lệnh CLI Plugin. Dùng phần này khi một Plugin sở hữu công việc cục bộ trên một thiết bị đã ghép đôi, ví dụ một cầu nối trình duyệt hoặc âm thanh trên một máy Mac khác.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -185,11 +184,13 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     });
     ```
 
-    Bên trong Gateway, runtime này chạy trong cùng tiến trình. Trong các lệnh CLI của Plugin, nó gọi Gateway đã cấu hình qua RPC, nên các lệnh như `openclaw googlemeet recover-tab` có thể kiểm tra các node đã ghép cặp từ terminal. Lệnh node vẫn đi qua quy trình ghép cặp node Gateway thông thường, allowlist lệnh, và xử lý lệnh cục bộ trên node.
+    Bên trong Gateway, runtime này chạy trong cùng tiến trình. Trong các lệnh CLI Plugin, nó gọi Gateway đã cấu hình qua RPC, vì vậy các lệnh như `openclaw googlemeet recover-tab` có thể kiểm tra các node đã ghép đôi từ terminal. Các lệnh node vẫn đi qua cơ chế ghép đôi node Gateway thông thường, danh sách cho phép lệnh, chính sách node-invoke của Plugin và xử lý lệnh cục bộ trên node.
+
+    Các Plugin phơi bày lệnh node-host nguy hiểm nên đăng ký một chính sách node-invoke bằng `api.registerNodeInvokePolicy(...)`. Chính sách chạy trong Gateway sau các kiểm tra danh sách cho phép lệnh và trước khi lệnh được chuyển tiếp đến node, vì vậy các lệnh gọi `node.invoke` trực tiếp và công cụ Plugin cấp cao hơn dùng chung cùng đường dẫn thực thi.
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Liên kết một runtime Task Flow với khóa phiên OpenClaw hiện có hoặc ngữ cảnh công cụ đáng tin cậy, sau đó tạo và quản lý Task Flow mà không cần truyền owner trong mỗi lần gọi.
+    Liên kết một runtime Luồng tác vụ với một khóa phiên OpenClaw hiện có hoặc ngữ cảnh công cụ đáng tin cậy, sau đó tạo và quản lý các Luồng tác vụ mà không cần truyền chủ sở hữu trong mọi lệnh gọi.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -216,7 +217,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     });
     ```
 
-    Dùng `bindSession({ sessionKey, requesterOrigin })` khi bạn đã có một khóa phiên OpenClaw đáng tin cậy từ lớp binding của riêng bạn. Không bind từ dữ liệu nhập thô của người dùng.
+    Dùng `bindSession({ sessionKey, requesterOrigin })` khi bạn đã có khóa phiên OpenClaw đáng tin cậy từ lớp liên kết của riêng mình. Không liên kết từ dữ liệu nhập thô của người dùng.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -242,11 +243,11 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     });
     ```
 
-    Dùng cấu hình `messages.tts` lõi và lựa chọn nhà cung cấp. Trả về bộ đệm âm thanh PCM + tần số lấy mẫu.
+    Dùng cấu hình lõi `messages.tts` và lựa chọn nhà cung cấp. Trả về bộ đệm âm thanh PCM + tốc độ mẫu.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
-    Phân tích hình ảnh, âm thanh, và video.
+    Phân tích hình ảnh, âm thanh và video.
 
     ```typescript
     // Describe an image
@@ -276,7 +277,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     });
     ```
 
-    Trả về `{ text: undefined }` khi không có đầu ra nào được tạo ra (ví dụ: dữ liệu nhập bị bỏ qua).
+    Trả về `{ text: undefined }` khi không tạo ra đầu ra nào (ví dụ: đầu vào bị bỏ qua).
 
     <Info>
     `api.runtime.stt.transcribeAudioFile(...)` vẫn là bí danh tương thích cho `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
@@ -310,7 +311,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.media">
-    Tiện ích media cấp thấp.
+    Các tiện ích đa phương tiện cấp thấp.
 
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -335,9 +336,9 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    Ảnh chụp cấu hình runtime hiện tại và các thao tác ghi cấu hình theo giao dịch. Ưu tiên
+    Ảnh chụp nhanh cấu hình runtime hiện tại và các lần ghi cấu hình theo giao dịch. Ưu tiên
     cấu hình đã được truyền vào đường dẫn lệnh gọi đang hoạt động; chỉ dùng
-    `current()` khi handler cần trực tiếp ảnh chụp tiến trình.
+    `current()` khi trình xử lý cần trực tiếp ảnh chụp nhanh của tiến trình.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -349,14 +350,14 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     });
     ```
 
-    `mutateConfigFile(...)` và `replaceConfigFile(...)` trả về giá trị `followUp`,
+    `mutateConfigFile(...)` và `replaceConfigFile(...)` trả về một giá trị `followUp`,
     ví dụ `{ mode: "restart", requiresRestart: true, reason }`,
-    ghi lại ý định của trình ghi mà không lấy quyền điều khiển khởi động lại khỏi
+    ghi lại ý định của bên ghi mà không lấy quyền kiểm soát khởi động lại khỏi
     gateway.
 
   </Accordion>
   <Accordion title="api.runtime.system">
-    Tiện ích cấp hệ thống.
+    Các tiện ích cấp hệ thống.
 
     ```typescript
     await api.runtime.system.enqueueSystemEvent(event);
@@ -367,7 +368,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.events">
-    Đăng ký nhận sự kiện.
+    Đăng ký sự kiện.
 
     ```typescript
     api.runtime.events.onAgentEvent((event) => {
@@ -380,7 +381,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.logging">
-    Ghi log.
+    Ghi nhật ký.
 
     ```typescript
     const verbose = api.runtime.logging.shouldLogVerbose();
@@ -389,7 +390,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    Phân giải xác thực model và provider.
+    Phân giải xác thực cho mô hình và nhà cung cấp.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -401,7 +402,7 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    Phân giải thư mục trạng thái và lưu trữ khóa-giá trị dựa trên SQLite.
+    Phân giải thư mục trạng thái và lưu trữ khóa dựa trên SQLite.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -417,15 +418,15 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     await store.clear();
     ```
 
-    Kho khóa-giá trị tồn tại qua các lần khởi động lại và được cô lập theo id plugin gắn với runtime. Giới hạn: `maxEntries` cho mỗi namespace, 1.000 hàng đang hoạt động cho mỗi plugin, giá trị JSON dưới 64KB, và tùy chọn hết hạn TTL.
+    Kho dữ liệu có khóa vẫn tồn tại sau khi khởi động lại và được cô lập theo id plugin gắn với runtime. Giới hạn: `maxEntries` cho mỗi namespace, 1.000 hàng đang hoạt động cho mỗi plugin, giá trị JSON dưới 64KB, và thời hạn hết hạn TTL tùy chọn.
 
     <Warning>
-    Chỉ các plugin đóng gói sẵn trong bản phát hành này.
+    Chỉ hỗ trợ plugin đi kèm trong bản phát hành này.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tools">
-    Factory công cụ bộ nhớ và CLI.
+    Các factory công cụ bộ nhớ và CLI.
 
     ```typescript
     const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -435,9 +436,9 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    Helper runtime dành riêng cho kênh (có sẵn khi một plugin kênh được tải).
+    Các helper runtime dành riêng cho kênh (có sẵn khi một plugin kênh được tải).
 
-    `api.runtime.channel.mentions` là bề mặt chính sách nhắc đến đầu vào dùng chung cho các plugin kênh đóng gói sẵn sử dụng tiêm runtime:
+    `api.runtime.channel.mentions` là bề mặt chính sách nhắc đến đầu vào dùng chung cho các plugin kênh đi kèm sử dụng runtime injection:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -472,17 +473,17 @@ Các đường dẫn thực thi nhà cung cấp và kênh phải dùng snapshot 
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions` cố ý không phơi bày các helper tương thích `resolveMentionGating*` cũ hơn. Ưu tiên đường dẫn `{ facts, policy }` đã chuẩn hóa.
+    `api.runtime.channel.mentions` cố ý không để lộ các helper tương thích `resolveMentionGating*` cũ hơn. Ưu tiên đường dẫn `{ facts, policy }` đã chuẩn hóa.
 
   </Accordion>
 </AccordionGroup>
 
 ## Lưu trữ tham chiếu runtime
 
-Dùng `createPluginRuntimeStore` để lưu trữ tham chiếu runtime cho việc sử dụng bên ngoài callback `register`:
+Dùng `createPluginRuntimeStore` để lưu trữ tham chiếu runtime nhằm sử dụng bên ngoài callback `register`:
 
 <Steps>
-  <Step title="Tạo store">
+  <Step title="Create the store">
     ```typescript
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
@@ -494,7 +495,7 @@ Dùng `createPluginRuntimeStore` để lưu trữ tham chiếu runtime cho việ
     ```
 
   </Step>
-  <Step title="Nối vào điểm vào">
+  <Step title="Wire into the entry point">
     ```typescript
     export default defineChannelPluginEntry({
       id: "my-plugin",
@@ -505,7 +506,7 @@ Dùng `createPluginRuntimeStore` để lưu trữ tham chiếu runtime cho việ
     });
     ```
   </Step>
-  <Step title="Truy cập từ các tệp khác">
+  <Step title="Access from other files">
     ```typescript
     export function getRuntime() {
       return store.getRuntime(); // throws if not initialized
@@ -520,10 +521,10 @@ Dùng `createPluginRuntimeStore` để lưu trữ tham chiếu runtime cho việ
 </Steps>
 
 <Note>
-Ưu tiên `pluginId` cho danh tính runtime-store. Dạng `key` cấp thấp hơn dành cho những trường hợp không phổ biến khi một plugin cố ý cần nhiều hơn một slot runtime.
+Ưu tiên `pluginId` cho danh tính runtime-store. Dạng `key` cấp thấp hơn dành cho các trường hợp không phổ biến khi một plugin cố ý cần nhiều hơn một slot runtime.
 </Note>
 
-## Các trường `api` cấp cao nhất khác
+## Các trường `api` cấp cao khác
 
 Ngoài `api.runtime`, đối tượng API cũng cung cấp:
 
@@ -543,14 +544,14 @@ Ngoài `api.runtime`, đối tượng API cũng cung cấp:
   Logger theo phạm vi (`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  Chế độ tải hiện tại; `"setup-runtime"` là khoảng thời gian khởi động/thiết lập nhẹ trước entry đầy đủ.
+  Chế độ tải hiện tại; `"setup-runtime"` là khoảng thời gian khởi động/thiết lập nhẹ trước full-entry.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  Phân giải một đường dẫn tương đối với gốc plugin.
+  Phân giải đường dẫn tương đối với gốc plugin.
 </ParamField>
 
 ## Liên quan
 
-- [Nội bộ plugin](/vi/plugins/architecture) — mô hình khả năng và registry
+- [Nội bộ plugin](/vi/plugins/architecture) — mô hình capability và registry
 - [Điểm vào SDK](/vi/plugins/sdk-entrypoints) — tùy chọn `definePluginEntry`
 - [Tổng quan SDK](/vi/plugins/sdk-overview) — tham chiếu subpath
