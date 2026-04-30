@@ -72,6 +72,7 @@ Nama yang sama di beberapa tempat → sumber tertinggi yang menang. Ruang kerja 
     - Tetapkan `agents.list[].skills: []` agar tidak ada keterampilan.
     - Daftar `agents.list[].skills` yang tidak kosong adalah set **final** untuk agen tersebut — daftar ini tidak digabungkan dengan default.
     - Daftar izin efektif berlaku di seluruh pembuatan prompt, penemuan perintah slash keterampilan, sinkronisasi sandbox, dan snapshot keterampilan.
+
   </Accordion>
 </AccordionGroup>
 

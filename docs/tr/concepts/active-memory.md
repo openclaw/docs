@@ -619,6 +619,7 @@ Active Memory, yapılandırılmış bellek Plugin'inin geri çağırma hattı ü
     - Gateway günlüklerinde `active-memory: ... start|done`, `memory sync failed (search-bootstrap)` veya sağlayıcı gömme hatalarını izleyin.
     - Bellek arama arka ucunu ve dizin sağlığını incelemek için `openclaw memory status --deep` komutunu çalıştırın.
     - `ollama` kullanıyorsanız gömme modelinin kurulu olduğunu doğrulayın (`ollama list`).
+
   </Accordion>
 </AccordionGroup>
 

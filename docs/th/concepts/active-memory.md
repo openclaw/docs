@@ -669,6 +669,7 @@ Active Memory ทำงานบนไปป์ไลน์การเรีย
     - ดูบันทึก Gateway เพื่อหา `active-memory: ... start|done`, `memory sync failed (search-bootstrap)`, หรือข้อผิดพลาด embedding ของผู้ให้บริการ
     - รัน `openclaw memory status --deep` เพื่อตรวจสอบแบ็กเอนด์ memory-search และสุขภาพของดัชนี
     - หากคุณใช้ `ollama` ให้ยืนยันว่าติดตั้งโมเดล embedding แล้ว (`ollama list`)
+
   </Accordion>
 </AccordionGroup>
 

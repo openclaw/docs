@@ -76,6 +76,7 @@ cho phép của agent quyết định agent thực sự có thể dùng kỹ nă
     - Đặt `agents.list[].skills: []` để không có kỹ năng nào.
     - Danh sách `agents.list[].skills` không rỗng là tập **cuối cùng** cho agent đó — danh sách này không hợp nhất với mặc định.
     - Danh sách cho phép hiệu lực áp dụng trên việc dựng prompt, khám phá slash-command kỹ năng, đồng bộ sandbox và snapshot kỹ năng.
+
   </Accordion>
 </AccordionGroup>
 

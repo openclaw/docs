@@ -76,6 +76,7 @@ Skills **位置**和 Skills **可見性**是分開的控制項。
     - 設定 `agents.list[].skills: []` 表示沒有 Skills。
     - 非空的 `agents.list[].skills` 清單是該代理的**最終**集合，不會與預設值合併。
     - 有效允許清單會套用於提示建構、Skills 斜線命令探索、沙箱同步，以及 Skills 快照。
+
   </Accordion>
 </AccordionGroup>
 
