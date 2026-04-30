@@ -1,46 +1,51 @@
 ---
 read_when:
     - تريد استخدام Cloudflare AI Gateway مع OpenClaw
-    - تحتاج إلى معرّف الحساب، أو معرّف Gateway، أو متغير البيئة الخاص بمفتاح API
-summary: إعداد Cloudflare AI Gateway ‏(المصادقة + اختيار النموذج)
-title: Cloudflare AI Gateway
+    - تحتاج إلى معرّف الحساب أو معرّف Gateway أو متغيّر البيئة لمفتاح API
+summary: إعداد Cloudflare AI Gateway (المصادقة + اختيار النموذج)
+title: Gateway الذكاء الاصطناعي من Cloudflare
 x-i18n:
-    generated_at: "2026-04-24T07:58:23Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:20:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb10ef4bd92db88b2b3dac1773439ab2ba37916a72d1925995d74ef787fa1c8b
+    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
     source_path: providers/cloudflare-ai-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
-يوضع Cloudflare AI Gateway أمام واجهات برمجة تطبيقات المزوّدين ويتيح لك إضافة التحليلات، والتخزين المؤقت، وعناصر التحكم. بالنسبة إلى Anthropic، يستخدم OpenClaw واجهة Anthropic Messages API عبر نقطة نهاية Gateway الخاصة بك.
+يقع Cloudflare AI Gateway أمام واجهات API للمزوّدين ويتيح لك إضافة التحليلات والتخزين المؤقت وعناصر التحكم. بالنسبة إلى Anthropic، يستخدم OpenClaw واجهة Anthropic Messages API عبر نقطة نهاية Gateway الخاصة بك.
 
-| الخاصية         | القيمة                                                                                         |
-| --------------- | ---------------------------------------------------------------------------------------------- |
-| المزوّد         | `cloudflare-ai-gateway`                                                                        |
-| Base URL        | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`                    |
-| النموذج الافتراضي | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                     |
-| مفتاح API       | `CLOUDFLARE_AI_GATEWAY_API_KEY` ‏(مفتاح API الخاص بالمزوّد لطلبات المرور عبر Gateway)         |
+| الخاصية | القيمة |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| المزوّد | `cloudflare-ai-gateway`                                                                  |
+| عنوان URL الأساسي | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
+| النموذج الافتراضي | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| مفتاح API | `CLOUDFLARE_AI_GATEWAY_API_KEY` (مفتاح API الخاص بالمزوّد لديك للطلبات عبر Gateway) |
 
 <Note>
-بالنسبة إلى نماذج Anthropic الموجّهة عبر Cloudflare AI Gateway، استخدم **مفتاح Anthropic API** الخاص بك كمفتاح للمزوّد.
+بالنسبة إلى نماذج Anthropic الموجّهة عبر Cloudflare AI Gateway، استخدم **مفتاح Anthropic API** الخاص بك كمفتاح المزوّد.
 </Note>
+
+عند تمكين التفكير لنماذج Anthropic Messages، يزيل OpenClaw أدوار
+الملء المسبق اللاحقة الخاصة بالمساعد قبل إرسال الحمولة عبر Cloudflare AI Gateway.
+ترفض Anthropic الملء المسبق للاستجابة مع التفكير الموسّع، بينما يظل
+الملء المسبق العادي من دون تفكير متاحًا.
 
 ## البدء
 
 <Steps>
-  <Step title="اضبط مفتاح API الخاص بالمزوّد وتفاصيل Gateway">
-    شغّل onboarding واختر خيار مصادقة Cloudflare AI Gateway:
+  <Step title="عيّن مفتاح API للمزوّد وتفاصيل Gateway">
+    شغّل الإعداد الأولي واختر خيار مصادقة Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    سيطلب منك ذلك معرّف الحساب، ومعرّف Gateway، ومفتاح API.
+    سيطلب ذلك معرّف الحساب ومعرّف Gateway ومفتاح API.
 
   </Step>
-  <Step title="اضبط نموذجًا افتراضيًا">
-    أضف النموذج إلى تكوين OpenClaw الخاص بك:
+  <Step title="عيّن نموذجًا افتراضيًا">
+    أضف النموذج إلى إعدادات OpenClaw لديك:
 
     ```json5
     {
@@ -53,7 +58,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="تحقّق من توفر النموذج">
+  <Step title="تحقق من أن النموذج متاح">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
@@ -62,7 +67,7 @@ x-i18n:
 
 ## مثال غير تفاعلي
 
-بالنسبة إلى الإعدادات المكتوبة بسكربتات أو CI، مرر جميع القيم عبر سطر الأوامر:
+لإعدادات البرمجة النصية أو CI، مرّر كل القيم في سطر الأوامر:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -73,11 +78,11 @@ openclaw onboard --non-interactive \
   --cloudflare-ai-gateway-api-key "$CLOUDFLARE_AI_GATEWAY_API_KEY"
 ```
 
-## التكوين المتقدم
+## الإعدادات المتقدمة
 
 <AccordionGroup>
-  <Accordion title="بوابات مصادق عليها">
-    إذا كنت قد فعّلت مصادقة Gateway في Cloudflare، فأضف الترويسة `cf-aig-authorization`. وهذا يكون **بالإضافة إلى** مفتاح API الخاص بالمزوّد.
+  <Accordion title="Gateways مصادَق عليها">
+    إذا فعّلت مصادقة Gateway في Cloudflare، فأضف ترويسة `cf-aig-authorization`. هذا **إضافةً إلى** مفتاح API الخاص بالمزوّد لديك.
 
     ```json5
     {
@@ -94,28 +99,28 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    تقوم الترويسة `cf-aig-authorization` بالمصادقة مع Cloudflare Gateway نفسها، بينما يقوم مفتاح API الخاص بالمزوّد (مثل مفتاح Anthropic الخاص بك) بالمصادقة مع المزوّد upstream.
+    تصادق ترويسة `cf-aig-authorization` مع Cloudflare Gateway نفسه، بينما يصادق مفتاح API الخاص بالمزوّد (على سبيل المثال، مفتاح Anthropic لديك) مع المزوّد المنبعي.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="ملاحظة حول البيئة">
-    إذا كان Gateway يعمل كـ daemon ‏(launchd/systemd)، فتأكد من أن `CLOUDFLARE_AI_GATEWAY_API_KEY` متاح لتلك العملية.
+  <Accordion title="ملاحظة عن البيئة">
+    إذا كان Gateway يعمل كخدمة خفية (launchd/systemd)، فتأكد من أن `CLOUDFLARE_AI_GATEWAY_API_KEY` متاح لتلك العملية.
 
     <Warning>
-    لن يفيد وجود مفتاح في `~/.profile` فقط daemon يعمل عبر launchd/systemd ما لم يتم استيراد تلك البيئة هناك أيضًا. اضبط المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لضمان أن عملية gateway تستطيع قراءته.
+    وجود المفتاح في `~/.profile` فقط لن يفيد خدمة launchd/systemd خفية ما لم تُستورد تلك البيئة هناك أيضًا. عيّن المفتاح في `~/.openclaw/.env` أو عبر `env.shellEnv` لضمان أن عملية Gateway يمكنها قراءته.
     </Warning>
 
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك الاحتياط.
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
   <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    استكشاف الأخطاء وإصلاحها والأسئلة الشائعة العامة.
+    استكشاف الأخطاء وإصلاحها العام والأسئلة الشائعة.
   </Card>
 </CardGroup>

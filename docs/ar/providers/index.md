@@ -1,29 +1,29 @@
 ---
 read_when:
-    - أنت تريد اختيار مزوّد نماذج
-    - أنت بحاجة إلى نظرة عامة سريعة على الواجهات الخلفية المدعومة لـ LLMs
-summary: مزوّدو النماذج (LLMs) المدعومون في OpenClaw
+    - تريد اختيار مزوّد نماذج
+    - تحتاج إلى نظرة عامة سريعة على الواجهات الخلفية المدعومة لنماذج اللغة الكبيرة
+summary: موفرو النماذج (نماذج اللغة الكبيرة) الذين يدعمهم OpenClaw
 title: دليل المزوّدين
 x-i18n:
-    generated_at: "2026-04-26T11:39:00Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:21:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
+    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
     source_path: providers/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-# مزوّدو النماذج
+# موفرو النماذج
 
-يمكن لـ OpenClaw استخدام العديد من مزوّدي LLM. اختر مزوّدًا، ثم قم بالمصادقة، ثم اضبط
-النموذج الافتراضي على هيئة `provider/model`.
+يمكن لـ OpenClaw استخدام العديد من موفري نماذج اللغة الكبيرة. اختر موفرًا، وصادق، ثم عيّن
+النموذج الافتراضي بصيغة `provider/model`.
 
-هل تبحث عن وثائق قنوات الدردشة (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/إلخ.)؟ راجع [القنوات](/ar/channels).
+هل تبحث عن وثائق قنوات المحادثة (WhatsApp/Telegram/Discord/Slack/Mattermost ‏(Plugin)/وما إلى ذلك)؟ راجع [القنوات](/ar/channels).
 
 ## البدء السريع
 
-1. قم بالمصادقة مع المزوّد (عادةً عبر `openclaw onboard`).
-2. اضبط النموذج الافتراضي:
+1. صادق مع الموفر (عادةً عبر `openclaw onboard`).
+2. عيّن النموذج الافتراضي:
 
 ```json5
 {
@@ -31,7 +31,7 @@ x-i18n:
 }
 ```
 
-## وثائق المزوّدين
+## وثائق الموفرين
 
 - [Alibaba Model Studio](/ar/providers/alibaba)
 - [Amazon Bedrock](/ar/providers/bedrock)
@@ -39,7 +39,8 @@ x-i18n:
 - [Anthropic (API + Claude CLI)](/ar/providers/anthropic)
 - [Arcee AI (نماذج Trinity)](/ar/providers/arcee)
 - [Azure Speech](/ar/providers/azure-speech)
-- [BytePlus (الدولي)](/ar/concepts/model-providers#byteplus-international)
+- [BytePlus (دولي)](/ar/concepts/model-providers#byteplus-international)
+- [Cerebras](/ar/providers/cerebras)
 - [Chutes](/ar/providers/chutes)
 - [Cloudflare AI Gateway](/ar/providers/cloudflare-ai-gateway)
 - [ComfyUI](/ar/providers/comfy)
@@ -48,20 +49,20 @@ x-i18n:
 - [fal](/ar/providers/fal)
 - [Fireworks](/ar/providers/fireworks)
 - [GitHub Copilot](/ar/providers/github-copilot)
-- [Gradium](/ar/providers/gradium)
 - [نماذج GLM](/ar/providers/glm)
 - [Google (Gemini)](/ar/providers/google)
+- [Gradium](/ar/providers/gradium)
 - [Groq (استدلال LPU)](/ar/providers/groq)
 - [Hugging Face (الاستدلال)](/ar/providers/huggingface)
-- [inferrs (النماذج المحلية)](/ar/providers/inferrs)
+- [inferrs (نماذج محلية)](/ar/providers/inferrs)
 - [Kilocode](/ar/providers/kilocode)
 - [LiteLLM (بوابة موحدة)](/ar/providers/litellm)
-- [LM Studio (النماذج المحلية)](/ar/providers/lmstudio)
+- [LM Studio (نماذج محلية)](/ar/providers/lmstudio)
 - [MiniMax](/ar/providers/minimax)
 - [Mistral](/ar/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/ar/providers/moonshot)
 - [NVIDIA](/ar/providers/nvidia)
-- [Ollama (النماذج السحابية + المحلية)](/ar/providers/ollama)
+- [Ollama (السحابة + نماذج محلية)](/ar/providers/ollama)
 - [OpenAI (API + Codex)](/ar/providers/openai)
 - [OpenCode](/ar/providers/opencode)
 - [OpenCode Go](/ar/providers/opencode-go)
@@ -71,14 +72,14 @@ x-i18n:
 - [Qwen Cloud](/ar/providers/qwen)
 - [Runway](/ar/providers/runway)
 - [SenseAudio](/ar/providers/senseaudio)
-- [SGLang (النماذج المحلية)](/ar/providers/sglang)
+- [SGLang (نماذج محلية)](/ar/providers/sglang)
 - [StepFun](/ar/providers/stepfun)
 - [Synthetic](/ar/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/ar/providers/tencent)
 - [Together AI](/ar/providers/together)
-- [Venice (Venice AI، مع تركيز على الخصوصية)](/ar/providers/venice)
+- [Venice (Venice AI، يركز على الخصوصية)](/ar/providers/venice)
 - [Vercel AI Gateway](/ar/providers/vercel-ai-gateway)
-- [vLLM (النماذج المحلية)](/ar/providers/vllm)
+- [vLLM (نماذج محلية)](/ar/providers/vllm)
 - [Volcengine (Doubao)](/ar/providers/volcengine)
 - [Vydra](/ar/providers/vydra)
 - [xAI](/ar/providers/xai)
@@ -87,14 +88,14 @@ x-i18n:
 
 ## صفحات النظرة العامة المشتركة
 
-- [المتغيرات المضمنة الإضافية](/ar/providers/models#additional-bundled-provider-variants) - Anthropic Vertex، وCopilot Proxy، وGemini CLI OAuth
-- [إنشاء الصور](/ar/tools/image-generation) - أداة `image_generate` المشتركة، واختيار المزوّد، والرجوع الاحتياطي
-- [إنشاء الموسيقى](/ar/tools/music-generation) - أداة `music_generate` المشتركة، واختيار المزوّد، والرجوع الاحتياطي
-- [إنشاء الفيديو](/ar/tools/video-generation) - أداة `video_generate` المشتركة، واختيار المزوّد، والرجوع الاحتياطي
+- [متغيرات مضمّنة إضافية](/ar/providers/models#additional-bundled-provider-variants) - Anthropic Vertex وCopilot Proxy وGemini CLI OAuth
+- [توليد الصور](/ar/tools/image-generation) - أداة `image_generate` المشتركة، واختيار الموفر، والتحويل عند الفشل
+- [توليد الموسيقى](/ar/tools/music-generation) - أداة `music_generate` المشتركة، واختيار الموفر، والتحويل عند الفشل
+- [توليد الفيديو](/ar/tools/video-generation) - أداة `video_generate` المشتركة، واختيار الموفر، والتحويل عند الفشل
 
-## مزوّدو النسخ
+## موفرو التفريغ النصي
 
-- [Deepgram (نسخ صوتي)](/ar/providers/deepgram)
+- [Deepgram (تفريغ صوتي نصيًا)](/ar/providers/deepgram)
 - [ElevenLabs](/ar/providers/elevenlabs#speech-to-text)
 - [Mistral](/ar/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/ar/providers/openai#speech-to-text)
@@ -103,7 +104,7 @@ x-i18n:
 
 ## أدوات المجتمع
 
-- [Claude Max API Proxy](/ar/providers/claude-max-api-proxy) - proxy مجتمعي لبيانات اعتماد اشتراك Claude ‏(تحقق من سياسة/شروط Anthropic قبل الاستخدام)
+- [Claude Max API Proxy](/ar/providers/claude-max-api-proxy) - وسيط مجتمعي لبيانات اعتماد اشتراك Claude (تحقق من سياسة/شروط Anthropic قبل الاستخدام)
 
-للاطلاع على كتالوج المزوّدين الكامل (xAI، وGroq، وMistral، وغير ذلك) والتكوين المتقدم،
-راجع [مزوّدو النماذج](/ar/concepts/model-providers).
+للحصول على كتالوج الموفرين الكامل (xAI وGroq وMistral وما إلى ذلك) والتهيئة المتقدمة،
+راجع [موفري النماذج](/ar/concepts/model-providers).

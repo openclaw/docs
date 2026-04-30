@@ -1,23 +1,23 @@
 ---
 read_when:
-    - ما زلت تستخدم `openclaw daemon ...` في البرامج النصية
-    - أنت بحاجة إلى أوامر دورة حياة الخدمة (install/start/stop/restart/status)
+    - ما زلت تستخدم `openclaw daemon ...` في السكربتات
+    - تحتاج إلى أوامر دورة حياة الخدمة (install/start/stop/restart/status)
 summary: مرجع CLI لـ `openclaw daemon` (اسم مستعار قديم لإدارة خدمة Gateway)
 title: الخدمة الخلفية
 x-i18n:
-    generated_at: "2026-04-24T07:34:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:47:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b492768b46c459b69cd3127c375e0c573db56c76572fdbf7b2b8eecb3e9835ce
+    source_hash: 51839f7cbc180cc0c43caa2d7e83cc2add7cbca40665f83f64e6ce9dde8574dd
     source_path: cli/daemon.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw daemon`
 
-اسم مستعار قديم لأوامر إدارة خدمة Gateway.
+اسم بديل قديم لأوامر إدارة خدمة Gateway.
 
-يقابل `openclaw daemon ...` سطح التحكم في الخدمة نفسه المستخدم في أوامر خدمة `openclaw gateway ...`.
+يتطابق `openclaw daemon ...` مع سطح التحكم في الخدمة نفسه الخاص بأوامر خدمة `openclaw gateway ...`.
 
 ## الاستخدام
 
@@ -32,7 +32,7 @@ openclaw daemon uninstall
 
 ## الأوامر الفرعية
 
-- `status`: عرض حالة تثبيت الخدمة وفحص سلامة Gateway
+- `status`: عرض حالة تثبيت الخدمة وفحص صحة Gateway
 - `install`: تثبيت الخدمة (`launchd`/`systemd`/`schtasks`)
 - `uninstall`: إزالة الخدمة
 - `start`: بدء الخدمة
@@ -41,29 +41,30 @@ openclaw daemon uninstall
 
 ## الخيارات الشائعة
 
-- `status`: ‏`--url` و`--token` و`--password` و`--timeout` و`--no-probe` و`--require-rpc` و`--deep` و`--json`
-- `install`: ‏`--port` و`--runtime <node|bun>` و`--token` و`--force` و`--json`
-- دورة الحياة (`uninstall|start|stop|restart`): ‏`--json`
+- `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
+- `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
+- دورة الحياة (`uninstall|start|stop|restart`): `--json`
 
 ملاحظات:
 
-- يقوم `status` بحل SecretRefs الخاصة بالمصادقة والمهيأة لمصادقة الفحص عند الإمكان.
-- إذا كانت SecretRef مطلوبة للمصادقة غير محلولة في مسار هذا الأمر، فإن `daemon status --json` يبلّغ عن `rpc.authWarning` عندما يفشل اتصال/مصادقة الفحص؛ مرّر `--token`/`--password` صراحةً أو قم أولًا بحل مصدر السر.
-- إذا نجح الفحص، فسيتم كتم تحذيرات auth-ref غير المحلولة لتجنب الإيجابيات الكاذبة.
-- يضيف `status --deep` فحصًا على مستوى النظام للخدمة بأفضل جهد. وعندما يعثر على خدمات أخرى شبيهة بـ gateway، فإن المخرجات البشرية تطبع تلميحات للتنظيف وتحذر من أن Gateway واحدًا لكل جهاز لا يزال هو التوصية المعتادة.
-- في تثبيتات Linux systemd، تتضمن فحوصات انحراف الرمز في `status` كلا المصدرين `Environment=` و`EnvironmentFile=` للوحدة.
-- تحل فحوصات الانحراف SecretRefs الخاصة بـ `gateway.auth.token` باستخدام env وقت التشغيل المدمج (env أمر الخدمة أولًا، ثم الرجوع الاحتياطي إلى env العملية).
-- إذا لم تكن مصادقة الرمز مفعّلة فعليًا (وجود `gateway.auth.mode` صريح بقيمة `password` أو `none` أو `trusted-proxy`، أو إذا كان الوضع غير معيّن بحيث يمكن لكلمة المرور أن تفوز ولا يوجد مرشح رمز يمكنه الفوز)، فإن فحوصات انحراف الرمز تتخطى حل رمز الإعدادات.
-- عندما تتطلب مصادقة الرمز وجود رمز ويكون `gateway.auth.token` مُدارًا عبر SecretRef، فإن `install` يتحقق من أن SecretRef قابلة للحل لكنه لا يحفظ الرمز المحلول داخل بيانات تعريف بيئة الخدمة.
-- إذا كانت مصادقة الرمز تتطلب رمزًا وكانت SecretRef الخاصة بالرمز المهيأ غير محلولة، فإن التثبيت يفشل بشكل مغلق.
-- إذا كان كل من `gateway.auth.token` و`gateway.auth.password` مهيأين وكان `gateway.auth.mode` غير معيّن، فسيتم حظر التثبيت حتى يتم تعيين الوضع صراحةً.
-- إذا كنت تشغّل عمدًا عدة Gateways على مضيف واحد، فاعزل المنافذ، والإعدادات/الحالة، ومساحات العمل؛ راجع [/gateway#multiple-gateways-same-host](/ar/gateway#multiple-gateways-same-host).
+- يحل `status` مراجع SecretRef المكوّنة للمصادقة عند الفحص متى أمكن.
+- إذا لم يُحل مرجع SecretRef مطلوب للمصادقة في مسار هذا الأمر، فإن `daemon status --json` يبلّغ عن `rpc.authWarning` عند فشل اتصال الفحص أو المصادقة؛ مرّر `--token`/`--password` صراحةً أو حلّ مصدر السر أولًا.
+- إذا نجح الفحص، تُكبت تحذيرات مراجع المصادقة غير المحلولة لتجنب النتائج الإيجابية الكاذبة.
+- يضيف `status --deep` فحصًا لخدمة على مستوى النظام وفق أفضل جهد. عندما يعثر على خدمات أخرى شبيهة بـ Gateway، يطبع الإخراج البشري تلميحات للتنظيف وينبّه إلى أن وجود Gateway واحد لكل جهاز لا يزال هو التوصية المعتادة.
+- في تثبيتات `systemd` على Linux، تشمل فحوصات انحراف الرمز المميز مصدري الوحدة `Environment=` و`EnvironmentFile=`.
+- تحل فحوصات الانحراف مراجع SecretRef الخاصة بـ `gateway.auth.token` باستخدام بيئة التشغيل المدمجة، بدءًا ببيئة أمر الخدمة ثم بيئة العملية كخيار احتياطي.
+- إذا لم تكن مصادقة الرمز المميز نشطة فعليًا، سواء عبر `gateway.auth.mode` صريح بقيمة `password`/`none`/`trusted-proxy`، أو عندما يكون الوضع غير مضبوط ويمكن لكلمة المرور أن تكون السائدة ولا يوجد مرشح رمز مميز يمكن أن يكون سائدًا، تتخطى فحوصات انحراف الرمز المميز حل رمز التكوين.
+- عندما تتطلب مصادقة الرمز المميز رمزًا ويكون `gateway.auth.token` مُدارًا عبر SecretRef، يتحقق `install` من أن SecretRef قابل للحل، لكنه لا يحفظ الرمز المحلول داخل بيانات تعريف بيئة الخدمة.
+- إذا كانت مصادقة الرمز المميز تتطلب رمزًا وكان SecretRef المكوّن للرمز غير محلول، يفشل التثبيت بإغلاق آمن.
+- إذا كان كل من `gateway.auth.token` و`gateway.auth.password` مكوّنين وكان `gateway.auth.mode` غير مضبوط، يُحظر التثبيت إلى أن يُضبط الوضع صراحةً.
+- على macOS، يُبقي `install` ملفات LaunchAgent plists مملوكة للمالك فقط، ويحمّل قيم بيئة الخدمة المُدارة عبر ملف ومغلّف مملوكين للمالك فقط بدلًا من تسلسل مفاتيح API أو مراجع بيئة ملف المصادقة الشخصي داخل `EnvironmentVariables`.
+- إذا كنت تشغّل عمدًا عدة Gateways على مضيف واحد، فاعزل المنافذ والتكوين/الحالة ومساحات العمل؛ راجع [/gateway#multiple-gateways-same-host](/ar/gateway#multiple-gateways-same-host).
 
-## المفضّل
+## يُفضّل
 
-استخدم [`openclaw gateway`](/ar/cli/gateway) للحصول على المستندات والأمثلة الحالية.
+استخدم [`openclaw gateway`](/ar/cli/gateway) للاطلاع على الوثائق والأمثلة الحالية.
 
-## ذو صلة
+## ذات صلة
 
 - [مرجع CLI](/ar/cli)
 - [دليل تشغيل Gateway](/ar/gateway)

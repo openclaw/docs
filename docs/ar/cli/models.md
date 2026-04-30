@@ -1,27 +1,27 @@
 ---
 read_when:
-    - تريد تغيير Models الافتراضية أو عرض حالة مصادقة provider
-    - تريد فحص Models وproviders المتاحة وتصحيح أخطاء ملفات تعريف المصادقة
-summary: مرجع CLI لـ `openclaw models` ‏(status/list/set/scan، والأسماء المستعارة، وعمليات fallback، والمصادقة)
-title: Models
+    - تريد تغيير النماذج الافتراضية أو عرض حالة مصادقة المزوّد
+    - تريد فحص النماذج/المزوّدين المتاحين وتصحيح أخطاء ملفات تعريف المصادقة
+summary: مرجع CLI لـ `openclaw models` (status/list/set/scan، الأسماء المستعارة، البدائل الاحتياطية، المصادقة)
+title: النماذج
 x-i18n:
-    generated_at: "2026-04-26T11:26:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:49:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a5acf5972251ee7aa22d1f9222f1a497822fb1f25f29f827702f8b37dda8dadf
+    source_hash: 95e2361989b583f7f52947dad1faaaba44dc6a5f58719cc2e83c13fce7c33adc
     source_path: cli/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw models`
 
-اكتشاف Models وفحصها وتهيئتها (Model الافتراضي، وعمليات fallback، وملفات تعريف المصادقة).
+اكتشاف النماذج وفحصها وتكوينها (النموذج الافتراضي، الاحتياطيات، ملفات تعريف المصادقة).
 
-ذو صلة:
+ذات صلة:
 
-- providers + Models: [Models](/ar/providers/models)
-- مفاهيم اختيار Model وأمر الشرطة المائلة `/models`: [مفهوم Models](/ar/concepts/models)
-- إعداد مصادقة provider: [البدء](/ar/start/getting-started)
+- المزوّدون + النماذج: [النماذج](/ar/providers/models)
+- مفاهيم اختيار النموذج + أمر الشرطة المائلة `/models`: [مفهوم النماذج](/ar/concepts/models)
+- إعداد مصادقة المزوّد: [البدء](/ar/start/getting-started)
 
 ## الأوامر الشائعة
 
@@ -32,67 +32,77 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-يعرض `openclaw models status` القيم الافتراضية/عمليات fallback المحلولة بالإضافة إلى نظرة عامة على المصادقة.
-وعندما تتوفر لقطات استخدام provider، يتضمن قسم حالة OAuth/API key
-نوافذ استخدام provider ولقطات الحصة.
-موفرو نوافذ الاستخدام الحاليون: Anthropic وGitHub Copilot وGemini CLI وOpenAI
-Codex وMiniMax وXiaomi وz.ai. تأتي مصادقة الاستخدام من خطافات خاصة بكل provider
-عند توفرها؛ وإلا يعود OpenClaw إلى مطابقة بيانات اعتماد OAuth/API key
-من ملفات تعريف المصادقة، أو env، أو الإعدادات.
-في خرج `--json`، يكون `auth.providers` هو العرض العام للـ provider
-الواعي بـ env/config/store، بينما يكون `auth.oauth` لصحة ملفات تعريف auth-store فقط.
-أضف `--probe` لتشغيل probes حية للمصادقة على كل ملف تعريف provider مهيأ.
-الـ probes هي طلبات حقيقية (وقد تستهلك tokens وتؤدي إلى تفعيل حدود المعدل).
-استخدم `--agent <id>` لفحص حالة model/auth الخاصة بوكيل مهيأ. وعند عدم تحديده،
-يستخدم الأمر `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` إذا كان مضبوطًا، وإلا
-يستخدم الوكيل الافتراضي المهيأ.
-يمكن أن تأتي صفوف probe من ملفات تعريف المصادقة، أو بيانات اعتماد env، أو `models.json`.
+يعرض `openclaw models status` النموذج الافتراضي/الاحتياطيات التي تم حلها، بالإضافة إلى نظرة عامة على المصادقة.
+عندما تتوفر لقطات استخدام المزوّدين، يتضمن قسم حالة OAuth/API-key
+نوافذ استخدام المزوّدين ولقطات الحصص.
+مزوّدو نوافذ الاستخدام الحاليون: Anthropic وGitHub Copilot وGemini CLI وOpenAI
+Codex وMiniMax وXiaomi وz.ai. تأتي مصادقة الاستخدام من خطافات خاصة بالمزوّد
+عند توفرها؛ وإلا يعود OpenClaw إلى مطابقة بيانات اعتماد OAuth/API-key
+من ملفات تعريف المصادقة أو البيئة أو التكوين.
+في خرج `--json`، يكون `auth.providers` هو النظرة العامة للمزوّد
+الواعية بالبيئة/التكوين/المخزن، بينما يكون `auth.oauth` صحة ملفات تعريف مخزن المصادقة فقط.
+أضف `--probe` لتشغيل فحوصات مصادقة مباشرة ضد كل ملف تعريف مزوّد مكوّن.
+الفحوصات طلبات حقيقية (قد تستهلك رموزا وتؤدي إلى حدود معدلات).
+استخدم `--agent <id>` لفحص حالة النموذج/المصادقة لوكيل مكوّن. عند حذفه،
+يستخدم الأمر `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` إذا كانا معينين، وإلا يستخدم
+الوكيل الافتراضي المكوّن.
+يمكن أن تأتي صفوف الفحص من ملفات تعريف المصادقة أو بيانات اعتماد البيئة أو `models.json`.
 
 ملاحظات:
 
-- يقبل `models set <model-or-alias>` الصيغة `provider/model` أو اسمًا مستعارًا.
-- `models list` للقراءة فقط: فهو يقرأ الإعدادات، وملفات تعريف المصادقة، وحالة
-  الفهرس الحالية، وصفوف الفهرس المملوكة للـ provider، لكنه لا يعيد كتابة
+- يقبل `models set <model-or-alias>` صيغة `provider/model` أو اسما مستعارا.
+- `models list` للقراءة فقط: يقرأ التكوين، وملفات تعريف المصادقة، وحالة الفهرس
+  الموجودة، وصفوف الفهرس المملوكة للمزوّد، لكنه لا يعيد كتابة
   `models.json`.
-- يمكن أن يتضمن `models list --all --provider <id>` صفوف فهرس ثابتة مملوكة للـ provider
-  من manifest الخاصة بالـ Plugin أو من بيانات فهرس provider المضمّنة حتى إذا
-  لم تكن قد صادقت مع ذلك provider بعد. وتظهر هذه الصفوف مع ذلك على أنها
-  غير متاحة حتى تتم تهيئة مصادقة مطابقة.
-- يحتفظ `models list` ببيانات model الوصفية الأصلية والحدود القصوى لوقت التشغيل منفصلة. في خرج
-  الجدول، يعرض `Ctx` القيمة `contextTokens/contextWindow` عندما يختلف الحد
-  الأقصى الفعال لوقت التشغيل عن نافذة السياق الأصلية؛ وتتضمن صفوف JSON الحقل `contextTokens`
-  عندما يعرّض provider هذا الحد الأقصى.
-- يقوم `models list --provider <id>` بالتصفية حسب معرّف provider، مثل `moonshot` أو
-  `openai-codex`. وهو لا يقبل تسميات العرض من أدوات اختيار providers التفاعلية،
+- عمود `Auth` على مستوى المزوّد وللقراءة فقط. يتم حسابه من بيانات تعريف
+  ملف تعريف المصادقة المحلية، وعلامات البيئة، ومفاتيح المزوّدين المكوّنة، وعلامات المزوّد المحلي،
+  وعلامات بيئة/ملف تعريف AWS Bedrock، وبيانات تعريف المصادقة الاصطناعية الخاصة بالـ plugin؛
+  ولا يحمّل وقت تشغيل المزوّد، أو يقرأ أسرار سلسلة المفاتيح، أو يستدعي واجهات API
+  الخاصة بالمزوّدين، أو يثبت جاهزية التنفيذ الدقيقة لكل نموذج.
+- يمكن أن يتضمن `models list --all --provider <id>` صفوف فهرس ثابتة مملوكة للمزوّد
+  من بيانات تعريف plugin manifests أو فهارس المزوّدين المضمّنة حتى عندما
+  لا تكون قد صادقت مع ذلك المزوّد بعد. تظل هذه الصفوف تظهر
+  غير متاحة حتى يتم تكوين المصادقة المطابقة.
+- يدمج `models list --all` الواسع صفوف فهرس manifest فوق صفوف السجل
+  دون تحميل خطافات إضافات وقت تشغيل المزوّد. تستخدم مسارات manifest السريعة
+  المفلترة حسب المزوّد فقط المزوّدين الموسومين `static`؛ أما المزوّدون الموسومون `refreshable`
+  فيبقون مدعومين بالسجل/الذاكرة المخبئية ويضيفون صفوف manifest كإضافات، بينما
+  يبقى المزوّدون الموسومون `runtime` على اكتشاف السجل/وقت التشغيل.
+- يحافظ `models list` على بيانات تعريف النموذج الأصلية وحدود وقت التشغيل منفصلة. في خرج الجدول،
+  يعرض `Ctx` القيمة `contextTokens/contextWindow` عندما يختلف حد وقت التشغيل الفعّال
+  عن نافذة السياق الأصلية؛ وتتضمن صفوف JSON القيمة `contextTokens`
+  عندما يكشف مزوّد ذلك الحد.
+- يرشح `models list --provider <id>` حسب معرّف المزوّد، مثل `moonshot` أو
+  `openai-codex`. لا يقبل تسميات العرض من منتقيات المزوّدين التفاعلية،
   مثل `Moonshot AI`.
-- يتم تحليل مراجع Models بالتقسيم عند **أول** `/`. إذا كان معرّف model يتضمن `/` (بنمط OpenRouter)، فأدرج بادئة provider (مثال: `openrouter/moonshotai/kimi-k2`).
-- إذا حذفت provider، فإن OpenClaw يحل الإدخال أولًا باعتباره اسمًا مستعارًا، ثم
-  باعتباره تطابق provider مهيأ وفريدًا لذلك المعرّف الدقيق لـ model، وبعد ذلك فقط
-  يعود إلى provider الافتراضي المهيأ مع تحذير إهمال.
-  وإذا لم يعد ذلك provider يعرّض model الافتراضي المهيأ، فإن OpenClaw
-  يعود إلى أول provider/model مهيأ بدلًا من إظهار
-  قيمة افتراضية قديمة تخص provider تمت إزالته.
-- قد يعرض `models status` القيمة `marker(<value>)` في خرج المصادقة للعناصر النائبة غير السرية (مثل `OPENAI_API_KEY` و`secretref-managed` و`minimax-oauth` و`oauth:chutes` و`ollama-local`) بدلًا من إخفائها كأسرار.
+- يتم تحليل مراجع النماذج بالتقسيم عند أول `/`. إذا كان معرّف النموذج يتضمن `/` (بنمط OpenRouter)، فأدرج بادئة المزوّد (مثال: `openrouter/moonshotai/kimi-k2`).
+- إذا حذفت المزوّد، يحل OpenClaw الإدخال كاسم مستعار أولا، ثم
+  كمطابقة فريدة لمزوّد مكوّن لذلك المعرّف الدقيق للنموذج، وبعد ذلك فقط
+  يعود إلى المزوّد الافتراضي المكوّن مع تحذير إهمال.
+  إذا لم يعد ذلك المزوّد يكشف النموذج الافتراضي المكوّن، فإن OpenClaw
+  يعود إلى أول مزوّد/نموذج مكوّن بدلا من إظهار افتراضي
+  قديم لمزوّد تمت إزالته.
+- قد يعرض `models status` القيمة `marker(<value>)` في خرج المصادقة للعناصر النائبة غير السرية (مثل `OPENAI_API_KEY` و`secretref-managed` و`minimax-oauth` و`oauth:chutes` و`ollama-local`) بدلا من إخفائها كأسرار.
 
-### `models scan`
+### فحص النماذج
 
-يقرأ `models scan` فهرس `:free` العام من OpenRouter ويرتّب المرشحين
-لاستخدامهم في fallback. والفهرس نفسه عام، لذا لا تحتاج عمليات الفحص المعتمدة على البيانات الوصفية فقط
+يقرأ `models scan` فهرس `:free` العام الخاص بـ OpenRouter ويرتب المرشحين
+لاستخدامهم كاحتياطي. الفهرس نفسه عام، لذلك لا تحتاج الفحوصات الخاصة ببيانات التعريف فقط
 إلى مفتاح OpenRouter.
 
-يحاول OpenClaw افتراضيًا فحص دعم الأدوات والصور باستدعاءات model حية.
-إذا لم يتم تهيئة مفتاح OpenRouter، يعود الأمر إلى خرج يعتمد على البيانات الوصفية فقط
-ويشرح أن Models `:free` لا تزال تتطلب `OPENROUTER_API_KEY` لإجراء
-probes والاستدلال.
+افتراضيا، يحاول OpenClaw فحص دعم الأدوات والصور باستدعاءات نموذج مباشرة.
+إذا لم يتم تكوين مفتاح OpenRouter، يعود الأمر إلى خرج بيانات التعريف فقط
+ويوضح أن نماذج `:free` ما زالت تتطلب `OPENROUTER_API_KEY` من أجل
+الفحوصات والاستدلال.
 
 الخيارات:
 
-- `--no-probe` (بيانات وصفية فقط؛ بدون بحث في config/secrets)
+- `--no-probe` (بيانات تعريف فقط؛ دون بحث في التكوين/الأسرار)
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
 - `--max-candidates <n>`
-- `--timeout <ms>` (مهلة طلب الفهرس والمهلة لكل probe)
+- `--timeout <ms>` (مهلة طلب الفهرس وكل فحص)
 - `--concurrency <n>`
 - `--yes`
 - `--no-input`
@@ -100,25 +110,29 @@ probes والاستدلال.
 - `--set-image`
 - `--json`
 
-يتطلب `--set-default` و`--set-image` probes حية؛ أما نتائج الفحص المعتمدة على البيانات الوصفية فقط
-فهي معلوماتية ولا تُطبَّق على الإعدادات.
+يتطلب `--set-default` و`--set-image` فحوصات مباشرة؛ نتائج الفحص الخاصة ببيانات التعريف فقط
+معلوماتية ولا تطبق على التكوين.
 
-### `models status`
+### حالة النماذج
 
 الخيارات:
 
 - `--json`
 - `--plain`
-- `--check` (رمز الخروج 1=منتهي/مفقود، 2=قارب على الانتهاء)
-- `--probe` (probe حي لملفات تعريف المصادقة المهيأة)
-- `--probe-provider <name>` (فحص provider واحد)
-- `--probe-profile <id>` (يمكن التكرار أو استخدام معرّفات ملفات تعريف مفصولة بفواصل)
+- `--check` (الخروج 1=منتهي/مفقود، 2=قارب على الانتهاء)
+- `--probe` (فحص مباشر لملفات تعريف المصادقة المكوّنة)
+- `--probe-provider <name>` (فحص مزوّد واحد)
+- `--probe-profile <id>` (معرّفات ملفات تعريف مكررة أو مفصولة بفواصل)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
-- `--agent <id>` (معرّف وكيل مهيأ؛ يتجاوز `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`)
+- `--agent <id>` (معرّف وكيل مكوّن؛ يتجاوز `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`)
 
-حالات probe:
+يحافظ `--json` على stdout مخصصا لحمولة JSON. يتم توجيه تشخيصات
+ملف تعريف المصادقة والمزوّد وبدء التشغيل إلى stderr حتى تتمكن السكربتات من تمرير stdout مباشرة
+إلى أدوات مثل `jq`.
+
+مجموعات حالة الفحص:
 
 - `ok`
 - `auth`
@@ -129,17 +143,17 @@ probes والاستدلال.
 - `unknown`
 - `no_model`
 
-حالات detail/reason-code المتوقعة في probe:
+حالات تفاصيل الفحص/رموز السبب المتوقعة:
 
-- `excluded_by_auth_order`: يوجد ملف تعريف مخزَّن، لكن
-  `auth.order.<provider>` الصريح استبعده، لذلك يبلغ probe عن الاستبعاد بدلًا
-  من محاولة استخدامه.
+- `excluded_by_auth_order`: يوجد ملف تعريف مخزن، لكن `auth.order.<provider>` الصريح
+  حذفه، لذلك يبلّغ الفحص عن الاستبعاد بدلا من
+  تجربته.
 - `missing_credential` و`invalid_expires` و`expired` و`unresolved_ref`:
   ملف التعريف موجود لكنه غير مؤهل/غير قابل للحل.
-- `no_model`: توجد مصادقة provider، لكن OpenClaw لم يتمكن من حل
-  مرشح model قابل للفحص لذلك provider.
+- `no_model`: مصادقة المزوّد موجودة، لكن OpenClaw لم يتمكن من حل مرشح نموذج
+  قابل للفحص لذلك المزوّد.
 
-## الأسماء المستعارة + عمليات fallback
+## الأسماء المستعارة + الاحتياطيات
 
 ```bash
 openclaw models aliases list
@@ -155,16 +169,16 @@ openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
-`models auth add` هو مساعد المصادقة التفاعلي. يمكنه تشغيل تدفق مصادقة provider
-‏(OAuth/API key) أو إرشادك إلى لصق token يدويًا، بحسب
-provider الذي تختاره.
+`models auth add` هو مساعد المصادقة التفاعلي. يمكنه إطلاق تدفق مصادقة مزوّد
+(OAuth/API key) أو إرشادك إلى لصق رمز مميز يدويا، حسب
+المزوّد الذي تختاره.
 
-يشغّل `models auth login` تدفق مصادقة Plugin خاص بـ provider
-‏(OAuth/API key). استخدم
-`openclaw plugins list` لمعرفة providers المثبتين.
+يشغل `models auth login` تدفق مصادقة plugin مزوّد (OAuth/API key). استخدم
+`openclaw plugins list` لمعرفة المزوّدين المثبتين.
 استخدم `openclaw models auth --agent <id> <subcommand>` لكتابة نتائج المصادقة إلى
-مخزن وكيل مهيأ محدد. وتحترم علامة `--agent` الأصلية الأمرَ
-`add` و`login` و`setup-token` و`paste-token` و`login-github-copilot`.
+مخزن وكيل مكوّن محدد. يحترم
+`add` و`login` و`setup-token` و`paste-token` و`login-github-copilot`
+علامة الأصل `--agent`.
 
 أمثلة:
 
@@ -174,21 +188,22 @@ openclaw models auth login --provider openai-codex --set-default
 
 ملاحظات:
 
-- يظل `setup-token` و`paste-token` أمرين عامين للتعامل مع tokens للـ providers
-  الذين يعرّضون أساليب مصادقة عبر token.
-- يتطلب `setup-token` بيئة TTY تفاعلية ويشغّل أسلوب مصادقة token الخاص بالـ provider
-  (ويستخدم افتراضيًا أسلوب `setup-token` لذلك provider عندما يعرّضه).
-- يقبل `paste-token` سلسلة token تم إنشاؤها في مكان آخر أو من الأتمتة.
-- يتطلب `paste-token` وجود `--provider`، ويطلب قيمة token، ويكتبها
+- يظل `setup-token` و`paste-token` أمرين عامين للرموز المميزة للمزوّدين
+  الذين يكشفون طرق مصادقة بالرموز المميزة.
+- يتطلب `setup-token` طرفية TTY تفاعلية ويشغل طريقة مصادقة الرمز المميز
+  الخاصة بالمزوّد (مع الافتراض إلى طريقة `setup-token` لذلك المزوّد عندما يكشف
+  واحدة).
+- يقبل `paste-token` سلسلة رمز مميز مولدة في مكان آخر أو من الأتمتة.
+- يتطلب `paste-token` الخيار `--provider`، ويطلب قيمة الرمز المميز، ويكتبها
   إلى معرّف ملف التعريف الافتراضي `<provider>:manual` ما لم تمرر
   `--profile-id`.
-- يقوم `paste-token --expires-in <duration>` بتخزين انتهاء صلاحية token مطلق
-  من مدة نسبية مثل `365d` أو `12h`.
-- ملاحظة Anthropic: أخبرنا موظفو Anthropic أن استخدام Claude CLI على نمط OpenClaw مسموح به مرة أخرى، لذا يتعامل OpenClaw مع إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما معتمدان لهذا التكامل ما لم تنشر Anthropic سياسة جديدة.
-- لا يزال `setup-token` / `paste-token` الخاصان بـ Anthropic متاحين كمسار token مدعوم في OpenClaw، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI و`claude -p` عند توفرهما.
+- يخزن `paste-token --expires-in <duration>` انتهاء صلاحية مطلقا للرمز المميز من
+  مدة نسبية مثل `365d` أو `12h`.
+- ملاحظة Anthropic: أخبرنا موظفو Anthropic أن استخدام Claude CLI بنمط OpenClaw مسموح به مجددا، لذلك يتعامل OpenClaw مع إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما مصرحان لهذا التكامل ما لم تنشر Anthropic سياسة جديدة.
+- يظل Anthropic `setup-token` / `paste-token` متاحين كمسار رمز مميز مدعوم في OpenClaw، لكن OpenClaw يفضل الآن إعادة استخدام Claude CLI و`claude -p` عند توفرهما.
 
-## ذو صلة
+## ذات صلة
 
 - [مرجع CLI](/ar/cli)
-- [اختيار Model](/ar/concepts/model-providers)
-- [Model failover](/ar/concepts/model-failover)
+- [اختيار النموذج](/ar/concepts/model-providers)
+- [تجاوز فشل النموذج](/ar/concepts/model-failover)

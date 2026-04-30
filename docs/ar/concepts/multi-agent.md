@@ -2,104 +2,104 @@
 read_when: You want multiple isolated agents (workspaces + auth) in one gateway process.
 sidebarTitle: Multi-agent routing
 status: active
-summary: 'التوجيه متعدد الوكلاء: وكلاء معزولون، وحسابات القنوات، وbindings'
-title: التوجيه متعدد الوكلاء
+summary: 'التوجيه متعدد الوكلاء: وكلاء معزولون، وحسابات القنوات، والارتباطات'
+title: توجيه متعدد الوكلاء
 x-i18n:
-    generated_at: "2026-04-26T11:27:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:53:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 845149ac1076d4746cc5038bd4444c2fc6117710f724b8cabdc31dc9ef6abbe8
+    source_hash: 67adea74d5f97feff3f816cc4c34c9429e7659289013e5a7c7623bd185a50a31
     source_path: concepts/multi-agent.md
-    workflow: 15
+    workflow: 16
 ---
 
-شغّل عدة وكلاء **معزولين** — لكل واحد منهم مساحة عمل خاصة به، ودليل حالة (`agentDir`) خاص به، وسجل جلسات مستقل — بالإضافة إلى عدة حسابات قنوات (مثل حسابَي WhatsApp) داخل Gateway واحد قيد التشغيل. تُوجَّه الرسائل الواردة إلى الوكيل الصحيح من خلال bindings.
+شغّل عدة وكلاء _معزولين_، لكل منهم مساحة عمل خاصة به، ودليل حالة (`agentDir`)، وسجل جلسة، إلى جانب حسابات قناة متعددة (مثل حسابي WhatsApp) داخل Gateway واحد قيد التشغيل. تُوجَّه الرسائل الواردة إلى الوكيل الصحيح عبر عمليات الربط.
 
-الـ **agent** هنا هو النطاق الكامل لكل شخصية: ملفات مساحة العمل، وملفات تعريف المصادقة، وسجل النماذج، ومخزن الجلسات. و`agentDir` هو دليل الحالة على القرص الذي يحتفظ بهذا الإعداد الخاص بكل وكيل في `~/.openclaw/agents/<agentId>/`. أما **binding** فهو يربط حساب قناة (مثل مساحة عمل Slack أو رقم WhatsApp) بأحد هؤلاء الوكلاء.
+الـ **وكيل** هنا هو النطاق الكامل لكل شخصية: ملفات مساحة العمل، وملفات تعريف المصادقة، وسجل النماذج، ومخزن الجلسات. `agentDir` هو دليل الحالة على القرص الذي يحتوي على هذا الإعداد الخاص بكل وكيل في `~/.openclaw/agents/<agentId>/`. يربط **الربط** حساب قناة (مثل مساحة عمل Slack أو رقم WhatsApp) بأحد هؤلاء الوكلاء.
 
-## ما المقصود بـ "وكيل واحد"؟
+## ما هو "وكيل واحد"؟
 
-الـ **agent** هو عقل محدد النطاق بالكامل وله ما يلي بشكل مستقل:
+الـ **وكيل** هو عقل محدد النطاق بالكامل وله ما يلي:
 
 - **مساحة العمل** (الملفات، وAGENTS.md/SOUL.md/USER.md، والملاحظات المحلية، وقواعد الشخصية).
-- **دليل الحالة** (`agentDir`) لملفات تعريف المصادقة، وسجل النماذج، والإعدادات الخاصة بكل وكيل.
-- **مخزن الجلسات** (سجل الدردشة + حالة التوجيه) ضمن `~/.openclaw/agents/<agentId>/sessions`.
+- **دليل الحالة** (`agentDir`) لملفات تعريف المصادقة، وسجل النماذج، وإعدادات كل وكيل.
+- **مخزن الجلسات** (سجل المحادثة + حالة التوجيه) تحت `~/.openclaw/agents/<agentId>/sessions`.
 
-ملفات تعريف المصادقة تكون **لكل وكيل**. يقرأ كل وكيل من ملفه الخاص:
+ملفات تعريف المصادقة **خاصة بكل وكيل**. يقرأ كل وكيل من ملفه الخاص:
 
 ```text
 ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
 ```
 
 <Note>
-يظل `sessions_history` هنا أيضًا هو المسار الأكثر أمانًا للاستدعاء عبر الجلسات: فهو يعيد عرضًا محدودًا ومنقحًا، وليس تفريغًا خامًا للسجل. يزيل استدعاء المساعد وسوم التفكير، وهياكل `<relevant-memories>`، وحمولات XML النصية العادية الخاصة باستدعاءات الأدوات (بما في ذلك `<tool_call>...</tool_call>` و`<function_call>...</function_call>` و`<tool_calls>...</tool_calls>` و`<function_calls>...</function_calls>` وكتل استدعاء الأدوات المقتطعة)، وهياكل استدعاء الأدوات المخفّضة، ورموز تحكم النموذج المتسربة بنمط ASCII/العرض الكامل، وXML المشوّه الخاص باستدعاء أدوات MiniMax قبل التنقيح/الاقتطاع.
+`sessions_history` هو مسار الاسترجاع عبر الجلسات الأكثر أمانا هنا أيضا: فهو يعيد عرضا محدودا ومنقحا، وليس تفريغا خاما للنص الكامل. يزيل استرجاع المساعد وسوم التفكير، وبنية `<relevant-memories>`، وحمولات XML النصية الصرفة لاستدعاءات الأدوات (بما في ذلك `<tool_call>...</tool_call>`، و`<function_call>...</function_call>`، و`<tool_calls>...</tool_calls>`، و`<function_calls>...</function_calls>`، وكتل استدعاء الأدوات المقتطعة)، وبنية استدعاء الأدوات المخفّضة، ورموز تحكم النماذج ASCII/كاملة العرض المسرّبة، وXML استدعاء أدوات MiniMax غير السليم قبل التنقيح/الاقتطاع.
 </Note>
 
 <Warning>
-لا تتم مشاركة بيانات اعتماد الوكيل الرئيسي **تلقائيًا**. لا تعِد استخدام `agentDir` بين الوكلاء مطلقًا (لأنه يسبب تصادمات في المصادقة/الجلسات). وإذا أردت مشاركة بيانات الاعتماد، فانسخ `auth-profiles.json` إلى `agentDir` الخاص بالوكيل الآخر.
+لا تعد استخدام `agentDir` عبر وكلاء متعددين أبدا (فذلك يسبب تصادمات في المصادقة/الجلسات). يمكن للوكلاء القراءة من ملفات تعريف المصادقة الخاصة بالوكيل الافتراضي/الرئيسي عندما لا يكون لديهم ملف تعريف محلي، لكن OpenClaw لا ينسخ رموز تحديث OAuth إلى مخزن الوكيل الثانوي. إذا أردت حساب OAuth مستقلا، فسجّل الدخول من ذلك الوكيل؛ وإذا نسخت بيانات الاعتماد يدويا، فانسخ فقط ملفات تعريف `api_key` أو `token` الثابتة والقابلة للنقل.
 </Warning>
 
-يتم تحميل Skills من مساحة عمل كل وكيل بالإضافة إلى الجذور المشتركة مثل `~/.openclaw/skills`، ثم تُرشَّح بواسطة allowlist الفعّال للـ Skills الخاص بالوكيل عند تكوينه. استخدم `agents.defaults.skills` كخط أساس مشترك، و`agents.list[].skills` كبديل لكل وكيل. راجع [Skills: per-agent vs shared](/ar/tools/skills#per-agent-vs-shared-skills) و[Skills: agent skill allowlists](/ar/tools/skills#agent-skill-allowlists).
+تُحمَّل Skills من مساحة عمل كل وكيل إضافة إلى الجذور المشتركة مثل `~/.openclaw/skills`، ثم تُرشَّح حسب قائمة السماح الفعالة لمهارات الوكيل عند إعدادها. استخدم `agents.defaults.skills` لخط أساس مشترك و`agents.list[].skills` لاستبدال خاص بكل وكيل. راجع [Skills: لكل وكيل مقابل مشتركة](/ar/tools/skills#per-agent-vs-shared-skills) و[Skills: قوائم سماح مهارات الوكيل](/ar/tools/skills#agent-skill-allowlists).
 
-يمكن لـ Gateway استضافة **وكيل واحد** (افتراضيًا) أو **عدة وكلاء** جنبًا إلى جنب.
+يمكن لـ Gateway استضافة **وكيل واحد** (افتراضيا) أو **عدة وكلاء** جنبا إلى جنب.
 
 <Note>
-**ملاحظة مساحة العمل:** مساحة عمل كل وكيل هي **cwd الافتراضي**، وليست sandbox صارمة. تُحل المسارات النسبية داخل مساحة العمل، لكن يمكن للمسارات المطلقة الوصول إلى مواقع أخرى على المضيف ما لم يكن sandboxing مفعّلًا. راجع [Sandboxing](/ar/gateway/sandboxing).
+**ملاحظة مساحة العمل:** مساحة عمل كل وكيل هي **دليل العمل الحالي الافتراضي**، وليست صندوق عزل صارما. تُحل المسارات النسبية داخل مساحة العمل، لكن المسارات المطلقة يمكن أن تصل إلى مواقع أخرى على المضيف ما لم يكن العزل مفعلا. راجع [العزل](/ar/gateway/sandboxing).
 </Note>
 
 ## المسارات (خريطة سريعة)
 
-- الإعدادات: `~/.openclaw/openclaw.json` (أو `OPENCLAW_CONFIG_PATH`)
+- الإعداد: `~/.openclaw/openclaw.json` (أو `OPENCLAW_CONFIG_PATH`)
 - دليل الحالة: `~/.openclaw` (أو `OPENCLAW_STATE_DIR`)
 - مساحة العمل: `~/.openclaw/workspace` (أو `~/.openclaw/workspace-<agentId>`)
-- Agent dir: `~/.openclaw/agents/<agentId>/agent` (أو `agents.list[].agentDir`)
+- دليل الوكيل: `~/.openclaw/agents/<agentId>/agent` (أو `agents.list[].agentDir`)
 - الجلسات: `~/.openclaw/agents/<agentId>/sessions`
 
-### وضع الوكيل الواحد (الافتراضي)
+### وضع الوكيل الواحد (افتراضي)
 
-إذا لم تفعل شيئًا، فسيشغّل OpenClaw وكيلًا واحدًا:
+إذا لم تفعل شيئا، يشغل OpenClaw وكيلا واحدا:
 
 - تكون القيمة الافتراضية لـ `agentId` هي **`main`**.
-- تُفهرس الجلسات على شكل `agent:main:<mainKey>`.
-- تكون مساحة العمل افتراضيًا `~/.openclaw/workspace` (أو `~/.openclaw/workspace-<profile>` عند ضبط `OPENCLAW_PROFILE`).
-- تكون الحالة افتراضيًا `~/.openclaw/agents/main/agent`.
+- تُفهرس الجلسات بصيغة `agent:main:<mainKey>`.
+- تكون مساحة العمل افتراضيا `~/.openclaw/workspace` (أو `~/.openclaw/workspace-<profile>` عند ضبط `OPENCLAW_PROFILE`).
+- تكون الحالة افتراضيا `~/.openclaw/agents/main/agent`.
 
-## مساعد الوكلاء
+## مساعد الوكيل
 
-استخدم معالج الوكلاء لإضافة وكيل جديد معزول:
+استخدم معالج الوكيل لإضافة وكيل معزول جديد:
 
 ```bash
 openclaw agents add work
 ```
 
-ثم أضف `bindings` (أو دع المعالج يقوم بذلك) لتوجيه الرسائل الواردة.
+ثم أضف `bindings` (أو دع المعالج يفعل ذلك) لتوجيه الرسائل الواردة.
 
-تحقّق باستخدام:
+تحقق باستخدام:
 
 ```bash
 openclaw agents list --bindings
 ```
 
-## بدء سريع
+## البدء السريع
 
 <Steps>
-  <Step title="أنشئ مساحة عمل لكل وكيل">
-    استخدم المعالج أو أنشئ مساحات العمل يدويًا:
+  <Step title="Create each agent workspace">
+    استخدم المعالج أو أنشئ مساحات العمل يدويا:
 
     ```bash
     openclaw agents add coding
     openclaw agents add social
     ```
 
-    يحصل كل وكيل على مساحة عمل خاصة به تتضمن `SOUL.md` و`AGENTS.md` و`USER.md` اختياريًا، بالإضافة إلى `agentDir` مخصص ومخزن جلسات ضمن `~/.openclaw/agents/<agentId>`.
+    يحصل كل وكيل على مساحة عمل خاصة به تحتوي على `SOUL.md` و`AGENTS.md` و`USER.md` اختياري، إضافة إلى `agentDir` مخصص ومخزن جلسات تحت `~/.openclaw/agents/<agentId>`.
 
   </Step>
-  <Step title="أنشئ حسابات القنوات">
-    أنشئ حسابًا واحدًا لكل وكيل على القنوات المفضلة لديك:
+  <Step title="Create channel accounts">
+    أنشئ حسابا واحدا لكل وكيل على قنواتك المفضلة:
 
-    - Discord: bot واحد لكل وكيل، فعّل Message Content Intent، وانسخ كل token.
-    - Telegram: bot واحد لكل وكيل عبر BotFather، وانسخ كل token.
-    - WhatsApp: اربط كل رقم هاتف لكل حساب.
+    - Discord: روبوت واحد لكل وكيل، فعّل Message Content Intent، وانسخ كل رمز.
+    - Telegram: روبوت واحد لكل وكيل عبر BotFather، وانسخ كل رمز.
+    - WhatsApp: اربط كل رقم هاتف بكل حساب.
 
     ```bash
     openclaw channels login --channel whatsapp --account work
@@ -108,10 +108,10 @@ openclaw agents list --bindings
     راجع أدلة القنوات: [Discord](/ar/channels/discord)، [Telegram](/ar/channels/telegram)، [WhatsApp](/ar/channels/whatsapp).
 
   </Step>
-  <Step title="أضف الوكلاء والحسابات وbindings">
-    أضف الوكلاء ضمن `agents.list`، وحسابات القنوات ضمن `channels.<channel>.accounts`، ثم اربطهم عبر `bindings` (انظر الأمثلة أدناه).
+  <Step title="Add agents, accounts, and bindings">
+    أضف الوكلاء تحت `agents.list`، وحسابات القنوات تحت `channels.<channel>.accounts`، واربطها باستخدام `bindings` (الأمثلة أدناه).
   </Step>
-  <Step title="أعد التشغيل وتحقق">
+  <Step title="Restart and verify">
     ```bash
     openclaw gateway restart
     openclaw agents list --bindings
@@ -122,17 +122,17 @@ openclaw agents list --bindings
 
 ## عدة وكلاء = عدة أشخاص، عدة شخصيات
 
-عند استخدام **عدة وكلاء**، يصبح كل `agentId` **شخصية معزولة بالكامل**:
+مع **عدة وكلاء**، يصبح كل `agentId` **شخصية معزولة بالكامل**:
 
-- **أرقام هواتف/حسابات مختلفة** (لكل قناة `accountId`).
-- **شخصيات مختلفة** (من خلال ملفات مساحة العمل الخاصة بكل وكيل مثل `AGENTS.md` و`SOUL.md`).
-- **مصادقة + جلسات منفصلة** (من دون تداخل إلا إذا تم تمكين ذلك صراحةً).
+- **أرقام هاتف/حسابات مختلفة** (لكل قناة `accountId`).
+- **شخصيات مختلفة** (ملفات مساحة عمل خاصة بكل وكيل مثل `AGENTS.md` و`SOUL.md`).
+- **مصادقة + جلسات منفصلة** (لا تداخل ما لم يُفعّل صراحة).
 
-يسمح ذلك لـ **عدة أشخاص** بمشاركة خادم Gateway واحد مع إبقاء "عقول" الذكاء الاصطناعي وبياناتهم معزولة.
+يتيح هذا لـ **عدة أشخاص** مشاركة خادم Gateway واحد مع إبقاء "عقول" الذكاء الاصطناعي وبياناتهم معزولة.
 
 ## بحث ذاكرة QMD عبر الوكلاء
 
-إذا كان يجب على أحد الوكلاء البحث في نصوص جلسات QMD الخاصة بوكيل آخر، فأضف مجموعات إضافية ضمن `agents.list[].memorySearch.qmd.extraCollections`. استخدم `agents.defaults.memorySearch.qmd.extraCollections` فقط عندما يجب أن يرث كل وكيل مجموعات النصوص المشتركة نفسها.
+إذا كان يجب على وكيل البحث في نصوص جلسات QMD لوكيل آخر، فأضف مجموعات إضافية تحت `agents.list[].memorySearch.qmd.extraCollections`. استخدم `agents.defaults.memorySearch.qmd.extraCollections` فقط عندما يجب أن يرث كل وكيل مجموعات النصوص المشتركة نفسها.
 
 ```json5
 {
@@ -151,7 +151,7 @@ openclaw agents list --bindings
         workspace: "~/workspaces/main",
         memorySearch: {
           qmd: {
-            extraCollections: [{ path: "notes" }], // تُحل داخل مساحة العمل -> مجموعة باسم "notes-main"
+            extraCollections: [{ path: "notes" }], // resolves inside workspace -> collection named "notes-main"
           },
         },
       },
@@ -165,14 +165,14 @@ openclaw agents list --bindings
 }
 ```
 
-يمكن مشاركة مسار المجموعة الإضافية بين الوكلاء، لكن يظل اسم المجموعة صريحًا عندما يكون المسار خارج مساحة عمل الوكيل. وتبقى المسارات داخل مساحة العمل مرتبطة بالوكيل بحيث يحتفظ كل وكيل بمجموعة البحث في النصوص الخاصة به.
+يمكن مشاركة مسار المجموعة الإضافية عبر الوكلاء، لكن يبقى اسم المجموعة صريحا عندما يكون المسار خارج مساحة عمل الوكيل. تظل المسارات داخل مساحة العمل محددة النطاق للوكيل كي يحتفظ كل وكيل بمجموعة بحث النصوص الخاصة به.
 
-## رقم WhatsApp واحد، عدة أشخاص (تقسيم DM)
+## رقم WhatsApp واحد، عدة أشخاص (تقسيم الرسائل المباشرة)
 
-يمكنك توجيه **رسائل WhatsApp الخاصة DM المختلفة** إلى وكلاء مختلفين مع البقاء على **حساب WhatsApp واحد**. طابق على E.164 الخاص بالمرسل (مثل `+15551234567`) باستخدام `peer.kind: "direct"`. وتظل الردود تأتي من رقم WhatsApp نفسه (من دون هوية مرسل منفصلة لكل وكيل).
+يمكنك توجيه **رسائل WhatsApp مباشرة مختلفة** إلى وكلاء مختلفين مع البقاء على **حساب WhatsApp واحد**. طابق حسب مرسل E.164 (مثل `+15551234567`) مع `peer.kind: "direct"`. ستظل الردود صادرة من رقم WhatsApp نفسه (لا توجد هوية مرسل خاصة بكل وكيل).
 
 <Note>
-تنهار الدردشات المباشرة إلى **مفتاح الجلسة الرئيسي** الخاص بالوكيل، لذا يتطلب العزل الحقيقي **وكيلًا واحدًا لكل شخص**.
+تنهار المحادثات المباشرة إلى **مفتاح الجلسة الرئيسي** للوكيل، لذلك يتطلب العزل الحقيقي **وكيلا واحدا لكل شخص**.
 </Note>
 
 مثال:
@@ -206,22 +206,22 @@ openclaw agents list --bindings
 
 ملاحظات:
 
-- التحكم في وصول الرسائل الخاصة DM هو **عام على مستوى حساب WhatsApp** (إقران/allowlist)، وليس لكل وكيل.
-- بالنسبة إلى المجموعات المشتركة، اربط المجموعة بوكيل واحد أو استخدم [Broadcast groups](/ar/channels/broadcast-groups).
+- التحكم في الوصول إلى الرسائل المباشرة **عام لكل حساب WhatsApp** (الاقتران/قائمة السماح)، وليس لكل وكيل.
+- للمجموعات المشتركة، اربط المجموعة بوكيل واحد أو استخدم [مجموعات البث](/ar/channels/broadcast-groups).
 
-## قواعد التوجيه (كيف تختار الرسائل وكيلًا)
+## قواعد التوجيه (كيف تختار الرسائل وكيلا)
 
-تكون bindings **حتمية** و**الأكثر تحديدًا هو الذي يفوز**:
+عمليات الربط **حتمية** و**الأكثر تحديدا يفوز**:
 
 <Steps>
   <Step title="peer match">
-    معرّف DM/group/channel مطابق تمامًا.
+    معرّف رسالة مباشرة/مجموعة/قناة مطابق تماما.
   </Step>
   <Step title="parentPeer match">
-    وراثة الخيوط.
+    وراثة الخيط.
   </Step>
   <Step title="guildId + roles">
-    توجيه الأدوار في Discord.
+    توجيه أدوار Discord.
   </Step>
   <Step title="guildId">
     Discord.
@@ -230,37 +230,37 @@ openclaw agents list --bindings
     Slack.
   </Step>
   <Step title="accountId match for a channel">
-    بديل احتياطي لكل حساب.
+    مسار احتياطي لكل حساب.
   </Step>
   <Step title="Channel-level match">
     `accountId: "*"`.
   </Step>
   <Step title="Default agent">
-    بديل احتياطي إلى `agents.list[].default`، وإلا أول إدخال في القائمة، والافتراضي: `main`.
+    مسار احتياطي إلى `agents.list[].default`، وإلا أول إدخال في القائمة، الافتراضي: `main`.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="فك التعادل ودلالات AND">
-    - إذا طابقت عدة bindings في المستوى نفسه، فالأولى حسب ترتيب config هي التي تفوز.
-    - إذا ضبط binding عدة حقول مطابقة (مثل `peer` + `guildId`)، فكل الحقول المحددة مطلوبة (دلالات `AND`).
+  <Accordion title="Tie-breaking and AND semantics">
+    - إذا طابقت عدة عمليات ربط في المستوى نفسه، تفوز أول واحدة حسب ترتيب الإعداد.
+    - إذا ضبط ربط عدة حقول مطابقة (مثلا `peer` + `guildId`)، فكل الحقول المحددة مطلوبة (دلالات `AND`).
 
   </Accordion>
-  <Accordion title="تفاصيل نطاق الحساب">
-    - يطابق binding الذي يحذف `accountId` الحساب الافتراضي فقط.
-    - استخدم `accountId: "*"` كبديل احتياطي على مستوى القناة عبر جميع الحسابات.
-    - إذا أضفت لاحقًا binding نفسها للوكيل نفسه مع معرّف حساب صريح، فسيقوم OpenClaw بترقية binding الحالية الخاصة بالقناة فقط إلى نطاق خاص بالحساب بدلًا من تكرارها.
+  <Accordion title="Account-scope detail">
+    - الربط الذي يحذف `accountId` يطابق الحساب الافتراضي فقط.
+    - استخدم `accountId: "*"` لمسار احتياطي على مستوى القناة عبر كل الحسابات.
+    - إذا أضفت لاحقا الربط نفسه للوكيل نفسه مع معرّف حساب صريح، يرقي OpenClaw الربط الحالي الخاص بالقناة فقط إلى ربط محدد النطاق بالحساب بدلا من تكراره.
 
   </Accordion>
 </AccordionGroup>
 
-## عدة حسابات / عدة أرقام هاتف
+## حسابات / أرقام هاتف متعددة
 
-تستخدم القنوات التي تدعم **عدة حسابات** (مثل WhatsApp) القيمة `accountId` لتحديد كل تسجيل دخول. ويمكن توجيه كل `accountId` إلى وكيل مختلف، بحيث يمكن لخادم واحد استضافة عدة أرقام هواتف من دون خلط الجلسات.
+تستخدم القنوات التي تدعم **حسابات متعددة** (مثل WhatsApp) `accountId` لتحديد كل تسجيل دخول. يمكن توجيه كل `accountId` إلى وكيل مختلف، لذلك يمكن لخادم واحد استضافة أرقام هاتف متعددة دون خلط الجلسات.
 
-إذا كنت تريد حسابًا افتراضيًا على مستوى القناة عندما يتم حذف `accountId`، فاضبط `channels.<channel>.defaultAccount` (اختياري). وعند عدم ضبطه، يعود OpenClaw إلى `default` إذا كانت موجودة، وإلا إلى أول معرّف حساب مُكوَّن (بعد الفرز).
+إذا أردت حسابا افتراضيا على مستوى القناة عند حذف `accountId`، فاضبط `channels.<channel>.defaultAccount` (اختياري). عند عدم ضبطه، يعود OpenClaw إلى `default` إذا كان موجودا، وإلا إلى أول معرّف حساب مضبوط (مرتّب).
 
-تشمل القنوات الشائعة التي تدعم هذا النمط ما يلي:
+تشمل القنوات الشائعة التي تدعم هذا النمط:
 
 - `whatsapp`, `telegram`, `discord`, `slack`, `signal`, `imessage`
 - `irc`, `line`, `googlechat`, `mattermost`, `matrix`, `nextcloud-talk`
@@ -268,16 +268,16 @@ openclaw agents list --bindings
 
 ## المفاهيم
 
-- `agentId`: "عقل" واحد (مساحة عمل، ومصادقة لكل وكيل، ومخزن جلسات لكل وكيل).
-- `accountId`: مثيل حساب قناة واحد (مثل حساب WhatsApp `"personal"` مقابل `"biz"`).
-- `binding`: يوجّه الرسائل الواردة إلى `agentId` بواسطة `(channel, accountId, peer)` واختياريًا معرّفات guild/team.
-- تنهار الدردشات المباشرة إلى `agent:<agentId>:<mainKey>` (الجلسة "الرئيسية" لكل وكيل؛ `session.mainKey`).
+- `agentId`: "عقل" واحد (مساحة عمل، مصادقة خاصة بكل وكيل، مخزن جلسات خاص بكل وكيل).
+- `accountId`: نسخة حساب قناة واحدة (مثلا حساب WhatsApp `"personal"` مقابل `"biz"`).
+- `binding`: يوجه الرسائل الواردة إلى `agentId` حسب `(channel, accountId, peer)` واختياريا معرّفات النقابة/الفريق.
+- تنهار المحادثات المباشرة إلى `agent:<agentId>:<mainKey>` ("الرئيسية" لكل وكيل؛ `session.mainKey`).
 
 ## أمثلة المنصات
 
 <AccordionGroup>
-  <Accordion title="Discord bots لكل وكيل">
-    يُعيَّن كل حساب Discord bot إلى `accountId` فريد. اربط كل حساب بوكيل واحتفظ بـ allowlists لكل bot.
+  <Accordion title="Discord bots per agent">
+    يرتبط كل حساب روبوت Discord بـ `accountId` فريد. اربط كل حساب بوكيل، واحتفظ بقوائم السماح لكل روبوت.
 
     ```json5
     {
@@ -321,11 +321,11 @@ openclaw agents list --bindings
     }
     ```
 
-    - ادعُ كل bot إلى guild وفعّل Message Content Intent.
-    - تعيش الـ tokens في `channels.discord.accounts.<id>.token` (ويمكن للحساب الافتراضي استخدام `DISCORD_BOT_TOKEN`).
+    - ادعُ كل بوت إلى الخادم وفعّل Message Content Intent.
+    - توجد الرموز المميزة في `channels.discord.accounts.<id>.token` (يمكن للحساب الافتراضي استخدام `DISCORD_BOT_TOKEN`).
 
   </Accordion>
-  <Accordion title="Telegram bots لكل وكيل">
+  <Accordion title="بوتات Telegram لكل وكيل">
     ```json5
     {
       agents: {
@@ -356,19 +356,19 @@ openclaw agents list --bindings
     }
     ```
 
-    - أنشئ bot واحدًا لكل وكيل باستخدام BotFather وانسخ كل token.
-    - توجد الـ tokens في `channels.telegram.accounts.<id>.botToken` (ويمكن للحساب الافتراضي استخدام `TELEGRAM_BOT_TOKEN`).
+    - أنشئ بوتًا واحدًا لكل وكيل باستخدام BotFather وانسخ كل رمز مميز.
+    - توجد الرموز المميزة في `channels.telegram.accounts.<id>.botToken` (يمكن للحساب الافتراضي استخدام `TELEGRAM_BOT_TOKEN`).
 
   </Accordion>
   <Accordion title="أرقام WhatsApp لكل وكيل">
-    اربط كل حساب قبل بدء gateway:
+    اربط كل حساب قبل بدء Gateway:
 
     ```bash
     openclaw channels login --channel whatsapp --account personal
     openclaw channels login --channel whatsapp --account biz
     ```
 
-    `~/.openclaw/openclaw.json` ‏(JSON5):
+    `~/.openclaw/openclaw.json` (JSON5):
 
     ```js
     {
@@ -390,12 +390,12 @@ openclaw agents list --bindings
         ],
       },
 
-      // توجيه حتمي: أول مطابقة تفوز (الأكثر تحديدًا أولًا).
+      // Deterministic routing: first match wins (most-specific first).
       bindings: [
         { agentId: "home", match: { channel: "whatsapp", accountId: "personal" } },
         { agentId: "work", match: { channel: "whatsapp", accountId: "biz" } },
 
-        // تجاوز اختياري لكل peer (مثال: أرسل مجموعة محددة إلى وكيل العمل).
+        // Optional per-peer override (example: send a specific group to work agent).
         {
           agentId: "work",
           match: {
@@ -406,7 +406,7 @@ openclaw agents list --bindings
         },
       ],
 
-      // معطّل افتراضيًا: يجب تمكين المراسلة بين الوكلاء بشكل صريح + إدراجها في allowlist.
+      // Off by default: agent-to-agent messaging must be explicitly enabled + allowlisted.
       tools: {
         agentToAgent: {
           enabled: false,
@@ -418,11 +418,11 @@ openclaw agents list --bindings
         whatsapp: {
           accounts: {
             personal: {
-              // تجاوز اختياري. الافتراضي: ~/.openclaw/credentials/whatsapp/personal
+              // Optional override. Default: ~/.openclaw/credentials/whatsapp/personal
               // authDir: "~/.openclaw/credentials/whatsapp/personal",
             },
             biz: {
-              // تجاوز اختياري. الافتراضي: ~/.openclaw/credentials/whatsapp/biz
+              // Optional override. Default: ~/.openclaw/credentials/whatsapp/biz
               // authDir: "~/.openclaw/credentials/whatsapp/biz",
             },
           },
@@ -437,7 +437,7 @@ openclaw agents list --bindings
 ## الأنماط الشائعة
 
 <Tabs>
-  <Tab title="WhatsApp يومي + عمل عميق على Telegram">
+  <Tab title="WhatsApp يومي + عمل معمّق عبر Telegram">
     قسّم حسب القناة: وجّه WhatsApp إلى وكيل يومي سريع وTelegram إلى وكيل Opus.
 
     ```json5
@@ -467,12 +467,12 @@ openclaw agents list --bindings
 
     ملاحظات:
 
-    - إذا كانت لديك حسابات متعددة للقناة، فأضف `accountId` إلى binding (مثل `{ channel: "whatsapp", accountId: "personal" }`).
-    - لتوجيه DM/group واحدة إلى Opus مع إبقاء الباقي على وكيل chat، أضف binding من نوع `match.peer` لذلك الـ peer؛ إذ تفوز مطابقة الـ peer دائمًا على القواعد العامة للقناة.
+    - إذا كانت لديك حسابات متعددة لقناة ما، فأضف `accountId` إلى الربط (على سبيل المثال `{ channel: "whatsapp", accountId: "personal" }`).
+    - لتوجيه رسالة مباشرة/مجموعة واحدة إلى Opus مع إبقاء البقية على وكيل المحادثة، أضف ربط `match.peer` لذلك النظير؛ تطابقات النظير تفوز دائمًا على القواعد الشاملة للقناة.
 
   </Tab>
-  <Tab title="القناة نفسها، peer واحد إلى Opus">
-    أبقِ WhatsApp على الوكيل السريع، لكن وجّه DM واحدة إلى Opus:
+  <Tab title="القناة نفسها، نظير واحد إلى Opus">
+    أبقِ WhatsApp على الوكيل السريع، لكن وجّه رسالة مباشرة واحدة إلى Opus:
 
     ```json5
     {
@@ -502,11 +502,11 @@ openclaw agents list --bindings
     }
     ```
 
-    تفوز bindings الخاصة بالـ peer دائمًا، لذا أبقها فوق القاعدة العامة للقناة.
+    تفوز روابط النظير دائمًا، لذلك أبقِها فوق القاعدة الشاملة للقناة.
 
   </Tab>
-  <Tab title="وكيل عائلي مرتبط بمجموعة WhatsApp">
-    اربط وكيلًا عائليًا مخصصًا بمجموعة WhatsApp واحدة، مع تقييد الإشارات وسياسة أدوات أكثر صرامة:
+  <Tab title="وكيل العائلة المرتبط بمجموعة WhatsApp">
+    اربط وكيلًا مخصصًا للعائلة بمجموعة WhatsApp واحدة، مع بوابة الإشارات وسياسة أدوات أكثر تشددًا:
 
     ```json5
     {
@@ -553,15 +553,15 @@ openclaw agents list --bindings
 
     ملاحظات:
 
-    - قوائم السماح/المنع للأدوات هي **أدوات** وليست Skills. إذا كانت Skill تحتاج إلى تشغيل binary، فتأكد من أن `exec` مسموح وأن الـ binary موجود داخل sandbox.
-    - لتقييد أكثر صرامة، اضبط `agents.list[].groupChat.mentionPatterns` وأبقِ allowlists الخاصة بالمجموعات مفعّلة للقناة.
+    - قوائم السماح/الرفض للأدوات هي **أدوات**، وليست Skills. إذا احتاجت Skill إلى تشغيل ملف ثنائي، فتأكد من السماح بـ `exec` ومن وجود الملف الثنائي في صندوق العزل.
+    - لبوابة أكثر تشددًا، اضبط `agents.list[].groupChat.mentionPatterns` وأبقِ قوائم السماح للمجموعات مفعّلة للقناة.
 
   </Tab>
 </Tabs>
 
-## إعداد sandbox والأدوات لكل وكيل
+## صندوق العزل وتكوين الأدوات لكل وكيل
 
-يمكن لكل وكيل أن يملك sandbox وقيود أدوات خاصة به:
+يمكن أن يكون لكل وكيل صندوق عزل وقيود أدوات خاصة به:
 
 ```js
 {
@@ -571,24 +571,24 @@ openclaw agents list --bindings
         id: "personal",
         workspace: "~/.openclaw/workspace-personal",
         sandbox: {
-          mode: "off",  // بدون sandbox للوكيل الشخصي
+          mode: "off",  // No sandbox for personal agent
         },
-        // لا توجد قيود على الأدوات - جميع الأدوات متاحة
+        // No tool restrictions - all tools available
       },
       {
         id: "family",
         workspace: "~/.openclaw/workspace-family",
         sandbox: {
-          mode: "all",     // دائمًا داخل sandbox
-          scope: "agent",  // حاوية واحدة لكل وكيل
+          mode: "all",     // Always sandboxed
+          scope: "agent",  // One container per agent
           docker: {
-            // إعداد اختياري لمرة واحدة بعد إنشاء الحاوية
+            // Optional one-time setup after container creation
             setupCommand: "apt-get update && apt-get install -y git curl",
           },
         },
         tools: {
-          allow: ["read"],                    // أداة read فقط
-          deny: ["exec", "write", "edit", "apply_patch"],    // منع البقية
+          allow: ["read"],                    // Only read tool
+          deny: ["exec", "write", "edit", "apply_patch"],    // Deny others
         },
       },
     ],
@@ -597,25 +597,25 @@ openclaw agents list --bindings
 ```
 
 <Note>
-يوجد `setupCommand` ضمن `sandbox.docker` ويعمل مرة واحدة عند إنشاء الحاوية. يتم تجاهل تجاوزات `sandbox.docker.*` لكل وكيل عندما يكون `scope` المحلول هو `"shared"`.
+يوجد `setupCommand` تحت `sandbox.docker` ويُشغّل مرة واحدة عند إنشاء الحاوية. تُتجاهل تجاوزات `sandbox.docker.*` لكل وكيل عندما يكون النطاق المحسوم هو `"shared"`.
 </Note>
 
 **الفوائد:**
 
-- **عزل أمني**: تقييد الأدوات للوكلاء غير الموثوقين.
-- **التحكم في الموارد**: وضع وكلاء محددين داخل sandbox مع إبقاء الآخرين على المضيف.
+- **عزل أمني**: قيّد الأدوات للوكلاء غير الموثوقين.
+- **التحكم في الموارد**: اعزل وكلاء محددين مع إبقاء آخرين على المضيف.
 - **سياسات مرنة**: أذونات مختلفة لكل وكيل.
 
 <Note>
-إن `tools.elevated` **عام** ويعتمد على المرسل؛ ولا يمكن ضبطه لكل وكيل. إذا كنت تحتاج إلى حدود لكل وكيل، فاستخدم `agents.list[].tools` لمنع `exec`. ولاستهداف المجموعات، استخدم `agents.list[].groupChat.mentionPatterns` حتى تُطابق @mentions الوكيل المقصود بشكل نظيف.
+`tools.elevated` عام **وشامل** ويعتمد على المُرسل؛ ولا يمكن تكوينه لكل وكيل. إذا كنت تحتاج إلى حدود لكل وكيل، فاستخدم `agents.list[].tools` لرفض `exec`. لاستهداف المجموعات، استخدم `agents.list[].groupChat.mentionPatterns` حتى تُربط إشارات @ بوضوح بالوكيل المقصود.
 </Note>
 
-راجع [Multi-agent sandbox and tools](/ar/tools/multi-agent-sandbox-tools) للاطلاع على أمثلة مفصلة.
+راجع [صندوق العزل والأدوات متعددة الوكلاء](/ar/tools/multi-agent-sandbox-tools) للحصول على أمثلة تفصيلية.
 
-## ذو صلة
+## ذات صلة
 
-- [ACP agents](/ar/tools/acp-agents) — تشغيل harnesses ترميز خارجية
-- [Channel routing](/ar/channels/channel-routing) — كيفية توجيه الرسائل إلى الوكلاء
-- [Presence](/ar/concepts/presence) — حضور الوكيل وتوفّره
-- [Session](/ar/concepts/session) — عزل الجلسات والتوجيه
-- [Sub-agents](/ar/tools/subagents) — إنشاء عمليات وكلاء خلفية
+- [وكلاء ACP](/ar/tools/acp-agents) — تشغيل أدوات ترميز خارجية
+- [توجيه القنوات](/ar/channels/channel-routing) — كيفية توجيه الرسائل إلى الوكلاء
+- [الحضور](/ar/concepts/presence) — حضور الوكيل وتوفره
+- [الجلسة](/ar/concepts/session) — عزل الجلسات وتوجيهها
+- [الوكلاء الفرعيون](/ar/tools/subagents) — إنشاء تشغيلات وكلاء في الخلفية

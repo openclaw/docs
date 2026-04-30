@@ -1,39 +1,39 @@
 ---
 read_when:
     - تريد استخدام Vercel AI Gateway مع OpenClaw
-    - تحتاج إلى متغير البيئة الخاص بمفتاح API أو خيار مصادقة CLI
-summary: إعداد Vercel AI Gateway ‏(المصادقة + اختيار النموذج)
-title: Vercel AI gateway
+    - تحتاج إلى متغير البيئة الخاص بمفتاح واجهة برمجة التطبيقات أو خيار المصادقة في CLI
+summary: إعداد Vercel AI Gateway (المصادقة + اختيار النموذج)
+title: Gateway الذكاء الاصطناعي من Vercel
 x-i18n:
-    generated_at: "2026-04-24T08:01:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:23:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e1fa1c3c6e44e40d7a1fc89d93ee268c19124b746d4644d58014157be7cceeb9
+    source_hash: c3bbe498a04c2073020fcfbbe68cb506eca4c52c3274e4eca6ab7e6893fcfa56
     source_path: providers/vercel-ai-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
-يوفر [Vercel AI Gateway](https://vercel.com/ai-gateway) API موحدًا
+يوفّر [Vercel AI Gateway](https://vercel.com/ai-gateway) واجهة API موحّدة
 للوصول إلى مئات النماذج عبر نقطة نهاية واحدة.
 
-| الخاصية      | القيمة                           |
+| الخاصية      | القيمة                            |
 | ------------- | -------------------------------- |
-| الموفّر      | `vercel-ai-gateway`              |
-| المصادقة     | `AI_GATEWAY_API_KEY`             |
-| API          | متوافق مع Anthropic Messages     |
-| فهرس النماذج | يُكتشف تلقائيًا عبر `/v1/models` |
+| المزوّد      | `vercel-ai-gateway`              |
+| المصادقة          | `AI_GATEWAY_API_KEY`             |
+| API           | متوافق مع Anthropic Messages    |
+| كتالوج النماذج | يُكتشف تلقائيًا عبر `/v1/models` |
 
 <Tip>
-يكتشف OpenClaw تلقائيًا فهرس Gateway ‏`/v1/models`، لذلك يتضمن
-`/models vercel-ai-gateway` مراجع النماذج الحالية مثل
+يكتشف OpenClaw تلقائيًا كتالوج Gateway `/v1/models`، لذلك
+يتضمن `/models vercel-ai-gateway` مراجع النماذج الحالية مثل
 `vercel-ai-gateway/openai/gpt-5.5` و
 `vercel-ai-gateway/moonshotai/kimi-k2.6`.
 </Tip>
 
-## البدء
+## بدء الاستخدام
 
 <Steps>
-  <Step title="اضبط مفتاح API">
+  <Step title="Set the API key">
     شغّل الإعداد الأولي واختر خيار مصادقة AI Gateway:
 
     ```bash
@@ -41,8 +41,8 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="اضبط نموذجًا افتراضيًا">
-    أضف النموذج إلى تهيئة OpenClaw الخاصة بك:
+  <Step title="Set a default model">
+    أضف النموذج إلى إعدادات OpenClaw لديك:
 
     ```json5
     {
@@ -55,7 +55,7 @@ x-i18n:
     ```
 
   </Step>
-  <Step title="تحقق من توفر النموذج">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider vercel-ai-gateway
     ```
@@ -64,7 +64,7 @@ x-i18n:
 
 ## مثال غير تفاعلي
 
-بالنسبة إلى الإعدادات المؤتمتة أو إعدادات CI، مرّر جميع القيم على سطر الأوامر:
+لإعدادات السكربتات أو CI، مرّر كل القيم في سطر الأوامر:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -73,54 +73,63 @@ openclaw onboard --non-interactive \
   --ai-gateway-api-key "$AI_GATEWAY_API_KEY"
 ```
 
-## الصيغة المختصرة لمعرّف النموذج
+## الاختصار المختصر لمعرّف النموذج
 
-يقبل OpenClaw مراجع نماذج Claude المختصرة الخاصة بـ Vercel ويطبّعها أثناء
-التشغيل:
+يقبل OpenClaw مراجع نماذج Vercel Claude المختصرة ويطبعها بالشكل الطبيعي
+أثناء التشغيل:
 
-| الإدخال المختصر                    | مرجع النموذج المطبع                          |
-| ---------------------------------- | ------------------------------------------- |
+| الإدخال المختصر                     | مرجع النموذج بعد التطبيع                          |
+| ----------------------------------- | --------------------------------------------- |
 | `vercel-ai-gateway/claude-opus-4.6` | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
 | `vercel-ai-gateway/opus-4.6`        | `vercel-ai-gateway/anthropic/claude-opus-4-6` |
 
 <Tip>
-يمكنك استخدام الصيغة المختصرة أو مرجع النموذج المؤهل بالكامل في
-التهيئة الخاصة بك. يحل OpenClaw الصيغة القياسية تلقائيًا.
+يمكنك استخدام الاختصار أو مرجع النموذج المؤهل بالكامل في
+إعداداتك. يحل OpenClaw الصيغة القانونية تلقائيًا.
 </Tip>
 
-## التهيئة المتقدمة
+## الإعدادات المتقدمة
 
 <AccordionGroup>
-  <Accordion title="متغير البيئة لعمليات daemon">
-    إذا كان OpenClaw Gateway يعمل كخدمة daemon ‏(`launchd`/`systemd`)، فتأكد من أن
-    `AI_GATEWAY_API_KEY` متاح لتلك العملية.
+  <Accordion title="Environment variable for daemon processes">
+    إذا كان OpenClaw Gateway يعمل كخدمة خلفية (launchd/systemd)، فتأكد من
+    إتاحة `AI_GATEWAY_API_KEY` لهذه العملية.
 
     <Warning>
-    لن يكون المفتاح المضبوط فقط في `~/.profile` مرئيًا لخدمة daemon تعمل عبر `launchd`/`systemd`
-    ما لم يتم استيراد تلك البيئة صراحةً. اضبط المفتاح في
-    `~/.openclaw/.env` أو عبر `env.shellEnv` لضمان أن تتمكن عملية gateway من
+    لن يكون المفتاح المعيّن فقط في `~/.profile` مرئيًا لخدمة خلفية launchd/systemd
+    ما لم تُستورد تلك البيئة صراحةً. عيّن المفتاح في
+    `~/.openclaw/.env` أو عبر `env.shellEnv` لضمان أن عملية gateway يمكنها
     قراءته.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="توجيه الموفّر">
-    يوجّه Vercel AI Gateway الطلبات إلى الموفّر الصاعد استنادًا إلى بادئة مرجع النموذج.
-    على سبيل المثال، يوجَّه `vercel-ai-gateway/anthropic/claude-opus-4.6`
-    عبر Anthropic، بينما يوجَّه `vercel-ai-gateway/openai/gpt-5.5` عبر
-    OpenAI ويوجَّه `vercel-ai-gateway/moonshotai/kimi-k2.6` عبر
-    MoonshotAI. ويتولى `AI_GATEWAY_API_KEY` الواحد الخاص بك المصادقة لجميع
-    الموفّرين الصاعدين.
+  <Accordion title="Provider routing">
+    يوجّه Vercel AI Gateway الطلبات إلى المزوّد العلوي بناءً على بادئة مرجع النموذج.
+    على سبيل المثال، يوجّه `vercel-ai-gateway/anthropic/claude-opus-4.6`
+    عبر Anthropic، بينما يوجّه `vercel-ai-gateway/openai/gpt-5.5` عبر
+    OpenAI ويوجّه `vercel-ai-gateway/moonshotai/kimi-k2.6` عبر
+    MoonshotAI. يتولى `AI_GATEWAY_API_KEY` الوحيد لديك المصادقة لكل
+    المزوّدين العلويين.
+  </Accordion>
+  <Accordion title="Thinking levels">
+    تتبع خيارات `/think` بادئات النماذج العلوية الموثوقة عندما يعرف OpenClaw
+    عقد المزوّد العلوي. يستخدم `vercel-ai-gateway/anthropic/...` ملف تعريف
+    التفكير الخاص بـ Claude، بما في ذلك القيم الافتراضية التكيفية لنماذج Claude 4.6.
+    تعرض مراجع `vercel-ai-gateway/openai/gpt-5.4` و`gpt-5.5` ومراجع نمط Codex
+    خيار `/think xhigh` تمامًا مثل مزوّدي OpenAI/OpenAI Codex المباشرين. تحتفظ
+    المراجع الأخرى ذات مساحات الأسماء بمستويات الاستدلال العادية ما لم تعلن
+    بيانات كتالوجها الوصفية عن المزيد.
   </Accordion>
 </AccordionGroup>
 
 ## ذو صلة
 
 <CardGroup cols={2}>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفّرين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    استكشاف الأخطاء وإصلاحها بشكل عام والأسئلة الشائعة.
+  <Card title="Troubleshooting" href="/ar/help/troubleshooting" icon="wrench">
+    استكشاف الأخطاء العامة وإصلاحها والأسئلة الشائعة.
   </Card>
 </CardGroup>

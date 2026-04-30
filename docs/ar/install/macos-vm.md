@@ -1,70 +1,70 @@
 ---
 read_when:
-    - أنت تريد عزل OpenClaw عن بيئة macOS الرئيسية لديك
-    - أنت تريد تكامل iMessage ‏(BlueBubbles) داخل بيئة معزولة
-    - أنت تريد بيئة macOS قابلة لإعادة التعيين ويمكنك استنساخها
-    - أنت تريد مقارنة خيارات أجهزة macOS الافتراضية المحلية مقابل المستضافة
-summary: شغّل OpenClaw داخل جهاز macOS VM معزول (محلي أو مستضاف) عندما تحتاج إلى العزل أو iMessage
+    - تريد عزل OpenClaw عن بيئة macOS الرئيسية لديك
+    - تريد تكامل iMessage (BlueBubbles) في بيئة معزولة
+    - تريد بيئة macOS قابلة لإعادة التعيين يمكنك استنساخها
+    - تريد مقارنة خيارات الآلات الافتراضية لنظام macOS المحلية مقابل المستضافة
+summary: شغّل OpenClaw في آلة افتراضية معزولة بنظام macOS (محلية أو مستضافة) عندما تحتاج إلى العزل أو iMessage
 title: أجهزة macOS الافتراضية
 x-i18n:
-    generated_at: "2026-04-05T12:47:41Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:08:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b1f7c5691fd2686418ee25f2c38b1f9badd511daeef2906d21ad30fb523b013f
+    source_hash: 49cd3d420db02bcdb80378c3a91a1c1243e7be2012525c31de1dd49db397d560
     source_path: install/macos-vm.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw على أجهزة macOS الافتراضية (العزل)
+# OpenClaw على أجهزة macOS الافتراضية (Sandboxing)
 
 ## الإعداد الافتراضي الموصى به (لمعظم المستخدمين)
 
-- **VPS صغير بنظام Linux** لتشغيل Gateway دائمًا وبتكلفة منخفضة. راجع [استضافة VPS](/vps).
-- **عتاد مخصص** (Mac mini أو جهاز Linux) إذا كنت تريد تحكمًا كاملًا و**عنوان IP سكنيًا** لأتمتة المتصفح. تحظر كثير من المواقع عناوين IP الخاصة بمراكز البيانات، لذلك يعمل التصفح المحلي غالبًا بشكل أفضل.
-- **إعداد هجين:** أبقِ Gateway على VPS رخيص، ووصل جهاز Mac لديك كـ **عقدة** عندما تحتاج إلى أتمتة المتصفح/واجهة المستخدم. راجع [العُقد](/nodes) و[Gateway remote](/gateway/remote).
+- **VPS صغير يعمل بنظام Linux** للحصول على Gateway يعمل دائمًا وبتكلفة منخفضة. راجع [استضافة VPS](/ar/vps).
+- **عتاد مخصص** (Mac mini أو جهاز Linux) إذا كنت تريد تحكمًا كاملًا و**عنوان IP سكنيًا** لأتمتة المتصفح. تحظر مواقع كثيرة عناوين IP الخاصة بمراكز البيانات، لذلك غالبًا ما يعمل التصفح المحلي بشكل أفضل.
+- **مختلط:** أبقِ Gateway على VPS رخيص، ووصل جهاز Mac الخاص بك كـ **node** عندما تحتاج إلى أتمتة المتصفح/واجهة المستخدم. راجع [العُقد](/ar/nodes) و[Gateway البعيد](/ar/gateway/remote).
 
-استخدم جهاز macOS VM عندما تحتاج تحديدًا إلى إمكانات خاصة بـ macOS فقط (iMessage/BlueBubbles) أو عندما تريد عزلًا صارمًا عن جهاز Mac اليومي الخاص بك.
+استخدم جهاز macOS افتراضيًا عندما تحتاج تحديدًا إلى إمكانات حصرية لـ macOS (iMessage/BlueBubbles) أو تريد عزلًا صارمًا عن جهاز Mac اليومي الخاص بك.
 
-## خيارات أجهزة macOS الافتراضية
+## خيارات جهاز macOS الافتراضي
 
-### جهاز VM محلي على جهاز Apple Silicon Mac لديك (Lume)
+### جهاز افتراضي محلي على جهاز Apple Silicon Mac الخاص بك (Lume)
 
-شغّل OpenClaw داخل جهاز macOS VM معزول على جهاز Apple Silicon Mac الحالي لديك باستخدام [Lume](https://cua.ai/docs/lume).
+شغّل OpenClaw داخل جهاز macOS افتراضي معزول على جهاز Apple Silicon Mac الحالي لديك باستخدام [Lume](https://cua.ai/docs/lume).
 
 يمنحك هذا:
 
-- بيئة macOS كاملة داخل عزل (ويبقى جهازك المضيف نظيفًا)
-- دعم iMessage عبر BlueBubbles ‏(وهو أمر مستحيل على Linux/Windows)
+- بيئة macOS كاملة ومعزولة (يبقى المضيف نظيفًا)
+- دعم iMessage عبر BlueBubbles (غير ممكن على Linux/Windows)
 - إعادة تعيين فورية عبر استنساخ الأجهزة الافتراضية
-- من دون عتاد إضافي أو تكاليف سحابية
+- دون عتاد إضافي أو تكاليف سحابية
 
-### موفرو أجهزة Mac المستضافة (السحابة)
+### مزودو Mac المستضافون (السحابة)
 
-إذا كنت تريد macOS في السحابة، فموفرو أجهزة Mac المستضافة يعملون أيضًا:
+إذا كنت تريد macOS في السحابة، فإن مزودي Mac المستضافين يعملون أيضًا:
 
-- [MacStadium](https://www.macstadium.com/) ‏(أجهزة Mac مستضافة)
-- يعمل أيضًا مزودو macOS المستضافون الآخرون؛ اتبع وثائق VM + SSH الخاصة بهم
+- [MacStadium](https://www.macstadium.com/) (أجهزة Mac مستضافة)
+- يعمل مزودو Mac المستضافون الآخرون أيضًا؛ اتبع وثائق الجهاز الافتراضي وSSH لديهم
 
-بمجرد أن يصبح لديك وصول SSH إلى جهاز macOS VM، تابع من الخطوة 6 أدناه.
+بعد حصولك على وصول SSH إلى جهاز macOS افتراضي، تابع من الخطوة 6 أدناه.
 
 ---
 
-## المسار السريع (Lume، للمستخدمين المتمرسين)
+## المسار السريع (Lume، للمستخدمين ذوي الخبرة)
 
 1. ثبّت Lume
-2. ‏`lume create openclaw --os macos --ipsw latest`
-3. أكمل Setup Assistant، وفعّل Remote Login ‏(SSH)
-4. ‏`lume run openclaw --no-display`
-5. اتصل عبر SSH، وثبّت OpenClaw، واضبط القنوات
+2. `lume create openclaw --os macos --ipsw latest`
+3. أكمل مساعد الإعداد، وفعل Remote Login (SSH)
+4. `lume run openclaw --no-display`
+5. ادخل عبر SSH، وثبّت OpenClaw، واضبط القنوات
 6. انتهى
 
 ---
 
-## ما الذي تحتاجه (Lume)
+## ما تحتاجه (Lume)
 
-- جهاز Apple Silicon Mac ‏(M1/M2/M3/M4)
-- macOS Sequoia أو أحدث على الجهاز المضيف
-- نحو 60 GB من المساحة الحرة لكل جهاز VM
+- جهاز Apple Silicon Mac (M1/M2/M3/M4)
+- macOS Sequoia أو أحدث على المضيف
+- نحو 60 GB من مساحة القرص الحرة لكل جهاز افتراضي
 - نحو 20 دقيقة
 
 ---
@@ -91,25 +91,27 @@ lume --version
 
 ---
 
-## 2) إنشاء جهاز macOS VM
+## 2) إنشاء جهاز macOS الافتراضي
 
 ```bash
 lume create openclaw --os macos --ipsw latest
 ```
 
-يقوم هذا بتنزيل macOS وإنشاء الجهاز الافتراضي. تفتح نافذة VNC تلقائيًا.
+ينزل هذا macOS وينشئ الجهاز الافتراضي. تُفتح نافذة VNC تلقائيًا.
 
-ملاحظة: قد يستغرق التنزيل بعض الوقت حسب سرعة اتصالك.
+<Note>
+قد يستغرق التنزيل بعض الوقت حسب اتصالك.
+</Note>
 
 ---
 
-## 3) إكمال Setup Assistant
+## 3) إكمال مساعد الإعداد
 
-داخل نافذة VNC:
+في نافذة VNC:
 
 1. اختر اللغة والمنطقة
-2. تخطَّ Apple ID ‏(أو سجّل الدخول إذا كنت تريد iMessage لاحقًا)
-3. أنشئ حساب مستخدم (وتذكر اسم المستخدم وكلمة المرور)
+2. تخطَّ Apple ID (أو سجّل الدخول إذا كنت تريد iMessage لاحقًا)
+3. أنشئ حساب مستخدم (تذكر اسم المستخدم وكلمة المرور)
 4. تخطَّ كل الميزات الاختيارية
 
 بعد اكتمال الإعداد، فعّل SSH:
@@ -119,23 +121,23 @@ lume create openclaw --os macos --ipsw latest
 
 ---
 
-## 4) الحصول على عنوان IP الخاص بالجهاز الافتراضي
+## 4) الحصول على عنوان IP للجهاز الافتراضي
 
 ```bash
 lume get openclaw
 ```
 
-ابحث عن عنوان IP ‏(غالبًا `192.168.64.x`).
+ابحث عن عنوان IP (عادةً `192.168.64.x`).
 
 ---
 
-## 5) الاتصال عبر SSH إلى الجهاز الافتراضي
+## 5) الدخول إلى الجهاز الافتراضي عبر SSH
 
 ```bash
 ssh youruser@192.168.64.X
 ```
 
-استبدل `youruser` بالحساب الذي أنشأته، واستبدل عنوان IP بعنوان جهازك الافتراضي.
+استبدل `youruser` بالحساب الذي أنشأته، واستبدل عنوان IP بعنوان IP الخاص بجهازك الافتراضي.
 
 ---
 
@@ -148,13 +150,13 @@ npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-اتبع مطالبات onboarding لإعداد موفّر النموذج لديك (Anthropic أو OpenAI أو غيرهما).
+اتبع مطالبات الإعداد الأولي لضبط مزود النموذج الخاص بك (Anthropic وOpenAI وغيرهما).
 
 ---
 
-## 7) إعداد القنوات
+## 7) ضبط القنوات
 
-حرّر ملف الإعدادات:
+حرر ملف الإعدادات:
 
 ```bash
 nano ~/.openclaw/openclaw.json
@@ -176,7 +178,7 @@ nano ~/.openclaw/openclaw.json
 }
 ```
 
-ثم سجّل الدخول إلى WhatsApp ‏(امسح QR):
+ثم سجّل الدخول إلى WhatsApp (امسح QR):
 
 ```bash
 openclaw channels login
@@ -184,16 +186,16 @@ openclaw channels login
 
 ---
 
-## 8) تشغيل الجهاز الافتراضي من دون واجهة
+## 8) تشغيل الجهاز الافتراضي دون واجهة عرض
 
-أوقف الجهاز الافتراضي ثم أعد تشغيله من دون عرض:
+أوقف الجهاز الافتراضي وأعد تشغيله دون عرض:
 
 ```bash
 lume stop openclaw
 lume run openclaw --no-display
 ```
 
-سيعمل الجهاز الافتراضي في الخلفية. وسيُبقي daemon الخاص بـ OpenClaw البوابة قيد التشغيل.
+يعمل الجهاز الافتراضي في الخلفية. تبقي خدمة OpenClaw الخفية Gateway قيد التشغيل.
 
 للتحقق من الحالة:
 
@@ -210,11 +212,11 @@ ssh youruser@192.168.64.X "openclaw status"
 داخل الجهاز الافتراضي:
 
 1. نزّل BlueBubbles من bluebubbles.app
-2. سجّل الدخول باستخدام Apple ID
+2. سجّل الدخول باستخدام Apple ID الخاص بك
 3. فعّل Web API واضبط كلمة مرور
-4. وجّه webhooks الخاصة بـ BlueBubbles إلى بوابتك (مثال: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
+4. وجّه BlueBubbles webhooks إلى Gateway لديك (مثال: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
 
-أضف إلى إعدادات OpenClaw:
+أضف إلى إعداد OpenClaw لديك:
 
 ```json5
 {
@@ -228,15 +230,15 @@ ssh youruser@192.168.64.X "openclaw status"
 }
 ```
 
-أعد تشغيل البوابة. والآن يمكن لوكيلك إرسال iMessages واستقبالها.
+أعد تشغيل Gateway. يمكن لوكيلك الآن إرسال iMessages واستقبالها.
 
-تفاصيل الإعداد الكاملة: [قناة BlueBubbles](/channels/bluebubbles)
+تفاصيل الإعداد الكاملة: [قناة BlueBubbles](/ar/channels/bluebubbles)
 
 ---
 
-## احفظ صورة ذهبية
+## حفظ صورة ذهبية
 
-قبل تخصيص المزيد، التقط Snapshot لحالتك النظيفة:
+قبل إجراء مزيد من التخصيصات، التقط نسخة من الحالة النظيفة:
 
 ```bash
 lume stop openclaw
@@ -257,32 +259,32 @@ lume run openclaw --no-display
 
 أبقِ الجهاز الافتراضي قيد التشغيل عبر:
 
-- إبقاء جهاز Mac موصولًا بالكهرباء
+- إبقاء جهاز Mac موصولًا بالطاقة
 - تعطيل السكون في System Settings → Energy Saver
 - استخدام `caffeinate` عند الحاجة
 
-ولتشغيل دائم حقيقي، فكّر في Mac mini مخصص أو VPS صغير. راجع [استضافة VPS](/vps).
+للحصول على تشغيل دائم حقيقي، فكر في جهاز Mac mini مخصص أو VPS صغير. راجع [استضافة VPS](/ar/vps).
 
 ---
 
 ## استكشاف الأخطاء وإصلاحها
 
-| المشكلة | الحل |
-| ------- | ---- |
-| تعذر الاتصال عبر SSH إلى الجهاز الافتراضي | تحقق من أن "Remote Login" مفعّل في System Settings داخل الجهاز الافتراضي |
-| لا يظهر عنوان IP الخاص بالجهاز الافتراضي | انتظر حتى يكتمل إقلاع الجهاز الافتراضي، ثم شغّل `lume get openclaw` مرة أخرى |
-| الأمر Lume غير موجود | أضف `~/.local/bin` إلى PATH |
-| لا يتم مسح QR الخاص بـ WhatsApp | تأكد من أنك مسجّل الدخول داخل الجهاز الافتراضي (وليس المضيف) عند تشغيل `openclaw channels login` |
+| المشكلة                  | الحل                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| لا يمكن الدخول إلى الجهاز الافتراضي عبر SSH | تحقق من تفعيل "Remote Login" في System Settings داخل الجهاز الافتراضي              |
+| عنوان IP للجهاز الافتراضي لا يظهر | انتظر حتى يكتمل إقلاع الجهاز الافتراضي، ثم شغّل `lume get openclaw` مرة أخرى       |
+| أمر Lume غير موجود       | أضف `~/.local/bin` إلى PATH لديك                                                   |
+| لا يتم مسح QR الخاص بـ WhatsApp | تأكد من أنك مسجل الدخول إلى الجهاز الافتراضي (وليس المضيف) عند تشغيل `openclaw channels login` |
 
 ---
 
 ## وثائق ذات صلة
 
-- [استضافة VPS](/vps)
-- [العُقد](/nodes)
-- [Gateway remote](/gateway/remote)
-- [قناة BlueBubbles](/channels/bluebubbles)
-- [البدء السريع مع Lume](https://cua.ai/docs/lume/guide/getting-started/quickstart)
-- [مرجع CLI الخاص بـ Lume](https://cua.ai/docs/lume/reference/cli-reference)
-- [إعداد VM غير تفاعلي](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (متقدم)
-- [العزل باستخدام Docker](/install/docker) (نهج عزل بديل)
+- [استضافة VPS](/ar/vps)
+- [العُقد](/ar/nodes)
+- [Gateway البعيد](/ar/gateway/remote)
+- [قناة BlueBubbles](/ar/channels/bluebubbles)
+- [بدء Lume السريع](https://cua.ai/docs/lume/guide/getting-started/quickstart)
+- [مرجع Lume CLI](https://cua.ai/docs/lume/reference/cli-reference)
+- [إعداد جهاز افتراضي غير مراقب](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (متقدم)
+- [Docker Sandboxing](/ar/install/docker) (نهج عزل بديل)

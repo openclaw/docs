@@ -1,51 +1,51 @@
 ---
 read_when:
-    - ضبط وتيرة Heartbeat أو رسائلها
-    - تحديد الاختيار بين Heartbeat وCron للمهام المجدولة
+    - ضبط وتيرة Heartbeat أو المراسلة
+    - الاختيار بين Heartbeat وCron للمهام المجدولة
 sidebarTitle: Heartbeat
-summary: رسائل استطلاع Heartbeat وقواعد الإشعارات
+summary: رسائل استقصاء Heartbeat وقواعد الإشعارات
 title: Heartbeat
 x-i18n:
-    generated_at: "2026-04-26T11:29:27Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:59:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fe0d3e9c531062d90e8e24cb7795fed20bc0985c3eadc8ed367295fc2544d14e
+    source_hash: 2bafae7cafb9163015a112c074d36ab070c71d1d7ba1c7c0834e6720521f4275
     source_path: gateway/heartbeat.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-**Heartbeat أم Cron؟** راجع [Automation & Tasks](/ar/automation) للحصول على إرشادات حول وقت استخدام كل منهما.
+**Heartbeat أم Cron؟** راجع [الأتمتة والمهام](/ar/automation) للحصول على إرشادات حول متى تستخدم كلًا منهما.
 </Note>
 
-تشغّل Heartbeat **أدوار وكيل دورية** في الجلسة الرئيسية حتى يتمكن النموذج من إظهار أي شيء يحتاج إلى انتباه من دون إغراقك بالرسائل.
+يشغّل Heartbeat **دورات وكيل دورية** في الجلسة الرئيسية حتى يتمكّن النموذج من إبراز أي شيء يحتاج إلى انتباه من دون إغراقك بالرسائل.
 
-Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي **لا** تنشئ سجلات [مهام في الخلفية](/ar/automation/tasks). فسجلات المهام مخصصة للعمل المنفصل (عمليات ACP، والوكلاء الفرعيون، ووظائف Cron المعزولة).
+Heartbeat هو دورة مجدولة في الجلسة الرئيسية، ولا ينشئ سجلات [مهمة في الخلفية](/ar/automation/tasks). سجلات المهام مخصّصة للعمل المنفصل (تشغيلات ACP، والوكلاء الفرعيون، ومهام Cron المعزولة).
 
-استكشاف الأخطاء وإصلاحها: [Scheduled Tasks](/ar/automation/cron-jobs#troubleshooting)
+استكشاف الأخطاء وإصلاحها: [المهام المجدولة](/ar/automation/cron-jobs#troubleshooting)
 
 ## البدء السريع (للمبتدئين)
 
 <Steps>
-  <Step title="اختر الوتيرة">
-    اترك Heartbeats مفعلة (القيمة الافتراضية هي `30m`، أو `1h` لمصادقة Anthropic عبر OAuth/token، بما في ذلك إعادة استخدام Claude CLI) أو اضبط وتيرتك الخاصة.
+  <Step title="Pick a cadence">
+    اترك Heartbeat مفعّلًا (القيمة الافتراضية هي `30m`، أو `1h` لمصادقة Anthropic OAuth/الرمز، بما في ذلك إعادة استخدام Claude CLI) أو عيّن الإيقاع الذي تريده.
   </Step>
-  <Step title="أضف HEARTBEAT.md (اختياري)">
+  <Step title="Add HEARTBEAT.md (optional)">
     أنشئ قائمة تحقق صغيرة في `HEARTBEAT.md` أو كتلة `tasks:` في مساحة عمل الوكيل.
   </Step>
-  <Step title="قرر إلى أين يجب أن تذهب رسائل Heartbeat">
-    القيمة الافتراضية لـ `target: "none"`؛ اضبط `target: "last"` للتوجيه إلى آخر جهة اتصال.
+  <Step title="Decide where heartbeat messages should go">
+    `target: "none"` هي القيمة الافتراضية؛ عيّن `target: "last"` للتوجيه إلى آخر جهة اتصال.
   </Step>
-  <Step title="ضبط اختياري">
-    - فعّل تسليم reasoning الخاصة بـ Heartbeat من أجل الشفافية.
-    - استخدم سياق تهيئة أولية خفيفًا إذا كانت تشغيلات Heartbeat تحتاج فقط إلى `HEARTBEAT.md`.
+  <Step title="Optional tuning">
+    - فعّل تسليم استدلال Heartbeat للشفافية.
+    - استخدم سياق تمهيد خفيفًا إذا كانت تشغيلات Heartbeat تحتاج فقط إلى `HEARTBEAT.md`.
     - فعّل الجلسات المعزولة لتجنب إرسال سجل المحادثة الكامل مع كل Heartbeat.
-    - قيّد Heartbeats بالساعات النشطة (بالتوقيت المحلي).
+    - قيّد Heartbeat بساعات النشاط (بالتوقيت المحلي).
 
   </Step>
 </Steps>
 
-مثال على التهيئة:
+مثال إعداد:
 
 ```json5
 {
@@ -53,12 +53,13 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
     defaults: {
       heartbeat: {
         every: "30m",
-        target: "last", // تسليم صريح إلى آخر جهة اتصال (الافتراضي هو "none")
-        directPolicy: "allow", // الافتراضي: السماح بالأهداف المباشرة/DM؛ اضبط "block" للكبت
-        lightContext: true, // اختياري: حقن HEARTBEAT.md فقط من ملفات التهيئة الأولية
-        isolatedSession: true, // اختياري: جلسة جديدة مع كل تشغيل (بلا سجل محادثة)
+        target: "last", // explicit delivery to last contact (default is "none")
+        directPolicy: "allow", // default: allow direct/DM targets; set "block" to suppress
+        lightContext: true, // optional: only inject HEARTBEAT.md from bootstrap files
+        isolatedSession: true, // optional: fresh session each run (no conversation history)
+        skipWhenBusy: true, // optional: also defer when subagent or nested lanes are busy
         // activeHours: { start: "08:00", end: "24:00" },
-        // includeReasoning: true, // اختياري: إرسال رسالة `Reasoning:` منفصلة أيضًا
+        // includeReasoning: true, // optional: send separate `Reasoning:` message too
       },
     },
   },
@@ -67,68 +68,70 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
 
 ## القيم الافتراضية
 
-- الفاصل الزمني: `30m` (أو `1h` عندما تكون مصادقة Anthropic عبر OAuth/token هي وضع المصادقة المكتشف، بما في ذلك إعادة استخدام Claude CLI). اضبط `agents.defaults.heartbeat.every` أو `agents.list[].heartbeat.every` لكل وكيل؛ واستخدم `0m` للتعطيل.
-- متن المطالبة (قابل للتهيئة عبر `agents.defaults.heartbeat.prompt`): `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
-- تُرسل مطالبة Heartbeat **كما هي حرفيًا** كرسالة مستخدم. ولا يتضمن system prompt قسم "Heartbeat" إلا عندما تكون Heartbeats مفعلة للوكيل الافتراضي، وتكون عملية التشغيل موسومة داخليًا.
-- عند تعطيل Heartbeats باستخدام `0m`، تحذف التشغيلات العادية أيضًا `HEARTBEAT.md` من سياق التهيئة الأولية حتى لا يرى النموذج تعليمات خاصة بـ Heartbeat فقط.
-- يتم التحقق من الساعات النشطة (`heartbeat.activeHours`) في المنطقة الزمنية المضبوطة. وخارج النافذة الزمنية، يتم تخطي Heartbeats حتى النبضة التالية داخل النافذة.
+- الفاصل الزمني: `30m` (أو `1h` عندما يكون وضع المصادقة المكتشف هو Anthropic OAuth/الرمز، بما في ذلك إعادة استخدام Claude CLI). عيّن `agents.defaults.heartbeat.every` أو `agents.list[].heartbeat.every` لكل وكيل؛ استخدم `0m` للتعطيل.
+- نص الموجّه (قابل للإعداد عبر `agents.defaults.heartbeat.prompt`): `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
+- يُرسل موجّه Heartbeat **حرفيًا** كرسالة المستخدم. يتضمن موجّه النظام قسم "Heartbeat" فقط عندما تكون Heartbeat مفعّلة للوكيل الافتراضي، وتُعلَّم التشغيلة داخليًا.
+- عند تعطيل Heartbeat باستخدام `0m`، تحذف التشغيلات العادية أيضًا `HEARTBEAT.md` من سياق التمهيد حتى لا يرى النموذج تعليمات مخصّصة لـ Heartbeat فقط.
+- تُفحص ساعات النشاط (`heartbeat.activeHours`) في المنطقة الزمنية المضبوطة. خارج النافذة، تُتخطى Heartbeat حتى النبضة التالية داخل النافذة.
+- يؤجّل Heartbeat تلقائيًا أثناء نشاط عمل Cron أو وجوده في قائمة الانتظار. عيّن `heartbeat.skipWhenBusy: true` للتأجيل أيضًا عند انشغال مسارات إضافية (وكيل فرعي أو عمل أوامر متداخل)؛ وهذا مفيد لـ Ollama المحلي والمضيفين الآخرين ذوي وقت التشغيل الواحد والمقيّد.
 
-## ما الغرض من مطالبة Heartbeat
+## ما الغرض من موجّه Heartbeat
 
-المطالبة الافتراضية عامة عمدًا:
+الموجّه الافتراضي واسع عمدًا:
 
-- **المهام الخلفية**: عبارة "Consider outstanding tasks" تدفع الوكيل إلى مراجعة المتابعات (البريد الوارد، والتقويم، والتذكيرات، والعمل في قائمة الانتظار) وإظهار أي شيء عاجل.
-- **الاطمئنان على الإنسان**: عبارة "Checkup sometimes on your human during day time" تدفع نحو رسالة خفيفة عرضية من نوع "هل تحتاج إلى شيء؟"، لكنها تتجنب الإزعاج الليلي باستخدام منطقتك الزمنية المحلية المضبوطة (راجع [Timezone](/ar/concepts/timezone)).
+- **المهام في الخلفية**: عبارة "Consider outstanding tasks" تدفع الوكيل إلى مراجعة المتابعات (البريد الوارد، التقويم، التذكيرات، العمل في قائمة الانتظار) وإبراز أي شيء عاجل.
+- **الاطمئنان على الإنسان**: عبارة "Checkup sometimes on your human during day time" تدفع رسالة خفيفة من حين لآخر مثل "هل تحتاج إلى شيء؟"، لكنها تتجنب الإزعاج ليلًا باستخدام منطقتك الزمنية المحلية المضبوطة (راجع [المنطقة الزمنية](/ar/concepts/timezone)).
 
-يمكن لـ Heartbeat التفاعل مع [المهام الخلفية](/ar/automation/tasks) المكتملة، لكن تشغيل Heartbeat نفسه لا ينشئ سجل مهمة.
+يمكن لـ Heartbeat التفاعل مع [المهام في الخلفية](/ar/automation/tasks) المكتملة، لكن تشغيل Heartbeat نفسه لا ينشئ سجل مهمة.
 
-إذا أردت أن تنفذ Heartbeat شيئًا محددًا جدًا (مثل "تحقق من إحصاءات Gmail PubSub" أو "تحقق من سلامة gateway")، فاضبط `agents.defaults.heartbeat.prompt` (أو `agents.list[].heartbeat.prompt`) على متن مخصص (يُرسل حرفيًا كما هو).
+إذا أردت أن ينفّذ Heartbeat شيئًا محددًا جدًا (مثل "check Gmail PubSub stats" أو "verify gateway health")، فعيّن `agents.defaults.heartbeat.prompt` (أو `agents.list[].heartbeat.prompt`) إلى نص مخصّص (يُرسل حرفيًا).
 
 ## عقد الاستجابة
 
-- إذا لم يكن هناك ما يحتاج إلى انتباه، فردّ باستخدام **`HEARTBEAT_OK`**.
-- أثناء تشغيلات Heartbeat، يتعامل OpenClaw مع `HEARTBEAT_OK` على أنه إقرار عندما يظهر في **بداية الرد أو نهايته**. تتم إزالة الرمز ويُحذف الرد إذا كان المحتوى المتبقي **≤ `ackMaxChars`** (الافتراضي: 300).
-- إذا ظهر `HEARTBEAT_OK` في **منتصف** الرد، فلا يُعامل معاملة خاصة.
-- في التنبيهات، **لا** تضمّن `HEARTBEAT_OK`؛ وأعد فقط نص التنبيه.
+- إذا لم يكن هناك شيء يحتاج إلى انتباه، فأجب بـ **`HEARTBEAT_OK`**.
+- أثناء تشغيلات Heartbeat، يتعامل OpenClaw مع `HEARTBEAT_OK` كتأكيد عندما يظهر في **بداية الرد أو نهايته**. يُزال الرمز وتُسقط الاستجابة إذا كان المحتوى المتبقي **≤ `ackMaxChars`** (القيمة الافتراضية: 300).
+- إذا ظهر `HEARTBEAT_OK` في **وسط** رد، فلا يُعامل معاملة خاصة.
+- للتنبيهات، **لا** تضمّن `HEARTBEAT_OK`؛ أعد نص التنبيه فقط.
 
-خارج Heartbeats، تتم إزالة `HEARTBEAT_OK` الشاردة في بداية الرسالة/نهايتها ويُسجل ذلك؛ أما الرسالة التي تكون فقط `HEARTBEAT_OK` فتُحذف.
+خارج Heartbeat، يُزال `HEARTBEAT_OK` الشارد في بداية/نهاية الرسالة ويُسجّل؛ أما الرسالة التي لا تحتوي إلا على `HEARTBEAT_OK` فتُسقط.
 
-## التهيئة
+## الإعدادات
 
 ```json5
 {
   agents: {
     defaults: {
       heartbeat: {
-        every: "30m", // الافتراضي: 30m (0m للتعطيل)
+        every: "30m", // default: 30m (0m disables)
         model: "anthropic/claude-opus-4-6",
-        includeReasoning: false, // الافتراضي: false (تسليم رسالة Reasoning: منفصلة عند توفرها)
-        lightContext: false, // الافتراضي: false؛ true تبقي فقط HEARTBEAT.md من ملفات التهيئة الأولية لمساحة العمل
-        isolatedSession: false, // الافتراضي: false؛ true تشغّل كل Heartbeat في جلسة جديدة (بلا سجل محادثة)
-        target: "last", // الافتراضي: none | الخيارات: last | none | <channel id> (أساسي أو Plugin، مثل "bluebubbles")
-        to: "+15551234567", // تجاوز اختياري خاص بالقناة
-        accountId: "ops-bot", // معرّف قناة اختياري للحسابات المتعددة
+        includeReasoning: false, // default: false (deliver separate Reasoning: message when available)
+        lightContext: false, // default: false; true keeps only HEARTBEAT.md from workspace bootstrap files
+        isolatedSession: false, // default: false; true runs each heartbeat in a fresh session (no conversation history)
+        skipWhenBusy: false, // default: false; true also waits for subagent/nested lanes
+        target: "last", // default: none | options: last | none | <channel id> (core or plugin, e.g. "bluebubbles")
+        to: "+15551234567", // optional channel-specific override
+        accountId: "ops-bot", // optional multi-account channel id
         prompt: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
-        ackMaxChars: 300, // الحد الأقصى للأحرف المسموح بها بعد HEARTBEAT_OK
+        ackMaxChars: 300, // max chars allowed after HEARTBEAT_OK
       },
     },
   },
 }
 ```
 
-### النطاق والأولوية
+### النطاق والأسبقية
 
-- يضبط `agents.defaults.heartbeat` سلوك Heartbeat العام.
-- يندمج `agents.list[].heartbeat` فوقه؛ وإذا كان لدى أي وكيل كتلة `heartbeat`، فإن **هؤلاء الوكلاء فقط** هم من يشغّلون Heartbeats.
-- يضبط `channels.defaults.heartbeat` القيم الافتراضية للظهور لجميع القنوات.
-- يتجاوز `channels.<channel>.heartbeat` القيم الافتراضية للقناة.
-- يتجاوز `channels.<channel>.accounts.<id>.heartbeat` (في القنوات متعددة الحسابات) إعدادات كل قناة.
+- يعيّن `agents.defaults.heartbeat` سلوك Heartbeat العام.
+- يندمج `agents.list[].heartbeat` فوقه؛ إذا كان لدى أي وكيل كتلة `heartbeat`، فإن **هؤلاء الوكلاء فقط** يشغّلون Heartbeat.
+- يعيّن `channels.defaults.heartbeat` افتراضات الرؤية لكل القنوات.
+- يتجاوز `channels.<channel>.heartbeat` افتراضات القناة.
+- يتجاوز `channels.<channel>.accounts.<id>.heartbeat` (للقنوات متعددة الحسابات) إعدادات كل قناة.
 
-### Heartbeats لكل وكيل
+### Heartbeat لكل وكيل
 
-إذا تضمّن أي إدخال في `agents.list[]` كتلة `heartbeat`، فإن **هؤلاء الوكلاء فقط** هم من يشغّلون Heartbeats. وتندمج الكتلة الخاصة بكل وكيل فوق `agents.defaults.heartbeat` (بحيث يمكنك تعيين القيم الافتراضية المشتركة مرة واحدة وتجاوزها لكل وكيل).
+إذا تضمّن أي إدخال في `agents.list[]` كتلة `heartbeat`، فإن **هؤلاء الوكلاء فقط** يشغّلون Heartbeat. تندمج كتلة كل وكيل فوق `agents.defaults.heartbeat` (لذا يمكنك تعيين افتراضات مشتركة مرة واحدة وتجاوزها لكل وكيل).
 
-مثال: وكيلان، ولا يشغّل Heartbeats إلا الوكيل الثاني.
+مثال: وكيلان، الوكيل الثاني فقط يشغّل Heartbeat.
 
 ```json5
 {
@@ -136,7 +139,7 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
     defaults: {
       heartbeat: {
         every: "30m",
-        target: "last", // تسليم صريح إلى آخر جهة اتصال (الافتراضي هو "none")
+        target: "last", // explicit delivery to last contact (default is "none")
       },
     },
     list: [
@@ -156,9 +159,9 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
 }
 ```
 
-### مثال على الساعات النشطة
+### مثال ساعات النشاط
 
-قيّد Heartbeats بساعات العمل في منطقة زمنية محددة:
+قيّد Heartbeat بساعات العمل في منطقة زمنية محددة:
 
 ```json5
 {
@@ -166,11 +169,11 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
     defaults: {
       heartbeat: {
         every: "30m",
-        target: "last", // تسليم صريح إلى آخر جهة اتصال (الافتراضي هو "none")
+        target: "last", // explicit delivery to last contact (default is "none")
         activeHours: {
           start: "09:00",
           end: "22:00",
-          timezone: "America/New_York", // اختياري؛ يستخدم userTimezone لديك إذا كانت مضبوطة، وإلا فـ host tz
+          timezone: "America/New_York", // optional; uses your userTimezone if set, otherwise host tz
         },
       },
     },
@@ -178,22 +181,22 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
 }
 ```
 
-خارج هذه النافذة (قبل 9 صباحًا أو بعد 10 مساءً بالتوقيت الشرقي)، يتم تخطي Heartbeats. وستعمل النبضة المجدولة التالية داخل النافذة بشكل طبيعي.
+خارج هذه النافذة (قبل 9 صباحًا أو بعد 10 مساءً بتوقيت الشرق)، تُتخطى Heartbeat. ستعمل النبضة المجدولة التالية داخل النافذة بشكل طبيعي.
 
 ### إعداد 24/7
 
-إذا أردت أن تعمل Heartbeats طوال اليوم، فاستخدم أحد هذين النمطين:
+إذا أردت أن يعمل Heartbeat طوال اليوم، فاستخدم أحد هذين النمطين:
 
-- احذف `activeHours` بالكامل (بلا تقييد لنافذة زمنية؛ وهذا هو السلوك الافتراضي).
-- اضبط نافذة يوم كامل: `activeHours: { start: "00:00", end: "24:00" }`.
+- احذف `activeHours` بالكامل (لا يوجد قيد نافذة زمنية؛ هذا هو السلوك الافتراضي).
+- عيّن نافذة يوم كامل: `activeHours: { start: "00:00", end: "24:00" }`.
 
 <Warning>
-لا تضبط `start` و`end` على الوقت نفسه (مثل `08:00` إلى `08:00`). فهذا يُعامل على أنه نافذة بعرض صفري، لذا يتم دائمًا تخطي Heartbeats.
+لا تعيّن وقتي `start` و`end` نفسيهما (مثلًا من `08:00` إلى `08:00`). يُعامل ذلك كنافذة صفرية العرض، لذلك تُتخطى Heartbeat دائمًا.
 </Warning>
 
-### مثال على الحسابات المتعددة
+### مثال الحسابات المتعددة
 
-استخدم `accountId` لاستهداف حساب محدد في القنوات متعددة الحسابات مثل Telegram:
+استخدم `accountId` لاستهداف حساب محدد على القنوات متعددة الحسابات مثل Telegram:
 
 ```json5
 {
@@ -204,7 +207,7 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
         heartbeat: {
           every: "1h",
           target: "telegram",
-          to: "12345678:topic:42", // اختياري: التوجيه إلى topic/thread محدد
+          to: "12345678:topic:42", // optional: route to a specific topic/thread
           accountId: "ops-bot",
         },
       },
@@ -223,121 +226,131 @@ Heartbeat هي دور مجدول في الجلسة الرئيسية — وهي *
 ### ملاحظات الحقول
 
 <ParamField path="every" type="string">
-  الفاصل الزمني لـ Heartbeat (سلسلة مدة؛ وحدة القياس الافتراضية = الدقائق).
+  فاصل Heartbeat الزمني (سلسلة مدة؛ الوحدة الافتراضية = دقائق).
 </ParamField>
 <ParamField path="model" type="string">
-  تجاوز اختياري للنموذج لتشغيلات Heartbeat (`provider/model`).
+  تجاوز اختياري للنموذج في تشغيلات Heartbeat (`provider/model`).
 </ParamField>
 <ParamField path="includeReasoning" type="boolean" default="false">
-  عند التفعيل، يسلّم أيضًا رسالة `Reasoning:` منفصلة عند توفرها (بنفس شكل `/reasoning on`).
+  عند التفعيل، تُسلَّم أيضًا رسالة `Reasoning:` المنفصلة عندما تكون متاحة (بنفس شكل `/reasoning on`).
 </ParamField>
 <ParamField path="lightContext" type="boolean" default="false">
-  عندما تكون true، تستخدم تشغيلات Heartbeat سياق تهيئة أولية خفيفًا وتحتفظ فقط بـ `HEARTBEAT.md` من ملفات التهيئة الأولية لمساحة العمل.
+  عند ضبطها على true، تستخدم تشغيلات Heartbeat سياق تمهيد خفيفًا وتُبقي فقط على `HEARTBEAT.md` من ملفات تمهيد مساحة العمل.
 </ParamField>
 <ParamField path="isolatedSession" type="boolean" default="false">
-  عندما تكون true، يعمل كل Heartbeat في جلسة جديدة بلا سجل محادثة سابق. ويستخدم نمط العزل نفسه الذي تستخدمه Cron في `sessionTarget: "isolated"`. وهذا يقلل بدرجة كبيرة من تكلفة الرموز لكل Heartbeat. اجمعه مع `lightContext: true` لتحقيق أقصى توفير. ويظل توجيه التسليم يستخدم سياق الجلسة الرئيسية.
+  عند ضبطها على true، يعمل كل Heartbeat في جلسة جديدة من دون سجل محادثات سابق. يستخدم نمط العزل نفسه مثل Cron `sessionTarget: "isolated"`. يقلّل تكلفة الرموز لكل Heartbeat بشكل كبير. ادمجه مع `lightContext: true` لأقصى توفير. لا يزال توجيه التسليم يستخدم سياق الجلسة الرئيسية.
+</ParamField>
+<ParamField path="skipWhenBusy" type="boolean" default="false">
+  عند ضبطها على true، تؤجّل تشغيلات Heartbeat عند انشغال مسارات إضافية: وكيل فرعي أو عمل أوامر متداخل. تؤجّل مسارات Cron دائمًا Heartbeat، حتى من دون هذا العلم، حتى لا تشغّل مضيفات النماذج المحلية موجّهات Cron وHeartbeat في الوقت نفسه.
 </ParamField>
 <ParamField path="session" type="string">
   مفتاح جلسة اختياري لتشغيلات Heartbeat.
 
-  - `main` (الافتراضي): الجلسة الرئيسية للوكيل.
-  - مفتاح جلسة صريح (انسخه من `openclaw sessions --json` أو من [sessions CLI](/ar/cli/sessions)).
-  - صيغ مفاتيح الجلسات: راجع [Sessions](/ar/concepts/session) و[Groups](/ar/channels/groups).
+- `main` (افتراضي): الجلسة الرئيسية للوكيل.
+- مفتاح جلسة صريح (انسخه من `openclaw sessions --json` أو من [CLI الجلسات](/ar/cli/sessions)).
+- تنسيقات مفاتيح الجلسة: راجع [الجلسات](/ar/concepts/session) و[المجموعات](/ar/channels/groups).
 
 </ParamField>
 <ParamField path="target" type="string">
-  - `last`: التسليم إلى آخر قناة خارجية مستخدمة.
-  - قناة صريحة: أي قناة مضبوطة أو معرّف Plugin، مثل `discord` أو `matrix` أو `telegram` أو `whatsapp`.
-  - `none` (الافتراضي): تشغيل Heartbeat لكن **من دون تسليم** خارجي.
+- `last`: التسليم إلى آخر قناة خارجية مستخدمة.
+- قناة صريحة: أي قناة مضبوطة أو معرّف Plugin، مثل `discord` أو `matrix` أو `telegram` أو `whatsapp`.
+- `none` (افتراضي): يشغّل Heartbeat لكن **لا يسلّم** خارجيًا.
 
 </ParamField>
 <ParamField path="directPolicy" type='"allow" | "block"' default="allow">
-  يتحكم في سلوك التسليم المباشر/DM. `allow`: السماح بتسليم Heartbeat المباشر/DM. `block`: كبت التسليم المباشر/DM (`reason=dm-blocked`).
+  يتحكم في سلوك التسليم المباشر/عبر الرسائل الخاصة. `allow`: السماح بتسليم Heartbeat المباشر/عبر الرسائل الخاصة. `block`: منع التسليم المباشر/عبر الرسائل الخاصة (`reason=dm-blocked`).
+
 </ParamField>
 <ParamField path="to" type="string">
-  تجاوز اختياري للمستلم (معرّف خاص بالقناة، مثل E.164 لـ WhatsApp أو معرّف دردشة Telegram). وبالنسبة إلى topics/threads في Telegram، استخدم `<chatId>:topic:<messageThreadId>`.
+  تجاوز اختياري للمستلم (معرّف خاص بالقناة، مثل E.164 لـ WhatsApp أو معرّف دردشة Telegram). لموضوعات/سلاسل Telegram، استخدم `<chatId>:topic:<messageThreadId>`.
+
 </ParamField>
 <ParamField path="accountId" type="string">
-  معرّف حساب اختياري للقنوات متعددة الحسابات. وعند استخدام `target: "last"`، يُطبَّق معرّف الحساب على آخر قناة تم حلها إذا كانت تدعم الحسابات؛ وإلا فيتم تجاهله. وإذا لم يطابق معرّف الحساب حسابًا مضبوطًا للقناة التي تم حلها، يتم تخطي التسليم.
+  معرّف حساب اختياري للقنوات متعددة الحسابات. عند `target: "last"`، يُطبّق معرّف الحساب على آخر قناة محلولة إذا كانت تدعم الحسابات؛ وإلا يُتجاهل. إذا لم يطابق معرّف الحساب حسابًا مضبوطًا للقناة المحلولة، يُتخطى التسليم.
+
 </ParamField>
 <ParamField path="prompt" type="string">
-  يتجاوز متن المطالبة الافتراضي (من دون دمج).
+  يتجاوز نص الموجّه الافتراضي (لا يُدمج).
+
 </ParamField>
 <ParamField path="ackMaxChars" type="number" default="300">
   الحد الأقصى للأحرف المسموح بها بعد `HEARTBEAT_OK` قبل التسليم.
+
 </ParamField>
 <ParamField path="suppressToolErrorWarnings" type="boolean">
-  عندما تكون true، يتم كبت حمولات تحذير أخطاء الأدوات أثناء تشغيلات Heartbeat.
+  عندما تكون true، تكبت حمولات تحذير أخطاء الأدوات أثناء تشغيلات Heartbeat.
+
 </ParamField>
 <ParamField path="activeHours" type="object">
-  يقيّد تشغيلات Heartbeat بنافذة زمنية. كائن يحتوي على `start` (بصيغة HH:MM، شامل؛ استخدم `00:00` لبداية اليوم)، و`end` (بصيغة HH:MM، غير شامل؛ ويُسمح بـ `24:00` لنهاية اليوم)، و`timezone` اختيارية.
+  يقيّد تشغيلات Heartbeat ضمن نافذة زمنية. كائن يحتوي على `start` (HH:MM، شامل؛ استخدم `00:00` لبداية اليوم)، و`end` (HH:MM غير شامل؛ يُسمح بـ `24:00` لنهاية اليوم)، و`timezone` اختياري.
 
-  - إذا تم حذفه أو تعيينه إلى `"user"`: يستخدم `agents.defaults.userTimezone` لديك إذا كانت مضبوطة، وإلا يعود إلى المنطقة الزمنية لنظام المضيف.
-  - `"local"`: يستخدم دائمًا المنطقة الزمنية لنظام المضيف.
-  - أي معرّف IANA (مثل `America/New_York`): يُستخدم مباشرة؛ وإذا كان غير صالح، يعود إلى سلوك `"user"` أعلاه.
-  - يجب ألا تكون قيمتا `start` و`end` متساويتين في نافذة نشطة؛ فالقيم المتساوية تُعامل على أنها نافذة بعرض صفري (دائمًا خارج النافذة).
-  - خارج النافذة النشطة، يتم تخطي Heartbeats حتى النبضة التالية داخل النافذة.
+- محذوف أو `"user"`: يستخدم `agents.defaults.userTimezone` لديك إذا كان معيّناً، وإلا يعود إلى المنطقة الزمنية لنظام المضيف.
+- `"local"`: يستخدم دائماً المنطقة الزمنية لنظام المضيف.
+- أي معرّف IANA (مثل `America/New_York`): يُستخدم مباشرة؛ وإذا كان غير صالح، يعود إلى سلوك `"user"` أعلاه.
+- يجب ألا تكون قيمتا `start` و`end` متساويتين لنافذة نشطة؛ تُعامل القيم المتساوية كنافذة صفرية العرض (دائماً خارج النافذة).
+- خارج النافذة النشطة، تُتخطى Heartbeats حتى النبضة التالية داخل النافذة.
 
 </ParamField>
 
 ## سلوك التسليم
 
 <AccordionGroup>
-  <Accordion title="الجلسة وتوجيه الهدف">
-    - تعمل Heartbeats افتراضيًا في الجلسة الرئيسية للوكيل (`agent:<id>:<mainKey>`)، أو `global` عندما تكون `session.scope = "global"`. اضبط `session` لتجاوزها إلى جلسة قناة محددة (Discord/WhatsApp/إلخ).
-    - يؤثر `session` فقط في سياق التشغيل؛ أما التسليم فيتحكم فيه `target` و`to`.
-    - للتسليم إلى قناة/مستلم محدد، اضبط `target` + `to`. ومع `target: "last"`، يستخدم التسليم آخر قناة خارجية لتلك الجلسة.
-    - تسمح عمليات تسليم Heartbeat بالأهداف المباشرة/DM افتراضيًا. اضبط `directPolicy: "block"` لكبت الإرسال إلى الأهداف المباشرة مع الاستمرار في تشغيل دور Heartbeat.
-    - إذا كان الطابور الرئيسي مشغولًا، يتم تخطي Heartbeat ثم إعادة المحاولة لاحقًا.
-    - إذا تم حل `target` إلى عدم وجود وجهة خارجية، فسيستمر التشغيل لكن لن تُرسل أي رسالة صادرة.
+  <Accordion title="توجيه الجلسة والهدف">
+    - تعمل Heartbeats في الجلسة الرئيسية للوكيل افتراضياً (`agent:<id>:<mainKey>`)، أو `global` عندما تكون `session.scope = "global"`. عيّن `session` للتجاوز إلى جلسة قناة محددة (Discord/WhatsApp/إلخ).
+    - يؤثر `session` فقط في سياق التشغيل؛ يتحكم `target` و`to` في التسليم.
+    - للتسليم إلى قناة/مستلم محدد، عيّن `target` + `to`. مع `target: "last"`، يستخدم التسليم آخر قناة خارجية لتلك الجلسة.
+    - تسمح تسليمات Heartbeat بالأهداف المباشرة/رسائل DM افتراضياً. عيّن `directPolicy: "block"` لكبت الإرسال إلى الأهداف المباشرة مع الاستمرار في تشغيل دورة Heartbeat.
+    - إذا كان الطابور الرئيسي أو مسار جلسة الهدف أو مسار cron أو مهمة cron نشطة مشغولاً، تُتخطى Heartbeat وتُعاد المحاولة لاحقاً.
+    - إذا كانت `skipWhenBusy: true`، فإن مسارات الوكلاء الفرعيين والمسارات المتداخلة تؤجل أيضاً تشغيلات Heartbeat.
+    - إذا لم يحلّ `target` إلى وجهة خارجية، يستمر التشغيل لكن لا تُرسل أي رسالة صادرة.
 
   </Accordion>
-  <Accordion title="الظهور وسلوك التخطي">
-    - إذا كانت `showOk` و`showAlerts` و`useIndicator` كلها معطلة، فسيتم تخطي التشغيل مسبقًا على أنه `reason=alerts-disabled`.
-    - إذا كان تسليم التنبيهات فقط معطلًا، فلا يزال بإمكان OpenClaw تشغيل Heartbeat، وتحديث الطوابع الزمنية للمهام المستحقة، واستعادة الطابع الزمني لخمول الجلسة، وكبت حمولة التنبيه الخارجية.
-    - إذا كان الهدف المحلول لـ Heartbeat يدعم الكتابة، فسيعرض OpenClaw مؤشر الكتابة أثناء نشاط تشغيل Heartbeat. ويستخدم هذا الهدف نفسه الذي كان Heartbeat سيرسل إليه خرج الدردشة، ويتم تعطيله بواسطة `typingMode: "never"`.
+  <Accordion title="الرؤية وسلوك التخطي">
+    - إذا كانت `showOk` و`showAlerts` و`useIndicator` كلها معطلة، يُتخطى التشغيل مسبقاً بوصفه `reason=alerts-disabled`.
+    - إذا كان تسليم التنبيهات فقط معطلاً، يستطيع OpenClaw مع ذلك تشغيل Heartbeat، وتحديث الطوابع الزمنية للمهام المستحقة، واستعادة طابع خمول الجلسة، وكبت حمولة التنبيه الخارجية.
+    - إذا كان هدف Heartbeat المحلول يدعم الكتابة، يعرض OpenClaw حالة الكتابة أثناء نشاط تشغيل Heartbeat. يستخدم هذا الهدف نفسه الذي سترسل Heartbeat إليه مخرجات الدردشة، ويُعطّل عبر `typingMode: "never"`.
 
   </Accordion>
   <Accordion title="دورة حياة الجلسة والتدقيق">
-    - الردود الخاصة بـ Heartbeat فقط **لا** تُبقي الجلسة حية. وقد تحدّث بيانات Heartbeat الوصفية صف الجلسة، لكن انتهاء الخمول يستخدم `lastInteractionAt` من آخر رسالة مستخدم/قناة حقيقية، ويستخدم الانتهاء اليومي `sessionStartedAt`.
-    - يُخفي سجل Control UI وWebChat مطالبات Heartbeat وإقرارات OK فقط. ومع ذلك، قد تظل نسخة الجلسة الأساسية تحتوي على تلك الأدوار من أجل التدقيق/إعادة التشغيل.
-    - يمكن لـ [المهام الخلفية](/ar/automation/tasks) المنفصلة إدراج حدث نظام وتنبيه Heartbeat عندما ينبغي أن تلاحظ الجلسة الرئيسية شيئًا بسرعة. ولا يجعل هذا التنبيه تشغيل Heartbeat مهمة خلفية.
+    - لا تُبقي ردود Heartbeat فقط الجلسة حيّة. قد تحدّث بيانات Heartbeat الوصفية صف الجلسة، لكن انتهاء الخمول يستخدم `lastInteractionAt` من آخر رسالة مستخدم/قناة حقيقية، ويستخدم الانتهاء اليومي `sessionStartedAt`.
+    - يخفي سجل Control UI وWebChat مطالبات Heartbeat وإقرارات OK فقط. لا يزال بإمكان نص الجلسة الأساسي احتواء تلك الدورات لأغراض التدقيق/إعادة التشغيل.
+    - يمكن أن تضيف [المهام الخلفية](/ar/automation/tasks) المنفصلة حدث نظام إلى الطابور وتوقظ Heartbeat عندما ينبغي للجلسة الرئيسية ملاحظة شيء بسرعة. لا يجعل ذلك الإيقاظ تشغيل Heartbeat مهمة خلفية.
 
   </Accordion>
 </AccordionGroup>
 
-## عناصر التحكم في الظهور
+## عناصر التحكم في الرؤية
 
-افتراضيًا، يتم كبت إقرارات `HEARTBEAT_OK` بينما يُسلَّم محتوى التنبيه. ويمكنك ضبط ذلك لكل قناة أو لكل حساب:
+افتراضياً، تُكبت إقرارات `HEARTBEAT_OK` بينما يُسلّم محتوى التنبيهات. يمكنك ضبط هذا لكل قناة أو لكل حساب:
 
 ```yaml
 channels:
   defaults:
     heartbeat:
-      showOk: false # إخفاء HEARTBEAT_OK (الافتراضي)
-      showAlerts: true # إظهار رسائل التنبيه (الافتراضي)
-      useIndicator: true # إصدار أحداث المؤشر (الافتراضي)
+      showOk: false # Hide HEARTBEAT_OK (default)
+      showAlerts: true # Show alert messages (default)
+      useIndicator: true # Emit indicator events (default)
   telegram:
     heartbeat:
-      showOk: true # إظهار إقرارات OK على Telegram
+      showOk: true # Show OK acknowledgments on Telegram
   whatsapp:
     accounts:
       work:
         heartbeat:
-          showAlerts: false # كبت تسليم التنبيهات لهذا الحساب
+          showAlerts: false # Suppress alert delivery for this account
 ```
 
-الأولوية: لكل حساب ← لكل قناة ← القيم الافتراضية للقنوات ← القيم الافتراضية المضمنة.
+الأسبقية: لكل حساب ← لكل قناة ← الإعدادات الافتراضية للقناة ← الإعدادات الافتراضية المضمنة.
 
 ### ما الذي يفعله كل علم
 
-- `showOk`: يرسل إقرار `HEARTBEAT_OK` عندما يعيد النموذج ردًا يحتوي على OK فقط.
-- `showAlerts`: يرسل محتوى التنبيه عندما يعيد النموذج ردًا غير OK.
+- `showOk`: يرسل إقرار `HEARTBEAT_OK` عندما يعيد النموذج رداً من نوع OK فقط.
+- `showAlerts`: يرسل محتوى التنبيه عندما يعيد النموذج رداً غير OK.
 - `useIndicator`: يصدر أحداث مؤشر لأسطح حالة واجهة المستخدم.
 
-إذا كانت **الثلاثة كلها** false، فإن OpenClaw يتخطى تشغيل Heartbeat بالكامل (من دون استدعاء للنموذج).
+إذا كانت **الثلاثة كلها** false، يتخطى OpenClaw تشغيل Heartbeat بالكامل (لا يوجد استدعاء للنموذج).
 
-### أمثلة لكل قناة مقابل لكل حساب
+### أمثلة لكل قناة مقابل كل حساب
 
 ```yaml
 channels:
@@ -348,11 +361,11 @@ channels:
       useIndicator: true
   slack:
     heartbeat:
-      showOk: true # جميع حسابات Slack
+      showOk: true # all Slack accounts
     accounts:
       ops:
         heartbeat:
-          showAlerts: false # كبت التنبيهات لحساب ops فقط
+          showAlerts: false # suppress alerts for the ops account only
   telegram:
     heartbeat:
       showOk: true
@@ -360,36 +373,36 @@ channels:
 
 ### أنماط شائعة
 
-| الهدف                                    | التهيئة                                                                                  |
+| الهدف                                    | الإعداد                                                                                  |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| السلوك الافتراضي (OK صامتة، والتنبيهات مفعلة) | _(لا حاجة إلى تهيئة)_                                                                    |
-| صامت بالكامل (لا رسائل ولا مؤشر)         | `channels.defaults.heartbeat: { showOk: false, showAlerts: false, useIndicator: false }` |
-| مؤشر فقط (من دون رسائل)                  | `channels.defaults.heartbeat: { showOk: false, showAlerts: false, useIndicator: true }`  |
-| OK في قناة واحدة فقط                     | `channels.telegram.heartbeat: { showOk: true }`                                          |
+| السلوك الافتراضي (OK صامتة، والتنبيهات مفعلة) | _(لا حاجة إلى إعداد)_                                                                    |
+| صامت بالكامل (لا رسائل، ولا مؤشر)        | `channels.defaults.heartbeat: { showOk: false, showAlerts: false, useIndicator: false }` |
+| مؤشر فقط (لا رسائل)                      | `channels.defaults.heartbeat: { showOk: false, showAlerts: false, useIndicator: true }`  |
+| OK في قناة واحدة فقط                    | `channels.telegram.heartbeat: { showOk: true }`                                          |
 
 ## HEARTBEAT.md (اختياري)
 
-إذا كان الملف `HEARTBEAT.md` موجودًا في مساحة العمل، فإن المطالبة الافتراضية تطلب من الوكيل قراءته. فكّر فيه باعتباره "قائمة التحقق الخاصة بـ Heartbeat": صغيرًا، ومستقرًا، وآمنًا للإدراج كل 30 دقيقة.
+إذا كان ملف `HEARTBEAT.md` موجوداً في مساحة العمل، فإن المطالبة الافتراضية تخبر الوكيل بقراءته. فكّر فيه كأنه "قائمة تحقق Heartbeat" الخاصة بك: صغيرة ومستقرة وآمنة للتضمين كل 30 دقيقة.
 
-في التشغيلات العادية، لا يتم حقن `HEARTBEAT.md` إلا عندما تكون إرشادات Heartbeat مفعلة للوكيل الافتراضي. ويؤدي تعطيل وتيرة Heartbeat باستخدام `0m` أو تعيين `includeSystemPromptSection: false` إلى حذفه من سياق التهيئة الأولية العادي.
+في التشغيلات العادية، لا يُحقن `HEARTBEAT.md` إلا عند تمكين إرشادات Heartbeat للوكيل الافتراضي. تعطيل إيقاع Heartbeat باستخدام `0m` أو تعيين `includeSystemPromptSection: false` يحذفه من سياق التمهيد العادي.
 
-إذا كان `HEARTBEAT.md` موجودًا لكنه فارغ فعليًا (فقط أسطر فارغة وعناوين Markdown مثل `# Heading`)، فإن OpenClaw يتخطى تشغيل Heartbeat لتوفير استدعاءات API. ويتم الإبلاغ عن هذا التخطي على أنه `reason=empty-heartbeat-file`. أما إذا كان الملف مفقودًا، فتستمر Heartbeat في العمل ويقرر النموذج ما الذي يجب فعله.
+إذا كان `HEARTBEAT.md` موجوداً لكنه فارغ فعلياً (فقط أسطر فارغة وعناوين markdown مثل `# Heading`)، يتخطى OpenClaw تشغيل Heartbeat لتوفير استدعاءات API. يُبلّغ عن هذا التخطي باسم `reason=empty-heartbeat-file`. إذا كان الملف مفقوداً، تستمر Heartbeat في العمل ويقرر النموذج ما يجب فعله.
 
-اجعله صغيرًا جدًا (قائمة تحقق قصيرة أو تذكيرات) لتجنب تضخم الـ prompt.
+اجعله صغيراً جداً (قائمة تحقق قصيرة أو تذكيرات) لتجنب تضخم المطالبة.
 
-مثال على `HEARTBEAT.md`:
+مثال `HEARTBEAT.md`:
 
 ```md
-# قائمة التحقق الخاصة بـ Heartbeat
+# Heartbeat checklist
 
-- فحص سريع: هل يوجد شيء عاجل في صناديق البريد؟
-- إذا كان الوقت نهارًا، فأجرِ تواصلًا خفيفًا إذا لم يكن هناك شيء آخر معلق.
-- إذا كانت مهمة ما محجوبة، فدوّن _ما الذي ينقص_ واسأل Peter في المرة القادمة.
+- Quick scan: anything urgent in inboxes?
+- If it's daytime, do a lightweight check-in if nothing else is pending.
+- If a task is blocked, write down _what is missing_ and ask Peter next time.
 ```
 
 ### كتل `tasks:`
 
-يدعم `HEARTBEAT.md` أيضًا كتلة `tasks:` منظمة صغيرة لإجراء الفحوصات المعتمدة على الفاصل الزمني داخل Heartbeat نفسها.
+يدعم `HEARTBEAT.md` أيضاً كتلة `tasks:` منظمة صغيرة للفحوصات القائمة على الفواصل داخل Heartbeat نفسها.
 
 مثال:
 
@@ -398,81 +411,87 @@ tasks:
 
 - name: inbox-triage
   interval: 30m
-  prompt: "تحقق من الرسائل الإلكترونية غير المقروءة العاجلة وحدد أي شيء حساس للوقت."
+  prompt: "Check for urgent unread emails and flag anything time sensitive."
 - name: calendar-scan
   interval: 2h
-  prompt: "تحقق من الاجتماعات القادمة التي تحتاج إلى استعداد أو متابعة."
+  prompt: "Check for upcoming meetings that need prep or follow-up."
 
-# تعليمات إضافية
+# Additional instructions
 
-- اجعل التنبيهات قصيرة.
-- إذا لم يكن هناك ما يحتاج إلى انتباه بعد جميع المهام المستحقة، فردّ بـ HEARTBEAT_OK.
+- Keep alerts short.
+- If nothing needs attention after all due tasks, reply HEARTBEAT_OK.
 ```
 
 <AccordionGroup>
   <Accordion title="السلوك">
-    - يحلل OpenClaw كتلة `tasks:` ويتحقق من كل مهمة وفق `interval` الخاص بها.
-    - لا تُضمَّن في مطالبة Heartbeat لتلك النبضة إلا المهام **المستحقة**.
-    - إذا لم تكن هناك مهام مستحقة، يتم تخطي Heartbeat بالكامل (`reason=no-tasks-due`) لتجنب استدعاء نموذج بلا فائدة.
-    - يتم الاحتفاظ بالمحتوى غير الخاص بالمهام في `HEARTBEAT.md` وإلحاقه كسياق إضافي بعد قائمة المهام المستحقة.
-    - تُخزَّن الطوابع الزمنية لآخر تشغيل للمهام في حالة الجلسة (`heartbeatTaskState`)، لذا تستمر الفواصل الزمنية عبر عمليات إعادة التشغيل العادية.
-    - لا تتقدم الطوابع الزمنية للمهام إلا بعد أن يكمل تشغيل Heartbeat مسار رده العادي. أما التشغيلات المتخطاة `empty-heartbeat-file` / `no-tasks-due` فلا تعلّم المهام على أنها مكتملة.
+    - يحلل OpenClaw كتلة `tasks:` ويفحص كل مهمة مقابل `interval` الخاص بها.
+    - تُضمّن فقط المهام **المستحقة** في مطالبة Heartbeat لتلك النبضة.
+    - إذا لم تكن هناك مهام مستحقة، تُتخطى Heartbeat بالكامل (`reason=no-tasks-due`) لتجنب استدعاء نموذج مهدور.
+    - يُحفظ المحتوى غير المتعلق بالمهام في `HEARTBEAT.md` ويُلحق كسياق إضافي بعد قائمة المهام المستحقة.
+    - تُخزن الطوابع الزمنية لآخر تشغيل للمهام في حالة الجلسة (`heartbeatTaskState`)، لذلك تصمد الفواصل الزمنية بعد عمليات إعادة التشغيل العادية.
+    - لا تُقدّم الطوابع الزمنية للمهام إلا بعد اكتمال تشغيل Heartbeat عبر مسار الرد العادي. لا تضع تشغيلات `empty-heartbeat-file` / `no-tasks-due` المتخطاة علامة اكتمال على المهام.
 
   </Accordion>
 </AccordionGroup>
 
-يكون وضع المهام مفيدًا عندما تريد أن يحتوي ملف Heartbeat واحد على عدة فحوصات دورية من دون دفع تكلفة جميعها في كل نبضة.
+يكون وضع المهام مفيداً عندما تريد أن يحتوي ملف Heartbeat واحد على عدة فحوصات دورية دون الدفع مقابلها كلها في كل نبضة.
 
 ### هل يمكن للوكيل تحديث HEARTBEAT.md؟
 
 نعم — إذا طلبت منه ذلك.
 
-`HEARTBEAT.md` ليس سوى ملف عادي في مساحة عمل الوكيل، لذلك يمكنك إخبار الوكيل (في محادثة عادية) بشيء مثل:
+`HEARTBEAT.md` مجرد ملف عادي في مساحة عمل الوكيل، لذلك يمكنك أن تخبر الوكيل (في دردشة عادية) بشيء مثل:
 
 - "حدّث `HEARTBEAT.md` لإضافة فحص يومي للتقويم."
-- "أعد كتابة `HEARTBEAT.md` ليكون أقصر ويركز على متابعات البريد الوارد."
+- "أعد كتابة `HEARTBEAT.md` بحيث يكون أقصر ومركزاً على متابعات البريد الوارد."
 
-وإذا أردت أن يحدث ذلك بشكل استباقي، فيمكنك أيضًا تضمين سطر صريح في مطالبة Heartbeat مثل: "إذا أصبحت قائمة التحقق قديمة، فحدّث HEARTBEAT.md بقائمة أفضل."
+إذا كنت تريد أن يحدث هذا استباقياً، يمكنك أيضاً تضمين سطر صريح في مطالبة Heartbeat لديك مثل: "إذا أصبحت قائمة التحقق قديمة، فحدّث HEARTBEAT.md بقائمة أفضل."
 
 <Warning>
-لا تضع أسرارًا (مفاتيح API أو أرقام الهواتف أو الرموز الخاصة) في `HEARTBEAT.md` — لأنه يصبح جزءًا من سياق الـ prompt.
+لا تضع أسراراً (مفاتيح API، أرقام هواتف، رموزاً خاصة) في `HEARTBEAT.md` — فهو يصبح جزءاً من سياق المطالبة.
 </Warning>
 
-## تنبيه يدوي (عند الطلب)
+## إيقاظ يدوي (عند الطلب)
 
-يمكنك إدراج حدث نظام وتشغيل Heartbeat فورًا باستخدام:
+يمكنك إدراج حدث نظام في الطابور وتشغيل Heartbeat فورية باستخدام:
 
 ```bash
-openclaw system event --text "تحقق من المتابعات العاجلة" --mode now
+openclaw system event --text "Check for urgent follow-ups" --mode now
 ```
 
-إذا كانت هناك عدة وكلاء لديهم `heartbeat` مضبوطًا، فإن التنبيه اليدوي يشغّل Heartbeats الخاصة بكل هؤلاء الوكلاء فورًا.
+إذا كان لدى عدة وكلاء إعداد `heartbeat`، فإن الإيقاظ اليدوي يشغّل كل Heartbeats هؤلاء الوكلاء فوراً.
 
 استخدم `--mode next-heartbeat` للانتظار حتى النبضة المجدولة التالية.
 
-## تسليم reasoning (اختياري)
+## تسليم الاستدلال (اختياري)
 
-افتراضيًا، تسلّم Heartbeats حمولة "الإجابة" النهائية فقط.
+افتراضياً، تسلّم Heartbeats حمولة "الإجابة" النهائية فقط.
 
-إذا كنت تريد الشفافية، ففعّل:
+إذا أردت الشفافية، فعّل:
 
 - `agents.defaults.heartbeat.includeReasoning: true`
 
-عند التفعيل، ستسلّم Heartbeats أيضًا رسالة منفصلة مسبوقة بـ `Reasoning:` (بنفس شكل `/reasoning on`). ويمكن أن يكون ذلك مفيدًا عندما يدير الوكيل جلسات/codexes متعددة وتريد أن ترى لماذا قرر تنبيهك — لكنه قد يكشف أيضًا تفاصيل داخلية أكثر مما تريد. ويُفضّل إبقاؤه معطلًا في محادثات المجموعات.
+عند التمكين، ستسلّم Heartbeats أيضاً رسالة منفصلة مسبوقة بـ `Reasoning:` (بالشكل نفسه مثل `/reasoning on`). قد يكون هذا مفيداً عندما يدير الوكيل جلسات/بيئات codex متعددة وتريد معرفة سبب قراره بمراسلتك — لكنه قد يسرّب أيضاً تفاصيل داخلية أكثر مما تريد. يُفضّل إبقاؤه متوقفاً في دردشات المجموعات.
 
 ## الوعي بالتكلفة
 
-تشغّل Heartbeats أدوار وكيل كاملة. وكلما قصرت الفواصل الزمنية زاد استهلاك الرموز. ولتقليل التكلفة:
+تشغّل Heartbeats دورات وكيل كاملة. تحرق الفواصل الأقصر رموزاً أكثر. لتقليل التكلفة:
 
-- استخدم `isolatedSession: true` لتجنب إرسال سجل المحادثة الكامل (من ~100 ألف رمز إلى ~2-5 آلاف لكل تشغيل).
-- استخدم `lightContext: true` لقصر ملفات التهيئة الأولية على `HEARTBEAT.md` فقط.
-- اضبط `model` أرخص (مثل `ollama/llama3.2:1b`).
-- أبقِ `HEARTBEAT.md` صغيرًا.
-- استخدم `target: "none"` إذا كنت تريد فقط تحديثات الحالة الداخلية.
+- استخدم `isolatedSession: true` لتجنب إرسال سجل المحادثة الكامل (من نحو 100 ألف رمز إلى نحو 2-5 آلاف لكل تشغيل).
+- استخدم `lightContext: true` لقصر ملفات التمهيد على `HEARTBEAT.md` فقط.
+- عيّن `model` أرخص (مثل `ollama/llama3.2:1b`).
+- أبقِ `HEARTBEAT.md` صغيراً.
+- استخدم `target: "none"` إذا كنت تريد تحديثات الحالة الداخلية فقط.
 
-## ذو صلة
+## تجاوز السياق بعد Heartbeat
 
-- [Automation & Tasks](/ar/automation) — نظرة سريعة على جميع آليات الأتمتة
-- [المهام الخلفية](/ar/automation/tasks) — كيفية تتبع العمل المنفصل
-- [Timezone](/ar/concepts/timezone) — كيف تؤثر المنطقة الزمنية في جدولة Heartbeat
+إذا استخدمت Heartbeat نموذجاً محلياً أصغر، على سبيل المثال نموذج Ollama بنافذة 32k، وأبلغت دورة الجلسة الرئيسية التالية عن تجاوز السياق، فتحقق مما إذا كانت Heartbeat السابقة قد تركت الجلسة على نموذج Heartbeat. تشير رسالة إعادة التعيين في OpenClaw إلى ذلك عندما يطابق آخر نموذج وقت تشغيل `heartbeat.model` المكوّن.
+
+استخدم `isolatedSession: true` لتشغيل Heartbeats في جلسة جديدة، واجمعه مع `lightContext: true` لأصغر مطالبة، أو اختر نموذج Heartbeat بنافذة سياق كبيرة بما يكفي للجلسة المشتركة.
+
+## ذات صلة
+
+- [الأتمتة والمهام](/ar/automation) — جميع آليات الأتمتة بنظرة سريعة
+- [المهام الخلفية](/ar/automation/tasks) — كيف يُتتبع العمل المنفصل
+- [المنطقة الزمنية](/ar/concepts/timezone) — كيف تؤثر المنطقة الزمنية في جدولة Heartbeat
 - [استكشاف الأخطاء وإصلاحها](/ar/automation/cron-jobs#troubleshooting) — تصحيح مشكلات الأتمتة

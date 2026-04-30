@@ -1,47 +1,47 @@
 ---
 read_when:
     - تريد استخدام DeepSeek مع OpenClaw
-    - أنت بحاجة إلى متغير البيئة الخاص بمفتاح API أو خيار المصادقة عبر CLI
+    - تحتاج إلى متغيّر بيئة مفتاح API أو خيار مصادقة CLI
 summary: إعداد DeepSeek (المصادقة + اختيار النموذج)
 title: DeepSeek
 x-i18n:
-    generated_at: "2026-04-25T13:56:27Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:20:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1fd89511faea8b961b7d6c5175143b9b8f0ba606ae24a49f276d9346de1cb8c3
+    source_hash: e84d989a7cba8d259779ac02293718050ce51efe6ce2bdbfacb9e22bbfd294ef
     source_path: providers/deepseek.md
-    workflow: 15
+    workflow: 16
 ---
 
-[DeepSeek](https://www.deepseek.com) يوفّر نماذج ذكاء اصطناعي قوية عبر API متوافق مع OpenAI.
+[DeepSeek](https://www.deepseek.com) يوفّر نماذج ذكاء اصطناعي قوية مع API متوافق مع OpenAI.
 
-| الخاصية | القيمة                     |
+| الخاصية | القيمة                    |
 | -------- | -------------------------- |
-| الموفّر | `deepseek`                 |
+| المزوّد | `deepseek`                 |
 | المصادقة | `DEEPSEEK_API_KEY`         |
-| API      | متوافق مع OpenAI          |
-| Base URL | `https://api.deepseek.com` |
+| API      | متوافق مع OpenAI           |
+| عنوان URL الأساسي | `https://api.deepseek.com` |
 
 ## البدء
 
 <Steps>
   <Step title="احصل على مفتاح API الخاص بك">
-    أنشئ مفتاح API من [platform.deepseek.com](https://platform.deepseek.com/api_keys).
+    أنشئ مفتاح API على [platform.deepseek.com](https://platform.deepseek.com/api_keys).
   </Step>
   <Step title="شغّل الإعداد الأولي">
     ```bash
     openclaw onboard --auth-choice deepseek-api-key
     ```
 
-    سيطلب هذا مفتاح API الخاص بك ويضبط `deepseek/deepseek-v4-flash` كنموذج افتراضي.
+    سيطلب هذا مفتاح API الخاص بك ويعيّن `deepseek/deepseek-v4-flash` كنموذج افتراضي.
 
   </Step>
-  <Step title="تحقق من أن النماذج متاحة">
+  <Step title="تحقق من توفر النماذج">
     ```bash
     openclaw models list --provider deepseek
     ```
 
-    لفحص الكتالوج الثابت المجمّع من دون الحاجة إلى Gateway قيد التشغيل،
+    لفحص الفهرس الثابت المضمّن دون الحاجة إلى Gateway قيد التشغيل،
     استخدم:
 
     ```bash
@@ -53,7 +53,7 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="إعداد غير تفاعلي">
-    بالنسبة إلى عمليات التثبيت المكتوبة برمجيًا أو من دون واجهة، مرّر جميع العلامات مباشرةً:
+    للتثبيتات النصية أو التي تعمل بلا واجهة، مرّر جميع العلامات مباشرة:
 
     ```bash
     openclaw onboard --non-interactive \
@@ -68,54 +68,54 @@ x-i18n:
 </AccordionGroup>
 
 <Warning>
-إذا كان Gateway يعمل كخدمة daemon ‏(launchd/systemd)، فتأكد من أن `DEEPSEEK_API_KEY`
-متاح لهذه العملية (على سبيل المثال، في `~/.openclaw/.env` أو عبر
+إذا كان Gateway يعمل كخدمة خفية (launchd/systemd)، فتأكد من أن `DEEPSEEK_API_KEY`
+متاح لتلك العملية (على سبيل المثال، في `~/.openclaw/.env` أو عبر
 `env.shellEnv`).
 </Warning>
 
-## الكتالوج المدمج
+## الفهرس المضمّن
 
-| مرجع النموذج                 | الاسم             | الإدخال | السياق    | الحد الأقصى للإخراج | ملاحظات                                     |
-| ---------------------------- | ----------------- | ------- | --------- | ------------------- | ------------------------------------------- |
-| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | text    | 1,000,000 | 384,000             | النموذج الافتراضي؛ سطح V4 يدعم Thinking |
-| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | text    | 1,000,000 | 384,000             | سطح V4 يدعم Thinking               |
-| `deepseek/deepseek-chat`     | DeepSeek Chat     | text    | 131,072   | 8,192               | سطح DeepSeek V3.2 غير المفكّر        |
-| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text    | 131,072   | 65,536              | سطح V3.2 مفعّل للاستدلال            |
+| مرجع النموذج                  | الاسم             | الإدخال | السياق   | الحد الأقصى للإخراج | ملاحظات                                   |
+| ---------------------------- | ----------------- | ----- | --------- | ---------- | ------------------------------------------ |
+| `deepseek/deepseek-v4-flash` | DeepSeek V4 Flash | text  | 1,000,000 | 384,000    | النموذج الافتراضي؛ سطح V4 قادر على التفكير |
+| `deepseek/deepseek-v4-pro`   | DeepSeek V4 Pro   | text  | 1,000,000 | 384,000    | سطح V4 قادر على التفكير                   |
+| `deepseek/deepseek-chat`     | DeepSeek Chat     | text  | 131,072   | 8,192      | سطح DeepSeek V3.2 غير مخصص للتفكير        |
+| `deepseek/deepseek-reasoner` | DeepSeek Reasoner | text  | 131,072   | 65,536     | سطح V3.2 مفعّل للاستدلال                  |
 
 <Tip>
-تدعم نماذج V4 عنصر التحكم `thinking` الخاص بـ DeepSeek. كما يعيد OpenClaw أيضًا تشغيل
-`reasoning_content` من DeepSeek في الأدوار اللاحقة، بحيث يمكن أن تستمر جلسات Thinking مع
-استدعاءات الأدوات.
+تدعم نماذج V4 عنصر التحكم `thinking` في DeepSeek. كما يعيد OpenClaw تشغيل
+`reasoning_content` من DeepSeek في الجولات اللاحقة حتى تتمكن جلسات التفكير التي تتضمن
+استدعاءات أدوات من المتابعة.
 </Tip>
 
-## Thinking والأدوات
+## التفكير والأدوات
 
-تحتوي جلسات Thinking في DeepSeek V4 على عقد إعادة تشغيل أكثر صرامة من معظم
-الموفّرين المتوافقين مع OpenAI: عندما تتضمن رسالة مساعد مفعّل فيها Thinking
-استدعاءات أدوات، يتوقع DeepSeek أن يُعاد إرسال `reasoning_content` السابق للمساعد
-في طلب المتابعة. يتولى OpenClaw هذا داخل Plugin الخاص بـ DeepSeek،
-لذلك يعمل استخدام الأدوات العادي متعدد الأدوار مع `deepseek/deepseek-v4-flash` و
-`deepseek/deepseek-v4-pro`.
+جلسات التفكير في DeepSeek V4 لديها عقد إعادة تشغيل أكثر صرامة من معظم
+المزوّدين المتوافقين مع OpenAI: بعد أن تستخدم جولة مفعّلة للتفكير الأدوات، يتوقع DeepSeek
+أن تتضمن رسائل المساعد المعاد تشغيلها من تلك الجولة
+`reasoning_content` في الطلبات اللاحقة. يتعامل OpenClaw مع هذا داخل
+Plugin الخاص بـ DeepSeek، لذلك يعمل استخدام الأدوات العادي متعدد الجولات مع
+`deepseek/deepseek-v4-flash` و`deepseek/deepseek-v4-pro`.
 
-إذا بدّلت جلسة موجودة من موفّر آخر متوافق مع OpenAI إلى
-نموذج DeepSeek V4، فقد لا تحتوي الأدوار الأقدم لاستدعاء أدوات المساعد على
-`reasoning_content` أصلي من DeepSeek. يملأ OpenClaw هذا الحقل المفقود لطلبات Thinking في DeepSeek V4
-حتى يتمكن الموفّر من قبول سجل استدعاءات الأدوات المعاد تشغيله
-من دون الحاجة إلى `/new`.
+إذا بدّلت جلسة حالية من مزوّد آخر متوافق مع OpenAI إلى نموذج
+DeepSeek V4، فقد لا تحتوي جولات استدعاء أدوات المساعد الأقدم على
+`reasoning_content` أصلي من DeepSeek. يملأ OpenClaw ذلك الحقل المفقود عند إعادة تشغيل
+رسائل المساعد لطلبات التفكير في DeepSeek V4 حتى يتمكن المزوّد من قبول
+السجل دون الحاجة إلى `/new`.
 
-عند تعطيل Thinking في OpenClaw (بما في ذلك اختيار **None** في واجهة المستخدم)،
-يرسل OpenClaw القيمة `thinking: { type: "disabled" }` إلى DeepSeek ويزيل
-`reasoning_content` المعاد تشغيله من السجل الصادر. وهذا يُبقي
-الجلسات المعطّل فيها Thinking على مسار DeepSeek غير المفكّر.
+عند تعطيل التفكير في OpenClaw (بما في ذلك اختيار **بلا** في واجهة المستخدم)،
+يرسل OpenClaw إلى DeepSeek ‏`thinking: { type: "disabled" }` ويزيل
+`reasoning_content` المعاد تشغيله من السجل الصادر. يحافظ هذا على جلسات التفكير المعطّل
+ضمن مسار DeepSeek غير المخصص للتفكير.
 
-استخدم `deepseek/deepseek-v4-flash` للمسار السريع الافتراضي. واستخدم
-`deepseek/deepseek-v4-pro` عندما تريد نموذج V4 الأقوى ويمكنك تقبّل
-تكلفة أو زمن انتقال أعلى.
+استخدم `deepseek/deepseek-v4-flash` للمسار السريع الافتراضي. استخدم
+`deepseek/deepseek-v4-pro` عندما تريد نموذج V4 الأقوى ويمكنك قبول
+تكلفة أو زمن استجابة أعلى.
 
-## الاختبار الحي
+## الاختبار المباشر
 
-تتضمن مجموعة النماذج الحية المباشرة DeepSeek V4 ضمن مجموعة النماذج الحديثة. من أجل
-تشغيل فحوصات النموذج المباشر الخاصة بـ DeepSeek V4 فقط:
+تتضمن مجموعة النماذج المباشرة الحية DeepSeek V4 ضمن مجموعة النماذج الحديثة. لتشغيل
+فحوصات النماذج المباشرة الخاصة بـ DeepSeek V4 فقط:
 
 ```bash
 OPENCLAW_LIVE_PROVIDERS=deepseek \
@@ -123,10 +123,10 @@ OPENCLAW_LIVE_MODELS="deepseek/deepseek-v4-flash,deepseek/deepseek-v4-pro" \
 pnpm test:live src/agents/models.profiles.live.test.ts
 ```
 
-يتحقق هذا الفحص الحي من أن كلا نموذجي V4 يمكنهما الإكمال وأن أدوار
-المتابعة الخاصة بـ Thinking/الأدوات تحافظ على حمولة إعادة التشغيل التي يتطلبها DeepSeek.
+يتحقق هذا الفحص المباشر من قدرة كلا نموذجي V4 على الإكمال، ومن أن جولات المتابعة
+الخاصة بالتفكير/الأدوات تحافظ على حمولة إعادة التشغيل التي يتطلبها DeepSeek.
 
-## مثال على الإعدادات
+## مثال تهيئة
 
 ```json5
 {
@@ -143,9 +143,9 @@ pnpm test:live src/agents/models.profiles.live.test.ts
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفّرين، ومراجع النماذج، وسلوك failover.
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    المرجع الكامل للإعدادات الخاصة بالوكلاء، والنماذج، والموفّرين.
+  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
+    مرجع التهيئة الكامل للوكلاء والنماذج والمزوّدين.
   </Card>
 </CardGroup>

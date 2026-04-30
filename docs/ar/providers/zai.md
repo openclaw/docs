@@ -1,39 +1,39 @@
 ---
 read_when:
-    - أنت تريد Z.AI / نماذج GLM في OpenClaw
-    - أنت بحاجة إلى إعداد بسيط لـ `ZAI_API_KEY`
-summary: استخدم Z.AI (نماذج GLM) مع OpenClaw
+    - تريد استخدام نماذج Z.AI / GLM في OpenClaw
+    - تحتاج إلى إعداد بسيط لـ ZAI_API_KEY
+summary: استخدام Z.AI (نماذج GLM) مع OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-26T11:39:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:23:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
+    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
     source_path: providers/zai.md
-    workflow: 15
+    workflow: 16
 ---
 
-Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GLM وتستخدم مفاتيح API
-للمصادقة. أنشئ مفتاح API الخاص بك في وحدة تحكم Z.AI. يستخدم OpenClaw مزوّد `zai`
+Z.AI هي منصة API لنماذج **GLM**. توفر واجهات REST API لـ GLM وتستخدم مفاتيح API
+للمصادقة. أنشئ مفتاح API الخاص بك في لوحة تحكم Z.AI. يستخدم OpenClaw مزوّد `zai`
 مع مفتاح API من Z.AI.
 
 - المزوّد: `zai`
 - المصادقة: `ZAI_API_KEY`
-- API: Z.AI Chat Completions (مصادقة Bearer)
+- API: إكمالات دردشة Z.AI (مصادقة Bearer)
 
-## البدء
+## بدء الاستخدام
 
 <Tabs>
-  <Tab title="اكتشاف نقطة النهاية تلقائيًا">
-    **الأفضل لـ:** معظم المستخدمين. يكتشف OpenClaw نقطة نهاية Z.AI المطابقة من المفتاح ويطبّق `base URL` الصحيح تلقائيًا.
+  <Tab title="Auto-detect endpoint">
+    **الأفضل لـ:** معظم المستخدمين. يكتشف OpenClaw نقطة نهاية Z.AI المطابقة من المفتاح ويطبّق عنوان URL الأساسي الصحيح تلقائيًا.
 
     <Steps>
-      <Step title="تشغيل الإعداد الأوّلي">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="تعيين نموذج افتراضي">
+      <Step title="Set a default model">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -41,7 +41,7 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
         }
         ```
       </Step>
-      <Step title="التحقق من أن النموذج متاح">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider zai
         ```
@@ -50,26 +50,26 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
 
   </Tab>
 
-  <Tab title="نقطة نهاية إقليمية صريحة">
-    **الأفضل لـ:** المستخدمين الذين يريدون فرض Coding Plan محددة أو سطح API عام محدد.
+  <Tab title="Explicit regional endpoint">
+    **الأفضل لـ:** المستخدمين الذين يريدون فرض Coding Plan محددة أو سطح API عام.
 
     <Steps>
-      <Step title="اختيار خيار الإعداد الأوّلي الصحيح">
+      <Step title="Pick the right onboarding choice">
         ```bash
-        # Coding Plan Global (موصى بها لمستخدمي Coding Plan)
+        # Coding Plan Global (recommended for Coding Plan users)
         openclaw onboard --auth-choice zai-coding-global
 
-        # Coding Plan CN (منطقة الصين)
+        # Coding Plan CN (China region)
         openclaw onboard --auth-choice zai-coding-cn
 
-        # API العام
+        # General API
         openclaw onboard --auth-choice zai-global
 
-        # API العام CN (منطقة الصين)
+        # General API CN (China region)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="تعيين نموذج افتراضي">
+      <Step title="Set a default model">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -77,7 +77,7 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
         }
         ```
       </Step>
-      <Step title="التحقق من أن النموذج متاح">
+      <Step title="Verify the model is available">
         ```bash
         openclaw models list --provider zai
         ```
@@ -87,41 +87,41 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
   </Tab>
 </Tabs>
 
-## الكتالوج المضمّن
+## الفهرس المضمّن
 
-يقوم OpenClaw حاليًا بتهيئة مزوّد `zai` المضمّن بما يلي:
+يزرع OpenClaw حاليًا مزوّد `zai` المضمّن باستخدام:
 
-| مرجع النموذج         | ملاحظات          |
-| -------------------- | ---------------- |
+| مرجع النموذج          | ملاحظات            |
+| -------------------- | ------------- |
 | `zai/glm-5.1`        | النموذج الافتراضي |
-| `zai/glm-5`          |                  |
-| `zai/glm-5-turbo`    |                  |
-| `zai/glm-5v-turbo`   |                  |
-| `zai/glm-4.7`        |                  |
-| `zai/glm-4.7-flash`  |                  |
-| `zai/glm-4.7-flashx` |                  |
-| `zai/glm-4.6`        |                  |
-| `zai/glm-4.6v`       |                  |
-| `zai/glm-4.5`        |                  |
-| `zai/glm-4.5-air`    |                  |
-| `zai/glm-4.5-flash`  |                  |
-| `zai/glm-4.5v`       |                  |
+| `zai/glm-5`          |               |
+| `zai/glm-5-turbo`    |               |
+| `zai/glm-5v-turbo`   |               |
+| `zai/glm-4.7`        |               |
+| `zai/glm-4.7-flash`  |               |
+| `zai/glm-4.7-flashx` |               |
+| `zai/glm-4.6`        |               |
+| `zai/glm-4.6v`       |               |
+| `zai/glm-4.5`        |               |
+| `zai/glm-4.5-air`    |               |
+| `zai/glm-4.5-flash`  |               |
+| `zai/glm-4.5v`       |               |
 
 <Tip>
-نماذج GLM متاحة بصيغة `zai/<model>` (مثال: `zai/glm-5`). مرجع النموذج المضمّن الافتراضي هو `zai/glm-5.1`.
+تتوفر نماذج GLM بصيغة `zai/<model>` (مثال: `zai/glm-5`). مرجع النموذج المضمّن الافتراضي هو `zai/glm-5.1`.
 </Tip>
 
-## الإعدادات المتقدمة
+## التكوين المتقدم
 
 <AccordionGroup>
-  <Accordion title="الحلّ الأمامي لمعرّفات GLM-5 غير المعروفة">
-    تظل معرّفات `glm-5*` غير المعروفة تُحلّ أماميًا على مسار المزوّد المضمّن عبر
-    توليد بيانات تعريف يملكها المزوّد من قالب `glm-4.7` عندما يطابق المعرّف
-    شكل عائلة GLM-5 الحالية.
+  <Accordion title="Forward-resolving unknown GLM-5 models">
+    ما تزال معرّفات `glm-5*` غير المعروفة تُحلّ مسبقًا على مسار المزوّد المضمّن عبر
+    إنشاء بيانات وصفية مملوكة للمزوّد من قالب `glm-4.7` عندما يطابق المعرّف
+    شكل عائلة GLM-5 الحالي.
   </Accordion>
 
-  <Accordion title="بث استدعاءات الأدوات">
-    يكون `tool_stream` مفعّلًا افتراضيًا لبث استدعاءات أدوات Z.AI. لتعطيله:
+  <Accordion title="Tool-call streaming">
+    يكون `tool_stream` مفعّلًا افتراضيًا لبث استدعاءات الأدوات في Z.AI. لتعطيله:
 
     ```json5
     {
@@ -139,13 +139,13 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
 
   </Accordion>
 
-  <Accordion title="Thinking وPreserved thinking">
-    يتبع Thinking في Z.AI عناصر التحكم `/think` الخاصة بـ OpenClaw. عند إيقاف Thinking،
-    يرسل OpenClaw `thinking: { type: "disabled" }` لتجنّب الردود التي
-    تستهلك ميزانية المخرجات في `reasoning_content` قبل النص المرئي.
+  <Accordion title="Thinking and preserved thinking">
+    يتبع تفكير Z.AI عناصر تحكم `/think` في OpenClaw. عند إيقاف التفكير،
+    يرسل OpenClaw ‏`thinking: { type: "disabled" }` لتجنب الاستجابات التي
+    تنفق ميزانية الإخراج على `reasoning_content` قبل النص المرئي.
 
-    يكون Preserved thinking اختياريًا لأنه في Z.AI يتطلب
-    إعادة تشغيل `reasoning_content` التاريخي الكامل، مما يزيد من رموز المطالبة. فعّله
+    التفكير المحفوظ اختياري لأن Z.AI يتطلب إعادة تشغيل كامل
+    `reasoning_content` التاريخي، ما يزيد رموز المطالبة. فعّله
     لكل نموذج:
 
     ```json5
@@ -162,42 +162,42 @@ Z.AI هي منصة API لنماذج **GLM**. وهي توفّر REST APIs لـ GL
     }
     ```
 
-    عند تفعيله ومع تشغيل Thinking، يرسل OpenClaw
+    عند تفعيله وتشغيل التفكير، يرسل OpenClaw
     `thinking: { type: "enabled", clear_thinking: false }` ويعيد تشغيل
-    `reasoning_content` السابق لنفس النسخة النصية المتوافقة مع OpenAI.
+    `reasoning_content` السابق لنفس النص المتسلسل المتوافق مع OpenAI.
 
-    ما يزال بإمكان المستخدمين المتقدمين تجاوز حمولة المزوّد الدقيقة عبر
+    لا يزال بإمكان المستخدمين المتقدمين تجاوز حمولة المزوّد الدقيقة باستخدام
     `params.extra_body.thinking`.
 
   </Accordion>
 
-  <Accordion title="فهم الصور">
-    يسجّل Plugin Z.AI المضمّن ميزة فهم الصور.
+  <Accordion title="Image understanding">
+    يسجّل Plugin ‏Z.AI المضمّن فهم الصور.
 
-    | الخاصية      | القيمة      |
-    | ------------ | ----------- |
-    | النموذج      | `glm-4.6v`  |
+    | الخاصية      | القيمة       |
+    | ------------- | ----------- |
+    | النموذج       | `glm-4.6v`  |
 
-    يُحل فهم الصور تلقائيًا من إعدادات مصادقة Z.AI المضبوطة — ولا
-    حاجة إلى إعدادات إضافية.
+    يُحلّ فهم الصور تلقائيًا من مصادقة Z.AI المكوّنة، ولا حاجة إلى
+    تكوين إضافي.
 
   </Accordion>
 
-  <Accordion title="تفاصيل المصادقة">
-    - تستخدم Z.AI مصادقة Bearer مع مفتاح API الخاص بك.
-    - يكتشف خيار الإعداد الأوّلي `zai-api-key` نقطة نهاية Z.AI المطابقة تلقائيًا من بادئة المفتاح.
-    - استخدم الخيارات الإقليمية الصريحة (`zai-coding-global` و`zai-coding-cn` و`zai-global` و`zai-cn`) عندما تريد فرض سطح API محدد.
+  <Accordion title="Auth details">
+    - يستخدم Z.AI مصادقة Bearer مع مفتاح API الخاص بك.
+    - يكتشف اختيار الإعداد الأولي `zai-api-key` نقطة نهاية Z.AI المطابقة تلقائيًا من بادئة المفتاح.
+    - استخدم الخيارات الإقليمية الصريحة (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) عندما تريد فرض سطح API محدد.
 
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="عائلة نماذج GLM" href="/ar/providers/glm" icon="microchip">
+  <Card title="GLM model family" href="/ar/providers/glm" icon="microchip">
     نظرة عامة على عائلة نماذج GLM.
   </Card>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
 </CardGroup>

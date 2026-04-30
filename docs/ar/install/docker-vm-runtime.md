@@ -1,37 +1,37 @@
 ---
 read_when:
-    - أنت تنشر OpenClaw على جهاز VM سحابي باستخدام Docker
-    - أنت بحاجة إلى تدفق bake للملف التنفيذي المشترك، والاستمرارية، والتحديثات
-summary: خطوات وقت تشغيل Docker VM المشتركة لمضيفي OpenClaw Gateway طويلي الأمد
-title: وقت تشغيل Docker VM
+    - أنت تنشر OpenClaw على آلة افتراضية سحابية باستخدام Docker
+    - تحتاج إلى عملية إعداد الملف الثنائي المشتركة، والاستمرارية، وتدفق التحديث
+summary: خطوات وقت التشغيل المشتركة لجهاز Docker الافتراضي لمضيفي OpenClaw Gateway طويلي الأمد
+title: بيئة تشغيل الآلة الافتراضية لـ Docker
 x-i18n:
-    generated_at: "2026-04-24T07:47:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:06:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 54e99e6186a3c13783922e4d1e4a55e9872514be23fa77ca869562dcd436ad2b
+    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
     source_path: install/docker-vm-runtime.md
-    workflow: 15
+    workflow: 16
 ---
 
-خطوات وقت التشغيل المشتركة لتثبيتات Docker المعتمدة على VM مثل GCP وHetzner ومزودي VPS المشابهين.
+خطوات وقت تشغيل مشتركة لعمليات تثبيت Docker المعتمدة على VM مثل GCP وHetzner ومزوّدي VPS المشابهين.
 
-## ضمّن الملفات التنفيذية المطلوبة داخل الصورة
+## ضمّن الثنائيات المطلوبة داخل الصورة
 
-إن تثبيت الملفات التنفيذية داخل حاوية قيد التشغيل هو فخ.
-فأي شيء يُثبَّت في وقت التشغيل سيُفقد عند إعادة التشغيل.
+تثبيت الثنائيات داخل حاوية قيد التشغيل فخ.
+أي شيء يُثبّت في وقت التشغيل سيُفقد عند إعادة التشغيل.
 
-يجب تثبيت جميع الملفات التنفيذية الخارجية التي تحتاج إليها Skills في وقت بناء الصورة.
+يجب تثبيت جميع الثنائيات الخارجية المطلوبة بواسطة Skills في وقت بناء الصورة.
 
-توضح الأمثلة أدناه ثلاثة ملفات تنفيذية شائعة فقط:
+تعرض الأمثلة أدناه ثلاثة ثنائيات شائعة فقط:
 
-- `gog` للوصول إلى Gmail
+- `gog` (من `gogcli`) للوصول إلى Gmail
 - `goplaces` لـ Google Places
 - `wacli` لـ WhatsApp
 
 هذه أمثلة وليست قائمة كاملة.
-يمكنك تثبيت أي عدد تحتاج إليه من الملفات التنفيذية باستخدام النمط نفسه.
+يمكنك تثبيت أي عدد تحتاجه من الثنائيات باستخدام النمط نفسه.
 
-إذا أضفت Skills جديدة لاحقًا تعتمد على ملفات تنفيذية إضافية، فيجب عليك:
+إذا أضفت Skills جديدة لاحقًا تعتمد على ثنائيات إضافية، فيجب عليك:
 
 1. تحديث Dockerfile
 2. إعادة بناء الصورة
@@ -44,17 +44,23 @@ FROM node:24-bookworm
 
 RUN apt-get update && apt-get install -y socat && rm -rf /var/lib/apt/lists/*
 
-# Example binary 1: Gmail CLI
-RUN curl -L https://github.com/steipete/gog/releases/latest/download/gog_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/gog
+# Example binary 1: Gmail CLI (gogcli — installs as `gog`)
+# Copy the current Linux asset URL from https://github.com/steipete/gogcli/releases
+RUN curl -L https://github.com/steipete/gogcli/releases/latest/download/gogcli_linux_amd64.tar.gz \
+  | tar -xzO gog > /usr/local/bin/gog; \
+  chmod +x /usr/local/bin/gog
 
 # Example binary 2: Google Places CLI
-RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/goplaces
+# Copy the current Linux asset URL from https://github.com/steipete/goplaces/releases
+RUN curl -L https://github.com/steipete/goplaces/releases/latest/download/goplaces_linux_amd64.tar.gz \
+  | tar -xzO goplaces > /usr/local/bin/goplaces; \
+  chmod +x /usr/local/bin/goplaces
 
 # Example binary 3: WhatsApp CLI
-RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli_Linux_x86_64.tar.gz \
-  | tar -xz -C /usr/local/bin && chmod +x /usr/local/bin/wacli
+# Copy the current Linux asset URL from https://github.com/steipete/wacli/releases
+RUN curl -L https://github.com/steipete/wacli/releases/latest/download/wacli-linux-amd64.tar.gz \
+  | tar -xzO wacli > /usr/local/bin/wacli; \
+  chmod +x /usr/local/bin/wacli
 
 # Add more binaries below using the same pattern
 
@@ -77,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-روابط التنزيل أعلاه مخصصة لـ x86_64 ‏(amd64). وبالنسبة إلى VMs المعتمدة على ARM (مثل Hetzner ARM أو GCP Tau T2A)، استبدل روابط التنزيل بنسخ ARM64 المناسبة من صفحة الإصدارات الخاصة بكل أداة.
+عناوين URL أعلاه أمثلة. بالنسبة إلى VM المعتمدة على ARM، اختر أصول `arm64`. للحصول على عمليات بناء قابلة لإعادة الإنتاج، ثبّت عناوين URL لإصدارات محددة.
 </Note>
 
 ## البناء والتشغيل
@@ -87,10 +93,10 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-إذا فشل البناء مع `Killed` أو `exit code 137` أثناء `pnpm install --frozen-lockfile`، فهذا يعني أن VM نفدت منها الذاكرة.
+إذا فشل البناء مع `Killed` أو `exit code 137` أثناء `pnpm install --frozen-lockfile`، فهذا يعني أن ذاكرة VM نفدت.
 استخدم فئة جهاز أكبر قبل إعادة المحاولة.
 
-تحقق من الملفات التنفيذية:
+تحقق من الثنائيات:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -118,23 +124,24 @@ docker compose logs -f openclaw-gateway
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## ما الذي يُحفَظ وأين
+## ما الذي يستمر وأين
 
 يعمل OpenClaw داخل Docker، لكن Docker ليس مصدر الحقيقة.
-يجب أن تنجو جميع الحالات طويلة الأمد من إعادة التشغيل، وإعادة البناء، وإعادة الإقلاع.
+يجب أن تبقى كل الحالات طويلة العمر بعد عمليات إعادة التشغيل وإعادة البناء وإعادة تمهيد الجهاز.
 
-| المكوّن | الموقع | آلية الاستمرارية | ملاحظات |
-| ------- | ------- | ---------------- | -------- |
-| إعدادات Gateway | `/home/node/.openclaw/` | ربط volume من المضيف | تتضمن `openclaw.json` و`.env` |
-| ملفات تعريف مصادقة النماذج | `/home/node/.openclaw/agents/` | ربط volume من المضيف | `agents/<agentId>/agent/auth-profiles.json` ‏(OAuth، مفاتيح API) |
-| إعدادات Skills | `/home/node/.openclaw/skills/` | ربط volume من المضيف | حالة على مستوى Skill |
-| مساحة عمل الوكيل | `/home/node/.openclaw/workspace/` | ربط volume من المضيف | الكود وعناصر الوكيل |
-| جلسة WhatsApp | `/home/node/.openclaw/` | ربط volume من المضيف | يحافظ على تسجيل الدخول عبر QR |
-| keyring الخاصة بـ Gmail | `/home/node/.openclaw/` | volume من المضيف + كلمة مرور | تتطلب `GOG_KEYRING_PASSWORD` |
-| الملفات التنفيذية الخارجية | `/usr/local/bin/` | صورة Docker | يجب تضمينها وقت البناء |
-| وقت تشغيل Node | نظام ملفات الحاوية | صورة Docker | يُعاد بناؤه مع كل بناء للصورة |
-| حزم نظام التشغيل | نظام ملفات الحاوية | صورة Docker | لا تثبتها في وقت التشغيل |
-| حاوية Docker | مؤقتة | قابلة لإعادة التشغيل | يمكن تدميرها بأمان |
+| المكوّن | الموقع | آلية الاستمرار | ملاحظات |
+| ------------------- | ---------------------------------------- | ---------------------- | ------------------------------------------------------------- |
+| إعدادات Gateway | `/home/node/.openclaw/` | ربط مجلد من المضيف | يتضمن `openclaw.json` و`.env` |
+| ملفات تعريف مصادقة النموذج | `/home/node/.openclaw/agents/` | ربط مجلد من المضيف | `agents/<agentId>/agent/auth-profiles.json` (OAuth، مفاتيح API) |
+| إعدادات Skill | `/home/node/.openclaw/skills/` | ربط مجلد من المضيف | حالة على مستوى Skill |
+| مساحة عمل الوكيل | `/home/node/.openclaw/workspace/` | ربط مجلد من المضيف | الكود ومخرجات الوكيل |
+| جلسة WhatsApp | `/home/node/.openclaw/` | ربط مجلد من المضيف | يحافظ على تسجيل الدخول عبر QR |
+| سلسلة مفاتيح Gmail | `/home/node/.openclaw/` | مجلد مضيف + كلمة مرور | يتطلب `GOG_KEYRING_PASSWORD` |
+| تبعيات وقت تشغيل Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | مجلد Docker مسمى | تبعيات Plugin المضمّنة المولّدة ونسخ وقت التشغيل المطابقة |
+| الثنائيات الخارجية | `/usr/local/bin/` | صورة Docker | يجب تضمينها في وقت البناء |
+| وقت تشغيل Node | نظام ملفات الحاوية | صورة Docker | يُعاد بناؤه في كل بناء للصورة |
+| حزم نظام التشغيل | نظام ملفات الحاوية | صورة Docker | لا تثبّتها في وقت التشغيل |
+| حاوية Docker | عابرة | قابلة لإعادة التشغيل | يمكن تدميرها بأمان |
 
 ## التحديثات
 

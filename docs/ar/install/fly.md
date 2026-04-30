@@ -1,61 +1,61 @@
 ---
 read_when:
     - نشر OpenClaw على Fly.io
-    - Setting up Fly volumes, secrets, and first-run config
+    - إعداد وحدات تخزين Fly والأسرار وتكوين التشغيل الأول
 summary: نشر OpenClaw على Fly.io خطوة بخطوة مع تخزين دائم وHTTPS
 title: Fly.io
 x-i18n:
-    generated_at: "2026-04-26T11:33:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:07:16Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1fe13cb60aff6ee2159e1008d2af660b689d819d38893e9758c23e1edaf32e22
+    source_hash: 195a77c4cec439dc2b5030f5ee618274df76b16d878b8d16e65a754e4bd8072c
     source_path: install/fly.md
-    workflow: 15
+    workflow: 16
 ---
 
 # نشر Fly.io
 
-**الهدف:** تشغيل OpenClaw Gateway على جهاز [Fly.io](https://fly.io) مع تخزين دائم، وHTTPS تلقائي، ووصول Discord/القنوات.
+**الهدف:** تشغيل OpenClaw Gateway على آلة [Fly.io](https://fly.io) مع تخزين دائم، وHTTPS تلقائي، ووصول Discord/القنوات.
 
 ## ما تحتاج إليه
 
 - تثبيت [flyctl CLI](https://fly.io/docs/hands-on/install-flyctl/)
-- حساب Fly.io (تعمل الطبقة المجانية)
+- حساب Fly.io (تعمل الخطة المجانية)
 - مصادقة النموذج: مفتاح API لموفر النموذج الذي اخترته
-- بيانات اعتماد القناة: Discord bot token، وTelegram token، وغير ذلك
+- بيانات اعتماد القنوات: رمز Discord bot، رمز Telegram، وما إلى ذلك.
 
 ## المسار السريع للمبتدئين
 
 1. استنسخ المستودع ← خصص `fly.toml`
-2. أنشئ التطبيق + وحدة التخزين ← اضبط الأسرار
+2. أنشئ التطبيق + وحدة التخزين ← عيّن الأسرار
 3. انشر باستخدام `fly deploy`
-4. ادخل عبر SSH لإنشاء الإعداد أو استخدم Control UI
+4. ادخل عبر SSH لإنشاء الإعدادات أو استخدم Control UI
 
 <Steps>
   <Step title="أنشئ تطبيق Fly">
     ```bash
-    # استنسخ المستودع
+    # Clone the repo
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
 
-    # أنشئ تطبيق Fly جديدًا (اختر اسمك الخاص)
+    # Create a new Fly app (pick your own name)
     fly apps create my-openclaw
 
-    # أنشئ وحدة تخزين دائمة (عادةً ما يكون 1GB كافيًا)
+    # Create a persistent volume (1GB is usually enough)
     fly volumes create openclaw_data --size 1 --region iad
     ```
 
-    **نصيحة:** اختر منطقة قريبة منك. من الخيارات الشائعة: `lhr` (لندن)، و`iad` (فيرجينيا)، و`sjc` (سان خوسيه).
+    **نصيحة:** اختر منطقة قريبة منك. من الخيارات الشائعة: `lhr` (لندن)، `iad` (فرجينيا)، `sjc` (سان خوسيه).
 
   </Step>
 
   <Step title="اضبط fly.toml">
-    عدّل `fly.toml` ليتوافق مع اسم تطبيقك ومتطلباتك.
+    عدّل `fly.toml` ليطابق اسم تطبيقك ومتطلباتك.
 
-    **ملاحظة أمنية:** يعرّض الإعداد الافتراضي عنوان URL عامًا. وللنشر المقوّى بدون عنوان IP عام، راجع [النشر الخاص](#private-deployment-hardened) أو استخدم `fly.private.toml`.
+    **ملاحظة أمنية:** تكشف الإعدادات الافتراضية عنوان URL عامًا. للحصول على نشر مشدد بلا IP عام، راجع [النشر الخاص](#private-deployment-hardened) أو استخدم `fly.private.toml`.
 
     ```toml
-    app = "my-openclaw"  # اسم تطبيقك
+    app = "my-openclaw"  # Your app name
     primary_region = "iad"
 
     [build]
@@ -89,37 +89,37 @@ x-i18n:
 
     **الإعدادات الأساسية:**
 
-    | الإعداد                        | السبب                                                                      |
-    | ------------------------------ | -------------------------------------------------------------------------- |
-    | `--bind lan`                   | يربط إلى `0.0.0.0` حتى يتمكن Proxy الخاص بـ Fly من الوصول إلى gateway      |
-    | `--allow-unconfigured`         | يبدأ بدون ملف إعداد (ستنشئه بعد ذلك)                                       |
-    | `internal_port = 3000`         | يجب أن يطابق `--port 3000` (أو `OPENCLAW_GATEWAY_PORT`) لفحوصات سلامة Fly |
-    | `memory = "2048mb"`            | 512MB صغيرة جدًا؛ يوصى بـ 2GB                                              |
-    | `OPENCLAW_STATE_DIR = "/data"` | يحفظ الحالة على وحدة التخزين                                               |
+    | الإعداد                        | السبب                                                                         |
+    | ------------------------------ | --------------------------------------------------------------------------- |
+    | `--bind lan`                   | يرتبط بـ `0.0.0.0` حتى يتمكن وكيل Fly من الوصول إلى Gateway                     |
+    | `--allow-unconfigured`         | يبدأ بدون ملف إعدادات (ستنشئ واحدًا بعد ذلك)                      |
+    | `internal_port = 3000`         | يجب أن يطابق `--port 3000` (أو `OPENCLAW_GATEWAY_PORT`) لفحوصات صحة Fly |
+    | `memory = "2048mb"`            | 512MB صغيرة جدًا؛ يُوصى بـ 2GB                                         |
+    | `OPENCLAW_STATE_DIR = "/data"` | يحافظ على الحالة داخل وحدة التخزين                                                |
 
   </Step>
 
-  <Step title="اضبط الأسرار">
+  <Step title="عيّن الأسرار">
     ```bash
-    # مطلوب: Gateway token (للربط غير loopback)
+    # Required: Gateway token (for non-loopback binding)
     fly secrets set OPENCLAW_GATEWAY_TOKEN=$(openssl rand -hex 32)
 
-    # مفاتيح API لموفر النموذج
+    # Model provider API keys
     fly secrets set ANTHROPIC_API_KEY=sk-ant-...
 
-    # اختياري: موفرون آخرون
+    # Optional: Other providers
     fly secrets set OPENAI_API_KEY=sk-...
     fly secrets set GOOGLE_API_KEY=...
 
-    # رموز القنوات
+    # Channel tokens
     fly secrets set DISCORD_BOT_TOKEN=MTQ...
     ```
 
     **ملاحظات:**
 
-    - تتطلب عمليات الربط غير loopback (`--bind lan`) مسار مصادقة صالحًا لـ gateway. يستخدم مثال Fly.io هذا `OPENCLAW_GATEWAY_TOKEN`، لكن `gateway.auth.password` أو نشر `trusted-proxy` غير loopback مضبوطًا بشكل صحيح يلبّيان المتطلب أيضًا.
-    - تعامل مع هذه الرموز كما لو كانت كلمات مرور.
-    - **فضّل متغيرات البيئة على ملف الإعداد** لجميع مفاتيح API والرموز. فهذا يُبقي الأسرار خارج `openclaw.json` حيث يمكن كشفها أو تسجيلها بالخطأ.
+    - تتطلب ارتباطات غير local loopback (`--bind lan`) مسار مصادقة Gateway صالحًا. يستخدم مثال Fly.io هذا `OPENCLAW_GATEWAY_TOKEN`، لكن `gateway.auth.password` أو نشر `trusted-proxy` غير local loopback مضبوط بشكل صحيح يفي بالمتطلب أيضًا.
+    - تعامل مع هذه الرموز ككلمات مرور.
+    - **فضّل متغيرات البيئة على ملف الإعدادات** لكل مفاتيح API والرموز. يحافظ ذلك على الأسرار خارج `openclaw.json` حيث قد تُكشف أو تُسجّل بالخطأ.
 
   </Step>
 
@@ -128,9 +128,9 @@ x-i18n:
     fly deploy
     ```
 
-    يبني أول نشر صورة Docker (حوالي 2-3 دقائق). وتكون عمليات النشر اللاحقة أسرع.
+    ينشئ النشر الأول صورة Docker (نحو 2-3 دقائق). النشرات اللاحقة أسرع.
 
-    بعد النشر، تحقّق باستخدام:
+    بعد النشر، تحقق:
 
     ```bash
     fly status
@@ -146,14 +146,14 @@ x-i18n:
 
   </Step>
 
-  <Step title="أنشئ ملف الإعداد">
-    ادخل عبر SSH إلى الجهاز لإنشاء إعداد صحيح:
+  <Step title="أنشئ ملف الإعدادات">
+    ادخل إلى الآلة عبر SSH لإنشاء إعدادات مناسبة:
 
     ```bash
     fly ssh console
     ```
 
-    أنشئ دليل الإعداد والملف:
+    أنشئ دليل الإعدادات والملف:
 
     ```bash
     mkdir -p /data
@@ -214,20 +214,16 @@ x-i18n:
     EOF
     ```
 
-    **ملاحظة:** مع `OPENCLAW_STATE_DIR=/data`، يكون مسار الإعداد هو `/data/openclaw.json`.
+    **ملاحظة:** مع `OPENCLAW_STATE_DIR=/data`، يكون مسار الإعدادات هو `/data/openclaw.json`.
 
-    **ملاحظة:** استبدل `https://my-openclaw.fly.dev` بعنوان
-    الأصل الحقيقي لتطبيق Fly الخاص بك. يزرع بدء تشغيل Gateway أصول Control UI المحلية من قيم
-    `--bind` و`--port` في وقت التشغيل بحيث يمكن أن يستمر الإقلاع الأول قبل وجود الإعداد،
-    لكن الوصول من المتصفح عبر Fly لا يزال يحتاج إلى إدراج أصل HTTPS الدقيق في
-    `gateway.controlUi.allowedOrigins`.
+    **ملاحظة:** استبدل `https://my-openclaw.fly.dev` بمنشأ تطبيق Fly الحقيقي لديك. يزرع بدء تشغيل Gateway مناشئ Control UI المحلية من قيمتي وقت التشغيل `--bind` و`--port` حتى يمكن للتمهيد الأول المتابعة قبل وجود الإعدادات، لكن وصول المتصفح عبر Fly لا يزال يحتاج إلى منشأ HTTPS الدقيق المدرج في `gateway.controlUi.allowedOrigins`.
 
-    **ملاحظة:** يمكن أن يأتي Discord token من أحد المصدرين التاليين:
+    **ملاحظة:** يمكن أن يأتي رمز Discord من أحد المصدرين:
 
     - متغير البيئة: `DISCORD_BOT_TOKEN` (موصى به للأسرار)
-    - ملف الإعداد: `channels.discord.token`
+    - ملف الإعدادات: `channels.discord.token`
 
-    إذا كنت تستخدم متغير البيئة، فلا حاجة لإضافة الرمز إلى الإعداد. تقرأ gateway القيمة `DISCORD_BOT_TOKEN` تلقائيًا.
+    عند استخدام متغير البيئة، لا حاجة لإضافة الرمز إلى الإعدادات. يقرأ Gateway `DISCORD_BOT_TOKEN` تلقائيًا.
 
     أعد التشغيل للتطبيق:
 
@@ -247,20 +243,18 @@ x-i18n:
     fly open
     ```
 
-    أو زر `https://my-openclaw.fly.dev/`
+    أو زُر `https://my-openclaw.fly.dev/`
 
-    صادِق باستخدام السر المشترك المضبوط. يستخدم هذا الدليل
-    gateway token من `OPENCLAW_GATEWAY_TOKEN`؛ وإذا انتقلت إلى
-    مصادقة كلمة المرور، فاستخدم تلك الكلمة بدلًا منه.
+    صادق باستخدام السر المشترك المضبوط. يستخدم هذا الدليل رمز Gateway من `OPENCLAW_GATEWAY_TOKEN`؛ إذا انتقلت إلى مصادقة كلمة المرور، فاستخدم تلك كلمة المرور بدلًا من ذلك.
 
     ### السجلات
 
     ```bash
-    fly logs              # سجلات مباشرة
-    fly logs --no-tail    # السجلات الحديثة
+    fly logs              # Live logs
+    fly logs --no-tail    # Recent logs
     ```
 
-    ### وحدة SSH
+    ### وحدة تحكم SSH
 
     ```bash
     fly ssh console
@@ -271,21 +265,21 @@ x-i18n:
 
 ## استكشاف الأخطاء وإصلاحها
 
-### "App is not listening on expected address"
+### "التطبيق لا يستمع على العنوان المتوقع"
 
-تربط gateway إلى `127.0.0.1` بدلًا من `0.0.0.0`.
+يرتبط Gateway بـ `127.0.0.1` بدلًا من `0.0.0.0`.
 
 **الإصلاح:** أضف `--bind lan` إلى أمر العملية في `fly.toml`.
 
-### فشل فحوصات السلامة / رفض الاتصال
+### فشل فحوصات الصحة / رُفض الاتصال
 
-لا يستطيع Fly الوصول إلى gateway على المنفذ المضبوط.
+لا يستطيع Fly الوصول إلى Gateway على المنفذ المضبوط.
 
-**الإصلاح:** تأكد من أن `internal_port` يطابق منفذ gateway (اضبط `--port 3000` أو `OPENCLAW_GATEWAY_PORT=3000`).
+**الإصلاح:** تأكد من أن `internal_port` يطابق منفذ Gateway (عيّن `--port 3000` أو `OPENCLAW_GATEWAY_PORT=3000`).
 
-### OOM / مشكلات الذاكرة
+### مشكلات OOM / الذاكرة
 
-تستمر الحاوية في إعادة التشغيل أو تُقتل. العلامات: `SIGABRT`، أو `v8::internal::Runtime_AllocateInYoungGeneration`، أو إعادة تشغيل صامتة.
+تستمر الحاوية في إعادة التشغيل أو تُقتل. العلامات: `SIGABRT` أو `v8::internal::Runtime_AllocateInYoungGeneration` أو عمليات إعادة تشغيل صامتة.
 
 **الإصلاح:** زِد الذاكرة في `fly.toml`:
 
@@ -294,19 +288,19 @@ x-i18n:
   memory = "2048mb"
 ```
 
-أو حدّث جهازًا موجودًا:
+أو حدّث آلة موجودة:
 
 ```bash
 fly machine update <machine-id> --vm-memory 2048 -y
 ```
 
-**ملاحظة:** 512MB صغيرة جدًا. وقد تعمل 1GB لكنها قد تتعرض لـ OOM تحت الحمل أو مع التسجيل المفصل. **يوصى بـ 2GB.**
+**ملاحظة:** 512MB صغيرة جدًا. قد يعمل 1GB لكنه قد يتعرض لـ OOM تحت الحمل أو مع التسجيل المطوّل. **يُوصى بـ 2GB.**
 
 ### مشكلات قفل Gateway
 
-ترفض Gateway البدء مع أخطاء من نوع "already running".
+يرفض Gateway البدء مع أخطاء "قيد التشغيل بالفعل".
 
-يحدث هذا عندما تُعاد الحاوية للتشغيل لكن يبقى ملف قفل PID على وحدة التخزين.
+يحدث ذلك عندما تُعاد الحاوية للتشغيل لكن ملف قفل PID يبقى موجودًا على وحدة التخزين.
 
 **الإصلاح:** احذف ملف القفل:
 
@@ -315,27 +309,27 @@ fly ssh console --command "rm -f /data/gateway.*.lock"
 fly machine restart <machine-id>
 ```
 
-يوجد ملف القفل في `/data/gateway.*.lock` (وليس في دليل فرعي).
+ملف القفل موجود في `/data/gateway.*.lock` (وليس في دليل فرعي).
 
-### عدم قراءة الإعداد
+### لا تتم قراءة الإعدادات
 
-يتجاوز `--allow-unconfigured` حارس بدء التشغيل فقط. وهو لا ينشئ أو يصلح `/data/openclaw.json`، لذا تأكد من وجود إعدادك الفعلي وأنه يتضمن `gateway.mode="local"` عندما تريد بدء gateway محلية عاديًا.
+يتجاوز `--allow-unconfigured` حارس بدء التشغيل فقط. لا ينشئ أو يصلح `/data/openclaw.json`، لذا تأكد من وجود إعداداتك الحقيقية وأنها تتضمن `gateway.mode="local"` عندما تريد بدء Gateway محليًا عاديًا.
 
-تحقق من وجود الإعداد:
+تحقق من وجود الإعدادات:
 
 ```bash
 fly ssh console --command "cat /data/openclaw.json"
 ```
 
-### كتابة الإعداد عبر SSH
+### كتابة الإعدادات عبر SSH
 
-لا يدعم الأمر `fly ssh console -C` إعادة توجيه shell. ولكتابة ملف إعداد:
+لا يدعم أمر `fly ssh console -C` إعادة توجيه الصدفة. لكتابة ملف إعدادات:
 
 ```bash
-# استخدم echo + tee (مرّر من المحلي إلى البعيد)
+# Use echo + tee (pipe from local to remote)
 echo '{"your":"config"}' | fly ssh console -C "tee /data/openclaw.json"
 
-# أو استخدم sftp
+# Or use sftp
 fly sftp shell
 > put /local/path/config.json /data/openclaw.json
 ```
@@ -346,85 +340,84 @@ fly sftp shell
 fly ssh console --command "rm /data/openclaw.json"
 ```
 
-### عدم حفظ الحالة
+### الحالة لا تبقى محفوظة
 
-إذا فقدت ملفات auth profiles، أو حالة القناة/الموفّر، أو الجلسات بعد إعادة التشغيل،
-فإن دليل الحالة يكتب إلى نظام ملفات الحاوية.
+إذا فقدت ملفات تعريف المصادقة، أو حالة القنوات/الموفرين، أو الجلسات بعد إعادة التشغيل، فهذا يعني أن دليل الحالة يكتب إلى نظام ملفات الحاوية.
 
-**الإصلاح:** تأكد من ضبط `OPENCLAW_STATE_DIR=/data` في `fly.toml` ثم أعد النشر.
+**الإصلاح:** تأكد من تعيين `OPENCLAW_STATE_DIR=/data` في `fly.toml` وأعد النشر.
 
 ## التحديثات
 
 ```bash
-# اسحب آخر التغييرات
+# Pull latest changes
 git pull
 
-# أعد النشر
+# Redeploy
 fly deploy
 
-# تحقق من السلامة
+# Check health
 fly status
 fly logs
 ```
 
-### تحديث أمر الجهاز
+### تحديث أمر الآلة
 
-إذا كنت بحاجة إلى تغيير أمر بدء التشغيل دون إعادة نشر كاملة:
+إذا احتجت إلى تغيير أمر بدء التشغيل بدون إعادة نشر كاملة:
 
 ```bash
-# احصل على معرّف الجهاز
+# Get machine ID
 fly machines list
 
-# حدّث الأمر
+# Update command
 fly machine update <machine-id> --command "node dist/index.js gateway --port 3000 --bind lan" -y
 
-# أو مع زيادة الذاكرة
+# Or with memory increase
 fly machine update <machine-id> --vm-memory 2048 --command "node dist/index.js gateway --port 3000 --bind lan" -y
 ```
 
-**ملاحظة:** بعد `fly deploy`، قد يُعاد تعيين أمر الجهاز إلى ما هو موجود في `fly.toml`. إذا أجريت تغييرات يدوية، فأعد تطبيقها بعد النشر.
+**ملاحظة:** بعد `fly deploy`، قد يُعاد تعيين أمر الآلة إلى ما هو موجود في `fly.toml`. إذا أجريت تغييرات يدوية، فأعد تطبيقها بعد النشر.
 
-## النشر الخاص (مقوّى)
+## النشر الخاص (مشدد)
 
-افتراضيًا، يخصص Fly عناوين IP عامة، مما يجعل gateway الخاصة بك متاحة على `https://your-app.fly.dev`. وهذا مناسب، لكنه يعني أن نشرَك قابل للاكتشاف بواسطة ماسحات الإنترنت (Shodan وCensys وغيرهما).
+افتراضيًا، يخصص Fly عناوين IP عامة، مما يجعل Gateway متاحًا على `https://your-app.fly.dev`. هذا ملائم، لكنه يعني أن نشرك قابل للاكتشاف بواسطة ماسحات الإنترنت (Shodan وCensys وما إلى ذلك).
 
-ولنشر مقوّى **بدون أي تعرض عام**، استخدم القالب الخاص.
+للحصول على نشر مشدد **بلا تعرض عام**، استخدم القالب الخاص.
 
 ### متى تستخدم النشر الخاص
 
-- عندما تجري اتصالات **صادرة** فقط/ترسل رسائل فقط (ولا توجد Webhooks واردة)
-- عندما تستخدم **ngrok أو Tailscale** لأي نداءات Webhook راجعة
-- عندما تصل إلى gateway عبر **SSH، أو Proxy، أو WireGuard** بدلًا من المتصفح
-- عندما تريد أن يكون النشر **مخفيًا عن ماسحات الإنترنت**
+- تجري فقط مكالمات/رسائل **صادرة** (لا توجد Webhook واردة)
+- تستخدم أنفاق **ngrok أو Tailscale** لأي استدعاءات Webhook راجعة
+- تصل إلى Gateway عبر **SSH أو وكيل أو WireGuard** بدلًا من المتصفح
+- تريد أن يكون النشر **مخفيًا عن ماسحات الإنترنت**
 
 ### الإعداد
 
-استخدم `fly.private.toml` بدلًا من الإعداد القياسي:
+استخدم `fly.private.toml` بدلًا من الإعدادات القياسية:
 
 ```bash
-# انشر باستخدام الإعداد الخاص
+# Deploy with private config
 fly deploy -c fly.private.toml
 ```
 
 أو حوّل نشرًا موجودًا:
 
 ```bash
-# اعرض عناوين IP الحالية
+# List current IPs
 fly ips list -a my-openclaw
 
-# حرر عناوين IP العامة
+# Release public IPs
 fly ips release <public-ipv4> -a my-openclaw
 fly ips release <public-ipv6> -a my-openclaw
 
-# انتقل إلى الإعداد الخاص حتى لا تعيد عمليات النشر المستقبلية تخصيص عناوين IP عامة
-# (أزل [http_service] أو انشر باستخدام القالب الخاص)
+# Switch to private config so future deploys don't re-allocate public IPs
+# (remove [http_service] or deploy with the private template)
 fly deploy -c fly.private.toml
 
-# خصص IPv6 خاصًا فقط
+# Allocate private-only IPv6
 fly ips allocate-v6 --private -a my-openclaw
 ```
 
-بعد ذلك، يجب أن يُظهر `fly ips list` عنوان IP من النوع `private` فقط:
+بعد ذلك، يجب أن يعرض `fly ips list` عنوان IP بنوع `private` فقط:
 
 ```
 VERSION  IP                   TYPE             REGION
@@ -433,25 +426,25 @@ v6       fdaa:x:x:x:x::x      private          global
 
 ### الوصول إلى نشر خاص
 
-بما أنه لا يوجد عنوان URL عام، فاستخدم إحدى الطرق التالية:
+بما أنه لا يوجد عنوان URL عام، استخدم إحدى هذه الطرق:
 
-**الخيار 1: Proxy محلي (الأبسط)**
+**الخيار 1: وكيل محلي (الأبسط)**
 
 ```bash
-# مرّر المنفذ المحلي 3000 إلى التطبيق
+# Forward local port 3000 to the app
 fly proxy 3000:3000 -a my-openclaw
 
-# ثم افتح http://localhost:3000 في المتصفح
+# Then open http://localhost:3000 in browser
 ```
 
-**الخيار 2: VPN عبر WireGuard**
+**الخيار 2: WireGuard VPN**
 
 ```bash
-# أنشئ إعداد WireGuard (مرة واحدة)
+# Create WireGuard config (one-time)
 fly wireguard create
 
-# استورده إلى عميل WireGuard، ثم ادخل عبر IPv6 الداخلي
-# مثال: http://[fdaa:x:x:x:x::x]:3000
+# Import to WireGuard client, then access via internal IPv6
+# Example: http://[fdaa:x:x:x:x::x]:3000
 ```
 
 **الخيار 3: SSH فقط**
@@ -460,15 +453,15 @@ fly wireguard create
 fly ssh console -a my-openclaw
 ```
 
-### Webhooks مع النشر الخاص
+### عمليات Webhook مع نشر خاص
 
-إذا كنت تحتاج إلى نداءات Webhook راجعة (Twilio، وTelnyx، وغيرهما) من دون تعرّض عام:
+إذا كنت تحتاج إلى استدعاءات Webhook الراجعة (Twilio وTelnyx وما إلى ذلك) من دون تعريض عام:
 
 1. **نفق ngrok** - شغّل ngrok داخل الحاوية أو كحاوية جانبية
-2. **Tailscale Funnel** - عرّض مسارات محددة عبر Tailscale
-3. **صادر فقط** - يعمل بعض الموفّرين (مثل Twilio) بشكل جيد للمكالمات الصادرة من دون Webhooks
+2. **Tailscale Funnel** - اكشف مسارات محددة عبر Tailscale
+3. **الصادر فقط** - يعمل بعض المزوّدين (Twilio) بشكل جيد للمكالمات الصادرة من دون Webhooks
 
-مثال على إعداد voice-call مع ngrok:
+مثال على إعداد مكالمة صوتية مع ngrok:
 
 ```json5
 {
@@ -489,41 +482,41 @@ fly ssh console -a my-openclaw
 }
 ```
 
-يعمل نفق ngrok داخل الحاوية ويوفّر عنوان URL عامًا لـ Webhook من دون تعريض تطبيق Fly نفسه. اضبط `webhookSecurity.allowedHosts` على اسم مضيف النفق العام حتى يتم قبول رؤوس المضيف المُمرّرة.
+يعمل نفق ngrok داخل الحاوية ويوفر عنوان URL عاما لـ Webhook من دون كشف تطبيق Fly نفسه. عيّن `webhookSecurity.allowedHosts` إلى اسم مضيف النفق العام حتى يتم قبول ترويسات المضيف المعاد توجيهها.
 
-### الفوائد الأمنية
+### فوائد الأمان
 
-| الجانب             | عام          | خاص        |
-| ------------------ | ------------ | ---------- |
-| ماسحات الإنترنت    | قابل للاكتشاف | مخفي       |
-| الهجمات المباشرة   | ممكنة        | محجوبة     |
-| وصول Control UI    | المتصفح      | Proxy/VPN  |
-| تسليم Webhook      | مباشر        | عبر نفق    |
+| الجانب            | عام          | خاص        |
+| ----------------- | ------------ | ---------- |
+| ماسحات الإنترنت   | قابل للاكتشاف | مخفي       |
+| الهجمات المباشرة  | ممكنة        | محظورة     |
+| الوصول إلى واجهة التحكم | المتصفح | وكيل/VPN   |
+| تسليم Webhook     | مباشر        | عبر نفق    |
 
 ## ملاحظات
 
-- يستخدم Fly.io **بنية x86** (وليس ARM)
-- ملف Dockerfile متوافق مع كلتا البنيتين
-- لإعداد WhatsApp/Telegram الأولي، استخدم `fly ssh console`
-- توجد البيانات الدائمة على وحدة التخزين في `/data`
-- يتطلب Signal وجود Java + signal-cli؛ استخدم صورة مخصصة وأبقِ الذاكرة عند 2GB أو أكثر.
+- تستخدم Fly.io **بنية x86** (وليس ARM)
+- ملف Dockerfile متوافق مع كلا المعماريتين
+- لتهيئة WhatsApp/Telegram، استخدم `fly ssh console`
+- توجد البيانات الدائمة على المجلد في `/data`
+- يتطلب Signal Java + signal-cli؛ استخدم صورة مخصصة وأبقِ الذاكرة عند 2GB+.
 
 ## التكلفة
 
-مع الإعداد الموصى به (`shared-cpu-2x`، وذاكرة RAM بحجم 2GB):
+مع الإعداد الموصى به (`shared-cpu-2x`، ذاكرة RAM بسعة 2GB):
 
-- نحو 10-15 دولارًا شهريًا حسب الاستخدام
-- تتضمن الطبقة المجانية قدرًا معينًا من الاستخدام
+- حوالي 10-15 دولارًا شهريًا حسب الاستخدام
+- تتضمن الطبقة المجانية بعض الحصة
 
-راجع [تسعير Fly.io](https://fly.io/docs/about/pricing/) للتفاصيل.
+راجع [أسعار Fly.io](https://fly.io/docs/about/pricing/) لمزيد من التفاصيل.
 
 ## الخطوات التالية
 
-- اضبط قنوات المراسلة: [القنوات](/ar/channels)
-- اضبط Gateway: [إعداد Gateway](/ar/gateway/configuration)
-- أبقِ OpenClaw محدثًا: [التحديث](/ar/install/updating)
+- إعداد قنوات المراسلة: [القنوات](/ar/channels)
+- تكوين Gateway: [تكوين Gateway](/ar/gateway/configuration)
+- إبقاء OpenClaw محدثًا: [التحديث](/ar/install/updating)
 
-## ذو صلة
+## ذات صلة
 
 - [نظرة عامة على التثبيت](/ar/install)
 - [Hetzner](/ar/install/hetzner)

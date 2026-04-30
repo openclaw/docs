@@ -1,23 +1,23 @@
 ---
 read_when:
-    - تريد فهم كيفية قيام OpenClaw بتجميع سياق النموذج
-    - أنت تنتقل بين المحرك القديم ومحرك Plugin
+    - تريد أن تفهم كيف يجمع OpenClaw سياق النموذج
+    - أنت تقوم بالتبديل بين المحرّك القديم ومحرّك Plugin
     - أنت تبني Plugin لمحرك السياق
 sidebarTitle: Context engine
 summary: 'محرك السياق: تجميع سياق قابل للتوصيل، وCompaction، ودورة حياة الوكيل الفرعي'
 title: محرك السياق
 x-i18n:
-    generated_at: "2026-04-26T11:27:14Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:51:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6a362f26cde3abca7c15487fa43a411f21e3114491e27a752ca06454add60481
+    source_hash: 8f192c6b28ad2b5960b504811926fb5e30fe8da9d985d8eec3ad4b65c9f7cae5
     source_path: concepts/context-engine.md
-    workflow: 15
+    workflow: 16
 ---
 
-يتحكم **محرك السياق** في كيفية بناء OpenClaw لسياق النموذج لكل تشغيل: أي الرسائل يجب تضمينها، وكيفية تلخيص السجل الأقدم، وكيفية إدارة السياق عبر حدود الوكلاء الفرعيين.
+يتحكم **محرك السياق** في كيفية بناء OpenClaw لسياق النموذج لكل تشغيل: الرسائل التي يجب تضمينها، وكيفية تلخيص السجل الأقدم، وكيفية إدارة السياق عبر حدود الوكلاء الفرعيين.
 
-يأتي OpenClaw مزودًا بمحرك `legacy` مضمّن ويستخدمه افتراضيًا — ومعظم المستخدمين لا يحتاجون أبدًا إلى تغيير ذلك. ثبّت واختر محرك Plugin فقط عندما تريد سلوكًا مختلفًا للتجميع أو Compaction أو الاستدعاء عبر الجلسات.
+يأتي OpenClaw مع محرك `legacy` مدمج ويستخدمه افتراضيًا — ولا يحتاج معظم المستخدمين إلى تغيير ذلك أبدًا. ثبّت محرك Plugin وحدده فقط عندما تريد سلوكًا مختلفًا للتجميع أو Compaction أو الاستدعاء عبر الجلسات.
 
 ## البدء السريع
 
@@ -25,12 +25,12 @@ x-i18n:
   <Step title="تحقق من المحرك النشط">
     ```bash
     openclaw doctor
-    # أو افحص التهيئة مباشرة:
+    # or inspect config directly:
     cat ~/.openclaw/openclaw.json | jq '.plugins.slots.contextEngine'
     ```
   </Step>
   <Step title="ثبّت محرك Plugin">
-    يتم تثبيت Plugins الخاصة بمحرك السياق مثل أي Plugin آخر في OpenClaw.
+    تُثبّت Plugins محرك السياق مثل أي OpenClaw Plugin آخر.
 
     <Tabs>
       <Tab title="من npm">
@@ -52,12 +52,12 @@ x-i18n:
     {
       plugins: {
         slots: {
-          contextEngine: "lossless-claw", // يجب أن يطابق معرّف المحرك المسجّل في Plugin
+          contextEngine: "lossless-claw", // must match the plugin's registered engine id
         },
         entries: {
           "lossless-claw": {
             enabled: true,
-            // توضع هنا التهيئة الخاصة بالـ Plugin (راجع وثائق Plugin)
+            // Plugin-specific config goes here (see the plugin's docs)
           },
         },
       },
@@ -67,8 +67,8 @@ x-i18n:
     أعد تشغيل Gateway بعد التثبيت والتهيئة.
 
   </Step>
-  <Step title="العودة إلى legacy (اختياري)">
-    عيّن `contextEngine` إلى `"legacy"` (أو أزل المفتاح بالكامل — إذ إن `"legacy"` هو الافتراضي).
+  <Step title="ارجع إلى legacy (اختياري)">
+    اضبط `contextEngine` على `"legacy"` (أو أزل المفتاح بالكامل — `"legacy"` هو الافتراضي).
   </Step>
 </Steps>
 
@@ -78,58 +78,58 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="1. الاستيعاب">
-    يُستدعى عند إضافة رسالة جديدة إلى الجلسة. ويمكن للمحرك تخزين الرسالة أو فهرستها في مخزن بياناته الخاص.
+    يُستدعى عند إضافة رسالة جديدة إلى الجلسة. يمكن للمحرك تخزين الرسالة أو فهرستها في مخزن البيانات الخاص به.
   </Accordion>
   <Accordion title="2. التجميع">
-    يُستدعى قبل كل تشغيل للنموذج. ويعيد المحرك مجموعة مرتبة من الرسائل (بالإضافة إلى `systemPromptAddition` اختياري) تلائم ميزانية الرموز.
+    يُستدعى قبل كل تشغيل للنموذج. يعيد المحرك مجموعة مرتبة من الرسائل (و`systemPromptAddition` اختياريًا) تلائم ميزانية الرموز.
   </Accordion>
   <Accordion title="3. Compaction">
-    يُستدعى عندما تمتلئ نافذة السياق، أو عندما يشغّل المستخدم `/compact`. ويقوم المحرك بتلخيص السجل الأقدم لتحرير مساحة.
+    يُستدعى عندما تمتلئ نافذة السياق، أو عندما يشغّل المستخدم `/compact`. يلخص المحرك السجل الأقدم لتحرير المساحة.
   </Accordion>
   <Accordion title="4. بعد الدور">
-    يُستدعى بعد اكتمال التشغيل. ويمكن للمحرك حفظ الحالة، أو تشغيل Compaction في الخلفية، أو تحديث الفهارس.
+    يُستدعى بعد اكتمال التشغيل. يمكن للمحرك الاحتفاظ بالحالة، أو تشغيل Compaction في الخلفية، أو تحديث الفهارس.
   </Accordion>
 </AccordionGroup>
 
-بالنسبة إلى حزمة Codex غير ACP المضمّنة، يطبق OpenClaw دورة الحياة نفسها من خلال إسقاط السياق المجمّع إلى تعليمات مطوّر Codex ومطالبة الدور الحالية. ولا يزال Codex يملك سجل سلاسله الأصلي وcompactor الأصلي الخاص به.
+بالنسبة إلى أداة Codex المضمنة غير ACP، يطبق OpenClaw دورة الحياة نفسها عبر إسقاط السياق المجمّع في تعليمات مطوّر Codex ومطالبة الدور الحالي. يظل Codex مالكًا لسجل المحادثة الأصلي وCompactor الأصلي الخاص به.
 
 ### دورة حياة الوكيل الفرعي (اختياري)
 
-يستدعي OpenClaw خطافين اختياريين لدورة حياة الوكيل الفرعي:
+يستدعي OpenClaw خطافي دورة حياة اختياريين للوكلاء الفرعيين:
 
 <ParamField path="prepareSubagentSpawn" type="method">
-  إعداد حالة سياق مشتركة قبل بدء تشغيل فرعي. يتلقى الخطاف مفاتيح جلسات الأصل/الفرعي، و`contextMode` (`isolated` أو `fork`)، ومعرّفات/ملفات النصوص المتاحة، وTTL اختياري. وإذا أعاد مقبض rollback، يستدعيه OpenClaw عندما يفشل التشغيل الفرعي بعد نجاح الإعداد.
+  حضّر حالة السياق المشتركة قبل بدء تشغيل فرعي. يتلقى الخطاف مفاتيح جلسة الأصل/الفرع، و`contextMode` (`isolated` أو `fork`)، ومعرّفات/ملفات النصوص المتاحة، وTTL اختياريًا. إذا أعاد مقبض تراجع، يستدعيه OpenClaw عندما يفشل الإنشاء بعد نجاح التحضير.
 </ParamField>
 <ParamField path="onSubagentEnded" type="method">
-  التنظيف عند اكتمال جلسة وكيل فرعي أو عند كنسها.
+  نظّف عند اكتمال جلسة وكيل فرعي أو كنسها.
 </ParamField>
 
 ### إضافة مطالبة النظام
 
-يمكن لطريقة `assemble` أن تعيد سلسلة `systemPromptAddition`. ويضيف OpenClaw هذه السلسلة في مقدمة مطالبة النظام الخاصة بالتشغيل. وهذا يسمح للمحركات بحقن إرشادات استدعاء ديناميكية، أو تعليمات استرجاع، أو تلميحات مدركة للسياق دون الحاجة إلى ملفات مساحة عمل ثابتة.
+يمكن لطريقة `assemble` أن تعيد سلسلة `systemPromptAddition`. يضيف OpenClaw هذه السلسلة في بداية مطالبة النظام للتشغيل. يتيح ذلك للمحركات حقن إرشادات استدعاء ديناميكية، أو تعليمات استرجاع، أو تلميحات واعية بالسياق من دون الحاجة إلى ملفات مساحة عمل ثابتة.
 
-## المحرك legacy
+## محرك legacy
 
-يحافظ المحرك `legacy` المضمّن على السلوك الأصلي لـ OpenClaw:
+يحافظ محرك `legacy` المدمج على السلوك الأصلي لـ OpenClaw:
 
-- **الاستيعاب**: بلا عملية (مدير الجلسة يتولى حفظ الرسائل مباشرة).
-- **التجميع**: تمرير مباشر (يتولى خط الأنابيب الحالي sanitize ← validate ← limit في بيئة التشغيل تجميع السياق).
-- **Compaction**: يفوض إلى Compaction التلخيصي المضمّن، الذي ينشئ ملخصًا واحدًا للرسائل الأقدم ويبقي الرسائل الحديثة كما هي.
-- **بعد الدور**: بلا عملية.
+- **الاستيعاب**: بلا إجراء (يتولى مدير الجلسة الاحتفاظ بالرسائل مباشرة).
+- **التجميع**: تمرير مباشر (يتولى خط أنابيب التنظيف → التحقق → التحديد الحالي في وقت التشغيل تجميع السياق).
+- **Compaction**: يفوّض إلى Compaction التلخيص المدمج، الذي ينشئ ملخصًا واحدًا للرسائل الأقدم ويحافظ على الرسائل الحديثة كما هي.
+- **بعد الدور**: بلا إجراء.
 
-لا يسجل المحرك legacy أدوات ولا يوفّر `systemPromptAddition`.
+لا يسجل محرك legacy أدوات ولا يوفر `systemPromptAddition`.
 
-عندما لا يتم تعيين `plugins.slots.contextEngine` (أو يتم تعيينه إلى `"legacy"`)، يُستخدم هذا المحرك تلقائيًا.
+عندما لا يتم ضبط `plugins.slots.contextEngine` (أو عندما يضبط على `"legacy"`)، يُستخدم هذا المحرك تلقائيًا.
 
 ## محركات Plugin
 
-يمكن لأي Plugin تسجيل محرك سياق باستخدام Plugin API:
+يمكن لـ Plugin تسجيل محرك سياق باستخدام واجهة Plugin البرمجية:
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
 
 export default function register(api) {
-  api.registerContextEngine("my-engine", () => ({
+  api.registerContextEngine("my-engine", (ctx) => ({
     info: {
       id: "my-engine",
       name: "My Context Engine",
@@ -137,12 +137,12 @@ export default function register(api) {
     },
 
     async ingest({ sessionId, message, isHeartbeat }) {
-      // خزّن الرسالة في مخزن البيانات الخاص بك
+      // Store the message in your data store
       return { ingested: true };
     },
 
     async assemble({ sessionId, messages, tokenBudget, availableTools, citationsMode }) {
-      // أعد الرسائل التي تلائم الميزانية
+      // Return messages that fit the budget
       return {
         messages: buildContext(messages, tokenBudget),
         estimatedTokens: countTokens(messages),
@@ -154,12 +154,16 @@ export default function register(api) {
     },
 
     async compact({ sessionId, force }) {
-      // لخص السياق الأقدم
+      // Summarize older context
       return { ok: true, compacted: true };
     },
   }));
 }
 ```
+
+يتضمن المصنع `ctx` قيم `config` و`agentDir` و`workspaceDir`
+الاختيارية، بحيث يمكن لـ Plugins تهيئة حالة لكل وكيل أو لكل مساحة عمل قبل تشغيل
+أول خطاف دورة حياة.
 
 ثم فعّله في التهيئة:
 
@@ -182,65 +186,69 @@ export default function register(api) {
 
 الأعضاء المطلوبة:
 
-| العضو              | النوع    | الغرض                                                    |
-| ------------------ | -------- | -------------------------------------------------------- |
+| العضو              | النوع    | الغرض                                                   |
+| ------------------ | -------- | ------------------------------------------------------- |
 | `info`             | خاصية    | معرّف المحرك واسمه وإصداره وما إذا كان يملك Compaction |
-| `ingest(params)`   | method   | تخزين رسالة واحدة                                       |
-| `assemble(params)` | method   | بناء السياق لتشغيل نموذج (يعيد `AssembleResult`)        |
-| `compact(params)`  | method   | تلخيص/تقليص السياق                                      |
+| `ingest(params)`   | طريقة    | تخزين رسالة واحدة                                      |
+| `assemble(params)` | طريقة    | بناء السياق لتشغيل نموذج (يعيد `AssembleResult`)       |
+| `compact(params)`  | طريقة    | تلخيص/تقليل السياق                                     |
 
-تعيد `assemble` قيمة `AssembleResult` تتضمن:
+تعيد `assemble` كائن `AssembleResult` يحتوي على:
 
 <ParamField path="messages" type="Message[]" required>
-  الرسائل المرتبة التي ستُرسل إلى النموذج.
+  الرسائل المرتبة التي سترسل إلى النموذج.
 </ParamField>
 <ParamField path="estimatedTokens" type="number" required>
-  تقدير المحرك لإجمالي الرموز في السياق المجمّع. ويستخدم OpenClaw هذا لاتخاذ قرارات عتبة Compaction وللتقارير التشخيصية.
+  تقدير المحرك لإجمالي الرموز في السياق المجمّع. يستخدم OpenClaw هذا لاتخاذ قرارات عتبة Compaction وإعداد تقارير التشخيص.
 </ParamField>
 <ParamField path="systemPromptAddition" type="string">
-  تُضاف في مقدمة مطالبة النظام.
+  يُضاف إلى بداية مطالبة النظام.
 </ParamField>
+
+تعيد `compact` كائن `CompactResult`. عندما يدير Compaction النص النشط،
+يحدد `result.sessionId` و`result.sessionFile` الجلسة اللاحقة التي يجب أن تستخدمها
+إعادة المحاولة أو الدور التالي.
 
 الأعضاء الاختيارية:
 
-| العضو                         | النوع  | الغرض                                                                                                         |
-| ------------------------------ | ------ | --------------------------------------------------------------------------------------------------------------- |
-| `bootstrap(params)`            | method | تهيئة حالة المحرك لجلسة. تُستدعى مرة واحدة عندما يرى المحرك الجلسة لأول مرة (مثل استيراد السجل). |
-| `ingestBatch(params)`          | method | استيعاب دور مكتمل كدفعة. تُستدعى بعد اكتمال التشغيل، مع جميع رسائل ذلك الدور دفعة واحدة.     |
-| `afterTurn(params)`            | method | أعمال دورة الحياة بعد التشغيل (حفظ الحالة، تشغيل Compaction في الخلفية).                                         |
-| `prepareSubagentSpawn(params)` | method | إعداد حالة مشتركة لجلسة فرعية قبل بدئها.                                                       |
-| `onSubagentEnded(params)`      | method | التنظيف بعد انتهاء وكيل فرعي.                                                                                 |
-| `dispose()`                    | method | تحرير الموارد. تُستدعى أثناء إيقاف Gateway أو إعادة تحميل Plugin — وليس لكل جلسة.                           |
+| العضو                          | النوع  | الغرض                                                                                                      |
+| ------------------------------ | ------ | ---------------------------------------------------------------------------------------------------------- |
+| `bootstrap(params)`            | طريقة  | تهيئة حالة المحرك لجلسة. يُستدعى مرة واحدة عندما يرى المحرك جلسة لأول مرة (مثلًا، استيراد السجل).        |
+| `ingestBatch(params)`          | طريقة  | استيعاب دور مكتمل كدفعة. يُستدعى بعد اكتمال تشغيل، مع كل الرسائل من ذلك الدور دفعة واحدة.               |
+| `afterTurn(params)`            | طريقة  | عمل دورة الحياة بعد التشغيل (الاحتفاظ بالحالة، تشغيل Compaction في الخلفية).                             |
+| `prepareSubagentSpawn(params)` | طريقة  | إعداد الحالة المشتركة لجلسة فرعية قبل أن تبدأ.                                                            |
+| `onSubagentEnded(params)`      | طريقة  | التنظيف بعد انتهاء وكيل فرعي.                                                                             |
+| `dispose()`                    | طريقة  | تحرير الموارد. يُستدعى أثناء إيقاف Gateway أو إعادة تحميل Plugin — وليس لكل جلسة.                        |
 
 ### ownsCompaction
 
-يتحكم `ownsCompaction` في ما إذا كان Compaction التلقائي المضمّن داخل المحاولة في Pi يظل مفعّلًا أثناء التشغيل:
+يتحكم `ownsCompaction` فيما إذا كان Compaction التلقائي المدمج داخل المحاولة في Pi سيظل مفعّلًا للتشغيل:
 
 <AccordionGroup>
   <Accordion title="ownsCompaction: true">
-    يملك المحرك سلوك Compaction. ويعطّل OpenClaw Compaction التلقائي المضمّن في Pi لذلك التشغيل، وتصبح عملية `compact()` الخاصة بالمحرك مسؤولة عن `/compact`، وCompaction الاسترداد عند الفائض، وأي Compaction استباقي يريد المحرك تنفيذه في `afterTurn()`. وقد يظل OpenClaw يشغّل حاجز الحماية قبل المطالبة عند الفائض؛ فعندما يتوقع أن النص الكامل سيتجاوز الحد، يستدعي مسار الاسترداد `compact()` في المحرك النشط قبل إرسال مطالبة أخرى.
+    يملك المحرك سلوك Compaction. يعطّل OpenClaw Compaction التلقائي المدمج في Pi لذلك التشغيل، وتكون دالة `compact()` في المحرك مسؤولة عن `/compact`، وCompaction استرداد التجاوز، وأي Compaction استباقي يريد تنفيذه في `afterTurn()`. قد يستمر OpenClaw في تشغيل أداة الحماية من التجاوز قبل المطالبة؛ وعندما تتوقع أن النص الكامل سيتجاوز الحد، يستدعي مسار الاسترداد `compact()` للمحرك النشط قبل إرسال مطالبة أخرى.
   </Accordion>
-  <Accordion title="ownsCompaction: false or unset">
-    قد يظل Compaction التلقائي المضمّن في Pi يعمل أثناء تنفيذ المطالبة، لكن طريقة `compact()` الخاصة بالمحرك النشط تظل تُستدعى من أجل `/compact` واسترداد الفائض.
+  <Accordion title="ownsCompaction: false أو غير مضبوط">
+    قد يستمر Compaction التلقائي المدمج في Pi في العمل أثناء تنفيذ المطالبة، لكن طريقة `compact()` للمحرك النشط تظل تُستدعى من أجل `/compact` واسترداد التجاوز.
   </Accordion>
 </AccordionGroup>
 
 <Warning>
-لا يعني `ownsCompaction: false` أن OpenClaw يعود تلقائيًا إلى مسار Compaction الخاص بالمحرك legacy.
+لا يعني `ownsCompaction: false` أن OpenClaw يعود تلقائيًا إلى مسار Compaction الخاص بمحرك legacy.
 </Warning>
 
-وهذا يعني وجود نمطين صالحين للـ Plugin:
+هذا يعني أن هناك نمطين صالحين لـ Plugin:
 
 <Tabs>
-  <Tab title="نمط التملك">
-    نفّذ خوارزمية Compaction خاصة بك وعيّن `ownsCompaction: true`.
+  <Tab title="وضع الامتلاك">
+    نفّذ خوارزمية Compaction الخاصة بك واضبط `ownsCompaction: true`.
   </Tab>
-  <Tab title="نمط التفويض">
-    عيّن `ownsCompaction: false` واجعل `compact()` تستدعي `delegateCompactionToRuntime(...)` من `openclaw/plugin-sdk/core` لاستخدام سلوك Compaction المضمّن في OpenClaw.
+  <Tab title="وضع التفويض">
+    اضبط `ownsCompaction: false` واجعل `compact()` تستدعي `delegateCompactionToRuntime(...)` من `openclaw/plugin-sdk/core` لاستخدام سلوك Compaction المدمج في OpenClaw.
   </Tab>
 </Tabs>
 
-إن `compact()` الخالية من العمليات ليست آمنة لمحرك نشط غير مالك لأنها تعطل مسار `/compact` وCompaction استرداد الفائض العادي لذلك الشق الخاص بالمحرك.
+تكون `compact()` التي لا تفعل شيئًا غير آمنة لمحرك نشط غير مالك، لأنها تعطل مسار Compaction العادي لـ `/compact` واسترداد التجاوز لفتحة ذلك المحرك.
 
 ## مرجع التهيئة
 
@@ -248,8 +256,8 @@ export default function register(api) {
 {
   plugins: {
     slots: {
-      // حدد محرك السياق النشط. الافتراضي: "legacy".
-      // عيّنه إلى معرّف Plugin لاستخدام محرك Plugin.
+      // Select the active context engine. Default: "legacy".
+      // Set to a plugin id to use a plugin engine.
       contextEngine: "legacy",
     },
   },
@@ -257,38 +265,38 @@ export default function register(api) {
 ```
 
 <Note>
-الشق حصري في وقت التشغيل — إذ لا يُحل سوى محرك سياق واحد مسجّل لتشغيل أو عملية Compaction معينة. ويمكن لـ Plugins أخرى مفعّلة من `kind: "context-engine"` أن تُحمّل وتنفّذ كود التسجيل الخاص بها؛ ويحدد `plugins.slots.contextEngine` فقط معرّف المحرك المسجّل الذي يحله OpenClaw عندما يحتاج إلى محرك سياق.
+الفتحة حصرية في وقت التشغيل — يُحل محرك سياق مسجل واحد فقط لتشغيل أو عملية Compaction معينة. ما زال بإمكان Plugins `kind: "context-engine"` المفعّلة الأخرى التحميل وتشغيل كود التسجيل الخاص بها؛ يحدد `plugins.slots.contextEngine` فقط معرّف المحرك المسجل الذي يحله OpenClaw عندما يحتاج إلى محرك سياق.
 </Note>
 
 <Note>
-**إلغاء تثبيت Plugin:** عندما تلغي تثبيت Plugin المحدد حاليًا كـ `plugins.slots.contextEngine`، يعيد OpenClaw ضبط الشق إلى الافتراضي (`legacy`). وينطبق سلوك إعادة الضبط نفسه على `plugins.slots.memory`. لا يلزم أي تعديل يدوي في التهيئة.
+**إلغاء تثبيت Plugin:** عندما تلغي تثبيت Plugin المحدد حاليًا كـ `plugins.slots.contextEngine`، يعيد OpenClaw ضبط الفتحة إلى الافتراضي (`legacy`). ينطبق سلوك إعادة الضبط نفسه على `plugins.slots.memory`. لا يلزم تعديل التهيئة يدويًا.
 </Note>
 
-## العلاقة مع Compaction وActive Memory
+## العلاقة مع Compaction والذاكرة
 
 <AccordionGroup>
   <Accordion title="Compaction">
-    يمثل Compaction إحدى مسؤوليات محرك السياق. ويفوض المحرك legacy إلى التلخيص المضمّن في OpenClaw. ويمكن لمحركات Plugin تنفيذ أي استراتيجية Compaction (ملخصات DAG، أو استرجاع متجهي، وما إلى ذلك).
+    Compaction هي إحدى مسؤوليات محرك السياق. يفوض المحرك القديم إلى التلخيص المدمج في OpenClaw. يمكن لمحركات Plugin تنفيذ أي استراتيجية Compaction (ملخصات DAG، استرجاع المتجهات، إلخ).
   </Accordion>
-  <Accordion title="Plugins الخاصة بالذاكرة">
-    Plugins الخاصة بالذاكرة (`plugins.slots.memory`) منفصلة عن محركات السياق. وتوفر Plugins الخاصة بالذاكرة البحث/الاسترجاع؛ بينما تتحكم محركات السياق فيما يراه النموذج. ويمكن أن تعملا معًا — فقد يستخدم محرك سياق بيانات Plugin للذاكرة أثناء التجميع. ويجب أن تفضّل محركات Plugin التي تريد مسار مطالبة الذاكرة النشط `buildMemorySystemPromptAddition(...)` من `openclaw/plugin-sdk/core`، إذ يحوّل أقسام مطالبة Active Memory النشطة إلى `systemPromptAddition` جاهزة للإضافة في المقدمة. وإذا احتاج المحرك إلى تحكم أدنى مستوى، فلا يزال بإمكانه سحب الأسطر الخام من `openclaw/plugin-sdk/memory-host-core` عبر `buildActiveMemoryPromptSection(...)`.
+  <Accordion title="Plugins الذاكرة">
+    تكون Plugins الذاكرة (`plugins.slots.memory`) منفصلة عن محركات السياق. توفر Plugins الذاكرة البحث/الاسترجاع؛ وتتحكم محركات السياق في ما يراه النموذج. يمكن أن تعمل معًا — قد يستخدم محرك السياق بيانات Plugin الذاكرة أثناء التجميع. يجب أن تفضل محركات Plugin التي تريد مسار مطالبة الذاكرة النشطة استخدام `buildMemorySystemPromptAddition(...)` من `openclaw/plugin-sdk/core`، الذي يحول أقسام مطالبة الذاكرة النشطة إلى `systemPromptAddition` جاهزة للإضافة في البداية. إذا احتاج المحرك إلى تحكم منخفض المستوى، فلا يزال بإمكانه سحب الأسطر الخام من `openclaw/plugin-sdk/memory-host-core` عبر `buildActiveMemoryPromptSection(...)`.
   </Accordion>
   <Accordion title="تشذيب الجلسة">
-    يستمر تقليم نتائج الأدوات القديمة داخل الذاكرة بغض النظر عن محرك السياق النشط.
+    لا يزال اقتطاع نتائج الأدوات القديمة في الذاكرة يعمل بغض النظر عن محرك السياق النشط.
   </Accordion>
 </AccordionGroup>
 
 ## نصائح
 
-- استخدم `openclaw doctor` للتحقق من أن المحرك يتم تحميله بشكل صحيح.
-- عند التبديل بين المحركات، تستمر الجلسات الحالية بسجلها الحالي. ويتولى المحرك الجديد التشغيلات المستقبلية.
-- يتم تسجيل أخطاء المحرك وإظهارها في التشخيصات. وإذا فشل محرك Plugin في التسجيل أو تعذر حل معرّف المحرك المحدد، فلن يعود OpenClaw تلقائيًا؛ بل ستفشل التشغيلات حتى تصلح Plugin أو تعيد `plugins.slots.contextEngine` إلى `"legacy"`.
-- أثناء التطوير، استخدم `openclaw plugins install -l ./my-engine` لربط دليل Plugin محلي من دون نسخه.
+- استخدم `openclaw doctor` للتحقق من أن محركك يتم تحميله بشكل صحيح.
+- عند تبديل المحركات، تستمر الجلسات الحالية بتاريخها الحالي. يتولى المحرك الجديد التشغيل في عمليات التشغيل المستقبلية.
+- تُسجل أخطاء المحرك وتظهر في التشخيصات. إذا فشل محرك Plugin في التسجيل أو تعذر حل معرف المحرك المحدد، فلن يعود OpenClaw تلقائيًا إلى البديل؛ تفشل عمليات التشغيل حتى تصلح Plugin أو تعيد `plugins.slots.contextEngine` إلى `"legacy"`.
+- للتطوير، استخدم `openclaw plugins install -l ./my-engine` لربط دليل Plugin محلي دون نسخ.
 
-## ذو صلة
+## ذات صلة
 
 - [Compaction](/ar/concepts/compaction) — تلخيص المحادثات الطويلة
-- [السياق](/ar/concepts/context) — كيفية بناء السياق لأدوار الوكيل
-- [بنية Plugin](/ar/plugins/architecture) — تسجيل Plugins الخاصة بمحرك السياق
-- [Plugin manifest](/ar/plugins/manifest) — حقول بيان Plugin
-- [Plugins](/ar/tools/plugin) — نظرة عامة على Plugins
+- [السياق](/ar/concepts/context) — كيفية بناء السياق لدورات الوكيل
+- [بنية Plugin](/ar/plugins/architecture) — تسجيل Plugins محرك السياق
+- [بيان Plugin](/ar/plugins/manifest) — حقول بيان Plugin
+- [Plugins](/ar/tools/plugin) — نظرة عامة على Plugin

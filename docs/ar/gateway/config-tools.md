@@ -1,21 +1,21 @@
 ---
 read_when:
-    - تكوين سياسة `tools.*` وقوائم السماح أو الميزات التجريبية
-    - تسجيل مزوّدين مخصصين أو تجاوز عناوين URL الأساسية
-    - إعداد نقاط نهاية مستضافة ذاتيًا ومتوافقة مع OpenAI
+    - تكوين سياسة `tools.*` أو قوائم السماح أو الميزات التجريبية
+    - تسجيل موفّرين مخصّصين أو تجاوز عناوين URL الأساسية
+    - إعداد نقاط النهاية ذاتية الاستضافة المتوافقة مع OpenAI
 sidebarTitle: Tools and custom providers
-summary: تكوين الأدوات (السياسة، والمفاتيح التجريبية، والأدوات المدعومة من المزوّد) وإعداد مزوّد/عنوان URL أساسي مخصص
-title: التكوين — الأدوات والمزوّدون المخصصون
+summary: تكوين الأدوات (السياسة، ومفاتيح التبديل التجريبية، والأدوات المدعومة بمزوّد) وإعداد المزود المخصص/عنوان URL الأساسي
+title: التكوين — الأدوات والموفّرون المخصّصون
 x-i18n:
-    generated_at: "2026-04-26T11:28:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:57:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ef030940b155224e614675a85c7a81567fd3a493e5ec1c25c5956d49cbc11b86
+    source_hash: 1790c92ecaf822c837326d8e22e9d72cc44e5d4cc0bcc00c154ba5160975002a
     source_path: gateway/config-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-مفاتيح التكوين `tools.*` وإعداد المزوّد المخصص / عنوان URL الأساسي. بالنسبة إلى الوكلاء، والقنوات، ومفاتيح التكوين الأخرى ذات المستوى الأعلى، راجع [مرجع التكوين](/ar/gateway/configuration-reference).
+مفاتيح إعدادات `tools.*` وإعداد المزوّد المخصص / عنوان URL الأساسي. للاطلاع على الوكلاء والقنوات ومفاتيح الإعدادات الأخرى ذات المستوى الأعلى، راجع [مرجع الإعدادات](/ar/gateway/configuration-reference).
 
 ## الأدوات
 
@@ -24,36 +24,36 @@ x-i18n:
 يضبط `tools.profile` قائمة سماح أساسية قبل `tools.allow`/`tools.deny`:
 
 <Note>
-يضبط الإعداد المحلي الأولي افتراضيًا التكوينات المحلية الجديدة على `tools.profile: "coding"` عندما تكون غير مضبوطة (ويتم الحفاظ على ملفات التعريف الصريحة الموجودة).
+تجعل التهيئة المحلية الإعدادات المحلية الجديدة افتراضياً على `tools.profile: "coding"` عند عدم ضبطها (وتُحفظ ملفات التعريف الصريحة الحالية).
 </Note>
 
-| ملف التعريف | يتضمن |
-| ----------- | ------- |
-| `minimal`   | `session_status` فقط |
-| `coding`    | `group:fs`، و`group:runtime`، و`group:web`، و`group:sessions`، و`group:memory`، و`cron`، و`image`، و`image_generate`، و`video_generate` |
-| `messaging` | `group:messaging`، و`sessions_list`، و`sessions_history`، و`sessions_send`، و`session_status` |
-| `full`      | بلا تقييد (يماثل عدم الضبط) |
+| ملف التعريف | يتضمن                                                                                                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `minimal`   | `session_status` فقط                                                                                                           |
+| `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `video_generate` |
+| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                       |
+| `full`      | بلا قيود (مثل عدم الضبط)                                                                                                  |
 
 ### مجموعات الأدوات
 
-| المجموعة | الأدوات |
+| المجموعة              | الأدوات                                                                                                                   |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | `exec`، و`process`، و`code_execution` ‏(`bash` مقبول كاسم بديل لـ `exec`) |
-| `group:fs`         | `read`، و`write`، و`edit`، و`apply_patch` |
-| `group:sessions`   | `sessions_list`، و`sessions_history`، و`sessions_send`، و`sessions_spawn`، و`sessions_yield`، و`subagents`، و`session_status` |
-| `group:memory`     | `memory_search`، و`memory_get` |
-| `group:web`        | `web_search`، و`x_search`، و`web_fetch` |
-| `group:ui`         | `browser`، و`canvas` |
-| `group:automation` | `cron`، و`gateway` |
-| `group:messaging`  | `message` |
-| `group:nodes`      | `nodes` |
-| `group:agents`     | `agents_list` |
-| `group:media`      | `image`، و`image_generate`، و`video_generate`، و`tts` |
-| `group:openclaw`   | جميع الأدوات المضمنة (باستثناء Plugins الخاصة بالمزوّد) |
+| `group:runtime`    | `exec`, `process`, `code_execution` (يُقبل `bash` كاسم مستعار لـ `exec`)                                         |
+| `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                  |
+| `group:sessions`   | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status` |
+| `group:memory`     | `memory_search`, `memory_get`                                                                                           |
+| `group:web`        | `web_search`, `x_search`, `web_fetch`                                                                                   |
+| `group:ui`         | `browser`, `canvas`                                                                                                     |
+| `group:automation` | `cron`, `gateway`                                                                                                       |
+| `group:messaging`  | `message`                                                                                                               |
+| `group:nodes`      | `nodes`                                                                                                                 |
+| `group:agents`     | `agents_list`                                                                                                           |
+| `group:media`      | `image`, `image_generate`, `video_generate`, `tts`                                                                      |
+| `group:openclaw`   | كل الأدوات المدمجة (باستثناء Provider Plugins)                                                                          |
 
 ### `tools.allow` / `tools.deny`
 
-سياسة السماح/المنع العامة للأدوات (المنع يفوز). غير حساسة لحالة الأحرف، وتدعم أحرف البدل `*`. وتُطبّق حتى عند إيقاف Docker sandbox.
+سياسة السماح/الرفض العامة للأدوات (الرفض له الأولوية). غير حساسة لحالة الأحرف، وتدعم أحرف البدل `*`. تُطبَّق حتى عند إيقاف وضع Docker sandbox.
 
 ```json5
 {
@@ -63,7 +63,7 @@ x-i18n:
 
 ### `tools.byProvider`
 
-تقييد إضافي للأدوات لمزوّدين أو نماذج محددة. الترتيب: ملف التعريف الأساسي ← ملف تعريف المزوّد ← السماح/المنع.
+تقييد إضافي للأدوات لمزوّدين أو نماذج محددة. الترتيب: ملف التعريف الأساسي → ملف تعريف المزوّد → السماح/الرفض.
 
 ```json5
 {
@@ -95,9 +95,9 @@ x-i18n:
 }
 ```
 
-- يمكن للتجاوز لكل وكيل (`agents.list[].tools.elevated`) أن يضيف تقييدًا إضافيًا فقط.
-- يخزن `/elevated on|off|ask|full` الحالة لكل جلسة؛ وتُطبَّق التوجيهات المضمنة على رسالة واحدة.
-- يتجاوز `exec` المرتفع آليات sandbox ويستخدم مسار الخروج المهيأ (`gateway` افتراضيًا، أو `node` عندما يكون هدف exec هو `node`).
+- يمكن لتجاوز كل وكيل (`agents.list[].tools.elevated`) أن يقيّد أكثر فقط.
+- يخزّن `/elevated on|off|ask|full` الحالة لكل جلسة؛ وتُطبَّق التوجيهات المضمنة على رسالة واحدة.
+- يتجاوز `exec` المرتفع sandboxing ويستخدم مسار الخروج المهيأ (`gateway` افتراضياً، أو `node` عندما يكون هدف exec هو `node`).
 
 ### `tools.exec`
 
@@ -121,7 +121,7 @@ x-i18n:
 
 ### `tools.loopDetection`
 
-فحوصات الأمان الخاصة بحلقات الأدوات **معطلة افتراضيًا**. اضبط `enabled: true` لتفعيل الاكتشاف. يمكن تعريف الإعدادات عمومًا في `tools.loopDetection` وتجاوزها لكل وكيل في `agents.list[].tools.loopDetection`.
+فحوصات أمان حلقات الأدوات **معطّلة افتراضياً**. اضبط `enabled: true` لتفعيل الاكتشاف. يمكن تعريف الإعدادات عالمياً في `tools.loopDetection` وتجاوزها لكل وكيل في `agents.list[].tools.loopDetection`.
 
 ```json5
 {
@@ -146,26 +146,26 @@ x-i18n:
   الحد الأقصى لسجل استدعاءات الأدوات المحتفَظ به لتحليل الحلقات.
 </ParamField>
 <ParamField path="warningThreshold" type="number">
-  عتبة نمط التكرار بلا تقدم لإطلاق التحذيرات.
+  عتبة نمط التكرار بلا تقدّم لإصدار التحذيرات.
 </ParamField>
 <ParamField path="criticalThreshold" type="number">
   عتبة تكرار أعلى لحظر الحلقات الحرجة.
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
-  عتبة إيقاف صارمة لأي تشغيل بلا تقدم.
+  عتبة إيقاف قسرية لأي تشغيل بلا تقدّم.
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
   التحذير عند تكرار استدعاءات الأداة نفسها/الوسائط نفسها.
 </ParamField>
 <ParamField path="detectors.knownPollNoProgress" type="boolean">
-  التحذير/الحظر عند أدوات polling المعروفة (`process.poll`، و`command_status`، وما إلى ذلك).
+  التحذير/الحظر عند أدوات الاستطلاع المعروفة (`process.poll`, `command_status`, وما إلى ذلك).
 </ParamField>
 <ParamField path="detectors.pingPong" type="boolean">
-  التحذير/الحظر عند أنماط الأزواج المتناوبة بلا تقدم.
+  التحذير/الحظر عند أنماط الأزواج المتناوبة بلا تقدّم.
 </ParamField>
 
 <Warning>
-إذا كانت `warningThreshold >= criticalThreshold` أو `criticalThreshold >= globalCircuitBreakerThreshold`، يفشل التحقق.
+إذا كان `warningThreshold >= criticalThreshold` أو `criticalThreshold >= globalCircuitBreakerThreshold`، يفشل التحقق.
 </Warning>
 
 ### `tools.web`
@@ -176,14 +176,14 @@ x-i18n:
     web: {
       search: {
         enabled: true,
-        apiKey: "brave_api_key", // أو BRAVE_API_KEY env
+        apiKey: "brave_api_key", // or BRAVE_API_KEY env
         maxResults: 5,
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
       },
       fetch: {
         enabled: true,
-        provider: "firecrawl", // اختياري؛ احذفه للاكتشاف التلقائي
+        provider: "firecrawl", // optional; omit for auto-detect
         maxChars: 50000,
         maxCharsCap: 50000,
         maxResponseBytes: 2000000,
@@ -200,7 +200,7 @@ x-i18n:
 
 ### `tools.media`
 
-يُكوّن فهم الوسائط الواردة (الصورة/الصوت/الفيديو):
+يهيّئ فهم الوسائط الواردة (الصور/الصوت/الفيديو):
 
 ```json5
 {
@@ -208,7 +208,7 @@ x-i18n:
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // اختياري: أرسل مهمة الموسيقى/الفيديو غير المتزامنة المكتملة مباشرة إلى القناة
+        directSend: false, // opt-in: send finished async music/video directly to the channel
       },
       audio: {
         enabled: true,
@@ -222,6 +222,11 @@ x-i18n:
           { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] },
         ],
       },
+      image: {
+        enabled: true,
+        timeoutSeconds: 180,
+        models: [{ provider: "ollama", model: "gemma4:26b", timeoutSeconds: 300 }],
+      },
       video: {
         enabled: true,
         maxBytes: 52428800,
@@ -233,29 +238,30 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="حقول إدخال نموذج الوسائط">
-    **إدخال المزوّد** (`type: "provider"` أو عند حذفه):
+  <Accordion title="Media model entry fields">
+    **إدخال المزوّد** (`type: "provider"` أو محذوف):
 
-    - `provider`: معرّف مزوّد API ‏(`openai` أو `anthropic` أو `google`/`gemini` أو `groq`، إلخ.)
+    - `provider`: معرّف مزوّد API (`openai`، `anthropic`، `google`/`gemini`، `groq`، إلخ)
     - `model`: تجاوز معرّف النموذج
-    - `profile` / `preferredProfile`: تحديد ملف التعريف من `auth-profiles.json`
+    - `profile` / `preferredProfile`: اختيار ملف تعريف `auth-profiles.json`
 
     **إدخال CLI** (`type: "cli"`):
 
-    - `command`: الملف التنفيذي المطلوب تشغيله
-    - `args`: وسائط قالبية (تدعم `{{MediaPath}}` و`{{Prompt}}` و`{{MaxChars}}`، إلخ.)
+    - `command`: الملف التنفيذي المراد تشغيله
+    - `args`: وسائط بقوالب (تدعم `{{MediaPath}}`، و`{{Prompt}}`، و`{{MaxChars}}`، إلخ؛ يرحّل `openclaw doctor --fix` عناصر نائبة مهملة بصيغة `{input}` إلى `{{MediaPath}}`)
 
     **الحقول المشتركة:**
 
-    - `capabilities`: قائمة اختيارية (`image` أو `audio` أو `video`). القيم الافتراضية: `openai`/`anthropic`/`minimax` → صورة، `google` → صورة+صوت+فيديو، `groq` → صوت.
-    - `prompt` و`maxChars` و`maxBytes` و`timeoutSeconds` و`language`: تجاوزات لكل إدخال.
-    - عند الفشل، يتم الرجوع إلى الإدخال التالي.
+    - `capabilities`: قائمة اختيارية (`image`، `audio`، `video`). القيم الافتراضية: `openai`/`anthropic`/`minimax` ← صورة، `google` ← صورة+صوت+فيديو، `groq` ← صوت.
+    - `prompt`، و`maxChars`، و`maxBytes`، و`timeoutSeconds`، و`language`: تجاوزات لكل إدخال.
+    - ينطبق `tools.media.image.timeoutSeconds` وإدخالات `timeoutSeconds` المطابقة لنموذج الصور أيضًا عندما يستدعي الوكيل أداة `image` الصريحة.
+    - تتراجع الإخفاقات إلى الإدخال التالي.
 
-    تتبع مصادقة المزوّد الترتيب القياسي: `auth-profiles.json` → متغيرات البيئة → `models.providers.*.apiKey`.
+    تتبع مصادقة المزوّد الترتيب القياسي: `auth-profiles.json` ← متغيرات البيئة ← `models.providers.*.apiKey`.
 
     **حقول الإكمال غير المتزامن:**
 
-    - `asyncCompletion.directSend`: عندما تكون `true`، تحاول مهام `music_generate` و`video_generate` غير المتزامنة المكتملة أولًا التسليم المباشر إلى القناة. الافتراضي: `false` (مسار requester-session wake/model-delivery القديم).
+    - `asyncCompletion.directSend`: عندما تكون `true`، تحاول مهام `music_generate` و`video_generate` غير المتزامنة المكتملة التسليم المباشر إلى القناة أولًا. الافتراضي: `false` (مسار تنبيه جلسة الطالب/التسليم عبر النموذج القديم).
 
   </Accordion>
 </AccordionGroup>
@@ -275,9 +281,9 @@ x-i18n:
 
 ### `tools.sessions`
 
-يتحكم في الجلسات التي يمكن استهدافها بواسطة أدوات الجلسات (`sessions_list` و`sessions_history` و`sessions_send`).
+يتحكم في الجلسات التي يمكن استهدافها بواسطة أدوات الجلسة (`sessions_list`، و`sessions_history`، و`sessions_send`).
 
-الافتراضي: `tree` ‏(الجلسة الحالية + الجلسات التي أنشأتها، مثل الوكلاء الفرعيين).
+الافتراضي: `tree` (الجلسة الحالية + الجلسات التي أنشأتها، مثل الوكلاء الفرعيين).
 
 ```json5
 {
@@ -291,30 +297,30 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="نطاقات الرؤية">
+  <Accordion title="Visibility scopes">
     - `self`: مفتاح الجلسة الحالية فقط.
     - `tree`: الجلسة الحالية + الجلسات التي أنشأتها الجلسة الحالية (الوكلاء الفرعيون).
-    - `agent`: أي جلسة تتبع معرّف الوكيل الحالي (وقد يشمل ذلك مستخدمين آخرين إذا كنت تشغّل جلسات لكل مرسل تحت معرّف الوكيل نفسه).
-    - `all`: أي جلسة. ولا يزال الاستهداف عبر الوكلاء يتطلب `tools.agentToAgent`.
-    - قيد sandbox: عندما تكون الجلسة الحالية ضمن sandbox ويكون `agents.defaults.sandbox.sessionToolsVisibility="spawned"`، تُفرَض الرؤية على `tree` حتى إذا كانت `tools.sessions.visibility="all"`.
+    - `agent`: أي جلسة تنتمي إلى معرّف الوكيل الحالي (قد تشمل مستخدمين آخرين إذا كنت تشغّل جلسات لكل مُرسِل تحت معرّف الوكيل نفسه).
+    - `all`: أي جلسة. لا يزال الاستهداف عبر الوكلاء يتطلب `tools.agentToAgent`.
+    - تقييد وضع العزل: عندما تكون الجلسة الحالية معزولة وتكون `agents.defaults.sandbox.sessionToolsVisibility="spawned"`، تُفرض الرؤية على `tree` حتى إذا كانت `tools.sessions.visibility="all"`.
 
   </Accordion>
 </AccordionGroup>
 
 ### `tools.sessions_spawn`
 
-يتحكم في دعم المرفقات المضمنة لـ `sessions_spawn`.
+يتحكم في دعم المرفقات المضمنة لـ`sessions_spawn`.
 
 ```json5
 {
   tools: {
     sessions_spawn: {
       attachments: {
-        enabled: false, // اختياري: اضبطها على true للسماح بمرفقات ملفات مضمنة
-        maxTotalBytes: 5242880, // 5 MB إجمالًا عبر جميع الملفات
+        enabled: false, // opt-in: set true to allow inline file attachments
+        maxTotalBytes: 5242880, // 5 MB total across all files
         maxFiles: 50,
-        maxFileBytes: 1048576, // 1 MB لكل ملف
-        retainOnSessionKeep: false, // الاحتفاظ بالمرفقات عندما يكون cleanup="keep"
+        maxFileBytes: 1048576, // 1 MB per file
+        retainOnSessionKeep: false, // keep attachments when cleanup="keep"
       },
     },
   },
@@ -322,13 +328,13 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="ملاحظات المرفقات">
-    - المرفقات مدعومة فقط لـ `runtime: "subagent"`. ويرفض ACP runtime هذه المرفقات.
-    - تُنشأ الملفات داخل مساحة عمل الابن في `.openclaw/attachments/<uuid>/` مع ملف `.manifest.json`.
-    - يُحجب محتوى المرفقات تلقائيًا من استمرار transcript.
-    - يتم التحقق من مدخلات Base64 باستخدام فحوصات صارمة للأبجدية/الحشو وحاجز لحجم ما قبل فك الترميز.
-    - تكون أذونات الملفات `0700` للأدلة و`0600` للملفات.
-    - تتبع عملية التنظيف سياسة `cleanup`: يقوم `delete` دائمًا بإزالة المرفقات؛ بينما يحتفظ `keep` بها فقط عندما تكون `retainOnSessionKeep: true`.
+  <Accordion title="Attachment notes">
+    - المرفقات مدعومة فقط مع `runtime: "subagent"`. يرفضها وقت تشغيل ACP.
+    - تُنشأ الملفات داخل مساحة عمل الابن في `.openclaw/attachments/<uuid>/` مع `.manifest.json`.
+    - يُنقّح محتوى المرفقات تلقائيًا من حفظ النصوص.
+    - تُتحقق مدخلات Base64 بفحوصات صارمة للأبجدية/الحشو، مع حارس حجم قبل فك الترميز.
+    - أذونات الملفات هي `0700` للأدلة و`0600` للملفات.
+    - يتبع التنظيف سياسة `cleanup`: يزيل `delete` المرفقات دائمًا؛ ويحتفظ بها `keep` فقط عندما تكون `retainOnSessionKeep: true`.
 
   </Accordion>
 </AccordionGroup>
@@ -337,21 +343,21 @@ x-i18n:
 
 ### `tools.experimental`
 
-أعلام الأدوات المضمنة التجريبية. تكون معطلة افتراضيًا ما لم تُطبق قاعدة تمكين تلقائي صارمة خاصة بـ GPT-5 agentic.
+علامات الأدوات المضمّنة التجريبية. تكون متوقفة افتراضيًا ما لم تنطبق قاعدة تمكين تلقائي صارمة لوكيل GPT-5.
 
 ```json5
 {
   tools: {
     experimental: {
-      planTool: true, // تمكين update_plan التجريبي
+      planTool: true, // enable experimental update_plan
     },
   },
 }
 ```
 
-- `planTool`: يفعّل أداة `update_plan` المنظمة للعمل غير البسيط متعدد الخطوات.
-- الافتراضي: `false` ما لم يكن `agents.defaults.embeddedPi.executionContract` ‏(أو تجاوز لكل وكيل) مضبوطًا على `"strict-agentic"` لتشغيل من عائلة GPT-5 لدى OpenAI أو OpenAI Codex. اضبطها على `true` لفرض تفعيل الأداة خارج هذا النطاق، أو على `false` للإبقاء عليها معطلة حتى في تشغيلات GPT-5 الصارمة agentic.
-- عند التفعيل، تضيف مطالبة النظام أيضًا إرشادات استخدام بحيث لا يستخدمها النموذج إلا للعمل الجوهري ويحافظ على خطوة واحدة فقط كحد أقصى في حالة `in_progress`.
+- `planTool`: يفعّل أداة `update_plan` المنظمة لتتبع الأعمال متعددة الخطوات غير البسيطة.
+- الافتراضي: `false` ما لم يتم تعيين `agents.defaults.embeddedPi.executionContract` (أو تجاوز لكل وكيل) إلى `"strict-agentic"` لتشغيل من عائلة GPT-5 عبر OpenAI أو OpenAI Codex. عيّن `true` لفرض تشغيل الأداة خارج ذلك النطاق، أو `false` لإبقائها متوقفة حتى لتشغيلات GPT-5 بنمط strict-agentic.
+- عند تفعيلها، يضيف موجه النظام أيضا إرشادات استخدام بحيث لا يستخدمها النموذج إلا للأعمال الجوهرية، ويبقي خطوة واحدة على الأكثر بحالة `in_progress`.
 
 ### `agents.defaults.subagents`
 
@@ -371,21 +377,21 @@ x-i18n:
 }
 ```
 
-- `model`: النموذج الافتراضي للوكلاء الفرعيين الذين يتم إنشاؤهم. وإذا حُذف، يرث الوكلاء الفرعيون نموذج المستدعي.
-- `allowAgents`: قائمة السماح الافتراضية لمعرّفات الوكلاء المستهدفة لـ `sessions_spawn` عندما لا يضبط الوكيل الطالب `subagents.allowAgents` الخاص به (`["*"]` = أي وكيل؛ والافتراضي: الوكيل نفسه فقط).
-- `runTimeoutSeconds`: المهلة الافتراضية (بالثواني) لـ `sessions_spawn` عندما يحذف استدعاء الأداة `runTimeoutSeconds`. وتعني `0` عدم وجود مهلة.
-- سياسة الأدوات لكل وكيل فرعي: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
+- `model`: النموذج الافتراضي للوكلاء الفرعيين الذين يتم إنشاؤهم. إذا حُذف، يرث الوكلاء الفرعيون نموذج المستدعي.
+- `allowAgents`: قائمة السماح الافتراضية لمعرفات الوكلاء الهدف لـ `sessions_spawn` عندما لا يعيّن الوكيل الطالب `subagents.allowAgents` خاصا به (`["*"]` = أي وكيل؛ الافتراضي: الوكيل نفسه فقط).
+- `runTimeoutSeconds`: المهلة الافتراضية (بالثواني) لـ `sessions_spawn` عندما يحذف استدعاء الأداة `runTimeoutSeconds`. تعني `0` عدم وجود مهلة.
+- سياسة أدوات كل وكيل فرعي: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
 
 ---
 
 ## المزوّدون المخصصون وعناوين URL الأساسية
 
-يستخدم OpenClaw كتالوج النماذج المضمن. أضف مزوّدين مخصصين عبر `models.providers` في التكوين أو `~/.openclaw/agents/<agentId>/agent/models.json`.
+يستخدم OpenClaw كتالوج النماذج المدمج. أضف مزوّدين مخصصين عبر `models.providers` في الإعدادات أو `~/.openclaw/agents/<agentId>/agent/models.json`.
 
 ```json5
 {
   models: {
-    mode: "merge", // merge (الافتراضي) | replace
+    mode: "merge", // merge (default) | replace
     providers: {
       "custom-proxy": {
         baseUrl: "http://localhost:4000/v1",
@@ -410,19 +416,19 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="أولوية المصادقة والدمج">
-    - استخدم `authHeader: true` مع `headers` لاحتياجات المصادقة المخصصة.
-    - تجاوز جذر تكوين الوكيل باستخدام `OPENCLAW_AGENT_DIR` ‏(أو `PI_CODING_AGENT_DIR`، وهو اسم بديل قديم لمتغير البيئة).
-    - أولوية الدمج عند تطابق معرّفات المزوّد:
-      - تفوز قيم `baseUrl` غير الفارغة في `models.json` الخاص بالوكيل.
-      - تفوز قيم `apiKey` غير الفارغة في الوكيل فقط عندما لا يكون ذلك المزوّد مُدارًا بواسطة SecretRef في سياق التكوين/ملف تعريف المصادقة الحالي.
-      - تُحدَّث قيم `apiKey` الخاصة بالمزوّدات المُدارة بواسطة SecretRef من علامات المصدر (`ENV_VAR_NAME` لإشارات env، و`secretref-managed` لإشارات file/exec) بدلًا من الاستمرار في حفظ الأسرار التي جرى حلها.
-      - تُحدَّث قيم headers الخاصة بالمزوّدات المُدارة بواسطة SecretRef من علامات المصدر (`secretref-env:ENV_VAR_NAME` لإشارات env، و`secretref-managed` لإشارات file/exec).
-      - تعود قيم `apiKey`/`baseUrl` الفارغة أو المفقودة في الوكيل إلى `models.providers` في التكوين.
-      - تستخدم القيم المتطابقة في `contextWindow`/`maxTokens` الخاصة بالنموذج القيمة الأعلى بين التكوين الصريح وقيم الكتالوج الضمنية.
-      - يحافظ `contextTokens` المتطابق في النموذج على حد وقت تشغيل صريح عند وجوده؛ استخدمه لتقييد السياق الفعلي من دون تغيير البيانات الوصفية الأصلية للنموذج.
-      - استخدم `models.mode: "replace"` عندما تريد أن يعيد التكوين كتابة `models.json` بالكامل.
-      - يكون استمرار العلامات خاضعًا لسلطة المصدر: إذ تُكتب العلامات من لقطة تكوين المصدر النشط (قبل الحل)، وليس من قيم الأسرار المحلولة وقت التشغيل.
+  <Accordion title="المصادقة وأسبقية الدمج">
+    - استخدم `authHeader: true` + `headers` لاحتياجات المصادقة المخصصة.
+    - تجاوز جذر إعدادات الوكيل باستخدام `OPENCLAW_AGENT_DIR` (أو `PI_CODING_AGENT_DIR`، وهو اسم مستعار قديم لمتغير بيئة).
+    - أسبقية الدمج لمعرفات المزوّدين المتطابقة:
+      - قيم `baseUrl` غير الفارغة في `models.json` الخاصة بالوكيل تكون لها الأولوية.
+      - قيم `apiKey` غير الفارغة الخاصة بالوكيل تكون لها الأولوية فقط عندما لا يكون ذلك المزوّد مُدارا بواسطة SecretRef في سياق الإعدادات/ملف المصادقة الحالي.
+      - تُحدّث قيم `apiKey` للمزوّدين المُدارين بواسطة SecretRef من علامات المصدر (`ENV_VAR_NAME` لمراجع البيئة، و`secretref-managed` لمراجع الملف/التنفيذ) بدلا من حفظ الأسرار المحلولة.
+      - تُحدّث قيم ترويسات المزوّدين المُدارين بواسطة SecretRef من علامات المصدر (`secretref-env:ENV_VAR_NAME` لمراجع البيئة، و`secretref-managed` لمراجع الملف/التنفيذ).
+      - قيم `apiKey`/`baseUrl` الفارغة أو المفقودة الخاصة بالوكيل ترجع إلى `models.providers` في الإعدادات.
+      - يستخدم `contextWindow`/`maxTokens` للنموذج المطابق القيمة الأعلى بين الإعدادات الصريحة وقيم الكتالوج الضمنية.
+      - يحافظ `contextTokens` للنموذج المطابق على سقف وقت التشغيل الصريح عند وجوده؛ استخدمه لتقييد السياق الفعال دون تغيير بيانات النموذج الأصلية.
+      - استخدم `models.mode: "replace"` عندما تريد أن تعيد الإعدادات كتابة `models.json` بالكامل.
+      - حفظ العلامات يعتمد على المصدر: تُكتب العلامات من لقطة إعدادات المصدر النشطة (قبل الحل)، وليس من قيم أسرار وقت التشغيل المحلولة.
 
   </Accordion>
 </AccordionGroup>
@@ -430,56 +436,65 @@ x-i18n:
 ### تفاصيل حقول المزوّد
 
 <AccordionGroup>
-  <Accordion title="الكتالوج ذو المستوى الأعلى">
-    - `models.mode`: سلوك كتالوج المزوّد (`merge` أو `replace`).
-    - `models.providers`: خريطة مزوّدين مخصصين مفهرسة حسب معرّف المزوّد.
-      - تعديلات آمنة: استخدم `openclaw config set models.providers.<id> '<json>' --strict-json --merge` أو `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` للتحديثات الإضافية. يرفض `config set` الاستبدالات المدمّرة ما لم تمرر `--replace`.
+  <Accordion title="الكتالوج الأعلى مستوى">
+    - `models.mode`: سلوك كتالوج المزوّدين (`merge` أو `replace`).
+    - `models.providers`: خريطة المزوّدين المخصصين مفهرسة بمعرف المزوّد.
+      - تعديلات آمنة: استخدم `openclaw config set models.providers.<id> '<json>' --strict-json --merge` أو `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` للتحديثات الإضافية. يرفض `config set` الاستبدالات المدمرة ما لم تمرر `--replace`.
 
   </Accordion>
   <Accordion title="اتصال المزوّد والمصادقة">
-    - `models.providers.*.api`: مهايئ الطلب (`openai-completions` أو `openai-responses` أو `anthropic-messages` أو `google-generative-ai`، إلخ).
-    - `models.providers.*.apiKey`: بيانات اعتماد المزوّد (يُفضّل SecretRef/الاستبدال من env).
-    - `models.providers.*.auth`: استراتيجية المصادقة (`api-key` أو `token` أو `oauth` أو `aws-sdk`).
-    - `models.providers.*.injectNumCtxForOpenAICompat`: بالنسبة إلى Ollama مع `openai-completions`، يتم حقن `options.num_ctx` داخل الطلبات (الافتراضي: `true`).
-    - `models.providers.*.authHeader`: فرض نقل بيانات الاعتماد داخل ترويسة `Authorization` عند الحاجة.
-    - `models.providers.*.baseUrl`: عنوان URL الأساسي لـ API upstream.
-    - `models.providers.*.headers`: ترويسات ثابتة إضافية لتوجيه proxy/tenant.
+    - `models.providers.*.api`: محوّل الطلبات (`openai-completions`، `openai-responses`، `anthropic-messages`، `google-generative-ai`، وغيرها). للواجهات الخلفية ذاتية الاستضافة `/v1/chat/completions` مثل MLX وvLLM وSGLang ومعظم الخوادم المحلية المتوافقة مع OpenAI، استخدم `openai-completions`. المزوّد المخصص الذي يتضمن `baseUrl` دون `api` يستخدم `openai-completions` افتراضيا؛ عيّن `openai-responses` فقط عندما تدعم الواجهة الخلفية `/v1/responses`.
+    - `models.providers.*.apiKey`: بيانات اعتماد المزوّد (يفضّل استخدام SecretRef/استبدال البيئة).
+    - `models.providers.*.auth`: استراتيجية المصادقة (`api-key`، `token`، `oauth`، `aws-sdk`).
+    - `models.providers.*.contextWindow`: نافذة السياق الأصلية الافتراضية للنماذج ضمن هذا المزوّد عندما لا يعيّن إدخال النموذج `contextWindow`.
+    - `models.providers.*.contextTokens`: سقف سياق وقت التشغيل الفعال الافتراضي للنماذج ضمن هذا المزوّد عندما لا يعيّن إدخال النموذج `contextTokens`.
+    - `models.providers.*.maxTokens`: سقف رموز الإخراج الافتراضي للنماذج ضمن هذا المزوّد عندما لا يعيّن إدخال النموذج `maxTokens`.
+    - `models.providers.*.timeoutSeconds`: مهلة اختيارية لكل مزوّد لطلب HTTP الخاص بالنموذج بالثواني، وتشمل الاتصال والترويسات والجسم ومعالجة إجهاض الطلب الكلي.
+    - `models.providers.*.injectNumCtxForOpenAICompat`: لـ Ollama + `openai-completions`، حقن `options.num_ctx` في الطلبات (الافتراضي: `true`).
+    - `models.providers.*.authHeader`: فرض نقل بيانات الاعتماد في ترويسة `Authorization` عند الحاجة.
+    - `models.providers.*.baseUrl`: عنوان URL الأساسي لواجهة API الصاعدة.
+    - `models.providers.*.headers`: ترويسات ثابتة إضافية لتوجيه الوكيل/المستأجر.
 
   </Accordion>
-  <Accordion title="تجاوزات نقل الطلب">
+  <Accordion title="تجاوزات نقل الطلبات">
     `models.providers.*.request`: تجاوزات النقل لطلبات HTTP الخاصة بمزوّد النموذج.
 
-    - `request.headers`: ترويسات إضافية (تُدمج مع إعدادات المزوّد الافتراضية). تقبل القيم SecretRef.
-    - `request.auth`: تجاوز لاستراتيجية المصادقة. الأوضاع: `"provider-default"` ‏(استخدام المصادقة المضمنة في المزوّد)، و`"authorization-bearer"` ‏(مع `token`)، و`"header"` ‏(مع `headerName` و`value` و`prefix` الاختياري).
-    - `request.proxy`: تجاوز HTTP proxy. الأوضاع: `"env-proxy"` ‏(استخدام متغيرات البيئة `HTTP_PROXY`/`HTTPS_PROXY`) و`"explicit-proxy"` ‏(مع `url`). يقبل كلا الوضعين كائنًا فرعيًا اختياريًا `tls`.
-    - `request.tls`: تجاوز TLS للاتصالات المباشرة. الحقول: `ca` و`cert` و`key` و`passphrase` ‏(كلها تقبل SecretRef)، و`serverName`، و`insecureSkipVerify`.
-    - `request.allowPrivateNetwork`: عندما تكون `true`، تسمح باتصال HTTPS إلى `baseUrl` عندما يُحل DNS إلى نطاقات خاصة أو CGNAT أو ما شابه، عبر حارس جلب HTTP الخاص بالمزوّد (اشتراك اختياري من المشغّل لنقاط نهاية OpenAI-compatible موثوقة ومستضافة ذاتيًا). يستخدم WebSocket نفس `request` للترويسات/TLS ولكن ليس بوابة SSRF الخاصة بالجلب. الافتراضي `false`.
+    - `request.headers`: ترويسات إضافية (تُدمج مع افتراضيات المزوّد). تقبل القيم SecretRef.
+    - `request.auth`: تجاوز استراتيجية المصادقة. الأوضاع: `"provider-default"` (استخدام المصادقة المدمجة للمزوّد)، `"authorization-bearer"` (مع `token`)، `"header"` (مع `headerName` و`value` و`prefix` اختياري).
+    - `request.proxy`: تجاوز وكيل HTTP. الأوضاع: `"env-proxy"` (استخدام متغيرات البيئة `HTTP_PROXY`/`HTTPS_PROXY`)، `"explicit-proxy"` (مع `url`). يقبل كلا الوضعين كائنا فرعيا اختياريا `tls`.
+    - `request.tls`: تجاوز TLS للاتصالات المباشرة. الحقول: `ca` و`cert` و`key` و`passphrase` (كلها تقبل SecretRef)، و`serverName`، و`insecureSkipVerify`.
+    - `request.allowPrivateNetwork`: عند `true`، يسمح بـ HTTPS إلى `baseUrl` عندما يحل DNS إلى نطاقات خاصة أو CGNAT أو نطاقات مشابهة، عبر حارس جلب HTTP الخاص بالمزوّد (اشتراك صريح من المشغل لنقاط النهاية ذاتية الاستضافة الموثوقة والمتوافقة مع OpenAI). يُسمح تلقائيا بعناوين URL لتدفقات مزوّد النموذج عبر loopback مثل `localhost` و`127.0.0.1` و`[::1]` ما لم يتم تعيين هذا صراحة إلى `false`؛ لا تزال مضيفات LAN وtailnet وDNS الخاصة تتطلب اشتراكا صريحا. يستخدم WebSocket نفس `request` للترويسات/TLS ولكن ليس بوابة SSRF الخاصة بالجلب. الافتراضي `false`.
 
   </Accordion>
-  <Accordion title="إدخالات كتالوج النموذج">
-    - `models.providers.*.models`: إدخالات كتالوج نماذج صريحة للمزوّد.
-    - `models.providers.*.models.*.contextWindow`: بيانات وصفية أصلية لنافذة سياق النموذج.
-    - `models.providers.*.models.*.contextTokens`: حد سياق اختياري لوقت التشغيل. استخدمه عندما تريد ميزانية سياق فعلية أصغر من `contextWindow` الأصلية للنموذج؛ ويعرض `openclaw models list` القيمتين كلتيهما عندما تختلفان.
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`: تلميح توافق اختياري. بالنسبة إلى `api: "openai-completions"` مع `baseUrl` غير فارغ وغير أصلي (مضيف ليس `api.openai.com`)، يفرض OpenClaw هذه القيمة إلى `false` وقت التشغيل. أما `baseUrl` الفارغ/المحذوف فيُبقي سلوك OpenAI الافتراضي.
-    - `models.providers.*.models.*.compat.requiresStringContent`: تلميح توافق اختياري لنقاط نهاية الدردشة OpenAI-compatible التي تدعم النصوص فقط. عندما تكون `true`، يقوم OpenClaw بتسطيح مصفوفات `messages[].content` النصية البحتة إلى سلاسل نصية عادية قبل إرسال الطلب.
+  <Accordion title="إدخالات كتالوج النماذج">
+    - `models.providers.*.models`: إدخالات كتالوج نماذج المزوّد الصريحة.
+    - `models.providers.*.models.*.input`: وسائط إدخال النموذج. استخدم `["text"]` للنماذج النصية فقط و`["text", "image"]` لنماذج الصور/الرؤية الأصلية. لا تُحقن مرفقات الصور في أدوار الوكيل إلا عندما يكون النموذج المحدد موسوما بأنه يدعم الصور.
+    - `models.providers.*.models.*.contextWindow`: بيانات نافذة السياق الأصلية للنموذج. يتجاوز هذا `contextWindow` على مستوى المزوّد لذلك النموذج.
+    - `models.providers.*.models.*.contextTokens`: سقف سياق وقت التشغيل الاختياري. يتجاوز هذا `contextTokens` على مستوى المزوّد؛ استخدمه عندما تريد ميزانية سياق فعالة أصغر من `contextWindow` الأصلية للنموذج؛ يعرض `openclaw models list` كلتا القيمتين عندما تختلفان.
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`: تلميح توافق اختياري. بالنسبة إلى `api: "openai-completions"` مع `baseUrl` غير أصلي وغير فارغ (مضيف ليس `api.openai.com`)، يفرض OpenClaw هذه القيمة إلى `false` في وقت التشغيل. يحافظ `baseUrl` الفارغ/المحذوف على سلوك OpenAI الافتراضي.
+    - `models.providers.*.models.*.compat.requiresStringContent`: تلميح توافق اختياري لنقاط نهاية الدردشة المتوافقة مع OpenAI التي تقبل السلاسل فقط. عند `true`، يسطّح OpenClaw مصفوفات `messages[].content` النصية الخالصة إلى سلاسل عادية قبل إرسال الطلب.
 
   </Accordion>
   <Accordion title="اكتشاف Amazon Bedrock">
     - `plugins.entries.amazon-bedrock.config.discovery`: جذر إعدادات الاكتشاف التلقائي لـ Bedrock.
     - `plugins.entries.amazon-bedrock.config.discovery.enabled`: تشغيل/إيقاف الاكتشاف الضمني.
     - `plugins.entries.amazon-bedrock.config.discovery.region`: منطقة AWS للاكتشاف.
-    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: مرشح اختياري لمعرّف المزوّد من أجل اكتشاف موجّه.
-    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: فترة polling لتحديث الاكتشاف.
+    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: مرشح اختياري لمعرف المزوّد للاكتشاف المستهدف.
+    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: فترة الاستقصاء لتحديث الاكتشاف.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: نافذة السياق الاحتياطية للنماذج المكتشفة.
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: الحد الاحتياطي الأقصى لرموز الإخراج للنماذج المكتشفة.
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: الحد الأقصى الاحتياطي لرموز الإخراج للنماذج المكتشفة.
 
   </Accordion>
 </AccordionGroup>
 
-### أمثلة على المزوّدين
+يستنتج إعداد المزوّد المخصص التفاعلي إدخال الصور لمعرفات نماذج الرؤية الشائعة مثل GPT-4o وClaude وGemini وQwen-VL وLLaVA وPixtral وInternVL وMllama وMiniCPM-V وGLM-4V، ويتجاوز السؤال الإضافي لعائلات النماذج المعروفة بأنها نصية فقط. لا تزال معرفات النماذج غير المعروفة تطلب تحديد دعم الصور. يستخدم الإعداد غير التفاعلي الاستنتاج نفسه؛ مرر `--custom-image-input` لفرض بيانات تعريف تدعم الصور أو `--custom-text-input` لفرض بيانات تعريف نصية فقط.
+
+### أمثلة المزوّدين
 
 <AccordionGroup>
-  <Accordion title="Cerebras (GLM 4.6 / 4.7)">
+  <Accordion title="Cerebras (GLM 4.7 / GPT OSS)">
+    يمكن لـ Plugin المزوّد المرفق `cerebras` إعداد هذا عبر `openclaw onboard --auth-choice cerebras-api-key`. استخدم إعدادات مزوّد صريحة فقط عند تجاوز الافتراضيات.
+
     ```json5
     {
       env: { CEREBRAS_API_KEY: "sk-..." },
@@ -487,11 +502,11 @@ x-i18n:
         defaults: {
           model: {
             primary: "cerebras/zai-glm-4.7",
-            fallbacks: ["cerebras/zai-glm-4.6"],
+            fallbacks: ["cerebras/gpt-oss-120b"],
           },
           models: {
             "cerebras/zai-glm-4.7": { alias: "GLM 4.7 (Cerebras)" },
-            "cerebras/zai-glm-4.6": { alias: "GLM 4.6 (Cerebras)" },
+            "cerebras/gpt-oss-120b": { alias: "GPT OSS 120B (Cerebras)" },
           },
         },
       },
@@ -504,7 +519,7 @@ x-i18n:
             api: "openai-completions",
             models: [
               { id: "zai-glm-4.7", name: "GLM 4.7 (Cerebras)" },
-              { id: "zai-glm-4.6", name: "GLM 4.6 (Cerebras)" },
+              { id: "gpt-oss-120b", name: "GPT OSS 120B (Cerebras)" },
             ],
           },
         },
@@ -512,7 +527,7 @@ x-i18n:
     }
     ```
 
-    استخدم `cerebras/zai-glm-4.7` مع Cerebras؛ و`zai/glm-4.7` مع Z.AI المباشر.
+    استخدم `cerebras/zai-glm-4.7` لـ Cerebras؛ و`zai/glm-4.7` لـ Z.AI مباشرة.
 
   </Accordion>
   <Accordion title="Kimi Coding">
@@ -528,11 +543,11 @@ x-i18n:
     }
     ```
 
-    متوافق مع Anthropic، وهو مزوّد مضمن. الاختصار: `openclaw onboard --auth-choice kimi-code-api-key`.
+    متوافق مع Anthropic ومزوّد مدمج. الاختصار: `openclaw onboard --auth-choice kimi-code-api-key`.
 
   </Accordion>
   <Accordion title="النماذج المحلية (LM Studio)">
-    راجع [النماذج المحلية](/ar/gateway/local-models). باختصار: شغّل نموذجًا محليًا كبيرًا عبر LM Studio Responses API على عتاد قوي؛ واحتفظ بالنماذج المستضافة مدمجةً من أجل الرجوع الاحتياطي.
+    راجع [النماذج المحلية](/ar/gateway/local-models). الخلاصة: شغّل نموذجًا محليًا كبيرًا عبر LM Studio Responses API على عتاد قوي؛ وأبقِ النماذج المستضافة مدمجة للاحتياط.
   </Accordion>
   <Accordion title="MiniMax M2.7 (مباشر)">
     ```json5
@@ -569,7 +584,7 @@ x-i18n:
     }
     ```
 
-    اضبط `MINIMAX_API_KEY`. الاختصارات: `openclaw onboard --auth-choice minimax-global-api` أو `openclaw onboard --auth-choice minimax-cn-api`. يفترض كتالوج النموذج القيمة M2.7 فقط. وعلى مسار البث المتوافق مع Anthropic، يعطّل OpenClaw التفكير في MiniMax افتراضيًا ما لم تضبط `thinking` بنفسك صراحةً. يقوم `/fast on` أو `params.fastMode: true` بإعادة كتابة `MiniMax-M2.7` إلى `MiniMax-M2.7-highspeed`.
+    اضبط `MINIMAX_API_KEY`. الاختصارات: `openclaw onboard --auth-choice minimax-global-api` أو `openclaw onboard --auth-choice minimax-cn-api`. يقتصر كتالوج النماذج افتراضيًا على M2.7 فقط. في مسار البث المتوافق مع Anthropic، يعطّل OpenClaw تفكير MiniMax افتراضيًا ما لم تضبط `thinking` بنفسك صراحةً. يعيد `/fast on` أو `params.fastMode: true` كتابة `MiniMax-M2.7` إلى `MiniMax-M2.7-highspeed`.
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -606,9 +621,9 @@ x-i18n:
     }
     ```
 
-    بالنسبة إلى نقطة نهاية الصين: `baseUrl: "https://api.moonshot.cn/v1"` أو `openclaw onboard --auth-choice moonshot-api-key-cn`.
+    لنقطة النهاية الخاصة بالصين: `baseUrl: "https://api.moonshot.cn/v1"` أو `openclaw onboard --auth-choice moonshot-api-key-cn`.
 
-    تعلن نقاط نهاية Moonshot الأصلية عن توافق استخدام البث على مسار النقل المشترك `openai-completions`، ويعتمد OpenClaw في ذلك على قدرات نقطة النهاية بدلًا من معرّف المزوّد المضمن وحده.
+    تعلن نقاط نهاية Moonshot الأصلية عن توافق استخدام البث على نقل `openai-completions` المشترك، ويعتمد OpenClaw في ذلك على إمكانات نقطة النهاية بدلًا من معرّف المزوّد المضمّن وحده.
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -623,7 +638,7 @@ x-i18n:
     }
     ```
 
-    اضبط `OPENCODE_API_KEY` ‏(أو `OPENCODE_ZEN_API_KEY`). استخدم المراجع `opencode/...` لكتالوج Zen أو المراجع `opencode-go/...` لكتالوج Go. الاختصار: `openclaw onboard --auth-choice opencode-zen` أو `openclaw onboard --auth-choice opencode-go`.
+    اضبط `OPENCODE_API_KEY` (أو `OPENCODE_ZEN_API_KEY`). استخدم مراجع `opencode/...` لكتالوج Zen أو مراجع `opencode-go/...` لكتالوج Go. الاختصار: `openclaw onboard --auth-choice opencode-zen` أو `openclaw onboard --auth-choice opencode-go`.
 
   </Accordion>
   <Accordion title="Synthetic (متوافق مع Anthropic)">
@@ -660,7 +675,7 @@ x-i18n:
     }
     ```
 
-    يجب أن يحذف عنوان URL الأساسي `/v1` ‏(عميل Anthropic يضيفه). الاختصار: `openclaw onboard --auth-choice synthetic-api-key`.
+    يجب أن يحذف عنوان URL الأساسي `/v1` (يضيفه عميل Anthropic). الاختصار: `openclaw onboard --auth-choice synthetic-api-key`.
 
   </Accordion>
   <Accordion title="Z.AI (GLM-4.7)">
@@ -675,11 +690,11 @@ x-i18n:
     }
     ```
 
-    اضبط `ZAI_API_KEY`. تُقبل الأسماء البديلة `z.ai/*` و`z-ai/*`. الاختصار: `openclaw onboard --auth-choice zai-api-key`.
+    اضبط `ZAI_API_KEY`. تُقبل `z.ai/*` و`z-ai/*` كأسماء مستعارة. الاختصار: `openclaw onboard --auth-choice zai-api-key`.
 
     - نقطة النهاية العامة: `https://api.z.ai/api/paas/v4`
     - نقطة نهاية البرمجة (الافتراضية): `https://api.z.ai/api/coding/paas/v4`
-    - بالنسبة إلى نقطة النهاية العامة، عرّف مزوّدًا مخصصًا مع تجاوز عنوان URL الأساسي.
+    - لنقطة النهاية العامة، عرّف مزوّدًا مخصصًا مع تجاوز عنوان URL الأساسي.
 
   </Accordion>
 </AccordionGroup>
@@ -688,7 +703,7 @@ x-i18n:
 
 ## ذو صلة
 
-- [التكوين — الوكلاء](/ar/gateway/config-agents)
-- [التكوين — القنوات](/ar/gateway/config-channels)
-- [مرجع التكوين](/ar/gateway/configuration-reference) — مفاتيح أخرى ذات مستوى أعلى
-- [الأدوات وPlugins](/ar/tools)
+- [الإعدادات — الوكلاء](/ar/gateway/config-agents)
+- [الإعدادات — القنوات](/ar/gateway/config-channels)
+- [مرجع الإعدادات](/ar/gateway/configuration-reference) — مفاتيح المستوى الأعلى الأخرى
+- [الأدوات والـ plugins](/ar/tools)

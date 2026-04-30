@@ -1,20 +1,20 @@
 ---
 read_when:
     - العمل على التفاعلات في أي قناة
-    - فهم اختلاف تفاعلات emoji عبر المنصات
-summary: دلالات أداة التفاعلات عبر جميع القنوات المدعومة
+    - فهم كيفية اختلاف تفاعلات الرموز التعبيرية عبر المنصات
+summary: دلالات أداة التفاعل عبر جميع القنوات المدعومة
 title: التفاعلات
 x-i18n:
-    generated_at: "2026-04-24T08:10:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:31:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
     source_path: tools/reactions.md
-    workflow: 15
+    workflow: 16
 ---
 
-يمكن للوكيل إضافة تفاعلات emoji وإزالتها على الرسائل باستخدام أداة `message`
-مع الإجراء `react`. ويختلف سلوك التفاعلات حسب القناة.
+يمكن للوكيل إضافة تفاعلات الرموز التعبيرية وإزالتها على الرسائل باستخدام أداة `message`
+مع الإجراء `react`. يختلف سلوك التفاعل حسب القناة ووسيلة النقل.
 
 ## كيف يعمل
 
@@ -26,65 +26,65 @@ x-i18n:
 }
 ```
 
-- الحقل `emoji` مطلوب عند إضافة تفاعل.
-- اضبط `emoji` على سلسلة فارغة (`""`) لإزالة تفاعل/تفاعلات الروبوت.
-- اضبط `remove: true` لإزالة emoji محدد (يتطلب `emoji` غير فارغ).
+- `emoji` مطلوب عند إضافة تفاعل.
+- اضبط `emoji` على سلسلة فارغة (`""`) لإزالة تفاعل/تفاعلات البوت.
+- اضبط `remove: true` لإزالة رمز تعبيري محدد (يتطلب `emoji` غير فارغ).
 
 ## سلوك القنوات
 
 <AccordionGroup>
-  <Accordion title="Discord and Slack">
-    - تؤدي قيمة `emoji` الفارغة إلى إزالة جميع تفاعلات الروبوت على الرسالة.
-    - يزيل `remove: true` قيمة emoji المحددة فقط.
+  <Accordion title="Discord وSlack">
+    - يزيل `emoji` الفارغ كل تفاعلات البوت على الرسالة.
+    - يزيل `remove: true` الرمز التعبيري المحدد فقط.
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - تؤدي قيمة `emoji` الفارغة إلى إزالة تفاعلات التطبيق على الرسالة.
-    - يزيل `remove: true` قيمة emoji المحددة فقط.
+    - يزيل `emoji` الفارغ تفاعلات التطبيق على الرسالة.
+    - يزيل `remove: true` الرمز التعبيري المحدد فقط.
 
   </Accordion>
 
   <Accordion title="Telegram">
-    - تؤدي قيمة `emoji` الفارغة إلى إزالة تفاعلات الروبوت.
-    - يزيل `remove: true` التفاعلات أيضًا، لكنه ما يزال يتطلب `emoji` غير فارغ للتحقق من الأداة.
+    - يزيل `emoji` الفارغ تفاعلات البوت.
+    - يزيل `remove: true` التفاعلات أيضًا، لكنه ما يزال يتطلب `emoji` غير فارغ للتحقق من صحة الأداة.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
-    - تؤدي قيمة `emoji` الفارغة إلى إزالة تفاعل الروبوت.
-    - يتم ربط `remove: true` داخليًا بـ emoji فارغة (مع أنه ما يزال يتطلب `emoji` في استدعاء الأداة).
+    - يزيل `emoji` الفارغ تفاعل البوت.
+    - يُربط `remove: true` داخليًا برمز تعبيري فارغ (ما يزال يتطلب `emoji` في استدعاء الأداة).
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
     - يتطلب `emoji` غير فارغ.
-    - يزيل `remove: true` تفاعل emoji المحدد هذا.
+    - يزيل `remove: true` تفاعل ذلك الرمز التعبيري المحدد.
 
   </Accordion>
 
   <Accordion title="Feishu/Lark">
     - استخدم أداة `feishu_reaction` مع الإجراءات `add` و`remove` و`list`.
-    - يتطلب الإجراءان add/remove الحقل `emoji_type`؛ كما يتطلب remove أيضًا `reaction_id`.
+    - تتطلب الإضافة/الإزالة `emoji_type`؛ وتتطلب الإزالة أيضًا `reaction_id`.
 
   </Accordion>
 
   <Accordion title="Signal">
-    - يتم التحكم في إشعارات التفاعلات الواردة بواسطة `channels.signal.reactionNotifications`: تؤدي القيمة `"off"` إلى تعطيلها، وتؤدي `"own"` ‏(الافتراضي) إلى إصدار أحداث عندما يتفاعل المستخدمون مع رسائل الروبوت، وتؤدي `"all"` إلى إصدار أحداث لجميع التفاعلات.
+    - تتحكم `channels.signal.reactionNotifications` في إشعارات التفاعلات الواردة: يعطلها `"off"`، ويصدر `"own"` (الافتراضي) أحداثًا عندما يتفاعل المستخدمون مع رسائل البوت، ويصدر `"all"` أحداثًا لكل التفاعلات.
 
   </Accordion>
 </AccordionGroup>
 
 ## مستوى التفاعل
 
-يتحكم إعداد `reactionLevel` لكل قناة في مدى استخدام الوكيل للتفاعلات. وتكون القيم عادةً `off` أو `ack` أو `minimal` أو `extensive`.
+يتحكم إعداد `reactionLevel` لكل قناة في مدى اتساع استخدام الوكيل للتفاعلات. تكون القيم عادةً `off` أو `ack` أو `minimal` أو `extensive`.
 
-- [مستوى reactionLevel في Telegram](/ar/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [مستوى reactionLevel في WhatsApp](/ar/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
+- [مستوى التفاعل في Telegram](/ar/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
+- [مستوى التفاعل في WhatsApp](/ar/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-اضبط `reactionLevel` على القنوات الفردية لتحديد مدى نشاط الوكيل في التفاعل مع الرسائل على كل منصة.
+اضبط `reactionLevel` على القنوات الفردية لتخصيص مدى نشاط تفاعل الوكيل مع الرسائل على كل منصة.
 
 ## ذو صلة
 
-- [Agent Send](/ar/tools/agent-send) — أداة `message` التي تتضمن `react`
-- [القنوات](/ar/channels) — إعدادات خاصة بكل قناة
+- [إرسال الوكيل](/ar/tools/agent-send) — أداة `message` التي تتضمن `react`
+- [القنوات](/ar/channels) — إعدادات خاصة بالقنوات

@@ -1,55 +1,74 @@
 ---
 read_when:
-    - تريد فهم Compaction التلقائي والأمر `/compact`
-    - أنت تقوم بتصحيح أخطاء الجلسات الطويلة التي تصطدم بحدود السياق
+    - تريد فهم Compaction التلقائي و /compact
+    - أنت تصحح أخطاء الجلسات الطويلة التي تصل إلى حدود السياق
 summary: كيف يلخّص OpenClaw المحادثات الطويلة للبقاء ضمن حدود النموذج
 title: Compaction
 x-i18n:
-    generated_at: "2026-04-25T13:44:58Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:51:41Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3e396a59d5346355cf2d87cd08ca8550877b103b1c613670fb3908fe1b028170
+    source_hash: 9beac513a8226a7dd107cdc3a7bfd7550d87e98648004c80487db968c57742d4
     source_path: concepts/compaction.md
-    workflow: 15
+    workflow: 16
 ---
 
-لكل نموذج نافذة سياق — وهي الحد الأقصى لعدد الرموز المميزة التي يمكنه معالجتها.
-عندما تقترب المحادثة من هذا الحد، يجري OpenClaw **Compaction** للرسائل الأقدم
-في ملخص حتى تستمر الدردشة.
+لكل نموذج نافذة سياق: الحد الأقصى لعدد الرموز التي يمكنه معالجتها. عندما تقترب محادثة من ذلك الحد، يقوم OpenClaw بعملية **Compaction** للرسائل الأقدم في ملخص حتى يمكن أن تستمر الدردشة.
 
 ## كيف يعمل
 
-1. تُلخَّص أدوار المحادثة الأقدم في إدخال مدمج.
-2. يُحفَظ الملخص في transcript الجلسة.
-3. تُحفَظ الرسائل الحديثة كما هي.
+1. تُلخَّص دورات المحادثة الأقدم في إدخال مضغوط.
+2. يُحفظ الملخص في نص جلسة المحادثة.
+3. تُبقى الرسائل الحديثة كما هي.
 
-عندما يقسم OpenClaw السجل إلى مقاطع Compaction، فإنه يُبقي استدعاءات أدوات
-المساعد مقترنة بإدخالات `toolResult` المطابقة لها. وإذا وقعت نقطة التقسيم
-داخل كتلة أداة، ينقل OpenClaw الحد بحيث يبقى الزوج معًا
-ويُحفَظ الذيل الحالي غير الملخّص.
+عندما يقسم OpenClaw السجل إلى أجزاء Compaction، فإنه يبقي استدعاءات أدوات المساعد مقترنة بإدخالات `toolResult` المطابقة لها. إذا وقع موضع التقسيم داخل كتلة أداة، ينقل OpenClaw الحد بحيث يبقى الزوج معًا ويُحافظ على الذيل الحالي غير الملخص.
 
-يبقى السجل الكامل للمحادثة على القرص. لا يغيّر Compaction إلا ما
-يراه النموذج في الدور التالي.
+يبقى سجل المحادثة الكامل على القرص. تغيّر Compaction فقط ما يراه النموذج في الدور التالي.
 
-## Compaction التلقائي
+## Compaction التلقائية
 
-يكون Compaction التلقائي مفعّلًا افتراضيًا. ويعمل عندما تقترب الجلسة من حد
-السياق، أو عندما يعيد النموذج خطأ تجاوز السياق (وفي هذه الحالة
-يجري OpenClaw عملية Compaction ثم يعيد المحاولة). تشمل تواقيع التجاوز المعتادة
-`request_too_large` و`context length exceeded` و`input exceeds the maximum
-number of tokens` و`input token count exceeds the maximum number of input
-tokens` و`input is too long for the model` و`ollama error: context length
-exceeded`.
+تكون Compaction التلقائية مفعلة افتراضيًا. تعمل عندما تقترب الجلسة من حد السياق، أو عندما يُرجع النموذج خطأ تجاوز السياق (وفي هذه الحالة يقوم OpenClaw بعملية Compaction ثم يعيد المحاولة).
+
+سترى:
+
+- `🧹 Auto-compaction complete` في الوضع المطوّل.
+- `/status` يعرض `🧹 Compactions: <count>`.
 
 <Info>
-قبل تنفيذ Compaction، يذكّر OpenClaw الوكيل تلقائيًا بحفظ الملاحظات المهمة
-في ملفات [memory](/ar/concepts/memory). وهذا يمنع فقدان السياق.
+قبل إجراء Compaction، يذكّر OpenClaw الوكيل تلقائيًا بحفظ الملاحظات المهمة في ملفات [الذاكرة](/ar/concepts/memory). يمنع هذا فقدان السياق.
 </Info>
 
-استخدم الإعداد `agents.defaults.compaction` في ملف `openclaw.json` لتهيئة سلوك Compaction (الوضع، والرموز المميزة المستهدفة، وغير ذلك).
-يحافظ تلخيص Compaction افتراضيًا على المعرفات المعتمة (`identifierPolicy: "strict"`). يمكنك تجاوز ذلك باستخدام `identifierPolicy: "off"` أو تقديم نص مخصص باستخدام `identifierPolicy: "custom"` و`identifierInstructions`.
+<AccordionGroup>
+  <Accordion title="تواقيع التجاوز المعروفة">
+    يكتشف OpenClaw تجاوز السياق من أنماط أخطاء المزوّدين هذه:
 
-يمكنك اختياريًا تحديد نموذج مختلف لتلخيص Compaction عبر `agents.defaults.compaction.model`. وهذا مفيد عندما يكون نموذجك الأساسي نموذجًا محليًا أو صغيرًا وتريد إنشاء ملخصات Compaction بواسطة نموذج أكثر قدرة. يقبل هذا التجاوز أي سلسلة `provider/model-id`:
+    - `request_too_large`
+    - `context length exceeded`
+    - `input exceeds the maximum number of tokens`
+    - `input token count exceeds the maximum number of input tokens`
+    - `input is too long for the model`
+    - `ollama error: context length exceeded`
+
+  </Accordion>
+</AccordionGroup>
+
+## Compaction اليدوية
+
+اكتب `/compact` في أي دردشة لفرض Compaction. أضف تعليمات لتوجيه الملخص:
+
+```
+/compact Focus on the API design decisions
+```
+
+عند ضبط `agents.defaults.compaction.keepRecentTokens`، تحترم Compaction اليدوية نقطة قص Pi هذه وتبقي الذيل الحديث في السياق المعاد بناؤه. من دون ميزانية إبقاء صريحة، تعمل Compaction اليدوية كنقطة تحقق صارمة وتستمر من الملخص الجديد وحده.
+
+## التكوين
+
+اضبط Compaction ضمن `agents.defaults.compaction` في ملف `openclaw.json` لديك. أكثر عناصر التحكم شيوعًا مذكورة أدناه؛ وللمرجع الكامل، راجع [التعمق في إدارة الجلسات](/ar/reference/session-management-compaction).
+
+### استخدام نموذج مختلف
+
+افتراضيًا، تستخدم Compaction النموذج الأساسي للوكيل. عيّن `agents.defaults.compaction.model` لتفويض التلخيص إلى نموذج أكثر قدرة أو تخصصًا. يقبل التجاوز أي سلسلة `provider/model-id`:
 
 ```json
 {
@@ -63,7 +82,7 @@ exceeded`.
 }
 ```
 
-ويعمل هذا أيضًا مع النماذج المحلية، مثل نموذج Ollama ثانٍ مخصص للتلخيص أو متخصص Compaction مضبوط بدقة:
+يعمل هذا أيضًا مع النماذج المحلية، مثل نموذج Ollama ثانٍ مخصص للتلخيص:
 
 ```json
 {
@@ -77,75 +96,34 @@ exceeded`.
 }
 ```
 
-عند عدم تعيينه، يستخدم Compaction النموذج الأساسي للوكيل.
+عند عدم ضبطه، تستخدم Compaction النموذج الأساسي للوكيل.
 
-## موفرو Compaction القابلون للتوصيل
+### الحفاظ على المعرّفات
 
-يمكن لـ Plugins تسجيل موفر Compaction مخصص عبر `registerCompactionProvider()` على Plugin API. وعندما يتم تسجيل موفر وتهيئته، يفوّض OpenClaw التلخيص إليه بدلًا من مسار LLM المضمن.
+يحافظ تلخيص Compaction على المعرّفات المعتمة افتراضيًا (`identifierPolicy: "strict"`). تجاوز ذلك باستخدام `identifierPolicy: "off"` للتعطيل، أو `identifierPolicy: "custom"` مع `identifierInstructions` لإرشادات مخصصة.
 
-لاستخدام موفر مسجل، اضبط معرّف الموفر في إعدادك:
+### حارس بايتات نص الجلسة النشط
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "compaction": {
-        "provider": "my-provider"
-      }
-    }
-  }
-}
-```
+عند ضبط `agents.defaults.compaction.maxActiveTranscriptBytes`، يفعّل OpenClaw عملية Compaction محلية عادية قبل التشغيل إذا بلغ ملف JSONL النشط ذلك الحجم. هذا مفيد للجلسات طويلة التشغيل حيث قد تبقي إدارة السياق من جهة المزوّد سياق النموذج سليمًا بينما يستمر نص الجلسة المحلي في النمو. لا يقسم بايتات JSONL الخام؛ بل يطلب من مسار Compaction العادي إنشاء ملخص دلالي.
 
-يؤدي تعيين `provider` تلقائيًا إلى فرض `mode: "safeguard"`. تتلقى الموفّرات تعليمات Compaction نفسها وسياسة الحفاظ على المعرفات نفسها كما في المسار المضمن، ولا يزال OpenClaw يحافظ على سياق لاحقة الأدوار الحديثة والأدوار المنقسمة بعد خرج الموفر. إذا فشل الموفر أو أعاد نتيجة فارغة، يعود OpenClaw إلى تلخيص LLM المضمن.
+<Warning>
+يتطلب حارس البايتات `truncateAfterCompaction: true`. من دون تدوير نص الجلسة، لن ينكمش الملف النشط وسيبقى الحارس غير نشط.
+</Warning>
 
-## Compaction التلقائي (مفعّل افتراضيًا)
+### نصوص جلسة لاحقة
 
-عندما تقترب الجلسة من نافذة سياق النموذج أو تتجاوزها، يشغّل OpenClaw Compaction تلقائيًا وقد يعيد محاولة الطلب الأصلي باستخدام السياق المضغوط.
+عند تفعيل `agents.defaults.compaction.truncateAfterCompaction`، لا يعيد OpenClaw كتابة نص الجلسة الحالي في مكانه. ينشئ نص جلسة لاحقًا نشطًا جديدًا من ملخص Compaction والحالة المحفوظة والذيل غير الملخص، ثم يحتفظ بملف JSONL السابق كمصدر نقطة تحقق مؤرشف.
+تحذف نصوص الجلسة اللاحقة أيضًا التكرارات المطابقة الطويلة لأدوار المستخدم التي تصل
+داخل نافذة إعادة محاولة قصيرة، بحيث لا تُنقل عواصف إعادة المحاولة في القناة إلى
+نص الجلسة النشط التالي بعد Compaction.
 
-سترى:
+لا تُحتفظ بنقاط التحقق السابقة لـ Compaction إلا ما دامت أقل من حد حجم نقاط
+التحقق في OpenClaw؛ لا تزال نصوص الجلسة النشطة كبيرة الحجم تُضغط، لكن OpenClaw
+يتخطى لقطة التصحيح الكبيرة بدلًا من مضاعفة استخدام القرص.
 
-- `🧹 Auto-compaction complete` في الوضع المطوّل
-- الأمر `/status` يعرض `🧹 Compactions: <count>`
+### إشعارات Compaction
 
-قبل تنفيذ Compaction، يمكن لـ OpenClaw تشغيل دور **تفريغ memory صامت**
-لتخزين الملاحظات الدائمة على القرص. راجع [Memory](/ar/concepts/memory) للاطلاع على التفاصيل والإعداد.
-
-## Compaction اليدوي
-
-اكتب `/compact` في أي دردشة لفرض تنفيذ Compaction. أضف تعليمات لتوجيه
-الملخص:
-
-```text
-/compact Focus on the API design decisions
-```
-
-عند ضبط `agents.defaults.compaction.keepRecentTokens`، يحترم Compaction اليدوي
-نقطة القطع الخاصة بـ Pi ويحافظ على الذيل الحديث في السياق المعاد بناؤه. ومن دون
-ميزانية احتفاظ صريحة، يتصرف Compaction اليدوي كنقطة تحقق صارمة
-ويتابع من الملخص الجديد وحده.
-
-## استخدام نموذج مختلف
-
-افتراضيًا، يستخدم Compaction النموذج الأساسي لوكيلك. ويمكنك استخدام نموذج
-أكثر قدرة للحصول على ملخصات أفضل:
-
-```json5
-{
-  agents: {
-    defaults: {
-      compaction: {
-        model: "openrouter/anthropic/claude-sonnet-4-6",
-      },
-    },
-  },
-}
-```
-
-## إشعارات Compaction
-
-افتراضيًا، يعمل Compaction بصمت. لإظهار إشعارات موجزة عند بدء Compaction
-وعند اكتماله، فعّل `notifyUser`:
+افتراضيًا، تعمل Compaction بصمت. عيّن `notifyUser` لإظهار رسائل حالة موجزة عند بدء Compaction واكتمالها:
 
 ```json5
 {
@@ -159,39 +137,73 @@ exceeded`.
 }
 ```
 
-عند التمكين، يرى المستخدم رسائل حالة قصيرة حول كل تشغيل لـ Compaction
-(مثل "Compacting context..." و"Compaction complete").
+### تفريغ الذاكرة
 
-## Compaction مقابل Pruning
+قبل Compaction، يمكن لـ OpenClaw تشغيل دور **تفريغ ذاكرة صامت** لتخزين الملاحظات الدائمة على القرص. عيّن `agents.defaults.compaction.memoryFlush.model` عندما يجب أن يستخدم دور الصيانة هذا نموذجًا محليًا بدلًا من نموذج المحادثة النشط:
 
-|                  | Compaction                    | Pruning                          |
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "memoryFlush": {
+          "model": "ollama/qwen3:8b"
+        }
+      }
+    }
+  }
+}
+```
+
+تجاوز نموذج تفريغ الذاكرة دقيق ولا يرث سلسلة الرجوع الاحتياطي للجلسة النشطة. راجع [الذاكرة](/ar/concepts/memory) للتفاصيل والتكوين.
+
+## مزوّدو Compaction القابلون للتوصيل
+
+يمكن لـ Plugins تسجيل مزوّد Compaction مخصص عبر `registerCompactionProvider()` في واجهة Plugin البرمجية. عند تسجيل مزوّد وتكوينه، يفوّض OpenClaw التلخيص إليه بدلًا من مسار LLM المدمج.
+
+لاستخدام مزوّد مسجل، عيّن معرّفه في تكوينك:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "provider": "my-provider"
+      }
+    }
+  }
+}
+```
+
+يفرض ضبط `provider` تلقائيًا `mode: "safeguard"`. يتلقى المزوّدون تعليمات Compaction نفسها وسياسة الحفاظ على المعرّفات نفسها مثل المسار المدمج، ولا يزال OpenClaw يحافظ على سياق لاحقة الأدوار الحديثة والأدوار المقسمة بعد إخراج المزوّد.
+
+<Note>
+إذا فشل المزوّد أو أرجع نتيجة فارغة، يعود OpenClaw إلى تلخيص LLM المدمج.
+</Note>
+
+## Compaction مقابل التشذيب
+
+|                  | Compaction                    | التشذيب                          |
 | ---------------- | ----------------------------- | -------------------------------- |
-| **ما الذي يفعله** | يلخص المحادثة الأقدم         | يقتطع نتائج الأدوات القديمة      |
-| **هل يُحفَظ؟**    | نعم (في transcript الجلسة)   | لا (في الذاكرة فقط، لكل طلب)     |
-| **النطاق**        | المحادثة بأكملها             | نتائج الأدوات فقط                |
+| **ماذا يفعل** | يلخّص المحادثة الأقدم | يقتطع نتائج الأدوات القديمة           |
+| **محفوظ؟**       | نعم (في نص جلسة المحادثة)   | لا (في الذاكرة فقط، لكل طلب) |
+| **النطاق**        | المحادثة كاملة           | نتائج الأدوات فقط                |
 
-إن [Session pruning](/ar/concepts/session-pruning) هو مكمّل أخف وزنًا
-يقتطع خرج الأدوات من دون تلخيص.
+[تشذيب الجلسة](/ar/concepts/session-pruning) مكمل أخف يقتطع مخرجات الأدوات من دون تلخيص.
 
 ## استكشاف الأخطاء وإصلاحها
 
-**هل يتم تنفيذ Compaction كثيرًا؟** قد تكون نافذة سياق النموذج صغيرة، أو قد تكون
-مخرجات الأدوات كبيرة. جرّب تمكين
-[session pruning](/ar/concepts/session-pruning).
+**تحدث Compaction كثيرًا جدًا؟** قد تكون نافذة سياق النموذج صغيرة، أو قد تكون مخرجات الأدوات كبيرة. جرّب تفعيل [تشذيب الجلسة](/ar/concepts/session-pruning).
 
-**هل يبدو السياق قديمًا بعد Compaction؟** استخدم `/compact Focus on <topic>` من أجل
-توجيه الملخص، أو فعّل [memory flush](/ar/concepts/memory) حتى
-تبقى الملاحظات محفوظة.
+**يبدو السياق قديمًا بعد Compaction؟** استخدم `/compact Focus on <topic>` لتوجيه الملخص، أو فعّل [تفريغ الذاكرة](/ar/concepts/memory) حتى تبقى الملاحظات.
 
-**هل تحتاج إلى بداية نظيفة؟** يبدأ `/new` جلسة جديدة من دون تنفيذ Compaction.
+**تحتاج إلى بداية نظيفة؟** يبدأ `/new` جلسة جديدة من دون إجراء Compaction.
 
-للاطلاع على الإعداد المتقدم (الرموز المميزة المحجوزة، والحفاظ على المعرفات، ومحركات
-السياق المخصصة، وCompaction من جهة الخادم في OpenAI)، راجع
-[التعمق في إدارة الجلسات](/ar/reference/session-management-compaction).
+للتكوين المتقدم (الرموز المحجوزة، الحفاظ على المعرّفات، محركات السياق المخصصة، Compaction من جهة خادم OpenAI)، راجع [التعمق في إدارة الجلسات](/ar/reference/session-management-compaction).
 
-## ذو صلة
+## ذات صلة
 
-- [Session](/ar/concepts/session) — إدارة الجلسات ودورة حياتها
-- [Session Pruning](/ar/concepts/session-pruning) — اقتطاع نتائج الأدوات
-- [Context](/ar/concepts/context) — كيفية بناء السياق لأدوار الوكيل
-- [Hooks](/ar/automation/hooks) — خطافات دورة حياة Compaction (`before_compaction`, `after_compaction`)
+- [الجلسة](/ar/concepts/session): إدارة الجلسة ودورة حياتها.
+- [تشذيب الجلسة](/ar/concepts/session-pruning): اقتطاع نتائج الأدوات.
+- [السياق](/ar/concepts/context): كيف يُبنى السياق لأدوار الوكيل.
+- [الخطافات](/ar/automation/hooks): خطافات دورة حياة Compaction (`before_compaction`, `after_compaction`).

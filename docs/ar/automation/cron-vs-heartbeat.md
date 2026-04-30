@@ -2,17 +2,17 @@
 summary: إعادة التوجيه إلى /automation
 title: Cron مقابل Heartbeat
 x-i18n:
-    generated_at: "2026-04-24T07:29:12Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:39:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 453a70724ffc9aa76b6629458be3b8a2b91b4a72a5f1b3371be9b5aba4f90bcb
+    source_hash: 4a4951f926f9050a9bd33b338cf4cd1869d73b9c3e7222349ea8265b959f41b4
     source_path: automation/cron-vs-heartbeat.md
-    workflow: 15
+    workflow: 16
 ---
 
-انتقلت هذه الصفحة إلى [الأتمتة والمهام](/ar/automation). راجع [الأتمتة والمهام](/ar/automation) للاطلاع على دليل اتخاذ القرار الذي يقارن بين Cron وHeartbeat.
+يوجد دليل الاختيار بين Cron وHeartbeat ضمن [الأتمتة والمهام](/ar/automation).
 
-## ذو صلة
+## ذات صلة
 
 - [المهام المجدولة](/ar/automation/cron-jobs)
-- [مهام الخلفية](/ar/automation/tasks)
+- [المهام الخلفية](/ar/automation/tasks)

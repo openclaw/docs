@@ -1,22 +1,22 @@
 ---
 read_when:
-    - تعلّم كيفية تهيئة OpenClaw
-    - البحث عن أمثلة للتهيئة
-    - إعداد OpenClaw للمرة الأولى
-summary: أمثلة تهيئة دقيقة وفق schema لإعدادات OpenClaw الشائعة
-title: أمثلة التهيئة
+    - تعلّم كيفية تكوين OpenClaw
+    - جارٍ البحث عن أمثلة التكوين
+    - إعداد OpenClaw لأول مرة
+summary: أمثلة تكوين مطابقة للمخطط لإعدادات OpenClaw الشائعة
+title: أمثلة التكوين
 x-i18n:
-    generated_at: "2026-04-25T13:46:35Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:57:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
+    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
     source_path: gateway/configuration-examples.md
-    workflow: 15
+    workflow: 16
 ---
 
-الأمثلة أدناه متوافقة مع schema الحالية للتهيئة. وللاطلاع على المرجع الكامل والملاحظات الخاصة بكل حقل، راجع [التهيئة](/ar/gateway/configuration).
+تتوافق الأمثلة أدناه مع مخطط الإعدادات الحالي. للاطلاع على المرجع الشامل وملاحظات كل حقل، راجع [الإعدادات](/ar/gateway/configuration).
 
-## البدء السريع
+## بدء سريع
 
 ### الحد الأدنى المطلق
 
@@ -27,15 +27,15 @@ x-i18n:
 }
 ```
 
-احفظه في `~/.openclaw/openclaw.json` وستتمكن من مراسلة الروبوت مباشرة من ذلك الرقم.
+احفظه في `~/.openclaw/openclaw.json` ويمكنك إرسال رسالة مباشرة إلى الروبوت من ذلك الرقم.
 
-### إعداد ابتدائي موصى به
+### بداية موصى بها
 
 ```json5
 {
   identity: {
     name: "Clawd",
-    theme: "مساعد مفيد",
+    theme: "helpful assistant",
     emoji: "🦞",
   },
   agent: {
@@ -48,16 +48,22 @@ x-i18n:
       groups: { "*": { requireMention: true } },
     },
   },
+  messages: {
+    visibleReplies: "automatic",
+    groupChat: {
+      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+    },
+  },
 }
 ```
 
 ## مثال موسع (الخيارات الرئيسية)
 
-> يتيح لك JSON5 استخدام التعليقات والفواصل الختامية. كما يعمل JSON العادي أيضًا.
+> يتيح لك JSON5 استخدام التعليقات والفواصل اللاحقة. يعمل JSON العادي أيضًا.
 
 ```json5
 {
-  // البيئة + shell
+  // Environment + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -69,7 +75,7 @@ x-i18n:
     },
   },
 
-  // البيانات الوصفية لملف auth profile (توجد الأسرار في auth-profiles.json)
+  // Auth profile metadata (secrets live in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -84,14 +90,14 @@ x-i18n:
     },
   },
 
-  // الهوية
+  // Identity
   identity: {
     name: "Samantha",
-    theme: "كسلان مفيد",
+    theme: "helpful sloth",
     emoji: "🦥",
   },
 
-  // التسجيل
+  // Logging
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -100,38 +106,35 @@ x-i18n:
     redactSensitive: "tools",
   },
 
-  // تنسيق الرسائل
+  // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
+    visibleReplies: "automatic",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
-  },
-
-  // التوجيه + قائمة الانتظار
-  routing: {
     groupChat: {
-      mentionPatterns: ["@openclaw", "openclaw"],
       historyLimit: 50,
+      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
     },
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
-        telegram: "collect",
-        discord: "collect",
-        slack: "collect",
-        signal: "collect",
-        imessage: "collect",
-        webchat: "collect",
+        whatsapp: "steer",
+        telegram: "steer",
+        discord: "steer",
+        slack: "steer",
+        signal: "steer",
+        imessage: "steer",
+        webchat: "steer",
       },
     },
   },
 
-  // الأدوات
+  // Tooling
   tools: {
     media: {
       audio: {
@@ -139,7 +142,7 @@ x-i18n:
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Fallback اختياري لـ CLI (ملف Whisper التنفيذي):
+          // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -152,10 +155,10 @@ x-i18n:
     },
   },
 
-  // سلوك الجلسة
+  // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // موصى به لصناديق الوارد متعددة المستخدمين
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -170,10 +173,9 @@ x-i18n:
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // مدة أو false
-      maxDiskBytes: "500mb", // اختياري
-      highWaterBytes: "400mb", // اختياري (الافتراضي 80% من maxDiskBytes)
+      resetArchiveRetention: "30d", // duration or false
+      maxDiskBytes: "500mb", // optional
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -182,7 +184,7 @@ x-i18n:
     },
   },
 
-  // القنوات
+  // Channels
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -234,7 +236,7 @@ x-i18n:
     },
   },
 
-  // بيئة تشغيل الوكيل
+  // Agent runtime
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -251,9 +253,10 @@ x-i18n:
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // تورَّث إلى الوكلاء الذين يحذفون list[].skills
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
       blockStreamingBreak: "text_end",
@@ -276,7 +279,7 @@ x-i18n:
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (الافتراضي) | block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -291,7 +294,7 @@ x-i18n:
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // مفضل على perSession القديم: true
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -310,15 +313,18 @@ x-i18n:
       {
         id: "main",
         default: true,
-        // يرث defaults.skills -> github, weather
-        thinkingDefault: "high", // تجاوز التفكير لكل وكيل
-        reasoningDefault: "on", // إظهار reasoning لكل وكيل
-        fastModeDefault: false, // الوضع السريع لكل وكيل
+        // inherits defaults.skills -> github, weather
+        groupChat: {
+          mentionPatterns: ["@openclaw", "openclaw"],
+        },
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // بلا Skills لهذا الوكيل
-        fastModeDefault: true, // يعمل هذا الوكيل دائمًا بسرعة
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -346,7 +352,7 @@ x-i18n:
     },
   },
 
-  // موفّرو النماذج المخصصون
+  // Custom model providers
   models: {
     mode: "merge",
     providers: {
@@ -372,11 +378,11 @@ x-i18n:
     },
   },
 
-  // وظائف Cron
+  // Cron jobs
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2,
+    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -399,7 +405,7 @@ x-i18n:
         wakeMode: "now",
         name: "Gmail",
         sessionKey: "hook:gmail:{{messages[0].id}}",
-        messageTemplate: "من: {{messages[0].from}}\nالموضوع: {{messages[0].subject}}",
+        messageTemplate: "From: {{messages[0].from}}\nSubject: {{messages[0].subject}}",
         textTemplate: "{{messages[0].snippet}}",
         deliver: true,
         channel: "last",
@@ -427,7 +433,7 @@ x-i18n:
     },
   },
 
-  // Gateway + الشبكات
+  // Gateway + networking
   gateway: {
     mode: "local",
     port: 18789,
@@ -464,9 +470,9 @@ x-i18n:
 }
 ```
 
-## الأنماط الشائعة
+## أنماط شائعة
 
-### خط أساس مشترك لـ Skill مع تجاوز واحد
+### خط أساس مشترك للمهارة مع تجاوز واحد
 
 ```json5
 {
@@ -483,8 +489,8 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills` هو خط الأساس المشترك.
-- يستبدل `agents.list[].skills` ذلك الخط الأساسي لوكيل واحد.
+- `agents.defaults.skills` هو الأساس المشترك.
+- `agents.list[].skills` يستبدل ذلك الأساس لوكيل واحد.
 - استخدم `skills: []` عندما يجب ألا يرى الوكيل أي Skills.
 
 ### إعداد متعدد المنصات
@@ -508,11 +514,11 @@ x-i18n:
 }
 ```
 
-### الموافقة التلقائية لعُقد الشبكة الموثوقة
+### موافقة تلقائية لشبكة Node موثوقة
 
-أبقِ اقتران الأجهزة يدويًا ما لم تكن تتحكم في مسار الشبكة. وبالنسبة إلى
-مختبر مخصص أو شبكة tailnet فرعية، يمكنك تفعيل الموافقة التلقائية لأول مرة على أجهزة Node
-باستخدام CIDR أو عناوين IP مطابقة تمامًا:
+أبقِ إقران الأجهزة يدويًا ما لم تكن تتحكم في مسار الشبكة. بالنسبة إلى مختبر
+مخصص أو شبكة فرعية في tailnet، يمكنك الاشتراك في الموافقة التلقائية على جهاز Node
+لأول مرة باستخدام CIDR أو عناوين IP دقيقة:
 
 ```json5
 {
@@ -526,27 +532,27 @@ x-i18n:
 }
 ```
 
-يظل هذا معطّلًا عند عدم تعيينه. وينطبق فقط على اقتران جديد لـ `role: node` من دون
-نطاقات scopes مطلوبة. ولا تزال ترقية عملاء المشغّل/المتصفح أو ترقية الدور أو
-النطاق أو البيانات الوصفية أو المفتاح العام تتطلب موافقة يدوية.
+يبقى هذا معطلًا عند عدم تعيينه. ينطبق فقط على إقران `role: node` جديد من دون
+نطاقات مطلوبة. ما يزال العملاء المشغّلون/المتصفح، وترقيات role أو scope أو metadata أو
+public-key تتطلب موافقة يدوية.
 
-### وضع الرسائل الخاصة الآمن (صندوق وارد مشترك / رسائل خاصة متعددة المستخدمين)
+### وضع الرسائل المباشرة الآمن (صندوق وارد مشترك / رسائل مباشرة متعددة المستخدمين)
 
-إذا كان بإمكان أكثر من شخص مراسلة الروبوت مباشرة (وجود أكثر من إدخال في `allowFrom`، أو موافقات اقتران لعدة أشخاص، أو `dmPolicy: "open"`)، فعِّل **وضع الرسائل الخاصة الآمن** حتى لا تشترك الرسائل الخاصة من مرسلين مختلفين في سياق واحد افتراضيًا:
+إذا كان يمكن لأكثر من شخص إرسال رسالة مباشرة إلى بوتك (إدخالات متعددة في `allowFrom`، أو موافقات إقران لعدة أشخاص، أو `dmPolicy: "open"`)، ففعّل **وضع الرسائل المباشرة الآمن** حتى لا تشارك الرسائل المباشرة من مرسلين مختلفين سياقًا واحدًا افتراضيًا:
 
 ```json5
 {
-  // وضع الرسائل الخاصة الآمن (موصى به لوكلاء الرسائل الخاصة متعددي المستخدمين أو الحساسين)
+  // Secure DM mode (recommended for multi-user or sensitive DM agents)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // مثال: صندوق وارد WhatsApp متعدد المستخدمين
+    // Example: WhatsApp multi-user inbox
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // مثال: صندوق وارد Discord متعدد المستخدمين
+    // Example: Discord multi-user inbox
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -556,10 +562,10 @@ x-i18n:
 }
 ```
 
-بالنسبة إلى Discord وSlack وGoogle Chat وMicrosoft Teams وMattermost وIRC، يكون تفويض المرسل قائمًا على المعرّف أولًا افتراضيًا.
-ولا تفعّل مطابقة الاسم/البريد الإلكتروني/الاسم المستعار القابل للتغيير مباشرة إلا باستخدام `dangerouslyAllowNameMatching: true` الخاص بكل قناة إذا كنت تقبل هذه المخاطرة صراحةً.
+بالنسبة إلى Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC، يكون تفويض المرسل قائمًا على المعرّف أولًا افتراضيًا.
+فعّل مطابقة الاسم/البريد الإلكتروني/اللقب القابلة للتغيير مباشرةً باستخدام `dangerouslyAllowNameMatching: true` الخاص بكل قناة فقط إذا كنت تقبل هذه المخاطرة صراحةً.
 
-### مفتاح Anthropic API مع fallback إلى MiniMax
+### مفتاح Anthropic API + احتياطي MiniMax
 
 ```json5
 {
@@ -593,13 +599,13 @@ x-i18n:
 }
 ```
 
-### روبوت العمل (وصول مقيّد)
+### بوت العمل (وصول مقيّد)
 
 ```json5
 {
   identity: {
     name: "WorkBot",
-    theme: "مساعد احترافي",
+    theme: "professional assistant",
   },
   agent: {
     workspace: "~/work-openclaw",
@@ -618,7 +624,7 @@ x-i18n:
 }
 ```
 
-### نماذج محلية فقط
+### النماذج المحلية فقط
 
 ```json5
 {
@@ -652,10 +658,10 @@ x-i18n:
 
 ## نصائح
 
-- إذا ضبطت `dmPolicy: "open"`، فيجب أن تتضمن قائمة `allowFrom` المطابقة القيمة `"*"`.
-- تختلف معرّفات الموفّرين (أرقام الهواتف، ومعرّفات المستخدمين، ومعرّفات القنوات). استخدم مستندات الموفّر لتأكيد الصيغة.
-- الأقسام الاختيارية التي يمكنك إضافتها لاحقًا: `web` و`browser` و`ui` و`discovery` و`canvasHost` و`talk` و`signal` و`imessage`.
-- راجع [الموفّرون](/ar/providers) و[استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting) للحصول على ملاحظات إعداد أعمق.
+- إذا عيّنت `dmPolicy: "open"`، فيجب أن تتضمن قائمة `allowFrom` المطابقة `"*"`.
+- تختلف معرّفات المزوّدين (أرقام الهواتف، معرّفات المستخدمين، معرّفات القنوات). استخدم وثائق المزوّد لتأكيد التنسيق.
+- أقسام اختيارية لإضافتها لاحقًا: `web`، `browser`، `ui`، `discovery`، `canvasHost`، `talk`، `signal`، `imessage`.
+- راجع [المزوّدين](/ar/providers) و[استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting) لملاحظات إعداد أكثر تفصيلًا.
 
 ## ذو صلة
 

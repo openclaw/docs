@@ -1,26 +1,26 @@
 ---
 read_when:
-    - أنت بصدد إجراء الإعداد الأولي من دون المرور بعملية الإعداد التفاعلي الكاملة في CLI
-    - أنت تريد تعيين مسار مساحة العمل الافتراضي
-summary: مرجع CLI لـ `openclaw setup` (تهيئة الإعداد + مساحة العمل)
+    - أنت تجري إعداد التشغيل الأول دون عملية التهيئة الكاملة عبر CLI
+    - تريد تعيين مسار مساحة العمل الافتراضي
+summary: مرجع CLI لـ `openclaw setup` (تهيئة التكوين + مساحة العمل)
 title: الإعداد
 x-i18n:
-    generated_at: "2026-04-24T07:36:08Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:50:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 650b0faf99ef1bc24ec6514661093a9a2ba7edead2e2622b863d51553c44f267
+    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
     source_path: cli/setup.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw setup`
 
 هيّئ `~/.openclaw/openclaw.json` ومساحة عمل الوكيل.
 
-ذو صلة:
+ذات صلة:
 
-- البدء: [بدء الاستخدام](/ar/start/getting-started)
-- الإعداد التفاعلي في CLI: [Onboarding (CLI)](/ar/start/wizard)
+- بدء الاستخدام: [بدء الاستخدام](/ar/start/getting-started)
+- الإعداد الأولي عبر CLI: [الإعداد الأولي (CLI)](/ar/start/wizard)
 
 ## أمثلة
 
@@ -28,19 +28,23 @@ x-i18n:
 openclaw setup
 openclaw setup --workspace ~/.openclaw/workspace
 openclaw setup --wizard
+openclaw setup --wizard --import-from hermes --import-source ~/.hermes
 openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:18789 --remote-token <token>
 ```
 
 ## الخيارات
 
-- `--workspace <dir>`: دليل مساحة عمل الوكيل (يُخزَّن كـ `agents.defaults.workspace`)
-- `--wizard`: تشغيل الإعداد التفاعلي
-- `--non-interactive`: تشغيل الإعداد التفاعلي دون مطالبات
-- `--mode <local|remote>`: وضع الإعداد التفاعلي
-- `--remote-url <url>`: عنوان URL الخاص بـ Gateway WebSocket البعيدة
-- `--remote-token <token>`: رمز Gateway البعيدة
+- `--workspace <dir>`: دليل مساحة عمل الوكيل (يُخزَّن باسم `agents.defaults.workspace`)
+- `--wizard`: تشغيل الإعداد الأولي
+- `--non-interactive`: تشغيل الإعداد الأولي من دون مطالبات
+- `--mode <local|remote>`: وضع الإعداد الأولي
+- `--import-from <provider>`: مزوّد الترحيل المراد تشغيله أثناء الإعداد الأولي
+- `--import-source <path>`: موطن الوكيل المصدر لـ `--import-from`
+- `--import-secrets`: استيراد الأسرار المدعومة أثناء ترحيل الإعداد الأولي
+- `--remote-url <url>`: عنوان URL لـ WebSocket الخاص بـ Gateway البعيد
+- `--remote-token <token>`: رمز Gateway البعيد
 
-لتشغيل الإعداد التفاعلي عبر setup:
+لتشغيل الإعداد الأولي عبر setup:
 
 ```bash
 openclaw setup --wizard
@@ -48,10 +52,11 @@ openclaw setup --wizard
 
 ملاحظات:
 
-- يقوم `openclaw setup` العادي بتهيئة الإعداد + مساحة العمل من دون تدفق الإعداد التفاعلي الكامل.
-- يتم تشغيل الإعداد التفاعلي تلقائيًا عند وجود أي من أعلام الإعداد التفاعلي (`--wizard` أو `--non-interactive` أو `--mode` أو `--remote-url` أو `--remote-token`).
+- يهيّئ `openclaw setup` العادي الإعدادات + مساحة العمل من دون تدفق الإعداد الأولي الكامل.
+- يعمل الإعداد الأولي تلقائيًا عند وجود أي أعلام للإعداد الأولي (`--wizard`، `--non-interactive`، `--mode`، `--import-from`، `--import-source`، `--import-secrets`، `--remote-url`، `--remote-token`).
+- إذا اكتُشفت حالة Hermes، يمكن للإعداد الأولي التفاعلي أن يعرض الترحيل تلقائيًا. يتطلب إعداد الاستيراد الأولي إعدادًا جديدًا؛ استخدم [الترحيل](/ar/cli/migrate) لخطط التشغيل التجريبي، والنسخ الاحتياطية، ووضع الاستبدال خارج الإعداد الأولي.
 
-## ذو صلة
+## ذات صلة
 
 - [مرجع CLI](/ar/cli)
 - [نظرة عامة على التثبيت](/ar/install)

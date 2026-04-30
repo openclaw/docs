@@ -1,23 +1,23 @@
 ---
 read_when:
     - تحديث OpenClaw
-    - حدث خلل بعد التحديث
-summary: تحديث OpenClaw بأمان (تثبيت عام أو من المصدر)، بالإضافة إلى استراتيجية التراجع
+    - يتعطل شيء ما بعد تحديث
+summary: تحديث OpenClaw بأمان (التثبيت العام أو من المصدر)، بالإضافة إلى استراتيجية التراجع
 title: التحديث
 x-i18n:
-    generated_at: "2026-04-26T11:34:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:09:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e40ff4d2db5f0b75107894d2b4959f34f3077acb55045230fb104b95795d9149
+    source_hash: 17d4839002b153976e014e0eefcb44f92dcb9bb45b81bf30efb1e8e8c0f30ec3
     source_path: install/updating.md
-    workflow: 15
+    workflow: 16
 ---
 
-احرص على إبقاء OpenClaw محدثًا.
+حافظ على OpenClaw محدثًا.
 
-## الموصى به: `openclaw update`
+## موصى به: `openclaw update`
 
-أسرع طريقة للتحديث. فهو يكتشف نوع التثبيت لديك (npm أو git)، ويجلب أحدث إصدار، ويشغّل `openclaw doctor`، ويعيد تشغيل gateway.
+أسرع طريقة للتحديث. يكتشف نوع التثبيت لديك (npm أو git)، ويجلب أحدث إصدار، ويشغّل `openclaw doctor`، ويعيد تشغيل Gateway.
 
 ```bash
 openclaw update
@@ -29,50 +29,64 @@ openclaw update
 openclaw update --channel beta
 openclaw update --channel dev
 openclaw update --tag main
-openclaw update --dry-run   # معاينة من دون تطبيق
+openclaw update --dry-run   # preview without applying
 ```
 
 يفضّل `--channel beta` قناة beta، لكن وقت التشغيل يعود إلى stable/latest عندما
-تكون علامة beta مفقودة أو أقدم من أحدث إصدار stable. استخدم `--tag beta`
-إذا كنت تريد dist-tag الخام الخاص بـ npm beta لتحديث حزمة لمرة واحدة.
+تكون وسم beta غير موجودة أو أقدم من أحدث إصدار مستقر. استخدم `--tag beta`
+إذا كنت تريد وسم توزيع npm beta الخام لتحديث حزمة لمرة واحدة.
 
 راجع [قنوات التطوير](/ar/install/development-channels) لمعرفة دلالات القنوات.
 
-## التبديل بين تثبيتات npm وgit
+## التبديل بين تثبيتات npm و git
 
-استخدم القنوات عندما تريد تغيير نوع التثبيت. يحتفظ المحدّث بالحالة،
-والإعداد، وبيانات الاعتماد، ومساحة العمل في `~/.openclaw`؛ ولا يغيّر إلا
-تثبيت شيفرة OpenClaw الذي يستخدمه CLI وgateway.
+استخدم القنوات عندما تريد تغيير نوع التثبيت. يحافظ المحدّث على
+الحالة، والإعدادات، وبيانات الاعتماد، ومساحة العمل في `~/.openclaw`؛ ولا يغيّر إلا
+تثبيت شيفرة OpenClaw الذي يستخدمه CLI وGateway.
 
 ```bash
-# تثبيت حزمة npm -> Git checkout قابل للتحرير
+# npm package install -> editable git checkout
 openclaw update --channel dev
 
-# Git checkout -> تثبيت حزمة npm
+# git checkout -> npm package install
 openclaw update --channel stable
 ```
 
-شغّل مع `--dry-run` أولًا لمعاينة التبديل الدقيق في وضع التثبيت:
+شغّل مع `--dry-run` أولًا لمعاينة تبديل وضع التثبيت بالضبط:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-تضمن قناة `dev` وجود Git checkout، وتبنيه، وتثبت CLI العالمية
-من تلك النسخة. أما القناتان `stable` و`beta` فتستخدمان تثبيتات الحزم. وإذا كانت
-gateway مثبتة بالفعل، فإن `openclaw update` يحدّث بيانات الخدمة الوصفية
-ويعيد تشغيلها ما لم تمرر `--no-restart`.
+تضمن قناة `dev` وجود نسخة git checkout، وتبنيها، وتثبّت CLI العام
+من تلك النسخة. تستخدم قناتا `stable` و`beta` تثبيتات الحزم. إذا كان
+Gateway مثبتًا بالفعل، فإن `openclaw update` يحدّث بيانات تعريف الخدمة
+ويعيد تشغيلها ما لم تمرّر `--no-restart`.
 
-## بديل: أعد تشغيل المُثبّت
+## بديل: إعادة تشغيل المثبّت
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-أضف `--no-onboard` لتخطي الإعداد الأولي. ولإجبار نوع تثبيت محدد عبر
+أضف `--no-onboard` لتخطي الإعداد الأولي. لفرض نوع تثبيت محدد عبر
 المثبّت، مرّر `--install-method git --no-onboard` أو
 `--install-method npm --no-onboard`.
+
+إذا فشل `openclaw update` بعد مرحلة تثبيت حزمة npm، فأعد تشغيل
+المثبّت. لا يستدعي المثبّت المحدّث القديم؛ بل يشغّل تثبيت الحزمة العامة
+مباشرةً ويمكنه استرداد تثبيت npm محدّث جزئيًا.
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
+```
+
+لتثبيت الاسترداد على إصدار محدد أو وسم توزيع محدد، أضف `--version`:
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
+```
 
 ## بديل: npm أو pnpm أو bun يدويًا
 
@@ -80,10 +94,13 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 npm i -g openclaw@latest
 ```
 
-عندما يدير `openclaw update` تثبيت npm عالميًا، فإنه يشغّل أولًا
-أمر التثبيت العالمي العادي. وإذا فشل هذا الأمر، يعيد OpenClaw المحاولة مرة واحدة باستخدام
-`--omit=optional`. تساعد إعادة المحاولة هذه على المضيفات التي لا تستطيع
-تجميع التبعيات الأصلية الاختيارية، مع إبقاء الفشل الأصلي ظاهرًا إذا فشل البديل أيضًا.
+عندما يدير `openclaw update` تثبيت npm عامًا، فإنه يثبّت الهدف أولًا داخل
+بادئة npm مؤقتة، ويتحقق من مخزون `dist` المضمّن في الحزمة، ثم يستبدل
+شجرة الحزمة النظيفة داخل البادئة العامة الحقيقية. يتجنب ذلك قيام npm بوضع
+حزمة جديدة فوق ملفات قديمة متبقية من الحزمة السابقة. إذا فشل أمر التثبيت،
+يعيد OpenClaw المحاولة مرة واحدة مع `--omit=optional`. تساعد إعادة المحاولة هذه المضيفات التي لا تستطيع فيها
+التبعيات الاختيارية الأصلية التحويل البرمجي، مع إبقاء الفشل الأصلي ظاهرًا
+إذا فشل خيار الرجوع أيضًا.
 
 ```bash
 pnpm add -g openclaw@latest
@@ -93,55 +110,47 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### تثبيتات npm العالمية وتبعيات وقت التشغيل
+### موضوعات متقدمة لتثبيت npm
 
-يتعامل OpenClaw مع التثبيتات العالمية المعبأة على أنها للقراءة فقط في وقت التشغيل، حتى عندما يكون
-دليل الحزمة العالمية قابلًا للكتابة بواسطة المستخدم الحالي. ويتم تجهيز تبعيات وقت التشغيل الخاصة بـ Plugin المضمنة
-في دليل وقت تشغيل قابل للكتابة بدلًا من تعديل
-شجرة الحزمة. وهذا يمنع `openclaw update` من التداخل مع gateway قيد التشغيل أو
-وكيل محلي يقوم بإصلاح تبعيات Plugin أثناء التثبيت نفسه.
+<AccordionGroup>
+  <Accordion title="شجرة حزم للقراءة فقط">
+    يتعامل OpenClaw مع التثبيتات العامة المعبأة كأنها للقراءة فقط أثناء التشغيل، حتى عندما يكون دليل الحزمة العام قابلًا للكتابة بواسطة المستخدم الحالي. تُحضّر تبعيات وقت تشغيل Plugins المضمّنة داخل دليل وقت تشغيل قابل للكتابة بدلًا من تعديل شجرة الحزم. يمنع ذلك `openclaw update` من التسابق مع Gateway قيد التشغيل أو وكيل محلي يصلح تبعيات Plugins أثناء التثبيت نفسه.
 
-تقوم بعض إعدادات npm على Linux بتثبيت الحزم العالمية ضمن أدلة مملوكة للجذر مثل
-`/usr/lib/node_modules/openclaw`. ويدعم OpenClaw هذا التخطيط عبر
-المسار الخارجي نفسه للتجهيز.
+    تثبّت بعض إعدادات npm على Linux الحزم العامة تحت أدلة مملوكة للجذر مثل `/usr/lib/node_modules/openclaw`. يدعم OpenClaw هذا التخطيط عبر مسار التحضير الخارجي نفسه.
 
-بالنسبة إلى وحدات systemd المقوّاة، اضبط دليل تجهيز قابلًا للكتابة ومضمّنًا في
-`ReadWritePaths`:
+  </Accordion>
+  <Accordion title="وحدات systemd معززة">
+    عيّن دليل تحضير قابلًا للكتابة ومضمّنًا في `ReadWritePaths`:
 
-```ini
-Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
-ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
-```
+    ```ini
+    Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
+    ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
+    ```
 
-إذا لم يتم تعيين `OPENCLAW_PLUGIN_STAGE_DIR`، يستخدم OpenClaw القيمة `$STATE_DIRECTORY` عندما
-توفرها systemd، ثم يعود إلى `~/.openclaw/plugin-runtime-deps`.
-وتتعامل خطوة الإصلاح مع هذا التجهيز على أنه جذر حزمة محلي مملوك لـ OpenClaw وتقوم
-بتجاهل إعدادات npm prefix/global الخاصة بالمستخدم، لذا لا يعيد إعداد npm الخاص بالتثبيت العالمي
-توجيه تبعيات Plugin المضمنة إلى `~/node_modules` أو إلى شجرة الحزمة العالمية.
+    يقبل `OPENCLAW_PLUGIN_STAGE_DIR` أيضًا قائمة مسارات. يحل OpenClaw تبعيات وقت تشغيل Plugins المضمّنة من اليسار إلى اليمين عبر الجذور المدرجة، ويتعامل مع الجذور السابقة كطبقات مثبتة مسبقًا للقراءة فقط، ولا يثبّت أو يصلح إلا داخل الجذر النهائي القابل للكتابة:
 
-قبل تحديثات الحزم وإصلاحات تبعيات وقت التشغيل المضمنة، يحاول OpenClaw إجراء
-فحص best-effort لمساحة القرص الخاصة بوحدة التخزين المستهدفة. ويؤدي انخفاض المساحة إلى تحذير
-يتضمن المسار الذي تم فحصه، لكنه لا يمنع التحديث لأن حصص أنظمة الملفات،
-واللقطات، ووحدات التخزين الشبكية قد تتغير بعد الفحص. وتبقى عمليات npm الفعلية
-للتثبيت، والنسخ، والتحقق بعد التثبيت هي المرجع النهائي.
+    ```ini
+    Environment=OPENCLAW_PLUGIN_STAGE_DIR=/opt/openclaw/plugin-runtime-deps:/var/lib/openclaw/plugin-runtime-deps
+    ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
+    ```
 
-### تبعيات وقت التشغيل الخاصة بـ Plugin المضمنة
+    إذا لم يتم تعيين `OPENCLAW_PLUGIN_STAGE_DIR`، يستخدم OpenClaw `$STATE_DIRECTORY` عندما يوفّره systemd، ثم يعود إلى `~/.openclaw/plugin-runtime-deps`. تتعامل خطوة الإصلاح مع ذلك التحضير كجذر حزم محلي مملوك لـ OpenClaw وتتجاهل بادئة npm الخاصة بالمستخدم والإعدادات العامة، لذلك لا تعيد إعدادات npm الخاصة بالتثبيت العام توجيه تبعيات Plugins المضمّنة إلى `~/node_modules` أو شجرة الحزمة العامة.
 
-تحافظ التثبيتات المعبأة على تبعيات وقت التشغيل الخاصة بـ Plugin المضمنة خارج شجرة
-الحزم للقراءة فقط. وعند بدء التشغيل وأثناء `openclaw doctor --fix`، يصلح OpenClaw
-تبعيات وقت التشغيل فقط لتلك Plugins المضمنة النشطة في الإعداد، أو النشطة
-عبر إعداد القناة القديم، أو المفعّلة بواسطة القيمة الافتراضية لبيانها المضمّن.
-لا تؤدي حالة مصادقة القناة الثابتة وحدها إلى تشغيل إصلاح تبعيات وقت التشغيل
-عند بدء تشغيل Gateway.
+  </Accordion>
+  <Accordion title="فحص مسبق لمساحة القرص">
+    قبل تحديثات الحزم وإصلاحات تبعيات وقت التشغيل المضمّنة، يحاول OpenClaw إجراء فحص مساحة قرص بأفضل جهد للمجلد الهدف. تؤدي المساحة المنخفضة إلى تحذير يتضمن المسار الذي تم فحصه، لكنها لا تمنع التحديث لأن حصص أنظمة الملفات، واللقطات، ووحدات التخزين الشبكية يمكن أن تتغير بعد الفحص. يظل تثبيت npm الفعلي، والنسخ، والتحقق بعد التثبيت هي المرجع النهائي.
+  </Accordion>
+  <Accordion title="تبعيات وقت تشغيل Plugins المضمّنة">
+    تُبقي التثبيتات المعبأة تبعيات وقت تشغيل Plugins المضمّنة خارج شجرة الحزمة للقراءة فقط. عند بدء التشغيل وأثناء `openclaw doctor --fix`، يصلح OpenClaw تبعيات وقت التشغيل فقط لـ Plugins المضمّنة النشطة في الإعدادات، أو النشطة عبر إعدادات القنوات القديمة، أو المفعّلة افتراضيًا بواسطة ملف manifest المضمّن الخاص بها. لا تؤدي حالة مصادقة القناة المحفوظة وحدها إلى تشغيل إصلاح تبعيات وقت التشغيل عند بدء Gateway.
 
-يفوز التعطيل الصريح. فلا يتم إصلاح تبعيات وقت التشغيل الخاصة بـ Plugin أو قناة معطّلة
-لمجرد وجودها في الحزمة. أما Plugins الخارجية ومسارات التحميل المخصصة
-فلا تزال تستخدم `openclaw plugins install` أو
-`openclaw plugins update`.
+    التعطيل الصريح له الأولوية. لا يحصل Plugin أو قناة معطّلة على إصلاح لتبعيات وقت التشغيل الخاصة بها لمجرد وجودها في الحزمة. لا تزال Plugins الخارجية ومسارات التحميل المخصصة تستخدم `openclaw plugins install` أو `openclaw plugins update`.
+
+  </Accordion>
+</AccordionGroup>
 
 ## المحدّث التلقائي
 
-يكون المحدّث التلقائي معطلًا افتراضيًا. فعّله في `~/.openclaw/openclaw.json`:
+المحدّث التلقائي متوقف افتراضيًا. فعّله في `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -157,13 +166,14 @@ ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 }
 ```
 
-| القناة   | السلوك                                                                                                      |
-| -------- | ----------------------------------------------------------------------------------------------------------- |
-| `stable` | ينتظر `stableDelayHours`، ثم يطبّق مع jitter حتمي عبر `stableJitterHours` (طرح تدريجي موزع). |
-| `beta`   | يتحقق كل `betaCheckIntervalHours` (الافتراضي: كل ساعة) ويطبّق فورًا.                                      |
-| `dev`    | لا يوجد تطبيق تلقائي. استخدم `openclaw update` يدويًا.                                                     |
+| القناة    | السلوك                                                                                                      |
+| -------- | ------------------------------------------------------------------------------------------------------------- |
+| `stable` | ينتظر `stableDelayHours`، ثم يطبّق مع تذبذب حتمي عبر `stableJitterHours` (طرح موزّع). |
+| `beta`   | يتحقق كل `betaCheckIntervalHours` (الافتراضي: كل ساعة) ويطبّق فورًا.                              |
+| `dev`    | لا يوجد تطبيق تلقائي. استخدم `openclaw update` يدويًا.                                                           |
 
-كما تسجل gateway أيضًا تلميح تحديث عند بدء التشغيل (يمكن تعطيله عبر `update.checkOnStart: false`).
+يسجّل Gateway أيضًا تلميح تحديث عند بدء التشغيل (عطّله باستخدام `update.checkOnStart: false`).
+لخفض الإصدار أو الاسترداد من حادثة، عيّن `OPENCLAW_NO_AUTO_UPDATE=1` في بيئة Gateway لمنع التطبيقات التلقائية حتى عند ضبط `update.auto.enabled`. يمكن أن تظل تلميحات التحديث عند بدء التشغيل تعمل ما لم يتم تعطيل `update.checkOnStart` أيضًا.
 
 ## بعد التحديث
 
@@ -175,15 +185,15 @@ ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
 openclaw doctor
 ```
 
-يرحّل الإعداد، ويدقق سياسات DM، ويتحقق من سلامة gateway. التفاصيل: [Doctor](/ar/gateway/doctor)
+يرحّل الإعدادات، ويدقق سياسات الرسائل المباشرة، ويتحقق من صحة Gateway. التفاصيل: [Doctor](/ar/gateway/doctor)
 
-### أعد تشغيل gateway
+### أعد تشغيل Gateway
 
 ```bash
 openclaw gateway restart
 ```
 
-### تحقّق
+### تحقق
 
 ```bash
 openclaw health
@@ -193,7 +203,7 @@ openclaw health
 
 ## التراجع
 
-### تثبيت إصدار محدد (npm)
+### تثبيت إصدار (npm)
 
 ```bash
 npm i -g openclaw@<version>
@@ -201,9 +211,11 @@ openclaw doctor
 openclaw gateway restart
 ```
 
-نصيحة: يعرض `npm view openclaw version` الإصدار المنشور الحالي.
+<Tip>
+يعرض `npm view openclaw version` الإصدار المنشور الحالي.
+</Tip>
 
-### تثبيت commit محدد (المصدر)
+### تثبيت commit (المصدر)
 
 ```bash
 git fetch origin
@@ -216,13 +228,13 @@ openclaw gateway restart
 
 ## إذا كنت عالقًا
 
-- شغّل `openclaw doctor` مرة أخرى واقرأ الخرج بعناية.
-- بالنسبة إلى `openclaw update --channel dev` على source checkouts، يقوم المحدّث بتهيئة `pnpm` تلقائيًا عند الحاجة. وإذا رأيت خطأ في تهيئة pnpm/corepack، فثبّت `pnpm` يدويًا (أو أعد تفعيل `corepack`) ثم أعد تشغيل التحديث.
-- راجع: [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
+- شغّل `openclaw doctor` مرة أخرى واقرأ المخرجات بعناية.
+- بالنسبة إلى `openclaw update --channel dev` على نسخ المصدر checkout، يجهّز المحدّث `pnpm` تلقائيًا عند الحاجة. إذا رأيت خطأ تجهيز pnpm/corepack، فثبّت `pnpm` يدويًا (أو أعد تفعيل `corepack`) وأعد تشغيل التحديث.
+- تحقق من: [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
 - اسأل في Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
-## ذو صلة
+## ذات صلة
 
-- [نظرة عامة على التثبيت](/ar/install) — جميع طرق التثبيت
-- [Doctor](/ar/gateway/doctor) — فحوصات السلامة بعد التحديثات
-- [الترحيل](/ar/install/migrating) — أدلة الترحيل بين الإصدارات الرئيسية
+- [نظرة عامة على التثبيت](/ar/install): جميع طرق التثبيت.
+- [Doctor](/ar/gateway/doctor): فحوصات الصحة بعد التحديثات.
+- [الترحيل](/ar/install/migrating): أدلة ترحيل الإصدارات الرئيسية.

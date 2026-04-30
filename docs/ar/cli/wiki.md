@@ -1,42 +1,41 @@
 ---
 read_when:
     - تريد استخدام CLI الخاص بـ memory-wiki
-    - أنت توثق `openclaw wiki` أو تغيّره
-summary: مرجع CLI لـ `openclaw wiki` (حالة خزينة memory-wiki، والبحث، وcompile، وlint، وapply، وbridge، ومساعدات Obsidian)
-title: الويكي
+    - أنت توثّق أو تعدّل `openclaw wiki`
+summary: مرجع CLI لـ `openclaw wiki` (حالة خزنة memory-wiki، والبحث، والتجميع، والتدقيق، والتطبيق، والجسر، ومساعدات Obsidian)
+title: ويكي
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T07:36:42Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: c25f7046ef0c29ed74204a5349edc2aa20ce79a355f49211a0ba0df4a5e4db3a
-  source_path: cli/wiki.md
-  workflow: 15
+    generated_at: "2026-04-30T07:50:54Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_path: cli/wiki.md
+    workflow: 16
 ---
 
 # `openclaw wiki`
 
-افحص خزينة `memory-wiki` وصُنها.
+افحص خزنة `memory-wiki` وصُنها.
 
-يوفّره Plugin المضمّن `memory-wiki`.
+يوفرها Plugin المضمّن `memory-wiki`.
 
-ذو صلة:
+ذات صلة:
 
-- [Plugin الذاكرة الويكي](/ar/plugins/memory-wiki)
+- [Plugin ويكي الذاكرة](/ar/plugins/memory-wiki)
 - [نظرة عامة على الذاكرة](/ar/concepts/memory)
-- [CLI: memory](/ar/cli/memory)
+- [CLI: الذاكرة](/ar/cli/memory)
 
-## الغرض منه
+## ما الغرض منه
 
-استخدم `openclaw wiki` عندما تريد خزينة معرفة مُجمّعة تتضمن:
+استخدم `openclaw wiki` عندما تريد خزنة معرفة مجمّعة تتضمن:
 
-- بحثًا أصليًا خاصًا بالويكي وقراءات للصفحات
-- توليفات غنية بالمصدر
-- تقارير عن التناقضات وحداثة المعلومات
-- استيرادات bridge من Plugin الذاكرة النشط
-- مساعدات CLI اختيارية لـ Obsidian
+- بحثًا أصليًا للويكي وقراءة الصفحات
+- تركيبات غنية بالمصدرية
+- تقارير التعارض والحداثة
+- عمليات استيراد جسرية من Plugin الذاكرة النشطة
+- أدوات مساعدة اختيارية لـ CLI الخاص بـ Obsidian
 
-## أوامر شائعة
+## الأوامر الشائعة
 
 ```bash
 openclaw wiki status
@@ -46,6 +45,7 @@ openclaw wiki ingest ./notes/alpha.md
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
+openclaw wiki search "who should I ask about Teams?" --mode route-question
 openclaw wiki get entity.alpha --from 1 --lines 80
 
 openclaw wiki apply synthesis "Alpha Summary" \
@@ -71,27 +71,34 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-افحص وضع الخزينة الحالي، وسلامتها، وتوفر Obsidian CLI.
+افحص وضع الخزنة الحالي وصحتها وتوفر CLI الخاص بـ Obsidian.
 
-استخدم هذا أولًا عندما لا تكون متأكدًا مما إذا كانت الخزينة قد تمت تهيئتها، أو ما إذا كان وضع bridge
-سليمًا، أو ما إذا كان تكامل Obsidian متاحًا.
+استخدم هذا أولًا عندما لا تكون متأكدًا مما إذا كانت الخزنة مهيأة، أو وضع الجسر
+سليمًا، أو تكامل Obsidian متاحًا.
+
+عندما يكون وضع الجسر نشطًا ومهيأً لقراءة عناصر الذاكرة، يستعلم هذا الأمر من
+Gateway الجاري تشغيله لكي يرى سياق Plugin الذاكرة النشطة نفسه مثل
+ذاكرة الوكيل/وقت التشغيل.
 
 ### `wiki doctor`
 
-شغّل فحوصات سلامة الويكي وأظهر مشكلات التهيئة أو الخزينة.
+شغّل فحوصات صحة الويكي واعرض مشكلات التهيئة أو الخزنة.
 
-تشمل المشكلات النموذجية:
+عندما يكون وضع الجسر نشطًا ومهيأً لقراءة عناصر الذاكرة، يستعلم هذا الأمر من
+Gateway الجاري تشغيله قبل بناء التقرير. تبقى عمليات استيراد الجسر المعطلة
+وتهيئات الجسر التي لا تقرأ عناصر الذاكرة محلية/غير متصلة.
 
-- تفعيل وضع bridge دون عناصر ذاكرة عامة
-- تخطيط خزينة غير صالح أو مفقود
-- غياب Obsidian CLI الخارجي عند توقع وضع Obsidian
+تشمل المشكلات المعتادة:
+
+- تفعيل وضع الجسر دون عناصر ذاكرة عامة
+- تخطيط خزنة غير صالح أو مفقود
+- غياب CLI الخارجي لـ Obsidian عندما يكون وضع Obsidian متوقعًا
 
 ### `wiki init`
 
-أنشئ تخطيط خزينة الويكي وصفحات البداية.
+أنشئ تخطيط خزنة الويكي وصفحات البداية.
 
-يهيّئ هذا البنية الجذرية، بما في ذلك الفهارس العليا
-ودلائل cache.
+يهيئ هذا البنية الجذرية، بما في ذلك الفهارس العليا ومجلدات التخزين المؤقت.
 
 ### `wiki ingest <path-or-url>`
 
@@ -99,33 +106,33 @@ openclaw wiki obsidian daily
 
 ملاحظات:
 
-- يخضع الاستيراد من URL إلى `ingest.allowUrlIngest`
-- تحتفظ صفحات المصادر المستوردة بالمصدر في frontmatter
-- يمكن تشغيل compile تلقائيًا بعد الاستيراد عند تفعيله
+- يتحكم `ingest.allowUrlIngest` في استيراد URL
+- تحتفظ صفحات المصادر المستوردة بالمصدرية في الواجهة الأمامية
+- يمكن أن يعمل التجميع التلقائي بعد الاستيراد عند تفعيله
 
 ### `wiki compile`
 
-أعِد بناء الفهارس، والكتل ذات الصلة، ولوحات المعلومات، والملخصات المجمّعة.
+أعد بناء الفهارس والكتل ذات الصلة ولوحات المعلومات والملخصات المجمّعة.
 
-يكتب هذا عناصر مستقرة موجهة للآلة تحت:
+يكتب هذا عناصر مستقرة موجهة للآلة ضمن:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-إذا كانت `render.createDashboards` مفعّلة، فسيقوم compile أيضًا بتحديث صفحات التقارير.
+إذا كان `render.createDashboards` مفعّلًا، يحدّث التجميع أيضًا صفحات التقارير.
 
 ### `wiki lint`
 
-دقّق الخزينة وأبلغ عن:
+افحص الخزنة وأبلغ عن:
 
-- المشكلات البنيوية
-- فجوات المصدر
-- التناقضات
+- مشكلات بنيوية
+- فجوات في المصدرية
+- التعارضات
 - الأسئلة المفتوحة
 - الصفحات/الادعاءات منخفضة الثقة
 - الصفحات/الادعاءات القديمة
 
-شغّل هذا بعد التحديثات المهمة على الويكي.
+شغّل هذا بعد تحديثات مهمة على الويكي.
 
 ### `wiki search <query>`
 
@@ -133,16 +140,38 @@ openclaw wiki obsidian daily
 
 يعتمد السلوك على التهيئة:
 
-- `search.backend`: ‏`shared` أو `local`
-- `search.corpus`: ‏`wiki` أو `memory` أو `all`
+- `search.backend`: `shared` أو `local`
+- `search.corpus`: `wiki` أو `memory` أو `all`
+- `--mode`: `auto` أو `find-person` أو `route-question` أو `source-evidence` أو
+  `raw-claim`
 
-استخدم `wiki search` عندما تريد ترتيبًا خاصًا بالويكي أو تفاصيل عن المصدر.
-وللحصول على مرور استدعاء مشترك واسع واحد، فضّل `openclaw memory search` عندما
-يكشف Plugin الذاكرة النشط بحثًا مشتركًا.
+استخدم `wiki search` عندما تريد ترتيبًا خاصًا بالويكي أو تفاصيل مصدرية.
+لإجراء استرجاع مشترك واسع واحد، فضّل `openclaw memory search` عندما يوفّر
+Plugin الذاكرة النشطة بحثًا مشتركًا.
+
+تساعد أوضاع البحث الوكيل في اختيار السطح الصحيح:
+
+- `find-person`: الأسماء البديلة والمعرّفات الاجتماعية ومعرفات الوسائط والمعرفات القياسية وصفحات الأشخاص
+- `route-question`: تلميحات مَن تسأل/أفضل استخدام وسياق العلاقات
+- `source-evidence`: صفحات المصادر وحقول الأدلة المنظمة
+- `raw-claim`: نص ادعاء منظم مع بيانات تعريف الادعاء/الدليل
+
+أمثلة:
+
+```bash
+openclaw wiki search "bgroux" --mode find-person
+openclaw wiki search "who knows Teams rollout?" --mode route-question
+openclaw wiki search "maintainer-whois" --mode source-evidence
+openclaw wiki search "strong route Teams" --mode raw-claim --json
+```
+
+يتضمن إخراج النص أسطر `Claim:` و`Evidence:` عندما تطابق نتيجة ما ادعاءً
+منظمًا. يعرض إخراج JSON أيضًا `matchedClaimId` و`matchedClaimStatus`
+و`matchedClaimConfidence` و`evidenceKinds` و`evidenceSourceIds` للتعمق من جهة الوكيل.
 
 ### `wiki get <lookup>`
 
-اقرأ صفحة ويكي حسب المعرّف أو المسار النسبي.
+اقرأ صفحة ويكي حسب المعرف أو المسار النسبي.
 
 أمثلة:
 
@@ -153,38 +182,41 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-طبّق تغييرات ضيقة دون جراحة حرة على الصفحة.
+طبّق تعديلات ضيقة دون جراحة صفحات حرة الصياغة.
 
 تشمل التدفقات المدعومة:
 
-- إنشاء/تحديث صفحة synthesis
-- تحديث بيانات الصفحة الوصفية
-- إرفاق معرّفات المصادر
+- إنشاء/تحديث صفحة تركيب
+- تحديث بيانات تعريف الصفحة
+- إرفاق معرفات المصادر
 - إضافة أسئلة
-- إضافة تناقضات
+- إضافة تعارضات
 - تحديث الثقة/الحالة
-- كتابة claims منظّمة
+- كتابة ادعاءات منظمة
 
-يوجد هذا الأمر حتى تتطور الويكي بأمان من دون تحرير يدوي
-للكتل المُدارة.
+يوجد هذا الأمر لكي يتمكن الويكي من التطور بأمان دون تحرير الكتل المُدارة يدويًا.
 
 ### `wiki bridge import`
 
-استورد عناصر الذاكرة العامة من Plugin الذاكرة النشط إلى صفحات المصادر
-المدعومة بـ bridge.
+استورد عناصر الذاكرة العامة من Plugin الذاكرة النشطة إلى صفحات مصادر مدعومة بالجسر.
 
 استخدم هذا في وضع `bridge` عندما تريد سحب أحدث عناصر الذاكرة المصدّرة
-إلى خزينة الويكي.
+إلى خزنة الويكي.
+
+لقراءات عناصر الجسر النشطة، يوجّه CLI الاستيراد عبر Gateway RPC لكي يستخدم
+الاستيراد سياق Plugin الذاكرة في وقت التشغيل. إذا كانت عمليات استيراد الجسر
+معطلة أو قراءات العناصر متوقفة، يحافظ الأمر على سلوك الاستيراد الصفري
+المحلي/غير المتصل.
 
 ### `wiki unsafe-local import`
 
-استورد من مسارات محلية مهيأة صراحةً في وضع `unsafe-local`.
+استورد من مسارات محلية مهيأة صراحة في وضع `unsafe-local`.
 
-وهذا تجريبي عمدًا ويقتصر على الجهاز نفسه فقط.
+هذا تجريبي عمدًا ومخصص للجهاز نفسه فقط.
 
 ### `wiki obsidian ...`
 
-أوامر مساعدة Obsidian للخزائن التي تعمل في وضع متوافق مع Obsidian.
+أوامر مساعدة لـ Obsidian للخزنات العاملة في وضع ملائم لـ Obsidian.
 
 الأوامر الفرعية:
 
@@ -194,20 +226,19 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 - `command`
 - `daily`
 
-تتطلب هذه الأوامر وجود `obsidian` CLI الرسمي على `PATH` عندما
-يكون `obsidian.useOfficialCli` مفعّلًا.
+تتطلب هذه الأوامر CLI الرسمي `obsidian` على `PATH` عندما يكون
+`obsidian.useOfficialCli` مفعّلًا.
 
-## إرشادات عملية للاستخدام
+## إرشادات الاستخدام العملية
 
-- استخدم `wiki search` + `wiki get` عندما تكون هوية الصفحة والمصدر مهمتين.
+- استخدم `wiki search` + `wiki get` عندما تكون المصدرية وهوية الصفحة مهمتين.
 - استخدم `wiki apply` بدلًا من التحرير اليدوي للأقسام المُدارة والمولدة.
-- استخدم `wiki lint` قبل الوثوق بالمحتوى المتناقض أو منخفض الثقة.
-- استخدم `wiki compile` بعد الاستيرادات الجماعية أو تغييرات المصادر عندما تريد
+- استخدم `wiki lint` قبل الثقة بمحتوى متعارض أو منخفض الثقة.
+- استخدم `wiki compile` بعد عمليات الاستيراد الضخمة أو تغييرات المصادر عندما تريد
   لوحات معلومات وملخصات مجمّعة حديثة فورًا.
-- استخدم `wiki bridge import` عندما يعتمد وضع bridge على عناصر
-  ذاكرة مُصدّرة حديثًا.
+- استخدم `wiki bridge import` عندما يعتمد وضع الجسر على عناصر ذاكرة مصدّرة حديثًا.
 
-## الارتباطات مع التهيئة
+## روابط التهيئة
 
 يتشكل سلوك `openclaw wiki` بواسطة:
 
@@ -219,9 +250,9 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 - `plugins.entries.memory-wiki.config.render.*`
 - `plugins.entries.memory-wiki.config.context.includeCompiledDigestPrompt`
 
-راجع [Plugin الذاكرة الويكي](/ar/plugins/memory-wiki) للاطلاع على نموذج التهيئة الكامل.
+راجع [Plugin ويكي الذاكرة](/ar/plugins/memory-wiki) للاطلاع على نموذج التهيئة الكامل.
 
-## ذو صلة
+## ذات صلة
 
 - [مرجع CLI](/ar/cli)
-- [الذاكرة الويكي](/ar/plugins/memory-wiki)
+- [ويكي الذاكرة](/ar/plugins/memory-wiki)

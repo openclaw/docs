@@ -1,35 +1,34 @@
 ---
 read_when:
-    - تشغيل أو تهيئة onboarding في CLI
+    - تشغيل الإعداد الأولي لـ CLI أو تكوينه
     - إعداد جهاز جديد
 sidebarTitle: 'Onboarding: CLI'
-summary: 'Onboarding في CLI: إعداد موجّه لـ gateway، ومساحة العمل، والقنوات، وSkills'
-title: Onboarding ‏(CLI)
+summary: 'الإعداد الأولي عبر CLI: إعداد موجّه لـ Gateway ومساحة العمل والقنوات وSkills'
+title: الإعداد الأولي (CLI)
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T08:06:25Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 919a4ab57f42f663e98e77c967e08e7ad7afbb193bd048ca1dedc884002d3801
-  source_path: start/wizard.md
-  workflow: 15
+    generated_at: "2026-04-30T08:27:35Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 9e9ee3af82ab9f4a1af5d20e3680eb932a9428cb914bbc08c9a2bf83c94ec158
+    source_path: start/wizard.md
+    workflow: 16
 ---
 
-يُعد onboarding في CLI **الطريقة الموصى بها** لإعداد OpenClaw على macOS،
-وLinux، وWindows ‏(عبر WSL2؛ وهو موصى به بشدة).
-فهو يهيّئ Gateway محلية أو اتصالًا بـ Gateway بعيدة، بالإضافة إلى القنوات، وSkills،
-وافتراضيات مساحة العمل في تدفق موجه واحد.
+يُعد إعداد CLI هو الطريقة **الموصى بها** لإعداد OpenClaw على macOS،
+أو Linux، أو Windows (عبر WSL2؛ موصى به بشدة).
+يقوم بتكوين Gateway محلي أو اتصال Gateway بعيد، بالإضافة إلى القنوات وSkills
+وافتراضيات مساحة العمل ضمن مسار إرشادي واحد.
 
 ```bash
 openclaw onboard
 ```
 
 <Info>
-أسرع أول دردشة: افتح Control UI ‏(لا حاجة إلى إعداد قناة). شغّل
-`openclaw dashboard` وابدأ الدردشة في المتصفح. الوثائق: [Dashboard](/ar/web/dashboard).
+أسرع محادثة أولى: افتح واجهة التحكم (لا يلزم إعداد قناة). شغّل
+`openclaw dashboard` وتحدث في المتصفح. الوثائق: [لوحة التحكم](/ar/web/dashboard).
 </Info>
 
-لإعادة التهيئة لاحقًا:
+لإعادة التكوين لاحقًا:
 
 ```bash
 openclaw configure
@@ -37,77 +36,77 @@ openclaw agents add <name>
 ```
 
 <Note>
-لا يعني `--json` الوضع غير التفاعلي ضمنيًا. وبالنسبة إلى السكربتات، استخدم `--non-interactive`.
+`--json` لا يعني الوضع غير التفاعلي. للبرامج النصية، استخدم `--non-interactive`.
 </Note>
 
 <Tip>
-يتضمن onboarding في CLI خطوة للبحث على الويب يمكنك فيها اختيار provider
-مثل Brave، وDuckDuckGo، وExa، وFirecrawl، وGemini، وGrok، وKimi، وMiniMax Search،
-وOllama Web Search، وPerplexity، وSearXNG، أو Tavily. تتطلب بعض providers
-مفتاح API، بينما لا تحتاج أخرى إلى مفتاح. ويمكنك أيضًا إعداد ذلك لاحقًا باستخدام
+يتضمن إعداد CLI خطوة بحث ويب يمكنك فيها اختيار مزود
+مثل Brave أو DuckDuckGo أو Exa أو Firecrawl أو Gemini أو Grok أو Kimi أو MiniMax Search
+أو Ollama Web Search أو Perplexity أو SearXNG أو Tavily. يتطلب بعض المزودين
+مفتاح API، بينما لا يحتاج آخرون إلى مفاتيح. يمكنك أيضًا تكوين ذلك لاحقًا باستخدام
 `openclaw configure --section web`. الوثائق: [أدوات الويب](/ar/tools/web).
 </Tip>
 
-## QuickStart مقابل Advanced
+## البدء السريع مقابل المتقدم
 
-يبدأ onboarding بخيار **QuickStart** ‏(افتراضيات) مقابل **Advanced** ‏(تحكم كامل).
+يبدأ الإعداد بـ **البدء السريع** (الافتراضيات) مقابل **المتقدم** (تحكم كامل).
 
 <Tabs>
-  <Tab title="QuickStart ‏(الافتراضيات)">
-    - Gateway محلية ‏(loopback)
-    - مساحة العمل الافتراضية (أو مساحة عمل موجودة)
+  <Tab title="البدء السريع (الافتراضيات)">
+    - Gateway محلي (local loopback)
+    - افتراضي مساحة العمل (أو مساحة عمل موجودة)
     - منفذ Gateway **18789**
-    - مصادقة Gateway **Token** ‏(يُنشأ تلقائيًا، حتى على loopback)
-    - سياسة الأدوات الافتراضية للإعدادات المحلية الجديدة: `tools.profile: "coding"` ‏(ويُحافَظ على أي ملف شخصي صريح موجود)
-    - افتراضي عزل الرسائل المباشرة: يكتب onboarding المحلي `session.dmScope: "per-channel-peer"` عندما لا يكون مضبوطًا. التفاصيل: [مرجع إعداد CLI](/ar/start/wizard-cli-reference#outputs-and-internals)
-    - تعريض Tailscale **معطل**
-    - تستخدم الرسائل المباشرة في Telegram + WhatsApp افتراضيًا **allowlist** ‏(وسيُطلب منك رقم هاتفك)
+    - مصادقة Gateway **Token** (يُنشأ تلقائيًا، حتى على loopback)
+    - افتراضي سياسة الأدوات للإعدادات المحلية الجديدة: `tools.profile: "coding"` (يُحافَظ على الملف الشخصي الصريح الموجود)
+    - افتراضي عزل الرسائل المباشرة: يكتب الإعداد المحلي `session.dmScope: "per-channel-peer"` عندما لا يكون مضبوطًا. التفاصيل: [مرجع إعداد CLI](/ar/start/wizard-cli-reference#outputs-and-internals)
+    - عرض Tailscale **متوقف**
+    - الرسائل المباشرة في Telegram وWhatsApp تستخدم **قائمة السماح** افتراضيًا (سيُطلب منك رقم هاتفك)
 
   </Tab>
-  <Tab title="Advanced ‏(تحكم كامل)">
-    - يكشف كل خطوة (الوضع، ومساحة العمل، وgateway، والقنوات، وdaemon، وSkills).
+  <Tab title="المتقدم (تحكم كامل)">
+    - يكشف كل خطوة (الوضع، مساحة العمل، Gateway، القنوات، الخدمة الخلفية، Skills).
 
   </Tab>
 </Tabs>
 
-## ما الذي يهيئه onboarding
+## ما الذي يكوّنه الإعداد
 
-**الوضع المحلي (الافتراضي)** يوجّهك عبر هذه الخطوات:
+يرشدك **الوضع المحلي (الافتراضي)** خلال هذه الخطوات:
 
-1. **النموذج/المصادقة** — اختر أي تدفق provider/auth مدعوم (مفتاح API، أو OAuth، أو مصادقة يدوية خاصة بالـ provider)، بما في ذلك Custom Provider
-   ‏(متوافق مع OpenAI، أو متوافق مع Anthropic، أو Unknown مع اكتشاف تلقائي). اختر نموذجًا افتراضيًا.
-   ملاحظة أمنية: إذا كان هذا الوكيل سيشغّل أدوات أو يعالج محتوى webhook/hooks، ففضّل أقوى نموذج متاح من أحدث جيل وحافظ على سياسة أدوات صارمة. فالطبقات الأضعف/الأقدم أسهل في التعرض لحقن prompt.
-   وبالنسبة إلى التشغيلات غير التفاعلية، يخزن `--secret-input-mode ref` مراجع مدعومة بالبيئة داخل ملفات تعريف المصادقة بدلًا من قيم مفاتيح API النصية الصريحة.
-   وفي وضع `ref` غير التفاعلي، يجب أن يكون متغير البيئة الخاص بالـ provider مضبوطًا؛ وتمرير علامات مفاتيح مضمنة من دون ذلك المتغير يؤدي إلى فشل سريع.
-   وفي التشغيلات التفاعلية، يتيح لك اختيار وضع SecretRef الإشارة إلى متغير بيئة أو مرجع provider مضبوط (`file` أو `exec`)، مع تحقق تمهيدي سريع قبل الحفظ.
-   بالنسبة إلى Anthropic، يقدّم onboarding/configure التفاعلي **Anthropic Claude CLI** كمسار محلي مفضّل و**مفتاح Anthropic API** كمسار موصى به للإنتاج. كما يظل Anthropic setup-token متاحًا أيضًا كمسار مصادقة قائم على الرمز ومدعوم.
-2. **مساحة العمل** — موقع ملفات الوكيل (الافتراضي `~/.openclaw/workspace`). ويزرع ملفات bootstrap.
-3. **Gateway** — المنفذ، وعنوان الربط، ووضع المصادقة، وتعريض Tailscale.
-   في وضع token التفاعلي، اختر التخزين النصي الصريح الافتراضي للرمز أو اشترك في SecretRef.
-   مسار SecretRef غير التفاعلي للرمز: `--gateway-token-ref-env <ENV_VAR>`.
-4. **القنوات** — قنوات الدردشة المضمنة والمجمعة مثل BlueBubbles، وDiscord، وFeishu، وGoogle Chat، وMattermost، وMicrosoft Teams، وQQ Bot، وSignal، وSlack، وTelegram، وWhatsApp، وغير ذلك.
-5. **Daemon** — يثبت LaunchAgent ‏(macOS)، أو وحدة systemd للمستخدم ‏(Linux/WSL2)، أو مهمة Windows Scheduled Task أصلية مع رجوع احتياطي إلى مجلد Startup لكل مستخدم.
-   إذا كانت مصادقة token تتطلب رمزًا وكان `gateway.auth.token` مُدارًا عبر SecretRef، فإن تثبيت daemon يتحقق منه لكنه لا يحفظ الرمز المحلول في بيانات البيئة الخاصة بخدمة supervisor.
-   وإذا كانت مصادقة token تتطلب رمزًا وكان SecretRef الخاص بالرمز المضبوط غير محلول، فيتم حظر تثبيت daemon مع إرشادات قابلة للتنفيذ.
-   وإذا كان كل من `gateway.auth.token` و`gateway.auth.password` مضبوطين وكانت `gateway.auth.mode` غير مضبوطة، فيُحظر تثبيت daemon حتى يتم ضبط الوضع صراحةً.
-6. **فحص الصحة** — يبدأ Gateway ويتحقق من أنها تعمل.
+1. **النموذج/المصادقة** — اختر أي مزود/مسار مصادقة مدعوم (مفتاح API أو OAuth أو مصادقة يدوية خاصة بالمزود)، بما في ذلك مزود مخصص
+   (متوافق مع OpenAI، أو متوافق مع Anthropic، أو كشف تلقائي غير معروف). اختر نموذجًا افتراضيًا.
+   ملاحظة أمان: إذا كان هذا الوكيل سيشغّل أدوات أو يعالج محتوى Webhook/hooks، ففضّل أقوى نموذج متاح من أحدث جيل وأبقِ سياسة الأدوات صارمة. المستويات الأضعف/الأقدم أسهل في حقن المطالبات.
+   للتشغيل غير التفاعلي، يخزن `--secret-input-mode ref` مراجع مدعومة بالبيئة في ملفات تعريف المصادقة بدلًا من قيم مفاتيح API بنص صريح.
+   في وضع `ref` غير التفاعلي، يجب ضبط متغير بيئة المزود؛ تمرير أعلام مفاتيح مضمّنة دون متغير البيئة هذا يفشل بسرعة.
+   في التشغيل التفاعلي، يتيح لك اختيار وضع مرجع السر الإشارة إما إلى متغير بيئة أو مرجع مزود مكوّن (`file` أو `exec`)، مع تحقق تمهيدي سريع قبل الحفظ.
+   بالنسبة إلى Anthropic، يعرض الإعداد/التكوين التفاعلي **Anthropic Claude CLI** كالمسار المحلي المفضل و**مفتاح Anthropic API** كالمسار الإنتاجي الموصى به. يظل setup-token من Anthropic متاحًا أيضًا كمسار مصادقة رمزية مدعوم.
+2. **مساحة العمل** — موقع ملفات الوكيل (الافتراضي `~/.openclaw/workspace`). يزرع ملفات التمهيد.
+3. **Gateway** — المنفذ، عنوان الربط، وضع المصادقة، عرض Tailscale.
+   في وضع الرمز التفاعلي، اختر تخزين الرمز النصي الصريح الافتراضي أو انتقل إلى SecretRef.
+   مسار SecretRef للرمز في الوضع غير التفاعلي: `--gateway-token-ref-env <ENV_VAR>`.
+4. **القنوات** — قنوات الدردشة المدمجة والمرفقة مثل BlueBubbles وDiscord وFeishu وGoogle Chat وMattermost وMicrosoft Teams وQQ Bot وSignal وSlack وTelegram وWhatsApp والمزيد.
+5. **الخدمة الخلفية** — يثبّت LaunchAgent (macOS)، أو وحدة مستخدم systemd (Linux/WSL2)، أو مهمة Windows Scheduled Task أصلية مع بديل مجلد Startup لكل مستخدم.
+   إذا كانت مصادقة الرمز تتطلب رمزًا وكان `gateway.auth.token` مُدارًا بواسطة SecretRef، فإن تثبيت الخدمة الخلفية يتحقق منه لكنه لا يحفظ الرمز المحلول في بيانات تعريف بيئة خدمة المشرف.
+   إذا كانت مصادقة الرمز تتطلب رمزًا وكان SecretRef للرمز المكوّن غير قابل للحل، فسيُحظر تثبيت الخدمة الخلفية مع إرشادات قابلة للتنفيذ.
+   إذا تم تكوين كل من `gateway.auth.token` و`gateway.auth.password` وكان `gateway.auth.mode` غير مضبوط، فسيُحظر تثبيت الخدمة الخلفية حتى يتم ضبط الوضع صراحةً.
+6. **فحص الصحة** — يبدأ Gateway ويتحقق من أنه يعمل.
 7. **Skills** — يثبّت Skills الموصى بها والتبعيات الاختيارية.
 
 <Note>
-إعادة تشغيل onboarding **لا** تمسح أي شيء ما لم تختر صراحةً **Reset** ‏(أو تمرر `--reset`).
-ويستخدم `--reset` في CLI افتراضيًا الإعدادات، وبيانات الاعتماد، والجلسات؛ استخدم `--reset-scope full` لتضمين مساحة العمل.
-إذا كانت الإعدادات غير صالحة أو تحتوي على مفاتيح قديمة، فسيطلب منك onboarding تشغيل `openclaw doctor` أولًا.
+لا تؤدي إعادة تشغيل الإعداد إلى مسح أي شيء ما لم تختر **إعادة تعيين** صراحةً (أو تمرر `--reset`).
+تستهدف `--reset` في CLI افتراضيًا التكوين وبيانات الاعتماد والجلسات؛ استخدم `--reset-scope full` لتضمين مساحة العمل.
+إذا كان التكوين غير صالح أو يحتوي على مفاتيح قديمة، فسيطلب منك الإعداد تشغيل `openclaw doctor` أولًا.
 </Note>
 
-**الوضع البعيد** يهيّئ فقط العميل المحلي للاتصال بـ Gateway موجودة في مكان آخر.
-وهو **لا** يثبت أو يغيّر أي شيء على المضيف البعيد.
+يقوم **الوضع البعيد** فقط بتكوين العميل المحلي للاتصال بـ Gateway في مكان آخر.
+لا يثبّت أو يغيّر أي شيء على المضيف البعيد.
 
 ## إضافة وكيل آخر
 
-استخدم `openclaw agents add <name>` لإنشاء وكيل منفصل له مساحة عمله،
-وجلساته، وملفات تعريف المصادقة الخاصة به. ويؤدي التشغيل من دون `--workspace` إلى إطلاق onboarding.
+استخدم `openclaw agents add <name>` لإنشاء وكيل منفصل له مساحة عمله الخاصة،
+وجلساته، وملفات تعريف المصادقة الخاصة به. التشغيل بدون `--workspace` يطلق الإعداد.
 
-ما الذي يضبطه:
+ما يضبطه:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -115,21 +114,21 @@ openclaw agents add <name>
 
 ملاحظات:
 
-- تتبع مساحات العمل الافتراضية النمط `~/.openclaw/workspace-<agentId>`.
-- أضف `bindings` لتوجيه الرسائل الواردة (يمكن لـ onboarding القيام بذلك).
-- العلامات غير التفاعلية: `--model` و`--agent-dir` و`--bind` و`--non-interactive`.
+- تتبع مساحات العمل الافتراضية `~/.openclaw/workspace-<agentId>`.
+- أضف `bindings` لتوجيه الرسائل الواردة (يمكن للإعداد فعل ذلك).
+- أعلام الوضع غير التفاعلي: `--model`، `--agent-dir`، `--bind`، `--non-interactive`.
 
 ## المرجع الكامل
 
-للحصول على تفصيلات خطوة بخطوة ومخرجات الإعدادات، راجع
+للحصول على تفصيل خطوة بخطوة ومخرجات التكوين، راجع
 [مرجع إعداد CLI](/ar/start/wizard-cli-reference).
-وللحصول على أمثلة غير تفاعلية، راجع [أتمتة CLI](/ar/start/wizard-cli-automation).
-أما المرجع التقني الأعمق، بما في ذلك تفاصيل RPC، فراجع
-[مرجع onboarding](/ar/reference/wizard).
+لأمثلة الوضع غير التفاعلي، راجع [أتمتة CLI](/ar/start/wizard-cli-automation).
+للمرجع التقني الأعمق، بما في ذلك تفاصيل RPC، راجع
+[مرجع الإعداد](/ar/reference/wizard).
 
 ## وثائق ذات صلة
 
-- مرجع أوامر CLI: ‏[`openclaw onboard`](/ar/cli/onboard)
-- نظرة عامة على onboarding: ‏[نظرة عامة على onboarding](/ar/start/onboarding-overview)
-- onboarding لتطبيق macOS: ‏[Onboarding](/ar/start/onboarding)
-- الطقس الأول للوكيل: ‏[Bootstrapping الوكيل](/ar/start/bootstrapping)
+- مرجع أوامر CLI: [`openclaw onboard`](/ar/cli/onboard)
+- نظرة عامة على الإعداد: [نظرة عامة على الإعداد](/ar/start/onboarding-overview)
+- إعداد تطبيق macOS: [الإعداد](/ar/start/onboarding)
+- طقس التشغيل الأول للوكيل: [تمهيد الوكيل](/ar/start/bootstrapping)

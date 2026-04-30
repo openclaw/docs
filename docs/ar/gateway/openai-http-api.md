@@ -1,109 +1,109 @@
 ---
 read_when:
     - دمج الأدوات التي تتوقع OpenAI Chat Completions
-summary: كشف نقطة نهاية HTTP متوافقة مع OpenAI من نوع `/v1/chat/completions` من Gateway
-title: إكمالات دردشة OpenAI
+summary: وفّر نقطة نهاية HTTP متوافقة مع OpenAI على /v1/chat/completions من Gateway
+title: إكمالات الدردشة في OpenAI
 x-i18n:
-    generated_at: "2026-04-25T13:48:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:00:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9a2f45abfc0aef8f73ab909bc3007de4078177214e5e0e5cf27a4c6ad0918172
+    source_hash: 9a19f9d9d6d8ce6d605f8af5324ae3eb0c100c167609341c8dfb569970b0b2c9
     source_path: gateway/openai-http-api.md
-    workflow: 15
+    workflow: 16
 ---
 
-يمكن لـ Gateway في OpenClaw تقديم نقطة نهاية صغيرة متوافقة مع OpenAI Chat Completions.
+يمكن لـ Gateway في OpenClaw تقديم نقطة نهاية صغيرة متوافقة مع OpenAI لـ Chat Completions.
 
-تكون نقطة النهاية هذه **معطلة افتراضيًا**. فعّلها أولًا في الإعدادات.
+تكون نقطة النهاية هذه **معطّلة افتراضيًا**. فعّلها في الإعدادات أولًا.
 
 - `POST /v1/chat/completions`
-- المنفذ نفسه الخاص بـ Gateway (تعدد WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
+- المنفذ نفسه مثل Gateway (تعدد إرسال WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
 
-عند تمكين واجهة HTTP المتوافقة مع OpenAI في Gateway، فإنها تقدّم أيضًا:
+عند تفعيل سطح HTTP المتوافق مع OpenAI في Gateway، فإنه يقدّم أيضًا:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/responses`
 
-في الخلفية، تُنفَّذ الطلبات كتشغيل وكيل Gateway عادي (المسار البرمجي نفسه مثل `openclaw agent`)، لذا فإن التوجيه/الأذونات/الإعدادات تتطابق مع Gateway الخاصة بك.
+داخليًا، تُنفّذ الطلبات كتشغيل عادي لوكيل Gateway (نفس مسار الكود مثل `openclaw agent`)، لذا تتطابق التوجيهات/الأذونات/الإعدادات مع Gateway لديك.
 
 ## المصادقة
 
-تستخدم إعدادات مصادقة Gateway.
+يستخدم إعدادات مصادقة Gateway.
 
 مسارات مصادقة HTTP الشائعة:
 
 - مصادقة السر المشترك (`gateway.auth.mode="token"` أو `"password"`):
   `Authorization: Bearer <token-or-password>`
-- مصادقة HTTP الموثوقة الحاملة للهوية (`gateway.auth.mode="trusted-proxy"`):
-  وجّه الحركة عبر الوكيل المُدرك للهوية والمُعدّ ودعه يحقن
+- مصادقة HTTP موثوقة تحمل الهوية (`gateway.auth.mode="trusted-proxy"`):
+  وجّه عبر الوكيل المكوّن المدرك للهوية ودعه يحقن
   ترويسات الهوية المطلوبة
-- مصادقة مفتوحة عبر إدخال خاص (`gateway.auth.mode="none"`):
-  لا حاجة إلى ترويسة مصادقة
+- مصادقة مفتوحة لدخول خاص (`gateway.auth.mode="none"`):
+  لا يلزم ترويسة مصادقة
 
 ملاحظات:
 
-- عندما تكون `gateway.auth.mode="token"`، استخدم `gateway.auth.token` (أو `OPENCLAW_GATEWAY_TOKEN`).
-- عندما تكون `gateway.auth.mode="password"`، استخدم `gateway.auth.password` (أو `OPENCLAW_GATEWAY_PASSWORD`).
-- عندما تكون `gateway.auth.mode="trusted-proxy"`، يجب أن يأتي طلب HTTP من
-  مصدر وكيل موثوق غير loopback مُعدّ؛ ولا تلبّي الوكلاء على loopback على المضيف نفسه
-  هذا الوضع.
-- إذا كانت `gateway.auth.rateLimit` مُعدّة وحدث عدد كبير جدًا من إخفاقات المصادقة، فستعيد نقطة النهاية `429` مع `Retry-After`.
+- عند `gateway.auth.mode="token"`، استخدم `gateway.auth.token` (أو `OPENCLAW_GATEWAY_TOKEN`).
+- عند `gateway.auth.mode="password"`، استخدم `gateway.auth.password` (أو `OPENCLAW_GATEWAY_PASSWORD`).
+- عند `gateway.auth.mode="trusted-proxy"`، يجب أن يأتي طلب HTTP من
+  مصدر وكيل موثوق مكوّن؛ تتطلب وكلاء loopback على المضيف نفسه
+  ضبطًا صريحًا لـ `gateway.auth.trustedProxy.allowLoopback = true`.
+- إذا كان `gateway.auth.rateLimit` مكوّنًا وحدث عدد كبير جدًا من إخفاقات المصادقة، فستعيد نقطة النهاية `429` مع `Retry-After`.
 
 ## حد الأمان (مهم)
 
-تعامل مع نقطة النهاية هذه باعتبارها واجهة **وصول كاملة على مستوى المشغّل** لنسخة gateway.
+تعامل مع نقطة النهاية هذه كسطح **وصول كامل للمشغّل** لمثيل Gateway.
 
-- مصادقة HTTP bearer هنا ليست نموذج نطاق ضيق لكل مستخدم.
-- يجب التعامل مع رمز/كلمة مرور Gateway صالحة لهذه النقطة كما لو كانت بيانات اعتماد مالك/مشغّل.
-- تمر الطلبات عبر مسار وكيل مستوى التحكم نفسه مثل إجراءات المشغّل الموثوق.
-- لا يوجد حد أدوات منفصل لغير المالك/لكل مستخدم على هذه النقطة؛ فبمجرد أن يجتاز المستدعي مصادقة Gateway هنا، يعامل OpenClaw ذلك المستدعي كمشغّل موثوق لهذه gateway.
-- بالنسبة إلى أوضاع مصادقة السر المشترك (`token` و`password`)، تعيد نقطة النهاية القيم الافتراضية الكاملة للمشغّل حتى إذا أرسل المستدعي ترويسة `x-openclaw-scopes` أضيق.
-- تحترم أوضاع HTTP الموثوقة الحاملة للهوية (مثل مصادقة trusted proxy أو `gateway.auth.mode="none"`) الترويسة `x-openclaw-scopes` عند وجودها، وإلا فإنها ترجع إلى مجموعة نطاقات المشغّل الافتراضية العادية.
-- إذا كانت سياسة الوكيل المستهدف تسمح بأدوات حساسة، فيمكن لهذه النقطة استخدامها.
-- أبقِ نقطة النهاية هذه على loopback أو tailnet أو إدخال خاص فقط؛ ولا تكشفها مباشرة إلى الإنترنت العام.
+- مصادقة HTTP bearer هنا ليست نموذج نطاق ضيقًا لكل مستخدم.
+- يجب التعامل مع رمز/كلمة مرور Gateway صالحة لنقطة النهاية هذه كاعتماد مالك/مشغّل.
+- تمر الطلبات عبر مسار وكيل مستوى التحكم نفسه كإجراءات المشغّل الموثوقة.
+- لا يوجد حد أدوات منفصل لغير المالك/لكل مستخدم على نقطة النهاية هذه؛ بمجرد أن يجتاز المستدعي مصادقة Gateway هنا، يتعامل OpenClaw مع ذلك المستدعي كمشغّل موثوق لهذا Gateway.
+- في أوضاع مصادقة السر المشترك (`token` و`password`)، تستعيد نقطة النهاية الإعدادات الافتراضية العادية الكاملة للمشغّل حتى إذا أرسل المستدعي ترويسة `x-openclaw-scopes` أضيق.
+- أوضاع HTTP الموثوقة الحاملة للهوية (مثل مصادقة الوكيل الموثوق أو `gateway.auth.mode="none"`) تحترم `x-openclaw-scopes` عند وجودها، وإلا فتعود إلى مجموعة النطاقات الافتراضية العادية للمشغّل.
+- إذا كانت سياسة الوكيل الهدف تسمح بأدوات حساسة، فيمكن لنقطة النهاية هذه استخدامها.
+- أبقِ نقطة النهاية هذه على loopback/tailnet/دخول خاص فقط؛ لا تعرضها مباشرة على الإنترنت العام.
 
 مصفوفة المصادقة:
 
 - `gateway.auth.mode="token"` أو `"password"` + `Authorization: Bearer ...`
-  - يثبت امتلاك السر المشترك لمشغّل gateway
+  - يثبت حيازة سر مشغّل Gateway المشترك
   - يتجاهل `x-openclaw-scopes` الأضيق
-  - يعيد مجموعة نطاقات المشغّل الافتراضية الكاملة:
-    `operator.admin` و`operator.approvals` و`operator.pairing`،
-    `operator.read` و`operator.talk.secrets` و`operator.write`
-  - يعامل أدوار الدردشة على هذه النقطة كأدوار مرسل-مالك
-- أوضاع HTTP الموثوقة الحاملة للهوية (مثل مصادقة trusted proxy أو `gateway.auth.mode="none"` على إدخال خاص)
-  - تصادق على بعض حدود الهوية الموثوقة الخارجية أو حدود النشر
-  - تحترم `x-openclaw-scopes` عندما تكون الترويسة موجودة
-  - ترجع إلى مجموعة نطاقات المشغّل الافتراضية العادية عند غياب الترويسة
-  - لا تفقد دلالات المالك إلا عندما يضيّق المستدعي النطاقات صراحةً ويحذف `operator.admin`
+  - يستعيد مجموعة نطاقات المشغّل الافتراضية الكاملة:
+    `operator.admin`, `operator.approvals`, `operator.pairing`,
+    `operator.read`, `operator.talk.secrets`, `operator.write`
+  - يتعامل مع أدوار المحادثة على نقطة النهاية هذه كأدوار مرسل المالك
+- أوضاع HTTP الموثوقة الحاملة للهوية (مثل مصادقة الوكيل الموثوق، أو `gateway.auth.mode="none"` على دخول خاص)
+  - تصادق بعض الهوية الخارجية الموثوقة أو حد النشر
+  - تحترم `x-openclaw-scopes` عند وجود الترويسة
+  - تعود إلى مجموعة نطاقات المشغّل الافتراضية العادية عند غياب الترويسة
+  - لا تفقد دلالات المالك إلا عندما يضيّق المستدعي النطاقات صراحة ويحذف `operator.admin`
 
-راجع [الأمان](/ar/gateway/security) و[الوصول البعيد](/ar/gateway/remote).
+راجع [الأمان](/ar/gateway/security) و[الوصول عن بُعد](/ar/gateway/remote).
 
-## عقد النموذج القائم على الوكيل
+## عقد نموذج يقدّم الوكيل أولًا
 
-يعامل OpenClaw حقل OpenAI `model` على أنه **هدف وكيل**، وليس معرّف نموذج مزوّد خام.
+يتعامل OpenClaw مع حقل `model` في OpenAI كـ **هدف وكيل**، وليس معرّف نموذج مزوّد خامًا.
 
-- يوجّه `model: "openclaw"` إلى الوكيل الافتراضي المُعدّ.
-- يوجّه `model: "openclaw/default"` أيضًا إلى الوكيل الافتراضي المُعدّ.
-- يوجّه `model: "openclaw/<agentId>"` إلى وكيل محدد.
+- `model: "openclaw"` يوجّه إلى الوكيل الافتراضي المكوّن.
+- `model: "openclaw/default"` يوجّه أيضًا إلى الوكيل الافتراضي المكوّن.
+- `model: "openclaw/<agentId>"` يوجّه إلى وكيل محدد.
 
-ترويسات طلب اختيارية:
+ترويسات الطلب الاختيارية:
 
-- يتجاوز `x-openclaw-model: <provider/model-or-bare-id>` النموذج الخلفي للوكيل المحدد.
-- لا يزال `x-openclaw-agent-id: <agentId>` مدعومًا كتجاوز توافق.
-- يتحكم `x-openclaw-session-key: <sessionKey>` بالكامل في توجيه الجلسة.
-- يعيّن `x-openclaw-message-channel: <channel>` سياق قناة دخول اصطناعيًا للمطالبات والسياسات المدركة للقنوات.
+- `x-openclaw-model: <provider/model-or-bare-id>` يتجاوز نموذج الخلفية للوكيل المحدد.
+- `x-openclaw-agent-id: <agentId>` يبقى مدعومًا كتجاوز توافق.
+- `x-openclaw-session-key: <sessionKey>` يتحكم بالكامل في توجيه الجلسة.
+- `x-openclaw-message-channel: <channel>` يضبط سياق قناة الدخول الاصطناعية للمطالبات والسياسات المدركة للقناة.
 
-أسماء مستعارة للتوافق ما تزال مقبولة:
+أسماء التوافق المستعارة التي لا تزال مقبولة:
 
 - `model: "openclaw:<agentId>"`
 - `model: "agent:<agentId>"`
 
-## تمكين نقطة النهاية
+## تفعيل نقطة النهاية
 
-اضبط `gateway.http.endpoints.chatCompletions.enabled` إلى `true`:
+اضبط `gateway.http.endpoints.chatCompletions.enabled` على `true`:
 
 ```json5
 {
@@ -119,7 +119,7 @@ x-i18n:
 
 ## تعطيل نقطة النهاية
 
-اضبط `gateway.http.endpoints.chatCompletions.enabled` إلى `false`:
+اضبط `gateway.http.endpoints.chatCompletions.enabled` على `false`:
 
 ```json5
 {
@@ -135,96 +135,96 @@ x-i18n:
 
 ## سلوك الجلسة
 
-افتراضيًا تكون نقطة النهاية **عديمة الحالة لكل طلب** (يتم إنشاء مفتاح جلسة جديد عند كل استدعاء).
+افتراضيًا، تكون نقطة النهاية **بلا حالة لكل طلب** (يُنشأ مفتاح جلسة جديد في كل استدعاء).
 
-إذا تضمّن الطلب سلسلة OpenAI `user`، فستشتق Gateway منها مفتاح جلسة ثابتًا، بحيث يمكن للمكالمات المتكررة مشاركة جلسة وكيل.
+إذا تضمّن الطلب سلسلة OpenAI `user`، فسيشتق Gateway مفتاح جلسة ثابتًا منها، بحيث يمكن للاستدعاءات المتكررة مشاركة جلسة وكيل.
 
-## لماذا تهم هذه الواجهة
+## لماذا هذا السطح مهم
 
-هذه هي مجموعة التوافق الأعلى أثرًا لواجهات وأدوات مستضافة ذاتيًا:
+هذه هي مجموعة التوافق الأعلى أثرًا للواجهات الأمامية والأدوات المستضافة ذاتيًا:
 
-- تتوقع معظم إعدادات Open WebUI وLobeChat وLibreChat المسار `/v1/models`.
-- تتوقع العديد من أنظمة RAG المسار `/v1/embeddings`.
-- يمكن لمعظم عملاء دردشة OpenAI الحاليين البدء عادةً من `/v1/chat/completions`.
-- يفضّل المزيد من العملاء الأكثر أصلية للوكلاء بشكل متزايد `/v1/responses`.
+- تتوقع معظم إعدادات Open WebUI وLobeChat وLibreChat وجود `/v1/models`.
+- تتوقع كثير من أنظمة RAG وجود `/v1/embeddings`.
+- يمكن لعملاء محادثة OpenAI الحاليين عادةً البدء باستخدام `/v1/chat/completions`.
+- يفضّل العملاء الأكثر اعتمادًا على الوكلاء أصلًا `/v1/responses` بشكل متزايد.
 
-## قائمة النماذج وتوجيه الوكيل
+## قائمة النماذج وتوجيه الوكلاء
 
 <AccordionGroup>
   <Accordion title="ماذا يعيد `/v1/models`؟">
     قائمة أهداف وكلاء OpenClaw.
 
-    تكون المعرّفات المعادة هي `openclaw` و`openclaw/default` وإدخالات `openclaw/<agentId>`.
-    استخدمها مباشرة كقيم OpenAI `model`.
+    المعرّفات المعادة هي إدخالات `openclaw` و`openclaw/default` و`openclaw/<agentId>`.
+    استخدمها مباشرة كقيم `model` في OpenAI.
 
   </Accordion>
-  <Accordion title="هل يسرد `/v1/models` الوكلاء أم الوكلاء الفرعيين؟">
-    إنه يسرد أهداف الوكلاء من المستوى الأعلى، وليس نماذج المزوّد الخلفية ولا الوكلاء الفرعيين.
+  <Accordion title="هل يسرد `/v1/models` وكلاء أم وكلاء فرعيين؟">
+    يسرد أهداف الوكلاء عالية المستوى، وليس نماذج مزوّدي الخلفية ولا الوكلاء الفرعيين.
 
-    يظل الوكلاء الفرعيون طوبولوجيا تنفيذ داخلية. ولا يظهرون كنماذج وهمية.
-
-  </Accordion>
-  <Accordion title="لماذا يتم تضمين `openclaw/default`؟">
-    `openclaw/default` هو الاسم المستعار الثابت للوكيل الافتراضي المُعدّ.
-
-    وهذا يعني أن العملاء يمكنهم الاستمرار في استخدام معرّف واحد متوقع حتى لو تغيّر معرّف الوكيل الافتراضي الفعلي بين البيئات.
+    تبقى الوكلاء الفرعية بنية تنفيذ داخلية. ولا تظهر كنماذج زائفة.
 
   </Accordion>
-  <Accordion title="كيف أتجاوز النموذج الخلفي؟">
+  <Accordion title="لماذا تم تضمين `openclaw/default`؟">
+    `openclaw/default` هو الاسم المستعار الثابت للوكيل الافتراضي المكوّن.
+
+    هذا يعني أن العملاء يمكنهم الاستمرار في استخدام معرّف واحد متوقع حتى إذا تغيّر معرّف الوكيل الافتراضي الحقيقي بين البيئات.
+
+  </Accordion>
+  <Accordion title="كيف أتجاوز نموذج الخلفية؟">
     استخدم `x-openclaw-model`.
 
     أمثلة:
     `x-openclaw-model: openai/gpt-5.4`
     `x-openclaw-model: gpt-5.5`
 
-    إذا حذفته، فسيعمل الوكيل المحدد بخيار النموذج المُعدّ العادي الخاص به.
+    إذا حذفته، فسيعمل الوكيل المحدد بخيار النموذج العادي المكوّن له.
 
   </Accordion>
-  <Accordion title="كيف تنسجم التضمينات مع هذا العقد؟">
-    يستخدم `/v1/embeddings` معرّفات `model` نفسها الخاصة بأهداف الوكلاء.
+  <Accordion title="كيف تندرج التضمينات ضمن هذا العقد؟">
+    يستخدم `/v1/embeddings` معرّفات `model` نفسها الخاصة بهدف الوكيل.
 
     استخدم `model: "openclaw/default"` أو `model: "openclaw/<agentId>"`.
-    وعندما تحتاج إلى نموذج تضمين محدد، أرسله في `x-openclaw-model`.
-    وبدون تلك الترويسة، يمر الطلب إلى إعداد التضمين العادي للوكيل المحدد.
+    عندما تحتاج إلى نموذج تضمين محدد، أرسله في `x-openclaw-model`.
+    من دون تلك الترويسة، يمر الطلب إلى إعداد التضمين العادي للوكيل المحدد.
 
   </Accordion>
 </AccordionGroup>
 
 ## البث (SSE)
 
-اضبط `stream: true` لتلقي Server-Sent Events (SSE):
+اضبط `stream: true` لتلقي أحداث مرسلة من الخادم (SSE):
 
 - `Content-Type: text/event-stream`
-- يكون كل سطر حدث بصيغة `data: <json>`
+- كل سطر حدث هو `data: <json>`
 - ينتهي البث بـ `data: [DONE]`
 
-## إعداد سريع لـ Open WebUI
+## إعداد Open WebUI السريع
 
 لاتصال Open WebUI أساسي:
 
 - عنوان URL الأساسي: `http://127.0.0.1:18789/v1`
 - عنوان URL الأساسي لـ Docker على macOS: `http://host.docker.internal:18789/v1`
-- مفتاح API: رمز Gateway bearer الخاص بك
+- مفتاح API: رمز bearer الخاص بـ Gateway لديك
 - النموذج: `openclaw/default`
 
 السلوك المتوقع:
 
-- ينبغي أن يسرد `GET /v1/models` القيمة `openclaw/default`
-- ينبغي أن يستخدم Open WebUI القيمة `openclaw/default` كمعرّف نموذج الدردشة
-- إذا أردت مزوّد/نموذجًا خلفيًا محددًا لذلك الوكيل، فاضبط النموذج الافتراضي العادي للوكيل أو أرسل `x-openclaw-model`
+- يجب أن يسرد `GET /v1/models` القيمة `openclaw/default`
+- يجب أن يستخدم Open WebUI القيمة `openclaw/default` كمعرّف نموذج المحادثة
+- إذا أردت مزوّد/نموذج خلفية محددًا لذلك الوكيل، فاضبط النموذج الافتراضي العادي للوكيل أو أرسل `x-openclaw-model`
 
-فحص سريع:
+اختبار سريع:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-إذا أعاد ذلك `openclaw/default`، فيمكن لمعظم إعدادات Open WebUI الاتصال باستخدام عنوان URL الأساسي نفسه والرمز نفسه.
+إذا أعاد ذلك `openclaw/default`، فيمكن لمعظم إعدادات Open WebUI الاتصال باستخدام عنوان URL الأساسي والرمز نفسيهما.
 
 ## أمثلة
 
-بدون بث:
+بلا بث:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/chat/completions \
@@ -236,7 +236,7 @@ curl -sS http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-مع البث:
+بث:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/chat/completions \
@@ -250,7 +250,7 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-إدراج النماذج:
+سرد النماذج:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
@@ -279,12 +279,12 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
 
 ملاحظات:
 
-- يعيد `/v1/models` أهداف وكلاء OpenClaw، وليس كتالوجات المزوّد الخام.
-- تكون `openclaw/default` موجودة دائمًا بحيث يعمل معرّف ثابت واحد عبر البيئات.
-- تنتمي تجاوزات المزوّد/النموذج الخلفية إلى `x-openclaw-model`، وليس إلى حقل OpenAI `model`.
-- يدعم `/v1/embeddings` الحقل `input` كسلسلة نصية أو مصفوفة من السلاسل النصية.
+- يعيد `/v1/models` أهداف وكلاء OpenClaw، وليس فهارس مزوّدين خامة.
+- يكون `openclaw/default` موجودًا دائمًا حتى يعمل معرّف ثابت واحد عبر البيئات.
+- تنتمي تجاوزات مزوّد/نموذج الخلفية إلى `x-openclaw-model`، وليس إلى حقل OpenAI `model`.
+- يدعم `/v1/embeddings` القيمة `input` كسلسلة أو مصفوفة سلاسل.
 
-## ذو صلة
+## ذات صلة
 
 - [مرجع الإعدادات](/ar/gateway/configuration-reference)
 - [OpenAI](/ar/providers/openai)

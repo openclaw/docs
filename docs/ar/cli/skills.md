@@ -1,27 +1,27 @@
 ---
 read_when:
-    - تريد معرفة Skills المتاحة والجاهزة للتشغيل
-    - تريد البحث عن Skills أو تثبيتها أو تحديثها من ClawHub
-    - تريد تصحيح أخطاء الملفات التنفيذية أو متغيرات البيئة أو الإعدادات المفقودة الخاصة بـ Skills
-summary: مرجع CLI لـ `openclaw skills` (البحث/التثبيت/التحديث/السرد/المعلومات/التحقق)
+    - تريد معرفة أي Skills متاحة وجاهزة للتشغيل
+    - تريد البحث عن Skills من ClawHub أو تثبيتها أو تحديثها
+    - تريد استكشاف أخطاء الملفات الثنائية/البيئة/التكوين المفقودة لـ Skills
+summary: مرجع CLI لـ `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-04-24T07:36:13Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:50:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 31cd7647a15cd5df6cf5a2311e63bb11cc3aabfe8beefda7be57dc76adc509ea
+    source_hash: 5059bf04c68dabe289d2c376407a52989c970e3d16e7637a2c83f4e24ad6564c
     source_path: cli/skills.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw skills`
 
 افحص Skills المحلية وثبّت/حدّث Skills من ClawHub.
 
-ذو صلة:
+ذات صلة:
 
 - نظام Skills: [Skills](/ar/tools/skills)
-- إعدادات Skills: [إعدادات Skills](/ar/tools/skills-config)
+- تكوين Skills: [Skills config](/ar/tools/skills-config)
 - تثبيتات ClawHub: [ClawHub](/ar/tools/clawhub)
 
 ## الأوامر
@@ -32,39 +32,49 @@ openclaw skills search --limit 20 --json
 openclaw skills install <slug>
 openclaw skills install <slug> --version <version>
 openclaw skills install <slug> --force
+openclaw skills install <slug> --agent <id>
 openclaw skills update <slug>
 openclaw skills update --all
+openclaw skills update --all --agent <id>
 openclaw skills list
 openclaw skills list --eligible
 openclaw skills list --json
 openclaw skills list --verbose
+openclaw skills list --agent <id>
 openclaw skills info <name>
 openclaw skills info <name> --json
+openclaw skills info <name> --agent <id>
 openclaw skills check
 openclaw skills check --json
+openclaw skills check --agent <id>
 ```
 
-تستخدم `search`/`install`/`update` خدمة ClawHub مباشرةً وتثبّت داخل دليل
-`skills/` الخاص بمساحة العمل النشطة. أما `list`/`info`/`check` فما تزال
-تفحص Skills المحلية المرئية لمساحة العمل الحالية والإعدادات الحالية.
+تستخدم `search`/`install`/`update` ClawHub مباشرةً وتثبّت في دليل
+`skills/` في مساحة العمل النشطة. ما زالت `list`/`info`/`check` تفحص
+Skills المحلية المرئية لمساحة العمل والتكوين الحاليين. تحلّ الأوامر المستندة
+إلى مساحة العمل مساحة العمل الهدف من `--agent <id>`، ثم دليل العمل الحالي
+عندما يكون داخل مساحة عمل وكيل مهيأة، ثم الوكيل الافتراضي.
 
-يقوم أمر CLI هذا `install` بتنزيل مجلدات Skill من ClawHub. أما
-تثبيتات تبعيات Skill المدعومة بـ Gateway والتي يتم تشغيلها من onboarding أو من
-إعدادات Skills فتستخدم مسار الطلب المنفصل `skills.install` بدلًا من ذلك.
+ينزّل أمر `install` في CLI هذا مجلدات Skills من ClawHub. أما عمليات تثبيت
+اعتماديات Skills المدعومة من Gateway والمشغّلة من الإعداد الأولي أو إعدادات
+Skills فتستخدم مسار طلب `skills.install` المنفصل بدلًا من ذلك.
 
 ملاحظات:
 
-- تقبل `search [query...]` استعلامًا اختياريًا؛ احذفه لتصفح خلاصة البحث الافتراضية في ClawHub.
-- يحد `search --limit <n>` من عدد النتائج المُعادة.
-- يقوم `install --force` بالكتابة فوق مجلد Skill موجود في مساحة العمل للـ
-  slug نفسه.
-- يقوم `update --all` فقط بتحديث تثبيتات ClawHub المتعقبة في مساحة العمل النشطة.
-- `list` هو الإجراء الافتراضي عندما لا يتم توفير أمر فرعي.
-- تكتب `list` و`info` و`check` المخرجات المعروضة إلى stdout. ومع
-  `--json`، فهذا يعني أن الحمولة القابلة للقراءة آليًا تبقى على stdout
-  لاستخدامها في الأنابيب والبرامج النصية.
+- تقبل `search [query...]` استعلامًا اختياريًا؛ احذفه لتصفح خلاصة بحث
+  ClawHub الافتراضية.
+- يحدّد `search --limit <n>` الحد الأقصى للنتائج المعادة.
+- يستبدل `install --force` مجلد Skill موجودًا في مساحة العمل للمعرّف النصي
+  نفسه.
+- يستهدف `--agent <id>` مساحة عمل وكيل واحدة مهيأة ويتجاوز استنتاج دليل
+  العمل الحالي.
+- يحدّث `update --all` تثبيتات ClawHub المتتبعة فقط في مساحة العمل النشطة.
+- `list` هو الإجراء الافتراضي عند عدم توفير أمر فرعي.
+- تكتب `list` و`info` و`check` مخرجاتها المعروضة إلى الإخراج القياسي. مع
+  `--json`، يعني ذلك أن الحمولة القابلة للقراءة آليًا تبقى على الإخراج
+  القياسي للأنابيب والسكربتات.
 
-## ذو صلة
+## ذات صلة
 
 - [مرجع CLI](/ar/cli)
 - [Skills](/ar/tools/skills)

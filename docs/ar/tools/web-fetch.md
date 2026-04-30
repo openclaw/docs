@@ -1,40 +1,39 @@
 ---
 read_when:
-    - تريد جلب عنوان URL واستخراج محتوى قابل للقراءة
-    - تحتاج إلى إعداد `web_fetch` أو بديله الاحتياطي Firecrawl
-    - تريد فهم حدود `web_fetch` والتخزين المؤقت الخاص بها
+    - تريد جلب عنوان URL واستخراج محتوى مقروء
+    - تحتاج إلى تكوين web_fetch أو بديله الاحتياطي Firecrawl
+    - تريد فهم حدود web_fetch والتخزين المؤقت
 sidebarTitle: Web Fetch
-summary: أداة `web_fetch` -- جلب HTTP مع استخراج محتوى قابل للقراءة
-title: جلب الويب
+summary: أداة web_fetch -- جلب HTTP مع استخراج محتوى قابل للقراءة
+title: جلب من الويب
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T08:11:54Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 56113bf358194d364a61f0e3f52b8f8437afc55565ab8dda5b5069671bc35735
-  source_path: tools/web-fetch.md
-  workflow: 15
+    generated_at: "2026-04-30T08:33:49Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
+    source_path: tools/web-fetch.md
+    workflow: 16
 ---
 
-تقوم أداة `web_fetch` بتنفيذ HTTP GET عادي وتستخرج محتوى قابلاً للقراءة
-(من HTML إلى markdown أو text). وهي **لا** تنفذ JavaScript.
+تُجري أداة `web_fetch` طلب HTTP GET عاديًا وتستخرج المحتوى القابل للقراءة
+(من HTML إلى markdown أو نص). وهي **لا** تنفّذ JavaScript.
 
-بالنسبة إلى المواقع المعتمدة بكثافة على JS أو الصفحات المحمية بتسجيل الدخول، استخدم
-[Web Browser](/ar/tools/browser) بدلًا من ذلك.
+للمواقع كثيفة الاعتماد على JS أو الصفحات المحمية بتسجيل الدخول، استخدم
+[متصفّح الويب](/ar/tools/browser) بدلًا من ذلك.
 
-## بدء سريع
+## البدء السريع
 
-تكون `web_fetch` **مفعلة افتراضيًا** -- ولا حاجة إلى أي إعداد. ويمكن للوكيل
+تكون `web_fetch` **مفعّلة افتراضيًا** -- ولا يلزم أي ضبط. يمكن للوكيل
 استدعاؤها فورًا:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
 ```
 
-## معلمات الأداة
+## معاملات الأداة
 
 <ParamField path="url" type="string" required>
-عنوان URL المراد جلبه. `http(s)` فقط.
+عنوان URL المطلوب جلبه. `http(s)` فقط.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
@@ -45,27 +44,27 @@ await web_fetch({ url: "https://example.com/article" });
 اقتطاع الإخراج إلى هذا العدد من الأحرف.
 </ParamField>
 
-## كيف تعمل
+## آلية العمل
 
 <Steps>
   <Step title="الجلب">
-    ترسل HTTP GET مع User-Agent شبيه بـ Chrome وترويسة `Accept-Language`.
-    وتحظر أسماء المضيفين الخاصة/الداخلية وتعيد فحص عمليات إعادة التوجيه.
+    يرسل طلب HTTP GET باستخدام User-Agent شبيه بمتصفّح Chrome وترويسة
+    `Accept-Language`. يحظر أسماء المضيف الخاصة/الداخلية ويعيد التحقق من عمليات إعادة التوجيه.
   </Step>
   <Step title="الاستخراج">
-    تشغّل Readability ‏(استخراج المحتوى الرئيسي) على استجابة HTML.
+    يشغّل Readability (استخراج المحتوى الرئيسي) على استجابة HTML.
   </Step>
-  <Step title="البديل الاحتياطي (اختياري)">
-    إذا فشل Readability وكانت Firecrawl مضبوطة، تعيد المحاولة عبر
-    Firecrawl API مع وضع تجاوز الحماية من البوتات.
+  <Step title="الرجوع الاحتياطي (اختياري)">
+    إذا فشل Readability وكان Firecrawl مضبوطًا، يعيد المحاولة عبر
+    Firecrawl API بوضع تجاوز البوتات.
   </Step>
   <Step title="التخزين المؤقت">
-    يتم تخزين النتائج مؤقتًا لمدة 15 دقيقة (قابلة للضبط) لتقليل
-    عمليات الجلب المتكررة لعنوان URL نفسه.
+    تُخزّن النتائج مؤقتًا لمدة 15 دقيقة (قابلة للضبط) لتقليل عمليات
+    الجلب المتكررة لنفس عنوان URL.
   </Step>
 </Steps>
 
-## الإعداد
+## الضبط
 
 ```json5
 {
@@ -82,16 +81,20 @@ await web_fetch({ url: "https://example.com/article" });
         maxRedirects: 3,
         readability: true, // use Readability extraction
         userAgent: "Mozilla/5.0 ...", // override User-Agent
+        ssrfPolicy: {
+          allowRfc2544BenchmarkRange: true, // opt-in for trusted fake-IP proxies using 198.18.0.0/15
+          allowIpv6UniqueLocalRange: true, // opt-in for trusted fake-IP proxies using fc00::/7
+        },
       },
     },
   },
 }
 ```
 
-## البديل الاحتياطي Firecrawl
+## رجوع Firecrawl الاحتياطي
 
-إذا فشل استخراج Readability، يمكن لـ `web_fetch` الرجوع إلى
-[Firecrawl](/ar/tools/firecrawl) لتجاوز حماية البوتات وتحسين الاستخراج:
+إذا فشل استخراج Readability، يمكن لـ `web_fetch` الرجوع احتياطيًا إلى
+[Firecrawl](/ar/tools/firecrawl) لتجاوز البوتات وتحسين الاستخراج:
 
 ```json5
 {
@@ -121,39 +124,43 @@ await web_fetch({ url: "https://example.com/article" });
 }
 ```
 
-تدعم `plugins.entries.firecrawl.config.webFetch.apiKey` كائنات SecretRef.
-ويتم ترحيل إعدادات `tools.web.fetch.firecrawl.*` القديمة تلقائيًا بواسطة `openclaw doctor --fix`.
+يدعم `plugins.entries.firecrawl.config.webFetch.apiKey` كائنات SecretRef.
+يُرحَّل ضبط `tools.web.fetch.firecrawl.*` القديم تلقائيًا بواسطة `openclaw doctor --fix`.
 
 <Note>
-  إذا كانت Firecrawl مفعلة وكان SecretRef الخاص بها غير محلول من دون
-  بديل env باسم `FIRECRAWL_API_KEY`، فإن بدء Gateway يفشل بسرعة.
+  إذا كان Firecrawl مفعّلًا وكانت SecretRef الخاصة به غير محلولة من دون رجوع احتياطي
+  إلى متغير البيئة `FIRECRAWL_API_KEY`، يفشل بدء تشغيل Gateway بسرعة.
 </Note>
 
 <Note>
-  تكون تجاوزات `baseUrl` الخاصة بـ Firecrawl مقيدة بإحكام: إذ يجب أن تستخدم `https://`
-  ومضيف Firecrawl الرسمي (`api.firecrawl.dev`).
+  تجاوزات Firecrawl `baseUrl` مقيّدة بإحكام: يجب أن تستخدم `https://` و
+  مضيف Firecrawl الرسمي (`api.firecrawl.dev`).
 </Note>
 
-السلوك الحالي أثناء التشغيل:
+سلوك وقت التشغيل الحالي:
 
-- تحدد `tools.web.fetch.provider` موفّر البديل الاحتياطي للجلب بشكل صريح.
-- إذا تم حذف `provider`، فإن OpenClaw تكتشف تلقائيًا أول موفّر web-fetch
-  جاهز من بيانات الاعتماد المتاحة. واليوم، الموفّر المضمن هو Firecrawl.
-- إذا تم تعطيل Readability، فإن `web_fetch` تتجاوز مباشرة إلى
-  البديل الاحتياطي المحدد. وإذا لم يتوفر أي موفّر، فإنها تفشل بشكل مغلق.
+- يحدّد `tools.web.fetch.provider` مزوّد رجوع الجلب الاحتياطي صراحةً.
+- إذا حُذف `provider`، يكتشف OpenClaw تلقائيًا أول مزوّد جاهز لجلب الويب
+  من بيانات الاعتماد المتاحة. حاليًا، المزوّد المضمّن هو Firecrawl.
+- إذا عُطّل Readability، تتجاوز `web_fetch` مباشرةً إلى رجوع المزوّد
+  الاحتياطي المحدد. إذا لم يتوفر أي مزوّد، فإنها تفشل بإغلاق آمن.
 
 ## الحدود والسلامة
 
-- يتم تقييد `maxChars` إلى `tools.web.fetch.maxCharsCap`
-- يتم تقييد جسم الاستجابة إلى `maxResponseBytes` قبل التحليل؛ ويتم اقتطاع
+- يُقيّد `maxChars` إلى `tools.web.fetch.maxCharsCap`
+- يُحدّد نص الاستجابة عند `maxResponseBytes` قبل التحليل؛ وتُقتطع
   الاستجابات كبيرة الحجم مع تحذير
-- يتم حظر أسماء المضيفين الخاصة/الداخلية
-- يتم فحص عمليات إعادة التوجيه وتقييدها بواسطة `maxRedirects`
-- تعمل `web_fetch` بأفضل جهد -- بعض المواقع تحتاج إلى [Web Browser](/ar/tools/browser)
+- تُحظر أسماء المضيف الخاصة/الداخلية
+- إن `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` و
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` هما اشتراكان ضيقان
+  لمكدسات وكلاء IP المزيّفة الموثوقة؛ اتركهما غير مضبوطين ما لم يكن وكيلك يملك
+  تلك النطاقات الاصطناعية ويفرض سياسة وجهته الخاصة
+- تُفحص عمليات إعادة التوجيه وتُحدّد بواسطة `maxRedirects`
+- `web_fetch` أداة تبذل أفضل جهد -- بعض المواقع تحتاج إلى [متصفّح الويب](/ar/tools/browser)
 
-## Profiles الأدوات
+## ملفات تعريف الأدوات
 
-إذا كنت تستخدم Profiles أدوات أو قوائم سماح، فأضف `web_fetch` أو `group:web`:
+إذا كنت تستخدم ملفات تعريف الأدوات أو قوائم السماح، فأضف `web_fetch` أو `group:web`:
 
 ```json5
 {
@@ -164,8 +171,8 @@ await web_fetch({ url: "https://example.com/article" });
 }
 ```
 
-## ذو صلة
+## ذات صلة
 
-- [Web Search](/ar/tools/web) -- البحث في الويب باستخدام عدة موفّرين
-- [Web Browser](/ar/tools/browser) -- أتمتة متصفح كاملة للمواقع المعتمدة بكثافة على JS
-- [Firecrawl](/ar/tools/firecrawl) -- أدوات البحث والكشط الخاصة بـ Firecrawl
+- [بحث الويب](/ar/tools/web) -- البحث في الويب باستخدام عدة مزوّدين
+- [متصفّح الويب](/ar/tools/browser) -- أتمتة متصفّح كاملة للمواقع كثيفة الاعتماد على JS
+- [Firecrawl](/ar/tools/firecrawl) -- أدوات البحث والكشط من Firecrawl

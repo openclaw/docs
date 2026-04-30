@@ -1,72 +1,78 @@
 ---
 read_when:
-    - أنت تريد توجيه OpenClaw عبر وكيل LiteLLM
-    - أنت بحاجة إلى تتبع التكلفة أو التسجيل أو توجيه النماذج عبر LiteLLM
-summary: شغّل OpenClaw عبر LiteLLM Proxy للوصول الموحّد إلى النماذج وتتبع التكلفة
+    - تريد توجيه OpenClaw عبر وكيل LiteLLM
+    - تحتاج إلى تتبّع التكاليف أو التسجيل أو توجيه النماذج عبر LiteLLM
+summary: شغّل OpenClaw عبر LiteLLM Proxy للوصول الموحّد إلى النماذج وتتبع التكاليف
 title: LiteLLM
 x-i18n:
-    generated_at: "2026-04-25T18:21:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:21:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f4e2cdddff8dd953b989beb4f2ed1c31dae09298dacd0cf809ef07b41358623b
+    source_hash: 26b5150cfca92c9cd425c864c711efb3ab62ef94377b9d1e5d6476b07bf4c800
     source_path: providers/litellm.md
-    workflow: 15
+    workflow: 16
 ---
 
-[LiteLLM](https://litellm.ai) هي Gateway مفتوحة المصدر لـ LLM توفّر API موحّدة لأكثر من 100 موفّر نماذج. وجّه OpenClaw عبر LiteLLM للحصول على تتبع مركزي للتكلفة، والتسجيل، ومرونة تبديل الواجهات الخلفية دون تغيير تهيئة OpenClaw الخاصة بك.
+[LiteLLM](https://litellm.ai) هي بوابة LLM مفتوحة المصدر توفر API موحدًا لأكثر من 100 موفر نماذج. مرّر OpenClaw عبر LiteLLM للحصول على تتبع مركزي للتكلفة، وتسجيل السجلات، ومرونة تبديل الخلفيات دون تغيير إعدادات OpenClaw.
 
 <Tip>
 **لماذا تستخدم LiteLLM مع OpenClaw؟**
 
-- **تتبع التكلفة** — اعرف بالضبط ما الذي ينفقه OpenClaw عبر جميع النماذج
-- **توجيه النماذج** — بدّل بين Claude وGPT-4 وGemini وBedrock من دون تغييرات في التهيئة
-- **المفاتيح الافتراضية** — أنشئ مفاتيح مع حدود إنفاق لـ OpenClaw
-- **التسجيل** — سجلات كاملة للطلبات/الاستجابات لأغراض تصحيح الأخطاء
-- **الرجوع الاحتياطي** — تبديل احتياطي تلقائي إذا كان موفّرك الأساسي متوقفًا
+- **تتبع التكلفة** — اعرف بدقة ما ينفقه OpenClaw عبر جميع النماذج
+- **توجيه النماذج** — بدّل بين Claude وGPT-4 وGemini وBedrock دون تغييرات في الإعدادات
+- **مفاتيح افتراضية** — أنشئ مفاتيح بحدود إنفاق لـ OpenClaw
+- **تسجيل السجلات** — سجلات كاملة للطلبات/الاستجابات من أجل التصحيح
+- **البدائل الاحتياطية** — تحويل تلقائي عند تعطل الموفر الأساسي
 
 </Tip>
 
 ## البدء السريع
 
 <Tabs>
-  <Tab title="الإعداد الأولي (موصى به)">
-    **الأفضل لـ:** أسرع طريق إلى إعداد LiteLLM يعمل.
+  <Tab title="Onboarding (recommended)">
+    **الأفضل لـ:** أسرع مسار إلى إعداد LiteLLM عامل.
 
     <Steps>
-      <Step title="شغّل الإعداد الأولي">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice litellm-api-key
+        ```
+
+        للإعداد غير التفاعلي مع وكيل بعيد، مرّر عنوان URL للوكيل صراحةً:
+
+        ```bash
+        openclaw onboard --non-interactive --auth-choice litellm-api-key --litellm-api-key "$LITELLM_API_KEY" --custom-base-url "https://litellm.example/v1"
         ```
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="إعداد يدوي">
-    **الأفضل لـ:** تحكم كامل في التثبيت والتهيئة.
+  <Tab title="Manual setup">
+    **الأفضل لـ:** تحكم كامل في التثبيت والإعدادات.
 
     <Steps>
-      <Step title="ابدأ LiteLLM Proxy">
+      <Step title="Start LiteLLM Proxy">
         ```bash
         pip install 'litellm[proxy]'
         litellm --model claude-opus-4-6
         ```
       </Step>
-      <Step title="وجّه OpenClaw إلى LiteLLM">
+      <Step title="Point OpenClaw to LiteLLM">
         ```bash
         export LITELLM_API_KEY="your-litellm-key"
 
         openclaw
         ```
 
-        هذا كل شيء. يمرّ OpenClaw الآن عبر LiteLLM.
+        هذا كل شيء. يمرّر OpenClaw الآن عبر LiteLLM.
       </Step>
     </Steps>
 
   </Tab>
 </Tabs>
 
-## التهيئة
+## الإعدادات
 
 ### متغيرات البيئة
 
@@ -74,7 +80,7 @@ x-i18n:
 export LITELLM_API_KEY="sk-litellm-key"
 ```
 
-### ملف التهيئة
+### ملف الإعدادات
 
 ```json5
 {
@@ -113,12 +119,12 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-## التهيئة المتقدمة
+## الإعدادات المتقدمة
 
-### توليد الصور
+### إنشاء الصور
 
-يمكن لـ LiteLLM أيضًا تشغيل أداة `image_generate` عبر المسارات المتوافقة مع OpenAI
-`/images/generations` و`/images/edits`. اضبط نموذج صور LiteLLM
+يمكن لـ LiteLLM أيضًا دعم أداة `image_generate` من خلال مسارات متوافقة مع OpenAI
+مثل `/images/generations` و`/images/edits`. اضبط نموذج صور LiteLLM
 ضمن `agents.defaults.imageGenerationModel`:
 
 ```json5
@@ -142,14 +148,14 @@ export LITELLM_API_KEY="sk-litellm-key"
 }
 ```
 
-تعمل عناوين URL الخاصة بـ LiteLLM على local loopback مثل `http://localhost:4000` دون
-تجاوز عام للشبكة الخاصة. أما بالنسبة إلى وكيل مستضاف على LAN، فاضبط
+تعمل عناوين URL الخاصة بـ LiteLLM على حلقة الرجوع مثل `http://localhost:4000` دون تجاوز عام
+للشبكة الخاصة. بالنسبة إلى وكيل مستضاف على شبكة LAN، اضبط
 `models.providers.litellm.request.allowPrivateNetwork: true` لأن مفتاح API
-سيُرسَل إلى مضيف الوكيل المهيّأ.
+سيُرسل إلى مضيف الوكيل المضبوط.
 
 <AccordionGroup>
-  <Accordion title="المفاتيح الافتراضية">
-    أنشئ مفتاحًا مخصصًا لـ OpenClaw مع حدود للإنفاق:
+  <Accordion title="Virtual keys">
+    أنشئ مفتاحًا مخصصًا لـ OpenClaw مع حدود إنفاق:
 
     ```bash
     curl -X POST "http://localhost:4000/key/generate" \
@@ -162,12 +168,12 @@ export LITELLM_API_KEY="sk-litellm-key"
       }'
     ```
 
-    استخدم المفتاح الذي تم إنشاؤه كقيمة لـ `LITELLM_API_KEY`.
+    استخدم المفتاح المُنشأ كـ `LITELLM_API_KEY`.
 
   </Accordion>
 
-  <Accordion title="توجيه النماذج">
-    يمكن لـ LiteLLM توجيه طلبات النماذج إلى واجهات خلفية مختلفة. اضبط ذلك في `config.yaml` الخاص بـ LiteLLM:
+  <Accordion title="Model routing">
+    يمكن لـ LiteLLM توجيه طلبات النماذج إلى خلفيات مختلفة. اضبط ذلك في `config.yaml` الخاص بـ LiteLLM:
 
     ```yaml
     model_list:
@@ -182,54 +188,53 @@ export LITELLM_API_KEY="sk-litellm-key"
           api_key: os.environ/OPENAI_API_KEY
     ```
 
-    يواصل OpenClaw طلب `claude-opus-4-6` — بينما يتولى LiteLLM التوجيه.
+    يواصل OpenClaw طلب `claude-opus-4-6` — ويتولى LiteLLM التوجيه.
 
   </Accordion>
 
-  <Accordion title="عرض الاستخدام">
-    تحقق من لوحة معلومات LiteLLM أو API الخاصة بها:
+  <Accordion title="Viewing usage">
+    تحقق من لوحة معلومات LiteLLM أو API:
 
     ```bash
-    # معلومات المفتاح
+    # Key info
     curl "http://localhost:4000/key/info" \
       -H "Authorization: Bearer sk-litellm-key"
 
-    # سجلات الإنفاق
+    # Spend logs
     curl "http://localhost:4000/spend/logs" \
       -H "Authorization: Bearer $LITELLM_MASTER_KEY"
     ```
 
   </Accordion>
 
-  <Accordion title="ملاحظات حول سلوك الوكيل">
+  <Accordion title="Proxy behavior notes">
     - يعمل LiteLLM على `http://localhost:4000` افتراضيًا
-    - يتصل OpenClaw عبر نقطة النهاية `/v1`
-      المتوافقة مع OpenAI بأسلوب الوكيل في LiteLLM
-    - لا ينطبق تشكيل الطلبات الخاص بـ OpenAI الأصلي فقط عبر LiteLLM:
-      لا يوجد `service_tier`، ولا `store` الخاص بـ Responses، ولا تلميحات تخزين المطالبات مؤقتًا، ولا
-      تشكيل حمولة متوافق مع OpenAI reasoning
-    - لا يتم حقن رؤوس الإسناد المخفية الخاصة بـ OpenClaw (`originator` و`version` و`User-Agent`)
+    - يتصل OpenClaw عبر نقطة نهاية `/v1` المتوافقة مع OpenAI وبنمط الوكيل في LiteLLM
+    - لا ينطبق تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط عبر LiteLLM:
+      لا `service_tier`، ولا `store` في Responses، ولا تلميحات لذاكرة التخزين المؤقت للمطالبات، ولا
+      تشكيل حمولات متوافق مع استدلال OpenAI
+    - لا تُحقن ترويسات الإسناد المخفية الخاصة بـ OpenClaw (`originator` و`version` و`User-Agent`)
       على عناوين URL الأساسية المخصصة لـ LiteLLM
   </Accordion>
 </AccordionGroup>
 
 <Note>
-للاطلاع على تهيئة الموفّر العامة وسلوك التبديل الاحتياطي، راجع [موفرو النماذج](/ar/concepts/model-providers).
+لإعدادات الموفر العامة وسلوك التحويل الاحتياطي، راجع [موفرو النماذج](/ar/concepts/model-providers).
 </Note>
 
-## ذي صلة
+## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="وثائق LiteLLM" href="https://docs.litellm.ai" icon="book">
+  <Card title="LiteLLM Docs" href="https://docs.litellm.ai" icon="book">
     وثائق LiteLLM الرسمية ومرجع API.
   </Card>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    نظرة عامة على جميع الموفّرين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    نظرة عامة على جميع الموفرين، ومراجع النماذج، وسلوك التحويل الاحتياطي.
   </Card>
-  <Card title="التهيئة" href="/ar/gateway/configuration" icon="gear">
-    المرجع الكامل للتهيئة.
+  <Card title="Configuration" href="/ar/gateway/configuration" icon="gear">
+    مرجع الإعدادات الكامل.
   </Card>
-  <Card title="اختيار النموذج" href="/ar/concepts/models" icon="brain">
-    كيفية اختيار النماذج وتهيئتها.
+  <Card title="Model selection" href="/ar/concepts/models" icon="brain">
+    كيفية اختيار النماذج وضبطها.
   </Card>
 </CardGroup>

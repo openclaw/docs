@@ -1,62 +1,62 @@
 ---
 read_when:
-    - إعداد مثيل مساعد جديد لأول مرة
-    - مراجعة تبعات السلامة والأذونات
-summary: دليل شامل لتشغيل OpenClaw كمساعد شخصي مع تنبيهات السلامة
+    - تهيئة مثيل مساعد جديد
+    - مراجعة الآثار المترتبة على السلامة والأذونات
+summary: دليل شامل من البداية إلى النهاية لتشغيل OpenClaw كمساعد شخصي مع تنبيهات السلامة
 title: إعداد المساعد الشخصي
 x-i18n:
-    generated_at: "2026-04-25T13:58:22Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:26:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1647b78e8cf23a3a025969c52fbd8a73aed78df27698abf36bbf62045dc30e3b
+    source_hash: b0614272f9a2b30e0900c55b39a8bd6a2b71b9f5d5fbf0fe00c534b91193e6a0
     source_path: start/openclaw.md
-    workflow: 15
+    workflow: 16
 ---
 
 # بناء مساعد شخصي باستخدام OpenClaw
 
-OpenClaw هو Gateway مستضاف ذاتيًا يربط Discord وGoogle Chat وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo وغيرها بوكلاء الذكاء الاصطناعي. يغطي هذا الدليل إعداد "المساعد الشخصي": رقم WhatsApp مخصص يتصرف كمساعدك الذكي الدائم التشغيل.
+OpenClaw هو Gateway مستضاف ذاتيًا يربط Discord وGoogle Chat وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo وغيرها بوكلاء الذكاء الاصطناعي. يغطي هذا الدليل إعداد "المساعد الشخصي": رقم WhatsApp مخصص يتصرف كمساعد ذكاء اصطناعي دائم التشغيل لديك.
 
 ## ⚠️ السلامة أولًا
 
-أنت تضع وكيلًا في موضع يسمح له بما يلي:
+أنت تضع وكيلًا في موضع يمكنه:
 
-- تشغيل الأوامر على جهازك (بحسب سياسة الأدوات لديك)
-- قراءة الملفات وكتابتها في مساحة العمل الخاصة بك
-- إرسال الرسائل مرة أخرى عبر WhatsApp/Telegram/Discord/Mattermost والقنوات المضمّنة الأخرى
+- تشغيل أوامر على جهازك (حسب سياسة الأدوات لديك)
+- قراءة/كتابة الملفات في مساحة عملك
+- إرسال الرسائل مجددًا عبر WhatsApp/Telegram/Discord/Mattermost والقنوات المضمنة الأخرى
 
-ابدأ بشكل محافظ:
+ابدأ بحذر:
 
-- احرص دائمًا على ضبط `channels.whatsapp.allowFrom` (ولا تشغّله أبدًا بشكل مفتوح للعالم على جهاز Mac الشخصي الخاص بك).
+- اضبط دائمًا `channels.whatsapp.allowFrom` (لا تشغله مفتوحًا للعالم على جهاز Mac الشخصي لديك).
 - استخدم رقم WhatsApp مخصصًا للمساعد.
-- أصبح Heartbeat افتراضيًا كل 30 دقيقة. عطّله إلى أن تثق في الإعداد عبر ضبط `agents.defaults.heartbeat.every: "0m"`.
+- أصبحت Heartbeats الآن تعمل افتراضيًا كل 30 دقيقة. عطّلها إلى أن تثق بالإعداد عبر ضبط `agents.defaults.heartbeat.every: "0m"`.
 
 ## المتطلبات المسبقة
 
-- يجب أن يكون OpenClaw مثبتًا وتم إجراء الإعداد الأولي له — راجع [البدء](/ar/start/getting-started) إذا لم تقم بذلك بعد
+- تثبيت OpenClaw وإكمال الإعداد الأولي — راجع [بدء الاستخدام](/ar/start/getting-started) إذا لم تكن قد فعلت ذلك بعد
 - رقم هاتف ثانٍ (SIM/eSIM/مسبق الدفع) للمساعد
 
 ## إعداد الهاتفين (موصى به)
 
-أنت تريد هذا:
+هذا ما تريده:
 
 ```mermaid
 flowchart TB
-    A["<b>هاتفك (الشخصي)<br></b><br>WhatsApp الخاص بك<br>+1-555-YOU"] -- message --> B["<b>الهاتف الثاني (المساعد)<br></b><br>WhatsApp المساعد<br>+1-555-ASSIST"]
-    B -- linked via QR --> C["<b>جهاز Mac الخاص بك (openclaw)<br></b><br>وكيل ذكاء اصطناعي"]
+    A["<b>Your Phone (personal)<br></b><br>Your WhatsApp<br>+1-555-YOU"] -- message --> B["<b>Second Phone (assistant)<br></b><br>Assistant WA<br>+1-555-ASSIST"]
+    B -- linked via QR --> C["<b>Your Mac (openclaw)<br></b><br>AI agent"]
 ```
 
-إذا قمت بربط WhatsApp الشخصي الخاص بك بـ OpenClaw، فستصبح كل رسالة تصلك بمثابة "إدخال للوكيل". وهذا نادرًا ما يكون ما تريده.
+إذا ربطت WhatsApp الشخصي لديك بـ OpenClaw، فستصبح كل رسالة تصل إليك "إدخالًا للوكيل". نادرًا ما يكون هذا ما تريده.
 
-## بداية سريعة خلال 5 دقائق
+## بدء سريع خلال 5 دقائق
 
-1. قم بإقران WhatsApp Web (سيعرض QR؛ امسحه بهاتف المساعد):
+1. اربط WhatsApp Web (يعرض رمز QR؛ امسحه بهاتف المساعد):
 
 ```bash
 openclaw channels login
 ```
 
-2. شغّل Gateway (واتركه يعمل):
+2. شغّل Gateway (اتركه قيد التشغيل):
 
 ```bash
 openclaw gateway --port 18789
@@ -71,23 +71,25 @@ openclaw gateway --port 18789
 }
 ```
 
-الآن أرسل رسالة إلى رقم المساعد من هاتفك المدرج في قائمة السماح.
+الآن أرسل رسالة إلى رقم المساعد من هاتفك الموجود في قائمة السماح.
 
-عند اكتمال الإعداد الأولي، يفتح OpenClaw لوحة التحكم تلقائيًا ويطبع رابطًا نظيفًا (من دون token). إذا طلبت لوحة التحكم المصادقة، فالصق السر المشترك المضبوط في إعدادات Control UI. يستخدم الإعداد الأولي token افتراضيًا (`gateway.auth.token`)، لكن مصادقة كلمة المرور تعمل أيضًا إذا بدّلت `gateway.auth.mode` إلى `password`. لإعادة الفتح لاحقًا: `openclaw dashboard`.
+عند انتهاء الإعداد الأولي، يفتح OpenClaw لوحة التحكم تلقائيًا ويطبع رابطًا نظيفًا (غير مرمّز بتوكن). إذا طلبت لوحة التحكم المصادقة، فالصق السر المشترك المضبوط في إعدادات Control UI. يستخدم الإعداد الأولي توكن افتراضيًا (`gateway.auth.token`)، لكن مصادقة كلمة المرور تعمل أيضًا إذا بدّلت `gateway.auth.mode` إلى `password`. لإعادة الفتح لاحقًا: `openclaw dashboard`.
 
 ## امنح الوكيل مساحة عمل (AGENTS)
 
 يقرأ OpenClaw تعليمات التشغيل و"الذاكرة" من دليل مساحة العمل الخاص به.
 
-بشكل افتراضي، يستخدم OpenClaw المسار `~/.openclaw/workspace` كمساحة عمل للوكيل، وينشئه تلقائيًا (بالإضافة إلى ملفات البداية `AGENTS.md` و`SOUL.md` و`TOOLS.md` و`IDENTITY.md` و`USER.md` و`HEARTBEAT.md`) عند الإعداد/أول تشغيل للوكيل. لا يتم إنشاء `BOOTSTRAP.md` إلا عندما تكون مساحة العمل جديدة تمامًا (ولا ينبغي أن يعود بعد حذفه). الملف `MEMORY.md` اختياري (لا يتم إنشاؤه تلقائيًا)؛ وعند وجوده، يتم تحميله للجلسات العادية. لا تضخ جلسات الوكيل الفرعي إلا `AGENTS.md` و`TOOLS.md`.
+افتراضيًا، يستخدم OpenClaw `~/.openclaw/workspace` كمساحة عمل للوكيل، وسينشئها (إضافة إلى ملفات البداية `AGENTS.md` و`SOUL.md` و`TOOLS.md` و`IDENTITY.md` و`USER.md` و`HEARTBEAT.md`) تلقائيًا عند الإعداد/أول تشغيل للوكيل. لا يُنشأ `BOOTSTRAP.md` إلا عندما تكون مساحة العمل جديدة تمامًا (ولا ينبغي أن يعود بعد حذفه). `MEMORY.md` اختياري (لا يُنشأ تلقائيًا)؛ وعند وجوده، يُحمّل للجلسات العادية. جلسات الوكلاء الفرعيين لا تحقن إلا `AGENTS.md` و`TOOLS.md`.
 
-نصيحة: تعامل مع هذا المجلد باعتباره "ذاكرة" OpenClaw واجعله مستودع git (ويُفضّل أن يكون خاصًا) حتى يتم نسخ ملفات `AGENTS.md` + الذاكرة احتياطيًا. إذا كان git مثبتًا، تتم تهيئة مساحات العمل الجديدة تلقائيًا.
+<Tip>
+تعامل مع هذا المجلد كذاكرة OpenClaw واجعله مستودع git (ويُفضّل أن يكون خاصًا) حتى تكون ملفات `AGENTS.md` والذاكرة لديك منسوخة احتياطيًا. إذا كان git مثبتًا، تُهيّأ مساحات العمل الجديدة تمامًا تلقائيًا.
+</Tip>
 
 ```bash
 openclaw setup
 ```
 
-التخطيط الكامل لمساحة العمل + دليل النسخ الاحتياطي: [مساحة عمل الوكيل](/ar/concepts/agent-workspace)  
+تخطيط مساحة العمل الكامل + دليل النسخ الاحتياطي: [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
 سير عمل الذاكرة: [الذاكرة](/ar/concepts/memory)
 
 اختياري: اختر مساحة عمل مختلفة باستخدام `agents.defaults.workspace` (يدعم `~`).
@@ -102,7 +104,7 @@ openclaw setup
 }
 ```
 
-إذا كنت توفّر بالفعل ملفات مساحة العمل الخاصة بك من مستودع، فيمكنك تعطيل إنشاء ملفات التهيئة الأولية بالكامل:
+إذا كنت تشحن ملفات مساحة العمل الخاصة بك من مستودع، يمكنك تعطيل إنشاء ملفات التمهيد بالكامل:
 
 ```json5
 {
@@ -114,13 +116,13 @@ openclaw setup
 }
 ```
 
-## الإعداد الذي يحوّله إلى "مساعد"
+## الإعداد الذي يحوله إلى "مساعد"
 
-يفترض OpenClaw افتراضيًا إعدادًا جيدًا للمساعد، لكنك عادةً ستحتاج إلى ضبط ما يلي:
+يضبط OpenClaw إعدادًا افتراضيًا جيدًا للمساعد، لكنك سترغب غالبًا في ضبط:
 
 - الشخصية/التعليمات في [`SOUL.md`](/ar/concepts/soul)
-- إعدادات التفكير الافتراضية (إذا رغبت)
-- Heartbeat (بعد أن تثق به)
+- افتراضيات التفكير (إن رغبت)
+- Heartbeats (بعد أن تثق به)
 
 مثال:
 
@@ -132,7 +134,7 @@ openclaw setup
     workspace: "~/.openclaw/workspace",
     thinkingDefault: "high",
     timeoutSeconds: 1800,
-    // ابدأ بـ 0؛ وفعّله لاحقًا.
+    // Start with 0; enable later.
     heartbeat: { every: "0m" },
   },
   channels: {
@@ -162,22 +164,22 @@ openclaw setup
 
 ## الجلسات والذاكرة
 
-- ملفات الجلسات: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
-- بيانات تعريف الجلسات (استخدام الرموز، وآخر مسار، وما إلى ذلك): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (القديم: `~/.openclaw/sessions/sessions.json`)
-- يبدأ `/new` أو `/reset` جلسة جديدة لتلك الدردشة (قابل للضبط عبر `resetTriggers`). وإذا أُرسل بمفرده، يرد الوكيل بتحية قصيرة لتأكيد إعادة التعيين.
-- يقوم `/compact [instructions]` بضغط سياق الجلسة ويعرض ميزانية السياق المتبقية.
+- ملفات الجلسة: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
+- بيانات الجلسة الوصفية (استخدام التوكنات، آخر مسار، إلخ): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (قديم: `~/.openclaw/sessions/sessions.json`)
+- يبدأ `/new` أو `/reset` جلسة جديدة لذلك الدردشة (قابل للضبط عبر `resetTriggers`). إذا أُرسل بمفرده، يؤكد OpenClaw إعادة الضبط دون استدعاء النموذج.
+- يقوم `/compact [instructions]` بإجراء Compaction لسياق الجلسة ويبلغ عن ميزانية السياق المتبقية.
 
 ## Heartbeats (الوضع الاستباقي)
 
-بشكل افتراضي، يشغّل OpenClaw Heartbeat كل 30 دقيقة مع الموجّه التالي:
+افتراضيًا، يشغّل OpenClaw Heartbeat كل 30 دقيقة مع الموجه:
 `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
 اضبط `agents.defaults.heartbeat.every: "0m"` للتعطيل.
 
-- إذا كان `HEARTBEAT.md` موجودًا لكنه فارغ فعليًا (أسطر فارغة فقط وعناوين markdown مثل `# Heading`)، يتخطى OpenClaw تشغيل Heartbeat لتوفير استدعاءات API.
-- إذا كان الملف مفقودًا، يظل Heartbeat يعمل ويقرر النموذج ما يجب فعله.
-- إذا رد الوكيل بـ `HEARTBEAT_OK` (اختياريًا مع حشو قصير؛ راجع `agents.defaults.heartbeat.ackMaxChars`)، يمنع OpenClaw الإرسال الصادر لذلك Heartbeat.
-- بشكل افتراضي، يُسمح بإرسال Heartbeat إلى الأهداف المباشرة بنمط DM وهي `user:<id>`. اضبط `agents.defaults.heartbeat.directPolicy: "block"` لمنع الإرسال إلى الأهداف المباشرة مع إبقاء تشغيل Heartbeat مفعّلًا.
-- تشغّل Heartbeats دورات وكيل كاملة — وكلما قصرت الفواصل الزمنية زاد استهلاك الرموز.
+- إذا كان `HEARTBEAT.md` موجودًا لكنه فارغ فعليًا (أسطر فارغة فقط ورؤوس Markdown مثل `# Heading`)، يتخطى OpenClaw تشغيل Heartbeat لتوفير استدعاءات API.
+- إذا كان الملف مفقودًا، تظل Heartbeat تعمل ويقرر النموذج ما يجب فعله.
+- إذا رد الوكيل بـ `HEARTBEAT_OK` (اختياريًا مع حشو قصير؛ راجع `agents.defaults.heartbeat.ackMaxChars`)، يمنع OpenClaw التسليم الصادر لتلك Heartbeat.
+- افتراضيًا، يُسمح بتسليم Heartbeat إلى أهداف `user:<id>` الشبيهة بالرسائل المباشرة. اضبط `agents.defaults.heartbeat.directPolicy: "block"` لمنع التسليم إلى الأهداف المباشرة مع إبقاء تشغيل Heartbeat نشطًا.
+- تشغّل Heartbeats دورات وكيل كاملة — الفواصل الأقصر تستهلك توكنات أكثر.
 
 ```json5
 {
@@ -189,13 +191,13 @@ openclaw setup
 
 ## الوسائط الواردة والصادرة
 
-يمكن إظهار المرفقات الواردة (الصور/الصوت/المستندات) إلى أمرك عبر قوالب:
+يمكن إظهار المرفقات الواردة (صور/صوت/مستندات) لأمرك عبر القوالب:
 
 - `{{MediaPath}}` (مسار ملف مؤقت محلي)
-- `{{MediaUrl}}` (عنوان URL وهمي)
-- `{{Transcript}}` (إذا كان النسخ الصوتي مفعّلًا)
+- `{{MediaUrl}}` (عنوان URL زائف)
+- `{{Transcript}}` (إذا كان نسخ الصوت مفعّلًا)
 
-المرفقات الصادرة من الوكيل: ضمّن `MEDIA:<path-or-url>` في سطر مستقل (من دون مسافات). مثال:
+المرفقات الصادرة من الوكيل: أدرج `MEDIA:<path-or-url>` في سطر مستقل (دون مسافات). مثال:
 
 ```
 Here’s the screenshot.
@@ -204,39 +206,39 @@ MEDIA:https://example.com/screenshot.png
 
 يستخرج OpenClaw هذه ويرسلها كوسائط إلى جانب النص.
 
-يتبع سلوك المسار المحلي نموذج الثقة نفسه لقراءة الملفات الخاص بالوكيل:
+يتبع سلوك المسار المحلي نموذج الثقة نفسه لقراءة الملفات مثل الوكيل:
 
-- إذا كانت قيمة `tools.fs.workspaceOnly` هي `true`، تبقى المسارات المحلية الصادرة `MEDIA:` محصورة في الجذر المؤقت لـ OpenClaw وذاكرة التخزين المؤقت للوسائط ومسارات مساحة عمل الوكيل والملفات المُنشأة داخل sandbox.
-- إذا كانت قيمة `tools.fs.workspaceOnly` هي `false`، يمكن للمسارات المحلية الصادرة `MEDIA:` استخدام الملفات المحلية على المضيف التي يُسمح للوكيل بقراءتها بالفعل.
-- لا تزال عمليات الإرسال المحلية على المضيف تسمح فقط بالوسائط وأنواع المستندات الآمنة (الصور والصوت والفيديو وPDF ومستندات Office). لا تُعامل النصوص العادية والملفات الشبيهة بالأسرار كوسائط قابلة للإرسال.
+- إذا كان `tools.fs.workspaceOnly` هو `true`، تبقى مسارات `MEDIA:` المحلية الصادرة مقيدة بجذر OpenClaw المؤقت، وذاكرة الوسائط المؤقتة، ومسارات مساحة عمل الوكيل، والملفات المولدة داخل sandbox.
+- إذا كان `tools.fs.workspaceOnly` هو `false`، يمكن لـ `MEDIA:` الصادرة استخدام ملفات محلية على المضيف يُسمح للوكيل بقراءتها بالفعل.
+- لا تزال الإرسالات المحلية من المضيف تسمح فقط بالوسائط وأنواع المستندات الآمنة (الصور، الصوت، الفيديو، PDF، ومستندات Office). لا تُعامل الملفات النصية الصرفة والملفات الشبيهة بالأسرار كوسائط قابلة للإرسال.
 
-وهذا يعني أن الصور/الملفات المُنشأة خارج مساحة العمل يمكن الآن إرسالها عندما تسمح سياسة fs الحالية لديك بهذه القراءات بالفعل، من دون إعادة فتح باب تسريب المرفقات النصية التعسفي من المضيف.
+هذا يعني أن الصور/الملفات المولدة خارج مساحة العمل يمكن إرسالها الآن عندما تسمح سياسة fs لديك بالفعل بتلك القراءات، دون إعادة فتح تسريب مرفقات نصية عشوائية من المضيف.
 
-## قائمة التحقق التشغيلية
+## قائمة تحقق العمليات
 
 ```bash
-openclaw status          # الحالة المحلية (بيانات الاعتماد، الجلسات، الأحداث المصطفّة)
-openclaw status --all    # تشخيص كامل (للقراءة فقط، وقابل للصق)
-openclaw status --deep   # يطلب من Gateway فحص سلامة مباشرًا مع فحوصات للقنوات عند الدعم
-openclaw health --json   # لقطة سلامة Gateway ‏(WS؛ يمكن للوضع الافتراضي أن يعيد لقطة مخزنة مؤقتًا وحديثة)
+openclaw status          # local status (creds, sessions, queued events)
+openclaw status --all    # full diagnosis (read-only, pasteable)
+openclaw status --deep   # asks the gateway for a live health probe with channel probes when supported
+openclaw health --json   # gateway health snapshot (WS; default can return a fresh cached snapshot)
 ```
 
-توجد السجلات ضمن `/tmp/openclaw/` (افتراضيًا: `openclaw-YYYY-MM-DD.log`).
+توجد السجلات تحت `/tmp/openclaw/` (افتراضيًا: `openclaw-YYYY-MM-DD.log`).
 
 ## الخطوات التالية
 
 - WebChat: [WebChat](/ar/web/webchat)
 - عمليات Gateway: [دليل تشغيل Gateway](/ar/gateway)
-- Cron + التنبيهات: [وظائف Cron](/ar/automation/cron-jobs)
-- الرفيق في شريط قوائم macOS: [تطبيق OpenClaw لنظام macOS](/ar/platforms/macos)
-- تطبيق العقدة على iOS: [تطبيق iOS](/ar/platforms/ios)
-- تطبيق العقدة على Android: [تطبيق Android](/ar/platforms/android)
+- Cron + إيقاظات: [مهام Cron](/ar/automation/cron-jobs)
+- رفيق شريط قوائم macOS: [تطبيق OpenClaw على macOS](/ar/platforms/macos)
+- تطبيق عقدة iOS: [تطبيق iOS](/ar/platforms/ios)
+- تطبيق عقدة Android: [تطبيق Android](/ar/platforms/android)
 - حالة Windows: [Windows (WSL2)](/ar/platforms/windows)
 - حالة Linux: [تطبيق Linux](/ar/platforms/linux)
 - الأمان: [الأمان](/ar/gateway/security)
 
-## ذو صلة
+## ذات صلة
 
-- [البدء](/ar/start/getting-started)
+- [بدء الاستخدام](/ar/start/getting-started)
 - [الإعداد](/ar/start/setup)
 - [نظرة عامة على القنوات](/ar/channels)

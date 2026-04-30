@@ -1,121 +1,132 @@
 ---
 read_when:
-    - إقران أو إعادة توصيل Android Node
-    - تصحيح اكتشاف Android Gateway أو المصادقة
+    - إقران Node الخاص بـ Android أو إعادة الاتصال به
+    - تصحيح أخطاء اكتشاف Gateway أو المصادقة على Android
     - التحقق من تكافؤ سجل الدردشة عبر العملاء
-summary: 'تطبيق Android (node): دليل تشغيل الاتصال + سطح أوامر Connect/Chat/Voice/Canvas'
-title: تطبيق Android (Node)
+summary: 'تطبيق Android (Node): دليل تشغيل الاتصال + واجهة أوامر الاتصال/الدردشة/الصوت/اللوحة'
+title: تطبيق Android
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-26T11:35:01Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 5a47c07e3301ad7b98f4827c9c34c42b7ba2f92c55aabd7b49606ab688191b66
-  source_path: platforms/android.md
-  workflow: 15
+    generated_at: "2026-04-30T08:10:42Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: ae8bec406a006165f124f305e00c848f5527d43dba3cbcd07bd0d7e6f0dcc247
+    source_path: platforms/android.md
+    workflow: 16
 ---
 
-> **ملاحظة:** لم يتم إصدار تطبيق Android للعامة بعد. الشيفرة المصدرية متاحة في [مستودع OpenClaw](https://github.com/openclaw/openclaw) ضمن `apps/android`. يمكنك بناؤه بنفسك باستخدام Java 17 وAndroid SDK عبر (`./gradlew :app:assemblePlayDebug`). راجع [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md) للحصول على تعليمات البناء.
+<Note>
+لم يُصدر تطبيق Android علنًا بعد. يتوفر كود المصدر في [مستودع OpenClaw](https://github.com/openclaw/openclaw) ضمن `apps/android`. يمكنك بناؤه بنفسك باستخدام Java 17 وAndroid SDK (`./gradlew :app:assemblePlayDebug`). راجع [apps/android/README.md](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md) للحصول على تعليمات البناء.
+</Note>
 
-## لمحة عن الدعم
+## لقطة دعم
 
-- الدور: تطبيق Node مرافق (Android لا يستضيف Gateway).
+- الدور: تطبيق عقدة مرافق (لا يستضيف Android الـ Gateway).
 - Gateway مطلوب: نعم (شغّله على macOS أو Linux أو Windows عبر WSL2).
-- التثبيت: [Getting Started](/ar/start/getting-started) + [Pairing](/ar/channels/pairing).
-- Gateway: [Runbook](/ar/gateway) + [Configuration](/ar/gateway/configuration).
-  - البروتوكولات: [Gateway protocol](/ar/gateway/protocol) (العُقد + مستوى التحكم).
+- التثبيت: [بدء الاستخدام](/ar/start/getting-started) + [الإقران](/ar/channels/pairing).
+- Gateway: [دليل التشغيل](/ar/gateway) + [الإعداد](/ar/gateway/configuration).
+  - البروتوكولات: [بروتوكول Gateway](/ar/gateway/protocol) (العقد + مستوى التحكم).
 
 ## التحكم في النظام
 
-يوجد التحكم في النظام (launchd/systemd) على مضيف Gateway. راجع [Gateway](/ar/gateway).
+يوجد التحكم في النظام (launchd/systemd) على مضيف الـ Gateway. راجع [Gateway](/ar/gateway).
 
 ## دليل تشغيل الاتصال
 
-تطبيق Android Node ⇄ (mDNS/NSD + WebSocket) ⇄ **Gateway**
+تطبيق عقدة Android ⇄ (mDNS/NSD + WebSocket) ⇄ **Gateway**
 
-يتصل Android مباشرةً بـ Gateway WebSocket ويستخدم إقران الأجهزة (`role: node`).
+يتصل Android مباشرةً بـ WebSocket الخاص بالـ Gateway ويستخدم إقران الجهاز (`role: node`).
 
-بالنسبة إلى Tailscale أو المضيفات العامة، يتطلب Android نقطة نهاية آمنة:
+بالنسبة إلى مضيفات Tailscale أو المضيفات العامة، يتطلب Android نقطة نهاية آمنة:
 
-- المفضّل: Tailscale Serve / Funnel عبر `https://<magicdns>` / `wss://<magicdns>`
-- المدعوم أيضًا: أي عنوان URL آخر لـ Gateway من نوع `wss://` مع نقطة نهاية TLS حقيقية
-- ما يزال `ws://` غير المشفر مدعومًا على عناوين LAN الخاصة / مضيفات `.local`، بالإضافة إلى `localhost` و`127.0.0.1` وجسر محاكي Android (`10.0.2.2`)
+- المفضل: Tailscale Serve / Funnel مع `https://<magicdns>` / `wss://<magicdns>`
+- مدعوم أيضًا: أي عنوان URL آخر للـ Gateway بصيغة `wss://` مع نقطة نهاية TLS حقيقية
+- يظل النص الصريح `ws://` مدعومًا على عناوين LAN الخاصة / مضيفات `.local`، بالإضافة إلى `localhost` و`127.0.0.1` وجسر محاكي Android (`10.0.2.2`)
 
 ### المتطلبات الأساسية
 
-- يمكنك تشغيل Gateway على الجهاز “الرئيسي”.
-- يستطيع جهاز/محاكي Android الوصول إلى Gateway WebSocket:
-  - على شبكة LAN نفسها مع mDNS/NSD، **أو**
-  - على Tailnet نفسها باستخدام Wide-Area Bonjour / unicast DNS-SD (انظر أدناه)، **أو**
-  - مضيف/منفذ Gateway يدويًا (حل احتياطي)
-- لا يستخدم إقران Android المحمول عبر Tailnet/المضيفات العامة نقاط نهاية raw tailnet IP من نوع `ws://`. استخدم Tailscale Serve أو عنوان URL آخر من نوع `wss://` بدلًا من ذلك.
-- يمكنك تشغيل CLI (`openclaw`) على جهاز gateway (أو عبر SSH).
+- يمكنك تشغيل الـ Gateway على الجهاز “الرئيسي”.
+- يمكن لجهاز/محاكي Android الوصول إلى WebSocket الخاص بالـ Gateway:
+  - نفس LAN مع mDNS/NSD، **أو**
+  - نفس tailnet في Tailscale باستخدام Wide-Area Bonjour / unicast DNS-SD (انظر أدناه)، **أو**
+  - مضيف/منفذ Gateway يدوي (احتياطي)
+- لا يستخدم إقران الهاتف عبر tailnet/العام نقاط نهاية IP خامة من tailnet بصيغة `ws://`. استخدم Tailscale Serve أو عنوان URL آخر بصيغة `wss://` بدلًا من ذلك.
+- يمكنك تشغيل CLI (`openclaw`) على جهاز الـ Gateway (أو عبر SSH).
 
-### 1) ابدأ Gateway
+### 1) بدء الـ Gateway
 
 ```bash
 openclaw gateway --port 18789 --verbose
 ```
 
-أكد في السجلات أنك ترى شيئًا مثل:
+تأكد في السجلات أنك ترى شيئًا مثل:
 
 - `listening on ws://0.0.0.0:18789`
 
-للوصول البعيد من Android عبر Tailscale، فضّل Serve/Funnel بدلًا من raw tailnet bind:
+للوصول إلى Android عن بُعد عبر Tailscale، فضّل Serve/Funnel بدلًا من ربط tailnet خام:
 
 ```bash
 openclaw gateway --tailscale serve
 ```
 
-يعطي ذلك Android نقطة نهاية آمنة من نوع `wss://` / `https://`. لا يكفي الإعداد العادي `gateway.bind: "tailnet"` لأول إقران بعيد لـ Android إلا إذا أنهيت TLS بشكل منفصل أيضًا.
+يعطي هذا Android نقطة نهاية آمنة بصيغة `wss://` / `https://`. إعداد `gateway.bind: "tailnet"` العادي ليس كافيًا لإقران Android عن بُعد للمرة الأولى ما لم تُنهِ TLS بشكل منفصل أيضًا.
 
-### 2) تحقّق من الاكتشاف (اختياري)
+### 2) التحقق من الاكتشاف (اختياري)
 
-من جهاز gateway:
+من جهاز الـ Gateway:
 
 ```bash
 dns-sd -B _openclaw-gw._tcp local.
 ```
 
-مزيد من ملاحظات التصحيح: [Bonjour](/ar/gateway/bonjour).
+ملاحظات تصحيح أخطاء إضافية: [Bonjour](/ar/gateway/bonjour).
 
-إذا كنت قد هيّأت أيضًا نطاق اكتشاف واسع النطاق، فقارن مع:
+إذا كنت قد أعددت أيضًا نطاق اكتشاف واسع النطاق، فقارنه مع:
 
 ```bash
 openclaw gateway discover --json
 ```
 
-يعرض ذلك `local.` بالإضافة إلى النطاق واسع النطاق المكوَّن في مرور واحد ويستخدم
-نقطة نهاية الخدمة المحلولة بدلًا من تلميحات TXT فقط.
+يعرض ذلك `local.` بالإضافة إلى النطاق واسع النطاق المهيأ في تمريرة واحدة ويستخدم نقطة نهاية الخدمة التي تم حلها بدلًا من تلميحات TXT فقط.
 
-#### اكتشاف Tailnet ‏(Vienna ⇄ London) عبر unicast DNS-SD
+#### اكتشاف Tailnet (فيينا ⇄ لندن) عبر unicast DNS-SD
 
-لن يعبر اكتشاف Android NSD/mDNS الشبكات. وإذا كانت Android Node وgateway على شبكتين مختلفتين لكنهما متصلتان عبر Tailscale، فاستخدم Wide-Area Bonjour / unicast DNS-SD بدلًا من ذلك.
+لن يعبر اكتشاف Android NSD/mDNS الشبكات. إذا كانت عقدة Android والـ Gateway على شبكات مختلفة لكنهما متصلان عبر Tailscale، فاستخدم Wide-Area Bonjour / unicast DNS-SD بدلًا من ذلك.
 
-لا يكفي الاكتشاف وحده لإقران Android عبر tailnet/المضيفات العامة. فما يزال المسار المكتشف يحتاج إلى نقطة نهاية آمنة (`wss://` أو Tailscale Serve):
+الاكتشاف وحده لا يكفي لإقران Android عبر tailnet/عام. لا يزال المسار المكتشف يحتاج إلى نقطة نهاية آمنة (`wss://` أو Tailscale Serve):
 
-1. اضبط منطقة DNS-SD (مثل `openclaw.internal.`) على مضيف gateway وانشر سجلات `_openclaw-gw._tcp`.
-2. اضبط Tailscale split DNS للنطاق الذي اخترته بحيث يشير إلى خادم DNS ذلك.
+1. أعدّ منطقة DNS-SD (مثال `openclaw.internal.`) على مضيف الـ Gateway وانشر سجلات `_openclaw-gw._tcp`.
+2. اضبط Tailscale split DNS لنطاقك المختار بحيث يشير إلى خادم DNS ذلك.
 
 التفاصيل ومثال إعداد CoreDNS: [Bonjour](/ar/gateway/bonjour).
 
-### 3) اتصل من Android
+### 3) الاتصال من Android
 
 في تطبيق Android:
 
-- يُبقي التطبيق اتصال gateway حيًا عبر **foreground service** (إشعار دائم).
-- افتح تبويب **Connect**.
-- استخدم وضع **Setup Code** أو **Manual**.
-- إذا كان الاكتشاف محجوبًا، فاستخدم المضيف/المنفذ يدويًا في **Advanced controls**. بالنسبة إلى مضيفات LAN الخاصة، ما يزال `ws://` يعمل. أما بالنسبة إلى مضيفات Tailscale/العامة، ففعّل TLS واستخدم نقطة نهاية `wss://` / Tailscale Serve.
+- يحافظ التطبيق على اتصال الـ Gateway نشطًا عبر **خدمة أمامية** (إشعار مستمر).
+- افتح تبويب **الاتصال**.
+- استخدم وضع **رمز الإعداد** أو **يدوي**.
+- إذا كان الاكتشاف محظورًا، فاستخدم المضيف/المنفذ يدويًا في **عناصر التحكم المتقدمة**. بالنسبة إلى مضيفات LAN الخاصة، لا يزال `ws://` يعمل. بالنسبة إلى مضيفات Tailscale/العامة، شغّل TLS واستخدم نقطة نهاية `wss://` / Tailscale Serve.
 
 بعد أول إقران ناجح، يعيد Android الاتصال تلقائيًا عند التشغيل:
 
-- نقطة النهاية اليدوية (إذا كانت مفعّلة)، وإلا
-- آخر Gateway تم اكتشافها (best-effort).
+- نقطة نهاية يدوية (إذا كانت مفعّلة)، وإلا
+- آخر Gateway تم اكتشافه (بأفضل جهد).
 
-### 4) وافق على الإقران (CLI)
+### إشارات بقاء الحضور
 
-على جهاز gateway:
+بعد اتصال جلسة العقدة المصادق عليها، وعندما ينتقل التطبيق إلى الخلفية بينما تكون
+الخدمة الأمامية لا تزال متصلة، يستدعي Android `node.event` مع
+`event: "node.presence.alive"`. يسجل الـ Gateway هذا كـ `lastSeenAtMs`/`lastSeenReason` في
+بيانات تعريف العقدة/الجهاز المقترن فقط بعد معرفة هوية جهاز العقدة المصادق عليها.
+
+يعدّ التطبيق الإشارة مسجلة بنجاح فقط عندما تتضمن استجابة الـ Gateway
+`handled: true`. قد تؤكد بوابات Gateway الأقدم `node.event` مع `{ "ok": true }`؛ هذه الاستجابة
+متوافقة لكنها لا تُحتسب كتحديث دائم لآخر ظهور.
+
+### 4) الموافقة على الإقران (CLI)
+
+على جهاز الـ Gateway:
 
 ```bash
 openclaw devices list
@@ -123,10 +134,10 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-تفاصيل الإقران: [Pairing](/ar/channels/pairing).
+تفاصيل الإقران: [الإقران](/ar/channels/pairing).
 
-اختياري: إذا كانت Android Node تتصل دائمًا من شبكة فرعية محكومة بإحكام،
-فيمكنك تمكين الموافقة التلقائية لأول إقران للعقدة باستخدام CIDRs صريحة أو عناوين IP مطابقة تمامًا:
+اختياري: إذا كانت عقدة Android تتصل دائمًا من شبكة فرعية محكمة التحكم،
+يمكنك الاشتراك في الموافقة التلقائية لأول مرة على العقدة باستخدام CIDRs صريحة أو عناوين IP دقيقة:
 
 ```json5
 {
@@ -140,13 +151,13 @@ openclaw devices reject <requestId>
 }
 ```
 
-هذا معطّل افتراضيًا. وينطبق فقط على إقران جديد من نوع `role: node` مع
-عدم وجود نطاقات مطلوبة. أما إقران المشغّل/المتصفح وأي تغيير في الدور أو النطاق أو البيانات الوصفية أو
-المفتاح العام فيظل يتطلب موافقة يدوية.
+هذا معطل افتراضيًا. ينطبق فقط على إقران `role: node` جديد
+دون نطاقات مطلوبة. لا يزال إقران المشغّل/المتصفح وأي تغيير في الدور أو النطاق أو البيانات الوصفية أو
+المفتاح العام يتطلب موافقة يدوية.
 
-### 5) تحقّق من أن العقدة متصلة
+### 5) التحقق من أن العقدة متصلة
 
-- عبر حالة العُقد:
+- عبر حالة العقد:
 
   ```bash
   openclaw nodes status
@@ -160,97 +171,98 @@ openclaw devices reject <requestId>
 
 ### 6) الدردشة + السجل
 
-يدعم تبويب Chat في Android اختيار الجلسة (الافتراضي `main`، بالإضافة إلى الجلسات الموجودة الأخرى):
+يدعم تبويب الدردشة في Android اختيار الجلسة (الافتراضية `main`، بالإضافة إلى الجلسات الموجودة الأخرى):
 
-- السجل: `chat.history` (مطبّع للعرض؛ تتم إزالة وسوم التوجيه المضمنة
-  من النص المرئي، كما تتم إزالة حمولات XML النصية العادية الخاصة باستدعاءات الأدوات (بما في ذلك
-  `<tool_call>...</tool_call>` و`<function_call>...</function_call>`,
-  و`<tool_calls>...</tool_calls>` و`<function_calls>...</function_calls>` و
-  كتل استدعاء الأدوات المقتطعة) ورموز تحكم النموذج المتسربة بنمط ASCII/العرض الكامل،
-  ويتم حذف صفوف المساعد التي تحتوي فقط على رموز صامتة بحتة مثل `NO_REPLY` /
-  `no_reply` تمامًا، ويمكن استبدال الصفوف الكبيرة جدًا بعناصر نائبة)
+- السجل: `chat.history` (مطبع للعرض؛ تُزال وسوم التوجيه المضمنة من
+  النص المرئي، وتُزال حمولات XML لاستدعاءات الأدوات بالنص العادي (بما في ذلك
+  `<tool_call>...</tool_call>` و`<function_call>...</function_call>` و
+  `<tool_calls>...</tool_calls>` و`<function_calls>...</function_calls>` و
+  كتل استدعاء الأدوات المقتطعة) ورموز تحكم النموذج ASCII/كاملة العرض المسرّبة،
+  وتُحذف صفوف المساعد ذات الرموز الصامتة الخالصة مثل `NO_REPLY` /
+  `no_reply` بالضبط، ويمكن استبدال الصفوف كبيرة الحجم بعناصر نائبة)
 - الإرسال: `chat.send`
-- تحديثات الدفع (best-effort): `chat.subscribe` → `event:"chat"`
+- تحديثات الدفع (بأفضل جهد): `chat.subscribe` → `event:"chat"`
 
 ### 7) Canvas + الكاميرا
 
-#### Gateway Canvas Host ‏(موصى به لمحتوى الويب)
+#### مضيف Gateway Canvas (موصى به لمحتوى الويب)
 
-إذا كنت تريد أن تعرض العقدة HTML/CSS/JS حقيقيًا يمكن للوكيل تعديله على القرص، فوجّه العقدة إلى Gateway canvas host.
+إذا كنت تريد من العقدة عرض HTML/CSS/JS حقيقي يمكن للوكيل تعديله على القرص، فوجه العقدة إلى مضيف Canvas في الـ Gateway.
 
-ملاحظة: تقوم العُقد بتحميل canvas من خادم Gateway HTTP (المنفذ نفسه الخاص بـ `gateway.port`، والافتراضي `18789`).
+<Note>
+تحمّل العقد Canvas من خادم HTTP الخاص بالـ Gateway (نفس منفذ `gateway.port`، الافتراضي `18789`).
+</Note>
 
-1. أنشئ الملف `~/.openclaw/workspace/canvas/index.html` على مضيف gateway.
+1. أنشئ `~/.openclaw/workspace/canvas/index.html` على مضيف الـ Gateway.
 
-2. وجّه العقدة إليه (LAN):
+2. انتقل بالعقدة إليه (LAN):
 
 ```bash
 openclaw nodes invoke --node "<Android Node>" --command canvas.navigate --params '{"url":"http://<gateway-hostname>.local:18789/__openclaw__/canvas/"}'
 ```
 
-Tailnet (اختياري): إذا كان كلا الجهازين على Tailscale، فاستخدم اسم MagicDNS أو tailnet IP بدل `.local`، مثل `http://<gateway-magicdns>:18789/__openclaw__/canvas/`.
+Tailnet (اختياري): إذا كان الجهازان على Tailscale، فاستخدم اسم MagicDNS أو عنوان IP في tailnet بدلًا من `.local`، مثل `http://<gateway-magicdns>:18789/__openclaw__/canvas/`.
 
-يقوم هذا الخادم بحقن عميل live-reload داخل HTML ويعيد التحميل عند تغيّر الملفات.
-يعيش مضيف A2UI على `http://<gateway-host>:18789/__openclaw__/a2ui/`.
+يحقن هذا الخادم عميل إعادة تحميل حي في HTML ويعيد التحميل عند تغييرات الملفات.
+يوجد مضيف A2UI في `http://<gateway-host>:18789/__openclaw__/a2ui/`.
 
-أوامر Canvas ‏(في الواجهة الأمامية فقط):
+أوامر Canvas (في المقدمة فقط):
 
-- `canvas.eval`, `canvas.snapshot`, `canvas.navigate` (استخدم `{"url":""}` أو `{"url":"/"}` للعودة إلى scaffold الافتراضي). يعيد `canvas.snapshot` القيمة `{ format, base64 }` (الافتراضي `format="jpeg"`).
-- A2UI: ‏`canvas.a2ui.push`, `canvas.a2ui.reset` (الاسم المستعار القديم `canvas.a2ui.pushJSONL`)
+- `canvas.eval` و`canvas.snapshot` و`canvas.navigate` (استخدم `{"url":""}` أو `{"url":"/"}` للعودة إلى القالب الافتراضي). يُرجع `canvas.snapshot` القيمة `{ format, base64 }` (الافتراضي `format="jpeg"`).
+- A2UI: `canvas.a2ui.push` و`canvas.a2ui.reset` (الاسم المستعار القديم `canvas.a2ui.pushJSONL`)
 
-أوامر الكاميرا (في الواجهة الأمامية فقط؛ محكومة بالأذونات):
+أوامر الكاميرا (في المقدمة فقط؛ محكومة بالأذونات):
 
-- `camera.snap` ‏(jpg)
-- `camera.clip` ‏(mp4)
+- `camera.snap` (jpg)
+- `camera.clip` (mp4)
 
-راجع [Camera node](/ar/nodes/camera) للاطلاع على المعلمات ومساعدات CLI.
+راجع [عقدة الكاميرا](/ar/nodes/camera) للمعلمات ومساعدات CLI.
 
-### 8) الصوت + سطح أوامر Android الموسّع
+### 8) الصوت + سطح أوامر Android الموسع
 
-- تبويب Voice: يحتوي Android على وضعَي التقاط صريحين. **Mic** هو جلسة يدوية ضمن تبويب Voice ترسل كل توقف على أنه دور دردشة وتتوقف عندما يغادر التطبيق الواجهة الأمامية أو يغادر المستخدم تبويب Voice. أما **Talk** فهو Talk Mode مستمر ويواصل الاستماع حتى يتم إيقافه أو تنفصل العقدة.
-- يقوم Talk Mode بترقية foreground service الحالية من `dataSync` إلى `dataSync|microphone` قبل بدء الالتقاط، ثم يُرجعها عند توقف Talk Mode. يتطلب Android 14+ تصريح `FOREGROUND_SERVICE_MICROPHONE`، ومنح `RECORD_AUDIO` وقت التشغيل، ونوع خدمة الميكروفون وقت التشغيل.
-- تستخدم الردود المنطوقة `talk.speak` عبر Talk provider المكوَّن في gateway. ولا يُستخدم TTS المحلي في النظام إلا عندما يكون `talk.speak` غير متاح.
-- يظل التنبيه الصوتي wake معطّلًا في واجهة/وقت تشغيل Android.
-- عائلات أوامر Android الإضافية (يعتمد توفرها على الجهاز + الأذونات):
-  - `device.status`, `device.info`, `device.permissions`, `device.health`
-  - `notifications.list`, `notifications.actions` (راجع [Notification forwarding](#notification-forwarding) أدناه)
+- تبويب الصوت: لدى Android وضعا التقاط صريحان. **Mic** هو جلسة يدوية في تبويب الصوت ترسل كل توقف كدور دردشة وتتوقف عندما يغادر التطبيق المقدمة أو يغادر المستخدم تبويب الصوت. **Talk** هو Talk Mode مستمر ويواصل الاستماع حتى يتم إيقافه بالمفتاح أو تنفصل العقدة.
+- يرقّي Talk Mode الخدمة الأمامية الحالية من `dataSync` إلى `dataSync|microphone` قبل بدء الالتقاط، ثم يخفضها عند توقف Talk Mode. يتطلب Android 14+ تصريح `FOREGROUND_SERVICE_MICROPHONE` ومنح وقت التشغيل `RECORD_AUDIO` ونوع خدمة الميكروفون في وقت التشغيل.
+- تستخدم الردود المنطوقة `talk.speak` عبر موفر Talk المهيأ في الـ Gateway. يُستخدم TTS المحلي للنظام فقط عندما لا يتوفر `talk.speak`.
+- يظل إيقاظ الصوت معطلًا في تجربة مستخدم Android/وقت التشغيل.
+- عائلات أوامر Android إضافية (يعتمد التوفر على الجهاز + الأذونات):
+  - `device.status` و`device.info` و`device.permissions` و`device.health`
+  - `notifications.list` و`notifications.actions` (راجع [إعادة توجيه الإشعارات](#notification-forwarding) أدناه)
   - `photos.latest`
-  - `contacts.search`, `contacts.add`
-  - `calendar.events`, `calendar.add`
+  - `contacts.search` و`contacts.add`
+  - `calendar.events` و`calendar.add`
   - `callLog.search`
   - `sms.search`
-  - `motion.activity`, `motion.pedometer`
+  - `motion.activity` و`motion.pedometer`
 
 ## نقاط دخول المساعد
 
-يدعم Android تشغيل OpenClaw من مُشغِّل مساعد النظام (Google
-Assistant). وعند ضبطه، يؤدي الضغط المطوّل على زر الصفحة الرئيسية أو قول "Hey Google, ask
-OpenClaw..." إلى فتح التطبيق وتمرير prompt إلى مؤلف الدردشة.
+يدعم Android تشغيل OpenClaw من مشغّل مساعد النظام (Google
+Assistant). عند إعداده، يؤدي الضغط مطولًا على زر الصفحة الرئيسية أو قول "Hey Google, ask
+OpenClaw..." إلى فتح التطبيق وتسليم الطلب إلى محرر الدردشة.
 
-يستخدم هذا بيانات Android **App Actions** الوصفية المعلنة في manifest التطبيق. ولا حاجة إلى
-أي إعداد إضافي من جهة gateway — إذ تتم معالجة نية المساعد بالكامل بواسطة
-تطبيق Android وتمريرها كرسالة دردشة عادية.
+يستخدم هذا بيانات تعريف Android **App Actions** المعلنة في بيان التطبيق. لا
+يلزم إعداد إضافي على جانب الـ Gateway -- تتم معالجة نية المساعد بالكامل بواسطة تطبيق Android وتُمرر كرسالة دردشة عادية.
 
 <Note>
-يعتمد توفر App Actions على الجهاز، وإصدار Google Play Services،
-وعلى ما إذا كان المستخدم قد ضبط OpenClaw كتطبيق المساعد الافتراضي.
+يعتمد توفر App Actions على الجهاز وإصدار Google Play Services
+وما إذا كان المستخدم قد عيّن OpenClaw كتطبيق المساعد الافتراضي.
 </Note>
 
 ## إعادة توجيه الإشعارات
 
-يمكن لـ Android إعادة توجيه إشعارات الجهاز إلى gateway كأحداث. وتتيح لك عدة عناصر تحكم تحديد نطاق الإشعارات التي يُعاد توجيهها ومتى.
+يمكن لـ Android إعادة توجيه إشعارات الجهاز إلى الـ Gateway كأحداث. تتيح لك عدة عناصر تحكم تحديد نطاق الإشعارات التي تُعاد توجيهها ووقت ذلك.
 
 | المفتاح                              | النوع           | الوصف                                                                                       |
 | -------------------------------- | -------------- | ------------------------------------------------------------------------------------------------- |
-| `notifications.allowPackages`    | `string[]`       | أعد توجيه الإشعارات من أسماء الحزم هذه فقط. إذا تم ضبطه، فسيتم تجاهل كل الحزم الأخرى.      |
-| `notifications.denyPackages`     | `string[]`       | لا تُعد توجيه الإشعارات من أسماء الحزم هذه أبدًا. يُطبَّق بعد `allowPackages`.              |
-| `notifications.quietHours.start` | `string (HH:mm)` | بداية نافذة الساعات الهادئة (بالتوقيت المحلي للجهاز). تُحجب الإشعارات خلال هذه النافذة. |
-| `notifications.quietHours.end`   | `string (HH:mm)` | نهاية نافذة الساعات الهادئة.                                                                        |
-| `notifications.rateLimit`        | `number`         | الحد الأقصى لعدد الإشعارات المعاد توجيهها لكل حزمة في الدقيقة. تُسقط الإشعارات الزائدة.         |
+| `notifications.allowPackages`    | string[]       | لا تُعد توجيه إلا الإشعارات من أسماء الحزم هذه. إذا ضُبطت، يتم تجاهل جميع الحزم الأخرى.      |
+| `notifications.denyPackages`     | string[]       | لا تُعد توجيه الإشعارات من أسماء الحزم هذه أبدًا. يُطبق بعد `allowPackages`.              |
+| `notifications.quietHours.start` | string (HH:mm) | بداية نافذة ساعات الهدوء (وقت الجهاز المحلي). تُكبت الإشعارات خلال هذه النافذة. |
+| `notifications.quietHours.end`   | string (HH:mm) | نهاية نافذة ساعات الهدوء.                                                                        |
+| `notifications.rateLimit`        | number         | الحد الأقصى للإشعارات المعاد توجيهها لكل حزمة في الدقيقة. تُسقط الإشعارات الزائدة.         |
 
-كما يستخدم منتقي الإشعارات سلوكًا أكثر أمانًا لأحداث الإشعارات المعاد توجيهها، ما يمنع إعادة التوجيه غير المقصودة لإشعارات النظام الحساسة.
+يستخدم منتقي الإشعارات أيضًا سلوكًا أكثر أمانًا لأحداث الإشعارات المعاد توجيهها، مما يمنع إعادة التوجيه العرضية لإشعارات النظام الحساسة.
 
-مثال إعداد:
+مثال على الإعداد:
 
 ```json5
 {
@@ -267,11 +279,11 @@ OpenClaw..." إلى فتح التطبيق وتمرير prompt إلى مؤلف ا
 ```
 
 <Note>
-يتطلب إعادة توجيه الإشعارات إذن Android Notification Listener. يطلب التطبيق هذا أثناء الإعداد.
+تتطلب إعادة توجيه الإشعارات إذن Android Notification Listener. يطلب التطبيق ذلك أثناء الإعداد.
 </Note>
 
-## ذو صلة
+## ذات صلة
 
-- [iOS app](/ar/platforms/ios)
-- [Nodes](/ar/nodes)
-- [Android node troubleshooting](/ar/nodes/troubleshooting)
+- [تطبيق iOS](/ar/platforms/ios)
+- [العقد](/ar/nodes)
+- [استكشاف أخطاء عقدة Android وإصلاحها](/ar/nodes/troubleshooting)

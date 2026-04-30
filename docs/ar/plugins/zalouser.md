@@ -1,47 +1,53 @@
 ---
 read_when:
-    - تريد دعم Zalo Personal ‏(غير الرسمي) في OpenClaw
-    - أنت تضبط أو تطور Plugin ‏zalouser
-summary: 'Plugin ‏Zalo Personal: تسجيل دخول عبر QR + مراسلة عبر `zca-js` الأصلي (تثبيت Plugin + إعداد القناة + الأداة)'
-title: Plugin ‏Zalo Personal
+    - تريد دعم Zalo Personal (غير الرسمي) في OpenClaw
+    - أنت تقوم بتكوين Plugin zalouser أو تطويره
+summary: 'Plugin Zalo Personal: تسجيل الدخول عبر QR + المراسلة عبر zca-js الأصلي (تثبيت Plugin + إعداد القناة + أداة)'
+title: Plugin Zalo الشخصي
 x-i18n:
-    generated_at: "2026-04-24T07:57:21Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T08:19:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: d678bd55fd405a9c689d1202870cc03bfb825a9314c433a0ab729d376e3b67a3
+    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
     source_path: plugins/zalouser.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Zalo Personal ‏(Plugin)
+# Zalo Personal (Plugin)
 
-دعم Zalo Personal في OpenClaw عبر Plugin، باستخدام `zca-js` الأصلي لأتمتة حساب مستخدم Zalo عادي.
+دعم Zalo Personal لـ OpenClaw عبر Plugin، باستخدام `zca-js` الأصلي لأتمتة حساب مستخدم Zalo عادي.
 
-> **تحذير:** قد تؤدي الأتمتة غير الرسمية إلى تعليق الحساب/حظره. استخدمها على مسؤوليتك الخاصة.
+<Warning>
+قد تؤدي الأتمتة غير الرسمية إلى تعليق الحساب أو حظره. استخدمها على مسؤوليتك الخاصة.
+</Warning>
 
 ## التسمية
 
-معرّف القناة هو `zalouser` لتوضيح أن هذا يؤتمت **حساب مستخدم Zalo شخصي** ‏(غير رسمي). ونُبقي `zalo` محجوزًا لتكامل رسمي محتمل مع Zalo API في المستقبل.
+معرّف القناة هو `zalouser` لتوضيح أن هذا يؤتمت **حساب مستخدم Zalo شخصيًا** (غير رسمي). نُبقي `zalo` محجوزًا لتكامل محتمل مستقبلاً مع واجهة Zalo API الرسمية.
 
 ## أين يعمل
 
 يعمل هذا Plugin **داخل عملية Gateway**.
 
-إذا كنت تستخدم Gateway بعيدة، فقم بتثبيته/إعداده على **الجهاز الذي يشغّل Gateway**، ثم أعد تشغيل Gateway.
+إذا كنت تستخدم Gateway بعيدًا، فثبّته/اضبطه على **الجهاز الذي يشغّل Gateway**، ثم أعد تشغيل Gateway.
 
-لا حاجة إلى أي ملف CLI تنفيذي خارجي من `zca`/`openzca`.
+لا يلزم وجود ملف CLI ثنائي خارجي لـ `zca`/`openzca`.
 
 ## التثبيت
 
-### الخيار A: التثبيت من npm
+### الخيار أ: التثبيت من npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
+إذا أبلغ npm أن الحزمة المملوكة لـ OpenClaw مهملة، فهذا يعني أن إصدار الحزمة هذا
+من مسار حزم خارجي أقدم؛ استخدم بناء OpenClaw مُغلّفًا حاليًا أو
+مسار المجلد المحلي إلى أن تُنشر حزمة npm أحدث.
+
 أعد تشغيل Gateway بعد ذلك.
 
-### الخيار B: التثبيت من مجلد محلي (للتطوير)
+### الخيار ب: التثبيت من مجلد محلي (تطوير)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -51,9 +57,9 @@ cd "$PLUGIN_SRC" && pnpm install
 
 أعد تشغيل Gateway بعد ذلك.
 
-## الإعدادات
+## الضبط
 
-توجد إعدادات القناة تحت `channels.zalouser` ‏(وليس `plugins.entries.*`):
+توجد تهيئة القناة ضمن `channels.zalouser` (وليس `plugins.entries.*`):
 
 ```json5
 {
@@ -80,7 +86,7 @@ openclaw directory peers list --channel zalouser --query "name"
 
 اسم الأداة: `zalouser`
 
-الإجراءات: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
+الإجراءات: `send`، `image`، `link`، `friends`، `groups`، `me`، `status`
 
 تدعم إجراءات رسائل القناة أيضًا `react` لتفاعلات الرسائل.
 
