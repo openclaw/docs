@@ -314,6 +314,7 @@ openclaw models list
       接著是 `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`，再來是 `AWS_PROFILE`，最後是預設 AWS SDK 鏈。
     - 推理支援取決於模型；請查看 Bedrock 模型卡以了解目前功能。
     - 如果你偏好受管理的金鑰流程，也可以在 Bedrock 前方放置 OpenAI 相容的代理，並將其改為設定成 OpenAI 提供者。
+
   </Accordion>
 </AccordionGroup>
 

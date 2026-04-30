@@ -214,6 +214,7 @@ LiteLLM 也可以透過 OpenAI 相容的
       沒有 `service_tier`、沒有 Responses `store`、沒有提示快取提示，也沒有
       OpenAI reasoning 相容酬載塑形
     - 自訂 LiteLLM base URL 不會注入隱藏的 OpenClaw 歸因標頭（`originator`、`version`、`User-Agent`）
+
   </Accordion>
 </AccordionGroup>
 

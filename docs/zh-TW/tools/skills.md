@@ -72,6 +72,7 @@ OpenClaw 會從這些來源載入技能，**優先順序由高到低**：
     - 設定 `agents.list[].skills: []` 表示沒有技能。
     - 非空的 `agents.list[].skills` 清單就是該代理的**最終**集合，不會與預設值合併。
     - 有效允許清單會套用於提示建構、技能斜線命令探索、沙箱同步與技能快照。
+
   </Accordion>
 </AccordionGroup>
 
