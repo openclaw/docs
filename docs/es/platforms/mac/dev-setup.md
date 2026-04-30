@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Configurar el entorno de desarrollo en macOS
-summary: Guía de configuración para desarrolladores que trabajan en la app de macOS de OpenClaw
-title: configuración de desarrollo en macOS
+    - Configuración del entorno de desarrollo de macOS
+summary: Guía de configuración para desarrolladores que trabajan en la aplicación para macOS de OpenClaw
+title: Configuración de desarrollo en macOS
 x-i18n:
-    generated_at: "2026-04-24T05:38:23Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:50:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 30f98b3249096fa1e125a7beb77562b7bd36e2c17f524f30a1c58de61bd04da0
+    source_hash: d0c494b7a214b6db2880ba02c512653c35dbcdf80805bee9777ec946412668e1
     source_path: platforms/mac/dev-setup.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Configuración de desarrollo en macOS
+# Configuración para desarrolladores de macOS
 
-Esta guía cubre los pasos necesarios para compilar y ejecutar desde el código fuente la aplicación de OpenClaw para macOS.
+Compila y ejecuta la aplicación de OpenClaw para macOS desde el código fuente.
 
 ## Requisitos previos
 
-Antes de compilar la app, asegúrate de tener instalado lo siguiente:
+Antes de compilar la aplicación, asegúrate de tener instalado lo siguiente:
 
-1. **Xcode 26.2+**: requerido para desarrollo con Swift.
-2. **Node.js 24 y pnpm**: recomendados para el gateway, la CLI y los scripts de empaquetado. Node 22 LTS, actualmente `22.14+`, sigue siendo compatible por motivos de compatibilidad.
+1. **Xcode 26.2+**: Requerido para el desarrollo en Swift.
+2. **Node.js 24 y pnpm**: Recomendado para el Gateway, la CLI y los scripts de empaquetado. Node 22 LTS, actualmente `22.14+`, sigue siendo compatible.
 
 ## 1. Instalar dependencias
 
@@ -31,30 +31,30 @@ Instala las dependencias de todo el proyecto:
 pnpm install
 ```
 
-## 2. Compilar y empaquetar la app
+## 2. Compilar y empaquetar la aplicación
 
-Para compilar la app de macOS y empaquetarla en `dist/OpenClaw.app`, ejecuta:
+Para compilar la aplicación de macOS y empaquetarla en `dist/OpenClaw.app`, ejecuta:
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Si no tienes un certificado Apple Developer ID, el script usará automáticamente **firma ad-hoc** (`-`).
+Si no tienes un certificado de Apple Developer ID, el script usará automáticamente **firma ad-hoc** (`-`).
 
-Para modos de ejecución de desarrollo, flags de firma y solución de problemas del Team ID, consulta el README de la app de macOS:
+Para los modos de ejecución de desarrollo, las opciones de firma y la solución de problemas del Team ID, consulta el README de la aplicación de macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Nota**: Las apps firmadas ad-hoc pueden activar avisos de seguridad. Si la app se bloquea inmediatamente con "Abort trap 6", consulta la sección [Solución de problemas](#solución-de-problemas).
+> **Nota**: Las aplicaciones firmadas ad-hoc pueden activar avisos de seguridad. Si la aplicación se bloquea de inmediato con "Abort trap 6", consulta la sección [Solución de problemas](#troubleshooting).
 
 ## 3. Instalar la CLI
 
-La app de macOS espera una instalación global de la CLI `openclaw` para gestionar tareas en segundo plano.
+La aplicación de macOS espera una instalación global de la CLI `openclaw` para gestionar tareas en segundo plano.
 
 **Para instalarla (recomendado):**
 
-1. Abre la app de OpenClaw.
-2. Ve a la pestaña de ajustes **General**.
-3. Haz clic en **"Install CLI"**.
+1. Abre la aplicación OpenClaw.
+2. Ve a la pestaña de configuración **General**.
+3. Haz clic en **"Instalar CLI"**.
 
 Como alternativa, instálala manualmente:
 
@@ -63,18 +63,18 @@ npm install -g openclaw@<version>
 ```
 
 `pnpm add -g openclaw@<version>` y `bun add -g openclaw@<version>` también funcionan.
-Para el tiempo de ejecución del Gateway, Node sigue siendo la ruta recomendada.
+Para el entorno de ejecución del Gateway, Node sigue siendo la ruta recomendada.
 
 ## Solución de problemas
 
-### La compilación falla: desajuste de toolchain o SDK
+### La compilación falla: incompatibilidad de toolchain o SDK
 
-La compilación de la app de macOS espera el SDK más reciente de macOS y el toolchain Swift 6.2.
+La compilación de la aplicación de macOS espera el SDK de macOS más reciente y la toolchain de Swift 6.2.
 
 **Dependencias del sistema (requeridas):**
 
-- **La última versión de macOS disponible en Software Update** (requerida por los SDK de Xcode 26.2)
-- **Xcode 26.2** (toolchain Swift 6.2)
+- **La versión más reciente de macOS disponible en Actualización de software** (requerida por los SDK de Xcode 26.2)
+- **Xcode 26.2** (toolchain de Swift 6.2)
 
 **Comprobaciones:**
 
@@ -85,35 +85,35 @@ xcrun swift --version
 
 Si las versiones no coinciden, actualiza macOS/Xcode y vuelve a ejecutar la compilación.
 
-### La app se bloquea al conceder permisos
+### La aplicación se bloquea al conceder permisos
 
-Si la app se bloquea cuando intentas permitir acceso a **Speech Recognition** o **Microphone**, puede deberse a una caché TCC dañada o a un desajuste de firma.
+Si la aplicación se bloquea cuando intentas permitir el acceso a **Reconocimiento de voz** o **Micrófono**, puede deberse a una caché TCC dañada o a una incompatibilidad de firma.
 
-**Solución:**
+**Corrección:**
 
-1. Restablece los permisos TCC:
+1. Restablece los permisos de TCC:
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Si eso falla, cambia temporalmente el `BUNDLE_ID` en [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) para forzar un "estado limpio" de macOS.
+2. Si eso falla, cambia temporalmente el `BUNDLE_ID` en [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) para forzar un "estado limpio" desde macOS.
 
-### Gateway "Starting..." indefinidamente
+### Gateway "Iniciando..." indefinidamente
 
-Si el estado del gateway se queda en "Starting...", comprueba si un proceso zombi está reteniendo el puerto:
+Si el estado del Gateway permanece en "Iniciando...", comprueba si un proceso zombie está reteniendo el puerto:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Si no estás usando un LaunchAgent (modo desarrollo / ejecuciones manuales), busca el listener:
+# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Si una ejecución manual está reteniendo el puerto, detén ese proceso (Ctrl+C). Como último recurso, mata el PID que encontraste arriba.
+Si una ejecución manual está reteniendo el puerto, detén ese proceso (Ctrl+C). Como último recurso, termina el PID que encontraste arriba.
 
 ## Relacionado
 
-- [app de macOS](/es/platforms/macos)
+- [Aplicación de macOS](/es/platforms/macos)
 - [Resumen de instalación](/es/install)

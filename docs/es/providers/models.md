@@ -1,22 +1,21 @@
 ---
 read_when:
-    - Quieres elegir un proveedor de modelos
-    - Quieres ejemplos rápidos de configuración para autenticación LLM + selección de modelo
+    - Desea elegir un proveedor de modelos
+    - Quieres ejemplos de configuración rápida para autenticación de LLM + selección de modelo
 summary: Proveedores de modelos (LLM) compatibles con OpenClaw
-title: Inicio rápido de proveedores de modelos
+title: Inicio rápido del proveedor de modelos
 x-i18n:
-    generated_at: "2026-04-24T05:45:13Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:58:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b824a664e0e7a7a5b0ea640ea7329ea3d1e3d12b85d9310231c76014b2ae01cc
+    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
     source_path: providers/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Proveedores de modelos
 
-OpenClaw puede usar muchos proveedores de LLM. Elige uno, autentícate y luego establece el
-modelo predeterminado como `provider/model`.
+OpenClaw puede usar muchos proveedores de LLM. Elige uno, autentícate y luego establece el modelo predeterminado como `provider/model`.
 
 ## Inicio rápido (dos pasos)
 
@@ -34,13 +33,14 @@ modelo predeterminado como `provider/model`.
 - [Alibaba Model Studio](/es/providers/alibaba)
 - [Amazon Bedrock](/es/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/es/providers/anthropic)
-- [BytePlus (International)](/es/concepts/model-providers#byteplus-international)
+- [BytePlus (internacional)](/es/concepts/model-providers#byteplus-international)
 - [Chutes](/es/providers/chutes)
 - [ComfyUI](/es/providers/comfy)
 - [Cloudflare AI Gateway](/es/providers/cloudflare-ai-gateway)
+- [DeepInfra](/es/providers/deepinfra)
 - [fal](/es/providers/fal)
 - [Fireworks](/es/providers/fireworks)
-- [GLM models](/es/providers/glm)
+- [modelos GLM](/es/providers/glm)
 - [MiniMax](/es/providers/minimax)
 - [Mistral](/es/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/es/providers/moonshot)
@@ -57,17 +57,16 @@ modelo predeterminado como `provider/model`.
 - [xAI](/es/providers/xai)
 - [Z.AI](/es/providers/zai)
 
-## Variantes adicionales de proveedores incluidos
+## Variantes adicionales de proveedores incluidas
 
-- `anthropic-vertex` - compatibilidad implícita con Anthropic en Google Vertex cuando hay credenciales de Vertex disponibles; no hay opción separada de autenticación en la incorporación
+- `anthropic-vertex` - compatibilidad implícita con Anthropic en Google Vertex cuando las credenciales de Vertex están disponibles; sin opción independiente de autenticación durante la incorporación
 - `copilot-proxy` - puente local de VS Code Copilot Proxy; usa `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - flujo no oficial de OAuth de Gemini CLI; requiere una instalación local de `gemini` (`brew install gemini-cli` o `npm install -g @google/gemini-cli`); modelo predeterminado `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` o `openclaw models auth login --provider google-gemini-cli --set-default`
+- `google-gemini-cli` - flujo OAuth no oficial de Gemini CLI; requiere una instalación local de `gemini` (`brew install gemini-cli` o `npm install -g @google/gemini-cli`); modelo predeterminado `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` o `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Para ver el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada,
-consulta [Proveedores de modelos](/es/concepts/model-providers).
+Para ver el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada, consulta [Proveedores de modelos](/es/concepts/model-providers).
 
 ## Relacionado
 
-- [Selección de modelo](/es/concepts/model-providers)
-- [Failover de modelos](/es/concepts/model-failover)
+- [Selección de modelos](/es/concepts/model-providers)
+- [Conmutación por error de modelos](/es/concepts/model-failover)
 - [CLI de modelos](/es/cli/models)

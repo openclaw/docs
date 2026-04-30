@@ -1,40 +1,29 @@
 ---
 read_when:
-    - Estás conectando el transporte sintético de QA a una ejecución de prueba local o de CI
-    - Necesitas la superficie de configuración del qa-channel incluido
-    - Estás iterando en la automatización de QA de extremo a extremo
-summary: Plugin de canal sintético de clase Slack para escenarios deterministas de QA de OpenClaw
+    - Estás integrando el transporte de QA sintético en una ejecución de pruebas local o de CI
+    - Necesitas la superficie de configuración de qa-channel incluida
+    - Estás iterando sobre la automatización de QA de extremo a extremo
+summary: Plugin de canal sintético de clase Slack para escenarios de QA deterministas de OpenClaw
 title: Canal de QA
 x-i18n:
-    generated_at: "2026-04-24T05:19:54Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:30:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
+    source_hash: e1de1f52da1a14c845cf2a536ddc6f36ab52ed6364f68d9ece32ce272e2a2f96
     source_path: channels/qa-channel.md
-    workflow: 15
+    workflow: 16
 ---
 
-`qa-channel` es un transporte de mensajes sintético incluido para la QA automatizada de OpenClaw.
+`qa-channel` es un transporte sintético de mensajes incluido para la QA automatizada de OpenClaw. No es un canal de producción: existe para ejercitar el mismo límite del Plugin de canal que usan los transportes reales, manteniendo el estado determinista y completamente inspeccionable.
 
-No es un canal de producción. Existe para ejercitar el mismo límite del Plugin
-de canal usado por transportes reales, mientras mantiene el estado determinista y
-totalmente inspeccionable.
+## Qué hace
 
-## Qué hace hoy
-
-- Gramática de destinos de clase Slack:
+- Gramática de destinos tipo Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- Bus sintético con respaldo HTTP para:
-  - inyección de mensajes entrantes
-  - captura de transcripciones salientes
-  - creación de hilos
-  - reacciones
-  - ediciones
-  - eliminaciones
-  - acciones de búsqueda y lectura
-- Ejecutor de autoverificación incluido del lado del host que escribe un informe en Markdown
+- Bus sintético respaldado por HTTP para inyección de mensajes entrantes, captura de transcripciones salientes, creación de hilos, reacciones, ediciones, eliminaciones y acciones de búsqueda/lectura.
+- Ejecutor de autocomprobación en el host que escribe un informe Markdown en `.artifacts/qa-e2e/`.
 
 ## Configuración
 
@@ -52,70 +41,53 @@ totalmente inspeccionable.
 }
 ```
 
-Claves de cuenta admitidas:
+Claves de cuenta:
 
-- `baseUrl`
-- `botUserId`
-- `botDisplayName`
-- `pollTimeoutMs`
-- `allowFrom`
-- `defaultTo`
-- `actions.messages`
-- `actions.reactions`
-- `actions.search`
-- `actions.threads`
+- `enabled` — interruptor principal para esta cuenta.
+- `name` — etiqueta de visualización opcional.
+- `baseUrl` — URL del bus sintético.
+- `botUserId` — id de usuario del bot con estilo Matrix usado en la gramática de destinos.
+- `botDisplayName` — nombre de visualización para mensajes salientes.
+- `pollTimeoutMs` — ventana de espera de long-poll. Entero entre 100 y 30000.
+- `allowFrom` — lista de remitentes permitidos (ids de usuario o `"*"`).
+- `defaultTo` — destino de respaldo cuando no se proporciona ninguno.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — control de herramientas por acción.
 
-## Ejecutor
+Claves multicuenta en el nivel superior:
 
-Corte vertical actual:
+- `accounts` — registro de anulaciones por cuenta nombradas, indexadas por id de cuenta.
+- `defaultAccount` — id de cuenta preferido cuando hay varias configuradas.
+
+## Ejecutores
+
+Autocomprobación en el host (escribe un informe Markdown bajo `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Ahora esto se enruta a través de la extensión `qa-lab` incluida. Inicia el
-bus de QA dentro del repositorio, arranca el segmento de tiempo de ejecución
-de `qa-channel` incluido, ejecuta una autoverificación determinista y escribe
-un informe en Markdown en `.artifacts/qa-e2e/`.
+Esto se enruta a través de `qa-lab`, inicia el bus de QA del repositorio, arranca la porción de runtime incluida de `qa-channel` y ejecuta una autocomprobación determinista.
 
-UI privada de depuración:
-
-```bash
-pnpm qa:lab:up
-```
-
-Ese único comando compila el sitio de QA, inicia la pila de Gateway + QA Lab
-con respaldo de Docker e imprime la URL de QA Lab. Desde ese sitio puedes
-elegir escenarios, seleccionar la vía del modelo, iniciar ejecuciones
-individuales y ver los resultados en vivo.
-
-Suite completa de QA con respaldo del repositorio:
+Suite completa de escenarios respaldada por el repositorio:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Eso inicia el depurador privado de QA en una URL local, separado del paquete
-de la UI de Control distribuida.
+Ejecuta escenarios en paralelo contra el carril del Gateway de QA. Consulta [Resumen de QA](/es/concepts/qa-e2e-automation) para escenarios, perfiles y modos de proveedor.
 
-## Alcance
+Sitio de QA respaldado por Docker (Gateway + UI de depuración de QA Lab en una sola pila):
 
-El alcance actual es intencionalmente limitado:
+```bash
+pnpm qa:lab:up
+```
 
-- bus + transporte del Plugin
-- gramática de enrutamiento por hilos
-- acciones de mensajes propiedad del canal
-- informes en Markdown
-- sitio de QA con respaldo de Docker y controles de ejecución
-
-El trabajo de seguimiento agregará:
-
-- ejecución de matriz de proveedor/modelo
-- descubrimiento de escenarios más completo
-- orquestación nativa de OpenClaw más adelante
+Compila el sitio de QA, inicia la pila Gateway + QA Lab respaldada por Docker e imprime la URL de QA Lab. Desde ahí puedes elegir escenarios, seleccionar el carril del modelo, iniciar ejecuciones individuales y ver los resultados en vivo. El depurador de QA Lab está separado del paquete de Control UI distribuido.
 
 ## Relacionado
 
+- [Resumen de QA](/es/concepts/qa-e2e-automation) — pila general, adaptadores de transporte, creación de escenarios
+- [QA de Matrix](/es/concepts/qa-matrix) — ejecutor de transporte en vivo de ejemplo que maneja un canal real
 - [Emparejamiento](/es/channels/pairing)
 - [Grupos](/es/channels/groups)
 - [Resumen de canales](/es/channels)

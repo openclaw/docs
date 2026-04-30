@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Quieres listar sesiones almacenadas y ver actividad reciente
-summary: Referencia de la CLI para `openclaw sessions` (listar sesiones almacenadas y uso)
+    - Quieres listar las sesiones almacenadas y ver la actividad reciente
+summary: Referencia de CLI para `openclaw sessions` (listar sesiones almacenadas + uso)
 title: Sesiones
 x-i18n:
-    generated_at: "2026-04-24T05:24:03Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:35:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
+    source_hash: 9fea2014f538b00a27fa0078391a421843052333c5bcfc8100fced515eed0004
     source_path: cli/sessions.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw sessions`
 
-Lista las sesiones de conversación almacenadas.
+Enumera las sesiones de conversación almacenadas.
 
 ```bash
 openclaw sessions
@@ -31,15 +31,26 @@ Selección de alcance:
 - `--verbose`: registro detallado
 - `--agent <id>`: un almacén de agente configurado
 - `--all-agents`: agrega todos los almacenes de agentes configurados
-- `--store <path>`: ruta explícita del almacén (no puede combinarse con `--agent` ni con `--all-agents`)
+- `--store <path>`: ruta explícita del almacén (no se puede combinar con `--agent` ni `--all-agents`)
 
-`openclaw sessions --all-agents` lee los almacenes de agentes configurados. El descubrimiento de sesiones del Gateway y ACP
-es más amplio: también incluyen almacenes solo en disco encontrados bajo
-la raíz predeterminada `agents/` o una raíz con plantilla `session.store`. Esos
-almacenes descubiertos deben resolverse a archivos `sessions.json` normales dentro de la
-raíz del agente; los symlinks y las rutas fuera de la raíz se omiten.
+Exporta un paquete de trayectoria para una sesión almacenada:
 
-Ejemplos de JSON:
+```bash
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
+```
+
+Esta es la ruta de comando que usa el comando de barra diagonal `/export-trajectory` después de que
+el propietario aprueba la solicitud de ejecución. El directorio de salida siempre se resuelve
+dentro de `.openclaw/trajectory-exports/` bajo el espacio de trabajo seleccionado.
+
+`openclaw sessions --all-agents` lee los almacenes de agentes configurados. El descubrimiento de sesiones de Gateway y ACP
+es más amplio: también incluye almacenes presentes solo en disco que se encuentran bajo
+la raíz `agents/` predeterminada o una raíz de `session.store` con plantilla. Esos
+almacenes descubiertos deben resolverse como archivos `sessions.json` normales dentro de la
+raíz del agente; los enlaces simbólicos y las rutas fuera de la raíz se omiten.
+
+Ejemplos JSON:
 
 `openclaw sessions --all-agents --json`:
 
@@ -73,19 +84,19 @@ openclaw sessions cleanup --enforce --active-key "agent:main:telegram:direct:123
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` usa la configuración `session.maintenance` de la configuración:
+`openclaw sessions cleanup` usa la configuración de `session.maintenance` desde la configuración:
 
-- Nota sobre el alcance: `openclaw sessions cleanup` mantiene solo almacenes/transcripciones de sesiones. No depura los registros de ejecución de Cron (`cron/runs/<jobId>.jsonl`), que se gestionan mediante `cron.runLog.maxBytes` y `cron.runLog.keepLines` en [Configuración de Cron](/es/automation/cron-jobs#configuration) y se explican en [Mantenimiento de Cron](/es/automation/cron-jobs#maintenance).
+- Nota de alcance: `openclaw sessions cleanup` mantiene almacenes de sesiones, transcripciones y archivos complementarios de trayectoria. No depura registros de ejecuciones Cron (`cron/runs/<jobId>.jsonl`), que se gestionan mediante `cron.runLog.maxBytes` y `cron.runLog.keepLines` en [configuración de Cron](/es/automation/cron-jobs#configuration) y se explican en [mantenimiento de Cron](/es/automation/cron-jobs#maintenance).
 
 - `--dry-run`: previsualiza cuántas entradas se depurarían/limitarían sin escribir.
-  - En modo texto, la simulación imprime una tabla de acciones por sesión (`Action`, `Key`, `Age`, `Model`, `Flags`) para que puedas ver qué se conservaría y qué se eliminaría.
+  - En modo de texto, dry-run imprime una tabla de acciones por sesión (`Action`, `Key`, `Age`, `Model`, `Flags`) para que puedas ver qué se conservaría y qué se eliminaría.
 - `--enforce`: aplica el mantenimiento incluso cuando `session.maintenance.mode` es `warn`.
-- `--fix-missing`: elimina entradas cuyos archivos de transcripción faltan, aunque normalmente aún no se eliminarían por antigüedad o recuento.
-- `--active-key <key>`: protege una clave activa específica de la expulsión por presupuesto de disco.
+- `--fix-missing`: elimina entradas cuyos archivos de transcripción faltan, aunque normalmente todavía no se eliminarían por antigüedad/cantidad.
+- `--active-key <key>`: protege una clave activa específica contra la expulsión por presupuesto de disco.
 - `--agent <id>`: ejecuta la limpieza para un almacén de agente configurado.
 - `--all-agents`: ejecuta la limpieza para todos los almacenes de agentes configurados.
-- `--store <path>`: ejecuta la limpieza sobre un archivo `sessions.json` específico.
-- `--json`: imprime un resumen en JSON. Con `--all-agents`, la salida incluye un resumen por almacén.
+- `--store <path>`: ejecuta contra un archivo `sessions.json` específico.
+- `--json`: imprime un resumen JSON. Con `--all-agents`, la salida incluye un resumen por almacén.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -117,9 +128,9 @@ openclaw sessions cleanup --json
 
 Relacionado:
 
-- Configuración de sesiones: [Referencia de configuración](/es/gateway/config-agents#session)
+- Configuración de sesiones: [referencia de configuración](/es/gateway/config-agents#session)
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
-- [Gestión de sesiones](/es/concepts/session)
+- [referencia de CLI](/es/cli)
+- [gestión de sesiones](/es/concepts/session)

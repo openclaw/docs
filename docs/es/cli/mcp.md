@@ -1,62 +1,62 @@
 ---
 read_when:
     - Conectar Codex, Claude Code u otro cliente MCP a canales respaldados por OpenClaw
-    - Ejecutar `openclaw mcp serve`
-    - Gestionar definiciones de servidores MCP guardadas por OpenClaw
+    - Ejecutando `openclaw mcp serve`
+    - Gestión de las definiciones de servidores MCP guardadas por OpenClaw
 sidebarTitle: MCP
-summary: Exponer conversaciones de canales de OpenClaw a través de MCP y gestionar definiciones guardadas de servidores MCP
+summary: Exponer las conversaciones de canales de OpenClaw a través de MCP y gestionar las definiciones guardadas de servidores MCP
 title: MCP
 x-i18n:
-    generated_at: "2026-04-26T11:26:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:34:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1e003d974a7ae989f240d7608470ddcf2f37e20ca342cf4569c14677dc6fc1d8
+    source_hash: d66ec20b81ab3894c7202ee1c1c6666bd9cdeffc8d48a280b1f298bb358887ef
     source_path: cli/mcp.md
-    workflow: 15
+    workflow: 16
 ---
 
 `openclaw mcp` tiene dos funciones:
 
 - ejecutar OpenClaw como servidor MCP con `openclaw mcp serve`
-- gestionar definiciones de servidores MCP salientes propiedad de OpenClaw con `list`, `show`, `set` y `unset`
+- gestionar las definiciones de servidores MCP salientes propiedad de OpenClaw con `list`, `show`, `set` y `unset`
 
 En otras palabras:
 
 - `serve` es OpenClaw actuando como servidor MCP
-- `list` / `show` / `set` / `unset` es OpenClaw actuando como un registro del lado cliente MCP para otros servidores MCP que sus runtimes podrían consumir más tarde
+- `list` / `show` / `set` / `unset` es OpenClaw actuando como registro del lado del cliente MCP para otros servidores MCP que sus runtimes puedan consumir más adelante
 
-Usa [`openclaw acp`](/es/cli/acp) cuando OpenClaw deba alojar por sí mismo una sesión de arnés de programación y enrutar ese runtime mediante ACP.
+Usa [`openclaw acp`](/es/cli/acp) cuando OpenClaw deba alojar por sí mismo una sesión de arnés de codificación y enrutar ese runtime a través de ACP.
 
 ## OpenClaw como servidor MCP
 
-Esta es la ruta `openclaw mcp serve`.
+Esta es la ruta de `openclaw mcp serve`.
 
 ### Cuándo usar `serve`
 
 Usa `openclaw mcp serve` cuando:
 
-- Codex, Claude Code u otro cliente MCP deba comunicarse directamente con conversaciones de canales respaldadas por OpenClaw
+- Codex, Claude Code u otro cliente MCP deba comunicarse directamente con conversaciones de canal respaldadas por OpenClaw
 - ya tengas un Gateway de OpenClaw local o remoto con sesiones enrutadas
-- quieras un único servidor MCP que funcione en los backends de canales de OpenClaw en lugar de ejecutar bridges separados por canal
+- quieras un servidor MCP que funcione con los backends de canal de OpenClaw en lugar de ejecutar puentes separados por canal
 
-Usa [`openclaw acp`](/es/cli/acp) en su lugar cuando OpenClaw deba alojar el runtime de programación por sí mismo y mantener la sesión del agente dentro de OpenClaw.
+Usa [`openclaw acp`](/es/cli/acp) en su lugar cuando OpenClaw deba alojar el runtime de codificación por sí mismo y mantener la sesión del agente dentro de OpenClaw.
 
 ### Cómo funciona
 
-`openclaw mcp serve` inicia un servidor MCP stdio. El cliente MCP es dueño de ese proceso. Mientras el cliente mantenga abierta la sesión stdio, el bridge se conecta por WebSocket a un Gateway de OpenClaw local o remoto y expone conversaciones de canales enrutadas a través de MCP.
+`openclaw mcp serve` inicia un servidor MCP stdio. El cliente MCP es propietario de ese proceso. Mientras el cliente mantiene abierta la sesión stdio, el puente se conecta a un Gateway de OpenClaw local o remoto mediante WebSocket y expone las conversaciones de canal enrutadas sobre MCP.
 
 <Steps>
-  <Step title="El cliente genera el bridge">
-    El cliente MCP genera `openclaw mcp serve`.
+  <Step title="El cliente inicia el puente">
+    El cliente MCP inicia `openclaw mcp serve`.
   </Step>
-  <Step title="El bridge se conecta al Gateway">
-    El bridge se conecta al Gateway de OpenClaw por WebSocket.
+  <Step title="El puente se conecta al Gateway">
+    El puente se conecta al Gateway de OpenClaw mediante WebSocket.
   </Step>
   <Step title="Las sesiones se convierten en conversaciones MCP">
     Las sesiones enrutadas se convierten en conversaciones MCP y herramientas de transcripción/historial.
   </Step>
-  <Step title="Cola de eventos en vivo">
-    Los eventos en vivo se ponen en cola en memoria mientras el bridge está conectado.
+  <Step title="Los eventos en vivo se encolan">
+    Los eventos en vivo se encolan en memoria mientras el puente está conectado.
   </Step>
   <Step title="Push opcional de Claude">
     Si el modo de canal de Claude está habilitado, la misma sesión también puede recibir notificaciones push específicas de Claude.
@@ -65,20 +65,20 @@ Usa [`openclaw acp`](/es/cli/acp) en su lugar cuando OpenClaw deba alojar el run
 
 <AccordionGroup>
   <Accordion title="Comportamiento importante">
-    - el estado de la cola en vivo comienza cuando el bridge se conecta
-    - el historial de transcripciones más antiguo se lee con `messages_read`
+    - el estado de la cola en vivo empieza cuando el puente se conecta
+    - el historial de transcripciones anterior se lee con `messages_read`
     - las notificaciones push de Claude solo existen mientras la sesión MCP está activa
-    - cuando el cliente se desconecta, el bridge termina y la cola en vivo desaparece
-    - los puntos de entrada de agente de una sola ejecución, como `openclaw agent` y `openclaw infer model run`, retiran los runtimes MCP incluidos que abren cuando la respuesta termina, por lo que las ejecuciones repetidas por script no acumulan procesos hijo MCP stdio
-    - los servidores MCP stdio iniciados por OpenClaw (incluidos o configurados por el usuario) se desmontan como árbol de procesos al apagarse, por lo que los subprocesos hijo iniciados por el servidor no sobreviven después de que el cliente stdio padre sale
-    - eliminar o restablecer una sesión libera los clientes MCP de esa sesión a través de la ruta compartida de limpieza del runtime, por lo que no quedan conexiones stdio residuales ligadas a una sesión eliminada
+    - cuando el cliente se desconecta, el puente sale y la cola en vivo desaparece
+    - los puntos de entrada de agente de una sola ejecución, como `openclaw agent` y `openclaw infer model run`, retiran cualquier runtime MCP incluido que abran cuando se completa la respuesta, por lo que las ejecuciones con scripts repetidas no acumulan procesos hijo MCP stdio
+    - los servidores MCP stdio iniciados por OpenClaw (incluidos o configurados por el usuario) se cierran como un árbol de procesos al apagar, por lo que los subprocesos hijo iniciados por el servidor no sobreviven después de que sale el cliente stdio principal
+    - eliminar o restablecer una sesión desecha los clientes MCP de esa sesión mediante la ruta compartida de limpieza del runtime, por lo que no quedan conexiones stdio persistentes vinculadas a una sesión eliminada
 
   </Accordion>
 </AccordionGroup>
 
-### Elegir un modo de cliente
+### Elige un modo de cliente
 
-Usa el mismo bridge de dos maneras diferentes:
+Usa el mismo puente de dos maneras diferentes:
 
 <Tabs>
   <Tab title="Clientes MCP genéricos">
@@ -93,12 +93,12 @@ Usa el mismo bridge de dos maneras diferentes:
 Hoy, `auto` se comporta igual que `on`. Todavía no hay detección de capacidades del cliente.
 </Note>
 
-### Lo que expone `serve`
+### Qué expone `serve`
 
-El bridge usa metadatos de rutas de sesión existentes del Gateway para exponer conversaciones respaldadas por canales. Una conversación aparece cuando OpenClaw ya tiene estado de sesión con una ruta conocida, como:
+El puente usa los metadatos existentes de ruta de sesión del Gateway para exponer conversaciones respaldadas por canales. Una conversación aparece cuando OpenClaw ya tiene estado de sesión con una ruta conocida, como:
 
 - `channel`
-- metadatos del destinatario o destino
+- metadatos de destinatario o destino
 - `accountId` opcional
 - `threadId` opcional
 
@@ -107,8 +107,8 @@ Esto da a los clientes MCP un único lugar para:
 - listar conversaciones enrutadas recientes
 - leer historial reciente de transcripciones
 - esperar nuevos eventos entrantes
-- enviar una respuesta de vuelta por la misma ruta
-- ver solicitudes de aprobación que llegan mientras el bridge está conectado
+- enviar una respuesta por la misma ruta
+- ver solicitudes de aprobación que llegan mientras el puente está conectado
 
 ### Uso
 
@@ -136,13 +136,13 @@ Esto da a los clientes MCP un único lugar para:
   </Tab>
 </Tabs>
 
-### Herramientas del bridge
+### Herramientas del puente
 
-Actualmente, el bridge expone estas herramientas MCP:
+El puente actual expone estas herramientas MCP:
 
 <AccordionGroup>
   <Accordion title="conversations_list">
-    Lista conversaciones recientes respaldadas por sesión que ya tienen metadatos de ruta en el estado de sesión del Gateway.
+    Lista conversaciones recientes respaldadas por sesiones que ya tienen metadatos de ruta en el estado de sesión del Gateway.
 
     Filtros útiles:
 
@@ -157,16 +157,16 @@ Actualmente, el bridge expone estas herramientas MCP:
     Devuelve una conversación por `session_key`.
   </Accordion>
   <Accordion title="messages_read">
-    Lee mensajes recientes de la transcripción para una conversación respaldada por sesión.
+    Lee mensajes recientes de transcripción para una conversación respaldada por sesión.
   </Accordion>
   <Accordion title="attachments_fetch">
-    Extrae bloques de contenido de mensaje no textual de una transcripción. Esta es una vista de metadatos sobre el contenido de la transcripción, no un almacén independiente y duradero de blobs adjuntos.
+    Extrae bloques de contenido de mensaje no textuales de un mensaje de transcripción. Esta es una vista de metadatos sobre el contenido de la transcripción, no un almacén independiente y durable de blobs de adjuntos.
   </Accordion>
   <Accordion title="events_poll">
-    Lee eventos en vivo en cola desde un cursor numérico.
+    Lee eventos en vivo encolados desde un cursor numérico.
   </Accordion>
   <Accordion title="events_wait">
-    Hace long-poll hasta que llega el siguiente evento coincidente en cola o expira un tiempo de espera.
+    Hace long polling hasta que llegue el siguiente evento encolado coincidente o venza un tiempo de espera.
 
     Usa esto cuando un cliente MCP genérico necesite entrega casi en tiempo real sin un protocolo push específico de Claude.
 
@@ -178,14 +178,14 @@ Actualmente, el bridge expone estas herramientas MCP:
 
     - requiere una ruta de conversación existente
     - usa el canal, destinatario, id de cuenta e id de hilo de la sesión
-    - solo envía texto
+    - envía solo texto
 
   </Accordion>
   <Accordion title="permissions_list_open">
-    Lista solicitudes pendientes de aprobación de exec/Plugin que el bridge ha observado desde que se conectó al Gateway.
+    Lista solicitudes pendientes de aprobación de exec/plugin que el puente ha observado desde que se conectó al Gateway.
   </Accordion>
   <Accordion title="permissions_respond">
-    Resuelve una solicitud pendiente de aprobación de exec/Plugin con:
+    Resuelve una solicitud pendiente de aprobación de exec/plugin con:
 
     - `allow-once`
     - `allow-always`
@@ -196,7 +196,7 @@ Actualmente, el bridge expone estas herramientas MCP:
 
 ### Modelo de eventos
 
-El bridge mantiene una cola de eventos en memoria mientras está conectado.
+El puente mantiene una cola de eventos en memoria mientras está conectado.
 
 Tipos de eventos actuales:
 
@@ -208,25 +208,25 @@ Tipos de eventos actuales:
 - `claude_permission_request`
 
 <Warning>
-- la cola es solo en vivo; comienza cuando inicia el bridge MCP
-- `events_poll` y `events_wait` no reproducen por sí solos historial más antiguo del Gateway
-- el backlog duradero debe leerse con `messages_read`
+- la cola es solo en vivo; empieza cuando se inicia el puente MCP
+- `events_poll` y `events_wait` no reproducen por sí mismos el historial anterior del Gateway
+- el backlog durable debe leerse con `messages_read`
 
 </Warning>
 
 ### Notificaciones de canal de Claude
 
-El bridge también puede exponer notificaciones de canal específicas de Claude. Este es el equivalente en OpenClaw de un adaptador de canal de Claude Code: las herramientas MCP estándar siguen disponibles, pero los mensajes entrantes en vivo también pueden llegar como notificaciones MCP específicas de Claude.
+El puente también puede exponer notificaciones de canal específicas de Claude. Este es el equivalente en OpenClaw de un adaptador de canal de Claude Code: las herramientas MCP estándar siguen disponibles, pero los mensajes entrantes en vivo también pueden llegar como notificaciones MCP específicas de Claude.
 
 <Tabs>
-  <Tab title="off">
+  <Tab title="desactivado">
     `--claude-channel-mode off`: solo herramientas MCP estándar.
   </Tab>
-  <Tab title="on">
-    `--claude-channel-mode on`: habilita notificaciones de canal de Claude.
+  <Tab title="activado">
+    `--claude-channel-mode on`: habilita las notificaciones de canal de Claude.
   </Tab>
   <Tab title="auto (predeterminado)">
-    `--claude-channel-mode auto`: valor predeterminado actual; mismo comportamiento del bridge que `on`.
+    `--claude-channel-mode auto`: valor predeterminado actual; mismo comportamiento del puente que `on`.
   </Tab>
 </Tabs>
 
@@ -235,16 +235,16 @@ Cuando el modo de canal de Claude está habilitado, el servidor anuncia capacida
 - `notifications/claude/channel`
 - `notifications/claude/channel/permission`
 
-Comportamiento actual del bridge:
+Comportamiento actual del puente:
 
-- los mensajes entrantes de transcripción `user` se reenvían como `notifications/claude/channel`
-- las solicitudes de permisos de Claude recibidas a través de MCP se rastrean en memoria
-- si la conversación vinculada envía más tarde `yes abcde` o `no abcde`, el bridge lo convierte en `notifications/claude/channel/permission`
-- estas notificaciones existen solo durante la sesión en vivo; si el cliente MCP se desconecta, no hay destino push
+- los mensajes de transcripción entrantes `user` se reenvían como `notifications/claude/channel`
+- las solicitudes de permiso de Claude recibidas sobre MCP se rastrean en memoria
+- si la conversación vinculada envía posteriormente `yes abcde` o `no abcde`, el puente lo convierte en `notifications/claude/channel/permission`
+- estas notificaciones son solo de sesión en vivo; si el cliente MCP se desconecta, no hay destino push
 
-Esto es intencionadamente específico del cliente. Los clientes MCP genéricos deben apoyarse en las herramientas de sondeo estándar.
+Esto es intencionalmente específico del cliente. Los clientes MCP genéricos deben depender de las herramientas de sondeo estándar.
 
-### Configuración del cliente MCP
+### Configuración de cliente MCP
 
 Ejemplo de configuración de cliente stdio:
 
@@ -279,13 +279,13 @@ Para la mayoría de los clientes MCP genéricos, empieza con la superficie de he
   Token del Gateway.
 </ParamField>
 <ParamField path="--token-file" type="string">
-  Leer el token desde un archivo.
+  Lee el token desde un archivo.
 </ParamField>
 <ParamField path="--password" type="string">
   Contraseña del Gateway.
 </ParamField>
 <ParamField path="--password-file" type="string">
-  Leer la contraseña desde un archivo.
+  Lee la contraseña desde un archivo.
 </ParamField>
 <ParamField path="--claude-channel-mode" type='"auto" | "on" | "off"'>
   Modo de notificación de Claude.
@@ -295,61 +295,61 @@ Para la mayoría de los clientes MCP genéricos, empieza con la superficie de he
 </ParamField>
 
 <Tip>
-Prefiere `--token-file` o `--password-file` en lugar de secretos inline cuando sea posible.
+Prefiere `--token-file` o `--password-file` antes que secretos en línea cuando sea posible.
 </Tip>
 
-### Seguridad y límite de confianza
+### Límite de seguridad y confianza
 
-El bridge no inventa el enrutamiento. Solo expone conversaciones que el Gateway ya sabe cómo enrutar.
+El puente no inventa el enrutamiento. Solo expone conversaciones que el Gateway ya sabe cómo enrutar.
 
-Eso significa:
+Eso significa que:
 
-- las allowlists de remitentes, el emparejamiento y la confianza a nivel de canal siguen perteneciendo a la configuración subyacente del canal de OpenClaw
-- `messages_send` solo puede responder a través de una ruta almacenada existente
-- el estado de aprobación es solo en vivo/en memoria para la sesión actual del bridge
-- la autenticación del bridge debe usar los mismos controles de token o contraseña del Gateway que considerarías confiables para cualquier otro cliente remoto del Gateway
+- las listas de remitentes permitidos, el emparejamiento y la confianza a nivel de canal siguen perteneciendo a la configuración de canal subyacente de OpenClaw
+- `messages_send` solo puede responder mediante una ruta almacenada existente
+- el estado de aprobación es solo en vivo/en memoria para la sesión actual del puente
+- la autenticación del puente debe usar los mismos controles de token o contraseña del Gateway en los que confiarías para cualquier otro cliente remoto del Gateway
 
 Si falta una conversación en `conversations_list`, la causa habitual no es la configuración de MCP. Son metadatos de ruta faltantes o incompletos en la sesión subyacente del Gateway.
 
 ### Pruebas
 
-OpenClaw incluye una prueba de humo Docker determinista para este bridge:
+OpenClaw incluye una prueba smoke determinista en Docker para este puente:
 
 ```bash
 pnpm test:docker:mcp-channels
 ```
 
-Esa prueba de humo:
+Esa prueba smoke:
 
-- inicia un contenedor Gateway con datos precargados
-- inicia un segundo contenedor que genera `openclaw mcp serve`
-- verifica descubrimiento de conversaciones, lecturas de transcripciones, lecturas de metadatos de adjuntos, comportamiento de la cola de eventos en vivo y enrutamiento de envíos salientes
-- valida notificaciones de canal y permisos de estilo Claude sobre el bridge MCP stdio real
+- inicia un contenedor de Gateway con datos iniciales
+- inicia un segundo contenedor que ejecuta `openclaw mcp serve`
+- verifica el descubrimiento de conversaciones, lecturas de transcripción, lecturas de metadatos de adjuntos, comportamiento de la cola de eventos en vivo y enrutamiento de envío saliente
+- valida notificaciones de canal y permiso al estilo Claude sobre el puente MCP stdio real
 
-Esta es la forma más rápida de demostrar que el bridge funciona sin conectar una cuenta real de Telegram, Discord o iMessage a la ejecución de prueba.
+Esta es la forma más rápida de demostrar que el puente funciona sin conectar una cuenta real de Telegram, Discord o iMessage a la ejecución de pruebas.
 
-Para un contexto más amplio de pruebas, consulta [Testing](/es/help/testing).
+Para un contexto de pruebas más amplio, consulta [Pruebas](/es/help/testing).
 
 ### Solución de problemas
 
 <AccordionGroup>
   <Accordion title="No se devuelven conversaciones">
-    Normalmente significa que la sesión del Gateway todavía no es enrutable. Confirma que la sesión subyacente tenga almacenados los metadatos de ruta de canal/proveedor, destinatario y cuenta/hilo opcionales.
+    Normalmente significa que la sesión del Gateway aún no es enrutable. Confirma que la sesión subyacente tenga metadatos almacenados de canal/proveedor, destinatario y ruta opcional de cuenta/hilo.
   </Accordion>
-  <Accordion title="events_poll o events_wait omite mensajes antiguos">
-    Es lo esperado. La cola en vivo comienza cuando el bridge se conecta. Lee el historial de transcripciones más antiguo con `messages_read`.
+  <Accordion title="events_poll o events_wait no ve mensajes antiguos">
+    Es esperado. La cola en vivo empieza cuando el puente se conecta. Lee el historial de transcripciones anterior con `messages_read`.
   </Accordion>
-  <Accordion title="No aparecen notificaciones de Claude">
+  <Accordion title="Las notificaciones de Claude no aparecen">
     Comprueba todo esto:
 
     - el cliente mantuvo abierta la sesión MCP stdio
     - `--claude-channel-mode` es `on` o `auto`
     - el cliente realmente entiende los métodos de notificación específicos de Claude
-    - el mensaje entrante ocurrió después de que el bridge se conectó
+    - el mensaje entrante ocurrió después de que el puente se conectara
 
   </Accordion>
   <Accordion title="Faltan aprobaciones">
-    `permissions_list_open` solo muestra solicitudes de aprobación observadas mientras el bridge estaba conectado. No es una API duradera de historial de aprobaciones.
+    `permissions_list_open` solo muestra solicitudes de aprobación observadas mientras el puente estaba conectado. No es una API de historial durable de aprobaciones.
   </Accordion>
 </AccordionGroup>
 
@@ -357,27 +357,27 @@ Para un contexto más amplio de pruebas, consulta [Testing](/es/help/testing).
 
 Esta es la ruta de `openclaw mcp list`, `show`, `set` y `unset`.
 
-Estos comandos no exponen OpenClaw a través de MCP. Gestionan definiciones de servidores MCP propiedad de OpenClaw en `mcp.servers` dentro de la configuración de OpenClaw.
+Estos comandos no exponen OpenClaw mediante MCP. Gestionan las definiciones de servidores MCP propiedad de OpenClaw bajo `mcp.servers` en la configuración de OpenClaw.
 
-Esas definiciones guardadas son para runtimes que OpenClaw inicia o configura más tarde, como Pi integrado y otros adaptadores de runtime. OpenClaw almacena las definiciones de forma centralizada para que esos runtimes no necesiten mantener sus propias listas duplicadas de servidores MCP.
+Esas definiciones guardadas son para entornos de ejecución que OpenClaw inicia o configura más tarde, como Pi integrado y otros adaptadores de entorno de ejecución. OpenClaw almacena las definiciones de forma centralizada para que esos entornos de ejecución no tengan que mantener sus propias listas duplicadas de servidores MCP.
 
 <AccordionGroup>
-  <Accordion title="Comportamiento importante">
+  <Accordion title="Important behavior">
     - estos comandos solo leen o escriben la configuración de OpenClaw
     - no se conectan al servidor MCP de destino
-    - no validan si el comando, la URL o el transporte remoto son accesibles en este momento
-    - los adaptadores de runtime deciden qué formas de transporte admiten realmente en tiempo de ejecución
-    - Pi integrado expone las herramientas MCP configuradas en los perfiles de herramientas normales `coding` y `messaging`; `minimal` sigue ocultándolas, y `tools.deny: ["bundle-mcp"]` las desactiva explícitamente
-    - los runtimes MCP incluidos con alcance de sesión se recolectan tras `mcp.sessionIdleTtlMs` milisegundos de inactividad (predeterminado: 10 minutos; establece `0` para desactivar) y las ejecuciones integradas de una sola vez los limpian al terminar la ejecución
+    - no validan si el comando, la URL o el transporte remoto están disponibles en este momento
+    - los adaptadores de entorno de ejecución deciden qué formas de transporte admiten realmente en tiempo de ejecución
+    - Pi integrado expone las herramientas MCP configuradas en los perfiles de herramientas normales `coding` y `messaging`; `minimal` sigue ocultándolas, y `tools.deny: ["bundle-mcp"]` las deshabilita explícitamente
+    - los entornos de ejecución MCP agrupados con ámbito de sesión se recolectan después de `mcp.sessionIdleTtlMs` milisegundos de inactividad (10 minutos de forma predeterminada; establece `0` para deshabilitarlo) y las ejecuciones integradas de una sola vez los limpian al finalizar la ejecución
 
   </Accordion>
 </AccordionGroup>
 
-Los adaptadores de runtime pueden normalizar este registro compartido a la forma que espera su cliente descendente. Por ejemplo, Pi integrado consume directamente los valores `transport` de OpenClaw, mientras que Claude Code y Gemini reciben valores `type` nativos de la CLI como `http`, `sse` o `stdio`.
+Los adaptadores de entorno de ejecución pueden normalizar este registro compartido a la forma que espera su cliente descendente. Por ejemplo, Pi integrado consume directamente los valores `transport` de OpenClaw, mientras que Claude Code y Gemini reciben valores `type` nativos de la CLI, como `http`, `sse` o `stdio`.
 
-### Definiciones guardadas de servidores MCP
+### Definiciones de servidores MCP guardadas
 
-OpenClaw también almacena un registro ligero de servidores MCP en la configuración para las superficies que quieren definiciones MCP gestionadas por OpenClaw.
+OpenClaw también almacena un registro ligero de servidores MCP en la configuración para superficies que quieren definiciones MCP gestionadas por OpenClaw.
 
 Comandos:
 
@@ -389,9 +389,10 @@ Comandos:
 Notas:
 
 - `list` ordena los nombres de los servidores.
-- `show` sin nombre imprime el objeto completo de servidores MCP configurados.
-- `set` espera un valor de objeto JSON en una sola línea de comandos.
-- `unset` falla si el servidor nombrado no existe.
+- `show` sin un nombre imprime el objeto completo de servidores MCP configurados.
+- `set` espera un valor de objeto JSON en la línea de comandos.
+- Usa `transport: "streamable-http"` para servidores MCP Streamable HTTP. `openclaw mcp set` también normaliza `type: "http"` nativo de la CLI a la misma forma canónica de configuración por compatibilidad.
+- `unset` falla si el servidor con ese nombre no existe.
 
 Ejemplos:
 
@@ -399,11 +400,11 @@ Ejemplos:
 openclaw mcp list
 openclaw mcp show context7 --json
 openclaw mcp set context7 '{"command":"uvx","args":["context7-mcp"]}'
-openclaw mcp set docs '{"url":"https://mcp.example.com"}'
+openclaw mcp set docs '{"url":"https://mcp.example.com","transport":"streamable-http"}'
 openclaw mcp unset context7
 ```
 
-Ejemplo de estructura de configuración:
+Forma de configuración de ejemplo:
 
 ```json
 {
@@ -414,7 +415,8 @@ Ejemplo de estructura de configuración:
         "args": ["context7-mcp"]
       },
       "docs": {
-        "url": "https://mcp.example.com"
+        "url": "https://mcp.example.com",
+        "transport": "streamable-http"
       }
     }
   }
@@ -423,32 +425,32 @@ Ejemplo de estructura de configuración:
 
 ### Transporte stdio
 
-Inicia un proceso hijo local y se comunica por stdin/stdout.
+Inicia un proceso secundario local y se comunica mediante stdin/stdout.
 
-| Campo                      | Descripción                         |
-| -------------------------- | ----------------------------------- |
+| Campo                      | Descripción                              |
+| -------------------------- | ---------------------------------------- |
 | `command`                  | Ejecutable que se iniciará (obligatorio) |
 | `args`                     | Matriz de argumentos de línea de comandos |
-| `env`                      | Variables de entorno adicionales    |
-| `cwd` / `workingDirectory` | Directorio de trabajo del proceso   |
+| `env`                      | Variables de entorno adicionales         |
+| `cwd` / `workingDirectory` | Directorio de trabajo para el proceso    |
 
 <Warning>
 **Filtro de seguridad de env para stdio**
 
-OpenClaw rechaza claves `env` de inicio de intérprete que puedan alterar cómo se inicia un servidor MCP stdio antes del primer RPC, incluso si aparecen en el bloque `env` de un servidor. Las claves bloqueadas incluyen `NODE_OPTIONS`, `PYTHONSTARTUP`, `PYTHONPATH`, `PERL5OPT`, `RUBYOPT`, `SHELLOPTS`, `PS4` y variables similares de control del runtime. El inicio rechaza estas claves con un error de configuración para que no puedan inyectar un preludio implícito, cambiar el intérprete o habilitar un depurador contra el proceso stdio. Las variables de entorno normales de credenciales, proxy y específicas del servidor (`GITHUB_TOKEN`, `HTTP_PROXY`, `*_API_KEY` personalizadas, etc.) no se ven afectadas.
+OpenClaw rechaza claves de env de inicio de intérprete que pueden alterar cómo se inicia un servidor MCP stdio antes del primer RPC, incluso si aparecen en el bloque `env` de un servidor. Las claves bloqueadas incluyen `NODE_OPTIONS`, `PYTHONSTARTUP`, `PYTHONPATH`, `PERL5OPT`, `RUBYOPT`, `SHELLOPTS`, `PS4` y variables similares de control del entorno de ejecución. El inicio las rechaza con un error de configuración para que no puedan inyectar un preludio implícito, cambiar el intérprete o habilitar un depurador contra el proceso stdio. Las variables de entorno ordinarias de credenciales, proxy y específicas del servidor (`GITHUB_TOKEN`, `HTTP_PROXY`, `*_API_KEY` personalizadas, etc.) no se ven afectadas.
 
-Si tu servidor MCP realmente necesita una de las variables bloqueadas, configúrala en el proceso host del Gateway en lugar de hacerlo bajo `env` del servidor stdio.
+Si tu servidor MCP realmente necesita una de las variables bloqueadas, configúrala en el proceso host del Gateway en lugar de bajo el `env` del servidor stdio.
 </Warning>
 
 ### Transporte SSE / HTTP
 
 Se conecta a un servidor MCP remoto mediante HTTP Server-Sent Events.
 
-| Campo                 | Descripción                                                      |
-| --------------------- | ---------------------------------------------------------------- |
-| `url`                 | URL HTTP o HTTPS del servidor remoto (obligatorio)              |
-| `headers`             | Mapa opcional clave-valor de encabezados HTTP (por ejemplo, tokens de autenticación) |
-| `connectionTimeoutMs` | Tiempo de espera de conexión por servidor en ms (opcional)      |
+| Campo                 | Descripción                                                            |
+| --------------------- | ---------------------------------------------------------------------- |
+| `url`                 | URL HTTP o HTTPS del servidor remoto (obligatorio)                     |
+| `headers`             | Mapa clave-valor opcional de encabezados HTTP (por ejemplo tokens auth) |
+| `connectionTimeoutMs` | Tiempo de espera de conexión por servidor en ms (opcional)             |
 
 Ejemplo:
 
@@ -467,18 +469,20 @@ Ejemplo:
 }
 ```
 
-Los valores sensibles en `url` (userinfo) y `headers` se redaccionan en los registros y en la salida de estado.
+Los valores sensibles en `url` (userinfo) y `headers` se redactan en los registros y en la salida de estado.
 
 ### Transporte Streamable HTTP
 
-`streamable-http` es una opción de transporte adicional junto con `sse` y `stdio`. Usa streaming HTTP para la comunicación bidireccional con servidores MCP remotos.
+`streamable-http` es una opción de transporte adicional junto con `sse` y `stdio`. Usa streaming HTTP para comunicación bidireccional con servidores MCP remotos.
 
-| Campo                 | Descripción                                                                            |
-| --------------------- | -------------------------------------------------------------------------------------- |
-| `url`                 | URL HTTP o HTTPS del servidor remoto (obligatorio)                                     |
-| `transport`           | Establécelo en `"streamable-http"` para seleccionar este transporte; cuando se omite, OpenClaw usa `sse` |
-| `headers`             | Mapa opcional clave-valor de encabezados HTTP (por ejemplo, tokens de autenticación)   |
-| `connectionTimeoutMs` | Tiempo de espera de conexión por servidor en ms (opcional)                             |
+| Campo                 | Descripción                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `url`                 | URL HTTP o HTTPS del servidor remoto (obligatorio)                                                           |
+| `transport`           | Establécelo en `"streamable-http"` para seleccionar este transporte; si se omite, OpenClaw usa `sse`          |
+| `headers`             | Mapa clave-valor opcional de encabezados HTTP (por ejemplo tokens auth)                                      |
+| `connectionTimeoutMs` | Tiempo de espera de conexión por servidor en ms (opcional)                                                   |
+
+La configuración de OpenClaw usa `transport: "streamable-http"` como la escritura canónica. Los valores MCP nativos de la CLI `type: "http"` se aceptan cuando se guardan mediante `openclaw mcp set` y los repara `openclaw doctor --fix` en la configuración existente, pero `transport` es lo que Pi integrado consume directamente.
 
 Ejemplo:
 
@@ -500,20 +504,20 @@ Ejemplo:
 ```
 
 <Note>
-Estos comandos gestionan solo la configuración guardada. No inician el bridge del canal, no abren una sesión de cliente MCP en vivo ni demuestran que el servidor de destino sea accesible.
+Estos comandos gestionan solo la configuración guardada. No inician el puente de canal, no abren una sesión activa de cliente MCP ni prueban que el servidor de destino esté disponible.
 </Note>
 
 ## Límites actuales
 
-Esta página documenta el bridge tal como se distribuye hoy.
+Esta página documenta el puente tal como se entrega hoy.
 
 Límites actuales:
 
-- el descubrimiento de conversaciones depende de metadatos de rutas de sesión existentes en el Gateway
-- no hay protocolo push genérico más allá del adaptador específico de Claude
+- el descubrimiento de conversaciones depende de los metadatos de ruta de sesión existentes del Gateway
+- no hay un protocolo push genérico más allá del adaptador específico de Claude
 - todavía no hay herramientas para editar mensajes ni reaccionar
 - el transporte HTTP/SSE/streamable-http se conecta a un único servidor remoto; todavía no hay upstream multiplexado
-- `permissions_list_open` solo incluye aprobaciones observadas mientras el bridge está conectado
+- `permissions_list_open` solo incluye aprobaciones observadas mientras el puente está conectado
 
 ## Relacionado
 

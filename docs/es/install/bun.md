@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Quieres el ciclo local de desarrollo más rápido (bun + watch)
-    - Has encontrado problemas con la instalación, los parches o los scripts de ciclo de vida de Bun
-summary: 'Flujo de trabajo con Bun (experimental): instalación y consideraciones frente a pnpm'
+    - Quieres el ciclo de desarrollo local más rápido (bun + watch)
+    - Tienes problemas con scripts de instalación, parches o ciclo de vida de Bun
+summary: 'Flujo de trabajo con Bun (experimental): instalaciones y consideraciones frente a pnpm'
 title: Bun (experimental)
 x-i18n:
-    generated_at: "2026-04-24T05:33:44Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:46:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
+    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
     source_path: install/bun.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-Bun **no se recomienda para el entorno de ejecución de Gateway** (problemas conocidos con WhatsApp y Telegram). Usa Node en producción.
+Bun **no se recomienda para el runtime de Gateway** (problemas conocidos con WhatsApp y Telegram). Usa Node para producción.
 </Warning>
 
-Bun es un entorno de ejecución local opcional para ejecutar TypeScript directamente (`bun run ...`, `bun --watch ...`). El gestor de paquetes predeterminado sigue siendo `pnpm`, que es totalmente compatible y lo usa la herramienta de documentación. Bun no puede usar `pnpm-lock.yaml` y lo ignorará.
+Bun es un runtime local opcional para ejecutar TypeScript directamente (`bun run ...`, `bun --watch ...`). El gestor de paquetes predeterminado sigue siendo `pnpm`, que cuenta con soporte completo y se usa en las herramientas de documentación. Bun no puede usar `pnpm-lock.yaml` y lo ignorará.
 
-## Instalar
+## Instalación
 
 <Steps>
   <Step title="Instalar dependencias">
@@ -27,7 +27,7 @@ Bun es un entorno de ejecución local opcional para ejecutar TypeScript directam
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` están ignorados por git, así que no hay cambios en el repositorio. Para omitir por completo la escritura del lockfile:
+    `bun.lock` / `bun.lockb` están ignorados por git, así que no hay cambios innecesarios en el repositorio. Para omitir por completo la escritura del archivo de bloqueo:
 
     ```sh
     bun install --no-save
@@ -44,23 +44,23 @@ Bun es un entorno de ejecución local opcional para ejecutar TypeScript directam
 
 ## Scripts de ciclo de vida
 
-Bun bloquea scripts de ciclo de vida de dependencias a menos que se confíe explícitamente en ellos. Para este repositorio, los scripts comúnmente bloqueados no son necesarios:
+Bun bloquea los scripts de ciclo de vida de dependencias a menos que se confíe explícitamente en ellos. Para este repositorio, los scripts bloqueados habitualmente no son necesarios:
 
-- `@whiskeysockets/baileys` `preinstall` -- comprueba que la versión principal de Node sea >= 20 (OpenClaw usa por defecto Node 24 y sigue siendo compatible con Node 22 LTS, actualmente `22.14+`)
-- `protobufjs` `postinstall` -- emite advertencias sobre esquemas de versión incompatibles (sin artefactos de compilación)
+- `@whiskeysockets/baileys` `preinstall` -- comprueba que la versión principal de Node sea >= 20 (OpenClaw usa Node 24 de forma predeterminada y sigue admitiendo Node 22 LTS, actualmente `22.14+`)
+- `protobufjs` `postinstall` -- emite advertencias sobre esquemas de versiones incompatibles (sin artefactos de compilación)
 
-Si encuentras un problema en tiempo de ejecución que requiera estos scripts, confía explícitamente en ellos:
+Si encuentras un problema de runtime que requiere estos scripts, confía en ellos explícitamente:
 
 ```sh
 bun pm trust @whiskeysockets/baileys protobufjs
 ```
 
-## Consideraciones
+## Advertencias
 
-Algunos scripts todavía codifican `pnpm` de forma fija (por ejemplo `docs:build`, `ui:*`, `protocol:check`). Por ahora, ejecútalos con `pnpm`.
+Algunos scripts todavía tienen pnpm codificado de forma fija (por ejemplo `docs:build`, `ui:*`, `protocol:check`). Ejecútalos mediante pnpm por ahora.
 
 ## Relacionado
 
-- [Resumen de instalación](/es/install)
+- [Descripción general de instalación](/es/install)
 - [Node.js](/es/install/node)
 - [Actualización](/es/install/updating)

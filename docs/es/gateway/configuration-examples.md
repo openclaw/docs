@@ -1,20 +1,20 @@
 ---
 read_when:
     - Aprender a configurar OpenClaw
-    - Buscar ejemplos de configuración
+    - Buscando ejemplos de configuración
     - Configurar OpenClaw por primera vez
 summary: Ejemplos de configuración precisos según el esquema para configuraciones comunes de OpenClaw
 title: Ejemplos de configuración
 x-i18n:
-    generated_at: "2026-04-25T13:45:52Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:40:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
+    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
     source_path: gateway/configuration-examples.md
-    workflow: 15
+    workflow: 16
 ---
 
-Los ejemplos de abajo están alineados con el esquema actual de configuración. Para la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
+Los ejemplos siguientes están alineados con el esquema de configuración actual. Para la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
 
 ## Inicio rápido
 
@@ -48,12 +48,18 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
       groups: { "*": { requireMention: true } },
     },
   },
+  messages: {
+    visibleReplies: "automatic",
+    groupChat: {
+      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+    },
+  },
 }
 ```
 
 ## Ejemplo ampliado (opciones principales)
 
-> JSON5 te permite usar comentarios y comas finales. El JSON normal también funciona.
+> JSON5 te permite usar comentarios y comas finales. JSON normal también funciona.
 
 ```json5
 {
@@ -103,30 +109,27 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
   // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
+    visibleReplies: "automatic",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
-  },
-
-  // Routing + queue
-  routing: {
     groupChat: {
-      mentionPatterns: ["@openclaw", "openclaw"],
       historyLimit: 50,
+      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
     },
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
-        telegram: "collect",
-        discord: "collect",
-        slack: "collect",
-        signal: "collect",
-        imessage: "collect",
-        webchat: "collect",
+        whatsapp: "steer",
+        telegram: "steer",
+        discord: "steer",
+        slack: "steer",
+        signal: "steer",
+        imessage: "steer",
+        webchat: "steer",
       },
     },
   },
@@ -155,7 +158,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
   // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // recomendado para bandejas de entrada multiusuario
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -170,10 +173,9 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // duración o false
-      maxDiskBytes: "500mb", // opcional
-      highWaterBytes: "400mb", // opcional (predeterminado: 80% de maxDiskBytes)
+      resetArchiveRetention: "30d", // duration or false
+      maxDiskBytes: "500mb", // optional
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -251,9 +253,10 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // heredado por los agentes que omiten list[].skills
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
       blockStreamingBreak: "text_end",
@@ -276,7 +279,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (predeterminado) | block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -291,7 +294,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferido frente al heredado perSession: true
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -310,15 +313,18 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
       {
         id: "main",
         default: true,
-        // hereda defaults.skills -> github, weather
-        thinkingDefault: "high", // anulación de thinking por agente
-        reasoningDefault: "on", // visibilidad de razonamiento por agente
-        fastModeDefault: false, // modo rápido por agente
+        // inherits defaults.skills -> github, weather
+        groupChat: {
+          mentionPatterns: ["@openclaw", "openclaw"],
+        },
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // sin Skills para este agente
-        fastModeDefault: true, // este agente siempre se ejecuta rápido
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -376,7 +382,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2,
+    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -466,7 +472,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
 
 ## Patrones comunes
 
-### Línea base compartida de Skills con una anulación
+### Base de habilidad compartida con una anulación
 
 ```json5
 {
@@ -485,7 +491,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
 
 - `agents.defaults.skills` es la línea base compartida.
 - `agents.list[].skills` reemplaza esa línea base para un agente.
-- Usa `skills: []` cuando un agente no deba ver ningún Skills.
+- Usa `skills: []` cuando un agente no deba ver ninguna Skills.
 
 ### Configuración multiplataforma
 
@@ -508,10 +514,10 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar mensajes directos al b
 }
 ```
 
-### Aprobación automática de red de Node de confianza
+### Aprobación automática de red de nodos de confianza
 
-Mantén el emparejamiento de dispositivos manual, a menos que controles la ruta de red. Para una subred
-dedicada de laboratorio o tailnet, puedes optar por la aprobación automática inicial de dispositivos Node
+Mantén el emparejamiento de dispositivos manual salvo que controles la ruta de red. Para un laboratorio dedicado
+o una subred tailnet, puedes optar por la aprobación automática de dispositivos Node en el primer uso
 con CIDR o IP exactos:
 
 ```json5
@@ -526,27 +532,27 @@ con CIDR o IP exactos:
 }
 ```
 
-Esto permanece desactivado cuando no se configura. Solo se aplica a emparejamientos nuevos de `role: node` sin
-alcances solicitados. Los clientes de operador/navegador y las actualizaciones de rol, alcance, metadatos o
+Esto permanece desactivado cuando no está configurado. Solo se aplica al emparejamiento nuevo de `role: node` sin
+alcances solicitados. Los clientes operador/navegador y las actualizaciones de rol, alcance, metadatos o
 clave pública siguen requiriendo aprobación manual.
 
-### Modo seguro de mensajes directos (bandeja compartida / mensajes directos multiusuario)
+### Modo DM seguro (bandeja de entrada compartida / DM multiusuario)
 
-Si más de una persona puede enviar mensajes directos a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo seguro de mensajes directos** para que los mensajes directos de remitentes diferentes no compartan un mismo contexto de forma predeterminada:
+Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), activa el **modo DM seguro** para que los DM de distintos remitentes no compartan un único contexto de forma predeterminada:
 
 ```json5
 {
-  // Modo seguro de mensajes directos (recomendado para agentes de mensajes directos multiusuario o sensibles)
+  // Secure DM mode (recommended for multi-user or sensitive DM agents)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Ejemplo: bandeja de entrada multiusuario de WhatsApp
+    // Example: WhatsApp multi-user inbox
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Ejemplo: bandeja de entrada multiusuario de Discord
+    // Example: Discord multi-user inbox
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -556,8 +562,8 @@ Si más de una persona puede enviar mensajes directos a tu bot (varias entradas 
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente usa primero ID de forma predeterminada.
-Solo habilita la coincidencia directa por nombre, correo o apodo mutable con `dangerouslyAllowNameMatching: true` de cada canal si aceptas explícitamente ese riesgo.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente se basa primero en el ID de forma predeterminada.
+Activa la coincidencia directa con nombres/correos/nicks mutables mediante `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
 
 ### Clave de API de Anthropic + respaldo de MiniMax
 
@@ -654,8 +660,8 @@ Solo habilita la coincidencia directa por nombre, correo o apodo mutable con `da
 
 - Si configuras `dmPolicy: "open"`, la lista `allowFrom` correspondiente debe incluir `"*"`.
 - Los ID de proveedor difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
-- Secciones opcionales para añadir después: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Consulta [Providers](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para notas de configuración más detalladas.
+- Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para ver notas de configuración más detalladas.
 
 ## Relacionado
 

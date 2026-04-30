@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Estás automatizando el onboarding en scripts o CI
-    - Necesitas ejemplos no interactivos para proveedores específicos
+    - Está automatizando la incorporación en scripts o CI
+    - Necesita ejemplos no interactivos para proveedores específicos
 sidebarTitle: CLI automation
-summary: Onboarding con scripts y configuración de agentes para la CLI de OpenClaw
+summary: Incorporación mediante scripts y configuración de agentes para la CLI de OpenClaw
 title: Automatización de la CLI
 x-i18n:
-    generated_at: "2026-04-25T18:21:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:02:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 50b6ef35554ec085012a84b8abb8d52013934ada5293d941babea56eaacf4a9f
+    source_hash: 6a169abafa682e99d2cd89dbcc9a738790d7fdfa7ba204f415baac35d6df4a2f
     source_path: start/wizard-cli-automation.md
-    workflow: 15
+    workflow: 16
 ---
 
-Usa `--non-interactive` para automatizar `openclaw onboard`.
+Use `--non-interactive` para automatizar `openclaw onboard`.
 
 <Note>
-`--json` no implica modo no interactivo. Usa `--non-interactive` (y `--workspace`) para scripts.
+`--json` no implica el modo no interactivo. Usa `--non-interactive` (y `--workspace`) para scripts.
 </Note>
 
 ## Ejemplo base no interactivo
@@ -36,15 +36,15 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-Agrega `--json` para un resumen legible por máquina.
+Agrega `--json` para obtener un resumen legible por máquina.
 
-Usa `--skip-bootstrap` cuando tu automatización precargue archivos del espacio de trabajo y no quiera que el onboarding cree los archivos bootstrap predeterminados.
+Usa `--skip-bootstrap` cuando tu automatización precargue archivos de espacio de trabajo y no quieras que la incorporación cree los archivos bootstrap predeterminados.
 
-Usa `--secret-input-mode ref` para almacenar referencias respaldadas por variables de entorno en los perfiles de autenticación en lugar de valores en texto plano.
-La selección interactiva entre referencias de entorno y referencias de proveedor configuradas (`file` o `exec`) está disponible en el flujo de onboarding.
+Usa `--secret-input-mode ref` para almacenar referencias respaldadas por env en perfiles de autenticación en lugar de valores en texto sin formato.
+La selección interactiva entre referencias env y referencias de proveedor configuradas (`file` o `exec`) está disponible en el flujo de incorporación.
 
-En el modo no interactivo `ref`, las variables de entorno del proveedor deben estar establecidas en el entorno del proceso.
-Pasar banderas de clave inline sin la variable de entorno correspondiente ahora falla de inmediato.
+En modo `ref` no interactivo, las variables env del proveedor deben estar definidas en el entorno del proceso.
+Pasar flags de clave en línea sin la variable env correspondiente ahora falla rápido.
 
 Ejemplo:
 
@@ -56,10 +56,10 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-## Ejemplos específicos por proveedor
+## Ejemplos específicos de proveedor
 
 <AccordionGroup>
-  <Accordion title="Ejemplo de clave API de Anthropic">
+  <Accordion title="Ejemplo de clave de API de Anthropic">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -173,11 +173,13 @@ openclaw onboard --non-interactive \
       --custom-api-key "$CUSTOM_API_KEY" \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
+      --custom-image-input \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
 
-    `--custom-api-key` es opcional. Si se omite, el onboarding comprueba `CUSTOM_API_KEY`.
+    `--custom-api-key` es opcional. Si se omite, la incorporación comprueba `CUSTOM_API_KEY`.
+    OpenClaw marca automáticamente los ID de modelo de visión comunes como compatibles con imágenes. Agrega `--custom-image-input` para ID de visión personalizados desconocidos, o `--custom-text-input` para forzar metadatos solo de texto.
 
     Variante en modo ref:
 
@@ -191,21 +193,22 @@ openclaw onboard --non-interactive \
       --secret-input-mode ref \
       --custom-provider-id "my-custom" \
       --custom-compatibility anthropic \
+      --custom-image-input \
       --gateway-port 18789 \
       --gateway-bind loopback
     ```
 
-    En este modo, el onboarding almacena `apiKey` como `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
+    En este modo, la incorporación almacena `apiKey` como `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
 
   </Accordion>
 </AccordionGroup>
 
-El token de configuración de Anthropic sigue disponible como una ruta de token de onboarding compatible, pero OpenClaw ahora prefiere la reutilización de Claude CLI cuando está disponible.
-Para producción, prefiere una clave API de Anthropic.
+El setup-token de Anthropic sigue disponible como ruta de token de incorporación compatible, pero OpenClaw ahora prefiere reutilizar Claude CLI cuando esté disponible.
+Para producción, prefiere una clave de API de Anthropic.
 
 ## Agregar otro agente
 
-Usa `openclaw agents add <name>` para crear un agente independiente con su propio espacio de trabajo,
+Usa `openclaw agents add <name>` para crear un agente separado con su propio espacio de trabajo,
 sesiones y perfiles de autenticación. Ejecutarlo sin `--workspace` inicia el asistente.
 
 ```bash
@@ -217,7 +220,7 @@ openclaw agents add work \
   --json
 ```
 
-Qué configura:
+Lo que define:
 
 - `agents.list[].name`
 - `agents.list[].workspace`
@@ -227,10 +230,10 @@ Notas:
 
 - Los espacios de trabajo predeterminados siguen `~/.openclaw/workspace-<agentId>`.
 - Agrega `bindings` para enrutar mensajes entrantes (el asistente puede hacerlo).
-- Banderas no interactivas: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
+- Flags no interactivos: `--model`, `--agent-dir`, `--bind`, `--non-interactive`.
 
 ## Documentos relacionados
 
-- Centro de onboarding: [Onboarding (CLI)](/es/start/wizard)
-- Referencia completa: [Referencia de configuración de la CLI](/es/start/wizard-cli-reference)
-- Referencia del comando: [`openclaw onboard`](/es/cli/onboard)
+- Centro de incorporación: [Incorporación (CLI)](/es/start/wizard)
+- Referencia completa: [Referencia de configuración de CLI](/es/start/wizard-cli-reference)
+- Referencia de comandos: [`openclaw onboard`](/es/cli/onboard)

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Un usuario informa de que los agentes se quedan atascados repitiendo llamadas a herramientas
-    - Necesitas ajustar la protección contra llamadas repetitivas
-    - Estás editando políticas de herramientas/runtime del agente
+    - Un usuario informa que los agentes se quedan atascados repitiendo llamadas a herramientas
+    - Debe ajustar la protección contra llamadas repetitivas
+    - Está editando las políticas de herramientas/tiempo de ejecución del agente
 summary: Cómo habilitar y ajustar las barreras de protección que detectan bucles repetitivos de llamadas a herramientas
 title: Detección de bucles de herramientas
 x-i18n:
-    generated_at: "2026-04-24T05:55:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T06:05:28Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
+    source_hash: ba601384e7d23ddfd316f9e5eef92b3daa4618d2287228a516c76fe141700a28
     source_path: tools/loop-detection.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw puede evitar que los agentes se queden atascados en patrones repetidos de llamadas a herramientas.
-La protección está **desactivada por defecto**.
+La protección está **deshabilitada de forma predeterminada**.
 
-Actívala solo donde haga falta, porque con ajustes estrictos puede bloquear llamadas repetidas legítimas.
+Habilítala solo donde sea necesario, porque con ajustes estrictos puede bloquear llamadas repetidas legítimas.
 
 ## Por qué existe esto
 
 - Detectar secuencias repetitivas que no avanzan.
-- Detectar bucles de alta frecuencia sin resultado (misma herramienta, mismas entradas, errores repetidos).
-- Detectar patrones específicos de llamadas repetidas para herramientas conocidas de sondeo.
+- Detectar bucles de alta frecuencia sin resultados (misma herramienta, mismas entradas, errores repetidos).
+- Detectar patrones específicos de llamadas repetidas para herramientas de sondeo conocidas.
 
 ## Bloque de configuración
 
@@ -48,7 +48,7 @@ Valores globales predeterminados:
 }
 ```
 
-Sobrescritura por agente (opcional):
+Anulación por agente (opcional):
 
 ```json5
 {
@@ -72,40 +72,43 @@ Sobrescritura por agente (opcional):
 ### Comportamiento de los campos
 
 - `enabled`: interruptor principal. `false` significa que no se realiza detección de bucles.
-- `historySize`: número de llamadas recientes a herramientas que se conservan para el análisis.
+- `historySize`: número de llamadas recientes a herramientas conservadas para análisis.
 - `warningThreshold`: umbral antes de clasificar un patrón como solo advertencia.
-- `criticalThreshold`: umbral para bloquear patrones repetitivos de bucle.
+- `criticalThreshold`: umbral para bloquear patrones de bucles repetitivos.
 - `globalCircuitBreakerThreshold`: umbral global del cortacircuitos sin progreso.
 - `detectors.genericRepeat`: detecta patrones repetidos de misma herramienta + mismos parámetros.
-- `detectors.knownPollNoProgress`: detecta patrones conocidos tipo sondeo sin cambio de estado.
-- `detectors.pingPong`: detecta patrones alternantes de ping-pong.
+- `detectors.knownPollNoProgress`: detecta patrones conocidos similares a sondeo sin cambio de estado.
+- `detectors.pingPong`: detecta patrones alternos de ping-pong.
+
+Para `exec`, las comprobaciones sin progreso comparan resultados estables de comandos e ignoran metadatos volátiles de tiempo de ejecución como la duración, el PID, el ID de sesión y el directorio de trabajo.
+Cuando hay un ID de ejecución disponible, el historial reciente de llamadas a herramientas se evalúa solo dentro de esa ejecución, para que los ciclos de Heartbeat programados y las ejecuciones nuevas no hereden recuentos de bucles obsoletos de ejecuciones anteriores.
 
 ## Configuración recomendada
 
-- Empieza con `enabled: true` y deja los valores predeterminados sin cambios.
+- Empieza con `enabled: true`, sin cambiar los valores predeterminados.
 - Mantén los umbrales ordenados como `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Si hay falsos positivos:
+- Si se producen falsos positivos:
   - aumenta `warningThreshold` y/o `criticalThreshold`
   - (opcionalmente) aumenta `globalCircuitBreakerThreshold`
-  - desactiva solo el detector que esté causando problemas
-  - reduce `historySize` para tener un contexto histórico menos estricto
+  - deshabilita solo el detector que cause problemas
+  - reduce `historySize` para un contexto histórico menos estricto
 
 ## Registros y comportamiento esperado
 
-Cuando se detecta un bucle, OpenClaw informa un evento de bucle y bloquea o amortigua el siguiente ciclo de herramientas según la severidad.
-Esto protege a los usuarios frente a gasto descontrolado de tokens y bloqueos, preservando al mismo tiempo el acceso normal a herramientas.
+Cuando se detecta un bucle, OpenClaw informa de un evento de bucle y bloquea o atenúa el siguiente ciclo de herramientas según la gravedad.
+Esto protege a los usuarios contra el gasto descontrolado de tokens y los bloqueos, al tiempo que preserva el acceso normal a las herramientas.
 
 - Prefiere primero la advertencia y la supresión temporal.
-- Escala solo cuando se acumula evidencia repetida.
+- Escala solo cuando se acumule evidencia repetida.
 
 ## Notas
 
-- `tools.loopDetection` se fusiona con las sobrescrituras a nivel de agente.
-- La configuración por agente sobrescribe completamente o amplía los valores globales.
-- Si no existe ninguna configuración, las barreras de protección permanecen desactivadas.
+- `tools.loopDetection` se combina con anulaciones a nivel de agente.
+- La configuración por agente anula o extiende por completo los valores globales.
+- Si no existe ninguna configuración, las protecciones permanecen desactivadas.
 
 ## Relacionado
 
-- [Aprobaciones de exec](/es/tools/exec-approvals)
-- [Niveles de thinking](/es/tools/thinking)
+- [Aprobaciones de Exec](/es/tools/exec-approvals)
+- [Niveles de razonamiento](/es/tools/thinking)
 - [Subagentes](/es/tools/subagents)

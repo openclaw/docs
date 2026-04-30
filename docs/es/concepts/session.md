@@ -1,37 +1,41 @@
 ---
 read_when:
-    - Quieres entender el enrutamiento y el aislamiento de sesiones
-    - Quieres configurar el alcance de los mensajes directos para entornos multiusuario
-    - Estás depurando restablecimientos de sesión diarios o por inactividad
+    - Quieres comprender el enrutamiento y el aislamiento de las sesiones
+    - Desea configurar el alcance de DM para configuraciones multiusuario
+    - Estás depurando restablecimientos diarios o por inactividad de la sesión
 summary: Cómo OpenClaw gestiona las sesiones de conversación
 title: Gestión de sesiones
 x-i18n:
-    generated_at: "2026-04-26T11:27:25Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:39:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f36995997dc7eb612333c6bbfe6cd6c08dc22769ad0a7e47d15dbb4208e6113
+    source_hash: 2bbb8f8fddf8ac942bc24b8b94a6464ec31d0aee035bf367726d2112269095f4
     source_path: concepts/session.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw organiza las conversaciones en **sesiones**. Cada mensaje se enruta a una sesión según su origen: mensajes directos, chats grupales, trabajos Cron, etc.
+OpenClaw organiza las conversaciones en **sesiones**. Cada mensaje se enruta a una
+sesión según de dónde provenga: DM, chats grupales, trabajos cron, etc.
 
 ## Cómo se enrutan los mensajes
 
-| Origen          | Comportamiento              |
-| --------------- | --------------------------- |
+| Origen          | Comportamiento                  |
+| --------------- | ------------------------------- |
 | Mensajes directos | Sesión compartida por defecto |
-| Chats grupales  | Aislados por grupo          |
-| Salas/canales   | Aislados por sala           |
-| Trabajos Cron   | Sesión nueva por ejecución  |
-| Webhooks        | Aislados por hook           |
+| Chats grupales  | Aislada por grupo               |
+| Salas/canales   | Aislada por sala                |
+| Trabajos cron   | Sesión nueva por ejecución      |
+| Webhooks        | Aislada por hook                |
 
-## Aislamiento de mensajes directos
+## Aislamiento de DM
 
-De forma predeterminada, todos los mensajes directos comparten una sesión para mantener la continuidad. Esto funciona bien en configuraciones de un solo usuario.
+Por defecto, todos los DM comparten una sesión para mantener la continuidad. Esto está bien para
+configuraciones de un solo usuario.
 
 <Warning>
-Si varias personas pueden enviar mensajes a tu agente, habilita el aislamiento de mensajes directos. Sin él, todos los usuarios comparten el mismo contexto de conversación: los mensajes privados de Alice serían visibles para Bob.
+Si varias personas pueden enviar mensajes a tu agente, habilita el aislamiento de DM. Sin él, todos
+los usuarios comparten el mismo contexto de conversación: los mensajes privados de Alice serían
+visibles para Bob.
 </Warning>
 
 **La solución:**
@@ -39,55 +43,82 @@ Si varias personas pueden enviar mensajes a tu agente, habilita el aislamiento d
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // aislar por canal + remitente
+    dmScope: "per-channel-peer", // isolate by channel + sender
   },
 }
 ```
 
 Otras opciones:
 
-- `main` (predeterminado) — todos los mensajes directos comparten una sesión.
-- `per-peer` — aísla por remitente (entre canales).
-- `per-channel-peer` — aísla por canal + remitente (recomendado).
-- `per-account-channel-peer` — aísla por cuenta + canal + remitente.
+- `main` (por defecto) -- todos los DM comparten una sesión.
+- `per-peer` -- aísla por remitente (entre canales).
+- `per-channel-peer` -- aísla por canal + remitente (recomendado).
+- `per-account-channel-peer` -- aísla por cuenta + canal + remitente.
 
 <Tip>
-Si la misma persona te contacta desde varios canales, usa `session.identityLinks` para vincular sus identidades y que compartan una sola sesión.
+Si la misma persona te contacta desde varios canales, usa
+`session.identityLinks` para vincular sus identidades y que compartan una sesión.
 </Tip>
+
+### Acoplar canales vinculados
+
+Los comandos de acoplamiento permiten que un usuario mueva la ruta de respuesta de la sesión actual de chat directo a
+otro canal vinculado sin iniciar una sesión nueva. Consulta
+[Acoplamiento de canales](/es/concepts/channel-docking) para ver ejemplos, configuración y
+solución de problemas.
 
 Verifica tu configuración con `openclaw security audit`.
 
 ## Ciclo de vida de la sesión
 
-Las sesiones se reutilizan hasta que expiran:
+Las sesiones se reutilizan hasta que caducan:
 
-- **Restablecimiento diario** (predeterminado) — sesión nueva a las 4:00 AM hora local en el host del gateway. La frescura diaria se basa en cuándo comenzó el `sessionId` actual, no en escrituras posteriores de metadatos.
-- **Restablecimiento por inactividad** (opcional) — sesión nueva tras un período de inactividad. Establece `session.reset.idleMinutes`. La frescura por inactividad se basa en la última interacción real de usuario/canal, por lo que los eventos del sistema de Heartbeat, Cron y exec no mantienen viva la sesión.
-- **Restablecimiento manual** — escribe `/new` o `/reset` en el chat. `/new <model>` también cambia el modelo.
+- **Restablecimiento diario** (por defecto) -- nueva sesión a las 4:00 a. m., hora local del
+  host del Gateway. La actualización diaria se basa en cuándo comenzó el `sessionId` actual, no
+  en escrituras posteriores de metadatos.
+- **Restablecimiento por inactividad** (opcional) -- nueva sesión tras un periodo de inactividad. Configura
+  `session.reset.idleMinutes`. La actualización por inactividad se basa en la última interacción real de
+  usuario/canal, por lo que los eventos de sistema de heartbeat, cron y exec no
+  mantienen viva la sesión.
+- **Restablecimiento manual** -- escribe `/new` o `/reset` en el chat. `/new <model>` también
+  cambia el modelo.
 
-Cuando se configuran tanto el restablecimiento diario como el de inactividad, prevalece el que expire primero.
-Los eventos de Heartbeat, Cron, exec y otros eventos del sistema pueden escribir metadatos de sesión, pero esas escrituras no amplían la frescura del restablecimiento diario ni por inactividad. Cuando un restablecimiento cambia la sesión, los avisos de eventos del sistema en cola de la sesión antigua se descartan para que las actualizaciones en segundo plano obsoletas no se antepongan al primer prompt de la nueva sesión.
+Cuando se configuran restablecimientos diarios y por inactividad, gana el que caduque primero.
+Heartbeat, cron, exec y otros turnos de eventos de sistema pueden escribir metadatos de sesión,
+pero esas escrituras no amplían la actualización del restablecimiento diario ni por inactividad. Cuando un restablecimiento
+rota la sesión, los avisos de eventos de sistema en cola para la sesión antigua se
+descartan para que las actualizaciones en segundo plano obsoletas no se antepongan al primer prompt de
+la nueva sesión.
 
-Las sesiones con una sesión CLI activa propiedad del proveedor no se cortan por el valor predeterminado diario implícito. Usa `/reset` o configura `session.reset` explícitamente cuando esas sesiones deban expirar con un temporizador.
+Las sesiones con una sesión CLI activa propiedad del proveedor no se cortan por el valor predeterminado
+diario implícito. Usa `/reset` o configura `session.reset` explícitamente cuando esas
+sesiones deban caducar con un temporizador.
 
 ## Dónde vive el estado
 
-Todo el estado de la sesión pertenece al **gateway**. Los clientes de UI consultan al gateway para obtener los datos de la sesión.
+Todo el estado de sesión pertenece al **Gateway**. Los clientes de UI consultan el Gateway para obtener
+datos de sesión.
 
 - **Almacén:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - **Transcripciones:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
 
-`sessions.json` mantiene marcas de tiempo separadas del ciclo de vida:
+`sessions.json` mantiene marcas de tiempo de ciclo de vida separadas:
 
-- `sessionStartedAt`: cuándo comenzó el `sessionId` actual; el restablecimiento diario usa este valor.
-- `lastInteractionAt`: última interacción de usuario/canal que amplía el tiempo de vida por inactividad.
-- `updatedAt`: última mutación de fila del almacén; útil para listar y depurar, pero no es autoritativa para la frescura del restablecimiento diario/por inactividad.
+- `sessionStartedAt`: cuándo comenzó el `sessionId` actual; el restablecimiento diario usa esto.
+- `lastInteractionAt`: última interacción de usuario/canal que extiende la vida útil por inactividad.
+- `updatedAt`: última mutación de fila del almacén; útil para listar y podar, pero no
+  autoritativa para la actualización del restablecimiento diario/por inactividad.
 
-Las filas antiguas sin `sessionStartedAt` se resuelven desde la cabecera de sesión JSONL de la transcripción cuando está disponible. Si una fila antigua tampoco tiene `lastInteractionAt`, la frescura por inactividad recurre a la hora de inicio de esa sesión, no a escrituras administrativas posteriores.
+Las filas antiguas sin `sessionStartedAt` se resuelven desde el encabezado de sesión JSONL de la transcripción
+cuando está disponible. Si una fila antigua tampoco tiene `lastInteractionAt`,
+la actualización por inactividad recurre a esa hora de inicio de sesión, no a escrituras posteriores
+de mantenimiento.
 
 ## Mantenimiento de sesiones
 
-OpenClaw limita automáticamente el almacenamiento de sesiones con el tiempo. De forma predeterminada, se ejecuta en modo `warn` (informa de lo que se limpiaría). Establece `session.maintenance.mode` en `"enforce"` para limpieza automática:
+OpenClaw limita automáticamente el almacenamiento de sesiones con el tiempo. Por defecto, se ejecuta
+en modo `warn` (informa qué se limpiaría). Configura `session.maintenance.mode`
+en `"enforce"` para la limpieza automática:
 
 ```json5
 {
@@ -101,27 +132,30 @@ OpenClaw limita automáticamente el almacenamiento de sesiones con el tiempo. De
 }
 ```
 
-Haz una vista previa con `openclaw sessions cleanup --dry-run`.
+Para límites de `maxEntries` de tamaño de producción, las escrituras en tiempo de ejecución del Gateway usan un pequeño búfer de marca alta y limpian en lotes hasta volver al límite configurado. Esto evita ejecutar una limpieza completa del almacén en cada sesión cron aislada. `openclaw sessions cleanup --enforce` aplica el límite inmediatamente.
 
-## Inspección de sesiones
+Previsualiza con `openclaw sessions cleanup --dry-run`.
 
-- `openclaw status` — ruta del almacén de sesiones y actividad reciente.
-- `openclaw sessions --json` — todas las sesiones (filtra con `--active <minutes>`).
-- `/status` en el chat — uso de contexto, modelo y conmutadores.
-- `/context list` — qué hay en el prompt del sistema.
+## Inspeccionar sesiones
 
-## Lectura adicional
+- `openclaw status` -- ruta del almacén de sesiones y actividad reciente.
+- `openclaw sessions --json` -- todas las sesiones (filtra con `--active <minutes>`).
+- `/status` en el chat -- uso de contexto, modelo y conmutadores.
+- `/context list` -- qué hay en el prompt del sistema.
 
-- [Session Pruning](/es/concepts/session-pruning) — recorte de resultados de herramientas
-- [Compaction](/es/concepts/compaction) — resumen de conversaciones largas
-- [Session Tools](/es/concepts/session-tool) — herramientas del agente para trabajo entre sesiones
-- [Session Management Deep Dive](/es/reference/session-management-compaction) — esquema del almacén, transcripciones, política de envío, metadatos de origen y configuración avanzada
-- [Multi-Agent](/es/concepts/multi-agent) — enrutamiento y aislamiento de sesiones entre agentes
-- [Background Tasks](/es/automation/tasks) — cómo el trabajo desacoplado crea registros de tareas con referencias de sesión
-- [Channel Routing](/es/channels/channel-routing) — cómo los mensajes entrantes se enrutan a las sesiones
+## Lecturas adicionales
+
+- [Poda de sesiones](/es/concepts/session-pruning) -- recortar resultados de herramientas
+- [Compaction](/es/concepts/compaction) -- resumir conversaciones largas
+- [Herramientas de sesión](/es/concepts/session-tool) -- herramientas de agente para trabajo entre sesiones
+- [Análisis profundo de gestión de sesiones](/es/reference/session-management-compaction) --
+  esquema del almacén, transcripciones, política de envío, metadatos de origen y configuración avanzada
+- [Multiagente](/es/concepts/multi-agent) — enrutamiento y aislamiento de sesiones entre agentes
+- [Tareas en segundo plano](/es/automation/tasks) — cómo el trabajo desacoplado crea registros de tarea con referencias de sesión
+- [Enrutamiento de canales](/es/channels/channel-routing) — cómo se enrutan los mensajes entrantes a sesiones
 
 ## Relacionado
 
-- [Session pruning](/es/concepts/session-pruning)
-- [Session tools](/es/concepts/session-tool)
-- [Command queue](/es/concepts/queue)
+- [Poda de sesiones](/es/concepts/session-pruning)
+- [Herramientas de sesión](/es/concepts/session-tool)
+- [Cola de comandos](/es/concepts/queue)

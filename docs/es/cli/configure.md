@@ -1,36 +1,34 @@
 ---
 read_when:
     - Quieres ajustar credenciales, dispositivos o valores predeterminados del agente de forma interactiva
-summary: Referencia de la CLI para `openclaw configure` (prompts de configuración interactiva)
+summary: Referencia de la CLI para `openclaw configure` (indicaciones interactivas de configuración)
 title: Configurar
 x-i18n:
-    generated_at: "2026-04-25T13:43:20Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:33:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 15f445b1b5dd7198175c718d51ae50f9c9c0f3dcbb199adacf9155f6a512d93a
+    source_hash: 1bde13a139c299879ff13a85c17afdd55dce7ad758418266854428b059d8a05e
     source_path: cli/configure.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw configure`
 
-Prompt interactivo para configurar credenciales, dispositivos y valores predeterminados del agente.
+Asistente interactivo para configurar credenciales, dispositivos y valores predeterminados de agentes.
 
-Nota: La sección **Model** ahora incluye una selección múltiple para la lista de permitidos
-`agents.defaults.models` (lo que aparece en `/model` y en el selector de modelos).
-Las opciones de configuración con alcance de proveedor fusionan sus modelos seleccionados en la lista de permitidos
-existente en lugar de reemplazar proveedores no relacionados ya presentes en la configuración.
-Volver a ejecutar la autenticación del proveedor desde configure preserva un valor existente de
-`agents.defaults.model.primary`; usa `openclaw models auth login --provider <id> --set-default`
-o `openclaw models set <model>` cuando quieras cambiar intencionalmente el modelo predeterminado.
+<Note>
+La sección **Modelo** incluye una selección múltiple para la lista permitida `agents.defaults.models` (lo que aparece en `/model` y en el selector de modelos). Las opciones de configuración con ámbito de proveedor fusionan sus modelos seleccionados en la lista permitida existente en lugar de reemplazar proveedores no relacionados que ya están en la configuración. Volver a ejecutar la autenticación del proveedor desde la configuración conserva un `agents.defaults.model.primary` existente. Usa `openclaw models auth login --provider <id> --set-default` u `openclaw models set <model>` cuando quieras cambiar intencionalmente el modelo predeterminado.
+</Note>
 
-Cuando configure se inicia desde una opción de autenticación de proveedor, los selectores del modelo predeterminado y de la lista de permitidos prefieren automáticamente ese proveedor. Para proveedores emparejados como Volcengine/BytePlus, esa misma preferencia también coincide con sus variantes de plan de programación (`volcengine-plan/*`, `byteplus-plan/*`). Si el filtro de proveedor preferido produjera una lista vacía, configure vuelve al catálogo sin filtrar en lugar de mostrar un selector vacío.
+Cuando la configuración se inicia desde una opción de autenticación de proveedor, los selectores de modelo predeterminado y lista permitida prefieren automáticamente ese proveedor. Para proveedores emparejados como Volcengine y BytePlus, la misma preferencia también coincide con sus variantes de plan de codificación (`volcengine-plan/*`, `byteplus-plan/*`). Si el filtro de proveedor preferido produciría una lista vacía, la configuración recurre al catálogo sin filtrar en lugar de mostrar un selector en blanco.
 
-Consejo: `openclaw config` sin subcomando abre el mismo asistente. Usa
-`openclaw config get|set|unset` para ediciones no interactivas.
+<Tip>
+`openclaw config` sin un subcomando abre el mismo asistente. Usa `openclaw config get|set|unset` para ediciones no interactivas.
+</Tip>
 
-Para búsqueda web, `openclaw configure --section web` te permite elegir un proveedor
-y configurar sus credenciales. Algunos proveedores también muestran prompts de seguimiento específicos del proveedor:
+Para la búsqueda web, `openclaw configure --section web` te permite elegir un proveedor
+y configurar sus credenciales. Algunos proveedores también muestran indicaciones de seguimiento
+específicas del proveedor:
 
 - **Grok** puede ofrecer una configuración opcional de `x_search` con la misma `XAI_API_KEY` y
   permitirte elegir un modelo `x_search`.
@@ -39,8 +37,8 @@ y configurar sus credenciales. Algunos proveedores también muestran prompts de 
 
 Relacionado:
 
-- Referencia de configuración del Gateway: [Configuración](/es/gateway/configuration)
-- CLI de configuración: [Config](/es/cli/config)
+- Referencia de configuración de Gateway: [Configuración](/es/gateway/configuration)
+- CLI de configuración: [Configuración](/es/cli/config)
 
 ## Opciones
 
@@ -60,11 +58,11 @@ Secciones disponibles:
 
 Notas:
 
-- Elegir dónde se ejecuta el Gateway siempre actualiza `gateway.mode`. Puedes seleccionar "Continue" sin otras secciones si eso es todo lo que necesitas.
-- Los servicios orientados a canales (Slack/Discord/Matrix/Microsoft Teams) solicitan listas de permitidos de canal/sala durante la configuración. Puedes introducir nombres o IDs; el asistente resuelve nombres a IDs cuando es posible.
-- Si ejecutas el paso de instalación del daemon, la autenticación por token requiere un token, y `gateway.auth.token` está gestionado por SecretRef, configure valida el SecretRef pero no persiste los valores de token en texto sin formato resueltos en los metadatos del entorno del servicio supervisor.
-- Si la autenticación por token requiere un token y el SecretRef de token configurado no está resuelto, configure bloquea la instalación del daemon con una guía de corrección accionable.
-- Si tanto `gateway.auth.token` como `gateway.auth.password` están configurados y `gateway.auth.mode` no está establecido, configure bloquea la instalación del daemon hasta que el modo se establezca explícitamente.
+- Elegir dónde se ejecuta el Gateway siempre actualiza `gateway.mode`. Puedes seleccionar "Continuar" sin otras secciones si eso es todo lo que necesitas.
+- Los servicios orientados a canales (Slack/Discord/Matrix/Microsoft Teams) solicitan listas permitidas de canales/salas durante la configuración. Puedes ingresar nombres o IDs; el asistente resuelve nombres a IDs cuando es posible.
+- Si ejecutas el paso de instalación del daemon, la autenticación con token requiere un token y `gateway.auth.token` está administrado por SecretRef, la configuración valida el SecretRef pero no conserva valores de token en texto plano resueltos en los metadatos del entorno del servicio supervisor.
+- Si la autenticación con token requiere un token y el SecretRef de token configurado no se puede resolver, la configuración bloquea la instalación del daemon con orientación de corrección aplicable.
+- Si tanto `gateway.auth.token` como `gateway.auth.password` están configurados y `gateway.auth.mode` no está establecido, la configuración bloquea la instalación del daemon hasta que el modo se establezca explícitamente.
 
 ## Ejemplos
 
@@ -77,5 +75,5 @@ openclaw configure --section gateway --section daemon
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
+- [Referencia de CLI](/es/cli)
 - [Configuración](/es/gateway/configuration)

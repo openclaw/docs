@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Necesitas registros de depuración dirigidos sin elevar los niveles globales de registro
-    - Necesitas capturar registros específicos de subsistemas para soporte
-summary: Banderas de diagnóstico para registros de depuración dirigidos
-title: Banderas de diagnóstico
+    - Necesitas registros de depuración específicos sin elevar los niveles globales de registro
+    - Debe capturar registros específicos del subsistema para soporte
+summary: Opciones de diagnóstico para registros de depuración específicos
+title: Opciones de diagnóstico
 x-i18n:
-    generated_at: "2026-04-24T05:27:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:39:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
+    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
     source_path: diagnostics/flags.md
-    workflow: 15
+    workflow: 16
 ---
 
-Las banderas de diagnóstico te permiten habilitar registros de depuración dirigidos sin activar el registro detallado en todas partes. Las banderas son opcionales y no tienen efecto a menos que un subsistema las consulte.
+Los flags de diagnóstico te permiten activar registros de depuración dirigidos sin habilitar el registro detallado en todas partes. Los flags son opcionales y no tienen efecto a menos que un subsistema los compruebe.
 
 ## Cómo funciona
 
-- Las banderas son cadenas (no distinguen entre mayúsculas y minúsculas).
-- Puedes habilitar banderas en la configuración o mediante una anulación por entorno.
+- Los flags son cadenas (sin distinción entre mayúsculas y minúsculas).
+- Puedes activar flags en la configuración o mediante una anulación por variable de entorno.
 - Se admiten comodines:
   - `telegram.*` coincide con `telegram.http`
-  - `*` habilita todas las banderas
+  - `*` activa todos los flags
 
-## Habilitar mediante configuración
+## Activar mediante configuración
 
 ```json
 {
@@ -33,7 +33,7 @@ Las banderas de diagnóstico te permiten habilitar registros de depuración diri
 }
 ```
 
-Varias banderas:
+Varios flags:
 
 ```json
 {
@@ -43,29 +43,66 @@ Varias banderas:
 }
 ```
 
-Reinicia el gateway después de cambiar las banderas.
+Reinicia el Gateway después de cambiar los flags.
 
-## Anulación por entorno (puntual)
+## Anulación por variable de entorno (puntual)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Desactivar todas las banderas:
+Desactivar todos los flags:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
 ```
 
+## Artefactos de timeline
+
+El flag `timeline` escribe eventos estructurados de temporización de inicio y ejecución para
+arneses de QA externos:
+
+```bash
+OPENCLAW_DIAGNOSTICS=timeline \
+OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
+openclaw gateway run
+```
+
+También puedes activarlo en la configuración:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["timeline"]
+  }
+}
+```
+
+La ruta del archivo de timeline sigue viniendo de
+`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Cuando `timeline` se activa solo desde la
+configuración, los primeros intervalos de carga de configuración no se emiten porque OpenClaw aún
+no ha leído la configuración; los intervalos de inicio posteriores usan el flag de configuración.
+
+`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` y
+`OPENCLAW_DIAGNOSTICS=*` también activan timeline porque activan todos los
+flags de diagnóstico. Prefiere `timeline` cuando solo quieras el artefacto de temporización
+JSONL.
+
+Los registros de timeline usan el envoltorio `openclaw.diagnostics.v1`. Los eventos pueden incluir
+ID de proceso, nombres de fase, nombres de intervalo, duraciones, ID de Plugin, recuentos de dependencias,
+muestras de retraso del bucle de eventos, nombres de operaciones de proveedor, estado de salida de procesos secundarios
+y nombres/mensajes de errores de inicio. Trata los archivos de timeline como artefactos de diagnóstico
+locales; revísalos antes de compartirlos fuera de tu máquina.
+
 ## Dónde van los registros
 
-Las banderas emiten registros en el archivo estándar de registros de diagnóstico. De forma predeterminada:
+Los flags emiten registros en el archivo estándar de registros de diagnóstico. De forma predeterminada:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Si estableces `logging.file`, usa esa ruta en su lugar. Los registros están en formato JSONL (un objeto JSON por línea). La redacción sigue aplicándose según `logging.redactSensitive`.
+Si estableces `logging.file`, usa esa ruta en su lugar. Los registros son JSONL (un objeto JSON por línea). La redacción sigue aplicándose según `logging.redactSensitive`.
 
 ## Extraer registros
 
@@ -81,7 +118,7 @@ Filtrar diagnósticos HTTP de Telegram:
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-O seguirlos mientras reproduces el problema:
+O seguir el registro mientras reproduces el problema:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
@@ -91,11 +128,11 @@ Para gateways remotos, también puedes usar `openclaw logs --follow` (consulta [
 
 ## Notas
 
-- Si `logging.level` está configurado por encima de `warn`, estos registros pueden suprimirse. El valor predeterminado `info` está bien.
-- Las banderas son seguras para dejarlas habilitadas; solo afectan al volumen de registros del subsistema específico.
-- Usa [/logging](/es/logging) para cambiar destinos, niveles y redacción de registros.
+- Si `logging.level` se establece por encima de `warn`, estos registros pueden suprimirse. El valor predeterminado `info` está bien.
+- Es seguro dejar los flags activados; solo afectan el volumen de registros del subsistema específico.
+- Usa [/logging](/es/logging) para cambiar los destinos, niveles y redacción de los registros.
 
 ## Relacionado
 
-- [Diagnósticos de Gateway](/es/gateway/diagnostics)
-- [Solución de problemas de Gateway](/es/gateway/troubleshooting)
+- [Diagnósticos del Gateway](/es/gateway/diagnostics)
+- [Solución de problemas del Gateway](/es/gateway/troubleshooting)

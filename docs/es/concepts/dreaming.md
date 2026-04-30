@@ -2,20 +2,20 @@
 read_when:
     - Quieres que la promoción de memoria se ejecute automáticamente
     - Quieres entender qué hace cada fase de Dreaming
-    - Quieres ajustar la consolidación sin contaminar `MEMORY.md`
+    - Desea ajustar la consolidación sin contaminar MEMORY.md
 sidebarTitle: Dreaming
-summary: Consolidación de memoria en segundo plano con fases ligeras, profundas y REM, además de un Diario de Sueños
+summary: Consolidación de memoria en segundo plano con fases ligera, profunda y REM, además de un Diario de sueños
 title: Dreaming
 x-i18n:
-    generated_at: "2026-04-26T11:26:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:36:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cba9593c5f697d49dbb20a3c908bf43ad37989f8cb029443b44523f2acab0e1d
+    source_hash: 85c323c073fc786069835aad25ee68781af49bb031e63b9601674461f385cc2a
     source_path: concepts/dreaming.md
-    workflow: 15
+    workflow: 16
 ---
 
-Dreaming es el sistema de consolidación de memoria en segundo plano de `memory-core`. Ayuda a OpenClaw a mover señales fuertes de corto plazo a memoria duradera mientras mantiene el proceso explicable y revisable.
+Dreaming es el sistema de consolidación de memoria en segundo plano de `memory-core`. Ayuda a OpenClaw a mover señales sólidas de corto plazo a memoria duradera, manteniendo el proceso explicable y revisable.
 
 <Note>
 Dreaming es **opcional** y está deshabilitado de forma predeterminada.
@@ -25,7 +25,7 @@ Dreaming es **opcional** y está deshabilitado de forma predeterminada.
 
 Dreaming mantiene dos tipos de salida:
 
-- **Estado de máquina** en `memory/.dreams/` (almacén de recuperación, señales de fase, puntos de control de ingestión, bloqueos).
+- **Estado de máquina** en `memory/.dreams/` (almacén de recuperación, señales de fase, puntos de control de ingesta, bloqueos).
 - **Salida legible por humanos** en `DREAMS.md` (o el `dreams.md` existente) y archivos opcionales de informe de fase en `memory/dreaming/<phase>/YYYY-MM-DD.md`.
 
 La promoción a largo plazo sigue escribiendo solo en `MEMORY.md`.
@@ -34,95 +34,96 @@ La promoción a largo plazo sigue escribiendo solo en `MEMORY.md`.
 
 Dreaming usa tres fases cooperativas:
 
-| Fase | Propósito                                   | Escritura duradera |
-| ----- | ------------------------------------------- | ------------------ |
+| Fase  | Propósito                                      | Escritura duradera |
+| ----- | ---------------------------------------------- | ------------------ |
 | Light | Ordenar y preparar material reciente de corto plazo | No                 |
-| Deep  | Puntuar y promover candidatos duraderos     | Sí (`MEMORY.md`)   |
-| REM   | Reflexionar sobre temas e ideas recurrentes | No                 |
+| Deep  | Puntuar y promover candidatos duraderos        | Sí (`MEMORY.md`)   |
+| REM   | Reflexionar sobre temas e ideas recurrentes    | No                 |
 
-Estas fases son detalles internos de implementación, no “modos” configurados por el usuario.
+Estas fases son detalles internos de implementación, no "modos" independientes configurados por el usuario.
 
 <AccordionGroup>
   <Accordion title="Fase Light">
-    La fase Light ingiere señales recientes de memoria diaria y trazas de recuperación, elimina duplicados y prepara líneas candidatas.
+    La fase Light ingiere señales recientes de memoria diaria y trazas de recuperación, las deduplica y prepara líneas candidatas.
 
-    - Lee del estado de recuperación a corto plazo, archivos recientes de memoria diaria y transcripciones redactadas de sesiones cuando están disponibles.
-    - Escribe un bloque gestionado `## Light Sleep` cuando el almacenamiento incluye salida en línea.
-    - Registra señales de refuerzo para el ranking profundo posterior.
+    - Lee desde el estado de recuperación de corto plazo, archivos recientes de memoria diaria y transcripciones de sesión redactadas cuando están disponibles.
+    - Escribe un bloque administrado `## Light Sleep` cuando el almacenamiento incluye salida en línea.
+    - Registra señales de refuerzo para la clasificación Deep posterior.
     - Nunca escribe en `MEMORY.md`.
 
   </Accordion>
   <Accordion title="Fase Deep">
-    La fase Deep decide qué se convierte en memoria a largo plazo.
+    La fase Deep decide qué se convierte en memoria de largo plazo.
 
-    - Ordena los candidatos usando puntuación ponderada y umbrales de filtrado.
+    - Clasifica candidatos usando puntuación ponderada y compuertas de umbral.
     - Requiere que `minScore`, `minRecallCount` y `minUniqueQueries` se cumplan.
-    - Rehidrata fragmentos desde archivos diarios activos antes de escribir, por lo que se omiten los fragmentos obsoletos o eliminados.
-    - Añade las entradas promovidas a `MEMORY.md`.
-    - Escribe un resumen `## Deep Sleep` en `DREAMS.md` y opcionalmente escribe `memory/dreaming/deep/YYYY-MM-DD.md`.
+    - Rehidrata fragmentos desde archivos diarios activos antes de escribir, por lo que se omiten fragmentos obsoletos o eliminados.
+    - Agrega entradas promovidas a `MEMORY.md`.
+    - Escribe un resumen `## Deep Sleep` en `DREAMS.md` y, opcionalmente, escribe `memory/dreaming/deep/YYYY-MM-DD.md`.
 
   </Accordion>
   <Accordion title="Fase REM">
     La fase REM extrae patrones y señales reflexivas.
 
-    - Construye resúmenes de temas y reflexiones a partir de trazas recientes de corto plazo.
-    - Escribe un bloque gestionado `## REM Sleep` cuando el almacenamiento incluye salida en línea.
-    - Registra señales de refuerzo REM usadas por el ranking profundo.
+    - Crea resúmenes de temas y reflexiones a partir de trazas recientes de corto plazo.
+    - Escribe un bloque administrado `## REM Sleep` cuando el almacenamiento incluye salida en línea.
+    - Registra señales de refuerzo REM usadas por la clasificación Deep.
     - Nunca escribe en `MEMORY.md`.
 
   </Accordion>
 </AccordionGroup>
 
-## Ingestión de transcripciones de sesión
+## Ingesta de transcripciones de sesión
 
-Dreaming puede ingerir transcripciones redactadas de sesiones en el corpus de Dreaming. Cuando las transcripciones están disponibles, se incorporan a la fase Light junto con las señales de memoria diaria y las trazas de recuperación. El contenido personal y sensible se redacta antes de la ingestión.
+Dreaming puede ingerir transcripciones de sesión redactadas en el corpus de Dreaming. Cuando hay transcripciones disponibles, se pasan a la fase Light junto con señales de memoria diaria y trazas de recuperación. El contenido personal y sensible se redacta antes de la ingesta.
 
-## Diario de Sueños
+## Diario de sueños
 
-Dreaming también mantiene un **Diario de Sueños** narrativo en `DREAMS.md`. Después de que cada fase tenga suficiente material, `memory-core` ejecuta un turno de subagente en segundo plano de mejor esfuerzo (usando el modelo de runtime predeterminado) y añade una breve entrada al diario.
+Dreaming también mantiene un **Diario de sueños** narrativo en `DREAMS.md`. Después de que cada fase tenga material suficiente, `memory-core` ejecuta un turno de subagente en segundo plano con el mejor esfuerzo y agrega una entrada breve al diario. Usa el modelo de runtime predeterminado salvo que `dreaming.model` esté configurado. Si el modelo configurado no está disponible, el Diario de sueños reintenta una vez con el modelo predeterminado de la sesión.
 
 <Note>
-Este diario es para lectura humana en la UI de Dreams, no una fuente de promoción. Los artefactos de diario/informe generados por Dreaming se excluyen de la promoción a corto plazo. Solo los fragmentos de memoria fundamentados pueden promocionarse a `MEMORY.md`.
+Este diario es para lectura humana en la interfaz de sueños, no una fuente de promoción. Los artefactos de diario/informe generados por Dreaming se excluyen de la promoción de corto plazo. Solo los fragmentos de memoria fundamentados son elegibles para promoverse a `MEMORY.md`.
 </Note>
 
-También existe una vía de relleno histórico fundamentado para trabajo de revisión y recuperación:
+También hay una vía de relleno histórico fundamentado para trabajos de revisión y recuperación:
 
 <AccordionGroup>
   <Accordion title="Comandos de relleno">
-    - `memory rem-harness --path ... --grounded` muestra una vista previa de la salida fundamentada del diario a partir de notas históricas `YYYY-MM-DD.md`.
+    - `memory rem-harness --path ... --grounded` previsualiza salida de diario fundamentada desde notas históricas `YYYY-MM-DD.md`.
     - `memory rem-backfill --path ...` escribe entradas de diario fundamentadas y reversibles en `DREAMS.md`.
-    - `memory rem-backfill --path ... --stage-short-term` prepara candidatos duraderos fundamentados en el mismo almacén de evidencia a corto plazo que ya usa la fase Deep normal.
-    - `memory rem-backfill --rollback` y `--rollback-short-term` eliminan esos artefactos de relleno preparados sin tocar las entradas normales del diario ni la recuperación activa normal a corto plazo.
+    - `memory rem-backfill --path ... --stage-short-term` prepara candidatos duraderos fundamentados en el mismo almacén de evidencia de corto plazo que ya usa la fase Deep normal.
+    - `memory rem-backfill --rollback` y `--rollback-short-term` eliminan esos artefactos de relleno preparados sin tocar entradas ordinarias del diario ni la recuperación de corto plazo activa.
 
   </Accordion>
 </AccordionGroup>
 
-La Control UI expone el mismo flujo de relleno/restablecimiento del diario para que puedas inspeccionar resultados en la escena Dreams antes de decidir si los candidatos fundamentados merecen promoción. La escena también muestra una vía fundamentada distinta para que puedas ver qué entradas preparadas de corto plazo proceden de reproducción histórica, qué elementos promocionados fueron guiados por contenido fundamentado y limpiar solo las entradas preparadas solo fundamentadas sin tocar el estado normal activo de corto plazo.
+La interfaz de control expone el mismo flujo de relleno/restablecimiento del diario para que puedas inspeccionar los resultados en la escena de sueños antes de decidir si los candidatos fundamentados merecen promoción. La escena también muestra una vía fundamentada distinta para que puedas ver qué entradas de corto plazo preparadas provienen de la reproducción histórica, qué elementos promovidos fueron impulsados por contenido fundamentado, y borrar solo entradas preparadas exclusivamente fundamentadas sin tocar el estado ordinario activo de corto plazo.
 
-## Señales de ranking profundo
+## Señales de clasificación Deep
 
-El ranking profundo usa seis señales base ponderadas más el refuerzo de fase:
+La clasificación Deep usa seis señales base ponderadas más refuerzo de fase:
 
 | Señal              | Peso | Descripción                                       |
-| ------------------ | ---- | ------------------------------------------------- |
-| Frecuencia         | 0.24 | Cuántas señales de corto plazo acumuló la entrada |
-| Relevancia         | 0.30 | Calidad media de recuperación de la entrada       |
-| Diversidad de consultas | 0.15 | Contextos distintos de consulta/día que la hicieron aparecer |
-| Recencia           | 0.15 | Puntuación de frescura con decaimiento temporal   |
-| Consolidación      | 0.10 | Fuerza de recurrencia en varios días              |
-| Riqueza conceptual | 0.06 | Densidad de etiquetas de concepto desde el fragmento/ruta |
+| ------------------- | ------ | ------------------------------------------------- |
+| Frecuencia           | 0.24   | Cuántas señales de corto plazo acumuló la entrada |
+| Relevancia           | 0.30   | Calidad media de recuperación para la entrada     |
+| Diversidad de consultas | 0.15   | Contextos distintos de consulta/día que la hicieron aparecer |
+| Recencia             | 0.15   | Puntuación de frescura con decaimiento temporal   |
+| Consolidación       | 0.10   | Fuerza de recurrencia en varios días              |
+| Riqueza conceptual | 0.06   | Densidad de etiquetas de concepto del fragmento/ruta |
 
-Los aciertos de las fases Light y REM añaden un pequeño refuerzo con decaimiento temporal desde `memory/.dreams/phase-signals.json`.
+Los aciertos de las fases Light y REM agregan un pequeño impulso con decaimiento por recencia desde `memory/.dreams/phase-signals.json`.
 
 ## Programación
 
-Cuando está habilitado, `memory-core` gestiona automáticamente un trabajo Cron para una ejecución completa de Dreaming. Cada ejecución procesa las fases en orden: Light → REM → Deep.
+Cuando está habilitado, `memory-core` administra automáticamente un trabajo de Cron para un barrido completo de Dreaming. Cada barrido ejecuta las fases en orden: Light → REM → Deep.
 
 Comportamiento de cadencia predeterminado:
 
-| Configuración         | Predeterminado |
-| --------------------- | -------------- |
-| `dreaming.frequency`  | `0 3 * * *`    |
+| Configuración              | Predeterminado       |
+| -------------------- | ------------- |
+| `dreaming.frequency` | `0 3 * * *`   |
+| `dreaming.model`     | modelo predeterminado |
 
 ## Inicio rápido
 
@@ -144,7 +145,7 @@ Comportamiento de cadencia predeterminado:
     }
     ```
   </Tab>
-  <Tab title="Cadencia personalizada de ejecución">
+  <Tab title="Cadencia de barrido personalizada">
     ```json
     {
       "plugins": {
@@ -165,7 +166,7 @@ Comportamiento de cadencia predeterminado:
   </Tab>
 </Tabs>
 
-## Comando con barra
+## Comando de barra
 
 ```
 /dreaming status
@@ -174,7 +175,7 @@ Comportamiento de cadencia predeterminado:
 /dreaming help
 ```
 
-## Flujo de trabajo de la CLI
+## Flujo de trabajo de CLI
 
 <Tabs>
   <Tab title="Vista previa / aplicación de promoción">
@@ -185,11 +186,11 @@ Comportamiento de cadencia predeterminado:
     openclaw memory status --deep
     ```
 
-    `memory promote` manual usa los umbrales de la fase Deep de forma predeterminada, salvo que se sobrescriban con flags de CLI.
+    `memory promote` manual usa los umbrales de la fase Deep de forma predeterminada salvo que se anulen con flags de CLI.
 
   </Tab>
   <Tab title="Explicar promoción">
-    Explica por qué un candidato específico se promocionaría o no:
+    Explica por qué un candidato específico se promovería o no:
 
     ```bash
     openclaw memory promote-explain "router vlan"
@@ -197,8 +198,8 @@ Comportamiento de cadencia predeterminado:
     ```
 
   </Tab>
-  <Tab title="Vista previa de REM harness">
-    Muestra una vista previa de reflexiones REM, verdades candidatas y salida de promoción profunda sin escribir nada:
+  <Tab title="Vista previa de arnés REM">
+    Previsualiza reflexiones REM, verdades candidatas y salida de promoción Deep sin escribir nada:
 
     ```bash
     openclaw memory rem-harness
@@ -210,33 +211,40 @@ Comportamiento de cadencia predeterminado:
 
 ## Valores predeterminados clave
 
-Toda la configuración reside en `plugins.entries.memory-core.config.dreaming`.
+Todas las configuraciones viven en `plugins.entries.memory-core.config.dreaming`.
 
 <ParamField path="enabled" type="boolean" default="false">
-  Habilita o deshabilita la ejecución de Dreaming.
+  Habilita o deshabilita el barrido de Dreaming.
 </ParamField>
 <ParamField path="frequency" type="string" default="0 3 * * *">
-  Cadencia Cron para la ejecución completa de Dreaming.
+  Cadencia de Cron para el barrido completo de Dreaming.
+</ParamField>
+<ParamField path="model" type="string">
+  Anulación opcional del modelo de subagente del Diario de sueños. Usa un valor canónico `provider/model` cuando también configures una lista de permitidos `allowedModels` de subagente.
 </ParamField>
 
+<Warning>
+`dreaming.model` requiere `plugins.entries.memory-core.subagent.allowModelOverride: true`. Para restringirlo, configura también `plugins.entries.memory-core.subagent.allowedModels`. Los fallos de confianza o de lista de permitidos permanecen visibles en lugar de recurrir silenciosamente a otro modelo; el reintento solo cubre errores de modelo no disponible.
+</Warning>
+
 <Note>
-La política de fases, los umbrales y el comportamiento de almacenamiento son detalles internos de implementación (no configuración orientada al usuario). Consulta [Memory configuration reference](/es/reference/memory-config#dreaming) para ver la lista completa de claves.
+La política de fases, los umbrales y el comportamiento de almacenamiento son detalles internos de implementación (no configuración orientada al usuario). Consulta la [referencia de configuración de memoria](/es/reference/memory-config#dreaming) para ver la lista completa de claves.
 </Note>
 
-## UI de Dreams
+## Interfaz de sueños
 
-Cuando está habilitada, la pestaña **Dreams** del Gateway muestra:
+Cuando está habilitada, la pestaña **Sueños** del Gateway muestra:
 
 - estado actual de habilitación de Dreaming
-- estado por fase y presencia de ejecución gestionada
-- recuentos de corto plazo, fundamentados, señales y promocionados hoy
-- hora de la siguiente ejecución programada
-- una vía distinta en la escena para entradas preparadas de reproducción histórica fundamentada
-- un lector expandible del Diario de Sueños respaldado por `doctor.memory.dreamDiary`
+- estado a nivel de fase y presencia de barrido administrado
+- conteos de corto plazo, fundamentados, de señales y promovidos hoy
+- horario de la próxima ejecución programada
+- una vía de escena fundamentada distinta para entradas preparadas de reproducción histórica
+- un lector expandible del Diario de sueños respaldado por `doctor.memory.dreamDiary`
 
 ## Relacionado
 
-- [Memory](/es/concepts/memory)
-- [Memory CLI](/es/cli/memory)
-- [Memory configuration reference](/es/reference/memory-config)
-- [Memory search](/es/concepts/memory-search)
+- [Memoria](/es/concepts/memory)
+- [CLI de memoria](/es/cli/memory)
+- [Referencia de configuración de memoria](/es/reference/memory-config)
+- [Búsqueda de memoria](/es/concepts/memory-search)

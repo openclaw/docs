@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Quieres elegir un provider de modelos
-    - Necesitas un resumen rápido de los backends de LLM compatibles
-summary: Providers de modelos (LLMs) compatibles con OpenClaw
-title: Directorio de providers
+    - Desea elegir un proveedor de modelos
+    - Necesitas una descripción general rápida de los backends de LLM compatibles
+summary: Proveedores de modelos (LLM) compatibles con OpenClaw
+title: Directorio de proveedores
 x-i18n:
-    generated_at: "2026-04-26T11:36:52Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:57:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b5d3bf5b30bd7a1dbd8b1348f4f07f178fea9bfea523afa96cad2a30d566a139
+    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
     source_path: providers/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Providers de modelos
+# Proveedores de modelos
 
-OpenClaw puede usar muchos providers de LLM. Elige un provider, autentícate y luego establece el
+OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego configura el
 modelo predeterminado como `provider/model`.
 
 ¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulta [Canales](/es/channels).
 
 ## Inicio rápido
 
-1. Autentícate con el provider (normalmente mediante `openclaw onboard`).
-2. Establece el modelo predeterminado:
+1. Autentícate con el proveedor (normalmente mediante `openclaw onboard`).
+2. Configura el modelo predeterminado:
 
 ```json5
 {
@@ -31,7 +31,7 @@ modelo predeterminado como `provider/model`.
 }
 ```
 
-## Documentación de providers
+## Documentación de proveedores
 
 - [Alibaba Model Studio](/es/providers/alibaba)
 - [Amazon Bedrock](/es/providers/bedrock)
@@ -40,6 +40,7 @@ modelo predeterminado como `provider/model`.
 - [Arcee AI (modelos Trinity)](/es/providers/arcee)
 - [Azure Speech](/es/providers/azure-speech)
 - [BytePlus (internacional)](/es/concepts/model-providers#byteplus-international)
+- [Cerebras](/es/providers/cerebras)
 - [Chutes](/es/providers/chutes)
 - [Cloudflare AI Gateway](/es/providers/cloudflare-ai-gateway)
 - [ComfyUI](/es/providers/comfy)
@@ -48,20 +49,20 @@ modelo predeterminado como `provider/model`.
 - [fal](/es/providers/fal)
 - [Fireworks](/es/providers/fireworks)
 - [GitHub Copilot](/es/providers/github-copilot)
-- [Gradium](/es/providers/gradium)
-- [Modelos GLM](/es/providers/glm)
+- [modelos GLM](/es/providers/glm)
 - [Google (Gemini)](/es/providers/google)
+- [Gradium](/es/providers/gradium)
 - [Groq (inferencia LPU)](/es/providers/groq)
-- [Hugging Face (Inference)](/es/providers/huggingface)
+- [Hugging Face (inferencia)](/es/providers/huggingface)
 - [inferrs (modelos locales)](/es/providers/inferrs)
 - [Kilocode](/es/providers/kilocode)
-- [LiteLLM (gateway unificado)](/es/providers/litellm)
+- [LiteLLM (Gateway unificado)](/es/providers/litellm)
 - [LM Studio (modelos locales)](/es/providers/lmstudio)
 - [MiniMax](/es/providers/minimax)
 - [Mistral](/es/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/es/providers/moonshot)
 - [NVIDIA](/es/providers/nvidia)
-- [Ollama (nube + modelos locales)](/es/providers/ollama)
+- [Ollama (modelos en la nube + locales)](/es/providers/ollama)
 - [OpenAI (API + Codex)](/es/providers/openai)
 - [OpenCode](/es/providers/opencode)
 - [OpenCode Go](/es/providers/opencode-go)
@@ -85,14 +86,14 @@ modelo predeterminado como `provider/model`.
 - [Xiaomi](/es/providers/xiaomi)
 - [Z.AI](/es/providers/zai)
 
-## Páginas generales compartidas
+## Páginas de resumen compartidas
 
-- [Variantes integradas adicionales](/es/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
-- [Generación de imágenes](/es/tools/image-generation) - herramienta compartida `image_generate`, selección de provider y failover
-- [Generación de música](/es/tools/music-generation) - herramienta compartida `music_generate`, selección de provider y failover
-- [Generación de video](/es/tools/video-generation) - herramienta compartida `video_generate`, selección de provider y failover
+- [Variantes agrupadas adicionales](/es/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
+- [Generación de imágenes](/es/tools/image-generation) - Herramienta compartida `image_generate`, selección de proveedor y conmutación por error
+- [Generación de música](/es/tools/music-generation) - Herramienta compartida `music_generate`, selección de proveedor y conmutación por error
+- [Generación de video](/es/tools/video-generation) - Herramienta compartida `video_generate`, selección de proveedor y conmutación por error
 
-## Providers de transcripción
+## Proveedores de transcripción
 
 - [Deepgram (transcripción de audio)](/es/providers/deepgram)
 - [ElevenLabs](/es/providers/elevenlabs#speech-to-text)
@@ -103,7 +104,7 @@ modelo predeterminado como `provider/model`.
 
 ## Herramientas de la comunidad
 
-- [Claude Max API Proxy](/es/providers/claude-max-api-proxy) - Proxy de la comunidad para credenciales de suscripción de Claude (verifica la política/los términos de Anthropic antes de usarlo)
+- [Claude Max API Proxy](/es/providers/claude-max-api-proxy) - Proxy de la comunidad para credenciales de suscripción de Claude (verifica la política/términos de Anthropic antes de usarlo)
 
-Para el catálogo completo de providers (xAI, Groq, Mistral, etc.) y la configuración avanzada,
-consulta [Providers de modelos](/es/concepts/model-providers).
+Para consultar el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada,
+consulta [Proveedores de modelos](/es/concepts/model-providers).

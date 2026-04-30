@@ -1,32 +1,32 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Gestiona entornos de ejecución de sandbox e inspecciona la política de sandbox efectiva
-title: CLI de sandbox
+summary: Administra los entornos de ejecución aislados e inspecciona la política de aislamiento efectiva
+title: CLI de entorno aislado
 x-i18n:
-    generated_at: "2026-04-24T05:23:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:35:22Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f2b5835968faac0a8243fd6eadfcecb51b211fe7b346454e215312b1b6d5e65
+    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
     source_path: cli/sandbox.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gestiona entornos de ejecución de sandbox para la ejecución aislada de agentes.
+Gestiona entornos de ejecución sandbox para la ejecución aislada de agentes.
 
-## Resumen
+## Descripción general
 
-OpenClaw puede ejecutar agentes en entornos de ejecución de sandbox aislados por seguridad. Los comandos `sandbox` te ayudan a inspeccionar y recrear esos entornos después de actualizaciones o cambios de configuración.
+OpenClaw puede ejecutar agentes en entornos de ejecución sandbox aislados por seguridad. Los comandos `sandbox` te ayudan a inspeccionar y recrear esos entornos después de actualizaciones o cambios de configuración.
 
-Hoy en día eso normalmente significa:
+Hoy eso normalmente significa:
 
-- contenedores de sandbox de Docker
-- entornos de ejecución de sandbox por SSH cuando `agents.defaults.sandbox.backend = "ssh"`
-- entornos de ejecución de sandbox de OpenShell cuando `agents.defaults.sandbox.backend = "openshell"`
+- Contenedores sandbox de Docker
+- Entornos de ejecución sandbox SSH cuando `agents.defaults.sandbox.backend = "ssh"`
+- Entornos de ejecución sandbox OpenShell cuando `agents.defaults.sandbox.backend = "openshell"`
 
-Para `ssh` y OpenShell `remote`, recrear es más importante que con Docker:
+Para `ssh` y OpenShell `remote`, recrear importa más que con Docker:
 
-- el espacio de trabajo remoto es canónico después de la siembra inicial
+- el espacio de trabajo remoto es canónico después de la semilla inicial
 - `openclaw sandbox recreate` elimina ese espacio de trabajo remoto canónico para el alcance seleccionado
 - el siguiente uso lo vuelve a sembrar desde el espacio de trabajo local actual
 
@@ -34,7 +34,7 @@ Para `ssh` y OpenShell `remote`, recrear es más importante que con Docker:
 
 ### `openclaw sandbox explain`
 
-Inspecciona el modo/alcance/acceso al espacio de trabajo de sandbox **efectivo**, la política de herramientas de sandbox y las barreras elevadas (con rutas de claves de configuración para corregirlo).
+Inspecciona el modo/alcance/acceso al espacio de trabajo sandbox **efectivo**, la política de herramientas sandbox y las puertas elevadas (con rutas de claves de configuración para corregirlas).
 
 ```bash
 openclaw sandbox explain
@@ -45,7 +45,7 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Muestra todos los entornos de ejecución de sandbox con su estado y configuración.
+Lista todos los entornos de ejecución sandbox con su estado y configuración.
 
 ```bash
 openclaw sandbox list
@@ -64,7 +64,7 @@ openclaw sandbox list --json     # JSON output
 
 ### `openclaw sandbox recreate`
 
-Elimina entornos de ejecución de sandbox para forzar su recreación con la configuración actualizada.
+Elimina entornos de ejecución sandbox para forzar su recreación con la configuración actualizada.
 
 ```bash
 openclaw sandbox recreate --all                # Recreate all containers
@@ -76,13 +76,15 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 
 **Opciones:**
 
-- `--all`: recrea todos los contenedores de sandbox
-- `--session <key>`: recrea el contenedor para una sesión específica
-- `--agent <id>`: recrea los contenedores para un agente específico
-- `--browser`: recrea solo los contenedores del navegador
-- `--force`: omite la solicitud de confirmación
+- `--all`: Recrea todos los contenedores sandbox
+- `--session <key>`: Recrea el contenedor para una sesión específica
+- `--agent <id>`: Recrea los contenedores para un agente específico
+- `--browser`: Recrea solo contenedores de navegador
+- `--force`: Omite la solicitud de confirmación
 
-**Importante:** los entornos de ejecución se recrean automáticamente la próxima vez que se use el agente.
+<Note>
+Los entornos de ejecución se recrean automáticamente la próxima vez que se usa el agente.
+</Note>
 
 ## Casos de uso
 
@@ -122,9 +124,10 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Para el backend `ssh` core, recrear elimina la raíz del espacio de trabajo remoto por alcance en el destino SSH. La siguiente ejecución lo vuelve a sembrar desde el espacio de trabajo local.
+Para el backend principal `ssh`, recrear elimina la raíz del espacio de trabajo remoto por alcance
+en el destino SSH. La siguiente ejecución lo vuelve a sembrar desde el espacio de trabajo local.
 
-### Después de cambiar el origen, la política o el modo de OpenShell
+### Después de cambiar la fuente, la política o el modo de OpenShell
 
 ```bash
 # Edit config:
@@ -136,9 +139,10 @@ Para el backend `ssh` core, recrear elimina la raíz del espacio de trabajo remo
 openclaw sandbox recreate --all
 ```
 
-Para el modo OpenShell `remote`, recrear elimina el espacio de trabajo remoto canónico para ese alcance. La siguiente ejecución lo vuelve a sembrar desde el espacio de trabajo local.
+Para el modo OpenShell `remote`, recrear elimina el espacio de trabajo remoto canónico
+para ese alcance. La siguiente ejecución lo vuelve a sembrar desde el espacio de trabajo local.
 
-### Después de cambiar `setupCommand`
+### Después de cambiar setupCommand
 
 ```bash
 openclaw sandbox recreate --all
@@ -153,22 +157,23 @@ openclaw sandbox recreate --agent family
 openclaw sandbox recreate --agent alfred
 ```
 
-## ¿Por qué es necesario?
+## Por qué esto es necesario
 
-**Problema:** cuando actualizas la configuración de sandbox:
+Cuando actualizas la configuración de sandbox:
 
-- los entornos de ejecución existentes siguen ejecutándose con la configuración antigua
-- los entornos de ejecución solo se depuran después de 24 h de inactividad
-- los agentes que se usan con regularidad mantienen vivos indefinidamente los entornos de ejecución antiguos
+- Los entornos de ejecución existentes siguen ejecutándose con la configuración antigua.
+- Los entornos de ejecución solo se eliminan después de 24 h de inactividad.
+- Los agentes usados con regularidad mantienen vivos los entornos de ejecución antiguos de forma indefinida.
 
-**Solución:** usa `openclaw sandbox recreate` para forzar la eliminación de los entornos de ejecución antiguos. Se recrearán automáticamente con la configuración actual la próxima vez que se necesiten.
+Usa `openclaw sandbox recreate` para forzar la eliminación de entornos de ejecución antiguos. Se recrean automáticamente con la configuración actual cuando se vuelven a necesitar.
 
-Consejo: prefiere `openclaw sandbox recreate` en lugar de una limpieza manual específica del backend.
-Usa el registro de entornos de ejecución del Gateway y evita desajustes cuando cambian las claves de alcance/sesión.
+<Tip>
+Prefiere `openclaw sandbox recreate` en lugar de una limpieza manual específica del backend. Usa el registro de entornos de ejecución del Gateway y evita discrepancias cuando cambian las claves de alcance o sesión.
+</Tip>
 
 ## Configuración
 
-Los ajustes de sandbox están en `~/.openclaw/openclaw.json` bajo `agents.defaults.sandbox` (las anulaciones por agente van en `agents.list[].sandbox`):
+La configuración de sandbox reside en `~/.openclaw/openclaw.json` bajo `agents.defaults.sandbox` (las sobrescrituras por agente van en `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -195,7 +200,7 @@ Los ajustes de sandbox están en `~/.openclaw/openclaw.json` bajo `agents.defaul
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
+- [Referencia de CLI](/es/cli)
 - [Sandboxing](/es/gateway/sandboxing)
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
-- [Doctor](/es/gateway/doctor) — comprueba la configuración de sandbox
+- [Doctor](/es/gateway/doctor): comprueba la configuración de sandbox.

@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Trabajar en código o pruebas de integración de Pi
-    - Ejecutar flujos específicos de lint, typecheck y pruebas en vivo de Pi
-summary: 'Flujo de trabajo de desarrollo para la integración de Pi: compilación, pruebas y validación en vivo'
+    - Trabajar en el código o las pruebas de integración con Pi
+    - Ejecución de flujos de lint, verificación de tipos y pruebas en vivo específicos de Pi
+summary: 'Flujo de trabajo para desarrolladores para la integración con Pi: compilación, pruebas y validación en vivo'
 title: Flujo de trabajo de desarrollo de Pi
 x-i18n:
-    generated_at: "2026-04-24T05:37:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:49:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
+    source_hash: 9c4025c8ed1a4dff0d8116440fd48f375264eb4cac06f71afebf8c05f3470ab4
     source_path: pi-dev.md
-    workflow: 15
+    workflow: 16
 ---
 
-Esta guía resume un flujo de trabajo razonable para trabajar en la integración de Pi en OpenClaw.
+Un flujo de trabajo sensato para trabajar en la integración de Pi en OpenClaw.
 
-## Verificación de tipos y linting
+## Comprobación de tipos y linting
 
 - Puerta local predeterminada: `pnpm check`
-- Puerta de build: `pnpm build` cuando el cambio puede afectar la salida de build, el empaquetado o los límites de carga diferida/módulos
-- Puerta completa antes de integrar para cambios importantes en Pi: `pnpm check && pnpm test`
+- Puerta de compilación: `pnpm build` cuando el cambio pueda afectar la salida de compilación, el empaquetado o los límites de carga diferida/módulos
+- Puerta completa para integrar cambios importantes de Pi: `pnpm check && pnpm test`
 
-## Ejecutar pruebas de Pi
+## Ejecución de pruebas de Pi
 
 Ejecuta directamente el conjunto de pruebas centrado en Pi con Vitest:
 
@@ -41,7 +41,7 @@ Para incluir el ejercicio del proveedor en vivo:
 OPENCLAW_LIVE_TEST=1 pnpm test src/agents/pi-embedded-runner-extraparams.live.test.ts
 ```
 
-Esto cubre las suites principales de unidades de Pi:
+Esto cubre los principales conjuntos de pruebas unitarias de Pi:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-embedded-*.test.ts`
@@ -54,30 +54,30 @@ Esto cubre las suites principales de unidades de Pi:
 
 Flujo recomendado:
 
-- Ejecuta el gateway en modo de desarrollo:
+- Ejecuta el Gateway en modo de desarrollo:
   - `pnpm gateway:dev`
 - Activa el agente directamente:
   - `pnpm openclaw agent --message "Hello" --thinking low`
 - Usa la TUI para depuración interactiva:
   - `pnpm tui`
 
-Para el comportamiento de llamadas a herramientas, solicita una acción `read` o `exec` para poder ver el streaming de herramientas y el manejo de la carga.
+Para el comportamiento de llamadas a herramientas, solicita una acción `read` o `exec` para poder ver el streaming de herramientas y el manejo de cargas útiles.
 
-## Restablecimiento limpio
+## Restablecimiento desde cero
 
-El estado vive en el directorio de estado de OpenClaw. El valor predeterminado es `~/.openclaw`. Si `OPENCLAW_STATE_DIR` está configurado, usa ese directorio en su lugar.
+El estado se almacena en el directorio de estado de OpenClaw. El predeterminado es `~/.openclaw`. Si `OPENCLAW_STATE_DIR` está definido, usa ese directorio en su lugar.
 
-Para restablecerlo todo:
+Para restablecer todo:
 
-- `openclaw.json` para configuración
-- `agents/<agentId>/agent/auth-profiles.json` para perfiles de autenticación de modelos (claves API + OAuth)
-- `credentials/` para estado de proveedor/canal que todavía vive fuera del almacén de perfiles de autenticación
-- `agents/<agentId>/sessions/` para historial de sesiones del agente
+- `openclaw.json` para la configuración
+- `agents/<agentId>/agent/auth-profiles.json` para los perfiles de autenticación del modelo (claves de API + OAuth)
+- `credentials/` para el estado de proveedor/canal que aún reside fuera del almacén de perfiles de autenticación
+- `agents/<agentId>/sessions/` para el historial de sesiones del agente
 - `agents/<agentId>/sessions/sessions.json` para el índice de sesiones
 - `sessions/` si existen rutas heredadas
 - `workspace/` si quieres un espacio de trabajo en blanco
 
-Si solo quieres restablecer sesiones, elimina `agents/<agentId>/sessions/` para ese agente. Si quieres mantener la autenticación, deja intactos `agents/<agentId>/agent/auth-profiles.json` y cualquier estado de proveedor bajo `credentials/`.
+Si solo quieres restablecer las sesiones, elimina `agents/<agentId>/sessions/` para ese agente. Si quieres conservar la autenticación, deja `agents/<agentId>/agent/auth-profiles.json` y cualquier estado de proveedor en `credentials/` en su lugar.
 
 ## Referencias
 

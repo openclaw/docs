@@ -1,62 +1,62 @@
 ---
 read_when:
-    - Encontrar el subcomando correcto de `openclaw`
-    - Consultar opciones globales o reglas de estilo de salida
+    - Encontrar el subcomando `openclaw` adecuado
+    - Consultando opciones globales o reglas de estilo de salida
 summary: 'Índice de la CLI de OpenClaw: lista de comandos, opciones globales y enlaces a páginas por comando'
-title: Referencia de la CLI
+title: Referencia de CLI
 x-i18n:
-    generated_at: "2026-04-25T13:43:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:34:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b8a61396b8ec7f57d15988d40b09f90458745bbb29e90bd387134aa032214853
+    source_hash: 522e0f156b919946756de6b933bb0a08374507401bf8639312daf52781927f33
     source_path: cli/index.md
-    workflow: 15
+    workflow: 16
 ---
 
 `openclaw` es el punto de entrada principal de la CLI. Cada comando principal tiene una
-página de referencia dedicada o está documentado con el comando al que sirve de alias; este
+página de referencia dedicada o está documentado con el comando al que aliasa; este
 índice enumera los comandos, las opciones globales y las reglas de estilo de salida que
 se aplican en toda la CLI.
 
 ## Páginas de comandos
 
-| Área                 | Comandos                                                                                                                                                                                                                                  |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Configuración inicial e incorporación | [`crestodian`](/es/cli/crestodian) · [`setup`](/es/cli/setup) · [`onboard`](/es/cli/onboard) · [`configure`](/es/cli/configure) · [`config`](/es/cli/config) · [`completion`](/es/cli/completion) · [`doctor`](/es/cli/doctor) · [`dashboard`](/es/cli/dashboard) |
+| Área                   | Comandos                                                                                                                                                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Configuración e incorporación | [`crestodian`](/es/cli/crestodian) · [`setup`](/es/cli/setup) · [`onboard`](/es/cli/onboard) · [`configure`](/es/cli/configure) · [`config`](/es/cli/config) · [`completion`](/es/cli/completion) · [`doctor`](/es/cli/doctor) · [`dashboard`](/es/cli/dashboard) |
 | Restablecimiento y desinstalación | [`backup`](/es/cli/backup) · [`reset`](/es/cli/reset) · [`uninstall`](/es/cli/uninstall) · [`update`](/es/cli/update)                                                                                                                                 |
-| Mensajería y agentes | [`message`](/es/cli/message) · [`agent`](/es/cli/agent) · [`agents`](/es/cli/agents) · [`acp`](/es/cli/acp) · [`mcp`](/es/cli/mcp)                                                                                                                       |
-| Estado y sesiones    | [`status`](/es/cli/status) · [`health`](/es/cli/health) · [`sessions`](/es/cli/sessions)                                                                                                                                                           |
-| Gateway y registros  | [`gateway`](/es/cli/gateway) · [`logs`](/es/cli/logs) · [`system`](/es/cli/system)                                                                                                                                                                 |
-| Modelos e inferencia | [`models`](/es/cli/models) · [`infer`](/es/cli/infer) · `capability` (alias de [`infer`](/es/cli/infer)) · [`memory`](/es/cli/memory) · [`wiki`](/es/cli/wiki)                                                                                          |
-| Red y nodos          | [`directory`](/es/cli/directory) · [`nodes`](/es/cli/nodes) · [`devices`](/es/cli/devices) · [`node`](/es/cli/node)                                                                                                                                   |
-| Entorno de ejecución y sandbox | [`approvals`](/es/cli/approvals) · `exec-policy` (consulta [`approvals`](/es/cli/approvals)) · [`sandbox`](/es/cli/sandbox) · [`tui`](/es/cli/tui) · `chat`/`terminal` (aliases de [`tui --local`](/es/cli/tui)) · [`browser`](/es/cli/browser)                 |
-| Automatización       | [`cron`](/es/cli/cron) · [`tasks`](/es/cli/tasks) · [`hooks`](/es/cli/hooks) · [`webhooks`](/es/cli/webhooks)                                                                                                                                         |
+| Mensajería y agentes   | [`message`](/es/cli/message) · [`agent`](/es/cli/agent) · [`agents`](/es/cli/agents) · [`acp`](/es/cli/acp) · [`mcp`](/es/cli/mcp)                                                                                                                       |
+| Estado y sesiones      | [`status`](/es/cli/status) · [`health`](/es/cli/health) · [`sessions`](/es/cli/sessions)                                                                                                                                                           |
+| Gateway y registros    | [`gateway`](/es/cli/gateway) · [`logs`](/es/cli/logs) · [`system`](/es/cli/system)                                                                                                                                                                 |
+| Modelos e inferencia   | [`models`](/es/cli/models) · [`infer`](/es/cli/infer) · `capability` (alias de [`infer`](/es/cli/infer)) · [`memory`](/es/cli/memory) · [`commitments`](/es/cli/commitments) · [`wiki`](/es/cli/wiki)                                                      |
+| Red y nodos            | [`directory`](/es/cli/directory) · [`nodes`](/es/cli/nodes) · [`devices`](/es/cli/devices) · [`node`](/es/cli/node)                                                                                                                                   |
+| Tiempo de ejecución y sandbox | [`approvals`](/es/cli/approvals) · `exec-policy` (consulta [`approvals`](/es/cli/approvals)) · [`sandbox`](/es/cli/sandbox) · [`tui`](/es/cli/tui) · `chat`/`terminal` (alias de [`tui --local`](/es/cli/tui)) · [`browser`](/es/cli/browser)                 |
+| Automatización         | [`cron`](/es/cli/cron) · [`tasks`](/es/cli/tasks) · [`hooks`](/es/cli/hooks) · [`webhooks`](/es/cli/webhooks)                                                                                                                                         |
 | Descubrimiento y documentación | [`dns`](/es/cli/dns) · [`docs`](/es/cli/docs)                                                                                                                                                                                                   |
 | Emparejamiento y canales | [`pairing`](/es/cli/pairing) · [`qr`](/es/cli/qr) · [`channels`](/es/cli/channels)                                                                                                                                                                 |
-| Seguridad y plugins  | [`security`](/es/cli/security) · [`secrets`](/es/cli/secrets) · [`skills`](/es/cli/skills) · [`plugins`](/es/cli/plugins) · [`proxy`](/es/cli/proxy)                                                                                                     |
-| Aliases heredados    | [`daemon`](/es/cli/daemon) (servicio del gateway) · [`clawbot`](/es/cli/clawbot) (espacio de nombres)                                                                                                                                                         |
-| Plugins (opcionales) | [`voicecall`](/es/cli/voicecall) (si está instalado)                                                                                                                                                                                              |
+| Seguridad y plugins    | [`security`](/es/cli/security) · [`secrets`](/es/cli/secrets) · [`skills`](/es/cli/skills) · [`plugins`](/es/cli/plugins) · [`proxy`](/es/cli/proxy)                                                                                                     |
+| Alias heredados        | [`daemon`](/es/cli/daemon) (servicio de gateway) · [`clawbot`](/es/cli/clawbot) (espacio de nombres)                                                                                                                                                         |
+| Plugins (opcional)     | [`voicecall`](/es/cli/voicecall) (si está instalado)                                                                                                                                                                                              |
 
 ## Opciones globales
 
-| Opción                  | Propósito                                                             |
+| Opción                  | Propósito                                                               |
 | ----------------------- | --------------------------------------------------------------------- |
 | `--dev`                 | Aísla el estado en `~/.openclaw-dev` y desplaza los puertos predeterminados         |
 | `--profile <name>`      | Aísla el estado en `~/.openclaw-<name>`                              |
 | `--container <name>`    | Apunta a un contenedor con nombre para la ejecución                                |
 | `--no-color`            | Desactiva los colores ANSI (`NO_COLOR=1` también se respeta)                  |
 | `--update`              | Abreviatura de [`openclaw update`](/es/cli/update) (solo instalaciones desde código fuente) |
-| `-V`, `--version`, `-v` | Muestra la versión y sale                                                |
+| `-V`, `--version`, `-v` | Imprime la versión y sale                                                |
 
 ## Modos de salida
 
-- Los colores ANSI y los indicadores de progreso solo se muestran en sesiones TTY.
-- Los hipervínculos OSC-8 se muestran como enlaces en los entornos compatibles; en caso contrario, la
-  CLI vuelve a URL sin formato.
-- `--json` (y `--plain` cuando sea compatible) desactiva el estilo para una salida limpia.
+- Los colores ANSI y los indicadores de progreso se muestran solo en sesiones TTY.
+- Los hipervínculos OSC-8 se muestran como enlaces clicables cuando hay compatibilidad; de lo contrario, la
+  CLI recurre a URL sin formato.
+- `--json` (y `--plain` donde sea compatible) desactiva el estilo para una salida limpia.
 - Los comandos de larga duración muestran un indicador de progreso (OSC 9;4 cuando es compatible).
 
-Fuente de verdad de la paleta: `src/terminal/palette.ts`.
+Fuente de referencia de la paleta: `src/terminal/palette.ts`.
 
 ## Árbol de comandos
 
@@ -128,6 +128,9 @@ openclaw [--dev] [--profile <name>] <command>
     status
     index
     search
+  commitments
+    list
+    dismiss
   wiki
     status
     doctor
@@ -354,33 +357,33 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Los plugins pueden añadir comandos adicionales de nivel superior (por ejemplo `openclaw voicecall`).
+Los plugins pueden agregar comandos adicionales de nivel superior (por ejemplo, `openclaw voicecall`).
 
 </Accordion>
 
-## Comandos con barra del chat
+## Comandos de barra diagonal en el chat
 
-Los mensajes de chat admiten comandos `/...`. Consulta [comandos con barra](/es/tools/slash-commands).
+Los mensajes de chat admiten comandos `/...`. Consulta [comandos de barra diagonal](/es/tools/slash-commands).
 
-Puntos destacados:
+Aspectos destacados:
 
 - `/status` — diagnósticos rápidos.
-- `/trace` — líneas de rastreo/depuración de plugins con ámbito de sesión.
-- `/config` — cambios persistentes de configuración.
+- `/trace` — líneas de traza/depuración de plugins con alcance de sesión.
+- `/config` — cambios de configuración persistidos.
 - `/debug` — anulaciones de configuración solo en tiempo de ejecución (memoria, no disco; requiere `commands.debug: true`).
 
 ## Seguimiento de uso
 
-`openclaw status --usage` y la IU de Control muestran el uso/cuota del proveedor cuando
-hay credenciales OAuth/API disponibles. Los datos provienen directamente de los endpoints
-de uso del proveedor y se normalizan como `X% left`. Proveedores con ventanas de uso
-actuales: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
+`openclaw status --usage` y la interfaz de Control UI muestran el uso/cuota del proveedor cuando
+las credenciales de OAuth/API están disponibles. Los datos provienen directamente de los endpoints de uso
+del proveedor y se normalizan a `X% left`. Proveedores con ventanas de uso actuales:
+Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
 Xiaomi y z.ai.
 
-Consulta [Seguimiento de uso](/es/concepts/usage-tracking) para más detalles.
+Consulta [Seguimiento de uso](/es/concepts/usage-tracking) para obtener detalles.
 
 ## Relacionado
 
-- [Comandos con barra](/es/tools/slash-commands)
+- [Comandos de barra diagonal](/es/tools/slash-commands)
 - [Configuración](/es/gateway/configuration)
 - [Entorno](/es/help/environment)
