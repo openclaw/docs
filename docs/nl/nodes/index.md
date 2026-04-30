@@ -1,39 +1,40 @@
 ---
 read_when:
-    - iOS-/Android-knooppunten koppelen aan een Gateway
+    - iOS/Android-nodes koppelen aan een Gateway
     - Node-canvas/camera gebruiken voor agentcontext
-    - Nieuwe Node-opdrachten of CLI-helpers toevoegen
-summary: 'Nodes: koppelen, mogelijkheden, machtigingen en CLI-helpers voor canvas/camera/scherm/apparaat/meldingen/systeem'
+    - Nieuwe node-commando's of CLI-helpers toevoegen
+summary: 'Nodes: koppeling, mogelijkheden, machtigingen en CLI-helpers voor canvas/camera/scherm/apparaat/meldingen/systeem'
 title: Nodes
 x-i18n:
-    generated_at: "2026-04-29T22:57:15Z"
+    generated_at: "2026-04-30T09:37:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fbe9fdeb21173a32f284810d0bd1e9219932ce7c74fdcbc8b5b197f2647659e8
+    source_hash: 060319f540fe3c4d168516df8cced9caad26d9281592c9a9537ab6df393dce43
     source_path: nodes/index.md
     workflow: 16
 ---
 
-Een **node** is een begeleidend apparaat (macOS/iOS/Android/headless) dat verbinding maakt met de Gateway **WebSocket** (dezelfde poort als operators) met `role: "node"` en een opdrachtoppervlak beschikbaar maakt (bijv. `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) via `node.invoke`. Protocoldetails: [Gateway-protocol](/nl/gateway/protocol).
+Een **Node** is een begeleidend apparaat (macOS/iOS/Android/headless) dat verbinding maakt met de Gateway **WebSocket** (dezelfde poort als operators) met `role: "node"` en een commando-interface beschikbaar stelt (bijv. `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) via `node.invoke`. Protocoldetails: [Gateway-protocol](/nl/gateway/protocol).
 
 Verouderd transport: [Bridge-protocol](/nl/gateway/bridge-protocol) (TCP JSONL;
-alleen historisch voor huidige nodes).
+alleen historisch voor huidige Nodes).
 
-macOS kan ook draaien in **nodemodus**: de menubalk-app maakt verbinding met de
-WS-server van de Gateway en stelt zijn lokale canvas-/cameraopdrachten beschikbaar als node (zodat
-`openclaw nodes …` werkt tegen deze Mac). In externe-gatewaymodus wordt browserautomatisering afgehandeld door de CLI-nodehost (`openclaw node run` of de
-geïnstalleerde nodeservice), niet door de native app-node.
+macOS kan ook in **Node-modus** draaien: de menubalk-app maakt verbinding met de
+WS-server van de Gateway en stelt zijn lokale canvas-/camera-commando’s beschikbaar als Node (zodat
+`openclaw nodes …` werkt tegen deze Mac). In remote Gateway-modus wordt browser-
+automatisering afgehandeld door de CLI Node-host (`openclaw node run` of de
+geïnstalleerde Node-service), niet door de native app-Node.
 
-Opmerkingen:
+Notities:
 
-- Nodes zijn **randapparaten**, geen gateways. Ze draaien de gatewayservice niet.
-- Telegram/WhatsApp/etc.-berichten komen binnen op de **gateway**, niet op nodes.
+- Nodes zijn **randapparaten**, geen Gateways. Ze draaien de Gateway-service niet.
+- Telegram/WhatsApp/enz.-berichten komen binnen op de **Gateway**, niet op Nodes.
 - Runbook voor probleemoplossing: [/nodes/troubleshooting](/nl/nodes/troubleshooting)
 
-## Koppelen + status
+## Koppeling + status
 
-**WS-nodes gebruiken apparaatkoppeling.** Nodes presenteren een apparaatidentiteit tijdens `connect`; de Gateway
-maakt een apparaatkoppelingsverzoek aan voor `role: node`. Keur dit goed via de apparaten-CLI (of UI).
+**WS-Nodes gebruiken apparaatkoppeling.** Nodes presenteren een apparaatidentiteit tijdens `connect`; de Gateway
+maakt een apparaatkoppelingsverzoek aan voor `role: node`. Keur goed via de devices-CLI (of UI).
 
 Snelle CLI:
 
@@ -45,82 +46,82 @@ openclaw nodes status
 openclaw nodes describe --node <idOrNameOrIp>
 ```
 
-Als een node opnieuw probeert met gewijzigde authgegevens (rol/scopes/publieke sleutel), wordt het eerdere
+Als een Node opnieuw probeert met gewijzigde auth-details (rol/scopes/publieke sleutel), wordt het vorige
 openstaande verzoek vervangen en wordt een nieuwe `requestId` aangemaakt. Voer
 `openclaw devices list` opnieuw uit voordat je goedkeurt.
 
-Opmerkingen:
+Notities:
 
-- `nodes status` markeert een node als **gekoppeld** wanneer de rol voor apparaatkoppeling `node` bevat.
-- Het apparaatkoppelingsrecord is het duurzame contract voor goedgekeurde rollen. Tokenrotatie
-  blijft binnen dat contract; het kan een gekoppelde node niet upgraden naar een
-  andere rol waarvoor koppelingsgoedkeuring nooit is verleend.
-- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) is een afzonderlijke gateway-beheerde
-  opslag voor nodekoppelingen; deze bewaakt de WS-`connect`-handshake **niet**.
-- `openclaw nodes remove --node <id|name|ip>` verwijdert verouderde vermeldingen uit die
-  afzonderlijke gateway-beheerde opslag voor nodekoppelingen.
-- Goedkeuringsscope volgt de gedeclareerde opdrachten van het openstaande verzoek:
-  - verzoek zonder opdrachten: `operator.pairing`
-  - nodeopdrachten zonder exec: `operator.pairing` + `operator.write`
+- `nodes status` markeert een Node als **gekoppeld** wanneer de apparaatkoppelingsrol `node` bevat.
+- De apparaatkoppelingsrecord is het duurzame contract voor goedgekeurde rollen. Token-
+  rotatie blijft binnen dat contract; dit kan een gekoppelde Node niet upgraden naar een
+  andere rol waarvoor de koppelingsgoedkeuring nooit toestemming gaf.
+- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) is een aparte Gateway-beheerde
+  Node-koppelingsopslag; deze blokkeert de WS-`connect`-handshake **niet**.
+- `openclaw nodes remove --node <id|name|ip>` verwijdert verouderde items uit die
+  aparte Gateway-beheerde Node-koppelingsopslag.
+- Goedkeuringsscope volgt de gedeclareerde commando’s van het openstaande verzoek:
+  - verzoek zonder commando’s: `operator.pairing`
+  - niet-exec Node-commando’s: `operator.pairing` + `operator.write`
   - `system.run` / `system.run.prepare` / `system.which`: `operator.pairing` + `operator.admin`
 
-## Externe nodehost (system.run)
+## Remote Node-host (system.run)
 
-Gebruik een **nodehost** wanneer je Gateway op de ene machine draait en je opdrachten
-op een andere wilt uitvoeren. Het model praat nog steeds met de **gateway**; de gateway
-stuurt `exec`-aanroepen door naar de **nodehost** wanneer `host=node` is geselecteerd.
+Gebruik een **Node-host** wanneer je Gateway op de ene machine draait en je commando’s
+op een andere wilt uitvoeren. Het model praat nog steeds met de **Gateway**; de Gateway
+stuurt `exec`-aanroepen door naar de **Node-host** wanneer `host=node` is geselecteerd.
 
 ### Wat draait waar
 
 - **Gateway-host**: ontvangt berichten, draait het model, routeert toolaanroepen.
-- **Nodehost**: voert `system.run`/`system.which` uit op de nodemachine.
-- **Goedkeuringen**: afgedwongen op de nodehost via `~/.openclaw/exec-approvals.json`.
+- **Node-host**: voert `system.run`/`system.which` uit op de Node-machine.
+- **Goedkeuringen**: afgedwongen op de Node-host via `~/.openclaw/exec-approvals.json`.
 
-Goedkeuringsopmerking:
+Goedkeuringsnotitie:
 
-- Node-uitvoeringen met goedkeuring binden exacte verzoekcontext.
-- Voor directe shell-/runtimebestandsuitvoeringen bindt OpenClaw ook naar beste vermogen één concreet lokaal
-  bestandsoperand en weigert de uitvoering als dat bestand vóór uitvoering wijzigt.
-- Als OpenClaw niet exact één concreet lokaal bestand kan identificeren voor een interpreter-/runtimeopdracht,
-  wordt uitvoering met goedkeuring geweigerd in plaats van volledige runtimedekking te veinzen. Gebruik sandboxing,
-  afzonderlijke hosts of een expliciete vertrouwde allowlist/volledige workflow voor bredere interpretersemantiek.
+- Node-runs met goedkeuring binden de exacte verzoekcontext.
+- Voor directe shell-/runtime-bestandsuitvoeringen bindt OpenClaw ook naar beste vermogen één concreet lokaal
+  bestandsoperand en weigert de run als dat bestand vóór uitvoering wijzigt.
+- Als OpenClaw niet precies één concreet lokaal bestand kan identificeren voor een interpreter-/runtime-commando,
+  wordt uitvoering met goedkeuring geweigerd in plaats van volledige runtime-dekking te veinzen. Gebruik sandboxing,
+  aparte hosts, of een expliciete vertrouwde allowlist/volledige workflow voor bredere interpreter-semantiek.
 
-### Start een nodehost (voorgrond)
+### Start een Node-host (foreground)
 
-Op de nodemachine:
+Op de Node-machine:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
 ```
 
-### Externe gateway via SSH-tunnel (loopback-bind)
+### Remote Gateway via SSH-tunnel (loopback-bind)
 
-Als de Gateway aan loopback bindt (`gateway.bind=loopback`, standaard in lokale modus),
-kunnen externe nodehosts niet rechtstreeks verbinden. Maak een SSH-tunnel en wijs de
-nodehost naar het lokale uiteinde van de tunnel.
+Als de Gateway bindt aan loopback (`gateway.bind=loopback`, standaard in lokale modus),
+kunnen remote Node-hosts niet direct verbinden. Maak een SSH-tunnel en wijs de
+Node-host naar het lokale uiteinde van de tunnel.
 
-Voorbeeld (nodehost -> gatewayhost):
+Voorbeeld (Node-host -> Gateway-host):
 
 ```bash
 # Terminal A (laten draaien): stuur lokale 18790 door -> gateway 127.0.0.1:18789
 ssh -N -L 18790:127.0.0.1:18789 user@gateway-host
 
-# Terminal B: exporteer het gatewaytoken en verbind via de tunnel
+# Terminal B: exporteer het Gateway-token en verbind via de tunnel
 export OPENCLAW_GATEWAY_TOKEN="<gateway-token>"
 openclaw node run --host 127.0.0.1 --port 18790 --display-name "Build Node"
 ```
 
-Opmerkingen:
+Notities:
 
 - `openclaw node run` ondersteunt token- of wachtwoordauthenticatie.
-- Omgevingsvariabelen hebben de voorkeur: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
-- Configuratiefallback is `gateway.auth.token` / `gateway.auth.password`.
-- In lokale modus negeert de nodehost bewust `gateway.remote.token` / `gateway.remote.password`.
-- In externe modus komen `gateway.remote.token` / `gateway.remote.password` in aanmerking volgens externe precedentieregels.
-- Als actieve lokale `gateway.auth.*` SecretRefs zijn geconfigureerd maar niet kunnen worden opgelost, faalt nodehostauthenticatie gesloten.
-- Nodehost-authenticatieoplossing respecteert alleen `OPENCLAW_GATEWAY_*`-omgevingsvariabelen.
+- Env vars hebben de voorkeur: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
+- Config-fallback is `gateway.auth.token` / `gateway.auth.password`.
+- In lokale modus negeert de Node-host bewust `gateway.remote.token` / `gateway.remote.password`.
+- In remote modus komen `gateway.remote.token` / `gateway.remote.password` in aanmerking volgens de remote voorrangsregels.
+- Als actieve lokale `gateway.auth.*` SecretRefs zijn geconfigureerd maar niet kunnen worden opgelost, faalt Node-host-auth gesloten.
+- Auth-resolutie voor Node-hosts respecteert alleen `OPENCLAW_GATEWAY_*` env vars.
 
-### Start een nodehost (service)
+### Start een Node-host (service)
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789 --display-name "Build Node"
@@ -128,9 +129,9 @@ openclaw node start
 openclaw node restart
 ```
 
-### Koppel + geef naam
+### Koppel + benoem
 
-Op de gatewayhost:
+Op de Gateway-host:
 
 ```bash
 openclaw devices list
@@ -138,28 +139,28 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Als de node opnieuw probeert met gewijzigde authgegevens, voer dan `openclaw devices list`
+Als de Node opnieuw probeert met gewijzigde auth-details, voer `openclaw devices list`
 opnieuw uit en keur de huidige `requestId` goed.
 
 Naamgevingsopties:
 
-- `--display-name` op `openclaw node run` / `openclaw node install` (blijft bewaard in `~/.openclaw/node.json` op de node).
-- `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (gateway-override).
+- `--display-name` op `openclaw node run` / `openclaw node install` (blijft staan in `~/.openclaw/node.json` op de Node).
+- `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (Gateway-override).
 
-### Zet de opdrachten op de allowlist
+### Zet de commando’s op de allowlist
 
-Exec-goedkeuringen zijn **per nodehost**. Voeg allowlist-vermeldingen toe vanaf de gateway:
+Exec-goedkeuringen zijn **per Node-host**. Voeg allowlist-items toe vanaf de Gateway:
 
 ```bash
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/uname"
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/sw_vers"
 ```
 
-Goedkeuringen staan op de nodehost in `~/.openclaw/exec-approvals.json`.
+Goedkeuringen staan op de Node-host in `~/.openclaw/exec-approvals.json`.
 
-### Richt exec op de node
+### Richt exec op de Node
 
-Configureer standaardwaarden (gatewayconfiguratie):
+Configureer standaardwaarden (Gateway-config):
 
 ```bash
 openclaw config set tools.exec.host node
@@ -173,18 +174,18 @@ Of per sessie:
 /exec host=node security=allowlist node=<id-or-name>
 ```
 
-Zodra dit is ingesteld, draait elke `exec`-aanroep met `host=node` op de nodehost (onderhevig aan de
-node-allowlist/-goedkeuringen).
+Eenmaal ingesteld draait elke `exec`-aanroep met `host=node` op de Node-host (afhankelijk van de
+Node-allowlist/goedkeuringen).
 
-`host=auto` kiest de node niet vanzelf impliciet, maar een expliciet per-aanroepverzoek `host=node` is toegestaan vanuit `auto`. Als je node-exec de standaard voor de sessie wilt maken, stel dan expliciet `tools.exec.host=node` of `/exec host=node ...` in.
+`host=auto` kiest niet impliciet zelf de Node, maar een expliciet per-call `host=node`-verzoek is toegestaan vanuit `auto`. Als je Node-exec de standaard voor de sessie wilt maken, stel dan expliciet `tools.exec.host=node` of `/exec host=node ...` in.
 
 Gerelateerd:
 
-- [Nodehost-CLI](/nl/cli/node)
+- [Node-host-CLI](/nl/cli/node)
 - [Exec-tool](/nl/tools/exec)
 - [Exec-goedkeuringen](/nl/tools/exec-approvals)
 
-## Opdrachten aanroepen
+## Commando’s aanroepen
 
 Laag niveau (ruwe RPC):
 
@@ -194,26 +195,32 @@ openclaw nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"ja
 
 Er bestaan helpers op hoger niveau voor de gangbare workflows “geef de agent een MEDIA-bijlage”.
 
-## Opdrachtbeleid
+## Commandobeleid
 
-Nodeopdrachten moeten twee poorten passeren voordat ze kunnen worden aangeroepen:
+Node-commando’s moeten twee controles doorstaan voordat ze kunnen worden aangeroepen:
 
-1. De node moet de opdracht declareren in zijn WebSocket-lijst `connect.commands`.
-2. Het platformbeleid van de gateway moet de gedeclareerde opdracht toestaan.
+1. De Node moet het commando declareren in zijn WebSocket-`connect.commands`-lijst.
+2. Het platformbeleid van de Gateway moet het gedeclareerde commando toestaan.
 
-Windows- en macOS-begeleidende nodes staan standaard veilige gedeclareerde opdrachten toe, zoals
+Windows- en macOS-begeleidings-Nodes staan standaard veilige gedeclareerde commando’s toe, zoals
 `canvas.*`, `camera.list`, `location.get` en `screen.snapshot`.
-Gevaarlijke of privacygevoelige opdrachten zoals `camera.snap`, `camera.clip` en
+Gevaarlijke of privacygevoelige commando’s zoals `camera.snap`, `camera.clip` en
 `screen.record` vereisen nog steeds expliciete opt-in met
-`gateway.nodes.allowCommands`. `gateway.nodes.denyCommands` heeft altijd voorrang op
-standaardwaarden en extra allowlist-vermeldingen.
+`gateway.nodes.allowCommands`. `gateway.nodes.denyCommands` wint altijd van
+standaardwaarden en extra allowlist-items.
 
-Nadat een node zijn gedeclareerde opdrachtenlijst wijzigt, wijs je de oude apparaatkoppeling af
-en keur je het nieuwe verzoek goed zodat de gateway de bijgewerkte opdrachtsnapshot opslaat.
+Plugin-beheerde Node-commando’s kunnen een Gateway-beleid voor Node-invoke toevoegen. Dat beleid
+draait na de allowlist-controle en vóór doorsturen naar de Node, zodat ruwe
+`node.invoke`, CLI-helpers en specifieke agent-tools dezelfde Plugin-
+toestemmingsgrens delen. Gevaarlijke Plugin-Node-commando’s vereisen nog steeds expliciete
+`gateway.nodes.allowCommands`-opt-in.
 
-## Schermafbeeldingen (canvassnapshots)
+Nadat een Node zijn gedeclareerde commandolijst wijzigt, wijs je de oude apparaatkoppeling af
+en keur je het nieuwe verzoek goed zodat de Gateway de bijgewerkte commandosnapshot opslaat.
 
-Als de node de Canvas (WebView) toont, retourneert `canvas.snapshot` `{ format, base64 }`.
+## Schermafbeeldingen (canvas-snapshots)
+
+Als de Node de Canvas (WebView) toont, retourneert `canvas.snapshot` `{ format, base64 }`.
 
 CLI-helper (schrijft naar een tijdelijk bestand en print `MEDIA:<path>`):
 
@@ -231,7 +238,7 @@ openclaw nodes canvas navigate https://example.com --node <idOrNameOrIp>
 openclaw nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 ```
 
-Opmerkingen:
+Notities:
 
 - `canvas present` accepteert URL’s of lokale bestandspaden (`--target`), plus optioneel `--x/--y/--width/--height` voor positionering.
 - `canvas eval` accepteert inline JS (`--js`) of een positioneel argument.
@@ -244,11 +251,11 @@ openclaw nodes canvas a2ui push --node <idOrNameOrIp> --jsonl ./payload.jsonl
 openclaw nodes canvas a2ui reset --node <idOrNameOrIp>
 ```
 
-Opmerkingen:
+Notities:
 
 - Alleen A2UI v0.8 JSONL wordt ondersteund (v0.9/createSurface wordt geweigerd).
 
-## Foto’s + video’s (nodecamera)
+## Foto’s + video’s (Node-camera)
 
 Foto’s (`jpg`):
 
@@ -265,29 +272,29 @@ openclaw nodes camera clip --node <idOrNameOrIp> --duration 10s
 openclaw nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
 ```
 
-Opmerkingen:
+Notities:
 
-- De node moet **op de voorgrond** staan voor `canvas.*` en `camera.*` (achtergrondaanroepen retourneren `NODE_BACKGROUND_UNAVAILABLE`).
-- Clipduur wordt begrensd (momenteel `<= 60s`) om te grote base64-payloads te voorkomen.
-- Android zal waar mogelijk vragen om `CAMERA`/`RECORD_AUDIO`-rechten; geweigerde rechten falen met `*_PERMISSION_REQUIRED`.
+- De Node moet **op de voorgrond staan** voor `canvas.*` en `camera.*` (achtergrondaanroepen retourneren `NODE_BACKGROUND_UNAVAILABLE`).
+- Clipduur wordt begrensd (momenteel `<= 60s`) om te grote base64-payloads te vermijden.
+- Android vraagt waar mogelijk om `CAMERA`/`RECORD_AUDIO`-toestemmingen; geweigerde toestemmingen falen met `*_PERMISSION_REQUIRED`.
 
-## Schermopnamen (nodes)
+## Schermopnamen (Nodes)
 
-Ondersteunde nodes stellen `screen.record` beschikbaar (mp4). Voorbeeld:
+Ondersteunde Nodes stellen `screen.record` beschikbaar (mp4). Voorbeeld:
 
 ```bash
 openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10
 openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-audio
 ```
 
-Opmerkingen:
+Notities:
 
-- Beschikbaarheid van `screen.record` hangt af van het nodeplatform.
-- Schermopnamen worden begrensd tot `<= 60s`.
+- Beschikbaarheid van `screen.record` hangt af van het Node-platform.
+- Schermopnamen worden begrensd op `<= 60s`.
 - `--no-audio` schakelt microfoonopname uit op ondersteunde platforms.
-- Gebruik `--screen <index>` om een scherm te selecteren wanneer meerdere schermen beschikbaar zijn.
+- Gebruik `--screen <index>` om een display te selecteren wanneer meerdere schermen beschikbaar zijn.
 
-## Locatie (nodes)
+## Locatie (Nodes)
 
 Nodes stellen `location.get` beschikbaar wanneer Locatie is ingeschakeld in de instellingen.
 
@@ -298,30 +305,30 @@ openclaw nodes location get --node <idOrNameOrIp>
 openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 15000 --location-timeout 10000
 ```
 
-Opmerkingen:
+Notities:
 
-- Locatie is **standaard uitgeschakeld**.
-- “Altijd” vereist systeemtoestemming; ophalen op de achtergrond gebeurt naar beste vermogen.
-- Het antwoord bevat lat/lon, nauwkeurigheid (meters) en tijdstempel.
+- Locatie staat **standaard uit**.
+- “Altijd” vereist systeemtoestemming; ophalen op de achtergrond is best-effort.
+- De response bevat lat/lon, nauwkeurigheid (meters) en timestamp.
 
-## SMS (Android-nodes)
+## SMS (Android-Nodes)
 
-Android-nodes kunnen `sms.send` beschikbaar maken wanneer de gebruiker **SMS**-toestemming verleent en het apparaat telefonie ondersteunt.
+Android-Nodes kunnen `sms.send` beschikbaar stellen wanneer de gebruiker **SMS**-toestemming verleent en het apparaat telefonie ondersteunt.
 
-Aanroep op laag niveau:
+Laag-niveauaanroep:
 
 ```bash
 openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from OpenClaw"}'
 ```
 
-Opmerkingen:
+Notities:
 
 - De toestemmingsprompt moet op het Android-apparaat worden geaccepteerd voordat de capability wordt geadverteerd.
-- Apparaten met alleen Wi-Fi zonder telefonie zullen `sms.send` niet adverteren.
+- Apparaten zonder telefonie die alleen Wi-Fi hebben, adverteren `sms.send` niet.
 
-## Android-apparaat + opdrachten voor persoonlijke gegevens
+## Android-apparaat + commando’s voor persoonlijke gegevens
 
-Android-nodes kunnen extra opdrachtfamilies adverteren wanneer de bijbehorende capabilities zijn ingeschakeld.
+Android-Nodes kunnen aanvullende commandofamilies adverteren wanneer de bijbehorende capabilities zijn ingeschakeld.
 
 Beschikbare families:
 
@@ -344,12 +351,12 @@ openclaw nodes invoke --node <idOrNameOrIp> --command photos.latest --params '{"
 
 Opmerkingen:
 
-- Bewegingsopdrachten zijn capability-gated op basis van beschikbare sensoren.
+- Bewegingsopdrachten worden op basis van capabilities beperkt door beschikbare sensoren.
 
-## Systeemopdrachten (Node-host / Mac-Node)
+## Systeemopdrachten (nodehost / Mac-node)
 
-De macOS-Node stelt `system.run`, `system.notify` en `system.execApprovals.get/set` beschikbaar.
-De headless Node-host stelt `system.run`, `system.which` en `system.execApprovals.get/set` beschikbaar.
+De macOS-node stelt `system.run`, `system.notify` en `system.execApprovals.get/set` beschikbaar.
+De headless nodehost stelt `system.run`, `system.which` en `system.execApprovals.get/set` beschikbaar.
 
 Voorbeelden:
 
@@ -361,27 +368,27 @@ openclaw nodes invoke --node <idOrNameOrIp> --command system.which --params '{"n
 Opmerkingen:
 
 - `system.run` retourneert stdout/stderr/exitcode in de payload.
-- Shell-uitvoering loopt nu via de `exec`-tool met `host=node`; `nodes` blijft het directe RPC-oppervlak voor expliciete Node-opdrachten.
+- Shelluitvoering loopt nu via de `exec`-tool met `host=node`; `nodes` blijft het directe RPC-oppervlak voor expliciete node-opdrachten.
 - `nodes invoke` stelt `system.run` of `system.run.prepare` niet beschikbaar; die blijven alleen op het exec-pad.
 - Het exec-pad bereidt vóór goedkeuring een canoniek `systemRunPlan` voor. Zodra een
-  goedkeuring is verleend, stuurt de Gateway dat opgeslagen plan door, niet eventuele later
-  door de aanroeper bewerkte velden voor command/cwd/session.
-- `system.notify` respecteert de status van meldingsmachtigingen in de macOS-app.
-- Onbekende Node-`platform`- / `deviceFamily`-metadata gebruikt een conservatieve standaard-allowlist die `system.run` en `system.which` uitsluit. Als je die opdrachten bewust nodig hebt voor een onbekend platform, voeg ze dan expliciet toe via `gateway.nodes.allowCommands`.
+  goedkeuring is verleend, stuurt de gateway dat opgeslagen plan door, niet eventuele later
+  door de aanroeper bewerkte opdracht-/cwd-/sessievelden.
+- `system.notify` respecteert de status van notificatierechten in de macOS-app.
+- Onbekende node-metadata voor `platform` / `deviceFamily` gebruikt een conservatieve standaardtoelatingslijst die `system.run` en `system.which` uitsluit. Als je die opdrachten bewust nodig hebt voor een onbekend platform, voeg ze dan expliciet toe via `gateway.nodes.allowCommands`.
 - `system.run` ondersteunt `--cwd`, `--env KEY=VAL`, `--command-timeout` en `--needs-screen-recording`.
-- Voor shell-wrappers (`bash|sh|zsh ... -c/-lc`) worden aanvraaggebonden `--env`-waarden beperkt tot een expliciete allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- Voor altijd-toestaan-beslissingen in allowlist-modus blijven bij bekende dispatch-wrappers (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) de paden van de interne executables behouden in plaats van wrapperpaden. Als uitpakken niet veilig is, wordt er niet automatisch een allowlist-vermelding opgeslagen.
-- Op Windows-Node-hosts in allowlist-modus vereisen shell-wrapper-runs via `cmd.exe /c` goedkeuring (alleen een allowlist-vermelding staat de wrapper-vorm niet automatisch toe).
+- Voor shellwrappers (`bash|sh|zsh ... -c/-lc`) worden request-scoped `--env`-waarden teruggebracht tot een expliciete toelatingslijst (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+- Voor altijd-toestaan-beslissingen in allowlist-modus blijven bij bekende dispatch-wrappers (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) de paden van de interne uitvoerbare bestanden bewaard in plaats van de wrapperpaden. Als uitpakken niet veilig is, wordt er niet automatisch een allowlist-vermelding bewaard.
+- Op Windows-nodehosts in allowlist-modus vereisen shellwrapper-runs via `cmd.exe /c` goedkeuring (alleen een allowlist-vermelding staat de wrapper-vorm niet automatisch toe).
 - `system.notify` ondersteunt `--priority <passive|active|timeSensitive>` en `--delivery <system|overlay|auto>`.
-- Node-hosts negeren `PATH`-overschrijvingen en verwijderen gevaarlijke opstart-/shell-sleutels (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Als je extra PATH-vermeldingen nodig hebt, configureer dan de serviceomgeving van de Node-host (of installeer tools op standaardlocaties) in plaats van `PATH` via `--env` door te geven.
-- In macOS-Node-modus wordt `system.run` beperkt door exec-goedkeuringen in de macOS-app (Instellingen → Exec-goedkeuringen).
-  Vragen/allowlist/volledig werken hetzelfde als bij de headless Node-host; geweigerde prompts retourneren `SYSTEM_RUN_DENIED`.
-- Op de headless Node-host wordt `system.run` beperkt door exec-goedkeuringen (`~/.openclaw/exec-approvals.json`).
+- Nodehosts negeren `PATH`-overschrijvingen en verwijderen gevaarlijke startup-/shellsleutels (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Als je extra PATH-vermeldingen nodig hebt, configureer dan de serviceomgeving van de nodehost (of installeer tools op standaardlocaties) in plaats van `PATH` via `--env` door te geven.
+- In macOS-nodemodus wordt `system.run` beperkt door exec-goedkeuringen in de macOS-app (Instellingen → Exec-goedkeuringen).
+  Vragen/allowlist/volledig werken hetzelfde als bij de headless nodehost; geweigerde prompts retourneren `SYSTEM_RUN_DENIED`.
+- Op de headless nodehost wordt `system.run` beperkt door exec-goedkeuringen (`~/.openclaw/exec-approvals.json`).
 
-## Exec-Node-binding
+## Exec-nodekoppeling
 
-Wanneer er meerdere Nodes beschikbaar zijn, kun je exec aan een specifieke Node binden.
-Dit stelt de standaard-Node in voor `exec host=node` (en kan per agent worden overschreven).
+Wanneer meerdere nodes beschikbaar zijn, kun je exec aan een specifieke node koppelen.
+Dit stelt de standaardnode in voor `exec host=node` (en kan per agent worden overschreven).
 
 Globale standaard:
 
@@ -396,7 +403,7 @@ openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-Maak de instelling ongedaan om elke Node toe te staan:
+Verwijder de instelling om elke node toe te staan:
 
 ```bash
 openclaw config unset tools.exec.node
@@ -405,13 +412,13 @@ openclaw config unset agents.list[0].tools.exec.node
 
 ## Machtigingenkaart
 
-Nodes kunnen een `permissions`-kaart opnemen in `node.list` / `node.describe`, met machtigingsnaam als sleutel (bijv. `screenRecording`, `accessibility`) en booleaanse waarden (`true` = verleend).
+Nodes kunnen een `permissions`-kaart bevatten in `node.list` / `node.describe`, geïndexeerd op machtigingsnaam (bijv. `screenRecording`, `accessibility`) met booleaanse waarden (`true` = verleend).
 
-## Headless Node-host (cross-platform)
+## Headless nodehost (cross-platform)
 
-OpenClaw kan een **headless Node-host** (geen UI) uitvoeren die verbinding maakt met de Gateway
-WebSocket en `system.run` / `system.which` beschikbaar stelt. Dit is handig op Linux/Windows
-of voor het uitvoeren van een minimale Node naast een server.
+OpenClaw kan een **headless nodehost** (geen UI) uitvoeren die verbinding maakt met de Gateway
+WebSocket en `system.run` / `system.which` beschikbaar stelt. Dit is nuttig op Linux/Windows
+of om een minimale node naast een server uit te voeren.
 
 Start deze:
 
@@ -421,16 +428,16 @@ openclaw node run --host <gateway-host> --port 18789
 
 Opmerkingen:
 
-- Koppelen is nog steeds vereist (de Gateway toont een prompt voor apparaatkoppeling).
-- De Node-host slaat zijn Node-id, token, weergavenaam en Gateway-verbindingsinformatie op in `~/.openclaw/node.json`.
+- Koppeling is nog steeds vereist (de Gateway toont een prompt voor apparaatkoppeling).
+- De nodehost slaat zijn node-id, token, weergavenaam en Gateway-verbindingsgegevens op in `~/.openclaw/node.json`.
 - Exec-goedkeuringen worden lokaal afgedwongen via `~/.openclaw/exec-approvals.json`
   (zie [Exec-goedkeuringen](/nl/tools/exec-approvals)).
-- Op macOS voert de headless Node-host `system.run` standaard lokaal uit. Stel
-  `OPENCLAW_NODE_EXEC_HOST=app` in om `system.run` via de exec-host van de begeleidende app te routeren; voeg
-  `OPENCLAW_NODE_EXEC_FALLBACK=0` toe om de app-host te vereisen en gesloten te falen als deze niet beschikbaar is.
-- Voeg `--tls` / `--tls-fingerprint` toe wanneer de Gateway-WS TLS gebruikt.
+- Op macOS voert de headless nodehost `system.run` standaard lokaal uit. Stel
+  `OPENCLAW_NODE_EXEC_HOST=app` in om `system.run` via de exec-host van de companion-app te routeren; voeg
+  `OPENCLAW_NODE_EXEC_FALLBACK=0` toe om de app-host verplicht te stellen en gesloten te falen als die niet beschikbaar is.
+- Voeg `--tls` / `--tls-fingerprint` toe wanneer de Gateway WS TLS gebruikt.
 
-## Mac-Node-modus
+## Mac-nodemodus
 
-- De macOS-menubalk-app maakt als Node verbinding met de Gateway-WS-server (zodat `openclaw nodes …` werkt voor deze Mac).
+- De macOS-menubalkapp maakt verbinding met de Gateway WS-server als een node (zodat `openclaw nodes …` tegen deze Mac werkt).
 - In externe modus opent de app een SSH-tunnel voor de Gateway-poort en maakt verbinding met `localhost`.

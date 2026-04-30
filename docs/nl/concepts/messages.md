@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Uitleg over hoe inkomende berichten worden omgezet in antwoorden
+    - Uitleg over hoe inkomende berichten antwoorden worden
     - Sessies, wachtrijmodi of streaminggedrag verduidelijken
-    - Zichtbaarheid van redeneringen en gevolgen voor het gebruik documenteren
-summary: Berichtenstroom, sessies, wachtrijvorming en zichtbaarheid van redenering
+    - Documentatie van zichtbaarheid van redenering en gevolgen voor gebruik
+summary: Berichtenstroom, sessies, wachtrijen en zichtbaarheid van redenering
 title: Berichten
 x-i18n:
-    generated_at: "2026-04-29T22:39:00Z"
+    generated_at: "2026-04-30T09:35:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 32e11bec46190e37fa6ce13ff876fe7c04299ae16a3690e5bbfac1d308071660
+    source_hash: dcfcc995995516b627993755b255a779c681b4976d2d724c0c11e87875e37b1e
     source_path: concepts/messages.md
     workflow: 16
 ---
 
-OpenClaw verwerkt inkomende berichten via een pipeline van sessieresolutie, wachtrijvorming, streaming, tooluitvoering en zichtbaarheid van redenering. Deze pagina brengt het pad van inkomend bericht naar antwoord in kaart.
+OpenClaw verwerkt inkomende berichten via een pijplijn van sessieresolutie, wachtrijplaatsing, streaming, tooluitvoering en zichtbaarheid van redenatie. Deze pagina brengt het pad van inkomend bericht naar antwoord in kaart.
 
-## Berichtenstroom (hoog niveau)
+## Berichtstroom (hoog niveau)
 
 ```
 Inbound message
@@ -28,23 +28,23 @@ Inbound message
 
 Belangrijke knoppen staan in de configuratie:
 
-- `messages.*` voor prefixes, wachtrijvorming en groepsgedrag.
-- `agents.defaults.*` voor standaardinstellingen voor blokstreaming en opdelen in chunks.
-- Kanaaloverrides (`channels.whatsapp.*`, `channels.telegram.*`, enzovoort) voor limieten en streaming-schakelaars.
+- `messages.*` voor prefixes, wachtrijplaatsing en groepsgedrag.
+- `agents.defaults.*` voor standaardinstellingen voor blokstreaming en chunking.
+- Kanaaloverrides (`channels.whatsapp.*`, `channels.telegram.*`, enz.) voor limieten en streaming-schakelaars.
 
 Zie [Configuratie](/nl/gateway/configuration) voor het volledige schema.
 
-## Dedupe van inkomende berichten
+## Inkomende deduplicatie
 
-Kanalen kunnen hetzelfde bericht opnieuw afleveren na reconnects. OpenClaw houdt een
+Kanalen kunnen hetzelfde bericht na herverbindingen opnieuw afleveren. OpenClaw houdt een
 kortlevende cache bij, gesleuteld op kanaal/account/peer/sessie/bericht-id, zodat dubbele
-afleveringen geen nieuwe agent-run triggeren.
+afleveringen geen nieuwe agentrun starten.
 
-## Debouncing van inkomende berichten
+## Inkomende debounce
 
-Snel opeenvolgende berichten van de **zelfde afzender** kunnen worden gebundeld in een enkele
-agent-beurt via `messages.inbound`. Debouncing is gescoped per kanaal + gesprek
-en gebruikt het meest recente bericht voor antwoord-threading/ID's.
+Snel opeenvolgende berichten van **dezelfde afzender** kunnen via `messages.inbound`
+worden samengevoegd tot een enkele agentbeurt. Debounce is begrensd per kanaal + gesprek
+en gebruikt het meest recente bericht voor antwoordthreading/ID's.
 
 Configuratie (globale standaard + overrides per kanaal):
 
@@ -65,33 +65,33 @@ Configuratie (globale standaard + overrides per kanaal):
 
 Opmerkingen:
 
-- Debounce geldt voor **alleen-tekst**-berichten; media/bijlagen worden onmiddellijk geflusht.
-- Besturingscommando's omzeilen debouncing zodat ze zelfstandig blijven — **behalve** wanneer een kanaal expliciet kiest voor samenvoegen van DM's van dezelfde afzender (bijv. [BlueBubbles `coalesceSameSenderDms`](/nl/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), waarbij DM-commando's binnen het debounce-venster wachten zodat een split-send-payload aan dezelfde agent-beurt kan worden toegevoegd.
+- Debounce geldt voor berichten met **alleen tekst**; media/bijlagen worden onmiddellijk doorgestuurd.
+- Besturingscommando's omzeilen debounce zodat ze zelfstandig blijven — **behalve** wanneer een kanaal expliciet kiest voor samenvoeging van DM's van dezelfde afzender (bijv. [BlueBubbles `coalesceSameSenderDms`](/nl/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), waarbij DM-commando's binnen het debouncevenster wachten zodat een payload uit een gesplitste verzending aan dezelfde agentbeurt kan worden toegevoegd.
 
 ## Sessies en apparaten
 
 Sessies zijn eigendom van de Gateway, niet van clients.
 
-- Directe chats worden samengevouwen tot de hoofdsessiesleutel van de agent.
+- Directe chats worden samengevoegd in de hoofdsessiesleutel van de agent.
 - Groepen/kanalen krijgen hun eigen sessiesleutels.
-- De sessiestore en transcripties staan op de Gateway-host.
+- De sessieopslag en transcripties staan op de Gateway-host.
 
-Meerdere apparaten/kanalen kunnen aan dezelfde sessie worden gekoppeld, maar de geschiedenis wordt niet volledig
+Meerdere apparaten/kanalen kunnen aan dezelfde sessie worden gekoppeld, maar geschiedenis wordt niet volledig
 teruggesynchroniseerd naar elke client. Aanbeveling: gebruik een primair apparaat voor lange
 gesprekken om uiteenlopende context te voorkomen. De Control UI en TUI tonen altijd de
-door de Gateway ondersteunde sessietranscriptie, dus zij zijn de bron van waarheid.
+door de Gateway ondersteunde sessietranscriptie, dus die zijn de bron van waarheid.
 
 Details: [Sessiebeheer](/nl/concepts/session).
 
 ## Metadata van toolresultaten
 
-Toolresultaat `content` is het model-zichtbare resultaat. Toolresultaat `details` is
-runtime-metadata voor UI-rendering, diagnostiek, medialevering en Plugins.
+Toolresultaat `content` is het modelzichtbare resultaat. Toolresultaat `details` is
+runtime-metadata voor UI-rendering, diagnostiek, medialevering en plugins.
 
 OpenClaw houdt die grens expliciet:
 
-- `toolResult.details` wordt verwijderd voor provider-replay en Compaction-invoer.
-- Bewaarde sessietranscripties houden alleen begrensde `details`; te grote metadata
+- `toolResult.details` wordt verwijderd vóór providerreplay en Compaction-invoer.
+- Blijvend opgeslagen sessietranscripties bewaren alleen begrensde `details`; te grote metadata
   wordt vervangen door een compacte samenvatting gemarkeerd met `persistedDetailsTruncated: true`.
 - Plugins en tools moeten tekst die het model moet lezen in `content` zetten, niet alleen
   in `details`.
@@ -100,7 +100,7 @@ OpenClaw houdt die grens expliciet:
 
 OpenClaw scheidt de **promptbody** van de **commandobody**:
 
-- `Body`: prompttekst die naar de agent wordt gestuurd. Dit kan kanaal-enveloppen en
+- `Body`: prompttekst die naar de agent wordt verzonden. Dit kan kanaalenveloppen en
   optionele geschiedeniswrappers bevatten.
 - `CommandBody`: ruwe gebruikerstekst voor directive-/commandoparsing.
 - `RawBody`: legacy-alias voor `CommandBody` (behouden voor compatibiliteit).
@@ -110,105 +110,105 @@ Wanneer een kanaal geschiedenis aanlevert, gebruikt het een gedeelde wrapper:
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-Voor **niet-directe chats** (groepen/kanalen/rooms) krijgt de **huidige berichtbody** het
-afzenderlabel als prefix (dezelfde stijl die wordt gebruikt voor geschiedenisitems). Dit houdt real-time en in de wachtrij geplaatste/geschiedenis-
+Voor **niet-directe chats** (groepen/kanalen/ruimtes) wordt de **huidige berichtbody** voorafgegaan door het
+afzenderlabel (dezelfde stijl als voor geschiedenisitems). Dit houdt realtime en in wachtrij geplaatste/geschiedenis-
 berichten consistent in de agentprompt.
 
-Geschiedenisbuffers zijn **alleen pending**: ze bevatten groepsberichten die _geen_
-run hebben getriggerd (bijvoorbeeld mention-gated berichten) en **sluiten** berichten uit
+Geschiedenisbuffers zijn **alleen in behandeling**: ze bevatten groepsberichten die _geen_
+run hebben gestart (bijvoorbeeld berichten die door mentions werden geblokkeerd) en **sluiten** berichten uit
 die al in de sessietranscriptie staan.
 
-Directive-stripping geldt alleen voor de sectie **huidig bericht**, zodat geschiedenis
+Directive-stripping geldt alleen voor het gedeelte **huidig bericht**, zodat geschiedenis
 intact blijft. Kanalen die geschiedenis wrappen, moeten `CommandBody` (of
 `RawBody`) instellen op de oorspronkelijke berichttekst en `Body` als de gecombineerde prompt behouden.
 Geschiedenisbuffers zijn configureerbaar via `messages.groupChat.historyLimit` (globale
 standaard) en overrides per kanaal zoals `channels.slack.historyLimit` of
 `channels.telegram.accounts.<id>.historyLimit` (stel `0` in om uit te schakelen).
 
-## Wachtrijvorming en follow-ups
+## Wachtrijplaatsing en follow-ups
 
-Als er al een run actief is, kunnen inkomende berichten in de wachtrij worden geplaatst, in de
+Als er al een run actief is, kunnen inkomende berichten in de wachtrij worden geplaatst, naar de
 huidige run worden gestuurd, of worden verzameld voor een follow-upbeurt.
 
 - Configureer via `messages.queue` (en `messages.queue.byChannel`).
-- De standaardmodus is `steer`, met een follow-updebounce van 500 ms wanneer sturen
-  terugvalt op levering als follow-up in de wachtrij.
+- De standaardmodus is `steer`, met een follow-updebounce van 500 ms wanneer sturen terugvalt
+  op aflevering als follow-up in de wachtrij.
 - Modi: `steer`, `followup`, `collect`, `steer-backlog`, `interrupt`, en de
-  legacy-alias `queue`.
+  legacy een-voor-een `queue`-modus.
 
-Details: [Commandowachtrij](/nl/concepts/queue).
+Details: [Commandowachtrij](/nl/concepts/queue) en [Sturingswachtrij](/nl/concepts/queue-steering).
 
 ## Eigenaarschap van kanaalruns
 
-Kanaal-Plugins kunnen ordening behouden, input debouncen en transport-
-backpressure toepassen voordat een bericht de sessiewachtrij ingaat. Ze mogen geen
-afzonderlijke timeout rond de agent-beurt zelf opleggen. Zodra een bericht naar een
-sessie is gerouteerd, wordt langlopende verwerking beheerd door de lifecycle van sessie, tool en runtime,
+Kanaalplugins kunnen volgorde behouden, invoer debouncen en transport-
+backpressure toepassen voordat een bericht de sessiewachtrij binnenkomt. Ze mogen geen
+afzonderlijke timeout rond de agentbeurt zelf afdwingen. Zodra een bericht naar een
+sessie is gerouteerd, wordt langlopende verwerking beheerd door de levenscyclus van sessie, tool en runtime,
 zodat alle kanalen trage beurten consistent rapporteren en herstellen.
 
-## Streaming, opdelen in chunks en batching
+## Streaming, chunking en batching
 
-Blokstreaming stuurt gedeeltelijke antwoorden terwijl het model tekstblokken produceert.
-Opdelen in chunks respecteert tekstlimieten van kanalen en voorkomt het splitsen van fenced code.
+Blokstreaming verzendt gedeeltelijke antwoorden terwijl het model tekstblokken produceert.
+Chunking respecteert tekstlimieten van kanalen en voorkomt splitsing van fenced code.
 
 Belangrijke instellingen:
 
 - `agents.defaults.blockStreamingDefault` (`on|off`, standaard uit)
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
-- `agents.defaults.blockStreamingCoalesce` (idle-gebaseerde batching)
+- `agents.defaults.blockStreamingCoalesce` (op inactiviteit gebaseerde batching)
 - `agents.defaults.humanDelay` (mensachtige pauze tussen blokantwoorden)
 - Kanaaloverrides: `*.blockStreaming` en `*.blockStreamingCoalesce` (niet-Telegram-kanalen vereisen expliciet `*.blockStreaming: true`)
 
-Details: [Streaming + opdelen in chunks](/nl/concepts/streaming).
+Details: [Streaming + chunking](/nl/concepts/streaming).
 
-## Zichtbaarheid van redenering en tokens
+## Zichtbaarheid van redenatie en tokens
 
-OpenClaw kan modelredenering tonen of verbergen:
+OpenClaw kan modelredenatie tonen of verbergen:
 
-- `/reasoning on|off|stream` regelt de zichtbaarheid.
-- Redeneringsinhoud telt nog steeds mee voor tokengebruik wanneer die door het model wordt geproduceerd.
-- Telegram ondersteunt reasoning-stream naar de conceptballon.
+- `/reasoning on|off|stream` regelt zichtbaarheid.
+- Redenatiecontent telt nog steeds mee voor tokengebruik wanneer die door het model wordt geproduceerd.
+- Telegram ondersteunt een redenatiestream naar de conceptballon.
 
-Details: [Denk- + redeneringsdirectives](/nl/tools/thinking) en [Tokengebruik](/nl/reference/token-use).
+Details: [Denk- + redenatiedirectives](/nl/tools/thinking) en [Tokengebruik](/nl/reference/token-use).
 
 ## Prefixes, threading en antwoorden
 
 Opmaak van uitgaande berichten is gecentraliseerd in `messages`:
 
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix`, en `channels.<channel>.accounts.<id>.responsePrefix` (cascade voor uitgaande prefixes), plus `channels.whatsapp.messagePrefix` (inkomende prefix voor WhatsApp)
-- Antwoord-threading via `replyToMode` en kanaalspecifieke standaarden
+- `messages.responsePrefix`, `channels.<channel>.responsePrefix` en `channels.<channel>.accounts.<id>.responsePrefix` (cascade voor uitgaande prefixes), plus `channels.whatsapp.messagePrefix` (WhatsApp-prefix voor inkomende berichten)
+- Antwoordthreading via `replyToMode` en standaarden per kanaal
 
 Details: [Configuratie](/nl/gateway/config-agents#messages) en kanaaldocumentatie.
 
 ## Stille antwoorden
 
-Het exacte stille token `NO_REPLY` / `no_reply` betekent "lever geen zichtbaar antwoord aan de gebruiker".
-Wanneer een beurt ook pending toolmedia heeft, zoals gegenereerde TTS-audio, verwijdert OpenClaw
-de stille tekst maar levert het nog steeds de mediabijlage.
-OpenClaw lost dat gedrag op per gesprekstype:
+Het exacte stille token `NO_REPLY` / `no_reply` betekent “lever geen voor de gebruiker zichtbaar antwoord af”.
+Wanneer een beurt ook in behandeling zijnde toolmedia heeft, zoals gegenereerde TTS-audio, verwijdert OpenClaw
+de stille tekst maar levert het nog steeds de mediabijlage af.
+OpenClaw bepaalt dat gedrag op basis van gesprekstype:
 
 - Directe gesprekken staan stilte standaard niet toe en herschrijven een kaal stil
-  antwoord naar een kort zichtbaar fallbackantwoord.
+  antwoord naar een korte zichtbare fallback.
 - Groepen/kanalen staan stilte standaard toe.
 - Interne orkestratie staat stilte standaard toe.
 
-OpenClaw gebruikt stille antwoorden ook voor interne runner-fouten die optreden
-voor een assistentantwoord in niet-directe chats, zodat groepen/kanalen geen
-Gateway-foutboilerplate zien. Directe chats tonen standaard compacte fouttekst;
+OpenClaw gebruikt stille antwoorden ook voor interne runnerfouten die optreden
+vóór enig assistentantwoord in niet-directe chats, zodat groepen/kanalen geen
+standaard Gateway-fouttekst zien. Directe chats tonen standaard compacte fouttekst;
 ruwe runnerdetails worden alleen getoond wanneer `/verbose` `on` of `full` is.
 
 Standaarden staan onder `agents.defaults.silentReply` en
 `agents.defaults.silentReplyRewrite`; `surfaces.<id>.silentReply` en
-`surfaces.<id>.silentReplyRewrite` kunnen ze per surface overriden.
+`surfaces.<id>.silentReplyRewrite` kunnen ze per oppervlak overriden.
 
-Wanneer de bovenliggende sessie een of meer pending gespawnde subagent-runs heeft, worden kale
-stille antwoorden op alle surfaces gedropt in plaats van herschreven, zodat de
-bovenliggende sessie stil blijft totdat de voltooiingsgebeurtenis van het kind het echte antwoord levert.
+Wanneer de bovenliggende sessie een of meer in behandeling zijnde gespawnde subagentruns heeft, worden kale
+stille antwoorden op alle oppervlakken verwijderd in plaats van herschreven, zodat de
+bovenliggende sessie stil blijft totdat de voltooiingsgebeurtenis van de child het echte antwoord aflevert.
 
 ## Gerelateerd
 
-- [Streaming](/nl/concepts/streaming) — real-time berichtlevering
-- [Opnieuw proberen](/nl/concepts/retry) — retry-gedrag voor berichtlevering
+- [Streaming](/nl/concepts/streaming) — realtime berichtaflevering
+- [Opnieuw proberen](/nl/concepts/retry) — retrygedrag voor berichtaflevering
 - [Wachtrij](/nl/concepts/queue) — wachtrij voor berichtverwerking
-- [Kanalen](/nl/channels) — integraties met messagingplatforms
+- [Kanalen](/nl/channels) — integraties met berichtenplatforms
