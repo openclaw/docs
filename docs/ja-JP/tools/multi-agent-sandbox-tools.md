@@ -2,33 +2,33 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: エージェントごとのサンドボックス + ツール制限、優先順位、および例
+summary: エージェントごとのサンドボックスとツール制限、優先順位、例
 title: マルチエージェントのサンドボックスとツール
 x-i18n:
-    generated_at: "2026-04-26T11:42:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:38:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8b8d24252b03dbcd00a5eefcc8e58bd51577a99ae057008f19a0acc4016413ea
+    source_hash: eedb36301f670bcd8956dbeb81788acfc96627e39401e34434c2348fcb10f155
     source_path: tools/multi-agent-sandbox-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-マルチエージェント構成では、各エージェントがグローバルのサンドボックスおよびツールポリシーを上書きできます。このページでは、エージェントごとの設定、優先順位ルール、および例を説明します。
+マルチエージェント構成の各エージェントは、グローバルなサンドボックスとツールポリシーを上書きできます。このページでは、エージェントごとの設定、優先順位ルール、例を説明します。
 
 <CardGroup cols={3}>
-  <Card title="Sandboxing" href="/ja-JP/gateway/sandboxing">
-    バックエンドとモード — 完全なサンドボックスリファレンス。
+  <Card title="サンドボックス化" href="/ja-JP/gateway/sandboxing">
+    バックエンドとモード — サンドボックスの完全なリファレンス。
   </Card>
-  <Card title="Sandbox vs tool policy vs elevated" href="/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated">
-    「なぜこれがブロックされるのか？」をデバッグします。
+  <Card title="サンドボックス、ツールポリシー、昇格の違い" href="/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated">
+    「なぜこれはブロックされるのか」をデバッグする。
   </Card>
-  <Card title="Elevated mode" href="/ja-JP/tools/elevated">
-    信頼された送信元向けの Elevated exec。
+  <Card title="昇格モード" href="/ja-JP/tools/elevated">
+    信頼済み送信者向けの昇格 exec。
   </Card>
 </CardGroup>
 
 <Warning>
-認証はエージェントごとです。各エージェントは `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` にある自身の `agentDir` 認証ストアを読み込みます。認証情報はエージェント間で**共有されません**。`agentDir` を複数のエージェントで再利用しないでください。認証情報を共有したい場合は、`auth-profiles.json` を別のエージェントの `agentDir` にコピーしてください。
+認証はエージェント単位でスコープされます。各エージェントには、`~/.openclaw/agents/<agentId>/agent/auth-profiles.json` にある独自の `agentDir` 認証ストアがあります。エージェント間で `agentDir` を再利用しないでください。エージェントはローカルプロファイルがない場合、デフォルト/メインエージェントの認証プロファイルを読み取れますが、OAuth リフレッシュトークンはセカンダリエージェントのストアには複製されません。認証情報を手動でコピーする場合は、移植可能な静的 `api_key` または `token` プロファイルのみをコピーしてください。
 </Warning>
 
 ---
@@ -36,7 +36,7 @@ x-i18n:
 ## 設定例
 
 <AccordionGroup>
-  <Accordion title="例 1: Personal + 制限付き family agent">
+  <Accordion title="例 1: 個人用 + 制限付きファミリーエージェント">
     ```json
     {
       "agents": {
@@ -81,11 +81,11 @@ x-i18n:
 
     **結果:**
 
-    - `main` agent: ホスト上で実行、全ツールにアクセス可能。
-    - `family` agent: Docker で実行（エージェントごとに 1 コンテナ）、`read` ツールのみ。
+    - `main` エージェント: ホスト上で実行され、すべてのツールにアクセスできます。
+    - `family` エージェント: Docker で実行され（エージェントごとに 1 コンテナ）、`read` ツールのみを使用できます。
 
   </Accordion>
-  <Accordion title="例 2: 共有サンドボックスを使う work agent">
+  <Accordion title="例 2: 共有サンドボックスを使う仕事用エージェント">
     ```json
     {
       "agents": {
@@ -113,7 +113,7 @@ x-i18n:
     }
     ```
   </Accordion>
-  <Accordion title="例 2b: グローバル coding profile + messaging-only agent">
+  <Accordion title="例 2b: グローバルなコーディングプロファイル + メッセージ専用エージェント">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -130,8 +130,8 @@ x-i18n:
 
     **結果:**
 
-    - デフォルトエージェントは coding tools を取得します。
-    - `support` agent は messaging-only（+ Slack tool）です。
+    - デフォルトのエージェントはコーディングツールを取得します。
+    - `support` エージェントはメッセージ専用です（+ Slack ツール）。
 
   </Accordion>
   <Accordion title="例 3: エージェントごとに異なるサンドボックスモード">
@@ -175,11 +175,11 @@ x-i18n:
 
 ## 設定の優先順位
 
-グローバル（`agents.defaults.*`）とエージェント固有（`agents.list[].*`）の設定が両方存在する場合:
+グローバル設定（`agents.defaults.*`）とエージェント固有設定（`agents.list[].*`）の両方が存在する場合:
 
 ### サンドボックス設定
 
-エージェント固有の設定がグローバルを上書きします:
+エージェント固有の設定はグローバル設定を上書きします。
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -192,30 +192,30 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-`agents.list[].sandbox.{docker,browser,prune}.*` は、そのエージェントについて `agents.defaults.sandbox.{docker,browser,prune}.*` を上書きします（サンドボックス scope が `"shared"` に解決される場合は無視されます）。
+`agents.list[].sandbox.{docker,browser,prune}.*` は、そのエージェントの `agents.defaults.sandbox.{docker,browser,prune}.*` を上書きします（サンドボックススコープが `"shared"` に解決される場合は無視されます）。
 </Note>
 
 ### ツール制限
 
-フィルタリング順序は次のとおりです:
+フィルタリング順序は次のとおりです。
 
 <Steps>
   <Step title="ツールプロファイル">
     `tools.profile` または `agents.list[].tools.profile`。
   </Step>
-  <Step title="provider ツールプロファイル">
+  <Step title="プロバイダーツールプロファイル">
     `tools.byProvider[provider].profile` または `agents.list[].tools.byProvider[provider].profile`。
   </Step>
   <Step title="グローバルツールポリシー">
     `tools.allow` / `tools.deny`。
   </Step>
-  <Step title="provider ツールポリシー">
+  <Step title="プロバイダーツールポリシー">
     `tools.byProvider[provider].allow/deny`。
   </Step>
-  <Step title="エージェント固有のツールポリシー">
+  <Step title="エージェント固有ツールポリシー">
     `agents.list[].tools.allow/deny`。
   </Step>
-  <Step title="エージェント provider ポリシー">
+  <Step title="エージェントプロバイダーポリシー">
     `agents.list[].tools.byProvider[provider].allow/deny`。
   </Step>
   <Step title="サンドボックスツールポリシー">
@@ -228,27 +228,27 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 <AccordionGroup>
   <Accordion title="優先順位ルール">
-    - 各レベルでさらにツールを制限できますが、前のレベルで拒否されたツールを再び許可することはできません。
+    - 各レベルはツールをさらに制限できますが、前のレベルで拒否されたツールを再度許可することはできません。
     - `agents.list[].tools.sandbox.tools` が設定されている場合、そのエージェントでは `tools.sandbox.tools` を置き換えます。
     - `agents.list[].tools.profile` が設定されている場合、そのエージェントでは `tools.profile` を上書きします。
-    - provider ツールキーは、`provider`（例: `google-antigravity`）または `provider/model`（例: `openai/gpt-5.4`）のどちらも受け付けます。
+    - プロバイダーツールキーは、`provider`（例: `google-antigravity`）または `provider/model`（例: `openai/gpt-5.4`）のどちらも受け付けます。
 
   </Accordion>
-  <Accordion title="空の allowlist の挙動">
-    そのチェーン内の明示的な allowlist によって呼び出し可能なツールが 1 つも残らなくなった場合、OpenClaw はモデルに prompt を送信する前に停止します。これは意図的な動作です。たとえば `agents.list[].tools.allow: ["query_db"]` のように未登録ツールが設定されたエージェントは、`query_db` を登録する plugin が有効になるまで、テキスト専用エージェントとして継続するのではなく、明確に失敗するべきだからです。
+  <Accordion title="空の許可リストの動作">
+    そのチェーン内の明示的な許可リストのいずれかによって、実行で呼び出し可能なツールがなくなった場合、OpenClaw はプロンプトをモデルに送信する前に停止します。これは意図的です。`agents.list[].tools.allow: ["query_db"]` のように存在しないツールで設定されたエージェントは、`query_db` を登録する Plugin が有効になるまで明示的に失敗するべきであり、テキスト専用エージェントとして継続するべきではありません。
   </Accordion>
 </AccordionGroup>
 
-ツールポリシーは、複数のツールに展開される `group:*` の短縮記法をサポートします。完全な一覧は [Tool groups](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) を参照してください。
+ツールポリシーは、複数のツールに展開される `group:*` 省略形をサポートします。完全な一覧は [ツールグループ](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) を参照してください。
 
-エージェントごとの Elevated 上書き（`agents.list[].tools.elevated`）は、特定のエージェントに対する Elevated exec をさらに制限できます。詳細は [Elevated mode](/ja-JP/tools/elevated) を参照してください。
+エージェントごとの昇格上書き（`agents.list[].tools.elevated`）は、特定のエージェントの昇格 exec をさらに制限できます。詳細は [昇格モード](/ja-JP/tools/elevated) を参照してください。
 
 ---
 
 ## 単一エージェントからの移行
 
 <Tabs>
-  <Tab title="Before（単一エージェント）">
+  <Tab title="移行前（単一エージェント）">
     ```json
     {
       "agents": {
@@ -270,7 +270,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
   </Tab>
-  <Tab title="After（マルチエージェント）">
+  <Tab title="移行後（マルチエージェント）">
     ```json
     {
       "agents": {
@@ -289,7 +289,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 </Tabs>
 
 <Note>
-レガシーな `agent.*` 設定は `openclaw doctor` によって移行されます。今後は `agents.defaults` + `agents.list` を優先してください。
+従来の `agent.*` 設定は `openclaw doctor` によって移行されます。今後は `agents.defaults` + `agents.list` を優先してください。
 </Note>
 
 ---
@@ -328,17 +328,17 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
 
-    このプロファイルの `sessions_history` は、依然として生の transcript ダンプではなく、境界付きでサニタイズされたリコールビューを返します。アシスタントのリコールでは、thinking tags、`<relevant-memories>` の足場、プレーンテキストの tool-call XML payloads（`<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`、および切り詰められた tool-call blocks を含む）、格下げされた tool-call scaffolding、漏洩した ASCII / 全角のモデル制御トークン、および不正な MiniMax tool-call XML が、redaction / truncation の前に取り除かれます。
+    このプロファイルの `sessions_history` は、生のトランスクリプトダンプではなく、境界付きでサニタイズされたリコールビューを返します。アシスタントのリコールは、思考タグ、`<relevant-memories>` の足場、プレーンテキストのツール呼び出し XML ペイロード（`<tool_call>...</tool_call>`、`<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、`<function_calls>...</function_calls>`、および切り詰められたツール呼び出しブロックを含む）、格下げされたツール呼び出しの足場、漏えいした ASCII/全角のモデル制御トークン、不正な MiniMax ツール呼び出し XML を、墨消し/切り詰めの前に取り除きます。
 
   </Tab>
 </Tabs>
 
 ---
 
-## よくある落とし穴: 「non-main」
+## よくある落とし穴: "non-main"
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` は、agent id ではなく `session.mainKey`（デフォルトは `"main"`）に基づきます。グループ / チャネルのセッションは常に独自のキーを持つため、non-main として扱われ、サンドボックス化されます。エージェントを絶対にサンドボックス化したくない場合は、`agents.list[].sandbox.mode: "off"` を設定してください。
+`agents.defaults.sandbox.mode: "non-main"` は、エージェント ID ではなく `session.mainKey`（デフォルトは `"main"`）に基づきます。グループ/チャンネルセッションは常に独自のキーを取得するため、非メインとして扱われ、サンドボックス化されます。エージェントを絶対にサンドボックス化したくない場合は、`agents.list[].sandbox.mode: "off"` を設定してください。
 </Warning>
 
 ---
@@ -348,22 +348,22 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 マルチエージェントのサンドボックスとツールを設定した後:
 
 <Steps>
-  <Step title="エージェント解決を確認">
+  <Step title="エージェント解決を確認する">
     ```bash
     openclaw agents list --bindings
     ```
   </Step>
-  <Step title="サンドボックスコンテナを確認">
+  <Step title="サンドボックスコンテナを検証する">
     ```bash
     docker ps --filter "name=openclaw-sbx-"
     ```
   </Step>
-  <Step title="ツール制限をテスト">
-    - 制限されたツールを必要とするメッセージを送信します。
-    - エージェントが拒否されたツールを使えないことを確認します。
+  <Step title="ツール制限をテストする">
+    - 制限対象ツールが必要なメッセージを送信します。
+    - エージェントが拒否されたツールを使用できないことを確認します。
 
   </Step>
-  <Step title="ログを監視">
+  <Step title="ログを監視する">
     ```bash
     tail -f "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log" | grep -E "routing|sandbox|tools"
     ```
@@ -375,19 +375,19 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## トラブルシューティング
 
 <AccordionGroup>
-  <Accordion title="`mode: 'all'` なのにエージェントがサンドボックス化されない">
-    - それを上書きするグローバルな `agents.defaults.sandbox.mode` がないか確認してください。
-    - エージェント固有の設定が優先されるため、`agents.list[].sandbox.mode: "all"` を設定してください。
+  <Accordion title="`mode: 'all'` でもエージェントがサンドボックス化されない">
+    - それを上書きするグローバルな `agents.defaults.sandbox.mode` がないか確認します。
+    - エージェント固有設定が優先されるため、`agents.list[].sandbox.mode: "all"` を設定します。
 
   </Accordion>
-  <Accordion title="deny list があるのにツールがまだ利用可能">
-    - ツールのフィルタリング順序を確認してください: global → agent → sandbox → subagent。
-    - 各レベルは、再許可ではなく追加制限のみ可能です。
-    - ログ `[tools] filtering tools for agent:${agentId}` で確認してください。
+  <Accordion title="拒否リストがあるのにツールがまだ利用できる">
+    - ツールのフィルタリング順序を確認します: グローバル → エージェント → サンドボックス → サブエージェント。
+    - 各レベルはさらに制限することだけができ、再度許可することはできません。
+    - ログで確認します: `[tools] filtering tools for agent:${agentId}`。
 
   </Accordion>
-  <Accordion title="コンテナがエージェントごとに分離されない">
-    - エージェント固有のサンドボックス設定で `scope: "agent"` を設定してください。
+  <Accordion title="コンテナがエージェントごとに分離されていない">
+    - エージェント固有のサンドボックス設定で `scope: "agent"` を設定します。
     - デフォルトは `"session"` で、セッションごとに 1 つのコンテナを作成します。
 
   </Accordion>
@@ -395,11 +395,11 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 ---
 
-## 関連
+## 関連項目
 
-- [Elevated mode](/ja-JP/tools/elevated)
-- [Multi-agent routing](/ja-JP/concepts/multi-agent)
-- [Sandbox configuration](/ja-JP/gateway/config-agents#agentsdefaultssandbox)
-- [Sandbox vs tool policy vs elevated](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated) — 「なぜこれがブロックされるのか？」のデバッグ
-- [Sandboxing](/ja-JP/gateway/sandboxing) — 完全なサンドボックスリファレンス（モード、scope、バックエンド、イメージ）
-- [Session management](/ja-JP/concepts/session)
+- [昇格モード](/ja-JP/tools/elevated)
+- [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
+- [サンドボックス設定](/ja-JP/gateway/config-agents#agentsdefaultssandbox)
+- [サンドボックス、ツールポリシー、昇格の違い](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated) — 「なぜこれはブロックされるのか」のデバッグ
+- [サンドボックス化](/ja-JP/gateway/sandboxing) — サンドボックスの完全なリファレンス（モード、スコープ、バックエンド、イメージ）
+- [セッション管理](/ja-JP/concepts/session)

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - ペアリングされたNode（camera、canvas、screen）を管理している場合
-    - リクエストを承認したり、Nodeコマンドを呼び出したりする必要がある場合
-summary: '`openclaw nodes`のCLIリファレンス（ステータス、ペアリング、呼び出し、camera/canvas/screen）'
-title: Node
+    - ペアリング済みノード（カメラ、画面、キャンバス）を管理しています
+    - リクエストを承認するか、node コマンドを実行する必要があります
+summary: '`openclaw nodes` の CLI リファレンス（status、pairing、invoke、camera/canvas/screen）'
+title: ノード
 x-i18n:
-    generated_at: "2026-04-25T13:44:41Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:05:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 68a5701ce0dcba399d93f6eed864b0b0ae34320501de0176aeaad1712d392834
+    source_hash: 3229db91d7e64b0d37bee29bd51895d90796f5fd33b67e3d900fd8bda2b6e7e9
     source_path: cli/nodes.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw nodes`
 
-ペアリングされたNode（デバイス）を管理し、Node機能を呼び出します。
+ペアリング済みノード（デバイス）を管理し、ノード機能を呼び出します。
 
 関連:
 
-- Node概要: [Nodes](/ja-JP/nodes)
-- Camera: [Camera nodes](/ja-JP/nodes/camera)
-- 画像: [Image nodes](/ja-JP/nodes/images)
+- ノード概要: [ノード](/ja-JP/nodes)
+- カメラ: [カメラノード](/ja-JP/nodes/camera)
+- 画像: [画像ノード](/ja-JP/nodes/images)
 
 共通オプション:
 
-- `--url`、`--token`、`--timeout`、`--json`
+- `--url`, `--token`, `--timeout`, `--json`
 
 ## 共通コマンド
 
@@ -36,23 +36,28 @@ openclaw nodes list --last-connected 24h
 openclaw nodes pending
 openclaw nodes approve <requestId>
 openclaw nodes reject <requestId>
+openclaw nodes remove --node <id|name|ip>
 openclaw nodes rename --node <id|name|ip> --name <displayName>
 openclaw nodes status
 openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list`は保留中/ペアリング済みの表を表示します。ペアリング済みの行には、直近の接続経過時間（Last Connect）が含まれます。
-現在接続中のNodeだけを表示するには`--connected`を使用します。一定期間内に接続したNodeだけに絞るには`--last-connected <duration>`を使用します（例: `24h`、`7d`）。
+`nodes list` は保留中/ペアリング済みのテーブルを出力します。ペアリング済み行には、直近の接続からの経過時間（最終接続）が含まれます。
+現在接続中のノードのみを表示するには `--connected` を使用します。一定期間内（例: `24h`, `7d`）に接続したノードに
+絞り込むには `--last-connected <duration>` を使用します。
+古くなった Gateway 所有のノードペアリング記録を削除するには、`nodes remove --node <id|name|ip>` を使用します。
 
-承認に関する注記:
+承認に関する注意:
 
-- `openclaw nodes pending`に必要なのはpairingスコープのみです。
-- `gateway.nodes.pairing.autoApproveCidrs`は、明示的に信頼された初回`role: node`デバイスペアリングに対してのみ、保留ステップをスキップできます。これはデフォルトでは無効で、アップグレードは承認しません。
-- `openclaw nodes approve <requestId>`は、保留中リクエストから追加のスコープ要件を引き継ぎます:
-  - コマンドなしリクエスト: pairingのみ
-  - 非execのNodeコマンド: pairing + write
-  - `system.run` / `system.run.prepare` / `system.which`: pairing + admin
+- `openclaw nodes pending` に必要なのはペアリングスコープのみです。
+- `gateway.nodes.pairing.autoApproveCidrs` は、明示的に信頼された初回の `role: node` デバイスペアリングに限り、
+  保留中ステップを省略できます。これはデフォルトではオフであり、
+  アップグレードは承認しません。
+- `openclaw nodes approve <requestId>` は、保留中リクエストから追加のスコープ要件を継承します:
+  - コマンドなしリクエスト: ペアリングのみ
+  - exec 以外のノードコマンド: ペアリング + 書き込み
+  - `system.run` / `system.run.prepare` / `system.which`: ペアリング + 管理者
 
 ## 呼び出し
 
@@ -62,16 +67,16 @@ openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 
 呼び出しフラグ:
 
-- `--params <json>`: JSONオブジェクト文字列（デフォルトは`{}`）。
-- `--invoke-timeout <ms>`: Node呼び出しタイムアウト（デフォルトは`15000`）。
+- `--params <json>`: JSON オブジェクト文字列（デフォルト `{}`）。
+- `--invoke-timeout <ms>`: ノード呼び出しタイムアウト（デフォルト `15000`）。
 - `--idempotency-key <key>`: 任意の冪等性キー。
-- `system.run`と`system.run.prepare`はここではブロックされます。シェル実行には`host=node`付きの`exec`ツールを使用してください。
+- `system.run` と `system.run.prepare` はここではブロックされます。シェル実行には、`host=node` 付きの `exec` ツールを使用してください。
 
-Node上でシェル実行するには、`openclaw nodes run`の代わりに`host=node`付きの`exec`ツールを使用してください。
-`nodes` CLIは現在、機能重視です: `nodes invoke`による直接RPCに加え、pairing、camera、
-screen、location、canvas、notificationsに対応します。
+ノード上でシェル実行を行うには、`openclaw nodes run` ではなく、`host=node` 付きの `exec` ツールを使用してください。
+`nodes` CLI は現在、機能中心です。`nodes invoke` による直接 RPC に加えて、ペアリング、カメラ、
+画面、位置情報、キャンバス、通知を扱います。
 
 ## 関連
 
-- [CLI reference](/ja-JP/cli)
-- [Nodes](/ja-JP/nodes)
+- [CLI リファレンス](/ja-JP/cli)
+- [ノード](/ja-JP/nodes)

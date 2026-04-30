@@ -1,132 +1,131 @@
 ---
 read_when:
-    - '`openclaw security audit` の出力で特定の `checkId` を見かけ、その意味を知りたい'
-    - 特定の検出結果に対応する修正キー/パスが必要です
-    - セキュリティ監査実行全体で重大度をトリアージしている
-summary: '`openclaw security audit` が出力する checkId のリファレンスカタログ'
+    - '`openclaw security audit` の出力で特定の `checkId` を見かけ、それが何を意味するのか知りたい場合'
+    - 特定の検出結果に対する修正キー/パスが必要です
+    - セキュリティ監査の実行全体で重大度をトリアージしています
+summary: openclaw security audit によって出力される checkIds のリファレンスカタログ
 title: セキュリティ監査チェック
 x-i18n:
-    generated_at: "2026-04-26T11:31:39Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:16:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7a5463bd1cec8382eb480cbbe1d8f8cceef0c15efc1f9124990df1e8f70b209a
+    source_hash: f8e864a557f93dccea01bb1232588d9a1f276455ea01c23b5b278e0aa3222824
     source_path: gateway/security/audit-checks.md
-    workflow: 15
+    workflow: 16
 ---
 
-`openclaw security audit` は、`checkId` をキーとする構造化された検出結果を出力します。このページは、それらのIDのリファレンスカタログです。高レベルの脅威モデルとハードニングガイダンスについては、[Security](/ja-JP/gateway/security) を参照してください。
+`openclaw security audit` は、`checkId` をキーとする構造化された検出事項を出力します。この
+ページは、それらの ID のリファレンスカタログです。高レベルの脅威モデルと
+堅牢化ガイダンスについては、[セキュリティ](/ja-JP/gateway/security)を参照してください。
 
-実運用で遭遇する可能性が高い高シグナルな `checkId` 値（網羅的ではありません）:
+実際のデプロイで最も目にする可能性が高い、高シグナルの `checkId` 値（網羅的ではありません）:
 
-| `checkId`                                                     | 重大度 | 重要な理由 | 主な修正キー/パス | 自動修正 |
+| `checkId`                                                     | 重大度        | 重要な理由                                                                           | 主な修正キー/パス                                                                                   | 自動修正 |
 | ------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | -------- |
-| `fs.state_dir.perms_world_writable`                           | critical      | 他のユーザー/プロセスがOpenClawの状態全体を変更できる | `~/.openclaw` のファイルシステム権限 | yes      |
-| `fs.state_dir.perms_group_writable`                           | warn          | グループユーザーがOpenClawの状態全体を変更できる | `~/.openclaw` のファイルシステム権限 | yes      |
-| `fs.state_dir.perms_readable`                                 | warn          | state dir が他者から読み取り可能 | `~/.openclaw` のファイルシステム権限 | yes      |
-| `fs.state_dir.symlink`                                        | warn          | state dir のターゲットが別の信頼境界になる | state dir のファイルシステムレイアウト | no       |
-| `fs.config.perms_writable`                                    | critical      | 他者が認証/ツールポリシー/config を変更できる | `~/.openclaw/openclaw.json` のファイルシステム権限 | yes      |
-| `fs.config.symlink`                                           | warn          | symlink されたconfigファイルは書き込みで未対応であり、別の信頼境界を追加する | 通常のconfigファイルに置き換えるか、`OPENCLAW_CONFIG_PATH` を実ファイルに向ける | no       |
-| `fs.config.perms_group_readable`                              | warn          | グループユーザーがconfigのtokens/settings を読める | configファイルのファイルシステム権限 | yes      |
-| `fs.config.perms_world_readable`                              | critical      | config がtokens/settings を露出する可能性がある | configファイルのファイルシステム権限 | yes      |
-| `fs.config_include.perms_writable`                            | critical      | config include ファイルを他者が変更できる | `openclaw.json` から参照されるincludeファイルの権限 | yes      |
-| `fs.config_include.perms_group_readable`                      | warn          | グループユーザーがincludeされたsecrets/settings を読める | `openclaw.json` から参照されるincludeファイルの権限 | yes      |
-| `fs.config_include.perms_world_readable`                      | critical      | includeされたsecrets/settings が全員から読み取り可能 | `openclaw.json` から参照されるincludeファイルの権限 | yes      |
-| `fs.auth_profiles.perms_writable`                             | critical      | 他者が保存済みモデルcredentials を注入または置換できる | `agents/<agentId>/agent/auth-profiles.json` の権限 | yes      |
-| `fs.auth_profiles.perms_readable`                             | warn          | 他者がAPI keys とOAuth tokens を読める | `agents/<agentId>/agent/auth-profiles.json` の権限 | yes      |
-| `fs.credentials_dir.perms_writable`                           | critical      | 他者がチャネルのペアリング/credential 状態を変更できる | `~/.openclaw/credentials` のファイルシステム権限 | yes      |
-| `fs.credentials_dir.perms_readable`                           | warn          | 他者がチャネルcredential 状態を読める | `~/.openclaw/credentials` のファイルシステム権限 | yes      |
-| `fs.sessions_store.perms_readable`                            | warn          | 他者がsession transcript/metadata を読める | session store の権限 | yes      |
-| `fs.log_file.perms_readable`                                  | warn          | 他者が秘匿化済みとはいえ依然として機微性のあるログを読める | gatewayログファイルの権限 | yes      |
-| `fs.synced_dir`                                               | warn          | iCloud/Dropbox/Drive 上のstate/config はtoken/transcript の露出範囲を広げる | config/state を同期フォルダーから移動する | no       |
-| `gateway.bind_no_auth`                                        | critical      | shared secret なしでリモートbind している | `gateway.bind`, `gateway.auth.*` | no       |
-| `gateway.loopback_no_auth`                                    | critical      | リバースプロキシ経由のloopback が無認証になる可能性がある | `gateway.auth.*`, proxy セットアップ | no       |
-| `gateway.trusted_proxies_missing`                             | warn          | リバースプロキシheader は存在するが信頼されていない | `gateway.trustedProxies` | no       |
-| `gateway.http.no_auth`                                        | warn/critical | `auth.mode="none"` で Gateway HTTP API に到達できる | `gateway.auth.mode`, `gateway.http.endpoints.*` | no       |
-| `gateway.http.session_key_override_enabled`                   | info          | HTTP API 呼び出し元が `sessionKey` を上書きできる | `gateway.http.allowSessionKeyOverride` | no       |
-| `gateway.tools_invoke_http.dangerous_allow`                   | warn/critical | HTTP API 経由で危険なツールを再有効化する | `gateway.tools.allow` | no       |
-| `gateway.nodes.allow_commands_dangerous`                      | warn/critical | 高影響の Node コマンド（camera/screen/contacts/calendar/SMS）を有効化する | `gateway.nodes.allowCommands` | no       |
-| `gateway.nodes.deny_commands_ineffective`                     | warn          | パターン風のdenyエントリはshellテキストやグループに一致しない | `gateway.nodes.denyCommands` | no       |
-| `gateway.tailscale_funnel`                                    | critical      | パブリックインターネットに公開される | `gateway.tailscale.mode` | no       |
-| `gateway.tailscale_serve`                                     | info          | Serve によりTailnet への公開が有効 | `gateway.tailscale.mode` | no       |
-| `gateway.control_ui.allowed_origins_required`                 | critical      | 非loopbackのControl UI が明示的なブラウザーorigin許可リストなしで動作している | `gateway.controlUi.allowedOrigins` | no       |
-| `gateway.control_ui.allowed_origins_wildcard`                 | warn/critical | `allowedOrigins=["*"]` によりブラウザーorigin許可リストが無効になる | `gateway.controlUi.allowedOrigins` | no       |
-| `gateway.control_ui.host_header_origin_fallback`              | warn/critical | Host-header origin フォールバックを有効にし（DNS rebinding ハードニングを弱める） | `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback` | no       |
-| `gateway.control_ui.insecure_auth`                            | warn          | insecure-auth 互換トグルが有効 | `gateway.controlUi.allowInsecureAuth` | no       |
-| `gateway.control_ui.device_auth_disabled`                     | critical      | デバイスidentityチェックを無効化する | `gateway.controlUi.dangerouslyDisableDeviceAuth` | no       |
-| `gateway.real_ip_fallback_enabled`                            | warn/critical | `X-Real-IP` フォールバックを信頼すると、proxy の設定ミスで送信元IP詐称が可能になる | `gateway.allowRealIpFallback`, `gateway.trustedProxies` | no       |
-| `gateway.token_too_short`                                     | warn          | 短いshared token は総当たりされやすい | `gateway.auth.token` | no       |
-| `gateway.auth_no_rate_limit`                                  | warn          | レート制限なしの公開認証は総当たりリスクを高める | `gateway.auth.rateLimit` | no       |
-| `gateway.trusted_proxy_auth`                                  | critical      | proxy identity が認証境界になる | `gateway.auth.mode="trusted-proxy"` | no       |
-| `gateway.trusted_proxy_no_proxies`                            | critical      | trusted-proxy 認証で trusted proxy IPs がないのは危険 | `gateway.trustedProxies` | no       |
-| `gateway.trusted_proxy_no_user_header`                        | critical      | trusted-proxy 認証ではユーザーidentity を安全に解決できない | `gateway.auth.trustedProxy.userHeader` | no       |
-| `gateway.trusted_proxy_no_allowlist`                          | warn          | trusted-proxy 認証が認証済みの上流ユーザーを誰でも受け入れる | `gateway.auth.trustedProxy.allowUsers` | no       |
-| `checkId`                                                     | 重大度 | 重要な理由 | 主な修正キー/パス | 自動修正 |
-| ------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | -------- |
-| `gateway.probe_auth_secretref_unavailable`                    | warn          | このコマンド経路では、deep probe が認証 SecretRefs を解決できなかった | deep-probe 認証ソース / SecretRef の可用性 | no       |
-| `gateway.probe_failed`                                        | warn/critical | live Gateway probe が失敗した | gateway の到達性/認証 | no       |
-| `discovery.mdns_full_mode`                                    | warn/critical | mDNS full mode がローカルネットワーク上で `cliPath`/`sshPort` メタデータを通知する | `discovery.mdns.mode`, `gateway.bind` | no       |
-| `config.insecure_or_dangerous_flags`                          | warn          | insecure/dangerous なdebug flags がいずれか有効 | 複数キー（詳細は検出結果を参照） | no       |
-| `config.secrets.gateway_password_in_config`                   | warn          | Gateway password がconfigに直接保存されている | `gateway.auth.password` | no       |
-| `config.secrets.hooks_token_in_config`                        | warn          | Hook bearer token がconfigに直接保存されている | `hooks.token` | no       |
-| `hooks.token_reuse_gateway_token`                             | critical      | Hook ingress token が Gateway 認証も解除してしまう | `hooks.token`, `gateway.auth.token` | no       |
-| `hooks.token_too_short`                                       | warn          | hook ingress で総当たりされやすい | `hooks.token` | no       |
-| `hooks.default_session_key_unset`                             | warn          | Hook エージェント実行が、リクエストごとに生成されるsessionへ分散する | `hooks.defaultSessionKey` | no       |
-| `hooks.allowed_agent_ids_unrestricted`                        | warn/critical | 認証済みhook呼び出し元が、設定済みの任意のエージェントへルーティングできる | `hooks.allowedAgentIds` | no       |
-| `hooks.request_session_key_enabled`                           | warn/critical | 外部呼び出し元が sessionKey を選べる | `hooks.allowRequestSessionKey` | no       |
-| `hooks.request_session_key_prefixes_missing`                  | warn/critical | 外部session key の形に制限がない | `hooks.allowedSessionKeyPrefixes` | no       |
-| `hooks.path_root`                                             | critical      | Hook path が `/` で、ingress が衝突または誤ルーティングしやすい | `hooks.path` | no       |
-| `hooks.installs_unpinned_npm_specs`                           | warn          | Hook インストール記録が不変なnpm specs に固定されていない | hook install metadata | no       |
-| `hooks.installs_missing_integrity`                            | warn          | Hook インストール記録に integrity metadata がない | hook install metadata | no       |
-| `hooks.installs_version_drift`                                | warn          | Hook インストール記録がインストール済みパッケージからずれている | hook install metadata | no       |
-| `logging.redact_off`                                          | warn          | 機微な値がlogs/status に漏れる | `logging.redactSensitive` | yes      |
-| `browser.control_invalid_config`                              | warn          | Browser control config が実行前に無効 | `browser.*` | no       |
-| `browser.control_no_auth`                                     | critical      | Browser control がtoken/password 認証なしで公開されている | `gateway.auth.*` | no       |
-| `browser.remote_cdp_http`                                     | warn          | plain HTTP 上のremote CDP には転送時の暗号化がない | browser profile `cdpUrl` | no       |
-| `browser.remote_cdp_private_host`                             | warn          | remote CDP が private/internal host を対象にしている | browser profile `cdpUrl`, `browser.ssrfPolicy.*` | no       |
-| `sandbox.docker_config_mode_off`                              | warn          | Sandbox Docker config は存在するが非アクティブ | `agents.*.sandbox.mode` | no       |
-| `sandbox.bind_mount_non_absolute`                             | warn          | 相対bind mount は予測不能に解決されることがある | `agents.*.sandbox.docker.binds[]` | no       |
-| `sandbox.dangerous_bind_mount`                                | critical      | Sandbox bind mount が、ブロック対象のsystem、credential、またはDocker socket パスを指している | `agents.*.sandbox.docker.binds[]` | no       |
-| `sandbox.dangerous_network_mode`                              | critical      | Sandbox Docker network が `host` または `container:*` のnamespace-join mode を使っている | `agents.*.sandbox.docker.network` | no       |
-| `sandbox.dangerous_seccomp_profile`                           | critical      | Sandbox seccomp profile がコンテナ分離を弱める | `agents.*.sandbox.docker.securityOpt` | no       |
-| `sandbox.dangerous_apparmor_profile`                          | critical      | Sandbox AppArmor profile がコンテナ分離を弱める | `agents.*.sandbox.docker.securityOpt` | no       |
-| `sandbox.browser_cdp_bridge_unrestricted`                     | warn          | Sandbox browser bridge が送信元範囲制限なしで公開されている | `sandbox.browser.cdpSourceRange` | no       |
-| `sandbox.browser_container.non_loopback_publish`              | critical      | 既存browser container が非loopback interface 上でCDPを公開している | browser sandbox container の公開設定 | no       |
-| `sandbox.browser_container.hash_label_missing`                | warn          | 既存browser container が現在のconfig-hash labels より前のもの | `openclaw sandbox recreate --browser --all` | no       |
-| `sandbox.browser_container.hash_epoch_stale`                  | warn          | 既存browser container が現在のbrowser config epoch より前のもの | `openclaw sandbox recreate --browser --all` | no       |
-| `tools.exec.host_sandbox_no_sandbox_defaults`                 | warn          | `exec host=sandbox` は sandbox がオフのときフェイルクローズする | `tools.exec.host`, `agents.defaults.sandbox.mode` | no       |
-| `tools.exec.host_sandbox_no_sandbox_agents`                   | warn          | エージェントごとの `exec host=sandbox` は sandbox がオフのときフェイルクローズする | `agents.list[].tools.exec.host`, `agents.list[].sandbox.mode` | no       |
-| `tools.exec.security_full_configured`                         | warn/critical | host exec が `security="full"` で実行されている | `tools.exec.security`, `agents.list[].tools.exec.security` | no       |
-| `tools.exec.auto_allow_skills_enabled`                        | warn          | exec approvals が skill bins を暗黙に信頼している | `~/.openclaw/exec-approvals.json` | no       |
-| `tools.exec.allowlist_interpreter_without_strict_inline_eval` | warn          | interpreter の許可リストにより、強制再承認なしでinline eval が許可される | `tools.exec.strictInlineEval`, `agents.list[].tools.exec.strictInlineEval`, exec approvals allowlist | no       |
-| `tools.exec.safe_bins_interpreter_unprofiled`                 | warn          | `safeBins` 内のinterpreter/runtime bins が明示的profile なしで、exec リスクを広げる | `tools.exec.safeBins`, `tools.exec.safeBinProfiles`, `agents.list[].tools.exec.*` | no       |
-| `tools.exec.safe_bins_broad_behavior`                         | warn          | `safeBins` 内の広範動作ツールが、低リスクstdin-filter 信頼モデルを弱める | `tools.exec.safeBins`, `agents.list[].tools.exec.safeBins` | no       |
-| `tools.exec.safe_bin_trusted_dirs_risky`                      | warn          | `safeBinTrustedDirs` に可変または危険なディレクトリが含まれる | `tools.exec.safeBinTrustedDirs`, `agents.list[].tools.exec.safeBinTrustedDirs` | no       |
-| `skills.workspace.symlink_escape`                             | warn          | ワークスペースの `skills/**/SKILL.md` がワークスペースroot の外へ解決される（symlink-chain drift） | ワークスペース `skills/**` のファイルシステム状態 | no       |
-| `plugins.extensions_no_allowlist`                             | warn          | 明示的なplugin許可リストなしでPlugins がインストールされている | `plugins.allowlist` | no       |
-| `plugins.installs_unpinned_npm_specs`                         | warn          | Plugin index 記録が不変なnpm specs に固定されていない | plugin install metadata | no       |
-| `checkId`                                                     | 重大度 | 重要な理由 | 主な修正キー/パス | 自動修正 |
-| ------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | -------- |
-| `plugins.installs_missing_integrity`                          | warn          | Plugin index 記録に integrity metadata がない | plugin install metadata | no       |
-| `plugins.installs_version_drift`                              | warn          | Plugin index 記録がインストール済みパッケージからずれている | plugin install metadata | no       |
-| `plugins.code_safety`                                         | warn/critical | Plugin コードスキャンが不審または危険なパターンを検出した | plugin コード / install source | no       |
-| `plugins.code_safety.entry_path`                              | warn          | Plugin のentry path が隠し場所または `node_modules` 内を指している | plugin manifest `entry` | no       |
-| `plugins.code_safety.entry_escape`                            | critical      | Plugin のentry がpluginディレクトリの外へ逃げている | plugin manifest `entry` | no       |
-| `plugins.code_safety.scan_failed`                             | warn          | Plugin コードスキャンを完了できなかった | plugin path / scan environment | no       |
-| `skills.code_safety`                                          | warn/critical | Skill installer metadata/code に不審または危険なパターンが含まれる | skill install source | no       |
-| `skills.code_safety.scan_failed`                              | warn          | Skill コードスキャンを完了できなかった | skill scan environment | no       |
-| `security.exposure.open_channels_with_exec`                   | warn/critical | shared/public ルームから exec 有効エージェントに到達できる | `channels.*.dmPolicy`, `channels.*.groupPolicy`, `tools.exec.*`, `agents.list[].tools.exec.*` | no       |
-| `security.exposure.open_groups_with_elevated`                 | critical      | open groups + elevated tools は高影響のprompt-injection 経路を作る | `channels.*.groupPolicy`, `tools.elevated.*` | no       |
-| `security.exposure.open_groups_with_runtime_or_fs`            | critical/warn | open groups がsandbox/workspace ガードなしでコマンド/ファイルツールに到達できる | `channels.*.groupPolicy`, `tools.profile/deny`, `tools.fs.workspaceOnly`, `agents.*.sandbox.mode` | no       |
-| `security.trust_model.multi_user_heuristic`                   | warn          | config がmulti-user に見える一方で、gateway の信頼モデルは personal-assistant である | 信頼境界を分離する、または shared-user ハードニング（`sandbox.mode`, tool deny/workspace scoping`） | no       |
-| `tools.profile_minimal_overridden`                            | warn          | エージェント上書きがグローバルminimal profile を回避する | `agents.list[].tools.profile` | no       |
-| `plugins.tools_reachable_permissive_policy`                   | warn          | permissive なコンテキストからextension tools に到達できる | `tools.profile` + tool allow/deny | no       |
-| `models.legacy`                                               | warn          | 従来のモデルファミリーがまだ設定されている | モデル選択 | no       |
-| `models.weak_tier`                                            | warn          | 設定済みモデルが現在の推奨tier を下回る | モデル選択 | no       |
-| `models.small_params`                                         | critical/info | 小型モデル + 安全でないツールサーフェスはinjection リスクを高める | モデル選択 + sandbox/tool policy | no       |
-| `summary.attack_surface`                                      | info          | 認証、チャネル、ツール、公開状態のロールアップ要約 | 複数キー（詳細は検出結果を参照） | no       |
+| `fs.state_dir.perms_world_writable`                           | 重大          | 他のユーザー/プロセスが OpenClaw の状態全体を変更できる                              | `~/.openclaw` のファイルシステム権限                                                                 | はい     |
+| `fs.state_dir.perms_group_writable`                           | 警告          | グループユーザーが OpenClaw の状態全体を変更できる                                   | `~/.openclaw` のファイルシステム権限                                                                 | はい     |
+| `fs.state_dir.perms_readable`                                 | 警告          | 状態ディレクトリを他者が読み取れる                                                   | `~/.openclaw` のファイルシステム権限                                                                 | はい     |
+| `fs.state_dir.symlink`                                        | 警告          | 状態ディレクトリのターゲットが別の信頼境界になる                                     | 状態ディレクトリのファイルシステムレイアウト                                                         | いいえ   |
+| `fs.config.perms_writable`                                    | 重大          | 他者が認証/ツールポリシー/設定を変更できる                                           | `~/.openclaw/openclaw.json` のファイルシステム権限                                                   | はい     |
+| `fs.config.symlink`                                           | 警告          | シンボリックリンクされた設定ファイルは書き込み非対応で、別の信頼境界を追加する       | 通常の設定ファイルに置き換えるか、`OPENCLAW_CONFIG_PATH` を実ファイルに向ける                        | いいえ   |
+| `fs.config.perms_group_readable`                              | 警告          | グループユーザーが設定のトークン/設定値を読み取れる                                  | 設定ファイルのファイルシステム権限                                                                   | はい     |
+| `fs.config.perms_world_readable`                              | 重大          | 設定によりトークン/設定値が露出する可能性がある                                      | 設定ファイルのファイルシステム権限                                                                   | はい     |
+| `fs.config_include.perms_writable`                            | 重大          | 設定インクルードファイルを他者が変更できる                                           | `openclaw.json` から参照されるインクルードファイル権限                                               | はい     |
+| `fs.config_include.perms_group_readable`                      | 警告          | グループユーザーがインクルードされたシークレット/設定値を読み取れる                  | `openclaw.json` から参照されるインクルードファイル権限                                               | はい     |
+| `fs.config_include.perms_world_readable`                      | 重大          | インクルードされたシークレット/設定値が誰でも読み取れる                              | `openclaw.json` から参照されるインクルードファイル権限                                               | はい     |
+| `fs.auth_profiles.perms_writable`                             | 重大          | 他者が保存済みモデル認証情報を注入または置換できる                                   | `agents/<agentId>/agent/auth-profiles.json` の権限                                                   | はい     |
+| `fs.auth_profiles.perms_readable`                             | 警告          | 他者が API キーと OAuth トークンを読み取れる                                          | `agents/<agentId>/agent/auth-profiles.json` の権限                                                   | はい     |
+| `fs.credentials_dir.perms_writable`                           | 重大          | 他者がチャンネルのペアリング/認証情報状態を変更できる                                | `~/.openclaw/credentials` のファイルシステム権限                                                     | はい     |
+| `fs.credentials_dir.perms_readable`                           | 警告          | 他者がチャンネルの認証情報状態を読み取れる                                           | `~/.openclaw/credentials` のファイルシステム権限                                                     | はい     |
+| `fs.sessions_store.perms_readable`                            | 警告          | 他者がセッショントランスクリプト/メタデータを読み取れる                              | セッションストア権限                                                                                 | はい     |
+| `fs.log_file.perms_readable`                                  | 警告          | 他者が秘匿化済みだが依然として機微なログを読み取れる                                 | gateway ログファイル権限                                                                             | はい     |
+| `fs.synced_dir`                                               | 警告          | iCloud/Dropbox/Drive 内の状態/設定はトークン/トランスクリプトの露出範囲を広げる      | 設定/状態を同期フォルダーの外へ移動                                                                  | いいえ   |
+| `gateway.bind_no_auth`                                        | 重大          | 共有シークレットなしのリモートバインド                                               | `gateway.bind`, `gateway.auth.*`                                                                     | いいえ   |
+| `gateway.loopback_no_auth`                                    | 重大          | リバースプロキシされたループバックが未認証になる可能性がある                         | `gateway.auth.*`, プロキシ設定                                                                       | いいえ   |
+| `gateway.trusted_proxies_missing`                             | 警告          | リバースプロキシヘッダーは存在するが信頼されていない                                 | `gateway.trustedProxies`                                                                             | いいえ   |
+| `gateway.http.no_auth`                                        | 警告/重大     | `auth.mode="none"` で Gateway HTTP API に到達できる                                   | `gateway.auth.mode`, `gateway.http.endpoints.*`                                                      | いいえ   |
+| `gateway.http.session_key_override_enabled`                   | 情報          | HTTP API 呼び出し元が `sessionKey` を上書きできる                                     | `gateway.http.allowSessionKeyOverride`                                                               | いいえ   |
+| `gateway.tools_invoke_http.dangerous_allow`                   | 警告/重大     | HTTP API 経由で危険なツールを再有効化する                                             | `gateway.tools.allow`                                                                                | いいえ   |
+| `gateway.nodes.allow_commands_dangerous`                      | 警告/重大     | 影響の大きいノードコマンド（カメラ/画面/連絡先/カレンダー/SMS）を有効にする          | `gateway.nodes.allowCommands`                                                                        | いいえ   |
+| `gateway.nodes.deny_commands_ineffective`                     | 警告          | パターンのような拒否エントリはシェルテキストやグループに一致しない                   | `gateway.nodes.denyCommands`                                                                         | いいえ   |
+| `gateway.tailscale_funnel`                                    | 重大          | 公開インターネットへの露出                                                           | `gateway.tailscale.mode`                                                                             | いいえ   |
+| `gateway.tailscale_serve`                                     | 情報          | Serve により tailnet 露出が有効になっている                                           | `gateway.tailscale.mode`                                                                             | いいえ   |
+| `gateway.control_ui.allowed_origins_required`                 | 重大          | 非ループバックの Control UI に明示的なブラウザーオリジン許可リストがない             | `gateway.controlUi.allowedOrigins`                                                                   | いいえ   |
+| `gateway.control_ui.allowed_origins_wildcard`                 | 警告/重大     | `allowedOrigins=["*"]` はブラウザーオリジン許可リストを無効化する                    | `gateway.controlUi.allowedOrigins`                                                                   | いいえ   |
+| `gateway.control_ui.host_header_origin_fallback`              | 警告/重大     | Host ヘッダーのオリジンフォールバックを有効にする（DNS リバインディング強化の低下）  | `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback`                                         | いいえ   |
+| `gateway.control_ui.insecure_auth`                            | 警告          | insecure-auth 互換性トグルが有効になっている                                         | `gateway.controlUi.allowInsecureAuth`                                                                | いいえ   |
+| `gateway.control_ui.device_auth_disabled`                     | 重大          | デバイス ID チェックを無効化する                                                     | `gateway.controlUi.dangerouslyDisableDeviceAuth`                                                     | いいえ   |
+| `gateway.real_ip_fallback_enabled`                            | 警告/重大     | `X-Real-IP` フォールバックを信頼すると、プロキシ設定ミスにより送信元 IP 偽装が可能になる | `gateway.allowRealIpFallback`, `gateway.trustedProxies`                                              | いいえ   |
+| `gateway.token_too_short`                                     | 警告          | 短い共有トークンは総当たり攻撃を受けやすい                                           | `gateway.auth.token`                                                                                 | いいえ   |
+| `gateway.auth_no_rate_limit`                                  | 警告          | レート制限なしで認証を公開すると総当たり攻撃のリスクが高まる                         | `gateway.auth.rateLimit`                                                                             | いいえ   |
+| `gateway.trusted_proxy_auth`                                  | 重大          | プロキシ ID が認証境界になる                                                         | `gateway.auth.mode="trusted-proxy"`                                                                  | いいえ   |
+| `gateway.trusted_proxy_no_proxies`                            | 重大          | 信頼済みプロキシ IP なしの trusted-proxy 認証は安全ではない                          | `gateway.trustedProxies`                                                                             | いいえ   |
+| `gateway.trusted_proxy_no_user_header`                        | 重大          | trusted-proxy 認証ではユーザー ID を安全に解決できない                               | `gateway.auth.trustedProxy.userHeader`                                                               | いいえ   |
+| `gateway.trusted_proxy_no_allowlist`                          | 警告          | trusted-proxy 認証が認証済みの上流ユーザーを誰でも受け入れる                         | `gateway.auth.trustedProxy.allowUsers`                                                               | いいえ   |
+| `gateway.trusted_proxy_allow_loopback`                        | 警告          | trusted-proxy 認証が明示的に許可された loopback プロキシソースを受け入れる                 | `gateway.auth.trustedProxy.allowLoopback`                                                            | いいえ       |
+| `gateway.probe_auth_secretref_unavailable`                    | 警告          | このコマンドパスでは Deep probe が認証 SecretRefs を解決できなかった                    | deep-probe 認証ソース / SecretRef の可用性                                                      | いいえ       |
+| `gateway.probe_failed`                                        | 警告/重大 | ライブ Gateway probe に失敗した                                                            | gateway 到達性/認証                                                                            | いいえ       |
+| `discovery.mdns_full_mode`                                    | 警告/重大 | mDNS フルモードがローカルネットワーク上で `cliPath`/`sshPort` メタデータを通知する              | `discovery.mdns.mode`, `gateway.bind`                                                                | いいえ       |
+| `config.insecure_or_dangerous_flags`                          | 警告          | 安全でない、または危険なデバッグフラグが有効になっている                                           | 複数のキー（検出事項の詳細を参照）                                                                   | いいえ       |
+| `config.secrets.gateway_password_in_config`                   | 警告          | Gateway パスワードが config に直接保存されている                                        | `gateway.auth.password`                                                                              | いいえ       |
+| `config.secrets.hooks_token_in_config`                        | 警告          | Hook bearer token が config に直接保存されている                                       | `hooks.token`                                                                                        | いいえ       |
+| `hooks.token_reuse_gateway_token`                             | 重大      | Hook ingress トークンでも Gateway 認証が解除される                                         | `hooks.token`, `gateway.auth.token`                                                                  | いいえ       |
+| `hooks.token_too_short`                                       | 警告          | hook ingress へのブルートフォースが容易になる                                                   | `hooks.token`                                                                                        | いいえ       |
+| `hooks.default_session_key_unset`                             | 警告          | Hook エージェント実行がリクエストごとに生成されるセッションへファンアウトする                          | `hooks.defaultSessionKey`                                                                            | いいえ       |
+| `hooks.allowed_agent_ids_unrestricted`                        | 警告/重大 | 認証済みの hook 呼び出し元が任意の設定済みエージェントにルーティングできる                         | `hooks.allowedAgentIds`                                                                              | いいえ       |
+| `hooks.request_session_key_enabled`                           | 警告/重大 | 外部呼び出し元が sessionKey を選択できる                                                | `hooks.allowRequestSessionKey`                                                                       | いいえ       |
+| `hooks.request_session_key_prefixes_missing`                  | 警告/重大 | 外部セッションキーの形状に制限がない                                              | `hooks.allowedSessionKeyPrefixes`                                                                    | いいえ       |
+| `hooks.path_root`                                             | 重大      | Hook パスが `/` で、ingress の衝突や誤ルーティングが起きやすくなる                       | `hooks.path`                                                                                         | いいえ       |
+| `hooks.installs_unpinned_npm_specs`                           | 警告          | Hook インストールレコードが不変の npm specs に固定されていない                           | hook インストールメタデータ                                                                                | いいえ       |
+| `hooks.installs_missing_integrity`                            | 警告          | Hook インストールレコードに integrity メタデータがない                                         | hook インストールメタデータ                                                                                | いいえ       |
+| `hooks.installs_version_drift`                                | 警告          | Hook インストールレコードがインストール済みパッケージからずれている                                   | hook インストールメタデータ                                                                                | いいえ       |
+| `logging.redact_off`                                          | 警告          | 機密値がログ/ステータスに漏れる                                                 | `logging.redactSensitive`                                                                            | はい      |
+| `browser.control_invalid_config`                              | 警告          | Browser control config が runtime 前に無効である                                     | `browser.*`                                                                                          | いいえ       |
+| `browser.control_no_auth`                                     | 重大      | Browser control がトークン/パスワード認証なしで公開されている                                  | `gateway.auth.*`                                                                                     | いいえ       |
+| `browser.remote_cdp_http`                                     | 警告          | 平文 HTTP 上のリモート CDP にはトランスポート暗号化がない                                | browser profile `cdpUrl`                                                                             | いいえ       |
+| `browser.remote_cdp_private_host`                             | 警告          | リモート CDP がプライベート/内部ホストを対象にしている                                           | browser profile `cdpUrl`, `browser.ssrfPolicy.*`                                                     | いいえ       |
+| `sandbox.docker_config_mode_off`                              | 警告          | Sandbox Docker config は存在するが非アクティブである                                           | `agents.*.sandbox.mode`                                                                              | いいえ       |
+| `sandbox.bind_mount_non_absolute`                             | 警告          | 相対 bind mount は予測不能に解決される可能性がある                                       | `agents.*.sandbox.docker.binds[]`                                                                    | いいえ       |
+| `sandbox.dangerous_bind_mount`                                | 重大      | Sandbox bind mount が、ブロック対象のシステム、認証情報、または Docker ソケットパスを対象にしている        | `agents.*.sandbox.docker.binds[]`                                                                    | いいえ       |
+| `sandbox.dangerous_network_mode`                              | 重大      | Sandbox Docker ネットワークが `host` または `container:*` の namespace-join モードを使用している              | `agents.*.sandbox.docker.network`                                                                    | いいえ       |
+| `sandbox.dangerous_seccomp_profile`                           | 重大      | Sandbox seccomp profile がコンテナ分離を弱める                                  | `agents.*.sandbox.docker.securityOpt`                                                                | いいえ       |
+| `sandbox.dangerous_apparmor_profile`                          | 重大      | Sandbox AppArmor profile がコンテナ分離を弱める                                 | `agents.*.sandbox.docker.securityOpt`                                                                | いいえ       |
+| `sandbox.browser_cdp_bridge_unrestricted`                     | 警告          | Sandbox browser bridge が source-range 制限なしで公開されている                   | `sandbox.browser.cdpSourceRange`                                                                     | いいえ       |
+| `sandbox.browser_container.non_loopback_publish`              | 重大      | 既存の browser container が非 loopback インターフェイスで CDP を公開している                  | browser sandbox container publish config                                                             | いいえ       |
+| `sandbox.browser_container.hash_label_missing`                | 警告          | 既存の browser container が現在の config-hash ラベルより古い                       | `openclaw sandbox recreate --browser --all`                                                          | いいえ       |
+| `sandbox.browser_container.hash_epoch_stale`                  | 警告          | 既存の browser container が現在の browser config epoch より古い                     | `openclaw sandbox recreate --browser --all`                                                          | いいえ       |
+| `tools.exec.host_sandbox_no_sandbox_defaults`                 | 警告          | sandbox がオフのとき `exec host=sandbox` は fail closed する                                 | `tools.exec.host`, `agents.defaults.sandbox.mode`                                                    | いいえ       |
+| `tools.exec.host_sandbox_no_sandbox_agents`                   | 警告          | sandbox がオフのときエージェントごとの `exec host=sandbox` は fail closed する                       | `agents.list[].tools.exec.host`, `agents.list[].sandbox.mode`                                        | いいえ       |
+| `tools.exec.security_full_configured`                         | 警告/重大 | ホスト exec が `security="full"` で実行されている                                          | `tools.exec.security`, `agents.list[].tools.exec.security`                                           | いいえ       |
+| `tools.exec.auto_allow_skills_enabled`                        | 警告          | Exec 承認が skill bins を暗黙的に信頼する                                           | `~/.openclaw/exec-approvals.json`                                                                    | いいえ       |
+| `tools.exec.allowlist_interpreter_without_strict_inline_eval` | 警告          | Interpreter allowlists が、強制再承認なしで inline eval を許可する                  | `tools.exec.strictInlineEval`, `agents.list[].tools.exec.strictInlineEval`, exec approvals allowlist | いいえ       |
+| `tools.exec.safe_bins_interpreter_unprofiled`                 | 警告          | 明示的なプロファイルなしの `safeBins` 内 interpreter/runtime bins が exec リスクを広げる   | `tools.exec.safeBins`, `tools.exec.safeBinProfiles`, `agents.list[].tools.exec.*`                    | いいえ       |
+| `tools.exec.safe_bins_broad_behavior`                         | 警告          | `safeBins` 内の broad-behavior ツールが低リスク stdin-filter 信頼モデルを弱める      | `tools.exec.safeBins`, `agents.list[].tools.exec.safeBins`                                           | いいえ       |
+| `tools.exec.safe_bin_trusted_dirs_risky`                      | 警告          | `safeBinTrustedDirs` に変更可能またはリスクのあるディレクトリが含まれている                           | `tools.exec.safeBinTrustedDirs`, `agents.list[].tools.exec.safeBinTrustedDirs`                       | いいえ       |
+| `skills.workspace.symlink_escape`                             | 警告          | Workspace `skills/**/SKILL.md` が workspace root の外に解決される（symlink-chain のずれ） | workspace `skills/**` filesystem state                                                               | いいえ       |
+| `plugins.extensions_no_allowlist`                             | 警告          | Plugin が明示的な plugin allowlist なしでインストールされている                           | `plugins.allowlist`                                                                                  | いいえ       |
+| `plugins.installs_unpinned_npm_specs`                         | 警告          | Plugin インデックスのレコードが不変の npm 仕様に固定されていません                           | plugin install metadata                                                                              | いいえ       |
+| `plugins.installs_missing_integrity`                          | 警告          | Plugin インデックスのレコードに整合性メタデータがありません                                         | plugin install metadata                                                                              | いいえ       |
+| `plugins.installs_version_drift`                              | 警告          | Plugin インデックスのレコードがインストール済みパッケージから乖離しています                                   | plugin install metadata                                                                              | いいえ       |
+| `plugins.code_safety`                                         | 警告/重大 | Plugin コードスキャンで疑わしい、または危険なパターンが見つかりました                              | plugin code / install source                                                                         | いいえ       |
+| `plugins.code_safety.entry_path`                              | 警告          | Plugin エントリパスが非表示の場所または `node_modules` の場所を指しています                     | plugin manifest `entry`                                                                              | いいえ       |
+| `plugins.code_safety.entry_escape`                            | 重大      | Plugin エントリが Plugin ディレクトリの外へ抜け出しています                                            | plugin manifest `entry`                                                                              | いいえ       |
+| `plugins.code_safety.scan_failed`                             | 警告          | Plugin コードスキャンを完了できませんでした                                                  | plugin path / scan environment                                                                       | いいえ       |
+| `skills.code_safety`                                          | 警告/重大 | Skill インストーラーメタデータ/コードに疑わしい、または危険なパターンが含まれています              | skill install source                                                                                 | いいえ       |
+| `skills.code_safety.scan_failed`                              | 警告          | Skill コードスキャンを完了できませんでした                                                   | skill scan environment                                                                               | いいえ       |
+| `security.exposure.open_channels_with_exec`                   | 警告/重大 | 共有/公開ルームが exec 有効のエージェントに到達できます                                    | `channels.*.dmPolicy`, `channels.*.groupPolicy`, `tools.exec.*`, `agents.list[].tools.exec.*`        | いいえ       |
+| `security.exposure.open_groups_with_elevated`                 | 重大      | オープングループと昇格ツールの組み合わせにより、影響の大きいプロンプトインジェクション経路が作られます               | `channels.*.groupPolicy`, `tools.elevated.*`                                                         | いいえ       |
+| `security.exposure.open_groups_with_runtime_or_fs`            | 重大/警告 | オープングループが sandbox/workspace ガードなしでコマンド/ファイルツールに到達できます            | `channels.*.groupPolicy`, `tools.profile/deny`, `tools.fs.workspaceOnly`, `agents.*.sandbox.mode`    | いいえ       |
+| `security.trust_model.multi_user_heuristic`                   | 警告          | Gateway の信頼モデルがパーソナルアシスタントである一方、設定はマルチユーザーに見えます              | 信頼境界の分割、または共有ユーザー向けの強化（`sandbox.mode`、ツールの拒否/workspace スコープ設定）      | いいえ       |
+| `tools.profile_minimal_overridden`                            | 警告          | エージェントの上書き設定がグローバルな最小プロファイルを迂回しています                                        | `agents.list[].tools.profile`                                                                        | いいえ       |
+| `plugins.tools_reachable_permissive_policy`                   | 警告          | 拡張ツールが許容的なコンテキストで到達可能です                                     | `tools.profile` + ツールの許可/拒否                                                                    | いいえ       |
+| `models.legacy`                                               | 警告          | レガシーモデルファミリーがまだ設定されています                                           | モデル選択                                                                                      | いいえ       |
+| `models.weak_tier`                                            | 警告          | 設定済みモデルが現在の推奨ティアを下回っています                                | モデル選択                                                                                      | いいえ       |
+| `models.small_params`                                         | 重大/情報 | 小規模モデルと安全でないツールサーフェスの組み合わせにより、インジェクションリスクが高まります                             | モデル選択 + sandbox/ツールポリシー                                                                   | いいえ       |
+| `summary.attack_surface`                                      | 情報          | 認証、チャンネル、ツール、露出状況のロールアップ概要                         | 複数のキー（検出事項の詳細を参照）                                                                   | いいえ       |
 
 ## 関連
 
-- [Security](/ja-JP/gateway/security)
-- [Configuration](/ja-JP/gateway/configuration)
-- [Trusted proxy auth](/ja-JP/gateway/trusted-proxy-auth)
+- [セキュリティ](/ja-JP/gateway/security)
+- [設定](/ja-JP/gateway/configuration)
+- [信頼済みプロキシ認証](/ja-JP/gateway/trusted-proxy-auth)

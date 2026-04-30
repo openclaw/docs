@@ -1,16 +1,16 @@
 ---
 read_when:
-    - TUI の初心者向けウォークスルーが必要です
+    - TUI の初心者向け手順解説が必要な場合
     - TUI の機能、コマンド、ショートカットの完全な一覧が必要です
-summary: 'Terminal UI (TUI): Gateway に接続するか、組み込みモードでローカル実行する'
+summary: 'ターミナル UI (TUI): Gateway に接続するか、組み込みモードでローカルに実行'
 title: TUI
 x-i18n:
-    generated_at: "2026-04-25T14:02:56Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:41:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6eaa938fb3a50b7478341fe51cafb09e352f6d3cb402373222153ed93531a5f5
+    source_hash: 5caca4b3f4df02ce1226a8ed0d759023464e5b0752b9cd1b7922b20099d58df1
     source_path: web/tui.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## クイックスタート
@@ -37,7 +37,7 @@ openclaw tui
 openclaw tui --url ws://<host>:<port> --token <gateway-token>
 ```
 
-Gateway が password auth を使っている場合は `--password` を使ってください。
+Gateway がパスワード認証を使っている場合は `--password` を使用します。
 
 ### ローカルモード
 
@@ -49,59 +49,59 @@ openclaw chat
 openclaw tui --local
 ```
 
-注記:
+注:
 
 - `openclaw chat` と `openclaw terminal` は `openclaw tui --local` のエイリアスです。
-- `--local` は `--url`、`--token`、`--password` と組み合わせられません。
-- ローカルモードは組み込みエージェントランタイムを直接使います。ほとんどのローカルツールは動作しますが、Gateway 専用機能は利用できません。
-- `openclaw` と `openclaw crestodian` もこの TUI シェルを使い、Crestodian はローカルのセットアップおよび修復 chat バックエンドとして動作します。
+- `--local` は `--url`、`--token`、または `--password` と組み合わせることはできません。
+- ローカルモードでは、組み込みのエージェントランタイムを直接使用します。ほとんどのローカルツールは動作しますが、Gateway 専用機能は利用できません。
+- `openclaw` と `openclaw crestodian` もこの TUI シェルを使用し、Crestodian がローカルセットアップおよび修復チャットバックエンドになります。
 
-## 画面に表示されるもの
+## 表示される内容
 
 - ヘッダー: 接続 URL、現在のエージェント、現在のセッション。
-- チャットログ: ユーザーメッセージ、assistant 返信、system 通知、ツールカード。
-- ステータス行: 接続/実行状態（connecting、running、streaming、idle、error）。
-- フッター: 接続状態 + agent + session + model + think/fast/verbose/trace/reasoning + token 数 + deliver。
-- 入力欄: オートコンプリート付きテキストエディター。
+- チャットログ: ユーザーメッセージ、アシスタントの返信、システム通知、ツールカード。
+- ステータス行: 接続/実行状態 (connecting、running、streaming、idle、error)。
+- フッター: 接続状態 + エージェント + セッション + モデル + think/fast/verbose/trace/reasoning + トークン数 + deliver。
+- 入力: オートコンプリート付きのテキストエディター。
 
-## メンタルモデル: agents + sessions
+## メンタルモデル: エージェント + セッション
 
-- Agents は一意な slug です（例: `main`、`research`）。Gateway がその一覧を公開します。
-- Sessions は現在の agent に属します。
+- エージェントは一意のスラッグです (例: `main`、`research`)。Gateway はその一覧を公開します。
+- セッションは現在のエージェントに属します。
 - セッションキーは `agent:<agentId>:<sessionKey>` として保存されます。
   - `/session main` と入力すると、TUI はそれを `agent:<currentAgent>:main` に展開します。
-  - `/session agent:other:main` と入力すると、その agent セッションへ明示的に切り替えます。
+  - `/session agent:other:main` と入力すると、そのエージェントセッションへ明示的に切り替えます。
 - セッションスコープ:
-  - `per-sender`（デフォルト）: 各 agent は複数の session を持ちます。
-  - `global`: TUI は常に `global` session を使います（picker が空になることがあります）。
-- 現在の agent + session は常にフッターに表示されます。
+  - `per-sender` (デフォルト): 各エージェントに複数のセッションがあります。
+  - `global`: TUI は常に `global` セッションを使用します (ピッカーは空の場合があります)。
+- 現在のエージェント + セッションは常にフッターに表示されます。
 
 ## 送信 + 配信
 
-- メッセージは Gateway に送信されます。provider への配信はデフォルトでオフです。
-- 配信をオンにするには:
+- メッセージは Gateway に送信されます。プロバイダーへの配信はデフォルトでオフです。
+- 配信をオンにします:
   - `/deliver on`
-  - または Settings パネル
+  - または設定パネル
   - または `openclaw tui --deliver` で起動
 
-## Pickers + overlays
+## ピッカー + オーバーレイ
 
-- モデル picker: 利用可能なモデルを一覧し、session override を設定します。
-- エージェント picker: 別の agent を選択します。
-- セッション picker: 現在の agent 用の session のみを表示します。
-- Settings: deliver、ツール出力の展開、thinking 可視化を切り替えます。
+- モデルピッカー: 利用可能なモデルを一覧表示し、セッションのオーバーライドを設定します。
+- エージェントピッカー: 別のエージェントを選択します。
+- セッションピッカー: 現在のエージェントのセッションのみを表示します。
+- 設定: deliver、ツール出力の展開、思考の表示を切り替えます。
 
 ## キーボードショートカット
 
-- Enter: メッセージ送信
-- Esc: アクティブな実行を中断
-- Ctrl+C: 入力をクリア（2 回押すと終了）
+- Enter: メッセージを送信
+- Esc: アクティブな実行を中止
+- Ctrl+C: 入力をクリア (終了するには 2 回押す)
 - Ctrl+D: 終了
-- Ctrl+L: モデル picker
-- Ctrl+G: エージェント picker
-- Ctrl+P: セッション picker
-- Ctrl+O: ツール出力の展開切り替え
-- Ctrl+T: thinking 表示の切り替え（履歴を再読み込み）
+- Ctrl+L: モデルピッカー
+- Ctrl+G: エージェントピッカー
+- Ctrl+P: セッションピッカー
+- Ctrl+O: ツール出力の展開を切り替え
+- Ctrl+T: 思考の表示を切り替え (履歴を再読み込み)
 
 ## スラッシュコマンド
 
@@ -109,9 +109,9 @@ openclaw tui --local
 
 - `/help`
 - `/status`
-- `/agent <id>`（または `/agents`）
-- `/session <key>`（または `/sessions`）
-- `/model <provider/model>`（または `/models`）
+- `/agent <id>` (または `/agents`)
+- `/session <key>` (または `/sessions`)
+- `/model <provider/model>` (または `/models`)
 
 セッション制御:
 
@@ -121,40 +121,38 @@ openclaw tui --local
 - `/trace <on|off>`
 - `/reasoning <on|off|stream>`
 - `/usage <off|tokens|full>`
-- `/elevated <on|off|ask|full>`（エイリアス: `/elev`）
+- `/elevated <on|off|ask|full>` (エイリアス: `/elev`)
 - `/activation <mention|always>`
 - `/deliver <on|off>`
 
-セッションライフサイクル:
+セッションのライフサイクル:
 
-- `/new` または `/reset`（セッションをリセット）
-- `/abort`（アクティブな実行を中断）
+- `/new` または `/reset` (セッションをリセット)
+- `/abort` (アクティブな実行を中止)
 - `/settings`
 - `/exit`
 
 ローカルモードのみ:
 
-- `/auth [provider]` は、TUI 内で provider の auth/login フローを開きます。
+- `/auth [provider]` は、TUI 内でプロバイダーの認証/ログインフローを開きます。
 
-その他の Gateway スラッシュコマンド（たとえば `/context`）は Gateway に転送され、system 出力として表示されます。[Slash commands](/ja-JP/tools/slash-commands) を参照してください。
+その他の Gateway スラッシュコマンド (例: `/context`) は Gateway に転送され、システム出力として表示されます。[スラッシュコマンド](/ja-JP/tools/slash-commands)を参照してください。
 
 ## ローカルシェルコマンド
 
-- 行頭に `!` を付けると、TUI ホスト上でローカルシェルコマンドを実行します。
-- TUI は、ローカル実行を許可するかをセッションごとに 1 回だけ確認します。拒否すると、そのセッションでは `!` は無効のままになります。
-- コマンドは TUI の作業ディレクトリで、新しい非対話シェル内で実行されます（`cd`/env は永続化されません）。
+- TUI ホストでローカルシェルコマンドを実行するには、行の先頭に `!` を付けます。
+- TUI はローカル実行を許可するかセッションごとに一度だけ確認します。拒否すると、そのセッションでは `!` が無効のままになります。
+- コマンドは TUI の作業ディレクトリで、新しい非対話型シェルとして実行されます (永続的な `cd`/env はありません)。
 - ローカルシェルコマンドの環境には `OPENCLAW_SHELL=tui-local` が渡されます。
-- 単独の `!` は通常メッセージとして送信されます。先頭に空白がある場合はローカル実行をトリガーしません。
+- 単独の `!` は通常のメッセージとして送信されます。先頭にスペースがある場合はローカル実行をトリガーしません。
 
-## ローカル TUI から config を修復する
+## ローカル TUI から設定を修復する
 
-現在の config がすでに検証を通っていて、組み込みエージェントに同じマシン上でそれを調査させ、docs と比較し、実行中の Gateway に依存せずにずれを修復したい場合は、ローカルモードを使ってください。
+現在の設定がすでに検証に通っており、実行中の Gateway に依存せず、同じマシン上で組み込みエージェントに設定を検査させ、ドキュメントと比較し、ずれの修復を支援させたい場合は、ローカルモードを使用します。
 
-`openclaw config validate` がすでに失敗している場合は、まず `openclaw configure`
-または `openclaw doctor --fix` から始めてください。`openclaw chat` は無効な
-config ガードを回避しません。
+`openclaw config validate` がすでに失敗している場合は、まず `openclaw configure` または `openclaw doctor --fix` から開始します。`openclaw chat` は無効な設定のガードを迂回しません。
 
-一般的な流れ:
+典型的なループ:
 
 1. ローカルモードを開始します。
 
@@ -162,13 +160,13 @@ config ガードを回避しません。
 openclaw chat
 ```
 
-2. たとえば、確認したい内容をエージェントに依頼します。
+2. 確認したい内容をエージェントに依頼します。例:
 
 ```text
 Compare my gateway auth config with the docs and suggest the smallest fix.
 ```
 
-3. 正確な証拠と検証のためにローカルシェルコマンドを使います。
+3. 正確な証拠と検証にはローカルシェルコマンドを使用します。
 
 ```text
 !openclaw config file
@@ -178,72 +176,72 @@ Compare my gateway auth config with the docs and suggest the smallest fix.
 ```
 
 4. `openclaw config set` または `openclaw configure` で狭い変更を適用し、その後 `!openclaw config validate` を再実行します。
-5. Doctor が自動移行または修復を推奨した場合は、それを確認してから `!openclaw doctor --fix` を実行します。
+5. Doctor が自動移行または修復を推奨する場合は、それを確認して `!openclaw doctor --fix` を実行します。
 
 ヒント:
 
 - `openclaw.json` を手で編集するより、`openclaw config set` または `openclaw configure` を優先してください。
-- `openclaw docs "<query>"` は、同じマシンから live docs index を検索します。
-- `openclaw config validate --json` は、構造化された schema エラーや SecretRef/解決可能性エラーが欲しいときに便利です。
+- `openclaw docs "<query>"` は、同じマシンからライブドキュメントインデックスを検索します。
+- `openclaw config validate --json` は、構造化されたスキーマと SecretRef/解決可能性のエラーが必要な場合に便利です。
 
 ## ツール出力
 
-- ツール呼び出しは args + results 付きカードとして表示されます。
-- Ctrl+O で折りたたみ/展開表示を切り替えます。
-- ツール実行中は、部分更新が同じカードにストリーミングされます。
+- ツール呼び出しは args + results を含むカードとして表示されます。
+- Ctrl+O で折りたたみ/展開ビューを切り替えます。
+- ツールの実行中、部分更新は同じカードにストリームされます。
 
 ## ターミナルカラー
 
-- TUI は assistant 本文テキストをターミナルのデフォルト前景色のままに保つため、ダーク/ライトどちらのターミナルでも読みやすさを維持します。
-- ターミナルが明るい背景で、自動検出が誤っている場合は、`openclaw tui` 起動前に `OPENCLAW_THEME=light` を設定してください。
-- 元のダークパレットを強制するには、代わりに `OPENCLAW_THEME=dark` を設定してください。
+- TUI は、暗いターミナルと明るいターミナルのどちらでも読みやすいように、アシスタント本文のテキストをターミナルのデフォルト前景色のままにします。
+- ターミナルが明るい背景を使用していて自動検出が誤っている場合は、`openclaw tui` を起動する前に `OPENCLAW_THEME=light` を設定してください。
+- 代わりに元のダークパレットを強制するには、`OPENCLAW_THEME=dark` を設定します。
 
 ## 履歴 + ストリーミング
 
-- 接続時に、TUI は最新の履歴を読み込みます（デフォルト 200 メッセージ）。
-- ストリーミング応答は、確定するまでその場で更新されます。
-- TUI は、より豊かなツールカードのために agent のツールイベントも受信します。
+- 接続時、TUI は最新の履歴 (デフォルト 200 件のメッセージ) を読み込みます。
+- ストリーミング応答は確定するまでその場で更新されます。
+- TUI は、よりリッチなツールカードのためにエージェントツールイベントもリッスンします。
 
 ## 接続の詳細
 
-- TUI は `mode: "tui"` として Gateway に登録されます。
-- 再接続時は system メッセージが表示され、イベント欠落はログに表示されます。
+- TUI は Gateway に `mode: "tui"` として登録します。
+- 再接続ではシステムメッセージが表示され、イベントの欠落はログに表示されます。
 
 ## オプション
 
-- `--local`: ローカル組み込みエージェントランタイムに対して実行
-- `--url <url>`: Gateway WebSocket URL（デフォルトは config または `ws://127.0.0.1:<port>`）
-- `--token <token>`: Gateway token（必要な場合）
-- `--password <password>`: Gateway password（必要な場合）
-- `--session <key>`: セッションキー（デフォルト: `main`、スコープが global の場合は `global`）
-- `--deliver`: assistant の返信を provider に配信する（デフォルトではオフ）
-- `--thinking <level>`: 送信時の thinking level を上書き
-- `--message <text>`: 接続後に最初のメッセージを送信
-- `--timeout-ms <ms>`: エージェントタイムアウト（ミリ秒）。デフォルトは `agents.defaults.timeoutSeconds`
-- `--history-limit <n>`: 読み込む履歴エントリ数（デフォルト `200`）
+- `--local`: ローカルの組み込みエージェントランタイムに対して実行
+- `--url <url>`: Gateway WebSocket URL (デフォルトは設定、または `ws://127.0.0.1:<port>`)
+- `--token <token>`: Gateway トークン (必要な場合)
+- `--password <password>`: Gateway パスワード (必要な場合)
+- `--session <key>`: セッションキー (デフォルト: `main`、またはスコープが global の場合は `global`)
+- `--deliver`: アシスタントの返信をプロバイダーに配信 (デフォルトはオフ)
+- `--thinking <level>`: 送信時の思考レベルを上書き
+- `--message <text>`: 接続後に初期メッセージを送信
+- `--timeout-ms <ms>`: エージェントのタイムアウト (ミリ秒、デフォルトは `agents.defaults.timeoutSeconds`)
+- `--history-limit <n>`: 読み込む履歴エントリ数 (デフォルト `200`)
 
-注記: `--url` を設定した場合、TUI は config や環境認証情報にはフォールバックしません。
-`--token` または `--password` を明示的に渡してください。明示的な認証情報がない場合はエラーです。
-ローカルモードでは、`--url`、`--token`、`--password` を渡さないでください。
+<Warning>
+`--url` を設定すると、TUI は設定や環境認証情報にフォールバックしません。`--token` または `--password` を明示的に渡してください。明示的な認証情報がない場合はエラーになります。ローカルモードでは、`--url`、`--token`、または `--password` を渡さないでください。
+</Warning>
 
 ## トラブルシューティング
 
 メッセージ送信後に出力がない場合:
 
-- TUI 内で `/status` を実行し、Gateway が接続済みで idle/busy のどちらかを確認してください。
-- Gateway ログを確認してください: `openclaw logs --follow`。
-- エージェントが実行可能か確認してください: `openclaw status` と `openclaw models status`。
-- chat channel へのメッセージを期待している場合は、配信を有効にしてください（`/deliver on` または `--deliver`）。
+- TUI で `/status` を実行し、Gateway が接続済みで idle/busy であることを確認します。
+- Gateway ログを確認します: `openclaw logs --follow`。
+- エージェントが実行できることを確認します: `openclaw status` と `openclaw models status`。
+- チャットチャネルにメッセージが表示されることを期待している場合は、配信を有効にします (`/deliver on` または `--deliver`)。
 
-## 接続トラブルシューティング
+## 接続のトラブルシューティング
 
-- `disconnected`: Gateway が実行中であり、`--url/--token/--password` が正しいことを確認してください。
-- picker に agents が出ない: `openclaw agents list` とルーティング config を確認してください。
-- session picker が空: global スコープか、まだ session が存在しない可能性があります。
+- `disconnected`: Gateway が実行中で、`--url/--token/--password` が正しいことを確認してください。
+- ピッカーにエージェントがない場合: `openclaw agents list` とルーティング設定を確認してください。
+- セッションピッカーが空の場合: global スコープになっているか、まだセッションがない可能性があります。
 
 ## 関連
 
-- [Control UI](/ja-JP/web/control-ui) — Web ベースの操作インターフェース
-- [Config](/ja-JP/cli/config) — `openclaw.json` の確認、検証、編集
-- [Doctor](/ja-JP/cli/doctor) — ガイド付き修復と移行チェック
-- [CLI Reference](/ja-JP/cli) — CLI コマンドの完全リファレンス
+- [Control UI](/ja-JP/web/control-ui) — Web ベースの制御インターフェイス
+- [設定](/ja-JP/cli/config) — `openclaw.json` を検査、検証、編集する
+- [Doctor](/ja-JP/cli/doctor) — ガイド付きの修復と移行チェック
+- [CLI リファレンス](/ja-JP/cli) — 完全な CLI コマンドリファレンス

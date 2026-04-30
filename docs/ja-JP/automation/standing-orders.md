@@ -2,56 +2,56 @@
 read_when:
     - タスクごとのプロンプトなしで実行される自律エージェントワークフローの設定
     - エージェントが独立して実行できることと、人間の承認が必要なことを定義する
-    - 明確な境界とエスカレーションルールを備えたマルチプログラムエージェントを構築する
-summary: 自律エージェントプログラムに対する恒久的な運用権限を定義する
-title: 恒久命令
+    - 明確な境界とエスカレーションルールで複数プログラムエージェントを構成する
+summary: 自律エージェントプログラムの永続的な運用権限を定義する
+title: 常設の指示
 x-i18n:
-    generated_at: "2026-04-25T13:40:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T04:57:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4a18777284a12e99b2e9f1ce660a0dc4d18ba5782d6a6a6673b495ab32b2d8cf
+    source_hash: ff895378cbd53f7e8058137389037ab40201ce2cdfb34c135f480dfef775919b
     source_path: automation/standing-orders.md
-    workflow: 15
+    workflow: 16
 ---
 
-恒久命令は、定義されたプログラムに対してエージェントに**恒久的な運用権限**を付与します。毎回個別のタスク指示を出す代わりに、明確なスコープ、トリガー、エスカレーションルールを持つプログラムを定義し、エージェントはその境界内で自律的に実行します。
+常時指示は、定義されたプログラムについてエージェントに**永続的な運用権限**を与えます。毎回個別のタスク指示を出す代わりに、明確なスコープ、トリガー、エスカレーションルールを備えたプログラムを定義し、エージェントはその境界内で自律的に実行します。
 
-これは、毎週金曜日にアシスタントへ「週次レポートを送って」と伝えるのと、恒久的な権限を与えることの違いです。「週次レポートはあなたの担当です。毎週金曜日にまとめて送信し、何かおかしな点がある場合だけエスカレーションしてください。」
+これは、毎週金曜日にアシスタントへ「週次レポートを送って」と伝えることと、常時権限を与えることの違いです。「週次レポートはあなたの担当です。毎週金曜日に作成して送信し、何かおかしい場合だけエスカレーションしてください。」
 
-## なぜ恒久命令なのか？
+## 常時指示が必要な理由
 
-**恒久命令がない場合:**
+**常時指示がない場合:**
 
-- すべてのタスクについてエージェントにプロンプトを送る必要がある
-- エージェントはリクエストの合間に待機したままになる
-- 定型業務が忘れられたり遅れたりする
-- あなたがボトルネックになる
+- すべてのタスクについてエージェントにプロンプトを出す必要がある
+- エージェントはリクエストの合間に待機するだけになる
+- 定型作業が忘れられたり遅れたりする
+- 自分がボトルネックになる
 
-**恒久命令がある場合:**
+**常時指示がある場合:**
 
 - エージェントは定義された境界内で自律的に実行する
-- 定型業務がプロンプトなしでスケジュールどおりに実行される
-- あなたが関与するのは例外対応と承認のみ
-- エージェントが空き時間を生産的に埋める
+- 定型作業はプロンプトなしでスケジュールどおりに行われる
+- 自分が関与するのは例外や承認だけになる
+- エージェントはアイドル時間を生産的に使う
 
 ## 仕組み
 
-恒久命令は、[agent workspace](/ja-JP/concepts/agent-workspace) のファイル内で定義します。推奨される方法は、`AGENTS.md` に直接含めることです（これは毎セッション自動注入されるため、エージェントは常にその内容をコンテキストに持ちます）。より大きな構成では、`standing-orders.md` のような専用ファイルに配置し、それを `AGENTS.md` から参照することもできます。
+常時指示は [agent workspace](/ja-JP/concepts/agent-workspace) ファイルで定義します。推奨される方法は、`AGENTS.md`（各セッションで自動注入されます）に直接含めることです。これにより、エージェントは常にそれらをコンテキストに持てます。より大きな構成では、`standing-orders.md` のような専用ファイルに配置し、`AGENTS.md` から参照することもできます。
 
-各プログラムでは、以下を指定します。
+各プログラムでは次を指定します。
 
-1. **スコープ** — エージェントが実行を許可されていること
+1. **スコープ** — エージェントに許可されていること
 2. **トリガー** — 実行するタイミング（スケジュール、イベント、または条件）
-3. **承認ゲート** — 実行前に人間の承認が必要なこと
+3. **承認ゲート** — 実行前に人間のサインオフが必要なこと
 4. **エスカレーションルール** — 停止して支援を求めるタイミング
 
-エージェントは、ワークスペースのブートストラップファイルを通じて毎セッションこれらの指示を読み込み（自動注入されるファイルの完全な一覧は [Agent Workspace](/ja-JP/concepts/agent-workspace) を参照）、時間ベースの強制実行には [cron jobs](/ja-JP/automation/cron-jobs) と組み合わせて実行します。
+エージェントは、ワークスペースのブートストラップファイルを通じて各セッションでこれらの指示を読み込み（自動注入されるファイルの完全な一覧は [Agent Workspace](/ja-JP/concepts/agent-workspace) を参照）、時間ベースの強制には [Cron ジョブ](/ja-JP/automation/cron-jobs) と組み合わせて実行します。
 
 <Tip>
-恒久命令は `AGENTS.md` に入れて、毎セッション確実に読み込まれるようにしてください。ワークスペースのブートストラップでは、`AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md`、`MEMORY.md` が自動注入されますが、サブディレクトリ内の任意のファイルは自動注入されません。
+常時指示は `AGENTS.md` に置くと、各セッションで必ず読み込まれます。ワークスペースのブートストラップは `AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md`、`MEMORY.md` を自動的に注入しますが、サブディレクトリ内の任意のファイルは注入しません。
 </Tip>
 
-## 恒久命令の構成
+## 常時指示の構成
 
 ```markdown
 ## Program: Weekly Status Report
@@ -61,7 +61,7 @@ x-i18n:
 **Approval gate:** None for standard reports. Flag anomalies for human review.
 **Escalation:** If data source is unavailable or metrics look unusual (>2σ from norm)
 
-### Execution Steps
+### Execution steps
 
 1. Pull metrics from configured sources
 2. Compare to prior week and targets
@@ -69,16 +69,16 @@ x-i18n:
 4. Deliver summary via configured channel
 5. Log completion to Agent/Logs/
 
-### What NOT to Do
+### What NOT to do
 
 - Do not send reports to external parties
 - Do not modify source data
 - Do not skip delivery if metrics look bad — report accurately
 ```
 
-## 恒久命令 + Cron Jobs
+## 常時指示と Cron ジョブ
 
-恒久命令は、エージェントに何を実行する権限があるかという**何を**定義します。[Cron jobs](/ja-JP/automation/cron-jobs) は、それが**いつ**起こるかを定義します。両者は連携して機能します。
+常時指示は、エージェントに実行を許可する**内容**を定義します。[Cron ジョブ](/ja-JP/automation/cron-jobs) は、それが発生する**タイミング**を定義します。これらは連携して動作します。
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-Cronジョブのプロンプトでは、内容を重複させるのではなく、恒久命令を参照するようにしてください。
+Cron ジョブのプロンプトは、内容を重複させるのではなく常時指示を参照するべきです。
 
 ```bash
 openclaw cron add \
@@ -113,13 +113,13 @@ openclaw cron add \
 **Approval gate:** All posts require owner review for first 30 days, then standing approval
 **Trigger:** Weekly cycle (Monday review → mid-week drafts → Friday brief)
 
-### Weekly Cycle
+### Weekly cycle
 
 - **Monday:** Review platform metrics and audience engagement
 - **Tuesday–Thursday:** Draft social posts, create blog content
 - **Friday:** Compile weekly marketing brief → deliver to owner
 
-### Content Rules
+### Content rules
 
 - Voice must match the brand (see SOUL.md or brand voice guide)
 - Never identify as AI in public-facing content
@@ -127,7 +127,7 @@ openclaw cron add \
 - Focus on value to audience, not self-promotion
 ```
 
-### 例 2: 財務オペレーション（イベントトリガー型）
+### 例 2: 財務オペレーション（イベントトリガー）
 
 ```markdown
 ## Program: Financial Processing
@@ -136,7 +136,7 @@ openclaw cron add \
 **Approval gate:** None for analysis. Recommendations require owner approval.
 **Trigger:** New data file detected OR scheduled monthly cycle
 
-### When New Data Arrives
+### When new data arrives
 
 1. Detect new file in designated input directory
 2. Parse and categorize all transactions
@@ -145,7 +145,7 @@ openclaw cron add \
 5. Generate report in designated output directory
 6. Deliver summary to owner via configured channel
 
-### Escalation Rules
+### Escalation rules
 
 - Single item > $500: immediate alert
 - Category > budget by 20%: flag in report
@@ -153,7 +153,7 @@ openclaw cron add \
 - Failed processing after 2 retries: report failure, do not guess
 ```
 
-### 例 3: 監視とアラート（継続実行型）
+### 例 3: 監視とアラート（継続）
 
 ```markdown
 ## Program: System Monitoring
@@ -169,7 +169,7 @@ openclaw cron add \
 - Pending tasks not stale (>24 hours)
 - Delivery channels operational
 
-### Response Matrix
+### Response matrix
 
 | Condition        | Action                   | Escalate?                |
 | ---------------- | ------------------------ | ------------------------ |
@@ -179,16 +179,16 @@ openclaw cron add \
 | Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## Execute-Verify-Report パターン
+## 実行・検証・報告パターン
 
-恒久命令は、厳格な実行規律と組み合わせると最も効果を発揮します。恒久命令内のすべてのタスクは、次のループに従う必要があります。
+常時指示は、厳格な実行規律と組み合わせると最も効果的です。常時指示内のすべてのタスクは、次のループに従うべきです。
 
-1. **実行する** — 実際の作業を行う（指示を確認するだけではない）
-2. **検証する** — 結果が正しいことを確認する（ファイルが存在する、メッセージが配信された、データが解析された）
-3. **報告する** — 何を実行し、何を検証したかを所有者に伝える
+1. **実行** — 実際の作業を行う（指示を認識するだけではない）
+2. **検証** — 結果が正しいことを確認する（ファイルが存在する、メッセージが配信された、データが解析された）
+3. **報告** — 何を行い、何を検証したかをオーナーに伝える
 
 ```markdown
-### Execution Rules
+### Execution rules
 
 - Every task follows Execute-Verify-Report. No exceptions.
 - "I'll do that" is not execution. Do it, then report.
@@ -198,11 +198,11 @@ openclaw cron add \
 - Never retry indefinitely — 3 attempts max, then escalate.
 ```
 
-このパターンにより、エージェントで最も一般的な失敗モード、つまりタスクを完了せずに了承だけしてしまうことを防げます。
+このパターンは、最も一般的なエージェントの失敗モード、つまりタスクを完了せずに認識だけすることを防ぎます。
 
 ## マルチプログラムアーキテクチャ
 
-複数の関心領域を管理するエージェントでは、明確な境界を持つ個別のプログラムとして恒久命令を整理してください。
+複数の領域を管理するエージェントでは、常時指示を明確な境界を持つ個別のプログラムとして整理します。
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -223,35 +223,35 @@ openclaw cron add \
 - [Approval gates that apply across programs]
 ```
 
-各プログラムには、次の要素が必要です。
+各プログラムには次が必要です。
 
-- 独自の**トリガー頻度**（週次、月次、イベント駆動、継続実行）
-- 独自の**承認ゲート**（他のプログラムより監督を必要とするものもある）
-- 明確な**境界**（どこで1つのプログラムが終わり、別のプログラムが始まるかをエージェントが理解できること）
+- 独自の**トリガー頻度**（週次、月次、イベント駆動、継続）
+- 独自の**承認ゲート**（プログラムによって必要な監督の度合いは異なる）
+- 明確な**境界**（エージェントは、あるプログラムがどこで終わり、別のプログラムがどこから始まるかを知っているべきです）
 
 ## ベストプラクティス
 
-### 推奨事項
+### すること
 
-- 権限は狭く始め、信頼の構築に応じて拡大する
-- 高リスクなアクションには明示的な承認ゲートを定義する
-- 「してはいけないこと」のセクションを含める — 境界は権限と同じくらい重要
-- 時間ベースの確実な実行のためにCronジョブと組み合わせる
-- 恒久命令が守られていることを確認するため、エージェントログを毎週確認する
-- ニーズの変化に応じて恒久命令を更新する — これらは生きたドキュメント
+- 狭い権限から始め、信頼が構築されるにつれて拡張する
+- 高リスクのアクションには明示的な承認ゲートを定義する
+- 「してはいけないこと」セクションを含める。境界は権限と同じくらい重要です
+- 信頼性の高い時間ベースの実行のために Cron ジョブと組み合わせる
+- エージェントログを毎週確認し、常時指示が守られていることを検証する
+- ニーズの変化に応じて常時指示を更新する。これは生きたドキュメントです
 
-### 避けるべきこと
+### 避けること
 
-- 初日から広範な権限を与えること（「最善だと思うことを何でもやって」）
-- エスカレーションルールを省くこと — すべてのプログラムには「いつ止まって確認するか」の条項が必要
-- エージェントが口頭指示を覚えていると想定すること — すべてをファイルに書く
-- 単一のプログラムに複数の関心事を混在させること — 別々の領域には別々のプログラム
-- Cronジョブによる強制実行を忘れること — トリガーのない恒久命令は提案にしかならない
+- 初日に広範な権限を与える（「最善だと思うことを何でもして」）
+- エスカレーションルールを省略する。すべてのプログラムには「いつ停止して尋ねるか」の条項が必要です
+- エージェントが口頭の指示を覚えていると仮定する。すべてをファイルに入れる
+- 1 つのプログラムに複数の関心事を混在させる。別々のドメインには別々のプログラムを使う
+- Cron ジョブで強制することを忘れる。トリガーのない常時指示は提案になってしまいます
 
-## 関連情報
+## 関連
 
-- [Automation & Tasks](/ja-JP/automation) — すべての自動化メカニズムの概要
-- [Cron Jobs](/ja-JP/automation/cron-jobs) — 恒久命令のスケジュール強制実行
-- [Hooks](/ja-JP/automation/hooks) — エージェントのライフサイクルイベントに対するイベント駆動スクリプト
-- [Webhooks](/ja-JP/automation/cron-jobs#webhooks) — 受信HTTPイベントトリガー
-- [Agent Workspace](/ja-JP/concepts/agent-workspace) — 恒久命令の保存場所。`AGENTS.md`、`SOUL.md` など、自動注入されるブートストラップファイルの完全な一覧も含む
+- [自動化とタスク](/ja-JP/automation): すべての自動化メカニズムの概要。
+- [Cron ジョブ](/ja-JP/automation/cron-jobs): 常時指示のスケジュール強制。
+- [フック](/ja-JP/automation/hooks): エージェントのライフサイクルイベント向けのイベント駆動スクリプト。
+- [Webhook](/ja-JP/automation/cron-jobs#webhooks): インバウンド HTTP イベントトリガー。
+- [Agent workspace](/ja-JP/concepts/agent-workspace): 常時指示を置く場所。自動注入されるブートストラップファイル（`AGENTS.md`、`SOUL.md` など）の完全な一覧を含みます。

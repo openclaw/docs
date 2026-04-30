@@ -1,28 +1,27 @@
 ---
 read_when:
-    - macOS開発環境をセットアップする場合
-summary: OpenClaw macOSアプリを開発する開発者向けセットアップガイド
-title: macOS開発セットアップ
+    - macOS 開発環境のセットアップ
+summary: OpenClaw macOS アプリの開発に取り組む開発者向けセットアップガイド
+title: macOS 開発環境のセットアップ
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:08:19Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 30f98b3249096fa1e125a7beb77562b7bd36e2c17f524f30a1c58de61bd04da0
-  source_path: platforms/mac/dev-setup.md
-  workflow: 15
+    generated_at: "2026-04-30T05:23:00Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: d0c494b7a214b6db2880ba02c512653c35dbcdf80805bee9777ec946412668e1
+    source_path: platforms/mac/dev-setup.md
+    workflow: 16
 ---
 
-# macOS開発者セットアップ
+# macOS 開発者セットアップ
 
-このガイドでは、ソースからOpenClaw macOSアプリケーションをビルドして実行するために必要な手順を扱います。
+OpenClaw macOS アプリケーションをソースからビルドして実行します。
 
 ## 前提条件
 
-アプリをビルドする前に、次がインストールされていることを確認してください。
+アプリをビルドする前に、以下がインストールされていることを確認してください。
 
-1. **Xcode 26.2+**: Swift開発に必要です。
-2. **Node.js 24 & pnpm**: gateway、CLI、およびパッケージングスクリプト向けに推奨されます。互換性のため、Node 22 LTS（現在は`22.14+`）も引き続きサポートされています。
+1. **Xcode 26.2+**: Swift 開発に必要です。
+2. **Node.js 24 & pnpm**: Gateway、CLI、パッケージングスクリプトに推奨されます。互換性のため、現在 `22.14+` の Node 22 LTS も引き続きサポートされています。
 
 ## 1. 依存関係をインストールする
 
@@ -34,28 +33,28 @@ pnpm install
 
 ## 2. アプリをビルドしてパッケージ化する
 
-macOSアプリをビルドし、それを`dist/OpenClaw.app`へパッケージ化するには、次を実行します。
+macOS アプリをビルドし、`dist/OpenClaw.app` にパッケージ化するには、次を実行します。
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Apple Developer ID証明書がない場合、このスクリプトは自動的に**ad-hoc signing**（`-`）を使用します。
+Apple Developer ID 証明書がない場合、スクリプトは自動的に **ad-hoc 署名** (`-`) を使用します。
 
-開発実行モード、署名フラグ、およびTeam IDのトラブルシューティングについては、macOSアプリREADMEを参照してください:
+開発実行モード、署名フラグ、Team ID のトラブルシューティングについては、macOS アプリの README を参照してください。
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **注意**: ad-hoc署名されたアプリはセキュリティプロンプトを引き起こす場合があります。アプリが「Abort trap 6」で即座にクラッシュする場合は、[トラブルシューティング](#トラブルシューティング)セクションを参照してください。
+> **注記**: ad-hoc 署名されたアプリでは、セキュリティプロンプトが表示される場合があります。アプリが "Abort trap 6" ですぐにクラッシュする場合は、[トラブルシューティング](#troubleshooting) セクションを参照してください。
 
-## 3. CLIをインストールする
+## 3. CLI をインストールする
 
-macOSアプリは、バックグラウンドタスク管理のためにグローバルな`openclaw` CLIインストールを前提としています。
+macOS アプリは、バックグラウンドタスクを管理するためにグローバルな `openclaw` CLI インストールを想定しています。
 
 **インストールするには（推奨）:**
 
-1. OpenClawアプリを開きます。
-2. **General**設定タブへ移動します。
-3. **"Install CLI"**をクリックします。
+1. OpenClaw アプリを開きます。
+2. **General** 設定タブに移動します。
+3. **"Install CLI"** をクリックします。
 
 または、手動でインストールします。
 
@@ -63,19 +62,19 @@ macOSアプリは、バックグラウンドタスク管理のためにグロー
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>`および`bun add -g openclaw@<version>`も動作します。
-Gatewayランタイムでは、引き続きNodeパスが推奨です。
+`pnpm add -g openclaw@<version>` と `bun add -g openclaw@<version>` も使用できます。
+Gateway ランタイムには、引き続き Node が推奨されます。
 
 ## トラブルシューティング
 
-### ビルド失敗: ツールチェーンまたはSDK不一致
+### ビルド失敗: ツールチェーンまたは SDK の不一致
 
-macOSアプリのビルドは、最新のmacOS SDKとSwift 6.2ツールチェーンを前提としています。
+macOS アプリのビルドには、最新の macOS SDK と Swift 6.2 ツールチェーンが必要です。
 
 **システム依存関係（必須）:**
 
-- **Software Updateで利用可能な最新のmacOSバージョン**（Xcode 26.2 SDKに必要）
-- **Xcode 26.2**（Swift 6.2ツールチェーン）
+- **ソフトウェアアップデートで入手可能な最新の macOS バージョン**（Xcode 26.2 SDK に必要）
+- **Xcode 26.2**（Swift 6.2 ツールチェーン）
 
 **確認:**
 
@@ -84,37 +83,37 @@ xcodebuild -version
 xcrun swift --version
 ```
 
-バージョンが一致しない場合は、macOS/Xcodeを更新してからビルドを再実行してください。
+バージョンが一致しない場合は、macOS/Xcode をアップデートしてからビルドを再実行してください。
 
 ### 権限付与時にアプリがクラッシュする
 
-**Speech Recognition**または**Microphone**アクセスを許可しようとしたときにアプリがクラッシュする場合、TCCキャッシュ破損または署名不一致が原因の可能性があります。
+**Speech Recognition** または **Microphone** へのアクセスを許可しようとしたときにアプリがクラッシュする場合、TCC キャッシュの破損または署名の不一致が原因である可能性があります。
 
 **修正:**
 
-1. TCC権限をリセットします。
+1. TCC 権限をリセットします。
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. それでも失敗する場合は、[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)内の`BUNDLE_ID`を一時的に変更し、macOS側で「クリーンスレート」を強制してください。
+2. それでも失敗する場合は、macOS から「クリーンスレート」を強制するために、[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) の `BUNDLE_ID` を一時的に変更します。
 
-### Gatewayが「Starting...」のままになる
+### Gateway が "Starting..." のまま終わらない
 
-gatewayステータスが「Starting...」のままの場合、zombie processがポートを保持していないか確認してください。
+Gateway のステータスが "Starting..." のままの場合は、ゾンビプロセスがポートを保持していないか確認してください。
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# LaunchAgentを使っていない場合（開発モード / 手動実行）、listenerを探します:
+# LaunchAgent を使用していない場合（開発モード / 手動実行）、リスナーを探します:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-手動実行がポートを保持している場合は、そのプロセスを停止してください（Ctrl+C）。最後の手段として、上で見つけたPIDをkillしてください。
+手動実行がポートを保持している場合は、そのプロセスを停止します（Ctrl+C）。最後の手段として、上で見つけた PID を kill してください。
 
 ## 関連
 
-- [macOS app](/ja-JP/platforms/macos)
-- [Install overview](/ja-JP/install)
+- [macOS アプリ](/ja-JP/platforms/macos)
+- [インストール概要](/ja-JP/install)

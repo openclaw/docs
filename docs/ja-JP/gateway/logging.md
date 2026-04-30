@@ -1,127 +1,126 @@
 ---
 read_when:
-    - ログ出力や形式の変更
-    - CLIまたはgateway出力のデバッグ
-summary: ログ出力先、ファイルログ、WSログスタイル、コンソール書式設定
-title: Gatewayログ記録
+    - ログ出力または形式の変更
+    - CLI または Gateway 出力のデバッグ
+summary: ログ出力サーフェス、ファイルログ、WSログスタイル、コンソールの書式設定
+title: Gateway のログ記録
 x-i18n:
-    generated_at: "2026-04-26T11:29:55Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:13:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c005cfc4cfe456b3734d3928a16c9cd131a2b465d46f2aba9c9c61db22dcc399
+    source_hash: 9ce9c78201d2e26760282b08eacb17826b1eac84e80b99d3a9d5cbff4078b5b3
     source_path: gateway/logging.md
-    workflow: 15
+    workflow: 16
 ---
 
-# ログ記録
+# ロギング
 
-ユーザー向けの概要（CLI + Control UI + config）については、[/logging](/ja-JP/logging) を参照してください。
+ユーザー向けの概要（CLI + Control UI + 設定）については、[/logging](/ja-JP/logging) を参照してください。
 
-OpenClaw には2つのログ「サーフェス」があります。
+OpenClaw には 2 つのログ「サーフェス」があります。
 
-- **コンソール出力**（ターミナル / Debug UI で表示されるもの）。
-- gateway logger によって書き込まれる **ファイルログ**（JSON lines）。
+- **コンソール出力**（ターミナル / デバッグ UI に表示されるもの）。
+- **ファイルログ**（JSON lines）。Gateway ロガーによって書き込まれます。
 
-## ファイルベースロガー
+## ファイルベースのロガー
 
-- デフォルトのローテーションログファイルは `/tmp/openclaw/` 配下です（1日1ファイル）: `openclaw-YYYY-MM-DD.log`
-  - 日付は gateway ホストのローカルタイムゾーンを使用します。
-- アクティブなログファイルは `logging.maxFileBytes`（デフォルト: 100 MB）でローテーションし、
-  最大5つの番号付きアーカイブを保持して、新しいアクティブファイルへの書き込みを続けます。
+- デフォルトのローリングログファイルは `/tmp/openclaw/` 配下です（1 日 1 ファイル）: `openclaw-YYYY-MM-DD.log`
+  - 日付には Gateway ホストのローカルタイムゾーンが使われます。
+- アクティブなログファイルは `logging.maxFileBytes`（デフォルト: 100 MB）でローテートされ、最大 5 つの番号付きアーカイブを保持し、新しいアクティブファイルへの書き込みを続けます。
 - ログファイルのパスとレベルは `~/.openclaw/openclaw.json` で設定できます。
   - `logging.file`
   - `logging.level`
 
-ファイル形式は、1行につき1つのJSONオブジェクトです。
+ファイル形式は、1 行につき 1 つの JSON オブジェクトです。
 
-Control UI の Logs タブは gateway 経由でこのファイルをtailします（`logs.tail`）。
-CLIでも同じことができます。
+Control UI のログタブは、Gateway 経由でこのファイルを追尾します（`logs.tail`）。
+CLI でも同じことができます。
 
 ```bash
 openclaw logs --follow
 ```
 
-**Verbose とログレベルの違い**
+**詳細表示とログレベル**
 
-- **ファイルログ** は `logging.level` だけで制御されます。
-- `--verbose` が影響するのは **コンソールの詳細度**（およびWSログスタイル）だけであり、
-  ファイルログレベルは上がりません。
-- verbose専用の詳細もファイルログに記録したい場合は、`logging.level` を `debug` または
-  `trace` に設定してください。
+- **ファイルログ**は `logging.level` のみで制御されます。
+- `--verbose` は **コンソールの詳細度**（および WS ログスタイル）にのみ影響します。ファイルログレベルは上げません。
+- 詳細表示でのみ出る内容をファイルログに記録するには、`logging.level` を `debug` または `trace` に設定します。
 
 ## コンソールキャプチャ
 
-CLIは `console.log/info/warn/error/debug/trace` をキャプチャしてファイルログに書き込みつつ、
-stdout/stderr にも引き続き出力します。
+CLI は `console.log/info/warn/error/debug/trace` をキャプチャしてファイルログに書き込みつつ、stdout/stderr への出力も続けます。
 
-コンソールの詳細度は、次で独立して調整できます。
+コンソールの詳細度は次の項目で個別に調整できます。
 
-- `logging.consoleLevel`（デフォルト `info`）
+- `logging.consoleLevel`（デフォルトは `info`）
 - `logging.consoleStyle`（`pretty` | `compact` | `json`）
 
-## ツール要約の秘匿化
+## リダクション
 
-詳細なツール要約（例: `🛠️ Exec: ...`）は、コンソールストリームに出る前に機密トークンをマスクできます。これは **ツールのみ** が対象で、ファイルログは変更しません。
+OpenClaw は、ログまたはトランスクリプト出力がプロセスを出る前に、機密トークンをマスクできます。このロギングのリダクションポリシーは、コンソール、ファイルログ、OTLP ログレコード、セッショントランスクリプトのテキストシンクに適用されるため、一致したシークレット値は JSONL 行やメッセージがディスクに書き込まれる前にマスクされます。
 
 - `logging.redactSensitive`: `off` | `tools`（デフォルト: `tools`）
-- `logging.redactPatterns`: regex文字列の配列（デフォルトを上書き）
-  - 生のregex文字列（自動で `gi`）を使うか、カスタムflags が必要な場合は `/pattern/flags` を使ってください。
-  - 一致部分は、先頭6文字 + 末尾4文字を残してマスクされます（長さが18以上の場合）。それ以外は `***` になります。
-  - デフォルトでは、一般的なキー代入、CLI flags、JSON fields、bearer headers、PEM blocks、よく使われるトークンprefix を対象にします。
+- `logging.redactPatterns`: 正規表現文字列の配列（デフォルトを上書き）
+  - 生の正規表現文字列（自動で `gi`）、またはカスタムフラグが必要な場合は `/pattern/flags` を使用します。
+  - 一致箇所は、長さが 18 以上の場合は先頭 6 文字 + 末尾 4 文字を残してマスクされ、それ以外は `***` になります。
+  - デフォルトでは、一般的なキー代入、CLI フラグ、JSON フィールド、bearer ヘッダー、PEM ブロック、よく使われるトークンプレフィックスを対象にします。
+
+一部の安全境界では、`logging.redactSensitive` に関係なく常にリダクションされます。
+これには、Control UI のツール呼び出しイベント、`sessions_history` ツール出力、診断サポートエクスポート、プロバイダーエラー観測、exec 承認コマンド表示、Gateway WebSocket プロトコルログが含まれます。これらのサーフェスでは追加パターンとして `logging.redactPatterns` を使用できますが、`redactSensitive: "off"` にしても生のシークレットは出力されません。
 
 ## Gateway WebSocket ログ
 
-gateway は、2つのモードでWebSocketプロトコルログを出力します。
+Gateway は WebSocket プロトコルログを 2 つのモードで出力します。
 
-- **通常モード（`--verbose` なし）**: 「重要な」RPC結果だけを出力します。
+- **通常モード（`--verbose` なし）**: 「注目すべき」RPC 結果のみ出力されます。
   - エラー（`ok=false`）
-  - 遅い呼び出し（デフォルト閾値: `>= 50ms`）
+  - 遅い呼び出し（デフォルトのしきい値: `>= 50ms`）
   - パースエラー
-- **verboseモード（`--verbose`）**: すべてのWSリクエスト/レスポンストラフィックを出力します。
+- **詳細モード（`--verbose`）**: すべての WS リクエスト/レスポンス通信を出力します。
 
-### WSログスタイル
+### WS ログスタイル
 
-`openclaw gateway` は、gatewayごとのスタイル切り替えをサポートします。
+`openclaw gateway` は Gateway ごとのスタイル切り替えをサポートします。
 
-- `--ws-log auto`（デフォルト）: 通常モードでは最適化され、verboseモードでは compact 出力を使います
-- `--ws-log compact`: verbose時に compact 出力（対応する request/response）
-- `--ws-log full`: verbose時にフレームごとの完全出力
+- `--ws-log auto`（デフォルト）: 通常モードは最適化され、詳細モードではコンパクト出力を使います
+- `--ws-log compact`: 詳細モード時のコンパクト出力（リクエスト/レスポンスのペア）
+- `--ws-log full`: 詳細モード時のフレーム単位の完全出力
 - `--compact`: `--ws-log compact` のエイリアス
 
 例:
 
 ```bash
-# 最適化（エラー/低速のみ）
+# optimized (only errors/slow)
 openclaw gateway
 
-# すべてのWSトラフィックを表示（対応表示）
+# show all WS traffic (paired)
 openclaw gateway --verbose --ws-log compact
 
-# すべてのWSトラフィックを表示（完全なメタ情報）
+# show all WS traffic (full meta)
 openclaw gateway --verbose --ws-log full
 ```
 
-## コンソール書式設定（サブシステムログ記録）
+## コンソールフォーマット（サブシステムロギング）
 
-コンソールフォーマッターは **TTY対応** で、一貫したプレフィックス付き行を出力します。
-サブシステムロガーにより、出力はまとまりがあり確認しやすくなります。
+コンソールフォーマッターは **TTY 対応**で、一貫したプレフィックス付きの行を出力します。
+サブシステムロガーにより、出力はまとまり、読み取りやすくなります。
 
-動作:
+挙動:
 
-- 各行に **サブシステムプレフィックス**（例: `[gateway]`, `[canvas]`, `[tailscale]`）
-- **サブシステムごとの色**（サブシステムごとに安定）に加えてレベル色分け
-- **出力先がTTYであるか、環境がリッチターミナルらしい場合に色付け**（`TERM`/`COLORTERM`/`TERM_PROGRAM`）、`NO_COLOR` を尊重
-- **短縮されたサブシステムプレフィックス**: 先頭の `gateway/` + `channels/` を落とし、末尾2セグメントを保持（例: `whatsapp/outbound`）
-- **サブシステムごとのサブロガー**（自動プレフィックス + 構造化フィールド `{ subsystem }`）
-- QR/UX出力用の **`logRaw()`**（プレフィックスなし、書式設定なし）
+- すべての行に **サブシステムプレフィックス**（例: `[gateway]`、`[canvas]`、`[tailscale]`）
+- **サブシステムカラー**（サブシステムごとに安定）とレベルカラー
+- **出力先が TTY、または環境がリッチターミナルらしい場合にカラーを使用**（`TERM`/`COLORTERM`/`TERM_PROGRAM`）。`NO_COLOR` を尊重します
+- **短縮サブシステムプレフィックス**: 先頭の `gateway/` + `channels/` を削除し、末尾 2 セグメントを保持します（例: `whatsapp/outbound`）
+- **サブシステム別サブロガー**（自動プレフィックス + 構造化フィールド `{ subsystem }`）
+- QR/UX 出力用の **`logRaw()`**（プレフィックスなし、フォーマットなし）
 - **コンソールスタイル**（例: `pretty | compact | json`）
-- **コンソールログレベル** はファイルログレベルと別です（`logging.level` が `debug`/`trace` の場合、ファイルは完全な詳細を保持）
-- **WhatsApp メッセージ本文** は `debug` で記録されます（確認するには `--verbose` を使ってください）
+- **コンソールログレベル**はファイルログレベルとは別です（`logging.level` が `debug`/`trace` に設定されている場合、ファイルには完全な詳細が保持されます）
+- **WhatsApp メッセージ本文**は `debug` でログ記録されます（表示するには `--verbose` を使用）
 
-これにより、既存のファイルログを安定させたまま、対話的な出力を確認しやすくします。
+これにより、既存のファイルログを安定させたまま、インタラクティブ出力を読み取りやすくできます。
 
 ## 関連
 
-- [Logging](/ja-JP/logging)
-- [OpenTelemetry export](/ja-JP/gateway/opentelemetry)
-- [Diagnostics export](/ja-JP/gateway/diagnostics)
+- [ロギング](/ja-JP/logging)
+- [OpenTelemetry エクスポート](/ja-JP/gateway/opentelemetry)
+- [診断エクスポート](/ja-JP/gateway/diagnostics)

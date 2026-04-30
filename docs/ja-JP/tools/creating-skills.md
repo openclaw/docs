@@ -1,29 +1,27 @@
 ---
 read_when:
-    - workspace で新しい custom skill を作成しています
-    - SKILL.md ベースの Skills のためのクイックスタートワークフローが必要です
-summary: SKILL.md を使って custom workspace Skills を構築およびテストする
-title: Skills を作成すること
+    - ワークスペースで新しいカスタムスキルを作成しています
+    - SKILL.mdベースのSkills向けに、すぐに始められるワークフローが必要です
+summary: SKILL.mdでカスタムワークスペースSkillsをビルドしてテストする
+title: Skillsの作成
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:24:03Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: df9249e14936c65143580a6618679cf2d79a2960390e5c7afc5dbea1a9a6e045
-  source_path: tools/creating-skills.md
-  workflow: 15
+    generated_at: "2026-04-30T05:37:12Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 201718f4088f4243b0dabe12fb4fce4b8a7e64df9a4b7d651356ab4ae0dd3579
+    source_path: tools/creating-skills.md
+    workflow: 16
 ---
 
-Skills は、tool をどのように、いつ使うかをエージェントに教えます。各 skill は、
-YAML frontmatter と markdown 命令を含む `SKILL.md` ファイルを持つディレクトリです。
+Skillsは、いつどのようにツールを使うかをエージェントに教えます。各スキルは、YAMLフロントマターとMarkdown指示を含む`SKILL.md`ファイルを持つディレクトリです。
 
-Skills の読み込み方法と優先順位については、[Skills](/ja-JP/tools/skills) を参照してください。
+Skillsの読み込みと優先順位付けの仕組みについては、[Skills](/ja-JP/tools/skills)を参照してください。
 
-## 最初の skill を作成する
+## 最初のスキルを作成する
 
 <Steps>
-  <Step title="skill ディレクトリを作成する">
-    Skills は workspace 内に配置されます。新しいフォルダーを作成してください。
+  <Step title="スキルディレクトリを作成する">
+    Skillsはワークスペース内に配置されます。新しいフォルダーを作成します。
 
     ```bash
     mkdir -p ~/.openclaw/workspace/skills/hello-world
@@ -31,43 +29,46 @@ Skills の読み込み方法と優先順位については、[Skills](/ja-JP/too
 
   </Step>
 
-  <Step title="SKILL.md を書く">
-    そのディレクトリ内に `SKILL.md` を作成します。frontmatter でメタデータを定義し、
-    markdown 本文にエージェント向けの指示を書きます。
+  <Step title="SKILL.mdを書く">
+    そのディレクトリ内に`SKILL.md`を作成します。フロントマターはメタデータを定義し、
+    Markdown本文にはエージェントへの指示を記述します。
 
     ```markdown
     ---
-    name: hello_world
-    description: あいさつを返すシンプルな skill。
+    name: hello-world
+    description: A simple skill that says hello.
     ---
 
     # Hello World Skill
 
-    ユーザーがあいさつを求めたら、`echo` tool を使って
-    "Hello from your custom skill!" と返してください。
+    When the user asks for a greeting, use the `echo` tool to say
+    "Hello from your custom skill!".
     ```
 
-  </Step>
-
-  <Step title="tool を追加する（任意）">
-    frontmatter で custom tool schema を定義することも、
-    既存の system tool（`exec` や `browser` など）を使うようエージェントに指示することもできます。
-    Skills は、それが説明する tool と一緒に plugin 内で配布することもできます。
+    スキルの`name`には、小文字、数字、ハイフンを使ったハイフンケースを使用します。
+    フォルダー名とフロントマターの`name`を一致させてください。
 
   </Step>
 
-  <Step title="skill を読み込む">
-    OpenClaw が skill を認識するよう、新しいセッションを開始してください。
+  <Step title="ツールを追加する（任意）">
+    フロントマターでカスタムツールスキーマを定義することも、エージェントに既存のシステムツール
+    （`exec`や`browser`など）を使うよう指示することもできます。Skillsは、説明対象のツールと一緒に
+    plugins内で配布することもできます。
+
+  </Step>
+
+  <Step title="スキルを読み込む">
+    OpenClawがスキルを検出するように、新しいセッションを開始します。
 
     ```bash
-    # チャットから
+    # From chat
     /new
 
-    # または gateway を再起動
+    # Or restart the gateway
     openclaw gateway restart
     ```
 
-    skill が読み込まれたことを確認します。
+    スキルが読み込まれたことを確認します。
 
     ```bash
     openclaw skills list
@@ -76,50 +77,50 @@ Skills の読み込み方法と優先順位については、[Skills](/ja-JP/too
   </Step>
 
   <Step title="テストする">
-    skill を発動するはずのメッセージを送ってください。
+    スキルをトリガーするはずのメッセージを送信します。
 
     ```bash
     openclaw agent --message "give me a greeting"
     ```
 
-    または、単にエージェントと会話して、あいさつを求めてください。
+    または、エージェントとチャットして挨拶を依頼します。
 
   </Step>
 </Steps>
 
-## skill メタデータリファレンス
+## スキルメタデータリファレンス
 
-YAML frontmatter は次のフィールドをサポートします。
+YAMLフロントマターは次のフィールドをサポートします。
 
-| Field | Required | 説明 |
-| ----------------------------------- | -------- | ------------------------------------------- |
-| `name` | Yes | 一意の識別子（snake_case） |
-| `description` | Yes | エージェントに表示される 1 行の説明 |
-| `metadata.openclaw.os` | No | OS フィルター（`["darwin"]`, `["linux"]` など） |
-| `metadata.openclaw.requires.bins` | No | PATH 上で必要なバイナリ |
-| `metadata.openclaw.requires.config` | No | 必要な config key |
+| フィールド                          | 必須     | 説明                                                           |
+| ----------------------------------- | -------- | -------------------------------------------------------------- |
+| `name`                              | はい     | 小文字、数字、ハイフンを使った一意の識別子                    |
+| `description`                       | はい     | エージェントに表示される1行の説明                             |
+| `metadata.openclaw.os`              | いいえ   | OSフィルター（`["darwin"]`、`["linux"]`など）                  |
+| `metadata.openclaw.requires.bins`   | いいえ   | PATH上に必要なバイナリ                                         |
+| `metadata.openclaw.requires.config` | いいえ   | 必要な設定キー                                                 |
 
 ## ベストプラクティス
 
-- **簡潔にする** — AI としてどう振る舞うかではなく、何をするかをモデルに指示します
-- **安全性を最優先にする** — skill が `exec` を使う場合、信頼できない入力から任意コマンド注入が起きないようにしてください
-- **ローカルでテストする** — 共有する前に `openclaw agent --message "..."` でテストしてください
-- **ClawHub を使う** — [ClawHub](https://clawhub.ai) で Skills を閲覧し、貢献できます
+- **簡潔にする** — AIとしてどう振る舞うかではなく、_何を_するかをモデルに指示する
+- **安全第一** — スキルが`exec`を使う場合、信頼できない入力から任意のコマンドインジェクションができないようにプロンプトを設計する
+- **ローカルでテストする** — 共有する前に`openclaw agent --message "..."`を使ってテストする
+- **ClawHubを使う** — [ClawHub](https://clawhub.ai)でSkillsを探して投稿する
 
-## Skills の配置場所
+## Skillsの配置場所
 
-| Location | Precedence | Scope |
-| ------------------------------- | ---------- | --------------------- |
-| `\<workspace\>/skills/` | 最優先 | エージェントごと |
-| `\<workspace\>/.agents/skills/` | 高 | workspace ごとのエージェント |
-| `~/.agents/skills/` | 中 | 共有エージェントプロファイル |
-| `~/.openclaw/skills/` | 中 | 共有（すべてのエージェント） |
-| Bundled（OpenClaw 同梱） | 低 | グローバル |
-| `skills.load.extraDirs` | 最低 | custom 共有フォルダー |
+| 場所                            | 優先順位 | スコープ              |
+| ------------------------------- | -------- | --------------------- |
+| `\<workspace\>/skills/`         | 最高     | エージェント単位      |
+| `\<workspace\>/.agents/skills/` | 高       | ワークスペース内のエージェント単位 |
+| `~/.agents/skills/`             | 中       | 共有エージェントプロファイル |
+| `~/.openclaw/skills/`           | 中       | 共有（すべてのエージェント） |
+| バンドル済み（OpenClawに同梱） | 低       | グローバル            |
+| `skills.load.extraDirs`         | 最低     | カスタム共有フォルダー |
 
 ## 関連
 
-- [Skills reference](/ja-JP/tools/skills) — 読み込み、優先順位、ゲーティングルール
-- [Skills config](/ja-JP/tools/skills-config) — `skills.*` config schema
-- [ClawHub](/ja-JP/tools/clawhub) — 公開 skill registry
-- [Building Plugins](/ja-JP/plugins/building-plugins) — plugin は skill を同梱できます
+- [Skillsリファレンス](/ja-JP/tools/skills) — 読み込み、優先順位、ゲートルール
+- [Skills設定](/ja-JP/tools/skills-config) — `skills.*`設定スキーマ
+- [ClawHub](/ja-JP/tools/clawhub) — 公開スキルレジストリ
+- [Pluginsの構築](/ja-JP/plugins/building-plugins) — pluginsはSkillsを同梱できる

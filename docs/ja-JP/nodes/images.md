@@ -1,83 +1,82 @@
 ---
 read_when:
-- Modifying media pipeline or attachments
-summary: 送信、Gateway、エージェント返信における画像とメディア処理ルール
+    - メディアパイプラインまたは添付ファイルの変更
+summary: send、Gateway、エージェント返信における画像とメディアの処理ルール
 title: 画像とメディアのサポート
 x-i18n:
-  generated_at: '2026-04-24T05:06:08Z'
-  refreshed_at: '2026-04-28T05:23:26Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 26fa460f7dcdac9f15c9d79c3c3370adbce526da5cfa9a6825a8ed20b41e0a29
-  source_path: nodes/images.md
-  workflow: 15
+    generated_at: "2026-04-30T05:21:52Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 1eb07bc638a755be5597e78c07041a52cfc0297b00d70c5adbfe5f3ad8c1a372
+    source_path: nodes/images.md
+    workflow: 16
 ---
 
-# 画像とメディアのサポート（2025-12-05）
+# 画像とメディアのサポート (2025-12-05)
 
-WhatsApp チャネルは **Baileys Web** 経由で動作します。このドキュメントでは、送信、Gateway、エージェント返信における現在のメディア処理ルールをまとめます。
+WhatsApp チャンネルは **Baileys Web** 経由で動作します。このドキュメントでは、送信、Gateway、エージェント返信に関する現在のメディア処理ルールをまとめます。
 
 ## 目標
 
-- `openclaw message send --media` で、任意のキャプション付きメディアを送信する。
-- Web inbox からの自動返信に、テキストと一緒にメディアを含められるようにする。
-- タイプごとの制限を妥当で予測可能なものに保つ。
+- `openclaw message send --media` で任意のキャプション付きメディアを送信する。
+- Web 受信箱からの自動返信で、テキストと一緒にメディアを含められるようにする。
+- 種類ごとの制限を妥当で予測しやすく保つ。
 
 ## CLI サーフェス
 
 - `openclaw message send --media <path-or-url> [--message <caption>]`
-  - `--media` は任意。メディアのみ送信する場合、キャプションは空でもよい。
-  - `--dry-run` は解決済みペイロードを表示し、`--json` は `{ channel, to, messageId, mediaUrl, caption }` を出力する。
+  - `--media` は任意。メディアのみの送信ではキャプションを空にできます。
+  - `--dry-run` は解決済みペイロードを出力します。`--json` は `{ channel, to, messageId, mediaUrl, caption }` を出力します。
 
-## WhatsApp Web チャネルの動作
+## WhatsApp Web チャンネルの挙動
 
 - 入力: ローカルファイルパス **または** HTTP(S) URL。
-- フロー: Buffer に読み込み、メディア種別を検出し、正しいペイロードを構築する:
-  - **画像:** `channels.whatsapp.mediaMaxMb`（デフォルト: 50 MB）を目標に、JPEG にリサイズおよび再圧縮する（最大辺 2048px）。
-  - **音声/ボイス/動画:** 16 MB まではそのまま通し、音声はボイスノートとして送信する（`ptt: true`）。
-  - **ドキュメント:** それ以外のものは 100 MB まで。利用可能な場合はファイル名を保持する。
-- WhatsApp の GIF 風再生: `gifPlayback: true` を付けた MP4 を送信する（CLI: `--gif-playback`）ことで、モバイルクライアントでインラインループ再生する。
-- MIME 検出は、まず magic bytes、次にヘッダー、その次にファイル拡張子を優先する。
-- キャプションは `--message` または `reply.text` から取得する。空のキャプションも許可される。
-- ログ: 非 verbose では `↩️`/`✅` を表示し、verbose ではサイズとソースパス/URL を含める。
+- フロー: Buffer に読み込み、メディアの種類を検出し、適切なペイロードを構築します:
+  - **画像:** `channels.whatsapp.mediaMaxMb` (デフォルト: 50 MB) を目標に、JPEG へリサイズおよび再圧縮します (最大辺 2048px)。
+  - **音声/ボイス/動画:** 16 MB までパススルーします。音声はボイスノート (`ptt: true`) として送信されます。
+  - **ドキュメント:** その他すべて。100 MB までで、利用可能な場合はファイル名を保持します。
+- WhatsApp の GIF 風再生: MP4 を `gifPlayback: true` (CLI: `--gif-playback`) で送信すると、モバイルクライアントでインラインループ再生されます。
+- MIME 検出は、マジックバイト、ヘッダー、ファイル拡張子の順に優先します。
+- キャプションは `--message` または `reply.text` から取得されます。空のキャプションも許可されます。
+- ログ: 非 verbose では `↩️`/`✅` を表示し、verbose ではサイズとソースパス/URL も含めます。
 
 ## 自動返信パイプライン
 
-- `getReplyFromConfig` は `{ text?, mediaUrl?, mediaUrls? }` を返す。
-- メディアが存在する場合、Web 送信側は `openclaw message send` と同じパイプラインを使ってローカルパスまたは URL を解決する。
-- 複数のメディアエントリーが指定された場合、それらは順番に送信される。
+- `getReplyFromConfig` は `{ text?, mediaUrl?, mediaUrls? }` を返します。
+- メディアが存在する場合、Web 送信側は `openclaw message send` と同じパイプラインを使ってローカルパスまたは URL を解決します。
+- 複数のメディアエントリが指定されている場合は、順番に送信されます。
 
-## コマンドへの受信メディア入力（Pi）
+## コマンドへの受信メディア (Pi)
 
-- 受信した Web メッセージにメディアが含まれる場合、OpenClaw はそれを一時ファイルにダウンロードし、テンプレート変数として公開する:
+- 受信した Web メッセージにメディアが含まれる場合、OpenClaw は一時ファイルへダウンロードし、テンプレート変数を公開します:
   - `{{MediaUrl}}` 受信メディア用の疑似 URL。
   - `{{MediaPath}}` コマンド実行前に書き込まれるローカル一時パス。
-- セッション単位の Docker sandbox が有効な場合、受信メディアは sandbox workspace にコピーされ、`MediaPath`/`MediaUrl` は `media/inbound/<filename>` のような相対パスに書き換えられる。
-- メディア理解（`tools.media.*` または共有 `tools.media.models` で設定されている場合）はテンプレート適用前に実行され、`Body` に `[Image]`、`[Audio]`、`[Video]` ブロックを挿入できる。
-  - 音声では `{{Transcript}}` が設定され、コマンド解析には transcript が使われるため、スラッシュコマンドも引き続き動作する。
-  - 動画と画像の説明は、コマンド解析のためにキャプションテキストを保持する。
-  - アクティブなプライマリ画像モデルがすでにネイティブで vision をサポートしている場合、OpenClaw は `[Image]` サマリーブロックを省略し、代わりに元の画像をモデルに渡す。
-- デフォルトでは、最初に一致した画像/音声/動画の添付のみが処理される。複数の添付を処理するには `tools.media.<cap>.attachments` を設定する。
+- セッション単位の Docker サンドボックスが有効な場合、受信メディアはサンドボックスワークスペースへコピーされ、`MediaPath`/`MediaUrl` は `media/inbound/<filename>` のような相対パスに書き換えられます。
+- メディア理解 (`tools.media.*` または共有 `tools.media.models` で設定されている場合) はテンプレート処理の前に実行され、`Body` に `[Image]`、`[Audio]`、`[Video]` ブロックを挿入できます。
+  - 音声は `{{Transcript}}` を設定し、スラッシュコマンドが引き続き機能するよう、コマンド解析に文字起こしを使います。
+  - 動画と画像の説明は、コマンド解析のためにキャプションテキストを保持します。
+  - アクティブなプライマリ画像モデルがすでにネイティブでビジョンに対応している場合、OpenClaw は `[Image]` 要約ブロックをスキップし、代わりに元の画像をモデルへ渡します。
+- デフォルトでは、条件に一致する最初の画像/音声/動画添付ファイルのみが処理されます。複数の添付ファイルを処理するには `tools.media.<cap>.attachments` を設定します。
 
 ## 制限とエラー
 
-**送信時の上限（WhatsApp Web 送信）**
+**送信上限 (WhatsApp Web 送信)**
 
-- 画像: 再圧縮後に `channels.whatsapp.mediaMaxMb`（デフォルト: 50 MB）まで。
-- 音声/ボイス/動画: 16 MB 上限。ドキュメント: 100 MB 上限。
-- サイズ超過または読み取れないメディア → ログに明確なエラーを出し、その返信はスキップされる。
+- 画像: 再圧縮後に `channels.whatsapp.mediaMaxMb` (デフォルト: 50 MB) まで。
+- 音声/ボイス/動画: 上限 16 MB。ドキュメント: 上限 100 MB。
+- サイズ超過または読み取り不能なメディア → ログに明確なエラーを出力し、返信はスキップされます。
 
-**メディア理解の上限（文字起こし/説明）**
+**メディア理解の上限 (文字起こし/説明)**
 
-- 画像デフォルト: 10 MB（`tools.media.image.maxBytes`）。
-- 音声デフォルト: 20 MB（`tools.media.audio.maxBytes`）。
-- 動画デフォルト: 50 MB（`tools.media.video.maxBytes`）。
-- サイズ超過のメディアは理解処理をスキップするが、返信自体は元の本文のまま引き続き行われる。
+- 画像のデフォルト: 10 MB (`tools.media.image.maxBytes`)。
+- 音声のデフォルト: 20 MB (`tools.media.audio.maxBytes`)。
+- 動画のデフォルト: 50 MB (`tools.media.video.maxBytes`)。
+- サイズ超過メディアでは理解処理をスキップしますが、返信は元の本文でそのまま続行されます。
 
-## テストに関する注意
+## テストに関するメモ
 
-- 画像/音声/ドキュメントケースについて、送信 + 返信フローをカバーする。
-- 画像の再圧縮（サイズ制限）と、音声のボイスノートフラグを検証する。
+- 画像/音声/ドキュメントのケースについて、送信と返信のフローをカバーする。
+- 画像の再圧縮 (サイズ境界) と、音声のボイスノートフラグを検証する。
 - 複数メディアの返信が順次送信として展開されることを確認する。
 
 ## 関連

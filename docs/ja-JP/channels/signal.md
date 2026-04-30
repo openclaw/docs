@@ -1,38 +1,38 @@
 ---
 read_when:
     - Signal サポートの設定
-    - Signal の送受信をデバッグする
-summary: '`signal-cli`（JSON-RPC + SSE）経由の Signal サポート、セットアップパス、および番号モデル'
+    - Signal の送受信のデバッグ
+summary: signal-cli（JSON-RPC + SSE）経由のSignalサポート、セットアップパス、番号モデル
 title: Signal
 x-i18n:
-    generated_at: "2026-04-25T13:42:00Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:00:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cb1ff4328aae73576a78b00be3dd79e9768badfc6193843ed3c05439765ae295
+    source_hash: d450454550a86cbf0e2b7231bb149f78275a756517db1f20d7a07e3d298febee
     source_path: channels/signal.md
-    workflow: 15
+    workflow: 16
 ---
 
-ステータス: 外部CLI統合。Gateway は HTTP JSON-RPC + SSE 経由で `signal-cli` と通信します。
+ステータス: 外部 CLI 統合。Gateway は HTTP JSON-RPC + SSE 経由で `signal-cli` と通信します。
 
 ## 前提条件
 
-- サーバーに OpenClaw がインストールされていること（以下の Linux フローは Ubuntu 24 でテスト済み）。
-- Gateway が動作するホストで `signal-cli` を利用できること。
-- 1回の認証SMSを受信できる電話番号があること（SMS登録パスの場合）。
-- 登録時に Signal の captcha（`signalcaptchas.org`）へアクセスできるブラウザがあること。
+- サーバーに OpenClaw がインストール済み（以下の Linux フローは Ubuntu 24 でテスト済み）。
+- Gateway が実行されるホストで `signal-cli` が利用可能。
+- 検証 SMS を 1 回受信できる電話番号（SMS 登録パスの場合）。
+- 登録中に Signal captcha（`signalcaptchas.org`）へアクセスできるブラウザー。
 
-## クイックセットアップ（初級者向け）
+## クイックセットアップ（初心者向け）
 
-1. ボットには**別の Signal 番号**を使用します（推奨）。
-2. `signal-cli` をインストールします（JVM ビルドを使う場合は Java が必要）。
-3. セットアップパスを1つ選びます:
+1. ボット用に**別の Signal 番号**を使用します（推奨）。
+2. `signal-cli` をインストールします（JVM ビルドを使う場合は Java が必要です）。
+3. セットアップパスを 1 つ選びます。
    - **パス A（QR リンク）:** `signal-cli link -n "OpenClaw"` を実行し、Signal でスキャンします。
-   - **パス B（SMS 登録）:** captcha + SMS 認証で専用番号を登録します。
+   - **パス B（SMS 登録）:** captcha + SMS 検証で専用番号を登録します。
 4. OpenClaw を設定し、Gateway を再起動します。
-5. 最初のDMを送信し、ペアリングを承認します（`openclaw pairing approve signal <CODE>`）。
+5. 最初の DM を送信し、ペアリングを承認します（`openclaw pairing approve signal <CODE>`）。
 
-最小構成:
+最小設定:
 
 ```json5
 {
@@ -50,24 +50,24 @@ x-i18n:
 
 フィールドリファレンス:
 
-| Field       | Description                                       |
+| フィールド  | 説明                                              |
 | ----------- | ------------------------------------------------- |
-| `account`   | E.164 形式のボット電話番号（`+15551234567`） |
+| `account`   | E.164 形式のボット電話番号（`+15551234567`）      |
 | `cliPath`   | `signal-cli` へのパス（`PATH` 上にある場合は `signal-cli`） |
-| `dmPolicy`  | DM アクセスポリシー（`pairing` を推奨） |
-| `allowFrom` | DM を許可する電話番号または `uuid:<id>` 値 |
+| `dmPolicy`  | DM アクセスポリシー（`pairing` を推奨）           |
+| `allowFrom` | DM を許可する電話番号または `uuid:<id>` 値        |
 
 ## これは何か
 
-- `signal-cli` 経由の Signal チャネル（埋め込み libsignal ではありません）。
+- `signal-cli` 経由の Signal チャンネル（組み込みの libsignal ではありません）。
 - 決定的ルーティング: 返信は常に Signal に戻ります。
-- DM はエージェントのメインセッションを共有し、グループは分離されます（`agent:<agentId>:signal:group:<groupId>`）。
+- DM はエージェントのメインセッションを共有します。グループは分離されます（`agent:<agentId>:signal:group:<groupId>`）。
 
-## 設定書き込み
+## 設定の書き込み
 
-デフォルトでは、Signal は `/config set|unset` によってトリガーされる設定更新の書き込みを許可します（`commands.config: true` が必要）。
+デフォルトでは、Signal は `/config set|unset` によってトリガーされる設定更新を書き込めます（`commands.config: true` が必要）。
 
-無効にするには:
+無効化するには:
 
 ```json5
 {
@@ -77,16 +77,16 @@ x-i18n:
 
 ## 番号モデル（重要）
 
-- Gateway は**Signal デバイス**（`signal-cli` アカウント）に接続します。
-- ボットを**個人の Signal アカウント**で動かしている場合、そのアカウント自身のメッセージは無視されます（ループ保護）。
-- 「自分がボットにテキストを送り、ボットが返信する」運用にしたい場合は、**別のボット番号**を使用してください。
+- Gateway は **Signal デバイス**（`signal-cli` アカウント）に接続します。
+- ボットを**自分の個人 Signal アカウント**で実行すると、自分自身のメッセージは無視されます（ループ保護）。
+- 「自分がボットにテキストを送ると返信される」ようにするには、**別のボット番号**を使用します。
 
 ## セットアップパス A: 既存の Signal アカウントをリンクする（QR）
 
-1. `signal-cli` をインストールします（JVM またはネイティブビルド）。
-2. ボットアカウントをリンクします:
+1. `signal-cli`（JVM またはネイティブビルド）をインストールします。
+2. ボットアカウントをリンクします。
    - `signal-cli link -n "OpenClaw"` を実行し、Signal で QR をスキャンします。
-3. Signal を設定して Gateway を起動します。
+3. Signal を設定し、Gateway を起動します。
 
 例:
 
@@ -104,15 +104,15 @@ x-i18n:
 }
 ```
 
-マルチアカウント対応: アカウントごとの設定と任意の `name` を持つ `channels.signal.accounts` を使用します。共有パターンについては [`gateway/configuration`](/ja-JP/gateway/config-channels#multi-account-all-channels) を参照してください。
+複数アカウント対応: アカウントごとの設定と任意の `name` を指定して `channels.signal.accounts` を使用します。共通パターンについては [`gateway/configuration`](/ja-JP/gateway/config-channels#multi-account-all-channels) を参照してください。
 
 ## セットアップパス B: 専用ボット番号を登録する（SMS、Linux）
 
-既存の Signal アプリのアカウントをリンクするのではなく、専用のボット番号を使いたい場合はこちらを使用します。
+既存の Signal アプリのアカウントをリンクする代わりに、専用ボット番号が必要な場合に使用します。
 
-1. SMS を受信できる番号を用意します（固定電話の場合は音声認証も可）。
-   - アカウント/セッションの競合を避けるため、専用のボット番号を使用してください。
-2. Gateway ホストに `signal-cli` をインストールします:
+1. SMS（または固定電話の場合は音声検証）を受信できる番号を用意します。
+   - アカウントやセッションの競合を避けるため、専用ボット番号を使用します。
+2. Gateway ホストに `signal-cli` をインストールします。
 
 ```bash
 VERSION=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/AsamK/signal-cli/releases/latest | sed -e 's/^.*\/v//')
@@ -122,10 +122,10 @@ sudo ln -sf /opt/signal-cli /usr/local/bin/
 signal-cli --version
 ```
 
-JVM ビルド（`signal-cli-${VERSION}.tar.gz`）を使う場合は、先に JRE 25+ をインストールしてください。
-`signal-cli` は常に最新に保ってください。Signal サーバー API の変更により、古いリリースは動作しなくなる可能性があると upstream は述べています。
+JVM ビルド（`signal-cli-${VERSION}.tar.gz`）を使用する場合は、先に JRE 25+ をインストールしてください。
+`signal-cli` は最新に保ってください。上流では、Signal サーバー API の変更により古いリリースが壊れる可能性があると記載されています。
 
-3. 番号を登録して認証します:
+3. 番号を登録して検証します。
 
 ```bash
 signal-cli -a +<BOT_PHONE_NUMBER> register
@@ -134,34 +134,36 @@ signal-cli -a +<BOT_PHONE_NUMBER> register
 captcha が必要な場合:
 
 1. `https://signalcaptchas.org/registration/generate.html` を開きます。
-2. captcha を完了し、「Open Signal」から `signalcaptcha://...` のリンク先をコピーします。
-3. 可能であれば、ブラウザセッションと同じ外部 IP から実行します。
-4. すぐに再度登録を実行します（captcha トークンはすぐ失効します）:
+2. captcha を完了し、「Open Signal」から `signalcaptcha://...` リンクターゲットをコピーします。
+3. 可能な場合は、ブラウザーセッションと同じ外部 IP から実行します。
+4. すぐに登録を再実行します（captcha トークンは短時間で期限切れになります）。
 
 ```bash
 signal-cli -a +<BOT_PHONE_NUMBER> register --captcha '<SIGNALCAPTCHA_URL>'
 signal-cli -a +<BOT_PHONE_NUMBER> verify <VERIFICATION_CODE>
 ```
 
-4. OpenClaw を設定し、Gateway を再起動し、チャネルを確認します:
+4. OpenClaw を設定し、Gateway を再起動して、チャンネルを検証します。
 
 ```bash
-# Gateway を user systemd service として実行している場合:
+# If you run the gateway as a user systemd service:
 systemctl --user restart openclaw-gateway.service
 
-# 次に確認:
+# Then verify:
 openclaw doctor
 openclaw channels status --probe
 ```
 
-5. DM 送信者をペアリングします:
+5. DM 送信者をペアリングします。
    - ボット番号に任意のメッセージを送信します。
-   - サーバー上でコードを承認します: `openclaw pairing approve signal <PAIRING_CODE>`。
-   - 「Unknown contact」を避けるため、ボット番号をスマートフォンの連絡先に保存します。
+   - サーバーでコードを承認します: `openclaw pairing approve signal <PAIRING_CODE>`。
+   - 「Unknown contact」を避けるため、ボット番号を電話の連絡先として保存します。
 
-重要: `signal-cli` で電話番号アカウントを登録すると、その番号のメイン Signal アプリセッションが認証解除されることがあります。専用のボット番号を使うか、既存のスマートフォンアプリ構成を維持する必要がある場合は QR リンクモードを使用してください。
+<Warning>
+`signal-cli` で電話番号アカウントを登録すると、その番号のメイン Signal アプリセッションが認証解除される可能性があります。専用ボット番号を推奨します。既存の電話アプリ設定を維持する必要がある場合は、QR リンクモードを使用してください。
+</Warning>
 
-upstream リファレンス:
+上流リファレンス:
 
 - `signal-cli` README: `https://github.com/AsamK/signal-cli`
 - captcha フロー: `https://github.com/AsamK/signal-cli/wiki/Registration-with-captcha`
@@ -169,7 +171,7 @@ upstream リファレンス:
 
 ## 外部デーモンモード（httpUrl）
 
-`signal-cli` を自分で管理したい場合（JVM のコールドスタートが遅い、コンテナ初期化、または CPU 共有など）、デーモンを別途実行し、OpenClaw をそれに向けます:
+`signal-cli` を自分で管理したい場合（遅い JVM コールドスタート、コンテナー初期化、共有 CPU など）は、デーモンを別途実行し、OpenClaw にその場所を指定します。
 
 ```json5
 {
@@ -182,56 +184,56 @@ upstream リファレンス:
 }
 ```
 
-これにより、OpenClaw 内部での自動起動と起動待機がスキップされます。自動起動時に起動が遅い場合は、`channels.signal.startupTimeoutMs` を設定してください。
+これにより、OpenClaw 内部での自動起動と起動待機がスキップされます。自動起動時の起動が遅い場合は、`channels.signal.startupTimeoutMs` を設定します。
 
 ## アクセス制御（DM + グループ）
 
 DM:
 
 - デフォルト: `channels.signal.dmPolicy = "pairing"`。
-- 未知の送信者にはペアリングコードが送られ、承認されるまでメッセージは無視されます（コードの有効期限は 1 時間）。
-- 承認方法:
+- 不明な送信者はペアリングコードを受け取ります。承認されるまでメッセージは無視されます（コードは 1 時間後に期限切れ）。
+- 次で承認します。
   - `openclaw pairing list signal`
   - `openclaw pairing approve signal <CODE>`
-- ペアリングは Signal DM のデフォルトのトークン交換です。詳細: [Pairing](/ja-JP/channels/pairing)
-- UUID のみの送信者（`sourceUuid` 由来）は `channels.signal.allowFrom` に `uuid:<id>` として保存されます。
+- ペアリングは Signal DM のデフォルトのトークン交換です。詳細: [ペアリング](/ja-JP/channels/pairing)
+- UUID のみの送信者（`sourceUuid` から）は、`channels.signal.allowFrom` に `uuid:<id>` として保存されます。
 
 グループ:
 
 - `channels.signal.groupPolicy = open | allowlist | disabled`。
-- `allowlist` が設定されている場合、`channels.signal.groupAllowFrom` がグループ内で誰がトリガーできるかを制御します。
-- `channels.signal.groups["<group-id>" | "*"]` で、`requireMention`、`tools`、`toolsBySender` を使ってグループ動作を上書きできます。
-- マルチアカウント構成では、アカウントごとの上書きに `channels.signal.accounts.<id>.groups` を使用します。
-- ランタイム注記: `channels.signal` が完全に欠けている場合、ランタイムはグループチェックに対して `groupPolicy="allowlist"` にフォールバックします（`channels.defaults.groupPolicy` が設定されていても同様です）。
+- `allowlist` が設定されている場合、`channels.signal.groupAllowFrom` はグループ内で誰がトリガーできるかを制御します。
+- `channels.signal.groups["<group-id>" | "*"]` は、`requireMention`、`tools`、`toolsBySender` でグループ動作を上書きできます。
+- 複数アカウントセットアップでアカウントごとの上書きを行うには、`channels.signal.accounts.<id>.groups` を使用します。
+- ランタイム注記: `channels.signal` が完全に欠落している場合、ランタイムはグループチェックで `groupPolicy="allowlist"` にフォールバックします（`channels.defaults.groupPolicy` が設定されている場合でも）。
 
 ## 仕組み（動作）
 
 - `signal-cli` はデーモンとして実行され、Gateway は SSE 経由でイベントを読み取ります。
-- 受信メッセージは共有チャネルエンベロープに正規化されます。
+- 受信メッセージは共有チャンネルエンベロープに正規化されます。
 - 返信は常に同じ番号またはグループへルーティングされます。
 
 ## メディア + 制限
 
-- 送信テキストは `channels.signal.textChunkLimit`（デフォルト 4000）で分割されます。
-- 任意の改行チャンク分割: `channels.signal.chunkMode="newline"` を設定すると、長さで分割する前に空行（段落境界）で分割します。
-- 添付ファイルをサポートします（`signal-cli` から取得される base64）。
-- 音声メモ添付では、`contentType` が欠けている場合に MIME のフォールバックとして `signal-cli` のファイル名を使用するため、音声文字起こしで AAC 音声メモを引き続き分類できます。
+- 送信テキストは `channels.signal.textChunkLimit`（デフォルト 4000）に分割されます。
+- 任意の改行分割: 長さによる分割の前に空行（段落境界）で分割するには、`channels.signal.chunkMode="newline"` を設定します。
+- 添付ファイルに対応しています（`signal-cli` から base64 を取得）。
+- ボイスメモ添付では、`contentType` が欠落している場合に `signal-cli` のファイル名を MIME フォールバックとして使用するため、音声文字起こしは AAC ボイスメモを引き続き分類できます。
 - デフォルトのメディア上限: `channels.signal.mediaMaxMb`（デフォルト 8）。
 - メディアのダウンロードをスキップするには `channels.signal.ignoreAttachments` を使用します。
-- グループ履歴コンテキストは `channels.signal.historyLimit`（または `channels.signal.accounts.*.historyLimit`）を使用し、`messages.groupChat.historyLimit` にフォールバックします。無効にするには `0` を設定します（デフォルト 50）。
+- グループ履歴コンテキストは `channels.signal.historyLimit`（または `channels.signal.accounts.*.historyLimit`）を使用し、`messages.groupChat.historyLimit` にフォールバックします。無効化するには `0` を設定します（デフォルト 50）。
 
-## 入力中表示 + 開封確認
+## 入力中表示 + 既読通知
 
-- **入力中インジケーター**: OpenClaw は `signal-cli sendTyping` 経由で入力中シグナルを送り、返信の実行中はそれを更新します。
-- **開封確認**: `channels.signal.sendReadReceipts` が true の場合、OpenClaw は許可された DM の開封確認を転送します。
-- `signal-cli` はグループの開封確認を公開していません。
+- **入力中インジケーター**: OpenClaw は `signal-cli sendTyping` 経由で入力中シグナルを送信し、返信の実行中に更新します。
+- **既読通知**: `channels.signal.sendReadReceipts` が true の場合、OpenClaw は許可された DM の既読通知を転送します。
+- signal-cli はグループの既読通知を公開しません。
 
-## リアクション（message tool）
+## リアクション（メッセージツール）
 
-- `channel=signal` を指定して `message action=react` を使用します。
-- 対象: 送信者の E.164 または UUID（ペアリング出力の `uuid:<id>` を使用。素の UUID でも可）。
-- `messageId` はリアクション対象メッセージの Signal タイムスタンプです。
-- グループのリアクションには `targetAuthor` または `targetAuthorUuid` が必要です。
+- `channel=signal` で `message action=react` を使用します。
+- ターゲット: 送信者の E.164 または UUID（ペアリング出力の `uuid:<id>` を使用します。裸の UUID も機能します）。
+- `messageId` は、リアクション対象メッセージの Signal タイムスタンプです。
+- グループリアクションには `targetAuthor` または `targetAuthorUuid` が必要です。
 
 例:
 
@@ -243,22 +245,22 @@ message action=react channel=signal target=signal:group:<groupId> targetAuthor=u
 
 設定:
 
-- `channels.signal.actions.reactions`: リアクション操作を有効/無効にします（デフォルト true）。
+- `channels.signal.actions.reactions`: リアクションアクションを有効化または無効化します（デフォルト true）。
 - `channels.signal.reactionLevel`: `off | ack | minimal | extensive`。
-  - `off`/`ack` はエージェントのリアクションを無効にします（message tool の `react` はエラーになります）。
-  - `minimal`/`extensive` はエージェントのリアクションを有効にし、ガイダンスレベルを設定します。
+  - `off`/`ack` はエージェントのリアクションを無効化します（メッセージツール `react` はエラーになります）。
+  - `minimal`/`extensive` はエージェントのリアクションを有効化し、ガイダンスレベルを設定します。
 - アカウントごとの上書き: `channels.signal.accounts.<id>.actions.reactions`、`channels.signal.accounts.<id>.reactionLevel`。
 
-## 配信先（CLI/cron）
+## 配信ターゲット（CLI/cron）
 
 - DM: `signal:+15551234567`（またはプレーンな E.164）。
-- UUID DM: `uuid:<id>`（または素の UUID）。
+- UUID DM: `uuid:<id>`（または裸の UUID）。
 - グループ: `signal:group:<groupId>`。
-- ユーザー名: `username:<name>`（Signal アカウントが対応している場合）。
+- ユーザー名: `username:<name>`（使用中の Signal アカウントで対応している場合）。
 
 ## トラブルシューティング
 
-まず次の手順を実行してください:
+まずこの手順を実行します。
 
 ```bash
 openclaw status
@@ -268,19 +270,19 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-必要に応じて、その後で DM のペアリング状態を確認します:
+必要に応じて DM ペアリング状態を確認します。
 
 ```bash
 openclaw pairing list signal
 ```
 
-よくある障害:
+よくある失敗:
 
-- デーモンには接続できるが返信がない: アカウント/デーモン設定（`httpUrl`、`account`）と受信モードを確認してください。
-- DM が無視される: 送信者はペアリング承認待ちです。
-- グループメッセージが無視される: グループ送信者/メンションのゲーティングにより配信がブロックされています。
-- 編集後に設定検証エラーが出る: `openclaw doctor --fix` を実行してください。
-- 診断に Signal が表示されない: `channels.signal.enabled: true` を確認してください。
+- デーモンには到達できるが返信がない: アカウント/デーモン設定（`httpUrl`、`account`）と受信モードを検証します。
+- DM が無視される: 送信者がペアリング承認待ちです。
+- グループメッセージが無視される: グループ送信者/メンションのゲートが配信をブロックしています。
+- 編集後に設定検証エラーが発生する: `openclaw doctor --fix` を実行します。
+- 診断に Signal が表示されない: `channels.signal.enabled: true` を確認します。
 
 追加チェック:
 
@@ -290,54 +292,54 @@ pgrep -af signal-cli
 grep -i "signal" "/tmp/openclaw/openclaw-$(date +%Y-%m-%d).log" | tail -20
 ```
 
-トリアージフローについては、[/channels/troubleshooting](/ja-JP/channels/troubleshooting) を参照してください。
+トリアージフロー: [/channels/troubleshooting](/ja-JP/channels/troubleshooting)。
 
 ## セキュリティ上の注意
 
 - `signal-cli` はアカウントキーをローカルに保存します（通常は `~/.local/share/signal-cli/data/`）。
-- サーバー移行や再構築の前に Signal アカウント状態をバックアップしてください。
-- より広い DM アクセスを明示的に望まない限り、`channels.signal.dmPolicy: "pairing"` を維持してください。
-- SMS 認証が必要なのは登録または復旧フローのみですが、番号/アカウントの制御を失うと再登録が複雑になることがあります。
+- サーバー移行または再構築の前に、Signal アカウント状態をバックアップしてください。
+- より広い DM アクセスを明示的に必要としない限り、`channels.signal.dmPolicy: "pairing"` のままにしてください。
+- SMS 検証は登録または復旧フローでのみ必要ですが、番号/アカウントの制御を失うと再登録が複雑になる可能性があります。
 
 ## 設定リファレンス（Signal）
 
-完全な設定: [Configuration](/ja-JP/gateway/configuration)
+完全な設定: [設定](/ja-JP/gateway/configuration)
 
 プロバイダーオプション:
 
-- `channels.signal.enabled`: チャネル起動の有効/無効。
-- `channels.signal.account`: ボットアカウントの E.164。
+- `channels.signal.enabled`: チャンネル起動を有効/無効にします。
+- `channels.signal.account`: ボットアカウント用の E.164。
 - `channels.signal.cliPath`: `signal-cli` へのパス。
-- `channels.signal.httpUrl`: 完全なデーモン URL（host/port より優先）。
-- `channels.signal.httpHost`、`channels.signal.httpPort`: デーモンのバインド先（デフォルトは 127.0.0.1:8080）。
-- `channels.signal.autoStart`: デーモンの自動起動（`httpUrl` 未設定時のデフォルトは true）。
-- `channels.signal.startupTimeoutMs`: 起動待機タイムアウト（ミリ秒、上限 120000）。
+- `channels.signal.httpUrl`: 完全なデーモン URL（ホスト/ポートを上書きします）。
+- `channels.signal.httpHost`, `channels.signal.httpPort`: デーモンのバインド先（デフォルトは 127.0.0.1:8080）。
+- `channels.signal.autoStart`: デーモンを自動起動します（`httpUrl` が未設定の場合、デフォルトは true）。
+- `channels.signal.startupTimeoutMs`: 起動待機タイムアウト（ms、上限 120000）。
 - `channels.signal.receiveMode`: `on-start | manual`。
-- `channels.signal.ignoreAttachments`: 添付ファイルのダウンロードをスキップ。
-- `channels.signal.ignoreStories`: デーモンからのストーリーを無視。
-- `channels.signal.sendReadReceipts`: 開封確認を転送。
+- `channels.signal.ignoreAttachments`: 添付ファイルのダウンロードをスキップします。
+- `channels.signal.ignoreStories`: デーモンからのストーリーを無視します。
+- `channels.signal.sendReadReceipts`: 既読通知を転送します。
 - `channels.signal.dmPolicy`: `pairing | allowlist | open | disabled`（デフォルト: pairing）。
-- `channels.signal.allowFrom`: DM 許可リスト（E.164 または `uuid:<id>`）。`open` では `"*"` が必要です。Signal にはユーザー名がないため、電話番号/UUID の ID を使用します。
+- `channels.signal.allowFrom`: DM 許可リスト（E.164 または `uuid:<id>`）。`open` には `"*"` が必要です。Signal にはユーザー名がないため、電話番号/UUID ID を使用します。
 - `channels.signal.groupPolicy`: `open | allowlist | disabled`（デフォルト: allowlist）。
 - `channels.signal.groupAllowFrom`: グループ送信者の許可リスト。
-- `channels.signal.groups`: Signal グループ ID（または `"*"`）をキーとしたグループごとの上書き設定。対応フィールド: `requireMention`、`tools`、`toolsBySender`。
-- `channels.signal.accounts.<id>.groups`: マルチアカウント構成向けの、`channels.signal.groups` のアカウントごとバージョン。
-- `channels.signal.historyLimit`: コンテキストとして含めるグループメッセージの最大数（`0` で無効）。
-- `channels.signal.dmHistoryLimit`: ユーザーターン単位の DM 履歴上限。ユーザーごとの上書き: `channels.signal.dms["<phone_or_uuid>"].historyLimit`。
+- `channels.signal.groups`: Signal グループ ID（または `"*"`）をキーにしたグループごとの上書き。サポートされるフィールド: `requireMention`, `tools`, `toolsBySender`。
+- `channels.signal.accounts.<id>.groups`: 複数アカウント構成向けの、`channels.signal.groups` のアカウントごとのバージョン。
+- `channels.signal.historyLimit`: コンテキストとして含めるグループメッセージの最大数（0 で無効）。
+- `channels.signal.dmHistoryLimit`: ユーザーターン数での DM 履歴制限。ユーザーごとの上書き: `channels.signal.dms["<phone_or_uuid>"].historyLimit`。
 - `channels.signal.textChunkLimit`: 送信チャンクサイズ（文字数）。
-- `channels.signal.chunkMode`: `length`（デフォルト）または `newline`。長さで分割する前に空行（段落境界）で分割します。
-- `channels.signal.mediaMaxMb`: 受信/送信メディア上限（MB）。
+- `channels.signal.chunkMode`: `length`（デフォルト）または `newline`。長さによるチャンク分割の前に空行（段落境界）で分割します。
+- `channels.signal.mediaMaxMb`: 受信/送信メディアの上限（MB）。
 
 関連するグローバルオプション:
 
-- `agents.list[].groupChat.mentionPatterns`（Signal はネイティブメンションをサポートしません）。
+- `agents.list[].groupChat.mentionPatterns`（Signal はネイティブメンションをサポートしていません）。
 - `messages.groupChat.mentionPatterns`（グローバルフォールバック）。
 - `messages.responsePrefix`。
 
 ## 関連
 
-- [Channels Overview](/ja-JP/channels) — 対応チャネル全体
-- [Pairing](/ja-JP/channels/pairing) — DM 認証とペアリングフロー
-- [Groups](/ja-JP/channels/groups) — グループチャット動作とメンションゲーティング
-- [Channel Routing](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
-- [Security](/ja-JP/gateway/security) — アクセスモデルとハードニング
+- [チャンネル概要](/ja-JP/channels) — サポートされるすべてのチャンネル
+- [ペアリング](/ja-JP/channels/pairing) — DM 認証とペアリングフロー
+- [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンションゲート
+- [チャンネルルーティング](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
+- [セキュリティ](/ja-JP/gateway/security) — アクセスモデルとハードニング

@@ -2,15 +2,15 @@
 summary: /gateway/authentication にリダイレクト
 title: 認証の監視
 x-i18n:
-    generated_at: "2026-04-24T04:44:55Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T04:56:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a80b75d3f35d0255213907562a5ac0416d9bf9fe6f8026193bff07e2f33086a2
+    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
     source_path: automation/auth-monitoring.md
-    workflow: 15
+    workflow: 16
 ---
 
-このページは[認証](/ja-JP/gateway/authentication)に移動しました。認証の監視に関するドキュメントは[認証](/ja-JP/gateway/authentication)を参照してください。
+認証監視は [認証](/ja-JP/gateway/authentication) にあります。
 
 ## 関連
 

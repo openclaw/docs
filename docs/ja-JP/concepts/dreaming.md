@@ -1,133 +1,134 @@
 ---
 read_when:
-    - memory昇格を自動実行したい場合
-    - 各Dreamingフェーズが何をするのか理解したい場合
-    - MEMORY.mdを汚さずに統合を調整したい場合
+    - メモリ昇格を自動的に実行したい場合
+    - 各Dreamingフェーズの役割を理解したい場合
+    - MEMORY.md を汚染せずに統合を調整したい場合
 sidebarTitle: Dreaming
-summary: light、deep、REMフェーズとDream Diaryを備えたバックグラウンドmemory統合
+summary: ライト、ディープ、REMの各フェーズと夢日記を備えたバックグラウンドでのメモリ統合
 title: Dreaming
 x-i18n:
-    generated_at: "2026-04-26T11:27:30Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:07:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cba9593c5f697d49dbb20a3c908bf43ad37989f8cb029443b44523f2acab0e1d
+    source_hash: 85c323c073fc786069835aad25ee68781af49bb031e63b9601674461f385cc2a
     source_path: concepts/dreaming.md
-    workflow: 15
+    workflow: 16
 ---
 
-Dreamingは `memory-core` のバックグラウンドmemory統合システムです。強い短期シグナルを耐久性のあるmemoryへ移しつつ、そのプロセスを説明可能かつレビュー可能に保つのに役立ちます。
+Dreaming は `memory-core` のバックグラウンドメモリ統合システムです。OpenClaw が強い短期シグナルを永続メモリへ移動しながら、そのプロセスを説明可能かつレビュー可能に保つのに役立ちます。
 
 <Note>
-Dreamingは**opt-in**で、デフォルトでは無効です。
+Dreaming は**オプトイン**であり、デフォルトでは無効です。
 </Note>
 
-## Dreamingが書き込むもの
+## Dreaming が書き込むもの
 
-Dreamingは2種類の出力を保持します。
+Dreaming は 2 種類の出力を保持します。
 
-- **マシン状態**: `memory/.dreams/`（recall store、phase signal、ingestion checkpoint、lock）
-- **人間が読める出力**: `DREAMS.md`（または既存の `dreams.md`）および任意のphase report file（`memory/dreaming/<phase>/YYYY-MM-DD.md` 配下）
+- `memory/.dreams/` の**マシン状態**（リコールストア、フェーズシグナル、取り込みチェックポイント、ロック）。
+- `DREAMS.md`（または既存の `dreams.md`）の**人間が読める出力**と、`memory/dreaming/<phase>/YYYY-MM-DD.md` 配下の任意のフェーズレポートファイル。
 
-長期promotionは引き続き `MEMORY.md` にのみ書き込みます。
+長期昇格は引き続き `MEMORY.md` にのみ書き込みます。
 
 ## フェーズモデル
 
-Dreamingは3つの協調フェーズを使います。
+Dreaming は 3 つの協調フェーズを使用します。
 
-| Phase | 目的 | Durable write |
-| ----- | ---- | ------------- |
-| Light | 最近の短期materialを整理してstageする | なし |
-| Deep  | 耐久候補をスコア付けしてpromoteする | はい（`MEMORY.md`） |
-| REM   | テーマと繰り返し現れるアイデアを振り返る | なし |
+| フェーズ | 目的                                   | 永続書き込み     |
+| ----- | ----------------------------------------- | ----------------- |
+| ライト | 最近の短期素材を分類してステージングする | いいえ                |
+| ディープ  | 永続候補をスコアリングして昇格する      | はい（`MEMORY.md`） |
+| REM   | テーマと繰り返し現れるアイデアを内省する     | いいえ                |
 
-これらのフェーズは内部実装の詳細であり、ユーザーが個別に設定する「mode」ではありません。
+これらのフェーズは内部実装の詳細であり、ユーザーが個別に設定する「モード」ではありません。
 
 <AccordionGroup>
-  <Accordion title="Light phase">
-    Light phaseは、最近の日次memory signalとrecall traceを取り込み、重複排除し、候補行をstageします。
+  <Accordion title="ライトフェーズ">
+    ライトフェーズは、最近の日次メモリシグナルとリコールトレースを取り込み、重複排除し、候補行をステージングします。
 
-    - 利用可能な場合、短期recall state、最近の日次memory file、redactedされたsession transcriptから読み取ります。
-    - storageにinline outputが含まれる場合、管理された `## Light Sleep` blockを書き込みます。
-    - 後続のdeep ranking用にreinforcement signalを記録します。
+    - 短期リコール状態、最近の日次メモリファイル、利用可能な場合は編集済みセッショントランスクリプトから読み取ります。
+    - ストレージにインライン出力が含まれる場合、管理対象の `## Light Sleep` ブロックを書き込みます。
+    - 後のディープランキング用に強化シグナルを記録します。
     - `MEMORY.md` には決して書き込みません。
 
   </Accordion>
-  <Accordion title="Deep phase">
-    Deep phaseは、何が長期memoryになるかを決定します。
+  <Accordion title="ディープフェーズ">
+    ディープフェーズは、何を長期メモリにするかを決定します。
 
-    - 重み付きスコアリングとthreshold gateを使って候補を順位付けします。
-    - `minScore`、`minRecallCount`、`minUniqueQueries` の通過が必要です。
-    - 書き込み前にliveな日次fileからsnippetをrehydrateするため、古い/削除済みsnippetはスキップされます。
-    - promoted entryを `MEMORY.md` に追記します。
-    - `DREAMS.md` に `## Deep Sleep` の要約を書き込み、任意で `memory/dreaming/deep/YYYY-MM-DD.md` にも書き込みます。
+    - 重み付きスコアリングとしきい値ゲートを使って候補をランク付けします。
+    - 通過するには `minScore`、`minRecallCount`、`minUniqueQueries` が必要です。
+    - 書き込み前にライブの日次ファイルからスニペットを再ハイドレートするため、古いスニペットや削除されたスニペットはスキップされます。
+    - 昇格したエントリを `MEMORY.md` に追記します。
+    - `DREAMS.md` に `## Deep Sleep` サマリーを書き込み、任意で `memory/dreaming/deep/YYYY-MM-DD.md` を書き込みます。
 
   </Accordion>
-  <Accordion title="REM phase">
-    REM phaseは、パターンと内省的signalを抽出します。
+  <Accordion title="REM フェーズ">
+    REM フェーズはパターンと内省的シグナルを抽出します。
 
-    - 最近の短期traceからthemeとreflectionの要約を構築します。
-    - storageにinline outputが含まれる場合、管理された `## REM Sleep` blockを書き込みます。
-    - deep rankingで使われるREM reinforcement signalを記録します。
+    - 最近の短期トレースからテーマと内省サマリーを構築します。
+    - ストレージにインライン出力が含まれる場合、管理対象の `## REM Sleep` ブロックを書き込みます。
+    - ディープランキングで使用される REM 強化シグナルを記録します。
     - `MEMORY.md` には決して書き込みません。
 
   </Accordion>
 </AccordionGroup>
 
-## Session transcript ingestion
+## セッショントランスクリプトの取り込み
 
-Dreamingは、redactedされたsession transcriptをdreaming corpusに取り込めます。transcriptが利用可能な場合、それらは日次memory signalおよびrecall traceとともにlight phaseへ入力されます。個人的および機密性の高いcontentは、取り込み前にredactされます。
+Dreaming は、編集済みセッショントランスクリプトを Dreaming コーパスに取り込めます。トランスクリプトが利用可能な場合、それらは日次メモリシグナルとリコールトレースとともにライトフェーズへ渡されます。個人情報や機密コンテンツは取り込み前に編集されます。
 
-## Dream Diary
+## 夢日記
 
-Dreamingは `DREAMS.md` に物語形式の**Dream Diary**も保持します。各phaseに十分なmaterialがそろうと、`memory-core` はベストエフォートのバックグラウンドsubagent turn（デフォルトruntime modelを使用）を実行し、短いdiary entryを追記します。
+Dreaming は `DREAMS.md` に物語形式の**夢日記**も保持します。各フェーズに十分な素材が集まると、`memory-core` はベストエフォートのバックグラウンドサブエージェントターンを実行し、短い日記エントリを追記します。`dreaming.model` が設定されていない限り、デフォルトのランタイムモデルを使用します。設定されたモデルが利用できない場合、夢日記はセッションのデフォルトモデルで 1 回再試行します。
 
 <Note>
-このdiaryはDreams UIで人が読むためのものであり、promotion元ではありません。Dreamingが生成したdiary/report artifactは短期promotionから除外されます。`MEMORY.md` にpromoteできるのは、groundedなmemory snippetだけです。
+この日記は Dreams UI で人が読むためのものであり、昇格元ではありません。Dreaming が生成した日記/レポートアーティファクトは短期昇格から除外されます。根拠のあるメモリスニペットだけが `MEMORY.md` に昇格できます。
 </Note>
 
-レビューおよび復旧作業向けに、groundedな履歴backfill laneもあります。
+レビューと復旧作業のために、根拠付きの履歴バックフィルレーンもあります。
 
 <AccordionGroup>
-  <Accordion title="Backfillコマンド">
-    - `memory rem-harness --path ... --grounded` は、過去の `YYYY-MM-DD.md` noteからgrounded diary outputをプレビューします。
-    - `memory rem-backfill --path ...` は、可逆的なgrounded diary entryを `DREAMS.md` に書き込みます。
-    - `memory rem-backfill --path ... --stage-short-term` は、groundedなdurable candidateを、通常のdeep phaseがすでに使っているのと同じ短期evidence storeにstageします。
-    - `memory rem-backfill --rollback` と `--rollback-short-term` は、通常のdiary entryやliveな短期recallに触れずに、それらのstage済みbackfill artifactを削除します。
+  <Accordion title="バックフィルコマンド">
+    - `memory rem-harness --path ... --grounded` は、履歴 `YYYY-MM-DD.md` ノートから根拠付き日記出力をプレビューします。
+    - `memory rem-backfill --path ...` は、取り消し可能な根拠付き日記エントリを `DREAMS.md` に書き込みます。
+    - `memory rem-backfill --path ... --stage-short-term` は、根拠付き永続候補を、通常のディープフェーズがすでに使用しているものと同じ短期エビデンスストアにステージングします。
+    - `memory rem-backfill --rollback` と `--rollback-short-term` は、通常の日記エントリやライブの短期リコールには触れずに、それらのステージ済みバックフィルアーティファクトを削除します。
 
   </Accordion>
 </AccordionGroup>
 
-Control UIは同じdiary backfill/reset flowを公開しているため、grounded candidateがpromotionに値するかを判断する前に、Dreams sceneで結果を確認できます。Sceneにはdistinctなgrounded laneも表示されるため、どのstage済み短期entryが履歴replay由来なのか、どのpromoted itemがgrounded主導だったのかを確認でき、通常のlive短期stateに触れずにgrounded専用のstage済みentryだけをクリアできます。
+Control UI には同じ日記バックフィル/リセットフローが表示されるため、根拠付き候補を昇格する価値があるかを決める前に、Dreams シーンで結果を確認できます。シーンには個別の根拠付きレーンも表示されるため、どのステージ済み短期エントリが履歴再生由来か、どの昇格項目が根拠主導だったかを確認でき、通常のライブ短期状態に触れずに根拠付きのみのステージ済みエントリだけを消去できます。
 
-## Deep ranking signal
+## ディープランキングシグナル
 
-Deep rankingは、6つの重み付きbase signalとphase reinforcementを使います。
+ディープランキングは、6 つの重み付きベースシグナルとフェーズ強化を使用します。
 
-| Signal | Weight | 説明 |
-| ------ | ------ | ---- |
-| Frequency | 0.24 | そのentryが蓄積した短期signalの数 |
-| Relevance | 0.30 | そのentryの平均retrieval quality |
-| Query diversity | 0.15 | それを表面化させた異なるquery/day context |
-| Recency | 0.15 | 時間減衰するfreshness score |
-| Consolidation | 0.10 | 複数日にわたる再発強度 |
-| Conceptual richness | 0.06 | snippet/pathからのconcept-tag密度 |
+| シグナル              | 重み | 説明                                       |
+| ------------------- | ------ | ------------------------------------------------- |
+| 頻度           | 0.24   | エントリが蓄積した短期シグナルの数 |
+| 関連性           | 0.30   | エントリの平均検索品質           |
+| クエリの多様性     | 0.15   | それを表面化させた個別のクエリ/日コンテキスト      |
+| 新しさ             | 0.15   | 時間減衰された鮮度スコア                      |
+| 統合       | 0.10   | 複数日にわたる再発の強さ                     |
+| 概念的な豊かさ | 0.06   | スニペット/パスからの概念タグ密度             |
 
-LightとREM phaseのhitは、`memory/.dreams/phase-signals.json` から小さなrecency-decayed boostを追加します。
+ライトフェーズと REM フェーズのヒットは、`memory/.dreams/phase-signals.json` から小さな新しさ減衰ブーストを追加します。
 
-## スケジューリング
+## スケジュール
 
-有効にすると、`memory-core` は完全なdreaming sweep用の1つのCron jobを自動管理します。各sweepはフェーズを順番に実行します: light → REM → deep。
+有効な場合、`memory-core` は完全な Dreaming スイープ用に 1 つの Cron ジョブを自動管理します。各スイープは、ライト → REM → ディープの順にフェーズを実行します。
 
-デフォルトのcadence動作:
+デフォルトの頻度動作:
 
-| Setting | Default |
-| ------- | ------- |
-| `dreaming.frequency` | `0 3 * * *` |
+| 設定              | デフォルト       |
+| -------------------- | ------------- |
+| `dreaming.frequency` | `0 3 * * *`   |
+| `dreaming.model`     | デフォルトモデル |
 
 ## クイックスタート
 
 <Tabs>
-  <Tab title="Dreamingを有効にする">
+  <Tab title="Dreaming を有効にする">
     ```json
     {
       "plugins": {
@@ -144,7 +145,7 @@ LightとREM phaseのhitは、`memory/.dreams/phase-signals.json` から小さな
     }
     ```
   </Tab>
-  <Tab title="カスタムsweep cadence">
+  <Tab title="カスタムスイープ頻度">
     ```json
     {
       "plugins": {
@@ -174,10 +175,10 @@ LightとREM phaseのhitは、`memory/.dreams/phase-signals.json` から小さな
 /dreaming help
 ```
 
-## CLIワークフロー
+## CLI ワークフロー
 
 <Tabs>
-  <Tab title="Promotionプレビュー / 適用">
+  <Tab title="昇格のプレビュー / 適用">
     ```bash
     openclaw memory promote
     openclaw memory promote --apply
@@ -185,11 +186,11 @@ LightとREM phaseのhitは、`memory/.dreams/phase-signals.json` から小さな
     openclaw memory status --deep
     ```
 
-    手動の `memory promote` は、CLI flagで上書きしない限り、デフォルトでdeep-phase thresholdを使います。
+    手動の `memory promote` は、CLI フラグで上書きされない限り、デフォルトでディープフェーズのしきい値を使用します。
 
   </Tab>
-  <Tab title="Promotionを説明する">
-    特定のcandidateがpromoteされる、またはされない理由を説明します。
+  <Tab title="昇格を説明する">
+    特定の候補が昇格する理由、または昇格しない理由を説明します。
 
     ```bash
     openclaw memory promote-explain "router vlan"
@@ -197,8 +198,8 @@ LightとREM phaseのhitは、`memory/.dreams/phase-signals.json` から小さな
     ```
 
   </Tab>
-  <Tab title="REM harnessプレビュー">
-    何も書き込まずに、REM reflection、candidate truth、deep promotion outputをプレビューします。
+  <Tab title="REM ハーネスプレビュー">
+    何も書き込まずに、REM の内省、候補真実、ディープ昇格出力をプレビューします。
 
     ```bash
     openclaw memory rem-harness
@@ -208,35 +209,42 @@ LightとREM phaseのhitは、`memory/.dreams/phase-signals.json` から小さな
   </Tab>
 </Tabs>
 
-## 主なデフォルト
+## 主要なデフォルト
 
 すべての設定は `plugins.entries.memory-core.config.dreaming` 配下にあります。
 
 <ParamField path="enabled" type="boolean" default="false">
-  dreaming sweepを有効または無効にします。
+  Dreaming スイープを有効または無効にします。
 </ParamField>
 <ParamField path="frequency" type="string" default="0 3 * * *">
-  完全なdreaming sweepのCron cadenceです。
+  完全な Dreaming スイープの Cron 頻度。
+</ParamField>
+<ParamField path="model" type="string">
+  任意の夢日記サブエージェントモデル上書き。サブエージェントの `allowedModels` 許可リストも設定する場合は、正規の `provider/model` 値を使用してください。
 </ParamField>
 
+<Warning>
+`dreaming.model` には `plugins.entries.memory-core.subagent.allowModelOverride: true` が必要です。制限するには、`plugins.entries.memory-core.subagent.allowedModels` も設定してください。信頼または許可リストの失敗は、黙ってフォールバックされるのではなく可視のままになります。再試行はモデル利用不可エラーのみを対象にします。
+</Warning>
+
 <Note>
-phase policy、threshold、storage behaviorは内部実装の詳細です（ユーザー向けconfigではありません）。完全なkey一覧は[Memory configuration reference](/ja-JP/reference/memory-config#dreaming)を参照してください。
+フェーズポリシー、しきい値、ストレージ動作は内部実装の詳細です（ユーザー向け設定ではありません）。完全なキー一覧については、[メモリ設定リファレンス](/ja-JP/reference/memory-config#dreaming)を参照してください。
 </Note>
 
 ## Dreams UI
 
-有効にすると、Gatewayの**Dreams** tabには次が表示されます。
+有効な場合、Gateway の **Dreams** タブには次が表示されます。
 
-- 現在のdreaming有効状態
-- phaseレベルstatusと管理sweepの有無
-- 短期、grounded、signal、当日promoted件数
-- 次回スケジュール実行時刻
-- stage済み履歴replay entry向けのdistinctなgrounded Scene lane
-- `doctor.memory.dreamDiary` をバックエンドに持つ展開可能なDream Diary reader
+- 現在の Dreaming 有効状態
+- フェーズレベルの状態と管理対象スイープの存在
+- 短期、根拠付き、シグナル、今日昇格された数
+- 次回スケジュール実行のタイミング
+- ステージ済み履歴再生エントリ用の個別の根拠付きシーンレーン
+- `doctor.memory.dreamDiary` に基づく展開可能な夢日記リーダー
 
 ## 関連
 
-- [Memory](/ja-JP/concepts/memory)
-- [Memory CLI](/ja-JP/cli/memory)
-- [Memory configuration reference](/ja-JP/reference/memory-config)
-- [Memory search](/ja-JP/concepts/memory-search)
+- [メモリ](/ja-JP/concepts/memory)
+- [メモリ CLI](/ja-JP/cli/memory)
+- [メモリ設定リファレンス](/ja-JP/reference/memory-config)
+- [メモリ検索](/ja-JP/concepts/memory-search)

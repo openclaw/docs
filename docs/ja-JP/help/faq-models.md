@@ -1,112 +1,112 @@
 ---
 read_when:
     - モデルの選択または切り替え、エイリアスの設定
-    - モデルのフェイルオーバー / 「All models failed」のデバッグ
-    - 認証プロファイルとその管理方法を理解する
+    - モデルフェイルオーバー / 「すべてのモデルが失敗しました」のデバッグ
+    - 認証プロファイルの概要と管理方法
 sidebarTitle: Models FAQ
-summary: 'FAQ: モデルのデフォルト、選択、エイリアス、切り替え、フェイルオーバー、および認証プロファイル'
+summary: 'FAQ: モデルのデフォルト、選択、エイリアス、切り替え、フェイルオーバー、認証プロファイル'
 title: 'FAQ: モデルと認証'
 x-i18n:
-    generated_at: "2026-04-25T18:18:11Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:17:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e060b48951b76d76a7f613b2abe3fdd845e34ae9eb5cbb36f45544f114edace7
+    source_hash: eaa72bf66d3f1528f95762e2a2763bc2f6bfddbc1d4c24a9ec2df7f943ebc14b
     source_path: help/faq-models.md
-    workflow: 15
+    workflow: 16
 ---
 
-  モデルおよび認証プロファイルに関する Q&A です。セットアップ、セッション、Gateway、チャネル、および
+  モデルと認証プロファイルの質疑応答。セットアップ、セッション、Gateway、チャネル、
   トラブルシューティングについては、メインの [FAQ](/ja-JP/help/faq) を参照してください。
 
-  ## モデル: デフォルト、選択、エイリアス、切り替え
+  ## モデル: 既定値、選択、エイリアス、切り替え
 
   <AccordionGroup>
-  <Accordion title='「デフォルトモデル」とは何ですか？'>
-    OpenClaw のデフォルトモデルは、次の設定に指定したものです:
+  <Accordion title='「既定のモデル」とは何ですか？'>
+    OpenClaw の既定モデルは、次のように設定したものです。
 
     ```
     agents.defaults.model.primary
     ```
 
-    モデルは `provider/model` として参照されます（例: `openai/gpt-5.5` または `openai-codex/gpt-5.5`）。provider を省略した場合、OpenClaw はまずエイリアスを試し、次にその正確なモデル ID に一致する一意の configured-provider を試し、それでも見つからない場合にのみ、非推奨の互換パスとして設定済みのデフォルト provider にフォールバックします。その provider が設定済みのデフォルトモデルをもう公開していない場合、OpenClaw は古くなって削除済みの provider デフォルトをそのまま出すのではなく、最初に設定された provider/model にフォールバックします。それでも、`provider/model` を**明示的に**設定するべきです。
+    モデルは `provider/model` として参照されます（例: `openai/gpt-5.5` または `openai-codex/gpt-5.5`）。プロバイダーを省略した場合、OpenClaw はまずエイリアスを試し、次にその正確なモデル ID に一致する一意の設定済みプロバイダーを試し、その後にのみ、非推奨の互換パスとして設定済みの既定プロバイダーへフォールバックします。そのプロバイダーが設定済みの既定モデルをすでに公開していない場合、OpenClaw は古い削除済みプロバイダーの既定値を表示する代わりに、最初の設定済みプロバイダー/モデルへフォールバックします。それでも `provider/model` は**明示的に**設定するべきです。
 
   </Accordion>
 
   <Accordion title="どのモデルを推奨しますか？">
-    **推奨デフォルト:** 利用中の provider スタックで利用可能な、最新世代の最も強力なモデルを使ってください。
-    **ツール対応または信頼できない入力を扱うエージェント向け:** コストよりモデル性能を優先してください。
-    **日常的/低リスクなチャット向け:** より安価なフォールバックモデルを使い、エージェントの役割ごとにルーティングしてください。
+    **推奨される既定値:** プロバイダースタックで利用できる最も強力な最新世代モデルを使用してください。
+    **ツール有効または信頼できない入力を扱うエージェント:** コストよりもモデルの強さを優先してください。
+    **通常の低リスクなチャット:** より安価なフォールバックモデルを使用し、エージェントの役割ごとにルーティングしてください。
 
-    MiniMax には専用ドキュメントがあります: [MiniMax](/ja-JP/providers/minimax) および
+    MiniMax には独自のドキュメントがあります: [MiniMax](/ja-JP/providers/minimax) と
     [ローカルモデル](/ja-JP/gateway/local-models)。
 
-    目安として、高リスクな作業には**無理なく使える範囲で最良のモデル**を使い、日常的な
-    チャットや要約には安価なモデルを使ってください。エージェントごとにモデルをルーティングでき、サブエージェントを使って
-    長いタスクを並列化することもできます（各サブエージェントはトークンを消費します）。[Models](/ja-JP/concepts/models) および
-    [Sub-agents](/ja-JP/tools/subagents) を参照してください。
+    目安として、高リスクな作業には**手の届く範囲で最良のモデル**を使用し、通常のチャットや要約にはより安価な
+    モデルを使用してください。エージェントごとにモデルをルーティングし、サブエージェントを使って
+    長いタスクを並列化できます（各サブエージェントはトークンを消費します）。[モデル](/ja-JP/concepts/models) と
+    [サブエージェント](/ja-JP/tools/subagents) を参照してください。
 
-    強い警告: 弱いモデルや量子化しすぎたモデルは、プロンプト
-    インジェクションや危険な挙動に対してより脆弱です。[Security](/ja-JP/gateway/security) を参照してください。
+    強い警告: 弱いモデルや過度に量子化されたモデルは、プロンプト
+    インジェクションや安全でない動作に対して脆弱です。[セキュリティ](/ja-JP/gateway/security) を参照してください。
 
-    詳細: [Models](/ja-JP/concepts/models)。
+    詳細: [モデル](/ja-JP/concepts/models)。
 
   </Accordion>
 
   <Accordion title="設定を消さずにモデルを切り替えるにはどうすればよいですか？">
-    **モデル用コマンド**を使うか、**model** フィールドだけを編集してください。設定全体の置き換えは避けてください。
+    **モデルコマンド**を使用するか、**モデル**フィールドだけを編集してください。設定全体の置き換えは避けてください。
 
-    安全な方法:
+    安全な選択肢:
 
-    - チャット内の `/model`（手早く、セッション単位）
-    - `openclaw models set ...`（モデル設定のみを更新）
+    - チャット内の `/model`（すばやく、セッションごと）
+    - `openclaw models set ...`（モデル設定だけを更新）
     - `openclaw configure --section model`（対話式）
     - `~/.openclaw/openclaw.json` の `agents.defaults.model` を編集
 
-    設定全体を置き換える意図がない限り、部分オブジェクトで `config.apply` を使うのは避けてください。
-    RPC 編集では、まず `config.schema.lookup` で確認し、`config.patch` を優先してください。lookup ペイロードには、正規化されたパス、浅いスキーマのドキュメント/制約、および直下の子要素の要約が含まれます。
-    部分更新向けです。
-    もし設定を上書きしてしまった場合は、バックアップから復元するか、`openclaw doctor` を再実行して修復してください。
+    設定全体を置き換えるつもりでない限り、部分オブジェクトで `config.apply` を使うことは避けてください。
+    RPC 編集では、まず `config.schema.lookup` で確認し、`config.patch` を優先してください。lookup ペイロードは、正規化されたパス、浅いスキーマドキュメント/制約、直下の子要素の要約を提供します。
+    部分更新用です。
+    設定を上書きしてしまった場合は、バックアップから復元するか、`openclaw doctor` を再実行して修復してください。
 
-    ドキュメント: [Models](/ja-JP/concepts/models), [Configure](/ja-JP/cli/configure), [Config](/ja-JP/cli/config), [Doctor](/ja-JP/gateway/doctor)。
+    ドキュメント: [モデル](/ja-JP/concepts/models)、[設定](/ja-JP/cli/configure)、[Config](/ja-JP/cli/config)、[Doctor](/ja-JP/gateway/doctor)。
 
   </Accordion>
 
-  <Accordion title="セルフホスト型モデル（llama.cpp、vLLM、Ollama）は使えますか？">
-    はい。ローカルモデルでは Ollama が最も簡単な方法です。
+  <Accordion title="セルフホストモデル（llama.cpp、vLLM、Ollama）を使用できますか？">
+    はい。ローカルモデルには Ollama が最も簡単な方法です。
 
-    最短のセットアップ:
+    最短セットアップ:
 
-    1. `https://ollama.com/download` から Ollama をインストール
-    2. `ollama pull gemma4` のようにローカルモデルを pull
-    3. クラウドモデルも使いたい場合は、`ollama signin` を実行
-    4. `openclaw onboard` を実行して `Ollama` を選択
-    5. `Local` または `Cloud + Local` を選択
+    1. `https://ollama.com/download` から Ollama をインストールします
+    2. `ollama pull gemma4` などでローカルモデルを取得します
+    3. クラウドモデルも使いたい場合は、`ollama signin` を実行します
+    4. `openclaw onboard` を実行し、`Ollama` を選択します
+    5. `Local` または `Cloud + Local` を選択します
 
-    メモ:
+    注:
 
-    - `Cloud + Local` では、クラウドモデルに加えてローカルの Ollama モデルも利用できます
-    - `kimi-k2.5:cloud` のようなクラウドモデルはローカル pull を必要としません
-    - 手動で切り替える場合は、`openclaw models list` と `openclaw models set ollama/<model>` を使ってください
+    - `Cloud + Local` では、クラウドモデルに加えてローカルの Ollama モデルを使用できます
+    - `kimi-k2.5:cloud` などのクラウドモデルにはローカルでの取得は不要です
+    - 手動で切り替えるには、`openclaw models list` と `openclaw models set ollama/<model>` を使用します
 
-    セキュリティ注意: 小規模モデルや強く量子化されたモデルは、プロンプト
-    インジェクションに対してより脆弱です。ツールを使えるボットには、**大規模モデル**を強く推奨します。
-    それでも小規模モデルを使いたい場合は、サンドボックス化と厳格なツール許可リストを有効にしてください。
+    セキュリティ上の注意: 小さいモデルや強く量子化されたモデルは、プロンプト
+    インジェクションに対してより脆弱です。ツールを使用できるボットには**大規模モデル**を強く推奨します。
+    それでも小さいモデルを使いたい場合は、サンドボックス化と厳格なツール許可リストを有効にしてください。
 
-    ドキュメント: [Ollama](/ja-JP/providers/ollama), [ローカルモデル](/ja-JP/gateway/local-models),
-    [モデル provider](/ja-JP/concepts/model-providers), [Security](/ja-JP/gateway/security),
+    ドキュメント: [Ollama](/ja-JP/providers/ollama)、[ローカルモデル](/ja-JP/gateway/local-models)、
+    [モデルプロバイダー](/ja-JP/concepts/model-providers)、[セキュリティ](/ja-JP/gateway/security)、
     [サンドボックス化](/ja-JP/gateway/sandboxing)。
 
   </Accordion>
 
-  <Accordion title="OpenClaw、Flawd、Krill ではどのモデルを使っていますか？">
-    - これらのデプロイはそれぞれ異なる場合があり、時間とともに変わる可能性があります。固定の provider 推奨はありません。
-    - 各 Gateway の現在の実行時設定は `openclaw models status` で確認してください。
-    - セキュリティに敏感でツール対応のエージェントには、利用可能な最新世代の最も強力なモデルを使用してください。
+  <Accordion title="OpenClaw、Flawd、Krill はどのモデルを使用していますか？">
+    - これらのデプロイメントは異なる場合があり、時間とともに変わることがあります。固定のプロバイダー推奨はありません。
+    - 各 Gateway の現在のランタイム設定は `openclaw models status` で確認してください。
+    - セキュリティに敏感なエージェントやツール有効エージェントには、利用可能な最も強力な最新世代モデルを使用してください。
 
   </Accordion>
 
-  <Accordion title="再起動せずに、その場でモデルを切り替えるにはどうすればよいですか？">
-    `/model` コマンドを単独メッセージとして使ってください:
+  <Accordion title="再起動せずにその場でモデルを切り替えるにはどうすればよいですか？">
+    `/model` コマンドを単独のメッセージとして使用してください。
 
     ```
     /model sonnet
@@ -122,51 +122,51 @@ x-i18n:
 
     利用可能なモデルは `/model`、`/model list`、または `/model status` で一覧表示できます。
 
-    `/model`（および `/model list`）は、コンパクトな番号付きピッカーを表示します。番号で選択します:
+    `/model`（および `/model list`）は、コンパクトな番号付きピッカーを表示します。番号で選択します。
 
     ```
     /model 3
     ```
 
-    また、provider 用に特定の認証プロファイルを強制することもできます（セッション単位）:
+    プロバイダーに対して特定の認証プロファイルを強制することもできます（セッションごと）。
 
     ```
     /model opus@anthropic:default
     /model opus@anthropic:work
     ```
 
-    ヒント: `/model status` では、どのエージェントがアクティブか、どの `auth-profiles.json` ファイルが使われているか、次にどの認証プロファイルが試されるかが表示されます。
-    利用可能な場合は、設定された provider エンドポイント（`baseUrl`）と API モード（`api`）も表示されます。
+    ヒント: `/model status` は、どのエージェントがアクティブか、どの `auth-profiles.json` ファイルが使用されているか、次にどの認証プロファイルが試されるかを表示します。
+    利用可能な場合は、設定済みのプロバイダーエンドポイント（`baseUrl`）と API モード（`api`）も表示します。
 
-    **`@profile` で設定したプロファイルの固定を解除するには？**
+    **@profile で設定したプロファイルの固定を解除するにはどうすればよいですか？**
 
-    `@profile` サフィックスを付けずに `/model` を再実行してください:
+    `@profile` サフィックスを付けずに `/model` を再実行してください。
 
     ```
     /model anthropic/claude-opus-4-6
     ```
 
-    デフォルトに戻したい場合は、`/model` から選択するか（または `/model <default provider/model>` を送信してください）。
-    どの認証プロファイルが有効かは `/model status` で確認できます。
+    既定値に戻したい場合は、`/model` から選択します（または `/model <default provider/model>` を送信します）。
+    どの認証プロファイルがアクティブかを確認するには、`/model status` を使用してください。
 
   </Accordion>
 
-  <Accordion title="日常業務に GPT 5.5 を使い、コーディングに Codex 5.5 を使えますか？">
-    はい。片方をデフォルトに設定し、必要に応じて切り替えてください:
+  <Accordion title="日常タスクには GPT 5.5、コーディングには Codex 5.5 を使用できますか？">
+    はい。片方をデフォルトに設定し、必要に応じて切り替えます。
 
-    - **クイック切り替え（セッション単位）:** 現在の直接 OpenAI API キー作業には `/model openai/gpt-5.5`、GPT-5.5 Codex OAuth 作業には `/model openai-codex/gpt-5.5` を使います。
-    - **デフォルト:** API キー利用には `agents.defaults.model.primary` を `openai/gpt-5.5` に、GPT-5.5 Codex OAuth 利用には `openai-codex/gpt-5.5` に設定します。
-    - **サブエージェント:** 別のデフォルトモデルを持つサブエージェントにコーディングタスクをルーティングします。
+    - **クイック切り替え（セッションごと）:** 現在の直接 OpenAI API キータスクには `/model openai/gpt-5.5`、GPT-5.5 Codex OAuth タスクには `/model openai-codex/gpt-5.5` を使用します。
+    - **デフォルト:** API キー使用には `agents.defaults.model.primary` を `openai/gpt-5.5` に、GPT-5.5 Codex OAuth 使用には `openai-codex/gpt-5.5` に設定します。
+    - **サブエージェント:** コーディングタスクを、異なるデフォルトモデルを持つサブエージェントにルーティングします。
 
-    [Models](/ja-JP/concepts/models) および [スラッシュコマンド](/ja-JP/tools/slash-commands) を参照してください。
+    [モデル](/ja-JP/concepts/models)と[スラッシュコマンド](/ja-JP/tools/slash-commands)を参照してください。
 
   </Accordion>
 
-  <Accordion title="GPT 5.5 の fast mode はどう設定しますか？">
-    セッショントグルまたは設定デフォルトのどちらかを使います:
+  <Accordion title="GPT 5.5 の高速モードを設定するにはどうすればよいですか？">
+    セッショントグルまたは設定デフォルトのいずれかを使用します。
 
-    - **セッション単位:** セッションが `openai/gpt-5.5` または `openai-codex/gpt-5.5` を使っている間に `/fast on` を送信します。
-    - **モデル単位のデフォルト:** `agents.defaults.models["openai/gpt-5.5"].params.fastMode` または `agents.defaults.models["openai-codex/gpt-5.5"].params.fastMode` を `true` に設定します。
+    - **セッションごと:** セッションが `openai/gpt-5.5` または `openai-codex/gpt-5.5` を使用している間に `/fast on` を送信します。
+    - **モデルごとのデフォルト:** `agents.defaults.models["openai/gpt-5.5"].params.fastMode` または `agents.defaults.models["openai-codex/gpt-5.5"].params.fastMode` を `true` に設定します。
 
     例:
 
@@ -186,57 +186,57 @@ x-i18n:
     }
     ```
 
-    OpenAI では、fast mode はサポートされているネイティブ Responses リクエスト上で `service_tier = "priority"` にマッピングされます。セッションの `/fast` 上書きは設定デフォルトより優先されます。
+    OpenAI の場合、高速モードは対応しているネイティブ Responses リクエストで `service_tier = "priority"` に対応します。セッションの `/fast` オーバーライドは設定デフォルトより優先されます。
 
-    [Thinking and fast mode](/ja-JP/tools/thinking) および [OpenAI fast mode](/ja-JP/providers/openai#fast-mode) を参照してください。
+    [思考と高速モード](/ja-JP/tools/thinking)と[OpenAI 高速モード](/ja-JP/providers/openai#fast-mode)を参照してください。
 
   </Accordion>
 
-  <Accordion title='「Model ... is not allowed」と表示され、その後返信が来ないのはなぜですか？'>
+  <Accordion title='「Model ... is not allowed」と表示された後、返信がないのはなぜですか？'>
     `agents.defaults.models` が設定されている場合、それは `/model` とすべての
-    セッション上書きに対する**許可リスト**になります。そのリストにないモデルを選ぶと、次が返されます:
+    セッションオーバーライドの**許可リスト**になります。そのリストにないモデルを選択すると、次が返されます。
 
     ```
     Model "provider/model" is not allowed. Use /model to list available models.
     ```
 
-    このエラーは通常の返信の**代わりに**返されます。対処法: そのモデルを
-    `agents.defaults.models` に追加する、許可リストを削除する、または `/model list` からモデルを選んでください。
+    このエラーは通常の返信の**代わりに**返されます。修正方法: モデルを
+    `agents.defaults.models` に追加する、許可リストを削除する、または `/model list` からモデルを選択します。
 
   </Accordion>
 
   <Accordion title='「Unknown model: minimax/MiniMax-M2.7」と表示されるのはなぜですか？'>
-    これは **provider が設定されていない** ことを意味します（MiniMax の provider 設定または認証
-    プロファイルが見つからなかったため）、そのモデルを解決できません。
+    これは**プロバイダーが設定されていない**ことを意味します（MiniMax プロバイダー設定または認証
+    プロファイルが見つかりませんでした）。そのため、モデルを解決できません。
 
-    確認チェックリスト:
+    修正チェックリスト:
 
-    1. 現在の OpenClaw リリースにアップグレードする（またはソースの `main` から実行する）し、その後 Gateway を再起動します。
-    2. MiniMax が設定されていること（ウィザードまたは JSON）、または一致する provider が注入できるよう
-       env/auth profiles に MiniMax 認証が存在することを確認します
+    1. 最新の OpenClaw リリースにアップグレードする（またはソース `main` から実行する）し、その後 Gateway を再起動します。
+    2. MiniMax が設定されていること（ウィザードまたは JSON）、または MiniMax 認証が
+       env/認証プロファイルに存在し、一致するプロバイダーを注入できることを確認します
        （`minimax` には `MINIMAX_API_KEY`、`minimax-portal` には `MINIMAX_OAUTH_TOKEN` または保存済み MiniMax
        OAuth）。
-    3. 認証経路に対して大文字小文字を区別する正確なモデル ID を使います:
-       API キー構成では `minimax/MiniMax-M2.7` または `minimax/MiniMax-M2.7-highspeed`、
-       OAuth 構成では `minimax-portal/MiniMax-M2.7` /
+    3. 認証パスに対応する正確なモデル ID（大文字小文字を区別）を使用します:
+       API キー
+       設定では `minimax/MiniMax-M2.7` または `minimax/MiniMax-M2.7-highspeed`、OAuth 設定では `minimax-portal/MiniMax-M2.7` /
        `minimax-portal/MiniMax-M2.7-highspeed`。
-    4. 次を実行します:
+    4. 次を実行します。
 
        ```bash
        openclaw models list
        ```
 
-       そしてリストから選んでください（またはチャット内で `/model list`）。
+       そしてリストから選択します（またはチャットで `/model list`）。
 
-    [MiniMax](/ja-JP/providers/minimax) および [Models](/ja-JP/concepts/models) を参照してください。
+    [MiniMax](/ja-JP/providers/minimax)と[モデル](/ja-JP/concepts/models)を参照してください。
 
   </Accordion>
 
-  <Accordion title="MiniMax をデフォルトにして、複雑なタスクには OpenAI を使えますか？">
-    はい。**MiniMax をデフォルト**にし、必要なときだけ**セッション単位**でモデルを切り替えてください。
-    フォールバックは**エラー時**のためのものであり、「難しいタスク」のためではないので、`/model` または別エージェントを使ってください。
+  <Accordion title="MiniMax をデフォルトにし、複雑なタスクには OpenAI を使用できますか？">
+    はい。**MiniMax をデフォルト**として使用し、必要なときに**セッションごと**にモデルを切り替えます。
+    フォールバックは**エラー**用であり、「難しいタスク」用ではないため、`/model` または別のエージェントを使用してください。
 
-    **オプション A: セッション単位で切り替える**
+    **オプション A: セッションごとに切り替える**
 
     ```json5
     {
@@ -259,33 +259,33 @@ x-i18n:
     /model gpt
     ```
 
-    **オプション B: 別々のエージェント**
+    **オプション B: 個別のエージェント**
 
     - エージェント A のデフォルト: MiniMax
     - エージェント B のデフォルト: OpenAI
-    - エージェントごとにルーティングするか、`/agent` で切り替える
+    - エージェントでルーティングするか、`/agent` を使用して切り替える
 
-    ドキュメント: [Models](/ja-JP/concepts/models), [複数エージェントルーティング](/ja-JP/concepts/multi-agent), [MiniMax](/ja-JP/providers/minimax), [OpenAI](/ja-JP/providers/openai)。
+    ドキュメント: [モデル](/ja-JP/concepts/models)、[マルチエージェントルーティング](/ja-JP/concepts/multi-agent)、[MiniMax](/ja-JP/providers/minimax)、[OpenAI](/ja-JP/providers/openai)。
 
   </Accordion>
 
   <Accordion title="opus / sonnet / gpt は組み込みショートカットですか？">
-    はい。OpenClaw にはいくつかのデフォルト短縮名が用意されています（`agents.defaults.models` にそのモデルが存在する場合にのみ適用されます）:
+    はい。OpenClaw にはいくつかのデフォルト短縮名が同梱されています（モデルが `agents.defaults.models` に存在する場合にのみ適用されます）。
 
     - `opus` → `anthropic/claude-opus-4-6`
     - `sonnet` → `anthropic/claude-sonnet-4-6`
-    - `gpt` → API キー構成では `openai/gpt-5.5`、Codex OAuth 用に構成されている場合は `openai-codex/gpt-5.5`
+    - `gpt` → API キー設定では `openai/gpt-5.5`、Codex OAuth 用に設定されている場合は `openai-codex/gpt-5.5`
     - `gpt-mini` → `openai/gpt-5.4-mini`
     - `gpt-nano` → `openai/gpt-5.4-nano`
     - `gemini` → `google/gemini-3.1-pro-preview`
     - `gemini-flash` → `google/gemini-3-flash-preview`
     - `gemini-flash-lite` → `google/gemini-3.1-flash-lite-preview`
 
-    同じ名前で独自のエイリアスを設定した場合は、あなたの設定が優先されます。
+    同じ名前で独自のエイリアスを設定した場合は、その値が優先されます。
 
   </Accordion>
 
-  <Accordion title="モデルショートカット（エイリアス）はどう定義/上書きしますか？">
+  <Accordion title="モデルショートカット（エイリアス）を定義または上書きするにはどうすればよいですか？">
     エイリアスは `agents.defaults.models.<modelId>.alias` から取得されます。例:
 
     ```json5
@@ -303,12 +303,12 @@ x-i18n:
     }
     ```
 
-    その後、`/model sonnet`（またはサポートされている場合は `/<alias>`）はそのモデル ID に解決されます。
+    その後、`/model sonnet`（または対応している場合は `/<alias>`）はそのモデル ID に解決されます。
 
   </Accordion>
 
-  <Accordion title="OpenRouter や Z.AI など他の provider のモデルを追加するにはどうすればよいですか？">
-    OpenRouter（従量課金、多数のモデル）:
+  <Accordion title="OpenRouter や Z.AI など他のプロバイダーのモデルを追加するにはどうすればよいですか？">
+    OpenRouter（トークンごとの課金、多数のモデル）:
 
     ```json5
     {
@@ -336,132 +336,132 @@ x-i18n:
     }
     ```
 
-    provider/model を参照していて、必要な provider キーが欠けている場合は、実行時の認証エラーになります（例: `No API key found for provider "zai"`）。
+    プロバイダー/モデルを参照していて、必要なプロバイダーキーがない場合、実行時の認証エラーが発生します（例: `No API key found for provider "zai"`）。
 
-    **新しいエージェントを追加した後に「No API key found for provider」と表示される**
+    **新しいエージェントを追加した後にプロバイダーの API キーが見つからない**
 
-    これは通常、**新しいエージェント**の認証ストアが空であることを意味します。認証はエージェントごとで、
-    次に保存されます:
+    これは通常、**新しいエージェント**の認証ストアが空であることを意味します。認証はエージェントごとに分かれており、
+    次の場所に保存されます。
 
     ```
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
     ```
 
-    対処方法:
+    修正方法:
 
-    - `openclaw agents add <id>` を実行し、ウィザード中に認証を設定する。
-    - または、メインエージェントの `agentDir` から `auth-profiles.json` を新しいエージェントの `agentDir` にコピーする。
+    - `openclaw agents add <id>` を実行し、ウィザード中に認証を設定します。
+    - または、メインエージェントの認証ストアから新しいエージェントの認証ストアへ、移植可能な静的 `api_key` / `token` プロファイルだけをコピーします。
+    - OAuth プロファイルの場合、そのエージェント固有のアカウントが必要なときは新しいエージェントからサインインします。それ以外の場合、OpenClaw は更新トークンを複製せずにデフォルト/メインエージェントを読み通せます。
 
-    エージェント間で `agentDir` を使い回してはいけません。認証/セッションの衝突を引き起こします。
+    エージェント間で `agentDir` を再利用**しないでください**。認証/セッションの衝突が発生します。
 
   </Accordion>
 </AccordionGroup>
 
-## モデルのフェイルオーバーと「All models failed」
+## モデルのフェイルオーバーと「すべてのモデルが失敗しました」
 
 <AccordionGroup>
   <Accordion title="フェイルオーバーはどのように動作しますか？">
-    フェイルオーバーは 2 段階で行われます:
+    フェイルオーバーは 2 段階で発生します。
 
-    1. 同じ provider 内での**認証プロファイルのローテーション**。
+    1. 同じプロバイダー内での**認証プロファイルのローテーション**。
     2. `agents.defaults.model.fallbacks` 内の次のモデルへの**モデルフォールバック**。
 
-    失敗したプロファイルにはクールダウン（指数バックオフ）が適用されるため、provider がレート制限中だったり一時的に失敗していたりしても、OpenClaw は応答を続けられます。
+    失敗したプロファイルにはクールダウン（指数バックオフ）が適用されるため、プロバイダーがレート制限中または一時的に失敗している場合でも、OpenClaw は応答を続けられます。
 
-    レート制限バケットには単純な `429` レスポンス以上のものが含まれます。OpenClaw は
+    レート制限バケットには、単なる `429` 応答以外も含まれます。OpenClaw は
     `Too many concurrent requests`、
     `ThrottlingException`、`concurrency limit reached`、
     `workers_ai ... quota limit exceeded`、`resource exhausted`、および定期的な
-    使用量ウィンドウ制限（`weekly/monthly limit reached`）のようなメッセージも、
-    フェイルオーバーに値するレート制限として扱います。
+    使用期間の上限（`weekly/monthly limit reached`）のようなメッセージも、フェイルオーバー対象の
+    レート制限として扱います。
 
-    一見課金系に見えるレスポンスの中には `402` ではないものもあり、HTTP `402`
-    レスポンスの一部もこの一時的バケットに残ります。provider が
-    `401` または `403` で明示的な課金テキストを返す場合、OpenClaw はそれを引き続き
-    billing レーンに置けますが、provider 固有のテキストマッチャーはそれを所有する
-    provider に限定されます（たとえば OpenRouter の `Key limit exceeded`）。もし `402`
-    メッセージが代わりに再試行可能な使用量ウィンドウや
-    organization/workspace の支出上限（`daily limit reached, resets tomorrow`、
+    請求関連に見える応答の一部は `402` ではなく、HTTP `402`
+    応答の一部も同じ一時的バケットに残ります。プロバイダーが
+    `401` または `403` で明示的な請求関連テキストを返す場合、OpenClaw はそれを
+    請求レーンに保持できますが、プロバイダー固有のテキストマッチャーは、それを所有する
+    プロバイダーの範囲内に保たれます（例: OpenRouter `Key limit exceeded`）。`402`
+    メッセージが、再試行可能な使用期間の上限、または
+    組織/ワークスペースの支出上限（`daily limit reached, resets tomorrow`、
     `organization spending limit exceeded`）のように見える場合、OpenClaw はそれを
-    長期の billing 無効化ではなく `rate_limit` として扱います。
+    長期の請求無効化ではなく `rate_limit` として扱います。
 
-    コンテキストオーバーフローエラーは別です。たとえば
+    コンテキストあふれのエラーは異なります。
     `request_too_large`、`input exceeds the maximum number of tokens`、
     `input token count exceeds the maximum number of input tokens`、
     `input is too long for the model`、または `ollama error: context length
-    exceeded` のようなシグネチャは、モデルフォールバックを進めるのではなく、
-    compaction/再試行パスに留まります。
+    exceeded` のようなシグネチャは、モデルフォールバックへ進まずに
+    Compaction/再試行パスに残ります。
 
-    汎用的なサーバーエラーテキストは、「unknown/error を含むものすべて」より意図的に
-    狭くしています。OpenClaw は、provider コンテキストが一致する場合、
-    Anthropic の素の `An unknown error occurred`、OpenRouter の素の
+    汎用のサーバーエラーテキストは、「unknown/error を含むものなら何でも」より意図的に狭くなっています。
+    OpenClaw は、プロバイダーコンテキストが一致する場合に、Anthropic の素の `An unknown error occurred`、OpenRouter の素の
     `Provider returned error`、`Unhandled stop reason:
-    error` のような stop-reason エラー、一時的なサーバーテキストを含む JSON `api_error`
-    ペイロード（`internal server error`、`unknown error, 520`、`upstream error`、`backend
-    error`）、および `ModelNotReadyException` のような provider-busy エラーを、
-    フェイルオーバーに値する timeout/過負荷シグナルとして扱います。
+    error` のような停止理由エラー、一時的なサーバーテキストを含む JSON `api_error` ペイロード
+    （`internal server error`、`unknown error, 520`、`upstream error`、`backend
+    error`）、および `ModelNotReadyException` のようなプロバイダー混雑エラーを、
+    フェイルオーバー対象のタイムアウト/過負荷シグナルとして扱います。
     `LLM request failed with an unknown
-    error.` のような汎用的な内部フォールバックテキストは保守的に扱われ、それ単体ではモデルフォールバックを引き起こしません。
+    error.` のような汎用の内部フォールバックテキストは保守的に扱われ、それ自体ではモデルフォールバックをトリガーしません。
 
   </Accordion>
 
-  <Accordion title='「No credentials found for profile anthropic:default」とはどういう意味ですか？'>
-    これは、システムが認証プロファイル ID `anthropic:default` を使おうとしたが、期待される認証ストア内にその認証情報が見つからなかったことを意味します。
+  <Accordion title='「No credentials found for profile anthropic:default」は何を意味しますか？'>
+    これは、システムが認証プロファイル ID `anthropic:default` を使おうとしたものの、想定される認証ストア内にその認証情報が見つからなかったことを意味します。
 
-    **確認チェックリスト:**
+    **修正チェックリスト:**
 
-    - **認証プロファイルの保存場所を確認する**（新しいパス vs レガシーパス）
+    - **認証プロファイルの保存場所を確認する**（新旧のパス）
       - 現在: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-      - レガシー: `~/.openclaw/agent/*`（`openclaw doctor` によって移行されます）
-    - **env var が Gateway に読み込まれていることを確認する**
-      - シェルで `ANTHROPIC_API_KEY` を設定していても、Gateway を systemd/launchd 経由で実行している場合は継承されないことがあります。`~/.openclaw/.env` に置くか、`env.shellEnv` を有効にしてください。
+      - レガシー: `~/.openclaw/agent/*`（`openclaw doctor` により移行）
+    - **環境変数が Gateway に読み込まれていることを確認する**
+      - シェルで `ANTHROPIC_API_KEY` を設定していても、systemd/launchd 経由で Gateway を実行している場合、継承されないことがあります。`~/.openclaw/.env` に入れるか、`env.shellEnv` を有効にしてください。
     - **正しいエージェントを編集していることを確認する**
-      - 複数エージェント構成では、複数の `auth-profiles.json` ファイルが存在し得ます。
-    - **モデル/認証ステータスをざっと確認する**
-      - `openclaw models status` を使って、設定済みモデルと provider が認証済みかどうかを確認します。
+      - 複数エージェント構成では、`auth-profiles.json` ファイルが複数存在する場合があります。
+    - **モデル/認証ステータスの健全性を確認する**
+      - `openclaw models status` を使って、設定済みモデルとプロバイダーが認証済みかどうかを確認します。
 
-    **「No credentials found for profile anthropic」への確認チェックリスト**
+    **「No credentials found for profile anthropic」の修正チェックリスト**
 
-    これは、その実行が Anthropic の認証プロファイルに固定されているが、Gateway
-    が認証ストア内でそれを見つけられないことを意味します。
+    これは、実行が Anthropic 認証プロファイルに固定されているものの、Gateway が
+    認証ストア内でそれを見つけられないことを意味します。
 
     - **Claude CLI を使う**
       - Gateway ホストで `openclaw models auth login --provider anthropic --method cli --set-default` を実行します。
     - **代わりに API キーを使いたい場合**
-      - **Gateway ホスト**の `~/.openclaw/.env` に `ANTHROPIC_API_KEY` を置きます。
-      - 欠けているプロファイルを強制する固定順序を解除します:
+      - **Gateway ホスト**上の `~/.openclaw/.env` に `ANTHROPIC_API_KEY` を入れます。
+      - 見つからないプロファイルを強制する固定順序をクリアします。
 
         ```bash
         openclaw models auth order clear --provider anthropic
         ```
 
     - **Gateway ホスト上でコマンドを実行していることを確認する**
-      - リモートモードでは、認証プロファイルはあなたのノート PC ではなく Gateway マシン上にあります。
+      - リモートモードでは、認証プロファイルはノート PC ではなく Gateway マシン上にあります。
 
   </Accordion>
 
-  <Accordion title="なぜ Google Gemini も試されて失敗したのですか？">
-    モデル設定に Google Gemini がフォールバックとして含まれている場合（または Gemini の短縮名に切り替えた場合）、OpenClaw はモデルフォールバック中にそれを試します。Google の認証情報を設定していなければ、`No API key found for provider "google"` が表示されます。
+  <Accordion title="なぜ Google Gemini も試して失敗したのですか？">
+    モデル設定にフォールバックとして Google Gemini が含まれている場合（または Gemini の省略表記に切り替えた場合）、OpenClaw はモデルフォールバック中にそれを試します。Google の認証情報を設定していない場合、`No API key found for provider "google"` が表示されます。
 
-    対処法: Google 認証を用意するか、`agents.defaults.model.fallbacks` / エイリアスから Google モデルを削除または回避して、フォールバック先にルーティングされないようにしてください。
+    修正: Google 認証を提供するか、`agents.defaults.model.fallbacks` / エイリアス内の Google モデルを削除または回避して、フォールバックがそこへルーティングされないようにします。
 
-    **LLM request rejected: thinking signature required（Google Antigravity）**
+    **LLM リクエストが拒否されました: thinking シグネチャが必要です（Google Antigravity）**
 
-    原因: セッション履歴に**署名のない thinking ブロック**が含まれています（多くは
-    中断/部分ストリーム由来です）。Google Antigravity では thinking ブロックに署名が必要です。
+    原因: セッション履歴に**シグネチャのない thinking ブロック**が含まれています（多くの場合、
+    中断された/部分的なストリームが原因です）。Google Antigravity は thinking ブロックにシグネチャを要求します。
 
-    対処法: OpenClaw は現在、Google Antigravity Claude 向けに署名なし thinking ブロックを除去します。それでも表示される場合は、**新しいセッション**を開始するか、そのエージェントで `/thinking off` を設定してください。
+    修正: OpenClaw は現在、Google Antigravity Claude 向けに署名されていない thinking ブロックを取り除きます。それでも表示される場合は、**新しいセッション**を開始するか、そのエージェントで `/thinking off` を設定してください。
 
   </Accordion>
 </AccordionGroup>
 
-## 認証プロファイル: それが何か、そして管理方法
+## 認証プロファイル: 概要と管理方法
 
 関連: [/concepts/oauth](/ja-JP/concepts/oauth)（OAuth フロー、トークン保存、複数アカウントのパターン）
 
 <AccordionGroup>
   <Accordion title="認証プロファイルとは何ですか？">
-    認証プロファイルは、provider に紐づいた名前付きの認証情報レコード（OAuth または API キー）です。プロファイルは次に保存されます:
+    認証プロファイルは、プロバイダーに紐づく名前付きの認証情報レコード（OAuth または API キー）です。プロファイルは次の場所にあります。
 
     ```
     ~/.openclaw/agents/<agentId>/agent/auth-profiles.json
@@ -469,37 +469,36 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="典型的なプロファイル ID には何がありますか？">
-    OpenClaw は次のような provider 接頭辞付き ID を使います:
+  <Accordion title="一般的なプロファイル ID は何ですか？">
+    OpenClaw は次のようなプロバイダー接頭辞付き ID を使います。
 
-    - `anthropic:default`（メール ID が存在しない場合によくある）
+    - `anthropic:default`（メール ID がない場合によく使われます）
     - OAuth ID 用の `anthropic:<email>`
-    - 自分で選んだカスタム ID（例: `anthropic:work`）
+    - 自分で選ぶカスタム ID（例: `anthropic:work`）
 
   </Accordion>
 
-  <Accordion title="最初に試す認証プロファイルを制御できますか？">
-    はい。設定では、プロファイルの任意メタデータと provider ごとの順序（`auth.order.<provider>`）をサポートしています。これは**シークレットを保存するものではなく**、ID を provider/mode に対応付けてローテーション順を設定します。
+  <Accordion title="最初に試行される認証プロファイルを制御できますか？">
+    はい。設定では、プロファイル用の任意メタデータと、プロバイダーごとの順序（`auth.order.<provider>`）をサポートしています。これはシークレットを保存しません。ID をプロバイダー/モードへ対応付け、ローテーション順序を設定します。
 
-    OpenClaw は、そのプロファイルが短い**クールダウン**（レート制限/タイムアウト/認証失敗）中、または長めの**無効化**状態（課金/クレジット不足）にある場合、一時的にスキップすることがあります。これを確認するには、`openclaw models status --json` を実行して `auth.unusableProfiles` を確認してください。調整項目: `auth.cooldowns.billingBackoffHours*`。
+    OpenClaw は、プロファイルが短い**クールダウン**（レート制限/タイムアウト/認証失敗）または長い**無効**状態（請求/クレジット不足）にある場合、一時的にスキップすることがあります。これを確認するには、`openclaw models status --json` を実行し、`auth.unusableProfiles` を確認します。調整: `auth.cooldowns.billingBackoffHours*`。
 
-    レート制限のクールダウンはモデル単位になることがあります。あるモデルで
-    クールダウン中のプロファイルでも、同じ provider 上の別の兄弟モデルではまだ利用可能なことがあり、
-    一方で billing/無効化ウィンドウは引き続きプロファイル全体をブロックします。
+    レート制限のクールダウンはモデル単位にできます。あるモデルでクールダウン中のプロファイルでも、同じプロバイダー上の兄弟モデルでは使用可能な場合があります。
+    一方、請求/無効化ウィンドウは引き続きプロファイル全体をブロックします。
 
-    CLI から**エージェント単位**の順序上書き（そのエージェントの `auth-state.json` に保存されます）も設定できます:
+    CLI を使って、**エージェントごとの**順序上書き（そのエージェントの `auth-state.json` に保存）も設定できます。
 
     ```bash
-    # 設定済みのデフォルトエージェントが対象（--agent を省略）
+    # Defaults to the configured default agent (omit --agent)
     openclaw models auth order get --provider anthropic
 
-    # ローテーションを単一プロファイルに固定する（これだけを試す）
+    # Lock rotation to a single profile (only try this one)
     openclaw models auth order set --provider anthropic anthropic:default
 
-    # または明示的な順序を設定する（provider 内フォールバック）
+    # Or set an explicit order (fallback within provider)
     openclaw models auth order set --provider anthropic anthropic:work anthropic:default
 
-    # 上書きをクリアする（config auth.order / round-robin に戻る）
+    # Clear override (fall back to config auth.order / round-robin)
     openclaw models auth order clear --provider anthropic
     ```
 
@@ -509,24 +508,24 @@ x-i18n:
     openclaw models auth order set --provider anthropic --agent main anthropic:default
     ```
 
-    実際に何が試されるか確認するには、次を使ってください:
+    実際に何が試行されるかを確認するには、次を使います。
 
     ```bash
     openclaw models status --probe
     ```
 
-    保存済みプロファイルが明示的な順序から省かれている場合、probe はそのプロファイルを黙って試す代わりに
+    保存済みプロファイルが明示的な順序から省略されている場合、probe はそのプロファイルを黙って試すのではなく、
     `excluded_by_auth_order` を報告します。
 
   </Accordion>
 
   <Accordion title="OAuth と API キーの違いは何ですか？">
-    OpenClaw は両方をサポートします:
+    OpenClaw は両方をサポートしています。
 
-    - **OAuth** は多くの場合、サブスクリプションアクセスを活用します（該当する場合）。
-    - **API キー** は従量課金を使用します。
+    - **OAuth** は、多くの場合サブスクリプションアクセスを活用します（該当する場合）。
+    - **API キー**はトークンごとの従量課金を使用します。
 
-    ウィザードは、Anthropic Claude CLI、OpenAI Codex OAuth、および API キーを明示的にサポートしています。
+    ウィザードは Anthropic Claude CLI、OpenAI Codex OAuth、および API キーを明示的にサポートしています。
 
   </Accordion>
 </AccordionGroup>

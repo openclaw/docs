@@ -1,33 +1,37 @@
 ---
 read_when:
-    - ローカル Docker の代わりにクラウド管理 sandbox を使いたい場合
-    - OpenShell Plugin をセットアップしている場合
-    - mirror モードと remote workspace モードのどちらを使うか決める必要がある場合
-summary: OpenClaw エージェント向けの管理された sandbox バックエンドとして OpenShell を使う
+    - ローカル Docker ではなくクラウド管理のサンドボックスを使いたい
+    - OpenShell Plugin を設定しています
+    - ミラーモードとリモートワークスペースモードのどちらかを選択する必要があります
+summary: OpenClaw エージェントの管理対象サンドボックスバックエンドとして OpenShell を使用する
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-24T04:58:56Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:15:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 47954cd27b4c7ef9d4268597c2846960b39b99fd03ece5dddb5055e9282366a0
+    source_hash: 694a0a145802f4b624af01b58cbb5886bab7426fb9a90f216480141082089144
     source_path: gateway/openshell.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenShell は OpenClaw 向けの管理された sandbox バックエンドです。Docker
-コンテナをローカルで実行する代わりに、OpenClaw は sandbox のライフサイクルを `openshell` CLI に委譲し、SSH ベースのコマンド実行を備えたリモート環境をプロビジョニングします。
+OpenShell は OpenClaw 用のマネージドサンドボックスバックエンドです。Docker
+コンテナをローカルで実行する代わりに、OpenClaw はサンドボックスのライフサイクルを `openshell` CLI に委譲し、
+SSH ベースのコマンド実行を備えたリモート環境をプロビジョニングします。
 
-OpenShell Plugin は、汎用 [SSH backend](/ja-JP/gateway/sandboxing#ssh-backend) と同じコア SSH トランスポートおよびリモートファイルシステムブリッジを再利用します。そこに OpenShell 固有のライフサイクル（`sandbox create/get/delete`、`sandbox ssh-config`）と、任意の `mirror` workspace モードを追加します。
+OpenShell Plugin は、汎用 [SSH バックエンド](/ja-JP/gateway/sandboxing#ssh-backend)と同じコア SSH トランスポートとリモートファイルシステム
+ブリッジを再利用します。さらに、
+OpenShell 固有のライフサイクル（`sandbox create/get/delete`、`sandbox ssh-config`）と、任意の `mirror` ワークスペースモードを追加します。
 
 ## 前提条件
 
-- `openshell` CLI がインストールされており、`PATH` 上にあること（または `plugins.entries.openshell.config.command` でカスタムパスを設定）
-- sandbox アクセス権のある OpenShell アカウント
-- ホスト上で OpenClaw Gateway が動作していること
+- `openshell` CLI がインストールされ、`PATH` 上にあること（または
+  `plugins.entries.openshell.config.command` でカスタムパスを設定）
+- サンドボックスアクセス権を持つ OpenShell アカウント
+- ホスト上で OpenClaw Gateway が実行中であること
 
 ## クイックスタート
 
-1. Plugin を有効にし、sandbox バックエンドを設定します:
+1. Plugin を有効化し、サンドボックスバックエンドを設定します。
 
 ```json5
 {
@@ -55,99 +59,98 @@ OpenShell Plugin は、汎用 [SSH backend](/ja-JP/gateway/sandboxing#ssh-backen
 }
 ```
 
-2. Gateway を再起動します。次のエージェントターンで、OpenClaw は OpenShell
-   sandbox を作成し、ツール実行をそこへルーティングします。
+2. Gateway を再起動します。次の agent ターンで、OpenClaw は OpenShell
+   サンドボックスを作成し、ツール実行をそこにルーティングします。
 
-3. 確認します:
+3. 確認します。
 
 ```bash
 openclaw sandbox list
 openclaw sandbox explain
 ```
 
-## Workspace モード
+## ワークスペースモード
 
-これは OpenShell を使うときにもっとも重要な判断です。
+これは OpenShell を使用する際の最も重要な判断です。
 
 ### `mirror`
 
-**ローカル workspace を正本のまま維持したい** 場合は、`plugins.entries.openshell.config.mode: "mirror"` を使ってください。
+**ローカルワークスペースを正本として維持**したい場合は、`plugins.entries.openshell.config.mode: "mirror"` を使用します。
 
 動作:
 
-- `exec` の前に、OpenClaw はローカル workspace を OpenShell sandbox に同期します。
-- `exec` の後に、OpenClaw はリモート workspace をローカル workspace に同期し戻します。
-- ファイルツールは引き続き sandbox ブリッジ経由で動作しますが、ターン間ではローカル workspace
-  がソースオブトゥルースのままです。
+- `exec` の前に、OpenClaw はローカルワークスペースを OpenShell サンドボックスに同期します。
+- `exec` の後に、OpenClaw はリモートワークスペースをローカルワークスペースへ同期します。
+- ファイルツールは引き続きサンドボックスブリッジ経由で動作しますが、ターン間ではローカルワークスペースが
+  真実のソースのままです。
 
 最適な用途:
 
-- OpenClaw の外でローカルにファイルを編集しており、その変更を自動的に
-  sandbox 側に反映させたい。
-- OpenShell sandbox を可能な限り Docker バックエンドのように振る舞わせたい。
-- 各 exec ターン後に、ホスト workspace に sandbox 書き込みを反映させたい。
+- OpenClaw の外部でファイルをローカル編集し、その変更をサンドボックスで自動的に見えるようにしたい。
+- OpenShell サンドボックスを Docker バックエンドにできるだけ近い挙動にしたい。
+- 各 exec ターン後に、ホストワークスペースへサンドボックス内の書き込みを反映したい。
 
-トレードオフ: 各 exec の前後で追加の同期コストがかかります。
+トレードオフ: 各 exec の前後に追加の同期コストが発生します。
 
 ### `remote`
 
-**OpenShell workspace を正本にしたい** 場合は、`plugins.entries.openshell.config.mode: "remote"` を使ってください。
+**OpenShell ワークスペースを正本にしたい**場合は、`plugins.entries.openshell.config.mode: "remote"` を使用します。
 
 動作:
 
-- sandbox が最初に作成されたとき、OpenClaw はローカル workspace から
-  リモート workspace に一度だけシードします。
-- その後は `exec`、`read`、`write`、`edit`、`apply_patch` が
-  リモート OpenShell workspace に対して直接動作します。
-- OpenClaw はリモート変更をローカル workspace へ同期し戻しません。
-- プロンプト時のメディア読み取りは、ファイルおよびメディアツールが sandbox ブリッジ経由で読むため、引き続き動作します。
+- サンドボックスが最初に作成されるとき、OpenClaw はローカルワークスペースからリモートワークスペースへ
+  一度だけシードします。
+- その後、`exec`、`read`、`write`、`edit`、`apply_patch` は
+  リモートの OpenShell ワークスペースに対して直接動作します。
+- OpenClaw はリモートの変更をローカルワークスペースに同期しません。
+- ファイルツールとメディアツールはサンドボックスブリッジ経由で読み取るため、プロンプト時のメディア読み取りは引き続き機能します。
 
 最適な用途:
 
-- workspace を主としてリモート側で運用したい。
+- サンドボックスを主にリモート側で維持したい。
 - ターンごとの同期オーバーヘッドを下げたい。
-- ホストローカルでの編集が、気づかないうちにリモート sandbox 状態を上書きするのを避けたい。
+- ホストローカルの編集でリモートサンドボックス状態が暗黙的に上書きされることを避けたい。
 
-重要: 初回シード後に OpenClaw の外でホスト上のファイルを編集しても、
-リモート sandbox にはその変更は見えません。再シードするには
-`openclaw sandbox recreate` を使ってください。
+<Warning>
+初回シード後に OpenClaw の外部でホスト上のファイルを編集しても、リモートサンドボックスはその変更を認識しません。再シードするには `openclaw sandbox recreate` を使用してください。
+</Warning>
 
-### モードの選び方
+### モードの選択
 
-|                          | `mirror`                 | `remote`                |
-| ------------------------ | ------------------------ | ----------------------- |
-| **正本 workspace**       | ローカルホスト           | リモート OpenShell      |
-| **同期方向**             | 双方向（各 exec ごと）   | 初回シードのみ          |
-| **ターンごとのオーバーヘッド** | 高い（アップロード + ダウンロード） | 低い（直接リモート操作） |
-| **ローカル編集は見えるか？** | はい、次回 exec で反映   | いいえ、recreate まで反映されない |
-| **最適な用途**           | 開発ワークフロー         | 長時間実行エージェント、CI |
+|                          | `mirror`                   | `remote`                  |
+| ------------------------ | -------------------------- | ------------------------- |
+| **正本ワークスペース**  | ローカルホスト                 | リモート OpenShell          |
+| **同期方向**       | 双方向（各 exec）  | 1 回限りのシード             |
+| **ターンごとのオーバーヘッド**    | 高い（アップロード + ダウンロード） | 低い（直接リモート操作） |
+| **ローカル編集は見えるか？** | はい、次の exec で          | いいえ、再作成まで        |
+| **最適な用途**             | 開発ワークフロー      | 長時間実行 agents、CI   |
 
 ## 設定リファレンス
 
-OpenShell の設定はすべて `plugins.entries.openshell.config` 配下にあります:
+すべての OpenShell 設定は `plugins.entries.openshell.config` 配下にあります。
 
-| キー                      | 型                       | デフォルト    | 説明                                                   |
-| ------------------------- | ------------------------ | ------------- | ------------------------------------------------------ |
-| `mode`                    | `"mirror"` または `"remote"` | `"mirror"`    | Workspace 同期モード                                   |
-| `command`                 | `string`                 | `"openshell"` | `openshell` CLI のパスまたは名前                       |
-| `from`                    | `string`                 | `"openclaw"`  | 初回作成時の sandbox ソース                            |
-| `gateway`                 | `string`                 | —             | OpenShell gateway 名（`--gateway`）                    |
+| キー                       | 型                     | デフォルト       | 説明                                           |
+| ------------------------- | ------------------------ | ------------- | ----------------------------------------------------- |
+| `mode`                    | `"mirror"` または `"remote"` | `"mirror"`    | ワークスペース同期モード                                   |
+| `command`                 | `string`                 | `"openshell"` | `openshell` CLI のパスまたは名前                   |
+| `from`                    | `string`                 | `"openclaw"`  | 初回作成時のサンドボックスソース                  |
+| `gateway`                 | `string`                 | —             | OpenShell gateway 名（`--gateway`）                  |
 | `gatewayEndpoint`         | `string`                 | —             | OpenShell gateway エンドポイント URL（`--gateway-endpoint`） |
-| `policy`                  | `string`                 | —             | sandbox 作成用 OpenShell policy ID                     |
-| `providers`               | `string[]`               | `[]`          | sandbox 作成時にアタッチするプロバイダ名               |
-| `gpu`                     | `boolean`                | `false`       | GPU リソースを要求                                     |
-| `autoProviders`           | `boolean`                | `true`        | sandbox create 時に `--auto-providers` を渡す          |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | sandbox 内の主たる書き込み可能 workspace               |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | エージェント workspace マウントパス（読み取り専用アクセス用） |
-| `timeoutSeconds`          | `number`                 | `120`         | `openshell` CLI 操作のタイムアウト                     |
+| `policy`                  | `string`                 | —             | サンドボックス作成用の OpenShell ポリシー ID              |
+| `providers`               | `string[]`               | `[]`          | サンドボックス作成時にアタッチするプロバイダー名      |
+| `gpu`                     | `boolean`                | `false`       | GPU リソースを要求する                                 |
+| `autoProviders`           | `boolean`                | `true`        | サンドボックス作成時に `--auto-providers` を渡す         |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | サンドボックス内の主要な書き込み可能ワークスペース         |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | agent ワークスペースのマウントパス（読み取り専用アクセス用）     |
+| `timeoutSeconds`          | `number`                 | `120`         | `openshell` CLI 操作のタイムアウト                |
 
-sandbox レベル設定（`mode`、`scope`、`workspaceAccess`）は、他のバックエンドと同様に
-`agents.defaults.sandbox` 配下で設定します。完全なマトリクスは
-[Sandboxing](/ja-JP/gateway/sandboxing) を参照してください。
+サンドボックスレベルの設定（`mode`、`scope`、`workspaceAccess`）は、他のバックエンドと同様に
+`agents.defaults.sandbox` 配下で設定します。完全なマトリクスについては
+[サンドボックス化](/ja-JP/gateway/sandboxing)を参照してください。
 
 ## 例
 
-### 最小の remote セットアップ
+### 最小限の remote セットアップ
 
 ```json5
 {
@@ -204,7 +207,7 @@ sandbox レベル設定（`mode`、`scope`、`workspaceAccess`）は、他のバ
 }
 ```
 
-### カスタム gateway を使うエージェント単位 OpenShell
+### カスタム gateway を使う agent ごとの OpenShell
 
 ```json5
 {
@@ -243,29 +246,27 @@ sandbox レベル設定（`mode`、`scope`、`workspaceAccess`）は、他のバ
 
 ## ライフサイクル管理
 
-OpenShell sandbox は通常の sandbox CLI 経由で管理されます:
+OpenShell サンドボックスは通常のサンドボックス CLI で管理します。
 
 ```bash
-# すべての sandbox ランタイムを一覧表示（Docker + OpenShell）
+# List all sandbox runtimes (Docker + OpenShell)
 openclaw sandbox list
 
-# 有効ポリシーを確認
+# Inspect effective policy
 openclaw sandbox explain
 
-# recreate（リモート workspace を削除し、次回使用時に再シード）
+# Recreate (deletes remote workspace, re-seeds on next use)
 openclaw sandbox recreate --all
 ```
 
-`remote` モードでは、**recreate が特に重要** です。これはそのスコープの正本である
-リモート workspace を削除します。次回使用時に、ローカル workspace から
-新しいリモート workspace がシードされます。
+`remote` モードでは、**再作成が特に重要**です。そのスコープの正本である
+リモートワークスペースを削除します。次回使用時に、ローカルワークスペースから新しいリモートワークスペースがシードされます。
 
-`mirror` モードでは、ローカル workspace が正本のままなので、recreate は主に
-リモート実行環境をリセットします。
+`mirror` モードでは、ローカルワークスペースが正本のままなので、再作成は主にリモート実行環境をリセットします。
 
-### recreate すべきタイミング
+### 再作成が必要な場合
 
-次のいずれかを変更した後は recreate してください:
+次のいずれかを変更した後は再作成してください。
 
 - `agents.defaults.sandbox.backend`
 - `plugins.entries.openshell.config.from`
@@ -278,32 +279,31 @@ openclaw sandbox recreate --all
 
 ## セキュリティ強化
 
-OpenShell は workspace ルート fd を固定し、各 read の前に sandbox ID を再確認するため、
-シンボリックリンク差し替えや workspace の再マウントによって、意図したリモート workspace の外へ
-読み取りが向けられることはありません。
+OpenShell はワークスペースのルート fd を固定し、各読み取りの前にサンドボックス ID を再確認するため、
+シンボリックリンクの差し替えやワークスペースの再マウントによって、意図したリモートワークスペース外へ読み取りがリダイレクトされることはありません。
 
 ## 現在の制限
 
-- sandbox browser は OpenShell バックエンドではサポートされません。
+- サンドボックスブラウザーは OpenShell バックエンドではサポートされていません。
 - `sandbox.docker.binds` は OpenShell には適用されません。
-- `sandbox.docker.*` 配下の Docker 固有ランタイム設定は、Docker
+- `sandbox.docker.*` 配下の Docker 固有のランタイムノブは Docker
   バックエンドにのみ適用されます。
 
 ## 仕組み
 
 1. OpenClaw は `openshell sandbox create` を呼び出します（設定に応じて `--from`、`--gateway`、
-   `--policy`、`--providers`、`--gpu` フラグ付き）。
-2. OpenClaw は `openshell sandbox ssh-config <name>` を呼び出し、
-   sandbox 用の SSH 接続情報を取得します。
-3. コアは SSH 設定を一時ファイルに書き出し、汎用 SSH バックエンドと同じ
-   リモートファイルシステムブリッジを使って SSH セッションを開きます。
-4. `mirror` モードでは: exec 前にローカルからリモートへ同期し、実行し、exec 後に同期し戻します。
-5. `remote` モードでは: 作成時に一度だけシードし、その後はリモート
-   workspace に対して直接操作します。
+   `--policy`、`--providers`、`--gpu` フラグを指定）。
+2. OpenClaw は `openshell sandbox ssh-config <name>` を呼び出して、サンドボックスの SSH 接続
+   詳細を取得します。
+3. コアは SSH 設定を一時ファイルに書き込み、汎用 SSH バックエンドと同じリモートファイルシステムブリッジを使って
+   SSH セッションを開きます。
+4. `mirror` モードの場合: exec の前にローカルからリモートへ同期し、実行し、exec 後に同期して戻します。
+5. `remote` モードの場合: 作成時に一度シードし、その後はリモート
+   ワークスペースで直接動作します。
 
 ## 関連
 
-- [Sandboxing](/ja-JP/gateway/sandboxing) -- モード、スコープ、バックエンド比較
-- [Sandbox vs Tool Policy vs Elevated](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated) -- ブロックされたツールのデバッグ
-- [Multi-Agent Sandbox and Tools](/ja-JP/tools/multi-agent-sandbox-tools) -- エージェント単位の上書き
-- [Sandbox CLI](/ja-JP/cli/sandbox) -- `openclaw sandbox` コマンド
+- [サンドボックス化](/ja-JP/gateway/sandboxing) -- モード、スコープ、バックエンド比較
+- [サンドボックス vs ツールポリシー vs Elevated](/ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated) -- ブロックされたツールのデバッグ
+- [Multi-Agent サンドボックスとツール](/ja-JP/tools/multi-agent-sandbox-tools) -- agent ごとのオーバーライド
+- [サンドボックス CLI](/ja-JP/cli/sandbox) -- `openclaw sandbox` コマンド

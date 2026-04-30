@@ -1,48 +1,48 @@
 ---
 read_when:
-    - SSHを使わずにGatewayログをリモートでtailする必要がある
-    - ツール向けにJSONログ行が欲しい
-summary: '`openclaw logs` のCLIリファレンス（RPC経由でGatewayログをtailする）'
+    - SSH なしで Gateway ログをリモートから追尾表示する必要があります
+    - ツール用の JSON ログ行が必要な場合
+summary: '`openclaw logs` の CLI リファレンス（RPC 経由で Gateway ログを tail する）'
 title: ログ
 x-i18n:
-    generated_at: "2026-04-24T04:50:47Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:04:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 94dddb9fd507c2f1d885c5cf92b78fd381355481317bf6f56b794afbd387f402
+    source_hash: 0f9268fefa4d0e54297fd12c5cef30a1465bd735ae6a36292c279a438285f2b8
     source_path: cli/logs.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw logs`
 
-RPC経由でGatewayのファイルログをtailします（リモートモードでも動作します）。
+RPC 経由で Gateway のファイルログを追尾します（リモートモードで動作します）。
 
 関連:
 
-- ログの概要: [ログ](/ja-JP/logging)
+- ロギングの概要: [ロギング](/ja-JP/logging)
 - Gateway CLI: [gateway](/ja-JP/cli/gateway)
 
 ## オプション
 
-- `--limit <n>`: 返すログ行数の上限（デフォルト `200`）
+- `--limit <n>`: 返すログ行の最大数（デフォルト `200`）
 - `--max-bytes <n>`: ログファイルから読み取る最大バイト数（デフォルト `250000`）
-- `--follow`: ログストリームを追従する
-- `--interval <ms>`: 追従中のポーリング間隔（デフォルト `1000`）
-- `--json`: 改行区切りJSONイベントを出力する
+- `--follow`: ログストリームを追尾
+- `--interval <ms>`: 追尾中のポーリング間隔（デフォルト `1000`）
+- `--json`: 行区切りの JSON イベントを出力
 - `--plain`: スタイル付き書式なしのプレーンテキスト出力
-- `--no-color`: ANSIカラーを無効にする
-- `--local-time`: タイムスタンプをローカルタイムゾーンで表示する
+- `--no-color`: ANSI カラーを無効化
+- `--local-time`: タイムスタンプをローカルタイムゾーンで表示
 
-## 共通のGateway RPCオプション
+## 共有 Gateway RPC オプション
 
-`openclaw logs` は、標準のGatewayクライアントフラグも受け付けます:
+`openclaw logs` は標準の Gateway クライアントフラグも受け付けます:
 
 - `--url <url>`: Gateway WebSocket URL
-- `--token <token>`: Gatewayトークン
-- `--timeout <ms>`: タイムアウト（ミリ秒、デフォルト `30000`）
-- `--expect-final`: Gateway呼び出しがエージェントバックの場合、最終応答を待つ
+- `--token <token>`: Gateway トークン
+- `--timeout <ms>`: ms 単位のタイムアウト（デフォルト `30000`）
+- `--expect-final`: Gateway 呼び出しがエージェントによって処理される場合に最終応答を待機
 
-`--url` を渡した場合、CLIは設定または環境変数の認証情報を自動適用しません。対象のGatewayで認証が必要な場合は、`--token` を明示的に含めてください。
+`--url` を渡すと、CLI は設定や環境の認証情報を自動適用しません。対象の Gateway が認証を要求する場合は、`--token` を明示的に含めてください。
 
 ## 例
 
@@ -62,10 +62,10 @@ openclaw logs --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 
 ## 注記
 
-- タイムスタンプをローカルタイムゾーンで表示するには `--local-time` を使ってください。
-- local loopback Gatewayがペアリングを要求する場合、`openclaw logs` は設定済みのローカルログファイルに自動的にフォールバックします。明示的な `--url` ターゲットではこのフォールバックは使われません。
+- タイムスタンプをローカルタイムゾーンで表示するには `--local-time` を使用します。
+- 暗黙の local loopback Gateway がペアリングを要求した場合、接続中に閉じた場合、または `logs.tail` が応答する前にタイムアウトした場合、`openclaw logs` は設定済みの Gateway ファイルログに自動的にフォールバックします。明示的な `--url` ターゲットでは、このフォールバックは使用されません。
 
 ## 関連
 
-- [CLIリファレンス](/ja-JP/cli)
-- [Gatewayログ](/ja-JP/gateway/logging)
+- [CLI リファレンス](/ja-JP/cli)
+- [Gateway ロギング](/ja-JP/gateway/logging)

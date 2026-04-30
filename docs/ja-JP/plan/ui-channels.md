@@ -1,65 +1,64 @@
 ---
 read_when:
-    - チャンネルメッセージ UI、インタラクティブペイロード、またはチャンネル固有のネイティブレンダラーをリファクタリングする場合
-    - メッセージツールの機能、配信ヒント、またはクロスコンテキストマーカーを変更する場合
-    - Discord Carbon のインポートファンアウトやチャンネル Plugin ランタイムの遅延読み込みをデバッグする場合
-summary: 意味的なメッセージプレゼンテーションを、チャンネル固有のネイティブ UI レンダラーから分離する。
-title: チャンネルプレゼンテーションのリファクタリング計画
+    - チャネルメッセージ UI、インタラクティブペイロード、またはネイティブチャネルレンダラーのリファクタリング
+    - メッセージツールの機能、配信ヒント、またはコンテキスト横断マーカーの変更
+    - Discord Carbon インポートのファンアウトまたはチャンネル Plugin ランタイムの遅延性のデバッグ
+summary: セマンティックなメッセージ表示をチャンネル固有の UI レンダラーから分離する。
+title: チャネル表示のリファクタリング計画
 x-i18n:
-    generated_at: "2026-04-24T05:07:14Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:22:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f983c4d14580e8a66744c7e5f23dd9846c11e926181a8441d60f346cec6d1eea
+    source_hash: 5608e7806a2a20e73ee82f1b1f0fcbbb4c865232df984d3d98b91e5b721998f5
     source_path: plan/ui-channels.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## ステータス
 
-共有エージェント、CLI、Plugin 機能、送信配信サーフェス向けに実装済み:
+共有エージェント、CLI、Plugin 機能、およびアウトバウンド配信サーフェスで実装済み:
 
-- `ReplyPayload.presentation` が意味的なメッセージ UI を運びます。
-- `ReplyPayload.delivery.pin` が送信済みメッセージの pin リクエストを運びます。
-- 共有メッセージアクションは、プロバイダー固有の `components`、`blocks`、`buttons`、`card` ではなく、`presentation`、`delivery`、`pin` を公開します。
-- コアは、Plugin が宣言した送信機能を通して presentation をレンダリングまたは自動劣化させます。
-- Discord、Slack、Telegram、Mattermost、MS Teams、Feishu のレンダラーが汎用契約を消費します。
-- Discord のチャンネル control-plane コードは、Carbon ベース UI コンテナをもう import しません。
+- `ReplyPayload.presentation` はセマンティックなメッセージ UI を保持する。
+- `ReplyPayload.delivery.pin` は送信済みメッセージのピン留めリクエストを保持する。
+- 共有メッセージアクションは、プロバイダー固有の `components`、`blocks`、`buttons`、`card` ではなく、`presentation`、`delivery`、`pin` を公開する。
+- コアは、Plugin が宣言したアウトバウンド機能を通じて presentation をレンダリングするか、自動的に代替表現へフォールバックする。
+- Discord、Slack、Telegram、Mattermost、MS Teams、Feishu のレンダラーは汎用契約を使用する。
+- Discord チャネルの制御プレーンコードは、Carbon ベースの UI コンテナーをインポートしなくなった。
 
-正規ドキュメントは現在 [Message Presentation](/ja-JP/plugins/message-presentation) にあります。
-この計画は履歴的な実装コンテキストとして保持し、契約、レンダラー、フォールバック動作に変更がある場合は
-正規ガイドを更新してください。
+正規ドキュメントは現在 [メッセージ presentation](/ja-JP/plugins/message-presentation) にある。
+この計画は履歴上の実装コンテキストとして保持し、契約、レンダラー、フォールバック動作の変更については正規ガイドを更新する。
 
 ## 問題
 
-チャンネル UI は現在、互換性のない複数のサーフェスに分裂しています。
+チャネル UI は現在、互換性のない複数のサーフェスに分割されている:
 
-- コアは `buildCrossContextComponents` を通じて Discord 形状のクロスコンテキストレンダラーフックを所有しています。
-- Discord `channel.ts` は `DiscordUiContainer` を通じてネイティブ Carbon UI を import できるため、ランタイム UI 依存がチャンネル Plugin の control plane に引き込まれます。
-- エージェントと CLI は、Discord の `components`、Slack の `blocks`、Telegram や Mattermost の `buttons`、Teams や Feishu の `card` のようなネイティブペイロードの escape hatch を公開しています。
-- `ReplyPayload.channelData` は transport hint とネイティブ UI envelope の両方を運びます。
-- 汎用 `interactive` モデルは存在しますが、Discord、Slack、Teams、Feishu、LINE、Telegram、Mattermost ですでに使われているより豊かなレイアウトよりも狭いです。
+- コアは `buildCrossContextComponents` を通じて、Discord 形状のクロスコンテキストレンダラーフックを所有している。
+- Discord の `channel.ts` は `DiscordUiContainer` を通じてネイティブ Carbon UI をインポートできるため、実行時 UI 依存関係がチャネル Plugin の制御プレーンに入り込む。
+- エージェントと CLI は、Discord の `components`、Slack の `blocks`、Telegram または Mattermost の `buttons`、Teams または Feishu の `card` などのネイティブペイロード回避口を公開している。
+- `ReplyPayload.channelData` は、トランスポートヒントとネイティブ UI エンベロープの両方を保持している。
+- 汎用の `interactive` モデルは存在するが、Discord、Slack、Teams、Feishu、LINE、Telegram、Mattermost ですでに使われているよりリッチなレイアウトより狭い。
 
-これにより、コアがネイティブ UI 形状を認識することになり、Plugin ランタイムの遅延読み込みが弱まり、エージェントが同じメッセージ意図を表現するためのプロバイダー固有の方法を持ちすぎることになります。
+これにより、コアがネイティブ UI 形状を意識し、Plugin 実行時の遅延性が弱まり、エージェントが同じメッセージ意図を表現するためのプロバイダー固有の方法を持ちすぎる。
 
 ## 目標
 
-- コアが、宣言された機能からメッセージに最適な意味的 presentation を決定する。
-- Extension が機能を宣言し、意味的 presentation をネイティブ transport payload にレンダリングする。
-- Web Control UI は、チャットのネイティブ UI とは別のままにする。
-- ネイティブチャンネルペイロードは、共有エージェントや CLI メッセージサーフェスから公開しない。
-- サポートされない presentation 機能は、自動的に最適なテキスト表現へ劣化する。
-- 送信済みメッセージの pin のような配信動作は、presentation ではなく汎用の配信メタデータである。
+- コアは、宣言された機能からメッセージに最適なセマンティック presentation を決定する。
+- 拡張は機能を宣言し、セマンティック presentation をネイティブトランスポートペイロードにレンダリングする。
+- Web Control UI はチャットネイティブ UI から分離したままにする。
+- ネイティブチャネルペイロードは、共有エージェントまたは CLI メッセージサーフェスを通じて公開しない。
+- サポートされていない presentation 機能は、最適なテキスト表現へ自動的にフォールバックする。
+- 送信済みメッセージのピン留めなどの配信動作は、presentation ではなく汎用配信メタデータである。
 
 ## 非目標
 
-- `buildCrossContextComponents` 向けの後方互換 shim は作らない。
-- `components`、`blocks`、`buttons`、`card` 向けの公開ネイティブ escape hatch は作らない。
-- コアからチャンネル固有 UI ライブラリを import しない。
-- バンドル済みチャンネル向けのプロバイダー固有 SDK seam は作らない。
+- `buildCrossContextComponents` の後方互換 shim は作らない。
+- `components`、`blocks`、`buttons`、`card` の公開ネイティブ回避口は作らない。
+- コアはチャネルネイティブ UI ライブラリをインポートしない。
+- バンドル済みチャネル向けのプロバイダー固有 SDK シームは作らない。
 
-## ターゲットモデル
+## 目標モデル
 
-コア所有の `presentation` フィールドを `ReplyPayload` に追加します。
+コア所有の `presentation` フィールドを `ReplyPayload` に追加する。
 
 ```ts
 type MessagePresentationTone = "neutral" | "info" | "success" | "warning" | "danger";
@@ -90,17 +89,17 @@ type MessagePresentationOption = {
 };
 ```
 
-移行中、`interactive` は `presentation` のサブセットになります。
+移行中、`interactive` は `presentation` のサブセットになる:
 
-- `interactive` text block は `presentation.blocks[].type = "text"` にマップされます。
-- `interactive` buttons block は `presentation.blocks[].type = "buttons"` にマップされます。
-- `interactive` select block は `presentation.blocks[].type = "select"` にマップされます。
+- `interactive` テキストブロックは `presentation.blocks[].type = "text"` にマップされる。
+- `interactive` ボタンブロックは `presentation.blocks[].type = "buttons"` にマップされる。
+- `interactive` セレクトブロックは `presentation.blocks[].type = "select"` にマップされる。
 
-外部エージェントと CLI schema は現在 `presentation` を使います。`interactive` は既存 reply producer 向けの内部 legacy parser/rendering helper のままです。
+外部エージェントと CLI スキーマは現在 `presentation` を使用する。`interactive` は既存の返信生成側のための内部レガシーパーサー/レンダリングヘルパーとして残る。
 
 ## 配信メタデータ
 
-UI ではない送信動作のために、コア所有の `delivery` フィールドを追加します。
+UI ではない送信動作用に、コア所有の `delivery` フィールドを追加する。
 
 ```ts
 type ReplyPayloadDelivery = {
@@ -116,16 +115,16 @@ type ReplyPayloadDelivery = {
 
 セマンティクス:
 
-- `delivery.pin = true` は、最初に正常配信されたメッセージを pin することを意味します。
+- `delivery.pin = true` は、最初に正常配信されたメッセージをピン留めすることを意味する。
 - `notify` のデフォルトは `false`。
-- `required` のデフォルトは `false`。未対応チャンネルや pin 失敗は、配信を続行することで自動劣化します。
-- 既存メッセージ向けの手動 `pin`、`unpin`、`list-pins` メッセージアクションは残します。
+- `required` のデフォルトは `false`。サポートされていないチャネルやピン留め失敗は、配信を継続することで自動的に代替動作へフォールバックする。
+- 手動の `pin`、`unpin`、`list-pins` メッセージアクションは既存メッセージ用に残る。
 
-現在の Telegram ACP topic binding は、`channelData.telegram.pin = true` から `delivery.pin = true` へ移行すべきです。
+現在の Telegram ACP トピックバインディングは、`channelData.telegram.pin = true` から `delivery.pin = true` に移す必要がある。
 
-## ランタイム機能契約
+## 実行時機能契約
 
-presentation と delivery の render hook を、control-plane チャンネル Plugin ではなく runtime outbound adapter に追加します。
+制御プレーンのチャネル Plugin ではなく、実行時アウトバウンドアダプターに presentation と delivery のレンダーフックを追加する。
 
 ```ts
 type ChannelPresentationCapabilities = {
@@ -163,22 +162,22 @@ type ChannelOutboundAdapter = {
 };
 ```
 
-コアの動作:
+コア動作:
 
-- 対象チャンネルと runtime adapter を解決する。
-- presentation capabilities を問い合わせる。
-- サポートされない block をレンダリング前に劣化させる。
+- 対象チャネルと実行時アダプターを解決する。
+- presentation 機能を問い合わせる。
+- レンダリング前にサポートされていないブロックを劣化させる。
 - `renderPresentation` を呼び出す。
-- renderer が存在しない場合は、presentation をテキストフォールバックへ変換する。
-- 配信成功後、`delivery.pin` が要求されサポートされている場合は `pinDeliveredMessage` を呼び出す。
+- レンダラーが存在しない場合、presentation をテキストフォールバックに変換する。
+- 送信成功後、`delivery.pin` がリクエストされサポートされている場合は `pinDeliveredMessage` を呼び出す。
 
-## チャンネルマッピング
+## チャネルマッピング
 
 Discord:
 
-- `presentation` を runtime-only module 内で components v2 と Carbon container にレンダリングする。
-- accent color helper は軽量 module に残す。
-- チャンネル Plugin control-plane コードから `DiscordUiContainer` の import を除去する。
+- `presentation` をコンポーネント v2 と Carbon コンテナーへ、実行時専用モジュールでレンダリングする。
+- アクセントカラーヘルパーは軽量モジュールに保持する。
+- チャネル Plugin 制御プレーンコードから `DiscordUiContainer` のインポートを削除する。
 
 Slack:
 
@@ -187,78 +186,78 @@ Slack:
 
 Telegram:
 
-- text、context、divider をテキストとしてレンダリングする。
-- actions と select は、対象サーフェスで設定され許可されている場合、inline keyboard としてレンダリングする。
-- inline button が無効な場合はテキストフォールバックを使う。
-- ACP topic pinning は `delivery.pin` へ移す。
+- テキスト、コンテキスト、区切り線をテキストとしてレンダリングする。
+- ターゲットサーフェスで設定され許可されている場合、アクションとセレクトをインラインキーボードとしてレンダリングする。
+- インラインボタンが無効な場合はテキストフォールバックを使用する。
+- ACP トピックのピン留めを `delivery.pin` に移す。
 
 Mattermost:
 
-- actions は設定されていれば interactive button としてレンダリングする。
-- その他の block はテキストフォールバックとしてレンダリングする。
+- 設定されている場合、アクションをインタラクティブボタンとしてレンダリングする。
+- その他のブロックはテキストフォールバックとしてレンダリングする。
 
 MS Teams:
 
 - `presentation` を Adaptive Cards にレンダリングする。
-- 手動の pin/unpin/list-pins アクションは維持する。
-- 対象 conversation に対して Graph サポートが信頼できるなら、`pinDeliveredMessage` を任意実装する。
+- 手動の pin/unpin/list-pins アクションを保持する。
+- 対象会話で Graph サポートが信頼できる場合は、任意で `pinDeliveredMessage` を実装する。
 
 Feishu:
 
-- `presentation` を interactive cards にレンダリングする。
-- 手動の pin/unpin/list-pins アクションは維持する。
-- API 挙動が信頼できるなら、送信済みメッセージ pinning 用に `pinDeliveredMessage` を任意実装する。
+- `presentation` をインタラクティブカードにレンダリングする。
+- 手動の pin/unpin/list-pins アクションを保持する。
+- API 動作が信頼できる場合は、送信済みメッセージのピン留め向けに任意で `pinDeliveredMessage` を実装する。
 
 LINE:
 
-- `presentation` を可能な限り Flex または template message にレンダリングする。
-- サポートされない block はテキストにフォールバックする。
-- `channelData` から LINE UI payload を削除する。
+- 可能な場合、`presentation` を Flex またはテンプレートメッセージにレンダリングする。
+- サポートされていないブロックはテキストにフォールバックする。
+- LINE UI ペイロードを `channelData` から削除する。
 
-プレーンまたは制限の多いチャンネル:
+プレーンまたは制限付きチャネル:
 
-- 保守的な書式で presentation をテキストへ変換する。
+- presentation を保守的な書式のテキストに変換する。
 
-## リファクタ手順
+## リファクタリング手順
 
-1. `ui-colors.ts` を Carbon ベース UI から分離し、`extensions/discord/src/channel.ts` から `DiscordUiContainer` を除去する Discord リリース修正を再適用する。
-2. `presentation` と `delivery` を `ReplyPayload`、送信 payload 正規化、配信サマリー、hook payload に追加する。
-3. 狭い SDK/runtime サブパスに `MessagePresentation` schema と parser helper を追加する。
-4. メッセージ機能の `buttons`、`cards`、`components`、`blocks` を意味的 presentation capabilities に置き換える。
-5. presentation render と delivery pinning のための runtime outbound adapter hook を追加する。
-6. クロスコンテキスト component 構築を `buildCrossContextPresentation` に置き換える。
-7. `src/infra/outbound/channel-adapters.ts` を削除し、チャンネル Plugin type から `buildCrossContextComponents` を除去する。
-8. `maybeApplyCrossContextMarker` がネイティブ params ではなく `presentation` を付与するよう変更する。
-9. Plugin-dispatch の send path を、意味的 presentation と delivery metadata だけを消費するよう更新する。
-10. エージェントと CLI のネイティブ payload params: `components`、`blocks`、`buttons`、`card` を削除する。
-11. ネイティブ message-tool schema を作る SDK helper を削除し、presentation schema helper に置き換える。
-12. `channelData` から UI/native envelope を除去する。残る各フィールドをレビューするまでは transport metadata のみを維持する。
+1. `ui-colors.ts` を Carbon ベース UI から分離し、`extensions/discord/src/channel.ts` から `DiscordUiContainer` を削除する Discord リリース修正を再適用する。
+2. `ReplyPayload`、アウトバウンドペイロード正規化、配信サマリー、フックペイロードに `presentation` と `delivery` を追加する。
+3. 狭い SDK/実行時サブパスに `MessagePresentation` スキーマとパーサーヘルパーを追加する。
+4. メッセージ機能の `buttons`、`cards`、`components`、`blocks` をセマンティック presentation 機能に置き換える。
+5. presentation レンダリングと delivery ピン留め用の実行時アウトバウンドアダプターフックを追加する。
+6. クロスコンテキストコンポーネント構築を `buildCrossContextPresentation` に置き換える。
+7. `src/infra/outbound/channel-adapters.ts` を削除し、チャネル Plugin 型から `buildCrossContextComponents` を削除する。
+8. `maybeApplyCrossContextMarker` を変更し、ネイティブパラメーターではなく `presentation` をアタッチする。
+9. Plugin ディスパッチ送信パスを更新し、セマンティック presentation と delivery メタデータのみを使用する。
+10. エージェントと CLI のネイティブペイロードパラメーター `components`、`blocks`、`buttons`、`card` を削除する。
+11. ネイティブメッセージツールスキーマを作成する SDK ヘルパーを削除し、presentation スキーマヘルパーに置き換える。
+12. UI/ネイティブエンベロープを `channelData` から削除する。残る各フィールドがレビューされるまでは、トランスポートメタデータのみを保持する。
 13. Discord、Slack、Telegram、Mattermost、MS Teams、Feishu、LINE のレンダラーを移行する。
-14. message CLI、channel page、Plugin SDK、capability cookbook のドキュメントを更新する。
-15. Discord と影響を受けるチャンネル entrypoint の import fanout profiling を実行する。
+14. メッセージ CLI、チャネルページ、Plugin SDK、機能クックブックのドキュメントを更新する。
+15. Discord と影響を受けるチャネルエントリーポイントのインポートファンアウトプロファイリングを実行する。
 
-このリファクタでは、共有エージェント、CLI、Plugin capability、outbound adapter 契約について手順 1-11 と 13-14 が実装済みです。手順 12 は provider-private `channelData` transport envelope に対する、より深い内部クリーンアップパスとして残っています。手順 15 は、型/テストゲートを超えた定量的な import-fanout 数値が欲しい場合のフォローアップ検証として残っています。
+手順 1〜11 と 13〜14 は、このリファクタリングで共有エージェント、CLI、Plugin 機能、アウトバウンドアダプター契約について実装済み。手順 12 は、プロバイダー非公開の `channelData` トランスポートエンベロープに対する、より深い内部クリーンアップパスとして残っている。手順 15 は、型/テストゲートを超えた定量的なインポートファンアウト数値が必要な場合のフォローアップ検証として残っている。
 
 ## テスト
 
 追加または更新するもの:
 
-- Presentation 正規化テスト。
-- サポートされない block に対する presentation 自動劣化テスト。
-- Plugin dispatch とコア配信経路向けのクロスコンテキスト marker テスト。
-- Discord、Slack、Telegram、Mattermost、MS Teams、Feishu、LINE、およびテキストフォールバック向けのチャンネル render matrix テスト。
-- ネイティブフィールドが消えたことを証明するメッセージツール schema テスト。
-- ネイティブフラグが消えたことを証明する CLI テスト。
-- Carbon を対象にした Discord entrypoint import-laziness 回帰テスト。
-- Telegram と汎用フォールバックをカバーする delivery pin テスト。
+- presentation 正規化テスト。
+- サポートされていないブロック向けの presentation 自動劣化テスト。
+- Plugin ディスパッチとコア配信パスのクロスコンテキストマーカーテスト。
+- Discord、Slack、Telegram、Mattermost、MS Teams、Feishu、LINE、テキストフォールバックのチャネルレンダリングマトリクステスト。
+- ネイティブフィールドがなくなったことを証明するメッセージツールスキーマテスト。
+- ネイティブフラグがなくなったことを証明する CLI テスト。
+- Carbon を対象にした Discord エントリーポイントのインポート遅延性回帰テスト。
+- Telegram と汎用フォールバックを対象にした delivery ピン留めテスト。
 
 ## 未解決の質問
 
-- `delivery.pin` は最初の段階で Discord、Slack、MS Teams、Feishu にも実装すべきか、それともまず Telegram のみか？
-- `delivery` は将来的に `replyToId`、`replyToCurrent`、`silent`、`audioAsVoice` のような既存フィールドも吸収すべきか、それとも post-send 動作に集中したままにすべきか？
-- Presentation は画像やファイル参照を直接サポートすべきか、それとも今のところメディアは UI レイアウトとは分離したままにすべきか？
+- `delivery.pin` は初回パスで Discord、Slack、MS Teams、Feishu にも実装すべきか、それともまず Telegram のみにすべきか。
+- `delivery` は最終的に `replyToId`、`replyToCurrent`、`silent`、`audioAsVoice` などの既存フィールドも吸収すべきか、それとも送信後の動作に集中したままにすべきか。
+- presentation は画像やファイル参照を直接サポートすべきか、それとも当面はメディアを UI レイアウトから分離したままにすべきか。
 
 ## 関連
 
-- [Channels overview](/ja-JP/channels)
-- [Message presentation](/ja-JP/plugins/message-presentation)
+- [チャネル概要](/ja-JP/channels)
+- [メッセージ presentation](/ja-JP/plugins/message-presentation)

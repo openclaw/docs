@@ -1,41 +1,40 @@
 ---
 read_when:
-    - メッセージカード、ボタン、またはセレクトのレンダリングを追加または変更すること
-    - リッチな送信メッセージをサポートするチャンネル Plugin を構築すること
-    - message tool のプレゼンテーションや配信 capabilities を変更すること
-    - プロバイダー固有のカード/ブロック/component レンダリングのリグレッションをデバッグすること
-summary: チャンネル Plugin 向けのセマンティックメッセージカード、ボタン、セレクト、フォールバックテキスト、配信ヒント
-title: メッセージプレゼンテーション
+    - メッセージカード、ボタン、またはセレクトのレンダリングの追加または変更
+    - リッチな送信メッセージをサポートするチャネル Plugin の構築
+    - メッセージツールの表示または配信機能の変更
+    - プロバイダー固有のカード/ブロック/コンポーネントのレンダリング回帰をデバッグする
+summary: チャネルPlugin向けのセマンティックメッセージカード、ボタン、セレクト、フォールバックテキスト、配信ヒント
+title: メッセージの表示
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:10:45Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 1c8c3903101310de330017b34bc2f0d641f4c8ea2b80a30532736b4409716510
-  source_path: plugins/message-presentation.md
-  workflow: 15
+    generated_at: "2026-04-30T05:26:08Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 23ef0eab890ee174c1433f72e84932a84a481f2bcf4b69bc793a2660ec94b10c
+    source_path: plugins/message-presentation.md
+    workflow: 16
 ---
 
-メッセージプレゼンテーションは、リッチな送信チャット UI 向けの OpenClaw の共有契約です。
-これにより、エージェント、CLI コマンド、承認フロー、Plugins はメッセージの
-意図を 1 回だけ記述でき、各チャンネル Plugin はそれを可能な限り最適なネイティブ形状にレンダリングできます。
+メッセージプレゼンテーションは、リッチな送信チャット UI のための OpenClaw の共有コントラクトです。
+これにより、エージェント、CLI コマンド、承認フロー、Plugin はメッセージの
+意図を一度記述すれば、各チャネル Plugin が可能な最適なネイティブ形状でレンダリングできます。
 
-プレゼンテーションは、移植性のあるメッセージ UI に使ってください。
+ポータブルなメッセージ UI にはプレゼンテーションを使用します。
 
 - テキストセクション
 - 小さなコンテキスト/フッターテキスト
 - 区切り線
 - ボタン
-- セレクトメニュー
+- 選択メニュー
 - カードタイトルとトーン
 
-Discord の `components`、Slack の
-`blocks`、Telegram の `buttons`、Teams の `card`、Feishu の `card` のような、新しい provider-native フィールドを共有
-message tool に追加してはいけません。これらはチャンネル Plugin が所有するレンダラー出力です。
+共有メッセージツールに、Discord `components`、Slack
+`blocks`、Telegram `buttons`、Teams `card`、Feishu `card` などの新しいプロバイダーネイティブフィールドを追加しないでください。
+それらはチャネル Plugin が所有するレンダラー出力です。
 
-## 契約
+## コントラクト
 
-Plugin 作成者は次から公開契約を import します。
+Plugin 作者は公開コントラクトを次からインポートします。
 
 ```ts
 import type {
@@ -83,22 +82,25 @@ type ReplyPayloadDelivery = {
 };
 ```
 
-ボタンの意味論:
+ボタンのセマンティクス:
 
-- `value` はアプリケーション action 値であり、チャンネルがクリック可能なコントロールをサポートしている場合、チャンネルの既存 interaction path 経由で戻されます。
-- `url` はリンクボタンです。`value` なしでも存在できます。
-- `label` は必須で、テキストフォールバックでも使われます。
-- `style` は advisory です。レンダラーは、サポートされていない style を失敗させるのではなく、安全なデフォルトにマップすべきです。
+- `value` は、チャネルがクリック可能なコントロールに対応している場合に、そのチャネルの
+  既存のインタラクション経路を通じて戻されるアプリケーションアクション値です。
+- `url` はリンクボタンです。`value` なしで存在できます。
+- `label` は必須で、テキストフォールバックでも使用されます。
+- `style` は助言的なものです。レンダラーは未対応のスタイルを、安全な
+  デフォルトにマッピングし、送信を失敗させないようにする必要があります。
 
-セレクトの意味論:
+選択のセマンティクス:
 
 - `options[].value` は選択されたアプリケーション値です。
-- `placeholder` は advisory であり、ネイティブなセレクトをサポートしないチャンネルでは無視されることがあります。
-- チャンネルがセレクトをサポートしない場合、フォールバックテキストはラベルを列挙します。
+- `placeholder` は助言的なもので、ネイティブの選択に対応しないチャネルでは無視される
+  場合があります。
+- チャネルが選択に対応していない場合、フォールバックテキストにはラベルが一覧表示されます。
 
-## Producer の例
+## プロデューサー例
 
-シンプルなカード:
+単純なカード:
 
 ```json
 {
@@ -132,7 +134,7 @@ URL のみのリンクボタン:
 }
 ```
 
-セレクトメニュー:
+選択メニュー:
 
 ```json
 {
@@ -159,7 +161,7 @@ openclaw message send --channel slack \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
-pin 付き配信:
+ピン留め配信:
 
 ```bash
 openclaw message send --channel telegram \
@@ -168,7 +170,7 @@ openclaw message send --channel telegram \
   --pin
 ```
 
-明示的 JSON を使った pin 付き配信:
+明示的な JSON によるピン留め配信:
 
 ```json
 {
@@ -180,9 +182,9 @@ openclaw message send --channel telegram \
 }
 ```
 
-## Renderer 契約
+## レンダラーコントラクト
 
-チャンネル Plugin は、その outbound adapter 上で render サポートを宣言します。
+チャネル Plugin は送信アダプターでレンダー対応を宣言します。
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -206,82 +208,87 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-capability フィールドは意図的に単純な真偽値です。これらは、レンダラーがどのネイティブプラットフォーム制限まで持つかではなく、何をインタラクティブにできるかを表します。ボタン最大数、ブロック数、カードサイズのようなプラットフォーム固有制限は、引き続きレンダラー側が所有します。
+ケイパビリティフィールドは意図的に単純なブール値です。これはレンダラーが何を
+インタラクティブにできるかを説明するものであり、すべてのネイティブプラットフォーム制限を表すものではありません。レンダラーは引き続き、
+最大ボタン数、ブロック数、カードサイズなどのプラットフォーム固有の制限を
+所有します。
 
-## Core のレンダーフロー
+## コアレンダーフロー
 
-`ReplyPayload` または message action に `presentation` が含まれる場合、core は次を行います。
+`ReplyPayload` またはメッセージアクションに `presentation` が含まれる場合、コアは次を行います。
 
-1. presentation payload を正規化する。
-2. ターゲットチャンネルの outbound adapter を解決する。
-3. `presentationCapabilities` を読む。
-4. adapter が payload をレンダリングできる場合、`renderPresentation` を呼ぶ。
-5. adapter がない、またはレンダリングできない場合は保守的なテキストへフォールバックする。
-6. 生成された payload を通常のチャンネル配信パスで送る。
-7. 最初に送信成功したメッセージの後で、`delivery.pin` のような配信メタデータを適用する。
+1. プレゼンテーションペイロードを正規化します。
+2. 対象チャネルの送信アダプターを解決します。
+3. `presentationCapabilities` を読み取ります。
+4. アダプターがペイロードをレンダリングできる場合、`renderPresentation` を呼び出します。
+5. アダプターが存在しない、またはレンダリングできない場合、保守的なテキストにフォールバックします。
+6. 結果のペイロードを通常のチャネル配信経路で送信します。
+7. 最初に正常送信されたメッセージの後に、`delivery.pin` などの配信メタデータを
+   適用します。
 
-フォールバック動作は core が所有するため、producer はチャンネル非依存のままでいられます。ネイティブレンダリングと interaction 処理はチャンネル Plugin が所有します。
+コアがフォールバック動作を所有するため、プロデューサーはチャネル非依存のままでいられます。チャネル
+Plugin はネイティブレンダリングとインタラクション処理を所有します。
 
 ## 劣化ルール
 
-プレゼンテーションは、制限されたチャンネルでも安全に送信できなければなりません。
+プレゼンテーションは、制限のあるチャネルでも安全に送信できる必要があります。
 
 フォールバックテキストには次が含まれます。
 
 - 最初の行としての `title`
-- 通常段落としての `text` ブロック
+- 通常の段落としての `text` ブロック
 - コンパクトなコンテキスト行としての `context` ブロック
-- 視覚的区切りとしての `divider` ブロック
+- 視覚的な区切りとしての `divider` ブロック
 - リンクボタンの URL を含むボタンラベル
-- セレクト option ラベル
+- 選択オプションのラベル
 
-サポートされないネイティブコントロールは、送信全体を失敗させるのではなく劣化すべきです。
+未対応のネイティブコントロールは、送信全体を失敗させるのではなく劣化する必要があります。
 例:
 
-- inline button 無効の Telegram では、テキストフォールバックを送信する。
-- セレクトをサポートしないチャンネルでは、セレクト option をテキストとして列挙する。
-- URL のみボタンは、ネイティブリンクボタンまたはフォールバック URL 行のどちらかになる。
-- 任意の pin 失敗は、配信済みメッセージを失敗させない。
+- インラインボタンが無効な Telegram はテキストフォールバックを送信します。
+- 選択に対応しないチャネルは、選択オプションをテキストとして一覧表示します。
+- URL のみのボタンは、ネイティブリンクボタンまたはフォールバック URL 行になります。
+- 任意のピン留め失敗は、配信済みメッセージを失敗させません。
 
-主な例外は `delivery.pin.required: true` です。pin が必須として要求され、
-チャンネルが送信済みメッセージを pin できない場合、配信は失敗として報告されます。
+主な例外は `delivery.pin.required: true` です。ピン留めが必須として要求され、
+チャネルが送信済みメッセージをピン留めできない場合、配信は失敗を報告します。
 
-## Provider マッピング
+## プロバイダーマッピング
 
 現在の同梱レンダラー:
 
-| Channel | ネイティブレンダー対象 | 注記 |
-| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord | Components と component container | 既存の provider-native payload producer 向けに旧式の `channelData.discord.components` を保持しますが、新しい共有送信では `presentation` を使うべきです。 |
-| Slack | Block Kit | 既存の provider-native payload producer 向けに旧式の `channelData.slack.blocks` を保持しますが、新しい共有送信では `presentation` を使うべきです。 |
-| Telegram | テキスト + inline keyboard | ボタン/セレクトは、ターゲットサーフェスに inline button capability が必要です。なければテキストフォールバックが使われます。 |
-| Mattermost | テキスト + interactive props | 他のブロックはテキストに劣化します。 |
-| Microsoft Teams | Adaptive Cards | 両方が提供された場合、プレーンな `message` テキストもカードと一緒に含まれます。 |
-| Feishu | Interactive cards | カードヘッダーは `title` を使えます。本文ではそのタイトルの重複を避けます。 |
-| Plain channels | テキストフォールバック | レンダラーのないチャンネルでも読みやすい出力が得られます。 |
+| チャネル        | ネイティブレンダーターゲット      | 備考                                                                                                                                           |
+| --------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Components とコンポーネントコンテナ | 既存のプロバイダーネイティブペイロードプロデューサー向けに従来の `channelData.discord.components` を保持しますが、新しい共有送信では `presentation` を使用する必要があります。 |
+| Slack           | Block Kit                           | 既存のプロバイダーネイティブペイロードプロデューサー向けに従来の `channelData.slack.blocks` を保持しますが、新しい共有送信では `presentation` を使用する必要があります。       |
+| Telegram        | テキストとインラインキーボード      | ボタン/選択には対象サーフェスのインラインボタンケイパビリティが必要です。そうでない場合はテキストフォールバックが使用されます。                                         |
+| Mattermost      | テキストとインタラクティブプロパティ | その他のブロックはテキストに劣化します。                                                                                                                     |
+| Microsoft Teams | Adaptive Cards                      | 両方が提供された場合、プレーンな `message` テキストはカードに含まれます。                                                                            |
+| Feishu          | インタラクティブカード              | カードヘッダーは `title` を使用できます。本文ではそのタイトルの重複を避けます。                                                                                  |
+| プレーンチャネル | テキストフォールバック              | レンダラーのないチャネルでも読みやすい出力を得られます。                                                                                            |
 
-provider-native payload 互換性は、既存の
-reply producer 向けの移行用便宜措置です。新しい共有ネイティブフィールドを追加する理由にはなりません。
+プロバイダーネイティブペイロード互換性は、既存の返信プロデューサー向けの移行上の便宜です。
+新しい共有ネイティブフィールドを追加する理由にはなりません。
 
-## Presentation と InteractiveReply
+## プレゼンテーションと InteractiveReply
 
-`InteractiveReply` は、承認および interaction
-helper で使われる古い内部サブセットです。サポートするもの:
+`InteractiveReply` は、承認とインタラクション
+ヘルパーで使用される古い内部サブセットです。これは次に対応しています。
 
-- text
-- buttons
-- selects
+- テキスト
+- ボタン
+- 選択
 
-`MessagePresentation` は正規の共有送信契約です。これにより次が追加されます。
+`MessagePresentation` は標準的な共有送信コントラクトです。これは次を追加します。
 
-- title
-- tone
-- context
-- divider
-- URL のみボタン
+- タイトル
+- トーン
+- コンテキスト
+- 区切り線
+- URL のみのボタン
 - `ReplyPayload.delivery` を通じた汎用配信メタデータ
 
-古いコードを bridge するときは `openclaw/plugin-sdk/interactive-runtime` の helper を使ってください。
+古いコードを橋渡しする場合は、`openclaw/plugin-sdk/interactive-runtime` のヘルパーを使用します。
 
 ```ts
 import {
@@ -292,42 +299,41 @@ import {
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-新しいコードは、`MessagePresentation` を直接受け取るか生成すべきです。
+新しいコードは `MessagePresentation` を直接受け入れるか生成する必要があります。
 
-## Delivery pin
+## 配信ピン留め
 
-pin は presentation ではなく配信動作です。`channelData.telegram.pin` のような
-provider-native フィールドではなく `delivery.pin` を使ってください。
+ピン留めは配信動作であり、プレゼンテーションではありません。
+`channelData.telegram.pin` などのプロバイダーネイティブフィールドではなく、`delivery.pin` を使用してください。
 
-意味論:
+セマンティクス:
 
-- `pin: true` は、最初に正常配信されたメッセージを pin します。
+- `pin: true` は最初に正常配信されたメッセージをピン留めします。
 - `pin.notify` のデフォルトは `false` です。
 - `pin.required` のデフォルトは `false` です。
-- 任意の pin 失敗は劣化し、送信済みメッセージはそのまま残ります。
-- 必須 pin 失敗は配信失敗になります。
-- chunk 化されたメッセージでは、tail chunk ではなく最初に配信された chunk を pin します。
+- 任意のピン留め失敗は劣化し、送信済みメッセージをそのまま残します。
+- 必須のピン留め失敗は配信を失敗させます。
+- チャンク化されたメッセージは末尾チャンクではなく、最初に配信されたチャンクをピン留めします。
 
-手動の `pin`, `unpin`, `pins` message action は、provider がそれらの操作をサポートする既存メッセージ用に引き続き存在します。
+手動の `pin`、`unpin`、`pins` メッセージアクションは、プロバイダーがそれらの操作に対応している
+既存メッセージ向けに引き続き存在します。
 
-## Plugin 作成者チェックリスト
+## Plugin 作者チェックリスト
 
-- チャンネルがセマンティックプレゼンテーションをレンダリングできる、または安全に劣化できる場合は、`describeMessageTool(...)` から `presentation` を宣言する。
-- ランタイム outbound adapter に `presentationCapabilities` を追加する。
-- `renderPresentation` は control-plane Plugin
-  setup コードではなく、ランタイムコード内に実装する。
-- ネイティブ UI ライブラリを hot setup/catalog パスに入れない。
-- プラットフォーム制限をレンダラーとテスト内で保持する。
-- 未対応のボタン、セレクト、URL ボタン、title/text
-  重複、および `message` と `presentation` の混在送信に対するフォールバックテストを追加する。
-- provider が送信済みメッセージ id を pin できる場合にのみ、`deliveryCapabilities.pin` と
-  `pinDeliveredMessage` により配信 pin サポートを追加する。
-- 新しい provider-native card/block/component/button フィールドを、
-  共有 message action schema 経由で公開しない。
+- チャネルがセマンティックプレゼンテーションをレンダリングできる、または安全に劣化できる場合は、
+  `describeMessageTool(...)` から `presentation` を宣言します。
+- ランタイム送信アダプターに `presentationCapabilities` を追加します。
+- コントロールプレーンの Plugin セットアップコードではなく、ランタイムコードで `renderPresentation` を実装します。
+- ネイティブ UI ライブラリをホットなセットアップ/カタログ経路から除外します。
+- レンダラーとテストでプラットフォーム制限を保持します。
+- 未対応のボタン、選択、URL ボタン、タイトル/テキストの重複、`message` と `presentation` の混在送信についてフォールバックテストを追加します。
+- プロバイダーが送信済みメッセージ ID をピン留めできる場合にのみ、`deliveryCapabilities.pin` と
+  `pinDeliveredMessage` を通じて配信ピン留め対応を追加します。
+- 共有メッセージアクションスキーマを通じて、新しいプロバイダーネイティブのカード/ブロック/コンポーネント/ボタンフィールドを公開しないでください。
 
 ## 関連ドキュメント
 
-- [Message CLI](/ja-JP/cli/message)
-- [Plugin SDK Overview](/ja-JP/plugins/sdk-overview)
-- [Plugin Architecture](/ja-JP/plugins/architecture-internals#message-tool-schemas)
-- [Channel Presentation Refactor Plan](/ja-JP/plan/ui-channels)
+- [メッセージ CLI](/ja-JP/cli/message)
+- [Plugin SDK 概要](/ja-JP/plugins/sdk-overview)
+- [Plugin アーキテクチャ](/ja-JP/plugins/architecture-internals#message-tool-schemas)
+- [チャネルプレゼンテーションリファクタリング計画](/ja-JP/plan/ui-channels)

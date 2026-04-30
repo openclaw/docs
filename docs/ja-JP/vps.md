@@ -1,78 +1,92 @@
 ---
 read_when:
-    - Linuxサーバーまたはcloud VPSでGatewayを実行したい場合
-    - ホスティングガイドの簡単な一覧が必要な場合
-    - OpenClaw向けの汎用Linuxサーバーチューニングが必要な場合
+    - Linux サーバーまたはクラウド VPS で Gateway を実行したい
+    - ホスティングガイドの簡単な全体像が必要です
+    - OpenClaw 向けの汎用的な Linux サーバーチューニングを行いたい場合
 sidebarTitle: Linux Server
-summary: Linuxサーバーまたはcloud VPSでOpenClawを実行する — provider picker、アーキテクチャ、チューニング
-title: Linuxサーバー
+summary: Linux サーバーまたはクラウド VPS で OpenClaw を実行する — プロバイダー選択、アーキテクチャ、チューニング
+title: Linux サーバー
 x-i18n:
-    generated_at: "2026-04-24T05:27:48Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T05:41:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ec71c7dcceedc20ecbeb3bdbbb7ea0047c1d1164e8049781171d3bdcac37cf95
+    source_hash: 5e8535af0b6d14123acd46436c2e942008cdb8485ae680fb42e9b175723b2232
     source_path: vps.md
-    workflow: 15
+    workflow: 16
 ---
 
-どのLinuxサーバーやcloud VPSでもOpenClaw Gatewayを実行できます。このページでは、
-provider選び、cloud deploymentの仕組み、そしてどこでも適用できる汎用的なLinux
-tuningを説明します。
+任意の Linux サーバーまたはクラウド VPS で OpenClaw Gateway を実行します。このページでは、
+プロバイダーの選び方、クラウドデプロイの仕組み、どこでも適用できる汎用的な Linux
+チューニングについて説明します。
 
-## providerを選ぶ
+## プロバイダーを選ぶ
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/ja-JP/install/railway">ワンクリック、browserセットアップ</Card>
-  <Card title="Northflank" href="/ja-JP/install/northflank">ワンクリック、browserセットアップ</Card>
-  <Card title="DigitalOcean" href="/ja-JP/install/digitalocean">シンプルな有料VPS</Card>
-  <Card title="Oracle Cloud" href="/ja-JP/install/oracle">Always Free ARM tier</Card>
+  <Card title="Railway" href="/ja-JP/install/railway">ワンクリックのブラウザー設定</Card>
+  <Card title="Northflank" href="/ja-JP/install/northflank">ワンクリックのブラウザー設定</Card>
+  <Card title="DigitalOcean" href="/ja-JP/install/digitalocean">シンプルな有料 VPS</Card>
+  <Card title="Oracle Cloud" href="/ja-JP/install/oracle">Always Free ARM ティア</Card>
   <Card title="Fly.io" href="/ja-JP/install/fly">Fly Machines</Card>
-  <Card title="Hetzner" href="/ja-JP/install/hetzner">Hetzner VPS上のDocker</Card>
-  <Card title="Hostinger" href="/ja-JP/install/hostinger">ワンクリックセットアップ付きVPS</Card>
+  <Card title="Hetzner" href="/ja-JP/install/hetzner">Hetzner VPS 上の Docker</Card>
+  <Card title="Hostinger" href="/ja-JP/install/hostinger">ワンクリック設定付き VPS</Card>
   <Card title="GCP" href="/ja-JP/install/gcp">Compute Engine</Card>
   <Card title="Azure" href="/ja-JP/install/azure">Linux VM</Card>
-  <Card title="exe.dev" href="/ja-JP/install/exe-dev">HTTPS proxy付きVM</Card>
-  <Card title="Raspberry Pi" href="/ja-JP/install/raspberry-pi">ARM self-hosted</Card>
+  <Card title="exe.dev" href="/ja-JP/install/exe-dev">HTTPS プロキシ付き VM</Card>
+  <Card title="Raspberry Pi" href="/ja-JP/install/raspberry-pi">ARM セルフホスト</Card>
 </CardGroup>
 
-**AWS（EC2 / Lightsail / free tier）** でも問題なく動作します。
+**AWS (EC2 / Lightsail / free tier)** でも問題なく動作します。
 コミュニティによる動画ウォークスルーは
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
 で利用できます
-（コミュニティリソースのため、利用できなくなる場合があります）。
+（コミュニティリソース -- 利用できなくなる場合があります）。
 
-## cloudセットアップの仕組み
+## クラウド設定の仕組み
 
-- **GatewayはVPS上で動作し**、state + workspaceを所有します。
-- laptopやphoneから **Control UI** または **Tailscale/SSH** 経由で接続します。
-- VPSをsource of truthとして扱い、state + workspaceを定期的に**バックアップ**してください。
-- 安全なデフォルトとして、Gatewayはloopback上に置き、SSH tunnelまたはTailscale Serve経由でアクセスしてください。
-  `lan` または `tailnet` にbindする場合は、`gateway.auth.token` または `gateway.auth.password` を必須にしてください。
+- **Gateway は VPS 上で実行**され、状態とワークスペースを所有します。
+- ノートパソコンまたはスマートフォンから **コントロール UI** または **Tailscale/SSH** 経由で接続します。
+- VPS を信頼できる唯一の情報源として扱い、状態とワークスペースを定期的に**バックアップ**します。
+- 安全なデフォルト: Gateway を loopback に保持し、SSH トンネルまたは Tailscale Serve 経由でアクセスします。
+  `lan` または `tailnet` にバインドする場合は、`gateway.auth.token` または `gateway.auth.password` を必須にしてください。
 
-関連ページ: [Gateway remote access](/ja-JP/gateway/remote), [Platforms hub](/ja-JP/platforms)。
+関連ページ: [Gateway リモートアクセス](/ja-JP/gateway/remote)、[プラットフォームハブ](/ja-JP/platforms)。
 
-## VPS上の共有company agent
+## まず管理アクセスを強化する
 
-同じtrust boundary内にいる全員が使い、agentがbusiness専用である場合、チーム向けに単一agentを実行する構成は妥当です。
+公開 VPS に OpenClaw をインストールする前に、そのマシン自体をどのように管理するかを決めます。
 
-- 専用runtime（VPS/VM/container + 専用OS user/account）上に置いてください。
-- そのruntimeを個人用のApple/Google accountや個人用browser/password-manager profileにサインインさせないでください。
-- ユーザー同士が敵対的である場合は、gateway/host/OS user単位で分割してください。
+- Tailnet のみの管理アクセスにしたい場合は、まず Tailscale をインストールし、VPS を
+  tailnet に参加させ、Tailscale IP または MagicDNS 名経由で 2 つ目の SSH セッションを確認してから、
+  公開 SSH を制限します。
+- Tailscale を使用しない場合は、追加のサービスを公開する前に、SSH
+  経路に対して同等の強化を適用します。
+- これは Gateway アクセスとは別です。OpenClaw を loopback にバインドしたまま、
+  ダッシュボードには SSH トンネルまたは Tailscale Serve を使うこともできます。
 
-security modelの詳細: [Security](/ja-JP/gateway/security)。
+Tailscale 固有の Gateway オプションは [Tailscale](/ja-JP/gateway/tailscale) にあります。
 
-## VPSでNodeを使う
+## VPS 上の共有会社エージェント
 
-Gatewayはcloudに置いたまま、ローカルdevice
-（Mac/iOS/Android/headless）上に **Node** をpairすることができます。Nodeは、Gatewayをcloudに置いたまま、
-ローカルscreen/camera/canvasと `system.run`
-capabilityを提供します。
+すべてのユーザーが同じ信頼境界内にいて、エージェントが業務専用である場合、チーム用に単一のエージェントを実行する構成は有効です。
 
-ドキュメント: [Nodes](/ja-JP/nodes), [Nodes CLI](/ja-JP/cli/nodes)。
+- 専用ランタイム（VPS/VM/コンテナ + 専用 OS ユーザー/アカウント）上に保持します。
+- そのランタイムで個人用の Apple/Google アカウントや、個人用ブラウザー/パスワードマネージャープロファイルにサインインしないでください。
+- ユーザー同士が敵対的である場合は、gateway/ホスト/OS ユーザーごとに分離します。
 
-## 小さなVMとARM host向けのstartup tuning
+セキュリティモデルの詳細: [セキュリティ](/ja-JP/gateway/security)。
 
-低性能VM（またはARM host）でCLI commandが遅く感じる場合は、Nodeのmodule compile cacheを有効にしてください:
+## VPS でノードを使う
+
+Gateway をクラウドに保持し、ローカルデバイス
+（Mac/iOS/Android/headless）上の**ノード**をペアリングできます。ノードは、Gateway がクラウドに留まったまま、
+ローカルの画面/カメラ/canvas と `system.run`
+機能を提供します。
+
+ドキュメント: [ノード](/ja-JP/nodes)、[ノード CLI](/ja-JP/cli/nodes)。
+
+## 小規模 VM と ARM ホスト向けの起動チューニング
+
+低電力 VM（または ARM ホスト）で CLI コマンドが遅く感じる場合は、Node のモジュールコンパイルキャッシュを有効にします。
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -83,25 +97,25 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE` は、繰り返し実行されるcommandのstartup timeを改善します。
-- `OPENCLAW_NO_RESPAWN=1` は、self-respawn pathによる追加startup overheadを避けます。
-- 最初のcommand実行でcacheがwarmされ、その後の実行が速くなります。
-- Raspberry Pi固有の内容については [Raspberry Pi](/ja-JP/install/raspberry-pi) を参照してください。
+- `NODE_COMPILE_CACHE` は、繰り返し実行するコマンドの起動時間を改善します。
+- `OPENCLAW_NO_RESPAWN=1` は、自己再起動パスによる追加の起動オーバーヘッドを回避します。
+- 最初のコマンド実行でキャッシュがウォームアップされ、その後の実行は高速になります。
+- Raspberry Pi 固有の内容は、[Raspberry Pi](/ja-JP/install/raspberry-pi) を参照してください。
 
-### systemd tuning checklist（任意）
+### systemd チューニングチェックリスト（任意）
 
-`systemd` を使うVM hostでは、次を検討してください:
+`systemd` を使用する VM ホストでは、次を検討してください。
 
-- 安定したstartup pathのためにservice envを追加する:
+- 安定した起動パスのためにサービス環境変数を追加します。
   - `OPENCLAW_NO_RESPAWN=1`
   - `NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache`
-- restart動作を明示的に保つ:
+- 再起動動作を明示的に保ちます。
   - `Restart=always`
   - `RestartSec=2`
   - `TimeoutStartSec=90`
-- state/cache pathのrandom-I/O cold-start penaltyを減らすため、SSD-backed diskを優先する。
+- ランダム I/O によるコールドスタートのペナルティを減らすため、状態/キャッシュパスには SSD バックのディスクを推奨します。
 
-標準の `openclaw onboard --install-daemon` pathでは、user unitを編集してください:
+標準の `openclaw onboard --install-daemon` パスでは、ユーザーユニットを編集します。
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -116,19 +130,19 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-意図的にsystem unitをインストールした場合は、代わりに
-`sudo systemctl edit openclaw-gateway.service` で
-`openclaw-gateway.service` を編集してください。
+意図的にシステムユニットをインストールした場合は、
+`sudo systemctl edit openclaw-gateway.service` 経由で
+`openclaw-gateway.service` を編集します。
 
-`Restart=` policyが自動復旧にどう役立つか:
-[systemd can automate service recovery](https://www.redhat.com/en/blog/systemd-automate-recovery)。
+`Restart=` ポリシーが自動復旧にどのように役立つか:
+[systemd はサービス復旧を自動化できます](https://www.redhat.com/en/blog/systemd-automate-recovery)。
 
-LinuxのOOM動作、child processのvictim選択、`exit 137`
-diagnosticsについては、[Linux memory pressure and OOM kills](/ja-JP/platforms/linux#memory-pressure-and-oom-kills) を参照してください。
+Linux の OOM 動作、子プロセスの犠牲プロセス選択、`exit 137`
+診断については、[Linux のメモリ圧迫と OOM kill](/ja-JP/platforms/linux#memory-pressure-and-oom-kills) を参照してください。
 
 ## 関連
 
-- [Install overview](/ja-JP/install)
+- [インストール概要](/ja-JP/install)
 - [DigitalOcean](/ja-JP/install/digitalocean)
 - [Fly.io](/ja-JP/install/fly)
 - [Hetzner](/ja-JP/install/hetzner)

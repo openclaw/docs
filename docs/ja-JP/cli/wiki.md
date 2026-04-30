@@ -1,39 +1,38 @@
 ---
 read_when:
-    - memory-wiki CLI を使いたい場合
-    - '`openclaw wiki` を文書化または変更している場合'
-summary: '`openclaw wiki` の CLI リファレンス（memory-wiki vault の status、search、compile、lint、apply、bridge、および Obsidian ヘルパー）'
-title: Wiki
+    - memory-wiki CLI を使いたい
+    - あなたは `openclaw wiki` を文書化または変更しています
+summary: '`openclaw wiki` のCLIリファレンス（memory-wiki vaultの状態、検索、コンパイル、lint、適用、ブリッジ、およびObsidianヘルパー）'
+title: ウィキ
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T04:52:26Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: c25f7046ef0c29ed74204a5349edc2aa20ce79a355f49211a0ba0df4a5e4db3a
-  source_path: cli/wiki.md
-  workflow: 15
+    generated_at: "2026-04-30T05:06:53Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 67fe56c9bff7b24570f890733314857dd261fca8233051681a83c171656ff27d
+    source_path: cli/wiki.md
+    workflow: 16
 ---
 
 # `openclaw wiki`
 
-`memory-wiki` vault を確認および保守します。
+`memory-wiki` 保管庫を検査し、保守します。
 
 同梱の `memory-wiki` Plugin によって提供されます。
 
 関連:
 
 - [Memory Wiki Plugin](/ja-JP/plugins/memory-wiki)
-- [メモリ概要](/ja-JP/concepts/memory)
+- [Memory の概要](/ja-JP/concepts/memory)
 - [CLI: memory](/ja-JP/cli/memory)
 
 ## 用途
 
-`openclaw wiki` は、次の機能を持つコンパイル済みナレッジ vault が必要な場合に使います:
+次のようなコンパイル済みナレッジ保管庫が必要な場合は、`openclaw wiki` を使用します。
 
-- wiki ネイティブ検索とページ読み取り
-- 出典情報が豊富な統合結果
-- 矛盾および鮮度レポート
-- アクティブなメモリ Plugin からの bridge インポート
+- wiki ネイティブの検索とページ読み取り
+- 来歴が豊富な統合
+- 矛盾と鮮度のレポート
+- Active Memory Plugin からのブリッジインポート
 - 任意の Obsidian CLI ヘルパー
 
 ## よく使うコマンド
@@ -46,6 +45,7 @@ openclaw wiki ingest ./notes/alpha.md
 openclaw wiki compile
 openclaw wiki lint
 openclaw wiki search "alpha"
+openclaw wiki search "who should I ask about Teams?" --mode route-question
 openclaw wiki get entity.alpha --from 1 --lines 80
 
 openclaw wiki apply synthesis "Alpha Summary" \
@@ -71,74 +71,93 @@ openclaw wiki obsidian daily
 
 ### `wiki status`
 
-現在の vault モード、健全性、および Obsidian CLI の可用性を確認します。
+現在の保管庫モード、健全性、Obsidian CLI の可用性を検査します。
 
-vault が初期化されているか、bridge モードが健全か、または Obsidian 統合が
-利用可能か不明な場合は、最初にこれを使ってください。
+保管庫が初期化されているか、ブリッジモードが健全か、または Obsidian 連携が利用可能か不明な場合は、最初にこれを使用します。
+
+ブリッジモードが有効で、Memory アーティファクトを読み取るように設定されている場合、このコマンドは実行中の Gateway に問い合わせるため、エージェント/ランタイム Memory と同じ Active Memory Plugin コンテキストを参照します。
 
 ### `wiki doctor`
 
-wiki のヘルスチェックを実行し、設定または vault の問題を表示します。
+wiki の健全性チェックを実行し、設定または保管庫の問題を表示します。
 
-典型的な問題には次が含まれます:
+ブリッジモードが有効で、Memory アーティファクトを読み取るように設定されている場合、このコマンドはレポートを作成する前に実行中の Gateway に問い合わせます。無効化されたブリッジインポートと、Memory アーティファクトを読み取らないブリッジ設定は、ローカル/オフラインのままです。
 
-- public memory artifact がないのに bridge モードが有効
-- 無効または欠落した vault レイアウト
-- Obsidian モードが想定されているのに外部 Obsidian CLI が存在しない
+典型的な問題には次が含まれます。
+
+- パブリック Memory アーティファクトなしでブリッジモードが有効
+- 無効または欠落している保管庫レイアウト
+- Obsidian モードが期待される場合に外部 Obsidian CLI が欠落
 
 ### `wiki init`
 
-wiki vault レイアウトとスターターページを作成します。
+wiki 保管庫のレイアウトとスターターページを作成します。
 
-これにより、トップレベルインデックスやキャッシュディレクトリを含む
-ルート構造が初期化されます。
+これは、トップレベルのインデックスとキャッシュディレクトリを含むルート構造を初期化します。
 
 ### `wiki ingest <path-or-url>`
 
-内容を wiki ソースレイヤーにインポートします。
+コンテンツを wiki のソースレイヤーにインポートします。
 
-注記:
+注:
 
-- URL ingest は `ingest.allowUrlIngest` で制御されます
-- インポートされたソースページは frontmatter に出典情報を保持します
-- 有効な場合、ingest 後に自動 compile を実行できます
+- URL 取り込みは `ingest.allowUrlIngest` によって制御されます
+- インポートされたソースページは frontmatter に来歴を保持します
+- 有効な場合、取り込み後に自動コンパイルを実行できます
 
 ### `wiki compile`
 
-インデックス、関連ブロック、ダッシュボード、およびコンパイル済みダイジェストを再構築します。
+インデックス、関連ブロック、ダッシュボード、コンパイル済みダイジェストを再構築します。
 
-これにより、安定した機械向け artifact が次に書き込まれます:
+これは次の場所に安定した機械向けアーティファクトを書き込みます。
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-`render.createDashboards` が有効な場合、compile はレポートページも更新します。
+`render.createDashboards` が有効な場合、コンパイルはレポートページも更新します。
 
 ### `wiki lint`
 
-vault を lint し、次を報告します:
+保管庫を lint し、次を報告します。
 
 - 構造上の問題
-- 出典情報の欠落
+- 来歴の欠落
 - 矛盾
 - 未解決の質問
-- 低信頼度のページ/クレーム
-- 古いページ/クレーム
+- 信頼度の低いページ/主張
+- 古くなったページ/主張
 
-意味のある wiki 更新の後にこれを実行してください。
+意味のある wiki 更新後にこれを実行します。
 
 ### `wiki search <query>`
 
 wiki コンテンツを検索します。
 
-動作は設定に依存します:
+動作は設定によって異なります。
 
 - `search.backend`: `shared` または `local`
 - `search.corpus`: `wiki`、`memory`、または `all`
+- `--mode`: `auto`、`find-person`、`route-question`、`source-evidence`、または `raw-claim`
 
-wiki 固有のランキングや出典情報詳細が必要な場合は `wiki search` を使ってください。
-アクティブなメモリ Plugin が共有検索を公開している場合、広い共有リコールを 1 回だけ行うなら
-`openclaw memory search` を優先してください。
+wiki 固有のランキングまたは来歴の詳細が必要な場合は、`wiki search` を使用します。幅広い共有想起を 1 回実行する場合は、Active Memory Plugin が共有検索を公開しているなら `openclaw memory search` を優先します。
+
+検索モードは、エージェントが適切なサーフェスを選ぶのに役立ちます。
+
+- `find-person`: 別名、ハンドル、ソーシャル、正規 ID、人のページ
+- `route-question`: 質問先/最適な用途のヒントと関係性コンテキスト
+- `source-evidence`: ソースページと構造化された証拠フィールド
+- `raw-claim`: 主張/証拠メタデータを含む構造化された主張テキスト
+
+例:
+
+```bash
+openclaw wiki search "bgroux" --mode find-person
+openclaw wiki search "who knows Teams rollout?" --mode route-question
+openclaw wiki search "maintainer-whois" --mode source-evidence
+openclaw wiki search "strong route Teams" --mode raw-claim --json
+```
+
+結果が構造化された主張と一致する場合、テキスト出力には `Claim:` 行と `Evidence:` 行が含まれます。JSON 出力ではさらに、エージェント側の掘り下げ用に `matchedClaimId`、`matchedClaimStatus`、`matchedClaimConfidence`、`evidenceKinds`、`evidenceSourceIds` が公開されます。
 
 ### `wiki get <lookup>`
 
@@ -153,27 +172,27 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki apply`
 
-自由形式のページ編集をせずに、限定的な変更を適用します。
+自由形式のページ手術なしで、狭い範囲の変更を適用します。
 
-サポートされるフローには次が含まれます:
+サポートされるフローには次が含まれます。
 
-- synthesis ページの作成/更新
+- 統合ページの作成/更新
 - ページメタデータの更新
-- source ID の付与
+- ソース ID の添付
 - 質問の追加
 - 矛盾の追加
 - 信頼度/ステータスの更新
-- 構造化クレームの書き込み
+- 構造化された主張の書き込み
 
 このコマンドは、管理対象ブロックを手動編集せずに wiki を安全に進化させるために存在します。
 
 ### `wiki bridge import`
 
-アクティブなメモリ Plugin から public memory artifact を、bridge バックエンドの
-ソースページへインポートします。
+Active Memory Plugin からパブリック Memory アーティファクトをブリッジバックのソースページにインポートします。
 
-最新のエクスポート済みメモリ artifact を wiki vault に取り込みたい
-`bridge` モードで使ってください。
+最新のエクスポート済み Memory アーティファクトを wiki 保管庫に取り込みたい場合は、`bridge` モードでこれを使用します。
+
+アクティブなブリッジアーティファクト読み取りでは、CLI は Gateway RPC 経由でインポートをルーティングするため、インポートはランタイム Memory Plugin コンテキストを使用します。ブリッジインポートが無効な場合、またはアーティファクト読み取りがオフになっている場合、コマンドはローカル/オフラインのゼロインポート動作を維持します。
 
 ### `wiki unsafe-local import`
 
@@ -183,7 +202,7 @@ openclaw wiki get syntheses/alpha-summary.md --from 1 --lines 80
 
 ### `wiki obsidian ...`
 
-Obsidian 対応モードで動作する vault 向けの Obsidian ヘルパーコマンドです。
+Obsidian フレンドリーモードで実行されている保管庫向けの Obsidian ヘルパーコマンドです。
 
 サブコマンド:
 
@@ -195,19 +214,17 @@ Obsidian 対応モードで動作する vault 向けの Obsidian ヘルパーコ
 
 `obsidian.useOfficialCli` が有効な場合、これらには `PATH` 上の公式 `obsidian` CLI が必要です。
 
-## 実用的な使い方のガイダンス
+## 実践的な使用ガイダンス
 
-- 出典情報とページ ID が重要な場合は `wiki search` + `wiki get` を使ってください。
-- 管理対象の生成セクションは手編集せず、`wiki apply` を使ってください。
-- 矛盾した内容や低信頼度の内容を信頼する前に `wiki lint` を使ってください。
-- 一括インポートやソース変更の後、ダッシュボードとコンパイル済みダイジェストをすぐ更新したい場合は
-  `wiki compile` を使ってください。
-- bridge モードが新たにエクスポートされたメモリ artifact に依存している場合は
-  `wiki bridge import` を使ってください。
+- 来歴とページ ID が重要な場合は、`wiki search` + `wiki get` を使用します。
+- 管理対象の生成セクションを手作業で編集する代わりに、`wiki apply` を使用します。
+- 矛盾するコンテンツや信頼度の低いコンテンツを信頼する前に、`wiki lint` を使用します。
+- 一括インポートまたはソース変更後、ダッシュボードとコンパイル済みダイジェストをすぐに最新化したい場合は、`wiki compile` を使用します。
+- ブリッジモードが新しくエクスポートされた Memory アーティファクトに依存している場合は、`wiki bridge import` を使用します。
 
-## 関連する設定
+## 設定との関連
 
-`openclaw wiki` の動作は次の設定によって決まります:
+`openclaw wiki` の動作は次によって形作られます。
 
 - `plugins.entries.memory-wiki.config.vaultMode`
 - `plugins.entries.memory-wiki.config.search.backend`
@@ -217,7 +234,7 @@ Obsidian 対応モードで動作する vault 向けの Obsidian ヘルパーコ
 - `plugins.entries.memory-wiki.config.render.*`
 - `plugins.entries.memory-wiki.config.context.includeCompiledDigestPrompt`
 
-完全な設定モデルについては [Memory Wiki Plugin](/ja-JP/plugins/memory-wiki) を参照してください。
+完全な設定モデルについては、[Memory Wiki Plugin](/ja-JP/plugins/memory-wiki) を参照してください。
 
 ## 関連
 

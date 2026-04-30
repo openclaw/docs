@@ -1,24 +1,23 @@
 ---
 read_when:
-- You want to update a source checkout safely
-- "`--update` の shorthand の動作を理解する必要があります"
-summary: "`openclaw update` の CLI リファレンス（比較的安全なソース更新 + Gateway 自動再起動）"
+    - ソースチェックアウトを安全に更新したい場合
+    - '`--update` の省略記法の動作を理解する必要があります'
+summary: '`openclaw update` の CLI リファレンス（比較的安全なソース更新 + Gateway の自動再起動）'
 title: 更新
 x-i18n:
-  generated_at: '2026-04-26T11:27:14Z'
-  refreshed_at: '2026-04-28T05:23:26Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: e86e7f8ffbf3f4ccd0787ba06aead35cb96e8db98c5d32c99b18ef9fda62efd6
-  source_path: cli/update.md
-  workflow: 15
+    generated_at: "2026-04-30T05:06:41Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 9cd4be6be8f6ae7df501f8bce3d208dd507ae5a1539f9772101cd844dcd93976
+    source_path: cli/update.md
+    workflow: 16
 ---
 
 # `openclaw update`
 
 OpenClaw を安全に更新し、stable/beta/dev チャネルを切り替えます。
 
-**npm/pnpm/bun** でインストールした場合（グローバルインストール、git メタデータなし）、
+**npm/pnpm/bun**（グローバルインストール、git メタデータなし）でインストールした場合、
 更新は [Updating](/ja-JP/install/updating) のパッケージマネージャーフローで行われます。
 
 ## 使用方法
@@ -40,19 +39,22 @@ openclaw --update
 
 ## オプション
 
-- `--no-restart`: 更新成功後の Gateway サービス再起動をスキップします。Gateway を再起動するパッケージマネージャー更新では、コマンドが成功する前に、再起動後のサービスが期待どおりの更新済みバージョンを報告することを確認します。
-- `--channel <stable|beta|dev>`: 更新チャネルを設定します（git + npm、設定に永続化されます）。
-- `--tag <dist-tag|version|spec>`: この更新に限ってパッケージターゲットを上書きします。パッケージインストールでは、`main` は `github:openclaw/openclaw#main` にマップされます。
-- `--dry-run`: 設定の書き込み、インストール、Plugin 同期、再起動を行わずに、予定されている更新アクション（チャネル/タグ/ターゲット/再起動フロー）をプレビューします。
-- `--json`: 機械可読な `UpdateRunResult` JSON を出力します。npm Plugin のアーティファクトドリフトが更新後の Plugin 同期中に検出された場合は、`postUpdate.plugins.integrityDrifts` も含まれます。
-- `--timeout <seconds>`: 各ステップのタイムアウト（デフォルトは 1800 秒）。
-- `--yes`: 確認プロンプトをスキップします（たとえばダウングレード確認）
+- `--no-restart`: 更新が成功した後に Gateway サービスの再起動をスキップします。Gateway を再起動するパッケージマネージャー更新では、コマンドが成功する前に、再起動されたサービスが想定される更新後バージョンを報告することを検証します。
+- `--channel <stable|beta|dev>`: 更新チャネルを設定します（git + npm。設定に永続化されます）。
+- `--tag <dist-tag|version|spec>`: この更新だけ、パッケージターゲットを上書きします。パッケージインストールでは、`main` は `github:openclaw/openclaw#main` に対応します。
+- `--dry-run`: 設定の書き込み、インストール、plugins の同期、再起動を行わずに、予定されている更新アクション（チャネル/タグ/ターゲット/再起動フロー）をプレビューします。
+- `--json`: 機械可読な `UpdateRunResult` JSON を出力します。更新後の plugin 同期中に npm plugin アーティファクトのドリフトが検出された場合は、
+  `postUpdate.plugins.integrityDrifts` も含まれます。
+- `--timeout <seconds>`: ステップごとのタイムアウトです（デフォルトは 1800s）。
+- `--yes`: 確認プロンプト（例: ダウングレード確認）をスキップします。
 
-注意: 古いバージョンは設定を壊す可能性があるため、ダウングレードには確認が必要です。
+<Warning>
+古いバージョンでは設定が壊れる可能性があるため、ダウングレードには確認が必要です。
+</Warning>
 
 ## `update status`
 
-現在の更新チャネル + git タグ/ブランチ/SHA（ソースチェックアウトの場合）と、更新の可用性を表示します。
+有効な更新チャネル + git タグ/ブランチ/SHA（ソースチェックアウトの場合）に加えて、更新の有無を表示します。
 
 ```bash
 openclaw update status
@@ -62,73 +64,106 @@ openclaw update status --timeout 10
 
 オプション:
 
-- `--json`: 機械可読な status JSON を出力します。
-- `--timeout <seconds>`: チェックのタイムアウト（デフォルトは 3 秒）。
+- `--json`: 機械可読なステータス JSON を出力します。
+- `--timeout <seconds>`: チェックのタイムアウトです（デフォルトは 3s）。
 
 ## `update wizard`
 
-更新チャネルを選択し、更新後に Gateway を再起動するかどうかを確認する対話フローです
-（デフォルトでは再起動します）。git チェックアウトなしで `dev` を選択すると、
-それを作成するオプションが表示されます。
+更新チャネルを選択し、更新後に Gateway を再起動するかどうかを確認する対話型フローです
+（デフォルトは再起動）。git チェックアウトなしで `dev` を選択した場合は、
+作成するかどうかを提示します。
 
 オプション:
 
-- `--timeout <seconds>`: 各更新ステップのタイムアウト（デフォルト `1800`）
+- `--timeout <seconds>`: 各更新ステップのタイムアウトです（デフォルト `1800`）
 
-## 動作内容
+## 実行内容
 
-チャネルを明示的に切り替えると（`--channel ...`）、OpenClaw はインストール方法も
-対応するように揃えます:
+チャネルを明示的に切り替える場合（`--channel ...`）、OpenClaw は
+インストール方法も整合させます。
 
-- `dev` → git チェックアウトを保証し（デフォルト: `~/openclaw`、`OPENCLAW_GIT_DIR` で上書き可能）、
-  それを更新し、そのチェックアウトからグローバル CLI をインストールします。
-- `stable` → `latest` を使って npm からインストールします。
-- `beta` → npm の dist-tag `beta` を優先しますが、beta が存在しない場合、または
-  現在の stable リリースより古い場合は `latest` にフォールバックします。
+- `dev` → git チェックアウト（デフォルト: `~/openclaw`、`OPENCLAW_GIT_DIR` で上書き）を確保し、
+  それを更新して、そのチェックアウトからグローバル CLI をインストールします。
+- `stable` → `latest` を使用して npm からインストールします。
+- `beta` → npm dist-tag `beta` を優先しますが、beta が存在しない、または現在の stable リリースより古い場合は
+  `latest` にフォールバックします。
 
-Gateway コアの自動更新機能（config で有効な場合）は、この同じ更新パスを再利用します。
+Gateway コアの自動更新機能（設定で有効な場合）は、この同じ更新パスを再利用します。
 
-パッケージマネージャーインストールでは、`openclaw update` はパッケージマネージャーを呼び出す前に
-ターゲットのパッケージバージョンを解決します。インストール済みバージョンがすでにターゲットと
-一致している場合でも、このコマンドはグローバルパッケージインストールを更新し、
-その後 Plugin 同期、補完更新、再起動処理を実行します。これにより、パッケージ版の
-サイドカーとチャネル所有の Plugin レコードが、インストール済みの OpenClaw
-ビルドと揃った状態に保たれます。
+パッケージマネージャーインストールでは、`openclaw update` はパッケージマネージャーを呼び出す前にターゲットパッケージ
+バージョンを解決します。npm グローバルインストールは段階的インストールを使用します。
+OpenClaw は新しいパッケージを一時 npm prefix にインストールし、そこでパッケージ化された `dist` インベントリを検証してから、
+そのクリーンなパッケージツリーを実際のグローバル prefix に入れ替えます。検証に失敗した場合、更新後の doctor、plugin 同期、
+再起動作業は疑わしいツリーから実行されません。インストール済みバージョンがすでにターゲットと一致している場合でも、
+コマンドはグローバルパッケージインストールを更新し、その後に plugin 同期、コアコマンド補完の更新、再起動作業を実行します。
+これにより、パッケージ化されたサイドカーとチャネル所有の plugin レコードが、インストール済み OpenClaw ビルドと整合した状態に保たれます。
+一方で、完全な plugin コマンド補完の再構築は、明示的な `openclaw completion --write-state` 実行に委ねられます。
 
-## Git チェックアウトフロー
+ローカルの管理対象 Gateway サービスがインストールされており、再起動が有効な場合、
+パッケージマネージャー更新はパッケージツリーを置き換える前に実行中のサービスを停止し、
+更新後のインストールからサービスメタデータを更新して、サービスを再起動し、再起動された Gateway が想定バージョンを報告することを検証します。
+`--no-restart` を指定すると、パッケージ置換は引き続き実行されますが、管理対象サービスは停止または再起動されません。
+そのため、手動で再起動するまで、実行中の Gateway は古いコードを使い続ける可能性があります。
 
-チャネル:
+## git チェックアウトフロー
 
-- `stable`: 最新の非 beta タグをチェックアウトし、その後 build + doctor を実行します。
-- `beta`: 最新の `-beta` タグを優先しますが、beta が存在しない場合やより古い場合は
-  最新の stable タグにフォールバックします。
-- `dev`: `main` をチェックアウトし、その後 fetch + rebase を行います。
+### チャネル選択
 
-概要:
+- `stable`: 最新の非 beta タグをチェックアウトし、その後ビルドして doctor を実行します。
+- `beta`: 最新の `-beta` タグを優先しますが、beta が存在しない、または古い場合は最新の stable タグにフォールバックします。
+- `dev`: `main` をチェックアウトし、その後 fetch と rebase を実行します。
 
-1. クリーンな worktree が必要です（コミットされていない変更がないこと）。
-2. 選択したチャネル（タグまたはブランチ）に切り替えます。
-3. upstream を fetch します（dev のみ）。
-4. dev のみ: 一時 worktree で preflight lint + TypeScript build を実行します。先端コミットが失敗した場合は、最大 10 コミットさかのぼって最新の正常ビルドを探します。
-5. 選択したコミットに rebase します（dev のみ）。
-6. リポジトリのパッケージマネージャーで依存関係をインストールします。pnpm チェックアウトでは、updater は pnpm workspace 内で `npm run build` を実行する代わりに、必要に応じて `pnpm` をブートストラップします（まず `corepack`、次に一時的な `npm install pnpm@10` フォールバック）。
-7. build を実行し、Control UI も build します。
-8. 最終の「安全な更新」チェックとして `openclaw doctor` を実行します。
-9. アクティブなチャネルに Plugin を同期し（dev はバンドル済み Plugin を使用、stable/beta は npm を使用）、npm でインストールされた Plugin を更新します。
+### 更新ステップ
 
-正確に固定された npm Plugin 更新が、保存されているインストール記録と整合性の異なるアーティファクトに解決された場合、`openclaw update` はその Plugin アーティファクト更新をインストールせず中止します。新しいアーティファクトを信頼できると確認した後でのみ、Plugin を明示的に再インストールまたは更新してください。
+<Steps>
+  <Step title="クリーンな作業ツリーを検証">
+    未コミットの変更がないことを要求します。
+  </Step>
+  <Step title="チャネルを切り替え">
+    選択したチャネル（タグまたはブランチ）に切り替えます。
+  </Step>
+  <Step title="upstream を fetch">
+    Dev のみ。
+  </Step>
+  <Step title="事前ビルド（dev のみ）">
+    一時 worktree で lint と TypeScript ビルドを実行します。先端が失敗した場合、最大 10 コミットまで戻って、最新のクリーンなビルドを探します。
+  </Step>
+  <Step title="Rebase">
+    選択したコミットに rebase します（dev のみ）。
+  </Step>
+  <Step title="依存関係をインストール">
+    リポジトリのパッケージマネージャーを使用します。pnpm チェックアウトでは、アップデーターは pnpm ワークスペース内で `npm run build` を実行するのではなく、必要に応じて `pnpm` をブートストラップします（まず `corepack`、次に一時的な `npm install pnpm@10` フォールバック）。
+  </Step>
+  <Step title="Control UI をビルド">
+    Gateway と Control UI をビルドします。
+  </Step>
+  <Step title="doctor を実行">
+    `openclaw doctor` は最後の安全更新チェックとして実行されます。
+  </Step>
+  <Step title="plugins を同期">
+    plugins を有効なチャネルに同期します。Dev は同梱 plugins を使用し、stable と beta は npm を使用します。npm インストール済み plugins を更新します。
+  </Step>
+</Steps>
 
-更新後の Plugin 同期が失敗すると、更新結果全体が失敗となり、再起動後続処理は停止します。Plugin のインストール/更新エラーを修正してから、`openclaw update` を再実行してください。
+<Warning>
+正確に pin された npm plugin 更新が、保存済みインストールレコードと整合性が異なるアーティファクトに解決された場合、`openclaw update` はそれをインストールせず、その plugin アーティファクト更新を中止します。新しいアーティファクトを信頼できることを検証した後にのみ、plugin を明示的に再インストールまたは更新してください。
+</Warning>
 
-pnpm のブートストラップがそれでも失敗する場合、updater はチェックアウト内で `npm run build` を試す代わりに、パッケージマネージャー固有のエラーで早期停止するようになりました。
+<Note>
+更新後の plugin 同期失敗は更新結果を失敗にし、再起動の後続作業を停止します。plugin のインストールまたは更新エラーを修正してから、`openclaw update` を再実行してください。
 
-## `--update` shorthand
+更新後の Gateway が起動すると、有効な同梱 plugin ランタイム依存関係は plugin の有効化前にステージングされます。更新によってトリガーされた再起動は、Gateway を閉じる前にアクティブなランタイム依存関係のステージングをすべて完了させるため、サービスマネージャーによる再起動が進行中の npm install を中断することはありません。
 
-`openclaw --update` は `openclaw update` に書き換えられます（シェルやランチャースクリプトで便利です）。
+pnpm ブートストラップがそれでも失敗する場合、アップデーターはチェックアウト内で `npm run build` を試すのではなく、パッケージマネージャー固有のエラーで早期に停止します。
+</Note>
+
+## `--update` 省略形
+
+`openclaw --update` は `openclaw update` に書き換えられます（shell やランチャースクリプトで便利です）。
 
 ## 関連
 
-- `openclaw doctor`（git チェックアウトでは先に update を実行することを提案します）
+- `openclaw doctor`（git チェックアウトでは、先に update を実行することを提案します）
 - [開発チャネル](/ja-JP/install/development-channels)
-- [更新](/ja-JP/install/updating)
+- [Updating](/ja-JP/install/updating)
 - [CLI リファレンス](/ja-JP/cli)
