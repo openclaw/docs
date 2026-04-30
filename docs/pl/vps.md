@@ -1,76 +1,91 @@
 ---
 read_when:
-    - Chcesz uruchomić Gateway na serwerze Linux lub chmurowym VPS
-    - Potrzebujesz szybkiego przeglądu przewodników hostingu
-    - Chcesz ogólnego dostrajania OpenClaw dla serwera Linux
+    - Chcesz uruchomić Gateway na serwerze z systemem Linux lub na serwerze VPS w chmurze
+    - Potrzebujesz krótkiego przeglądu przewodników po hostingu
+    - Chcesz ogólnej optymalizacji serwera Linux dla OpenClaw
 sidebarTitle: Linux Server
-summary: Uruchom OpenClaw na serwerze Linux lub chmurowym VPS — wybór providera, architektura i dostrajanie
+summary: Uruchamianie OpenClaw na serwerze Linux lub VPS w chmurze — wybór dostawcy, architektura i dostrajanie
 title: Serwer Linux
 x-i18n:
-    generated_at: "2026-04-24T09:39:18Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:26:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ec71c7dcceedc20ecbeb3bdbbb7ea0047c1d1164e8049781171d3bdcac37cf95
+    source_hash: 5e8535af0b6d14123acd46436c2e942008cdb8485ae680fb42e9b175723b2232
     source_path: vps.md
-    workflow: 15
+    workflow: 16
 ---
 
-Uruchom Gateway OpenClaw na dowolnym serwerze Linux lub chmurowym VPS. Ta strona pomaga
-wybrać providera, wyjaśnia, jak działają wdrożenia chmurowe, i omawia ogólne
-dostrajanie Linuxa, które sprawdza się wszędzie.
+Uruchom OpenClaw Gateway na dowolnym serwerze Linux lub chmurowym VPS. Ta strona pomaga
+wybrać dostawcę, wyjaśnia, jak działają wdrożenia w chmurze, i omawia ogólne
+dostrajanie Linux, które ma zastosowanie wszędzie.
 
-## Wybierz providera
+## Wybierz dostawcę
 
 <CardGroup cols={2}>
-  <Card title="Railway" href="/pl/install/railway">Konfiguracja jednym kliknięciem w przeglądarce</Card>
-  <Card title="Northflank" href="/pl/install/northflank">Konfiguracja jednym kliknięciem w przeglądarce</Card>
+  <Card title="Railway" href="/pl/install/railway">Konfiguracja w przeglądarce jednym kliknięciem</Card>
+  <Card title="Northflank" href="/pl/install/northflank">Konfiguracja w przeglądarce jednym kliknięciem</Card>
   <Card title="DigitalOcean" href="/pl/install/digitalocean">Prosty płatny VPS</Card>
-  <Card title="Oracle Cloud" href="/pl/install/oracle">Zawsze darmowa warstwa ARM</Card>
+  <Card title="Oracle Cloud" href="/pl/install/oracle">Warstwa Always Free ARM</Card>
   <Card title="Fly.io" href="/pl/install/fly">Fly Machines</Card>
   <Card title="Hetzner" href="/pl/install/hetzner">Docker na VPS Hetzner</Card>
   <Card title="Hostinger" href="/pl/install/hostinger">VPS z konfiguracją jednym kliknięciem</Card>
   <Card title="GCP" href="/pl/install/gcp">Compute Engine</Card>
-  <Card title="Azure" href="/pl/install/azure">Linux VM</Card>
-  <Card title="exe.dev" href="/pl/install/exe-dev">VM z proxy HTTPS</Card>
-  <Card title="Raspberry Pi" href="/pl/install/raspberry-pi">Self-hosted ARM</Card>
+  <Card title="Azure" href="/pl/install/azure">Maszyna wirtualna Linux</Card>
+  <Card title="exe.dev" href="/pl/install/exe-dev">Maszyna wirtualna z proxy HTTPS</Card>
+  <Card title="Raspberry Pi" href="/pl/install/raspberry-pi">Samodzielny hosting ARM</Card>
 </CardGroup>
 
-**AWS (EC2 / Lightsail / free tier)** również działa bardzo dobrze.
-Przewodnik wideo przygotowany przez społeczność jest dostępny pod adresem
+**AWS (EC2 / Lightsail / warstwa bezpłatna)** również działa dobrze.
+Społecznościowy film z instruktażem jest dostępny pod adresem
 [x.com/techfrenAJ/status/2014934471095812547](https://x.com/techfrenAJ/status/2014934471095812547)
-(zasób społeczności — może stać się niedostępny).
+(zasób społecznościowy -- może stać się niedostępny).
 
-## Jak działają konfiguracje chmurowe
+## Jak działają konfiguracje w chmurze
 
-- **Gateway działa na VPS** i przechowuje stan oraz obszar roboczy.
+- **Gateway działa na VPS** i jest właścicielem stanu oraz obszaru roboczego.
 - Łączysz się z laptopa lub telefonu przez **Control UI** albo **Tailscale/SSH**.
-- Traktuj VPS jako źródło prawdy i regularnie twórz **kopie zapasowe** stanu oraz obszaru roboczego.
-- Bezpieczna konfiguracja domyślna: trzymaj Gateway na loopback i uzyskuj do niego dostęp przez tunel SSH albo Tailscale Serve.
-  Jeśli bindowanie ustawisz na `lan` lub `tailnet`, wymagaj `gateway.auth.token` albo `gateway.auth.password`.
+- Traktuj VPS jako źródło prawdy i regularnie **twórz kopie zapasowe** stanu oraz obszaru roboczego.
+- Bezpieczne ustawienie domyślne: pozostaw Gateway na loopback i uzyskuj do niego dostęp przez tunel SSH albo Tailscale Serve.
+  Jeśli bindujesz do `lan` lub `tailnet`, wymagaj `gateway.auth.token` albo `gateway.auth.password`.
 
-Powiązane strony: [Zdalny dostęp do Gateway](/pl/gateway/remote), [Hub platform](/pl/platforms).
+Powiązane strony: [Zdalny dostęp do Gateway](/pl/gateway/remote), [Centrum platform](/pl/platforms).
+
+## Najpierw utwardź dostęp administracyjny
+
+Zanim zainstalujesz OpenClaw na publicznym VPS, zdecyduj, jak chcesz administrować
+samą maszyną.
+
+- Jeśli chcesz dostęp administracyjny tylko przez Tailnet, najpierw zainstaluj Tailscale, dołącz VPS
+  do swojego tailnet, zweryfikuj drugą sesję SSH przez adres IP Tailscale albo
+  nazwę MagicDNS, a następnie ogranicz publiczny SSH.
+- Jeśli nie używasz Tailscale, zastosuj równoważne utwardzenie dla swojej ścieżki
+  SSH przed wystawieniem większej liczby usług.
+- To jest niezależne od dostępu do Gateway. Nadal możesz pozostawić OpenClaw zbindowany do
+  loopback i używać tunelu SSH albo Tailscale Serve dla panelu.
+
+Opcje Gateway specyficzne dla Tailscale znajdują się w [Tailscale](/pl/gateway/tailscale).
 
 ## Współdzielony agent firmowy na VPS
 
-Uruchomienie jednego agenta dla zespołu to poprawna konfiguracja, gdy wszyscy użytkownicy znajdują się w tej samej granicy zaufania, a agent służy wyłącznie do celów biznesowych.
+Uruchamianie jednego agenta dla zespołu jest poprawną konfiguracją, gdy każdy użytkownik znajduje się w tej samej granicy zaufania, a agent jest przeznaczony wyłącznie do pracy firmowej.
 
-- Utrzymuj go na dedykowanym środowisku uruchomieniowym (VPS/VM/kontener + dedykowany użytkownik/systemowe konta OS).
-- Nie loguj tego środowiska do prywatnych kont Apple/Google ani do prywatnych profili przeglądarki/menedżera haseł.
-- Jeśli użytkownicy są dla siebie wzajemnie antagonistyczni, rozdziel ich według gateway/hosta/użytkownika OS.
+- Umieść go w dedykowanym środowisku uruchomieniowym (VPS/VM/kontener + dedykowany użytkownik/konta systemu operacyjnego).
+- Nie loguj tego środowiska uruchomieniowego do osobistych kont Apple/Google ani osobistych profili przeglądarki/menedżera haseł.
+- Jeśli użytkownicy są wobec siebie adwersarialni, rozdziel ich według Gateway/hosta/użytkownika systemu operacyjnego.
 
-Szczegóły modelu bezpieczeństwa: [Security](/pl/gateway/security).
+Szczegóły modelu bezpieczeństwa: [Bezpieczeństwo](/pl/gateway/security).
 
-## Używanie node z VPS
+## Używanie węzłów z VPS
 
-Możesz trzymać Gateway w chmurze i sparować **Node** na lokalnych urządzeniach
-(Mac/iOS/Android/headless). Node zapewniają lokalne możliwości screen/camera/canvas oraz `system.run`,
+Możesz utrzymać Gateway w chmurze i parować **węzły** na swoich urządzeniach lokalnych
+(Mac/iOS/Android/headless). Węzły udostępniają lokalny ekran/kamerę/canvas oraz możliwości `system.run`,
 podczas gdy Gateway pozostaje w chmurze.
 
-Dokumentacja: [Node](/pl/nodes), [CLI Node](/pl/cli/nodes).
+Dokumentacja: [Węzły](/pl/nodes), [CLI węzłów](/pl/cli/nodes).
 
-## Dostrajanie uruchamiania dla małych VM i hostów ARM
+## Dostrajanie uruchamiania dla małych maszyn wirtualnych i hostów ARM
 
-Jeśli polecenia CLI wydają się wolne na słabszych VM (albo hostach ARM), włącz cache kompilacji modułów Node:
+Jeśli polecenia CLI działają wolno na maszynach wirtualnych o niskiej mocy (lub hostach ARM), włącz pamięć podręczną kompilacji modułów Node:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF'
@@ -81,10 +96,10 @@ EOF
 source ~/.bashrc
 ```
 
-- `NODE_COMPILE_CACHE` poprawia czas uruchamiania przy kolejnych wywołaniach poleceń.
-- `OPENCLAW_NO_RESPAWN=1` unika dodatkowego narzutu startowego wynikającego ze ścieżki self-respawn.
-- Pierwsze uruchomienie polecenia rozgrzewa cache; kolejne uruchomienia są szybsze.
-- Szczegóły dla Raspberry Pi znajdziesz w [Raspberry Pi](/pl/install/raspberry-pi).
+- `NODE_COMPILE_CACHE` poprawia czasy uruchamiania powtarzanych poleceń.
+- `OPENCLAW_NO_RESPAWN=1` pozwala uniknąć dodatkowego narzutu uruchamiania związanego ze ścieżką samodzielnego ponownego uruchamiania.
+- Pierwsze uruchomienie polecenia rozgrzewa pamięć podręczną; kolejne uruchomienia są szybsze.
+- Szczegóły dotyczące Raspberry Pi znajdziesz w [Raspberry Pi](/pl/install/raspberry-pi).
 
 ### Lista kontrolna dostrajania systemd (opcjonalnie)
 
@@ -97,9 +112,9 @@ Dla hostów VM używających `systemd` rozważ:
   - `Restart=always`
   - `RestartSec=2`
   - `TimeoutStartSec=90`
-- Preferowanie dysków opartych na SSD dla ścieżek stanu/cache, aby ograniczyć kary cold-start związane z losowym I/O.
+- Preferowanie dysków opartych na SSD dla ścieżek stanu/pamięci podręcznej, aby zmniejszyć kary zimnego startu wynikające z losowego I/O.
 
-Dla standardowej ścieżki `openclaw onboard --install-daemon` edytuj unit użytkownika:
+Dla standardowej ścieżki `openclaw onboard --install-daemon` edytuj jednostkę użytkownika:
 
 ```bash
 systemctl --user edit openclaw-gateway.service
@@ -114,18 +129,18 @@ RestartSec=2
 TimeoutStartSec=90
 ```
 
-Jeśli celowo zainstalowano system unit, zamiast tego edytuj
+Jeśli celowo zainstalowano zamiast tego jednostkę systemową, edytuj
 `openclaw-gateway.service` przez `sudo systemctl edit openclaw-gateway.service`.
 
-Jak polityki `Restart=` pomagają w automatycznym odzyskiwaniu działania:
-[systemd can automate service recovery](https://www.redhat.com/en/blog/systemd-automate-recovery).
+Jak zasady `Restart=` pomagają w automatycznym odzyskiwaniu:
+[systemd może automatyzować odzyskiwanie usług](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
-Informacje o zachowaniu Linux OOM, wyborze ofiary w procesach potomnych i diagnostyce
-`exit 137` znajdziesz w [Linux memory pressure and OOM kills](/pl/platforms/linux#memory-pressure-and-oom-kills).
+Informacje o zachowaniu Linux przy OOM, wyborze procesu potomnego jako ofiary oraz diagnostyce `exit 137`
+znajdziesz w [Presja pamięci w Linux i zabijanie przez OOM](/pl/platforms/linux#memory-pressure-and-oom-kills).
 
 ## Powiązane
 
-- [Przegląd instalacji](/pl/install)
+- [Omówienie instalacji](/pl/install)
 - [DigitalOcean](/pl/install/digitalocean)
 - [Fly.io](/pl/install/fly)
 - [Hetzner](/pl/install/hetzner)

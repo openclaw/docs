@@ -1,21 +1,20 @@
 ---
 read_when:
     - Chcesz używać modeli Z.AI / GLM w OpenClaw
-    - Potrzebujesz prostej konfiguracji `ZAI_API_KEY`
-summary: Używaj Z.AI (modele GLM) z OpenClaw
+    - Potrzebujesz prostej konfiguracji ZAI_API_KEY
+summary: Korzystanie z Z.AI (modeli GLM) w OpenClaw
 title: Z.AI
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-26T11:40:11Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
-  source_path: providers/zai.md
-  workflow: 15
+    generated_at: "2026-04-30T10:15:49Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
+    source_path: providers/zai.md
+    workflow: 16
 ---
 
 Z.AI to platforma API dla modeli **GLM**. Udostępnia interfejsy REST API dla GLM i używa kluczy API
-do uwierzytelniania. Utwórz klucz API w konsoli Z.AI. OpenClaw używa dostawcy `zai`
+do uwierzytelniania. Utwórz swój klucz API w konsoli Z.AI. OpenClaw używa dostawcy `zai`
 z kluczem API Z.AI.
 
 - Dostawca: `zai`
@@ -26,7 +25,7 @@ z kluczem API Z.AI.
 
 <Tabs>
   <Tab title="Automatyczne wykrywanie punktu końcowego">
-    **Najlepsze dla:** większości użytkowników. OpenClaw wykrywa pasujący punkt końcowy Z.AI na podstawie klucza i automatycznie stosuje poprawny bazowy URL.
+    **Najlepsze dla:** większości użytkowników. OpenClaw wykrywa pasujący punkt końcowy Z.AI na podstawie klucza i automatycznie stosuje prawidłowy bazowy URL.
 
     <Steps>
       <Step title="Uruchom onboarding">
@@ -52,21 +51,21 @@ z kluczem API Z.AI.
   </Tab>
 
   <Tab title="Jawny regionalny punkt końcowy">
-    **Najlepsze dla:** użytkowników, którzy chcą wymusić określony Coding Plan lub ogólną powierzchnię API.
+    **Najlepsze dla:** użytkowników, którzy chcą wymusić konkretny plan Coding Plan lub ogólną powierzchnię API.
 
     <Steps>
       <Step title="Wybierz właściwą opcję onboardingu">
         ```bash
-        # Coding Plan Global (zalecane dla użytkowników Coding Plan)
+        # Coding Plan Global (recommended for Coding Plan users)
         openclaw onboard --auth-choice zai-coding-global
 
-        # Coding Plan CN (region Chiny)
+        # Coding Plan CN (China region)
         openclaw onboard --auth-choice zai-coding-cn
 
-        # Ogólne API
+        # General API
         openclaw onboard --auth-choice zai-global
 
-        # Ogólne API CN (region Chiny)
+        # General API CN (China region)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
@@ -90,7 +89,7 @@ z kluczem API Z.AI.
 
 ## Wbudowany katalog
 
-OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` następującymi modelami:
+OpenClaw obecnie inicjuje dołączonego dostawcę `zai` następującymi modelami:
 
 | Odwołanie do modelu  | Uwagi            |
 | -------------------- | ---------------- |
@@ -109,14 +108,14 @@ OpenClaw obecnie inicjalizuje dołączonego dostawcę `zai` następującymi mode
 | `zai/glm-4.5v`       |                  |
 
 <Tip>
-Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne odwołanie do dołączonego modelu to `zai/glm-5.1`.
+Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne dołączone odwołanie do modelu to `zai/glm-5.1`.
 </Tip>
 
-## Konfiguracja zaawansowana
+## Zaawansowana konfiguracja
 
 <AccordionGroup>
-  <Accordion title="Rozwiązywanie nieznanych modeli GLM-5 do przodu">
-    Nieznane identyfikatory `glm-5*` są nadal rozwiązywane do przodu na ścieżce dołączonego dostawcy przez
+  <Accordion title="Rozpoznawanie do przodu nieznanych modeli GLM-5">
+    Nieznane identyfikatory `glm-5*` nadal są rozpoznawane do przodu na ścieżce dołączonego dostawcy przez
     syntetyzowanie metadanych należących do dostawcy z szablonu `glm-4.7`, gdy identyfikator
     pasuje do bieżącego kształtu rodziny GLM-5.
   </Accordion>
@@ -140,14 +139,14 @@ Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne 
 
   </Accordion>
 
-  <Accordion title="Myślenie i zachowane myślenie">
-    Myślenie Z.AI podąża za kontrolkami `/think` OpenClaw. Przy wyłączonym myśleniu
-    OpenClaw wysyła `thinking: { type: "disabled" }`, aby uniknąć odpowiedzi,
-    które zużywają budżet wyjściowy na `reasoning_content` przed widocznym tekstem.
+  <Accordion title="Thinking i zachowane thinking">
+    Thinking Z.AI działa zgodnie z kontrolkami `/think` OpenClaw. Gdy thinking jest wyłączone,
+    OpenClaw wysyła `thinking: { type: "disabled" }`, aby uniknąć odpowiedzi, które
+    zużywają budżet wyjścia na `reasoning_content` przed widocznym tekstem.
 
-    Zachowane myślenie jest opcjonalne, ponieważ Z.AI wymaga ponownego odtworzenia pełnego historycznego
-    `reasoning_content`, co zwiększa liczbę tokenów promptu. Włącz je
-    per model:
+    Zachowane thinking jest opcjonalne, ponieważ Z.AI wymaga ponownego odtworzenia pełnej historycznej
+    zawartości `reasoning_content`, co zwiększa liczbę tokenów promptu. Włącz je
+    dla konkretnego modelu:
 
     ```json5
     {
@@ -163,11 +162,11 @@ Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne 
     }
     ```
 
-    Gdy jest włączone i myślenie jest aktywne, OpenClaw wysyła
+    Gdy jest włączone i thinking jest aktywne, OpenClaw wysyła
     `thinking: { type: "enabled", clear_thinking: false }` i odtwarza wcześniejsze
-    `reasoning_content` dla tej samej zgodnej z OpenAI transkrypcji.
+    `reasoning_content` dla tej samej transkrypcji zgodnej z OpenAI.
 
-    Zaawansowani użytkownicy nadal mogą nadpisać dokładny ładunek dostawcy przez
+    Zaawansowani użytkownicy nadal mogą nadpisać dokładny payload dostawcy za pomocą
     `params.extra_body.thinking`.
 
   </Accordion>
@@ -175,19 +174,19 @@ Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne 
   <Accordion title="Rozumienie obrazów">
     Dołączony Plugin Z.AI rejestruje rozumienie obrazów.
 
-    | Właściwość | Wartość    |
-    | ---------- | ---------- |
-    | Model      | `glm-4.6v` |
+    | Właściwość   | Wartość     |
+    | ------------- | ----------- |
+    | Model         | `glm-4.6v`  |
 
-    Rozumienie obrazów jest automatycznie rozwiązywane na podstawie skonfigurowanego uwierzytelniania Z.AI — nie
-    jest potrzebna dodatkowa konfiguracja.
+    Rozumienie obrazów jest automatycznie rozpoznawane na podstawie skonfigurowanego uwierzytelniania Z.AI — nie jest potrzebna
+    dodatkowa konfiguracja.
 
   </Accordion>
 
   <Accordion title="Szczegóły uwierzytelniania">
     - Z.AI używa uwierzytelniania Bearer z Twoim kluczem API.
     - Opcja onboardingu `zai-api-key` automatycznie wykrywa pasujący punkt końcowy Z.AI na podstawie prefiksu klucza.
-    - Użyj jawnych opcji regionalnych (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`), gdy chcesz wymusić określoną powierzchnię API.
+    - Użyj jawnych opcji regionalnych (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`), gdy chcesz wymusić konkretną powierzchnię API.
 
   </Accordion>
 </AccordionGroup>
@@ -196,9 +195,9 @@ Modele GLM są dostępne jako `zai/<model>` (przykład: `zai/glm-5`). Domyślne 
 
 <CardGroup cols={2}>
   <Card title="Rodzina modeli GLM" href="/pl/providers/glm" icon="microchip">
-    Przegląd rodziny modeli GLM.
+    Omówienie rodziny modeli GLM.
   </Card>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybór dostawców, odwołań do modeli i zachowania awaryjnego.
+    Wybieranie dostawców, odwołań do modeli i zachowania przełączania awaryjnego.
   </Card>
 </CardGroup>

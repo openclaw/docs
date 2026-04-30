@@ -1,85 +1,85 @@
 ---
 read_when:
-    - Integracja klientów korzystających z OpenResponses API
-    - Chcesz używać wejść opartych na elementach, wywołań narzędzi klienta lub zdarzeń SSE
-summary: Udostępnij zgodny z OpenResponses endpoint HTTP `/v1/responses` z Gateway
-title: OpenResponses API
+    - Integracja klientów obsługujących interfejs API OpenResponses
+    - Chcesz używać danych wejściowych opartych na elementach, wywołań narzędzi klienta lub zdarzeń SSE
+summary: Udostępnij z Gateway punkt końcowy HTTP /v1/responses zgodny z OpenResponses
+title: API OpenResponses
 x-i18n:
-    generated_at: "2026-04-25T13:48:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:55:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b48685ab42d6f031849990b60a57af9501c216f058dc38abce184b963b05cedb
+    source_hash: 1cfba4c2572fab2d2ef6bceecd1ae0a022850c46125c62d5a5f3969d07d03aff
     source_path: gateway/openresponses-http-api.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gateway OpenClaw może udostępniać zgodny z OpenResponses endpoint `POST /v1/responses`.
+OpenClaw Gateway może udostępniać zgodny z OpenResponses endpoint `POST /v1/responses`.
 
 Ten endpoint jest **domyślnie wyłączony**. Najpierw włącz go w konfiguracji.
 
 - `POST /v1/responses`
-- Ten sam port co Gateway (multipleks WS + HTTP): `http://<gateway-host>:<port>/v1/responses`
+- Ten sam port co Gateway (multipleksowanie WS + HTTP): `http://<gateway-host>:<port>/v1/responses`
 
 Pod spodem żądania są wykonywane jako zwykłe uruchomienie agenta Gateway (ta sama ścieżka kodu co
-`openclaw agent`), więc routing/uprawnienia/konfiguracja są zgodne z Twoim Gateway.
+`openclaw agent`), więc routing/uprawnienia/konfiguracja odpowiadają Twojemu Gateway.
 
 ## Uwierzytelnianie, bezpieczeństwo i routing
 
 Zachowanie operacyjne odpowiada [OpenAI Chat Completions](/pl/gateway/openai-http-api):
 
-- użyj pasującej ścieżki uwierzytelniania HTTP Gateway:
-  - uwierzytelnianie współdzielonym sekretem (`gateway.auth.mode="token"` lub `"password"`): `Authorization: Bearer <token-or-password>`
-  - uwierzytelnianie trusted-proxy (`gateway.auth.mode="trusted-proxy"`): nagłówki proxy świadome tożsamości z skonfigurowanego źródła trusted proxy bez loopback
-  - otwarte uwierzytelnianie private-ingress (`gateway.auth.mode="none"`): bez nagłówka uwierzytelniania
-- traktuj endpoint jako pełny dostęp operatora do instancji Gateway
-- dla trybów uwierzytelniania współdzielonym sekretem (`token` i `password`) ignoruj węższe wartości `x-openclaw-scopes` zadeklarowane w bearer i przywracaj normalne pełne domyślne ustawienia operatora
-- dla zaufanych trybów HTTP niosących tożsamość (na przykład uwierzytelnianie trusted proxy lub `gateway.auth.mode="none"`) honoruj `x-openclaw-scopes`, gdy jest obecne, a w przeciwnym razie wracaj do normalnego domyślnego zestawu zakresów operatora
-- wybieraj agentów przez `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` lub `x-openclaw-agent-id`
-- używaj `x-openclaw-model`, gdy chcesz nadpisać backendowy model wybranego agenta
-- używaj `x-openclaw-session-key` do jawnego routingu sesji
-- używaj `x-openclaw-message-channel`, gdy chcesz kontekst syntetycznego kanału wejściowego inny niż domyślny
+- użyj odpowiedniej ścieżki uwierzytelniania HTTP Gateway:
+  - uwierzytelnianie wspólnym sekretem (`gateway.auth.mode="token"` lub `"password"`): `Authorization: Bearer <token-or-password>`
+  - uwierzytelnianie trusted-proxy (`gateway.auth.mode="trusted-proxy"`): nagłówki proxy świadome tożsamości ze skonfigurowanego zaufanego źródła proxy; proxy same-host loopback wymagają jawnego `gateway.auth.trustedProxy.allowLoopback = true`
+  - otwarte uwierzytelnianie private-ingress (`gateway.auth.mode="none"`): brak nagłówka uwierzytelniania
+- traktuj endpoint jako pełny dostęp operatora do instancji gateway
+- dla trybów uwierzytelniania wspólnym sekretem (`token` i `password`) ignoruj węższe wartości `x-openclaw-scopes` zadeklarowane przez bearer i przywróć normalne pełne domyślne ustawienia operatora
+- dla trybów HTTP z zaufaną tożsamością (na przykład uwierzytelnianie trusted proxy lub `gateway.auth.mode="none"`) honoruj `x-openclaw-scopes`, gdy jest obecny, a w przeciwnym razie wróć do normalnego domyślnego zestawu zakresów operatora
+- wybieraj agentów za pomocą `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` lub `x-openclaw-agent-id`
+- użyj `x-openclaw-model`, gdy chcesz nadpisać model backendu wybranego agenta
+- użyj `x-openclaw-session-key` do jawnego routingu sesji
+- użyj `x-openclaw-message-channel`, gdy chcesz użyć niedomyślnego kontekstu syntetycznego kanału wejściowego
 
 Macierz uwierzytelniania:
 
 - `gateway.auth.mode="token"` lub `"password"` + `Authorization: Bearer ...`
-  - dowodzi posiadania współdzielonego sekretu operatora Gateway
+  - dowodzi posiadania wspólnego sekretu operatora gateway
   - ignoruje węższe `x-openclaw-scopes`
   - przywraca pełny domyślny zestaw zakresów operatora:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - traktuje tury czatu na tym endpointcie jako tury nadawcy-właściciela
-- zaufane tryby HTTP niosące tożsamość (na przykład uwierzytelnianie trusted proxy lub `gateway.auth.mode="none"` na prywatnym ingressie)
+  - traktuje tury czatu na tym endpoincie jako tury owner-sender
+- tryby HTTP z zaufaną tożsamością (na przykład uwierzytelnianie trusted proxy albo `gateway.auth.mode="none"` na private ingress)
   - honorują `x-openclaw-scopes`, gdy nagłówek jest obecny
-  - wracają do normalnego domyślnego zestawu zakresów operatora, gdy nagłówek jest nieobecny
-  - tracą semantykę właściciela tylko wtedy, gdy wywołujący jawnie zawęzi zakresy i pominie `operator.admin`
+  - wracają do normalnego domyślnego zestawu zakresów operatora, gdy nagłówka nie ma
+  - tracą semantykę właściciela tylko wtedy, gdy wywołujący jawnie zawęża zakresy i pomija `operator.admin`
 
-Włączaj lub wyłączaj ten endpoint przez `gateway.http.endpoints.responses.enabled`.
+Włącz lub wyłącz ten endpoint za pomocą `gateway.http.endpoints.responses.enabled`.
 
-Ta sama powierzchnia zgodności obejmuje również:
+Ta sama powierzchnia zgodności obejmuje także:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-Aby uzyskać kanoniczne wyjaśnienie, jak łączą się modele kierowane na agentów, `openclaw/default`, pass-through embeddings i nadpisania modeli backendowych, zobacz [OpenAI Chat Completions](/pl/gateway/openai-http-api#agent-first-model-contract) i [Lista modeli i routing agentów](/pl/gateway/openai-http-api#model-list-and-agent-routing).
+Kanoniczne wyjaśnienie, jak modele kierujące do agentów, `openclaw/default`, przekazywanie embeddings i nadpisania modeli backendu współpracują ze sobą, znajdziesz w [OpenAI Chat Completions](/pl/gateway/openai-http-api#agent-first-model-contract) oraz [Lista modeli i routing agentów](/pl/gateway/openai-http-api#model-list-and-agent-routing).
 
 ## Zachowanie sesji
 
-Domyślnie endpoint jest **bezstanowy per żądanie** (dla każdego wywołania generowany jest nowy klucz sesji).
+Domyślnie endpoint jest **bezstanowy dla każdego żądania** (przy każdym wywołaniu generowany jest nowy klucz sesji).
 
-Jeśli żądanie zawiera ciąg `user` OpenResponses, Gateway wyprowadza z niego stabilny klucz sesji,
+Jeśli żądanie zawiera ciąg OpenResponses `user`, Gateway wyprowadza z niego stabilny klucz sesji,
 dzięki czemu powtarzane wywołania mogą współdzielić sesję agenta.
 
 ## Kształt żądania (obsługiwany)
 
-Żądanie jest zgodne z OpenResponses API z wejściem opartym na elementach. Obecnie obsługiwane:
+Żądanie jest zgodne z API OpenResponses z wejściem opartym na elementach. Obecna obsługa:
 
 - `input`: ciąg znaków lub tablica obiektów elementów.
 - `instructions`: scalane z promptem systemowym.
 - `tools`: definicje narzędzi klienta (narzędzia funkcyjne).
-- `tool_choice`: filtruje lub wymusza narzędzia klienta.
-- `stream`: włącza streaming SSE.
+- `tool_choice`: filtruje lub wymaga narzędzi klienta.
+- `stream`: włącza strumieniowanie SSE.
 - `max_output_tokens`: limit wyjścia best-effort (zależny od providera).
 - `user`: stabilny routing sesji.
 
@@ -93,9 +93,9 @@ Akceptowane, ale **obecnie ignorowane**:
 
 Obsługiwane:
 
-- `previous_response_id`: OpenClaw ponownie używa sesji wcześniejszej odpowiedzi, gdy żądanie pozostaje w tym samym zakresie agent/user/requested-session.
+- `previous_response_id`: OpenClaw ponownie używa wcześniejszej sesji odpowiedzi, gdy żądanie pozostaje w tym samym zakresie agenta/użytkownika/żądanej sesji.
 
-## Elementy (`input`)
+## Elementy (wejście)
 
 ### `message`
 
@@ -103,11 +103,11 @@ Role: `system`, `developer`, `user`, `assistant`.
 
 - `system` i `developer` są dołączane do promptu systemowego.
 - Najnowszy element `user` lub `function_call_output` staje się „bieżącą wiadomością”.
-- Wcześniejsze wiadomości użytkownika/asystenta są uwzględniane jako historia dla kontekstu.
+- Wcześniejsze wiadomości użytkownika/asystenta są dołączane jako historia dla kontekstu.
 
 ### `function_call_output` (narzędzia oparte na turach)
 
-Wyślij wyniki narzędzia z powrotem do modelu:
+Odeślij wyniki narzędzi do modelu:
 
 ```json
 {
@@ -119,14 +119,14 @@ Wyślij wyniki narzędzia z powrotem do modelu:
 
 ### `reasoning` i `item_reference`
 
-Akceptowane dla zgodności ze schematem, ale ignorowane podczas budowania promptu.
+Akceptowane dla zgodności schematu, ale ignorowane podczas budowania promptu.
 
-## Narzędzia (narzędzia funkcyjne po stronie klienta)
+## Narzędzia (funkcyjne narzędzia po stronie klienta)
 
-Dostarczaj narzędzia przez `tools: [{ type: "function", function: { name, description?, parameters? } }]`.
+Dostarcz narzędzia za pomocą `tools: [{ type: "function", function: { name, description?, parameters? } }]`.
 
 Jeśli agent zdecyduje się wywołać narzędzie, odpowiedź zwróci element wyjściowy `function_call`.
-Następnie wysyłasz kolejne żądanie z `function_call_output`, aby kontynuować turę.
+Następnie wyślij kolejne żądanie z `function_call_output`, aby kontynuować turę.
 
 ## Obrazy (`input_image`)
 
@@ -140,7 +140,7 @@ Obsługuje źródła base64 lub URL:
 ```
 
 Dozwolone typy MIME (obecnie): `image/jpeg`, `image/png`, `image/gif`, `image/webp`, `image/heic`, `image/heif`.
-Maksymalny rozmiar (obecnie): 10 MB.
+Maksymalny rozmiar (obecnie): 10MB.
 
 ## Pliki (`input_file`)
 
@@ -161,43 +161,43 @@ Obsługuje źródła base64 lub URL:
 Dozwolone typy MIME (obecnie): `text/plain`, `text/markdown`, `text/html`, `text/csv`,
 `application/json`, `application/pdf`.
 
-Maksymalny rozmiar (obecnie): 5 MB.
+Maksymalny rozmiar (obecnie): 5MB.
 
-Bieżące zachowanie:
+Obecne zachowanie:
 
 - Zawartość pliku jest dekodowana i dodawana do **promptu systemowego**, a nie do wiadomości użytkownika,
-  dzięki czemu pozostaje efemeryczna (nie jest utrwalana w historii sesji).
-- Zdekodowany tekst pliku jest opakowywany jako **niezaufana zawartość zewnętrzna** przed dodaniem,
-  więc bajty pliku są traktowane jako dane, a nie zaufane instrukcje.
-- Wstrzykiwany blok używa jawnych znaczników granic, takich jak
+  więc pozostaje efemeryczna (nie jest utrwalana w historii sesji).
+- Zdekodowany tekst pliku jest opakowywany jako **niezaufana treść zewnętrzna**, zanim zostanie dodany,
+  więc bajty pliku są traktowane jako dane, a nie jako zaufane instrukcje.
+- Wstrzyknięty blok używa jawnych znaczników granicznych, takich jak
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
-  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` i zawiera
-  wiersz metadanych `Source: External`.
-- Ta ścieżka wejścia pliku celowo pomija długi baner `SECURITY NOTICE:`,
-  aby zachować budżet promptu; znaczniki granic i metadane nadal pozostają na miejscu.
-- PDF-y są najpierw analizowane pod kątem tekstu. Jeśli tekstu jest niewiele, pierwsze strony są
-  rasteryzowane do obrazów i przekazywane do modelu, a wstrzykiwany blok pliku używa
+  `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>`, i zawiera wiersz metadanych
+  `Source: External`.
+- Ta ścieżka wejścia plikowego celowo pomija długi baner `SECURITY NOTICE:`, aby
+  zachować budżet promptu; znaczniki graniczne i metadane nadal pozostają na miejscu.
+- Pliki PDF są najpierw analizowane pod kątem tekstu. Jeśli znaleziono niewiele tekstu, pierwsze strony są
+  rasteryzowane do obrazów i przekazywane do modelu, a wstrzyknięty blok pliku używa
   placeholdera `[PDF content rendered to images]`.
 
-Parsowanie PDF jest zapewniane przez dołączony Plugin `document-extract`, który używa
-przyjaznej dla Node starszej wersji `pdfjs-dist` (bez workera). Nowoczesna wersja PDF.js
-oczekuje browser workers/DOM globals, więc nie jest używana w Gateway.
+Parsowanie PDF zapewnia dołączony plugin `document-extract`, który używa przyjaznej dla
+Node starszej wersji `pdfjs-dist` (bez workera). Nowoczesna wersja PDF.js
+oczekuje workerów przeglądarkowych/globali DOM, więc nie jest używana w Gateway.
 
-Domyślne ustawienia pobierania URL:
+Domyślne pobieranie URL:
 
 - `files.allowUrl`: `true`
 - `images.allowUrl`: `true`
-- `maxUrlParts`: `8` (łączna liczba części `input_file` + `input_image` opartych na URL na żądanie)
-- Żądania są chronione (rozwiązywanie DNS, blokowanie prywatnych IP, limity przekierowań, timeouty).
-- Opcjonalne allowlisty nazw hostów są obsługiwane per typ wejścia (`files.urlAllowlist`, `images.urlAllowlist`).
+- `maxUrlParts`: `8` (łączna liczba części opartych na URL `input_file` + `input_image` na żądanie)
+- Żądania są chronione (rozwiązywanie DNS, blokowanie prywatnych adresów IP, limity przekierowań, timeouty).
+- Opcjonalne listy dozwolonych nazw hostów są obsługiwane dla każdego typu wejścia (`files.urlAllowlist`, `images.urlAllowlist`).
   - Dokładny host: `"cdn.example.com"`
-  - Subdomeny wildcard: `"*.assets.example.com"` (nie pasuje do domeny głównej)
-  - Puste lub pominięte allowlisty oznaczają brak ograniczenia allowlisty nazw hostów.
-- Aby całkowicie wyłączyć pobieranie na podstawie URL, ustaw `files.allowUrl: false` i/lub `images.allowUrl: false`.
+  - Poddomeny z wildcardem: `"*.assets.example.com"` (nie pasuje do domeny apex)
+  - Puste lub pominięte listy dozwolone oznaczają brak ograniczenia listą dozwolonych nazw hostów.
+- Aby całkowicie wyłączyć pobieranie oparte na URL, ustaw `files.allowUrl: false` i/lub `images.allowUrl: false`.
 
-## Limity plików i obrazów (config)
+## Limity plików i obrazów (konfiguracja)
 
-Wartości domyślne można dostroić w `gateway.http.endpoints.responses`:
+Domyślne wartości można dostroić pod `gateway.http.endpoints.responses`:
 
 ```json5
 {
@@ -253,36 +253,36 @@ Wartości domyślne można dostroić w `gateway.http.endpoints.responses`:
 
 Wartości domyślne po pominięciu:
 
-- `maxBodyBytes`: 20 MB
+- `maxBodyBytes`: 20MB
 - `maxUrlParts`: 8
-- `files.maxBytes`: 5 MB
+- `files.maxBytes`: 5MB
 - `files.maxChars`: 200k
 - `files.maxRedirects`: 3
-- `files.timeoutMs`: 10 s
+- `files.timeoutMs`: 10s
 - `files.pdf.maxPages`: 4
 - `files.pdf.maxPixels`: 4,000,000
 - `files.pdf.minTextChars`: 200
-- `images.maxBytes`: 10 MB
+- `images.maxBytes`: 10MB
 - `images.maxRedirects`: 3
-- `images.timeoutMs`: 10 s
-- Źródła `input_image` HEIC/HEIF są akceptowane i normalizowane do JPEG przed dostarczeniem do providera.
+- `images.timeoutMs`: 10s
+- Źródła HEIC/HEIF `input_image` są akceptowane i normalizowane do JPEG przed dostarczeniem do providera.
 
 Uwaga dotycząca bezpieczeństwa:
 
-- Allowlisty URL są egzekwowane przed pobraniem i przy przekierowaniach.
-- Umieszczenie nazwy hosta na allowliście nie omija blokowania prywatnych/wewnętrznych adresów IP.
-- Dla Gateway wystawionych do internetu stosuj kontrolę ruchu wychodzącego na poziomie sieci oprócz zabezpieczeń aplikacyjnych.
+- Listy dozwolonych URL są egzekwowane przed pobraniem oraz przy skokach przekierowań.
+- Dodanie nazwy hosta do listy dozwolonych nie omija blokowania prywatnych/wewnętrznych adresów IP.
+- Dla gateway wystawionych do internetu zastosuj kontrolę ruchu wychodzącego sieci oprócz zabezpieczeń na poziomie aplikacji.
   Zobacz [Bezpieczeństwo](/pl/gateway/security).
 
-## Streaming (SSE)
+## Strumieniowanie (SSE)
 
-Ustaw `stream: true`, aby otrzymywać Server-Sent Events (SSE):
+Ustaw `stream: true`, aby odbierać Server-Sent Events (SSE):
 
 - `Content-Type: text/event-stream`
 - Każdy wiersz zdarzenia ma postać `event: <type>` i `data: <json>`
 - Strumień kończy się `data: [DONE]`
 
-Obecnie emitowane typy zdarzeń:
+Typy zdarzeń obecnie emitowane:
 
 - `response.created`
 - `response.in_progress`
@@ -297,14 +297,14 @@ Obecnie emitowane typy zdarzeń:
 
 ## Użycie
 
-`usage` jest wypełniane, gdy bazowy provider raportuje liczbę tokenów.
-OpenClaw normalizuje typowe aliasy w stylu OpenAI, zanim te liczniki trafią
-do powierzchni statusu/sesji downstream, w tym `input_tokens` / `output_tokens`
+`usage` jest wypełniane, gdy bazowy provider raportuje liczniki tokenów.
+OpenClaw normalizuje typowe aliasy w stylu OpenAI, zanim te liczniki trafią do
+dalszych powierzchni statusu/sesji, w tym `input_tokens` / `output_tokens`
 oraz `prompt_tokens` / `completion_tokens`.
 
 ## Błędy
 
-Błędy używają obiektu JSON w rodzaju:
+Błędy używają obiektu JSON, takiego jak:
 
 ```json
 { "error": { "message": "...", "type": "invalid_request_error" } }
@@ -314,11 +314,11 @@ Typowe przypadki:
 
 - `401` brakujące/nieprawidłowe uwierzytelnianie
 - `400` nieprawidłowe ciało żądania
-- `405` nieprawidłowa metoda
+- `405` niewłaściwa metoda
 
 ## Przykłady
 
-Bez streamingu:
+Bez strumieniowania:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/responses \
@@ -331,7 +331,7 @@ curl -sS http://127.0.0.1:18789/v1/responses \
   }'
 ```
 
-Streaming:
+Strumieniowanie:
 
 ```bash
 curl -N http://127.0.0.1:18789/v1/responses \

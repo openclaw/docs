@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Chcesz włączyć lub skonfigurować `code_execution`
-    - Chcesz zdalnej analizy bez lokalnego dostępu do shella
-    - Chcesz połączyć `x_search` lub `web_search` ze zdalną analizą w Pythonie
-summary: code_execution -- uruchamiaj sandboxowaną zdalną analizę w Pythonie z xAI
+    - Chcesz włączyć lub skonfigurować code_execution
+    - Chcesz zdalnej analizy bez lokalnego dostępu do powłoki
+    - Chcesz połączyć x_search lub web_search ze zdalną analizą w Pythonie
+summary: code_execution -- uruchom zdalną analizę w Pythonie w izolowanym środowisku z xAI
 title: Wykonywanie kodu
 x-i18n:
-    generated_at: "2026-04-24T09:35:36Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:21:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 332afbbef15eaa832d87f263eb095eff680e8f941b9e123add9b37f9b4fa5e00
+    source_hash: fe635ec65aaf593a5bd63c139fbfc69e1ba3ea7c58c2bba639ec1ebd70dba1a9
     source_path: tools/code-execution.md
-    workflow: 15
+    workflow: 16
 ---
 
-`code_execution` uruchamia sandboxowaną zdalną analizę w Pythonie na Responses API xAI.
-To różni się od lokalnego [`exec`](/pl/tools/exec):
+`code_execution` uruchamia sandboxowaną zdalną analizę w Pythonie w Responses API firmy xAI.
+Różni się to od lokalnego [`exec`](/pl/tools/exec):
 
-- `exec` uruchamia polecenia shella na twojej maszynie lub Node
-- `code_execution` uruchamia Python w zdalnym sandboxie xAI
+- `exec` uruchamia polecenia powłoki na Twojej maszynie lub węźle
+- `code_execution` uruchamia Pythona w zdalnym sandboxie xAI
 
 Używaj `code_execution` do:
 
 - obliczeń
-- tabelaryzacji
+- tworzenia tabel
 - szybkich statystyk
-- analiz w stylu wykresów
+- analizy typu wykresowego
 - analizowania danych zwróconych przez `x_search` lub `web_search`
 
-**Nie** używaj tego, gdy potrzebujesz lokalnych plików, swojego shella, repozytorium lub sparowanych
-urządzeń. Do tego używaj [`exec`](/pl/tools/exec).
+**Nie** używaj go, gdy potrzebujesz plików lokalnych, swojej powłoki, repozytorium lub sparowanych
+urządzeń. Do tego użyj [`exec`](/pl/tools/exec).
 
 ## Konfiguracja
 
-Potrzebujesz klucza API xAI. Każdy z tych wariantów działa:
+Potrzebujesz klucza API xAI. Działa dowolna z tych opcji:
 
 - `XAI_API_KEY`
 - `plugins.entries.xai.config.webSearch.apiKey`
@@ -62,9 +62,9 @@ Przykład:
 }
 ```
 
-## Jak tego używać
+## Jak go używać
 
-Pisz naturalnie i jasno określ intencję analizy:
+Pytaj naturalnie i wyraźnie określ zamiar analizy:
 
 ```text
 Use code_execution to calculate the 7-day moving average for these numbers: ...
@@ -78,20 +78,20 @@ Use x_search to find posts mentioning OpenClaw this week, then use code_executio
 Use web_search to gather the latest AI benchmark numbers, then use code_execution to compare percent changes.
 ```
 
-Narzędzie wewnętrznie przyjmuje pojedynczy parametr `task`, więc agent powinien wysłać
-pełne żądanie analizy i wszelkie dane inline w jednym promptcie.
+Narzędzie przyjmuje wewnętrznie pojedynczy parametr `task`, więc agent powinien wysłać
+pełne żądanie analizy oraz wszelkie dane w treści w jednym prompcie.
 
 ## Ograniczenia
 
-- To jest zdalne wykonywanie xAI, a nie wykonywanie lokalnego procesu.
-- Należy to traktować jako analizę efemeryczną, a nie trwały notebook.
-- Nie zakładaj dostępu do lokalnych plików ani swojego obszaru roboczego.
-- Dla świeżych danych X najpierw użyj [`x_search`](/pl/tools/web#x_search).
+- To jest zdalne wykonanie xAI, a nie lokalne wykonanie procesu.
+- Należy je traktować jako tymczasową analizę, a nie trwały notatnik.
+- Nie zakładaj dostępu do plików lokalnych ani do swojego obszaru roboczego.
+- Aby uzyskać świeże dane z X, najpierw użyj [`x_search`](/pl/tools/web#x_search).
 
 ## Powiązane
 
 - [Narzędzie Exec](/pl/tools/exec)
 - [Zatwierdzenia Exec](/pl/tools/exec-approvals)
 - [Narzędzie apply_patch](/pl/tools/apply-patch)
-- [Narzędzia internetowe](/pl/tools/web)
+- [Narzędzia webowe](/pl/tools/web)
 - [xAI](/pl/providers/xai)

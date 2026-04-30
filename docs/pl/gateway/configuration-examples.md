@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Nauka konfiguracji OpenClaw
-    - Szukasz przykładów konfiguracji
+    - Nauka konfigurowania OpenClaw
+    - Wyszukiwanie przykładów konfiguracji
     - Konfigurowanie OpenClaw po raz pierwszy
-summary: Przykłady konfiguracji OpenClaw zgodne ze schematem dla typowych konfiguracji
+summary: Przykłady konfiguracji zgodne ze schematem dla typowych konfiguracji OpenClaw
 title: Przykłady konfiguracji
 x-i18n:
-    generated_at: "2026-04-25T13:46:40Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:51:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f31f70459d6232d2aefe668440312bb1800f18de0ef3c2783befa1de05f25f6
+    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
     source_path: gateway/configuration-examples.md
-    workflow: 15
+    workflow: 16
 ---
 
-Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dla każdego pola znajdziesz w [Configuration](/pl/gateway/configuration).
+Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dotyczące poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
 
 ## Szybki start
 
@@ -27,9 +27,9 @@ Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dok
 }
 ```
 
-Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania botowi wiadomości prywatnych z tego numeru.
+Zapisz w `~/.openclaw/openclaw.json`, a bot będzie mógł odbierać wiadomości DM z tego numeru.
 
-### Zalecana konfiguracja startowa
+### Zalecany punkt startowy
 
 ```json5
 {
@@ -48,16 +48,22 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
       groups: { "*": { requireMention: true } },
     },
   },
+  messages: {
+    visibleReplies: "automatic",
+    groupChat: {
+      visibleReplies: "message_tool", // default; use "automatic" for legacy room replies
+    },
+  },
 }
 ```
 
-## Rozszerzony przykład (główne opcje)
+## Rozbudowany przykład (główne opcje)
 
 > JSON5 pozwala używać komentarzy i końcowych przecinków. Zwykły JSON też działa.
 
 ```json5
 {
-  // Środowisko + powłoka
+  // Environment + shell
   env: {
     OPENROUTER_API_KEY: "sk-or-...",
     vars: {
@@ -69,7 +75,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Metadane profilu uwierzytelniania (sekrety znajdują się w auth-profiles.json)
+  // Auth profile metadata (secrets live in auth-profiles.json)
   auth: {
     profiles: {
       "anthropic:default": { provider: "anthropic", mode: "api_key" },
@@ -84,14 +90,14 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Tożsamość
+  // Identity
   identity: {
     name: "Samantha",
     theme: "helpful sloth",
     emoji: "🦥",
   },
 
-  // Logowanie
+  // Logging
   logging: {
     level: "info",
     file: "/tmp/openclaw/openclaw.log",
@@ -100,38 +106,35 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     redactSensitive: "tools",
   },
 
-  // Formatowanie wiadomości
+  // Message formatting
   messages: {
     messagePrefix: "[openclaw]",
+    visibleReplies: "automatic",
     responsePrefix: ">",
     ackReaction: "👀",
     ackReactionScope: "group-mentions",
-  },
-
-  // Routing + kolejka
-  routing: {
     groupChat: {
-      mentionPatterns: ["@openclaw", "openclaw"],
       historyLimit: 50,
+      visibleReplies: "message_tool", // normal final replies stay private in groups/channels
     },
     queue: {
-      mode: "collect",
-      debounceMs: 1000,
+      mode: "steer",
+      debounceMs: 500,
       cap: 20,
       drop: "summarize",
       byChannel: {
-        whatsapp: "collect",
-        telegram: "collect",
-        discord: "collect",
-        slack: "collect",
-        signal: "collect",
-        imessage: "collect",
-        webchat: "collect",
+        whatsapp: "steer",
+        telegram: "steer",
+        discord: "steer",
+        slack: "steer",
+        signal: "steer",
+        imessage: "steer",
+        webchat: "steer",
       },
     },
   },
 
-  // Narzędzia
+  // Tooling
   tools: {
     media: {
       audio: {
@@ -139,7 +142,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
         maxBytes: 20971520,
         models: [
           { provider: "openai", model: "gpt-4o-mini-transcribe" },
-          // Opcjonalny fallback CLI (binarka Whisper):
+          // Optional CLI fallback (Whisper binary):
           // { type: "cli", command: "whisper", args: ["--model", "base", "{{MediaPath}}"] }
         ],
         timeoutSeconds: 120,
@@ -152,10 +155,10 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Zachowanie sesji
+  // Session behavior
   session: {
     scope: "per-sender",
-    dmScope: "per-channel-peer", // zalecane dla skrzynek odbiorczych wielu użytkowników
+    dmScope: "per-channel-peer", // recommended for multi-user inboxes
     reset: {
       mode: "daily",
       atHour: 4,
@@ -170,10 +173,9 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
       mode: "warn",
       pruneAfter: "30d",
       maxEntries: 500,
-      rotateBytes: "10mb",
-      resetArchiveRetention: "30d", // czas trwania lub false
-      maxDiskBytes: "500mb", // opcjonalne
-      highWaterBytes: "400mb", // opcjonalne (domyślnie 80% maxDiskBytes)
+      resetArchiveRetention: "30d", // duration or false
+      maxDiskBytes: "500mb", // optional
+      highWaterBytes: "400mb", // optional (defaults to 80% of maxDiskBytes)
     },
     typingIntervalSeconds: 5,
     sendPolicy: {
@@ -182,7 +184,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Kanały
+  // Channels
   channels: {
     whatsapp: {
       dmPolicy: "pairing",
@@ -234,7 +236,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Runtime agenta
+  // Agent runtime
   agents: {
     defaults: {
       workspace: "~/.openclaw/workspace",
@@ -251,9 +253,10 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
         "anthropic/claude-sonnet-4-6": { alias: "sonnet" },
         "openai/gpt-5.4": { alias: "gpt" },
       },
-      skills: ["github", "weather"], // dziedziczone przez agentów, którzy pomijają list[].skills
+      skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
       blockStreamingBreak: "text_end",
@@ -276,7 +279,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
-        directPolicy: "allow", // allow (domyślnie) | block
+        directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
         prompt: "HEARTBEAT",
         ackMaxChars: 300,
@@ -291,7 +294,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
       },
       sandbox: {
         mode: "non-main",
-        scope: "session", // preferowane zamiast starszego perSession: true
+        scope: "session", // preferred over legacy perSession: true
         workspaceRoot: "~/.openclaw/sandboxes",
         docker: {
           image: "openclaw-sandbox:bookworm-slim",
@@ -310,15 +313,18 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
       {
         id: "main",
         default: true,
-        // dziedziczy defaults.skills -> github, weather
-        thinkingDefault: "high", // nadpisanie myślenia per agent
-        reasoningDefault: "on", // widoczność reasoning per agent
-        fastModeDefault: false, // tryb szybki per agent
+        // inherits defaults.skills -> github, weather
+        groupChat: {
+          mentionPatterns: ["@openclaw", "openclaw"],
+        },
+        thinkingDefault: "high", // per-agent thinking override
+        reasoningDefault: "on", // per-agent reasoning visibility
+        fastModeDefault: false, // per-agent fast mode
       },
       {
         id: "quick",
-        skills: [], // brak Skills dla tego agenta
-        fastModeDefault: true, // ten agent zawsze działa szybko
+        skills: [], // no skills for this agent
+        fastModeDefault: true, // this agent always runs fast
         thinkingDefault: "off",
       },
     ],
@@ -346,7 +352,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Własni dostawcy modeli
+  // Custom model providers
   models: {
     mode: "merge",
     providers: {
@@ -372,11 +378,11 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Zadania Cron
+  // Cron jobs
   cron: {
     enabled: true,
     store: "~/.openclaw/cron/cron.json",
-    maxConcurrentRuns: 2,
+    maxConcurrentRuns: 2, // cron dispatch + isolated cron agent-turn execution
     sessionRetention: "24h",
     runLog: {
       maxBytes: "2mb",
@@ -384,7 +390,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Webhooki
+  // Webhooks
   hooks: {
     enabled: true,
     path: "/hooks",
@@ -427,7 +433,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
     },
   },
 
-  // Gateway + sieć
+  // Gateway + networking
   gateway: {
     mode: "local",
     port: 18789,
@@ -466,7 +472,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
 
 ## Typowe wzorce
 
-### Wspólna baza Skills z jednym nadpisaniem
+### Wspólna bazowa konfiguracja skill z jednym nadpisaniem
 
 ```json5
 {
@@ -483,7 +489,7 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
 }
 ```
 
-- `agents.defaults.skills` to wspólna baza.
+- `agents.defaults.skills` to współdzielona baza.
 - `agents.list[].skills` zastępuje tę bazę dla jednego agenta.
 - Użyj `skills: []`, gdy agent nie powinien widzieć żadnych Skills.
 
@@ -510,9 +516,9 @@ Zapisz do `~/.openclaw/openclaw.json`, a będziesz mieć możliwość wysyłania
 
 ### Automatyczne zatwierdzanie zaufanej sieci Node
 
-Pozostaw parowanie urządzeń jako ręczne, chyba że kontrolujesz ścieżkę sieciową. Dla dedykowanej
-podsiec lab lub tailnet możesz opcjonalnie włączyć automatyczne zatwierdzanie pierwszego parowania
-urządzeń Node przy użyciu dokładnych CIDR lub adresów IP:
+Pozostaw parowanie urządzeń w trybie ręcznym, chyba że kontrolujesz ścieżkę sieciową. Dla dedykowanego
+laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie
+urządzenia Node przy pierwszym połączeniu za pomocą dokładnych CIDR-ów lub adresów IP:
 
 ```json5
 {
@@ -526,27 +532,27 @@ urządzeń Node przy użyciu dokładnych CIDR lub adresów IP:
 }
 ```
 
-Ta funkcja pozostaje wyłączona, gdy nie jest ustawiona. Dotyczy tylko nowego parowania `role: node` bez
-żądanych zakresów. Klienci operator/przeglądarka oraz rozszerzenia roli, zakresu, metadanych lub
-klucza publicznego nadal wymagają ręcznego zatwierdzenia.
+Bez ustawienia pozostaje to wyłączone. Dotyczy tylko świeżego parowania `role: node`
+bez żądanych zakresów. Klienci operatora/przeglądarki oraz aktualizacje roli, zakresu,
+metadanych lub klucza publicznego nadal wymagają ręcznego zatwierdzenia.
 
-### Bezpieczny tryb wiadomości prywatnych (wspólna skrzynka odbiorcza / wiadomości prywatne wielu użytkowników)
+### Tryb bezpiecznych DM (wspólna skrzynka odbiorcza / DM wielu użytkowników)
 
-Jeśli więcej niż jedna osoba może wysyłać botowi wiadomości prywatne (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób albo `dmPolicy: "open"`), włącz **bezpieczny tryb wiadomości prywatnych**, aby wiadomości prywatne od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
+Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób albo `dmPolicy: "open"`), włącz **tryb bezpiecznych DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
 
 ```json5
 {
-  // Bezpieczny tryb wiadomości prywatnych (zalecany dla agentów wiadomości prywatnych wielu użytkowników lub wrażliwych)
+  // Secure DM mode (recommended for multi-user or sensitive DM agents)
   session: { dmScope: "per-channel-peer" },
 
   channels: {
-    // Przykład: wieloużytkownikowa skrzynka odbiorcza WhatsApp
+    // Example: WhatsApp multi-user inbox
     whatsapp: {
       dmPolicy: "allowlist",
       allowFrom: ["+15555550123", "+15555550124"],
     },
 
-    // Przykład: wieloużytkownikowa skrzynka odbiorcza Discord
+    // Example: Discord multi-user inbox
     discord: {
       enabled: true,
       token: "YOUR_DISCORD_BOT_TOKEN",
@@ -556,10 +562,10 @@ Jeśli więcej niż jedna osoba może wysyłać botowi wiadomości prywatne (wie
 }
 ```
 
-W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy jest domyślnie oparta najpierw na identyfikatorze.
-Włączaj bezpośrednie dopasowanie zmiennych nazw/emaili/nicków przy użyciu `dangerouslyAllowNameMatching: true` dla danego kanału tylko wtedy, gdy jawnie akceptujesz to ryzyko.
+W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie opiera się najpierw na identyfikatorze.
+Włącz bezpośrednie, modyfikowalne dopasowywanie nazwy/adresu e-mail/nicka przez `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy wyraźnie akceptujesz to ryzyko.
 
-### Klucz API Anthropic + fallback MiniMax
+### Klucz API Anthropic + awaryjny MiniMax
 
 ```json5
 {
@@ -652,10 +658,10 @@ Włączaj bezpośrednie dopasowanie zmiennych nazw/emaili/nicków przy użyciu `
 
 ## Wskazówki
 
-- Jeśli ustawisz `dmPolicy: "open"`, odpowiednia lista `allowFrom` musi zawierać `"*"`.
-- Identyfikatory dostawców różnią się między sobą (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Sprawdź dokumentację dostawcy, aby potwierdzić format.
+- Jeśli ustawisz `dmPolicy: "open"`, odpowiadająca lista `allowFrom` musi zawierać `"*"`.
+- Identyfikatory dostawców różnią się (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Użyj dokumentacji dostawcy, aby potwierdzić format.
 - Opcjonalne sekcje do dodania później: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Zobacz [Providers](/pl/providers) i [Troubleshooting](/pl/gateway/troubleshooting), aby uzyskać bardziej szczegółowe uwagi dotyczące konfiguracji.
+- Zobacz [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting), aby poznać bardziej szczegółowe uwagi dotyczące konfiguracji.
 
 ## Powiązane
 

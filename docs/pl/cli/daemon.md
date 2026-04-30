@@ -2,22 +2,22 @@
 read_when:
     - Nadal używasz `openclaw daemon ...` w skryptach
     - Potrzebujesz poleceń cyklu życia usługi (install/start/stop/restart/status)
-summary: Dokumentacja CLI dla `openclaw daemon` (starszy alias do zarządzania usługą Gateway)
-title: Daemon
+summary: Dokumentacja referencyjna CLI dla `openclaw daemon` (starszy alias do zarządzania usługą Gateway)
+title: Demon
 x-i18n:
-    generated_at: "2026-04-24T09:02:24Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:42:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b492768b46c459b69cd3127c375e0c573db56c76572fdbf7b2b8eecb3e9835ce
+    source_hash: 51839f7cbc180cc0c43caa2d7e83cc2add7cbca40665f83f64e6ce9dde8574dd
     source_path: cli/daemon.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw daemon`
 
-Starszy alias dla poleceń zarządzania usługą Gateway.
+Starszy alias poleceń zarządzania usługą Gateway.
 
-`openclaw daemon ...` mapuje się na tę samą powierzchnię sterowania usługą co polecenia usługowe `openclaw gateway ...`.
+`openclaw daemon ...` mapuje na ten sam interfejs sterowania usługą co polecenia usługi `openclaw gateway ...`.
 
 ## Użycie
 
@@ -37,7 +37,7 @@ openclaw daemon uninstall
 - `uninstall`: usuń usługę
 - `start`: uruchom usługę
 - `stop`: zatrzymaj usługę
-- `restart`: uruchom usługę ponownie
+- `restart`: zrestartuj usługę
 
 ## Typowe opcje
 
@@ -47,23 +47,24 @@ openclaw daemon uninstall
 
 Uwagi:
 
-- `status` rozwiązuje skonfigurowane SecretRef uwierzytelniania dla uwierzytelniania sondy, gdy to możliwe.
-- Jeśli wymagany SecretRef uwierzytelniania nie może zostać rozwiązany w tej ścieżce polecenia, `daemon status --json` raportuje `rpc.authWarning`, gdy łączność/uwierzytelnianie sondy się nie powiedzie; przekaż jawnie `--token`/`--password` albo najpierw rozwiąż źródło sekretu.
-- Jeśli sonda zakończy się powodzeniem, ostrzeżenia o nierozwiązanym auth-ref są ukrywane, aby uniknąć fałszywych alarmów.
-- `status --deep` dodaje skanowanie usługi na poziomie systemu z podejściem best-effort. Gdy znajdzie inne usługi podobne do Gateway, wyjście dla człowieka drukuje wskazówki dotyczące czyszczenia i ostrzega, że jedna Gateway na maszynę nadal jest normalnym zaleceniem.
-- W instalacjach Linux systemd kontrole dryfu tokena w `status` obejmują zarówno źródła jednostki `Environment=`, jak i `EnvironmentFile=`.
-- Kontrole dryfu rozwiązują SecretRef `gateway.auth.token` przy użyciu scalonego env środowiska uruchomieniowego (najpierw env polecenia usługi, potem rezerwa env procesu).
-- Jeśli uwierzytelnianie tokenem nie jest efektywnie aktywne (jawne `gateway.auth.mode` ustawione na `password`/`none`/`trusted-proxy` albo tryb nieustawiony, gdy może wygrać hasło i żaden kandydat tokena nie może wygrać), kontrole dryfu tokena pomijają rozwiązywanie tokena z konfiguracji.
-- Jeśli uwierzytelnianie tokenem wymaga tokena, a `gateway.auth.token` jest zarządzane przez SecretRef, `install` sprawdza, czy SecretRef można rozwiązać, ale nie zapisuje rozwiązanego tokena w metadanych środowiska usługi.
-- Jeśli uwierzytelnianie tokenem wymaga tokena, a skonfigurowany SecretRef tokena nie może zostać rozwiązany, instalacja kończy się bezpieczną odmową.
-- Jeśli skonfigurowane są zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, instalacja jest blokowana do czasu jawnego ustawienia trybu.
-- Jeśli celowo uruchamiasz wiele Gateway na jednym hoście, odizoluj porty, konfigurację/stan i obszary robocze; zobacz [/gateway#multiple-gateways-same-host](/pl/gateway#multiple-gateways-same-host).
+- `status` rozwiązuje skonfigurowane SecretRefs uwierzytelniania na potrzeby uwierzytelniania sondy, gdy to możliwe.
+- Jeśli wymagane SecretRef uwierzytelniania pozostaje nierozwiązane w tej ścieżce polecenia, `daemon status --json` zgłasza `rpc.authWarning`, gdy łączność/uwierzytelnianie sondy nie powiedzie się; przekaż jawnie `--token`/`--password` albo najpierw rozwiąż źródło sekretu.
+- Jeśli sonda zakończy się powodzeniem, ostrzeżenia o nierozwiązanych odwołaniach uwierzytelniania są tłumione, aby uniknąć wyników fałszywie dodatnich.
+- `status --deep` dodaje najlepsze możliwe skanowanie usługi na poziomie systemu. Gdy znajdzie inne usługi podobne do gateway, wyjście czytelne dla człowieka wypisuje wskazówki dotyczące porządkowania i ostrzega, że jeden gateway na maszynę nadal jest normalną rekomendacją.
+- W instalacjach systemd na Linuksie kontrole rozbieżności tokenu w `status` obejmują zarówno źródła jednostek `Environment=`, jak i `EnvironmentFile=`.
+- Kontrole rozbieżności rozwiązują SecretRefs `gateway.auth.token` przy użyciu scalonego środowiska uruchomieniowego (najpierw środowisko polecenia usługi, potem awaryjnie środowisko procesu).
+- Jeśli uwierzytelnianie tokenem nie jest efektywnie aktywne (jawny `gateway.auth.mode` ustawiony na `password`/`none`/`trusted-proxy` albo tryb nieustawiony, gdy hasło może wygrać i żaden kandydat na token nie może wygrać), kontrole rozbieżności tokenu pomijają rozwiązywanie tokenu konfiguracji.
+- Gdy uwierzytelnianie tokenem wymaga tokenu, a `gateway.auth.token` jest zarządzany przez SecretRef, `install` sprawdza, czy SecretRef da się rozwiązać, ale nie utrwala rozwiązanego tokenu w metadanych środowiska usługi.
+- Jeśli uwierzytelnianie tokenem wymaga tokenu, a skonfigurowane SecretRef tokenu jest nierozwiązane, instalacja kończy się bezpieczną odmową.
+- Jeśli skonfigurowano zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawiony, instalacja jest blokowana do czasu jawnego ustawienia trybu.
+- Na macOS `install` utrzymuje pliki plist LaunchAgent wyłącznie dla właściciela i ładuje zarządzane wartości środowiska usługi przez plik oraz wrapper dostępne wyłącznie dla właściciela, zamiast serializować klucze API lub odwołania env profilu uwierzytelniania do `EnvironmentVariables`.
+- Jeśli celowo uruchamiasz wiele gateway na jednym hoście, odizoluj porty, konfigurację/stan i obszary robocze; zobacz [/gateway#multiple-gateways-same-host](/pl/gateway#multiple-gateways-same-host).
 
-## Preferowane
+## Zalecane
 
-Używaj [`openclaw gateway`](/pl/cli/gateway), aby korzystać z aktualnej dokumentacji i przykładów.
+Użyj [`openclaw gateway`](/pl/cli/gateway), aby zobaczyć aktualną dokumentację i przykłady.
 
 ## Powiązane
 
-- [Dokumentacja CLI](/pl/cli)
+- [Dokumentacja referencyjna CLI](/pl/cli)
 - [Runbook Gateway](/pl/gateway)

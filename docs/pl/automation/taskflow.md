@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Chcesz zrozumieć, jak TaskFlow odnosi się do zadań w tle.
-    - Natrafiasz na Task Flow lub przepływ zadań openclaw w informacjach o wydaniu albo w dokumentacji
-    - Chcesz sprawdzić lub zarządzać trwałym stanem przepływu.
-summary: Warstwa orkiestracji przepływu zadań ponad zadaniami w tle
+    - Chcesz zrozumieć, jaki jest związek między Task Flow a zadaniami w tle
+    - Napotykasz Task Flow lub przepływ zadań openclaw w informacjach o wydaniu lub dokumentacji
+    - Chcesz sprawdzić stan trwałego przepływu lub nim zarządzać
+summary: Warstwa orkiestracji przepływów Task Flow nad zadaniami w tle
 title: Przepływ zadań
 x-i18n:
-    generated_at: "2026-04-25T13:41:10Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:35:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: de94ed672e492c7dac066e1a63f5600abecfea63828a92acca1b8caa041c5212
+    source_hash: 2ab261dea0ec3beb10b53c641bd188288cada5345aef6ddbbc8071d37eb57bdc
     source_path: automation/taskflow.md
-    workflow: 15
+    workflow: 16
 ---
 
-TaskFlow to warstwa orkiestracji przepływu, która znajduje się ponad [zadaniami w tle](/pl/automation/tasks). Zarządza trwałymi, wieloetapowymi przepływami z własnym stanem, śledzeniem rewizji i semantyką synchronizacji, podczas gdy pojedyncze zadania pozostają jednostką pracy odłączonej.
+Przepływ zadań to podłoże orkiestracji przepływów, które znajduje się nad [zadaniami w tle](/pl/automation/tasks). Zarządza trwałymi, wieloetapowymi przepływami z własnym stanem, śledzeniem rewizji i semantyką synchronizacji, podczas gdy pojedyncze zadania pozostają jednostką odłączonej pracy.
 
-## Kiedy używać TaskFlow
+## Kiedy używać Przepływu zadań
 
-Używaj TaskFlow, gdy praca obejmuje wiele kolejnych lub rozgałęziających się kroków i potrzebujesz trwałego śledzenia postępu między restartami Gateway. W przypadku pojedynczych operacji w tle wystarczy zwykłe [zadanie](/pl/automation/tasks).
+Użyj Przepływu zadań, gdy praca obejmuje wiele kroków sekwencyjnych lub rozgałęzionych i potrzebujesz trwałego śledzenia postępu po restartach Gateway. W przypadku pojedynczych operacji w tle wystarczy zwykłe [zadanie](/pl/automation/tasks).
 
-| Scenariusz                            | Zastosowanie          |
-| ------------------------------------- | --------------------- |
-| Pojedyncze zadanie w tle              | Zwykłe zadanie        |
-| Wieloetapowy potok (A, potem B, potem C) | TaskFlow (zarządzany) |
-| Obserwowanie zadań utworzonych zewnętrznie | TaskFlow (lustrzany)  |
-| Jednorazowe przypomnienie             | Zadanie Cron          |
+| Scenariusz                          | Użycie                         |
+| ----------------------------------- | ------------------------------ |
+| Pojedyncze zadanie w tle            | Zwykłe zadanie                 |
+| Wieloetapowy potok (A, potem B, potem C) | Przepływ zadań (zarządzany) |
+| Obserwowanie zadań utworzonych zewnętrznie | Przepływ zadań (odzwierciedlony) |
+| Jednorazowe przypomnienie           | Zadanie Cron                   |
 
-## Niezawodny wzorzec zaplanowanego workflow
+## Wzorzec niezawodnego zaplanowanego przepływu pracy
 
-W przypadku cyklicznych workflow, takich jak briefingi z analizy rynku, traktuj harmonogram, orkiestrację i kontrole niezawodności jako osobne warstwy:
+W przypadku powtarzalnych przepływów pracy, takich jak briefingi analizy rynku, traktuj harmonogram, orkiestrację i kontrole niezawodności jako oddzielne warstwy:
 
-1. Używaj [Scheduled Tasks](/pl/automation/cron-jobs) do określania czasu.
-2. Używaj trwałej sesji Cron, gdy workflow ma bazować na wcześniejszym kontekście.
-3. Używaj [Lobster](/pl/tools/lobster) do deterministycznych kroków, bramek zatwierdzania i tokenów wznowienia.
-4. Używaj TaskFlow do śledzenia wieloetapowego uruchomienia przez zadania podrzędne, oczekiwania, ponowienia i restarty Gateway.
+1. Użyj [Zaplanowanych zadań](/pl/automation/cron-jobs) do określania czasu.
+2. Użyj trwałej sesji cron, gdy przepływ pracy powinien korzystać z wcześniejszego kontekstu.
+3. Użyj [Lobster](/pl/tools/lobster) do deterministycznych kroków, bramek zatwierdzania i tokenów wznowienia.
+4. Użyj Przepływu zadań, aby śledzić wieloetapowe uruchomienie obejmujące zadania podrzędne, oczekiwania, ponowienia i restarty Gateway.
 
-Przykładowy kształt zadania Cron:
+Przykładowy kształt cron:
 
 ```bash
 openclaw cron add \
@@ -50,9 +50,9 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Używaj `session:<id>` zamiast `isolated`, gdy cykliczny workflow wymaga celowo zachowywanej historii, podsumowań poprzednich uruchomień lub stałego kontekstu. Używaj `isolated`, gdy każde uruchomienie ma zaczynać się od nowa, a cały wymagany stan jest jawnie określony w workflow.
+Użyj `session:<id>` zamiast `isolated`, gdy powtarzalny przepływ pracy potrzebuje celowej historii, podsumowań poprzednich uruchomień lub stałego kontekstu. Użyj `isolated`, gdy każde uruchomienie powinno zaczynać od nowa, a cały wymagany stan jest jawnie określony w przepływie pracy.
 
-Wewnątrz workflow umieść kontrole niezawodności przed krokiem podsumowania przez LLM:
+W przepływie pracy umieść kontrole niezawodności przed krokiem podsumowania LLM:
 
 ```yaml
 name: market-intel-brief
@@ -77,11 +77,11 @@ steps:
 
 Zalecane kontrole wstępne:
 
-- Dostępność przeglądarki i wybór profilu, na przykład `openclaw` dla zarządzanego stanu albo `user`, gdy wymagane jest zalogowane środowisko Chrome. Zobacz [Browser](/pl/tools/browser).
-- Poświadczenia API i limit dla każdego źródła.
+- Dostępność przeglądarki i wybór profilu, na przykład `openclaw` dla stanu zarządzanego lub `user`, gdy wymagana jest zalogowana sesja Chrome. Zobacz [Przeglądarkę](/pl/tools/browser).
+- Dane uwierzytelniające API i limit dla każdego źródła.
 - Osiągalność sieciowa wymaganych punktów końcowych.
 - Wymagane narzędzia włączone dla agenta, takie jak `lobster`, `browser` i `llm-task`.
-- Skonfigurowane miejsce docelowe błędów dla zadania Cron, aby błędy kontroli wstępnej były widoczne. Zobacz [Scheduled Tasks](/pl/automation/cron-jobs#delivery-and-output).
+- Miejsce docelowe awarii skonfigurowane dla cron, aby awarie kontroli wstępnych były widoczne. Zobacz [Zaplanowane zadania](/pl/automation/cron-jobs#delivery-and-output).
 
 Zalecane pola pochodzenia danych dla każdego zebranego elementu:
 
@@ -95,17 +95,17 @@ Zalecane pola pochodzenia danych dla każdego zebranego elementu:
 }
 ```
 
-Workflow powinien odrzucać lub oznaczać nieaktualne elementy przed podsumowaniem. Krok LLM powinien otrzymywać wyłącznie ustrukturyzowany JSON i powinien mieć polecenie zachowania `sourceUrl`, `retrievedAt` oraz `asOf` w danych wyjściowych. Używaj [LLM Task](/pl/tools/llm-task), gdy potrzebujesz kroku modelu ze schematem walidacji wewnątrz workflow.
+Niech przepływ pracy odrzuca lub oznacza jako nieaktualne elementy przed podsumowaniem. Krok LLM powinien otrzymywać tylko strukturalny JSON i powinien mieć polecenie zachowania `sourceUrl`, `retrievedAt` i `asOf` w swoich danych wyjściowych. Użyj [zadania LLM](/pl/tools/llm-task), gdy potrzebujesz kroku modelu z walidacją schematu wewnątrz przepływu pracy.
 
-W przypadku wielokrotnego użycia przez zespół lub społeczność spakuj CLI, pliki `.lobster` oraz wszelkie notatki konfiguracyjne jako skill albo Plugin i opublikuj je przez [ClawHub](/pl/tools/clawhub). Zachowuj ograniczenia specyficzne dla danego workflow w tym pakiecie, chyba że w API Plugin brakuje potrzebnej ogólnej możliwości.
+W przypadku wielokrotnego użytku przez zespół lub społeczność spakuj CLI, pliki `.lobster` i wszelkie notatki konfiguracyjne jako skill albo plugin i opublikuj je przez [ClawHub](/pl/tools/clawhub). Zabezpieczenia specyficzne dla przepływu pracy przechowuj w tym pakiecie, chyba że API pluginu nie udostępnia potrzebnej ogólnej możliwości.
 
 ## Tryby synchronizacji
 
 ### Tryb zarządzany
 
-TaskFlow zarządza cyklem życia od początku do końca. Tworzy zadania jako kroki przepływu, prowadzi je do ukończenia i automatycznie przesuwa stan przepływu dalej.
+Przepływ zadań jest właścicielem cyklu życia od początku do końca. Tworzy zadania jako kroki przepływu, doprowadza je do ukończenia i automatycznie przesuwa stan przepływu do przodu.
 
-Przykład: przepływ cotygodniowego raportu, który (1) zbiera dane, (2) generuje raport i (3) dostarcza go. TaskFlow tworzy każdy krok jako zadanie w tle, czeka na ukończenie, a następnie przechodzi do kolejnego kroku.
+Przykład: przepływ raportu tygodniowego, który (1) zbiera dane, (2) generuje raport i (3) dostarcza go. Przepływ zadań tworzy każdy krok jako zadanie w tle, czeka na ukończenie, a następnie przechodzi do następnego kroku.
 
 ```
 Flow: weekly-report
@@ -114,19 +114,22 @@ Flow: weekly-report
   Step 3: deliver         → task created → running
 ```
 
-### Tryb lustrzany
+### Tryb odzwierciedlony
 
-TaskFlow obserwuje zadania utworzone zewnętrznie i utrzymuje stan przepływu w synchronizacji bez przejmowania odpowiedzialności za tworzenie zadań. Jest to przydatne, gdy zadania pochodzą z zadań Cron, poleceń CLI lub innych źródeł i chcesz mieć ujednolicony widok ich postępu jako przepływu.
+Przepływ zadań obserwuje zadania utworzone zewnętrznie i utrzymuje stan przepływu w synchronizacji bez przejmowania własności tworzenia zadań. Jest to przydatne, gdy zadania pochodzą z zadań cron, poleceń CLI lub innych źródeł, a chcesz mieć zunifikowany widok ich postępu jako przepływu.
 
-Przykład: trzy niezależne zadania Cron, które razem tworzą rutynę „morning ops”. Lustrzany przepływ śledzi ich zbiorczy postęp bez kontrolowania, kiedy i jak są uruchamiane.
+Przykład: trzy niezależne zadania cron, które razem tworzą rutynę „porannych operacji”. Odzwierciedlony przepływ śledzi ich łączny postęp bez kontrolowania tego, kiedy ani jak są uruchamiane.
 
 ## Trwały stan i śledzenie rewizji
 
-Każdy przepływ zachowuje własny stan i śledzi rewizje, dzięki czemu postęp przetrwa restarty Gateway. Śledzenie rewizji umożliwia wykrywanie konfliktów, gdy wiele źródeł próbuje równocześnie przesunąć ten sam przepływ dalej.
+Każdy przepływ utrwala własny stan i śledzi rewizje, dzięki czemu postęp przetrwa restarty Gateway. Śledzenie rewizji umożliwia wykrywanie konfliktów, gdy wiele źródeł próbuje równocześnie przesunąć ten sam przepływ do przodu.
+Rejestr przepływów używa SQLite z ograniczoną konserwacją dziennika wyprzedzającego zapisu, w tym
+okresowymi punktami kontrolnymi oraz punktami kontrolnymi przy zamykaniu, dzięki czemu długo działające Gateway nie przechowują
+nieograniczonych plików pomocniczych `registry.sqlite-wal`.
 
 ## Zachowanie anulowania
 
-`openclaw tasks flow cancel` ustawia trwały zamiar anulowania na przepływie. Aktywne zadania w ramach przepływu są anulowane i żadne nowe kroki nie są uruchamiane. Zamiar anulowania utrzymuje się po restartach, więc anulowany przepływ pozostaje anulowany, nawet jeśli Gateway uruchomi się ponownie, zanim wszystkie zadania podrzędne się zakończą.
+`openclaw tasks flow cancel` ustawia trwałą intencję anulowania w przepływie. Aktywne zadania w ramach przepływu są anulowane i nie są uruchamiane żadne nowe kroki. Intencja anulowania utrzymuje się po restartach, więc anulowany przepływ pozostaje anulowany nawet wtedy, gdy Gateway zrestartuje się, zanim wszystkie zadania podrzędne zakończą działanie.
 
 ## Polecenia CLI
 
@@ -141,19 +144,19 @@ openclaw tasks flow show <lookup>
 openclaw tasks flow cancel <lookup>
 ```
 
-| Polecenie                        | Opis                                          |
-| -------------------------------- | --------------------------------------------- |
+| Polecenie                         | Opis                                          |
+| --------------------------------- | --------------------------------------------- |
 | `openclaw tasks flow list`        | Pokazuje śledzone przepływy ze statusem i trybem synchronizacji |
 | `openclaw tasks flow show <id>`   | Sprawdza jeden przepływ według identyfikatora przepływu lub klucza wyszukiwania |
 | `openclaw tasks flow cancel <id>` | Anuluje działający przepływ i jego aktywne zadania |
 
 ## Jak przepływy odnoszą się do zadań
 
-Przepływy koordynują zadania, a nie je zastępują. Pojedynczy przepływ może w trakcie swojego istnienia obsługiwać wiele zadań w tle. Używaj `openclaw tasks`, aby sprawdzać poszczególne rekordy zadań, oraz `openclaw tasks flow`, aby sprawdzać przepływ orkiestrujący.
+Przepływy koordynują zadania, a nie je zastępują. Pojedynczy przepływ może w trakcie swojego życia sterować wieloma zadaniami w tle. Użyj `openclaw tasks`, aby sprawdzić pojedyncze rekordy zadań, oraz `openclaw tasks flow`, aby sprawdzić orkiestrujący przepływ.
 
 ## Powiązane
 
-- [Background Tasks](/pl/automation/tasks) — rejestr pracy odłączonej, którą koordynują przepływy
-- [CLI: tasks](/pl/cli/tasks) — dokumentacja poleceń CLI dla `openclaw tasks flow`
-- [Automation Overview](/pl/automation) — przegląd wszystkich mechanizmów automatyzacji
-- [Cron Jobs](/pl/automation/cron-jobs) — zaplanowane zadania, które mogą zasilać przepływy
+- [Zadania w tle](/pl/automation/tasks) — rejestr odłączonej pracy koordynowanej przez przepływy
+- [CLI: zadania](/pl/cli/tasks) — dokumentacja polecenia CLI dla `openclaw tasks flow`
+- [Przegląd automatyzacji](/pl/automation) — wszystkie mechanizmy automatyzacji w skrócie
+- [Zadania Cron](/pl/automation/cron-jobs) — zaplanowane zadania, które mogą zasilać przepływy

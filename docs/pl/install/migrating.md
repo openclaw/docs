@@ -1,42 +1,55 @@
 ---
 read_when:
-    - Przenosisz OpenClaw na nowy laptop/serwer
-    - Chcesz zachować sesje, auth i logowania kanałów (WhatsApp itd.)
-summary: Przenieś (zmigruj) instalację OpenClaw z jednej maszyny na drugą
-title: Przewodnik migracji
+    - Przenosisz OpenClaw na nowy laptop lub serwer
+    - Przechodzisz z innego systemu agentowego i chcesz zachować stan
+    - Uaktualniasz Plugin w miejscu
+summary: 'Centrum migracji: importy między systemami, przenoszenie między maszynami i aktualizacje Plugin'
+title: Przewodnik po migracji
 x-i18n:
-    generated_at: "2026-04-24T09:17:48Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:02:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2c14be563d1eb052726324678cf2784efffc2341aa17f662587fdabe1d8ec1e2
+    source_hash: e2a1dc86ed367a0b92cdc0d5189123bb045d327be944516f564dac723f324c97
     source_path: install/migrating.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Migracja OpenClaw na nową maszynę
+OpenClaw obsługuje trzy ścieżki migracji: import z innego systemu agentów, przeniesienie istniejącej instalacji na nową maszynę oraz aktualizację Pluginu w miejscu.
 
-Ten przewodnik przenosi Gateway OpenClaw na nową maszynę bez ponownego przechodzenia onboardingu.
+## Import z innego systemu agentów
 
-## Co jest migrowane
+Użyj dołączonych dostawców migracji, aby przenieść do OpenClaw instrukcje, serwery MCP, Skills, konfigurację modeli oraz (opcjonalnie) klucze API. Plany są pokazywane w podglądzie przed jakąkolwiek zmianą, sekrety są redagowane w raportach, a zastosowanie zmian jest zabezpieczone zweryfikowaną kopią zapasową.
 
-Gdy skopiujesz **katalog stanu** (domyślnie `~/.openclaw/`) oraz swój **obszar roboczy**, zachowasz:
+<CardGroup cols={2}>
+  <Card title="Migrating from Claude" href="/pl/install/migrating-claude" icon="brain">
+    Zaimportuj stan Claude Code i Claude Desktop, w tym `CLAUDE.md`, serwery MCP, Skills oraz polecenia projektu.
+  </Card>
+  <Card title="Migrating from Hermes" href="/pl/install/migrating-hermes" icon="feather">
+    Zaimportuj konfigurację Hermes, dostawców, serwery MCP, pamięć, Skills oraz obsługiwane klucze `.env`.
+  </Card>
+</CardGroup>
 
-- **Konfigurację** — `openclaw.json` i wszystkie ustawienia gateway
-- **Auth** — per-agent `auth-profiles.json` (klucze API + OAuth), a także wszelki stan kanałów/providerów w `credentials/`
-- **Sesje** — historię rozmów i stan agenta
-- **Stan kanałów** — logowanie WhatsApp, sesję Telegram itd.
-- **Pliki obszaru roboczego** — `MEMORY.md`, `USER.md`, Skills i prompty
+Punktem wejścia CLI jest [`openclaw migrate`](/pl/cli/migrate). Onboarding może również zaproponować migrację, gdy wykryje znane źródło (`openclaw onboard --flow import`).
+
+## Przenoszenie OpenClaw na nową maszynę
+
+Skopiuj **katalog stanu** (domyślnie `~/.openclaw/`) oraz swój **obszar roboczy**, aby zachować:
+
+- **Konfigurację** — `openclaw.json` i wszystkie ustawienia Gateway.
+- **Uwierzytelnianie** — plik `auth-profiles.json` dla każdego agenta (klucze API oraz OAuth), a także dowolny stan kanału lub dostawcy w `credentials/`.
+- **Sesje** — historię konwersacji i stan agenta.
+- **Stan kanałów** — logowanie WhatsApp, sesję Telegram i podobne dane.
+- **Pliki obszaru roboczego** — `MEMORY.md`, `USER.md`, Skills i prompty.
 
 <Tip>
-Uruchom `openclaw status` na starej maszynie, aby potwierdzić ścieżkę katalogu stanu.
-Niestandardowe profile używają `~/.openclaw-<profile>/` albo ścieżki ustawionej przez `OPENCLAW_STATE_DIR`.
+Uruchom `openclaw status` na starej maszynie, aby potwierdzić ścieżkę katalogu stanu. Profile niestandardowe używają `~/.openclaw-<profile>/` albo ścieżki ustawionej przez `OPENCLAW_STATE_DIR`.
 </Tip>
 
-## Kroki migracji
+### Kroki migracji
 
 <Steps>
-  <Step title="Zatrzymaj gateway i wykonaj kopię zapasową">
-    Na **starej** maszynie zatrzymaj gateway, aby pliki nie zmieniały się w trakcie kopiowania, a następnie zarchiwizuj:
+  <Step title="Stop the gateway and back up">
+    Na **starej** maszynie zatrzymaj Gateway, aby pliki nie zmieniały się w trakcie kopiowania, a następnie utwórz archiwum:
 
     ```bash
     openclaw gateway stop
@@ -44,28 +57,27 @@ Niestandardowe profile używają `~/.openclaw-<profile>/` albo ścieżki ustawio
     tar -czf openclaw-state.tgz .openclaw
     ```
 
-    Jeśli używasz wielu profili (np. `~/.openclaw-work`), zarchiwizuj każdy osobno.
+    Jeśli używasz wielu profili (na przykład `~/.openclaw-work`), zarchiwizuj każdy z nich osobno.
 
   </Step>
 
-  <Step title="Zainstaluj OpenClaw na nowej maszynie">
-    [Zainstaluj](/pl/install) CLI (i Node, jeśli potrzeba) na nowej maszynie.
-    To w porządku, jeśli onboarding utworzy świeże `~/.openclaw/` — za chwilę je nadpiszesz.
+  <Step title="Install OpenClaw on the new machine">
+    [Zainstaluj](/pl/install) CLI (oraz Node, jeśli jest potrzebny) na nowej maszynie. Nie ma problemu, jeśli onboarding utworzy świeży katalog `~/.openclaw/`. Nadpiszesz go w następnym kroku.
   </Step>
 
-  <Step title="Skopiuj katalog stanu i obszar roboczy">
-    Przenieś archiwum przez `scp`, `rsync -a` lub zewnętrzny dysk, a następnie rozpakuj:
+  <Step title="Copy state directory and workspace">
+    Przenieś archiwum przez `scp`, `rsync -a` albo dysk zewnętrzny, a następnie je rozpakuj:
 
     ```bash
     cd ~
     tar -xzf openclaw-state.tgz
     ```
 
-    Upewnij się, że uwzględniono ukryte katalogi i że właściciel plików zgadza się z użytkownikiem, który będzie uruchamiał gateway.
+    Upewnij się, że katalogi ukryte zostały uwzględnione, a właściciel plików odpowiada użytkownikowi, który będzie uruchamiać Gateway.
 
   </Step>
 
-  <Step title="Uruchom doctor i zweryfikuj">
+  <Step title="Run doctor and verify">
     Na nowej maszynie uruchom [Doctor](/pl/gateway/doctor), aby zastosować migracje konfiguracji i naprawić usługi:
 
     ```bash
@@ -77,49 +89,48 @@ Niestandardowe profile używają `~/.openclaw-<profile>/` albo ścieżki ustawio
   </Step>
 </Steps>
 
-## Typowe pułapki
+### Typowe pułapki
 
 <AccordionGroup>
-  <Accordion title="Niedopasowanie profilu lub katalogu stanu">
-    Jeśli stary gateway używał `--profile` albo `OPENCLAW_STATE_DIR`, a nowy nie,
-    kanały będą wyglądały na wylogowane, a sesje będą puste.
-    Uruchom gateway z **tym samym** profilem lub katalogiem stanu, który zmigrowałeś, a następnie ponownie uruchom `openclaw doctor`.
+  <Accordion title="Profile or state-dir mismatch">
+    Jeśli stary Gateway używał `--profile` albo `OPENCLAW_STATE_DIR`, a nowy ich nie używa, kanały będą wyglądać na wylogowane, a sesje będą puste. Uruchom Gateway z **tym samym** profilem lub katalogiem stanu, który został zmigrowany, a następnie ponownie uruchom `openclaw doctor`.
   </Accordion>
 
-  <Accordion title="Kopiowanie tylko openclaw.json">
-    Sam plik konfiguracji nie wystarczy. Profile auth modeli znajdują się w
-    `agents/<agentId>/agent/auth-profiles.json`, a stan kanałów/providerów nadal
-    znajduje się w `credentials/`. Zawsze migruj **cały** katalog stanu.
+  <Accordion title="Copying only openclaw.json">
+    Sam plik konfiguracyjny nie wystarczy. Profile uwierzytelniania modeli znajdują się w `agents/<agentId>/agent/auth-profiles.json`, a stan kanałów i dostawców znajduje się w `credentials/`. Zawsze migruj **cały** katalog stanu.
   </Accordion>
 
-  <Accordion title="Uprawnienia i własność">
-    Jeśli kopiowałeś jako root albo zmieniłeś użytkowników, gateway może nie móc odczytać poświadczeń.
-    Upewnij się, że katalog stanu i obszar roboczy należą do użytkownika uruchamiającego gateway.
+  <Accordion title="Permissions and ownership">
+    Jeśli pliki zostały skopiowane jako root albo po zmianie użytkownika, Gateway może nie odczytać poświadczeń. Upewnij się, że katalog stanu i obszar roboczy należą do użytkownika uruchamiającego Gateway.
   </Accordion>
 
-  <Accordion title="Tryb zdalny">
-    Jeśli Twój interfejs wskazuje na **zdalny** gateway, to zdalny host jest właścicielem sesji i obszaru roboczego.
-    Migruj sam host gateway, a nie lokalny laptop. Zobacz [FAQ](/pl/help/faq#where-things-live-on-disk).
+  <Accordion title="Remote mode">
+    Jeśli Twój interfejs użytkownika wskazuje na **zdalny** Gateway, sesje i obszar roboczy należą do zdalnego hosta. Zmigruj sam host Gateway, a nie lokalny laptop. Zobacz [FAQ](/pl/help/faq#where-things-live-on-disk).
   </Accordion>
 
-  <Accordion title="Sekrety w kopiach zapasowych">
-    Katalog stanu zawiera profile auth, poświadczenia kanałów i inny
-    stan providerów.
-    Przechowuj kopie zapasowe w postaci zaszyfrowanej, unikaj niezabezpieczonych kanałów transferu i obróć klucze, jeśli podejrzewasz ekspozycję.
+  <Accordion title="Secrets in backups">
+    Katalog stanu zawiera profile uwierzytelniania, poświadczenia kanałów i inny stan dostawców. Przechowuj kopie zapasowe w postaci zaszyfrowanej, unikaj niezabezpieczonych kanałów transferu i rotuj klucze, jeśli podejrzewasz ujawnienie.
   </Accordion>
 </AccordionGroup>
 
-## Checklista weryfikacyjna
+### Lista kontrolna weryfikacji
 
 Na nowej maszynie potwierdź:
 
-- [ ] `openclaw status` pokazuje, że gateway działa
-- [ ] Kanały nadal są połączone (nie trzeba ponownie parować)
-- [ ] Panel kontrolny otwiera się i pokazuje istniejące sesje
-- [ ] Pliki obszaru roboczego (pamięć, konfiguracje) są obecne
+- [ ] `openclaw status` pokazuje, że Gateway działa.
+- [ ] Kanały są nadal połączone (ponowne parowanie nie jest potrzebne).
+- [ ] Pulpit otwiera się i pokazuje istniejące sesje.
+- [ ] Pliki obszaru roboczego (pamięć, konfiguracje) są obecne.
+
+## Aktualizacja Pluginu w miejscu
+
+Aktualizacje Pluginów w miejscu zachowują ten sam identyfikator Pluginu i klucze konfiguracji, ale mogą przenieść stan na dysku do bieżącego układu. Przewodniki aktualizacji właściwe dla Pluginów znajdują się obok ich kanałów:
+
+- [Migracja Matrix](/pl/channels/matrix-migration): limity odzyskiwania zaszyfrowanego stanu, automatyczne zachowanie migawek oraz ręczne polecenia odzyskiwania.
 
 ## Powiązane
 
-- [Przegląd instalacji](/pl/install)
-- [Migracja Matrix](/pl/install/migrating-matrix)
-- [Odinstalowanie](/pl/install/uninstall)
+- [`openclaw migrate`](/pl/cli/migrate): dokumentacja CLI dotycząca importów między systemami.
+- [Przegląd instalacji](/pl/install): wszystkie metody instalacji.
+- [Doctor](/pl/gateway/doctor): kontrola stanu po migracji.
+- [Odinstalowanie](/pl/install/uninstall): czyste usuwanie OpenClaw.

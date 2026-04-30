@@ -2,33 +2,33 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: Ograniczenia sandbox i narzędzi per agent, priorytety oraz przykłady
-title: Sandbox i narzędzia dla wielu agentów
+summary: Piaskownica + ograniczenia narzędzi dla poszczególnych agentów, kolejność pierwszeństwa i przykłady
+title: Piaskownica i narzędzia dla wielu agentów
 x-i18n:
-    generated_at: "2026-04-26T11:43:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:23:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8b8d24252b03dbcd00a5eefcc8e58bd51577a99ae057008f19a0acc4016413ea
+    source_hash: eedb36301f670bcd8956dbeb81788acfc96627e39401e34434c2348fcb10f155
     source_path: tools/multi-agent-sandbox-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-Każdy agent w konfiguracji wieloagentowej może nadpisywać globalny sandbox i politykę narzędzi. Ta strona opisuje konfigurację per agent, zasady priorytetów i przykłady.
+Każdy agent w konfiguracji wieloagentowej może nadpisać globalne zasady sandboxa i narzędzi. Ta strona omawia konfigurację dla poszczególnych agentów, reguły pierwszeństwa i przykłady.
 
 <CardGroup cols={3}>
-  <Card title="Sandboxing" href="/pl/gateway/sandboxing">
-    Backendy i tryby — pełna dokumentacja sandbox.
+  <Card title="Izolacja w sandboxie" href="/pl/gateway/sandboxing">
+    Backendy i tryby — pełna dokumentacja sandboxa.
   </Card>
-  <Card title="Sandbox vs tool policy vs elevated" href="/pl/gateway/sandbox-vs-tool-policy-vs-elevated">
-    Debugowanie „dlaczego to jest blokowane?”.
+  <Card title="Sandbox a zasady narzędzi a tryb podwyższony" href="/pl/gateway/sandbox-vs-tool-policy-vs-elevated">
+    Debugowanie „dlaczego to jest zablokowane?”
   </Card>
-  <Card title="Elevated mode" href="/pl/tools/elevated">
-    Elevated exec dla zaufanych nadawców.
+  <Card title="Tryb podwyższony" href="/pl/tools/elevated">
+    Podwyższony exec dla zaufanych nadawców.
   </Card>
 </CardGroup>
 
 <Warning>
-Uwierzytelnianie jest per agent: każdy agent odczytuje dane z własnego magazynu auth w `agentDir` pod `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`. Poświadczenia **nie** są współdzielone między agentami. Nigdy nie używaj ponownie `agentDir` dla wielu agentów. Jeśli chcesz współdzielić poświadczenia, skopiuj `auth-profiles.json` do `agentDir` drugiego agenta.
+Uwierzytelnianie jest ograniczone do agenta: każdy agent ma własny magazyn uwierzytelniania `agentDir` w `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`. Nigdy nie używaj ponownie `agentDir` między agentami. Agenci mogą odczytywać profile uwierzytelniania domyślnego/głównego agenta, gdy nie mają profilu lokalnego, ale tokeny odświeżania OAuth nie są klonowane do magazynów agentów dodatkowych. Jeśli ręcznie kopiujesz poświadczenia, kopiuj tylko przenośne statyczne profile `api_key` lub `token`.
 </Warning>
 
 ---
@@ -36,7 +36,7 @@ Uwierzytelnianie jest per agent: każdy agent odczytuje dane z własnego magazyn
 ## Przykłady konfiguracji
 
 <AccordionGroup>
-  <Accordion title="Przykład 1: osobisty agent + ograniczony agent rodzinny">
+  <Accordion title="Przykład 1: Agent osobisty + ograniczony agent rodzinny">
     ```json
     {
       "agents": {
@@ -81,11 +81,11 @@ Uwierzytelnianie jest per agent: każdy agent odczytuje dane z własnego magazyn
 
     **Wynik:**
 
-    - agent `main`: działa na hoście, pełny dostęp do narzędzi.
-    - agent `family`: działa w Docker (jeden kontener na agenta), tylko narzędzie `read`.
+    - Agent `main`: działa na hoście, pełny dostęp do narzędzi.
+    - Agent `family`: działa w Dockerze (jeden kontener na agenta), tylko narzędzie `read`.
 
   </Accordion>
-  <Accordion title="Przykład 2: agent do pracy ze współdzielonym sandbox">
+  <Accordion title="Przykład 2: Agent służbowy ze współdzielonym sandboxem">
     ```json
     {
       "agents": {
@@ -113,7 +113,7 @@ Uwierzytelnianie jest per agent: każdy agent odczytuje dane z własnego magazyn
     }
     ```
   </Accordion>
-  <Accordion title="Przykład 2b: globalny profil coding + agent tylko do komunikacji">
+  <Accordion title="Przykład 2b: Globalny profil kodowania + agent tylko do wiadomości">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -130,11 +130,11 @@ Uwierzytelnianie jest per agent: każdy agent odczytuje dane z własnego magazyn
 
     **Wynik:**
 
-    - domyślni agenci otrzymują narzędzia coding.
-    - agent `support` jest tylko do komunikacji (+ narzędzie Slack).
+    - Domyślni agenci otrzymują narzędzia do kodowania.
+    - Agent `support` działa tylko z wiadomościami (+ narzędzie Slack).
 
   </Accordion>
-  <Accordion title="Przykład 3: różne tryby sandbox per agent">
+  <Accordion title="Przykład 3: Różne tryby sandboxa dla agentów">
     ```json
     {
       "agents": {
@@ -173,13 +173,13 @@ Uwierzytelnianie jest per agent: każdy agent odczytuje dane z własnego magazyn
 
 ---
 
-## Priorytety konfiguracji
+## Pierwszeństwo konfiguracji
 
 Gdy istnieją zarówno konfiguracje globalne (`agents.defaults.*`), jak i specyficzne dla agenta (`agents.list[].*`):
 
-### Konfiguracja sandbox
+### Konfiguracja sandboxa
 
-Ustawienia specyficzne dla agenta nadpisują ustawienia globalne:
+Ustawienia specyficzne dla agenta nadpisują globalne:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -192,7 +192,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-`agents.list[].sandbox.{docker,browser,prune}.*` nadpisuje `agents.defaults.sandbox.{docker,browser,prune}.*` dla tego agenta (ignorowane, gdy zakres sandbox rozwiązuje się do `"shared"`).
+`agents.list[].sandbox.{docker,browser,prune}.*` nadpisuje `agents.defaults.sandbox.{docker,browser,prune}.*` dla tego agenta (ignorowane, gdy zakres sandboxa zostanie rozstrzygnięty jako `"shared"`).
 </Note>
 
 ### Ograniczenia narzędzi
@@ -206,42 +206,42 @@ Kolejność filtrowania jest następująca:
   <Step title="Profil narzędzi dostawcy">
     `tools.byProvider[provider].profile` lub `agents.list[].tools.byProvider[provider].profile`.
   </Step>
-  <Step title="Globalna polityka narzędzi">
+  <Step title="Globalne zasady narzędzi">
     `tools.allow` / `tools.deny`.
   </Step>
-  <Step title="Polityka narzędzi dostawcy">
+  <Step title="Zasady narzędzi dostawcy">
     `tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Polityka narzędzi specyficzna dla agenta">
+  <Step title="Zasady narzędzi specyficzne dla agenta">
     `agents.list[].tools.allow/deny`.
   </Step>
-  <Step title="Polityka dostawcy agenta">
+  <Step title="Zasady dostawcy dla agenta">
     `agents.list[].tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="Polityka narzędzi sandbox">
+  <Step title="Zasady narzędzi sandboxa">
     `tools.sandbox.tools` lub `agents.list[].tools.sandbox.tools`.
   </Step>
-  <Step title="Polityka narzędzi subagent">
+  <Step title="Zasady narzędzi subagenta">
     `tools.subagents.tools`, jeśli dotyczy.
   </Step>
 </Steps>
 
 <AccordionGroup>
-  <Accordion title="Zasady priorytetów">
-    - Każdy poziom może dalej ograniczać narzędzia, ale nie może przywrócić narzędzi odrzuconych na wcześniejszych poziomach.
+  <Accordion title="Reguły pierwszeństwa">
+    - Każdy poziom może dalej ograniczać narzędzia, ale nie może przywrócić narzędzi zablokowanych na wcześniejszych poziomach.
     - Jeśli ustawiono `agents.list[].tools.sandbox.tools`, zastępuje ono `tools.sandbox.tools` dla tego agenta.
     - Jeśli ustawiono `agents.list[].tools.profile`, nadpisuje ono `tools.profile` dla tego agenta.
-    - Klucze narzędzi dostawcy akceptują zarówno `provider` (np. `google-antigravity`), jak i `provider/model` (np. `openai/gpt-5.4`).
+    - Klucze narzędzi dostawcy akceptują `provider` (np. `google-antigravity`) albo `provider/model` (np. `openai/gpt-5.4`).
 
   </Accordion>
   <Accordion title="Zachowanie pustej listy dozwolonych">
-    Jeśli jakakolwiek jawna lista dozwolonych w tym łańcuchu pozostawi uruchomienie bez wywoływalnych narzędzi, OpenClaw zatrzymuje się przed wysłaniem promptu do modelu. Jest to zamierzone: agent skonfigurowany z brakującym narzędziem, takim jak `agents.list[].tools.allow: ["query_db"]`, powinien zakończyć się głośnym błędem, dopóki nie zostanie włączony Plugin rejestrujący `query_db`, a nie działać dalej jako agent wyłącznie tekstowy.
+    Jeśli jakakolwiek jawna lista dozwolonych w tym łańcuchu pozostawi uruchomienie bez możliwych do wywołania narzędzi, OpenClaw zatrzyma się przed przesłaniem promptu do modelu. To celowe: agent skonfigurowany z brakującym narzędziem, takim jak `agents.list[].tools.allow: ["query_db"]`, powinien jasno zakończyć się błędem, dopóki Plugin rejestrujący `query_db` nie zostanie włączony, zamiast kontynuować jako agent wyłącznie tekstowy.
   </Accordion>
 </AccordionGroup>
 
-Polityki narzędzi obsługują skróty `group:*`, które rozwijają się do wielu narzędzi. Pełną listę znajdziesz w [Grupy narzędzi](/pl/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands).
+Zasady narzędzi obsługują skróty `group:*`, które rozwijają się do wielu narzędzi. Pełną listę znajdziesz w [Grupach narzędzi](/pl/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands).
 
-Nadpisania elevated per agent (`agents.list[].tools.elevated`) mogą dodatkowo ograniczać elevated exec dla konkretnych agentów. Szczegóły znajdziesz w [Elevated mode](/pl/tools/elevated).
+Nadpisania trybu podwyższonego dla poszczególnych agentów (`agents.list[].tools.elevated`) mogą dodatkowo ograniczać podwyższony exec dla konkretnych agentów. Szczegóły znajdziesz w [Trybie podwyższonym](/pl/tools/elevated).
 
 ---
 
@@ -289,7 +289,7 @@ Nadpisania elevated per agent (`agents.list[].tools.elevated`) mogą dodatkowo o
 </Tabs>
 
 <Note>
-Starsze konfiguracje `agent.*` są migrowane przez `openclaw doctor`; od teraz preferuj `agents.defaults` + `agents.list`.
+Starsze konfiguracje `agent.*` są migrowane przez `openclaw doctor`; w przyszłości preferuj `agents.defaults` + `agents.list`.
 </Note>
 
 ---
@@ -328,7 +328,7 @@ Starsze konfiguracje `agent.*` są migrowane przez `openclaw doctor`; od teraz p
     }
     ```
 
-    `sessions_history` w tym profilu nadal zwraca ograniczony, oczyszczony widok historii zamiast surowego zrzutu transkrypcji. Przywołanie asystenta usuwa tagi myślenia, szkielety `<relevant-memories>`, ładunki XML wywołań narzędzi w postaci zwykłego tekstu (w tym `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` oraz obcięte bloki wywołań narzędzi), zdegradowane szkielety wywołań narzędzi, ujawnione tokeny sterujące modelu ASCII/full-width oraz nieprawidłowy XML wywołań narzędzi MiniMax przed redakcją/obcięciem.
+    `sessions_history` w tym profilu nadal zwraca ograniczony, oczyszczony widok przywołania zamiast surowego zrzutu transkrypcji. Przywołanie asystenta usuwa znaczniki myślenia, strukturę pomocniczą `<relevant-memories>`, tekstowe ładunki XML wywołań narzędzi (w tym `<tool_call>...</tool_call>`, `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`, `<function_calls>...</function_calls>` oraz ucięte bloki wywołań narzędzi), zdegradowaną strukturę pomocniczą wywołań narzędzi, ujawnione ASCII/pełnoszerokościowe tokeny sterujące modelu oraz niepoprawnie sformowany XML wywołań narzędzi MiniMax przed redakcją/ucięciem.
 
   </Tab>
 </Tabs>
@@ -338,29 +338,29 @@ Starsze konfiguracje `agent.*` są migrowane przez `openclaw doctor`; od teraz p
 ## Częsta pułapka: "non-main"
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` opiera się na `session.mainKey` (domyślnie `"main"`), a nie na identyfikatorze agenta. Sesje grupowe/kanałowe zawsze otrzymują własne klucze, więc są traktowane jako non-main i będą uruchamiane w sandbox. Jeśli chcesz, aby agent nigdy nie używał sandbox, ustaw `agents.list[].sandbox.mode: "off"`.
+`agents.defaults.sandbox.mode: "non-main"` opiera się na `session.mainKey` (domyślnie `"main"`), a nie na identyfikatorze agenta. Sesje grup/kanałów zawsze otrzymują własne klucze, więc są traktowane jako niegłówne i zostaną umieszczone w sandboxie. Jeśli chcesz, aby agent nigdy nie używał sandboxa, ustaw `agents.list[].sandbox.mode: "off"`.
 </Warning>
 
 ---
 
 ## Testowanie
 
-Po skonfigurowaniu sandbox i narzędzi dla wielu agentów:
+Po skonfigurowaniu sandboxa i narzędzi dla wielu agentów:
 
 <Steps>
-  <Step title="Sprawdź rozwiązywanie agentów">
+  <Step title="Sprawdź rozstrzyganie agenta">
     ```bash
     openclaw agents list --bindings
     ```
   </Step>
-  <Step title="Zweryfikuj kontenery sandbox">
+  <Step title="Zweryfikuj kontenery sandboxa">
     ```bash
     docker ps --filter "name=openclaw-sbx-"
     ```
   </Step>
   <Step title="Przetestuj ograniczenia narzędzi">
     - Wyślij wiadomość wymagającą ograniczonych narzędzi.
-    - Zweryfikuj, że agent nie może używać narzędzi z listy deny.
+    - Zweryfikuj, że agent nie może używać zablokowanych narzędzi.
 
   </Step>
   <Step title="Monitoruj logi">
@@ -375,20 +375,20 @@ Po skonfigurowaniu sandbox i narzędzi dla wielu agentów:
 ## Rozwiązywanie problemów
 
 <AccordionGroup>
-  <Accordion title="Agent nie jest uruchamiany w sandbox mimo `mode: 'all'`">
-    - Sprawdź, czy istnieje globalne `agents.defaults.sandbox.mode`, które to nadpisuje.
+  <Accordion title="Agent nie jest w sandboxie mimo `mode: 'all'`">
+    - Sprawdź, czy istnieje globalne `agents.defaults.sandbox.mode`, które je nadpisuje.
     - Konfiguracja specyficzna dla agenta ma pierwszeństwo, więc ustaw `agents.list[].sandbox.mode: "all"`.
 
   </Accordion>
-  <Accordion title="Narzędzia nadal są dostępne mimo listy deny">
+  <Accordion title="Narzędzia nadal dostępne mimo listy blokad">
     - Sprawdź kolejność filtrowania narzędzi: globalne → agent → sandbox → subagent.
-    - Każdy poziom może tylko dalej ograniczać, a nie przywracać.
+    - Każdy poziom może tylko dalej ograniczać, nie przywracać.
     - Zweryfikuj w logach: `[tools] filtering tools for agent:${agentId}`.
 
   </Accordion>
-  <Accordion title="Kontener nie jest izolowany per agent">
-    - Ustaw `scope: "agent"` w konfiguracji sandbox specyficznej dla agenta.
-    - Domyślnie jest `"session"`, co tworzy jeden kontener na sesję.
+  <Accordion title="Kontener nie jest izolowany dla każdego agenta">
+    - Ustaw `scope: "agent"` w konfiguracji sandboxa specyficznej dla agenta.
+    - Domyślnie jest to `"session"`, co tworzy jeden kontener na sesję.
 
   </Accordion>
 </AccordionGroup>
@@ -397,9 +397,9 @@ Po skonfigurowaniu sandbox i narzędzi dla wielu agentów:
 
 ## Powiązane
 
-- [Elevated mode](/pl/tools/elevated)
-- [Routing wielu agentów](/pl/concepts/multi-agent)
-- [Konfiguracja sandbox](/pl/gateway/config-agents#agentsdefaultssandbox)
-- [Sandbox vs tool policy vs elevated](/pl/gateway/sandbox-vs-tool-policy-vs-elevated) — debugowanie „dlaczego to jest blokowane?”
-- [Sandboxing](/pl/gateway/sandboxing) — pełna dokumentacja sandbox (tryby, zakresy, backendy, obrazy)
-- [Zarządzanie sesjami](/pl/concepts/session)
+- [Tryb podwyższony](/pl/tools/elevated)
+- [Routing wieloagentowy](/pl/concepts/multi-agent)
+- [Konfiguracja sandboxa](/pl/gateway/config-agents#agentsdefaultssandbox)
+- [Sandbox a zasady narzędzi a tryb podwyższony](/pl/gateway/sandbox-vs-tool-policy-vs-elevated) — debugowanie „dlaczego to jest zablokowane?”
+- [Izolacja w sandboxie](/pl/gateway/sandboxing) — pełna dokumentacja sandboxa (tryby, zakresy, backendy, obrazy)
+- [Zarządzanie sesją](/pl/concepts/session)

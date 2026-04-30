@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Chcesz sandboxów zarządzanych w chmurze zamiast lokalnego Dockera
+    - Chcesz używać piaskownic zarządzanych w chmurze zamiast lokalnego Dockera
     - Konfigurujesz Plugin OpenShell
-    - Musisz wybrać między trybami mirror i remote workspace
-summary: Używaj OpenShell jako zarządzanego backendu sandboxa dla agentów OpenClaw
+    - Musisz wybrać między trybem kopii lustrzanej a trybem zdalnego obszaru roboczego
+summary: Użyj OpenShell jako zarządzanego backendu piaskownicy dla agentów OpenClaw
 title: OpenShell
 x-i18n:
-    generated_at: "2026-04-24T09:11:24Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:55:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 47954cd27b4c7ef9d4268597c2846960b39b99fd03ece5dddb5055e9282366a0
+    source_hash: 694a0a145802f4b624af01b58cbb5886bab7426fb9a90f216480141082089144
     source_path: gateway/openshell.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenShell to zarządzany backend sandboxa dla OpenClaw. Zamiast uruchamiać kontenery Docker
 lokalnie, OpenClaw deleguje cykl życia sandboxa do CLI `openshell`,
-które udostępnia zdalne środowiska z wykonywaniem poleceń opartym na SSH.
+które udostępnia zdalne środowiska z wykonywaniem poleceń przez SSH.
 
-Plugin OpenShell ponownie wykorzystuje ten sam główny transport SSH i zdalny most
-systemu plików co ogólny [backend SSH](/pl/gateway/sandboxing#ssh-backend). Dodaje
-specyficzny dla OpenShell cykl życia (`sandbox create/get/delete`, `sandbox ssh-config`)
-oraz opcjonalny tryb przestrzeni roboczej `mirror`.
+Plugin OpenShell ponownie używa tego samego podstawowego transportu SSH i pomostu zdalnego systemu plików
+co ogólny [backend SSH](/pl/gateway/sandboxing#ssh-backend). Dodaje
+cykl życia specyficzny dla OpenShell (`sandbox create/get/delete`, `sandbox ssh-config`)
+oraz opcjonalny tryb obszaru roboczego `mirror`.
 
 ## Wymagania wstępne
 
-- CLI `openshell` zainstalowane i dostępne w `PATH` (lub ustaw własną ścieżkę przez
+- CLI `openshell` zainstalowane i dostępne w `PATH` (albo ustaw niestandardową ścieżkę przez
   `plugins.entries.openshell.config.command`)
 - Konto OpenShell z dostępem do sandboxów
-- Gateway OpenClaw uruchomiony na hoście
+- OpenClaw Gateway uruchomiony na hoście
 
 ## Szybki start
 
@@ -60,8 +60,8 @@ oraz opcjonalny tryb przestrzeni roboczej `mirror`.
 }
 ```
 
-2. Uruchom ponownie Gateway. Przy następnej turze agenta OpenClaw utworzy sandbox OpenShell
-   i skieruje przez niego wykonywanie narzędzi.
+2. Uruchom ponownie Gateway. W następnej turze agenta OpenClaw utworzy sandbox OpenShell
+   i przekieruje przez niego wykonywanie narzędzi.
 
 3. Zweryfikuj:
 
@@ -70,91 +70,92 @@ openclaw sandbox list
 openclaw sandbox explain
 ```
 
-## Tryby przestrzeni roboczej
+## Tryby obszaru roboczego
 
-To najważniejsza decyzja przy używaniu OpenShell.
+To najważniejsza decyzja podczas używania OpenShell.
 
 ### `mirror`
 
-Użyj `plugins.entries.openshell.config.mode: "mirror"`, gdy chcesz, aby **lokalna
-przestrzeń robocza pozostała kanoniczna**.
+Użyj `plugins.entries.openshell.config.mode: "mirror"`, gdy chcesz, aby **lokalny
+obszar roboczy pozostał kanoniczny**.
 
 Zachowanie:
 
-- Przed `exec` OpenClaw synchronizuje lokalną przestrzeń roboczą z sandboxem OpenShell.
-- Po `exec` OpenClaw synchronizuje zdalną przestrzeń roboczą z powrotem do lokalnej przestrzeni roboczej.
-- Narzędzia plikowe nadal działają przez most sandboxa, ale lokalna przestrzeń robocza
+- Przed `exec` OpenClaw synchronizuje lokalny obszar roboczy do sandboxa OpenShell.
+- Po `exec` OpenClaw synchronizuje zdalny obszar roboczy z powrotem do lokalnego obszaru roboczego.
+- Narzędzia plikowe nadal działają przez pomost sandboxa, ale lokalny obszar roboczy
   pozostaje źródłem prawdy między turami.
 
 Najlepsze do:
 
-- Edytujesz pliki lokalnie poza OpenClaw i chcesz, by te zmiany były automatycznie widoczne w
+- Edytujesz pliki lokalnie poza OpenClaw i chcesz, aby te zmiany były automatycznie widoczne w
   sandboxie.
-- Chcesz, aby sandbox OpenShell zachowywał się możliwie najbardziej jak backend Docker.
-- Chcesz, aby przestrzeń robocza hosta odzwierciedlała zapisy sandboxa po każdej turze exec.
+- Chcesz, aby sandbox OpenShell zachowywał się możliwie podobnie do backendu Docker.
+- Chcesz, aby obszar roboczy hosta odzwierciedlał zapisy w sandboxie po każdej turze exec.
 
 Kompromis: dodatkowy koszt synchronizacji przed i po każdym exec.
 
 ### `remote`
 
 Użyj `plugins.entries.openshell.config.mode: "remote"`, gdy chcesz, aby
-**przestrzeń robocza OpenShell stała się kanoniczna**.
+**obszar roboczy OpenShell stał się kanoniczny**.
 
 Zachowanie:
 
-- Gdy sandbox jest tworzony po raz pierwszy, OpenClaw jednorazowo zasila zdalną przestrzeń roboczą z
-  lokalnej przestrzeni roboczej.
-- Po tym `exec`, `read`, `write`, `edit` i `apply_patch` działają
-  bezpośrednio na zdalnej przestrzeni roboczej OpenShell.
-- OpenClaw **nie** synchronizuje zdalnych zmian z powrotem do lokalnej przestrzeni roboczej.
-- Odczyty multimediów w czasie promptu nadal działają, ponieważ narzędzia plików i multimediów czytają przez most sandboxa.
+- Gdy sandbox jest tworzony po raz pierwszy, OpenClaw jednorazowo inicjuje zdalny obszar roboczy z
+  lokalnego obszaru roboczego.
+- Następnie `exec`, `read`, `write`, `edit` i `apply_patch` działają
+  bezpośrednio na zdalnym obszarze roboczym OpenShell.
+- OpenClaw **nie** synchronizuje zdalnych zmian z powrotem do lokalnego obszaru roboczego.
+- Odczyty multimediów w czasie tworzenia promptu nadal działają, ponieważ narzędzia plikowe i multimedialne czytają przez
+  pomost sandboxa.
 
 Najlepsze do:
 
-- Sandbox ma żyć głównie po stronie zdalnej.
-- Chcesz mniejszego narzutu synchronizacji na turę.
-- Nie chcesz, by lokalne edycje hosta po cichu nadpisywały zdalny stan sandboxa.
+- Sandbox powinien działać głównie po stronie zdalnej.
+- Chcesz zmniejszyć narzut synchronizacji w każdej turze.
+- Nie chcesz, aby lokalne edycje na hoście po cichu nadpisywały zdalny stan sandboxa.
 
-Ważne: jeśli po początkowym zasileniu edytujesz pliki na hoście poza OpenClaw,
-zdalny sandbox **nie** zobaczy tych zmian. Użyj
-`openclaw sandbox recreate`, aby ponownie zasilić.
+<Warning>
+Jeśli po początkowej inicjalizacji edytujesz pliki na hoście poza OpenClaw, zdalny sandbox **nie** widzi tych zmian. Użyj `openclaw sandbox recreate`, aby ponownie zainicjować.
+</Warning>
 
 ### Wybór trybu
 
-|                          | `mirror`                   | `remote`                  |
-| ------------------------ | -------------------------- | ------------------------- |
-| **Kanoniczna przestrzeń robocza** | Lokalny host              | Zdalny OpenShell          |
-| **Kierunek synchronizacji**       | Dwukierunkowy (każdy exec) | Jednorazowe zasilenie     |
-| **Narzut na turę**                | Wyższy (wysyłanie + pobieranie) | Niższy (bezpośrednie operacje zdalne) |
-| **Czy lokalne edycje są widoczne?** | Tak, przy następnym exec   | Nie, aż do recreate       |
-| **Najlepsze do**                  | Przepływy deweloperskie    | Długotrwałe agenty, CI    |
+|                          | `mirror`                         | `remote`                         |
+| ------------------------ | -------------------------------- | -------------------------------- |
+| **Kanoniczny obszar roboczy** | Lokalny host                     | Zdalny OpenShell                 |
+| **Kierunek synchronizacji** | Dwukierunkowy (każdy exec)        | Jednorazowa inicjalizacja        |
+| **Narzut na turę**       | Wyższy (wysyłanie + pobieranie)  | Niższy (bezpośrednie operacje zdalne) |
+| **Lokalne edycje widoczne?** | Tak, przy następnym exec          | Nie, dopóki nie odtworzysz       |
+| **Najlepsze do**         | Przepływy pracy developerskie    | Długotrwałe agenty, CI           |
 
-## Odwołanie do konfiguracji
+## Dokumentacja konfiguracji
 
-Cała konfiguracja OpenShell znajduje się pod `plugins.entries.openshell.config`:
+Cała konfiguracja OpenShell znajduje się w `plugins.entries.openshell.config`:
 
 | Klucz                     | Typ                      | Domyślnie     | Opis                                                  |
 | ------------------------- | ------------------------ | ------------- | ----------------------------------------------------- |
-| `mode`                    | `"mirror"` lub `"remote"` | `"mirror"`    | Tryb synchronizacji przestrzeni roboczej              |
-| `command`                 | `string`                 | `"openshell"` | Ścieżka lub nazwa CLI `openshell`                     |
-| `from`                    | `string`                 | `"openclaw"`  | Źródło sandboxa dla pierwszego utworzenia             |
+| `mode`                    | `"mirror"` albo `"remote"` | `"mirror"`    | Tryb synchronizacji obszaru roboczego                 |
+| `command`                 | `string`                 | `"openshell"` | Ścieżka albo nazwa CLI `openshell`                    |
+| `from`                    | `string`                 | `"openclaw"`  | Źródło sandboxa przy pierwszym utworzeniu             |
 | `gateway`                 | `string`                 | —             | Nazwa Gateway OpenShell (`--gateway`)                 |
 | `gatewayEndpoint`         | `string`                 | —             | URL punktu końcowego Gateway OpenShell (`--gateway-endpoint`) |
-| `policy`                  | `string`                 | —             | Identyfikator polityki OpenShell do tworzenia sandboxa |
-| `providers`               | `string[]`               | `[]`          | Nazwy dostawców do dołączenia przy tworzeniu sandboxa |
-| `gpu`                     | `boolean`                | `false`       | Żądanie zasobów GPU                                   |
-| `autoProviders`           | `boolean`                | `true`        | Przekazuje `--auto-providers` przy tworzeniu sandboxa |
-| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Główna zapisywalna przestrzeń robocza wewnątrz sandboxa |
-| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Ścieżka montowania przestrzeni roboczej agenta (dla dostępu tylko do odczytu) |
+| `policy`                  | `string`                 | —             | ID polityki OpenShell do tworzenia sandboxa           |
+| `providers`               | `string[]`               | `[]`          | Nazwy dostawców do podłączenia przy tworzeniu sandboxa |
+| `gpu`                     | `boolean`                | `false`       | Zażądaj zasobów GPU                                   |
+| `autoProviders`           | `boolean`                | `true`        | Przekaż `--auto-providers` podczas tworzenia sandboxa |
+| `remoteWorkspaceDir`      | `string`                 | `"/sandbox"`  | Główny zapisywalny obszar roboczy wewnątrz sandboxa   |
+| `remoteAgentWorkspaceDir` | `string`                 | `"/agent"`    | Ścieżka montowania obszaru roboczego agenta (dla dostępu tylko do odczytu) |
 | `timeoutSeconds`          | `number`                 | `120`         | Limit czasu dla operacji CLI `openshell`              |
 
-Ustawienia poziomu sandboxa (`mode`, `scope`, `workspaceAccess`) są konfigurowane w
-`agents.defaults.sandbox`, tak jak przy każdym backendzie. Zobacz
+Ustawienia poziomu sandboxa (`mode`, `scope`, `workspaceAccess`) konfiguruje się pod
+`agents.defaults.sandbox`, tak jak w każdym backendzie. Zobacz
 [Sandboxing](/pl/gateway/sandboxing), aby poznać pełną macierz.
 
 ## Przykłady
 
-### Minimalna konfiguracja remote
+### Minimalna konfiguracja zdalna
 
 ```json5
 {
@@ -250,29 +251,29 @@ Ustawienia poziomu sandboxa (`mode`, `scope`, `workspaceAccess`) są konfigurowa
 
 ## Zarządzanie cyklem życia
 
-Sandboxy OpenShell są zarządzane przez zwykłe CLI sandboxa:
+Sandboxami OpenShell zarządza się przez normalne CLI sandboxa:
 
 ```bash
-# Wyświetl wszystkie runtime sandboxów (Docker + OpenShell)
+# List all sandbox runtimes (Docker + OpenShell)
 openclaw sandbox list
 
-# Sprawdź efektywną politykę
+# Inspect effective policy
 openclaw sandbox explain
 
-# Odtwórz (usuwa zdalną przestrzeń roboczą, ponownie zasila przy następnym użyciu)
+# Recreate (deletes remote workspace, re-seeds on next use)
 openclaw sandbox recreate --all
 ```
 
-Dla trybu `remote` **recreate jest szczególnie ważne**: usuwa kanoniczną
-zdalną przestrzeń roboczą dla tego zakresu. Następne użycie zasila świeżą zdalną przestrzeń roboczą z
-lokalnej przestrzeni roboczej.
+W trybie `remote` **odtworzenie jest szczególnie ważne**: usuwa kanoniczny
+zdalny obszar roboczy dla tego zakresu. Następne użycie inicjuje świeży zdalny obszar roboczy z
+lokalnego obszaru roboczego.
 
-Dla trybu `mirror` recreate głównie resetuje zdalne środowisko wykonywania, ponieważ
-lokalna przestrzeń robocza pozostaje kanoniczna.
+W trybie `mirror` odtworzenie głównie resetuje zdalne środowisko wykonywania, ponieważ
+lokalny obszar roboczy pozostaje kanoniczny.
 
-### Kiedy używać recreate
+### Kiedy odtwarzać
 
-Użyj recreate po zmianie któregokolwiek z tych ustawień:
+Odtwórz po zmianie któregokolwiek z tych ustawień:
 
 - `agents.defaults.sandbox.backend`
 - `plugins.entries.openshell.config.from`
@@ -283,33 +284,33 @@ Użyj recreate po zmianie któregokolwiek z tych ustawień:
 openclaw sandbox recreate --all
 ```
 
-## Utwardzanie Security
+## Wzmocnienie bezpieczeństwa
 
-OpenShell przypina deskryptor katalogu głównego przestrzeni roboczej i ponownie sprawdza tożsamość sandboxa przed każdym
-odczytem, więc podmiany symlinków lub ponownie zamontowana przestrzeń robocza nie mogą przekierować odczytów poza
-zamierzoną zdalną przestrzeń roboczą.
+OpenShell przypina deskryptor pliku katalogu głównego obszaru roboczego i ponownie sprawdza tożsamość sandboxa przed każdym
+odczytem, więc podmiany dowiązań symbolicznych albo ponownie zamontowany obszar roboczy nie mogą przekierować odczytów poza
+zamierzony zdalny obszar roboczy.
 
 ## Obecne ograniczenia
 
-- Przeglądarka sandboxa nie jest obsługiwana przez backend OpenShell.
+- Przeglądarka sandboxa nie jest obsługiwana w backendzie OpenShell.
 - `sandbox.docker.binds` nie ma zastosowania do OpenShell.
-- Pokrętła runtime specyficzne dla Dockera w `sandbox.docker.*` mają zastosowanie tylko do backendu Docker.
+- Pokrętła środowiska uruchomieniowego specyficzne dla Docker pod `sandbox.docker.*` dotyczą tylko backendu Docker.
 
 ## Jak to działa
 
 1. OpenClaw wywołuje `openshell sandbox create` (z flagami `--from`, `--gateway`,
-   `--policy`, `--providers`, `--gpu`, zgodnie z konfiguracją).
-2. OpenClaw wywołuje `openshell sandbox ssh-config <name>`, aby uzyskać szczegóły
-   połączenia SSH dla sandboxa.
-3. Core zapisuje konfigurację SSH do pliku tymczasowego i otwiera sesję SSH, używając
-   tego samego zdalnego mostu systemu plików co ogólny backend SSH.
-4. W trybie `mirror`: synchronizuj lokalnie do zdalnego przed exec, uruchom, zsynchronizuj z powrotem po exec.
-5. W trybie `remote`: zasil raz przy tworzeniu, następnie działaj bezpośrednio na zdalnej
-   przestrzeni roboczej.
+   `--policy`, `--providers`, `--gpu` zgodnie z konfiguracją).
+2. OpenClaw wywołuje `openshell sandbox ssh-config <name>`, aby uzyskać szczegóły połączenia SSH
+   dla sandboxa.
+3. Rdzeń zapisuje konfigurację SSH do pliku tymczasowego i otwiera sesję SSH przy użyciu
+   tego samego pomostu zdalnego systemu plików co ogólny backend SSH.
+4. W trybie `mirror`: synchronizuj lokalne do zdalnego przed exec, uruchom, zsynchronizuj z powrotem po exec.
+5. W trybie `remote`: zainicjuj raz przy tworzeniu, a potem działaj bezpośrednio na zdalnym
+   obszarze roboczym.
 
 ## Powiązane
 
 - [Sandboxing](/pl/gateway/sandboxing) -- tryby, zakresy i porównanie backendów
-- [Sandbox vs Tool Policy vs Elevated](/pl/gateway/sandbox-vs-tool-policy-vs-elevated) -- debugowanie zablokowanych narzędzi
+- [Sandbox vs Tool Policy vs Elevated](/pl/gateway/sandbox-vs-tool-policy-vs-elevated) -- debugowanie blokowanych narzędzi
 - [Multi-Agent Sandbox and Tools](/pl/tools/multi-agent-sandbox-tools) -- nadpisania per agent
 - [Sandbox CLI](/pl/cli/sandbox) -- polecenia `openclaw sandbox`

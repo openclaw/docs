@@ -1,99 +1,100 @@
 ---
 read_when:
-    - Dodawanie lub modyfikowanie zachowania exec w tle
+    - Dodawanie lub modyfikowanie zachowania wykonywania poleceń w tle
     - Debugowanie długotrwałych zadań exec
 summary: Wykonywanie exec w tle i zarządzanie procesami
-title: Narzędzie exec i process w tle
+title: Narzędzie do wykonywania poleceń w tle i zarządzania procesami
 x-i18n:
-    generated_at: "2026-04-24T09:08:34Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:51:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c6dbf6fd0ee39a053fda0a910e95827e9d0e31dcdfbbf542b6ba5d1d63aa48dc
+    source_hash: 0df76d7a09184bf87f5568d800bcee683620a76c092f34451d987db4ef1a1eaf
     source_path: gateway/background-process.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Exec w tle + narzędzie process
+# Wykonywanie w tle + narzędzie process
 
-OpenClaw uruchamia polecenia powłoki przez narzędzie `exec` i przechowuje długotrwałe zadania w pamięci. Narzędzie `process` zarządza tymi sesjami działającymi w tle.
+OpenClaw uruchamia polecenia powłoki przez narzędzie `exec` i przechowuje długotrwałe zadania w pamięci. Narzędzie `process` zarządza tymi sesjami w tle.
 
 ## Narzędzie exec
 
 Kluczowe parametry:
 
 - `command` (wymagane)
-- `yieldMs` (domyślnie 10000): automatyczne przeniesienie do tła po tym opóźnieniu
-- `background` (bool): natychmiastowe uruchomienie w tle
-- `timeout` (sekundy, domyślnie 1800): zabicie procesu po upływie tego limitu czasu
-- `elevated` (bool): uruchomienie poza sandboxem, jeśli tryb podwyższony jest włączony/dozwolony (`gateway` domyślnie lub `node`, gdy celem exec jest `node`)
+- `yieldMs` (domyślnie 10000): automatyczne przeniesienie w tło po tym opóźnieniu
+- `background` (bool): natychmiastowe przeniesienie w tło
+- `timeout` (sekundy, domyślnie `tools.exec.timeoutSec`): zabija proces po tym limicie czasu; ustaw `timeout: 0` tylko po to, aby wyłączyć limit czasu procesu exec dla tego wywołania
+- `elevated` (bool): uruchamia poza piaskownicą, jeśli tryb podwyższony jest włączony/dozwolony (domyślnie `gateway`, albo `node`, gdy celem exec jest `node`)
 - Potrzebujesz prawdziwego TTY? Ustaw `pty: true`.
 - `workdir`, `env`
 
 Zachowanie:
 
-- Uruchomienia na pierwszym planie zwracają dane wyjściowe bezpośrednio.
-- Po przeniesieniu do tła (jawnie lub przez limit czasu) narzędzie zwraca `status: "running"` + `sessionId` i krótki końcowy fragment.
-- Dane wyjściowe są przechowywane w pamięci, dopóki sesja nie zostanie odpytana lub wyczyszczona.
+- Uruchomienia pierwszoplanowe zwracają wynik bezpośrednio.
+- Po przeniesieniu w tło (jawnie lub przez limit czasu) narzędzie zwraca `status: "running"` + `sessionId` oraz krótki ogon wyjścia.
+- Uruchomienia w tle i z `yieldMs` dziedziczą `tools.exec.timeoutSec`, chyba że wywołanie podaje jawny `timeout`.
+- Wyjście jest przechowywane w pamięci, dopóki sesja nie zostanie odpytywana albo wyczyszczona.
 - Jeśli narzędzie `process` jest niedozwolone, `exec` działa synchronicznie i ignoruje `yieldMs`/`background`.
-- Uruchomione polecenia exec otrzymują `OPENCLAW_SHELL=exec` na potrzeby zależnych od kontekstu reguł powłoki/profilu.
-- W przypadku długotrwałej pracy, która ma zacząć się teraz, uruchom ją raz i polegaj na automatycznym
-  wybudzeniu po zakończeniu, gdy jest włączone i polecenie generuje dane wyjściowe lub kończy się błędem.
+- Uruchomione polecenia exec otrzymują `OPENCLAW_SHELL=exec` na potrzeby reguł powłoki/profilu świadomych kontekstu.
+- Dla długotrwałej pracy, która zaczyna się teraz, uruchom ją raz i polegaj na automatycznym
+  wybudzeniu po zakończeniu, gdy jest włączone i polecenie emituje wyjście albo kończy się niepowodzeniem.
 - Jeśli automatyczne wybudzenie po zakończeniu jest niedostępne albo potrzebujesz potwierdzenia
-  cichego sukcesu dla polecenia, które zakończyło się poprawnie bez danych wyjściowych, użyj `process`,
+  cichego sukcesu dla polecenia, które zakończyło się poprawnie bez wyjścia, użyj `process`,
   aby potwierdzić zakończenie.
-- Nie emuluj przypomnień ani opóźnionych działań następczych za pomocą pętli `sleep` lub powtarzanego
-  odpytywania; do przyszłych zadań używaj Cron.
+- Nie emuluj przypomnień ani opóźnionych kontynuacji za pomocą pętli `sleep` ani powtarzanego
+  odpytywania; używaj cron do przyszłej pracy.
 
 ## Mostkowanie procesów potomnych
 
-Podczas uruchamiania długotrwałych procesów potomnych poza narzędziami exec/process (na przykład przy ponownych uruchomieniach CLI lub pomocnikach gateway), dołącz pomocniczy most procesu potomnego, aby sygnały zakończenia były przekazywane, a nasłuchiwacze odłączane przy wyjściu/błędzie. Pozwala to uniknąć osieroconych procesów w systemd i utrzymuje spójne zachowanie wyłączania na różnych platformach.
+Podczas uruchamiania długotrwałych procesów potomnych poza narzędziami exec/process (na przykład ponowne uruchomienia CLI albo pomocniki Gateway), dołącz pomocnik mostka procesów potomnych, aby sygnały zakończenia były przekazywane dalej, a listenery odłączane przy wyjściu/błędzie. Zapobiega to osieroconym procesom w systemd i utrzymuje spójne zachowanie zamykania na różnych platformach.
 
-Nadpisania środowiskowe:
+Nadpisania środowiska:
 
-- `PI_BASH_YIELD_MS`: domyślny yield (ms)
-- `PI_BASH_MAX_OUTPUT_CHARS`: limit danych wyjściowych w pamięci (znaki)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: limit oczekujących `stdout`/`stderr` na strumień (znaki)
-- `PI_BASH_JOB_TTL_MS`: TTL zakończonych sesji (ms, ograniczone do 1 min–3 h)
+- `PI_BASH_YIELD_MS`: domyślne opóźnienie yield (ms)
+- `PI_BASH_MAX_OUTPUT_CHARS`: limit wyjścia w pamięci (znaki)
+- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: limit oczekującego stdout/stderr na strumień (znaki)
+- `PI_BASH_JOB_TTL_MS`: TTL dla zakończonych sesji (ms, ograniczone do 1m–3h)
 
-Konfiguracja (zalecana):
+Konfiguracja (preferowana):
 
 - `tools.exec.backgroundMs` (domyślnie 10000)
 - `tools.exec.timeoutSec` (domyślnie 1800)
 - `tools.exec.cleanupMs` (domyślnie 1800000)
-- `tools.exec.notifyOnExit` (domyślnie true): umieszcza zdarzenie systemowe w kolejce + żąda Heartbeat, gdy exec działający w tle zakończy się.
-- `tools.exec.notifyOnExitEmptySuccess` (domyślnie false): gdy ma wartość true, umieszcza też zdarzenia zakończenia dla pomyślnych uruchomień w tle, które nie wygenerowały danych wyjściowych.
+- `tools.exec.notifyOnExit` (domyślnie true): kolejkowanie zdarzenia systemowego + żądanie Heartbeat, gdy exec przeniesiony w tło kończy działanie.
+- `tools.exec.notifyOnExitEmptySuccess` (domyślnie false): gdy true, kolejkuje także zdarzenia zakończenia dla pomyślnych uruchomień w tle, które nie wygenerowały wyjścia.
 
 ## Narzędzie process
 
 Akcje:
 
-- `list`: sesje uruchomione + zakończone
-- `poll`: pobranie nowych danych wyjściowych dla sesji (raportuje też status zakończenia)
-- `log`: odczyt zagregowanych danych wyjściowych (obsługuje `offset` + `limit`)
-- `write`: wysłanie `stdin` (`data`, opcjonalnie `eof`)
-- `send-keys`: wysłanie jawnych tokenów klawiszy lub bajtów do sesji opartej na PTY
-- `submit`: wysłanie Enter / carriage return do sesji opartej na PTY
-- `paste`: wysłanie dosłownego tekstu, opcjonalnie opakowanego w tryb bracketed paste
-- `kill`: zakończenie sesji działającej w tle
-- `clear`: usunięcie zakończonej sesji z pamięci
-- `remove`: zabicie, jeśli działa, lub wyczyszczenie, jeśli jest zakończona
+- `list`: uruchomione + zakończone sesje
+- `poll`: pobiera nowe wyjście dla sesji (raportuje też status zakończenia)
+- `log`: odczytuje zagregowane wyjście (obsługuje `offset` + `limit`)
+- `write`: wysyła stdin (`data`, opcjonalnie `eof`)
+- `send-keys`: wysyła jawne tokeny klawiszy albo bajty do sesji opartej na PTY
+- `submit`: wysyła Enter / powrót karetki do sesji opartej na PTY
+- `paste`: wysyła tekst literalny, opcjonalnie opakowany w tryb wklejania z nawiasami
+- `kill`: kończy sesję w tle
+- `clear`: usuwa zakończoną sesję z pamięci
+- `remove`: zabija, jeśli działa, w przeciwnym razie czyści, jeśli jest zakończona
 
 Uwagi:
 
-- Tylko sesje działające w tle są wyświetlane/przechowywane w pamięci.
-- Sesje są tracone po ponownym uruchomieniu procesu (brak trwałości na dysku).
-- Logi sesji są zapisywane do historii czatu tylko wtedy, gdy uruchomisz `process poll/log` i wynik narzędzia zostanie zapisany.
-- `process` ma zakres per agent; widzi tylko sesje uruchomione przez tego agenta.
-- Używaj `poll` / `log` do sprawdzania statusu, logów, potwierdzania cichego sukcesu lub
-  potwierdzania zakończenia, gdy automatyczne wybudzenie po zakończeniu jest niedostępne.
-- Używaj `write` / `send-keys` / `submit` / `paste` / `kill`, gdy potrzebujesz danych wejściowych
-  lub interwencji.
-- `process list` zawiera wyprowadzone `name` (czasownik polecenia + cel) do szybkiego przeglądania.
-- `process log` używa opartych na liniach `offset`/`limit`.
-- Gdy pominięto zarówno `offset`, jak i `limit`, zwraca ostatnie 200 linii i zawiera wskazówkę stronicowania.
-- Gdy podano `offset`, a pominięto `limit`, zwraca dane od `offset` do końca (bez ograniczenia do 200).
-- Odpytywanie służy do doraźnego sprawdzania statusu, a nie do planowania pętli oczekiwania. Jeśli praca
-  ma zostać wykonana później, użyj Cron.
+- Tylko sesje przeniesione w tło są listowane/utrwalane w pamięci.
+- Sesje są tracone po restarcie procesu (brak trwałości na dysku).
+- Logi sesji są zapisywane w historii czatu tylko wtedy, gdy uruchomisz `process poll/log`, a wynik narzędzia zostanie zapisany.
+- `process` jest zakresowane per agent; widzi tylko sesje uruchomione przez tego agenta.
+- Używaj `poll` / `log` do statusu, logów, potwierdzenia cichego sukcesu albo
+  potwierdzenia zakończenia, gdy automatyczne wybudzenie po zakończeniu jest niedostępne.
+- Używaj `write` / `send-keys` / `submit` / `paste` / `kill`, gdy potrzebujesz wejścia
+  albo interwencji.
+- `process list` zawiera wyprowadzoną wartość `name` (czasownik polecenia + cel) do szybkiego przeglądania.
+- `process log` używa opartego na liniach `offset`/`limit`.
+- Gdy pominięto zarówno `offset`, jak i `limit`, zwraca ostatnie 200 linii i dołącza wskazówkę stronicowania.
+- Gdy podano `offset`, a pominięto `limit`, zwraca od `offset` do końca (bez ograniczenia do 200).
+- Odpytywanie służy do statusu na żądanie, nie do planowania pętli oczekiwania. Jeśli praca ma
+  wydarzyć się później, użyj zamiast tego cron.
 
 ## Przykłady
 
@@ -125,13 +126,13 @@ Wyślij klawisze PTY:
 { "tool": "process", "action": "send-keys", "sessionId": "<id>", "keys": ["C-c"] }
 ```
 
-Wyślij bieżący wiersz:
+Prześlij bieżącą linię:
 
 ```json
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-Wklej dosłowny tekst:
+Wklej tekst literalny:
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }

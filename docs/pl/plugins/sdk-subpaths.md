@@ -1,34 +1,51 @@
 ---
 read_when:
-    - Wybór właściwej ścieżki podrzędnej plugin-sdk dla importu Plugin
-    - Audyt ścieżek podrzędnych dołączonych Plugin i powierzchni pomocniczych
-summary: 'Katalog ścieżek podrzędnych SDK Plugin: które importy znajdują się gdzie, pogrupowane według obszaru'
-title: Ścieżki podrzędne SDK Plugin
+    - Wybór właściwej podścieżki plugin-sdk dla importu Plugin
+    - Audyt podścieżek dołączonych pluginów i powierzchni pomocniczych
+summary: 'Katalog podścieżek SDK Plugin: gdzie znajdują się poszczególne importy, pogrupowane według obszaru'
+title: Podścieżki Plugin SDK
 x-i18n:
-    generated_at: "2026-04-26T11:38:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:10:28Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fcb49ee51301b79985d43470cd8c149c858e79d685908605317de253121d4736
+    source_hash: 6a8c431c1835fff6720a00984171e3f55886363654074d81859f50ca28a35104
     source_path: plugins/sdk-subpaths.md
-    workflow: 15
+    workflow: 16
 ---
 
-  SDK Plugin jest udostępniane jako zestaw wąskich ścieżek podrzędnych pod `openclaw/plugin-sdk/`.
-  Ta strona kataloguje najczęściej używane ścieżki podrzędne pogrupowane według przeznaczenia. Wygenerowana
+  SDK Plugin jest udostępniany jako zestaw wąskich ścieżek podrzędnych pod `openclaw/plugin-sdk/`.
+  Ta strona kataloguje często używane ścieżki podrzędne pogrupowane według przeznaczenia. Wygenerowana
   pełna lista ponad 200 ścieżek podrzędnych znajduje się w `scripts/lib/plugin-sdk-entrypoints.json`;
-  zastrzeżone ścieżki podrzędne helperów dołączonych Plugin też się tam pojawiają, ale są szczegółem implementacji,
-  chyba że jakaś strona dokumentacji jawnie je promuje.
+  zarezerwowane ścieżki podrzędne pomocników wbudowanych Pluginów pojawiają się tam, ale są szczegółem
+  implementacyjnym, chyba że strona dokumentacji jawnie je promuje. Maintainerzy mogą audytować aktywne
+  zarezerwowane ścieżki podrzędne pomocników za pomocą `pnpm plugins:boundary-report:summary`; nieużywane
+  zarezerwowane eksporty pomocników powodują niepowodzenie raportu CI zamiast pozostawać w publicznym SDK
+  jako uśpiony dług zgodności.
 
-  Przewodnik po tworzeniu Plugin znajdziesz w [Plugin SDK overview](/pl/plugins/sdk-overview).
+  Przewodnik tworzenia Pluginów znajdziesz w [Przeglądzie SDK Plugin](/pl/plugins/sdk-overview).
 
   ## Wejście Plugin
 
-  | Ścieżka podrzędna          | Kluczowe eksporty                                                                                                                      |
-  | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-  | `plugin-sdk/plugin-entry`  | `definePluginEntry`                                                                                                                    |
-  | `plugin-sdk/core`          | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema` |
-  | `plugin-sdk/config-schema` | `OpenClawSchema`                                                                                                                       |
-  | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry`                                                                                                     |
+  | Ścieżka podrzędna                         | Kluczowe eksporty                                                                                                                                                           |
+  | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `plugin-sdk/plugin-entry`                 | `definePluginEntry`                                                                                                                                                          |
+  | `plugin-sdk/core`                         | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`                                       |
+  | `plugin-sdk/config-schema`                | `OpenClawSchema`                                                                                                                                                             |
+  | `plugin-sdk/provider-entry`               | `defineSingleProviderPluginEntry`                                                                                                                                            |
+  | `plugin-sdk/testing`                      | Szeroki barrel zgodności dla starszych testów Pluginów; w nowych testach rozszerzeń preferuj ukierunkowane ścieżki podrzędne testów                                         |
+  | `plugin-sdk/plugin-test-api`              | Minimalny konstruktor makiet `OpenClawPluginApi` do bezpośrednich testów jednostkowych rejestracji Pluginów                                                                 |
+  | `plugin-sdk/agent-runtime-test-contracts` | Natywne fixtures kontraktów adaptera agent-runtime dla profili uwierzytelniania, tłumienia dostarczania, klasyfikacji fallback, haków narzędzi, nakładek promptów, schematów i naprawy transkryptu |
+  | `plugin-sdk/channel-test-helpers`         | Pomocniki testów cyklu życia konta kanału, katalogu, send-config, makiety runtime, haka, wpisu wbudowanego kanału, znacznika czasu koperty, odpowiedzi parowania i ogólnego kontraktu kanału |
+  | `plugin-sdk/channel-target-testing`       | Współdzielony zestaw testów przypadków błędów rozpoznawania celu kanału                                                                                                      |
+  | `plugin-sdk/plugin-test-contracts`        | Pomocniki kontraktów rejestracji Plugin, manifestu pakietu, artefaktu publicznego, API runtime, efektów ubocznych importu i bezpośredniego importu                          |
+  | `plugin-sdk/plugin-test-runtime`          | Fixtures testowe runtime Plugin, rejestru, rejestracji providera, kreatora konfiguracji i przepływu zadań runtime                                                           |
+  | `plugin-sdk/provider-test-contracts`      | Pomocniki kontraktów runtime providera, uwierzytelniania, wykrywania, onboardingu, katalogu, możliwości mediów, zasad replay, realtime STT live-audio, web-search/fetch i kreatora |
+  | `plugin-sdk/provider-http-test-mocks`     | Opcjonalne makiety HTTP/uwierzytelniania Vitest dla testów providera, które używają `plugin-sdk/provider-http`                                                              |
+  | `plugin-sdk/test-env`                     | Fixtures środowiska testowego, fetch/sieci, jednorazowego serwera HTTP, żądania przychodzącego, testu live, tymczasowego systemu plików i kontroli czasu                    |
+  | `plugin-sdk/test-fixtures`                | Ogólne fixtures testowe CLI, sandboxa, skill, komunikatu agenta, zdarzenia systemowego, przeładowania modułu, ścieżki wbudowanego Pluginu, terminala, dzielenia na fragmenty, auth-token i typed-case |
+  | `plugin-sdk/test-node-mocks`              | Ukierunkowane pomocniki makiet wbudowanych Node do użycia wewnątrz fabryk Vitest `vi.mock("node:*")`                                                                         |
+  | `plugin-sdk/migration`                    | Pomocniki elementów providera migracji, takie jak `createMigrationItem`, stałe powodów, znaczniki statusu elementu, pomocniki redakcji i `summarizeMigrationItems`           |
+  | `plugin-sdk/migration-runtime`            | Pomocniki migracji runtime, takie jak `copyMigrationFileItem`, `withCachedMigrationConfigRuntime` i `writeMigrationReport`                                                   |
 
   <AccordionGroup>
   <Accordion title="Ścieżki podrzędne kanałów">
@@ -36,254 +53,286 @@ x-i18n:
     | --- | --- |
     | `plugin-sdk/channel-core` | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
     | `plugin-sdk/config-schema` | Eksport głównego schematu Zod `openclaw.json` (`OpenClawSchema`) |
-    | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, plus `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
-    | `plugin-sdk/setup` | Współdzielone helpery wizard konfiguracji, prompty list dozwolonych, konstruktory statusu konfiguracji |
+    | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard` oraz `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
+    | `plugin-sdk/setup` | Współdzielone pomocniki kreatora konfiguracji, prompty listy dozwolonych, konstruktory statusu konfiguracji |
     | `plugin-sdk/setup-runtime` | `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
     | `plugin-sdk/setup-adapter-runtime` | `createEnvPatchedAccountSetupAdapter` |
     | `plugin-sdk/setup-tools` | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-    | `plugin-sdk/account-core` | Helpery konfiguracji/bramkowania akcji dla wielu kont, helpery fallbacku do konta domyślnego |
-    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`, helpery normalizacji account-id |
-    | `plugin-sdk/account-resolution` | Helpery wyszukiwania konta + fallbacku do ustawienia domyślnego |
-    | `plugin-sdk/account-helpers` | Wąskie helpery list kont/akcji kont |
+    | `plugin-sdk/account-core` | Pomocniki konfiguracji wielu kont i bramki akcji, pomocniki fallback konta domyślnego |
+    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`, pomocniki normalizacji account-id |
+    | `plugin-sdk/account-resolution` | Pomocniki wyszukiwania konta i fallbacku domyślnego |
+    | `plugin-sdk/account-helpers` | Wąskie pomocniki listy kont i akcji konta |
     | `plugin-sdk/channel-pairing` | `createChannelPairingController` |
-    | `plugin-sdk/channel-reply-pipeline` | `createChannelReplyPipeline` |
-    | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter` |
-    | `plugin-sdk/channel-config-schema` | Typy schematu konfiguracji kanału |
-    | `plugin-sdk/telegram-command-config` | Helpery normalizacji/walidacji niestandardowych poleceń Telegram z fallbackiem do kontraktu dołączonego |
-    | `plugin-sdk/command-gating` | Wąskie helpery bramkowania autoryzacji poleceń |
+    | `plugin-sdk/channel-reply-pipeline` | `createChannelReplyPipeline`, `resolveChannelSourceReplyDeliveryMode` |
+    | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
+    | `plugin-sdk/channel-config-schema` | Współdzielone prymitywy schematu konfiguracji kanału i ogólny konstruktor |
+    | `plugin-sdk/bundled-channel-config-schema` | Schematy konfiguracji wbudowanych kanałów OpenClaw tylko dla utrzymywanych wbudowanych Pluginów |
+    | `plugin-sdk/channel-config-schema-legacy` | Przestarzały alias zgodności dla schematów konfiguracji wbudowanych kanałów |
+    | `plugin-sdk/telegram-command-config` | Pomocniki normalizacji/walidacji niestandardowych poleceń Telegram z fallbackiem kontraktu wbudowanego |
+    | `plugin-sdk/command-gating` | Wąskie pomocniki bramki autoryzacji poleceń |
     | `plugin-sdk/channel-policy` | `resolveChannelGroupRequireMention` |
-    | `plugin-sdk/channel-lifecycle` | `createAccountStatusSink`, helpery cyklu życia/finalizacji draft stream |
-    | `plugin-sdk/inbound-envelope` | Współdzielone helpery routingu przychodzącego + budowania koperty |
-    | `plugin-sdk/inbound-reply-dispatch` | Współdzielone helpery rejestrowania i dispatchu przychodzącego |
-    | `plugin-sdk/messaging-targets` | Helpery parsowania/dopasowywania celów |
-    | `plugin-sdk/outbound-media` | Współdzielone helpery ładowania mediów wychodzących |
-    | `plugin-sdk/outbound-send-deps` | Lekkie wyszukiwanie zależności wysyłania wychodzącego dla adapterów kanałów |
-    | `plugin-sdk/outbound-runtime` | Helpery dostarczania wychodzącego, tożsamości, delegata wysyłania, sesji, formatowania i planowania payloadów |
-    | `plugin-sdk/poll-runtime` | Wąskie helpery normalizacji ankiet |
-    | `plugin-sdk/thread-bindings-runtime` | Helpery cyklu życia powiązań wątków i adapterów |
-    | `plugin-sdk/agent-media-payload` | Starszy konstruktor payloadów mediów agenta |
-    | `plugin-sdk/conversation-runtime` | Helpery powiązań rozmów/wątków, Pairing i skonfigurowanych powiązań |
-    | `plugin-sdk/runtime-config-snapshot` | Helper migawki konfiguracji runtime |
-    | `plugin-sdk/runtime-group-policy` | Helpery rozstrzygania polityki grup runtime |
-    | `plugin-sdk/channel-status` | Współdzielone helpery migawek/podsumowań statusu kanału |
+    | `plugin-sdk/channel-lifecycle` | `createAccountStatusSink`, `createChannelRunQueue`, pomocniki cyklu życia/finalizacji szkicowego strumienia |
+    | `plugin-sdk/inbound-envelope` | Współdzielone pomocniki trasy przychodzącej i konstruktora koperty |
+    | `plugin-sdk/inbound-reply-dispatch` | Współdzielone pomocniki rejestrowania i wysyłania przychodzących rekordów |
+    | `plugin-sdk/messaging-targets` | Pomocniki parsowania/dopasowywania celów |
+    | `plugin-sdk/outbound-media` | Współdzielone pomocniki ładowania mediów wychodzących |
+    | `plugin-sdk/outbound-send-deps` | Lekki lookup zależności wysyłania wychodzącego dla adapterów kanałów |
+    | `plugin-sdk/outbound-runtime` | Pomocniki dostarczania wychodzącego, tożsamości, delegata wysyłania, sesji, formatowania i planowania payloadu |
+    | `plugin-sdk/poll-runtime` | Wąskie pomocniki normalizacji ankiet |
+    | `plugin-sdk/thread-bindings-runtime` | Pomocniki cyklu życia powiązań wątków i adaptera |
+    | `plugin-sdk/agent-media-payload` | Starszy konstruktor payloadu mediów agenta |
+    | `plugin-sdk/conversation-runtime` | Pomocniki konwersacji/powiązań wątków, parowania i skonfigurowanych powiązań |
+    | `plugin-sdk/runtime-config-snapshot` | Pomocnik migawki konfiguracji runtime |
+    | `plugin-sdk/runtime-group-policy` | Pomocniki rozpoznawania zasad grup runtime |
+    | `plugin-sdk/channel-status` | Współdzielone pomocniki migawki/podsumowania statusu kanału |
     | `plugin-sdk/channel-config-primitives` | Wąskie prymitywy schematu konfiguracji kanału |
-    | `plugin-sdk/channel-config-writes` | Helpery autoryzacji zapisów konfiguracji kanału |
-    | `plugin-sdk/channel-plugin-common` | Współdzielone eksporty prelude Plugin kanału |
-    | `plugin-sdk/allowlist-config-edit` | Helpery edycji/odczytu konfiguracji allowlist |
-    | `plugin-sdk/group-access` | Współdzielone helpery decyzji dostępu grupowego |
-    | `plugin-sdk/direct-dm` | Współdzielone helpery auth/guard bezpośrednich DM |
-    | `plugin-sdk/interactive-runtime` | Semantyczna prezentacja wiadomości, dostarczanie i starsze helpery interaktywnych odpowiedzi. Zobacz [Message Presentation](/pl/plugins/message-presentation) |
-    | `plugin-sdk/channel-inbound` | Compatibility barrel dla inbound debounce, dopasowywania wzmianek, helperów polityki wzmianek i helperów kopert |
-    | `plugin-sdk/channel-inbound-debounce` | Wąskie helpery inbound debounce |
-    | `plugin-sdk/channel-mention-gating` | Wąskie helpery polityki wzmianek i tekstu wzmianek bez szerszej powierzchni inbound runtime |
-    | `plugin-sdk/channel-envelope` | Wąskie helpery formatowania kopert przychodzących |
-    | `plugin-sdk/channel-location` | Helpery kontekstu lokalizacji kanału i formatowania |
-    | `plugin-sdk/channel-logging` | Helpery logowania kanału dla odrzuceń przychodzących i błędów typing/ack |
-    | `plugin-sdk/channel-send-result` | Typy wyników odpowiedzi |
-    | `plugin-sdk/channel-actions` | Helpery akcji wiadomości kanału oraz przestarzałe helpery natywnych schematów zachowane dla zgodności Plugin |
-    | `plugin-sdk/channel-targets` | Helpery parsowania/dopasowywania celów |
+    | `plugin-sdk/channel-config-writes` | Pomocniki autoryzacji zapisu konfiguracji kanału |
+    | `plugin-sdk/channel-plugin-common` | Współdzielone eksporty prelude Pluginu kanału |
+    | `plugin-sdk/allowlist-config-edit` | Pomocniki edycji/odczytu konfiguracji listy dozwolonych |
+    | `plugin-sdk/group-access` | Współdzielone pomocniki decyzji dostępu grupowego |
+    | `plugin-sdk/direct-dm` | Współdzielone pomocniki uwierzytelniania/ochrony bezpośrednich DM |
+    | `plugin-sdk/discord` | Przestarzała fasada zgodności Discord dla opublikowanego `@openclaw/discord@2026.3.13` i śledzonej zgodności właściciela; nowe Pluginy powinny używać ogólnych ścieżek podrzędnych SDK kanału |
+    | `plugin-sdk/telegram-account` | Przestarzała fasada zgodności rozpoznawania kont Telegram dla śledzonej zgodności właściciela; nowe Pluginy powinny używać wstrzykniętych pomocników runtime lub ogólnych ścieżek podrzędnych SDK kanału |
+    | `plugin-sdk/zalouser` | Przestarzała fasada zgodności Zalo Personal dla opublikowanych pakietów Lark/Zalo, które nadal importują autoryzację poleceń nadawcy; nowe Pluginy powinny używać `plugin-sdk/command-auth` |
+    | `plugin-sdk/interactive-runtime` | Pomocniki semantycznej prezentacji wiadomości, dostarczania i starszych interaktywnych odpowiedzi. Zobacz [Prezentacja wiadomości](/pl/plugins/message-presentation) |
+    | `plugin-sdk/channel-inbound` | Barrel zgodności dla debounce przychodzących, dopasowywania wzmianek, pomocników zasad wzmianek i pomocników kopert |
+    | `plugin-sdk/channel-inbound-debounce` | Wąskie pomocniki debounce przychodzących |
+    | `plugin-sdk/channel-mention-gating` | Wąskie pomocniki zasad wzmianek, znacznika wzmianki i tekstu wzmianki bez szerszej powierzchni runtime przychodzącego |
+    | `plugin-sdk/channel-envelope` | Wąskie pomocniki formatowania koperty przychodzącej |
+    | `plugin-sdk/channel-location` | Kontekst lokalizacji kanału i pomocniki formatowania |
+    | `plugin-sdk/channel-logging` | Pomocniki logowania kanału dla odrzuceń przychodzących oraz niepowodzeń pisania/ack |
+    | `plugin-sdk/channel-send-result` | Typy wyniku odpowiedzi |
+    | `plugin-sdk/channel-actions` | Pomocniki akcji wiadomości kanału oraz przestarzałe pomocniki natywnego schematu zachowane dla zgodności Pluginów |
+    | `plugin-sdk/channel-route` | Współdzielona normalizacja tras, rozpoznawanie celu sterowane parserem, zamiana thread-id na string, klucze tras dedupe/compact, typy parsed-target i pomocniki porównywania tras/celów |
+    | `plugin-sdk/channel-targets` | Pomocniki parsowania celów; wywołujący porównywanie tras powinni używać `plugin-sdk/channel-route` |
     | `plugin-sdk/channel-contract` | Typy kontraktu kanału |
-    | `plugin-sdk/channel-feedback` | Okablowanie feedbacku/reakcji |
-    | `plugin-sdk/channel-secret-runtime` | Wąskie helpery kontraktu sekretów, takie jak `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`, oraz typy celów sekretów |
+    | `plugin-sdk/channel-feedback` | Połączenia feedbacku/reakcji |
+    | `plugin-sdk/channel-secret-runtime` | Wąskie pomocniki kontraktu sekretów, takie jak `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment` i typy celów sekretów |
   </Accordion>
 
-  <Accordion title="Ścieżki podrzędne dostawców">
-    | Ścieżka podrzędna | Kluczowe eksporty |
+  <Accordion title="Podścieżki dostawców">
+    | Podścieżka | Kluczowe eksporty |
     | --- | --- |
     | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry` |
-    | `plugin-sdk/provider-setup` | Kuratorowane helpery konfiguracji dostawców lokalnych/samohostowanych |
-    | `plugin-sdk/self-hosted-provider-setup` | Skoncentrowane helpery konfiguracji samohostowanych dostawców zgodnych z OpenAI |
-    | `plugin-sdk/cli-backend` | Domyślne ustawienia backendu CLI + stałe watchdog |
-    | `plugin-sdk/provider-auth-runtime` | Helpery rozwiązywania klucza API w runtime dla Plugin dostawców |
-    | `plugin-sdk/provider-auth-api-key` | Helpery onboardingu/zapisu profili kluczy API, takie jak `upsertApiKeyProfile` |
-    | `plugin-sdk/provider-auth-result` | Standardowy konstruktor wyników auth OAuth |
-    | `plugin-sdk/provider-auth-login` | Współdzielone helpery interaktywnego logowania dla Plugin dostawców |
-    | `plugin-sdk/provider-env-vars` | Helpery wyszukiwania zmiennych env auth dostawcy |
+    | `plugin-sdk/lmstudio` | Obsługiwana fasada dostawcy LM Studio do konfiguracji, wykrywania katalogu i przygotowywania modeli w czasie wykonywania |
+    | `plugin-sdk/lmstudio-runtime` | Obsługiwana fasada czasu wykonywania LM Studio dla domyślnych ustawień lokalnego serwera, wykrywania modeli, nagłówków żądań i helperów załadowanych modeli |
+    | `plugin-sdk/provider-setup` | Wyselekcjonowane helpery konfiguracji lokalnego/samodzielnie hostowanego dostawcy |
+    | `plugin-sdk/self-hosted-provider-setup` | Wyspecjalizowane helpery konfiguracji samodzielnie hostowanego dostawcy zgodnego z OpenAI |
+    | `plugin-sdk/cli-backend` | Domyślne ustawienia backendu CLI + stałe mechanizmu watchdog |
+    | `plugin-sdk/provider-auth-runtime` | Helpery rozwiązywania kluczy API w czasie wykonywania dla pluginów dostawców |
+    | `plugin-sdk/provider-auth-api-key` | Helpery onboardingu klucza API/zapisu profilu, takie jak `upsertApiKeyProfile` |
+    | `plugin-sdk/provider-auth-result` | Standardowy konstruktor wyniku uwierzytelniania OAuth |
+    | `plugin-sdk/provider-auth-login` | Współdzielone helpery interaktywnego logowania dla pluginów dostawców |
+    | `plugin-sdk/provider-env-vars` | Helpery wyszukiwania zmiennych środowiskowych uwierzytelniania dostawcy |
     | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials` |
-    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, współdzielone konstruktory polityki replay, helpery endpointów dostawców oraz helpery normalizacji identyfikatorów modeli, takie jak `normalizeNativeXaiModelId` |
-    | `plugin-sdk/provider-catalog-shared` | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-    | `plugin-sdk/provider-http` | Generyczne helpery możliwości HTTP/endpointów dostawcy, błędy HTTP dostawcy i helpery formularzy multipart do transkrypcji audio |
-    | `plugin-sdk/provider-web-fetch-contract` | Wąskie helpery kontraktu konfiguracji/wyboru web-fetch, takie jak `enablePluginInConfig` i `WebFetchProviderPlugin` |
-    | `plugin-sdk/provider-web-fetch` | Helpery rejestracji/cache dostawców web-fetch |
-    | `plugin-sdk/provider-web-search-config-contract` | Wąskie helpery konfiguracji/poświadczeń web-search dla dostawców, którzy nie potrzebują okablowania włączania Plugin |
-    | `plugin-sdk/provider-web-search-contract` | Wąskie helpery kontraktu konfiguracji/poświadczeń web-search, takie jak `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` oraz zakresowe settery/gettery poświadczeń |
-    | `plugin-sdk/provider-web-search` | Helpery rejestracji/cache/runtime dostawców web-search |
-    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, cleanup + diagnostyka schematów Gemini oraz helpery zgodności xAI, takie jak `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
+    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, współdzielone konstruktory zasad odtwarzania, helpery punktów końcowych dostawcy oraz helpery normalizacji identyfikatorów modeli, takie jak `normalizeNativeXaiModelId` |
+    | `plugin-sdk/provider-catalog-runtime` | Hak czasu wykonywania rozszerzania katalogu dostawcy i połączenia rejestru plugin-dostawca dla testów kontraktu |
+    | `plugin-sdk/provider-catalog-shared` | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
+    | `plugin-sdk/provider-http` | Ogólne helpery możliwości HTTP/punktów końcowych dostawcy, błędy HTTP dostawcy oraz helpery formularzy multipart do transkrypcji audio |
+    | `plugin-sdk/provider-web-fetch-contract` | Wąskie helpery kontraktu konfiguracji/wyboru pobierania z sieci, takie jak `enablePluginInConfig` i `WebFetchProviderPlugin` |
+    | `plugin-sdk/provider-web-fetch` | Helpery rejestracji/pamięci podręcznej dostawcy pobierania z sieci |
+    | `plugin-sdk/provider-web-search-config-contract` | Wąskie helpery konfiguracji/poświadczeń wyszukiwania w sieci dla dostawców, którzy nie potrzebują okablowania włączania pluginu |
+    | `plugin-sdk/provider-web-search-contract` | Wąskie helpery kontraktu konfiguracji/poświadczeń wyszukiwania w sieci, takie jak `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig` oraz zakresowe settery/gettery poświadczeń |
+    | `plugin-sdk/provider-web-search` | Helpery rejestracji/pamięci podręcznej/czasu wykonywania dostawcy wyszukiwania w sieci |
+    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, czyszczenie schematów Gemini + diagnostyka oraz helpery zgodności xAI, takie jak `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
     | `plugin-sdk/provider-usage` | `fetchClaudeUsage` i podobne |
     | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, typy wrapperów strumieni oraz współdzielone helpery wrapperów Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
-    | `plugin-sdk/provider-transport-runtime` | Natywne helpery transportu dostawców, takie jak guarded fetch, transformacje wiadomości transportowych i zapisywalne strumienie zdarzeń transportu |
-    | `plugin-sdk/provider-onboard` | Helpery patchy konfiguracji onboardingu |
-    | `plugin-sdk/global-singleton` | Helpery singletonów/map/cache lokalnych dla procesu |
+    | `plugin-sdk/provider-transport-runtime` | Helpery natywnego transportu dostawcy, takie jak chronione pobieranie, transformacje komunikatów transportowych i zapisywalne strumienie zdarzeń transportu |
+    | `plugin-sdk/provider-onboard` | Helpery łatek konfiguracji onboardingu |
+    | `plugin-sdk/global-singleton` | Helpery singletonów/map/pamięci podręcznej lokalnych dla procesu |
     | `plugin-sdk/group-activation` | Wąskie helpery trybu aktywacji grupy i parsowania poleceń |
   </Accordion>
 
-  <Accordion title="Ścieżki podrzędne auth i bezpieczeństwa">
-    | Ścieżka podrzędna | Kluczowe eksporty |
+  <Accordion title="Podścieżki uwierzytelniania i bezpieczeństwa">
+    | Podścieżka | Kluczowe eksporty |
     | --- | --- |
-    | `plugin-sdk/command-auth` | `resolveControlCommandGate`, helpery rejestru poleceń, w tym formatowanie dynamicznego menu argumentów, helpery autoryzacji nadawcy |
+    | `plugin-sdk/command-auth` | `resolveControlCommandGate`, helpery rejestru poleceń, w tym formatowanie menu dynamicznych argumentów, helpery autoryzacji nadawcy |
     | `plugin-sdk/command-status` | Konstruktory komunikatów poleceń/pomocy, takie jak `buildCommandsMessagePaginated` i `buildHelpMessage` |
-    | `plugin-sdk/approval-auth-runtime` | Helpery rozstrzygania zatwierdzającego i auth akcji w tym samym czacie |
-    | `plugin-sdk/approval-client-runtime` | Helpery profili/filtrów natywnych zatwierdzeń exec |
-    | `plugin-sdk/approval-delivery-runtime` | Adaptery możliwości/dostarczania natywnych zatwierdzeń |
-    | `plugin-sdk/approval-gateway-runtime` | Współdzielony helper rozstrzygania gateway zatwierdzeń |
-    | `plugin-sdk/approval-handler-adapter-runtime` | Lekkie helpery ładowania natywnych adapterów zatwierdzeń dla hot channel entrypoints |
-    | `plugin-sdk/approval-handler-runtime` | Szersze helpery runtime obsługi zatwierdzeń; preferuj węższe adapter/gateway seams, gdy są wystarczające |
-    | `plugin-sdk/approval-native-runtime` | Helpery celu natywnych zatwierdzeń + powiązań kont |
-    | `plugin-sdk/approval-reply-runtime` | Helpery payloadów odpowiedzi zatwierdzeń exec/Plugin |
-    | `plugin-sdk/approval-runtime` | Helpery payloadów zatwierdzeń exec/Plugin, helpery routingu/runtime natywnych zatwierdzeń oraz helpery uporządkowanego wyświetlania zatwierdzeń, takie jak `formatApprovalDisplayPath` |
-    | `plugin-sdk/reply-dedupe` | Wąskie helpery resetu deduplikacji odpowiedzi przychodzących |
-    | `plugin-sdk/channel-contract-testing` | Wąskie helpery testów kontraktu kanału bez szerokiego testing barrel |
-    | `plugin-sdk/command-auth-native` | Natywne auth poleceń, formatowanie dynamicznego menu argumentów i helpery celów natywnych sesji |
+    | `plugin-sdk/approval-auth-runtime` | Rozwiązywanie zatwierdzających i helpery uwierzytelniania działań w tym samym czacie |
+    | `plugin-sdk/approval-client-runtime` | Helpery natywnych profili/filtrów zatwierdzania wykonywania |
+    | `plugin-sdk/approval-delivery-runtime` | Natywne adaptery możliwości/dostarczania zatwierdzeń |
+    | `plugin-sdk/approval-gateway-runtime` | Współdzielony helper rozwiązywania Gateway zatwierdzeń |
+    | `plugin-sdk/approval-handler-adapter-runtime` | Lekkie helpery ładowania natywnego adaptera zatwierdzeń dla gorących punktów wejścia kanałów |
+    | `plugin-sdk/approval-handler-runtime` | Szersze helpery czasu wykonywania obsługi zatwierdzeń; preferuj węższe połączenia adaptera/Gateway, gdy są wystarczające |
+    | `plugin-sdk/approval-native-runtime` | Natywny cel zatwierdzenia + helpery wiązania konta |
+    | `plugin-sdk/approval-reply-runtime` | Helpery ładunków odpowiedzi zatwierdzeń exec/plugin |
+    | `plugin-sdk/approval-runtime` | Helpery ładunków zatwierdzeń exec/plugin, helpery routingu/czasu wykonywania natywnych zatwierdzeń oraz helpery strukturalnego wyświetlania zatwierdzeń, takie jak `formatApprovalDisplayPath` |
+    | `plugin-sdk/reply-dedupe` | Wąskie helpery resetowania deduplikacji odpowiedzi przychodzących |
+    | `plugin-sdk/channel-contract-testing` | Wąskie helpery testów kontraktu kanału bez szerokiego barrel testowego |
+    | `plugin-sdk/command-auth-native` | Natywne uwierzytelnianie poleceń, formatowanie menu dynamicznych argumentów i helpery natywnych celów sesji |
     | `plugin-sdk/command-detection` | Współdzielone helpery wykrywania poleceń |
-    | `plugin-sdk/command-primitives-runtime` | Lekkie predykaty tekstu poleceń dla hot channel paths |
-    | `plugin-sdk/command-surface` | Helpery normalizacji ciała polecenia i powierzchni poleceń |
+    | `plugin-sdk/command-primitives-runtime` | Lekkie predykaty tekstu poleceń dla gorących ścieżek kanałów |
+    | `plugin-sdk/command-surface` | Normalizacja treści poleceń i helpery powierzchni poleceń |
     | `plugin-sdk/allow-from` | `formatAllowFromLowercase` |
-    | `plugin-sdk/channel-secret-runtime` | Wąskie helpery zbierania kontraktu sekretów dla powierzchni sekretów kanałów/Plugin |
-    | `plugin-sdk/secret-ref-runtime` | Wąskie helpery `coerceSecretRef` i typowania SecretRef dla parsowania kontraktu sekretów/konfiguracji |
-    | `plugin-sdk/security-runtime` | Współdzielone helpery zaufania, bramkowania DM, treści zewnętrznych i zbierania sekretów |
-    | `plugin-sdk/ssrf-policy` | Helpery allowlist hostów i polityki SSRF dla sieci prywatnych |
-    | `plugin-sdk/ssrf-dispatcher` | Wąskie helpery pinned-dispatcher bez szerokiej powierzchni infra runtime |
-    | `plugin-sdk/ssrf-runtime` | Helpery pinned-dispatcher, fetch chronionego przed SSRF i polityki SSRF |
-    | `plugin-sdk/secret-input` | Helpery parsowania sekretnego wejścia |
-    | `plugin-sdk/webhook-ingress` | Helpery żądań/celów Webhook |
-    | `plugin-sdk/webhook-request-guards` | Helpery rozmiaru treści żądania/timeoutu |
+    | `plugin-sdk/channel-secret-runtime` | Wąskie helpery zbierania kontraktów sekretów dla powierzchni sekretów kanału/pluginu |
+    | `plugin-sdk/secret-ref-runtime` | Wąskie helpery typowania `coerceSecretRef` i SecretRef do parsowania kontraktu sekretów/konfiguracji |
+    | `plugin-sdk/security-runtime` | Współdzielone helpery zaufania, blokowania DM, treści zewnętrznych, redagowania tekstu wrażliwego, stałoczasowego porównywania sekretów i zbierania sekretów |
+    | `plugin-sdk/ssrf-policy` | Helpery listy dozwolonych hostów i zasad SSRF sieci prywatnej |
+    | `plugin-sdk/ssrf-dispatcher` | Wąskie helpery przypiętego dispatchera bez szerokiej powierzchni czasu wykonywania infrastruktury |
+    | `plugin-sdk/ssrf-runtime` | Przypięty dispatcher, pobieranie chronione przed SSRF, błąd SSRF i helpery zasad SSRF |
+    | `plugin-sdk/secret-input` | Helpery parsowania wejścia sekretu |
+    | `plugin-sdk/webhook-ingress` | Helpery żądań/celów Webhook i koercja surowego websocketu/treści |
+    | `plugin-sdk/webhook-request-guards` | Helpery rozmiaru treści żądania/limitu czasu |
   </Accordion>
 
-  <Accordion title="Ścieżki podrzędne runtime i storage">
-    | Ścieżka podrzędna | Kluczowe eksporty |
+  <Accordion title="Podścieżki środowiska uruchomieniowego i pamięci masowej">
+    | Podścieżka | Kluczowe eksporty |
     | --- | --- |
-    | `plugin-sdk/runtime` | Szerokie helpery runtime/logowania/backupu/instalacji Plugin |
-    | `plugin-sdk/runtime-env` | Wąskie helpery env runtime, loggera, timeoutu, retry i backoff |
-    | `plugin-sdk/channel-runtime-context` | Generyczne helpery rejestracji i wyszukiwania kontekstu runtime kanału |
+    | `plugin-sdk/runtime` | Szerokie pomocniki środowiska uruchomieniowego, rejestrowania, kopii zapasowych i instalacji Pluginów |
+    | `plugin-sdk/runtime-env` | Wąskie pomocniki env środowiska uruchomieniowego, loggera, limitu czasu, ponawiania i wycofywania |
+    | `plugin-sdk/browser-config` | Obsługiwana fasada konfiguracji przeglądarki do znormalizowanego profilu/wartości domyślnych, parsowania adresów URL CDP i pomocników uwierzytelniania sterowania przeglądarką |
+    | `plugin-sdk/channel-runtime-context` | Ogólne pomocniki rejestracji i wyszukiwania kontekstu środowiska uruchomieniowego kanału |
     | `plugin-sdk/runtime-store` | `createPluginRuntimeStore` |
-    | `plugin-sdk/plugin-runtime` | Współdzielone helpery poleceń/hooków/http/interaktywności Plugin |
-    | `plugin-sdk/hook-runtime` | Współdzielone helpery pipeline Webhook/wewnętrznych hooków |
-    | `plugin-sdk/lazy-runtime` | Helpery lazy import/binding runtime, takie jak `createLazyRuntimeModule`, `createLazyRuntimeMethod` i `createLazyRuntimeSurface` |
-    | `plugin-sdk/process-runtime` | Helpery exec procesu |
-    | `plugin-sdk/cli-runtime` | Helpery formatowania CLI, wait, version, wywołania argumentów i leniwych grup poleceń |
-    | `plugin-sdk/gateway-runtime` | Helpery klienta Gateway i patchy statusu kanału |
-    | `plugin-sdk/config-runtime` | Helpery ładowania/zapisu konfiguracji i wyszukiwania konfiguracji Plugin |
-    | `plugin-sdk/telegram-command-config` | Helpery normalizacji nazw/opisów poleceń Telegram oraz kontroli duplikatów/konfliktów, nawet gdy dołączona powierzchnia kontraktu Telegram nie jest dostępna |
-    | `plugin-sdk/text-autolink-runtime` | Wykrywanie autolinków referencji plików bez szerokiego text-runtime barrel |
-    | `plugin-sdk/approval-runtime` | Helpery zatwierdzeń exec/Plugin, konstruktory możliwości zatwierdzeń, helpery auth/profili, helpery natywnego routingu/runtime oraz formatowanie uporządkowanych ścieżek wyświetlania zatwierdzeń |
-    | `plugin-sdk/reply-runtime` | Współdzielone helpery runtime przychodzących/odpowiedzi, chunking, dispatch, Heartbeat, planner odpowiedzi |
-    | `plugin-sdk/reply-dispatch-runtime` | Wąskie helpery dispatch/finalizacji odpowiedzi i etykiet rozmów |
-    | `plugin-sdk/reply-history` | Współdzielone helpery historii odpowiedzi dla krótkiego okna, takie jak `buildHistoryContext`, `recordPendingHistoryEntry` i `clearHistoryEntriesIfEnabled` |
+    | `plugin-sdk/plugin-runtime` | Współdzielone pomocniki poleceń, hooków, HTTP i interakcji Pluginów |
+    | `plugin-sdk/hook-runtime` | Współdzielone pomocniki potoku webhooków/wewnętrznych hooków |
+    | `plugin-sdk/lazy-runtime` | Pomocniki leniwego importu i wiązania środowiska uruchomieniowego, takie jak `createLazyRuntimeModule`, `createLazyRuntimeMethod` i `createLazyRuntimeSurface` |
+    | `plugin-sdk/process-runtime` | Pomocniki wykonywania procesów |
+    | `plugin-sdk/cli-runtime` | Pomocniki formatowania CLI, oczekiwania, wersji, wywołań argumentów i leniwych grup poleceń |
+    | `plugin-sdk/gateway-runtime` | Klient Gateway, pomocnik uruchamiania klienta gotowego na pętlę zdarzeń, RPC CLI Gateway, błędy protokołu Gateway i pomocniki łatek statusu kanału |
+    | `plugin-sdk/config-types` | Powierzchnia konfiguracji tylko typów dla kształtów konfiguracji Pluginów, takich jak `OpenClawConfig` i typy konfiguracji kanałów/dostawców |
+    | `plugin-sdk/plugin-config-runtime` | Pomocniki wyszukiwania konfiguracji Pluginów w środowisku uruchomieniowym, takie jak `requireRuntimeConfig`, `resolvePluginConfigObject` i `resolveLivePluginConfigObject` |
+    | `plugin-sdk/config-mutation` | Pomocniki transakcyjnej mutacji konfiguracji, takie jak `mutateConfigFile`, `replaceConfigFile` i `logConfigUpdated` |
+    | `plugin-sdk/runtime-config-snapshot` | Pomocniki migawki konfiguracji bieżącego procesu, takie jak `getRuntimeConfig`, `getRuntimeConfigSnapshot` i settery migawek testowych |
+    | `plugin-sdk/telegram-command-config` | Normalizacja nazw/opisów poleceń Telegram oraz sprawdzanie duplikatów/konfliktów, nawet gdy dołączona powierzchnia kontraktu Telegram jest niedostępna |
+    | `plugin-sdk/text-autolink-runtime` | Wykrywanie automatycznych linków odwołań do plików bez szerokiego barrela text-runtime |
+    | `plugin-sdk/approval-runtime` | Pomocniki zatwierdzania exec/Pluginów, konstruktory możliwości zatwierdzania, pomocniki uwierzytelniania/profili, natywne pomocniki routingu/środowiska uruchomieniowego i formatowanie ścieżek wyświetlania strukturalnych zatwierdzeń |
+    | `plugin-sdk/reply-runtime` | Współdzielone pomocniki środowiska uruchomieniowego przychodzących wiadomości/odpowiedzi, dzielenia na fragmenty, wysyłki, Heartbeat, planisty odpowiedzi |
+    | `plugin-sdk/reply-dispatch-runtime` | Wąskie pomocniki wysyłki/finalizacji odpowiedzi i etykiet konwersacji |
+    | `plugin-sdk/reply-history` | Współdzielone pomocniki i znaczniki historii odpowiedzi z krótkiego okna, takie jak `buildHistoryContext`, `HISTORY_CONTEXT_MARKER`, `recordPendingHistoryEntry` i `clearHistoryEntriesIfEnabled` |
     | `plugin-sdk/reply-reference` | `createReplyReferencePlanner` |
-    | `plugin-sdk/reply-chunking` | Wąskie helpery chunkingu tekstu/Markdown |
-    | `plugin-sdk/session-store-runtime` | Helpery ścieżek magazynu sesji + updated-at |
-    | `plugin-sdk/state-paths` | Helpery ścieżek katalogów stanu/OAuth |
-    | `plugin-sdk/routing` | Helpery routingu/kluczy sesji/powiązań kont, takie jak `resolveAgentRoute`, `buildAgentSessionKey` i `resolveDefaultAgentBoundAccountId` |
-    | `plugin-sdk/status-helpers` | Współdzielone helpery podsumowań statusu kanałów/kont, domyślne ustawienia runtime-state i helpery metadanych problemów |
-    | `plugin-sdk/target-resolver-runtime` | Współdzielone helpery resolvera celów |
-    | `plugin-sdk/string-normalization-runtime` | Helpery normalizacji slug/string |
-    | `plugin-sdk/request-url` | Wyodrębnia string URL z wejść podobnych do fetch/request |
-    | `plugin-sdk/run-command` | Runner poleceń z limitem czasu i znormalizowanymi wynikami stdout/stderr |
-    | `plugin-sdk/param-readers` | Wspólni czytelnicy parametrów narzędzi/CLI |
-    | `plugin-sdk/tool-payload` | Wyodrębnia znormalizowane payloady z obiektów wyników narzędzi |
-    | `plugin-sdk/tool-send` | Wyodrębnia kanoniczne pola celu wysyłania z argumentów narzędzia |
-    | `plugin-sdk/temp-path` | Współdzielone helpery ścieżek tymczasowych pobrań |
-    | `plugin-sdk/logging-core` | Helpery loggera podsystemów i redakcji |
-    | `plugin-sdk/markdown-table-runtime` | Helpery trybu i konwersji tabel Markdown |
-    | `plugin-sdk/json-store` | Małe helpery odczytu/zapisu stanu JSON |
-    | `plugin-sdk/file-lock` | Helpery re-entrant file-lock |
-    | `plugin-sdk/persistent-dedupe` | Helpery cache deduplikacji opartej na dysku |
-    | `plugin-sdk/acp-runtime` | Helpery runtime/sesji ACP i reply-dispatch |
-    | `plugin-sdk/acp-binding-resolve-runtime` | Read-only rozstrzyganie powiązań ACP bez importów uruchamiania cyklu życia |
-    | `plugin-sdk/agent-config-primitives` | Wąskie prymitywy schematu konfiguracji runtime agenta |
+    | `plugin-sdk/reply-chunking` | Wąskie pomocniki dzielenia tekstu/markdown na fragmenty |
+    | `plugin-sdk/session-store-runtime` | Pomocniki ścieżki magazynu sesji, klucza sesji, updated-at i mutacji magazynu |
+    | `plugin-sdk/cron-store-runtime` | Pomocniki ścieżki/wczytywania/zapisu magazynu Cron |
+    | `plugin-sdk/state-paths` | Pomocniki ścieżek katalogów stanu/OAuth |
+    | `plugin-sdk/routing` | Pomocniki routingu/klucza sesji/wiązania konta, takie jak `resolveAgentRoute`, `buildAgentSessionKey` i `resolveDefaultAgentBoundAccountId` |
+    | `plugin-sdk/status-helpers` | Współdzielone pomocniki podsumowania statusu kanału/konta, domyślne wartości stanu środowiska uruchomieniowego i pomocniki metadanych problemów |
+    | `plugin-sdk/target-resolver-runtime` | Współdzielone pomocniki resolvera celu |
+    | `plugin-sdk/string-normalization-runtime` | Pomocniki normalizacji slugów/ciągów znaków |
+    | `plugin-sdk/request-url` | Wyodrębnianie adresów URL jako ciągów znaków z danych wejściowych podobnych do fetch/request |
+    | `plugin-sdk/run-command` | Uruchamiacz poleceń z limitem czasu i znormalizowanymi wynikami stdout/stderr |
+    | `plugin-sdk/param-readers` | Wspólne czytniki parametrów narzędzi/CLI |
+    | `plugin-sdk/tool-payload` | Wyodrębnianie znormalizowanych ładunków z obiektów wyników narzędzi |
+    | `plugin-sdk/tool-send` | Wyodrębnianie kanonicznych pól celu wysyłki z argumentów narzędzia |
+    | `plugin-sdk/temp-path` | Współdzielone pomocniki ścieżek tymczasowych pobrań |
+    | `plugin-sdk/logging-core` | Pomocniki loggera podsystemu i redakcji |
+    | `plugin-sdk/markdown-table-runtime` | Pomocniki trybu tabel Markdown i konwersji |
+    | `plugin-sdk/model-session-runtime` | Pomocniki nadpisań modelu/sesji, takie jak `applyModelOverrideToSessionEntry` i `resolveAgentMaxConcurrent` |
+    | `plugin-sdk/talk-config-runtime` | Pomocniki rozwiązywania konfiguracji dostawcy rozmów |
+    | `plugin-sdk/json-store` | Małe pomocniki odczytu/zapisu stanu JSON |
+    | `plugin-sdk/file-lock` | Pomocniki re-entrant file-lock |
+    | `plugin-sdk/persistent-dedupe` | Pomocniki cache deduplikacji opartego na dysku |
+    | `plugin-sdk/acp-runtime` | Pomocniki środowiska uruchomieniowego/sesji ACP i wysyłki odpowiedzi |
+    | `plugin-sdk/acp-runtime-backend` | Lekkie pomocniki rejestracji backendu ACP i wysyłki odpowiedzi dla Pluginów ładowanych przy starcie |
+    | `plugin-sdk/acp-binding-resolve-runtime` | Rozwiązywanie powiązań ACP tylko do odczytu bez importów uruchamiania cyklu życia |
+    | `plugin-sdk/agent-config-primitives` | Wąskie prymitywy schematu konfiguracji środowiska uruchomieniowego agenta |
     | `plugin-sdk/boolean-param` | Luźny czytnik parametrów logicznych |
-    | `plugin-sdk/dangerous-name-runtime` | Helpery rozstrzygania dopasowań niebezpiecznych nazw |
-    | `plugin-sdk/device-bootstrap` | Helpery bootstrap urządzeń i tokenów Pairing |
-    | `plugin-sdk/extension-shared` | Współdzielone prymitywy helperów kanałów pasywnych, statusu i ambient proxy |
-    | `plugin-sdk/models-provider-runtime` | Helpery odpowiedzi polecenia `/models` / dostawcy |
-    | `plugin-sdk/skill-commands-runtime` | Helpery listowania poleceń Skills |
-    | `plugin-sdk/native-command-registry` | Helpery rejestru/budowy/serializacji natywnych poleceń |
-    | `plugin-sdk/agent-harness` | Eksperymentalna powierzchnia zaufanych Plugin dla niskopoziomowych harnessów agentów: typy harnessów, helpery steer/abort aktywnych uruchomień, helpery mostka narzędzi OpenClaw, helpery polityki narzędzia runtime-plan, klasyfikacja wyników terminalnych, helpery formatowania/szczegółów postępu narzędzi i utility wyników prób |
-    | `plugin-sdk/provider-zai-endpoint` | Helpery wykrywania endpointów Z.AI |
-    | `plugin-sdk/infra-runtime` | Helpery zdarzeń systemowych/Heartbeat |
-    | `plugin-sdk/collection-runtime` | Małe helpery cache o ograniczonym rozmiarze |
-    | `plugin-sdk/diagnostic-runtime` | Helpery flag i zdarzeń diagnostycznych |
-    | `plugin-sdk/error-runtime` | Helpery grafu błędów, formatowania, współdzielonej klasyfikacji błędów, `isApprovalNotFoundError` |
-    | `plugin-sdk/fetch-runtime` | Helpery opakowanego fetch, proxy i pinned lookup |
-    | `plugin-sdk/runtime-fetch` | Fetch runtime świadomy dispatcher bez importów proxy/guarded-fetch |
-    | `plugin-sdk/response-limit-runtime` | Czytnik treści odpowiedzi o ograniczonym rozmiarze bez szerokiej powierzchni media runtime |
-    | `plugin-sdk/session-binding-runtime` | Bieżący stan powiązania rozmowy bez routingu skonfigurowanych powiązań lub magazynów Pairing |
-    | `plugin-sdk/session-store-runtime` | Helpery odczytu session-store bez szerokich importów zapisów/utrzymania konfiguracji |
-    | `plugin-sdk/context-visibility-runtime` | Rozstrzyganie widoczności kontekstu i filtrowanie kontekstu uzupełniającego bez szerokich importów config/security |
-    | `plugin-sdk/string-coerce-runtime` | Wąskie helpery wymuszania i normalizacji prymitywnych rekordów/string bez importów markdown/logging |
-    | `plugin-sdk/host-runtime` | Helpery normalizacji hostname i hostów SCP |
-    | `plugin-sdk/retry-runtime` | Helpery konfiguracji retry i runnera retry |
-    | `plugin-sdk/agent-runtime` | Helpery katalogu/tożsamości/workspace agenta |
-    | `plugin-sdk/directory-runtime` | Zapytania/dedup katalogów wspierane konfiguracją |
+    | `plugin-sdk/dangerous-name-runtime` | Pomocniki rozwiązywania dopasowywania niebezpiecznych nazw |
+    | `plugin-sdk/device-bootstrap` | Pomocniki bootstrapu urządzenia i tokenów parowania |
+    | `plugin-sdk/extension-shared` | Współdzielone prymitywy pomocnicze pasywnego kanału, statusu i ambient proxy |
+    | `plugin-sdk/models-provider-runtime` | Pomocniki odpowiedzi polecenia/dostawcy `/models` |
+    | `plugin-sdk/skill-commands-runtime` | Pomocniki listowania poleceń Skills |
+    | `plugin-sdk/native-command-registry` | Pomocniki rejestru/budowania/serializacji natywnych poleceń |
+    | `plugin-sdk/agent-harness` | Eksperymentalna powierzchnia zaufanych Pluginów dla niskopoziomowych harnessów agentów: typy harnessów, pomocniki sterowania/przerywania aktywnego uruchomienia, pomocniki mostu narzędzi OpenClaw, pomocniki polityki narzędzi planu środowiska uruchomieniowego, klasyfikacja wyniku terminala, pomocniki formatowania/szczegółów postępu narzędzi i narzędzia wyników prób |
+    | `plugin-sdk/provider-zai-endpoint` | Pomocniki wykrywania punktów końcowych Z.AI |
+    | `plugin-sdk/async-lock-runtime` | Pomocnik lokalnej dla procesu blokady asynchronicznej dla małych plików stanu środowiska uruchomieniowego |
+    | `plugin-sdk/channel-activity-runtime` | Pomocnik telemetrii aktywności kanału |
+    | `plugin-sdk/concurrency-runtime` | Pomocnik ograniczonej współbieżności zadań asynchronicznych |
+    | `plugin-sdk/dedupe-runtime` | Pomocniki cache deduplikacji w pamięci |
+    | `plugin-sdk/delivery-queue-runtime` | Pomocnik opróżniania oczekujących dostarczeń wychodzących |
+    | `plugin-sdk/file-access-runtime` | Pomocniki bezpiecznych ścieżek plików lokalnych i źródeł multimediów |
+    | `plugin-sdk/heartbeat-runtime` | Pomocniki zdarzeń i widoczności Heartbeat |
+    | `plugin-sdk/number-runtime` | Pomocnik koercji numerycznej |
+    | `plugin-sdk/secure-random-runtime` | Pomocniki bezpiecznych tokenów/UUID |
+    | `plugin-sdk/system-event-runtime` | Pomocniki kolejki zdarzeń systemowych |
+    | `plugin-sdk/transport-ready-runtime` | Pomocnik oczekiwania na gotowość transportu |
+    | `plugin-sdk/infra-runtime` | Przestarzały shim zgodności; użyj powyższych wyspecjalizowanych podścieżek środowiska uruchomieniowego |
+    | `plugin-sdk/collection-runtime` | Pomocniki małego ograniczonego cache |
+    | `plugin-sdk/diagnostic-runtime` | Pomocniki flag diagnostycznych, zdarzeń i kontekstu śledzenia |
+    | `plugin-sdk/error-runtime` | Graf błędów, formatowanie, współdzielone pomocniki klasyfikacji błędów, `isApprovalNotFoundError` |
+    | `plugin-sdk/fetch-runtime` | Opakowany fetch, proxy, opcja EnvHttpProxyAgent i pomocniki przypiętego wyszukiwania |
+    | `plugin-sdk/runtime-fetch` | Fetch środowiska uruchomieniowego świadomy dispatchera bez importów proxy/guarded-fetch |
+    | `plugin-sdk/response-limit-runtime` | Ograniczony czytnik treści odpowiedzi bez szerokiej powierzchni środowiska uruchomieniowego multimediów |
+    | `plugin-sdk/session-binding-runtime` | Bieżący stan powiązania konwersacji bez skonfigurowanego routingu powiązań lub magazynów parowania |
+    | `plugin-sdk/session-store-runtime` | Pomocniki magazynu sesji bez szerokich importów zapisów/utrzymania konfiguracji |
+    | `plugin-sdk/context-visibility-runtime` | Rozwiązywanie widoczności kontekstu i filtrowanie kontekstu uzupełniającego bez szerokich importów konfiguracji/zabezpieczeń |
+    | `plugin-sdk/string-coerce-runtime` | Wąskie pomocniki koercji i normalizacji prymitywnych rekordów/ciągów znaków bez importów markdown/rejestrowania |
+    | `plugin-sdk/host-runtime` | Pomocniki normalizacji nazw hostów i hostów SCP |
+    | `plugin-sdk/retry-runtime` | Pomocniki konfiguracji ponawiania i uruchamiacza ponowień |
+    | `plugin-sdk/agent-runtime` | Pomocniki katalogu/tożsamości/przestrzeni roboczej agenta |
+    | `plugin-sdk/directory-runtime` | Zapytanie/deduplikacja katalogu opartego na konfiguracji |
     | `plugin-sdk/keyed-async-queue` | `KeyedAsyncQueue` |
   </Accordion>
 
-  <Accordion title="Ścieżki podrzędne możliwości i testów">
+  <Accordion title="Capability and testing subpaths">
     | Ścieżka podrzędna | Kluczowe eksporty |
     | --- | --- |
-    | `plugin-sdk/media-runtime` | Współdzielone helpery fetch/transform/store mediów oraz konstruktory payloadów mediów |
-    | `plugin-sdk/media-store` | Wąskie helpery media store, takie jak `saveMediaBuffer` |
-    | `plugin-sdk/media-generation-runtime` | Współdzielone helpery failover generowania mediów, wybór kandydatów i komunikaty o brakujących modelach |
-    | `plugin-sdk/media-understanding` | Typy dostawców rozumienia mediów oraz eksporty helperów obrazu/audio skierowane do dostawców |
-    | `plugin-sdk/text-runtime` | Współdzielone helpery tekstu/Markdown/logowania, takie jak usuwanie tekstu widocznego dla asystenta, helpery renderowania/chunkingu/tabel Markdown, helpery redakcji, helpery tagów dyrektyw i utility bezpiecznego tekstu |
-    | `plugin-sdk/text-chunking` | Helper chunkingu tekstu wychodzącego |
-    | `plugin-sdk/speech` | Typy dostawców mowy oraz eksporty helperów dyrektyw, rejestru, walidacji i mowy skierowane do dostawców |
-    | `plugin-sdk/speech-core` | Współdzielone typy dostawców mowy, rejestr, dyrektywy, normalizacja i helpery mowy |
-    | `plugin-sdk/realtime-transcription` | Typy dostawców transkrypcji realtime, helpery rejestru i współdzielony helper sesji WebSocket |
-    | `plugin-sdk/realtime-voice` | Typy dostawców realtime voice i helpery rejestru |
-    | `plugin-sdk/image-generation` | Typy dostawców generowania obrazów |
-    | `plugin-sdk/image-generation-core` | Współdzielone typy, failover, auth i helpery rejestru generowania obrazów |
+    | `plugin-sdk/media-runtime` | Wspólne pomocniki do pobierania/przekształcania/przechowywania multimediów, wykrywanie wymiarów wideo oparte na ffprobe oraz konstruktory ładunków multimedialnych |
+    | `plugin-sdk/media-store` | Wąskie pomocniki magazynu multimediów, takie jak `saveMediaBuffer` |
+    | `plugin-sdk/media-generation-runtime` | Wspólne pomocniki przełączania awaryjnego generowania multimediów, wybór kandydatów i komunikaty o brakującym modelu |
+    | `plugin-sdk/media-understanding` | Typy dostawców rozumienia multimediów oraz eksporty pomocników obrazu/audio dla dostawców |
+    | `plugin-sdk/text-runtime` | Wspólne pomocniki tekstu/Markdown/logowania, takie jak usuwanie tekstu widocznego dla asystenta, pomocniki renderowania/dzielenia Markdown/tabel, pomocniki redakcji, pomocniki tagów dyrektyw i narzędzia bezpiecznego tekstu |
+    | `plugin-sdk/text-chunking` | Pomocnik dzielenia tekstu wychodzącego |
+    | `plugin-sdk/speech` | Typy dostawców mowy oraz eksporty dyrektyw, rejestru, walidacji, konstruktora TTS zgodnego z OpenAI i pomocników mowy dla dostawców |
+    | `plugin-sdk/speech-core` | Wspólne typy dostawców mowy, rejestr, dyrektywa, normalizacja i eksporty pomocników mowy |
+    | `plugin-sdk/realtime-transcription` | Typy dostawców transkrypcji w czasie rzeczywistym, pomocniki rejestru i wspólny pomocnik sesji WebSocket |
+    | `plugin-sdk/realtime-voice` | Typy dostawców głosu w czasie rzeczywistym i pomocniki rejestru |
+    | `plugin-sdk/image-generation` | Typy dostawców generowania obrazów oraz pomocniki zasobów obrazów/adresów URL danych i konstruktor dostawcy obrazów zgodny z OpenAI |
+    | `plugin-sdk/image-generation-core` | Wspólne typy generowania obrazów, przełączanie awaryjne, uwierzytelnianie i pomocniki rejestru |
     | `plugin-sdk/music-generation` | Typy dostawców/żądań/wyników generowania muzyki |
-    | `plugin-sdk/music-generation-core` | Współdzielone typy generowania muzyki, helpery failover, wyszukiwanie dostawców i parsowanie referencji modeli |
+    | `plugin-sdk/music-generation-core` | Wspólne typy generowania muzyki, pomocniki przełączania awaryjnego, wyszukiwanie dostawcy i parsowanie odwołań do modeli |
     | `plugin-sdk/video-generation` | Typy dostawców/żądań/wyników generowania wideo |
-    | `plugin-sdk/video-generation-core` | Współdzielone typy generowania wideo, helpery failover, wyszukiwanie dostawców i parsowanie referencji modeli |
-    | `plugin-sdk/webhook-targets` | Rejestr celów Webhook i helpery instalacji tras |
-    | `plugin-sdk/webhook-path` | Helpery normalizacji ścieżek Webhook |
-    | `plugin-sdk/web-media` | Współdzielone helpery ładowania zdalnych/lokalnych mediów |
-    | `plugin-sdk/zod` | Reeksportowane `zod` dla konsumentów SDK Plugin |
-    | `plugin-sdk/testing` | `installCommonResolveTargetErrorCases`, `shouldAckReaction` |
+    | `plugin-sdk/video-generation-core` | Wspólne typy generowania wideo, pomocniki przełączania awaryjnego, wyszukiwanie dostawcy i parsowanie odwołań do modeli |
+    | `plugin-sdk/webhook-targets` | Rejestr celów Webhook i pomocniki instalacji tras |
+    | `plugin-sdk/webhook-path` | Pomocniki normalizacji ścieżek Webhook |
+    | `plugin-sdk/web-media` | Wspólne pomocniki ładowania multimediów zdalnych/lokalnych |
+    | `plugin-sdk/zod` | Ponownie wyeksportowany `zod` dla użytkowników SDK Plugin |
+    | `plugin-sdk/testing` | Szeroki barrel zgodności dla starszych testów plugin. Nowe testy pluginów powinny zamiast tego importować wyspecjalizowane ścieżki podrzędne SDK, takie jak `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/test-env` lub `plugin-sdk/test-fixtures` |
+    | `plugin-sdk/plugin-test-api` | Minimalny pomocnik `createTestPluginApi` do bezpośrednich testów jednostkowych rejestracji plugin bez importowania mostków pomocników testowych repozytorium |
+    | `plugin-sdk/agent-runtime-test-contracts` | Natywne fixture kontraktów adaptera środowiska wykonawczego agenta do testów uwierzytelniania, dostarczania, fallbacku, hooków narzędzi, nakładki promptu, schematu i projekcji transkryptu |
+    | `plugin-sdk/channel-test-helpers` | Pomocniki testowe zorientowane na kanały dla ogólnych kontraktów akcji/konfiguracji/statusu, asercji katalogów, cyklu życia uruchamiania konta, wątkowania konfiguracji wysyłania, mocków środowiska wykonawczego, problemów statusu, dostarczania wychodzącego i rejestracji hooków |
+    | `plugin-sdk/channel-target-testing` | Wspólny zestaw przypadków błędów rozwiązywania celów dla testów kanałów |
+    | `plugin-sdk/plugin-test-contracts` | Pomocniki kontraktów pakietu plugin, rejestracji, artefaktu publicznego, bezpośredniego importu, API środowiska wykonawczego i efektów ubocznych importu |
+    | `plugin-sdk/provider-test-contracts` | Pomocniki kontraktów środowiska wykonawczego dostawcy, uwierzytelniania, wykrywania, onboardingu, katalogu, kreatora, możliwości multimedialnych, polityki odtwarzania, dźwięku na żywo STT w czasie rzeczywistym, wyszukiwania/pobierania z sieci i strumienia |
+    | `plugin-sdk/provider-http-test-mocks` | Opcjonalne mocki HTTP/uwierzytelniania Vitest dla testów dostawców, które ćwiczą `plugin-sdk/provider-http` |
+    | `plugin-sdk/test-fixtures` | Ogólne fixture przechwytywania środowiska wykonawczego CLI, kontekstu piaskownicy, zapisywania umiejętności, wiadomości agenta, zdarzeń systemowych, przeładowania modułu, ścieżki dołączonego plugin, tekstu terminala, dzielenia na fragmenty, tokenu uwierzytelniającego i typowanych przypadków |
+    | `plugin-sdk/test-node-mocks` | Wyspecjalizowane pomocniki mocków wbudowanych modułów Node do użycia wewnątrz fabryk Vitest `vi.mock("node:*")` |
   </Accordion>
 
-  <Accordion title="Ścieżki podrzędne pamięci">
+  <Accordion title="Memory subpaths">
     | Ścieżka podrzędna | Kluczowe eksporty |
     | --- | --- |
-    | `plugin-sdk/memory-core` | Dołączona powierzchnia helperów memory-core dla helperów manager/config/file/CLI |
-    | `plugin-sdk/memory-core-engine-runtime` | Fasada runtime indeksowania/wyszukiwania pamięci |
-    | `plugin-sdk/memory-core-host-engine-foundation` | Eksporty foundation engine hosta pamięci |
-    | `plugin-sdk/memory-core-host-engine-embeddings` | Kontrakty embeddingów hosta pamięci, dostęp do rejestru, lokalny dostawca i generyczne helpery batch/remote |
-    | `plugin-sdk/memory-core-host-engine-qmd` | Eksporty QMD engine hosta pamięci |
-    | `plugin-sdk/memory-core-host-engine-storage` | Eksporty storage engine hosta pamięci |
-    | `plugin-sdk/memory-core-host-multimodal` | Helpery multimodal hosta pamięci |
-    | `plugin-sdk/memory-core-host-query` | Helpery zapytań hosta pamięci |
-    | `plugin-sdk/memory-core-host-secret` | Helpery sekretów hosta pamięci |
-    | `plugin-sdk/memory-core-host-events` | Helpery dziennika zdarzeń hosta pamięci |
-    | `plugin-sdk/memory-core-host-status` | Helpery statusu hosta pamięci |
-    | `plugin-sdk/memory-core-host-runtime-cli` | Helpery CLI runtime hosta pamięci |
-    | `plugin-sdk/memory-core-host-runtime-core` | Podstawowe helpery runtime hosta pamięci |
-    | `plugin-sdk/memory-core-host-runtime-files` | Helpery plików/runtime hosta pamięci |
-    | `plugin-sdk/memory-host-core` | Neutralny względem dostawcy alias dla podstawowych helperów runtime hosta pamięci |
-    | `plugin-sdk/memory-host-events` | Neutralny względem dostawcy alias dla helperów dziennika zdarzeń hosta pamięci |
-    | `plugin-sdk/memory-host-files` | Neutralny względem dostawcy alias dla helperów plików/runtime hosta pamięci |
-    | `plugin-sdk/memory-host-markdown` | Współdzielone helpery managed-markdown dla Plugin powiązanych z pamięcią |
-    | `plugin-sdk/memory-host-search` | Fasada runtime Active Memory dla dostępu do search-manager |
-    | `plugin-sdk/memory-host-status` | Neutralny względem dostawcy alias dla helperów statusu hosta pamięci |
-    | `plugin-sdk/memory-lancedb` | Dołączona powierzchnia helperów memory-lancedb |
+    | `plugin-sdk/memory-core` | Dołączona powierzchnia pomocnicza memory-core dla pomocników menedżera/konfiguracji/plików/CLI |
+    | `plugin-sdk/memory-core-engine-runtime` | Fasada środowiska wykonawczego indeksu/wyszukiwania pamięci |
+    | `plugin-sdk/memory-core-host-engine-foundation` | Eksporty silnika fundamentu hosta pamięci |
+    | `plugin-sdk/memory-core-host-engine-embeddings` | Kontrakty osadzania hosta pamięci, dostęp do rejestru, dostawca lokalny i ogólne pomocniki wsadowe/zdalne |
+    | `plugin-sdk/memory-core-host-engine-qmd` | Eksporty silnika QMD hosta pamięci |
+    | `plugin-sdk/memory-core-host-engine-storage` | Eksporty silnika magazynu hosta pamięci |
+    | `plugin-sdk/memory-core-host-multimodal` | Pomocniki multimodalne hosta pamięci |
+    | `plugin-sdk/memory-core-host-query` | Pomocniki zapytań hosta pamięci |
+    | `plugin-sdk/memory-core-host-secret` | Pomocniki sekretów hosta pamięci |
+    | `plugin-sdk/memory-core-host-events` | Pomocniki dziennika zdarzeń hosta pamięci |
+    | `plugin-sdk/memory-core-host-status` | Pomocniki statusu hosta pamięci |
+    | `plugin-sdk/memory-core-host-runtime-cli` | Pomocniki środowiska wykonawczego CLI hosta pamięci |
+    | `plugin-sdk/memory-core-host-runtime-core` | Pomocniki głównego środowiska wykonawczego hosta pamięci |
+    | `plugin-sdk/memory-core-host-runtime-files` | Pomocniki plików/środowiska wykonawczego hosta pamięci |
+    | `plugin-sdk/memory-host-core` | Neutralny względem dostawcy alias pomocników głównego środowiska wykonawczego hosta pamięci |
+    | `plugin-sdk/memory-host-events` | Neutralny względem dostawcy alias pomocników dziennika zdarzeń hosta pamięci |
+    | `plugin-sdk/memory-host-files` | Neutralny względem dostawcy alias pomocników plików/środowiska wykonawczego hosta pamięci |
+    | `plugin-sdk/memory-host-markdown` | Wspólne pomocniki zarządzanego Markdown dla pluginów sąsiadujących z pamięcią |
+    | `plugin-sdk/memory-host-search` | Fasada środowiska wykonawczego Active Memory dla dostępu do menedżera wyszukiwania |
+    | `plugin-sdk/memory-host-status` | Neutralny względem dostawcy alias pomocników statusu hosta pamięci |
   </Accordion>
 
-  <Accordion title="Zastrzeżone ścieżki podrzędne dołączonych helperów">
-    | Rodzina | Bieżące ścieżki podrzędne | Zamierzone użycie |
-    | --- | --- | --- |
-    | Browser | `plugin-sdk/browser-cdp`, `plugin-sdk/browser-config-runtime`, `plugin-sdk/browser-config-support`, `plugin-sdk/browser-control-auth`, `plugin-sdk/browser-node-runtime`, `plugin-sdk/browser-profiles`, `plugin-sdk/browser-security-runtime`, `plugin-sdk/browser-setup-tools`, `plugin-sdk/browser-support` | Helpery wsparcia dołączonego Plugin przeglądarki. `browser-profiles` eksportuje `resolveBrowserConfig`, `resolveProfile`, `ResolvedBrowserConfig`, `ResolvedBrowserProfile` i `ResolvedBrowserTabCleanupConfig` dla znormalizowanego kształtu `browser.tabCleanup`. `browser-support` pozostaje compatibility barrel. |
-    | Matrix | `plugin-sdk/matrix`, `plugin-sdk/matrix-helper`, `plugin-sdk/matrix-runtime-heavy`, `plugin-sdk/matrix-runtime-shared`, `plugin-sdk/matrix-runtime-surface`, `plugin-sdk/matrix-surface`, `plugin-sdk/matrix-thread-bindings` | Dołączona powierzchnia helperów/runtime Matrix |
-    | Line | `plugin-sdk/line`, `plugin-sdk/line-core`, `plugin-sdk/line-runtime`, `plugin-sdk/line-surface` | Dołączona powierzchnia helperów/runtime LINE |
-    | IRC | `plugin-sdk/irc`, `plugin-sdk/irc-surface` | Dołączona powierzchnia helperów IRC |
-    | Helpery specyficzne dla kanału | `plugin-sdk/googlechat`, `plugin-sdk/zalouser`, `plugin-sdk/bluebubbles`, `plugin-sdk/bluebubbles-policy`, `plugin-sdk/mattermost`, `plugin-sdk/mattermost-policy`, `plugin-sdk/feishu-conversation`, `plugin-sdk/msteams`, `plugin-sdk/nextcloud-talk`, `plugin-sdk/nostr`, `plugin-sdk/tlon`, `plugin-sdk/twitch` | Dołączone seams zgodności/helperów kanałowych |
-    | Helpery specyficzne dla auth/Plugin | `plugin-sdk/github-copilot-login`, `plugin-sdk/github-copilot-token`, `plugin-sdk/diagnostics-otel`, `plugin-sdk/diagnostics-prometheus`, `plugin-sdk/diffs`, `plugin-sdk/llm-task`, `plugin-sdk/thread-ownership`, `plugin-sdk/voice-call` | Dołączone seams helperów funkcji/Plugin; `plugin-sdk/github-copilot-token` obecnie eksportuje `DEFAULT_COPILOT_API_BASE_URL`, `deriveCopilotApiBaseUrlFromToken` i `resolveCopilotApiToken` |
+  <Accordion title="Reserved bundled-helper subpaths">
+    Obecnie nie ma zarezerwowanych ścieżek podrzędnych SDK z dołączonymi pomocnikami. Pomocniki specyficzne dla właściciela
+    znajdują się w pakiecie plugin będącego właścicielem, a kontrakty hosta wielokrotnego użytku
+    używają ogólnych ścieżek podrzędnych SDK, takich jak `plugin-sdk/gateway-runtime`,
+    `plugin-sdk/security-runtime` i `plugin-sdk/plugin-config-runtime`.
   </Accordion>
 </AccordionGroup>
 
 ## Powiązane
 
-- [Plugin SDK overview](/pl/plugins/sdk-overview)
-- [Plugin SDK setup](/pl/plugins/sdk-setup)
-- [Building plugins](/pl/plugins/building-plugins)
+- [Przegląd SDK Plugin](/pl/plugins/sdk-overview)
+- [Konfiguracja SDK Plugin](/pl/plugins/sdk-setup)
+- [Tworzenie pluginów](/pl/plugins/building-plugins)

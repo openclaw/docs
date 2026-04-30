@@ -1,48 +1,44 @@
 ---
 read_when:
     - Aktualizowanie OpenClaw
-    - Coś psuje się po aktualizacji
-summary: Bezpieczna aktualizacja OpenClaw (instalacja globalna lub ze źródła) oraz strategia wycofania zmian
+    - Coś przestaje działać po aktualizacji
+summary: Bezpieczne aktualizowanie OpenClaw (instalacja globalna lub ze źródeł) oraz strategia wycofywania
 title: Aktualizacja
 x-i18n:
-    generated_at: "2026-04-26T11:34:49Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:02:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e40ff4d2db5f0b75107894d2b4959f34f3077acb55045230fb104b95795d9149
+    source_hash: 17d4839002b153976e014e0eefcb44f92dcb9bb45b81bf30efb1e8e8c0f30ec3
     source_path: install/updating.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aktualizuj OpenClaw.
+Dbaj o aktualność OpenClaw.
 
 ## Zalecane: `openclaw update`
 
-Najszybszy sposób aktualizacji. Wykrywa typ instalacji (npm lub git), pobiera najnowszą wersję, uruchamia `openclaw doctor` i restartuje gateway.
+Najszybszy sposób aktualizacji. Wykrywa typ instalacji (npm albo git), pobiera najnowszą wersję, uruchamia `openclaw doctor` i ponownie uruchamia Gateway.
 
 ```bash
 openclaw update
 ```
 
-Aby przełączyć kanały lub wskazać konkretną wersję:
+Aby przełączyć kanały albo wskazać konkretną wersję:
 
 ```bash
 openclaw update --channel beta
 openclaw update --channel dev
 openclaw update --tag main
-openclaw update --dry-run   # podgląd bez zastosowania
+openclaw update --dry-run   # podgląd bez stosowania zmian
 ```
 
-`--channel beta` preferuje betę, ale runtime przechodzi awaryjnie do stable/latest, gdy
-tag beta nie istnieje lub jest starszy od najnowszego stabilnego wydania. Użyj `--tag beta`,
-jeśli chcesz użyć surowego npm dist-tag beta do jednorazowej aktualizacji pakietu.
+`--channel beta` preferuje wersję beta, ale środowisko runtime wraca do stable/latest, gdy tag beta jest brakujący albo starszy niż najnowsze wydanie stabilne. Użyj `--tag beta`, jeśli chcesz surowego tagu dist-tag npm beta dla jednorazowej aktualizacji pakietu.
 
-Semantykę kanałów znajdziesz w [Kanały rozwojowe](/pl/install/development-channels).
+Zobacz [Kanały rozwojowe](/pl/install/development-channels), aby poznać semantykę kanałów.
 
-## Przełączanie między instalacją npm a git
+## Przełączanie między instalacjami npm i git
 
-Użyj kanałów, gdy chcesz zmienić typ instalacji. Aktualizator zachowuje Twój
-stan, konfigurację, poświadczenia i workspace w `~/.openclaw`; zmienia tylko to,
-której instalacji kodu OpenClaw używają CLI i gateway.
+Używaj kanałów, gdy chcesz zmienić typ instalacji. Aktualizator zachowuje Twój stan, konfigurację, dane uwierzytelniające i przestrzeń roboczą w `~/.openclaw`; zmienia tylko to, z której instalacji kodu OpenClaw korzystają CLI i Gateway.
 
 ```bash
 # instalacja pakietu npm -> edytowalny checkout git
@@ -52,38 +48,42 @@ openclaw update --channel dev
 openclaw update --channel stable
 ```
 
-Najpierw uruchom z `--dry-run`, aby zobaczyć dokładny podgląd przełączenia trybu instalacji:
+Najpierw uruchom z `--dry-run`, aby podejrzeć dokładne przełączenie trybu instalacji:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-Kanał `dev` zapewnia checkout git, buduje go i instaluje globalne CLI
-z tego checkoutu. Kanały `stable` i `beta` używają instalacji pakietowych. Jeśli
-gateway jest już zainstalowany, `openclaw update` odświeża metadane usługi
-i restartuje ją, chyba że przekażesz `--no-restart`.
+Kanał `dev` zapewnia checkout git, buduje go i instaluje globalne CLI z tego checkoutu. Kanały `stable` i `beta` używają instalacji pakietowych. Jeśli Gateway jest już zainstalowany, `openclaw update` odświeża metadane usługi i uruchamia ją ponownie, chyba że przekażesz `--no-restart`.
 
-## Alternatywa: uruchom ponownie instalator
+## Alternatywa: ponownie uruchom instalator
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-Dodaj `--no-onboard`, aby pominąć onboarding. Aby wymusić konkretny typ instalacji przez
-instalator, przekaż `--install-method git --no-onboard` lub
-`--install-method npm --no-onboard`.
+Dodaj `--no-onboard`, aby pominąć wdrażanie. Aby wymusić konkretny typ instalacji przez instalator, przekaż `--install-method git --no-onboard` albo `--install-method npm --no-onboard`.
 
-## Alternatywa: ręczne npm, pnpm lub bun
+Jeśli `openclaw update` zawiedzie po fazie instalacji pakietu npm, ponownie uruchom instalator. Instalator nie wywołuje starego aktualizatora; uruchamia bezpośrednio globalną instalację pakietu i może odzyskać częściowo zaktualizowaną instalację npm.
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
+```
+
+Aby przypiąć odzyskiwanie do konkretnej wersji albo tagu dist-tag, dodaj `--version`:
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
+```
+
+## Alternatywa: ręcznie przez npm, pnpm albo bun
 
 ```bash
 npm i -g openclaw@latest
 ```
 
-Gdy `openclaw update` zarządza globalną instalacją npm, najpierw uruchamia zwykłe
-polecenie instalacji globalnej. Jeśli to polecenie zakończy się niepowodzeniem, OpenClaw
-ponawia próbę raz z `--omit=optional`. To ponowienie pomaga na hostach, gdzie natywne
-opcjonalne zależności nie mogą się skompilować, zachowując widoczność pierwotnego błędu, jeśli fallback również się nie powiedzie.
+Gdy `openclaw update` zarządza globalną instalacją npm, najpierw instaluje cel w tymczasowym prefiksie npm, weryfikuje spis spakowanego `dist`, a następnie podmienia czyste drzewo pakietu do prawdziwego prefiksu globalnego. Zapobiega to nakładaniu przez npm nowego pakietu na przestarzałe pliki ze starego pakietu. Jeśli polecenie instalacji zawiedzie, OpenClaw ponawia próbę raz z `--omit=optional`. Ta ponowna próba pomaga hostom, na których natywne zależności opcjonalne nie mogą się skompilować, jednocześnie zachowując widoczność pierwotnego błędu, jeśli obejście także zawiedzie.
 
 ```bash
 pnpm add -g openclaw@latest
@@ -93,52 +93,47 @@ pnpm add -g openclaw@latest
 bun add -g openclaw@latest
 ```
 
-### Globalne instalacje npm i zależności runtime
+### Zaawansowane tematy instalacji npm
 
-OpenClaw traktuje spakowane instalacje globalne jako tylko do odczytu w runtime, nawet gdy
-globalny katalog pakietu jest zapisywalny dla bieżącego użytkownika. Zależności runtime
-dołączonych Pluginów są przygotowywane w zapisywalnym katalogu runtime zamiast modyfikować
-drzewo pakietu. Dzięki temu `openclaw update` nie ściga się z działającym gateway ani
-lokalnym agentem, który w tym samym czasie naprawia zależności Pluginów.
+<AccordionGroup>
+  <Accordion title="Drzewo pakietów tylko do odczytu">
+    OpenClaw traktuje spakowane globalne instalacje jako tylko do odczytu w czasie runtime, nawet gdy globalny katalog pakietu jest zapisywalny przez bieżącego użytkownika. Zależności runtime dołączonych Pluginów są umieszczane w zapisywalnym katalogu runtime zamiast modyfikować drzewo pakietu. Dzięki temu `openclaw update` nie ściga się z działającym Gateway ani lokalnym agentem, który naprawia zależności Pluginów podczas tej samej instalacji.
 
-Niektóre konfiguracje npm w Linux instalują pakiety globalne w katalogach należących do roota, takich
-jak `/usr/lib/node_modules/openclaw`. OpenClaw obsługuje ten układ przez tę samą zewnętrzną ścieżkę stagingu.
+    Niektóre konfiguracje npm w Linuksie instalują pakiety globalne w katalogach należących do root, takich jak `/usr/lib/node_modules/openclaw`. OpenClaw obsługuje taki układ przez tę samą zewnętrzną ścieżkę stagingu.
 
-Dla utwardzonych jednostek systemd ustaw zapisywalny katalog stage, który jest uwzględniony w `ReadWritePaths`:
+  </Accordion>
+  <Accordion title="Utwardzone jednostki systemd">
+    Ustaw zapisywalny katalog stagingu, który jest uwzględniony w `ReadWritePaths`:
 
-```ini
-Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
-ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
-```
+    ```ini
+    Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
+    ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
+    ```
 
-Jeśli `OPENCLAW_PLUGIN_STAGE_DIR` nie jest ustawione, OpenClaw używa `$STATE_DIRECTORY`, gdy
-systemd go udostępnia, a następnie przechodzi awaryjnie do `~/.openclaw/plugin-runtime-deps`.
-Krok naprawy traktuje ten stage jako lokalny root pakietów należący do OpenClaw i
-ignoruje ustawienia prefix/global npm użytkownika, dzięki czemu konfiguracja npm dla instalacji globalnych nie
-przekierowuje zależności dołączonych Pluginów do `~/node_modules` ani do globalnego drzewa pakietów.
+    `OPENCLAW_PLUGIN_STAGE_DIR` przyjmuje także listę ścieżek. OpenClaw rozwiązuje zależności runtime dołączonych Pluginów od lewej do prawej po wymienionych katalogach głównych, traktuje wcześniejsze katalogi główne jako tylko do odczytu, wstępnie zainstalowane warstwy, i instaluje albo naprawia wyłącznie w końcowym zapisywalnym katalogu głównym:
 
-Przed aktualizacjami pakietów i naprawami zależności runtime dołączonych Pluginów OpenClaw wykonuje
-kontrolę wolnego miejsca na dysku dla docelowego wolumenu w trybie best-effort. Mała ilość miejsca generuje ostrzeżenie
-z badaną ścieżką, ale nie blokuje aktualizacji, ponieważ kwoty systemu plików,
-migawki i wolumeny sieciowe mogą się zmienić po sprawdzeniu. Rzeczywista instalacja npm,
-kopiowanie i weryfikacja po instalacji pozostają autorytatywne.
+    ```ini
+    Environment=OPENCLAW_PLUGIN_STAGE_DIR=/opt/openclaw/plugin-runtime-deps:/var/lib/openclaw/plugin-runtime-deps
+    ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
+    ```
 
-### Zależności runtime dołączonych Pluginów
+    Jeśli `OPENCLAW_PLUGIN_STAGE_DIR` nie jest ustawione, OpenClaw używa `$STATE_DIRECTORY`, gdy systemd je udostępnia, a następnie wraca do `~/.openclaw/plugin-runtime-deps`. Krok naprawy traktuje ten staging jako lokalny katalog główny pakietów należący do OpenClaw i ignoruje prefiks npm użytkownika oraz ustawienia globalne, więc konfiguracja npm dla instalacji globalnej nie przekierowuje zależności dołączonych Pluginów do `~/node_modules` ani do globalnego drzewa pakietu.
 
-Instalacje pakietowe utrzymują zależności runtime dołączonych Pluginów poza drzewem pakietu tylko do odczytu. Przy starcie i podczas `openclaw doctor --fix` OpenClaw naprawia
-zależności runtime tylko dla dołączonych Pluginów, które są aktywne w konfiguracji, aktywne
-przez starszą konfigurację kanału lub włączone przez domyślny manifest bundle.
-Sam utrwalony stan auth kanału nie wyzwala naprawy zależności runtime
-przy starcie Gateway.
+  </Accordion>
+  <Accordion title="Wstępne sprawdzenie miejsca na dysku">
+    Przed aktualizacjami pakietów i naprawami dołączonych zależności runtime OpenClaw próbuje wykonać najlepsze możliwe sprawdzenie miejsca na dysku dla woluminu docelowego. Mała ilość miejsca generuje ostrzeżenie ze sprawdzoną ścieżką, ale nie blokuje aktualizacji, ponieważ limity systemu plików, migawki i woluminy sieciowe mogą zmienić się po sprawdzeniu. Rzeczywista instalacja npm, kopiowanie i weryfikacja po instalacji pozostają rozstrzygające.
+  </Accordion>
+  <Accordion title="Zależności runtime dołączonych Pluginów">
+    Instalacje pakietowe utrzymują zależności runtime dołączonych Pluginów poza drzewem pakietu tylko do odczytu. Przy uruchomieniu i podczas `openclaw doctor --fix` OpenClaw naprawia zależności runtime tylko dla dołączonych Pluginów, które są aktywne w konfiguracji, aktywne przez starszą konfigurację kanału albo włączone przez domyślne ustawienie ich dołączonego manifestu. Sam utrwalony stan uwierzytelnienia kanału nie wyzwala naprawy zależności runtime podczas startu Gateway.
 
-Jawne wyłączenie ma pierwszeństwo. Wyłączony Plugin lub kanał nie otrzymuje
-naprawy zależności runtime tylko dlatego, że istnieje w pakiecie. Zewnętrzne
-Pluginy i niestandardowe ścieżki ładowania nadal używają `openclaw plugins install` lub
-`openclaw plugins update`.
+    Jawne wyłączenie ma pierwszeństwo. Wyłączony Plugin albo kanał nie ma naprawianych zależności runtime tylko dlatego, że istnieje w pakiecie. Zewnętrzne Pluginy i niestandardowe ścieżki ładowania nadal używają `openclaw plugins install` albo `openclaw plugins update`.
 
-## Autoaktualizator
+  </Accordion>
+</AccordionGroup>
 
-Autoaktualizator jest domyślnie wyłączony. Włącz go w `~/.openclaw/openclaw.json`:
+## Automatyczny aktualizator
+
+Automatyczny aktualizator jest domyślnie wyłączony. Włącz go w `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -154,13 +149,14 @@ Autoaktualizator jest domyślnie wyłączony. Włącz go w `~/.openclaw/openclaw
 }
 ```
 
-| Channel  | Zachowanie                                                                                                      |
-| -------- | --------------------------------------------------------------------------------------------------------------- |
-| `stable` | Czeka `stableDelayHours`, a następnie stosuje z deterministycznym jitter w zakresie `stableJitterHours` (rozłożone wdrożenie). |
-| `beta`   | Sprawdza co `betaCheckIntervalHours` (domyślnie: co godzinę) i stosuje natychmiast.                            |
-| `dev`    | Brak automatycznego stosowania. Użyj ręcznie `openclaw update`.                                                 |
+| Kanał    | Zachowanie                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `stable` | Czeka `stableDelayHours`, a potem stosuje aktualizację z deterministycznym jitterem w ramach `stableJitterHours` (rozproszone wdrożenie). |
+| `beta`   | Sprawdza co `betaCheckIntervalHours` (domyślnie: co godzinę) i stosuje natychmiast.                                            |
+| `dev`    | Brak automatycznego stosowania. Użyj ręcznie `openclaw update`.                                                                |
 
-Gateway zapisuje też wskazówkę aktualizacji przy starcie (wyłącz przez `update.checkOnStart: false`).
+Gateway zapisuje także podpowiedź o aktualizacji przy uruchomieniu (wyłącz przez `update.checkOnStart: false`).
+W przypadku downgrade'u albo odzyskiwania po incydencie ustaw `OPENCLAW_NO_AUTO_UPDATE=1` w środowisku Gateway, aby zablokować automatyczne stosowanie aktualizacji nawet wtedy, gdy skonfigurowano `update.auto.enabled`. Podpowiedzi o aktualizacji przy starcie nadal mogą działać, chyba że wyłączono także `update.checkOnStart`.
 
 ## Po aktualizacji
 
@@ -172,9 +168,9 @@ Gateway zapisuje też wskazówkę aktualizacji przy starcie (wyłącz przez `upd
 openclaw doctor
 ```
 
-Migruje konfigurację, audytuje polityki DM i sprawdza kondycję gateway. Szczegóły: [Doctor](/pl/gateway/doctor)
+Migruje konfigurację, audytuje zasady DM i sprawdza kondycję Gateway. Szczegóły: [Doctor](/pl/gateway/doctor)
 
-### Zrestartuj gateway
+### Uruchom ponownie Gateway
 
 ```bash
 openclaw gateway restart
@@ -188,9 +184,9 @@ openclaw health
 
 </Steps>
 
-## Wycofanie zmian
+## Wycofanie
 
-### Przypięcie wersji (npm)
+### Przypnij wersję (npm)
 
 ```bash
 npm i -g openclaw@<version>
@@ -198,9 +194,11 @@ openclaw doctor
 openclaw gateway restart
 ```
 
-Wskazówka: `npm view openclaw version` pokazuje bieżącą opublikowaną wersję.
+<Tip>
+`npm view openclaw version` pokazuje bieżącą opublikowaną wersję.
+</Tip>
 
-### Przypięcie commita (źródło)
+### Przypnij commit (źródło)
 
 ```bash
 git fetch origin
@@ -209,17 +207,17 @@ pnpm install && pnpm build
 openclaw gateway restart
 ```
 
-Aby wrócić do latest: `git checkout main && git pull`.
+Aby wrócić do najnowszej wersji: `git checkout main && git pull`.
 
 ## Jeśli utkniesz
 
-- Uruchom ponownie `openclaw doctor` i uważnie przeczytaj dane wyjściowe.
-- Dla `openclaw update --channel dev` na checkoutach źródłowych aktualizator automatycznie bootstrapuje `pnpm`, gdy jest to potrzebne. Jeśli zobaczysz błąd bootstrapu pnpm/corepack, zainstaluj `pnpm` ręcznie (lub ponownie włącz `corepack`) i uruchom aktualizację ponownie.
+- Uruchom ponownie `openclaw doctor` i uważnie przeczytaj wynik.
+- Dla `openclaw update --channel dev` na checkoutach źródłowych aktualizator automatycznie bootstrapuje `pnpm`, gdy jest to potrzebne. Jeśli zobaczysz błąd bootstrapu pnpm/corepack, zainstaluj `pnpm` ręcznie (albo ponownie włącz `corepack`) i ponów aktualizację.
 - Sprawdź: [Rozwiązywanie problemów](/pl/gateway/troubleshooting)
 - Zapytaj na Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 
 ## Powiązane
 
-- [Przegląd instalacji](/pl/install) — wszystkie metody instalacji
-- [Doctor](/pl/gateway/doctor) — kontrole kondycji po aktualizacjach
-- [Migracja](/pl/install/migrating) — przewodniki migracji głównych wersji
+- [Przegląd instalacji](/pl/install): wszystkie metody instalacji.
+- [Doctor](/pl/gateway/doctor): kontrole kondycji po aktualizacjach.
+- [Migracja](/pl/install/migrating): przewodniki migracji wersji głównych.

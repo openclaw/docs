@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Potrzebujesz ukierunkowanych logów debugowania bez podnoszenia globalnych poziomów logowania
-    - Musisz przechwycić logi specyficzne dla podsystemu na potrzeby wsparcia
-summary: Flagi diagnostyczne do ukierunkowanych logów debugowania
+    - Potrzebujesz ukierunkowanych logów debugowania bez zwiększania globalnych poziomów logowania
+    - Należy zebrać logi specyficzne dla podsystemu na potrzeby pomocy technicznej
+summary: Flagi diagnostyczne dla ukierunkowanych logów debugowania
 title: Flagi diagnostyczne
 x-i18n:
-    generated_at: "2026-04-24T09:08:17Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:50:42Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
+    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
     source_path: diagnostics/flags.md
-    workflow: 15
+    workflow: 16
 ---
 
-Flagi diagnostyczne pozwalają włączyć ukierunkowane logi debugowania bez włączania szczegółowego logowania wszędzie. Flagi są opt-in i nie mają żadnego efektu, dopóki podsystem ich nie sprawdza.
+Flagi diagnostyczne pozwalają włączać ukierunkowane dzienniki debugowania bez włączania szczegółowego logowania wszędzie. Flagi są opcjonalne i nie mają żadnego efektu, dopóki podsystem ich nie sprawdzi.
 
 ## Jak to działa
 
 - Flagi są ciągami znaków (bez rozróżniania wielkości liter).
-- Flagi można włączyć w konfiguracji lub przez nadpisanie zmienną środowiskową.
+- Flagi można włączyć w konfiguracji albo przez nadpisanie zmienną środowiskową.
 - Obsługiwane są symbole wieloznaczne:
   - `telegram.*` pasuje do `telegram.http`
   - `*` włącza wszystkie flagi
@@ -43,57 +43,94 @@ Wiele flag:
 }
 ```
 
-Po zmianie flag uruchom ponownie Gateway.
+Uruchom ponownie Gateway po zmianie flag.
 
-## Nadpisanie zmienną środowiskową (jednorazowo)
+## Nadpisanie zmienną środowiskową (jednorazowe)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
 ```
 
-Wyłączenie wszystkich flag:
+Wyłącz wszystkie flagi:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=0
 ```
 
-## Gdzie trafiają logi
+## Artefakty osi czasu
 
-Flagi emitują logi do standardowego pliku logów diagnostycznych. Domyślnie:
+Flaga `timeline` zapisuje ustrukturyzowane zdarzenia czasu uruchamiania i działania dla
+zewnętrznych zestawów QA:
+
+```bash
+OPENCLAW_DIAGNOSTICS=timeline \
+OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
+openclaw gateway run
+```
+
+Możesz ją też włączyć w konfiguracji:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["timeline"]
+  }
+}
+```
+
+Ścieżka pliku osi czasu nadal pochodzi z
+`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Gdy `timeline` jest włączona tylko z
+konfiguracji, najwcześniejsze odcinki ładowania konfiguracji nie są emitowane, ponieważ OpenClaw
+nie odczytał jeszcze konfiguracji; kolejne odcinki uruchamiania używają flagi z konfiguracji.
+
+`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` i
+`OPENCLAW_DIAGNOSTICS=*` również włączają oś czasu, ponieważ włączają każdą
+flagę diagnostyczną. Użyj `timeline`, gdy potrzebujesz tylko artefaktu czasu
+JSONL.
+
+Rekordy osi czasu używają koperty `openclaw.diagnostics.v1`. Zdarzenia mogą zawierać
+identyfikatory procesów, nazwy faz, nazwy odcinków, czasy trwania, identyfikatory pluginów, liczby zależności,
+próbki opóźnień pętli zdarzeń, nazwy operacji dostawców, stan zakończenia procesu potomnego
+oraz nazwy/komunikaty błędów uruchamiania. Traktuj pliki osi czasu jako lokalne artefakty
+diagnostyczne; przejrzyj je przed udostępnieniem poza swoim komputerem.
+
+## Gdzie trafiają dzienniki
+
+Flagi emitują dzienniki do standardowego pliku dziennika diagnostycznego. Domyślnie:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Jeśli ustawisz `logging.file`, używana będzie ta ścieżka. Logi są w formacie JSONL (jeden obiekt JSON na linię). Redakcja nadal obowiązuje zgodnie z `logging.redactSensitive`.
+Jeśli ustawisz `logging.file`, użyj zamiast tego tej ścieżki. Dzienniki mają format JSONL (jeden obiekt JSON na wiersz). Redagowanie nadal obowiązuje zgodnie z `logging.redactSensitive`.
 
-## Wyodrębnianie logów
+## Wyodrębnianie dzienników
 
-Wybierz najnowszy plik logów:
+Wybierz najnowszy plik dziennika:
 
 ```bash
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Filtr dla diagnostyki HTTP Telegram:
+Filtruj diagnostykę HTTP Telegram:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Lub śledzenie podczas odtwarzania problemu:
+Albo śledź podczas odtwarzania problemu:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-W przypadku zdalnych Gateway możesz też użyć `openclaw logs --follow` (zobacz [/cli/logs](/pl/cli/logs)).
+W przypadku zdalnych instancji Gateway możesz też użyć `openclaw logs --follow` (zobacz [/cli/logs](/pl/cli/logs)).
 
 ## Uwagi
 
-- Jeśli `logging.level` jest ustawione wyżej niż `warn`, te logi mogą być tłumione. Domyślne `info` jest odpowiednie.
-- Flagi można bezpiecznie pozostawić włączone; wpływają tylko na wolumen logów dla określonego podsystemu.
-- Użyj [/logging](/pl/logging), aby zmienić miejsca docelowe logów, poziomy i redakcję.
+- Jeśli `logging.level` jest ustawiony wyżej niż `warn`, te dzienniki mogą zostać pominięte. Domyślne `info` jest odpowiednie.
+- Flagi można bezpiecznie pozostawić włączone; wpływają tylko na ilość dzienników konkretnego podsystemu.
+- Użyj [/logging](/pl/logging), aby zmienić miejsca docelowe dzienników, poziomy i redagowanie.
 
 ## Powiązane
 

@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Chcesz, aby agenci pokazywali zmiany w kodzie lub Markdown jako różnice.
-    - Chcesz adres URL widoku gotowego do Canvas albo wyrenderowany plik różnic.
-    - Potrzebujesz kontrolowanych, tymczasowych artefaktów różnic z bezpiecznymi ustawieniami domyślnymi.
+    - Chcesz, aby agenci pokazywali zmiany w kodzie lub Markdown w formie różnic
+    - Potrzebujesz adresu URL podglądu gotowego do użycia w kanwie albo wyrenderowanego pliku różnic
+    - Potrzebujesz kontrolowanych, tymczasowych artefaktów różnic z bezpiecznymi ustawieniami domyślnymi
 sidebarTitle: Diffs
-summary: 'Tylko do odczytu: przeglądarka różnic i renderer plików dla agentów (opcjonalne narzędzie Plugin)'
+summary: Przeglądarka różnic i renderer plików tylko do odczytu dla agentów (opcjonalne narzędzie Plugin)
 title: Różnice
 x-i18n:
-    generated_at: "2026-04-26T11:42:15Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:21:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8af098a294a4ba56e1a8df3b4f9650802fc53392634fee97b330f03b69e10781
+    source_hash: 8d8938b11f6bc612168057b7f4f5ceaafb22c2445e015fb746795b2e93f033e5
     source_path: tools/diffs.md
-    workflow: 15
+    workflow: 16
 ---
 
-`diffs` to opcjonalne narzędzie Plugin z krótkimi wbudowanymi wskazówkami systemowymi i towarzyszącym Skill, który zamienia treść zmian w artefakt różnic tylko do odczytu dla agentów.
+`diffs` to opcjonalne narzędzie pluginu z krótkimi wbudowanymi wskazówkami systemowymi i towarzyszącą funkcją Skills, która przekształca treść zmian w artefakt różnic tylko do odczytu dla agentów.
 
-Akceptuje ono jeden z następujących wariantów:
+Przyjmuje jedno z poniższych:
 
 - tekst `before` i `after`
 - ujednolicony `patch`
 
-Może zwracać:
+Może zwrócić:
 
-- adres URL przeglądarki Gateway do prezentacji w Canvas
-- ścieżkę do wyrenderowanego pliku (PNG lub PDF) do dostarczania w wiadomości
+- URL przeglądarki Gateway do prezentacji na canvasie
+- wyrenderowaną ścieżkę pliku (PNG lub PDF) do dostarczenia w wiadomości
 - oba wyniki w jednym wywołaniu
 
-Po włączeniu Plugin dodaje zwięzłe wskazówki dotyczące użycia do przestrzeni system promptu oraz udostępnia szczegółowy Skill na wypadek, gdy agent potrzebuje pełniejszych instrukcji.
+Po włączeniu plugin dodaje zwięzłe wskazówki użycia do przestrzeni promptu systemowego i udostępnia także szczegółową funkcję Skills dla przypadków, w których agent potrzebuje pełniejszych instrukcji.
 
 ## Szybki start
 
 <Steps>
-  <Step title="Włącz Plugin">
+  <Step title="Włącz plugin">
     ```json5
     {
       plugins: {
@@ -49,7 +49,7 @@ Po włączeniu Plugin dodaje zwięzłe wskazówki dotyczące użycia do przestrz
   <Step title="Wybierz tryb">
     <Tabs>
       <Tab title="view">
-        Przepływy zorientowane na Canvas: agenci wywołują `diffs` z `mode: "view"` i otwierają `details.viewerUrl` za pomocą `canvas present`.
+        Przepływy z canvasem jako pierwszym miejscem prezentacji: agenci wywołują `diffs` z `mode: "view"` i otwierają `details.viewerUrl` za pomocą `canvas present`.
       </Tab>
       <Tab title="file">
         Dostarczanie plików na czacie: agenci wywołują `diffs` z `mode: "file"` i wysyłają `details.filePath` za pomocą `message`, używając `path` lub `filePath`.
@@ -63,7 +63,7 @@ Po włączeniu Plugin dodaje zwięzłe wskazówki dotyczące użycia do przestrz
 
 ## Wyłącz wbudowane wskazówki systemowe
 
-Jeśli chcesz pozostawić narzędzie `diffs` włączone, ale wyłączyć jego wbudowane wskazówki w system prompt, ustaw `plugins.entries.diffs.hooks.allowPromptInjection` na `false`:
+Jeśli chcesz pozostawić narzędzie `diffs` włączone, ale wyłączyć jego wbudowane wskazówki promptu systemowego, ustaw `plugins.entries.diffs.hooks.allowPromptInjection` na `false`:
 
 ```json5
 {
@@ -80,9 +80,9 @@ Jeśli chcesz pozostawić narzędzie `diffs` włączone, ale wyłączyć jego wb
 }
 ```
 
-To blokuje hook `before_prompt_build` Pluginu diffs, pozostawiając jednocześnie dostępne Plugin, narzędzie i towarzyszący Skill.
+To blokuje hook `before_prompt_build` pluginu diffs, zachowując dostępność pluginu, narzędzia i towarzyszącej funkcji Skills.
 
-Jeśli chcesz wyłączyć zarówno wskazówki, jak i narzędzie, zamiast tego wyłącz Plugin.
+Jeśli chcesz wyłączyć zarówno wskazówki, jak i narzędzie, wyłącz zamiast tego plugin.
 
 ## Typowy przepływ pracy agenta
 
@@ -93,8 +93,8 @@ Jeśli chcesz wyłączyć zarówno wskazówki, jak i narzędzie, zamiast tego wy
   <Step title="Odczytaj szczegóły">
     Agent odczytuje pola `details` z odpowiedzi.
   </Step>
-  <Step title="Przedstaw">
-    Agent albo otwiera `details.viewerUrl` za pomocą `canvas present`, wysyła `details.filePath` za pomocą `message`, używając `path` lub `filePath`, albo robi obie rzeczy.
+  <Step title="Zaprezentuj">
+    Agent otwiera `details.viewerUrl` za pomocą `canvas present`, wysyła `details.filePath` za pomocą `message`, używając `path` lub `filePath`, albo robi jedno i drugie.
   </Step>
 </Steps>
 
@@ -121,61 +121,61 @@ Jeśli chcesz wyłączyć zarówno wskazówki, jak i narzędzie, zamiast tego wy
   </Tab>
 </Tabs>
 
-## Dokumentacja danych wejściowych narzędzia
+## Referencja danych wejściowych narzędzia
 
 Wszystkie pola są opcjonalne, chyba że zaznaczono inaczej.
 
 <ParamField path="before" type="string">
-  Tekst oryginalny. Wymagany razem z `after`, gdy pominięto `patch`.
+  Tekst oryginalny. Wymagany z `after`, gdy pominięto `patch`.
 </ParamField>
 <ParamField path="after" type="string">
-  Tekst zaktualizowany. Wymagany razem z `before`, gdy pominięto `patch`.
+  Zaktualizowany tekst. Wymagany z `before`, gdy pominięto `patch`.
 </ParamField>
 <ParamField path="patch" type="string">
-  Tekst różnic ujednoliconych. Wzajemnie wyklucza się z `before` i `after`.
+  Tekst ujednoliconego diffu. Wzajemnie wyklucza się z `before` i `after`.
 </ParamField>
 <ParamField path="path" type="string">
-  Wyświetlana nazwa pliku dla trybu before i after.
+  Wyświetlana nazwa pliku dla trybu przed i po.
 </ParamField>
 <ParamField path="lang" type="string">
-  Wskazówka zastąpienia języka dla trybu before i after. Nieznane wartości wracają do zwykłego tekstu.
+  Wskazówka nadpisania języka dla trybu przed i po. Nieznane wartości wracają do zwykłego tekstu.
 </ParamField>
 <ParamField path="title" type="string">
-  Zastąpienie tytułu przeglądarki.
+  Nadpisanie tytułu przeglądarki.
 </ParamField>
 <ParamField path="mode" type='"view" | "file" | "both"'>
-  Tryb wyjścia. Domyślnie używana jest wartość domyślna Pluginu `defaults.mode`. Przestarzały alias: `"image"` działa jak `"file"` i nadal jest akceptowany dla zgodności wstecznej.
+  Tryb wyjścia. Domyślnie używa wartości domyślnej pluginu `defaults.mode`. Przestarzały alias: `"image"` zachowuje się jak `"file"` i nadal jest akceptowany dla zgodności wstecznej.
 </ParamField>
 <ParamField path="theme" type='"light" | "dark"'>
-  Motyw przeglądarki. Domyślnie używana jest wartość domyślna Pluginu `defaults.theme`.
+  Motyw przeglądarki. Domyślnie używa wartości domyślnej pluginu `defaults.theme`.
 </ParamField>
 <ParamField path="layout" type='"unified" | "split"'>
-  Układ różnic. Domyślnie używana jest wartość domyślna Pluginu `defaults.layout`.
+  Układ diffu. Domyślnie używa wartości domyślnej pluginu `defaults.layout`.
 </ParamField>
 <ParamField path="expandUnchanged" type="boolean">
-  Rozwiń niezmienione sekcje, gdy dostępny jest pełny kontekst. Opcja tylko dla wywołania (nie jest kluczem domyślnym Pluginu).
+  Rozwiń niezmienione sekcje, gdy dostępny jest pełny kontekst. Opcja tylko dla pojedynczego wywołania (nie jest domyślnym kluczem pluginu).
 </ParamField>
 <ParamField path="fileFormat" type='"png" | "pdf"'>
-  Format wyrenderowanego pliku. Domyślnie używana jest wartość domyślna Pluginu `defaults.fileFormat`.
+  Format wyrenderowanego pliku. Domyślnie używa wartości domyślnej pluginu `defaults.fileFormat`.
 </ParamField>
 <ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
-  Ustawienie jakości dla renderowania PNG lub PDF.
+  Preset jakości dla renderowania PNG lub PDF.
 </ParamField>
 <ParamField path="fileScale" type="number">
-  Zastąpienie skali urządzenia (`1`-`4`).
+  Nadpisanie skali urządzenia (`1`-`4`).
 </ParamField>
 <ParamField path="fileMaxWidth" type="number">
   Maksymalna szerokość renderowania w pikselach CSS (`640`-`2400`).
 </ParamField>
 <ParamField path="ttlSeconds" type="number" default="1800">
-  TTL artefaktu w sekundach dla przeglądarki i samodzielnych wyników plikowych. Maksymalnie 21600.
+  TTL artefaktu w sekundach dla wyników przeglądarki i samodzielnego pliku. Maksymalnie 21600.
 </ParamField>
 <ParamField path="baseUrl" type="string">
-  Zastąpienie pochodzenia adresu URL przeglądarki. Zastępuje Plugin `viewerBaseUrl`. Musi używać `http` lub `https`, bez query/hash.
+  Nadpisanie źródła URL przeglądarki. Nadpisuje `viewerBaseUrl` pluginu. Musi być `http` lub `https`, bez zapytania ani hasha.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Starsze aliasy wejścia">
+  <Accordion title="Starsze aliasy wejściowe">
     Nadal akceptowane dla zgodności wstecznej:
 
     - `format` -> `fileFormat`
@@ -186,29 +186,29 @@ Wszystkie pola są opcjonalne, chyba że zaznaczono inaczej.
 
   </Accordion>
   <Accordion title="Walidacja i limity">
-    - `before` i `after` mają limit po 512 KiB.
-    - `patch` ma limit 2 MiB.
-    - `path` ma limit 2048 bajtów.
-    - `lang` ma limit 128 bajtów.
-    - `title` ma limit 1024 bajtów.
-    - Limit złożoności patcha: maksymalnie 128 plików i 120000 linii łącznie.
-    - `patch` razem z `before` lub `after` jest odrzucany.
-    - Limity bezpieczeństwa dla renderowanych plików (dotyczą PNG i PDF):
-      - `fileQuality: "standard"`: maks. 8 MP (8,000,000 wyrenderowanych pikseli).
-      - `fileQuality: "hq"`: maks. 14 MP (14,000,000 wyrenderowanych pikseli).
-      - `fileQuality: "print"`: maks. 24 MP (24,000,000 wyrenderowanych pikseli).
-      - PDF ma dodatkowo limit 50 stron.
+    - `before` i `after` mają maksymalnie po 512 KiB.
+    - `patch` ma maksymalnie 2 MiB.
+    - `path` ma maksymalnie 2048 bajtów.
+    - `lang` ma maksymalnie 128 bajtów.
+    - `title` ma maksymalnie 1024 bajty.
+    - Limit złożoności patcha: maksymalnie 128 plików i 120000 łącznych linii.
+    - `patch` razem z `before` lub `after` są odrzucane.
+    - Limity bezpieczeństwa wyrenderowanego pliku (dotyczą PNG i PDF):
+      - `fileQuality: "standard"`: maks. 8 MP (8 000 000 wyrenderowanych pikseli).
+      - `fileQuality: "hq"`: maks. 14 MP (14 000 000 wyrenderowanych pikseli).
+      - `fileQuality: "print"`: maks. 24 MP (24 000 000 wyrenderowanych pikseli).
+      - PDF ma także limit maksymalnie 50 stron.
 
   </Accordion>
 </AccordionGroup>
 
-## Kontrakt szczegółów wyjścia
+## Kontrakt szczegółów wyjściowych
 
-Narzędzie zwraca ustrukturyzowane metadane w `details`.
+Narzędzie zwraca ustrukturyzowane metadane pod `details`.
 
 <AccordionGroup>
   <Accordion title="Pola przeglądarki">
-    Współdzielone pola dla trybów tworzących przeglądarkę:
+    Wspólne pola dla trybów tworzących przeglądarkę:
 
     - `artifactId`
     - `viewerUrl`
@@ -218,7 +218,7 @@ Narzędzie zwraca ustrukturyzowane metadane w `details`.
     - `inputKind`
     - `fileCount`
     - `mode`
-    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId`, gdy są dostępne)
+    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId`, gdy dostępne)
 
   </Accordion>
   <Accordion title="Pola pliku">
@@ -227,7 +227,7 @@ Narzędzie zwraca ustrukturyzowane metadane w `details`.
     - `artifactId`
     - `expiresAt`
     - `filePath`
-    - `path` (ta sama wartość co `filePath`, dla zgodności z narzędziem message)
+    - `path` (ta sama wartość co `filePath`, dla zgodności z narzędziem wiadomości)
     - `fileBytes`
     - `fileFormat`
     - `fileQuality`
@@ -236,7 +236,7 @@ Narzędzie zwraca ustrukturyzowane metadane w `details`.
 
   </Accordion>
   <Accordion title="Aliasy zgodności">
-    Zwracane również dla istniejących wywołujących:
+    Zwracane także dla istniejących wywołujących:
 
     - `format` (ta sama wartość co `fileFormat`)
     - `imagePath` (ta sama wartość co `filePath`)
@@ -248,25 +248,25 @@ Narzędzie zwraca ustrukturyzowane metadane w `details`.
   </Accordion>
 </AccordionGroup>
 
-Podsumowanie działania trybów:
+Podsumowanie zachowania trybów:
 
-| Tryb     | Co jest zwracane                                                                 |
-| -------- | -------------------------------------------------------------------------------- |
-| `"view"` | Tylko pola przeglądarki.                                                         |
-| `"file"` | Tylko pola pliku, bez artefaktu przeglądarki.                                    |
-| `"both"` | Pola przeglądarki i pola pliku. Jeśli renderowanie pliku się nie powiedzie, przeglądarka nadal jest zwracana z `fileError` i aliasem `imageError`. |
+| Tryb     | Co jest zwracane                                                                                                       |
+| -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `"view"` | Tylko pola przeglądarki.                                                                                               |
+| `"file"` | Tylko pola pliku, bez artefaktu przeglądarki.                                                                          |
+| `"both"` | Pola przeglądarki oraz pola pliku. Jeśli renderowanie pliku się nie powiedzie, przeglądarka nadal zostanie zwrócona z aliasem `fileError` i `imageError`. |
 
 ## Zwinięte niezmienione sekcje
 
 - Przeglądarka może pokazywać wiersze takie jak `N unmodified lines`.
-- Elementy sterujące rozwijaniem tych wierszy są warunkowe i nie są gwarantowane dla każdego rodzaju danych wejściowych.
-- Elementy sterujące rozwijaniem pojawiają się, gdy wyrenderowana różnica ma rozwijalne dane kontekstowe, co jest typowe dla danych wejściowych before i after.
-- W przypadku wielu ujednoliconych danych wejściowych patch, pominięte treści kontekstowe nie są dostępne w sparsowanych hunkach patcha, więc wiersz może pojawić się bez elementów sterujących rozwijaniem. To jest oczekiwane zachowanie.
+- Kontrolki rozwijania w tych wierszach są warunkowe i nie są gwarantowane dla każdego rodzaju danych wejściowych.
+- Kontrolki rozwijania pojawiają się, gdy wyrenderowany diff ma rozwijalne dane kontekstowe, co jest typowe dla danych wejściowych przed i po zmianie.
+- Dla wielu danych wejściowych w formacie unified patch pominięte treści kontekstowe nie są dostępne w sparsowanych hunkach patcha, więc wiersz może pojawić się bez kontrolek rozwijania. To oczekiwane zachowanie.
 - `expandUnchanged` ma zastosowanie tylko wtedy, gdy istnieje rozwijalny kontekst.
 
-## Wartości domyślne Pluginu
+## Domyślne wartości Plugin
 
-Ustaw domyślne wartości dla całego Pluginu w `~/.openclaw/openclaw.json`:
+Ustaw domyślne wartości dla całego Plugin w `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -320,7 +320,7 @@ Jawne parametry narzędzia zastępują te wartości domyślne.
 ### Trwała konfiguracja adresu URL przeglądarki
 
 <ParamField path="viewerBaseUrl" type="string">
-  Należąca do Pluginu wartość zapasowa dla zwracanych linków przeglądarki, gdy wywołanie narzędzia nie przekazuje `baseUrl`. Musi używać `http` lub `https`, bez query/hash.
+  Należący do Plugin adres zapasowy dla zwracanych linków przeglądarki, gdy wywołanie narzędzia nie przekazuje `baseUrl`. Musi być `http` albo `https`, bez zapytania ani hasha.
 </ParamField>
 
 ```json5
@@ -341,7 +341,7 @@ Jawne parametry narzędzia zastępują te wartości domyślne.
 ## Konfiguracja zabezpieczeń
 
 <ParamField path="security.allowRemoteViewer" type="boolean" default="false">
-  `false`: żądania spoza loopback do tras przeglądarki są odrzucane. `true`: zdalne przeglądarki są dozwolone, jeśli ścieżka z tokenem jest prawidłowa.
+  `false`: żądania spoza loopback do tras przeglądarki są odrzucane. `true`: zdalne przeglądarki są dozwolone, jeśli tokenizowana ścieżka jest poprawna.
 </ParamField>
 
 ```json5
@@ -361,7 +361,7 @@ Jawne parametry narzędzia zastępują te wartości domyślne.
 }
 ```
 
-## Cykl życia artefaktów i przechowywanie
+## Cykl życia i przechowywanie artefaktów
 
 - Artefakty są przechowywane w podfolderze tymczasowym: `$TMPDIR/openclaw-diffs`.
 - Metadane artefaktu przeglądarki zawierają:
@@ -369,11 +369,11 @@ Jawne parametry narzędzia zastępują te wartości domyślne.
   - losowy token (48 znaków szesnastkowych)
   - `createdAt` i `expiresAt`
   - zapisaną ścieżkę `viewer.html`
-- Domyślny TTL artefaktu wynosi 30 minut, jeśli nie został określony.
-- Maksymalny akceptowany TTL przeglądarki to 6 godzin.
-- Czyszczenie jest uruchamiane oportunistycznie po utworzeniu artefaktu.
+- Domyślny TTL artefaktu wynosi 30 minut, gdy nie podano inaczej.
+- Maksymalny akceptowany TTL przeglądarki wynosi 6 godzin.
+- Czyszczenie uruchamia się oportunistycznie po utworzeniu artefaktu.
 - Wygasłe artefakty są usuwane.
-- Zapasowe czyszczenie usuwa nieaktualne foldery starsze niż 24 godziny, gdy brakuje metadanych.
+- Czyszczenie zapasowe usuwa nieaktualne foldery starsze niż 24 godziny, gdy brakuje metadanych.
 
 ## Adres URL przeglądarki i zachowanie sieciowe
 
@@ -386,49 +386,49 @@ Zasoby przeglądarki:
 - `/plugins/diffs/assets/viewer.js`
 - `/plugins/diffs/assets/viewer-runtime.js`
 
-Dokument przeglądarki rozwiązuje te zasoby względem adresu URL przeglądarki, więc opcjonalny prefiks ścieżki `baseUrl` jest zachowywany również dla żądań zasobów.
+Dokument przeglądarki rozwiązuje te zasoby względem adresu URL przeglądarki, więc opcjonalny prefiks ścieżki `baseUrl` jest zachowywany także dla obu żądań zasobów.
 
-Zachowanie konstruowania URL:
+Zachowanie konstruowania adresu URL:
 
-- Jeśli przekazano `baseUrl` w wywołaniu narzędzia, jest ono używane po ścisłej walidacji.
-- W przeciwnym razie, jeśli skonfigurowano Plugin `viewerBaseUrl`, używana jest ta wartość.
-- Bez żadnego zastąpienia adres URL przeglądarki domyślnie używa loopback `127.0.0.1`.
-- Jeśli tryb powiązania Gateway to `custom` i ustawiono `gateway.customBindHost`, używany jest ten host.
+- Jeśli podano `baseUrl` w wywołaniu narzędzia, jest on używany po ścisłej walidacji.
+- W przeciwnym razie, jeśli skonfigurowano `viewerBaseUrl` Plugin, jest on używany.
+- Bez żadnego z tych nadpisań adres URL przeglądarki domyślnie używa loopback `127.0.0.1`.
+- Jeśli tryb bindowania Gateway to `custom` i ustawiono `gateway.customBindHost`, używany jest ten host.
 
-Zasady `baseUrl`:
+Reguły `baseUrl`:
 
-- Musi używać `http://` lub `https://`.
-- Query i hash są odrzucane.
-- Dozwolone jest pochodzenie oraz opcjonalna ścieżka bazowa.
+- Musi być `http://` albo `https://`.
+- Zapytanie i hash są odrzucane.
+- Dozwolone jest origin oraz opcjonalna ścieżka bazowa.
 
-## Model bezpieczeństwa
+## Model zabezpieczeń
 
 <AccordionGroup>
-  <Accordion title="Wzmocnienie zabezpieczeń przeglądarki">
+  <Accordion title="Wzmocnienie przeglądarki">
     - Domyślnie tylko loopback.
-    - Ścieżki przeglądarki z tokenem i ścisłą walidacją identyfikatora oraz tokena.
+    - Tokenizowane ścieżki przeglądarki ze ścisłą walidacją identyfikatora i tokenu.
     - CSP odpowiedzi przeglądarki:
       - `default-src 'none'`
       - skrypty i zasoby tylko z self
       - brak wychodzącego `connect-src`
-    - Ograniczanie częstotliwości zdalnych niepowodzeń, gdy zdalny dostęp jest włączony:
+    - Ograniczanie zdalnych chybień, gdy zdalny dostęp jest włączony:
       - 40 niepowodzeń na 60 sekund
-      - blokada na 60 sekund (`429 Too Many Requests`)
+      - 60-sekundowa blokada (`429 Too Many Requests`)
 
   </Accordion>
-  <Accordion title="Wzmocnienie zabezpieczeń renderowania plików">
-    - Routing żądań przeglądarki do zrzutów ekranu domyślnie wszystko odrzuca.
+  <Accordion title="Wzmocnienie renderowania plików">
+    - Routing żądań przeglądarki do zrzutów ekranu domyślnie odmawia dostępu.
     - Dozwolone są tylko lokalne zasoby przeglądarki z `http://127.0.0.1/plugins/diffs/assets/*`.
     - Zewnętrzne żądania sieciowe są blokowane.
 
   </Accordion>
 </AccordionGroup>
 
-## Wymagania przeglądarki dla trybu plikowego
+## Wymagania przeglądarki dla trybu pliku
 
 `mode: "file"` i `mode: "both"` wymagają przeglądarki zgodnej z Chromium.
 
-Kolejność rozwiązywania:
+Kolejność rozpoznawania:
 
 <Steps>
   <Step title="Konfiguracja">
@@ -440,47 +440,47 @@ Kolejność rozwiązywania:
     - `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`
 
   </Step>
-  <Step title="Awaryjnie dla platformy">
-    Zapasowe wykrywanie polecenia/ścieżki dla platformy.
+  <Step title="Rozwiązanie zastępcze platformy">
+    Zastępcze wykrywanie poleceń/ścieżek platformy.
   </Step>
 </Steps>
 
-Typowy komunikat błędu:
+Typowy tekst błędu:
 
 - `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
 
-Napraw to, instalując Chrome, Chromium, Edge lub Brave albo ustawiając jedną z powyższych opcji ścieżki wykonywalnej.
+Napraw, instalując Chrome, Chromium, Edge lub Brave albo ustawiając jedną z powyższych opcji ścieżki do pliku wykonywalnego.
 
 ## Rozwiązywanie problemów
 
 <AccordionGroup>
   <Accordion title="Błędy walidacji danych wejściowych">
-    - `Provide patch or both before and after text.` — uwzględnij zarówno `before`, jak i `after`, albo podaj `patch`.
-    - `Provide either patch or before/after input, not both.` — nie mieszaj trybów wejścia.
-    - `Invalid baseUrl: ...` — użyj pochodzenia `http(s)` z opcjonalną ścieżką, bez query/hash.
+    - `Provide patch or both before and after text.` — dołącz oba pola `before` i `after` albo podaj `patch`.
+    - `Provide either patch or before/after input, not both.` — nie mieszaj trybów danych wejściowych.
+    - `Invalid baseUrl: ...` — użyj źródła `http(s)` z opcjonalną ścieżką, bez zapytania/hasza.
     - `{field} exceeds maximum size (...)` — zmniejsz rozmiar ładunku.
-    - Odrzucenie dużego patcha — zmniejsz liczbę plików w patchu lub łączną liczbę linii.
+    - Odrzucenie dużej łatki — zmniejsz liczbę plików łatki lub łączną liczbę wierszy.
 
   </Accordion>
   <Accordion title="Dostępność przeglądarki">
-    - Adres URL przeglądarki domyślnie wskazuje na `127.0.0.1`.
-    - W scenariuszach zdalnego dostępu:
-      - ustaw Plugin `viewerBaseUrl`, albo
-      - przekazuj `baseUrl` dla każdego wywołania narzędzia, albo
+    - Adres URL przeglądarki domyślnie rozwiązuje się do `127.0.0.1`.
+    - W scenariuszach dostępu zdalnego:
+      - ustaw `viewerBaseUrl` Pluginu, albo
+      - przekaż `baseUrl` przy każdym wywołaniu narzędzia, albo
       - użyj `gateway.bind=custom` i `gateway.customBindHost`
-    - Jeśli `gateway.trustedProxies` obejmuje loopback dla proxy działającego na tym samym hoście (na przykład Tailscale Serve), surowe żądania loopback do przeglądarki bez przekazanych nagłówków IP klienta kończą się zamknięciem zgodnie z założeniami.
-    - Dla takiej topologii proxy:
+    - Jeśli `gateway.trustedProxies` obejmuje pętlę zwrotną dla proxy na tym samym hoście (na przykład Tailscale Serve), surowe żądania przeglądarki przez pętlę zwrotną bez przekazanych nagłówków IP klienta zgodnie z projektem kończą się bezpiecznym niepowodzeniem.
+    - Dla tej topologii proxy:
       - preferuj `mode: "file"` lub `mode: "both"`, gdy potrzebujesz tylko załącznika, albo
-      - celowo włącz `security.allowRemoteViewer` i ustaw Plugin `viewerBaseUrl` lub przekaż proxy/publiczny `baseUrl`, gdy potrzebujesz współdzielonego adresu URL przeglądarki
-    - Włączaj `security.allowRemoteViewer` tylko wtedy, gdy zamierzasz udostępniać zewnętrzny dostęp do przeglądarki.
+      - celowo włącz `security.allowRemoteViewer` i ustaw `viewerBaseUrl` Pluginu albo przekaż proxy/publiczny `baseUrl`, gdy potrzebujesz udostępnialnego adresu URL przeglądarki
+    - Włączaj `security.allowRemoteViewer` tylko wtedy, gdy zamierzasz udostępnić przeglądarkę z zewnątrz.
 
   </Accordion>
-  <Accordion title="Wiersz niezmienionych linii nie ma przycisku rozwijania">
-    Może się to zdarzyć dla danych wejściowych patch, gdy patch nie zawiera rozwijalnego kontekstu. Jest to oczekiwane i nie oznacza awarii przeglądarki.
+  <Accordion title="Wiersz niezmodyfikowanych linii nie ma przycisku rozwijania">
+    Może się tak zdarzyć dla danych wejściowych łatki, gdy łatka nie zawiera rozwijalnego kontekstu. Jest to oczekiwane i nie oznacza awarii przeglądarki.
   </Accordion>
   <Accordion title="Nie znaleziono artefaktu">
     - Artefakt wygasł z powodu TTL.
-    - Token lub ścieżka zostały zmienione.
+    - Token lub ścieżka się zmieniły.
     - Czyszczenie usunęło nieaktualne dane.
 
   </Accordion>
@@ -488,19 +488,19 @@ Napraw to, instalując Chrome, Chromium, Edge lub Brave albo ustawiając jedną 
 
 ## Wskazówki operacyjne
 
-- Preferuj `mode: "view"` przy lokalnych interaktywnych przeglądach w Canvas.
-- Preferuj `mode: "file"` dla wychodzących kanałów czatu wymagających załącznika.
+- Preferuj `mode: "view"` do lokalnych interaktywnych przeglądów w canvas.
+- Preferuj `mode: "file"` dla wychodzących kanałów czatu, które potrzebują załącznika.
 - Pozostaw `allowRemoteViewer` wyłączone, chyba że Twoje wdrożenie wymaga zdalnych adresów URL przeglądarki.
-- Ustawiaj jawne krótkie `ttlSeconds` dla wrażliwych różnic.
-- Unikaj wysyłania tajnych danych w wejściu różnic, jeśli nie jest to wymagane.
-- Jeśli Twój kanał agresywnie kompresuje obrazy (na przykład Telegram lub WhatsApp), preferuj wynik PDF (`fileFormat: "pdf"`).
+- Ustaw wyraźnie krótkie `ttlSeconds` dla wrażliwych diffów.
+- Unikaj wysyłania sekretów w danych wejściowych diffów, gdy nie jest to wymagane.
+- Jeśli Twój kanał agresywnie kompresuje obrazy (na przykład Telegram lub WhatsApp), preferuj dane wyjściowe PDF (`fileFormat: "pdf"`).
 
 <Note>
-Silnik renderowania różnic jest oparty na [Diffs](https://diffs.com).
+Silnik renderowania diffów oparty na [Diffs](https://diffs.com).
 </Note>
 
 ## Powiązane
 
 - [Przeglądarka](/pl/tools/browser)
 - [Pluginy](/pl/tools/plugin)
-- [Przegląd narzędzi](/pl/tools)
+- [Omówienie narzędzi](/pl/tools)

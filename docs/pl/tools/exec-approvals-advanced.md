@@ -1,40 +1,30 @@
 ---
 read_when:
-    - Konfigurowanie bezpiecznych plików binarnych lub własnych profili safe-bin
+    - Konfigurowanie bezpiecznych koszy lub niestandardowych profili bezpiecznych koszy
     - Przekazywanie zatwierdzeń do Slack/Discord/Telegram lub innych kanałów czatu
-    - Implementowanie natywnego klienta zatwierdzeń dla kanału
-summary: 'Zaawansowane zatwierdzenia exec: bezpieczne pliki binarne, powiązanie interpretera, przekazywanie zatwierdzeń, natywne dostarczanie'
-title: Zatwierdzenia exec — zaawansowane
+    - Implementacja natywnego klienta zatwierdzania dla kanału
+summary: 'Zaawansowane zatwierdzenia exec: bezpieczne binaria, wiązanie interpretera, przekazywanie zatwierdzeń, natywne dostarczanie'
+title: Zatwierdzenia wykonywania poleceń — zaawansowane
 x-i18n:
-    generated_at: "2026-04-25T13:59:24Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:21:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f5fab4a65d2d14f0d15cbe750d718b2a4e8f781a218debdb24b41be570a22d87
+    source_hash: de8a72ca1d23e55dc198ae3c5ad55a57660c2111feebfb89f08d8fa9584e4337
     source_path: tools/exec-approvals-advanced.md
-    workflow: 15
+    workflow: 16
 ---
 
-Zaawansowane tematy dotyczące zatwierdzeń exec: szybka ścieżka `safeBins`, powiązanie interpretera/runtime
-oraz przekazywanie zatwierdzeń do kanałów czatu (w tym natywne dostarczanie).
-Informacje o podstawowej polityce i przepływie zatwierdzania znajdziesz w [Zatwierdzenia exec](/pl/tools/exec-approvals).
+Zaawansowane tematy zatwierdzania exec: szybka ścieżka `safeBins`, wiązanie interpretera/środowiska uruchomieniowego oraz przekazywanie zatwierdzeń do kanałów czatu (w tym dostarczanie natywne). Podstawowe zasady i przepływ zatwierdzania opisano w [Zatwierdzeniach exec](/pl/tools/exec-approvals).
 
-## Safe bins (tylko stdin)
+## Bezpieczne binaria (tylko stdin)
 
-`tools.exec.safeBins` definiuje małą listę plików binarnych **tylko dla stdin** (na
-przykład `cut`), które mogą działać w trybie allowlist **bez** jawnych wpisów
-allowlisty. Safe bins odrzucają pozycyjne argumenty plików i tokeny podobne do ścieżek, więc
-mogą działać wyłącznie na przychodzącym strumieniu. Traktuj to jako wąską szybką ścieżkę dla
-filtrów strumieniowych, a nie ogólną listę zaufania.
+`tools.exec.safeBins` definiuje niewielką listę binariów **tylko stdin** (na przykład `cut`), które mogą działać w trybie listy dozwolonych **bez** jawnych wpisów na liście dozwolonych. Bezpieczne binaria odrzucają pozycyjne argumenty plików i tokeny przypominające ścieżki, więc mogą działać wyłącznie na przychodzącym strumieniu. Traktuj to jako wąską szybką ścieżkę dla filtrów strumieniowych, a nie ogólną listę zaufania.
 
 <Warning>
-**Nie** dodawaj interpreterów ani plików binarnych runtime (na przykład `python3`, `node`,
-`ruby`, `bash`, `sh`, `zsh`) do `safeBins`. Jeśli polecenie potrafi wykonywać kod,
-uruchamiać podpolecenia albo z założenia czytać pliki, preferuj jawne wpisy allowlisty
-i pozostaw włączone monity o zatwierdzenie. Własne safe bins muszą definiować jawny
-profil w `tools.exec.safeBinProfiles.<bin>`.
+**Nie** dodawaj binariów interpreterów ani środowisk uruchomieniowych (na przykład `python3`, `node`, `ruby`, `bash`, `sh`, `zsh`) do `safeBins`. Jeśli polecenie może ewaluować kod, wykonywać podpolecenia albo z założenia czytać pliki, preferuj jawne wpisy listy dozwolonych i pozostaw włączone monity zatwierdzeń. Niestandardowe bezpieczne binaria muszą definiować jawny profil w `tools.exec.safeBinProfiles.<bin>`.
 </Warning>
 
-Domyślne safe bins:
+Domyślne bezpieczne binaria:
 
 [//]: # "SAFE_BIN_DEFAULTS:START"
 
@@ -42,19 +32,13 @@ Domyślne safe bins:
 
 [//]: # "SAFE_BIN_DEFAULTS:END"
 
-`grep` i `sort` nie znajdują się na liście domyślnej. Jeśli włączysz je jawnie, zachowaj
-jawne wpisy allowlisty dla ich przepływów pracy innych niż stdin. Dla `grep` w trybie safe-bin
-wzorzec podawaj przez `-e`/`--regexp`; pozycyjna forma wzorca jest odrzucana,
-aby operandy plików nie mogły być przemycane jako niejednoznaczne argumenty pozycyjne.
+`grep` i `sort` nie znajdują się na domyślnej liście. Jeśli je włączysz, zachowaj jawne wpisy listy dozwolonych dla ich przepływów pracy innych niż stdin. Dla `grep` w trybie bezpiecznego binarium podaj wzorzec za pomocą `-e`/`--regexp`; forma pozycyjna wzorca jest odrzucana, aby operandów plików nie dało się przemycić jako niejednoznacznych argumentów pozycyjnych.
 
-### Walidacja argv i odrzucane flagi
+### Walidacja argv i zabronione flagi
 
-Walidacja jest deterministyczna wyłącznie na podstawie kształtu argv (bez sprawdzania istnienia systemu plików hosta),
-co zapobiega zachowaniu typu oracle istnienia pliku wynikającemu z różnic allow/deny.
-Opcje zorientowane na pliki są odrzucane dla domyślnych safe bins; opcje długie są walidowane
-w trybie fail-closed (nieznane flagi i niejednoznaczne skróty są odrzucane).
+Walidacja jest deterministyczna wyłącznie na podstawie kształtu argv (bez sprawdzania istnienia plików w systemie hosta), co zapobiega zachowaniom wyroczni istnienia plików wynikającym z różnic allow/deny. Opcje zorientowane na pliki są zabronione dla domyślnych bezpiecznych binariów; długie opcje są walidowane w trybie fail-closed (nieznane flagi i niejednoznaczne skróty są odrzucane).
 
-Odrzucane flagi według profilu safe-bin:
+Zabronione flagi według profilu bezpiecznego binarium:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:START"
 
@@ -65,214 +49,165 @@ Odrzucane flagi według profilu safe-bin:
 
 [//]: # "SAFE_BIN_DENIED_FLAGS:END"
 
-Safe bins wymuszają także traktowanie tokenów argv jako **dosłownego tekstu** w czasie wykonania
-(brak globbingu i rozwijania `$VARS`) dla segmentów tylko-stdin, dzięki czemu wzorce
-takie jak `*` lub `$HOME/...` nie mogą być używane do przemycania odczytów plików.
+Bezpieczne binaria wymuszają też traktowanie tokenów argv jako **tekstu dosłownego** w czasie wykonania (bez globowania i bez rozwijania `$VARS`) dla segmentów tylko stdin, więc wzorce takie jak `*` lub `$HOME/...` nie mogą zostać użyte do przemycenia odczytów plików.
 
-### Zaufane katalogi plików binarnych
+### Zaufane katalogi binariów
 
-Safe bins muszą być rozwiązywane z zaufanych katalogów plików binarnych (domyślnych systemowych oraz
-opcjonalnych `tools.exec.safeBinTrustedDirs`). Wpisy `PATH` nigdy nie są automatycznie uznawane za zaufane.
-Domyślne zaufane katalogi są celowo minimalne: `/bin`, `/usr/bin`. Jeśli
-Twój plik binarny safe-bin znajduje się w ścieżkach menedżera pakietów/użytkownika (na przykład
-`/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), dodaj je
-jawnie do `tools.exec.safeBinTrustedDirs`.
+Bezpieczne binaria muszą być rozwiązywane z zaufanych katalogów binariów (domyślne systemowe plus opcjonalne `tools.exec.safeBinTrustedDirs`). Wpisy `PATH` nigdy nie są automatycznie zaufane. Domyślne zaufane katalogi są celowo minimalne: `/bin`, `/usr/bin`. Jeśli wykonywalny plik bezpiecznego binarium znajduje się w ścieżkach menedżera pakietów/użytkownika (na przykład `/opt/homebrew/bin`, `/usr/local/bin`, `/opt/local/bin`, `/snap/bin`), dodaj je jawnie do `tools.exec.safeBinTrustedDirs`.
 
-### Łączenie w powłoce, wrappery i multipleksery
+### Łączenie powłoki, wrappery i multipleksery
 
-Łączenie w powłoce (`&&`, `||`, `;`) jest dozwolone, gdy każdy segment najwyższego poziomu
-spełnia zasady allowlisty (w tym safe bins lub automatyczne dopuszczenie Skills). Przekierowania
-pozostają nieobsługiwane w trybie allowlist. Substytucja poleceń (`$()` / backticks) jest
-odrzucana podczas parsowania allowlisty, również wewnątrz podwójnych cudzysłowów; użyj pojedynczych
-cudzysłowów, jeśli potrzebujesz dosłownego tekstu `$()`.
+Łączenie powłoki (`&&`, `||`, `;`) jest dozwolone, gdy każdy segment najwyższego poziomu spełnia listę dozwolonych (w tym bezpieczne binaria lub automatyczne zezwolenie Skills). Przekierowania pozostają nieobsługiwane w trybie listy dozwolonych. Podstawianie poleceń (`$()` / backticki) jest odrzucane podczas parsowania listy dozwolonych, także wewnątrz podwójnych cudzysłowów; użyj pojedynczych cudzysłowów, jeśli potrzebujesz dosłownego tekstu `$()`.
 
-W zatwierdzeniach aplikacji towarzyszącej macOS surowy tekst powłoki zawierający składnię sterowania
-lub rozwinięć powłoki (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) jest
-traktowany jako chybienie allowlisty, chyba że sam plik binarny powłoki znajduje się na allowliście.
+W zatwierdzeniach aplikacji towarzyszącej macOS surowy tekst powłoki zawierający składnię sterowania powłoką lub rozwijania (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`) jest traktowany jako brak trafienia na liście dozwolonych, chyba że samo binarium powłoki jest na liście dozwolonych.
 
-Dla opakowań powłoki (`bash|sh|zsh ... -c/-lc`) nadpisania env w zakresie żądania są
-redukowane do małej jawnej allowlisty (`TERM`, `LANG`, `LC_*`, `COLORTERM`,
-`NO_COLOR`, `FORCE_COLOR`).
+Dla wrapperów powłoki (`bash|sh|zsh ... -c/-lc`) nadpisania env o zakresie żądania są redukowane do małej jawnej listy dozwolonych (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
 
-Dla decyzji `allow-always` w trybie allowlist znane wrappery dyspozycyjne (`env`,
-`nice`, `nohup`, `stdbuf`, `timeout`) utrwalają wewnętrzną ścieżkę pliku wykonywalnego
-zamiast ścieżki wrappera. Multipleksery powłoki (`busybox`, `toybox`) są rozpakowywane dla
-apletów powłoki (`sh`, `ash` itd.) w ten sam sposób. Jeśli wrapper albo multiplexer
-nie może zostać bezpiecznie rozpakowany, żaden wpis allowlisty nie jest utrwalany automatycznie.
+Dla decyzji `allow-always` w trybie listy dozwolonych znane wrappery uruchamiania (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) utrwalają ścieżkę wewnętrznego pliku wykonywalnego zamiast ścieżki wrappera. Multipleksery powłoki (`busybox`, `toybox`) są rozpakowywane dla apletów powłoki (`sh`, `ash` itd.) w ten sam sposób. Jeśli wrappera lub multipleksera nie da się bezpiecznie rozpakować, żaden wpis listy dozwolonych nie jest utrwalany automatycznie.
 
-Jeśli umieszczasz interpretery takie jak `python3` lub `node` na allowliście, preferuj
-`tools.exec.strictInlineEval=true`, tak aby eval inline nadal wymagał jawnego
-zatwierdzenia. W trybie strict `allow-always` nadal może utrwalać nieszkodliwe
-wywołania interpretera/skryptu, ale nośniki inline-eval nie są utrwalane automatycznie.
+Jeśli dodajesz do listy dozwolonych interpretery takie jak `python3` lub `node`, preferuj `tools.exec.strictInlineEval=true`, aby inline eval nadal wymagał jawnego zatwierdzenia. W trybie ścisłym `allow-always` nadal może utrwalać nieszkodliwe wywołania interpretera/skryptu, ale nośniki inline-eval nie są utrwalane automatycznie.
 
-### Safe bins a allowlista
+### Bezpieczne binaria a lista dozwolonych
 
-| Temat            | `tools.exec.safeBins`                                 | Allowlista (`exec-approvals.json`)                                              |
-| ---------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Cel              | Automatyczne dopuszczanie wąskich filtrów stdin       | Jawne zaufanie dla konkretnych plików wykonywalnych                              |
-| Typ dopasowania  | Nazwa pliku wykonywalnego + polityka argv safe-bin    | Glob rozwiązanej ścieżki pliku wykonywalnego albo glob samej nazwy polecenia dla poleceń wywoływanych przez PATH |
-| Zakres argumentów | Ograniczony przez profil safe-bin i zasady dosłownych tokenów | Tylko dopasowanie ścieżki; argumenty są poza tym Twoją odpowiedzialnością        |
-| Typowe przykłady | `head`, `tail`, `tr`, `wc`                            | `jq`, `python3`, `node`, `ffmpeg`, własne CLI                                    |
-| Najlepsze użycie | Niskiego ryzyka transformacje tekstu w potokach       | Każde narzędzie o szerszym zachowaniu lub efektach ubocznych                     |
+| Temat | `tools.exec.safeBins` | Lista dozwolonych (`exec-approvals.json`) |
+| ---------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Cel | Automatycznie zezwalać na wąskie filtry stdin | Jawnie ufać określonym plikom wykonywalnym |
+| Typ dopasowania | Nazwa pliku wykonywalnego + zasady argv bezpiecznego binarium | Glob rozwiązanej ścieżki pliku wykonywalnego albo glob samej nazwy polecenia dla poleceń uruchamianych przez PATH |
+| Zakres argumentów | Ograniczony przez profil bezpiecznego binarium i reguły tokenów dosłownych | Tylko dopasowanie ścieżki; za argumenty odpowiadasz poza tym samodzielnie |
+| Typowe przykłady | `head`, `tail`, `tr`, `wc` | `jq`, `python3`, `node`, `ffmpeg`, niestandardowe CLI |
+| Najlepsze użycie | Transformacje tekstu niskiego ryzyka w potokach | Każde narzędzie o szerszym zachowaniu lub skutkach ubocznych |
 
 Lokalizacja konfiguracji:
 
-- `safeBins` pochodzi z konfiguracji (`tools.exec.safeBins` albo per agent `agents.list[].tools.exec.safeBins`).
-- `safeBinTrustedDirs` pochodzi z konfiguracji (`tools.exec.safeBinTrustedDirs` albo per agent `agents.list[].tools.exec.safeBinTrustedDirs`).
-- `safeBinProfiles` pochodzi z konfiguracji (`tools.exec.safeBinProfiles` albo per agent `agents.list[].tools.exec.safeBinProfiles`). Klucze profili per agent nadpisują klucze globalne.
-- Wpisy allowlisty znajdują się w lokalnym dla hosta `~/.openclaw/exec-approvals.json` pod `agents.<id>.allowlist` (albo przez Control UI / `openclaw approvals allowlist ...`).
-- `openclaw security audit` ostrzega przy użyciu `tools.exec.safe_bins_interpreter_unprofiled`, gdy pliki binarne interpreterów/runtime pojawiają się w `safeBins` bez jawnych profili.
-- `openclaw doctor --fix` może wygenerować brakujące wpisy własnych `safeBinProfiles.<bin>` jako `{}` (po tym przejrzyj je i zaostrz). Pliki binarne interpreterów/runtime nie są scaffoldowane automatycznie.
+- `safeBins` pochodzi z konfiguracji (`tools.exec.safeBins` albo per-agent `agents.list[].tools.exec.safeBins`).
+- `safeBinTrustedDirs` pochodzi z konfiguracji (`tools.exec.safeBinTrustedDirs` albo per-agent `agents.list[].tools.exec.safeBinTrustedDirs`).
+- `safeBinProfiles` pochodzi z konfiguracji (`tools.exec.safeBinProfiles` albo per-agent `agents.list[].tools.exec.safeBinProfiles`). Klucze profili per-agent zastępują klucze globalne.
+- Wpisy listy dozwolonych znajdują się w lokalnym dla hosta `~/.openclaw/exec-approvals.json` pod `agents.<id>.allowlist` (albo przez Control UI / `openclaw approvals allowlist ...`).
+- `openclaw security audit` ostrzega za pomocą `tools.exec.safe_bins_interpreter_unprofiled`, gdy binaria interpretera/środowiska uruchomieniowego pojawiają się w `safeBins` bez jawnych profili.
+- `openclaw doctor --fix` może utworzyć brakujące niestandardowe wpisy `safeBinProfiles.<bin>` jako `{}` (potem przejrzyj je i zaostrz). Binaria interpretera/środowiska uruchomieniowego nie są automatycznie tworzone.
 
-Przykład własnego profilu:
+Przykład niestandardowego profilu:
 __OC_I18N_900000__
-Jeśli jawnie włączysz `jq` do `safeBins`, OpenClaw nadal odrzuca builtin `env` w trybie safe-bin,
-dzięki czemu `jq -n env` nie może zrzucić środowiska procesu hosta bez jawnej ścieżki allowlisty
-lub monitu o zatwierdzenie.
+Jeśli jawnie włączysz `jq` do `safeBins`, OpenClaw nadal odrzuca wbudowane `env` w trybie bezpiecznego binarium, więc `jq -n env` nie może zrzucić środowiska procesu hosta bez jawnej ścieżki listy dozwolonych albo monitu zatwierdzenia.
 
-## Polecenia interpretera/runtime
+## Polecenia interpretera/środowiska uruchomieniowego
 
-Wykonania interpreterów/runtime oparte na zatwierdzeniach są celowo konserwatywne:
+Uruchomienia interpretera/środowiska uruchomieniowego oparte na zatwierdzeniach są celowo konserwatywne:
 
-- Zawsze wiązany jest dokładny kontekst argv/cwd/env.
-- Bezpośrednie skrypty powłoki i bezpośrednie formy plików runtime są w miarę możliwości wiązane z jedną konkretną lokalną migawką pliku.
-- Typowe formy wrapperów menedżera pakietów, które nadal rozwiązują się do jednego bezpośredniego lokalnego pliku (na przykład
-  `pnpm exec`, `pnpm node`, `npm exec`, `npx`), są rozpakowywane przed powiązaniem.
-- Jeśli OpenClaw nie potrafi zidentyfikować dokładnie jednego konkretnego lokalnego pliku dla polecenia interpretera/runtime
-  (na przykład skrypty pakietów, formy eval, łańcuchy loaderów specyficznych dla runtime albo niejednoznaczne formy wielu plików),
-  wykonanie oparte na zatwierdzeniu jest odrzucane zamiast twierdzić, że obejmuje semantykę,
-  której faktycznie nie obejmuje.
-- Dla takich przepływów preferuj sandboxing, oddzielną granicę hosta albo jawną zaufaną
-  allowlistę/pełny workflow, w którym operator akceptuje szerszą semantykę runtime.
+- Dokładny kontekst argv/cwd/env jest zawsze wiązany.
+- Bezpośrednie formy skryptu powłoki i bezpośrednie formy pliku środowiska uruchomieniowego są best-effort wiązane z jedną konkretną lokalną migawką pliku.
+- Typowe formy wrapperów menedżerów pakietów, które nadal rozwiązują się do jednego bezpośredniego pliku lokalnego (na przykład `pnpm exec`, `pnpm node`, `npm exec`, `npx`), są rozpakowywane przed wiązaniem.
+- Jeśli OpenClaw nie może zidentyfikować dokładnie jednego konkretnego pliku lokalnego dla polecenia interpretera/środowiska uruchomieniowego (na przykład skrypty pakietów, formy eval, łańcuchy loaderów specyficzne dla środowiska uruchomieniowego albo niejednoznaczne formy wieloplikowe), wykonanie oparte na zatwierdzeniu jest odrzucane zamiast deklarowania pokrycia semantycznego, którego nie ma.
+- Dla takich przepływów pracy preferuj sandboxing, osobną granicę hosta albo jawnie zaufaną listę dozwolonych/pełny przepływ pracy, w którym operator akceptuje szerszą semantykę środowiska uruchomieniowego.
 
-Gdy wymagane są zatwierdzenia, narzędzie exec natychmiast zwraca identyfikator zatwierdzenia. Użyj tego identyfikatora do
-skorelowania późniejszych zdarzeń systemowych (`Exec finished` / `Exec denied`). Jeśli przed
-timeoutem nie nadejdzie żadna decyzja, żądanie jest traktowane jako timeout zatwierdzenia i ujawniane jako przyczyna odmowy.
+Gdy zatwierdzenia są wymagane, narzędzie exec natychmiast zwraca identyfikator zatwierdzenia. Użyj tego identyfikatora do korelowania późniejszych zdarzeń systemowych (`Exec finished` / `Exec denied`). Jeśli decyzja nie nadejdzie przed timeoutem, żądanie jest traktowane jako timeout zatwierdzenia i prezentowane jako powód odmowy.
 
-### Zachowanie dostarczania follow-up
+### Zachowanie dostarczania followup
 
-Po zakończeniu zatwierdzonego asynchronicznego exec OpenClaw wysyła follow-up `agent` do tej samej sesji.
+Po zakończeniu zatwierdzonego asynchronicznego exec OpenClaw wysyła followup turn `agent` do tej samej sesji.
 
-- Jeśli istnieje prawidłowy zewnętrzny cel dostarczenia (kanał dostarczalny plus docelowe `to`), dostarczenie follow-up używa tego kanału.
-- W przepływach wyłącznie webchat lub sesji wewnętrznych bez zewnętrznego celu, dostarczenie follow-up pozostaje wyłącznie sesyjne (`deliver: false`).
-- Jeśli wywołujący jawnie zażąda ścisłego zewnętrznego dostarczania bez możliwego do rozwiązania zewnętrznego kanału, żądanie kończy się błędem `INVALID_REQUEST`.
-- Jeśli włączone jest `bestEffortDeliver` i nie można rozwiązać zewnętrznego kanału, dostarczenie jest degradowane do trybu wyłącznie sesyjnego zamiast błędu.
+- Jeśli istnieje prawidłowy zewnętrzny cel dostarczania (dostarczalny kanał plus docelowe `to`), dostarczanie followup używa tego kanału.
+- W przepływach tylko webchat lub sesjach wewnętrznych bez zewnętrznego celu dostarczanie followup pozostaje tylko w sesji (`deliver: false`).
+- Jeśli wywołujący jawnie zażąda ścisłego zewnętrznego dostarczania bez rozwiązywalnego kanału zewnętrznego, żądanie kończy się błędem `INVALID_REQUEST`.
+- Jeśli `bestEffortDeliver` jest włączone i nie da się rozwiązać żadnego kanału zewnętrznego, dostarczanie jest obniżane do trybu tylko sesyjnego zamiast zakończyć się błędem.
 
 ## Przekazywanie zatwierdzeń do kanałów czatu
 
-Możesz przekazywać monity zatwierdzeń exec do dowolnego kanału czatu (w tym kanałów Plugin) i zatwierdzać
-je przez `/approve`. Używa to zwykłego potoku dostarczania wychodzącego.
+Możesz przekazywać monity zatwierdzeń exec do dowolnego kanału czatu (w tym kanałów Plugin) i zatwierdzać je za pomocą `/approve`. Używa to standardowego potoku dostarczania wychodzącego.
 
 Konfiguracja:
 __OC_I18N_900001__
 Odpowiedź na czacie:
 __OC_I18N_900002__
-Polecenie `/approve` obsługuje zarówno zatwierdzenia exec, jak i zatwierdzenia Pluginów. Jeśli identyfikator nie pasuje do oczekującego zatwierdzenia exec, automatycznie sprawdza zamiast tego zatwierdzenia Pluginów.
+Polecenie `/approve` obsługuje zarówno zatwierdzenia exec, jak i zatwierdzenia Plugin. Jeśli identyfikator nie pasuje do oczekującego zatwierdzenia exec, automatycznie sprawdza zamiast tego zatwierdzenia Plugin.
 
-### Przekazywanie zatwierdzeń Pluginów
+### Przekazywanie zatwierdzeń Plugin
 
-Przekazywanie zatwierdzeń Pluginów używa tego samego potoku dostarczania co zatwierdzenia exec, ale ma własną
-niezależną konfigurację w `approvals.plugin`. Włączanie lub wyłączanie jednej funkcji nie wpływa na drugą.
+Przekazywanie zatwierdzeń Plugin używa tego samego potoku dostarczania co zatwierdzenia exec, ale ma własną niezależną konfigurację pod `approvals.plugin`. Włączenie lub wyłączenie jednego nie wpływa na drugie.
 __OC_I18N_900003__
-Kształt konfiguracji jest identyczny jak `approvals.exec`: `enabled`, `mode`, `agentFilter`,
-`sessionFilter` i `targets` działają tak samo.
+Kształt konfiguracji jest identyczny jak `approvals.exec`: `enabled`, `mode`, `agentFilter`, `sessionFilter` i `targets` działają tak samo.
 
-Kanały obsługujące współdzielone odpowiedzi interaktywne renderują te same przyciski zatwierdzeń zarówno dla zatwierdzeń exec, jak i Pluginów. Kanały bez współdzielonego interaktywnego UI wracają do zwykłego tekstu z instrukcjami `/approve`.
+Kanały obsługujące współdzielone interaktywne odpowiedzi renderują te same przyciski zatwierdzania zarówno dla zatwierdzeń exec, jak i Plugin. Kanały bez współdzielonego interaktywnego UI wracają do zwykłego tekstu z instrukcjami `/approve`.
 
 ### Zatwierdzenia w tym samym czacie na dowolnym kanale
 
-Gdy żądanie zatwierdzenia exec lub Plugin pochodzi z dostarczalnej powierzchni czatu, ten sam czat
-może teraz domyślnie zatwierdzić je przez `/approve`. Dotyczy to kanałów takich jak Slack, Matrix i
-Microsoft Teams, oprócz istniejących przepływów Web UI i terminal UI.
+Gdy żądanie zatwierdzenia exec lub Plugin pochodzi z dostarczalnej powierzchni czatu, ten sam czat może teraz domyślnie je zatwierdzić za pomocą `/approve`. Dotyczy to kanałów takich jak Slack, Matrix i Microsoft Teams, oprócz istniejących przepływów Web UI i terminal UI.
 
-Ta współdzielona ścieżka polecenia tekstowego używa normalnego modelu uwierzytelniania kanału dla tej konwersacji. Jeśli
-czat źródłowy może już wysyłać polecenia i odbierać odpowiedzi, żądania zatwierdzeń nie potrzebują już
-osobnego natywnego adaptera dostarczania tylko po to, aby pozostać oczekujące.
+Ta współdzielona ścieżka polecenia tekstowego używa standardowego modelu autoryzacji kanału dla tej konwersacji. Jeśli czat źródłowy może już wysyłać polecenia i odbierać odpowiedzi, żądania zatwierdzeń nie potrzebują już osobnego natywnego adaptera dostarczania tylko po to, aby pozostać w stanie oczekiwania.
 
-Discord i Telegram także obsługują `/approve` w tym samym czacie, ale te kanały nadal używają
-rozwiązanej listy zatwierdzających do autoryzacji, nawet gdy natywne dostarczanie zatwierdzeń jest wyłączone.
+Discord i Telegram także obsługują `/approve` w tym samym czacie, ale te kanały nadal używają swojej rozwiązanej listy zatwierdzających do autoryzacji, nawet gdy natywne dostarczanie zatwierdzeń jest wyłączone.
 
-Dla Telegram i innych natywnych klientów zatwierdzeń wywołujących Gateway bezpośrednio,
-ten fallback jest celowo ograniczony do błędów typu „nie znaleziono zatwierdzenia”.
-Rzeczywista odmowa/błąd zatwierdzenia exec nie jest po cichu ponawiana jako zatwierdzenie Plugin.
+Dla Telegram i innych natywnych klientów zatwierdzeń, które wywołują Gateway bezpośrednio, ten fallback jest celowo ograniczony do niepowodzeń typu „approval not found”. Rzeczywista odmowa/błąd zatwierdzenia exec nie ponawia po cichu próby jako zatwierdzenie Plugin.
 
 ### Natywne dostarczanie zatwierdzeń
 
-Niektóre kanały mogą także działać jako natywni klienci zatwierdzeń. Natywni klienci dodają DM-y zatwierdzających, fanout do czatu źródłowego i interaktywne UX zatwierdzeń specyficzne dla kanału ponad współdzielony przepływ `/approve` w tym samym czacie.
+Niektóre kanały mogą także działać jako natywni klienci zatwierdzeń. Natywni klienci dodają prywatne wiadomości do zatwierdzających, fanout czatu źródłowego oraz specyficzny dla kanału interaktywny UX zatwierdzania na warstwie współdzielonego przepływu `/approve` w tym samym czacie.
 
-Gdy dostępne są natywne karty/przyciski zatwierdzeń, to natywne UI jest podstawową
-ścieżką widoczną dla agenta. Agent nie powinien dodatkowo powtarzać zduplikowanego zwykłego polecenia
-`/approve` na czacie, chyba że wynik narzędzia mówi, że zatwierdzenia czatowe są niedostępne albo
-ręczne zatwierdzenie jest jedyną pozostałą ścieżką.
+Gdy dostępne są natywne karty/przyciski zatwierdzania, ten natywny interfejs użytkownika jest podstawową ścieżką dla agenta. Agent nie powinien także powielać zwykłego polecenia czatu `/approve`, chyba że wynik narzędzia wskazuje, że zatwierdzenia przez czat są niedostępne albo ręczne zatwierdzenie jest jedyną pozostałą ścieżką.
+
+Jeśli natywny klient zatwierdzeń jest skonfigurowany, ale żadne natywne środowisko wykonawcze nie jest aktywne dla kanału źródłowego, OpenClaw pozostawia widoczny lokalny deterministyczny monit `/approve`. Jeśli natywne środowisko wykonawcze jest aktywne i próbuje dostarczyć kartę, ale żaden cel jej nie otrzymuje, OpenClaw wysyła w tym samym czacie powiadomienie zastępcze z dokładnym poleceniem `/approve <id> <decision>`, aby żądanie nadal można było rozstrzygnąć.
 
 Model ogólny:
 
-- polityka exec hosta nadal decyduje, czy wymagane jest zatwierdzenie exec
-- `approvals.exec` kontroluje przekazywanie monitów zatwierdzeń do innych miejsc docelowych czatu
-- `channels.<channel>.execApprovals` kontroluje, czy dany kanał działa jako natywny klient zatwierdzeń
+- polityka wykonywania hosta nadal decyduje, czy zatwierdzenie exec jest wymagane
+- `approvals.exec` steruje przekazywaniem monitów zatwierdzenia do innych miejsc docelowych czatu
+- `channels.<channel>.execApprovals` steruje tym, czy dany kanał działa jako natywny klient zatwierdzeń
 
-Natywni klienci zatwierdzeń automatycznie włączają dostarczanie DM-first, gdy spełnione są wszystkie poniższe warunki:
+Natywni klienci zatwierdzeń automatycznie włączają dostarczanie najpierw przez DM, gdy spełnione są wszystkie te warunki:
 
 - kanał obsługuje natywne dostarczanie zatwierdzeń
-- zatwierdzających można rozwiązać z jawnych `execApprovals.approvers` albo z
-  udokumentowanych źródeł fallback dla tego kanału
+- zatwierdzających można ustalić z jawnego `execApprovals.approvers` albo tożsamości właściciela, takiej jak `commands.ownerAllowFrom`
 - `channels.<channel>.execApprovals.enabled` jest nieustawione albo ma wartość `"auto"`
 
-Ustaw `enabled: false`, aby jawnie wyłączyć natywnego klienta zatwierdzeń. Ustaw `enabled: true`, aby wymusić
-jego włączenie, gdy można rozwiązać zatwierdzających. Publiczne dostarczanie do czatu źródłowego pozostaje jawnie sterowane przez
-`channels.<channel>.execApprovals.target`.
+Ustaw `enabled: false`, aby jawnie wyłączyć natywnego klienta zatwierdzeń. Ustaw `enabled: true`, aby wymusić jego włączenie, gdy zatwierdzający zostaną ustaleni. Publiczne dostarczanie do czatu źródłowego pozostaje jawne przez `channels.<channel>.execApprovals.target`.
 
-FAQ: [Dlaczego istnieją dwie konfiguracje zatwierdzeń exec dla zatwierdzeń czatowych?](/help/faq-first-run#why-are-there-two-exec-approval-configs-for-chat-approvals)
+FAQ: [Dlaczego istnieją dwie konfiguracje zatwierdzeń exec dla zatwierdzeń na czacie?](/help/faq-first-run#why-are-there-two-exec-approval-configs-for-chat-approvals)
 
 - Discord: `channels.discord.execApprovals.*`
 - Slack: `channels.slack.execApprovals.*`
 - Telegram: `channels.telegram.execApprovals.*`
 
-Ci natywni klienci zatwierdzeń dodają routing DM i opcjonalny fanout kanałowy ponad współdzielony
-przepływ `/approve` w tym samym czacie oraz współdzielone przyciski zatwierdzeń.
+Ci natywni klienci zatwierdzeń dodają routing DM i opcjonalne rozsyłanie do kanałów na bazie współdzielonego przepływu `/approve` w tym samym czacie oraz współdzielonych przycisków zatwierdzania.
 
 Wspólne zachowanie:
 
-- Slack, Matrix, Microsoft Teams i podobne dostarczalne czaty używają normalnego modelu uwierzytelniania kanału
-  dla `/approve` w tym samym czacie
-- gdy natywny klient zatwierdzeń włącza się automatycznie, domyślnym celem natywnego dostarczania są DM-y zatwierdzających
-- w przypadku Discord i Telegram tylko rozwiązani zatwierdzający mogą zatwierdzać lub odrzucać
-- zatwierdzający Discord mogą być jawni (`execApprovals.approvers`) albo wywnioskowani z `commands.ownerAllowFrom`
-- zatwierdzający Telegram mogą być jawni (`execApprovals.approvers`) albo wywnioskowani z istniejącej konfiguracji właściciela (`allowFrom` oraz bezpośredniego `defaultTo`, gdy jest obsługiwane)
-- zatwierdzający Slack mogą być jawni (`execApprovals.approvers`) albo wywnioskowani z `commands.ownerAllowFrom`
-- natywne przyciski Slack zachowują rodzaj identyfikatora zatwierdzenia, dzięki czemu identyfikatory `plugin:` mogą rozwiązywać zatwierdzenia Pluginów
-  bez drugiej lokalnej warstwy fallback Slack
-- natywny routing DM/kanałów Matrix i skróty reakcji obsługują zarówno zatwierdzenia exec, jak i Pluginów;
-  autoryzacja Pluginów nadal pochodzi z `channels.matrix.dm.allowFrom`
+- Slack, Matrix, Microsoft Teams i podobne czaty z możliwością dostarczania używają normalnego modelu uwierzytelniania kanału dla `/approve` w tym samym czacie
+- gdy natywny klient zatwierdzeń włącza się automatycznie, domyślnym natywnym celem dostarczania są DM zatwierdzających
+- w przypadku Discord i Telegram tylko ustaleni zatwierdzający mogą zatwierdzać albo odmawiać
+- zatwierdzający w Discord mogą być jawni (`execApprovals.approvers`) albo wywnioskowani z `commands.ownerAllowFrom`
+- zatwierdzający w Telegram mogą być jawni (`execApprovals.approvers`) albo wywnioskowani z `commands.ownerAllowFrom`
+- zatwierdzający w Slack mogą być jawni (`execApprovals.approvers`) albo wywnioskowani z `commands.ownerAllowFrom`
+- natywne przyciski Slack zachowują rodzaj identyfikatora zatwierdzenia, więc identyfikatory `plugin:` mogą rozwiązywać zatwierdzenia pluginów bez drugiej, lokalnej dla Slack warstwy zastępczej
+- natywny routing DM/kanału w Matrix oraz skróty reakcji obsługują zarówno zatwierdzenia exec, jak i pluginów; autoryzacja pluginów nadal pochodzi z `channels.matrix.dm.allowFrom`
+- natywne monity Matrix zawierają niestandardową treść zdarzenia `com.openclaw.approval` w pierwszym zdarzeniu monitu, aby klienci Matrix świadomi OpenClaw mogli odczytywać ustrukturyzowany stan zatwierdzenia, podczas gdy standardowi klienci zachowują zwykły tekst zastępczy `/approve`
 - zgłaszający nie musi być zatwierdzającym
-- czat źródłowy może zatwierdzić bezpośrednio przez `/approve`, gdy ten czat już obsługuje polecenia i odpowiedzi
-- natywne przyciski zatwierdzeń Discord kierują według rodzaju identyfikatora zatwierdzenia: identyfikatory `plugin:` trafiają
-  bezpośrednio do zatwierdzeń Pluginów, a wszystko inne trafia do zatwierdzeń exec
-- natywne przyciski zatwierdzeń Telegram podążają za tym samym ograniczonym fallbackiem exec-to-plugin co `/approve`
-- gdy natywny `target` włącza dostarczanie do czatu źródłowego, monity zatwierdzeń zawierają tekst polecenia
+- czat źródłowy może zatwierdzać bezpośrednio za pomocą `/approve`, gdy ten czat już obsługuje polecenia i odpowiedzi
+- natywne przyciski zatwierdzania Discord kierują według rodzaju identyfikatora zatwierdzenia: identyfikatory `plugin:` trafiają bezpośrednio do zatwierdzeń pluginów, a wszystko inne trafia do zatwierdzeń exec
+- natywne przyciski zatwierdzania Telegram stosują ten sam ograniczony mechanizm zastępczy exec-do-pluginu co `/approve`
+- gdy natywny `target` włącza dostarczanie do czatu źródłowego, monity zatwierdzenia zawierają tekst polecenia
 - oczekujące zatwierdzenia exec domyślnie wygasają po 30 minutach
-- jeśli żadne UI operatora ani skonfigurowany klient zatwierdzeń nie może przyjąć żądania, monit wraca do `askFallback`
+- jeśli żaden interfejs operatora ani skonfigurowany klient zatwierdzeń nie może przyjąć żądania, monit przechodzi na `askFallback`
 
-Telegram domyślnie używa DM-ów zatwierdzających (`target: "dm"`). Możesz przełączyć na `channel` albo `both`, gdy
-chcesz, aby monity zatwierdzeń pojawiały się również w źródłowym czacie/temacie Telegram. W przypadku tematów forum Telegram
-OpenClaw zachowuje temat dla monitu zatwierdzenia i follow-up po zatwierdzeniu.
+Wrażliwe polecenia grupowe tylko dla właściciela, takie jak `/diagnostics` i `/export-trajectory`, używają prywatnego routingu właściciela dla monitów zatwierdzenia i wyników końcowych. OpenClaw najpierw próbuje użyć prywatnej trasy na tej samej powierzchni, na której właściciel uruchomił polecenie. Jeśli ta powierzchnia nie ma prywatnej trasy właściciela, przechodzi na pierwszą dostępną trasę właściciela z `commands.ownerAllowFrom`, więc polecenie grupowe Discord nadal może wysłać zatwierdzenie i wynik do DM właściciela w Telegram, gdy Telegram jest skonfigurowanym podstawowym interfejsem prywatnym. Czat grupowy otrzymuje tylko krótkie potwierdzenie.
+
+Telegram domyślnie używa DM zatwierdzających (`target: "dm"`). Możesz przełączyć na `channel` albo `both`, gdy chcesz, aby monity zatwierdzenia pojawiały się także w źródłowym czacie/temacie Telegram. Dla tematów forum Telegram OpenClaw zachowuje temat dla monitu zatwierdzenia i dalszej wiadomości po zatwierdzeniu.
 
 Zobacz:
 
 - [Discord](/channels/discord)
 - [Telegram](/channels/telegram)
 
-### Przepływ IPC macOS
+### Przepływ IPC w macOS
 __OC_I18N_900004__
 Uwagi dotyczące bezpieczeństwa:
 
 - Tryb gniazda Unix `0600`, token przechowywany w `exec-approvals.json`.
-- Sprawdzanie peera o tym samym UID.
-- Challenge/response (nonce + HMAC token + hash żądania) + krótki TTL.
+- Sprawdzenie peera o tym samym UID.
+- Wyzwanie/odpowiedź (nonce + token HMAC + skrót żądania) + krótki TTL.
 
 ## Powiązane
 
-- [Zatwierdzenia exec](/pl/tools/exec-approvals) — podstawowa polityka i przepływ zatwierdzeń
+- [Zatwierdzenia exec](/pl/tools/exec-approvals) — podstawowa polityka i przepływ zatwierdzania
 - [Narzędzie exec](/pl/tools/exec)
-- [Tryb podwyższonych uprawnień](/pl/tools/elevated)
-- [Skills](/pl/tools/skills) — zachowanie auto-allow oparte na Skills
+- [Tryb podwyższony](/pl/tools/elevated)
+- [Skills](/pl/tools/skills) — zachowanie automatycznego zezwalania wspierane przez Skills

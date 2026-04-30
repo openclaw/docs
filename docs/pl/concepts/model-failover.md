@@ -1,73 +1,85 @@
 ---
 read_when:
-    - Diagnozowanie rotacji profili uwierzytelniania, cooldownów lub zachowania awaryjnego przełączania modeli
-    - Aktualizowanie reguł awaryjnego przełączania dla profili uwierzytelniania lub modeli
-    - Zrozumienie, jak nadpisania modelu sesji współdziałają z ponownymi próbami awaryjnego przełączania
+    - Diagnozowanie rotacji profili uwierzytelniania, okresów karencji lub zachowania awaryjnego przełączania modelu
+    - Aktualizowanie reguł przełączania awaryjnego dla profili uwierzytelniania lub modeli
+    - Zrozumienie, jak nadpisania modelu sesji współdziałają z ponowieniami awaryjnymi
 sidebarTitle: Model failover
-summary: Jak OpenClaw rotuje profile uwierzytelniania i przełącza się awaryjnie między modelami
-title: Awaryjne przełączanie modeli
+summary: Jak OpenClaw rotuje profile uwierzytelniania i przełącza awaryjnie między modelami
+title: Przełączanie awaryjne modelu
 x-i18n:
-    generated_at: "2026-04-26T11:27:50Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:48:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0e681a456f75073bb34e7af94234efeee57c6c25e9414da19eb9527ccba5444a
+    source_hash: af8c343186105256cb2e1a65cdfc3e0042ce8d3d14d21cd007d90174e35b98e7
     source_path: concepts/model-failover.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw obsługuje błędy w dwóch etapach:
+OpenClaw obsługuje awarie w dwóch etapach:
 
-1. **Rotacja profili uwierzytelniania** w obrębie bieżącego dostawcy.
-2. **Awaryjne przełączanie modelu** do następnego modelu w `agents.defaults.model.fallbacks`.
+1. **Rotacja profilu uwierzytelniania** w ramach bieżącego dostawcy.
+2. **Awaryjne przełączenie modelu** na następny model w `agents.defaults.model.fallbacks`.
 
-Ten dokument wyjaśnia reguły działania w runtime oraz dane, które je wspierają.
+Ten dokument wyjaśnia reguły działania w czasie wykonywania oraz dane, na których się opierają.
 
-## Przepływ runtime
+## Przepływ działania
 
-Dla zwykłego uruchomienia tekstowego OpenClaw ocenia kandydatów w tej kolejności:
+W przypadku zwykłego uruchomienia tekstowego OpenClaw ocenia kandydatów w tej kolejności:
 
 <Steps>
-  <Step title="Rozwiąż stan sesji">
-    Rozwiąż aktywny model sesji i preferencję profilu uwierzytelniania.
+  <Step title="Ustal stan sesji">
+    Ustal aktywny model sesji i preferencję profilu uwierzytelniania.
   </Step>
   <Step title="Zbuduj łańcuch kandydatów">
-    Zbuduj łańcuch kandydatów modeli na podstawie aktualnie wybranego modelu sesji, następnie `agents.defaults.model.fallbacks` w kolejności, kończąc skonfigurowanym primary, gdy uruchomienie zaczęło się od nadpisania.
+    Zbuduj łańcuch kandydatów modelu na podstawie bieżącego wyboru modelu i zasad awaryjnego przełączania dla źródła tego wyboru. Skonfigurowane wartości domyślne, podstawowe modele zadań cron oraz automatycznie wybrane modele awaryjne mogą używać skonfigurowanych opcji awaryjnych; jawne wybory sesji użytkownika są ścisłe.
   </Step>
   <Step title="Wypróbuj bieżącego dostawcę">
-    Wypróbuj bieżącego dostawcę z regułami rotacji/cooldown profili uwierzytelniania.
+    Wypróbuj bieżącego dostawcę z regułami rotacji profili uwierzytelniania i okresów cooldown.
   </Step>
   <Step title="Przejdź dalej przy błędach kwalifikujących się do failover">
     Jeśli ten dostawca zostanie wyczerpany z błędem kwalifikującym się do failover, przejdź do następnego kandydata modelu.
   </Step>
-  <Step title="Zapisz nadpisanie fallback">
-    Zapisz wybrane nadpisanie fallback przed rozpoczęciem ponownej próby, aby inni czytelnicy sesji widzieli tego samego dostawcę/model, którego runner zaraz użyje.
+  <Step title="Utrwal nadpisanie awaryjne">
+    Utrwal wybrane nadpisanie awaryjne przed rozpoczęciem ponownej próby, aby inne czytniki sesji widziały tego samego dostawcę/model, którego runner zaraz użyje. Utrwalone nadpisanie modelu jest oznaczone jako `modelOverrideSource: "auto"`.
   </Step>
-  <Step title="Wąsko wycofaj po błędzie">
-    Jeśli kandydat fallback zawiedzie, wycofaj tylko pola nadpisania sesji należące do fallback, gdy nadal odpowiadają temu nieudanemu kandydatowi.
+  <Step title="Wycofaj wąsko przy niepowodzeniu">
+    Jeśli kandydat awaryjny zawiedzie, wycofaj tylko pola nadpisania sesji należące do mechanizmu awaryjnego, gdy nadal odpowiadają temu nieudanemu kandydatowi.
   </Step>
   <Step title="Rzuć FallbackSummaryError po wyczerpaniu">
-    Jeśli każdy kandydat zawiedzie, rzuć `FallbackSummaryError` ze szczegółami dla każdej próby i najbliższym znanym czasem wygaśnięcia cooldown.
+    Jeśli każdy kandydat zawiedzie, rzuć `FallbackSummaryError` ze szczegółami każdej próby i najbliższym czasem wygaśnięcia cooldown, jeśli jest znany.
   </Step>
 </Steps>
 
-Jest to celowo węższe niż „zapisz i przywróć całą sesję”. Runner odpowiedzi zapisuje dla fallback tylko pola wyboru modelu, którymi zarządza:
+Jest to celowo węższe niż „zapisz i przywróć całą sesję”. Runner odpowiedzi utrwala tylko pola wyboru modelu, które należą do niego w ramach mechanizmu awaryjnego:
 
 - `providerOverride`
 - `modelOverride`
+- `modelOverrideSource`
 - `authProfileOverride`
 - `authProfileOverrideSource`
 - `authProfileOverrideCompactionCount`
 
-To zapobiega sytuacji, w której nieudana ponowna próba fallback nadpisuje nowsze, niepowiązane mutacje sesji, takie jak ręczne zmiany `/model` lub aktualizacje rotacji sesji, które nastąpiły podczas działania próby.
+Zapobiega to sytuacji, w której nieudana ponowna próba awaryjna nadpisuje nowsze, niepowiązane mutacje sesji, takie jak ręczne zmiany `/model` lub aktualizacje rotacji sesji, które nastąpiły w trakcie działania próby.
+
+## Zasady źródła wyboru
+
+OpenClaw oddziela wybranego dostawcę/model od powodu, dla którego został wybrany. To źródło kontroluje, czy łańcuch awaryjny jest dozwolony:
+
+- **Skonfigurowana wartość domyślna**: `agents.defaults.model.primary` używa `agents.defaults.model.fallbacks`.
+- **Podstawowy model agenta**: `agents.list[].model` jest ścisły, chyba że obiekt modelu tego agenta zawiera własne `fallbacks`. Użyj `fallbacks: []`, aby jawnie ustawić ścisłe zachowanie, albo podaj niepustą listę, aby włączyć awaryjne przełączanie modeli dla tego agenta.
+- **Automatyczne nadpisanie awaryjne**: awaryjne przełączenie w czasie wykonywania zapisuje `providerOverride`, `modelOverride` i `modelOverrideSource: "auto"` przed ponowną próbą. To automatyczne nadpisanie może dalej przechodzić po skonfigurowanym łańcuchu awaryjnym i jest czyszczone przez `/new`, `/reset` oraz `sessions.reset`.
+- **Nadpisanie sesji użytkownika**: `/model`, selektor modelu, `session_status(model=...)` i `sessions.patch` zapisują `modelOverrideSource: "user"`. To dokładny wybór sesji. Jeśli wybrany dostawca/model zawiedzie przed wygenerowaniem odpowiedzi, OpenClaw zgłasza błąd zamiast odpowiadać z niepowiązanego skonfigurowanego modelu awaryjnego.
+- **Starsze nadpisanie sesji**: starsze wpisy sesji mogą mieć `modelOverride` bez `modelOverrideSource`. OpenClaw traktuje je jako nadpisania użytkownika, aby jawny stary wybór nie został po cichu przekształcony w zachowanie awaryjne.
+- **Model w ładunku Cron**: `payload.model` / `--model` zadania cron jest podstawowym modelem zadania, a nie nadpisaniem sesji użytkownika. Używa skonfigurowanych opcji awaryjnych, chyba że zadanie podaje `payload.fallbacks`; `payload.fallbacks: []` sprawia, że uruchomienie cron jest ścisłe.
 
 ## Przechowywanie uwierzytelniania (klucze + OAuth)
 
 OpenClaw używa **profili uwierzytelniania** zarówno dla kluczy API, jak i tokenów OAuth.
 
 - Sekrety znajdują się w `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (starsza ścieżka: `~/.openclaw/agent/auth-profiles.json`).
-- Stan routingu uwierzytelniania w runtime znajduje się w `~/.openclaw/agents/<agentId>/agent/auth-state.json`.
-- Konfiguracja `auth.profiles` / `auth.order` to wyłącznie **metadane + routing** (bez sekretów).
-- Starszy plik OAuth tylko do importu: `~/.openclaw/credentials/oauth.json` (importowany do `auth-profiles.json` przy pierwszym użyciu).
+- Stan routingu uwierzytelniania w czasie wykonywania znajduje się w `~/.openclaw/agents/<agentId>/agent/auth-state.json`.
+- Konfiguracje `auth.profiles` / `auth.order` to **tylko metadane + routing** (bez sekretów).
+- Starszy plik OAuth wyłącznie do importu: `~/.openclaw/credentials/oauth.json` (importowany do `auth-profiles.json` przy pierwszym użyciu).
 
 Więcej szczegółów: [OAuth](/pl/concepts/oauth)
 
@@ -78,7 +90,7 @@ Typy poświadczeń:
 
 ## Identyfikatory profili
 
-Logowania OAuth tworzą odrębne profile, aby wiele kont mogło współistnieć.
+Logowania OAuth tworzą osobne profile, aby wiele kont mogło współistnieć.
 
 - Domyślnie: `provider:default`, gdy adres e-mail nie jest dostępny.
 - OAuth z adresem e-mail: `provider:<email>` (na przykład `google-antigravity:user@gmail.com`).
@@ -91,72 +103,72 @@ Gdy dostawca ma wiele profili, OpenClaw wybiera kolejność w ten sposób:
 
 <Steps>
   <Step title="Jawna konfiguracja">
-    `auth.order[provider]` (jeśli ustawione).
+    `auth.order[provider]` (jeśli ustawiono).
   </Step>
   <Step title="Skonfigurowane profile">
-    `auth.profiles` odfiltrowane według dostawcy.
+    `auth.profiles` przefiltrowane według dostawcy.
   </Step>
   <Step title="Zapisane profile">
-    Wpisy w `auth-profiles.json` dla tego dostawcy.
+    Wpisy w `auth-profiles.json` dla dostawcy.
   </Step>
 </Steps>
 
-Jeśli nie skonfigurowano jawnej kolejności, OpenClaw używa kolejności round‑robin:
+Jeśli nie skonfigurowano jawnej kolejności, OpenClaw używa kolejności round-robin:
 
 - **Klucz główny:** typ profilu (**OAuth przed kluczami API**).
-- **Klucz pomocniczy:** `usageStats.lastUsed` (najstarsze najpierw, w obrębie każdego typu).
+- **Klucz pomocniczy:** `usageStats.lastUsed` (najstarsze najpierw, w ramach każdego typu).
 - **Profile w cooldown/wyłączone** są przenoszone na koniec, uporządkowane według najbliższego wygaśnięcia.
 
-### Przyklejenie do sesji (przyjazne dla cache)
+### Przywiązanie do sesji (przyjazne dla cache)
 
-OpenClaw **przypina wybrany profil uwierzytelniania do sesji**, aby utrzymać ciepłe cache dostawcy. **Nie** rotuje przy każdym żądaniu. Przypięty profil jest używany ponownie, dopóki:
+OpenClaw **przypina wybrany profil uwierzytelniania do sesji**, aby utrzymać ciepłe cache dostawców. **Nie** rotuje przy każdym żądaniu. Przypięty profil jest używany ponownie, dopóki:
 
 - sesja nie zostanie zresetowana (`/new` / `/reset`)
-- nie zakończy się Compaction (licznik Compaction rośnie)
+- Compaction się nie zakończy (licznik compaction wzrośnie)
 - profil nie znajdzie się w cooldown/nie zostanie wyłączony
 
-Ręczny wybór przez `/model …@<profileId>` ustawia **nadpisanie użytkownika** dla tej sesji i nie jest automatycznie rotowany, dopóki nie rozpocznie się nowa sesja.
+Ręczny wybór przez `/model …@<profileId>` ustawia **nadpisanie użytkownika** dla tej sesji i nie jest automatycznie rotowany do rozpoczęcia nowej sesji.
 
 <Note>
-Profile przypięte automatycznie (wybrane przez router sesji) są traktowane jako **preferencja**: są próbowane jako pierwsze, ale OpenClaw może obrócić do innego profilu przy limitach szybkości/timeoutach. Profile przypięte przez użytkownika pozostają zablokowane do tego profilu; jeśli zawiodą i skonfigurowano fallback modeli, OpenClaw przechodzi do następnego modelu zamiast przełączać profile.
+Automatycznie przypięte profile (wybrane przez router sesji) są traktowane jako **preferencja**: są próbowane jako pierwsze, ale OpenClaw może przejść do innego profilu przy limitach szybkości/timeoutach. Profile przypięte przez użytkownika pozostają zablokowane na tym profilu; jeśli zawiedzie, a awaryjne przełączanie modeli jest skonfigurowane, OpenClaw przechodzi do następnego modelu zamiast przełączać profile.
 </Note>
 
-### Dlaczego OAuth może „wydawać się zagubione”
+### Dlaczego OAuth może „wyglądać na utracone”
 
-Jeśli masz jednocześnie profil OAuth i profil klucza API dla tego samego dostawcy, round‑robin może przełączać się między nimi między wiadomościami, o ile nie są przypięte. Aby wymusić pojedynczy profil:
+Jeśli masz zarówno profil OAuth, jak i profil klucza API dla tego samego dostawcy, round-robin może przełączać się między nimi w kolejnych wiadomościach, chyba że profil jest przypięty. Aby wymusić jeden profil:
 
-- Przypnij przez `auth.order[provider] = ["provider:profileId"]`, albo
-- Użyj nadpisania per sesja przez `/model …` z nadpisaniem profilu (gdy jest obsługiwane przez Twój interfejs UI/powierzchnię czatu).
+- Przypnij za pomocą `auth.order[provider] = ["provider:profileId"]`, albo
+- Użyj nadpisania dla sesji przez `/model …` z nadpisaniem profilu (gdy jest obsługiwane przez Twój interfejs UI/czat).
 
 ## Cooldowny
 
-Gdy profil zawiedzie z powodu błędów uwierzytelniania/limitów szybkości (lub timeoutu wyglądającego jak limit szybkości), OpenClaw oznacza go cooldown i przechodzi do następnego profilu.
+Gdy profil zawiedzie z powodu błędów uwierzytelniania/limitów szybkości (albo timeoutu wyglądającego jak limit szybkości), OpenClaw oznacza go jako w cooldown i przechodzi do następnego profilu.
 
 <AccordionGroup>
   <Accordion title="Co trafia do koszyka limitu szybkości / timeoutu">
-    Ten koszyk limitu szybkości jest szerszy niż zwykłe `429`: obejmuje również komunikaty dostawców takie jak `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` oraz okresowe limity okna użycia, takie jak `weekly/monthly limit reached`.
+    Ten koszyk limitu szybkości jest szerszy niż zwykłe `429`: obejmuje też komunikaty dostawców takie jak `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded`, `throttled`, `resource exhausted` oraz okresowe limity okien użycia, takie jak `weekly/monthly limit reached`.
 
-    Błędy formatu/nieprawidłowego żądania (na przykład błędy walidacji identyfikatora wywołania narzędzia Cloud Code Assist) są traktowane jako kwalifikujące się do failover i używają tych samych cooldownów. Błędy OpenAI-compatible stop-reason, takie jak `Unhandled stop reason: error`, `stop reason: error` i `reason: error`, są klasyfikowane jako sygnały timeout/failover.
+    Błędy formatu/nieprawidłowego żądania (na przykład błędy walidacji identyfikatora wywołania narzędzia Cloud Code Assist) są traktowane jako kwalifikujące się do failover i używają tych samych cooldownów. Błędy powodu zatrzymania zgodne z OpenAI, takie jak `Unhandled stop reason: error`, `stop reason: error` i `reason: error`, są klasyfikowane jako sygnały timeoutu/failover.
 
-    Ogólny tekst serwera może również trafić do tego koszyka timeoutu, gdy źródło pasuje do znanego wzorca przejściowego. Na przykład sam komunikat wrappera strumienia pi-ai `An unknown error occurred` jest traktowany jako kwalifikujący się do failover dla każdego dostawcy, ponieważ pi-ai emituje go, gdy strumienie dostawcy kończą się z `stopReason: "aborted"` lub `stopReason: "error"` bez szczegółów. Ładunki JSON `api_error` z przejściowym tekstem serwera, takim jak `internal server error`, `unknown error, 520`, `upstream error` lub `backend error`, również są traktowane jako timeouty kwalifikujące się do failover.
+    Ogólny tekst serwera może również trafić do tego koszyka timeoutów, gdy źródło pasuje do znanego wzorca przejściowego. Na przykład podstawowy komunikat wrappera strumienia pi-ai `An unknown error occurred` jest traktowany jako kwalifikujący się do failover dla każdego dostawcy, ponieważ pi-ai emituje go, gdy strumienie dostawcy kończą się z `stopReason: "aborted"` lub `stopReason: "error"` bez konkretnych szczegółów. Ładunki JSON `api_error` z przejściowym tekstem serwera, takim jak `internal server error`, `unknown error, 520`, `upstream error` lub `backend error`, są również traktowane jako timeouty kwalifikujące się do failover.
 
-    Ogólny tekst upstream specyficzny dla OpenRouter, taki jak samo `Provider returned error`, jest traktowany jako timeout tylko wtedy, gdy kontekst dostawcy to rzeczywiście OpenRouter. Ogólny wewnętrzny tekst fallback, taki jak `LLM request failed with an unknown error.`, pozostaje konserwatywny i sam z siebie nie wyzwala failover.
+    Ogólny tekst upstream specyficzny dla OpenRouter, taki jak samo `Provider returned error`, jest traktowany jako timeout tylko wtedy, gdy kontekst dostawcy faktycznie jest OpenRouter. Ogólny wewnętrzny tekst awaryjny, taki jak `LLM request failed with an unknown error.`, pozostaje zachowawczy i sam nie wyzwala failover.
 
   </Accordion>
-  <Accordion title="Ograniczenia retry-after w SDK">
-    Niektóre SDK dostawców mogłyby w przeciwnym razie zasnąć na długie okno `Retry-After`, zanim zwrócą sterowanie do OpenClaw. Dla SDK opartych na Stainless, takich jak Anthropic i OpenAI, OpenClaw domyślnie ogranicza wewnętrzne oczekiwania SDK `retry-after-ms` / `retry-after` do 60 sekund i natychmiast ujawnia dłuższe odpowiedzi kwalifikujące się do ponownej próby, aby ta ścieżka failover mogła się uruchomić. Dostosuj lub wyłącz ten limit przez `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS`; zobacz [Zachowanie ponownych prób](/pl/concepts/retry).
+  <Accordion title="Limity retry-after w SDK">
+    Niektóre SDK dostawców mogłyby w przeciwnym razie uśpić proces na długie okno `Retry-After` przed zwróceniem kontroli do OpenClaw. Dla SDK opartych na Stainless, takich jak Anthropic i OpenAI, OpenClaw domyślnie ogranicza wewnętrzne oczekiwania SDK `retry-after-ms` / `retry-after` do 60 sekund i natychmiast ujawnia dłuższe odpowiedzi nadające się do ponowienia, aby ta ścieżka failover mogła się uruchomić. Dostosuj lub wyłącz limit za pomocą `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS`; zobacz [Zachowanie ponowień](/pl/concepts/retry).
   </Accordion>
-  <Accordion title="Cooldowny ograniczone do modelu">
-    Cooldowny limitu szybkości mogą też być ograniczone do modelu:
+  <Accordion title="Cooldowny zakresowane do modelu">
+    Cooldowny limitów szybkości mogą być także zakresowane do modelu:
 
-    - OpenClaw zapisuje `cooldownModel` dla błędów limitu szybkości, gdy znany jest identyfikator nieudanego modelu.
-    - Model równorzędny u tego samego dostawcy nadal może zostać wypróbowany, gdy cooldown jest ograniczony do innego modelu.
-    - Okna billing/disabled nadal blokują cały profil między modelami.
+    - OpenClaw zapisuje `cooldownModel` dla awarii limitu szybkości, gdy identyfikator modelu, który zawiódł, jest znany.
+    - Pokrewny model u tego samego dostawcy nadal może zostać wypróbowany, gdy cooldown jest ograniczony do innego modelu.
+    - Okna rozliczeń/wyłączenia nadal blokują cały profil we wszystkich modelach.
 
   </Accordion>
 </AccordionGroup>
 
-Cooldowny używają wykładniczego backoff:
+Cooldowny używają wykładniczego backoffu:
 
 - 1 minuta
 - 5 minut
@@ -177,14 +189,14 @@ Stan jest przechowywany w `auth-state.json` pod `usageStats`:
 }
 ```
 
-## Wyłączenia billingowe
+## Wyłączenia rozliczeniowe
 
-Błędy billing/credit (na przykład „insufficient credits” / „credit balance too low”) są traktowane jako kwalifikujące się do failover, ale zwykle nie są przejściowe. Zamiast krótkiego cooldown, OpenClaw oznacza profil jako **disabled** (z dłuższym backoff) i przechodzi do następnego profilu/dostawcy.
+Awarie rozliczeń/kredytów (na przykład „insufficient credits” / „credit balance too low”) są traktowane jako kwalifikujące się do failover, ale zwykle nie są przejściowe. Zamiast krótkiego cooldownu OpenClaw oznacza profil jako **wyłączony** (z dłuższym backoffem) i rotuje do następnego profilu/dostawcy.
 
 <Note>
-Nie każda odpowiedź o charakterze billing ma kod `402` i nie każdy HTTP `402` trafia tutaj. OpenClaw utrzymuje jawny tekst billing na ścieżce billing nawet wtedy, gdy dostawca zwraca zamiast tego `401` lub `403`, ale dopasowania specyficzne dla dostawcy pozostają ograniczone do dostawcy, do którego należą (na przykład OpenRouter `403 Key limit exceeded`).
+Nie każda odpowiedź wyglądająca na rozliczeniową jest `402` i nie każde HTTP `402` trafia tutaj. OpenClaw utrzymuje jawny tekst rozliczeniowy w ścieżce rozliczeń nawet wtedy, gdy dostawca zwraca zamiast tego `401` lub `403`, ale matchery specyficzne dla dostawcy pozostają ograniczone do dostawcy, który jest ich właścicielem (na przykład OpenRouter `403 Key limit exceeded`).
 
-Tymczasem tymczasowe błędy `402` związane z oknem użycia oraz limitem wydatków organizacji/workspace są klasyfikowane jako `rate_limit`, gdy komunikat wygląda na taki, który można ponowić (na przykład `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` lub `organization spending limit exceeded`). Pozostają one na ścieżce krótkiego cooldown/failover zamiast długiej ścieżki billing-disable.
+Tymczasem tymczasowe błędy `402` dotyczące okna użycia oraz limitów wydatków organizacji/przestrzeni roboczej są klasyfikowane jako `rate_limit`, gdy komunikat wygląda na możliwy do ponowienia (na przykład `weekly usage limit exhausted`, `daily limit reached, resets tomorrow` lub `organization spending limit exceeded`). Pozostają one na krótkiej ścieżce cooldown/failover zamiast długiej ścieżki wyłączenia rozliczeniowego.
 </Note>
 
 Stan jest przechowywany w `auth-state.json`:
@@ -200,125 +212,132 @@ Stan jest przechowywany w `auth-state.json`:
 }
 ```
 
-Ustawienia domyślne:
+Wartości domyślne:
 
-- Backoff billing zaczyna się od **5 godzin**, podwaja się przy każdym błędzie billing i ma limit **24 godzin**.
-- Liczniki backoff resetują się, jeśli profil nie miał błędu przez **24 godziny** (konfigurowalne).
-- Ponowne próby dla przeciążenia dopuszczają **1 rotację profilu u tego samego dostawcy** przed fallback modelu.
-- Ponowne próby dla przeciążenia używają domyślnie backoff **0 ms**.
+- Backoff rozliczeniowy zaczyna się od **5 godzin**, podwaja się po każdej awarii rozliczeniowej i ma limit **24 godzin**.
+- Liczniki backoffu resetują się, jeśli profil nie zawiódł przez **24 godziny** (konfigurowalne).
+- Ponowienia przy przeciążeniu pozwalają na **1 rotację profilu tego samego dostawcy** przed awaryjnym przełączeniem modelu.
+- Ponowienia przy przeciążeniu domyślnie używają **0 ms backoffu**.
 
-## Fallback modelu
+## Awaryjne przełączanie modelu
 
-Jeśli wszystkie profile dla dostawcy zawiodą, OpenClaw przechodzi do następnego modelu w `agents.defaults.model.fallbacks`. Dotyczy to błędów uwierzytelniania, limitów szybkości i timeoutów, które wyczerpały rotację profili (inne błędy nie przechodzą do fallback).
+Jeśli wszystkie profile dostawcy zawiodą, OpenClaw przechodzi do następnego modelu w `agents.defaults.model.fallbacks`. Dotyczy to awarii uwierzytelniania, limitów szybkości i timeoutów, które wyczerpały rotację profili (inne błędy nie przechodzą dalej w ramach awaryjnego przełączania). Błędy dostawcy, które nie ujawniają wystarczających szczegółów, nadal są precyzyjnie etykietowane w stanie awaryjnym: `empty_response` oznacza, że dostawca nie zwrócił użytecznej wiadomości ani statusu, `no_error_details` oznacza, że dostawca jawnie zwrócił `Unknown error (no error details in response)`, a `unclassified` oznacza, że OpenClaw zachował surowy podgląd, ale żaden klasyfikator jeszcze go nie dopasował.
 
-Błędy przeciążenia i limitu szybkości są obsługiwane bardziej agresywnie niż cooldowny billing. Domyślnie OpenClaw dopuszcza jedną ponowną próbę profilu uwierzytelniania u tego samego dostawcy, a następnie bez czekania przełącza się do następnego skonfigurowanego modelu fallback. Sygnały zajętości dostawcy, takie jak `ModelNotReadyException`, trafiają do tego koszyka przeciążenia. Dostosuj to przez `auth.cooldowns.overloadedProfileRotations`, `auth.cooldowns.overloadedBackoffMs` oraz `auth.cooldowns.rateLimitedProfileRotations`.
+Błędy przeciążenia i limitów szybkości są obsługiwane bardziej agresywnie niż przerwy rozliczeniowe. Domyślnie OpenClaw zezwala na jedną ponowną próbę z profilem uwierzytelniania tego samego dostawcy, a następnie przełącza się na następny skonfigurowany model zapasowy bez czekania. Sygnały zajętości dostawcy, takie jak `ModelNotReadyException`, trafiają do tej kategorii przeciążenia. Dostosuj to za pomocą `auth.cooldowns.overloadedProfileRotations`, `auth.cooldowns.overloadedBackoffMs` i `auth.cooldowns.rateLimitedProfileRotations`.
 
-Gdy uruchomienie zaczyna się z nadpisaniem modelu (hooki lub CLI), fallbacki nadal kończą się na `agents.defaults.model.primary` po wypróbowaniu wszystkich skonfigurowanych fallbacków.
+Gdy uruchomienie zaczyna się od skonfigurowanego domyślnego modelu podstawowego, modelu podstawowego zadania cron, modelu podstawowego agenta z jawnymi modelami zapasowymi albo automatycznie wybranego nadpisania zapasowego, OpenClaw może przejść przez pasujący skonfigurowany łańcuch modeli zapasowych. Modele podstawowe agentów bez jawnych modeli zapasowych oraz jawne wybory użytkownika (na przykład `/model ollama/qwen3.5:27b`, selektor modelu, `sessions.patch` albo jednorazowe nadpisania dostawcy/modelu w CLI) są ścisłe: jeśli ten dostawca/model jest nieosiągalny albo zawiedzie przed wygenerowaniem odpowiedzi, OpenClaw zgłasza błąd zamiast odpowiadać z niepowiązanego modelu zapasowego.
 
 ### Reguły łańcucha kandydatów
 
-OpenClaw buduje listę kandydatów na podstawie aktualnie żądanego `provider/model` oraz skonfigurowanych fallbacków.
+OpenClaw buduje listę kandydatów z aktualnie żądanego `provider/model` oraz skonfigurowanych modeli zapasowych.
 
 <AccordionGroup>
   <Accordion title="Reguły">
     - Żądany model jest zawsze pierwszy.
-    - Jawnie skonfigurowane fallbacki są deduplikowane, ale nie są filtrowane przez allowlist modelu. Są traktowane jako jawna intencja operatora.
-    - Jeśli bieżące uruchomienie jest już na skonfigurowanym fallbacku w tej samej rodzinie dostawcy, OpenClaw nadal używa pełnego skonfigurowanego łańcucha.
-    - Jeśli bieżące uruchomienie jest u innego dostawcy niż w konfiguracji i ten bieżący model nie jest już częścią skonfigurowanego łańcucha fallback, OpenClaw nie dołącza niepowiązanych skonfigurowanych fallbacków od innego dostawcy.
-    - Gdy uruchomienie zaczęło się od nadpisania, skonfigurowany primary jest dołączany na końcu, aby łańcuch mógł wrócić do normalnego domyślnego stanu po wyczerpaniu wcześniejszych kandydatów.
+    - Jawnie skonfigurowane modele zapasowe są deduplikowane, ale nie są filtrowane przez listę dozwolonych modeli. Są traktowane jako jawny zamiar operatora.
+    - Jeśli bieżące uruchomienie już działa na skonfigurowanym modelu zapasowym z tej samej rodziny dostawców, OpenClaw nadal używa pełnego skonfigurowanego łańcucha.
+    - Jeśli bieżące uruchomienie działa u innego dostawcy niż w konfiguracji, a bieżący model nie jest już częścią skonfigurowanego łańcucha modeli zapasowych, OpenClaw nie dołącza niepowiązanych skonfigurowanych modeli zapasowych od innego dostawcy.
+    - Gdy do mechanizmu modeli zapasowych nie podano jawnego nadpisania zapasowego, skonfigurowany model podstawowy jest dołączany na końcu, aby łańcuch mógł wrócić do normalnej wartości domyślnej po wyczerpaniu wcześniejszych kandydatów.
+    - Gdy wywołujący podaje `fallbacksOverride`, mechanizm używa dokładnie żądanego modelu oraz tej listy nadpisań. Pusta lista wyłącza przełączanie na modele zapasowe i zapobiega dołączaniu skonfigurowanego modelu podstawowego jako ukrytego celu ponownej próby.
 
   </Accordion>
 </AccordionGroup>
 
-### Które błędy przechodzą do fallback
+### Które błędy przechodzą do modelu zapasowego
 
 <Tabs>
   <Tab title="Kontynuuje przy">
     - błędach uwierzytelniania
-    - limitach szybkości i wyczerpaniu cooldown
+    - limitach szybkości i wyczerpaniu przerw
     - błędach przeciążenia/zajętości dostawcy
-    - błędach failover o charakterze timeoutu
-    - wyłączeniach billingowych
-    - `LiveSessionModelSwitchError`, który jest normalizowany do ścieżki failover, aby nieaktualny zapisany model nie tworzył zewnętrznej pętli ponownych prób
+    - błędach przełączania awaryjnego przypominających przekroczenie czasu
+    - wyłączeniach rozliczeń
+    - `LiveSessionModelSwitchError`, który jest normalizowany do ścieżki przełączania awaryjnego, aby nieaktualny utrwalony model nie tworzył zewnętrznej pętli ponownych prób
     - innych nierozpoznanych błędach, gdy nadal pozostają kandydaci
 
   </Tab>
   <Tab title="Nie kontynuuje przy">
-    - jawnych przerwaniach, które nie mają charakteru timeout/failover
-    - błędach przepełnienia kontekstu, które powinny pozostać w logice Compaction/ponownych prób (na przykład `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` lub `ollama error: context length exceeded`)
-    - końcowym nieznanym błędzie, gdy nie ma już żadnych kandydatów
+    - jawnych przerwaniach, które nie przypominają przekroczenia czasu/przełączania awaryjnego
+    - błędach przepełnienia kontekstu, które powinny pozostać wewnątrz logiki Compaction/ponownej próby (na przykład `request_too_large`, `INVALID_ARGUMENT: input exceeds the maximum number of tokens`, `input token count exceeds the maximum number of input tokens`, `The input is too long for the model` albo `ollama error: context length exceeded`)
+    - końcowym nieznanym błędzie, gdy nie pozostało już żadnych kandydatów
 
   </Tab>
 </Tabs>
 
-### Pomijanie cooldown vs zachowanie sondy
+### Pomijanie przerw a zachowanie sondowania
 
-Gdy każdy profil uwierzytelniania dla dostawcy jest już w cooldown, OpenClaw nie pomija automatycznie tego dostawcy na zawsze. Podejmuje decyzję dla każdego kandydata osobno:
+Gdy każdy profil uwierzytelniania dla dostawcy jest już w okresie przerwy, OpenClaw nie pomija automatycznie tego dostawcy na zawsze. Podejmuje decyzję dla każdego kandydata:
 
 <AccordionGroup>
-  <Accordion title="Decyzje dla poszczególnych kandydatów">
+  <Accordion title="Decyzje dla każdego kandydata">
     - Trwałe błędy uwierzytelniania natychmiast pomijają całego dostawcę.
-    - Wyłączenia billingowe zwykle powodują pominięcie, ale kandydat primary może nadal zostać sprawdzony przez sondę z ograniczaniem częstotliwości, aby odzyskanie było możliwe bez restartu.
-    - Kandydat primary może zostać sprawdzony przez sondę blisko wygaśnięcia cooldown, z ograniczaniem częstotliwości per dostawca.
-    - Równorzędne fallbacki u tego samego dostawcy mogą być próbowane mimo cooldown, gdy błąd wygląda na przejściowy (`rate_limit`, `overloaded` lub nieznany). Jest to szczególnie istotne, gdy limit szybkości jest ograniczony do modelu i model równorzędny może nadal odzyskać sprawność natychmiast.
-    - Przejściowe sondy cooldown są ograniczone do jednej na dostawcę na jedno uruchomienie fallback, aby pojedynczy dostawca nie blokował fallback między dostawcami.
+    - Wyłączenia rozliczeń zwykle są pomijane, ale kandydat podstawowy nadal może być sondowany z ograniczeniem, aby odzyskanie działania było możliwe bez ponownego uruchamiania.
+    - Kandydat podstawowy może być sondowany w pobliżu wygaśnięcia przerwy, z ograniczeniem dla każdego dostawcy.
+    - Zapasowe modele siostrzane tego samego dostawcy mogą być próbowane mimo przerwy, gdy błąd wygląda na przejściowy (`rate_limit`, `overloaded` lub nieznany). Jest to szczególnie istotne, gdy limit szybkości jest przypisany do modelu, a model siostrzany może nadal odzyskać działanie natychmiast.
+    - Sondowania przejściowych przerw są ograniczone do jednego na dostawcę w ramach jednego uruchomienia modeli zapasowych, aby pojedynczy dostawca nie wstrzymywał przełączania między dostawcami.
 
   </Accordion>
 </AccordionGroup>
 
 ## Nadpisania sesji i przełączanie modelu na żywo
 
-Zmiany modelu sesji to stan współdzielony. Aktywny runner, polecenie `/model`, aktualizacje Compaction/sesji i uzgadnianie live-session odczytują lub zapisują części tego samego wpisu sesji.
+Zmiany modelu sesji są współdzielonym stanem. Aktywny mechanizm uruchamiający, polecenie `/model`, aktualizacje Compaction/sesji oraz uzgadnianie sesji na żywo odczytują lub zapisują części tego samego wpisu sesji.
 
-Oznacza to, że ponowne próby fallback muszą koordynować się z przełączaniem modelu na żywo:
+Oznacza to, że ponowne próby z modelami zapasowymi muszą koordynować się z przełączaniem modelu na żywo:
 
-- Tylko jawne zmiany modelu wywołane przez użytkownika oznaczają oczekujące przełączenie live. Obejmuje to `/model`, `session_status(model=...)` i `sessions.patch`.
-- Zmiany modelu sterowane przez system, takie jak rotacja fallback, nadpisania Heartbeat lub Compaction, nigdy same z siebie nie oznaczają oczekującego przełączenia live.
-- Przed rozpoczęciem ponownej próby fallback runner odpowiedzi zapisuje wybrane pola nadpisania fallback we wpisie sesji.
-- Uzgadnianie live-session preferuje zapisane nadpisania sesji zamiast nieaktualnych pól modelu runtime.
-- Jeśli próba fallback zawiedzie, runner wycofuje tylko pola nadpisania, które sam zapisał, i tylko wtedy, gdy nadal odpowiadają temu nieudanemu kandydatowi.
+- Tylko jawne zmiany modelu zainicjowane przez użytkownika oznaczają oczekujące przełączenie na żywo. Obejmuje to `/model`, `session_status(model=...)` i `sessions.patch`.
+- Zmiany modelu inicjowane przez system, takie jak rotacja modeli zapasowych, nadpisania Heartbeat lub Compaction, nigdy same nie oznaczają oczekującego przełączenia na żywo.
+- Nadpisania modelu zainicjowane przez użytkownika są traktowane jako dokładne wybory dla zasad modeli zapasowych, więc nieosiągalny wybrany dostawca jest zgłaszany jako błąd zamiast być maskowany przez `agents.defaults.model.fallbacks`.
+- Zanim rozpocznie się ponowna próba z modelem zapasowym, mechanizm odpowiedzi utrwala wybrane pola nadpisania zapasowego we wpisie sesji.
+- Automatyczne nadpisania zapasowe pozostają wybrane w kolejnych turach, aby OpenClaw nie sondował znanego wadliwego modelu podstawowego przy każdej wiadomości. `/new`, `/reset` i `sessions.reset` czyszczą nadpisania pochodzące z automatycznego wyboru i przywracają sesję do skonfigurowanej wartości domyślnej.
+- `/status` pokazuje wybrany model oraz, gdy stan zapasowy się różni, aktywny model zapasowy i powód.
+- Uzgadnianie sesji na żywo preferuje utrwalone nadpisania sesji zamiast nieaktualnych pól modelu w czasie działania.
+- Jeśli błąd przełączenia na żywo wskazuje późniejszego kandydata w aktywnym łańcuchu modeli zapasowych, OpenClaw przechodzi bezpośrednio do tego wybranego modelu zamiast najpierw przechodzić przez niepowiązanych kandydatów.
+- Jeśli próba z modelem zapasowym się nie powiedzie, mechanizm wycofuje tylko pola nadpisania, które sam zapisał, i tylko jeśli nadal pasują do tego nieudanego kandydata.
 
 Zapobiega to klasycznemu wyścigowi:
 
 <Steps>
-  <Step title="Primary zawodzi">
-    Wybrany model primary zawodzi.
+  <Step title="Model podstawowy zawodzi">
+    Wybrany model podstawowy zawodzi.
   </Step>
-  <Step title="Fallback wybrany w pamięci">
-    Kandydat fallback zostaje wybrany w pamięci.
+  <Step title="Model zapasowy wybrany w pamięci">
+    Kandydat zapasowy zostaje wybrany w pamięci.
   </Step>
-  <Step title="Magazyn sesji nadal wskazuje stare primary">
-    Magazyn sesji nadal odzwierciedla stare primary.
+  <Step title="Magazyn sesji nadal wskazuje stary model podstawowy">
+    Magazyn sesji nadal odzwierciedla stary model podstawowy.
   </Step>
-  <Step title="Uzgadnianie live odczytuje nieaktualny stan">
-    Uzgadnianie live-session odczytuje nieaktualny stan sesji.
+  <Step title="Uzgadnianie na żywo odczytuje nieaktualny stan">
+    Uzgadnianie sesji na żywo odczytuje nieaktualny stan sesji.
   </Step>
-  <Step title="Ponowna próba zostaje cofnięta">
-    Ponowna próba zostaje cofnięta do starego modelu przed rozpoczęciem próby fallback.
+  <Step title="Ponowna próba wróciła do starego modelu">
+    Ponowna próba zostaje cofnięta do starego modelu, zanim rozpocznie się próba z modelem zapasowym.
   </Step>
 </Steps>
 
-Zapisane nadpisanie fallback zamyka to okno, a wąskie wycofanie zachowuje nienaruszone nowsze ręczne lub runtime’owe zmiany sesji.
+Utrwalone nadpisanie zapasowe zamyka to okno, a wąskie wycofanie zachowuje nowsze ręczne lub uruchomieniowe zmiany sesji.
 
 ## Obserwowalność i podsumowania błędów
 
-`runWithModelFallback(...)` zapisuje szczegóły każdej próby, które zasilają logi i komunikaty cooldown widoczne dla użytkownika:
+`runWithModelFallback(...)` zapisuje szczegóły każdej próby, które zasilają dzienniki i komunikaty o przerwach widoczne dla użytkownika:
 
 - próbowany dostawca/model
-- powód (`rate_limit`, `overloaded`, `billing`, `auth`, `model_not_found` i podobne powody failover)
+- powód (`rate_limit`, `overloaded`, `billing`, `auth`, `model_not_found` i podobne powody przełączania awaryjnego)
 - opcjonalny status/kod
 - czytelne dla człowieka podsumowanie błędu
 
-Gdy każdy kandydat zawiedzie, OpenClaw rzuca `FallbackSummaryError`. Zewnętrzny runner odpowiedzi może użyć tego do zbudowania bardziej precyzyjnego komunikatu, takiego jak „wszystkie modele są tymczasowo objęte ograniczeniem szybkości”, i dołączyć najbliższy czas wygaśnięcia cooldown, gdy jest znany.
+Ustrukturyzowane dzienniki `model_fallback_decision` zawierają także płaskie pola `fallbackStep*`, gdy kandydat zawodzi, jest pomijany albo późniejszy model zapasowy kończy się powodzeniem. Te pola czynią próbę przejścia jawną (`fallbackStepFromModel`, `fallbackStepToModel`, `fallbackStepFromFailureReason`, `fallbackStepFromFailureDetail`, `fallbackStepFinalOutcome`), aby eksportery dzienników i diagnostyki mogły odtworzyć błąd modelu podstawowego nawet wtedy, gdy końcowy model zapasowy również zawiedzie.
 
-To podsumowanie cooldown uwzględnia model:
+Gdy każdy kandydat zawiedzie, OpenClaw zgłasza `FallbackSummaryError`. Zewnętrzny mechanizm odpowiedzi może użyć tego do zbudowania bardziej szczegółowego komunikatu, takiego jak „wszystkie modele są tymczasowo ograniczone limitami szybkości”, i dołączyć najbliższe wygaśnięcie przerwy, gdy jest znane.
 
-- niepowiązane limity szybkości ograniczone do modelu są ignorowane dla łańcucha próbowanego dostawcy/modelu
-- jeśli pozostałą blokadą jest pasujący limit szybkości ograniczony do modelu, OpenClaw zgłasza ostatni pasujący czas wygaśnięcia, który nadal blokuje ten model
+To podsumowanie przerw uwzględnia model:
+
+- niepowiązane limity szybkości przypisane do modelu są ignorowane dla próbowanego łańcucha dostawca/model
+- jeśli pozostała blokada jest pasującym limitem szybkości przypisanym do modelu, OpenClaw zgłasza ostatnie pasujące wygaśnięcie, które nadal blokuje ten model
 
 ## Powiązana konfiguracja
 
-Zobacz [Konfiguracja Gateway](/pl/gateway/configuration), aby poznać:
+Zobacz [konfigurację Gateway](/pl/gateway/configuration), aby poznać:
 
 - `auth.profiles` / `auth.order`
 - `auth.cooldowns.billingBackoffHours` / `auth.cooldowns.billingBackoffHoursByProvider`
@@ -328,4 +347,4 @@ Zobacz [Konfiguracja Gateway](/pl/gateway/configuration), aby poznać:
 - `agents.defaults.model.primary` / `agents.defaults.model.fallbacks`
 - routing `agents.defaults.imageModel`
 
-Zobacz [Modele](/pl/concepts/models), aby poznać szerszy przegląd wyboru modelu i fallback.
+Zobacz [Modele](/pl/concepts/models), aby poznać szerszy przegląd wyboru modelu i modeli zapasowych.

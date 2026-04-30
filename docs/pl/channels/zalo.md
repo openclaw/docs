@@ -1,41 +1,44 @@
 ---
 read_when:
-    - Pracujesz nad funkcjami Zalo lub Webhookami.
-summary: Status obsługi, możliwości i konfiguracja bota Zalo
+    - Praca nad funkcjami Zalo lub funkcjami Webhook
+summary: Stan obsługi bota Zalo, możliwości i konfiguracja
 title: Zalo
 x-i18n:
-    generated_at: "2026-04-25T13:42:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e7eb9d5b1879fcdf70220c4b1542e843e47e12048ff567eeb0e1cb3367b3d200
+    source_hash: e79a4a27accc7f460bd3ae9c01e8f5f80e21a285af5d89b94bb9c89244a4438f
     source_path: channels/zalo.md
-    workflow: 15
+    workflow: 16
 ---
 
-Status: eksperymentalny. Wiadomości prywatne są obsługiwane. Sekcja [Możliwości](#capabilities) poniżej odzwierciedla bieżące zachowanie botów Marketplace.
+Status: eksperymentalny. DM-y są obsługiwane. Poniższa sekcja [Możliwości](#capabilities) odzwierciedla obecne zachowanie botów Marketplace.
 
 ## Dołączony Plugin
 
-Zalo jest dostarczane jako dołączony Plugin w bieżących wydaniach OpenClaw, więc zwykłe
-buildy pakietowe nie wymagają osobnej instalacji.
+Zalo jest dostarczany jako dołączony Plugin w obecnych wydaniach OpenClaw, więc zwykłe
+spakowane kompilacje nie wymagają osobnej instalacji.
 
-Jeśli używasz starszego buildu lub niestandardowej instalacji, która nie zawiera Zalo, zainstaluj go
-ręcznie:
+Jeśli używasz starszej kompilacji lub instalacji niestandardowej, która wyklucza Zalo, zainstaluj
+aktualny pakiet npm, gdy zostanie opublikowany:
 
 - Instalacja przez CLI: `openclaw plugins install @openclaw/zalo`
-- Lub z checkoutu źródłowego: `openclaw plugins install ./path/to/local/zalo-plugin`
+- Lub z checkoutu źródeł: `openclaw plugins install ./path/to/local/zalo-plugin`
 - Szczegóły: [Plugins](/pl/tools/plugin)
+
+Jeśli npm zgłasza pakiet należący do OpenClaw jako przestarzały, użyj aktualnej spakowanej
+kompilacji OpenClaw lub lokalnej ścieżki checkoutu, dopóki nie zostanie opublikowany nowszy pakiet npm.
 
 ## Szybka konfiguracja (dla początkujących)
 
 1. Upewnij się, że Plugin Zalo jest dostępny.
-   - Bieżące pakietowe wydania OpenClaw zawierają go już w zestawie.
+   - Obecne spakowane wydania OpenClaw już go dołączają.
    - Starsze/niestandardowe instalacje mogą dodać go ręcznie za pomocą powyższych poleceń.
 2. Ustaw token:
-   - Zmienna środowiskowa: `ZALO_BOT_TOKEN=...`
+   - Env: `ZALO_BOT_TOKEN=...`
    - Lub konfiguracja: `channels.zalo.accounts.default.botToken: "..."`.
 3. Uruchom ponownie gateway (lub dokończ konfigurację).
-4. Dostęp do wiadomości prywatnych domyślnie używa parowania; zatwierdź kod parowania przy pierwszym kontakcie.
+4. Dostęp przez DM domyślnie używa parowania; zatwierdź kod parowania przy pierwszym kontakcie.
 
 Minimalna konfiguracja:
 
@@ -57,16 +60,16 @@ Minimalna konfiguracja:
 
 ## Czym to jest
 
-Zalo to komunikator popularny w Wietnamie; jego Bot API pozwala Gateway uruchamiać bota do rozmów 1:1.
-To dobre rozwiązanie do wsparcia lub powiadomień, gdy zależy Ci na deterministycznym kierowaniu odpowiedzi z powrotem do Zalo.
+Zalo to komunikator skoncentrowany na Wietnamie; jego Bot API pozwala Gateway uruchamiać bota do rozmów 1:1.
+Dobrze sprawdza się do obsługi lub powiadomień, gdy chcesz deterministycznego routingu z powrotem do Zalo.
 
-Ta strona odzwierciedla bieżące zachowanie OpenClaw dla **botów Zalo Bot Creator / Marketplace**.
-**Boty Zalo Official Account (OA)** to inna powierzchnia produktowa Zalo i mogą działać inaczej.
+Ta strona odzwierciedla obecne zachowanie OpenClaw dla **Zalo Bot Creator / botów Marketplace**.
+**Boty Zalo Official Account (OA)** są inną powierzchnią produktu Zalo i mogą zachowywać się inaczej.
 
 - Kanał Zalo Bot API należący do Gateway.
-- Deterministyczne kierowanie: odpowiedzi wracają do Zalo; model nigdy nie wybiera kanałów.
-- Wiadomości prywatne współdzielą główną sesję agenta.
-- Sekcja [Możliwości](#capabilities) poniżej pokazuje bieżące wsparcie dla botów Marketplace.
+- Deterministyczny routing: odpowiedzi wracają do Zalo; model nigdy nie wybiera kanałów.
+- DM-y współdzielą główną sesję agenta.
+- Poniższa sekcja [Możliwości](#capabilities) pokazuje obecną obsługę botów Marketplace.
 
 ## Konfiguracja (szybka ścieżka)
 
@@ -74,9 +77,9 @@ Ta strona odzwierciedla bieżące zachowanie OpenClaw dla **botów Zalo Bot Crea
 
 1. Przejdź do [https://bot.zaloplatforms.com](https://bot.zaloplatforms.com) i zaloguj się.
 2. Utwórz nowego bota i skonfiguruj jego ustawienia.
-3. Skopiuj pełny token bota (zwykle `numeric_id:secret`). W przypadku botów Marketplace użyteczny token środowiska wykonawczego może pojawić się w wiadomości powitalnej bota po utworzeniu.
+3. Skopiuj pełny token bota (zwykle `numeric_id:secret`). W przypadku botów Marketplace używalny token runtime może pojawić się w wiadomości powitalnej bota po utworzeniu.
 
-### 2) Skonfiguruj token (zmienna środowiskowa lub konfiguracja)
+### 2) Skonfiguruj token (env lub konfiguracja)
 
 Przykład:
 
@@ -96,105 +99,105 @@ Przykład:
 }
 ```
 
-Jeśli później przejdziesz do powierzchni botów Zalo, w której grupy są dostępne, możesz jawnie dodać konfigurację specyficzną dla grup, taką jak `groupPolicy` i `groupAllowFrom`. Dla bieżącego zachowania botów Marketplace zobacz [Możliwości](#capabilities).
+Jeśli później przejdziesz na powierzchnię bota Zalo, w której dostępne są grupy, możesz jawnie dodać konfigurację specyficzną dla grup, taką jak `groupPolicy` i `groupAllowFrom`. Obecne zachowanie botów Marketplace opisuje sekcja [Możliwości](#capabilities).
 
-Opcja zmiennej środowiskowej: `ZALO_BOT_TOKEN=...` (działa tylko dla konta domyślnego).
+Opcja env: `ZALO_BOT_TOKEN=...` (działa tylko dla konta domyślnego).
 
-Obsługa wielu kont: użyj `channels.zalo.accounts` z tokenami per konto oraz opcjonalną `name`.
+Obsługa wielu kont: użyj `channels.zalo.accounts` z tokenami dla poszczególnych kont i opcjonalnym `name`.
 
-3. Uruchom ponownie gateway. Zalo uruchamia się, gdy token zostanie rozwiązany (ze zmiennej środowiskowej lub konfiguracji).
-4. Dostęp do wiadomości prywatnych domyślnie używa parowania. Zatwierdź kod, gdy bot zostanie po raz pierwszy skontaktowany.
+3. Uruchom ponownie gateway. Zalo uruchamia się po rozpoznaniu tokena (env lub konfiguracja).
+4. Dostęp przez DM domyślnie używa parowania. Zatwierdź kod, gdy bot zostanie pierwszy raz skontaktowany.
 
 ## Jak to działa (zachowanie)
 
-- Wiadomości przychodzące są normalizowane do współdzielonej otoczki kanału z placeholderami multimediów.
-- Odpowiedzi są zawsze kierowane z powrotem do tego samego czatu Zalo.
-- Domyślnie używane jest long-polling; tryb Webhook jest dostępny przez `channels.zalo.webhookUrl`.
+- Wiadomości przychodzące są normalizowane do współdzielonej koperty kanału z symbolami zastępczymi mediów.
+- Odpowiedzi zawsze wracają do tego samego czatu Zalo.
+- Domyślnie używane jest long-polling; tryb Webhook jest dostępny z `channels.zalo.webhookUrl`.
 
-## Ograniczenia
+## Limity
 
-- Tekst wychodzący jest dzielony na fragmenty po 2000 znaków (limit API Zalo).
-- Pobieranie/przesyłanie multimediów jest ograniczone przez `channels.zalo.mediaMaxMb` (domyślnie 5).
-- Streaming jest domyślnie blokowany, ponieważ limit 2000 znaków sprawia, że streaming jest mniej przydatny.
+- Tekst wychodzący jest dzielony na fragmenty po 2000 znaków (limit Zalo API).
+- Pobieranie/wysyłanie mediów jest ograniczone przez `channels.zalo.mediaMaxMb` (domyślnie 5).
+- Streaming jest domyślnie blokowany, ponieważ limit 2000 znaków zmniejsza jego użyteczność.
 
-## Kontrola dostępu (wiadomości prywatne)
+## Kontrola dostępu (DM-y)
 
-### Dostęp do wiadomości prywatnych
+### Dostęp przez DM
 
-- Domyślnie: `channels.zalo.dmPolicy = "pairing"`. Nieznani nadawcy otrzymują kod parowania; wiadomości są ignorowane do momentu zatwierdzenia (kody wygasają po 1 godzinie).
-- Zatwierdzanie przez:
+- Domyślnie: `channels.zalo.dmPolicy = "pairing"`. Nieznani nadawcy otrzymują kod parowania; wiadomości są ignorowane do czasu zatwierdzenia (kody wygasają po 1 godzinie).
+- Zatwierdź przez:
   - `openclaw pairing list zalo`
   - `openclaw pairing approve zalo <CODE>`
-- Parowanie jest domyślnym mechanizmem wymiany tokenów. Szczegóły: [Pairing](/pl/channels/pairing)
-- `channels.zalo.allowFrom` akceptuje numeryczne identyfikatory użytkowników (brak dostępnego wyszukiwania po nazwie użytkownika).
+- Parowanie jest domyślną wymianą tokena. Szczegóły: [Parowanie](/pl/channels/pairing)
+- `channels.zalo.allowFrom` akceptuje numeryczne identyfikatory użytkowników (wyszukiwanie nazw użytkowników nie jest dostępne).
 
 ## Kontrola dostępu (grupy)
 
-W przypadku **botów Zalo Bot Creator / Marketplace** obsługa grup nie była w praktyce dostępna, ponieważ nie dało się w ogóle dodać bota do grupy.
+W przypadku **Zalo Bot Creator / botów Marketplace** obsługa grup nie była w praktyce dostępna, ponieważ bota w ogóle nie można było dodać do grupy.
 
-Oznacza to, że poniższe klucze konfiguracyjne związane z grupami istnieją w schemacie, ale nie były użyteczne dla botów Marketplace:
+Oznacza to, że poniższe klucze konfiguracji związane z grupami istnieją w schemacie, ale nie były używalne dla botów Marketplace:
 
-- `channels.zalo.groupPolicy` kontroluje obsługę wiadomości przychodzących w grupach: `open | allowlist | disabled`.
-- `channels.zalo.groupAllowFrom` ogranicza, które identyfikatory nadawców mogą uruchamiać bota w grupach.
-- Jeśli `groupAllowFrom` nie jest ustawione, Zalo używa `allowFrom` jako ustawienia rezerwowego do sprawdzania nadawców.
-- Uwaga środowiska wykonawczego: jeśli całe `channels.zalo` jest pominięte, środowisko wykonawcze nadal używa ustawienia rezerwowego `groupPolicy="allowlist"` dla bezpieczeństwa.
+- `channels.zalo.groupPolicy` steruje obsługą wiadomości przychodzących w grupach: `open | allowlist | disabled`.
+- `channels.zalo.groupAllowFrom` ogranicza, które identyfikatory nadawców mogą uruchomić bota w grupach.
+- Jeśli `groupAllowFrom` nie jest ustawione, Zalo wraca do `allowFrom` przy sprawdzaniu nadawcy.
+- Uwaga runtime: jeśli `channels.zalo` całkowicie brakuje, runtime nadal wraca do `groupPolicy="allowlist"` dla bezpieczeństwa.
 
-Wartości zasad grupowych (gdy dostęp do grup jest dostępny na powierzchni Twojego bota) to:
+Wartości zasad grup (gdy dostęp do grup jest dostępny na powierzchni Twojego bota) to:
 
 - `groupPolicy: "disabled"` — blokuje wszystkie wiadomości grupowe.
-- `groupPolicy: "open"` — zezwala każdemu członkowi grupy (z bramkowaniem wzmianek).
-- `groupPolicy: "allowlist"` — domyślne zachowanie fail-closed; akceptowani są tylko dozwoleni nadawcy.
+- `groupPolicy: "open"` — zezwala dowolnemu członkowi grupy (bramka przez wzmiankę).
+- `groupPolicy: "allowlist"` — domyślne zamknięcie w razie niepowodzenia; akceptowani są tylko dozwoleni nadawcy.
 
-Jeśli używasz innej powierzchni produktu botów Zalo i masz potwierdzone działanie grup, udokumentuj to osobno, zamiast zakładać, że odpowiada to przepływowi botów Marketplace.
+Jeśli używasz innej powierzchni produktu bota Zalo i zweryfikowano działające zachowanie grup, udokumentuj to osobno zamiast zakładać, że odpowiada przepływowi botów Marketplace.
 
-## Long-polling a Webhook
+## Long-polling kontra Webhook
 
-- Domyślnie: long-polling (nie jest wymagany publiczny URL).
+- Domyślnie: long-polling (publiczny URL nie jest wymagany).
 - Tryb Webhook: ustaw `channels.zalo.webhookUrl` i `channels.zalo.webhookSecret`.
-  - Sekret Webhook musi mieć od 8 do 256 znaków.
+  - Sekret Webhook musi mieć 8-256 znaków.
   - URL Webhook musi używać HTTPS.
   - Zalo wysyła zdarzenia z nagłówkiem `X-Bot-Api-Secret-Token` do weryfikacji.
   - HTTP Gateway obsługuje żądania Webhook pod `channels.zalo.webhookPath` (domyślnie ścieżka URL Webhook).
   - Żądania muszą używać `Content-Type: application/json` (lub typów mediów `+json`).
-  - Zduplikowane zdarzenia (`event_name + message_id`) są ignorowane przez krótki okres ochrony przed powtórzeniami.
-  - Ruch seryjny jest ograniczany per ścieżka/źródło i może zwracać HTTP 429.
+  - Duplikaty zdarzeń (`event_name + message_id`) są ignorowane przez krótkie okno powtórzeń.
+  - Ruch skokowy jest ograniczany stawką na ścieżkę/źródło i może zwrócić HTTP 429.
 
-**Uwaga:** `getUpdates` (polling) i Webhook wzajemnie się wykluczają zgodnie z dokumentacją API Zalo.
+**Uwaga:** getUpdates (polling) i Webhook wzajemnie się wykluczają zgodnie z dokumentacją Zalo API.
 
 ## Obsługiwane typy wiadomości
 
-Aby szybko sprawdzić stan wsparcia, zobacz [Możliwości](#capabilities). Poniższe uwagi dodają szczegóły tam, gdzie zachowanie wymaga dodatkowego kontekstu.
+Szybki przegląd obsługi znajduje się w sekcji [Możliwości](#capabilities). Poniższe uwagi dodają szczegóły tam, gdzie zachowanie wymaga dodatkowego kontekstu.
 
-- **Wiadomości tekstowe**: pełne wsparcie z dzieleniem na fragmenty po 2000 znaków.
-- **Zwykłe URL-e w tekście**: działają jak zwykłe dane wejściowe tekstowe.
-- **Podglądy linków / rozbudowane karty linków**: zobacz status botów Marketplace w [Możliwości](#capabilities); nie wywoływały odpowiedzi w sposób niezawodny.
-- **Wiadomości obrazkowe**: zobacz status botów Marketplace w [Możliwości](#capabilities); obsługa obrazów przychodzących była zawodna (wskaźnik pisania bez końcowej odpowiedzi).
-- **Naklejki**: zobacz status botów Marketplace w [Możliwości](#capabilities).
-- **Notatki głosowe / pliki audio / wideo / ogólne załączniki plikowe**: zobacz status botów Marketplace w [Możliwości](#capabilities).
-- **Nieobsługiwane typy**: są logowane (na przykład wiadomości od użytkowników chronionych).
+- **Wiadomości tekstowe**: Pełna obsługa z dzieleniem na fragmenty po 2000 znaków.
+- **Zwykłe URL-e w tekście**: Zachowują się jak normalne wejście tekstowe.
+- **Podglądy linków / bogate karty linków**: Zobacz status botów Marketplace w sekcji [Możliwości](#capabilities); nie wyzwalały niezawodnie odpowiedzi.
+- **Wiadomości obrazkowe**: Zobacz status botów Marketplace w sekcji [Możliwości](#capabilities); obsługa obrazów przychodzących była zawodna (wskaźnik pisania bez końcowej odpowiedzi).
+- **Naklejki**: Zobacz status botów Marketplace w sekcji [Możliwości](#capabilities).
+- **Notatki głosowe / pliki audio / wideo / ogólne załączniki plików**: Zobacz status botów Marketplace w sekcji [Możliwości](#capabilities).
+- **Nieobsługiwane typy**: Rejestrowane w logach (na przykład wiadomości od chronionych użytkowników).
 
 ## Możliwości
 
-Ta tabela podsumowuje bieżące zachowanie **botów Zalo Bot Creator / Marketplace** w OpenClaw.
+Ta tabela podsumowuje obecne zachowanie **Zalo Bot Creator / botów Marketplace** w OpenClaw.
 
 | Funkcja                     | Status                                  |
 | --------------------------- | --------------------------------------- |
-| Wiadomości prywatne         | ✅ Obsługiwane                          |
+| Wiadomości bezpośrednie     | ✅ Obsługiwane                          |
 | Grupy                       | ❌ Niedostępne dla botów Marketplace    |
-| Multimedia (obrazy przychodzące) | ⚠️ Ograniczone / sprawdź w swoim środowisku |
-| Multimedia (obrazy wychodzące)   | ⚠️ Nie testowano ponownie dla botów Marketplace |
+| Media (obrazy przychodzące) | ⚠️ Ograniczone / zweryfikuj w swoim środowisku |
+| Media (obrazy wychodzące)   | ⚠️ Nie przetestowano ponownie dla botów Marketplace |
 | Zwykłe URL-e w tekście      | ✅ Obsługiwane                          |
 | Podglądy linków             | ⚠️ Zawodne dla botów Marketplace        |
 | Reakcje                     | ❌ Nieobsługiwane                       |
 | Naklejki                    | ⚠️ Brak odpowiedzi agenta dla botów Marketplace |
 | Notatki głosowe / audio / wideo | ⚠️ Brak odpowiedzi agenta dla botów Marketplace |
-| Załączniki plikowe          | ⚠️ Brak odpowiedzi agenta dla botów Marketplace |
+| Załączniki plików           | ⚠️ Brak odpowiedzi agenta dla botów Marketplace |
 | Wątki                       | ❌ Nieobsługiwane                       |
 | Ankiety                     | ❌ Nieobsługiwane                       |
-| Polecenia natywne           | ❌ Nieobsługiwane                       |
+| Natywne polecenia           | ❌ Nieobsługiwane                       |
 | Streaming                   | ⚠️ Zablokowany (limit 2000 znaków)      |
 
-## Cele dostarczania (CLI/Cron)
+## Cele dostarczania (CLI/cron)
 
 - Użyj identyfikatora czatu jako celu.
 - Przykład: `openclaw message send --channel zalo --target 123456789 --message "hi"`.
@@ -204,56 +207,56 @@ Ta tabela podsumowuje bieżące zachowanie **botów Zalo Bot Creator / Marketpla
 **Bot nie odpowiada:**
 
 - Sprawdź, czy token jest prawidłowy: `openclaw channels status --probe`
-- Zweryfikuj, czy nadawca jest zatwierdzony (parowanie lub `allowFrom`)
+- Zweryfikuj, czy nadawca jest zatwierdzony (parowanie lub allowFrom)
 - Sprawdź logi gateway: `openclaw logs --follow`
 
-**Webhook nie odbiera zdarzeń:**
+**Webhook nie otrzymuje zdarzeń:**
 
 - Upewnij się, że URL Webhook używa HTTPS
-- Zweryfikuj, czy sekretny token ma od 8 do 256 znaków
+- Zweryfikuj, czy token sekretu ma 8-256 znaków
 - Potwierdź, że punkt końcowy HTTP gateway jest osiągalny pod skonfigurowaną ścieżką
-- Sprawdź, czy polling `getUpdates` nie jest uruchomiony (wzajemnie się wykluczają)
+- Sprawdź, czy polling getUpdates nie jest uruchomiony (wzajemnie się wykluczają)
 
-## Dokumentacja konfiguracji (Zalo)
+## Odniesienie konfiguracji (Zalo)
 
-Pełna konfiguracja: [Configuration](/pl/gateway/configuration)
+Pełna konfiguracja: [Konfiguracja](/pl/gateway/configuration)
 
-Płaskie klucze najwyższego poziomu (`channels.zalo.botToken`, `channels.zalo.dmPolicy` i podobne) to starszy skrót dla pojedynczego konta. W nowych konfiguracjach preferuj `channels.zalo.accounts.<id>.*`. Obie formy są nadal udokumentowane tutaj, ponieważ istnieją w schemacie.
+Płaskie klucze najwyższego poziomu (`channels.zalo.botToken`, `channels.zalo.dmPolicy` i podobne) są starszym skrótem dla pojedynczego konta. W nowych konfiguracjach preferuj `channels.zalo.accounts.<id>.*`. Obie formy nadal są tutaj udokumentowane, ponieważ istnieją w schemacie.
 
-Opcje dostawcy:
+Opcje providera:
 
-- `channels.zalo.enabled`: włącza/wyłącza uruchamianie kanału.
+- `channels.zalo.enabled`: włącz/wyłącz uruchamianie kanału.
 - `channels.zalo.botToken`: token bota z Zalo Bot Platform.
-- `channels.zalo.tokenFile`: odczytuje token ze zwykłej ścieżki pliku. Dowiązania symboliczne są odrzucane.
+- `channels.zalo.tokenFile`: odczytaj token ze zwykłej ścieżki pliku. Dowiązania symboliczne są odrzucane.
 - `channels.zalo.dmPolicy`: `pairing | allowlist | open | disabled` (domyślnie: pairing).
-- `channels.zalo.allowFrom`: allowlista wiadomości prywatnych (identyfikatory użytkowników). `open` wymaga `"*"`. Kreator poprosi o identyfikatory numeryczne.
-- `channels.zalo.groupPolicy`: `open | allowlist | disabled` (domyślnie: allowlist). Obecne w konfiguracji; zobacz [Możliwości](#capabilities) i [Kontrola dostępu (grupy)](#access-control-groups), aby poznać bieżące zachowanie botów Marketplace.
-- `channels.zalo.groupAllowFrom`: allowlista nadawców grupowych (identyfikatory użytkowników). Gdy nie jest ustawione, używa `allowFrom` jako ustawienia rezerwowego.
-- `channels.zalo.mediaMaxMb`: limit multimediów przychodzących/wychodzących (MB, domyślnie 5).
-- `channels.zalo.webhookUrl`: włącza tryb Webhook (wymagany HTTPS).
+- `channels.zalo.allowFrom`: allowlist DM (identyfikatory użytkowników). `open` wymaga `"*"`. Kreator poprosi o numeryczne identyfikatory.
+- `channels.zalo.groupPolicy`: `open | allowlist | disabled` (domyślnie: allowlist). Obecne w konfiguracji; zobacz [Możliwości](#capabilities) i [Kontrola dostępu (grupy)](#access-control-groups), aby poznać obecne zachowanie botów Marketplace.
+- `channels.zalo.groupAllowFrom`: allowlist nadawców grupowych (identyfikatory użytkowników). Wraca do `allowFrom`, gdy nie jest ustawione.
+- `channels.zalo.mediaMaxMb`: limit mediów przychodzących/wychodzących (MB, domyślnie 5).
+- `channels.zalo.webhookUrl`: włącz tryb Webhook (wymagany HTTPS).
 - `channels.zalo.webhookSecret`: sekret Webhook (8-256 znaków).
 - `channels.zalo.webhookPath`: ścieżka Webhook na serwerze HTTP gateway.
 - `channels.zalo.proxy`: URL proxy dla żądań API.
 
 Opcje wielu kont:
 
-- `channels.zalo.accounts.<id>.botToken`: token per konto.
-- `channels.zalo.accounts.<id>.tokenFile`: zwykły plik tokena per konto. Dowiązania symboliczne są odrzucane.
+- `channels.zalo.accounts.<id>.botToken`: token dla danego konta.
+- `channels.zalo.accounts.<id>.tokenFile`: zwykły plik tokena dla danego konta. Dowiązania symboliczne są odrzucane.
 - `channels.zalo.accounts.<id>.name`: nazwa wyświetlana.
-- `channels.zalo.accounts.<id>.enabled`: włącza/wyłącza konto.
-- `channels.zalo.accounts.<id>.dmPolicy`: zasada wiadomości prywatnych per konto.
-- `channels.zalo.accounts.<id>.allowFrom`: allowlista per konto.
-- `channels.zalo.accounts.<id>.groupPolicy`: zasada grup per konto. Obecne w konfiguracji; zobacz [Możliwości](#capabilities) i [Kontrola dostępu (grupy)](#access-control-groups), aby poznać bieżące zachowanie botów Marketplace.
-- `channels.zalo.accounts.<id>.groupAllowFrom`: allowlista nadawców grupowych per konto.
-- `channels.zalo.accounts.<id>.webhookUrl`: URL Webhook per konto.
-- `channels.zalo.accounts.<id>.webhookSecret`: sekret Webhook per konto.
-- `channels.zalo.accounts.<id>.webhookPath`: ścieżka Webhook per konto.
-- `channels.zalo.accounts.<id>.proxy`: URL proxy per konto.
+- `channels.zalo.accounts.<id>.enabled`: włącz/wyłącz konto.
+- `channels.zalo.accounts.<id>.dmPolicy`: zasada DM dla danego konta.
+- `channels.zalo.accounts.<id>.allowFrom`: allowlist dla danego konta.
+- `channels.zalo.accounts.<id>.groupPolicy`: zasada grup dla danego konta. Obecne w konfiguracji; zobacz [Możliwości](#capabilities) i [Kontrola dostępu (grupy)](#access-control-groups), aby poznać obecne zachowanie botów Marketplace.
+- `channels.zalo.accounts.<id>.groupAllowFrom`: allowlist nadawców grupowych dla danego konta.
+- `channels.zalo.accounts.<id>.webhookUrl`: URL Webhook dla danego konta.
+- `channels.zalo.accounts.<id>.webhookSecret`: sekret Webhook dla danego konta.
+- `channels.zalo.accounts.<id>.webhookPath`: ścieżka Webhook dla danego konta.
+- `channels.zalo.accounts.<id>.proxy`: URL proxy dla danego konta.
 
 ## Powiązane
 
-- [Channels Overview](/pl/channels) — wszystkie obsługiwane kanały
-- [Pairing](/pl/channels/pairing) — uwierzytelnianie wiadomości prywatnych i przepływ parowania
-- [Groups](/pl/channels/groups) — zachowanie czatów grupowych i bramkowanie wzmianek
-- [Channel Routing](/pl/channels/channel-routing) — routing sesji dla wiadomości
-- [Security](/pl/gateway/security) — model dostępu i utwardzanie
+- [Przegląd kanałów](/pl/channels) — wszystkie obsługiwane kanały
+- [Parowanie](/pl/channels/pairing) — uwierzytelnianie DM i przepływ parowania
+- [Grupy](/pl/channels/groups) — zachowanie czatu grupowego i bramkowanie wzmianek
+- [Routing kanałów](/pl/channels/channel-routing) — routing sesji dla wiadomości
+- [Bezpieczeństwo](/pl/gateway/security) — model dostępu i utwardzanie

@@ -2,15 +2,15 @@
 summary: Przekieruj do /gateway/authentication
 title: Monitorowanie uwierzytelniania
 x-i18n:
-    generated_at: "2026-04-24T08:57:13Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:34:53Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a80b75d3f35d0255213907562a5ac0416d9bf9fe6f8026193bff07e2f33086a2
+    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
     source_path: automation/auth-monitoring.md
-    workflow: 15
+    workflow: 16
 ---
 
-Ta strona została przeniesiona do [Authentication](/pl/gateway/authentication). Zobacz [Authentication](/pl/gateway/authentication), aby zapoznać się z dokumentacją monitorowania uwierzytelniania.
+Monitorowanie uwierzytelniania znajduje się w sekcji [Uwierzytelnianie](/pl/gateway/authentication).
 
 ## Powiązane
 

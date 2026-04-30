@@ -1,58 +1,45 @@
 ---
 read_when:
-    - Utrzymujesz plugin OpenClaw
-    - Widzisz ostrzeżenie o zgodności pluginu
-    - Planujesz migrację SDK pluginu lub manifestu pluginu
-summary: Kontrakty zgodności pluginów, metadane deprecacji i oczekiwania migracyjne
-title: Zgodność pluginów
+    - Utrzymujesz Plugin OpenClaw
+    - Widzisz ostrzeżenie o zgodności typu Plugin
+    - Planujesz migrację Plugin SDK lub manifestu
+summary: Kontrakty zgodności Plugin, metadane wycofania i oczekiwania dotyczące migracji
+title: Zgodność Plugin
 x-i18n:
-    generated_at: "2026-04-26T11:36:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:06:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3b4e11dc57c29eac72844b91bec75a9d48005bbd3c89a2a9d7a5634ab782e5fc
+    source_hash: 344dbaac86db7259adc09bc91b7fbe7ba540fc6fdd96cc422918ccf2c34d9cec
     source_path: plugins/compatibility.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw utrzymuje starsze kontrakty pluginów podłączone przez nazwane adaptery
-zgodności, zanim je usunie. Chroni to istniejące pluginy dołączone i zewnętrzne,
-podczas gdy ewoluują kontrakty SDK, manifestu, setupu, konfiguracji i runtime agenta.
+OpenClaw utrzymuje starsze kontrakty Pluginów podłączone przez nazwane adaptery zgodności przed ich usunięciem. Chroni to istniejące wbudowane i zewnętrzne Pluginy, gdy ewoluują kontrakty SDK, manifestu, konfiguracji początkowej, konfiguracji i środowiska uruchomieniowego agenta.
 
 ## Rejestr zgodności
 
-Kontrakty zgodności pluginów są śledzone w głównym rejestrze pod
+Kontrakty zgodności Pluginów są śledzone w głównym rejestrze pod adresem
 `src/plugins/compat/registry.ts`.
 
-Każdy rekord ma:
+Każdy rekord zawiera:
 
 - stabilny kod zgodności
 - status: `active`, `deprecated`, `removal-pending` lub `removed`
-- właściciela: SDK, config, setup, channel, provider, wykonanie pluginu, agent runtime
-  lub core
-- daty wprowadzenia i deprecacji, jeśli mają zastosowanie
+- właściciela: SDK, konfigurację, konfigurację początkową, kanał, dostawcę, wykonywanie Pluginu, środowisko uruchomieniowe agenta lub core
+- daty wprowadzenia i wycofania, jeśli mają zastosowanie
 - wskazówki dotyczące zamiennika
 - dokumentację, diagnostykę i testy obejmujące stare i nowe zachowanie
 
-Rejestr jest źródłem dla planowania maintainerów i przyszłych kontroli inspektora
-pluginów. Jeśli zachowanie skierowane do pluginów się zmienia, dodaj lub zaktualizuj
-rekord zgodności w tej samej zmianie, która dodaje adapter.
+Rejestr jest źródłem dla planowania przez maintainerów i przyszłych kontroli inspektora Pluginów. Jeśli zachowanie widoczne dla Pluginów się zmienia, dodaj lub zaktualizuj rekord zgodności w tej samej zmianie, która dodaje adapter.
 
-Naprawy doctor i zgodność migracji są śledzone osobno pod
-`src/commands/doctor/shared/deprecation-compat.ts`. Te rekordy obejmują stare
-kształty konfiguracji, układy install-ledger i shimy naprawcze, które mogą
-musieć pozostać dostępne po usunięciu ścieżki zgodności runtime.
+Zgodność napraw i migracji Doctor jest śledzona osobno w
+`src/commands/doctor/shared/deprecation-compat.ts`. Te rekordy obejmują stare kształty konfiguracji, układy dziennika instalacji i warstwy naprawcze, które mogą wymagać dostępności po usunięciu ścieżki zgodności środowiska uruchomieniowego.
 
-Przeglądy wydaniowe powinny sprawdzać oba rejestry. Nie usuwaj migracji doctor
-tylko dlatego, że wygasł odpowiadający jej rekord zgodności runtime lub config; najpierw
-zweryfikuj, że nie istnieje obsługiwana ścieżka aktualizacji, która nadal wymaga tej naprawy.
-Ponownie weryfikuj też każdą adnotację zamiennika podczas planowania wydania, ponieważ
-własność pluginów i ślad konfiguracji mogą się zmieniać, gdy providery i kanały są wynoszone z
-core.
+Przeglądy wydania powinny sprawdzać oba rejestry. Nie usuwaj migracji Doctor tylko dlatego, że odpowiadający jej rekord zgodności środowiska uruchomieniowego lub konfiguracji wygasł; najpierw zweryfikuj, że nie istnieje obsługiwana ścieżka aktualizacji, która nadal wymaga naprawy. Podczas planowania wydania ponownie zweryfikuj także każdą adnotację zamiennika, ponieważ własność Pluginów i zakres konfiguracji mogą się zmieniać, gdy dostawcy i kanały przenoszą się poza core.
 
-## Pakiet inspektora pluginów
+## Pakiet inspektora Pluginów
 
-Inspektor pluginów powinien znajdować się poza głównym repo OpenClaw jako osobny
-pakiet/repozytorium oparty na wersjonowanych kontraktach zgodności i manifestu.
+Inspektor Pluginów powinien żyć poza głównym repozytorium OpenClaw jako osobny pakiet/repozytorium oparte na wersjonowanych kontraktach zgodności i manifestu.
 
 CLI pierwszego dnia powinno wyglądać tak:
 
@@ -60,83 +47,94 @@ CLI pierwszego dnia powinno wyglądać tak:
 openclaw-plugin-inspector ./my-plugin
 ```
 
-Powinien emitować:
+Powinno emitować:
 
 - walidację manifestu/schematu
-- wersję kontraktu zgodności, która jest sprawdzana
+- sprawdzaną wersję zgodności kontraktu
 - kontrole metadanych instalacji/źródła
-- kontrole importu zimnej ścieżki
-- ostrzeżenia o deprecacji i zgodności
+- kontrole importów ścieżki zimnej
+- ostrzeżenia o wycofaniu i zgodności
 
-Używaj `--json`, aby uzyskać stabilne wyjście czytelne maszynowo w adnotacjach CI. Core
-OpenClaw powinno udostępniać kontrakty i fixture’y, z których może korzystać inspektor, ale
-nie powinno publikować binarki inspektora z głównego pakietu `openclaw`.
+Użyj `--json` dla stabilnego, czytelnego maszynowo wyjścia w adnotacjach CI. Core OpenClaw powinno udostępniać kontrakty i fixture’y, z których inspektor może korzystać, ale nie powinno publikować binarium inspektora z głównego pakietu `openclaw`.
 
-## Polityka deprecacji
+### Ścieżka akceptacyjna maintainerów
 
-OpenClaw nie powinien usuwać udokumentowanego kontraktu pluginu w tym samym wydaniu,
-w którym wprowadza jego zamiennik.
+Używaj Blacksmith Testbox dla ścieżki akceptacji instalowalnego pakietu podczas walidowania zewnętrznego inspektora względem pakietów Pluginów OpenClaw. Uruchom to z czystego checkoutu OpenClaw po zbudowaniu pakietu:
+
+```sh
+blacksmith testbox warmup ci-check-testbox.yml --ref main --idle-timeout 90
+blacksmith testbox run --id <tbx_id> "pnpm install && pnpm build && npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/telegram --json"
+blacksmith testbox run --id <tbx_id> "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- ./extensions/discord --json"
+blacksmith testbox run --id <tbx_id> "npm exec --yes @openclaw/plugin-inspector@0.1.0 -- <clawhub-plugin-dir> --json"
+blacksmith testbox stop <tbx_id>
+```
+
+Ta ścieżka powinna pozostać opcjonalna dla maintainerów, ponieważ instaluje zewnętrzny pakiet npm i może sprawdzać pakiety Pluginów sklonowane poza repozytorium. Lokalne zabezpieczenia repozytorium obejmują mapę eksportów SDK, metadane rejestru zgodności, redukcję wycofanych importów SDK i granice importów wbudowanych rozszerzeń; dowód z inspektora w Testbox obejmuje pakiet tak, jak konsumują go zewnętrzni autorzy Pluginów.
+
+## Zasady wycofywania
+
+OpenClaw nie powinien usuwać udokumentowanego kontraktu Pluginu w tym samym wydaniu, które wprowadza jego zamiennik.
 
 Sekwencja migracji wygląda następująco:
 
 1. Dodaj nowy kontrakt.
-2. Utrzymuj stare zachowanie podłączone przez nazwany adapter zgodności.
-3. Emituj diagnostykę lub ostrzeżenia, gdy autorzy pluginów mogą podjąć działanie.
+2. Utrzymaj stare zachowanie podłączone przez nazwany adapter zgodności.
+3. Emituj diagnostykę lub ostrzeżenia, gdy autorzy Pluginów mogą podjąć działanie.
 4. Udokumentuj zamiennik i harmonogram.
-5. Przetestuj zarówno stare, jak i nowe ścieżki.
+5. Testuj zarówno stare, jak i nowe ścieżki.
 6. Odczekaj ogłoszone okno migracji.
-7. Usuwaj tylko po uzyskaniu jawnej zgody na wydanie łamiące zgodność.
+7. Usuwaj tylko za wyraźną zgodą na wydanie z breaking changes.
 
-Rekordy oznaczone jako deprecated muszą zawierać datę rozpoczęcia ostrzeżeń, zamiennik, link do dokumentacji
-oraz ostateczną datę usunięcia nie później niż trzy miesiące po rozpoczęciu ostrzeżeń. Nie
-dodawaj zdeprecjonowanej ścieżki zgodności z otwartym oknem usunięcia, chyba że
-maintainerzy jawnie zdecydują, że jest to trwała zgodność, i oznaczą ją zamiast tego jako `active`.
+Wycofane rekordy muszą zawierać datę rozpoczęcia ostrzegania, zamiennik, link do dokumentacji i ostateczną datę usunięcia nie późniejszą niż trzy miesiące od rozpoczęcia ostrzegania. Nie dodawaj wycofanej ścieżki zgodności z otwartym oknem usunięcia, chyba że maintainerzy wyraźnie zdecydują, że jest to trwała zgodność, i oznaczą ją zamiast tego jako `active`.
 
-## Bieżące obszary zgodności
+## Obecne obszary zgodności
 
-Bieżące rekordy zgodności obejmują:
+Obecne rekordy zgodności obejmują:
 
 - starsze szerokie importy SDK, takie jak `openclaw/plugin-sdk/compat`
-- starsze kształty pluginów oparte tylko na hookach i `before_agent_start`
-- starsze entrypointy pluginów `activate(api)`, podczas gdy pluginy migrują do
-  `register(api)`
+- starsze kształty Pluginów oparte wyłącznie na hookach oraz `before_agent_start`
+- starsze punkty wejścia Pluginów `activate(api)`, gdy Pluginy migrują do `register(api)`
 - starsze aliasy SDK, takie jak `openclaw/extension-api`,
   `openclaw/plugin-sdk/channel-runtime`, konstruktory statusu `openclaw/plugin-sdk/command-auth`,
-  `openclaw/plugin-sdk/test-utils` oraz aliasy typów `ClawdbotConfig` /
+  `openclaw/plugin-sdk/test-utils` (zastąpione przez ukierunkowane
+  podścieżki testowe `openclaw/plugin-sdk/*`) oraz aliasy typów `ClawdbotConfig` /
   `OpenClawSchemaType`
-- zachowanie allowlist i enablement dołączonych pluginów
-- starsze metadane manifestu zmiennych środowiskowych providera/kanału
-- starsze hooki pluginów providera i aliasy typów, podczas gdy providery przechodzą na
-  jawne hooki katalogu, auth, thinking, replay i transport
-- starsze aliasy runtime, takie jak `api.runtime.taskFlow`,
-  `api.runtime.subagent.getSession` oraz `api.runtime.stt`
-- starszą rozdzieloną rejestrację pluginów pamięci, podczas gdy pluginy pamięci przechodzą do
+- lista dozwolonych wbudowanych Pluginów i zachowanie włączania
+- starsze metadane manifestu zmiennych środowiskowych dostawców/kanałów
+- starsze hooki Pluginów dostawców i aliasy typów, gdy dostawcy przechodzą na
+  jawne hooki katalogu, uwierzytelniania, myślenia, odtwarzania i transportu
+- starsze aliasy środowiska uruchomieniowego, takie jak `api.runtime.taskFlow`,
+  `api.runtime.subagent.getSession`, `api.runtime.stt` oraz wycofane
+  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
+- starsza dzielona rejestracja Pluginów pamięci, gdy Pluginy pamięci przechodzą na
   `registerMemoryCapability`
-- starsze helpery SDK kanałów dla natywnych schematów wiadomości, bramkowania wzmianek,
-  formatowania inbound envelope i zagnieżdżania możliwości zatwierdzania
-- podpowiedzi aktywacji zastępowane przez własność wkładów manifestu
-- fallback runtime `setup-api`, podczas gdy deskryptory setup przechodzą do zimnych
-  metadanych `setup.requiresRuntime: false`
-- hooki providera `discovery`, podczas gdy hooki katalogu providera przechodzą do
+- starsze pomocniki SDK kanałów dla natywnych schematów wiadomości, bramkowania wzmianek,
+  formatowania kopert przychodzących i zagnieżdżania możliwości zatwierdzania
+- starszy klucz trasy kanału i aliasy pomocników porównywalnych celów, gdy Pluginy
+  przechodzą na `openclaw/plugin-sdk/channel-route`
+- wskazówki aktywacji zastępowane przez własność kontrybucji w manifeście
+- wycofane niejawne ładowanie bocznych procesów podczas startu dla Pluginów, które nie zadeklarowały
+  `activation.onStartup`; maintainerzy mogą testować przyszłe bardziej rygorystyczne zachowanie za pomocą
+  `OPENCLAW_DISABLE_LEGACY_IMPLICIT_STARTUP_SIDECARS=1`
+- fallback środowiska uruchomieniowego `setup-api`, gdy deskryptory konfiguracji początkowej przechodzą na zimne
+  metadane `setup.requiresRuntime: false`
+- hooki `discovery` dostawców, gdy hooki katalogu dostawców przechodzą na
   `catalog.run(...)`
-- metadane kanałów `showConfigured` / `showInSetup`, podczas gdy pakiety kanałów przechodzą
-  do `openclaw.channel.exposure`
-- starsze klucze konfiguracji polityki runtime, podczas gdy doctor migruje operatorów do
+- metadane kanału `showConfigured` / `showInSetup`, gdy pakiety kanałów przechodzą na
+  `openclaw.channel.exposure`
+- starsze klucze konfiguracji polityki środowiska uruchomieniowego, gdy Doctor migruje operatorów do
   `agentRuntime`
-- fallback wygenerowanych metadanych konfiguracji dołączonych kanałów, podczas gdy lądują
-  metadane `channelConfigs` typu registry-first
-- utrwalone flagi env wyłączania rejestru pluginów i migracji instalacji, podczas gdy
-  przebiegi naprawcze migrują operatorów do `openclaw plugins registry --refresh` i
+- fallback wygenerowanych metadanych konfiguracji wbudowanych kanałów, gdy wprowadzane są metadane `channelConfigs` oparte najpierw na rejestrze
+- utrwalone flagi środowiskowe wyłączania rejestru Pluginów i migracji instalacji, gdy
+  przepływy naprawcze migrują operatorów do `openclaw plugins registry --refresh` i
   `openclaw doctor --fix`
-- starsze ścieżki konfiguracji web search, web fetch i x_search należące do pluginów, podczas gdy
-  doctor migruje je do `plugins.entries.<plugin>.config`
-- starszą autorską konfigurację `plugins.installs` i aliasy ścieżek ładowania dołączonych pluginów, podczas gdy metadane instalacji przechodzą do stanu zarządzanego przez plugin ledger
+- starsze ścieżki konfiguracji wyszukiwania w sieci, pobierania z sieci i x_search należące do Pluginu, gdy
+  Doctor migruje je do `plugins.entries.<plugin>.config`
+- starsza konfiguracja autorska `plugins.installs` i aliasy ścieżki ładowania wbudowanych Pluginów,
+  gdy metadane instalacji przechodzą do zarządzanego stanem dziennika Pluginów
 
-Nowy kod pluginów powinien preferować zamiennik wymieniony w rejestrze i w
-konkretnym przewodniku migracyjnym. Istniejące pluginy mogą nadal używać ścieżki zgodności,
-dopóki dokumentacja, diagnostyka i informacje o wydaniu nie ogłoszą okna usunięcia.
+Nowy kod Pluginów powinien preferować zamiennik wymieniony w rejestrze i w konkretnym przewodniku migracji. Istniejące Pluginy mogą nadal używać ścieżki zgodności, dopóki dokumentacja, diagnostyka i informacje o wydaniu nie ogłoszą okna usunięcia.
 
 ## Informacje o wydaniu
 
-Informacje o wydaniu powinny zawierać nadchodzące deprecacje pluginów z docelowymi datami i
-linkami do dokumentacji migracyjnej. To ostrzeżenie musi pojawić się przed tym, jak ścieżka zgodności przejdzie do `removal-pending` lub `removed`.
+Informacje o wydaniu powinny zawierać nadchodzące wycofania Pluginów wraz z docelowymi datami i linkami do dokumentacji migracji. To ostrzeżenie musi nastąpić, zanim ścieżka zgodności przejdzie do `removal-pending` lub `removed`.

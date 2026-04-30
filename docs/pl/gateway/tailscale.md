@@ -1,65 +1,66 @@
 ---
 read_when:
-    - Udostępnianie Control UI Gateway poza localhost
-    - Automatyzowanie dostępu do dashboardu w tailnet lub publicznie
-summary: Zintegrowane Tailscale Serve/Funnel dla dashboardu Gateway
+    - Udostępnianie interfejsu sterowania Gateway poza localhost
+    - Automatyzacja dostępu do tailnetu lub publicznego panelu
+summary: Zintegrowana obsługa Tailscale Serve/Funnel dla panelu Gateway
 title: Tailscale
 x-i18n:
-    generated_at: "2026-04-26T11:32:05Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:56:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b5966490f8e85774b5149ed29cf7fd4b108eb438f94f5f74a3e5aa3e3b39568a
+    source_hash: e5bc0a90ce8105017f5f52bad4a40609711f4bd4538437916c020680d3e9eda4
     source_path: gateway/tailscale.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw może automatycznie skonfigurować Tailscale **Serve** (tailnet) albo **Funnel** (publicznie) dla
-dashboardu Gateway i portu WebSocket. Dzięki temu Gateway pozostaje związany z loopback, podczas gdy
+OpenClaw może automatycznie konfigurować Tailscale **Serve** (tailnet) lub **Funnel** (publiczny) dla
+pulpitu Gateway i portu WebSocket. Dzięki temu Gateway pozostaje powiązany z loopback, a
 Tailscale zapewnia HTTPS, routing oraz (dla Serve) nagłówki tożsamości.
 
 ## Tryby
 
-- `serve`: Serve tylko dla tailnet przez `tailscale serve`. Gateway pozostaje na `127.0.0.1`.
+- `serve`: Serve tylko w Tailnet przez `tailscale serve`. Gateway pozostaje na `127.0.0.1`.
 - `funnel`: Publiczny HTTPS przez `tailscale funnel`. OpenClaw wymaga współdzielonego hasła.
-- `off`: Domyślnie (brak automatyzacji Tailscale).
+- `off`: Domyślnie (bez automatyzacji Tailscale).
 
-Wyjście statusu i audytu używa określenia **ekspozycja Tailscale** dla tego trybu OpenClaw Serve/Funnel.
-`off` oznacza, że OpenClaw nie zarządza Serve ani Funnel; nie oznacza to, że
-lokalny demon Tailscale jest zatrzymany albo wylogowany.
+Dane wyjściowe statusu i audytu używają określenia **ekspozycja Tailscale** dla tego trybu
+Serve/Funnel w OpenClaw. `off` oznacza, że OpenClaw nie zarządza Serve ani Funnel; nie oznacza to, że
+lokalny demon Tailscale jest zatrzymany lub wylogowany.
 
 ## Uwierzytelnianie
 
-Ustaw `gateway.auth.mode`, aby kontrolować handshake:
+Ustaw `gateway.auth.mode`, aby kontrolować uzgadnianie:
 
-- `none` (tylko prywatny ingress)
-- `token` (domyślnie, gdy ustawione jest `OPENCLAW_GATEWAY_TOKEN`)
+- `none` (tylko prywatne wejście)
+- `token` (domyślnie, gdy ustawiono `OPENCLAW_GATEWAY_TOKEN`)
 - `password` (współdzielony sekret przez `OPENCLAW_GATEWAY_PASSWORD` lub konfigurację)
-- `trusted-proxy` (reverse proxy świadome tożsamości; zobacz [Trusted Proxy Auth](/pl/gateway/trusted-proxy-auth))
+- `trusted-proxy` (odwrotny proxy świadomy tożsamości; zobacz [Uwierzytelnianie przez zaufany proxy](/pl/gateway/trusted-proxy-auth))
 
 Gdy `tailscale.mode = "serve"` i `gateway.auth.allowTailscale` ma wartość `true`,
-uwierzytelnianie Control UI/WebSocket może używać nagłówków tożsamości Tailscale
+uwierzytelnianie interfejsu sterowania/WebSocket może używać nagłówków tożsamości Tailscale
 (`tailscale-user-login`) bez podawania tokenu/hasła. OpenClaw weryfikuje
-tożsamość, rozwiązując adres `x-forwarded-for` przez lokalnego demona Tailscale
-(`tailscale whois`) i dopasowując go do nagłówka przed akceptacją.
-OpenClaw traktuje żądanie jako Serve tylko wtedy, gdy przychodzi z loopback z
-nagłówkami Tailscale `x-forwarded-for`, `x-forwarded-proto` i `x-forwarded-host`.
-Dla sesji operatora Control UI, które zawierają tożsamość urządzenia przeglądarki, ta
-zweryfikowana ścieżka Serve pomija również rundę parowania urządzenia. Nie omija to
+tożsamość, rozpoznając adres `x-forwarded-for` przez lokalnego demona Tailscale
+(`tailscale whois`) i dopasowując go do nagłówka przed jego zaakceptowaniem.
+OpenClaw traktuje żądanie jako Serve tylko wtedy, gdy przychodzi z loopback z nagłówkami
+Tailscale `x-forwarded-for`, `x-forwarded-proto` i `x-forwarded-host`.
+W przypadku sesji operatora interfejsu sterowania, które obejmują tożsamość urządzenia przeglądarki, ta
+zweryfikowana ścieżka Serve pomija także rundę parowania urządzenia. Nie omija
 tożsamości urządzenia przeglądarki: klienci bez urządzenia są nadal odrzucani, a połączenia WebSocket
-w roli node albo niebędące połączeniami Control UI nadal przechodzą normalne sprawdzenia parowania i
-uwierzytelniania.
-Endpointy HTTP API (na przykład `/v1/*`, `/tools/invoke` i `/api/channels/*`)
-**nie** używają uwierzytelniania nagłówkami tożsamości Tailscale. Nadal stosują
-normalny tryb uwierzytelniania HTTP gateway: domyślnie uwierzytelnianie współdzielonym sekretem albo
-intencjonalnie skonfigurowany `trusted-proxy` / prywatny ingress `none`.
-Ten przepływ bez tokena zakłada, że host gateway jest zaufany. Jeśli na tym samym hoście
-może działać niezaufany kod lokalny, wyłącz `gateway.auth.allowTailscale` i zamiast tego wymagaj uwierzytelniania tokenem/hasłem.
+z rolą węzła lub spoza interfejsu sterowania nadal przechodzą standardowe parowanie i
+kontrole uwierzytelniania.
+Punkty końcowe API HTTP (na przykład `/v1/*`, `/tools/invoke` i `/api/channels/*`)
+**nie** używają uwierzytelniania przez nagłówki tożsamości Tailscale. Nadal stosują zwykły
+tryb uwierzytelniania HTTP Gateway: domyślnie uwierzytelnianie współdzielonym sekretem albo celowo
+skonfigurowaną konfigurację zaufanego proxy / prywatnego wejścia `none`.
+Ten przepływ bez tokenu zakłada, że host Gateway jest zaufany. Jeśli niezaufany kod lokalny
+może działać na tym samym hoście, wyłącz `gateway.auth.allowTailscale` i zamiast tego wymagaj
+uwierzytelniania tokenem/hasłem.
 Aby wymagać jawnych poświadczeń współdzielonego sekretu, ustaw `gateway.auth.allowTailscale: false`
-i użyj `gateway.auth.mode: "token"` albo `"password"`.
+i użyj `gateway.auth.mode: "token"` lub `"password"`.
 
 ## Przykłady konfiguracji
 
-### Tylko tailnet (Serve)
+### Tylko Tailnet (Serve)
 
 ```json5
 {
@@ -70,9 +71,9 @@ i użyj `gateway.auth.mode: "token"` albo `"password"`.
 }
 ```
 
-Otwórz: `https://<magicdns>/` (albo skonfigurowane `gateway.controlUi.basePath`)
+Otwórz: `https://<magicdns>/` (lub skonfigurowaną wartość `gateway.controlUi.basePath`)
 
-### Tylko tailnet (powiązanie z adresem IP Tailnet)
+### Tylko Tailnet (powiązanie z adresem IP Tailnet)
 
 Użyj tego, gdy chcesz, aby Gateway nasłuchiwał bezpośrednio na adresie IP Tailnet (bez Serve/Funnel).
 
@@ -87,10 +88,12 @@ Użyj tego, gdy chcesz, aby Gateway nasłuchiwał bezpośrednio na adresie IP Ta
 
 Połącz się z innego urządzenia Tailnet:
 
-- Control UI: `http://<tailscale-ip>:18789/`
+- Interfejs sterowania: `http://<tailscale-ip>:18789/`
 - WebSocket: `ws://<tailscale-ip>:18789`
 
-Uwaga: loopback (`http://127.0.0.1:18789`) **nie** będzie działać w tym trybie.
+<Note>
+Loopback (`http://127.0.0.1:18789`) **nie** będzie działać w tym trybie.
+</Note>
 
 ### Publiczny internet (Funnel + współdzielone hasło)
 
@@ -116,39 +119,39 @@ openclaw gateway --tailscale funnel --auth password
 ## Uwagi
 
 - Tailscale Serve/Funnel wymaga zainstalowanego i zalogowanego CLI `tailscale`.
-- `tailscale.mode: "funnel"` odmawia uruchomienia, jeśli tryb uwierzytelniania nie jest `password`, aby uniknąć publicznej ekspozycji.
+- `tailscale.mode: "funnel"` odmawia uruchomienia, chyba że tryb uwierzytelniania to `password`, aby uniknąć publicznej ekspozycji.
 - Ustaw `gateway.tailscale.resetOnExit`, jeśli chcesz, aby OpenClaw cofnął konfigurację `tailscale serve`
-  albo `tailscale funnel` przy zamknięciu.
+  lub `tailscale funnel` przy zamykaniu.
 - `gateway.bind: "tailnet"` to bezpośrednie powiązanie Tailnet (bez HTTPS, bez Serve/Funnel).
 - `gateway.bind: "auto"` preferuje loopback; użyj `tailnet`, jeśli chcesz tylko Tailnet.
-- Serve/Funnel udostępniają tylko **Gateway control UI + WS**. Node łączą się przez
-  ten sam endpoint Gateway WS, więc Serve może działać także dla dostępu node.
+- Serve/Funnel udostępniają tylko **interfejs sterowania Gateway + WS**. Węzły łączą się przez
+  ten sam punkt końcowy WS Gateway, więc Serve może działać dla dostępu węzłów.
 
 ## Sterowanie przeglądarką (zdalny Gateway + lokalna przeglądarka)
 
-Jeśli uruchamiasz Gateway na jednej maszynie, ale chcesz sterować przeglądarką na innej,
-uruchom **host node** na maszynie z przeglądarką i trzymaj obie w tej samej tailnet.
-Gateway będzie proxyował akcje przeglądarki do node; nie jest potrzebny osobny serwer sterujący ani URL Serve.
+Jeśli uruchamiasz Gateway na jednym komputerze, ale chcesz sterować przeglądarką na innym komputerze,
+uruchom **host węzła** na komputerze z przeglądarką i trzymaj oba w tym samym tailnet.
+Gateway będzie przekazywać akcje przeglądarki do węzła; nie jest potrzebny osobny serwer sterowania ani adres URL Serve.
 
-Unikaj Funnel do sterowania przeglądarką; traktuj parowanie node tak samo jak dostęp operatora.
+Unikaj Funnel do sterowania przeglądarką; traktuj parowanie węzłów jak dostęp operatora.
 
 ## Wymagania wstępne i ograniczenia Tailscale
 
 - Serve wymaga włączonego HTTPS dla Twojego tailnet; CLI wyświetli monit, jeśli go brakuje.
-- Serve wstrzykuje nagłówki tożsamości Tailscale; Funnel tego nie robi.
-- Funnel wymaga Tailscale v1.38.3+, MagicDNS, włączonego HTTPS i atrybutu node funnel.
+- Serve wstrzykuje nagłówki tożsamości Tailscale; Funnel nie.
+- Funnel wymaga Tailscale v1.38.3+, MagicDNS, włączonego HTTPS oraz atrybutu węzła funnel.
 - Funnel obsługuje tylko porty `443`, `8443` i `10000` przez TLS.
-- Funnel na macOS wymaga wariantu aplikacji Tailscale typu open-source.
+- Funnel na macOS wymaga wariantu aplikacji Tailscale o otwartym kodzie źródłowym.
 
 ## Dowiedz się więcej
 
-- Przegląd Tailscale Serve: [https://tailscale.com/kb/1312/serve](https://tailscale.com/kb/1312/serve)
+- Omówienie Tailscale Serve: [https://tailscale.com/kb/1312/serve](https://tailscale.com/kb/1312/serve)
 - Polecenie `tailscale serve`: [https://tailscale.com/kb/1242/tailscale-serve](https://tailscale.com/kb/1242/tailscale-serve)
-- Przegląd Tailscale Funnel: [https://tailscale.com/kb/1223/tailscale-funnel](https://tailscale.com/kb/1223/tailscale-funnel)
+- Omówienie Tailscale Funnel: [https://tailscale.com/kb/1223/tailscale-funnel](https://tailscale.com/kb/1223/tailscale-funnel)
 - Polecenie `tailscale funnel`: [https://tailscale.com/kb/1311/tailscale-funnel](https://tailscale.com/kb/1311/tailscale-funnel)
 
 ## Powiązane
 
-- [Dostęp zdalny](/pl/gateway/remote)
-- [Discovery](/pl/gateway/discovery)
+- [Zdalny dostęp](/pl/gateway/remote)
+- [Wykrywanie](/pl/gateway/discovery)
 - [Uwierzytelnianie](/pl/gateway/authentication)

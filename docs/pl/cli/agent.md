@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Chcesz uruchomić jedną turę agenta ze skryptów (opcjonalnie dostarczyć odpowiedź)
-summary: Dokumentacja CLI dla `openclaw agent` (wyślij jedną turę agenta przez Gateway)
+    - Chcesz uruchomić jedną turę agenta z poziomu skryptów (opcjonalnie dostarczyć odpowiedź)
+summary: Dokumentacja referencyjna CLI dla `openclaw agent` (wyślij jedną turę agenta przez Gateway)
 title: Agent
 x-i18n:
-    generated_at: "2026-04-25T13:43:25Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:41Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e06681ffbed56cb5be05c7758141e784eac8307ed3c6fc973f71534238b407e1
+    source_hash: b77668949040933c5281f2f183e48cc2593d09252470483b9ae38dcffd13d071
     source_path: cli/agent.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw agent`
@@ -25,30 +25,32 @@ Przekaż co najmniej jeden selektor sesji:
 
 Powiązane:
 
-- Narzędzie wysyłania agenta: [Agent send](/pl/tools/agent-send)
+- Narzędzie wysyłania agenta: [Wysyłanie agenta](/pl/tools/agent-send)
 
 ## Opcje
 
-- `-m, --message <text>`: wymagane ciało wiadomości
+- `-m, --message <text>`: wymagana treść wiadomości
 - `-t, --to <dest>`: odbiorca używany do wyprowadzenia klucza sesji
 - `--session-id <id>`: jawny identyfikator sesji
-- `--agent <id>`: identyfikator agenta; nadpisuje powiązania routingu
-- `--thinking <level>`: poziom myślenia agenta (`off`, `minimal`, `low`, `medium`, `high` oraz obsługiwane przez dostawcę niestandardowe poziomy, takie jak `xhigh`, `adaptive` lub `max`)
-- `--verbose <on|off>`: utrwala poziom verbose dla sesji
-- `--channel <channel>`: kanał dostarczenia; pomiń, aby użyć kanału głównej sesji
+- `--agent <id>`: identyfikator agenta; zastępuje powiązania routingu
+- `--model <id>`: nadpisanie modelu dla tego uruchomienia (`provider/model` lub identyfikator modelu)
+- `--thinking <level>`: poziom myślenia agenta (`off`, `minimal`, `low`, `medium`, `high` oraz niestandardowe poziomy obsługiwane przez dostawcę, takie jak `xhigh`, `adaptive` lub `max`)
+- `--verbose <on|off>`: utrwal poziom szczegółowości dla sesji
+- `--channel <channel>`: kanał dostarczenia; pomiń, aby użyć głównego kanału sesji
 - `--reply-to <target>`: nadpisanie celu dostarczenia
 - `--reply-channel <channel>`: nadpisanie kanału dostarczenia
 - `--reply-account <id>`: nadpisanie konta dostarczenia
-- `--local`: uruchamia osadzonego agenta bezpośrednio (po wstępnym załadowaniu rejestru Plugin)
-- `--deliver`: wysyła odpowiedź z powrotem do wybranego kanału/celu
-- `--timeout <seconds>`: nadpisuje limit czasu agenta (domyślnie 600 lub wartość z konfiguracji)
-- `--json`: zwraca JSON
+- `--local`: uruchom osadzonego agenta bezpośrednio (po wstępnym załadowaniu rejestru pluginów)
+- `--deliver`: wyślij odpowiedź z powrotem do wybranego kanału/celu
+- `--timeout <seconds>`: nadpisz limit czasu agenta (domyślnie 600 lub wartość z konfiguracji)
+- `--json`: wyjście JSON
 
 ## Przykłady
 
 ```bash
 openclaw agent --to +15555550123 --message "status update" --deliver
 openclaw agent --agent ops --message "Summarize logs"
+openclaw agent --agent ops --model openai/gpt-5.4 --message "Summarize logs"
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
 openclaw agent --agent ops --message "Generate report" --deliver --reply-channel slack --reply-to "#reports"
@@ -57,13 +59,16 @@ openclaw agent --agent ops --message "Run locally" --local
 
 ## Uwagi
 
-- Tryb Gateway wraca do osadzonego agenta, gdy żądanie do Gateway zakończy się niepowodzeniem. Użyj `--local`, aby od razu wymusić wykonanie osadzone.
-- `--local` nadal najpierw wstępnie ładuje rejestr Plugin, więc dostawcy, narzędzia i kanały dostarczane przez Plugin pozostają dostępne podczas uruchomień osadzonych.
-- Każde wywołanie `openclaw agent` jest traktowane jako jednorazowe uruchomienie. Dołączone lub skonfigurowane przez użytkownika serwery MCP otwarte dla tego uruchomienia są wycofywane po odpowiedzi, nawet gdy polecenie używa ścieżki Gateway, więc procesy potomne stdio MCP nie pozostają aktywne między wywołaniami ze skryptów.
+- Tryb Gateway przełącza się awaryjnie na osadzonego agenta, gdy żądanie Gateway się nie powiedzie. Użyj `--local`, aby od razu wymusić wykonanie osadzone.
+- `--local` nadal najpierw wstępnie ładuje rejestr pluginów, więc dostawcy, narzędzia i kanały zapewniane przez pluginy pozostają dostępne podczas uruchomień osadzonych.
+- `--local` i osadzone uruchomienia awaryjne są traktowane jako uruchomienia jednorazowe. Dołączone zasoby MCP loopback oraz ciepłe sesje Claude stdio otwarte dla tego lokalnego procesu są wycofywane po odpowiedzi, więc wywołania skryptowe nie utrzymują lokalnych procesów potomnych przy życiu.
+- Uruchomienia oparte na Gateway pozostawiają zasoby MCP loopback należące do Gateway w działającym procesie Gateway; starsi klienci mogą nadal wysyłać historyczną flagę czyszczenia, ale Gateway akceptuje ją jako bezoperacyjną zgodność wsteczną.
 - `--channel`, `--reply-channel` i `--reply-account` wpływają na dostarczenie odpowiedzi, a nie na routing sesji.
-- `--json` zachowuje stdout wyłącznie dla odpowiedzi JSON. Diagnostyka Gateway, Plugin i osadzonego trybu awaryjnego jest kierowana do stderr, aby skrypty mogły bezpośrednio parsować stdout.
-- Gdy to polecenie wyzwala regenerację `models.json`, poświadczenia dostawcy zarządzane przez SecretRef są utrwalane jako znaczniki niebędące sekretami (na przykład nazwy zmiennych środowiskowych, `secretref-env:ENV_VAR_NAME` lub `secretref-managed`), a nie jako rozwiązany jawny tekst sekretu.
-- Zapisy znaczników są autorytatywne względem źródła: OpenClaw utrwala znaczniki z aktywnego migawkowego źródła konfiguracji, a nie z rozwiązanych wartości sekretów w środowisku wykonawczym.
+- `--json` rezerwuje stdout dla odpowiedzi JSON. Diagnostyka Gateway, pluginów i osadzonego trybu awaryjnego jest kierowana do stderr, aby skrypty mogły bezpośrednio parsować stdout.
+- JSON osadzonego trybu awaryjnego zawiera `meta.transport: "embedded"` i `meta.fallbackFrom: "gateway"`, aby skrypty mogły odróżnić uruchomienia awaryjne od uruchomień Gateway.
+- Jeśli Gateway przyjmie uruchomienie agenta, ale CLI przekroczy limit czasu oczekiwania na końcową odpowiedź, osadzony tryb awaryjny użyje świeżego jawnego identyfikatora sesji/uruchomienia `gateway-fallback-*` i zgłosi `meta.fallbackReason: "gateway_timeout"` oraz pola sesji awaryjnej. Pozwala to uniknąć wyścigu z blokadą transkryptu należącą do Gateway albo cichego zastąpienia oryginalnej routowanej sesji rozmowy.
+- Gdy to polecenie wyzwala ponowne wygenerowanie `models.json`, poświadczenia dostawców zarządzane przez SecretRef są utrwalane jako niesekretne znaczniki (na przykład nazwy zmiennych środowiskowych, `secretref-env:ENV_VAR_NAME` lub `secretref-managed`), a nie jako rozwiązany tajny tekst jawny.
+- Zapisy znaczników są autorytatywne względem źródła: OpenClaw utrwala znaczniki z aktywnego zrzutu konfiguracji źródłowej, a nie z rozwiązanych wartości sekretów w czasie wykonywania.
 
 ## Powiązane
 

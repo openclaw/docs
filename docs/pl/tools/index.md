@@ -1,42 +1,42 @@
 ---
 read_when:
     - Chcesz zrozumieć, jakie narzędzia udostępnia OpenClaw
-    - Musisz skonfigurować, zezwolić na narzędzia lub je zablokować
-    - Decydujesz między wbudowanymi narzędziami, Skills i Pluginami
-summary: 'Przegląd narzędzi i Pluginów OpenClaw: co agent potrafi zrobić i jak go rozszerzać'
-title: Narzędzia i Pluginy
+    - Musisz skonfigurować narzędzia, zezwolić na ich użycie lub go odmówić
+    - Decydujesz między wbudowanymi narzędziami, Skills i plugins
+summary: 'Omówienie narzędzi i pluginów OpenClaw: co agent może robić i jak go rozszerzać'
+title: Narzędzia i pluginy
 x-i18n:
-    generated_at: "2026-04-26T11:42:47Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:22:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 47cc0e2de5688328f7c11fcf86c0a2262b488c277f48416f584f5c7913f750c4
+    source_hash: 62cde740188c224af03b4425c7f6dfca9a12f95603066db5925724fc6a07dcf0
     source_path: tools/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Wszystko, co agent robi poza generowaniem tekstu, dzieje się przez **narzędzia**.
-Narzędzia to sposób, w jaki agent odczytuje pliki, uruchamia polecenia, przegląda sieć, wysyła
-wiadomości i wchodzi w interakcje z urządzeniami.
+Wszystko, co agent robi poza generowaniem tekstu, odbywa się przez **narzędzia**.
+Narzędzia umożliwiają agentowi odczytywanie plików, uruchamianie poleceń, przeglądanie sieci, wysyłanie
+wiadomości oraz interakcję z urządzeniami.
 
-## Narzędzia, Skills i Pluginy
+## Narzędzia, Skills i pluginy
 
-OpenClaw ma trzy warstwy, które współpracują ze sobą:
+OpenClaw ma trzy współpracujące ze sobą warstwy:
 
 <Steps>
-  <Step title="Narzędzia to to, co wywołuje agent">
+  <Step title="Narzędzia są tym, co wywołuje agent">
     Narzędzie to typowana funkcja, którą agent może wywołać (np. `exec`, `browser`,
     `web_search`, `message`). OpenClaw dostarcza zestaw **wbudowanych narzędzi**, a
-    Pluginy mogą rejestrować dodatkowe.
+    pluginy mogą rejestrować dodatkowe.
 
-    Agent widzi narzędzia jako strukturalne definicje funkcji wysyłane do API modelu.
+    Agent widzi narzędzia jako ustrukturyzowane definicje funkcji wysyłane do API modelu.
 
   </Step>
 
-  <Step title="Skills uczą agenta kiedy i jak">
+  <Step title="Skills uczą agenta, kiedy i jak działać">
     Skill to plik markdown (`SKILL.md`) wstrzykiwany do promptu systemowego.
-    Skills dają agentowi kontekst, ograniczenia i instrukcje krok po kroku dotyczące
-    skutecznego używania narzędzi. Skills znajdują się w Twoim workspace, we współdzielonych folderach
-    albo są dostarczane wewnątrz Pluginów.
+    Skills dostarczają agentowi kontekstu, ograniczeń i wskazówek krok po kroku dotyczących
+    skutecznego używania narzędzi. Skills znajdują się w Twoim obszarze roboczym, we współdzielonych folderach
+    albo są dostarczane wewnątrz pluginów.
 
     [Dokumentacja Skills](/pl/tools/skills) | [Tworzenie Skills](/pl/tools/creating-skills)
 
@@ -45,85 +45,85 @@ OpenClaw ma trzy warstwy, które współpracują ze sobą:
   <Step title="Pluginy pakują wszystko razem">
     Plugin to pakiet, który może rejestrować dowolną kombinację możliwości:
     kanały, dostawców modeli, narzędzia, Skills, mowę, transkrypcję w czasie rzeczywistym,
-    głos w czasie rzeczywistym, rozumienie multimediów, generowanie obrazów, generowanie wideo,
-    web fetch, web search i inne. Niektóre Pluginy są **rdzeniowe** (dostarczane z
-    OpenClaw), inne są **zewnętrzne** (publikowane w npm przez społeczność).
+    głos w czasie rzeczywistym, rozumienie mediów, generowanie obrazów, generowanie wideo,
+    pobieranie stron z sieci, wyszukiwanie w sieci i nie tylko. Niektóre pluginy są **core** (dostarczane z
+    OpenClaw), inne są **zewnętrzne** (publikowane na npm przez społeczność).
 
-    [Instalacja i konfiguracja Pluginów](/pl/tools/plugin) | [Zbuduj własny](/pl/plugins/building-plugins)
+    [Instalowanie i konfigurowanie pluginów](/pl/tools/plugin) | [Zbuduj własny](/pl/plugins/building-plugins)
 
   </Step>
 </Steps>
 
 ## Wbudowane narzędzia
 
-Te narzędzia są dostarczane z OpenClaw i są dostępne bez instalowania jakichkolwiek Pluginów:
+Te narzędzia są dostarczane z OpenClaw i dostępne bez instalowania jakichkolwiek pluginów:
 
-| Narzędzie                                 | Co robi                                                               | Strona                                                       |
-| ----------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                        | Uruchamia polecenia powłoki, zarządza procesami w tle                 | [Exec](/pl/tools/exec), [Akceptacje Exec](/pl/tools/exec-approvals) |
-| `code_execution`                          | Uruchamia sandboxowaną zdalną analizę Pythona                         | [Code Execution](/pl/tools/code-execution)                      |
-| `browser`                                 | Steruje przeglądarką Chromium (nawigacja, kliknięcia, zrzuty ekranu)  | [Browser](/pl/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`   | Przeszukuje sieć, przeszukuje posty X, pobiera treść stron            | [Web](/pl/tools/web), [Web Fetch](/pl/tools/web-fetch)             |
-| `read` / `write` / `edit`                 | Operacje wejścia/wyjścia na plikach w workspace                       |                                                              |
-| `apply_patch`                             | Wielohunkowe poprawki plików                                          | [Apply Patch](/pl/tools/apply-patch)                            |
-| `message`                                 | Wysyła wiadomości przez wszystkie kanały                              | [Agent Send](/pl/tools/agent-send)                              |
-| `canvas`                                  | Steruje Node Canvas (present, eval, snapshot)                         |                                                              |
-| `nodes`                                   | Odkrywa sparowane urządzenia i kieruje do nich działania              |                                                              |
-| `cron` / `gateway`                        | Zarządza zadaniami harmonogramu; sprawdza, poprawia, restartuje lub aktualizuje Gateway |                                                              |
-| `image` / `image_generate`                | Analizuje lub generuje obrazy                                         | [Generowanie obrazów](/pl/tools/image-generation)               |
-| `music_generate`                          | Generuje utwory muzyczne                                              | [Generowanie muzyki](/pl/tools/music-generation)                |
-| `video_generate`                          | Generuje wideo                                                        | [Generowanie wideo](/pl/tools/video-generation)                 |
-| `tts`                                     | Jednorazowa konwersja tekstu na mowę                                  | [TTS](/pl/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Zarządzanie sesjami, status i orkiestracja subagentów                 | [Subagenci](/pl/tools/subagents)                                |
-| `session_status`                          | Lekkie odczytywanie w stylu `/status` i nadpisanie modelu sesji       | [Narzędzia sesji](/pl/concepts/session-tool)                    |
+| Narzędzie                                  | Co robi                                                               | Strona                                                       |
+| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `exec` / `process`                         | Uruchamia polecenia powłoki, zarządza procesami w tle                 | [Exec](/pl/tools/exec), [Zatwierdzenia Exec](/pl/tools/exec-approvals) |
+| `code_execution`                           | Uruchamia zdalną analizę Python w piaskownicy                         | [Wykonywanie kodu](/pl/tools/code-execution)                    |
+| `browser`                                  | Steruje przeglądarką Chromium (nawigacja, kliknięcia, zrzuty ekranu)  | [Przeglądarka](/pl/tools/browser)                               |
+| `web_search` / `x_search` / `web_fetch`    | Przeszukuje sieć, przeszukuje wpisy X, pobiera treść stron            | [Sieć](/pl/tools/web), [Pobieranie z sieci](/pl/tools/web-fetch)   |
+| `read` / `write` / `edit`                  | Wejście/wyjście plików w obszarze roboczym                            |                                                              |
+| `apply_patch`                              | Wieloczęściowe poprawki plików                                        | [Apply Patch](/pl/tools/apply-patch)                            |
+| `message`                                  | Wysyła wiadomości we wszystkich kanałach                              | [Wysyłanie przez agenta](/pl/tools/agent-send)                  |
+| `canvas`                                   | Obsługuje node Canvas (present, eval, snapshot)                       |                                                              |
+| `nodes`                                    | Wykrywa sparowane urządzenia i kieruje do nich działania              |                                                              |
+| `cron` / `gateway`                         | Zarządza zaplanowanymi zadaniami; sprawdza, poprawia, restartuje lub aktualizuje gateway |                                                              |
+| `image` / `image_generate`                 | Analizuje lub generuje obrazy                                         | [Generowanie obrazów](/pl/tools/image-generation)               |
+| `music_generate`                           | Generuje ścieżki muzyczne                                             | [Generowanie muzyki](/pl/tools/music-generation)                |
+| `video_generate`                           | Generuje filmy                                                        | [Generowanie wideo](/pl/tools/video-generation)                 |
+| `tts`                                      | Jednorazowa konwersja tekstu na mowę                                  | [TTS](/pl/tools/tts)                                            |
+| `sessions_*` / `subagents` / `agents_list` | Zarządzanie sesjami, status i orkiestracja podagentów                 | [Podagenci](/pl/tools/subagents)                                |
+| `session_status`                           | Lekki odczyt zwrotny w stylu `/status` i nadpisanie modelu sesji      | [Narzędzia sesji](/pl/concepts/session-tool)                    |
 
-Do pracy z obrazami używaj `image` do analizy oraz `image_generate` do generowania lub edycji. Jeśli wskazujesz `openai/*`, `google/*`, `fal/*` albo innego niedomyślnego dostawcę obrazów, najpierw skonfiguruj auth/klucz API tego dostawcy.
+Do pracy z obrazami używaj `image` do analizy oraz `image_generate` do generowania lub edycji. Jeśli kierujesz żądanie do `openai/*`, `google/*`, `fal/*` albo innego niedomyślnego dostawcy obrazów, najpierw skonfiguruj uwierzytelnienie/klucz API tego dostawcy.
 
-Do pracy z muzyką używaj `music_generate`. Jeśli wskazujesz `google/*`, `minimax/*` albo innego niedomyślnego dostawcę muzyki, najpierw skonfiguruj auth/klucz API tego dostawcy.
+Do pracy z muzyką używaj `music_generate`. Jeśli kierujesz żądanie do `google/*`, `minimax/*` albo innego niedomyślnego dostawcy muzyki, najpierw skonfiguruj uwierzytelnienie/klucz API tego dostawcy.
 
-Do pracy z wideo używaj `video_generate`. Jeśli wskazujesz `qwen/*` albo innego niedomyślnego dostawcę wideo, najpierw skonfiguruj auth/klucz API tego dostawcy.
+Do pracy z wideo używaj `video_generate`. Jeśli kierujesz żądanie do `qwen/*` albo innego niedomyślnego dostawcy wideo, najpierw skonfiguruj uwierzytelnienie/klucz API tego dostawcy.
 
-Do generowania audio sterowanego workflow używaj `music_generate`, gdy Plugin taki jak
-ComfyUI go rejestruje. Jest to oddzielne od `tts`, które służy do zamiany tekstu na mowę.
+Do generowania audio sterowanego przepływem pracy używaj `music_generate`, gdy rejestruje je plugin taki jak
+ComfyUI. Jest to oddzielne od `tts`, które służy do zamiany tekstu na mowę.
 
-`session_status` to lekkie narzędzie statusu/odczytu w grupie sesji.
+`session_status` to lekkie narzędzie statusu/odczytu zwrotnego w grupie sesji.
 Odpowiada na pytania w stylu `/status` dotyczące bieżącej sesji i może
-opcjonalnie ustawić nadpisanie modelu dla sesji; `model=default` usuwa to
-nadpisanie. Podobnie jak `/status` może uzupełniać rzadkie liczniki tokenów/cache oraz
-etykietę aktywnego modelu środowiska uruchomieniowego na podstawie ostatniego wpisu użycia w transkrypcie.
+opcjonalnie ustawić nadpisanie modelu dla danej sesji; `model=default` czyści to
+nadpisanie. Podobnie jak `/status`, może uzupełniać rzadkie liczniki tokenów/pamięci podręcznej oraz
+etykietę aktywnego modelu wykonawczego z najnowszego wpisu użycia w transkrypcie.
 
-`gateway` to narzędzie środowiska uruchomieniowego tylko dla właściciela do operacji Gateway:
+`gateway` to narzędzie runtime tylko dla właściciela do operacji na gateway:
 
 - `config.schema.lookup` dla jednego poddrzewa konfiguracji ograniczonego ścieżką przed edycjami
-- `config.get` dla bieżącej migawki konfiguracji + hasha
+- `config.get` dla bieżącego zrzutu konfiguracji + hasha
 - `config.patch` dla częściowych aktualizacji konfiguracji z restartem
-- `config.apply` tylko dla pełnej zamiany konfiguracji
-- `update.run` dla jawnej samodzielnej aktualizacji + restartu
+- `config.apply` tylko dla zastąpienia pełnej konfiguracji
+- `update.run` dla jawnej samoaktualizacji + restartu
 
-Dla częściowych zmian preferuj `config.schema.lookup`, a potem `config.patch`. Używaj
+Przy zmianach częściowych preferuj `config.schema.lookup`, a potem `config.patch`. Używaj
 `config.apply` tylko wtedy, gdy celowo zastępujesz całą konfigurację.
-Aby zapoznać się z szerszą dokumentacją konfiguracji, przeczytaj [Konfiguracja](/pl/gateway/configuration) oraz
+Szerszą dokumentację konfiguracji znajdziesz w [Konfiguracja](/pl/gateway/configuration) i
 [Dokumentacja konfiguracji](/pl/gateway/configuration-reference).
-Narzędzie odmawia także zmiany `tools.exec.ask` lub `tools.exec.security`;
+Narzędzie odmawia też zmiany `tools.exec.ask` lub `tools.exec.security`;
 starsze aliasy `tools.bash.*` są normalizowane do tych samych chronionych ścieżek exec.
 
-### Narzędzia dostarczane przez Pluginy
+### Narzędzia dostarczane przez pluginy
 
-Pluginy mogą rejestrować dodatkowe narzędzia. Kilka przykładów:
+Pluginy mogą rejestrować dodatkowe narzędzia. Przykłady:
 
-- [Diffs](/pl/tools/diffs) — przeglądarka i renderer diffów
-- [LLM Task](/pl/tools/llm-task) — krok LLM tylko JSON dla ustrukturyzowanych danych wyjściowych
-- [Lobster](/pl/tools/lobster) — typowane środowisko uruchomieniowe workflow z wznawialnymi akceptacjami
-- [Music Generation](/pl/tools/music-generation) — współdzielone narzędzie `music_generate` z dostawcami opartymi na workflow
-- [OpenProse](/pl/prose) — orkiestracja workflow z podejściem markdown-first
+- [Diffy](/pl/tools/diffs) — przeglądarka i renderer diffów
+- [Zadanie LLM](/pl/tools/llm-task) — krok LLM tylko w JSON do ustrukturyzowanego wyjścia
+- [Lobster](/pl/tools/lobster) — typowany runtime przepływu pracy z wznawialnymi zatwierdzeniami
+- [Generowanie muzyki](/pl/tools/music-generation) — współdzielone narzędzie `music_generate` z dostawcami opartymi na przepływach pracy
+- [OpenProse](/pl/prose) — orkiestracja przepływów pracy z markdown jako formatem podstawowym
 - [Tokenjuice](/pl/tools/tokenjuice) — kompaktuje zaszumione wyniki narzędzi `exec` i `bash`
 
 ## Konfiguracja narzędzi
 
-### Listy zezwalania i blokowania
+### Listy dozwolonych i zabronionych
 
-Kontroluj, które narzędzia agent może wywoływać przez `tools.allow` / `tools.deny` w
-konfiguracji. Blokowanie zawsze ma pierwszeństwo przed zezwoleniem.
+Kontroluj, które narzędzia agent może wywoływać, przez `tools.allow` / `tools.deny` w
+konfiguracji. Zabronienie zawsze ma pierwszeństwo przed zezwoleniem.
 
 ```json5
 {
@@ -134,68 +134,86 @@ konfiguracji. Blokowanie zawsze ma pierwszeństwo przed zezwoleniem.
 }
 ```
 
-OpenClaw kończy się bezpieczną odmową, gdy jawna allowlist rozwiązuje się do braku wywoływalnych narzędzi.
-Na przykład `tools.allow: ["query_db"]` działa tylko wtedy, gdy załadowany Plugin rzeczywiście
-rejestruje `query_db`. Jeśli allowlist nie pasuje do żadnego
-wbudowanego narzędzia, narzędzia Pluginu ani dołączonego do pakietu narzędzia MCP,
-uruchomienie zatrzymuje się przed wywołaniem modelu zamiast przechodzić dalej jako uruchomienie tylko tekstowe, które mogłoby halucynować wyniki narzędzi.
+OpenClaw kończy działanie bez dostępu, gdy jawna lista dozwolonych nie daje żadnych wywoływalnych narzędzi.
+Na przykład `tools.allow: ["query_db"]` działa tylko wtedy, gdy załadowany plugin faktycznie
+rejestruje `query_db`. Jeśli żadne wbudowane narzędzie, plugin ani dołączone narzędzie MCP nie pasuje do
+listy dozwolonych, uruchomienie zatrzymuje się przed wywołaniem modelu zamiast kontynuować jako
+uruchomienie tylko tekstowe, które mogłoby halucynować wyniki narzędzi.
 
 ### Profile narzędzi
 
-`tools.profile` ustawia bazową allowlist przed zastosowaniem `allow`/`deny`.
-Nadpisanie per agent: `agents.list[].tools.profile`.
+`tools.profile` ustawia bazową listę dozwolonych przed zastosowaniem `allow`/`deny`.
+Nadpisanie dla agenta: `agents.list[].tools.profile`.
 
-| Profil      | Co obejmuje                                                                                                                                     |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Brak ograniczeń (tak samo jak brak ustawienia)                                                                                                  |
+| Profil      | Co obejmuje                                                                                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `full`      | Nieograniczona baza dla szerszego dostępu do poleceń/kontroli; taka sama jak pozostawienie `tools.profile` bez ustawienia                         |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                        |
-| `minimal`   | tylko `session_status`                                                                                                                          |
+| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
+| `minimal`   | Tylko `session_status`                                                                                                                            |
 
-`coding` obejmuje lekkie narzędzia web (`web_search`, `web_fetch`, `x_search`),
-ale nie obejmuje pełnego narzędzia sterowania przeglądarką. Automatyzacja przeglądarki może sterować prawdziwymi
+<Note>
+`tools.profile: "messaging"` jest celowo wąski dla agentów skupionych na kanałach.
+Pomija szersze narzędzia poleceń/kontroli, takie jak system plików, runtime,
+przeglądarka, canvas, węzły, cron i kontrola gateway. Użyj `tools.profile: "full"`
+jako nieograniczonej bazy dla szerszego dostępu do poleceń/kontroli, a następnie przytnij
+dostęp przez `tools.allow` / `tools.deny`, gdy będzie to potrzebne.
+</Note>
+
+`coding` obejmuje lekkie narzędzia sieciowe (`web_search`, `web_fetch`, `x_search`),
+ale nie pełne narzędzie do sterowania przeglądarką. Automatyzacja przeglądarki może sterować prawdziwymi
 sesjami i zalogowanymi profilami, więc dodaj ją jawnie przez
-`tools.alsoAllow: ["browser"]` albo per agent przez
+`tools.alsoAllow: ["browser"]` albo dla konkretnego agenta przez
 `agents.list[].tools.alsoAllow: ["browser"]`.
 
-Profile `coding` i `messaging` dopuszczają również skonfigurowane narzędzia bundle MCP
-pod kluczem Pluginu `bundle-mcp`. Dodaj `tools.deny: ["bundle-mcp"]`, gdy
-chcesz, aby profil zachował swoje zwykłe wbudowane narzędzia, ale ukrył wszystkie skonfigurowane narzędzia MCP.
+Profile `coding` i `messaging` pozwalają też na skonfigurowane narzędzia bundle MCP
+pod kluczem pluginu `bundle-mcp`. Dodaj `tools.deny: ["bundle-mcp"]`, gdy
+chcesz, aby profil zachował swoje normalne narzędzia wbudowane, ale ukrył wszystkie skonfigurowane narzędzia MCP.
 Profil `minimal` nie obejmuje narzędzi bundle MCP.
+
+Przykład (domyślnie najszersza powierzchnia narzędzi):
+
+```json5
+{
+  tools: {
+    profile: "full",
+  },
+}
+```
 
 ### Grupy narzędzi
 
-Używaj skrótów `group:*` w listach zezwalania/blokowania:
+Używaj skrótów `group:*` na listach dozwolonych/zabronionych:
 
-| Grupa              | Narzędzia                                                                                               |
-| ------------------ | ------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | exec, process, code_execution (`bash` jest akceptowane jako alias `exec`)                               |
-| `group:fs`         | read, write, edit, apply_patch                                                                          |
+| Grupa              | Narzędzia                                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------------------------- |
+| `group:runtime`    | exec, process, code_execution (`bash` jest akceptowany jako alias dla `exec`)                             |
+| `group:fs`         | read, write, edit, apply_patch                                                                            |
 | `group:sessions`   | sessions_list, sessions_history, sessions_send, sessions_spawn, sessions_yield, subagents, session_status |
-| `group:memory`     | memory_search, memory_get                                                                               |
-| `group:web`        | web_search, x_search, web_fetch                                                                         |
-| `group:ui`         | browser, canvas                                                                                         |
-| `group:automation` | cron, gateway                                                                                           |
-| `group:messaging`  | message                                                                                                 |
-| `group:nodes`      | nodes                                                                                                   |
-| `group:agents`     | agents_list                                                                                             |
-| `group:media`      | image, image_generate, music_generate, video_generate, tts                                              |
-| `group:openclaw`   | Wszystkie wbudowane narzędzia OpenClaw (bez narzędzi Pluginów)                                          |
+| `group:memory`     | memory_search, memory_get                                                                                 |
+| `group:web`        | web_search, x_search, web_fetch                                                                           |
+| `group:ui`         | browser, canvas                                                                                           |
+| `group:automation` | cron, gateway                                                                                             |
+| `group:messaging`  | message                                                                                                   |
+| `group:nodes`      | nodes                                                                                                     |
+| `group:agents`     | agents_list                                                                                               |
+| `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
+| `group:openclaw`   | Wszystkie wbudowane narzędzia OpenClaw (z wyłączeniem narzędzi pluginów)                                  |
 
-`sessions_history` zwraca ograniczony, filtrowany pod kątem bezpieczeństwa widok przywołania. Usuwa
-tagi Thinking, rusztowanie `<relevant-memories>`, ładunki XML wywołań narzędzi w postaci zwykłego tekstu
-(w tym `<tool_call>...</tool_call>`,
+`sessions_history` zwraca ograniczony, filtrowany pod kątem bezpieczeństwa widok przywołanych danych. Usuwa
+znaczniki myślenia, strukturę pomocniczą `<relevant-memories>`, ładunki XML
+wywołań narzędzi w postaci zwykłego tekstu (w tym `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-`<function_calls>...</function_calls>` oraz ucięte bloki wywołań narzędzi),
-zdegradowane rusztowanie wywołań narzędzi, wyciekłe tokeny sterowania modelem ASCII/full-width
-oraz błędny XML wywołań narzędzi MiniMax z tekstu asystenta, a następnie stosuje
-redakcję/przycinanie i w razie potrzeby placeholdery zbyt dużych wierszy zamiast działać
-jak surowy zrzut transkryptu.
+`<function_calls>...</function_calls>` oraz obcięte bloki wywołań narzędzi),
+zdegradowaną strukturę pomocniczą wywołań narzędzi, ujawnione tokeny sterujące
+modelu ASCII/pełnej szerokości oraz nieprawidłowy XML wywołań narzędzi MiniMax
+z tekstu asystenta, a następnie stosuje redakcję/obcinanie i możliwe symbole
+zastępcze dla zbyt dużych wierszy zamiast działać jako surowy zrzut transkryptu.
 
 ### Ograniczenia specyficzne dla dostawcy
 
-Używaj `tools.byProvider`, aby ograniczać narzędzia dla określonych dostawców bez
-zmieniania globalnych ustawień domyślnych:
+Użyj `tools.byProvider`, aby ograniczyć narzędzia dla konkretnych dostawców bez
+zmiany globalnych ustawień domyślnych:
 
 ```json5
 {

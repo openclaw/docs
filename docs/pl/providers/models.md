@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Chcesz wybrać dostawcę modeli
-    - Chcesz szybkich przykładów konfiguracji uwierzytelniania LLM + wyboru modelu
-summary: Dostawcy modeli (LLM-y) obsługiwani przez OpenClaw
-title: Skrócony przewodnik po dostawcach modeli
+    - Chcesz wybrać dostawcę modelu
+    - Potrzebujesz szybkich przykładów konfiguracji uwierzytelniania LLM i wyboru modelu
+summary: Dostawcy modeli (LLM) obsługiwani przez OpenClaw
+title: Szybki start z dostawcą modeli
 x-i18n:
-    generated_at: "2026-04-24T09:28:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:14:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b824a664e0e7a7a5b0ea640ea7329ea3d1e3d12b85d9310231c76014b2ae01cc
+    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
     source_path: providers/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Dostawcy modeli
 
-OpenClaw może używać wielu dostawców LLM. Wybierz jednego, uwierzytelnij się, a następnie ustaw model domyślny
-jako `provider/model`.
+OpenClaw może używać wielu dostawców LLM. Wybierz jednego, uwierzytelnij się, a następnie ustaw domyślny
+model jako `provider/model`.
 
 ## Szybki start (dwa kroki)
 
 1. Uwierzytelnij się u dostawcy (zwykle przez `openclaw onboard`).
-2. Ustaw model domyślny:
+2. Ustaw domyślny model:
 
 ```json5
 {
@@ -29,18 +29,19 @@ jako `provider/model`.
 }
 ```
 
-## Obsługiwani dostawcy (zestaw startowy)
+## Obsługiwani dostawcy (zestaw początkowy)
 
 - [Alibaba Model Studio](/pl/providers/alibaba)
 - [Amazon Bedrock](/pl/providers/bedrock)
 - [Anthropic (API + Claude CLI)](/pl/providers/anthropic)
-- [BytePlus (międzynarodowy)](/pl/concepts/model-providers#byteplus-international)
+- [BytePlus (International)](/pl/concepts/model-providers#byteplus-international)
 - [Chutes](/pl/providers/chutes)
 - [ComfyUI](/pl/providers/comfy)
 - [Cloudflare AI Gateway](/pl/providers/cloudflare-ai-gateway)
+- [DeepInfra](/pl/providers/deepinfra)
 - [fal](/pl/providers/fal)
 - [Fireworks](/pl/providers/fireworks)
-- [Modele GLM](/pl/providers/glm)
+- [modele GLM](/pl/providers/glm)
 - [MiniMax](/pl/providers/minimax)
 - [Mistral](/pl/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pl/providers/moonshot)
@@ -57,17 +58,17 @@ jako `provider/model`.
 - [xAI](/pl/providers/xai)
 - [Z.AI](/pl/providers/zai)
 
-## Dodatkowe warianty dołączonych dostawców
+## Dodatkowe dołączone warianty dostawców
 
-- `anthropic-vertex` — niejawna obsługa Anthropic w Google Vertex, gdy poświadczenia Vertex są dostępne; bez osobnego wyboru uwierzytelniania w onboardingu
-- `copilot-proxy` — lokalny most VS Code Copilot Proxy; użyj `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` — nieoficjalny przepływ OAuth Gemini CLI; wymaga lokalnej instalacji `gemini` (`brew install gemini-cli` lub `npm install -g @google/gemini-cli`); model domyślny `google-gemini-cli/gemini-3-flash-preview`; użyj `openclaw onboard --auth-choice google-gemini-cli` lub `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` - niejawna obsługa Anthropic w Google Vertex, gdy dostępne są dane uwierzytelniające Vertex; brak osobnego wyboru uwierzytelniania podczas onboardingu
+- `copilot-proxy` - lokalny most VS Code Copilot Proxy; użyj `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - nieoficjalny przepływ OAuth Gemini CLI; wymaga lokalnej instalacji `gemini` (`brew install gemini-cli` lub `npm install -g @google/gemini-cli`); domyślny model `google-gemini-cli/gemini-3-flash-preview`; użyj `openclaw onboard --auth-choice google-gemini-cli` lub `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Pełny katalog dostawców (xAI, Groq, Mistral itd.) i konfigurację zaawansowaną
+Pełny katalog dostawców (xAI, Groq, Mistral itd.) oraz zaawansowaną konfigurację
 znajdziesz w sekcji [Dostawcy modeli](/pl/concepts/model-providers).
 
 ## Powiązane
 
 - [Wybór modelu](/pl/concepts/model-providers)
-- [Failover modeli](/pl/concepts/model-failover)
+- [Przełączanie awaryjne modelu](/pl/concepts/model-failover)
 - [CLI modeli](/pl/cli/models)

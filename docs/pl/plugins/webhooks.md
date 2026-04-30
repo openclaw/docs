@@ -1,37 +1,33 @@
 ---
 read_when:
-    - Chcesz wyzwalać lub sterować TaskFlow z zewnętrznego systemu
-    - Konfigurujesz dołączony Plugin Webhooków
-summary: 'Plugin Webhooków: uwierzytelnione wejście TaskFlow dla zaufanej automatyzacji zewnętrznej'
-title: Plugin Webhooków
+    - Chcesz wyzwalać przepływy TaskFlow lub sterować nimi z systemu zewnętrznego
+    - Konfigurujesz dołączony Plugin webhooków
+summary: 'Plugin Webhooks: uwierzytelnione wejście TaskFlow dla zaufanej automatyzacji zewnętrznej'
+title: Plugin Webhook
 x-i18n:
-    generated_at: "2026-04-24T09:25:55Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:11:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
+    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
     source_path: plugins/webhooks.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Webhooki (Plugin)
+# Webhooks (Plugin)
 
-Plugin Webhooków dodaje uwierzytelnione trasy HTTP, które wiążą zewnętrzną
-automatyzację z TaskFlow OpenClaw.
+Plugin Webhooks dodaje uwierzytelnione trasy HTTP, które wiążą zewnętrzną automatyzację z TaskFlow OpenClaw.
 
-Używaj go, gdy chcesz, aby zaufany system, taki jak Zapier, n8n, zadanie CI albo
-usługa wewnętrzna, tworzył i sterował zarządzanymi TaskFlow bez konieczności pisania najpierw własnego
-Pluginu.
+Użyj go, gdy chcesz, aby zaufany system, taki jak Zapier, n8n, zadanie CI lub usługa wewnętrzna, tworzył i prowadził zarządzane TaskFlow bez wcześniejszego pisania niestandardowego Plugin.
 
 ## Gdzie działa
 
-Plugin Webhooków działa wewnątrz procesu Gateway.
+Plugin Webhooks działa wewnątrz procesu Gateway.
 
-Jeśli twoje Gateway działa na innej maszynie, zainstaluj i skonfiguruj Plugin na
-hoście tego Gateway, a następnie uruchom Gateway ponownie.
+Jeśli Twój Gateway działa na innej maszynie, zainstaluj i skonfiguruj Plugin na tym hoście Gateway, a następnie uruchom ponownie Gateway.
 
-## Konfiguracja tras
+## Konfigurowanie tras
 
-Ustaw konfigurację pod `plugins.entries.webhooks.config`:
+Ustaw konfigurację w `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -50,7 +46,7 @@ Ustaw konfigurację pod `plugins.entries.webhooks.config`:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Most TaskFlow dla Zapier",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -65,45 +61,42 @@ Pola trasy:
 - `enabled`: opcjonalne, domyślnie `true`
 - `path`: opcjonalne, domyślnie `/plugins/webhooks/<routeId>`
 - `sessionKey`: wymagana sesja, która jest właścicielem powiązanych TaskFlow
-- `secret`: wymagany współdzielony sekret albo SecretRef
-- `controllerId`: opcjonalny identyfikator kontrolera dla tworzonych zarządzanych flow
-- `description`: opcjonalna notatka dla operatora
+- `secret`: wymagany współdzielony sekret lub SecretRef
+- `controllerId`: opcjonalny identyfikator kontrolera dla utworzonych zarządzanych przepływów
+- `description`: opcjonalna notatka operatora
 
 Obsługiwane wejścia `secret`:
 
-- Zwykły ciąg znaków
+- Zwykły ciąg tekstowy
 - SecretRef z `source: "env" | "file" | "exec"`
 
-Jeśli trasa oparta na sekrecie nie może rozwiązać swojego sekretu przy uruchomieniu, Plugin pomija
-tę trasę i zapisuje ostrzeżenie w logu, zamiast wystawiać uszkodzony punkt końcowy.
+Jeśli trasa oparta na sekrecie nie może rozwiązać swojego sekretu podczas uruchamiania, Plugin pomija tę trasę i zapisuje ostrzeżenie w dzienniku zamiast ujawniać uszkodzony punkt końcowy.
 
 ## Model bezpieczeństwa
 
-Każda trasa jest uznawana za zaufaną do działania z uprawnieniami TaskFlow swojej skonfigurowanej
-`sessionKey`.
+Każda trasa jest zaufana do działania z uprawnieniami TaskFlow skonfigurowanego `sessionKey`.
 
-Oznacza to, że trasa może sprawdzać i mutować TaskFlow należące do tej sesji, więc
-powinieneś:
+Oznacza to, że trasa może sprawdzać i modyfikować TaskFlow należące do tej sesji, więc należy:
 
-- Używać silnego unikalnego sekretu dla każdej trasy
-- Preferować odwołania do sekretów zamiast jawnych sekretów w tekście jawnym
-- Wiązać trasy z najwęższą sesją pasującą do workflow
-- Wystawiać tylko konkretną ścieżkę Webhook, której potrzebujesz
+- Używać silnego, unikalnego sekretu dla każdej trasy
+- Preferować odwołania do sekretów zamiast sekretów w postaci zwykłego tekstu w konfiguracji
+- Wiązać trasy z najwęższą sesją pasującą do przepływu pracy
+- Ujawniać tylko konkretną ścieżkę Webhook, której potrzebujesz
 
 Plugin stosuje:
 
 - Uwierzytelnianie współdzielonym sekretem
-- Ograniczenia rozmiaru treści żądania i timeouty
+- Limity rozmiaru treści żądania i czasu oczekiwania
 - Ograniczanie szybkości w stałym oknie
-- Ograniczanie liczby żądań w locie
-- Dostęp do TaskFlow powiązany z właścicielem przez `api.runtime.taskFlow.bindSession(...)`
+- Ograniczanie liczby równoczesnych żądań
+- Powiązany z właścicielem dostęp do TaskFlow przez `api.runtime.tasks.managedFlows.bindSession(...)`
 
 ## Format żądania
 
 Wysyłaj żądania `POST` z:
 
 - `Content-Type: application/json`
-- `Authorization: Bearer <secret>` albo `x-openclaw-webhook-secret: <secret>`
+- `Authorization: Bearer <secret>` lub `x-openclaw-webhook-secret: <secret>`
 
 Przykład:
 
@@ -116,7 +109,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Obsługiwane akcje
 
-Plugin obecnie akceptuje te wartości JSON `action`:
+Plugin obecnie akceptuje następujące wartości JSON `action`:
 
 - `create_flow`
 - `get_flow`
@@ -134,7 +127,7 @@ Plugin obecnie akceptuje te wartości JSON `action`:
 
 ### `create_flow`
 
-Tworzy zarządzany TaskFlow dla sesji powiązanej z trasą.
+Tworzy zarządzany TaskFlow dla powiązanej sesji trasy.
 
 Przykład:
 
@@ -151,7 +144,7 @@ Przykład:
 
 Tworzy zarządzane zadanie podrzędne wewnątrz istniejącego zarządzanego TaskFlow.
 
-Dozwolone środowiska wykonawcze:
+Dozwolone środowiska uruchomieniowe to:
 
 - `subagent`
 - `acp`
@@ -192,10 +185,10 @@ Odrzucone żądania zwracają:
 }
 ```
 
-Plugin celowo usuwa metadane właściciela/sesji z odpowiedzi Webhooków.
+Plugin celowo usuwa metadane właściciela/sesji z odpowiedzi Webhook.
 
 ## Powiązana dokumentacja
 
-- [SDK runtime Pluginów](/pl/plugins/sdk-runtime)
-- [Przegląd Hooków i Webhooków](/pl/automation/hooks)
-- [Webhooki CLI](/pl/cli/webhooks)
+- [SDK środowiska uruchomieniowego Plugin](/pl/plugins/sdk-runtime)
+- [Omówienie hooków i Webhook](/pl/automation/hooks)
+- [Webhook CLI](/pl/cli/webhooks)

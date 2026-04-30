@@ -1,55 +1,74 @@
 ---
 read_when:
-    - Chcesz zrozumieć automatyczny Compaction i `/compact`
-    - Debugujesz długie sesje osiągające limity kontekstu
-summary: Jak OpenClaw podsumowuje długie rozmowy, aby zmieścić się w limitach modelu
+    - Chcesz zrozumieć automatyczną kompakcję i /compact
+    - Debugujesz długie sesje, które osiągają limity kontekstu
+summary: Jak OpenClaw podsumowuje długie rozmowy, aby mieścić się w limitach modelu
 title: Compaction
 x-i18n:
-    generated_at: "2026-04-25T13:45:09Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:46:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3e396a59d5346355cf2d87cd08ca8550877b103b1c613670fb3908fe1b028170
+    source_hash: 9beac513a8226a7dd107cdc3a7bfd7550d87e98648004c80487db968c57742d4
     source_path: concepts/compaction.md
-    workflow: 15
+    workflow: 16
 ---
 
-Każdy model ma okno kontekstowe — maksymalną liczbę tokenów, które może przetworzyć.
-Gdy rozmowa zbliża się do tego limitu, OpenClaw wykonuje **Compaction** starszych wiadomości
-do postaci podsumowania, aby czat mógł być kontynuowany.
+Każdy model ma okno kontekstu: maksymalną liczbę tokenów, które może przetworzyć. Gdy rozmowa zbliża się do tego limitu, OpenClaw **kompaktuje** starsze wiadomości w podsumowanie, aby czat mógł być kontynuowany.
 
 ## Jak to działa
 
-1. Starsze tury rozmowy są podsumowywane do zwartego wpisu.
+1. Starsze tury rozmowy są streszczane do zwartego wpisu.
 2. Podsumowanie jest zapisywane w transkrypcie sesji.
 3. Ostatnie wiadomości pozostają nienaruszone.
 
-Gdy OpenClaw dzieli historię na fragmenty Compaction, utrzymuje wywołania narzędzi
-asystenta sparowane z odpowiadającymi im wpisami `toolResult`. Jeśli punkt podziału wypada
-wewnątrz bloku narzędzia, OpenClaw przesuwa granicę tak, aby para pozostała razem
-i aby zachowany został bieżący niepodsumowany ogon.
+Gdy OpenClaw dzieli historię na fragmenty kompaktowania, zachowuje wywołania narzędzi asystenta sparowane z odpowiadającymi im wpisami `toolResult`. Jeśli punkt podziału wypada wewnątrz bloku narzędzia, OpenClaw przesuwa granicę, aby para pozostała razem, a bieżący niestreszczony ogon został zachowany.
 
-Pełna historia rozmowy pozostaje na dysku. Compaction zmienia tylko to, co
-model widzi w następnej turze.
+Pełna historia rozmowy pozostaje na dysku. Kompaktowanie zmienia tylko to, co model widzi w następnej turze.
 
-## Automatyczny Compaction
+## Automatyczne kompaktowanie
 
-Automatyczny Compaction jest domyślnie włączony. Uruchamia się, gdy sesja zbliża się do limitu
-kontekstu lub gdy model zwraca błąd przepełnienia kontekstu (w takim przypadku
-OpenClaw wykonuje Compaction i ponawia próbę). Typowe sygnatury przepełnienia obejmują
-`request_too_large`, `context length exceeded`, `input exceeds the maximum
-number of tokens`, `input token count exceeds the maximum number of input
-tokens`, `input is too long for the model` oraz `ollama error: context length
-exceeded`.
+Automatyczne kompaktowanie jest domyślnie włączone. Uruchamia się, gdy sesja zbliża się do limitu kontekstu albo gdy model zwróci błąd przepełnienia kontekstu (w takim przypadku OpenClaw kompaktuje i ponawia próbę).
+
+Zobaczysz:
+
+- `🧹 Auto-compaction complete` w trybie szczegółowym.
+- `/status` pokazujące `🧹 Compactions: <count>`.
 
 <Info>
-Przed wykonaniem Compaction OpenClaw automatycznie przypomina agentowi o zapisaniu ważnych
-notatek do plików [memory](/pl/concepts/memory). Zapobiega to utracie kontekstu.
+Przed kompaktowaniem OpenClaw automatycznie przypomina agentowi, aby zapisał ważne notatki w plikach [pamięci](/pl/concepts/memory). Zapobiega to utracie kontekstu.
 </Info>
 
-Użyj ustawienia `agents.defaults.compaction` w swoim `openclaw.json`, aby skonfigurować zachowanie Compaction (tryb, docelowe tokeny itp.).
-Podsumowywanie Compaction domyślnie zachowuje nieprzezroczyste identyfikatory (`identifierPolicy: "strict"`). Możesz to nadpisać przez `identifierPolicy: "off"` albo podać własny tekst przez `identifierPolicy: "custom"` i `identifierInstructions`.
+<AccordionGroup>
+  <Accordion title="Rozpoznawane sygnatury przepełnienia">
+    OpenClaw wykrywa przepełnienie kontekstu na podstawie tych wzorców błędów dostawców:
 
-Opcjonalnie możesz określić inny model do podsumowywania Compaction przez `agents.defaults.compaction.model`. Jest to przydatne, gdy główny model jest lokalny lub mały, a chcesz, by podsumowania Compaction były tworzone przez bardziej zaawansowany model. To nadpisanie akceptuje dowolny ciąg `provider/model-id`:
+    - `request_too_large`
+    - `context length exceeded`
+    - `input exceeds the maximum number of tokens`
+    - `input token count exceeds the maximum number of input tokens`
+    - `input is too long for the model`
+    - `ollama error: context length exceeded`
+
+  </Accordion>
+</AccordionGroup>
+
+## Ręczne kompaktowanie
+
+Wpisz `/compact` w dowolnym czacie, aby wymusić kompaktowanie. Dodaj instrukcje, aby ukierunkować podsumowanie:
+
+```
+/compact Focus on the API design decisions
+```
+
+Gdy ustawiono `agents.defaults.compaction.keepRecentTokens`, ręczne kompaktowanie respektuje ten punkt odcięcia Pi i zachowuje ostatni ogon w odbudowanym kontekście. Bez jawnego budżetu zachowania ręczne kompaktowanie działa jak twardy punkt kontrolny i kontynuuje wyłącznie od nowego podsumowania.
+
+## Konfiguracja
+
+Skonfiguruj kompaktowanie w `agents.defaults.compaction` w swoim `openclaw.json`. Najczęstsze opcje wymieniono poniżej; pełną dokumentację znajdziesz w sekcji [Szczegółowe omówienie zarządzania sesją](/pl/reference/session-management-compaction).
+
+### Używanie innego modelu
+
+Domyślnie kompaktowanie używa głównego modelu agenta. Ustaw `agents.defaults.compaction.model`, aby delegować streszczanie do bardziej wydajnego lub wyspecjalizowanego modelu. Nadpisanie akceptuje dowolny ciąg `provider/model-id`:
 
 ```json
 {
@@ -63,7 +82,7 @@ Opcjonalnie możesz określić inny model do podsumowywania Compaction przez `ag
 }
 ```
 
-Działa to także z modelami lokalnymi, na przykład drugim modelem Ollama przeznaczonym do podsumowywania albo specjalistą Compaction po fine-tuningu:
+Działa to także z modelami lokalnymi, na przykład z drugim modelem Ollama przeznaczonym do streszczania:
 
 ```json
 {
@@ -77,75 +96,34 @@ Działa to także z modelami lokalnymi, na przykład drugim modelem Ollama przez
 }
 ```
 
-Jeśli nie jest ustawione, Compaction używa głównego modelu agenta.
+Gdy nie ustawiono tej opcji, kompaktowanie używa głównego modelu agenta.
 
-## Wymienne dostawcy Compaction
+### Zachowywanie identyfikatorów
 
-Pluginy mogą rejestrować własnego dostawcę Compaction przez `registerCompactionProvider()` w API Plugin. Gdy dostawca jest zarejestrowany i skonfigurowany, OpenClaw deleguje podsumowywanie do niego zamiast do wbudowanego potoku LLM.
+Streszczanie podczas kompaktowania domyślnie zachowuje nieprzezroczyste identyfikatory (`identifierPolicy: "strict"`). Nadpisz za pomocą `identifierPolicy: "off"`, aby wyłączyć, albo `identifierPolicy: "custom"` oraz `identifierInstructions`, aby podać własne wskazówki.
 
-Aby użyć zarejestrowanego dostawcy, ustaw identyfikator dostawcy w konfiguracji:
+### Ochrona bajtów aktywnego transkryptu
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "compaction": {
-        "provider": "my-provider"
-      }
-    }
-  }
-}
-```
+Gdy ustawiono `agents.defaults.compaction.maxActiveTranscriptBytes`, OpenClaw uruchamia normalne lokalne kompaktowanie przed wykonaniem, jeśli aktywny JSONL osiągnie ten rozmiar. Jest to przydatne w długotrwałych sesjach, w których zarządzanie kontekstem po stronie dostawcy może utrzymywać kontekst modelu w dobrej kondycji, podczas gdy lokalny transkrypt nadal rośnie. Nie dzieli surowych bajtów JSONL; prosi normalny potok kompaktowania o utworzenie semantycznego podsumowania.
 
-Ustawienie `provider` automatycznie wymusza `mode: "safeguard"`. Dostawcy otrzymują te same instrukcje Compaction i zasady zachowywania identyfikatorów co ścieżka wbudowana, a OpenClaw nadal zachowuje kontekst ostatnich tur i sufiksu tury podziału po wyniku dostawcy. Jeśli dostawca zawiedzie lub zwróci pusty wynik, OpenClaw wraca do wbudowanego podsumowywania LLM.
+<Warning>
+Ochrona bajtów wymaga `truncateAfterCompaction: true`. Bez rotacji transkryptu aktywny plik nie zmniejszyłby się, a ochrona pozostałaby nieaktywna.
+</Warning>
 
-## Automatyczny Compaction (domyślnie włączony)
+### Transkrypty następcze
 
-Gdy sesja zbliża się do okna kontekstowego modelu lub je przekracza, OpenClaw wyzwala automatyczny Compaction i może ponowić oryginalne żądanie, używając skompaktowanego kontekstu.
+Gdy włączono `agents.defaults.compaction.truncateAfterCompaction`, OpenClaw nie przepisuje istniejącego transkryptu w miejscu. Tworzy nowy aktywny transkrypt następczy z podsumowania kompaktowania, zachowanego stanu i niestreszczonego ogona, a następnie zachowuje poprzedni JSONL jako zarchiwizowane źródło punktu kontrolnego.
+Transkrypty następcze usuwają także dokładne duplikaty długich tur użytkownika, które trafiają
+w krótkim oknie ponawiania, dzięki czemu burze ponowień kanału nie są przenoszone do
+następnego aktywnego transkryptu po kompaktowaniu.
 
-Zobaczysz:
+Punkty kontrolne sprzed kompaktowania są zachowywane tylko wtedy, gdy pozostają poniżej limitu
+rozmiaru punktu kontrolnego OpenClaw; zbyt duże aktywne transkrypty nadal są kompaktowane, ale OpenClaw
+pomija duży zrzut debugowania zamiast podwajać użycie dysku.
 
-- `🧹 Auto-compaction complete` w trybie verbose
-- `/status` pokazujące `🧹 Compactions: <count>`
+### Powiadomienia o kompaktowaniu
 
-Przed wykonaniem Compaction OpenClaw może uruchomić **cichą turę opróżniania pamięci**, aby zapisać
-trwałe notatki na dysku. Szczegóły i konfiguracja: [Memory](/pl/concepts/memory).
-
-## Ręczny Compaction
-
-Wpisz `/compact` w dowolnym czacie, aby wymusić Compaction. Dodaj instrukcje, aby ukierunkować
-podsumowanie:
-
-```
-/compact Focus on the API design decisions
-```
-
-Gdy ustawione jest `agents.defaults.compaction.keepRecentTokens`, ręczny Compaction
-respektuje ten punkt cięcia Pi i zachowuje ostatni ogon w odbudowanym kontekście. Bez
-jawnego budżetu zachowania ręczny Compaction zachowuje się jak twardy punkt kontrolny i
-kontynuuje tylko z nowego podsumowania.
-
-## Używanie innego modelu
-
-Domyślnie Compaction używa głównego modelu agenta. Możesz użyć bardziej
-zaawansowanego modelu, aby uzyskać lepsze podsumowania:
-
-```json5
-{
-  agents: {
-    defaults: {
-      compaction: {
-        model: "openrouter/anthropic/claude-sonnet-4-6",
-      },
-    },
-  },
-}
-```
-
-## Powiadomienia Compaction
-
-Domyślnie Compaction działa po cichu. Aby pokazywać krótkie powiadomienia, gdy Compaction
-się rozpoczyna i gdy się kończy, włącz `notifyUser`:
+Domyślnie kompaktowanie działa po cichu. Ustaw `notifyUser`, aby pokazywać krótkie komunikaty stanu, gdy kompaktowanie się rozpoczyna i kończy:
 
 ```json5
 {
@@ -159,39 +137,73 @@ się rozpoczyna i gdy się kończy, włącz `notifyUser`:
 }
 ```
 
-Po włączeniu użytkownik widzi krótkie komunikaty o stanie przy każdym przebiegu Compaction
-(na przykład „Compacting context...” i „Compaction complete”).
+### Opróżnianie pamięci
+
+Przed kompaktowaniem OpenClaw może uruchomić turę **cichego opróżniania pamięci**, aby zapisać trwałe notatki na dysku. Ustaw `agents.defaults.compaction.memoryFlush.model`, gdy ta tura porządkowa powinna używać modelu lokalnego zamiast aktywnego modelu rozmowy:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "memoryFlush": {
+          "model": "ollama/qwen3:8b"
+        }
+      }
+    }
+  }
+}
+```
+
+Nadpisanie modelu opróżniania pamięci jest dokładne i nie dziedziczy łańcucha awaryjnego aktywnej sesji. Szczegóły i konfigurację znajdziesz w sekcji [Pamięć](/pl/concepts/memory).
+
+## Wymienni dostawcy kompaktowania
+
+Plugins mogą rejestrować niestandardowego dostawcę kompaktowania za pomocą `registerCompactionProvider()` w API Plugin. Gdy dostawca jest zarejestrowany i skonfigurowany, OpenClaw deleguje streszczanie do niego zamiast do wbudowanego potoku LLM.
+
+Aby użyć zarejestrowanego dostawcy, ustaw jego identyfikator w konfiguracji:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "provider": "my-provider"
+      }
+    }
+  }
+}
+```
+
+Ustawienie `provider` automatycznie wymusza `mode: "safeguard"`. Dostawcy otrzymują te same instrukcje kompaktowania i politykę zachowywania identyfikatorów co wbudowana ścieżka, a OpenClaw nadal zachowuje kontekst sufiksu ostatnich tur i podzielonych tur po wyniku dostawcy.
+
+<Note>
+Jeśli dostawca zawiedzie albo zwróci pusty wynik, OpenClaw wraca do wbudowanego streszczania LLM.
+</Note>
 
 ## Compaction a przycinanie
 
-|                  | Compaction                   | Przycinanie                      |
-| ---------------- | ---------------------------- | -------------------------------- |
-| **Co robi**      | Podsumowuje starszą rozmowę  | Przycina stare wyniki narzędzi   |
-| **Zapisywane?**  | Tak (w transkrypcie sesji)   | Nie (tylko w pamięci, per żądanie) |
-| **Zakres**       | Cała rozmowa                 | Tylko wyniki narzędzi            |
+|                  | Compaction                    | Przycinanie                      |
+| ---------------- | ----------------------------- | -------------------------------- |
+| **Co robi**      | Streszcza starszą rozmowę     | Przycina stare wyniki narzędzi   |
+| **Zapisane?**    | Tak (w transkrypcie sesji)    | Nie (tylko w pamięci, dla żądania) |
+| **Zakres**       | Cała rozmowa                  | Tylko wyniki narzędzi            |
 
-[Session pruning](/pl/concepts/session-pruning) to lżejsze uzupełnienie, które
-przycina wyniki narzędzi bez podsumowywania.
+[Przycinanie sesji](/pl/concepts/session-pruning) jest lżejszym uzupełnieniem, które przycina dane wyjściowe narzędzi bez streszczania.
 
 ## Rozwiązywanie problemów
 
-**Compaction dzieje się zbyt często?** Okno kontekstowe modelu może być małe albo wyniki
-narzędzi mogą być duże. Spróbuj włączyć
-[session pruning](/pl/concepts/session-pruning).
+**Kompaktowanie odbywa się zbyt często?** Okno kontekstu modelu może być małe albo dane wyjściowe narzędzi mogą być duże. Spróbuj włączyć [przycinanie sesji](/pl/concepts/session-pruning).
 
-**Kontekst wydaje się nieaktualny po Compaction?** Użyj `/compact Focus on <topic>`, aby
-ukierunkować podsumowanie, albo włącz [memory flush](/pl/concepts/memory), aby notatki
-przetrwały.
+**Kontekst wydaje się nieaktualny po kompaktowaniu?** Użyj `/compact Focus on <topic>`, aby ukierunkować podsumowanie, albo włącz [opróżnianie pamięci](/pl/concepts/memory), aby notatki przetrwały.
 
-**Potrzebujesz czystego startu?** `/new` rozpoczyna świeżą sesję bez Compaction.
+**Potrzebujesz czystego startu?** `/new` rozpoczyna świeżą sesję bez kompaktowania.
 
-W przypadku zaawansowanej konfiguracji (rezerwa tokenów, zachowywanie identyfikatorów, niestandardowe
-silniki kontekstu, server-side Compaction OpenAI) zobacz
-[Session Management Deep Dive](/pl/reference/session-management-compaction).
+Zaawansowaną konfigurację (tokeny rezerwowe, zachowywanie identyfikatorów, niestandardowe silniki kontekstu, kompaktowanie po stronie serwera OpenAI) znajdziesz w sekcji [Szczegółowe omówienie zarządzania sesją](/pl/reference/session-management-compaction).
 
 ## Powiązane
 
-- [Session](/pl/concepts/session) — zarządzanie sesją i cykl życia
-- [Session Pruning](/pl/concepts/session-pruning) — przycinanie wyników narzędzi
-- [Context](/pl/concepts/context) — jak budowany jest kontekst dla tur agenta
-- [Hooks](/pl/automation/hooks) — hooki cyklu życia Compaction (`before_compaction`, `after_compaction`)
+- [Sesja](/pl/concepts/session): zarządzanie sesją i cykl życia.
+- [Przycinanie sesji](/pl/concepts/session-pruning): przycinanie wyników narzędzi.
+- [Kontekst](/pl/concepts/context): jak kontekst jest budowany dla tur agenta.
+- [Hooks](/pl/automation/hooks): haki cyklu życia kompaktowania (`before_compaction`, `after_compaction`).

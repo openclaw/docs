@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Użytkownik zgłasza, że agenci zawieszają się, powtarzając wywołania narzędzi
+    - Użytkownik zgłasza, że agenci zapętlają się, powtarzając wywołania narzędzi
     - Musisz dostroić ochronę przed powtarzającymi się wywołaniami
-    - Edytujesz polityki narzędzi/środowiska uruchomieniowego agenta
+    - Edytujesz zasady dotyczące narzędzi i środowiska uruchomieniowego agenta
 summary: Jak włączyć i dostroić zabezpieczenia wykrywające powtarzające się pętle wywołań narzędzi
-title: Wykrywanie pętli narzędziowych
+title: Wykrywanie pętli narzędzi
 x-i18n:
-    generated_at: "2026-04-24T09:37:12Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:23:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0f5824d511ec33eb1f46c77250cb779b5e3bd5b3e5f16fab9e6c0b67297f87df
+    source_hash: ba601384e7d23ddfd316f9e5eef92b3daa4618d2287228a516c76fe141700a28
     source_path: tools/loop-detection.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw może zapobiegać sytuacjom, w których agenci utkną w powtarzalnych wzorcach wywołań narzędzi.
-To zabezpieczenie jest **domyślnie wyłączone**.
+OpenClaw może zapobiegać utknięciu agentów w powtarzających się wzorcach wywołań narzędzi.
+Zabezpieczenie jest **domyślnie wyłączone**.
 
-Włączaj je tylko tam, gdzie jest potrzebne, ponieważ przy rygorystycznych ustawieniach może blokować uzasadnione powtarzające się wywołania.
+Włączaj je tylko tam, gdzie jest potrzebne, ponieważ przy restrykcyjnych ustawieniach może blokować prawidłowe powtarzane wywołania.
 
 ## Dlaczego to istnieje
 
-- Wykrywanie powtarzalnych sekwencji, które nie prowadzą do postępu.
-- Wykrywanie pętli o wysokiej częstotliwości bez wyników (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
-- Wykrywanie określonych wzorców powtarzanych wywołań dla znanych narzędzi sondujących.
+- Wykrywanie powtarzalnych sekwencji, które nie przynoszą postępu.
+- Wykrywanie szybkich pętli bez wyników (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
+- Wykrywanie konkretnych wzorców powtarzanych wywołań dla znanych narzędzi odpytywania.
 
 ## Blok konfiguracji
 
@@ -48,7 +48,7 @@ Domyślne ustawienia globalne:
 }
 ```
 
-Nadpisanie per-agent (opcjonalne):
+Nadpisanie dla agenta (opcjonalne):
 
 ```json5
 {
@@ -71,41 +71,44 @@ Nadpisanie per-agent (opcjonalne):
 
 ### Zachowanie pól
 
-- `enabled`: główny przełącznik. `false` oznacza brak wykrywania pętli.
+- `enabled`: główny przełącznik. `false` oznacza, że wykrywanie pętli nie jest wykonywane.
 - `historySize`: liczba ostatnich wywołań narzędzi przechowywanych do analizy.
-- `warningThreshold`: próg, po którym wzorzec jest klasyfikowany tylko jako ostrzeżenie.
+- `warningThreshold`: próg przed sklasyfikowaniem wzorca wyłącznie jako ostrzeżenie.
 - `criticalThreshold`: próg blokowania powtarzalnych wzorców pętli.
-- `globalCircuitBreakerThreshold`: globalny próg wyłącznika bezpieczeństwa dla braku postępu.
-- `detectors.genericRepeat`: wykrywa wzorce powtarzania tego samego narzędzia + tych samych parametrów.
-- `detectors.knownPollNoProgress`: wykrywa znane wzorce podobne do sondowania bez zmiany stanu.
+- `globalCircuitBreakerThreshold`: globalny próg wyłącznika obwodu przy braku postępu.
+- `detectors.genericRepeat`: wykrywa powtarzane wzorce tego samego narzędzia i tych samych parametrów.
+- `detectors.knownPollNoProgress`: wykrywa znane wzorce podobne do odpytywania bez zmiany stanu.
 - `detectors.pingPong`: wykrywa naprzemienne wzorce ping-pong.
+
+W przypadku `exec` kontrole braku postępu porównują stabilne wyniki poleceń i ignorują zmienne metadane wykonania, takie jak czas trwania, PID, identyfikator sesji i katalog roboczy.
+Gdy dostępny jest identyfikator uruchomienia, historia ostatnich wywołań narzędzi jest oceniana tylko w ramach tego uruchomienia, aby zaplanowane cykle Heartbeat i nowe uruchomienia nie dziedziczyły nieaktualnych liczników pętli z wcześniejszych uruchomień.
 
 ## Zalecana konfiguracja
 
-- Zacznij od `enabled: true`, bez zmiany wartości domyślnych.
-- Utrzymuj progi w kolejności `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Jeśli pojawią się fałszywe alarmy:
-  - zwiększ `warningThreshold` i/lub `criticalThreshold`
-  - (opcjonalnie) zwiększ `globalCircuitBreakerThreshold`
+- Zacznij od `enabled: true`, bez zmiany ustawień domyślnych.
+- Zachowaj kolejność progów jako `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
+- Jeśli wystąpią fałszywe alarmy:
+  - podnieś `warningThreshold` i/lub `criticalThreshold`
+  - (opcjonalnie) podnieś `globalCircuitBreakerThreshold`
   - wyłącz tylko detektor powodujący problemy
-  - zmniejsz `historySize`, aby kontekst historyczny był mniej rygorystyczny
+  - zmniejsz `historySize`, aby ograniczyć rygor kontekstu historycznego
 
 ## Logi i oczekiwane zachowanie
 
-Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i blokuje lub tłumi następny cykl narzędzia zależnie od poziomu zagrożenia.
-Chroni to użytkowników przed niekontrolowanym zużyciem tokenów i zawieszeniami, zachowując jednocześnie zwykły dostęp do narzędzi.
+Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i blokuje lub tłumi następny cykl narzędzia w zależności od powagi.
+Chroni to użytkowników przed niekontrolowanym zużyciem tokenów i blokadami, jednocześnie zachowując normalny dostęp do narzędzi.
 
-- Najpierw preferuj ostrzeżenia i tymczasowe tłumienie.
-- Eskaluj dopiero wtedy, gdy zgromadzą się powtarzające się przesłanki.
+- Najpierw preferuj ostrzeżenie i tymczasowe tłumienie.
+- Eskaluj dopiero wtedy, gdy zgromadzą się powtarzalne dowody.
 
 ## Uwagi
 
 - `tools.loopDetection` jest scalane z nadpisaniami na poziomie agenta.
-- Konfiguracja per-agent w pełni nadpisuje lub rozszerza wartości globalne.
+- Konfiguracja dla agenta w pełni nadpisuje lub rozszerza wartości globalne.
 - Jeśli konfiguracja nie istnieje, zabezpieczenia pozostają wyłączone.
 
 ## Powiązane
 
-- [Zatwierdzenia exec](/pl/tools/exec-approvals)
-- [Poziomy myślenia](/pl/tools/thinking)
-- [Subagenci](/pl/tools/subagents)
+- [Zatwierdzenia Exec](/pl/tools/exec-approvals)
+- [Poziomy rozumowania](/pl/tools/thinking)
+- [Podagenty](/pl/tools/subagents)
