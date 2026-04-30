@@ -1,102 +1,107 @@
 ---
 read_when:
-    - การตั้งค่าหรือการดีบักการควบคุม mac ระยะไกล
-summary: โฟลว์แอป macOS สำหรับควบคุม OpenClaw gateway ระยะไกลผ่าน SSH
+    - การตั้งค่าหรือดีบักการควบคุม Mac ระยะไกล
+summary: โฟลว์ของแอป macOS สำหรับควบคุม OpenClaw Gateway ระยะไกลผ่าน SSH
 title: การควบคุมระยะไกล
 x-i18n:
-    generated_at: "2026-04-26T11:35:53Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T16:29:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4de4980fe378fc9b685cf7732d21a80c640088191308b8ef1d3df9f468cb5be2
+    source_hash: 2c63f752c3636a253220310c7c8e57a28549704b74b2f0370bac432bae28a7d3
     source_path: platforms/mac/remote.md
-    workflow: 15
+    workflow: 16
 ---
 
 # OpenClaw ระยะไกล (macOS ⇄ โฮสต์ระยะไกล)
 
-โฟลว์นี้ช่วยให้แอป macOS ทำหน้าที่เป็นรีโมตคอนโทรลเต็มรูปแบบสำหรับ OpenClaw gateway ที่ทำงานอยู่บนโฮสต์อื่น (เดสก์ท็อป/เซิร์ฟเวอร์) โดยเป็นฟีเจอร์ **Remote over SSH** (การรันระยะไกล) ของแอป ฟีเจอร์ทั้งหมด—การตรวจสอบสุขภาพระบบ การส่งต่อ Voice Wake และ Web Chat—จะใช้การตั้งค่า SSH ระยะไกลชุดเดียวกันจาก _Settings → General_
+โฟลว์นี้ทำให้แอป macOS ทำหน้าที่เป็นรีโมตคอนโทรลเต็มรูปแบบสำหรับ OpenClaw Gateway ที่ทำงานอยู่บนโฮสต์อื่น (เดสก์ท็อป/เซิร์ฟเวอร์) ได้ นี่คือฟีเจอร์ **รีโมตผ่าน SSH** (เรียกใช้ระยะไกล) ของแอป ฟีเจอร์ทั้งหมด ทั้งการตรวจสอบสถานะ, การส่งต่อการปลุกด้วยเสียง และเว็บแชต จะใช้การกำหนดค่า SSH ระยะไกลเดียวกันจาก _การตั้งค่า → ทั่วไป_
 
 ## โหมด
 
-- **Local (Mac เครื่องนี้)**: ทุกอย่างทำงานบนแล็ปท็อป ไม่มี SSH เข้ามาเกี่ยวข้อง
-- **Remote over SSH (ค่าเริ่มต้น)**: คำสั่ง OpenClaw จะถูกรันบนโฮสต์ระยะไกล แอป mac จะเปิดการเชื่อมต่อ SSH ด้วย `-o BatchMode` พร้อม identity/key ที่คุณเลือกและ local port-forward
-- **Remote direct (ws/wss)**: ไม่มี SSH tunnel แอป mac จะเชื่อมต่อกับ URL ของ gateway โดยตรง (เช่น ผ่าน Tailscale Serve หรือ public HTTPS reverse proxy)
+- **ภายในเครื่อง (Mac เครื่องนี้)**: ทุกอย่างทำงานบนแล็ปท็อป ไม่เกี่ยวข้องกับ SSH
+- **รีโมตผ่าน SSH (ค่าเริ่มต้น)**: คำสั่ง OpenClaw จะถูกเรียกใช้บนโฮสต์ระยะไกล แอป Mac เปิดการเชื่อมต่อ SSH ด้วย `-o BatchMode` พร้อม identity/key ที่คุณเลือกและการส่งต่อพอร์ตภายในเครื่อง
+- **รีโมตโดยตรง (ws/wss)**: ไม่มีอุโมงค์ SSH แอป Mac เชื่อมต่อกับ URL ของ Gateway โดยตรง (ตัวอย่างเช่น ผ่าน Tailscale Serve หรือ reverse proxy HTTPS สาธารณะ)
 
-## การขนส่งระยะไกล
+## การรับส่งข้อมูลระยะไกล
 
-โหมดระยะไกลรองรับการขนส่งสองแบบ:
+โหมดรีโมตรองรับการรับส่งข้อมูลสองแบบ:
 
-- **SSH tunnel** (ค่าเริ่มต้น): ใช้ `ssh -N -L ...` เพื่อ forward พอร์ตของ gateway มายัง localhost Gateway จะเห็น IP ของ node เป็น `127.0.0.1` เพราะ tunnel เป็นแบบ loopback
-- **Direct (ws/wss)**: เชื่อมต่อไปยัง URL ของ gateway โดยตรง Gateway จะเห็น IP จริงของไคลเอนต์
+- **อุโมงค์ SSH** (ค่าเริ่มต้น): ใช้ `ssh -N -L ...` เพื่อส่งต่อพอร์ต Gateway ไปยัง localhost Gateway จะเห็น IP ของ Node เป็น `127.0.0.1` เพราะอุโมงค์เป็น loopback
+- **โดยตรง (ws/wss)**: เชื่อมต่อตรงไปยัง URL ของ Gateway Gateway จะเห็น IP ไคลเอนต์จริง
 
-ในโหมด SSH tunnel ชื่อโฮสต์ LAN/tailnet ที่ค้นพบจะถูกบันทึกเป็น
-`gateway.remote.sshTarget` แอปจะเก็บ `gateway.remote.url` ไว้ที่
-ปลายทาง tunnel ในเครื่อง เช่น `ws://127.0.0.1:18789` เพื่อให้ CLI, Web Chat และ
-บริการ node-host ในเครื่องใช้การขนส่ง loopback ที่ปลอดภัยแบบเดียวกัน
+ในโหมดอุโมงค์ SSH ชื่อโฮสต์ LAN/tailnet ที่ค้นพบจะถูกบันทึกเป็น
+`gateway.remote.sshTarget` แอปจะคง `gateway.remote.url` ไว้ที่ปลายทางอุโมงค์ภายในเครื่อง
+เช่น `ws://127.0.0.1:18789` เพื่อให้ CLI, เว็บแชต และ
+บริการ node-host ภายในเครื่องทั้งหมดใช้การรับส่งข้อมูลผ่าน loopback ที่ปลอดภัยเหมือนกัน
 
-งานอัตโนมัติของเบราว์เซอร์ในโหมดระยะไกลเป็นของ CLI node host ไม่ใช่ node ของแอป macOS แบบ native แอปจะเริ่มบริการ node host ที่ติดตั้งไว้เมื่อทำได้; หากคุณต้องการควบคุมเบราว์เซอร์จาก Mac เครื่องนั้น ให้ติดตั้ง/เริ่มด้วย `openclaw node install ...` และ `openclaw node start` (หรือรัน
-`openclaw node run ...` แบบ foreground) แล้วกำหนดเป้าหมายไปยัง node ที่รองรับเบราว์เซอร์นั้น
+ระบบอัตโนมัติของเบราว์เซอร์ในโหมดรีโมตเป็นความรับผิดชอบของโฮสต์ Node ของ CLI ไม่ใช่
+Node ของแอป macOS แบบเนทีฟ แอปจะเริ่มบริการโฮสต์ Node ที่ติดตั้งไว้เมื่อ
+ทำได้ หากคุณต้องการควบคุมเบราว์เซอร์จาก Mac เครื่องนั้น ให้ติดตั้ง/เริ่มด้วย
+`openclaw node install ...` และ `openclaw node start` (หรือเรียกใช้
+`openclaw node run ...` ใน foreground) แล้วกำหนดเป้าหมายไปยัง Node
+ที่รองรับเบราว์เซอร์นั้น
 
-## ข้อกำหนดเบื้องต้นบนโฮสต์ระยะไกล
+## สิ่งที่ต้องเตรียมบนโฮสต์ระยะไกล
 
-1. ติดตั้ง Node + pnpm และ build/install OpenClaw CLI (`pnpm install && pnpm build && pnpm link --global`)
-2. ตรวจสอบให้แน่ใจว่า `openclaw` อยู่บน PATH สำหรับเชลล์แบบ non-interactive (ทำ symlink ไปที่ `/usr/local/bin` หรือ `/opt/homebrew/bin` หากจำเป็น)
-3. เปิดใช้ SSH พร้อม key auth เราแนะนำให้ใช้ IP ของ **Tailscale** เพื่อให้เข้าถึงได้เสถียรเมื่อนอก LAN
+1. ติดตั้ง Node + pnpm แล้ว build/ติดตั้ง OpenClaw CLI (`pnpm install && pnpm build && pnpm link --global`)
+2. ตรวจสอบให้แน่ใจว่า `openclaw` อยู่บน PATH สำหรับ shell แบบไม่โต้ตอบ (symlink ไปยัง `/usr/local/bin` หรือ `/opt/homebrew/bin` หากจำเป็น)
+3. เปิด SSH ด้วยการยืนยันตัวตนผ่าน key เราแนะนำ IP ของ **Tailscale** เพื่อให้เข้าถึงได้อย่างเสถียรนอก LAN
 
 ## การตั้งค่าแอป macOS
 
-1. เปิด _Settings → General_
-2. ภายใต้ **OpenClaw runs** ให้เลือก **Remote over SSH** และตั้งค่า:
-   - **Transport**: **SSH tunnel** หรือ **Direct (ws/wss)**
-   - **SSH target**: `user@host` (เลือก `:port` ได้)
-     - หาก gateway อยู่บน LAN เดียวกันและประกาศผ่าน Bonjour ให้เลือกจากรายการที่ค้นพบเพื่อกรอกฟิลด์นี้อัตโนมัติ
-   - **Gateway URL** (เฉพาะ Direct): `wss://gateway.example.ts.net` (หรือ `ws://...` สำหรับ local/LAN)
-   - **Identity file** (ขั้นสูง): path ไปยัง key ของคุณ
-   - **Project root** (ขั้นสูง): path ของ checkout บนเครื่องระยะไกลที่ใช้สำหรับคำสั่ง
-   - **CLI path** (ขั้นสูง): path แบบเลือกได้ไปยัง entrypoint/binary `openclaw` ที่รันได้ (กรอกอัตโนมัติเมื่อมีการประกาศไว้)
-3. กด **Test remote** หากสำเร็จแสดงว่า `openclaw status --json` บนเครื่องระยะไกลรันได้ถูกต้อง ความล้มเหลวมักเกิดจากปัญหา PATH/CLI; exit 127 หมายถึงไม่พบ CLI บนเครื่องระยะไกล
-4. การตรวจสอบสุขภาพระบบและ Web Chat จะรันผ่าน SSH tunnel นี้โดยอัตโนมัติ
+1. เปิด _การตั้งค่า → ทั่วไป_
+2. ใต้ **OpenClaw ทำงานที่** ให้เลือก **รีโมตผ่าน SSH** และตั้งค่า:
+   - **การรับส่งข้อมูล**: **อุโมงค์ SSH** หรือ **โดยตรง (ws/wss)**
+   - **เป้าหมาย SSH**: `user@host` (เลือกใส่ `:port` ได้)
+     - หาก Gateway อยู่ใน LAN เดียวกันและประกาศผ่าน Bonjour ให้เลือกจากรายการที่ค้นพบเพื่อกรอกฟิลด์นี้อัตโนมัติ
+   - **URL ของ Gateway** (เฉพาะโดยตรง): `wss://gateway.example.ts.net` (หรือ `ws://...` สำหรับภายในเครื่อง/LAN)
+   - **ไฟล์ identity** (ขั้นสูง): path ไปยัง key ของคุณ
+   - **รากโปรเจกต์** (ขั้นสูง): path ของ checkout ระยะไกลที่ใช้สำหรับคำสั่ง
+   - **path ของ CLI** (ขั้นสูง): path ไม่บังคับไปยัง entrypoint/binary `openclaw` ที่เรียกใช้ได้ (กรอกอัตโนมัติเมื่อมีการประกาศ)
+3. กด **ทดสอบรีโมต** สำเร็จหมายความว่า `openclaw status --json` ระยะไกลทำงานถูกต้อง ความล้มเหลวมักหมายถึงปัญหา PATH/CLI; exit 127 หมายความว่าไม่พบ CLI บนรีโมต
+4. การตรวจสอบสถานะและเว็บแชตจะทำงานผ่านอุโมงค์ SSH นี้โดยอัตโนมัติ
 
-## Web Chat
+## เว็บแชต
 
-- **SSH tunnel**: Web Chat จะเชื่อมต่อกับ gateway ผ่านพอร์ตควบคุม WebSocket ที่ถูก forward มา (ค่าเริ่มต้น 18789)
-- **Direct (ws/wss)**: Web Chat จะเชื่อมต่อไปยัง URL ของ gateway ที่กำหนดไว้โดยตรง
-- ไม่มี WebChat HTTP server แยกต่างหากอีกต่อไป
+- **อุโมงค์ SSH**: เว็บแชตเชื่อมต่อกับ Gateway ผ่านพอร์ตควบคุม WebSocket ที่ถูกส่งต่อ (ค่าเริ่มต้น 18789)
+- **โดยตรง (ws/wss)**: เว็บแชตเชื่อมต่อตรงไปยัง URL ของ Gateway ที่กำหนดค่าไว้
+- ไม่มีเซิร์ฟเวอร์ HTTP WebChat แยกต่างหากอีกต่อไป
 
-## สิทธิ์การใช้งาน
+## สิทธิ์
 
-- โฮสต์ระยะไกลต้องมีการอนุมัติ TCC แบบเดียวกับเครื่อง local (Automation, Accessibility, Screen Recording, Microphone, Speech Recognition, Notifications) ให้รัน onboarding บนเครื่องนั้นเพื่ออนุมัติครั้งเดียว
-- Nodes จะประกาศสถานะสิทธิ์ของตนผ่าน `node.list` / `node.describe` เพื่อให้เอเจนต์รู้ว่ามีอะไรใช้งานได้บ้าง
+- โฮสต์ระยะไกลต้องได้รับการอนุมัติ TCC เหมือนกับภายในเครื่อง (Automation, Accessibility, Screen Recording, Microphone, Speech Recognition, Notifications) เรียกใช้ onboarding บนเครื่องนั้นเพื่ออนุญาตเพียงครั้งเดียว
+- Node จะประกาศสถานะสิทธิ์ของตนผ่าน `node.list` / `node.describe` เพื่อให้ agent รู้ว่ามีอะไรพร้อมใช้งาน
 
 ## หมายเหตุด้านความปลอดภัย
 
-- ควรใช้ bind แบบ loopback บนโฮสต์ระยะไกลและเชื่อมต่อผ่าน SSH หรือ Tailscale
-- การทำ SSH tunneling ใช้ strict host-key checking; ให้เชื่อถือ host key ก่อนเพื่อให้มีอยู่ใน `~/.ssh/known_hosts`
-- หากคุณ bind Gateway เข้ากับอินเทอร์เฟซที่ไม่ใช่ loopback ให้บังคับใช้ Gateway auth ที่ถูกต้อง: token, password หรือ identity-aware reverse proxy พร้อม `gateway.auth.mode: "trusted-proxy"`
+- ควรใช้การ bind แบบ loopback บนโฮสต์ระยะไกลและเชื่อมต่อผ่าน SSH หรือ Tailscale
+- การทำอุโมงค์ SSH ใช้การตรวจสอบ host-key แบบเข้มงวด ให้เชื่อถือ host key ก่อนเพื่อให้ key นั้นมีอยู่ใน `~/.ssh/known_hosts`
+- หากคุณ bind Gateway กับอินเทอร์เฟซที่ไม่ใช่ loopback ให้บังคับใช้การยืนยันตัวตน Gateway ที่ถูกต้อง: token, password หรือ reverse proxy ที่รับรู้ตัวตนด้วย `gateway.auth.mode: "trusted-proxy"`
 - ดู [ความปลอดภัย](/th/gateway/security) และ [Tailscale](/th/gateway/tailscale)
 
-## โฟลว์การเข้าสู่ระบบ WhatsApp (ระยะไกล)
+## โฟลว์เข้าสู่ระบบ WhatsApp (ระยะไกล)
 
-- รัน `openclaw channels login --verbose` **บนโฮสต์ระยะไกล** สแกน QR ด้วย WhatsApp บนโทรศัพท์ของคุณ
-- รัน login ใหม่บนโฮสต์นั้นหาก auth หมดอายุ การตรวจสอบสุขภาพระบบจะแสดงปัญหาการเชื่อมโยง
+- เรียกใช้ `openclaw channels login --verbose` **บนโฮสต์ระยะไกล** สแกน QR ด้วย WhatsApp บนโทรศัพท์ของคุณ
+- เรียกใช้การเข้าสู่ระบบอีกครั้งบนโฮสต์นั้นหากการยืนยันตัวตนหมดอายุ การตรวจสอบสถานะจะแสดงปัญหาการลิงก์
 
-## การแก้ปัญหา
+## การแก้ไขปัญหา
 
-- **exit 127 / not found**: `openclaw` ไม่ได้อยู่บน PATH สำหรับเชลล์แบบ non-login ให้เพิ่มลงใน `/etc/paths`, shell rc ของคุณ หรือทำ symlink ไปยัง `/usr/local/bin`/`/opt/homebrew/bin`
-- **Health probe failed**: ตรวจสอบการเข้าถึง SSH, PATH และยืนยันว่า Baileys เข้าสู่ระบบแล้ว (`openclaw status --json`)
-- **Web Chat ค้าง**: ยืนยันว่า gateway กำลังทำงานบนโฮสต์ระยะไกล และพอร์ตที่ forward มาตรงกับพอร์ต WS ของ gateway; UI ต้องการการเชื่อมต่อ WS ที่สมบูรณ์
-- **Node IP แสดงเป็น 127.0.0.1**: เป็นพฤติกรรมปกติเมื่อใช้ SSH tunnel เปลี่ยน **Transport** เป็น **Direct (ws/wss)** หากคุณต้องการให้ gateway เห็น IP จริงของไคลเอนต์
-- **Voice Wake**: วลีทริกเกอร์จะถูกส่งต่อโดยอัตโนมัติในโหมดระยะไกล; ไม่ต้องมี forwarder แยกต่างหาก
+- **exit 127 / ไม่พบ**: `openclaw` ไม่ได้อยู่บน PATH สำหรับ shell ที่ไม่ใช่ login เพิ่มลงใน `/etc/paths`, shell rc ของคุณ หรือ symlink ไปยัง `/usr/local/bin`/`/opt/homebrew/bin`
+- **Health probe ล้มเหลว**: ตรวจสอบการเข้าถึง SSH, PATH และตรวจสอบว่า Baileys เข้าสู่ระบบอยู่ (`openclaw status --json`)
+- **เว็บแชตค้าง**: ยืนยันว่า Gateway ทำงานอยู่บนโฮสต์ระยะไกลและพอร์ตที่ส่งต่อตรงกับพอร์ต WS ของ Gateway; UI ต้องการการเชื่อมต่อ WS ที่สมบูรณ์
+- **IP ของ Node แสดงเป็น 127.0.0.1**: เป็นพฤติกรรมที่คาดไว้กับอุโมงค์ SSH เปลี่ยน **การรับส่งข้อมูล** เป็น **โดยตรง (ws/wss)** หากคุณต้องการให้ Gateway เห็น IP ไคลเอนต์จริง
+- **แดชบอร์ดทำงานแต่ความสามารถของ Mac ออฟไลน์**: หมายความว่าการเชื่อมต่อ operator/control ของแอปสมบูรณ์ แต่การเชื่อมต่อ Node คู่ขนานไม่ได้เชื่อมต่อหรือขาดพื้นผิวคำสั่ง เปิดส่วนอุปกรณ์ในแถบเมนูและตรวจสอบว่า Mac เป็น `paired · disconnected` หรือไม่ สำหรับ endpoint `wss://*.ts.net` ของ Tailscale Serve แอปจะตรวจพบ TLS leaf pin รุ่นเก่าที่ค้างหลังการหมุนเวียนใบรับรอง ล้าง pin ที่ค้างเมื่อ macOS เชื่อถือใบรับรองใหม่ และลองใหม่อัตโนมัติ หากใบรับรองไม่ได้รับความเชื่อถือจากระบบหรือโฮสต์ไม่ใช่ชื่อ Tailscale Serve ให้ตรวจสอบใบรับรองหรือเปลี่ยนเป็น **รีโมตผ่าน SSH**
+- **การปลุกด้วยเสียง**: trigger phrase จะถูกส่งต่ออัตโนมัติในโหมดรีโมต ไม่ต้องใช้ forwarder แยกต่างหาก
 
-## เสียงแจ้งเตือน
+## เสียงการแจ้งเตือน
 
-เลือกเสียงต่อการแจ้งเตือนหนึ่งรายการจากสคริปต์ด้วย `openclaw` และ `node.invoke` เช่น:
+เลือกเสียงต่อการแจ้งเตือนจากสคริปต์ด้วย `openclaw` และ `node.invoke` เช่น:
 
 ```bash
 openclaw nodes notify --node <id> --title "Ping" --body "Remote gateway ready" --sound Glass
 ```
 
-ไม่มีตัวสลับ “default sound” แบบส่วนกลางในแอปอีกต่อไป; ผู้เรียกจะเลือกเสียง (หรือไม่เลือกเลย) ต่อคำขอหนึ่งรายการ
+ไม่มี toggle “เสียงเริ่มต้น” ระดับ global ในแอปอีกต่อไป ผู้เรียกเลือกเสียง (หรือไม่เลือกเสียง) ต่อคำขอแต่ละครั้ง
 
 ## ที่เกี่ยวข้อง
 
