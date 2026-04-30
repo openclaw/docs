@@ -1,36 +1,35 @@
 ---
 read_when:
-    - Vous souhaitez accéder à la Gateway via Tailscale
-    - Vous souhaitez l’interface navigateur Control UI et l’édition de configuration
-summary: 'Surfaces web de la Gateway : Control UI, modes de liaison et sécurité'
+    - Vous souhaitez accéder au Gateway via Tailscale
+    - Vous voulez l’interface utilisateur de contrôle du navigateur et la modification de la configuration
+summary: 'Surfaces web du Gateway : interface utilisateur de contrôle, modes de liaison et sécurité'
 title: Web
 x-i18n:
-    generated_at: "2026-04-25T14:00:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:55:22Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 424704a35ce3a0f5960486372514751cc93ae90e4b75d0ed114e045664256d2d
+    source_hash: d1e357d1e9f4ad0286b9412cd0a684b6428180e0586eef76577ecb2909212fb2
     source_path: web/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-La Gateway sert une petite **Control UI** navigateur (Vite + Lit) depuis le même port que le WebSocket Gateway :
+Le Gateway sert une petite **interface de contrôle dans le navigateur** (Vite + Lit) depuis le même port que le WebSocket du Gateway :
 
 - par défaut : `http://<host>:18789/`
 - avec `gateway.tls.enabled: true` : `https://<host>:18789/`
-- préfixe facultatif : définissez `gateway.controlUi.basePath` (par ex. `/openclaw`)
+- préfixe facultatif : définissez `gateway.controlUi.basePath` (p. ex. `/openclaw`)
 
-Les fonctionnalités se trouvent dans [Control UI](/fr/web/control-ui).
-Cette page se concentre sur les modes de liaison, la sécurité et les surfaces exposées au web.
+Les fonctionnalités se trouvent dans [l’interface de contrôle](/fr/web/control-ui). Le reste de cette page se concentre sur les modes de liaison, la sécurité et les surfaces exposées au Web.
 
 ## Webhooks
 
-Lorsque `hooks.enabled=true`, la Gateway expose également un petit point de terminaison Webhook sur le même serveur HTTP.
-Consultez [Configuration de la Gateway](/fr/gateway/configuration) → `hooks` pour l’authentification + les charges utiles.
+Lorsque `hooks.enabled=true`, le Gateway expose aussi un petit point de terminaison Webhook sur le même serveur HTTP.
+Consultez [Configuration du Gateway](/fr/gateway/configuration) → `hooks` pour l’authentification et les charges utiles.
 
-## Config (activée par défaut)
+## Configuration (activée par défaut)
 
-La Control UI est **activée par défaut** lorsque les assets sont présents (`dist/control-ui`).
-Vous pouvez la contrôler via la config :
+L’interface de contrôle est **activée par défaut** lorsque les ressources sont présentes (`dist/control-ui`).
+Vous pouvez la contrôler via la configuration :
 
 ```json5
 {
@@ -44,7 +43,7 @@ Vous pouvez la contrôler via la config :
 
 ### Serve intégré (recommandé)
 
-Conservez la Gateway sur loopback et laissez Tailscale Serve la proxyfier :
+Gardez le Gateway sur loopback et laissez Tailscale Serve le proxyfier :
 
 ```json5
 {
@@ -55,7 +54,7 @@ Conservez la Gateway sur loopback et laissez Tailscale Serve la proxyfier :
 }
 ```
 
-Démarrez ensuite la gateway :
+Puis démarrez le gateway :
 
 ```bash
 openclaw gateway
@@ -65,7 +64,7 @@ Ouvrez :
 
 - `https://<magicdns>/` (ou votre `gateway.controlUi.basePath` configuré)
 
-### Liaison tailnet + jeton
+### Liaison au tailnet + jeton
 
 ```json5
 {
@@ -77,8 +76,8 @@ Ouvrez :
 }
 ```
 
-Démarrez ensuite la gateway (cet exemple non loopback utilise l’authentification
-par jeton à secret partagé) :
+Puis démarrez le gateway (cet exemple non-loopback utilise une authentification
+par jeton secret partagé) :
 
 ```bash
 openclaw gateway
@@ -102,31 +101,32 @@ Ouvrez :
 
 ## Notes de sécurité
 
-- L’authentification Gateway est requise par défaut (jeton, mot de passe, trusted-proxy, ou en-têtes d’identité Tailscale Serve lorsqu’ils sont activés).
-- Les liaisons non loopback **requièrent toujours** une authentification gateway. En pratique, cela signifie une authentification par jeton/mot de passe ou un proxy inverse sensible à l’identité avec `gateway.auth.mode: "trusted-proxy"`.
-- L’assistant crée une authentification à secret partagé par défaut et génère généralement un
-  jeton gateway (même sur loopback).
+- L’authentification du Gateway est requise par défaut (jeton, mot de passe, trusted-proxy ou en-têtes d’identité Tailscale Serve lorsqu’ils sont activés).
+- Les liaisons non-loopback **requièrent** toujours l’authentification du gateway. En pratique, cela signifie une authentification par jeton/mot de passe ou un proxy inverse sensible à l’identité avec `gateway.auth.mode: "trusted-proxy"`.
+- L’assistant crée une authentification par secret partagé par défaut et génère généralement un
+  jeton de gateway (même sur loopback).
 - En mode secret partagé, l’interface envoie `connect.params.auth.token` ou
   `connect.params.auth.password`.
-- Lorsque `gateway.tls.enabled: true`, les helpers locaux de tableau de bord et de statut affichent
-  les URL du tableau de bord en `https://` et les URL WebSocket en `wss://`.
-- Dans les modes avec identité, comme Tailscale Serve ou `trusted-proxy`, la
-  vérification d’authentification WebSocket est satisfaite à partir des en-têtes de requête.
-- Pour les déploiements Control UI non loopback, définissez explicitement `gateway.controlUi.allowedOrigins`
-  (origines complètes). Sans cela, le démarrage de la gateway est refusé par défaut.
-- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` active le mode de repli d’origine basé sur l’en-tête Host, mais il s’agit d’une dégradation de sécurité dangereuse.
-- Avec Serve, les en-têtes d’identité Tailscale peuvent satisfaire l’authentification Control UI/WebSocket
+- Lorsque `gateway.tls.enabled: true`, les assistants locaux de tableau de bord et de statut affichent
+  des URL de tableau de bord en `https://` et des URL WebSocket en `wss://`.
+- Dans les modes portant une identité, comme Tailscale Serve ou `trusted-proxy`, la
+  vérification d’authentification WebSocket est satisfaite à partir des en-têtes de requête à la place.
+- Pour les déploiements non-loopback de l’interface de contrôle, définissez `gateway.controlUi.allowedOrigins`
+  explicitement (origines complètes). Sans cela, le démarrage du gateway est refusé par défaut.
+- `gateway.controlUi.dangerouslyAllowHostHeaderOriginFallback=true` active
+  le mode de repli de l’origine sur l’en-tête Host, mais constitue une dégradation de sécurité dangereuse.
+- Avec Serve, les en-têtes d’identité Tailscale peuvent satisfaire l’authentification de l’interface de contrôle/WebSocket
   lorsque `gateway.auth.allowTailscale` vaut `true` (aucun jeton/mot de passe requis).
-  Les points de terminaison HTTP API n’utilisent pas ces en-têtes d’identité Tailscale ; ils suivent
-  à la place le mode d’authentification HTTP normal de la gateway. Définissez
+  Les points de terminaison de l’API HTTP n’utilisent pas ces en-têtes d’identité Tailscale ; ils suivent
+  plutôt le mode d’authentification HTTP normal du gateway. Définissez
   `gateway.auth.allowTailscale: false` pour exiger des identifiants explicites. Consultez
   [Tailscale](/fr/gateway/tailscale) et [Sécurité](/fr/gateway/security). Ce
-  flux sans jeton suppose que l’hôte gateway est de confiance.
-- `gateway.tailscale.mode: "funnel"` exige `gateway.auth.mode: "password"` (mot de passe partagé).
+  flux sans jeton suppose que l’hôte du gateway est fiable.
+- `gateway.tailscale.mode: "funnel"` requiert `gateway.auth.mode: "password"` (mot de passe partagé).
 
-## Compilation de l’interface
+## Construire l’interface
 
-La Gateway sert les fichiers statiques depuis `dist/control-ui`. Compilez-les avec :
+Le Gateway sert les fichiers statiques depuis `dist/control-ui`. Construisez-les avec :
 
 ```bash
 pnpm ui:build

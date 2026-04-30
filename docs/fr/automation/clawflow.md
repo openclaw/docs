@@ -1,19 +1,19 @@
 ---
-summary: Rediriger vers Task Flow
+summary: Rediriger vers le flux de tâches
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-24T06:59:12Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:10:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1de967044fe5b9996d5aa6d46d63e645d887a98f31bb6dae9ba66dd0eddd1d0e
+    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
     source_path: automation/clawflow.md
-    workflow: 15
+    workflow: 16
 ---
 
-ClawFlow a été renommé en [Task Flow](/fr/automation/taskflow). Consultez [Task Flow](/fr/automation/taskflow) pour la documentation actuelle.
+ClawFlow a été renommé en [Flux de tâches](/fr/automation/taskflow).
 
-## Articles connexes
+## Voir aussi
 
-- [Task Flow](/fr/automation/taskflow)
-- [Ordres permanents](/fr/automation/standing-orders)
-- [Hooks](/fr/automation/hooks)
+- [Flux de tâches](/fr/automation/taskflow)
+- [Consignes permanentes](/fr/automation/standing-orders)
+- [Points d’accroche](/fr/automation/hooks)

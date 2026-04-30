@@ -1,49 +1,48 @@
 ---
 read_when:
-    - Expliquer comment les messages entrants deviennent des réponses
-    - Clarifier les sessions, les modes de mise en file d’attente ou le comportement du streaming
+    - Explication de la façon dont les messages entrants deviennent des réponses
+    - Clarification des sessions, des modes de mise en file d’attente ou du comportement de streaming
     - Documenter la visibilité du raisonnement et les implications d’utilisation
 summary: Flux de messages, sessions, mise en file d’attente et visibilité du raisonnement
 title: Messages
 x-i18n:
-    generated_at: "2026-04-26T11:27:09Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:22:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7b77d344ed0cab80566582f43127c91ec987e892eeed788aeb9988b377a96e06
+    source_hash: dcfcc995995516b627993755b255a779c681b4976d2d724c0c11e87875e37b1e
     source_path: concepts/messages.md
-    workflow: 15
+    workflow: 16
 ---
 
-Cette page relie le fonctionnement des messages entrants, des sessions, de la mise en file d’attente,
-du streaming et de la visibilité du raisonnement dans OpenClaw.
+OpenClaw traite les messages entrants au moyen d’un pipeline de résolution de session, de mise en file d’attente, de streaming, d’exécution d’outils et de visibilité du raisonnement. Cette page décrit le chemin allant du message entrant à la réponse.
 
 ## Flux des messages (vue d’ensemble)
 
 ```
-Message entrant
-  -> routage/bindings -> clé de session
-  -> file d’attente (si une exécution est active)
-  -> exécution de l’agent (streaming + outils)
-  -> réponses sortantes (limites du canal + segmentation)
+Inbound message
+  -> routing/bindings -> session key
+  -> queue (if a run is active)
+  -> agent run (streaming + tools)
+  -> outbound replies (channel limits + chunking)
 ```
 
-Les principaux paramètres se trouvent dans la configuration :
+Les principaux réglages se trouvent dans la configuration :
 
 - `messages.*` pour les préfixes, la mise en file d’attente et le comportement des groupes.
-- `agents.defaults.*` pour les valeurs par défaut du streaming par bloc et de la segmentation.
-- Les surcharges par canal (`channels.whatsapp.*`, `channels.telegram.*`, etc.) pour les plafonds et les bascules de streaming.
+- `agents.defaults.*` pour les valeurs par défaut du streaming par blocs et du découpage.
+- Les remplacements de canal (`channels.whatsapp.*`, `channels.telegram.*`, etc.) pour les limites et les options de streaming.
 
-Voir [Configuration](/fr/gateway/configuration) pour le schéma complet.
+Consultez [Configuration](/fr/gateway/configuration) pour le schéma complet.
 
-## Déduplication des messages entrants
+## Déduplication entrante
 
-Les canaux peuvent redistribuer le même message après des reconnexions. OpenClaw conserve un cache de courte durée, indexé par canal/compte/pair/session/ID de message, afin que les livraisons en double ne déclenchent pas une nouvelle exécution d’agent.
+Les canaux peuvent relivrer le même message après des reconnexions. OpenClaw conserve un cache de courte durée indexé par canal/compte/pair/session/identifiant de message afin que les livraisons en double ne déclenchent pas une autre exécution d’agent.
 
-## Anti-rebond des messages entrants
+## Débounce entrant
 
-Des messages consécutifs rapides provenant du **même expéditeur** peuvent être regroupés dans un seul tour d’agent via `messages.inbound`. L’anti-rebond s’applique par canal + conversation et utilise le message le plus récent pour les fils/ID de réponse.
+Les messages consécutifs rapides provenant du **même expéditeur** peuvent être regroupés en un seul tour d’agent via `messages.inbound`. Le débounce est limité par canal + conversation et utilise le message le plus récent pour le fil de réponse/les identifiants.
 
-Configuration (valeur par défaut globale + surcharges par canal) :
+Configuration (valeur par défaut globale + remplacements par canal) :
 
 ```json5
 {
@@ -60,38 +59,38 @@ Configuration (valeur par défaut globale + surcharges par canal) :
 }
 ```
 
-Remarques :
+Notes :
 
-- L’anti-rebond s’applique aux messages **texte uniquement** ; les médias/pièces jointes déclenchent immédiatement l’envoi.
-- Les commandes de contrôle contournent l’anti-rebond afin de rester autonomes — **sauf** lorsqu’un canal active explicitement le regroupement des messages privés du même expéditeur (par ex. [BlueBubbles `coalesceSameSenderDms`](/fr/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), où les commandes en message privé attendent dans la fenêtre d’anti-rebond afin qu’une charge utile envoyée en plusieurs parties puisse rejoindre le même tour d’agent.
+- Le débounce s’applique aux messages **texte uniquement** ; les médias/pièces jointes sont envoyés immédiatement.
+- Les commandes de contrôle contournent le débounce afin de rester autonomes — **sauf** lorsqu’un canal choisit explicitement le regroupement des DM du même expéditeur (par exemple [BlueBubbles `coalesceSameSenderDms`](/fr/channels/bluebubbles#coalescing-split-send-dms-command--url-in-one-composition)), où les commandes DM attendent dans la fenêtre de débounce afin qu’une charge utile envoyée en plusieurs parties puisse rejoindre le même tour d’agent.
 
 ## Sessions et appareils
 
-Les sessions appartiennent à la gateway, pas aux clients.
+Les sessions appartiennent au Gateway, pas aux clients.
 
-- Les discussions directes se replient dans la clé de session principale de l’agent.
+- Les conversations directes se replient sur la clé de session principale de l’agent.
 - Les groupes/canaux obtiennent leurs propres clés de session.
-- Le magasin de sessions et les transcriptions résident sur l’hôte de la gateway.
+- Le magasin de sessions et les transcriptions résident sur l’hôte du Gateway.
 
-Plusieurs appareils/canaux peuvent être associés à la même session, mais l’historique n’est pas entièrement resynchronisé vers tous les clients. Recommandation : utilisez un appareil principal pour les longues conversations afin d’éviter des contextes divergents. Le Control UI et le TUI affichent toujours la transcription de session adossée à la gateway ; ils constituent donc la source de vérité.
+Plusieurs appareils/canaux peuvent correspondre à la même session, mais l’historique n’est pas entièrement resynchronisé vers chaque client. Recommandation : utilisez un appareil principal pour les longues conversations afin d’éviter un contexte divergent. La Control UI et la TUI affichent toujours la transcription de session soutenue par le Gateway ; elles constituent donc la source de vérité.
 
 Détails : [Gestion des sessions](/fr/concepts/session).
 
 ## Métadonnées des résultats d’outil
 
-Le `content` du résultat d’outil est le résultat visible par le modèle. Le `details` du résultat d’outil correspond à des métadonnées d’exécution pour le rendu UI, les diagnostics, la livraison de médias et les plugins.
+Le `content` d’un résultat d’outil est le résultat visible par le modèle. Les `details` d’un résultat d’outil sont des métadonnées d’exécution pour le rendu de l’UI, les diagnostics, la livraison des médias et les plugins.
 
-OpenClaw maintient explicitement cette frontière :
+OpenClaw rend cette frontière explicite :
 
-- `toolResult.details` est retiré avant la relecture du fournisseur et l’entrée de Compaction.
+- `toolResult.details` est retiré avant la relecture par le fournisseur et l’entrée de Compaction.
 - Les transcriptions de session persistées ne conservent que des `details` bornés ; les métadonnées trop volumineuses sont remplacées par un résumé compact marqué `persistedDetailsTruncated: true`.
-- Les plugins et outils doivent placer dans `content` le texte que le modèle doit lire, et pas uniquement dans `details`.
+- Les plugins et outils doivent placer le texte que le modèle doit lire dans `content`, et pas seulement dans `details`.
 
 ## Corps entrants et contexte d’historique
 
-OpenClaw sépare le **corps du prompt** du **corps de commande** :
+OpenClaw sépare le **corps de l’invite** du **corps de commande** :
 
-- `Body` : texte du prompt envoyé à l’agent. Il peut inclure des enveloppes de canal et des wrappers d’historique facultatifs.
+- `Body` : texte d’invite envoyé à l’agent. Il peut inclure des enveloppes de canal et des wrappers d’historique facultatifs.
 - `CommandBody` : texte utilisateur brut pour l’analyse des directives/commandes.
 - `RawBody` : alias historique de `CommandBody` (conservé pour compatibilité).
 
@@ -100,26 +99,29 @@ Lorsqu’un canal fournit un historique, il utilise un wrapper partagé :
 - `[Chat messages since your last reply - for context]`
 - `[Current message - respond to this]`
 
-Pour les **discussions non directes** (groupes/canaux/salons), le **corps du message actuel** est préfixé avec l’étiquette de l’expéditeur (même style que celui utilisé pour les entrées d’historique). Cela maintient la cohérence entre les messages en temps réel et les messages mis en file d’attente/d’historique dans le prompt de l’agent.
+Pour les **conversations non directes** (groupes/canaux/salles), le **corps du message actuel** est préfixé avec l’étiquette de l’expéditeur (dans le même style que celui utilisé pour les entrées d’historique). Cela garde les messages en temps réel et les messages mis en file d’attente/d’historique cohérents dans l’invite de l’agent.
 
 Les tampons d’historique sont **uniquement en attente** : ils incluent les messages de groupe qui n’ont _pas_ déclenché d’exécution (par exemple, les messages filtrés par mention) et **excluent** les messages déjà présents dans la transcription de session.
 
-Le retrait des directives s’applique uniquement à la section du **message actuel** afin que l’historique reste intact. Les canaux qui encapsulent l’historique doivent définir `CommandBody` (ou `RawBody`) sur le texte d’origine du message et conserver `Body` comme prompt combiné.
-Les tampons d’historique sont configurables via `messages.groupChat.historyLimit` (valeur par défaut globale) et des surcharges par canal comme `channels.slack.historyLimit` ou `channels.telegram.accounts.<id>.historyLimit` (définissez `0` pour désactiver).
+La suppression des directives ne s’applique qu’à la section du **message actuel** afin que l’historique reste intact. Les canaux qui enveloppent l’historique doivent définir `CommandBody` (ou `RawBody`) sur le texte original du message et garder `Body` comme invite combinée. Les tampons d’historique sont configurables via `messages.groupChat.historyLimit` (valeur par défaut globale) et des remplacements par canal comme `channels.slack.historyLimit` ou `channels.telegram.accounts.<id>.historyLimit` (définissez `0` pour désactiver).
 
 ## Mise en file d’attente et suivis
 
-Si une exécution est déjà active, les messages entrants peuvent être mis en file d’attente, redirigés vers l’exécution en cours ou collectés pour un tour de suivi.
+Si une exécution est déjà active, les messages entrants peuvent être mis en file d’attente, orientés vers l’exécution actuelle, ou collectés pour un tour de suivi.
 
-- Configurez cela via `messages.queue` (et `messages.queue.byChannel`).
-- Modes : `interrupt`, `steer`, `followup`, `collect`, plus les variantes de backlog.
+- Configurez via `messages.queue` (et `messages.queue.byChannel`).
+- Le mode par défaut est `steer`, avec un débounce de suivi de 500 ms lorsque l’orientation revient à une livraison de suivi mise en file d’attente.
+- Modes : `steer`, `followup`, `collect`, `steer-backlog`, `interrupt`, et l’ancien mode `queue` un élément à la fois.
 
-Détails : [Mise en file d’attente](/fr/concepts/queue).
+Détails : [File de commandes](/fr/concepts/queue) et [File d’orientation](/fr/concepts/queue-steering).
 
-## Streaming, segmentation et regroupement
+## Propriété des exécutions de canal
 
-Le streaming par bloc envoie des réponses partielles à mesure que le modèle produit des blocs de texte.
-La segmentation respecte les limites de texte du canal et évite de couper du code délimité.
+Les plugins de canal peuvent préserver l’ordre, appliquer un débounce à l’entrée et appliquer une rétropression de transport avant qu’un message n’entre dans la file de session. Ils ne doivent pas imposer de délai d’expiration distinct autour du tour d’agent lui-même. Une fois qu’un message est routé vers une session, le travail de longue durée est régi par la session, l’outil et le cycle de vie d’exécution afin que tous les canaux signalent les tours lents et s’en rétablissent de manière cohérente.
+
+## Streaming, découpage et regroupement
+
+Le streaming par blocs envoie des réponses partielles au fur et à mesure que le modèle produit des blocs de texte. Le découpage respecte les limites de texte du canal et évite de scinder les blocs de code clôturés.
 
 Paramètres clés :
 
@@ -127,51 +129,49 @@ Paramètres clés :
 - `agents.defaults.blockStreamingBreak` (`text_end|message_end`)
 - `agents.defaults.blockStreamingChunk` (`minChars|maxChars|breakPreference`)
 - `agents.defaults.blockStreamingCoalesce` (regroupement basé sur l’inactivité)
-- `agents.defaults.humanDelay` (pause de type humain entre les réponses par bloc)
-- Surcharges par canal : `*.blockStreaming` et `*.blockStreamingCoalesce` (les canaux autres que Telegram exigent un `*.blockStreaming: true` explicite)
+- `agents.defaults.humanDelay` (pause de type humain entre les réponses par blocs)
+- Remplacements de canal : `*.blockStreaming` et `*.blockStreamingCoalesce` (les canaux non-Telegram exigent `*.blockStreaming: true` explicite)
 
-Détails : [Streaming + segmentation](/fr/concepts/streaming).
+Détails : [Streaming + découpage](/fr/concepts/streaming).
 
 ## Visibilité du raisonnement et jetons
 
 OpenClaw peut exposer ou masquer le raisonnement du modèle :
 
 - `/reasoning on|off|stream` contrôle la visibilité.
-- Le contenu de raisonnement compte quand même dans l’utilisation des jetons lorsqu’il est produit par le modèle.
-- Telegram prend en charge le streaming du raisonnement dans la bulle de brouillon.
+- Le contenu de raisonnement compte toujours dans l’utilisation des jetons lorsqu’il est produit par le modèle.
+- Telegram prend en charge le flux de raisonnement dans la bulle de brouillon.
 
-Détails : [Directives Thinking + reasoning](/fr/tools/thinking) et [Utilisation des jetons](/fr/reference/token-use).
+Détails : [Directives de réflexion + raisonnement](/fr/tools/thinking) et [Utilisation des jetons](/fr/reference/token-use).
 
 ## Préfixes, fils et réponses
 
 La mise en forme des messages sortants est centralisée dans `messages` :
 
-- `messages.responsePrefix`, `channels.<channel>.responsePrefix` et `channels.<channel>.accounts.<id>.responsePrefix` (cascade de préfixes sortants), ainsi que `channels.whatsapp.messagePrefix` (préfixe entrant WhatsApp)
-- Fils de réponse via `replyToMode` et valeurs par défaut par canal
+- `messages.responsePrefix`, `channels.<channel>.responsePrefix`, et `channels.<channel>.accounts.<id>.responsePrefix` (cascade de préfixe sortant), plus `channels.whatsapp.messagePrefix` (préfixe entrant WhatsApp)
+- Fil de réponse via `replyToMode` et valeurs par défaut par canal
 
 Détails : [Configuration](/fr/gateway/config-agents#messages) et documentation des canaux.
 
 ## Réponses silencieuses
 
-Le jeton silencieux exact `NO_REPLY` / `no_reply` signifie « ne pas envoyer de réponse visible à l’utilisateur ».
-Lorsqu’un tour comporte aussi des médias d’outil en attente, comme un audio TTS généré, OpenClaw retire le texte silencieux mais livre quand même la pièce jointe multimédia.
-OpenClaw résout ce comportement selon le type de conversation :
+Le jeton silencieux exact `NO_REPLY` / `no_reply` signifie « ne pas livrer de réponse visible par l’utilisateur ».
+Lorsqu’un tour comporte également des médias d’outil en attente, comme un audio TTS généré, OpenClaw supprime le texte silencieux mais livre tout de même la pièce jointe multimédia.
+OpenClaw résout ce comportement par type de conversation :
 
-- Les conversations directes n’autorisent pas le silence par défaut et réécrivent une réponse silencieuse nue en un court message visible de repli.
+- Les conversations directes interdisent le silence par défaut et réécrivent une réponse silencieuse seule en court repli visible.
 - Les groupes/canaux autorisent le silence par défaut.
 - L’orchestration interne autorise le silence par défaut.
 
-OpenClaw utilise aussi des réponses silencieuses pour les échecs internes d’exécution qui se produisent avant toute réponse de l’assistant dans les discussions non directes, afin que les groupes/canaux ne voient pas de texte standard d’erreur de gateway. Les discussions directes affichent par défaut un message d’échec compact ; les détails bruts du runner ne sont affichés que lorsque `/verbose` vaut `on` ou `full`.
+OpenClaw utilise également des réponses silencieuses pour les échecs internes du runner qui surviennent avant toute réponse de l’assistant dans les conversations non directes, afin que les groupes/canaux ne voient pas de texte standard d’erreur du Gateway. Les conversations directes affichent une copie d’échec compacte par défaut ; les détails bruts du runner ne sont affichés que lorsque `/verbose` est `on` ou `full`.
 
-Les valeurs par défaut se trouvent sous `agents.defaults.silentReply` et
-`agents.defaults.silentReplyRewrite` ; `surfaces.<id>.silentReply` et
-`surfaces.<id>.silentReplyRewrite` peuvent les remplacer par surface.
+Les valeurs par défaut se trouvent sous `agents.defaults.silentReply` et `agents.defaults.silentReplyRewrite` ; `surfaces.<id>.silentReply` et `surfaces.<id>.silentReplyRewrite` peuvent les remplacer par surface.
 
-Lorsque la session parente comporte une ou plusieurs exécutions de sous-agent engendrées encore en attente, les réponses silencieuses nues sont abandonnées sur toutes les surfaces au lieu d’être réécrites, afin que la session parente reste silencieuse jusqu’à ce que l’événement de fin de l’enfant livre la vraie réponse.
+Lorsque la session parente a une ou plusieurs exécutions de sous-agent engendrées en attente, les réponses silencieuses seules sont abandonnées sur toutes les surfaces au lieu d’être réécrites, afin que le parent reste silencieux jusqu’à ce que l’événement d’achèvement de l’enfant livre la vraie réponse.
 
-## Connexe
+## Associé
 
 - [Streaming](/fr/concepts/streaming) — livraison des messages en temps réel
-- [Retry](/fr/concepts/retry) — comportement de nouvelle tentative de livraison des messages
-- [Queue](/fr/concepts/queue) — file de traitement des messages
+- [Nouvelle tentative](/fr/concepts/retry) — comportement de nouvelle tentative de livraison des messages
+- [File d’attente](/fr/concepts/queue) — file de traitement des messages
 - [Canaux](/fr/channels) — intégrations de plateformes de messagerie

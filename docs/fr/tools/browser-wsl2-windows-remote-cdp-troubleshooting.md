@@ -1,35 +1,28 @@
 ---
 read_when:
-    - Exécuter le Gateway OpenClaw dans WSL2 tandis que Chrome s’exécute sur Windows
-    - Voir des erreurs de browser/control-ui qui se recouvrent entre WSL2 et Windows
-    - Choisir entre le MCP Chrome local à l’hôte et le CDP distant brut dans les configurations à hôtes séparés
-summary: Dépanner le Gateway WSL2 + Chrome Windows distant via CDP par couches
-title: Dépannage WSL2 + Windows + Chrome distant via CDP
+    - Exécuter OpenClaw Gateway dans WSL2 alors que Chrome est sur Windows
+    - Voir des erreurs de navigateur/interface utilisateur de contrôle qui se chevauchent entre WSL2 et Windows
+    - Choisir entre Chrome MCP local à l’hôte et CDP distant brut dans les configurations à hôtes séparés
+summary: Dépanner par couches le Gateway WSL2 + le CDP distant de Chrome sous Windows
+title: Dépannage de WSL2 + Windows + CDP Chrome distant
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T07:35:02Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
-  source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-  workflow: 15
+    generated_at: "2026-04-30T07:50:10Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
+    source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
+    workflow: 16
 ---
 
-Ce guide couvre la configuration courante à hôtes séparés où :
+Dans la configuration courante à hôtes séparés, le Gateway OpenClaw s’exécute dans WSL2, Chrome s’exécute sur Windows, et le contrôle du navigateur doit traverser la frontière entre WSL2 et Windows. Le schéma de défaillance en couches décrit dans [l’issue #39369](https://github.com/openclaw/openclaw/issues/39369) signifie que plusieurs problèmes indépendants peuvent apparaître en même temps, ce qui peut donner l’impression que la mauvaise couche est cassée en premier.
 
-- le Gateway OpenClaw s’exécute dans WSL2
-- Chrome s’exécute sur Windows
-- le contrôle du navigateur doit traverser la frontière WSL2/Windows
+## Choisir d’abord le bon mode de navigateur
 
-Il couvre aussi le motif d’échec par couches de [l’issue #39369](https://github.com/openclaw/openclaw/issues/39369) : plusieurs problèmes indépendants peuvent apparaître en même temps, ce qui fait que la mauvaise couche semble cassée en premier.
-
-## Choisissez d’abord le bon mode navigateur
-
-Vous avez deux schémas valides :
+Vous avez deux modèles valides :
 
 ### Option 1 : CDP distant brut de WSL2 vers Windows
 
-Utilisez un profil de navigateur distant qui pointe de WSL2 vers un point de terminaison CDP Chrome sous Windows.
+Utilisez un profil de navigateur distant qui pointe depuis WSL2 vers un endpoint CDP Chrome Windows.
 
 Choisissez cette option lorsque :
 
@@ -37,56 +30,57 @@ Choisissez cette option lorsque :
 - Chrome s’exécute sur Windows
 - vous avez besoin que le contrôle du navigateur traverse la frontière WSL2/Windows
 
-### Option 2 : Chrome MCP local à l’hôte
+### Option 2 : MCP Chrome local à l’hôte
 
 Utilisez `existing-session` / `user` uniquement lorsque le Gateway lui-même s’exécute sur le même hôte que Chrome.
 
 Choisissez cette option lorsque :
 
 - OpenClaw et Chrome sont sur la même machine
-- vous voulez l’état local connecté du navigateur
-- vous n’avez pas besoin de transport navigateur inter-hôtes
-- vous n’avez pas besoin de routes avancées limitées à managed/raw-CDP comme `responsebody`, l’export PDF, l’interception de téléchargement, ou les actions par lots
+- vous voulez l’état local du navigateur connecté
+- vous n’avez pas besoin d’un transport de navigateur entre hôtes
+- vous n’avez pas besoin de routes avancées gérées ou réservées au CDP brut comme `responsebody`, l’export
+  PDF, l’interception de téléchargements ou les actions par lot
 
-Pour un Gateway WSL2 + Chrome Windows, préférez le CDP distant brut. Chrome MCP est local à l’hôte, pas un pont WSL2-vers-Windows.
+Pour Gateway WSL2 + Chrome Windows, préférez le CDP distant brut. Chrome MCP est local à l’hôte, ce n’est pas un pont de WSL2 vers Windows.
 
 ## Architecture fonctionnelle
 
 Forme de référence :
 
 - WSL2 exécute le Gateway sur `127.0.0.1:18789`
-- Windows ouvre la Control UI dans un navigateur normal à `http://127.0.0.1:18789/`
-- Chrome Windows expose un point de terminaison CDP sur le port `9222`
-- WSL2 peut atteindre ce point de terminaison CDP Windows
-- OpenClaw pointe un profil de navigateur vers l’adresse joignable depuis WSL2
+- Windows ouvre l’interface de contrôle dans un navigateur normal à l’adresse `http://127.0.0.1:18789/`
+- Chrome Windows expose un endpoint CDP sur le port `9222`
+- WSL2 peut atteindre cet endpoint CDP Windows
+- OpenClaw pointe un profil de navigateur vers l’adresse accessible depuis WSL2
 
-## Pourquoi cette configuration est déroutante
+## Pourquoi cette configuration prête à confusion
 
-Plusieurs échecs peuvent se recouvrir :
+Plusieurs défaillances peuvent se chevaucher :
 
-- WSL2 ne peut pas atteindre le point de terminaison CDP Windows
-- la Control UI est ouverte depuis une origine non sécurisée
+- WSL2 ne peut pas atteindre l’endpoint CDP Windows
+- l’interface de contrôle est ouverte depuis une origine non sécurisée
 - `gateway.controlUi.allowedOrigins` ne correspond pas à l’origine de la page
-- le jeton ou l’appairage est manquant
+- le jeton ou l’association est manquant
 - le profil de navigateur pointe vers la mauvaise adresse
 
-À cause de cela, corriger une couche peut encore laisser visible une erreur différente.
+Pour cette raison, corriger une couche peut toujours laisser une autre erreur visible.
 
-## Règle critique pour la Control UI
+## Règle critique pour l’interface de contrôle
 
-Lorsque l’interface est ouverte depuis Windows, utilisez localhost Windows sauf si vous avez une configuration HTTPS délibérée.
+Lorsque l’UI est ouverte depuis Windows, utilisez localhost Windows, sauf si vous disposez d’une configuration HTTPS volontaire.
 
 Utilisez :
 
 `http://127.0.0.1:18789/`
 
-N’utilisez pas par défaut une IP LAN pour la Control UI. Un HTTP simple sur une adresse LAN ou tailnet peut déclencher un comportement d’origine non sécurisée / d’authentification d’appareil sans rapport avec le CDP lui-même. Voir [Control UI](/fr/web/control-ui).
+N’utilisez pas par défaut une IP LAN pour l’interface de contrôle. Le HTTP simple sur une adresse LAN ou tailnet peut déclencher un comportement d’origine non sécurisée ou d’authentification d’appareil sans rapport avec CDP lui-même. Consultez [l’interface de contrôle](/fr/web/control-ui).
 
 ## Valider par couches
 
 Travaillez de haut en bas. Ne sautez pas d’étape.
 
-### Couche 1 : vérifier que Chrome sert CDP sur Windows
+### Couche 1 : Vérifier que Chrome sert CDP sur Windows
 
 Démarrez Chrome sur Windows avec le débogage distant activé :
 
@@ -103,9 +97,9 @@ curl http://127.0.0.1:9222/json/list
 
 Si cela échoue sur Windows, OpenClaw n’est pas encore le problème.
 
-### Couche 2 : vérifier que WSL2 peut atteindre ce point de terminaison Windows
+### Couche 2 : Vérifier que WSL2 peut atteindre cet endpoint Windows
 
-Depuis WSL2, testez l’adresse exacte que vous comptez utiliser dans `cdpUrl` :
+Depuis WSL2, testez l’adresse exacte que vous prévoyez d’utiliser dans `cdpUrl` :
 
 ```bash
 curl http://WINDOWS_HOST_OR_IP:9222/json/version
@@ -120,14 +114,14 @@ Bon résultat :
 Si cela échoue :
 
 - Windows n’expose pas encore le port à WSL2
-- l’adresse est mauvaise du point de vue WSL2
-- le pare-feu / le transfert de port / le proxy local manque encore
+- l’adresse est incorrecte côté WSL2
+- le pare-feu, la redirection de port ou le proxy local manque encore
 
 Corrigez cela avant de toucher à la configuration OpenClaw.
 
-### Couche 3 : configurer le bon profil de navigateur
+### Couche 3 : Configurer le bon profil de navigateur
 
-Pour le CDP distant brut, faites pointer OpenClaw vers l’adresse joignable depuis WSL2 :
+Pour le CDP distant brut, faites pointer OpenClaw vers l’adresse accessible depuis WSL2 :
 
 ```json5
 {
@@ -147,30 +141,30 @@ Pour le CDP distant brut, faites pointer OpenClaw vers l’adresse joignable dep
 
 Remarques :
 
-- utilisez l’adresse joignable depuis WSL2, pas celle qui ne fonctionne que sur Windows
+- utilisez l’adresse accessible depuis WSL2, pas celle qui fonctionne uniquement sur Windows
 - gardez `attachOnly: true` pour les navigateurs gérés en externe
-- `cdpUrl` peut être `http://`, `https://`, `ws://`, ou `wss://`
+- `cdpUrl` peut être `http://`, `https://`, `ws://` ou `wss://`
 - utilisez HTTP(S) lorsque vous voulez qu’OpenClaw découvre `/json/version`
-- utilisez WS(S) uniquement lorsque le fournisseur de navigateur vous donne une URL directe de socket DevTools
-- testez la même URL avec `curl` avant d’attendre qu’OpenClaw réussisse
+- utilisez WS(S) uniquement lorsque le fournisseur de navigateur vous donne une URL de socket DevTools directe
+- testez la même URL avec `curl` avant de vous attendre à ce qu’OpenClaw réussisse
 
-### Couche 4 : vérifier séparément la couche Control UI
+### Couche 4 : Vérifier séparément la couche de l’interface de contrôle
 
-Ouvrez l’interface depuis Windows :
+Ouvrez l’UI depuis Windows :
 
 `http://127.0.0.1:18789/`
 
 Puis vérifiez :
 
 - l’origine de la page correspond à ce que `gateway.controlUi.allowedOrigins` attend
-- l’authentification par jeton ou l’appairage est correctement configuré
-- vous n’êtes pas en train de déboguer un problème d’authentification de la Control UI comme s’il s’agissait d’un problème de navigateur
+- l’authentification par jeton ou l’association est configurée correctement
+- vous ne déboguez pas un problème d’authentification de l’interface de contrôle comme s’il s’agissait d’un problème de navigateur
 
 Page utile :
 
-- [Control UI](/fr/web/control-ui)
+- [Interface de contrôle](/fr/web/control-ui)
 
-### Couche 5 : vérifier le contrôle navigateur de bout en bout
+### Couche 5 : Vérifier le contrôle du navigateur de bout en bout
 
 Depuis WSL2 :
 
@@ -183,50 +177,50 @@ Bon résultat :
 
 - l’onglet s’ouvre dans Chrome Windows
 - `openclaw browser tabs` renvoie la cible
-- les actions suivantes (`snapshot`, `screenshot`, `navigate`) fonctionnent depuis le même profil
+- les actions ultérieures (`snapshot`, `screenshot`, `navigate`) fonctionnent depuis le même profil
 
-## Erreurs trompeuses courantes
+## Erreurs courantes trompeuses
 
 Traitez chaque message comme un indice propre à une couche :
 
 - `control-ui-insecure-auth`
-  - problème d’origine d’interface / de contexte sécurisé, pas un problème de transport CDP
+  - problème d’origine de l’UI ou de contexte sécurisé, pas un problème de transport CDP
 - `token_missing`
   - problème de configuration d’authentification
 - `pairing required`
-  - problème d’approbation d’appareil
+  - problème d’approbation de l’appareil
 - `Remote CDP for profile "remote" is not reachable`
   - WSL2 ne peut pas atteindre le `cdpUrl` configuré
 - `Browser attachOnly is enabled and CDP websocket for profile "remote" is not reachable`
-  - le point de terminaison HTTP a répondu, mais le WebSocket DevTools n’a toujours pas pu être ouvert
-- remplacements persistants de viewport / mode sombre / locale / hors ligne après une session distante
+  - l’endpoint HTTP a répondu, mais le WebSocket DevTools n’a toujours pas pu être ouvert
+- remplacements obsolètes de viewport / dark-mode / paramètres régionaux / mode hors ligne après une session distante
   - exécutez `openclaw browser stop --browser-profile remote`
-  - cela ferme la session de contrôle active et libère l’état d’émulation Playwright/CDP sans redémarrer le gateway ni le navigateur externe
+  - cela ferme la session de contrôle active et libère l’état d’émulation Playwright/CDP sans redémarrer le Gateway ni le navigateur externe
 - `gateway timeout after 1500ms`
-  - souvent encore un problème de joignabilité CDP ou un point de terminaison distant lent/injoignable
+  - souvent encore un problème d’accessibilité CDP ou un endpoint distant lent/inaccessible
 - `No Chrome tabs found for profile="user"`
-  - profil Chrome MCP local à l’hôte sélectionné là où aucun onglet local à l’hôte n’est disponible
+  - profil MCP Chrome local sélectionné alors qu’aucun onglet local à l’hôte n’est disponible
 
-## Checklist de tri rapide
+## Liste de triage rapide
 
-1. Windows : est-ce que `curl http://127.0.0.1:9222/json/version` fonctionne ?
-2. WSL2 : est-ce que `curl http://WINDOWS_HOST_OR_IP:9222/json/version` fonctionne ?
-3. Configuration OpenClaw : est-ce que `browser.profiles.<name>.cdpUrl` utilise cette adresse exacte joignable depuis WSL2 ?
-4. Control UI : ouvrez-vous `http://127.0.0.1:18789/` au lieu d’une IP LAN ?
+1. Windows : `curl http://127.0.0.1:9222/json/version` fonctionne-t-il ?
+2. WSL2 : `curl http://WINDOWS_HOST_OR_IP:9222/json/version` fonctionne-t-il ?
+3. Configuration OpenClaw : `browser.profiles.<name>.cdpUrl` utilise-t-il exactement cette adresse accessible depuis WSL2 ?
+4. Interface de contrôle : ouvrez-vous `http://127.0.0.1:18789/` au lieu d’une IP LAN ?
 5. Essayez-vous d’utiliser `existing-session` entre WSL2 et Windows au lieu du CDP distant brut ?
 
-## Conclusion pratique
+## À retenir en pratique
 
-La configuration est généralement viable. Le plus difficile est que le transport navigateur, la sécurité d’origine de la Control UI, et le jeton/l’appairage peuvent chacun échouer indépendamment tout en semblant similaires du point de vue de l’utilisateur.
+Cette configuration est généralement viable. La difficulté est que le transport du navigateur, la sécurité d’origine de l’interface de contrôle, et le jeton ou l’association peuvent chacun échouer indépendamment tout en semblant similaires côté utilisateur.
 
 En cas de doute :
 
-- vérifiez d’abord localement le point de terminaison Chrome Windows
-- vérifiez ensuite le même point de terminaison depuis WSL2
-- seulement après cela, déboguez la configuration OpenClaw ou l’authentification de la Control UI
+- vérifiez d’abord localement l’endpoint Chrome Windows
+- vérifiez ensuite le même endpoint depuis WSL2
+- déboguez seulement ensuite la configuration OpenClaw ou l’authentification de l’interface de contrôle
 
-## Lié
+## Connexe
 
-- [Browser](/fr/tools/browser)
-- [Connexion Browser](/fr/tools/browser-login)
-- [Dépannage Browser Linux](/fr/tools/browser-linux-troubleshooting)
+- [Navigateur](/fr/tools/browser)
+- [Connexion au navigateur](/fr/tools/browser-login)
+- [Dépannage du navigateur sous Linux](/fr/tools/browser-linux-troubleshooting)

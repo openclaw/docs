@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Vous voulez que Prometheus, Grafana, VictoriaMetrics ou un autre scraper collecte les métriques de la Gateway OpenClaw
-    - Vous avez besoin des noms de métriques Prometheus et de la politique de labels pour les tableaux de bord ou les alertes
-    - Vous voulez des métriques sans exécuter de collecteur OpenTelemetry
+    - Vous voulez que Prometheus, Grafana, VictoriaMetrics ou un autre collecteur récupère les métriques du Gateway OpenClaw
+    - Vous avez besoin des noms des métriques Prometheus et de la politique d’étiquettes pour les tableaux de bord ou les alertes
+    - Vous voulez des métriques sans exécuter un collecteur OpenTelemetry
 sidebarTitle: Prometheus
-summary: Exposer les diagnostics OpenClaw sous forme de métriques texte Prometheus via le Plugin diagnostics-prometheus
+summary: Exposer les diagnostics d'OpenClaw sous forme de métriques texte Prometheus via le plugin diagnostics-prometheus
 title: Métriques Prometheus
 x-i18n:
-    generated_at: "2026-04-26T11:30:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:28:58Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 29fd3e4658ceffe20f078e8e38b61c685ea9df518ca04ca34abf2085166eb481
+    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
     source_path: gateway/prometheus.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw peut exposer les métriques de diagnostic via le Plugin intégré `diagnostics-prometheus`. Il écoute les diagnostics internes de confiance et génère un endpoint texte Prometheus à l’adresse :
+OpenClaw peut exposer des métriques de diagnostic via le Plugin `diagnostics-prometheus` intégré. Il écoute les diagnostics internes de confiance et génère un point de terminaison texte Prometheus à :
 
 ```text
 GET /api/diagnostics/prometheus
 ```
 
-Le type de contenu est `text/plain; version=0.0.4; charset=utf-8`, le format d’exposition standard de Prometheus.
+Le type de contenu est `text/plain; version=0.0.4; charset=utf-8`, le format d’exposition Prometheus standard.
 
 <Warning>
-La route utilise l’authentification Gateway (portée operator). Ne l’exposez pas comme endpoint `/metrics` public non authentifié. Faites-la scraper via le même chemin d’authentification que celui utilisé pour vos autres API operator.
+La route utilise l’authentification Gateway (scope opérateur). Ne l’exposez pas comme point de terminaison public non authentifié `/metrics`. Collectez-la via le même chemin d’authentification que celui utilisé pour les autres API opérateur.
 </Warning>
 
-Pour les traces, journaux, envoi OTLP push et attributs sémantiques OpenTelemetry GenAI, voir [OpenTelemetry export](/fr/gateway/opentelemetry).
+Pour les traces, les journaux, l’envoi OTLP et les attributs sémantiques OpenTelemetry GenAI, consultez [Export OpenTelemetry](/fr/gateway/opentelemetry).
 
 ## Démarrage rapide
 
@@ -56,11 +56,11 @@ Pour les traces, journaux, envoi OTLP push et attributs sémantiques OpenTelemet
       </Tab>
     </Tabs>
   </Step>
-  <Step title="Redémarrer la Gateway">
-    La route HTTP est enregistrée au démarrage du Plugin, donc rechargez après activation.
+  <Step title="Redémarrer le Gateway">
+    La route HTTP est enregistrée au démarrage du Plugin ; rechargez donc après l’avoir activé.
   </Step>
-  <Step title="Scraper la route protégée">
-    Envoyez la même authentification gateway que celle utilisée par vos clients operator :
+  <Step title="Collecter la route protégée">
+    Envoyez la même authentification Gateway que celle utilisée par vos clients opérateur :
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -84,12 +84,12 @@ Pour les traces, journaux, envoi OTLP push et attributs sémantiques OpenTelemet
 </Steps>
 
 <Note>
-`diagnostics.enabled: true` est requis. Sans cela, le Plugin enregistre quand même la route HTTP mais aucun événement de diagnostic n’alimente l’exporteur, donc la réponse est vide.
+`diagnostics.enabled: true` est requis. Sans cette option, le Plugin enregistre quand même la route HTTP, mais aucun événement de diagnostic n’arrive dans l’exportateur ; la réponse est donc vide.
 </Note>
 
 ## Métriques exportées
 
-| Métrique                                      | Type      | Labels                                                                                    |
+| Métrique                                      | Type      | Libellés                                                                                  |
 | --------------------------------------------- | --------- | ----------------------------------------------------------------------------------------- |
 | `openclaw_run_completed_total`                | counter   | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
 | `openclaw_run_duration_seconds`               | histogram | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
@@ -111,31 +111,31 @@ Pour les traces, journaux, envoi OTLP push et attributs sémantiques OpenTelemet
 | `openclaw_session_state_total`                | counter   | `reason`, `state`                                                                         |
 | `openclaw_session_queue_depth`                | gauge     | `state`                                                                                   |
 | `openclaw_memory_bytes`                       | gauge     | `kind`                                                                                    |
-| `openclaw_memory_rss_bytes`                   | histogram | none                                                                                      |
+| `openclaw_memory_rss_bytes`                   | histogram | aucun                                                                                     |
 | `openclaw_memory_pressure_total`              | counter   | `level`, `reason`                                                                         |
 | `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
-| `openclaw_prometheus_series_dropped_total`    | counter   | none                                                                                      |
+| `openclaw_prometheus_series_dropped_total`    | counter   | aucun                                                                                     |
 
-## Politique de labels
+## Politique des libellés
 
 <AccordionGroup>
-  <Accordion title="Labels bornés à faible cardinalité">
-    Les labels Prometheus restent bornés et à faible cardinalité. L’exporteur n’émet pas d’identifiants de diagnostic bruts tels que `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, IDs de message, IDs de chat ou IDs de requête fournisseur.
+  <Accordion title="Libellés bornés, à faible cardinalité">
+    Les libellés Prometheus restent bornés et à faible cardinalité. L’exportateur n’émet pas d’identifiants de diagnostic bruts tels que `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, les ID de messages, les ID de discussions ou les ID de requêtes fournisseur.
 
-    Les valeurs de label sont expurgées et doivent respecter la politique de caractères à faible cardinalité d’OpenClaw. Les valeurs qui ne respectent pas cette politique sont remplacées par `unknown`, `other` ou `none`, selon la métrique.
+    Les valeurs de libellé sont expurgées et doivent respecter la politique de caractères à faible cardinalité d’OpenClaw. Les valeurs qui ne respectent pas la politique sont remplacées par `unknown`, `other` ou `none`, selon la métrique.
 
   </Accordion>
-  <Accordion title="Plafond de séries et comptabilisation des dépassements">
-    L’exporteur limite les séries temporelles conservées en mémoire à **2048** séries au total, compteurs, gauges et histogrammes confondus. Les nouvelles séries au-delà de ce plafond sont supprimées, et `openclaw_prometheus_series_dropped_total` s’incrémente de un à chaque occurrence.
+  <Accordion title="Plafond des séries et comptabilisation du dépassement">
+    L’exportateur limite les séries temporelles conservées en mémoire à **2048** séries, compteurs, jauges et histogrammes confondus. Les nouvelles séries au-delà de ce plafond sont abandonnées, et `openclaw_prometheus_series_dropped_total` augmente de un à chaque fois.
 
-    Surveillez ce compteur comme signal fort qu’un attribut en amont fuit des valeurs à forte cardinalité. L’exporteur ne relève jamais automatiquement ce plafond ; s’il augmente, corrigez la source au lieu de désactiver le plafond.
+    Surveillez ce compteur comme un signal fort indiquant qu’un attribut en amont laisse fuiter des valeurs à haute cardinalité. L’exportateur ne relève jamais le plafond automatiquement ; s’il augmente, corrigez la source plutôt que de désactiver le plafond.
 
   </Accordion>
   <Accordion title="Ce qui n’apparaît jamais dans la sortie Prometheus">
-    - texte d’invite, texte de réponse, entrées d’outil, sorties d’outil, prompts système
-    - IDs de requête fournisseur bruts (uniquement des hachages bornés, le cas échéant, sur les spans — jamais sur les métriques)
-    - clés de session et IDs de session
-    - noms d’hôte, chemins de fichier, valeurs secrètes
+    - texte de prompt, texte de réponse, entrées d’outils, sorties d’outils, prompts système
+    - ID de requêtes fournisseur bruts (uniquement des hachages bornés, le cas échéant, sur les spans — jamais sur les métriques)
+    - clés de session et ID de session
+    - noms d’hôtes, chemins de fichiers, valeurs secrètes
 
   </Accordion>
 </AccordionGroup>
@@ -143,51 +143,51 @@ Pour les traces, journaux, envoi OTLP push et attributs sémantiques OpenTelemet
 ## Recettes PromQL
 
 ```promql
-# Jetons par minute, ventilés par fournisseur
+# Tokens per minute, split by provider
 sum by (provider) (rate(openclaw_model_tokens_total[1m]))
 
-# Dépenses (USD) sur la dernière heure, par modèle
+# Spend (USD) over the last hour, by model
 sum by (model) (increase(openclaw_model_cost_usd_total[1h]))
 
-# 95e percentile de durée d’exécution du modèle
+# 95th percentile model run duration
 histogram_quantile(
   0.95,
   sum by (le, provider, model)
     (rate(openclaw_run_duration_seconds_bucket[5m]))
 )
 
-# SLO de temps d’attente en file (95p sous 2s)
+# Queue wait time SLO (95p under 2s)
 histogram_quantile(
   0.95,
   sum by (le, lane) (rate(openclaw_queue_lane_wait_seconds_bucket[5m]))
 ) < 2
 
-# Séries Prometheus supprimées (alarme de cardinalité)
+# Dropped Prometheus series (cardinality alarm)
 increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Préférez `gen_ai_client_token_usage` pour les tableaux de bord inter-fournisseurs : il suit les conventions sémantiques OpenTelemetry GenAI et reste cohérent avec les métriques des services GenAI non OpenClaw.
+Préférez `gen_ai_client_token_usage` pour les tableaux de bord multi-fournisseurs : cette métrique suit les conventions sémantiques OpenTelemetry GenAI et reste cohérente avec les métriques des services GenAI non OpenClaw.
 </Tip>
 
-## Choisir entre Prometheus et OpenTelemetry export
+## Choisir entre Prometheus et l’export OpenTelemetry
 
-OpenClaw prend en charge les deux surfaces indépendamment. Vous pouvez exécuter l’une, l’autre, les deux ou aucune.
+OpenClaw prend en charge les deux surfaces indépendamment. Vous pouvez en exécuter une, les deux, ou aucune.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - Modèle **pull** : Prometheus scrape `/api/diagnostics/prometheus`.
+    - Modèle **pull** : Prometheus collecte `/api/diagnostics/prometheus`.
     - Aucun collecteur externe requis.
     - Authentifié via l’authentification Gateway normale.
-    - Surface limitée aux métriques (pas de traces ni de journaux).
+    - La surface ne contient que des métriques (pas de traces ni de journaux).
     - Idéal pour les piles déjà standardisées sur Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - Modèle **push** : OpenClaw envoie OTLP/HTTP vers un collecteur ou un backend compatible OTLP.
-    - La surface inclut métriques, traces et journaux.
-    - Fait le pont vers Prometheus via un OpenTelemetry Collector (exporteur `prometheus` ou `prometheusremotewrite`) lorsque vous avez besoin des deux.
-    - Voir [OpenTelemetry export](/fr/gateway/opentelemetry) pour le catalogue complet.
+    - Modèle **push** : OpenClaw envoie OTLP/HTTP à un collecteur ou à un backend compatible OTLP.
+    - La surface inclut les métriques, les traces et les journaux.
+    - Fait le pont vers Prometheus via un OpenTelemetry Collector (exportateur `prometheus` ou `prometheusremotewrite`) quand vous avez besoin des deux.
+    - Consultez [Export OpenTelemetry](/fr/gateway/opentelemetry) pour le catalogue complet.
 
   </Tab>
 </Tabs>
@@ -202,19 +202,19 @@ OpenClaw prend en charge les deux surfaces indépendamment. Vous pouvez exécute
 
   </Accordion>
   <Accordion title="401 / non autorisé">
-    L’endpoint requiert la portée operator Gateway (`auth: "gateway"` avec `gatewayRuntimeScopeSurface: "trusted-operator"`). Utilisez le même jeton ou mot de passe que Prometheus utilise pour n’importe quelle autre route operator Gateway. Il n’existe pas de mode public non authentifié.
+    Le point de terminaison nécessite le scope opérateur Gateway (`auth: "gateway"` avec `gatewayRuntimeScopeSurface: "trusted-operator"`). Utilisez le même token ou mot de passe que celui utilisé par Prometheus pour toute autre route opérateur Gateway. Il n’existe aucun mode public non authentifié.
   </Accordion>
   <Accordion title="`openclaw_prometheus_series_dropped_total` augmente">
-    Un nouvel attribut dépasse le plafond de **2048** séries. Inspectez les métriques récentes pour détecter un label à cardinalité anormalement élevée et corrigez-le à la source. L’exporteur supprime volontairement les nouvelles séries au lieu de réécrire silencieusement les labels.
+    Un nouvel attribut dépasse le plafond de **2048** séries. Inspectez les métriques récentes pour détecter un libellé à cardinalité étonnamment élevée et corrigez-le à la source. L’exportateur abandonne intentionnellement les nouvelles séries au lieu de réécrire silencieusement les libellés.
   </Accordion>
   <Accordion title="Prometheus affiche des séries obsolètes après un redémarrage">
-    Le Plugin conserve son état uniquement en mémoire. Après un redémarrage de la Gateway, les compteurs repartent à zéro et les gauges redémarrent à leur prochaine valeur rapportée. Utilisez `rate()` et `increase()` en PromQL pour gérer proprement les remises à zéro.
+    Le Plugin conserve l’état uniquement en mémoire. Après un redémarrage du Gateway, les compteurs sont remis à zéro et les jauges reprennent à leur prochaine valeur signalée. Utilisez `rate()` et `increase()` PromQL pour gérer proprement les réinitialisations.
   </Accordion>
 </AccordionGroup>
 
 ## Associé
 
-- [Export de diagnostics](/fr/gateway/diagnostics) — zip local de diagnostics pour les bundles de support
-- [État de santé et readiness](/fr/gateway/health) — sondes `/healthz` et `/readyz`
+- [Export de diagnostics](/fr/gateway/diagnostics) — zip de diagnostics local pour les lots de support
+- [Santé et disponibilité](/fr/gateway/health) — sondes `/healthz` et `/readyz`
 - [Journalisation](/fr/logging) — journalisation basée sur des fichiers
-- [OpenTelemetry export](/fr/gateway/opentelemetry) — envoi OTLP push pour les traces, métriques et journaux
+- [Export OpenTelemetry](/fr/gateway/opentelemetry) — envoi OTLP pour les traces, les métriques et les journaux

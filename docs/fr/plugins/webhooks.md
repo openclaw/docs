@@ -1,31 +1,32 @@
 ---
 read_when:
     - Vous souhaitez déclencher ou piloter des TaskFlow depuis un système externe
-    - Vous configurez le plugin Webhooks inclus
-summary: 'Plugin Webhooks : entrée TaskFlow authentifiée pour une automatisation externe de confiance'
+    - Vous configurez le Plugin Webhook intégré
+summary: 'Plugin Webhooks : point d’entrée TaskFlow authentifié pour l’automatisation externe de confiance'
 title: Plugin Webhooks
 x-i18n:
-    generated_at: "2026-04-24T07:25:27Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:42:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a35074f256e0664ee73111bcb93ce1a2311dbd4db2231200a1a385e15ed5e6c4
+    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
     source_path: plugins/webhooks.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Webhooks (plugin)
+# Webhooks (Plugin)
 
-Le plugin Webhooks ajoute des routes HTTP authentifiées qui lient une
-automatisation externe aux TaskFlow OpenClaw.
+Le Plugin Webhooks ajoute des routes HTTP authentifiées qui lient l’automatisation
+externe aux TaskFlows OpenClaw.
 
 Utilisez-le lorsque vous voulez qu’un système de confiance tel que Zapier, n8n, une tâche CI ou un
-service interne crée et pilote des TaskFlow gérés sans écrire d’abord un plugin personnalisé.
+service interne crée et pilote des TaskFlows gérés sans écrire d’abord un Plugin
+personnalisé.
 
 ## Où il s’exécute
 
-Le plugin Webhooks s’exécute dans le processus Gateway.
+Le Plugin Webhooks s’exécute dans le processus Gateway.
 
-Si votre Gateway s’exécute sur une autre machine, installez et configurez le plugin sur
+Si votre Gateway s’exécute sur une autre machine, installez et configurez le Plugin sur
 cet hôte Gateway, puis redémarrez le Gateway.
 
 ## Configurer les routes
@@ -49,7 +50,7 @@ Définissez la configuration sous `plugins.entries.webhooks.config` :
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Pont TaskFlow Zapier",
+              description: "Zapier TaskFlow bridge",
             },
           },
         },
@@ -63,39 +64,39 @@ Champs de route :
 
 - `enabled` : facultatif, vaut `true` par défaut
 - `path` : facultatif, vaut `/plugins/webhooks/<routeId>` par défaut
-- `sessionKey` : session requise qui possède les TaskFlow liés
+- `sessionKey` : session requise qui possède les TaskFlows liés
 - `secret` : secret partagé requis ou SecretRef
-- `controllerId` : identifiant facultatif du contrôleur pour les flux gérés créés
+- `controllerId` : identifiant de contrôleur facultatif pour les flux gérés créés
 - `description` : note opérateur facultative
 
 Entrées `secret` prises en charge :
 
-- Chaîne simple
+- Chaîne en clair
 - SecretRef avec `source: "env" | "file" | "exec"`
 
-Si une route adossée à un secret ne peut pas résoudre son secret au démarrage, le plugin ignore
-cette route et journalise un avertissement au lieu d’exposer un point de terminaison cassé.
+Si une route adossée à un secret ne peut pas résoudre son secret au démarrage, le Plugin ignore
+cette route et consigne un avertissement au lieu d’exposer un point de terminaison cassé.
 
 ## Modèle de sécurité
 
-Chaque route est considérée comme de confiance pour agir avec l’autorité TaskFlow de sa
-`sessionKey` configurée.
+Chaque route est considérée comme fiable pour agir avec l’autorité TaskFlow de son
+`sessionKey` configuré.
 
-Cela signifie que la route peut inspecter et modifier les TaskFlow possédés par cette session, donc
-vous devriez :
+Cela signifie que la route peut inspecter et modifier les TaskFlows appartenant à cette session ; vous
+devez donc :
 
 - Utiliser un secret fort et unique par route
-- Préférer les références de secret aux secrets en clair inline
-- Lier les routes à la session la plus étroite adaptée au flux de travail
-- Exposer uniquement le chemin de Webhook spécifique dont vous avez besoin
+- Préférer les références de secrets aux secrets en texte clair intégrés
+- Lier les routes à la session la plus restreinte adaptée au workflow
+- Exposer uniquement le chemin Webhook spécifique dont vous avez besoin
 
-Le plugin applique :
+Le Plugin applique :
 
-- L’authentification par secret partagé
-- Des garde-fous sur la taille du corps de requête et les délais
-- Une limitation de débit à fenêtre fixe
-- Une limitation des requêtes en vol
-- Un accès TaskFlow lié au propriétaire via `api.runtime.taskFlow.bindSession(...)`
+- Authentification par secret partagé
+- Protections de taille et de délai d’expiration du corps de requête
+- Limitation de débit à fenêtre fixe
+- Limitation des requêtes en cours
+- Accès TaskFlow lié au propriétaire via `api.runtime.tasks.managedFlows.bindSession(...)`
 
 ## Format de requête
 
@@ -104,7 +105,7 @@ Envoyez des requêtes `POST` avec :
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` ou `x-openclaw-webhook-secret: <secret>`
 
-Exemple :
+Exemple :
 
 ```bash
 curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
@@ -115,7 +116,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Actions prises en charge
 
-Le plugin accepte actuellement ces valeurs JSON `action` :
+Le plugin accepte actuellement ces valeurs JSON `action` :
 
 - `create_flow`
 - `get_flow`
@@ -135,7 +136,7 @@ Le plugin accepte actuellement ces valeurs JSON `action` :
 
 Crée un TaskFlow géré pour la session liée à la route.
 
-Exemple :
+Exemple :
 
 ```json
 {
@@ -150,12 +151,12 @@ Exemple :
 
 Crée une tâche enfant gérée dans un TaskFlow géré existant.
 
-Les runtimes autorisés sont :
+Les runtimes autorisés sont :
 
 - `subagent`
 - `acp`
 
-Exemple :
+Exemple :
 
 ```json
 {
@@ -169,7 +170,7 @@ Exemple :
 
 ## Forme de la réponse
 
-Les réponses réussies renvoient :
+Les réponses réussies renvoient :
 
 ```json
 {
@@ -179,22 +180,22 @@ Les réponses réussies renvoient :
 }
 ```
 
-Les requêtes rejetées renvoient :
+Les requêtes rejetées renvoient :
 
 ```json
 {
   "ok": false,
   "routeId": "zapier",
   "code": "not_found",
-  "error": "TaskFlow introuvable.",
+  "error": "TaskFlow not found.",
   "result": {}
 }
 ```
 
-Le plugin expurge volontairement les métadonnées de propriétaire/session des réponses Webhook.
+Le plugin supprime intentionnellement les métadonnées de propriétaire/session des réponses Webhook.
 
-## Documentation liée
+## Docs connexes
 
-- [SDK runtime de Plugin](/fr/plugins/sdk-runtime)
-- [Aperçu hooks et Webhooks](/fr/automation/hooks)
-- [CLI webhooks](/fr/cli/webhooks)
+- [SDK de runtime du Plugin](/fr/plugins/sdk-runtime)
+- [Vue d’ensemble des hooks et Webhooks](/fr/automation/hooks)
+- [Webhooks CLI](/fr/cli/webhooks)

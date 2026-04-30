@@ -1,56 +1,56 @@
 ---
 read_when:
-    - Configuration d’un Plugin de canal (authentification, contrôle d’accès, multi-comptes)
+    - Configuration d’un Plugin de canal (authentification, contrôle d’accès, comptes multiples)
     - Dépannage des clés de configuration par canal
-    - Audit de la politique DM, de la politique de groupe ou du filtrage des mentions
-summary: 'Configuration des canaux : contrôle d’accès, appairage, clés par canal sur Slack, Discord, Telegram, WhatsApp, Matrix, iMessage, etc.'
+    - Audit de la politique des DM, de la politique de groupe ou du filtrage des mentions
+summary: 'Configuration des canaux : contrôle d’accès, appairage, clés par canal sur Slack, Discord, Telegram, WhatsApp, Matrix, iMessage et plus encore'
 title: Configuration — canaux
 x-i18n:
-    generated_at: "2026-04-25T13:46:11Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:25:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8b7071f7cda3f7f71b464e64c2abb8e0b88326606234f0cf7778c80a7ef4b3e0
+    source_hash: e16ab50020711aac8e06cd234739ac7b566420cf7ce8621c0aca12c22484f07f
     source_path: gateway/config-channels.md
-    workflow: 15
+    workflow: 16
 ---
 
-Clés de configuration par canal sous `channels.*`. Couvre l’accès DM et groupe,
-les configurations multi-comptes, le filtrage des mentions et les clés par canal pour Slack, Discord,
-Telegram, WhatsApp, Matrix, iMessage et les autres Plugins de canal intégrés.
+Configuration par canal sous `channels.*`. Couvre l’accès aux DM et aux groupes,
+les configurations multi-comptes, le filtrage par mention et les clés par canal pour Slack, Discord,
+Telegram, WhatsApp, Matrix, iMessage et les autres plugins de canal groupés.
 
-Pour les agents, les outils, le runtime Gateway et les autres clés de niveau supérieur, voir
+Pour les agents, les outils, le runtime Gateway et les autres clés de premier niveau, consultez
 [Référence de configuration](/fr/gateway/configuration-reference).
 
 ## Canaux
 
 Chaque canal démarre automatiquement lorsque sa section de configuration existe (sauf si `enabled: false`).
 
-### Accès DM et groupe
+### Accès aux DM et aux groupes
 
-Tous les canaux prennent en charge les politiques DM et les politiques de groupe :
+Tous les canaux prennent en charge les politiques de DM et les politiques de groupe :
 
-| Politique DM        | Comportement                                                    |
-| ------------------- | --------------------------------------------------------------- |
-| `pairing` (par défaut) | Les expéditeurs inconnus reçoivent un code d’appairage à usage unique ; le propriétaire doit l’approuver |
-| `allowlist`         | Uniquement les expéditeurs présents dans `allowFrom` (ou le magasin d’autorisations appairé) |
-| `open`              | Autoriser tous les DM entrants (nécessite `allowFrom: ["*"]`)   |
-| `disabled`          | Ignorer tous les DM entrants                                    |
+| Politique de DM     | Comportement                                                   |
+| ------------------- | -------------------------------------------------------------- |
+| `pairing` (default) | Les expéditeurs inconnus reçoivent un code d’appairage unique ; le propriétaire doit approuver |
+| `allowlist`         | Seulement les expéditeurs dans `allowFrom` (ou le magasin d’autorisations appairé) |
+| `open`              | Autoriser tous les DM entrants (nécessite `allowFrom: ["*"]`)  |
+| `disabled`          | Ignorer tous les DM entrants                                   |
 
-| Politique de groupe   | Comportement                                            |
-| --------------------- | ------------------------------------------------------- |
-| `allowlist` (par défaut) | Uniquement les groupes correspondant à la liste d’autorisation configurée |
-| `open`                | Contourner les listes d’autorisation de groupe (le filtrage des mentions s’applique toujours) |
-| `disabled`            | Bloquer tous les messages de groupe/salon               |
+| Politique de groupe   | Comportement                                             |
+| --------------------- | -------------------------------------------------------- |
+| `allowlist` (default) | Seulement les groupes correspondant à la liste d’autorisation configurée |
+| `open`                | Contourner les listes d’autorisation de groupe (le filtrage par mention s’applique toujours) |
+| `disabled`            | Bloquer tous les messages de groupe/salon                |
 
 <Note>
-`channels.defaults.groupPolicy` définit la valeur par défaut lorsqu’un `groupPolicy` de fournisseur n’est pas défini.
+`channels.defaults.groupPolicy` définit la valeur par défaut lorsque le `groupPolicy` d’un fournisseur n’est pas défini.
 Les codes d’appairage expirent après 1 heure. Les demandes d’appairage DM en attente sont limitées à **3 par canal**.
-Si un bloc fournisseur est totalement absent (`channels.<provider>` absent), la politique de groupe à l’exécution se replie sur `allowlist` (échec fermé) avec un avertissement au démarrage.
+Si un bloc fournisseur est entièrement absent (`channels.<provider>` absent), la politique de groupe du runtime revient à `allowlist` (échec fermé) avec un avertissement au démarrage.
 </Note>
 
 ### Remplacements de modèle par canal
 
-Utilisez `channels.modelByChannel` pour épingler des identifiants de canal spécifiques à un modèle. Les valeurs acceptent `provider/model` ou des alias de modèle configurés. Le mappage de canal s’applique lorsqu’une session n’a pas déjà de remplacement de modèle (par exemple, défini via `/model`).
+Utilisez `channels.modelByChannel` pour associer des ID de canal spécifiques à un modèle. Les valeurs acceptent `provider/model` ou des alias de modèle configurés. La correspondance de canal s’applique lorsqu’une session ne dispose pas déjà d’un remplacement de modèle (par exemple, défini via `/model`).
 
 ```json5
 {
@@ -73,7 +73,7 @@ Utilisez `channels.modelByChannel` pour épingler des identifiants de canal spé
 
 ### Valeurs par défaut des canaux et Heartbeat
 
-Utilisez `channels.defaults` pour partager le comportement de politique de groupe et de Heartbeat entre fournisseurs :
+Utilisez `channels.defaults` pour le comportement partagé de politique de groupe et de Heartbeat entre les fournisseurs :
 
 ```json5
 {
@@ -91,18 +91,25 @@ Utilisez `channels.defaults` pour partager le comportement de politique de group
 }
 ```
 
-- `channels.defaults.groupPolicy` : politique de groupe de repli lorsque le `groupPolicy` au niveau fournisseur n’est pas défini.
-- `channels.defaults.contextVisibility` : mode de visibilité du contexte supplémentaire par défaut pour tous les canaux. Valeurs : `all` (par défaut, inclut tout le contexte cité/fil/historique), `allowlist` (inclut uniquement le contexte provenant d’expéditeurs autorisés), `allowlist_quote` (identique à allowlist mais conserve le contexte explicite de citation/réponse). Remplacement par canal : `channels.<channel>.contextVisibility`.
-- `channels.defaults.heartbeat.showOk` : inclure les états de canaux sains dans la sortie Heartbeat.
-- `channels.defaults.heartbeat.showAlerts` : inclure les états dégradés/en erreur dans la sortie Heartbeat.
-- `channels.defaults.heartbeat.useIndicator` : afficher une sortie Heartbeat compacte de style indicateur.
+- `channels.defaults.groupPolicy` : politique de groupe de repli lorsqu’un `groupPolicy` au niveau du fournisseur n’est pas défini.
+- `channels.defaults.contextVisibility` : mode de visibilité par défaut du contexte supplémentaire pour tous les canaux. Valeurs : `all` (par défaut, inclut tout le contexte cité/de fil/d’historique), `allowlist` (inclut seulement le contexte provenant d’expéditeurs autorisés), `allowlist_quote` (identique à allowlist, mais conserve le contexte explicite de citation/réponse). Remplacement par canal : `channels.<channel>.contextVisibility`.
+- `channels.defaults.heartbeat.showOk` : inclure les états de canaux sains dans la sortie de Heartbeat.
+- `channels.defaults.heartbeat.showAlerts` : inclure les états dégradés/en erreur dans la sortie de Heartbeat.
+- `channels.defaults.heartbeat.useIndicator` : rendre une sortie Heartbeat compacte de type indicateur.
 
 ### WhatsApp
 
-WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiquement lorsqu’une session liée existe.
+WhatsApp s’exécute via le canal web du Gateway (Baileys Web). Il démarre automatiquement lorsqu’une session liée existe.
 
 ```json5
 {
+  web: {
+    whatsapp: {
+      keepAliveIntervalMs: 25000,
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 60000,
+    },
+  },
   channels: {
     whatsapp: {
       dmPolicy: "pairing", // pairing | allowlist | open | disabled
@@ -110,7 +117,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
       textChunkLimit: 4000,
       chunkMode: "length", // length | newline
       mediaMaxMb: 50,
-      sendReadReceipts: true, // doubles coches bleues (false en mode self-chat)
+      sendReadReceipts: true, // blue ticks (false in self-chat mode)
       groups: {
         "*": { requireMention: true },
       },
@@ -150,8 +157,8 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
 }
 ```
 
-- Les commandes sortantes utilisent par défaut le compte `default` s’il est présent ; sinon le premier identifiant de compte configuré (trié).
-- `channels.whatsapp.defaultAccount` facultatif remplace cette sélection de compte par défaut de repli lorsqu’il correspond à un identifiant de compte configuré.
+- Les commandes sortantes utilisent par défaut le compte `default` s’il est présent ; sinon, le premier identifiant de compte configuré (trié).
+- `channels.whatsapp.defaultAccount`, optionnel, remplace cette sélection de compte par défaut de repli lorsqu’il correspond à un identifiant de compte configuré.
 - L’ancien répertoire d’authentification Baileys mono-compte est migré par `openclaw doctor` vers `whatsapp/default`.
 - Remplacements par compte : `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
 
@@ -171,24 +178,24 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
         "*": { requireMention: true },
         "-1001234567890": {
           allowFrom: ["@admin"],
-          systemPrompt: "Gardez des réponses brèves.",
+          systemPrompt: "Keep answers brief.",
           topics: {
             "99": {
               requireMention: false,
               skills: ["search"],
-              systemPrompt: "Restez sur le sujet.",
+              systemPrompt: "Stay on topic.",
             },
           },
         },
       },
       customCommands: [
-        { command: "backup", description: "Sauvegarde Git" },
-        { command: "generate", description: "Créer une image" },
+        { command: "backup", description: "Git backup" },
+        { command: "generate", description: "Create an image" },
       ],
       historyLimit: 50,
       replyToMode: "first", // off | first | all | batched
       linkPreview: true,
-      streaming: "partial", // off | partial | block | progress (par défaut : off ; activer explicitement pour éviter les limites de débit des modifications de prévisualisation)
+      streaming: "partial", // off | partial | block | progress (default: off; opt in explicitly to avoid preview-edit rate limits)
       actions: { reactions: true, sendMessage: true },
       reactionNotifications: "own", // off | own | all
       mediaMaxMb: 100,
@@ -202,6 +209,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
         autoSelectFamily: true,
         dnsResultOrder: "ipv4first",
       },
+      apiRoot: "https://api.telegram.org",
       proxy: "socks5://localhost:9050",
       webhookUrl: "https://example.com/telegram-webhook",
       webhookSecret: "secret",
@@ -211,13 +219,14 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
 }
 ```
 
-- Jeton du bot : `channels.telegram.botToken` ou `channels.telegram.tokenFile` (fichier normal uniquement ; liens symboliques rejetés), avec `TELEGRAM_BOT_TOKEN` comme solution de repli pour le compte par défaut.
-- `channels.telegram.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
-- Dans les configurations multi-comptes (2 identifiants de compte ou plus), définissez une valeur par défaut explicite (`channels.telegram.defaultAccount` ou `channels.telegram.accounts.default`) pour éviter le routage de repli ; `openclaw doctor` avertit lorsque cela manque ou est invalide.
-- `configWrites: false` bloque les écritures de configuration initiées par Telegram (migrations d’identifiants de supergroupes, `/config set|unset`).
-- Les entrées `bindings[]` de niveau supérieur avec `type: "acp"` configurent des liaisons ACP persistantes pour les sujets de forum (utilisez le format canonique `chatId:topic:topicId` dans `match.peer.id`). La sémantique des champs est partagée dans [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
-- Les prévisualisations de flux Telegram utilisent `sendMessage` + `editMessageText` (fonctionne dans les discussions directes et de groupe).
-- Politique de nouvelle tentative : voir [Politique de nouvelle tentative](/fr/concepts/retry).
+- Jeton du bot : `channels.telegram.botToken` ou `channels.telegram.tokenFile` (fichier normal uniquement ; les liens symboliques sont rejetés), avec `TELEGRAM_BOT_TOKEN` comme repli pour le compte par défaut.
+- `apiRoot` est uniquement la racine de l’API Bot Telegram. Utilisez `https://api.telegram.org` ou votre racine auto-hébergée/proxy, pas `https://api.telegram.org/bot<TOKEN>` ; `openclaw doctor --fix` supprime un suffixe accidentel final `/bot<TOKEN>`.
+- `channels.telegram.defaultAccount`, optionnel, remplace la sélection de compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
+- Dans les configurations multi-comptes (2 identifiants de compte ou plus), définissez une valeur par défaut explicite (`channels.telegram.defaultAccount` ou `channels.telegram.accounts.default`) pour éviter le routage de repli ; `openclaw doctor` avertit lorsqu’elle est absente ou non valide.
+- `configWrites: false` bloque les écritures de configuration initiées par Telegram (migrations d’ID de supergroupe, `/config set|unset`).
+- Les entrées `bindings[]` de premier niveau avec `type: "acp"` configurent des liaisons ACP persistantes pour les sujets de forum (utilisez le format canonique `chatId:topic:topicId` dans `match.peer.id`). La sémantique des champs est partagée dans [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
+- Les aperçus de flux Telegram utilisent `sendMessage` + `editMessageText` (fonctionne dans les conversations directes et de groupe).
+- Politique de nouvelle tentative : consultez [Politique de nouvelle tentative](/fr/concepts/retry).
 
 ### Discord
 
@@ -264,7 +273,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
               requireMention: true,
               users: ["987654321098765432"],
               skills: ["docs"],
-              systemPrompt: "Réponses courtes uniquement.",
+              systemPrompt: "Short answers only.",
             },
           },
         },
@@ -272,7 +281,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
       historyLimit: 20,
       textChunkLimit: 2000,
       chunkMode: "length", // length | newline
-      streaming: "off", // off | partial | block | progress (progress correspond à partial sur Discord)
+      streaming: "off", // off | partial | block | progress (progress maps to partial on Discord)
       maxLinesPerMessage: 17,
       ui: {
         components: {
@@ -283,7 +292,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
         enabled: true,
         idleHours: 24,
         maxAgeHours: 0,
-        spawnSubagentSessions: false, // activation explicite pour sessions_spawn({ thread: true })
+        spawnSubagentSessions: false, // opt-in for sessions_spawn({ thread: true })
       },
       voice: {
         enabled: true,
@@ -320,36 +329,36 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
 ```
 
 - Jeton : `channels.discord.token`, avec `DISCORD_BOT_TOKEN` comme solution de repli pour le compte par défaut.
-- Les appels sortants directs qui fournissent un `token` Discord explicite utilisent ce jeton pour l’appel ; les paramètres de politique/de nouvelle tentative du compte proviennent toujours du compte sélectionné dans l’instantané de runtime actif.
-- `channels.discord.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
-- Utilisez `user:<id>` (DM) ou `channel:<id>` (canal de guilde) pour les cibles de remise ; les identifiants numériques bruts sont rejetés.
-- Les slugs de guilde sont en minuscules avec les espaces remplacés par `-` ; les clés de canal utilisent le nom slugifié (sans `#`). Préférez les identifiants de guilde.
-- Les messages rédigés par des bots sont ignorés par défaut. `allowBots: true` les active ; utilisez `allowBots: "mentions"` pour n’accepter que les messages de bot qui mentionnent le bot (les propres messages restent filtrés).
-- `channels.discord.guilds.<id>.ignoreOtherMentions` (ainsi que les remplacements au niveau canal) supprime les messages qui mentionnent un autre utilisateur ou rôle mais pas le bot (hors @everyone/@here).
-- `maxLinesPerMessage` (17 par défaut) segmente les messages hauts même lorsqu’ils restent sous 2000 caractères.
-- `channels.discord.threadBindings` contrôle le routage lié aux fils Discord :
-  - `enabled` : remplacement Discord pour les fonctionnalités de session liées aux fils (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, ainsi que la remise/le routage liés)
-  - `idleHours` : remplacement Discord pour l’arrêt automatique du focus après inactivité en heures (`0` désactive)
-  - `maxAgeHours` : remplacement Discord pour l’âge maximal strict en heures (`0` désactive)
-  - `spawnSubagentSessions` : commutateur d’activation explicite pour la création/liaison automatique de fils avec `sessions_spawn({ thread: true })`
-- Les entrées `bindings[]` de niveau supérieur avec `type: "acp"` configurent des liaisons ACP persistantes pour les canaux et les fils (utilisez l’identifiant de canal/fil dans `match.peer.id`). La sémantique des champs est partagée dans [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
-- `channels.discord.ui.components.accentColor` définit la couleur d’accent pour les conteneurs de composants Discord v2.
-- `channels.discord.voice` active les conversations dans les canaux vocaux Discord ainsi que les remplacements facultatifs d’auto-jonction + LLM + TTS.
-- `channels.discord.voice.model` remplace éventuellement le modèle LLM utilisé pour les réponses dans les canaux vocaux Discord.
+- Les appels sortants directs qui fournissent un `token` Discord explicite utilisent ce jeton pour l’appel ; les paramètres de nouvelle tentative/de stratégie du compte proviennent toujours du compte sélectionné dans l’instantané d’exécution actif.
+- `channels.discord.defaultAccount`, facultatif, remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
+- Utilisez `user:<id>` (MP) ou `channel:<id>` (canal de guilde) pour les cibles de livraison ; les identifiants numériques nus sont rejetés.
+- Les slugs de guilde sont en minuscules avec les espaces remplacés par `-` ; les clés de canal utilisent le nom sous forme de slug (sans `#`). Préférez les identifiants de guilde.
+- Les messages rédigés par des bots sont ignorés par défaut. `allowBots: true` les active ; utilisez `allowBots: "mentions"` pour n’accepter que les messages de bots qui mentionnent le bot (les propres messages restent filtrés).
+- `channels.discord.guilds.<id>.ignoreOtherMentions` (et les remplacements au niveau du canal) supprime les messages qui mentionnent un autre utilisateur ou rôle mais pas le bot (hors @everyone/@here).
+- `maxLinesPerMessage` (17 par défaut) divise les messages longs même lorsqu’ils font moins de 2000 caractères.
+- `channels.discord.threadBindings` contrôle le routage Discord lié aux fils :
+  - `enabled` : remplacement Discord pour les fonctionnalités de session liées aux fils (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, et livraison/routage liés)
+  - `idleHours` : remplacement Discord pour le désaxage automatique après inactivité, en heures (`0` désactive)
+  - `maxAgeHours` : remplacement Discord pour l’âge maximal strict, en heures (`0` désactive)
+  - `spawnSubagentSessions` : commutateur d’activation pour la création/liaison automatique de fils par `sessions_spawn({ thread: true })`
+- Les entrées `bindings[]` de niveau supérieur avec `type: "acp"` configurent des liaisons ACP persistantes pour les canaux et les fils (utilisez l’identifiant du canal/fil dans `match.peer.id`). La sémantique des champs est partagée dans [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
+- `channels.discord.ui.components.accentColor` définit la couleur d’accentuation pour les conteneurs de composants Discord v2.
+- `channels.discord.voice` active les conversations de canaux vocaux Discord et les remplacements facultatifs de jonction automatique, LLM et TTS.
+- `channels.discord.voice.model` remplace facultativement le modèle LLM utilisé pour les réponses de canal vocal Discord.
 - `channels.discord.voice.daveEncryption` et `channels.discord.voice.decryptionFailureTolerance` sont transmis aux options DAVE de `@discordjs/voice` (`true` et `24` par défaut).
-- OpenClaw tente également une récupération de réception vocale en quittant/rejoignant une session vocale après des échecs répétés de déchiffrement.
+- OpenClaw tente en outre de récupérer la réception vocale en quittant/rejoignant une session vocale après des échecs de déchiffrement répétés.
 - `channels.discord.streaming` est la clé canonique du mode de flux. Les anciennes valeurs `streamMode` et booléennes `streaming` sont migrées automatiquement.
-- `channels.discord.autoPresence` mappe la disponibilité du runtime à la présence du bot (sain => online, dégradé => idle, épuisé => dnd) et permet des remplacements facultatifs de texte d’état.
-- `channels.discord.dangerouslyAllowNameMatching` réactive la correspondance mutable par nom/tag (mode de compatibilité break-glass).
-- `channels.discord.execApprovals` : remise native Discord des approbations exec et autorisation des approbateurs.
-  - `enabled` : `true`, `false` ou `"auto"` (par défaut). En mode auto, les approbations exec s’activent lorsque les approbateurs peuvent être résolus depuis `approvers` ou `commands.ownerAllowFrom`.
-  - `approvers` : identifiants d’utilisateurs Discord autorisés à approuver les demandes exec. Se replie sur `commands.ownerAllowFrom` lorsqu’il est omis.
-  - `agentFilter` : liste d’autorisation facultative d’identifiants d’agent. Omettez-la pour transmettre les approbations de tous les agents.
-  - `sessionFilter` : motifs facultatifs de clé de session (sous-chaîne ou regex).
-  - `target` : où envoyer les invites d’approbation. `"dm"` (par défaut) envoie vers les DM des approbateurs, `"channel"` envoie vers le canal d’origine, `"both"` envoie aux deux. Lorsque la cible inclut `"channel"`, les boutons ne sont utilisables que par les approbateurs résolus.
-  - `cleanupAfterResolve` : lorsqu’il vaut `true`, supprime les DM d’approbation après approbation, refus ou expiration.
+- `channels.discord.autoPresence` associe la disponibilité d’exécution à la présence du bot (healthy => online, degraded => idle, exhausted => dnd) et permet des remplacements facultatifs du texte de statut.
+- `channels.discord.dangerouslyAllowNameMatching` réactive la correspondance mutable par nom/tag (mode de compatibilité d’urgence).
+- `channels.discord.execApprovals` : livraison d’approbation d’exécution native Discord et autorisation des approbateurs.
+  - `enabled` : `true`, `false` ou `"auto"` (par défaut). En mode automatique, les approbations d’exécution s’activent lorsque les approbateurs peuvent être résolus depuis `approvers` ou `commands.ownerAllowFrom`.
+  - `approvers` : identifiants d’utilisateurs Discord autorisés à approuver les demandes d’exécution. Se rabat sur `commands.ownerAllowFrom` en cas d’omission.
+  - `agentFilter` : liste d’autorisation facultative d’identifiants d’agents. Omettez-la pour transférer les approbations pour tous les agents.
+  - `sessionFilter` : motifs facultatifs de clés de session (sous-chaîne ou regex).
+  - `target` : où envoyer les invites d’approbation. `"dm"` (par défaut) envoie aux MP des approbateurs, `"channel"` envoie au canal d’origine, `"both"` envoie aux deux. Lorsque la cible inclut `"channel"`, les boutons ne sont utilisables que par les approbateurs résolus.
+  - `cleanupAfterResolve` : lorsque `true`, supprime les MP d’approbation après approbation, refus ou expiration du délai.
 
-**Modes de notification de réaction :** `off` (aucune), `own` (messages du bot, par défaut), `all` (tous les messages), `allowlist` (depuis `guilds.<id>.users` sur tous les messages).
+**Modes de notification par réaction :** `off` (aucune), `own` (messages du bot, par défaut), `all` (tous les messages), `allowlist` (depuis `guilds.<id>.users` sur tous les messages).
 
 ### Google Chat
 
@@ -380,11 +389,11 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
 }
 ```
 
-- JSON du compte de service : en ligne (`serviceAccount`) ou basé sur un fichier (`serviceAccountFile`).
-- SecretRef de compte de service également pris en charge (`serviceAccountRef`).
+- JSON de compte de service : en ligne (`serviceAccount`) ou basé sur un fichier (`serviceAccountFile`).
+- SecretRef de compte de service est également pris en charge (`serviceAccountRef`).
 - Solutions de repli d’environnement : `GOOGLE_CHAT_SERVICE_ACCOUNT` ou `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
-- Utilisez `spaces/<spaceId>` ou `users/<userId>` pour les cibles de remise.
-- `channels.googlechat.dangerouslyAllowNameMatching` réactive la correspondance mutable des principaux d’e-mail (mode de compatibilité break-glass).
+- Utilisez `spaces/<spaceId>` ou `users/<userId>` pour les cibles de livraison.
+- `channels.googlechat.dangerouslyAllowNameMatching` réactive la correspondance mutable des principaux par e-mail (mode de compatibilité d’urgence).
 
 ### Slack
 
@@ -395,6 +404,11 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
       enabled: true,
       botToken: "xoxb-...",
       appToken: "xapp-...",
+      socketMode: {
+        clientPingTimeout: 15000,
+        serverPingTimeout: 30000,
+        pingPongLoggingEnabled: false,
+      },
       dmPolicy: "pairing",
       allowFrom: ["U123", "U456", "*"],
       dm: { enabled: true, groupEnabled: false, groupChannels: ["G123"] },
@@ -406,7 +420,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
           allowBots: false,
           users: ["U123"],
           skills: ["docs"],
-          systemPrompt: "Réponses courtes uniquement.",
+          systemPrompt: "Short answers only.",
         },
       },
       historyLimit: 50,
@@ -436,7 +450,7 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
       chunkMode: "length",
       streaming: {
         mode: "partial", // off | partial | block | progress
-        nativeTransport: true, // utiliser l’API de streaming native de Slack lorsque mode=partial
+        nativeTransport: true, // use Slack native streaming API when mode=partial
       },
       mediaMaxMb: 20,
       execApprovals: {
@@ -451,39 +465,44 @@ WhatsApp passe par le canal web de Gateway (Baileys Web). Il démarre automatiqu
 }
 ```
 
-- Le **mode Socket** nécessite `botToken` et `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` comme solution de repli d’environnement du compte par défaut).
-- Le **mode HTTP** nécessite `botToken` plus `signingSecret` (à la racine ou par compte).
-- `botToken`, `appToken`, `signingSecret` et `userToken` acceptent des chaînes
-  en clair ou des objets SecretRef.
-- Les instantanés de compte Slack exposent des champs de source/état par identifiant tels que
+- **Mode socket** nécessite à la fois `botToken` et `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` comme solution de repli d’environnement pour le compte par défaut).
+- **Mode HTTP** nécessite `botToken` plus `signingSecret` (à la racine ou par compte).
+- `socketMode` transmet le réglage du transport Socket Mode du SDK Slack à l’API publique du récepteur Bolt. Utilisez-le uniquement lors de l’investigation de délais d’expiration ping/pong ou d’un comportement websocket obsolète.
+- `botToken`, `appToken`, `signingSecret` et `userToken` acceptent des chaînes en texte clair
+  ou des objets SecretRef.
+- Les instantanés de comptes Slack exposent des champs de source/statut par identifiant tels que
   `botTokenSource`, `botTokenStatus`, `appTokenStatus` et, en mode HTTP,
   `signingSecretStatus`. `configured_unavailable` signifie que le compte est
-  configuré via SecretRef mais que le chemin actuel de commande/runtime n’a pas
-  pu résoudre la valeur du secret.
+  configuré via SecretRef mais que le chemin de commande/d’exécution actuel n’a pas pu
+  résoudre la valeur du secret.
 - `configWrites: false` bloque les écritures de configuration initiées par Slack.
-- `channels.slack.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
+- `channels.slack.defaultAccount`, facultatif, remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
 - `channels.slack.streaming.mode` est la clé canonique du mode de flux Slack. `channels.slack.streaming.nativeTransport` contrôle le transport de flux natif de Slack. Les anciennes valeurs `streamMode`, booléennes `streaming` et `nativeStreaming` sont migrées automatiquement.
-- Utilisez `user:<id>` (DM) ou `channel:<id>` pour les cibles de remise.
+- Utilisez `user:<id>` (MP) ou `channel:<id>` pour les cibles de livraison.
 
-**Modes de notification de réaction :** `off`, `own` (par défaut), `all`, `allowlist` (depuis `reactionAllowlist`).
+**Modes de notification par réaction :** `off`, `own` (par défaut), `all`, `allowlist` (depuis `reactionAllowlist`).
 
-**Isolation de session par fil :** `thread.historyScope` est par fil (par défaut) ou partagé sur le canal. `thread.inheritParent` copie la transcription du canal parent vers les nouveaux fils.
+**Isolation des sessions de fil :** `thread.historyScope` est propre au fil (par défaut) ou partagé sur le canal. `thread.inheritParent` copie la transcription du canal parent vers les nouveaux fils.
 
-- Le streaming natif Slack ainsi que l’état de fil de style assistant Slack « is typing... » nécessitent une cible de réponse de fil. Les DM de niveau supérieur restent hors fil par défaut ; ils utilisent donc `typingReaction` ou une remise normale au lieu de la prévisualisation de style fil.
-- `typingReaction` ajoute une réaction temporaire au message Slack entrant pendant l’exécution d’une réponse, puis la retire à la fin. Utilisez un shortcode emoji Slack tel que `"hourglass_flowing_sand"`.
-- `channels.slack.execApprovals` : remise native Slack des approbations exec et autorisation des approbateurs. Même schéma que Discord : `enabled` (`true`/`false`/`"auto"`), `approvers` (identifiants d’utilisateurs Slack), `agentFilter`, `sessionFilter` et `target` (`"dm"`, `"channel"` ou `"both"`).
+- Le flux natif Slack plus le statut de fil de style assistant Slack « is typing... » nécessitent une cible de fil de réponse. Les MP de niveau supérieur restent hors fil par défaut ; ils utilisent donc `typingReaction` ou la livraison normale au lieu de l’aperçu de style fil.
+- `typingReaction` ajoute une réaction temporaire au message Slack entrant pendant qu’une réponse est en cours, puis la supprime à la fin. Utilisez un shortcode d’emoji Slack tel que `"hourglass_flowing_sand"`.
+- `channels.slack.execApprovals` : livraison d’approbation d’exécution native Slack et autorisation des approbateurs. Même schéma que Discord : `enabled` (`true`/`false`/`"auto"`), `approvers` (identifiants d’utilisateurs Slack), `agentFilter`, `sessionFilter` et `target` (`"dm"`, `"channel"` ou `"both"`).
 
-| Groupe d’actions | Par défaut | Remarques                 |
-| ---------------- | ---------- | ------------------------- |
+| Groupe d’actions | Par défaut | Notes                       |
+| ---------------- | ---------- | --------------------------- |
 | reactions        | activé     | Réagir + lister les réactions |
 | messages         | activé     | Lire/envoyer/modifier/supprimer |
 | pins             | activé     | Épingler/désépingler/lister |
-| memberInfo       | activé     | Informations sur les membres |
-| emojiList        | activé     | Liste d’emoji personnalisés |
+| memberInfo       | activé     | Infos du membre             |
+| emojiList        | activé     | Liste d’emojis personnalisés |
 
 ### Mattermost
 
-Mattermost est distribué comme Plugin : `openclaw plugins install @openclaw/mattermost`.
+Mattermost est fourni comme Plugin intégré dans les versions actuelles d’OpenClaw. Les builds plus anciens ou
+personnalisés peuvent installer un package npm actuel avec
+`openclaw plugins install @openclaw/mattermost` ; si npm signale que le
+package appartenant à OpenClaw est obsolète, utilisez le Plugin intégré ou un checkout local
+jusqu’à la publication d’un package npm plus récent.
 
 ```json5
 {
@@ -500,10 +519,10 @@ Mattermost est distribué comme Plugin : `openclaw plugins install @openclaw/mat
         "team-channel-id": { requireMention: false },
       },
       commands: {
-        native: true, // activation explicite
+        native: true, // opt-in
         nativeSkills: true,
         callbackPath: "/api/channels/mattermost/command",
-        // URL explicite facultative pour les déploiements reverse-proxy/publics
+        // Optional explicit URL for reverse-proxy/public deployments
         callbackUrl: "https://gateway.example.com/api/channels/mattermost/command",
       },
       textChunkLimit: 4000,
@@ -513,23 +532,23 @@ Mattermost est distribué comme Plugin : `openclaw plugins install @openclaw/mat
 }
 ```
 
-Modes de discussion : `oncall` (répond sur @mention, par défaut), `onmessage` (chaque message), `onchar` (messages commençant par un préfixe déclencheur).
+Modes de chat : `oncall` (répond à une @mention, par défaut), `onmessage` (chaque message), `onchar` (messages commençant par un préfixe déclencheur).
 
 Lorsque les commandes natives Mattermost sont activées :
 
-- `commands.callbackPath` doit être un chemin (par exemple `/api/channels/mattermost/command`), et non une URL complète.
-- `commands.callbackUrl` doit se résoudre vers le point de terminaison Gateway OpenClaw et être accessible depuis le serveur Mattermost.
-- Les rappels slash natifs sont authentifiés avec les jetons par commande renvoyés
-  par Mattermost lors de l’enregistrement de la commande slash. Si l’enregistrement échoue ou si aucune
+- `commands.callbackPath` doit être un chemin (par exemple `/api/channels/mattermost/command`), pas une URL complète.
+- `commands.callbackUrl` doit résoudre vers le point de terminaison Gateway OpenClaw et être joignable depuis le serveur Mattermost.
+- Les rappels slash natifs sont authentifiés avec les jetons par commande retournés
+  par Mattermost lors de l’enregistrement des commandes slash. Si l’enregistrement échoue ou si aucune
   commande n’est activée, OpenClaw rejette les rappels avec
   `Unauthorized: invalid command token.`
 - Pour les hôtes de rappel privés/tailnet/internes, Mattermost peut exiger que
-  `ServiceSettings.AllowedUntrustedInternalConnections` inclue l’hôte/le domaine du rappel.
-  Utilisez des valeurs hôte/domaine, pas des URL complètes.
-- `channels.mattermost.configWrites` : autoriser ou refuser les écritures de configuration initiées par Mattermost.
-- `channels.mattermost.requireMention` : exiger une `@mention` avant de répondre dans les canaux.
-- `channels.mattermost.groups.<channelId>.requireMention` : remplacement du filtrage des mentions par canal (`"*"` pour la valeur par défaut).
-- `channels.mattermost.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
+  `ServiceSettings.AllowedUntrustedInternalConnections` inclue l’hôte/domaine de rappel.
+  Utilisez des valeurs d’hôte/domaine, pas des URL complètes.
+- `channels.mattermost.configWrites` : autorise ou refuse les écritures de configuration initiées par Mattermost.
+- `channels.mattermost.requireMention` : exige `@mention` avant de répondre dans les canaux.
+- `channels.mattermost.groups.<channelId>.requireMention` : remplacement de filtrage par mention propre au canal (`"*"` par défaut).
+- `channels.mattermost.defaultAccount`, facultatif, remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
 
 ### Signal
 
@@ -538,7 +557,7 @@ Lorsque les commandes natives Mattermost sont activées :
   channels: {
     signal: {
       enabled: true,
-      account: "+15555550123", // liaison facultative au compte
+      account: "+15555550123", // optional account binding
       dmPolicy: "pairing",
       allowFrom: ["+15551234567", "uuid:123e4567-e89b-12d3-a456-426614174000"],
       configWrites: true,
@@ -550,15 +569,15 @@ Lorsque les commandes natives Mattermost sont activées :
 }
 ```
 
-**Modes de notification de réaction :** `off`, `own` (par défaut), `all`, `allowlist` (depuis `reactionAllowlist`).
+**Modes de notification des réactions :** `off`, `own` (par défaut), `all`, `allowlist` (depuis `reactionAllowlist`).
 
-- `channels.signal.account` : épingler le démarrage du canal à une identité de compte Signal spécifique.
-- `channels.signal.configWrites` : autoriser ou refuser les écritures de configuration initiées par Signal.
-- `channels.signal.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
+- `channels.signal.account` : épingle le démarrage du canal à une identité de compte Signal spécifique.
+- `channels.signal.configWrites` : autorise ou refuse les écritures de configuration initiées par Signal.
+- Le paramètre facultatif `channels.signal.defaultAccount` remplace la sélection de compte par défaut lorsqu’il correspond à un ID de compte configuré.
 
 ### BlueBubbles
 
-BlueBubbles est la voie iMessage recommandée (adossée à un Plugin, configurée sous `channels.bluebubbles`).
+BlueBubbles est le chemin recommandé pour iMessage (adossé à un Plugin, configuré sous `channels.bluebubbles`).
 
 ```json5
 {
@@ -566,21 +585,21 @@ BlueBubbles est la voie iMessage recommandée (adossée à un Plugin, configuré
     bluebubbles: {
       enabled: true,
       dmPolicy: "pairing",
-      // serverUrl, password, webhookPath, contrôles de groupe et actions avancées :
-      // voir /channels/bluebubbles
+      // serverUrl, password, webhookPath, group controls, and advanced actions:
+      // see /channels/bluebubbles
     },
   },
 }
 ```
 
 - Chemins de clés principaux couverts ici : `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
-- `channels.bluebubbles.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
-- Les entrées `bindings[]` de niveau supérieur avec `type: "acp"` peuvent lier des conversations BlueBubbles à des sessions ACP persistantes. Utilisez un handle BlueBubbles ou une chaîne cible (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) dans `match.peer.id`. Sémantique partagée des champs : [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
+- Le paramètre facultatif `channels.bluebubbles.defaultAccount` remplace la sélection de compte par défaut lorsqu’il correspond à un ID de compte configuré.
+- Les entrées de premier niveau `bindings[]` avec `type: "acp"` peuvent lier des conversations BlueBubbles à des sessions ACP persistantes. Utilisez un identifiant BlueBubbles ou une chaîne cible (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) dans `match.peer.id`. Sémantique des champs partagés : [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
 - La configuration complète du canal BlueBubbles est documentée dans [BlueBubbles](/fr/channels/bluebubbles).
 
 ### iMessage
 
-OpenClaw lance `imsg rpc` (JSON-RPC sur stdio). Aucun démon ni port requis.
+OpenClaw lance `imsg rpc` (JSON-RPC sur stdio). Aucun démon ni port n’est requis.
 
 ```json5
 {
@@ -604,15 +623,15 @@ OpenClaw lance `imsg rpc` (JSON-RPC sur stdio). Aucun démon ni port requis.
 }
 ```
 
-- `channels.imessage.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
+- Le paramètre facultatif `channels.imessage.defaultAccount` remplace la sélection de compte par défaut lorsqu’il correspond à un ID de compte configuré.
 
-- Nécessite un accès complet au disque à la base de données Messages.
+- Nécessite Full Disk Access à la base de données Messages.
 - Préférez les cibles `chat_id:<id>`. Utilisez `imsg chats --limit 20` pour lister les discussions.
-- `cliPath` peut pointer vers un wrapper SSH ; définissez `remoteHost` (`host` ou `user@host`) pour la récupération des pièces jointes via SCP.
-- `attachmentRoots` et `remoteAttachmentRoots` restreignent les chemins des pièces jointes entrantes (par défaut : `/Users/*/Library/Messages/Attachments`).
+- `cliPath` peut pointer vers un wrapper SSH ; définissez `remoteHost` (`host` ou `user@host`) pour récupérer les pièces jointes par SCP.
+- `attachmentRoots` et `remoteAttachmentRoots` limitent les chemins des pièces jointes entrantes (par défaut : `/Users/*/Library/Messages/Attachments`).
 - SCP utilise une vérification stricte des clés d’hôte ; assurez-vous donc que la clé d’hôte du relais existe déjà dans `~/.ssh/known_hosts`.
-- `channels.imessage.configWrites` : autoriser ou refuser les écritures de configuration initiées par iMessage.
-- Les entrées `bindings[]` de niveau supérieur avec `type: "acp"` peuvent lier des conversations iMessage à des sessions ACP persistantes. Utilisez un handle normalisé ou une cible de discussion explicite (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) dans `match.peer.id`. Sémantique partagée des champs : [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
+- `channels.imessage.configWrites` : autorise ou refuse les écritures de configuration initiées par iMessage.
+- Les entrées de premier niveau `bindings[]` avec `type: "acp"` peuvent lier des conversations iMessage à des sessions ACP persistantes. Utilisez un identifiant normalisé ou une cible de discussion explicite (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) dans `match.peer.id`. Sémantique des champs partagés : [Agents ACP](/fr/tools/acp-agents#channel-specific-settings).
 
 <Accordion title="Exemple de wrapper SSH iMessage">
 
@@ -656,20 +675,20 @@ Matrix est adossé à un Plugin et configuré sous `channels.matrix`.
 ```
 
 - L’authentification par jeton utilise `accessToken` ; l’authentification par mot de passe utilise `userId` + `password`.
-- `channels.matrix.proxy` route le trafic HTTP Matrix via un proxy HTTP(S) explicite. Les comptes nommés peuvent le remplacer avec `channels.matrix.accounts.<id>.proxy`.
+- `channels.matrix.proxy` achemine le trafic HTTP Matrix via un proxy HTTP(S) explicite. Les comptes nommés peuvent le remplacer avec `channels.matrix.accounts.<id>.proxy`.
 - `channels.matrix.network.dangerouslyAllowPrivateNetwork` autorise les homeservers privés/internes. `proxy` et cette activation réseau sont des contrôles indépendants.
-- `channels.matrix.defaultAccount` sélectionne le compte préféré dans les configurations multi-comptes.
-- `channels.matrix.autoJoin` vaut `off` par défaut, donc les salons invités et les nouvelles invitations de type DM sont ignorés jusqu’à ce que vous définissiez `autoJoin: "allowlist"` avec `autoJoinAllowlist` ou `autoJoin: "always"`.
-- `channels.matrix.execApprovals` : remise native Matrix des approbations exec et autorisation des approbateurs.
-  - `enabled` : `true`, `false` ou `"auto"` (par défaut). En mode auto, les approbations exec s’activent lorsque les approbateurs peuvent être résolus depuis `approvers` ou `commands.ownerAllowFrom`.
-  - `approvers` : identifiants d’utilisateurs Matrix (par ex. `@owner:example.org`) autorisés à approuver les demandes exec.
-  - `agentFilter` : liste d’autorisation facultative d’identifiants d’agent. Omettez-la pour transmettre les approbations de tous les agents.
-  - `sessionFilter` : motifs facultatifs de clé de session (sous-chaîne ou regex).
-  - `target` : où envoyer les invites d’approbation. `"dm"` (par défaut), `"channel"` (salon d’origine) ou `"both"`.
+- `channels.matrix.defaultAccount` sélectionne le compte préféré dans les configurations multicomptes.
+- `channels.matrix.autoJoin` vaut `off` par défaut ; les salons sur invitation et les nouvelles invitations de type DM sont donc ignorés jusqu’à ce que vous définissiez `autoJoin: "allowlist"` avec `autoJoinAllowlist` ou `autoJoin: "always"`.
+- `channels.matrix.execApprovals` : livraison des approbations d’exécution natives Matrix et autorisation des approbateurs.
+  - `enabled` : `true`, `false` ou `"auto"` (par défaut). En mode automatique, les approbations d’exécution s’activent lorsque les approbateurs peuvent être résolus depuis `approvers` ou `commands.ownerAllowFrom`.
+  - `approvers` : ID utilisateur Matrix (par exemple `@owner:example.org`) autorisés à approuver les demandes d’exécution.
+  - `agentFilter` : liste d’autorisation facultative d’ID d’agent. Omettez-la pour transférer les approbations pour tous les agents.
+  - `sessionFilter` : modèles facultatifs de clés de session (sous-chaîne ou expression régulière).
+  - `target` : destination des invites d’approbation. `"dm"` (par défaut), `"channel"` (salon d’origine) ou `"both"`.
   - Remplacements par compte : `channels.matrix.accounts.<id>.execApprovals`.
-- `channels.matrix.dm.sessionScope` contrôle la façon dont les DM Matrix sont regroupés en sessions : `per-user` (par défaut) partage par pair routé, tandis que `per-room` isole chaque salon DM.
-- Les sondes d’état Matrix et les recherches live dans l’annuaire utilisent la même politique de proxy que le trafic à l’exécution.
-- La configuration complète de Matrix, les règles de ciblage et les exemples d’installation sont documentés dans [Matrix](/fr/channels/matrix).
+- `channels.matrix.dm.sessionScope` contrôle la façon dont les DM Matrix se regroupent en sessions : `per-user` (par défaut) partage par pair routé, tandis que `per-room` isole chaque salon DM.
+- Les sondes de statut Matrix et les recherches d’annuaire en direct utilisent la même politique de proxy que le trafic d’exécution.
+- La configuration complète de Matrix, les règles de ciblage et les exemples de configuration sont documentés dans [Matrix](/fr/channels/matrix).
 
 ### Microsoft Teams
 
@@ -681,15 +700,15 @@ Microsoft Teams est adossé à un Plugin et configuré sous `channels.msteams`.
     msteams: {
       enabled: true,
       configWrites: true,
-      // appId, appPassword, tenantId, webhook, politiques d’équipe/canal :
-      // voir /channels/msteams
+      // appId, appPassword, tenantId, webhook, team/channel policies:
+      // see /channels/msteams
     },
   },
 }
 ```
 
 - Chemins de clés principaux couverts ici : `channels.msteams`, `channels.msteams.configWrites`.
-- La configuration complète de Teams (identifiants, webhook, politique DM/groupe, remplacements par équipe/par canal) est documentée dans [Microsoft Teams](/fr/channels/msteams).
+- La configuration complète de Teams (identifiants, Webhook, politique DM/groupe, remplacements par équipe/par canal) est documentée dans [Microsoft Teams](/fr/channels/msteams).
 
 ### IRC
 
@@ -715,10 +734,10 @@ IRC est adossé à un Plugin et configuré sous `channels.irc`.
 ```
 
 - Chemins de clés principaux couverts ici : `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
-- `channels.irc.defaultAccount` facultatif remplace la sélection du compte par défaut lorsqu’il correspond à un identifiant de compte configuré.
-- La configuration complète du canal IRC (hôte/port/TLS/canaux/listes d’autorisation/filtrage des mentions) est documentée dans [IRC](/fr/channels/irc).
+- Le paramètre facultatif `channels.irc.defaultAccount` remplace la sélection de compte par défaut lorsqu’il correspond à un ID de compte configuré.
+- La configuration complète du canal IRC (hôte/port/TLS/canaux/listes d’autorisation/contrôle par mention) est documentée dans [IRC](/fr/channels/irc).
 
-### Multi-comptes (tous les canaux)
+### Multicompte (tous les canaux)
 
 Exécutez plusieurs comptes par canal (chacun avec son propre `accountId`) :
 
@@ -728,11 +747,11 @@ Exécutez plusieurs comptes par canal (chacun avec son propre `accountId`) :
     telegram: {
       accounts: {
         default: {
-          name: "Bot principal",
+          name: "Primary bot",
           botToken: "123456:ABC...",
         },
         alerts: {
-          name: "Bot d’alertes",
+          name: "Alerts bot",
           botToken: "987654:XYZ...",
         },
       },
@@ -742,32 +761,38 @@ Exécutez plusieurs comptes par canal (chacun avec son propre `accountId`) :
 ```
 
 - `default` est utilisé lorsque `accountId` est omis (CLI + routage).
-- Les jetons d’environnement s’appliquent uniquement au compte **default**.
-- Les paramètres du canal de base s’appliquent à tous les comptes sauf remplacement par compte.
+- Les jetons d’environnement s’appliquent uniquement au compte **par défaut**.
+- Les paramètres de canal de base s’appliquent à tous les comptes sauf s’ils sont remplacés par compte.
 - Utilisez `bindings[].match.accountId` pour router chaque compte vers un agent différent.
-- Si vous ajoutez un compte non par défaut via `openclaw channels add` (ou l’intégration initiale du canal) alors que vous êtes encore sur une configuration de canal de niveau supérieur mono-compte, OpenClaw promeut d’abord les valeurs mono-compte de niveau supérieur à portée de compte dans le mappage de comptes du canal afin que le compte d’origine continue de fonctionner. La plupart des canaux les déplacent vers `channels.<channel>.accounts.default` ; Matrix peut à la place conserver une cible nommée/par défaut existante correspondante.
-- Les liaisons existantes seulement au niveau canal (sans `accountId`) continuent à correspondre au compte par défaut ; les liaisons à portée compte restent facultatives.
-- `openclaw doctor --fix` répare aussi les formes mixtes en déplaçant les valeurs mono-compte de niveau supérieur à portée de compte dans le compte promu choisi pour ce canal. La plupart des canaux utilisent `accounts.default` ; Matrix peut à la place conserver une cible nommée/par défaut existante correspondante.
+- Si vous ajoutez un compte non par défaut via `openclaw channels add` (ou l’intégration du canal) tout en conservant une configuration de canal de premier niveau à compte unique, OpenClaw promeut d’abord les valeurs de compte unique de premier niveau à portée de compte dans la carte des comptes du canal afin que le compte d’origine continue de fonctionner. La plupart des canaux les déplacent dans `channels.<channel>.accounts.default` ; Matrix peut plutôt conserver une cible nommée/par défaut correspondante existante.
+- Les liaisons existantes limitées au canal (sans `accountId`) continuent de correspondre au compte par défaut ; les liaisons à portée de compte restent facultatives.
+- `openclaw doctor --fix` répare également les formes mixtes en déplaçant les valeurs de compte unique de premier niveau à portée de compte dans le compte promu choisi pour ce canal. La plupart des canaux utilisent `accounts.default` ; Matrix peut plutôt conserver une cible nommée/par défaut correspondante existante.
 
-### Autres canaux Plugin
+### Autres canaux de Plugin
 
-De nombreux canaux Plugin sont configurés sous la forme `channels.<id>` et documentés dans leurs pages de canal dédiées (par exemple Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat et Twitch).
+De nombreux canaux de Plugin sont configurés comme `channels.<id>` et documentés dans leurs pages de canal dédiées (par exemple Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat et Twitch).
 Voir l’index complet des canaux : [Canaux](/fr/channels).
 
-### Filtrage des mentions dans les discussions de groupe
+### Contrôle des mentions dans les discussions de groupe
 
-Les messages de groupe exigent par défaut une **mention requise** (mention de métadonnées ou motifs regex sûrs). Cela s’applique aux discussions de groupe WhatsApp, Telegram, Discord, Google Chat et iMessage.
+Les messages de groupe exigent par défaut une **mention obligatoire** (mention de métadonnées ou modèles regex sûrs). S’applique aux discussions de groupe WhatsApp, Telegram, Discord, Google Chat et iMessage.
 
-**Types de mention :**
+Les réponses visibles sont contrôlées séparément. Les salons de groupe/canal utilisent par défaut `messages.groupChat.visibleReplies: "message_tool"` : OpenClaw traite toujours le tour, mais les réponses finales normales restent privées et la sortie visible dans le salon nécessite `message(action=send)`. Définissez `"automatic"` uniquement lorsque vous voulez le comportement hérité où les réponses normales sont republiées dans le salon. Pour appliquer le même comportement de réponse visible uniquement via outil aux discussions directes aussi, définissez `messages.visibleReplies: "message_tool"`.
 
-- **Mentions de métadonnées** : @mentions natives de la plateforme. Ignorées en mode self-chat WhatsApp.
-- **Motifs de texte** : motifs regex sûrs dans `agents.list[].groupChat.mentionPatterns`. Les motifs invalides et les répétitions imbriquées non sûres sont ignorés.
-- Le filtrage des mentions n’est appliqué que lorsque la détection est possible (mentions natives ou au moins un motif).
+**Types de mentions :**
+
+- **Mentions de métadonnées** : @-mentions natives de la plateforme. Ignorées en mode auto-discussion WhatsApp.
+- **Modèles de texte** : modèles regex sûrs dans `agents.list[].groupChat.mentionPatterns`. Les modèles invalides et les répétitions imbriquées non sûres sont ignorés.
+- Le contrôle par mention n’est appliqué que lorsque la détection est possible (mentions natives ou au moins un modèle).
 
 ```json5
 {
   messages: {
-    groupChat: { historyLimit: 50 },
+    visibleReplies: "automatic", // global default for direct/source chats
+    groupChat: {
+      historyLimit: 50,
+      visibleReplies: "message_tool", // default; use "automatic" for legacy final replies
+    },
   },
   agents: {
     list: [{ id: "main", groupChat: { mentionPatterns: ["@openclaw", "openclaw"] } }],
@@ -777,7 +802,9 @@ Les messages de groupe exigent par défaut une **mention requise** (mention de m
 
 `messages.groupChat.historyLimit` définit la valeur globale par défaut. Les canaux peuvent la remplacer avec `channels.<channel>.historyLimit` (ou par compte). Définissez `0` pour désactiver.
 
-#### Limites d’historique DM
+`messages.visibleReplies` est la valeur globale par défaut pour les tours de source ; `messages.groupChat.visibleReplies` la remplace pour les tours de source de groupe/canal. Les listes d’autorisation de canal et le contrôle par mention décident toujours si un tour est traité.
+
+#### Limites d’historique des DM
 
 ```json5
 {
@@ -792,13 +819,13 @@ Les messages de groupe exigent par défaut une **mention requise** (mention de m
 }
 ```
 
-Résolution : remplacement par DM → valeur par défaut du fournisseur → pas de limite (tout est conservé).
+Résolution : remplacement par DM → valeur par défaut du fournisseur → aucune limite (tout est conservé).
 
 Pris en charge : `telegram`, `whatsapp`, `discord`, `slack`, `signal`, `imessage`, `msteams`.
 
-#### Mode self-chat
+#### Mode auto-discussion
 
-Incluez votre propre numéro dans `allowFrom` pour activer le mode self-chat (ignore les @mentions natives, répond uniquement aux motifs de texte) :
+Incluez votre propre numéro dans `allowFrom` pour activer le mode auto-discussion (ignore les @-mentions natives, répond uniquement aux modèles de texte) :
 
 ```json5
 {
@@ -824,16 +851,16 @@ Incluez votre propre numéro dans `allowFrom` pour activer le mode self-chat (ig
 ```json5
 {
   commands: {
-    native: "auto", // enregistrer les commandes natives lorsqu’elles sont prises en charge
-    nativeSkills: "auto", // enregistrer les commandes natives de Skills lorsqu’elles sont prises en charge
-    text: true, // analyser les /commandes dans les messages de discussion
-    bash: false, // autoriser ! (alias : /bash)
+    native: "auto", // register native commands when supported
+    nativeSkills: "auto", // register native skill commands when supported
+    text: true, // parse /commands in chat messages
+    bash: false, // allow ! (alias: /bash)
     bashForegroundMs: 2000,
-    config: false, // autoriser /config
-    mcp: false, // autoriser /mcp
-    plugins: false, // autoriser /plugins
-    debug: false, // autoriser /debug
-    restart: true, // autoriser /restart + l’outil de redémarrage Gateway
+    config: false, // allow /config
+    mcp: false, // allow /mcp
+    plugins: false, // allow /plugins
+    debug: false, // allow /debug
+    restart: true, // allow /restart + gateway restart tool
     ownerAllowFrom: ["discord:123456789012345678"],
     ownerDisplay: "raw", // raw | hash
     ownerDisplaySecret: "${OWNER_ID_HASH_SECRET}",
@@ -846,41 +873,41 @@ Incluez votre propre numéro dans `allowFrom` pour activer le mode self-chat (ig
 }
 ```
 
-<Accordion title="Détails des commandes">
+<Accordion title="Command details">
 
-- Ce bloc configure les surfaces de commande. Pour le catalogue actuel des commandes intégrées + fournies avec les Plugins, voir [Commandes slash](/fr/tools/slash-commands).
-- Cette page est une **référence des clés de configuration**, et non le catalogue complet des commandes. Les commandes appartenant aux canaux/Plugins telles que QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, device-pair `/pair`, memory `/dreaming`, phone-control `/phone` et Talk `/voice` sont documentées dans leurs pages de canal/Plugin ainsi que dans [Commandes slash](/fr/tools/slash-commands).
-- Les commandes textuelles doivent être des messages **autonomes** avec un `/` initial.
-- `native: "auto"` active les commandes natives pour Discord/Telegram, et laisse Slack désactivé.
-- `nativeSkills: "auto"` active les commandes natives de Skills pour Discord/Telegram, et laisse Slack désactivé.
-- Remplacement par canal : `channels.discord.commands.native` (booléen ou `"auto"`). `false` efface les commandes précédemment enregistrées.
-- Remplacez l’enregistrement natif de Skills par canal avec `channels.<provider>.commands.nativeSkills`.
+- Ce bloc configure les surfaces de commandes. Pour le catalogue actuel des commandes intégrées et groupées, consultez [Commandes slash](/fr/tools/slash-commands).
+- Cette page est une **référence des clés de configuration**, et non le catalogue complet des commandes. Les commandes propres aux canaux/plugins, telles que QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, l’appairage d’appareil `/pair`, la mémoire `/dreaming`, le contrôle du téléphone `/phone` et Talk `/voice`, sont documentées dans leurs pages de canal/plugin ainsi que dans [Commandes slash](/fr/tools/slash-commands).
+- Les commandes textuelles doivent être des messages **autonomes** commençant par `/`.
+- `native: "auto"` active les commandes natives pour Discord/Telegram et les laisse désactivées pour Slack.
+- `nativeSkills: "auto"` active les commandes de Skills natives pour Discord/Telegram et les laisse désactivées pour Slack.
+- Remplacer par canal : `channels.discord.commands.native` (booléen ou `"auto"`). `false` efface les commandes précédemment enregistrées.
+- Remplacer l’enregistrement des Skills natives par canal avec `channels.<provider>.commands.nativeSkills`.
 - `channels.telegram.customCommands` ajoute des entrées supplémentaires au menu du bot Telegram.
-- `bash: true` active `! <cmd>` pour le shell hôte. Nécessite `tools.elevated.enabled` et que l’expéditeur figure dans `tools.elevated.allowFrom.<channel>`.
-- `config: true` active `/config` (lecture/écriture de `openclaw.json`). Pour les clients `chat.send` Gateway, les écritures persistantes `/config set|unset` nécessitent aussi `operator.admin` ; la lecture seule `/config show` reste disponible pour les clients opérateur normaux à portée écriture.
-- `mcp: true` active `/mcp` pour la configuration de serveurs MCP gérés par OpenClaw sous `mcp.servers`.
-- `plugins: true` active `/plugins` pour la découverte de Plugins, l’installation et les contrôles d’activation/désactivation.
+- `bash: true` active `! <cmd>` pour le shell de l’hôte. Nécessite `tools.elevated.enabled` et un expéditeur dans `tools.elevated.allowFrom.<channel>`.
+- `config: true` active `/config` (lit/écrit `openclaw.json`). Pour les clients Gateway `chat.send`, les écritures persistantes `/config set|unset` nécessitent également `operator.admin`; `/config show`, en lecture seule, reste disponible pour les clients opérateurs normaux avec périmètre d’écriture.
+- `mcp: true` active `/mcp` pour la configuration des serveurs MCP gérés par OpenClaw sous `mcp.servers`.
+- `plugins: true` active `/plugins` pour la découverte de plugins, l’installation et les contrôles d’activation/désactivation.
 - `channels.<provider>.configWrites` contrôle les mutations de configuration par canal (par défaut : true).
-- Pour les canaux multi-comptes, `channels.<provider>.accounts.<id>.configWrites` contrôle aussi les écritures qui ciblent ce compte (par exemple `/allowlist --config --account <id>` ou `/config set channels.<provider>.accounts.<id>...`).
-- `restart: false` désactive `/restart` et les actions de l’outil de redémarrage Gateway. Valeur par défaut : `true`.
-- `ownerAllowFrom` est la liste d’autorisation explicite du propriétaire pour les commandes/outils réservés au propriétaire. Elle est distincte de `allowFrom`.
-- `ownerDisplay: "hash"` hache les identifiants du propriétaire dans l’invite système. Définissez `ownerDisplaySecret` pour contrôler le hachage.
-- `allowFrom` est par fournisseur. Lorsqu’il est défini, c’est la **seule** source d’autorisation (les listes d’autorisation/appairages de canal et `useAccessGroups` sont ignorés).
+- Pour les canaux multi-comptes, `channels.<provider>.accounts.<id>.configWrites` contrôle aussi les écritures ciblant ce compte (par exemple `/allowlist --config --account <id>` ou `/config set channels.<provider>.accounts.<id>...`).
+- `restart: false` désactive `/restart` et les actions de l’outil de redémarrage du Gateway. Par défaut : `true`.
+- `ownerAllowFrom` est la liste d’autorisation explicite du propriétaire pour les commandes/outils réservés au propriétaire. Elle est séparée de `allowFrom`.
+- `ownerDisplay: "hash"` hache les identifiants de propriétaire dans le prompt système. Définissez `ownerDisplaySecret` pour contrôler le hachage.
+- `allowFrom` est défini par fournisseur. Lorsqu’il est défini, c’est la **seule** source d’autorisation (les listes d’autorisation/l’appairage de canal et `useAccessGroups` sont ignorés).
 - `useAccessGroups: false` permet aux commandes de contourner les politiques de groupes d’accès lorsque `allowFrom` n’est pas défini.
-- Cartographie de la documentation des commandes :
-  - catalogue intégré + fourni avec les Plugins : [Commandes slash](/fr/tools/slash-commands)
-  - surfaces de commande spécifiques aux canaux : [Canaux](/fr/channels)
+- Carte de la documentation des commandes :
+  - catalogue intégré et groupé : [Commandes slash](/fr/tools/slash-commands)
+  - surfaces de commandes propres aux canaux : [Canaux](/fr/channels)
   - commandes QQ Bot : [QQ Bot](/fr/channels/qqbot)
   - commandes d’appairage : [Appairage](/fr/channels/pairing)
   - commande de carte LINE : [LINE](/fr/channels/line)
-  - dreaming de la mémoire : [Dreaming](/fr/concepts/dreaming)
+  - Dreaming de mémoire : [Dreaming](/fr/concepts/dreaming)
 
 </Accordion>
 
 ---
 
-## Liens associés
+## Connexe
 
-- [Référence de configuration](/fr/gateway/configuration-reference) — clés de niveau supérieur
+- [Référence de configuration](/fr/gateway/configuration-reference) — clés de premier niveau
 - [Configuration — agents](/fr/gateway/config-agents)
 - [Vue d’ensemble des canaux](/fr/channels)

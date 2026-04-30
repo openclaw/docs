@@ -2,34 +2,34 @@
 read_when:
     - Vous devez suivre les journaux du Gateway à distance (sans SSH)
     - Vous voulez des lignes de journal JSON pour l’outillage
-summary: Référence CLI pour `openclaw logs` (suivre les journaux du Gateway via RPC)
+summary: Référence CLI pour `openclaw logs` (suivi des journaux du Gateway via RPC)
 title: Journaux
 x-i18n:
-    generated_at: "2026-04-24T07:04:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:18:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 94dddb9fd507c2f1d885c5cf92b78fd381355481317bf6f56b794afbd387f402
+    source_hash: 0f9268fefa4d0e54297fd12c5cef30a1465bd735ae6a36292c279a438285f2b8
     source_path: cli/logs.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw logs`
 
-Suivre les journaux de fichiers du Gateway via RPC (fonctionne en mode distant).
+Suit les journaux de fichier du Gateway via RPC (fonctionne en mode distant).
 
-Associé :
+Connexe :
 
 - Vue d’ensemble de la journalisation : [Journalisation](/fr/logging)
-- CLI Gateway : [gateway](/fr/cli/gateway)
+- CLI du Gateway : [gateway](/fr/cli/gateway)
 
 ## Options
 
 - `--limit <n>` : nombre maximal de lignes de journal à renvoyer (par défaut `200`)
-- `--max-bytes <n>` : nombre maximal d’octets à lire depuis le fichier journal (par défaut `250000`)
-- `--follow` : suivre le flux de journaux
+- `--max-bytes <n>` : nombre maximal d’octets à lire dans le fichier de journal (par défaut `250000`)
+- `--follow` : suivre le flux de journal
 - `--interval <ms>` : intervalle d’interrogation pendant le suivi (par défaut `1000`)
 - `--json` : émettre des événements JSON délimités par ligne
-- `--plain` : sortie en texte brut sans formatage stylisé
+- `--plain` : sortie en texte brut sans mise en forme stylisée
 - `--no-color` : désactiver les couleurs ANSI
 - `--local-time` : afficher les horodatages dans votre fuseau horaire local
 
@@ -40,7 +40,7 @@ Associé :
 - `--url <url>` : URL WebSocket du Gateway
 - `--token <token>` : jeton du Gateway
 - `--timeout <ms>` : délai d’expiration en ms (par défaut `30000`)
-- `--expect-final` : attendre une réponse finale lorsque l’appel Gateway est adossé à un agent
+- `--expect-final` : attendre une réponse finale lorsque l’appel au Gateway est adossé à un agent
 
 Lorsque vous passez `--url`, la CLI n’applique pas automatiquement les identifiants de configuration ou d’environnement. Incluez explicitement `--token` si le Gateway cible exige une authentification.
 
@@ -60,12 +60,12 @@ openclaw logs --follow --local-time
 openclaw logs --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-## Remarques
+## Notes
 
 - Utilisez `--local-time` pour afficher les horodatages dans votre fuseau horaire local.
-- Si le Gateway local loopback demande un appairage, `openclaw logs` revient automatiquement au fichier journal local configuré. Les cibles `--url` explicites n’utilisent pas ce repli.
+- Si le Gateway local loopback implicite demande un appairage, ferme pendant la connexion ou expire avant que `logs.tail` ne réponde, `openclaw logs` bascule automatiquement vers le journal de fichier du Gateway configuré. Les cibles `--url` explicites n’utilisent pas ce repli.
 
-## Associé
+## Connexe
 
-- [Référence CLI](/fr/cli)
+- [Référence de la CLI](/fr/cli)
 - [Journalisation du Gateway](/fr/gateway/logging)

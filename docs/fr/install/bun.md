@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Vous voulez la boucle de développement locale la plus rapide (bun + watch)
-    - Vous rencontrez des problèmes Bun liés à l’installation, aux patches ou aux scripts de cycle de vie
-summary: 'Flux de travail Bun (expérimental) : installations et points d’attention par rapport à pnpm'
+    - Vous voulez la boucle de développement local la plus rapide (bun + watch)
+    - Vous rencontrez des problèmes d’installation, de correctifs ou de scripts de cycle de vie avec Bun
+summary: 'Flux de travail Bun (expérimental) : installations et pièges par rapport à pnpm'
 title: Bun (expérimental)
 x-i18n:
-    generated_at: "2026-04-24T07:15:38Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:32:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
+    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
     source_path: install/bun.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-Bun n’est **pas recommandé pour le runtime du Gateway** (problèmes connus avec WhatsApp et Telegram). Utilisez Node en production.
+Bun n’est **pas recommandé pour l’exécution du gateway** (problèmes connus avec WhatsApp et Telegram). Utilisez Node en production.
 </Warning>
 
-Bun est un runtime local optionnel pour exécuter directement du TypeScript (`bun run ...`, `bun --watch ...`). Le gestionnaire de paquets par défaut reste `pnpm`, qui est entièrement pris en charge et utilisé par l’outillage de documentation. Bun ne peut pas utiliser `pnpm-lock.yaml` et l’ignorera.
+Bun est un runtime local facultatif permettant d’exécuter TypeScript directement (`bun run ...`, `bun --watch ...`). Le gestionnaire de paquets par défaut reste `pnpm`, qui est entièrement pris en charge et utilisé par l’outillage de documentation. Bun ne peut pas utiliser `pnpm-lock.yaml` et l’ignorera.
 
 ## Installation
 
@@ -27,14 +27,14 @@ Bun est un runtime local optionnel pour exécuter directement du TypeScript (`bu
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` sont ignorés par git, donc il n’y a pas de bruit dans le dépôt. Pour ignorer complètement les écritures de lockfile :
+    `bun.lock` / `bun.lockb` sont ignorés par git, il n’y a donc pas de bruit dans le dépôt. Pour ignorer entièrement l’écriture des fichiers de verrouillage :
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Construire et tester">
+  <Step title="Compiler et tester">
     ```sh
     bun run build
     bun run vitest run
@@ -46,21 +46,21 @@ Bun est un runtime local optionnel pour exécuter directement du TypeScript (`bu
 
 Bun bloque les scripts de cycle de vie des dépendances sauf s’ils sont explicitement approuvés. Pour ce dépôt, les scripts couramment bloqués ne sont pas requis :
 
-- `@whiskeysockets/baileys` `preinstall` -- vérifie que la version majeure de Node est >= 20 (OpenClaw utilise par défaut Node 24 et prend toujours en charge Node 22 LTS, actuellement `22.14+`)
-- `protobufjs` `postinstall` -- émet des avertissements sur des schémas de version incompatibles (aucun artefact de build)
+- `@whiskeysockets/baileys` `preinstall` -- vérifie que la version majeure de Node est >= 20 (OpenClaw utilise Node 24 par défaut et prend toujours en charge Node 22 LTS, actuellement `22.14+`)
+- `protobufjs` `postinstall` -- émet des avertissements sur les schémas de version incompatibles (aucun artefact de compilation)
 
-Si vous rencontrez un problème runtime nécessitant ces scripts, approuvez-les explicitement :
+Si vous rencontrez un problème d’exécution qui nécessite ces scripts, approuvez-les explicitement :
 
 ```sh
 bun pm trust @whiskeysockets/baileys protobufjs
 ```
 
-## Points d’attention
+## Mises en garde
 
-Certains scripts codent encore `pnpm` en dur (par exemple `docs:build`, `ui:*`, `protocol:check`). Exécutez-les via pnpm pour l’instant.
+Certains scripts codent encore pnpm en dur (par exemple `docs:build`, `ui:*`, `protocol:check`). Exécutez-les via pnpm pour le moment.
 
-## Associé
+## Associés
 
 - [Vue d’ensemble de l’installation](/fr/install)
 - [Node.js](/fr/install/node)
-- [Updating](/fr/install/updating)
+- [Mise à jour](/fr/install/updating)

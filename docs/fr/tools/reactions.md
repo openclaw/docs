@@ -1,20 +1,19 @@
 ---
 read_when:
     - Travailler sur les réactions dans n’importe quel canal
-    - Comprendre comment les réactions emoji diffèrent selon les plateformes to=final code  omitted
+    - Comprendre comment les réactions par emoji diffèrent selon les plateformes
 summary: Sémantique de l’outil de réaction sur tous les canaux pris en charge
 title: Réactions
 x-i18n:
-    generated_at: "2026-04-24T07:38:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:53:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 58d9a85114e715fd1813a4d662b02a6b8b9cad9a8eea9c63d024a933ba573a65
+    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
     source_path: tools/reactions.md
-    workflow: 15
+    workflow: 16
 ---
 
-L’agent peut ajouter et retirer des réactions emoji sur les messages à l’aide de l’outil `message`
-avec l’action `react`. Le comportement des réactions varie selon le canal.
+L’agent peut ajouter et supprimer des réactions emoji sur les messages à l’aide de l’outil `message` avec l’action `react`. Le comportement des réactions varie selon le canal et le transport.
 
 ## Fonctionnement
 
@@ -47,13 +46,13 @@ avec l’action `react`. Le comportement des réactions varie selon le canal.
 
   <Accordion title="Telegram">
     - Un `emoji` vide supprime les réactions du bot.
-    - `remove: true` supprime aussi les réactions mais exige quand même un `emoji` non vide pour la validation de l’outil.
+    - `remove: true` supprime aussi les réactions, mais nécessite toujours un `emoji` non vide pour la validation de l’outil.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
     - Un `emoji` vide supprime la réaction du bot.
-    - `remove: true` est mappé en interne vers un emoji vide (nécessite tout de même `emoji` dans l’appel d’outil).
+    - `remove: true` correspond en interne à un emoji vide (nécessite toujours `emoji` dans l’appel d’outil).
 
   </Accordion>
 
@@ -65,26 +64,26 @@ avec l’action `react`. Le comportement des réactions varie selon le canal.
 
   <Accordion title="Feishu/Lark">
     - Utilisez l’outil `feishu_reaction` avec les actions `add`, `remove` et `list`.
-    - L’ajout/la suppression nécessite `emoji_type` ; la suppression nécessite aussi `reaction_id`.
+    - L’ajout/la suppression nécessite `emoji_type`; la suppression nécessite aussi `reaction_id`.
 
   </Accordion>
 
   <Accordion title="Signal">
-    - Les notifications de réaction entrantes sont contrôlées par `channels.signal.reactionNotifications` : `"off"` les désactive, `"own"` (par défaut) émet des événements lorsque des utilisateurs réagissent aux messages du bot, et `"all"` émet des événements pour toutes les réactions.
+    - Les notifications de réactions entrantes sont contrôlées par `channels.signal.reactionNotifications` : `"off"` les désactive, `"own"` (valeur par défaut) émet des événements lorsque des utilisateurs réagissent aux messages du bot, et `"all"` émet des événements pour toutes les réactions.
 
   </Accordion>
 </AccordionGroup>
 
 ## Niveau de réaction
 
-La configuration `reactionLevel` par canal contrôle à quel point l’agent utilise les réactions. Les valeurs sont généralement `off`, `ack`, `minimal` ou `extensive`.
+La configuration `reactionLevel` par canal contrôle l’étendue avec laquelle l’agent utilise les réactions. Les valeurs sont généralement `off`, `ack`, `minimal` ou `extensive`.
 
-- [Telegram reactionLevel](/fr/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [WhatsApp reactionLevel](/fr/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
+- [reactionLevel de Telegram](/fr/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
+- [reactionLevel de WhatsApp](/fr/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Définissez `reactionLevel` sur des canaux individuels pour ajuster à quel point l’agent réagit activement aux messages sur chaque plateforme.
+Définissez `reactionLevel` sur des canaux individuels pour ajuster le niveau d’activité avec lequel l’agent réagit aux messages sur chaque plateforme.
 
-## Associé
+## Voir aussi
 
-- [Agent Send](/fr/tools/agent-send) — l’outil `message` qui inclut `react`
-- [Channels](/fr/channels) — configuration propre à chaque canal
+- [Envoi par l’agent](/fr/tools/agent-send) — l’outil `message` qui inclut `react`
+- [Canaux](/fr/channels) — configuration propre aux canaux

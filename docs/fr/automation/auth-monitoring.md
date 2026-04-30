@@ -2,17 +2,17 @@
 summary: Rediriger vers /gateway/authentication
 title: Surveillance de l’authentification
 x-i18n:
-    generated_at: "2026-04-24T06:59:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:10:51Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a80b75d3f35d0255213907562a5ac0416d9bf9fe6f8026193bff07e2f33086a2
+    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
     source_path: automation/auth-monitoring.md
-    workflow: 15
+    workflow: 16
 ---
 
-Cette page a été déplacée vers [Authentication](/fr/gateway/authentication). Consultez [Authentication](/fr/gateway/authentication) pour la documentation sur la surveillance de l’authentification.
+La surveillance de l’authentification se trouve dans [Authentification](/fr/gateway/authentication).
 
-## Associé
+## Ressources associées
 
 - [Dépannage de l’automatisation](/fr/automation/cron-jobs)
 - [Hooks](/fr/automation/hooks)

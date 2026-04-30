@@ -1,47 +1,53 @@
 ---
 read_when:
-    - Vous voulez la prise en charge de Zalo Personal (non officiel) dans OpenClaw
-    - Vous configurez ou développez le plugin zalouser
-summary: 'Plugin Zalo Personal : connexion par QR + messagerie via le `zca-js` natif (installation du plugin + configuration du canal + outil)'
-title: Plugin Zalo Personal
+    - Vous souhaitez la prise en charge non officielle de Zalo Personal dans OpenClaw
+    - Vous configurez ou développez le Plugin zalouser
+summary: 'Plugin Zalo Personal : connexion par code QR + messagerie via zca-js natif (installation du Plugin + configuration du canal + outil)'
+title: Plugin personnel Zalo
 x-i18n:
-    generated_at: "2026-04-24T07:25:29Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:42:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: d678bd55fd405a9c689d1202870cc03bfb825a9314c433a0ab729d376e3b67a3
+    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
     source_path: plugins/zalouser.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Zalo Personal (Plugin)
+# Zalo Personal (plugin)
 
-Prise en charge de Zalo Personal pour OpenClaw via un plugin, utilisant le `zca-js` natif pour automatiser un compte utilisateur Zalo normal.
+Prise en charge de Zalo Personal pour OpenClaw via un plugin, avec `zca-js` natif pour automatiser un compte utilisateur Zalo normal.
 
-> **Avertissement :** L’automatisation non officielle peut entraîner la suspension/le bannissement du compte. Utilisez-la à vos risques et périls.
+<Warning>
+L’automatisation non officielle peut entraîner la suspension ou le bannissement du compte. Utilisez-la à vos propres risques.
+</Warning>
 
 ## Nommage
 
-L’ID du canal est `zalouser` pour indiquer explicitement qu’il automatise un **compte utilisateur Zalo personnel** (non officiel). Nous réservons `zalo` à une éventuelle future intégration officielle de l’API Zalo.
+L’id du canal est `zalouser` pour indiquer explicitement que cela automatise un **compte utilisateur Zalo personnel** (non officiel). Nous gardons `zalo` réservé à une éventuelle future intégration officielle de l’API Zalo.
 
 ## Où il s’exécute
 
 Ce plugin s’exécute **dans le processus Gateway**.
 
-Si vous utilisez un Gateway distant, installez/configurez-le sur la **machine qui exécute le Gateway**, puis redémarrez le Gateway.
+Si vous utilisez un Gateway distant, installez/configurez-le sur la **machine exécutant le Gateway**, puis redémarrez le Gateway.
 
 Aucun binaire CLI externe `zca`/`openzca` n’est requis.
 
 ## Installation
 
-### Option A : installation depuis npm
+### Option A : installer depuis npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
+Si npm indique que le package appartenant à OpenClaw est obsolète, cette version du package provient
+d’une ancienne série de packages externe ; utilisez une build OpenClaw packagée actuelle ou
+le chemin du dossier local jusqu’à la publication d’un package npm plus récent.
+
 Redémarrez ensuite le Gateway.
 
-### Option B : installation depuis un dossier local (dev)
+### Option B : installer depuis un dossier local (développement)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -82,9 +88,9 @@ Nom de l’outil : `zalouser`
 
 Actions : `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Les actions de message de canal prennent aussi en charge `react` pour les réactions aux messages.
+Les actions de message de canal prennent également en charge `react` pour les réactions aux messages.
 
 ## Associé
 
 - [Créer des plugins](/fr/plugins/building-plugins)
-- [Plugins communautaires](/fr/plugins/community)
+- [Plugins de la communauté](/fr/plugins/community)

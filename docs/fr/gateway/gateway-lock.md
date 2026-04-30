@@ -1,42 +1,44 @@
 ---
 read_when:
-    - Exécuter ou déboguer le processus Gateway
-    - Enquêter sur l’application de l’instance unique
-summary: Garde singleton du Gateway utilisant la liaison du listener WebSocket
+    - Exécution ou débogage du processus Gateway
+    - Analyse de l’application de l’instance unique
+summary: Protection du singleton Gateway utilisant la liaison de l’écouteur WebSocket
 title: Verrou du Gateway
 x-i18n:
-    generated_at: "2026-04-24T07:10:31Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T07:26:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4f52405d1891470592cb2f9328421dc910c15f4fdc4d34d57c1fec8b322c753f
+    source_hash: fe61ff81106554e98de1ca04c213b76d230265cdf3e81b70897d2de00f6a0179
     source_path: gateway/gateway-lock.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Pourquoi
 
-- Garantir qu’une seule instance du gateway s’exécute par port de base sur le même hôte ; les gateways supplémentaires doivent utiliser des profils isolés et des ports uniques.
-- Survivre aux crashs/SIGKILL sans laisser de fichiers de verrou obsolètes.
+- Garantir qu’une seule instance de Gateway s’exécute par port de base sur le même hôte ; les Gateways supplémentaires doivent utiliser des profils isolés et des ports uniques.
+- Résister aux plantages/SIGKILL sans laisser de fichiers de verrouillage obsolètes.
 - Échouer rapidement avec une erreur claire lorsque le port de contrôle est déjà occupé.
 
 ## Mécanisme
 
-- Le gateway lie le listener WebSocket (par défaut `ws://127.0.0.1:18789`) immédiatement au démarrage à l’aide d’un listener TCP exclusif.
+- Le Gateway acquiert d’abord un fichier de verrouillage par configuration dans le répertoire des verrous d’état et sonde le port configuré pour détecter un écouteur existant.
+- Si le propriétaire du verrou enregistré n’existe plus, si le port est libre ou si le verrou est obsolète, le démarrage récupère le verrou et continue.
+- Le Gateway lie ensuite l’écouteur HTTP/WebSocket (par défaut `ws://127.0.0.1:18789`) au moyen d’un écouteur TCP exclusif.
 - Si la liaison échoue avec `EADDRINUSE`, le démarrage lève `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
-- L’OS libère automatiquement le listener à toute sortie du processus, y compris en cas de crash et de SIGKILL — aucun fichier de verrou séparé ni étape de nettoyage n’est nécessaire.
-- À l’arrêt, le gateway ferme le serveur WebSocket et le serveur HTTP sous-jacent afin de libérer rapidement le port.
+- À l’arrêt, le Gateway ferme le serveur HTTP/WebSocket et supprime le fichier de verrouillage.
 
 ## Surface d’erreur
 
-- Si un autre processus détient le port, le démarrage lève `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
+- Si un autre processus occupe le port, le démarrage lève `GatewayLockError("another gateway instance is already listening on ws://127.0.0.1:<port>")`.
 - Les autres échecs de liaison apparaissent sous la forme `GatewayLockError("failed to bind gateway socket on ws://127.0.0.1:<port>: …")`.
 
-## Remarques opérationnelles
+## Notes opérationnelles
 
-- Si le port est occupé par _un autre_ processus, l’erreur est la même ; libérez le port ou choisissez-en un autre avec `openclaw gateway --port <port>`.
-- L’app macOS conserve toujours sa propre garde PID légère avant de lancer le gateway ; le verrou runtime est appliqué par la liaison WebSocket.
+- Si le port est occupé par un _autre_ processus, l’erreur est la même ; libérez le port ou choisissez-en un autre avec `openclaw gateway --port <port>`.
+- Sous un superviseur de service, un nouveau processus Gateway qui détecte un répondant `/healthz` existant et sain se termine avec succès et laisse ce processus garder le contrôle. Si le processus existant ne devient jamais sain, les nouvelles tentatives sont bornées et le démarrage échoue avec une erreur de verrouillage claire au lieu de boucler indéfiniment.
+- L’app macOS conserve toujours son propre garde PID léger avant de lancer le Gateway ; le verrou d’exécution est appliqué par le fichier de verrouillage plus la liaison HTTP/WebSocket.
 
-## Articles connexes
+## Liens connexes
 
-- [Plusieurs Gateways](/fr/gateway/multiple-gateways) — exécuter plusieurs instances avec des ports uniques
+- [Gateways multiples](/fr/gateway/multiple-gateways) — exécuter plusieurs instances avec des ports uniques
 - [Dépannage](/fr/gateway/troubleshooting) — diagnostiquer `EADDRINUSE` et les conflits de ports
