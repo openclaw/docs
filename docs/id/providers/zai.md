@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Anda ingin model Z.AI / GLM di OpenClaw
-    - Anda memerlukan penyiapan `ZAI_API_KEY` yang sederhana
+    - Anda menginginkan model Z.AI / GLM di OpenClaw
+    - Anda memerlukan penyiapan ZAI_API_KEY sederhana
 summary: Gunakan Z.AI (model GLM) dengan OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-26T11:38:03Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:09:22Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5e2935aae04850539f46908fcbfc12111eac3ebbd963244e6347165afdd14bc5
+    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
     source_path: providers/zai.md
-    workflow: 15
+    workflow: 16
 ---
 
 Z.AI adalah platform API untuk model **GLM**. Platform ini menyediakan REST API untuk GLM dan menggunakan API key
@@ -18,14 +18,14 @@ untuk autentikasi. Buat API key Anda di konsol Z.AI. OpenClaw menggunakan provid
 dengan API key Z.AI.
 
 - Provider: `zai`
-- Auth: `ZAI_API_KEY`
+- Autentikasi: `ZAI_API_KEY`
 - API: Z.AI Chat Completions (autentikasi Bearer)
 
 ## Memulai
 
 <Tabs>
-  <Tab title="Deteksi endpoint otomatis">
-    **Terbaik untuk:** sebagian besar pengguna. OpenClaw mendeteksi endpoint Z.AI yang cocok dari key dan menerapkan base URL yang benar secara otomatis.
+  <Tab title="Deteksi otomatis endpoint">
+    **Paling cocok untuk:** sebagian besar pengguna. OpenClaw mendeteksi endpoint Z.AI yang sesuai dari key dan menerapkan base URL yang benar secara otomatis.
 
     <Steps>
       <Step title="Jalankan onboarding">
@@ -33,7 +33,7 @@ dengan API key Z.AI.
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Setel model default">
+      <Step title="Tetapkan model default">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -41,7 +41,7 @@ dengan API key Z.AI.
         }
         ```
       </Step>
-      <Step title="Verifikasi model tersedia">
+      <Step title="Verifikasi bahwa model tersedia">
         ```bash
         openclaw models list --provider zai
         ```
@@ -51,7 +51,7 @@ dengan API key Z.AI.
   </Tab>
 
   <Tab title="Endpoint regional eksplisit">
-    **Terbaik untuk:** pengguna yang ingin memaksa Coding Plan tertentu atau surface API umum tertentu.
+    **Paling cocok untuk:** pengguna yang ingin memaksa Coding Plan atau permukaan API umum tertentu.
 
     <Steps>
       <Step title="Pilih opsi onboarding yang tepat">
@@ -62,14 +62,14 @@ dengan API key Z.AI.
         # Coding Plan CN (wilayah China)
         openclaw onboard --auth-choice zai-coding-cn
 
-        # API umum
+        # API Umum
         openclaw onboard --auth-choice zai-global
 
-        # API umum CN (wilayah China)
+        # API Umum CN (wilayah China)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Setel model default">
+      <Step title="Tetapkan model default">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -77,7 +77,7 @@ dengan API key Z.AI.
         }
         ```
       </Step>
-      <Step title="Verifikasi model tersedia">
+      <Step title="Verifikasi bahwa model tersedia">
         ```bash
         openclaw models list --provider zai
         ```
@@ -89,9 +89,9 @@ dengan API key Z.AI.
 
 ## Katalog bawaan
 
-OpenClaw saat ini melakukan seed pada provider bawaan `zai` dengan:
+OpenClaw saat ini mengisi provider `zai` bawaan dengan:
 
-| Model ref            | Catatan       |
+| Ref model            | Catatan       |
 | -------------------- | ------------- |
 | `zai/glm-5.1`        | Model default |
 | `zai/glm-5`          |               |
@@ -115,8 +115,8 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
 
 <AccordionGroup>
   <Accordion title="Forward-resolving model GLM-5 yang tidak dikenal">
-    Id `glm-5*` yang tidak dikenal tetap di-forward-resolve pada jalur provider bawaan dengan
-    mensintesis metadata milik provider dari template `glm-4.7` ketika id tersebut
+    Id `glm-5*` yang tidak dikenal tetap di-resolve maju pada jalur provider bawaan dengan
+    menyintesis metadata milik provider dari templat `glm-4.7` ketika id tersebut
     cocok dengan bentuk keluarga GLM-5 saat ini.
   </Accordion>
 
@@ -139,13 +139,13 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
 
   </Accordion>
 
-  <Accordion title="Thinking dan preserved thinking">
+  <Accordion title="Thinking dan thinking yang dipertahankan">
     Thinking Z.AI mengikuti kontrol `/think` OpenClaw. Saat thinking nonaktif,
     OpenClaw mengirim `thinking: { type: "disabled" }` untuk menghindari respons yang
-    menghabiskan anggaran output pada `reasoning_content` sebelum teks terlihat.
+    menghabiskan anggaran keluaran pada `reasoning_content` sebelum teks yang terlihat.
 
-    Preserved thinking bersifat opt-in karena Z.AI mengharuskan
-    `reasoning_content` historis penuh diputar ulang, yang meningkatkan token prompt. Aktifkan
+    Thinking yang dipertahankan bersifat opt-in karena Z.AI mengharuskan seluruh riwayat
+    `reasoning_content` diputar ulang, yang meningkatkan token prompt. Aktifkan
     per model:
 
     ```json5
@@ -162,11 +162,11 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
     }
     ```
 
-    Saat diaktifkan dan thinking aktif, OpenClaw mengirim
+    Saat diaktifkan dan thinking menyala, OpenClaw mengirim
     `thinking: { type: "enabled", clear_thinking: false }` dan memutar ulang
-    `reasoning_content` sebelumnya untuk transkrip OpenAI-compatible yang sama.
+    `reasoning_content` sebelumnya untuk transkrip kompatibel OpenAI yang sama.
 
-    Pengguna lanjutan tetap dapat menimpa payload provider yang tepat dengan
+    Pengguna tingkat lanjut masih dapat mengganti payload provider yang tepat dengan
     `params.extra_body.thinking`.
 
   </Accordion>
@@ -174,19 +174,19 @@ Model GLM tersedia sebagai `zai/<model>` (contoh: `zai/glm-5`). Ref model bawaan
   <Accordion title="Pemahaman gambar">
     Plugin Z.AI bawaan mendaftarkan pemahaman gambar.
 
-    | Property      | Nilai       |
+    | Properti      | Nilai       |
     | ------------- | ----------- |
     | Model         | `glm-4.6v`  |
 
     Pemahaman gambar di-resolve otomatis dari auth Z.AI yang dikonfigurasi — tidak
-    diperlukan config tambahan.
+    diperlukan konfigurasi tambahan.
 
   </Accordion>
 
   <Accordion title="Detail auth">
     - Z.AI menggunakan autentikasi Bearer dengan API key Anda.
-    - Opsi onboarding `zai-api-key` mendeteksi endpoint Z.AI yang cocok dari prefiks key secara otomatis.
-    - Gunakan opsi regional eksplisit (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) saat Anda ingin memaksa surface API tertentu.
+    - Opsi onboarding `zai-api-key` mendeteksi otomatis endpoint Z.AI yang sesuai dari prefiks key.
+    - Gunakan opsi regional eksplisit (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) saat Anda ingin memaksa permukaan API tertentu.
 
   </Accordion>
 </AccordionGroup>

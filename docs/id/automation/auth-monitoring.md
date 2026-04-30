@@ -2,17 +2,17 @@
 summary: Alihkan ke /gateway/authentication
 title: Pemantauan autentikasi
 x-i18n:
-    generated_at: "2026-04-24T08:57:06Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:31:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a80b75d3f35d0255213907562a5ac0416d9bf9fe6f8026193bff07e2f33086a2
+    source_hash: d0bb68c2881911afc634aaba017444a5a8356f4cc519f0a2b5e415ff9ad739f3
     source_path: automation/auth-monitoring.md
-    workflow: 15
+    workflow: 16
 ---
 
-Halaman ini dipindahkan ke [Authentication](/id/gateway/authentication). Lihat [Authentication](/id/gateway/authentication) untuk dokumentasi pemantauan autentikasi.
+Pemantauan autentikasi berada di bawah [Autentikasi](/id/gateway/authentication).
 
 ## Terkait
 
-- [Pemecahan masalah otomatisasi](/id/automation/cron-jobs)
-- [Hooks](/id/automation/hooks)
+- [Pemecahan masalah otomasi](/id/automation/cron-jobs)
+- [Kait](/id/automation/hooks)

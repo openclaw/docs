@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Mengubah runtime agen, bootstrap workspace, atau perilaku sesi
-summary: Runtime agen, kontrak workspace, dan bootstrap sesi
+    - Mengubah lingkungan eksekusi agen, inisialisasi ruang kerja, atau perilaku sesi
+summary: Runtime agen, kontrak ruang kerja, dan inisialisasi awal sesi
 title: Runtime agen
 x-i18n:
-    generated_at: "2026-04-25T13:44:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:42:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 37483fdb62d41a8f888bd362db93078dc8ecb8bb3fd19270b0234689aa82f309
+    source_hash: f4d65ee96cece296251d7d3a0512f12d2dfa900db0e5ffc0f37dcddae7ea55ad
     source_path: concepts/agent.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw menjalankan **satu runtime agen embedded** — satu proses agen per
-Gateway, dengan workspace, file bootstrap, dan session store miliknya sendiri. Halaman ini
-mencakup kontrak runtime tersebut: apa yang harus ada di workspace, file mana yang
-diinjeksikan, dan bagaimana sesi melakukan bootstrap terhadapnya.
+OpenClaw menjalankan **satu runtime agen tertanam** — satu proses agen per
+Gateway, dengan workspace, file bootstrap, dan penyimpanan sesinya sendiri. Halaman ini
+membahas kontrak runtime tersebut: apa yang harus ada dalam workspace, file mana yang
+disuntikkan, dan bagaimana sesi melakukan bootstrap terhadapnya.
 
 ## Workspace (wajib)
 
-OpenClaw menggunakan satu direktori workspace agen (`agents.defaults.workspace`) sebagai **satu-satunya** working directory (`cwd`) agen untuk alat dan konteks.
+OpenClaw menggunakan satu direktori workspace agen (`agents.defaults.workspace`) sebagai direktori kerja (`cwd`) **satu-satunya** milik agen untuk alat dan konteks.
 
-Disarankan: gunakan `openclaw setup` untuk membuat `~/.openclaw/openclaw.json` jika belum ada dan menginisialisasi file workspace.
+Direkomendasikan: gunakan `openclaw setup` untuk membuat `~/.openclaw/openclaw.json` jika belum ada dan menginisialisasi file workspace.
 
-Panduan lengkap tata letak workspace + backup: [Agent workspace](/id/concepts/agent-workspace)
+Tata letak workspace lengkap + panduan pencadangan: [Workspace agen](/id/concepts/agent-workspace)
 
-Jika `agents.defaults.sandbox` diaktifkan, sesi non-main dapat menimpa ini dengan
+Jika `agents.defaults.sandbox` diaktifkan, sesi non-utama dapat menimpanya dengan
 workspace per sesi di bawah `agents.defaults.sandbox.workspaceRoot` (lihat
-[Gateway configuration](/id/gateway/configuration)).
+[Konfigurasi Gateway](/id/gateway/configuration)).
 
-## File bootstrap (diinjeksikan)
+## File bootstrap (disuntikkan)
 
 Di dalam `agents.defaults.workspace`, OpenClaw mengharapkan file yang dapat diedit pengguna berikut:
 
-- `AGENTS.md` — instruksi operasi + “memori”
+- `AGENTS.md` — instruksi operasional + “memori”
 - `SOUL.md` — persona, batasan, nada
-- `TOOLS.md` — catatan alat yang dikelola pengguna (misalnya `imsg`, `sag`, konvensi)
-- `BOOTSTRAP.md` — ritual pertama kali dijalankan satu kali (dihapus setelah selesai)
-- `IDENTITY.md` — nama/gaya/emoji agen
-- `USER.md` — profil pengguna + sapaan yang diutamakan
+- `TOOLS.md` — catatan alat yang dikelola pengguna (mis. `imsg`, `sag`, konvensi)
+- `BOOTSTRAP.md` — ritual sekali jalan pertama kali (dihapus setelah selesai)
+- `IDENTITY.md` — nama/vibe/emoji agen
+- `USER.md` — profil pengguna + sapaan yang disukai
 
-Pada giliran pertama sesi baru, OpenClaw menginjeksikan isi file-file ini langsung ke konteks agen.
+Pada giliran pertama sesi baru, OpenClaw menyuntikkan isi file-file ini langsung ke konteks agen.
 
-File kosong dilewati. File besar dipangkas dan dipotong dengan marker agar prompt tetap ringkas (baca file untuk konten lengkap).
+File kosong dilewati. File besar dipangkas dan dipotong dengan penanda agar prompt tetap ringkas (baca file untuk isi lengkap).
 
-Jika file tidak ada, OpenClaw menginjeksikan satu baris marker “file hilang” (dan `openclaw setup` akan membuat template default yang aman).
+Jika sebuah file hilang, OpenClaw menyuntikkan satu baris penanda “file hilang” (dan `openclaw setup` akan membuat templat default yang aman).
 
-`BOOTSTRAP.md` hanya dibuat untuk **workspace yang benar-benar baru** (belum ada file bootstrap lain). Jika Anda menghapusnya setelah menyelesaikan ritual, file ini tidak boleh dibuat ulang pada restart berikutnya.
+`BOOTSTRAP.md` hanya dibuat untuk **workspace yang benar-benar baru** (tidak ada file bootstrap lain). Jika Anda menghapusnya setelah menyelesaikan ritual, file itu tidak boleh dibuat ulang pada restart berikutnya.
 
-Untuk menonaktifkan pembuatan file bootstrap sepenuhnya (untuk workspace yang sudah di-seed sebelumnya), setel:
+Untuk menonaktifkan pembuatan file bootstrap sepenuhnya (untuk workspace yang sudah diisi sebelumnya), atur:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
@@ -57,28 +57,28 @@ Untuk menonaktifkan pembuatan file bootstrap sepenuhnya (untuk workspace yang su
 ## Alat bawaan
 
 Alat inti (read/exec/edit/write dan alat sistem terkait) selalu tersedia,
-sesuai dengan kebijakan alat. `apply_patch` bersifat opsional dan dibatasi oleh
-`tools.exec.applyPatch`. `TOOLS.md` **tidak** mengontrol alat mana yang ada; file ini adalah
+sesuai kebijakan alat. `apply_patch` bersifat opsional dan dikendalikan oleh
+`tools.exec.applyPatch`. `TOOLS.md` **tidak** mengontrol alat mana yang ada; itu adalah
 panduan tentang bagaimana _Anda_ ingin alat tersebut digunakan.
 
 ## Skills
 
-OpenClaw memuat Skills dari lokasi berikut (prioritas tertinggi lebih dulu):
+OpenClaw memuat skills dari lokasi berikut (prioritas tertinggi terlebih dahulu):
 
 - Workspace: `<workspace>/skills`
-- Skills agen project: `<workspace>/.agents/skills`
-- Skills agen pribadi: `~/.agents/skills`
+- Skill agen proyek: `<workspace>/.agents/skills`
+- Skill agen pribadi: `~/.agents/skills`
 - Terkelola/lokal: `~/.openclaw/skills`
-- Bundled (dikirim bersama instalasi)
+- Bundel (dikirim bersama instalasi)
 - Folder skill tambahan: `skills.load.extraDirs`
 
-Skills dapat dibatasi oleh config/env (lihat `skills` di [Gateway configuration](/id/gateway/configuration)).
+Skills dapat dibatasi oleh config/env (lihat `skills` di [Konfigurasi Gateway](/id/gateway/configuration)).
 
 ## Batas runtime
 
-Runtime agen embedded dibangun di atas inti agen Pi (model, alat, dan
-pipeline prompt). Manajemen sesi, discovery, wiring alat, dan pengiriman channel
-adalah lapisan milik OpenClaw di atas inti tersebut.
+Runtime agen tertanam dibangun di atas inti agen Pi (model, alat, dan
+pipeline prompt). Manajemen sesi, penemuan, pengabelan alat, dan pengiriman
+channel adalah lapisan milik OpenClaw di atas inti tersebut.
 
 ## Sesi
 
@@ -89,51 +89,57 @@ Transkrip sesi disimpan sebagai JSONL di:
 ID sesi stabil dan dipilih oleh OpenClaw.
 Folder sesi lama dari alat lain tidak dibaca.
 
-## Pengarahan saat streaming
+## Mengarahkan saat streaming
 
-Ketika mode antrean adalah `steer`, pesan masuk diinjeksikan ke eksekusi saat ini.
-Pengarahan dalam antrean dikirim **setelah giliran asisten saat ini selesai
-mengeksekusi tool call-nya**, sebelum pemanggilan LLM berikutnya. Pengarahan tidak lagi melewati
-tool call yang tersisa dari pesan asisten saat ini; pesan dalam antrean diinjeksikan
-pada batas model berikutnya.
+Ketika mode antrean adalah `steer`, pesan masuk disuntikkan ke run saat ini.
+Pengarahan yang diantrekan dikirim **setelah giliran asisten saat ini selesai
+mengeksekusi panggilan alatnya**, sebelum panggilan LLM berikutnya. Pi menguras semua pesan
+pengarahan tertunda sekaligus untuk `steer`; `queue` lama menguras satu pesan per
+batas model. Pengarahan tidak lagi melewati panggilan alat tersisa dari pesan
+asisten saat ini.
 
-Ketika mode antrean adalah `followup` atau `collect`, pesan masuk ditahan sampai
-giliran saat ini berakhir, lalu giliran agen baru dimulai dengan payload dalam antrean tersebut. Lihat
-[Queue](/id/concepts/queue) untuk perilaku mode + debounce/cap.
+Ketika mode antrean adalah `followup` atau `collect`, pesan masuk ditahan hingga
+giliran saat ini berakhir, lalu giliran agen baru dimulai dengan payload yang diantrekan. Lihat
+[Antrean](/id/concepts/queue) dan [Antrean pengarahan](/id/concepts/queue-steering) untuk perilaku mode
+dan batas.
 
-Streaming blok mengirim blok asisten yang selesai segera setelah selesai; ini
-**nonaktif secara default** (`agents.defaults.blockStreamingDefault: "off"`).
-Sesuaikan batasnya melalui `agents.defaults.blockStreamingBreak` (`text_end` vs `message_end`; default ke text_end).
-Kontrol chunking blok lunak dengan `agents.defaults.blockStreamingChunk` (default ke
+Streaming blok mengirim blok asisten yang selesai segera setelah blok tersebut selesai; fitur ini
+**mati secara default** (`agents.defaults.blockStreamingDefault: "off"`).
+Sesuaikan batas melalui `agents.defaults.blockStreamingBreak` (`text_end` vs `message_end`; default ke text_end).
+Kontrol pemotongan blok lunak dengan `agents.defaults.blockStreamingChunk` (default ke
 800–1200 karakter; mengutamakan jeda paragraf, lalu baris baru; kalimat terakhir).
-Gabungkan chunk yang di-stream dengan `agents.defaults.blockStreamingCoalesce` untuk mengurangi
+Gabungkan potongan yang di-stream dengan `agents.defaults.blockStreamingCoalesce` untuk mengurangi
 spam satu baris (penggabungan berbasis idle sebelum kirim). Channel non-Telegram memerlukan
 `*.blockStreaming: true` eksplisit untuk mengaktifkan balasan blok.
-Ringkasan alat verbose dikeluarkan saat alat dimulai (tanpa debounce); UI Control
-men-stream output alat melalui event agen bila tersedia.
-Detail lebih lanjut: [Streaming + chunking](/id/concepts/streaming).
+Ringkasan alat verbose dikeluarkan saat alat dimulai (tanpa debounce); Control UI
+melakukan stream output alat melalui event agen jika tersedia.
+Detail selengkapnya: [Streaming + pemotongan](/id/concepts/streaming).
 
-## Ref model
+## Referensi model
 
-Ref model dalam config (misalnya `agents.defaults.model` dan `agents.defaults.models`) diparse dengan memisahkan pada **`/` pertama**.
+Referensi model dalam konfigurasi (misalnya `agents.defaults.model` dan `agents.defaults.models`) diurai dengan memisahkan pada `/` **pertama**.
 
 - Gunakan `provider/model` saat mengonfigurasi model.
-- Jika ID model itu sendiri berisi `/` (gaya OpenRouter), sertakan prefix provider (contoh: `openrouter/moonshotai/kimi-k2`).
-- Jika Anda menghilangkan provider, OpenClaw mencoba alias terlebih dahulu, lalu kecocokan provider yang dikonfigurasi dan unik untuk id model tersebut, dan baru kemudian fallback ke provider default yang dikonfigurasi. Jika provider tersebut tidak lagi mengekspos model default yang dikonfigurasi, OpenClaw fallback ke provider/model pertama yang dikonfigurasi alih-alih menampilkan default provider yang sudah usang dan dihapus.
+- Jika ID model itu sendiri berisi `/` (gaya OpenRouter), sertakan prefiks provider (contoh: `openrouter/moonshotai/kimi-k2`).
+- Jika Anda menghilangkan provider, OpenClaw mencoba alias terlebih dahulu, lalu kecocokan
+  provider-terkonfigurasi yang unik untuk id model persis tersebut, dan baru kemudian fallback
+  ke provider default yang dikonfigurasi. Jika provider tersebut tidak lagi mengekspos
+  model default yang dikonfigurasi, OpenClaw fallback ke provider/model pertama yang
+  dikonfigurasi alih-alih menampilkan default provider yang sudah dihapus dan usang.
 
 ## Konfigurasi (minimal)
 
-Minimal, setel:
+Minimal, atur:
 
 - `agents.defaults.workspace`
-- `channels.whatsapp.allowFrom` (sangat disarankan)
+- `channels.whatsapp.allowFrom` (sangat direkomendasikan)
 
 ---
 
-_Berikutnya: [Group Chats](/id/channels/group-messages)_ 🦞
+_Berikutnya: [Chat Grup](/id/channels/group-messages)_ 🦞
 
 ## Terkait
 
-- [Agent workspace](/id/concepts/agent-workspace)
-- [Multi-agent routing](/id/concepts/multi-agent)
-- [Session management](/id/concepts/session)
+- [Workspace agen](/id/concepts/agent-workspace)
+- [Perutean multi-agen](/id/concepts/multi-agent)
+- [Manajemen sesi](/id/concepts/session)

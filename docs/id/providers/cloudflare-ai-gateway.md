@@ -1,46 +1,48 @@
 ---
 read_when:
     - Anda ingin menggunakan Cloudflare AI Gateway dengan OpenClaw
-    - Anda memerlukan account ID, gateway ID, atau env var API key
-summary: Penyiapan Cloudflare AI Gateway (auth + pemilihan model)
+    - Anda memerlukan ID akun, ID Gateway, atau variabel lingkungan kunci API
+summary: Penyiapan Cloudflare AI Gateway (autentikasi + pemilihan model)
 title: Cloudflare AI Gateway
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T09:22:39Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: fb10ef4bd92db88b2b3dac1773439ab2ba37916a72d1925995d74ef787fa1c8b
-  source_path: providers/cloudflare-ai-gateway.md
-  workflow: 15
+    generated_at: "2026-04-30T10:06:32Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: c7c567076a5b3fea0f09f44d772c0858aed2a4813f91f1cc9f87b0da39c2e5db
+    source_path: providers/cloudflare-ai-gateway.md
+    workflow: 16
 ---
 
-Cloudflare AI Gateway berada di depan API provider dan memungkinkan Anda menambahkan analitik, caching, dan kontrol. Untuk Anthropic, OpenClaw menggunakan Anthropic Messages API melalui endpoint Gateway Anda.
+Cloudflare AI Gateway berada di depan API penyedia dan memungkinkan Anda menambahkan analitik, caching, dan kontrol. Untuk Anthropic, OpenClaw menggunakan Anthropic Messages API melalui endpoint Gateway Anda.
 
-| Properti      | Nilai                                                                                   |
-| ------------- | --------------------------------------------------------------------------------------- |
-| Provider      | `cloudflare-ai-gateway`                                                                 |
-| Base URL      | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`             |
-| Model default | `cloudflare-ai-gateway/claude-sonnet-4-6`                                               |
-| API key       | `CLOUDFLARE_AI_GATEWAY_API_KEY` (API key provider Anda untuk permintaan melalui Gateway) |
+| Properti      | Nilai                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| Penyedia      | `cloudflare-ai-gateway`                                                                  |
+| URL Dasar     | `https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic`               |
+| Model default | `cloudflare-ai-gateway/claude-sonnet-4-6`                                                |
+| Kunci API     | `CLOUDFLARE_AI_GATEWAY_API_KEY` (kunci API penyedia Anda untuk permintaan melalui Gateway) |
 
 <Note>
-Untuk model Anthropic yang dirutekan melalui Cloudflare AI Gateway, gunakan **Anthropic API key** Anda sebagai kunci provider.
+Untuk model Anthropic yang dirutekan melalui Cloudflare AI Gateway, gunakan **kunci API Anthropic** Anda sebagai kunci penyedia.
 </Note>
+
+Saat thinking diaktifkan untuk model Anthropic Messages, OpenClaw menghapus giliran prefill asisten di akhir sebelum mengirim payload melalui Cloudflare AI Gateway.
+Anthropic menolak prefilling respons dengan extended thinking, sementara prefill non-thinking biasa tetap tersedia.
 
 ## Memulai
 
 <Steps>
-  <Step title="Tetapkan API key provider dan detail Gateway">
+  <Step title="Set the provider API key and Gateway details">
     Jalankan onboarding dan pilih opsi auth Cloudflare AI Gateway:
 
     ```bash
     openclaw onboard --auth-choice cloudflare-ai-gateway-api-key
     ```
 
-    Ini akan meminta account ID, gateway ID, dan API key Anda.
+    Ini meminta ID akun, ID gateway, dan kunci API Anda.
 
   </Step>
-  <Step title="Tetapkan model default">
+  <Step title="Set a default model">
     Tambahkan model ke config OpenClaw Anda:
 
     ```json5
@@ -54,7 +56,7 @@ Untuk model Anthropic yang dirutekan melalui Cloudflare AI Gateway, gunakan **An
     ```
 
   </Step>
-  <Step title="Verifikasi bahwa model tersedia">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider cloudflare-ai-gateway
     ```
@@ -63,7 +65,7 @@ Untuk model Anthropic yang dirutekan melalui Cloudflare AI Gateway, gunakan **An
 
 ## Contoh non-interaktif
 
-Untuk penyiapan berskrip atau CI, berikan semua nilai di command line:
+Untuk penyiapan skrip atau CI, teruskan semua nilai di baris perintah:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -77,8 +79,8 @@ openclaw onboard --non-interactive \
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Gateway terautentikasi">
-    Jika Anda mengaktifkan autentikasi Gateway di Cloudflare, tambahkan header `cf-aig-authorization`. Ini **tambahan** selain API key provider Anda.
+  <Accordion title="Authenticated gateways">
+    Jika Anda mengaktifkan autentikasi Gateway di Cloudflare, tambahkan header `cf-aig-authorization`. Ini **sebagai tambahan dari** kunci API penyedia Anda.
 
     ```json5
     {
@@ -95,16 +97,16 @@ openclaw onboard --non-interactive \
     ```
 
     <Tip>
-    Header `cf-aig-authorization` mengautentikasi ke Cloudflare Gateway itu sendiri, sedangkan API key provider (misalnya kunci Anthropic Anda) mengautentikasi ke provider upstream.
+    Header `cf-aig-authorization` mengautentikasi dengan Cloudflare Gateway itu sendiri, sementara kunci API penyedia (misalnya, kunci Anthropic Anda) mengautentikasi dengan penyedia upstream.
     </Tip>
 
   </Accordion>
 
-  <Accordion title="Catatan environment">
+  <Accordion title="Environment note">
     Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `CLOUDFLARE_AI_GATEWAY_API_KEY` tersedia untuk proses tersebut.
 
     <Warning>
-    Kunci yang hanya ada di `~/.profile` tidak akan membantu daemon launchd/systemd kecuali environment tersebut juga diimpor ke sana. Atur kunci di `~/.openclaw/.env` atau melalui `env.shellEnv` untuk memastikan proses gateway dapat membacanya.
+    Kunci yang hanya berada di `~/.profile` tidak akan membantu daemon launchd/systemd kecuali environment tersebut juga diimpor ke sana. Tetapkan kunci di `~/.openclaw/.env` atau melalui `env.shellEnv` untuk memastikan proses gateway dapat membacanya.
     </Warning>
 
   </Accordion>
@@ -113,10 +115,10 @@ openclaw onboard --non-interactive \
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, ref model, dan perilaku failover.
+  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
+    Memilih penyedia, referensi model, dan perilaku failover.
   </Card>
-  <Card title="Pemecahan masalah" href="/id/help/troubleshooting" icon="wrench">
+  <Card title="Troubleshooting" href="/id/help/troubleshooting" icon="wrench">
     Pemecahan masalah umum dan FAQ.
   </Card>
 </CardGroup>

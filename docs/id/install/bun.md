@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Anda menginginkan loop dev lokal tercepat (bun + watch)
-    - Anda mengalami masalah instalasi/patch/skrip lifecycle Bun
-summary: 'Alur kerja Bun (eksperimental): instalasi dan hal yang perlu diwaspadai vs pnpm'
+    - Anda menginginkan siklus pengembangan lokal tercepat (bun + watch)
+    - Anda mengalami masalah instalasi, patch, atau skrip siklus hidup Bun
+summary: 'Alur kerja Bun (eksperimental): instalasi dan hal-hal yang perlu diperhatikan dibandingkan pnpm'
 title: Bun (eksperimental)
 x-i18n:
-    generated_at: "2026-04-24T09:12:23Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:54:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5637f64fe272faf74915e8de115f21fdf9c9dd0406e5c471932323b2c1d4c0bd
+    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
     source_path: install/bun.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-Bun **tidak direkomendasikan untuk runtime gateway** (ada masalah yang diketahui dengan WhatsApp dan Telegram). Gunakan Node untuk produksi.
+Bun **tidak direkomendasikan untuk runtime Gateway** (masalah yang diketahui dengan WhatsApp dan Telegram). Gunakan Node untuk produksi.
 </Warning>
 
-Bun adalah runtime lokal opsional untuk menjalankan TypeScript secara langsung (`bun run ...`, `bun --watch ...`). Manajer paket default tetap `pnpm`, yang didukung sepenuhnya dan digunakan oleh tooling dokumentasi. Bun tidak dapat menggunakan `pnpm-lock.yaml` dan akan mengabaikannya.
+Bun adalah runtime lokal opsional untuk menjalankan TypeScript secara langsung (`bun run ...`, `bun --watch ...`). Package manager default tetap `pnpm`, yang didukung sepenuhnya dan digunakan oleh tooling docs. Bun tidak dapat menggunakan `pnpm-lock.yaml` dan akan mengabaikannya.
 
 ## Instalasi
 
@@ -27,14 +27,14 @@ Bun adalah runtime lokal opsional untuk menjalankan TypeScript secara langsung (
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` diabaikan oleh git, sehingga tidak ada churn repo. Untuk melewati penulisan lockfile sepenuhnya:
+    `bun.lock` / `bun.lockb` masuk gitignore, sehingga tidak ada churn repo. Untuk melewati penulisan lockfile sepenuhnya:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Build dan test">
+  <Step title="Build dan uji">
     ```sh
     bun run build
     bun run vitest run
@@ -44,10 +44,10 @@ Bun adalah runtime lokal opsional untuk menjalankan TypeScript secara langsung (
 
 ## Skrip lifecycle
 
-Bun memblokir skrip lifecycle dependensi kecuali secara eksplisit dipercaya. Untuk repo ini, skrip yang umum diblokir tidak diperlukan:
+Bun memblokir skrip lifecycle dependensi kecuali dipercaya secara eksplisit. Untuk repo ini, skrip yang umum diblokir tidak diperlukan:
 
-- `@whiskeysockets/baileys` `preinstall` -- memeriksa Node major >= 20 (default OpenClaw adalah Node 24 dan masih mendukung Node 22 LTS, saat ini `22.14+`)
-- `protobufjs` `postinstall` -- menghasilkan peringatan tentang skema versi yang tidak kompatibel (tanpa artefak build)
+- `@whiskeysockets/baileys` `preinstall` -- memeriksa Node major >= 20 (OpenClaw default ke Node 24 dan masih mendukung Node 22 LTS, saat ini `22.14+`)
+- `protobufjs` `postinstall` -- mengeluarkan peringatan tentang skema versi yang tidak kompatibel (tanpa artefak build)
 
 Jika Anda mengalami masalah runtime yang memerlukan skrip ini, percayai secara eksplisit:
 
@@ -55,12 +55,12 @@ Jika Anda mengalami masalah runtime yang memerlukan skrip ini, percayai secara e
 bun pm trust @whiskeysockets/baileys protobufjs
 ```
 
-## Hal yang perlu diwaspadai
+## Catatan
 
-Beberapa skrip masih meng-hardcode pnpm (misalnya `docs:build`, `ui:*`, `protocol:check`). Untuk saat ini, jalankan skrip tersebut melalui pnpm.
+Beberapa skrip masih meng-hardcode pnpm (misalnya `docs:build`, `ui:*`, `protocol:check`). Jalankan skrip tersebut melalui pnpm untuk saat ini.
 
 ## Terkait
 
-- [Ikhtisar instalasi](/id/install)
+- [Ringkasan instalasi](/id/install)
 - [Node.js](/id/install/node)
 - [Memperbarui](/id/install/updating)

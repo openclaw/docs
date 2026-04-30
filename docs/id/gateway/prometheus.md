@@ -1,18 +1,18 @@
 ---
 read_when:
-    - Anda ingin Prometheus, Grafana, VictoriaMetrics, atau scraper lain mengumpulkan metrik Gateway OpenClaw
-    - Anda memerlukan nama metrik Prometheus dan kebijakan label untuk dashboard atau alert
+    - Anda ingin Prometheus, Grafana, VictoriaMetrics, atau scraper lain mengumpulkan metrik OpenClaw Gateway
+    - Anda memerlukan nama metrik Prometheus dan kebijakan label untuk dasbor atau peringatan
     - Anda menginginkan metrik tanpa menjalankan kolektor OpenTelemetry
 sidebarTitle: Prometheus
 summary: Ekspos diagnostik OpenClaw sebagai metrik teks Prometheus melalui Plugin diagnostics-prometheus
 title: Metrik Prometheus
 x-i18n:
-    generated_at: "2026-04-26T11:29:45Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:50:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 29fd3e4658ceffe20f078e8e38b61c685ea9df518ca04ca34abf2085166eb481
+    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
     source_path: gateway/prometheus.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw dapat mengekspos metrik diagnostik melalui Plugin bawaan `diagnostics-prometheus`. Plugin ini mendengarkan diagnostik internal tepercaya dan merender endpoint teks Prometheus di:
@@ -21,20 +21,20 @@ OpenClaw dapat mengekspos metrik diagnostik melalui Plugin bawaan `diagnostics-p
 GET /api/diagnostics/prometheus
 ```
 
-Tipe kontennya adalah `text/plain; version=0.0.4; charset=utf-8`, format eksposisi Prometheus standar.
+Jenis kontennya adalah `text/plain; version=0.0.4; charset=utf-8`, format eksposisi Prometheus standar.
 
 <Warning>
-Rute ini menggunakan autentikasi Gateway (cakupan operator). Jangan mengeksposnya sebagai endpoint `/metrics` publik tanpa autentikasi. Lakukan scrape melalui jalur autentikasi yang sama yang Anda gunakan untuk API operator lainnya.
+Rute ini menggunakan autentikasi Gateway (cakupan operator). Jangan mengeksposnya sebagai endpoint `/metrics` publik tanpa autentikasi. Scrape melalui jalur autentikasi yang sama dengan yang Anda gunakan untuk API operator lainnya.
 </Warning>
 
-Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [OpenTelemetry export](/id/gateway/opentelemetry).
+Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [Ekspor OpenTelemetry](/id/gateway/opentelemetry).
 
 ## Mulai cepat
 
 <Steps>
   <Step title="Aktifkan Plugin">
     <Tabs>
-      <Tab title="Config">
+      <Tab title="Konfigurasi">
         ```json5
         {
           plugins: {
@@ -57,10 +57,10 @@ Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [Op
     </Tabs>
   </Step>
   <Step title="Mulai ulang Gateway">
-    Rute HTTP didaftarkan saat startup Plugin, jadi lakukan reload setelah mengaktifkannya.
+    Rute HTTP didaftarkan saat Plugin dimulai, jadi muat ulang setelah mengaktifkannya.
   </Step>
   <Step title="Scrape rute yang dilindungi">
-    Kirim autentikasi gateway yang sama seperti yang digunakan klien operator Anda:
+    Kirim autentikasi gateway yang sama dengan yang digunakan klien operator Anda:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -84,12 +84,12 @@ Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [Op
 </Steps>
 
 <Note>
-`diagnostics.enabled: true` wajib diaktifkan. Tanpanya, Plugin tetap mendaftarkan rute HTTP tetapi tidak ada peristiwa diagnostik yang mengalir ke exporter, sehingga respons kosong.
+`diagnostics.enabled: true` wajib ada. Tanpanya, Plugin tetap mendaftarkan rute HTTP tetapi tidak ada peristiwa diagnostik yang mengalir ke eksportir, sehingga responsnya kosong.
 </Note>
 
 ## Metrik yang diekspor
 
-| Metric                                        | Tipe      | Label                                                                                     |
+| Metrik                                        | Jenis     | Label                                                                                     |
 | --------------------------------------------- | --------- | ----------------------------------------------------------------------------------------- |
 | `openclaw_run_completed_total`                | counter   | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
 | `openclaw_run_duration_seconds`               | histogram | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
@@ -111,31 +111,31 @@ Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [Op
 | `openclaw_session_state_total`                | counter   | `reason`, `state`                                                                         |
 | `openclaw_session_queue_depth`                | gauge     | `state`                                                                                   |
 | `openclaw_memory_bytes`                       | gauge     | `kind`                                                                                    |
-| `openclaw_memory_rss_bytes`                   | histogram | none                                                                                      |
+| `openclaw_memory_rss_bytes`                   | histogram | tidak ada                                                                                 |
 | `openclaw_memory_pressure_total`              | counter   | `level`, `reason`                                                                         |
 | `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
-| `openclaw_prometheus_series_dropped_total`    | counter   | none                                                                                      |
+| `openclaw_prometheus_series_dropped_total`    | counter   | tidak ada                                                                                 |
 
 ## Kebijakan label
 
 <AccordionGroup>
-  <Accordion title="Label terbatas, dengan kardinalitas rendah">
-    Label Prometheus dijaga tetap terbatas dan berkardinalitas rendah. Exporter tidak mengeluarkan pengenal diagnostik mentah seperti `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ID pesan, ID chat, atau ID permintaan provider.
+  <Accordion title="Label terbatas dengan kardinalitas rendah">
+    Label Prometheus tetap terbatas dan berkardinalitas rendah. Eksportir tidak memancarkan pengidentifikasi diagnostik mentah seperti `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ID pesan, ID chat, atau ID permintaan penyedia.
 
-    Nilai label disamarkan dan harus cocok dengan kebijakan karakter berkardinalitas rendah milik OpenClaw. Nilai yang gagal memenuhi kebijakan diganti dengan `unknown`, `other`, atau `none`, tergantung metriknya.
-
-  </Accordion>
-  <Accordion title="Batas seri dan akuntansi overflow">
-    Exporter membatasi seri waktu yang dipertahankan di memori hingga **2048** seri untuk gabungan counter, gauge, dan histogram. Seri baru di luar batas itu akan dibuang, dan `openclaw_prometheus_series_dropped_total` bertambah satu setiap kali hal itu terjadi.
-
-    Pantau counter ini sebagai sinyal keras bahwa sebuah atribut di upstream membocorkan nilai berkardinalitas tinggi. Exporter tidak pernah menaikkan batas secara otomatis; jika nilainya naik, perbaiki sumbernya alih-alih menonaktifkan batas.
+    Nilai label direduksi dan harus cocok dengan kebijakan karakter berkardinalitas rendah OpenClaw. Nilai yang gagal memenuhi kebijakan diganti dengan `unknown`, `other`, atau `none`, bergantung pada metriknya.
 
   </Accordion>
-  <Accordion title="Apa yang tidak pernah muncul dalam output Prometheus">
-    - teks prompt, teks respons, input tool, output tool, system prompt
-    - ID permintaan provider mentah (hanya hash terbatas, bila berlaku, pada span — tidak pernah pada metrik)
+  <Accordion title="Batas deret dan akuntansi luapan">
+    Eksportir membatasi deret waktu yang disimpan di memori hingga **2048** deret secara gabungan untuk counter, gauge, dan histogram. Deret baru di luar batas tersebut dibuang, dan `openclaw_prometheus_series_dropped_total` bertambah satu setiap kali.
+
+    Pantau counter ini sebagai sinyal keras bahwa atribut di upstream sedang membocorkan nilai berkardinalitas tinggi. Eksportir tidak pernah menaikkan batas secara otomatis; jika nilainya meningkat, perbaiki sumbernya alih-alih menonaktifkan batas.
+
+  </Accordion>
+  <Accordion title="Yang tidak pernah muncul dalam output Prometheus">
+    - teks prompt, teks respons, input alat, output alat, prompt sistem
+    - ID permintaan penyedia mentah (hanya hash terbatas, jika berlaku, pada span — tidak pernah pada metrik)
     - kunci sesi dan ID sesi
-    - hostname, path file, nilai secret
+    - nama host, jalur file, nilai rahasia
 
   </Accordion>
 </AccordionGroup>
@@ -143,51 +143,51 @@ Untuk trace, log, push OTLP, dan atribut semantik OpenTelemetry GenAI, lihat [Op
 ## Resep PromQL
 
 ```promql
-# Token per menit, dipisah menurut provider
+# Tokens per minute, split by provider
 sum by (provider) (rate(openclaw_model_tokens_total[1m]))
 
-# Pengeluaran (USD) selama satu jam terakhir, menurut model
+# Spend (USD) over the last hour, by model
 sum by (model) (increase(openclaw_model_cost_usd_total[1h]))
 
-# Persentil ke-95 durasi proses model
+# 95th percentile model run duration
 histogram_quantile(
   0.95,
   sum by (le, provider, model)
     (rate(openclaw_run_duration_seconds_bucket[5m]))
 )
 
-# SLO waktu tunggu antrean (95p di bawah 2 detik)
+# Queue wait time SLO (95p under 2s)
 histogram_quantile(
   0.95,
   sum by (le, lane) (rate(openclaw_queue_lane_wait_seconds_bucket[5m]))
 ) < 2
 
-# Seri Prometheus yang dibuang (alarm kardinalitas)
+# Dropped Prometheus series (cardinality alarm)
 increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Sebaiknya gunakan `gen_ai_client_token_usage` untuk dashboard lintas provider: metrik ini mengikuti konvensi semantik OpenTelemetry GenAI dan konsisten dengan metrik dari layanan GenAI non-OpenClaw.
+Pilih `gen_ai_client_token_usage` untuk dasbor lintas penyedia: metrik ini mengikuti konvensi semantik OpenTelemetry GenAI dan konsisten dengan metrik dari layanan GenAI non-OpenClaw.
 </Tip>
 
-## Memilih antara Prometheus dan OpenTelemetry export
+## Memilih antara ekspor Prometheus dan OpenTelemetry
 
-OpenClaw mendukung kedua permukaan ini secara independen. Anda dapat menjalankan salah satunya, keduanya, atau tidak sama sekali.
+OpenClaw mendukung kedua permukaan secara independen. Anda dapat menjalankan salah satu, keduanya, atau tidak keduanya.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - Model **pull**: Prometheus melakukan scrape ke `/api/diagnostics/prometheus`.
+    - Model **pull**: Prometheus melakukan scrape `/api/diagnostics/prometheus`.
     - Tidak memerlukan kolektor eksternal.
     - Diautentikasi melalui autentikasi Gateway normal.
-    - Permukaannya hanya metrik (tanpa trace atau log).
+    - Permukaan hanya berisi metrik (tanpa trace atau log).
     - Paling cocok untuk stack yang sudah distandardisasi pada Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
     - Model **push**: OpenClaw mengirim OTLP/HTTP ke kolektor atau backend yang kompatibel dengan OTLP.
-    - Permukaannya mencakup metrik, trace, dan log.
-    - Menjembatani ke Prometheus melalui OpenTelemetry Collector (exporter `prometheus` atau `prometheusremotewrite`) saat Anda memerlukan keduanya.
-    - Lihat [OpenTelemetry export](/id/gateway/opentelemetry) untuk katalog lengkapnya.
+    - Permukaan mencakup metrik, trace, dan log.
+    - Menjembatani ke Prometheus melalui OpenTelemetry Collector (eksportir `prometheus` atau `prometheusremotewrite`) saat Anda membutuhkan keduanya.
+    - Lihat [Ekspor OpenTelemetry](/id/gateway/opentelemetry) untuk katalog lengkap.
 
   </Tab>
 </Tabs>
@@ -195,26 +195,26 @@ OpenClaw mendukung kedua permukaan ini secara independen. Anda dapat menjalankan
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Body respons kosong">
-    - Periksa `diagnostics.enabled: true` di konfigurasi.
-    - Pastikan Plugin aktif dan dimuat dengan `openclaw plugins list --enabled`.
-    - Hasilkan beberapa traffic; counter dan histogram hanya mengeluarkan baris setelah setidaknya satu peristiwa.
+  <Accordion title="Isi respons kosong">
+    - Periksa `diagnostics.enabled: true` dalam konfigurasi.
+    - Pastikan Plugin diaktifkan dan dimuat dengan `openclaw plugins list --enabled`.
+    - Hasilkan sebagian traffic; counter dan histogram hanya memancarkan baris setelah setidaknya satu peristiwa.
 
   </Accordion>
-  <Accordion title="401 / unauthorized">
-    Endpoint ini memerlukan cakupan operator Gateway (`auth: "gateway"` dengan `gatewayRuntimeScopeSurface: "trusted-operator"`). Gunakan token atau password yang sama seperti yang digunakan Prometheus untuk rute operator Gateway lainnya. Tidak ada mode publik tanpa autentikasi.
+  <Accordion title="401 / tidak terotorisasi">
+    Endpoint ini memerlukan cakupan operator Gateway (`auth: "gateway"` dengan `gatewayRuntimeScopeSurface: "trusted-operator"`). Gunakan token atau kata sandi yang sama dengan yang digunakan Prometheus untuk rute operator Gateway lainnya. Tidak ada mode publik tanpa autentikasi.
   </Accordion>
-  <Accordion title="`openclaw_prometheus_series_dropped_total` terus naik">
-    Sebuah atribut baru melebihi batas **2048** seri. Periksa metrik terbaru untuk label dengan kardinalitas tinggi yang tidak terduga dan perbaiki di sumbernya. Exporter sengaja membuang seri baru alih-alih menulis ulang label secara diam-diam.
+  <Accordion title="`openclaw_prometheus_series_dropped_total` meningkat">
+    Atribut baru melampaui batas **2048** deret. Periksa metrik terbaru untuk label dengan kardinalitas tinggi yang tidak terduga dan perbaiki di sumbernya. Eksportir sengaja membuang deret baru alih-alih menulis ulang label secara diam-diam.
   </Accordion>
-  <Accordion title="Prometheus menampilkan seri basi setelah restart">
-    Plugin hanya menyimpan status di memori. Setelah Gateway restart, counter di-reset ke nol dan gauge dimulai ulang pada nilai berikutnya yang dilaporkan. Gunakan PromQL `rate()` dan `increase()` untuk menangani reset dengan bersih.
+  <Accordion title="Prometheus menampilkan deret lama setelah mulai ulang">
+    Plugin hanya menyimpan status di memori. Setelah Gateway dimulai ulang, counter direset ke nol dan gauge dimulai ulang pada nilai berikutnya yang dilaporkan. Gunakan PromQL `rate()` dan `increase()` untuk menangani reset dengan bersih.
   </Accordion>
 </AccordionGroup>
 
 ## Terkait
 
-- [Diagnostics export](/id/gateway/diagnostics) — zip diagnostik lokal untuk support bundle
-- [Health and readiness](/id/gateway/health) — probe `/healthz` dan `/readyz`
+- [Ekspor diagnostik](/id/gateway/diagnostics) — zip diagnostik lokal untuk bundel dukungan
+- [Kesehatan dan kesiapan](/id/gateway/health) — probe `/healthz` dan `/readyz`
 - [Logging](/id/logging) — logging berbasis file
-- [OpenTelemetry export](/id/gateway/opentelemetry) — push OTLP untuk trace, metrik, dan log
+- [Ekspor OpenTelemetry](/id/gateway/opentelemetry) — push OTLP untuk trace, metrik, dan log

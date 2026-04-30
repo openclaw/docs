@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda memerlukan log debug yang terarah tanpa menaikkan level logging global
-    - Anda perlu menangkap log khusus subsistem untuk dukungan
-summary: Flag diagnostik untuk log debug yang terarah
-title: Flag diagnostik
+    - Anda memerlukan log awakutu terarah tanpa menaikkan tingkat pencatatan log global
+    - Anda perlu mengumpulkan log khusus subsistem untuk dukungan
+summary: Flag diagnostik untuk log debug tertarget
+title: Opsi diagnostik
 x-i18n:
-    generated_at: "2026-04-24T09:06:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:46:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b7e5ec9c5e28ef51f1e617baf62412897df8096f227a74d86a0824e269aafd9d
+    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
     source_path: diagnostics/flags.md
-    workflow: 15
+    workflow: 16
 ---
 
-Flag diagnostik memungkinkan Anda mengaktifkan log debug yang terarah tanpa menyalakan logging verbose di mana-mana. Flag bersifat opt-in dan tidak berpengaruh kecuali suatu subsistem memeriksanya.
+Flag diagnostik memungkinkan Anda mengaktifkan log debug tertarget tanpa menyalakan logging verbose di semua tempat. Flag bersifat harus diaktifkan secara eksplisit dan tidak berdampak kecuali sebuah subsistem memeriksanya.
 
 ## Cara kerjanya
 
-- Flag berupa string (tidak peka huruf besar/kecil).
-- Anda dapat mengaktifkan flag di konfigurasi atau melalui override env.
+- Flag adalah string (tidak peka huruf besar/kecil).
+- Anda dapat mengaktifkan flag dalam konfigurasi atau melalui penimpaan env.
 - Wildcard didukung:
   - `telegram.*` cocok dengan `telegram.http`
   - `*` mengaktifkan semua flag
@@ -43,9 +43,9 @@ Beberapa flag:
 }
 ```
 
-Mulai ulang gateway setelah mengubah flag.
+Mulai ulang Gateway setelah mengubah flag.
 
-## Override env (sekali pakai)
+## Penimpaan env (sekali pakai)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -57,7 +57,44 @@ Nonaktifkan semua flag:
 OPENCLAW_DIAGNOSTICS=0
 ```
 
-## Ke mana log dikirim
+## Artefak timeline
+
+Flag `timeline` menulis peristiwa waktu startup dan runtime terstruktur untuk
+harness QA eksternal:
+
+```bash
+OPENCLAW_DIAGNOSTICS=timeline \
+OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=/tmp/openclaw-timeline.jsonl \
+openclaw gateway run
+```
+
+Anda juga dapat mengaktifkannya dalam konfigurasi:
+
+```json
+{
+  "diagnostics": {
+    "flags": ["timeline"]
+  }
+}
+```
+
+Path file timeline tetap berasal dari
+`OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Ketika `timeline` diaktifkan hanya dari
+konfigurasi, span pemuatan konfigurasi yang paling awal tidak dikeluarkan karena OpenClaw belum
+membaca konfigurasi; span startup berikutnya menggunakan flag konfigurasi.
+
+`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all`, dan
+`OPENCLAW_DIAGNOSTICS=*` juga mengaktifkan timeline karena semuanya mengaktifkan setiap
+flag diagnostik. Gunakan `timeline` ketika Anda hanya menginginkan artefak waktu
+JSONL.
+
+Rekaman timeline menggunakan envelope `openclaw.diagnostics.v1`. Peristiwa dapat mencakup
+ID proses, nama fase, nama span, durasi, ID Plugin, jumlah dependensi,
+sampel penundaan event-loop, nama operasi penyedia, status keluar child process,
+serta nama/pesan error startup. Perlakukan file timeline sebagai artefak
+diagnostik lokal; tinjau sebelum membagikannya ke luar mesin Anda.
+
+## Lokasi log
 
 Flag mengeluarkan log ke file log diagnostik standar. Secara default:
 
@@ -65,7 +102,7 @@ Flag mengeluarkan log ke file log diagnostik standar. Secara default:
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Jika Anda mengatur `logging.file`, gunakan path tersebut sebagai gantinya. Log berbentuk JSONL (satu objek JSON per baris). Redaksi tetap berlaku berdasarkan `logging.redactSensitive`.
+Jika Anda menetapkan `logging.file`, gunakan path tersebut sebagai gantinya. Log berbentuk JSONL (satu objek JSON per baris). Redaksi tetap diterapkan berdasarkan `logging.redactSensitive`.
 
 ## Ekstrak log
 
@@ -81,19 +118,19 @@ Filter untuk diagnostik HTTP Telegram:
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Atau tail sambil mereproduksi:
+Atau tail saat mereproduksi:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Untuk gateway jarak jauh, Anda juga dapat menggunakan `openclaw logs --follow` (lihat [/cli/logs](/id/cli/logs)).
+Untuk Gateway jarak jauh, Anda juga dapat menggunakan `openclaw logs --follow` (lihat [/cli/logs](/id/cli/logs)).
 
 ## Catatan
 
-- Jika `logging.level` diatur lebih tinggi dari `warn`, log ini mungkin ditekan. Default `info` sudah baik.
-- Flag aman untuk dibiarkan aktif; flag hanya memengaruhi volume log untuk subsistem tertentu.
-- Gunakan [/logging](/id/logging) untuk mengubah tujuan log, level, dan redaksi.
+- Jika `logging.level` ditetapkan lebih tinggi dari `warn`, log ini mungkin disupresi. Default `info` sudah cukup.
+- Flag aman dibiarkan aktif; flag hanya memengaruhi volume log untuk subsistem tertentu.
+- Gunakan [/logging](/id/logging) untuk mengubah tujuan, level, dan redaksi log.
 
 ## Terkait
 

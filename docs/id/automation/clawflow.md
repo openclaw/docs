@@ -1,19 +1,19 @@
 ---
-summary: Alihkan ke TaskFlow
+summary: Alihkan ke Alur Tugas
 title: ClawFlow
 x-i18n:
-    generated_at: "2026-04-24T08:57:14Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:31:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1de967044fe5b9996d5aa6d46d63e645d887a98f31bb6dae9ba66dd0eddd1d0e
+    source_hash: dec1ddc0e784b4ad49d0f5e5a8e332032e40281b81fe27de99363178ff8d3272
     source_path: automation/clawflow.md
-    workflow: 15
+    workflow: 16
 ---
 
-ClawFlow diubah namanya menjadi [TaskFlow](/id/automation/taskflow). Lihat [TaskFlow](/id/automation/taskflow) untuk dokumentasi saat ini.
+ClawFlow telah diganti namanya menjadi [Alur tugas](/id/automation/taskflow).
 
 ## Terkait
 
-- [TaskFlow](/id/automation/taskflow)
+- [Alur tugas](/id/automation/taskflow)
 - [Perintah tetap](/id/automation/standing-orders)
-- [Hooks](/id/automation/hooks)
+- [Hook](/id/automation/hooks)

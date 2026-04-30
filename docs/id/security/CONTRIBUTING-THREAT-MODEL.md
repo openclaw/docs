@@ -1,108 +1,108 @@
 ---
 read_when:
-    - Anda ingin berkontribusi temuan keamanan atau skenario ancaman
+    - Anda ingin menyumbangkan temuan keamanan atau skenario ancaman
     - Meninjau atau memperbarui model ancaman
 summary: Cara berkontribusi pada model ancaman OpenClaw
 title: Berkontribusi pada model ancaman
 x-i18n:
-    generated_at: "2026-04-24T09:27:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:11:57Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 21cf130c2d8641b66b87de86a3ea718cd7c751c29ed9bf5e0bd76b43d65d0964
+    source_hash: 75cf2b408a78fce5134d24a3f115490da2dacc4ba8a1a24415425c3e4420ca55
     source_path: security/CONTRIBUTING-THREAT-MODEL.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Berkontribusi pada Model Ancaman OpenClaw
 
-Terima kasih telah membantu membuat OpenClaw lebih aman. Model ancaman ini adalah dokumen hidup dan kami menyambut kontribusi dari siapa pun - Anda tidak perlu menjadi pakar keamanan.
+Terima kasih telah membantu membuat OpenClaw lebih aman. Model ancaman ini adalah dokumen hidup dan kami menerima kontribusi dari siapa pun - Anda tidak perlu menjadi pakar keamanan.
 
 ## Cara Berkontribusi
 
 ### Tambahkan Ancaman
 
-Melihat vektor serangan atau risiko yang belum kami bahas? Buka issue di [openclaw/trust](https://github.com/openclaw/trust/issues) dan jelaskan dengan kata-kata Anda sendiri. Anda tidak perlu mengetahui framework apa pun atau mengisi setiap field - cukup jelaskan skenarionya.
+Menemukan vektor serangan atau risiko yang belum kami cakup? Buka isu di [openclaw/trust](https://github.com/openclaw/trust/issues) dan jelaskan dengan kata-kata Anda sendiri. Anda tidak perlu mengetahui kerangka kerja apa pun atau mengisi setiap bidang - cukup jelaskan skenarionya.
 
-**Berguna untuk disertakan (tetapi tidak wajib):**
+**Bermanfaat untuk disertakan (tetapi tidak wajib):**
 
-- Skenario serangan dan bagaimana serangan itu dapat dieksploitasi
-- Bagian OpenClaw mana yang terdampak (CLI, gateway, channels, ClawHub, server MCP, dll.)
-- Seberapa parah menurut Anda (low / medium / high / critical)
-- Tautan ke riset terkait, CVE, atau contoh dunia nyata
+- Skenario serangan dan bagaimana skenario itu dapat dieksploitasi
+- Bagian OpenClaw mana yang terdampak (CLI, Gateway, kanal, ClawHub, server MCP, dll.)
+- Seberapa parah menurut Anda risikonya (rendah / sedang / tinggi / kritis)
+- Tautan apa pun ke penelitian terkait, CVE, atau contoh dunia nyata
 
 Kami akan menangani pemetaan ATLAS, ID ancaman, dan penilaian risiko selama peninjauan. Jika Anda ingin menyertakan detail tersebut, bagus - tetapi itu tidak diharapkan.
 
-> **Ini untuk menambahkan ke model ancaman, bukan melaporkan kerentanan aktif.** Jika Anda menemukan kerentanan yang dapat dieksploitasi, lihat [Trust page](https://trust.openclaw.ai) kami untuk instruksi responsible disclosure.
+> **Ini untuk menambahkan ke model ancaman, bukan melaporkan kerentanan aktif.** Jika Anda menemukan kerentanan yang dapat dieksploitasi, lihat [halaman Trust](https://trust.openclaw.ai) kami untuk instruksi pengungkapan yang bertanggung jawab.
 
 ### Sarankan Mitigasi
 
-Punya ide tentang cara mengatasi ancaman yang ada? Buka issue atau PR yang merujuk ke ancaman tersebut. Mitigasi yang berguna bersifat spesifik dan dapat ditindaklanjuti - misalnya, "rate limiting per-pengirim sebesar 10 pesan/menit di gateway" lebih baik daripada "implement rate limiting."
+Punya ide tentang cara menangani ancaman yang sudah ada? Buka isu atau PR yang merujuk ke ancaman tersebut. Mitigasi yang berguna bersifat spesifik dan dapat ditindaklanjuti - misalnya, "pembatasan laju per-pengirim sebesar 10 pesan/menit di Gateway" lebih baik daripada "terapkan pembatasan laju."
 
 ### Usulkan Rantai Serangan
 
-Rantai serangan menunjukkan bagaimana beberapa ancaman digabungkan menjadi skenario serangan yang realistis. Jika Anda melihat kombinasi berbahaya, jelaskan langkah-langkahnya dan bagaimana penyerang akan merangkainya. Narasi singkat tentang bagaimana serangan berlangsung dalam praktik lebih bernilai daripada template formal.
+Rantai serangan menunjukkan bagaimana beberapa ancaman bergabung menjadi skenario serangan yang realistis. Jika Anda melihat kombinasi yang berbahaya, jelaskan langkah-langkahnya dan bagaimana penyerang akan merangkainya. Narasi singkat tentang bagaimana serangan berlangsung dalam praktik lebih bernilai daripada templat formal.
 
 ### Perbaiki atau Tingkatkan Konten yang Ada
 
-Typo, klarifikasi, informasi usang, contoh yang lebih baik - PR dipersilakan, tanpa perlu issue.
+Salah ketik, klarifikasi, informasi usang, contoh yang lebih baik - PR dipersilakan, tidak perlu isu.
 
-## Yang Kami Gunakan
+## Yang kami gunakan
 
 ### MITRE ATLAS
 
-Model ancaman ini dibangun di atas [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems), sebuah framework yang dirancang khusus untuk ancaman AI/ML seperti prompt injection, penyalahgunaan tool, dan eksploitasi agen. Anda tidak perlu mengetahui ATLAS untuk berkontribusi - kami memetakan kiriman ke framework ini selama peninjauan.
+Model ancaman ini dibangun di atas [MITRE ATLAS](https://atlas.mitre.org/) (Adversarial Threat Landscape for AI Systems), kerangka kerja yang dirancang khusus untuk ancaman AI/ML seperti injeksi prompt, penyalahgunaan alat, dan eksploitasi agen. Anda tidak perlu mengetahui ATLAS untuk berkontribusi - kami memetakan kiriman ke kerangka kerja tersebut selama peninjauan.
 
-### ID Ancaman
+### ID ancaman
 
-Setiap ancaman mendapat ID seperti `T-EXEC-003`. Kategorinya adalah:
+Setiap ancaman mendapatkan ID seperti `T-EXEC-003`. Kategorinya adalah:
 
-| Kode    | Kategori                                   |
-| ------- | ------------------------------------------ |
-| RECON   | Reconnaissance - pengumpulan informasi     |
-| ACCESS  | Initial access - mendapatkan akses masuk   |
-| EXEC    | Execution - menjalankan tindakan berbahaya |
-| PERSIST | Persistence - mempertahankan akses         |
-| EVADE   | Defense evasion - menghindari deteksi      |
-| DISC    | Discovery - mempelajari lingkungan         |
-| EXFIL   | Exfiltration - mencuri data                |
-| IMPACT  | Impact - kerusakan atau gangguan           |
+| Kode    | Kategori                                      |
+| ------- | --------------------------------------------- |
+| RECON   | Pengintaian - pengumpulan informasi           |
+| ACCESS  | Akses awal - mendapatkan akses masuk          |
+| EXEC    | Eksekusi - menjalankan tindakan berbahaya     |
+| PERSIST | Persistensi - mempertahankan akses            |
+| EVADE   | Penghindaran pertahanan - menghindari deteksi |
+| DISC    | Penemuan - mempelajari lingkungan             |
+| EXFIL   | Eksfiltrasi - mencuri data                    |
+| IMPACT  | Dampak - kerusakan atau gangguan              |
 
-ID ditetapkan oleh maintainer selama peninjauan. Anda tidak perlu memilihnya.
+ID ditetapkan oleh pemelihara selama peninjauan. Anda tidak perlu memilihnya.
 
-### Tingkat Risiko
+### Tingkat risiko
 
-| Tingkat      | Arti                                                            |
-| ------------ | --------------------------------------------------------------- |
-| **Critical** | Kompromi sistem penuh, atau kemungkinan tinggi + dampak kritis  |
-| **High**     | Kerusakan signifikan kemungkinan besar terjadi, atau kemungkinan sedang + dampak kritis |
-| **Medium**   | Risiko sedang, atau kemungkinan rendah + dampak tinggi          |
-| **Low**      | Tidak mungkin dan dampak terbatas                               |
+| Tingkat      | Arti                                                               |
+| ------------ | ------------------------------------------------------------------ |
+| **Kritis**   | Kompromi sistem penuh, atau kemungkinan tinggi + dampak kritis     |
+| **Tinggi**   | Kerusakan signifikan mungkin terjadi, atau kemungkinan sedang + dampak kritis |
+| **Sedang**   | Risiko sedang, atau kemungkinan rendah + dampak tinggi             |
+| **Rendah**   | Tidak mungkin terjadi dan dampak terbatas                          |
 
 Jika Anda tidak yakin tentang tingkat risikonya, cukup jelaskan dampaknya dan kami akan menilainya.
 
-## Proses Peninjauan
+## Proses peninjauan
 
 1. **Triase** - Kami meninjau kiriman baru dalam 48 jam
 2. **Penilaian** - Kami memverifikasi kelayakan, menetapkan pemetaan ATLAS dan ID ancaman, memvalidasi tingkat risiko
-3. **Dokumentasi** - Kami memastikan semuanya diformat dengan benar dan lengkap
-4. **Merge** - Ditambahkan ke model ancaman dan visualisasi
+3. **Dokumentasi** - Kami memastikan semuanya diformat dan lengkap
+4. **Penggabungan** - Ditambahkan ke model ancaman dan visualisasi
 
-## Sumber Daya
+## Sumber daya
 
-- [Website ATLAS](https://atlas.mitre.org/)
+- [Situs Web ATLAS](https://atlas.mitre.org/)
 - [Teknik ATLAS](https://atlas.mitre.org/techniques/)
 - [Studi Kasus ATLAS](https://atlas.mitre.org/studies/)
 - [Model Ancaman OpenClaw](/id/security/THREAT-MODEL-ATLAS)
 
 ## Kontak
 
-- **Kerentanan keamanan:** Lihat [Trust page](https://trust.openclaw.ai) kami untuk instruksi pelaporan
-- **Pertanyaan model ancaman:** Buka issue di [openclaw/trust](https://github.com/openclaw/trust/issues)
-- **Obrolan umum:** channel #security di Discord
+- **Kerentanan keamanan:** Lihat [halaman Trust](https://trust.openclaw.ai) kami untuk instruksi pelaporan
+- **Pertanyaan model ancaman:** Buka isu di [openclaw/trust](https://github.com/openclaw/trust/issues)
+- **Obrolan umum:** Kanal Discord #security
 
 ## Pengakuan
 
-Kontributor model ancaman diakui dalam acknowledgments model ancaman, catatan rilis, dan hall of fame keamanan OpenClaw untuk kontribusi yang signifikan.
+Kontributor pada model ancaman diakui dalam ucapan terima kasih model ancaman, catatan rilis, dan aula kehormatan keamanan OpenClaw untuk kontribusi signifikan.
 
 ## Terkait
 

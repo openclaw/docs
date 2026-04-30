@@ -5,33 +5,33 @@ read_when:
 summary: OpenClaw di DigitalOcean (opsi VPS berbayar sederhana)
 title: DigitalOcean (platform)
 x-i18n:
-    generated_at: "2026-04-24T09:16:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:58:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c9d286f243f38ed910a3229f195be724f9f96481036380d8c8194ff298d39c87
+    source_hash: 13df486b81590d6350f4b33f5460069fee21881631970d5f4ae34f6ce956407e
     source_path: platforms/digitalocean.md
-    workflow: 15
+    workflow: 16
 ---
 
 # OpenClaw di DigitalOcean
 
 ## Tujuan
 
-Jalankan Gateway OpenClaw persisten di DigitalOcean dengan biaya **$6/bulan** (atau $4/bln dengan harga reserved).
+Jalankan OpenClaw Gateway persisten di DigitalOcean seharga **$6/bulan** (atau $4/bln dengan harga reserved).
 
-Jika Anda menginginkan opsi $0/bulan dan tidak keberatan dengan ARM + penyiapan spesifik provider, lihat [panduan Oracle Cloud](/id/install/oracle).
+Jika Anda menginginkan opsi $0/bulan dan tidak keberatan dengan ARM + penyiapan khusus penyedia, lihat [panduan Oracle Cloud](/id/install/oracle).
 
 ## Perbandingan biaya (2026)
 
-| Provider     | Plan            | Specs                  | Harga/bln   | Catatan                              |
-| ------------ | --------------- | ---------------------- | ----------- | ------------------------------------ |
-| Oracle Cloud | Always Free ARM | hingga 4 OCPU, 24GB RAM | $0         | ARM, kapasitas terbatas / kendala pendaftaran |
-| Hetzner      | CX22            | 2 vCPU, 4GB RAM        | €3.79 (~$4) | Opsi berbayar termurah               |
-| DigitalOcean | Basic           | 1 vCPU, 1GB RAM        | $6          | UI mudah, dokumentasi bagus          |
-| Vultr        | Cloud Compute   | 1 vCPU, 1GB RAM        | $6          | Banyak lokasi                        |
-| Linode       | Nanode          | 1 vCPU, 1GB RAM        | $5          | Kini bagian dari Akamai              |
+| Penyedia     | Paket           | Spesifikasi            | Harga/bln   | Catatan                               |
+| ------------ | --------------- | ---------------------- | ----------- | ------------------------------------- |
+| Oracle Cloud | Always Free ARM | hingga 4 OCPU, RAM 24GB | $0          | ARM, kapasitas terbatas / keunikan pendaftaran |
+| Hetzner      | CX22            | 2 vCPU, RAM 4GB        | €3.79 (~$4) | Opsi berbayar termurah                |
+| DigitalOcean | Basic           | 1 vCPU, RAM 1GB        | $6          | UI mudah, dokumentasi bagus           |
+| Vultr        | Cloud Compute   | 1 vCPU, RAM 1GB        | $6          | Banyak lokasi                         |
+| Linode       | Nanode          | 1 vCPU, RAM 1GB        | $5          | Sekarang bagian dari Akamai           |
 
-**Memilih provider:**
+**Memilih penyedia:**
 
 - DigitalOcean: UX paling sederhana + penyiapan yang dapat diprediksi (panduan ini)
 - Hetzner: harga/performa bagus (lihat [panduan Hetzner](/id/install/hetzner))
@@ -42,26 +42,26 @@ Jika Anda menginginkan opsi $0/bulan dan tidak keberatan dengan ARM + penyiapan 
 ## Prasyarat
 
 - Akun DigitalOcean ([daftar dengan kredit gratis $200](https://m.do.co/c/signup))
-- Pasangan SSH key (atau bersedia menggunakan auth kata sandi)
+- Pasangan kunci SSH (atau bersedia menggunakan autentikasi kata sandi)
 - ~20 menit
 
 ## 1) Buat Droplet
 
 <Warning>
-Gunakan base image yang bersih (Ubuntu 24.04 LTS). Hindari image 1-klik Marketplace pihak ketiga kecuali Anda telah meninjau skrip startup dan default firewall-nya.
+Gunakan image dasar yang bersih (Ubuntu 24.04 LTS). Hindari image 1-klik Marketplace pihak ketiga kecuali Anda telah meninjau skrip startup dan default firewall-nya.
 </Warning>
 
-1. Login ke [DigitalOcean](https://cloud.digitalocean.com/)
+1. Masuk ke [DigitalOcean](https://cloud.digitalocean.com/)
 2. Klik **Create → Droplets**
 3. Pilih:
-   - **Region:** Yang paling dekat dengan Anda (atau pengguna Anda)
+   - **Wilayah:** Yang terdekat dengan Anda (atau pengguna Anda)
    - **Image:** Ubuntu 24.04 LTS
-   - **Size:** Basic → Regular → **$6/bln** (1 vCPU, 1GB RAM, 25GB SSD)
-   - **Authentication:** SSH key (disarankan) atau kata sandi
+   - **Ukuran:** Basic → Regular → **$6/bln** (1 vCPU, RAM 1GB, SSD 25GB)
+   - **Autentikasi:** Kunci SSH (direkomendasikan) atau kata sandi
 4. Klik **Create Droplet**
-5. Catat alamat IP-nya
+5. Catat alamat IP
 
-## 2) Sambungkan via SSH
+## 2) Hubungkan melalui SSH
 
 ```bash
 ssh root@YOUR_DROPLET_IP
@@ -70,21 +70,21 @@ ssh root@YOUR_DROPLET_IP
 ## 3) Instal OpenClaw
 
 ```bash
-# Perbarui sistem
+# Update system
 apt update && apt upgrade -y
 
-# Instal Node.js 24
+# Install Node.js 24
 curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 apt install -y nodejs
 
-# Instal OpenClaw
+# Install OpenClaw
 curl -fsSL https://openclaw.ai/install.sh | bash
 
-# Verifikasi
+# Verify
 openclaw --version
 ```
 
-## 4) Jalankan onboarding
+## 4) Jalankan Onboarding
 
 ```bash
 openclaw onboard --install-daemon
@@ -92,7 +92,7 @@ openclaw onboard --install-daemon
 
 Wizard akan memandu Anda melalui:
 
-- Auth model (API key atau OAuth)
+- Autentikasi model (kunci API atau OAuth)
 - Penyiapan channel (Telegram, WhatsApp, Discord, dll.)
 - Token Gateway (dibuat otomatis)
 - Instalasi daemon (systemd)
@@ -100,37 +100,37 @@ Wizard akan memandu Anda melalui:
 ## 5) Verifikasi Gateway
 
 ```bash
-# Periksa status
+# Check status
 openclaw status
 
-# Periksa service
+# Check service
 systemctl --user status openclaw-gateway.service
 
-# Lihat log
+# View logs
 journalctl --user -u openclaw-gateway.service -f
 ```
 
 ## 6) Akses Dashboard
 
-Gateway bind ke loopback secara default. Untuk mengakses Control UI:
+Gateway terikat ke loopback secara default. Untuk mengakses UI Kontrol:
 
-**Opsi A: SSH Tunnel (disarankan)**
+**Opsi A: Tunnel SSH (direkomendasikan)**
 
 ```bash
-# Dari mesin lokal Anda
+# From your local machine
 ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
 
-# Lalu buka: http://localhost:18789
+# Then open: http://localhost:18789
 ```
 
 **Opsi B: Tailscale Serve (HTTPS, hanya loopback)**
 
 ```bash
-# Di droplet
+# On the droplet
 curl -fsSL https://tailscale.com/install.sh | sh
 tailscale up
 
-# Konfigurasikan Gateway untuk menggunakan Tailscale Serve
+# Configure Gateway to use Tailscale Serve
 openclaw config set gateway.tailscale.mode serve
 openclaw gateway restart
 ```
@@ -139,8 +139,8 @@ Buka: `https://<magicdns>/`
 
 Catatan:
 
-- Serve menjaga Gateway tetap hanya-loopback dan mengautentikasi lalu lintas Control UI/WebSocket melalui header identitas Tailscale (auth tanpa token mengasumsikan host gateway tepercaya; API HTTP tidak menggunakan header Tailscale tersebut dan sebaliknya mengikuti mode auth HTTP normal gateway).
-- Untuk mewajibkan kredensial shared-secret eksplisit, setel `gateway.auth.allowTailscale: false` dan gunakan `gateway.auth.mode: "token"` atau `"password"`.
+- Serve menjaga Gateway tetap hanya loopback dan mengautentikasi lalu lintas UI Kontrol/WebSocket melalui header identitas Tailscale (autentikasi tanpa token mengasumsikan host gateway tepercaya; API HTTP tidak menggunakan header Tailscale tersebut dan mengikuti mode autentikasi HTTP normal gateway).
+- Untuk mewajibkan kredensial rahasia bersama secara eksplisit sebagai gantinya, atur `gateway.auth.allowTailscale: false` dan gunakan `gateway.auth.mode: "token"` atau `"password"`.
 
 **Opsi C: Bind tailnet (tanpa Serve)**
 
@@ -151,7 +151,7 @@ openclaw gateway restart
 
 Buka: `http://<tailscale-ip>:18789` (token diperlukan).
 
-## 7) Hubungkan channel Anda
+## 7) Hubungkan Channel Anda
 
 ### Telegram
 
@@ -164,18 +164,18 @@ openclaw pairing approve telegram <CODE>
 
 ```bash
 openclaw channels login whatsapp
-# Pindai kode QR
+# Scan QR code
 ```
 
-Lihat [Channels](/id/channels) untuk provider lain.
+Lihat [Channel](/id/channels) untuk penyedia lain.
 
 ---
 
-## Optimasi untuk RAM 1GB
+## Optimisasi untuk RAM 1GB
 
-Droplet $6 hanya memiliki RAM 1GB. Agar semuanya tetap berjalan lancar:
+Droplet $6 hanya memiliki RAM 1GB. Agar semuanya berjalan lancar:
 
-### Tambahkan swap (disarankan)
+### Tambahkan swap (direkomendasikan)
 
 ```bash
 fallocate -l 2G /swapfile
@@ -190,7 +190,7 @@ echo '/swapfile none swap sw 0 0' >> /etc/fstab
 Jika Anda mengalami OOM, pertimbangkan:
 
 - Menggunakan model berbasis API (Claude, GPT) alih-alih model lokal
-- Menyetel `agents.defaults.model.primary` ke model yang lebih kecil
+- Mengatur `agents.defaults.model.primary` ke model yang lebih kecil
 
 ### Pantau memori
 
@@ -205,10 +205,10 @@ htop
 
 Semua status berada di:
 
-- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, status channel/provider, dan data sesi
-- `~/.openclaw/workspace/` — workspace (SOUL.md, memory, dll.)
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, status channel/penyedia, dan data sesi
+- `~/.openclaw/workspace/` — workspace (SOUL.md, memori, dll.)
 
-Semua ini bertahan setelah reboot. Cadangkan secara berkala:
+Ini tetap ada setelah reboot. Cadangkan secara berkala:
 
 ```bash
 openclaw backup create
@@ -218,27 +218,27 @@ openclaw backup create
 
 ## Alternatif gratis Oracle Cloud
 
-Oracle Cloud menawarkan instance ARM **Always Free** yang jauh lebih kuat daripada opsi berbayar mana pun di sini — dengan biaya $0/bulan.
+Oracle Cloud menawarkan instans ARM **Always Free** yang jauh lebih kuat daripada opsi berbayar mana pun di sini — seharga $0/bulan.
 
-| Yang Anda dapatkan | Specs                 |
-| ------------------ | --------------------- |
-| **4 OCPU**         | ARM Ampere A1         |
-| **24GB RAM**       | Lebih dari cukup      |
-| **200GB storage**  | Block volume          |
-| **Gratis selamanya** | Tanpa biaya kartu kredit |
+| Yang Anda dapatkan | Spesifikasi            |
+| ------------------ | ---------------------- |
+| **4 OCPU**         | ARM Ampere A1          |
+| **RAM 24GB**       | Lebih dari cukup       |
+| **Penyimpanan 200GB** | Volume blok          |
+| **Gratis selamanya** | Tidak ada tagihan kartu kredit |
 
-**Catatan:**
+**Catatan penting:**
 
 - Pendaftaran bisa rewel (coba lagi jika gagal)
 - Arsitektur ARM — sebagian besar hal berfungsi, tetapi beberapa biner memerlukan build ARM
 
-Untuk panduan penyiapan lengkap, lihat [Oracle Cloud](/id/install/oracle). Untuk tips pendaftaran dan pemecahan masalah proses pendaftaran, lihat [panduan komunitas](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) ini.
+Untuk panduan penyiapan lengkap, lihat [Oracle Cloud](/id/install/oracle). Untuk tips pendaftaran dan pemecahan masalah proses enrollment, lihat [panduan komunitas](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) ini.
 
 ---
 
-## Pemecahan masalah
+## Pemecahan Masalah
 
-### Gateway tidak mau mulai
+### Gateway tidak dapat dimulai
 
 ```bash
 openclaw gateway status
@@ -256,18 +256,18 @@ kill <PID>
 ### Kehabisan memori
 
 ```bash
-# Periksa memori
+# Check memory
 free -h
 
-# Tambahkan swap lagi
-# Atau upgrade ke droplet $12/bln (RAM 2GB)
+# Add more swap
+# Or upgrade to $12/mo droplet (2GB RAM)
 ```
 
 ---
 
 ## Terkait
 
-- [Panduan Hetzner](/id/install/hetzner) — lebih murah, lebih bertenaga
-- [Instalasi Docker](/id/install/docker) — penyiapan dalam container
-- [Tailscale](/id/gateway/tailscale) — akses remote yang aman
+- [Panduan Hetzner](/id/install/hetzner) — lebih murah, lebih kuat
+- [Instal Docker](/id/install/docker) — penyiapan berbasis container
+- [Tailscale](/id/gateway/tailscale) — akses jarak jauh yang aman
 - [Konfigurasi](/id/gateway/configuration) — referensi konfigurasi lengkap

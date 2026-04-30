@@ -2,87 +2,87 @@
 read_when:
     - Menyiapkan OpenClaw di Oracle Cloud
     - Mencari hosting VPS berbiaya rendah untuk OpenClaw
-    - Ingin OpenClaw 24/7 di server kecil
+    - Ingin menjalankan OpenClaw 24/7 di server kecil
 summary: OpenClaw di Oracle Cloud (Always Free ARM)
 title: Oracle Cloud (platform)
 x-i18n:
-    generated_at: "2026-04-24T09:18:09Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:59:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 18b2e55d330457e18bc94f1e7d7744a3cc3b0c0ce99654a61e9871c21e2c3e35
+    source_hash: d86af91bd924ad08535a21fa481ce551e8c19f1a6cd82b61c335da7a068a09f0
     source_path: platforms/oracle.md
-    workflow: 15
+    workflow: 16
 ---
 
 # OpenClaw di Oracle Cloud (OCI)
 
 ## Tujuan
 
-Menjalankan Gateway OpenClaw yang persisten di tier ARM **Always Free** milik Oracle Cloud.
+Menjalankan OpenClaw Gateway persisten di tier ARM **Always Free** Oracle Cloud.
 
-Tier gratis Oracle bisa sangat cocok untuk OpenClaw (terutama jika Anda sudah memiliki akun OCI), tetapi ada komprominya:
+Tier gratis Oracle bisa sangat cocok untuk OpenClaw (terutama jika Anda sudah memiliki akun OCI), tetapi ada beberapa kompromi:
 
-- Arsitektur ARM (sebagian besar berjalan, tetapi beberapa binary mungkin hanya x86)
-- Kapasitas dan pendaftaran bisa agak merepotkan
+- Arsitektur ARM (sebagian besar berjalan, tetapi beberapa biner mungkin hanya x86)
+- Kapasitas dan pendaftaran bisa kurang stabil
 
-## Perbandingan Biaya (2026)
+## Perbandingan biaya (2026)
 
-| Provider     | Paket            | Spesifikasi            | Harga/bln | Catatan               |
-| ------------ | ---------------- | ---------------------- | --------- | --------------------- |
-| Oracle Cloud | Always Free ARM  | hingga 4 OCPU, 24GB RAM | $0        | ARM, kapasitas terbatas |
-| Hetzner      | CX22             | 2 vCPU, 4GB RAM        | ~ $4      | Opsi berbayar termurah |
-| DigitalOcean | Basic            | 1 vCPU, 1GB RAM        | $6        | UI mudah, dokumentasi bagus |
-| Vultr        | Cloud Compute    | 1 vCPU, 1GB RAM        | $6        | Banyak lokasi         |
-| Linode       | Nanode           | 1 vCPU, 1GB RAM        | $5        | Sekarang bagian dari Akamai |
+| Penyedia     | Paket           | Spesifikasi           | Harga/bln | Catatan                  |
+| ------------ | --------------- | --------------------- | --------- | ------------------------ |
+| Oracle Cloud | Always Free ARM | hingga 4 OCPU, RAM 24GB | $0        | ARM, kapasitas terbatas  |
+| Hetzner      | CX22            | 2 vCPU, RAM 4GB       | ~ $4      | Opsi berbayar termurah   |
+| DigitalOcean | Basic           | 1 vCPU, RAM 1GB       | $6        | UI mudah, dokumentasi baik |
+| Vultr        | Cloud Compute   | 1 vCPU, RAM 1GB       | $6        | Banyak lokasi            |
+| Linode       | Nanode          | 1 vCPU, RAM 1GB       | $5        | Kini bagian dari Akamai  |
 
 ---
 
 ## Prasyarat
 
-- Akun Oracle Cloud ([signup](https://www.oracle.com/cloud/free/)) — lihat [panduan signup komunitas](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) jika Anda mengalami masalah
+- Akun Oracle Cloud ([daftar](https://www.oracle.com/cloud/free/)) — lihat [panduan pendaftaran komunitas](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) jika Anda mengalami masalah
 - Akun Tailscale (gratis di [tailscale.com](https://tailscale.com))
 - ~30 menit
 
-## 1) Buat instance OCI
+## 1) Buat Instance OCI
 
-1. Login ke [Oracle Cloud Console](https://cloud.oracle.com/)
-2. Navigasi ke **Compute → Instances → Create Instance**
+1. Masuk ke [Oracle Cloud Console](https://cloud.oracle.com/)
+2. Buka **Compute → Instances → Create Instance**
 3. Konfigurasikan:
-   - **Name:** `openclaw`
+   - **Nama:** `openclaw`
    - **Image:** Ubuntu 24.04 (aarch64)
    - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-   - **OCPUs:** 2 (atau hingga 4)
-   - **Memory:** 12 GB (atau hingga 24 GB)
-   - **Boot volume:** 50 GB (hingga 200 GB gratis)
-   - **SSH key:** Tambahkan public key Anda
+   - **OCPU:** 2 (atau hingga 4)
+   - **Memori:** 12 GB (atau hingga 24 GB)
+   - **Volume boot:** 50 GB (hingga 200 GB gratis)
+   - **Kunci SSH:** Tambahkan kunci publik Anda
 4. Klik **Create**
-5. Catat alamat IP publiknya
+5. Catat alamat IP publik
 
-**Tip:** Jika pembuatan instance gagal dengan "Out of capacity", coba availability domain lain atau coba lagi nanti. Kapasitas tier gratis terbatas.
+**Tip:** Jika pembuatan instance gagal dengan "Out of capacity", coba domain ketersediaan lain atau coba lagi nanti. Kapasitas tier gratis terbatas.
 
-## 2) Hubungkan dan perbarui
+## 2) Hubungkan dan Perbarui
 
 ```bash
-# Hubungkan melalui IP publik
+# Connect via public IP
 ssh ubuntu@YOUR_PUBLIC_IP
 
-# Perbarui sistem
+# Update system
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y build-essential
 ```
 
-**Catatan:** `build-essential` diperlukan untuk kompilasi ARM beberapa dependensi.
+**Catatan:** `build-essential` diperlukan untuk kompilasi ARM pada beberapa dependensi.
 
-## 3) Konfigurasikan pengguna dan hostname
+## 3) Konfigurasikan Pengguna dan Hostname
 
 ```bash
-# Atur hostname
+# Set hostname
 sudo hostnamectl set-hostname openclaw
 
-# Atur password untuk pengguna ubuntu
+# Set password for ubuntu user
 sudo passwd ubuntu
 
-# Aktifkan lingering (menjaga layanan pengguna tetap berjalan setelah logout)
+# Enable lingering (keeps user services running after logout)
 sudo loginctl enable-linger ubuntu
 ```
 
@@ -93,7 +93,7 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up --ssh --hostname=openclaw
 ```
 
-Ini mengaktifkan Tailscale SSH, sehingga Anda dapat terhubung melalui `ssh openclaw` dari perangkat mana pun di tailnet Anda — tanpa perlu IP publik.
+Ini mengaktifkan SSH Tailscale, sehingga Anda dapat terhubung melalui `ssh openclaw` dari perangkat apa pun di tailnet Anda — tanpa perlu IP publik.
 
 Verifikasi:
 
@@ -112,54 +112,54 @@ source ~/.bashrc
 
 Saat diminta "How do you want to hatch your bot?", pilih **"Do this later"**.
 
-> Catatan: Jika Anda mengalami masalah build native ARM, mulai dengan paket sistem (misalnya `sudo apt install -y build-essential`) sebelum beralih ke Homebrew.
+> Catatan: Jika Anda mengalami masalah build native ARM, mulai dengan paket sistem (misalnya `sudo apt install -y build-essential`) sebelum mencoba Homebrew.
 
-## 6) Konfigurasikan Gateway (loopback + auth token) dan aktifkan Tailscale Serve
+## 6) Konfigurasikan Gateway (loopback + autentikasi token) dan aktifkan Tailscale Serve
 
-Gunakan auth token sebagai default. Ini dapat diprediksi dan menghindari kebutuhan akan flag Control UI “insecure auth”.
+Gunakan autentikasi token sebagai default. Ini mudah diprediksi dan menghindari kebutuhan flag Control UI “insecure auth”.
 
 ```bash
-# Jaga Gateway tetap privat di VM
+# Keep the Gateway private on the VM
 openclaw config set gateway.bind loopback
 
-# Wajibkan auth untuk Gateway + Control UI
+# Require auth for the Gateway + Control UI
 openclaw config set gateway.auth.mode token
 openclaw doctor --generate-gateway-token
 
-# Ekspos melalui Tailscale Serve (HTTPS + akses tailnet)
+# Expose over Tailscale Serve (HTTPS + tailnet access)
 openclaw config set gateway.tailscale.mode serve
 openclaw config set gateway.trustedProxies '["127.0.0.1"]'
 
 systemctl --user restart openclaw-gateway.service
 ```
 
-`gateway.trustedProxies=["127.0.0.1"]` di sini hanya untuk penanganan forwarded-IP/local-client milik proxy Tailscale Serve lokal. Ini **bukan** `gateway.auth.mode: "trusted-proxy"`. Rute penampil diff tetap berperilaku fail-closed dalam penyiapan ini: permintaan penampil `127.0.0.1` mentah tanpa header proxy yang diteruskan dapat mengembalikan `Diff not found`. Gunakan `mode=file` / `mode=both` untuk lampiran, atau aktifkan penampil remote secara sengaja dan atur `plugins.entries.diffs.config.viewerBaseUrl` (atau berikan proxy `baseUrl`) jika Anda membutuhkan tautan penampil yang dapat dibagikan.
+`gateway.trustedProxies=["127.0.0.1"]` di sini hanya untuk penanganan forwarded-IP/local-client milik proxy Tailscale Serve lokal. Ini **bukan** `gateway.auth.mode: "trusted-proxy"`. Rute penampil diff tetap mempertahankan perilaku fail-closed dalam penyiapan ini: permintaan penampil mentah `127.0.0.1` tanpa header proxy terusan dapat mengembalikan `Diff not found`. Gunakan `mode=file` / `mode=both` untuk lampiran, atau aktifkan penampil jarak jauh secara sengaja dan tetapkan `plugins.entries.diffs.config.viewerBaseUrl` (atau berikan `baseUrl` proxy) jika Anda memerlukan tautan penampil yang dapat dibagikan.
 
 ## 7) Verifikasi
 
 ```bash
-# Periksa versi
+# Check version
 openclaw --version
 
-# Periksa status daemon
+# Check daemon status
 systemctl --user status openclaw-gateway.service
 
-# Periksa Tailscale Serve
+# Check Tailscale Serve
 tailscale serve status
 
-# Uji respons lokal
+# Test local response
 curl http://localhost:18789
 ```
 
-## 8) Kunci keamanan VCN
+## 8) Kunci Keamanan VCN
 
-Sekarang setelah semuanya berfungsi, kunci VCN agar memblokir semua traffic kecuali Tailscale. Virtual Cloud Network OCI bertindak sebagai firewall di tepi jaringan — traffic diblokir sebelum mencapai instance Anda.
+Setelah semuanya berjalan, kunci VCN untuk memblokir semua lalu lintas kecuali Tailscale. Virtual Cloud Network OCI bertindak sebagai firewall di tepi jaringan — lalu lintas diblokir sebelum mencapai instance Anda.
 
 1. Buka **Networking → Virtual Cloud Networks** di OCI Console
 2. Klik VCN Anda → **Security Lists** → Default Security List
 3. **Hapus** semua aturan ingress kecuali:
    - `0.0.0.0/0 UDP 41641` (Tailscale)
-4. Pertahankan aturan egress default (izinkan semua trafik keluar)
+4. Pertahankan aturan egress default (izinkan semua keluar)
 
 Ini memblokir SSH pada port 22, HTTP, HTTPS, dan semua yang lain di tepi jaringan. Mulai sekarang, Anda hanya dapat terhubung melalui Tailscale.
 
@@ -167,7 +167,7 @@ Ini memblokir SSH pada port 22, HTTP, HTTPS, dan semua yang lain di tepi jaringa
 
 ## Akses Control UI
 
-Dari perangkat mana pun di jaringan Tailscale Anda:
+Dari perangkat apa pun di jaringan Tailscale Anda:
 
 ```
 https://openclaw.<tailnet-name>.ts.net/
@@ -175,59 +175,59 @@ https://openclaw.<tailnet-name>.ts.net/
 
 Ganti `<tailnet-name>` dengan nama tailnet Anda (terlihat di `tailscale status`).
 
-Tidak perlu SSH tunnel. Tailscale menyediakan:
+Tidak perlu tunnel SSH. Tailscale menyediakan:
 
 - Enkripsi HTTPS (sertifikat otomatis)
 - Autentikasi melalui identitas Tailscale
-- Akses dari perangkat mana pun di tailnet Anda (laptop, ponsel, dll.)
+- Akses dari perangkat apa pun di tailnet Anda (laptop, ponsel, dll.)
 
 ---
 
 ## Keamanan: VCN + Tailscale (baseline yang direkomendasikan)
 
-Dengan VCN yang dikunci (hanya UDP 41641 yang terbuka) dan Gateway di-bind ke loopback, Anda mendapatkan pertahanan berlapis yang kuat: traffic publik diblokir di tepi jaringan, dan akses admin dilakukan melalui tailnet Anda.
+Dengan VCN dikunci (hanya UDP 41641 yang terbuka) dan Gateway diikat ke loopback, Anda mendapatkan pertahanan berlapis yang kuat: lalu lintas publik diblokir di tepi jaringan, dan akses admin terjadi melalui tailnet Anda.
 
-Penyiapan ini sering kali menghilangkan _kebutuhan_ akan aturan firewall berbasis host tambahan hanya untuk menghentikan brute force SSH dari Internet — tetapi Anda tetap harus menjaga OS tetap mutakhir, menjalankan `openclaw security audit`, dan memastikan Anda tidak tanpa sengaja melakukan listen pada antarmuka publik.
+Penyiapan ini sering menghilangkan _kebutuhan_ akan aturan firewall tambahan berbasis host hanya untuk menghentikan brute force SSH dari seluruh Internet — tetapi Anda tetap harus menjaga OS tetap diperbarui, menjalankan `openclaw security audit`, dan memverifikasi bahwa Anda tidak secara tidak sengaja mendengarkan di antarmuka publik.
 
 ### Sudah terlindungi
 
-| Langkah tradisional   | Perlu?       | Alasan                                                                       |
-| --------------------- | ------------ | ---------------------------------------------------------------------------- |
-| Firewall UFW          | Tidak        | VCN memblokir sebelum traffic mencapai instance                              |
-| fail2ban              | Tidak        | Tidak ada brute force jika port 22 diblokir di VCN                           |
-| Hardening sshd        | Tidak        | Tailscale SSH tidak menggunakan sshd                                         |
-| Nonaktifkan login root | Tidak       | Tailscale menggunakan identitas Tailscale, bukan pengguna sistem             |
-| Auth SSH key-only     | Tidak        | Tailscale mengautentikasi melalui tailnet Anda                               |
-| Hardening IPv6        | Biasanya tidak | Bergantung pada pengaturan VCN/subnet Anda; verifikasi apa yang benar-benar ditetapkan/diekspos |
+| Langkah Tradisional | Diperlukan? | Alasan                                                                      |
+| ------------------- | ----------- | --------------------------------------------------------------------------- |
+| Firewall UFW        | Tidak       | VCN memblokir sebelum lalu lintas mencapai instance                         |
+| fail2ban            | Tidak       | Tidak ada brute force jika port 22 diblokir di VCN                          |
+| Pengerasan sshd     | Tidak       | SSH Tailscale tidak menggunakan sshd                                        |
+| Nonaktifkan login root | Tidak    | Tailscale menggunakan identitas Tailscale, bukan pengguna sistem            |
+| Autentikasi hanya kunci SSH | Tidak | Tailscale mengautentikasi melalui tailnet Anda                              |
+| Pengerasan IPv6     | Biasanya tidak | Bergantung pada pengaturan VCN/subnet Anda; verifikasi apa yang benar-benar ditetapkan/terekspos |
 
-### Masih direkomendasikan
+### Tetap direkomendasikan
 
 - **Izin kredensial:** `chmod 700 ~/.openclaw`
 - **Audit keamanan:** `openclaw security audit`
 - **Pembaruan sistem:** `sudo apt update && sudo apt upgrade` secara rutin
 - **Pantau Tailscale:** Tinjau perangkat di [konsol admin Tailscale](https://login.tailscale.com/admin)
 
-### Verifikasi posture keamanan
+### Verifikasi postur keamanan
 
 ```bash
-# Konfirmasi tidak ada port publik yang melakukan listen
+# Confirm no public ports listening
 sudo ss -tlnp | grep -v '127.0.0.1\|::1'
 
-# Verifikasi Tailscale SSH aktif
+# Verify Tailscale SSH is active
 tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
 
-# Opsional: nonaktifkan sshd sepenuhnya
+# Optional: disable sshd entirely
 sudo systemctl disable --now ssh
 ```
 
 ---
 
-## Fallback: SSH Tunnel
+## Fallback: Tunnel SSH
 
-Jika Tailscale Serve tidak berfungsi, gunakan SSH tunnel:
+Jika Tailscale Serve tidak berfungsi, gunakan tunnel SSH:
 
 ```bash
-# Dari mesin lokal Anda (melalui Tailscale)
+# From your local machine (via Tailscale)
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 ```
 
@@ -235,27 +235,27 @@ Lalu buka `http://localhost:18789`.
 
 ---
 
-## Pemecahan masalah
+## Pemecahan Masalah
 
 ### Pembuatan instance gagal ("Out of capacity")
 
 Instance ARM tier gratis populer. Coba:
 
-- Availability domain yang berbeda
-- Coba lagi di jam non-puncak (pagi hari)
+- Domain ketersediaan yang berbeda
+- Coba lagi saat jam sepi (pagi hari)
 - Gunakan filter "Always Free" saat memilih shape
 
-### Tailscale tidak mau terhubung
+### Tailscale tidak dapat terhubung
 
 ```bash
-# Periksa status
+# Check status
 sudo tailscale status
 
-# Autentikasi ulang
+# Re-authenticate
 sudo tailscale up --ssh --hostname=openclaw --reset
 ```
 
-### Gateway tidak mau mulai
+### Gateway tidak dapat dimulai
 
 ```bash
 openclaw gateway status
@@ -263,28 +263,28 @@ openclaw doctor --non-interactive
 journalctl --user -u openclaw-gateway.service -n 50
 ```
 
-### Tidak bisa menjangkau Control UI
+### Tidak dapat menjangkau Control UI
 
 ```bash
-# Verifikasi Tailscale Serve berjalan
+# Verify Tailscale Serve is running
 tailscale serve status
 
-# Periksa apakah gateway melakukan listen
+# Check gateway is listening
 curl http://localhost:18789
 
-# Restart jika perlu
+# Restart if needed
 systemctl --user restart openclaw-gateway.service
 ```
 
-### Masalah binary ARM
+### Masalah biner ARM
 
-Beberapa tool mungkin tidak memiliki build ARM. Periksa:
+Beberapa alat mungkin tidak memiliki build ARM. Periksa:
 
 ```bash
-uname -m  # Harus menampilkan aarch64
+uname -m  # Should show aarch64
 ```
 
-Sebagian besar paket npm berfungsi dengan baik. Untuk binary, cari rilis `linux-arm64` atau `aarch64`.
+Sebagian besar paket npm berjalan baik. Untuk biner, cari rilis `linux-arm64` atau `aarch64`.
 
 ---
 
@@ -293,9 +293,9 @@ Sebagian besar paket npm berfungsi dengan baik. Untuk binary, cari rilis `linux-
 Semua state berada di:
 
 - `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, state channel/provider, dan data sesi
-- `~/.openclaw/workspace/` — workspace (SOUL.md, memory, artefak)
+- `~/.openclaw/workspace/` — workspace (SOUL.md, memori, artefak)
 
-Lakukan backup secara berkala:
+Cadangkan secara berkala:
 
 ```bash
 openclaw backup create
@@ -305,8 +305,8 @@ openclaw backup create
 
 ## Terkait
 
-- [Akses remote Gateway](/id/gateway/remote) — pola akses remote lainnya
-- [Integrasi Tailscale](/id/gateway/tailscale) — dokumentasi Tailscale lengkap
-- [Konfigurasi gateway](/id/gateway/configuration) — semua opsi config
-- [Panduan DigitalOcean](/id/install/digitalocean) — jika Anda menginginkan opsi berbayar + pendaftaran yang lebih mudah
+- [Akses jarak jauh Gateway](/id/gateway/remote) — pola akses jarak jauh lainnya
+- [Integrasi Tailscale](/id/gateway/tailscale) — dokumentasi lengkap Tailscale
+- [Konfigurasi Gateway](/id/gateway/configuration) — semua opsi konfigurasi
+- [Panduan DigitalOcean](/id/install/digitalocean) — jika Anda menginginkan berbayar + pendaftaran lebih mudah
 - [Panduan Hetzner](/id/install/hetzner) — alternatif berbasis Docker

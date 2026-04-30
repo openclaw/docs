@@ -1,117 +1,130 @@
 ---
 read_when:
-    - Anda sedang membangun Plugin channel pesan baru
-    - Anda ingin menghubungkan OpenClaw ke platform pesan
-    - Anda perlu memahami surface adapter `ChannelPlugin`
+    - Anda sedang membuat Plugin saluran perpesanan baru
+    - Anda ingin menghubungkan OpenClaw ke platform perpesanan
+    - Anda perlu memahami antarmuka adaptor ChannelPlugin
 sidebarTitle: Channel Plugins
-summary: Panduan langkah demi langkah untuk membangun Plugin channel pesan untuk OpenClaw
-title: Membangun Plugin channel pesan
+summary: Panduan langkah demi langkah untuk membuat Plugin saluran perpesanan untuk OpenClaw
+title: Membangun Plugin saluran
 x-i18n:
-    generated_at: "2026-04-25T13:51:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:03:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0a466decff828bdce1d9d3e85127867b88f43c6eca25aa97306f8bd0df39f3a9
+    source_hash: 068cd797f7761efa54f4fdeb7cb4aa784ceace959f1af12bc549c16ed2776b72
     source_path: plugins/sdk-channel-plugins.md
-    workflow: 15
+    workflow: 16
 ---
 
-Panduan ini memandu Anda membangun Plugin channel yang menghubungkan OpenClaw ke
-platform pesan. Pada akhirnya Anda akan memiliki channel yang berfungsi dengan keamanan DM,
-pairing, reply threading, dan pesan keluar.
+Panduan ini menjelaskan cara membuat plugin kanal yang menghubungkan OpenClaw ke
+platform perpesanan. Pada akhirnya, Anda akan memiliki kanal yang berfungsi dengan keamanan DM,
+pairing, threading balasan, dan pengiriman pesan keluar.
 
 <Info>
-  Jika Anda belum pernah membangun Plugin OpenClaw sebelumnya, baca
-  [Getting Started](/id/plugins/building-plugins) terlebih dahulu untuk struktur
-  paket dasar dan penyiapan manifest.
+  Jika Anda belum pernah membuat plugin OpenClaw sebelumnya, baca
+  [Memulai](/id/plugins/building-plugins) terlebih dahulu untuk struktur paket dasar
+  dan penyiapan manifest.
 </Info>
 
-## Cara kerja Plugin channel
+## Cara kerja plugin kanal
 
-Plugin channel tidak memerlukan tool send/edit/react sendiri. OpenClaw menyimpan satu
-tool `message` bersama di core. Plugin Anda memiliki:
+Plugin kanal tidak memerlukan alat kirim/edit/reaksi miliknya sendiri. OpenClaw mempertahankan satu
+alat `message` bersama di inti. Plugin Anda memiliki:
 
-- **Config** — resolusi akun dan wizard penyiapan
-- **Security** — kebijakan DM dan allowlist
+- **Konfigurasi** — resolusi akun dan wizard penyiapan
+- **Keamanan** — kebijakan DM dan allowlist
 - **Pairing** — alur persetujuan DM
-- **Session grammar** — bagaimana id percakapan khusus provider dipetakan ke chat dasar, id thread, dan fallback induk
-- **Outbound** — mengirim teks, media, dan polling ke platform
-- **Threading** — bagaimana balasan di-thread
-- **Heartbeat typing** — sinyal mengetik/sibuk opsional untuk target pengiriman Heartbeat
+- **Tata bahasa sesi** — bagaimana id percakapan khusus penyedia dipetakan ke chat dasar, id thread, dan fallback induk
+- **Keluar** — mengirim teks, media, dan polling ke platform
+- **Threading** — bagaimana balasan dibuat dalam thread
+- **Pengetikan Heartbeat** — sinyal mengetik/sibuk opsional untuk target pengiriman Heartbeat
 
-Core memiliki tool pesan bersama, wiring prompt, bentuk luar kunci sesi,
-pembukuan generik `:thread:`, dan dispatch.
+Inti memiliki alat pesan bersama, wiring prompt, bentuk kunci sesi luar,
+pencatatan `:thread:` generik, dan dispatch.
 
-Jika channel Anda mendukung indikator mengetik di luar balasan masuk, ekspos
-`heartbeat.sendTyping(...)` pada Plugin channel. Core memanggilnya dengan target
-pengiriman Heartbeat yang telah di-resolve sebelum eksekusi model Heartbeat dimulai dan
-menggunakan siklus hidup keepalive/pembersihan pengetikan bersama. Tambahkan `heartbeat.clearTyping(...)`
-saat platform memerlukan sinyal berhenti eksplisit.
+Jika kanal Anda mendukung indikator mengetik di luar balasan masuk, ekspos
+`heartbeat.sendTyping(...)` pada plugin kanal. Inti memanggilnya dengan
+target pengiriman Heartbeat yang sudah diselesaikan sebelum model Heartbeat mulai berjalan dan
+menggunakan siklus hidup keepalive/cleanup pengetikan bersama. Tambahkan `heartbeat.clearTyping(...)`
+ketika platform memerlukan sinyal berhenti eksplisit.
 
-Jika channel Anda menambahkan parameter tool pesan yang membawa sumber media, ekspos
-nama parameter tersebut melalui `describeMessageTool(...).mediaSourceParams`. Core menggunakan
+Jika kanal Anda menambahkan param alat pesan yang membawa sumber media, ekspos nama
+param tersebut melalui `describeMessageTool(...).mediaSourceParams`. Inti menggunakan
 daftar eksplisit itu untuk normalisasi path sandbox dan kebijakan akses media keluar,
-sehingga Plugin tidak memerlukan kasus khusus shared-core untuk parameter avatar, attachment,
-atau cover-image khusus provider.
-Sebaiknya kembalikan map yang dikunci oleh action seperti
-`{ "set-profile": ["avatarUrl", "avatarPath"] }` agar action yang tidak terkait tidak
-mewarisi argumen media milik action lain. Array datar tetap berfungsi untuk parameter
-yang memang sengaja dibagikan di setiap action yang diekspos.
+sehingga plugin tidak memerlukan kasus khusus inti bersama untuk param avatar,
+lampiran, atau gambar sampul yang khusus penyedia.
+Utamakan mengembalikan peta berbasis kunci aksi seperti
+`{ "set-profile": ["avatarUrl", "avatarPath"] }` agar aksi yang tidak terkait tidak
+mewarisi argumen media aksi lain. Array datar tetap berfungsi untuk param yang
+sengaja dibagikan di semua aksi yang diekspos.
 
 Jika platform Anda menyimpan scope tambahan di dalam id percakapan, pertahankan parsing itu
-di Plugin dengan `messaging.resolveSessionConversation(...)`. Ini adalah hook kanonis
-untuk memetakan `rawId` ke id percakapan dasar, `threadId` opsional,
-`baseConversationId` eksplisit, dan `parentConversationCandidates`, jika ada.
-Saat Anda mengembalikan `parentConversationCandidates`, pertahankan urutannya dari induk
-yang paling sempit ke percakapan dasar/terluas.
+di plugin dengan `messaging.resolveSessionConversation(...)`. Itu adalah hook
+kanonis untuk memetakan `rawId` ke id percakapan dasar, id thread opsional,
+`baseConversationId` eksplisit, dan `parentConversationCandidates` apa pun.
+Saat Anda mengembalikan `parentConversationCandidates`, pertahankan urutannya dari
+induk tersempit ke percakapan terluas/dasar.
 
-Plugin bawaan yang memerlukan parsing yang sama sebelum registri channel melakukan boot
-juga dapat mengekspos file top-level `session-key-api.ts` dengan ekspor
-`resolveSessionConversation(...)` yang cocok. Core menggunakan surface yang aman untuk bootstrap itu
-hanya saat registri Plugin runtime belum tersedia.
+Gunakan `openclaw/plugin-sdk/channel-route` ketika kode plugin perlu menormalkan
+field yang mirip rute, membandingkan thread turunan dengan rute induknya, atau membuat
+kunci dedupe stabil dari `{ channel, to, accountId, threadId }`. Helper tersebut
+menormalkan id thread numerik dengan cara yang sama seperti inti, sehingga plugin sebaiknya mengutamakannya
+daripada perbandingan ad hoc `String(threadId)`.
+Plugin dengan tata bahasa target khusus penyedia dapat menyuntikkan parsernya ke
+`resolveChannelRouteTargetWithParser(...)` dan tetap mendapatkan bentuk target rute
+serta semantik fallback thread yang sama seperti yang digunakan inti.
 
-`messaging.resolveParentConversationCandidates(...)` tetap tersedia sebagai fallback kompatibilitas lama saat sebuah Plugin hanya memerlukan fallback induk di atas id generik/mentah. Jika kedua hook ada, core menggunakan
+Plugin bawaan yang memerlukan parsing yang sama sebelum registry kanal aktif
+juga dapat mengekspos file `session-key-api.ts` tingkat atas dengan ekspor
+`resolveSessionConversation(...)` yang cocok. Inti menggunakan permukaan yang aman untuk bootstrap itu
+hanya ketika registry plugin runtime belum tersedia.
+
+`messaging.resolveParentConversationCandidates(...)` tetap tersedia sebagai
+fallback kompatibilitas lama ketika plugin hanya memerlukan fallback induk di atas
+id generik/mentah. Jika kedua hook ada, inti menggunakan
 `resolveSessionConversation(...).parentConversationCandidates` terlebih dahulu dan hanya
-menggunakan fallback ke `resolveParentConversationCandidates(...)` saat hook kanonis
+fallback ke `resolveParentConversationCandidates(...)` ketika hook kanonis
 menghilangkannya.
 
-## Persetujuan dan kemampuan channel
+## Persetujuan dan kapabilitas kanal
 
-Sebagian besar Plugin channel tidak memerlukan kode khusus persetujuan.
+Sebagian besar plugin kanal tidak memerlukan kode khusus persetujuan.
 
-- Core memiliki `/approve` untuk chat yang sama, payload tombol persetujuan bersama, dan pengiriman fallback generik.
-- Sebaiknya gunakan satu objek `approvalCapability` pada Plugin channel saat channel memerlukan perilaku khusus persetujuan.
-- `ChannelPlugin.approvals` dihapus. Letakkan fakta pengiriman/render/auth persetujuan native pada `approvalCapability`.
-- `plugin.auth` hanya untuk login/logout; core tidak lagi membaca hook auth persetujuan dari objek itu.
-- `approvalCapability.authorizeActorAction` dan `approvalCapability.getActionAvailabilityState` adalah seam auth persetujuan yang kanonis.
-- Gunakan `approvalCapability.getActionAvailabilityState` untuk ketersediaan auth persetujuan di chat yang sama.
-- Jika channel Anda mengekspos persetujuan exec native, gunakan `approvalCapability.getExecInitiatingSurfaceState` untuk state permukaan pemula/native-client saat berbeda dari auth persetujuan chat yang sama. Core menggunakan hook khusus exec itu untuk membedakan `enabled` vs `disabled`, memutuskan apakah channel pemula mendukung persetujuan exec native, dan menyertakan channel tersebut dalam panduan fallback native-client. `createApproverRestrictedNativeApprovalCapability(...)` mengisi ini untuk kasus umum.
-- Gunakan `outbound.shouldSuppressLocalPayloadPrompt` atau `outbound.beforeDeliverPayload` untuk perilaku siklus hidup payload khusus channel seperti menyembunyikan prompt persetujuan lokal duplikat atau mengirim indikator mengetik sebelum pengiriman.
+- Inti memiliki `/approve` dalam chat yang sama, payload tombol persetujuan bersama, dan pengiriman fallback generik.
+- Utamakan satu objek `approvalCapability` pada plugin kanal ketika kanal memerlukan perilaku khusus persetujuan.
+- `ChannelPlugin.approvals` dihapus. Letakkan fakta pengiriman/native/render/auth persetujuan pada `approvalCapability`.
+- `plugin.auth` hanya untuk login/logout; inti tidak lagi membaca hook auth persetujuan dari objek itu.
+- `approvalCapability.authorizeActorAction` dan `approvalCapability.getActionAvailabilityState` adalah seam auth persetujuan kanonis.
+- Gunakan `approvalCapability.getActionAvailabilityState` untuk ketersediaan auth persetujuan dalam chat yang sama.
+- Jika kanal Anda mengekspos persetujuan eksekusi native, gunakan `approvalCapability.getExecInitiatingSurfaceState` untuk status permukaan pemicu/klien native ketika berbeda dari auth persetujuan dalam chat yang sama. Inti menggunakan hook khusus eksekusi itu untuk membedakan `enabled` vs `disabled`, menentukan apakah kanal pemicu mendukung persetujuan eksekusi native, dan menyertakan kanal dalam panduan fallback klien native. `createApproverRestrictedNativeApprovalCapability(...)` mengisi ini untuk kasus umum.
+- Gunakan `outbound.shouldSuppressLocalPayloadPrompt` atau `outbound.beforeDeliverPayload` untuk perilaku siklus hidup payload khusus kanal seperti menyembunyikan prompt persetujuan lokal duplikat atau mengirim indikator mengetik sebelum pengiriman.
 - Gunakan `approvalCapability.delivery` hanya untuk routing persetujuan native atau penekanan fallback.
-- Gunakan `approvalCapability.nativeRuntime` untuk fakta persetujuan native milik channel. Pertahankan agar lazy pada entrypoint channel panas dengan `createLazyChannelApprovalNativeRuntimeAdapter(...)`, yang dapat mengimpor modul runtime Anda sesuai kebutuhan sambil tetap membiarkan core merakit siklus hidup persetujuan.
-- Gunakan `approvalCapability.render` hanya saat channel benar-benar memerlukan payload persetujuan kustom alih-alih renderer bersama.
-- Gunakan `approvalCapability.describeExecApprovalSetup` saat channel ingin balasan jalur-disabled menjelaskan knob config persis yang dibutuhkan untuk mengaktifkan persetujuan exec native. Hook menerima `{ channel, channelLabel, accountId }`; channel akun bernama harus merender path dengan cakupan akun seperti `channels.<channel>.accounts.<id>.execApprovals.*` alih-alih default top-level.
-- Jika channel dapat menyimpulkan identitas DM mirip pemilik yang stabil dari config yang ada, gunakan `createResolvedApproverActionAuthAdapter` dari `openclaw/plugin-sdk/approval-runtime` untuk membatasi `/approve` pada chat yang sama tanpa menambahkan logika inti khusus persetujuan.
-- Jika channel memerlukan pengiriman persetujuan native, pertahankan kode channel tetap fokus pada normalisasi target plus fakta transport/presentasi. Gunakan `createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`, `createChannelApproverDmTargetResolver`, dan `createApproverRestrictedNativeApprovalCapability` dari `openclaw/plugin-sdk/approval-runtime`. Letakkan fakta khusus channel di balik `approvalCapability.nativeRuntime`, idealnya melalui `createChannelApprovalNativeRuntimeAdapter(...)` atau `createLazyChannelApprovalNativeRuntimeAdapter(...)`, sehingga core dapat merakit handler dan memiliki filter permintaan, routing, dedupe, expiry, subscription gateway, dan pemberitahuan routed-elsewhere. `nativeRuntime` dibagi menjadi beberapa seam kecil:
-- `availability` — apakah akun dikonfigurasi dan apakah suatu permintaan harus ditangani
-- `presentation` — memetakan model tampilan persetujuan bersama ke payload native pending/resolved/expired atau action akhir
-- `transport` — menyiapkan target plus mengirim/memperbarui/menghapus pesan persetujuan native
+- Gunakan `approvalCapability.nativeRuntime` untuk fakta persetujuan native milik kanal. Pertahankan agar tetap lazy pada entrypoint kanal panas dengan `createLazyChannelApprovalNativeRuntimeAdapter(...)`, yang dapat mengimpor modul runtime Anda sesuai permintaan sambil tetap memungkinkan inti menyusun siklus hidup persetujuan.
+- Gunakan `approvalCapability.render` hanya ketika kanal benar-benar memerlukan payload persetujuan khusus alih-alih renderer bersama.
+- Gunakan `approvalCapability.describeExecApprovalSetup` ketika kanal ingin balasan jalur nonaktif menjelaskan knob konfigurasi persis yang diperlukan untuk mengaktifkan persetujuan eksekusi native. Hook menerima `{ channel, channelLabel, accountId }`; kanal akun bernama sebaiknya merender path berscope akun seperti `channels.<channel>.accounts.<id>.execApprovals.*` alih-alih default tingkat atas.
+- Jika kanal dapat menyimpulkan identitas DM yang stabil seperti pemilik dari konfigurasi yang ada, gunakan `createResolvedApproverActionAuthAdapter` dari `openclaw/plugin-sdk/approval-runtime` untuk membatasi `/approve` dalam chat yang sama tanpa menambahkan logika inti khusus persetujuan.
+- Jika kanal memerlukan pengiriman persetujuan native, pertahankan kode kanal tetap berfokus pada normalisasi target ditambah fakta transport/presentasi. Gunakan `createChannelExecApprovalProfile`, `createChannelNativeOriginTargetResolver`, `createChannelApproverDmTargetResolver`, dan `createApproverRestrictedNativeApprovalCapability` dari `openclaw/plugin-sdk/approval-runtime`. Letakkan fakta khusus kanal di balik `approvalCapability.nativeRuntime`, idealnya melalui `createChannelApprovalNativeRuntimeAdapter(...)` atau `createLazyChannelApprovalNativeRuntimeAdapter(...)`, sehingga inti dapat menyusun handler dan memiliki pemfilteran permintaan, routing, dedupe, kedaluwarsa, langganan Gateway, dan pemberitahuan dirutekan-ke-tempat-lain. `nativeRuntime` dipecah menjadi beberapa seam yang lebih kecil:
+- `createChannelNativeOriginTargetResolver` menggunakan pencocok channel-route bersama secara default untuk target `{ to, accountId, threadId }`. Teruskan `targetsMatch` hanya ketika kanal memiliki aturan ekuivalensi khusus penyedia, seperti pencocokan prefiks timestamp Slack.
+- Teruskan `normalizeTargetForMatch` ke `createChannelNativeOriginTargetResolver` ketika kanal perlu mengkanoniskan id penyedia sebelum pencocok rute default atau callback `targetsMatch` khusus berjalan, sambil mempertahankan target asli untuk pengiriman. Gunakan `normalizeTarget` hanya ketika target pengiriman yang diselesaikan itu sendiri harus dikanoniskan.
+- `availability` — apakah akun sudah dikonfigurasi dan apakah permintaan harus ditangani
+- `presentation` — memetakan model tampilan persetujuan bersama ke payload native tertunda/diselesaikan/kedaluwarsa atau aksi akhir
+- `transport` — menyiapkan target serta mengirim/memperbarui/menghapus pesan persetujuan native
 - `interactions` — hook bind/unbind/clear-action opsional untuk tombol atau reaksi native
 - `observe` — hook diagnostik pengiriman opsional
-- Jika channel memerlukan objek milik runtime seperti klien, token, aplikasi Bolt, atau penerima Webhook, daftarkan melalui `openclaw/plugin-sdk/channel-runtime-context`. Registri runtime-context generik memungkinkan core melakukan bootstrap handler yang digerakkan capability dari state startup channel tanpa menambahkan glue wrapper khusus persetujuan.
-- Gunakan `createChannelApprovalHandler` atau `createChannelNativeApprovalRuntime` tingkat lebih rendah hanya saat seam yang digerakkan capability belum cukup ekspresif.
-- Channel persetujuan native harus merutekan `accountId` dan `approvalKind` melalui helper tersebut. `accountId` menjaga kebijakan persetujuan multi-akun tetap dibatasi ke akun bot yang tepat, dan `approvalKind` menjaga perilaku persetujuan exec vs Plugin tetap tersedia bagi channel tanpa cabang hardcoded di core.
-- Core sekarang juga memiliki pemberitahuan reroute persetujuan. Plugin channel tidak boleh mengirim pesan lanjutan sendiri seperti "approval went to DMs / another channel" dari `createChannelNativeApprovalRuntime`; sebagai gantinya, ekspos routing origin + approver-DM yang akurat melalui helper capability persetujuan bersama dan biarkan core mengagregasi pengiriman aktual sebelum memposting pemberitahuan kembali ke chat pemula.
-- Pertahankan jenis id persetujuan yang telah dikirim dari ujung ke ujung. Klien native tidak boleh
-  menebak atau menulis ulang routing persetujuan exec vs Plugin dari state lokal channel.
-- Jenis persetujuan yang berbeda dapat secara sengaja mengekspos surface native yang berbeda.
+- Jika kanal memerlukan objek milik runtime seperti klien, token, aplikasi Bolt, atau penerima webhook, daftarkan melalui `openclaw/plugin-sdk/channel-runtime-context`. Registry runtime-context generik memungkinkan inti melakukan bootstrap handler berbasis kapabilitas dari status startup kanal tanpa menambahkan lem wrapper khusus persetujuan.
+- Gunakan `createChannelApprovalHandler` atau `createChannelNativeApprovalRuntime` tingkat lebih rendah hanya ketika seam berbasis kapabilitas belum cukup ekspresif.
+- Kanal persetujuan native harus merutekan `accountId` dan `approvalKind` melalui helper tersebut. `accountId` menjaga kebijakan persetujuan multi-akun tetap terscope ke akun bot yang benar, dan `approvalKind` menjaga perilaku persetujuan eksekusi vs plugin tetap tersedia bagi kanal tanpa cabang hardcoded di inti.
+- Inti kini juga memiliki pemberitahuan reroute persetujuan. Plugin kanal tidak boleh mengirim pesan lanjutan "persetujuan dikirim ke DM / kanal lain" miliknya sendiri dari `createChannelNativeApprovalRuntime`; sebagai gantinya, ekspos routing asal + DM pemberi persetujuan yang akurat melalui helper kapabilitas persetujuan bersama dan biarkan inti mengagregasi pengiriman aktual sebelum memposting pemberitahuan apa pun kembali ke chat pemicu.
+- Pertahankan jenis id persetujuan yang dikirimkan dari ujung ke ujung. Klien native tidak boleh
+  menebak atau menulis ulang routing persetujuan eksekusi vs plugin dari status lokal kanal.
+- Jenis persetujuan yang berbeda dapat secara sengaja mengekspos permukaan native yang berbeda.
   Contoh bawaan saat ini:
-  - Slack mempertahankan routing persetujuan native tersedia untuk id exec dan Plugin.
-  - Matrix mempertahankan routing DM/channel native yang sama dan UX reaksi untuk persetujuan exec
-    dan Plugin, sambil tetap membiarkan auth berbeda menurut jenis persetujuan.
-- `createApproverRestrictedNativeApprovalAdapter` masih ada sebagai wrapper kompatibilitas, tetapi kode baru sebaiknya menggunakan builder capability dan mengekspos `approvalCapability` pada Plugin.
+  - Slack mempertahankan routing persetujuan native tersedia untuk id eksekusi dan plugin.
+  - Matrix mempertahankan routing DM/kanal native dan UX reaksi yang sama untuk persetujuan eksekusi
+    dan plugin, sambil tetap membiarkan auth berbeda menurut jenis persetujuan.
+- `createApproverRestrictedNativeApprovalAdapter` masih ada sebagai wrapper kompatibilitas, tetapi kode baru sebaiknya mengutamakan pembuat kapabilitas dan mengekspos `approvalCapability` pada plugin.
 
-Untuk entrypoint channel panas, sebaiknya gunakan subpath runtime yang lebih sempit saat Anda hanya
-memerlukan satu bagian dari keluarga itu:
+Untuk entrypoint kanal panas, utamakan subpath runtime yang lebih sempit ketika Anda hanya
+memerlukan satu bagian dari keluarga tersebut:
 
 - `openclaw/plugin-sdk/approval-auth-runtime`
 - `openclaw/plugin-sdk/approval-client-runtime`
@@ -123,89 +136,107 @@ memerlukan satu bagian dari keluarga itu:
 - `openclaw/plugin-sdk/approval-reply-runtime`
 - `openclaw/plugin-sdk/channel-runtime-context`
 
-Demikian juga, sebaiknya gunakan `openclaw/plugin-sdk/setup-runtime`,
+Demikian juga, utamakan `openclaw/plugin-sdk/setup-runtime`,
 `openclaw/plugin-sdk/setup-adapter-runtime`,
 `openclaw/plugin-sdk/reply-runtime`,
 `openclaw/plugin-sdk/reply-dispatch-runtime`,
 `openclaw/plugin-sdk/reply-reference`, dan
-`openclaw/plugin-sdk/reply-chunking` saat Anda tidak memerlukan surface umbrella
+`openclaw/plugin-sdk/reply-chunking` ketika Anda tidak memerlukan permukaan payung
 yang lebih luas.
 
-Khusus untuk setup:
+Khusus untuk penyiapan:
 
-- `openclaw/plugin-sdk/setup-runtime` mencakup helper setup yang aman untuk runtime:
-  adapter patch setup yang aman untuk impor (`createPatchedAccountSetupAdapter`,
+- `openclaw/plugin-sdk/setup-runtime` mencakup helper penyiapan yang aman untuk runtime:
+  adapter patch penyiapan yang aman impor (`createPatchedAccountSetupAdapter`,
   `createEnvPatchedAccountSetupAdapter`,
   `createSetupInputPresenceValidator`), output catatan lookup,
-  `promptResolvedAllowFrom`, `splitSetupEntries`, dan builder
-  setup-proxy terdelegasi
+  `promptResolvedAllowFrom`, `splitSetupEntries`, dan pembuat
+  proksi penyiapan terdelegasi
 - `openclaw/plugin-sdk/setup-adapter-runtime` adalah seam adapter sempit yang sadar env
   untuk `createEnvPatchedAccountSetupAdapter`
-- `openclaw/plugin-sdk/channel-setup` mencakup builder setup opsional-install
-  ditambah beberapa primitive yang aman untuk setup:
+- `openclaw/plugin-sdk/channel-setup` mencakup pembuat penyiapan instalasi opsional
+  ditambah beberapa primitif yang aman untuk penyiapan:
   `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`,
 
-Jika channel Anda mendukung setup atau auth berbasis env dan alur startup/config generik
-harus mengetahui nama env tersebut sebelum runtime dimuat, deklarasikan di manifest
-Plugin dengan `channelEnvVars`. Pertahankan `envVars` runtime channel atau
-konstanta lokal hanya untuk salinan yang ditujukan kepada operator.
+Jika kanal Anda mendukung penyiapan atau auth berbasis env dan alur startup/konfigurasi
+generik perlu mengetahui nama env tersebut sebelum runtime dimuat, deklarasikan nama tersebut dalam
+manifest plugin dengan `channelEnvVars`. Pertahankan `envVars` runtime kanal atau konstanta lokal
+hanya untuk salinan yang ditujukan kepada operator.
 
-Jika channel Anda dapat muncul di `status`, `channels list`, `channels status`, atau pemindaian SecretRef sebelum runtime Plugin dimulai, tambahkan `openclaw.setupEntry` di
-`package.json`. Entrypoint itu harus aman untuk diimpor dalam jalur perintah read-only dan harus mengembalikan metadata channel, adapter config yang aman untuk setup, adapter status, dan metadata target secret channel yang diperlukan untuk ringkasan tersebut. Jangan memulai klien, listener, atau runtime transport dari entri setup.
+Jika saluran Anda dapat muncul di `status`, `channels list`, `channels status`, atau
+pemindaian SecretRef sebelum runtime Plugin dimulai, tambahkan `openclaw.setupEntry` di
+`package.json`. Titik masuk tersebut harus aman untuk diimpor di jalur perintah hanya-baca
+dan harus mengembalikan metadata saluran, adapter konfigurasi yang aman untuk penyiapan, adapter status,
+serta metadata target rahasia saluran yang diperlukan untuk ringkasan tersebut. Jangan
+memulai klien, listener, atau runtime transport dari entri penyiapan.
 
-Pertahankan jalur impor entri channel utama juga sempit. Discovery dapat mengevaluasi entri dan modul Plugin channel untuk mendaftarkan capability tanpa mengaktifkan channel. File seperti `channel-plugin-api.ts` harus mengekspor objek Plugin channel tanpa mengimpor wizard setup, klien transport, listener socket, launcher subprocess, atau modul startup layanan. Letakkan bagian runtime itu dalam modul yang dimuat dari `registerFull(...)`, setter runtime, atau adapter capability lazy.
+Jaga jalur impor entri saluran utama tetap sempit juga. Discovery dapat mengevaluasi
+entri dan modul Plugin saluran untuk mendaftarkan kapabilitas tanpa mengaktifkan
+saluran. File seperti `channel-plugin-api.ts` harus mengekspor objek Plugin
+saluran tanpa mengimpor wizard penyiapan, klien transport, listener socket,
+peluncur subproses, atau modul startup layanan. Letakkan bagian runtime
+tersebut di modul yang dimuat dari `registerFull(...)`, setter runtime, atau adapter
+kapabilitas lazy.
 
 `createOptionalChannelSetupWizard`, `DEFAULT_ACCOUNT_ID`,
 `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, dan
 `splitSetupEntries`
 
 - gunakan seam `openclaw/plugin-sdk/setup` yang lebih luas hanya saat Anda juga memerlukan
-  helper setup/config bersama yang lebih berat seperti
+  helper penyiapan/konfigurasi bersama yang lebih berat seperti
   `moveSingleAccountChannelSectionToDefaultAccount(...)`
 
-Jika channel Anda hanya ingin mengiklankan "instal plugin ini dulu" di
-surface setup, sebaiknya gunakan `createOptionalChannelSetupSurface(...)`. Wizard/adapter yang dihasilkan gagal secara fail-closed pada penulisan config dan finalisasi, dan menggunakan kembali pesan wajib-instal yang sama pada validasi, finalisasi, dan salinan tautan dokumen.
+Jika saluran Anda hanya ingin mengiklankan "instal Plugin ini terlebih dahulu" di permukaan
+penyiapan, utamakan `createOptionalChannelSetupSurface(...)`. Adapter/wizard yang dihasilkan
+gagal tertutup pada penulisan konfigurasi dan finalisasi, serta menggunakan kembali
+pesan perlu-instal yang sama di seluruh validasi, finalisasi, dan salinan tautan dokumentasi.
 
-Untuk jalur channel panas lainnya, sebaiknya gunakan helper sempit daripada surface lama yang lebih luas:
+Untuk jalur saluran hot lainnya, utamakan helper sempit daripada permukaan legacy
+yang lebih luas:
 
 - `openclaw/plugin-sdk/account-core`,
   `openclaw/plugin-sdk/account-id`,
   `openclaw/plugin-sdk/account-resolution`, dan
   `openclaw/plugin-sdk/account-helpers` untuk konfigurasi multi-akun dan
-  fallback akun default
+  fallback akun-default
 - `openclaw/plugin-sdk/inbound-envelope` dan
-  `openclaw/plugin-sdk/inbound-reply-dispatch` untuk wiring rute/envelope masuk dan
-  record-and-dispatch
+  `openclaw/plugin-sdk/inbound-reply-dispatch` untuk rute/amplop inbound dan
+  wiring rekam-dan-dispatch
 - `openclaw/plugin-sdk/messaging-targets` untuk parsing/pencocokan target
 - `openclaw/plugin-sdk/outbound-media` dan
-  `openclaw/plugin-sdk/outbound-runtime` untuk pemuatan media plus delegasi identitas/pengiriman outbound dan perencanaan payload
+  `openclaw/plugin-sdk/outbound-runtime` untuk pemuatan media beserta delegasi
+  identitas/kirim outbound dan perencanaan payload
 - `buildThreadAwareOutboundSessionRoute(...)` dari
   `openclaw/plugin-sdk/channel-core` saat rute outbound harus mempertahankan
   `replyToId`/`threadId` eksplisit atau memulihkan sesi `:thread:` saat ini
-  setelah kunci sesi dasar masih cocok. Plugin provider dapat menimpa
+  setelah kunci sesi dasar masih cocok. Plugin penyedia dapat mengganti
   prioritas, perilaku sufiks, dan normalisasi id thread saat platform mereka
   memiliki semantik pengiriman thread native.
-- `openclaw/plugin-sdk/thread-bindings-runtime` untuk siklus hidup thread-binding
+- `openclaw/plugin-sdk/thread-bindings-runtime` untuk lifecycle thread-binding
   dan pendaftaran adapter
-- `openclaw/plugin-sdk/agent-media-payload` hanya saat layout field payload agen/media lama masih diperlukan
-- `openclaw/plugin-sdk/telegram-command-config` untuk normalisasi custom-command Telegram, validasi duplikat/konflik, dan kontrak config perintah yang stabil untuk fallback
+- `openclaw/plugin-sdk/agent-media-payload` hanya saat tata letak field payload
+  agent/media legacy masih diperlukan
+- `openclaw/plugin-sdk/telegram-command-config` untuk normalisasi custom-command
+  Telegram, validasi duplikat/konflik, dan kontrak konfigurasi perintah yang
+  stabil sebagai fallback
 
-Channel khusus-auth biasanya dapat berhenti pada jalur default: core menangani persetujuan dan plugin hanya mengekspos capability outbound/auth. Channel persetujuan native seperti Matrix, Slack, Telegram, dan transport chat kustom harus menggunakan helper native bersama alih-alih membangun siklus hidup persetujuan sendiri.
+Saluran khusus auth biasanya dapat berhenti di jalur default: core menangani persetujuan dan Plugin hanya mengekspos kapabilitas outbound/auth. Saluran persetujuan native seperti Matrix, Slack, Telegram, dan transport chat kustom harus menggunakan helper native bersama alih-alih membuat lifecycle persetujuan sendiri.
 
-## Kebijakan mention masuk
+## Kebijakan mention inbound
 
-Pertahankan penanganan mention masuk terbagi menjadi dua lapisan:
+Jaga penanganan mention inbound tetap terbagi dalam dua lapisan:
 
-- pengumpulan bukti milik plugin
+- pengumpulan bukti milik Plugin
 - evaluasi kebijakan bersama
 
 Gunakan `openclaw/plugin-sdk/channel-mention-gating` untuk keputusan kebijakan mention.
-Gunakan `openclaw/plugin-sdk/channel-inbound` hanya saat Anda memerlukan barrel helper inbound yang lebih luas.
+Gunakan `openclaw/plugin-sdk/channel-inbound` hanya saat Anda memerlukan barrel helper inbound
+yang lebih luas.
 
-Cocok untuk logika lokal plugin:
+Cocok untuk logika lokal Plugin:
 
-- deteksi reply-ke-bot
-- deteksi kutipan-bot
+- deteksi reply-to-bot
+- deteksi quoted-bot
 - pemeriksaan partisipasi thread
 - pengecualian pesan layanan/sistem
 - cache native platform yang diperlukan untuk membuktikan partisipasi bot
@@ -216,13 +247,13 @@ Cocok untuk helper bersama:
 - hasil mention eksplisit
 - allowlist mention implisit
 - bypass perintah
-- keputusan skip akhir
+- keputusan skip final
 
 Alur yang disarankan:
 
 1. Hitung fakta mention lokal.
-2. Teruskan fakta itu ke `resolveInboundMentionDecision({ facts, policy })`.
-3. Gunakan `decision.effectiveWasMentioned`, `decision.shouldBypassMention`, dan `decision.shouldSkip` pada gate inbound Anda.
+2. Teruskan fakta tersebut ke `resolveInboundMentionDecision({ facts, policy })`.
+3. Gunakan `decision.effectiveWasMentioned`, `decision.shouldBypassMention`, dan `decision.shouldSkip` di gate inbound Anda.
 
 ```typescript
 import {
@@ -262,7 +293,7 @@ if (decision.shouldSkip) return;
 ```
 
 `api.runtime.channel.mentions` mengekspos helper mention bersama yang sama untuk
-Plugin channel bawaan yang sudah bergantung pada injeksi runtime:
+Plugin saluran bawaan yang sudah bergantung pada injeksi runtime:
 
 - `buildMentionRegexes`
 - `matchesMentionPatterns`
@@ -272,21 +303,21 @@ Plugin channel bawaan yang sudah bergantung pada injeksi runtime:
 
 Jika Anda hanya memerlukan `implicitMentionKindWhen` dan
 `resolveInboundMentionDecision`, impor dari
-`openclaw/plugin-sdk/channel-mention-gating` untuk menghindari pemuatan helper
-runtime inbound lain yang tidak terkait.
+`openclaw/plugin-sdk/channel-mention-gating` untuk menghindari pemuatan helper runtime
+inbound yang tidak terkait.
 
-Helper `resolveMentionGating*` yang lebih lama tetap ada di
+Helper `resolveMentionGating*` yang lebih lama tetap berada di
 `openclaw/plugin-sdk/channel-inbound` hanya sebagai ekspor kompatibilitas. Kode baru
 sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
 
-## Panduan langkah demi langkah
+## Panduan
 
 <Steps>
   <a id="step-1-package-and-manifest"></a>
-  <Step title="Paket dan manifest">
+  <Step title="Paket dan manifes">
     Buat file Plugin standar. Field `channel` di `package.json` adalah
-    yang menjadikannya Plugin channel. Untuk surface metadata paket lengkap,
-    lihat [Plugin Setup and Config](/id/plugins/sdk-setup#openclaw-channel):
+    yang menjadikannya Plugin saluran. Untuk permukaan metadata paket lengkap,
+    lihat [Penyiapan dan Konfigurasi Plugin](/id/plugins/sdk-setup#openclaw-channel):
 
     <CodeGroup>
     ```json package.json
@@ -343,15 +374,15 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
     ```
     </CodeGroup>
 
-    `configSchema` memvalidasi `plugins.entries.acme-chat.config`. Gunakan ini untuk
-    pengaturan milik Plugin yang bukan merupakan konfigurasi akun channel. `channelConfigs`
-    memvalidasi `channels.acme-chat` dan merupakan sumber jalur dingin yang digunakan oleh config
-    schema, setup, dan surface UI sebelum runtime Plugin dimuat.
+    `configSchema` memvalidasi `plugins.entries.acme-chat.config`. Gunakan untuk
+    pengaturan milik Plugin yang bukan konfigurasi akun saluran. `channelConfigs`
+    memvalidasi `channels.acme-chat` dan merupakan sumber cold-path yang digunakan oleh skema
+    konfigurasi, penyiapan, dan permukaan UI sebelum runtime Plugin dimuat.
 
   </Step>
 
-  <Step title="Bangun objek Plugin channel">
-    Interface `ChannelPlugin` memiliki banyak surface adapter opsional. Mulailah dengan
+  <Step title="Bangun objek Plugin saluran">
+    Antarmuka `ChannelPlugin` memiliki banyak permukaan adapter opsional. Mulai dengan
     minimum — `id` dan `setup` — lalu tambahkan adapter sesuai kebutuhan.
 
     Buat `src/channel.ts`:
@@ -362,7 +393,7 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
       createChannelPluginBase,
     } from "openclaw/plugin-sdk/channel-core";
     import type { OpenClawConfig } from "openclaw/plugin-sdk/channel-core";
-    import { acmeChatApi } from "./client.js"; // klien API platform Anda
+    import { acmeChatApi } from "./client.js"; // your platform API client
 
     type ResolvedAccount = {
       accountId: string | null;
@@ -403,7 +434,7 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
         },
       }),
 
-      // Keamanan DM: siapa yang dapat mengirim pesan ke bot
+      // DM security: who can message the bot
       security: {
         dm: {
           channelKey: "acme-chat",
@@ -413,7 +444,7 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
         },
       },
 
-      // Pairing: alur persetujuan untuk kontak DM baru
+      // Pairing: approval flow for new DM contacts
       pairing: {
         text: {
           idLabel: "Acme Chat username",
@@ -424,10 +455,10 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
         },
       },
 
-      // Threading: bagaimana balasan dikirim
+      // Threading: how replies are delivered
       threading: { topLevelReplyToMode: "reply" },
 
-      // Outbound: kirim pesan ke platform
+      // Outbound: send messages to the platform
       outbound: {
         attachedResults: {
           sendText: async (params) => {
@@ -447,32 +478,34 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
     });
     ```
 
-    <Accordion title="Apa yang dilakukan createChatChannelPlugin untuk Anda">
-      Daripada mengimplementasikan interface adapter tingkat rendah secara manual, Anda meneruskan
-      opsi deklaratif dan builder akan menyusunnya:
+    Untuk saluran yang menerima kunci DM top-level kanonis dan kunci nested legacy, gunakan helper dari `plugin-sdk/channel-config-helpers`: `resolveChannelDmAccess`, `resolveChannelDmPolicy`, `resolveChannelDmAllowFrom`, dan `normalizeChannelDmPolicy` menjaga nilai lokal-akun tetap lebih dahulu daripada nilai root yang diwariskan. Pasangkan resolver yang sama dengan perbaikan doctor melalui `normalizeLegacyDmAliases` agar runtime dan migrasi membaca kontrak yang sama.
 
-      | Opsi | Apa yang dihubungkan |
+    <Accordion title="Apa yang createChatChannelPlugin lakukan untuk Anda">
+      Alih-alih mengimplementasikan antarmuka adapter tingkat rendah secara manual, Anda meneruskan
+      opsi deklaratif dan builder menyusunnya:
+
+      | Opsi | Yang di-wiring |
       | --- | --- |
-      | `security.dm` | Resolver keamanan DM dengan cakupan dari field config |
+      | `security.dm` | Resolver keamanan DM terskop dari field konfigurasi |
       | `pairing.text` | Alur pairing DM berbasis teks dengan pertukaran kode |
-      | `threading` | Resolver mode balas-ke (tetap, dengan cakupan akun, atau kustom) |
-      | `outbound.attachedResults` | Fungsi kirim yang mengembalikan metadata hasil (id pesan) |
+      | `threading` | Resolver mode reply-to (tetap, terskop akun, atau kustom) |
+      | `outbound.attachedResults` | Fungsi kirim yang mengembalikan metadata hasil (ID pesan) |
 
       Anda juga dapat meneruskan objek adapter mentah alih-alih opsi deklaratif
-      jika memerlukan kontrol penuh.
+      jika Anda memerlukan kontrol penuh.
 
       Adapter outbound mentah dapat mendefinisikan fungsi `chunker(text, limit, ctx)`.
-      `ctx.formatting` opsional membawa keputusan pemformatan waktu pengiriman
-      seperti `maxLinesPerMessage`; terapkan ini sebelum mengirim agar reply threading
-      dan batas chunk di-resolve sekali oleh pengiriman outbound bersama.
-      Konteks pengiriman juga menyertakan `replyToIdSource` (`implicit` atau `explicit`)
-      saat target balasan native berhasil di-resolve, sehingga helper payload dapat mempertahankan
-      tag balasan eksplisit tanpa menghabiskan slot balasan implisit sekali pakai.
+      `ctx.formatting` opsional membawa keputusan pemformatan saat pengiriman
+      seperti `maxLinesPerMessage`; terapkan sebelum mengirim agar threading balasan
+      dan batas chunk diselesaikan sekali oleh pengiriman outbound bersama.
+      Konteks kirim juga menyertakan `replyToIdSource` (`implicit` atau `explicit`)
+      saat target balasan native berhasil diselesaikan, sehingga helper payload dapat mempertahankan
+      tag balasan eksplisit tanpa menggunakan slot balasan implisit sekali pakai.
     </Accordion>
 
   </Step>
 
-  <Step title="Hubungkan entry point">
+  <Step title="Hubungkan titik masuk">
     Buat `index.ts`:
 
     ```typescript index.ts
@@ -508,21 +541,21 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
     });
     ```
 
-    Letakkan descriptor CLI milik channel di `registerCliMetadata(...)` agar OpenClaw
+    Letakkan deskriptor CLI milik channel di `registerCliMetadata(...)` agar OpenClaw
     dapat menampilkannya di bantuan root tanpa mengaktifkan runtime channel penuh,
-    sementara pemuatan penuh normal tetap mengambil descriptor yang sama untuk pendaftaran
-    perintah yang sebenarnya. Pertahankan `registerFull(...)` untuk pekerjaan yang hanya saat runtime.
-    Jika `registerFull(...)` mendaftarkan metode RPC gateway, gunakan prefix
-    khusus plugin. Namespace admin core (`config.*`,
+    sementara pemuatan penuh normal tetap mengambil deskriptor yang sama untuk pendaftaran
+    perintah sungguhan. Pertahankan `registerFull(...)` untuk pekerjaan khusus runtime.
+    Jika `registerFull(...)` mendaftarkan metode RPC Gateway, gunakan
+    prefiks khusus Plugin. Namespace admin inti (`config.*`,
     `exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu
-    di-resolve ke `operator.admin`.
+    diselesaikan ke `operator.admin`.
     `defineChannelPluginEntry` menangani pemisahan mode pendaftaran secara otomatis. Lihat
-    [Entry Points](/id/plugins/sdk-entrypoints#definechannelpluginentry) untuk semua
+    [Titik Masuk](/id/plugins/sdk-entrypoints#definechannelpluginentry) untuk semua
     opsi.
 
   </Step>
 
-  <Step title="Tambahkan entri setup">
+  <Step title="Tambahkan entri penyiapan">
     Buat `setup-entry.ts` untuk pemuatan ringan selama onboarding:
 
     ```typescript setup-entry.ts
@@ -532,33 +565,33 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
     export default defineSetupPluginEntry(acmeChatPlugin);
     ```
 
-    OpenClaw memuat ini alih-alih entri penuh saat channel dinonaktifkan
-    atau belum dikonfigurasi. Ini menghindari penarikan kode runtime yang berat selama alur setup.
-    Lihat [Setup and Config](/id/plugins/sdk-setup#setup-entry) untuk detail.
+    OpenClaw memuat ini sebagai pengganti entri penuh saat channel dinonaktifkan
+    atau belum dikonfigurasi. Ini menghindari pemuatan kode runtime berat selama alur penyiapan.
+    Lihat [Penyiapan dan Konfigurasi](/id/plugins/sdk-setup#setup-entry) untuk detail.
 
-    Channel workspace bawaan yang memisahkan ekspor aman-setup ke modul sidecar
-    dapat menggunakan `defineBundledChannelSetupEntry(...)` dari
-    `openclaw/plugin-sdk/channel-entry-contract` saat juga memerlukan
-    setter runtime waktu-setup yang eksplisit.
+    Channel workspace bawaan yang memisahkan ekspor yang aman untuk penyiapan ke dalam modul
+    sidecar dapat menggunakan `defineBundledChannelSetupEntry(...)` dari
+    `openclaw/plugin-sdk/channel-entry-contract` saat mereka juga memerlukan
+    setter runtime eksplisit pada waktu penyiapan.
 
   </Step>
 
-  <Step title="Tangani pesan masuk">
+  <Step title="Tangani pesan inbound">
     Plugin Anda perlu menerima pesan dari platform dan meneruskannya ke
-    OpenClaw. Pola yang umum adalah Webhook yang memverifikasi permintaan dan
-    me-dispatch-nya melalui handler inbound channel Anda:
+    OpenClaw. Pola umumnya adalah Webhook yang memverifikasi permintaan dan
+    mengirimkannya melalui handler inbound channel Anda:
 
     ```typescript
     registerFull(api) {
       api.registerHttpRoute({
         path: "/acme-chat/webhook",
-        auth: "plugin", // auth yang dikelola plugin (verifikasi signature sendiri)
+        auth: "plugin", // plugin-managed auth (verify signatures yourself)
         handler: async (req, res) => {
           const event = parseWebhookPayload(req);
 
-          // Handler inbound Anda me-dispatch pesan ke OpenClaw.
-          // Wiring pastinya bergantung pada SDK platform Anda —
-          // lihat contoh nyata di paket plugin Microsoft Teams atau Google Chat bawaan.
+          // Your inbound handler dispatches the message to OpenClaw.
+          // The exact wiring depends on your platform SDK —
+          // see a real example in the bundled Microsoft Teams or Google Chat plugin package.
           await handleAcmeChatInbound(api, event);
 
           res.statusCode = 200;
@@ -570,23 +603,23 @@ sebaiknya menggunakan `resolveInboundMentionDecision({ facts, policy })`.
     ```
 
     <Note>
-      Penanganan pesan masuk bersifat khusus channel. Setiap Plugin channel memiliki
+      Penanganan pesan inbound bersifat khusus channel. Setiap Plugin channel memiliki
       pipeline inbound-nya sendiri. Lihat Plugin channel bawaan
-      (misalnya paket plugin Microsoft Teams atau Google Chat) untuk pola nyata.
+      (misalnya paket Plugin Microsoft Teams atau Google Chat) untuk pola nyata.
     </Note>
 
   </Step>
 
 <a id="step-6-test"></a>
 <Step title="Uji">
-Tulis test yang diletakkan berdampingan di `src/channel.test.ts`:
+Tulis pengujian berdampingan di `src/channel.test.ts`:
 
     ```typescript src/channel.test.ts
     import { describe, it, expect } from "vitest";
     import { acmeChatPlugin } from "./channel.js";
 
-    describe("plugin acme-chat", () => {
-      it("me-resolve akun dari config", () => {
+    describe("acme-chat plugin", () => {
+      it("resolves account from config", () => {
         const cfg = {
           channels: {
             "acme-chat": { token: "test-token", allowFrom: ["user1"] },
@@ -596,7 +629,7 @@ Tulis test yang diletakkan berdampingan di `src/channel.test.ts`:
         expect(account.token).toBe("test-token");
       });
 
-      it("memeriksa akun tanpa mematerialisasi secret", () => {
+      it("inspects account without materializing secrets", () => {
         const cfg = {
           channels: { "acme-chat": { token: "test-token" } },
         } as any;
@@ -605,7 +638,7 @@ Tulis test yang diletakkan berdampingan di `src/channel.test.ts`:
         expect(result.tokenStatus).toBe("available");
       });
 
-      it("melaporkan config yang hilang", () => {
+      it("reports missing config", () => {
         const cfg = { channels: {} } as any;
         const result = acmeChatPlugin.setup!.inspectAccount!(cfg, undefined);
         expect(result.configured).toBe(false);
@@ -617,7 +650,7 @@ Tulis test yang diletakkan berdampingan di `src/channel.test.ts`:
     pnpm test -- <bundled-plugin-root>/acme-chat/
     ```
 
-    Untuk helper test bersama, lihat [Testing](/id/plugins/sdk-testing).
+    Untuk helper pengujian bersama, lihat [Pengujian](/id/plugins/sdk-testing).
 
 </Step>
 </Steps>
@@ -626,52 +659,55 @@ Tulis test yang diletakkan berdampingan di `src/channel.test.ts`:
 
 ```
 <bundled-plugin-root>/acme-chat/
-├── package.json              # metadata openclaw.channel
-├── openclaw.plugin.json      # Manifest dengan config schema
+├── package.json              # openclaw.channel metadata
+├── openclaw.plugin.json      # Manifest with config schema
 ├── index.ts                  # defineChannelPluginEntry
 ├── setup-entry.ts            # defineSetupPluginEntry
-├── api.ts                    # Ekspor publik (opsional)
-├── runtime-api.ts            # Ekspor runtime internal (opsional)
+├── api.ts                    # Public exports (optional)
+├── runtime-api.ts            # Internal runtime exports (optional)
 └── src/
-    ├── channel.ts            # ChannelPlugin melalui createChatChannelPlugin
-    ├── channel.test.ts       # Test
-    ├── client.ts             # Klien API platform
-    └── runtime.ts            # Store runtime (jika diperlukan)
+    ├── channel.ts            # ChannelPlugin via createChatChannelPlugin
+    ├── channel.test.ts       # Tests
+    ├── client.ts             # Platform API client
+    └── runtime.ts            # Runtime store (if needed)
 ```
 
 ## Topik lanjutan
 
 <CardGroup cols={2}>
   <Card title="Opsi threading" icon="git-branch" href="/id/plugins/sdk-entrypoints#registration-mode">
-    Mode balas tetap, dengan cakupan akun, atau kustom
+    Mode balasan tetap, berbasis akun, atau kustom
   </Card>
-  <Card title="Integrasi tool pesan" icon="puzzle" href="/id/plugins/architecture#channel-plugins-and-the-shared-message-tool">
-    describeMessageTool dan penemuan action
+  <Card title="Integrasi alat pesan" icon="puzzle" href="/id/plugins/architecture#channel-plugins-and-the-shared-message-tool">
+    describeMessageTool dan penemuan tindakan
   </Card>
   <Card title="Resolusi target" icon="crosshair" href="/id/plugins/architecture-internals#channel-target-resolution">
     inferTargetChatType, looksLikeId, resolveTarget
   </Card>
   <Card title="Helper runtime" icon="settings" href="/id/plugins/sdk-runtime">
-    TTS, STT, media, subagen via api.runtime
+    TTS, STT, media, subagen melalui api.runtime
+  </Card>
+  <Card title="Kernel giliran channel" icon="bolt" href="/id/plugins/sdk-channel-turn">
+    Siklus hidup giliran inbound bersama: serap, selesaikan, catat, kirim, finalisasi
   </Card>
 </CardGroup>
 
 <Note>
 Beberapa seam helper bawaan masih ada untuk pemeliharaan Plugin bawaan dan
 kompatibilitas. Itu bukan pola yang direkomendasikan untuk Plugin channel baru;
-sebaiknya gunakan subpath channel/setup/reply/runtime generik dari surface SDK
-umum kecuali Anda memang sedang memelihara keluarga Plugin bawaan tersebut secara langsung.
+utamakan subpath channel/setup/reply/runtime generik dari permukaan SDK umum
+kecuali Anda memelihara keluarga Plugin bawaan tersebut secara langsung.
 </Note>
 
-## Langkah selanjutnya
+## Langkah berikutnya
 
-- [Provider Plugins](/id/plugins/sdk-provider-plugins) — jika Plugin Anda juga menyediakan model
-- [SDK Overview](/id/plugins/sdk-overview) — referensi impor subpath lengkap
-- [SDK Testing](/id/plugins/sdk-testing) — utilitas test dan contract test
-- [Plugin Manifest](/id/plugins/manifest) — schema manifest lengkap
+- [Plugin Provider](/id/plugins/sdk-provider-plugins) — jika Plugin Anda juga menyediakan model
+- [Ikhtisar SDK](/id/plugins/sdk-overview) — referensi impor subpath lengkap
+- [Pengujian SDK](/id/plugins/sdk-testing) — utilitas pengujian dan pengujian kontrak
+- [Manifest Plugin](/id/plugins/manifest) — skema manifest lengkap
 
 ## Terkait
 
-- [Plugin SDK setup](/id/plugins/sdk-setup)
-- [Building plugins](/id/plugins/building-plugins)
-- [Agent harness plugins](/id/plugins/sdk-agent-harness)
+- [Penyiapan SDK Plugin](/id/plugins/sdk-setup)
+- [Membangun Plugin](/id/plugins/building-plugins)
+- [Plugin harness agen](/id/plugins/sdk-agent-harness)

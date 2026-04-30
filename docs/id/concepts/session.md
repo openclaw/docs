@@ -2,39 +2,39 @@
 read_when:
     - Anda ingin memahami perutean dan isolasi sesi
     - Anda ingin mengonfigurasi cakupan DM untuk penyiapan multi-pengguna
-    - Anda sedang men-debug reset sesi harian atau saat idle
-summary: Cara OpenClaw mengelola sesi percakapan
+    - Anda sedang men-debug reset sesi harian atau tidak aktif
+summary: Bagaimana OpenClaw mengelola sesi percakapan
 title: Manajemen sesi
 x-i18n:
-    generated_at: "2026-04-26T11:27:36Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:45:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f36995997dc7eb612333c6bbfe6cd6c08dc22769ad0a7e47d15dbb4208e6113
+    source_hash: 2bbb8f8fddf8ac942bc24b8b94a6464ec31d0aee035bf367726d2112269095f4
     source_path: concepts/session.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw mengatur percakapan ke dalam **sesi**. Setiap pesan dirutekan ke
-sebuah sesi berdasarkan asalnya -- DM, obrolan grup, pekerjaan Cron, dan sebagainya.
+sesi berdasarkan asalnya -- DM, obrolan grup, cron job, dan sebagainya.
 
 ## Cara pesan dirutekan
 
-| Source          | Perilaku                  |
+| Sumber          | Perilaku                  |
 | --------------- | ------------------------- |
-| Pesan langsung  | Sesi bersama secara default |
-| Obrolan grup    | Terisolasi per grup       |
-| Room/saluran    | Terisolasi per room       |
-| Pekerjaan Cron  | Sesi baru setiap run      |
-| Webhook         | Terisolasi per hook       |
+| Pesan langsung | Sesi bersama secara default |
+| Obrolan grup     | Terisolasi per grup        |
+| Ruang/channel  | Terisolasi per ruang         |
+| Cron job       | Sesi baru per eksekusi     |
+| Webhook        | Terisolasi per hook         |
 
 ## Isolasi DM
 
-Secara default, semua DM berbagi satu sesi demi kontinuitas. Ini cocok untuk
+Secara default, semua DM berbagi satu sesi untuk kesinambungan. Ini cocok untuk
 penyiapan satu pengguna.
 
 <Warning>
-Jika beberapa orang dapat mengirim pesan ke agent Anda, aktifkan isolasi DM. Tanpa itu, semua
-pengguna berbagi konteks percakapan yang sama -- pesan privat Alice akan
+Jika beberapa orang dapat mengirim pesan ke agen Anda, aktifkan isolasi DM. Tanpa itu, semua
+pengguna berbagi konteks percakapan yang sama -- pesan pribadi Alice akan
 terlihat oleh Bob.
 </Warning>
 
@@ -43,7 +43,7 @@ terlihat oleh Bob.
 ```json5
 {
   session: {
-    dmScope: "per-channel-peer", // isolasi berdasarkan saluran + pengirim
+    dmScope: "per-channel-peer", // isolate by channel + sender
   },
 }
 ```
@@ -51,65 +51,71 @@ terlihat oleh Bob.
 Opsi lain:
 
 - `main` (default) -- semua DM berbagi satu sesi.
-- `per-peer` -- isolasi berdasarkan pengirim (lintas saluran).
-- `per-channel-peer` -- isolasi berdasarkan saluran + pengirim (disarankan).
-- `per-account-channel-peer` -- isolasi berdasarkan akun + saluran + pengirim.
+- `per-peer` -- isolasi berdasarkan pengirim (lintas channel).
+- `per-channel-peer` -- isolasi berdasarkan channel + pengirim (direkomendasikan).
+- `per-account-channel-peer` -- isolasi berdasarkan akun + channel + pengirim.
 
 <Tip>
-Jika orang yang sama menghubungi Anda dari beberapa saluran, gunakan
-`session.identityLinks` untuk menautkan identitas mereka agar mereka berbagi satu sesi.
+Jika orang yang sama menghubungi Anda dari beberapa channel, gunakan
+`session.identityLinks` untuk menautkan identitas mereka agar berbagi satu sesi.
 </Tip>
+
+### Dock channel tertaut
+
+Perintah dock memungkinkan pengguna memindahkan rute balasan sesi obrolan langsung saat ini ke
+channel tertaut lain tanpa memulai sesi baru. Lihat
+[Docking channel](/id/concepts/channel-docking) untuk contoh, konfigurasi, dan
+pemecahan masalah.
 
 Verifikasi penyiapan Anda dengan `openclaw security audit`.
 
 ## Siklus hidup sesi
 
-Sesi digunakan kembali sampai kedaluwarsa:
+Sesi digunakan kembali hingga kedaluwarsa:
 
-- **Reset harian** (default) -- sesi baru pada pukul 4:00 pagi waktu lokal di host gateway.
-  Kesegaran harian didasarkan pada kapan `sessionId` saat ini dimulai, bukan
+- **Reset harian** (default) -- sesi baru pada pukul 4:00 pagi waktu lokal di host gateway. Kesegaran harian didasarkan pada kapan `sessionId` saat ini dimulai, bukan
   pada penulisan metadata berikutnya.
-- **Reset saat idle** (opsional) -- sesi baru setelah periode tidak aktif. Setel
-  `session.reset.idleMinutes`. Kesegaran idle didasarkan pada interaksi pengguna/saluran nyata terakhir,
-  sehingga event sistem Heartbeat, Cron, dan exec tidak menjaga sesi tetap hidup.
-- **Reset manual** -- ketik `/new` atau `/reset` di chat. `/new <model>` juga
+- **Reset idle** (opsional) -- sesi baru setelah periode tanpa aktivitas. Atur
+  `session.reset.idleMinutes`. Kesegaran idle didasarkan pada interaksi nyata terakhir
+  dari pengguna/channel, sehingga Heartbeat, cron, dan peristiwa sistem exec tidak
+  mempertahankan sesi tetap aktif.
+- **Reset manual** -- ketik `/new` atau `/reset` dalam obrolan. `/new <model>` juga
   mengganti model.
 
-Saat reset harian dan idle sama-sama dikonfigurasi, yang lebih dulu kedaluwarsa akan berlaku.
-Giliran event sistem seperti Heartbeat, Cron, exec, dan lainnya dapat menulis metadata sesi,
-tetapi penulisan itu tidak memperpanjang kesegaran reset harian atau idle. Saat reset
-mengganti sesi, notifikasi event sistem yang mengantre untuk sesi lama akan
-dibuang agar pembaruan latar belakang yang usang tidak ditambahkan di awal prompt pertama dalam
+Ketika reset harian dan idle sama-sama dikonfigurasi, yang kedaluwarsa lebih dulu yang berlaku.
+Heartbeat, cron, exec, dan giliran peristiwa sistem lainnya dapat menulis metadata sesi,
+tetapi penulisan tersebut tidak memperpanjang kesegaran reset harian atau idle. Ketika reset
+menggulung sesi, pemberitahuan peristiwa sistem yang mengantre untuk sesi lama akan
+dibuang sehingga pembaruan latar belakang yang sudah usang tidak ditambahkan ke prompt pertama dalam
 sesi baru.
 
-Sesi dengan sesi CLI milik provider yang aktif tidak dipotong oleh default harian implisit.
-Gunakan `/reset` atau konfigurasikan `session.reset` secara eksplisit saat sesi tersebut
+Sesi dengan sesi CLI aktif milik penyedia tidak dipotong oleh default harian implisit.
+Gunakan `/reset` atau konfigurasikan `session.reset` secara eksplisit ketika sesi tersebut
 harus kedaluwarsa berdasarkan timer.
 
 ## Tempat state disimpan
 
-Semua state sesi dimiliki oleh **Gateway**. Klien UI melakukan query ke gateway untuk
-data sesi.
+Semua state sesi dimiliki oleh **gateway**. Klien UI meminta data sesi ke gateway.
 
 - **Store:** `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - **Transkrip:** `~/.openclaw/agents/<agentId>/sessions/<sessionId>.jsonl`
 
-`sessions.json` menyimpan stempel waktu siklus hidup yang terpisah:
+`sessions.json` menyimpan timestamp siklus hidup secara terpisah:
 
-- `sessionStartedAt`: kapan `sessionId` saat ini dimulai; reset harian menggunakan ini.
-- `lastInteractionAt`: interaksi pengguna/saluran terakhir yang memperpanjang masa hidup idle.
-- `updatedAt`: mutasi baris store terakhir; berguna untuk listing dan pruning, tetapi tidak
+- `sessionStartedAt`: saat `sessionId` saat ini dimulai; reset harian menggunakan ini.
+- `lastInteractionAt`: interaksi pengguna/channel terakhir yang memperpanjang masa aktif idle.
+- `updatedAt`: mutasi baris store terakhir; berguna untuk daftar dan pruning, tetapi tidak
   otoritatif untuk kesegaran reset harian/idle.
 
-Baris lama tanpa `sessionStartedAt` di-resolve dari header sesi JSONL transkrip
-saat tersedia. Jika baris lama juga tidak memiliki `lastInteractionAt`,
-kesegaran idle fallback ke waktu mulai sesi tersebut, bukan ke penulisan pencatatan
+Baris lama tanpa `sessionStartedAt` diselesaikan dari header sesi JSONL transkrip
+jika tersedia. Jika baris lama juga tidak memiliki `lastInteractionAt`,
+kesegaran idle jatuh kembali ke waktu mulai sesi tersebut, bukan ke penulisan pembukuan
 berikutnya.
 
 ## Pemeliharaan sesi
 
-OpenClaw secara otomatis membatasi penyimpanan sesi dari waktu ke waktu. Secara default, ia berjalan
-dalam mode `warn` (melaporkan apa yang akan dibersihkan). Setel `session.maintenance.mode`
+OpenClaw secara otomatis membatasi penyimpanan sesi seiring waktu. Secara default, ini berjalan
+dalam mode `warn` (melaporkan apa yang akan dibersihkan). Atur `session.maintenance.mode`
 ke `"enforce"` untuk pembersihan otomatis:
 
 ```json5
@@ -124,28 +130,30 @@ ke `"enforce"` untuk pembersihan otomatis:
 }
 ```
 
+Untuk batas `maxEntries` ukuran produksi, penulisan runtime Gateway menggunakan buffer high-water kecil dan membersihkan kembali ke batas yang dikonfigurasi secara bertahap. Ini menghindari pembersihan store penuh pada setiap sesi cron terisolasi. `openclaw sessions cleanup --enforce` menerapkan batas tersebut segera.
+
 Pratinjau dengan `openclaw sessions cleanup --dry-run`.
 
 ## Memeriksa sesi
 
-- `openclaw status` -- path store sesi dan aktivitas terbaru.
+- `openclaw status` -- jalur store sesi dan aktivitas terbaru.
 - `openclaw sessions --json` -- semua sesi (filter dengan `--active <minutes>`).
-- `/status` di chat -- penggunaan konteks, model, dan toggle.
-- `/context list` -- apa saja yang ada di prompt sistem.
+- `/status` dalam obrolan -- penggunaan konteks, model, dan toggle.
+- `/context list` -- apa yang ada dalam prompt sistem.
 
-## Bacaan lanjutan
+## Bacaan lebih lanjut
 
-- [Session Pruning](/id/concepts/session-pruning) -- memangkas hasil tool
-- [Compaction](/id/concepts/compaction) -- merangkum percakapan panjang
-- [Session Tools](/id/concepts/session-tool) -- alat agent untuk pekerjaan lintas sesi
+- [Pruning Sesi](/id/concepts/session-pruning) -- memangkas hasil tool
+- [Compaction](/id/concepts/compaction) -- meringkas percakapan panjang
+- [Tool Sesi](/id/concepts/session-tool) -- tool agen untuk pekerjaan lintas sesi
 - [Pendalaman Manajemen Sesi](/id/reference/session-management-compaction) --
-  skema store, transkrip, kebijakan kirim, metadata asal, dan config lanjutan
-- [Multi-Agent](/id/concepts/multi-agent) — perutean dan isolasi sesi lintas agent
-- [Tugas Latar Belakang](/id/automation/tasks) — bagaimana pekerjaan terlepas membuat catatan tugas dengan referensi sesi
-- [Perutean Saluran](/id/channels/channel-routing) — bagaimana pesan masuk dirutekan ke sesi
+  skema store, transkrip, kebijakan pengiriman, metadata asal, dan konfigurasi lanjutan
+- [Multi-Agen](/id/concepts/multi-agent) — routing dan isolasi sesi lintas agen
+- [Tugas Latar Belakang](/id/automation/tasks) — cara pekerjaan terpisah membuat catatan tugas dengan referensi sesi
+- [Routing Channel](/id/channels/channel-routing) — cara pesan masuk dirutekan ke sesi
 
 ## Terkait
 
-- [Session pruning](/id/concepts/session-pruning)
-- [Session tools](/id/concepts/session-tool)
+- [Pruning sesi](/id/concepts/session-pruning)
+- [Tool sesi](/id/concepts/session-tool)
 - [Antrean perintah](/id/concepts/queue)

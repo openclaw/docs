@@ -2,119 +2,63 @@
 read_when:
     - Menyiapkan Matrix di OpenClaw
     - Mengonfigurasi E2EE dan verifikasi Matrix
-summary: Status dukungan matriks, penyiapan, dan contoh konfigurasi
-title: Matrix
+summary: Status dukungan Matrix, penyiapan, dan contoh konfigurasi
+title: Matriks
 x-i18n:
-    generated_at: "2026-04-26T11:23:35Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:34:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1850d51aba7279a3d495c346809b4df26d7da4b7611c5a8c9ab70f9a2b3c827d
+    source_hash: 261b0eaae452cff7bb9ddf8dc67ddda45fb27b6468e95450b19207348d0b577a
     source_path: channels/matrix.md
-    workflow: 15
+    workflow: 16
 ---
 
-Matrix adalah plugin channel bawaan untuk OpenClaw.
-Plugin ini menggunakan `matrix-js-sdk` resmi dan mendukung DM, room, thread, media, reaction, poll, lokasi, dan E2EE.
+Matrix adalah Plugin saluran bawaan untuk OpenClaw.
+Matrix menggunakan `matrix-js-sdk` resmi dan mendukung DM, room, thread, media, reaksi, polling, lokasi, dan E2EE.
 
 ## Plugin bawaan
 
-Matrix dikirim sebagai plugin bawaan dalam rilis OpenClaw saat ini, jadi build paket normal tidak memerlukan pemasangan terpisah.
+Rilis OpenClaw terpaket saat ini menyertakan Plugin Matrix secara langsung. Anda tidak perlu menginstal apa pun; mengonfigurasi `channels.matrix.*` (lihat [Penyiapan](#setup)) adalah yang mengaktifkannya.
 
-Jika Anda menggunakan build lama atau instalasi kustom yang tidak menyertakan Matrix, pasang secara manual:
-
-Pasang dari npm:
+Untuk build lama atau instalasi kustom yang mengecualikan Matrix, instal paket npm
+terkini saat sudah diterbitkan:
 
 ```bash
 openclaw plugins install @openclaw/matrix
 ```
 
-Pasang dari checkout lokal:
+Jika npm melaporkan paket milik OpenClaw sebagai deprecated, gunakan build OpenClaw
+terpaket terkini atau checkout lokal hingga paket npm yang lebih baru diterbitkan.
+
+Dari checkout lokal:
 
 ```bash
 openclaw plugins install ./path/to/local/matrix-plugin
 ```
 
-Lihat [Plugins](/id/tools/plugin) untuk perilaku plugin dan aturan pemasangan.
+`plugins install` mendaftarkan dan mengaktifkan Plugin, sehingga langkah `openclaw plugins enable matrix` terpisah tidak diperlukan. Plugin tetap tidak melakukan apa pun hingga Anda mengonfigurasi saluran di bawah. Lihat [Plugin](/id/tools/plugin) untuk perilaku Plugin umum dan aturan instalasi.
 
 ## Penyiapan
 
-1. Pastikan plugin Matrix tersedia.
-   - Rilis OpenClaw terpaket saat ini sudah membundel plugin tersebut.
-   - Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
-2. Buat akun Matrix di homeserver Anda.
-3. Konfigurasikan `channels.matrix` dengan salah satu dari:
-   - `homeserver` + `accessToken`, atau
-   - `homeserver` + `userId` + `password`.
-4. Mulai ulang gateway.
-5. Mulai DM dengan bot atau undang bot ke sebuah room.
-   - Undangan Matrix baru hanya berfungsi jika `channels.matrix.autoJoin` mengizinkannya.
+1. Buat akun Matrix di homeserver Anda.
+2. Konfigurasikan `channels.matrix` dengan `homeserver` + `accessToken`, atau `homeserver` + `userId` + `password`.
+3. Mulai ulang Gateway.
+4. Mulai DM dengan bot, atau undang bot ke room (lihat [auto-join](#auto-join) — undangan baru hanya masuk saat `autoJoin` mengizinkannya).
 
-Jalur penyiapan interaktif:
+### Penyiapan interaktif
 
 ```bash
 openclaw channels add
 openclaw configure --section channels
 ```
 
-Wizard Matrix akan meminta:
+Wizard meminta: URL homeserver, metode auth (token akses atau kata sandi), ID pengguna (hanya auth kata sandi), nama perangkat opsional, apakah akan mengaktifkan E2EE, dan apakah akan mengonfigurasi akses room serta auto-join.
 
-- URL homeserver
-- metode autentikasi: access token atau password
-- ID pengguna (hanya autentikasi password)
-- nama perangkat opsional
-- apakah akan mengaktifkan E2EE
-- apakah akan mengonfigurasi akses room dan auto-join undangan
+Jika env var `MATRIX_*` yang cocok sudah ada dan akun yang dipilih tidak memiliki auth tersimpan, wizard menawarkan pintasan env-var. Untuk menyelesaikan nama room sebelum menyimpan allowlist, jalankan `openclaw channels resolve --channel matrix "Project Room"`. Saat E2EE diaktifkan, wizard menulis konfigurasi dan menjalankan bootstrap yang sama seperti [`openclaw matrix encryption setup`](#encryption-and-verification).
 
-Perilaku utama wizard:
+### Konfigurasi minimal
 
-- Jika variabel lingkungan autentikasi Matrix sudah ada dan akun tersebut belum memiliki autentikasi yang disimpan di konfigurasi, wizard menawarkan pintasan env agar autentikasi tetap berada di variabel lingkungan.
-- Nama akun dinormalisasi ke ID akun. Misalnya, `Ops Bot` menjadi `ops-bot`.
-- Entri allowlist DM menerima `@user:server` secara langsung; nama tampilan hanya berfungsi bila pencarian direktori langsung menemukan satu kecocokan yang tepat.
-- Entri allowlist room menerima ID room dan alias secara langsung. Sebaiknya gunakan `!room:server` atau `#alias:server`; nama yang tidak terselesaikan diabaikan saat runtime oleh resolusi allowlist.
-- Dalam mode allowlist auto-join undangan, gunakan hanya target undangan yang stabil: `!roomId:server`, `#alias:server`, atau `*`. Nama room biasa ditolak.
-- Untuk menyelesaikan nama room sebelum menyimpan, gunakan `openclaw channels resolve --channel matrix "Project Room"`.
-
-<Warning>
-`channels.matrix.autoJoin` secara default adalah `off`.
-
-Jika Anda membiarkannya tidak diatur, bot tidak akan bergabung ke room yang mengundangnya atau undangan gaya DM baru, sehingga bot tidak akan muncul di grup baru atau DM undangan kecuali Anda bergabung secara manual terlebih dahulu.
-
-Atur `autoJoin: "allowlist"` bersama dengan `autoJoinAllowlist` untuk membatasi undangan mana yang diterima, atau atur `autoJoin: "always"` jika Anda ingin bot bergabung ke setiap undangan.
-
-Dalam mode `allowlist`, `autoJoinAllowlist` hanya menerima `!roomId:server`, `#alias:server`, atau `*`.
-</Warning>
-
-Contoh allowlist:
-
-```json5
-{
-  channels: {
-    matrix: {
-      autoJoin: "allowlist",
-      autoJoinAllowlist: ["!ops:example.org", "#support:example.org"],
-      groups: {
-        "!ops:example.org": {
-          requireMention: true,
-        },
-      },
-    },
-  },
-}
-```
-
-Bergabung ke setiap undangan:
-
-```json5
-{
-  channels: {
-    matrix: {
-      autoJoin: "always",
-    },
-  },
-}
-```
-
-Penyiapan minimal berbasis token:
+Berbasis token:
 
 ```json5
 {
@@ -129,7 +73,7 @@ Penyiapan minimal berbasis token:
 }
 ```
 
-Penyiapan berbasis password (token di-cache setelah login):
+Berbasis kata sandi (token disimpan dalam cache setelah login pertama):
 
 ```json5
 {
@@ -145,48 +89,75 @@ Penyiapan berbasis password (token di-cache setelah login):
 }
 ```
 
-Matrix menyimpan kredensial cache di `~/.openclaw/credentials/matrix/`.
-Akun default menggunakan `credentials.json`; akun bernama menggunakan `credentials-<account>.json`.
-Ketika kredensial cache ada di sana, OpenClaw memperlakukan Matrix sebagai sudah dikonfigurasi untuk penyiapan, doctor, dan penemuan status channel meskipun autentikasi saat ini tidak diatur langsung di konfigurasi.
+### Auto-join
 
-Padanan variabel lingkungan (digunakan saat kunci konfigurasi tidak diatur):
+`channels.matrix.autoJoin` default ke `off`. Dengan default tersebut, bot tidak akan muncul di room atau DM baru dari undangan baru hingga Anda bergabung secara manual.
 
-- `MATRIX_HOMESERVER`
-- `MATRIX_ACCESS_TOKEN`
-- `MATRIX_USER_ID`
-- `MATRIX_PASSWORD`
-- `MATRIX_DEVICE_ID`
-- `MATRIX_DEVICE_NAME`
+OpenClaw tidak dapat mengetahui pada saat undangan apakah room yang diundang adalah DM atau grup, jadi semua undangan — termasuk undangan bergaya DM — melewati `autoJoin` terlebih dahulu. `dm.policy` hanya berlaku nanti, setelah bot bergabung dan room telah diklasifikasikan.
 
-Untuk akun non-default, gunakan variabel lingkungan dengan cakupan akun:
+<Warning>
+Tetapkan `autoJoin: "allowlist"` plus `autoJoinAllowlist` untuk membatasi undangan yang diterima bot, atau `autoJoin: "always"` untuk menerima setiap undangan.
 
-- `MATRIX_<ACCOUNT_ID>_HOMESERVER`
-- `MATRIX_<ACCOUNT_ID>_ACCESS_TOKEN`
-- `MATRIX_<ACCOUNT_ID>_USER_ID`
-- `MATRIX_<ACCOUNT_ID>_PASSWORD`
-- `MATRIX_<ACCOUNT_ID>_DEVICE_ID`
-- `MATRIX_<ACCOUNT_ID>_DEVICE_NAME`
+`autoJoinAllowlist` hanya menerima target stabil: `!roomId:server`, `#alias:server`, atau `*`. Nama room biasa ditolak; entri alias diselesaikan terhadap homeserver, bukan terhadap state yang diklaim oleh room yang mengundang.
+</Warning>
 
-Contoh untuk akun `ops`:
+```json5
+{
+  channels: {
+    matrix: {
+      autoJoin: "allowlist",
+      autoJoinAllowlist: ["!ops:example.org", "#support:example.org"],
+      groups: {
+        "!ops:example.org": { requireMention: true },
+      },
+    },
+  },
+}
+```
 
-- `MATRIX_OPS_HOMESERVER`
-- `MATRIX_OPS_ACCESS_TOKEN`
+Untuk menerima setiap undangan, gunakan `autoJoin: "always"`.
 
-Untuk ID akun ternormalisasi `ops-bot`, gunakan:
+### Format target allowlist
 
-- `MATRIX_OPS_X2D_BOT_HOMESERVER`
-- `MATRIX_OPS_X2D_BOT_ACCESS_TOKEN`
+Allowlist DM dan room sebaiknya diisi dengan ID stabil:
 
-Matrix mengeksekusi escape pada tanda baca di ID akun agar variabel lingkungan bercakupan tidak bertabrakan.
-Misalnya, `-` menjadi `_X2D_`, sehingga `ops-prod` dipetakan ke `MATRIX_OPS_X2D_PROD_*`.
+- DM (`dm.allowFrom`, `groupAllowFrom`, `groups.<room>.users`): gunakan `@user:server`. Nama tampilan hanya diselesaikan saat direktori homeserver mengembalikan tepat satu kecocokan.
+- Room (`groups`, `autoJoinAllowlist`): gunakan `!room:server` atau `#alias:server`. Nama diselesaikan secara upaya terbaik terhadap room yang sudah diikuti; entri yang tidak terselesaikan diabaikan saat runtime.
 
-Wizard interaktif hanya menawarkan pintasan env-var saat variabel lingkungan autentikasi tersebut sudah ada dan akun yang dipilih belum memiliki autentikasi Matrix yang disimpan di konfigurasi.
+### Normalisasi ID akun
 
-`MATRIX_HOMESERVER` tidak dapat diatur dari `.env` workspace; lihat [file `.env` workspace](/id/gateway/security).
+Wizard mengonversi nama ramah menjadi ID akun yang dinormalisasi. Misalnya, `Ops Bot` menjadi `ops-bot`. Tanda baca di-escape dalam nama env-var terskop agar dua akun tidak dapat bertabrakan: `-` → `_X2D_`, sehingga `ops-prod` dipetakan ke `MATRIX_OPS_X2D_PROD_*`.
+
+### Kredensial cache
+
+Matrix menyimpan kredensial cache di bawah `~/.openclaw/credentials/matrix/`:
+
+- akun default: `credentials.json`
+- akun bernama: `credentials-<account>.json`
+
+Saat kredensial cache ada di sana, OpenClaw memperlakukan Matrix sebagai sudah dikonfigurasi meskipun token akses tidak ada di file konfigurasi — ini mencakup penyiapan, `openclaw doctor`, dan probe status saluran.
+
+### Variabel lingkungan
+
+Digunakan saat kunci konfigurasi yang setara tidak disetel. Akun default menggunakan nama tanpa prefiks; akun bernama menggunakan ID akun yang disisipkan sebelum sufiks.
+
+| Akun default          | Akun bernama (`<ID>` adalah ID akun yang dinormalisasi) |
+| --------------------- | ------------------------------------------------------- |
+| `MATRIX_HOMESERVER`   | `MATRIX_<ID>_HOMESERVER`                                |
+| `MATRIX_ACCESS_TOKEN` | `MATRIX_<ID>_ACCESS_TOKEN`                              |
+| `MATRIX_USER_ID`      | `MATRIX_<ID>_USER_ID`                                   |
+| `MATRIX_PASSWORD`     | `MATRIX_<ID>_PASSWORD`                                  |
+| `MATRIX_DEVICE_ID`    | `MATRIX_<ID>_DEVICE_ID`                                 |
+| `MATRIX_DEVICE_NAME`  | `MATRIX_<ID>_DEVICE_NAME`                               |
+| `MATRIX_RECOVERY_KEY` | `MATRIX_<ID>_RECOVERY_KEY`                              |
+
+Untuk akun `ops`, namanya menjadi `MATRIX_OPS_HOMESERVER`, `MATRIX_OPS_ACCESS_TOKEN`, dan seterusnya. Env var recovery-key dibaca oleh alur CLI yang sadar recovery (`verify backup restore`, `verify device`, `verify bootstrap`) saat Anda menyalurkan kunci melalui `--recovery-key-stdin`.
+
+`MATRIX_HOMESERVER` tidak dapat disetel dari `.env` workspace; lihat [File `.env` workspace](/id/gateway/security).
 
 ## Contoh konfigurasi
 
-Ini adalah konfigurasi dasar praktis dengan pairing DM, allowlist room, dan E2EE yang diaktifkan:
+Baseline praktis dengan pairing DM, allowlist room, dan E2EE:
 
 ```json5
 {
@@ -206,9 +177,7 @@ Ini adalah konfigurasi dasar praktis dengan pairing DM, allowlist room, dan E2EE
       groupPolicy: "allowlist",
       groupAllowFrom: ["@admin:example.org"],
       groups: {
-        "!roomid:example.org": {
-          requireMention: true,
-        },
+        "!roomid:example.org": { requireMention: true },
       },
 
       autoJoin: "allowlist",
@@ -221,17 +190,9 @@ Ini adalah konfigurasi dasar praktis dengan pairing DM, allowlist room, dan E2EE
 }
 ```
 
-`autoJoin` berlaku untuk semua undangan Matrix, termasuk undangan gaya DM. OpenClaw tidak dapat secara andal
-mengklasifikasikan room yang diundang sebagai DM atau grup pada saat undangan, sehingga semua undangan melewati `autoJoin`
-terlebih dahulu. `dm.policy` berlaku setelah bot bergabung dan room diklasifikasikan sebagai DM.
-
 ## Pratinjau streaming
 
-Streaming balasan Matrix bersifat opt-in.
-
-Atur `channels.matrix.streaming` ke `"partial"` saat Anda ingin OpenClaw mengirim satu balasan pratinjau langsung,
-mengedit pratinjau itu di tempat saat model sedang menghasilkan teks, lalu memfinalkannya saat
-balasan selesai:
+Streaming balasan Matrix bersifat opt-in. `streaming` mengontrol cara OpenClaw mengirim balasan asisten yang sedang berjalan; `blockStreaming` mengontrol apakah setiap blok yang selesai dipertahankan sebagai pesan Matrix tersendiri.
 
 ```json5
 {
@@ -243,32 +204,59 @@ balasan selesai:
 }
 ```
 
-- `streaming: "off"` adalah default. OpenClaw menunggu balasan akhir dan mengirimkannya satu kali.
-- `streaming: "partial"` membuat satu pesan pratinjau yang dapat diedit untuk blok asisten saat ini menggunakan pesan teks Matrix normal. Ini mempertahankan perilaku notifikasi lama Matrix yang mendahulukan pratinjau, sehingga klien bawaan dapat memberi notifikasi pada teks pratinjau streaming pertama, bukan pada blok yang selesai.
-- `streaming: "quiet"` membuat satu notifikasi pratinjau senyap yang dapat diedit untuk blok asisten saat ini. Gunakan ini hanya jika Anda juga mengonfigurasi aturan push penerima untuk edit pratinjau yang telah difinalkan.
-- `blockStreaming: true` mengaktifkan pesan progres Matrix terpisah. Dengan streaming pratinjau diaktifkan, Matrix mempertahankan draf langsung untuk blok saat ini dan menyimpan blok yang telah selesai sebagai pesan terpisah.
-- Saat streaming pratinjau aktif dan `blockStreaming` nonaktif, Matrix mengedit draf langsung di tempat dan memfinalkan event yang sama itu saat blok atau giliran selesai.
-- Jika pratinjau tidak lagi muat dalam satu event Matrix, OpenClaw menghentikan streaming pratinjau dan kembali ke pengiriman akhir normal.
-- Balasan media tetap mengirim lampiran secara normal. Jika pratinjau lama tidak lagi dapat digunakan ulang dengan aman, OpenClaw meredaksinya sebelum mengirim balasan media akhir.
-- Edit pratinjau memerlukan panggilan API Matrix tambahan. Biarkan streaming nonaktif jika Anda menginginkan perilaku rate-limit yang paling konservatif.
+Untuk mempertahankan pratinjau jawaban live tetapi menyembunyikan baris alat/progres sementara, gunakan bentuk
+objek:
 
-`blockStreaming` tidak dengan sendirinya mengaktifkan pratinjau draf.
-Gunakan `streaming: "partial"` atau `streaming: "quiet"` untuk edit pratinjau; lalu tambahkan `blockStreaming: true` hanya jika Anda juga ingin blok asisten yang telah selesai tetap terlihat sebagai pesan progres terpisah.
+```json5
+{
+  channels: {
+    matrix: {
+      streaming: {
+        mode: "partial",
+        preview: {
+          toolProgress: false,
+        },
+      },
+    },
+  },
+}
+```
 
-Jika Anda memerlukan notifikasi Matrix bawaan tanpa aturan push kustom, gunakan `streaming: "partial"` untuk perilaku pratinjau-terlebih-dahulu atau biarkan `streaming` nonaktif untuk pengiriman akhir saja. Dengan `streaming: "off"`:
+| `streaming`       | Perilaku                                                                                                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `"off"` (default) | Menunggu balasan penuh, kirim sekali. `true` ↔ `"partial"`, `false` ↔ `"off"`.                                                                                     |
+| `"partial"`       | Mengedit satu pesan teks normal di tempat saat model menulis blok saat ini. Klien Matrix bawaan dapat memberi notifikasi pada pratinjau pertama, bukan edit final. |
+| `"quiet"`         | Sama seperti `"partial"` tetapi pesannya adalah notice tanpa notifikasi. Penerima hanya mendapat notifikasi setelah aturan push per pengguna cocok dengan edit final (lihat di bawah). |
 
-- `blockStreaming: true` mengirim setiap blok yang selesai sebagai pesan Matrix normal yang memberi notifikasi.
-- `blockStreaming: false` hanya mengirim balasan akhir yang sudah selesai sebagai pesan Matrix normal yang memberi notifikasi.
+`blockStreaming` independen dari `streaming`:
 
-### Aturan push self-hosted untuk pratinjau final senyap
+| `streaming`             | `blockStreaming: true`                                           | `blockStreaming: false` (default)                         |
+| ----------------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
+| `"partial"` / `"quiet"` | Draf live untuk blok saat ini, blok selesai disimpan sebagai pesan | Draf live untuk blok saat ini, difinalisasi di tempat      |
+| `"off"`                 | Satu pesan Matrix yang memberi notifikasi per blok selesai        | Satu pesan Matrix yang memberi notifikasi untuk balasan penuh |
 
-Streaming senyap (`streaming: "quiet"`) hanya memberi notifikasi kepada penerima setelah sebuah blok atau giliran difinalkan — aturan push per pengguna harus cocok dengan penanda pratinjau yang telah difinalkan. Lihat [Aturan push Matrix untuk pratinjau senyap](/id/channels/matrix-push-rules) untuk penyiapan lengkapnya (token penerima, pemeriksaan pusher, pemasangan aturan, catatan per homeserver).
+Catatan:
+
+- Jika pratinjau melampaui batas ukuran per-event Matrix, OpenClaw menghentikan streaming pratinjau dan fallback ke pengiriman final-only.
+- Balasan media selalu mengirim lampiran secara normal. Jika pratinjau lama tidak lagi dapat digunakan ulang dengan aman, OpenClaw meredaksinya sebelum mengirim balasan media final.
+- Pembaruan pratinjau progres alat diaktifkan secara default saat streaming pratinjau Matrix aktif. Setel `streaming.preview.toolProgress: false` untuk mempertahankan edit pratinjau bagi teks jawaban tetapi membiarkan progres alat berada di jalur pengiriman normal.
+- Edit pratinjau memerlukan panggilan API Matrix tambahan. Biarkan `streaming: "off"` jika Anda menginginkan profil rate-limit yang paling konservatif.
+
+## Metadata persetujuan
+
+Prompt persetujuan native Matrix adalah event `m.room.message` normal dengan konten event kustom khusus OpenClaw di bawah `com.openclaw.approval`. Matrix mengizinkan kunci konten event kustom, sehingga klien bawaan tetap merender body teks sementara klien yang sadar OpenClaw dapat membaca ID persetujuan terstruktur, jenis, state, keputusan yang tersedia, serta detail exec/Plugin.
+
+Saat prompt persetujuan terlalu panjang untuk satu event Matrix, OpenClaw memecah teks yang terlihat menjadi chunk dan melampirkan `com.openclaw.approval` hanya ke chunk pertama. Reaksi untuk keputusan izinkan/tolak terikat ke event pertama tersebut, sehingga prompt panjang mempertahankan target persetujuan yang sama seperti prompt satu event.
+
+### Aturan push self-hosted untuk pratinjau final quiet
+
+`streaming: "quiet"` hanya memberi notifikasi kepada penerima setelah blok atau turn difinalisasi — aturan push per pengguna harus cocok dengan marker pratinjau final. Lihat [Aturan push Matrix untuk pratinjau quiet](/id/channels/matrix-push-rules) untuk resep lengkap (token penerima, pemeriksaan pusher, instalasi aturan, catatan per homeserver).
 
 ## Room bot-ke-bot
 
-Secara default, pesan Matrix dari akun Matrix OpenClaw lain yang sudah dikonfigurasi akan diabaikan.
+Secara default, pesan Matrix dari akun Matrix OpenClaw lain yang dikonfigurasi diabaikan.
 
-Gunakan `allowBots` saat Anda memang menginginkan lalu lintas Matrix antar agen:
+Gunakan `allowBots` saat Anda sengaja menginginkan lalu lintas Matrix antar-agent:
 
 ```json5
 {
@@ -285,19 +273,43 @@ Gunakan `allowBots` saat Anda memang menginginkan lalu lintas Matrix antar agen:
 }
 ```
 
-- `allowBots: true` menerima pesan dari akun bot Matrix lain yang telah dikonfigurasi di room dan DM yang diizinkan.
-- `allowBots: "mentions"` menerima pesan tersebut hanya saat mereka secara terlihat menyebut bot ini di room. DM tetap diizinkan.
-- `groups.<room>.allowBots` menimpa pengaturan tingkat akun untuk satu room.
-- OpenClaw tetap mengabaikan pesan dari ID pengguna Matrix yang sama untuk menghindari loop balas ke diri sendiri.
-- Matrix tidak mengekspos penanda bot bawaan di sini; OpenClaw memperlakukan "ditulis bot" sebagai "dikirim oleh akun Matrix lain yang telah dikonfigurasi pada gateway OpenClaw ini".
+- `allowBots: true` menerima pesan dari akun bot Matrix lain yang dikonfigurasi di room dan DM yang diizinkan.
+- `allowBots: "mentions"` menerima pesan tersebut hanya saat pesan itu secara terlihat menyebut bot ini di room. DM tetap diizinkan.
+- `groups.<room>.allowBots` mengganti pengaturan tingkat akun untuk satu room.
+- OpenClaw tetap mengabaikan pesan dari ID pengguna Matrix yang sama untuk menghindari loop balasan ke diri sendiri.
+- Matrix tidak mengekspos flag bot native di sini; OpenClaw memperlakukan "ditulis bot" sebagai "dikirim oleh akun Matrix lain yang dikonfigurasi pada Gateway OpenClaw ini".
 
 Gunakan allowlist room yang ketat dan persyaratan mention saat mengaktifkan lalu lintas bot-ke-bot di room bersama.
 
 ## Enkripsi dan verifikasi
 
-Di room terenkripsi (E2EE), event gambar keluar menggunakan `thumbnail_file` sehingga pratinjau gambar dienkripsi bersama lampiran lengkap. Room yang tidak terenkripsi tetap menggunakan `thumbnail_url` biasa. Tidak diperlukan konfigurasi — plugin mendeteksi status E2EE secara otomatis.
+Di ruang terenkripsi (E2EE), peristiwa gambar keluar menggunakan `thumbnail_file` sehingga pratinjau gambar dienkripsi bersama lampiran lengkap. Ruang yang tidak terenkripsi tetap menggunakan `thumbnail_url` biasa. Tidak diperlukan konfigurasi — Plugin mendeteksi status E2EE secara otomatis.
 
-Aktifkan enkripsi:
+Semua perintah `openclaw matrix` menerima `--verbose` (diagnostik lengkap), `--json` (keluaran yang dapat dibaca mesin), dan `--account <id>` (penyiapan multi-akun). Keluaran secara default ringkas dengan pencatatan SDK internal yang tenang. Contoh di bawah menunjukkan bentuk kanonis; tambahkan flag sesuai kebutuhan.
+
+### Aktifkan enkripsi
+
+```bash
+openclaw matrix encryption setup
+```
+
+Melakukan bootstrap penyimpanan rahasia dan penandatanganan silang, membuat cadangan kunci ruang jika diperlukan, lalu mencetak status dan langkah berikutnya. Flag yang berguna:
+
+- `--recovery-key <key>` menerapkan kunci pemulihan sebelum bootstrap (utamakan bentuk stdin yang didokumentasikan di bawah)
+- `--force-reset-cross-signing` membuang identitas penandatanganan silang saat ini dan membuat yang baru (gunakan hanya dengan sengaja)
+
+Untuk akun baru, aktifkan E2EE saat pembuatan:
+
+```bash
+openclaw matrix account add \
+  --homeserver https://matrix.example.org \
+  --access-token syt_xxx \
+  --enable-e2ee
+```
+
+`--encryption` adalah alias untuk `--enable-e2ee`.
+
+Padanan konfigurasi manual:
 
 ```json5
 {
@@ -313,210 +325,137 @@ Aktifkan enkripsi:
 }
 ```
 
-Perintah verifikasi (semuanya menerima `--verbose` untuk diagnostik dan `--json` untuk output yang dapat dibaca mesin):
+### Status dan sinyal kepercayaan
 
 ```bash
 openclaw matrix verify status
-```
-
-Status verbose (diagnostik lengkap):
-
-```bash
-openclaw matrix verify status --verbose
-```
-
-Sertakan recovery key yang tersimpan dalam output yang dapat dibaca mesin:
-
-```bash
 openclaw matrix verify status --include-recovery-key --json
 ```
 
-Bootstrap cross-signing dan status verifikasi:
+`verify status` melaporkan tiga sinyal kepercayaan independen (`--verbose` menampilkan semuanya):
+
+- `Locally trusted`: dipercaya hanya oleh klien ini
+- `Cross-signing verified`: SDK melaporkan verifikasi melalui penandatanganan silang
+- `Signed by owner`: ditandatangani oleh kunci penandatanganan mandiri Anda sendiri (hanya diagnostik)
+
+`Verified by owner` menjadi `yes` hanya ketika `Cross-signing verified` adalah `yes`. Kepercayaan lokal atau tanda tangan pemilik saja tidak cukup.
+
+`--allow-degraded-local-state` mengembalikan diagnostik upaya terbaik tanpa menyiapkan akun Matrix terlebih dahulu; berguna untuk pemeriksaan offline atau yang terkonfigurasi sebagian.
+
+### Verifikasi perangkat ini dengan kunci pemulihan
+
+Kunci pemulihan bersifat sensitif — kirim melalui stdin, bukan meneruskannya di baris perintah. Tetapkan `MATRIX_RECOVERY_KEY` (atau `MATRIX_<ID>_RECOVERY_KEY` untuk akun bernama):
+
+```bash
+printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify device --recovery-key-stdin
+```
+
+Perintah ini melaporkan tiga status:
+
+- `Recovery key accepted`: Matrix menerima kunci untuk penyimpanan rahasia atau kepercayaan perangkat.
+- `Backup usable`: cadangan kunci ruang dapat dimuat dengan materi pemulihan tepercaya.
+- `Device verified by owner`: perangkat ini memiliki kepercayaan identitas penandatanganan silang Matrix penuh.
+
+Perintah keluar dengan status non-nol ketika kepercayaan identitas penuh belum lengkap, meskipun kunci pemulihan membuka materi cadangan. Dalam kasus itu, selesaikan verifikasi mandiri dari klien Matrix lain:
+
+```bash
+openclaw matrix verify self
+```
+
+`verify self` menunggu `Cross-signing verified: yes` sebelum berhasil keluar. Gunakan `--timeout-ms <ms>` untuk menyesuaikan waktu tunggu.
+
+Bentuk kunci literal `openclaw matrix verify device "<recovery-key>"` juga diterima, tetapi kunci akan masuk ke riwayat shell Anda.
+
+### Bootstrap atau perbaiki penandatanganan silang
 
 ```bash
 openclaw matrix verify bootstrap
 ```
 
-Diagnostik bootstrap verbose:
+`verify bootstrap` adalah perintah perbaikan dan penyiapan untuk akun terenkripsi. Secara berurutan, perintah ini:
 
-```bash
-openclaw matrix verify bootstrap --verbose
-```
+- melakukan bootstrap penyimpanan rahasia, menggunakan kembali kunci pemulihan yang ada jika memungkinkan
+- melakukan bootstrap penandatanganan silang dan mengunggah kunci publik yang hilang
+- menandai dan menandatangani silang perangkat saat ini
+- membuat cadangan kunci ruang sisi server jika belum ada
 
-Paksa reset identitas cross-signing baru sebelum bootstrap:
+Jika homeserver memerlukan UIA untuk mengunggah kunci penandatanganan silang, OpenClaw mencoba tanpa autentikasi terlebih dahulu, lalu `m.login.dummy`, lalu `m.login.password` (memerlukan `channels.matrix.password`).
 
-```bash
-openclaw matrix verify bootstrap --force-reset-cross-signing
-```
+Flag yang berguna:
 
-Verifikasi perangkat ini dengan recovery key:
+- `--recovery-key-stdin` (pasangkan dengan `printf '%s\n' "$MATRIX_RECOVERY_KEY" | …`) atau `--recovery-key <key>`
+- `--force-reset-cross-signing` untuk membuang identitas penandatanganan silang saat ini (hanya dengan sengaja)
 
-```bash
-openclaw matrix verify device "<your-recovery-key>"
-```
-
-Perintah ini melaporkan tiga status terpisah:
-
-- `Recovery key accepted`: Matrix menerima recovery key untuk penyimpanan rahasia atau kepercayaan perangkat.
-- `Backup usable`: backup kunci room dapat dimuat dengan materi recovery tepercaya.
-- `Device verified by owner`: perangkat OpenClaw saat ini memiliki kepercayaan identitas cross-signing Matrix penuh.
-
-`Signed by owner` dalam output verbose atau JSON hanya bersifat diagnostik. OpenClaw tidak
-menganggap itu cukup kecuali `Cross-signing verified` juga bernilai `yes`.
-
-Perintah ini tetap keluar dengan status non-zero ketika kepercayaan identitas Matrix penuh belum lengkap,
-meskipun recovery key dapat membuka materi backup. Dalam kasus itu, selesaikan
-verifikasi mandiri dari klien Matrix lain:
-
-```bash
-openclaw matrix verify self
-```
-
-Terima permintaan tersebut di klien Matrix lain, bandingkan emoji atau angka SAS,
-dan ketik `yes` hanya jika keduanya cocok. Perintah ini menunggu hingga Matrix melaporkan
-`Cross-signing verified: yes` sebelum keluar dengan sukses.
-
-Gunakan `verify bootstrap --force-reset-cross-signing` hanya jika Anda memang
-ingin mengganti identitas cross-signing saat ini.
-
-Detail verifikasi perangkat verbose:
-
-```bash
-openclaw matrix verify device "<your-recovery-key>" --verbose
-```
-
-Periksa kesehatan backup kunci room:
+### Cadangan kunci ruang
 
 ```bash
 openclaw matrix verify backup status
+printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin
 ```
 
-Diagnostik kesehatan backup verbose:
+`backup status` menunjukkan apakah cadangan sisi server ada dan apakah perangkat ini dapat mendekripsinya. `backup restore` mengimpor kunci ruang yang dicadangkan ke penyimpanan kripto lokal; jika kunci pemulihan sudah ada di disk, Anda dapat menghilangkan `--recovery-key-stdin`.
 
-```bash
-openclaw matrix verify backup status --verbose
-```
-
-Pulihkan kunci room dari backup server:
-
-```bash
-openclaw matrix verify backup restore
-```
-
-Jika kunci backup belum dimuat di disk, berikan recovery key Matrix:
-
-```bash
-openclaw matrix verify backup restore --recovery-key "<your-recovery-key>"
-```
-
-Alur verifikasi mandiri interaktif:
-
-```bash
-openclaw matrix verify self
-```
-
-Untuk permintaan verifikasi tingkat lebih rendah atau masuk, gunakan:
-
-```bash
-openclaw matrix verify accept <id>
-openclaw matrix verify start <id>
-openclaw matrix verify sas <id>
-openclaw matrix verify confirm-sas <id>
-```
-
-Gunakan `openclaw matrix verify cancel <id>` untuk membatalkan permintaan.
-
-Diagnostik pemulihan verbose:
-
-```bash
-openclaw matrix verify backup restore --verbose
-```
-
-Hapus backup server saat ini dan buat baseline backup baru. Jika kunci
-backup yang tersimpan tidak dapat dimuat dengan bersih, reset ini juga dapat membuat ulang secret storage sehingga
-cold start berikutnya dapat memuat kunci backup baru:
+Untuk mengganti cadangan rusak dengan baseline baru (menerima hilangnya riwayat lama yang tidak dapat dipulihkan; juga dapat membuat ulang penyimpanan rahasia jika rahasia cadangan saat ini tidak dapat dimuat):
 
 ```bash
 openclaw matrix verify backup reset --yes
 ```
 
-Semua perintah `verify` bersifat ringkas secara default (termasuk logging SDK internal yang senyap) dan hanya menampilkan diagnostik terperinci dengan `--verbose`.
-Gunakan `--json` untuk output lengkap yang dapat dibaca mesin saat membuat skrip.
+Tambahkan `--rotate-recovery-key` hanya ketika Anda sengaja ingin kunci pemulihan sebelumnya berhenti membuka baseline cadangan baru.
 
-Dalam pengaturan multi-akun, perintah CLI Matrix menggunakan akun default Matrix implisit kecuali Anda memberikan `--account <id>`.
-Jika Anda mengonfigurasi beberapa akun bernama, atur `channels.matrix.defaultAccount` terlebih dahulu atau operasi CLI implisit tersebut akan berhenti dan meminta Anda memilih akun secara eksplisit.
-Gunakan `--account` kapan pun Anda ingin operasi verifikasi atau perangkat menargetkan akun bernama secara eksplisit:
+### Mencantumkan, meminta, dan menanggapi verifikasi
 
 ```bash
-openclaw matrix verify status --account assistant
-openclaw matrix verify backup restore --account assistant
-openclaw matrix devices list --account assistant
+openclaw matrix verify list
 ```
 
-Saat enkripsi dinonaktifkan atau tidak tersedia untuk akun bernama, peringatan Matrix dan error verifikasi menunjuk ke kunci konfigurasi akun tersebut, misalnya `channels.matrix.accounts.assistant.encryption`.
+Mencantumkan permintaan verifikasi tertunda untuk akun yang dipilih.
+
+```bash
+openclaw matrix verify request --own-user
+openclaw matrix verify request --user-id @ops:example.org --device-id ABCDEF
+```
+
+Mengirim permintaan verifikasi dari akun OpenClaw ini. `--own-user` meminta verifikasi mandiri (Anda menerima prompt di klien Matrix lain milik pengguna yang sama); `--user-id`/`--device-id`/`--room-id` menargetkan orang lain. `--own-user` tidak dapat digabungkan dengan flag penargetan lain.
+
+Untuk penanganan siklus hidup tingkat lebih rendah — biasanya saat membayangi permintaan masuk dari klien lain — perintah ini bekerja pada permintaan `<id>` tertentu (dicetak oleh `verify list` dan `verify request`):
+
+| Perintah                                   | Tujuan                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| `openclaw matrix verify accept <id>`       | Menerima permintaan masuk                                           |
+| `openclaw matrix verify start <id>`        | Memulai alur SAS                                                    |
+| `openclaw matrix verify sas <id>`          | Mencetak emoji atau desimal SAS                                     |
+| `openclaw matrix verify confirm-sas <id>`  | Mengonfirmasi bahwa SAS cocok dengan yang ditampilkan klien lain    |
+| `openclaw matrix verify mismatch-sas <id>` | Menolak SAS ketika emoji atau desimal tidak cocok                   |
+| `openclaw matrix verify cancel <id>`       | Membatalkan; menerima `--reason <text>` dan `--code <matrix-code>` opsional |
+
+`accept`, `start`, `sas`, `confirm-sas`, `mismatch-sas`, dan `cancel` semuanya menerima `--user-id` dan `--room-id` sebagai petunjuk tindak lanjut DM ketika verifikasi ditambatkan ke ruang pesan langsung tertentu.
+
+### Catatan multi-akun
+
+Tanpa `--account <id>`, perintah CLI Matrix menggunakan akun default implisit. Jika Anda memiliki beberapa akun bernama dan belum menetapkan `channels.matrix.defaultAccount`, perintah akan menolak menebak dan meminta Anda memilih. Ketika E2EE dinonaktifkan atau tidak tersedia untuk akun bernama, galat menunjuk ke kunci konfigurasi akun tersebut, misalnya `channels.matrix.accounts.assistant.encryption`.
 
 <AccordionGroup>
-  <Accordion title="Apa arti verified">
-    OpenClaw menganggap perangkat sebagai verified hanya ketika identitas cross-signing Anda sendiri menandatanganinya. `verify status --verbose` menampilkan tiga sinyal kepercayaan:
+  <Accordion title="Perilaku startup">
+    Dengan `encryption: true`, `startupVerification` secara default adalah `"if-unverified"`. Saat startup, perangkat yang belum diverifikasi meminta verifikasi mandiri di klien Matrix lain, melewati duplikat dan menerapkan cooldown (24 jam secara default). Sesuaikan dengan `startupVerificationCooldownHours` atau nonaktifkan dengan `startupVerification: "off"`.
 
-    - `Locally trusted`: dipercaya hanya oleh klien ini
-    - `Cross-signing verified`: SDK melaporkan verifikasi melalui cross-signing
-    - `Signed by owner`: ditandatangani oleh kunci self-signing Anda sendiri
+    Startup juga menjalankan pass bootstrap kripto konservatif yang menggunakan kembali penyimpanan rahasia dan identitas penandatanganan silang saat ini. Jika status bootstrap rusak, OpenClaw mencoba perbaikan yang dijaga bahkan tanpa `channels.matrix.password`; jika homeserver memerlukan UIA kata sandi, startup mencatat peringatan dan tetap non-fatal. Perangkat yang sudah ditandatangani pemilik dipertahankan.
 
-    `Verified by owner` menjadi `yes` hanya ketika verifikasi cross-signing ada.
-    Kepercayaan lokal atau tanda tangan pemilik saja tidak cukup bagi OpenClaw untuk memperlakukan
-    perangkat sebagai sepenuhnya terverifikasi.
-
-  </Accordion>
-
-  <Accordion title="Apa yang dilakukan bootstrap">
-    `verify bootstrap` adalah perintah perbaikan dan penyiapan untuk akun terenkripsi. Secara berurutan, perintah ini:
-
-    - melakukan bootstrap secret storage, menggunakan kembali recovery key yang ada bila memungkinkan
-    - melakukan bootstrap cross-signing dan mengunggah kunci cross-signing publik yang belum ada
-    - menandai dan menandatangani silang perangkat saat ini
-    - membuat backup kunci room sisi server jika belum ada
-
-    Jika homeserver memerlukan UIA untuk mengunggah kunci cross-signing, OpenClaw mencoba tanpa autentikasi terlebih dahulu, lalu `m.login.dummy`, kemudian `m.login.password` (memerlukan `channels.matrix.password`). Gunakan `--force-reset-cross-signing` hanya saat memang ingin membuang identitas saat ini.
-
-  </Accordion>
-
-  <Accordion title="Baseline backup baru">
-    Jika Anda ingin menjaga agar pesan terenkripsi di masa depan tetap berfungsi dan menerima kehilangan riwayat lama yang tidak dapat dipulihkan:
-
-```bash
-openclaw matrix verify backup reset --yes
-openclaw matrix verify backup status --verbose
-openclaw matrix verify status
-```
-
-    Tambahkan `--account <id>` untuk menargetkan akun bernama. Ini juga dapat membuat ulang secret storage jika rahasia backup saat ini tidak dapat dimuat dengan aman.
-    Tambahkan `--rotate-recovery-key` hanya jika Anda memang ingin recovery key lama
-    tidak lagi dapat membuka baseline backup baru.
-
-  </Accordion>
-
-  <Accordion title="Perilaku saat startup">
-    Dengan `encryption: true`, `startupVerification` default-nya adalah `"if-unverified"`. Saat startup, perangkat yang belum diverifikasi meminta verifikasi mandiri di klien Matrix lain, melewati duplikasi dan menerapkan cooldown. Sesuaikan dengan `startupVerificationCooldownHours` atau nonaktifkan dengan `startupVerification: "off"`.
-
-    Startup juga menjalankan proses bootstrap crypto konservatif yang menggunakan kembali secret storage dan identitas cross-signing saat ini. Jika status bootstrap rusak, OpenClaw mencoba perbaikan yang dijaga bahkan tanpa `channels.matrix.password`; jika homeserver memerlukan password UIA, startup mencatat peringatan dan tetap tidak fatal. Perangkat yang sudah ditandatangani pemilik tetap dipertahankan.
-
-    Lihat [Migrasi Matrix](/id/install/migrating-matrix) untuk alur upgrade lengkap.
+    Lihat [migrasi Matrix](/id/channels/matrix-migration) untuk alur peningkatan lengkap.
 
   </Accordion>
 
   <Accordion title="Pemberitahuan verifikasi">
-    Matrix memposting pemberitahuan siklus hidup verifikasi ke room DM verifikasi ketat sebagai pesan `m.notice`: permintaan, siap (dengan panduan "Verify by emoji"), mulai/selesai, dan detail SAS (emoji/angka) bila tersedia.
+    Matrix memposting pemberitahuan siklus hidup verifikasi ke ruang verifikasi DM ketat sebagai pesan `m.notice`: permintaan, siap (dengan panduan "Verifikasi dengan emoji"), mulai/selesai, dan detail SAS (emoji/desimal) jika tersedia.
 
-    Permintaan masuk dari klien Matrix lain dilacak dan diterima otomatis. Untuk verifikasi mandiri, OpenClaw memulai alur SAS secara otomatis dan mengonfirmasi sisinya sendiri begitu verifikasi emoji tersedia — Anda tetap perlu membandingkan dan mengonfirmasi "They match" di klien Matrix Anda.
+    Permintaan masuk dari klien Matrix lain dilacak dan diterima otomatis. Untuk verifikasi mandiri, OpenClaw memulai alur SAS secara otomatis dan mengonfirmasi sisinya sendiri setelah verifikasi emoji tersedia — Anda tetap perlu membandingkan dan mengonfirmasi "Cocok" di klien Matrix Anda.
 
     Pemberitahuan sistem verifikasi tidak diteruskan ke pipeline chat agen.
 
   </Accordion>
 
   <Accordion title="Perangkat Matrix yang dihapus atau tidak valid">
-    Jika `verify status` mengatakan perangkat saat ini tidak lagi terdaftar di
-    homeserver, buat perangkat Matrix OpenClaw baru. Untuk login dengan password:
+    Jika `verify status` mengatakan perangkat saat ini tidak lagi tercantum di homeserver, buat perangkat Matrix OpenClaw baru. Untuk login kata sandi:
 
 ```bash
 openclaw matrix account add \
@@ -527,8 +466,7 @@ openclaw matrix account add \
   --device-name OpenClaw-Gateway
 ```
 
-    Untuk autentikasi token, buat access token baru di klien Matrix atau UI admin Anda,
-    lalu perbarui OpenClaw:
+    Untuk autentikasi token, buat token akses baru di klien Matrix atau UI admin Anda, lalu perbarui OpenClaw:
 
 ```bash
 openclaw matrix account add \
@@ -537,13 +475,12 @@ openclaw matrix account add \
   --access-token '<token>'
 ```
 
-    Ganti `assistant` dengan ID akun dari perintah yang gagal, atau hilangkan
-    `--account` untuk akun default.
+    Ganti `assistant` dengan ID akun dari perintah yang gagal, atau hilangkan `--account` untuk akun default.
 
   </Accordion>
 
   <Accordion title="Kebersihan perangkat">
-    Perangkat lama yang dikelola OpenClaw dapat menumpuk. Daftar dan pangkas:
+    Perangkat lama yang dikelola OpenClaw dapat menumpuk. Cantumkan dan pangkas:
 
 ```bash
 openclaw matrix devices list
@@ -552,66 +489,79 @@ openclaw matrix devices prune-stale
 
   </Accordion>
 
-  <Accordion title="Penyimpanan crypto">
-    Matrix E2EE menggunakan jalur crypto Rust `matrix-js-sdk` resmi dengan `fake-indexeddb` sebagai shim IndexedDB. Status crypto disimpan ke `crypto-idb-snapshot.json` (izin file ketat).
+  <Accordion title="Penyimpanan kripto">
+    E2EE Matrix menggunakan jalur kripto Rust `matrix-js-sdk` resmi dengan `fake-indexeddb` sebagai shim IndexedDB. Status kripto bertahan ke `crypto-idb-snapshot.json` (izin file restriktif).
 
-    Status runtime terenkripsi berada di bawah `~/.openclaw/matrix/accounts/<account>/<homeserver>__<user>/<token-hash>/` dan mencakup sync store, crypto store, recovery key, snapshot IDB, binding thread, dan status verifikasi startup. Saat token berubah tetapi identitas akun tetap sama, OpenClaw menggunakan kembali root terbaik yang sudah ada sehingga status sebelumnya tetap terlihat.
+    Status runtime terenkripsi berada di bawah `~/.openclaw/matrix/accounts/<account>/<homeserver>__<user>/<token-hash>/` dan mencakup penyimpanan sinkronisasi, penyimpanan kripto, kunci pemulihan, snapshot IDB, pengikatan thread, dan status verifikasi startup. Ketika token berubah tetapi identitas akun tetap sama, OpenClaw menggunakan kembali root terbaik yang ada sehingga status sebelumnya tetap terlihat.
 
   </Accordion>
 </AccordionGroup>
 
 ## Manajemen profil
 
-Perbarui profil diri Matrix untuk akun yang dipilih dengan:
+Perbarui profil mandiri Matrix untuk akun yang dipilih:
 
 ```bash
 openclaw matrix profile set --name "OpenClaw Assistant"
 openclaw matrix profile set --avatar-url https://cdn.example.org/avatar.png
 ```
 
-Tambahkan `--account <id>` saat Anda ingin menargetkan akun Matrix bernama secara eksplisit.
-
-Matrix menerima URL avatar `mxc://` secara langsung. Saat Anda memberikan URL avatar `http://` atau `https://`, OpenClaw akan mengunggahnya ke Matrix terlebih dahulu dan menyimpan URL `mxc://` yang telah di-resolve kembali ke `channels.matrix.avatarUrl` (atau override akun yang dipilih).
+Anda dapat meneruskan kedua opsi dalam satu panggilan. Matrix menerima URL avatar `mxc://` secara langsung; ketika Anda meneruskan `http://` atau `https://`, OpenClaw mengunggah file terlebih dahulu dan menyimpan URL `mxc://` yang diselesaikan ke `channels.matrix.avatarUrl` (atau override per akun).
 
 ## Thread
 
-Matrix mendukung thread Matrix native baik untuk balasan otomatis maupun pengiriman message-tool.
+Matrix mendukung thread Matrix native untuk balasan otomatis dan pengiriman alat pesan. Dua knob independen mengontrol perilaku:
 
-- `dm.sessionScope: "per-user"` (default) menjaga perutean DM Matrix tetap berbasis pengirim, sehingga beberapa room DM dapat berbagi satu sesi saat semuanya di-resolve ke peer yang sama.
-- `dm.sessionScope: "per-room"` mengisolasi setiap room DM Matrix ke kunci sesi masing-masing sambil tetap menggunakan autentikasi DM normal dan pemeriksaan allowlist.
-- Binding percakapan Matrix eksplisit tetap lebih diutamakan daripada `dm.sessionScope`, sehingga room dan thread yang terikat mempertahankan sesi target yang dipilih.
-- `threadReplies: "off"` menjaga balasan tetap di level teratas dan mempertahankan pesan ber-thread yang masuk pada sesi induk.
-- `threadReplies: "inbound"` membalas di dalam thread hanya ketika pesan masuk memang sudah berada di thread tersebut.
-- `threadReplies: "always"` mempertahankan balasan room di sebuah thread yang berakar pada pesan pemicu dan merutekan percakapan itu melalui sesi bercakupan thread yang cocok dari pesan pemicu pertama.
-- `dm.threadReplies` menimpa pengaturan tingkat atas hanya untuk DM. Misalnya, Anda dapat menjaga thread room tetap terisolasi sambil menjaga DM tetap datar.
-- Pesan ber-thread yang masuk menyertakan pesan akar thread sebagai konteks agen tambahan.
-- Pengiriman message-tool secara otomatis mewarisi thread Matrix saat ini ketika targetnya adalah room yang sama, atau target pengguna DM yang sama, kecuali `threadId` eksplisit diberikan.
-- Penggunaan ulang target pengguna DM untuk sesi yang sama hanya aktif ketika metadata sesi saat ini membuktikan peer DM yang sama pada akun Matrix yang sama; jika tidak, OpenClaw kembali ke perutean normal berbasis pengguna.
-- Ketika OpenClaw melihat sebuah room DM Matrix bertabrakan dengan room DM lain pada sesi DM Matrix bersama yang sama, OpenClaw memposting `m.notice` satu kali di room tersebut dengan escape hatch `/focus` saat binding thread diaktifkan dan petunjuk `dm.sessionScope`.
-- Binding thread runtime didukung untuk Matrix. `/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, dan `/acp spawn` yang terikat thread berfungsi di room dan DM Matrix.
-- `/focus` Matrix room/DM level atas membuat thread Matrix baru dan mengikatnya ke sesi target ketika `threadBindings.spawnSubagentSessions=true`.
-- Menjalankan `/focus` atau `/acp spawn --thread here` di dalam thread Matrix yang sudah ada akan mengikat thread saat ini itu.
+### Perutean sesi (`sessionScope`)
 
-## Binding percakapan ACP
+`dm.sessionScope` menentukan cara ruang DM Matrix dipetakan ke sesi OpenClaw:
 
-Room, DM, dan thread Matrix yang sudah ada dapat diubah menjadi workspace ACP yang persisten tanpa mengubah permukaan chat.
+- `"per-user"` (default): semua ruang DM dengan peer terute yang sama berbagi satu sesi.
+- `"per-room"`: setiap ruang DM Matrix mendapatkan kunci sesinya sendiri, bahkan ketika peer-nya sama.
+
+Pengikatan percakapan eksplisit selalu mengalahkan `sessionScope`, sehingga ruang dan thread yang terikat mempertahankan sesi target pilihannya.
+
+### Threading balasan (`threadReplies`)
+
+`threadReplies` menentukan tempat bot memposting balasannya:
+
+- `"off"`: balasan berada di tingkat atas. Pesan ber-thread yang masuk tetap berada pada sesi induk.
+- `"inbound"`: balas di dalam thread hanya ketika pesan masuk sudah berada di thread tersebut.
+- `"always"`: balas di dalam thread yang berakar pada pesan pemicu; percakapan itu dirutekan melalui sesi dengan cakupan thread yang cocok sejak pemicu pertama.
+
+`dm.threadReplies` mengesampingkan ini hanya untuk DM — misalnya, menjaga thread ruang tetap terisolasi sambil mempertahankan DM tetap datar.
+
+### Pewarisan thread dan perintah slash
+
+- Pesan berutas inbound menyertakan pesan akar utas sebagai konteks agen tambahan.
+- Pengiriman message-tool otomatis mewarisi utas Matrix saat ini ketika menargetkan ruang yang sama (atau target pengguna DM yang sama), kecuali `threadId` eksplisit diberikan.
+- Penggunaan ulang target pengguna DM hanya berlaku ketika metadata sesi saat ini membuktikan peer DM yang sama pada akun Matrix yang sama; jika tidak, OpenClaw kembali ke perutean normal berbasis pengguna.
+- `/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, dan `/acp spawn` yang terikat utas semuanya berfungsi di ruang Matrix dan DM.
+- `/focus` tingkat atas membuat utas Matrix baru dan mengikatnya ke sesi target ketika `threadBindings.spawnSubagentSessions: true`.
+- Menjalankan `/focus` atau `/acp spawn --thread here` di dalam utas Matrix yang sudah ada mengikat utas tersebut di tempat.
+
+Ketika OpenClaw mendeteksi ruang DM Matrix bertabrakan dengan ruang DM lain pada sesi bersama yang sama, OpenClaw mengirim `m.notice` satu kali di ruang tersebut yang menunjuk ke jalan keluar `/focus` dan menyarankan perubahan `dm.sessionScope`. Notifikasi hanya muncul ketika pengikatan utas diaktifkan.
+
+## Pengikatan percakapan ACP
+
+Ruang Matrix, DM, dan utas Matrix yang sudah ada dapat diubah menjadi ruang kerja ACP yang tahan lama tanpa mengubah permukaan obrolan.
 
 Alur operator cepat:
 
-- Jalankan `/acp spawn codex --bind here` di dalam DM, room, atau thread Matrix yang sudah ada yang ingin terus Anda gunakan.
-- Di DM atau room Matrix level atas, DM/room saat ini tetap menjadi permukaan chat dan pesan berikutnya dirutekan ke sesi ACP yang di-spawn.
-- Di dalam thread Matrix yang sudah ada, `--bind here` mengikat thread saat ini di tempat.
-- `/new` dan `/reset` mereset sesi ACP terikat yang sama di tempat.
-- `/acp close` menutup sesi ACP dan menghapus binding.
+- Jalankan `/acp spawn codex --bind here` di dalam DM Matrix, ruang, atau utas yang sudah ada yang ingin tetap Anda gunakan.
+- Di DM atau ruang Matrix tingkat atas, DM/ruang saat ini tetap menjadi permukaan obrolan dan pesan mendatang dirutekan ke sesi ACP yang dibuat.
+- Di dalam utas Matrix yang sudah ada, `--bind here` mengikat utas saat ini di tempat.
+- `/new` dan `/reset` mengatur ulang sesi ACP terikat yang sama di tempat.
+- `/acp close` menutup sesi ACP dan menghapus pengikatan.
 
 Catatan:
 
-- `--bind here` tidak membuat thread Matrix anak.
-- `threadBindings.spawnAcpSessions` hanya diperlukan untuk `/acp spawn --thread auto|here`, saat OpenClaw perlu membuat atau mengikat thread Matrix anak.
+- `--bind here` tidak membuat utas Matrix anak.
+- `threadBindings.spawnAcpSessions` hanya diperlukan untuk `/acp spawn --thread auto|here`, ketika OpenClaw perlu membuat atau mengikat utas Matrix anak.
 
-### Konfigurasi binding thread
+### Konfigurasi pengikatan utas
 
-Matrix mewarisi default global dari `session.threadBindings`, dan juga mendukung override per-channel:
+Matrix mewarisi default global dari `session.threadBindings`, dan juga mendukung override per kanal:
 
 - `threadBindings.enabled`
 - `threadBindings.idleHours`
@@ -619,66 +569,52 @@ Matrix mewarisi default global dari `session.threadBindings`, dan juga mendukung
 - `threadBindings.spawnSubagentSessions`
 - `threadBindings.spawnAcpSessions`
 
-Flag spawn terikat thread Matrix bersifat opt-in:
+Flag spawn terikat utas Matrix bersifat opt-in:
 
-- Atur `threadBindings.spawnSubagentSessions: true` untuk mengizinkan `/focus` level atas membuat dan mengikat thread Matrix baru.
-- Atur `threadBindings.spawnAcpSessions: true` untuk mengizinkan `/acp spawn --thread auto|here` mengikat sesi ACP ke thread Matrix.
+- Atur `threadBindings.spawnSubagentSessions: true` untuk mengizinkan `/focus` tingkat atas membuat dan mengikat utas Matrix baru.
+- Atur `threadBindings.spawnAcpSessions: true` untuk mengizinkan `/acp spawn --thread auto|here` mengikat sesi ACP ke utas Matrix.
 
 ## Reaksi
 
-Matrix mendukung aksi reaksi keluar, notifikasi reaksi masuk, dan reaksi ack masuk.
+Matrix mendukung reaksi outbound, notifikasi reaksi inbound, dan reaksi ack.
 
-- Tooling reaksi keluar dikendalikan oleh `channels["matrix"].actions.reactions`.
-- `react` menambahkan reaksi ke event Matrix tertentu.
-- `reactions` mencantumkan ringkasan reaksi saat ini untuk event Matrix tertentu.
-- `emoji=""` menghapus reaksi milik akun bot sendiri pada event tersebut.
-- `remove: true` hanya menghapus reaksi emoji yang ditentukan dari akun bot.
+Peralatan reaksi outbound dikendalikan oleh `channels.matrix.actions.reactions`:
 
-Cakupan reaksi ack di-resolve dalam urutan standar OpenClaw:
+- `react` menambahkan reaksi ke event Matrix.
+- `reactions` mencantumkan ringkasan reaksi saat ini untuk event Matrix.
+- `emoji=""` menghapus reaksi milik bot sendiri pada event tersebut.
+- `remove: true` hanya menghapus reaksi emoji yang ditentukan dari bot.
 
-- `channels["matrix"].accounts.<accountId>.ackReaction`
-- `channels["matrix"].ackReaction`
-- `messages.ackReaction`
-- fallback emoji identitas agen
+**Urutan resolusi** (nilai pertama yang didefinisikan menang):
 
-Cakupan reaksi ack di-resolve dalam urutan ini:
+| Pengaturan             | Urutan                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `ackReaction`           | per akun → kanal → `messages.ackReaction` → fallback emoji identitas agen       |
+| `ackReactionScope`      | per akun → kanal → `messages.ackReactionScope` → default `"group-mentions"`     |
+| `reactionNotifications` | per akun → kanal → default `"own"`                                              |
 
-- `channels["matrix"].accounts.<accountId>.ackReactionScope`
-- `channels["matrix"].ackReactionScope`
-- `messages.ackReactionScope`
-
-Mode notifikasi reaksi di-resolve dalam urutan ini:
-
-- `channels["matrix"].accounts.<accountId>.reactionNotifications`
-- `channels["matrix"].reactionNotifications`
-- default: `own`
-
-Perilaku:
-
-- `reactionNotifications: "own"` meneruskan event `m.reaction` yang ditambahkan saat event tersebut menargetkan pesan Matrix yang dibuat bot.
-- `reactionNotifications: "off"` menonaktifkan event sistem reaksi.
-- Penghapusan reaksi tidak disintesis menjadi event sistem karena Matrix menampilkannya sebagai redaksi, bukan sebagai penghapusan `m.reaction` mandiri.
+`reactionNotifications: "own"` meneruskan event `m.reaction` yang ditambahkan ketika menargetkan pesan Matrix yang ditulis bot; `"off"` menonaktifkan event sistem reaksi. Penghapusan reaksi tidak disintesis menjadi event sistem karena Matrix menampilkan hal tersebut sebagai redaksi, bukan sebagai penghapusan `m.reaction` mandiri.
 
 ## Konteks riwayat
 
-- `channels.matrix.historyLimit` mengontrol berapa banyak pesan room terbaru yang disertakan sebagai `InboundHistory` ketika pesan room Matrix memicu agen. Fallback ke `messages.groupChat.historyLimit`; jika keduanya tidak diatur, default efektifnya adalah `0`. Atur `0` untuk menonaktifkan.
-- Riwayat room Matrix hanya berlaku untuk room. DM tetap menggunakan riwayat sesi normal.
-- Riwayat room Matrix bersifat pending-only: OpenClaw membuffer pesan room yang belum memicu balasan, lalu mengambil snapshot jendela itu saat mention atau pemicu lain datang.
-- Pesan pemicu saat ini tidak disertakan dalam `InboundHistory`; pesan tersebut tetap berada di body masuk utama untuk giliran itu.
-- Percobaan ulang untuk event Matrix yang sama menggunakan kembali snapshot riwayat asli alih-alih bergeser ke depan ke pesan room yang lebih baru.
+- `channels.matrix.historyLimit` mengontrol berapa banyak pesan ruang terbaru yang disertakan sebagai `InboundHistory` ketika pesan ruang Matrix memicu agen. Fallback ke `messages.groupChat.historyLimit`; jika keduanya tidak diatur, default efektifnya adalah `0`. Atur `0` untuk menonaktifkan.
+- Riwayat ruang Matrix hanya untuk ruang. DM tetap menggunakan riwayat sesi normal.
+- Riwayat ruang Matrix bersifat pending-only: OpenClaw men-buffer pesan ruang yang belum memicu balasan, lalu mengambil snapshot jendela tersebut ketika mention atau pemicu lain datang.
+- Pesan pemicu saat ini tidak disertakan dalam `InboundHistory`; pesan tersebut tetap berada di isi inbound utama untuk giliran itu.
+- Percobaan ulang event Matrix yang sama menggunakan ulang snapshot riwayat asli alih-alih bergeser maju ke pesan ruang yang lebih baru.
 
 ## Visibilitas konteks
 
-Matrix mendukung kontrol bersama `contextVisibility` untuk konteks room tambahan seperti teks balasan yang diambil, akar thread, dan riwayat tertunda.
+Matrix mendukung kontrol bersama `contextVisibility` untuk konteks ruang tambahan seperti teks balasan yang diambil, akar utas, dan riwayat tertunda.
 
 - `contextVisibility: "all"` adalah default. Konteks tambahan dipertahankan sebagaimana diterima.
-- `contextVisibility: "allowlist"` memfilter konteks tambahan ke pengirim yang diizinkan oleh pemeriksaan allowlist room/pengguna aktif.
+- `contextVisibility: "allowlist"` memfilter konteks tambahan ke pengirim yang diizinkan oleh pemeriksaan allowlist ruang/pengguna aktif.
 - `contextVisibility: "allowlist_quote"` berperilaku seperti `allowlist`, tetapi tetap mempertahankan satu balasan kutipan eksplisit.
 
-Pengaturan ini memengaruhi visibilitas konteks tambahan, bukan apakah pesan masuk itu sendiri dapat memicu balasan.
+Pengaturan ini memengaruhi visibilitas konteks tambahan, bukan apakah pesan inbound itu sendiri dapat memicu balasan.
 Otorisasi pemicu tetap berasal dari `groupPolicy`, `groups`, `groupAllowFrom`, dan pengaturan kebijakan DM.
 
-## Kebijakan DM dan room
+## Kebijakan DM dan ruang
 
 ```json5
 {
@@ -692,97 +628,93 @@ Otorisasi pemicu tetap berasal dari `groupPolicy`, `groups`, `groupAllowFrom`, d
       groupPolicy: "allowlist",
       groupAllowFrom: ["@admin:example.org"],
       groups: {
-        "!roomid:example.org": {
-          requireMention: true,
-        },
+        "!roomid:example.org": { requireMention: true },
       },
     },
   },
 }
 ```
 
-Lihat [Groups](/id/channels/groups) untuk perilaku mention-gating dan allowlist.
+Untuk membisukan DM sepenuhnya sambil tetap membuat ruang berfungsi, atur `dm.enabled: false`:
 
-Contoh pairing untuk DM Matrix:
+```json5
+{
+  channels: {
+    matrix: {
+      dm: { enabled: false },
+      groupPolicy: "allowlist",
+      groupAllowFrom: ["@admin:example.org"],
+    },
+  },
+}
+```
+
+Lihat [Grup](/id/channels/groups) untuk perilaku pembatasan mention dan allowlist.
+
+Contoh pemasangan untuk DM Matrix:
 
 ```bash
 openclaw pairing list matrix
 openclaw pairing approve matrix <CODE>
 ```
 
-Jika pengguna Matrix yang belum disetujui terus mengirim pesan kepada Anda sebelum persetujuan, OpenClaw menggunakan kembali kode pairing tertunda yang sama dan dapat mengirim balasan pengingat lagi setelah cooldown singkat alih-alih membuat kode baru.
+Jika pengguna Matrix yang belum disetujui terus mengirim pesan kepada Anda sebelum persetujuan, OpenClaw menggunakan ulang kode pemasangan tertunda yang sama dan dapat mengirim balasan pengingat setelah cooldown singkat alih-alih membuat kode baru.
 
-Lihat [Pairing](/id/channels/pairing) untuk alur pairing DM bersama dan tata letak penyimpanannya.
+Lihat [Pemasangan](/id/channels/pairing) untuk alur pemasangan DM bersama dan tata letak penyimpanan.
 
-## Perbaikan room direct
+## Perbaikan ruang langsung
 
-Jika status direct-message tidak sinkron, OpenClaw dapat berakhir dengan pemetaan `m.direct` usang yang menunjuk ke room solo lama alih-alih DM aktif. Periksa pemetaan saat ini untuk peer dengan:
+Jika status pesan langsung bergeser hingga tidak sinkron, OpenClaw dapat berakhir dengan pemetaan `m.direct` usang yang menunjuk ke ruang solo lama, bukan DM aktif. Periksa pemetaan saat ini untuk peer:
 
 ```bash
 openclaw matrix direct inspect --user-id @alice:example.org
 ```
 
-Perbaiki dengan:
+Perbaiki:
 
 ```bash
 openclaw matrix direct repair --user-id @alice:example.org
 ```
 
-Alur perbaikan:
+Kedua perintah menerima `--account <id>` untuk setup multi-akun. Alur perbaikan:
 
-- memprioritaskan DM 1:1 ketat yang sudah dipetakan di `m.direct`
-- fallback ke DM 1:1 ketat mana pun yang saat ini sudah diikuti dengan pengguna tersebut
-- membuat room direct baru dan menulis ulang `m.direct` jika tidak ada DM sehat
+- memilih DM 1:1 ketat yang sudah dipetakan di `m.direct`
+- fallback ke DM 1:1 ketat yang saat ini tergabung dengan pengguna tersebut
+- membuat ruang langsung baru dan menulis ulang `m.direct` jika tidak ada DM yang sehat
 
-Alur perbaikan tidak menghapus room lama secara otomatis. Alur ini hanya memilih DM yang sehat dan memperbarui pemetaan agar pengiriman Matrix baru, pemberitahuan verifikasi, dan alur direct-message lainnya kembali menargetkan room yang benar.
+Ini tidak menghapus ruang lama secara otomatis. Ini memilih DM yang sehat dan memperbarui pemetaan sehingga pengiriman Matrix mendatang, notifikasi verifikasi, dan alur pesan langsung lainnya menargetkan ruang yang benar.
 
 ## Persetujuan exec
 
-Matrix dapat bertindak sebagai klien persetujuan native untuk akun Matrix. Pengaturan
-perutean DM/channel native tetap berada di bawah konfigurasi persetujuan exec:
+Matrix dapat bertindak sebagai klien persetujuan native. Konfigurasikan di bawah `channels.matrix.execApprovals` (atau `channels.matrix.accounts.<account>.execApprovals` untuk override per akun):
 
-- `channels.matrix.execApprovals.enabled`
-- `channels.matrix.execApprovals.approvers` (opsional; fallback ke `channels.matrix.dm.allowFrom`)
-- `channels.matrix.execApprovals.target` (`dm` | `channel` | `both`, default: `dm`)
-- `channels.matrix.execApprovals.agentFilter`
-- `channels.matrix.execApprovals.sessionFilter`
+- `enabled`: mengirim persetujuan melalui prompt native Matrix. Ketika tidak diatur atau `"auto"`, Matrix otomatis aktif setelah setidaknya satu pemberi persetujuan dapat di-resolve. Atur `false` untuk menonaktifkan secara eksplisit.
+- `approvers`: ID pengguna Matrix (`@owner:example.org`) yang diizinkan menyetujui permintaan exec. Opsional — fallback ke `channels.matrix.dm.allowFrom`.
+- `target`: lokasi tujuan prompt. `"dm"` (default) mengirim ke DM pemberi persetujuan; `"channel"` mengirim ke ruang Matrix atau DM asal; `"both"` mengirim ke keduanya.
+- `agentFilter` / `sessionFilter`: allowlist opsional untuk agen/sesi mana yang memicu pengiriman Matrix.
 
-Pemberi persetujuan harus berupa ID pengguna Matrix seperti `@owner:example.org`. Matrix otomatis mengaktifkan persetujuan native ketika `enabled` tidak diatur atau `"auto"` dan setidaknya satu pemberi persetujuan dapat di-resolve. Persetujuan exec menggunakan `execApprovals.approvers` terlebih dahulu dan dapat fallback ke `channels.matrix.dm.allowFrom`. Persetujuan plugin mengotorisasi melalui `channels.matrix.dm.allowFrom`. Atur `enabled: false` untuk menonaktifkan Matrix sebagai klien persetujuan native secara eksplisit. Permintaan persetujuan selain itu akan fallback ke rute persetujuan terkonfigurasi lain atau kebijakan fallback persetujuan.
+Otorisasi sedikit berbeda antar jenis persetujuan:
 
-Perutean native Matrix mendukung kedua jenis persetujuan:
+- **Persetujuan exec** menggunakan `execApprovals.approvers`, dengan fallback ke `dm.allowFrom`.
+- **Persetujuan Plugin** mengotorisasi hanya melalui `dm.allowFrom`.
 
-- `channels.matrix.execApprovals.*` mengontrol mode fanout DM/channel native untuk prompt persetujuan Matrix.
-- Persetujuan exec menggunakan kumpulan pemberi persetujuan exec dari `execApprovals.approvers` atau `channels.matrix.dm.allowFrom`.
-- Persetujuan plugin menggunakan allowlist DM Matrix dari `channels.matrix.dm.allowFrom`.
-- Pintasan reaksi Matrix dan pembaruan pesan berlaku untuk persetujuan exec maupun plugin.
+Kedua jenis berbagi pintasan reaksi Matrix dan pembaruan pesan. Pemberi persetujuan melihat pintasan reaksi pada pesan persetujuan utama:
 
-Aturan pengiriman:
+- `✅` izinkan sekali
+- `❌` tolak
+- `♾️` selalu izinkan (ketika kebijakan exec efektif mengizinkannya)
 
-- `target: "dm"` mengirim prompt persetujuan ke DM pemberi persetujuan
-- `target: "channel"` mengirim prompt kembali ke room atau DM Matrix asal
-- `target: "both"` mengirim ke DM pemberi persetujuan dan room atau DM Matrix asal
+Perintah slash fallback: `/approve <id> allow-once`, `/approve <id> allow-always`, `/approve <id> deny`.
 
-Prompt persetujuan Matrix menanamkan pintasan reaksi pada pesan persetujuan utama:
+Hanya pemberi persetujuan yang berhasil di-resolve yang dapat menyetujui atau menolak. Pengiriman kanal untuk persetujuan exec menyertakan teks perintah — hanya aktifkan `channel` atau `both` di ruang tepercaya.
 
-- `✅` = izinkan sekali
-- `❌` = tolak
-- `♾️` = izinkan selalu ketika keputusan itu diizinkan oleh kebijakan exec efektif
-
-Pemberi persetujuan dapat bereaksi pada pesan itu atau menggunakan perintah slash fallback: `/approve <id> allow-once`, `/approve <id> allow-always`, atau `/approve <id> deny`.
-
-Hanya pemberi persetujuan yang berhasil di-resolve yang dapat menyetujui atau menolak. Untuk persetujuan exec, pengiriman channel menyertakan teks perintah, jadi aktifkan `channel` atau `both` hanya di room tepercaya.
-
-Override per akun:
-
-- `channels.matrix.accounts.<account>.execApprovals`
-
-Dokumen terkait: [Persetujuan exec](/id/tools/exec-approvals)
+Terkait: [Persetujuan exec](/id/tools/exec-approvals).
 
 ## Perintah slash
 
-Perintah slash Matrix (misalnya `/new`, `/reset`, `/model`) berfungsi langsung di DM. Di room, OpenClaw juga mengenali perintah slash yang diawali dengan mention Matrix bot itu sendiri, sehingga `@bot:server /new` memicu jalur perintah tanpa memerlukan regex mention kustom. Ini membuat bot tetap responsif terhadap kiriman gaya room `@mention /command` yang dihasilkan Element dan klien serupa ketika pengguna melakukan tab-complete bot sebelum mengetik perintah.
+Perintah slash (`/new`, `/reset`, `/model`, `/focus`, `/unfocus`, `/agents`, `/session`, `/acp`, `/approve`, dll.) berfungsi langsung di DM. Di ruang, OpenClaw juga mengenali perintah yang diawali dengan mention Matrix milik bot sendiri, sehingga `@bot:server /new` memicu jalur perintah tanpa regex mention kustom. Ini menjaga bot tetap responsif terhadap posting bergaya ruang `@mention /command` yang dipancarkan Element dan klien serupa ketika pengguna menggunakan tab-complete pada bot sebelum mengetik perintah.
 
-Aturan otorisasi tetap berlaku: pengirim perintah harus memenuhi kebijakan allowlist atau owner untuk DM atau room seperti pesan biasa.
+Aturan otorisasi tetap berlaku: pengirim perintah harus memenuhi kebijakan allowlist/pemilik DM atau ruang yang sama seperti pesan biasa.
 
 ## Multi-akun
 
@@ -814,22 +746,28 @@ Aturan otorisasi tetap berlaku: pengirim perintah harus memenuhi kebijakan allow
 }
 ```
 
-Nilai `channels.matrix` level atas bertindak sebagai default untuk akun bernama kecuali sebuah akun menimpanya.
-Anda dapat memberi cakupan entri room turunan ke satu akun Matrix dengan `groups.<room>.account`.
-Entri tanpa `account` tetap dibagikan di semua akun Matrix, dan entri dengan `account: "default"` tetap berfungsi ketika akun default dikonfigurasi langsung pada `channels.matrix.*` level atas.
-Default autentikasi bersama parsial tidak dengan sendirinya membuat akun default implisit terpisah. OpenClaw hanya mensintesis akun `default` level atas ketika default tersebut memiliki autentikasi baru (`homeserver` plus `accessToken`, atau `homeserver` plus `userId` dan `password`); akun bernama tetap dapat ditemukan dari `homeserver` plus `userId` ketika kredensial cache memenuhi autentikasi kemudian.
-Jika Matrix sudah memiliki tepat satu akun bernama, atau `defaultAccount` menunjuk ke kunci akun bernama yang ada, promosi perbaikan/penyiapan dari akun tunggal ke multi-akun mempertahankan akun tersebut alih-alih membuat entri `accounts.default` baru. Hanya kunci autentikasi/bootstrap Matrix yang dipindahkan ke akun yang dipromosikan itu; kunci kebijakan pengiriman bersama tetap di level atas.
-Atur `defaultAccount` saat Anda ingin OpenClaw lebih memilih satu akun Matrix bernama untuk perutean implisit, probing, dan operasi CLI.
-Jika beberapa akun Matrix dikonfigurasi dan satu ID akun adalah `default`, OpenClaw menggunakan akun itu secara implisit meskipun `defaultAccount` tidak diatur.
-Jika Anda mengonfigurasi beberapa akun bernama, atur `defaultAccount` atau berikan `--account <id>` untuk perintah CLI yang bergantung pada pemilihan akun implisit.
-Berikan `--account <id>` ke `openclaw matrix verify ...` dan `openclaw matrix devices ...` saat Anda ingin menimpa pilihan implisit itu untuk satu perintah.
+**Pewarisan:**
+
+- Nilai `channels.matrix` tingkat atas bertindak sebagai default untuk akun bernama kecuali akun menimpanya.
+- Batasi entri ruang yang diwarisi ke akun tertentu dengan `groups.<room>.account`. Entri tanpa `account` dibagikan lintas akun; `account: "default"` tetap berfungsi ketika akun default dikonfigurasi di tingkat atas.
+
+**Pemilihan akun default:**
+
+- Atur `defaultAccount` untuk memilih akun bernama yang diprioritaskan oleh perutean implisit, probing, dan perintah CLI.
+- Jika Anda memiliki beberapa akun dan salah satunya secara literal bernama `default`, OpenClaw menggunakannya secara implisit meskipun `defaultAccount` tidak diatur.
+- Jika Anda memiliki beberapa akun bernama dan tidak ada default yang dipilih, perintah CLI menolak menebak — atur `defaultAccount` atau berikan `--account <id>`.
+- Blok `channels.matrix.*` tingkat atas hanya diperlakukan sebagai akun `default` implisit ketika autentikasinya lengkap (`homeserver` + `accessToken`, atau `homeserver` + `userId` + `password`). Akun bernama tetap dapat ditemukan dari `homeserver` + `userId` setelah kredensial yang di-cache mencakup autentikasi.
+
+**Promosi:**
+
+- Ketika OpenClaw mempromosikan konfigurasi akun tunggal menjadi multi-akun selama perbaikan atau setup, OpenClaw mempertahankan akun bernama yang ada jika ada atau `defaultAccount` sudah menunjuk ke salah satunya. Hanya kunci auth/bootstrap Matrix yang dipindahkan ke akun yang dipromosikan; kunci kebijakan pengiriman bersama tetap berada di tingkat atas.
 
 Lihat [Referensi konfigurasi](/id/gateway/config-channels#multi-account-all-channels) untuk pola multi-akun bersama.
 
-## Homeserver privat/LAN
+## Homeserver pribadi/LAN
 
-Secara default, OpenClaw memblokir homeserver Matrix privat/internal untuk perlindungan SSRF kecuali Anda
-secara eksplisit memilih untuk mengizinkannya per akun.
+Secara default, OpenClaw memblokir homeserver Matrix pribadi/internal untuk perlindungan SSRF kecuali Anda
+secara eksplisit ikut serta per akun.
 
 Jika homeserver Anda berjalan di localhost, IP LAN/Tailscale, atau hostname internal, aktifkan
 `network.dangerouslyAllowPrivateNetwork` untuk akun Matrix tersebut:
@@ -858,10 +796,10 @@ openclaw matrix account add \
   --access-token syt_ops_xxx
 ```
 
-Opt-in ini hanya mengizinkan target privat/internal tepercaya. Homeserver cleartext publik seperti
-`http://matrix.example.org:8008` tetap diblokir. Sebaiknya gunakan `https://` bila memungkinkan.
+Pengaktifan eksplisit ini hanya mengizinkan target privat/internal yang tepercaya. Homeserver publik tanpa enkripsi seperti
+`http://matrix.example.org:8008` tetap diblokir. Gunakan `https://` jika memungkinkan.
 
-## Proxy lalu lintas Matrix
+## Memproksikan trafik Matrix
 
 Jika deployment Matrix Anda memerlukan proxy HTTP(S) keluar eksplisit, atur `channels.matrix.proxy`:
 
@@ -877,91 +815,113 @@ Jika deployment Matrix Anda memerlukan proxy HTTP(S) keluar eksplisit, atur `cha
 }
 ```
 
-Akun bernama dapat menimpa default level atas dengan `channels.matrix.accounts.<id>.proxy`.
-OpenClaw menggunakan pengaturan proxy yang sama untuk lalu lintas Matrix runtime dan probe status akun.
+Akun bernama dapat menimpa default tingkat atas dengan `channels.matrix.accounts.<id>.proxy`.
+OpenClaw menggunakan pengaturan proxy yang sama untuk trafik Matrix saat runtime dan pemeriksaan status akun.
 
 ## Resolusi target
 
-Matrix menerima bentuk target berikut di mana pun OpenClaw meminta target room atau pengguna:
+Matrix menerima bentuk target berikut di mana pun OpenClaw meminta target ruang atau pengguna:
 
 - Pengguna: `@user:server`, `user:@user:server`, atau `matrix:user:@user:server`
-- Room: `!room:server`, `room:!room:server`, atau `matrix:room:!room:server`
+- Ruang: `!room:server`, `room:!room:server`, atau `matrix:room:!room:server`
 - Alias: `#alias:server`, `channel:#alias:server`, atau `matrix:channel:#alias:server`
 
-ID room Matrix peka huruf besar-kecil. Gunakan kapitalisasi ID room Matrix yang tepat
-saat mengonfigurasi target pengiriman eksplisit, Cron, binding, atau allowlist.
-OpenClaw menjaga kunci sesi internal tetap kanonis untuk penyimpanan, sehingga kunci
-huruf kecil tersebut bukan sumber yang andal untuk ID pengiriman Matrix.
+ID ruang Matrix peka huruf besar/kecil. Gunakan kapitalisasi ID ruang yang persis dari Matrix
+saat mengonfigurasi target pengiriman eksplisit, pekerjaan Cron, binding, atau daftar izin.
+OpenClaw menjaga kunci sesi internal tetap kanonis untuk penyimpanan, sehingga kunci huruf kecil
+tersebut bukan sumber yang andal untuk ID pengiriman Matrix.
 
-Pencarian direktori langsung menggunakan akun Matrix yang sedang login:
+Pencarian direktori langsung menggunakan akun Matrix yang sedang masuk:
 
-- Pencarian pengguna melakukan kueri ke direktori pengguna Matrix di homeserver tersebut.
-- Pencarian room menerima ID room dan alias eksplisit secara langsung, lalu fallback ke pencarian nama room yang sudah diikuti untuk akun tersebut.
-- Pencarian nama room yang sudah diikuti bersifat best-effort. Jika nama room tidak dapat di-resolve menjadi ID atau alias, nama itu diabaikan oleh resolusi allowlist saat runtime.
+- Pencarian pengguna menanyakan direktori pengguna Matrix pada homeserver tersebut.
+- Pencarian ruang menerima ID ruang dan alias eksplisit secara langsung, lalu kembali ke pencarian nama ruang yang sudah diikuti untuk akun tersebut.
+- Pencarian nama ruang yang sudah diikuti bersifat upaya terbaik. Jika nama ruang tidak dapat diresolusikan menjadi ID atau alias, nama tersebut diabaikan oleh resolusi daftar izin saat runtime.
 
 ## Referensi konfigurasi
 
-- `enabled`: mengaktifkan atau menonaktifkan channel.
-- `name`: label opsional untuk akun.
-- `defaultAccount`: ID akun yang diprioritaskan ketika beberapa akun Matrix dikonfigurasi.
+Bidang bergaya daftar izin (`groupAllowFrom`, `dm.allowFrom`, `groups.<room>.users`) menerima ID pengguna Matrix lengkap (paling aman). Kecocokan direktori persis diresolusikan saat startup dan setiap kali daftar izin berubah ketika monitor sedang berjalan; entri yang tidak dapat diresolusikan diabaikan saat runtime. Daftar izin ruang lebih mengutamakan ID ruang atau alias karena alasan yang sama.
+
+### Akun dan koneksi
+
+- `enabled`: aktifkan atau nonaktifkan kanal.
+- `name`: label tampilan opsional untuk akun.
+- `defaultAccount`: ID akun pilihan saat beberapa akun Matrix dikonfigurasi.
+- `accounts`: override bernama per akun. Nilai tingkat atas `channels.matrix` diwarisi sebagai default.
 - `homeserver`: URL homeserver, misalnya `https://matrix.example.org`.
-- `network.dangerouslyAllowPrivateNetwork`: izinkan akun Matrix ini terhubung ke homeserver privat/internal. Aktifkan ini ketika homeserver di-resolve ke `localhost`, IP LAN/Tailscale, atau host internal seperti `matrix-synapse`.
-- `proxy`: URL proxy HTTP(S) opsional untuk lalu lintas Matrix. Akun bernama dapat menimpa default level atas dengan `proxy` mereka sendiri.
-- `userId`: ID pengguna Matrix lengkap, misalnya `@bot:example.org`.
-- `accessToken`: access token untuk autentikasi berbasis token. Nilai plaintext dan nilai SecretRef didukung untuk `channels.matrix.accessToken` dan `channels.matrix.accounts.<id>.accessToken` di seluruh provider env/file/exec. Lihat [Secrets Management](/id/gateway/secrets).
-- `password`: password untuk login berbasis password. Nilai plaintext dan nilai SecretRef didukung.
+- `network.dangerouslyAllowPrivateNetwork`: izinkan akun ini terhubung ke `localhost`, IP LAN/Tailscale, atau hostname internal.
+- `proxy`: URL proxy HTTP(S) opsional untuk lalu lintas Matrix. Override per akun didukung.
+- `userId`: ID pengguna Matrix lengkap (`@bot:example.org`).
+- `accessToken`: token akses untuk autentikasi berbasis token. Nilai teks biasa dan SecretRef didukung di penyedia env/file/exec ([Manajemen Rahasia](/id/gateway/secrets)).
+- `password`: kata sandi untuk login berbasis kata sandi. Nilai teks biasa dan SecretRef didukung.
 - `deviceId`: ID perangkat Matrix eksplisit.
-- `deviceName`: nama tampilan perangkat untuk login password.
-- `avatarUrl`: URL avatar diri yang disimpan untuk sinkronisasi profil dan pembaruan `profile set`.
-- `initialSyncLimit`: jumlah maksimum event yang diambil selama sinkronisasi startup.
-- `encryption`: mengaktifkan E2EE.
-- `allowlistOnly`: ketika `true`, meningkatkan kebijakan room `open` menjadi `allowlist`, dan memaksa semua kebijakan DM aktif kecuali `disabled` (termasuk `pairing` dan `open`) menjadi `allowlist`. Tidak memengaruhi kebijakan `disabled`.
-- `allowBots`: mengizinkan pesan dari akun Matrix OpenClaw lain yang telah dikonfigurasi (`true` atau `"mentions"`).
-- `groupPolicy`: `open`, `allowlist`, atau `disabled`.
-- `contextVisibility`: mode visibilitas konteks room tambahan (`all`, `allowlist`, `allowlist_quote`).
-- `groupAllowFrom`: allowlist ID pengguna untuk lalu lintas room. ID pengguna Matrix lengkap paling aman; kecocokan direktori eksak di-resolve saat startup dan ketika allowlist berubah saat monitor berjalan. Nama yang tidak ter-resolve diabaikan.
-- `historyLimit`: jumlah maksimum pesan room yang disertakan sebagai konteks riwayat grup. Fallback ke `messages.groupChat.historyLimit`; jika keduanya tidak diatur, default efektifnya adalah `0`. Atur `0` untuk menonaktifkan.
-- `replyToMode`: `off`, `first`, `all`, atau `batched`.
-- `markdown`: konfigurasi rendering Markdown opsional untuk teks Matrix keluar.
-- `streaming`: `off` (default), `"partial"`, `"quiet"`, `true`, atau `false`. `"partial"` dan `true` mengaktifkan pembaruan draf pratinjau-terlebih-dahulu dengan pesan teks Matrix normal. `"quiet"` menggunakan pemberitahuan pratinjau tanpa notifikasi untuk penyiapan aturan push self-hosted. `false` setara dengan `"off"`.
-- `blockStreaming`: `true` mengaktifkan pesan progres terpisah untuk blok asisten yang telah selesai saat streaming pratinjau draf aktif.
-- `threadReplies`: `off`, `inbound`, atau `always`.
-- `threadBindings`: override per-channel untuk perutean dan siklus hidup sesi terikat thread.
-- `startupVerification`: mode permintaan verifikasi mandiri otomatis saat startup (`if-unverified`, `off`).
-- `startupVerificationCooldownHours`: cooldown sebelum mencoba ulang permintaan verifikasi startup otomatis.
-- `textChunkLimit`: ukuran potongan pesan keluar dalam karakter (berlaku saat `chunkMode` adalah `length`).
-- `chunkMode`: `length` membagi pesan berdasarkan jumlah karakter; `newline` membagi pada batas baris.
-- `responsePrefix`: string opsional yang ditambahkan di depan semua balasan keluar untuk channel ini.
-- `ackReaction`: override reaksi ack opsional untuk channel/akun ini.
-- `ackReactionScope`: override cakupan reaksi ack opsional (`group-mentions`, `group-all`, `direct`, `all`, `none`, `off`).
-- `reactionNotifications`: mode notifikasi reaksi masuk (`own`, `off`).
-- `mediaMaxMb`: batas ukuran media dalam MB untuk pengiriman keluar dan pemrosesan media masuk.
-- `autoJoin`: kebijakan auto-join undangan (`always`, `allowlist`, `off`). Default: `off`. Berlaku untuk semua undangan Matrix, termasuk undangan gaya DM.
-- `autoJoinAllowlist`: room/alias yang diizinkan ketika `autoJoin` adalah `allowlist`. Entri alias di-resolve menjadi ID room selama penanganan undangan; OpenClaw tidak mempercayai status alias yang diklaim oleh room yang mengundang.
-- `dm`: blok kebijakan DM (`enabled`, `policy`, `allowFrom`, `sessionScope`, `threadReplies`).
-- `dm.policy`: mengontrol akses DM setelah OpenClaw bergabung ke room dan mengklasifikasikannya sebagai DM. Ini tidak mengubah apakah undangan akan di-auto-join.
-- `dm.allowFrom`: allowlist ID pengguna untuk lalu lintas DM. ID pengguna Matrix lengkap paling aman; kecocokan direktori eksak di-resolve saat startup dan ketika allowlist berubah saat monitor berjalan. Nama yang tidak ter-resolve diabaikan.
-- `dm.sessionScope`: `per-user` (default) atau `per-room`. Gunakan `per-room` saat Anda ingin setiap room DM Matrix mempertahankan konteks terpisah meskipun peer-nya sama.
-- `dm.threadReplies`: override kebijakan thread khusus DM (`off`, `inbound`, `always`). Ini menimpa pengaturan `threadReplies` level atas untuk penempatan balasan maupun isolasi sesi di DM.
-- `execApprovals`: pengiriman persetujuan exec native Matrix (`enabled`, `approvers`, `target`, `agentFilter`, `sessionFilter`).
-- `execApprovals.approvers`: ID pengguna Matrix yang diizinkan menyetujui permintaan exec. Opsional ketika `dm.allowFrom` sudah mengidentifikasi para pemberi persetujuan.
-- `execApprovals.target`: `dm | channel | both` (default: `dm`).
-- `accounts`: override bernama per akun. Nilai `channels.matrix` level atas bertindak sebagai default untuk entri ini.
-- `groups`: map kebijakan per-room. Sebaiknya gunakan ID room atau alias; nama room yang tidak ter-resolve diabaikan saat runtime. Identitas sesi/grup menggunakan ID room stabil setelah resolusi.
-- `groups.<room>.account`: membatasi satu entri room turunan ke akun Matrix tertentu dalam pengaturan multi-akun.
-- `groups.<room>.allowBots`: override tingkat room untuk pengirim bot yang telah dikonfigurasi (`true` atau `"mentions"`).
-- `groups.<room>.users`: allowlist pengirim per-room.
-- `groups.<room>.tools`: override allow/deny tool per-room.
-- `groups.<room>.autoReply`: override mention-gating tingkat room. `true` menonaktifkan persyaratan mention untuk room tersebut; `false` mengaktifkannya kembali secara paksa.
-- `groups.<room>.skills`: filter skill tingkat room opsional.
-- `groups.<room>.systemPrompt`: cuplikan system prompt tingkat room opsional.
-- `rooms`: alias lama untuk `groups`.
-- `actions`: gating tool per aksi (`messages`, `reactions`, `pins`, `profile`, `memberInfo`, `channelInfo`, `verification`).
+- `deviceName`: nama tampilan perangkat yang digunakan saat login kata sandi.
+- `avatarUrl`: URL avatar diri tersimpan untuk sinkronisasi profil dan pembaruan `profile set`.
+- `initialSyncLimit`: jumlah maksimum peristiwa yang diambil selama sinkronisasi startup.
+
+### Enkripsi
+
+- `encryption`: aktifkan E2EE. Default: `false`.
+- `startupVerification`: `"if-unverified"` (default saat E2EE aktif) atau `"off"`. Meminta verifikasi diri secara otomatis saat startup jika perangkat ini belum diverifikasi.
+- `startupVerificationCooldownHours`: cooldown sebelum permintaan startup otomatis berikutnya. Default: `24`.
+
+### Akses dan kebijakan
+
+- `groupPolicy`: `"open"`, `"allowlist"`, atau `"disabled"`. Default: `"allowlist"`.
+- `groupAllowFrom`: daftar izin ID pengguna untuk lalu lintas room.
+- `dm.enabled`: saat `false`, abaikan semua DM. Default: `true`.
+- `dm.policy`: `"pairing"` (default), `"allowlist"`, `"open"`, atau `"disabled"`. Berlaku setelah bot bergabung dan mengklasifikasikan room sebagai DM; ini tidak memengaruhi penanganan undangan.
+- `dm.allowFrom`: daftar izin ID pengguna untuk lalu lintas DM.
+- `dm.sessionScope`: `"per-user"` (default) atau `"per-room"`.
+- `dm.threadReplies`: override khusus DM untuk penguliran balasan (`"off"`, `"inbound"`, `"always"`).
+- `allowBots`: terima pesan dari akun bot Matrix lain yang dikonfigurasi (`true` atau `"mentions"`).
+- `allowlistOnly`: saat `true`, memaksa semua kebijakan DM aktif (kecuali `"disabled"`) dan kebijakan grup `"open"` menjadi `"allowlist"`. Tidak mengubah kebijakan `"disabled"`.
+- `autoJoin`: `"always"`, `"allowlist"`, atau `"off"`. Default: `"off"`. Berlaku untuk setiap undangan Matrix, termasuk undangan bergaya DM.
+- `autoJoinAllowlist`: room/alias yang diizinkan saat `autoJoin` adalah `"allowlist"`. Entri alias diselesaikan terhadap homeserver, bukan terhadap state yang diklaim oleh room yang mengundang.
+- `contextVisibility`: visibilitas konteks tambahan (`"all"` default, `"allowlist"`, `"allowlist_quote"`).
+
+### Perilaku balasan
+
+- `replyToMode`: `"off"`, `"first"`, `"all"`, atau `"batched"`.
+- `threadReplies`: `"off"`, `"inbound"`, atau `"always"`.
+- `threadBindings`: override per kanal untuk perutean dan siklus hidup sesi yang terikat thread.
+- `streaming`: `"off"` (default), `"partial"`, `"quiet"`, atau bentuk objek `{ mode, preview: { toolProgress } }`. `true` ↔ `"partial"`, `false` ↔ `"off"`.
+- `blockStreaming`: saat `true`, blok asisten yang selesai disimpan sebagai pesan progres terpisah.
+- `markdown`: konfigurasi rendering Markdown opsional untuk teks keluar.
+- `responsePrefix`: string opsional yang ditambahkan di awal balasan keluar.
+- `textChunkLimit`: ukuran potongan keluar dalam karakter saat `chunkMode: "length"`. Default: `4000`.
+- `chunkMode`: `"length"` (default, membagi berdasarkan jumlah karakter) atau `"newline"` (membagi pada batas baris).
+- `historyLimit`: jumlah pesan room terbaru yang disertakan sebagai `InboundHistory` saat pesan room memicu agent. Fallback ke `messages.groupChat.historyLimit`; default efektif `0` (dinonaktifkan).
+- `mediaMaxMb`: batas ukuran media dalam MB untuk pengiriman keluar dan pemrosesan masuk.
+
+### Pengaturan reaksi
+
+- `ackReaction`: override reaksi ack untuk kanal/akun ini.
+- `ackReactionScope`: override cakupan (`"group-mentions"` default, `"group-all"`, `"direct"`, `"all"`, `"none"`, `"off"`).
+- `reactionNotifications`: mode notifikasi reaksi masuk (`"own"` default, `"off"`).
+
+### Peralatan dan override per room
+
+- `actions`: gating alat per aksi (`messages`, `reactions`, `pins`, `profile`, `memberInfo`, `channelInfo`, `verification`).
+- `groups`: peta kebijakan per room. Identitas sesi menggunakan ID room stabil setelah resolusi. (`rooms` adalah alias lama.)
+  - `groups.<room>.account`: batasi satu entri room yang diwarisi ke akun tertentu.
+  - `groups.<room>.allowBots`: override per room untuk pengaturan tingkat kanal (`true` atau `"mentions"`).
+  - `groups.<room>.users`: daftar izin pengirim per room.
+  - `groups.<room>.tools`: override izinkan/tolak alat per room.
+  - `groups.<room>.autoReply`: override gating mention per room. `true` menonaktifkan persyaratan mention untuk room tersebut; `false` memaksanya aktif kembali.
+  - `groups.<room>.skills`: filter Skills per room.
+  - `groups.<room>.systemPrompt`: cuplikan prompt sistem per room.
+
+### Pengaturan persetujuan exec
+
+- `execApprovals.enabled`: kirim persetujuan exec melalui prompt native Matrix.
+- `execApprovals.approvers`: ID pengguna Matrix yang diizinkan menyetujui. Fallback ke `dm.allowFrom`.
+- `execApprovals.target`: `"dm"` (default), `"channel"`, atau `"both"`.
+- `execApprovals.agentFilter` / `execApprovals.sessionFilter`: daftar izin agent/sesi opsional untuk pengiriman.
 
 ## Terkait
 
-- [Ikhtisar Channels](/id/channels) — semua channel yang didukung
+- [Ikhtisar Kanal](/id/channels) — semua kanal yang didukung
 - [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Groups](/id/channels/groups) — perilaku chat grup dan mention-gating
-- [Channel Routing](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Security](/id/gateway/security) — model akses dan hardening
+- [Grup](/id/channels/groups) — perilaku chat grup dan gating mention
+- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan hardening

@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Anda ingin mencantumkan sesi tersimpan dan melihat aktivitas terbaru
+    - Anda ingin menampilkan daftar sesi tersimpan dan melihat aktivitas terbaru
 summary: Referensi CLI untuk `openclaw sessions` (daftar sesi tersimpan + penggunaan)
 title: Sesi
 x-i18n:
-    generated_at: "2026-04-24T09:02:50Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d9fdc5d4cc968784e6e937a1000e43650345c27765208d46611e1fe85ee9293
+    source_hash: 9fea2014f538b00a27fa0078391a421843052333c5bcfc8100fced515eed0004
     source_path: cli/sessions.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw sessions`
@@ -27,17 +27,28 @@ openclaw sessions --json
 
 Pemilihan cakupan:
 
-- default: store agen default yang dikonfigurasi
+- bawaan: penyimpanan agen bawaan yang dikonfigurasi
 - `--verbose`: logging verbose
-- `--agent <id>`: satu store agen yang dikonfigurasi
-- `--all-agents`: agregasikan semua store agen yang dikonfigurasi
-- `--store <path>`: path store eksplisit (tidak dapat digabungkan dengan `--agent` atau `--all-agents`)
+- `--agent <id>`: satu penyimpanan agen yang dikonfigurasi
+- `--all-agents`: gabungkan semua penyimpanan agen yang dikonfigurasi
+- `--store <path>`: path penyimpanan eksplisit (tidak dapat digabungkan dengan `--agent` atau `--all-agents`)
 
-`openclaw sessions --all-agents` membaca store agen yang dikonfigurasi. Penemuan sesi Gateway dan ACP
-lebih luas: keduanya juga mencakup store khusus disk yang ditemukan di bawah
-root `agents/` default atau root `session.store` bertemplate. Store yang
-ditemukan ini harus me-resolve ke file `sessions.json` reguler di dalam
-root agen; symlink dan path di luar root akan dilewati.
+Ekspor bundel trajektori untuk sesi yang tersimpan:
+
+```bash
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
+openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
+```
+
+Ini adalah path perintah yang digunakan oleh perintah slash `/export-trajectory` setelah
+pemilik menyetujui permintaan eksekusi. Direktori output selalu di-resolve
+di dalam `.openclaw/trajectory-exports/` di bawah ruang kerja yang dipilih.
+
+`openclaw sessions --all-agents` membaca penyimpanan agen yang dikonfigurasi. Penemuan sesi Gateway dan ACP
+lebih luas: keduanya juga menyertakan penyimpanan khusus disk yang ditemukan di bawah
+root `agents/` bawaan atau root `session.store` bertemplat. Penyimpanan
+yang ditemukan tersebut harus di-resolve ke file `sessions.json` reguler di dalam
+root agen; symlink dan path di luar root dilewati.
 
 Contoh JSON:
 
@@ -60,9 +71,9 @@ Contoh JSON:
 }
 ```
 
-## Pemeliharaan cleanup
+## Pemeliharaan pembersihan
 
-Jalankan pemeliharaan sekarang (alih-alih menunggu siklus penulisan berikutnya):
+Jalankan pemeliharaan sekarang (alih-alih menunggu siklus tulis berikutnya):
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -73,19 +84,19 @@ openclaw sessions cleanup --enforce --active-key "agent:main:telegram:direct:123
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` menggunakan pengaturan `session.maintenance` dari konfigurasi:
+`openclaw sessions cleanup` menggunakan pengaturan `session.maintenance` dari config:
 
-- Catatan cakupan: `openclaw sessions cleanup` hanya memelihara store/transkrip sesi. Perintah ini tidak memangkas log eksekusi Cron (`cron/runs/<jobId>.jsonl`), yang dikelola oleh `cron.runLog.maxBytes` dan `cron.runLog.keepLines` dalam [Konfigurasi Cron](/id/automation/cron-jobs#configuration) dan dijelaskan di [Pemeliharaan Cron](/id/automation/cron-jobs#maintenance).
+- Catatan cakupan: `openclaw sessions cleanup` memelihara penyimpanan sesi, transkrip, dan sidecar trajektori. Perintah ini tidak memangkas log run cron (`cron/runs/<jobId>.jsonl`), yang dikelola oleh `cron.runLog.maxBytes` dan `cron.runLog.keepLines` dalam [Konfigurasi Cron](/id/automation/cron-jobs#configuration) dan dijelaskan dalam [Pemeliharaan Cron](/id/automation/cron-jobs#maintenance).
 
 - `--dry-run`: pratinjau berapa banyak entri yang akan dipangkas/dibatasi tanpa menulis.
-  - Dalam mode teks, dry-run mencetak tabel aksi per sesi (`Action`, `Key`, `Age`, `Model`, `Flags`) sehingga Anda dapat melihat mana yang akan dipertahankan vs dihapus.
-- `--enforce`: terapkan pemeliharaan bahkan saat `session.maintenance.mode` bernilai `warn`.
-- `--fix-missing`: hapus entri yang file transkripnya hilang, meskipun biasanya belum melewati batas usia/jumlah.
-- `--active-key <key>`: lindungi active key tertentu dari pengusiran karena anggaran disk.
-- `--agent <id>`: jalankan cleanup untuk satu store agen yang dikonfigurasi.
-- `--all-agents`: jalankan cleanup untuk semua store agen yang dikonfigurasi.
+  - Dalam mode teks, dry-run mencetak tabel tindakan per sesi (`Action`, `Key`, `Age`, `Model`, `Flags`) sehingga Anda dapat melihat apa yang akan dipertahankan vs dihapus.
+- `--enforce`: terapkan pemeliharaan meskipun `session.maintenance.mode` adalah `warn`.
+- `--fix-missing`: hapus entri yang file transkripnya hilang, meskipun entri tersebut biasanya belum akan dikeluarkan berdasarkan umur/jumlah.
+- `--active-key <key>`: lindungi key aktif tertentu dari eviction anggaran disk.
+- `--agent <id>`: jalankan cleanup untuk satu penyimpanan agen yang dikonfigurasi.
+- `--all-agents`: jalankan cleanup untuk semua penyimpanan agen yang dikonfigurasi.
 - `--store <path>`: jalankan terhadap file `sessions.json` tertentu.
-- `--json`: cetak ringkasan JSON. Dengan `--all-agents`, output mencakup satu ringkasan per store.
+- `--json`: cetak ringkasan JSON. Dengan `--all-agents`, output menyertakan satu ringkasan per penyimpanan.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -117,7 +128,7 @@ openclaw sessions cleanup --json
 
 Terkait:
 
-- Konfigurasi sesi: [Referensi konfigurasi](/id/gateway/config-agents#session)
+- Config sesi: [Referensi konfigurasi](/id/gateway/config-agents#session)
 
 ## Terkait
 

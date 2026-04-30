@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Anda menginginkan beberapa agen terisolasi (workspace + routing + auth)
+    - Anda menginginkan beberapa agen terisolasi (ruang kerja + perutean + autentikasi)
 summary: Referensi CLI untuk `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
 title: Agen
 x-i18n:
-    generated_at: "2026-04-25T13:42:51Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:37:53Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fcd0698f0821f9444e84cd82fe78ee46071447fb4c3cada6d1a98b5130147691
+    source_hash: 46742a890a57cb1035a053f14fe574044e4a3d7dcc04812cd11c633bd808819b
     source_path: cli/agents.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw agents`
 
-Kelola agen terisolasi (workspace + auth + routing).
+Kelola agen terisolasi (ruang kerja + autentikasi + perutean).
 
 Terkait:
 
-- Routing multi-agen: [Multi-Agent Routing](/id/concepts/multi-agent)
-- Workspace agen: [Agent workspace](/id/concepts/agent-workspace)
-- Konfigurasi visibilitas Skills: [Skills config](/id/tools/skills-config)
+- [Perutean multi-agen](/id/concepts/multi-agent)
+- [Ruang kerja agen](/id/concepts/agent-workspace)
+- [Konfigurasi Skills](/id/tools/skills-config): konfigurasi visibilitas skill.
 
 ## Contoh
 
@@ -37,16 +37,13 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Binding routing
+## Binding perutean
 
-Gunakan binding routing untuk menetapkan trafik kanal masuk ke agen tertentu.
+Gunakan binding perutean untuk menetapkan trafik kanal masuk ke agen tertentu.
 
-Jika Anda juga menginginkan Skills yang terlihat berbeda per agen, konfigurasikan
-`agents.defaults.skills` dan `agents.list[].skills` di `openclaw.json`. Lihat
-[Skills config](/id/tools/skills-config) dan
-[Configuration Reference](/id/gateway/config-agents#agents-defaults-skills).
+Jika Anda juga menginginkan skill yang terlihat berbeda per agen, konfigurasikan `agents.defaults.skills` dan `agents.list[].skills` di `openclaw.json`. Lihat [Konfigurasi Skills](/id/tools/skills-config) dan [Referensi konfigurasi](/id/gateway/config-agents#agents-defaults-skills).
 
-Daftar binding:
+Cantumkan binding:
 
 ```bash
 openclaw agents bindings
@@ -60,7 +57,7 @@ Tambahkan binding:
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-Jika Anda menghilangkan `accountId` (`--bind <channel>`), OpenClaw akan me-resolve-nya dari default kanal dan hook penyiapan Plugin saat tersedia.
+Jika Anda menghilangkan `accountId` (`--bind <channel>`), OpenClaw menyelesaikannya dari default kanal dan hook penyiapan Plugin saat tersedia.
 
 Jika Anda menghilangkan `--agent` untuk `bind` atau `unbind`, OpenClaw menargetkan agen default saat ini.
 
@@ -68,19 +65,19 @@ Jika Anda menghilangkan `--agent` untuk `bind` atau `unbind`, OpenClaw menargetk
 
 - Binding tanpa `accountId` hanya cocok dengan akun default kanal.
 - `accountId: "*"` adalah fallback seluruh kanal (semua akun) dan kurang spesifik dibanding binding akun eksplisit.
-- Jika agen yang sama sudah memiliki binding kanal yang cocok tanpa `accountId`, lalu Anda kemudian melakukan bind dengan `accountId` yang eksplisit atau yang sudah di-resolve, OpenClaw akan meningkatkan binding yang ada itu di tempat alih-alih menambahkan duplikat.
+- Jika agen yang sama sudah memiliki binding kanal yang cocok tanpa `accountId`, dan Anda kemudian melakukan binding dengan `accountId` eksplisit atau terselesaikan, OpenClaw meningkatkan binding yang ada tersebut di tempat alih-alih menambahkan duplikat.
 
 Contoh:
 
 ```bash
-# binding awal hanya-kanal
+# initial channel-only binding
 openclaw agents bind --agent work --bind telegram
 
-# kemudian tingkatkan menjadi binding dengan cakupan akun
+# later upgrade to account-scoped binding
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-Setelah peningkatan, routing untuk binding tersebut dibatasi ke `telegram:ops`. Jika Anda juga menginginkan routing akun default, tambahkan secara eksplisit (misalnya `--bind telegram:default`).
+Setelah peningkatan, perutean untuk binding tersebut dicakup ke `telegram:ops`. Jika Anda juga menginginkan perutean akun default, tambahkan secara eksplisit (misalnya `--bind telegram:default`).
 
 Hapus binding:
 
@@ -89,9 +86,9 @@ openclaw agents unbind --agent work --bind telegram:ops
 openclaw agents unbind --agent work --all
 ```
 
-`unbind` menerima `--all` atau satu atau lebih nilai `--bind`, bukan keduanya.
+`unbind` menerima `--all` atau satu atau beberapa nilai `--bind`, bukan keduanya.
 
-## Surface perintah
+## Permukaan perintah
 
 ### `agents`
 
@@ -102,7 +99,7 @@ Menjalankan `openclaw agents` tanpa subperintah setara dengan `openclaw agents l
 Opsi:
 
 - `--json`
-- `--bindings`: sertakan aturan routing lengkap, bukan hanya jumlah/ringkasan per agen
+- `--bindings`: sertakan aturan perutean lengkap, bukan hanya jumlah/ringkasan per agen
 
 ### `agents add [name]`
 
@@ -117,9 +114,14 @@ Opsi:
 
 Catatan:
 
-- Meneruskan flag add eksplisit apa pun mengalihkan perintah ke jalur non-interaktif.
+- Meneruskan flag tambah eksplisit apa pun mengalihkan perintah ke jalur non-interaktif.
 - Mode non-interaktif memerlukan nama agen dan `--workspace`.
 - `main` dicadangkan dan tidak dapat digunakan sebagai id agen baru.
+- Dalam mode interaktif, penyemaian autentikasi hanya menyalin profil statis portabel
+  (`api_key` dan `token` statis secara default). Profil token penyegaran OAuth tetap
+  tersedia hanya melalui pewarisan baca-terusan dari penyimpanan agen `main` yang sebenarnya.
+  Jika agen default yang dikonfigurasi bukan `main`, masuk secara terpisah untuk profil
+  OAuth pada agen baru.
 
 ### `agents bindings`
 
@@ -156,28 +158,28 @@ Catatan:
 
 - `main` tidak dapat dihapus.
 - Tanpa `--force`, konfirmasi interaktif diperlukan.
-- Direktori workspace, status agen, dan transkrip sesi dipindahkan ke Trash, bukan dihapus permanen.
-- Jika workspace agen lain adalah path yang sama, berada di dalam workspace ini, atau berisi workspace ini,
-  workspace akan dipertahankan dan `--json` melaporkan `workspaceRetained`,
+- Direktori ruang kerja, status agen, dan transkrip sesi dipindahkan ke Sampah, bukan dihapus permanen.
+- Jika ruang kerja agen lain adalah jalur yang sama, berada di dalam ruang kerja ini, atau berisi ruang kerja ini,
+  ruang kerja dipertahankan dan `--json` melaporkan `workspaceRetained`,
   `workspaceRetainedReason`, dan `workspaceSharedWith`.
 
 ## File identitas
 
-Setiap workspace agen dapat menyertakan `IDENTITY.md` di root workspace:
+Setiap ruang kerja agen dapat menyertakan `IDENTITY.md` di root ruang kerja:
 
-- Contoh path: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` membaca dari root workspace (atau `--identity-file` yang eksplisit)
+- Contoh jalur: `~/.openclaw/workspace/IDENTITY.md`
+- `set-identity --from-identity` membaca dari root ruang kerja (atau `--identity-file` eksplisit)
 
-Path avatar di-resolve relatif terhadap root workspace.
+Jalur avatar diselesaikan relatif terhadap root ruang kerja.
 
-## Set identitas
+## Tetapkan identitas
 
 `set-identity` menulis field ke `agents.list[].identity`:
 
 - `name`
 - `theme`
 - `emoji`
-- `avatar` (path relatif-workspace, URL http(s), atau data URI)
+- `avatar` (jalur relatif ruang kerja, URL http(s), atau URI data)
 
 Opsi:
 
@@ -194,7 +196,7 @@ Opsi:
 Catatan:
 
 - `--agent` atau `--workspace` dapat digunakan untuk memilih agen target.
-- Jika Anda bergantung pada `--workspace` dan beberapa agen berbagi workspace tersebut, perintah gagal dan meminta Anda meneruskan `--agent`.
+- Jika Anda mengandalkan `--workspace` dan beberapa agen berbagi ruang kerja tersebut, perintah gagal dan meminta Anda meneruskan `--agent`.
 - Saat tidak ada field identitas eksplisit yang diberikan, perintah membaca data identitas dari `IDENTITY.md`.
 
 Muat dari `IDENTITY.md`:
@@ -203,7 +205,7 @@ Muat dari `IDENTITY.md`:
 openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 ```
 
-Override field secara eksplisit:
+Timpa field secara eksplisit:
 
 ```bash
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
@@ -219,7 +221,7 @@ Contoh konfigurasi:
         id: "main",
         identity: {
           name: "OpenClaw",
-          theme: "lobster luar angkasa",
+          theme: "space lobster",
           emoji: "🦞",
           avatar: "avatars/openclaw.png",
         },
@@ -231,6 +233,6 @@ Contoh konfigurasi:
 
 ## Terkait
 
-- [CLI reference](/id/cli)
-- [Multi-agent routing](/id/concepts/multi-agent)
-- [Agent workspace](/id/concepts/agent-workspace)
+- [Referensi CLI](/id/cli)
+- [Perutean multi-agen](/id/concepts/multi-agent)
+- [Ruang kerja agen](/id/concepts/agent-workspace)

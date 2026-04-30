@@ -1,76 +1,76 @@
 ---
 read_when:
-    - Mengimplementasikan atau mengubah penemuan/periklanan Bonjour
+    - Mengimplementasikan atau mengubah penemuan/pengiklanan Bonjour
     - Menyesuaikan mode koneksi jarak jauh (langsung vs SSH)
-    - Merancang penemuan Node + pairing untuk Node jarak jauh
-summary: Penemuan Node dan transport (Bonjour, Tailscale, SSH) untuk menemukan gateway
+    - Merancang penemuan Node + pemasangan untuk Node jarak jauh
+summary: Penemuan Node dan transport (Bonjour, Tailscale, SSH) untuk menemukan Gateway
 title: Penemuan dan transport
 x-i18n:
-    generated_at: "2026-04-26T11:28:37Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:48:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 615be0f501470772c257beb8e798c522c108b09081a603f44218404277fdf269
+    source_hash: c396e6e07808e2571c6d7f539922b94443adbf39339027e6e962596c6f13deaa
     source_path: gateway/discovery.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Penemuan & transport
 
-OpenClaw memiliki dua masalah berbeda yang sekilas tampak mirip:
+OpenClaw memiliki dua masalah berbeda yang sekilas terlihat mirip:
 
-1. **Kontrol jarak jauh operator**: aplikasi menu bar macOS mengendalikan gateway yang berjalan di tempat lain.
-2. **Node pairing**: iOS/Android (dan Node masa depan) menemukan gateway dan melakukan pairing dengan aman.
+1. **Kendali jarak jauh operator**: aplikasi bilah menu macOS yang mengendalikan Gateway yang berjalan di tempat lain.
+2. **Pemasangan Node**: iOS/Android (dan Node masa depan) menemukan Gateway dan memasangkan secara aman.
 
-Tujuan desainnya adalah menjaga semua penemuan/periklanan jaringan di **Node Gateway** (`openclaw gateway`) dan menjaga klien (aplikasi Mac, iOS) tetap sebagai konsumen.
+Tujuan desainnya adalah menjaga semua penemuan/iklan jaringan di **Node Gateway** (`openclaw gateway`) dan menjadikan klien (aplikasi Mac, iOS) sebagai konsumen.
 
 ## Istilah
 
-- **Gateway**: satu proses gateway berjalan lama yang memiliki state (sesi, pairing, registri Node) dan menjalankan kanal. Sebagian besar penyiapan menggunakan satu per host; penyiapan multi-gateway terisolasi dimungkinkan.
-- **Gateway WS (control plane)**: endpoint WebSocket pada `127.0.0.1:18789` secara default; dapat di-bind ke LAN/tailnet melalui `gateway.bind`.
-- **Direct WS transport**: endpoint Gateway WS yang menghadap LAN/tailnet (tanpa SSH).
-- **SSH transport (fallback)**: kontrol jarak jauh dengan meneruskan `127.0.0.1:18789` melalui SSH.
-- **Legacy TCP bridge (dihapus)**: transport Node lama (lihat
-  [Bridge protocol](/id/gateway/bridge-protocol)); tidak lagi diiklankan untuk
+- **Gateway**: satu proses Gateway yang berjalan lama yang memiliki status (sesi, pemasangan, registri Node) dan menjalankan kanal. Sebagian besar penyiapan menggunakan satu per host; penyiapan multi-Gateway terisolasi dimungkinkan.
+- **Gateway WS (control plane)**: endpoint WebSocket pada `127.0.0.1:18789` secara default; dapat diikat ke LAN/tailnet melalui `gateway.bind`.
+- **Transport WS langsung**: endpoint Gateway WS yang menghadap LAN/tailnet (tanpa SSH).
+- **Transport SSH (fallback)**: kendali jarak jauh dengan meneruskan `127.0.0.1:18789` melalui SSH.
+- **Bridge TCP lama (dihapus)**: transport Node lama (lihat
+  [Protokol bridge](/id/gateway/bridge-protocol)); tidak lagi diiklankan untuk
   penemuan dan tidak lagi menjadi bagian dari build saat ini.
 
 Detail protokol:
 
-- [Gateway protocol](/id/gateway/protocol)
-- [Bridge protocol (legacy)](/id/gateway/bridge-protocol)
+- [Protokol Gateway](/id/gateway/protocol)
+- [Protokol bridge (lama)](/id/gateway/bridge-protocol)
 
-## Mengapa kami mempertahankan "direct" dan SSH
+## Mengapa kami mempertahankan "langsung" dan SSH
 
-- **Direct WS** memberikan UX terbaik pada jaringan yang sama dan di dalam tailnet:
+- **WS langsung** adalah UX terbaik di jaringan yang sama dan di dalam tailnet:
   - penemuan otomatis di LAN melalui Bonjour
-  - token pairing + ACL dimiliki oleh gateway
-  - tidak memerlukan akses shell; surface protokol dapat tetap ketat dan dapat diaudit
+  - token pemasangan + ACL dimiliki oleh Gateway
+  - tidak memerlukan akses shell; permukaan protokol dapat tetap ketat dan dapat diaudit
 - **SSH** tetap menjadi fallback universal:
-  - bekerja di mana pun Anda memiliki akses SSH (bahkan lintas jaringan yang tidak terkait)
-  - tetap berfungsi saat ada masalah multicast/mDNS
+  - berfungsi di mana pun Anda memiliki akses SSH (bahkan lintas jaringan yang tidak terkait)
+  - tahan terhadap masalah multicast/mDNS
   - tidak memerlukan port masuk baru selain SSH
 
-## Input penemuan (bagaimana klien mengetahui di mana gateway berada)
+## Input penemuan (cara klien mengetahui lokasi Gateway)
 
 ### 1) Penemuan Bonjour / DNS-SD
 
-Bonjour multicast bersifat best-effort dan tidak melintasi jaringan. OpenClaw juga dapat menelusuri
-beacon gateway yang sama melalui domain DNS-SD area luas yang dikonfigurasi, sehingga penemuan dapat mencakup:
+Multicast Bonjour bersifat upaya terbaik dan tidak melintasi jaringan. OpenClaw juga dapat menelusuri
+beacon Gateway yang sama melalui domain DNS-SD area luas yang dikonfigurasi, sehingga penemuan dapat mencakup:
 
-- `local.` pada LAN yang sama
+- `local.` di LAN yang sama
 - domain DNS-SD unicast yang dikonfigurasi untuk penemuan lintas jaringan
 
 Arah target:
 
 - **Gateway** mengiklankan endpoint WS-nya melalui Bonjour.
-- Klien menelusuri dan menampilkan daftar “pilih gateway”, lalu menyimpan endpoint yang dipilih.
+- Klien menelusuri dan menampilkan daftar “pilih Gateway”, lalu menyimpan endpoint yang dipilih.
 
 Pemecahan masalah dan detail beacon: [Bonjour](/id/gateway/bonjour).
 
 #### Detail beacon layanan
 
 - Jenis layanan:
-  - `_openclaw-gw._tcp` (beacon transport gateway)
-- Kunci TXT (bukan rahasia):
+  - `_openclaw-gw._tcp` (beacon transport Gateway)
+- Kunci TXT (non-rahasia):
   - `role=gateway`
   - `transport=gateway`
   - `displayName=<friendly name>` (nama tampilan yang dikonfigurasi operator)
@@ -85,73 +85,73 @@ Pemecahan masalah dan detail beacon: [Bonjour](/id/gateway/bonjour).
 
 Catatan keamanan:
 
-- Rekaman TXT Bonjour/mDNS **tidak diautentikasi**. Klien harus memperlakukan nilai TXT hanya sebagai petunjuk UX.
-- Perutean (host/port) harus memilih **endpoint layanan yang di-resolve** (SRV + A/AAAA) daripada `lanHost`, `tailnetDns`, atau `gatewayPort` yang diberikan TXT.
-- TLS pinning tidak boleh mengizinkan `gatewayTlsSha256` yang diiklankan menimpa pin yang sebelumnya disimpan.
-- Node iOS/Android harus memerlukan konfirmasi eksplisit “percayai fingerprint ini” sebelum menyimpan pin pertama kali (verifikasi out-of-band) kapan pun rute yang dipilih aman/berbasis TLS.
+- Catatan TXT Bonjour/mDNS **tidak diautentikasi**. Klien harus memperlakukan nilai TXT hanya sebagai petunjuk UX.
+- Perutean (host/port) sebaiknya mengutamakan **endpoint layanan yang di-resolve** (SRV + A/AAAA) dibanding `lanHost`, `tailnetDns`, atau `gatewayPort` yang disediakan TXT.
+- Pinning TLS tidak boleh pernah mengizinkan `gatewayTlsSha256` yang diiklankan untuk menimpa pin yang telah disimpan sebelumnya.
+- Node iOS/Android harus memerlukan konfirmasi eksplisit “percayai fingerprint ini” sebelum menyimpan pin pertama kali (verifikasi di luar band) setiap kali rute yang dipilih berbasis aman/TLS.
 
-Nonaktifkan/override:
+Nonaktifkan/timpa:
 
-- `OPENCLAW_DISABLE_BONJOUR=1` menonaktifkan periklanan.
-- Docker Compose secara default menetapkan `OPENCLAW_DISABLE_BONJOUR=1` karena jaringan bridge
-  biasanya tidak membawa multicast mDNS secara andal; gunakan `0` hanya pada host, macvlan,
-  atau jaringan lain yang mendukung mDNS.
-- `gateway.bind` di `~/.openclaw/openclaw.json` mengontrol mode bind Gateway.
-- `OPENCLAW_SSH_PORT` mengoverride port SSH yang diiklankan saat `sshPort` dipancarkan.
-- `OPENCLAW_TAILNET_DNS` memublikasikan petunjuk `tailnetDns` (MagicDNS).
-- `OPENCLAW_CLI_PATH` mengoverride path CLI yang diiklankan.
+- `OPENCLAW_DISABLE_BONJOUR=1` menonaktifkan iklan.
+- Saat `OPENCLAW_DISABLE_BONJOUR` tidak disetel, Bonjour mengiklankan pada host normal
+  dan otomatis nonaktif di dalam container yang terdeteksi. Gunakan `0` hanya pada host, macvlan,
+  atau jaringan lain yang mendukung mDNS; gunakan `1` untuk memaksa nonaktif.
+- `gateway.bind` di `~/.openclaw/openclaw.json` mengendalikan mode bind Gateway.
+- `OPENCLAW_SSH_PORT` menimpa port SSH yang diiklankan saat `sshPort` dipancarkan.
+- `OPENCLAW_TAILNET_DNS` menerbitkan petunjuk `tailnetDns` (MagicDNS).
+- `OPENCLAW_CLI_PATH` menimpa jalur CLI yang diiklankan.
 
 ### 2) Tailnet (lintas jaringan)
 
-Untuk penyiapan gaya London/Vienna, Bonjour tidak akan membantu. Target “direct” yang direkomendasikan adalah:
+Untuk penyiapan gaya London/Vienna, Bonjour tidak akan membantu. Target “langsung” yang direkomendasikan adalah:
 
-- nama Tailscale MagicDNS (disarankan) atau IP tailnet yang stabil.
+- Nama MagicDNS Tailscale (lebih disukai) atau IP tailnet yang stabil.
 
-Jika gateway dapat mendeteksi bahwa ia berjalan di bawah Tailscale, gateway akan memublikasikan `tailnetDns` sebagai petunjuk opsional untuk klien (termasuk beacon area luas).
+Jika Gateway dapat mendeteksi bahwa ia berjalan di bawah Tailscale, ia menerbitkan `tailnetDns` sebagai petunjuk opsional untuk klien (termasuk beacon area luas).
 
-Aplikasi macOS kini lebih memilih nama MagicDNS daripada IP Tailscale mentah untuk penemuan gateway. Ini meningkatkan keandalan saat IP tailnet berubah (misalnya setelah restart Node atau penetapan ulang CGNAT), karena nama MagicDNS otomatis di-resolve ke IP saat ini.
+Aplikasi macOS sekarang lebih memilih nama MagicDNS daripada IP Tailscale mentah untuk penemuan Gateway. Ini meningkatkan keandalan saat IP tailnet berubah (misalnya setelah restart Node atau penetapan ulang CGNAT), karena nama MagicDNS otomatis di-resolve ke IP saat ini.
 
-Untuk pairing Node mobile, petunjuk penemuan tidak melonggarkan keamanan transport pada rute tailnet/publik:
+Untuk pemasangan Node seluler, petunjuk penemuan tidak melonggarkan keamanan transport pada rute tailnet/publik:
 
-- iOS/Android tetap memerlukan path koneksi pertama tailnet/publik yang aman (`wss://` atau Tailscale Serve/Funnel).
+- iOS/Android tetap memerlukan jalur koneksi pertama kali tailnet/publik yang aman (`wss://` atau Tailscale Serve/Funnel).
 - IP tailnet mentah yang ditemukan adalah petunjuk perutean, bukan izin untuk menggunakan `ws://` jarak jauh plaintext.
-- `ws://` direct-connect LAN privat tetap didukung.
-- Jika Anda menginginkan path Tailscale paling sederhana untuk Node mobile, gunakan Tailscale Serve agar penemuan dan kode penyiapan sama-sama di-resolve ke endpoint MagicDNS aman yang sama.
+- Koneksi langsung LAN privat `ws://` tetap didukung.
+- Jika Anda menginginkan jalur Tailscale paling sederhana untuk Node seluler, gunakan Tailscale Serve agar penemuan dan kode penyiapan sama-sama di-resolve ke endpoint MagicDNS aman yang sama.
 
 ### 3) Target manual / SSH
 
-Saat tidak ada rute direct (atau direct dinonaktifkan), klien selalu dapat terhubung melalui SSH dengan meneruskan port gateway loopback.
+Saat tidak ada rute langsung (atau langsung dinonaktifkan), klien selalu dapat terhubung melalui SSH dengan meneruskan port Gateway loopback.
 
-Lihat [Remote access](/id/gateway/remote).
+Lihat [Akses jarak jauh](/id/gateway/remote).
 
 ## Pemilihan transport (kebijakan klien)
 
 Perilaku klien yang direkomendasikan:
 
-1. Jika endpoint direct yang telah dipairing dikonfigurasi dan dapat dijangkau, gunakan itu.
-2. Jika tidak, bila penemuan menemukan gateway di `local.` atau domain area luas yang dikonfigurasi, tawarkan pilihan “Gunakan gateway ini” sekali ketuk dan simpan sebagai endpoint direct.
-3. Jika tidak, bila DNS/IP tailnet dikonfigurasi, coba direct.
-   Untuk Node mobile pada rute tailnet/publik, direct berarti endpoint yang aman, bukan `ws://` jarak jauh plaintext.
+1. Jika endpoint langsung yang sudah dipasangkan dikonfigurasi dan dapat dijangkau, gunakan itu.
+2. Jika tidak, jika penemuan menemukan Gateway di `local.` atau domain area luas yang dikonfigurasi, tawarkan pilihan sekali ketuk “Gunakan Gateway ini” dan simpan sebagai endpoint langsung.
+3. Jika tidak, jika DNS/IP tailnet dikonfigurasi, coba langsung.
+   Untuk Node seluler pada rute tailnet/publik, langsung berarti endpoint aman, bukan `ws://` jarak jauh plaintext.
 4. Jika tidak, fallback ke SSH.
 
-## Pairing + auth (direct transport)
+## Pemasangan + auth (transport langsung)
 
 Gateway adalah sumber kebenaran untuk penerimaan Node/klien.
 
-- Permintaan pairing dibuat/disetujui/ditolak di gateway (lihat [Gateway pairing](/id/gateway/pairing)).
+- Permintaan pemasangan dibuat/disetujui/ditolak di Gateway (lihat [Pemasangan Gateway](/id/gateway/pairing)).
 - Gateway menegakkan:
   - auth (token / keypair)
-  - scope/ACL (gateway bukan proxy mentah ke setiap metode)
-  - rate limit
+  - cakupan/ACL (Gateway bukan proxy mentah ke setiap metode)
+  - batas laju
 
-## Tanggung jawab per komponen
+## Tanggung jawab menurut komponen
 
-- **Gateway**: mengiklankan beacon penemuan, memiliki keputusan pairing, dan menghosting endpoint WS.
-- **Aplikasi macOS**: membantu Anda memilih gateway, menampilkan prompt pairing, dan menggunakan SSH hanya sebagai fallback.
-- **Node iOS/Android**: menelusuri Bonjour sebagai kemudahan dan terhubung ke Gateway WS yang telah dipairing.
+- **Gateway**: mengiklankan beacon penemuan, memiliki keputusan pemasangan, dan menghosting endpoint WS.
+- **Aplikasi macOS**: membantu Anda memilih Gateway, menampilkan prompt pemasangan, dan menggunakan SSH hanya sebagai fallback.
+- **Node iOS/Android**: menelusuri Bonjour sebagai kemudahan dan terhubung ke Gateway WS yang sudah dipasangkan.
 
 ## Terkait
 
-- [Remote access](/id/gateway/remote)
+- [Akses jarak jauh](/id/gateway/remote)
 - [Tailscale](/id/gateway/tailscale)
-- [Bonjour discovery](/id/gateway/bonjour)
+- [Penemuan Bonjour](/id/gateway/bonjour)

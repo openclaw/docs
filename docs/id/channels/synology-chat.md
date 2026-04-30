@@ -1,28 +1,28 @@
 ---
 read_when:
     - Menyiapkan Synology Chat dengan OpenClaw
-    - Men-debug routing Webhook Synology Chat
+    - Men-debug perutean Webhook Synology Chat
 summary: Penyiapan Webhook Synology Chat dan konfigurasi OpenClaw
 title: Synology Chat
 x-i18n:
-    generated_at: "2026-04-24T08:59:22Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:36:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5135e9aa1fd86437a635378dfbbde321bbd2e5f6fef7a3cc740ea54ebf4b76d5
+    source_hash: c3d6d7a56bd15d29de38c6ae29ae496b491c2e75df5e0a0a15410b0fbdc55a00
     source_path: channels/synology-chat.md
-    workflow: 15
+    workflow: 16
 ---
 
-Status: Plugin bawaan channel pesan langsung yang menggunakan Webhook Synology Chat.
-Plugin ini menerima pesan masuk dari outgoing webhook Synology Chat dan mengirim balasan
-melalui incoming webhook Synology Chat.
+Status: channel pesan langsung plugin bawaan yang menggunakan Webhook Synology Chat.
+Plugin menerima pesan masuk dari Webhook keluar Synology Chat dan mengirim balasan
+melalui Webhook masuk Synology Chat.
 
 ## Plugin bawaan
 
-Synology Chat disertakan sebagai Plugin bawaan dalam rilis OpenClaw saat ini, jadi build
-terpaket normal tidak memerlukan instalasi terpisah.
+Synology Chat dikirimkan sebagai plugin bawaan dalam rilis OpenClaw saat ini, sehingga build
+paket normal tidak memerlukan instalasi terpisah.
 
-Jika Anda menggunakan build yang lebih lama atau instalasi kustom yang tidak menyertakan Synology Chat,
+Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Synology Chat,
 instal secara manual:
 
 Instal dari checkout lokal:
@@ -31,36 +31,36 @@ Instal dari checkout lokal:
 openclaw plugins install ./path/to/local/synology-chat-plugin
 ```
 
-Detail: [Plugins](/id/tools/plugin)
+Detail: [Plugin](/id/tools/plugin)
 
 ## Penyiapan cepat
 
-1. Pastikan Plugin Synology Chat tersedia.
-   - Rilis OpenClaw terpaket saat ini sudah menyertakannya secara bawaan.
+1. Pastikan plugin Synology Chat tersedia.
+   - Rilis OpenClaw paket saat ini sudah menyertakannya.
    - Instalasi lama/kustom dapat menambahkannya secara manual dari checkout sumber dengan perintah di atas.
-   - `openclaw onboard` kini menampilkan Synology Chat dalam daftar penyiapan channel yang sama seperti `openclaw channels add`.
+   - `openclaw onboard` sekarang menampilkan Synology Chat dalam daftar penyiapan channel yang sama dengan `openclaw channels add`.
    - Penyiapan non-interaktif: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
 2. Di integrasi Synology Chat:
-   - Buat incoming Webhook dan salin URL-nya.
-   - Buat outgoing Webhook dengan token rahasia Anda.
-3. Arahkan URL outgoing Webhook ke Gateway OpenClaw Anda:
+   - Buat Webhook masuk dan salin URL-nya.
+   - Buat Webhook keluar dengan token rahasia Anda.
+3. Arahkan URL Webhook keluar ke Gateway OpenClaw Anda:
    - `https://gateway-host/webhook/synology` secara default.
    - Atau `channels.synology-chat.webhookPath` kustom Anda.
 4. Selesaikan penyiapan di OpenClaw.
    - Terpandu: `openclaw onboard`
    - Langsung: `openclaw channels add --channel synology-chat --token <token> --url <incoming-webhook-url>`
-5. Restart Gateway dan kirim DM ke bot Synology Chat.
+5. Mulai ulang Gateway dan kirim DM ke bot Synology Chat.
 
 Detail autentikasi Webhook:
 
-- OpenClaw menerima token outgoing Webhook dari `body.token`, lalu
+- OpenClaw menerima token Webhook keluar dari `body.token`, lalu
   `?token=...`, lalu header.
 - Bentuk header yang diterima:
   - `x-synology-token`
   - `x-webhook-token`
   - `x-openclaw-token`
   - `Authorization: Bearer <token>`
-- Token kosong atau hilang akan gagal secara fail-closed.
+- Token kosong atau tidak ada akan gagal tertutup.
 
 Konfigurasi minimal:
 
@@ -83,7 +83,7 @@ Konfigurasi minimal:
 
 ## Variabel lingkungan
 
-Untuk akun default, Anda dapat menggunakan env var:
+Untuk akun default, Anda dapat menggunakan env vars:
 
 - `SYNOLOGY_CHAT_TOKEN`
 - `SYNOLOGY_CHAT_INCOMING_URL`
@@ -92,19 +92,19 @@ Untuk akun default, Anda dapat menggunakan env var:
 - `SYNOLOGY_RATE_LIMIT`
 - `OPENCLAW_BOT_NAME`
 
-Nilai konfigurasi menimpa env var.
+Nilai konfigurasi menimpa env vars.
 
-`SYNOLOGY_CHAT_INCOMING_URL` tidak dapat disetel dari `.env` workspace; lihat [file `.env` workspace](/id/gateway/security).
+`SYNOLOGY_CHAT_INCOMING_URL` tidak dapat diatur dari `.env` workspace; lihat [File `.env` workspace](/id/gateway/security).
 
 ## Kebijakan DM dan kontrol akses
 
 - `dmPolicy: "allowlist"` adalah default yang direkomendasikan.
-- `allowedUserIds` menerima daftar (atau string dipisahkan koma) ID pengguna Synology.
-- Dalam mode `allowlist`, daftar `allowedUserIds` yang kosong diperlakukan sebagai salah konfigurasi dan rute Webhook tidak akan dimulai (gunakan `dmPolicy: "open"` untuk mengizinkan semua).
-- `dmPolicy: "open"` mengizinkan pengirim mana pun.
+- `allowedUserIds` menerima daftar (atau string yang dipisahkan koma) ID pengguna Synology.
+- Dalam mode `allowlist`, daftar `allowedUserIds` kosong diperlakukan sebagai salah konfigurasi dan rute Webhook tidak akan dimulai (gunakan `dmPolicy: "open"` dengan `allowedUserIds: ["*"]` untuk mengizinkan semua).
+- `dmPolicy: "open"` mengizinkan DM publik hanya ketika `allowedUserIds` menyertakan `"*"`; dengan entri restriktif, hanya pengguna yang cocok yang dapat mengobrol.
 - `dmPolicy: "disabled"` memblokir DM.
-- Binding penerima balasan tetap menggunakan `user_id` numerik yang stabil secara default. `channels.synology-chat.dangerouslyAllowNameMatching: true` adalah mode kompatibilitas darurat yang mengaktifkan kembali pencocokan username/nickname yang dapat berubah untuk pengiriman balasan.
-- Persetujuan pairing berfungsi dengan:
+- Pengikatan penerima balasan tetap pada `user_id` numerik stabil secara default. `channels.synology-chat.dangerouslyAllowNameMatching: true` adalah mode kompatibilitas darurat yang mengaktifkan kembali pencarian nama pengguna/nama panggilan yang dapat berubah untuk pengiriman balasan.
+- Persetujuan pairing bekerja dengan:
   - `openclaw pairing list synology-chat`
   - `openclaw pairing approve synology-chat <CODE>`
 
@@ -119,20 +119,20 @@ openclaw message send --channel synology-chat --target 123456 --text "Hello from
 openclaw message send --channel synology-chat --target synology-chat:123456 --text "Hello again"
 ```
 
-Pengiriman media didukung melalui pengiriman file berbasis URL.
-URL file keluar harus menggunakan `http` atau `https`, dan target jaringan privat atau target lain yang diblokir akan ditolak sebelum OpenClaw meneruskan URL ke Webhook NAS.
+Pengiriman media didukung oleh pengiriman file berbasis URL.
+URL file keluar harus menggunakan `http` atau `https`, dan target jaringan privat atau yang diblokir akan ditolak sebelum OpenClaw meneruskan URL ke Webhook NAS.
 
 ## Multi-akun
 
 Beberapa akun Synology Chat didukung di bawah `channels.synology-chat.accounts`.
-Setiap akun dapat menimpa token, URL incoming, path Webhook, kebijakan DM, dan limit.
-Sesi pesan langsung diisolasi per akun dan pengguna, jadi `user_id` numerik yang sama
-pada dua akun Synology yang berbeda tidak berbagi status transkrip.
-Berikan setiap akun yang diaktifkan `webhookPath` yang berbeda. OpenClaw kini menolak path persis yang duplikat
-dan menolak memulai akun bernama yang hanya mewarisi path Webhook bersama dalam penyiapan multi-akun.
-Jika Anda memang perlu inheritance lama untuk akun bernama, setel
-`dangerouslyAllowInheritedWebhookPath: true` pada akun tersebut atau pada `channels.synology-chat`,
-tetapi path persis yang duplikat tetap ditolak secara fail-closed. Sebaiknya gunakan path eksplisit per akun.
+Setiap akun dapat menimpa token, URL masuk, jalur Webhook, kebijakan DM, dan batas.
+Sesi pesan langsung diisolasi per akun dan pengguna, sehingga `user_id` numerik yang sama
+pada dua akun Synology berbeda tidak berbagi status transkrip.
+Berikan `webhookPath` yang berbeda untuk setiap akun yang diaktifkan. OpenClaw sekarang menolak jalur persis yang duplikat
+dan menolak memulai akun bernama yang hanya mewarisi jalur Webhook bersama dalam penyiapan multi-akun.
+Jika Anda memang memerlukan pewarisan lama untuk akun bernama, atur
+`dangerouslyAllowInheritedWebhookPath: true` pada akun tersebut atau di `channels.synology-chat`,
+tetapi jalur persis yang duplikat tetap ditolak secara gagal tertutup. Lebih baik gunakan jalur eksplisit per akun.
 
 ```json5
 {
@@ -159,35 +159,35 @@ tetapi path persis yang duplikat tetap ditolak secara fail-closed. Sebaiknya gun
 
 ## Catatan keamanan
 
-- Jaga `token` tetap rahasia dan rotasi jika bocor.
-- Biarkan `allowInsecureSsl: false` kecuali Anda secara eksplisit mempercayai sertifikat NAS lokal self-signed.
-- Permintaan Webhook masuk diverifikasi dengan token dan dibatasi lajunya per pengirim.
-- Pemeriksaan token tidak valid menggunakan perbandingan rahasia waktu konstan dan gagal secara fail-closed.
-- Sebaiknya gunakan `dmPolicy: "allowlist"` untuk produksi.
-- Biarkan `dangerouslyAllowNameMatching` nonaktif kecuali Anda benar-benar memerlukan pengiriman balasan berbasis username lama.
-- Biarkan `dangerouslyAllowInheritedWebhookPath` nonaktif kecuali Anda secara eksplisit menerima risiko routing path bersama dalam penyiapan multi-akun.
+- Jaga kerahasiaan `token` dan rotasikan jika bocor.
+- Pertahankan `allowInsecureSsl: false` kecuali Anda secara eksplisit memercayai sertifikat NAS lokal yang ditandatangani sendiri.
+- Permintaan Webhook masuk diverifikasi tokennya dan dibatasi lajunya per pengirim.
+- Pemeriksaan token tidak valid menggunakan perbandingan rahasia waktu konstan dan gagal tertutup.
+- Lebih baik gunakan `dmPolicy: "allowlist"` untuk produksi.
+- Biarkan `dangerouslyAllowNameMatching` mati kecuali Anda secara eksplisit memerlukan pengiriman balasan lama berbasis nama pengguna.
+- Biarkan `dangerouslyAllowInheritedWebhookPath` mati kecuali Anda secara eksplisit menerima risiko routing jalur bersama dalam penyiapan multi-akun.
 
 ## Pemecahan masalah
 
 - `Missing required fields (token, user_id, text)`:
-  - payload outgoing Webhook tidak memiliki salah satu field yang diperlukan
-  - jika Synology mengirim token di header, pastikan Gateway/proxy mempertahankan header tersebut
+  - payload Webhook keluar tidak memiliki salah satu field yang wajib
+  - jika Synology mengirim token dalam header, pastikan Gateway/proxy mempertahankan header tersebut
 - `Invalid token`:
-  - rahasia outgoing Webhook tidak cocok dengan `channels.synology-chat.token`
-  - permintaan menuju akun/path Webhook yang salah
+  - rahasia Webhook keluar tidak cocok dengan `channels.synology-chat.token`
+  - permintaan mengenai akun/jalur Webhook yang salah
   - reverse proxy menghapus header token sebelum permintaan mencapai OpenClaw
 - `Rate limit exceeded`:
-  - terlalu banyak percobaan token tidak valid dari sumber yang sama dapat mengunci sementara sumber tersebut
-  - pengirim yang terautentikasi juga memiliki rate limit pesan terpisah per pengguna
-- `Allowlist is empty. Configure allowedUserIds or use dmPolicy=open.`:
+  - terlalu banyak percobaan token tidak valid dari sumber yang sama dapat mengunci sumber tersebut untuk sementara
+  - pengirim terautentikasi juga memiliki batas laju pesan per pengguna yang terpisah
+- `Allowlist is empty. Configure allowedUserIds or use dmPolicy=open with allowedUserIds=["*"].`:
   - `dmPolicy="allowlist"` diaktifkan tetapi tidak ada pengguna yang dikonfigurasi
 - `User not authorized`:
   - `user_id` numerik pengirim tidak ada di `allowedUserIds`
 
 ## Terkait
 
-- [Ikhtisar Channels](/id/channels) — semua channel yang didukung
+- [Ikhtisar Channel](/id/channels) — semua channel yang didukung
 - [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Groups](/id/channels/groups) — perilaku obrolan grup dan pembatasan mention
+- [Grup](/id/channels/groups) — perilaku obrolan grup dan gating sebutan
 - [Routing Channel](/id/channels/channel-routing) — routing sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan penguatan keamanan
+- [Keamanan](/id/gateway/security) — model akses dan hardening

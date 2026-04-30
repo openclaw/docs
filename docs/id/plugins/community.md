@@ -1,40 +1,41 @@
 ---
 read_when:
-    - Anda ingin menemukan Plugin OpenClaw pihak ketiga
-    - Anda ingin memublikasikan atau mendaftarkan Plugin Anda sendiri
-summary: 'Plugin OpenClaw yang dikelola komunitas: telusuri, instal, dan kirim Plugin Anda sendiri'
+    - Anda ingin menemukan plugin OpenClaw pihak ketiga
+    - Anda ingin menerbitkan atau mencantumkan Plugin Anda sendiri
+summary: 'Plugin OpenClaw yang dikelola komunitas: jelajahi, instal, dan kirim milik Anda sendiri'
 title: Plugin komunitas
 x-i18n:
-    generated_at: "2026-04-26T11:34:30Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:00:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3af2f0be5e5e75fe26a58576e6f44bce52a1ff8d597f86cafd8fb893f6c6b8f4
+    source_hash: 9685aaf141b739a2a745a6184201ac86689e4284bec6eb068ffbd0d53fb4ecf1
     source_path: plugins/community.md
-    workflow: 15
+    workflow: 16
 ---
 
 Plugin komunitas adalah paket pihak ketiga yang memperluas OpenClaw dengan
-saluran, tool, provider, atau kapabilitas baru lainnya. Plugin ini dibangun dan dikelola
-oleh komunitas, dipublikasikan di [ClawHub](/id/tools/clawhub) atau npm, dan
-dapat diinstal dengan satu perintah.
+channel, alat, provider, atau kemampuan lain baru. Plugin ini dibuat dan dipelihara
+oleh komunitas, biasanya dipublikasikan di [ClawHub](/id/tools/clawhub), dan dapat diinstal
+dengan satu perintah. Npm tetap menjadi fallback yang didukung untuk paket yang
+belum berpindah ke ClawHub.
 
-ClawHub adalah surface penemuan kanonis untuk Plugin komunitas. Jangan membuka
-PR dokumen saja hanya untuk menambahkan Plugin Anda di sini demi keterlihatan; publikasikan
-saja di ClawHub.
+ClawHub adalah permukaan penemuan kanonis untuk Plugin komunitas. Jangan membuka
+PR khusus dokumentasi hanya untuk menambahkan Plugin Anda di sini agar mudah ditemukan; publikasikan di
+ClawHub sebagai gantinya.
 
 ```bash
 openclaw plugins install <package-name>
 ```
 
-OpenClaw memeriksa ClawHub terlebih dahulu dan otomatis fallback ke npm.
+OpenClaw memeriksa ClawHub terlebih dahulu dan otomatis melakukan fallback ke npm.
 
 ## Plugin yang terdaftar
 
 ### Apify
 
-Scrape data dari situs web apa pun dengan 20.000+ scraper siap pakai. Biarkan agen Anda
+Ambil data dari situs web apa pun dengan 20.000+ scraper siap pakai. Biarkan agen Anda
 mengekstrak data dari Instagram, Facebook, TikTok, YouTube, Google Maps, Google
-Search, situs e-commerce, dan lainnya — cukup dengan memintanya.
+Search, situs e-commerce, dan lainnya — cukup dengan meminta.
 
 - **npm:** `@apify/apify-openclaw-plugin`
 - **repo:** [github.com/apify/apify-openclaw-plugin](https://github.com/apify/apify-openclaw-plugin)
@@ -45,9 +46,9 @@ openclaw plugins install @apify/apify-openclaw-plugin
 
 ### Codex App Server Bridge
 
-Bridge OpenClaw independen untuk percakapan Codex App Server. Ikat obrolan ke
-thread Codex, ajak bicara dengan teks biasa, dan kendalikan dengan perintah native obrolan
-untuk melanjutkan, perencanaan, review, pemilihan model, Compaction, dan lainnya.
+Bridge OpenClaw independen untuk percakapan Codex App Server. Ikat chat ke
+thread Codex, berbicara dengannya dengan teks biasa, dan kendalikan dengan perintah
+native chat untuk melanjutkan, perencanaan, peninjauan, pemilihan model, Compaction, dan lainnya.
 
 - **npm:** `openclaw-codex-app-server`
 - **repo:** [github.com/pwrdrvr/openclaw-codex-app-server](https://github.com/pwrdrvr/openclaw-codex-app-server)
@@ -70,9 +71,9 @@ openclaw plugins install @largezhou/ddingtalk
 
 ### Lossless Claw (LCM)
 
-Plugin Lossless Context Management untuk OpenClaw. Ringkasan percakapan berbasis DAG
-dengan Compaction inkremental — mempertahankan fidelitas konteks penuh
-sambil mengurangi penggunaan token.
+Plugin manajemen konteks tanpa kehilangan data untuk OpenClaw. Perangkuman percakapan
+berbasis DAG dengan Compaction inkremental — mempertahankan fidelitas konteks penuh
+sekaligus mengurangi penggunaan token.
 
 - **npm:** `@martian-engineering/lossless-claw`
 - **repo:** [github.com/Martian-Engineering/lossless-claw](https://github.com/Martian-Engineering/lossless-claw)
@@ -95,9 +96,9 @@ openclaw plugins install @opik/opik-openclaw
 
 ### Prometheus Avatar
 
-Berikan agen OpenClaw Anda avatar Live2D dengan sinkronisasi bibir real-time, ekspresi
-emosi, dan text-to-speech. Termasuk tool kreator untuk pembuatan aset AI
-dan deployment satu klik ke Prometheus Marketplace. Saat ini masih alpha.
+Beri agen OpenClaw Anda avatar Live2D dengan lip-sync real-time, ekspresi
+emosi, dan text-to-speech. Mencakup alat kreator untuk pembuatan aset AI
+dan deployment sekali klik ke Prometheus Marketplace. Saat ini dalam alpha.
 
 - **npm:** `@prometheusavatar/openclaw-plugin`
 - **repo:** [github.com/myths-labs/prometheus-avatar](https://github.com/myths-labs/prometheus-avatar)
@@ -108,13 +109,13 @@ openclaw plugins install @prometheusavatar/openclaw-plugin
 
 ### QQbot
 
-Hubungkan OpenClaw ke QQ melalui QQ Bot API. Mendukung obrolan privat, mention
-grup, pesan saluran, dan media kaya termasuk suara, gambar, video,
+Hubungkan OpenClaw ke QQ melalui QQ Bot API. Mendukung chat privat, mention grup,
+pesan channel, dan rich media termasuk suara, gambar, video,
 dan file.
 
 Rilis OpenClaw saat ini membundel QQ Bot. Gunakan penyiapan bawaan di
 [QQ Bot](/id/channels/qqbot) untuk instalasi normal; instal Plugin eksternal ini hanya
-jika Anda memang sengaja menginginkan paket mandiri yang dikelola Tencent.
+ketika Anda secara sengaja menginginkan paket mandiri yang dipelihara Tencent.
 
 - **npm:** `@tencent-connect/openclaw-qqbot`
 - **repo:** [github.com/tencent-connect/openclaw-qqbot](https://github.com/tencent-connect/openclaw-qqbot)
@@ -125,10 +126,10 @@ openclaw plugins install @tencent-connect/openclaw-qqbot
 
 ### wecom
 
-Plugin saluran WeCom untuk OpenClaw oleh tim Tencent WeCom. Didukung oleh
-koneksi persisten WebSocket WeCom Bot, Plugin ini mendukung pesan langsung & obrolan grup,
-balasan streaming, pesan proaktif, pemrosesan gambar/file, pemformatan Markdown,
-kontrol akses bawaan, dan Skills dokumen/rapat/pesan.
+Plugin channel WeCom untuk OpenClaw oleh tim Tencent WeCom. Didukung oleh
+koneksi persisten WebSocket WeCom Bot, Plugin ini mendukung pesan langsung & chat grup,
+balasan streaming, pengiriman pesan proaktif, pemrosesan gambar/file, pemformatan Markdown,
+kontrol akses bawaan, serta Skills dokumen/rapat/pengiriman pesan.
 
 - **npm:** `@wecom/wecom-openclaw-plugin`
 - **repo:** [github.com/WecomTeam/wecom-openclaw-plugin](https://github.com/WecomTeam/wecom-openclaw-plugin)
@@ -137,45 +138,60 @@ kontrol akses bawaan, dan Skills dokumen/rapat/pesan.
 openclaw plugins install @wecom/wecom-openclaw-plugin
 ```
 
-## Kirimkan Plugin Anda
+### Yuanbao
 
-Kami menyambut Plugin komunitas yang berguna, terdokumentasi, dan aman untuk dioperasikan.
+Plugin channel Yuanbao untuk OpenClaw oleh tim Tencent Yuanbao. Didukung oleh
+koneksi persisten WebSocket, Plugin ini mendukung pesan langsung & chat grup,
+balasan streaming, pengiriman pesan proaktif, pemrosesan gambar/file/audio/video,
+pemformatan Markdown, kontrol akses bawaan, dan menu slash-command.
+
+- **npm:** `openclaw-plugin-yuanbao`
+- **repo:** [github.com/YuanbaoTeam/yuanbao-openclaw-plugin](https://github.com/YuanbaoTeam/yuanbao-openclaw-plugin)
+
+```bash
+openclaw plugins install openclaw-plugin-yuanbao
+```
+
+## Kirim Plugin Anda
+
+Kami menyambut Plugin komunitas yang berguna, terdokumentasi, dan aman dioperasikan.
 
 <Steps>
   <Step title="Publikasikan ke ClawHub atau npm">
     Plugin Anda harus dapat diinstal melalui `openclaw plugins install \<package-name\>`.
-    Publikasikan ke [ClawHub](/id/tools/clawhub) (lebih disukai) atau npm.
+    Publikasikan ke [ClawHub](/id/tools/clawhub) kecuali Anda secara khusus membutuhkan distribusi
+    khusus npm.
     Lihat [Membangun Plugin](/id/plugins/building-plugins) untuk panduan lengkap.
 
   </Step>
 
   <Step title="Host di GitHub">
-    Kode sumber harus berada di repositori publik dengan dokumen penyiapan dan pelacak
-    issue.
+    Kode sumber harus berada di repositori publik dengan dokumentasi penyiapan dan issue
+    tracker.
 
   </Step>
 
-  <Step title="Gunakan PR dokumen hanya untuk perubahan source-doc">
-    Anda tidak memerlukan PR dokumen hanya untuk membuat Plugin Anda dapat ditemukan. Publikasikan
-    saja di ClawHub.
+  <Step title="Gunakan PR dokumentasi hanya untuk perubahan dokumentasi sumber">
+    Anda tidak memerlukan PR dokumentasi hanya untuk membuat Plugin Anda mudah ditemukan. Publikasikan
+    di ClawHub sebagai gantinya.
 
-    Buka PR dokumen hanya ketika dokumen sumber OpenClaw memang memerlukan perubahan konten
-    nyata, seperti memperbaiki panduan instalasi atau menambahkan dokumentasi lintas-repo
-    yang memang seharusnya ada dalam set dokumen utama.
+    Buka PR dokumentasi hanya ketika dokumentasi sumber OpenClaw memerlukan perubahan konten
+    nyata, seperti memperbaiki panduan instalasi atau menambahkan dokumentasi
+    lintas-repo yang memang termasuk dalam kumpulan dokumentasi utama.
 
   </Step>
 </Steps>
 
 ## Standar kualitas
 
-| Persyaratan                | Alasannya                                      |
-| -------------------------- | ---------------------------------------------- |
-| Dipublikasikan di ClawHub atau npm | Pengguna memerlukan `openclaw plugins install` untuk berfungsi |
-| Repo GitHub publik         | Review source, pelacakan issue, transparansi   |
-| Dokumen penyiapan dan penggunaan | Pengguna perlu tahu cara mengonfigurasikannya |
-| Pemeliharaan aktif         | Pembaruan terbaru atau penanganan issue yang responsif |
+| Persyaratan                 | Alasan                                           |
+| --------------------------- | --------------------------------------------- |
+| Dipublikasikan di ClawHub atau npm | Pengguna membutuhkan `openclaw plugins install` agar berfungsi |
+| Repo GitHub publik          | Peninjauan sumber, pelacakan issue, transparansi   |
+| Dokumentasi penyiapan dan penggunaan        | Pengguna perlu tahu cara mengonfigurasinya        |
+| Pemeliharaan aktif          | Pembaruan terbaru atau penanganan issue yang responsif   |
 
-Wrapper upaya rendah, kepemilikan yang tidak jelas, atau paket yang tidak dirawat dapat ditolak.
+Wrapper berupaya rendah, kepemilikan yang tidak jelas, atau paket yang tidak dipelihara dapat ditolak.
 
 ## Terkait
 

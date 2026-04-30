@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Anda ingin memahami backend memori default
-    - Anda ingin mengonfigurasi provider embedding atau pencarian hibrida
-summary: Backend memori berbasis SQLite default dengan pencarian kata kunci, vektor, dan hibrida
+    - Anda ingin memahami backend memori bawaan
+    - Anda ingin mengonfigurasi penyedia penyematan atau pencarian hibrida
+summary: Backend memori berbasis SQLite bawaan dengan pencarian kata kunci, vektor, dan hibrida
 title: Mesin memori bawaan
 x-i18n:
-    generated_at: "2026-04-25T13:44:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:43:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ccf0b70bd3ed4e2138ae1d811573f6920c95eb3f8117693b242732012779dc6
+    source_hash: aa1597a9a49a6f1124cedf49f6f5a4c336f76dd5998ced246affb9c2e8171f05
     source_path: concepts/memory-builtin.md
-    workflow: 15
+    workflow: 16
 ---
 
 Mesin bawaan adalah backend memori default. Mesin ini menyimpan indeks memori Anda dalam
-database SQLite per agen dan tidak memerlukan dependensi tambahan untuk memulai.
+basis data SQLite per agen dan tidak memerlukan dependensi tambahan untuk memulai.
 
-## Apa yang disediakan
+## Yang disediakan
 
-- **Pencarian kata kunci** melalui pengindeksan full-text FTS5 (skor BM25).
-- **Pencarian vektor** melalui embedding dari provider yang didukung.
-- **Pencarian hibrida** yang menggabungkan keduanya untuk hasil terbaik.
-- **Dukungan CJK** melalui tokenisasi trigram untuk bahasa Tionghoa, Jepang, dan Korea.
-- **Akselerasi `sqlite-vec`** untuk kueri vektor di dalam database (opsional).
+- **Pencarian kata kunci** melalui pengindeksan teks penuh FTS5 (skor BM25).
+- **Pencarian vektor** melalui embedding dari penyedia mana pun yang didukung.
+- **Pencarian hybrid** yang menggabungkan keduanya untuk hasil terbaik.
+- **Dukungan CJK** melalui tokenisasi trigram untuk bahasa Mandarin, Jepang, dan Korea.
+- **Akselerasi sqlite-vec** untuk kueri vektor dalam basis data (opsional).
 
 ## Memulai
 
-Jika Anda memiliki API key untuk OpenAI, Gemini, Voyage, atau Mistral, mesin bawaan
-akan mendeteksinya secara otomatis dan mengaktifkan pencarian vektor. Tidak perlu config.
+Jika Anda memiliki kunci API untuk OpenAI, Gemini, Voyage, Mistral, atau DeepInfra, mesin
+bawaan akan mendeteksinya secara otomatis dan mengaktifkan pencarian vektor. Tidak perlu konfigurasi.
 
-Untuk menetapkan provider secara eksplisit:
+Untuk menetapkan penyedia secara eksplisit:
 
 ```json5
 {
@@ -43,9 +43,9 @@ Untuk menetapkan provider secara eksplisit:
 }
 ```
 
-Tanpa provider embedding, hanya pencarian kata kunci yang tersedia.
+Tanpa penyedia embedding, hanya pencarian kata kunci yang tersedia.
 
-Untuk memaksa provider embedding lokal bawaan, instal paket runtime opsional
+Untuk memaksa penyedia embedding lokal bawaan, instal paket runtime opsional
 `node-llama-cpp` di samping OpenClaw, lalu arahkan `local.modelPath`
 ke file GGUF:
 
@@ -65,28 +65,31 @@ ke file GGUF:
 }
 ```
 
-## Provider embedding yang didukung
+## Penyedia embedding yang didukung
 
-| Provider | ID        | Terdeteksi otomatis | Catatan                             |
-| -------- | --------- | ------------------- | ----------------------------------- |
-| OpenAI   | `openai`  | Ya                  | Default: `text-embedding-3-small`   |
-| Gemini   | `gemini`  | Ya                  | Mendukung multimodal (gambar + audio) |
-| Voyage   | `voyage`  | Ya                  |                                     |
-| Mistral  | `mistral` | Ya                  |                                     |
-| Ollama   | `ollama`  | Tidak               | Lokal, tetapkan secara eksplisit    |
-| Local    | `local`   | Ya (pertama)        | Runtime `node-llama-cpp` opsional   |
+| Penyedia  | ID          | Terdeteksi otomatis | Catatan                              |
+| --------- | ----------- | ------------------- | ------------------------------------ |
+| OpenAI    | `openai`    | Ya                  | Bawaan: `text-embedding-3-small`     |
+| Gemini    | `gemini`    | Ya                  | Mendukung multimodal (gambar + audio) |
+| Voyage    | `voyage`    | Ya                  |                                      |
+| Mistral   | `mistral`   | Ya                  |                                      |
+| DeepInfra | `deepinfra` | Ya                  | Bawaan: `BAAI/bge-m3`                |
+| Ollama    | `ollama`    | Tidak               | Lokal, tetapkan secara eksplisit     |
+| Lokal     | `local`     | Ya (pertama)        | Runtime `node-llama-cpp` opsional    |
 
-Deteksi otomatis memilih provider pertama yang API key-nya dapat di-resolve, dalam
-urutan yang ditampilkan. Tetapkan `memorySearch.provider` untuk override.
+Deteksi otomatis memilih penyedia pertama yang kunci API-nya dapat diselesaikan, dalam
+urutan yang ditampilkan. Tetapkan `memorySearch.provider` untuk menimpa.
 
 ## Cara kerja pengindeksan
 
 OpenClaw mengindeks `MEMORY.md` dan `memory/*.md` menjadi potongan (~400 token dengan
-tumpang tindih 80 token) dan menyimpannya dalam database SQLite per agen.
+tumpang tindih 80 token) dan menyimpannya dalam basis data SQLite per agen.
 
 - **Lokasi indeks:** `~/.openclaw/memory/<agentId>.sqlite`
-- **Pemantauan file:** perubahan pada file memori memicu pengindeksan ulang yang di-debounce (1,5 dtk).
-- **Pengindeksan ulang otomatis:** saat provider embedding, model, atau config chunking
+- **Pemeliharaan penyimpanan:** sidecar WAL SQLite dibatasi dengan checkpoint berkala dan
+  saat shutdown.
+- **Pemantauan file:** perubahan pada file memori memicu pengindeksan ulang dengan debounce (1,5 dtk).
+- **Pengindeksan ulang otomatis:** ketika penyedia embedding, model, atau konfigurasi pemotongan
   berubah, seluruh indeks dibangun ulang secara otomatis.
 - **Pengindeksan ulang sesuai permintaan:** `openclaw memory index --force`
 
@@ -100,48 +103,48 @@ Anda juga dapat mengindeks file Markdown di luar workspace dengan
 
 Mesin bawaan adalah pilihan yang tepat bagi sebagian besar pengguna:
 
-- Berfungsi langsung tanpa dependensi tambahan.
+- Langsung berfungsi tanpa dependensi tambahan.
 - Menangani pencarian kata kunci dan vektor dengan baik.
-- Mendukung semua provider embedding.
-- Pencarian hibrida menggabungkan keunggulan dari kedua pendekatan retrieval.
+- Mendukung semua penyedia embedding.
+- Pencarian hybrid menggabungkan yang terbaik dari kedua pendekatan retrieval.
 
-Pertimbangkan untuk beralih ke [QMD](/id/concepts/memory-qmd) jika Anda memerlukan reranking, query
-expansion, atau ingin mengindeks direktori di luar workspace.
+Pertimbangkan beralih ke [QMD](/id/concepts/memory-qmd) jika Anda memerlukan reranking, perluasan
+kueri, atau ingin mengindeks direktori di luar workspace.
 
 Pertimbangkan [Honcho](/id/concepts/memory-honcho) jika Anda menginginkan memori lintas sesi dengan
 pemodelan pengguna otomatis.
 
 ## Pemecahan masalah
 
-**Pencarian memori dinonaktifkan?** Periksa `openclaw memory status`. Jika tidak ada provider yang
-terdeteksi, tetapkan satu secara eksplisit atau tambahkan API key.
+**Pencarian memori dinonaktifkan?** Periksa `openclaw memory status`. Jika tidak ada penyedia yang
+terdeteksi, tetapkan satu secara eksplisit atau tambahkan kunci API.
 
-**Provider lokal tidak terdeteksi?** Pastikan path lokal ada dan jalankan:
+**Penyedia lokal tidak terdeteksi?** Pastikan jalur lokal ada dan jalankan:
 
 ```bash
 openclaw memory status --deep --agent main
 openclaw memory index --force --agent main
 ```
 
-Baik perintah CLI mandiri maupun Gateway menggunakan ID provider `local` yang sama.
-Jika provider ditetapkan ke `auto`, embedding lokal dipertimbangkan terlebih dahulu hanya
-saat `memorySearch.local.modelPath` menunjuk ke file lokal yang ada.
+Baik perintah CLI mandiri maupun Gateway menggunakan id penyedia `local` yang sama.
+Jika penyedia ditetapkan ke `auto`, embedding lokal hanya dipertimbangkan pertama
+ketika `memorySearch.local.modelPath` mengarah ke file lokal yang ada.
 
-**Hasil usang?** Jalankan `openclaw memory index --force` untuk membangun ulang. Watcher
+**Hasil usang?** Jalankan `openclaw memory index --force` untuk membangun ulang. Pemantau
 dapat melewatkan perubahan dalam kasus tepi yang jarang terjadi.
 
-**`sqlite-vec` tidak dimuat?** OpenClaw otomatis fallback ke cosine similarity dalam proses.
-Periksa log untuk error pemuatan yang spesifik.
+**sqlite-vec tidak dimuat?** OpenClaw otomatis kembali ke cosine similarity dalam proses.
+Periksa log untuk galat pemuatan yang spesifik.
 
 ## Konfigurasi
 
-Untuk penyiapan provider embedding, penyetelan pencarian hibrida (bobot, MMR, temporal
-decay), pengindeksan batch, memori multimodal, `sqlite-vec`, path tambahan, dan semua
-pengaturan config lainnya, lihat
-[Referensi konfigurasi memori](/id/reference/memory-config).
+Untuk penyiapan penyedia embedding, penyesuaian pencarian hybrid (bobot, MMR, peluruhan
+temporal), pengindeksan batch, memori multimodal, sqlite-vec, jalur tambahan, dan semua
+kenop konfigurasi lainnya, lihat
+[referensi konfigurasi Memori](/id/reference/memory-config).
 
 ## Terkait
 
-- [Gambaran umum memori](/id/concepts/memory)
+- [Ikhtisar memori](/id/concepts/memory)
 - [Pencarian memori](/id/concepts/memory-search)
 - [Active Memory](/id/concepts/active-memory)

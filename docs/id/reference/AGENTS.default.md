@@ -1,23 +1,23 @@
 ---
 read_when:
     - Memulai sesi agen OpenClaw baru
-    - Mengaktifkan atau mengaudit Skills default
+    - Mengaktifkan atau mengaudit Skills bawaan
 summary: Instruksi agen OpenClaw default dan daftar Skills untuk penyiapan asisten pribadi
-title: '`AGENTS.md` default'
+title: AGENTS.md Bawaan
 x-i18n:
-    generated_at: "2026-04-24T09:25:44Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:09:47Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ce1ce4e8bd84ca8913dc30112fd2d7ec81782c1f84f62eb8cc5c1032e9b060da
+    source_hash: 839368a09c60ac6b7cd403e6ecd86dd0cafd01de8c8b70a1d919cf7daf6d51af
     source_path: reference/AGENTS.default.md
-    workflow: 15
+    workflow: 16
 ---
 
-# AGENTS.md - Asisten Pribadi OpenClaw (default)
+# AGENTS.md - Asisten Pribadi OpenClaw (bawaan)
 
-## Menjalankan pertama kali (disarankan)
+## Jalankan pertama kali (disarankan)
 
-OpenClaw menggunakan direktori workspace khusus untuk agen. Default: `~/.openclaw/workspace` (dapat dikonfigurasi melalui `agents.defaults.workspace`).
+OpenClaw menggunakan direktori workspace khusus untuk agen. Bawaan: `~/.openclaw/workspace` (dapat dikonfigurasi melalui `agents.defaults.workspace`).
 
 1. Buat workspace (jika belum ada):
 
@@ -25,7 +25,7 @@ OpenClaw menggunakan direktori workspace khusus untuk agen. Default: `~/.opencla
 mkdir -p ~/.openclaw/workspace
 ```
 
-2. Salin template workspace default ke dalam workspace:
+2. Salin templat workspace bawaan ke dalam workspace:
 
 ```bash
 cp docs/reference/templates/AGENTS.md ~/.openclaw/workspace/AGENTS.md
@@ -39,7 +39,7 @@ cp docs/reference/templates/TOOLS.md ~/.openclaw/workspace/TOOLS.md
 cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 ```
 
-4. Opsional: pilih workspace lain dengan menetapkan `agents.defaults.workspace` (mendukung `~`):
+4. Opsional: pilih workspace lain dengan mengatur `agents.defaults.workspace` (mendukung `~`):
 
 ```json5
 {
@@ -47,44 +47,44 @@ cp docs/reference/AGENTS.default.md ~/.openclaw/workspace/AGENTS.md
 }
 ```
 
-## Default keamanan
+## Bawaan keselamatan
 
-- Jangan membuang isi direktori atau rahasia ke chat.
+- Jangan memasukkan direktori atau rahasia ke chat.
 - Jangan menjalankan perintah destruktif kecuali diminta secara eksplisit.
-- Jangan kirim balasan parsial/streaming ke permukaan pesan eksternal (hanya balasan final).
+- Jangan mengirim balasan parsial/streaming ke permukaan pesan eksternal (hanya balasan final).
 
-## Mulai sesi (wajib)
+## Awal sesi (wajib)
 
 - Baca `SOUL.md`, `USER.md`, dan hari ini+kemarin di `memory/`.
 - Baca `MEMORY.md` jika ada.
-- Lakukan itu sebelum merespons.
+- Lakukan sebelum merespons.
 
 ## Soul (wajib)
 
-- `SOUL.md` mendefinisikan identitas, nada, dan batasan. Jaga agar tetap mutakhir.
+- `SOUL.md` mendefinisikan identitas, nada, dan batasan. Jaga agar tetap terkini.
 - Jika Anda mengubah `SOUL.md`, beri tahu pengguna.
-- Anda adalah instans baru di setiap sesi; kontinuitas ada di file-file ini.
+- Anda adalah instans baru di setiap sesi; kontinuitas berada di file-file ini.
 
 ## Ruang bersama (disarankan)
 
-- Anda bukan suara pengguna; berhati-hatilah di chat grup atau saluran publik.
-- Jangan bagikan data pribadi, info kontak, atau catatan internal.
+- Anda bukan suara pengguna; berhati-hatilah dalam chat grup atau channel publik.
+- Jangan membagikan data pribadi, info kontak, atau catatan internal.
 
 ## Sistem memori (disarankan)
 
-- Log harian: `memory/YYYY-MM-DD.md` (buat `memory/` jika diperlukan).
-- Memori jangka panjang: `MEMORY.md` untuk fakta, preferensi, dan keputusan yang bertahan lama.
-- Huruf kecil `memory.md` hanya untuk input perbaikan legacy; jangan sengaja menyimpan kedua file root.
-- Saat sesi dimulai, baca hari ini + kemarin + `MEMORY.md` jika ada.
-- Catat: keputusan, preferensi, batasan, loop yang belum selesai.
+- Log harian: `memory/YYYY-MM-DD.md` (buat `memory/` jika perlu).
+- Memori jangka panjang: `MEMORY.md` untuk fakta, preferensi, dan keputusan yang tahan lama.
+- `memory.md` huruf kecil hanya masukan perbaikan lama; jangan sengaja menyimpan kedua file root.
+- Saat awal sesi, baca hari ini + kemarin + `MEMORY.md` jika ada.
+- Tangkap: keputusan, preferensi, batasan, loop terbuka.
 - Hindari rahasia kecuali diminta secara eksplisit.
 
 ## Alat & Skills
 
-- Alat berada di dalam skills; ikuti `SKILL.md` masing-masing skill saat Anda membutuhkannya.
+- Alat berada dalam Skills; ikuti `SKILL.md` milik setiap skill saat Anda membutuhkannya.
 - Simpan catatan khusus lingkungan di `TOOLS.md` (Catatan untuk Skills).
 
-## Tips cadangan (disarankan)
+## Tip pencadangan (disarankan)
 
 Jika Anda memperlakukan workspace ini sebagai “memori” Clawd, jadikan ini repo git (idealnya privat) agar `AGENTS.md` dan file memori Anda dicadangkan.
 
@@ -93,44 +93,44 @@ cd ~/.openclaw/workspace
 git init
 git add AGENTS.md
 git commit -m "Add Clawd workspace"
-# Opsional: tambahkan remote privat + push
+# Optional: add a private remote + push
 ```
 
-## Yang Dilakukan OpenClaw
+## Yang dilakukan OpenClaw
 
-- Menjalankan gateway WhatsApp + agen coding Pi agar asisten dapat membaca/menulis chat, mengambil konteks, dan menjalankan skills melalui host Mac.
-- Aplikasi macOS mengelola izin (perekaman layar, notifikasi, mikrofon) dan mengekspos CLI `openclaw` melalui biner bawaan.
-- Chat langsung digabungkan ke sesi `main` agen secara default; grup tetap terisolasi sebagai `agent:<agentId>:<channel>:group:<id>` (ruangan/saluran: `agent:<agentId>:<channel>:channel:<id>`); Heartbeat menjaga tugas latar belakang tetap aktif.
+- Menjalankan Gateway WhatsApp + agen coding Pi agar asisten dapat membaca/menulis chat, mengambil konteks, dan menjalankan Skills melalui Mac host.
+- Aplikasi macOS mengelola izin (perekaman layar, notifikasi, mikrofon) dan mengekspos CLI `openclaw` melalui biner bawaannya.
+- Chat langsung digabungkan ke sesi `main` agen secara bawaan; grup tetap terisolasi sebagai `agent:<agentId>:<channel>:group:<id>` (ruang/channel: `agent:<agentId>:<channel>:channel:<id>`); Heartbeat menjaga tugas latar belakang tetap hidup.
 
-## Skills Inti (aktifkan di Settings → Skills)
+## Skills inti (aktifkan di Pengaturan → Skills)
 
-- **mcporter** — Runtime/server alat dan CLI untuk mengelola backend skill eksternal.
-- **Peekaboo** — Screenshot macOS cepat dengan analisis visi AI opsional.
-- **camsnap** — Ambil frame, klip, atau peringatan gerakan dari kamera keamanan RTSP/ONVIF.
+- **mcporter** — Runtime server alat/CLI untuk mengelola backend skill eksternal.
+- **Peekaboo** — Tangkapan layar macOS cepat dengan analisis visi AI opsional.
+- **camsnap** — Tangkap frame, klip, atau peringatan gerakan dari kamera keamanan RTSP/ONVIF.
 - **oracle** — CLI agen siap OpenAI dengan pemutaran ulang sesi dan kontrol browser.
-- **eightctl** — Kendalikan tidur Anda dari terminal.
-- **imsg** — Kirim, baca, streaming iMessage & SMS.
-- **wacli** — CLI WhatsApp: sinkronisasi, pencarian, kirim.
-- **discord** — Tindakan Discord: react, stiker, polling. Gunakan target `user:<id>` atau `channel:<id>` (id numerik tanpa awalan ambigu).
-- **gog** — CLI Google Suite: Gmail, Kalender, Drive, Kontak.
-- **spotify-player** — Klien Spotify terminal untuk mencari/mengantre/mengontrol pemutaran.
-- **sag** — Ucapan ElevenLabs dengan UX seperti say di Mac; secara default streaming ke speaker.
-- **Sonos CLI** — Kontrol speaker Sonos (discover/status/playback/volume/grouping) dari skrip.
-- **blucli** — Putar, kelompokkan, dan otomatisasikan pemutar BluOS dari skrip.
-- **OpenHue CLI** — Kontrol pencahayaan Philips Hue untuk scene dan otomatisasi.
-- **OpenAI Whisper** — Speech-to-text lokal untuk dikte cepat dan transkrip voicemail.
-- **Gemini CLI** — Model Gemini Google dari terminal untuk tanya jawab cepat.
-- **agent-tools** — Toolkit utilitas untuk otomatisasi dan skrip bantuan.
+- **eightctl** — Kendalikan tidur Anda, dari terminal.
+- **imsg** — Kirim, baca, stream iMessage & SMS.
+- **wacli** — CLI WhatsApp: sinkronkan, cari, kirim.
+- **discord** — Aksi Discord: reaksi, stiker, polling. Gunakan target `user:<id>` atau `channel:<id>` (id numerik polos bersifat ambigu).
+- **gog** — CLI Google Suite: Gmail, Calendar, Drive, Contacts.
+- **spotify-player** — Klien Spotify terminal untuk mencari/mengantrikan/mengontrol pemutaran.
+- **sag** — Ucapan ElevenLabs dengan UX say bergaya Mac; stream ke speaker secara bawaan.
+- **Sonos CLI** — Kendalikan speaker Sonos (temukan/status/pemutaran/volume/pengelompokan) dari skrip.
+- **blucli** — Putar, kelompokkan, dan otomatiskan pemutar BluOS dari skrip.
+- **OpenHue CLI** — Kontrol pencahayaan Philips Hue untuk scene dan automasi.
+- **OpenAI Whisper** — Ucapan-ke-teks lokal untuk dikte cepat dan transkrip pesan suara.
+- **Gemini CLI** — Model Google Gemini dari terminal untuk tanya jawab cepat.
+- **agent-tools** — Toolkit utilitas untuk automasi dan skrip pembantu.
 
-## Catatan Penggunaan
+## Catatan penggunaan
 
 - Utamakan CLI `openclaw` untuk scripting; aplikasi Mac menangani izin.
 - Jalankan instalasi dari tab Skills; tombol disembunyikan jika biner sudah ada.
-- Biarkan Heartbeat tetap aktif agar asisten dapat menjadwalkan pengingat, memantau inbox, dan memicu pengambilan kamera.
-- UI Canvas berjalan layar penuh dengan overlay native. Hindari menempatkan kontrol penting di tepi kiri atas/kanan atas/bawah; tambahkan gutter eksplisit di tata letak dan jangan bergantung pada safe-area inset.
-- Untuk verifikasi berbasis browser, gunakan `openclaw browser` (tabs/status/screenshot) dengan profil Chrome yang dikelola OpenClaw.
-- Untuk inspeksi DOM, gunakan `openclaw browser eval|query|dom|snapshot` (dan `--json`/`--out` saat Anda memerlukan output terstruktur).
-- Untuk interaksi, gunakan `openclaw browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type memerlukan referensi snapshot; gunakan `evaluate` untuk selector CSS).
+- Biarkan Heartbeat aktif agar asisten dapat menjadwalkan pengingat, memantau kotak masuk, dan memicu tangkapan kamera.
+- UI Canvas berjalan layar penuh dengan overlay native. Hindari menempatkan kontrol penting di tepi kiri atas/kanan atas/bawah; tambahkan gutter eksplisit dalam layout dan jangan bergantung pada inset area aman.
+- Untuk verifikasi berbasis browser, gunakan `openclaw browser` (tab/status/tangkapan layar) dengan profil Chrome yang dikelola OpenClaw.
+- Untuk inspeksi DOM, gunakan `openclaw browser eval|query|dom|snapshot` (dan `--json`/`--out` saat Anda membutuhkan keluaran mesin).
+- Untuk interaksi, gunakan `openclaw browser click|type|hover|drag|select|upload|press|wait|navigate|back|evaluate|run` (click/type memerlukan ref snapshot; gunakan `evaluate` untuk selektor CSS).
 
 ## Terkait
 

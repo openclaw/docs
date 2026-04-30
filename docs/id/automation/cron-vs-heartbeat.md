@@ -1,16 +1,16 @@
 ---
 summary: Alihkan ke /automation
-title: Cron vs Heartbeat
+title: Cron dibandingkan Heartbeat
 x-i18n:
-    generated_at: "2026-04-24T08:57:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:31:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 453a70724ffc9aa76b6629458be3b8a2b91b4a72a5f1b3371be9b5aba4f90bcb
+    source_hash: 4a4951f926f9050a9bd33b338cf4cd1869d73b9c3e7222349ea8265b959f41b4
     source_path: automation/cron-vs-heartbeat.md
-    workflow: 15
+    workflow: 16
 ---
 
-Halaman ini dipindahkan ke [Automation & Tasks](/id/automation). Lihat [Automation & Tasks](/id/automation) untuk panduan keputusan yang membandingkan cron dan Heartbeat.
+Panduan keputusan untuk cron vs heartbeat berada di [Automasi dan tugas](/id/automation).
 
 ## Terkait
 

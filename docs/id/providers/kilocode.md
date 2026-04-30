@@ -5,25 +5,25 @@ read_when:
 summary: Gunakan API terpadu Kilo Gateway untuk mengakses banyak model di OpenClaw
 title: Kilocode
 x-i18n:
-    generated_at: "2026-04-24T09:23:33Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:07:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: aa3c29e7b39b1dfb049444c7ef2759555bb3f94479622d58fa2aa8fd6389d01f
+    source_hash: c51012b94d4b720795356b67c8482ae7ee0b37d401689e923be0b7732d77c4aa
     source_path: providers/kilocode.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Kilo Gateway
 
 Kilo Gateway menyediakan **API terpadu** yang merutekan permintaan ke banyak model di balik satu
-endpoint dan kunci API. API ini kompatibel dengan OpenAI, jadi sebagian besar SDK OpenAI bekerja dengan mengganti base URL.
+endpoint dan kunci API. API ini kompatibel dengan OpenAI, sehingga sebagian besar OpenAI SDK berfungsi dengan mengganti URL dasar.
 
-| Property | Value                              |
+| Properti | Nilai                              |
 | -------- | ---------------------------------- |
-| Provider | `kilocode`                         |
-| Auth     | `KILOCODE_API_KEY`                 |
+| Penyedia | `kilocode`                         |
+| Autentikasi | `KILOCODE_API_KEY`              |
 | API      | Kompatibel dengan OpenAI           |
-| Base URL | `https://api.kilo.ai/api/gateway/` |
+| URL Dasar | `https://api.kilo.ai/api/gateway/` |
 
 ## Memulai
 
@@ -36,7 +36,7 @@ endpoint dan kunci API. API ini kompatibel dengan OpenAI, jadi sebagian besar SD
     openclaw onboard --auth-choice kilocode-api-key
     ```
 
-    Atau setel variabel environment secara langsung:
+    Atau tetapkan variabel lingkungan secara langsung:
 
     ```bash
     export KILOCODE_API_KEY="<your-kilocode-api-key>" # pragma: allowlist secret
@@ -50,15 +50,15 @@ endpoint dan kunci API. API ini kompatibel dengan OpenAI, jadi sebagian besar SD
   </Step>
 </Steps>
 
-## Model default
+## Model bawaan
 
-Model default adalah `kilocode/kilo/auto`, model smart-routing milik provider
-yang dikelola oleh Kilo Gateway.
+Model bawaan adalah `kilocode/kilo/auto`, model perutean cerdas
+milik penyedia yang dikelola oleh Kilo Gateway.
 
 <Note>
-OpenClaw memperlakukan `kilocode/kilo/auto` sebagai ref default stabil, tetapi tidak
-memublikasikan pemetaan tugas-ke-model-upstream yang didukung sumber untuk rute itu. Perutean
-upstream yang tepat di balik `kilocode/kilo/auto` dimiliki oleh Kilo Gateway, bukan
+OpenClaw memperlakukan `kilocode/kilo/auto` sebagai ref bawaan yang stabil, tetapi tidak
+menerbitkan pemetaan tugas-ke-model-hulu berbasis sumber untuk rute tersebut. Perutean
+hulu persis di balik `kilocode/kilo/auto` dimiliki oleh Kilo Gateway, bukan
 di-hard-code di OpenClaw.
 </Note>
 
@@ -67,24 +67,24 @@ di-hard-code di OpenClaw.
 OpenClaw secara dinamis menemukan model yang tersedia dari Kilo Gateway saat startup. Gunakan
 `/models kilocode` untuk melihat daftar lengkap model yang tersedia dengan akun Anda.
 
-Model apa pun yang tersedia di gateway dapat digunakan dengan prefix `kilocode/`:
+Model apa pun yang tersedia di Gateway dapat digunakan dengan prefiks `kilocode/`:
 
-| Model ref                              | Notes                              |
-| -------------------------------------- | ---------------------------------- |
-| `kilocode/kilo/auto`                   | Default — smart routing            |
-| `kilocode/anthropic/claude-sonnet-4`   | Anthropic via Kilo                 |
-| `kilocode/openai/gpt-5.5`              | OpenAI via Kilo                    |
-| `kilocode/google/gemini-3-pro-preview` | Google via Kilo                    |
-| ...and many more                       | Gunakan `/models kilocode` untuk mencantumkan semuanya |
+| Ref model                              | Catatan                           |
+| -------------------------------------- | --------------------------------- |
+| `kilocode/kilo/auto`                   | Bawaan — perutean cerdas          |
+| `kilocode/anthropic/claude-sonnet-4`   | Anthropic melalui Kilo            |
+| `kilocode/openai/gpt-5.5`              | OpenAI melalui Kilo               |
+| `kilocode/google/gemini-3-pro-preview` | Google melalui Kilo               |
+| ...dan masih banyak lagi               | Gunakan `/models kilocode` untuk mencantumkan semuanya |
 
 <Tip>
 Saat startup, OpenClaw mengkueri `GET https://api.kilo.ai/api/gateway/models` dan menggabungkan
-model yang ditemukan sebelum katalog fallback statis. Fallback bawaan selalu
+model yang ditemukan sebelum katalog cadangan statis. Cadangan yang dibundel selalu
 menyertakan `kilocode/kilo/auto` (`Kilo Auto`) dengan `input: ["text", "image"]`,
 `reasoning: true`, `contextWindow: 1000000`, dan `maxTokens: 128000`.
 </Tip>
 
-## Contoh config
+## Contoh konfigurasi
 
 ```json5
 {
@@ -99,29 +99,31 @@ menyertakan `kilocode/kilo/auto` (`Kilo Auto`) dengan `input: ["text", "image"]`
 
 <AccordionGroup>
   <Accordion title="Transport dan kompatibilitas">
-    Kilo Gateway didokumentasikan di source sebagai kompatibel dengan OpenRouter, sehingga tetap berada pada jalur bergaya proxy yang kompatibel dengan OpenAI alih-alih pembentukan permintaan OpenAI native.
+    Kilo Gateway didokumentasikan dalam sumber sebagai kompatibel dengan OpenRouter, sehingga tetap berada pada
+    jalur bergaya proksi yang kompatibel dengan OpenAI, bukan pembentukan permintaan OpenAI native.
 
-    - Ref Kilo yang didukung Gemini tetap berada pada jalur proxy-Gemini, sehingga OpenClaw
-      mempertahankan sanitasi thought-signature Gemini di sana tanpa mengaktifkan replay validation Gemini native atau bootstrap rewrite.
+    - Ref Kilo yang didukung Gemini tetap berada pada jalur proksi-Gemini, sehingga OpenClaw mempertahankan
+      sanitasi tanda tangan pemikiran Gemini di sana tanpa mengaktifkan validasi replay Gemini native
+      atau penulisan ulang bootstrap.
     - Kilo Gateway menggunakan token Bearer dengan kunci API Anda di balik layar.
 
   </Accordion>
 
-  <Accordion title="Stream wrapper dan reasoning">
-    Stream wrapper bersama Kilo menambahkan header aplikasi provider dan menormalkan
-    payload reasoning proxy untuk ref model konkret yang didukung.
+  <Accordion title="Wrapper stream dan penalaran">
+    Wrapper stream bersama milik Kilo menambahkan header aplikasi penyedia dan menormalkan
+    payload penalaran proksi untuk ref model konkret yang didukung.
 
     <Warning>
-    `kilocode/kilo/auto` dan petunjuk lain yang tidak mendukung proxy-reasoning melewati injeksi reasoning.
-    Jika Anda membutuhkan dukungan reasoning, gunakan ref model konkret seperti
+    `kilocode/kilo/auto` dan petunjuk lain yang tidak mendukung penalaran proksi melewati injeksi penalaran.
+    Jika Anda memerlukan dukungan penalaran, gunakan ref model konkret seperti
     `kilocode/anthropic/claude-sonnet-4`.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Pemecahan masalah">
-    - Jika penemuan model gagal saat startup, OpenClaw fallback ke katalog statis bawaan yang berisi `kilocode/kilo/auto`.
-    - Pastikan kunci API Anda valid dan akun Kilo Anda mengaktifkan model yang diinginkan.
+    - Jika penemuan model gagal saat startup, OpenClaw kembali ke katalog statis yang dibundel yang berisi `kilocode/kilo/auto`.
+    - Konfirmasikan bahwa kunci API Anda valid dan akun Kilo Anda telah mengaktifkan model yang diinginkan.
     - Saat Gateway berjalan sebagai daemon, pastikan `KILOCODE_API_KEY` tersedia untuk proses tersebut (misalnya di `~/.openclaw/.env` atau melalui `env.shellEnv`).
 
   </Accordion>
@@ -130,10 +132,10 @@ menyertakan `kilocode/kilo/auto` (`Kilo Auto`) dengan `input: ["text", "image"]`
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, ref model, dan perilaku failover.
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
+    Memilih penyedia, ref model, dan perilaku failover.
   </Card>
-  <Card title="Configuration reference" href="/id/gateway/configuration-reference" icon="gear">
+  <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
     Referensi konfigurasi OpenClaw lengkap.
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">

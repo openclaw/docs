@@ -1,29 +1,29 @@
 ---
 read_when:
     - Mengerjakan kode atau pengujian integrasi Pi
-    - Menjalankan alur lint, typecheck, dan pengujian live khusus Pi
-summary: 'Alur kerja developer untuk integrasi Pi: build, pengujian, dan validasi live'
+    - Menjalankan alur lint, pemeriksaan tipe, dan pengujian langsung khusus Pi
+summary: 'Alur kerja pengembang untuk integrasi Pi: kompilasi, pengujian, dan validasi langsung'
 title: Alur kerja pengembangan Pi
 x-i18n:
-    generated_at: "2026-04-24T09:16:01Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:58:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb626bf21bc731b8ca7bb2a48692e17c8b93f2b6ffa471ed9e70d9c91cd57149
+    source_hash: 9c4025c8ed1a4dff0d8116440fd48f375264eb4cac06f71afebf8c05f3470ab4
     source_path: pi-dev.md
-    workflow: 15
+    workflow: 16
 ---
 
-Panduan ini merangkum alur kerja yang masuk akal untuk mengerjakan integrasi Pi di OpenClaw.
+Alur kerja yang wajar untuk mengerjakan integrasi Pi di OpenClaw.
 
-## Type Checking dan Linting
+## Pemeriksaan tipe dan linting
 
-- Gate lokal default: `pnpm check`
-- Gate build: `pnpm build` saat perubahan dapat memengaruhi output build, packaging, atau batas lazy-loading/modul
-- Gate penuh sebelum landing untuk perubahan yang berat pada Pi: `pnpm check && pnpm test`
+- Gerbang lokal bawaan: `pnpm check`
+- Gerbang build: `pnpm build` saat perubahan dapat memengaruhi output build, packaging, atau batas lazy-loading/module
+- Gerbang landing penuh untuk perubahan berat Pi: `pnpm check && pnpm test`
 
-## Menjalankan Pengujian Pi
+## Menjalankan pengujian Pi
 
-Jalankan kumpulan pengujian yang berfokus pada Pi langsung dengan Vitest:
+Jalankan set pengujian yang berfokus pada Pi secara langsung dengan Vitest:
 
 ```bash
 pnpm test \
@@ -50,39 +50,39 @@ Ini mencakup suite unit Pi utama:
 - `src/agents/pi-tool-definition-adapter.test.ts`
 - `src/agents/pi-hooks/*.test.ts`
 
-## Pengujian Manual
+## Pengujian manual
 
-Alur yang direkomendasikan:
+Alur yang disarankan:
 
-- Jalankan gateway dalam mode dev:
+- Jalankan Gateway dalam mode dev:
   - `pnpm gateway:dev`
-- Picu agen secara langsung:
+- Picu agent secara langsung:
   - `pnpm openclaw agent --message "Hello" --thinking low`
 - Gunakan TUI untuk debugging interaktif:
   - `pnpm tui`
 
-Untuk perilaku pemanggilan alat, beri prompt untuk tindakan `read` atau `exec` agar Anda dapat melihat streaming alat dan penanganan payload.
+Untuk perilaku pemanggilan tool, minta tindakan `read` atau `exec` agar Anda dapat melihat streaming tool dan penanganan payload.
 
-## Reset Clean Slate
+## Reset dari keadaan bersih
 
-Status berada di bawah direktori status OpenClaw. Default-nya adalah `~/.openclaw`. Jika `OPENCLAW_STATE_DIR` disetel, gunakan direktori itu sebagai gantinya.
+State berada di bawah direktori state OpenClaw. Bawaannya adalah `~/.openclaw`. Jika `OPENCLAW_STATE_DIR` diatur, gunakan direktori tersebut sebagai gantinya.
 
 Untuk mereset semuanya:
 
 - `openclaw.json` untuk config
-- `agents/<agentId>/agent/auth-profiles.json` untuk profil auth model (API key + OAuth)
-- `credentials/` untuk status provider/saluran yang masih berada di luar penyimpanan profil auth
-- `agents/<agentId>/sessions/` untuk riwayat sesi agen
+- `agents/<agentId>/agent/auth-profiles.json` untuk profil auth model (kunci API + OAuth)
+- `credentials/` untuk state provider/channel yang masih berada di luar penyimpanan profil auth
+- `agents/<agentId>/sessions/` untuk riwayat sesi agent
 - `agents/<agentId>/sessions/sessions.json` untuk indeks sesi
-- `sessions/` jika path lama masih ada
+- `sessions/` jika path legacy ada
 - `workspace/` jika Anda menginginkan workspace kosong
 
-Jika Anda hanya ingin mereset sesi, hapus `agents/<agentId>/sessions/` untuk agen tersebut. Jika Anda ingin mempertahankan auth, biarkan `agents/<agentId>/agent/auth-profiles.json` dan status provider apa pun di bawah `credentials/` tetap ada.
+Jika Anda hanya ingin mereset sesi, hapus `agents/<agentId>/sessions/` untuk agent tersebut. Jika Anda ingin mempertahankan auth, biarkan `agents/<agentId>/agent/auth-profiles.json` dan state provider apa pun di bawah `credentials/` tetap ada.
 
 ## Referensi
 
 - [Pengujian](/id/help/testing)
-- [Mulai](/id/start/getting-started)
+- [Memulai](/id/start/getting-started)
 
 ## Terkait
 

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Anda menginginkan diagnosis cepat tentang kesehatan saluran + penerima sesi terbaru
-    - Anda menginginkan status “all” yang bisa langsung ditempel untuk debugging
+    - Anda ingin diagnosis cepat tentang kesehatan saluran + penerima sesi terbaru
+    - Anda menginginkan status “all” yang dapat ditempelkan untuk pemecahan masalah
 summary: Referensi CLI untuk `openclaw status` (diagnostik, probe, snapshot penggunaan)
 title: Status
 x-i18n:
-    generated_at: "2026-04-25T13:44:04Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:41:57Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b191b8d78d43fb9426bfad495815fd06ab7188b413beff6fb7eb90f811b6d261
+    source_hash: a85613e1830dc24253847e6517d3e155c175bb39ff6b01031ac5cb4291e276fa
     source_path: cli/status.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw status`
@@ -26,21 +26,23 @@ openclaw status --usage
 
 Catatan:
 
-- `--deep` menjalankan probe live (WhatsApp Web + Telegram + Discord + Slack + Signal).
-- `--usage` mencetak jendela penggunaan provider yang dinormalisasi sebagai `X% left`.
-- Output status sesi memisahkan `Execution:` dari `Runtime:`. `Execution` adalah path sandbox (`direct`, `docker/*`), sedangkan `Runtime` memberi tahu Anda apakah sesi menggunakan `OpenClaw Pi Default`, `OpenAI Codex`, backend CLI, atau backend ACP seperti `codex (acp/acpx)`. Lihat [runtime agent](/id/concepts/agent-runtimes) untuk perbedaan provider/model/runtime.
-- Field mentah `usage_percent` / `usagePercent` MiniMax adalah kuota yang tersisa, jadi OpenClaw membalikkannya sebelum ditampilkan; field berbasis hitungan diutamakan jika ada. Respons `model_remains` mengutamakan entri model chat, menurunkan label jendela dari timestamp bila diperlukan, dan menyertakan nama model dalam label paket.
-- Saat snapshot sesi saat ini jarang, `/status` dapat mengisi kembali penghitung token dan cache dari log penggunaan transkrip terbaru. Nilai live nonzero yang sudah ada tetap diutamakan dibanding nilai fallback transkrip.
-- Fallback transkrip juga dapat memulihkan label model runtime aktif saat entri sesi live tidak memilikinya. Jika model transkrip itu berbeda dari model yang dipilih, status menyelesaikan context window terhadap model runtime yang dipulihkan alih-alih model yang dipilih.
-- Untuk perhitungan ukuran prompt, fallback transkrip mengutamakan total berorientasi prompt yang lebih besar saat metadata sesi tidak ada atau lebih kecil, sehingga sesi custom-provider tidak turun menjadi tampilan token `0`.
-- Output mencakup penyimpanan sesi per agent saat beberapa agent dikonfigurasi.
-- Ikhtisar mencakup status instalasi/runtime layanan host Gateway + node saat tersedia.
-- Ikhtisar mencakup saluran pembaruan + SHA git (untuk checkout sumber).
-- Informasi pembaruan ditampilkan di Ikhtisar; jika pembaruan tersedia, status mencetak petunjuk untuk menjalankan `openclaw update` (lihat [Memperbarui](/id/install/updating)).
-- Permukaan status read-only (`status`, `status --json`, `status --all`) menyelesaikan SecretRef yang didukung untuk path konfigurasi targetnya bila memungkinkan.
-- Jika SecretRef saluran yang didukung dikonfigurasi tetapi tidak tersedia dalam path perintah saat ini, status tetap read-only dan melaporkan output terdegradasi alih-alih crash. Output untuk manusia menampilkan peringatan seperti “configured token unavailable in this command path”, dan output JSON menyertakan `secretDiagnostics`.
-- Saat resolusi SecretRef lokal-perintah berhasil, status mengutamakan snapshot yang telah diselesaikan dan menghapus penanda saluran “secret unavailable” sementara dari output akhir.
-- `status --all` mencakup baris ikhtisar Secrets dan bagian diagnosis yang merangkum diagnostik secret (dipotong demi keterbacaan) tanpa menghentikan pembuatan laporan.
+- `--deep` menjalankan probe langsung (WhatsApp Web + Telegram + Discord + Slack + Signal).
+- `openclaw status` biasa tetap berada pada jalur baca-saja yang cepat dan menandai memori sebagai `not checked`, bukan tidak tersedia, saat melewati inspeksi memori. Audit keamanan berat, kompatibilitas Plugin, dan probe vektor memori diserahkan ke `openclaw status --all`, `openclaw status --deep`, `openclaw security audit`, dan `openclaw memory status --deep`.
+- `status --json --all` melaporkan detail memori dari runtime Plugin memori aktif yang dipilih oleh `plugins.slots.memory`. Plugin memori kustom dapat membiarkan `agents.defaults.memorySearch.enabled` bawaan tetap nonaktif dan tetap melaporkan file, potongan, vektor, dan status FTS miliknya sendiri.
+- `--usage` mencetak jendela penggunaan penyedia yang dinormalisasi sebagai `X% left`.
+- Keluaran status sesi memisahkan `Execution:` dari `Runtime:`. `Execution` adalah jalur sandbox (`direct`, `docker/*`), sedangkan `Runtime` memberi tahu apakah sesi menggunakan `OpenClaw Pi Default`, `OpenAI Codex`, backend CLI, atau backend ACP seperti `codex (acp/acpx)`. Lihat [Runtime agen](/id/concepts/agent-runtimes) untuk perbedaan penyedia/model/runtime.
+- Kolom mentah `usage_percent` / `usagePercent` dari MiniMax adalah kuota yang tersisa, jadi OpenClaw membalikkannya sebelum ditampilkan; kolom berbasis jumlah menang saat tersedia. Respons `model_remains` memprioritaskan entri model chat, menurunkan label jendela dari stempel waktu bila diperlukan, dan menyertakan nama model dalam label paket.
+- Saat snapshot sesi saat ini jarang, `/status` dapat mengisi balik penghitung token dan cache dari log penggunaan transkrip terbaru. Nilai langsung bukan nol yang sudah ada tetap menang atas nilai fallback transkrip.
+- Fallback transkrip juga dapat memulihkan label model runtime aktif saat entri sesi langsung tidak memilikinya. Jika model transkrip tersebut berbeda dari model yang dipilih, status menyelesaikan jendela konteks terhadap model runtime yang dipulihkan, bukan model yang dipilih.
+- Untuk perhitungan ukuran prompt, fallback transkrip memprioritaskan total berorientasi prompt yang lebih besar saat metadata sesi hilang atau lebih kecil, sehingga sesi penyedia kustom tidak runtuh menjadi tampilan token `0`.
+- Keluaran menyertakan penyimpanan sesi per agen saat beberapa agen dikonfigurasi.
+- Ikhtisar menyertakan status instalasi/runtime Gateway + layanan host Node saat tersedia.
+- Ikhtisar menyertakan kanal pembaruan + SHA git (untuk checkout sumber).
+- Info pembaruan muncul di Ikhtisar; jika pembaruan tersedia, status mencetak petunjuk untuk menjalankan `openclaw update` (lihat [Memperbarui](/id/install/updating)).
+- Permukaan status baca-saja (`status`, `status --json`, `status --all`) menyelesaikan SecretRefs yang didukung untuk jalur konfigurasi yang ditargetkan jika memungkinkan.
+- Jika SecretRef saluran yang didukung dikonfigurasi tetapi tidak tersedia di jalur perintah saat ini, status tetap baca-saja dan melaporkan keluaran yang terdegradasi alih-alih crash. Keluaran manusia menampilkan peringatan seperti “token yang dikonfigurasi tidak tersedia di jalur perintah ini”, dan keluaran JSON menyertakan `secretDiagnostics`.
+- Saat penyelesaian SecretRef lokal perintah berhasil, status memprioritaskan snapshot yang terselesaikan dan menghapus penanda saluran sementara “rahasia tidak tersedia” dari keluaran akhir.
+- `status --all` menyertakan baris ikhtisar Rahasia dan bagian diagnosis yang merangkum diagnostik rahasia (dipotong agar mudah dibaca) tanpa menghentikan pembuatan laporan.
 
 ## Terkait
 

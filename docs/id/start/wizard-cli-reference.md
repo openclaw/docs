@@ -1,67 +1,67 @@
 ---
 read_when:
-    - Anda memerlukan perilaku terperinci untuk `openclaw onboard`
-    - Anda sedang men-debug hasil onboarding atau mengintegrasikan klien onboarding
+    - Anda memerlukan perilaku terperinci untuk openclaw onboard
+    - Anda sedang mendiagnosis hasil orientasi atau mengintegrasikan klien orientasi
 sidebarTitle: CLI reference
-summary: Referensi lengkap untuk alur penyiapan CLI, penyiapan auth/model, output, dan internal
+summary: Referensi lengkap untuk alur penyiapan CLI, penyiapan autentikasi/model, keluaran, dan internal
 title: Referensi penyiapan CLI
 x-i18n:
-    generated_at: "2026-04-26T11:39:26Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:12:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a967fd6734d8facaa732b40567c33e48434208bf861d102adc8a4ee042f13041
+    source_hash: 8d40a63ff27d6aaf4cda167ad0cdf3ad7c4f61ecf92d1cf51b5a0237b24917a7
     source_path: start/wizard-cli-reference.md
-    workflow: 15
+    workflow: 16
 ---
 
 Halaman ini adalah referensi lengkap untuk `openclaw onboard`.
 Untuk panduan singkat, lihat [Onboarding (CLI)](/id/start/wizard).
 
-## Apa yang dilakukan wizard
+## Yang dilakukan wizard
 
 Mode lokal (default) memandu Anda melalui:
 
-- Penyiapan model dan autentikasi (langganan OpenAI Code OAuth, Anthropic Claude CLI atau kunci API, serta opsi MiniMax, GLM, Ollama, Moonshot, StepFun, dan AI Gateway)
+- Penyiapan model dan auth (OAuth langganan OpenAI Code, Anthropic Claude CLI atau API key, plus opsi MiniMax, GLM, Ollama, Moonshot, StepFun, dan AI Gateway)
 - Lokasi workspace dan file bootstrap
-- Pengaturan Gateway (port, bind, auth, Tailscale)
-- Channel dan provider (Telegram, WhatsApp, Discord, Google Chat, Mattermost, Signal, BlueBubbles, dan plugin channel bawaan lainnya)
-- Instalasi daemon (LaunchAgent, systemd user unit, atau Scheduled Task Windows native dengan fallback folder Startup)
-- Pemeriksaan kesehatan
+- Pengaturan Gateway (port, bind, auth, tailscale)
+- Channel dan penyedia (Telegram, WhatsApp, Discord, Google Chat, Mattermost, Signal, BlueBubbles, dan Plugin channel bawaan lainnya)
+- Instalasi daemon (LaunchAgent, unit pengguna systemd, atau Windows Scheduled Task native dengan fallback folder Startup)
+- Health check
 - Penyiapan Skills
 
 Mode remote mengonfigurasi mesin ini untuk terhubung ke Gateway di tempat lain.
-Mode ini tidak menginstal atau memodifikasi apa pun di host remote.
+Mode ini tidak menginstal atau mengubah apa pun di host remote.
 
 ## Detail alur lokal
 
 <Steps>
-  <Step title="Deteksi konfigurasi yang ada">
+  <Step title="Deteksi konfigurasi yang sudah ada">
     - Jika `~/.openclaw/openclaw.json` ada, pilih Keep, Modify, atau Reset.
-    - Menjalankan ulang wizard tidak akan menghapus apa pun kecuali Anda secara eksplisit memilih Reset (atau memberikan `--reset`).
+    - Menjalankan ulang wizard tidak menghapus apa pun kecuali Anda secara eksplisit memilih Reset (atau meneruskan `--reset`).
     - CLI `--reset` default ke `config+creds+sessions`; gunakan `--reset-scope full` untuk juga menghapus workspace.
-    - Jika konfigurasi tidak valid atau berisi kunci lama, wizard berhenti dan meminta Anda menjalankan `openclaw doctor` sebelum melanjutkan.
+    - Jika konfigurasi tidak valid atau berisi kunci legacy, wizard berhenti dan meminta Anda menjalankan `openclaw doctor` sebelum melanjutkan.
     - Reset menggunakan `trash` dan menawarkan cakupan:
       - Hanya konfigurasi
       - Konfigurasi + kredensial + sesi
       - Reset penuh (juga menghapus workspace)
 
   </Step>
-  <Step title="Model dan autentikasi">
+  <Step title="Model dan auth">
     - Matriks opsi lengkap ada di [Opsi auth dan model](#auth-and-model-options).
 
   </Step>
   <Step title="Workspace">
     - Default `~/.openclaw/workspace` (dapat dikonfigurasi).
-    - Menyiapkan file workspace yang diperlukan untuk ritual bootstrap saat pertama kali dijalankan.
-    - Tata letak workspace: [Workspace agent](/id/concepts/agent-workspace).
+    - Menanam file workspace yang diperlukan untuk ritual bootstrap saat pertama kali dijalankan.
+    - Tata letak workspace: [Workspace agen](/id/concepts/agent-workspace).
 
   </Step>
   <Step title="Gateway">
-    - Meminta port, bind, mode auth, dan eksposur Tailscale.
-    - Rekomendasi: tetap aktifkan auth token bahkan untuk loopback agar klien WS lokal tetap harus diautentikasi.
+    - Meminta port, bind, mode auth, dan eksposur tailscale.
+    - Direkomendasikan: tetap aktifkan auth token bahkan untuk loopback agar klien WS lokal harus melakukan autentikasi.
     - Dalam mode token, penyiapan interaktif menawarkan:
       - **Buat/simpan token plaintext** (default)
-      - **Gunakan SecretRef** (opsional)
+      - **Gunakan SecretRef** (opt-in)
     - Dalam mode kata sandi, penyiapan interaktif juga mendukung penyimpanan plaintext atau SecretRef.
     - Jalur SecretRef token non-interaktif: `--gateway-token-ref-env <ENV_VAR>`.
       - Memerlukan env var yang tidak kosong di lingkungan proses onboarding.
@@ -74,34 +74,34 @@ Mode ini tidak menginstal atau memodifikasi apa pun di host remote.
     - [WhatsApp](/id/channels/whatsapp): login QR opsional
     - [Telegram](/id/channels/telegram): token bot
     - [Discord](/id/channels/discord): token bot
-    - [Google Chat](/id/channels/googlechat): JSON service account + audiens webhook
+    - [Google Chat](/id/channels/googlechat): JSON akun layanan + audiens webhook
     - [Mattermost](/id/channels/mattermost): token bot + URL dasar
     - [Signal](/id/channels/signal): instalasi `signal-cli` opsional + konfigurasi akun
     - [BlueBubbles](/id/channels/bluebubbles): direkomendasikan untuk iMessage; URL server + kata sandi + webhook
-    - [iMessage](/id/channels/imessage): path CLI `imsg` lama + akses DB
-    - Keamanan DM: default-nya adalah pairing. DM pertama mengirim kode; setujui melalui
+    - [iMessage](/id/channels/imessage): jalur CLI `imsg` legacy + akses DB
+    - Keamanan DM: default adalah pairing. DM pertama mengirim kode; setujui melalui
       `openclaw pairing approve <channel> <code>` atau gunakan allowlist.
   </Step>
   <Step title="Instalasi daemon">
     - macOS: LaunchAgent
-      - Memerlukan sesi pengguna yang sedang login; untuk headless, gunakan LaunchDaemon kustom (tidak disertakan).
-    - Linux dan Windows melalui WSL2: systemd user unit
-      - Wizard mencoba `loginctl enable-linger <user>` agar gateway tetap aktif setelah logout.
-      - Mungkin meminta sudo (menulis `/var/lib/systemd/linger`); wizard mencoba tanpa sudo terlebih dahulu.
+      - Memerlukan sesi pengguna yang sedang login; untuk headless, gunakan LaunchDaemon kustom (tidak dikirimkan).
+    - Linux dan Windows melalui WSL2: unit pengguna systemd
+      - Wizard mencoba `loginctl enable-linger <user>` agar Gateway tetap aktif setelah logout.
+      - Dapat meminta sudo (menulis `/var/lib/systemd/linger`); wizard mencoba tanpa sudo terlebih dahulu.
     - Windows native: Scheduled Task terlebih dahulu
-      - Jika pembuatan task ditolak, OpenClaw akan menggunakan fallback item login folder Startup per pengguna dan langsung memulai gateway.
-      - Scheduled Task tetap lebih disukai karena menyediakan status supervisor yang lebih baik.
-    - Pemilihan runtime: Node (direkomendasikan; wajib untuk WhatsApp dan Telegram). Bun tidak direkomendasikan.
+      - Jika pembuatan task ditolak, OpenClaw beralih ke item login folder Startup per pengguna dan langsung memulai Gateway.
+      - Scheduled Tasks tetap lebih disukai karena memberikan status supervisor yang lebih baik.
+    - Pilihan runtime: Node (direkomendasikan; diperlukan untuk WhatsApp dan Telegram). Bun tidak direkomendasikan.
 
   </Step>
-  <Step title="Pemeriksaan kesehatan">
-    - Memulai gateway (jika perlu) dan menjalankan `openclaw health`.
-    - `openclaw status --deep` menambahkan probe kesehatan gateway langsung ke output status, termasuk probe channel bila didukung.
+  <Step title="Health check">
+    - Memulai Gateway (jika diperlukan) dan menjalankan `openclaw health`.
+    - `openclaw status --deep` menambahkan probe kesehatan Gateway live ke output status, termasuk probe channel saat didukung.
 
   </Step>
   <Step title="Skills">
     - Membaca Skills yang tersedia dan memeriksa persyaratan.
-    - Memungkinkan Anda memilih node manager: npm, pnpm, atau bun.
+    - Memungkinkan Anda memilih manajer node: npm, pnpm, atau bun.
     - Menginstal dependensi opsional (beberapa menggunakan Homebrew di macOS).
 
   </Step>
@@ -112,8 +112,8 @@ Mode ini tidak menginstal atau memodifikasi apa pun di host remote.
 </Steps>
 
 <Note>
-Jika tidak ada GUI yang terdeteksi, wizard mencetak instruksi port-forward SSH untuk Control UI alih-alih membuka browser.
-Jika aset Control UI tidak ada, wizard mencoba membangunnya; fallback-nya adalah `pnpm ui:build` (secara otomatis menginstal dependensi UI).
+Jika tidak ada GUI yang terdeteksi, wizard mencetak instruksi SSH port-forward untuk Control UI alih-alih membuka browser.
+Jika aset Control UI hilang, wizard mencoba membangunnya; fallback adalah `pnpm ui:build` (menginstal dependensi UI secara otomatis).
 </Note>
 
 ## Detail mode remote
@@ -121,7 +121,7 @@ Jika aset Control UI tidak ada, wizard mencoba membangunnya; fallback-nya adalah
 Mode remote mengonfigurasi mesin ini untuk terhubung ke Gateway di tempat lain.
 
 <Info>
-Mode remote tidak menginstal atau memodifikasi apa pun di host remote.
+Mode remote tidak menginstal atau mengubah apa pun di host remote.
 </Info>
 
 Yang Anda atur:
@@ -130,8 +130,8 @@ Yang Anda atur:
 - Token jika auth Gateway remote diperlukan (direkomendasikan)
 
 <Note>
-- Jika gateway hanya loopback, gunakan tunneling SSH atau tailnet.
-- Petunjuk penemuan:
+- Jika Gateway hanya loopback, gunakan SSH tunneling atau tailnet.
+- Petunjuk discovery:
   - macOS: Bonjour (`dns-sd`)
   - Linux: Avahi (`avahi-browse`)
 
@@ -140,35 +140,35 @@ Yang Anda atur:
 ## Opsi auth dan model
 
 <AccordionGroup>
-  <Accordion title="Kunci API Anthropic">
+  <Accordion title="API key Anthropic">
     Menggunakan `ANTHROPIC_API_KEY` jika ada atau meminta kunci, lalu menyimpannya untuk penggunaan daemon.
   </Accordion>
   <Accordion title="Langganan OpenAI Code (OAuth)">
     Alur browser; tempel `code#state`.
 
-    Menetapkan `agents.defaults.model` ke `openai-codex/gpt-5.5` saat model belum disetel atau sudah termasuk keluarga OpenAI.
+    Mengatur `agents.defaults.model` ke `openai-codex/gpt-5.5` saat model belum diatur atau sudah keluarga OpenAI.
 
   </Accordion>
   <Accordion title="Langganan OpenAI Code (pairing perangkat)">
-    Alur pairing browser dengan kode perangkat yang berlaku singkat.
+    Alur pairing browser dengan kode perangkat berumur pendek.
 
-    Menetapkan `agents.defaults.model` ke `openai-codex/gpt-5.5` saat model belum disetel atau sudah termasuk keluarga OpenAI.
-
-  </Accordion>
-  <Accordion title="Kunci API OpenAI">
-    Menggunakan `OPENAI_API_KEY` jika ada atau meminta kunci, lalu menyimpan kredensial dalam profil auth.
-
-    Menetapkan `agents.defaults.model` ke `openai/gpt-5.5` saat model belum disetel, `openai/*`, atau `openai-codex/*`.
+    Mengatur `agents.defaults.model` ke `openai-codex/gpt-5.5` saat model belum diatur atau sudah keluarga OpenAI.
 
   </Accordion>
-  <Accordion title="Kunci API xAI (Grok)">
-    Meminta `XAI_API_KEY` dan mengonfigurasi xAI sebagai provider model.
+  <Accordion title="API key OpenAI">
+    Menggunakan `OPENAI_API_KEY` jika ada atau meminta kunci, lalu menyimpan kredensial di profil auth.
+
+    Mengatur `agents.defaults.model` ke `openai/gpt-5.5` saat model belum diatur, `openai/*`, atau `openai-codex/*`.
+
+  </Accordion>
+  <Accordion title="API key xAI (Grok)">
+    Meminta `XAI_API_KEY` dan mengonfigurasi xAI sebagai penyedia model.
   </Accordion>
   <Accordion title="OpenCode">
     Meminta `OPENCODE_API_KEY` (atau `OPENCODE_ZEN_API_KEY`) dan memungkinkan Anda memilih katalog Zen atau Go.
     URL penyiapan: [opencode.ai/auth](https://opencode.ai/auth).
   </Accordion>
-  <Accordion title="Kunci API (generik)">
+  <Accordion title="API key (generik)">
     Menyimpan kunci untuk Anda.
   </Accordion>
   <Accordion title="Vercel AI Gateway">
@@ -176,16 +176,16 @@ Yang Anda atur:
     Detail selengkapnya: [Vercel AI Gateway](/id/providers/vercel-ai-gateway).
   </Accordion>
   <Accordion title="Cloudflare AI Gateway">
-    Meminta account ID, gateway ID, dan `CLOUDFLARE_AI_GATEWAY_API_KEY`.
+    Meminta ID akun, ID Gateway, dan `CLOUDFLARE_AI_GATEWAY_API_KEY`.
     Detail selengkapnya: [Cloudflare AI Gateway](/id/providers/cloudflare-ai-gateway).
   </Accordion>
   <Accordion title="MiniMax">
-    Konfigurasi ditulis secara otomatis. Default hosted adalah `MiniMax-M2.7`; penyiapan kunci API menggunakan
+    Konfigurasi ditulis otomatis. Default hosted adalah `MiniMax-M2.7`; penyiapan API-key menggunakan
     `minimax/...`, dan penyiapan OAuth menggunakan `minimax-portal/...`.
     Detail selengkapnya: [MiniMax](/id/providers/minimax).
   </Accordion>
   <Accordion title="StepFun">
-    Konfigurasi ditulis secara otomatis untuk StepFun standard atau Step Plan pada endpoint China atau global.
+    Konfigurasi ditulis otomatis untuk StepFun standard atau Step Plan pada endpoint Tiongkok atau global.
     Standard saat ini mencakup `step-3.5-flash`, dan Step Plan juga mencakup `step-3.5-flash-2603`.
     Detail selengkapnya: [StepFun](/id/providers/stepfun).
   </Accordion>
@@ -193,23 +193,23 @@ Yang Anda atur:
     Meminta `SYNTHETIC_API_KEY`.
     Detail selengkapnya: [Synthetic](/id/providers/synthetic).
   </Accordion>
-  <Accordion title="Ollama (Cloud dan model terbuka lokal)">
+  <Accordion title="Ollama (Cloud dan model open lokal)">
     Meminta `Cloud + Local`, `Cloud only`, atau `Local only` terlebih dahulu.
     `Cloud only` menggunakan `OLLAMA_API_KEY` dengan `https://ollama.com`.
     Mode berbasis host meminta URL dasar (default `http://127.0.0.1:11434`), menemukan model yang tersedia, dan menyarankan default.
-    `Cloud + Local` juga memeriksa apakah host Ollama tersebut sudah login untuk akses cloud.
+    `Cloud + Local` juga memeriksa apakah host Ollama tersebut sudah masuk untuk akses cloud.
     Detail selengkapnya: [Ollama](/id/providers/ollama).
   </Accordion>
   <Accordion title="Moonshot dan Kimi Coding">
-    Konfigurasi Moonshot (Kimi K2) dan Kimi Coding ditulis secara otomatis.
+    Konfigurasi Moonshot (Kimi K2) dan Kimi Coding ditulis otomatis.
     Detail selengkapnya: [Moonshot AI (Kimi + Kimi Coding)](/id/providers/moonshot).
   </Accordion>
-  <Accordion title="Provider kustom">
-    Berfungsi dengan endpoint yang kompatibel dengan OpenAI dan Anthropic.
+  <Accordion title="Penyedia kustom">
+    Berfungsi dengan endpoint yang kompatibel OpenAI dan kompatibel Anthropic.
 
-    Onboarding interaktif mendukung pilihan penyimpanan kunci API yang sama seperti alur kunci API provider lainnya:
-    - **Tempel kunci API sekarang** (plaintext)
-    - **Gunakan referensi secret** (referensi env atau referensi provider yang dikonfigurasi, dengan validasi preflight)
+    Onboarding interaktif mendukung pilihan penyimpanan API key yang sama seperti alur API key penyedia lainnya:
+    - **Tempel API key sekarang** (plaintext)
+    - **Gunakan referensi rahasia** (env ref atau ref penyedia yang dikonfigurasi, dengan validasi preflight)
 
     Flag non-interaktif:
     - `--auth-choice custom-api-key`
@@ -218,6 +218,7 @@ Yang Anda atur:
     - `--custom-api-key` (opsional; fallback ke `CUSTOM_API_KEY`)
     - `--custom-provider-id` (opsional)
     - `--custom-compatibility <openai|anthropic>` (opsional; default `openai`)
+    - `--custom-image-input` / `--custom-text-input` (opsional; mengganti kemampuan input model yang disimpulkan)
 
   </Accordion>
   <Accordion title="Lewati">
@@ -227,36 +228,37 @@ Yang Anda atur:
 
 Perilaku model:
 
-- Pilih model default dari opsi yang terdeteksi, atau masukkan provider dan model secara manual.
-- Saat onboarding dimulai dari pilihan auth provider, pemilih model secara otomatis memprioritaskan
-  provider tersebut. Untuk Volcengine dan BytePlus, preferensi yang sama
-  juga mencocokkan varian coding-plan mereka (`volcengine-plan/*`,
+- Pilih model default dari opsi yang terdeteksi, atau masukkan penyedia dan model secara manual.
+- Onboarding penyedia kustom menyimpulkan dukungan gambar untuk ID model umum dan hanya bertanya saat nama model tidak diketahui.
+- Saat onboarding dimulai dari pilihan auth penyedia, pemilih model otomatis memprioritaskan
+  penyedia tersebut. Untuk Volcengine dan BytePlus, preferensi yang sama
+  juga cocok dengan varian coding-plan mereka (`volcengine-plan/*`,
   `byteplus-plan/*`).
-- Jika filter provider yang diprioritaskan itu kosong, pemilih akan kembali ke
-  katalog lengkap alih-alih tidak menampilkan model sama sekali.
-- Wizard menjalankan pemeriksaan model dan memperingatkan jika model yang dikonfigurasi tidak dikenal atau auth-nya tidak ada.
+- Jika filter penyedia pilihan tersebut akan kosong, pemilih kembali ke
+  katalog lengkap alih-alih tidak menampilkan model apa pun.
+- Wizard menjalankan pemeriksaan model dan memperingatkan jika model yang dikonfigurasi tidak diketahui atau auth hilang.
 
-Path kredensial dan profil:
+Jalur kredensial dan profil:
 
-- Profil auth (kunci API + OAuth): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- Impor OAuth lama: `~/.openclaw/credentials/oauth.json`
+- Profil auth (API key + OAuth): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Impor OAuth legacy: `~/.openclaw/credentials/oauth.json`
 
 Mode penyimpanan kredensial:
 
-- Perilaku onboarding default menyimpan kunci API sebagai nilai plaintext dalam profil auth.
+- Perilaku onboarding default menyimpan API key sebagai nilai plaintext di profil auth.
 - `--secret-input-mode ref` mengaktifkan mode referensi alih-alih penyimpanan kunci plaintext.
   Dalam penyiapan interaktif, Anda dapat memilih salah satu:
-  - referensi environment variable (misalnya `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
-  - referensi provider yang dikonfigurasi (`file` atau `exec`) dengan alias provider + id
+  - ref environment variable (misalnya `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`)
+  - ref penyedia yang dikonfigurasi (`file` atau `exec`) dengan alias penyedia + id
 - Mode referensi interaktif menjalankan validasi preflight cepat sebelum menyimpan.
-  - Referensi env: memvalidasi nama variabel + nilai yang tidak kosong di lingkungan onboarding saat ini.
-  - Referensi provider: memvalidasi konfigurasi provider dan me-resolve id yang diminta.
+  - Env refs: memvalidasi nama variabel + nilai tidak kosong di lingkungan onboarding saat ini.
+  - Provider refs: memvalidasi konfigurasi penyedia dan menyelesaikan id yang diminta.
   - Jika preflight gagal, onboarding menampilkan error dan memungkinkan Anda mencoba lagi.
-- Dalam mode non-interaktif, `--secret-input-mode ref` hanya didukung berbasis env.
-  - Setel env var provider di lingkungan proses onboarding.
-  - Flag kunci inline (misalnya `--openai-api-key`) mengharuskan env var tersebut disetel; jika tidak, onboarding gagal dengan cepat.
-  - Untuk provider kustom, mode `ref` non-interaktif menyimpan `models.providers.<id>.apiKey` sebagai `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
-  - Dalam kasus provider kustom tersebut, `--custom-api-key` mengharuskan `CUSTOM_API_KEY` disetel; jika tidak, onboarding gagal dengan cepat.
+- Dalam mode non-interaktif, `--secret-input-mode ref` hanya berbasis env.
+  - Atur env var penyedia di lingkungan proses onboarding.
+  - Flag kunci inline (misalnya `--openai-api-key`) mengharuskan env var tersebut diatur; jika tidak, onboarding gagal cepat.
+  - Untuk penyedia kustom, mode `ref` non-interaktif menyimpan `models.providers.<id>.apiKey` sebagai `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`.
+  - Dalam kasus penyedia kustom tersebut, `--custom-api-key` mengharuskan `CUSTOM_API_KEY` diatur; jika tidak, onboarding gagal cepat.
 - Kredensial auth Gateway mendukung pilihan plaintext dan SecretRef dalam penyiapan interaktif:
   - Mode token: **Buat/simpan token plaintext** (default) atau **Gunakan SecretRef**.
   - Mode kata sandi: plaintext atau SecretRef.
@@ -264,28 +266,28 @@ Mode penyimpanan kredensial:
 - Penyiapan plaintext yang sudah ada tetap berfungsi tanpa perubahan.
 
 <Note>
-Tips headless dan server: selesaikan OAuth di mesin dengan browser, lalu salin
-`auth-profiles.json` milik agent tersebut (misalnya
-`~/.openclaw/agents/<agentId>/agent/auth-profiles.json`, atau path
+Kiat headless dan server: selesaikan OAuth di mesin yang memiliki peramban, lalu salin
+`auth-profiles.json` milik agen tersebut (misalnya
+`~/.openclaw/agents/<agentId>/agent/auth-profiles.json`, atau jalur
 `$OPENCLAW_STATE_DIR/...` yang sesuai) ke host gateway. `credentials/oauth.json`
-hanyalah sumber impor lama.
+hanya merupakan sumber impor lama.
 </Note>
 
-## Output dan internal
+## Keluaran dan internal
 
-Field umum dalam `~/.openclaw/openclaw.json`:
+Bidang umum di `~/.openclaw/openclaw.json`:
 
 - `agents.defaults.workspace`
-- `agents.defaults.skipBootstrap` saat `--skip-bootstrap` diberikan
-- `agents.defaults.model` / `models.providers` (jika MiniMax dipilih)
-- `tools.profile` (onboarding lokal default ke `"coding"` saat belum disetel; nilai eksplisit yang sudah ada dipertahankan)
-- `gateway.*` (mode, bind, auth, Tailscale)
-- `session.dmScope` (onboarding lokal menetapkan default ini ke `per-channel-peer` saat belum disetel; nilai eksplisit yang sudah ada dipertahankan)
+- `agents.defaults.skipBootstrap` saat `--skip-bootstrap` diteruskan
+- `agents.defaults.model` / `models.providers` (jika Minimax dipilih)
+- `tools.profile` (penyiapan awal lokal menggunakan default `"coding"` saat belum diatur; nilai eksplisit yang sudah ada dipertahankan)
+- `gateway.*` (mode, bind, auth, tailscale)
+- `session.dmScope` (penyiapan awal lokal menggunakan default `per-channel-peer` saat belum diatur; nilai eksplisit yang sudah ada dipertahankan)
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- Allowlist channel (Slack, Discord, Matrix, Microsoft Teams) saat Anda ikut serta selama prompt (nama di-resolve ke ID jika memungkinkan)
+- Daftar izin channel (Slack, Discord, Matrix, Microsoft Teams) saat Anda ikut serta selama prompt (nama diselesaikan menjadi ID jika memungkinkan)
 - `skills.install.nodeManager`
   - Flag `setup --node-manager` menerima `npm`, `pnpm`, atau `bun`.
-  - Konfigurasi manual tetap dapat menetapkan `skills.install.nodeManager: "yarn"` nanti.
+  - Konfigurasi manual tetap dapat mengatur `skills.install.nodeManager: "yarn"` nanti.
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
 - `wizard.lastRunCommit`
@@ -294,12 +296,12 @@ Field umum dalam `~/.openclaw/openclaw.json`:
 
 `openclaw agents add` menulis `agents.list[]` dan `bindings` opsional.
 
-Kredensial WhatsApp disimpan di `~/.openclaw/credentials/whatsapp/<accountId>/`.
-Sesi disimpan di `~/.openclaw/agents/<agentId>/sessions/`.
+Kredensial WhatsApp ditempatkan di bawah `~/.openclaw/credentials/whatsapp/<accountId>/`.
+Sesi disimpan di bawah `~/.openclaw/agents/<agentId>/sessions/`.
 
 <Note>
-Beberapa channel disediakan sebagai Plugin. Saat dipilih selama penyiapan, wizard
-meminta Anda menginstal Plugin tersebut (npm atau path lokal) sebelum konfigurasi channel.
+Beberapa channel dikirim sebagai plugin. Saat dipilih selama penyiapan, wizard
+meminta untuk memasang plugin (npm atau jalur lokal) sebelum konfigurasi channel.
 </Note>
 
 RPC wizard Gateway:
@@ -309,19 +311,19 @@ RPC wizard Gateway:
 - `wizard.cancel`
 - `wizard.status`
 
-Klien (aplikasi macOS dan Control UI) dapat merender langkah-langkah tanpa mengimplementasikan ulang logika onboarding.
+Klien (aplikasi macOS dan UI Kontrol) dapat merender langkah-langkah tanpa mengimplementasikan ulang logika penyiapan awal.
 
 Perilaku penyiapan Signal:
 
 - Mengunduh aset rilis yang sesuai
-- Menyimpannya di `~/.openclaw/tools/signal-cli/<version>/`
+- Menyimpannya di bawah `~/.openclaw/tools/signal-cli/<version>/`
 - Menulis `channels.signal.cliPath` dalam konfigurasi
 - Build JVM memerlukan Java 21
 - Build native digunakan saat tersedia
-- Windows menggunakan WSL2 dan mengikuti alur Linux signal-cli di dalam WSL
+- Windows menggunakan WSL2 dan mengikuti alur signal-cli Linux di dalam WSL
 
-## Dokumen terkait
+## Dokumentasi terkait
 
-- Pusat onboarding: [Onboarding (CLI)](/id/start/wizard)
-- Otomatisasi dan skrip: [CLI Automation](/id/start/wizard-cli-automation)
+- Pusat penyiapan awal: [Penyiapan Awal (CLI)](/id/start/wizard)
+- Otomatisasi dan skrip: [Otomatisasi CLI](/id/start/wizard-cli-automation)
 - Referensi perintah: [`openclaw onboard`](/id/cli/onboard)

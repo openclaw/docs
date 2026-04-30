@@ -1,76 +1,62 @@
 ---
 read_when:
-    - Mengonfigurasi persetujuan exec atau allowlist
+    - Mengonfigurasi persetujuan exec atau daftar izinkan
     - Mengimplementasikan UX persetujuan exec di aplikasi macOS
-    - Meninjau prompt sandbox-escape dan implikasinya
+    - Meninjau perintah untuk keluar dari lingkungan terisolasi dan implikasinya
 sidebarTitle: Exec approvals
-summary: 'Persetujuan exec host: knob kebijakan, allowlist, dan alur kerja YOLO/strict'
-title: Persetujuan exec
+summary: 'Persetujuan eksekusi host: kontrol kebijakan, daftar izin, dan alur kerja YOLO/ketat'
+title: Persetujuan eksekusi
 x-i18n:
-    generated_at: "2026-04-26T11:40:01Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:15:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 868cee97882f7298a092bdcb9ec8fd058a5d7cb8745fad2edd712fabfb512e52
+    source_hash: 71c16d0e547c4dd42a351d37e37e97b681a062cd496d5e0cba923b54c8f5b0e9
     source_path: tools/exec-approvals.md
-    workflow: 15
+    workflow: 16
 ---
 
-Persetujuan exec adalah **guardrail aplikasi pendamping / host node** untuk mengizinkan
-agent tersandbox menjalankan perintah pada host nyata (`gateway` atau `node`). Ini adalah
-interlock keamanan: perintah hanya diizinkan ketika kebijakan + allowlist +
-(persetujuan pengguna opsional) semuanya setuju. Persetujuan exec menumpuk **di atas**
-kebijakan tool dan elevated gating (kecuali elevated disetel ke `full`, yang
-melewati persetujuan).
+Persetujuan exec adalah **pagar pengaman aplikasi pendamping / host Node** untuk memungkinkan agen bersandbox menjalankan perintah pada host nyata (`gateway` atau `node`). Sebuah interlock keselamatan: perintah diizinkan hanya ketika kebijakan + daftar izin + persetujuan pengguna (opsional) semuanya sepakat. Persetujuan exec ditumpuk **di atas** kebijakan alat dan gating yang ditingkatkan (kecuali elevated diatur ke `full`, yang melewati persetujuan).
 
 <Note>
-Kebijakan efektif adalah yang **lebih ketat** antara default `tools.exec.*` dan
-persetujuan; jika field persetujuan dihilangkan, nilai `tools.exec`
-yang digunakan. Exec host juga menggunakan state persetujuan lokal pada mesin tersebut — `ask: "always"` lokal pada
-`~/.openclaw/exec-approvals.json` akan tetap memunculkan prompt meskipun default sesi atau config meminta `ask: "on-miss"`.
+Kebijakan efektif adalah yang **lebih ketat** antara default `tools.exec.*` dan persetujuan; jika suatu kolom persetujuan dihilangkan, nilai `tools.exec` digunakan. Exec host juga menggunakan status persetujuan lokal pada mesin tersebut — `ask: "always"` lokal-host di `~/.openclaw/exec-approvals.json` tetap meminta persetujuan meskipun default sesi atau konfigurasi meminta `ask: "on-miss"`.
 </Note>
 
 ## Memeriksa kebijakan efektif
 
-| Command                                                          | Apa yang ditampilkan                                                                    |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Kebijakan yang diminta, sumber kebijakan host, dan hasil efektifnya.                    |
-| `openclaw exec-policy show`                                      | Tampilan gabungan mesin lokal.                                                          |
-| `openclaw exec-policy set` / `preset`                            | Menyinkronkan kebijakan yang diminta lokal dengan file persetujuan host lokal dalam satu langkah. |
+| Perintah                                                          | Yang ditampilkan                                                                          |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `openclaw approvals get` / `--gateway` / `--node <id\|name\|ip>` | Kebijakan yang diminta, sumber kebijakan host, dan hasil efektif.                       |
+| `openclaw exec-policy show`                                      | Tampilan gabungan mesin lokal.                                                             |
+| `openclaw exec-policy set` / `preset`                            | Menyinkronkan kebijakan lokal yang diminta dengan file persetujuan host lokal dalam satu langkah. |
 
-Saat scope lokal meminta `host=node`, `exec-policy show` melaporkan
-scope tersebut sebagai dikelola node saat runtime alih-alih berpura-pura bahwa file
-persetujuan lokal adalah sumber kebenarannya.
+Ketika cakupan lokal meminta `host=node`, `exec-policy show` melaporkan cakupan itu sebagai dikelola Node saat runtime alih-alih berpura-pura bahwa file persetujuan lokal adalah sumber kebenaran.
 
-Jika UI aplikasi pendamping **tidak tersedia**, setiap permintaan yang biasanya
-memunculkan prompt akan diselesaikan oleh **ask fallback** (default: `deny`).
+Jika UI aplikasi pendamping **tidak tersedia**, permintaan apa pun yang biasanya memunculkan prompt akan diselesaikan oleh **fallback ask** (default: `deny`).
 
 <Tip>
-Klien persetujuan chat bawaan dapat melakukan seed affordance khusus saluran pada
-pesan persetujuan yang tertunda. Misalnya, Matrix melakukan seed shortcut reaksi
-(`✅` izinkan sekali, `❌` tolak, `♾️` izinkan selalu) sambil tetap membiarkan
-perintah `/approve ...` di pesan sebagai fallback.
+Klien persetujuan chat native dapat menyiapkan affordance khusus kanal pada pesan persetujuan tertunda. Misalnya, Matrix menyiapkan pintasan reaksi (`✅` izinkan sekali, `❌` tolak, `♾️` selalu izinkan) sambil tetap menyertakan perintah `/approve ...` di pesan sebagai fallback.
 </Tip>
 
-## Tempat ini berlaku
+## Tempat penerapan
 
 Persetujuan exec diberlakukan secara lokal pada host eksekusi:
 
-- **Host Gateway** → proses `openclaw` pada mesin gateway.
-- **Host node** → runner node (aplikasi pendamping macOS atau host node headless).
+- **Host Gateway** → proses `openclaw` pada mesin Gateway.
+- **Host Node** → runner Node (aplikasi pendamping macOS atau host Node headless).
 
 ### Model kepercayaan
 
-- Pemanggil yang diautentikasi Gateway adalah operator tepercaya untuk Gateway tersebut.
-- Node yang dipasangkan memperluas kapabilitas operator tepercaya itu ke host node.
-- Persetujuan exec mengurangi risiko eksekusi yang tidak disengaja, tetapi **bukan** batas autentikasi per pengguna.
-- Run host-node yang disetujui mengikat konteks eksekusi kanonis: cwd kanonis, argv persis, binding env saat ada, dan path executable yang dipatok bila berlaku.
-- Untuk shell script dan pemanggilan file interpreter/runtime langsung, OpenClaw juga mencoba mengikat satu operand file lokal konkret. Jika file yang diikat ini berubah setelah persetujuan tetapi sebelum eksekusi, run akan ditolak alih-alih menjalankan konten yang berubah.
-- Pengikatan file sengaja bersifat best-effort, **bukan** model semantik lengkap untuk setiap path loader interpreter/runtime. Jika mode persetujuan tidak dapat mengidentifikasi tepat satu file lokal konkret untuk diikat, mode ini menolak membuat run berbasis persetujuan alih-alih berpura-pura memiliki cakupan penuh.
+- Pemanggil yang diautentikasi Gateway dipercaya sebagai operator untuk Gateway tersebut.
+- Node yang dipasangkan memperluas kapabilitas operator tepercaya itu ke host Node.
+- Persetujuan exec mengurangi risiko eksekusi tidak disengaja, tetapi **bukan** batas autentikasi per pengguna.
+- Eksekusi host Node yang disetujui mengikat konteks eksekusi kanonis: cwd kanonis, argv persis, pengikatan env jika ada, dan path executable yang dipin jika berlaku.
+- Untuk skrip shell dan pemanggilan file interpreter/runtime langsung, OpenClaw juga mencoba mengikat satu operand file lokal konkret. Jika file terikat itu berubah setelah persetujuan tetapi sebelum eksekusi, eksekusi ditolak alih-alih menjalankan konten yang bergeser.
+- Pengikatan file sengaja bersifat upaya-terbaik, **bukan** model semantik lengkap dari setiap path loader interpreter/runtime. Jika mode persetujuan tidak dapat mengidentifikasi tepat satu file lokal konkret untuk diikat, mode itu menolak membuat eksekusi berbasis persetujuan alih-alih berpura-pura memiliki cakupan penuh.
 
 ### Pemisahan macOS
 
-- **Layanan host node** meneruskan `system.run` ke **aplikasi macOS** melalui IPC lokal.
-- **Aplikasi macOS** menegakkan persetujuan dan mengeksekusi perintah dalam konteks UI.
+- **Layanan host Node** meneruskan `system.run` ke **aplikasi macOS** melalui IPC lokal.
+- **Aplikasi macOS** memberlakukan persetujuan dan menjalankan perintah dalam konteks UI.
 
 ## Pengaturan dan penyimpanan
 
@@ -105,6 +91,8 @@ Contoh skema:
         {
           "id": "B0C8C0B3-2C2D-4F8A-9A3C-5A4B3C2D1E0F",
           "pattern": "~/Projects/**/bin/rg",
+          "source": "allow-always",
+          "commandText": "rg -n TODO",
           "lastUsedAt": 1737150000000,
           "lastUsedCommand": "rg -n TODO",
           "lastResolvedPath": "/Users/user/Projects/.../bin/rg"
@@ -115,13 +103,13 @@ Contoh skema:
 }
 ```
 
-## Knob kebijakan
+## Kenop kebijakan
 
 ### `exec.security`
 
 <ParamField path="security" type='"deny" | "allowlist" | "full"'>
   - `deny` — blokir semua permintaan exec host.
-  - `allowlist` — izinkan hanya perintah yang ada di allowlist.
+  - `allowlist` — izinkan hanya perintah dalam daftar izin.
   - `full` — izinkan semuanya (setara dengan elevated).
 
 </ParamField>
@@ -129,19 +117,19 @@ Contoh skema:
 ### `exec.ask`
 
 <ParamField path="ask" type='"off" | "on-miss" | "always"'>
-  - `off` — jangan pernah memunculkan prompt.
-  - `on-miss` — munculkan prompt hanya saat allowlist tidak cocok.
-  - `always` — munculkan prompt pada setiap perintah. Kepercayaan tahan lama `allow-always` **tidak** menekan prompt saat mode ask efektif adalah `always`.
+  - `off` — jangan pernah meminta persetujuan.
+  - `on-miss` — minta persetujuan hanya ketika daftar izin tidak cocok.
+  - `always` — minta persetujuan pada setiap perintah. Kepercayaan tahan lama `allow-always` **tidak** menekan prompt ketika mode ask efektif adalah `always`.
 
 </ParamField>
 
 ### `askFallback`
 
 <ParamField path="askFallback" type='"deny" | "allowlist" | "full"'>
-  Resolusi saat prompt diperlukan tetapi tidak ada UI yang dapat dijangkau.
+  Penyelesaian ketika prompt diperlukan tetapi tidak ada UI yang dapat dijangkau.
 
 - `deny` — blokir.
-- `allowlist` — izinkan hanya jika allowlist cocok.
+- `allowlist` — izinkan hanya jika daftar izin cocok.
 - `full` — izinkan.
 
 </ParamField>
@@ -149,13 +137,13 @@ Contoh skema:
 ### `tools.exec.strictInlineEval`
 
 <ParamField path="strictInlineEval" type="boolean">
-  Saat `true`, OpenClaw memperlakukan bentuk code-eval inline sebagai khusus-persetujuan
-  meskipun binary interpreter itu sendiri ada di allowlist. Defense-in-depth
-  untuk loader interpreter yang tidak dapat dipetakan dengan bersih ke satu operand
+  Ketika `true`, OpenClaw memperlakukan bentuk evaluasi kode inline sebagai hanya-persetujuan
+  meskipun biner interpreter itu sendiri ada dalam daftar izin. Pertahanan berlapis
+  untuk loader interpreter yang tidak dapat dipetakan dengan rapi ke satu operand
   file stabil.
 </ParamField>
 
-Contoh yang ditangkap oleh mode strict:
+Contoh yang ditangkap mode ketat:
 
 - `python -c`
 - `node -e`, `node --eval`, `node -p`
@@ -165,49 +153,38 @@ Contoh yang ditangkap oleh mode strict:
 - `lua -e`
 - `osascript -e`
 
-Dalam mode strict, perintah ini tetap memerlukan persetujuan eksplisit, dan
-`allow-always` tidak secara otomatis mempertahankan entri allowlist baru untuknya.
+Dalam mode ketat, perintah ini tetap memerlukan persetujuan eksplisit, dan `allow-always` tidak secara otomatis menyimpan entri daftar izin baru untuknya.
 
 ## Mode YOLO (tanpa persetujuan)
 
-Jika Anda ingin exec host berjalan tanpa prompt persetujuan, Anda harus membuka
-**kedua** lapisan kebijakan — kebijakan exec yang diminta dalam config OpenClaw
-(`tools.exec.*`) **dan** kebijakan persetujuan lokal host dalam
-`~/.openclaw/exec-approvals.json`.
+Jika Anda ingin exec host berjalan tanpa prompt persetujuan, Anda harus membuka **kedua** lapisan kebijakan — kebijakan exec yang diminta dalam konfigurasi OpenClaw (`tools.exec.*`) **dan** kebijakan persetujuan lokal-host dalam `~/.openclaw/exec-approvals.json`.
 
 YOLO adalah perilaku host default kecuali Anda memperketatnya secara eksplisit:
 
-| Lapisan              | Pengaturan YOLO            |
-| -------------------- | -------------------------- |
+| Lapisan                 | Pengaturan YOLO               |
+| --------------------- | -------------------------- |
 | `tools.exec.security` | `full` pada `gateway`/`node` |
 | `tools.exec.ask`      | `off`                      |
-| Host `askFallback`    | `full`                     |
+| `askFallback` host    | `full`                     |
 
 <Warning>
 **Perbedaan penting:**
 
-- `tools.exec.host=auto` memilih **tempat** exec berjalan: sandbox bila tersedia, jika tidak gateway.
+- `tools.exec.host=auto` memilih **di mana** exec berjalan: sandbox ketika tersedia, selain itu Gateway.
 - YOLO memilih **bagaimana** exec host disetujui: `security=full` plus `ask=off`.
-- Dalam mode YOLO, OpenClaw **tidak** menambahkan gate persetujuan obfuscation perintah heuristik atau lapisan penolakan script-preflight di atas kebijakan exec host yang dikonfigurasi.
-- `auto` tidak membuat perutean gateway menjadi override gratis dari sesi tersandbox. Permintaan per-panggilan `host=node` diizinkan dari `auto`; `host=gateway` hanya diizinkan dari `auto` saat tidak ada runtime sandbox yang aktif. Untuk default non-auto yang stabil, setel `tools.exec.host` atau gunakan `/exec host=...` secara eksplisit.
+- Dalam mode YOLO, OpenClaw **tidak** menambahkan gerbang persetujuan obfuscation perintah heuristik terpisah atau lapisan penolakan preflight skrip di atas kebijakan exec host yang dikonfigurasi.
+- `auto` tidak menjadikan perutean Gateway sebagai override bebas dari sesi bersandbox. Permintaan per panggilan `host=node` diizinkan dari `auto`; `host=gateway` hanya diizinkan dari `auto` ketika tidak ada runtime sandbox yang aktif. Untuk default non-auto yang stabil, atur `tools.exec.host` atau gunakan `/exec host=...` secara eksplisit.
 
 </Warning>
 
-Provider berbasis CLI yang mengekspos mode izin noninteraktif mereka sendiri
-dapat mengikuti kebijakan ini. Claude CLI menambahkan
-`--permission-mode bypassPermissions` ketika kebijakan exec yang diminta OpenClaw
-adalah YOLO. Timpa perilaku backend itu dengan argumen Claude eksplisit
-di bawah `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` —
-misalnya `--permission-mode default`, `acceptEdits`, atau
-`bypassPermissions`.
+Provider berbasis CLI yang mengekspos mode izin noninteraktifnya sendiri dapat mengikuti kebijakan ini. Claude CLI menambahkan `--permission-mode bypassPermissions` ketika kebijakan exec yang diminta OpenClaw adalah YOLO. Timpa perilaku backend itu dengan argumen Claude eksplisit di bawah `agents.defaults.cliBackends.claude-cli.args` / `resumeArgs` — misalnya `--permission-mode default`, `acceptEdits`, atau `bypassPermissions`.
 
-Jika Anda ingin penyiapan yang lebih konservatif, ketatkan kembali salah satu lapisan ke
-`allowlist` / `on-miss` atau `deny`.
+Jika Anda menginginkan penyiapan yang lebih konservatif, perketat salah satu lapisan kembali ke `allowlist` / `on-miss` atau `deny`.
 
-### Penyiapan persisten host gateway "jangan pernah memunculkan prompt"
+### Penyiapan "jangan pernah prompt" host Gateway persisten
 
 <Steps>
-  <Step title="Setel kebijakan config yang diminta">
+  <Step title="Atur kebijakan konfigurasi yang diminta">
     ```bash
     openclaw config set tools.exec.host gateway
     openclaw config set tools.exec.security full
@@ -215,7 +192,7 @@ Jika Anda ingin penyiapan yang lebih konservatif, ketatkan kembali salah satu la
     openclaw gateway restart
     ```
   </Step>
-  <Step title="Samakan file persetujuan host">
+  <Step title="Cocokkan file persetujuan host">
     ```bash
     openclaw approvals set --stdin <<'EOF'
     {
@@ -231,24 +208,22 @@ Jika Anda ingin penyiapan yang lebih konservatif, ketatkan kembali salah satu la
   </Step>
 </Steps>
 
-### Shortcut lokal
+### Pintasan lokal
 
 ```bash
 openclaw exec-policy preset yolo
 ```
 
-Shortcut lokal ini memperbarui keduanya:
+Pintasan lokal itu memperbarui keduanya:
 
 - `tools.exec.host/security/ask` lokal.
 - Default `~/.openclaw/exec-approvals.json` lokal.
 
-Ini sengaja hanya lokal. Untuk mengubah persetujuan host gateway atau host node
-dari jarak jauh, gunakan `openclaw approvals set --gateway` atau
-`openclaw approvals set --node <id|name|ip>`.
+Ini sengaja hanya lokal. Untuk mengubah persetujuan host Gateway atau host Node dari jarak jauh, gunakan `openclaw approvals set --gateway` atau `openclaw approvals set --node <id|name|ip>`.
 
-### Host node
+### Host Node
 
-Untuk host node, terapkan file persetujuan yang sama pada node tersebut:
+Untuk host Node, terapkan file persetujuan yang sama pada Node itu:
 
 ```bash
 openclaw approvals set --node <id|name|ip> --stdin <<'EOF'
@@ -264,35 +239,28 @@ EOF
 ```
 
 <Note>
-**Keterbatasan hanya-lokal:**
+**Batasan hanya-lokal:**
 
-- `openclaw exec-policy` tidak menyinkronkan persetujuan node.
+- `openclaw exec-policy` tidak menyinkronkan persetujuan Node.
 - `openclaw exec-policy set --host node` ditolak.
-- Persetujuan exec node diambil dari node saat runtime, sehingga pembaruan yang ditargetkan ke node harus menggunakan `openclaw approvals --node ...`.
+- Persetujuan exec Node diambil dari Node saat runtime, sehingga pembaruan yang menargetkan Node harus menggunakan `openclaw approvals --node ...`.
 
 </Note>
 
-### Shortcut hanya-sesi
+### Pintasan hanya-sesi
 
 - `/exec security=full ask=off` hanya mengubah sesi saat ini.
-- `/elevated full` adalah shortcut break-glass yang juga melewati persetujuan exec untuk sesi tersebut.
+- `/elevated full` adalah pintasan break-glass yang juga melewati persetujuan exec untuk sesi itu.
 
-Jika file persetujuan host tetap lebih ketat daripada config, kebijakan host
-yang lebih ketat tetap menang.
+Jika file persetujuan host tetap lebih ketat daripada konfigurasi, kebijakan host yang lebih ketat tetap menang.
 
-## Allowlist (per agent)
+## Daftar izin (per agen)
 
-Allowlists bersifat **per agent**. Jika ada beberapa agent, ganti agent
-yang sedang Anda edit di aplikasi macOS. Pola adalah kecocokan glob.
+Daftar izin adalah **per agen**. Jika ada beberapa agen, ganti agen yang sedang Anda edit di aplikasi macOS. Pola adalah kecocokan glob.
 
-Pola dapat berupa glob path binary yang di-resolve atau glob nama perintah biasa.
-Nama biasa hanya cocok dengan perintah yang dipanggil melalui `PATH`, jadi `rg` dapat cocok dengan
-`/opt/homebrew/bin/rg` ketika perintahnya `rg`, tetapi **tidak** `./rg` atau
-`/tmp/rg`. Gunakan glob path saat Anda ingin mempercayai satu lokasi binary tertentu.
+Pola dapat berupa glob path biner yang di-resolve atau glob nama perintah polos. Nama polos hanya cocok dengan perintah yang dipanggil melalui `PATH`, sehingga `rg` dapat cocok dengan `/opt/homebrew/bin/rg` ketika perintahnya adalah `rg`, tetapi **tidak** `./rg` atau `/tmp/rg`. Gunakan glob path ketika Anda ingin memercayai satu lokasi biner tertentu.
 
-Entri `agents.default` lama dimigrasikan ke `agents.main` saat dimuat.
-Rangkaian shell seperti `echo ok && pwd` tetap memerlukan setiap segmen tingkat atas
-memenuhi aturan allowlist.
+Entri lama `agents.default` dimigrasikan ke `agents.main` saat dimuat. Rantai shell seperti `echo ok && pwd` tetap memerlukan setiap segmen tingkat atas untuk memenuhi aturan daftar izin.
 
 Contoh:
 
@@ -301,47 +269,38 @@ Contoh:
 - `~/.local/bin/*`
 - `/opt/homebrew/bin/rg`
 
-Setiap entri allowlist melacak:
+Setiap entri daftar izin melacak:
 
-| Field              | Makna                            |
+| Kolom              | Makna                          |
 | ------------------ | -------------------------------- |
 | `id`               | UUID stabil yang digunakan untuk identitas UI |
-| `lastUsedAt`       | Stempel waktu terakhir digunakan |
-| `lastUsedCommand`  | Perintah terakhir yang cocok     |
-| `lastResolvedPath` | Path binary terakhir yang di-resolve |
+| `lastUsedAt`       | Timestamp penggunaan terakhir              |
+| `lastUsedCommand`  | Perintah terakhir yang cocok        |
+| `lastResolvedPath` | Path biner terakhir yang di-resolve        |
 
-## Auto-allow CLI Skills
+## Izinkan otomatis CLI Skills
 
-Saat **Auto-allow skill CLIs** diaktifkan, executable yang dirujuk oleh
-Skills yang dikenal diperlakukan sebagai masuk allowlist pada node (node macOS atau host
-node headless). Ini menggunakan `skills.bins` melalui Gateway RPC untuk mengambil
-daftar bin Skill. Nonaktifkan ini jika Anda menginginkan allowlist manual yang ketat.
+Ketika **Izinkan otomatis CLI Skills** diaktifkan, executable yang dirujuk oleh Skills yang diketahui diperlakukan sebagai masuk daftar izin pada Node (Node macOS atau host Node headless). Ini menggunakan `skills.bins` melalui RPC Gateway untuk mengambil daftar bin skill. Nonaktifkan ini jika Anda menginginkan daftar izin manual yang ketat.
 
 <Warning>
-- Ini adalah **allowlist kenyamanan implisit**, terpisah dari entri allowlist path manual.
-- Ini ditujukan untuk lingkungan operator tepercaya di mana Gateway dan node berada dalam batas kepercayaan yang sama.
-- Jika Anda memerlukan kepercayaan eksplisit yang ketat, pertahankan `autoAllowSkills: false` dan gunakan hanya entri allowlist path manual.
+- Ini adalah **daftar izin kemudahan implisit**, terpisah dari entri daftar izin path manual.
+- Ini ditujukan untuk lingkungan operator tepercaya tempat Gateway dan Node berada dalam batas kepercayaan yang sama.
+- Jika Anda memerlukan kepercayaan eksplisit yang ketat, pertahankan `autoAllowSkills: false` dan gunakan hanya entri daftar izin path manual.
 
 </Warning>
 
-## Safe bins dan penerusan persetujuan
+## Bin aman dan penerusan persetujuan
 
-Untuk safe bins (jalur cepat hanya-stdin), detail pengikatan interpreter, dan
-cara meneruskan prompt persetujuan ke Slack/Discord/Telegram (atau menjalankannya sebagai
-klien persetujuan bawaan), lihat
-[Persetujuan exec — lanjutan](/id/tools/exec-approvals-advanced).
+Untuk bin aman (jalur cepat hanya-stdin), detail pengikatan interpreter, dan cara meneruskan prompt persetujuan ke Slack/Discord/Telegram (atau menjalankannya sebagai klien persetujuan native), lihat [Persetujuan exec — lanjutan](/id/tools/exec-approvals-advanced).
 
-## Pengeditan Control UI
+## Pengeditan UI Kontrol
 
-Gunakan kartu **Control UI → Nodes → Exec approvals** untuk mengedit default,
-override per-agent, dan allowlist. Pilih scope (Defaults atau agent),
-ubah kebijakannya, tambah/hapus pola allowlist, lalu **Save**. UI
-menampilkan metadata terakhir digunakan per pola agar Anda dapat menjaga daftar tetap rapi.
+Gunakan kartu **UI Kontrol → Node → Persetujuan exec** untuk mengedit default, override per agen, dan daftar izin. Pilih cakupan (Default atau agen), sesuaikan kebijakan, tambah/hapus pola daftar izin, lalu **Simpan**. UI menampilkan metadata penggunaan terakhir per pola sehingga Anda dapat menjaga daftar tetap rapi.
 
 Pemilih target memilih **Gateway** (persetujuan lokal) atau **Node**.
 Node harus mengiklankan `system.execApprovals.get/set` (aplikasi macOS atau
-host node headless). Jika node belum mengiklankan persetujuan exec,
-edit `~/.openclaw/exec-approvals.json` lokalnya secara langsung.
+host node headless). Jika sebuah node belum mengiklankan persetujuan exec,
+edit langsung `~/.openclaw/exec-approvals.json` lokalnya.
 
 CLI: `openclaw approvals` mendukung pengeditan gateway atau node — lihat
 [CLI Persetujuan](/id/cli/approvals).
@@ -354,56 +313,56 @@ menyelesaikannya melalui `exec.approval.resolve`, lalu gateway meneruskan
 permintaan yang disetujui ke host node.
 
 Untuk `host=node`, permintaan persetujuan menyertakan payload `systemRunPlan`
-kanonis. Gateway menggunakan plan itu sebagai konteks
-perintah/cwd/sesi yang otoritatif saat meneruskan permintaan `system.run`
+kanonis. Gateway menggunakan rencana itu sebagai konteks
+command/cwd/session otoritatif saat meneruskan permintaan `system.run`
 yang disetujui.
 
-Ini penting untuk latensi persetujuan async:
+Hal itu penting untuk latensi persetujuan async:
 
-- Jalur exec node menyiapkan satu plan kanonis di awal.
-- Catatan persetujuan menyimpan plan itu beserta metadata binding-nya.
-- Setelah disetujui, panggilan `system.run` final yang diteruskan menggunakan ulang plan yang disimpan alih-alih mempercayai edit pemanggil di kemudian hari.
+- Jalur exec node menyiapkan satu rencana kanonis di awal.
+- Catatan persetujuan menyimpan rencana itu dan metadata binding-nya.
+- Setelah disetujui, panggilan `system.run` final yang diteruskan memakai ulang rencana tersimpan alih-alih memercayai edit pemanggil setelahnya.
 - Jika pemanggil mengubah `command`, `rawCommand`, `cwd`, `agentId`, atau `sessionKey` setelah permintaan persetujuan dibuat, gateway menolak run yang diteruskan sebagai ketidakcocokan persetujuan.
 
 ## Event sistem
 
 Siklus hidup exec ditampilkan sebagai pesan sistem:
 
-- `Exec running` (hanya jika perintah melebihi ambang pemberitahuan running).
+- `Exec running` (hanya jika perintah melebihi ambang notifikasi berjalan).
 - `Exec finished`.
 - `Exec denied`.
 
-Pesan-pesan ini diposting ke sesi agent setelah node melaporkan event tersebut.
-Persetujuan exec host-gateway mengeluarkan event siklus hidup yang sama saat
+Ini diposting ke sesi agen setelah node melaporkan event tersebut.
+Persetujuan exec host-gateway memancarkan event siklus hidup yang sama saat
 perintah selesai (dan secara opsional saat berjalan lebih lama dari ambang).
-Exec yang di-gate oleh persetujuan menggunakan ulang id persetujuan sebagai `runId` dalam pesan-pesan ini untuk korelasi yang mudah.
+Exec yang dibatasi persetujuan memakai ulang id persetujuan sebagai `runId` dalam pesan-pesan ini agar mudah dikorelasikan.
 
 ## Perilaku persetujuan yang ditolak
 
-Saat persetujuan exec async ditolak, OpenClaw mencegah agent
-menggunakan ulang output dari run sebelumnya dari perintah yang sama dalam sesi.
+Saat persetujuan exec async ditolak, OpenClaw mencegah agen
+memakai ulang output dari run sebelumnya untuk perintah yang sama dalam sesi.
 Alasan penolakan diteruskan dengan panduan eksplisit bahwa tidak ada output perintah
-yang tersedia, yang menghentikan agent mengklaim ada output baru atau
-mengulangi perintah yang ditolak dengan hasil basi dari run sukses sebelumnya.
+yang tersedia, sehingga menghentikan agen agar tidak mengklaim ada output baru atau
+mengulangi perintah yang ditolak dengan hasil lama dari run sukses sebelumnya.
 
 ## Implikasi
 
 - **`full`** sangat kuat; pilih allowlist bila memungkinkan.
-- **`ask`** membuat Anda tetap terlibat sambil tetap memungkinkan persetujuan cepat.
-- Allowlist per-agent mencegah persetujuan satu agent bocor ke agent lain.
-- Persetujuan hanya berlaku untuk permintaan exec host dari **pengirim yang berwenang**. Pengirim yang tidak berwenang tidak dapat mengeluarkan `/exec`.
-- `/exec security=full` adalah kemudahan level-sesi untuk operator yang berwenang dan secara desain melewati persetujuan. Untuk memblokir keras exec host, setel security persetujuan ke `deny` atau tolak tool `exec` melalui kebijakan tool.
+- **`ask`** membuat Anda tetap terlibat sekaligus memungkinkan persetujuan cepat.
+- Allowlist per agen mencegah persetujuan satu agen bocor ke agen lain.
+- Persetujuan hanya berlaku untuk permintaan exec host dari **pengirim terotorisasi**. Pengirim tidak terotorisasi tidak dapat menjalankan `/exec`.
+- `/exec security=full` adalah kemudahan tingkat sesi untuk operator terotorisasi dan memang melewati persetujuan. Untuk memblokir keras exec host, atur keamanan persetujuan ke `deny` atau tolak tool `exec` melalui kebijakan tool.
 
 ## Terkait
 
 <CardGroup cols={2}>
   <Card title="Persetujuan exec — lanjutan" href="/id/tools/exec-approvals-advanced" icon="gear">
-    Safe bins, pengikatan interpreter, dan penerusan persetujuan ke chat.
+    Bin aman, binding interpreter, dan penerusan persetujuan ke chat.
   </Card>
   <Card title="Tool exec" href="/id/tools/exec" icon="terminal">
     Tool eksekusi perintah shell.
   </Card>
-  <Card title="Mode elevated" href="/id/tools/elevated" icon="shield-exclamation">
+  <Card title="Mode tinggi" href="/id/tools/elevated" icon="shield-exclamation">
     Jalur break-glass yang juga melewati persetujuan.
   </Card>
   <Card title="Sandboxing" href="/id/gateway/sandboxing" icon="box">
@@ -413,9 +372,9 @@ mengulangi perintah yang ditolak dengan hasil basi dari run sukses sebelumnya.
     Model keamanan dan hardening.
   </Card>
   <Card title="Sandbox vs kebijakan tool vs elevated" href="/id/gateway/sandbox-vs-tool-policy-vs-elevated" icon="sliders">
-    Kapan menggunakan masing-masing kontrol.
+    Kapan menggunakan tiap kontrol.
   </Card>
   <Card title="Skills" href="/id/tools/skills" icon="sparkles">
-    Perilaku auto-allow yang didukung Skill.
+    Perilaku auto-allow yang didukung Skills.
   </Card>
 </CardGroup>

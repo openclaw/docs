@@ -1,38 +1,41 @@
 ---
 read_when:
     - Menyiapkan kontrol akses DM
-    - Mem-pairing Node iOS/Android baru
+    - Memasangkan Node iOS/Android baru
     - Meninjau postur keamanan OpenClaw
-summary: 'Ikhtisar pairing: setujui siapa yang dapat DM Anda + node mana yang dapat bergabung'
-title: Pairing
+summary: 'Ikhtisar penyandingan: setujui siapa yang dapat mengirim pesan langsung kepada Anda + Node mana yang dapat bergabung'
+title: Penyandingan
 x-i18n:
-    generated_at: "2026-04-26T11:24:07Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:35:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f9d28547baacce638347ce0062e3bc4f194704eb369b4ca45f7158d5e16cee93
+    source_hash: cfdcaf831aedb122ea85200518b8dc1c6f42eff365444dee6c4b740050b1ce26
     source_path: channels/pairing.md
-    workflow: 15
+    workflow: 16
 ---
 
-“Pairing” adalah langkah **persetujuan pemilik** yang eksplisit di OpenClaw.
+“Pemasangan” adalah langkah persetujuan akses eksplisit OpenClaw.
 Ini digunakan di dua tempat:
 
-1. **DM pairing** (siapa yang diizinkan berbicara dengan bot)
-2. **Node pairing** (perangkat/node mana yang diizinkan bergabung ke jaringan gateway)
+1. **Pemasangan DM** (siapa yang diizinkan berbicara dengan bot)
+2. **Pemasangan Node** (perangkat/node mana yang diizinkan bergabung ke jaringan Gateway)
 
-Konteks keamanan: [Security](/id/gateway/security)
+Konteks keamanan: [Keamanan](/id/gateway/security)
 
-## 1) DM pairing (akses chat masuk)
+## 1) Pemasangan DM (akses chat masuk)
 
-Saat sebuah channel dikonfigurasi dengan kebijakan DM `pairing`, pengirim yang tidak dikenal akan mendapatkan kode singkat dan pesan mereka **tidak diproses** sampai Anda menyetujuinya.
+Saat kanal dikonfigurasi dengan kebijakan DM `pairing`, pengirim yang tidak dikenal mendapatkan kode singkat dan pesan mereka **tidak diproses** sampai Anda menyetujuinya.
 
-Kebijakan DM default didokumentasikan di: [Security](/id/gateway/security)
+Kebijakan DM bawaan didokumentasikan di: [Keamanan](/id/gateway/security)
 
-Kode pairing:
+`dmPolicy: "open"` bersifat publik hanya ketika daftar izin DM efektif menyertakan `"*"`.
+Penyiapan dan validasi mensyaratkan wildcard tersebut untuk konfigurasi publik-terbuka. Jika status yang ada berisi `open` dengan entri `allowFrom` konkret, runtime tetap hanya menerima pengirim tersebut, dan persetujuan pairing-store tidak memperluas akses `open`.
+
+Kode pemasangan:
 
 - 8 karakter, huruf besar, tanpa karakter ambigu (`0O1I`).
-- **Kedaluwarsa setelah 1 jam**. Bot hanya mengirim pesan pairing saat permintaan baru dibuat (kira-kira sekali per jam per pengirim).
-- Permintaan DM pairing yang tertunda dibatasi hingga **3 per channel** secara default; permintaan tambahan diabaikan sampai salah satu kedaluwarsa atau disetujui.
+- **Kedaluwarsa setelah 1 jam**. Bot hanya mengirim pesan pemasangan saat permintaan baru dibuat (kira-kira sekali per jam per pengirim).
+- Permintaan pemasangan DM tertunda dibatasi secara bawaan menjadi **3 per kanal**; permintaan tambahan diabaikan sampai salah satunya kedaluwarsa atau disetujui.
 
 ### Setujui pengirim
 
@@ -41,61 +44,63 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-Channel yang didukung: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
+Jika belum ada pemilik perintah yang dikonfigurasi, menyetujui kode pemasangan DM juga melakukan bootstrap `commands.ownerAllowFrom` ke pengirim yang disetujui, seperti `telegram:123456789`.
+Itu memberi penyiapan pertama kali pemilik eksplisit untuk perintah istimewa dan prompt persetujuan exec. Setelah pemilik ada, persetujuan pemasangan berikutnya hanya memberikan akses DM; persetujuan tersebut tidak menambahkan pemilik lain.
+
+Kanal yang didukung: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
 
 ### Lokasi status disimpan
 
 Disimpan di bawah `~/.openclaw/credentials/`:
 
 - Permintaan tertunda: `<channel>-pairing.json`
-- Store allowlist yang disetujui:
-  - Akun default: `<channel>-allowFrom.json`
-  - Akun non-default: `<channel>-<accountId>-allowFrom.json`
+- Penyimpanan daftar izin yang disetujui:
+  - Akun bawaan: `<channel>-allowFrom.json`
+  - Akun non-bawaan: `<channel>-<accountId>-allowFrom.json`
 
 Perilaku cakupan akun:
 
-- Akun non-default hanya membaca/menulis file allowlist sesuai cakupannya.
-- Akun default menggunakan file allowlist tanpa cakupan khusus milik channel.
+- Akun non-bawaan hanya membaca/menulis file daftar izin bercakupan miliknya.
+- Akun bawaan menggunakan file daftar izin tanpa cakupan yang dicakup kanal.
 
-Perlakukan file ini sebagai sensitif (karena mengendalikan akses ke asisten Anda).
+Perlakukan ini sebagai data sensitif (ini mengatur akses ke asisten Anda).
 
-Penting: store ini untuk akses DM. Otorisasi grup terpisah.
-Menyetujui kode DM pairing tidak otomatis mengizinkan pengirim itu menjalankan perintah grup atau mengendalikan bot di grup. Untuk akses grup, konfigurasikan allowlist grup eksplisit milik channel tersebut (misalnya `groupAllowFrom`, `groups`, atau override per grup/per topik tergantung channel).
+<Note>
+Penyimpanan daftar izin pemasangan adalah untuk akses DM. Otorisasi grup terpisah.
+Menyetujui kode pemasangan DM tidak otomatis mengizinkan pengirim tersebut menjalankan perintah grup atau mengontrol bot di grup. Bootstrap pemilik pertama adalah status konfigurasi terpisah di `commands.ownerAllowFrom`, dan pengiriman chat grup tetap mengikuti daftar izin grup kanal tersebut (misalnya `groupAllowFrom`, `groups`, atau override per grup atau per topik tergantung kanal).
+</Note>
 
-## 2) Node device pairing (node iOS/Android/macOS/headless)
+## 2) Pemasangan perangkat Node (node iOS/Android/macOS/headless)
 
-Node terhubung ke Gateway sebagai **device** dengan `role: node`. Gateway
-membuat permintaan pairing device yang harus disetujui.
+Node terhubung ke Gateway sebagai **perangkat** dengan `role: node`. Gateway membuat permintaan pemasangan perangkat yang harus disetujui.
 
-### Pair melalui Telegram (disarankan untuk iOS)
+### Pasangkan melalui Telegram (direkomendasikan untuk iOS)
 
-Jika Anda menggunakan Plugin `device-pair`, Anda dapat melakukan pairing device pertama kali sepenuhnya dari Telegram:
+Jika Anda menggunakan plugin `device-pair`, Anda dapat melakukan pemasangan perangkat pertama kali sepenuhnya dari Telegram:
 
 1. Di Telegram, kirim pesan ke bot Anda: `/pair`
-2. Bot membalas dengan dua pesan: pesan instruksi dan pesan **setup code** terpisah (mudah disalin/tempel di Telegram).
-3. Di ponsel Anda, buka aplikasi OpenClaw iOS → Settings → Gateway.
-4. Tempel setup code dan hubungkan.
-5. Kembali ke Telegram: `/pair pending` (tinjau ID permintaan, role, dan scope), lalu setujui.
+2. Bot membalas dengan dua pesan: pesan instruksi dan pesan **kode penyiapan** terpisah (mudah disalin/ditempel di Telegram).
+3. Di ponsel Anda, buka aplikasi iOS OpenClaw → Settings → Gateway.
+4. Tempel kode penyiapan dan hubungkan.
+5. Kembali di Telegram: `/pair pending` (tinjau ID permintaan, peran, dan cakupan), lalu setujui.
 
-Setup code adalah payload JSON yang di-encode base64 dan berisi:
+Kode penyiapan adalah payload JSON berkode base64 yang berisi:
 
 - `url`: URL WebSocket Gateway (`ws://...` atau `wss://...`)
-- `bootstrapToken`: token bootstrap satu-device berumur pendek yang digunakan untuk handshake pairing awal
+- `bootstrapToken`: token bootstrap satu perangkat berumur pendek yang digunakan untuk handshake pemasangan awal
 
-Token bootstrap itu membawa profil bootstrap pairing bawaan:
+Token bootstrap tersebut membawa profil bootstrap pemasangan bawaan:
 
-- token `node` utama yang diserahkan tetap `scopes: []`
-- token `operator` apa pun yang diserahkan tetap dibatasi pada allowlist bootstrap:
+- token `node` utama yang diserahterimakan tetap `scopes: []`
+- token `operator` apa pun yang diserahterimakan tetap dibatasi ke daftar izin bootstrap:
   `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`
-- pemeriksaan scope bootstrap menggunakan prefix role, bukan satu kumpulan scope datar:
-  entri scope operator hanya memenuhi permintaan operator, dan role non-operator
-  tetap harus meminta scope di bawah prefix role mereka sendiri
-- rotasi/pencabutan token berikutnya tetap dibatasi oleh kontrak role device yang
-  disetujui dan scope operator sesi pemanggil
+- pemeriksaan cakupan bootstrap berprefiks peran, bukan satu kumpulan cakupan datar:
+  entri cakupan operator hanya memenuhi permintaan operator, dan peran non-operator tetap harus meminta cakupan di bawah prefiks peran mereka sendiri
+- rotasi/pencabutan token berikutnya tetap dibatasi oleh kontrak peran yang disetujui untuk perangkat dan cakupan operator sesi pemanggil
 
-Perlakukan setup code seperti kata sandi selama masih berlaku.
+Perlakukan kode penyiapan seperti kata sandi selama masih valid.
 
-### Setujui node device
+### Setujui perangkat Node
 
 ```bash
 openclaw devices list
@@ -103,20 +108,15 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
-Jika device yang sama mencoba lagi dengan detail auth yang berbeda (misalnya
-role/scope/public key yang berbeda), permintaan tertunda sebelumnya akan digantikan dan
-`requestId` baru dibuat.
+Jika perangkat yang sama mencoba lagi dengan detail autentikasi berbeda (misalnya peran/cakupan/kunci publik berbeda), permintaan tertunda sebelumnya digantikan dan `requestId` baru dibuat.
 
-Penting: device yang sudah di-pairing tidak otomatis mendapatkan akses yang lebih luas. Jika
-device tersebut terhubung kembali dengan meminta lebih banyak scope atau role yang lebih luas, OpenClaw mempertahankan
-persetujuan yang ada apa adanya dan membuat permintaan upgrade tertunda yang baru. Gunakan
-`openclaw devices list` untuk membandingkan akses yang saat ini disetujui dengan akses yang baru
-diminta sebelum Anda menyetujui.
+<Note>
+Perangkat yang sudah dipasangkan tidak mendapatkan akses lebih luas secara diam-diam. Jika perangkat terhubung kembali dan meminta cakupan lebih banyak atau peran lebih luas, OpenClaw mempertahankan persetujuan yang ada apa adanya dan membuat permintaan peningkatan tertunda yang baru. Gunakan `openclaw devices list` untuk membandingkan akses yang saat ini disetujui dengan akses yang baru diminta sebelum Anda menyetujui.
+</Note>
 
-### Auto-approve node trusted-CIDR opsional
+### Persetujuan otomatis Node CIDR tepercaya opsional
 
-Pairing device tetap manual secara default. Untuk jaringan node yang sangat terkontrol,
-Anda dapat ikut menggunakan auto-approval node pertama kali dengan CIDR eksplisit atau IP yang tepat:
+Pemasangan perangkat tetap manual secara bawaan. Untuk jaringan node yang dikontrol ketat, Anda dapat ikut serta dalam persetujuan otomatis node pertama kali dengan CIDR eksplisit atau IP tepat:
 
 ```json5
 {
@@ -130,30 +130,25 @@ Anda dapat ikut menggunakan auto-approval node pertama kali dengan CIDR eksplisi
 }
 ```
 
-Ini hanya berlaku untuk permintaan pairing `role: node` baru tanpa scope yang diminta.
-Klien operator, browser, Control UI, dan WebChat tetap memerlukan persetujuan manual.
-Perubahan role, scope, metadata, dan public key tetap memerlukan persetujuan manual.
+Ini hanya berlaku untuk permintaan pemasangan `role: node` baru tanpa cakupan yang diminta. Klien operator, browser, UI Kontrol, dan WebChat tetap memerlukan persetujuan manual. Perubahan peran, cakupan, metadata, dan kunci publik tetap memerlukan persetujuan manual.
 
-### Penyimpanan status node pairing
+### Penyimpanan status pemasangan Node
 
 Disimpan di bawah `~/.openclaw/devices/`:
 
 - `pending.json` (berumur pendek; permintaan tertunda kedaluwarsa)
-- `paired.json` (device yang sudah di-pairing + token)
+- `paired.json` (perangkat yang dipasangkan + token)
 
 ### Catatan
 
-- API `node.pair.*` lama (CLI: `openclaw nodes pending|approve|reject|rename`) adalah
-  store pairing terpisah milik gateway. Node WS tetap memerlukan device pairing.
-- Rekaman pairing adalah sumber kebenaran tahan lama untuk role yang disetujui. Token device aktif
-  tetap dibatasi pada kumpulan role yang disetujui itu; entri token yang menyimpang
-  di luar role yang disetujui tidak menciptakan akses baru.
+- API lama `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|remove|rename`) adalah penyimpanan pemasangan terpisah yang dimiliki gateway. Node WS tetap memerlukan pemasangan perangkat.
+- Catatan pemasangan adalah sumber kebenaran tahan lama untuk peran yang disetujui. Token perangkat aktif tetap dibatasi ke kumpulan peran yang disetujui tersebut; entri token tersasar di luar peran yang disetujui tidak membuat akses baru.
 
 ## Dokumen terkait
 
-- Model keamanan + prompt injection: [Security](/id/gateway/security)
-- Memperbarui dengan aman (jalankan doctor): [Updating](/id/install/updating)
-- Config channel:
+- Model keamanan + injeksi prompt: [Keamanan](/id/gateway/security)
+- Memperbarui dengan aman (jalankan doctor): [Memperbarui](/id/install/updating)
+- Konfigurasi kanal:
   - Telegram: [Telegram](/id/channels/telegram)
   - WhatsApp: [WhatsApp](/id/channels/whatsapp)
   - Signal: [Signal](/id/channels/signal)

@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Anda ingin mengubah model default atau melihat status autentikasi provider
-    - Anda ingin memindai model/provider yang tersedia dan men-debug profil autentikasi
-summary: Referensi CLI untuk `openclaw models` (`status`/`list`/`set`/`scan`, alias, fallback, autentikasi)
+    - Anda ingin mengubah model bawaan atau melihat status autentikasi penyedia
+    - Anda ingin memindai model/penyedia yang tersedia dan mendiagnosis profil autentikasi
+summary: Referensi CLI untuk `openclaw models` (status/list/set/scan, alias, fallback, auth)
 title: Model
 x-i18n:
-    generated_at: "2026-04-26T11:26:11Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:40:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a5acf5972251ee7aa22d1f9222f1a497822fb1f25f29f827702f8b37dda8dadf
+    source_hash: 95e2361989b583f7f52947dad1faaaba44dc6a5f58719cc2e83c13fce7c33adc
     source_path: cli/models.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw models`
 
-Penemuan model, pemindaian, dan konfigurasi (model default, fallback, profil autentikasi).
+Penemuan, pemindaian, dan konfigurasi model (model default, fallback, profil auth).
 
 Terkait:
 
-- Provider + model: [Model](/id/providers/models)
-- Konsep pemilihan model + slash command `/models`: [Konsep model](/id/concepts/models)
-- Penyiapan autentikasi provider: [Memulai](/id/start/getting-started)
+- Penyedia + model: [Model](/id/providers/models)
+- Konsep pemilihan model + perintah slash `/models`: [Konsep model](/id/concepts/models)
+- Penyiapan auth penyedia: [Memulai](/id/start/getting-started)
 
 ## Perintah umum
 
@@ -32,66 +32,77 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status` menampilkan default/fallback yang telah di-resolve beserta ringkasan autentikasi.
-Saat snapshot penggunaan provider tersedia, bagian status OAuth/API key mencakup
-jendela penggunaan provider dan snapshot kuota.
-Provider jendela penggunaan saat ini: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
-Codex, MiniMax, Xiaomi, dan z.ai. Autentikasi penggunaan berasal dari hook khusus provider
-saat tersedia; jika tidak, OpenClaw fallback ke pencocokan kredensial OAuth/API key
-dari profil autentikasi, env, atau config.
-Dalam output `--json`, `auth.providers` adalah ringkasan provider
-yang sadar env/config/store, sedangkan `auth.oauth` hanya kesehatan profil auth-store.
-Tambahkan `--probe` untuk menjalankan probe autentikasi live terhadap setiap profil provider yang dikonfigurasi.
-Probe adalah permintaan nyata (dapat menghabiskan token dan memicu rate limit).
-Gunakan `--agent <id>` untuk memeriksa status model/autentikasi agent yang dikonfigurasi. Jika dihilangkan,
-perintah menggunakan `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` jika disetel, jika tidak maka
-menggunakan agent default yang dikonfigurasi.
-Baris probe dapat berasal dari profil autentikasi, kredensial env, atau `models.json`.
+`openclaw models status` menampilkan default/fallback yang sudah di-resolve serta ringkasan auth.
+Saat snapshot penggunaan penyedia tersedia, bagian status OAuth/kunci API menyertakan
+jendela penggunaan penyedia dan snapshot kuota.
+Penyedia jendela penggunaan saat ini: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
+Codex, MiniMax, Xiaomi, dan z.ai. Auth penggunaan berasal dari hook khusus penyedia
+bila tersedia; jika tidak, OpenClaw fallback ke kredensial OAuth/kunci API yang cocok
+dari profil auth, env, atau konfigurasi.
+Dalam output `--json`, `auth.providers` adalah ringkasan penyedia yang sadar env/config/store,
+sedangkan `auth.oauth` hanya kesehatan profil auth-store.
+Tambahkan `--probe` untuk menjalankan probe auth langsung terhadap setiap profil penyedia yang dikonfigurasi.
+Probe adalah permintaan nyata (dapat memakai token dan memicu batas laju).
+Gunakan `--agent <id>` untuk memeriksa status model/auth agen yang dikonfigurasi. Jika dihilangkan,
+perintah menggunakan `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` jika disetel; jika tidak, memakai
+agen default yang dikonfigurasi.
+Baris probe dapat berasal dari profil auth, kredensial env, atau `models.json`.
 
 Catatan:
 
-- `models set <model-or-alias>` menerima `provider/model` atau sebuah alias.
-- `models list` bersifat hanya-baca: perintah ini membaca config, profil autentikasi, status katalog
-  yang ada, dan baris katalog milik provider, tetapi tidak menulis ulang
+- `models set <model-or-alias>` menerima `provider/model` atau alias.
+- `models list` bersifat hanya-baca: membaca konfigurasi, profil auth, status katalog yang ada,
+  dan baris katalog milik penyedia, tetapi tidak menulis ulang
   `models.json`.
-- `models list --all --provider <id>` dapat menyertakan baris katalog statis milik provider
-  dari manifest Plugin atau metadata katalog provider bawaan bahkan ketika Anda
-  belum mengautentikasi provider tersebut. Baris itu tetap ditampilkan sebagai
-  tidak tersedia sampai autentikasi yang cocok dikonfigurasi.
-- `models list` menjaga metadata model bawaan dan batas runtime tetap terpisah. Dalam
-  output tabel, `Ctx` menampilkan `contextTokens/contextWindow` saat batas runtime efektif
-  berbeda dari jendela konteks bawaan; baris JSON menyertakan `contextTokens`
-  saat provider mengekspos batas tersebut.
-- `models list --provider <id>` memfilter berdasarkan id provider, seperti `moonshot` atau
-  `openai-codex`. Perintah ini tidak menerima label tampilan dari pemilih provider interaktif,
+- Kolom `Auth` bersifat tingkat penyedia dan hanya-baca. Kolom ini dihitung dari metadata
+  profil auth lokal, penanda env, kunci penyedia yang dikonfigurasi, penanda penyedia lokal,
+  penanda env/profil AWS Bedrock, dan metadata auth sintetis Plugin;
+  kolom ini tidak memuat runtime penyedia, membaca rahasia keychain, memanggil API
+  penyedia, atau membuktikan kesiapan eksekusi per model secara tepat.
+- `models list --all --provider <id>` dapat menyertakan baris katalog statis milik penyedia
+  dari manifest Plugin atau metadata katalog penyedia bawaan meskipun Anda
+  belum melakukan auth dengan penyedia tersebut. Baris tersebut tetap ditampilkan sebagai
+  tidak tersedia sampai auth yang cocok dikonfigurasi.
+- `models list --all` yang luas menggabungkan baris katalog manifest di atas baris registry
+  tanpa memuat hook suplemen runtime penyedia. Jalur cepat manifest yang difilter penyedia
+  hanya menggunakan penyedia yang ditandai `static`; penyedia yang ditandai `refreshable`
+  tetap berbasis registry/cache dan menambahkan baris manifest sebagai suplemen, sedangkan
+  penyedia yang ditandai `runtime` tetap menggunakan penemuan registry/runtime.
+- `models list` menjaga metadata model native dan batas runtime tetap terpisah. Dalam output tabel,
+  `Ctx` menampilkan `contextTokens/contextWindow` saat batas runtime efektif
+  berbeda dari jendela konteks native; baris JSON menyertakan `contextTokens`
+  saat penyedia mengekspos batas tersebut.
+- `models list --provider <id>` memfilter berdasarkan id penyedia, seperti `moonshot` atau
+  `openai-codex`. Perintah ini tidak menerima label tampilan dari pemilih penyedia interaktif,
   seperti `Moonshot AI`.
-- Referensi model di-parse dengan memisah pada `/` **pertama**. Jika ID model menyertakan `/` (gaya OpenRouter), sertakan prefiks provider (contoh: `openrouter/moonshotai/kimi-k2`).
-- Jika Anda menghilangkan provider, OpenClaw me-resolve input sebagai alias terlebih dahulu, lalu
-  sebagai kecocokan provider yang dikonfigurasi dan unik untuk ID model persis tersebut, dan baru kemudian
-  fallback ke provider default yang dikonfigurasi dengan peringatan deprecasi.
-  Jika provider tersebut tidak lagi mengekspos model default yang dikonfigurasi,
-  OpenClaw fallback ke provider/model pertama yang dikonfigurasi alih-alih menampilkan
-  default provider yang sudah dihapus dan basi.
-- `models status` dapat menampilkan `marker(<value>)` dalam output autentikasi untuk placeholder non-rahasia (misalnya `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) alih-alih menyamarkannya sebagai rahasia.
+- Referensi model diurai dengan memisahkan pada `/` **pertama**. Jika ID model menyertakan `/` (gaya OpenRouter), sertakan prefiks penyedia (contoh: `openrouter/moonshotai/kimi-k2`).
+- Jika Anda menghilangkan penyedia, OpenClaw me-resolve input sebagai alias terlebih dahulu, lalu
+  sebagai kecocokan unik penyedia terkonfigurasi untuk id model yang tepat tersebut, dan baru kemudian
+  fallback ke penyedia default yang dikonfigurasi dengan peringatan penghentian.
+  Jika penyedia itu tidak lagi mengekspos model default yang dikonfigurasi, OpenClaw
+  fallback ke penyedia/model terkonfigurasi pertama alih-alih menampilkan
+  default penyedia terhapus yang usang.
+- `models status` dapat menampilkan `marker(<value>)` dalam output auth untuk placeholder non-rahasia (misalnya `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) alih-alih menyamarkannya sebagai rahasia.
 
-### `models scan`
+### Pemindaian model
 
-`models scan` membaca katalog publik `:free` OpenRouter dan memberi peringkat kandidat untuk
-penggunaan fallback. Katalog itu sendiri bersifat publik, jadi pemindaian metadata saja tidak memerlukan kunci OpenRouter.
+`models scan` membaca katalog publik `:free` milik OpenRouter dan memberi peringkat kandidat untuk
+penggunaan fallback. Katalog itu sendiri bersifat publik, sehingga pemindaian khusus metadata tidak memerlukan
+kunci OpenRouter.
 
-Secara default OpenClaw mencoba mem-probe dukungan tool dan gambar dengan panggilan model live.
-Jika tidak ada kunci OpenRouter yang dikonfigurasi, perintah fallback ke output metadata saja
+Secara default OpenClaw mencoba mem-probe dukungan alat dan gambar dengan panggilan model langsung.
+Jika tidak ada kunci OpenRouter yang dikonfigurasi, perintah fallback ke output khusus metadata
 dan menjelaskan bahwa model `:free` tetap memerlukan `OPENROUTER_API_KEY` untuk
 probe dan inferensi.
 
 Opsi:
 
-- `--no-probe` (hanya metadata; tanpa lookup config/secret)
+- `--no-probe` (hanya metadata; tanpa pencarian konfigurasi/rahasia)
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
 - `--max-candidates <n>`
-- `--timeout <ms>` (timeout permintaan katalog dan per-probe)
+- `--timeout <ms>` (permintaan katalog dan timeout per probe)
 - `--concurrency <n>`
 - `--yes`
 - `--no-input`
@@ -99,23 +110,27 @@ Opsi:
 - `--set-image`
 - `--json`
 
-`--set-default` dan `--set-image` memerlukan probe live; hasil scan metadata saja
-bersifat informatif dan tidak diterapkan ke config.
+`--set-default` dan `--set-image` memerlukan probe langsung; hasil pemindaian khusus metadata
+bersifat informatif dan tidak diterapkan ke konfigurasi.
 
-### `models status`
+### Status model
 
 Opsi:
 
 - `--json`
 - `--plain`
-- `--check` (keluar 1=kedaluwarsa/tidak ada, 2=akan kedaluwarsa)
-- `--probe` (probe live untuk profil autentikasi yang dikonfigurasi)
-- `--probe-provider <name>` (probe satu provider)
-- `--probe-profile <id>` (dapat diulang atau daftar id profil dipisahkan koma)
+- `--check` (exit 1=kedaluwarsa/hilang, 2=akan kedaluwarsa)
+- `--probe` (probe langsung atas profil auth yang dikonfigurasi)
+- `--probe-provider <name>` (probe satu penyedia)
+- `--probe-profile <id>` (id profil berulang atau dipisahkan koma)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
-- `--agent <id>` (id agent yang dikonfigurasi; menimpa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`)
+- `--agent <id>` (id agen terkonfigurasi; mengesampingkan `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`)
+
+`--json` menjaga stdout tetap khusus untuk payload JSON. Diagnostik profil auth, penyedia,
+dan startup dialihkan ke stderr sehingga skrip dapat menyalurkan stdout langsung
+ke alat seperti `jq`.
 
 Bucket status probe:
 
@@ -128,15 +143,15 @@ Bucket status probe:
 - `unknown`
 - `no_model`
 
-Kasus detail/kode alasan probe yang perlu diharapkan:
+Kasus detail/kode alasan probe yang perlu diantisipasi:
 
-- `excluded_by_auth_order`: profil tersimpan ada, tetapi `auth.order.<provider>`
-  yang eksplisit menghilangkannya, jadi probe melaporkan pengecualian itu alih-alih
+- `excluded_by_auth_order`: profil tersimpan ada, tetapi
+  `auth.order.<provider>` eksplisit menghilangkannya, sehingga probe melaporkan pengecualian tersebut alih-alih
   mencobanya.
 - `missing_credential`, `invalid_expires`, `expired`, `unresolved_ref`:
-  profil ada tetapi tidak memenuhi syarat/tidak dapat di-resolve.
-- `no_model`: autentikasi provider ada, tetapi OpenClaw tidak dapat me-resolve
-  kandidat model yang dapat di-probe untuk provider tersebut.
+  profil ada tetapi tidak memenuhi syarat/dapat di-resolve.
+- `no_model`: auth penyedia ada, tetapi OpenClaw tidak dapat me-resolve kandidat
+  model yang dapat diprobe untuk penyedia tersebut.
 
 ## Alias + fallback
 
@@ -145,7 +160,7 @@ openclaw models aliases list
 openclaw models fallbacks list
 ```
 
-## Profil autentikasi
+## Profil auth
 
 ```bash
 openclaw models auth add
@@ -154,14 +169,14 @@ openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
-`models auth add` adalah helper autentikasi interaktif. Perintah ini dapat meluncurkan alur autentikasi provider
-(OAuth/API key) atau memandu Anda ke penempelan token manual, tergantung provider
-yang Anda pilih.
+`models auth add` adalah helper auth interaktif. Ini dapat meluncurkan alur auth penyedia
+(OAuth/kunci API) atau memandu Anda untuk menempel token secara manual, tergantung pada
+penyedia yang Anda pilih.
 
-`models auth login` menjalankan alur autentikasi Plugin provider (OAuth/API key). Gunakan
-`openclaw plugins list` untuk melihat provider mana yang terinstal.
-Gunakan `openclaw models auth --agent <id> <subcommand>` untuk menulis hasil autentikasi ke
-store agent tertentu yang dikonfigurasi. Flag induk `--agent` dihormati oleh
+`models auth login` menjalankan alur auth Plugin penyedia (OAuth/kunci API). Gunakan
+`openclaw plugins list` untuk melihat penyedia mana yang terpasang.
+Gunakan `openclaw models auth --agent <id> <subcommand>` untuk menulis hasil auth ke
+store agen terkonfigurasi tertentu. Flag induk `--agent` dihormati oleh
 `add`, `login`, `setup-token`, `paste-token`, dan `login-github-copilot`.
 
 Contoh:
@@ -172,18 +187,18 @@ openclaw models auth login --provider openai-codex --set-default
 
 Catatan:
 
-- `setup-token` dan `paste-token` tetap merupakan perintah token generik untuk provider
-  yang mengekspos metode autentikasi token.
-- `setup-token` memerlukan TTY interaktif dan menjalankan metode auth-token provider
-  (secara default ke metode `setup-token` provider tersebut saat tersedia).
-- `paste-token` menerima string token yang dihasilkan di tempat lain atau dari otomatisasi.
+- `setup-token` dan `paste-token` tetap menjadi perintah token generik untuk penyedia
+  yang mengekspos metode auth token.
+- `setup-token` memerlukan TTY interaktif dan menjalankan metode token-auth milik penyedia
+  (default ke metode `setup-token` penyedia tersebut saat tersedia).
+- `paste-token` menerima string token yang dibuat di tempat lain atau dari otomatisasi.
 - `paste-token` memerlukan `--provider`, meminta nilai token, dan menuliskannya
-  ke id profil default `<provider>:manual` kecuali Anda memberikan
+  ke id profil default `<provider>:manual` kecuali Anda meneruskan
   `--profile-id`.
 - `paste-token --expires-in <duration>` menyimpan kedaluwarsa token absolut dari
   durasi relatif seperti `365d` atau `12h`.
-- Catatan Anthropic: Staf Anthropic memberi tahu kami bahwa penggunaan Claude CLI gaya OpenClaw diizinkan lagi, jadi OpenClaw memperlakukan penggunaan ulang Claude CLI dan penggunaan `claude -p` sebagai hal yang disetujui untuk integrasi ini kecuali Anthropic menerbitkan kebijakan baru.
-- Anthropic `setup-token` / `paste-token` tetap tersedia sebagai jalur token OpenClaw yang didukung, tetapi OpenClaw sekarang lebih memilih penggunaan ulang Claude CLI dan `claude -p` saat tersedia.
+- Catatan Anthropic: staf Anthropic memberi tahu kami bahwa penggunaan Claude CLI bergaya OpenClaw diizinkan lagi, sehingga OpenClaw memperlakukan penggunaan ulang Claude CLI dan penggunaan `claude -p` sebagai disetujui untuk integrasi ini kecuali Anthropic menerbitkan kebijakan baru.
+- Anthropic `setup-token` / `paste-token` tetap tersedia sebagai jalur token OpenClaw yang didukung, tetapi OpenClaw sekarang lebih memilih penggunaan ulang Claude CLI dan `claude -p` bila tersedia.
 
 ## Terkait
 

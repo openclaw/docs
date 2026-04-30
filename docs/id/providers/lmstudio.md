@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Anda ingin menjalankan OpenClaw dengan model open source melalui LM Studio
+    - Anda ingin menjalankan OpenClaw dengan model sumber terbuka melalui LM Studio
     - Anda ingin menyiapkan dan mengonfigurasi LM Studio
 summary: Jalankan OpenClaw dengan LM Studio
 title: LM Studio
 x-i18n:
-    generated_at: "2026-04-24T09:23:28Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:07:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2077790173a8cb660409b64e199d2027dda7b5b55226a00eadb0cdc45061e3ce
+    source_hash: fe6d1feadf355579b244ab4187a8d3b8bad661a5605aed906eedf361d6fcae3f
     source_path: providers/lmstudio.md
-    workflow: 15
+    workflow: 16
 ---
 
-LM Studio adalah aplikasi yang ramah namun canggih untuk menjalankan model berbobot terbuka di perangkat keras Anda sendiri. Aplikasi ini memungkinkan Anda menjalankan model llama.cpp (GGUF) atau MLX (Apple Silicon). Tersedia dalam paket GUI atau daemon headless (`llmster`). Untuk dokumentasi produk dan penyiapan, lihat [lmstudio.ai](https://lmstudio.ai/).
+LM Studio adalah aplikasi yang ramah pengguna sekaligus kuat untuk menjalankan model open-weight di perangkat keras Anda sendiri. Aplikasi ini memungkinkan Anda menjalankan model llama.cpp (GGUF) atau MLX (Apple Silicon). Tersedia sebagai paket GUI atau daemon headless (`llmster`). Untuk dokumentasi produk dan penyiapan, lihat [lmstudio.ai](https://lmstudio.ai/).
 
-## Memulai dengan cepat
+## Mulai cepat
 
 1. Instal LM Studio (desktop) atau `llmster` (headless), lalu mulai server lokal:
 
@@ -35,19 +35,15 @@ lms daemon up
 lms server start --port 1234
 ```
 
-Jika Anda menggunakan aplikasi, pastikan JIT diaktifkan untuk pengalaman yang lebih lancar. Pelajari lebih lanjut di [panduan JIT dan TTL LM Studio](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
+Jika Anda menggunakan aplikasi, pastikan JIT diaktifkan untuk pengalaman yang mulus. Pelajari selengkapnya di [panduan LM Studio JIT dan TTL](https://lmstudio.ai/docs/developer/core/ttl-and-auto-evict).
 
-3. OpenClaw memerlukan nilai token LM Studio. Tetapkan `LM_API_TOKEN`:
+3. Jika autentikasi LM Studio diaktifkan, tetapkan `LM_API_TOKEN`:
 
 ```bash
 export LM_API_TOKEN="your-lm-studio-api-token"
 ```
 
-Jika autentikasi LM Studio dinonaktifkan, gunakan nilai token apa pun yang tidak kosong:
-
-```bash
-export LM_API_TOKEN="placeholder-key"
-```
+Jika autentikasi LM Studio dinonaktifkan, Anda dapat membiarkan kunci API kosong selama penyiapan OpenClaw interaktif.
 
 Untuk detail penyiapan autentikasi LM Studio, lihat [Autentikasi LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
 
@@ -65,13 +61,11 @@ Anda juga dapat menetapkan atau mengubahnya nanti:
 openclaw models set lmstudio/qwen/qwen3.5-9b
 ```
 
-Kunci model LM Studio mengikuti format `author/model-name` (misalnya `qwen/qwen3.5-9b`). Referensi model OpenClaw
-menambahkan awalan nama provider: `lmstudio/qwen/qwen3.5-9b`. Anda dapat menemukan kunci yang tepat untuk
-sebuah model dengan menjalankan `curl http://localhost:1234/api/v1/models` dan melihat field `key`.
+Kunci model LM Studio mengikuti format `author/model-name` (mis. `qwen/qwen3.5-9b`). Ref model OpenClaw menambahkan nama penyedia di depan: `lmstudio/qwen/qwen3.5-9b`. Anda dapat menemukan kunci persis untuk sebuah model dengan menjalankan `curl http://localhost:1234/api/v1/models` dan melihat bidang `key`.
 
 ## Onboarding non-interaktif
 
-Gunakan onboarding non-interaktif saat Anda ingin membuat skrip penyiapan (CI, provisioning, bootstrap jarak jauh):
+Gunakan onboarding non-interaktif ketika Anda ingin membuat skrip penyiapan (CI, provisioning, bootstrap jarak jauh):
 
 ```bash
 openclaw onboard \
@@ -80,7 +74,7 @@ openclaw onboard \
   --auth-choice lmstudio
 ```
 
-Atau tentukan URL dasar atau model dengan kunci API:
+Atau tentukan URL dasar, model, dan kunci API opsional:
 
 ```bash
 openclaw onboard \
@@ -92,28 +86,25 @@ openclaw onboard \
   --custom-model-id qwen/qwen3.5-9b
 ```
 
-`--custom-model-id` menggunakan kunci model sebagaimana dikembalikan oleh LM Studio (misalnya `qwen/qwen3.5-9b`), tanpa
-awalan provider `lmstudio/`.
+`--custom-model-id` menerima kunci model seperti yang dikembalikan oleh LM Studio (mis. `qwen/qwen3.5-9b`), tanpa prefiks penyedia `lmstudio/`.
 
-Onboarding non-interaktif memerlukan `--lmstudio-api-key` (atau `LM_API_TOKEN` di env).
-Untuk server LM Studio tanpa autentikasi, nilai token apa pun yang tidak kosong akan berfungsi.
+Untuk server LM Studio yang diautentikasi, berikan `--lmstudio-api-key` atau tetapkan `LM_API_TOKEN`.
+Untuk server LM Studio tanpa autentikasi, hilangkan kuncinya; OpenClaw menyimpan penanda lokal non-rahasia.
 
 `--custom-api-key` tetap didukung untuk kompatibilitas, tetapi `--lmstudio-api-key` lebih disarankan untuk LM Studio.
 
-Ini menulis `models.providers.lmstudio`, menetapkan model default ke
-`lmstudio/<custom-model-id>`, dan menulis profil autentikasi `lmstudio:default`.
+Ini menulis `models.providers.lmstudio` dan menetapkan model default ke `lmstudio/<custom-model-id>`. Ketika Anda memberikan kunci API, penyiapan juga menulis profil auth `lmstudio:default`.
 
-Penyiapan interaktif dapat meminta panjang konteks muat pilihan yang opsional dan menerapkannya ke seluruh model LM Studio yang ditemukan lalu disimpan ke konfigurasi.
+Penyiapan interaktif dapat meminta panjang konteks pemuatan pilihan yang opsional dan menerapkannya ke semua model LM Studio yang ditemukan yang disimpannya ke konfigurasi.
+Konfigurasi Plugin LM Studio memercayai endpoint LM Studio yang dikonfigurasi untuk permintaan model, termasuk loopback, LAN, dan host tailnet. Anda dapat memilih keluar dengan menetapkan `models.providers.lmstudio.request.allowPrivateNetwork: false`.
 
 ## Konfigurasi
 
 ### Kompatibilitas penggunaan streaming
 
-LM Studio kompatibel dengan penggunaan streaming. Saat tidak mengeluarkan objek `usage`
-berbentuk OpenAI, OpenClaw memulihkan jumlah token dari metadata gaya llama.cpp
-`timings.prompt_n` / `timings.predicted_n`.
+LM Studio kompatibel dengan penggunaan streaming. Ketika tidak memancarkan objek `usage` berbentuk OpenAI, OpenClaw memulihkan jumlah token dari metadata bergaya llama.cpp `timings.prompt_n` / `timings.predicted_n` sebagai gantinya.
 
-Perilaku yang sama berlaku untuk backend lokal yang kompatibel dengan OpenAI berikut:
+Perilaku penggunaan streaming yang sama berlaku untuk backend lokal kompatibel OpenAI berikut:
 
 - vLLM
 - SGLang
@@ -122,6 +113,10 @@ Perilaku yang sama berlaku untuk backend lokal yang kompatibel dengan OpenAI ber
 - Jan
 - TabbyAPI
 - text-generation-webui
+
+### Kompatibilitas thinking
+
+Ketika penemuan `/api/v1/models` LM Studio melaporkan opsi reasoning khusus model, OpenClaw mempertahankan nilai native tersebut dalam metadata compat model. Untuk model thinking biner yang mengiklankan `allowed_options: ["off", "on"]`, OpenClaw memetakan thinking yang dinonaktifkan ke `off` dan level `/think` yang diaktifkan ke `on`, alih-alih mengirim nilai khusus OpenAI seperti `low` atau `medium`.
 
 ### Konfigurasi eksplisit
 
@@ -154,14 +149,14 @@ Perilaku yang sama berlaku untuk backend lokal yang kompatibel dengan OpenAI ber
 
 ### LM Studio tidak terdeteksi
 
-Pastikan LM Studio sedang berjalan dan Anda telah menetapkan `LM_API_TOKEN` (untuk server tanpa autentikasi, nilai token apa pun yang tidak kosong akan berfungsi):
+Pastikan LM Studio sedang berjalan. Jika autentikasi diaktifkan, tetapkan juga `LM_API_TOKEN`:
 
 ```bash
-# Mulai melalui aplikasi desktop, atau headless:
+# Start via desktop app, or headless:
 lms server start --port 1234
 ```
 
-Verifikasi bahwa API dapat diakses:
+Verifikasi API dapat diakses:
 
 ```bash
 curl http://localhost:1234/api/v1/models
@@ -173,11 +168,32 @@ Jika penyiapan melaporkan HTTP 401, verifikasi kunci API Anda:
 
 - Periksa bahwa `LM_API_TOKEN` cocok dengan kunci yang dikonfigurasi di LM Studio.
 - Untuk detail penyiapan autentikasi LM Studio, lihat [Autentikasi LM Studio](https://lmstudio.ai/docs/developer/core/authentication).
-- Jika server Anda tidak memerlukan autentikasi, gunakan nilai token apa pun yang tidak kosong untuk `LM_API_TOKEN`.
+- Jika server Anda tidak memerlukan autentikasi, biarkan kunci kosong selama penyiapan.
 
 ### Pemuatan model just-in-time
 
-LM Studio mendukung pemuatan model just-in-time (JIT), yaitu model dimuat pada permintaan pertama. Pastikan ini diaktifkan untuk menghindari kesalahan 'Model not loaded'.
+LM Studio mendukung pemuatan model just-in-time (JIT), ketika model dimuat pada permintaan pertama. Pastikan ini diaktifkan untuk menghindari kesalahan 'Model not loaded'.
+
+### Host LM Studio LAN atau tailnet
+
+Gunakan alamat host LM Studio yang dapat dijangkau, pertahankan `/v1`, dan pastikan LM Studio diikat melampaui loopback pada mesin tersebut:
+
+```json5
+{
+  models: {
+    providers: {
+      lmstudio: {
+        baseUrl: "http://gpu-box.local:1234/v1",
+        apiKey: "lmstudio",
+        api: "openai-completions",
+        models: [{ id: "qwen/qwen3.5-9b" }],
+      },
+    },
+  },
+}
+```
+
+Tidak seperti penyedia generik kompatibel OpenAI, `lmstudio` secara otomatis memercayai endpoint lokal/privat yang dikonfigurasi untuk permintaan model yang dilindungi. ID penyedia loopback kustom seperti `localhost` atau `127.0.0.1` juga dipercaya secara otomatis; untuk ID penyedia kustom LAN, tailnet, atau DNS privat, tetapkan `models.providers.<id>.request.allowPrivateNetwork: true` secara eksplisit.
 
 ## Terkait
 

@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Menjalankan atau men-debug proses gateway
+    - Menjalankan atau menelusuri kesalahan proses Gateway
 summary: Runbook untuk layanan Gateway, siklus hidup, dan operasi
-title: Runbook Gateway
+title: Panduan operasional Gateway
 x-i18n:
-    generated_at: "2026-04-26T11:28:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:49:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 775c7288ce1fa666f65c0fc4ff1fc06b0cd14589fc932af1944ac7eeb126729c
+    source_hash: 14f3d288c426848bc176291ff084a2b63b00e81739cd02f31fdf517d230d8111
     source_path: gateway/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gunakan halaman ini untuk startup hari pertama dan operasi hari kedua dari layanan Gateway.
+Gunakan halaman ini untuk startup hari pertama dan operasi hari kedua layanan Gateway.
 
 <CardGroup cols={2}>
   <Card title="Pemecahan masalah mendalam" icon="siren" href="/id/gateway/troubleshooting">
-    Diagnostik berbasis gejala dengan urutan perintah yang tepat dan signature log.
+    Diagnostik berbasis gejala dengan tangga perintah yang tepat dan tanda tangan log.
   </Card>
   <Card title="Konfigurasi" icon="sliders" href="/id/gateway/configuration">
     Panduan penyiapan berorientasi tugas + referensi konfigurasi lengkap.
   </Card>
-  <Card title="Manajemen secret" icon="key-round" href="/id/gateway/secrets">
-    Kontrak SecretRef, perilaku snapshot runtime, dan operasi migrate/reload.
+  <Card title="Manajemen rahasia" icon="key-round" href="/id/gateway/secrets">
+    Kontrak SecretRef, perilaku snapshot runtime, dan operasi migrasi/muat ulang.
   </Card>
-  <Card title="Kontrak rencana secret" icon="shield-check" href="/id/gateway/secrets-plan-contract">
-    Aturan target/path `secrets apply` yang tepat dan perilaku auth-profile hanya-ref.
+  <Card title="Kontrak rencana rahasia" icon="shield-check" href="/id/gateway/secrets-plan-contract">
+    Aturan target/path `secrets apply` yang tepat dan perilaku profil autentikasi hanya-ref.
   </Card>
 </CardGroup>
 
@@ -36,9 +36,9 @@ Gunakan halaman ini untuk startup hari pertama dan operasi hari kedua dari layan
 
 ```bash
 openclaw gateway --port 18789
-# debug/trace dicerminkan ke stdio
+# debug/trace mirrored to stdio
 openclaw gateway --port 18789 --verbose
-# paksa hentikan listener pada port yang dipilih, lalu mulai
+# force-kill listener on selected port, then start
 openclaw gateway --force
 ```
 
@@ -52,7 +52,7 @@ openclaw status
 openclaw logs --follow
 ```
 
-Baseline sehat: `Runtime: running`, `Connectivity probe: ok`, dan `Capability: ...` yang sesuai dengan yang Anda harapkan. Gunakan `openclaw gateway status --require-rpc` saat Anda memerlukan bukti RPC scope-baca, bukan hanya reachability.
+Baseline sehat: `Runtime: running`, `Connectivity probe: ok`, dan `Capability: ...` yang sesuai dengan yang Anda harapkan. Gunakan `openclaw gateway status --require-rpc` saat Anda memerlukan bukti RPC cakupan-baca, bukan hanya keterjangkauan.
 
   </Step>
 
@@ -63,34 +63,34 @@ openclaw channels status --probe
 ```
 
 Dengan gateway yang dapat dijangkau, ini menjalankan probe channel live per akun dan audit opsional.
-Jika gateway tidak dapat dijangkau, CLI kembali ke ringkasan channel berbasis config saja
-alih-alih output probe live.
+Jika gateway tidak dapat dijangkau, CLI kembali ke ringkasan channel hanya-konfigurasi alih-alih
+output probe live.
 
   </Step>
 </Steps>
 
 <Note>
-Reload config Gateway memantau path file config aktif (yang di-resolve dari default profile/state, atau `OPENCLAW_CONFIG_PATH` saat diatur).
+Muat ulang konfigurasi Gateway mengawasi path file konfigurasi aktif (diselesaikan dari default profil/status, atau `OPENCLAW_CONFIG_PATH` saat ditetapkan).
 Mode default adalah `gateway.reload.mode="hybrid"`.
-Setelah pemuatan pertama berhasil, proses yang berjalan menyajikan snapshot config dalam memori yang aktif; reload yang berhasil menukar snapshot itu secara atomik.
+Setelah pemuatan pertama yang berhasil, proses yang berjalan melayani snapshot konfigurasi aktif dalam memori; muat ulang yang berhasil menukar snapshot tersebut secara atomik.
 </Note>
 
 ## Model runtime
 
-- Satu proses selalu aktif untuk routing, control plane, dan koneksi channel.
+- Satu proses yang selalu aktif untuk perutean, control plane, dan koneksi channel.
 - Satu port termultipleks untuk:
-  - control/RPC WebSocket
+  - Kontrol/RPC WebSocket
   - API HTTP, kompatibel OpenAI (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
   - Control UI dan hook
 - Mode bind default: `loopback`.
-- Auth diwajibkan secara default. Penyiapan shared-secret menggunakan
+- Autentikasi diwajibkan secara default. Penyiapan rahasia bersama menggunakan
   `gateway.auth.token` / `gateway.auth.password` (atau
-  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), dan penyiapan
-  reverse-proxy non-loopback dapat menggunakan `gateway.auth.mode: "trusted-proxy"`.
+  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), dan penyiapan reverse-proxy
+  non-loopback dapat menggunakan `gateway.auth.mode: "trusted-proxy"`.
 
 ## Endpoint kompatibel OpenAI
 
-Permukaan kompatibilitas dengan leverage tertinggi di OpenClaw sekarang adalah:
+Permukaan kompatibilitas bernilai tertinggi OpenClaw sekarang adalah:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
@@ -98,45 +98,49 @@ Permukaan kompatibilitas dengan leverage tertinggi di OpenClaw sekarang adalah:
 - `POST /v1/chat/completions`
 - `POST /v1/responses`
 
-Mengapa set ini penting:
+Mengapa kumpulan ini penting:
 
 - Sebagian besar integrasi Open WebUI, LobeChat, dan LibreChat mem-probe `/v1/models` terlebih dahulu.
 - Banyak pipeline RAG dan memori mengharapkan `/v1/embeddings`.
-- Klien native agen semakin memilih `/v1/responses`.
+- Klien agent-native semakin memilih `/v1/responses`.
 
 Catatan perencanaan:
 
-- `/v1/models` bersifat agent-first: endpoint ini mengembalikan `openclaw`, `openclaw/default`, dan `openclaw/<agentId>`.
-- `openclaw/default` adalah alias stabil yang selalu dipetakan ke agen default yang dikonfigurasi.
-- Gunakan `x-openclaw-model` saat Anda menginginkan override backend provider/model; jika tidak, penyiapan model dan embedding normal dari agen yang dipilih tetap mengendalikan.
+- `/v1/models` mengutamakan agen: mengembalikan `openclaw`, `openclaw/default`, dan `openclaw/<agentId>`.
+- `openclaw/default` adalah alias stabil yang selalu memetakan ke agen default yang dikonfigurasi.
+- Gunakan `x-openclaw-model` saat Anda menginginkan override penyedia/model backend; jika tidak, penyiapan model dan embedding normal agen yang dipilih tetap memegang kendali.
 
-Semua ini berjalan pada port Gateway utama dan menggunakan batas auth operator tepercaya yang sama seperti HTTP API Gateway lainnya.
+Semua ini berjalan di port Gateway utama dan menggunakan batas autentikasi operator tepercaya yang sama seperti API HTTP Gateway lainnya.
 
 ### Prioritas port dan bind
 
-| Pengaturan   | Urutan resolusi                                              |
-| ------------ | ------------------------------------------------------------ |
+| Pengaturan  | Urutan resolusi                                               |
+| ------------ | ------------------------------------------------------------- |
 | Port Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
-| Mode bind    | CLI/override → `gateway.bind` → `loopback`                   |
+| Mode bind    | CLI/override → `gateway.bind` → `loopback`                    |
 
-Startup Gateway menggunakan port dan bind efektif yang sama saat menginisialisasi origin Control UI lokal untuk bind non-loopback. Misalnya, `--bind lan --port 3000`
-menginisialisasi `http://localhost:3000` dan `http://127.0.0.1:3000` sebelum validasi runtime berjalan. Tambahkan origin browser remote, seperti URL proxy HTTPS, ke
+Layanan gateway yang terinstal mencatat `--port` yang diselesaikan di metadata supervisor. Setelah mengubah `gateway.port`, jalankan `openclaw doctor --fix` atau `openclaw gateway install --force` agar launchd/systemd/schtasks memulai proses di port baru.
+
+Startup Gateway menggunakan port dan bind efektif yang sama saat menanam origin
+Control UI lokal untuk bind non-loopback. Misalnya, `--bind lan --port 3000`
+menanam `http://localhost:3000` dan `http://127.0.0.1:3000` sebelum validasi
+runtime berjalan. Tambahkan origin browser jarak jauh apa pun, seperti URL proxy HTTPS, ke
 `gateway.controlUi.allowedOrigins` secara eksplisit.
 
 ### Mode hot reload
 
 | `gateway.reload.mode` | Perilaku                                  |
 | --------------------- | ----------------------------------------- |
-| `off`                 | Tidak ada reload config                   |
-| `hot`                 | Terapkan hanya perubahan yang aman untuk hot |
-| `restart`             | Restart pada perubahan yang memerlukan reload |
-| `hybrid` (default)    | Terapkan hot bila aman, restart bila diperlukan |
+| `off`                 | Tidak ada muat ulang konfigurasi          |
+| `hot`                 | Terapkan hanya perubahan yang aman-hot    |
+| `restart`             | Mulai ulang pada perubahan yang perlu muat ulang |
+| `hybrid` (default)    | Terapkan-hot saat aman, mulai ulang saat diperlukan |
 
-## Kumpulan perintah operator
+## Set perintah operator
 
 ```bash
 openclaw gateway status
-openclaw gateway status --deep   # menambahkan pemindaian layanan tingkat sistem
+openclaw gateway status --deep   # adds a system-level service scan
 openclaw gateway status --json
 openclaw gateway install
 openclaw gateway restart
@@ -146,17 +150,16 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` untuk discovery layanan tambahan (LaunchDaemons/systemd system
-units/schtasks), bukan probe kesehatan RPC yang lebih mendalam.
+`gateway status --deep` ditujukan untuk penemuan layanan tambahan (LaunchDaemons/unit systemd sistem/schtasks), bukan probe kesehatan RPC yang lebih mendalam.
 
 ## Beberapa gateway (host yang sama)
 
-Sebagian besar instalasi seharusnya menjalankan satu gateway per mesin. Satu gateway dapat meng-host beberapa
+Sebagian besar instalasi sebaiknya menjalankan satu gateway per mesin. Satu gateway dapat menampung beberapa
 agen dan channel.
 
-Anda hanya memerlukan beberapa gateway saat memang menginginkan isolasi atau rescue bot.
+Anda hanya memerlukan beberapa gateway saat Anda secara sengaja menginginkan isolasi atau bot penyelamat.
 
-Pemeriksaan yang berguna:
+Pemeriksaan berguna:
 
 ```bash
 openclaw gateway status --deep
@@ -166,10 +169,10 @@ openclaw gateway probe
 Yang diharapkan:
 
 - `gateway status --deep` dapat melaporkan `Other gateway-like services detected (best effort)`
-  dan mencetak petunjuk pembersihan ketika instalasi launchd/systemd/schtasks usang masih ada.
+  dan mencetak petunjuk pembersihan saat instalasi launchd/systemd/schtasks usang masih ada.
 - `gateway probe` dapat memperingatkan tentang `multiple reachable gateways` saat lebih dari satu target
   menjawab.
-- Jika itu memang disengaja, isolasikan port, config/state, dan root workspace per gateway.
+- Jika itu disengaja, isolasikan port, konfigurasi/status, dan root workspace per gateway.
 
 Checklist per instance:
 
@@ -187,27 +190,26 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b opencla
 
 Penyiapan terperinci: [/gateway/multiple-gateways](/id/gateway/multiple-gateways).
 
-## Endpoint brain real-time VoiceClaw
+## Endpoint otak real-time VoiceClaw
 
-OpenClaw mengekspos endpoint WebSocket real-time yang kompatibel VoiceClaw di
+OpenClaw mengekspos endpoint WebSocket real-time yang kompatibel dengan VoiceClaw di
 `/voiceclaw/realtime`. Gunakan ini saat klien desktop VoiceClaw harus berbicara
-langsung dengan brain OpenClaw real-time alih-alih melalui proses relay
-terpisah.
+langsung ke otak OpenClaw real-time alih-alih melalui proses relay terpisah.
 
 Endpoint ini menggunakan Gemini Live untuk audio real-time dan memanggil OpenClaw sebagai
-brain dengan mengekspos tool OpenClaw langsung ke Gemini Live. Panggilan tool mengembalikan
-hasil `working` langsung agar giliran suara tetap responsif, lalu OpenClaw
-mengeksekusi tool sebenarnya secara asynchronous dan menyuntikkan hasilnya kembali ke
-sesi live. Atur `GEMINI_API_KEY` dalam environment proses gateway. Jika
-auth gateway diaktifkan, klien desktop mengirim token atau password gateway
+otak dengan mengekspos alat OpenClaw langsung ke Gemini Live. Panggilan alat mengembalikan hasil
+`working` langsung untuk menjaga giliran suara tetap responsif, lalu OpenClaw
+mengeksekusi alat sebenarnya secara asinkron dan menyuntikkan hasilnya kembali ke
+sesi live. Tetapkan `GEMINI_API_KEY` di lingkungan proses gateway. Jika
+autentikasi gateway diaktifkan, klien desktop mengirim token atau kata sandi gateway
 dalam pesan `session.config` pertamanya.
 
-Akses brain real-time menjalankan perintah agen OpenClaw yang diotorisasi owner. Batasi
-`gateway.auth.mode: "none"` hanya untuk instance uji loopback-only. Koneksi brain
-real-time non-lokal memerlukan auth gateway.
+Akses otak real-time menjalankan perintah agen OpenClaw yang diotorisasi pemilik. Batasi
+`gateway.auth.mode: "none"` hanya untuk instance uji loopback. Koneksi otak real-time
+non-lokal memerlukan autentikasi gateway.
 
-Untuk gateway uji terisolasi, jalankan instance terpisah dengan port, config,
-dan state miliknya sendiri:
+Untuk gateway uji yang terisolasi, jalankan instance terpisah dengan port, konfigurasi,
+dan statusnya sendiri:
 
 ```bash
 OPENCLAW_CONFIG_PATH=/path/to/openclaw-realtime/openclaw.json \
@@ -223,9 +225,9 @@ Lalu konfigurasikan VoiceClaw untuk menggunakan:
 ws://127.0.0.1:19789/voiceclaw/realtime
 ```
 
-## Akses remote
+## Akses jarak jauh
 
-Yang disukai: Tailscale/VPN.
+Disarankan: Tailscale/VPN.
 Fallback: tunnel SSH.
 
 ```bash
@@ -235,12 +237,12 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 Lalu hubungkan klien secara lokal ke `ws://127.0.0.1:18789`.
 
 <Warning>
-Tunnel SSH tidak melewati auth gateway. Untuk auth shared-secret, klien tetap
+Tunnel SSH tidak melewati autentikasi gateway. Untuk autentikasi rahasia bersama, klien tetap
 harus mengirim `token`/`password` bahkan melalui tunnel. Untuk mode yang membawa identitas,
-permintaan tetap harus memenuhi jalur auth tersebut.
+permintaan tetap harus memenuhi jalur autentikasi tersebut.
 </Warning>
 
-Lihat: [Remote Gateway](/id/gateway/remote), [Authentication](/id/gateway/authentication), [Tailscale](/id/gateway/tailscale).
+Lihat: [Gateway Jarak Jauh](/id/gateway/remote), [Autentikasi](/id/gateway/authentication), [Tailscale](/id/gateway/tailscale).
 
 ## Supervisi dan siklus hidup layanan
 
@@ -256,13 +258,13 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-Gunakan `openclaw gateway restart` untuk restart. Jangan merangkai `openclaw gateway stop` dan `openclaw gateway start`; di macOS, `gateway stop` sengaja menonaktifkan LaunchAgent sebelum menghentikannya.
+Gunakan `openclaw gateway restart` untuk mulai ulang. Jangan merantai `openclaw gateway stop` dan `openclaw gateway start`; di macOS, `gateway stop` secara sengaja menonaktifkan LaunchAgent sebelum menghentikannya.
 
-Label LaunchAgent adalah `ai.openclaw.gateway` (default) atau `ai.openclaw.<profile>` (profile bernama). `openclaw doctor` mengaudit dan memperbaiki drift config layanan.
+Label LaunchAgent adalah `ai.openclaw.gateway` (default) atau `ai.openclaw.<profile>` (profil bernama). `openclaw doctor` mengaudit dan memperbaiki drift konfigurasi layanan.
 
   </Tab>
 
-  <Tab title="Linux (systemd user)">
+  <Tab title="Linux (pengguna systemd)">
 
 ```bash
 openclaw gateway install
@@ -276,7 +278,7 @@ Untuk persistensi setelah logout, aktifkan lingering:
 sudo loginctl enable-linger <user>
 ```
 
-Contoh user-unit manual saat Anda memerlukan path instalasi kustom:
+Contoh unit pengguna manual saat Anda memerlukan path instalasi khusus:
 
 ```ini
 [Unit]
@@ -309,29 +311,31 @@ openclaw gateway stop
 ```
 
 Startup terkelola Windows native menggunakan Scheduled Task bernama `OpenClaw Gateway`
-(atau `OpenClaw Gateway (<profile>)` untuk profile bernama). Jika pembuatan Scheduled Task
-ditolak, OpenClaw kembali ke launcher Startup-folder per pengguna
-yang mengarah ke `gateway.cmd` di dalam direktori status.
+(atau `OpenClaw Gateway (<profile>)` untuk profil bernama). Jika pembuatan Scheduled Task
+ditolak, OpenClaw kembali ke peluncur folder Startup per pengguna
+yang menunjuk ke `gateway.cmd` di dalam direktori status.
 
   </Tab>
 
-  <Tab title="Linux (system service)">
+  <Tab title="Linux (layanan sistem)">
 
-Gunakan system unit untuk host multi-pengguna/selalu aktif.
+Gunakan unit sistem untuk host multi-pengguna/selalu aktif.
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now openclaw-gateway[-<profile>].service
 ```
 
-Gunakan body layanan yang sama seperti user unit, tetapi pasang di
+Gunakan isi layanan yang sama seperti unit pengguna, tetapi instal di bawah
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` dan sesuaikan
-`ExecStart=` jika biner `openclaw` Anda berada di lokasi lain.
+`ExecStart=` jika binary `openclaw` Anda berada di tempat lain.
+
+Jangan juga membiarkan `openclaw doctor --fix` menginstal layanan gateway tingkat-pengguna untuk profil/port yang sama. Doctor menolak instalasi otomatis tersebut saat menemukan layanan gateway OpenClaw tingkat-sistem; gunakan `OPENCLAW_SERVICE_REPAIR_POLICY=external` saat unit sistem memiliki siklus hidupnya.
 
   </Tab>
 </Tabs>
 
-## Jalur cepat profile dev
+## Jalur cepat profil dev
 
 ```bash
 openclaw --dev setup
@@ -339,34 +343,34 @@ openclaw --dev gateway --allow-unconfigured
 openclaw --dev status
 ```
 
-Default mencakup state/config terisolasi dan port gateway dasar `19001`.
+Default mencakup status/konfigurasi terisolasi dan port gateway dasar `19001`.
 
 ## Referensi cepat protokol (tampilan operator)
 
-- Frame klien pertama harus `connect`.
-- Gateway mengembalikan snapshot `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, limits/policy).
-- `hello-ok.features.methods` / `events` adalah daftar discovery konservatif, bukan
-  dump yang dihasilkan dari setiap helper route yang dapat dipanggil.
+- Frame klien pertama harus berupa `connect`.
+- Gateway mengembalikan snapshot `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, batas/kebijakan).
+- `hello-ok.features.methods` / `events` adalah daftar penemuan konservatif, bukan
+  dump yang dihasilkan dari setiap rute helper yang dapat dipanggil.
 - Permintaan: `req(method, params)` → `res(ok/payload|error)`.
-- Peristiwa umum mencakup `connect.challenge`, `agent`, `chat`,
+- Event umum mencakup `connect.challenge`, `agent`, `chat`,
   `session.message`, `session.tool`, `sessions.changed`, `presence`, `tick`,
-  `health`, `heartbeat`, peristiwa siklus hidup pairing/approval, dan `shutdown`.
+  `health`, `heartbeat`, event siklus hidup pairing/persetujuan, dan `shutdown`.
 
-Eksekusi agen terdiri dari dua tahap:
+Eksekusi agen berlangsung dalam dua tahap:
 
-1. Ack langsung diterima (`status:"accepted"`)
-2. Respons penyelesaian final (`status:"ok"|"error"`), dengan peristiwa `agent` yang di-stream di antaranya.
+1. Ack diterima langsung (`status:"accepted"`)
+2. Respons penyelesaian final (`status:"ok"|"error"`), dengan event `agent` yang distream di antaranya.
 
-Lihat dokumentasi protokol lengkap: [Gateway Protocol](/id/gateway/protocol).
+Lihat dokumentasi protokol lengkap: [Protokol Gateway](/id/gateway/protocol).
 
 ## Pemeriksaan operasional
 
 ### Liveness
 
 - Buka WS dan kirim `connect`.
-- Harapkan respons `hello-ok` dengan snapshot.
+- Harapkan respons `hello-ok` dengan cuplikan.
 
-### Readiness
+### Kesiapan
 
 ```bash
 openclaw gateway status
@@ -374,26 +378,26 @@ openclaw channels status --probe
 openclaw health
 ```
 
-### Pemulihan gap
+### Pemulihan celah
 
-Peristiwa tidak diputar ulang. Pada gap urutan, segarkan status (`health`, `system-presence`) sebelum melanjutkan.
+Peristiwa tidak diputar ulang. Saat ada celah urutan, segarkan keadaan (`health`, `system-presence`) sebelum melanjutkan.
 
-## Signature kegagalan umum
+## Tanda kegagalan umum
 
-| Signature                                                      | Masalah yang mungkin terjadi                                                     |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `refusing to bind gateway ... without auth`                    | Bind non-loopback tanpa jalur auth gateway yang valid                            |
-| `another gateway instance is already listening` / `EADDRINUSE` | Konflik port                                                                     |
-| `Gateway start blocked: set gateway.mode=local`                | Config diatur ke mode remote, atau cap mode lokal hilang dari config yang rusak |
-| `unauthorized` during connect                                  | Ketidakcocokan auth antara klien dan gateway                                     |
+| Tanda                                                          | Kemungkinan masalah                                                            |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `refusing to bind gateway ... without auth`                    | Bind non-loopback tanpa jalur auth gateway yang valid                           |
+| `another gateway instance is already listening` / `EADDRINUSE` | Konflik port                                                                    |
+| `Gateway start blocked: set gateway.mode=local`                | Konfigurasi diatur ke mode remote, atau stempel mode lokal hilang dari konfigurasi yang rusak |
+| `unauthorized` saat connect                                    | Ketidakcocokan auth antara klien dan gateway                                    |
 
-Untuk urutan diagnosis lengkap, gunakan [Gateway Troubleshooting](/id/gateway/troubleshooting).
+Untuk tangga diagnosis lengkap, gunakan [Pemecahan Masalah Gateway](/id/gateway/troubleshooting).
 
 ## Jaminan keamanan
 
-- Klien protokol Gateway gagal cepat saat Gateway tidak tersedia (tidak ada fallback direct-channel implisit).
-- Frame pertama yang tidak valid/bukan connect ditolak dan koneksi ditutup.
-- Shutdown graceful memancarkan peristiwa `shutdown` sebelum socket ditutup.
+- Klien protokol Gateway gagal cepat saat Gateway tidak tersedia (tidak ada fallback channel langsung implisit).
+- Frame pertama yang tidak valid/bukan connect ditolak dan ditutup.
+- Shutdown yang anggun memancarkan peristiwa `shutdown` sebelum socket ditutup.
 
 ---
 
@@ -402,13 +406,13 @@ Terkait:
 - [Pemecahan masalah](/id/gateway/troubleshooting)
 - [Proses Latar Belakang](/id/gateway/background-process)
 - [Konfigurasi](/id/gateway/configuration)
-- [Health](/id/gateway/health)
+- [Kesehatan](/id/gateway/health)
 - [Doctor](/id/gateway/doctor)
-- [Authentication](/id/gateway/authentication)
+- [Autentikasi](/id/gateway/authentication)
 
 ## Terkait
 
 - [Konfigurasi](/id/gateway/configuration)
 - [Pemecahan masalah Gateway](/id/gateway/troubleshooting)
 - [Akses remote](/id/gateway/remote)
-- [Manajemen secret](/id/gateway/secrets)
+- [Manajemen rahasia](/id/gateway/secrets)

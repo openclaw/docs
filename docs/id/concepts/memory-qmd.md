@@ -1,40 +1,40 @@
 ---
 read_when:
     - Anda ingin menyiapkan QMD sebagai backend memori Anda
-    - Anda menginginkan fitur memori lanjutan seperti reranking atau jalur yang diindeks tambahan
-summary: Sidecar pencarian local-first dengan BM25, vektor, reranking, dan ekspansi kueri
+    - Anda menginginkan fitur memori lanjutan seperti reranking atau jalur terindeks tambahan
+summary: Komponen pendamping pencarian yang mengutamakan lokal dengan BM25, vektor, pemeringkatan ulang, dan perluasan kueri
 title: Mesin memori QMD
 x-i18n:
-    generated_at: "2026-04-25T13:44:41Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:43:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 89e6a5e0c8f5fb8507dffd08975fec0ca6fda03883079a27c2a28a1d09e95368
+    source_hash: 71980e3701f9a5ddcfbbfa41497ef51d2aae2993b2326591124cc0a87f9a849f
     source_path: concepts/memory-qmd.md
-    workflow: 15
+    workflow: 16
 ---
 
-[QMD](https://github.com/tobi/qmd) adalah sidecar pencarian local-first yang berjalan
-bersama OpenClaw. QMD menggabungkan BM25, pencarian vektor, dan reranking dalam satu
-biner, serta dapat mengindeks konten di luar file memori workspace Anda.
+[QMD](https://github.com/tobi/qmd) adalah sidecar pencarian yang mengutamakan lokal dan berjalan
+bersama OpenClaw. QMD menggabungkan BM25, pencarian vektor, dan pemeringkatan ulang dalam satu
+binary, serta dapat mengindeks konten di luar file memori workspace Anda.
 
-## Apa yang ditambahkan dibanding bawaan
+## Yang ditambahkan dibanding bawaan
 
-- **Reranking dan ekspansi kueri** untuk recall yang lebih baik.
+- **Pemeringkatan ulang dan perluasan kueri** untuk recall yang lebih baik.
 - **Indeks direktori tambahan** -- dokumentasi proyek, catatan tim, apa pun di disk.
-- **Indeks transkrip sesi** -- mengingat percakapan sebelumnya.
+- **Indeks transkrip sesi** -- ingat kembali percakapan sebelumnya.
 - **Sepenuhnya lokal** -- berjalan dengan paket runtime node-llama-cpp opsional dan
-  mengunduh model GGUF secara otomatis.
-- **Fallback otomatis** -- jika QMD tidak tersedia, OpenClaw fallback ke
-  mesin bawaan secara mulus.
+  mengunduh otomatis model GGUF.
+- **Fallback otomatis** -- jika QMD tidak tersedia, OpenClaw beralih ke
+  mesin bawaan tanpa hambatan.
 
 ## Memulai
 
 ### Prasyarat
 
 - Instal QMD: `npm install -g @tobilu/qmd` atau `bun install -g @tobilu/qmd`
-- Build SQLite yang mengizinkan extension (`brew install sqlite` di macOS).
-- QMD harus ada di `PATH` gateway.
-- macOS dan Linux berfungsi langsung. Windows paling didukung melalui WSL2.
+- Build SQLite yang mengizinkan ekstensi (`brew install sqlite` di macOS).
+- QMD harus ada di `PATH` milik Gateway.
+- macOS dan Linux langsung berfungsi. Windows paling baik didukung melalui WSL2.
 
 ### Aktifkan
 
@@ -47,33 +47,83 @@ biner, serta dapat mengindeks konten di luar file memori workspace Anda.
 ```
 
 OpenClaw membuat home QMD mandiri di bawah
-`~/.openclaw/agents/<agentId>/qmd/` dan mengelola lifecycle sidecar
-secara otomatis -- collection, pembaruan, dan eksekusi embedding ditangani untuk Anda.
-Sistem ini lebih memilih bentuk collection dan kueri MCP QMD saat ini, tetapi tetap fallback ke
-flag collection `--mask` lama dan nama tool MCP lama bila diperlukan.
-Rekonsiliasi saat boot juga membuat ulang collection terkelola usang kembali ke
-pola kanonisnya saat collection QMD lama dengan nama yang sama masih ada.
+`~/.openclaw/agents/<agentId>/qmd/` dan mengelola siklus hidup sidecar
+secara otomatis -- koleksi, pembaruan, dan proses embedding ditangani untuk Anda.
+OpenClaw mengutamakan koleksi QMD dan bentuk kueri MCP saat ini, tetapi tetap fallback ke
+flag pola koleksi alternatif dan nama alat MCP lama saat diperlukan.
+Rekonsiliasi saat boot juga membuat ulang koleksi terkelola yang usang kembali ke
+pola kanonisnya ketika koleksi QMD lama dengan nama yang sama masih
+ada.
 
 ## Cara kerja sidecar
 
-- OpenClaw membuat collection dari file memori workspace Anda dan
-  `memory.qmd.paths` apa pun yang dikonfigurasi, lalu menjalankan `qmd update` + `qmd embed` saat boot
-  dan secara berkala (default setiap 5 menit).
-- Collection workspace default melacak `MEMORY.md` serta tree `memory/`.
+- OpenClaw membuat koleksi dari file memori workspace Anda dan
+  `memory.qmd.paths` apa pun yang dikonfigurasi, lalu menjalankan `qmd update` ketika manajer QMD
+  dibuka dan secara berkala setelahnya (default setiap 5 menit). Penyegaran ini
+  berjalan melalui subprocess QMD, bukan crawl filesystem dalam proses. Mode
+  semantik juga menjalankan `qmd embed`.
+- Koleksi workspace default melacak `MEMORY.md` ditambah tree `memory/`.
   `memory.md` huruf kecil tidak diindeks sebagai file memori root.
-- Refresh saat boot berjalan di latar belakang agar startup chat tidak terblokir.
+- Pemindai milik QMD mengabaikan path tersembunyi dan direktori dependensi/build
+  umum seperti `.git`, `.cache`, `node_modules`, `vendor`, `dist`, dan
+  `build`. Startup Gateway tidak menginisialisasi QMD secara default, sehingga boot dingin
+  menghindari impor runtime memori atau pembuatan watcher berumur panjang sebelum
+  memori pertama kali digunakan.
+- Jika Anda tetap menginginkan penyegaran saat Gateway dimulai, set
+  `memory.qmd.update.startup` ke `idle` atau `immediate`. Penyegaran startup
+  opt-in menggunakan path subprocess QMD satu kali alih-alih membuat watcher
+  dalam proses penuh yang berumur panjang.
 - Pencarian menggunakan `searchMode` yang dikonfigurasi (default: `search`; juga mendukung
-  `vsearch` dan `query`). Jika sebuah mode gagal, OpenClaw mencoba ulang dengan `qmd query`.
+  `vsearch` dan `query`). `search` hanya BM25, sehingga OpenClaw melewati probe kesiapan
+  vektor semantik dan pemeliharaan embedding dalam mode tersebut. Jika suatu mode
+  gagal, OpenClaw mencoba lagi dengan `qmd query`.
+- Dengan rilis QMD yang mengiklankan filter multi-koleksi, OpenClaw mengelompokkan
+  koleksi dari sumber yang sama ke satu invocation pencarian QMD. Rilis QMD lama
+  tetap memakai fallback per koleksi yang kompatibel.
 - Jika QMD gagal sepenuhnya, OpenClaw fallback ke mesin SQLite bawaan.
+  Upaya berulang pada giliran chat mundur sebentar setelah kegagalan membuka agar
+  binary yang hilang atau dependensi sidecar yang rusak tidak membuat badai retry;
+  `openclaw memory status` dan probe CLI satu kali tetap memeriksa ulang QMD secara langsung.
 
 <Info>
-Pencarian pertama mungkin lambat -- QMD mengunduh model GGUF (~2 GB) secara otomatis untuk
-reranking dan ekspansi kueri pada eksekusi pertama `qmd query`.
+Pencarian pertama mungkin lambat -- QMD mengunduh otomatis model GGUF (~2 GB) untuk
+pemeringkatan ulang dan perluasan kueri pada proses `qmd query` pertama.
 </Info>
+
+## Performa pencarian dan kompatibilitas
+
+OpenClaw menjaga path pencarian QMD tetap kompatibel dengan instalasi QMD saat ini
+maupun yang lebih lama.
+
+Saat startup, OpenClaw memeriksa teks bantuan QMD yang terinstal sekali per manajer. Jika
+binary mengiklankan dukungan untuk beberapa filter koleksi, OpenClaw mencari semua
+koleksi dari sumber yang sama dengan satu perintah:
+
+```bash
+qmd search "router notes" --json -n 10 -c memory-root-main -c memory-dir-main
+```
+
+Ini menghindari memulai satu subprocess QMD untuk setiap koleksi memori tahan lama.
+Koleksi transkrip sesi tetap berada dalam grup sumbernya sendiri, sehingga pencarian campuran
+`memory` + `sessions` tetap memberi input pendiversifikasi hasil dari kedua
+sumber.
+
+Build QMD lama hanya menerima satu filter koleksi. Ketika OpenClaw mendeteksi salah satu
+build tersebut, OpenClaw mempertahankan path kompatibilitas dan mencari setiap koleksi
+secara terpisah sebelum menggabungkan dan menghapus duplikasi hasil.
+
+Untuk memeriksa kontrak yang terinstal secara manual, jalankan:
+
+```bash
+qmd --help | grep -i collection
+```
+
+Bantuan QMD saat ini mengatakan filter koleksi dapat menargetkan satu atau beberapa koleksi.
+Bantuan lama biasanya menjelaskan satu koleksi.
 
 ## Override model
 
-Variabel env model QMD diteruskan tanpa perubahan dari proses gateway,
+Variabel lingkungan model QMD diteruskan tanpa perubahan dari proses Gateway,
 sehingga Anda dapat menyetel QMD secara global tanpa menambahkan konfigurasi OpenClaw baru:
 
 ```bash
@@ -85,7 +135,7 @@ export QMD_GENERATE_MODEL="/absolute/path/to/generator.gguf"
 Setelah mengubah model embedding, jalankan ulang embedding agar indeks cocok dengan
 ruang vektor baru.
 
-## Mengindeks jalur tambahan
+## Mengindeks path tambahan
 
 Arahkan QMD ke direktori tambahan agar dapat dicari:
 
@@ -100,12 +150,13 @@ Arahkan QMD ke direktori tambahan agar dapat dicari:
 }
 ```
 
-Cuplikan dari jalur tambahan muncul sebagai `qmd/<collection>/<relative-path>` dalam
-hasil pencarian. `memory_get` memahami prefiks ini dan membaca dari root collection yang benar.
+Cuplikan dari path tambahan muncul sebagai `qmd/<collection>/<relative-path>` dalam
+hasil pencarian. `memory_get` memahami prefix ini dan membaca dari root koleksi
+yang benar.
 
 ## Mengindeks transkrip sesi
 
-Aktifkan pengindeksan sesi untuk mengingat percakapan sebelumnya:
+Aktifkan pengindeksan sesi untuk mengingat kembali percakapan sebelumnya:
 
 ```json5
 {
@@ -118,8 +169,8 @@ Aktifkan pengindeksan sesi untuk mengingat percakapan sebelumnya:
 }
 ```
 
-Transkrip diekspor sebagai giliran User/Assistant yang telah disanitasi ke collection QMD khusus
-di bawah `~/.openclaw/agents/<id>/qmd/sessions/`.
+Transkrip diekspor sebagai giliran User/Assistant yang disanitasi ke koleksi QMD
+khusus di bawah `~/.openclaw/agents/<id>/qmd/sessions/`.
 
 ## Cakupan pencarian
 
@@ -139,61 +190,89 @@ Secara default, hasil pencarian QMD ditampilkan dalam sesi langsung dan channel
 }
 ```
 
-Saat cakupan menolak pencarian, OpenClaw mencatat peringatan dengan channel dan
-jenis chat yang diturunkan agar hasil kosong lebih mudah di-debug.
+Ketika cakupan menolak pencarian, OpenClaw mencatat peringatan dengan channel turunan dan
+jenis chat agar hasil kosong lebih mudah di-debug.
 
 ## Sitasi
 
-Saat `memory.citations` adalah `auto` atau `on`, cuplikan pencarian menyertakan
-footer `Source: <path#line>`. Tetapkan `memory.citations = "off"` untuk menghilangkan footer
-sambil tetap meneruskan jalurnya ke agen secara internal.
+Ketika `memory.citations` adalah `auto` atau `on`, cuplikan pencarian menyertakan footer
+`Source: <path#line>`. Set `memory.citations = "off"` untuk menghilangkan footer
+sambil tetap meneruskan path ke agen secara internal.
 
 ## Kapan digunakan
 
-Pilih QMD saat Anda memerlukan:
+Pilih QMD ketika Anda membutuhkan:
 
-- Reranking untuk hasil dengan kualitas lebih tinggi.
-- Mencari dokumentasi proyek atau catatan di luar workspace.
-- Mengingat percakapan sesi sebelumnya.
-- Pencarian sepenuhnya lokal tanpa API key.
+- Pemeringkatan ulang untuk hasil berkualitas lebih tinggi.
+- Pencarian dokumentasi proyek atau catatan di luar workspace.
+- Mengingat kembali percakapan sesi terdahulu.
+- Pencarian sepenuhnya lokal tanpa kunci API.
 
-Untuk pengaturan yang lebih sederhana, [mesin bawaan](/id/concepts/memory-builtin) bekerja dengan baik
+Untuk setup yang lebih sederhana, [mesin bawaan](/id/concepts/memory-builtin) berfungsi baik
 tanpa dependensi tambahan.
 
 ## Pemecahan masalah
 
-**QMD tidak ditemukan?** Pastikan biner ada di `PATH` gateway. Jika OpenClaw
+**QMD tidak ditemukan?** Pastikan binary ada di `PATH` milik Gateway. Jika OpenClaw
 berjalan sebagai layanan, buat symlink:
 `sudo ln -s ~/.bun/bin/qmd /usr/local/bin/qmd`.
 
-**Pencarian pertama sangat lambat?** QMD mengunduh model GGUF saat pertama digunakan. Pre-warm
-dengan `qmd query "test"` menggunakan direktori XDG yang sama seperti yang digunakan OpenClaw.
+Jika `qmd --version` berfungsi di shell Anda tetapi OpenClaw masih melaporkan
+`spawn qmd ENOENT`, proses Gateway kemungkinan memiliki `PATH` yang berbeda dari
+shell interaktif Anda. Pin binary secara eksplisit:
 
-**Pencarian timeout?** Tingkatkan `memory.qmd.limits.timeoutMs` (default: 4000 ms).
-Tetapkan ke `120000` untuk perangkat keras yang lebih lambat.
+```json5
+{
+  memory: {
+    backend: "qmd",
+    qmd: {
+      command: "/absolute/path/to/qmd",
+    },
+  },
+}
+```
+
+Gunakan `command -v qmd` di lingkungan tempat QMD diinstal, lalu periksa ulang
+dengan `openclaw memory status --deep`.
+
+**Pencarian pertama sangat lambat?** QMD mengunduh model GGUF saat pertama kali digunakan. Lakukan pre-warm
+dengan `qmd query "test"` menggunakan direktori XDG yang sama dengan yang digunakan OpenClaw.
+
+**Banyak subprocess QMD selama pencarian?** Perbarui QMD jika memungkinkan. OpenClaw menggunakan
+satu proses untuk pencarian multi-koleksi dari sumber yang sama hanya ketika QMD yang terinstal
+mengiklankan dukungan untuk beberapa filter `-c`; jika tidak, OpenClaw mempertahankan fallback
+per koleksi lama demi kebenaran.
+
+**QMD hanya BM25 masih mencoba membangun llama.cpp?** Set
+`memory.qmd.searchMode = "search"`. OpenClaw memperlakukan mode tersebut sebagai hanya leksikal,
+tidak menjalankan probe status vektor QMD atau pemeliharaan embedding, dan menyerahkan
+pemeriksaan kesiapan semantik ke setup `vsearch` atau `query`.
+
+**Pencarian timeout?** Tingkatkan `memory.qmd.limits.timeoutMs` (default: 4000ms).
+Set ke `120000` untuk perangkat keras yang lebih lambat.
 
 **Hasil kosong di chat grup?** Periksa `memory.qmd.scope` -- default hanya
 mengizinkan sesi langsung dan channel.
 
-**Pencarian memori root tiba-tiba jadi terlalu luas?** Mulai ulang gateway atau tunggu hingga
-rekonsiliasi startup berikutnya. OpenClaw membuat ulang collection terkelola usang
-kembali ke pola kanonis `MEMORY.md` dan `memory/` saat mendeteksi konflik
+**Pencarian memori root tiba-tiba menjadi terlalu luas?** Mulai ulang Gateway atau tunggu
+rekonsiliasi startup berikutnya. OpenClaw membuat ulang koleksi terkelola yang usang
+kembali ke pola kanonis `MEMORY.md` dan `memory/` ketika mendeteksi konflik
 nama yang sama.
 
-**Repo temp yang terlihat oleh workspace menyebabkan `ENAMETOOLONG` atau pengindeksan rusak?**
-Traversal QMD saat ini mengikuti perilaku pemindai QMD yang mendasarinya, bukan
+**Repo sementara yang terlihat workspace menyebabkan `ENAMETOOLONG` atau pengindeksan rusak?**
+Traversal QMD saat ini mengikuti perilaku pemindai QMD yang mendasari, bukan
 aturan symlink bawaan OpenClaw. Simpan checkout monorepo sementara di bawah
-direktori tersembunyi seperti `.tmp/` atau di luar root QMD yang diindeks sampai QMD menyediakan
-traversal aman terhadap siklus atau kontrol pengecualian eksplisit.
+direktori tersembunyi seperti `.tmp/` atau di luar root QMD yang diindeks sampai QMD mengekspos
+traversal aman siklus atau kontrol pengecualian eksplisit.
 
 ## Konfigurasi
 
-Untuk seluruh permukaan konfigurasi (`memory.qmd.*`), mode pencarian, interval pembaruan,
-aturan cakupan, dan semua pengaturan lainnya, lihat
-[Referensi konfigurasi Memory](/id/reference/memory-config).
+Untuk permukaan konfigurasi lengkap (`memory.qmd.*`), mode pencarian, interval pembaruan,
+aturan cakupan, dan semua knob lainnya, lihat
+[referensi konfigurasi Memori](/id/reference/memory-config).
 
 ## Terkait
 
-- [Ringkasan Memory](/id/concepts/memory)
+- [Ringkasan memori](/id/concepts/memory)
 - [Mesin memori bawaan](/id/concepts/memory-builtin)
-- [Memory Honcho](/id/concepts/memory-honcho)
+- [Memori Honcho](/id/concepts/memory-honcho)

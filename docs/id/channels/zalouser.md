@@ -1,44 +1,51 @@
 ---
 read_when:
     - Menyiapkan Zalo Personal untuk OpenClaw
-    - Men-debug login atau alur pesan Zalo Personal
-summary: Dukungan akun pribadi Zalo melalui zca-js native (login QR), kapabilitas, dan konfigurasi
+    - Men-debug alur login atau pesan Zalo Personal
+summary: Dukungan akun pribadi Zalo melalui zca-js asli (masuk dengan QR), kemampuan, dan konfigurasi
 title: Zalo pribadi
 x-i18n:
-    generated_at: "2026-04-25T13:42:19Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:37:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5f996822f44648ae7791b5b027230edf1265f90157275ac058e0fa117f071d3a
+    source_hash: 581a427f7fa37b0fa204f6b813c767eaa7af1f577baf2ac6ea3a31bf23ca6a49
     source_path: channels/zalouser.md
-    workflow: 15
+    workflow: 16
 ---
 
-Status: eksperimental. Integrasi ini mengotomatisasi **akun Zalo pribadi** melalui `zca-js` native di dalam OpenClaw.
+Status: eksperimental. Integrasi ini mengotomatiskan **akun Zalo pribadi** melalui `zca-js` native di dalam OpenClaw.
 
-> **Peringatan:** Ini adalah integrasi tidak resmi dan dapat menyebabkan akun ditangguhkan/diblokir. Gunakan dengan risiko Anda sendiri.
+<Warning>
+Ini adalah integrasi tidak resmi dan dapat menyebabkan penangguhan atau pemblokiran akun. Gunakan dengan risiko Anda sendiri.
+</Warning>
 
 ## Plugin bawaan
 
-Zalo Personal tersedia sebagai plugin bawaan dalam rilis OpenClaw saat ini, jadi build paket normal tidak memerlukan instalasi terpisah.
+Zalo Personal dikirim sebagai Plugin bawaan dalam rilis OpenClaw saat ini, jadi build
+paket normal tidak memerlukan instalasi terpisah.
 
-Jika Anda menggunakan build lama atau instalasi kustom yang tidak menyertakan Zalo Personal,
-instal secara manual:
+Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Zalo Personal,
+instal paket npm saat ini ketika sudah diterbitkan:
 
 - Instal melalui CLI: `openclaw plugins install @openclaw/zalouser`
-- Atau dari source checkout: `openclaw plugins install ./path/to/local/zalouser-plugin`
-- Detail: [Plugins](/id/tools/plugin)
+- Atau dari checkout sumber: `openclaw plugins install ./path/to/local/zalouser-plugin`
+- Detail: [Plugin](/id/tools/plugin)
 
-Tidak diperlukan biner CLI `zca`/`openzca` eksternal.
+Jika npm melaporkan paket milik OpenClaw sebagai usang, gunakan build OpenClaw
+paket saat ini atau jalur checkout lokal sampai paket npm yang lebih baru
+diterbitkan.
+
+Tidak diperlukan biner CLI eksternal `zca`/`openzca`.
 
 ## Penyiapan cepat (pemula)
 
-1. Pastikan plugin Zalo Personal tersedia.
-   - Rilis paket OpenClaw saat ini sudah menyertakannya.
+1. Pastikan Plugin Zalo Personal tersedia.
+   - Rilis OpenClaw paket saat ini sudah menyertakannya.
    - Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
-2. Login (QR, di mesin Gateway):
+2. Login (QR, pada mesin Gateway):
    - `openclaw channels login --channel zalouser`
    - Pindai kode QR dengan aplikasi seluler Zalo.
-3. Aktifkan channel:
+3. Aktifkan kanal:
 
 ```json5
 {
@@ -52,18 +59,18 @@ Tidak diperlukan biner CLI `zca`/`openzca` eksternal.
 ```
 
 4. Mulai ulang Gateway (atau selesaikan penyiapan).
-5. Akses DM secara default menggunakan pairing; setujui kode pairing saat kontak pertama.
+5. Akses DM default menggunakan pairing; setujui kode pairing pada kontak pertama.
 
-## Apa ini
+## Apa itu
 
-- Berjalan sepenuhnya in-process melalui `zca-js`.
+- Berjalan sepenuhnya dalam proses melalui `zca-js`.
 - Menggunakan event listener native untuk menerima pesan masuk.
-- Mengirim balasan langsung melalui API JS (teks/media/tautan).
-- Dirancang untuk kasus penggunaan “akun pribadi” saat Zalo Bot API tidak tersedia.
+- Mengirim balasan langsung melalui JS API (teks/media/tautan).
+- Dirancang untuk kasus penggunaan “akun pribadi” ketika Zalo Bot API tidak tersedia.
 
 ## Penamaan
 
-ID channel adalah `zalouser` untuk menegaskan bahwa ini mengotomatisasi **akun pengguna Zalo pribadi** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API resmi Zalo di masa mendatang.
+ID kanal adalah `zalouser` untuk menegaskan bahwa ini mengotomatiskan **akun pengguna Zalo pribadi** (tidak resmi). Kami menjaga `zalo` tetap dicadangkan untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
 
 ## Menemukan ID (direktori)
 
@@ -77,14 +84,14 @@ openclaw directory groups list --channel zalouser --query "work"
 
 ## Batasan
 
-- Teks keluar dipotong menjadi bagian sekitar 2000 karakter (batas klien Zalo).
+- Teks keluar dipecah menjadi potongan sekitar 2000 karakter (batas klien Zalo).
 - Streaming diblokir secara default.
 
 ## Kontrol akses (DM)
 
 `channels.zalouser.dmPolicy` mendukung: `pairing | allowlist | open | disabled` (default: `pairing`).
 
-`channels.zalouser.allowFrom` menerima ID pengguna atau nama. Saat penyiapan, nama di-resolve menjadi ID menggunakan lookup kontak in-process plugin.
+`channels.zalouser.allowFrom` menerima ID pengguna atau nama. Selama penyiapan, nama diselesaikan menjadi ID menggunakan lookup kontak dalam proses milik Plugin.
 
 Setujui melalui:
 
@@ -93,18 +100,18 @@ Setujui melalui:
 
 ## Akses grup (opsional)
 
-- Default: `channels.zalouser.groupPolicy = "open"` (grup diizinkan). Gunakan `channels.defaults.groupPolicy` untuk mengganti default saat tidak ditetapkan.
+- Default: `channels.zalouser.groupPolicy = "open"` (grup diizinkan). Gunakan `channels.defaults.groupPolicy` untuk menimpa default ketika belum diatur.
 - Batasi ke allowlist dengan:
   - `channels.zalouser.groupPolicy = "allowlist"`
-  - `channels.zalouser.groups` (kuncinya sebaiknya berupa ID grup yang stabil; nama di-resolve menjadi ID saat startup bila memungkinkan)
-  - `channels.zalouser.groupAllowFrom` (mengontrol pengirim mana di grup yang diizinkan yang dapat memicu bot)
+  - `channels.zalouser.groups` (kunci sebaiknya berupa ID grup yang stabil; nama diselesaikan menjadi ID saat startup jika memungkinkan)
+  - `channels.zalouser.groupAllowFrom` (mengontrol pengirim mana dalam grup yang diizinkan yang dapat memicu bot)
 - Blokir semua grup: `channels.zalouser.groupPolicy = "disabled"`.
 - Wizard konfigurasi dapat meminta allowlist grup.
-- Saat startup, OpenClaw me-resolve nama grup/pengguna dalam allowlist menjadi ID dan mencatat pemetaannya.
-- Pencocokan allowlist grup secara default hanya berdasarkan ID. Nama yang tidak berhasil di-resolve diabaikan untuk auth kecuali `channels.zalouser.dangerouslyAllowNameMatching: true` diaktifkan.
+- Saat startup, OpenClaw menyelesaikan nama grup/pengguna dalam allowlist menjadi ID dan mencatat pemetaannya di log.
+- Pencocokan allowlist grup secara default hanya berdasarkan ID. Nama yang tidak terselesaikan diabaikan untuk auth kecuali `channels.zalouser.dangerouslyAllowNameMatching: true` diaktifkan.
 - `channels.zalouser.dangerouslyAllowNameMatching: true` adalah mode kompatibilitas break-glass yang mengaktifkan kembali pencocokan nama grup yang dapat berubah.
-- Jika `groupAllowFrom` tidak ditetapkan, runtime akan fallback ke `allowFrom` untuk pemeriksaan pengirim grup.
-- Pemeriksaan pengirim berlaku untuk pesan grup normal maupun perintah kontrol (misalnya `/new`, `/reset`).
+- Jika `groupAllowFrom` belum diatur, runtime fallback ke `allowFrom` untuk pemeriksaan pengirim grup.
+- Pemeriksaan pengirim berlaku untuk pesan grup normal dan perintah kontrol (misalnya `/new`, `/reset`).
 
 Contoh:
 
@@ -123,15 +130,15 @@ Contoh:
 }
 ```
 
-### Mention gating grup
+### Gating mention grup
 
 - `channels.zalouser.groups.<group>.requireMention` mengontrol apakah balasan grup memerlukan mention.
-- Urutan resolusi: ID/nama grup persis -> slug grup yang dinormalisasi -> `*` -> default (`true`).
-- Ini berlaku baik untuk grup yang ada di allowlist maupun mode grup open.
+- Urutan resolusi: ID/nama grup persis -> slug grup ternormalisasi -> `*` -> default (`true`).
+- Ini berlaku baik untuk grup dalam allowlist maupun mode grup terbuka.
 - Mengutip pesan bot dihitung sebagai mention implisit untuk aktivasi grup.
-- Perintah kontrol yang diotorisasi (misalnya `/new`) dapat melewati mention gating.
-- Saat pesan grup dilewati karena mention diperlukan, OpenClaw menyimpannya sebagai riwayat grup tertunda dan menyertakannya pada pesan grup berikutnya yang diproses.
-- Batas riwayat grup default mengikuti `messages.groupChat.historyLimit` (fallback `50`). Anda dapat menggantinya per akun dengan `channels.zalouser.historyLimit`.
+- Perintah kontrol yang terotorisasi (misalnya `/new`) dapat melewati gating mention.
+- Ketika pesan grup dilewati karena mention diperlukan, OpenClaw menyimpannya sebagai riwayat grup tertunda dan menyertakannya pada pesan grup berikutnya yang diproses.
+- Batas riwayat grup default ke `messages.groupChat.historyLimit` (fallback `50`). Anda dapat menimpanya per akun dengan `channels.zalouser.historyLimit`.
 
 Contoh:
 
@@ -151,7 +158,7 @@ Contoh:
 
 ## Multi-akun
 
-Akun dipetakan ke profil `zalouser` dalam state OpenClaw. Contoh:
+Akun dipetakan ke profil `zalouser` dalam status OpenClaw. Contoh:
 
 ```json5
 {
@@ -167,34 +174,34 @@ Akun dipetakan ke profil `zalouser` dalam state OpenClaw. Contoh:
 }
 ```
 
-## Mengetik, reaksi, dan pengakuan pengiriman
+## Pengetikan, reaksi, dan konfirmasi pengiriman
 
-- OpenClaw mengirim peristiwa mengetik sebelum mengirim balasan (best-effort).
-- Tindakan reaksi pesan `react` didukung untuk `zalouser` dalam tindakan channel.
+- OpenClaw mengirim event pengetikan sebelum mengirim balasan (upaya terbaik).
+- Aksi reaksi pesan `react` didukung untuk `zalouser` dalam aksi kanal.
   - Gunakan `remove: true` untuk menghapus emoji reaksi tertentu dari sebuah pesan.
-  - Semantik reaksi: [Reactions](/id/tools/reactions)
-- Untuk pesan masuk yang menyertakan metadata peristiwa, OpenClaw mengirim pengakuan delivered + seen (best-effort).
+  - Semantik reaksi: [Reaksi](/id/tools/reactions)
+- Untuk pesan masuk yang menyertakan metadata event, OpenClaw mengirim konfirmasi delivered + seen (upaya terbaik).
 
 ## Pemecahan masalah
 
-**Login tidak bertahan:**
+**Login tidak tersimpan:**
 
 - `openclaw channels status --probe`
 - Login ulang: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
 
-**Nama allowlist/grup tidak berhasil di-resolve:**
+**Nama allowlist/grup tidak terselesaikan:**
 
-- Gunakan ID numerik dalam `allowFrom`/`groupAllowFrom`/`groups`, atau nama teman/grup yang persis.
+- Gunakan ID numerik di `allowFrom`/`groupAllowFrom`/`groups`, atau nama teman/grup yang persis.
 
-**Di-upgrade dari penyiapan lama berbasis CLI:**
+**Ditingkatkan dari penyiapan lama berbasis CLI:**
 
-- Hapus asumsi proses `zca` eksternal lama.
-- Channel sekarang berjalan sepenuhnya di dalam OpenClaw tanpa biner CLI eksternal.
+- Hapus asumsi proses eksternal `zca` lama.
+- Kanal sekarang berjalan sepenuhnya di OpenClaw tanpa biner CLI eksternal.
 
 ## Terkait
 
-- [Ringkasan Channels](/id/channels) — semua channel yang didukung
+- [Ikhtisar Kanal](/id/channels) — semua kanal yang didukung
 - [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
-- [Groups](/id/channels/groups) — perilaku chat grup dan mention gating
-- [Channel Routing](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Security](/id/gateway/security) — model akses dan penguatan
+- [Grup](/id/channels/groups) — perilaku chat grup dan gating mention
+- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan pengerasan

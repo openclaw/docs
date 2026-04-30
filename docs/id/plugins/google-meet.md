@@ -2,33 +2,36 @@
 read_when:
     - Anda ingin agen OpenClaw bergabung ke panggilan Google Meet
     - Anda ingin agen OpenClaw membuat panggilan Google Meet baru
-    - Anda sedang mengonfigurasi Chrome, Chrome Node, atau Twilio sebagai transport Google Meet
-summary: 'Plugin Google Meet: bergabung ke URL Meet eksplisit melalui Chrome atau Twilio dengan default suara realtime'
+    - Anda sedang mengonfigurasi Chrome, Node Chrome, atau Twilio sebagai transport Google Meet
+summary: 'Plugin Google Meet: bergabung ke URL Meet eksplisit melalui Chrome atau Twilio dengan pengaturan default suara waktu nyata'
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-04-26T11:34:43Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:01:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1bd53db711e4729a9a7b18f7aaa3eedffd71a1e19349fc858537652b5d17cfcb
+    source_hash: 7b989c872fee0dca31680f67559cd26b715303f7c6f4eeda51fc63889bb0383c
     source_path: plugins/google-meet.md
-    workflow: 15
+    workflow: 16
 ---
 
-Dukungan peserta Google Meet untuk OpenClaw — Plugin ini sengaja dibuat eksplisit:
+Dukungan peserta Google Meet untuk OpenClaw — plugin ini eksplisit secara desain:
 
-- Plugin ini hanya bergabung ke URL `https://meet.google.com/...` yang eksplisit.
-- Plugin ini dapat membuat ruang Meet baru melalui Google Meet API, lalu bergabung ke
+- Plugin hanya bergabung ke URL `https://meet.google.com/...` yang eksplisit.
+- Plugin dapat membuat ruang Meet baru melalui Google Meet API, lalu bergabung ke
   URL yang dikembalikan.
 - Suara `realtime` adalah mode default.
-- Suara realtime dapat memanggil kembali ke agen OpenClaw penuh saat reasoning atau tool yang lebih dalam diperlukan.
+- Suara realtime dapat memanggil kembali agen OpenClaw lengkap ketika penalaran
+  lebih dalam atau alat diperlukan.
 - Agen memilih perilaku bergabung dengan `mode`: gunakan `realtime` untuk
-  dengar/balas langsung secara live, atau `transcribe` untuk bergabung/mengendalikan browser tanpa bridge suara realtime.
-- Auth dimulai sebagai OAuth Google pribadi atau profil Chrome yang sudah login.
+  mendengarkan/berbicara balik secara langsung, atau `transcribe` untuk
+  bergabung/mengontrol browser tanpa jembatan suara realtime.
+- Auth dimulai sebagai Google OAuth pribadi atau profil Chrome yang sudah masuk.
 - Tidak ada pengumuman persetujuan otomatis.
 - Backend audio Chrome default adalah `BlackHole 2ch`.
-- Chrome dapat berjalan secara lokal atau pada host Node yang dipairing.
+- Chrome dapat berjalan secara lokal atau di host node yang dipasangkan.
 - Twilio menerima nomor dial-in plus PIN opsional atau urutan DTMF.
-- Perintah CLI adalah `googlemeet`; `meet` dicadangkan untuk alur kerja konferensi agen yang lebih luas.
+- Perintah CLI adalah `googlemeet`; `meet` dicadangkan untuk alur kerja
+  telekonferensi agen yang lebih luas.
 
 ## Mulai cepat
 
@@ -44,20 +47,20 @@ export GEMINI_API_KEY=...
 ```
 
 `blackhole-2ch` menginstal perangkat audio virtual `BlackHole 2ch`. Installer
-Homebrew memerlukan reboot sebelum macOS menampilkan perangkat itu:
+Homebrew memerlukan reboot sebelum macOS mengekspos perangkat tersebut:
 
 ```bash
 sudo reboot
 ```
 
-Setelah reboot, verifikasi kedua bagiannya:
+Setelah reboot, verifikasi kedua komponen:
 
 ```bash
 system_profiler SPAudioDataType | grep -i BlackHole
-command -v rec play
+command -v sox
 ```
 
-Aktifkan Plugin:
+Aktifkan plugin:
 
 ```json5
 {
@@ -72,19 +75,29 @@ Aktifkan Plugin:
 }
 ```
 
-Periksa penyiapan:
+Periksa setup:
 
 ```bash
 openclaw googlemeet setup
 ```
 
-Output penyiapan dimaksudkan agar dapat dibaca agen. Output ini melaporkan profil Chrome,
-bridge audio, pinning Node, intro realtime tertunda, dan, saat delegasi Twilio
-dikonfigurasi, apakah Plugin `voice-call` dan kredensial Twilio sudah siap.
-Perlakukan pemeriksaan `ok: false` apa pun sebagai penghalang sebelum meminta agen bergabung.
-Gunakan `openclaw googlemeet setup --json` untuk skrip atau output yang dapat dibaca mesin.
-Gunakan `--transport chrome`, `--transport chrome-node`, atau `--transport twilio`
-untuk preflight transport tertentu sebelum agen mencobanya.
+Output setup dimaksudkan agar dapat dibaca agen dan memahami mode. Output
+melaporkan profil Chrome, penguncian node, dan, untuk bergabung Chrome realtime,
+jembatan audio BlackHole/SoX serta pemeriksaan intro realtime tertunda. Untuk
+bergabung hanya observasi, periksa transport yang sama dengan `--mode transcribe`;
+mode itu melewati prasyarat audio realtime karena tidak mendengarkan melalui atau
+berbicara melalui jembatan:
+
+```bash
+openclaw googlemeet setup --transport chrome-node --mode transcribe
+```
+
+Ketika delegasi Twilio dikonfigurasi, setup juga melaporkan apakah plugin
+`voice-call` dan kredensial Twilio siap. Perlakukan setiap pemeriksaan `ok: false`
+sebagai pemblokir untuk transport dan mode yang diperiksa sebelum meminta agen
+bergabung. Gunakan `openclaw googlemeet setup --json` untuk skrip atau output yang
+dapat dibaca mesin. Gunakan `--transport chrome`, `--transport chrome-node`, atau
+`--transport twilio` untuk preflight transport tertentu sebelum agen mencobanya.
 
 Bergabung ke rapat:
 
@@ -92,7 +105,7 @@ Bergabung ke rapat:
 openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
-Atau biarkan agen bergabung melalui tool `google_meet`:
+Atau biarkan agen bergabung melalui alat `google_meet`:
 
 ```json
 {
@@ -103,40 +116,42 @@ Atau biarkan agen bergabung melalui tool `google_meet`:
 }
 ```
 
-Buat rapat baru dan bergabung ke sana:
+Buat rapat baru dan bergabung ke dalamnya:
 
 ```bash
 openclaw googlemeet create --transport chrome-node --mode realtime
 ```
 
-Buat hanya URL tanpa bergabung:
+Buat URL saja tanpa bergabung:
 
 ```bash
 openclaw googlemeet create --no-join
 ```
 
-`googlemeet create` memiliki dua path:
+`googlemeet create` memiliki dua jalur:
 
-- Pembuatan API: digunakan saat kredensial OAuth Google Meet dikonfigurasi. Ini adalah
-  path yang paling deterministik dan tidak bergantung pada state UI browser.
-- Fallback browser: digunakan saat kredensial OAuth tidak ada. OpenClaw menggunakan
-  Chrome Node yang dipin, membuka `https://meet.google.com/new`, menunggu Google
-  mengalihkan ke URL kode rapat yang nyata, lalu mengembalikan URL tersebut. Path ini memerlukan
-  profil Chrome OpenClaw pada Node sudah login ke Google.
-  Automasi browser menangani prompt mikrofon pertama milik Meet sendiri; prompt itu
-  tidak diperlakukan sebagai kegagalan login Google.
-  Alur join dan create juga mencoba menggunakan kembali tab Meet yang sudah ada sebelum membuka
-  yang baru. Pencocokan mengabaikan query string URL yang tidak berbahaya seperti `authuser`, sehingga
-  percobaan ulang agen seharusnya memfokuskan rapat yang sudah terbuka alih-alih membuat tab Chrome kedua.
+- Buat via API: digunakan ketika kredensial Google Meet OAuth dikonfigurasi. Ini
+  adalah jalur paling deterministik dan tidak bergantung pada status UI browser.
+- Fallback browser: digunakan ketika kredensial OAuth tidak ada. OpenClaw
+  menggunakan node Chrome yang dikunci, membuka `https://meet.google.com/new`,
+  menunggu Google mengalihkan ke URL kode rapat nyata, lalu mengembalikan URL
+  tersebut. Jalur ini mengharuskan profil Chrome OpenClaw di node sudah masuk ke
+  Google. Otomasi browser menangani prompt mikrofon first-run milik Meet; prompt
+  itu tidak diperlakukan sebagai kegagalan login Google.
+  Alur bergabung dan buat juga mencoba menggunakan kembali tab Meet yang ada
+  sebelum membuka tab baru. Pencocokan mengabaikan string kueri URL yang tidak
+  berbahaya seperti `authuser`, sehingga percobaan ulang agen seharusnya
+  memfokuskan rapat yang sudah terbuka alih-alih membuat tab Chrome kedua.
 
-Output perintah/tool menyertakan field `source` (`api` atau `browser`) sehingga agen
-dapat menjelaskan path mana yang digunakan. `create` bergabung ke rapat baru secara default dan
-mengembalikan `joined: true` plus sesi join. Untuk hanya mencetak URL, gunakan
-`create --no-join` pada CLI atau berikan `"join": false` ke tool.
+Output perintah/alat menyertakan bidang `source` (`api` atau `browser`) sehingga
+agen dapat menjelaskan jalur mana yang digunakan. `create` bergabung ke rapat
+baru secara default dan mengembalikan `joined: true` plus sesi bergabung. Untuk
+hanya menerbitkan URL, gunakan `create --no-join` di CLI atau teruskan
+`"join": false` ke alat.
 
-Atau beri tahu agen: "Buat Google Meet, gabung ke sana dengan suara realtime, dan kirim
-tautannya kepada saya." Agen harus memanggil `google_meet` dengan `action: "create"` lalu
-membagikan `meetingUri` yang dikembalikan.
+Atau beri tahu agen: "Buat Google Meet, bergabung dengan suara realtime, dan
+kirim tautannya kepada saya." Agen seharusnya memanggil `google_meet` dengan
+`action: "create"` lalu membagikan `meetingUri` yang dikembalikan.
 
 ```json
 {
@@ -146,38 +161,46 @@ membagikan `meetingUri` yang dikembalikan.
 }
 ```
 
-Untuk join observe-only/kontrol browser, setel `"mode": "transcribe"`. Ini
-tidak memulai bridge model realtime dupleks, sehingga tidak akan berbicara kembali ke
-rapat.
+Untuk bergabung hanya observasi/kontrol browser, atur `"mode": "transcribe"`. Itu
+tidak memulai jembatan model realtime dupleks, tidak memerlukan BlackHole atau
+SoX, dan tidak akan berbicara balik ke rapat. Bergabung Chrome dalam mode ini
+juga menghindari pemberian izin mikrofon/kamera OpenClaw dan menghindari jalur
+Meet **Use microphone**. Jika Meet menampilkan interstitial pilihan audio,
+otomasi mencoba jalur tanpa mikrofon dan jika tidak bisa melaporkan tindakan
+manual alih-alih membuka mikrofon lokal.
 
-Selama sesi realtime, status `google_meet` mencakup kesehatan browser dan bridge audio
-seperti `inCall`, `manualActionRequired`, `providerConnected`,
+Selama sesi realtime, status `google_meet` menyertakan kesehatan browser dan
+jembatan audio seperti `inCall`, `manualActionRequired`, `providerConnected`,
 `realtimeReady`, `audioInputActive`, `audioOutputActive`, timestamp input/output
-terakhir, penghitung byte, dan state bridge tertutup. Jika prompt halaman Meet yang aman
-muncul, automasi browser menanganinya bila bisa. Prompt login, penerimaan host, dan izin browser/OS
-dilaporkan sebagai tindakan manual dengan alasan dan
-pesan agar agen dapat menyampaikannya.
+terakhir, penghitung byte, dan status jembatan tertutup. Jika prompt halaman Meet
+yang aman muncul, otomasi browser menanganinya ketika bisa. Login, penerimaan
+host, dan prompt izin browser/OS dilaporkan sebagai tindakan manual dengan alasan
+dan pesan untuk diteruskan agen. Sesi Chrome terkelola hanya mengeluarkan intro
+atau frasa uji setelah kesehatan browser melaporkan `inCall: true`; jika tidak,
+status melaporkan `speechReady: false` dan percobaan bicara diblokir alih-alih
+berpura-pura agen berbicara ke rapat.
 
-Chrome bergabung sebagai profil Chrome yang sudah login. Di Meet, pilih `BlackHole 2ch` untuk
-jalur mikrofon/speaker yang digunakan oleh OpenClaw. Untuk audio dupleks yang bersih, gunakan
-perangkat virtual terpisah atau grafik bergaya Loopback; satu perangkat BlackHole sudah
-cukup untuk smoke test pertama tetapi dapat menimbulkan gema.
+Bergabung Chrome lokal melalui profil browser OpenClaw yang sudah masuk. Mode
+realtime memerlukan `BlackHole 2ch` untuk jalur mikrofon/speaker yang digunakan
+oleh OpenClaw. Untuk audio dupleks yang bersih, gunakan perangkat virtual
+terpisah atau grafik bergaya Loopback; satu perangkat BlackHole cukup untuk
+smoke test pertama tetapi dapat menimbulkan gema.
 
-### Gateway lokal + Chrome Parallels
+### Gateway lokal + Parallels Chrome
 
-Anda **tidak** memerlukan Gateway OpenClaw penuh atau API key model di dalam macOS VM
-hanya agar VM memiliki Chrome. Jalankan Gateway dan agen secara lokal, lalu jalankan
-host Node di VM. Aktifkan Plugin bawaan pada VM sekali agar Node
-mengiklankan perintah Chrome:
+Anda **tidak** memerlukan Gateway OpenClaw lengkap atau kunci API model di dalam
+VM macOS hanya untuk membuat VM memiliki Chrome. Jalankan Gateway dan agen secara
+lokal, lalu jalankan host node di VM. Aktifkan plugin bundel di VM sekali agar
+node mengiklankan perintah Chrome:
 
-Apa yang berjalan di mana:
+Yang berjalan di mana:
 
-- Host Gateway: OpenClaw Gateway, workspace agen, model/API key, provider
-  realtime, dan config Plugin Google Meet.
-- macOS VM Parallels: CLI/host Node OpenClaw, Google Chrome, SoX, BlackHole 2ch,
-  dan profil Chrome yang login ke Google.
-- Tidak diperlukan di VM: layanan Gateway, config agen, key OpenAI/GPT, atau penyiapan
-  provider model.
+- Host Gateway: OpenClaw Gateway, workspace agen, kunci model/API, provider
+  realtime, dan konfigurasi plugin Google Meet.
+- VM macOS Parallels: CLI/host node OpenClaw, Google Chrome, SoX, BlackHole 2ch,
+  dan profil Chrome yang masuk ke Google.
+- Tidak diperlukan di VM: layanan Gateway, konfigurasi agen, kunci OpenAI/GPT,
+  atau setup provider model.
 
 Instal dependensi VM:
 
@@ -185,7 +208,7 @@ Instal dependensi VM:
 brew install blackhole-2ch sox
 ```
 
-Reboot VM setelah menginstal BlackHole agar macOS menampilkan `BlackHole 2ch`:
+Reboot VM setelah menginstal BlackHole agar macOS mengekspos `BlackHole 2ch`:
 
 ```bash
 sudo reboot
@@ -195,30 +218,30 @@ Setelah reboot, verifikasi VM dapat melihat perangkat audio dan perintah SoX:
 
 ```bash
 system_profiler SPAudioDataType | grep -i BlackHole
-command -v rec play
+command -v sox
 ```
 
-Instal atau perbarui OpenClaw di VM, lalu aktifkan Plugin bawaan di sana:
+Instal atau perbarui OpenClaw di VM, lalu aktifkan plugin bundel di sana:
 
 ```bash
 openclaw plugins enable google-meet
 ```
 
-Mulai host Node di VM:
+Mulai host node di VM:
 
 ```bash
 openclaw node run --host <gateway-host> --port 18789 --display-name parallels-macos
 ```
 
-Jika `<gateway-host>` adalah IP LAN dan Anda tidak menggunakan TLS, Node menolak
-WebSocket plaintext kecuali Anda memilih masuk untuk jaringan privat tepercaya tersebut:
+Jika `<gateway-host>` adalah IP LAN dan Anda tidak menggunakan TLS, node menolak
+WebSocket plaintext kecuali Anda ikut serta untuk jaringan privat tepercaya itu:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Gunakan variabel lingkungan yang sama saat menginstal Node sebagai LaunchAgent:
+Gunakan variabel lingkungan yang sama saat menginstal node sebagai LaunchAgent:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -226,25 +249,25 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
 openclaw node restart
 ```
 
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` adalah lingkungan proses, bukan
-pengaturan `openclaw.json`. `openclaw node install` menyimpannya di lingkungan
-LaunchAgent saat ada pada perintah instalasi.
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` adalah environment proses, bukan pengaturan
+`openclaw.json`. `openclaw node install` menyimpannya di environment LaunchAgent
+ketika variabel tersebut ada pada perintah instal.
 
-Setujui Node dari host Gateway:
+Setujui node dari host Gateway:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Konfirmasi Gateway melihat Node dan bahwa Node mengiklankan capability `googlemeet.chrome`
-dan browser/`browser.proxy`:
+Konfirmasi Gateway melihat node dan node tersebut mengiklankan
+`googlemeet.chrome` serta kapabilitas browser/`browser.proxy`:
 
 ```bash
 openclaw nodes status
 ```
 
-Rutekan Meet melalui Node tersebut pada host Gateway:
+Rutekan Meet melalui node itu di host Gateway:
 
 ```json5
 {
@@ -280,85 +303,87 @@ Sekarang bergabung seperti biasa dari host Gateway:
 openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
-atau minta agen menggunakan tool `google_meet` dengan `transport: "chrome-node"`.
+atau minta agen menggunakan alat `google_meet` dengan `transport: "chrome-node"`.
 
-Untuk smoke test satu perintah yang membuat atau menggunakan kembali sesi, mengucapkan
-frasa yang diketahui, dan mencetak kesehatan sesi:
+Untuk smoke test satu perintah yang membuat atau menggunakan kembali sesi,
+mengucapkan frasa yang diketahui, dan mencetak kesehatan sesi:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij
 ```
 
-Selama join, automasi browser OpenClaw mengisi nama tamu, mengklik Join/Ask
-to join, dan menerima pilihan pertama "Use microphone" milik Meet saat prompt itu
-muncul. Selama pembuatan rapat khusus browser, automasi juga dapat melanjutkan melewati
-prompt yang sama tanpa mikrofon jika Meet tidak menampilkan tombol use-microphone.
-Jika profil browser belum login, Meet sedang menunggu
-penerimaan host, Chrome memerlukan izin mikrofon/kamera, atau Meet macet pada
-prompt yang tidak dapat diselesaikan automasi, hasil join/test-speech melaporkan
-`manualActionRequired: true` dengan `manualActionReason` dan
-`manualActionMessage`. Agen harus berhenti mencoba ulang join,
-melaporkan pesan tersebut beserta `browserUrl`/`browserTitle` saat ini, dan
-mencoba ulang hanya setelah tindakan browser manual selesai.
+Selama bergabung realtime, otomasi browser OpenClaw mengisi nama tamu, mengeklik
+Join/Ask to join, dan menerima pilihan "Use microphone" first-run Meet ketika
+prompt itu muncul. Selama bergabung hanya observasi atau pembuatan rapat hanya
+browser, otomasi terus melewati prompt yang sama tanpa mikrofon ketika pilihan
+itu tersedia. Jika profil browser belum masuk, Meet sedang menunggu penerimaan
+host, Chrome memerlukan izin mikrofon/kamera untuk bergabung realtime, atau Meet
+tertahan pada prompt yang tidak dapat diselesaikan otomasi, hasil
+join/test-speech melaporkan `manualActionRequired: true` dengan
+`manualActionReason` dan `manualActionMessage`. Agen harus berhenti mencoba ulang
+bergabung, melaporkan pesan persis itu plus `browserUrl`/`browserTitle` saat ini,
+dan mencoba ulang hanya setelah tindakan browser manual selesai.
 
-Jika `chromeNode.node` dihilangkan, OpenClaw memilih otomatis hanya ketika tepat satu
-Node yang terhubung mengiklankan `googlemeet.chrome` dan kontrol browser. Jika
-beberapa Node yang mampu terhubung, setel `chromeNode.node` ke id Node,
-nama tampilan, atau IP jarak jauh.
+Jika `chromeNode.node` dihilangkan, OpenClaw memilih otomatis hanya ketika tepat
+satu node terhubung mengiklankan `googlemeet.chrome` dan kontrol browser. Jika
+beberapa node yang mampu terhubung, atur `chromeNode.node` ke id node, nama
+tampilan, atau IP jarak jauh.
 
 Pemeriksaan kegagalan umum:
 
-- `Configured Google Meet node ... is not usable: offline`: Node yang dipin
-  dikenal oleh Gateway tetapi tidak tersedia. Agen harus memperlakukan Node itu sebagai
-  state diagnostik, bukan host Chrome yang dapat digunakan, dan melaporkan penghalang penyiapan
-  alih-alih fallback ke transport lain kecuali pengguna meminta itu.
-- `No connected Google Meet-capable node`: mulai `openclaw node run` di VM,
-  setujui pairing, dan pastikan `openclaw plugins enable google-meet` serta
-  `openclaw plugins enable browser` telah dijalankan di VM. Juga konfirmasi
-  host Gateway mengizinkan kedua perintah Node dengan
+- `Configured Google Meet node ... is not usable: offline`: node yang dipasangkan
+  diketahui oleh Gateway tetapi tidak tersedia. Agents harus memperlakukan node itu sebagai
+  status diagnostik, bukan sebagai host Chrome yang dapat digunakan, dan melaporkan penghambat penyiapan
+  alih-alih kembali ke transport lain kecuali pengguna memintanya.
+- `No connected Google Meet-capable node`: jalankan `openclaw node run` di VM,
+  setujui pemasangan, dan pastikan `openclaw plugins enable google-meet` serta
+  `openclaw plugins enable browser` sudah dijalankan di VM. Konfirmasi juga bahwa
+  host Gateway mengizinkan kedua perintah node dengan
   `gateway.nodes.allowCommands: ["googlemeet.chrome", "browser.proxy"]`.
 - `BlackHole 2ch audio device not found`: instal `blackhole-2ch` pada host
-  yang sedang diperiksa dan reboot sebelum menggunakan audio Chrome lokal.
+  yang sedang diperiksa dan mulai ulang sebelum menggunakan audio Chrome lokal.
 - `BlackHole 2ch audio device not found on the node`: instal `blackhole-2ch`
-  di VM dan reboot VM.
-- Chrome terbuka tetapi tidak dapat bergabung: login ke profil browser di dalam VM, atau
-  pertahankan `chrome.guestName` disetel untuk join tamu. Auto-join tamu menggunakan automasi browser OpenClaw
-  melalui proxy browser Node; pastikan config browser Node
-  menunjuk ke profil yang Anda inginkan, misalnya
-  `browser.defaultProfile: "user"` atau profil existing-session bernama.
+  di VM dan mulai ulang VM.
+- Chrome terbuka tetapi tidak dapat bergabung: masuk ke profil peramban di dalam VM, atau
+  tetap tetapkan `chrome.guestName` untuk bergabung sebagai tamu. Bergabung otomatis sebagai tamu menggunakan automasi peramban OpenClaw
+  melalui proksi peramban node; pastikan konfigurasi peramban node
+  mengarah ke profil yang Anda inginkan, misalnya
+  `browser.defaultProfile: "user"` atau profil sesi-berjalan bernama yang sudah ada.
 - Tab Meet duplikat: biarkan `chrome.reuseExistingTab: true` tetap aktif. OpenClaw
   mengaktifkan tab yang sudah ada untuk URL Meet yang sama sebelum membuka yang baru, dan
-  pembuatan rapat browser menggunakan kembali tab `https://meet.google.com/new`
-  yang sedang berlangsung atau tab prompt akun Google sebelum membuka yang lain.
-- Tidak ada audio: di Meet, rutekan mikrofon/speaker melalui jalur perangkat audio virtual
+  pembuatan rapat peramban menggunakan kembali tab `https://meet.google.com/new`
+  yang sedang berlangsung atau tab prompt akun Google sebelum membuka tab lain.
+- Tidak ada audio: di Meet, arahkan mikrofon/speaker melalui jalur perangkat audio virtual
   yang digunakan oleh OpenClaw; gunakan perangkat virtual terpisah atau perutean bergaya Loopback
   untuk audio dupleks yang bersih.
 
 ## Catatan instalasi
 
-Default realtime Chrome menggunakan dua tool eksternal:
+Default realtime Chrome menggunakan dua alat eksternal:
 
-- `sox`: utilitas audio command-line. Plugin ini menggunakan perintah `rec` dan `play`
-  untuk bridge audio G.711 mu-law 8 kHz default.
-- `blackhole-2ch`: driver audio virtual macOS. Driver ini membuat perangkat audio `BlackHole 2ch`
-  yang dapat dirutekan oleh Chrome/Meet.
+- `sox`: utilitas audio baris perintah. Plugin menggunakan perintah perangkat CoreAudio
+  eksplisit untuk bridge audio PCM16 24 kHz default.
+- `blackhole-2ch`: driver audio virtual macOS. Ini membuat perangkat audio `BlackHole 2ch`
+  yang dapat dirutekan melalui Chrome/Meet.
 
-OpenClaw tidak membundel atau mendistribusikan ulang kedua paket tersebut. Dokumen meminta pengguna
+OpenClaw tidak membundel atau mendistribusikan ulang kedua paket tersebut. Dokumentasi meminta pengguna untuk
 menginstalnya sebagai dependensi host melalui Homebrew. SoX dilisensikan sebagai
-`LGPL-2.0-only AND GPL-2.0-only`; BlackHole adalah GPL-3.0. Jika Anda membangun
-installer atau appliance yang membundel BlackHole dengan OpenClaw, tinjau ketentuan lisensi upstream
-BlackHole atau dapatkan lisensi terpisah dari Existential Audio.
+`LGPL-2.0-only AND GPL-2.0-only`; BlackHole adalah GPL-3.0. Jika Anda membuat
+installer atau appliance yang membundel BlackHole dengan OpenClaw, tinjau ketentuan lisensi
+upstream BlackHole atau dapatkan lisensi terpisah dari Existential Audio.
 
 ## Transport
 
 ### Chrome
 
-Transport Chrome membuka URL Meet di Google Chrome dan bergabung sebagai profil
-Chrome yang sudah login. Di macOS, Plugin memeriksa `BlackHole 2ch` sebelum meluncurkan.
-Jika dikonfigurasi, Plugin juga menjalankan perintah pemeriksaan kesehatan bridge audio dan perintah startup
-sebelum membuka Chrome. Gunakan `chrome` saat Chrome/audio berada di host Gateway;
-gunakan `chrome-node` saat Chrome/audio berada di Node yang dipairing seperti
-macOS VM Parallels.
+Transport Chrome membuka URL Meet melalui kontrol peramban OpenClaw dan bergabung
+sebagai profil peramban OpenClaw yang sudah masuk. Di macOS, plugin memeriksa
+`BlackHole 2ch` sebelum peluncuran. Jika dikonfigurasi, plugin juga menjalankan perintah kesehatan
+bridge audio dan perintah startup sebelum membuka Chrome. Gunakan `chrome` saat
+Chrome/audio berada di host Gateway; gunakan `chrome-node` saat Chrome/audio berada
+di node yang dipasangkan seperti VM macOS Parallels. Untuk Chrome lokal, pilih
+profil dengan `browser.defaultProfile`; `chrome.browserProfile` diteruskan ke
+host `chrome-node`.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
@@ -366,19 +391,19 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 ```
 
 Rutekan audio mikrofon dan speaker Chrome melalui bridge audio OpenClaw lokal.
-Jika `BlackHole 2ch` tidak terinstal, join gagal dengan error penyiapan
+Jika `BlackHole 2ch` tidak terinstal, proses bergabung gagal dengan kesalahan penyiapan
 alih-alih diam-diam bergabung tanpa jalur audio.
 
 ### Twilio
 
-Transport Twilio adalah dial plan ketat yang didelegasikan ke Plugin Voice Call. Transport ini
+Transport Twilio adalah rencana panggilan ketat yang didelegasikan ke Plugin Voice Call. Transport ini
 tidak mengurai halaman Meet untuk nomor telepon.
 
-Gunakan ini saat partisipasi Chrome tidak tersedia atau Anda menginginkan fallback
-dial-in telepon. Google Meet harus menampilkan nomor dial-in telepon dan PIN untuk
-rapat tersebut; OpenClaw tidak menemukannya dari halaman Meet.
+Gunakan ini saat partisipasi Chrome tidak tersedia atau Anda menginginkan fallback dial-in
+telepon. Google Meet harus menampilkan nomor dial-in telepon dan PIN untuk
+rapat; OpenClaw tidak menemukannya dari halaman Meet.
 
-Aktifkan Plugin Voice Call pada host Gateway, bukan pada Chrome Node:
+Aktifkan Plugin Voice Call pada host Gateway, bukan pada node Chrome:
 
 ```json5
 {
@@ -389,7 +414,7 @@ Aktifkan Plugin Voice Call pada host Gateway, bukan pada Chrome Node:
         enabled: true,
         config: {
           defaultTransport: "chrome-node",
-          // atau setel "twilio" jika Twilio harus menjadi default
+          // or set "twilio" if Twilio should be the default
         },
       },
       "voice-call": {
@@ -403,8 +428,8 @@ Aktifkan Plugin Voice Call pada host Gateway, bukan pada Chrome Node:
 }
 ```
 
-Berikan kredensial Twilio melalui environment atau config. Environment menjaga
-secret tetap di luar `openclaw.json`:
+Berikan kredensial Twilio melalui environment atau konfigurasi. Environment menjaga
+rahasia tetap di luar `openclaw.json`:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -412,8 +437,8 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-Restart atau reload Gateway setelah mengaktifkan `voice-call`; perubahan config Plugin
-tidak muncul dalam proses Gateway yang sudah berjalan sampai proses tersebut di-reload.
+Mulai ulang atau muat ulang Gateway setelah mengaktifkan `voice-call`; perubahan konfigurasi plugin
+tidak muncul di proses Gateway yang sudah berjalan sampai proses itu dimuat ulang.
 
 Lalu verifikasi:
 
@@ -423,7 +448,7 @@ openclaw plugins list | grep -E 'google-meet|voice-call'
 openclaw googlemeet setup
 ```
 
-Saat delegasi Twilio sudah terhubung, `googlemeet setup` mencakup pemeriksaan
+Saat delegasi Twilio sudah tersambung, `googlemeet setup` menyertakan pemeriksaan
 `twilio-voice-call-plugin` dan `twilio-voice-call-credentials` yang berhasil.
 
 ```bash
@@ -433,7 +458,7 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --pin 123456
 ```
 
-Gunakan `--dtmf-sequence` saat rapat memerlukan urutan kustom:
+Gunakan `--dtmf-sequence` saat rapat membutuhkan urutan khusus:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -444,30 +469,30 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
 
 ## OAuth dan preflight
 
-OAuth bersifat opsional untuk membuat tautan Meet karena `googlemeet create` dapat
-fallback ke automasi browser. Konfigurasikan OAuth saat Anda menginginkan pembuatan API resmi,
+OAuth bersifat opsional untuk membuat tautan Meet karena `googlemeet create` dapat menggunakan
+fallback ke automasi peramban. Konfigurasikan OAuth saat Anda menginginkan pembuatan API resmi,
 resolusi space, atau pemeriksaan preflight Meet Media API.
 
 Akses Google Meet API menggunakan OAuth pengguna: buat klien OAuth Google Cloud,
 minta scope yang diperlukan, otorisasi akun Google, lalu simpan
-refresh token yang dihasilkan di config Plugin Google Meet atau berikan
-variabel lingkungan `OPENCLAW_GOOGLE_MEET_*`.
+refresh token yang dihasilkan di konfigurasi Plugin Google Meet atau berikan
+variabel environment `OPENCLAW_GOOGLE_MEET_*`.
 
-OAuth tidak menggantikan path join Chrome. Transport Chrome dan Chrome-node
-tetap bergabung melalui profil Chrome yang sudah login, BlackHole/SoX, dan Node yang terhubung
-saat Anda menggunakan partisipasi browser. OAuth hanya untuk path Google
-Meet API resmi: membuat ruang rapat, resolve space, dan menjalankan pemeriksaan
+OAuth tidak menggantikan jalur bergabung Chrome. Transport Chrome dan Chrome-node
+tetap bergabung melalui profil Chrome yang sudah masuk, BlackHole/SoX, dan node yang terhubung
+saat Anda menggunakan partisipasi peramban. OAuth hanya untuk jalur Google
+Meet API resmi: membuat space rapat, menyelesaikan space, dan menjalankan pemeriksaan
 preflight Meet Media API.
 
 ### Buat kredensial Google
 
 Di Google Cloud Console:
 
-1. Buat atau pilih project Google Cloud.
-2. Aktifkan **Google Meet REST API** untuk project tersebut.
+1. Buat atau pilih proyek Google Cloud.
+2. Aktifkan **Google Meet REST API** untuk proyek tersebut.
 3. Konfigurasikan layar persetujuan OAuth.
-   - **Internal** adalah yang paling sederhana untuk organisasi Google Workspace.
-   - **External** berfungsi untuk penyiapan pribadi/pengujian; saat aplikasi masih dalam mode Testing,
+   - **Internal** paling sederhana untuk organisasi Google Workspace.
+   - **External** berfungsi untuk penyiapan pribadi/uji; saat aplikasi berada dalam Testing,
      tambahkan setiap akun Google yang akan mengotorisasi aplikasi sebagai pengguna uji.
 4. Tambahkan scope yang diminta OpenClaw:
    - `https://www.googleapis.com/auth/meetings.space.created`
@@ -475,7 +500,7 @@ Di Google Cloud Console:
    - `https://www.googleapis.com/auth/meetings.conference.media.readonly`
 5. Buat OAuth client ID.
    - Jenis aplikasi: **Web application**.
-   - URI redirect yang diotorisasi:
+   - URI pengalihan yang diotorisasi:
 
      ```text
      http://localhost:8085/oauth2callback
@@ -484,21 +509,21 @@ Di Google Cloud Console:
 6. Salin client ID dan client secret.
 
 `meetings.space.created` diperlukan oleh Google Meet `spaces.create`.
-`meetings.space.readonly` memungkinkan OpenClaw melakukan resolve URL/kode Meet ke space.
+`meetings.space.readonly` memungkinkan OpenClaw menyelesaikan URL/kode Meet menjadi space.
 `meetings.conference.media.readonly` digunakan untuk preflight Meet Media API dan pekerjaan media;
-Google mungkin memerlukan pendaftaran Developer Preview untuk penggunaan Media API yang sebenarnya.
-Jika Anda hanya memerlukan join Chrome berbasis browser, lewati OAuth sepenuhnya.
+Google mungkin mengharuskan pendaftaran Developer Preview untuk penggunaan Media API sebenarnya.
+Jika Anda hanya membutuhkan proses bergabung Chrome berbasis peramban, lewati OAuth sepenuhnya.
 
-### Cetak refresh token
+### Buat refresh token
 
-Konfigurasikan `oauth.clientId` dan opsional `oauth.clientSecret`, atau berikan sebagai
-variabel lingkungan, lalu jalankan:
+Konfigurasikan `oauth.clientId` dan secara opsional `oauth.clientSecret`, atau teruskan sebagai
+variabel environment, lalu jalankan:
 
 ```bash
 openclaw googlemeet auth login --json
 ```
 
-Perintah ini mencetak blok config `oauth` dengan refresh token. Perintah ini menggunakan PKCE,
+Perintah ini mencetak blok konfigurasi `oauth` dengan refresh token. Perintah ini menggunakan PKCE,
 callback localhost pada `http://localhost:8085/oauth2callback`, dan alur
 salin/tempel manual dengan `--manual`.
 
@@ -510,7 +535,7 @@ OPENCLAW_GOOGLE_MEET_CLIENT_SECRET="your-client-secret" \
 openclaw googlemeet auth login --json
 ```
 
-Gunakan mode manual saat browser tidak dapat mencapai callback lokal:
+Gunakan mode manual saat peramban tidak dapat mencapai callback lokal:
 
 ```bash
 OPENCLAW_GOOGLE_MEET_CLIENT_ID="your-client-id" \
@@ -533,7 +558,7 @@ Output JSON menyertakan:
 }
 ```
 
-Simpan objek `oauth` di bawah config Plugin Google Meet:
+Simpan objek `oauth` di bawah konfigurasi Plugin Google Meet:
 
 ```json5
 {
@@ -554,50 +579,51 @@ Simpan objek `oauth` di bawah config Plugin Google Meet:
 }
 ```
 
-Pilih variabel lingkungan saat Anda tidak ingin refresh token berada di config.
-Jika nilai config dan environment sama-sama ada, Plugin me-resolve config
-terlebih dahulu lalu fallback ke environment.
+Utamakan variabel environment saat Anda tidak ingin refresh token berada di konfigurasi.
+Jika nilai konfigurasi dan environment sama-sama ada, plugin menyelesaikan konfigurasi
+terlebih dahulu lalu fallback environment.
 
-Persetujuan OAuth mencakup pembuatan space Meet, akses baca space Meet, dan akses baca media konferensi Meet. Jika Anda mengautentikasi sebelum dukungan
-pembuatan rapat ada, jalankan ulang `openclaw googlemeet auth login --json` agar refresh
+Persetujuan OAuth mencakup pembuatan space Meet, akses baca space Meet, dan akses baca media
+konferensi Meet. Jika Anda mengautentikasi sebelum dukungan pembuatan rapat
+tersedia, jalankan ulang `openclaw googlemeet auth login --json` agar refresh
 token memiliki scope `meetings.space.created`.
 
 ### Verifikasi OAuth dengan doctor
 
-Jalankan OAuth doctor saat Anda menginginkan pemeriksaan kesehatan cepat tanpa secret:
+Jalankan doctor OAuth saat Anda menginginkan pemeriksaan kesehatan cepat tanpa rahasia:
 
 ```bash
 openclaw googlemeet doctor --oauth --json
 ```
 
-Perintah ini tidak memuat runtime Chrome atau memerlukan Chrome Node yang terhubung. Perintah ini
-memeriksa bahwa config OAuth ada dan bahwa refresh token dapat mencetak access
-token. Laporan JSON hanya menyertakan field status seperti `ok`, `configured`,
-`tokenSource`, `expiresAt`, dan pesan pemeriksaan; tidak mencetak access
+Ini tidak memuat runtime Chrome atau memerlukan node Chrome yang terhubung. Ini
+memeriksa bahwa konfigurasi OAuth ada dan bahwa refresh token dapat membuat access
+token. Laporan JSON hanya menyertakan kolom status seperti `ok`, `configured`,
+`tokenSource`, `expiresAt`, dan pesan pemeriksaan; laporan ini tidak mencetak access
 token, refresh token, atau client secret.
 
 Hasil umum:
 
 | Pemeriksaan          | Arti                                                                                    |
 | -------------------- | --------------------------------------------------------------------------------------- |
-| `oauth-config`       | `oauth.clientId` plus `oauth.refreshToken`, atau access token yang di-cache, tersedia. |
-| `oauth-token`        | Access token yang di-cache masih valid, atau refresh token mencetak access token baru.  |
-| `meet-spaces-get`    | Pemeriksaan `--meeting` opsional me-resolve space Meet yang sudah ada.                  |
-| `meet-spaces-create` | Pemeriksaan `--create-space` opsional membuat space Meet baru.                          |
+| `oauth-config`       | `oauth.clientId` plus `oauth.refreshToken`, atau access token yang di-cache, ada.       |
+| `oauth-token`        | Access token yang di-cache masih valid, atau refresh token membuat access token baru.   |
+| `meet-spaces-get`    | Pemeriksaan opsional `--meeting` menyelesaikan space Meet yang sudah ada.              |
+| `meet-spaces-create` | Pemeriksaan opsional `--create-space` membuat space Meet baru.                         |
 
 Untuk membuktikan pengaktifan Google Meet API dan scope `spaces.create` juga, jalankan
-pemeriksaan create yang memiliki efek samping:
+pemeriksaan pembuatan yang memiliki efek samping:
 
 ```bash
 openclaw googlemeet doctor --oauth --create-space --json
 openclaw googlemeet create --no-join --json
 ```
 
-`--create-space` membuat URL Meet sementara. Gunakan ini saat Anda perlu mengonfirmasi
-bahwa project Google Cloud mengaktifkan Meet API dan bahwa akun yang diotorisasi
+`--create-space` membuat URL Meet sekali pakai. Gunakan ini saat Anda perlu mengonfirmasi
+bahwa proyek Google Cloud telah mengaktifkan Meet API dan bahwa akun yang diotorisasi
 memiliki scope `meetings.space.created`.
 
-Untuk membuktikan akses baca ke space rapat yang sudah ada:
+Untuk membuktikan akses baca untuk space rapat yang sudah ada:
 
 ```bash
 openclaw googlemeet doctor --oauth --meeting https://meet.google.com/abc-defg-hij --json
@@ -605,17 +631,17 @@ openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 ```
 
 `doctor --oauth --meeting` dan `resolve-space` membuktikan akses baca ke space
-yang sudah ada yang dapat diakses oleh akun Google yang diotorisasi. `403` dari pemeriksaan ini
-biasanya berarti Google Meet REST API dinonaktifkan, refresh token hasil consent
-tidak memiliki scope yang diperlukan, atau akun Google tidak dapat mengakses space
-Meet tersebut. Error refresh-token berarti jalankan ulang `openclaw googlemeet auth login
+yang sudah ada yang dapat diakses akun Google yang diotorisasi. `403` dari pemeriksaan ini
+biasanya berarti Google Meet REST API dinonaktifkan, refresh token yang disetujui
+kehilangan scope yang diperlukan, atau akun Google tidak dapat mengakses space Meet tersebut.
+Kesalahan refresh-token berarti jalankan ulang `openclaw googlemeet auth login
 --json` dan simpan blok `oauth` baru.
 
-Tidak diperlukan kredensial OAuth untuk fallback browser. Dalam mode itu, auth Google
-berasal dari profil Chrome yang sudah login pada Node yang dipilih, bukan dari
-config OpenClaw.
+Tidak diperlukan kredensial OAuth untuk fallback peramban. Dalam mode itu, autentikasi Google
+berasal dari profil Chrome yang sudah masuk pada node yang dipilih, bukan dari
+konfigurasi OpenClaw.
 
-Variabel lingkungan ini diterima sebagai fallback:
+Variabel environment berikut diterima sebagai fallback:
 
 - `OPENCLAW_GOOGLE_MEET_CLIENT_ID` atau `GOOGLE_MEET_CLIENT_ID`
 - `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET` atau `GOOGLE_MEET_CLIENT_SECRET`
@@ -626,7 +652,7 @@ Variabel lingkungan ini diterima sebagai fallback:
 - `OPENCLAW_GOOGLE_MEET_DEFAULT_MEETING` atau `GOOGLE_MEET_DEFAULT_MEETING`
 - `OPENCLAW_GOOGLE_MEET_PREVIEW_ACK` atau `GOOGLE_MEET_PREVIEW_ACK`
 
-Resolve URL Meet, kode, atau `spaces/{id}` melalui `spaces.get`:
+Resolve URL, kode, atau `spaces/{id}` Meet melalui `spaces.get`:
 
 ```bash
 openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
@@ -638,7 +664,7 @@ Jalankan preflight sebelum pekerjaan media:
 openclaw googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Daftar artefak rapat dan kehadiran setelah Meet membuat conference record:
+Cantumkan artefak rapat dan kehadiran setelah Meet membuat catatan konferensi:
 
 ```bash
 openclaw googlemeet artifacts --meeting https://meet.google.com/abc-defg-hij
@@ -646,11 +672,11 @@ openclaw googlemeet attendance --meeting https://meet.google.com/abc-defg-hij
 openclaw googlemeet export --meeting https://meet.google.com/abc-defg-hij --output ./meet-export
 ```
 
-Dengan `--meeting`, `artifacts` dan `attendance` menggunakan conference record
-terbaru secara default. Berikan `--all-conference-records` saat Anda menginginkan setiap record yang dipertahankan
+Dengan `--meeting`, `artifacts` dan `attendance` menggunakan catatan konferensi terbaru
+secara default. Berikan `--all-conference-records` saat Anda menginginkan setiap catatan yang disimpan
 untuk rapat tersebut.
 
-Lookup kalender dapat me-resolve URL rapat dari Google Calendar sebelum membaca
+Pencarian Calendar dapat me-resolve URL rapat dari Google Calendar sebelum membaca
 artefak Meet:
 
 ```bash
@@ -660,14 +686,14 @@ openclaw googlemeet artifacts --event "Weekly sync"
 openclaw googlemeet attendance --today --format csv --output attendance.csv
 ```
 
-`--today` mencari kalender `primary` hari ini untuk Calendar event dengan
-tautan Google Meet. Gunakan `--event <query>` untuk mencari teks event yang cocok, dan
-`--calendar <id>` untuk kalender non-primary. Lookup kalender memerlukan
-login OAuth baru yang menyertakan scope readonly Calendar events.
-`calendar-events` menampilkan pratinjau event Meet yang cocok dan menandai event yang akan
-dipilih oleh `latest`, `artifacts`, `attendance`, atau `export`.
+`--today` mencari kalender `primary` hari ini untuk event Calendar dengan tautan
+Google Meet. Gunakan `--event <query>` untuk mencari teks event yang cocok, dan
+`--calendar <id>` untuk kalender non-primer. Pencarian Calendar memerlukan login
+OAuth baru yang menyertakan cakupan readonly event Calendar.
+`calendar-events` mempratinjau event Meet yang cocok dan menandai event yang akan dipilih oleh
+`latest`, `artifacts`, `attendance`, atau `export`.
 
-Jika Anda sudah mengetahui id conference record, alamatkan langsung:
+Jika Anda sudah mengetahui id catatan konferensi, alamatkan langsung:
 
 ```bash
 openclaw googlemeet latest --meeting https://meet.google.com/abc-defg-hij
@@ -690,34 +716,34 @@ openclaw googlemeet export --conference-record conferenceRecords/abc123 \
   --include-doc-bodies --dry-run
 ```
 
-`artifacts` mengembalikan metadata conference record plus metadata resource peserta,
-rekaman, transkrip, entri transkrip terstruktur, dan smart-note saat
-Google mengeksposnya untuk rapat tersebut. Gunakan `--no-transcript-entries` untuk melewati
-lookup entri untuk rapat besar. `attendance` memperluas peserta menjadi
+`artifacts` mengembalikan metadata catatan konferensi ditambah metadata resource peserta, rekaman,
+transkrip, entri transkrip terstruktur, dan catatan pintar saat
+Google mengeksposnya untuk rapat. Gunakan `--no-transcript-entries` untuk melewati
+pencarian entri untuk rapat besar. `attendance` memperluas peserta menjadi
 baris sesi peserta dengan waktu pertama/terakhir terlihat, total durasi sesi,
-flag terlambat/pulang lebih awal, dan resource peserta duplikat yang digabungkan berdasarkan pengguna yang login
+flag terlambat/pulang-awal, dan resource peserta duplikat yang digabung berdasarkan pengguna yang masuk
 atau nama tampilan. Berikan `--no-merge-duplicates` untuk mempertahankan resource peserta mentah
-tetap terpisah, `--late-after-minutes` untuk menyetel deteksi terlambat, dan
-`--early-before-minutes` untuk menyetel deteksi pulang lebih awal.
+secara terpisah, `--late-after-minutes` untuk menyesuaikan deteksi keterlambatan, dan
+`--early-before-minutes` untuk menyesuaikan deteksi pulang awal.
 
 `export` menulis folder yang berisi `summary.md`, `attendance.csv`,
 `transcript.md`, `artifacts.json`, `attendance.json`, dan `manifest.json`.
-`manifest.json` mencatat input yang dipilih, opsi ekspor, conference record,
-file output, jumlah, sumber token, Calendar event saat digunakan, dan
-peringatan pengambilan parsial. Berikan `--zip` untuk juga menulis arsip portabel
+`manifest.json` mencatat input yang dipilih, opsi ekspor, catatan konferensi,
+file output, jumlah, sumber token, event Calendar saat digunakan, dan
+peringatan pengambilan sebagian apa pun. Berikan `--zip` untuk juga menulis arsip portabel
 di samping folder. Berikan `--include-doc-bodies` untuk mengekspor teks Google Docs
-transkrip dan smart-note yang ditautkan melalui Google Drive `files.export`; ini memerlukan
-login OAuth baru yang mencakup scope readonly Drive Meet. Tanpa
-`--include-doc-bodies`, ekspor hanya menyertakan metadata Meet dan entri transkrip terstruktur.
-Jika Google mengembalikan kegagalan artefak parsial, seperti error listing smart-note,
-entri transkrip, atau body dokumen Drive, ringkasan dan
-manifest mempertahankan peringatan itu alih-alih menggagalkan seluruh ekspor.
+transkrip dan catatan pintar yang tertaut melalui Google Drive `files.export`; ini memerlukan
+login OAuth baru yang menyertakan cakupan readonly Drive Meet. Tanpa
+`--include-doc-bodies`, ekspor hanya menyertakan metadata Meet dan entri transkrip
+terstruktur. Jika Google mengembalikan kegagalan artefak sebagian, seperti kesalahan daftar
+catatan pintar, entri transkrip, atau isi dokumen Drive, ringkasan dan
+manifest mempertahankan peringatan alih-alih menggagalkan seluruh ekspor.
 Gunakan `--dry-run` untuk mengambil data artefak/kehadiran yang sama dan mencetak
-manifest JSON tanpa membuat folder atau ZIP. Ini berguna sebelum menulis
-ekspor besar atau saat agen hanya memerlukan jumlah, record yang dipilih, dan
+JSON manifest tanpa membuat folder atau ZIP. Itu berguna sebelum menulis
+ekspor besar atau saat agen hanya membutuhkan jumlah, catatan yang dipilih, dan
 peringatan.
 
-Agen juga dapat membuat bundel yang sama melalui tool `google_meet`:
+Agen juga dapat membuat bundel yang sama melalui alat `google_meet`:
 
 ```json
 {
@@ -729,9 +755,9 @@ Agen juga dapat membuat bundel yang sama melalui tool `google_meet`:
 }
 ```
 
-Setel `"dryRun": true` untuk hanya mengembalikan manifest ekspor dan melewati penulisan file.
+Tetapkan `"dryRun": true` untuk hanya mengembalikan manifest ekspor dan melewati penulisan file.
 
-Jalankan smoke live yang dijaga terhadap rapat nyata yang dipertahankan:
+Jalankan uji smoke live terjaga terhadap rapat nyata yang disimpan:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 \
@@ -739,37 +765,37 @@ OPENCLAW_GOOGLE_MEET_LIVE_MEETING=https://meet.google.com/abc-defg-hij \
 pnpm test:live -- extensions/google-meet/google-meet.live.test.ts
 ```
 
-Lingkungan smoke live:
+Lingkungan uji smoke live:
 
-- `OPENCLAW_LIVE_TEST=1` mengaktifkan tes live yang dijaga.
+- `OPENCLAW_LIVE_TEST=1` mengaktifkan pengujian live terjaga.
 - `OPENCLAW_GOOGLE_MEET_LIVE_MEETING` menunjuk ke URL, kode, atau
-  `spaces/{id}` Meet yang dipertahankan.
-- `OPENCLAW_GOOGLE_MEET_CLIENT_ID` atau `GOOGLE_MEET_CLIENT_ID` menyediakan OAuth
-  client id.
+  `spaces/{id}` Meet yang disimpan.
+- `OPENCLAW_GOOGLE_MEET_CLIENT_ID` atau `GOOGLE_MEET_CLIENT_ID` menyediakan id klien
+  OAuth.
 - `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` atau `GOOGLE_MEET_REFRESH_TOKEN` menyediakan
-  refresh token.
+  token refresh.
 - Opsional: `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET`,
   `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN`, dan
   `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` menggunakan nama fallback yang sama
   tanpa prefiks `OPENCLAW_`.
 
-Smoke live artefak/kehadiran dasar memerlukan
+Uji smoke live artefak/kehadiran dasar memerlukan
 `https://www.googleapis.com/auth/meetings.space.readonly` dan
-`https://www.googleapis.com/auth/meetings.conference.media.readonly`. Lookup
-kalender memerlukan `https://www.googleapis.com/auth/calendar.events.readonly`. Ekspor
-body dokumen Drive memerlukan
+`https://www.googleapis.com/auth/meetings.conference.media.readonly`. Pencarian Calendar
+memerlukan `https://www.googleapis.com/auth/calendar.events.readonly`. Ekspor
+isi dokumen Drive memerlukan
 `https://www.googleapis.com/auth/drive.meet.readonly`.
 
-Buat space Meet baru:
+Buat ruang Meet baru:
 
 ```bash
 openclaw googlemeet create
 ```
 
-Perintah ini mencetak `meeting uri`, sumber, dan sesi join yang baru. Dengan kredensial
-OAuth perintah ini menggunakan Google Meet API resmi. Tanpa kredensial OAuth, perintah ini
-menggunakan fallback profil browser yang sudah login pada Chrome Node yang dipin. Agen dapat
-menggunakan tool `google_meet` dengan `action: "create"` untuk membuat dan bergabung dalam satu
+Perintah mencetak `meeting uri` baru, sumber, dan sesi bergabung. Dengan kredensial OAuth,
+perintah ini menggunakan API Google Meet resmi. Tanpa kredensial OAuth, perintah ini
+menggunakan profil browser yang sudah masuk milik Node Chrome yang dipin sebagai fallback. Agen dapat
+menggunakan alat `google_meet` dengan `action: "create"` untuk membuat dan bergabung dalam satu
 langkah. Untuk pembuatan URL saja, berikan `"join": false`.
 
 Contoh output JSON dari fallback browser:
@@ -792,9 +818,9 @@ Contoh output JSON dari fallback browser:
 }
 ```
 
-Jika fallback browser menemui login Google atau penghalang izin Meet sebelum
-dapat membuat URL, metode Gateway mengembalikan respons gagal dan tool
-`google_meet` mengembalikan detail terstruktur alih-alih string biasa:
+Jika fallback browser menemui login Google atau pemblokir izin Meet sebelum
+dapat membuat URL, metode Gateway mengembalikan respons gagal dan alat
+`google_meet` mengembalikan detail terstruktur alih-alih string polos:
 
 ```json
 {
@@ -814,7 +840,7 @@ dapat membuat URL, metode Gateway mengembalikan respons gagal dan tool
 
 Saat agen melihat `manualActionRequired: true`, agen harus melaporkan
 `manualActionMessage` beserta konteks Node/tab browser dan berhenti membuka tab
-Meet baru sampai operator menyelesaikan langkah browser tersebut.
+Meet baru sampai operator menyelesaikan langkah browser.
 
 Contoh output JSON dari pembuatan API:
 
@@ -837,20 +863,20 @@ Contoh output JSON dari pembuatan API:
 }
 ```
 
-Membuat Meet secara default juga melakukan join. Transport Chrome atau Chrome-node tetap
-memerlukan profil Google Chrome yang sudah login untuk bergabung melalui browser. Jika
-profil logout, OpenClaw melaporkan `manualActionRequired: true` atau
-error fallback browser dan meminta operator menyelesaikan login Google sebelum
+Pembuatan Meet bergabung secara default. Transport Chrome atau Chrome-node masih
+memerlukan profil Google Chrome yang sudah masuk untuk bergabung melalui browser. Jika
+profil sudah keluar, OpenClaw melaporkan `manualActionRequired: true` atau
+kesalahan fallback browser dan meminta operator menyelesaikan login Google sebelum
 mencoba lagi.
 
-Setel `preview.enrollmentAcknowledged: true` hanya setelah mengonfirmasi bahwa Cloud
-project, principal OAuth, dan peserta rapat Anda terdaftar dalam Google
-Workspace Developer Preview Program untuk Meet media APIs.
+Tetapkan `preview.enrollmentAcknowledged: true` hanya setelah mengonfirmasi bahwa project Cloud,
+principal OAuth, dan peserta rapat Anda terdaftar dalam Google
+Workspace Developer Preview Program untuk API media Meet.
 
-## Config
+## Konfigurasi
 
-Path realtime Chrome yang umum hanya memerlukan Plugin diaktifkan, BlackHole, SoX,
-dan key provider suara realtime backend. OpenAI adalah default; setel
+Jalur realtime Chrome umum hanya memerlukan Plugin diaktifkan, BlackHole, SoX,
+dan kunci penyedia suara realtime backend. OpenAI adalah default; tetapkan
 `realtime.provider: "google"` untuk menggunakan Google Gemini Live:
 
 ```bash
@@ -860,7 +886,7 @@ export OPENAI_API_KEY=sk-...
 export GEMINI_API_KEY=...
 ```
 
-Setel config Plugin di bawah `plugins.entries.google-meet.config`:
+Tetapkan konfigurasi Plugin di bawah `plugins.entries.google-meet.config`:
 
 ```json5
 {
@@ -881,24 +907,29 @@ Default:
 - `defaultMode: "realtime"`
 - `chromeNode.node`: id/nama/IP Node opsional untuk `chrome-node`
 - `chrome.audioBackend: "blackhole-2ch"`
-- `chrome.guestName: "OpenClaw Agent"`: nama yang digunakan pada layar tamu
-  Meet dalam keadaan logout
-- `chrome.autoJoin: true`: pengisian nama tamu dan klik Join Now best-effort
+- `chrome.guestName: "OpenClaw Agent"`: nama yang digunakan pada layar tamu Meet
+  yang belum masuk
+- `chrome.autoJoin: true`: pengisian nama tamu dan klik Join Now secara best-effort
   melalui automasi browser OpenClaw pada `chrome-node`
-- `chrome.reuseExistingTab: true`: aktifkan tab Meet yang sudah ada alih-alih
+- `chrome.reuseExistingTab: true`: aktifkan tab Meet yang ada alih-alih
   membuka duplikat
-- `chrome.waitForInCallMs: 20000`: tunggu sampai tab Meet melaporkan in-call
+- `chrome.waitForInCallMs: 20000`: tunggu tab Meet melaporkan in-call
   sebelum intro realtime dipicu
-- `chrome.audioInputCommand`: perintah SoX `rec` yang menulis audio
-  G.711 mu-law 8 kHz ke stdout
-- `chrome.audioOutputCommand`: perintah SoX `play` yang membaca audio
-  G.711 mu-law 8 kHz dari stdin
+- `chrome.audioFormat: "pcm16-24khz"`: format audio pasangan perintah. Gunakan
+  `"g711-ulaw-8khz"` hanya untuk pasangan perintah lawas/kustom yang masih memancarkan
+  audio telepon.
+- `chrome.audioInputCommand`: perintah SoX yang membaca dari CoreAudio `BlackHole 2ch`
+  dan menulis audio dalam `chrome.audioFormat`
+- `chrome.audioOutputCommand`: perintah SoX yang membaca audio dalam `chrome.audioFormat`
+  dan menulis ke CoreAudio `BlackHole 2ch`
 - `realtime.provider: "openai"`
 - `realtime.toolPolicy: "safe-read-only"`
 - `realtime.instructions`: balasan lisan singkat, dengan
-  `openclaw_agent_consult` untuk jawaban yang lebih dalam
+  `openclaw_agent_consult` untuk jawaban yang lebih mendalam
 - `realtime.introMessage`: pemeriksaan kesiapan lisan singkat saat bridge realtime
-  terhubung; setel ke `""` untuk bergabung secara diam-diam
+  terhubung; tetapkan ke `""` untuk bergabung secara diam-diam
+- `realtime.agentId`: id agen OpenClaw opsional untuk
+  `openclaw_agent_consult`; default ke `main`
 
 Override opsional:
 
@@ -907,8 +938,10 @@ Override opsional:
   defaults: {
     meeting: "https://meet.google.com/abc-defg-hij",
   },
+  browser: {
+    defaultProfile: "openclaw",
+  },
   chrome: {
-    browserProfile: "Default",
     guestName: "OpenClaw Agent",
     waitForInCallMs: 30000,
   },
@@ -917,6 +950,7 @@ Override opsional:
   },
   realtime: {
     provider: "google",
+    agentId: "jay",
     toolPolicy: "owner",
     introMessage: "Say exactly: I'm here.",
     providers: {
@@ -929,7 +963,7 @@ Override opsional:
 }
 ```
 
-Config khusus Twilio:
+Konfigurasi khusus Twilio:
 
 ```json5
 {
@@ -946,12 +980,12 @@ Config khusus Twilio:
 
 `voiceCall.enabled` default ke `true`; dengan transport Twilio, ini mendelegasikan
 panggilan PSTN aktual dan DTMF ke Plugin Voice Call. Jika `voice-call` tidak
-diaktifkan, Google Meet tetap dapat memvalidasi dan merekam dial plan, tetapi
-tidak dapat melakukan panggilan Twilio.
+diaktifkan, Google Meet masih dapat memvalidasi dan merekam rencana panggilan, tetapi tidak dapat
+melakukan panggilan Twilio.
 
-## Tool
+## Alat
 
-Agen dapat menggunakan tool `google_meet`:
+Agen dapat menggunakan alat `google_meet`:
 
 ```json
 {
@@ -962,25 +996,33 @@ Agen dapat menggunakan tool `google_meet`:
 }
 ```
 
-Gunakan `transport: "chrome"` saat Chrome berjalan pada host Gateway. Gunakan
-`transport: "chrome-node"` saat Chrome berjalan pada Node yang dipairing seperti
-VM Parallels. Dalam kedua kasus tersebut model realtime dan `openclaw_agent_consult` berjalan pada
-host Gateway, sehingga kredensial model tetap berada di sana.
+Gunakan `transport: "chrome"` saat Chrome berjalan di host Gateway. Gunakan
+`transport: "chrome-node"` saat Chrome berjalan di node yang dipasangkan seperti VM
+Parallels. Dalam kedua kasus, model realtime dan `openclaw_agent_consult` berjalan
+di host Gateway, sehingga kredensial model tetap berada di sana.
 
 Gunakan `action: "status"` untuk mencantumkan sesi aktif atau memeriksa ID sesi. Gunakan
-`action: "speak"` dengan `sessionId` dan `message` agar agen realtime
-segera berbicara. Gunakan `action: "test_speech"` untuk membuat atau menggunakan kembali sesi,
-memicu frasa yang diketahui, dan mengembalikan kesehatan `inCall` saat host
-Chrome dapat melaporkannya. Gunakan `action: "leave"` untuk menandai sesi berakhir.
+`action: "speak"` dengan `sessionId` dan `message` agar agen realtime langsung
+berbicara. Gunakan `action: "test_speech"` untuk membuat atau menggunakan kembali sesi,
+memicu frasa yang diketahui, dan mengembalikan kesehatan `inCall` saat host Chrome dapat
+melaporkannya. `test_speech` selalu memaksa `mode: "realtime"` dan gagal jika diminta
+berjalan dalam `mode: "transcribe"` karena sesi hanya-observasi secara sengaja tidak dapat
+mengeluarkan ucapan. Hasil `speechOutputVerified` didasarkan pada byte output audio realtime
+yang meningkat selama panggilan pengujian ini, sehingga sesi yang digunakan kembali dengan audio lama
+tidak dihitung sebagai pemeriksaan ucapan baru yang berhasil. Gunakan `action: "leave"` untuk menandai
+sesi telah berakhir.
 
-`status` mencakup kesehatan Chrome saat tersedia:
+`status` menyertakan kesehatan Chrome saat tersedia:
 
-- `inCall`: Chrome tampak berada di dalam panggilan Meet
-- `micMuted`: state mikrofon Meet best-effort
+- `inCall`: Chrome tampaknya berada di dalam panggilan Meet
+- `micMuted`: status mikrofon Meet secara upaya terbaik
 - `manualActionRequired` / `manualActionReason` / `manualActionMessage`: profil
-  browser memerlukan login manual, penerimaan host Meet, izin, atau
+  browser memerlukan login manual, penerimaan oleh host Meet, izin, atau
   perbaikan kontrol browser sebelum ucapan dapat berfungsi
-- `providerConnected` / `realtimeReady`: state bridge suara realtime
+- `speechReady` / `speechBlockedReason` / `speechBlockedMessage`: apakah
+  ucapan Chrome terkelola diizinkan saat ini. `speechReady: false` berarti OpenClaw tidak
+  mengirim frasa intro/pengujian ke bridge audio.
+- `providerConnected` / `realtimeReady`: status bridge suara realtime
 - `lastInputAt` / `lastOutputAt`: audio terakhir yang terlihat dari atau dikirim ke bridge
 
 ```json
@@ -993,23 +1035,28 @@ Chrome dapat melaporkannya. Gunakan `action: "leave"` untuk menandai sesi berakh
 
 ## Konsultasi agen realtime
 
-Mode realtime Chrome dioptimalkan untuk loop suara live. Provider suara realtime
+Mode realtime Chrome dioptimalkan untuk loop suara langsung. Penyedia suara realtime
 mendengar audio rapat dan berbicara melalui bridge audio yang dikonfigurasi.
-Saat model realtime membutuhkan reasoning yang lebih dalam, informasi terkini, atau tool OpenClaw normal, model dapat memanggil `openclaw_agent_consult`.
+Saat model realtime memerlukan penalaran lebih dalam, informasi terkini, atau alat
+OpenClaw normal, model dapat memanggil `openclaw_agent_consult`.
 
-Tool konsultasi menjalankan agen OpenClaw biasa di balik layar dengan konteks
+Alat konsultasi menjalankan agen OpenClaw reguler di balik layar dengan konteks
 transkrip rapat terbaru dan mengembalikan jawaban lisan ringkas ke sesi suara
 realtime. Model suara kemudian dapat mengucapkan jawaban itu kembali ke rapat.
-Tool ini menggunakan tool konsultasi realtime bersama yang sama seperti Voice Call.
+Ini menggunakan alat konsultasi realtime bersama yang sama dengan Voice Call.
 
-`realtime.toolPolicy` mengontrol eksekusi konsultasi:
+Secara default, konsultasi berjalan terhadap agen `main`. Atur `realtime.agentId` saat
+lane Meet harus berkonsultasi dengan workspace agen OpenClaw khusus, default model,
+kebijakan alat, memori, dan riwayat sesi.
 
-- `safe-read-only`: tampilkan tool konsultasi dan batasi agen biasa ke
+`realtime.toolPolicy` mengontrol proses konsultasi:
+
+- `safe-read-only`: mengekspos alat konsultasi dan membatasi agen reguler ke
   `read`, `web_search`, `web_fetch`, `x_search`, `memory_search`, dan
   `memory_get`.
-- `owner`: tampilkan tool konsultasi dan biarkan agen biasa menggunakan
-  kebijakan tool agen normal.
-- `none`: jangan tampilkan tool konsultasi ke model suara realtime.
+- `owner`: mengekspos alat konsultasi dan membiarkan agen reguler menggunakan kebijakan
+  alat agen normal.
+- `none`: jangan mengekspos alat konsultasi ke model suara realtime.
 
 Kunci sesi konsultasi diberi cakupan per sesi Meet, sehingga panggilan konsultasi lanjutan
 dapat menggunakan kembali konteks konsultasi sebelumnya selama rapat yang sama.
@@ -1020,7 +1067,7 @@ Untuk memaksa pemeriksaan kesiapan lisan setelah Chrome sepenuhnya bergabung ke 
 openclaw googlemeet speak meet_... "Say exactly: I'm here and listening."
 ```
 
-Untuk smoke join-and-speak penuh:
+Untuk smoke join-and-speak lengkap:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
@@ -1028,9 +1075,9 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
   --message "Say exactly: I'm here and listening."
 ```
 
-## Checklist tes live
+## Daftar periksa pengujian live
 
-Gunakan urutan ini sebelum menyerahkan rapat ke agen tanpa pengawasan:
+Gunakan urutan ini sebelum menyerahkan rapat kepada agen tanpa pengawasan:
 
 ```bash
 openclaw googlemeet setup
@@ -1040,17 +1087,17 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
   --message "Say exactly: Google Meet speech test complete."
 ```
 
-State `chrome-node` yang diharapkan:
+Status Chrome-node yang diharapkan:
 
 - `googlemeet setup` semuanya hijau.
-- `googlemeet setup` mencakup `chrome-node-connected` saat `chrome-node` adalah
-  transport default atau sebuah Node dipin.
-- `nodes status` menunjukkan Node yang dipilih terhubung.
+- `googlemeet setup` menyertakan `chrome-node-connected` saat Chrome-node adalah
+  transport default atau node dipasangi pin.
+- `nodes status` menampilkan node yang dipilih terhubung.
 - Node yang dipilih mengiklankan `googlemeet.chrome` dan `browser.proxy`.
 - Tab Meet bergabung ke panggilan dan `test-speech` mengembalikan kesehatan Chrome dengan
   `inCall: true`.
 
-Untuk host Chrome jarak jauh seperti macOS VM Parallels, ini adalah pemeriksaan aman
+Untuk host Chrome jarak jauh seperti VM macOS Parallels, ini adalah pemeriksaan aman
 terpendek setelah memperbarui Gateway atau VM:
 
 ```bash
@@ -1062,11 +1109,11 @@ openclaw nodes invoke \
   --params '{"action":"setup"}'
 ```
 
-Ini membuktikan bahwa Plugin Gateway dimuat, VM Node terhubung dengan
-token saat ini, dan bridge audio Meet tersedia sebelum agen membuka tab rapat
+Itu membuktikan Plugin Gateway dimuat, node VM terhubung dengan token
+saat ini, dan bridge audio Meet tersedia sebelum agen membuka tab rapat
 nyata.
 
-Untuk smoke Twilio, gunakan rapat yang menampilkan detail dial-in telepon:
+Untuk smoke Twilio, gunakan rapat yang mengekspos detail panggilan masuk telepon:
 
 ```bash
 openclaw googlemeet setup
@@ -1076,32 +1123,32 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --pin 123456
 ```
 
-State Twilio yang diharapkan:
+Status Twilio yang diharapkan:
 
-- `googlemeet setup` mencakup pemeriksaan `twilio-voice-call-plugin` dan
-  `twilio-voice-call-credentials` yang hijau.
-- `voicecall` tersedia di CLI setelah reload Gateway.
+- `googlemeet setup` menyertakan pemeriksaan `twilio-voice-call-plugin` dan
+  `twilio-voice-call-credentials` hijau.
+- `voicecall` tersedia di CLI setelah Gateway dimuat ulang.
 - Sesi yang dikembalikan memiliki `transport: "twilio"` dan `twilio.voiceCallId`.
 - `googlemeet leave <sessionId>` menutup panggilan suara yang didelegasikan.
 
-## Pemecahan masalah
+## Pemecahan Masalah
 
-### Agen tidak dapat melihat tool Google Meet
+### Agen tidak dapat melihat alat Google Meet
 
-Konfirmasikan Plugin diaktifkan dalam config Gateway dan reload Gateway:
+Pastikan Plugin diaktifkan dalam konfigurasi Gateway dan muat ulang Gateway:
 
 ```bash
 openclaw plugins list | grep google-meet
 openclaw googlemeet setup
 ```
 
-Jika Anda baru saja mengedit `plugins.entries.google-meet`, restart atau reload Gateway.
-Agen yang sedang berjalan hanya melihat tool Plugin yang didaftarkan oleh proses Gateway
+Jika Anda baru saja mengedit `plugins.entries.google-meet`, mulai ulang atau muat ulang Gateway.
+Agen yang sedang berjalan hanya melihat alat Plugin yang didaftarkan oleh proses Gateway
 saat ini.
 
-### Tidak ada Node yang terhubung dan mampu Google Meet
+### Tidak ada node berkemampuan Google Meet yang terhubung
 
-Pada host Node, jalankan:
+Pada host node, jalankan:
 
 ```bash
 openclaw plugins enable google-meet
@@ -1110,7 +1157,7 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Pada host Gateway, setujui Node dan verifikasi perintah:
+Pada host Gateway, setujui node dan verifikasi perintah:
 
 ```bash
 openclaw devices list
@@ -1119,7 +1166,7 @@ openclaw nodes status
 ```
 
 Node harus terhubung dan mencantumkan `googlemeet.chrome` plus `browser.proxy`.
-Config Gateway harus mengizinkan perintah Node tersebut:
+Konfigurasi Gateway harus mengizinkan perintah node tersebut:
 
 ```json5
 {
@@ -1132,8 +1179,8 @@ Config Gateway harus mengizinkan perintah Node tersebut:
 ```
 
 Jika `googlemeet setup` gagal pada `chrome-node-connected` atau log Gateway melaporkan
-`gateway token mismatch`, instal ulang atau restart Node dengan token Gateway
-saat ini. Untuk Gateway LAN biasanya ini berarti:
+`gateway token mismatch`, instal ulang atau mulai ulang node dengan token Gateway
+saat ini. Untuk Gateway LAN, ini biasanya berarti:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -1144,7 +1191,7 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   --force
 ```
 
-Lalu reload layanan Node dan jalankan ulang:
+Kemudian muat ulang layanan node dan jalankan ulang:
 
 ```bash
 openclaw googlemeet setup
@@ -1153,22 +1200,22 @@ openclaw nodes status --connected
 
 ### Browser terbuka tetapi agen tidak dapat bergabung
 
-Jalankan `googlemeet test-speech` dan periksa kesehatan Chrome yang dikembalikan. Jika
-laporan menyatakan `manualActionRequired: true`, tampilkan `manualActionMessage` kepada operator
-dan hentikan percobaan ulang sampai tindakan browser selesai.
+Jalankan `googlemeet test-speech` dan periksa kesehatan Chrome yang dikembalikan. Jika itu
+melaporkan `manualActionRequired: true`, tampilkan `manualActionMessage` kepada operator
+dan berhenti mencoba lagi hingga tindakan browser selesai.
 
-Tindakan manual yang umum:
+Tindakan manual umum:
 
-- Login ke profil Chrome.
+- Masuk ke profil Chrome.
 - Terima tamu dari akun host Meet.
 - Berikan izin mikrofon/kamera Chrome saat prompt izin native Chrome
   muncul.
 - Tutup atau perbaiki dialog izin Meet yang macet.
 
-Jangan laporkan "belum login" hanya karena Meet menampilkan "Do you want people to
-hear you in the meeting?" Itu adalah interstitial pilihan audio milik Meet; OpenClaw
-mengklik **Use microphone** melalui automasi browser saat tersedia dan tetap
-menunggu state rapat yang sebenarnya. Untuk fallback browser create-only, OpenClaw
+Jangan laporkan "not signed in" hanya karena Meet menampilkan "Do you want people to
+hear you in the meeting?" Itu adalah interstisial pilihan audio Meet; OpenClaw
+mengklik **Use microphone** melalui otomatisasi browser saat tersedia dan tetap
+menunggu status rapat yang sebenarnya. Untuk fallback browser khusus-buat, OpenClaw
 dapat mengklik **Continue without microphone** karena pembuatan URL tidak memerlukan
 jalur audio realtime.
 
@@ -1176,84 +1223,89 @@ jalur audio realtime.
 
 `googlemeet create` pertama-tama menggunakan endpoint Google Meet API `spaces.create`
 saat kredensial OAuth dikonfigurasi. Tanpa kredensial OAuth, perintah ini fallback
-ke browser Chrome Node yang dipin. Konfirmasikan:
+ke browser node Chrome yang dipasangi pin. Pastikan:
 
 - Untuk pembuatan API: `oauth.clientId` dan `oauth.refreshToken` dikonfigurasi,
-  atau variabel lingkungan `OPENCLAW_GOOGLE_MEET_*` yang sesuai tersedia.
-- Untuk pembuatan API: refresh token dibuat setelah dukungan create
+  atau variabel lingkungan `OPENCLAW_GOOGLE_MEET_*` yang cocok tersedia.
+- Untuk pembuatan API: refresh token dibuat setelah dukungan pembuatan
   ditambahkan. Token lama mungkin tidak memiliki scope `meetings.space.created`; jalankan ulang
-  `openclaw googlemeet auth login --json` dan perbarui config Plugin.
+  `openclaw googlemeet auth login --json` dan perbarui konfigurasi Plugin.
 - Untuk fallback browser: `defaultTransport: "chrome-node"` dan
-  `chromeNode.node` menunjuk ke Node terhubung dengan `browser.proxy` dan
+  `chromeNode.node` menunjuk ke node terhubung dengan `browser.proxy` dan
   `googlemeet.chrome`.
-- Untuk fallback browser: profil Chrome OpenClaw pada Node tersebut sudah login
+- Untuk fallback browser: profil Chrome OpenClaw pada node tersebut masuk
   ke Google dan dapat membuka `https://meet.google.com/new`.
-- Untuk fallback browser: percobaan ulang menggunakan kembali tab `https://meet.google.com/new`
-  atau prompt akun Google yang sudah ada sebelum membuka tab baru. Jika agen timeout,
-  coba ulang panggilan tool alih-alih membuka tab Meet lain secara manual.
-- Untuk fallback browser: jika tool mengembalikan `manualActionRequired: true`, gunakan
+- Untuk fallback browser: percobaan ulang menggunakan kembali tab
+  `https://meet.google.com/new` atau prompt akun Google yang sudah ada sebelum membuka tab baru. Jika agen mengalami timeout,
+  coba ulang panggilan alat daripada membuka tab Meet lain secara manual.
+- Untuk fallback browser: jika alat mengembalikan `manualActionRequired: true`, gunakan
   `browser.nodeId`, `browser.targetId`, `browserUrl`, dan
-  `manualActionMessage` yang dikembalikan untuk memandu operator. Jangan retry dalam loop sampai
-  tindakan itu selesai.
+  `manualActionMessage` yang dikembalikan untuk memandu operator. Jangan mencoba ulang dalam loop hingga tindakan itu
+  selesai.
 - Untuk fallback browser: jika Meet menampilkan "Do you want people to hear you in the
-  meeting?", biarkan tab tetap terbuka. OpenClaw seharusnya mengklik **Use microphone** atau, untuk
-  fallback create-only, **Continue without microphone** melalui automasi browser
-  dan terus menunggu URL Meet yang dihasilkan. Jika tidak bisa, error
-  seharusnya menyebut `meet-audio-choice-required`, bukan `google-login-required`.
+  meeting?", biarkan tab tetap terbuka. OpenClaw harus mengklik **Use microphone** atau, untuk
+  fallback khusus-buat, **Continue without microphone** melalui otomatisasi browser
+  dan terus menunggu URL Meet yang dihasilkan. Jika tidak bisa, kesalahan harus menyebut
+  `meet-audio-choice-required`, bukan `google-login-required`.
 
 ### Agen bergabung tetapi tidak berbicara
 
-Periksa path realtime:
+Periksa jalur realtime:
 
 ```bash
 openclaw googlemeet setup
 openclaw googlemeet doctor
 ```
 
-Gunakan `mode: "realtime"` untuk dengar/balas langsung. `mode: "transcribe"` memang
-tidak memulai bridge suara realtime dupleks.
+Gunakan `mode: "realtime"` untuk mendengarkan/berbicara balik. `mode: "transcribe"` secara sengaja
+tidak memulai bridge suara realtime dupleks. `googlemeet test-speech`
+selalu memeriksa jalur realtime dan melaporkan apakah byte output bridge
+teramati untuk invokasi tersebut. Jika `speechOutputVerified` false dan
+`speechOutputTimedOut` true, penyedia realtime mungkin telah menerima
+ucapan tetapi OpenClaw tidak melihat byte output baru mencapai bridge audio
+Chrome.
 
 Verifikasi juga:
 
-- Key provider realtime tersedia pada host Gateway, seperti
+- Kunci penyedia realtime tersedia di host Gateway, seperti
   `OPENAI_API_KEY` atau `GEMINI_API_KEY`.
 - `BlackHole 2ch` terlihat pada host Chrome.
-- `rec` dan `play` ada pada host Chrome.
+- `sox` ada pada host Chrome.
 - Mikrofon dan speaker Meet dirutekan melalui jalur audio virtual yang digunakan oleh
   OpenClaw.
 
-`googlemeet doctor [session-id]` mencetak sesi, Node, state in-call,
-alasan tindakan manual, koneksi provider realtime, `realtimeReady`, aktivitas audio
-input/output, timestamp audio terakhir, penghitung byte, dan URL browser.
+`googlemeet doctor [session-id]` mencetak sesi, node, status dalam panggilan,
+alasan tindakan manual, koneksi penyedia realtime, `realtimeReady`, aktivitas
+input/output audio, timestamp audio terakhir, penghitung byte, dan URL browser.
 Gunakan `googlemeet status [session-id]` saat Anda memerlukan JSON mentah. Gunakan
-`googlemeet doctor --oauth` saat Anda perlu memverifikasi refresh Google Meet OAuth
-tanpa mengekspos token; tambahkan `--meeting` atau `--create-space` saat Anda
-juga memerlukan bukti Google Meet API.
+`googlemeet doctor --oauth` saat Anda perlu memverifikasi refresh OAuth Google Meet
+tanpa mengekspos token; tambahkan `--meeting` atau `--create-space` saat Anda juga memerlukan
+bukti Google Meet API.
 
-Jika agen timeout dan Anda dapat melihat tab Meet sudah terbuka, periksa tab itu
-tanpa membuka yang lain:
+Jika agen mengalami timeout dan Anda dapat melihat tab Meet sudah terbuka, periksa tab itu
+tanpa membuka tab lain:
 
 ```bash
 openclaw googlemeet recover-tab
 openclaw googlemeet recover-tab https://meet.google.com/abc-defg-hij
 ```
 
-Tindakan tool yang setara adalah `recover_current_tab`. Tindakan ini memfokuskan dan memeriksa
-tab Meet yang sudah ada untuk transport yang dipilih. Dengan `chrome`, tindakan ini menggunakan
-kontrol browser lokal melalui Gateway; dengan `chrome-node`, tindakan ini menggunakan
-Chrome Node yang dikonfigurasi. Tindakan ini tidak membuka tab baru atau membuat sesi baru; tindakan ini melaporkan
-penghalang saat ini, seperti login, penerimaan, izin, atau state pilihan audio.
-Perintah CLI berbicara ke Gateway yang dikonfigurasi, jadi Gateway harus berjalan;
-`chrome-node` juga mengharuskan Chrome Node terhubung.
+Tindakan alat yang setara adalah `recover_current_tab`. Ini memfokuskan dan memeriksa
+tab Meet yang ada untuk transport yang dipilih. Dengan `chrome`, ini menggunakan kontrol
+browser lokal melalui Gateway; dengan `chrome-node`, ini menggunakan node Chrome yang dikonfigurasi.
+Ini tidak membuka tab baru atau membuat sesi baru; ini melaporkan
+pemblokir saat ini, seperti login, penerimaan, izin, atau status pilihan audio.
+Perintah CLI berbicara dengan Gateway yang dikonfigurasi, sehingga Gateway harus berjalan;
+`chrome-node` juga memerlukan node Chrome untuk terhubung.
 
-### Pemeriksaan penyiapan Twilio gagal
+### Pemeriksaan pengaturan Twilio gagal
 
 `twilio-voice-call-plugin` gagal saat `voice-call` tidak diizinkan atau tidak diaktifkan.
-Tambahkan ke `plugins.allow`, aktifkan `plugins.entries.voice-call`, dan reload
+Tambahkan ke `plugins.allow`, aktifkan `plugins.entries.voice-call`, lalu muat ulang
 Gateway.
 
-`twilio-voice-call-credentials` gagal saat backend Twilio tidak memiliki account
-SID, auth token, atau nomor penelepon. Setel ini pada host Gateway:
+`twilio-voice-call-credentials` gagal saat backend Twilio tidak memiliki SID akun,
+token auth, atau nomor pemanggil. Atur ini di host Gateway:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -1261,7 +1313,7 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-Lalu restart atau reload Gateway dan jalankan:
+Lalu mulai ulang atau muat ulang Gateway dan jalankan:
 
 ```bash
 openclaw googlemeet setup
@@ -1269,13 +1321,14 @@ openclaw voicecall setup
 openclaw voicecall smoke
 ```
 
-`voicecall smoke` hanya untuk kesiapan secara default. Untuk dry-run nomor tertentu:
+`voicecall smoke` secara bawaan hanya memeriksa kesiapan. Untuk melakukan uji coba tanpa menjalankan pada nomor tertentu:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123"
 ```
 
-Tambahkan `--yes` hanya saat Anda benar-benar ingin melakukan panggilan notifikasi keluar live:
+Hanya tambahkan `--yes` saat Anda memang ingin melakukan panggilan notifikasi
+keluar secara langsung:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123" --yes
@@ -1283,8 +1336,8 @@ openclaw voicecall smoke --to "+15555550123" --yes
 
 ### Panggilan Twilio dimulai tetapi tidak pernah masuk ke rapat
 
-Konfirmasikan event Meet menampilkan detail dial-in telepon. Berikan nomor dial-in
-yang tepat dan PIN atau urutan DTMF kustom:
+Pastikan acara Meet menampilkan detail panggilan masuk telepon. Berikan nomor
+panggilan masuk dan PIN persisnya atau urutan DTMF khusus:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -1293,34 +1346,35 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --dtmf-sequence ww123456#
 ```
 
-Gunakan `w` di depan atau koma dalam `--dtmf-sequence` jika provider memerlukan jeda
+Gunakan awalan `w` atau koma di `--dtmf-sequence` jika penyedia membutuhkan jeda
 sebelum memasukkan PIN.
 
 ## Catatan
 
-Media API resmi Google Meet berorientasi penerimaan, jadi berbicara ke panggilan Meet
-tetap memerlukan path peserta. Plugin ini menjaga batas itu tetap terlihat:
-Chrome menangani partisipasi browser dan perutean audio lokal; Twilio menangani
-partisipasi dial-in telepon.
+API media resmi Google Meet berorientasi penerimaan, sehingga berbicara ke dalam
+panggilan Meet tetap membutuhkan jalur peserta. Plugin ini membuat batas tersebut
+tetap terlihat: Chrome menangani partisipasi browser dan perutean audio lokal; Twilio menangani
+partisipasi panggilan masuk telepon.
 
-Mode realtime Chrome memerlukan salah satu dari:
+Mode waktu nyata Chrome membutuhkan `BlackHole 2ch` ditambah salah satu dari:
 
-- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw memiliki
-  bridge model realtime dan mem-pipe audio G.711 mu-law 8 kHz di antara perintah tersebut
-  dan provider suara realtime yang dipilih.
+- `chrome.audioInputCommand` ditambah `chrome.audioOutputCommand`: OpenClaw memiliki
+  bridge model waktu nyata dan menyalurkan audio dalam `chrome.audioFormat` di antara
+  perintah tersebut dan penyedia suara waktu nyata yang dipilih. Jalur Chrome bawaan adalah
+  PCM16 24 kHz; G.711 mu-law 8 kHz tetap tersedia untuk pasangan perintah lama.
 - `chrome.audioBridgeCommand`: perintah bridge eksternal memiliki seluruh jalur
-  audio lokal dan harus keluar setelah memulai atau memvalidasi daemon-nya.
+  audio lokal dan harus keluar setelah memulai atau memvalidasi daemonnya.
 
-Untuk audio dupleks yang bersih, rutekan output Meet dan mikrofon Meet melalui
-perangkat virtual terpisah atau grafik perangkat virtual bergaya Loopback. Satu perangkat
+Untuk audio dupleks yang bersih, rutekan keluaran Meet dan mikrofon Meet melalui perangkat
+virtual terpisah atau grafik perangkat virtual bergaya Loopback. Satu perangkat
 BlackHole bersama dapat memantulkan peserta lain kembali ke panggilan.
 
-`googlemeet speak` memicu bridge audio realtime aktif untuk sesi
-Chrome. `googlemeet leave` menghentikan bridge tersebut. Untuk sesi Twilio yang didelegasikan
+`googlemeet speak` memicu bridge audio waktu nyata aktif untuk sesi Chrome.
+`googlemeet leave` menghentikan bridge tersebut. Untuk sesi Twilio yang didelegasikan
 melalui Plugin Voice Call, `leave` juga menutup panggilan suara yang mendasarinya.
 
 ## Terkait
 
-- [Voice call plugin](/id/plugins/voice-call)
-- [Talk mode](/id/nodes/talk)
-- [Building plugins](/id/plugins/building-plugins)
+- [Plugin panggilan suara](/id/plugins/voice-call)
+- [Mode bicara](/id/nodes/talk)
+- [Membangun Plugin](/id/plugins/building-plugins)

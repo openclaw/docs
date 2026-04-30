@@ -1,40 +1,29 @@
 ---
 read_when:
-    - Anda sedang menghubungkan transport QA sintetis ke dalam pengujian lokal atau CI
-    - Anda memerlukan permukaan konfigurasi qa-channel bawaan
-    - Anda sedang mengiterasi otomatisasi QA end-to-end
-summary: Plugin kanal kelas Slack sintetis untuk skenario QA OpenClaw yang deterministik
-title: Kanal QA
+    - Anda sedang menghubungkan transport QA sintetis ke proses pengujian lokal atau CI
+    - Anda memerlukan antarmuka konfigurasi qa-channel bawaan
+    - Anda sedang melakukan iterasi pada otomatisasi QA end-to-end
+summary: Plugin saluran kelas Slack sintetis untuk skenario QA OpenClaw deterministik
+title: Saluran QA
 x-i18n:
-    generated_at: "2026-04-24T08:58:59Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:35:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 195312376ce8815af44169505b66314eb287ede19e40d27db5b4f256edaa0b46
+    source_hash: e1de1f52da1a14c845cf2a536ddc6f36ab52ed6364f68d9ece32ce272e2a2f96
     source_path: channels/qa-channel.md
-    workflow: 15
+    workflow: 16
 ---
 
-`qa-channel` adalah transport pesan sintetis bawaan untuk QA OpenClaw otomatis.
+`qa-channel` adalah transport pesan sintetis bawaan untuk QA OpenClaw otomatis. Ini bukan channel produksi — ini ada untuk menguji batas Plugin channel yang sama yang digunakan oleh transport nyata sambil menjaga state tetap deterministik dan sepenuhnya dapat diinspeksi.
 
-Ini bukan kanal produksi. Kanal ini ada untuk menguji batas Plugin kanal yang sama
-yang digunakan oleh transport nyata sambil menjaga state tetap deterministik dan
-sepenuhnya dapat diperiksa.
-
-## Apa yang dilakukan saat ini
+## Apa yang dilakukan
 
 - Tata bahasa target kelas Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `thread:<room>/<thread>`
-- Bus sintetis berbasis HTTP untuk:
-  - injeksi pesan masuk
-  - penangkapan transkrip keluar
-  - pembuatan thread
-  - reaksi
-  - edit
-  - hapus
-  - tindakan pencarian dan baca
-- Runner self-check sisi host bawaan yang menulis laporan Markdown
+- Bus sintetis berbasis HTTP untuk injeksi pesan masuk, penangkapan transkrip keluar, pembuatan thread, reaksi, edit, hapus, serta tindakan pencarian/baca.
+- Pelaksana pemeriksaan mandiri sisi host yang menulis laporan Markdown ke `.artifacts/qa-e2e/`.
 
 ## Konfigurasi
 
@@ -52,68 +41,53 @@ sepenuhnya dapat diperiksa.
 }
 ```
 
-Kunci akun yang didukung:
+Kunci akun:
 
-- `baseUrl`
-- `botUserId`
-- `botDisplayName`
-- `pollTimeoutMs`
-- `allowFrom`
-- `defaultTo`
-- `actions.messages`
-- `actions.reactions`
-- `actions.search`
-- `actions.threads`
+- `enabled` — tombol aktif/nonaktif utama untuk akun ini.
+- `name` — label tampilan opsional.
+- `baseUrl` — URL bus sintetis.
+- `botUserId` — id pengguna bot bergaya Matrix yang digunakan dalam tata bahasa target.
+- `botDisplayName` — nama tampilan untuk pesan keluar.
+- `pollTimeoutMs` — jendela tunggu long-poll. Bilangan bulat antara 100 dan 30000.
+- `allowFrom` — daftar izinkan pengirim (id pengguna atau `"*"`).
+- `defaultTo` — target fallback saat tidak ada yang diberikan.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — pembatasan alat per tindakan.
 
-## Runner
+Kunci multi-akun di tingkat teratas:
 
-Irisan vertikal saat ini:
+- `accounts` — catatan override per akun bernama yang dikunci berdasarkan id akun.
+- `defaultAccount` — id akun pilihan saat beberapa akun dikonfigurasi.
+
+## Pelaksana
+
+Pemeriksaan mandiri sisi host (menulis laporan Markdown di bawah `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Ini sekarang dirutekan melalui ekstensi `qa-lab` bawaan. Ini memulai
-bus QA di dalam repo, mem-boot irisan runtime `qa-channel` bawaan, menjalankan
-self-check yang deterministik, dan menulis laporan Markdown di bawah `.artifacts/qa-e2e/`.
+Ini dirutekan melalui `qa-lab`, memulai bus QA dalam repo, mem-boot potongan runtime `qa-channel` bawaan, dan menjalankan pemeriksaan mandiri deterministik.
 
-UI debugger privat:
-
-```bash
-pnpm qa:lab:up
-```
-
-Satu perintah itu membangun situs QA, memulai stack gateway + QA Lab
-berbasis Docker, dan mencetak URL QA Lab. Dari situs tersebut Anda dapat memilih
-skenario, memilih lane model, meluncurkan eksekusi individual, dan memantau hasil secara langsung.
-
-Suite QA lengkap berbasis repo:
+Rangkaian skenario penuh berbasis repo:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Itu meluncurkan debugger QA privat di URL lokal, terpisah dari
-bundle UI Control yang dikirimkan.
+Menjalankan skenario secara paralel terhadap jalur Gateway QA. Lihat [Gambaran umum QA](/id/concepts/qa-e2e-automation) untuk skenario, profil, dan mode penyedia.
 
-## Cakupan
+Situs QA berbasis Docker (Gateway + UI debugger QA Lab dalam satu stack):
 
-Cakupan saat ini sengaja sempit:
+```bash
+pnpm qa:lab:up
+```
 
-- bus + transport Plugin
-- tata bahasa perutean ber-thread
-- tindakan pesan yang dimiliki kanal
-- pelaporan Markdown
-- situs QA berbasis Docker dengan kontrol eksekusi
-
-Pekerjaan lanjutan akan menambahkan:
-
-- eksekusi matriks provider/model
-- penemuan skenario yang lebih kaya
-- orkestrasi native OpenClaw di tahap berikutnya
+Membangun situs QA, memulai stack Gateway + QA Lab berbasis Docker, dan mencetak URL QA Lab. Dari sana Anda dapat memilih skenario, memilih jalur model, meluncurkan run individual, dan memantau hasil secara live. Debugger QA Lab terpisah dari bundel Control UI yang dikirimkan.
 
 ## Terkait
 
+- [Gambaran umum QA](/id/concepts/qa-e2e-automation) — stack keseluruhan, adaptor transport, penulisan skenario
+- [QA Matrix](/id/concepts/qa-matrix) — contoh pelaksana transport live yang menggerakkan channel nyata
 - [Pairing](/id/channels/pairing)
 - [Grup](/id/channels/groups)
-- [Ikhtisar kanal](/id/channels)
+- [Gambaran umum channel](/id/channels)

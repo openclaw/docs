@@ -2,127 +2,127 @@
 read_when:
     - Menyiapkan OpenClaw di Raspberry Pi
     - Menjalankan OpenClaw di perangkat ARM
-    - Membangun AI pribadi hemat biaya yang selalu aktif
-summary: OpenClaw di Raspberry Pi (penyiapan self-hosted hemat biaya)
+    - Membangun AI pribadi murah yang selalu aktif
+summary: OpenClaw di Raspberry Pi (penyiapan hosting mandiri hemat biaya)
 title: Raspberry Pi (platform)
 x-i18n:
-    generated_at: "2026-04-24T09:18:00Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:59:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 79a2e8edf3c2853deddece8d52dc87b9a5800643b4d866acd80db3a83ca9b270
+    source_hash: f5a277499ee8759f766984b3fd2097dbd55f2f34ba6169fdfc2eb9dd53d6bb7c
     source_path: platforms/raspberry-pi.md
-    workflow: 15
+    workflow: 16
 ---
 
 # OpenClaw di Raspberry Pi
 
 ## Tujuan
 
-Menjalankan Gateway OpenClaw yang persisten dan selalu aktif di Raspberry Pi dengan biaya **sekitar $35-80** sekali beli (tanpa biaya bulanan).
+Jalankan OpenClaw Gateway yang persisten dan selalu aktif di Raspberry Pi dengan biaya satu kali **~$35-80** (tanpa biaya bulanan).
 
-Cocok untuk:
+Sempurna untuk:
 
 - Asisten AI pribadi 24/7
-- Hub otomasi rumah
+- Hub otomatisasi rumah
 - Bot Telegram/WhatsApp berdaya rendah yang selalu tersedia
 
 ## Persyaratan perangkat keras
 
-| Model Pi        | RAM     | Berfungsi? | Catatan                           |
-| --------------- | ------- | ---------- | --------------------------------- |
-| **Pi 5**        | 4GB/8GB | ✅ Terbaik | Paling cepat, direkomendasikan    |
-| **Pi 4**        | 4GB     | ✅ Baik    | Titik ideal untuk kebanyakan pengguna |
-| **Pi 4**        | 2GB     | ✅ Oke     | Berfungsi, tambahkan swap         |
-| **Pi 4**        | 1GB     | ⚠️ Ketat   | Mungkin dengan swap, config minimal |
-| **Pi 3B+**      | 1GB     | ⚠️ Lambat  | Berfungsi tapi lamban             |
-| **Pi Zero 2 W** | 512MB   | ❌         | Tidak direkomendasikan            |
+| Model Pi         | RAM     | Berfungsi?   | Catatan                              |
+| ---------------- | ------- | ------------ | ------------------------------------ |
+| **Pi 5**         | 4GB/8GB | ✅ Terbaik   | Tercepat, direkomendasikan           |
+| **Pi 4**         | 4GB     | ✅ Baik      | Pilihan paling seimbang bagi sebagian besar pengguna |
+| **Pi 4**         | 2GB     | ✅ OK        | Berfungsi, tambahkan swap            |
+| **Pi 4**         | 1GB     | ⚠️ Terbatas | Mungkin dengan swap, konfigurasi minimal |
+| **Pi 3B+**       | 1GB     | ⚠️ Lambat   | Berfungsi tetapi lamban              |
+| **Pi Zero 2 W**  | 512MB   | ❌           | Tidak direkomendasikan               |
 
 **Spesifikasi minimum:** RAM 1GB, 1 core, disk 500MB  
 **Direkomendasikan:** RAM 2GB+, OS 64-bit, kartu SD 16GB+ (atau USB SSD)
 
-## Yang Anda butuhkan
+## Yang Anda perlukan
 
 - Raspberry Pi 4 atau 5 (2GB+ direkomendasikan)
-- Kartu MicroSD (16GB+) atau USB SSD (kinerja lebih baik)
-- Catu daya (PSU Pi resmi direkomendasikan)
+- Kartu MicroSD (16GB+) atau USB SSD (performa lebih baik)
+- Catu daya (PSU resmi Pi direkomendasikan)
 - Koneksi jaringan (Ethernet atau WiFi)
 - ~30 menit
 
 ## 1) Flash OS
 
-Gunakan **Raspberry Pi OS Lite (64-bit)** — tidak perlu desktop untuk server tanpa antarmuka.
+Gunakan **Raspberry Pi OS Lite (64-bit)** — desktop tidak diperlukan untuk server headless.
 
 1. Unduh [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 2. Pilih OS: **Raspberry Pi OS Lite (64-bit)**
-3. Klik ikon gear (⚙️) untuk prakonfigurasi:
-   - Setel hostname: `gateway-host`
+3. Klik ikon roda gigi (⚙️) untuk pra-konfigurasi:
+   - Tetapkan hostname: `gateway-host`
    - Aktifkan SSH
-   - Setel username/password
-   - Konfigurasikan WiFi (jika tidak menggunakan Ethernet)
+   - Tetapkan nama pengguna/kata sandi
+   - Konfigurasikan WiFi (jika tidak memakai Ethernet)
 4. Flash ke kartu SD / drive USB Anda
 5. Masukkan dan boot Pi
 
-## 2) Hubungkan via SSH
+## 2) Hubungkan melalui SSH
 
 ```bash
 ssh user@gateway-host
-# atau gunakan alamat IP
+# or use the IP address
 ssh user@192.168.x.x
 ```
 
-## 3) Penyiapan sistem
+## 3) Penyiapan Sistem
 
 ```bash
-# Perbarui sistem
+# Update system
 sudo apt update && sudo apt upgrade -y
 
-# Instal paket penting
+# Install essential packages
 sudo apt install -y git curl build-essential
 
-# Setel zona waktu (penting untuk cron/pengingat)
-sudo timedatectl set-timezone America/Chicago  # Ganti ke zona waktu Anda
+# Set timezone (important for cron/reminders)
+sudo timedatectl set-timezone America/Chicago  # Change to your timezone
 ```
 
 ## 4) Instal Node.js 24 (ARM64)
 
 ```bash
-# Instal Node.js via NodeSource
+# Install Node.js via NodeSource
 curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# Verifikasi
-node --version  # Harus menampilkan v24.x.x
+# Verify
+node --version  # Should show v24.x.x
 npm --version
 ```
 
 ## 5) Tambahkan Swap (Penting untuk 2GB atau kurang)
 
-Swap mencegah crash akibat kehabisan memori:
+Swap mencegah crash karena kehabisan memori:
 
 ```bash
-# Buat file swap 2GB
+# Create 2GB swap file
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 
-# Jadikan permanen
+# Make permanent
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
-# Optimalkan untuk RAM kecil (kurangi swappiness)
+# Optimize for low RAM (reduce swappiness)
 echo 'vm.swappiness=10' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 ```
 
 ## 6) Instal OpenClaw
 
-### Opsi A: Instalasi standar (disarankan)
+### Opsi A: instalasi standar (direkomendasikan)
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-### Opsi B: Instalasi yang dapat diutak-atik (untuk eksperimen)
+### Opsi B: instalasi yang dapat diutak-atik (untuk bereksperimen)
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -134,7 +134,7 @@ npm link
 
 Instalasi yang dapat diutak-atik memberi Anda akses langsung ke log dan kode — berguna untuk men-debug masalah khusus ARM.
 
-## 7) Jalankan onboarding
+## 7) Jalankan Onboarding
 
 ```bash
 openclaw onboard --install-daemon
@@ -143,26 +143,26 @@ openclaw onboard --install-daemon
 Ikuti wizard:
 
 1. **Mode Gateway:** Lokal
-2. **Auth:** API key direkomendasikan (OAuth bisa agak rewel di Pi tanpa antarmuka)
-3. **Channels:** Telegram paling mudah untuk memulai
+2. **Auth:** API key direkomendasikan (OAuth bisa rewel pada Pi headless)
+3. **Channel:** Telegram paling mudah untuk memulai
 4. **Daemon:** Ya (systemd)
 
-## 8) Verifikasi instalasi
+## 8) Verifikasi Instalasi
 
 ```bash
-# Periksa status
+# Check status
 openclaw status
 
-# Periksa layanan (instalasi standar = unit pengguna systemd)
+# Check service (standard install = systemd user unit)
 systemctl --user status openclaw-gateway.service
 
-# Lihat log
+# View logs
 journalctl --user -u openclaw-gateway.service -f
 ```
 
-## 9) Akses Dashboard OpenClaw
+## 9) Akses OpenClaw Dashboard
 
-Ganti `user@gateway-host` dengan username dan hostname atau IP Pi Anda.
+Ganti `user@gateway-host` dengan nama pengguna Pi dan hostname atau alamat IP Anda.
 
 Di komputer Anda, minta Pi mencetak URL dashboard baru:
 
@@ -170,20 +170,20 @@ Di komputer Anda, minta Pi mencetak URL dashboard baru:
 ssh user@gateway-host 'openclaw dashboard --no-open'
 ```
 
-Perintah tersebut mencetak `Dashboard URL:`. Bergantung pada cara `gateway.auth.token`
-dikonfigurasi, URL dapat berupa tautan biasa `http://127.0.0.1:18789/` atau
-tautan yang menyertakan `#token=...`.
+Perintah ini mencetak `Dashboard URL:`. Bergantung pada bagaimana `gateway.auth.token`
+dikonfigurasi, URL dapat berupa tautan `http://127.0.0.1:18789/` biasa atau tautan
+yang menyertakan `#token=...`.
 
-Di terminal lain di komputer Anda, buat tunnel SSH:
+Di terminal lain pada komputer Anda, buat tunnel SSH:
 
 ```bash
 ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
 ```
 
-Lalu buka URL Dashboard yang dicetak di browser lokal Anda.
+Lalu buka Dashboard URL yang dicetak di browser lokal Anda.
 
-Jika UI meminta shared-secret auth, tempelkan token atau password yang dikonfigurasi
-ke pengaturan UI Control. Untuk auth token, gunakan `gateway.auth.token` (atau
+Jika UI meminta autentikasi shared-secret, tempelkan token atau kata sandi yang
+dikonfigurasi ke pengaturan Control UI. Untuk auth token, gunakan `gateway.auth.token` (atau
 `OPENCLAW_GATEWAY_TOKEN`).
 
 Untuk akses jarak jauh yang selalu aktif, lihat [Tailscale](/id/gateway/tailscale).
@@ -192,12 +192,12 @@ Untuk akses jarak jauh yang selalu aktif, lihat [Tailscale](/id/gateway/tailscal
 
 ## Optimasi performa
 
-### Gunakan USB SSD (peningkatan besar)
+### Gunakan USB SSD (Peningkatan Besar)
 
 Kartu SD lambat dan cepat aus. USB SSD meningkatkan performa secara drastis:
 
 ```bash
-# Periksa apakah boot dari USB
+# Check if booting from USB
 lsblk
 ```
 
@@ -219,13 +219,13 @@ source ~/.bashrc
 Catatan:
 
 - `NODE_COMPILE_CACHE` mempercepat eksekusi berikutnya (`status`, `health`, `--help`).
-- `/var/tmp` bertahan setelah reboot lebih baik daripada `/tmp`.
+- `/var/tmp` bertahan lebih baik setelah reboot daripada `/tmp`.
 - `OPENCLAW_NO_RESPAWN=1` menghindari biaya startup tambahan dari self-respawn CLI.
-- Eksekusi pertama akan memanaskan cache; eksekusi berikutnya paling diuntungkan.
+- Eksekusi pertama menghangatkan cache; eksekusi berikutnya paling merasakan manfaatnya.
 
 ### Penyetelan startup systemd (opsional)
 
-Jika Pi ini sebagian besar menjalankan OpenClaw, tambahkan drop-in layanan untuk mengurangi jitter restart
+Jika Pi ini terutama menjalankan OpenClaw, tambahkan drop-in layanan untuk mengurangi jitter restart
 dan menjaga env startup tetap stabil:
 
 ```bash
@@ -248,73 +248,74 @@ systemctl --user daemon-reload
 systemctl --user restart openclaw-gateway.service
 ```
 
-Jika memungkinkan, simpan status/cache OpenClaw pada penyimpanan berbasis SSD untuk menghindari
-bottleneck random-I/O kartu SD saat cold start.
+Jika memungkinkan, simpan state/cache OpenClaw pada penyimpanan berbasis SSD untuk menghindari
+bottleneck I/O acak kartu SD saat cold start.
 
-Jika ini adalah Pi tanpa antarmuka, aktifkan lingering sekali agar layanan pengguna bertahan setelah logout:
+Jika ini Pi headless, aktifkan lingering sekali agar layanan pengguna tetap berjalan
+setelah logout:
 
 ```bash
 sudo loginctl enable-linger "$(whoami)"
 ```
 
 Bagaimana kebijakan `Restart=` membantu pemulihan otomatis:
-[systemd dapat mengotomatisasi pemulihan layanan](https://www.redhat.com/en/blog/systemd-automate-recovery).
+[systemd dapat mengotomatiskan pemulihan layanan](https://www.redhat.com/en/blog/systemd-automate-recovery).
 
 ### Kurangi penggunaan memori
 
 ```bash
-# Nonaktifkan alokasi memori GPU (headless)
+# Disable GPU memory allocation (headless)
 echo 'gpu_mem=16' | sudo tee -a /boot/config.txt
 
-# Nonaktifkan Bluetooth jika tidak diperlukan
+# Disable Bluetooth if not needed
 sudo systemctl disable bluetooth
 ```
 
-### Pantau resource
+### Pantau sumber daya
 
 ```bash
-# Periksa memori
+# Check memory
 free -h
 
-# Periksa suhu CPU
+# Check CPU temperature
 vcgencmd measure_temp
 
-# Pemantauan live
+# Live monitoring
 htop
 ```
 
 ---
 
-## Catatan khusus ARM
+## Catatan Khusus ARM
 
 ### Kompatibilitas biner
 
-Sebagian besar fitur OpenClaw berfungsi di ARM64, tetapi beberapa binary eksternal mungkin memerlukan build ARM:
+Sebagian besar fitur OpenClaw berfungsi di ARM64, tetapi beberapa biner eksternal mungkin memerlukan build ARM:
 
-| Alat               | Status ARM64 | Catatan                            |
-| ------------------ | ------------ | ---------------------------------- |
-| Node.js            | ✅           | Bekerja sangat baik                |
-| WhatsApp (Baileys) | ✅           | Pure JS, tidak ada masalah         |
-| Telegram           | ✅           | Pure JS, tidak ada masalah         |
-| gog (Gmail CLI)    | ⚠️           | Periksa apakah ada rilis ARM       |
+| Tool               | Status ARM64 | Catatan                             |
+| ------------------ | ------------ | ----------------------------------- |
+| Node.js            | ✅           | Berfungsi sangat baik               |
+| WhatsApp (Baileys) | ✅           | JS murni, tidak ada masalah         |
+| Telegram           | ✅           | JS murni, tidak ada masalah         |
+| gog (Gmail CLI)    | ⚠️           | Periksa rilis ARM                   |
 | Chromium (browser) | ✅           | `sudo apt install chromium-browser` |
 
-Jika suatu skill gagal, periksa apakah binary-nya memiliki build ARM. Banyak alat Go/Rust memilikinya; beberapa tidak.
+Jika sebuah skill gagal, periksa apakah binernya memiliki build ARM. Banyak tool Go/Rust memilikinya; sebagian tidak.
 
 ### 32-bit vs 64-bit
 
-**Selalu gunakan OS 64-bit.** Node.js dan banyak alat modern memerlukannya. Periksa dengan:
+**Selalu gunakan OS 64-bit.** Node.js dan banyak tool modern memerlukannya. Periksa dengan:
 
 ```bash
 uname -m
-# Harus menampilkan: aarch64 (64-bit) bukan armv7l (32-bit)
+# Should show: aarch64 (64-bit) not armv7l (32-bit)
 ```
 
 ---
 
 ## Penyiapan model yang direkomendasikan
 
-Karena Pi hanya menjadi Gateway (model berjalan di cloud), gunakan model berbasis API:
+Karena Pi hanya berperan sebagai Gateway (model berjalan di cloud), gunakan model berbasis API:
 
 ```json
 {
@@ -329,22 +330,22 @@ Karena Pi hanya menjadi Gateway (model berjalan di cloud), gunakan model berbasi
 }
 ```
 
-**Jangan mencoba menjalankan LLM lokal di Pi** — bahkan model kecil pun terlalu lambat. Biarkan Claude/GPT melakukan pekerjaan berat.
+**Jangan mencoba menjalankan LLM lokal di Pi** — bahkan model kecil terlalu lambat. Biarkan Claude/GPT menangani pekerjaan berat.
 
 ---
 
-## Mulai otomatis saat boot
+## Auto-Start saat Boot
 
-Onboarding menyiapkan ini, tetapi untuk verifikasi:
+Onboarding menyiapkan ini, tetapi untuk memverifikasi:
 
 ```bash
-# Periksa apakah layanan aktif
+# Check service is enabled
 systemctl --user is-enabled openclaw-gateway.service
 
-# Aktifkan jika belum
+# Enable if not
 systemctl --user enable openclaw-gateway.service
 
-# Mulai saat boot
+# Start on boot
 systemctl --user start openclaw-gateway.service
 ```
 
@@ -352,51 +353,51 @@ systemctl --user start openclaw-gateway.service
 
 ## Pemecahan masalah
 
-### Kehabisan memori (OOM)
+### Kehabisan Memori (OOM)
 
 ```bash
-# Periksa memori
+# Check memory
 free -h
 
-# Tambahkan swap lebih banyak (lihat Langkah 5)
-# Atau kurangi layanan yang berjalan di Pi
+# Add more swap (see Step 5)
+# Or reduce services running on the Pi
 ```
 
 ### Performa lambat
 
 - Gunakan USB SSD alih-alih kartu SD
 - Nonaktifkan layanan yang tidak digunakan: `sudo systemctl disable cups bluetooth avahi-daemon`
-- Periksa throttling CPU: `vcgencmd get_throttled` (harus mengembalikan `0x0`)
+- Periksa throttling CPU: `vcgencmd get_throttled` (seharusnya mengembalikan `0x0`)
 
 ### Layanan tidak mau mulai
 
 ```bash
-# Periksa log
+# Check logs
 journalctl --user -u openclaw-gateway.service --no-pager -n 100
 
-# Perbaikan umum: build ulang
-cd ~/openclaw  # jika menggunakan instalasi yang dapat diutak-atik
+# Common fix: rebuild
+cd ~/openclaw  # if using hackable install
 npm run build
 systemctl --user restart openclaw-gateway.service
 ```
 
-### Masalah binary ARM
+### Masalah Biner ARM
 
-Jika suatu skill gagal dengan "exec format error":
+Jika sebuah skill gagal dengan "exec format error":
 
-1. Periksa apakah binary memiliki build ARM64
-2. Coba build dari source
-3. Atau gunakan container Docker dengan dukungan ARM
+1. Periksa apakah biner memiliki build ARM64
+2. Coba build dari sumber
+3. Atau gunakan kontainer Docker dengan dukungan ARM
 
-### WiFi sering putus
+### WiFi Terputus
 
-Untuk Pi tanpa antarmuka yang menggunakan WiFi:
+Untuk Pi headless di WiFi:
 
 ```bash
-# Nonaktifkan manajemen daya WiFi
+# Disable WiFi power management
 sudo iwconfig wlan0 power off
 
-# Jadikan permanen
+# Make permanent
 echo 'wireless-power off' | sudo tee -a /etc/network/interfaces
 ```
 
@@ -404,16 +405,16 @@ echo 'wireless-power off' | sudo tee -a /etc/network/interfaces
 
 ## Perbandingan biaya
 
-| Penyiapan        | Biaya sekali beli | Biaya bulanan | Catatan                    |
-| ---------------- | ----------------- | ------------- | -------------------------- |
-| **Pi 4 (2GB)**   | ~$45              | $0            | + listrik (~$5/tahun)      |
-| **Pi 4 (4GB)**   | ~$55              | $0            | Direkomendasikan           |
-| **Pi 5 (4GB)**   | ~$60              | $0            | Performa terbaik           |
-| **Pi 5 (8GB)**   | ~$80              | $0            | Berlebihan tapi future-proof |
-| DigitalOcean     | $0                | $6/bln        | $72/tahun                  |
-| Hetzner          | $0                | €3.79/bln     | ~$50/tahun                 |
+| Penyiapan       | Biaya Satu Kali | Biaya Bulanan | Catatan                   |
+| --------------- | --------------- | ------------- | ------------------------- |
+| **Pi 4 (2GB)**  | ~$45            | $0            | + daya (~$5/tahun)        |
+| **Pi 4 (4GB)**  | ~$55            | $0            | Direkomendasikan          |
+| **Pi 5 (4GB)**  | ~$60            | $0            | Performa terbaik          |
+| **Pi 5 (8GB)**  | ~$80            | $0            | Berlebihan tetapi tahan masa depan |
+| DigitalOcean    | $0              | $6/bln        | $72/tahun                 |
+| Hetzner         | $0              | €3.79/bln     | ~$50/tahun                |
 
-**Titik impas:** Pi akan balik modal dalam ~6-12 bulan dibanding VPS cloud.
+**Titik impas:** Pi membayar dirinya sendiri dalam ~6-12 bulan dibandingkan VPS cloud.
 
 ---
 
@@ -423,4 +424,4 @@ echo 'wireless-power off' | sudo tee -a /etc/network/interfaces
 - [Panduan DigitalOcean](/id/install/digitalocean) — alternatif cloud
 - [Panduan Hetzner](/id/install/hetzner) — penyiapan Docker
 - [Tailscale](/id/gateway/tailscale) — akses jarak jauh
-- [Nodes](/id/nodes) — pasangkan laptop/ponsel Anda dengan gateway Pi
+- [Nodes](/id/nodes) — pasangkan laptop/ponsel Anda dengan Gateway Pi

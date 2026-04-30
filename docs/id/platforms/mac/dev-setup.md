@@ -1,60 +1,60 @@
 ---
 read_when:
     - Menyiapkan lingkungan pengembangan macOS
-summary: Panduan penyiapan untuk developer yang bekerja pada aplikasi macOS OpenClaw
-title: Penyiapan dev macOS
+summary: Panduan penyiapan untuk pengembang yang bekerja pada aplikasi macOS OpenClaw
+title: Penyiapan pengembangan macOS
 x-i18n:
-    generated_at: "2026-04-24T09:17:03Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T09:58:51Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 30f98b3249096fa1e125a7beb77562b7bd36e2c17f524f30a1c58de61bd04da0
+    source_hash: d0c494b7a214b6db2880ba02c512653c35dbcdf80805bee9777ec946412668e1
     source_path: platforms/mac/dev-setup.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Penyiapan Developer macOS
+# Penyiapan pengembang macOS
 
-Panduan ini mencakup langkah-langkah yang diperlukan untuk membangun dan menjalankan aplikasi macOS OpenClaw dari source.
+Bangun dan jalankan aplikasi macOS OpenClaw dari sumber.
 
 ## Prasyarat
 
 Sebelum membangun aplikasi, pastikan Anda telah menginstal hal berikut:
 
 1. **Xcode 26.2+**: Diperlukan untuk pengembangan Swift.
-2. **Node.js 24 & pnpm**: Direkomendasikan untuk Gateway, CLI, dan skrip packaging. Node 22 LTS, saat ini `22.14+`, tetap didukung untuk kompatibilitas.
+2. **Node.js 24 & pnpm**: Direkomendasikan untuk Gateway, CLI, dan skrip pengemasan. Node 22 LTS, saat ini `22.14+`, tetap didukung untuk kompatibilitas.
 
 ## 1. Instal Dependensi
 
-Instal dependensi untuk seluruh project:
+Instal dependensi di seluruh proyek:
 
 ```bash
 pnpm install
 ```
 
-## 2. Build dan package aplikasi
+## 2. Bangun dan Kemas Aplikasi
 
-Untuk membangun aplikasi macOS dan mem-package-nya ke `dist/OpenClaw.app`, jalankan:
+Untuk membangun aplikasi macOS dan mengemasnya ke dalam `dist/OpenClaw.app`, jalankan:
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-Jika Anda tidak memiliki sertifikat Apple Developer ID, skrip akan secara otomatis menggunakan **ad-hoc signing** (`-`).
+Jika Anda tidak memiliki sertifikat Apple Developer ID, skrip akan otomatis menggunakan **penandatanganan ad-hoc** (`-`).
 
-Untuk mode dev run, flag signing, dan pemecahan masalah Team ID, lihat README aplikasi macOS:
+Untuk mode jalankan pengembangan, flag penandatanganan, dan pemecahan masalah Team ID, lihat README aplikasi macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Catatan**: Aplikasi yang ditandatangani secara ad-hoc dapat memicu prompt keamanan. Jika aplikasi langsung crash dengan "Abort trap 6", lihat bagian [Pemecahan masalah](#troubleshooting).
+> **Catatan**: Aplikasi yang ditandatangani ad-hoc dapat memicu prompt keamanan. Jika aplikasi langsung crash dengan "Abort trap 6", lihat bagian [Pemecahan Masalah](#troubleshooting).
 
 ## 3. Instal CLI
 
 Aplikasi macOS mengharapkan instalasi CLI `openclaw` global untuk mengelola tugas latar belakang.
 
-**Untuk menginstalnya (disarankan):**
+**Untuk menginstalnya (direkomendasikan):**
 
 1. Buka aplikasi OpenClaw.
-2. Buka tab pengaturan **General**.
-3. Klik **"Install CLI"**.
+2. Buka tab pengaturan **Umum**.
+3. Klik **"Instal CLI"**.
 
 Sebagai alternatif, instal secara manual:
 
@@ -65,15 +65,15 @@ npm install -g openclaw@<version>
 `pnpm add -g openclaw@<version>` dan `bun add -g openclaw@<version>` juga berfungsi.
 Untuk runtime Gateway, Node tetap menjadi jalur yang direkomendasikan.
 
-## Pemecahan masalah
+## Pemecahan Masalah
 
-### Build Gagal: Ketidakcocokan toolchain atau SDK
+### Build gagal: ketidakcocokan toolchain atau SDK
 
 Build aplikasi macOS mengharapkan SDK macOS terbaru dan toolchain Swift 6.2.
 
 **Dependensi sistem (wajib):**
 
-- **Versi macOS terbaru yang tersedia di Software Update** (diperlukan oleh SDK Xcode 26.2)
+- **Versi macOS terbaru yang tersedia di Software Update** (diwajibkan oleh SDK Xcode 26.2)
 - **Xcode 26.2** (toolchain Swift 6.2)
 
 **Pemeriksaan:**
@@ -83,11 +83,11 @@ xcodebuild -version
 xcrun swift --version
 ```
 
-Jika versinya tidak cocok, perbarui macOS/Xcode dan jalankan ulang build.
+Jika versi tidak cocok, perbarui macOS/Xcode dan jalankan ulang build.
 
-### Aplikasi crash saat memberikan izin
+### Aplikasi crash saat pemberian izin
 
-Jika aplikasi crash saat Anda mencoba mengizinkan akses **Speech Recognition** atau **Microphone**, ini mungkin disebabkan oleh cache TCC yang rusak atau ketidakcocokan signature.
+Jika aplikasi crash saat Anda mencoba mengizinkan akses **Pengenalan Ucapan** atau **Mikrofon**, penyebabnya mungkin cache TCC yang rusak atau ketidakcocokan tanda tangan.
 
 **Perbaikan:**
 
@@ -97,21 +97,21 @@ Jika aplikasi crash saat Anda mencoba mengizinkan akses **Speech Recognition** a
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Jika itu gagal, ubah `BUNDLE_ID` sementara di [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) untuk memaksa "clean slate" dari macOS.
+2. Jika gagal, ubah `BUNDLE_ID` sementara di [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) untuk memaksa "awal bersih" dari macOS.
 
-### Gateway "Starting..." tanpa akhir
+### Gateway "Memulai..." tanpa henti
 
-Jika status Gateway tetap di "Starting...", periksa apakah ada proses zombie yang menahan port:
+Jika status Gateway tetap pada "Memulai...", periksa apakah ada proses zombie yang menahan port:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Jika Anda tidak menggunakan LaunchAgent (mode dev / eksekusi manual), temukan listener:
+# Jika Anda tidak menggunakan LaunchAgent (mode pengembangan / proses manual), temukan listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Jika eksekusi manual menahan port, hentikan proses tersebut (Ctrl+C). Sebagai jalan terakhir, kill PID yang Anda temukan di atas.
+Jika proses manual menahan port, hentikan proses tersebut (Ctrl+C). Sebagai upaya terakhir, matikan PID yang Anda temukan di atas.
 
 ## Terkait
 

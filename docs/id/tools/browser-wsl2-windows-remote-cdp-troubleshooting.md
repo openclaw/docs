@@ -1,91 +1,85 @@
 ---
 read_when:
-    - Menjalankan Gateway OpenClaw di WSL2 sementara Chrome berada di Windows
-    - Melihat error browser/control-ui yang saling tumpang tindih di WSL2 dan Windows
-    - Memutuskan antara host-local Chrome MCP dan CDP jarak jauh mentah dalam penyiapan host-terpisah
-summary: Pemecahan masalah Gateway WSL2 + Chrome Windows remote CDP secara berlapis
-title: Pemecahan masalah WSL2 + Windows + Chrome jarak jauh CDP
+    - Menjalankan OpenClaw Gateway di WSL2 sementara Chrome berjalan di Windows
+    - Melihat kesalahan peramban/control-ui yang tumpang tindih di WSL2 dan Windows
+    - Memutuskan antara Chrome MCP lokal-host dan CDP jarak jauh mentah dalam penyiapan host terpisah
+summary: Pecahkan masalah WSL2 Gateway + CDP jarak jauh Windows Chrome secara berlapis
+title: Pemecahan masalah WSL2 + Windows + Chrome CDP jarak jauh
 x-i18n:
-    generated_at: "2026-04-24T09:29:47Z"
-    model: gpt-5.4
+    generated_at: "2026-04-30T10:13:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 30c8b94332e74704f85cbce5891b677b264fd155bc180c44044ab600e84018fd
+    source_hash: 7532c672f7e829b851d175d93354fc586baecea4af5f2555f57908780cedfd02
     source_path: tools/browser-wsl2-windows-remote-cdp-troubleshooting.md
-    workflow: 15
+    workflow: 16
 ---
 
-Panduan ini membahas penyiapan split-host yang umum, yaitu saat:
+Dalam pengaturan split-host umum, OpenClaw Gateway berjalan di dalam WSL2, Chrome berjalan di Windows, dan kontrol peramban harus melintasi batas WSL2 dan Windows. Pola kegagalan berlapis dari [issue #39369](https://github.com/openclaw/openclaw/issues/39369) berarti beberapa masalah independen dapat muncul sekaligus, sehingga lapisan yang salah tampak rusak terlebih dahulu.
 
-- OpenClaw Gateway berjalan di dalam WSL2
-- Chrome berjalan di Windows
-- kontrol browser harus melintasi batas WSL2/Windows
+## Pilih mode peramban yang tepat terlebih dahulu
 
-Panduan ini juga membahas pola kegagalan berlapis dari [issue #39369](https://github.com/openclaw/openclaw/issues/39369): beberapa masalah independen dapat muncul sekaligus, yang membuat lapisan yang salah terlihat rusak lebih dulu.
+Ada dua pola valid:
 
-## Pilih mode browser yang tepat terlebih dahulu
+### Opsi 1: CDP remote mentah dari WSL2 ke Windows
 
-Anda memiliki dua pola yang valid:
-
-### Opsi 1: CDP jarak jauh mentah dari WSL2 ke Windows
-
-Gunakan profil browser jarak jauh yang menunjuk dari WSL2 ke endpoint CDP Chrome di Windows.
+Gunakan profil peramban remote yang mengarah dari WSL2 ke endpoint CDP Chrome Windows.
 
 Pilih ini saat:
 
 - Gateway tetap berada di dalam WSL2
 - Chrome berjalan di Windows
-- Anda memerlukan kontrol browser yang melintasi batas WSL2/Windows
+- Anda perlu kontrol peramban melintasi batas WSL2/Windows
 
-### Opsi 2: Chrome MCP host-local
+### Opsi 2: Chrome MCP lokal-host
 
-Gunakan `existing-session` / `user` hanya saat Gateway sendiri berjalan pada host yang sama dengan Chrome.
+Gunakan `existing-session` / `user` hanya saat Gateway itu sendiri berjalan di host yang sama dengan Chrome.
 
 Pilih ini saat:
 
 - OpenClaw dan Chrome berada di mesin yang sama
-- Anda menginginkan state browser lokal yang sudah login
-- Anda tidak memerlukan transport browser lintas host
-- Anda tidak memerlukan rute lanjutan yang hanya tersedia pada managed/raw-CDP seperti `responsebody`, ekspor PDF, intersepsi unduhan, atau aksi batch
+- Anda menginginkan status peramban lokal yang sudah masuk
+- Anda tidak memerlukan transport peramban lintas-host
+- Anda tidak memerlukan rute lanjutan khusus managed/raw-CDP seperti `responsebody`, ekspor PDF, intersepsi unduhan, atau tindakan batch
 
-Untuk Gateway WSL2 + Chrome Windows, utamakan CDP jarak jauh mentah. Chrome MCP bersifat host-local, bukan bridge WSL2-ke-Windows.
+Untuk WSL2 Gateway + Windows Chrome, pilih CDP remote mentah. Chrome MCP bersifat lokal-host, bukan jembatan WSL2-ke-Windows.
 
 ## Arsitektur yang berfungsi
 
 Bentuk referensi:
 
 - WSL2 menjalankan Gateway di `127.0.0.1:18789`
-- Windows membuka UI Kontrol di browser normal pada `http://127.0.0.1:18789/`
-- Chrome Windows mengekspos endpoint CDP pada port `9222`
+- Windows membuka UI Kontrol di peramban normal pada `http://127.0.0.1:18789/`
+- Windows Chrome mengekspos endpoint CDP pada port `9222`
 - WSL2 dapat menjangkau endpoint CDP Windows tersebut
-- OpenClaw mengarahkan profil browser ke alamat yang dapat dijangkau dari WSL2
+- OpenClaw mengarahkan profil peramban ke alamat yang dapat dijangkau dari WSL2
 
-## Mengapa penyiapan ini membingungkan
+## Mengapa pengaturan ini membingungkan
 
-Beberapa kegagalan dapat saling tumpang tindih:
+Beberapa kegagalan dapat tumpang tindih:
 
 - WSL2 tidak dapat menjangkau endpoint CDP Windows
 - UI Kontrol dibuka dari origin yang tidak aman
 - `gateway.controlUi.allowedOrigins` tidak cocok dengan origin halaman
-- token atau pairing tidak ada
-- profil browser menunjuk ke alamat yang salah
+- token atau pairing hilang
+- profil peramban mengarah ke alamat yang salah
 
-Karena itu, memperbaiki satu lapisan masih dapat meninggalkan error lain yang tetap terlihat.
+Karena itu, memperbaiki satu lapisan masih dapat menyisakan error berbeda yang terlihat.
 
 ## Aturan penting untuk UI Kontrol
 
-Saat UI dibuka dari Windows, gunakan localhost Windows kecuali Anda memiliki penyiapan HTTPS yang disengaja.
+Saat UI dibuka dari Windows, gunakan localhost Windows kecuali Anda memiliki pengaturan HTTPS yang disengaja.
 
 Gunakan:
 
 `http://127.0.0.1:18789/`
 
-Jangan menggunakan IP LAN sebagai default untuk UI Kontrol. HTTP biasa pada alamat LAN atau tailnet dapat memicu perilaku insecure-origin/device-auth yang tidak terkait dengan CDP itu sendiri. Lihat [UI Kontrol](/id/web/control-ui).
+Jangan default ke IP LAN untuk UI Kontrol. HTTP biasa pada alamat LAN atau tailnet dapat memicu perilaku insecure-origin/device-auth yang tidak terkait dengan CDP itu sendiri. Lihat [UI Kontrol](/id/web/control-ui).
 
-## Validasi secara berlapis
+## Validasi berlapis
 
 Kerjakan dari atas ke bawah. Jangan melompat.
 
-### Lapisan 1: Verifikasi bahwa Chrome menyajikan CDP di Windows
+### Lapisan 1: Verifikasi Chrome menyajikan CDP di Windows
 
 Mulai Chrome di Windows dengan remote debugging diaktifkan:
 
@@ -102,7 +96,7 @@ curl http://127.0.0.1:9222/json/list
 
 Jika ini gagal di Windows, OpenClaw belum menjadi masalahnya.
 
-### Lapisan 2: Verifikasi bahwa WSL2 dapat menjangkau endpoint Windows tersebut
+### Lapisan 2: Verifikasi WSL2 dapat menjangkau endpoint Windows tersebut
 
 Dari WSL2, uji alamat persis yang akan Anda gunakan di `cdpUrl`:
 
@@ -118,15 +112,15 @@ Hasil yang baik:
 
 Jika ini gagal:
 
-- Windows belum mengekspos port tersebut ke WSL2
+- Windows belum mengekspos port ke WSL2
 - alamatnya salah untuk sisi WSL2
 - firewall / port forwarding / proxy lokal masih belum ada
 
-Perbaiki itu sebelum menyentuh config OpenClaw.
+Perbaiki itu sebelum menyentuh konfigurasi OpenClaw.
 
-### Lapisan 3: Konfigurasikan profil browser yang benar
+### Lapisan 3: Konfigurasikan profil peramban yang benar
 
-Untuk CDP jarak jauh mentah, arahkan OpenClaw ke alamat yang dapat dijangkau dari WSL2:
+Untuk CDP remote mentah, arahkan OpenClaw ke alamat yang dapat dijangkau dari WSL2:
 
 ```json5
 {
@@ -146,11 +140,11 @@ Untuk CDP jarak jauh mentah, arahkan OpenClaw ke alamat yang dapat dijangkau dar
 
 Catatan:
 
-- gunakan alamat yang dapat dijangkau WSL2, bukan alamat yang hanya berfungsi di Windows
-- pertahankan `attachOnly: true` untuk browser yang dikelola secara eksternal
+- gunakan alamat yang dapat dijangkau WSL2, bukan yang hanya berfungsi di Windows
+- pertahankan `attachOnly: true` untuk peramban yang dikelola secara eksternal
 - `cdpUrl` dapat berupa `http://`, `https://`, `ws://`, atau `wss://`
 - gunakan HTTP(S) saat Anda ingin OpenClaw menemukan `/json/version`
-- gunakan WS(S) hanya saat penyedia browser memberi Anda URL socket DevTools langsung
+- gunakan WS(S) hanya saat penyedia peramban memberi Anda URL soket DevTools langsung
 - uji URL yang sama dengan `curl` sebelum mengharapkan OpenClaw berhasil
 
 ### Lapisan 4: Verifikasi lapisan UI Kontrol secara terpisah
@@ -163,13 +157,13 @@ Lalu verifikasi:
 
 - origin halaman cocok dengan yang diharapkan `gateway.controlUi.allowedOrigins`
 - autentikasi token atau pairing dikonfigurasi dengan benar
-- Anda tidak sedang men-debug masalah autentikasi UI Kontrol seolah-olah itu masalah browser
+- Anda tidak sedang men-debug masalah autentikasi UI Kontrol seolah-olah itu masalah peramban
 
-Halaman yang membantu:
+Halaman berguna:
 
 - [UI Kontrol](/id/web/control-ui)
 
-### Lapisan 5: Verifikasi kontrol browser end-to-end
+### Lapisan 5: Verifikasi kontrol peramban end-to-end
 
 Dari WSL2:
 
@@ -180,13 +174,13 @@ openclaw browser tabs --browser-profile remote
 
 Hasil yang baik:
 
-- tab terbuka di Chrome Windows
+- tab terbuka di Windows Chrome
 - `openclaw browser tabs` mengembalikan target
-- aksi berikutnya (`snapshot`, `screenshot`, `navigate`) berfungsi dari profil yang sama
+- tindakan berikutnya (`snapshot`, `screenshot`, `navigate`) berfungsi dari profil yang sama
 
 ## Error umum yang menyesatkan
 
-Perlakukan setiap pesan sebagai petunjuk spesifik lapisan:
+Perlakukan setiap pesan sebagai petunjuk khusus lapisan:
 
 - `control-ui-insecure-auth`
   - masalah origin UI / secure-context, bukan masalah transport CDP
@@ -197,35 +191,35 @@ Perlakukan setiap pesan sebagai petunjuk spesifik lapisan:
 - `Remote CDP for profile "remote" is not reachable`
   - WSL2 tidak dapat menjangkau `cdpUrl` yang dikonfigurasi
 - `Browser attachOnly is enabled and CDP websocket for profile "remote" is not reachable`
-  - endpoint HTTP menjawab, tetapi WebSocket DevTools masih tidak dapat dibuka
-- override viewport / dark-mode / locale / offline yang stale setelah sesi jarak jauh
+  - endpoint HTTP merespons, tetapi WebSocket DevTools masih tidak dapat dibuka
+- override viewport / dark-mode / locale / offline yang usang setelah sesi remote
   - jalankan `openclaw browser stop --browser-profile remote`
-  - ini menutup sesi kontrol aktif dan melepaskan state emulasi Playwright/CDP tanpa memulai ulang gateway atau browser eksternal
+  - ini menutup sesi kontrol aktif dan melepaskan status emulasi Playwright/CDP tanpa memulai ulang gateway atau peramban eksternal
 - `gateway timeout after 1500ms`
-  - sering kali tetap merupakan masalah keterjangkauan CDP atau endpoint jarak jauh yang lambat/tidak dapat dijangkau
+  - sering kali masih terkait keterjangkauan CDP atau endpoint remote yang lambat/tidak terjangkau
 - `No Chrome tabs found for profile="user"`
-  - profil Chrome MCP lokal dipilih saat tidak ada tab host-local yang tersedia
+  - profil Chrome MCP lokal dipilih saat tidak ada tab lokal-host yang tersedia
 
 ## Checklist triase cepat
 
 1. Windows: apakah `curl http://127.0.0.1:9222/json/version` berfungsi?
 2. WSL2: apakah `curl http://WINDOWS_HOST_OR_IP:9222/json/version` berfungsi?
-3. Config OpenClaw: apakah `browser.profiles.<name>.cdpUrl` menggunakan alamat persis yang dapat dijangkau WSL2 itu?
+3. Konfigurasi OpenClaw: apakah `browser.profiles.<name>.cdpUrl` menggunakan alamat persis yang dapat dijangkau WSL2 itu?
 4. UI Kontrol: apakah Anda membuka `http://127.0.0.1:18789/` alih-alih IP LAN?
-5. Apakah Anda mencoba menggunakan `existing-session` lintas WSL2 dan Windows alih-alih CDP jarak jauh mentah?
+5. Apakah Anda mencoba menggunakan `existing-session` melintasi WSL2 dan Windows alih-alih CDP remote mentah?
 
 ## Kesimpulan praktis
 
-Penyiapan ini biasanya layak dilakukan. Bagian sulitnya adalah transport browser, keamanan origin UI Kontrol, dan token/pairing masing-masing dapat gagal secara independen sambil terlihat mirip dari sisi pengguna.
+Pengaturan ini biasanya layak digunakan. Bagian sulitnya adalah transport peramban, keamanan origin UI Kontrol, dan token/pairing masing-masing dapat gagal secara independen sambil tampak serupa dari sisi pengguna.
 
 Jika ragu:
 
-- verifikasi endpoint Chrome Windows secara lokal terlebih dahulu
-- verifikasi endpoint yang sama dari WSL2 setelah itu
-- baru kemudian debug config OpenClaw atau autentikasi UI Kontrol
+- verifikasi endpoint Windows Chrome secara lokal terlebih dahulu
+- verifikasi endpoint yang sama dari WSL2 berikutnya
+- baru kemudian debug konfigurasi OpenClaw atau autentikasi UI Kontrol
 
 ## Terkait
 
-- [Browser](/id/tools/browser)
-- [Login browser](/id/tools/browser-login)
-- [Pemecahan masalah Browser Linux](/id/tools/browser-linux-troubleshooting)
+- [Peramban](/id/tools/browser)
+- [Login peramban](/id/tools/browser-login)
+- [Pemecahan masalah peramban Linux](/id/tools/browser-linux-troubleshooting)
