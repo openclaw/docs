@@ -1,31 +1,37 @@
 ---
 read_when:
-    - Je gebruikt de voice-call-Plugin en wilt de CLI-toegangspunten
+    - Je gebruikt de voice-call Plugin en wilt de CLI-toegangspunten
     - Je wilt snelle voorbeelden voor `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
-summary: CLI-referentie voor `openclaw voicecall` (commandosurface van de spraakoproep-Plugin)
+summary: CLI-referentie voor `openclaw voicecall` (opdrachtinterface van de spraakoproep-Plugin)
 title: Spraakoproep
 x-i18n:
-    generated_at: "2026-04-29T22:36:12Z"
+    generated_at: "2026-05-01T11:16:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: c040cf4cd984ad6d6dd302923494a7c8ee131390b803fe20a9894b077f08d5bb
     source_path: cli/voicecall.md
     workflow: 16
 ---
 
 # `openclaw voicecall`
 
-`voicecall` is een door een Plugin geleverde opdracht. Deze verschijnt alleen als de spraakoproep-Plugin is geïnstalleerd en ingeschakeld.
+`voicecall` is een door een Plugin geleverde opdracht. Deze verschijnt alleen als de voice-call-Plugin is geinstalleerd en ingeschakeld.
+
+Wanneer de Gateway draait, worden operationele opdrachten (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end` en `status`) verzonden naar de
+voice-call-runtime van die Gateway. Als er geen Gateway bereikbaar is, vallen ze
+terug op een zelfstandige CLI-runtime.
 
 Primair document:
 
-- Spraakoproep-Plugin: [Spraakoproep](/nl/plugins/voice-call)
+- Voice-call-Plugin: [Voice Call](/nl/plugins/voice-call)
 
 ## Veelgebruikte opdrachten
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -33,19 +39,22 @@ openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 ```
 
-`setup` toont standaard menselijk leesbare gereedheidscontroles. Gebruik `--json` voor
+`setup` toont standaard voor mensen leesbare gereedheidscontroles. Gebruik `--json` voor
 scripts:
 
 ```bash
 openclaw voicecall setup --json
 ```
 
-Voor externe providers (`twilio`, `telnyx`, `plivo`) moet setup een openbare
-Webhook-URL oplossen vanuit `publicUrl`, een tunnel of Tailscale-blootstelling. Een terugvaloptie met loopback/privé
-serveren wordt geweigerd omdat providers die niet kunnen bereiken.
+`status` toont actieve oproepen standaard als JSON. Geef `--call-id <id>` door om
+een oproep te inspecteren.
 
-`smoke` voert dezelfde gereedheidscontroles uit. Er wordt geen echte telefoonoproep geplaatst
-tenzij zowel `--to` als `--yes` aanwezig zijn:
+Voor externe providers (`twilio`, `telnyx`, `plivo`) moet setup een openbare
+Webhook-URL bepalen via `publicUrl`, een tunnel of Tailscale-blootstelling. Een terugval naar
+local loopback/private serve wordt geweigerd omdat providers deze niet kunnen bereiken.
+
+`smoke` voert dezelfde gereedheidscontroles uit. Er wordt geen echt telefoongesprek
+geplaatst tenzij zowel `--to` als `--yes` aanwezig zijn:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123"        # dry run
@@ -60,9 +69,9 @@ openclaw voicecall expose --mode funnel
 openclaw voicecall expose --mode off
 ```
 
-Beveiligingsopmerking: stel het Webhook-eindpunt alleen beschikbaar aan netwerken die je vertrouwt. Geef waar mogelijk de voorkeur aan Tailscale Serve boven Funnel.
+Beveiligingsopmerking: stel het Webhook-eindpunt alleen beschikbaar aan netwerken die u vertrouwt. Geef waar mogelijk de voorkeur aan Tailscale Serve boven Funnel.
 
 ## Gerelateerd
 
-- [CLI-referentie](/nl/cli)
-- [Spraakoproep-Plugin](/nl/plugins/voice-call)
+- [CLI-verwijzing](/nl/cli)
+- [Voice call-Plugin](/nl/plugins/voice-call)

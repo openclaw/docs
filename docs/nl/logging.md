@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Je hebt een beginnersvriendelijk overzicht van OpenClaw-logboekregistratie nodig
+    - Je hebt een beginnersvriendelijk overzicht van OpenClaw-logregistratie nodig
     - Je wilt logniveaus, indelingen of maskering configureren
-    - Je lost problemen op en moet snel logs vinden.
-summary: Bestandslogboeken, console-uitvoer, volgen via de CLI en het tabblad Logboeken van de Control UI
+    - Je lost problemen op en moet snel logbestanden vinden
+summary: Bestandslogboeken, console-uitvoer, volgen via de CLI en het tabblad Logboeken in de Control UI
 title: Logregistratie
 x-i18n:
-    generated_at: "2026-04-29T22:56:30Z"
+    generated_at: "2026-05-01T11:20:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 916fb03219d571f0302560a4cb6755940575c92fff0b4eab024b9dad53f841ce
+    source_hash: d41ce5b1ae30fe1ca65577abe387fc266bd281686acb10098f82b8e78dfaa357
     source_path: logging.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 OpenClaw heeft twee hoofdoppervlakken voor logs:
 
 - **Bestandslogs** (JSON-regels) geschreven door de Gateway.
-- **Console-uitvoer** weergegeven in terminals en de Gateway Debug UI.
+- **Console-uitvoer** getoond in terminals en de Gateway Debug UI.
 
 Het tabblad **Logs** van de Control UI volgt het gateway-bestandslog. Deze pagina legt uit waar
 logs staan, hoe je ze leest en hoe je logniveaus en -indelingen configureert.
@@ -32,7 +32,7 @@ De datum gebruikt de lokale tijdzone van de gateway-host.
 
 Elk bestand roteert wanneer het `logging.maxFileBytes` bereikt (standaard: 100 MB).
 OpenClaw bewaart maximaal vijf genummerde archieven naast het actieve bestand, zoals
-`openclaw-YYYY-MM-DD.1.log`, en blijft schrijven naar een vers actief log in plaats van
+`openclaw-YYYY-MM-DD.1.log`, en blijft naar een nieuw actief log schrijven in plaats van
 diagnostiek te onderdrukken.
 
 Je kunt dit overschrijven in `~/.openclaw/openclaw.json`:
@@ -55,22 +55,22 @@ Gebruik de CLI om het gateway-logbestand via RPC te volgen:
 openclaw logs --follow
 ```
 
-Nuttige huidige opties:
+Handige huidige opties:
 
-- `--local-time`: geef tijdstempels weer in je lokale tijdzone
-- `--url <url>` / `--token <token>` / `--timeout <ms>`: standaard Gateway RPC-vlaggen
-- `--expect-final`: wachttijdvlag voor definitieve RPC-reactie met agent-ondersteuning (hier geaccepteerd via de gedeelde clientlaag)
+- `--local-time`: timestamps weergeven in je lokale tijdzone
+- `--url <url>` / `--token <token>` / `--timeout <ms>`: standaard Gateway-RPC-vlaggen
+- `--expect-final`: wachtvlag voor de eindrespons van agent-ondersteunde RPC (hier geaccepteerd via de gedeelde clientlaag)
 
 Uitvoermodi:
 
-- **TTY-sessies**: mooie, gekleurde, gestructureerde logregels.
+- **TTY-sessies**: fraaie, ingekleurde, gestructureerde logregels.
 - **Niet-TTY-sessies**: platte tekst.
 - `--json`: regelgescheiden JSON (één loggebeurtenis per regel).
-- `--plain`: forceer platte tekst in TTY-sessies.
-- `--no-color`: schakel ANSI-kleuren uit.
+- `--plain`: platte tekst afdwingen in TTY-sessies.
+- `--no-color`: ANSI-kleuren uitschakelen.
 
-Wanneer je een expliciete `--url` meegeeft, past de CLI configuratie- of
-omgevingsreferenties niet automatisch toe; geef zelf `--token` mee als de doel-Gateway
+Wanneer je een expliciete `--url` doorgeeft, past de CLI configuratie- of
+omgevingscredentials niet automatisch toe; voeg zelf `--token` toe als de doel-Gateway
 authenticatie vereist.
 
 In JSON-modus geeft de CLI objecten met een `type`-tag uit:
@@ -80,8 +80,8 @@ In JSON-modus geeft de CLI objecten met een `type`-tag uit:
 - `notice`: hints voor afkapping / rotatie
 - `raw`: ongeparseerde logregel
 
-Als de impliciete local loopback Gateway om koppeling vraagt, sluit tijdens het verbinden,
-of een timeout krijgt voordat `logs.tail` antwoordt, valt `openclaw logs` automatisch terug op het
+Als de impliciete local loopback Gateway om pairing vraagt, tijdens het verbinden sluit,
+of een time-out krijgt voordat `logs.tail` antwoordt, valt `openclaw logs` automatisch terug op het
 geconfigureerde Gateway-bestandslog. Expliciete `--url`-doelen gebruiken deze fallback niet.
 
 Als de Gateway onbereikbaar is, toont de CLI een korte hint om dit uit te voeren:
@@ -93,11 +93,11 @@ openclaw doctor
 ### Control UI (web)
 
 Het tabblad **Logs** van de Control UI volgt hetzelfde bestand met `logs.tail`.
-Zie [/web/control-ui](/nl/web/control-ui) voor hoe je dit opent.
+Zie [/web/control-ui](/nl/web/control-ui) voor hoe je het opent.
 
 ### Alleen-kanaallogs
 
-Gebruik dit om kanaalactiviteit (WhatsApp/Telegram/etc.) te filteren:
+Gebruik dit om kanaalactiviteit (WhatsApp/Telegram/enz.) te filteren:
 
 ```bash
 openclaw channels logs --channel whatsapp
@@ -110,11 +110,11 @@ openclaw channels logs --channel whatsapp
 Elke regel in het logbestand is een JSON-object. De CLI en Control UI parseren deze
 vermeldingen om gestructureerde uitvoer weer te geven (tijd, niveau, subsysteem, bericht).
 
-JSONL-records van bestandslogs bevatten ook machinaal filterbare top-level velden wanneer
+JSONL-records van bestandslogs bevatten ook machinefilterbare top-level velden wanneer
 beschikbaar:
 
 - `hostname`: hostnaam van de gateway.
-- `message`: afgevlakte logberichttekst voor zoeken in volledige tekst.
+- `message`: afgeplatte logberichttekst voor zoeken in volledige tekst.
 - `agent_id`: actieve agent-id wanneer de logaanroep agentcontext bevat.
 - `session_id`: actieve sessie-id/sleutel wanneer de logaanroep sessiecontext bevat.
 - `channel`: actief kanaal wanneer de logaanroep kanaalcontext bevat.
@@ -126,19 +126,19 @@ zodat bestaande parsers die genummerde tslog-argumentsleutels lezen blijven werk
 
 Consolelogs zijn **TTY-bewust** en opgemaakt voor leesbaarheid:
 
-- Subsysteemprefixes (bijv. `gateway/channels/whatsapp`)
-- Niveaukleuren (info/warn/error)
+- Subsysteemprefixen (bijv. `gateway/channels/whatsapp`)
+- Niveaukleuring (info/warn/error)
 - Optionele compacte of JSON-modus
 
-Console-opmaak wordt beheerd door `logging.consoleStyle`.
+Console-opmaak wordt geregeld door `logging.consoleStyle`.
 
 ### Gateway WebSocket-logs
 
 `openclaw gateway` heeft ook WebSocket-protocollogging voor RPC-verkeer:
 
-- normale modus: alleen interessante resultaten (fouten, parseerfouten, trage aanroepen)
-- `--verbose`: al het request/response-verkeer
-- `--ws-log auto|compact|full`: kies de verbose-weergavestijl
+- normale modus: alleen interessante resultaten (fouten, parsefouten, trage aanroepen)
+- `--verbose`: al het aanvraag-/antwoordverkeer
+- `--ws-log auto|compact|full`: kies de uitgebreide weergavestijl
 - `--compact`: alias voor `--ws-log compact`
 
 Voorbeelden:
@@ -169,75 +169,79 @@ Alle loggingconfiguratie staat onder `logging` in `~/.openclaw/openclaw.json`.
 ### Logniveaus
 
 - `logging.level`: niveau voor **bestandslogs** (JSONL).
-- `logging.consoleLevel`: verbositeitsniveau voor de **console**.
+- `logging.consoleLevel`: uitgebreidheidsniveau voor de **console**.
 
-Je kunt beide overschrijven via de omgevingsvariabele **`OPENCLAW_LOG_LEVEL`** (bijv. `OPENCLAW_LOG_LEVEL=debug`). De omgevingsvariabele heeft voorrang op het configuratiebestand, zodat je de verbositeit voor één run kunt verhogen zonder `openclaw.json` te bewerken. Je kunt ook de globale CLI-optie **`--log-level <level>`** meegeven (bijvoorbeeld `openclaw --log-level debug gateway run`), die de omgevingsvariabele voor die opdracht overschrijft.
+Je kunt beide overschrijven via de omgevingsvariabele **`OPENCLAW_LOG_LEVEL`** (bijv. `OPENCLAW_LOG_LEVEL=debug`). De omgevingsvariabele heeft voorrang op het configuratiebestand, zodat je de uitgebreidheid voor één run kunt verhogen zonder `openclaw.json` te bewerken. Je kunt ook de globale CLI-optie **`--log-level <level>`** doorgeven (bijvoorbeeld `openclaw --log-level debug gateway run`), die de omgevingsvariabele voor die opdracht overschrijft.
 
-`--verbose` beïnvloedt alleen console-uitvoer en WS-logverbositeit; het wijzigt
+`--verbose` beïnvloedt alleen console-uitvoer en WS-loguitgebreidheid; het verandert
 bestandslogniveaus niet.
 
 ### Trace-correlatie
 
 Bestandslogs zijn JSONL. Wanneer een logaanroep een geldige diagnostische tracecontext bevat,
 schrijft OpenClaw de tracevelden als top-level JSON-sleutels (`traceId`, `spanId`,
-`parentSpanId`, `traceFlags`), zodat externe logprocessors de regel kunnen correleren
-met OTEL-spans en provider-`traceparent`-propagatie.
+`parentSpanId`, `traceFlags`) zodat externe logprocessors de regel kunnen correleren
+met OTEL-spans en `traceparent`-propagatie van providers.
 
-Gateway HTTP-requests en Gateway WebSocket-frames maken een interne request
-trace-scope aan. Logs en diagnostische gebeurtenissen die binnen die async scope worden uitgegeven erven
-de request-trace wanneer ze geen expliciete tracecontext meegeven. Agent-run- en
-modelaanroeptraces worden kinderen van de actieve request-trace, zodat lokale logs,
-diagnostische snapshots, OTEL-spans en vertrouwde provider-`traceparent`-headers kunnen
-worden gekoppeld via `traceId` zonder ruwe request- of modelinhoud te loggen.
+Gateway-HTTP-verzoeken en Gateway WebSocket-frames stellen een interne aanvraag-
+tracescope in. Logs en diagnostische gebeurtenissen die binnen die async scope worden uitgegeven erven
+de aanvraagtrace wanneer ze geen expliciete tracecontext doorgeven. Agent-run- en
+modelaanroeptraces worden kinderen van de actieve aanvraagtrace, zodat lokale logs,
+diagnostische snapshots, OTEL-spans en vertrouwde `traceparent`-headers van providers kunnen
+worden gekoppeld via `traceId` zonder ruwe aanvraag- of modelinhoud te loggen.
 
 ### Grootte en timing van modelaanroepen
 
-Diagnostiek voor modelaanroepen registreert begrensde request/response-metingen zonder
-ruwe prompt- of response-inhoud vast te leggen:
+Diagnostiek voor modelaanroepen registreert begrensde aanvraag-/antwoordmetingen zonder
+ruwe prompt- of antwoordinhoud vast te leggen:
 
-- `requestPayloadBytes`: UTF-8-bytegrootte van de definitieve requestpayload voor het model
-- `responseStreamBytes`: UTF-8-bytegrootte van gestreamde modelresponse-gebeurtenissen
-- `timeToFirstByteMs`: verstreken tijd vóór de eerste gestreamde response-gebeurtenis
+- `requestPayloadBytes`: UTF-8-bytegrootte van de uiteindelijke modelaanvraagpayload
+- `responseStreamBytes`: UTF-8-bytegrootte van gestreamde modelantwoordgebeurtenissen
+- `timeToFirstByteMs`: verstreken tijd vóór de eerste gestreamde antwoordgebeurtenis
 - `durationMs`: totale duur van de modelaanroep
 
-Deze velden zijn beschikbaar voor diagnostische snapshots, modelaanroep-Plugin-hooks en
-OTEL-spans/metrics voor modelaanroepen wanneer diagnostische export is ingeschakeld.
+Deze velden zijn beschikbaar voor diagnostische snapshots, modelaanroep-hooks van Plugins en
+OTEL-modelaanroep-spans/-metrics wanneer diagnostiekexport is ingeschakeld.
 
 ### Consolestijlen
 
 `logging.consoleStyle`:
 
-- `pretty`: gebruiksvriendelijk, gekleurd, met tijdstempels.
+- `pretty`: mensvriendelijk, gekleurd, met timestamps.
 - `compact`: compactere uitvoer (het beste voor lange sessies).
 - `json`: JSON per regel (voor logprocessors).
 
 ### Redactie
 
 OpenClaw kan gevoelige tokens redigeren voordat ze in console-uitvoer, bestandslogs,
-OTLP-logrecords, opgeslagen tekst van sessietranscripten of toolgebeurtenispayloads van de Control UI
-terechtkomen (startargumenten van tools, gedeeltelijke/definitieve resultaatpayloads, afgeleide
+OTLP-logrecords, opgeslagen sessietranscripttekst of Control UI-tool-
+gebeurtenispayloads terechtkomen (startargumenten van tools, gedeeltelijke/definitieve resultaatpayloads, afgeleide
 exec-uitvoer en patchsamenvattingen):
 
 - `logging.redactSensitive`: `off` | `tools` (standaard: `tools`)
-- `logging.redactPatterns`: lijst met regex-strings om de standaardset te overschrijven. Aangepaste patronen worden toegepast bovenop de ingebouwde standaarden voor toolpayloads van de Control UI, dus het toevoegen van een patroon verzwakt nooit de redactie van waarden die al door de standaarden worden afgevangen.
+- `logging.redactPatterns`: lijst met regex-strings om de standaardset te overschrijven. Aangepaste patronen worden boven op de ingebouwde standaarden voor Control UI-toolpayloads toegepast, dus het toevoegen van een patroon verzwakt nooit de redactie van waarden die al door de standaarden worden gevonden.
 
 Bestandslogs en sessietranscripten blijven JSONL, maar overeenkomende geheime waarden worden
-gemaskeerd voordat de regel of het bericht naar schijf wordt geschreven. Redactie is beste poging:
-het wordt toegepast op tekstdragende berichtinhoud en logstrings, niet op elk
+gemaskeerd voordat de regel of het bericht naar schijf wordt geschreven. Redactie is best-effort:
+ze wordt toegepast op tekstdragende berichtinhoud en logstrings, niet op elk
 identifier- of binair payloadveld.
 
-`logging.redactSensitive: "off"` schakelt alleen dit algemene beleid voor logs/transcripten
-uit. OpenClaw redigeert nog steeds safety-boundary-payloads die aan UI-clients,
-supportbundels, diagnostische observers, goedkeuringsprompts of agenttools kunnen worden getoond.
-Voorbeelden zijn toolaanroepgebeurtenissen van de Control UI, `sessions_history`-uitvoer,
+De ingebouwde standaarden dekken gangbare API-credentials en veldnamen voor betaalcredentials
+zoals kaartnummer, CVC/CVV, gedeeld betalingstoken en betaalcredential
+wanneer ze voorkomen als JSON-velden, URL-parameters, CLI-vlaggen of toewijzingen.
+
+`logging.redactSensitive: "off"` schakelt alleen dit algemene log-/transcript-
+beleid uit. OpenClaw redigeert nog steeds payloads op veiligheidsgrenzen die aan UI-
+clients, supportbundels, diagnostiekwaarnemers, goedkeuringsprompts of agent-
+tools kunnen worden getoond. Voorbeelden zijn Control UI-toolaanroepgebeurtenissen, `sessions_history`-uitvoer,
 diagnostische supportexports, providerfoutobservaties, weergave van exec-goedkeuringsopdrachten
 en Gateway WebSocket-protocollogs. Aangepaste `logging.redactPatterns`
 kunnen nog steeds projectspecifieke patronen toevoegen op die oppervlakken.
 
 ## Diagnostiek en OpenTelemetry
 
-Diagnostiek bestaat uit gestructureerde, machinaal leesbare gebeurtenissen voor modelruns en
-telemetrie van berichtenstromen (webhooks, wachtrijen, sessiestatus). Ze vervangen logs **niet**:
+Diagnostiek bestaat uit gestructureerde, machineleesbare gebeurtenissen voor modelruns en
+berichtstroomtelemetrie (webhooks, queueing, sessiestatus). Ze vervangen logs **niet** —
 ze voeden metrics, traces en exporters. Gebeurtenissen worden in-process uitgegeven,
 ongeacht of je ze exporteert.
 
@@ -246,15 +250,15 @@ Twee aangrenzende oppervlakken:
 - **OpenTelemetry-export** — stuur metrics, traces en logs via OTLP/HTTP naar
   elke OpenTelemetry-compatibele collector of backend (Grafana, Datadog,
   Honeycomb, New Relic, Tempo, enz.). Volledige configuratie, signaalcatalogus,
-  metric-/spannamen, omgevingsvariabelen en privacymodel staan op een speciale pagina:
+  metric-/spannamen, omgevingsvariabelen en privacymodel staan op een aparte pagina:
   [OpenTelemetry-export](/nl/gateway/opentelemetry).
 - **Diagnostiekvlaggen** — gerichte debug-logvlaggen die extra logs naar
-  `logging.file` routeren zonder `logging.level` te verhogen. Vlaggen zijn niet hoofdlettergevoelig
-  en ondersteunen jokertekens (`telegram.*`, `*`). Configureer onder `diagnostics.flags`
-  of via de `OPENCLAW_DIAGNOSTICS=...`-omgevingsoverschrijving. Volledige gids:
+  `logging.file` routeren zonder `logging.level` te verhogen. Vlaggen zijn hoofdletterongevoelig
+  en ondersteunen wildcards (`telegram.*`, `*`). Configureer onder `diagnostics.flags`
+  of via de omgevingsoverschrijving `OPENCLAW_DIAGNOSTICS=...`. Volledige gids:
   [Diagnostiekvlaggen](/nl/diagnostics/flags).
 
-Om diagnostische gebeurtenissen voor plugins of aangepaste sinks in te schakelen zonder OTLP-export:
+Om diagnostiekgebeurtenissen voor Plugins of aangepaste sinks zonder OTLP-export in te schakelen:
 
 ```json5
 {
@@ -269,11 +273,11 @@ Voor OTLP-export naar een collector, zie [OpenTelemetry-export](/nl/gateway/open
 - **Gateway niet bereikbaar?** Voer eerst `openclaw doctor` uit.
 - **Logs leeg?** Controleer of de Gateway draait en naar het bestandspad
   in `logging.file` schrijft.
-- **Meer detail nodig?** Stel `logging.level` in op `debug` of `trace` en probeer opnieuw.
+- **Meer detail nodig?** Zet `logging.level` op `debug` of `trace` en probeer het opnieuw.
 
 ## Gerelateerd
 
 - [OpenTelemetry-export](/nl/gateway/opentelemetry) — OTLP/HTTP-export, metric-/spancatalogus, privacymodel
 - [Diagnostiekvlaggen](/nl/diagnostics/flags) — gerichte debug-logvlaggen
-- [Interne Gateway-logging](/nl/gateway/logging) — WS-logstijlen, subsysteemprefixes en consolecaptatie
-- [Configuratiereferentie](/nl/gateway/configuration-reference#diagnostics) — volledige `diagnostics.*`-veldreferentie
+- [Gateway-logginginternals](/nl/gateway/logging) — WS-logstijlen, subsysteemprefixen en consolevastlegging
+- [Configuratiereferentie](/nl/gateway/configuration-reference#diagnostics) — volledige veldreferentie voor `diagnostics.*`

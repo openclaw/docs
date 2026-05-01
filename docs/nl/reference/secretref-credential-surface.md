@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Dekking van SecretRef-referenties verifiëren
-    - Controleren of een aanmeldgegeven in aanmerking komt voor `secrets configure` of `secrets apply`
-    - Controleren waarom een aanmeldgegeven buiten het ondersteunde oppervlak valt
-summary: Canoniek ondersteund versus niet-ondersteund SecretRef-oppervlak voor inloggegevens
+    - SecretRef-dekking voor referenties verifiëren
+    - Controleren of een aanmeldingsgegeven in aanmerking komt voor `secrets configure` of `secrets apply`
+    - Controleren waarom een referentie buiten het ondersteunde oppervlak valt
+summary: Canonieke ondersteunde versus niet-ondersteunde SecretRef-referentiegegevensinterface
 title: SecretRef-oppervlak voor inloggegevens
 x-i18n:
-    generated_at: "2026-04-29T23:16:17Z"
+    generated_at: "2026-05-01T11:22:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
+    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Deze pagina definieert het canonieke SecretRef-referentieoppervlak.
+Deze pagina definieert het canonieke SecretRef-credentialoppervlak.
 
-Doel van de scope:
+Scope-intentie:
 
-- Binnen scope: strikt door de gebruiker aangeleverde referenties die OpenClaw niet aanmaakt of roteert.
-- Buiten scope: referenties die tijdens runtime worden aangemaakt of roteren, OAuth-verversingsmateriaal en sessieachtige artefacten.
+- Binnen scope: strikt door de gebruiker aangeleverde credentials die OpenClaw niet uitgeeft of roteert.
+- Buiten scope: tijdens runtime uitgegeven of roterende credentials, OAuth-refreshmateriaal en sessieachtige artefacten.
 
-## Ondersteunde referenties
+## Ondersteunde credentials
 
 ### `openclaw.json`-doelen (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -57,6 +57,8 @@ Doel van de scope:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
+- `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
@@ -110,8 +112,8 @@ Doel van de scope:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` via zuster-`serviceAccountRef` (compatibiliteitsuitzondering)
-- `channels.googlechat.accounts.*.serviceAccount` via zuster-`serviceAccountRef` (compatibiliteitsuitzondering)
+- `channels.googlechat.serviceAccount` via naastgelegen `serviceAccountRef` (compatibiliteitsuitzondering)
+- `channels.googlechat.accounts.*.serviceAccount` via naastgelegen `serviceAccountRef` (compatibiliteitsuitzondering)
 
 ### `auth-profiles.json`-doelen (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -123,21 +125,21 @@ Doel van de scope:
 Opmerkingen:
 
 - Auth-profielplandoelen vereisen `agentId`.
-- Planvermeldingen richten zich op `profiles.*.key` / `profiles.*.token` en schrijven zusterrefs (`keyRef` / `tokenRef`).
+- Planvermeldingen richten zich op `profiles.*.key` / `profiles.*.token` en schrijven naastgelegen refs (`keyRef` / `tokenRef`).
 - Auth-profielrefs zijn opgenomen in runtime-resolutie en auditdekking.
-- In `openclaw.json` moeten SecretRefs gestructureerde objecten gebruiken zoals `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Verouderde `secretref-env:<ENV_VAR>`-markertekens worden geweigerd op SecretRef-referentiepaden; voer `openclaw doctor --fix` uit om geldige markeringen te migreren.
-- OAuth-beleidsbewaking: `auth.profiles.<id>.mode = "oauth"` kan niet worden gecombineerd met SecretRef-invoer voor dat profiel. Opstarten/herladen en auth-profielresolutie falen snel wanneer dit beleid wordt geschonden.
-- Voor door SecretRef beheerde modelproviders blijven gegenereerde `agents/*/agent/models.json`-vermeldingen niet-geheime markeringen behouden (niet opgeloste geheime waarden) voor `apiKey`-/headeroppervlakken.
-- Markeringspersistentie is brongezaghebbend: OpenClaw schrijft markeringen vanuit de actieve bronconfiguratiesnapshot (vóór resolutie), niet vanuit opgeloste runtime-geheime waarden.
+- In `openclaw.json` moeten SecretRefs gestructureerde objecten gebruiken, zoals `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Verouderde markerstrings met `secretref-env:<ENV_VAR>` worden geweigerd op SecretRef-credentialpaden; voer `openclaw doctor --fix` uit om geldige markers te migreren.
+- OAuth-beleidsbewaking: `auth.profiles.<id>.mode = "oauth"` kan niet worden gecombineerd met SecretRef-invoer voor dat profiel. Startup/reload en auth-profielresolutie falen snel wanneer dit beleid wordt geschonden.
+- Voor door SecretRef beheerde modelproviders blijven gegenereerde `agents/*/agent/models.json`-vermeldingen niet-geheime markers bewaren (niet opgeloste geheime waarden) voor `apiKey`/header-oppervlakken.
+- Markerpersistentie is bron-autoritair: OpenClaw schrijft markers uit de actieve bronconfiguratiesnapshot (voor resolutie), niet uit opgeloste geheime runtimewaarden.
 - Voor webzoekopdrachten:
   - In expliciete providermodus (`tools.web.search.provider` ingesteld) is alleen de geselecteerde providersleutel actief.
-  - In automatische modus (`tools.web.search.provider` niet ingesteld) is alleen de eerste providersleutel die volgens de prioriteit wordt opgelost actief.
+  - In automatische modus (`tools.web.search.provider` niet ingesteld) is alleen de eerste providersleutel die volgens prioriteit wordt opgelost actief.
   - In automatische modus worden niet-geselecteerde providerrefs als inactief behandeld totdat ze worden geselecteerd.
-  - Verouderde `tools.web.search.*`-providerpaden worden tijdens de compatibiliteitsperiode nog steeds opgelost, maar het canonieke SecretRef-oppervlak is `plugins.entries.<plugin>.config.webSearch.*`.
+  - Verouderde `tools.web.search.*`-providerpaden worden nog steeds opgelost tijdens het compatibiliteitsvenster, maar het canonieke SecretRef-oppervlak is `plugins.entries.<plugin>.config.webSearch.*`.
 
-## Niet-ondersteunde referenties
+## Niet-ondersteunde credentials
 
-Referenties buiten scope omvatten:
+Credentials buiten scope zijn onder andere:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -153,11 +155,11 @@ Referenties buiten scope omvatten:
 
 [//]: # "secretref-unsupported-list-end"
 
-Reden:
+Rationale:
 
-- Deze referenties zijn klassen die worden aangemaakt, geroteerd, sessiedragend zijn of OAuth-duurzaam zijn en niet passen bij alleen-lezen externe SecretRef-resolutie.
+- Deze credentials zijn uitgegeven, geroteerd, sessiedragend of OAuth-duurzame klassen die niet passen bij alleen-lezen externe SecretRef-resolutie.
 
 ## Gerelateerd
 
 - [Geheimenbeheer](/nl/gateway/secrets)
-- [Semantiek van auth-referenties](/nl/auth-credential-semantics)
+- [Semantiek van auth-credentials](/nl/auth-credential-semantics)

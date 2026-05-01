@@ -1,44 +1,44 @@
 ---
 read_when:
-    - Configureren van `tools.*`-beleid, toelatingslijsten of experimentele functies
+    - Beleid voor `tools.*`, allowlists of experimentele functies configureren
     - Aangepaste providers registreren of basis-URL's overschrijven
     - OpenAI-compatibele zelfgehoste eindpunten instellen
 sidebarTitle: Tools and custom providers
-summary: Toolconfiguratie (beleid, experimentele schakelaars, door providers ondersteunde tools) en aangepaste provider-/basis-URL-configuratie
+summary: Toolconfiguratie (beleid, experimentele schakelaars, door providers ondersteunde tools) en aangepaste provider-/basis-URL-instelling
 title: Configuratie — hulpmiddelen en aangepaste providers
 x-i18n:
-    generated_at: "2026-04-29T22:43:10Z"
+    generated_at: "2026-05-01T11:17:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1790c92ecaf822c837326d8e22e9d72cc44e5d4cc0bcc00c154ba5160975002a
+    source_hash: 97e6bd8c762f6f7a9985b99ec016dde22c8ea8adc925778b11c2ae5103b887a8
     source_path: gateway/config-tools.md
     workflow: 16
 ---
 
-`tools.*`-configuratiesleutels en aangepaste provider- / base-URL-instelling. Zie voor agents, kanalen en andere configuratiesleutels op topniveau de [Configuratiereferentie](/nl/gateway/configuration-reference).
+`tools.*`-configuratiesleutels en aangepaste provider-/base-URL-instelling. Zie [Configuratiereferentie](/nl/gateway/configuration-reference) voor agents, kanalen en andere top-level configuratiesleutels.
 
 ## Hulpmiddelen
 
 ### Hulpmiddelprofielen
 
-`tools.profile` stelt een basis-toelatingslijst in vóór `tools.allow`/`tools.deny`:
+`tools.profile` stelt een basis-allowlist in vóór `tools.allow`/`tools.deny`:
 
 <Note>
-Lokale onboarding stelt nieuwe lokale configuraties standaard in op `tools.profile: "coding"` wanneer dit niet is ingesteld (bestaande expliciete profielen blijven behouden).
+Lokale onboarding zet nieuwe lokale configuraties standaard op `tools.profile: "coding"` wanneer dit niet is ingesteld (bestaande expliciete profielen blijven behouden).
 </Note>
 
-| Profiel     | Bevat                                                                                                                          |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `minimal`   | alleen `session_status`                                                                                                        |
+| Profiel     | Bevat                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `minimal`   | alleen `session_status`                                                                                                         |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `video_generate` |
-| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                      |
-| `full`      | Geen beperking (hetzelfde als niet ingesteld)                                                                                  |
+| `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                       |
+| `full`      | Geen beperking (hetzelfde als niet ingesteld)                                                                                   |
 
 ### Hulpmiddelgroepen
 
-| Groep              | Hulpmiddelen                                                                                                           |
+| Groep              | Hulpmiddelen                                                                                                            |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` wordt geaccepteerd als alias voor `exec`)                                  |
+| `group:runtime`    | `exec`, `process`, `code_execution` (`bash` wordt geaccepteerd als alias voor `exec`)                                   |
 | `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                  |
 | `group:sessions`   | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status` |
 | `group:memory`     | `memory_search`, `memory_get`                                                                                           |
@@ -48,12 +48,12 @@ Lokale onboarding stelt nieuwe lokale configuraties standaard in op `tools.profi
 | `group:messaging`  | `message`                                                                                                               |
 | `group:nodes`      | `nodes`                                                                                                                 |
 | `group:agents`     | `agents_list`                                                                                                           |
-| `group:media`      | `image`, `image_generate`, `video_generate`, `tts`                                                                       |
-| `group:openclaw`   | Alle ingebouwde hulpmiddelen (exclusief provider-Plugins)                                                               |
+| `group:media`      | `image`, `image_generate`, `video_generate`, `tts`                                                                      |
+| `group:openclaw`   | Alle ingebouwde hulpmiddelen (exclusief provider-plugins)                                                               |
 
 ### `tools.allow` / `tools.deny`
 
-Globaal toestaan/weigeren-beleid voor hulpmiddelen (weigeren wint). Niet hoofdlettergevoelig, ondersteunt `*`-wildcards. Wordt ook toegepast wanneer de Docker-sandbox uit staat.
+Globaal allow/deny-beleid voor hulpmiddelen (deny wint). Niet hoofdlettergevoelig, ondersteunt jokertekens met `*`. Wordt ook toegepast wanneer de Docker-sandbox uit staat.
 
 ```json5
 {
@@ -63,7 +63,7 @@ Globaal toestaan/weigeren-beleid voor hulpmiddelen (weigeren wint). Niet hoofdle
 
 ### `tools.byProvider`
 
-Beperk hulpmiddelen verder voor specifieke providers of modellen. Volgorde: basisprofiel → providerprofiel → toestaan/weigeren.
+Beperk hulpmiddelen verder voor specifieke providers of modellen. Volgorde: basisprofiel → providerprofiel → allow/deny.
 
 ```json5
 {
@@ -96,8 +96,8 @@ Regelt verhoogde `exec`-toegang buiten de sandbox:
 ```
 
 - Override per agent (`agents.list[].tools.elevated`) kan alleen verder beperken.
-- `/elevated on|off|ask|full` slaat de status per sessie op; inline instructies gelden voor één bericht.
-- Verhoogde `exec` omzeilt sandboxing en gebruikt het geconfigureerde escape-pad (standaard `gateway`, of `node` wanneer het `exec`-doel `node` is).
+- `/elevated on|off|ask|full` slaat de status per sessie op; inline-instructies gelden voor één bericht.
+- Verhoogde `exec` omzeilt sandboxing en gebruikt het geconfigureerde escape-pad (`gateway` standaard, of `node` wanneer het `exec`-doel `node` is).
 
 ### `tools.exec`
 
@@ -121,7 +121,7 @@ Regelt verhoogde `exec`-toegang buiten de sandbox:
 
 ### `tools.loopDetection`
 
-Veiligheidscontroles voor hulpmiddellussen zijn **standaard uitgeschakeld**. Stel `enabled: true` in om detectie te activeren. Instellingen kunnen globaal worden gedefinieerd in `tools.loopDetection` en per agent worden overschreven op `agents.list[].tools.loopDetection`.
+Veiligheidscontroles voor hulpmiddel-loops zijn **standaard uitgeschakeld**. Stel `enabled: true` in om detectie te activeren. Instellingen kunnen globaal worden gedefinieerd in `tools.loopDetection` en per agent worden overschreven bij `agents.list[].tools.loopDetection`.
 
 ```json5
 {
@@ -143,16 +143,16 @@ Veiligheidscontroles voor hulpmiddellussen zijn **standaard uitgeschakeld**. Ste
 ```
 
 <ParamField path="historySize" type="number">
-  Maximale bewaarde geschiedenis van hulpmiddelaanroepen voor lusanalyse.
+  Maximale geschiedenis van tool-calls die wordt bewaard voor loopanalyse.
 </ParamField>
 <ParamField path="warningThreshold" type="number">
-  Drempel voor waarschuwingen bij herhalend patroon zonder voortgang.
+  Drempel voor herhaald patroon zonder voortgang voor waarschuwingen.
 </ParamField>
 <ParamField path="criticalThreshold" type="number">
-  Hogere herhalingsdrempel voor het blokkeren van kritieke lussen.
+  Hogere herhalingsdrempel voor het blokkeren van kritieke loops.
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
-  Harde stopdrempel voor elke uitvoering zonder voortgang.
+  Harde stopdrempel voor elke run zonder voortgang.
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
   Waarschuw bij herhaalde aanroepen met hetzelfde hulpmiddel/dezelfde argumenten.
@@ -161,7 +161,7 @@ Veiligheidscontroles voor hulpmiddellussen zijn **standaard uitgeschakeld**. Ste
   Waarschuw/blokkeer bij bekende pollinghulpmiddelen (`process.poll`, `command_status`, enz.).
 </ParamField>
 <ParamField path="detectors.pingPong" type="boolean">
-  Waarschuw/blokkeer bij afwisselende paarsgewijze patronen zonder voortgang.
+  Waarschuw/blokkeer bij afwisselende parenpatronen zonder voortgang.
 </ParamField>
 
 <Warning>
@@ -208,7 +208,7 @@ Configureert begrip van inkomende media (afbeelding/audio/video):
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // opt-in: send finished async music/video directly to the channel
+        directSend: false, // opt-in: send finished async video directly to the channel
       },
       audio: {
         enabled: true,
@@ -238,30 +238,30 @@ Configureert begrip van inkomende media (afbeelding/audio/video):
 ```
 
 <AccordionGroup>
-  <Accordion title="Media model entry fields">
+  <Accordion title="Velden voor mediamodelvermeldingen">
     **Providervermelding** (`type: "provider"` of weggelaten):
 
     - `provider`: API-provider-id (`openai`, `anthropic`, `google`/`gemini`, `groq`, enz.)
     - `model`: overschrijving van model-id
-    - `profile` / `preferredProfile`: profielselectie voor `auth-profiles.json`
+    - `profile` / `preferredProfile`: profielselectie uit `auth-profiles.json`
 
     **CLI-vermelding** (`type: "cli"`):
 
     - `command`: uitvoerbaar bestand om uit te voeren
-    - `args`: args met sjabloonwaarden (ondersteunt `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}`, enz.; `openclaw doctor --fix` migreert verouderde `{input}`-placeholders naar `{{MediaPath}}`)
+    - `args`: args met sjablonen (ondersteunt `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}`, enz.; `openclaw doctor --fix` migreert verouderde `{input}`-placeholders naar `{{MediaPath}}`)
 
     **Algemene velden:**
 
-    - `capabilities`: optionele lijst (`image`, `audio`, `video`). Standaardwaarden: `openai`/`anthropic`/`minimax` → afbeelding, `google` → afbeelding+audio+video, `groq` → audio.
+    - `capabilities`: optionele lijst (`image`, `audio`, `video`). Standaarden: `openai`/`anthropic`/`minimax` → afbeelding, `google` → afbeelding+audio+video, `groq` → audio.
     - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: overschrijvingen per vermelding.
-    - `tools.media.image.timeoutSeconds` en overeenkomende vermeldingen voor afbeeldingsmodellen met `timeoutSeconds` zijn ook van toepassing wanneer de agent de expliciete `image`-tool aanroept.
-    - Fouten vallen terug op de volgende vermelding.
+    - `tools.media.image.timeoutSeconds` en overeenkomende `timeoutSeconds`-vermeldingen voor afbeeldingsmodellen zijn ook van toepassing wanneer de agent de expliciete `image`-tool aanroept.
+    - Mislukkingen vallen terug op de volgende vermelding.
 
-    Providerauthenticatie volgt de standaardvolgorde: `auth-profiles.json` → omgevingsvariabelen → `models.providers.*.apiKey`.
+    Providerauthenticatie volgt de standaardvolgorde: `auth-profiles.json` → env-vars → `models.providers.*.apiKey`.
 
     **Velden voor asynchrone voltooiing:**
 
-    - `asyncCompletion.directSend`: wanneer `true`, proberen voltooide asynchrone `music_generate`- en `video_generate`-taken eerst rechtstreekse levering aan het kanaal. Standaard: `false` (legacy pad voor requester-session wake/modellevering).
+    - `asyncCompletion.directSend`: wanneer `true`, proberen voltooide asynchrone mediataken die directe levering van voltooiingen ondersteunen eerst directe kanaallevering. Standaard: `false` (pad via aanvragerssessie-wake/modellevering). Tegenwoordig geldt dit voor asynchrone `video_generate`; voltooiingen van asynchrone `music_generate` blijven via de aanvragerssessie verlopen, ook wanneer dit is ingeschakeld.
 
   </Accordion>
 </AccordionGroup>
@@ -281,9 +281,9 @@ Configureert begrip van inkomende media (afbeelding/audio/video):
 
 ### `tools.sessions`
 
-Bepaalt welke sessies door de sessietools kunnen worden getarget (`sessions_list`, `sessions_history`, `sessions_send`).
+Bepaalt op welke sessies de sessietools (`sessions_list`, `sessions_history`, `sessions_send`) kunnen worden gericht.
 
-Standaard: `tree` (huidige sessie + sessies die daardoor zijn gestart, zoals subagenten).
+Standaard: `tree` (huidige sessie + sessies die daardoor zijn gestart, zoals subagents).
 
 ```json5
 {
@@ -297,19 +297,19 @@ Standaard: `tree` (huidige sessie + sessies die daardoor zijn gestart, zoals sub
 ```
 
 <AccordionGroup>
-  <Accordion title="Visibility scopes">
+  <Accordion title="Zichtbaarheidsbereiken">
     - `self`: alleen de huidige sessiesleutel.
-    - `tree`: huidige sessie + sessies die door de huidige sessie zijn gestart (subagenten).
-    - `agent`: elke sessie die bij de huidige agent-id hoort (kan andere gebruikers omvatten als u sessies per afzender onder dezelfde agent-id uitvoert).
-    - `all`: elke sessie. Targeting tussen agents vereist nog steeds `tools.agentToAgent`.
-    - Sandbox-afklemming: wanneer de huidige sessie in een sandbox draait en `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, wordt zichtbaarheid geforceerd naar `tree`, zelfs als `tools.sessions.visibility="all"`.
+    - `tree`: huidige sessie + sessies die door de huidige sessie zijn gestart (subagents).
+    - `agent`: elke sessie die bij de huidige agent-id hoort (kan andere gebruikers omvatten als je sessies per afzender onder dezelfde agent-id uitvoert).
+    - `all`: elke sessie. Richten op meerdere agents vereist nog steeds `tools.agentToAgent`.
+    - Sandboxklem: wanneer de huidige sessie in een sandbox draait en `agents.defaults.sandbox.sessionToolsVisibility="spawned"` is, wordt zichtbaarheid geforceerd naar `tree`, zelfs als `tools.sessions.visibility="all"` is.
 
   </Accordion>
 </AccordionGroup>
 
 ### `tools.sessions_spawn`
 
-Bepaalt ondersteuning voor inline bijlagen voor `sessions_spawn`.
+Beheert ondersteuning voor inline bijlagen voor `sessions_spawn`.
 
 ```json5
 {
@@ -328,13 +328,13 @@ Bepaalt ondersteuning voor inline bijlagen voor `sessions_spawn`.
 ```
 
 <AccordionGroup>
-  <Accordion title="Attachment notes">
+  <Accordion title="Opmerkingen over bijlagen">
     - Bijlagen worden alleen ondersteund voor `runtime: "subagent"`. ACP-runtime weigert ze.
-    - Bestanden worden in de onderliggende workspace gematerialiseerd op `.openclaw/attachments/<uuid>/` met een `.manifest.json`.
-    - Inhoud van bijlagen wordt automatisch geredigeerd uit transcriptpersistentie.
-    - Base64-invoer wordt gevalideerd met strikte controles op alfabet/padding en een groottebeveiliging vóór het decoderen.
-    - Bestandsmachtigingen zijn `0700` voor mappen en `0600` voor bestanden.
-    - Opschonen volgt het `cleanup`-beleid: `delete` verwijdert bijlagen altijd; `keep` behoudt ze alleen wanneer `retainOnSessionKeep: true`.
+    - Bestanden worden in de child-workspace geplaatst op `.openclaw/attachments/<uuid>/` met een `.manifest.json`.
+    - Bijlage-inhoud wordt automatisch geredigeerd uit transcriptpersistentie.
+    - Base64-invoer wordt gevalideerd met strikte alfabet-/paddingcontroles en een groottebewaking vóór decodering.
+    - Bestandsrechten zijn `0700` voor mappen en `0600` voor bestanden.
+    - Opschonen volgt het `cleanup`-beleid: `delete` verwijdert bijlagen altijd; `keep` bewaart ze alleen wanneer `retainOnSessionKeep: true`.
 
   </Accordion>
 </AccordionGroup>
@@ -355,9 +355,9 @@ Experimentele ingebouwde toolvlaggen. Standaard uit, tenzij een regel voor autom
 }
 ```
 
-- `planTool`: schakelt de gestructureerde tool `update_plan` in voor het volgen van niet-triviaal werk met meerdere stappen.
-- Standaard: `false`, tenzij `agents.defaults.embeddedPi.executionContract` (of een override per agent) is ingesteld op `"strict-agentic"` voor een OpenAI- of OpenAI Codex-run uit de GPT-5-familie. Stel in op `true` om de tool buiten dat bereik af te dwingen, of op `false` om deze uitgeschakeld te houden, zelfs voor strict-agentic GPT-5-runs.
-- Wanneer ingeschakeld, voegt de systeemprompt ook gebruiksrichtlijnen toe zodat het model de tool alleen gebruikt voor substantieel werk en maximaal één stap op `in_progress` houdt.
+- `planTool`: schakelt de gestructureerde `update_plan`-tool in voor het volgen van niet-triviaal meerstapswerk.
+- Standaard: `false` tenzij `agents.defaults.embeddedPi.executionContract` (of een overschrijving per agent) is ingesteld op `"strict-agentic"` voor een OpenAI- of OpenAI Codex-uitvoering uit de GPT-5-familie. Stel in op `true` om de tool buiten dat bereik geforceerd in te schakelen, of op `false` om deze zelfs voor strict-agentic GPT-5-uitvoeringen uitgeschakeld te houden.
+- Wanneer ingeschakeld, voegt de systeemprompt ook gebruiksrichtlijnen toe zodat het model de tool alleen voor substantieel werk gebruikt en maximaal één stap op `in_progress` houdt.
 
 ### `agents.defaults.subagents`
 
@@ -377,9 +377,9 @@ Experimentele ingebouwde toolvlaggen. Standaard uit, tenzij een regel voor autom
 }
 ```
 
-- `model`: standaardmodel voor gestarte subagenten. Indien weggelaten, erven subagenten het model van de aanroeper.
-- `allowAgents`: standaard allowlist van doelagent-id's voor `sessions_spawn` wanneer de aanvragende agent geen eigen `subagents.allowAgents` instelt (`["*"]` = elk; standaard: alleen dezelfde agent).
-- `runTimeoutSeconds`: standaardtimeout (seconden) voor `sessions_spawn` wanneer de toolaanroep `runTimeoutSeconds` weglaat. `0` betekent geen timeout.
+- `model`: standaardmodel voor gespawnde subagenten. Indien weggelaten, erven subagenten het model van de aanroeper.
+- `allowAgents`: standaardlijst met toegestane doel-agent-id's voor `sessions_spawn` wanneer de aanvragende agent geen eigen `subagents.allowAgents` instelt (`["*"]` = elke; standaard: alleen dezelfde agent).
+- `runTimeoutSeconds`: standaardtime-out (seconden) voor `sessions_spawn` wanneer de toolaanroep `runTimeoutSeconds` weglaat. `0` betekent geen time-out.
 - Toolbeleid per subagent: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
 
 ---
@@ -416,19 +416,19 @@ OpenClaw gebruikt de ingebouwde modelcatalogus. Voeg aangepaste providers toe vi
 ```
 
 <AccordionGroup>
-  <Accordion title="Verificatie en merge-voorrang">
-    - Gebruik `authHeader: true` + `headers` voor aangepaste verificatiebehoeften.
-    - Overschrijf de hoofdmap van de agentconfiguratie met `OPENCLAW_AGENT_DIR` (of `PI_CODING_AGENT_DIR`, een alias voor een verouderde omgevingsvariabele).
-    - Merge-voorrang voor overeenkomende provider-ID's:
-      - Niet-lege waarden voor `baseUrl` in agent-`models.json` winnen.
-      - Niet-lege agentwaarden voor `apiKey` winnen alleen wanneer die provider niet door SecretRef wordt beheerd in de huidige configuratie-/auth-profielcontext.
-      - Door SecretRef beheerde providerwaarden voor `apiKey` worden vernieuwd vanuit bronmarkeringen (`ENV_VAR_NAME` voor env-verwijzingen, `secretref-managed` voor file-/exec-verwijzingen) in plaats van opgeloste geheimen te bewaren.
-      - Door SecretRef beheerde providerheaderwaarden worden vernieuwd vanuit bronmarkeringen (`secretref-env:ENV_VAR_NAME` voor env-verwijzingen, `secretref-managed` voor file-/exec-verwijzingen).
-      - Lege of ontbrekende agentwaarden voor `apiKey`/`baseUrl` vallen terug op `models.providers` in de configuratie.
-      - Overeenkomende modelwaarden voor `contextWindow`/`maxTokens` gebruiken de hogere waarde van expliciete configuratie en impliciete cataloguswaarden.
-      - Overeenkomende modelwaarden voor `contextTokens` behouden een expliciete runtimecap wanneer aanwezig; gebruik dit om effectieve context te beperken zonder native modelmetadata te wijzigen.
-      - Gebruik `models.mode: "replace"` wanneer je wilt dat de configuratie `models.json` volledig herschrijft.
-      - Markeringspersistentie is bronauthoritatief: markeringen worden geschreven vanuit de actieve bronconfiguratiesnapshot (voor resolutie), niet vanuit opgeloste runtimegeheimwaarden.
+  <Accordion title="Authenticatie en samenvoegprioriteit">
+    - Gebruik `authHeader: true` + `headers` voor aangepaste authenticatiebehoeften.
+    - Overschrijf de root voor agentconfiguratie met `OPENCLAW_AGENT_DIR` (of `PI_CODING_AGENT_DIR`, een verouderde alias voor omgevingsvariabelen).
+    - Samenvoegprioriteit voor overeenkomende provider-ID's:
+      - Niet-lege `models.json`-`baseUrl`-waarden van de agent hebben voorrang.
+      - Niet-lege `apiKey`-waarden van de agent hebben alleen voorrang wanneer die provider niet door SecretRef wordt beheerd in de huidige configuratie-/authenticatieprofielcontext.
+      - Door SecretRef beheerde `apiKey`-waarden van providers worden vernieuwd op basis van bronmarkeringen (`ENV_VAR_NAME` voor env-verwijzingen, `secretref-managed` voor bestand-/exec-verwijzingen) in plaats van opgeloste geheimen te bewaren.
+      - Door SecretRef beheerde headerwaarden van providers worden vernieuwd op basis van bronmarkeringen (`secretref-env:ENV_VAR_NAME` voor env-verwijzingen, `secretref-managed` voor bestand-/exec-verwijzingen).
+      - Lege of ontbrekende `apiKey`/`baseUrl` van de agent vallen terug op `models.providers` in de configuratie.
+      - Overeenkomende modelwaarden voor `contextWindow`/`maxTokens` gebruiken de hoogste waarde van expliciete configuratie en impliciete cataloguswaarden.
+      - Overeenkomende modelwaarden voor `contextTokens` behouden een expliciete runtime-limiet wanneer aanwezig; gebruik dit om de effectieve context te beperken zonder de eigen modelmetadata te wijzigen.
+      - Gebruik `models.mode: "replace"` wanneer `models.json` volledig door de configuratie moet worden herschreven.
+      - Het bewaren van markeringen is bronleidend: markeringen worden geschreven vanuit de actieve bronconfiguratiesnapshot (voor resolutie), niet vanuit opgeloste runtime-geheimwaarden.
 
   </Accordion>
 </AccordionGroup>
@@ -436,64 +436,64 @@ OpenClaw gebruikt de ingebouwde modelcatalogus. Voeg aangepaste providers toe vi
 ### Details van providervelden
 
 <AccordionGroup>
-  <Accordion title="Catalogus op topniveau">
-    - `models.mode`: gedrag van providercatalogus (`merge` of `replace`).
-    - `models.providers`: aangepaste providermap, gesleuteld op provider-id.
-      - Veilige bewerkingen: gebruik `openclaw config set models.providers.<id> '<json>' --strict-json --merge` of `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` voor additieve updates. `config set` weigert destructieve vervangingen tenzij je `--replace` meegeeft.
+  <Accordion title="Catalogus op hoofdniveau">
+    - `models.mode`: gedrag van de providercatalogus (`merge` of `replace`).
+    - `models.providers`: aangepaste providermap met provider-id als sleutel.
+      - Veilige bewerkingen: gebruik `openclaw config set models.providers.<id> '<json>' --strict-json --merge` of `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` voor additieve updates. `config set` weigert destructieve vervangingen tenzij je `--replace` doorgeeft.
 
   </Accordion>
-  <Accordion title="Providerverbinding en verificatie">
-    - `models.providers.*.api`: aanvraagadapter (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, enz.). Gebruik voor zelfgehoste `/v1/chat/completions`-backends zoals MLX, vLLM, SGLang en de meeste OpenAI-compatibele lokale servers `openai-completions`. Een aangepaste provider met `baseUrl` maar zonder `api` valt standaard terug op `openai-completions`; stel `openai-responses` alleen in wanneer de backend `/v1/responses` ondersteunt.
-    - `models.providers.*.apiKey`: providerreferentie (bij voorkeur SecretRef/env-substitutie).
-    - `models.providers.*.auth`: verificatiestrategie (`api-key`, `token`, `oauth`, `aws-sdk`).
-    - `models.providers.*.contextWindow`: standaard native contextvenster voor modellen onder deze provider wanneer de modelvermelding geen `contextWindow` instelt.
-    - `models.providers.*.contextTokens`: standaard effectieve runtimecontextcap voor modellen onder deze provider wanneer de modelvermelding geen `contextTokens` instelt.
-    - `models.providers.*.maxTokens`: standaard uitvoertokencap voor modellen onder deze provider wanneer de modelvermelding geen `maxTokens` instelt.
-    - `models.providers.*.timeoutSeconds`: optionele HTTP-aanvraagtimeout per providermodel in seconden, inclusief verbinding, headers, body en afhandeling van afbreken van de totale aanvraag.
+  <Accordion title="Providerverbinding en authenticatie">
+    - `models.providers.*.api`: aanvraagadapter (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, enzovoort). Gebruik `openai-completions` voor zelf gehoste `/v1/chat/completions`-backends zoals MLX, vLLM, SGLang en de meeste OpenAI-compatibele lokale servers. Een aangepaste provider met `baseUrl` maar zonder `api` gebruikt standaard `openai-completions`; stel `openai-responses` alleen in wanneer de backend `/v1/responses` ondersteunt.
+    - `models.providers.*.apiKey`: aanmeldgegeven voor provider (geef de voorkeur aan SecretRef-/env-substitutie).
+    - `models.providers.*.auth`: authenticatiestrategie (`api-key`, `token`, `oauth`, `aws-sdk`).
+    - `models.providers.*.contextWindow`: standaard eigen contextvenster voor modellen onder deze provider wanneer het modelitem `contextWindow` niet instelt.
+    - `models.providers.*.contextTokens`: standaard effectieve contextlimiet tijdens uitvoering voor modellen onder deze provider wanneer het modelitem `contextTokens` niet instelt.
+    - `models.providers.*.maxTokens`: standaardlimiet voor uitvoertokens voor modellen onder deze provider wanneer het modelitem `maxTokens` niet instelt.
+    - `models.providers.*.timeoutSeconds`: optionele time-out per provider voor HTTP-modelaanvragen in seconden, inclusief verbinding, headers, body en afhandeling van het afbreken van de volledige aanvraag.
     - `models.providers.*.injectNumCtxForOpenAICompat`: injecteer voor Ollama + `openai-completions` `options.num_ctx` in aanvragen (standaard: `true`).
-    - `models.providers.*.authHeader`: dwing referentietransport af in de header `Authorization` wanneer vereist.
-    - `models.providers.*.baseUrl`: basis-URL van de upstream-API.
+    - `models.providers.*.authHeader`: dwing transport van aanmeldgegevens af in de `Authorization`-header wanneer vereist.
+    - `models.providers.*.baseUrl`: basis-URL van upstream-API.
     - `models.providers.*.headers`: extra statische headers voor proxy-/tenantroutering.
 
   </Accordion>
-  <Accordion title="Overrides voor aanvraagtransport">
-    `models.providers.*.request`: transportoverrides voor HTTP-aanvragen aan modelproviders.
+  <Accordion title="Overschrijvingen voor aanvraagtransport">
+    `models.providers.*.request`: transportoverschrijvingen voor HTTP-aanvragen aan modelproviders.
 
-    - `request.headers`: extra headers (samengevoegd met providerstandaarden). Waarden accepteren SecretRef.
-    - `request.auth`: override voor verificatiestrategie. Modi: `"provider-default"` (gebruik de ingebouwde verificatie van de provider), `"authorization-bearer"` (met `token`), `"header"` (met `headerName`, `value`, optioneel `prefix`).
-    - `request.proxy`: override voor HTTP-proxy. Modi: `"env-proxy"` (gebruik env-vars `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (met `url`). Beide modi accepteren een optioneel subobject `tls`.
-    - `request.tls`: TLS-override voor directe verbindingen. Velden: `ca`, `cert`, `key`, `passphrase` (allemaal accepteren SecretRef), `serverName`, `insecureSkipVerify`.
-    - `request.allowPrivateNetwork`: wanneer `true`, HTTPS naar `baseUrl` toestaan wanneer DNS naar private, CGNAT- of vergelijkbare bereiken resolveert, via de HTTP-fetchguard van de provider (operator opt-in voor vertrouwde zelfgehoste OpenAI-compatibele eindpunten). Stream-URL's voor loopback-modelproviders zoals `localhost`, `127.0.0.1` en `[::1]` worden automatisch toegestaan, tenzij dit expliciet is ingesteld op `false`; LAN-, tailnet- en private DNS-hosts vereisen nog steeds opt-in. WebSocket gebruikt dezelfde `request` voor headers/TLS, maar niet die fetch-SSRF-poort. Standaard `false`.
+    - `request.headers`: extra headers (samengevoegd met providerstandaarden). Waarden ondersteunen SecretRef.
+    - `request.auth`: overschrijving van authenticatiestrategie. Modi: `"provider-default"` (gebruik de ingebouwde authenticatie van de provider), `"authorization-bearer"` (met `token`), `"header"` (met `headerName`, `value`, optioneel `prefix`).
+    - `request.proxy`: overschrijving van HTTP-proxy. Modi: `"env-proxy"` (gebruik de env-vars `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (met `url`). Beide modi ondersteunen een optioneel `tls`-subobject.
+    - `request.tls`: TLS-overschrijving voor directe verbindingen. Velden: `ca`, `cert`, `key`, `passphrase` (alle ondersteunen SecretRef), `serverName`, `insecureSkipVerify`.
+    - `request.allowPrivateNetwork`: wanneer `true`, sta HTTPS naar `baseUrl` toe wanneer DNS naar privé-, CGNAT- of vergelijkbare bereiken verwijst, via de HTTP-fetchbeveiliging van de provider (opt-in door de operator voor vertrouwde zelf gehoste OpenAI-compatibele eindpunten). Loopback-stream-URL's van modelproviders zoals `localhost`, `127.0.0.1` en `[::1]` zijn automatisch toegestaan tenzij dit expliciet op `false` is ingesteld; LAN-, tailnet- en privé-DNS-hosts vereisen nog steeds opt-in. WebSocket gebruikt dezelfde `request` voor headers/TLS, maar niet die SSRF-controle voor fetch. Standaard `false`.
 
   </Accordion>
-  <Accordion title="Modelcatalogusvermeldingen">
-    - `models.providers.*.models`: expliciete vermeldingen in de providermodelcatalogus.
-    - `models.providers.*.models.*.input`: invoermodaliteiten van het model. Gebruik `["text"]` voor modellen met alleen tekst en `["text", "image"]` voor native image-/vision-modellen. Afbeeldingsbijlagen worden alleen in agentbeurten geïnjecteerd wanneer het geselecteerde model als image-capable is gemarkeerd.
-    - `models.providers.*.models.*.contextWindow`: native metadata voor het contextvenster van het model. Dit overschrijft `contextWindow` op providerniveau voor dat model.
-    - `models.providers.*.models.*.contextTokens`: optionele runtimecontextcap. Dit overschrijft `contextTokens` op providerniveau; gebruik dit wanneer je een kleiner effectief contextbudget wilt dan het native `contextWindow` van het model; `openclaw models list` toont beide waarden wanneer ze verschillen.
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`: optionele compatibiliteitshint. Voor `api: "openai-completions"` met een niet-lege niet-native `baseUrl` (host niet `api.openai.com`) dwingt OpenClaw dit tijdens runtime af naar `false`. Een lege/weggelaten `baseUrl` behoudt standaard OpenAI-gedrag.
-    - `models.providers.*.models.*.compat.requiresStringContent`: optionele compatibiliteitshint voor OpenAI-compatibele chat-eindpunten met alleen strings. Wanneer `true`, vlakt OpenClaw pure tekstarrays `messages[].content` af naar gewone strings voordat de aanvraag wordt verzonden.
+  <Accordion title="Modelcatalogusitems">
+    - `models.providers.*.models`: expliciete modelcatalogusitems van de provider.
+    - `models.providers.*.models.*.input`: invoermodaliteiten van het model. Gebruik `["text"]` voor modellen met alleen tekst en `["text", "image"]` voor eigen beeld-/visiemodellen. Beeldbijlagen worden alleen in agentbeurten geïnjecteerd wanneer het geselecteerde model als beeldgeschikt is gemarkeerd.
+    - `models.providers.*.models.*.contextWindow`: metadata voor het eigen contextvenster van het model. Dit overschrijft `contextWindow` op providerniveau voor dat model.
+    - `models.providers.*.models.*.contextTokens`: optionele runtime-contextlimiet. Dit overschrijft `contextTokens` op providerniveau; gebruik dit wanneer je een kleiner effectief contextbudget wilt dan de eigen `contextWindow` van het model; `openclaw models list` toont beide waarden wanneer ze verschillen.
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`: optionele compatibiliteitshint. Voor `api: "openai-completions"` met een niet-lege niet-eigen `baseUrl` (host is niet `api.openai.com`) dwingt OpenClaw dit tijdens uitvoering af op `false`. Lege/weggelaten `baseUrl` behoudt standaard OpenAI-gedrag.
+    - `models.providers.*.models.*.compat.requiresStringContent`: optionele compatibiliteitshint voor OpenAI-compatibele chat-eindpunten die alleen strings ondersteunen. Wanneer `true`, vlakt OpenClaw `messages[].content`-arrays met uitsluitend tekst af naar gewone strings voordat de aanvraag wordt verzonden.
 
   </Accordion>
   <Accordion title="Amazon Bedrock-detectie">
-    - `plugins.entries.amazon-bedrock.config.discovery`: hoofdmap voor instellingen voor automatische Bedrock-detectie.
-    - `plugins.entries.amazon-bedrock.config.discovery.enabled`: impliciete detectie in-/uitschakelen.
+    - `plugins.entries.amazon-bedrock.config.discovery`: hoofdniveau voor Bedrock-autodetectie-instellingen.
+    - `plugins.entries.amazon-bedrock.config.discovery.enabled`: schakel impliciete detectie in/uit.
     - `plugins.entries.amazon-bedrock.config.discovery.region`: AWS-regio voor detectie.
     - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: optioneel provider-id-filter voor gerichte detectie.
-    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: pollinginterval voor detectievernieuwing.
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: fallback-contextvenster voor gedetecteerde modellen.
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: fallback voor maximaal aantal uitvoertokens voor gedetecteerde modellen.
+    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: pollinginterval voor het vernieuwen van detectie.
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: terugvalcontextvenster voor ontdekte modellen.
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: terugvalmaximum voor uitvoertokens voor ontdekte modellen.
 
   </Accordion>
 </AccordionGroup>
 
-Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voor veelvoorkomende vision-model-ID's zoals GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V en GLM-4V, en slaat de extra vraag over voor bekende tekst-only families. Onbekende model-ID's vragen nog steeds om image-ondersteuning. Niet-interactieve onboarding gebruikt dezelfde afleiding; geef `--custom-image-input` mee om image-capable metadata af te dwingen of `--custom-text-input` om metadata voor alleen tekst af te dwingen.
+Interactieve onboarding voor aangepaste providers leidt beeldinvoer af voor veelvoorkomende visie-model-ID's zoals GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V en GLM-4V, en slaat de extra vraag over voor bekende families met alleen tekst. Bij onbekende model-ID's wordt nog steeds om beeldondersteuning gevraagd. Niet-interactieve onboarding gebruikt dezelfde afleiding; geef `--custom-image-input` door om beeldgeschikte metadata af te dwingen of `--custom-text-input` om metadata voor alleen tekst af te dwingen.
 
 ### Providervoorbeelden
 
 <AccordionGroup>
   <Accordion title="Cerebras (GLM 4.7 / GPT OSS)">
-    De gebundelde provider-Plugin `cerebras` kan dit configureren via `openclaw onboard --auth-choice cerebras-api-key`. Gebruik expliciete providerconfiguratie alleen wanneer je standaarden overschrijft.
+    De meegeleverde `cerebras`-providerplugin kan dit configureren via `openclaw onboard --auth-choice cerebras-api-key`. Gebruik alleen expliciete providerconfiguratie wanneer standaardwaarden worden overschreven.
 
     ```json5
     {
@@ -527,7 +527,7 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Gebruik `cerebras/zai-glm-4.7` voor Cerebras; `zai/glm-4.7` voor Z.AI direct.
+    Gebruik `cerebras/zai-glm-4.7` voor Cerebras; `zai/glm-4.7` voor directe Z.AI-toegang.
 
   </Accordion>
   <Accordion title="Kimi Coding">
@@ -543,7 +543,7 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Anthropic-compatibel, ingebouwde provider. Snelkoppeling: `openclaw onboard --auth-choice kimi-code-api-key`.
+    Anthropic-compatibele, ingebouwde provider. Snelkoppeling: `openclaw onboard --auth-choice kimi-code-api-key`.
 
   </Accordion>
   <Accordion title="Lokale modellen (LM Studio)">
@@ -584,7 +584,7 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Stel `MINIMAX_API_KEY` in. Snelkoppelingen: `openclaw onboard --auth-choice minimax-global-api` of `openclaw onboard --auth-choice minimax-cn-api`. De modelcatalogus gebruikt standaard alleen M2.7. Op het Anthropic-compatibele streamingpad schakelt OpenClaw MiniMax-denken standaard uit, tenzij je `thinking` zelf expliciet instelt. `/fast on` of `params.fastMode: true` herschrijft `MiniMax-M2.7` naar `MiniMax-M2.7-highspeed`.
+    Stel `MINIMAX_API_KEY` in. Snelkoppelingen: `openclaw onboard --auth-choice minimax-global-api` of `openclaw onboard --auth-choice minimax-cn-api`. De modelcatalogus gebruikt standaard alleen M2.7. Op het Anthropic-compatibele streamingpad schakelt OpenClaw MiniMax-denken standaard uit, tenzij je zelf expliciet `thinking` instelt. `/fast on` of `params.fastMode: true` herschrijft `MiniMax-M2.7` naar `MiniMax-M2.7-highspeed`.
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -621,9 +621,9 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Voor het China-endpoint: `baseUrl: "https://api.moonshot.cn/v1"` of `openclaw onboard --auth-choice moonshot-api-key-cn`.
+    Voor het China-eindpunt: `baseUrl: "https://api.moonshot.cn/v1"` of `openclaw onboard --auth-choice moonshot-api-key-cn`.
 
-    Native Moonshot-endpoints adverteren compatibiliteit met streaminggebruik op het gedeelde `openai-completions`-transport, en OpenClaw baseert dat op endpointmogelijkheden in plaats van alleen op de ingebouwde provider-id.
+    Native Moonshot-eindpunten melden compatibiliteit met streaminggebruik op het gedeelde `openai-completions`-transport, en OpenClaw baseert zich daarbij op eindpuntmogelijkheden in plaats van alleen op de ingebouwde provider-id.
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -638,10 +638,10 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Stel `OPENCODE_API_KEY` (of `OPENCODE_ZEN_API_KEY`) in. Gebruik `opencode/...`-refs voor de Zen-catalogus of `opencode-go/...`-refs voor de Go-catalogus. Snelkoppeling: `openclaw onboard --auth-choice opencode-zen` of `openclaw onboard --auth-choice opencode-go`.
+    Stel `OPENCODE_API_KEY` in (of `OPENCODE_ZEN_API_KEY`). Gebruik `opencode/...`-refs voor de Zen-catalogus of `opencode-go/...`-refs voor de Go-catalogus. Snelkoppeling: `openclaw onboard --auth-choice opencode-zen` of `openclaw onboard --auth-choice opencode-go`.
 
   </Accordion>
-  <Accordion title="Synthetisch (Anthropic-compatibel)">
+  <Accordion title="Synthetic (Anthropic-compatibel)">
     ```json5
     {
       env: { SYNTHETIC_API_KEY: "sk-..." },
@@ -675,7 +675,7 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Basis-URL moet `/v1` weglaten (Anthropic-client voegt die toe). Snelkoppeling: `openclaw onboard --auth-choice synthetic-api-key`.
+    Basis-URL moet `/v1` weglaten (de Anthropic-client voegt dit toe). Snelkoppeling: `openclaw onboard --auth-choice synthetic-api-key`.
 
   </Accordion>
   <Accordion title="Z.AI (GLM-4.7)">
@@ -690,11 +690,11 @@ Interactieve onboarding voor aangepaste providers leidt afbeeldingsinvoer af voo
     }
     ```
 
-    Stel `ZAI_API_KEY` in. `z.ai/*` en `z-ai/*` zijn geaccepteerde aliassen. Snelkoppeling: `openclaw onboard --auth-choice zai-api-key`.
+    Stel `ZAI_API_KEY` in. `z.ai/*` en `z-ai/*` worden geaccepteerd als aliassen. Snelkoppeling: `openclaw onboard --auth-choice zai-api-key`.
 
-    - Algemeen endpoint: `https://api.z.ai/api/paas/v4`
-    - Coding-endpoint (standaard): `https://api.z.ai/api/coding/paas/v4`
-    - Definieer voor het algemene endpoint een aangepaste provider met de basis-URL-override.
+    - Algemeen eindpunt: `https://api.z.ai/api/paas/v4`
+    - Coding-eindpunt (standaard): `https://api.z.ai/api/coding/paas/v4`
+    - Definieer voor het algemene eindpunt een aangepaste provider met de basis-URL-override.
 
   </Accordion>
 </AccordionGroup>
