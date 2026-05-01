@@ -1106,6 +1106,7 @@
                 "group": "Configuration",
                 "pages": [
                   "channels/pairing",
+                  "channels/access-groups",
                   "channels/group-messages",
                   "channels/groups",
                   "channels/broadcast-groups",
@@ -2584,6 +2585,7 @@
                 "group": "Configuration",
                 "pages": [
                   "zh-TW/channels/pairing",
+                  "zh-TW/channels/access-groups",
                   "zh-TW/channels/group-messages",
                   "zh-TW/channels/groups",
                   "zh-TW/channels/broadcast-groups",
@@ -3447,6 +3449,7 @@
                 "group": "Configuration",
                 "pages": [
                   "ja-JP/channels/pairing",
+                  "ja-JP/channels/access-groups",
                   "ja-JP/channels/group-messages",
                   "ja-JP/channels/groups",
                   "ja-JP/channels/broadcast-groups",
@@ -4310,6 +4313,7 @@
                 "group": "Configuration",
                 "pages": [
                   "es/channels/pairing",
+                  "es/channels/access-groups",
                   "es/channels/group-messages",
                   "es/channels/groups",
                   "es/channels/broadcast-groups",
@@ -5173,6 +5177,7 @@
                 "group": "Configuration",
                 "pages": [
                   "pt-BR/channels/pairing",
+                  "pt-BR/channels/access-groups",
                   "pt-BR/channels/group-messages",
                   "pt-BR/channels/groups",
                   "pt-BR/channels/broadcast-groups",
@@ -6036,6 +6041,7 @@
                 "group": "Configuration",
                 "pages": [
                   "ko/channels/pairing",
+                  "ko/channels/access-groups",
                   "ko/channels/group-messages",
                   "ko/channels/groups",
                   "ko/channels/broadcast-groups",
@@ -6899,6 +6905,7 @@
                 "group": "Configuration",
                 "pages": [
                   "de/channels/pairing",
+                  "de/channels/access-groups",
                   "de/channels/group-messages",
                   "de/channels/groups",
                   "de/channels/broadcast-groups",
@@ -7762,6 +7769,7 @@
                 "group": "Configuration",
                 "pages": [
                   "fr/channels/pairing",
+                  "fr/channels/access-groups",
                   "fr/channels/group-messages",
                   "fr/channels/groups",
                   "fr/channels/broadcast-groups",
@@ -8625,6 +8633,7 @@
                 "group": "Configuration",
                 "pages": [
                   "ar/channels/pairing",
+                  "ar/channels/access-groups",
                   "ar/channels/group-messages",
                   "ar/channels/groups",
                   "ar/channels/broadcast-groups",
@@ -9488,6 +9497,7 @@
                 "group": "Configuration",
                 "pages": [
                   "it/channels/pairing",
+                  "it/channels/access-groups",
                   "it/channels/group-messages",
                   "it/channels/groups",
                   "it/channels/broadcast-groups",
@@ -10351,6 +10361,7 @@
                 "group": "Configuration",
                 "pages": [
                   "vi/channels/pairing",
+                  "vi/channels/access-groups",
                   "vi/channels/group-messages",
                   "vi/channels/groups",
                   "vi/channels/broadcast-groups",
@@ -11214,6 +11225,7 @@
                 "group": "Configuration",
                 "pages": [
                   "nl/channels/pairing",
+                  "nl/channels/access-groups",
                   "nl/channels/group-messages",
                   "nl/channels/groups",
                   "nl/channels/broadcast-groups",
@@ -12077,6 +12089,7 @@
                 "group": "Configuration",
                 "pages": [
                   "tr/channels/pairing",
+                  "tr/channels/access-groups",
                   "tr/channels/group-messages",
                   "tr/channels/groups",
                   "tr/channels/broadcast-groups",
@@ -12940,6 +12953,7 @@
                 "group": "Configuration",
                 "pages": [
                   "uk/channels/pairing",
+                  "uk/channels/access-groups",
                   "uk/channels/group-messages",
                   "uk/channels/groups",
                   "uk/channels/broadcast-groups",
@@ -13803,6 +13817,7 @@
                 "group": "Configuration",
                 "pages": [
                   "id/channels/pairing",
+                  "id/channels/access-groups",
                   "id/channels/group-messages",
                   "id/channels/groups",
                   "id/channels/broadcast-groups",
@@ -14666,6 +14681,7 @@
                 "group": "Configuration",
                 "pages": [
                   "pl/channels/pairing",
+                  "pl/channels/access-groups",
                   "pl/channels/group-messages",
                   "pl/channels/groups",
                   "pl/channels/broadcast-groups",
