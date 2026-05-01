@@ -1,35 +1,35 @@
 ---
 read_when:
-    - คุณกำลังสร้าง Plugin ผู้ให้บริการโมเดลใหม่
-    - คุณต้องการเพิ่มพร็อกซีที่เข้ากันได้กับ OpenAI หรือ LLM แบบกำหนดเองลงใน OpenClaw
-    - คุณต้องเข้าใจการยืนยันตัวตนของผู้ให้บริการ แคตตาล็อก และฮุกขณะรันไทม์
+    - คุณกำลังสร้าง Plugin ผู้ให้บริการโมเดลตัวใหม่
+    - คุณต้องการเพิ่มพร็อกซีที่เข้ากันได้กับ OpenAI หรือโมเดลภาษาขนาดใหญ่แบบกำหนดเองลงใน OpenClaw
+    - คุณต้องเข้าใจการยืนยันตัวตนของผู้ให้บริการ แค็ตตาล็อก และฮุกขณะรันไทม์
 sidebarTitle: Provider plugins
-summary: คู่มือแบบทีละขั้นตอนสำหรับการสร้าง Plugin ผู้ให้บริการโมเดลสำหรับ OpenClaw
+summary: คู่มือแบบทีละขั้นตอนในการสร้าง Plugin ผู้ให้บริการโมเดลสำหรับ OpenClaw
 title: การสร้าง Plugin ผู้ให้บริการ
 x-i18n:
-    generated_at: "2026-04-30T10:08:32Z"
+    generated_at: "2026-05-01T10:20:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1404594fe1d1e11a612f903512c1002c8f3a804dee53d4204457b534eae93381
+    source_hash: 3f9d721673bdfef0b9c1979b4b8b4c86f19d114374d6b941facb928c3574cd1b
     source_path: plugins/sdk-provider-plugins.md
     workflow: 16
 ---
 
-คู่มือนี้อธิบายขั้นตอนการสร้าง Plugin ผู้ให้บริการที่เพิ่มผู้ให้บริการโมเดล
-(LLM) ให้กับ OpenClaw เมื่อจบแล้ว คุณจะมีผู้ให้บริการที่มีแค็ตตาล็อกโมเดล
-การยืนยันตัวตนด้วยคีย์ API และการแก้ข้อมูลโมเดลแบบไดนามิก
+คู่มือนี้จะแนะนำขั้นตอนการสร้าง Plugin ผู้ให้บริการที่เพิ่มผู้ให้บริการโมเดล
+(LLM) ให้กับ OpenClaw เมื่อจบแล้ว คุณจะมีผู้ให้บริการพร้อมแค็ตตาล็อกโมเดล,
+การยืนยันตัวตนด้วยคีย์ API, และการแก้ไขโมเดลแบบไดนามิก
 
 <Info>
   หากคุณยังไม่เคยสร้าง Plugin ของ OpenClaw มาก่อน ให้อ่าน
-  [เริ่มต้นใช้งาน](/th/plugins/building-plugins) ก่อนเพื่อทำความเข้าใจโครงสร้างแพ็กเกจ
-  พื้นฐานและการตั้งค่า manifest
+  [เริ่มต้นใช้งาน](/th/plugins/building-plugins) ก่อน เพื่อดูโครงสร้างแพ็กเกจ
+  และการตั้งค่า manifest พื้นฐาน
 </Info>
 
 <Tip>
-  Plugin ผู้ให้บริการจะเพิ่มโมเดลเข้าไปในลูป inference ปกติของ OpenClaw หากโมเดล
-  ต้องทำงานผ่านเดมอน agent แบบ native ที่เป็นเจ้าของเธรด, Compaction หรืออีเวนต์เครื่องมือ
-  ให้จับคู่ผู้ให้บริการกับ [agent harness](/th/plugins/sdk-agent-harness)
-  แทนการใส่รายละเอียดโปรโตคอลของเดมอนไว้ใน core
+  Plugin ผู้ให้บริการจะเพิ่มโมเดลเข้าไปในลูปอนุมานปกติของ OpenClaw หากโมเดล
+  ต้องทำงานผ่านดีมอนเอเจนต์แบบเนทีฟที่เป็นเจ้าของเธรด, Compaction, หรือเหตุการณ์เครื่องมือ
+  ให้จับคู่ผู้ให้บริการกับ [ชุดควบคุมเอเจนต์](/th/plugins/sdk-agent-harness)
+  แทนการใส่รายละเอียดโปรโตคอลของดีมอนใน core
 </Tip>
 
 ## คำแนะนำทีละขั้นตอน
@@ -94,17 +94,17 @@ x-i18n:
     </CodeGroup>
 
     manifest ประกาศ `providerAuthEnvVars` เพื่อให้ OpenClaw ตรวจพบ
-    ข้อมูลรับรองได้โดยไม่ต้องโหลดรันไทม์ของ Plugin ของคุณ เพิ่ม `providerAuthAliases`
-    เมื่อ variant ของผู้ให้บริการควรใช้การยืนยันตัวตนของ id ผู้ให้บริการอีกรายซ้ำ `modelSupport`
-    เป็นตัวเลือกเสริม และช่วยให้ OpenClaw โหลด Plugin ผู้ให้บริการของคุณอัตโนมัติจาก
-    id โมเดลแบบย่อ เช่น `acme-large` ก่อนที่จะมี hook ระดับรันไทม์ หากคุณเผยแพร่
-    ผู้ให้บริการบน ClawHub ฟิลด์ `openclaw.compat` และ `openclaw.build` เหล่านั้น
+    ข้อมูลประจำตัวได้โดยไม่ต้องโหลดรันไทม์ของ Plugin คุณ เพิ่ม `providerAuthAliases`
+    เมื่อรูปแบบย่อยของผู้ให้บริการควรใช้การยืนยันตัวตนของรหัสผู้ให้บริการอื่นร่วมกัน `modelSupport`
+    เป็นตัวเลือกเสริมและช่วยให้ OpenClaw โหลด Plugin ผู้ให้บริการของคุณอัตโนมัติจากรหัสโมเดลแบบย่อ
+    เช่น `acme-large` ก่อนที่จะมีฮุกรันไทม์ หากคุณเผยแพร่ผู้ให้บริการบน ClawHub
+    ฟิลด์ `openclaw.compat` และ `openclaw.build` เหล่านั้น
     จำเป็นต้องมีใน `package.json`
 
   </Step>
 
   <Step title="ลงทะเบียนผู้ให้บริการ">
-    ผู้ให้บริการขั้นต่ำต้องมี `id`, `label`, `auth` และ `catalog`:
+    ผู้ให้บริการขั้นต่ำต้องมี `id`, `label`, `auth`, และ `catalog`:
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -175,12 +175,12 @@ x-i18n:
     });
     ```
 
-    นี่คือผู้ให้บริการที่ใช้งานได้แล้ว ตอนนี้ผู้ใช้สามารถ
+    นั่นคือผู้ให้บริการที่ใช้งานได้แล้ว ผู้ใช้สามารถ
     `openclaw onboard --acme-ai-api-key <key>` และเลือก
-    `acme-ai/acme-large` เป็นโมเดลของตนได้
+    `acme-ai/acme-large` เป็นโมเดลของตนได้แล้ว
 
-    หากผู้ให้บริการต้นทางใช้โทเคนควบคุมต่างจาก OpenClaw ให้เพิ่ม
-    การแปลงข้อความสองทิศทางขนาดเล็ก แทนการแทนที่เส้นทางสตรีม:
+    หากผู้ให้บริการต้นทางใช้โทเค็นควบคุมที่ต่างจาก OpenClaw ให้เพิ่ม
+    การแปลงข้อความแบบสองทิศทางขนาดเล็กแทนการแทนที่เส้นทางสตรีม:
 
     ```typescript
     api.registerTextTransforms({
@@ -197,12 +197,12 @@ x-i18n:
     });
     ```
 
-    `input` เขียน prompt ระบบสุดท้ายและเนื้อหาข้อความใหม่ก่อนการส่งผ่าน
-    `output` เขียนเดลตาข้อความของ assistant และข้อความสุดท้ายใหม่ก่อนที่
-    OpenClaw จะวิเคราะห์ marker ควบคุมของตัวเองหรือส่งต่อไปยังช่องทาง
+    `input` เขียนพรอมป์ระบบสุดท้ายและเนื้อหาข้อความใหม่ก่อน
+    การขนส่ง `output` เขียนเดลตาข้อความของผู้ช่วยและข้อความสุดท้ายใหม่ก่อนที่
+    OpenClaw จะแยกวิเคราะห์เครื่องหมายควบคุมของตัวเองหรือการส่งมอบช่องทาง
 
-    สำหรับผู้ให้บริการที่ bundled ซึ่งลงทะเบียนผู้ให้บริการข้อความเพียงหนึ่งรายพร้อมการยืนยันตัวตน
-    ด้วยคีย์ API และมีรันไทม์ที่อิงแค็ตตาล็อกเพียงหนึ่งรายการ ให้ใช้ helper ที่แคบกว่า
+    สำหรับผู้ให้บริการที่บันเดิลมาซึ่งลงทะเบียนผู้ให้บริการข้อความเพียงหนึ่งรายพร้อมการยืนยันตัวตนด้วยคีย์ API
+    และรันไทม์เดียวที่อิงแค็ตตาล็อก ให้เลือกใช้ตัวช่วยที่แคบกว่า
     `defineSingleProviderPluginEntry(...)`:
 
     ```typescript
@@ -243,33 +243,33 @@ x-i18n:
     });
     ```
 
-    `buildProvider` คือเส้นทางแค็ตตาล็อกแบบ live ที่ใช้เมื่อ OpenClaw แก้ข้อมูล
-    การยืนยันตัวตนจริงของผู้ให้บริการได้ และอาจทำ discovery เฉพาะผู้ให้บริการ
-    ใช้ `buildStaticProvider` เฉพาะสำหรับแถวแบบออฟไลน์ที่ปลอดภัยต่อการแสดงก่อนตั้งค่า
-    การยืนยันตัวตนเท่านั้น โดยต้องไม่ต้องใช้ข้อมูลรับรองหรือส่งคำขอเครือข่าย
-    การแสดงผล `models list --all` ของ OpenClaw ในปัจจุบันจะเรียกใช้แค็ตตาล็อกแบบ static
-    เฉพาะสำหรับ Plugin ผู้ให้บริการแบบ bundled โดยใช้ config ว่าง env ว่าง และไม่มี
-    path ของ agent/workspace
+    `buildProvider` คือเส้นทางแค็ตตาล็อกแบบสดที่ใช้เมื่อ OpenClaw สามารถแก้ไขการยืนยันตัวตนจริง
+    ของผู้ให้บริการได้ อาจทำการค้นพบเฉพาะผู้ให้บริการ ใช้
+    `buildStaticProvider` เฉพาะสำหรับแถวออฟไลน์ที่ปลอดภัยต่อการแสดงก่อนตั้งค่าการยืนยันตัวตน
+    เท่านั้น ต้องไม่ต้องใช้ข้อมูลประจำตัวหรือส่งคำขอเครือข่าย
+    การแสดงผล `models list --all` ของ OpenClaw ในปัจจุบันจะรันแค็ตตาล็อกแบบสแตติก
+    เฉพาะสำหรับ Plugin ผู้ให้บริการที่บันเดิลมา โดยใช้ config ว่าง, env ว่าง, และไม่มี
+    พาธเอเจนต์/เวิร์กสเปซ
 
-    หาก flow การยืนยันตัวตนของคุณต้อง patch `models.providers.*`, alias และ
-    โมเดลเริ่มต้นของ agent ระหว่าง onboarding ด้วย ให้ใช้ preset helper จาก
-    `openclaw/plugin-sdk/provider-onboard` helper ที่แคบที่สุดคือ
+    หากโฟลว์การยืนยันตัวตนของคุณยังต้องแพตช์ `models.providers.*`, alias, และ
+    โมเดลเริ่มต้นของเอเจนต์ระหว่างการ onboarding ให้ใช้ตัวช่วย preset จาก
+    `openclaw/plugin-sdk/provider-onboard` ตัวช่วยที่แคบที่สุดคือ
     `createDefaultModelPresetAppliers(...)`,
-    `createDefaultModelsPresetAppliers(...)` และ
+    `createDefaultModelsPresetAppliers(...)`, และ
     `createModelCatalogPresetAppliers(...)`
 
-    เมื่อ endpoint แบบ native ของผู้ให้บริการรองรับบล็อก usage แบบ streamed บน
-    การส่งผ่าน `openai-completions` ปกติ ให้ใช้ helper แค็ตตาล็อกที่ใช้ร่วมกันใน
-    `openclaw/plugin-sdk/provider-catalog-shared` แทนการ hardcode
-    การตรวจสอบ id ผู้ให้บริการ `supportsNativeStreamingUsageCompat(...)` และ
-    `applyProviderNativeStreamingUsageCompat(...)` จะตรวจพบการรองรับจาก
-    capability map ของ endpoint ดังนั้น endpoint แบบ native สไตล์ Moonshot/DashScope
-    จึงยัง opt in ได้แม้ Plugin จะใช้ id ผู้ให้บริการแบบกำหนดเอง
+    เมื่อเอนด์พอยต์เนทีฟของผู้ให้บริการรองรับบล็อกการใช้งานแบบสตรีมบน
+    การขนส่ง `openai-completions` ปกติ ให้เลือกใช้ตัวช่วยแค็ตตาล็อกที่ใช้ร่วมกันใน
+    `openclaw/plugin-sdk/provider-catalog-shared` แทนการฮาร์ดโค้ด
+    การตรวจสอบรหัสผู้ให้บริการ `supportsNativeStreamingUsageCompat(...)` และ
+    `applyProviderNativeStreamingUsageCompat(...)` ตรวจจับการรองรับจาก
+    แผนที่ความสามารถของเอนด์พอยต์ ดังนั้นเอนด์พอยต์แบบเนทีฟสไตล์ Moonshot/DashScope
+    จึงยังเลือกใช้ได้แม้ Plugin จะใช้รหัสผู้ให้บริการแบบกำหนดเอง
 
   </Step>
 
-  <Step title="เพิ่มการแก้ข้อมูลโมเดลแบบไดนามิก">
-    หากผู้ให้บริการของคุณรับ ID โมเดลใดก็ได้ (เช่น proxy หรือ router)
+  <Step title="เพิ่มการแก้ไขโมเดลแบบไดนามิก">
+    หากผู้ให้บริการของคุณยอมรับรหัสโมเดลใดก็ได้ (เช่น proxy หรือ router)
     ให้เพิ่ม `resolveDynamicModel`:
 
     ```typescript
@@ -291,17 +291,17 @@ x-i18n:
     });
     ```
 
-    หากการแก้ข้อมูลต้องใช้คำขอเครือข่าย ให้ใช้ `prepareDynamicModel` สำหรับการ warm-up
-    แบบ async — `resolveDynamicModel` จะรันอีกครั้งหลังจากทำงานเสร็จ
+    หากการแก้ไขต้องใช้การเรียกเครือข่าย ให้ใช้ `prepareDynamicModel` สำหรับการวอร์มอัปแบบ async
+    — `resolveDynamicModel` จะทำงานอีกครั้งหลังจากเสร็จสิ้น
 
   </Step>
 
-  <Step title="เพิ่ม hook ระดับรันไทม์ (ตามจำเป็น)">
-    ผู้ให้บริการส่วนใหญ่ต้องใช้เพียง `catalog` + `resolveDynamicModel` เพิ่ม hook
-    แบบค่อยเป็นค่อยไปตามที่ผู้ให้บริการของคุณต้องการ
+  <Step title="เพิ่มฮุกรันไทม์ (ตามจำเป็น)">
+    ผู้ให้บริการส่วนใหญ่ต้องใช้เพียง `catalog` + `resolveDynamicModel` เพิ่มฮุก
+    ทีละส่วนตามที่ผู้ให้บริการของคุณต้องการ
 
-    helper builder ที่ใช้ร่วมกันตอนนี้ครอบคลุมกลุ่ม replay/tool-compat ที่พบบ่อยที่สุดแล้ว
-    ดังนั้นโดยปกติ Plugin จึงไม่จำเป็นต้องต่อ hook แต่ละตัวเองทีละตัว:
+    ตอนนี้ตัวสร้างตัวช่วยที่ใช้ร่วมกันครอบคลุมกลุ่ม replay/tool-compat ที่พบบ่อยที่สุด
+    แล้ว ดังนั้นโดยปกติ Plugin จึงไม่จำเป็นต้องเชื่อมฮุกแต่ละตัวด้วยมือทีละตัว:
 
     ```typescript
     import { buildProviderReplayFamilyHooks } from "openclaw/plugin-sdk/provider-model-shared";
@@ -321,43 +321,43 @@ x-i18n:
     });
     ```
 
-    กลุ่ม replay ที่มีอยู่ในวันนี้:
+    กลุ่ม replay ที่มีให้ใช้ในปัจจุบัน:
 
-    | กลุ่ม | สิ่งที่ต่อเข้ามา | ตัวอย่างที่ bundled |
+    | กลุ่ม | สิ่งที่เชื่อมให้ | ตัวอย่างที่บันเดิลมา |
     | --- | --- | --- |
-    | `openai-compatible` | นโยบาย replay สไตล์ OpenAI ที่ใช้ร่วมกันสำหรับการส่งผ่านที่เข้ากันได้กับ OpenAI รวมถึงการทำความสะอาด tool-call-id การแก้ลำดับ assistant-first และการตรวจสอบ Gemini-turn ทั่วไปในกรณีที่การส่งผ่านต้องใช้ | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | นโยบาย replay ที่รับรู้ Claude ซึ่งเลือกตาม `modelId` เพื่อให้การส่งผ่านแบบ Anthropic-message ได้รับการ cleanup thinking-block เฉพาะ Claude เฉพาะเมื่อโมเดลที่แก้ข้อมูลแล้วเป็น id ของ Claude จริงๆ | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | นโยบาย replay แบบ native ของ Gemini พร้อมการทำความสะอาด bootstrap replay และโหมด reasoning-output แบบ tagged | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | การทำความสะอาด thought-signature ของ Gemini สำหรับโมเดล Gemini ที่ทำงานผ่านการส่งผ่าน proxy ที่เข้ากันได้กับ OpenAI; ไม่เปิดใช้การตรวจสอบ replay แบบ native ของ Gemini หรือการเขียน bootstrap ใหม่ | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | นโยบายแบบ hybrid สำหรับผู้ให้บริการที่ผสมพื้นผิวโมเดลแบบ Anthropic-message และแบบเข้ากันได้กับ OpenAI ไว้ใน Plugin เดียว; การตัด thinking-block เฉพาะ Claude แบบตัวเลือกเสริมจะยังจำกัดขอบเขตไว้ที่ฝั่ง Anthropic | `minimax` |
+    | `openai-compatible` | นโยบาย replay แบบ OpenAI-style ที่ใช้ร่วมกันสำหรับการขนส่งที่เข้ากันได้กับ OpenAI รวมถึงการทำความสะอาด tool-call-id, การแก้ลำดับ assistant-first, และการตรวจสอบ Gemini-turn ทั่วไปเมื่อการขนส่งต้องใช้ | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | นโยบาย replay ที่รู้จัก Claude ซึ่งเลือกตาม `modelId` เพื่อให้การขนส่งข้อความแบบ Anthropic ได้รับการล้าง thinking-block เฉพาะ Claude เมื่อโมเดลที่แก้ไขได้เป็นรหัส Claude จริงเท่านั้น | `amazon-bedrock`, `anthropic-vertex` |
+    | `google-gemini` | นโยบาย replay แบบ Gemini เนทีฟ พร้อมการทำความสะอาด bootstrap replay และโหมด reasoning-output ที่ติดแท็ก | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | การทำความสะอาด thought-signature ของ Gemini สำหรับโมเดล Gemini ที่รันผ่านการขนส่ง proxy ที่เข้ากันได้กับ OpenAI; ไม่เปิดใช้การตรวจสอบ replay แบบ Gemini เนทีฟหรือการเขียน bootstrap ใหม่ | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | นโยบายไฮบริดสำหรับผู้ให้บริการที่ผสมพื้นผิวโมเดลแบบข้อความ Anthropic และแบบเข้ากันได้กับ OpenAI ใน Plugin เดียว; การดรอป thinking-block เฉพาะ Claude ซึ่งเป็นตัวเลือกเสริมจะยังจำกัดอยู่ที่ฝั่ง Anthropic | `minimax` |
 
-    กลุ่มสตรีมที่มีอยู่ในวันนี้:
+    กลุ่มสตรีมที่มีให้ใช้ในปัจจุบัน:
 
-    | ตระกูล | สิ่งที่เชื่อมต่อเข้ามา | ตัวอย่างที่บันเดิลมา |
+    | ตระกูล | สิ่งที่เชื่อมต่อให้ | ตัวอย่างที่บันเดิลมา |
     | --- | --- | --- |
-    | `google-thinking` | การทำให้เพย์โหลดการคิดของ Gemini เป็นมาตรฐานบนเส้นทางสตรีมที่ใช้ร่วมกัน | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | ตัวห่อหุ้มการให้เหตุผลของ Kilo บนเส้นทางสตรีมพร็อกซีที่ใช้ร่วมกัน โดยมี `kilo/auto` และรหัสการให้เหตุผลของพร็อกซีที่ไม่รองรับข้ามการแทรกการคิด | `kilocode` |
-    | `moonshot-thinking` | การแมปเพย์โหลดการคิดแบบไบนารีดั้งเดิมของ Moonshot จากคอนฟิก + ระดับ `/think` | `moonshot` |
-    | `minimax-fast-mode` | การเขียนโมเดลโหมดเร็วของ MiniMax ใหม่บนเส้นทางสตรีมที่ใช้ร่วมกัน | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | ตัวห่อหุ้ม Responses ของ OpenAI/Codex แบบดั้งเดิมที่ใช้ร่วมกัน: เฮดเดอร์แสดงที่มา, `/fast`/`serviceTier`, ความละเอียดของข้อความ, การค้นหาเว็บดั้งเดิมของ Codex, การจัดรูปเพย์โหลดให้เข้ากับการให้เหตุผล และการจัดการบริบทของ Responses | `openai`, `openai-codex` |
-    | `openrouter-thinking` | ตัวห่อหุ้มการให้เหตุผลของ OpenRouter สำหรับเส้นทางพร็อกซี โดยจัดการการข้ามสำหรับโมเดลที่ไม่รองรับ/`auto` ไว้ที่ส่วนกลาง | `openrouter` |
-    | `tool-stream-default-on` | ตัวห่อหุ้ม `tool_stream` ที่เปิดโดยค่าเริ่มต้นสำหรับผู้ให้บริการอย่าง Z.AI ที่ต้องการสตรีมเครื่องมือ เว้นแต่จะปิดใช้งานอย่างชัดเจน | `zai` |
+    | `google-thinking` | การปรับมาตรฐานเพย์โหลดการคิดของ Gemini บนเส้นทางสตรีมที่ใช้ร่วมกัน | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | wrapper เหตุผลของ Kilo บนเส้นทางสตรีมพร็อกซีที่ใช้ร่วมกัน โดยข้ามการฉีดการคิดสำหรับ `kilo/auto` และรหัสเหตุผลของพร็อกซีที่ไม่รองรับ | `kilocode` |
+    | `moonshot-thinking` | การแมปเพย์โหลด native-thinking แบบไบนารีของ Moonshot จากการตั้งค่า + ระดับ `/think` | `moonshot` |
+    | `minimax-fast-mode` | การเขียนโมเดล MiniMax fast-mode ใหม่บนเส้นทางสตรีมที่ใช้ร่วมกัน | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | wrapper OpenAI/Codex Responses แบบเนทีฟที่ใช้ร่วมกัน: เฮดเดอร์การระบุแหล่งที่มา, `/fast`/`serviceTier`, ความละเอียดของข้อความ, การค้นหาเว็บเนทีฟของ Codex, การจัดรูปเพย์โหลด reasoning-compat และการจัดการบริบทของ Responses | `openai`, `openai-codex` |
+    | `openrouter-thinking` | wrapper เหตุผลของ OpenRouter สำหรับเส้นทางพร็อกซี โดยจัดการการข้ามสำหรับโมเดลที่ไม่รองรับ/`auto` จากส่วนกลาง | `openrouter` |
+    | `tool-stream-default-on` | wrapper `tool_stream` แบบเปิดเป็นค่าเริ่มต้นสำหรับผู้ให้บริการอย่าง Z.AI ที่ต้องการสตรีมเครื่องมือ เว้นแต่จะปิดใช้งานอย่างชัดเจน | `zai` |
 
-    <Accordion title="จุดเชื่อม SDK ที่ขับเคลื่อนตัวสร้างตระกูล">
-      ตัวสร้างแต่ละตระกูลประกอบจากตัวช่วยสาธารณะระดับล่างที่ส่งออกจากแพ็กเกจเดียวกัน ซึ่งคุณสามารถใช้ได้เมื่อผู้ให้บริการต้องออกจากรูปแบบทั่วไป:
+    <Accordion title="seam ของ SDK ที่ขับเคลื่อนตัวสร้างตระกูล">
+      ตัวสร้างแต่ละตระกูลประกอบจากตัวช่วยสาธารณะระดับล่างที่ export จากแพ็กเกจเดียวกัน ซึ่งคุณสามารถใช้ได้เมื่อผู้ให้บริการจำเป็นต้องออกนอกแพตเทิร์นทั่วไป:
 
-      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)` และตัวสร้างรีเพลย์ดิบ (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`) นอกจากนี้ยังส่งออกตัวช่วยรีเพลย์ของ Gemini (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) และตัวช่วยเอนด์พอยต์/โมเดล (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`, `normalizeNativeXaiModelId`)
-      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)` รวมถึงตัวห่อหุ้ม OpenAI/Codex ที่ใช้ร่วมกัน (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), ตัวห่อหุ้มที่เข้ากันได้กับ OpenAI ของ DeepSeek V4 (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), การล้างพรีฟิลการคิดของ Anthropic Messages (`createAnthropicThinkingPrefillPayloadWrapper`) และตัวห่อหุ้มพร็อกซี/ผู้ให้บริการที่ใช้ร่วมกัน (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`)
-      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("gemini")`, ตัวช่วยสคีมาของ Gemini ที่อยู่เบื้องหลัง (`normalizeGeminiToolSchemas`, `inspectGeminiToolSchemas`) และตัวช่วยความเข้ากันได้ของ xAI (`resolveXaiModelCompatPatch()`, `applyXaiModelCompat(model)`) Plugin xAI ที่บันเดิลมาใช้ `normalizeResolvedModel` + `contributeResolvedModelCompat` กับตัวช่วยเหล่านี้เพื่อให้กฎของ xAI เป็นของผู้ให้บริการเอง
+      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)` และตัวสร้าง replay ดิบ (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`) นอกจากนี้ยัง export ตัวช่วย replay ของ Gemini (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) และตัวช่วย endpoint/model (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`, `normalizeNativeXaiModelId`)
+      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)` รวมถึง wrapper OpenAI/Codex ที่ใช้ร่วมกัน (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), wrapper ที่เข้ากันได้กับ OpenAI ของ DeepSeek V4 (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), การล้าง prefill การคิดของ Anthropic Messages (`createAnthropicThinkingPrefillPayloadWrapper`) และ wrapper พร็อกซี/ผู้ให้บริการที่ใช้ร่วมกัน (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`)
+      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("gemini")`, ตัวช่วย schema ของ Gemini ที่อยู่เบื้องหลัง (`normalizeGeminiToolSchemas`, `inspectGeminiToolSchemas`) และตัวช่วย compat ของ xAI (`resolveXaiModelCompatPatch()`, `applyXaiModelCompat(model)`) Plugin xAI ที่บันเดิลมาใช้ `normalizeResolvedModel` + `contributeResolvedModelCompat` ร่วมกับสิ่งเหล่านี้เพื่อให้กฎ xAI อยู่ภายใต้ผู้ให้บริการ
 
-      ตัวช่วยสตรีมบางตัวยังคงอยู่ในผู้ให้บริการโดยตั้งใจ `@openclaw/anthropic-provider` เก็บ `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier` และตัวสร้างตัวห่อหุ้ม Anthropic ระดับล่างไว้ในจุดเชื่อมสาธารณะ `api.ts` / `contract-api.ts` ของตัวเอง เพราะสิ่งเหล่านี้เข้ารหัสการจัดการเบต้า Claude OAuth และการกั้น `context1m` Plugin xAI ก็เช่นกัน โดยเก็บการจัดรูป Responses ดั้งเดิมของ xAI ไว้ใน `wrapStreamFn` ของตัวเอง (นามแฝง `/fast`, ค่าเริ่มต้น `tool_stream`, การล้างเครื่องมือแบบเข้มงวดที่ไม่รองรับ, การลบเพย์โหลดการให้เหตุผลเฉพาะ xAI)
+      ตัวช่วยสตรีมบางตัวยังคงอยู่เฉพาะผู้ให้บริการโดยตั้งใจ `@openclaw/anthropic-provider` เก็บ `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier` และตัวสร้าง wrapper ของ Anthropic ระดับล่างไว้ใน seam สาธารณะ `api.ts` / `contract-api.ts` ของตัวเอง เพราะสิ่งเหล่านี้เข้ารหัสการจัดการ Claude OAuth beta และการ gating ของ `context1m` Plugin xAI ก็เก็บการจัดรูป Responses เนทีฟของ xAI ไว้ใน `wrapStreamFn` ของตัวเองเช่นกัน (alias ของ `/fast`, ค่าเริ่มต้น `tool_stream`, การล้าง strict-tool ที่ไม่รองรับ, การลบเพย์โหลดเหตุผลเฉพาะ xAI)
 
-      รูปแบบรูทแพ็กเกจเดียวกันยังรองรับ `@openclaw/openai-provider` (ตัวสร้างผู้ให้บริการ, ตัวช่วยโมเดลค่าเริ่มต้น, ตัวสร้างผู้ให้บริการแบบเรียลไทม์) และ `@openclaw/openrouter-provider` (ตัวสร้างผู้ให้บริการพร้อมตัวช่วยการเริ่มต้นใช้งาน/คอนฟิก)
+      แพตเทิร์น package-root เดียวกันยังรองรับ `@openclaw/openai-provider` (ตัวสร้างผู้ให้บริการ, ตัวช่วย default-model, ตัวสร้างผู้ให้บริการ realtime) และ `@openclaw/openrouter-provider` (ตัวสร้างผู้ให้บริการพร้อมตัวช่วย onboarding/config)
     </Accordion>
 
     <Tabs>
       <Tab title="การแลกเปลี่ยนโทเค็น">
-        สำหรับผู้ให้บริการที่ต้องแลกเปลี่ยนโทเค็นก่อนการเรียกอนุมานแต่ละครั้ง:
+        สำหรับผู้ให้บริการที่ต้องแลกเปลี่ยนโทเค็นก่อนการเรียก inference แต่ละครั้ง:
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -370,8 +370,8 @@ x-i18n:
         },
         ```
       </Tab>
-      <Tab title="เฮดเดอร์แบบกำหนดเอง">
-        สำหรับผู้ให้บริการที่ต้องใช้เฮดเดอร์คำขอแบบกำหนดเองหรือการแก้ไขเนื้อหาคำขอ:
+      <Tab title="เฮดเดอร์กำหนดเอง">
+        สำหรับผู้ให้บริการที่ต้องใช้เฮดเดอร์คำขอกำหนดเองหรือการแก้ไข body:
 
         ```typescript
         // wrapStreamFn returns a StreamFn derived from ctx.streamFn
@@ -388,8 +388,8 @@ x-i18n:
         },
         ```
       </Tab>
-      <Tab title="อัตลักษณ์การขนส่งดั้งเดิม">
-        สำหรับผู้ให้บริการที่ต้องใช้เฮดเดอร์คำขอ/เซสชันดั้งเดิมหรือเมทาดาทาบน
+      <Tab title="อัตลักษณ์การขนส่งเนทีฟ">
+        สำหรับผู้ให้บริการที่ต้องใช้เฮดเดอร์คำขอ/เซสชันเนทีฟหรือเมตาดาต้าบน
         การขนส่ง HTTP หรือ WebSocket ทั่วไป:
 
         ```typescript
@@ -425,78 +425,78 @@ x-i18n:
       </Tab>
     </Tabs>
 
-    <Accordion title="ฮุกผู้ให้บริการทั้งหมดที่มี">
-      OpenClaw เรียกฮุกตามลำดับนี้ ผู้ให้บริการส่วนใหญ่ใช้เพียง 2-3 รายการ:
-      ฟิลด์ผู้ให้บริการเพื่อความเข้ากันได้เท่านั้นที่ OpenClaw ไม่เรียกใช้อีกแล้ว เช่น
-      `ProviderPlugin.capabilities` และ `suppressBuiltInModel` จะไม่แสดงอยู่
-      ที่นี่
+    <Accordion title="hook ผู้ให้บริการทั้งหมดที่มี">
+      OpenClaw เรียก hook ตามลำดับนี้ ผู้ให้บริการส่วนใหญ่ใช้เพียง 2-3 รายการ:
+      ฟิลด์ผู้ให้บริการที่มีไว้เพื่อความเข้ากันได้เท่านั้นซึ่ง OpenClaw ไม่เรียกใช้อีกต่อไป เช่น
+      `ProviderPlugin.capabilities` และ `suppressBuiltInModel` จะไม่แสดง
+      ไว้ที่นี่
 
-      | # | ฮุก | ควรใช้เมื่อใด |
+      | # | Hook | ควรใช้เมื่อใด |
       | --- | --- | --- |
-      | 1 | `catalog` | แคตตาล็อกโมเดลหรือค่าเริ่มต้น URL ฐาน |
-      | 2 | `applyConfigDefaults` | ค่าเริ่มต้นส่วนกลางที่ผู้ให้บริการเป็นเจ้าของระหว่างการทำให้คอนฟิกเป็นรูปธรรม |
-      | 3 | `normalizeModelId` | การล้างนามแฝงรหัสโมเดลแบบเดิม/พรีวิวก่อนการค้นหา |
+      | 1 | `catalog` | แคตตาล็อกโมเดลหรือค่าเริ่มต้นของ base URL |
+      | 2 | `applyConfigDefaults` | ค่าเริ่มต้นส่วนกลางที่ผู้ให้บริการเป็นเจ้าของระหว่างการ materialize การตั้งค่า |
+      | 3 | `normalizeModelId` | การล้าง alias ของ legacy/preview model-id ก่อน lookup |
       | 4 | `normalizeTransport` | การล้าง `api` / `baseUrl` ของตระกูลผู้ให้บริการก่อนประกอบโมเดลทั่วไป |
-      | 5 | `normalizeConfig` | ทำคอนฟิก `models.providers.<id>` ให้เป็นมาตรฐาน |
-      | 6 | `applyNativeStreamingUsageCompat` | การเขียนความเข้ากันได้ของการใช้งานสตรีมดั้งเดิมใหม่สำหรับผู้ให้บริการคอนฟิก |
-      | 7 | `resolveConfigApiKey` | การแก้ไขการยืนยันตัวตนด้วยมาร์กเกอร์ env ที่ผู้ให้บริการเป็นเจ้าของ |
-      | 8 | `resolveSyntheticAuth` | การยืนยันตัวตนสังเคราะห์แบบ local/self-hosted หรือมีคอนฟิกหนุนหลัง |
-      | 9 | `shouldDeferSyntheticProfileAuth` | ลดลำดับตัวแทนโปรไฟล์ที่เก็บไว้แบบสังเคราะห์ไว้หลังการยืนยันตัวตนผ่าน env/config |
-      | 10 | `resolveDynamicModel` | ยอมรับรหัสโมเดลอัปสตรีมตามอำเภอใจ |
-      | 11 | `prepareDynamicModel` | ดึงเมทาดาทาแบบอะซิงก์ก่อนแก้ไข |
-      | 12 | `normalizeResolvedModel` | เขียนการขนส่งใหม่ก่อนรันเนอร์ |
-      | 13 | `contributeResolvedModelCompat` | แฟล็กความเข้ากันได้สำหรับโมเดลผู้ขายที่อยู่หลังการขนส่งที่เข้ากันได้อีกรูปแบบหนึ่ง |
-      | 14 | `normalizeToolSchemas` | การล้างสคีมาเครื่องมือที่ผู้ให้บริการเป็นเจ้าของก่อนลงทะเบียน |
-      | 15 | `inspectToolSchemas` | การวินิจฉัยสคีมาเครื่องมือที่ผู้ให้บริการเป็นเจ้าของ |
-      | 16 | `resolveReasoningOutputMode` | สัญญาเอาต์พุตการให้เหตุผลแบบติดแท็กเทียบกับแบบดั้งเดิม |
+      | 5 | `normalizeConfig` | ปรับมาตรฐาน config `models.providers.<id>` |
+      | 6 | `applyNativeStreamingUsageCompat` | การเขียน compat ของ native streaming-usage ใหม่สำหรับผู้ให้บริการจาก config |
+      | 7 | `resolveConfigApiKey` | การแก้ค่า auth แบบ env-marker ที่ผู้ให้บริการเป็นเจ้าของ |
+      | 8 | `resolveSyntheticAuth` | auth สังเคราะห์แบบ local/self-hosted หรืออิง config |
+      | 9 | `shouldDeferSyntheticProfileAuth` | ลดลำดับ placeholder โปรไฟล์ที่จัดเก็บแบบสังเคราะห์ไว้หลัง auth จาก env/config |
+      | 10 | `resolveDynamicModel` | ยอมรับ ID โมเดล upstream ใดก็ได้ |
+      | 11 | `prepareDynamicModel` | ดึงเมตาดาต้าแบบ async ก่อน resolve |
+      | 12 | `normalizeResolvedModel` | การเขียน transport ใหม่ก่อน runner |
+      | 13 | `contributeResolvedModelCompat` | แฟล็ก compat สำหรับโมเดลผู้ขายที่อยู่หลัง transport ที่เข้ากันได้อื่น |
+      | 14 | `normalizeToolSchemas` | การล้าง tool-schema ที่ผู้ให้บริการเป็นเจ้าของก่อน registration |
+      | 15 | `inspectToolSchemas` | การวินิจฉัย tool-schema ที่ผู้ให้บริการเป็นเจ้าของ |
+      | 16 | `resolveReasoningOutputMode` | สัญญา reasoning-output แบบ tagged เทียบกับแบบเนทีฟ |
       | 17 | `prepareExtraParams` | พารามิเตอร์คำขอค่าเริ่มต้น |
-      | 18 | `createStreamFn` | การขนส่ง StreamFn แบบกำหนดเองทั้งหมด |
-      | 19 | `wrapStreamFn` | ตัวห่อหุ้มเฮดเดอร์/เนื้อหาแบบกำหนดเองบนเส้นทางสตรีมปกติ |
-      | 20 | `resolveTransportTurnState` | เฮดเดอร์/เมทาดาทาดั้งเดิมรายเทิร์น |
-      | 21 | `resolveWebSocketSessionPolicy` | เฮดเดอร์เซสชัน WS ดั้งเดิม/ช่วงพักลดระดับ |
-      | 22 | `formatApiKey` | รูปทรงโทเค็นรันไทม์แบบกำหนดเอง |
-      | 23 | `refreshOAuth` | การรีเฟรช OAuth แบบกำหนดเอง |
-      | 24 | `buildAuthDoctorHint` | คำแนะนำการซ่อมแซมการยืนยันตัวตน |
-      | 25 | `matchesContextOverflowError` | การตรวจจับบริบทล้นที่ผู้ให้บริการเป็นเจ้าของ |
-      | 26 | `classifyFailoverReason` | การจัดประเภท rate-limit/โอเวอร์โหลดที่ผู้ให้บริการเป็นเจ้าของ |
-      | 27 | `isCacheTtlEligible` | การกั้น TTL ของแคชพรอมป์ |
-      | 28 | `buildMissingAuthMessage` | คำแนะนำการยืนยันตัวตนที่ขาดหายแบบกำหนดเอง |
-      | 29 | `augmentModelCatalog` | แถวความเข้ากันได้ล่วงหน้าแบบสังเคราะห์ |
+      | 18 | `createStreamFn` | transport StreamFn แบบกำหนดเองทั้งหมด |
+      | 19 | `wrapStreamFn` | wrapper เฮดเดอร์/body กำหนดเองบนเส้นทางสตรีมปกติ |
+      | 20 | `resolveTransportTurnState` | เฮดเดอร์/เมตาดาต้าเนทีฟต่อ turn |
+      | 21 | `resolveWebSocketSessionPolicy` | เฮดเดอร์/คูลดาวน์เซสชัน WS เนทีฟ |
+      | 22 | `formatApiKey` | รูปแบบโทเค็น runtime กำหนดเอง |
+      | 23 | `refreshOAuth` | การ refresh OAuth กำหนดเอง |
+      | 24 | `buildAuthDoctorHint` | คำแนะนำการซ่อมแซม auth |
+      | 25 | `matchesContextOverflowError` | การตรวจจับ overflow ที่ผู้ให้บริการเป็นเจ้าของ |
+      | 26 | `classifyFailoverReason` | การจัดประเภท rate-limit/overload ที่ผู้ให้บริการเป็นเจ้าของ |
+      | 27 | `isCacheTtlEligible` | การ gating TTL ของ prompt cache |
+      | 28 | `buildMissingAuthMessage` | hint missing-auth กำหนดเอง |
+      | 29 | `augmentModelCatalog` | แถว forward-compat สังเคราะห์ |
       | 30 | `resolveThinkingProfile` | ชุดตัวเลือก `/think` เฉพาะโมเดล |
-      | 31 | `isBinaryThinking` | ความเข้ากันได้ของการเปิด/ปิดการคิดแบบไบนารี |
-      | 32 | `supportsXHighThinking` | ความเข้ากันได้ของการรองรับการให้เหตุผล `xhigh` |
+      | 31 | `isBinaryThinking` | ความเข้ากันได้ของการคิดแบบไบนารีเปิด/ปิด |
+      | 32 | `supportsXHighThinking` | ความเข้ากันได้กับการรองรับเหตุผล `xhigh` |
       | 33 | `resolveDefaultThinkingLevel` | ความเข้ากันได้ของนโยบาย `/think` ค่าเริ่มต้น |
-      | 34 | `isModernModelRef` | การจับคู่โมเดลแบบสด/สโมก |
-      | 35 | `prepareRuntimeAuth` | การแลกเปลี่ยนโทเค็นก่อนการอนุมาน |
-      | 36 | `resolveUsageAuth` | การแยกวิเคราะห์ข้อมูลประจำตัวการใช้งานแบบกำหนดเอง |
-      | 37 | `fetchUsageSnapshot` | เอนด์พอยต์การใช้งานแบบกำหนดเอง |
-      | 38 | `createEmbeddingProvider` | อะแดปเตอร์ embedding ที่ผู้ให้บริการเป็นเจ้าของสำหรับหน่วยความจำ/การค้นหา |
-      | 39 | `buildReplayPolicy` | นโยบายรีเพลย์/Compaction ของทรานสคริปต์แบบกำหนดเอง |
-      | 40 | `sanitizeReplayHistory` | การเขียนรีเพลย์ใหม่เฉพาะผู้ให้บริการหลังการล้างทั่วไป |
-      | 41 | `validateReplayTurns` | การตรวจสอบเทิร์นรีเพลย์แบบเข้มงวดก่อนรันเนอร์แบบฝัง |
-      | 42 | `onModelSelected` | คอลแบ็กหลังการเลือก (เช่น เทเลเมทรี) |
+      | 34 | `isModernModelRef` | การจับคู่โมเดล live/smoke |
+      | 35 | `prepareRuntimeAuth` | การแลกเปลี่ยนโทเค็นก่อน inference |
+      | 36 | `resolveUsageAuth` | การแยก credential การใช้งานกำหนดเอง |
+      | 37 | `fetchUsageSnapshot` | endpoint การใช้งานกำหนดเอง |
+      | 38 | `createEmbeddingProvider` | adapter embedding ที่ผู้ให้บริการเป็นเจ้าของสำหรับ memory/search |
+      | 39 | `buildReplayPolicy` | นโยบาย replay/Compaction ของ transcript กำหนดเอง |
+      | 40 | `sanitizeReplayHistory` | การเขียน replay ใหม่เฉพาะผู้ให้บริการหลังการล้างทั่วไป |
+      | 41 | `validateReplayTurns` | การตรวจสอบ replay-turn แบบเข้มงวดก่อน runner แบบฝัง |
+      | 42 | `onModelSelected` | callback หลังการเลือก (เช่น telemetry) |
 
-      หมายเหตุเกี่ยวกับการสำรองรันไทม์:
+      หมายเหตุ fallback ของ runtime:
 
-      - `normalizeConfig` ตรวจสอบผู้ให้บริการที่ตรงกันก่อน จากนั้นจึงตรวจสอบ Plugin ผู้ให้บริการอื่นที่รองรับฮุกได้จนกว่าจะมีรายการหนึ่งเปลี่ยนคอนฟิกจริง หากไม่มีฮุกผู้ให้บริการใดเขียนรายการคอนฟิกตระกูล Google ที่รองรับใหม่ ตัวทำมาตรฐานคอนฟิก Google ที่บันเดิลมาก็ยังทำงานอยู่
-      - `resolveConfigApiKey` ใช้ฮุกผู้ให้บริการเมื่อมีการเปิดเผย เส้นทาง `amazon-bedrock` ที่บันเดิลมายังมีตัวแก้ไขมาร์กเกอร์ env ของ AWS ในตัวที่นี่ด้วย แม้ว่าการยืนยันตัวตนรันไทม์ของ Bedrock เองยังใช้เชนค่าเริ่มต้นของ AWS SDK ก็ตาม
-      - `resolveSystemPromptContribution` ให้ผู้ให้บริการแทรกคำแนะนำพรอมป์ระบบที่คำนึงถึงแคชสำหรับตระกูลโมเดลได้ ควรใช้สิ่งนี้แทน `before_prompt_build` เมื่อพฤติกรรมเป็นของผู้ให้บริการ/ตระกูลโมเดลหนึ่ง และควรรักษาการแยกแคชแบบเสถียร/ไดนามิกไว้
+      - `normalizeConfig` ตรวจสอบผู้ให้บริการที่ตรงกันก่อน จากนั้นตรวจสอบ Plugin ผู้ให้บริการอื่นที่มี hook จนกว่าจะมีรายการหนึ่งเปลี่ยน config จริง หากไม่มี hook ผู้ให้บริการใดเขียนรายการ config ตระกูล Google ที่รองรับใหม่ ตัวปรับมาตรฐาน config ของ Google ที่บันเดิลมาก็ยังทำงาน
+      - `resolveConfigApiKey` ใช้ hook ของผู้ให้บริการเมื่อมีให้ใช้ เส้นทาง `amazon-bedrock` ที่บันเดิลมายังมี resolver env-marker ของ AWS ในตัวที่นี่ด้วย แม้ว่า auth runtime ของ Bedrock เองยังคงใช้เชนค่าเริ่มต้นของ AWS SDK
+      - `resolveSystemPromptContribution` ให้ผู้ให้บริการฉีดคำแนะนำ system-prompt ที่รับรู้ cache สำหรับตระกูลโมเดลได้ ควรใช้สิ่งนี้แทน `before_prompt_build` เมื่อพฤติกรรมเป็นของผู้ให้บริการ/ตระกูลโมเดลเดียว และควรรักษาการแยก cache แบบ stable/dynamic
 
-      สำหรับคำอธิบายโดยละเอียดและตัวอย่างจริง โปรดดู [ภายใน: ฮุกรันไทม์ของผู้ให้บริการ](/th/plugins/architecture-internals#provider-runtime-hooks)
+      สำหรับคำอธิบายละเอียดและตัวอย่างจากการใช้งานจริง โปรดดู [ภายใน: Hook Runtime ของผู้ให้บริการ](/th/plugins/architecture-internals#provider-runtime-hooks)
     </Accordion>
 
   </Step>
 
   <Step title="เพิ่มความสามารถเพิ่มเติม (ไม่บังคับ)">
-    Plugin ผู้ให้บริการสามารถลงทะเบียนเสียงพูด, การถอดเสียงแบบเรียลไทม์, เสียง
-    แบบเรียลไทม์, การทำความเข้าใจสื่อ, การสร้างภาพ, การสร้างวิดีโอ, การดึงข้อมูลเว็บ,
-    และการค้นหาเว็บควบคู่ไปกับการอนุมานข้อความ OpenClaw จัดประเภทสิ่งนี้เป็น
-    Plugin แบบ **hybrid-capability** ซึ่งเป็นรูปแบบที่แนะนำสำหรับ Plugin ของบริษัท
+    Plugin ผู้ให้บริการสามารถลงทะเบียน speech, realtime transcription, realtime
+    voice, media understanding, image generation, video generation, web fetch,
+    และ web search ควบคู่กับ text inference ได้ OpenClaw จัดประเภทสิ่งนี้เป็น
+    Plugin แบบ **hybrid-capability** ซึ่งเป็นแพตเทิร์นที่แนะนำสำหรับ Plugin ของบริษัท
     (หนึ่ง Plugin ต่อผู้ขาย) ดู
     [ภายใน: ความเป็นเจ้าของความสามารถ](/th/plugins/architecture#capability-ownership-model)
 
-    ลงทะเบียนแต่ละความสามารถภายใน `register(api)` ควบคู่ไปกับการเรียก
-    `api.registerProvider(...)` ที่มีอยู่ เลือกเฉพาะแท็บที่คุณต้องใช้:
+    ลงทะเบียนแต่ละความสามารถภายใน `register(api)` ควบคู่กับการเรียก
+    `api.registerProvider(...)` ที่มีอยู่ เลือกเฉพาะแท็บที่คุณต้องการ:
 
     <Tabs>
       <Tab title="คำพูด (TTS)">
@@ -534,15 +534,15 @@ x-i18n:
         });
         ```
 
-        ใช้ `assertOkOrThrowProviderError(...)` สำหรับความล้มเหลว HTTP ของผู้ให้บริการ เพื่อให้
-        plugins ใช้การอ่านเนื้อหา error-body แบบจำกัด, การแยกวิเคราะห์ข้อผิดพลาด JSON และ
-        ส่วนต่อท้าย request-id ร่วมกัน
+        ใช้ `assertOkOrThrowProviderError(...)` สำหรับความล้มเหลวของ HTTP ของผู้ให้บริการ เพื่อให้
+        Plugin ใช้การอ่านเนื้อหาข้อผิดพลาดแบบจำกัด การแยกวิเคราะห์ข้อผิดพลาด JSON และ
+        ส่วนต่อท้าย request-id ร่วมกันได้
       </Tab>
       <Tab title="การถอดเสียงแบบเรียลไทม์">
-        แนะนำให้ใช้ `createRealtimeTranscriptionWebSocketSession(...)` — ตัวช่วยที่ใช้ร่วมกัน
-        จะจัดการการจับพร็อกซี, backoff สำหรับการเชื่อมต่อใหม่, การ flush เมื่่อปิด, การ handshake ความพร้อม,
-        การเข้าคิวเสียง และการวินิจฉัยเหตุการณ์ปิด Plugin ของคุณ
-        เพียงแมปเหตุการณ์จาก upstream เท่านั้น
+        ควรใช้ `createRealtimeTranscriptionWebSocketSession(...)` — ตัวช่วยที่ใช้ร่วมกัน
+        จัดการการจับพร็อกซี การหน่วงเวลาก่อนเชื่อมต่อใหม่ การล้างข้อมูลเมื่อปิด แฮนด์เชกความพร้อม
+        การจัดคิวเสียง และการวินิจฉัยเหตุการณ์ปิด Plugin ของคุณ
+        เพียงแมปเหตุการณ์จากต้นทางเท่านั้น
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -580,11 +580,11 @@ x-i18n:
         });
         ```
 
-        ผู้ให้บริการ STT แบบแบตช์ที่ POST เสียง multipart ควรใช้
+        ผู้ให้บริการ STT แบบแบตช์ที่ POST เสียงแบบ multipart ควรใช้
         `buildAudioTranscriptionFormData(...)` จาก
         `openclaw/plugin-sdk/provider-http` ตัวช่วยนี้ทำให้ชื่อไฟล์อัปโหลดเป็นรูปแบบมาตรฐาน
-        รวมถึงการอัปโหลด AAC ที่ต้องใช้ชื่อไฟล์แบบ M4A เพื่อให้เข้ากันได้กับ
-        API การถอดเสียง
+        รวมถึงการอัปโหลด AAC ที่ต้องใช้ชื่อไฟล์สไตล์ M4A สำหรับ
+        API ถอดเสียงที่เข้ากันได้
       </Tab>
       <Tab title="เสียงแบบเรียลไทม์">
         ```typescript
@@ -600,6 +600,7 @@ x-i18n:
             connect: async () => {},
             sendAudio: () => {},
             setMediaTimestamp: () => {},
+            handleBargeIn: () => {},
             submitToolResult: () => {},
             acknowledgeMark: () => {},
             close: () => {},
@@ -607,6 +608,10 @@ x-i18n:
           }),
         });
         ```
+
+        ใช้งาน `handleBargeIn` เมื่อทรานสปอร์ตสามารถตรวจจับได้ว่ามนุษย์กำลัง
+        ขัดจังหวะการเล่นเสียงของผู้ช่วย และผู้ให้บริการรองรับการตัดทอนหรือ
+        ล้างการตอบกลับเสียงที่กำลังใช้งานอยู่
       </Tab>
       <Tab title="การทำความเข้าใจสื่อ">
         ```typescript
@@ -618,13 +623,13 @@ x-i18n:
         });
         ```
       </Tab>
-      <Tab title="การสร้างภาพและวิดีโอ">
-        ความสามารถด้านวิดีโอใช้โครงสร้างที่ **รับรู้โหมด**: `generate`,
+      <Tab title="การสร้างรูปภาพและวิดีโอ">
+        ความสามารถวิดีโอใช้รูปแบบที่ **รับรู้โหมด** ได้แก่ `generate`,
         `imageToVideo` และ `videoToVideo` ฟิลด์รวมแบบแบน เช่น
-        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` ไม่
-        เพียงพอสำหรับประกาศการรองรับโหมดแปลง หรือโหมดที่ปิดใช้งานไว้อย่างชัดเจน
-        การสร้างเพลงใช้รูปแบบเดียวกันโดยมีบล็อก `generate` /
-        `edit` ที่ระบุชัดเจน
+        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` นั้น
+        ไม่เพียงพอสำหรับประกาศการรองรับโหมดแปลงหรือโหมดที่ปิดใช้งานอย่างชัดเจน
+        การสร้างเพลงใช้รูปแบบเดียวกัน โดยมีบล็อก `generate` /
+        `edit` อย่างชัดเจน
 
         ```typescript
         api.registerImageGenerationProvider({
@@ -720,14 +725,14 @@ x-i18n:
 
 ## เผยแพร่ไปยัง ClawHub
 
-Provider plugins เผยแพร่ในลักษณะเดียวกับ plugin โค้ดภายนอกอื่นๆ:
+Plugin ผู้ให้บริการเผยแพร่ด้วยวิธีเดียวกับ Plugin โค้ดภายนอกอื่นๆ:
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-อย่าใช้นามแฝงการเผยแพร่แบบเดิมที่ใช้เฉพาะ skill ที่นี่ แพ็กเกจ plugin ควรใช้
+อย่าใช้นามแฝงการเผยแพร่แบบเดิมที่ใช้เฉพาะ skill ที่นี่ แพ็กเกจ Plugin ควรใช้
 `clawhub package publish`
 
 ## โครงสร้างไฟล์
@@ -742,27 +747,27 @@ clawhub package publish your-org/your-plugin
     └── usage.ts              # Usage endpoint (optional)
 ```
 
-## ข้อมูลอ้างอิงลำดับแค็ตตาล็อก
+## อ้างอิงลำดับแคตตาล็อก
 
-`catalog.order` ควบคุมว่าแค็ตตาล็อกของคุณจะถูกรวมเมื่อใดเมื่อเทียบกับ
+`catalog.order` ควบคุมเวลาที่แคตตาล็อกของคุณผสานเมื่อเทียบกับ
 ผู้ให้บริการในตัว:
 
 | ลำดับ     | เมื่อใด          | กรณีใช้งาน                                        |
 | --------- | ------------- | ----------------------------------------------- |
-| `simple`  | รอบแรก    | ผู้ให้บริการ API-key แบบตรงไปตรงมา                         |
-| `profile` | หลัง simple  | ผู้ให้บริการที่ถูกจำกัดด้วยโปรไฟล์ auth                |
+| `simple`  | รอบแรก    | ผู้ให้บริการที่ใช้ API-key ธรรมดา                         |
+| `profile` | หลัง simple  | ผู้ให้บริการที่ถูกจำกัดด้วยโปรไฟล์การยืนยันตัวตน                |
 | `paired`  | หลัง profile | สังเคราะห์รายการที่เกี่ยวข้องหลายรายการ             |
 | `late`    | รอบสุดท้าย     | แทนที่ผู้ให้บริการที่มีอยู่ (ชนะเมื่อชนกัน) |
 
 ## ขั้นตอนถัดไป
 
-- [Channel Plugins](/th/plugins/sdk-channel-plugins) — หาก Plugin ของคุณยังให้บริการช่องทางด้วย
+- [Plugin ช่องทาง](/th/plugins/sdk-channel-plugins) — หาก Plugin ของคุณมีช่องทางด้วย
 - [SDK Runtime](/th/plugins/sdk-runtime) — ตัวช่วย `api.runtime` (TTS, การค้นหา, subagent)
-- [ภาพรวม SDK](/th/plugins/sdk-overview) — ข้อมูลอ้างอิงการนำเข้า subpath แบบเต็ม
-- [รายละเอียดภายใน Plugin](/th/plugins/architecture-internals#provider-runtime-hooks) — รายละเอียด hook และตัวอย่างที่ bundled มา
+- [ภาพรวม SDK](/th/plugins/sdk-overview) — อ้างอิงการนำเข้า subpath แบบเต็ม
+- [ภายในของ Plugin](/th/plugins/architecture-internals#provider-runtime-hooks) — รายละเอียด hook และตัวอย่างที่มาพร้อมชุด
 
 ## ที่เกี่ยวข้อง
 
 - [การตั้งค่า Plugin SDK](/th/plugins/sdk-setup)
-- [การสร้าง plugins](/th/plugins/building-plugins)
-- [การสร้าง channel plugins](/th/plugins/sdk-channel-plugins)
+- [การสร้าง Plugin](/th/plugins/building-plugins)
+- [การสร้าง Plugin ช่องทาง](/th/plugins/sdk-channel-plugins)

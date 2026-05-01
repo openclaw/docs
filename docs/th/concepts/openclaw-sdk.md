@@ -1,65 +1,68 @@
 ---
 read_when:
     - คุณกำลังสร้างแอปภายนอก สคริปต์ แดชบอร์ด งาน CI หรือส่วนขยาย IDE ที่สื่อสารกับ OpenClaw
-    - คุณกำลังเลือกระหว่าง App SDK และ Plugin SDK
+    - คุณกำลังเลือกระหว่าง SDK สำหรับแอปกับ SDK สำหรับ Plugin
     - คุณกำลังผสานการทำงานกับการรันเอเจนต์ เซสชัน เหตุการณ์ การอนุมัติ โมเดล หรือเครื่องมือของ Gateway
 sidebarTitle: App SDK
-summary: SDK แอป OpenClaw สาธารณะสำหรับแอปภายนอก สคริปต์ แดชบอร์ด งาน CI และส่วนขยาย IDE
-title: SDK แอป OpenClaw
+summary: OpenClaw App SDK สาธารณะสำหรับแอปภายนอก สคริปต์ แดชบอร์ด งาน CI และส่วนขยาย IDE
+title: SDK สำหรับแอป OpenClaw
 x-i18n:
-    generated_at: "2026-04-30T09:47:53Z"
+    generated_at: "2026-05-01T10:16:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c46454d172a25d329a796461982dc4307d3720a28df777eda8605996505e38c
+    source_hash: a6b22e9f4f809a572cfd19fd22f633a706dd23b8bee2f3c244003a0861a41073
     source_path: concepts/openclaw-sdk.md
     workflow: 16
 ---
 
-**OpenClaw App SDK** คือ API ไคลเอนต์สาธารณะสำหรับแอปที่อยู่นอกโปรเซสของ
+**OpenClaw App SDK** คือ API ไคลเอนต์สาธารณะสำหรับแอปที่อยู่นอกโปรเซส
 OpenClaw ใช้ `@openclaw/sdk` เมื่อสคริปต์ แดชบอร์ด งาน CI ส่วนขยาย IDE
-หรือแอปภายนอกอื่นต้องการเชื่อมต่อกับ Gateway, เริ่มการรันของเอเจนต์,
-สตรีมอีเวนต์, รอผลลัพธ์, ยกเลิกงาน หรือตรวจสอบทรัพยากรของ Gateway
+หรือแอปภายนอกอื่นต้องการเชื่อมต่อกับ Gateway, เริ่มการรันของเอเจนต์
+สตรีมเหตุการณ์ รอผลลัพธ์ ยกเลิกงาน หรือตรวจสอบทรัพยากรของ Gateway
 
 <Note>
   App SDK แตกต่างจาก [Plugin SDK](/th/plugins/sdk-overview)
-  `@openclaw/sdk` คุยกับ Gateway จากภายนอก OpenClaw
-  `openclaw/plugin-sdk/*` ใช้สำหรับ Plugin ที่รันอยู่ภายใน OpenClaw เท่านั้น และ
-  ลงทะเบียนผู้ให้บริการ ช่องทาง เครื่องมือ hooks หรือรันไทม์ที่เชื่อถือได้
+  `@openclaw/sdk` สื่อสารกับ Gateway จากภายนอก OpenClaw
+  `openclaw/plugin-sdk/*` ใช้เฉพาะสำหรับ plugins ที่ทำงานภายใน OpenClaw และ
+  ลงทะเบียนผู้ให้บริการ ช่องทาง เครื่องมือ hooks หรือ trusted runtimes
 </Note>
 
-## สิ่งที่มีให้ในวันนี้
+## สิ่งที่มีให้ใช้งานในวันนี้
 
-`@openclaw/sdk` มาพร้อมกับ:
+`@openclaw/sdk` มีสิ่งต่อไปนี้:
 
-| พื้นผิว                  | สถานะ       | สิ่งที่ทำ                                                                    |
-| ------------------------- | ------- | ---------------------------------------------------------------------------- |
-| `OpenClaw`                | พร้อมใช้งาน | จุดเข้าใช้งานหลักของไคลเอนต์ เป็นเจ้าของ transport, การเชื่อมต่อ, คำขอ และอีเวนต์ |
-| `GatewayClientTransport`  | พร้อมใช้งาน | WebSocket transport ที่รองรับโดยไคลเอนต์ Gateway                             |
-| `oc.agents`               | พร้อมใช้งาน | แสดงรายการ สร้าง อัปเดต ลบ และรับ handle ของเอเจนต์                         |
-| `Agent.run()`             | พร้อมใช้งาน | เริ่มการรัน Gateway `agent` และคืนค่า `Run`                                  |
-| `oc.runs`                 | พร้อมใช้งาน | สร้าง รับ รอ ยกเลิก และสตรีมการรัน                                          |
-| `Run.events()`            | พร้อมใช้งาน | สตรีมอีเวนต์ต่อการรันที่ปรับรูปแบบแล้ว พร้อม replay สำหรับการรันที่เร็ว     |
-| `Run.wait()`              | พร้อมใช้งาน | เรียก `agent.wait` และคืนค่า `RunResult` ที่เสถียร                           |
-| `Run.cancel()`            | พร้อมใช้งาน | เรียก `sessions.abort` ด้วย run id พร้อม session key เมื่อมีให้ใช้งาน        |
-| `oc.sessions`             | พร้อมใช้งาน | สร้าง resolve ส่งไปยัง แพตช์ compact และรับ handle ของเซสชัน                |
-| `Session.send()`          | พร้อมใช้งาน | เรียก `sessions.send` และคืนค่า `Run`                                        |
-| `oc.models`               | พร้อมใช้งาน | เรียก `models.list` และ RPC สถานะ `models.authStatus` ปัจจุบัน               |
-| `oc.tools`                | บางส่วน | แสดงรายการแค็ตตาล็อกเครื่องมือและเครื่องมือที่มีผลจริง; ยังไม่ได้ต่อการเรียกใช้เครื่องมือโดยตรง |
-| `oc.approvals`            | พร้อมใช้งาน | แสดงรายการและ resolve การอนุมัติ exec ผ่าน RPC การอนุมัติของ Gateway        |
-| `oc.rawEvents()`          | พร้อมใช้งาน | เปิดเผยอีเวนต์ Gateway แบบดิบสำหรับผู้ใช้งานขั้นสูง                         |
-| `normalizeGatewayEvent()` | พร้อมใช้งาน | แปลงอีเวนต์ Gateway แบบดิบให้เป็นรูปแบบอีเวนต์ SDK ที่เสถียร                |
+| Surface                   | สถานะ | สิ่งที่ทำ                                                                 |
+| ------------------------- | ------ | -------------------------------------------------------------------------- |
+| `OpenClaw`                | พร้อมใช้งาน | จุดเริ่มต้นไคลเอนต์หลัก เป็นเจ้าของ transport, การเชื่อมต่อ, requests และ events |
+| `GatewayClientTransport`  | พร้อมใช้งาน | WebSocket transport ที่อิงกับไคลเอนต์ Gateway                              |
+| `oc.agents`               | พร้อมใช้งาน | แสดงรายการ สร้าง อัปเดต ลบ และรับ handles ของเอเจนต์                      |
+| `Agent.run()`             | พร้อมใช้งาน | เริ่มการรัน `agent` ของ Gateway และส่งคืน `Run`                            |
+| `oc.runs`                 | พร้อมใช้งาน | สร้าง รับ รอ ยกเลิก และสตรีม runs                                          |
+| `Run.events()`            | พร้อมใช้งาน | สตรีม events ต่อ run ที่ถูกทำให้เป็นรูปแบบมาตรฐาน พร้อม replay สำหรับ runs ที่เร็ว |
+| `Run.wait()`              | พร้อมใช้งาน | เรียก `agent.wait` และส่งคืน `RunResult` ที่เสถียร                         |
+| `Run.cancel()`            | พร้อมใช้งาน | เรียก `sessions.abort` ด้วย run id พร้อม session key เมื่อมี               |
+| `oc.sessions`             | พร้อมใช้งาน | สร้าง แก้ไขการอ้างอิง ส่งไปยัง แพตช์ compact และรับ handles ของเซสชัน     |
+| `Session.send()`          | พร้อมใช้งาน | เรียก `sessions.send` และส่งคืน `Run`                                      |
+| `oc.models`               | พร้อมใช้งาน | เรียก `models.list` และ RPC สถานะ `models.authStatus` ปัจจุบัน             |
+| `oc.tools`                | พร้อมใช้งาน | แสดงรายการ กำหนด scope และเรียกใช้เครื่องมือ Gateway ผ่าน policy pipeline |
+| `oc.artifacts`            | พร้อมใช้งาน | แสดงรายการ รับ และดาวน์โหลด artifacts ของ transcript จาก Gateway           |
+| `oc.approvals`            | พร้อมใช้งาน | แสดงรายการและแก้ไข exec approvals ผ่าน approval RPCs ของ Gateway           |
+| `oc.rawEvents()`          | พร้อมใช้งาน | เปิดเผย events ดิบของ Gateway สำหรับผู้ใช้ขั้นสูง                          |
+| `normalizeGatewayEvent()` | พร้อมใช้งาน | แปลง events ดิบของ Gateway เป็นรูปแบบ event ของ SDK ที่เสถียร              |
 
-SDK ยัง export ชนิดหลักที่พื้นผิวเหล่านั้นใช้:
+SDK ยัง export types หลักที่ surfaces เหล่านั้นใช้:
 `AgentRunParams`, `RunResult`, `RunStatus`, `OpenClawEvent`,
 `OpenClawEventType`, `GatewayEvent`, `OpenClawTransport`,
 `GatewayRequestOptions`, `SessionCreateParams`, `SessionSendParams`,
-`RuntimeSelection`, `EnvironmentSelection`, `WorkspaceSelection`,
-`ApprovalMode` และชนิดผลลัพธ์ที่เกี่ยวข้อง
+`ArtifactSummary`, `ArtifactQuery`, `ArtifactsListResult`,
+`ArtifactsGetResult`, `ArtifactsDownloadResult`, `RuntimeSelection`,
+`EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode` และ
+result types ที่เกี่ยวข้อง
 
 ## เชื่อมต่อกับ Gateway
 
-สร้างไคลเอนต์ด้วย URL ของ Gateway ที่ระบุชัดเจน หรือฉีด transport แบบกำหนดเองสำหรับ
-การทดสอบและรันไทม์แอปแบบฝัง
+สร้างไคลเอนต์ด้วย URL ของ Gateway ที่ระบุชัดเจน หรือฉีด custom transport สำหรับ
+tests และ embedded app runtimes
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
@@ -74,10 +77,11 @@ await oc.connect();
 ```
 
 `new OpenClaw({ gateway: "ws://..." })` เทียบเท่ากับ `url` ตัวเลือก
-`gateway: "auto"` ถูก constructor รับได้ แต่การค้นหา Gateway อัตโนมัติยังไม่ใช่
-ฟีเจอร์ SDK แยกต่างหาก; ส่ง `url` เมื่อแอปยังไม่รู้วิธีค้นหา Gateway อยู่แล้ว
+`gateway: "auto"` ถูก constructor ยอมรับ แต่การค้นหา Gateway อัตโนมัติ
+ยังไม่ใช่ฟีเจอร์ SDK แยกต่างหากในตอนนี้ ให้ส่ง `url` เมื่อแอปยังไม่รู้วิธี
+ค้นหา Gateway อยู่แล้ว
 
-สำหรับการทดสอบ ให้ส่งออบเจ็กต์ที่ implement `OpenClawTransport`:
+สำหรับ tests ให้ส่ง object ที่ implements `OpenClawTransport`:
 
 ```typescript
 const oc = new OpenClaw({
@@ -116,18 +120,18 @@ const result = await run.wait({ timeoutMs: 120_000 });
 console.log(result.status);
 ```
 
-model ref ที่ระบุ provider เช่น `openai/gpt-5.5` จะถูกแยกเป็น override ของ Gateway
-สำหรับ `provider` และ `model` ค่า `timeoutMs` ยังเป็นมิลลิวินาทีใน SDK และ
-จะถูกแปลงเป็นวินาที timeout ของ Gateway สำหรับ RPC `agent`
+model refs ที่ระบุ provider เช่น `openai/gpt-5.5` จะถูกแยกเป็น overrides
+`provider` และ `model` ของ Gateway `timeoutMs` ยังคงเป็นมิลลิวินาทีใน SDK และ
+ถูกแปลงเป็น timeout หน่วยวินาทีของ Gateway สำหรับ RPC `agent`
 
-`run.wait()` ใช้ RPC `agent.wait` ของ Gateway กำหนดเวลารอที่หมดอายุ
-ขณะที่การรันยัง active จะคืนค่า `status: "accepted"` แทนการแกล้งทำเหมือนว่า
-การรันเองหมดเวลา timeout ของรันไทม์ การรันที่ถูก abort และการรันที่ถูกยกเลิกจะถูก
-ปรับรูปแบบเป็น `timed_out` หรือ `cancelled`
+`run.wait()` ใช้ RPC `agent.wait` ของ Gateway กำหนดเวลารอที่หมดอายุขณะที่ run
+ยังทำงานอยู่จะส่งคืน `status: "accepted"` แทนที่จะทำเสมือนว่า run นั้น timeout
+เอง Runtime timeouts, runs ที่ถูก abort และ runs ที่ถูกยกเลิกจะถูกทำให้เป็น
+รูปแบบมาตรฐานเป็น `timed_out` หรือ `cancelled`
 
-## สร้างและใช้เซสชันซ้ำ
+## สร้างและใช้ Sessions ซ้ำ
 
-ใช้เซสชันเมื่อแอปต้องการสถานะ transcript ที่คงทน
+ใช้ sessions เมื่อแอปต้องการสถานะ transcript ที่คงอยู่
 
 ```typescript
 const session = await oc.sessions.create({
@@ -139,7 +143,7 @@ const run = await session.send("Prepare release notes from the current diff.");
 await run.wait();
 ```
 
-`Session.send()` เรียก `sessions.send` และคืนค่า `Run` handle ของเซสชันยัง
+`Session.send()` เรียก `sessions.send` และส่งคืน `Run` handles ของเซสชันยัง
 รองรับ:
 
 ```typescript
@@ -148,9 +152,9 @@ await session.patch({ label: "renamed-session" });
 await session.compact({ maxLines: 200 });
 ```
 
-## สตรีมอีเวนต์
+## สตรีม Events
 
-SDK ปรับรูปแบบอีเวนต์ Gateway แบบดิบให้เป็น envelope `OpenClawEvent` ที่เสถียร:
+SDK ทำให้ events ดิบของ Gateway เป็น envelope `OpenClawEvent` ที่เสถียร:
 
 ```typescript
 type OpenClawEvent = {
@@ -168,33 +172,33 @@ type OpenClawEvent = {
 };
 ```
 
-ชนิดอีเวนต์ทั่วไปประกอบด้วย:
+ประเภท event ที่พบบ่อยได้แก่:
 
-| ชนิดอีเวนต์            | อีเวนต์ Gateway ต้นทาง                    |
+| ประเภท event          | event ต้นทางของ Gateway                    |
 | --------------------- | ------------------------------------------- |
-| `run.started`         | การเริ่ม lifecycle ของ `agent`             |
-| `run.completed`       | การสิ้นสุด lifecycle ของ `agent`           |
-| `run.failed`          | ข้อผิดพลาด lifecycle ของ `agent`           |
-| `run.cancelled`       | การสิ้นสุด lifecycle แบบ abort/ยกเลิก      |
-| `run.timed_out`       | การสิ้นสุด lifecycle แบบ timeout           |
-| `assistant.delta`     | streaming delta ของผู้ช่วย                 |
-| `assistant.message`   | ข้อความของผู้ช่วย                          |
-| `thinking.delta`      | สตรีมการคิดหรือแผน                         |
-| `tool.call.started`   | การเริ่มเครื่องมือ/รายการ/คำสั่ง           |
-| `tool.call.delta`     | การอัปเดตเครื่องมือ/รายการ/คำสั่ง          |
-| `tool.call.completed` | การเสร็จสิ้นเครื่องมือ/รายการ/คำสั่ง       |
-| `tool.call.failed`    | ความล้มเหลวของเครื่องมือ/รายการ/คำสั่ง หรือสถานะถูกบล็อก |
-| `approval.requested`  | คำขออนุมัติ exec หรือ Plugin               |
-| `approval.resolved`   | การ resolve การอนุมัติ exec หรือ Plugin    |
-| `session.created`     | การสร้างจาก `sessions.changed`             |
-| `session.updated`     | การอัปเดตจาก `sessions.changed`            |
+| `run.started`         | การเริ่ม lifecycle ของ `agent`              |
+| `run.completed`       | การสิ้นสุด lifecycle ของ `agent`            |
+| `run.failed`          | ข้อผิดพลาด lifecycle ของ `agent`            |
+| `run.cancelled`       | การสิ้นสุด lifecycle ที่ถูก abort/cancelled |
+| `run.timed_out`       | การสิ้นสุด lifecycle จาก timeout            |
+| `assistant.delta`     | streaming delta ของ assistant               |
+| `assistant.message`   | ข้อความของ assistant                        |
+| `thinking.delta`      | สตรีมความคิดหรือแผน                         |
+| `tool.call.started`   | การเริ่ม tool/item/command                  |
+| `tool.call.delta`     | การอัปเดต tool/item/command                 |
+| `tool.call.completed` | การเสร็จสิ้น tool/item/command              |
+| `tool.call.failed`    | ความล้มเหลวของ tool/item/command หรือสถานะถูกบล็อก |
+| `approval.requested`  | คำขออนุมัติ exec หรือ plugin                |
+| `approval.resolved`   | การแก้ไขการอนุมัติ exec หรือ plugin         |
+| `session.created`     | การสร้างจาก `sessions.changed`              |
+| `session.updated`     | การอัปเดตจาก `sessions.changed`             |
 | `session.compacted`   | Compaction จาก `sessions.changed`           |
-| `task.updated`        | อีเวนต์อัปเดตงาน                           |
-| `artifact.updated`    | อีเวนต์สตรีมแพตช์                          |
-| `raw`                 | อีเวนต์ใดๆ ที่ยังไม่มี mapping SDK ที่เสถียร |
+| `task.updated`        | events การอัปเดต task                       |
+| `artifact.updated`    | events ของ patch stream                     |
+| `raw`                 | event ใดก็ตามที่ยังไม่มี mapping SDK ที่เสถียร |
 
-`Run.events()` กรองอีเวนต์ให้เหลือ run id เดียวและ replay อีเวนต์ที่เคยเห็นแล้วสำหรับ
-การรันที่เร็ว ซึ่งหมายความว่า flow ที่บันทึกไว้ในเอกสารนั้นปลอดภัย:
+`Run.events()` กรอง events ให้เหลือ run id เดียวและ replay events ที่เห็นแล้ว
+สำหรับ runs ที่เร็ว ซึ่งหมายความว่า flow ที่บันทึกไว้ในเอกสารนี้ปลอดภัย:
 
 ```typescript
 const run = await agent.run("Summarize the latest session.");
@@ -206,47 +210,65 @@ for await (const event of run.events()) {
 }
 ```
 
-สำหรับสตรีมทั้งแอป ให้ใช้ `oc.events()` สำหรับเฟรม Gateway แบบดิบ ให้ใช้
-`oc.rawEvents()`
+สำหรับ streams ระดับทั้งแอป ให้ใช้ `oc.events()` สำหรับ frames ดิบของ Gateway
+ให้ใช้ `oc.rawEvents()`
 
-## โมเดล เครื่องมือ และการอนุมัติ
+## Models, Tools, Artifacts และ Approvals
 
-ตัวช่วยโมเดล map ไปยังเมธอด Gateway ปัจจุบัน:
+ตัวช่วย model map ไปยัง methods ปัจจุบันของ Gateway:
 
 ```typescript
 await oc.models.list();
 await oc.models.status({ probe: false }); // calls models.authStatus
 ```
 
-ตัวช่วยเครื่องมือเปิดเผยแค็ตตาล็อก Gateway และมุมมองเครื่องมือที่มีผลจริง:
+ตัวช่วย tool เปิดเผย catalog ของ Gateway, มุมมอง tool ที่มีผล และการเรียกใช้
+Gateway tool โดยตรง `oc.tools.invoke()` ส่งคืน envelope ที่มี type แทนการ throw
+สำหรับการปฏิเสธจาก policy หรือ approval
 
 ```typescript
 await oc.tools.list();
 await oc.tools.effective({ sessionKey: "main" });
+await oc.tools.invoke("tool-name", {
+  args: { input: "value" },
+  sessionKey: "main",
+  confirm: false,
+  idempotencyKey: "tool-call-1",
+});
 ```
 
-ตัวช่วยการอนุมัติใช้ RPC การอนุมัติ exec:
+ตัวช่วย artifact เปิดเผย projection ของ artifact ใน Gateway สำหรับ context ของ
+session, run หรือ task แต่ละ call ต้องมี scope `sessionKey`, `runId` หรือ
+`taskId` อย่างใดอย่างหนึ่งที่ระบุชัดเจน:
+
+```typescript
+const { artifacts } = await oc.artifacts.list({ sessionKey: "main" });
+const first = artifacts[0];
+
+if (first) {
+  const { artifact } = await oc.artifacts.get(first.id, { sessionKey: "main" });
+  const download = await oc.artifacts.download(artifact.id, { sessionKey: "main" });
+  console.log(download.encoding, download.url);
+}
+```
+
+ตัวช่วย approval ใช้ RPCs สำหรับ exec approval:
 
 ```typescript
 const approvals = await oc.approvals.list();
 await oc.approvals.respond("approval-id", { decision: "approve" });
 ```
 
-## ยังไม่รองรับอย่างชัดเจนในวันนี้
+## สิ่งที่ยังไม่รองรับอย่างชัดเจนในวันนี้
 
-SDK รวมชื่อสำหรับโมเดลผลิตภัณฑ์ที่เราต้องการไว้ แต่จะไม่แกล้งทำเงียบๆ ว่า
-มี RPC ของ Gateway อยู่ การเรียกเหล่านี้ตอนนี้ throw ข้อผิดพลาดว่าไม่รองรับอย่างชัดเจน:
+SDK มีชื่อสำหรับ product model ที่เราต้องการ แต่จะไม่ทำเสมือนว่า Gateway RPCs
+มีอยู่โดยเงียบ ๆ calls เหล่านี้ในตอนนี้จะ throw ข้อผิดพลาด unsupported
+อย่างชัดเจน:
 
 ```typescript
 await oc.tasks.list();
 await oc.tasks.get("task-id");
 await oc.tasks.cancel("task-id");
-
-await oc.tools.invoke("tool-name", {});
-
-await oc.artifacts.list();
-await oc.artifacts.get("artifact-id");
-await oc.artifacts.download("artifact-id");
 
 await oc.environments.list();
 await oc.environments.create({});
@@ -254,11 +276,11 @@ await oc.environments.status("environment-id");
 await oc.environments.delete("environment-id");
 ```
 
-ฟิลด์ต่อการรัน `workspace`, `runtime`, `environment` และ `approvals` ถูกกำหนดชนิด
-เป็นรูปแบบในอนาคต แต่ Gateway ปัจจุบันไม่รองรับ override เหล่านั้นบน
-RPC `agent` หาก caller ส่งมา SDK จะ throw ก่อน submit การรัน
-เพื่อไม่ให้งานถูก execute โดยไม่ตั้งใจด้วยพฤติกรรม workspace, runtime,
-environment หรือ approval ค่าเริ่มต้น
+ฟิลด์ `workspace`, `runtime`, `environment` และ `approvals` ต่อ run ถูกกำหนด
+type เป็นรูปแบบอนาคต แต่ Gateway ปัจจุบันไม่รองรับ overrides เหล่านั้นบน RPC
+`agent` หาก callers ส่งค่าเหล่านี้ SDK จะ throw ก่อนส่ง run เพื่อไม่ให้งาน
+ถูก execute โดยไม่ตั้งใจด้วยพฤติกรรม workspace, runtime, environment หรือ
+approval แบบค่าเริ่มต้น
 
 ## App SDK เทียบกับ Plugin SDK
 
@@ -266,29 +288,29 @@ environment หรือ approval ค่าเริ่มต้น
 
 - สคริปต์ Node ที่เริ่มหรือสังเกตการรันของเอเจนต์
 - งาน CI ที่เรียก Gateway
-- แดชบอร์ดและแผงผู้ดูแล
+- แดชบอร์ดและแผงผู้ดูแลระบบ
 - ส่วนขยาย IDE
-- bridge ภายนอกที่ไม่จำเป็นต้องกลายเป็น channel Plugin
-- การทดสอบ integration ด้วย transport ของ Gateway แบบปลอมหรือจริง
+- bridges ภายนอกที่ไม่จำเป็นต้องกลายเป็น channel plugins
+- integration tests ด้วย Gateway transports ปลอมหรือจริง
 
-ใช้ Plugin SDK เมื่อโค้ดรันอยู่ภายใน OpenClaw:
+ใช้ Plugin SDK เมื่อโค้ดทำงานภายใน OpenClaw:
 
-- provider Plugin
-- channel Plugin
-- hook ของเครื่องมือหรือ lifecycle
-- agent harness Plugin
-- ตัวช่วยรันไทม์ที่เชื่อถือได้
+- provider plugins
+- channel plugins
+- hooks สำหรับ tool หรือ lifecycle
+- agent harness plugins
+- trusted runtime helpers
 
 โค้ด App SDK ควร import จาก `@openclaw/sdk` โค้ด Plugin ควร import จาก
-subpath `openclaw/plugin-sdk/*` ที่มีเอกสารกำกับไว้ อย่าผสมสัญญาทั้งสองแบบเข้าด้วยกัน
+subpaths `openclaw/plugin-sdk/*` ที่บันทึกไว้ในเอกสาร อย่าผสมสอง contracts นี้
 
 ## เอกสารที่เกี่ยวข้อง
 
 - [การออกแบบ API ของ OpenClaw App SDK](/th/reference/openclaw-sdk-api-design)
-- [เอกสารอ้างอิง RPC ของ Gateway](/th/reference/rpc)
-- [ลูปเอเจนต์](/th/concepts/agent-loop)
-- [รันไทม์ของเอเจนต์](/th/concepts/agent-runtimes)
-- [เซสชัน](/th/concepts/session)
-- [งานเบื้องหลัง](/th/automation/tasks)
-- [เอเจนต์ ACP](/th/tools/acp-agents)
+- [ข้อมูลอ้างอิง RPC ของ Gateway](/th/reference/rpc)
+- [Agent loop](/th/concepts/agent-loop)
+- [Agent runtimes](/th/concepts/agent-runtimes)
+- [Sessions](/th/concepts/session)
+- [Background tasks](/th/automation/tasks)
+- [ACP agents](/th/tools/acp-agents)
 - [ภาพรวม Plugin SDK](/th/plugins/sdk-overview)
