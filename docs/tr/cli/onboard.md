@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Gateway, çalışma alanı, kimlik doğrulama, kanallar ve Skills için rehberli kurulum istiyorsunuz
+    - Gateway, çalışma alanı, kimlik doğrulama, kanallar ve Skills için yönlendirmeli kurulum istiyorsunuz
 summary: '`openclaw onboard` için CLI referansı (etkileşimli ilk kurulum)'
-title: Kullanıma Al
+title: İlk Kurulum
 x-i18n:
-    generated_at: "2026-04-30T09:14:05Z"
+    generated_at: "2026-05-01T08:59:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 583310458b2e2bc8ddc1513112c960520d972716be0c33e4177d0db30e896504
+    source_hash: 1276a0b20f37da470bb4d49b38d06bacc38e7d0e85737a22971a2a9a3d90e244
     source_path: cli/onboard.md
     workflow: 16
 ---
 
 # `openclaw onboard`
 
-Yerel veya uzak Gateway kurulumu için etkileşimli ilk katılım.
+Yerel veya uzak Gateway kurulumu için etkileşimli ilk kurulum.
 
 ## İlgili kılavuzlar
 
@@ -23,7 +23,7 @@ Yerel veya uzak Gateway kurulumu için etkileşimli ilk katılım.
     Etkileşimli CLI akışının adım adım açıklaması.
   </Card>
   <Card title="Onboarding overview" href="/tr/start/onboarding-overview" icon="map">
-    OpenClaw ilk katılımının nasıl bir araya geldiği.
+    OpenClaw ilk kurulumunun nasıl bir araya geldiği.
   </Card>
   <Card title="CLI setup reference" href="/tr/start/wizard-cli-reference" icon="book">
     Çıktılar, iç işleyiş ve adım bazında davranış.
@@ -32,7 +32,7 @@ Yerel veya uzak Gateway kurulumu için etkileşimli ilk katılım.
     Etkileşimsiz bayraklar ve betikli kurulumlar.
   </Card>
   <Card title="macOS app onboarding" href="/tr/start/onboarding" icon="apple">
-    macOS menü çubuğu uygulaması için ilk katılım akışı.
+    macOS menü çubuğu uygulaması için ilk kurulum akışı.
   </Card>
 </CardGroup>
 
@@ -49,11 +49,11 @@ openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--flow import`, Hermes gibi plugin tarafından sahiplenilen geçiş sağlayıcılarını kullanır. Yalnızca yeni bir OpenClaw kurulumunda çalışır; mevcut config, credentials, sessions veya çalışma alanı memory/identity dosyaları varsa içe aktarmadan önce sıfırlayın ya da yeni bir kurulum seçin.
+`--flow import`, Hermes gibi Plugin sahipli geçiş sağlayıcılarını kullanır. Yalnızca yeni bir OpenClaw kurulumu üzerinde çalışır; mevcut yapılandırma, kimlik bilgileri, oturumlar veya çalışma alanı bellek/kimlik dosyaları varsa içe aktarmadan önce sıfırlayın ya da yeni bir kurulum seçin.
 
-`--modern`, Crestodian konuşmalı ilk katılım önizlemesini başlatır. `--modern` olmadan, `openclaw onboard` klasik ilk katılım akışını korur.
+`--modern`, Crestodian konuşmalı ilk kurulum önizlemesini başlatır. `--modern` olmadan `openclaw onboard` klasik ilk kurulum akışını korur.
 
-Düz metin özel ağ `ws://` hedefleri için (yalnızca güvenilir ağlar), ilk katılım süreci ortamında `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ayarını yapın. Bu istemci tarafı taşıma acil durum aşımı için `openclaw.json` eşdeğeri yoktur.
+Düz metin özel ağ `ws://` hedefleri için (yalnızca güvenilir ağlar), ilk kurulum süreci ortamında `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ayarlayın. Bu istemci tarafı taşıma acil durum seçeneği için `openclaw.json` eşdeğeri yoktur.
 
 Etkileşimsiz özel sağlayıcı:
 
@@ -68,8 +68,8 @@ openclaw onboard --non-interactive \
   --custom-image-input
 ```
 
-`--custom-api-key`, etkileşimsiz modda isteğe bağlıdır. Atlanırsa ilk katılım `CUSTOM_API_KEY` değişkenini denetler.
-OpenClaw, yaygın görme modeli kimliklerini otomatik olarak görüntü destekli şeklinde işaretler. Bilinmeyen özel görme kimlikleri için `--custom-image-input` geçirin veya yalnızca metin meta verilerini zorlamak için `--custom-text-input` kullanın.
+`--custom-api-key`, etkileşimsiz modda isteğe bağlıdır. Atlanırsa ilk kurulum `CUSTOM_API_KEY` değerini denetler.
+OpenClaw, yaygın görsel model kimliklerini otomatik olarak görüntü destekli olarak işaretler. Bilinmeyen özel görsel kimlikleri için `--custom-image-input`, yalnızca metin meta verilerini zorlamak için `--custom-text-input` iletin.
 
 LM Studio, etkileşimsiz modda sağlayıcıya özgü bir anahtar bayrağını da destekler:
 
@@ -92,7 +92,7 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` varsayılan olarak `http://127.0.0.1:11434` değerini kullanır. `--custom-model-id` isteğe bağlıdır; atlanırsa ilk katılım Ollama'nın önerilen varsayılanlarını kullanır. `kimi-k2.5:cloud` gibi bulut modeli kimlikleri de burada çalışır.
+`--custom-base-url` varsayılan olarak `http://127.0.0.1:11434` kullanır. `--custom-model-id` isteğe bağlıdır; atlanırsa ilk kurulum Ollama'nın önerilen varsayılanlarını kullanır. `kimi-k2.5:cloud` gibi bulut model kimlikleri de burada çalışır.
 
 Sağlayıcı anahtarlarını düz metin yerine ref olarak saklayın:
 
@@ -103,26 +103,28 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--secret-input-mode ref` ile ilk katılım, düz metin anahtar değerleri yerine env destekli ref'ler yazar.
-Auth-profile destekli sağlayıcılar için bu, `keyRef` girdileri yazar; özel sağlayıcılar için `models.providers.<id>.apiKey` değerini env ref olarak yazar (örneğin `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+`--secret-input-mode ref` ile ilk kurulum, düz metin anahtar değerleri yerine ortam destekli ref'ler yazar.
+Kimlik doğrulama profili destekli sağlayıcılar için bu, `keyRef` girdileri yazar; özel sağlayıcılar için `models.providers.<id>.apiKey` değerini bir ortam ref'i olarak yazar (örneğin `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
 
 Etkileşimsiz `ref` modu sözleşmesi:
 
-- Sağlayıcı env var'ını ilk katılım süreci ortamında ayarlayın (örneğin `OPENAI_API_KEY`).
-- Bu env var da ayarlanmadıkça satır içi anahtar bayrakları geçirmeyin (örneğin `--openai-api-key`).
-- Gerekli env var olmadan satır içi anahtar bayrağı geçirilirse ilk katılım hızlıca başarısız olur ve yönlendirme gösterir.
+- Sağlayıcı ortam değişkenini ilk kurulum süreci ortamında ayarlayın (örneğin `OPENAI_API_KEY`).
+- Bu ortam değişkeni de ayarlı değilse satır içi anahtar bayrakları (örneğin `--openai-api-key`) iletmeyin.
+- Gerekli ortam değişkeni olmadan satır içi anahtar bayrağı iletilirse ilk kurulum rehberlikle hızlıca başarısız olur.
 
-Etkileşimsiz modda Gateway token seçenekleri:
+Etkileşimsiz modda Gateway belirteci seçenekleri:
 
-- `--gateway-auth token --gateway-token <token>` düz metin token saklar.
-- `--gateway-auth token --gateway-token-ref-env <name>` `gateway.auth.token` değerini env SecretRef olarak saklar.
+- `--gateway-auth token --gateway-token <token>` düz metin bir belirteç saklar.
+- `--gateway-auth token --gateway-token-ref-env <name>` `gateway.auth.token` değerini bir ortam SecretRef'i olarak saklar.
 - `--gateway-token` ve `--gateway-token-ref-env` birbirini dışlar.
-- `--gateway-token-ref-env`, ilk katılım süreci ortamında boş olmayan bir env var gerektirir.
-- `--install-daemon` ile token auth bir token gerektirdiğinde, SecretRef tarafından yönetilen gateway token'ları doğrulanır ancak supervisor hizmet ortamı meta verilerinde çözümlenmiş düz metin olarak kalıcılaştırılmaz.
-- `--install-daemon` ile token modu bir token gerektiriyor ve yapılandırılan token SecretRef çözümlenemiyorsa ilk katılım güvenli şekilde başarısız olur ve düzeltme yönlendirmesi gösterir.
-- `--install-daemon` ile hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa ilk katılım, mod açıkça ayarlanana kadar kurulumu engeller.
-- Yerel ilk katılım, config içine `gateway.mode="local"` yazar. Daha sonraki bir config dosyasında `gateway.mode` eksikse bunu geçerli bir yerel mod kısayolu olarak değil, config hasarı veya eksik bir manuel düzenleme olarak ele alın.
-- `--allow-unconfigured` ayrı bir gateway çalışma zamanı kaçış yoludur. Bu, ilk katılımın `gateway.mode` değerini atlayabileceği anlamına gelmez.
+- `--gateway-token-ref-env`, ilk kurulum süreci ortamında boş olmayan bir ortam değişkeni gerektirir.
+- `--install-daemon` ile, belirteç kimlik doğrulaması belirteç gerektirdiğinde, SecretRef ile yönetilen Gateway belirteçleri doğrulanır ancak supervisor hizmet ortamı meta verilerinde çözümlenmiş düz metin olarak kalıcılaştırılmaz.
+- `--install-daemon` ile, belirteç modu bir belirteç gerektiriyorsa ve yapılandırılmış belirteç SecretRef'i çözümlenmemişse ilk kurulum düzeltme rehberliğiyle kapalı şekilde başarısız olur.
+- `--install-daemon` ile, hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa ilk kurulum, mod açıkça ayarlanana kadar kurulumu engeller.
+- Yerel ilk kurulum, yapılandırmaya `gateway.mode="local"` yazar. Daha sonraki bir yapılandırma dosyasında `gateway.mode` yoksa bunu geçerli bir yerel mod kısayolu olarak değil, yapılandırma hasarı veya eksik bir manuel düzenleme olarak değerlendirin.
+- Yerel ilk kurulum, yeni gerekli paketli Plugin çalışma zamanı bağımlılıklarını yapılandırmayı yazdıktan sonra ve çalışma alanı/bootstrap, daemon kurulumu veya sağlık denetimleri devam etmeden önce oluşturur. Bu dar kapsamlı bir paket yöneticisi onarım adımıdır; tam bir `openclaw doctor` çalıştırması değildir.
+- Uzak ilk kurulum yalnızca uzak Gateway için bağlantı bilgilerini yazar ve yerel paketli Plugin bağımlılıklarını kurmaz.
+- `--allow-unconfigured` ayrı bir Gateway çalışma zamanı kaçış yoludur. Bu, ilk kurulumun `gateway.mode` değerini atlayabileceği anlamına gelmez.
 
 Örnek:
 
@@ -136,27 +138,27 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Etkileşimsiz yerel gateway sağlığı:
+Etkileşimsiz yerel Gateway sağlığı:
 
-- `--skip-health` geçirmediğiniz sürece ilk katılım, başarıyla çıkmadan önce erişilebilir bir yerel gateway bekler.
-- `--install-daemon` önce yönetilen gateway kurulum yolunu başlatır. Onsuz, örneğin `openclaw gateway run` ile zaten çalışan bir yerel gateway'iniz olmalıdır.
-- Otomasyonda yalnızca config/çalışma alanı/bootstrap yazımları istiyorsanız `--skip-health` kullanın.
-- Çalışma alanı dosyalarını kendiniz yönetiyorsanız `agents.defaults.skipBootstrap: true` ayarlamak ve `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` ve `BOOTSTRAP.md` oluşturmayı atlamak için `--skip-bootstrap` geçirin.
-- Yerel Windows'ta `--install-daemon` önce Zamanlanmış Görevleri dener ve görev oluşturma reddedilirse kullanıcı bazlı Startup klasörü oturum açma öğesine geri döner.
+- `--skip-health` iletmediğiniz sürece ilk kurulum, başarıyla çıkmadan önce erişilebilir bir yerel Gateway bekler.
+- `--install-daemon` önce yönetilen Gateway kurulum yolunu başlatır. Onsuz, örneğin `openclaw gateway run` ile zaten çalışan bir yerel Gateway'iniz olmalıdır.
+- Otomasyonda yalnızca yapılandırma/çalışma alanı/bootstrap yazımları istiyorsanız `--skip-health` kullanın.
+- Çalışma alanı dosyalarını kendiniz yönetiyorsanız `agents.defaults.skipBootstrap: true` ayarlamak ve `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` ve `BOOTSTRAP.md` oluşturmayı atlamak için `--skip-bootstrap` iletin.
+- Yerel Windows üzerinde `--install-daemon` önce Zamanlanmış Görevler'i dener ve görev oluşturma reddedilirse kullanıcı başına Startup klasörü oturum açma öğesine geri döner.
 
-Reference modu ile etkileşimli ilk katılım davranışı:
+Referans moduyla etkileşimli ilk kurulum davranışı:
 
-- Sorulduğunda **Gizli referans kullan** seçeneğini belirleyin.
+- İstendiğinde **Gizli referans kullan** seçeneğini seçin.
 - Ardından şunlardan birini seçin:
   - Ortam değişkeni
   - Yapılandırılmış gizli sağlayıcı (`file` veya `exec`)
-- İlk katılım, ref'i kaydetmeden önce hızlı bir ön doğrulama gerçekleştirir.
-  - Doğrulama başarısız olursa ilk katılım hatayı gösterir ve yeniden denemenize izin verir.
+- İlk kurulum, ref'i kaydetmeden önce hızlı bir ön doğrulama yapar.
+  - Doğrulama başarısız olursa ilk kurulum hatayı gösterir ve yeniden denemenize izin verir.
 
-### Etkileşimsiz Z.AI endpoint seçenekleri
+### Etkileşimsiz Z.AI uç nokta seçenekleri
 
 <Note>
-`--auth-choice zai-api-key`, anahtarınız için en iyi Z.AI endpoint'ini otomatik algılar (genel API'yi `zai/glm-5.1` ile tercih eder). Özellikle GLM Coding Plan endpoint'lerini istiyorsanız `zai-coding-global` veya `zai-coding-cn` seçin.
+`--auth-choice zai-api-key`, anahtarınız için en iyi Z.AI uç noktasını otomatik algılar (genel API'yi `zai/glm-5.1` ile tercih eder). Özellikle GLM Coding Plan uç noktalarını istiyorsanız `zai-coding-global` veya `zai-coding-cn` seçin.
 </Note>
 
 ```bash
@@ -183,29 +185,29 @@ openclaw onboard --non-interactive \
 
 <AccordionGroup>
   <Accordion title="Flow types">
-    - `quickstart`: en az istem, otomatik olarak bir gateway token'ı oluşturur.
-    - `manual`: port, bind ve auth için tam istemler (`advanced` takma adı).
-    - `import`: algılanan bir geçiş sağlayıcısını çalıştırır, planı önizler, ardından onaydan sonra uygular.
+    - `quickstart`: en az istem, otomatik olarak bir Gateway belirteci üretir.
+    - `manual`: bağlantı noktası, bind ve kimlik doğrulama için tam istemler (`advanced` takma adı).
+    - `import`: algılanan bir geçiş sağlayıcısını çalıştırır, planı önizler, sonra onaydan sonra uygular.
 
   </Accordion>
   <Accordion title="Provider prefiltering">
-    Bir auth seçimi tercih edilen bir sağlayıcıyı ima ettiğinde ilk katılım, varsayılan model ve allowlist seçicilerini o sağlayıcıya göre önceden filtreler. Volcengine ve BytePlus için bu, coding-plan varyantlarıyla da eşleşir (`volcengine-plan/*`, `byteplus-plan/*`).
+    Bir kimlik doğrulama seçimi tercih edilen bir sağlayıcı ima ettiğinde ilk kurulum, varsayılan model ve izin listesi seçicilerini bu sağlayıcıya ön filtreler. Volcengine ve BytePlus için bu, coding-plan varyantlarını da eşleştirir (`volcengine-plan/*`, `byteplus-plan/*`).
 
-    Tercih edilen sağlayıcı filtresi henüz yüklenmiş model üretmezse ilk katılım, seçiciyi boş bırakmak yerine filtresiz kataloğa geri döner.
+    Tercih edilen sağlayıcı filtresi henüz yüklü model döndürmezse ilk kurulum, seçiciyi boş bırakmak yerine filtrelenmemiş kataloğa geri döner.
 
   </Accordion>
   <Accordion title="Web-search follow-ups">
-    Bazı web-search sağlayıcıları, sağlayıcıya özgü takip istemlerini tetikler:
+    Bazı web arama sağlayıcıları sağlayıcıya özgü takip istemlerini tetikler:
 
     - **Grok**, aynı `XAI_API_KEY` ve bir `x_search` model seçimiyle isteğe bağlı `x_search` kurulumu sunabilir.
-    - **Kimi**, Moonshot API bölgesini (`api.moonshot.ai` ve `api.moonshot.cn`) ve varsayılan Kimi web-search modelini sorabilir.
+    - **Kimi**, Moonshot API bölgesini (`api.moonshot.ai` ve `api.moonshot.cn`) ve varsayılan Kimi web arama modelini sorabilir.
 
   </Accordion>
   <Accordion title="Other behaviors">
-    - Yerel ilk katılım DM kapsamı davranışı: [CLI kurulum başvurusu](/tr/start/wizard-cli-reference#outputs-and-internals).
+    - Yerel ilk kurulum DM kapsamı davranışı: [CLI setup reference](/tr/start/wizard-cli-reference#outputs-and-internals).
     - En hızlı ilk sohbet: `openclaw dashboard` (Control UI, kanal kurulumu yok).
-    - Özel sağlayıcı: listelenmeyen barındırılan sağlayıcılar dahil, OpenAI veya Anthropic uyumlu herhangi bir endpoint'e bağlanın. Otomatik algılama için Unknown kullanın.
-    - Hermes durumu algılanırsa ilk katılım bir geçiş akışı sunar. Deneme çalıştırması planları, üzerine yazma modu, raporlar ve kesin eşlemeler için [Geçir](/tr/cli/migrate) kullanın.
+    - Özel sağlayıcı: listelenmeyen barındırılan sağlayıcılar dahil, herhangi bir OpenAI veya Anthropic uyumlu uç noktayı bağlayın. Otomatik algılama için Unknown kullanın.
+    - Hermes durumu algılanırsa ilk kurulum bir geçiş akışı sunar. Kuru çalıştırma planları, üzerine yazma modu, raporlar ve tam eşlemeler için [Migrate](/tr/cli/migrate) kullanın.
 
   </Accordion>
 </AccordionGroup>
@@ -218,5 +220,5 @@ openclaw agents add <name>
 ```
 
 <Note>
-`--json` etkileşimsiz mod anlamına gelmez. Betikler için `--non-interactive` kullanın.
+`--json`, etkileşimsiz modu ima etmez. Betikler için `--non-interactive` kullanın.
 </Note>
