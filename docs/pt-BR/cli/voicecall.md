@@ -2,30 +2,36 @@
 read_when:
     - Você usa o Plugin de chamada de voz e quer os pontos de entrada da CLI
     - Você quer exemplos rápidos para `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
-summary: Referência da CLI para `openclaw voicecall` (superfície de comando do Plugin de chamada de voz)
+summary: Referência da CLI para `openclaw voicecall` (superfície de comandos do Plugin de chamada de voz)
 title: Chamada de voz
 x-i18n:
-    generated_at: "2026-04-25T13:44:15Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T05:55:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: c040cf4cd984ad6d6dd302923494a7c8ee131390b803fe20a9894b077f08d5bb
     source_path: cli/voicecall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw voicecall`
 
-`voicecall` é um comando fornecido por Plugin. Ele só aparece se o Plugin de chamada de voz estiver instalado e ativado.
+`voicecall` é um comando fornecido por Plugin. Ele aparece somente se o Plugin de chamada de voz estiver instalado e habilitado.
+
+Quando o Gateway está em execução, comandos operacionais (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end` e `status`) são enviados para o runtime de
+chamada de voz desse Gateway. Se nenhum Gateway estiver acessível, eles recorrem
+a um runtime de CLI independente.
 
 Documentação principal:
 
-- Plugin de chamada de voz: [Voice Call](/pt-BR/plugins/voice-call)
+- Plugin de chamada de voz: [Chamada de voz](/pt-BR/plugins/voice-call)
 
 ## Comandos comuns
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -40,16 +46,19 @@ scripts:
 openclaw voicecall setup --json
 ```
 
-Para provedores externos (`twilio`, `telnyx`, `plivo`), `setup` precisa resolver uma
-URL pública de Webhook a partir de `publicUrl`, um túnel ou exposição via Tailscale. Um fallback de serviço em loopback/privado
-é rejeitado porque as operadoras não conseguem alcançá-lo.
+`status` imprime chamadas ativas como JSON por padrão. Passe `--call-id <id>` para inspecionar
+uma chamada.
+
+Para provedores externos (`twilio`, `telnyx`, `plivo`), a configuração precisa resolver uma URL de
+Webhook pública a partir de `publicUrl`, de um túnel ou da exposição via Tailscale. Um fallback de
+serviço em loopback/privado é rejeitado porque as operadoras não conseguem acessá-lo.
 
 `smoke` executa as mesmas verificações de prontidão. Ele não fará uma chamada telefônica real
 a menos que `--to` e `--yes` estejam presentes:
 
 ```bash
-openclaw voicecall smoke --to "+15555550123"        # execução de teste
-openclaw voicecall smoke --to "+15555550123" --yes  # chamada notify real
+openclaw voicecall smoke --to "+15555550123"        # dry run
+openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 ```
 
 ## Expondo Webhooks (Tailscale)
@@ -60,9 +69,9 @@ openclaw voicecall expose --mode funnel
 openclaw voicecall expose --mode off
 ```
 
-Observação de segurança: exponha o endpoint de Webhook apenas a redes em que você confia. Prefira Tailscale Serve a Funnel sempre que possível.
+Observação de segurança: exponha o endpoint de Webhook somente para redes em que você confia. Prefira Tailscale Serve em vez de Funnel quando possível.
 
-## Relacionados
+## Relacionado
 
 - [Referência da CLI](/pt-BR/cli)
 - [Plugin de chamada de voz](/pt-BR/plugins/voice-call)
