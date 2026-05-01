@@ -1,38 +1,64 @@
 ---
 read_when:
-    - Necesitas capturar tráfico de transporte de OpenClaw localmente para depuración
-    - Quieres inspeccionar sesiones del proxy de depuración, blobs o preajustes de consulta integrados
-summary: Referencia de CLI para `openclaw proxy`, el proxy local de depuración y el inspector de capturas
-title: Proxy
+    - Debe validar el enrutamiento del proxy administrado por el operador antes del despliegue
+    - Debe capturar el tráfico de transporte de OpenClaw localmente para la depuración
+    - Desea inspeccionar sesiones de proxy de depuración, objetos binarios grandes o preajustes de consulta integrados
+summary: Referencia de CLI para `openclaw proxy`, incluida la validación del proxy administrado por el operador y el inspector local de capturas del proxy de depuración
+title: Servidor proxy
 x-i18n:
-    generated_at: "2026-04-24T05:23:51Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T05:30:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7af5c596fb36f67e3fcffaff14dcbb4eabbcff0b95174ac6058a097ec9fd715f
+    source_hash: e0820de861bfe1ec14e0c1624d636d6474b5fedd317e3ba1baaa61f6530e06e9
     source_path: cli/proxy.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw proxy`
 
-Ejecuta el proxy local explícito de depuración e inspecciona el tráfico capturado.
+Valida el enrutamiento de proxy gestionado por el operador, o ejecuta el proxy de depuración explícito local
+e inspecciona el tráfico capturado.
 
-Este es un comando de depuración para investigación a nivel de transporte. Puede iniciar un
-proxy local, ejecutar un comando hijo con captura habilitada, listar sesiones de captura,
-consultar patrones de tráfico comunes, leer blobs capturados y purgar los datos locales
-de captura.
+Usa `validate` para comprobar de antemano un proxy de reenvío gestionado por el operador antes de habilitar
+el enrutamiento de proxy de OpenClaw. Los otros comandos son herramientas de depuración para la investigación
+a nivel de transporte: pueden iniciar un proxy local, ejecutar un comando secundario
+con la captura habilitada, listar sesiones de captura, consultar patrones de tráfico comunes, leer
+blobs capturados y purgar datos de captura locales.
 
 ## Comandos
 
 ```bash
 openclaw proxy start [--host <host>] [--port <port>]
 openclaw proxy run [--host <host>] [--port <port>] -- <cmd...>
+openclaw proxy validate [--json] [--proxy-url <url>] [--allowed-url <url>] [--denied-url <url>] [--timeout-ms <ms>]
 openclaw proxy coverage
 openclaw proxy sessions [--limit <count>]
 openclaw proxy query --preset <name> [--session <id>]
 openclaw proxy blob --id <blobId>
 openclaw proxy purge
 ```
+
+## Validar
+
+`openclaw proxy validate` comprueba la URL efectiva del proxy gestionado por el operador a partir de
+`--proxy-url`, la configuración o `OPENCLAW_PROXY_URL`. Informa de un problema de configuración cuando
+no hay ningún proxy habilitado y configurado; usa `--proxy-url` para una comprobación previa puntual
+antes de cambiar la configuración. De forma predeterminada, verifica que un destino público funcione
+a través del proxy y que el proxy no pueda alcanzar un canario de loopback temporal.
+Los destinos denegados personalizados fallan en modo cerrado: las respuestas HTTP y los fallos
+de transporte ambiguos fallan ambos, a menos que puedas verificar por separado una señal de denegación
+específica del despliegue.
+
+Opciones:
+
+- `--json`: imprime JSON legible por máquina.
+- `--proxy-url <url>`: valida esta URL de proxy en lugar de la configuración o el entorno.
+- `--allowed-url <url>`: añade un destino que se espera que funcione a través del proxy. Repítelo para comprobar varios destinos.
+- `--denied-url <url>`: añade un destino que se espera que el proxy bloquee. Repítelo para comprobar varios destinos.
+- `--timeout-ms <ms>`: tiempo de espera por solicitud en milisegundos.
+
+Consulta [Proxy de red](/es/security/network-proxy) para obtener orientación de despliegue y semántica
+de denegación.
 
 ## Preajustes de consulta
 
@@ -47,11 +73,13 @@ openclaw proxy purge
 
 ## Notas
 
-- `start` usa `127.0.0.1` de forma predeterminada a menos que se establezca `--host`.
-- `run` inicia un proxy local de depuración y luego ejecuta el comando después de `--`.
-- Las capturas son datos locales de depuración; usa `openclaw proxy purge` al terminar.
+- `start` usa `127.0.0.1` de forma predeterminada, a menos que se configure `--host`.
+- `run` inicia un proxy de depuración local y luego ejecuta el comando después de `--`.
+- `validate` sale con el código 1 cuando fallan la configuración del proxy o las comprobaciones de destino.
+- Las capturas son datos de depuración locales; usa `openclaw proxy purge` cuando termines.
 
 ## Relacionado
 
 - [Referencia de CLI](/es/cli)
+- [Proxy de red](/es/security/network-proxy)
 - [Autenticación de proxy de confianza](/es/gateway/trusted-proxy-auth)
