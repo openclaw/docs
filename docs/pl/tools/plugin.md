@@ -1,29 +1,27 @@
 ---
 read_when:
     - Instalowanie lub konfigurowanie pluginów
-    - Zrozumienie reguł wykrywania i ładowania pluginów
+    - Omówienie reguł wykrywania i ładowania Pluginów
     - Praca z pakietami Plugin zgodnymi z Codex/Claude
 sidebarTitle: Install and Configure
-summary: Instalowanie, konfigurowanie i zarządzanie pluginami OpenClaw
+summary: Instalowanie, konfigurowanie i zarządzanie Pluginami OpenClaw
 title: Pluginy
 x-i18n:
-    generated_at: "2026-04-30T10:23:55Z"
+    generated_at: "2026-05-01T10:04:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7a12d158053c13b47a56d8d6b382818962e9b5109fdf8ededd3ecf92b83089e6
+    source_hash: 2df8aca086aafbd8f268820f1ccc2425079c69f1a673a4c2ea163aba1358ff51
     source_path: tools/plugin.md
     workflow: 16
 ---
 
 Pluginy rozszerzają OpenClaw o nowe możliwości: kanały, dostawców modeli,
-wiązki agentów, narzędzia, Skills, mowę, transkrypcję w czasie rzeczywistym,
-głos w czasie rzeczywistym, rozumienie multimediów, generowanie obrazów,
-generowanie wideo, pobieranie z sieci, wyszukiwanie w sieci i więcej. Niektóre
-pluginy są **core** (dostarczane z OpenClaw), inne są **zewnętrzne**. Większość
-zewnętrznych pluginów jest publikowana i odkrywana przez
-[ClawHub](/pl/tools/clawhub). Npm pozostaje obsługiwane dla bezpośrednich instalacji
-oraz dla tymczasowego zestawu pakietów pluginów należących do OpenClaw, dopóki
-ta migracja się nie zakończy.
+środowiska agentów, narzędzia, skills, mowę, transkrypcję w czasie rzeczywistym, głos
+w czasie rzeczywistym, rozumienie mediów, generowanie obrazów, generowanie wideo, pobieranie
+z sieci, wyszukiwanie w sieci i nie tylko. Niektóre Pluginy są **podstawowe** (dostarczane z OpenClaw), inne
+są **zewnętrzne**. Większość zewnętrznych Pluginów jest publikowana i odkrywana przez
+[ClawHub](/pl/tools/clawhub). Npm pozostaje obsługiwane przy instalacjach bezpośrednich oraz dla
+tymczasowego zestawu pakietów Pluginów należących do OpenClaw do czasu zakończenia tej migracji.
 
 ## Szybki start
 
@@ -51,7 +49,7 @@ ta migracja się nie zakończy.
     openclaw gateway restart
     ```
 
-    Następnie skonfiguruj w `plugins.entries.\<id\>.config` w pliku konfiguracyjnym.
+    Następnie skonfiguruj pod `plugins.entries.\<id\>.config` w swoim pliku konfiguracyjnym.
 
   </Step>
 </Steps>
@@ -64,76 +62,72 @@ Jeśli wolisz sterowanie natywne dla czatu, włącz `commands.plugins: true` i u
 /plugin enable <plugin-id>
 ```
 
-Ścieżka instalacji używa tego samego resolvera co CLI: ścieżka lokalna/archiwum,
-jawne `clawhub:<pkg>`, jawne `npm:<pkg>` albo specyfikacja samego pakietu
-(najpierw ClawHub, potem fallback npm).
+Ścieżka instalacji używa tego samego resolvera co CLI: lokalna ścieżka/archiwum, jawne
+`clawhub:<pkg>`, jawne `npm:<pkg>` albo specyfikacja samego pakietu (najpierw ClawHub, potem
+awaryjnie npm).
 
-Jeśli konfiguracja jest nieprawidłowa, instalacja zwykle kończy się bezpiecznym
-niepowodzeniem i wskazuje `openclaw doctor --fix`. Jedynym wyjątkiem odzyskiwania
-jest wąska ścieżka ponownej instalacji dołączonego pluginu dla pluginów, które
-wybierają `openclaw.install.allowInvalidConfigRecovery`.
-Podczas uruchamiania Gateway nieprawidłowa konfiguracja jednego pluginu jest
-izolowana do tego pluginu: uruchamianie zapisuje w logach problem
-`plugins.entries.<id>.config`, pomija ten plugin podczas ładowania i utrzymuje
-pozostałe pluginy oraz kanały online. Uruchom `openclaw doctor --fix`, aby
-poddać złą konfigurację pluginu kwarantannie przez wyłączenie tego wpisu pluginu
-i usunięcie jego nieprawidłowego ładunku konfiguracji; zwykła kopia zapasowa
-konfiguracji zachowuje poprzednie wartości. Gdy konfiguracja kanału odwołuje się
-do pluginu, którego nie da się już odkryć, ale ten sam nieaktualny identyfikator
-pluginu pozostaje w konfiguracji pluginów lub rekordach instalacji, uruchamianie
-Gateway zapisuje ostrzeżenia i pomija ten kanał, zamiast blokować wszystkie inne
-kanały. Uruchom `openclaw doctor --fix`, aby usunąć nieaktualne wpisy
-kanału/pluginu; nieznane klucze kanałów bez dowodów na nieaktualny plugin nadal
-powodują niepowodzenie walidacji, dzięki czemu literówki pozostają widoczne.
-Jeśli ustawiono `plugins.enabled: false`, nieaktualne odwołania do pluginów są
-traktowane jako bezczynne: uruchamianie Gateway pomija odkrywanie/ładowanie
-pluginów, a `openclaw doctor` zachowuje wyłączoną konfigurację pluginów zamiast
-automatycznie ją usuwać. Włącz pluginy ponownie przed uruchomieniem czyszczenia
-przez doctor, jeśli chcesz usunąć nieaktualne identyfikatory pluginów.
+Jeśli konfiguracja jest nieprawidłowa, instalacja zwykle kończy się zamknięciem i wskazuje
+`openclaw doctor --fix`. Jedynym wyjątkiem odzyskiwania jest wąska ścieżka
+ponownej instalacji dołączonego Pluginu dla Pluginów, które włączają
+`openclaw.install.allowInvalidConfigRecovery`.
+Podczas uruchamiania Gateway nieprawidłowa konfiguracja jednego Pluginu jest izolowana do tego Pluginu:
+uruchamianie zapisuje problem `plugins.entries.<id>.config` w logach, pomija ten Plugin podczas
+ładowania i utrzymuje pozostałe Pluginy oraz kanały online. Uruchom `openclaw doctor --fix`,
+aby poddać złą konfigurację Pluginu kwarantannie przez wyłączenie tego wpisu Pluginu i usunięcie
+jego nieprawidłowego ładunku konfiguracyjnego; normalna kopia zapasowa konfiguracji zachowuje poprzednie wartości.
+Gdy konfiguracja kanału odwołuje się do Pluginu, którego nie da się już odkryć, ale ten sam
+przestarzały identyfikator Pluginu pozostaje w konfiguracji Pluginu lub rekordach instalacji, uruchamianie Gateway
+zapisuje ostrzeżenia i pomija ten kanał zamiast blokować wszystkie inne kanały.
+Uruchom `openclaw doctor --fix`, aby usunąć przestarzałe wpisy kanału/Pluginu; nieznane
+klucze kanałów bez dowodów na przestarzały Plugin nadal powodują błąd walidacji, aby literówki pozostały
+widoczne.
+Jeśli ustawiono `plugins.enabled: false`, przestarzałe odwołania do Pluginów są traktowane jako nieaktywne:
+uruchamianie Gateway pomija odkrywanie/ładowanie Pluginów, a `openclaw doctor` zachowuje
+wyłączoną konfigurację Pluginu zamiast automatycznie ją usuwać. Włącz Pluginy ponownie przed
+uruchomieniem czyszczenia przez doctor, jeśli chcesz usunąć przestarzałe identyfikatory Pluginów.
 
-Pakietowe instalacje OpenClaw nie instalują zachłannie drzewa zależności
-uruchomieniowych każdego dołączonego pluginu. Gdy dołączony plugin należący do
-OpenClaw jest aktywny z konfiguracji pluginów, starszej konfiguracji kanału albo
-domyślnie włączonego manifestu, uruchamianie naprawia tylko zadeklarowane
-zależności uruchomieniowe tego pluginu przed jego importem. Sam utrwalony stan
-uwierzytelnienia kanału nie aktywuje dołączonego kanału na potrzeby naprawy
-zależności uruchomieniowych podczas uruchamiania Gateway.
+Pakietowe instalacje OpenClaw nie instalują z wyprzedzeniem pełnego drzewa
+zależności runtime każdego dołączonego Pluginu. Gdy dołączony, należący do OpenClaw Plugin jest aktywny z
+konfiguracji Pluginów, starszej konfiguracji kanału albo domyślnie włączonego manifestu, uruchamianie
+naprawia tylko zadeklarowane zależności runtime tego Pluginu przed jego zaimportowaniem.
+Sam utrwalony stan uwierzytelniania kanału nie aktywuje dołączonego kanału na potrzeby
+naprawy zależności runtime podczas uruchamiania Gateway.
 Jawne wyłączenie nadal ma pierwszeństwo: `plugins.entries.<id>.enabled: false`,
 `plugins.deny`, `plugins.enabled: false` i `channels.<id>.enabled: false`
-zapobiegają automatycznej naprawie dołączonych zależności uruchomieniowych dla
-tego pluginu/kanału. Niepusta lista `plugins.allow` także ogranicza naprawę
-domyślnie włączonych dołączonych zależności uruchomieniowych; jawne włączenie
-dołączonego kanału (`channels.<id>.enabled: true`) nadal może naprawić zależności
-pluginu tego kanału.
-Zewnętrzne pluginy i niestandardowe ścieżki ładowania nadal trzeba instalować
-przez `openclaw plugins install`.
+zapobiegają automatycznej naprawie dołączonych zależności runtime dla tego Pluginu/kanału.
+Niepusta lista `plugins.allow` również ogranicza domyślnie włączoną naprawę dołączonych zależności
+runtime; jawne włączenie dołączonego kanału (`channels.<id>.enabled: true`) nadal może
+naprawić zależności Pluginu tego kanału.
+Zewnętrzne Pluginy i niestandardowe ścieżki ładowania nadal muszą być instalowane przez
+`openclaw plugins install`.
+Zobacz [Rozwiązywanie zależności Pluginów](/pl/plugins/dependency-resolution), aby poznać pełny
+cykl planowania i przygotowania.
 
-## Typy Plugin
+## Typy Pluginów
 
-OpenClaw rozpoznaje dwa formaty pluginów:
+OpenClaw rozpoznaje dwa formaty Pluginów:
 
-| Format       | Jak działa                                                          | Przykłady                                               |
-| ------------ | ------------------------------------------------------------------- | ------------------------------------------------------- |
-| **Natywny**  | `openclaw.plugin.json` + moduł uruchomieniowy; wykonuje się w procesie | Oficjalne pluginy, społecznościowe pakiety npm          |
-| **Bundle**   | Układ zgodny z Codex/Claude/Cursor; mapowany na funkcje OpenClaw    | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
+| Format     | Jak działa                                                        | Przykłady                                               |
+| ---------- | ----------------------------------------------------------------- | ------------------------------------------------------- |
+| **Natywny** | `openclaw.plugin.json` + moduł runtime; wykonuje się w procesie  | Oficjalne Pluginy, społecznościowe pakiety npm          |
+| **Bundle** | Układ zgodny z Codex/Claude/Cursor; mapowany na funkcje OpenClaw | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
 
-Oba pojawiają się w `openclaw plugins list`. Szczegóły bundle znajdziesz w [Plugin Bundles](/pl/plugins/bundles).
+Oba pojawiają się w `openclaw plugins list`. Zobacz [Pakiety Pluginów](/pl/plugins/bundles), aby poznać szczegóły pakietów.
 
-Jeśli piszesz natywny plugin, zacznij od [Building Plugins](/pl/plugins/building-plugins)
-i [Plugin SDK Overview](/pl/plugins/sdk-overview).
+Jeśli piszesz natywny Plugin, zacznij od [Tworzenia Pluginów](/pl/plugins/building-plugins)
+oraz [Przeglądu Plugin SDK](/pl/plugins/sdk-overview).
 
 ## Punkty wejścia pakietu
 
-Natywne pakiety npm pluginów muszą deklarować `openclaw.extensions` w `package.json`.
+Natywne pakiety npm Pluginów muszą deklarować `openclaw.extensions` w `package.json`.
 Każdy wpis musi pozostać wewnątrz katalogu pakietu i rozwiązywać się do czytelnego
-pliku uruchomieniowego albo do pliku źródłowego TypeScript z wywnioskowanym
-zbudowanym odpowiednikiem JavaScript, takim jak `src/index.ts` do `dist/index.js`.
+pliku runtime albo do pliku źródłowego TypeScript z wywnioskowanym zbudowanym odpowiednikiem JavaScript,
+takim jak `src/index.ts` do `dist/index.js`.
 
-Użyj `openclaw.runtimeExtensions`, gdy opublikowane pliki uruchomieniowe nie
-znajdują się w tych samych ścieżkach co wpisy źródłowe. Gdy `runtimeExtensions`
-jest obecne, musi zawierać dokładnie jeden wpis dla każdego wpisu `extensions`.
-Niedopasowane listy powodują niepowodzenie instalacji i odkrywania pluginów
-zamiast cichego fallbacku do ścieżek źródłowych.
+Użyj `openclaw.runtimeExtensions`, gdy opublikowane pliki runtime nie znajdują się w
+tych samych ścieżkach co wpisy źródłowe. Gdy jest obecne, `runtimeExtensions` musi zawierać
+dokładnie jeden wpis dla każdego wpisu `extensions`. Niedopasowane listy powodują błąd instalacji i
+odkrywania Pluginów zamiast cichego powrotu do ścieżek źródłowych.
 
 ```json
 {
@@ -145,23 +139,21 @@ zamiast cichego fallbacku do ścieżek źródłowych.
 }
 ```
 
-## Oficjalne pluginy
+## Oficjalne Pluginy
 
 ### Pakiety npm należące do OpenClaw podczas migracji
 
-ClawHub jest podstawową ścieżką dystrybucji dla większości pluginów. Obecne
-pakietowe wydania OpenClaw już zawierają wiele oficjalnych pluginów, więc w
-normalnych konfiguracjach nie wymagają one osobnych instalacji npm. Dopóki każdy
-plugin należący do OpenClaw nie zostanie zmigrowany do ClawHub, OpenClaw nadal
-publikuje niektóre pakiety pluginów `@openclaw/*` w npm dla starszych/niestandardowych
-instalacji oraz bezpośrednich przepływów pracy npm.
+ClawHub jest podstawową ścieżką dystrybucji dla większości Pluginów. Obecne pakietowe
+wydania OpenClaw zawierają już wiele oficjalnych Pluginów, więc w typowych konfiguracjach nie wymagają one
+osobnych instalacji npm. Dopóki każdy Plugin należący do OpenClaw nie zostanie
+przeniesiony do ClawHub, OpenClaw nadal dostarcza niektóre pakiety Pluginów `@openclaw/*` w
+npm dla starszych/niestandardowych instalacji i bezpośrednich przepływów npm.
 
-Jeśli npm zgłasza pakiet pluginu `@openclaw/*` jako przestarzały, ta wersja
-pakietu pochodzi ze starszego zewnętrznego toru pakietów. Użyj dołączonego pluginu
-z bieżącego OpenClaw albo lokalnego checkoutu, dopóki nie zostanie opublikowany
-nowszy pakiet npm.
+Jeśli npm zgłasza pakiet Pluginu `@openclaw/*` jako przestarzały, ta wersja pakietu
+pochodzi ze starszej zewnętrznej linii pakietów. Użyj dołączonego Pluginu z
+obecnego OpenClaw albo lokalnego checkoutu, dopóki nie zostanie opublikowany nowszy pakiet npm.
 
-| Plugin          | Pakiet                     | Dokumentacja                               |
+| Plugin          | Pakiet                     | Dokumentacja                              |
 | --------------- | -------------------------- | ------------------------------------------ |
 | BlueBubbles     | `@openclaw/bluebubbles`    | [BlueBubbles](/pl/channels/bluebubbles)       |
 | Discord         | `@openclaw/discord`        | [Discord](/pl/channels/discord)               |
@@ -177,7 +169,7 @@ nowszy pakiet npm.
 | Zalo            | `@openclaw/zalo`           | [Zalo](/pl/channels/zalo)                     |
 | Zalo Personal   | `@openclaw/zalouser`       | [Zalo Personal](/pl/plugins/zalouser)         |
 
-### Core (dostarczane z OpenClaw)
+### Podstawowe (dostarczane z OpenClaw)
 
 <AccordionGroup>
   <Accordion title="Model providers (enabled by default)">
@@ -189,12 +181,11 @@ nowszy pakiet npm.
   </Accordion>
 
   <Accordion title="Memory plugins">
-    - `memory-core` — dołączone wyszukiwanie pamięci (domyślnie przez `plugins.slots.memory`)
-    - `memory-lancedb` — instalowana na żądanie pamięć długoterminowa z automatycznym przywoływaniem/przechwytywaniem (ustaw `plugins.slots.memory = "memory-lancedb"`)
+    - `memory-core` — dołączone wyszukiwanie w pamięci (domyślnie przez `plugins.slots.memory`)
+    - `memory-lancedb` — instalowana na żądanie pamięć długoterminowa z automatycznym przypominaniem/przechwytywaniem (ustaw `plugins.slots.memory = "memory-lancedb"`)
 
-    Zobacz [Memory LanceDB](/pl/plugins/memory-lancedb), aby poznać konfigurację
-    osadzania zgodną z OpenAI, przykłady Ollama, limity przywoływania i
-    rozwiązywanie problemów.
+    Zobacz [Memory LanceDB](/pl/plugins/memory-lancedb), aby poznać konfigurację osadzania zgodną z OpenAI,
+    przykłady Ollama, limity przypominania i rozwiązywanie problemów.
 
   </Accordion>
 
@@ -203,13 +194,13 @@ nowszy pakiet npm.
   </Accordion>
 
   <Accordion title="Other">
-    - `browser` — dołączony plugin przeglądarki dla narzędzia przeglądarki, CLI `openclaw browser`, metody Gateway `browser.request`, środowiska uruchomieniowego przeglądarki i domyślnej usługi sterowania przeglądarką (włączony domyślnie; wyłącz przed zastąpieniem)
+    - `browser` — dołączony Plugin przeglądarki dla narzędzia przeglądarki, CLI `openclaw browser`, metody Gateway `browser.request`, runtime przeglądarki i domyślnej usługi sterowania przeglądarką (włączony domyślnie; wyłącz przed zastąpieniem)
     - `copilot-proxy` — most VS Code Copilot Proxy (domyślnie wyłączony)
 
   </Accordion>
 </AccordionGroup>
 
-Szukasz pluginów zewnętrznych? Zobacz [Community Plugins](/pl/plugins/community).
+Szukasz Pluginów firm trzecich? Zobacz [Pluginy społeczności](/pl/plugins/community).
 
 ## Konfiguracja
 
@@ -230,109 +221,112 @@ Szukasz pluginów zewnętrznych? Zobacz [Community Plugins](/pl/plugins/communit
 | Pole             | Opis                                                      |
 | ---------------- | --------------------------------------------------------- |
 | `enabled`        | Główny przełącznik (domyślnie: `true`)                    |
-| `allow`          | Lista dozwolonych pluginów (opcjonalna)                   |
-| `deny`           | Lista zablokowanych pluginów (opcjonalna; blokada wygrywa) |
-| `load.paths`     | Dodatkowe pliki/katalogi pluginów                         |
-| `slots`          | Selektory wyłącznych slotów (np. `memory`, `contextEngine`) |
-| `entries.\<id\>` | Przełączniki i konfiguracja per plugin                    |
+| `allow`          | Lista dozwolonych Pluginów (opcjonalnie)                  |
+| `deny`           | Lista zabronionych Pluginów (opcjonalnie; deny wygrywa)   |
+| `load.paths`     | Dodatkowe pliki/katalogi Pluginów                         |
+| `slots`          | Wyłączne selektory slotów (np. `memory`, `contextEngine`) |
+| `entries.\<id\>` | Przełączniki i konfiguracja dla poszczególnych Pluginów   |
 
-Zmiany konfiguracji **wymagają ponownego uruchomienia gatewaya**. Jeśli Gateway
-działa z obserwowaniem konfiguracji i włączonym ponownym uruchamianiem w procesie
-(domyślna ścieżka `openclaw gateway`), to ponowne uruchomienie jest zwykle
-wykonywane automatycznie chwilę po zapisaniu konfiguracji. Nie ma obsługiwanej
-ścieżki hot-reloadu dla natywnego kodu uruchomieniowego pluginu ani haków cyklu
-życia; uruchom ponownie proces Gateway obsługujący kanał live, zanim oczekujesz,
-że zaktualizowany kod `register(api)`, haki `api.on(...)`, narzędzia, usługi albo
-haki provider/runtime zaczną działać.
+`plugins.allow` jest wyłączne. Gdy nie jest puste, tylko wymienione Pluginy mogą się ładować
+lub udostępniać narzędzia, nawet jeśli `tools.allow` zawiera `"*"` albo konkretną nazwę
+narzędzia należącego do Pluginu. Jeśli lista dozwolonych narzędzi odwołuje się do narzędzi Pluginu, dodaj identyfikatory
+posiadających je Pluginów do `plugins.allow` albo usuń `plugins.allow`; `openclaw doctor` ostrzega o takim
+kształcie.
 
-`openclaw plugins list` to lokalna migawka rejestru/konfiguracji pluginów. Plugin
-oznaczony tam jako `enabled` oznacza, że utrwalony rejestr i bieżąca konfiguracja
-pozwalają pluginowi uczestniczyć. Nie dowodzi to, że już działający zdalny proces
-potomny Gateway został ponownie uruchomiony do tego samego kodu pluginu. W
-konfiguracjach VPS/kontenerowych z procesami opakowującymi wysyłaj ponowne
-uruchomienia do rzeczywistego procesu `openclaw gateway run` albo użyj
-`openclaw gateway restart` wobec działającego Gateway.
+Zmiany konfiguracji **wymagają restartu Gateway**. Jeśli Gateway działa z włączonym obserwowaniem konfiguracji
+i restartem w procesie (domyślna ścieżka `openclaw gateway`), taki
+restart jest zwykle wykonywany automatycznie chwilę po zapisaniu konfiguracji.
+Nie ma obsługiwanej ścieżki hot-reload dla natywnego kodu runtime Pluginu ani hooków cyklu życia;
+zrestartuj proces Gateway obsługujący kanał na żywo, zanim będziesz oczekiwać uruchomienia
+zaktualizowanego kodu `register(api)`, hooków `api.on(...)`, narzędzi, usług albo
+hooków dostawcy/runtime.
+
+`openclaw plugins list` to lokalna migawka rejestru/konfiguracji Pluginów.
+Włączony tam Plugin oznacza, że utrwalony rejestr i obecna konfiguracja pozwalają
+Pluginowi uczestniczyć. Nie dowodzi to, że już działające zdalne dziecko Gateway
+zrestartowało się do tego samego kodu Pluginu. W konfiguracjach VPS/kontenerowych z
+procesami opakowującymi wysyłaj restarty do właściwego procesu `openclaw gateway run`
+albo użyj `openclaw gateway restart` względem działającego Gateway.
 
 <Accordion title="Plugin states: disabled vs missing vs invalid">
-  - **Wyłączony**: plugin istnieje, ale reguły włączania go wyłączyły. Konfiguracja jest zachowywana.
-  - **Brakujący**: konfiguracja odwołuje się do identyfikatora pluginu, którego odkrywanie nie znalazło.
-  - **Nieprawidłowy**: plugin istnieje, ale jego konfiguracja nie pasuje do zadeklarowanego schematu. Uruchamianie Gateway pomija tylko ten plugin; `openclaw doctor --fix` może poddać nieprawidłowy wpis kwarantannie przez wyłączenie go i usunięcie jego ładunku konfiguracji.
+  - **Wyłączony**: Plugin istnieje, ale reguły włączania go wyłączyły. Konfiguracja jest zachowana.
+  - **Brakujący**: konfiguracja odwołuje się do identyfikatora Pluginu, którego odkrywanie nie znalazło.
+  - **Nieprawidłowy**: Plugin istnieje, ale jego konfiguracja nie pasuje do zadeklarowanego schematu. Uruchamianie Gateway pomija tylko ten Plugin; `openclaw doctor --fix` może poddać nieprawidłowy wpis kwarantannie przez jego wyłączenie i usunięcie jego ładunku konfiguracyjnego.
 
 </Accordion>
 
 ## Odkrywanie i pierwszeństwo
 
-OpenClaw skanuje pluginy w tej kolejności (pierwsze dopasowanie wygrywa):
+OpenClaw skanuje Pluginy w tej kolejności (pierwsze dopasowanie wygrywa):
 
 <Steps>
-  <Step title="Config paths">
-    `plugins.load.paths` — jawne ścieżki plików lub katalogów. Ścieżki, które
-    wskazują z powrotem na własne pakietowe katalogi dołączonych pluginów
-    OpenClaw, są ignorowane; uruchom `openclaw doctor --fix`, aby usunąć te
-    nieaktualne aliasy.
+  <Step title="Ścieżki konfiguracji">
+    `plugins.load.paths` — jawne ścieżki plików lub katalogów. Ścieżki wskazujące
+    z powrotem na własne spakowane katalogi wbudowanych pluginów OpenClaw są ignorowane;
+    uruchom `openclaw doctor --fix`, aby usunąć te nieaktualne aliasy.
   </Step>
 
-  <Step title="Workspace plugins">
+  <Step title="Pluginy obszaru roboczego">
     `\<workspace\>/.openclaw/<plugin-root>/*.ts` i `\<workspace\>/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
-  <Step title="Global plugins">
+  <Step title="Pluginy globalne">
     `~/.openclaw/<plugin-root>/*.ts` i `~/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
-  <Step title="Dołączone pluginy">
+  <Step title="Pluginy wbudowane">
     Dostarczane z OpenClaw. Wiele z nich jest domyślnie włączonych (dostawcy modeli, mowa).
     Inne wymagają jawnego włączenia.
   </Step>
 </Steps>
 
-Instalacje pakietowe i obrazy Docker zwykle rozpoznają dołączone pluginy z
-drzewa skompilowanego `dist/extensions`. Jeśli katalog źródłowy dołączonego pluginu jest
-podmontowany bind mountem na odpowiadającej mu spakowanej ścieżce źródłowej, na przykład
-`/app/extensions/synology-chat`, OpenClaw traktuje ten podmontowany katalog źródłowy
-jako nakładkę źródeł dołączonego pluginu i wykrywa go przed spakowanym pakietem
-`/app/dist/extensions/synology-chat`. Dzięki temu kontenerowe pętle pracy maintainerów
-działają bez przełączania każdego dołączonego pluginu z powrotem na źródła TypeScript.
+Instalacje pakietowe i obrazy Docker zwykle rozwiązują wbudowane pluginy z
+skompilowanego drzewa `dist/extensions`. Jeśli katalog źródłowy wbudowanego pluginu
+zostanie podmontowany przez bind mount nad odpowiadającą mu spakowaną ścieżką źródłową, na przykład
+`/app/extensions/synology-chat`, OpenClaw traktuje ten zamontowany katalog źródłowy
+jako nakładkę źródeł wbudowanych i wykrywa go przed spakowanym pakietem
+`/app/dist/extensions/synology-chat`. Dzięki temu pętle kontenerowe maintainerów
+działają bez przełączania każdego wbudowanego pluginu z powrotem na źródła TypeScript.
 Ustaw `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS=1`, aby wymusić spakowane pakiety dist
 nawet wtedy, gdy obecne są montowania nakładek źródłowych.
 
 ### Reguły włączania
 
-- `plugins.enabled: false` wyłącza wszystkie pluginy i pomija wykrywanie oraz ładowanie pluginów
-- `plugins.deny` zawsze ma pierwszeństwo przed allow
+- `plugins.enabled: false` wyłącza wszystkie pluginy i pomija wykrywanie/ładowanie pluginów
+- `plugins.deny` zawsze ma pierwszeństwo przed listą dozwolonych
 - `plugins.entries.\<id\>.enabled: false` wyłącza ten plugin
-- Pluginy pochodzące z obszaru roboczego są **domyślnie wyłączone** (muszą zostać jawnie włączone)
-- Dołączone pluginy stosują wbudowany zestaw domyślnie włączony, chyba że zostanie nadpisany
-- Wyłączne sloty mogą wymusić włączenie wybranego pluginu dla danego slotu
-- Niektóre dołączone pluginy opt-in są włączane automatycznie, gdy konfiguracja wskazuje
-  powierzchnię należącą do pluginu, taką jak odwołanie do modelu dostawcy, konfigurację kanału lub
-  środowisko uruchomieniowe harness
-- Nieaktualna konfiguracja pluginu jest zachowywana, gdy aktywne jest `plugins.enabled: false`;
-  ponownie włącz pluginy przed uruchomieniem czyszczenia doctor, jeśli chcesz usunąć nieaktualne identyfikatory
+- Pluginy pochodzące z obszaru roboczego są **domyślnie wyłączone** (muszą być jawnie włączone)
+- Wbudowane pluginy używają wbudowanego zestawu domyślnie włączonych, chyba że zostanie to nadpisane
+- Ekskluzywne sloty mogą wymusić włączenie wybranego pluginu dla danego slotu
+- Niektóre wbudowane pluginy opt-in są włączane automatycznie, gdy konfiguracja wskazuje
+  powierzchnię należącą do pluginu, taką jak referencja modelu dostawcy, konfiguracja kanału lub runtime
+  harnessu
+- Nieaktualna konfiguracja pluginu jest zachowywana, gdy `plugins.enabled: false` jest aktywne;
+  włącz ponownie pluginy przed uruchomieniem czyszczenia przez doctor, jeśli chcesz usunąć nieaktualne identyfikatory
 - Trasy Codex z rodziny OpenAI zachowują oddzielne granice pluginów:
-  `openai-codex/*` należy do pluginu OpenAI, natomiast dołączony plugin serwera aplikacji Codex
-  jest wybierany przez `agentRuntime.id: "codex"` albo starsze odwołania do modeli
+  `openai-codex/*` należy do pluginu OpenAI, natomiast wbudowany plugin serwera aplikacji Codex
+  jest wybierany przez `agentRuntime.id: "codex"` lub starsze referencje modeli
   `codex/*`
 
-## Rozwiązywanie problemów z hookami środowiska uruchomieniowego
+## Rozwiązywanie problemów z hookami runtime
 
-Jeśli plugin pojawia się w `plugins list`, ale efekty uboczne lub hooki `register(api)`
-nie uruchamiają się w ruchu czatu na żywo, najpierw sprawdź te elementy:
+Jeśli plugin pojawia się w `plugins list`, ale efekty uboczne lub hooki
+`register(api)` nie uruchamiają się w ruchu czatu live, najpierw sprawdź:
 
 - Uruchom `openclaw gateway status --deep --require-rpc` i potwierdź, że aktywny
   adres URL Gateway, profil, ścieżka konfiguracji i proces są tymi, które edytujesz.
-- Uruchom ponownie działający Gateway po zmianach instalacji, konfiguracji lub kodu pluginu. W kontenerach
-  opakowujących PID 1 może być tylko supervisorem; uruchom ponownie albo wyślij sygnał do procesu potomnego
+- Uruchom ponownie Gateway live po zmianach instalacji/konfiguracji/kodu pluginu. W kontenerach
+  wrapperów PID 1 może być tylko supervisorem; uruchom ponownie albo wyślij sygnał do procesu potomnego
   `openclaw gateway run`.
-- Użyj `openclaw plugins inspect <id> --json`, aby potwierdzić rejestracje hooków i
-  diagnostykę. Niedostarczane w pakiecie hooki konwersacji, takie jak `llm_input`,
+- Użyj `openclaw plugins inspect <id> --runtime --json`, aby potwierdzić rejestracje hooków i
+  diagnostykę. Niewbudowane hooki konwersacji, takie jak `llm_input`,
   `llm_output`, `before_agent_finalize` i `agent_end`, wymagają
   `plugins.entries.<id>.hooks.allowConversationAccess=true`.
-- Do przełączania modeli preferuj `before_model_resolve`. Działa przed rozpoznaniem modelu
-  dla tur agenta; `llm_output` działa dopiero po tym, jak próba modelu
+- Do przełączania modeli preferuj `before_model_resolve`. Uruchamia się przed
+  rozwiązywaniem modelu dla tur agenta; `llm_output` uruchamia się dopiero po tym, jak próba modelu
   wygeneruje wynik asystenta.
-- Jako dowodu efektywnego modelu sesji użyj `openclaw sessions` albo powierzchni
-  sesji/statusu Gateway, a podczas debugowania ładunków dostawcy uruchom
+- Jako dowód efektywnego modelu sesji użyj `openclaw sessions` albo powierzchni
+  sesji/statusu Gateway, a podczas debugowania payloadów dostawcy uruchom
   Gateway z `--raw-stream --raw-stream-path <path>`.
 
 ### Zduplikowana własność kanału lub narzędzia
@@ -344,33 +338,33 @@ Objawy:
 - `plugin tool name conflict (<plugin-id>): <tool-name>`
 
 Oznacza to, że więcej niż jeden włączony plugin próbuje posiadać ten sam kanał,
-przepływ konfiguracji albo nazwę narzędzia. Najczęstszą przyczyną jest zewnętrzny plugin kanału
-zainstalowany obok dołączonego pluginu, który teraz zapewnia ten sam identyfikator kanału.
+przepływ konfiguracji lub nazwę narzędzia. Najczęstszą przyczyną jest zewnętrzny plugin kanału
+zainstalowany obok wbudowanego pluginu, który teraz zapewnia ten sam identyfikator kanału.
 
 Kroki debugowania:
 
 - Uruchom `openclaw plugins list --enabled --verbose`, aby zobaczyć każdy włączony plugin
   i jego pochodzenie.
-- Uruchom `openclaw plugins inspect <id> --json` dla każdego podejrzanego pluginu i
+- Uruchom `openclaw plugins inspect <id> --runtime --json` dla każdego podejrzanego pluginu i
   porównaj `channels`, `channelConfigs`, `tools` oraz diagnostykę.
-- Uruchom `openclaw plugins registry --refresh` po zainstalowaniu albo usunięciu
+- Uruchom `openclaw plugins registry --refresh` po zainstalowaniu lub usunięciu
   pakietów pluginów, aby utrwalone metadane odzwierciedlały bieżącą instalację.
-- Uruchom ponownie Gateway po zmianach instalacji, rejestru albo konfiguracji.
+- Uruchom ponownie Gateway po zmianach instalacji, rejestru lub konfiguracji.
 
 Opcje naprawy:
 
-- Jeśli jeden plugin celowo zastępuje inny dla tego samego identyfikatora kanału, preferowany
-  plugin powinien zadeklarować `channelConfigs.<channel-id>.preferOver` z
+- Jeśli jeden plugin celowo zastępuje inny dla tego samego identyfikatora kanału,
+  preferowany plugin powinien zadeklarować `channelConfigs.<channel-id>.preferOver` z
   identyfikatorem pluginu o niższym priorytecie. Zobacz [/plugins/manifest#replacing-another-channel-plugin](/pl/plugins/manifest#replacing-another-channel-plugin).
 - Jeśli duplikat jest przypadkowy, wyłącz jedną stronę za pomocą
   `plugins.entries.<plugin-id>.enabled: false` albo usuń nieaktualną instalację pluginu.
 - Jeśli jawnie włączono oba pluginy, OpenClaw zachowuje to żądanie i
   zgłasza konflikt. Wybierz jednego właściciela kanału albo zmień nazwy narzędzi należących do pluginu,
-  aby powierzchnia środowiska uruchomieniowego była jednoznaczna.
+  aby powierzchnia runtime była jednoznaczna.
 
-## Sloty pluginów (kategorie wyłączne)
+## Sloty pluginów (kategorie ekskluzywne)
 
-Niektóre kategorie są wyłączne (aktywna może być tylko jedna naraz):
+Niektóre kategorie są ekskluzywne (aktywna może być tylko jedna naraz):
 
 ```json5
 {
@@ -383,9 +377,9 @@ Niektóre kategorie są wyłączne (aktywna może być tylko jedna naraz):
 }
 ```
 
-| Slot            | Co kontroluje            | Domyślnie            |
-| --------------- | ------------------------ | -------------------- |
-| `memory`        | Aktywny plugin pamięci   | `memory-core`        |
+| Slot            | Co kontroluje          | Domyślne            |
+| --------------- | ---------------------- | ------------------- |
+| `memory`        | Plugin aktywnej pamięci | `memory-core`       |
 | `contextEngine` | Aktywny silnik kontekstu | `legacy` (wbudowany) |
 
 ## Dokumentacja CLI
@@ -395,7 +389,8 @@ openclaw plugins list                       # compact inventory
 openclaw plugins list --enabled            # only enabled plugins
 openclaw plugins list --verbose            # per-plugin detail lines
 openclaw plugins list --json               # machine-readable inventory
-openclaw plugins inspect <id>              # deep detail
+openclaw plugins inspect <id>              # static detail
+openclaw plugins inspect <id> --runtime    # registered hooks/tools/diagnostics
 openclaw plugins inspect <id> --json       # machine-readable
 openclaw plugins inspect --all             # fleet-wide table
 openclaw plugins info <id>                 # inspect alias
@@ -426,78 +421,79 @@ openclaw plugins enable <id>
 openclaw plugins disable <id>
 ```
 
-Dołączone pluginy są dostarczane z OpenClaw. Wiele z nich jest domyślnie włączonych (na przykład
-dołączeni dostawcy modeli, dołączeni dostawcy mowy i dołączony plugin przeglądarki).
-Inne dołączone pluginy nadal wymagają `openclaw plugins enable <id>`.
+Wbudowane pluginy są dostarczane z OpenClaw. Wiele z nich jest domyślnie włączonych (na przykład
+wbudowani dostawcy modeli, wbudowani dostawcy mowy i wbudowany plugin przeglądarki).
+Inne wbudowane pluginy nadal wymagają `openclaw plugins enable <id>`.
 
-`--force` nadpisuje istniejący zainstalowany plugin albo pakiet hooków w miejscu. Użyj
+`--force` nadpisuje istniejący zainstalowany plugin lub pakiet hooków w miejscu. Użyj
 `openclaw plugins update <id-or-npm-spec>` do rutynowych aktualizacji śledzonych pluginów npm.
-Nie jest obsługiwane z `--link`, które ponownie używa ścieżki źródłowej zamiast
-kopiować ją do zarządzanego celu instalacji.
+Nie jest obsługiwane z `--link`, który ponownie używa ścieżki źródłowej zamiast
+kopiować do zarządzanego celu instalacji.
 
 Gdy `plugins.allow` jest już ustawione, `openclaw plugins install` dodaje
 identyfikator zainstalowanego pluginu do tej listy dozwolonych przed jego włączeniem. Jeśli ten sam identyfikator pluginu
 jest obecny w `plugins.deny`, instalacja usuwa ten nieaktualny wpis deny, aby
 jawna instalacja była możliwa do załadowania natychmiast po restarcie.
 
-OpenClaw utrzymuje utrwalony lokalny rejestr pluginów jako model zimnego odczytu dla
-inwentaryzacji pluginów, własności wkładów i planowania uruchamiania. Przepływy instalacji, aktualizacji,
+OpenClaw utrzymuje trwały lokalny rejestr pluginów jako model zimnego odczytu dla
+inwentarza pluginów, własności kontrybucji i planowania startu. Przepływy instalacji, aktualizacji,
 odinstalowania, włączania i wyłączania odświeżają ten rejestr po zmianie stanu pluginu.
 Ten sam plik `plugins/installs.json` przechowuje trwałe metadane instalacji w
-górnopoziomowym `installRecords` oraz odtwarzalne metadane manifestu w `plugins`. Jeśli
-rejestru brakuje, jest nieaktualny albo nieprawidłowy, `openclaw plugins registry
---refresh` odbudowuje jego widok manifestu z rekordów instalacji, zasad konfiguracji oraz
-metadanych manifestu/pakietu bez ładowania modułów środowiska uruchomieniowego pluginów.
+najwyższego poziomu `installRecords` oraz odbudowywalne metadane manifestów w `plugins`. Jeśli
+rejestru brakuje, jest nieaktualny lub nieprawidłowy, `openclaw plugins registry
+--refresh` odbudowuje jego widok manifestów z rekordów instalacji, polityki konfiguracji i
+metadanych manifestu/pakietu bez ładowania modułów runtime pluginów.
 `openclaw plugins update <id-or-npm-spec>` dotyczy śledzonych instalacji. Przekazanie
-specyfikacji pakietu npm z tagiem dist-tag albo dokładną wersją rozpoznaje nazwę pakietu
-z powrotem do śledzonego rekordu pluginu i zapisuje nową specyfikację dla przyszłych aktualizacji.
-Przekazanie nazwy pakietu bez wersji przenosi dokładnie przypiętą instalację z powrotem na
-domyślną linię wydań rejestru. Jeśli zainstalowany plugin npm już pasuje do
-rozpoznanej wersji i zapisanej tożsamości artefaktu, OpenClaw pomija aktualizację
+specyfikacji pakietu npm z dist-tag lub dokładną wersją rozwiązuje nazwę pakietu
+z powrotem do rekordu śledzonego pluginu i zapisuje nową specyfikację do przyszłych aktualizacji.
+Przekazanie nazwy pakietu bez wersji przenosi dokładnie przypiętą instalację z powrotem do
+domyślnej linii wydań rejestru. Jeśli zainstalowany plugin npm już odpowiada
+rozwiązanej wersji i zapisanej tożsamości artefaktu, OpenClaw pomija aktualizację
 bez pobierania, ponownej instalacji ani przepisywania konfiguracji.
 
-`--pin` działa tylko z npm. Nie jest obsługiwane z `--marketplace`, ponieważ
+`--pin` dotyczy tylko npm. Nie jest obsługiwane z `--marketplace`, ponieważ
 instalacje z marketplace utrwalają metadane źródła marketplace zamiast specyfikacji npm.
 
-`--dangerously-force-unsafe-install` to awaryjne obejście dla fałszywych alarmów
-z wbudowanego skanera niebezpiecznego kodu. Pozwala kontynuować instalacje pluginów
-i aktualizacje pluginów mimo wbudowanych ustaleń `critical`, ale nadal
-nie omija blokad zasad pluginu `before_install` ani blokowania przy niepowodzeniu skanowania.
-Skany instalacyjne ignorują typowe pliki i katalogi testowe, takie jak `tests/`,
+`--dangerously-force-unsafe-install` to awaryjne obejście fałszywych
+alarmów z wbudowanego skanera niebezpiecznego kodu. Pozwala instalacjom pluginów
+i aktualizacjom pluginów kontynuować mimo wbudowanych wyników `critical`, ale nadal
+nie omija blokad polityki `before_install` pluginu ani blokowania po niepowodzeniu skanowania.
+Skany instalacji ignorują typowe pliki i katalogi testowe, takie jak `tests/`,
 `__tests__/`, `*.test.*` i `*.spec.*`, aby uniknąć blokowania spakowanych mocków testowych;
-zadeklarowane punkty wejścia środowiska uruchomieniowego pluginu są nadal skanowane, nawet jeśli używają jednej z
+zadeklarowane punkty wejścia runtime pluginu nadal są skanowane, nawet jeśli używają jednej z
 tych nazw.
 
 Ta flaga CLI dotyczy tylko przepływów instalacji/aktualizacji pluginów. Instalacje zależności Skills
-obsługiwane przez Gateway używają zamiast tego odpowiadającego nadpisania żądania
-`dangerouslyForceUnsafeInstall`, natomiast `openclaw skills install` pozostaje oddzielnym przepływem
-pobierania/instalacji Skills z ClawHub.
+obsługiwane przez Gateway używają zamiast tego odpowiadającego override żądania
+`dangerouslyForceUnsafeInstall`, natomiast `openclaw skills install` pozostaje oddzielnym
+przepływem pobierania/instalacji Skills z ClawHub.
 
-Jeśli plugin opublikowany przez ciebie w ClawHub jest ukryty albo zablokowany przez skan, otwórz
+Jeśli plugin opublikowany przez Ciebie w ClawHub jest ukryty lub zablokowany przez skan, otwórz
 panel ClawHub albo uruchom `clawhub package rescan <name>`, aby poprosić ClawHub o ponowne
-sprawdzenie. `--dangerously-force-unsafe-install` wpływa tylko na instalacje na twojej własnej
-maszynie; nie prosi ClawHub o ponowne skanowanie pluginu ani o upublicznienie zablokowanego wydania.
+sprawdzenie go. `--dangerously-force-unsafe-install` wpływa tylko na instalacje na Twoim własnym
+komputerze; nie prosi ClawHub o ponowne przeskanowanie pluginu ani nie sprawia, że zablokowane wydanie
+staje się publiczne.
 
-Zgodne pakiety uczestniczą w tym samym przepływie list/inspekcji/włączania/wyłączania pluginów.
-Bieżąca obsługa środowiska uruchomieniowego obejmuje pakietowe Skills, command-skills Claude,
+Zgodne pakiety uczestniczą w tym samym przepływie list/inspect/enable/disable
+pluginów. Bieżące wsparcie runtime obejmuje Skills pakietu, command-skills Claude,
 domyślne ustawienia Claude `settings.json`, domyślne ustawienia Claude `.lsp.json` oraz zadeklarowane w manifeście
-`lspServers`, command-skills Cursor oraz zgodne katalogi hooków Codex.
+`lspServers`, command-skills Cursor i zgodne katalogi hooków Codex.
 
-`openclaw plugins inspect <id>` zgłasza też wykryte możliwości pakietu oraz
+`openclaw plugins inspect <id>` zgłasza również wykryte możliwości pakietu oraz
 obsługiwane lub nieobsługiwane wpisy serwerów MCP i LSP dla pluginów opartych na pakietach.
 
-Źródłami marketplace mogą być znana nazwa marketplace Claude z
-`~/.claude/plugins/known_marketplaces.json`, lokalny katalog główny marketplace albo ścieżka
-`marketplace.json`, skrót GitHub taki jak `owner/repo`, adres URL repozytorium GitHub
-albo adres URL git. W przypadku zdalnych marketplace wpisy pluginów muszą pozostać wewnątrz
+Źródła marketplace mogą być znaną nazwą marketplace Claude z
+`~/.claude/plugins/known_marketplaces.json`, lokalnym katalogiem głównym marketplace albo
+ścieżką `marketplace.json`, skrótem GitHub takim jak `owner/repo`, adresem URL repozytorium
+GitHub albo adresem URL git. W przypadku zdalnych marketplace wpisy pluginów muszą pozostać wewnątrz
 sklonowanego repozytorium marketplace i używać wyłącznie względnych źródeł ścieżek.
 
-Zobacz [dokumentację CLI `openclaw plugins`](/pl/cli/plugins), aby poznać pełne szczegóły.
+Zobacz [dokumentację CLI `openclaw plugins`](/pl/cli/plugins), aby uzyskać pełne szczegóły.
 
 ## Przegląd API pluginów
 
-Natywne pluginy eksportują obiekt wejściowy, który udostępnia `register(api)`. Starsze
-pluginy mogą nadal używać `activate(api)` jako starszego aliasu, ale nowe pluginy powinny
+Natywne plugins eksportują obiekt wejścia, który udostępnia `register(api)`. Starsze
+plugins mogą nadal używać `activate(api)` jako starszego aliasu, ale nowe plugins powinny
 używać `register`.
 
 ```typescript
@@ -518,75 +514,75 @@ export default definePluginEntry({
 });
 ```
 
-OpenClaw ładuje obiekt wejściowy i wywołuje `register(api)` podczas
-aktywacji pluginu. Loader nadal wraca do `activate(api)` dla starszych pluginów,
-ale dołączone pluginy i nowe zewnętrzne pluginy powinny traktować `register` jako
+OpenClaw ładuje obiekt wejścia i wywołuje `register(api)` podczas aktywacji
+plugin. Loader nadal awaryjnie używa `activate(api)` dla starszych plugins,
+ale dołączone plugins i nowe zewnętrzne plugins powinny traktować `register` jako
 publiczny kontrakt.
 
-`api.registrationMode` informuje plugin, dlaczego jego punkt wejścia jest ładowany:
+`api.registrationMode` informuje plugin, dlaczego jego wejście jest ładowane:
 
 | Tryb            | Znaczenie                                                                                                                          |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `full`          | Aktywacja środowiska uruchomieniowego. Rejestruje narzędzia, haki, usługi, polecenia, trasy i inne aktywne efekty uboczne.          |
-| `discovery`     | Odkrywanie możliwości tylko do odczytu. Rejestruje dostawców i metadane; zaufany kod wejściowy pluginu może zostać załadowany, ale aktywne efekty uboczne są pomijane. |
-| `setup-only`    | Ładowanie metadanych konfiguracji kanału przez lekkie wejście konfiguracji.                                                         |
-| `setup-runtime` | Ładowanie konfiguracji kanału, które wymaga także wejścia środowiska uruchomieniowego.                                              |
-| `cli-metadata`  | Tylko zbieranie metadanych poleceń CLI.                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `full`          | Aktywacja w czasie działania. Rejestruje narzędzia, hooks, usługi, polecenia, trasy i inne aktywne efekty uboczne.                              |
+| `discovery`     | Odkrywanie możliwości tylko do odczytu. Rejestruje providers i metadane; zaufany kod wejścia plugin może zostać załadowany, ale należy pominąć aktywne efekty uboczne. |
+| `setup-only`    | Ładowanie metadanych konfiguracji kanału przez lekkie wejście konfiguracji.                                                                |
+| `setup-runtime` | Ładowanie konfiguracji kanału, które wymaga także wejścia czasu działania.                                                                         |
+| `cli-metadata`  | Tylko zbieranie metadanych poleceń CLI.                                                                                            |
 
-Wpisy pluginów, które otwierają gniazda, bazy danych, procesy robocze w tle lub długotrwałe
-klienty, powinny chronić te efekty uboczne warunkiem `api.registrationMode === "full"`.
+Wejścia plugin, które otwierają sockets, bazy danych, workers w tle lub długotrwałe
+clients, powinny zabezpieczać te efekty uboczne warunkiem `api.registrationMode === "full"`.
 Ładowania odkrywania są buforowane oddzielnie od ładowań aktywujących i nie zastępują
-działającego rejestru Gateway. Odkrywanie nie aktywuje, ale nie oznacza braku importów:
-OpenClaw może wykonać zaufany wpis pluginu lub moduł pluginu kanału, aby zbudować
-migawkę. Utrzymuj najwyższe poziomy modułów jako lekkie i wolne od efektów ubocznych, a
-klientów sieciowych, podprocesy, nasłuchiwacze, odczyty poświadczeń i uruchamianie usług
-przenieś za ścieżki pełnego środowiska uruchomieniowego.
+działającego rejestru Gateway. Odkrywanie jest nieaktywujące, ale nie jest wolne od importów:
+OpenClaw może ocenić zaufane wejście plugin lub moduł plugin kanału, aby zbudować
+snapshot. Utrzymuj najwyższe poziomy modułów lekkie i wolne od efektów ubocznych, a klientów
+sieciowych, podprocesy, listeners, odczyty poświadczeń i uruchamianie usług przenieś
+za ścieżki pełnego czasu działania.
 
 Typowe metody rejestracji:
 
-| Metoda                                  | Co rejestruje                |
-| --------------------------------------- | ---------------------------- |
-| `registerProvider`                      | Dostawca modelu (LLM)        |
-| `registerChannel`                       | Kanał czatu                  |
-| `registerTool`                          | Narzędzie agenta             |
-| `registerHook` / `on(...)`              | Haki cyklu życia             |
-| `registerSpeechProvider`                | Tekst na mowę / STT          |
-| `registerRealtimeTranscriptionProvider` | Strumieniowe STT             |
-| `registerRealtimeVoiceProvider`         | Dwukierunkowy głos w czasie rzeczywistym |
-| `registerMediaUnderstandingProvider`    | Analiza obrazów/audio        |
-| `registerImageGenerationProvider`       | Generowanie obrazów          |
-| `registerMusicGenerationProvider`       | Generowanie muzyki           |
+| Metoda                                  | Co rejestruje           |
+| --------------------------------------- | --------------------------- |
+| `registerProvider`                      | Model provider (LLM)        |
+| `registerChannel`                       | Kanał czatu                |
+| `registerTool`                          | Narzędzie agenta                  |
+| `registerHook` / `on(...)`              | Hooks cyklu życia             |
+| `registerSpeechProvider`                | Text-to-speech / STT        |
+| `registerRealtimeTranscriptionProvider` | Strumieniowe STT               |
+| `registerRealtimeVoiceProvider`         | Dwukierunkowy głos w czasie rzeczywistym       |
+| `registerMediaUnderstandingProvider`    | Analiza obrazu/audio        |
+| `registerImageGenerationProvider`       | Generowanie obrazów            |
+| `registerMusicGenerationProvider`       | Generowanie muzyki            |
 | `registerVideoGenerationProvider`       | Generowanie wideo            |
-| `registerWebFetchProvider`              | Dostawca pobierania / scrapingu WWW |
-| `registerWebSearchProvider`             | Wyszukiwanie w sieci         |
-| `registerHttpRoute`                     | Punkt końcowy HTTP           |
+| `registerWebFetchProvider`              | Provider pobierania / scrapingu z sieci |
+| `registerWebSearchProvider`             | Wyszukiwanie w sieci                  |
+| `registerHttpRoute`                     | Punkt końcowy HTTP               |
 | `registerCommand` / `registerCli`       | Polecenia CLI                |
-| `registerContextEngine`                 | Silnik kontekstu             |
-| `registerService`                       | Usługa w tle                 |
+| `registerContextEngine`                 | Silnik kontekstu              |
+| `registerService`                       | Usługa w tle          |
 
-Zachowanie osłon haków dla typowanych haków cyklu życia:
+Zachowanie guard hooks dla typowanych hooks cyklu życia:
 
-- `before_tool_call`: `{ block: true }` jest końcowe; procedury obsługi o niższym priorytecie są pomijane.
-- `before_tool_call`: `{ block: false }` nic nie robi i nie usuwa wcześniejszej blokady.
-- `before_install`: `{ block: true }` jest końcowe; procedury obsługi o niższym priorytecie są pomijane.
-- `before_install`: `{ block: false }` nic nie robi i nie usuwa wcześniejszej blokady.
-- `message_sending`: `{ cancel: true }` jest końcowe; procedury obsługi o niższym priorytecie są pomijane.
-- `message_sending`: `{ cancel: false }` nic nie robi i nie usuwa wcześniejszego anulowania.
+- `before_tool_call`: `{ block: true }` jest terminalne; handlers o niższym priorytecie są pomijane.
+- `before_tool_call`: `{ block: false }` jest operacją bez efektu i nie usuwa wcześniejszej blokady.
+- `before_install`: `{ block: true }` jest terminalne; handlers o niższym priorytecie są pomijane.
+- `before_install`: `{ block: false }` jest operacją bez efektu i nie usuwa wcześniejszej blokady.
+- `message_sending`: `{ cancel: true }` jest terminalne; handlers o niższym priorytecie są pomijane.
+- `message_sending`: `{ cancel: false }` jest operacją bez efektu i nie usuwa wcześniejszego anulowania.
 
-Natywny serwer aplikacji Codex przekazuje natywne zdarzenia narzędzi Codex z powrotem do tej
-powierzchni haków. Pluginy mogą blokować natywne narzędzia Codex przez `before_tool_call`,
-obserwować wyniki przez `after_tool_call` i uczestniczyć w zatwierdzaniu Codex
-`PermissionRequest`. Most nie przepisuje jeszcze argumentów natywnych narzędzi Codex.
-Dokładna granica obsługi środowiska uruchomieniowego Codex znajduje się w
+Natywny serwer aplikacji Codex mostkuje natywne zdarzenia narzędzi Codex z powrotem do tej
+powierzchni hook. Plugins mogą blokować natywne narzędzia Codex przez `before_tool_call`,
+obserwować wyniki przez `after_tool_call` i uczestniczyć w zatwierdzeniach
+`PermissionRequest` Codex. Mostek nie przepisuje jeszcze natywnych argumentów narzędzi
+Codex. Dokładna granica obsługi runtime Codex znajduje się w
 [kontrakcie obsługi Codex harness v1](/pl/plugins/codex-harness#v1-support-contract).
 
-Pełne zachowanie typowanych haków opisuje [omówienie SDK](/pl/plugins/sdk-overview#hook-decision-semantics).
+Pełne zachowanie typowanych hooks opisano w [omówieniu SDK](/pl/plugins/sdk-overview#hook-decision-semantics).
 
 ## Powiązane
 
-- [Tworzenie pluginów](/pl/plugins/building-plugins) — utwórz własny plugin
-- [Pakiety pluginów](/pl/plugins/bundles) — zgodność pakietów Codex/Claude/Cursor
-- [Manifest pluginu](/pl/plugins/manifest) — schemat manifestu
-- [Rejestrowanie narzędzi](/pl/plugins/building-plugins#registering-agent-tools) — dodaj narzędzia agenta w pluginie
-- [Wewnętrzna architektura pluginów](/pl/plugins/architecture) — model możliwości i potok ładowania
-- [Pluginy społecznościowe](/pl/plugins/community) — listy zewnętrznych pluginów
+- [Tworzenie plugins](/pl/plugins/building-plugins) — utwórz własny plugin
+- [Pakiety plugin](/pl/plugins/bundles) — zgodność pakietów Codex/Claude/Cursor
+- [Manifest plugin](/pl/plugins/manifest) — schemat manifestu
+- [Rejestrowanie narzędzi](/pl/plugins/building-plugins#registering-agent-tools) — dodawanie narzędzi agenta w plugin
+- [Wewnętrzna architektura plugin](/pl/plugins/architecture) — model możliwości i pipeline ładowania
+- [Społecznościowe plugins](/pl/plugins/community) — listy rozwiązań zewnętrznych

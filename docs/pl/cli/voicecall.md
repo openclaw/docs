@@ -1,21 +1,27 @@
 ---
 read_when:
-    - Używasz Plugin połączeń głosowych i chcesz poznać punkty wejścia CLI
-    - Chcesz zobaczyć szybkie przykłady dla `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
-summary: Dokumentacja CLI dla `openclaw voicecall` (powierzchnia poleceń Plugin połączeń głosowych)
-title: Voicecall
+    - Używasz pluginu voice-call i potrzebujesz punktów wejścia CLI
+    - Potrzebujesz szybkich przykładów dla `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
+summary: Dokumentacja referencyjna CLI dla `openclaw voicecall` (interfejs poleceń Plugin połączeń głosowych)
+title: Połączenie głosowe
 x-i18n:
-    generated_at: "2026-04-25T13:44:54Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T09:57:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: c040cf4cd984ad6d6dd302923494a7c8ee131390b803fe20a9894b077f08d5bb
     source_path: cli/voicecall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw voicecall`
 
 `voicecall` to polecenie dostarczane przez Plugin. Pojawia się tylko wtedy, gdy Plugin połączeń głosowych jest zainstalowany i włączony.
+
+Gdy Gateway działa, polecenia operacyjne (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end` i `status`) są wysyłane do środowiska
+uruchomieniowego połączeń głosowych tego Gateway. Jeśli żaden Gateway nie jest
+osiągalny, używane jest zapasowe autonomiczne środowisko uruchomieniowe
+CLI.
 
 Główna dokumentacja:
 
@@ -26,6 +32,7 @@ Główna dokumentacja:
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -33,26 +40,29 @@ openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 ```
 
-`setup` domyślnie wypisuje czytelne dla człowieka kontrole gotowości. Użyj `--json` w
-skryptach:
+`setup` domyślnie wypisuje kontrole gotowości czytelne dla człowieka. Użyj `--json` dla
+skryptów:
 
 ```bash
 openclaw voicecall setup --json
 ```
 
-W przypadku zewnętrznych providerów (`twilio`, `telnyx`, `plivo`) setup musi rozwiązać publiczny
-URL Webhook z `publicUrl`, tunelu lub ekspozycji Tailscale. Fallback do lokalnego/prywatnego
-serwowania jest odrzucany, ponieważ operatorzy nie mogą do niego dotrzeć.
+`status` domyślnie wypisuje aktywne połączenia jako JSON. Przekaż `--call-id <id>`, aby sprawdzić
+jedno połączenie.
+
+W przypadku zewnętrznych dostawców (`twilio`, `telnyx`, `plivo`) konfiguracja musi rozpoznać publiczny
+adres URL Webhook z `publicUrl`, tunelu lub ekspozycji Tailscale. Zapasowy
+serwer local loopback/prywatny jest odrzucany, ponieważ operatorzy nie mogą go osiągnąć.
 
 `smoke` uruchamia te same kontrole gotowości. Nie wykona prawdziwego połączenia telefonicznego,
-chyba że obecne są jednocześnie `--to` i `--yes`:
+chyba że obecne są zarówno `--to`, jak i `--yes`:
 
 ```bash
-openclaw voicecall smoke --to "+15555550123"        # test na sucho
-openclaw voicecall smoke --to "+15555550123" --yes  # rzeczywiste połączenie notify
+openclaw voicecall smoke --to "+15555550123"        # dry run
+openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 ```
 
-## Udostępnianie Webhooków (Tailscale)
+## Udostępnianie Webhook (Tailscale)
 
 ```bash
 openclaw voicecall expose --mode serve

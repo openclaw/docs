@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Chcesz zmienić domyślne modele lub wyświetlić status uwierzytelniania dostawcy
+    - Chcesz zmienić domyślne modele lub wyświetlić stan uwierzytelniania dostawcy
     - Chcesz przeskanować dostępne modele/dostawców i debugować profile uwierzytelniania
-summary: Dokumentacja referencyjna CLI dla `openclaw models` (status/list/set/scan, aliasy, mechanizmy zastępcze, uwierzytelnianie)
+summary: Dokumentacja referencyjna CLI dla `openclaw models` (status/list/set/scan, aliasy, mechanizmy rezerwowe, uwierzytelnianie)
 title: Modele
 x-i18n:
-    generated_at: "2026-04-30T09:44:40Z"
+    generated_at: "2026-05-01T09:56:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 95e2361989b583f7f52947dad1faaaba44dc6a5f58719cc2e83c13fce7c33adc
+    source_hash: 538d3e4808329737fdc044dc6e14e5c7c78052e75d8a8b3b257b1ebd821c84d1
     source_path: cli/models.md
     workflow: 16
 ---
 
 # `openclaw models`
 
-Wykrywanie, skanowanie i konfiguracja modeli (model domyślny, modele zastępcze, profile uwierzytelniania).
+Wykrywanie, skanowanie i konfiguracja modeli (model domyślny, modele awaryjne, profile uwierzytelniania).
 
 Powiązane:
 
 - Dostawcy + modele: [Modele](/pl/providers/models)
-- Koncepcje wyboru modelu + polecenie slash `/models`: [Koncepcja modeli](/pl/concepts/models)
+- Koncepcje wyboru modelu + polecenie ukośnikowe `/models`: [Koncepcja modeli](/pl/concepts/models)
 - Konfiguracja uwierzytelniania dostawcy: [Pierwsze kroki](/pl/start/getting-started)
 
 ## Typowe polecenia
@@ -32,66 +32,72 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status` pokazuje rozstrzygnięty model domyślny/modele zastępcze oraz przegląd uwierzytelniania.
-Gdy dostępne są migawki użycia dostawców, sekcja statusu OAuth/klucza API zawiera
-okna użycia dostawców i migawki limitów.
-Obecni dostawcy z oknami użycia: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
-Codex, MiniMax, Xiaomi i z.ai. Uwierzytelnianie użycia pochodzi z hooków właściwych
-dla dostawcy, gdy są dostępne; w przeciwnym razie OpenClaw przechodzi do pasujących
-danych uwierzytelniających OAuth/klucza API z profili uwierzytelniania, env lub konfiguracji.
-W wyjściu `--json` `auth.providers` to przegląd dostawców świadomy env/konfiguracji/magazynu,
-natomiast `auth.oauth` to wyłącznie kondycja profili magazynu uwierzytelniania.
-Dodaj `--probe`, aby uruchomić sondy uwierzytelniania na żywo wobec każdego skonfigurowanego profilu dostawcy.
-Sondy są rzeczywistymi żądaniami (mogą zużywać tokeny i wyzwalać limity szybkości).
-Użyj `--agent <id>`, aby sprawdzić stan modelu/uwierzytelniania skonfigurowanego agenta. Gdy pominięte,
-polecenie używa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`, jeśli są ustawione, a w przeciwnym razie
+`openclaw models status` pokazuje rozwiązany model domyślny/modele awaryjne oraz przegląd uwierzytelniania.
+Gdy dostępne są migawki użycia dostawcy, sekcja stanu OAuth/klucza API zawiera
+okna użycia dostawcy i migawki limitów.
+Obecni dostawcy okien użycia: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
+Codex, MiniMax, Xiaomi i z.ai. Uwierzytelnianie użycia pochodzi z haków specyficznych
+dla dostawcy, gdy są dostępne; w przeciwnym razie OpenClaw wraca do pasujących
+poświadczeń OAuth/klucza API z profili uwierzytelniania, środowiska lub konfiguracji.
+W wyjściu `--json` `auth.providers` jest przeglądem dostawców świadomym
+środowiska/konfiguracji/magazynu, natomiast `auth.oauth` obejmuje tylko kondycję
+profili magazynu uwierzytelniania.
+Dodaj `--probe`, aby uruchomić sondy uwierzytelniania na żywo względem każdego skonfigurowanego profilu dostawcy.
+Sondy to rzeczywiste żądania (mogą zużywać tokeny i wyzwalać limity szybkości).
+Użyj `--agent <id>`, aby sprawdzić stan modelu/uwierzytelniania skonfigurowanego agenta. Gdy pominięto,
+polecenie używa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`, jeśli są ustawione, w przeciwnym razie
 skonfigurowanego agenta domyślnego.
-Wiersze sond mogą pochodzić z profili uwierzytelniania, danych uwierzytelniających env lub `models.json`.
+Wiersze sond mogą pochodzić z profili uwierzytelniania, poświadczeń środowiskowych lub `models.json`.
 
 Uwagi:
 
-- `models set <model-or-alias>` akceptuje `provider/model` albo alias.
-- `models list` jest tylko do odczytu: odczytuje konfigurację, profile uwierzytelniania, istniejący stan katalogu
-  oraz wiersze katalogu należące do dostawcy, ale nie przepisuje
+- `models set <model-or-alias>` przyjmuje `provider/model` lub alias.
+- `models list` jest tylko do odczytu: odczytuje konfigurację, profile uwierzytelniania, istniejący stan
+  katalogu i wiersze katalogu należące do dostawcy, ale nie przepisuje
   `models.json`.
-- Kolumna `Auth` jest na poziomie dostawcy i jest tylko do odczytu. Jest obliczana na podstawie lokalnych
-  metadanych profilu uwierzytelniania, znaczników env, skonfigurowanych kluczy dostawcy, znaczników lokalnego dostawcy,
-  znaczników env/profilu AWS Bedrock oraz syntetycznych metadanych uwierzytelniania Plugin;
-  nie ładuje runtime dostawcy, nie odczytuje sekretów z keychain, nie wywołuje
-  API dostawcy ani nie dowodzi dokładnej gotowości wykonania dla poszczególnych modeli.
-- `models list --all --provider <id>` może obejmować statyczne wiersze katalogu należące do dostawcy
-  z manifestów Plugin lub dołączonych metadanych katalogu dostawcy, nawet jeśli
-  nie uwierzytelniono się jeszcze u tego dostawcy. Te wiersze nadal są pokazywane jako
-  niedostępne, dopóki nie skonfiguruje się pasującego uwierzytelniania.
-- Szerokie `models list --all` scala wiersze katalogu manifestu nad wierszami rejestru
-  bez ładowania hooków uzupełniania runtime dostawcy. Szybkie ścieżki manifestu filtrowane po dostawcy
+- Kolumna `Auth` jest na poziomie dostawcy i jest tylko do odczytu. Jest obliczana z lokalnych
+  metadanych profilu uwierzytelniania, znaczników środowiska, skonfigurowanych kluczy dostawcy, znaczników
+  lokalnego dostawcy, znaczników środowiska/profilu AWS Bedrock oraz metadanych syntetycznego uwierzytelniania pluginu;
+  nie ładuje środowiska uruchomieniowego dostawcy, nie odczytuje sekretów z keychaina, nie wywołuje API dostawcy
+  ani nie potwierdza dokładnej gotowości wykonania dla pojedynczego modelu.
+- `models list --all --provider <id>` może zawierać należące do dostawcy statyczne wiersze katalogu
+  z manifestów pluginów lub dołączonych metadanych katalogu dostawcy, nawet gdy
+  nie uwierzytelniłeś się jeszcze u tego dostawcy. Te wiersze nadal są pokazywane jako
+  niedostępne, dopóki nie zostanie skonfigurowane pasujące uwierzytelnianie.
+- `models list` utrzymuje responsywność płaszczyzny sterowania, gdy odkrywanie katalogu dostawcy
+  jest wolne. Widoki domyślne i skonfigurowane wracają do skonfigurowanych lub
+  syntetycznych wierszy modeli po krótkim oczekiwaniu i pozwalają odkrywaniu zakończyć się w
+  tle. Użyj `--all`, gdy potrzebujesz dokładnego pełnego odkrytego katalogu i
+  chcesz zaczekać na odkrywanie dostawcy.
+- Szerokie `models list --all` scala wiersze katalogu z manifestu nad wierszami rejestru
+  bez ładowania haków uzupełniających środowiska uruchomieniowego dostawcy. Szybkie ścieżki manifestu filtrowane według dostawcy
   używają tylko dostawców oznaczonych jako `static`; dostawcy oznaczeni jako `refreshable`
   pozostają oparte na rejestrze/pamięci podręcznej i dołączają wiersze manifestu jako uzupełnienia, natomiast
-  dostawcy oznaczeni jako `runtime` pozostają przy wykrywaniu z rejestru/runtime.
-- `models list` utrzymuje natywne metadane modelu i limity runtime oddzielnie. W wyjściu tabelarycznym
-  `Ctx` pokazuje `contextTokens/contextWindow`, gdy efektywny limit runtime
+  dostawcy oznaczeni jako `runtime` pozostają przy odkrywaniu z rejestru/środowiska uruchomieniowego.
+- `models list` utrzymuje natywne metadane modelu i limity środowiska uruchomieniowego jako osobne wartości. W wyjściu tabelarycznym
+  `Ctx` pokazuje `contextTokens/contextWindow`, gdy efektywny limit środowiska uruchomieniowego
   różni się od natywnego okna kontekstu; wiersze JSON zawierają `contextTokens`,
-  gdy dostawca ujawnia ten limit.
+  gdy dostawca udostępnia ten limit.
 - `models list --provider <id>` filtruje według identyfikatora dostawcy, takiego jak `moonshot` lub
-  `openai-codex`. Nie akceptuje etykiet wyświetlanych z interaktywnych selektorów dostawców,
-  takich jak `Moonshot AI`.
-- Referencje modeli są analizowane przez podział przy **pierwszym** `/`. Jeśli identyfikator modelu zawiera `/` (w stylu OpenRouter), dołącz prefiks dostawcy (przykład: `openrouter/moonshotai/kimi-k2`).
-- Jeśli pominiesz dostawcę, OpenClaw najpierw rozstrzyga wejście jako alias, następnie
-  jako unikalne dopasowanie skonfigurowanego dostawcy dla tego dokładnego identyfikatora modelu, a dopiero potem
-  przechodzi do skonfigurowanego dostawcy domyślnego z ostrzeżeniem o wycofaniu.
+  `openai-codex`. Nie przyjmuje etykiet wyświetlanych z interaktywnych
+  selektorów dostawców, takich jak `Moonshot AI`.
+- Referencje modeli są parsowane przez podział na **pierwszym** `/`. Jeśli ID modelu zawiera `/` (w stylu OpenRouter), dołącz prefiks dostawcy (przykład: `openrouter/moonshotai/kimi-k2`).
+- Jeśli pominiesz dostawcę, OpenClaw rozwiązuje dane wejściowe najpierw jako alias, potem
+  jako unikalne dopasowanie skonfigurowanego dostawcy dla dokładnego identyfikatora modelu, a dopiero potem
+  wraca do skonfigurowanego dostawcy domyślnego z ostrzeżeniem o wycofaniu.
   Jeśli ten dostawca nie udostępnia już skonfigurowanego modelu domyślnego, OpenClaw
-  przechodzi do pierwszego skonfigurowanego dostawcy/modelu zamiast zgłaszać
-  nieaktualny domyślny usuniętego dostawcy.
+  wraca do pierwszej skonfigurowanej pary dostawca/model zamiast pokazywać
+  nieaktualny domyślny wybór usuniętego dostawcy.
 - `models status` może pokazywać `marker(<value>)` w wyjściu uwierzytelniania dla niesekretnych symboli zastępczych (na przykład `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) zamiast maskować je jako sekrety.
 
 ### Skanowanie modeli
 
-`models scan` odczytuje publiczny katalog `:free` OpenRouter i szereguje kandydatów do
-użycia jako modele zastępcze. Sam katalog jest publiczny, więc skanowanie samych metadanych nie wymaga
+`models scan` odczytuje publiczny katalog `:free` OpenRouter i klasyfikuje kandydatów do
+użycia awaryjnego. Sam katalog jest publiczny, więc skanowania samych metadanych nie wymagają
 klucza OpenRouter.
 
-Domyślnie OpenClaw próbuje sondować obsługę narzędzi i obrazów za pomocą wywołań modeli na żywo.
-Jeśli nie skonfigurowano klucza OpenRouter, polecenie przechodzi do wyjścia zawierającego tylko metadane
+Domyślnie OpenClaw próbuje sondować obsługę narzędzi i obrazów za pomocą wywołań modelu na żywo.
+Jeśli nie skonfigurowano klucza OpenRouter, polecenie wraca do wyjścia zawierającego tylko metadane
 i wyjaśnia, że modele `:free` nadal wymagają `OPENROUTER_API_KEY` do
 sond i inferencji.
 
@@ -110,10 +116,10 @@ Opcje:
 - `--set-image`
 - `--json`
 
-`--set-default` i `--set-image` wymagają sond na żywo; wyniki skanowania zawierające
-tylko metadane są informacyjne i nie są stosowane do konfiguracji.
+`--set-default` i `--set-image` wymagają sond na żywo; wyniki skanowania tylko metadanych
+mają charakter informacyjny i nie są stosowane do konfiguracji.
 
-### Status modeli
+### Stan modeli
 
 Opcje:
 
@@ -122,7 +128,7 @@ Opcje:
 - `--check` (kod wyjścia 1=wygasłe/brakujące, 2=wygasające)
 - `--probe` (sonda na żywo skonfigurowanych profili uwierzytelniania)
 - `--probe-provider <name>` (sonduj jednego dostawcę)
-- `--probe-profile <id>` (powtarzane lub rozdzielone przecinkami identyfikatory profili)
+- `--probe-profile <id>` (powtarzalne lub rozdzielone przecinkami identyfikatory profili)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
@@ -132,7 +138,7 @@ Opcje:
 i uruchamiania jest kierowana do stderr, aby skrypty mogły przekazywać stdout bezpośrednio
 do narzędzi takich jak `jq`.
 
-Koszyki statusu sond:
+Koszyki stanu sond:
 
 - `ok`
 - `auth`
@@ -143,17 +149,17 @@ Koszyki statusu sond:
 - `unknown`
 - `no_model`
 
-Oczekiwane przypadki szczegółów/kodów przyczyn sond:
+Oczekiwane przypadki szczegółów/kodów przyczyny sondy:
 
 - `excluded_by_auth_order`: zapisany profil istnieje, ale jawne
   `auth.order.<provider>` go pominęło, więc sonda zgłasza wykluczenie zamiast
-  go próbować.
+  próbować go użyć.
 - `missing_credential`, `invalid_expires`, `expired`, `unresolved_ref`:
-  profil jest obecny, ale nie kwalifikuje się/nie może zostać rozstrzygnięty.
-- `no_model`: uwierzytelnianie dostawcy istnieje, ale OpenClaw nie mógł rozstrzygnąć kandydata modelu,
-  którego można sondować dla tego dostawcy.
+  profil jest obecny, ale nie kwalifikuje się lub nie da się go rozwiązać.
+- `no_model`: uwierzytelnianie dostawcy istnieje, ale OpenClaw nie mógł rozwiązać kandydata
+  modelu możliwego do sondowania dla tego dostawcy.
 
-## Aliasy + modele zastępcze
+## Aliasy + modele awaryjne
 
 ```bash
 openclaw models aliases list
@@ -169,14 +175,14 @@ openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
-`models auth add` to interaktywny pomocnik uwierzytelniania. Może uruchomić przepływ uwierzytelniania dostawcy
-(OAuth/klucz API) albo poprowadzić do ręcznego wklejenia tokenu, zależnie od
+`models auth add` to interaktywny pomocnik uwierzytelniania. Może uruchomić przepływ uwierzytelniania
+dostawcy (OAuth/klucz API) albo poprowadzić Cię przez ręczne wklejenie tokenu, zależnie od
 wybranego dostawcy.
 
-`models auth login` uruchamia przepływ uwierzytelniania Plugin dostawcy (OAuth/klucz API). Użyj
+`models auth login` uruchamia przepływ uwierzytelniania pluginu dostawcy (OAuth/klucz API). Użyj
 `openclaw plugins list`, aby zobaczyć, którzy dostawcy są zainstalowani.
-Użyj `openclaw models auth --agent <id> <subcommand>`, aby zapisać wyniki uwierzytelniania w
-magazynie konkretnego skonfigurowanego agenta. Flaga nadrzędna `--agent` jest respektowana przez
+Użyj `openclaw models auth --agent <id> <subcommand>`, aby zapisać wyniki uwierzytelniania do
+magazynu konkretnego skonfigurowanego agenta. Flaga nadrzędna `--agent` jest respektowana przez
 `add`, `login`, `setup-token`, `paste-token` i `login-github-copilot`.
 
 Przykłady:
@@ -191,17 +197,17 @@ Uwagi:
   którzy udostępniają metody uwierzytelniania tokenem.
 - `setup-token` wymaga interaktywnego TTY i uruchamia metodę uwierzytelniania tokenem dostawcy
   (domyślnie metodę `setup-token` tego dostawcy, gdy ją udostępnia).
-- `paste-token` akceptuje ciąg tokenu wygenerowany gdzie indziej lub z automatyzacji.
-- `paste-token` wymaga `--provider`, pyta o wartość tokenu i zapisuje
-  ją pod domyślnym identyfikatorem profilu `<provider>:manual`, chyba że przekażesz
+- `paste-token` przyjmuje ciąg tokenu wygenerowany gdzie indziej lub z automatyzacji.
+- `paste-token` wymaga `--provider`, prosi o wartość tokenu i zapisuje
+  ją do domyślnego identyfikatora profilu `<provider>:manual`, chyba że przekażesz
   `--profile-id`.
 - `paste-token --expires-in <duration>` zapisuje bezwzględny czas wygaśnięcia tokenu na podstawie
   względnego czasu trwania, takiego jak `365d` lub `12h`.
-- Uwaga Anthropic: pracownicy Anthropic powiedzieli nam, że użycie Claude CLI w stylu OpenClaw jest ponownie dozwolone, więc OpenClaw traktuje ponowne użycie Claude CLI i użycie `claude -p` jako usankcjonowane dla tej integracji, chyba że Anthropic opublikuje nową politykę.
-- Anthropic `setup-token` / `paste-token` pozostają dostępne jako obsługiwana ścieżka tokenu OpenClaw, ale OpenClaw obecnie preferuje ponowne użycie Claude CLI i `claude -p`, gdy są dostępne.
+- Uwaga Anthropic: pracownicy Anthropic poinformowali nas, że użycie Claude CLI w stylu OpenClaw jest ponownie dozwolone, więc OpenClaw traktuje ponowne użycie Claude CLI i użycie `claude -p` jako usankcjonowane dla tej integracji, chyba że Anthropic opublikuje nową politykę.
+- Anthropic `setup-token` / `paste-token` pozostają dostępne jako obsługiwana ścieżka tokenu OpenClaw, ale OpenClaw preferuje teraz ponowne użycie Claude CLI i `claude -p`, gdy są dostępne.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
 - [Wybór modelu](/pl/concepts/model-providers)
-- [Przełączanie awaryjne modelu](/pl/concepts/model-failover)
+- [Przełączanie awaryjne modeli](/pl/concepts/model-failover)

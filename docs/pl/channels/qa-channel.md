@@ -1,29 +1,31 @@
 ---
 read_when:
-    - Podłączasz syntetyczny transport QA do lokalnego uruchomienia testów lub uruchomienia testów w CI
-    - Potrzebujesz dołączonego interfejsu konfiguracji qa-channel
-    - Iterujesz nad kompleksową automatyzacją kontroli jakości
+    - Podłączasz syntetyczny transport QA do lokalnego uruchomienia testów lub uruchomienia w CI
+    - Potrzebujesz wbudowanego interfejsu konfiguracji qa-channel
+    - Pracujesz iteracyjnie nad kompleksową automatyzacją QA
 summary: Syntetyczny Plugin kanału klasy Slack do deterministycznych scenariuszy QA OpenClaw
 title: Kanał QA
 x-i18n:
-    generated_at: "2026-04-30T09:39:15Z"
+    generated_at: "2026-05-01T09:56:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e1de1f52da1a14c845cf2a536ddc6f36ab52ed6364f68d9ece32ce272e2a2f96
+    source_hash: efe057812de1fbc6d89d2b6d5860cd6af4648c3e86913efa3a69267c4e8c57b4
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` to dołączony syntetyczny transport wiadomości do zautomatyzowanego QA OpenClaw. Nie jest to kanał produkcyjny — istnieje po to, aby ćwiczyć tę samą granicę Plugin kanału, której używają rzeczywiste transporty, przy zachowaniu deterministycznego i w pełni możliwego do inspekcji stanu.
+`qa-channel` to wbudowany syntetyczny transport wiadomości do zautomatyzowanego QA OpenClaw. Nie jest to kanał produkcyjny — istnieje po to, aby ćwiczyć tę samą granicę Plugin kanału, której używają rzeczywiste transporty, przy zachowaniu deterministycznego i w pełni możliwego do inspekcji stanu.
 
 ## Co robi
 
 - Gramatyka celów klasy Slack:
   - `dm:<user>`
   - `channel:<room>`
+  - `group:<room>`
   - `thread:<room>/<thread>`
-- Syntetyczna szyna oparta na HTTP do wstrzykiwania wiadomości przychodzących, przechwytywania transkrypcji wychodzącej, tworzenia wątków, reakcji, edycji, usuwania oraz akcji wyszukiwania/odczytu.
-- Uruchamiany po stronie hosta moduł samokontroli, który zapisuje raport Markdown w `.artifacts/qa-e2e/`.
+- Współdzielone konwersacje `channel:` i `group:` są prezentowane agentom jako tury pokoju grupy/kanału, dzięki czemu ćwiczą tę samą politykę widocznych odpowiedzi i routingu narzędzi wiadomości, której używają Discord, Slack, Telegram i podobne transporty.
+- Syntetyczna magistrala oparta na HTTP do wstrzykiwania wiadomości przychodzących, przechwytywania transkryptów wychodzących, tworzenia wątków, reakcji, edycji, usuwania oraz akcji wyszukiwania/odczytu.
+- Uruchamiacz autotestu po stronie hosta, który zapisuje raport Markdown w `.artifacts/qa-e2e/`.
 
 ## Konfiguracja
 
@@ -43,30 +45,30 @@ x-i18n:
 
 Klucze konta:
 
-- `enabled` — główny przełącznik dla tego konta.
+- `enabled` — główny przełącznik tego konta.
 - `name` — opcjonalna etykieta wyświetlana.
-- `baseUrl` — URL syntetycznej szyny.
+- `baseUrl` — URL syntetycznej magistrali.
 - `botUserId` — identyfikator użytkownika bota w stylu Matrix używany w gramatyce celów.
 - `botDisplayName` — nazwa wyświetlana dla wiadomości wychodzących.
 - `pollTimeoutMs` — okno oczekiwania długiego odpytywania. Liczba całkowita od 100 do 30000.
 - `allowFrom` — lista dozwolonych nadawców (identyfikatory użytkowników lub `"*"`).
-- `defaultTo` — cel zastępczy, gdy nie podano żadnego.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — bramkowanie narzędzi dla poszczególnych akcji.
+- `defaultTo` — cel awaryjny, gdy nie podano żadnego.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — bramkowanie narzędzi według akcji.
 
-Klucze wielokontowe na najwyższym poziomie:
+Klucze wielu kont na najwyższym poziomie:
 
 - `accounts` — rekord nazwanych nadpisań dla poszczególnych kont, indeksowany według identyfikatora konta.
 - `defaultAccount` — preferowany identyfikator konta, gdy skonfigurowano wiele kont.
 
-## Moduły uruchamiające
+## Uruchamiacze
 
-Samokontrola po stronie hosta (zapisuje raport Markdown w `.artifacts/qa-e2e/`):
+Autotest po stronie hosta (zapisuje raport Markdown w `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-To przechodzi przez `qa-lab`, uruchamia szynę QA z repozytorium, startuje dołączony wycinek środowiska uruchomieniowego `qa-channel` i wykonuje deterministyczną samokontrolę.
+To przechodzi przez `qa-lab`, uruchamia magistralę QA z repozytorium, bootuje wbudowany fragment środowiska wykonawczego `qa-channel` i wykonuje deterministyczny autotest.
 
 Pełny zestaw scenariuszy oparty na repozytorium:
 
@@ -74,7 +76,7 @@ Pełny zestaw scenariuszy oparty na repozytorium:
 pnpm openclaw qa suite
 ```
 
-Uruchamia scenariusze równolegle względem linii QA Gateway. Zobacz [omówienie QA](/pl/concepts/qa-e2e-automation), aby poznać scenariusze, profile i tryby dostawców.
+Uruchamia scenariusze równolegle względem ścieżki QA Gateway. Zobacz [Przegląd QA](/pl/concepts/qa-e2e-automation), aby poznać scenariusze, profile i tryby providerów.
 
 Witryna QA oparta na Dockerze (Gateway + interfejs debuggera QA Lab w jednym stosie):
 
@@ -82,12 +84,12 @@ Witryna QA oparta na Dockerze (Gateway + interfejs debuggera QA Lab w jednym sto
 pnpm qa:lab:up
 ```
 
-Buduje witrynę QA, uruchamia oparty na Dockerze stos Gateway + QA Lab i wypisuje URL QA Lab. Następnie możesz wybierać scenariusze, wybrać linię modelu, uruchamiać pojedyncze przebiegi i obserwować wyniki na żywo. Debugger QA Lab jest oddzielony od dostarczanego pakietu interfejsu Control UI.
+Buduje witrynę QA, uruchamia oparty na Dockerze stos Gateway + QA Lab i wypisuje URL QA Lab. Stamtąd możesz wybierać scenariusze, wybierać ścieżkę modelu, uruchamiać pojedyncze przebiegi i obserwować wyniki na żywo. Debugger QA Lab jest oddzielny od dostarczanego pakietu Control UI.
 
 ## Powiązane
 
-- [Omówienie QA](/pl/concepts/qa-e2e-automation) — ogólny stos, adaptery transportu, tworzenie scenariuszy
-- [QA Matrix](/pl/concepts/qa-matrix) — przykładowy moduł uruchamiający transport na żywo, który steruje rzeczywistym kanałem
+- [Przegląd QA](/pl/concepts/qa-e2e-automation) — ogólny stos, adaptery transportu, tworzenie scenariuszy
+- [Matrix QA](/pl/concepts/qa-matrix) — przykładowy uruchamiacz transportu na żywo, który steruje rzeczywistym kanałem
 - [Parowanie](/pl/channels/pairing)
 - [Grupy](/pl/channels/groups)
-- [Omówienie kanałów](/pl/channels)
+- [Przegląd kanałów](/pl/channels)
