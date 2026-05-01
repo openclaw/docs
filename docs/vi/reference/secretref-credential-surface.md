@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Xác minh mức độ bao phủ thông tin xác thực SecretRef
-    - Kiểm tra xem thông tin xác thực có đủ điều kiện cho `secrets configure` hay `secrets apply` hay không
-    - Xác minh lý do một thông tin xác thực nằm ngoài phạm vi được hỗ trợ
-summary: Bề mặt thông tin xác thực SecretRef được hỗ trợ và không được hỗ trợ chính thức
+    - Xác minh phạm vi bao phủ thông tin xác thực SecretRef
+    - Kiểm tra xem thông tin xác thực có đủ điều kiện cho `secrets configure` hoặc `secrets apply` hay không
+    - Đang xác minh lý do thông tin xác thực nằm ngoài phạm vi được hỗ trợ
+summary: Phạm vi thông tin xác thực SecretRef chuẩn được hỗ trợ và không được hỗ trợ
 title: Bề mặt thông tin xác thực SecretRef
 x-i18n:
-    generated_at: "2026-04-29T23:11:55Z"
+    generated_at: "2026-05-01T10:52:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
+    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Trang này định nghĩa bề mặt thông tin xác thực SecretRef chuẩn.
+Trang này định nghĩa bề mặt thông tin xác thực SecretRef chuẩn tắc.
 
-Ý định về phạm vi:
+Ý định phạm vi:
 
-- Trong phạm vi: chỉ các thông tin xác thực do người dùng cung cấp mà OpenClaw không cấp phát hoặc xoay vòng.
-- Ngoài phạm vi: thông tin xác thực được cấp phát trong thời gian chạy hoặc được xoay vòng, dữ liệu làm mới OAuth, và các hiện vật giống phiên.
+- Trong phạm vi: chỉ những thông tin xác thực do người dùng cung cấp mà OpenClaw không phát hành hoặc xoay vòng.
+- Ngoài phạm vi: thông tin xác thực được phát hành tại runtime hoặc xoay vòng, vật liệu làm mới OAuth và các tạo tác giống phiên.
 
 ## Thông tin xác thực được hỗ trợ
 
@@ -57,6 +57,8 @@ Trang này định nghĩa bề mặt thông tin xác thực SecretRef chuẩn.
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
+- `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
@@ -110,8 +112,8 @@ Trang này định nghĩa bề mặt thông tin xác thực SecretRef chuẩn.
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` qua `serviceAccountRef` cùng cấp (ngoại lệ tương thích)
-- `channels.googlechat.accounts.*.serviceAccount` qua `serviceAccountRef` cùng cấp (ngoại lệ tương thích)
+- `channels.googlechat.serviceAccount` thông qua trường cùng cấp `serviceAccountRef` (ngoại lệ tương thích)
+- `channels.googlechat.accounts.*.serviceAccount` thông qua trường cùng cấp `serviceAccountRef` (ngoại lệ tương thích)
 
 ### Mục tiêu `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -122,18 +124,18 @@ Trang này định nghĩa bề mặt thông tin xác thực SecretRef chuẩn.
 
 Ghi chú:
 
-- Mục tiêu kế hoạch auth-profile yêu cầu `agentId`.
-- Mục nhập kế hoạch nhắm tới `profiles.*.key` / `profiles.*.token` và ghi các ref cùng cấp (`keyRef` / `tokenRef`).
-- Ref auth-profile được đưa vào phạm vi phân giải thời gian chạy và kiểm tra audit.
-- Trong `openclaw.json`, SecretRef phải dùng các đối tượng có cấu trúc như `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Chuỗi đánh dấu cũ `secretref-env:<ENV_VAR>` bị từ chối trên đường dẫn thông tin xác thực SecretRef; chạy `openclaw doctor --fix` để di chuyển các marker hợp lệ.
-- Chốt chặn chính sách OAuth: không thể kết hợp `auth.profiles.<id>.mode = "oauth"` với đầu vào SecretRef cho hồ sơ đó. Khởi động/tải lại và phân giải auth-profile sẽ fail fast khi chính sách này bị vi phạm.
-- Đối với nhà cung cấp mô hình do SecretRef quản lý, các mục `agents/*/agent/models.json` được tạo sẽ lưu các marker không bí mật (không phải giá trị bí mật đã phân giải) cho các bề mặt `apiKey`/header.
-- Việc lưu marker lấy nguồn làm thẩm quyền: OpenClaw ghi marker từ ảnh chụp cấu hình nguồn đang hoạt động (trước khi phân giải), không phải từ giá trị bí mật thời gian chạy đã phân giải.
+- Mục tiêu kế hoạch hồ sơ xác thực yêu cầu `agentId`.
+- Các mục kế hoạch nhắm tới `profiles.*.key` / `profiles.*.token` và ghi các ref cùng cấp (`keyRef` / `tokenRef`).
+- Ref hồ sơ xác thực được đưa vào phạm vi phân giải runtime và kiểm tra audit.
+- Trong `openclaw.json`, SecretRef phải dùng các đối tượng có cấu trúc như `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Chuỗi đánh dấu cũ `secretref-env:<ENV_VAR>` bị từ chối trên các đường dẫn thông tin xác thực SecretRef; chạy `openclaw doctor --fix` để di chuyển các marker hợp lệ.
+- Biện pháp bảo vệ chính sách OAuth: `auth.profiles.<id>.mode = "oauth"` không thể kết hợp với đầu vào SecretRef cho hồ sơ đó. Khởi động/tải lại và phân giải hồ sơ xác thực sẽ lỗi nhanh khi chính sách này bị vi phạm.
+- Đối với các nhà cung cấp mô hình do SecretRef quản lý, các mục `agents/*/agent/models.json` được tạo sẽ lưu marker không phải bí mật (không phải giá trị bí mật đã phân giải) cho các bề mặt `apiKey`/header.
+- Việc lưu marker lấy nguồn làm chuẩn: OpenClaw ghi marker từ snapshot cấu hình nguồn đang hoạt động (trước phân giải), không phải từ các giá trị bí mật runtime đã phân giải.
 - Đối với tìm kiếm web:
-  - Trong chế độ nhà cung cấp rõ ràng (đã đặt `tools.web.search.provider`), chỉ khóa của nhà cung cấp đã chọn là hoạt động.
-  - Trong chế độ tự động (chưa đặt `tools.web.search.provider`), chỉ khóa nhà cung cấp đầu tiên phân giải được theo thứ tự ưu tiên là hoạt động.
-  - Trong chế độ tự động, ref của nhà cung cấp không được chọn được coi là không hoạt động cho đến khi được chọn.
-  - Các đường dẫn nhà cung cấp `tools.web.search.*` cũ vẫn phân giải trong khoảng thời gian tương thích, nhưng bề mặt SecretRef chuẩn là `plugins.entries.<plugin>.config.webSearch.*`.
+  - Ở chế độ nhà cung cấp tường minh (`tools.web.search.provider` được đặt), chỉ khóa của nhà cung cấp đã chọn là hoạt động.
+  - Ở chế độ tự động (`tools.web.search.provider` không được đặt), chỉ khóa nhà cung cấp đầu tiên phân giải theo thứ tự ưu tiên là hoạt động.
+  - Ở chế độ tự động, ref của các nhà cung cấp không được chọn được xem là không hoạt động cho đến khi được chọn.
+  - Các đường dẫn nhà cung cấp `tools.web.search.*` cũ vẫn phân giải trong giai đoạn tương thích, nhưng bề mặt SecretRef chuẩn tắc là `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Thông tin xác thực không được hỗ trợ
 
@@ -155,9 +157,9 @@ Thông tin xác thực ngoài phạm vi bao gồm:
 
 Lý do:
 
-- Các thông tin xác thực này thuộc các lớp được cấp phát, xoay vòng, mang phiên, hoặc bền vững theo OAuth, nên không phù hợp với phân giải SecretRef bên ngoài chỉ đọc.
+- Những thông tin xác thực này thuộc các lớp được phát hành, xoay vòng, mang phiên hoặc bền vững OAuth, không phù hợp với phân giải SecretRef bên ngoài chỉ đọc.
 
 ## Liên quan
 
 - [Quản lý bí mật](/vi/gateway/secrets)
-- [Ngữ nghĩa thông tin xác thực auth](/vi/auth-credential-semantics)
+- [Ngữ nghĩa thông tin xác thực xác thực](/vi/auth-credential-semantics)
