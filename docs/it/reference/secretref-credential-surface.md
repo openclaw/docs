@@ -1,15 +1,15 @@
 ---
 read_when:
     - Verifica della copertura delle credenziali SecretRef
-    - Verifica dell'idoneità di una credenziale per `secrets configure` o `secrets apply`
-    - Verifica del motivo per cui una credenziale non rientra nella superficie supportata
-summary: Superficie canonica delle credenziali SecretRef supportate e non supportate
+    - Verificare se una credenziale è idonea per `secrets configure` o `secrets apply`
+    - Verificare perché una credenziale è al di fuori della superficie supportata
+summary: Superficie canonica supportata e non supportata per le credenziali SecretRef
 title: Superficie delle credenziali SecretRef
 x-i18n:
-    generated_at: "2026-04-30T09:11:47Z"
+    generated_at: "2026-05-01T08:33:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
+    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
@@ -18,12 +18,12 @@ Questa pagina definisce la superficie canonica delle credenziali SecretRef.
 
 Intento dell'ambito:
 
-- Nell'ambito: credenziali fornite esclusivamente dall'utente che OpenClaw non genera né ruota.
-- Fuori ambito: credenziali generate a runtime o soggette a rotazione, materiale di refresh OAuth e artefatti assimilabili a sessioni.
+- In ambito: credenziali strettamente fornite dall'utente che OpenClaw non emette né ruota.
+- Fuori ambito: credenziali emesse o ruotate a runtime, materiale di aggiornamento OAuth e artefatti simili a sessioni.
 
 ## Credenziali supportate
 
-### Target `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Destinazioni `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -57,6 +57,8 @@ Intento dell'ambito:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
+- `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
@@ -113,7 +115,7 @@ Intento dell'ambito:
 - `channels.googlechat.serviceAccount` tramite elemento sibling `serviceAccountRef` (eccezione di compatibilità)
 - `channels.googlechat.accounts.*.serviceAccount` tramite elemento sibling `serviceAccountRef` (eccezione di compatibilità)
 
-### Target `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Destinazioni `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 - `profiles.*.keyRef` (`type: "api_key"`; non supportato quando `auth.profiles.<id>.mode = "oauth"`)
 - `profiles.*.tokenRef` (`type: "token"`; non supportato quando `auth.profiles.<id>.mode = "oauth"`)
@@ -122,18 +124,18 @@ Intento dell'ambito:
 
 Note:
 
-- I target del piano auth-profile richiedono `agentId`.
-- Le voci del piano hanno come target `profiles.*.key` / `profiles.*.token` e scrivono ref sibling (`keyRef` / `tokenRef`).
-- I ref auth-profile sono inclusi nella risoluzione runtime e nella copertura di audit.
-- In `openclaw.json`, i SecretRef devono usare oggetti strutturati come `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Le stringhe marker legacy `secretref-env:<ENV_VAR>` vengono rifiutate sui percorsi delle credenziali SecretRef; esegui `openclaw doctor --fix` per migrare i marker validi.
-- Guard della policy OAuth: `auth.profiles.<id>.mode = "oauth"` non può essere combinato con input SecretRef per quel profilo. Avvio/ricaricamento e risoluzione auth-profile falliscono rapidamente quando questa policy viene violata.
-- Per i provider di modelli gestiti da SecretRef, le voci `agents/*/agent/models.json` generate mantengono marker non segreti (non valori segreti risolti) per le superfici `apiKey`/header.
-- La persistenza dei marker è autorevole rispetto alla sorgente: OpenClaw scrive i marker dallo snapshot della configurazione sorgente attiva (prima della risoluzione), non dai valori segreti risolti a runtime.
+- Le destinazioni del piano auth-profile richiedono `agentId`.
+- Le voci del piano hanno come destinazione `profiles.*.key` / `profiles.*.token` e scrivono riferimenti sibling (`keyRef` / `tokenRef`).
+- I riferimenti auth-profile sono inclusi nella risoluzione a runtime e nella copertura di audit.
+- In `openclaw.json`, le SecretRefs devono usare oggetti strutturati come `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Le stringhe marker legacy `secretref-env:<ENV_VAR>` vengono rifiutate nei percorsi delle credenziali SecretRef; esegui `openclaw doctor --fix` per migrare i marker validi.
+- Protezione della policy OAuth: `auth.profiles.<id>.mode = "oauth"` non può essere combinato con input SecretRef per quel profilo. Avvio/ricaricamento e risoluzione auth-profile falliscono rapidamente quando questa policy viene violata.
+- Per i provider di modelli gestiti da SecretRef, le voci `agents/*/agent/models.json` generate persistono marker non segreti (non valori segreti risolti) per le superfici `apiKey`/header.
+- La persistenza dei marker è autorevole rispetto alla fonte: OpenClaw scrive i marker dallo snapshot della configurazione sorgente attiva (prima della risoluzione), non dai valori segreti risolti a runtime.
 - Per la ricerca web:
   - In modalità provider esplicita (`tools.web.search.provider` impostato), è attiva solo la chiave del provider selezionato.
-  - In modalità automatica (`tools.web.search.provider` non impostato), è attiva solo la prima chiave del provider che viene risolta per precedenza.
-  - In modalità automatica, i ref dei provider non selezionati vengono trattati come inattivi finché non vengono selezionati.
-  - I percorsi legacy dei provider `tools.web.search.*` continuano a risolversi durante la finestra di compatibilità, ma la superficie canonica SecretRef è `plugins.entries.<plugin>.config.webSearch.*`.
+  - In modalità automatica (`tools.web.search.provider` non impostato), è attiva solo la prima chiave provider che si risolve in base alla precedenza.
+  - In modalità automatica, i riferimenti dei provider non selezionati sono considerati inattivi finché non vengono selezionati.
+  - I percorsi provider legacy `tools.web.search.*` vengono ancora risolti durante la finestra di compatibilità, ma la superficie SecretRef canonica è `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Credenziali non supportate
 
@@ -155,9 +157,9 @@ Le credenziali fuori ambito includono:
 
 Motivazione:
 
-- Queste credenziali sono classi generate, ruotate, portatrici di sessione o durevoli OAuth che non si adattano alla risoluzione SecretRef esterna di sola lettura.
+- Queste credenziali sono classi emesse, ruotate, portatrici di sessione o durevoli OAuth che non si adattano alla risoluzione SecretRef esterna in sola lettura.
 
 ## Correlati
 
 - [Gestione dei segreti](/it/gateway/secrets)
-- [Semantica delle credenziali auth](/it/auth-credential-semantics)
+- [Semantica delle credenziali di autenticazione](/it/auth-credential-semantics)
