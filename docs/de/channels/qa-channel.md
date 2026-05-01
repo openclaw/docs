@@ -6,24 +6,26 @@ read_when:
 summary: Synthetisches Kanal-Plugin der Slack-Klasse für deterministische OpenClaw-QA-Szenarien
 title: QA-Kanal
 x-i18n:
-    generated_at: "2026-04-30T06:41:36Z"
+    generated_at: "2026-05-01T06:41:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e1de1f52da1a14c845cf2a536ddc6f36ab52ed6364f68d9ece32ce272e2a2f96
+    source_hash: efe057812de1fbc6d89d2b6d5860cd6af4648c3e86913efa3a69267c4e8c57b4
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` ist ein gebündelter synthetischer Nachrichtentransport für automatisierte OpenClaw-QA. Er ist kein Produktionskanal — er dient dazu, dieselbe Channel-Plugin-Grenze zu testen, die von echten Transporten verwendet wird, während der Zustand deterministisch und vollständig inspizierbar bleibt.
+`qa-channel` ist ein mitgelieferter synthetischer Nachrichtentransport für automatisierte OpenClaw-QA. Er ist kein Produktionskanal — er dient dazu, dieselbe Kanal-Plugin-Grenze zu prüfen, die von echten Transporten verwendet wird, während der Zustand deterministisch und vollständig überprüfbar bleibt.
 
-## Funktion
+## Was er tut
 
-- Slack-artige Zielgrammatik:
+- Zielgrammatik der Slack-Klasse:
   - `dm:<user>`
   - `channel:<room>`
+  - `group:<room>`
   - `thread:<room>/<thread>`
-- HTTP-gestützter synthetischer Bus für das Einschleusen eingehender Nachrichten, das Erfassen ausgehender Transkripte, Thread-Erstellung, Reaktionen, Bearbeitungen, Löschungen sowie Such-/Leseaktionen.
-- Hostseitiger Self-Check-Runner, der einen Markdown-Bericht nach `.artifacts/qa-e2e/` schreibt.
+- Gemeinsame `channel:`- und `group:`-Konversationen werden Agenten als Gruppen-/Kanalraum-Turns bereitgestellt, sodass sie dieselbe Routing-Richtlinie für sichtbare Antworten und Nachrichten-Tools prüfen, die von Discord, Slack, Telegram und ähnlichen Transporten verwendet wird.
+- HTTP-gestützter synthetischer Bus zum Einspeisen eingehender Nachrichten, Erfassen ausgehender Transkripte, Erstellen von Threads, Reaktionen, Bearbeitungen, Löschungen sowie Such-/Leseaktionen.
+- Host-seitiger Self-Check-Runner, der einen Markdown-Bericht nach `.artifacts/qa-e2e/` schreibt.
 
 ## Konfiguration
 
@@ -44,29 +46,29 @@ x-i18n:
 Kontoschlüssel:
 
 - `enabled` — Hauptschalter für dieses Konto.
-- `name` — optionale Anzeigebezeichnung.
+- `name` — optionales Anzeigelabel.
 - `baseUrl` — URL des synthetischen Busses.
 - `botUserId` — Bot-Benutzer-ID im Matrix-Stil, die in der Zielgrammatik verwendet wird.
 - `botDisplayName` — Anzeigename für ausgehende Nachrichten.
 - `pollTimeoutMs` — Wartefenster für Long Polling. Ganzzahl zwischen 100 und 30000.
 - `allowFrom` — Absender-Allowlist (Benutzer-IDs oder `"*"`).
-- `defaultTo` — Fallback-Ziel, wenn keines angegeben wird.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — Tool-Freischaltung pro Aktion.
+- `defaultTo` — Fallback-Ziel, wenn keines angegeben ist.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — Tool-Gating pro Aktion.
 
-Multi-Account-Schlüssel auf oberster Ebene:
+Multi-Account-Schlüssel auf der obersten Ebene:
 
-- `accounts` — Zuordnung benannter kontospezifischer Überschreibungen, indiziert nach Konto-ID.
+- `accounts` — Datensatz benannter kontoabhängiger Überschreibungen, nach Konto-ID geschlüsselt.
 - `defaultAccount` — bevorzugte Konto-ID, wenn mehrere konfiguriert sind.
 
 ## Runner
 
-Hostseitiger Self-Check (schreibt einen Markdown-Bericht unter `.artifacts/qa-e2e/`):
+Host-seitiger Self-Check (schreibt einen Markdown-Bericht unter `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Dies läuft über `qa-lab`, startet den QA-Bus im Repository, bootet das gebündelte `qa-channel`-Runtime-Slice und führt einen deterministischen Self-Check aus.
+Dies läuft über `qa-lab`, startet den QA-Bus im Repo, bootet den mitgelieferten `qa-channel`-Runtime-Ausschnitt und führt einen deterministischen Self-Check aus.
 
 Vollständige repo-gestützte Szenario-Suite:
 
@@ -74,20 +76,20 @@ Vollständige repo-gestützte Szenario-Suite:
 pnpm openclaw qa suite
 ```
 
-Führt Szenarien parallel gegen die QA-Gateway-Lane aus. Siehe [QA-Übersicht](/de/concepts/qa-e2e-automation) für Szenarien, Profile und Provider-Modi.
+Führt Szenarien parallel gegen die QA-Gateway-Lane aus. Siehe [QA-Überblick](/de/concepts/qa-e2e-automation) für Szenarien, Profile und Provider-Modi.
 
-Docker-gestützte QA-Site (Gateway + QA-Lab-Debugger-UI in einem Stack):
+Docker-gestützte QA-Site (Gateway + QA Lab-Debugger-UI in einem Stack):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Baut die QA-Site, startet den Docker-gestützten Gateway- + QA-Lab-Stack und gibt die QA-Lab-URL aus. Von dort aus können Sie Szenarien auswählen, die Modell-Lane wählen, einzelne Läufe starten und Ergebnisse live verfolgen. Der QA-Lab-Debugger ist vom ausgelieferten Control-UI-Bundle getrennt.
+Baut die QA-Site, startet den Docker-gestützten Gateway- + QA Lab-Stack und gibt die QA Lab-URL aus. Von dort aus können Sie Szenarien auswählen, die Modell-Lane wählen, einzelne Läufe starten und Ergebnisse live verfolgen. Der QA Lab-Debugger ist vom ausgelieferten Control UI-Bundle getrennt.
 
-## Verwandte Themen
+## Verwandt
 
-- [QA-Übersicht](/de/concepts/qa-e2e-automation) — Gesamt-Stack, Transportadapter, Szenarioerstellung
+- [QA-Überblick](/de/concepts/qa-e2e-automation) — Gesamt-Stack, Transportadapter, Szenarioerstellung
 - [Matrix-QA](/de/concepts/qa-matrix) — Beispiel für einen Live-Transport-Runner, der einen echten Kanal steuert
-- [Kopplung](/de/channels/pairing)
+- [Koppeln](/de/channels/pairing)
 - [Gruppen](/de/channels/groups)
-- [Channel-Übersicht](/de/channels)
+- [Kanalüberblick](/de/channels)

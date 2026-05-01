@@ -1,31 +1,37 @@
 ---
 read_when:
-    - Sie verwenden das Voice-Call-Plugin und möchten die CLI-Einstiegspunkte
+    - Sie verwenden das Sprachanruf-Plugin und möchten die CLI-Einstiegspunkte
     - Sie möchten kurze Beispiele für `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
-summary: CLI-Referenz für `openclaw voicecall` (Befehlsoberfläche des Voice-Call-Plugin)
+summary: CLI-Referenz für `openclaw voicecall` (Befehlsoberfläche des voice-call-Plugins)
 title: Sprachanruf
 x-i18n:
-    generated_at: "2026-04-25T13:44:23Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T06:40:58Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: c040cf4cd984ad6d6dd302923494a7c8ee131390b803fe20a9894b077f08d5bb
     source_path: cli/voicecall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw voicecall`
 
-`voicecall` ist ein vom Plugin bereitgestellter Befehl. Er erscheint nur, wenn das Voice-Call-Plugin installiert und aktiviert ist.
+`voicecall` ist ein von einem Plugin bereitgestellter Befehl. Er wird nur angezeigt, wenn das Sprachanruf-Plugin installiert und aktiviert ist.
+
+Wenn der Gateway ausgeführt wird, werden operative Befehle (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end` und `status`) an die Sprachanruf-Runtime
+dieses Gateway gesendet. Wenn kein Gateway erreichbar ist, fallen sie auf eine eigenständige
+CLI-Runtime zurück.
 
 Primäre Dokumentation:
 
-- Voice-Call-Plugin: [Voice Call](/de/plugins/voice-call)
+- Sprachanruf-Plugin: [Sprachanruf](/de/plugins/voice-call)
 
 ## Häufige Befehle
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -40,16 +46,19 @@ Skripte:
 openclaw voicecall setup --json
 ```
 
-Für externe Provider (`twilio`, `telnyx`, `plivo`) muss setup eine öffentliche
-Webhook-URL aus `publicUrl`, einem Tunnel oder Tailscale auflösen. Ein Loopback-/privates
-Serve-Fallback wird abgelehnt, da Carrier es nicht erreichen können.
+`status` gibt aktive Anrufe standardmäßig als JSON aus. Übergeben Sie `--call-id <id>`, um
+einen Anruf zu prüfen.
 
-`smoke` führt dieselben Bereitschaftsprüfungen aus. Es führt keinen echten Anruf durch,
-es sei denn, sowohl `--to` als auch `--yes` sind vorhanden:
+Für externe Provider (`twilio`, `telnyx`, `plivo`) muss die Einrichtung eine öffentliche
+Webhook-URL aus `publicUrl`, einem Tunnel oder einer Tailscale-Freigabe auflösen. Ein Fallback über
+Loopback-/privates Bereitstellen wird abgelehnt, weil Netzbetreiber ihn nicht erreichen können.
+
+`smoke` führt dieselben Bereitschaftsprüfungen aus. Es wird keinen echten Telefonanruf
+starten, sofern nicht sowohl `--to` als auch `--yes` vorhanden sind:
 
 ```bash
-openclaw voicecall smoke --to "+15555550123"        # Probelauf
-openclaw voicecall smoke --to "+15555550123" --yes  # echter Notify-Anruf
+openclaw voicecall smoke --to "+15555550123"        # dry run
+openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 ```
 
 ## Webhooks verfügbar machen (Tailscale)
@@ -60,9 +69,9 @@ openclaw voicecall expose --mode funnel
 openclaw voicecall expose --mode off
 ```
 
-Sicherheitshinweis: Stellen Sie den Webhook-Endpunkt nur Netzwerken bereit, denen Sie vertrauen. Bevorzugen Sie nach Möglichkeit Tailscale Serve gegenüber Funnel.
+Sicherheitshinweis: Machen Sie den Webhook-Endpunkt nur für Netzwerke verfügbar, denen Sie vertrauen. Bevorzugen Sie nach Möglichkeit Tailscale Serve gegenüber Funnel.
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
-- [Voice-Call-Plugin](/de/plugins/voice-call)
+- [Sprachanruf-Plugin](/de/plugins/voice-call)
