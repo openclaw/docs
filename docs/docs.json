@@ -1758,6 +1758,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "reference/RELEASING",
+                  "reference/full-release-validation",
                   "reference/test",
                   "ci",
                   "help/scripts"
@@ -3233,6 +3234,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "zh-TW/reference/RELEASING",
+                  "zh-TW/reference/full-release-validation",
                   "zh-TW/reference/test",
                   "zh-TW/ci",
                   "zh-TW/help/scripts"
@@ -4093,6 +4095,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "ja-JP/reference/RELEASING",
+                  "ja-JP/reference/full-release-validation",
                   "ja-JP/reference/test",
                   "ja-JP/ci",
                   "ja-JP/help/scripts"
@@ -4953,6 +4956,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "es/reference/RELEASING",
+                  "es/reference/full-release-validation",
                   "es/reference/test",
                   "es/ci",
                   "es/help/scripts"
@@ -5813,6 +5817,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "pt-BR/reference/RELEASING",
+                  "pt-BR/reference/full-release-validation",
                   "pt-BR/reference/test",
                   "pt-BR/ci",
                   "pt-BR/help/scripts"
@@ -6673,6 +6678,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "ko/reference/RELEASING",
+                  "ko/reference/full-release-validation",
                   "ko/reference/test",
                   "ko/ci",
                   "ko/help/scripts"
@@ -7533,6 +7539,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "de/reference/RELEASING",
+                  "de/reference/full-release-validation",
                   "de/reference/test",
                   "de/ci",
                   "de/help/scripts"
@@ -8393,6 +8400,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "fr/reference/RELEASING",
+                  "fr/reference/full-release-validation",
                   "fr/reference/test",
                   "fr/ci",
                   "fr/help/scripts"
@@ -9253,6 +9261,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "ar/reference/RELEASING",
+                  "ar/reference/full-release-validation",
                   "ar/reference/test",
                   "ar/ci",
                   "ar/help/scripts"
@@ -10113,6 +10122,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "it/reference/RELEASING",
+                  "it/reference/full-release-validation",
                   "it/reference/test",
                   "it/ci",
                   "it/help/scripts"
@@ -10973,6 +10983,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "vi/reference/RELEASING",
+                  "vi/reference/full-release-validation",
                   "vi/reference/test",
                   "vi/ci",
                   "vi/help/scripts"
@@ -11833,6 +11844,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "nl/reference/RELEASING",
+                  "nl/reference/full-release-validation",
                   "nl/reference/test",
                   "nl/ci",
                   "nl/help/scripts"
@@ -12693,6 +12705,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "tr/reference/RELEASING",
+                  "tr/reference/full-release-validation",
                   "tr/reference/test",
                   "tr/ci",
                   "tr/help/scripts"
@@ -13553,6 +13566,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "uk/reference/RELEASING",
+                  "uk/reference/full-release-validation",
                   "uk/reference/test",
                   "uk/ci",
                   "uk/help/scripts"
@@ -14413,6 +14427,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "id/reference/RELEASING",
+                  "id/reference/full-release-validation",
                   "id/reference/test",
                   "id/ci",
                   "id/help/scripts"
@@ -15273,6 +15288,7 @@
                 "group": "Release and CI",
                 "pages": [
                   "pl/reference/RELEASING",
+                  "pl/reference/full-release-validation",
                   "pl/reference/test",
                   "pl/ci",
                   "pl/help/scripts"
