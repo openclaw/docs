@@ -1,25 +1,26 @@
 ---
 read_when:
-    - Запуск або повторний запуск повної перевірки релізу
-    - Порівняння стабільного та повного профілів перевірки релізу
-    - Налагодження збоїв на етапі перевірки релізу
-summary: Етапи повної перевірки релізу, дочірні робочі процеси, профілі релізу, дескриптори повторного запуску та докази
-title: Повна перевірка релізу
+    - Запуск або повторний запуск повної валідації релізу
+    - Порівняння стабільного та повного профілів валідації релізу
+    - Усунення збоїв на етапі перевірки релізу
+summary: Етапи повної перевірки випуску, дочірні робочі процеси, профілі випуску, ідентифікатори повторного запуску та підтвердження
+title: Повна перевірка випуску
 x-i18n:
-    generated_at: "2026-05-01T02:24:35Z"
+    generated_at: "2026-05-01T02:43:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ef87c4b54ed8e4834d5417f8be80b99e7d9c9476caefe0581b0864b07bcc4e1a
+    source_hash: dcbfafd744437c160c09a9c508a639781549193669b300e5249023f9f5dd4afe
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
-`Full Release Validation` — це парасолька релізу. Це єдина ручна
-точка входу для передрелізного підтвердження, але більшість роботи відбувається в дочірніх workflow, щоб
-невдалий бокс можна було запустити повторно без перезапуску всього релізу.
+`Full Release Validation` — це загальна перевірка релізу. Це єдина ручна
+точка входу для передрелізного підтвердження, але більшість роботи виконується
+в дочірніх workflow, щоб невдалу машину можна було перезапустити без повторного
+запуску всього релізу.
 
-Запускайте її з довіреного посилання workflow, зазвичай `main`, і передайте релізну гілку,
-тег або повний SHA коміту як `ref`:
+Запускайте її з довіреного ref workflow, зазвичай `main`, і передавайте гілку
+релізу, тег або повний SHA коміту як `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
@@ -30,133 +31,136 @@ gh workflow run full-release-validation.yml \
   -f release_profile=stable
 ```
 
-Дочірні workflow використовують довірене посилання workflow для harness і вхідний
-`ref` для кандидата, що тестується. Це зберігає доступність нової логіки валідації
-під час перевірки старішої релізної гілки або тегу.
+Дочірні workflow використовують довірений ref workflow для harness і вхідний
+`ref` для кандидата, що тестується. Це зберігає доступність нової логіки
+валідації під час перевірки старішої гілки релізу або тегу.
 
-## Верхньорівневі етапи
+## Етапи верхнього рівня
 
-| Етап                  | Назва job у workflow                      | Дочірній workflow         | Що підтверджує                                                                                                                                                                                                                                                                  | Handle для повторного запуску                                  |
-| --------------------- | ----------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| Визначення target     | `Resolve target ref`                      | немає                     | Визначає релізну гілку, тег або повний SHA коміту та записує вибрані вхідні дані.                                                                                                                                                                                              | Повторно запустіть парасольку, якщо це не вдасться.             |
-| Vitest і звичайний CI | `Run normal full CI`                      | `CI`                      | Ручний повний граф CI проти target ref, включно з Linux Node lanes, shards bundled plugin, контрактами каналів, сумісністю Node 22, `check`, `check-additional`, build smoke, перевірками документації, Python Skills, Windows, macOS, Control UI i18n і Android через парасольку. | `rerun_group=ci`                                                |
-| Передреліз Plugin     | `Run plugin prerelease validation`        | `Plugin Prerelease`       | Статичні перевірки Plugin лише для релізу, покриття agentic plugin, повні shards batch extensions і передрелізні Docker lanes для Plugin.                                                                                                                                      | `rerun_group=plugin-prerelease`                                 |
-| Перевірки релізу      | `Run release/live/Docker/QA validation`   | `OpenClaw Release Checks` | Install smoke, cross-OS перевірки пакета, live/E2E suites, Docker release-path chunks, Package Acceptance, QA Lab parity, live Matrix і live Telegram.                                                                                                                         | `rerun_group=release-checks` або вужчий release-checks handle   |
-| Telegram після публікації | `Run post-publish Telegram E2E`       | `NPM Telegram Beta E2E`   | Необов’язкове підтвердження Telegram для опублікованого пакета, коли задано `npm_telegram_package_spec`.                                                                                                                                                                       | `rerun_group=npm-telegram`                                      |
-| Перевірник парасольки | `Verify full validation`                  | немає                     | Повторно перевіряє записані висновки дочірніх запусків і додає таблиці найповільніших job із дочірніх workflow.                                                                                                                                                                | Повторно запустіть лише цю job після доведення невдалої дочірньої до green. |
+| Етап                  | Подробиці                                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Визначення цілі       | **Завдання:** `Resolve target ref`<br />**Дочірній workflow:** немає<br />**Підтверджує:** визначає гілку релізу, тег або повний SHA коміту та записує вибрані вхідні параметри.<br />**Перезапуск:** перезапустіть umbrella, якщо це завершиться помилкою.                                                                                                                                          |
+| Vitest і звичайний CI | **Завдання:** `Run normal full CI`<br />**Дочірній workflow:** `CI`<br />**Підтверджує:** ручний повний граф CI для цільового ref, включно з Linux Node lanes, shards вбудованих плагінів, контрактами каналів, сумісністю Node 22, `check`, `check-additional`, build smoke, перевірками документації, Python skills, Windows, macOS, i18n Control UI та Android через umbrella.<br />**Перезапуск:** `rerun_group=ci`. |
+| Попередній реліз Plugin | **Завдання:** `Run plugin prerelease validation`<br />**Дочірній workflow:** `Plugin Prerelease`<br />**Підтверджує:** релізні статичні перевірки Plugin, agentic покриття плагінів, повні batch shards розширень і Docker lanes передрелізу плагінів.<br />**Перезапуск:** `rerun_group=plugin-prerelease`.                                                                                         |
+| Перевірки релізу      | **Завдання:** `Run release/live/Docker/QA validation`<br />**Дочірній workflow:** `OpenClaw Release Checks`<br />**Підтверджує:** install smoke, cross-OS перевірки пакетів, live/E2E набори, Docker chunks релізного шляху, Package Acceptance, parity QA Lab, live Matrix і live Telegram.<br />**Перезапуск:** `rerun_group=release-checks` або вужчий handle release-checks.                      |
+| Telegram після публікації | **Завдання:** `Run post-publish Telegram E2E`<br />**Дочірній workflow:** `NPM Telegram Beta E2E`<br />**Підтверджує:** необов’язкове підтвердження Telegram для опублікованого пакета, коли задано `npm_telegram_package_spec`.<br />**Перезапуск:** `rerun_group=npm-telegram`.                                                                                                                  |
+| Верифікатор umbrella  | **Завдання:** `Verify full validation`<br />**Дочірній workflow:** немає<br />**Підтверджує:** повторно перевіряє записані висновки дочірніх запусків і додає таблиці найповільніших завдань із дочірніх workflow.<br />**Перезапуск:** перезапустіть лише це завдання після перезапуску невдалого дочірнього workflow до зеленого стану.                                                              |
 
-Для `ref=main` і `rerun_group=all` новіша парасолька замінює старішу.
-Коли parent скасовано, його монітор скасовує будь-який дочірній workflow, який він уже
-запустив. Запуски валідації релізних гілок і тегів типово не скасовують один одного.
+Для `ref=main` і `rerun_group=all` новіший umbrella замінює старіший. Коли
+батьківський workflow скасовано, його monitor скасовує будь-який дочірній
+workflow, який він уже відправив. Запуски валідації гілок релізу й тегів за
+замовчуванням не скасовують одне одного.
 
 ## Етапи перевірок релізу
 
-`OpenClaw Release Checks` — найбільший дочірній workflow. Він один раз визначає target
-і готує спільний артефакт `release-package-under-test`, коли він потрібен етапам,
-орієнтованим на пакет або Docker.
+`OpenClaw Release Checks` — найбільший дочірній workflow. Він один раз визначає
+ціль і готує спільний артефакт `release-package-under-test`, коли він потрібен
+етапам, що працюють із пакетами або Docker.
 
-| Етап                | Назва job у workflow                                      | Допоміжний workflow або jobs                    | Що тестує                                                                                                                                                                                                        | Handle для повторного запуску                              |
-| ------------------- | --------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Release target      | `Resolve target ref`                                      | немає                                           | Валідує вибраний ref, необов’язковий очікуваний SHA, профіль, rerun group і сфокусований фільтр live suite.                                                                                                      | Повторно запустіть `release-checks`.                        |
-| Артефакт пакета     | `Prepare release package artifact`                        | немає                                           | Пакує або визначає один candidate tarball і завантажує `release-package-under-test` для downstream перевірок, орієнтованих на пакет.                                                                             | Повторно запустіть відповідну групу package, cross-OS або live/E2E. |
-| Install smoke       | `Run install smoke`                                       | `Install Smoke`                                 | Повний шлях встановлення з повторним використанням root Dockerfile smoke image, QR package install, root і Gateway Docker smokes, installer Docker tests, Bun global install image-provider smoke і швидкий bundled-plugin Docker E2E. | `rerun_group=install-smoke`                                 |
-| Cross-OS            | `cross_os_release_checks`                                 | `OpenClaw Cross-OS Release Checks (Reusable)`   | Fresh і upgrade lanes на Linux, Windows і macOS для вибраного provider і mode з використанням candidate tarball плюс baseline package.                                                                           | `rerun_group=cross-os`                                      |
-| Repo і live E2E     | `Run repo/live E2E validation`                            | `OpenClaw Live And E2E Checks (Reusable)`       | Repository E2E, live cache, OpenAI websocket streaming, native live provider і plugin shards, а також live model/backend/gateway harnesses на базі Docker, вибрані через `release_profile`.                       | `rerun_group=live-e2e`, необов’язково з `live_suite_filter` |
-| Docker release path | `Run Docker release-path validation`                      | `OpenClaw Live And E2E Checks (Reusable)`       | Docker chunks release-path проти спільного артефакта пакета.                                                                                                                                                     | `rerun_group=live-e2e`                                      |
-| Package Acceptance  | `Run package acceptance`                                  | `Package Acceptance`                            | Сумісність залежностей bundled-channel у нативному для артефакта режимі, offline plugin package fixtures і mock-OpenAI Telegram package acceptance проти того самого tarball.                                    | `rerun_group=package`                                       |
-| QA parity           | `Run QA Lab parity lane` і `Run QA Lab parity report`     | прямі jobs                                      | Candidate і baseline agentic parity packs, потім parity report.                                                                                                                                                  | `rerun_group=qa-parity` або `rerun_group=qa`                |
-| QA live Matrix      | `Run QA Lab live Matrix lane`                             | пряма job                                       | Швидкий профіль live Matrix QA в середовищі `qa-live-shared`.                                                                                                                                                    | `rerun_group=qa-live` або `rerun_group=qa`                  |
-| QA live Telegram    | `Run QA Lab live Telegram lane`                           | пряма job                                       | Live Telegram QA з leases облікових даних Convex CI.                                                                                                                                                             | `rerun_group=qa-live` або `rerun_group=qa`                  |
-| Перевірник релізу   | `Verify release checks`                                   | немає                                           | Перевіряє обов’язкові release-check jobs для вибраної rerun group.                                                                                                                                               | Повторно запустіть після успішного проходження сфокусованих дочірніх jobs. |
+| Етап                | Подробиці                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Ціль релізу         | **Завдання:** `Resolve target ref`<br />**Базовий workflow:** немає<br />**Тести:** вибраний ref, необов’язковий очікуваний SHA, профіль, група перезапуску та сфокусований фільтр live suite.<br />**Перезапуск:** `rerun_group=release-checks`.                                                                                                                                                    |
+| Артефакт пакета     | **Завдання:** `Prepare release package artifact`<br />**Базовий workflow:** немає<br />**Тести:** пакує або визначає один tarball кандидата та завантажує `release-package-under-test` для наступних перевірок, що працюють із пакетами.<br />**Перезапуск:** відповідна група package, cross-OS або live/E2E.                                                                                       |
+| Install smoke       | **Завдання:** `Run install smoke`<br />**Базовий workflow:** `Install Smoke`<br />**Тести:** повний шлях встановлення з повторним використанням root Dockerfile smoke image, встановлення QR-пакета, root і gateway Docker smokes, Docker-тести інсталятора, Bun global install image-provider smoke і швидкий bundled-plugin Docker E2E.<br />**Перезапуск:** `rerun_group=install-smoke`.            |
+| Cross-OS            | **Завдання:** `cross_os_release_checks`<br />**Базовий workflow:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**Тести:** fresh і upgrade lanes у Linux, Windows і macOS для вибраного provider і mode з використанням tarball кандидата та базового пакета.<br />**Перезапуск:** `rerun_group=cross-os`.                                                                                    |
+| Repo і live E2E     | **Завдання:** `Run repo/live E2E validation`<br />**Базовий workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Тести:** repository E2E, live cache, OpenAI websocket streaming, native live provider і plugin shards, а також Docker-backed live model/backend/gateway harnesses, вибрані через `release_profile`.<br />**Перезапуск:** `rerun_group=live-e2e`, необов’язково з `live_suite_filter`. |
+| Docker release path | **Завдання:** `Run Docker release-path validation`<br />**Базовий workflow:** `OpenClaw Live And E2E Checks (Reusable)`<br />**Тести:** Docker chunks релізного шляху зі спільним артефактом пакета.<br />**Перезапуск:** `rerun_group=live-e2e`.                                                                                                                                                     |
+| Package Acceptance  | **Завдання:** `Run package acceptance`<br />**Базовий workflow:** `Package Acceptance`<br />**Тести:** artifact-native сумісність залежностей вбудованих каналів, офлайн fixtures пакетів плагінів і mock-OpenAI Telegram package acceptance для того самого tarball.<br />**Перезапуск:** `rerun_group=package`.                                                                                   |
+| QA parity           | **Завдання:** `Run QA Lab parity lane` і `Run QA Lab parity report`<br />**Базовий workflow:** прямі завдання<br />**Тести:** agentic parity packs кандидата й baseline, потім parity report.<br />**Перезапуск:** `rerun_group=qa-parity` або `rerun_group=qa`.                                                                                                                                      |
+| QA live Matrix      | **Завдання:** `Run QA Lab live Matrix lane`<br />**Базовий workflow:** пряме завдання<br />**Тести:** швидкий live Matrix QA profile у середовищі `qa-live-shared`.<br />**Перезапуск:** `rerun_group=qa-live` або `rerun_group=qa`.                                                                                                                                                                  |
+| QA live Telegram    | **Завдання:** `Run QA Lab live Telegram lane`<br />**Базовий workflow:** пряме завдання<br />**Тести:** live Telegram QA з credential leases Convex CI.<br />**Перезапуск:** `rerun_group=qa-live` або `rerun_group=qa`.                                                                                                                                                                               |
+| Верифікатор релізу  | **Завдання:** `Verify release checks`<br />**Базовий workflow:** немає<br />**Тести:** обов’язкові завдання release-check для вибраної групи перезапуску.<br />**Перезапуск:** перезапустіть після успішного проходження сфокусованих дочірніх завдань.                                                                                                                                             |
 
-## Docker release-path chunks
+## Docker chunks релізного шляху
 
 Етап Docker release-path запускає ці chunks, коли `live_suite_filter`
 порожній:
 
-| Фрагмент                                                                                   | Покриття                                                                     |
-| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| `core`                                                                                     | Димові лінії основного Docker release-path.                                  |
-| `package-update-openai`                                                                    | Поведінка встановлення та оновлення пакета OpenAI.                           |
-| `package-update-anthropic`                                                                 | Поведінка встановлення та оновлення пакета Anthropic.                        |
-| `package-update-core`                                                                      | Нейтральна до провайдера поведінка пакета й оновлення.                       |
-| `plugins-runtime-plugins`                                                                  | Лінії середовища виконання Plugin, які перевіряють поведінку Plugin.         |
-| `plugins-runtime-services`                                                                 | Лінії середовища виконання Plugin із сервісною підтримкою; включає OpenWebUI за запитом. |
-| `plugins-runtime-install-a` through `plugins-runtime-install-h`                            | Пакети встановлення/виконання Plugin, розділені для паралельної перевірки релізу. |
-| `bundled-channels-core`                                                                    | Поведінка вбудованих каналів Docker.                                         |
-| `bundled-channels-update-a`, `bundled-channels-update-discord`, `bundled-channels-update-b` | Поведінка оновлення вбудованих каналів.                                      |
-| `bundled-channels-contracts`                                                               | Перевірки контрактів вбудованих каналів у Docker release path.               |
+| Chunk                                                                                       | Покриття                                                                |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `core`                                                                                      | Core Docker smoke lanes релізного шляху.                                |
+| `package-update-openai`                                                                     | Поведінка встановлення й оновлення пакета OpenAI.                       |
+| `package-update-anthropic`                                                                  | Поведінка встановлення й оновлення пакета Anthropic.                    |
+| `package-update-core`                                                                       | Provider-neutral поведінка пакета й оновлення.                          |
+| `plugins-runtime-plugins`                                                                   | Runtime lanes плагінів, які перевіряють поведінку плагінів.             |
+| `plugins-runtime-services`                                                                  | Runtime lanes плагінів із сервісною підтримкою; включає OpenWebUI за запитом. |
+| `plugins-runtime-install-a` through `plugins-runtime-install-h`                             | Batch перевірки встановлення/runtime плагінів, розділені для паралельної релізної валідації. |
+| `bundled-channels-core`                                                                     | Docker-поведінка вбудованих каналів.                                    |
+| `bundled-channels-update-a`, `bundled-channels-update-discord`, `bundled-channels-update-b` | Поведінка оновлення вбудованих каналів.                                 |
+| `bundled-channels-contracts`                                                                | Перевірки контрактів вбудованих каналів у Docker release path.          |
 
-Використовуйте цільовий `docker_lanes=<lane[,lane]>` у повторно використовуваному workflow live/E2E, коли
-збій стався лише в одній лінії Docker. Артефакти релізу містять команди повторного запуску
-для кожної лінії з вхідними даними повторного використання артефакта пакета та образу, коли вони доступні.
+Використовуйте цільовий `docker_lanes=<lane[,lane]>` у повторно використовуваному live/E2E workflow, коли
+збій стався лише в одній Docker-смузі. Артефакти релізу містять команди
+повторного запуску для кожної смуги з вхідними параметрами повторного використання артефакта пакета й образу, коли вони доступні.
 
 ## Профілі релізу
 
-`release_profile` керує лише широтою live/provider у перевірках релізу. Він
-не прибирає звичайний повний CI, Plugin Prerelease, install smoke, package
-acceptance, QA Lab або фрагменти Docker release-path.
+`release_profile` керує лише широтою live/provider у межах перевірок релізу. Він
+не вилучає звичайний повний CI, Plugin Prerelease, install smoke, package
+acceptance, QA Lab або частини Docker release-path.
 
-| Профіль  | Призначене використання              | Увімкнене покриття live/provider                                                                                                                                              |
-| -------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum` | Найшвидший критичний для релізу smoke. | Live-шлях OpenAI/core, live-моделі Docker для OpenAI, ядро native gateway, профіль native OpenAI gateway, native OpenAI plugin і Docker live gateway OpenAI.                  |
-| `stable`  | Типовий профіль схвалення релізу.    | `minimum` плюс Anthropic, Google, MiniMax, backend, native live test harness, Docker live CLI backend, Docker ACP bind, Docker Codex harness і OpenCode Go smoke shard.       |
-| `full`    | Широке advisory-перевіряння.         | `stable` плюс advisory-провайдери, plugin live shards і media live shards.                                                                                                    |
+| Профіль  | Призначення                            | Включене live/provider-покриття                                                                                                                                                         |
+| -------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `minimum` | Найшвидший критичний smoke для релізу. | Live-шлях OpenAI/core, Docker live-моделі для OpenAI, ядро native gateway, профіль native OpenAI gateway, native OpenAI plugin і Docker live gateway OpenAI.                            |
+| `stable`  | Стандартний профіль схвалення релізу.  | `minimum` плюс Anthropic, Google, MiniMax, backend, native live test harness, Docker live CLI backend, Docker ACP bind, Docker Codex harness і smoke-шард OpenCode Go.                  |
+| `full`    | Широкий advisory sweep.                | `stable` плюс advisory-провайдери, plugin live-шарди й media live-шарди.                                                                                                                |
 
-## Додатки лише для full
+## Доповнення лише для full
 
-Ці набори пропускаються у `stable` і включаються у `full`:
+Ці набори пропускаються в `stable` і включаються в `full`:
 
-| Область                          | Покриття лише для full                                                         |
-| -------------------------------- | ------------------------------------------------------------------------------- |
-| Docker live models               | OpenCode Go, OpenRouter, xAI, Z.ai і Fireworks.                                |
-| Docker live gateway              | Advisory shard для DeepSeek, Fireworks, OpenCode Go, OpenRouter, xAI і Z.ai.   |
-| Native gateway provider profiles | Fireworks, DeepSeek, повні шарди моделей OpenCode Go, OpenRouter, xAI і Z.ai.  |
-| Native plugin live shards        | Plugins A-K, L-N, O-Z other, Moonshot і xAI.                                   |
-| Native media live shards         | Audio, Google music, MiniMax music і video groups A-D.                         |
+| Область                         | Покриття лише для full                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| Docker live models               | OpenCode Go, OpenRouter, xAI, Z.ai і Fireworks.                               |
+| Docker live gateway              | Advisory-шард для DeepSeek, Fireworks, OpenCode Go, OpenRouter, xAI і Z.ai.   |
+| Native gateway provider profiles | Fireworks, DeepSeek, повні шарди моделей OpenCode Go, OpenRouter, xAI і Z.ai. |
+| Native plugin live shards        | Plugins A-K, L-N, O-Z other, Moonshot і xAI.                                  |
+| Native media live shards         | Audio, Google music, MiniMax music і video groups A-D.                        |
 
 `stable` включає `native-live-src-gateway-profiles-opencode-go-smoke`; `full`
 натомість використовує ширші шарди моделей OpenCode Go.
 
 ## Сфокусовані повторні запуски
 
-Використовуйте `rerun_group`, щоб не повторювати не пов’язані з цим release boxes:
+Використовуйте `rerun_group`, щоб не повторювати непов’язані релізні бокси:
 
-| Ідентифікатор       | Обсяг                                             |
+| Дескриптор          | Область                                           |
 | ------------------- | ------------------------------------------------- |
 | `all`               | Усі етапи Full Release Validation.                |
-| `ci`                | Лише дочірній ручний full CI.                     |
+| `ci`                | Лише дочірній ручний повний CI.                   |
 | `plugin-prerelease` | Лише дочірній Plugin Prerelease.                  |
 | `release-checks`    | Усі етапи OpenClaw Release Checks.                |
 | `install-smoke`     | Install Smoke через release checks.               |
-| `cross-os`          | Перевірки релізу Cross-OS.                        |
-| `live-e2e`          | Repo/live E2E і перевірка Docker release-path.    |
+| `cross-os`          | Cross-OS release checks.                          |
+| `live-e2e`          | Repo/live E2E і Docker release-path validation.   |
 | `package`           | Package Acceptance.                               |
-| `qa`                | QA parity плюс QA live lanes.                     |
-| `qa-parity`         | Лише QA parity lanes і звіт.                      |
-| `qa-live`           | Лише QA live Matrix і Telegram.                   |
+| `qa`                | QA parity плюс QA live-смуги.                     |
+| `qa-parity`         | QA parity-смуги й лише звіт.                      |
+| `qa-live`           | QA live Matrix і лише Telegram.                   |
 | `npm-telegram`      | Лише необов’язковий Telegram E2E після публікації. |
 
-Використовуйте `live_suite_filter` з `rerun_group=live-e2e`, коли одна live suite завершилася збоєм.
-Чинні ідентифікатори фільтрів визначені в повторно використовуваному workflow live/E2E, зокрема
+Використовуйте `live_suite_filter` із `rerun_group=live-e2e`, коли збій стався в
+одному live-наборі. Чинні ідентифікатори фільтрів визначені в повторно
+використовуваному live/E2E workflow, зокрема
 `docker-live-models`, `live-gateway-docker`,
 `live-gateway-anthropic-docker`, `live-gateway-google-docker`,
 `live-gateway-minimax-docker`, `live-gateway-advisory-docker`,
 `live-cli-backend-docker`, `live-acp-bind-docker` і
 `live-codex-harness-docker`.
 
-## Докази, які слід зберігати
+## Докази, які потрібно зберегти
 
-Зберігайте зведення `Full Release Validation` як індекс рівня релізу. Воно посилається
-на ідентифікатори дочірніх запусків і містить таблиці найповільніших jobs. У разі збоїв спочатку перевірте дочірній
-workflow, а потім повторно запустіть найменший відповідний ідентифікатор вище.
+Зберігайте зведення `Full Release Validation` як індекс рівня релізу. Воно
+посилається на ідентифікатори дочірніх запусків і містить таблиці найповільніших
+завдань. У разі збоїв спочатку перевірте дочірній workflow, а потім повторно
+запустіть найменший відповідний дескриптор вище.
 
 Корисні артефакти:
 
 - `release-package-under-test` з `OpenClaw Release Checks`
 - Артефакти Docker release-path у `.artifacts/docker-tests/`
-- `package-under-test` з Package Acceptance і артефакти Docker acceptance
-- Артефакти Cross-OS release-check для кожної OS і suite
+- Package Acceptance `package-under-test` і Docker acceptance artifacts
+- Артефакти Cross-OS release-check для кожної ОС і набору
 - Артефакти QA parity, Matrix і Telegram
 
 ## Файли workflow
