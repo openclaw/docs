@@ -1,25 +1,25 @@
 ---
 read_when:
     - Перевірка покриття облікових даних SecretRef
-    - Аудит того, чи придатні облікові дані для `secrets configure` або `secrets apply`
-    - Перевірка, чому облікові дані виходять за межі підтримуваної поверхні
+    - Перевірка того, чи облікові дані придатні для `secrets configure` або `secrets apply`
+    - Перевірка, чому облікові дані перебувають поза підтримуваною поверхнею
 summary: Канонічна підтримувана й непідтримувана поверхня облікових даних SecretRef
-title: Поверхня облікових даних SecretRef
+title: Інтерфейс облікових даних SecretRef
 x-i18n:
-    generated_at: "2026-04-27T06:28:00Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T06:25:06Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
+    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
     source_path: reference/secretref-credential-surface.md
-    workflow: 15
+    workflow: 16
 ---
 
 Ця сторінка визначає канонічну поверхню облікових даних SecretRef.
 
-Намір сфери застосування:
+Намір області застосування:
 
-- У межах сфери: лише облікові дані, надані користувачем, які OpenClaw не створює і не ротує.
-- Поза сферою: облікові дані, створені під час виконання або такі, що ротуються, матеріали оновлення OAuth і артефакти, подібні до сесій.
+- У межах області: строго надані користувачем облікові дані, які OpenClaw не створює й не ротує.
+- Поза областю: облікові дані, створені під час виконання або ротаційні, матеріали оновлення OAuth і артефакти, подібні до сесійних.
 
 ## Підтримувані облікові дані
 
@@ -57,6 +57,8 @@ x-i18n:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
+- `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
@@ -110,8 +112,8 @@ x-i18n:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` через сусідній `serviceAccountRef` (виняток сумісності)
-- `channels.googlechat.accounts.*.serviceAccount` через сусідній `serviceAccountRef` (виняток сумісності)
+- `channels.googlechat.serviceAccount` через сусіднє поле `serviceAccountRef` (виняток сумісності)
+- `channels.googlechat.accounts.*.serviceAccount` через сусіднє поле `serviceAccountRef` (виняток сумісності)
 
 ### Цілі `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -123,21 +125,21 @@ x-i18n:
 Примітки:
 
 - Цілі плану auth-profile потребують `agentId`.
-- Записи плану націлюються на `profiles.*.key` / `profiles.*.token` і записують сусідні ref (`keyRef` / `tokenRef`).
-- Ref auth-profile включено до runtime resolution і покриття audit.
-- У `openclaw.json` SecretRef мають використовувати структуровані об’єкти на кшталт `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Застарілі рядки-маркери `secretref-env:<ENV_VAR>` відхиляються на шляхах облікових даних SecretRef; запустіть `openclaw doctor --fix`, щоб мігрувати коректні маркери.
-- Захист політики OAuth: `auth.profiles.<id>.mode = "oauth"` не можна поєднувати з входами SecretRef для цього профілю. Під час запуску/перезавантаження та розв’язання auth-profile відбувається негайна помилка, якщо цю політику порушено.
-- Для провайдерів моделей, керованих SecretRef, згенеровані записи `agents/*/agent/models.json` зберігають маркери без секретів (а не розв’язані значення секретів) для поверхонь `apiKey`/header.
-- Збереження маркерів є джерельно-авторитетним: OpenClaw записує маркери з активного знімка конфігурації джерела (до розв’язання), а не з розв’язаних runtime-значень секретів.
+- Записи плану націлюються на `profiles.*.key` / `profiles.*.token` і записують сусідні посилання (`keyRef` / `tokenRef`).
+- Посилання auth-profile включено до покриття розв’язання під час виконання та аудиту.
+- В `openclaw.json` SecretRefs мають використовувати структуровані об’єкти, як-от `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Застарілі рядки-маркери `secretref-env:<ENV_VAR>` відхиляються на шляхах облікових даних SecretRef; виконайте `openclaw doctor --fix`, щоб мігрувати чинні маркери.
+- Захист політики OAuth: `auth.profiles.<id>.mode = "oauth"` не можна поєднувати з вхідними даними SecretRef для цього профілю. Запуск/перезавантаження та розв’язання auth-profile швидко завершуються помилкою, коли цю політику порушено.
+- Для постачальників моделей, керованих SecretRef, згенеровані записи `agents/*/agent/models.json` зберігають несекретні маркери (а не розв’язані значення секретів) для поверхонь `apiKey`/заголовків.
+- Збереження маркерів є авторитетним щодо джерела: OpenClaw записує маркери з активного знімка конфігурації джерела (до розв’язання), а не з розв’язаних секретних значень під час виконання.
 - Для вебпошуку:
-  - У режимі явного провайдера (задано `tools.web.search.provider`) активним є лише ключ вибраного провайдера.
-  - В автоматичному режимі (`tools.web.search.provider` не задано) активним є лише перший ключ провайдера, який розв’язується за пріоритетом.
-  - В автоматичному режимі ref провайдерів, які не вибрано, вважаються неактивними, доки їх не буде вибрано.
-  - Застарілі шляхи провайдера `tools.web.search.*` усе ще розв’язуються протягом вікна сумісності, але канонічна поверхня SecretRef — це `plugins.entries.<plugin>.config.webSearch.*`.
+  - У режимі явного постачальника (задано `tools.web.search.provider`) активним є лише ключ вибраного постачальника.
+  - В автоматичному режимі (`tools.web.search.provider` не задано) активним є лише перший ключ постачальника, який розв’язується за пріоритетом.
+  - В автоматичному режимі посилання невибраних постачальників вважаються неактивними, доки їх не буде вибрано.
+  - Застарілі шляхи постачальників `tools.web.search.*` усе ще розв’язуються протягом вікна сумісності, але канонічною поверхнею SecretRef є `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Непідтримувані облікові дані
 
-Облікові дані поза сферою охоплюють:
+Облікові дані поза областю включають:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -155,9 +157,9 @@ x-i18n:
 
 Обґрунтування:
 
-- Ці облікові дані є створюваними, ротованими, сесійними або належать до довготривалих класів OAuth, які не відповідають read-only зовнішньому розв’язанню SecretRef.
+- Ці облікові дані належать до класів, які створюються, ротуються, містять сесійні дані або є довготривалими OAuth-даними, і не підходять для розв’язання лише для читання через зовнішній SecretRef.
 
 ## Пов’язане
 
 - [Керування секретами](/uk/gateway/secrets)
-- [Семантика облікових даних auth](/uk/auth-credential-semantics)
+- [Семантика облікових даних автентифікації](/uk/auth-credential-semantics)
