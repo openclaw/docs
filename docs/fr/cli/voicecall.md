@@ -1,21 +1,26 @@
 ---
 read_when:
-    - Vous utilisez le Plugin d’appel vocal et voulez les points d’entrée CLI
+    - Vous utilisez le Plugin voice-call et voulez les points d’entrée CLI
     - Vous voulez des exemples rapides pour `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
-summary: Référence CLI pour `openclaw voicecall` (surface de commande du Plugin voice-call)
+summary: Référence CLI pour `openclaw voicecall` (surface de commandes du Plugin voice-call)
 title: Appel vocal
 x-i18n:
-    generated_at: "2026-04-25T13:44:44Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T07:13:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: c040cf4cd984ad6d6dd302923494a7c8ee131390b803fe20a9894b077f08d5bb
     source_path: cli/voicecall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw voicecall`
 
-`voicecall` est une commande fournie par un Plugin. Elle n’apparaît que si le Plugin d’appel vocal est installé et activé.
+`voicecall` est une commande fournie par un plugin. Elle n’apparaît que si le plugin d’appel vocal est installé et activé.
+
+Lorsque le Gateway est en cours d’exécution, les commandes opérationnelles (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end` et `status`) sont envoyées au runtime
+d’appel vocal de ce Gateway. Si aucun Gateway n’est joignable, elles basculent vers un runtime
+CLI autonome.
 
 Documentation principale :
 
@@ -26,6 +31,7 @@ Documentation principale :
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -33,22 +39,29 @@ openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 ```
 
-`setup` affiche par défaut des vérifications de préparation lisibles par des humains. Utilisez `--json` pour les scripts :
+`setup` affiche par défaut des vérifications de préparation lisibles par un humain. Utilisez `--json` pour les
+scripts :
 
 ```bash
 openclaw voicecall setup --json
 ```
 
-Pour les fournisseurs externes (`twilio`, `telnyx`, `plivo`), la configuration doit résoudre une URL Webhook publique à partir de `publicUrl`, d’un tunnel ou d’une exposition Tailscale. Un repli de service loopback/privé est rejeté, car les opérateurs ne peuvent pas l’atteindre.
+`status` affiche les appels actifs au format JSON par défaut. Passez `--call-id <id>` pour inspecter
+un appel.
 
-`smoke` exécute les mêmes vérifications de préparation. Il ne passera pas de véritable appel téléphonique sauf si `--to` et `--yes` sont tous deux présents :
+Pour les fournisseurs externes (`twilio`, `telnyx`, `plivo`), la configuration doit résoudre une URL
+Webhook publique depuis `publicUrl`, un tunnel ou une exposition Tailscale. Un repli de service
+en loopback/privé est refusé, car les opérateurs ne peuvent pas l’atteindre.
+
+`smoke` exécute les mêmes vérifications de préparation. Il ne passera pas de véritable appel téléphonique
+sauf si `--to` et `--yes` sont tous les deux présents :
 
 ```bash
-openclaw voicecall smoke --to "+15555550123"        # essai à blanc
-openclaw voicecall smoke --to "+15555550123" --yes  # appel notify réel
+openclaw voicecall smoke --to "+15555550123"        # dry run
+openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 ```
 
-## Exposition des Webhooks (Tailscale)
+## Exposer les Webhooks (Tailscale)
 
 ```bash
 openclaw voicecall expose --mode serve
@@ -56,9 +69,9 @@ openclaw voicecall expose --mode funnel
 openclaw voicecall expose --mode off
 ```
 
-Remarque de sécurité : n’exposez le point de terminaison Webhook qu’aux réseaux de confiance. Préférez Tailscale Serve à Funnel lorsque c’est possible.
+Note de sécurité : exposez le point de terminaison Webhook uniquement aux réseaux auxquels vous faites confiance. Préférez Tailscale Serve à Funnel lorsque c’est possible.
 
-## Lié
+## Connexe
 
 - [Référence CLI](/fr/cli)
 - [Plugin d’appel vocal](/fr/plugins/voice-call)

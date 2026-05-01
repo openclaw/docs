@@ -1,25 +1,25 @@
 ---
 read_when:
     - Vérification de la couverture des identifiants SecretRef
-    - Vérifier si un identifiant est éligible à `secrets configure` ou `secrets apply`
-    - Vérification de la raison pour laquelle un identifiant se trouve en dehors de la surface prise en charge
-summary: Surface canonique des identifiants SecretRef pris en charge et non pris en charge
-title: Surface d’identifiants SecretRef
+    - Vérification de l’éligibilité d’un identifiant à `secrets configure` ou `secrets apply`
+    - Vérifier pourquoi un identifiant se trouve en dehors de la surface prise en charge
+summary: Surface canonique des informations d’identification SecretRef prises en charge et non prises en charge
+title: Surface des identifiants SecretRef
 x-i18n:
-    generated_at: "2026-04-30T07:47:23Z"
+    generated_at: "2026-05-01T07:17:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
+    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-Cette page définit la surface canonique des identifiants SecretRef.
+Cette page définit la surface canonique des identifiants SecretRef. 
 
-Objectif du périmètre :
+Intention de périmètre :
 
-- Inclus dans le périmètre : les identifiants strictement fournis par l’utilisateur qu’OpenClaw n’émet ni ne renouvelle.
-- Hors périmètre : les identifiants émis ou renouvelés à l’exécution, les éléments de rafraîchissement OAuth et les artefacts assimilables à une session.
+- Dans le périmètre : identifiants strictement fournis par l’utilisateur qu’OpenClaw n’émet ni ne fait tourner.
+- Hors périmètre : identifiants émis ou renouvelés à l’exécution, matériel de rafraîchissement OAuth et artefacts de type session.
 
 ## Identifiants pris en charge
 
@@ -57,6 +57,8 @@ Objectif du périmètre :
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
+- `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
@@ -110,8 +112,8 @@ Objectif du périmètre :
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` via le champ frère `serviceAccountRef` (exception de compatibilité)
-- `channels.googlechat.accounts.*.serviceAccount` via le champ frère `serviceAccountRef` (exception de compatibilité)
+- `channels.googlechat.serviceAccount` via le champ homologue `serviceAccountRef` (exception de compatibilité)
+- `channels.googlechat.accounts.*.serviceAccount` via le champ homologue `serviceAccountRef` (exception de compatibilité)
 
 ### Cibles `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
@@ -120,19 +122,19 @@ Objectif du périmètre :
 
 [//]: # "secretref-supported-list-end"
 
-Remarques :
+Notes :
 
 - Les cibles de plan de profil d’authentification nécessitent `agentId`.
-- Les entrées de plan ciblent `profiles.*.key` / `profiles.*.token` et écrivent les refs frères (`keyRef` / `tokenRef`).
-- Les refs de profil d’authentification sont incluses dans la résolution à l’exécution et dans la couverture d’audit.
+- Les entrées de plan ciblent `profiles.*.key` / `profiles.*.token` et écrivent les références homologues (`keyRef` / `tokenRef`).
+- Les références de profil d’authentification sont incluses dans la résolution à l’exécution et la couverture d’audit.
 - Dans `openclaw.json`, les SecretRefs doivent utiliser des objets structurés tels que `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Les chaînes de marqueur héritées `secretref-env:<ENV_VAR>` sont rejetées sur les chemins d’identifiants SecretRef ; exécutez `openclaw doctor --fix` pour migrer les marqueurs valides.
-- Garde de politique OAuth : `auth.profiles.<id>.mode = "oauth"` ne peut pas être combiné avec des entrées SecretRef pour ce profil. Le démarrage/rechargement et la résolution du profil d’authentification échouent rapidement lorsque cette politique est enfreinte.
+- Garde de politique OAuth : `auth.profiles.<id>.mode = "oauth"` ne peut pas être combiné avec des entrées SecretRef pour ce profil. Le démarrage/rechargement et la résolution des profils d’authentification échouent rapidement lorsque cette politique est enfreinte.
 - Pour les fournisseurs de modèles gérés par SecretRef, les entrées `agents/*/agent/models.json` générées conservent des marqueurs non secrets (et non les valeurs secrètes résolues) pour les surfaces `apiKey`/d’en-têtes.
-- La persistance des marqueurs est fondée sur la source faisant autorité : OpenClaw écrit les marqueurs depuis l’instantané actif de la configuration source (avant résolution), et non depuis les valeurs secrètes résolues à l’exécution.
+- La persistance des marqueurs fait autorité depuis la source : OpenClaw écrit les marqueurs depuis l’instantané de configuration source actif (avant résolution), et non depuis les valeurs secrètes résolues à l’exécution.
 - Pour la recherche web :
   - En mode fournisseur explicite (`tools.web.search.provider` défini), seule la clé du fournisseur sélectionné est active.
   - En mode automatique (`tools.web.search.provider` non défini), seule la première clé de fournisseur résolue par ordre de précédence est active.
-  - En mode automatique, les refs des fournisseurs non sélectionnés sont considérées comme inactives jusqu’à leur sélection.
+  - En mode automatique, les références de fournisseurs non sélectionnés sont traitées comme inactives jusqu’à leur sélection.
   - Les chemins de fournisseurs hérités `tools.web.search.*` sont encore résolus pendant la fenêtre de compatibilité, mais la surface SecretRef canonique est `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Identifiants non pris en charge
@@ -155,9 +157,9 @@ Les identifiants hors périmètre incluent :
 
 Justification :
 
-- Ces identifiants appartiennent à des classes émises, renouvelées, porteuses de session ou durables OAuth qui ne correspondent pas à une résolution SecretRef externe en lecture seule.
+- Ces identifiants appartiennent à des classes émises, renouvelées, porteuses de session ou durables OAuth qui ne correspondent pas à la résolution SecretRef externe en lecture seule.
 
-## Associé
+## Voir aussi
 
 - [Gestion des secrets](/fr/gateway/secrets)
 - [Sémantique des identifiants d’authentification](/fr/auth-credential-semantics)
