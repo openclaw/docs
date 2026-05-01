@@ -1,31 +1,32 @@
 ---
 read_when:
-    - voice-call Plugin を使用していて、CLI のエントリポイントを知りたい場合
-    - '`voicecall setup|smoke|call|continue|dtmf|status|tail|expose` のクイック例を見たい場合'
-summary: '`openclaw voicecall` の CLI リファレンス（voice-call Plugin のコマンド画面）'
-title: Voicecall
+    - voice-call プラグインを使用していて、CLI エントリポイントが必要な場合
+    - '`voicecall setup|smoke|call|continue|dtmf|status|tail|expose` の簡単な例が必要です'
+summary: '`openclaw voicecall` の CLI リファレンス（音声通話 Plugin のコマンドサーフェス）'
+title: 音声通話
 x-i18n:
-    generated_at: "2026-04-25T13:44:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T05:00:28Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: 4090858a58b7defaff955a370c8cb0ff025ef68061e68a6c69a637de24707c0b
     source_path: cli/voicecall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw voicecall`
 
-`voicecall` は Plugin 提供のコマンドです。voice-call Plugin がインストールされ、有効化されている場合にのみ表示されます。
+`voicecall` はPluginが提供するコマンドです。音声通話Pluginがインストールされ、有効化されている場合にのみ表示されます。
 
-主なドキュメント:
+主要ドキュメント:
 
-- voice-call Plugin: [Voice Call](/ja-JP/plugins/voice-call)
+- 音声通話Plugin: [音声通話](/ja-JP/plugins/voice-call)
 
-## よく使うコマンド
+## 一般的なコマンド
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -33,22 +34,29 @@ openclaw voicecall dtmf --call-id <id> --digits "ww123456#"
 openclaw voicecall end --call-id <id>
 ```
 
-`setup` はデフォルトで人間が読みやすい準備状況チェックを表示します。スクリプトでは `--json` を使用してください:
+`setup` はデフォルトで人間が読める形式の準備状況チェックを出力します。
+スクリプト向けには `--json` を使用します:
 
 ```bash
 openclaw voicecall setup --json
 ```
 
-外部プロバイダー（`twilio`、`telnyx`、`plivo`）では、setup は `publicUrl`、トンネル、または Tailscale 公開からパブリックな Webhook URL を解決する必要があります。loopback/private の serve フォールバックは、キャリアから到達できないため拒否されます。
+`status` はデフォルトでアクティブな通話をJSONとして出力します。1件の通話を調べるには
+`--call-id <id>` を渡します。
 
-`smoke` は同じ準備状況チェックを実行します。`--to` と `--yes` の両方が指定されていない限り、実際の電話は発信しません:
+外部プロバイダー (`twilio`, `telnyx`, `plivo`) では、セットアップ時に `publicUrl`、トンネル、または Tailscale の公開から公開
+Webhook URLを解決できる必要があります。通信事業者が到達できないため、local loopback/プライベートの
+配信フォールバックは拒否されます。
+
+`smoke` は同じ準備状況チェックを実行します。`--to` と `--yes` の両方が存在しない限り、
+実際の電話発信は行いません:
 
 ```bash
-openclaw voicecall smoke --to "+15555550123"        # ドライラン
-openclaw voicecall smoke --to "+15555550123" --yes  # 実際の通知コール
+openclaw voicecall smoke --to "+15555550123"        # dry run
+openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 ```
 
-## Webhook の公開（Tailscale）
+## Webhookの公開 (Tailscale)
 
 ```bash
 openclaw voicecall expose --mode serve
@@ -56,9 +64,9 @@ openclaw voicecall expose --mode funnel
 openclaw voicecall expose --mode off
 ```
 
-セキュリティに関する注記: Webhook エンドポイントは、信頼できるネットワークにのみ公開してください。可能な場合は Tailscale Funnel より Tailscale Serve を優先してください。
+セキュリティ注記: Webhookエンドポイントは、信頼するネットワークにのみ公開してください。可能な場合は Funnel より Tailscale Serve を優先してください。
 
-## 関連
+## 関連項目
 
-- [CLI reference](/ja-JP/cli)
-- [Voice call plugin](/ja-JP/plugins/voice-call)
+- [CLIリファレンス](/ja-JP/cli)
+- [音声通話Plugin](/ja-JP/plugins/voice-call)
