@@ -2,29 +2,29 @@
 read_when:
     - Mengonfigurasi kebijakan `tools.*`, daftar izin, atau fitur eksperimental
     - Mendaftarkan penyedia kustom atau mengganti URL dasar
-    - Menyiapkan endpoint yang dihosting sendiri dan kompatibel dengan OpenAI
+    - Menyiapkan endpoint yang dihosting sendiri yang kompatibel dengan OpenAI
 sidebarTitle: Tools and custom providers
-summary: Konfigurasi alat (kebijakan, toggle eksperimental, alat berbasis penyedia) dan penyiapan penyedia/URL dasar kustom
+summary: Konfigurasi alat (kebijakan, toggle eksperimental, alat yang didukung penyedia) dan penyiapan penyedia/URL dasar kustom
 title: Konfigurasi — alat dan penyedia kustom
 x-i18n:
-    generated_at: "2026-04-30T09:47:34Z"
+    generated_at: "2026-05-01T09:24:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1790c92ecaf822c837326d8e22e9d72cc44e5d4cc0bcc00c154ba5160975002a
+    source_hash: 97e6bd8c762f6f7a9985b99ec016dde22c8ea8adc925778b11c2ae5103b887a8
     source_path: gateway/config-tools.md
     workflow: 16
 ---
 
-`tools.*` kunci konfigurasi dan penyiapan penyedia khusus / base-URL. Untuk agen, channel, dan kunci konfigurasi tingkat atas lainnya, lihat [Referensi konfigurasi](/id/gateway/configuration-reference).
+`tools.*` kunci konfigurasi dan penyiapan penyedia kustom / base-URL. Untuk agents, channels, dan kunci konfigurasi tingkat atas lainnya, lihat [Referensi konfigurasi](/id/gateway/configuration-reference).
 
 ## Alat
 
 ### Profil alat
 
-`tools.profile` menetapkan allowlist dasar sebelum `tools.allow`/`tools.deny`:
+`tools.profile` menetapkan daftar izin dasar sebelum `tools.allow`/`tools.deny`:
 
 <Note>
-Onboarding lokal secara default menyetel konfigurasi lokal baru ke `tools.profile: "coding"` jika belum disetel (profil eksplisit yang sudah ada dipertahankan).
+Onboarding lokal menetapkan default konfigurasi lokal baru ke `tools.profile: "coding"` saat belum diatur (profil eksplisit yang sudah ada dipertahankan).
 </Note>
 
 | Profil      | Mencakup                                                                                                                        |
@@ -32,7 +32,7 @@ Onboarding lokal secara default menyetel konfigurasi lokal baru ke `tools.profil
 | `minimal`   | hanya `session_status`                                                                                                          |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `video_generate` |
 | `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                       |
-| `full`      | Tidak ada pembatasan (sama seperti tidak disetel)                                                                               |
+| `full`      | Tanpa pembatasan (sama seperti tidak diatur)                                                                                    |
 
 ### Grup alat
 
@@ -53,7 +53,7 @@ Onboarding lokal secara default menyetel konfigurasi lokal baru ke `tools.profil
 
 ### `tools.allow` / `tools.deny`
 
-Kebijakan allow/deny alat global (deny menang). Tidak peka huruf besar/kecil, mendukung wildcard `*`. Diterapkan bahkan saat sandbox Docker nonaktif.
+Kebijakan izin/tolak alat global (tolak lebih diutamakan). Tidak peka huruf besar/kecil, mendukung wildcard `*`. Diterapkan bahkan saat sandbox Docker tidak aktif.
 
 ```json5
 {
@@ -63,7 +63,7 @@ Kebijakan allow/deny alat global (deny menang). Tidak peka huruf besar/kecil, me
 
 ### `tools.byProvider`
 
-Batasi alat lebih lanjut untuk penyedia atau model tertentu. Urutan: profil dasar → profil penyedia → allow/deny.
+Batasi alat lebih lanjut untuk penyedia atau model tertentu. Urutan: profil dasar → profil penyedia → izin/tolak.
 
 ```json5
 {
@@ -79,7 +79,7 @@ Batasi alat lebih lanjut untuk penyedia atau model tertentu. Urutan: profil dasa
 
 ### `tools.elevated`
 
-Mengontrol akses exec yang ditingkatkan di luar sandbox:
+Mengontrol akses exec yang ditinggikan di luar sandbox:
 
 ```json5
 {
@@ -95,9 +95,9 @@ Mengontrol akses exec yang ditingkatkan di luar sandbox:
 }
 ```
 
-- Override per agen (`agents.list[].tools.elevated`) hanya dapat membatasi lebih lanjut.
+- Penggantian per agen (`agents.list[].tools.elevated`) hanya dapat memperketat pembatasan.
 - `/elevated on|off|ask|full` menyimpan status per sesi; direktif inline berlaku untuk satu pesan.
-- `exec` yang ditingkatkan melewati sandboxing dan menggunakan jalur escape yang dikonfigurasi (`gateway` secara default, atau `node` saat target exec adalah `node`).
+- `exec` yang ditinggikan melewati sandboxing dan menggunakan jalur escape yang dikonfigurasi (`gateway` secara default, atau `node` saat target exec adalah `node`).
 
 ### `tools.exec`
 
@@ -121,7 +121,7 @@ Mengontrol akses exec yang ditingkatkan di luar sandbox:
 
 ### `tools.loopDetection`
 
-Pemeriksaan keamanan loop alat **dinonaktifkan secara default**. Setel `enabled: true` untuk mengaktifkan deteksi. Pengaturan dapat didefinisikan secara global di `tools.loopDetection` dan dioverride per agen di `agents.list[].tools.loopDetection`.
+Pemeriksaan keamanan loop alat **dinonaktifkan secara default**. Atur `enabled: true` untuk mengaktifkan deteksi. Pengaturan dapat didefinisikan secara global di `tools.loopDetection` dan diganti per agen di `agents.list[].tools.loopDetection`.
 
 ```json5
 {
@@ -143,19 +143,19 @@ Pemeriksaan keamanan loop alat **dinonaktifkan secara default**. Setel `enabled:
 ```
 
 <ParamField path="historySize" type="number">
-  Riwayat pemanggilan alat maksimum yang disimpan untuk analisis loop.
+  Riwayat panggilan alat maksimum yang disimpan untuk analisis loop.
 </ParamField>
 <ParamField path="warningThreshold" type="number">
-  Ambang pola berulang tanpa progres untuk peringatan.
+  Ambang pola tanpa progres yang berulang untuk peringatan.
 </ParamField>
 <ParamField path="criticalThreshold" type="number">
-  Ambang berulang yang lebih tinggi untuk memblokir loop kritis.
+  Ambang pengulangan yang lebih tinggi untuk memblokir loop kritis.
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
   Ambang penghentian paksa untuk setiap proses tanpa progres.
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
-  Peringatkan pada panggilan berulang dengan alat yang sama/argumen yang sama.
+  Peringatkan pada panggilan alat yang sama/argumen yang sama secara berulang.
 </ParamField>
 <ParamField path="detectors.knownPollNoProgress" type="boolean">
   Peringatkan/blokir pada alat polling yang dikenal (`process.poll`, `command_status`, dll.).
@@ -176,14 +176,14 @@ Jika `warningThreshold >= criticalThreshold` atau `criticalThreshold >= globalCi
     web: {
       search: {
         enabled: true,
-        apiKey: "brave_api_key", // atau env BRAVE_API_KEY
+        apiKey: "brave_api_key", // or BRAVE_API_KEY env
         maxResults: 5,
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
       },
       fetch: {
         enabled: true,
-        provider: "firecrawl", // opsional; hilangkan untuk deteksi otomatis
+        provider: "firecrawl", // optional; omit for auto-detect
         maxChars: 50000,
         maxCharsCap: 50000,
         maxResponseBytes: 2000000,
@@ -208,7 +208,7 @@ Mengonfigurasi pemahaman media masuk (gambar/audio/video):
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // opt-in: send finished async music/video directly to the channel
+        directSend: false, // opt-in: send finished async video directly to the channel
       },
       audio: {
         enabled: true,
@@ -242,26 +242,26 @@ Mengonfigurasi pemahaman media masuk (gambar/audio/video):
     **Entri penyedia** (`type: "provider"` atau dihilangkan):
 
     - `provider`: id penyedia API (`openai`, `anthropic`, `google`/`gemini`, `groq`, dll.)
-    - `model`: penggantian id model
+    - `model`: penimpaan id model
     - `profile` / `preferredProfile`: pemilihan profil `auth-profiles.json`
 
     **Entri CLI** (`type: "cli"`):
 
-    - `command`: executable yang dijalankan
-    - `args`: argumen bertemplat (mendukung `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}`, dll.; `openclaw doctor --fix` memigrasikan placeholder `{input}` yang usang ke `{{MediaPath}}`)
+    - `command`: executable yang akan dijalankan
+    - `args`: argumen bertemplat (mendukung `{{MediaPath}}`, `{{Prompt}}`, `{{MaxChars}}`, dll.; `openclaw doctor --fix` memigrasikan placeholder `{input}` yang sudah usang ke `{{MediaPath}}`)
 
-    **Bidang umum:**
+    **Kolom umum:**
 
     - `capabilities`: daftar opsional (`image`, `audio`, `video`). Default: `openai`/`anthropic`/`minimax` → gambar, `google` → gambar+audio+video, `groq` → audio.
-    - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: penggantian per entri.
-    - `tools.media.image.timeoutSeconds` dan entri `timeoutSeconds` model gambar yang cocok juga berlaku saat agen memanggil tool `image` eksplisit.
-    - Kegagalan beralih ke entri berikutnya.
+    - `prompt`, `maxChars`, `maxBytes`, `timeoutSeconds`, `language`: penimpaan per entri.
+    - `tools.media.image.timeoutSeconds` dan entri `timeoutSeconds` model gambar yang cocok juga berlaku saat agen memanggil alat `image` eksplisit.
+    - Kegagalan akan fallback ke entri berikutnya.
 
-    Auth penyedia mengikuti urutan standar: `auth-profiles.json` → env vars → `models.providers.*.apiKey`.
+    Autentikasi penyedia mengikuti urutan standar: `auth-profiles.json` → variabel env → `models.providers.*.apiKey`.
 
-    **Bidang penyelesaian asinkron:**
+    **Kolom penyelesaian asinkron:**
 
-    - `asyncCompletion.directSend`: saat `true`, tugas `music_generate` dan `video_generate` asinkron yang selesai mencoba pengiriman kanal langsung terlebih dahulu. Default: `false` (jalur wake sesi peminta/pengiriman model lama).
+    - `asyncCompletion.directSend`: saat `true`, tugas media asinkron yang selesai dan mendukung pengiriman penyelesaian langsung mencoba pengiriman channel langsung terlebih dahulu. Default: `false` (jalur pembangkitan sesi peminta/pengiriman model). Saat ini ini berlaku untuk `video_generate` asinkron; penyelesaian `music_generate` asinkron tetap dimediasi sesi peminta meskipun ini diaktifkan.
 
   </Accordion>
 </AccordionGroup>
@@ -281,7 +281,7 @@ Mengonfigurasi pemahaman media masuk (gambar/audio/video):
 
 ### `tools.sessions`
 
-Mengontrol sesi mana yang dapat ditargetkan oleh tool sesi (`sessions_list`, `sessions_history`, `sessions_send`).
+Mengontrol sesi mana yang dapat ditargetkan oleh alat sesi (`sessions_list`, `sessions_history`, `sessions_send`).
 
 Default: `tree` (sesi saat ini + sesi yang dibuat olehnya, seperti subagen).
 
@@ -302,7 +302,7 @@ Default: `tree` (sesi saat ini + sesi yang dibuat olehnya, seperti subagen).
     - `tree`: sesi saat ini + sesi yang dibuat oleh sesi saat ini (subagen).
     - `agent`: sesi apa pun yang termasuk dalam id agen saat ini (dapat mencakup pengguna lain jika Anda menjalankan sesi per pengirim di bawah id agen yang sama).
     - `all`: sesi apa pun. Penargetan lintas agen tetap memerlukan `tools.agentToAgent`.
-    - Batas sandbox: saat sesi saat ini berada dalam sandbox dan `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, visibilitas dipaksa menjadi `tree` meskipun `tools.sessions.visibility="all"`.
+    - Pembatasan sandbox: saat sesi saat ini berada dalam sandbox dan `agents.defaults.sandbox.sessionToolsVisibility="spawned"`, visibilitas dipaksa menjadi `tree` meskipun `tools.sessions.visibility="all"`.
 
   </Accordion>
 </AccordionGroup>
@@ -330,9 +330,9 @@ Mengontrol dukungan lampiran inline untuk `sessions_spawn`.
 <AccordionGroup>
   <Accordion title="Attachment notes">
     - Lampiran hanya didukung untuk `runtime: "subagent"`. Runtime ACP menolaknya.
-    - File diwujudkan ke ruang kerja anak di `.openclaw/attachments/<uuid>/` dengan `.manifest.json`.
+    - File diwujudkan ke ruang kerja turunan di `.openclaw/attachments/<uuid>/` dengan `.manifest.json`.
     - Konten lampiran otomatis disunting dari persistensi transkrip.
-    - Input Base64 divalidasi dengan pemeriksaan alfabet/padding yang ketat dan pelindung ukuran pra-dekode.
+    - Input Base64 divalidasi dengan pemeriksaan alfabet/padding ketat dan pelindung ukuran pra-dekode.
     - Izin file adalah `0700` untuk direktori dan `0600` untuk file.
     - Pembersihan mengikuti kebijakan `cleanup`: `delete` selalu menghapus lampiran; `keep` mempertahankannya hanya saat `retainOnSessionKeep: true`.
 
@@ -343,7 +343,7 @@ Mengontrol dukungan lampiran inline untuk `sessions_spawn`.
 
 ### `tools.experimental`
 
-Flag tool bawaan eksperimental. Default nonaktif kecuali aturan aktif otomatis GPT-5 agentik-ketat berlaku.
+Flag alat bawaan eksperimental. Default nonaktif kecuali aturan aktif otomatis GPT-5 agen-ketat berlaku.
 
 ```json5
 {
@@ -355,9 +355,9 @@ Flag tool bawaan eksperimental. Default nonaktif kecuali aturan aktif otomatis G
 }
 ```
 
-- `planTool`: mengaktifkan alat terstruktur `update_plan` untuk pelacakan pekerjaan multi-langkah yang tidak sepele.
-- Bawaan: `false` kecuali `agents.defaults.embeddedPi.executionContract` (atau override per agen) diatur ke `"strict-agentic"` untuk proses OpenAI atau OpenAI Codex keluarga GPT-5. Atur `true` untuk memaksa alat aktif di luar cakupan tersebut, atau `false` untuk tetap menonaktifkannya bahkan untuk proses strict-agentic GPT-5.
-- Saat diaktifkan, prompt sistem juga menambahkan panduan penggunaan agar model hanya menggunakannya untuk pekerjaan substansial dan menjaga maksimal satu langkah `in_progress`.
+- `planTool`: mengaktifkan alat `update_plan` terstruktur untuk pelacakan pekerjaan multi-langkah yang tidak sepele.
+- Nilai bawaan: `false` kecuali `agents.defaults.embeddedPi.executionContract` (atau penimpaan per-agen) diatur ke `"strict-agentic"` untuk proses OpenAI atau OpenAI Codex keluarga GPT-5. Atur `true` untuk memaksa alat aktif di luar cakupan tersebut, atau `false` agar tetap nonaktif bahkan untuk proses GPT-5 strict-agentic.
+- Saat diaktifkan, prompt sistem juga menambahkan panduan penggunaan agar model hanya menggunakannya untuk pekerjaan yang substansial dan mempertahankan paling banyak satu langkah `in_progress`.
 
 ### `agents.defaults.subagents`
 
@@ -377,10 +377,10 @@ Flag tool bawaan eksperimental. Default nonaktif kecuali aturan aktif otomatis G
 }
 ```
 
-- `model`: model bawaan untuk sub-agen yang dimunculkan. Jika dihilangkan, sub-agen mewarisi model pemanggil.
-- `allowAgents`: daftar izinkan bawaan untuk id agen target bagi `sessions_spawn` ketika agen peminta tidak menetapkan `subagents.allowAgents` miliknya sendiri (`["*"]` = apa pun; bawaan: hanya agen yang sama).
-- `runTimeoutSeconds`: batas waktu bawaan (detik) untuk `sessions_spawn` ketika pemanggilan alat menghilangkan `runTimeoutSeconds`. `0` berarti tanpa batas waktu.
-- Kebijakan alat per sub-agen: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
+- `model`: model bawaan untuk sub-agen yang di-spawn. Jika dihilangkan, sub-agen mewarisi model pemanggil.
+- `allowAgents`: allowlist bawaan id agen target untuk `sessions_spawn` saat agen peminta tidak menetapkan `subagents.allowAgents` miliknya sendiri (`["*"]` = apa pun; bawaan: hanya agen yang sama).
+- `runTimeoutSeconds`: timeout bawaan (detik) untuk `sessions_spawn` saat pemanggilan alat menghilangkan `runTimeoutSeconds`. `0` berarti tanpa timeout.
+- Kebijakan alat per-subagen: `tools.subagents.tools.allow` / `tools.subagents.tools.deny`.
 
 ---
 
@@ -416,84 +416,84 @@ OpenClaw menggunakan katalog model bawaan. Tambahkan penyedia kustom melalui `mo
 ```
 
 <AccordionGroup>
-  <Accordion title="Autentikasi dan prioritas merge">
+  <Accordion title="Auth and merge precedence">
     - Gunakan `authHeader: true` + `headers` untuk kebutuhan autentikasi kustom.
-    - Override akar konfigurasi agen dengan `OPENCLAW_AGENT_DIR` (atau `PI_CODING_AGENT_DIR`, alias variabel lingkungan lama).
-    - Prioritas merge untuk ID penyedia yang cocok:
+    - Timpa root konfigurasi agen dengan `OPENCLAW_AGENT_DIR` (atau `PI_CODING_AGENT_DIR`, alias variabel lingkungan lama).
+    - Prioritas penggabungan untuk ID penyedia yang cocok:
       - Nilai `baseUrl` `models.json` agen yang tidak kosong menang.
-      - Nilai `apiKey` agen yang tidak kosong hanya menang ketika penyedia tersebut tidak dikelola SecretRef dalam konteks konfigurasi/profil autentikasi saat ini.
-      - Nilai `apiKey` penyedia yang dikelola SecretRef disegarkan dari penanda sumber (`ENV_VAR_NAME` untuk referensi env, `secretref-managed` untuk referensi file/exec), bukan menyimpan secret yang telah di-resolve.
-      - Nilai header penyedia yang dikelola SecretRef disegarkan dari penanda sumber (`secretref-env:ENV_VAR_NAME` untuk referensi env, `secretref-managed` untuk referensi file/exec).
-      - `apiKey`/`baseUrl` agen yang kosong atau tidak ada fallback ke `models.providers` di konfigurasi.
+      - Nilai `apiKey` agen yang tidak kosong menang hanya saat penyedia tersebut tidak dikelola SecretRef dalam konteks konfigurasi/auth-profile saat ini.
+      - Nilai `apiKey` penyedia yang dikelola SecretRef diperbarui dari penanda sumber (`ENV_VAR_NAME` untuk referensi env, `secretref-managed` untuk referensi file/exec) alih-alih mempertahankan secret yang sudah di-resolve.
+      - Nilai header penyedia yang dikelola SecretRef diperbarui dari penanda sumber (`secretref-env:ENV_VAR_NAME` untuk referensi env, `secretref-managed` untuk referensi file/exec).
+      - `apiKey`/`baseUrl` agen yang kosong atau tidak ada kembali menggunakan `models.providers` di konfigurasi.
       - `contextWindow`/`maxTokens` model yang cocok menggunakan nilai yang lebih tinggi antara konfigurasi eksplisit dan nilai katalog implisit.
       - `contextTokens` model yang cocok mempertahankan batas runtime eksplisit saat ada; gunakan ini untuk membatasi konteks efektif tanpa mengubah metadata model native.
-      - Gunakan `models.mode: "replace"` ketika Anda ingin konfigurasi sepenuhnya menulis ulang `models.json`.
-      - Persistensi penanda bersifat otoritatif terhadap sumber: penanda ditulis dari snapshot konfigurasi sumber aktif (pra-resolusi), bukan dari nilai secret runtime yang telah di-resolve.
+      - Gunakan `models.mode: "replace"` saat Anda ingin konfigurasi menulis ulang `models.json` sepenuhnya.
+      - Persistensi penanda bersifat otoritatif-sumber: penanda ditulis dari snapshot konfigurasi sumber aktif (pra-resolusi), bukan dari nilai secret runtime yang sudah di-resolve.
 
   </Accordion>
 </AccordionGroup>
 
-### Detail bidang penyedia
+### Detail field penyedia
 
 <AccordionGroup>
-  <Accordion title="Katalog tingkat atas">
+  <Accordion title="Top-level catalog">
     - `models.mode`: perilaku katalog penyedia (`merge` atau `replace`).
     - `models.providers`: peta penyedia kustom yang dikunci berdasarkan id penyedia.
       - Edit aman: gunakan `openclaw config set models.providers.<id> '<json>' --strict-json --merge` atau `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` untuk pembaruan aditif. `config set` menolak penggantian destruktif kecuali Anda meneruskan `--replace`.
 
   </Accordion>
-  <Accordion title="Koneksi penyedia dan autentikasi">
-    - `models.providers.*.api`: adaptor permintaan (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, dll). Untuk backend `/v1/chat/completions` yang di-host sendiri seperti MLX, vLLM, SGLang, dan sebagian besar server lokal yang kompatibel dengan OpenAI, gunakan `openai-completions`. Penyedia kustom dengan `baseUrl` tetapi tanpa `api` memiliki bawaan `openai-completions`; atur `openai-responses` hanya ketika backend mendukung `/v1/responses`.
+  <Accordion title="Provider connection and auth">
+    - `models.providers.*.api`: adapter permintaan (`openai-completions`, `openai-responses`, `anthropic-messages`, `google-generative-ai`, dll). Untuk backend `/v1/chat/completions` self-hosted seperti MLX, vLLM, SGLang, dan sebagian besar server lokal yang kompatibel dengan OpenAI, gunakan `openai-completions`. Penyedia kustom dengan `baseUrl` tetapi tanpa `api` menggunakan `openai-completions` secara bawaan; atur `openai-responses` hanya saat backend mendukung `/v1/responses`.
     - `models.providers.*.apiKey`: kredensial penyedia (utamakan substitusi SecretRef/env).
     - `models.providers.*.auth`: strategi autentikasi (`api-key`, `token`, `oauth`, `aws-sdk`).
-    - `models.providers.*.contextWindow`: jendela konteks native bawaan untuk model di bawah penyedia ini ketika entri model tidak menetapkan `contextWindow`.
-    - `models.providers.*.contextTokens`: batas konteks runtime efektif bawaan untuk model di bawah penyedia ini ketika entri model tidak menetapkan `contextTokens`.
-    - `models.providers.*.maxTokens`: batas token output bawaan untuk model di bawah penyedia ini ketika entri model tidak menetapkan `maxTokens`.
-    - `models.providers.*.timeoutSeconds`: batas waktu opsional per penyedia untuk permintaan HTTP model dalam detik, termasuk penanganan koneksi, header, body, dan pembatalan total permintaan.
-    - `models.providers.*.injectNumCtxForOpenAICompat`: untuk Ollama + `openai-completions`, suntikkan `options.num_ctx` ke dalam permintaan (bawaan: `true`).
-    - `models.providers.*.authHeader`: paksa transport kredensial di header `Authorization` saat diperlukan.
+    - `models.providers.*.contextWindow`: jendela konteks native bawaan untuk model di bawah penyedia ini saat entri model tidak menetapkan `contextWindow`.
+    - `models.providers.*.contextTokens`: batas konteks runtime efektif bawaan untuk model di bawah penyedia ini saat entri model tidak menetapkan `contextTokens`.
+    - `models.providers.*.maxTokens`: batas token output bawaan untuk model di bawah penyedia ini saat entri model tidak menetapkan `maxTokens`.
+    - `models.providers.*.timeoutSeconds`: timeout permintaan HTTP model opsional per-penyedia dalam detik, termasuk penanganan connect, header, body, dan pembatalan total permintaan.
+    - `models.providers.*.injectNumCtxForOpenAICompat`: untuk Ollama + `openai-completions`, sisipkan `options.num_ctx` ke dalam permintaan (bawaan: `true`).
+    - `models.providers.*.authHeader`: paksa pengangkutan kredensial di header `Authorization` saat diperlukan.
     - `models.providers.*.baseUrl`: URL dasar API upstream.
-    - `models.providers.*.headers`: header statis ekstra untuk routing proxy/tenant.
+    - `models.providers.*.headers`: header statis tambahan untuk routing proxy/tenant.
 
   </Accordion>
-  <Accordion title="Override transport permintaan">
-    `models.providers.*.request`: override transport untuk permintaan HTTP penyedia model.
+  <Accordion title="Request transport overrides">
+    `models.providers.*.request`: penimpaan transport untuk permintaan HTTP penyedia model.
 
-    - `request.headers`: header ekstra (digabungkan dengan bawaan penyedia). Nilai menerima SecretRef.
-    - `request.auth`: override strategi autentikasi. Mode: `"provider-default"` (gunakan autentikasi bawaan penyedia), `"authorization-bearer"` (dengan `token`), `"header"` (dengan `headerName`, `value`, `prefix` opsional).
-    - `request.proxy`: override proxy HTTP. Mode: `"env-proxy"` (gunakan variabel env `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (dengan `url`). Kedua mode menerima sub-objek `tls` opsional.
-    - `request.tls`: override TLS untuk koneksi langsung. Bidang: `ca`, `cert`, `key`, `passphrase` (semuanya menerima SecretRef), `serverName`, `insecureSkipVerify`.
-    - `request.allowPrivateNetwork`: ketika `true`, izinkan HTTPS ke `baseUrl` ketika DNS me-resolve ke rentang privat, CGNAT, atau rentang serupa, melalui guard HTTP fetch penyedia (keikutsertaan operator untuk endpoint yang di-host sendiri dan kompatibel dengan OpenAI yang tepercaya). URL stream penyedia model local loopback seperti `localhost`, `127.0.0.1`, dan `[::1]` diizinkan otomatis kecuali ini secara eksplisit diatur ke `false`; host LAN, tailnet, dan DNS privat tetap memerlukan keikutsertaan. WebSocket menggunakan `request` yang sama untuk header/TLS tetapi bukan gate SSRF fetch tersebut. Bawaan `false`.
+    - `request.headers`: header tambahan (digabungkan dengan bawaan penyedia). Nilai menerima SecretRef.
+    - `request.auth`: penimpaan strategi autentikasi. Mode: `"provider-default"` (gunakan autentikasi bawaan penyedia), `"authorization-bearer"` (dengan `token`), `"header"` (dengan `headerName`, `value`, `prefix` opsional).
+    - `request.proxy`: penimpaan proxy HTTP. Mode: `"env-proxy"` (gunakan variabel env `HTTP_PROXY`/`HTTPS_PROXY`), `"explicit-proxy"` (dengan `url`). Kedua mode menerima sub-objek `tls` opsional.
+    - `request.tls`: penimpaan TLS untuk koneksi langsung. Field: `ca`, `cert`, `key`, `passphrase` (semuanya menerima SecretRef), `serverName`, `insecureSkipVerify`.
+    - `request.allowPrivateNetwork`: saat `true`, izinkan HTTPS ke `baseUrl` saat DNS me-resolve ke rentang privat, CGNAT, atau serupa, melalui guard fetch HTTP penyedia (opt-in operator untuk endpoint self-hosted tepercaya yang kompatibel dengan OpenAI). URL stream penyedia model loopback seperti `localhost`, `127.0.0.1`, dan `[::1]` diizinkan otomatis kecuali ini secara eksplisit diatur ke `false`; host LAN, tailnet, dan DNS privat tetap memerlukan opt-in. WebSocket menggunakan `request` yang sama untuk header/TLS tetapi tidak menggunakan gate SSRF fetch tersebut. Bawaan `false`.
 
   </Accordion>
-  <Accordion title="Entri katalog model">
+  <Accordion title="Model catalog entries">
     - `models.providers.*.models`: entri katalog model penyedia eksplisit.
-    - `models.providers.*.models.*.input`: modalitas input model. Gunakan `["text"]` untuk model khusus teks dan `["text", "image"]` untuk model gambar/visi native. Lampiran gambar hanya disuntikkan ke turn agen ketika model yang dipilih ditandai mampu menangani gambar.
-    - `models.providers.*.models.*.contextWindow`: metadata jendela konteks model native. Ini meng-override `contextWindow` tingkat penyedia untuk model tersebut.
-    - `models.providers.*.models.*.contextTokens`: batas konteks runtime opsional. Ini meng-override `contextTokens` tingkat penyedia; gunakan ketika Anda menginginkan anggaran konteks efektif yang lebih kecil daripada `contextWindow` native model; `openclaw models list` menampilkan kedua nilai ketika berbeda.
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`: petunjuk kompatibilitas opsional. Untuk `api: "openai-completions"` dengan `baseUrl` non-native yang tidak kosong (host bukan `api.openai.com`), OpenClaw memaksa ini menjadi `false` saat runtime. `baseUrl` yang kosong/dihilangkan mempertahankan perilaku bawaan OpenAI.
-    - `models.providers.*.models.*.compat.requiresStringContent`: petunjuk kompatibilitas opsional untuk endpoint chat khusus string yang kompatibel dengan OpenAI. Ketika `true`, OpenClaw meratakan array `messages[].content` teks murni menjadi string biasa sebelum mengirim permintaan.
+    - `models.providers.*.models.*.input`: modalitas input model. Gunakan `["text"]` untuk model khusus teks dan `["text", "image"]` untuk model native image/vision. Lampiran gambar hanya disisipkan ke giliran agen saat model yang dipilih ditandai mendukung gambar.
+    - `models.providers.*.models.*.contextWindow`: metadata jendela konteks native model. Ini menimpa `contextWindow` tingkat penyedia untuk model tersebut.
+    - `models.providers.*.models.*.contextTokens`: batas konteks runtime opsional. Ini menimpa `contextTokens` tingkat penyedia; gunakan saat Anda menginginkan anggaran konteks efektif yang lebih kecil daripada `contextWindow` native model; `openclaw models list` menampilkan kedua nilai saat keduanya berbeda.
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`: petunjuk kompatibilitas opsional. Untuk `api: "openai-completions"` dengan `baseUrl` non-native yang tidak kosong (host bukan `api.openai.com`), OpenClaw memaksanya menjadi `false` saat runtime. `baseUrl` yang kosong/dihilangkan mempertahankan perilaku OpenAI bawaan.
+    - `models.providers.*.models.*.compat.requiresStringContent`: petunjuk kompatibilitas opsional untuk endpoint chat kompatibel OpenAI yang hanya menerima string. Saat `true`, OpenClaw meratakan array `messages[].content` teks murni menjadi string biasa sebelum mengirim permintaan.
 
   </Accordion>
-  <Accordion title="Penemuan Amazon Bedrock">
-    - `plugins.entries.amazon-bedrock.config.discovery`: akar pengaturan auto-discovery Bedrock.
-    - `plugins.entries.amazon-bedrock.config.discovery.enabled`: aktifkan/nonaktifkan discovery implisit.
-    - `plugins.entries.amazon-bedrock.config.discovery.region`: region AWS untuk discovery.
-    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: filter id penyedia opsional untuk discovery tertarget.
-    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: interval polling untuk penyegaran discovery.
+  <Accordion title="Amazon Bedrock discovery">
+    - `plugins.entries.amazon-bedrock.config.discovery`: root pengaturan penemuan otomatis Bedrock.
+    - `plugins.entries.amazon-bedrock.config.discovery.enabled`: aktifkan/nonaktifkan penemuan implisit.
+    - `plugins.entries.amazon-bedrock.config.discovery.region`: region AWS untuk penemuan.
+    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`: filter id penyedia opsional untuk penemuan tertarget.
+    - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`: interval polling untuk penyegaran penemuan.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`: jendela konteks fallback untuk model yang ditemukan.
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`: token output maksimum fallback untuk model yang ditemukan.
 
   </Accordion>
 </AccordionGroup>
 
-Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model visi umum seperti GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V, dan GLM-4V, serta melewati pertanyaan ekstra untuk keluarga khusus teks yang dikenal. ID model yang tidak dikenal tetap meminta dukungan gambar. Onboarding non-interaktif menggunakan inferensi yang sama; teruskan `--custom-image-input` untuk memaksa metadata yang mampu menangani gambar atau `--custom-text-input` untuk memaksa metadata khusus teks.
+Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model vision umum seperti GPT-4o, Claude, Gemini, Qwen-VL, LLaVA, Pixtral, InternVL, Mllama, MiniCPM-V, dan GLM-4V, serta melewati pertanyaan tambahan untuk keluarga khusus teks yang dikenal. ID model yang tidak dikenal tetap memunculkan prompt untuk dukungan gambar. Onboarding non-interaktif menggunakan inferensi yang sama; teruskan `--custom-image-input` untuk memaksa metadata yang mendukung gambar atau `--custom-text-input` untuk memaksa metadata khusus teks.
 
 ### Contoh penyedia
 
 <AccordionGroup>
   <Accordion title="Cerebras (GLM 4.7 / GPT OSS)">
-    Plugin penyedia `cerebras` yang dibundel dapat mengonfigurasi ini melalui `openclaw onboard --auth-choice cerebras-api-key`. Gunakan konfigurasi penyedia eksplisit hanya saat meng-override bawaan.
+    Plugin penyedia `cerebras` yang dibundel dapat mengonfigurasi ini melalui `openclaw onboard --auth-choice cerebras-api-key`. Gunakan konfigurasi penyedia eksplisit hanya saat menimpa nilai bawaan.
 
     ```json5
     {
@@ -546,10 +546,10 @@ Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model v
     Kompatibel dengan Anthropic, penyedia bawaan. Pintasan: `openclaw onboard --auth-choice kimi-code-api-key`.
 
   </Accordion>
-  <Accordion title="Model lokal (LM Studio)">
-    Lihat [Model Lokal](/id/gateway/local-models). TL;DR: jalankan model lokal besar melalui LM Studio Responses API di perangkat keras serius; tetap gabungkan model terhosting sebagai fallback.
+  <Accordion title="Local models (LM Studio)">
+    Lihat [Model Lokal](/id/gateway/local-models). TL;DR: jalankan model lokal besar melalui LM Studio Responses API pada perangkat keras serius; tetap gabungkan model hosted sebagai fallback.
   </Accordion>
-  <Accordion title="MiniMax M2.7 (langsung)">
+  <Accordion title="MiniMax M2.7 (direct)">
     ```json5
     {
       agents: {
@@ -621,9 +621,9 @@ Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model v
     }
     ```
 
-    Untuk endpoint China: `baseUrl: "https://api.moonshot.cn/v1"` atau `openclaw onboard --auth-choice moonshot-api-key-cn`.
+    Untuk endpoint Tiongkok: `baseUrl: "https://api.moonshot.cn/v1"` atau `openclaw onboard --auth-choice moonshot-api-key-cn`.
 
-    Endpoint native Moonshot mengiklankan kompatibilitas penggunaan streaming pada transport `openai-completions` bersama, dan OpenClaw menentukannya berdasarkan kapabilitas endpoint, bukan hanya id penyedia bawaan.
+    Endpoint native Moonshot mengiklankan kompatibilitas penggunaan streaming pada transport `openai-completions` bersama, dan OpenClaw menentukannya dari kemampuan endpoint, bukan hanya dari id penyedia bawaan.
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -641,7 +641,7 @@ Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model v
     Tetapkan `OPENCODE_API_KEY` (atau `OPENCODE_ZEN_API_KEY`). Gunakan referensi `opencode/...` untuk katalog Zen atau referensi `opencode-go/...` untuk katalog Go. Pintasan: `openclaw onboard --auth-choice opencode-zen` atau `openclaw onboard --auth-choice opencode-go`.
 
   </Accordion>
-  <Accordion title="Synthetic (kompatibel dengan Anthropic)">
+  <Accordion title="Synthetic (Anthropic-compatible)">
     ```json5
     {
       env: { SYNTHETIC_API_KEY: "sk-..." },
@@ -675,7 +675,7 @@ Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model v
     }
     ```
 
-    URL dasar sebaiknya menghilangkan `/v1` (klien Anthropic menambahkannya). Pintasan: `openclaw onboard --auth-choice synthetic-api-key`.
+    URL dasar harus menghilangkan `/v1` (klien Anthropic menambahkannya). Pintasan: `openclaw onboard --auth-choice synthetic-api-key`.
 
   </Accordion>
   <Accordion title="Z.AI (GLM-4.7)">
@@ -706,4 +706,4 @@ Onboarding penyedia kustom interaktif menyimpulkan input gambar untuk ID model v
 - [Konfigurasi — agen](/id/gateway/config-agents)
 - [Konfigurasi — channel](/id/gateway/config-channels)
 - [Referensi konfigurasi](/id/gateway/configuration-reference) — kunci tingkat atas lainnya
-- [Alat dan plugins](/id/tools)
+- [Alat dan plugin](/id/tools)

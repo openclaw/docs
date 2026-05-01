@@ -1,31 +1,36 @@
 ---
 read_when:
-    - Anda menggunakan Plugin voice-call dan menginginkan entrypoint CLI
-    - Anda menginginkan contoh cepat untuk `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
-summary: Referensi CLI untuk `openclaw voicecall` (surface perintah Plugin panggilan suara)
-title: Voicecall
+    - Anda menggunakan Plugin voice-call dan menginginkan titik masuk CLI
+    - Anda ingin contoh cepat untuk `voicecall setup|smoke|call|continue|dtmf|status|tail|expose`
+summary: Referensi CLI untuk `openclaw voicecall` (antarmuka perintah Plugin panggilan suara)
+title: Panggilan suara
 x-i18n:
-    generated_at: "2026-04-25T13:44:09Z"
-    model: gpt-5.4
+    generated_at: "2026-05-01T09:23:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7c8b83ef75f792920024a67b0dee1b07aff9f55486de1149266c6d94854ca0fe
+    source_hash: c040cf4cd984ad6d6dd302923494a7c8ee131390b803fe20a9894b077f08d5bb
     source_path: cli/voicecall.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw voicecall`
 
-`voicecall` adalah perintah yang disediakan Plugin. Perintah ini hanya muncul jika Plugin voice-call terinstal dan diaktifkan.
+`voicecall` adalah perintah yang disediakan Plugin. Perintah ini hanya muncul jika Plugin panggilan suara diinstal dan diaktifkan.
 
-Dokumentasi utama:
+Saat Gateway berjalan, perintah operasional (`call`, `start`,
+`continue`, `speak`, `dtmf`, `end`, dan `status`) dikirim ke runtime
+panggilan suara milik Gateway tersebut. Jika tidak ada Gateway yang dapat dijangkau, perintah tersebut menggunakan runtime CLI mandiri sebagai fallback.
 
-- Plugin voice-call: [Voice Call](/id/plugins/voice-call)
+Dokumen utama:
+
+- Plugin panggilan suara: [Panggilan Suara](/id/plugins/voice-call)
 
 ## Perintah umum
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke
+openclaw voicecall status --json
 openclaw voicecall status --call-id <id>
 openclaw voicecall call --to "+15555550123" --message "Hello" --mode notify
 openclaw voicecall continue --call-id <id> --message "Any questions?"
@@ -40,16 +45,19 @@ skrip:
 openclaw voicecall setup --json
 ```
 
-Untuk provider eksternal (`twilio`, `telnyx`, `plivo`), setup harus me-resolve URL
-webhook publik dari `publicUrl`, tunnel, atau eksposur Tailscale. Fallback serve
-loopback/pribadi ditolak karena carrier tidak dapat menjangkaunya.
+`status` secara default mencetak panggilan aktif sebagai JSON. Berikan `--call-id <id>` untuk memeriksa
+satu panggilan.
 
-`smoke` menjalankan pemeriksaan kesiapan yang sama. Perintah ini tidak akan menempatkan panggilan telepon nyata
-kecuali `--to` dan `--yes` keduanya ada:
+Untuk penyedia eksternal (`twilio`, `telnyx`, `plivo`), setup harus mendapatkan URL
+webhook publik dari `publicUrl`, tunnel, atau eksposur Tailscale. Fallback penyajian
+loopback/pribadi ditolak karena operator tidak dapat menjangkaunya.
+
+`smoke` menjalankan pemeriksaan kesiapan yang sama. Perintah ini tidak akan melakukan panggilan telepon sungguhan
+kecuali `--to` dan `--yes` sama-sama ada:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123"        # dry run
-openclaw voicecall smoke --to "+15555550123" --yes  # panggilan notify live
+openclaw voicecall smoke --to "+15555550123" --yes  # live notify call
 ```
 
 ## Mengekspos webhook (Tailscale)
@@ -64,5 +72,5 @@ Catatan keamanan: hanya ekspos endpoint webhook ke jaringan yang Anda percayai. 
 
 ## Terkait
 
-- [CLI reference](/id/cli)
-- [Plugin voice-call](/id/plugins/voice-call)
+- [Referensi CLI](/id/cli)
+- [Plugin panggilan suara](/id/plugins/voice-call)

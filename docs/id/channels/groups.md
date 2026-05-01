@@ -2,37 +2,37 @@
 read_when:
     - Mengubah perilaku obrolan grup atau pembatasan penyebutan
 sidebarTitle: Groups
-summary: Perilaku obrolan grup di seluruh permukaan (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
+summary: Perilaku obrolan grup di berbagai platform (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
 title: Grup
 x-i18n:
-    generated_at: "2026-04-30T16:27:45Z"
+    generated_at: "2026-05-01T09:22:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ed9cba03cf4546a20d473e8095a54858530869b27f8934f2680e8dbe987dbf5e
+    source_hash: a8580f98ab03c89770688102da776627d8ce18b7bd34c4a687009fd4aabb6213
     source_path: channels/groups.md
     workflow: 16
 ---
 
-OpenClaw memperlakukan obrolan grup secara konsisten di seluruh permukaan: Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo.
+OpenClaw memperlakukan chat grup secara konsisten di berbagai permukaan: Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo.
 
 ## Pengantar pemula (2 menit)
 
-OpenClaw "hidup" di akun perpesanan Anda sendiri. Tidak ada pengguna bot WhatsApp terpisah. Jika **Anda** berada dalam grup, OpenClaw dapat melihat grup tersebut dan merespons di sana.
+OpenClaw "hidup" di akun perpesanan Anda sendiri. Tidak ada pengguna bot WhatsApp terpisah. Jika **Anda** berada dalam suatu grup, OpenClaw dapat melihat grup itu dan merespons di sana.
 
-Perilaku default:
+Perilaku bawaan:
 
 - Grup dibatasi (`groupPolicy: "allowlist"`).
-- Balasan memerlukan mention kecuali Anda secara eksplisit menonaktifkan pembatasan mention.
-- Balasan akhir normal di grup/channel bersifat privat secara default. Keluaran ruang yang terlihat menggunakan tool `message`.
+- Balasan memerlukan mention kecuali Anda secara eksplisit menonaktifkan gerbang mention.
+- Balasan akhir normal di grup/channel bersifat privat secara bawaan. Output ruang yang terlihat menggunakan alat `message`.
 
-Artinya: pengirim yang ada dalam daftar izin dapat memicu OpenClaw dengan menyebutnya.
+Artinya: pengirim dalam daftar izin dapat memicu OpenClaw dengan me-mention-nya.
 
 <Note>
 **TL;DR**
 
 - **Akses DM** dikontrol oleh `*.allowFrom`.
 - **Akses grup** dikontrol oleh `*.groupPolicy` + daftar izin (`*.groups`, `*.groupAllowFrom`).
-- **Pemicu balasan** dikontrol oleh pembatasan mention (`requireMention`, `/activation`).
+- **Pemicu balasan** dikontrol oleh gerbang mention (`requireMention`, `/activation`).
 
 </Note>
 
@@ -47,14 +47,18 @@ otherwise -> reply
 
 ## Balasan yang terlihat
 
-Untuk ruang grup/channel, OpenClaw secara default menggunakan `messages.groupChat.visibleReplies: "message_tool"`.
-Itu berarti agent tetap memproses giliran dan dapat memperbarui status memori/sesi, tetapi jawaban akhir normalnya tidak otomatis diposting kembali ke ruang. Untuk berbicara secara terlihat, agent menggunakan `message(action=send)`.
+Untuk ruang grup/channel, OpenClaw secara bawaan menggunakan `messages.groupChat.visibleReplies: "message_tool"`.
+Artinya agen tetap memproses giliran dan dapat memperbarui memori/status sesi, tetapi jawaban akhir normalnya tidak otomatis diposting kembali ke ruang. Untuk berbicara secara terlihat, agen menggunakan `message(action=send)`.
 
-Untuk obrolan langsung dan giliran sumber lainnya, gunakan `messages.visibleReplies: "message_tool"` untuk menerapkan perilaku balasan terlihat yang hanya melalui tool secara global. `messages.groupChat.visibleReplies` tetap menjadi override yang lebih spesifik untuk ruang grup/channel.
+Jika alat message tidak tersedia berdasarkan kebijakan alat aktif, OpenClaw akan
+kembali ke balasan terlihat otomatis alih-alih membungkam respons secara diam-diam.
+`openclaw doctor` memperingatkan tentang ketidaksesuaian ini.
 
-Ini menggantikan pola lama yang memaksa model menjawab `NO_REPLY` untuk sebagian besar giliran mode intai. Dalam mode hanya tool, tidak melakukan apa pun yang terlihat berarti tidak memanggil tool message.
+Untuk chat langsung dan giliran sumber lain apa pun, gunakan `messages.visibleReplies: "message_tool"` untuk menerapkan perilaku balasan terlihat khusus alat yang sama secara global. `messages.groupChat.visibleReplies` tetap menjadi override yang lebih spesifik untuk ruang grup/channel.
 
-Indikator mengetik tetap dikirim saat agent bekerja dalam mode hanya tool. Mode mengetik grup default ditingkatkan dari "message" menjadi "instant" untuk giliran ini karena mungkin tidak pernah ada teks pesan assistant normal sebelum agent memutuskan apakah akan memanggil tool message. Konfigurasi mode mengetik eksplisit tetap berlaku lebih kuat.
+Ini menggantikan pola lama yang memaksa model menjawab `NO_REPLY` untuk sebagian besar giliran mode mengintai. Dalam mode khusus alat, tidak melakukan apa pun yang terlihat cukup berarti tidak memanggil alat message.
+
+Indikator mengetik tetap dikirim saat agen bekerja dalam mode khusus alat. Mode mengetik grup bawaan ditingkatkan dari "message" menjadi "instant" untuk giliran ini karena mungkin tidak pernah ada teks pesan asisten normal sebelum agen memutuskan apakah akan memanggil alat message. Konfigurasi mode mengetik eksplisit tetap menang.
 
 Untuk memulihkan balasan akhir otomatis lama untuk ruang grup/channel:
 
@@ -68,10 +72,10 @@ Untuk memulihkan balasan akhir otomatis lama untuk ruang grup/channel:
 }
 ```
 
-Gateway memuat ulang panas konfigurasi `messages` setelah file disimpan. Mulai ulang hanya
-ketika pemantauan file atau pemuatan ulang konfigurasi dinonaktifkan dalam deployment.
+Gateway memuat ulang konfigurasi `messages` secara hot-reload setelah file disimpan. Mulai ulang hanya
+saat pemantauan file atau pemuatan ulang konfigurasi dinonaktifkan dalam deployment.
 
-Untuk mewajibkan keluaran terlihat melewati tool message untuk setiap obrolan sumber:
+Untuk mewajibkan output terlihat melewati alat message untuk setiap chat sumber:
 
 ```json5
 {
@@ -81,29 +85,29 @@ Untuk mewajibkan keluaran terlihat melewati tool message untuk setiap obrolan su
 }
 ```
 
-Perintah slash native (Discord, Telegram, dan permukaan lain dengan dukungan perintah native) melewati `visibleReplies: "message_tool"` dan selalu membalas secara terlihat agar UI perintah native channel mendapatkan respons yang diharapkan. Ini hanya berlaku untuk giliran perintah native yang tervalidasi; perintah `/...` yang diketik sebagai teks dan giliran obrolan biasa tetap mengikuti default grup yang dikonfigurasi.
+Perintah slash native (Discord, Telegram, dan permukaan lain dengan dukungan perintah native) melewati `visibleReplies: "message_tool"` dan selalu membalas secara terlihat agar UI perintah native channel mendapatkan respons yang diharapkannya. Ini hanya berlaku untuk giliran perintah native yang tervalidasi; perintah `/...` yang diketik sebagai teks dan giliran chat biasa tetap mengikuti bawaan grup yang dikonfigurasi.
 
 ## Visibilitas konteks dan daftar izin
 
 Dua kontrol berbeda terlibat dalam keamanan grup:
 
-- **Otorisasi pemicu**: siapa yang dapat memicu agent (`groupPolicy`, `groups`, `groupAllowFrom`, daftar izin khusus channel).
+- **Otorisasi pemicu**: siapa yang dapat memicu agen (`groupPolicy`, `groups`, `groupAllowFrom`, daftar izin khusus channel).
 - **Visibilitas konteks**: konteks tambahan apa yang disuntikkan ke model (teks balasan, kutipan, riwayat thread, metadata terusan).
 
-Secara default, OpenClaw memprioritaskan perilaku obrolan normal dan mempertahankan konteks sebagian besar seperti yang diterima. Ini berarti daftar izin terutama menentukan siapa yang dapat memicu tindakan, bukan batas redaksi universal untuk setiap cuplikan kutipan atau historis.
+Secara bawaan, OpenClaw memprioritaskan perilaku chat normal dan sebagian besar mempertahankan konteks seperti yang diterima. Artinya daftar izin terutama menentukan siapa yang dapat memicu tindakan, bukan batas redaksi universal untuk setiap cuplikan yang dikutip atau historis.
 
 <AccordionGroup>
-  <Accordion title="Perilaku saat ini spesifik per channel">
-    - Beberapa channel sudah menerapkan penyaringan berbasis pengirim untuk konteks tambahan di jalur tertentu (misalnya penyemaian thread Slack, pencarian balasan/thread Matrix).
-    - Channel lain masih meneruskan konteks kutipan/balasan/terusan seperti yang diterima.
+  <Accordion title="Current behavior is channel-specific">
+    - Beberapa channel sudah menerapkan pemfilteran berbasis pengirim untuk konteks tambahan pada jalur tertentu (misalnya penanaman thread Slack, pencarian balasan/thread Matrix).
+    - Channel lain masih meneruskan konteks kutipan/balasan/terusan sebagaimana diterima.
 
   </Accordion>
-  <Accordion title="Arah penguatan (direncanakan)">
-    - `contextVisibility: "all"` (default) mempertahankan perilaku saat ini seperti yang diterima.
-    - `contextVisibility: "allowlist"` memfilter konteks tambahan ke pengirim yang ada dalam daftar izin.
+  <Accordion title="Hardening direction (planned)">
+    - `contextVisibility: "all"` (bawaan) mempertahankan perilaku saat ini sebagaimana diterima.
+    - `contextVisibility: "allowlist"` memfilter konteks tambahan ke pengirim dalam daftar izin.
     - `contextVisibility: "allowlist_quote"` adalah `allowlist` ditambah satu pengecualian kutipan/balasan eksplisit.
 
-    Sampai model penguatan ini diterapkan secara konsisten di seluruh channel, perkirakan adanya perbedaan berdasarkan permukaan.
+    Sampai model pengerasan ini diterapkan secara konsisten di seluruh channel, perkirakan ada perbedaan menurut permukaan.
 
   </Accordion>
 </AccordionGroup>
@@ -112,39 +116,39 @@ Secara default, OpenClaw memprioritaskan perilaku obrolan normal dan mempertahan
 
 Jika Anda ingin...
 
-| Tujuan                                         | Yang harus diatur                                         |
-| ---------------------------------------------- | ---------------------------------------------------------- |
+| Tujuan                                       | Yang perlu diatur                                          |
+| -------------------------------------------- | ---------------------------------------------------------- |
 | Izinkan semua grup tetapi hanya balas pada @mentions | `groups: { "*": { requireMention: true } }`                |
-| Nonaktifkan semua balasan grup                 | `groupPolicy: "disabled"`                                  |
-| Hanya grup tertentu                            | `groups: { "<group-id>": { ... } }` (tanpa kunci `"*"` )   |
-| Hanya Anda yang dapat memicu di grup           | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
+| Nonaktifkan semua balasan grup               | `groupPolicy: "disabled"`                                  |
+| Hanya grup tertentu                          | `groups: { "<group-id>": { ... } }` (tanpa kunci `"*"` )   |
+| Hanya Anda yang dapat memicu di grup         | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
 
 ## Kunci sesi
 
 - Sesi grup menggunakan kunci sesi `agent:<agentId>:<channel>:group:<id>` (ruang/channel menggunakan `agent:<agentId>:<channel>:channel:<id>`).
-- Topik forum Telegram menambahkan `:topic:<threadId>` ke id grup sehingga setiap topik memiliki sesi sendiri.
-- Obrolan langsung menggunakan sesi utama (atau per-pengirim jika dikonfigurasi).
+- Topik forum Telegram menambahkan `:topic:<threadId>` ke id grup sehingga setiap topik memiliki sesinya sendiri.
+- Chat langsung menggunakan sesi utama (atau per pengirim jika dikonfigurasi).
 - Heartbeat dilewati untuk sesi grup.
 
 <a id="pattern-personal-dms-public-groups-single-agent"></a>
 
-## Pola: DM pribadi + grup publik (satu agent)
+## Pola: DM pribadi + grup publik (agen tunggal)
 
-Ya — ini bekerja dengan baik jika trafik "pribadi" Anda adalah **DM** dan trafik "publik" Anda adalah **grup**.
+Ya — ini bekerja dengan baik jika lalu lintas "pribadi" Anda adalah **DM** dan lalu lintas "publik" Anda adalah **grup**.
 
-Mengapa: dalam mode satu agent, DM biasanya masuk ke kunci sesi **utama** (`agent:main:main`), sementara grup selalu menggunakan kunci sesi **non-utama** (`agent:main:<channel>:group:<id>`). Jika Anda mengaktifkan sandboxing dengan `mode: "non-main"`, sesi grup tersebut berjalan di backend sandbox yang dikonfigurasi sementara sesi DM utama Anda tetap berada di host. Docker adalah backend default jika Anda tidak memilih salah satu.
+Alasannya: dalam mode agen tunggal, DM biasanya masuk ke kunci sesi **utama** (`agent:main:main`), sedangkan grup selalu menggunakan kunci sesi **non-utama** (`agent:main:<channel>:group:<id>`). Jika Anda mengaktifkan sandboxing dengan `mode: "non-main"`, sesi grup tersebut berjalan di backend sandbox yang dikonfigurasi sementara sesi DM utama Anda tetap di host. Docker adalah backend bawaan jika Anda tidak memilih salah satu.
 
-Ini memberi Anda satu "otak" agent (workspace + memori bersama), tetapi dua postur eksekusi:
+Ini memberi Anda satu "otak" agen (workspace + memori bersama), tetapi dua postur eksekusi:
 
-- **DM**: tool penuh (host)
-- **Grup**: sandbox + tool terbatas
+- **DM**: alat penuh (host)
+- **Grup**: sandbox + alat terbatas
 
 <Note>
-Jika Anda memerlukan workspace/persona yang benar-benar terpisah ("pribadi" dan "publik" tidak boleh pernah bercampur), gunakan agent kedua + binding. Lihat [Routing Multi-Agent](/id/concepts/multi-agent).
+Jika Anda memerlukan workspace/persona yang benar-benar terpisah ("pribadi" dan "publik" tidak boleh pernah bercampur), gunakan agen kedua + binding. Lihat [Perutean Multi-Agen](/id/concepts/multi-agent).
 </Note>
 
 <Tabs>
-  <Tab title="DM di host, grup disandbox">
+  <Tab title="DMs on host, groups sandboxed">
     ```json5
     {
       agents: {
@@ -168,8 +172,8 @@ Jika Anda memerlukan workspace/persona yang benar-benar terpisah ("pribadi" dan 
     }
     ```
   </Tab>
-  <Tab title="Grup hanya melihat folder yang ada dalam daftar izin">
-    Ingin "grup hanya dapat melihat folder X" alih-alih "tidak ada akses host"? Pertahankan `workspaceAccess: "none"` dan mount hanya path yang ada dalam daftar izin ke sandbox:
+  <Tab title="Groups see only an allowlisted folder">
+    Ingin "grup hanya dapat melihat folder X" alih-alih "tanpa akses host"? Pertahankan `workspaceAccess: "none"` dan mount hanya path dalam daftar izin ke dalam sandbox:
 
     ```json5
     {
@@ -196,18 +200,18 @@ Jika Anda memerlukan workspace/persona yang benar-benar terpisah ("pribadi" dan 
 
 Terkait:
 
-- Kunci konfigurasi dan default: [Konfigurasi Gateway](/id/gateway/config-agents#agentsdefaultssandbox)
-- Men-debug mengapa sebuah tool diblokir: [Sandbox vs Kebijakan Tool vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated)
+- Kunci konfigurasi dan bawaan: [Konfigurasi Gateway](/id/gateway/config-agents#agentsdefaultssandbox)
+- Men-debug mengapa sebuah alat diblokir: [Sandbox vs Kebijakan Alat vs Elevated](/id/gateway/sandbox-vs-tool-policy-vs-elevated)
 - Detail bind mount: [Sandboxing](/id/gateway/sandboxing#custom-bind-mounts)
 
 ## Label tampilan
 
 - Label UI menggunakan `displayName` jika tersedia, diformat sebagai `<channel>:<token>`.
-- `#room` dicadangkan untuk ruang/channel; obrolan grup menggunakan `g-<slug>` (huruf kecil, spasi -> `-`, pertahankan `#@+._-`).
+- `#room` dicadangkan untuk ruang/channel; chat grup menggunakan `g-<slug>` (huruf kecil, spasi -> `-`, pertahankan `#@+._-`).
 
 ## Kebijakan grup
 
-Kontrol bagaimana pesan grup/ruang ditangani per channel:
+Kontrol cara pesan grup/ruang ditangani per channel:
 
 ```json5
 {
@@ -256,23 +260,23 @@ Kontrol bagaimana pesan grup/ruang ditangani per channel:
 
 | Kebijakan     | Perilaku                                                     |
 | ------------- | ------------------------------------------------------------ |
-| `"open"`      | Grup melewati daftar izin; pembatasan mention tetap berlaku. |
+| `"open"`      | Grup melewati daftar izin; gerbang mention tetap berlaku.    |
 | `"disabled"`  | Blokir semua pesan grup sepenuhnya.                          |
 | `"allowlist"` | Hanya izinkan grup/ruang yang cocok dengan daftar izin yang dikonfigurasi. |
 
 <AccordionGroup>
-  <Accordion title="Catatan per channel">
-    - `groupPolicy` terpisah dari pembatasan mention (yang memerlukan @mentions).
+  <Accordion title="Per-channel notes">
+    - `groupPolicy` terpisah dari gerbang mention (yang memerlukan @mentions).
     - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams/Zalo: gunakan `groupAllowFrom` (fallback: `allowFrom` eksplisit).
     - Signal: `groupAllowFrom` dapat mencocokkan id grup Signal masuk atau telepon/UUID pengirim.
-    - Persetujuan pairing DM (entri penyimpanan `*-allowFrom`) hanya berlaku untuk akses DM; otorisasi pengirim grup tetap eksplisit ke daftar izin grup.
+    - Persetujuan pemasangan DM (entri penyimpanan `*-allowFrom`) hanya berlaku untuk akses DM; otorisasi pengirim grup tetap eksplisit pada daftar izin grup.
     - Discord: daftar izin menggunakan `channels.discord.guilds.<id>.channels`.
     - Slack: daftar izin menggunakan `channels.slack.channels`.
     - Matrix: daftar izin menggunakan `channels.matrix.groups`. Utamakan ID ruang atau alias; pencarian nama ruang yang sudah diikuti bersifat upaya terbaik, dan nama yang tidak terselesaikan diabaikan saat runtime. Gunakan `channels.matrix.groupAllowFrom` untuk membatasi pengirim; daftar izin `users` per ruang juga didukung.
     - DM grup dikontrol secara terpisah (`channels.discord.dm.*`, `channels.slack.dm.*`).
-    - Daftar izin Telegram dapat mencocokkan ID pengguna (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) atau nama pengguna (`"@alice"` atau `"alice"`); prefiks tidak peka huruf besar-kecil.
-    - Default adalah `groupPolicy: "allowlist"`; jika daftar izin grup Anda kosong, pesan grup diblokir.
-    - Keamanan runtime: ketika blok provider sepenuhnya tidak ada (`channels.<provider>` tidak ada), kebijakan grup kembali ke mode gagal-tertutup (biasanya `allowlist`) alih-alih mewarisi `channels.defaults.groupPolicy`.
+    - Daftar izin Telegram dapat mencocokkan ID pengguna (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) atau nama pengguna (`"@alice"` atau `"alice"`); prefiks tidak peka huruf besar/kecil.
+    - Bawaannya adalah `groupPolicy: "allowlist"`; jika daftar izin grup Anda kosong, pesan grup diblokir.
+    - Keamanan runtime: saat blok penyedia sepenuhnya hilang (`channels.<provider>` tidak ada), kebijakan grup kembali ke mode gagal-tertutup (biasanya `allowlist`) alih-alih mewarisi `channels.defaults.groupPolicy`.
 
   </Accordion>
 </AccordionGroup>
@@ -286,16 +290,16 @@ Model mental cepat (urutan evaluasi untuk pesan grup):
   <Step title="Daftar izin grup">
     Daftar izin grup (`*.groups`, `*.groupAllowFrom`, daftar izin khusus channel).
   </Step>
-  <Step title="Pembatasan mention">
-    Pembatasan mention (`requireMention`, `/activation`).
+  <Step title="Pembatasan penyebutan">
+    Pembatasan penyebutan (`requireMention`, `/activation`).
   </Step>
 </Steps>
 
-## Pembatasan mention (default)
+## Pembatasan penyebutan (bawaan)
 
-Pesan grup memerlukan mention kecuali dioverride per grup. Default berada per subsistem di bawah `*.groups."*"`.
+Pesan grup memerlukan penyebutan kecuali ditimpa per grup. Nilai bawaan berada per subsistem di bawah `*.groups."*"`.
 
-Membalas pesan bot dihitung sebagai mention implisit saat channel mendukung metadata balasan. Mengutip pesan bot juga dapat dihitung sebagai mention implisit pada channel yang mengekspos metadata kutipan. Kasus bawaan saat ini mencakup Telegram, WhatsApp, Slack, Discord, Microsoft Teams, dan ZaloUser.
+Membalas pesan bot dihitung sebagai penyebutan implisit saat channel mendukung metadata balasan. Mengutip pesan bot juga dapat dihitung sebagai penyebutan implisit pada channel yang mengekspos metadata kutipan. Kasus bawaan saat ini mencakup Telegram, WhatsApp, Slack, Discord, Microsoft Teams, dan ZaloUser.
 
 ```json5
 {
@@ -334,40 +338,40 @@ Membalas pesan bot dihitung sebagai mention implisit saat channel mendukung meta
 ```
 
 <AccordionGroup>
-  <Accordion title="Catatan gerbang mention">
-    - `mentionPatterns` adalah pola regex aman yang tidak peka huruf besar-kecil; pola yang tidak valid dan bentuk pengulangan bersarang yang tidak aman diabaikan.
-    - Surface yang menyediakan mention eksplisit tetap lolos; pola adalah cadangan.
-    - Override per agen: `agents.list[].groupChat.mentionPatterns` (berguna saat beberapa agen berbagi sebuah grup).
-    - Gerbang mention hanya diterapkan saat deteksi mention memungkinkan (mention native atau `mentionPatterns` dikonfigurasi).
-    - Memasukkan grup atau pengirim ke allowlist tidak menonaktifkan gerbang mention; atur `requireMention` grup tersebut ke `false` saat semua pesan harus memicu.
-    - Konteks prompt chat grup membawa instruksi balasan diam yang sudah di-resolve setiap giliran; file workspace tidak boleh menduplikasi mekanik `NO_REPLY`.
-    - Grup yang mengizinkan balasan diam memperlakukan giliran model yang kosong bersih atau hanya berisi penalaran sebagai diam, setara dengan `NO_REPLY`. Chat langsung melakukan hal yang sama hanya saat balasan diam langsung diizinkan secara eksplisit; jika tidak, balasan kosong tetap menjadi giliran agen yang gagal.
-    - Default Discord berada di `channels.discord.guilds."*"` (dapat dioverride per guild/channel).
-    - Konteks riwayat grup dibungkus secara seragam di seluruh channel dan **hanya pending** (pesan yang dilewati karena gerbang mention); gunakan `messages.groupChat.historyLimit` untuk default global dan `channels.<channel>.historyLimit` (atau `channels.<channel>.accounts.*.historyLimit`) untuk override. Atur `0` untuk menonaktifkan.
+  <Accordion title="Catatan pembatasan penyebutan">
+    - `mentionPatterns` adalah pola regex aman yang tidak peka huruf besar-kecil; pola yang tidak valid dan bentuk pengulangan bertingkat yang tidak aman diabaikan.
+    - Permukaan yang menyediakan penyebutan eksplisit tetap lolos; pola adalah fallback.
+    - Penimpaan per agen: `agents.list[].groupChat.mentionPatterns` (berguna saat beberapa agen berbagi grup).
+    - Pembatasan penyebutan hanya diberlakukan saat deteksi penyebutan memungkinkan (penyebutan native atau `mentionPatterns` dikonfigurasi).
+    - Memasukkan grup atau pengirim ke daftar izin tidak menonaktifkan pembatasan penyebutan; atur `requireMention` grup tersebut ke `false` saat semua pesan harus memicu.
+    - Konteks prompt chat grup membawa instruksi balasan senyap yang sudah diselesaikan pada setiap giliran; file workspace tidak boleh menduplikasi mekanisme `NO_REPLY`.
+    - Grup yang mengizinkan balasan senyap memperlakukan giliran model yang kosong bersih atau hanya berisi penalaran sebagai senyap, setara dengan `NO_REPLY`. Chat langsung melakukan hal yang sama hanya saat balasan senyap langsung diizinkan secara eksplisit; jika tidak, balasan kosong tetap menjadi giliran agen yang gagal.
+    - Default Discord berada di `channels.discord.guilds."*"` (dapat ditimpa per guild/channel).
+    - Konteks riwayat grup dibungkus secara seragam di seluruh channel dan **hanya tertunda** (pesan yang dilewati karena pembatasan penyebutan); gunakan `messages.groupChat.historyLimit` untuk default global dan `channels.<channel>.historyLimit` (atau `channels.<channel>.accounts.*.historyLimit`) untuk penimpaan. Atur `0` untuk menonaktifkan.
 
   </Accordion>
 </AccordionGroup>
 
-## Pembatasan tool grup/channel (opsional)
+## Pembatasan alat grup/channel (opsional)
 
-Beberapa konfigurasi channel mendukung pembatasan tool mana yang tersedia **di dalam grup/room/channel tertentu**.
+Beberapa konfigurasi channel mendukung pembatasan alat mana yang tersedia **di dalam grup/ruang/channel tertentu**.
 
-- `tools`: izinkan/tolak tool untuk seluruh grup.
-- `toolsBySender`: override per pengirim di dalam grup. Gunakan prefiks kunci eksplisit: `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>`, dan wildcard `"*"`. Kunci lama tanpa prefiks masih diterima dan dicocokkan sebagai `id:` saja.
+- `tools`: izinkan/tolak alat untuk seluruh grup.
+- `toolsBySender`: penimpaan per pengirim dalam grup. Gunakan prefiks kunci eksplisit: `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>`, dan wildcard `"*"`. Kunci lama tanpa prefiks masih diterima dan dicocokkan sebagai `id:` saja.
 
 Urutan resolusi (yang paling spesifik menang):
 
 <Steps>
-  <Step title="Group toolsBySender">
+  <Step title="toolsBySender grup">
     Kecocokan `toolsBySender` grup/channel.
   </Step>
-  <Step title="Group tools">
+  <Step title="tools grup">
     `tools` grup/channel.
   </Step>
-  <Step title="Default toolsBySender">
+  <Step title="toolsBySender default">
     Kecocokan `toolsBySender` default (`"*"`).
   </Step>
-  <Step title="Default tools">
+  <Step title="tools default">
     `tools` default (`"*"`).
   </Step>
 </Steps>
@@ -393,18 +397,18 @@ Contoh (Telegram):
 ```
 
 <Note>
-Pembatasan tool grup/channel diterapkan selain kebijakan tool global/agen (penolakan tetap menang). Beberapa channel menggunakan nesting berbeda untuk room/channel (misalnya, Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
+Pembatasan alat grup/channel diterapkan selain kebijakan alat global/agen (tolak tetap menang). Beberapa channel menggunakan nesting berbeda untuk ruang/channel (misalnya, Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
 </Note>
 
-## Allowlist grup
+## Daftar izin grup
 
-Saat `channels.whatsapp.groups`, `channels.telegram.groups`, atau `channels.imessage.groups` dikonfigurasi, kunci bertindak sebagai allowlist grup. Gunakan `"*"` untuk mengizinkan semua grup sambil tetap menetapkan perilaku mention default.
+Saat `channels.whatsapp.groups`, `channels.telegram.groups`, atau `channels.imessage.groups` dikonfigurasi, kuncinya bertindak sebagai daftar izin grup. Gunakan `"*"` untuk mengizinkan semua grup sambil tetap menetapkan perilaku penyebutan bawaan.
 
 <Warning>
-Kebingungan umum: persetujuan pairing DM tidak sama dengan otorisasi grup. Untuk channel yang mendukung pairing DM, penyimpanan pairing hanya membuka DM. Perintah grup tetap memerlukan otorisasi pengirim grup eksplisit dari allowlist konfigurasi seperti `groupAllowFrom` atau fallback konfigurasi yang terdokumentasi untuk channel tersebut.
+Kebingungan umum: persetujuan pemasangan DM tidak sama dengan otorisasi grup. Untuk channel yang mendukung pemasangan DM, penyimpanan pemasangan hanya membuka kunci DM. Perintah grup tetap memerlukan otorisasi pengirim grup eksplisit dari daftar izin konfigurasi seperti `groupAllowFrom` atau fallback konfigurasi terdokumentasi untuk channel tersebut.
 </Warning>
 
-Intent umum (salin/tempel):
+Maksud umum (salin/tempel):
 
 <Tabs>
   <Tab title="Nonaktifkan semua balasan grup">
@@ -428,7 +432,7 @@ Intent umum (salin/tempel):
     }
     ```
   </Tab>
-  <Tab title="Izinkan semua grup tetapi wajib mention">
+  <Tab title="Izinkan semua grup tetapi wajibkan penyebutan">
     ```json5
     {
       channels: {
@@ -439,7 +443,7 @@ Intent umum (salin/tempel):
     }
     ```
   </Tab>
-  <Tab title="Pemicu hanya owner (WhatsApp)">
+  <Tab title="Pemicu hanya pemilik (WhatsApp)">
     ```json5
     {
       channels: {
@@ -454,48 +458,48 @@ Intent umum (salin/tempel):
   </Tab>
 </Tabs>
 
-## Aktivasi (hanya owner)
+## Aktivasi (hanya pemilik)
 
-Owner grup dapat mengaktifkan/menonaktifkan aktivasi per grup:
+Pemilik grup dapat mengalihkan aktivasi per grup:
 
 - `/activation mention`
 - `/activation always`
 
-Owner ditentukan oleh `channels.whatsapp.allowFrom` (atau E.164 mandiri bot saat tidak diatur). Kirim perintah sebagai pesan mandiri. Surface lain saat ini mengabaikan `/activation`.
+Pemilik ditentukan oleh `channels.whatsapp.allowFrom` (atau E.164 milik bot sendiri saat tidak diatur). Kirim perintah sebagai pesan mandiri. Permukaan lain saat ini mengabaikan `/activation`.
 
-## Field konteks
+## Bidang konteks
 
-Payload masuk grup mengatur:
+Payload masuk grup menetapkan:
 
 - `ChatType=group`
 - `GroupSubject` (jika diketahui)
 - `GroupMembers` (jika diketahui)
-- `WasMentioned` (hasil gerbang mention)
-- Topik forum Telegram juga mencakup `MessageThreadId` dan `IsForum`.
+- `WasMentioned` (hasil pembatasan penyebutan)
+- Topik forum Telegram juga menyertakan `MessageThreadId` dan `IsForum`.
 
 Catatan khusus channel:
 
-- BlueBubbles dapat secara opsional memperkaya peserta grup macOS tanpa nama dari database Contacts lokal sebelum mengisi `GroupMembers`. Ini nonaktif secara default dan hanya berjalan setelah gerbang grup normal lolos.
+- BlueBubbles dapat secara opsional memperkaya peserta grup macOS tanpa nama dari basis data Contacts lokal sebelum mengisi `GroupMembers`. Ini nonaktif secara default dan hanya berjalan setelah pembatasan grup normal lolos.
 
-Prompt sistem agen menyertakan intro grup pada giliran pertama sesi grup baru. Ini mengingatkan model untuk merespons seperti manusia, menghindari tabel Markdown, meminimalkan baris kosong dan mengikuti spasi chat normal, serta menghindari pengetikan urutan literal `\n`. Nama grup dan label peserta yang bersumber dari channel dirender sebagai metadata tidak tepercaya berpagar, bukan instruksi sistem inline.
+Prompt sistem agen menyertakan pengantar grup pada giliran pertama sesi grup baru. Ini mengingatkan model untuk merespons seperti manusia, menghindari tabel Markdown, meminimalkan baris kosong dan mengikuti spasi chat normal, serta menghindari pengetikan urutan literal `\n`. Nama grup dan label peserta yang bersumber dari channel dirender sebagai metadata tidak tepercaya yang berpagar, bukan instruksi sistem inline.
 
-## Detail khusus iMessage
+## Kekhususan iMessage
 
-- Utamakan `chat_id:<id>` saat merutekan atau memasukkan ke allowlist.
-- Daftar chat: `imsg chats --limit 20`.
+- Lebih pilih `chat_id:<id>` saat merutekan atau memasukkan ke daftar izin.
+- Cantumkan chat: `imsg chats --limit 20`.
 - Balasan grup selalu kembali ke `chat_id` yang sama.
 
 ## Prompt sistem WhatsApp
 
-Lihat [WhatsApp](/id/channels/whatsapp#system-prompts) untuk aturan prompt sistem WhatsApp kanonis, termasuk resolusi prompt grup dan langsung, perilaku wildcard, dan semantik override akun.
+Lihat [WhatsApp](/id/channels/whatsapp#system-prompts) untuk aturan prompt sistem WhatsApp kanonis, termasuk resolusi prompt grup dan langsung, perilaku wildcard, serta semantik penimpaan akun.
 
-## Detail khusus WhatsApp
+## Kekhususan WhatsApp
 
-Lihat [Pesan grup](/id/channels/group-messages) untuk perilaku khusus WhatsApp (injeksi riwayat, detail penanganan mention).
+Lihat [Pesan grup](/id/channels/group-messages) untuk perilaku khusus WhatsApp (injeksi riwayat, detail penanganan penyebutan).
 
 ## Terkait
 
 - [Grup siaran](/id/channels/broadcast-groups)
 - [Perutean channel](/id/channels/channel-routing)
 - [Pesan grup](/id/channels/group-messages)
-- [Pairing](/id/channels/pairing)
+- [Pemasangan](/id/channels/pairing)
