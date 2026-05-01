@@ -1790,6 +1790,7 @@
                 "group": "Testing",
                 "pages": [
                   "help/testing",
+                  "help/testing-updates-plugins",
                   "help/testing-live"
                 ]
               },
@@ -3267,6 +3268,7 @@
                 "group": "Testing",
                 "pages": [
                   "zh-TW/help/testing",
+                  "zh-TW/help/testing-updates-plugins",
                   "zh-TW/help/testing-live"
                 ]
               },
@@ -4129,6 +4131,7 @@
                 "group": "Testing",
                 "pages": [
                   "ja-JP/help/testing",
+                  "ja-JP/help/testing-updates-plugins",
                   "ja-JP/help/testing-live"
                 ]
               },
@@ -4991,6 +4994,7 @@
                 "group": "Testing",
                 "pages": [
                   "es/help/testing",
+                  "es/help/testing-updates-plugins",
                   "es/help/testing-live"
                 ]
               },
@@ -5853,6 +5857,7 @@
                 "group": "Testing",
                 "pages": [
                   "pt-BR/help/testing",
+                  "pt-BR/help/testing-updates-plugins",
                   "pt-BR/help/testing-live"
                 ]
               },
@@ -6715,6 +6720,7 @@
                 "group": "Testing",
                 "pages": [
                   "ko/help/testing",
+                  "ko/help/testing-updates-plugins",
                   "ko/help/testing-live"
                 ]
               },
@@ -7577,6 +7583,7 @@
                 "group": "Testing",
                 "pages": [
                   "de/help/testing",
+                  "de/help/testing-updates-plugins",
                   "de/help/testing-live"
                 ]
               },
@@ -8439,6 +8446,7 @@
                 "group": "Testing",
                 "pages": [
                   "fr/help/testing",
+                  "fr/help/testing-updates-plugins",
                   "fr/help/testing-live"
                 ]
               },
@@ -9301,6 +9309,7 @@
                 "group": "Testing",
                 "pages": [
                   "ar/help/testing",
+                  "ar/help/testing-updates-plugins",
                   "ar/help/testing-live"
                 ]
               },
@@ -10163,6 +10172,7 @@
                 "group": "Testing",
                 "pages": [
                   "it/help/testing",
+                  "it/help/testing-updates-plugins",
                   "it/help/testing-live"
                 ]
               },
@@ -11025,6 +11035,7 @@
                 "group": "Testing",
                 "pages": [
                   "vi/help/testing",
+                  "vi/help/testing-updates-plugins",
                   "vi/help/testing-live"
                 ]
               },
@@ -11887,6 +11898,7 @@
                 "group": "Testing",
                 "pages": [
                   "nl/help/testing",
+                  "nl/help/testing-updates-plugins",
                   "nl/help/testing-live"
                 ]
               },
@@ -12749,6 +12761,7 @@
                 "group": "Testing",
                 "pages": [
                   "tr/help/testing",
+                  "tr/help/testing-updates-plugins",
                   "tr/help/testing-live"
                 ]
               },
@@ -13611,6 +13624,7 @@
                 "group": "Testing",
                 "pages": [
                   "uk/help/testing",
+                  "uk/help/testing-updates-plugins",
                   "uk/help/testing-live"
                 ]
               },
@@ -14473,6 +14487,7 @@
                 "group": "Testing",
                 "pages": [
                   "id/help/testing",
+                  "id/help/testing-updates-plugins",
                   "id/help/testing-live"
                 ]
               },
@@ -15335,6 +15350,7 @@
                 "group": "Testing",
                 "pages": [
                   "pl/help/testing",
+                  "pl/help/testing-updates-plugins",
                   "pl/help/testing-live"
                 ]
               },
