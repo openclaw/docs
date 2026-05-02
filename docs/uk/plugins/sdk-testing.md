@@ -1,31 +1,31 @@
 ---
 read_when:
     - Ви пишете тести для Plugin
-    - Вам потрібні утиліти тестування з SDK Plugin
+    - Вам потрібні тестові утиліти з Plugin SDK
     - Ви хочете зрозуміти контрактні тести для вбудованих плагінів
 sidebarTitle: Testing
-summary: Утиліти та шаблони тестування для плагінів OpenClaw
+summary: Утиліти та шаблони тестування для Plugin OpenClaw
 title: Тестування Plugin
 x-i18n:
-    generated_at: "2026-04-28T02:58:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T21:41:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7edf81e7662784356fcb0f481dd3fcdde05cc59da2a6c1b38eae1008b3ead96c
+    source_hash: 67092d71302d566ee9ed3f3f1e32b5aa6f4eabf522a9656ad13cad812550f1e8
     source_path: plugins/sdk-testing.md
-    workflow: 15
+    workflow: 16
 ---
 
-Довідник з утиліт тестування, шаблонів і примусового застосування lint для плагінів OpenClaw.
+Довідник із тестових утиліт, патернів і lint-перевірок для Plugin OpenClaw.
 
 <Tip>
-  **Шукаєте приклади тестів?** Посібники містять готові приклади тестів:
-  [Тести плагінів каналів](/uk/plugins/sdk-channel-plugins#step-6-test) і
-  [Тести плагінів провайдерів](/uk/plugins/sdk-provider-plugins#step-6-test).
+  **Шукаєте приклади тестів?** Практичні посібники містять опрацьовані приклади тестів:
+  [Тести Plugin каналів](/uk/plugins/sdk-channel-plugins#step-6-test) і
+  [Тести Plugin провайдерів](/uk/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
-## Утиліти тестування
+## Тестові утиліти
 
-**Імпорт мока API Plugin:** `openclaw/plugin-sdk/plugin-test-api`
+**Імпорт mock Plugin API:** `openclaw/plugin-sdk/plugin-test-api`
 
 **Імпорт контракту середовища виконання агента:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
 
@@ -37,23 +37,23 @@ x-i18n:
 
 **Імпорт контракту Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
 
-**Імпорт тестування середовища виконання Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
+**Імпорт тесту середовища виконання Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
 
 **Імпорт контракту провайдера:** `openclaw/plugin-sdk/provider-test-contracts`
 
-**Імпорт HTTP-мока провайдера:** `openclaw/plugin-sdk/provider-http-test-mocks`
+**Імпорт HTTP mock провайдера:** `openclaw/plugin-sdk/provider-http-test-mocks`
 
-**Імпорт тестування середовища/мережі:** `openclaw/plugin-sdk/test-env`
+**Імпорт тестів середовища/мережі:** `openclaw/plugin-sdk/test-env`
 
-**Імпорт універсальних фікстур:** `openclaw/plugin-sdk/test-fixtures`
+**Імпорт загальних фікстур:** `openclaw/plugin-sdk/test-fixtures`
 
-**Імпорт мока вбудованих модулів Node:** `openclaw/plugin-sdk/test-node-mocks`
+**Імпорт mock вбудованих модулів Node:** `openclaw/plugin-sdk/test-node-mocks`
 
-Для нових тестів плагінів надавайте перевагу наведеним нижче спеціалізованим підшляхам. Широкий барель
-`openclaw/plugin-sdk/testing` зберігається лише для сумісності зі застарілими рішеннями.
-Захисні механізми репозиторію відхиляють нові реальні імпорти з `plugin-sdk/testing` і
-`plugin-sdk/test-utils`; ці назви залишаються лише як застарілі поверхні сумісності
-для зовнішніх плагінів і тестів на сумісність записів.
+Для нових тестів Plugin надавайте перевагу наведеним нижче вузькоспрямованим підшляхам. Широкий barrel
+`openclaw/plugin-sdk/testing` призначений лише для сумісності зі спадковим кодом.
+Захисні правила репозиторію відхиляють нові реальні імпорти з `plugin-sdk/testing` і
+`plugin-sdk/test-utils`; ці назви залишаються тільки як застарілі поверхні сумісності
+для зовнішніх Plugin і тестів записів сумісності.
 
 ```typescript
 import {
@@ -82,84 +82,76 @@ import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 
 | Експорт                                              | Призначення                                                                                                                              |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | Створює мінімальний мок API Plugin для модульних тестів прямої реєстрації. Імпортуйте з `plugin-sdk/plugin-test-api`                    |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Спільна фікстура контракту профілю автентифікації для адаптерів рідного середовища виконання агента. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Спільна фікстура контракту придушення доставки для адаптерів рідного середовища виконання агента. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Спільна фікстура контракту класифікації резервного сценарію для адаптерів рідного середовища виконання агента. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
-| `createParameterFreeTool`                            | Створює фікстури схеми динамічних інструментів для контрактних тестів рідного середовища виконання. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
-| `expectChannelInboundContextContract`                | Перевіряє форму вхідного контексту каналу. Імпортуйте з `plugin-sdk/channel-contract-testing`                                            |
-| `installChannelOutboundPayloadContractSuite`         | Встановлює набір випадків контракту вихідного payload каналу. Імпортуйте з `plugin-sdk/channel-contract-testing`                        |
-| `createStartAccountContext`                          | Створює контексти життєвого циклу облікового запису каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                             |
-| `installChannelActionsContractSuite`                 | Встановлює загальний набір випадків контракту дій повідомлень каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                    |
-| `installChannelSetupContractSuite`                   | Встановлює загальний набір випадків контракту налаштування каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                       |
-| `installChannelStatusContractSuite`                  | Встановлює загальний набір випадків контракту статусу каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                            |
-| `expectDirectoryIds`                                 | Перевіряє ідентифікатори каталогу з функції списку каталогів. Імпортуйте з `plugin-sdk/channel-test-helpers`                            |
-| `assertBundledChannelEntries`                        | Перевіряє, що точки входу вбудованого каналу надають очікуваний публічний контракт. Імпортуйте з `plugin-sdk/channel-test-helpers`     |
-| `formatEnvelopeTimestamp`                            | Форматує детерміновані часові позначки envelope. Імпортуйте з `plugin-sdk/channel-test-helpers`                                         |
-| `expectPairingReplyText`                             | Перевіряє текст відповіді спарювання та витягує його код. Імпортуйте з `plugin-sdk/channel-test-helpers`                                |
-| `describePluginRegistrationContract`                 | Встановлює перевірки контракту реєстрації Plugin. Імпортуйте з `plugin-sdk/plugin-test-contracts`                                       |
-| `registerSingleProviderPlugin`                       | Реєструє один плагін провайдера у smoke-тестах завантажувача. Імпортуйте з `plugin-sdk/plugin-test-runtime`                             |
-| `registerProviderPlugin`                             | Захоплює всі типи провайдерів з одного Plugin. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                             |
-| `registerProviderPlugins`                            | Захоплює реєстрації провайдерів у кількох плагінах. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                       |
-| `requireRegisteredProvider`                          | Перевіряє, що колекція провайдерів містить ідентифікатор. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                 |
-| `createRuntimeEnv`                                   | Створює моковане середовище виконання CLI/Plugin. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                         |
-| `createPluginSetupWizardStatus`                      | Створює допоміжні засоби статусу налаштування для плагінів каналів. Імпортуйте з `plugin-sdk/plugin-test-runtime`                       |
-| `describeOpenAIProviderRuntimeContract`              | Встановлює перевірки контракту середовища виконання для сімейства провайдерів. Імпортуйте з `plugin-sdk/provider-test-contracts`        |
-| `expectPassthroughReplayPolicy`                      | Перевіряє, що політики повторного відтворення провайдера пропускають інструменти й метадані, які належать провайдеру. Імпортуйте з `plugin-sdk/provider-test-contracts` |
-| `runRealtimeSttLiveTest`                             | Запускає live-тест провайдера realtime STT зі спільними аудіофікстурами. Імпортуйте з `plugin-sdk/provider-test-contracts`              |
-| `normalizeTranscriptForMatch`                        | Нормалізує вихід транскрипту live перед нечіткими перевірками. Імпортуйте з `plugin-sdk/provider-test-contracts`                        |
-| `expectExplicitVideoGenerationCapabilities`          | Перевіряє, що відеопровайдери явно оголошують можливості режиму генерації. Імпортуйте з `plugin-sdk/provider-test-contracts`            |
-| `expectExplicitMusicGenerationCapabilities`          | Перевіряє, що музичні провайдери явно оголошують можливості генерації/редагування. Імпортуйте з `plugin-sdk/provider-test-contracts`   |
-| `mockSuccessfulDashscopeVideoTask`                   | Встановлює успішну відповідь завдання відео, сумісну з DashScope. Імпортуйте з `plugin-sdk/provider-test-contracts`                     |
-| `getProviderHttpMocks`                               | Надає доступ до opt-in моків HTTP/автентифікації провайдера для Vitest. Імпортуйте з `plugin-sdk/provider-http-test-mocks`              |
-| `installProviderHttpMockCleanup`                     | Скидає моки HTTP/автентифікації провайдера після кожного тесту. Імпортуйте з `plugin-sdk/provider-http-test-mocks`                      |
-| `installCommonResolveTargetErrorCases`               | Спільні тестові випадки для обробки помилок розв’язання цілі. Імпортуйте з `plugin-sdk/channel-target-testing`                          |
-| `shouldAckReaction`                                  | Перевіряє, чи має канал додавати реакцію підтвердження. Імпортуйте з `plugin-sdk/channel-feedback`                                      |
-| `removeAckReactionAfterReply`                        | Видаляє реакцію підтвердження після доставки відповіді. Імпортуйте з `plugin-sdk/channel-feedback`                                      |
-| `createTestRegistry`                                 | Створює фікстуру реєстру плагінів каналу. Імпортуйте з `plugin-sdk/plugin-test-runtime` або `plugin-sdk/channel-test-helpers`           |
-| `createEmptyPluginRegistry`                          | Створює фікстуру порожнього реєстру плагінів. Імпортуйте з `plugin-sdk/plugin-test-runtime` або `plugin-sdk/channel-test-helpers`       |
-| `setActivePluginRegistry`                            | Встановлює фікстуру реєстру для тестів середовища виконання Plugin. Імпортуйте з `plugin-sdk/plugin-test-runtime` або `plugin-sdk/channel-test-helpers` |
-| `createRequestCaptureJsonFetch`                      | Захоплює JSON-запити fetch у тестах допоміжних засобів для медіа. Імпортуйте з `plugin-sdk/test-env`                                    |
-| `withServer`                                         | Запускає тести на тимчасовому локальному HTTP-сервері. Імпортуйте з `plugin-sdk/test-env`                                               |
-| `createMockIncomingRequest`                          | Створює мінімальний об’єкт вхідного HTTP-запиту. Імпортуйте з `plugin-sdk/test-env`                                                      |
-| `withFetchPreconnect`                                | Запускає тести fetch зі встановленими хуками preconnect. Імпортуйте з `plugin-sdk/test-env`                                             |
-| `withEnv` / `withEnvAsync`                           | Тимчасово підмінює змінні середовища. Імпортуйте з `plugin-sdk/test-env`                                                                 |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Створює ізольовані фікстури файлової системи для тестів. Імпортуйте з `plugin-sdk/test-env`                                             |
-| `createMockServerResponse`                           | Створює мінімальний мок відповіді HTTP-сервера. Імпортуйте з `plugin-sdk/test-env`                                                       |
-| `createCliRuntimeCapture`                            | Захоплює вивід середовища виконання CLI у тестах. Імпортуйте з `plugin-sdk/test-fixtures`                                               |
-| `importFreshModule`                                  | Імпортує модуль ESM зі свіжим токеном запиту для обходу кешу модулів. Імпортуйте з `plugin-sdk/test-fixtures`                           |
-| `bundledPluginRoot` / `bundledPluginFile`            | Розв’язує шляхи до фікстур джерел або dist вбудованого Plugin. Імпортуйте з `plugin-sdk/test-fixtures`                                  |
-| `mockNodeBuiltinModule`                              | Встановлює вузькі моки вбудованих модулів Node для Vitest. Імпортуйте з `plugin-sdk/test-node-mocks`                                    |
-| `createSandboxTestContext`                           | Створює тестові контексти sandbox. Імпортуйте з `plugin-sdk/test-fixtures`                                                               |
-| `writeSkill`                                         | Записує фікстури Skills. Імпортуйте з `plugin-sdk/test-fixtures`                                                                         |
-| `makeAgentAssistantMessage`                          | Створює фікстури повідомлень транскрипту агента. Імпортуйте з `plugin-sdk/test-fixtures`                                                 |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | Переглядає та скидає фікстури системних подій. Імпортуйте з `plugin-sdk/test-fixtures`                                                   |
-| `sanitizeTerminalText`                               | Очищує текст термінала для перевірок. Імпортуйте з `plugin-sdk/test-fixtures`                                                            |
-| `countLines` / `hasBalancedFences`                   | Перевіряє форму chunking-виводу. Імпортуйте з `plugin-sdk/test-fixtures`                                                                 |
-| `runProviderCatalog`                                 | Виконує хук каталогу провайдера з тестовими залежностями                                                                                 |
-| `resolveProviderWizardOptions`                       | Розв’язує варіанти майстра налаштування провайдера в контрактних тестах                                                                  |
-| `resolveProviderModelPickerEntries`                  | Розв’язує елементи вибору моделі провайдера в контрактних тестах                                                                         |
-| `buildProviderPluginMethodChoice`                    | Створює ідентифікатори варіантів майстра провайдера для перевірок                                                                        |
-| `setProviderWizardProvidersResolverForTest`          | Інжектує провайдери майстра провайдера для ізольованих тестів                                                                            |
-| `createProviderUsageFetch`                           | Створює фікстури fetch використання провайдера                                                                                           |
-| `useFrozenTime` / `useRealTime`                      | Заморожує та відновлює таймери для тестів, чутливих до часу. Імпортуйте з `plugin-sdk/test-env`                                         |
-| `createTestWizardPrompter`                           | Створює мокований prompter майстра налаштування                                                                                          |
-| `createRuntimeTaskFlow`                              | Створює ізольований стан runtime для TaskFlow                                                                                            |
-| `typedCases`                                         | Зберігає літеральні типи для таблично-орієнтованих тестів. Імпортуйте з `plugin-sdk/test-fixtures`                                      |
+| `createTestPluginApi`                                | Створює мінімальний мок API плагіна для модульних тестів прямої реєстрації. Імпортуйте з `plugin-sdk/plugin-test-api`                  |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Спільна фікстура контракту профілю автентифікації для нативних адаптерів середовища виконання агента. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Спільна фікстура контракту пригнічення доставки для нативних адаптерів середовища виконання агента. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Спільна фікстура контракту класифікації резервного варіанта для нативних адаптерів середовища виконання агента. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
+| `createParameterFreeTool`                            | Створює фікстури схеми динамічного інструмента для тестів контракту нативного середовища виконання. Імпортуйте з `plugin-sdk/agent-runtime-test-contracts` |
+| `expectChannelInboundContextContract`                | Перевіряє форму вхідного контексту каналу. Імпортуйте з `plugin-sdk/channel-contract-testing`                                           |
+| `installChannelOutboundPayloadContractSuite`         | Встановлює випадки контракту вихідного корисного навантаження каналу. Імпортуйте з `plugin-sdk/channel-contract-testing`                |
+| `createStartAccountContext`                          | Створює контексти життєвого циклу облікового запису каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                              |
+| `installChannelActionsContractSuite`                 | Встановлює загальні випадки контракту дій із повідомленнями каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                      |
+| `installChannelSetupContractSuite`                   | Встановлює загальні випадки контракту налаштування каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                               |
+| `installChannelStatusContractSuite`                  | Встановлює загальні випадки контракту статусу каналу. Імпортуйте з `plugin-sdk/channel-test-helpers`                                    |
+| `expectDirectoryIds`                                 | Перевіряє ідентифікатори каталогу каналу з функції списку каталогу. Імпортуйте з `plugin-sdk/channel-test-helpers`                     |
+| `assertBundledChannelEntries`                        | Перевіряє, що вбудовані точки входу каналу відкривають очікуваний публічний контракт. Імпортуйте з `plugin-sdk/channel-test-helpers`   |
+| `formatEnvelopeTimestamp`                            | Форматує детерміновані часові мітки конверта. Імпортуйте з `plugin-sdk/channel-test-helpers`                                            |
+| `expectPairingReplyText`                             | Перевіряє текст відповіді на сполучення каналу та витягує його код. Імпортуйте з `plugin-sdk/channel-test-helpers`                     |
+| `describePluginRegistrationContract`                 | Встановлює перевірки контракту реєстрації плагіна. Імпортуйте з `plugin-sdk/plugin-test-contracts`                                      |
+| `registerSingleProviderPlugin`                       | Реєструє один плагін провайдера в димових тестах завантажувача. Імпортуйте з `plugin-sdk/plugin-test-runtime`                          |
+| `registerProviderPlugin`                             | Захоплює всі типи провайдерів з одного плагіна. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                           |
+| `registerProviderPlugins`                            | Захоплює реєстрації провайдерів у кількох плагінах. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                      |
+| `requireRegisteredProvider`                          | Перевіряє, що колекція провайдерів містить ідентифікатор. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                |
+| `createRuntimeEnv`                                   | Створює моковане середовище виконання CLI/плагіна. Імпортуйте з `plugin-sdk/plugin-test-runtime`                                       |
+| `createPluginSetupWizardStatus`                      | Створює помічники статусу налаштування для плагінів каналів. Імпортуйте з `plugin-sdk/plugin-test-runtime`                             |
+| `describeOpenAIProviderRuntimeContract`              | Встановлює перевірки контракту середовища виконання сімейства провайдерів. Імпортуйте з `plugin-sdk/provider-test-contracts`           |
+| `expectPassthroughReplayPolicy`                      | Перевіряє, що політики повторного відтворення провайдера пропускають інструменти й метадані, якими володіє провайдер. Імпортуйте з `plugin-sdk/provider-test-contracts` |
+| `runRealtimeSttLiveTest`                             | Запускає live-тест провайдера STT у реальному часі зі спільними аудіофікстурами. Імпортуйте з `plugin-sdk/provider-test-contracts`     |
+| `normalizeTranscriptForMatch`                        | Нормалізує вихід live-транскрипту перед нечіткими перевірками. Імпортуйте з `plugin-sdk/provider-test-contracts`                      |
+| `expectExplicitVideoGenerationCapabilities`          | Перевіряє, що провайдери відео оголошують явні можливості режиму генерації. Імпортуйте з `plugin-sdk/provider-test-contracts`          |
+| `expectExplicitMusicGenerationCapabilities`          | Перевіряє, що провайдери музики оголошують явні можливості генерації/редагування. Імпортуйте з `plugin-sdk/provider-test-contracts`    |
+| `mockSuccessfulDashscopeVideoTask`                   | Встановлює успішну відповідь відеозавдання, сумісну з DashScope. Імпортуйте з `plugin-sdk/provider-test-contracts`                     |
+| `getProviderHttpMocks`                               | Надає доступ до opt-in HTTP/автентифікаційних моків провайдера Vitest. Імпортуйте з `plugin-sdk/provider-http-test-mocks`              |
+| `installProviderHttpMockCleanup`                     | Скидає HTTP/автентифікаційні моки провайдера після кожного тесту. Імпортуйте з `plugin-sdk/provider-http-test-mocks`                   |
+| `installCommonResolveTargetErrorCases`               | Спільні тестові випадки для обробки помилок розв'язання цілі. Імпортуйте з `plugin-sdk/channel-target-testing`                         |
+| `shouldAckReaction`                                  | Перевіряє, чи має канал додати реакцію підтвердження. Імпортуйте з `plugin-sdk/channel-feedback`                                       |
+| `removeAckReactionAfterReply`                        | Видаляє реакцію підтвердження після доставки відповіді. Імпортуйте з `plugin-sdk/channel-feedback`                                     |
+| `createTestRegistry`                                 | Створює фікстуру реєстру плагінів каналів. Імпортуйте з `plugin-sdk/plugin-test-runtime` або `plugin-sdk/channel-test-helpers`         |
+| `createEmptyPluginRegistry`                          | Створює фікстуру порожнього реєстру плагінів. Імпортуйте з `plugin-sdk/plugin-test-runtime` або `plugin-sdk/channel-test-helpers`      |
+| `setActivePluginRegistry`                            | Встановлює фікстуру реєстру для тестів середовища виконання плагінів. Імпортуйте з `plugin-sdk/plugin-test-runtime` або `plugin-sdk/channel-test-helpers` |
+| `createRequestCaptureJsonFetch`                      | Захоплює запити JSON fetch у тестах медіапомічників. Імпортуйте з `plugin-sdk/test-env`                                                |
+| `withServer`                                         | Запускає тести проти одноразового локального HTTP-сервера. Імпортуйте з `plugin-sdk/test-env`                                          |
+| `createMockIncomingRequest`                          | Створює мінімальний об'єкт вхідного HTTP-запиту. Імпортуйте з `plugin-sdk/test-env`                                                     |
+| `withFetchPreconnect`                                | Запускає тести fetch зі встановленими хуками попереднього підключення. Імпортуйте з `plugin-sdk/test-env`                              |
+| `withEnv` / `withEnvAsync`                           | Тимчасово змінює змінні середовища. Імпортуйте з `plugin-sdk/test-env`                                                                  |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Створює ізольовані фікстури файлової системи для тестів. Імпортуйте з `plugin-sdk/test-env`                                            |
+| `createMockServerResponse`                           | Створює мінімальний мок відповіді HTTP-сервера. Імпортуйте з `plugin-sdk/test-env`                                                      |
+| `createCliRuntimeCapture`                            | Захоплює вивід середовища виконання CLI у тестах. Імпортуйте з `plugin-sdk/test-fixtures`                                              |
+| `importFreshModule`                                  | Імпортує модуль ESM зі свіжим токеном запиту, щоб обійти кеш модулів. Імпортуйте з `plugin-sdk/test-fixtures`                          |
+| `bundledPluginRoot` / `bundledPluginFile`            | Розв'язує шляхи до фікстур вихідного коду або dist вбудованого плагіна. Імпортуйте з `plugin-sdk/test-fixtures`                       |
+| `mockNodeBuiltinModule`                              | Встановлює вузькі моки вбудованих модулів Node для Vitest. Імпортуйте з `plugin-sdk/test-node-mocks`                                   |
+| `createSandboxTestContext`                           | Створює контексти тестів пісочниці. Імпортуйте з `plugin-sdk/test-fixtures`                                                             |
+| `writeSkill`                                         | Записує фікстури Skills. Імпортуйте з `plugin-sdk/test-fixtures`                                                                        |
+| `makeAgentAssistantMessage`                          | Створює фікстури повідомлень транскрипту агента. Імпортуйте з `plugin-sdk/test-fixtures`                                               |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | Переглядає та скидає фікстури системних подій. Імпортуйте з `plugin-sdk/test-fixtures`                                                 |
+| `sanitizeTerminalText`                               | Очищує вивід термінала для перевірок. Імпортуйте з `plugin-sdk/test-fixtures`                                                          |
+| `countLines` / `hasBalancedFences`                   | Перевіряє форму виводу чанкінгу. Імпортуйте з `plugin-sdk/test-fixtures`                                                               |
+| `runProviderCatalog`                                 | Виконує хук каталогу провайдера з тестовими залежностями                                                                                |
+| `resolveProviderWizardOptions`                       | Розв'язує варіанти майстра налаштування провайдера в тестах контракту                                                                  |
+| `resolveProviderModelPickerEntries`                  | Розв'язує записи вибору моделей провайдера в тестах контракту                                                                          |
+| `buildProviderPluginMethodChoice`                    | Створює ідентифікатори вибору майстра провайдера для перевірок                                                                         |
+| `setProviderWizardProvidersResolverForTest`          | Ін'єктує провайдерів майстра провайдера для ізольованих тестів                                                                         |
+| `createProviderUsageFetch`                           | Створює фікстури для отримання даних про використання провайдера                                                                         |
+| `useFrozenTime` / `useRealTime`                      | Заморожує та відновлює таймери для тестів, чутливих до часу. Імпортуйте з `plugin-sdk/test-env`                                          |
+| `createTestWizardPrompter`                           | Створює імітований запитувач майстра налаштування                                                                                        |
+| `createRuntimeTaskFlow`                              | Створює ізольований стан потоку завдань середовища виконання                                                                             |
+| `typedCases`                                         | Зберігає літеральні типи для табличних тестів. Імпортуйте з `plugin-sdk/test-fixtures`                                                    |
 
-Набори контрактних тестів для вбудованих плагінів також використовують підшляхи тестування SDK для допоміжних засобів тестових реєстрів, маніфестів, публічних артефактів і фікстур runtime. Набори лише для ядра, які залежать від вбудованого інвентаря OpenClaw, залишаються в `src/plugins/contracts`.
-Тримайте нові тести розширень на документованому спеціалізованому підшляху SDK, наприклад
-`plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`,
-`plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`,
-`plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`,
-`plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`,
-`plugin-sdk/test-env` або `plugin-sdk/test-fixtures`, замість імпорту з
-широкого суміснісного бареля `plugin-sdk/testing`, файлів репозиторію `src/**` або
-напряму з мостів репозиторію `test/helpers/*`.
+Набори контрактних тестів для вбудованих plugin також використовують тестові підшляхи SDK для допоміжних засобів реєстру, маніфесту, публічного артефакту та runtime-фікстур, призначених лише для тестів. Набори тестів лише для ядра, які залежать від інвентаря вбудованого OpenClaw, залишаються в `src/plugins/contracts`. Розміщуйте нові тести extensions у задокументованому сфокусованому підшляху SDK, такому як `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env` або `plugin-sdk/test-fixtures`, замість прямого імпорту широкого сумісного barrel `plugin-sdk/testing`, файлів репозиторію `src/**` або мостів репозиторію `test/helpers/*`.
 
 ### Типи
 
-Спеціалізовані підшляхи тестування також повторно експортують типи, корисні у тестових файлах:
+Сфокусовані тестові підшляхи також повторно експортують типи, корисні у тестових файлах:
 
 ```typescript
 import type {
@@ -170,10 +162,9 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## Тестування розв’язання цілі
+## Розв’язання цілей тестування
 
-Використовуйте `installCommonResolveTargetErrorCases`, щоб додати стандартні випадки помилок для
-розв’язання цілі каналу:
+Використовуйте `installCommonResolveTargetErrorCases`, щоб додати стандартні випадки помилок для розв’язання цілей каналу:
 
 ```typescript
 import { describe } from "vitest";
@@ -182,13 +173,13 @@ import { installCommonResolveTargetErrorCases } from "openclaw/plugin-sdk/channe
 describe("my-channel target resolution", () => {
   installCommonResolveTargetErrorCases({
     resolveTarget: ({ to, mode, allowFrom }) => {
-      // Логіка розв’язання цілі вашого каналу
+      // Your channel's target resolution logic
       return myChannelResolveTarget({ to, mode, allowFrom });
     },
     implicitAllowFrom: ["user1", "user2"],
   });
 
-  // Додайте специфічні для каналу тестові випадки
+  // Add channel-specific test cases
   it("should resolve @username targets", () => {
     // ...
   });
@@ -199,26 +190,15 @@ describe("my-channel target resolution", () => {
 
 ### Тестування контрактів реєстрації
 
-Модульні тести, які передають вручну написаний мок `api` до `register(api)`, не перевіряють
-ворота прийняття завантажувача OpenClaw. Додайте принаймні один smoke-тест на основі завантажувача
-для кожної поверхні реєстрації, від якої залежить ваш плагін, особливо для хуків і
-ексклюзивних можливостей, таких як memory.
+Unit-тести, які передають рукописний мок `api` до `register(api)`, не перевіряють шлюзи приймання завантажувача OpenClaw. Додайте принаймні один smoke-тест із реальним завантажувачем для кожної поверхні реєстрації, від якої залежить ваш plugin, особливо для hooks і ексклюзивних capabilities, таких як пам’ять.
 
-Справжній завантажувач не дозволяє реєстрацію плагіна, якщо відсутні обов’язкові метадані або
-плагін викликає API можливості, якою він не володіє. Наприклад,
-`api.registerHook(...)` вимагає назву хука, а
-`api.registerMemoryCapability(...)` вимагає, щоб маніфест плагіна або експортована
-точка входу оголошували `kind: "memory"`.
+Реальний завантажувач відхиляє реєстрацію plugin, коли бракує обов’язкових метаданих або plugin викликає API capability, якою він не володіє. Наприклад, `api.registerHook(...)` вимагає назву hook, а `api.registerMemoryCapability(...)` вимагає, щоб маніфест plugin або експортований entry оголошував `kind: "memory"`.
 
-### Тестування доступу до конфігурації runtime
+### Тестування доступу до runtime-конфігурації
 
-Надавайте перевагу спільному моку runtime плагіна з `openclaw/plugin-sdk/channel-test-helpers`
-під час тестування вбудованих плагінів каналів. Його застарілі моки `runtime.config.loadConfig()` і
-`runtime.config.writeConfigFile(...)` за замовчуванням викидають помилки, щоб тести виявляли нове
-використання API сумісності. Перевизначайте ці моки лише тоді, коли тест
-явно перевіряє застарілу поведінку сумісності.
+Віддавайте перевагу спільному моку runtime plugin з `openclaw/plugin-sdk/channel-test-helpers` під час тестування вбудованих channel plugin. Його застарілі моки `runtime.config.loadConfig()` і `runtime.config.writeConfigFile(...)` за замовчуванням кидають помилку, щоб тести виявляли нове використання сумісних API. Перевизначайте ці моки лише тоді, коли тест явно покриває поведінку застарілої сумісності.
 
-### Модульне тестування плагіна каналу
+### Unit-тестування channel plugin
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -248,13 +228,13 @@ describe("my-channel plugin", () => {
     const inspection = myPlugin.setup.inspectAccount(cfg, undefined);
     expect(inspection.configured).toBe(true);
     expect(inspection.tokenStatus).toBe("available");
-    // Значення токена не розкривається
+    // No token value exposed
     expect(inspection).not.toHaveProperty("token");
   });
 });
 ```
 
-### Модульне тестування плагіна провайдера
+### Unit-тестування provider plugin
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -263,7 +243,7 @@ describe("my-provider plugin", () => {
   it("should resolve dynamic models", () => {
     const model = myProvider.resolveDynamicModel({
       modelId: "custom-model-v2",
-      // ... контекст
+      // ... context
     });
 
     expect(model.id).toBe("custom-model-v2");
@@ -274,7 +254,7 @@ describe("my-provider plugin", () => {
   it("should return catalog when API key is available", async () => {
     const result = await myProvider.catalog.run({
       resolveProviderApiKey: () => ({ apiKey: "test-key" }),
-      // ... контекст
+      // ... context
     });
 
     expect(result?.provider?.models).toHaveLength(2);
@@ -282,9 +262,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### Мокування runtime плагіна
+### Мокання runtime plugin
 
-Для коду, який використовує `createPluginRuntimeStore`, мокуйте runtime у тестах:
+Для коду, який використовує `createPluginRuntimeStore`, мокайте runtime у тестах:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -295,42 +275,42 @@ const store = createPluginRuntimeStore<PluginRuntime>({
   errorMessage: "test runtime not set",
 });
 
-// У налаштуванні тесту
+// In test setup
 const mockRuntime = {
   agent: {
     resolveAgentDir: vi.fn().mockReturnValue("/tmp/agent"),
-    // ... інші моки
+    // ... other mocks
   },
   config: {
     current: vi.fn(() => ({}) as const),
     mutateConfigFile: vi.fn(),
     replaceConfigFile: vi.fn(),
   },
-  // ... інші простори імен
+  // ... other namespaces
 } as unknown as PluginRuntime;
 
 store.setRuntime(mockRuntime);
 
-// Після тестів
+// After tests
 store.clearRuntime();
 ```
 
-### Тестування з підмінами на рівні екземпляра
+### Тестування зі стабами для окремих інстансів
 
-Надавайте перевагу підмінам на рівні екземпляра замість мутації прототипу:
+Віддавайте перевагу стабам для окремих інстансів, а не мутації прототипу:
 
 ```typescript
-// Бажано: підміна на рівні екземпляра
+// Preferred: per-instance stub
 const client = new MyChannelClient();
 client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
-// Уникайте: мутація прототипу
+// Avoid: prototype mutation
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Контрактні тести (плагіни в репозиторії)
+## Контрактні тести (plugin у репозиторії)
 
-Вбудовані плагіни мають контрактні тести, які перевіряють права власності на реєстрацію:
+Вбудовані plugin мають контрактні тести, які перевіряють право власності на реєстрацію:
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -338,14 +318,14 @@ pnpm test -- src/plugins/contracts/
 
 Ці тести перевіряють:
 
-- Які плагіни реєструють які провайдери
-- Які плагіни реєструють які мовленнєві провайдери
+- Які plugin реєструють які provider
+- Які plugin реєструють які speech provider
 - Коректність форми реєстрації
-- Відповідність контракту runtime
+- Відповідність runtime-контракту
 
-### Запуск обмежених тестів
+### Запуск тестів з обмеженою областю
 
-Для конкретного плагіна:
+Для конкретного plugin:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
@@ -355,36 +335,35 @@ pnpm test -- <bundled-plugin-root>/my-channel/
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime.contract.test.ts
+pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
-## Примусове застосування lint (плагіни в репозиторії)
+## Примусове застосування lint (plugin у репозиторії)
 
-`pnpm check` примусово застосовує три правила для плагінів у репозиторії:
+Три правила примусово перевіряються `pnpm check` для plugin у репозиторії:
 
-1. **Без монолітних імпортів із кореня** -- кореневий барель `openclaw/plugin-sdk` відхиляється
-2. **Без прямих імпортів із `src/`** -- плагіни не можуть напряму імпортувати `../../src/`
-3. **Без самоімпортів** -- плагіни не можуть імпортувати власний підшлях `plugin-sdk/<name>`
+1. **Жодних монолітних root-імпортів** -- root barrel `openclaw/plugin-sdk` відхиляється
+2. **Жодних прямих імпортів `src/`** -- plugin не можуть напряму імпортувати `../../src/`
+3. **Жодних self-імпортів** -- plugin не можуть імпортувати власний підшлях `plugin-sdk/<name>`
 
-На зовнішні плагіни ці правила lint не поширюються, але дотримуватися таких самих
-шаблонів рекомендується.
+Зовнішні plugin не підпадають під ці правила lint, але рекомендовано дотримуватися тих самих шаблонів.
 
-## Конфігурація тестування
+## Конфігурація тестів
 
-OpenClaw використовує Vitest із порогами покриття V8. Для тестів плагінів:
+OpenClaw використовує Vitest із порогами покриття V8. Для тестів plugin:
 
 ```bash
-# Запустити всі тести
+# Run all tests
 pnpm test
 
-# Запустити тести конкретного плагіна
+# Run specific plugin tests
 pnpm test -- <bundled-plugin-root>/my-channel/src/channel.test.ts
 
-# Запустити з фільтром за конкретною назвою тесту
+# Run with a specific test name filter
 pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 
-# Запустити з покриттям
+# Run with coverage
 pnpm test:coverage
 ```
 
@@ -396,7 +375,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## Пов’язане
 
-- [Огляд SDK](/uk/plugins/sdk-overview) -- правила імпорту
-- [Плагіни каналів SDK](/uk/plugins/sdk-channel-plugins) -- інтерфейс плагіна каналу
-- [Плагіни провайдерів SDK](/uk/plugins/sdk-provider-plugins) -- хуки плагіна провайдера
-- [Створення плагінів](/uk/plugins/building-plugins) -- посібник для початку роботи
+- [Огляд SDK](/uk/plugins/sdk-overview) -- конвенції імпорту
+- [Channel Plugins SDK](/uk/plugins/sdk-channel-plugins) -- інтерфейс channel plugin
+- [Provider Plugins SDK](/uk/plugins/sdk-provider-plugins) -- hooks provider plugin
+- [Створення Plugins](/uk/plugins/building-plugins) -- посібник для початку роботи

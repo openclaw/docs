@@ -1,30 +1,30 @@
 ---
 read_when:
     - Ви встановлюєте, налаштовуєте або аудіюєте Plugin line
-summary: Додає поверхню каналу LINE для надсилання й отримання повідомлень OpenClaw.
-title: Plugin LINE
+summary: Додає інтерфейс каналу LINE для надсилання й отримання повідомлень OpenClaw.
+title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-02T15:19:12Z"
+    generated_at: "2026-05-02T21:41:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 469a8781af08abd50a475fe58e4ff4e93b592d4a412f17b01d34640422e0cc6f
+    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # LINE Plugin
 
-Додає поверхню каналу LINE для надсилання й отримання повідомлень OpenClaw.
+Додає поверхню каналу LINE для надсилання та отримання повідомлень OpenClaw.
 
 ## Розповсюдження
 
 - Пакет: `@openclaw/line`
-- Спосіб встановлення: ClawHub + npm
+- Шлях встановлення: включено до OpenClaw
 
 ## Поверхня
 
 channels: line
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [line](/uk/channels/line)
