@@ -1,50 +1,44 @@
 ---
 read_when:
-- 你想将 Grok 用于 `web_search`
-- 你需要为 Web 搜索配置 `XAI_API_KEY`
-summary: 通过 xAI 的 Web-grounded 响应使用 Grok Web 搜索
+    - 你想使用 Grok 进行 web_search
+    - 你需要 XAI_API_KEY 才能进行网页搜索
+summary: 通过 xAI 基于网页检索的响应实现 Grok 网页搜索
 title: Grok 搜索
 x-i18n:
-  generated_at: '2026-04-23T21:08:07Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
-  source_path: tools/grok-search.md
-  workflow: 15
+    generated_at: "2026-05-02T01:59:39Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: ab38ee8614ba4bab9a3bf91cb14d4565f1766513594fd2d1a280ff4b2fed1478
+    source_path: tools/grok-search.md
+    workflow: 16
 ---
-OpenClaw 支持将 Grok 用作 `web_search` 提供商，它通过 xAI 的 Web-grounded
-响应来生成由实时搜索结果支撑、并带有引用的 AI 综合答案。
 
-同一个 `XAI_API_KEY` 还可以驱动内置的 `x_search` 工具，用于搜索 X
-（原 Twitter）帖子。如果你将该 key 存储在
-`plugins.entries.xai.config.webSearch.apiKey` 下，OpenClaw 现在还会将其
-作为内置 xAI 模型提供商的回退凭证复用。
+OpenClaw 支持将 Grok 作为 `web_search` 提供商，使用 xAI 基于网页的响应来生成由实时搜索结果和引用支撑的 AI 综合回答。
 
-对于帖子级别的 X 指标，例如转发、回复、收藏或浏览量，请优先使用
-`x_search`，并提供精确的帖子 URL 或状态 ID，而不是使用宽泛的搜索
-查询。
+同一个 `XAI_API_KEY` 也可以为内置的 `x_search` 工具提供支持，用于搜索 X（前身为 Twitter）帖子。如果你将 key 存储在 `plugins.entries.xai.config.webSearch.apiKey` 下，OpenClaw 现在也会将它作为内置 xAI 模型提供商的备用值复用。
 
-## 新手引导与配置
+对于帖子级 X 指标，例如转帖、回复、书签或浏览量，优先使用带有确切帖子 URL 或状态 ID 的 `x_search`，而不是宽泛的搜索查询。
+
+## 新手引导和配置
 
 如果你在以下流程中选择 **Grok**：
 
 - `openclaw onboard`
 - `openclaw configure --section web`
 
-OpenClaw 可以显示一个单独的后续步骤，用同一个
-`XAI_API_KEY` 启用 `x_search`。这个后续步骤：
+OpenClaw 可以显示一个单独的后续步骤，用同一个 `XAI_API_KEY` 启用 `x_search`。该后续步骤：
 
-- 只会在你为 `web_search` 选择 Grok 之后出现
-- 不是一个独立的顶层 Web 搜索提供商选项
-- 还可以在同一流程中选择性设置 `x_search` 模型
+- 只会在你为 `web_search` 选择 Grok 后出现
+- 不是单独的顶层网页搜索提供商选项
+- 可以在同一流程中选择性设置 `x_search` 模型
 
-如果你跳过了它，之后仍然可以在配置中启用或更改 `x_search`。
+如果你跳过它，可以稍后在配置中启用或更改 `x_search`。
 
 ## 获取 API key
 
 <Steps>
   <Step title="创建 key">
-    从 [xAI](https://console.x.ai/) 获取一个 API key。
+    从 [xAI](https://console.x.ai/) 获取 API key。
   </Step>
   <Step title="存储 key">
     在 Gateway 网关环境中设置 `XAI_API_KEY`，或通过以下命令配置：
@@ -65,7 +59,7 @@ OpenClaw 可以显示一个单独的后续步骤，用同一个
       xai: {
         config: {
           webSearch: {
-            apiKey: "xai-...", // 如果已设置 XAI_API_KEY，则为可选
+            apiKey: "xai-...", // optional if XAI_API_KEY is set
           },
         },
       },
@@ -81,25 +75,25 @@ OpenClaw 可以显示一个单独的后续步骤，用同一个
 }
 ```
 
-**环境变量替代方式：** 在 Gateway 网关环境中设置 `XAI_API_KEY`。
-对于 gateway 安装，请将其写入 `~/.openclaw/.env`。
+**环境替代方案：**在 Gateway 网关环境中设置 `XAI_API_KEY`。
+对于 Gateway 网关安装，将它放在 `~/.openclaw/.env` 中。
 
 ## 工作原理
 
-Grok 使用 xAI 的 Web-grounded 响应来综合答案，并附带内联
-引用，这与 Gemini 使用 Google Search grounding 的方式类似。
+Grok 使用 xAI 基于网页的响应来综合带有行内引用的回答，类似于 Gemini 的 Google 搜索 grounding 方法。
 
 ## 支持的参数
 
 Grok 搜索支持 `query`。
 
-为了与共享 `web_search` 保持兼容，也接受 `count`，但 Grok 仍然
-返回一条带引用的综合答案，而不是 N 条结果列表。
+`count` 会被接受，以兼容共享的 `web_search`，但 Grok 仍会返回一个带引用的综合回答，而不是 N 条结果列表。
 
-当前尚不支持提供商专用过滤器。
+目前不支持提供商特定的过滤器。
+
+Grok 使用提供商特定的 60 秒默认超时时间，因为 xAI Responses 基于网页的搜索可能比共享的 `web_search` 默认时间运行更久。设置 `tools.web.search.timeoutSeconds` 可覆盖它。
 
 ## 相关内容
 
-- [Web Search 概览](/zh-CN/tools/web) —— 所有提供商与自动检测
-- [Web Search 中的 x_search](/zh-CN/tools/web#x_search) —— 通过 xAI 实现的一等 X 搜索
-- [Gemini Search](/zh-CN/tools/gemini-search) —— 通过 Google grounding 生成带 AI 综合答案
+- [网页搜索概览](/zh-CN/tools/web) -- 所有提供商和自动检测
+- [网页搜索中的 x_search](/zh-CN/tools/web#x_search) -- 通过 xAI 提供一等 X 搜索
+- [Gemini 搜索](/zh-CN/tools/gemini-search) -- 通过 Google grounding 提供 AI 综合回答
