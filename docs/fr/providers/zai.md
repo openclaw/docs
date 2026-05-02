@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Vous voulez utiliser les modèles Z.AI / GLM dans OpenClaw
+    - Vous souhaitez utiliser les modèles Z.AI / GLM dans OpenClaw
     - Il vous faut une configuration simple de ZAI_API_KEY
 summary: Utiliser Z.AI (modèles GLM) avec OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-30T07:46:07Z"
+    generated_at: "2026-05-02T07:17:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
+    source_hash: 423fc2bc27c62352d9d9acd13c70aa2bc3804112dab25aa46505e844cb166c93
     source_path: providers/zai.md
     workflow: 16
 ---
@@ -19,16 +19,16 @@ avec une clé d’API Z.AI.
 
 - Fournisseur : `zai`
 - Authentification : `ZAI_API_KEY`
-- API : Z.AI Chat Completions (authentification Bearer)
+- API : Chat Completions Z.AI (authentification Bearer)
 
 ## Bien démarrer
 
 <Tabs>
   <Tab title="Détection automatique du point de terminaison">
-    **Idéal pour :** la plupart des utilisateurs. OpenClaw détecte le point de terminaison Z.AI correspondant à partir de la clé et applique automatiquement l’URL de base correcte.
+    **Idéal pour :** la plupart des utilisateurs. OpenClaw détecte le point de terminaison Z.AI correspondant à partir de la clé et applique automatiquement la bonne URL de base.
 
     <Steps>
-      <Step title="Exécuter l’intégration">
+      <Step title="Exécuter l’onboarding">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
@@ -41,9 +41,9 @@ avec une clé d’API Z.AI.
         }
         ```
       </Step>
-      <Step title="Vérifier que le modèle est disponible">
+      <Step title="Vérifier que le modèle est listé">
         ```bash
-        openclaw models list --provider zai
+        openclaw models list --all --provider zai
         ```
       </Step>
     </Steps>
@@ -54,9 +54,9 @@ avec une clé d’API Z.AI.
     **Idéal pour :** les utilisateurs qui veulent forcer un Coding Plan spécifique ou une surface d’API générale.
 
     <Steps>
-      <Step title="Choisir la bonne option d’intégration">
+      <Step title="Choisir la bonne option d’onboarding">
         ```bash
-        # Coding Plan Global (recommandé pour les utilisateurs de Coding Plan)
+        # Coding Plan Global (recommandé pour les utilisateurs du Coding Plan)
         openclaw onboard --auth-choice zai-coding-global
 
         # Coding Plan CN (région Chine)
@@ -77,9 +77,9 @@ avec une clé d’API Z.AI.
         }
         ```
       </Step>
-      <Step title="Vérifier que le modèle est disponible">
+      <Step title="Vérifier que le modèle est listé">
         ```bash
-        openclaw models list --provider zai
+        openclaw models list --all --provider zai
         ```
       </Step>
     </Steps>
@@ -89,7 +89,14 @@ avec une clé d’API Z.AI.
 
 ## Catalogue intégré
 
-OpenClaw initialise actuellement le fournisseur `zai` groupé avec :
+OpenClaw fournit le catalogue du fournisseur `zai` groupé dans le manifeste du plugin, afin que le
+listing en lecture seule puisse afficher les lignes GLM connues sans charger le runtime du fournisseur :
+
+```bash
+openclaw models list --all --provider zai
+```
+
+Le catalogue basé sur le manifeste comprend actuellement :
 
 | Réf. de modèle       | Notes             |
 | -------------------- | ----------------- |
@@ -108,15 +115,15 @@ OpenClaw initialise actuellement le fournisseur `zai` groupé avec :
 | `zai/glm-4.5v`       |                   |
 
 <Tip>
-Les modèles GLM sont disponibles sous la forme `zai/<model>` (exemple : `zai/glm-5`). La réf. de modèle intégrée par défaut est `zai/glm-5.1`.
+Les modèles GLM sont disponibles sous la forme `zai/<model>` (exemple : `zai/glm-5`). La référence du modèle groupé par défaut est `zai/glm-5.1`.
 </Tip>
 
 ## Configuration avancée
 
 <AccordionGroup>
-  <Accordion title="Résolution vers l’avant des modèles GLM-5 inconnus">
-    Les identifiants `glm-5*` inconnus sont toujours résolus vers l’avant sur le chemin du fournisseur groupé en
-    synthétisant les métadonnées détenues par le fournisseur à partir du modèle `glm-4.7` lorsque l’identifiant
+  <Accordion title="Résolution prospective des modèles GLM-5 inconnus">
+    Les identifiants `glm-5*` inconnus sont encore résolus prospectivement sur le chemin du fournisseur groupé en
+    synthétisant les métadonnées appartenant au fournisseur à partir du modèle `glm-4.7` lorsque l’identifiant
     correspond à la forme actuelle de la famille GLM-5.
   </Accordion>
 
@@ -139,13 +146,13 @@ Les modèles GLM sont disponibles sous la forme `zai/<model>` (exemple : `zai/gl
 
   </Accordion>
 
-  <Accordion title="Raisonnement et raisonnement préservé">
-    Le raisonnement Z.AI suit les contrôles `/think` d’OpenClaw. Lorsque le raisonnement est désactivé,
+  <Accordion title="Thinking et thinking préservé">
+    Le thinking Z.AI suit les contrôles `/think` d’OpenClaw. Lorsque le thinking est désactivé,
     OpenClaw envoie `thinking: { type: "disabled" }` pour éviter les réponses qui
     dépensent le budget de sortie en `reasoning_content` avant le texte visible.
 
-    Le raisonnement préservé est optionnel, car Z.AI exige que l’intégralité de l’historique
-    `reasoning_content` soit rejouée, ce qui augmente les jetons d’invite. Activez-le
+    Le thinking préservé est opt-in, car Z.AI exige que l’intégralité de l’historique
+    `reasoning_content` soit rejouée, ce qui augmente le nombre de tokens du prompt. Activez-le
     par modèle :
 
     ```json5
@@ -162,31 +169,31 @@ Les modèles GLM sont disponibles sous la forme `zai/<model>` (exemple : `zai/gl
     }
     ```
 
-    Lorsqu’il est activé et que le raisonnement est actif, OpenClaw envoie
-    `thinking: { type: "enabled", clear_thinking: false }` et rejoue les précédents
-    `reasoning_content` pour la même transcription compatible OpenAI.
+    Lorsqu’il est activé et que le thinking est actif, OpenClaw envoie
+    `thinking: { type: "enabled", clear_thinking: false }` et rejoue le
+    `reasoning_content` précédent pour la même transcription compatible OpenAI.
 
     Les utilisateurs avancés peuvent toujours remplacer exactement la charge utile du fournisseur avec
     `params.extra_body.thinking`.
 
   </Accordion>
 
-  <Accordion title="Compréhension des images">
-    Le Plugin Z.AI groupé enregistre la compréhension des images.
+  <Accordion title="Compréhension d’image">
+    Le plugin Z.AI groupé enregistre la compréhension d’image.
 
-    | Propriété     | Valeur      |
-    | ------------- | ----------- |
-    | Modèle        | `glm-4.6v`  |
+    | Propriété | Valeur      |
+    | --------- | ----------- |
+    | Modèle    | `glm-4.6v`  |
 
-    La compréhension des images est résolue automatiquement à partir de l’authentification Z.AI configurée — aucune
+    La compréhension d’image est automatiquement résolue à partir de l’authentification Z.AI configurée ; aucune
     configuration supplémentaire n’est nécessaire.
 
   </Accordion>
 
   <Accordion title="Détails d’authentification">
     - Z.AI utilise l’authentification Bearer avec votre clé d’API.
-    - L’option d’intégration `zai-api-key` détecte automatiquement le point de terminaison Z.AI correspondant à partir du préfixe de la clé.
-    - Utilisez les choix régionaux explicites (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) lorsque vous voulez forcer une surface d’API spécifique.
+    - L’option d’onboarding `zai-api-key` détecte automatiquement le point de terminaison Z.AI correspondant à partir du préfixe de la clé.
+    - Utilisez les options régionales explicites (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) lorsque vous voulez forcer une surface d’API spécifique.
 
   </Accordion>
 </AccordionGroup>
@@ -197,7 +204,7 @@ Les modèles GLM sont disponibles sous la forme `zai/<model>` (exemple : `zai/gl
   <Card title="Famille de modèles GLM" href="/fr/providers/glm" icon="microchip">
     Vue d’ensemble de la famille de modèles GLM.
   </Card>
-  <Card title="Sélection de modèles" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, les réfs. de modèle et le comportement de basculement.
+  <Card title="Sélection de modèle" href="/fr/concepts/model-providers" icon="layers">
+    Choisir les fournisseurs, les références de modèle et le comportement de basculement.
   </Card>
 </CardGroup>

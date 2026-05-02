@@ -1,53 +1,54 @@
 ---
 read_when:
-    - Vous voulez rechercher des contacts/groupes/ID de soi pour un canal
-    - Vous développez un adaptateur d’annuaire de canal
-summary: Référence CLI pour `openclaw directory` (soi, pairs, groupes)
-title: Annuaire
+    - Vous voulez rechercher les identifiants de contacts/groupes/de vous-même pour un canal
+    - Vous développez un adaptateur d’annuaire de canaux
+summary: Référence CLI pour `openclaw directory` (soi-même, pairs, groupes)
+title: Répertoire
 x-i18n:
-    generated_at: "2026-04-24T07:04:05Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T07:01:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-Recherches d’annuaire pour les canaux qui les prennent en charge (contacts/pairs, groupes et « moi »).
+Recherches dans l’annuaire pour les canaux qui les prennent en charge (contacts/pairs, groupes et « moi »).
 
-## Indicateurs courants
+## Options communes
 
-- `--channel <name>` : ID/alias du canal (requis lorsque plusieurs canaux sont configurés ; automatique lorsqu’un seul canal est configuré)
-- `--account <id>` : ID de compte (par défaut : compte par défaut du canal)
+- `--channel <name>` : identifiant/alias du canal (obligatoire lorsque plusieurs canaux sont configurés ; automatique lorsqu’un seul est configuré)
+- `--account <id>` : identifiant de compte (par défaut : valeur par défaut du canal)
 - `--json` : sortie JSON
 
 ## Remarques
 
-- `directory` est destiné à vous aider à trouver des ID que vous pouvez coller dans d’autres commandes (en particulier `openclaw message send --target ...`).
-- Pour de nombreux canaux, les résultats sont adossés à la configuration (listes blanches / groupes configurés) plutôt qu’à un annuaire de fournisseur en direct.
-- La sortie par défaut est `id` (et parfois `name`) séparés par une tabulation ; utilisez `--json` pour les scripts.
+- `directory` est conçu pour vous aider à trouver des identifiants que vous pouvez coller dans d’autres commandes (en particulier `openclaw message send --target ...`).
+- Pour de nombreux canaux, les résultats s’appuient sur la configuration (listes d’autorisation / groupes configurés) plutôt que sur un annuaire fournisseur en direct.
+- Les plugins de canal installés peuvent tout de même omettre la prise en charge de l’annuaire ; dans ce cas, la commande signale l’opération d’annuaire non prise en charge au lieu de réinstaller le plugin.
+- La sortie par défaut est `id` (et parfois `name`) séparé par une tabulation ; utilisez `--json` pour les scripts.
 
-## Utiliser les résultats avec `message send`
+## Utilisation des résultats avec `message send`
 
 ```bash
 openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## Formats d’ID (par canal)
+## Formats d’identifiant (par canal)
 
 - WhatsApp : `+15551234567` (DM), `1234567890-1234567890@g.us` (groupe)
-- Telegram : `@username` ou ID de chat numérique ; les groupes sont des ID numériques
+- Telegram : `@username` ou identifiant numérique de discussion ; les groupes ont des identifiants numériques
 - Slack : `user:U…` et `channel:C…`
 - Discord : `user:<id>` et `channel:<id>`
-- Matrix (Plugin) : `user:@user:server`, `room:!roomId:server` ou `#alias:server`
-- Microsoft Teams (Plugin) : `user:<id>` et `conversation:<id>`
-- Zalo (Plugin) : ID utilisateur (Bot API)
-- Zalo Personal / `zalouser` (Plugin) : ID de fil (DM/groupe) depuis `zca` (`me`, `friend list`, `group list`)
+- Matrix (plugin) : `user:@user:server`, `room:!roomId:server` ou `#alias:server`
+- Microsoft Teams (plugin) : `user:<id>` et `conversation:<id>`
+- Zalo (plugin) : identifiant utilisateur (Bot API)
+- Zalo Personal / `zalouser` (plugin) : identifiant de fil (DM/groupe) provenant de `zca` (`me`, `friend list`, `group list`)
 
-## Soi-même ("me")
+## Soi-même (« moi »)
 
 ```bash
 openclaw directory self --channel zalouser
@@ -69,6 +70,6 @@ openclaw directory groups list --channel zalouser --query "work"
 openclaw directory groups members --channel zalouser --group-id <id>
 ```
 
-## Lié
+## Associé
 
 - [Référence CLI](/fr/cli)

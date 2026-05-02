@@ -1,66 +1,66 @@
 ---
 read_when:
     - Vous maintenez un Plugin OpenClaw
-    - Un avertissement de compatibilité de plugin s’affiche
-    - Vous planifiez une migration du SDK de Plugin ou du manifeste
-summary: Contrats de compatibilité Plugin, métadonnées d'obsolescence et attentes relatives à la migration
-title: Compatibilité Plugin
+    - Vous voyez un avertissement de compatibilité de Plugin
+    - Vous planifiez une migration du SDK Plugin ou du manifeste
+summary: Contrats de compatibilité Plugin, métadonnées d’obsolescence et attentes de migration
+title: Compatibilité des Plugins
 x-i18n:
-    generated_at: "2026-04-30T07:38:08Z"
+    generated_at: "2026-05-02T07:13:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 344dbaac86db7259adc09bc91b7fbe7ba540fc6fdd96cc422918ccf2c34d9cec
+    source_hash: eecf94743cf34c5b773bfa8066164f90b7c8a75667c43f3f1002d32ec1d04902
     source_path: plugins/compatibility.md
     workflow: 16
 ---
 
-OpenClaw garde les anciens contrats de Plugin câblés via des adaptateurs de compatibilité nommés avant de les supprimer. Cela protège les Plugins intégrés et externes existants pendant que les contrats du SDK, du manifeste, de la configuration initiale, de la config et du runtime d’agent évoluent.
+OpenClaw conserve les anciens contrats de plugins câblés via des adaptateurs de compatibilité nommés avant de les supprimer. Cela protège les plugins groupés et externes existants pendant que les contrats du SDK, du manifeste, de la configuration initiale, de la configuration et de l’environnement d’exécution des agents évoluent.
 
 ## Registre de compatibilité
 
-Les contrats de compatibilité des Plugins sont suivis dans le registre central à
+Les contrats de compatibilité des plugins sont suivis dans le registre principal à l’emplacement
 `src/plugins/compat/registry.ts`.
 
-Chaque enregistrement contient :
+Chaque enregistrement contient :
 
 - un code de compatibilité stable
-- un statut : `active`, `deprecated`, `removal-pending` ou `removed`
-- un propriétaire : SDK, config, configuration initiale, canal, fournisseur, exécution de Plugin, runtime d’agent,
+- statut : `active`, `deprecated`, `removal-pending` ou `removed`
+- propriétaire : SDK, configuration, configuration initiale, canal, fournisseur, exécution de plugin, environnement d’exécution d’agent,
   ou noyau
-- les dates d’introduction et de dépréciation, le cas échéant
-- des consignes de remplacement
-- la documentation, les diagnostics et les tests qui couvrent l’ancien et le nouveau comportement
+- dates d’introduction et de dépréciation, le cas échéant
+- recommandations de remplacement
+- documentation, diagnostics et tests couvrant l’ancien et le nouveau comportement
 
-Le registre est la source pour la planification des mainteneurs et les futurs contrôles de l’inspecteur de Plugins. Si un comportement exposé aux Plugins change, ajoutez ou mettez à jour l’enregistrement de compatibilité dans le même changement que celui qui ajoute l’adaptateur.
+Le registre est la source pour la planification des mainteneurs et les futures vérifications de l’inspecteur de plugins. Si un comportement visible par les plugins change, ajoutez ou mettez à jour l’enregistrement de compatibilité dans le même changement que celui qui ajoute l’adaptateur.
 
-La compatibilité des réparations et migrations de doctor est suivie séparément dans
-`src/commands/doctor/shared/deprecation-compat.ts`. Ces enregistrements couvrent les anciennes formes de config, les structures de registre d’installation et les shims de réparation qui peuvent devoir rester disponibles après la suppression du chemin de compatibilité runtime.
+La compatibilité des réparations et migrations de doctor est suivie séparément à l’emplacement
+`src/commands/doctor/shared/deprecation-compat.ts`. Ces enregistrements couvrent les anciennes formes de configuration, les dispositions de registre d’installation et les shims de réparation qui peuvent devoir rester disponibles après la suppression du chemin de compatibilité d’exécution.
 
-Les revues de release doivent vérifier les deux registres. Ne supprimez pas une migration de doctor simplement parce que l’enregistrement de compatibilité runtime ou config correspondant a expiré ; vérifiez d’abord qu’aucun chemin de mise à niveau pris en charge n’a encore besoin de la réparation. Revalidez aussi chaque annotation de remplacement pendant la planification de release, car la propriété des Plugins et l’empreinte de config peuvent changer à mesure que les fournisseurs et canaux sortent du noyau.
+Les balayages de version doivent vérifier les deux registres. Ne supprimez pas une migration doctor simplement parce que l’enregistrement de compatibilité d’exécution ou de configuration correspondant a expiré ; vérifiez d’abord qu’aucun chemin de mise à niveau pris en charge n’a encore besoin de la réparation. Revalidez également chaque annotation de remplacement pendant la planification de version, car la propriété des plugins et l’empreinte de configuration peuvent changer à mesure que les fournisseurs et les canaux sortent du noyau.
 
-## Package d’inspecteur de Plugins
+## Paquet d’inspecteur de plugins
 
-L’inspecteur de Plugins doit vivre hors du dépôt OpenClaw principal, sous forme de package/dépôt séparé adossé aux contrats versionnés de compatibilité et de manifeste.
+L’inspecteur de plugins doit vivre en dehors du dépôt principal OpenClaw sous forme de paquet/dépôt séparé, adossé aux contrats de compatibilité et de manifeste versionnés.
 
-La CLI initiale doit être :
+La CLI du premier jour doit être :
 
 ```sh
 openclaw-plugin-inspector ./my-plugin
 ```
 
-Elle doit émettre :
+Elle doit émettre :
 
-- la validation du manifeste/schéma
-- la version de compatibilité du contrat vérifiée
-- les contrôles de métadonnées d’installation/source
-- les contrôles d’import de chemin froid
-- les avertissements de dépréciation et de compatibilité
+- validation du manifeste/schéma
+- la version de compatibilité du contrat en cours de vérification
+- vérifications des métadonnées d’installation/source
+- vérifications d’importation du chemin froid
+- avertissements de dépréciation et de compatibilité
 
-Utilisez `--json` pour une sortie stable lisible par machine dans les annotations CI. Le noyau OpenClaw doit exposer les contrats et fixtures que l’inspecteur peut consommer, mais ne doit pas publier le binaire de l’inspecteur depuis le package principal `openclaw`.
+Utilisez `--json` pour une sortie stable lisible par machine dans les annotations de CI. Le noyau OpenClaw doit exposer des contrats et des fixtures que l’inspecteur peut consommer, mais ne doit pas publier le binaire de l’inspecteur depuis le paquet principal `openclaw`.
 
 ### Voie d’acceptation des mainteneurs
 
-Utilisez Blacksmith Testbox pour la voie d’acceptation du package installable lors de la validation de l’inspecteur externe avec les packages de Plugins OpenClaw. Exécutez-la depuis un checkout OpenClaw propre après la construction du package :
+Utilisez Blacksmith Testbox pour la voie d’acceptation du paquet installable lors de la validation de l’inspecteur externe avec les paquets de plugins OpenClaw. Exécutez-la depuis un checkout OpenClaw propre après la construction du paquet :
 
 ```sh
 blacksmith testbox warmup ci-check-testbox.yml --ref main --idle-timeout 90
@@ -70,68 +70,65 @@ blacksmith testbox run --id <tbx_id> "npm exec --yes @openclaw/plugin-inspector@
 blacksmith testbox stop <tbx_id>
 ```
 
-Gardez cette voie optionnelle pour les mainteneurs, car elle installe un package npm externe et peut inspecter des packages de Plugins clonés hors du dépôt. Les garde-fous locaux du dépôt couvrent la carte d’exports du SDK, les métadonnées du registre de compatibilité, la réduction des imports SDK dépréciés et les frontières d’import des Plugins intégrés ; la preuve de l’inspecteur dans Testbox couvre le package tel que les auteurs de Plugins externes le consomment.
+Gardez cette voie facultative pour les mainteneurs, car elle installe un paquet npm externe et peut inspecter des paquets de plugins clonés en dehors du dépôt. Les garde-fous du dépôt local couvrent la carte d’export du SDK, les métadonnées du registre de compatibilité, la réduction des importations SDK obsolètes et les frontières d’importation des extensions groupées ; la preuve de l’inspecteur Testbox couvre le paquet tel que les auteurs de plugins externes le consomment.
 
 ## Politique de dépréciation
 
-OpenClaw ne doit pas supprimer un contrat de Plugin documenté dans la même release que celle qui introduit son remplacement.
+OpenClaw ne doit pas supprimer un contrat de plugin documenté dans la même version que celle qui introduit son remplacement.
 
-La séquence de migration est :
+La séquence de migration est :
 
 1. Ajouter le nouveau contrat.
-2. Garder l’ancien comportement câblé via un adaptateur de compatibilité nommé.
-3. Émettre des diagnostics ou avertissements lorsque les auteurs de Plugins peuvent agir.
+2. Conserver l’ancien comportement câblé via un adaptateur de compatibilité nommé.
+3. Émettre des diagnostics ou des avertissements lorsque les auteurs de plugins peuvent agir.
 4. Documenter le remplacement et le calendrier.
 5. Tester les anciens et les nouveaux chemins.
 6. Attendre pendant la fenêtre de migration annoncée.
-7. Supprimer uniquement avec une approbation explicite de release avec rupture.
+7. Supprimer uniquement avec une approbation explicite de version incompatible.
 
-Les enregistrements dépréciés doivent inclure une date de début d’avertissement, un remplacement, un lien de documentation et une date de suppression finale au plus tard trois mois après le début de l’avertissement. N’ajoutez pas de chemin de compatibilité déprécié avec une fenêtre de suppression ouverte, sauf si les mainteneurs décident explicitement qu’il s’agit d’une compatibilité permanente et le marquent plutôt `active`.
+Les enregistrements obsolètes doivent inclure une date de début d’avertissement, un remplacement, un lien de documentation et une date de suppression finale au plus tard trois mois après le début de l’avertissement. N’ajoutez pas de chemin de compatibilité obsolète avec une fenêtre de suppression ouverte, sauf si les mainteneurs décident explicitement qu’il s’agit d’une compatibilité permanente et le marquent plutôt comme `active`.
 
 ## Zones de compatibilité actuelles
 
-Les enregistrements de compatibilité actuels incluent :
+Les enregistrements de compatibilité actuels incluent :
 
-- les anciens imports SDK larges tels que `openclaw/plugin-sdk/compat`
-- les anciennes formes de Plugins fondées uniquement sur les hooks et `before_agent_start`
-- les anciens points d’entrée de Plugins `activate(api)` pendant que les Plugins migrent vers
+- anciennes importations SDK larges telles que `openclaw/plugin-sdk/compat`
+- anciennes formes de plugins limitées aux hooks et `before_agent_start`
+- anciens points d’entrée de plugins `activate(api)` pendant que les plugins migrent vers
   `register(api)`
-- les anciens alias SDK tels que `openclaw/extension-api`,
-  `openclaw/plugin-sdk/channel-runtime`, les constructeurs de statut `openclaw/plugin-sdk/command-auth`,
-  `openclaw/plugin-sdk/test-utils` (remplacé par des sous-chemins de test ciblés
-  `openclaw/plugin-sdk/*`), et les alias de types `ClawdbotConfig` /
+- anciens alias SDK tels que `openclaw/extension-api`,
+  `openclaw/plugin-sdk/channel-runtime`, générateurs de statut `openclaw/plugin-sdk/command-auth`,
+  `openclaw/plugin-sdk/test-utils` (remplacé par des sous-chemins de test
+  `openclaw/plugin-sdk/*` ciblés), ainsi que les alias de type `ClawdbotConfig` /
   `OpenClawSchemaType`
-- le comportement de liste d’autorisation et d’activation des Plugins intégrés
-- les anciennes métadonnées de manifeste de variables d’environnement pour fournisseurs/canaux
-- les anciens hooks de Plugins fournisseurs et alias de types pendant que les fournisseurs migrent vers des hooks explicites de catalogue, d’authentification, de réflexion, de relecture et de transport
-- les anciens alias runtime tels que `api.runtime.taskFlow`,
-  `api.runtime.subagent.getSession`, `api.runtime.stt`, et les fonctions dépréciées
-  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)`
-- l’ancien enregistrement scindé des Plugins de mémoire pendant que les Plugins de mémoire migrent vers
+- comportement d’autorisation et d’activation des plugins groupés
+- anciennes métadonnées de manifeste de variables d’environnement de fournisseur/canal
+- anciens hooks de plugins de fournisseurs et alias de type pendant que les fournisseurs passent à des hooks explicites de catalogue, d’authentification, de réflexion, de relecture et de transport
+- anciens alias d’exécution tels que `api.runtime.taskFlow`,
+  `api.runtime.subagent.getSession`, `api.runtime.stt`, et les
+  `api.runtime.config.loadConfig()` / `api.runtime.config.writeConfigFile(...)` obsolètes
+- ancien enregistrement scindé des plugins mémoire pendant que les plugins mémoire passent à
   `registerMemoryCapability`
-- les anciens helpers du SDK de canal pour les schémas de messages natifs, le filtrage des mentions, le formatage des enveloppes entrantes et l’imbrication de capacité d’approbation
-- les anciens alias de clé de route de canal et de helper de cible comparable pendant que les Plugins migrent vers `openclaw/plugin-sdk/channel-route`
-- les indices d’activation remplacés par la propriété des contributions de manifeste
-- le chargement implicite déprécié des sidecars au démarrage pour les Plugins qui n’ont pas déclaré
-  `activation.onStartup` ; les mainteneurs peuvent tester le futur comportement plus strict avec
-  `OPENCLAW_DISABLE_LEGACY_IMPLICIT_STARTUP_SIDECARS=1`
-- le fallback runtime `setup-api` pendant que les descripteurs de configuration initiale migrent vers les métadonnées froides
+- anciens assistants SDK de canal pour les schémas de messages natifs, le filtrage des mentions, la mise en forme des enveloppes entrantes et l’imbrication des capacités d’approbation
+- ancienne clé de route de canal et alias d’assistants de cible comparable pendant que les plugins passent à `openclaw/plugin-sdk/channel-route`
+- indications d’activation remplacées par la propriété des contributions du manifeste
+- repli d’exécution `setup-api` pendant que les descripteurs de configuration initiale passent aux métadonnées froides
   `setup.requiresRuntime: false`
-- les hooks `discovery` des fournisseurs pendant que les hooks de catalogue fournisseur migrent vers
+- hooks `discovery` de fournisseur pendant que les hooks de catalogue de fournisseur passent à
   `catalog.run(...)`
-- les métadonnées de canal `showConfigured` / `showInSetup` pendant que les packages de canal migrent vers
+- métadonnées de canal `showConfigured` / `showInSetup` pendant que les paquets de canal passent à
   `openclaw.channel.exposure`
-- les anciennes clés de config de politique runtime pendant que doctor migre les opérateurs vers
+- anciennes clés de configuration de politique d’exécution pendant que doctor migre les opérateurs vers
   `agentRuntime`
-- le fallback des métadonnées générées de config des canaux intégrés pendant que les métadonnées
-  `channelConfigs` priorisant le registre arrivent
-- les indicateurs d’environnement de désactivation du registre de Plugins persistant et de migration d’installation pendant que les flux de réparation migrent les opérateurs vers `openclaw plugins registry --refresh` et
+- repli des métadonnées de configuration de canal groupé générées pendant l’arrivée des métadonnées
+  `channelConfigs` axées d’abord sur le registre
+- indicateurs d’environnement persistants de désactivation du registre de plugins et de migration d’installation pendant que les flux de réparation migrent les opérateurs vers `openclaw plugins registry --refresh` et
   `openclaw doctor --fix`
-- les anciens chemins de config de recherche web, de récupération web et de x_search détenus par les Plugins pendant que doctor les migre vers `plugins.entries.<plugin>.config`
-- l’ancienne config rédigée `plugins.installs` et les alias de chemin de chargement des Plugins intégrés pendant que les métadonnées d’installation migrent vers le registre de Plugins géré par l’état
+- anciens chemins de configuration de recherche web, récupération web et x_search appartenant à des plugins pendant que doctor les migre vers `plugins.entries.<plugin>.config`
+- ancienne configuration rédigée `plugins.installs` et alias de chemin de chargement de plugins groupés pendant que les métadonnées d’installation passent dans le registre de plugins géré par l’état
 
-Le nouveau code de Plugin doit préférer le remplacement indiqué dans le registre et dans le guide de migration spécifique. Les Plugins existants peuvent continuer à utiliser un chemin de compatibilité jusqu’à ce que la documentation, les diagnostics et les notes de release annoncent une fenêtre de suppression.
+Le nouveau code de plugin doit privilégier le remplacement indiqué dans le registre et dans le guide de migration spécifique. Les plugins existants peuvent continuer à utiliser un chemin de compatibilité jusqu’à ce que la documentation, les diagnostics et les notes de version annoncent une fenêtre de suppression.
 
-## Notes de release
+## Notes de version
 
-Les notes de release doivent inclure les dépréciations de Plugins à venir avec les dates cibles et les liens vers la documentation de migration. Cet avertissement doit avoir lieu avant qu’un chemin de compatibilité passe à `removal-pending` ou `removed`.
+Les notes de version doivent inclure les prochaines dépréciations de plugins avec des dates cibles et des liens vers la documentation de migration. Cet avertissement doit avoir lieu avant qu’un chemin de compatibilité ne passe à `removal-pending` ou `removed`.

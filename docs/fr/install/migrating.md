@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Vous migrez OpenClaw vers un nouvel ordinateur portable ou serveur
+    - Vous migrez OpenClaw vers un nouvel ordinateur portable ou un nouveau serveur
     - Vous venez d’un autre système d’agents et souhaitez conserver l’état
-    - Vous effectuez une mise à niveau sur place d’un Plugin
-summary: 'Centre de migration : importations intersystèmes, déplacements de machine à machine et mises à niveau de Plugin'
+    - Vous mettez à niveau un Plugin en place
+summary: 'Hub de migration : imports inter-systèmes, déplacements de machine à machine et mises à niveau des Plugins'
 title: Guide de migration
 x-i18n:
-    generated_at: "2026-04-30T07:34:51Z"
+    generated_at: "2026-05-02T07:12:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e2a1dc86ed367a0b92cdc0d5189123bb045d327be944516f564dac723f324c97
+    source_hash: e447e38cf0086603a7b30ee5204e63cc8227ebc7a56add26d06ac2798a23e26f
     source_path: install/migrating.md
     workflow: 16
 ---
 
-OpenClaw prend en charge trois chemins de migration : importer depuis un autre système d’agent, déplacer une installation existante vers une nouvelle machine et mettre à niveau un plugin sur place.
+OpenClaw prend en charge trois parcours de migration : l’import depuis un autre système d’agent, le déplacement d’une installation existante vers une nouvelle machine et la mise à niveau d’un plugin sur place.
 
 ## Importer depuis un autre système d’agent
 
-Utilisez les fournisseurs de migration intégrés pour importer des instructions, des serveurs MCP, des skills, la configuration des modèles et, sur opt-in, des clés d’API dans OpenClaw. Les plans sont prévisualisés avant toute modification, les secrets sont masqués dans les rapports, et l’application s’appuie sur une sauvegarde vérifiée.
+Utilisez les fournisseurs de migration inclus pour importer dans OpenClaw les instructions, les serveurs MCP, les skills, la configuration du modèle et, avec consentement explicite, les clés d’API. Les plans sont prévisualisés avant toute modification, les secrets sont masqués dans les rapports, et l’application s’appuie sur une sauvegarde vérifiée.
 
 <CardGroup cols={2}>
   <Card title="Migrating from Claude" href="/fr/install/migrating-claude" icon="brain">
@@ -29,17 +29,17 @@ Utilisez les fournisseurs de migration intégrés pour importer des instructions
   </Card>
 </CardGroup>
 
-Le point d’entrée CLI est [`openclaw migrate`](/fr/cli/migrate). L’onboarding peut également proposer une migration lorsqu’il détecte une source connue (`openclaw onboard --flow import`).
+Le point d’entrée CLI est [`openclaw migrate`](/fr/cli/migrate). L’onboarding peut aussi proposer une migration lorsqu’il détecte une source connue (`openclaw onboard --flow import`).
 
 ## Déplacer OpenClaw vers une nouvelle machine
 
-Copiez le **répertoire d’état** (`~/.openclaw/` par défaut) et votre **espace de travail** afin de préserver :
+Copiez le **répertoire d’état** (`~/.openclaw/` par défaut) et votre **espace de travail** pour préserver :
 
 - **Configuration** — `openclaw.json` et tous les paramètres du gateway.
-- **Authentification** — les fichiers `auth-profiles.json` propres à chaque agent (clés d’API plus OAuth), ainsi que tout état de canal ou de fournisseur sous `credentials/`.
-- **Sessions** — l’historique des conversations et l’état des agents.
+- **Authentification** — les `auth-profiles.json` propres à chaque agent (clés d’API et OAuth), ainsi que tout état de canal ou de fournisseur sous `credentials/`.
+- **Sessions** — l’historique des conversations et l’état de l’agent.
 - **État des canaux** — connexion WhatsApp, session Telegram, et éléments similaires.
-- **Fichiers de l’espace de travail** — `MEMORY.md`, `USER.md`, les skills et les prompts.
+- **Fichiers de l’espace de travail** — `MEMORY.md`, `USER.md`, skills et prompts.
 
 <Tip>
 Exécutez `openclaw status` sur l’ancienne machine pour confirmer le chemin de votre répertoire d’état. Les profils personnalisés utilisent `~/.openclaw-<profile>/` ou un chemin défini via `OPENCLAW_STATE_DIR`.
@@ -73,7 +73,7 @@ Exécutez `openclaw status` sur l’ancienne machine pour confirmer le chemin de
     tar -xzf openclaw-state.tgz
     ```
 
-    Assurez-vous que les répertoires masqués ont été inclus et que la propriété des fichiers correspond à l’utilisateur qui exécutera le gateway.
+    Vérifiez que les répertoires cachés ont été inclus et que le propriétaire des fichiers correspond à l’utilisateur qui exécutera le gateway.
 
   </Step>
 
@@ -89,11 +89,19 @@ Exécutez `openclaw status` sur l’ancienne machine pour confirmer le chemin de
   </Step>
 </Steps>
 
+Si Telegram ou Discord utilise le repli d’environnement par défaut (`TELEGRAM_BOT_TOKEN` ou `DISCORD_BOT_TOKEN`), vérifiez que le `.env` du répertoire d’état migré contient ces clés sans afficher les valeurs secrètes :
+
+```bash
+awk -F= '/^(TELEGRAM_BOT_TOKEN|DISCORD_BOT_TOKEN)=/ { print $1 "=present" }' ~/.openclaw/.env
+```
+
+`openclaw doctor` avertit également lorsqu’un compte Telegram ou Discord par défaut activé n’a aucun jeton configuré et que la variable d’environnement correspondante n’est pas disponible pour le processus doctor.
+
 ### Pièges courants
 
 <AccordionGroup>
   <Accordion title="Profile or state-dir mismatch">
-    Si l’ancien gateway utilisait `--profile` ou `OPENCLAW_STATE_DIR` et que le nouveau ne le fait pas, les canaux apparaîtront comme déconnectés et les sessions seront vides. Lancez le gateway avec le **même** profil ou répertoire d’état que celui que vous avez migré, puis réexécutez `openclaw doctor`.
+    Si l’ancien gateway utilisait `--profile` ou `OPENCLAW_STATE_DIR` et que le nouveau ne le fait pas, les canaux sembleront déconnectés et les sessions seront vides. Lancez le gateway avec le **même** profil ou répertoire d’état que celui que vous avez migré, puis relancez `openclaw doctor`.
   </Accordion>
 
   <Accordion title="Copying only openclaw.json">
@@ -109,7 +117,7 @@ Exécutez `openclaw status` sur l’ancienne machine pour confirmer le chemin de
   </Accordion>
 
   <Accordion title="Secrets in backups">
-    Le répertoire d’état contient des profils d’authentification, des identifiants de canaux et d’autres états de fournisseurs. Stockez les sauvegardes sous forme chiffrée, évitez les canaux de transfert non sécurisés et faites tourner les clés si vous soupçonnez une exposition.
+    Le répertoire d’état contient des profils d’authentification, des identifiants de canaux et d’autres états de fournisseurs. Stockez les sauvegardes chiffrées, évitez les canaux de transfert non sécurisés et effectuez une rotation des clés si vous soupçonnez une exposition.
   </Accordion>
 </AccordionGroup>
 
@@ -126,11 +134,11 @@ Sur la nouvelle machine, confirmez que :
 
 Les mises à niveau de plugin sur place conservent le même identifiant de plugin et les mêmes clés de configuration, mais peuvent déplacer l’état sur disque vers la disposition actuelle. Les guides de mise à niveau propres aux plugins se trouvent avec leurs canaux :
 
-- [Migration Matrix](/fr/channels/matrix-migration) : limites de récupération de l’état chiffré, comportement de capture automatique et commandes de récupération manuelle.
+- [Migration Matrix](/fr/channels/matrix-migration) : limites de récupération de l’état chiffré, comportement de snapshot automatique et commandes de récupération manuelle.
 
-## Associés
+## Connexe
 
-- [`openclaw migrate`](/fr/cli/migrate) : référence CLI pour les importations entre systèmes.
+- [`openclaw migrate`](/fr/cli/migrate) : référence CLI pour les imports entre systèmes.
 - [Vue d’ensemble de l’installation](/fr/install) : toutes les méthodes d’installation.
-- [Doctor](/fr/gateway/doctor) : vérification de santé après migration.
-- [Désinstallation](/fr/install/uninstall) : supprimer proprement OpenClaw.
+- [Doctor](/fr/gateway/doctor) : contrôle de santé après migration.
+- [Désinstaller](/fr/install/uninstall) : supprimer OpenClaw proprement.
