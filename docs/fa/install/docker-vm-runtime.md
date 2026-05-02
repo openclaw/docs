@@ -1,26 +1,26 @@
 ---
 read_when:
     - شما در حال استقرار OpenClaw روی یک ماشین مجازی ابری با Docker هستید
-    - شما به جریان مشترک ساخت باینری، ماندگاری و به‌روزرسانی نیاز دارید
+    - به فرایند ساخت باینری مشترک، ماندگاری، و جریان به‌روزرسانی نیاز دارید
 summary: مراحل زمان اجرای ماشین مجازی مشترک Docker برای میزبان‌های بلندمدت OpenClaw Gateway
-title: محیط اجرای ماشین مجازی Docker
+title: محیط اجرای VM Docker
 x-i18n:
-    generated_at: "2026-04-29T23:03:21Z"
+    generated_at: "2026-05-02T11:51:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
+    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-مراحل زمان اجرای مشترک برای نصب‌های Docker مبتنی بر VM مانند GCP، Hetzner و ارائه‌دهندگان VPS مشابه.
+مراحل runtime مشترک برای نصب‌های Docker مبتنی بر VM مانند GCP، Hetzner و ارائه‌دهندگان VPS مشابه.
 
-## گنجاندن باینری‌های لازم در تصویر
+## باینری‌های موردنیاز را داخل image آماده کنید
 
-نصب باینری‌ها داخل یک کانتینر در حال اجرا یک دام است.
-هر چیزی که در زمان اجرا نصب شود، پس از راه‌اندازی مجدد از دست می‌رود.
+نصب باینری‌ها داخل container در حال اجرا یک دام است.
+هر چیزی که در runtime نصب شود، پس از restart از بین می‌رود.
 
-همه باینری‌های خارجی موردنیاز Skills باید در زمان ساخت تصویر نصب شوند.
+همه باینری‌های خارجی موردنیاز Skills باید هنگام build کردن image نصب شوند.
 
 نمونه‌های زیر فقط سه باینری رایج را نشان می‌دهند:
 
@@ -29,13 +29,13 @@ x-i18n:
 - `wacli` برای WhatsApp
 
 این‌ها نمونه هستند، نه یک فهرست کامل.
-می‌توانید با همین الگو هر تعداد باینری موردنیاز را نصب کنید.
+می‌توانید با همین الگو هر تعداد باینری که نیاز دارید نصب کنید.
 
-اگر بعدا Skills جدیدی اضافه کنید که به باینری‌های بیشتری وابسته باشد، باید:
+اگر بعدا Skills جدیدی اضافه کنید که به باینری‌های بیشتری وابسته باشند، باید:
 
 1. Dockerfile را به‌روزرسانی کنید
-2. تصویر را دوباره بسازید
-3. کانتینرها را راه‌اندازی مجدد کنید
+2. image را دوباره build کنید
+3. containerها را restart کنید
 
 **نمونه Dockerfile**
 
@@ -83,18 +83,18 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-URLهای بالا نمونه هستند. برای VMهای مبتنی بر ARM، دارایی‌های `arm64` را انتخاب کنید. برای ساخت‌های قابل بازتولید، URLهای انتشار نسخه‌دار را سنجاق کنید.
+URLهای بالا نمونه هستند. برای VMهای مبتنی بر ARM، assetهای `arm64` را انتخاب کنید. برای buildهای قابل بازتولید، URLهای release نسخه‌دار را pin کنید.
 </Note>
 
-## ساخت و راه‌اندازی
+## Build و اجرا
 
 ```bash
 docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-اگر ساخت هنگام `pnpm install --frozen-lockfile` با `Killed` یا `exit code 137` شکست بخورد، حافظه VM تمام شده است.
-پیش از تلاش دوباره، از یک رده ماشین بزرگ‌تر استفاده کنید.
+اگر build هنگام `pnpm install --frozen-lockfile` با `Killed` یا `exit code 137` شکست خورد، VM با کمبود حافظه مواجه است.
+پیش از تلاش دوباره، از یک کلاس ماشین بزرگ‌تر استفاده کنید.
 
 باینری‌ها را بررسی کنید:
 
@@ -127,21 +127,21 @@ docker compose logs -f openclaw-gateway
 ## چه چیزی کجا پایدار می‌ماند
 
 OpenClaw در Docker اجرا می‌شود، اما Docker منبع حقیقت نیست.
-همه وضعیت‌های بلندمدت باید پس از راه‌اندازی‌های مجدد، بازسازی‌ها و راه‌اندازی‌های دوباره سیستم باقی بمانند.
+همه stateهای بلندمدت باید پس از restart، rebuild و reboot باقی بمانند.
 
-| مؤلفه               | مکان                                      | سازوکار پایداری        | یادداشت‌ها                                                   |
-| ------------------- | ---------------------------------------- | ---------------------- | ------------------------------------------------------------- |
-| پیکربندی Gateway    | `/home/node/.openclaw/`                  | اتصال volume میزبان    | شامل `openclaw.json`، `.env`                                  |
-| پروفایل‌های احراز هویت مدل | `/home/node/.openclaw/agents/`           | اتصال volume میزبان    | `agents/<agentId>/agent/auth-profiles.json` (OAuth، کلیدهای API) |
-| پیکربندی‌های Skill  | `/home/node/.openclaw/skills/`           | اتصال volume میزبان    | وضعیت در سطح Skill                                           |
-| فضای کاری عامل      | `/home/node/.openclaw/workspace/`        | اتصال volume میزبان    | کد و مصنوعات عامل                                            |
-| نشست WhatsApp       | `/home/node/.openclaw/`                  | اتصال volume میزبان    | ورود با QR را حفظ می‌کند                                      |
-| keyring مربوط به Gmail | `/home/node/.openclaw/`                  | volume میزبان + گذرواژه | به `GOG_KEYRING_PASSWORD` نیاز دارد                           |
-| وابستگی‌های زمان اجرای Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | volume نام‌دار Docker   | وابستگی‌های Plugin بسته‌بندی‌شده تولیدشده و mirrorهای زمان اجرا |
-| باینری‌های خارجی    | `/usr/local/bin/`                        | تصویر Docker           | باید در زمان ساخت گنجانده شوند                               |
-| زمان اجرای Node     | فایل‌سیستم کانتینر                       | تصویر Docker           | در هر ساخت تصویر دوباره ساخته می‌شود                         |
-| بسته‌های سیستم‌عامل | فایل‌سیستم کانتینر                       | تصویر Docker           | در زمان اجرا نصب نکنید                                       |
-| کانتینر Docker      | ناپایدار                                 | قابل راه‌اندازی مجدد   | نابود کردن آن ایمن است                                       |
+| مؤلفه | مکان | سازوکار پایداری | یادداشت‌ها |
+| ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
+| پیکربندی Gateway | `/home/node/.openclaw/` | mount کردن volume میزبان | شامل `openclaw.json`، `.env` |
+| پروفایل‌های احراز هویت مدل | `/home/node/.openclaw/agents/` | mount کردن volume میزبان | `agents/<agentId>/agent/auth-profiles.json` (OAuth، کلیدهای API) |
+| پیکربندی‌های Skills | `/home/node/.openclaw/skills/` | mount کردن volume میزبان | state در سطح Skills |
+| workspace عامل | `/home/node/.openclaw/workspace/` | mount کردن volume میزبان | کد و artifactهای عامل |
+| session WhatsApp | `/home/node/.openclaw/` | mount کردن volume میزبان | ورود QR را حفظ می‌کند |
+| keyring مربوط به Gmail | `/home/node/.openclaw/` | volume میزبان + password | به `GOG_KEYRING_PASSWORD` نیاز دارد |
+| بسته‌های Plugin | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | mount کردن volume میزبان | ریشه‌های بسته Plugin قابل دانلود |
+| باینری‌های خارجی | `/usr/local/bin/` | Docker image | باید هنگام build داخل image آماده شوند |
+| runtime مربوط به Node | filesystem مربوط به container | Docker image | با هر build کردن image دوباره ساخته می‌شود |
+| بسته‌های سیستم‌عامل | filesystem مربوط به container | Docker image | در runtime نصب نکنید |
+| container مربوط به Docker | موقتی | قابل restart | نابود کردن آن امن است |
 
 ## به‌روزرسانی‌ها
 

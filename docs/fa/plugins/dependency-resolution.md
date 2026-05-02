@@ -1,152 +1,131 @@
 ---
 read_when:
-    - شما در حال اشکال‌زدایی تعمیر وابستگی زمان اجرای Plugin همراه هستید
-    - شما رفتار راه‌اندازی Plugin، doctor، یا نصب از طریق مدیر بسته را تغییر می‌دهید
-    - شما در حال نگهداری نصب‌های بسته‌بندی‌شدهٔ OpenClaw یا مانیفست‌های Plugin همراه هستید
+    - در حال اشکال‌زدایی نصب بسته‌های Plugin هستید
+    - شما در حال تغییر رفتار راه‌اندازی Plugin، doctor، یا نصب توسط مدیر بسته هستید
+    - شما در حال نگه‌داری از نصب‌های بسته‌بندی‌شده OpenClaw یا مانیفست‌های Plugin همراه هستید
 sidebarTitle: Dependencies
-summary: OpenClaw چگونه وابستگی‌های زمان اجرای Pluginهای همراه را برنامه‌ریزی، مرحله‌بندی و ترمیم می‌کند
+summary: نحوهٔ نصب بسته‌های Plugin توسط OpenClaw و حل وابستگی‌های Plugin
 title: حل وابستگی‌های Plugin
 x-i18n:
-    generated_at: "2026-05-01T11:51:08Z"
+    generated_at: "2026-05-02T11:55:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e09245c2b7e2f1fb2a61d64f0f9dc77e7df7da58fd71608c391e3865345b7bc9
+    source_hash: c9476529ad1d44ed1b17caca628c58acfbb1d8c73393f58fa7d3d76944a71aea
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-OpenClaw همهٔ درخت وابستگی Pluginهای bundled را در زمان نصب package نصب نمی‌کند. ابتدا از config و فرادادهٔ Plugin یک طرح مؤثر Plugin استخراج می‌کند، سپس وابستگی‌های runtime را فقط برای Pluginهای bundled متعلق به OpenClaw که طرح واقعاً می‌تواند load کند stage می‌کند.
+# حل وابستگی‌های Plugin
 
-این صفحه وابستگی‌های runtime بسته‌بندی‌شده برای Pluginهای bundled OpenClaw را پوشش می‌دهد. Pluginهای شخص ثالث و مسیرهای سفارشی Plugin همچنان از فرمان‌های صریح نصب Plugin مانند `openclaw plugins install` و `openclaw plugins update` استفاده می‌کنند.
+OpenClaw کار مربوط به وابستگی‌های Plugin را در زمان نصب/به‌روزرسانی نگه می‌دارد. بارگذاری زمان اجرا
+مدیرهای بسته را اجرا نمی‌کند، درخت‌های وابستگی را ترمیم نمی‌کند، یا دایرکتوری بسته
+OpenClaw را تغییر نمی‌دهد.
 
-## تقسیم مسئولیت
+## تفکیک مسئولیت
 
-OpenClaw مالک طرح و policy است:
+بسته‌های Plugin مالک گراف وابستگی خود هستند:
 
-- کدام Pluginها برای این config فعال هستند
-- کدام ریشه‌های وابستگی قابل نوشتن یا فقط خواندنی هستند
-- چه زمانی repair مجاز است
-- کدام شناسه‌های Plugin برای startup stage می‌شوند
-- بررسی‌های نهایی پیش از import کردن moduleهای runtime Plugin
+- وابستگی‌های زمان اجرا در `dependencies` یا `optionalDependencies` بسته Plugin قرار می‌گیرند
+- ایمپورت‌های SDK/هسته، peer هستند یا ایمپورت‌های فراهم‌شده توسط OpenClaw
+- Pluginهای توسعه محلی، وابستگی‌های ازپیش‌نصب‌شده خودشان را همراه دارند
+- Pluginهای npm و git در ریشه‌های بسته متعلق به OpenClaw نصب می‌شوند
 
-مدیر package مالک همگرا کردن وابستگی‌ها است:
+OpenClaw فقط مالک چرخه عمر Plugin است:
 
-- resolution گراف package
-- مدیریت وابستگی‌های production، optional و peer
-- چیدمان `node_modules`
-- یکپارچگی package
-- فرادادهٔ lock و install
-
-در عمل، OpenClaw باید تصمیم بگیرد چه چیزی باید وجود داشته باشد. `pnpm` یا `npm` باید filesystem را با آن تصمیم هماهنگ کند.
-
-OpenClaw همچنین مالک قفل هماهنگی در سطح هر install root است. مدیران package از تراکنش نصب خودشان محافظت می‌کنند، اما نوشتن‌های manifest توسط OpenClaw، copy/rename در stage ایزوله، validation نهایی، یا import کردن Plugin را در برابر Gateway، doctor یا فرایند CLI دیگری که همان ریشهٔ وابستگی runtime را لمس می‌کند، serialize نمی‌کنند.
-
-## طرح مؤثر Plugin
-
-طرح مؤثر Plugin از config به‌علاوهٔ فرادادهٔ کشف‌شدهٔ Plugin استخراج می‌شود. این ورودی‌ها می‌توانند وابستگی‌های runtime Pluginهای bundled را فعال کنند:
-
-- `plugins.entries.<id>.enabled`
-- `plugins.allow`، `plugins.deny` و `plugins.enabled`
-- config قدیمی channel مانند `channels.telegram.enabled`
-- providerها، modelها یا ارجاع‌های backend در CLI که به یک Plugin نیاز دارند
-- پیش‌فرض‌های manifest bundled مانند `enabledByDefault`
-- index Plugin نصب‌شده و فرادادهٔ manifest bundled
-
-غیرفعال‌سازی صریح مقدم است. یک Plugin غیرفعال، شناسهٔ Plugin ردشده، سیستم Plugin غیرفعال، یا channel غیرفعال، repair وابستگی runtime را trigger نمی‌کند. وضعیت auth ذخیره‌شده به‌تنهایی نیز یک channel یا provider bundled را فعال نمی‌کند.
-
-طرح Plugin ورودی پایدار است. materialization وابستگی تولیدشده خروجی آن طرح است.
-
-## جریان startup
-
-startup در Gateway، config را parse می‌کند و پیش از load شدن moduleهای runtime Plugin، جدول lookup Pluginهای startup را می‌سازد. سپس startup وابستگی‌های runtime را فقط برای `startupPluginIds` انتخاب‌شده توسط آن طرح stage می‌کند.
-
-برای نصب‌های packaged، staging وابستگی پیش از import کردن Plugin مجاز است. پس از staging، loader runtime، Pluginهای startup را با repair نصب غیرفعال import می‌کند؛ در آن نقطه، materialization وابستگی مفقود به‌عنوان failure در load در نظر گرفته می‌شود، نه یک loop دیگر برای repair.
-
-وقتی staging وابستگی startup به بعد از HTTP bind موکول می‌شود، readiness در Gateway تا زمانی که وابستگی‌های Pluginهای startup انتخاب‌شده materialize شوند و runtime Plugin startup load شود، روی دلیل `plugin-runtime-deps` blocked می‌ماند.
-
-## زمان اجرای repair
-
-repair وابستگی runtime باید زمانی اجرا شود که یکی از این موارد درست باشد:
-
-- طرح مؤثر Plugin تغییر کرده و Pluginهای bundled اضافه می‌کند که به وابستگی‌های runtime نیاز دارند
-- manifest وابستگی تولیدشده دیگر با طرح مؤثر مطابقت ندارد
-- sentinelهای package نصب‌شدهٔ مورد انتظار مفقود یا ناقص هستند
-- `openclaw doctor --fix` یا `openclaw plugins deps --repair` درخواست شده است
-
-repair وابستگی runtime نباید فقط به این دلیل اجرا شود که OpenClaw started است. یک startup عادی با طرح بدون تغییر و materialization کامل وابستگی باید کار مدیر package را skip کند.
-
-فرمان‌هایی که config را ویرایش می‌کنند، Pluginها را فعال می‌کنند، یا یافته‌های doctor را repair می‌کنند، می‌توانند یک‌بار وارد حالت طرح Plugin شوند، وابستگی‌های bundled تازه موردنیاز را materialize کنند، سپس به جریان عادی فرمان برگردند. `openclaw onboard` محلی و `openclaw configure` پس از اینکه config را با موفقیت write کنند این کار را خودکار انجام می‌دهند، بنابراین اجرای بعدی Gateway پس از اینکه startup از قبل آغاز شده است packageهای bundled Plugin مفقود را کشف نمی‌کند. onboarding/configure از راه دور برای runtime deps محلی read-only می‌ماند.
-
-## قانون hot reload
-
-مسیرهای hot reload که می‌توانند Pluginهای فعال را تغییر دهند باید پیش از load کردن runtime Plugin دوباره از حالت طرح Plugin عبور کنند. reload باید طرح مؤثر جدید Plugin را با طرح قبلی compare کند، وابستگی‌های مفقود را برای Pluginهای bundled تازه فعال stage کند، سپس runtime تحت تأثیر را load یا restart کند.
-
-اگر reload کردن config طرح مؤثر Plugin را تغییر ندهد، نباید وابستگی‌های runtime bundled را repair کند.
-
-## اجرای مدیر package
-
-OpenClaw یک manifest نصب تولیدشده برای وابستگی‌های runtime bundled انتخاب‌شده می‌نویسد و مدیر package را در install root وابستگی runtime اجرا می‌کند. وقتی `pnpm` در دسترس باشد آن را ترجیح می‌دهد و در غیر این صورت به runner `npm` bundled با Node fallback می‌کند.
-
-مسیر `pnpm` از وابستگی‌های production استفاده می‌کند، lifecycle scriptها را غیرفعال می‌کند، workspace را نادیده می‌گیرد، و store را داخل install root نگه می‌دارد:
-
-```bash
-pnpm install \
-  --prod \
-  --ignore-scripts \
-  --ignore-workspace \
-  --config.frozen-lockfile=false \
-  --config.minimum-release-age=0 \
-  --config.store-dir=<install-root>/.openclaw-pnpm-store \
-  --config.node-linker=hoisted \
-  --config.virtual-store-dir=.pnpm
-```
-
-fallback `npm` از wrapper امن نصب npm با وابستگی‌های production، lifecycle scriptهای غیرفعال، حالت workspace غیرفعال، audit غیرفعال، خروجی fund غیرفعال، رفتار legacy برای peer dependency، و خروجی package-lock فعال برای install root تولیدشده استفاده می‌کند.
-
-پس از نصب، OpenClaw پیش از قابل مشاهده کردن درخت وابستگی stage‌شده برای ریشهٔ وابستگی runtime، آن را validate می‌کند. staging ایزوله در ریشهٔ وابستگی runtime کپی می‌شود و دوباره validate می‌شود.
-
-کل بخش repair/materialization با یک قفل install-root محافظت می‌شود. مالک‌های فعلی lock، PID، زمان شروع فرایند در صورت موجود بودن، و زمان ایجاد را ثبت می‌کنند. lockهای legacy بدون evidence زمان شروع فرایند یا زمان ایجاد، فقط بر اساس سن filesystem بازپس‌گرفته می‌شوند، بنابراین lockهای Docker PID 1 بازیافت‌شده بدون اینکه نصب‌های فعلی عادی و طولانی‌مدت صرفاً بر اساس سن expire شوند، recover می‌شوند.
+- کشف منبع Plugin
+- نصب یا به‌روزرسانی بسته هنگام درخواست صریح
+- ثبت فراداده نصب
+- بارگذاری نقطه ورود Plugin
+- شکست با خطای قابل اقدام وقتی وابستگی‌ها موجود نیستند
 
 ## ریشه‌های نصب
 
-نصب‌های packaged نباید directoryهای package فقط خواندنی را mutate کنند. OpenClaw می‌تواند ریشه‌های وابستگی را از لایه‌های packaged بخواند، اما وابستگی‌های runtime تولیدشده را در یک stage قابل نوشتن می‌نویسد، مانند:
+OpenClaw از ریشه‌های پایدار به‌ازای هر منبع استفاده می‌کند:
 
-- `OPENCLAW_PLUGIN_STAGE_DIR`
-- `$STATE_DIRECTORY`
-- `~/.openclaw/plugin-runtime-deps`
-- `/var/lib/openclaw/plugin-runtime-deps` در نصب‌های container-style
+- بسته‌های npm زیر `~/.openclaw/npm` نصب می‌شوند
+- بسته‌های git زیر `~/.openclaw/git` clone می‌شوند
+- نصب‌های محلی/مسیر/آرشیو بدون ترمیم وابستگی کپی یا ارجاع داده می‌شوند
 
-ریشهٔ قابل نوشتن هدف نهایی materialization است. ریشه‌های قدیمی‌تر فقط خواندنی فقط در صورت نیاز به‌عنوان لایه‌های compatibility نگه داشته می‌شوند.
-
-وقتی یک update بسته‌بندی‌شدهٔ OpenClaw ریشهٔ قابل نوشتن versioned را تغییر می‌دهد اما طرح وابستگی Pluginهای bundled انتخاب‌شده همچنان توسط ریشهٔ stage‌شدهٔ قبلی برآورده می‌شود، repair به‌جای اجرای دوبارهٔ مدیر package، همان درخت `node_modules` قبلی را reuse می‌کند. ریشهٔ versioned جدید همچنان mirror فعلی runtime package خودش را می‌گیرد، بنابراین کد Plugin از package فعلی OpenClaw می‌آید در حالی که درخت‌های وابستگی بدون تغییر در updateها shared می‌شوند. reuse ریشه‌های قبلی دارای lock فعال وابستگی runtime OpenClaw را skip می‌کند، بنابراین ریشهٔ جدید به درخت وابستگی‌ای link نمی‌شود که Gateway، doctor یا فرایند CLI دیگری در حال حاضر در حال repair کردن آن است.
-
-## فرمان‌های doctor و CLI
-
-از `plugins deps` برای inspect یا repair کردن materialization وابستگی runtime Pluginهای bundled استفاده کنید:
+نصب‌های npm در ریشه npm با این دستور اجرا می‌شوند:
 
 ```bash
-openclaw plugins deps
-openclaw plugins deps --json
-openclaw plugins deps --repair
-openclaw plugins deps --prune
+npm install --prefix ~/.openclaw/npm <spec> --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-وقتی وضعیت وابستگی بخشی از سلامت گسترده‌تر نصب است، از doctor استفاده کنید:
+npm ممکن است وابستگی‌های گذرای Plugin را کنار بسته Plugin به
+`~/.openclaw/npm/node_modules` hoist کند. OpenClaw پیش از اعتماد به نصب، ریشه npm مدیریت‌شده را اسکن می‌کند
+و هنگام حذف نصب، از npm برای حذف بسته‌های مدیریت‌شده توسط npm استفاده می‌کند، بنابراین وابستگی‌های
+زمان اجرای hoistشده داخل مرز پاک‌سازی مدیریت‌شده باقی می‌مانند.
+
+نصب‌های git مخزن را clone یا refresh می‌کنند، سپس اجرا می‌کنند:
 
 ```bash
-openclaw doctor
+npm install --omit=dev --ignore-scripts --no-audit --no-fund
+```
+
+سپس Plugin نصب‌شده از همان دایرکتوری بسته بارگذاری می‌شود، بنابراین حل‌وفصل
+`node_modules` محلیِ بسته و والد همان‌طور کار می‌کند که برای یک بسته معمولی
+Node کار می‌کند.
+
+## Pluginهای محلی
+
+Pluginهای محلی به‌عنوان دایرکتوری‌های تحت کنترل توسعه‌دهنده در نظر گرفته می‌شوند. OpenClaw برای آن‌ها
+`npm install`، `pnpm install`، یا ترمیم وابستگی اجرا نمی‌کند. اگر یک Plugin محلی
+وابستگی دارد، پیش از بارگذاری آن، وابستگی‌ها را در همان Plugin نصب کنید.
+
+Pluginهای محلی TypeScript شخص ثالث می‌توانند از مسیر اضطراری Jiti استفاده کنند. Pluginهای
+JavaScript بسته‌بندی‌شده و Pluginهای داخلی همراه، به‌جای Jiti از طریق
+import/require بومی بارگذاری می‌شوند.
+
+## راه‌اندازی و بارگذاری مجدد
+
+راه‌اندازی Gateway و بارگذاری مجدد پیکربندی هرگز وابستگی‌های Plugin را نصب نمی‌کنند. آن‌ها
+رکوردهای نصب Plugin را می‌خوانند، نقطه ورود را محاسبه می‌کنند، و آن را بارگذاری می‌کنند.
+
+اگر یک وابستگی در زمان اجرا موجود نباشد، Plugin بارگذاری نمی‌شود و خطا
+باید اپراتور را به یک اصلاح صریح راهنمایی کند:
+
+```bash
+openclaw plugins update <id>
+openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`plugins deps` و doctor روی وابستگی‌های runtime Pluginهای bundled متعلق به OpenClaw که توسط طرح مؤثر Plugin انتخاب شده‌اند عمل می‌کنند. آن‌ها فرمان‌های نصب یا update برای Pluginهای شخص ثالث نیستند.
+`doctor --fix` می‌تواند وضعیت وابستگی قدیمی تولیدشده توسط OpenClaw را پاک‌سازی کند و
+Pluginهای قابل‌دانلود پیکربندی‌شده‌ای را که در رکوردهای نصب محلی وجود ندارند نصب کند.
+این دستور وابستگی‌های یک Plugin محلیِ ازپیش‌نصب‌شده را ترمیم نمی‌کند.
 
-## عیب‌یابی
+## Pluginهای همراه
 
-اگر یک نصب packaged وابستگی‌های runtime bundled مفقود گزارش کرد:
+Pluginهای سبک و حیاتی برای هسته، به‌عنوان بخشی از OpenClaw منتشر می‌شوند.
+آن‌ها یا نباید درخت وابستگی زمان اجرای سنگینی داشته باشند، یا باید به یک
+بسته قابل‌دانلود در ClawHub/npm منتقل شوند.
 
-1. `openclaw plugins deps --json` را اجرا کنید تا طرح انتخاب‌شده و packageهای مفقود را inspect کنید.
-2. `openclaw plugins deps --repair` یا `openclaw doctor --fix` را اجرا کنید تا stage وابستگی قابل نوشتن repair شود.
-3. اگر install root فقط خواندنی است، `OPENCLAW_PLUGIN_STAGE_DIR` را روی یک مسیر قابل نوشتن تنظیم کنید و repair را دوباره اجرا کنید.
-4. اگر وابستگی مفقود، load شدن Plugin startup را blocked کرده بود، پس از repair، Gateway را restart کنید.
+برای فهرست تولیدشده فعلی Pluginهایی که در بسته هسته منتشر می‌شوند، بیرونی نصب می‌شوند،
+یا فقط در سورس باقی می‌مانند، [موجودی Plugin](/fa/plugins/plugin-inventory) را ببینید.
 
-در source checkoutها، نصب workspace معمولاً وابستگی‌های Pluginهای bundled را فراهم می‌کند. برای repair وابستگی source، به‌جای اینکه در گام اول از repair وابستگی runtime packaged استفاده کنید، `pnpm install` را اجرا کنید.
+manifestهای Plugin همراه نباید staging وابستگی درخواست کنند. قابلیت‌های بزرگ یا اختیاری
+Plugin باید به‌عنوان یک Plugin معمولی بسته‌بندی شوند و از طریق همان مسیر
+npm/git/ClawHub مانند Pluginهای شخص ثالث نصب شوند.
+
+در checkoutهای سورس، OpenClaw مخزن را به‌عنوان یک monorepo مبتنی بر pnpm در نظر می‌گیرد. پس از
+`pnpm install`، Pluginهای همراه از `extensions/<id>` بارگذاری می‌شوند تا وابستگی‌های
+workspace محلی بسته در دسترس باشند و ویرایش‌ها مستقیماً اعمال شوند. توسعه در checkout سورس
+فقط با pnpm پشتیبانی می‌شود؛ اجرای ساده `npm install` در ریشه مخزن
+روش پشتیبانی‌شده‌ای برای آماده‌سازی وابستگی‌های Plugin همراه نیست.
+
+| شکل نصب                         | محل Plugin همراه                     | مالک وابستگی                                                        |
+| -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
+| `npm install -g openclaw`        | درخت زمان اجرای ساخته‌شده داخل بسته | بسته OpenClaw و جریان‌های صریح نصب/به‌روزرسانی/doctor برای Plugin   |
+| checkout از Git به‌همراه `pnpm install` | بسته‌های workspace در `extensions/<id>` | workspace مبتنی بر pnpm، شامل وابستگی‌های خود هر بسته Plugin        |
+| `openclaw plugins install ...`   | ریشه Plugin مدیریت‌شده npm/git/ClawHub | جریان نصب/به‌روزرسانی Plugin                                       |
+
+## پاک‌سازی قدیمی
+
+نسخه‌های قدیمی‌تر OpenClaw در زمان راه‌اندازی یا هنگام ترمیم doctor، ریشه‌های وابستگی
+Plugin همراه تولید می‌کردند. پاک‌سازی فعلی doctor وقتی از `--fix` استفاده شود،
+آن دایرکتوری‌ها و symlinkهای کهنه را حذف می‌کند، از جمله ریشه‌های قدیمی
+`plugin-runtime-deps`، manifestهای `.openclaw-runtime-deps*`، `node_modules`های Plugin تولیدشده،
+دایرکتوری‌های مرحله نصب، و storeهای pnpm محلیِ بسته.
+
+این مسیرها فقط بقایای قدیمی هستند. نصب‌های جدید نباید آن‌ها را ایجاد کنند.

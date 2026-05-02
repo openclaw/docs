@@ -1,35 +1,36 @@
 ---
 read_when:
-    - می‌خواهید شناسه‌های مخاطبان/گروه‌ها/خود را برای یک کانال پیدا کنید
-    - شما در حال توسعه‌ی یک آداپتور فهرست کانال هستید
+    - می‌خواهید شناسه‌های مخاطبان/گروه‌ها/خودتان را برای یک کانال جست‌وجو کنید
+    - شما در حال توسعهٔ یک آداپتور دایرکتوری کانال هستید
 summary: مرجع CLI برای `openclaw directory` (خود، همتایان، گروه‌ها)
 title: دایرکتوری
 x-i18n:
-    generated_at: "2026-04-29T22:34:55Z"
+    generated_at: "2026-05-02T11:39:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
     workflow: 16
 ---
 
 # `openclaw directory`
 
-جست‌وجوهای دایرکتوری برای کانال‌هایی که از آن پشتیبانی می‌کنند (مخاطبان/همتایان، گروه‌ها، و «من»).
+جست‌وجوهای Directory برای کانال‌هایی که از آن پشتیبانی می‌کنند (مخاطبان/همتاها، گروه‌ها، و «من»).
 
 ## پرچم‌های مشترک
 
-- `--channel <name>`: شناسه/نام مستعار کانال (وقتی چند کانال پیکربندی شده باشند الزامی است؛ وقتی فقط یکی پیکربندی شده باشد خودکار است)
+- `--channel <name>`: شناسه/نام مستعار کانال (وقتی چند کانال پیکربندی شده باشند الزامی است؛ وقتی فقط یک کانال پیکربندی شده باشد خودکار است)
 - `--account <id>`: شناسه حساب (پیش‌فرض: پیش‌فرض کانال)
 - `--json`: خروجی JSON
 
 ## نکته‌ها
 
-- `directory` برای کمک به یافتن شناسه‌هایی است که می‌توانید در فرمان‌های دیگر جای‌گذاری کنید (به‌ویژه `openclaw message send --target ...`).
-- برای بسیاری از کانال‌ها، نتایج به‌جای دایرکتوری زنده ارائه‌دهنده، مبتنی بر پیکربندی هستند (فهرست‌های مجاز / گروه‌های پیکربندی‌شده).
+- `directory` برای این است که به شما کمک کند شناسه‌هایی را پیدا کنید که می‌توانید در فرمان‌های دیگر جای‌گذاری کنید (به‌ویژه `openclaw message send --target ...`).
+- برای بسیاری از کانال‌ها، نتیجه‌ها به‌جای یک Directory زنده از ارائه‌دهنده، بر پایه پیکربندی هستند (فهرست‌های مجاز / گروه‌های پیکربندی‌شده).
+- Pluginهای کانال نصب‌شده همچنان می‌توانند پشتیبانی از Directory را حذف کنند؛ در این حالت، فرمان به‌جای نصب دوباره Plugin، عملیات Directory پشتیبانی‌نشده را گزارش می‌کند.
 - خروجی پیش‌فرض `id` (و گاهی `name`) است که با یک تب جدا شده‌اند؛ برای اسکریپت‌نویسی از `--json` استفاده کنید.
 
-## استفاده از نتایج با `message send`
+## استفاده از نتیجه‌ها با `message send`
 
 ```bash
 openclaw directory peers list --channel slack --query "U0"
@@ -39,21 +40,21 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ## قالب‌های شناسه (بر اساس کانال)
 
 - WhatsApp: `+15551234567` (پیام مستقیم)، `1234567890-1234567890@g.us` (گروه)
-- Telegram: `@username` یا شناسه عددی چت؛ گروه‌ها شناسه‌های عددی هستند
+- Telegram: `@username` یا شناسه عددی گفت‌وگو؛ گروه‌ها شناسه‌های عددی هستند
 - Slack: `user:U…` و `channel:C…`
 - Discord: `user:<id>` و `channel:<id>`
 - Matrix (Plugin): `user:@user:server`، `room:!roomId:server`، یا `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` و `conversation:<id>`
-- Zalo (Plugin): شناسه کاربر (Bot API)
-- Zalo Personal / `zalouser` (Plugin): شناسه رشته گفتگو (پیام مستقیم/گروه) از `zca` (`me`، `friend list`، `group list`)
+- Zalo (Plugin): شناسه کاربر (رابط برنامه‌نویسی ربات)
+- Zalo Personal / `zalouser` (Plugin): شناسه رشته گفت‌وگو (پیام مستقیم/گروه) از `zca` (`me`، `friend list`، `group list`)
 
-## خود ("me")
+## خود کاربر ("me")
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## همتایان (مخاطبان/کاربران)
+## همتاها (مخاطبان/کاربران)
 
 ```bash
 openclaw directory peers list --channel zalouser
