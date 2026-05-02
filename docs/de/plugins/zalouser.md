@@ -2,52 +2,51 @@
 read_when:
     - Sie möchten Unterstützung für Zalo Personal (inoffiziell) in OpenClaw
     - Sie konfigurieren oder entwickeln das zalouser-Plugin
-summary: 'Zalo Personal-Plugin: QR-Anmeldung + Nachrichtenversand über natives zca-js (Plugin-Installation + Kanal-Konfiguration + Tool)'
+summary: 'Zalo Personal-Plugin: QR-Anmeldung + Nachrichtenversand über natives zca-js (Plugin-Installation + Kanalkonfiguration + Tool)'
 title: Persönliches Zalo-Plugin
 x-i18n:
-    generated_at: "2026-04-30T07:09:13Z"
+    generated_at: "2026-05-02T22:21:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
+    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
 # Zalo Personal (Plugin)
 
-Unterstützung für Zalo Personal in OpenClaw über ein Plugin, wobei das native `zca-js` verwendet wird, um ein normales Zalo-Benutzerkonto zu automatisieren.
+Zalo Personal-Unterstützung für OpenClaw über ein Plugin, mit nativem `zca-js`, um ein normales Zalo-Benutzerkonto zu automatisieren.
 
 <Warning>
-Inoffizielle Automatisierung kann zur Kontosperrung oder zum Bann führen. Die Nutzung erfolgt auf eigenes Risiko.
+Inoffizielle Automatisierung kann zur Sperrung oder zum Bann des Kontos führen. Nutzung auf eigenes Risiko.
 </Warning>
 
 ## Benennung
 
-Die Channel-ID ist `zalouser`, um ausdrücklich zu machen, dass damit ein **persönliches Zalo-Benutzerkonto** automatisiert wird (inoffiziell). Wir halten `zalo` für eine mögliche künftige offizielle Zalo-API-Integration reserviert.
+Die Kanal-ID ist `zalouser`, um ausdrücklich zu machen, dass dadurch ein **persönliches Zalo-Benutzerkonto** automatisiert wird (inoffiziell). Wir halten `zalo` für eine mögliche zukünftige offizielle Integration der Zalo-API reserviert.
 
-## Ausführungsort
+## Wo es ausgeführt wird
 
 Dieses Plugin wird **innerhalb des Gateway-Prozesses** ausgeführt.
 
-Wenn Sie ein entferntes Gateway verwenden, installieren/konfigurieren Sie es auf der **Maschine, auf der das Gateway ausgeführt wird**, und starten Sie anschließend das Gateway neu.
+Wenn Sie einen entfernten Gateway verwenden, installieren/konfigurieren Sie es auf der **Maschine, auf der der Gateway ausgeführt wird**, und starten Sie dann den Gateway neu.
 
-Es ist keine externe `zca`-/`openzca`-CLI-Binärdatei erforderlich.
+Es ist keine externe `zca`/`openzca`-CLI-Binärdatei erforderlich.
 
-## Installieren
+## Installation
 
-### Option A: von npm installieren
+### Option A: Installation von npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
-Wenn npm meldet, dass das OpenClaw-eigene Paket als veraltet markiert ist, stammt diese Paketversion
-aus einem älteren externen Paket-Zweig; verwenden Sie einen aktuellen paketierten OpenClaw-Build oder
-den lokalen Ordnerpfad, bis ein neueres npm-Paket veröffentlicht wird.
+Verwenden Sie das Paket ohne Versionsangabe, um dem aktuellen offiziellen Release-Tag zu folgen. Pinnen Sie eine exakte
+Version nur dann, wenn Sie eine reproduzierbare Installation benötigen.
 
-Starten Sie anschließend das Gateway neu.
+Starten Sie den Gateway anschließend neu.
 
-### Option B: aus einem lokalen Ordner installieren (Entwicklung)
+### Option B: Installation aus einem lokalen Ordner (Entwicklung)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -55,11 +54,11 @@ openclaw plugins install "$PLUGIN_SRC"
 cd "$PLUGIN_SRC" && pnpm install
 ```
 
-Starten Sie anschließend das Gateway neu.
+Starten Sie den Gateway anschließend neu.
 
 ## Konfiguration
 
-Die Channel-Konfiguration liegt unter `channels.zalouser` (nicht `plugins.entries.*`):
+Die Kanalkonfiguration befindet sich unter `channels.zalouser` (nicht `plugins.entries.*`):
 
 ```json5
 {
@@ -88,7 +87,7 @@ Tool-Name: `zalouser`
 
 Aktionen: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Channel-Nachrichtenaktionen unterstützen außerdem `react` für Nachrichtenreaktionen.
+Kanalnachrichtenaktionen unterstützen außerdem `react` für Nachrichtenreaktionen.
 
 ## Verwandte Themen
 

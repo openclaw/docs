@@ -1,42 +1,41 @@
 ---
 read_when:
-    - Darstellung der Assistentenausgabe in der Control UI ändern
-    - Debugging von `[embed ...]`, `MEDIA:`, Antwort- oder Audio-Präsentationsdirektiven
-summary: Shortcode-Protokoll für formatierte Ausgaben, Einbettungen, Medien, Audiohinweise und Antworten
-title: Protokoll für formatierte Ausgaben
+    - Darstellung von Assistentenausgaben in der Control UI ändern
+    - Fehlersuche für `[embed ...]`-, `MEDIA:`-, Antwort- oder Audio-Präsentationsanweisungen
+summary: Shortcode-Protokoll für erweiterte Ausgaben mit Einbettungen, Medien, Audiohinweisen und Antworten
+title: Protokoll für erweiterte Ausgabe
 x-i18n:
-    generated_at: "2026-04-30T07:13:37Z"
+    generated_at: "2026-05-02T22:22:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7c52a2f3a37e7a8d1237046edafc3e80c3199c01f890a1ef39662436590ef55d
+    source_hash: 8e0c365029c26d198090e1f181703e3979394afb0dfa1742f9c088885650de8b
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Die Ausgabe des Assistant kann eine kleine Gruppe von Auslieferungs-/Darstellungsdirektiven enthalten:
+Die Assistentenausgabe kann eine kleine Menge an Liefer-/Darstellungsdirektiven enthalten:
 
-- `MEDIA:` für die Auslieferung von Anhängen
+- `MEDIA:` für die Zustellung von Anhängen
 - `[[audio_as_voice]]` für Hinweise zur Audiopräsentation
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` für Antwortmetadaten
 - `[embed ...]` für erweiterte Darstellung in der Control UI
 
 Remote-`MEDIA:`-Anhänge müssen öffentliche `https:`-URLs sein. Reines `http:`,
-Loopback, link-lokale, private und interne Hostnamen werden als Anhangs-
-direktiven ignoriert; serverseitige Medienabrufmechanismen erzwingen weiterhin
-ihre eigenen Netzwerkschutzmaßnahmen.
+Loopback, Link-Local, private und interne Hostnamen werden als Anhangsdirektiven
+ignoriert; serverseitige Medienabrufe erzwingen weiterhin ihre eigenen Netzwerkschutzmaßnahmen.
 
-Normale Markdown-Bildsyntax bleibt standardmäßig Text. Kanäle, die Markdown-
-Bildantworten absichtlich Medienanhängen zuordnen, aktivieren dies in ihrem
-ausgehenden Adapter; Telegram tut dies, sodass `![alt](url)` weiterhin zu einer
-Medienantwort werden kann.
+Lokale `MEDIA:`-Anhänge können absolute Pfade, workspace-relative Pfade oder
+home-relative `~/`-Pfade verwenden. Sie durchlaufen vor der Zustellung weiterhin
+die Datei-Leserichtlinie des Agenten und Medientypprüfungen.
 
-Diese Direktiven sind voneinander getrennt. `MEDIA:` und Antwort-/Voice-Tags bleiben Auslieferungsmetadaten; `[embed ...]` ist der nur für das Web bestimmte Pfad für erweiterte Darstellung.
-Vertrauenswürdige Medien aus Tool-Ergebnissen verwenden vor der Auslieferung denselben `MEDIA:`-/`[[audio_as_voice]]`-Parser, sodass Textausgaben von Tools einen Audioanhang weiterhin als Sprachnachricht kennzeichnen können.
+Normale Markdown-Bildsyntax bleibt standardmäßig Text. Kanäle, die Markdown-Bildantworten
+absichtlich Anhängen zuordnen, aktivieren dies in ihrem ausgehenden
+Adapter; Telegram macht das, damit `![alt](url)` weiterhin zu einer Medienantwort werden kann.
 
-Wenn Block-Streaming aktiviert ist, bleibt `MEDIA:` eine Metadatenangabe für
-eine einzelne Auslieferung in einem Turn. Wenn dieselbe Medien-URL in einem gestreamten Block gesendet und in der finalen
-Assistant-Nutzlast wiederholt wird, liefert OpenClaw den Anhang einmal aus und entfernt das Duplikat
-aus der finalen Nutzlast.
+Diese Direktiven sind getrennt. `MEDIA:` und Antwort-/Sprach-Tags bleiben Zustellungsmetadaten; `[embed ...]` ist der ausschließlich webbasierte Pfad für erweiterte Darstellung.
+Vertrauenswürdige Tool-Ergebnis-Medien verwenden vor der Zustellung denselben `MEDIA:`- / `[[audio_as_voice]]`-Parser, sodass Textausgaben von Tools einen Audioanhang weiterhin als Sprachnotiz markieren können.
+
+Wenn Block-Streaming aktiviert ist, bleibt `MEDIA:` für einen Turn eine Metadatenangabe mit einmaliger Zustellung. Wenn dieselbe Medien-URL in einem gestreamten Block gesendet und in der finalen Assistenten-Nutzlast wiederholt wird, stellt OpenClaw den Anhang einmal zu und entfernt das Duplikat aus der finalen Nutzlast.
 
 ## `[embed ...]`
 
@@ -51,15 +50,15 @@ Selbstschließendes Beispiel:
 Regeln:
 
 - `[view ...]` ist für neue Ausgaben nicht mehr gültig.
-- Einbettungs-Shortcodes werden nur auf der Nachrichtenoberfläche des Assistant dargestellt.
-- Nur URL-basierte Einbettungen werden dargestellt. Verwenden Sie `ref="..."` oder `url="..."`.
-- Einbettungs-Shortcodes im Blockformat mit Inline-HTML werden nicht dargestellt.
-- Die Web-UI entfernt den Shortcode aus dem sichtbaren Text und stellt die Einbettung inline dar.
-- `MEDIA:` ist kein Alias für Einbettungen und sollte nicht für erweiterte Einbettungsdarstellung verwendet werden.
+- Embed-Shortcodes werden nur in der Oberfläche der Assistentennachricht dargestellt.
+- Nur URL-gestützte Embeds werden dargestellt. Verwenden Sie `ref="..."` oder `url="..."`.
+- Inline-HTML-Embed-Shortcodes in Blockform werden nicht dargestellt.
+- Die Web-UI entfernt den Shortcode aus dem sichtbaren Text und stellt den Embed inline dar.
+- `MEDIA:` ist kein Embed-Alias und sollte nicht für Rich-Embed-Darstellung verwendet werden.
 
 ## Gespeicherte Darstellungsform
 
-Der normalisierte/gespeicherte Inhaltsblock des Assistant ist ein strukturiertes `canvas`-Element:
+Der normalisierte/gespeicherte Inhaltsblock des Assistenten ist ein strukturiertes `canvas`-Element:
 
 ```json
 {
@@ -76,9 +75,9 @@ Der normalisierte/gespeicherte Inhaltsblock des Assistant ist ein strukturiertes
 }
 ```
 
-Gespeicherte/dargestellte Blöcke für erweiterte Darstellung verwenden diese `canvas`-Form direkt. `present_view` wird nicht erkannt.
+Gespeicherte/dargestellte Rich-Blöcke verwenden diese `canvas`-Form direkt. `present_view` wird nicht erkannt.
 
-## Verwandte Themen
+## Verwandt
 
 - [RPC-Adapter](/de/reference/rpc)
 - [Typebox](/de/concepts/typebox)

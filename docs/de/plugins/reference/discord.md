@@ -4,10 +4,10 @@ read_when:
 summary: Fügt die Discord-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Discord-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:07Z"
+    generated_at: "2026-05-02T22:20:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fd84b465797fd02f9b008bb3f951c8a7e5f12a524b7c2d8c01681215271b83ba
+    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Fügt die Discord-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachric
 ## Distribution
 
 - Paket: `@openclaw/discord`
-- Installationsweg: in OpenClaw enthalten
+- Installationsweg: ClawHub + npm
 
 ## Oberfläche
 
@@ -27,4 +27,4 @@ channels: discord
 
 ## Zugehörige Dokumentation
 
-- [Discord](/de/channels/discord)
+- [discord](/de/channels/discord)
