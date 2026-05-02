@@ -1,25 +1,25 @@
 ---
 read_when:
-    - googlechat プラグインをインストール、設定、または監査しています
-summary: OpenClaw メッセージを送受信するための Google Chat チャネルサーフェスを追加します。
+    - googlechat Plugin をインストール、設定、または監査している
+summary: OpenClaw メッセージの送受信用に Google Chat チャネルサーフェスを追加します。
 title: Google Chat Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:45Z"
+    generated_at: "2026-05-02T22:20:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5806bfb6c5a21bfb83bccd20a998795c00a8ad69af69649aee52db72ae7f6cc4
+    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Google Chat Plugin
 
-OpenClawメッセージを送受信するための Google Chat チャンネルサーフェスを追加します。
+OpenClaw メッセージの送受信用に Google Chat チャネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/googlechat`
-- インストール経路: ClawHub + npm
+- インストール経路: OpenClaw に含まれています
 
 ## サーフェス
 

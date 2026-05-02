@@ -1,61 +1,61 @@
 ---
 read_when:
-    - Nextcloud Talk チャンネル機能に取り組む
-summary: Nextcloud Talk のサポート状況、機能、設定
+    - Nextcloud Talk チャネル機能に取り組む
+summary: Nextcloud Talk のサポート状況、機能、および設定
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-04-30T04:59:52Z"
+    generated_at: "2026-05-02T22:16:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fcbe8a65adfddc95d2b4944af88f9982e23a1676752efec2bbf40cfc4dd846d2
+    source_hash: 4956586ae8622118dcf136f4279c6ed1c2895fd4bb4576a7f5799de600a95740
     source_path: channels/nextcloud-talk.md
     workflow: 16
 ---
 
-ステータス: バンドルされたPlugin (Webhookボット)。ダイレクトメッセージ、ルーム、リアクション、マークダウンメッセージに対応しています。
+ステータス: バンドル済みPlugin（Webhook ボット）。ダイレクトメッセージ、ルーム、リアクション、Markdown メッセージに対応しています。
 
-## バンドルされたPlugin
+## バンドル済みPlugin
 
-Nextcloud Talkは現在のOpenClawリリースにバンドルされたPluginとして同梱されるため、
-通常のパッケージ版ビルドでは個別のインストールは不要です。
+Nextcloud Talk は現在の OpenClaw リリースにバンドル済みPluginとして同梱されているため、
+通常のパッケージ版ビルドでは別途インストールは不要です。
 
-古いビルドを使用している場合、またはNextcloud Talkを除外したカスタムインストールの場合は、
-公開されていれば現在のnpmパッケージをインストールしてください。
+古いビルドを使用している場合、または Nextcloud Talk を除外したカスタムインストールの場合は、
+npm パッケージを直接インストールします。
 
-CLIでインストール (npmレジストリ、現在のパッケージが存在する場合):
+CLI 経由でインストール（npm レジストリ）:
 
 ```bash
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-npmがOpenClaw所有のパッケージを非推奨として報告する場合は、より新しいnpmパッケージが
-公開されるまで、現在のパッケージ版OpenClawビルドまたはローカルチェックアウトパスを使用してください。
+現在の公式リリースタグに追従するには、裸のパッケージを使用します。再現可能な
+インストールが必要な場合のみ、正確なバージョンに固定してください。
 
-ローカルチェックアウト (gitリポジトリから実行する場合):
+ローカルチェックアウト（git リポジトリから実行する場合）:
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-詳細: [Plugin](/ja-JP/tools/plugin)
+詳細: [Plugins](/ja-JP/tools/plugin)
 
-## クイックセットアップ (初心者向け)
+## クイックセットアップ（初心者向け）
 
-1. Nextcloud Talk Pluginが利用可能であることを確認します。
-   - 現在のパッケージ版OpenClawリリースにはすでにバンドルされています。
+1. Nextcloud Talk Plugin が利用可能であることを確認します。
+   - 現在のパッケージ版 OpenClaw リリースにはすでに同梱されています。
    - 古いインストールやカスタムインストールでは、上記のコマンドで手動追加できます。
-2. Nextcloudサーバーでボットを作成します:
+2. Nextcloud サーバーでボットを作成します。
 
    ```bash
    ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction
    ```
 
-3. 対象ルーム設定でボットを有効にします。
-4. OpenClawを設定します:
+3. 対象ルームの設定でボットを有効化します。
+4. OpenClaw を設定します。
    - 設定: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - または環境変数: `NEXTCLOUD_TALK_BOT_SECRET` (デフォルトアカウントのみ)
+   - または env: `NEXTCLOUD_TALK_BOT_SECRET`（デフォルトアカウントのみ）
 
-   CLIセットアップ:
+   CLI セットアップ:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -63,7 +63,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --token "<shared-secret>"
    ```
 
-   同等の明示的フィールド:
+   同等の明示的なフィールド:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -71,7 +71,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret "<shared-secret>"
    ```
 
-   ファイルに保存されたシークレット:
+   ファイルベースのシークレット:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -79,7 +79,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. Gatewayを再起動します (またはセットアップを完了します)。
+5. Gateway を再起動します（またはセットアップを完了します）。
 
 最小設定:
 
@@ -96,26 +96,26 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 }
 ```
 
-## 注意事項
+## 注記
 
-- ボットはDMを開始できません。ユーザーが最初にボットへメッセージを送信する必要があります。
-- Webhook URLはGatewayから到達可能である必要があります。プロキシ背後の場合は`webhookPublicUrl`を設定してください。
-- メディアアップロードはボットAPIで対応していません。メディアはURLとして送信されます。
-- WebhookペイロードはDMとルームを区別しません。ルーム種別の検索を有効にするには`apiUser` + `apiPassword`を設定してください (設定しない場合、DMはルームとして扱われます)。
+- ボットは DM を開始できません。ユーザーが先にボットへメッセージを送信する必要があります。
+- Webhook URL は Gateway から到達可能である必要があります。プロキシの背後にある場合は `webhookPublicUrl` を設定してください。
+- メディアアップロードはボット API ではサポートされていません。メディアは URL として送信されます。
+- Webhook ペイロードでは DM とルームを区別できません。ルーム種別の検索を有効にするには `apiUser` + `apiPassword` を設定してください（設定しない場合、DM はルームとして扱われます）。
 
-## アクセス制御 (DM)
+## アクセス制御（DM）
 
-- デフォルト: `channels.nextcloud-talk.dmPolicy = "pairing"`。不明な送信者にはペアリングコードが返されます。
+- デフォルト: `channels.nextcloud-talk.dmPolicy = "pairing"`。不明な送信者にはペアリングコードが送られます。
 - 承認方法:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
-- 公開DM: `channels.nextcloud-talk.dmPolicy="open"`に加えて`channels.nextcloud-talk.allowFrom=["*"]`。
-- `allowFrom`はNextcloudユーザーIDのみに一致します。表示名は無視されます。
+- 公開 DM: `channels.nextcloud-talk.dmPolicy="open"` に加えて `channels.nextcloud-talk.allowFrom=["*"]`。
+- `allowFrom` は Nextcloud ユーザー ID のみに一致します。表示名は無視されます。
 
-## ルーム (グループ)
+## ルーム（グループ）
 
-- デフォルト: `channels.nextcloud-talk.groupPolicy = "allowlist"` (メンション必須)。
-- `channels.nextcloud-talk.rooms`でルームを許可リストに追加します:
+- デフォルト: `channels.nextcloud-talk.groupPolicy = "allowlist"`（メンションゲート）。
+- `channels.nextcloud-talk.rooms` でルームを許可リストに追加します。
 
 ```json5
 {
@@ -129,54 +129,54 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 }
 ```
 
-- ルームを許可しない場合は、許可リストを空のままにするか、`channels.nextcloud-talk.groupPolicy="disabled"`を設定します。
+- ルームを許可しない場合は、許可リストを空のままにするか、`channels.nextcloud-talk.groupPolicy="disabled"` を設定します。
 
 ## 機能
 
-| 機能                 | ステータス |
-| -------------------- | ---------- |
-| ダイレクトメッセージ | 対応       |
-| ルーム               | 対応       |
-| スレッド             | 非対応     |
-| メディア             | URLのみ    |
-| リアクション         | 対応       |
-| ネイティブコマンド   | 非対応     |
+| 機能            | ステータス       |
+| --------------- | ------------- |
+| ダイレクトメッセージ | 対応          |
+| ルーム           | 対応          |
+| スレッド          | 未対応        |
+| メディア          | URL のみ      |
+| リアクション       | 対応          |
+| ネイティブコマンド  | 未対応        |
 
-## 設定リファレンス (Nextcloud Talk)
+## 設定リファレンス（Nextcloud Talk）
 
 完全な設定: [設定](/ja-JP/gateway/configuration)
 
 プロバイダーオプション:
 
-- `channels.nextcloud-talk.enabled`: チャンネル起動を有効化/無効化します。
-- `channels.nextcloud-talk.baseUrl`: NextcloudインスタンスURL。
+- `channels.nextcloud-talk.enabled`: チャンネル起動を有効化または無効化します。
+- `channels.nextcloud-talk.baseUrl`: Nextcloud インスタンスの URL。
 - `channels.nextcloud-talk.botSecret`: ボット共有シークレット。
 - `channels.nextcloud-talk.botSecretFile`: 通常ファイルのシークレットパス。シンボリックリンクは拒否されます。
-- `channels.nextcloud-talk.apiUser`: ルーム検索 (DM検出) 用のAPIユーザー。
-- `channels.nextcloud-talk.apiPassword`: ルーム検索用のAPI/アプリパスワード。
-- `channels.nextcloud-talk.apiPasswordFile`: APIパスワードファイルのパス。
-- `channels.nextcloud-talk.webhookPort`: Webhookリスナーポート (デフォルト: 8788)。
-- `channels.nextcloud-talk.webhookHost`: Webhookホスト (デフォルト: 0.0.0.0)。
-- `channels.nextcloud-talk.webhookPath`: Webhookパス (デフォルト: /nextcloud-talk-webhook)。
-- `channels.nextcloud-talk.webhookPublicUrl`: 外部から到達可能なWebhook URL。
+- `channels.nextcloud-talk.apiUser`: ルーム検索（DM 検出）用の API ユーザー。
+- `channels.nextcloud-talk.apiPassword`: ルーム検索用の API/app パスワード。
+- `channels.nextcloud-talk.apiPasswordFile`: API パスワードファイルのパス。
+- `channels.nextcloud-talk.webhookPort`: Webhook リスナーポート（デフォルト: 8788）。
+- `channels.nextcloud-talk.webhookHost`: Webhook ホスト（デフォルト: 0.0.0.0）。
+- `channels.nextcloud-talk.webhookPath`: Webhook パス（デフォルト: /nextcloud-talk-webhook）。
+- `channels.nextcloud-talk.webhookPublicUrl`: 外部から到達可能な Webhook URL。
 - `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`。
-- `channels.nextcloud-talk.allowFrom`: DM許可リスト (ユーザーID)。`open`には`"*"`が必要です。
+- `channels.nextcloud-talk.allowFrom`: DM 許可リスト（ユーザー ID）。`open` には `"*"` が必要です。
 - `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`。
-- `channels.nextcloud-talk.groupAllowFrom`: グループ許可リスト (ユーザーID)。
+- `channels.nextcloud-talk.groupAllowFrom`: グループ許可リスト（ユーザー ID）。
 - `channels.nextcloud-talk.rooms`: ルームごとの設定と許可リスト。
-- `channels.nextcloud-talk.historyLimit`: グループ履歴の上限 (0で無効)。
-- `channels.nextcloud-talk.dmHistoryLimit`: DM履歴の上限 (0で無効)。
-- `channels.nextcloud-talk.dms`: DMごとの上書き設定 (historyLimit)。
-- `channels.nextcloud-talk.textChunkLimit`: 送信テキストのチャンクサイズ (文字数)。
-- `channels.nextcloud-talk.chunkMode`: 長さでチャンク化する前に空行 (段落境界) で分割するには`length` (デフォルト) または`newline`。
-- `channels.nextcloud-talk.blockStreaming`: このチャンネルのブロックストリーミングを無効にします。
-- `channels.nextcloud-talk.blockStreamingCoalesce`: ブロックストリーミングの結合調整。
-- `channels.nextcloud-talk.mediaMaxMb`: 受信メディア上限 (MB)。
+- `channels.nextcloud-talk.historyLimit`: グループ履歴制限（0 で無効化）。
+- `channels.nextcloud-talk.dmHistoryLimit`: DM 履歴制限（0 で無効化）。
+- `channels.nextcloud-talk.dms`: DM ごとのオーバーライド（historyLimit）。
+- `channels.nextcloud-talk.textChunkLimit`: 送信テキストのチャンクサイズ（文字数）。
+- `channels.nextcloud-talk.chunkMode`: 長さでチャンク分割する前に空行（段落境界）で分割するには、`length`（デフォルト）または `newline`。
+- `channels.nextcloud-talk.blockStreaming`: このチャンネルのブロックストリーミングを無効化します。
+- `channels.nextcloud-talk.blockStreamingCoalesce`: ブロックストリーミングの結合チューニング。
+- `channels.nextcloud-talk.mediaMaxMb`: 受信メディアの上限（MB）。
 
 ## 関連
 
-- [チャンネル概要](/ja-JP/channels) — 対応しているすべてのチャンネル
-- [ペアリング](/ja-JP/channels/pairing) — DM認証とペアリングフロー
-- [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンション制御
+- [チャンネル概要](/ja-JP/channels) — サポートされているすべてのチャンネル
+- [ペアリング](/ja-JP/channels/pairing) — DM 認証とペアリングフロー
+- [グループ](/ja-JP/channels/groups) — グループチャットの動作とメンションゲート
 - [チャンネルルーティング](/ja-JP/channels/channel-routing) — メッセージのセッションルーティング
-- [セキュリティ](/ja-JP/gateway/security) — アクセスモデルと堅牢化
+- [セキュリティ](/ja-JP/gateway/security) — アクセスモデルと強化

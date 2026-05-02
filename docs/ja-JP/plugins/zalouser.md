@@ -1,14 +1,14 @@
 ---
 read_when:
-    - OpenClaw で Zalo Personal（非公式）サポートを利用したい場合
-    - zalouser Pluginを設定または開発しています
-summary: 'Zalo Personal Plugin: ネイティブ zca-js による QR ログイン + メッセージング（Plugin インストール + チャネル設定 + ツール）'
+    - OpenClawでZalo Personal（非公式）対応を利用したい
+    - zalouser Plugin を設定または開発しています
+summary: 'Zalo Personalプラグイン: ネイティブ zca-js によるQRログイン + メッセージング（プラグインインストール + チャンネル設定 + ツール）'
 title: Zalo 個人用 Plugin
 x-i18n:
-    generated_at: "2026-04-30T05:29:17Z"
+    generated_at: "2026-05-02T22:22:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
+    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
     source_path: plugins/zalouser.md
     workflow: 16
 ---
@@ -18,16 +18,16 @@ x-i18n:
 ネイティブの `zca-js` を使用して通常の Zalo ユーザーアカウントを自動化する、Plugin による OpenClaw の Zalo Personal サポート。
 
 <Warning>
-非公式の自動化により、アカウントの停止または禁止につながる可能性があります。自己責任で使用してください。
+非公式の自動化により、アカウントの一時停止または禁止につながる可能性があります。自己責任で使用してください。
 </Warning>
 
 ## 命名
 
-Channel id は `zalouser` です。これは **個人の Zalo ユーザーアカウント**（非公式）を自動化することを明示するためです。`zalo` は、将来の公式 Zalo API 統合の可能性のために予約しています。
+チャンネル ID は `zalouser` です。これは **個人用 Zalo ユーザーアカウント**（非公式）を自動化することを明示するためです。将来の公式 Zalo API 統合の可能性に備えて、`zalo` は予約したままにしています。
 
 ## 実行場所
 
-この Plugin は **Gateway プロセス内**で実行されます。
+この Plugin は **Gateway プロセス内** で実行されます。
 
 リモート Gateway を使用する場合は、**Gateway を実行しているマシン**にインストール/設定してから、Gateway を再起動してください。
 
@@ -41,7 +41,7 @@ Channel id は `zalouser` です。これは **個人の Zalo ユーザーアカ
 openclaw plugins install @openclaw/zalouser
 ```
 
-npm が OpenClaw 所有のパッケージを deprecated と報告する場合、そのパッケージバージョンは古い外部パッケージ系列のものです。新しい npm パッケージが公開されるまでは、現在のパッケージ化された OpenClaw ビルドまたはローカルフォルダーパスを使用してください。
+現在の公式リリースタグに追従するには、ベアパッケージを使用します。再現可能なインストールが必要な場合にのみ、正確なバージョンに固定してください。
 
 その後、Gateway を再起動してください。
 
@@ -57,7 +57,7 @@ cd "$PLUGIN_SRC" && pnpm install
 
 ## 設定
 
-Channel config は `channels.zalouser`（`plugins.entries.*` ではありません）の下にあります。
+チャンネル設定は `channels.zalouser` の下にあります（`plugins.entries.*` ではありません）。
 
 ```json5
 {
@@ -80,13 +80,13 @@ openclaw message send --channel zalouser --target <threadId> --message "Hello fr
 openclaw directory peers list --channel zalouser --query "name"
 ```
 
-## Agent ツール
+## エージェントツール
 
 ツール名: `zalouser`
 
-アクション: `send`、`image`、`link`、`friends`、`groups`、`me`、`status`
+アクション: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Channel message actions は、メッセージのリアクション用に `react` もサポートします。
+チャンネルメッセージアクションは、メッセージリアクション用の `react` もサポートしています。
 
 ## 関連
 

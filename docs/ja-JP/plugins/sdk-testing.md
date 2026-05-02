@@ -2,58 +2,57 @@
 read_when:
     - Plugin のテストを書いています
     - Plugin SDK のテストユーティリティが必要です
-    - バンドルされた Plugin のコントラクトテストを理解したい場合
+    - バンドルされたPluginのコントラクトテストを理解したい
 sidebarTitle: Testing
-summary: OpenClaw Plugin向けのテストユーティリティとパターン
+summary: OpenClaw Plugin 向けのテストユーティリティとパターン
 title: Plugin テスト
 x-i18n:
-    generated_at: "2026-04-30T05:28:38Z"
+    generated_at: "2026-05-02T22:21:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7edf81e7662784356fcb0f481dd3fcdde05cc59da2a6c1b38eae1008b3ead96c
+    source_hash: 67092d71302d566ee9ed3f3f1e32b5aa6f4eabf522a9656ad13cad812550f1e8
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-OpenClaw
-Plugin 向けのテストユーティリティ、パターン、lint 適用のリファレンス。
+OpenClaw Plugin のテストユーティリティ、パターン、lint 適用に関するリファレンス。
 
 <Tip>
-  **テスト例を探していますか？** ハウツーガイドには実践的なテスト例が含まれています:
-  [Channel Plugin テスト](/ja-JP/plugins/sdk-channel-plugins#step-6-test) と
-  [Provider Plugin テスト](/ja-JP/plugins/sdk-provider-plugins#step-6-test)。
+  **テスト例を探していますか？** ハウツーガイドには、実際に動くテスト例が含まれています:
+  [チャネル Plugin テスト](/ja-JP/plugins/sdk-channel-plugins#step-6-test) と
+  [プロバイダー Plugin テスト](/ja-JP/plugins/sdk-provider-plugins#step-6-test)。
 </Tip>
 
 ## テストユーティリティ
 
 **Plugin API モックのインポート:** `openclaw/plugin-sdk/plugin-test-api`
 
-**Agent ランタイム契約のインポート:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
+**エージェントランタイムコントラクトのインポート:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
 
-**Channel 契約のインポート:** `openclaw/plugin-sdk/channel-contract-testing`
+**チャネルコントラクトのインポート:** `openclaw/plugin-sdk/channel-contract-testing`
 
-**Channel テストヘルパーのインポート:** `openclaw/plugin-sdk/channel-test-helpers`
+**チャネルテストヘルパーのインポート:** `openclaw/plugin-sdk/channel-test-helpers`
 
-**Channel target テストのインポート:** `openclaw/plugin-sdk/channel-target-testing`
+**チャネルターゲットテストのインポート:** `openclaw/plugin-sdk/channel-target-testing`
 
-**Plugin 契約のインポート:** `openclaw/plugin-sdk/plugin-test-contracts`
+**Plugin コントラクトのインポート:** `openclaw/plugin-sdk/plugin-test-contracts`
 
 **Plugin ランタイムテストのインポート:** `openclaw/plugin-sdk/plugin-test-runtime`
 
-**Provider 契約のインポート:** `openclaw/plugin-sdk/provider-test-contracts`
+**プロバイダーコントラクトのインポート:** `openclaw/plugin-sdk/provider-test-contracts`
 
-**Provider HTTP モックのインポート:** `openclaw/plugin-sdk/provider-http-test-mocks`
+**プロバイダー HTTP モックのインポート:** `openclaw/plugin-sdk/provider-http-test-mocks`
 
 **環境/ネットワークテストのインポート:** `openclaw/plugin-sdk/test-env`
 
-**汎用 fixture のインポート:** `openclaw/plugin-sdk/test-fixtures`
+**汎用フィクスチャのインポート:** `openclaw/plugin-sdk/test-fixtures`
 
 **Node 組み込みモックのインポート:** `openclaw/plugin-sdk/test-node-mocks`
 
-新しい Plugin テストには、以下の絞り込まれたサブパスを優先してください。幅広い
-`openclaw/plugin-sdk/testing` barrel はレガシー互換性専用です。
+新しい Plugin テストでは、以下の焦点を絞ったサブパスを推奨します。広範な
+`openclaw/plugin-sdk/testing` バレルは、レガシー互換性専用です。
 リポジトリのガードレールは、`plugin-sdk/testing` と
-`plugin-sdk/test-utils` からの新しい実インポートを拒否します。これらの名前は、外部 Plugin と互換性記録テスト向けの非推奨の互換性サーフェスとしてのみ残っています。
+`plugin-sdk/test-utils` からの新しい実インポートを拒否します。これらの名前は、外部 Plugin と互換性記録テスト向けの非推奨互換性サーフェスとしてのみ残ります。
 
 ```typescript
 import {
@@ -82,85 +81,85 @@ import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 
 | エクスポート                                               | 目的                                                                                                                                  |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | 直接登録のユニットテスト用に、最小限の Plugin API モックを構築します。`plugin-sdk/plugin-test-api` からインポートします                             |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | ネイティブエージェントランタイムアダプター用の共有 auth-profile コントラクトフィクスチャです。`plugin-sdk/agent-runtime-test-contracts` からインポートします            |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | ネイティブエージェントランタイムアダプター用の共有配信抑制コントラクトフィクスチャです。`plugin-sdk/agent-runtime-test-contracts` からインポートします    |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | ネイティブエージェントランタイムアダプター用の共有フォールバック分類コントラクトフィクスチャです。`plugin-sdk/agent-runtime-test-contracts` からインポートします |
-| `createParameterFreeTool`                            | ネイティブランタイムコントラクトテスト用に動的ツールスキーマフィクスチャを構築します。`plugin-sdk/agent-runtime-test-contracts` からインポートします              |
-| `expectChannelInboundContextContract`                | チャンネル受信コンテキストの形状を検証します。`plugin-sdk/channel-contract-testing` からインポートします                                                  |
-| `installChannelOutboundPayloadContractSuite`         | チャンネル送信ペイロードのコントラクトケースをインストールします。`plugin-sdk/channel-contract-testing` からインポートします                                       |
-| `createStartAccountContext`                          | チャンネルアカウントのライフサイクルコンテキストを構築します。`plugin-sdk/channel-test-helpers` からインポートします                                                  |
-| `installChannelActionsContractSuite`                 | 汎用チャンネルメッセージアクションのコントラクトケースをインストールします。`plugin-sdk/channel-test-helpers` からインポートします                                     |
-| `installChannelSetupContractSuite`                   | 汎用チャンネルセットアップのコントラクトケースをインストールします。`plugin-sdk/channel-test-helpers` からインポートします                                              |
-| `installChannelStatusContractSuite`                  | 汎用チャンネルステータスのコントラクトケースをインストールします。`plugin-sdk/channel-test-helpers` からインポートします                                             |
-| `expectDirectoryIds`                                 | ディレクトリ一覧関数から得られるチャンネルディレクトリ ID を検証します。`plugin-sdk/channel-test-helpers` からインポートします                               |
-| `assertBundledChannelEntries`                        | 同梱チャンネルエントリーポイントが想定される公開コントラクトを公開していることを検証します。`plugin-sdk/channel-test-helpers` からインポートします                    |
-| `formatEnvelopeTimestamp`                            | 決定論的なエンベロープタイムスタンプをフォーマットします。`plugin-sdk/channel-test-helpers` からインポートします                                                  |
-| `expectPairingReplyText`                             | チャンネルのペアリング返信テキストを検証し、そのコードを抽出します。`plugin-sdk/channel-test-helpers` からインポートします                                    |
-| `describePluginRegistrationContract`                 | Plugin 登録コントラクトチェックをインストールします。`plugin-sdk/plugin-test-contracts` からインポートします                                              |
-| `registerSingleProviderPlugin`                       | ローダーのスモークテストで 1 つのプロバイダー Plugin を登録します。`plugin-sdk/plugin-test-runtime` からインポートします                                         |
+| `createTestPluginApi`                                | 直接登録のユニットテスト用に最小限の Plugin API モックを構築します。`plugin-sdk/plugin-test-api` からインポートします                             |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | ネイティブエージェントランタイムアダプター用の共有認証プロファイル契約フィクスチャです。`plugin-sdk/agent-runtime-test-contracts` からインポートします            |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | ネイティブエージェントランタイムアダプター用の共有配信抑制契約フィクスチャです。`plugin-sdk/agent-runtime-test-contracts` からインポートします    |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | ネイティブエージェントランタイムアダプター用の共有フォールバック分類契約フィクスチャです。`plugin-sdk/agent-runtime-test-contracts` からインポートします |
+| `createParameterFreeTool`                            | ネイティブランタイム契約テスト用の動的ツールスキーマフィクスチャを構築します。`plugin-sdk/agent-runtime-test-contracts` からインポートします              |
+| `expectChannelInboundContextContract`                | チャネル受信コンテキストの形状をアサートします。`plugin-sdk/channel-contract-testing` からインポートします                                                  |
+| `installChannelOutboundPayloadContractSuite`         | チャネル送信ペイロード契約ケースをインストールします。`plugin-sdk/channel-contract-testing` からインポートします                                       |
+| `createStartAccountContext`                          | チャネルアカウントライフサイクルコンテキストを構築します。`plugin-sdk/channel-test-helpers` からインポートします                                                  |
+| `installChannelActionsContractSuite`                 | 汎用チャネルメッセージアクション契約ケースをインストールします。`plugin-sdk/channel-test-helpers` からインポートします                                     |
+| `installChannelSetupContractSuite`                   | 汎用チャネルセットアップ契約ケースをインストールします。`plugin-sdk/channel-test-helpers` からインポートします                                              |
+| `installChannelStatusContractSuite`                  | 汎用チャネルステータス契約ケースをインストールします。`plugin-sdk/channel-test-helpers` からインポートします                                             |
+| `expectDirectoryIds`                                 | ディレクトリ一覧関数から得られるチャネルディレクトリ ID をアサートします。`plugin-sdk/channel-test-helpers` からインポートします                               |
+| `assertBundledChannelEntries`                        | バンドル済みチャネルエントリポイントが期待される公開契約を公開していることをアサートします。`plugin-sdk/channel-test-helpers` からインポートします                    |
+| `formatEnvelopeTimestamp`                            | 決定的なエンベロープタイムスタンプをフォーマットします。`plugin-sdk/channel-test-helpers` からインポートします                                                  |
+| `expectPairingReplyText`                             | チャネルペアリング返信テキストをアサートし、そのコードを抽出します。`plugin-sdk/channel-test-helpers` からインポートします                                    |
+| `describePluginRegistrationContract`                 | Plugin 登録契約チェックをインストールします。`plugin-sdk/plugin-test-contracts` からインポートします                                              |
+| `registerSingleProviderPlugin`                       | ローダースモークテストで 1 つのプロバイダー Plugin を登録します。`plugin-sdk/plugin-test-runtime` からインポートします                                         |
 | `registerProviderPlugin`                             | 1 つの Plugin からすべてのプロバイダー種別をキャプチャします。`plugin-sdk/plugin-test-runtime` からインポートします                                                 |
 | `registerProviderPlugins`                            | 複数の Plugin にまたがるプロバイダー登録をキャプチャします。`plugin-sdk/plugin-test-runtime` からインポートします                                     |
-| `requireRegisteredProvider`                          | プロバイダーコレクションに ID が含まれていることを検証します。`plugin-sdk/plugin-test-runtime` からインポートします                                           |
-| `createRuntimeEnv`                                   | モックされた CLI/Plugin ランタイム環境を構築します。`plugin-sdk/plugin-test-runtime` からインポートします                                              |
-| `createPluginSetupWizardStatus`                      | チャンネル Plugin 用のセットアップステータスヘルパーを構築します。`plugin-sdk/plugin-test-runtime` からインポートします                                             |
-| `describeOpenAIProviderRuntimeContract`              | プロバイダーファミリーランタイムのコントラクトチェックをインストールします。`plugin-sdk/provider-test-contracts` からインポートします                                        |
-| `expectPassthroughReplayPolicy`                      | プロバイダーのリプレイポリシーが、プロバイダー所有のツールとメタデータをそのまま通すことを検証します。`plugin-sdk/provider-test-contracts` からインポートします         |
-| `runRealtimeSttLiveTest`                             | 共有音声フィクスチャを使用して、リアルタイム STT プロバイダーのライブテストを実行します。`plugin-sdk/provider-test-contracts` からインポートします                       |
-| `normalizeTranscriptForMatch`                        | あいまい一致のアサーション前に、ライブ文字起こし出力を正規化します。`plugin-sdk/provider-test-contracts` からインポートします                               |
-| `expectExplicitVideoGenerationCapabilities`          | 動画プロバイダーが明示的な生成モード機能を宣言していることを検証します。`plugin-sdk/provider-test-contracts` からインポートします                   |
-| `expectExplicitMusicGenerationCapabilities`          | 音楽プロバイダーが明示的な生成/編集機能を宣言していることを検証します。`plugin-sdk/provider-test-contracts` からインポートします                   |
-| `mockSuccessfulDashscopeVideoTask`                   | DashScope 互換の成功動画タスクレスポンスをインストールします。`plugin-sdk/provider-test-contracts` からインポートします                          |
-| `getProviderHttpMocks`                               | オプトインのプロバイダー HTTP/auth Vitest モックにアクセスします。`plugin-sdk/provider-http-test-mocks` からインポートします                                         |
-| `installProviderHttpMockCleanup`                     | 各テスト後にプロバイダー HTTP/auth モックをリセットします。`plugin-sdk/provider-http-test-mocks` からインポートします                                        |
+| `requireRegisteredProvider`                          | プロバイダーコレクションに ID が含まれることをアサートします。`plugin-sdk/plugin-test-runtime` からインポートします                                           |
+| `createRuntimeEnv`                                   | モック化された CLI/Plugin ランタイム環境を構築します。`plugin-sdk/plugin-test-runtime` からインポートします                                              |
+| `createPluginSetupWizardStatus`                      | チャネル Plugin 用のセットアップステータスヘルパーを構築します。`plugin-sdk/plugin-test-runtime` からインポートします                                             |
+| `describeOpenAIProviderRuntimeContract`              | プロバイダーファミリーのランタイム契約チェックをインストールします。`plugin-sdk/provider-test-contracts` からインポートします                                        |
+| `expectPassthroughReplayPolicy`                      | プロバイダーのリプレイポリシーがプロバイダー所有のツールとメタデータをそのまま通すことをアサートします。`plugin-sdk/provider-test-contracts` からインポートします         |
+| `runRealtimeSttLiveTest`                             | 共有音声フィクスチャでライブのリアルタイム STT プロバイダーテストを実行します。`plugin-sdk/provider-test-contracts` からインポートします                       |
+| `normalizeTranscriptForMatch`                        | ファジーアサーションの前にライブ文字起こし出力を正規化します。`plugin-sdk/provider-test-contracts` からインポートします                               |
+| `expectExplicitVideoGenerationCapabilities`          | 動画プロバイダーが明示的な生成モード機能を宣言していることをアサートします。`plugin-sdk/provider-test-contracts` からインポートします                   |
+| `expectExplicitMusicGenerationCapabilities`          | 音楽プロバイダーが明示的な生成/編集機能を宣言していることをアサートします。`plugin-sdk/provider-test-contracts` からインポートします                   |
+| `mockSuccessfulDashscopeVideoTask`                   | 成功した DashScope 互換の動画タスクレスポンスをインストールします。`plugin-sdk/provider-test-contracts` からインポートします                          |
+| `getProviderHttpMocks`                               | オプトインのプロバイダー HTTP/認証 Vitest モックにアクセスします。`plugin-sdk/provider-http-test-mocks` からインポートします                                         |
+| `installProviderHttpMockCleanup`                     | 各テスト後にプロバイダー HTTP/認証モックをリセットします。`plugin-sdk/provider-http-test-mocks` からインポートします                                        |
 | `installCommonResolveTargetErrorCases`               | ターゲット解決エラー処理の共有テストケースです。`plugin-sdk/channel-target-testing` からインポートします                                  |
-| `shouldAckReaction`                                  | チャンネルが ack リアクションを追加すべきかを確認します。`plugin-sdk/channel-feedback` からインポートします                                            |
-| `removeAckReactionAfterReply`                        | 返信配信後に ack リアクションを削除します。`plugin-sdk/channel-feedback` からインポートします                                                      |
-| `createTestRegistry`                                 | チャンネル Plugin レジストリフィクスチャを構築します。`plugin-sdk/plugin-test-runtime` または `plugin-sdk/channel-test-helpers` からインポートします               |
+| `shouldAckReaction`                                  | チャネルが確認リアクションを追加すべきかどうかを確認します。`plugin-sdk/channel-feedback` からインポートします                                            |
+| `removeAckReactionAfterReply`                        | 返信配信後に確認リアクションを削除します。`plugin-sdk/channel-feedback` からインポートします                                                      |
+| `createTestRegistry`                                 | チャネル Plugin レジストリフィクスチャを構築します。`plugin-sdk/plugin-test-runtime` または `plugin-sdk/channel-test-helpers` からインポートします               |
 | `createEmptyPluginRegistry`                          | 空の Plugin レジストリフィクスチャを構築します。`plugin-sdk/plugin-test-runtime` または `plugin-sdk/channel-test-helpers` からインポートします                |
 | `setActivePluginRegistry`                            | Plugin ランタイムテスト用のレジストリフィクスチャをインストールします。`plugin-sdk/plugin-test-runtime` または `plugin-sdk/channel-test-helpers` からインポートします   |
 | `createRequestCaptureJsonFetch`                      | メディアヘルパーテストで JSON fetch リクエストをキャプチャします。`plugin-sdk/test-env` からインポートします                                                     |
 | `withServer`                                         | 破棄可能なローカル HTTP サーバーに対してテストを実行します。`plugin-sdk/test-env` からインポートします                                                      |
 | `createMockIncomingRequest`                          | 最小限の受信 HTTP リクエストオブジェクトを構築します。`plugin-sdk/test-env` からインポートします                                                          |
-| `withFetchPreconnect`                                | preconnect フックをインストールした状態で fetch テストを実行します。`plugin-sdk/test-env` からインポートします                                                       |
+| `withFetchPreconnect`                                | プリコネクトフックをインストールした状態で fetch テストを実行します。`plugin-sdk/test-env` からインポートします                                                       |
 | `withEnv` / `withEnvAsync`                           | 環境変数を一時的にパッチします。`plugin-sdk/test-env` からインポートします                                                               |
 | `createTempHomeEnv` / `withTempHome` / `withTempDir` | 分離されたファイルシステムテストフィクスチャを作成します。`plugin-sdk/test-env` からインポートします                                                              |
 | `createMockServerResponse`                           | 最小限の HTTP サーバーレスポンスモックを作成します。`plugin-sdk/test-env` からインポートします                                                            |
 | `createCliRuntimeCapture`                            | テストで CLI ランタイム出力をキャプチャします。`plugin-sdk/test-fixtures` からインポートします                                                              |
-| `importFreshModule`                                  | モジュールキャッシュを回避するため、新しいクエリトークンで ESM モジュールをインポートします。`plugin-sdk/test-fixtures` からインポートします                             |
-| `bundledPluginRoot` / `bundledPluginFile`            | 同梱 Plugin のソースまたは dist フィクスチャパスを解決します。`plugin-sdk/test-fixtures` からインポートします                                              |
+| `importFreshModule`                                  | モジュールキャッシュをバイパスするため、新しいクエリトークンで ESM モジュールをインポートします。`plugin-sdk/test-fixtures` からインポートします                             |
+| `bundledPluginRoot` / `bundledPluginFile`            | バンドル済み Plugin のソースまたは dist フィクスチャパスを解決します。`plugin-sdk/test-fixtures` からインポートします                                              |
 | `mockNodeBuiltinModule`                              | 狭い範囲の Node 組み込み Vitest モックをインストールします。`plugin-sdk/test-node-mocks` からインポートします                                                       |
 | `createSandboxTestContext`                           | サンドボックステストコンテキストを構築します。`plugin-sdk/test-fixtures` からインポートします                                                                      |
-| `writeSkill`                                         | Skill フィクスチャを書き込みます。`plugin-sdk/test-fixtures` からインポートします                                                                             |
-| `makeAgentAssistantMessage`                          | エージェント文字起こしメッセージフィクスチャを構築します。`plugin-sdk/test-fixtures` からインポートします                                                          |
+| `writeSkill`                                         | Skills フィクスチャを書き込みます。`plugin-sdk/test-fixtures` からインポートします                                                                             |
+| `makeAgentAssistantMessage`                          | エージェントトランスクリプトメッセージフィクスチャを構築します。`plugin-sdk/test-fixtures` からインポートします                                                          |
 | `peekSystemEvents` / `resetSystemEventsForTest`      | システムイベントフィクスチャを検査およびリセットします。`plugin-sdk/test-fixtures` からインポートします                                                          |
 | `sanitizeTerminalText`                               | アサーション用にターミナル出力をサニタイズします。`plugin-sdk/test-fixtures` からインポートします                                                          |
-| `countLines` / `hasBalancedFences`                   | チャンク化出力の形状を検証します。`plugin-sdk/test-fixtures` からインポートします                                                                     |
-| `runProviderCatalog`                                 | テスト依存関係を使用してプロバイダーカタログフックを実行します                                                                                   |
-| `resolveProviderWizardOptions`                       | コントラクトテストでプロバイダーセットアップウィザードの選択肢を解決します                                                                                  |
-| `resolveProviderModelPickerEntries`                  | コントラクトテストでプロバイダーモデルピッカーのエントリーを解決します                                                                                  |
-| `buildProviderPluginMethodChoice`                    | アサーション用にプロバイダーウィザードの選択 ID を構築します                                                                                          |
-| `setProviderWizardProvidersResolverForTest`          | 分離テスト用にプロバイダーウィザードのプロバイダーを注入します                                                                                      |
-| `createProviderUsageFetch`                           | プロバイダー使用量取得フィクスチャを構築                                                                                                      |
-| `useFrozenTime` / `useRealTime`                      | 時間依存のテスト用にタイマーを固定し、復元します。`plugin-sdk/test-env` からインポート                                                    |
+| `countLines` / `hasBalancedFences`                   | チャンク化出力の形状をアサートします。`plugin-sdk/test-fixtures` からインポートします                                                                     |
+| `runProviderCatalog`                                 | テスト依存関係を使ってプロバイダーカタログフックを実行します                                                                                   |
+| `resolveProviderWizardOptions`                       | 契約テストでプロバイダーセットアップウィザードの選択肢を解決します                                                                                  |
+| `resolveProviderModelPickerEntries`                  | 契約テストでプロバイダーモデルピッカーエントリを解決します                                                                                  |
+| `buildProviderPluginMethodChoice`                    | アサーション用にプロバイダーウィザード選択 ID を構築します                                                                                          |
+| `setProviderWizardProvidersResolverForTest`          | 分離テスト用にプロバイダーウィザードプロバイダーを注入します                                                                                      |
+| `createProviderUsageFetch`                           | プロバイダー使用状況取得フィクスチャを構築                                                                                                      |
+| `useFrozenTime` / `useRealTime`                      | 時間依存のテスト用にタイマーを固定し、復元します。`plugin-sdk/test-env` からインポートします                                                    |
 | `createTestWizardPrompter`                           | モック化されたセットアップウィザードプロンプターを構築                                                                                                     |
-| `createRuntimeTaskFlow`                              | 分離されたランタイムタスクフロー状態を作成                                                                                                  |
-| `typedCases`                                         | テーブル駆動テスト用にリテラル型を保持します。`plugin-sdk/test-fixtures` からインポート                                                    |
+| `createRuntimeTaskFlow`                              | 分離されたランタイムのタスクフロー状態を作成                                                                                                  |
+| `typedCases`                                         | テーブル駆動テスト用にリテラル型を保持します。`plugin-sdk/test-fixtures` からインポートします                                                    |
 
-バンドルされた Plugin のコントラクトスイートでも、テスト専用の
-レジストリ、マニフェスト、公開アーティファクト、ランタイム fixture ヘルパーに SDK テスト用サブパスを使用します。バンドルされた OpenClaw インベントリに依存する core 専用
+バンドル Plugin のコントラクトスイートでも、テスト専用の
+registry、manifest、public-artifact、runtime fixture ヘルパー向けに SDK testing サブパスを使用します。バンドルされた OpenClaw インベントリに依存する core-only
 スイートは `src/plugins/contracts` 配下に残します。
-新しい extension テストでは、広範な `plugin-sdk/testing` 互換バレル、repo の `src/**` ファイル、または repo の
-`test/helpers/*` ブリッジを直接 import するのではなく、
+新しい拡張テストでは、広範な `plugin-sdk/testing` 互換 barrel、repo の `src/**` ファイル、または repo の
+`test/helpers/*` ブリッジを直接インポートするのではなく、
 `plugin-sdk/plugin-test-api`、`plugin-sdk/channel-contract-testing`、
 `plugin-sdk/agent-runtime-test-contracts`、`plugin-sdk/channel-test-helpers`、
 `plugin-sdk/plugin-test-contracts`、`plugin-sdk/plugin-test-runtime`、
 `plugin-sdk/provider-test-contracts`、`plugin-sdk/provider-http-test-mocks`、
-`plugin-sdk/test-env`、または `plugin-sdk/test-fixtures` のような、文書化された焦点を絞った SDK サブパスに置いてください。
+`plugin-sdk/test-env`、または `plugin-sdk/test-fixtures` など、ドキュメント化された焦点の絞られた SDK サブパスを使用してください。
 
 ### 型
 
-焦点を絞ったテスト用サブパスは、テストファイルで役立つ型も再エクスポートします。
+焦点の絞られた testing サブパスは、テストファイルで役立つ型も再エクスポートします。
 
 ```typescript
 import type {
@@ -171,9 +170,9 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## テストターゲット解決
+## テスト対象の解決
 
-チャネルターゲット解決の標準エラーケースを追加するには、
+channel ターゲット解決に標準エラーケースを追加するには、
 `installCommonResolveTargetErrorCases` を使用します。
 
 ```typescript
@@ -198,25 +197,23 @@ describe("my-channel target resolution", () => {
 
 ## テストパターン
 
-### 登録コントラクトのテスト
+### registration コントラクトのテスト
 
-手書きの `api` mock を `register(api)` に渡すユニットテストでは、
-OpenClaw のローダー受け入れゲートは検証されません。Plugin が依存する各登録サーフェスについて、特に hook や
-memory のような排他的 capability については、ローダーに基づく smoke test を少なくとも 1 つ追加してください。
+手書きの `api` モックを `register(api)` に渡す単体テストでは、
+OpenClaw の loader 受け入れゲートは実行されません。Plugin が依存する各 registration サーフェス、特に hook や memory などの排他的な capability について、loader-backed の smoke test を少なくとも 1 つ追加してください。
 
-実際のローダーは、必須メタデータが欠けている場合や、
-Plugin が所有していない capability API を呼び出した場合に Plugin 登録を失敗させます。たとえば、
+実際の loader は、必須メタデータが欠落している場合や、Plugin が所有していない capability API を呼び出した場合に Plugin registration を失敗させます。たとえば、
 `api.registerHook(...)` には hook 名が必要であり、
-`api.registerMemoryCapability(...)` には Plugin マニフェストまたはエクスポートされた
-entry が `kind: "memory"` を宣言している必要があります。
+`api.registerMemoryCapability(...)` には Plugin manifest またはエクスポートされた entry が
+`kind: "memory"` を宣言している必要があります。
 
-### ランタイム設定アクセスのテスト
+### runtime config アクセスのテスト
 
-バンドルされたチャネル Plugin をテストする場合は、`openclaw/plugin-sdk/channel-test-helpers` の共有 Plugin ランタイム mock を優先してください。
-非推奨の `runtime.config.loadConfig()` と
-`runtime.config.writeConfigFile(...)` の mock はデフォルトで throw するため、互換 API の新しい使用をテストで検出できます。これらの mock は、テストがレガシー互換動作を明示的に扱っている場合にのみ上書きしてください。
+バンドルされた channel Plugin をテストする場合は、`openclaw/plugin-sdk/channel-test-helpers`
+の共有 Plugin runtime モックを優先してください。非推奨の `runtime.config.loadConfig()` と
+`runtime.config.writeConfigFile(...)` モックはデフォルトで throw するため、テストで互換 API の新しい使用を検出できます。これらのモックを上書きするのは、テストが legacy 互換動作を明示的に扱っている場合のみにしてください。
 
-### チャネル Plugin のユニットテスト
+### channel Plugin の単体テスト
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -252,7 +249,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### プロバイダー Plugin のユニットテスト
+### provider Plugin の単体テスト
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -280,9 +277,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### Plugin ランタイムのモック
+### Plugin runtime のモック
 
-`createPluginRuntimeStore` を使用するコードでは、テスト内でランタイムを mock します。
+`createPluginRuntimeStore` を使用するコードでは、テスト内で runtime をモックします。
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -315,7 +312,7 @@ store.clearRuntime();
 
 ### インスタンスごとの stub を使ったテスト
 
-prototype mutation よりも、インスタンスごとの stub を優先してください。
+prototype mutation よりもインスタンスごとの stub を優先してください。
 
 ```typescript
 // Preferred: per-instance stub
@@ -328,20 +325,20 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 
 ## コントラクトテスト（repo 内 Plugin）
 
-バンドルされた Plugin には、登録の所有権を検証するコントラクトテストがあります。
+バンドル Plugin には、registration ownership を検証するコントラクトテストがあります。
 
 ```bash
 pnpm test -- src/plugins/contracts/
 ```
 
-これらのテストは次を検証します。
+これらのテストは次を assert します。
 
-- どの Plugin がどのプロバイダーを登録するか
-- どの Plugin がどの speech プロバイダーを登録するか
-- 登録形状の正確性
-- ランタイムコントラクトへの準拠
+- どの Plugin がどの provider を登録するか
+- どの Plugin がどの speech provider を登録するか
+- registration 形状の正しさ
+- runtime コントラクトへの準拠
 
-### スコープ指定テストの実行
+### scoped test の実行
 
 特定の Plugin の場合:
 
@@ -353,23 +350,23 @@ pnpm test -- <bundled-plugin-root>/my-channel/
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime.contract.test.ts
+pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
 ## lint 適用（repo 内 Plugin）
 
-repo 内 Plugin には、`pnpm check` によって 3 つのルールが適用されます。
+repo 内 Plugin に対して、`pnpm check` により 3 つのルールが適用されます。
 
-1. **モノリシックな root import 禁止** -- `openclaw/plugin-sdk` root barrel は拒否されます
-2. **直接の `src/` import 禁止** -- Plugin は `../../src/` を直接 import できません
-3. **self-import 禁止** -- Plugin は自身の `plugin-sdk/<name>` サブパスを import できません
+1. **monolithic root import なし** -- `openclaw/plugin-sdk` root barrel は拒否されます
+2. **直接の `src/` import なし** -- Plugin は `../../src/` を直接 import できません
+3. **self-import なし** -- Plugin は自身の `plugin-sdk/<name>` サブパスを import できません
 
-外部 Plugin はこれらの lint ルールの対象ではありませんが、同じパターンに従うことを推奨します。
+外部 Plugin にはこれらの lint ルールは適用されませんが、同じパターンに従うことを推奨します。
 
 ## テスト設定
 
-OpenClaw は V8 coverage threshold 付きの Vitest を使用します。Plugin テストでは次を使います。
+OpenClaw は V8 coverage しきい値付きで Vitest を使用します。Plugin テストの場合:
 
 ```bash
 # Run all tests
@@ -385,7 +382,7 @@ pnpm test -- <bundled-plugin-root>/my-channel/ -t "resolves account"
 pnpm test:coverage
 ```
 
-ローカル実行でメモリ負荷が発生する場合:
+ローカル実行でメモリ圧迫が発生する場合:
 
 ```bash
 OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
@@ -393,7 +390,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## 関連
 
-- [SDK 概要](/ja-JP/plugins/sdk-overview) -- import 規約
-- [SDK チャネル Plugin](/ja-JP/plugins/sdk-channel-plugins) -- チャネル Plugin インターフェイス
-- [SDK プロバイダー Plugin](/ja-JP/plugins/sdk-provider-plugins) -- プロバイダー Plugin hook
+- [SDK の概要](/ja-JP/plugins/sdk-overview) -- import 規約
+- [SDK channel Plugin](/ja-JP/plugins/sdk-channel-plugins) -- channel Plugin インターフェイス
+- [SDK provider Plugin](/ja-JP/plugins/sdk-provider-plugins) -- provider Plugin hook
 - [Plugin の構築](/ja-JP/plugins/building-plugins) -- はじめにガイド
