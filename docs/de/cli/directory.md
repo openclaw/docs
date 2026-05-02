@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Sie möchten Kontakt-/Gruppen-/Eigen-IDs für einen Kanal nachschlagen
-    - Sie entwickeln einen Kanal-Directory-Adapter
-summary: CLI-Referenz für `openclaw directory` (selbst, Peers, Gruppen)
-title: Directory
+    - Sie möchten Kontakte/Gruppen/eigene IDs für einen Kanal nachschlagen
+    - Sie entwickeln einen Kanalverzeichnis-Adapter
+summary: CLI-Referenz für `openclaw directory` (Selbst, Peers, Gruppen)
+title: Verzeichnis
 x-i18n:
-    generated_at: "2026-04-24T06:31:12Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T06:29:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-Directory-Abfragen für Kanäle, die dies unterstützen (Kontakte/Peers, Gruppen und „ich“).
+Verzeichnisabfragen für Kanäle, die dies unterstützen (Kontakte/Peers, Gruppen und „me“).
 
 ## Allgemeine Flags
 
 - `--channel <name>`: Kanal-ID/-Alias (erforderlich, wenn mehrere Kanäle konfiguriert sind; automatisch, wenn nur einer konfiguriert ist)
-- `--account <id>`: Konto-ID (Standard: Kanal-Standardkonto)
+- `--account <id>`: Konto-ID (Standard: Kanalstandard)
 - `--json`: JSON ausgeben
 
 ## Hinweise
 
 - `directory` soll Ihnen helfen, IDs zu finden, die Sie in andere Befehle einfügen können (insbesondere `openclaw message send --target ...`).
-- Bei vielen Kanälen sind die Ergebnisse konfigurationsgestützt (Allowlists / konfigurierte Gruppen) und kein Live-Provider-Directory.
-- Die Standardausgabe ist `id` (und manchmal `name`), getrennt durch einen Tabulator; verwenden Sie `--json` für Skripte.
+- Für viele Kanäle sind Ergebnisse konfigurationsgestützt (Allowlists / konfigurierte Gruppen) statt aus einem Live-Provider-Verzeichnis.
+- Installierte Kanal-Plugins können Verzeichnisunterstützung trotzdem auslassen; in diesem Fall meldet der Befehl die nicht unterstützte Verzeichnisoperation, statt das Plugin neu zu installieren.
+- Die Standardausgabe ist `id` (und manchmal `name`), getrennt durch einen Tabulator; verwenden Sie `--json` für Skripting.
 
 ## Ergebnisse mit `message send` verwenden
 
@@ -45,9 +46,9 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 - Matrix (Plugin): `user:@user:server`, `room:!roomId:server` oder `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` und `conversation:<id>`
 - Zalo (Plugin): Benutzer-ID (Bot API)
-- Persönliches Zalo / `zalouser` (Plugin): Thread-ID (DM/Gruppe) von `zca` (`me`, `friend list`, `group list`)
+- Zalo Personal / `zalouser` (Plugin): Thread-ID (DM/Gruppe) aus `zca` (`me`, `friend list`, `group list`)
 
-## Ich selbst ("me")
+## Selbst („me“)
 
 ```bash
 openclaw directory self --channel zalouser

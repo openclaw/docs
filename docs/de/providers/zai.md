@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Sie möchten Z.AI-/GLM-Modelle in OpenClaw nutzen
-    - Sie benötigen eine einfache ZAI_API_KEY-Einrichtung
+    - Sie möchten Z.AI-/GLM-Modelle in OpenClaw verwenden
+    - Sie benötigen eine einfache Einrichtung von ZAI_API_KEY
 summary: Z.AI (GLM-Modelle) mit OpenClaw verwenden
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-30T07:12:36Z"
+    generated_at: "2026-05-02T06:44:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
+    source_hash: 423fc2bc27c62352d9d9acd13c70aa2bc3804112dab25aa46505e844cb166c93
     source_path: providers/zai.md
     workflow: 16
 ---
 
 Z.AI ist die API-Plattform für **GLM**-Modelle. Sie stellt REST-APIs für GLM bereit und verwendet API-Schlüssel
-zur Authentifizierung. Erstellen Sie Ihren API-Schlüssel in der Z.AI-Konsole. OpenClaw verwendet den `zai`-Provider
+für die Authentifizierung. Erstellen Sie Ihren API-Schlüssel in der Z.AI-Konsole. OpenClaw verwendet den `zai`-Provider
 mit einem Z.AI-API-Schlüssel.
 
 - Provider: `zai`
@@ -24,8 +24,8 @@ mit einem Z.AI-API-Schlüssel.
 ## Erste Schritte
 
 <Tabs>
-  <Tab title="Endpunkt automatisch erkennen">
-    **Am besten geeignet für:** die meisten Benutzer. OpenClaw erkennt den passenden Z.AI-Endpunkt anhand des Schlüssels und wendet automatisch die richtige Basis-URL an.
+  <Tab title="Endpoint automatisch erkennen">
+    **Am besten für:** die meisten Nutzer. OpenClaw erkennt den passenden Z.AI-Endpoint aus dem Schlüssel und wendet automatisch die richtige Basis-URL an.
 
     <Steps>
       <Step title="Onboarding ausführen">
@@ -41,17 +41,17 @@ mit einem Z.AI-API-Schlüssel.
         }
         ```
       </Step>
-      <Step title="Prüfen, ob das Modell verfügbar ist">
+      <Step title="Prüfen, ob das Modell aufgelistet ist">
         ```bash
-        openclaw models list --provider zai
+        openclaw models list --all --provider zai
         ```
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="Expliziter regionaler Endpunkt">
-    **Am besten geeignet für:** Benutzer, die einen bestimmten Coding Plan oder eine allgemeine API-Oberfläche erzwingen möchten.
+  <Tab title="Expliziter regionaler Endpoint">
+    **Am besten für:** Nutzer, die einen bestimmten Coding Plan oder eine allgemeine API-Oberfläche erzwingen möchten.
 
     <Steps>
       <Step title="Die richtige Onboarding-Auswahl wählen">
@@ -77,9 +77,9 @@ mit einem Z.AI-API-Schlüssel.
         }
         ```
       </Step>
-      <Step title="Prüfen, ob das Modell verfügbar ist">
+      <Step title="Prüfen, ob das Modell aufgelistet ist">
         ```bash
-        openclaw models list --provider zai
+        openclaw models list --all --provider zai
         ```
       </Step>
     </Steps>
@@ -89,39 +89,46 @@ mit einem Z.AI-API-Schlüssel.
 
 ## Integrierter Katalog
 
-OpenClaw initialisiert den gebündelten `zai`-Provider derzeit mit:
+OpenClaw liefert den gebündelten `zai`-Provider-Katalog im Plugin-Manifest aus, sodass schreibgeschützte
+Auflistungen bekannte GLM-Zeilen anzeigen können, ohne die Provider-Laufzeit zu laden:
 
-| Modell-Referenz      | Hinweise      |
-| -------------------- | ------------- |
-| `zai/glm-5.1`        | Standardmodell |
-| `zai/glm-5`          |               |
-| `zai/glm-5-turbo`    |               |
-| `zai/glm-5v-turbo`   |               |
-| `zai/glm-4.7`        |               |
-| `zai/glm-4.7-flash`  |               |
-| `zai/glm-4.7-flashx` |               |
-| `zai/glm-4.6`        |               |
-| `zai/glm-4.6v`       |               |
-| `zai/glm-4.5`        |               |
-| `zai/glm-4.5-air`    |               |
-| `zai/glm-4.5-flash`  |               |
-| `zai/glm-4.5v`       |               |
+```bash
+openclaw models list --all --provider zai
+```
+
+Der manifestgestützte Katalog enthält derzeit:
+
+| Modellreferenz       | Hinweise        |
+| -------------------- | --------------- |
+| `zai/glm-5.1`        | Standardmodell  |
+| `zai/glm-5`          |                 |
+| `zai/glm-5-turbo`    |                 |
+| `zai/glm-5v-turbo`   |                 |
+| `zai/glm-4.7`        |                 |
+| `zai/glm-4.7-flash`  |                 |
+| `zai/glm-4.7-flashx` |                 |
+| `zai/glm-4.6`        |                 |
+| `zai/glm-4.6v`       |                 |
+| `zai/glm-4.5`        |                 |
+| `zai/glm-4.5-air`    |                 |
+| `zai/glm-4.5-flash`  |                 |
+| `zai/glm-4.5v`       |                 |
 
 <Tip>
-GLM-Modelle sind als `zai/<model>` verfügbar (Beispiel: `zai/glm-5`). Die gebündelte Standardmodell-Referenz ist `zai/glm-5.1`.
+GLM-Modelle sind als `zai/<model>` verfügbar (Beispiel: `zai/glm-5`). Die standardmäßig gebündelte Modellreferenz ist `zai/glm-5.1`.
 </Tip>
 
 ## Erweiterte Konfiguration
 
 <AccordionGroup>
-  <Accordion title="Vorwärtsauflösung unbekannter GLM-5-Modelle">
-    Unbekannte `glm-5*`-IDs werden auf dem gebündelten Provider-Pfad weiterhin vorwärts aufgelöst, indem
-    Provider-eigene Metadaten aus der Vorlage `glm-4.7` synthetisiert werden, wenn die ID
+  <Accordion title="Unbekannte GLM-5-Modelle vorwärtsauflösen">
+    Unbekannte `glm-5*`-IDs werden im gebündelten Provider-Pfad weiterhin vorwärtsaufgelöst, indem
+    Provider-eigene Metadaten aus der `glm-4.7`-Vorlage synthetisiert werden, wenn die ID
     der aktuellen Form der GLM-5-Familie entspricht.
   </Accordion>
 
   <Accordion title="Tool-Call-Streaming">
-    `tool_stream` ist standardmäßig für Z.AI-Tool-Call-Streaming aktiviert. So deaktivieren Sie es:
+    `tool_stream` ist für Z.AI-Tool-Call-Streaming standardmäßig aktiviert. So deaktivieren Sie es:
 
     ```json5
     {
@@ -140,12 +147,12 @@ GLM-Modelle sind als `zai/<model>` verfügbar (Beispiel: `zai/glm-5`). Die gebü
   </Accordion>
 
   <Accordion title="Thinking und beibehaltenes Thinking">
-    Z.AI-Thinking folgt den `/think`-Steuerungen von OpenClaw. Wenn Thinking deaktiviert ist,
+    Z.AI-Thinking folgt den `/think`-Steuerungen von OpenClaw. Wenn Thinking ausgeschaltet ist,
     sendet OpenClaw `thinking: { type: "disabled" }`, um Antworten zu vermeiden, die
     das Ausgabebudget für `reasoning_content` vor sichtbarem Text verbrauchen.
 
-    Beibehaltenes Thinking ist optional, da Z.AI verlangt, dass der vollständige historische
-    `reasoning_content` erneut wiedergegeben wird, was die Prompt-Tokens erhöht. Aktivieren Sie es
+    Beibehaltenes Thinking ist Opt-in, da Z.AI verlangt, dass der vollständige historische
+    `reasoning_content` erneut abgespielt wird, was die Prompt-Tokens erhöht. Aktivieren Sie es
     pro Modell:
 
     ```json5
@@ -162,11 +169,11 @@ GLM-Modelle sind als `zai/<model>` verfügbar (Beispiel: `zai/glm-5`). Die gebü
     }
     ```
 
-    Wenn es aktiviert und Thinking eingeschaltet ist, sendet OpenClaw
-    `thinking: { type: "enabled", clear_thinking: false }` und gibt vorherigen
-    `reasoning_content` für dasselbe OpenAI-kompatible Transkript erneut wieder.
+    Wenn es aktiviert ist und Thinking eingeschaltet ist, sendet OpenClaw
+    `thinking: { type: "enabled", clear_thinking: false }` und spielt vorherigen
+    `reasoning_content` für dasselbe OpenAI-kompatible Transkript erneut ab.
 
-    Fortgeschrittene Benutzer können die exakte Provider-Payload weiterhin mit
+    Fortgeschrittene Nutzer können die exakte Provider-Payload weiterhin mit
     `params.extra_body.thinking` überschreiben.
 
   </Accordion>
@@ -179,14 +186,14 @@ GLM-Modelle sind als `zai/<model>` verfügbar (Beispiel: `zai/glm-5`). Die gebü
     | Modell        | `glm-4.6v`  |
 
     Bildverständnis wird automatisch aus der konfigurierten Z.AI-Authentifizierung aufgelöst;
-    zusätzliche Konfiguration ist nicht erforderlich.
+    es ist keine zusätzliche Konfiguration erforderlich.
 
   </Accordion>
 
   <Accordion title="Authentifizierungsdetails">
     - Z.AI verwendet Bearer-Authentifizierung mit Ihrem API-Schlüssel.
-    - Die Onboarding-Auswahl `zai-api-key` erkennt den passenden Z.AI-Endpunkt automatisch anhand des Schlüsselpräfixes.
-    - Verwenden Sie die expliziten regionalen Auswahlmöglichkeiten (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`), wenn Sie eine bestimmte API-Oberfläche erzwingen möchten.
+    - Die Onboarding-Auswahl `zai-api-key` erkennt den passenden Z.AI-Endpoint automatisch aus dem Schlüsselpräfix.
+    - Verwenden Sie die expliziten regionalen Auswahlen (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`), wenn Sie eine bestimmte API-Oberfläche erzwingen möchten.
 
   </Accordion>
 </AccordionGroup>
@@ -195,9 +202,9 @@ GLM-Modelle sind als `zai/<model>` verfügbar (Beispiel: `zai/glm-5`). Die gebü
 
 <CardGroup cols={2}>
   <Card title="GLM-Modellfamilie" href="/de/providers/glm" icon="microchip">
-    Übersicht über die Modellfamilie für GLM.
+    Überblick über die Modellfamilie für GLM.
   </Card>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Provider, Modell-Referenzen und Failover-Verhalten auswählen.
+    Provider, Modellreferenzen und Failover-Verhalten auswählen.
   </Card>
 </CardGroup>

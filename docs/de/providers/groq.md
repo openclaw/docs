@@ -1,26 +1,26 @@
 ---
 read_when:
     - Sie möchten Groq mit OpenClaw verwenden
-    - Sie benötigen die API-Schlüssel-Umgebungsvariable oder die Auswahl der CLI-Authentifizierung
+    - Sie benötigen die Umgebungsvariable für den API-Schlüssel oder die CLI-Authentifizierungsoption
 summary: Groq-Einrichtung (Authentifizierung + Modellauswahl)
 title: Groq
 x-i18n:
-    generated_at: "2026-04-30T07:10:39Z"
+    generated_at: "2026-05-02T06:42:54Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ed612471939e7ac5362f8236f179d38ae07f9076709ff55020c1790f7c56a6fa
+    source_hash: 2cf6678047581a438906420894b250bafb68d71254fbaf30ea5dfcfc4799eac7
     source_path: providers/groq.md
     workflow: 16
 ---
 
 [Groq](https://groq.com) bietet ultraschnelle Inferenz für Open-Source-Modelle
-(Llama, Gemma, Mistral und weitere) mit spezieller LPU-Hardware. OpenClaw stellt
-über die OpenAI-kompatible API eine Verbindung zu Groq her.
+(Llama, Gemma, Mistral und weitere) mit kundenspezifischer LPU-Hardware. OpenClaw verbindet sich
+über die OpenAI-kompatible API mit Groq.
 
 | Eigenschaft | Wert              |
 | ----------- | ----------------- |
 | Provider    | `groq`            |
-| Authentifizierung | `GROQ_API_KEY`    |
+| Auth        | `GROQ_API_KEY`    |
 | API         | OpenAI-kompatibel |
 
 ## Erste Schritte
@@ -62,37 +62,37 @@ x-i18n:
 
 ## Integrierter Katalog
 
-Der Modellkatalog von Groq ändert sich häufig. Führen Sie `openclaw models list | grep groq`
-aus, um die derzeit verfügbaren Modelle anzuzeigen, oder prüfen Sie
+OpenClaw liefert einen manifestgestützten Groq-Katalog für schnelle, nach Provider gefilterte
+Modellauflistungen. Führen Sie `openclaw models list --all --provider groq` aus, um die gebündelten
+Zeilen anzuzeigen, oder lesen Sie
 [console.groq.com/docs/models](https://console.groq.com/docs/models).
 
 | Modell                      | Hinweise                           |
 | --------------------------- | ---------------------------------- |
-| **Llama 3.3 70B Versatile** | Allgemeiner Einsatz, großer Kontext |
+| **Llama 3.3 70B Versatile** | Universell einsetzbar, großer Kontext |
 | **Llama 3.1 8B Instant**    | Schnell, leichtgewichtig           |
 | **Gemma 2 9B**              | Kompakt, effizient                 |
-| **Mixtral 8x7B**            | MoE-Architektur, starkes Reasoning |
+| **Mixtral 8x7B**            | MoE-Architektur, starkes Schlussfolgern |
 
 <Tip>
-Verwenden Sie `openclaw models list --provider groq`, um die aktuellste Liste der
-für Ihr Konto verfügbaren Modelle zu erhalten.
+Verwenden Sie `openclaw models list --all --provider groq` für die manifestgestützten Groq-
+Zeilen, die dieser OpenClaw-Version bekannt sind.
 </Tip>
 
 ## Reasoning-Modelle
 
 OpenClaw ordnet seine gemeinsamen `/think`-Stufen den modellspezifischen
-`reasoning_effort`-Werten von Groq zu. Für `qwen/qwen3-32b` sendet deaktiviertes
-Denken `none` und aktiviertes Denken `default`. Für Groq GPT-OSS-Reasoning-Modelle
+`reasoning_effort`-Werten von Groq zu. Für `qwen/qwen3-32b` sendet deaktiviertes Denken
+`none` und aktiviertes Denken sendet `default`. Für Groq GPT-OSS-Reasoning-Modelle
 sendet OpenClaw `low`, `medium` oder `high`; bei deaktiviertem Denken wird
-`reasoning_effort` ausgelassen, da diese Modelle keinen deaktivierten Wert
-unterstützen.
+`reasoning_effort` ausgelassen, da diese Modelle keinen deaktivierten Wert unterstützen.
 
 ## Audiotranskription
 
 Groq bietet außerdem schnelle Whisper-basierte Audiotranskription. Wenn Groq als
 Provider für Medienverständnis konfiguriert ist, verwendet OpenClaw das
-`whisper-large-v3-turbo`-Modell von Groq, um Sprachnachrichten über die gemeinsame
-`tools.media.audio`-Oberfläche zu transkribieren.
+Modell `whisper-large-v3-turbo` von Groq, um Sprachnachrichten über die gemeinsame
+`tools.media.audio`-Schnittstelle zu transkribieren.
 
 ```json5
 {
@@ -122,9 +122,9 @@ Provider für Medienverständnis konfiguriert ist, verwendet OpenClaw das
     `env.shellEnv`).
 
     <Warning>
-    Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für vom Daemon verwaltete
-    Gateway-Prozesse nicht sichtbar. Verwenden Sie die Konfiguration `~/.openclaw/.env` oder
-    `env.shellEnv` für dauerhafte Verfügbarkeit.
+    Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für daemonverwaltete
+    Gateway-Prozesse nicht sichtbar. Verwenden Sie `~/.openclaw/.env` oder die
+    `env.shellEnv`-Konfiguration für dauerhafte Verfügbarkeit.
     </Warning>
 
   </Accordion>
@@ -139,10 +139,10 @@ Provider für Medienverständnis konfiguriert ist, verwendet OpenClaw das
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
     Vollständiges Konfigurationsschema einschließlich Provider- und Audioeinstellungen.
   </Card>
-  <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
+  <Card title="Groq-Konsole" href="https://console.groq.com" icon="arrow-up-right-from-square">
     Groq-Dashboard, API-Dokumentation und Preise.
   </Card>
   <Card title="Groq-Modellliste" href="https://console.groq.com/docs/models" icon="list">
-    Offizieller Modellkatalog von Groq.
+    Offizieller Groq-Modellkatalog.
   </Card>
 </CardGroup>

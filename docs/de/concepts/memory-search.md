@@ -1,28 +1,28 @@
 ---
 read_when:
     - Sie möchten verstehen, wie memory_search funktioniert
-    - Sie möchten einen Provider für Embeddings auswählen
+    - Sie möchten einen Embedding-Provider auswählen
     - Sie möchten die Suchqualität optimieren
-summary: Wie die Speichersuche relevante Notizen mit Embeddings und hybrider Suche findet
+summary: Wie die Speichersuche mithilfe von Embeddings und hybridem Retrieval relevante Notizen findet
 title: Speichersuche
 x-i18n:
-    generated_at: "2026-04-30T16:27:51Z"
+    generated_at: "2026-05-02T06:31:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7f40bbe32453a28070ffc67f19a4c06e2fe59a24237a2aef353f4b9b8260bcf2
+    source_hash: 2a71fb0809d5c70689e8046f854e4b4b4e79f45769ac2964e40a762ebb4e91a8
     source_path: concepts/memory-search.md
     workflow: 16
 ---
 
-`memory_search` findet relevante Notizen aus Ihren Memory-Dateien, auch wenn die
-Formulierung vom ursprünglichen Text abweicht. Dies funktioniert, indem Memory in
-kleine Chunks indexiert wird und diese mit Embeddings, Schlüsselwörtern oder
+`memory_search` findet relevante Notizen aus Ihren Speicherdateien, auch wenn die
+Formulierung vom Originaltext abweicht. Es funktioniert, indem Speicher in kleine
+Abschnitte indexiert und diese mithilfe von Embeddings, Schlüsselwörtern oder
 beidem durchsucht werden.
 
 ## Schnellstart
 
-Wenn Sie ein GitHub Copilot-Abonnement oder einen konfigurierten OpenAI-,
-Gemini-, Voyage- oder Mistral-API-Schlüssel haben, funktioniert die Memory-Suche
+Wenn Sie ein GitHub Copilot-Abonnement, OpenAI, Gemini, Voyage oder einen
+Mistral-API-Schlüssel konfiguriert haben, funktioniert die Speichersuche
 automatisch. So legen Sie einen Provider explizit fest:
 
 ```json5
@@ -39,35 +39,34 @@ automatisch. So legen Sie einen Provider explizit fest:
 
 Für Setups mit mehreren Endpunkten kann `provider` auch ein benutzerdefinierter
 `models.providers.<id>`-Eintrag sein, z. B. `ollama-5080`, wenn dieser Provider
-`api: "ollama"` oder einen anderen Besitzer eines Embedding-Adapters festlegt.
+`api: "ollama"` oder einen anderen Eigentümer eines Embedding-Adapters festlegt.
 
-Für lokale Embeddings ohne API-Schlüssel legen Sie `provider: "local"` fest.
-Paketierte Installationen behalten die native `node-llama-cpp`-Runtime im von
-OpenClaw verwalteten Plugin-Baum für Runtime-Abhängigkeiten bei; führen Sie
-`openclaw doctor --fix` aus, wenn dieser Baum repariert werden muss.
+Für lokale Embeddings ohne API-Schlüssel setzen Sie `provider: "local"`.
+Source-Checkouts können weiterhin eine Freigabe für native Builds erfordern:
+`pnpm approve-builds` und dann `pnpm rebuild node-llama-cpp`.
 
 Einige OpenAI-kompatible Embedding-Endpunkte erfordern asymmetrische Labels wie
 `input_type: "query"` für Suchen und `input_type: "document"` oder `"passage"`
-für indexierte Chunks. Konfigurieren Sie diese mit
+für indexierte Abschnitte. Konfigurieren Sie diese mit
 `memorySearch.queryInputType` und `memorySearch.documentInputType`; siehe die
-[Referenz zur Memory-Konfiguration](/de/reference/memory-config#provider-specific-config).
+[Referenz zur Speicherkonfiguration](/de/reference/memory-config#provider-specific-config).
 
 ## Unterstützte Provider
 
-| Provider       | ID               | Benötigt API-Schlüssel | Hinweise                                               |
-| -------------- | ---------------- | ---------------------- | ------------------------------------------------------ |
-| Bedrock        | `bedrock`        | Nein                   | Automatisch erkannt, wenn die AWS-Anmeldekette auflöst |
-| Gemini         | `gemini`         | Ja                     | Unterstützt Bild-/Audioindexierung                     |
-| GitHub Copilot | `github-copilot` | Nein                   | Automatisch erkannt, nutzt Copilot-Abonnement          |
-| Local          | `local`          | Nein                   | GGUF-Modell, ca. 0,6 GB Download                       |
-| Mistral        | `mistral`        | Ja                     | Automatisch erkannt                                    |
-| Ollama         | `ollama`         | Nein                   | Lokal, muss explizit festgelegt werden                 |
-| OpenAI         | `openai`         | Ja                     | Automatisch erkannt, schnell                           |
-| Voyage         | `voyage`         | Ja                     | Automatisch erkannt                                    |
+| Provider       | ID               | API-Schlüssel erforderlich | Hinweise                                             |
+| -------------- | ---------------- | -------------------------- | ---------------------------------------------------- |
+| Bedrock        | `bedrock`        | Nein                       | Automatisch erkannt, wenn die AWS-Anmeldekette aufgelöst wird |
+| Gemini         | `gemini`         | Ja                         | Unterstützt Bild-/Audioindexierung                   |
+| GitHub Copilot | `github-copilot` | Nein                       | Automatisch erkannt, verwendet das Copilot-Abonnement |
+| Local          | `local`          | Nein                       | GGUF-Modell, Download mit ~0,6 GB                    |
+| Mistral        | `mistral`        | Ja                         | Automatisch erkannt                                  |
+| Ollama         | `ollama`         | Nein                       | Lokal, muss explizit festgelegt werden               |
+| OpenAI         | `openai`         | Ja                         | Automatisch erkannt, schnell                         |
+| Voyage         | `voyage`         | Ja                         | Automatisch erkannt                                  |
 
-## So funktioniert die Suche
+## Funktionsweise der Suche
 
-OpenClaw führt zwei Retrieval-Pfade parallel aus und führt die Ergebnisse zusammen:
+OpenClaw führt zwei Abrufpfade parallel aus und führt die Ergebnisse zusammen:
 
 ```mermaid
 flowchart LR
@@ -80,30 +79,30 @@ flowchart LR
     M --> R["Top Results"]
 ```
 
-- **Vektorsuche** findet Notizen mit ähnlicher Bedeutung ("gateway host" passt
-  zu "the machine running OpenClaw").
-- **BM25-Schlüsselwortsuche** findet exakte Treffer (IDs, Fehlerzeichenfolgen,
+- **Vektorsuche** findet Notizen mit ähnlicher Bedeutung ("gateway host" passt zu
+  "the machine running OpenClaw").
+- **BM25-Schlüsselwortsuche** findet exakte Übereinstimmungen (IDs, Fehlerstrings,
   Konfigurationsschlüssel).
 
-Wenn nur ein Pfad verfügbar ist (keine Embeddings oder kein FTS), läuft der
-andere allein.
+Wenn nur ein Pfad verfügbar ist (keine Embeddings oder kein FTS), wird der andere
+allein ausgeführt.
 
 Wenn Embeddings nicht verfügbar sind, verwendet OpenClaw weiterhin lexikalisches
-Ranking über FTS-Ergebnisse, statt nur auf rohe Exakt-Treffer-Sortierung
-zurückzufallen. Dieser eingeschränkte Modus gewichtet Chunks mit stärkerer
-Abdeckung der Suchbegriffe und relevanten Dateipfaden höher, wodurch die
-Trefferquote auch ohne `sqlite-vec` oder Embedding-Provider nützlich bleibt.
+Ranking über FTS-Ergebnisse, anstatt nur auf rohe Reihenfolge nach exakter
+Übereinstimmung zurückzufallen. Dieser eingeschränkte Modus wertet Abschnitte mit
+stärkerer Abdeckung der Suchbegriffe und relevanten Dateipfaden höher, wodurch
+der Abruf auch ohne `sqlite-vec` oder einen Embedding-Provider nützlich bleibt.
 
 ## Suchqualität verbessern
 
-Zwei optionale Funktionen helfen, wenn Sie eine große Notizhistorie haben:
+Zwei optionale Funktionen helfen, wenn Sie einen großen Notizverlauf haben:
 
 ### Zeitlicher Verfall
 
-Alte Notizen verlieren schrittweise Ranking-Gewicht, damit aktuelle Informationen
-zuerst erscheinen. Mit der Standard-Halbwertszeit von 30 Tagen erreicht eine
-Notiz aus dem letzten Monat 50 % ihres ursprünglichen Gewichts. Evergreen-Dateien
-wie `MEMORY.md` unterliegen nie dem Verfall.
+Alte Notizen verlieren nach und nach Ranking-Gewicht, damit aktuelle Informationen
+zuerst erscheinen. Mit der standardmäßigen Halbwertszeit von 30 Tagen erzielt
+eine Notiz vom letzten Monat 50 % ihres ursprünglichen Gewichts. Dauerhaft
+relevante Dateien wie `MEMORY.md` verfallen nie.
 
 <Tip>
 Aktivieren Sie zeitlichen Verfall, wenn Ihr Agent monatelange tägliche Notizen
@@ -112,13 +111,13 @@ hat und veraltete Informationen aktuellen Kontext weiterhin überranken.
 
 ### MMR (Diversität)
 
-Reduziert redundante Ergebnisse. Wenn fünf Notizen alle dieselbe
-Router-Konfiguration erwähnen, stellt MMR sicher, dass die Top-Ergebnisse
-verschiedene Themen abdecken, statt sich zu wiederholen.
+Reduziert redundante Ergebnisse. Wenn fünf Notizen alle dieselbe Router-Konfiguration
+erwähnen, stellt MMR sicher, dass die Top-Ergebnisse verschiedene Themen abdecken,
+anstatt Wiederholungen zu liefern.
 
 <Tip>
-Aktivieren Sie MMR, wenn `memory_search` weiterhin nahezu doppelte Snippets aus
-verschiedenen täglichen Notizen zurückgibt.
+Aktivieren Sie MMR, wenn `memory_search` immer wieder nahezu doppelte Ausschnitte
+aus verschiedenen täglichen Notizen zurückgibt.
 </Tip>
 
 ### Beides aktivieren
@@ -140,18 +139,18 @@ verschiedenen täglichen Notizen zurückgibt.
 }
 ```
 
-## Multimodale Memory
+## Multimodaler Speicher
 
 Mit Gemini Embedding 2 können Sie Bilder und Audiodateien zusammen mit Markdown
-indexieren. Suchanfragen bleiben Text, werden aber mit visuellen und
-Audioinhalten abgeglichen. Einrichtungshinweise finden Sie in der
-[Referenz zur Memory-Konfiguration](/de/reference/memory-config).
+indexieren. Suchanfragen bleiben textbasiert, stimmen aber mit visuellen und
+Audioinhalten überein. Informationen zur Einrichtung finden Sie in der
+[Referenz zur Speicherkonfiguration](/de/reference/memory-config).
 
-## Session-Memory-Suche
+## Speichersuche für Sitzungen
 
-Sie können optional Sitzungs-Transkripte indexieren, damit `memory_search`
-frühere Gespräche abrufen kann. Dies ist Opt-in über
-`memorySearch.experimental.sessionMemory`. Details finden Sie in der
+Sie können optional Sitzungstranskripte indexieren, damit `memory_search` sich an
+frühere Unterhaltungen erinnern kann. Dies ist per Opt-in über
+`memorySearch.experimental.sessionMemory` möglich. Details finden Sie in der
 [Konfigurationsreferenz](/de/reference/memory-config).
 
 ## Fehlerbehebung
@@ -162,23 +161,23 @@ prüfen. Wenn er leer ist, führen Sie `openclaw memory index --force` aus.
 **Nur Schlüsselworttreffer?** Ihr Embedding-Provider ist möglicherweise nicht
 konfiguriert. Prüfen Sie `openclaw memory status --deep`.
 
-**Zeitüberschreitung bei lokalen Embeddings?** `ollama`, `lmstudio` und `local`
+**Lokale Embeddings laufen in ein Timeout?** `ollama`, `lmstudio` und `local`
 verwenden standardmäßig ein längeres Inline-Batch-Timeout. Wenn der Host einfach
-langsam ist, legen Sie
-`agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` fest und führen
-Sie `openclaw memory index --force` erneut aus.
+langsam ist, setzen Sie
+`agents.defaults.memorySearch.sync.embeddingBatchTimeoutSeconds` und führen Sie
+`openclaw memory index --force` erneut aus.
 
 **CJK-Text nicht gefunden?** Erstellen Sie den FTS-Index mit
 `openclaw memory index --force` neu.
 
-## Weiterführende Lektüre
+## Weiterführende Informationen
 
-- [Active Memory](/de/concepts/active-memory) -- Sub-Agent-Memory für interaktive Chat-Sitzungen
-- [Memory](/de/concepts/memory) -- Dateilayout, Backends, Tools
-- [Referenz zur Memory-Konfiguration](/de/reference/memory-config) -- alle Konfigurationsoptionen
+- [Active Memory](/de/concepts/active-memory) -- Speicher von Sub-Agents für interaktive Chatsitzungen
+- [Speicher](/de/concepts/memory) -- Dateilayout, Backends, Tools
+- [Referenz zur Speicherkonfiguration](/de/reference/memory-config) -- alle Konfigurationsoptionen
 
 ## Verwandt
 
-- [Memory-Übersicht](/de/concepts/memory)
+- [Speicherübersicht](/de/concepts/memory)
 - [Active Memory](/de/concepts/active-memory)
-- [Integrierte Memory-Engine](/de/concepts/memory-builtin)
+- [Integrierte Speicher-Engine](/de/concepts/memory-builtin)

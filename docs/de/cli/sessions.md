@@ -4,10 +4,10 @@ read_when:
 summary: CLI-Referenz für `openclaw sessions` (gespeicherte Sitzungen auflisten + Verwendung)
 title: Sitzungen
 x-i18n:
-    generated_at: "2026-04-30T06:47:02Z"
+    generated_at: "2026-05-02T06:30:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fea2014f538b00a27fa0078391a421843052333c5bcfc8100fced515eed0004
+    source_hash: 4e7e5017ba5a6194ac10d3a18ea9b711da57bc2ef1696776622cd3be2a2fbf43
     source_path: cli/sessions.md
     workflow: 16
 ---
@@ -27,28 +27,28 @@ openclaw sessions --json
 
 Bereichsauswahl:
 
-- Standard: konfigurierter Standard-Agent-Store
+- Standard: konfigurierter Standard-Agent-Speicher
 - `--verbose`: ausführliche Protokollierung
-- `--agent <id>`: ein konfigurierter Agent-Store
-- `--all-agents`: alle konfigurierten Agent-Stores zusammenfassen
-- `--store <path>`: expliziter Store-Pfad (kann nicht mit `--agent` oder `--all-agents` kombiniert werden)
+- `--agent <id>`: ein konfigurierter Agent-Speicher
+- `--all-agents`: alle konfigurierten Agent-Speicher zusammenfassen
+- `--store <path>`: expliziter Speicherpfad (kann nicht mit `--agent` oder `--all-agents` kombiniert werden)
 
-Ein Trajektorien-Bundle für eine gespeicherte Sitzung exportieren:
+Ein Trajectory-Bundle für eine gespeicherte Sitzung exportieren:
 
 ```bash
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
 ```
 
-Dies ist der Befehlspfad, der vom Slash-Befehl `/export-trajectory` verwendet wird, nachdem
-der Eigentümer die Exec-Anforderung genehmigt hat. Das Ausgabeverzeichnis wird immer
+Dies ist der Befehlspfad, den der Slash-Befehl `/export-trajectory` verwendet, nachdem
+der Eigentümer die Exec-Anfrage genehmigt hat. Das Ausgabeverzeichnis wird immer
 innerhalb von `.openclaw/trajectory-exports/` unter dem ausgewählten Workspace aufgelöst.
 
-`openclaw sessions --all-agents` liest konfigurierte Agent-Stores. Die Sitzungserkennung für Gateway und ACP
-ist umfassender: Sie schließt auch reine Datenträger-Stores ein, die unter
-dem Standardstamm `agents/` oder einem templatisierten Stamm `session.store` gefunden werden. Diese
-erkannten Stores müssen zu regulären `sessions.json`-Dateien innerhalb des
-Agent-Stamms aufgelöst werden; Symlinks und Pfade außerhalb des Stamms werden übersprungen.
+`openclaw sessions --all-agents` liest konfigurierte Agent-Speicher. Die Sitzungserkennung
+für Gateway und ACP ist breiter: Sie umfasst auch reine Datenträgerspeicher, die unter
+dem standardmäßigen `agents/`-Root oder einem vorlagenbasierten `session.store`-Root gefunden werden. Diese
+erkannten Speicher müssen zu regulären `sessions.json`-Dateien innerhalb des
+Agent-Roots aufgelöst werden; Symlinks und Pfade außerhalb des Roots werden übersprungen.
 
 JSON-Beispiele:
 
@@ -84,19 +84,19 @@ openclaw sessions cleanup --enforce --active-key "agent:main:telegram:direct:123
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` verwendet `session.maintenance`-Einstellungen aus der Konfiguration:
+`openclaw sessions cleanup` verwendet die `session.maintenance`-Einstellungen aus der Konfiguration:
 
-- Bereichshinweis: `openclaw sessions cleanup` wartet Sitzungs-Stores, Transkripte und Trajektorien-Sidecars. Es bereinigt keine Cron-Ausführungsprotokolle (`cron/runs/<jobId>.jsonl`), die über `cron.runLog.maxBytes` und `cron.runLog.keepLines` in der [Cron-Konfiguration](/de/automation/cron-jobs#configuration) verwaltet und in der [Cron-Wartung](/de/automation/cron-jobs#maintenance) erläutert werden.
+- Bereichshinweis: `openclaw sessions cleanup` wartet Sitzungsspeicher, Transkripte und Trajectory-Sidecars. Es bereinigt keine Cron-Ausführungsprotokolle (`cron/runs/<jobId>.jsonl`), die über `cron.runLog.maxBytes` und `cron.runLog.keepLines` in der [Cron-Konfiguration](/de/automation/cron-jobs#configuration) verwaltet und in der [Cron-Wartung](/de/automation/cron-jobs#maintenance) erklärt werden.
 
-- `--dry-run`: Vorschau, wie viele Einträge ohne Schreiben bereinigt/begrenzt würden.
-  - Im Textmodus gibt der dry-run eine Aktionstabelle pro Sitzung aus (`Action`, `Key`, `Age`, `Model`, `Flags`), damit Sie sehen können, was beibehalten und was entfernt würde.
-- `--enforce`: Wartung auch dann anwenden, wenn `session.maintenance.mode` `warn` ist.
+- `--dry-run`: Vorschau anzeigen, wie viele Einträge ohne Schreiben bereinigt/begrenzt würden.
+  - Im Textmodus gibt der Dry-Run eine Aktionstabelle pro Sitzung aus (`Action`, `Key`, `Age`, `Model`, `Flags`), damit Sie sehen können, was behalten bzw. entfernt würde.
+- `--enforce`: Wartung auch dann anwenden, wenn `session.maintenance.mode` auf `warn` gesetzt ist.
 - `--fix-missing`: Einträge entfernen, deren Transkriptdateien fehlen, auch wenn sie normalerweise noch nicht aufgrund von Alter/Anzahl entfernt würden.
-- `--active-key <key>`: einen bestimmten aktiven Schlüssel vor der Verdrängung durch das Datenträgerbudget schützen.
-- `--agent <id>`: Bereinigung für einen konfigurierten Agent-Store ausführen.
-- `--all-agents`: Bereinigung für alle konfigurierten Agent-Stores ausführen.
+- `--active-key <key>`: einen bestimmten aktiven Schlüssel vor einer Räumung aufgrund des Datenträgerbudgets schützen. Dauerhafte externe Konversationszeiger, z. B. Gruppensitzungen und Thread-bezogene Chatsitzungen, werden ebenfalls durch Wartung nach Alter/Anzahl/Datenträgerbudget beibehalten.
+- `--agent <id>`: Bereinigung für einen konfigurierten Agent-Speicher ausführen.
+- `--all-agents`: Bereinigung für alle konfigurierten Agent-Speicher ausführen.
 - `--store <path>`: gegen eine bestimmte `sessions.json`-Datei ausführen.
-- `--json`: eine JSON-Zusammenfassung ausgeben. Mit `--all-agents` enthält die Ausgabe eine Zusammenfassung pro Store.
+- `--json`: eine JSON-Zusammenfassung ausgeben. Mit `--all-agents` enthält die Ausgabe eine Zusammenfassung pro Speicher.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 

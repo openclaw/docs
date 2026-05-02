@@ -1,45 +1,44 @@
 ---
 read_when:
-    - Sie möchten, dass ein OpenClaw-Agent einem Google Meet-Anruf beitritt
+    - Sie möchten, dass ein OpenClaw-Agent an einem Google Meet-Anruf teilnimmt
     - Sie möchten, dass ein OpenClaw-Agent einen neuen Google Meet-Anruf erstellt
     - Sie konfigurieren Chrome, Chrome-Node oder Twilio als Google Meet-Transport
-summary: 'Google Meet-Plugin: expliziten Meet-URLs über Chrome oder Twilio mit Standardeinstellungen für Echtzeit-Sprachübertragung beitreten'
+summary: 'Google Meet-Plugin: expliziten Meet-URLs über Chrome oder Twilio mit Standardeinstellungen für Echtzeit-Sprache beitreten'
 title: Google Meet-Plugin
 x-i18n:
-    generated_at: "2026-05-01T06:44:16Z"
+    generated_at: "2026-05-02T06:40:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 67661177ca8a72e2e9a67bfee30a90fd02089a81b2ef90ba10f964dee962552b
+    source_hash: af1f327249c45fe318410a15c598fa9aff52bd160961b6354f027cb728b7aa82
     source_path: plugins/google-meet.md
     workflow: 16
 ---
 
-Google Meet-Teilnehmerunterstützung für OpenClaw — das Plugin ist bewusst explizit gestaltet:
+Google Meet-Teilnehmerunterstützung für OpenClaw — das Plugin ist absichtlich explizit ausgelegt:
 
 - Es tritt nur einer expliziten `https://meet.google.com/...`-URL bei.
 - Es kann über die Google Meet API einen neuen Meet-Raum erstellen und dann der
   zurückgegebenen URL beitreten.
 - `realtime`-Sprache ist der Standardmodus.
-- Realtime-Sprache kann an den vollständigen OpenClaw-Agent zurückrufen, wenn
-  tieferes Schlussfolgern oder Tools benötigt werden.
-- Agents wählen das Beitrittsverhalten mit `mode`: Verwenden Sie `realtime` für
-  Live-Mithören und Rücksprechen oder `transcribe`, um dem Browser beizutreten
-  und ihn zu steuern, ohne die Realtime-Sprachbrücke zu verwenden.
+- Echtzeitsprache kann bei Bedarf für tiefere
+  Schlussfolgerungen oder Tools an den vollständigen OpenClaw-Agenten zurückrufen.
+- Agenten wählen das Beitrittsverhalten mit `mode`: Verwenden Sie `realtime` für
+  Live-Zuhören/Rücksprechen oder `transcribe`, um dem Browser beizutreten/ihn zu
+  steuern, ohne die Echtzeit-Sprachbrücke zu verwenden.
 - Authentifizierung beginnt als persönliches Google OAuth oder als bereits
   angemeldetes Chrome-Profil.
-- Es gibt keine automatische Zustimmungshinweis-Ansage.
+- Es gibt keine automatische Einwilligungsansage.
 - Das standardmäßige Chrome-Audio-Backend ist `BlackHole 2ch`.
 - Chrome kann lokal oder auf einem gekoppelten Node-Host ausgeführt werden.
 - Twilio akzeptiert eine Einwahlnummer plus optionale PIN oder DTMF-Sequenz.
-- Der CLI-Befehl ist `googlemeet`; `meet` ist für breitere
-  Agent-Telekonferenz-Workflows reserviert.
+- Der CLI-Befehl ist `googlemeet`; `meet` ist für umfassendere Agenten-
+  Telefonkonferenz-Workflows reserviert.
 
 ## Schnellstart
 
-Installieren Sie die lokalen Audioabhängigkeiten und konfigurieren Sie einen
-Backend-Provider für Realtime-Sprache. OpenAI ist die Standardeinstellung;
-Google Gemini Live funktioniert ebenfalls mit
-`realtime.provider: "google"`:
+Installieren Sie die lokalen Audio-Abhängigkeiten und konfigurieren Sie einen
+Backend-Provider für Echtzeitsprache. OpenAI ist der Standard; Google Gemini Live
+funktioniert ebenfalls mit `realtime.provider: "google"`:
 
 ```bash
 brew install blackhole-2ch sox
@@ -48,8 +47,8 @@ export OPENAI_API_KEY=sk-...
 export GEMINI_API_KEY=...
 ```
 
-`blackhole-2ch` installiert das virtuelle Audiogerät `BlackHole 2ch`. Das
-Homebrew-Installationsprogramm erfordert einen Neustart, bevor macOS das Gerät
+`blackhole-2ch` installiert das virtuelle Audiogerät `BlackHole 2ch`. Der
+Installer von Homebrew erfordert einen Neustart, bevor macOS das Gerät
 bereitstellt:
 
 ```bash
@@ -78,30 +77,29 @@ Aktivieren Sie das Plugin:
 }
 ```
 
-Prüfen Sie die Einrichtung:
+Einrichtung prüfen:
 
 ```bash
 openclaw googlemeet setup
 ```
 
-Die Einrichtungsausgabe ist dafür vorgesehen, von Agents gelesen zu werden, und
-ist modusabhängig. Sie meldet Chrome-Profil, Node-Pinning und bei Realtime-
-Chrome-Beitritten die BlackHole/SoX-Audiobrücke sowie verzögerte Prüfungen der
-Realtime-Einführung. Für reine Beobachtungsbeitritte prüfen Sie denselben
-Transport mit `--mode transcribe`; dieser Modus überspringt die
-Realtime-Audio-Voraussetzungen, weil er nicht über die Brücke zuhört oder
-spricht:
+Die Setup-Ausgabe ist so gedacht, dass sie für Agenten lesbar und modusbewusst
+ist. Sie meldet Chrome-Profil, Node-Pinning und bei Echtzeit-Chrome-Beitritten
+die BlackHole/SoX-Audiobrücke sowie verzögerte Prüfungen der Echtzeit-
+Einführung. Für reine Beobachtungsbeitritte prüfen Sie denselben Transport mit
+`--mode transcribe`; dieser Modus überspringt die Echtzeit-Audio-
+Voraussetzungen, weil er weder über die Brücke zuhört noch über sie spricht:
 
 ```bash
 openclaw googlemeet setup --transport chrome-node --mode transcribe
 ```
 
-Wenn Twilio-Delegation konfiguriert ist, meldet die Einrichtung außerdem, ob das
-`voice-call`-Plugin, die Twilio-Anmeldedaten und die öffentliche
-Webhook-Erreichbarkeit bereit sind. Behandeln Sie jede Prüfung mit `ok: false`
-als Blocker für den geprüften Transport und Modus, bevor Sie einen Agent um den
-Beitritt bitten. Verwenden Sie `openclaw googlemeet setup --json` für Skripte
-oder maschinenlesbare Ausgabe. Verwenden Sie `--transport chrome`,
+Wenn Twilio-Delegation konfiguriert ist, meldet das Setup außerdem, ob das
+`voice-call`-Plugin, Twilio-Anmeldedaten und die öffentliche Webhook-
+Erreichbarkeit bereit sind. Behandeln Sie jede Prüfung mit `ok: false` als
+Blocker für den geprüften Transport und Modus, bevor Sie einen Agenten zum
+Beitritt auffordern. Verwenden Sie `openclaw googlemeet setup --json` für
+Skripte oder maschinenlesbare Ausgabe. Verwenden Sie `--transport chrome`,
 `--transport chrome-node` oder `--transport twilio`, um einen bestimmten
 Transport vorab zu prüfen, bevor ein Agent ihn versucht.
 
@@ -112,17 +110,17 @@ Standardtransport Chrome ist:
 openclaw googlemeet setup --transport twilio
 ```
 
-Dadurch werden fehlende `voice-call`-Verdrahtung, Twilio-Anmeldedaten oder nicht
-erreichbare Webhook-Bereitstellung erkannt, bevor der Agent versucht, die
-Besprechung anzurufen.
+So werden fehlende `voice-call`-Verdrahtung, Twilio-Anmeldedaten oder nicht
+erreichbare Webhook-Freigabe erkannt, bevor der Agent versucht, das Meeting
+anzurufen.
 
-Einer Besprechung beitreten:
+Einem Meeting beitreten:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
-Oder lassen Sie einen Agent über das `google_meet`-Tool beitreten:
+Oder lassen Sie einen Agenten über das Tool `google_meet` beitreten:
 
 ```json
 {
@@ -133,7 +131,7 @@ Oder lassen Sie einen Agent über das `google_meet`-Tool beitreten:
 }
 ```
 
-Eine neue Besprechung erstellen und ihr beitreten:
+Ein neues Meeting erstellen und ihm beitreten:
 
 ```bash
 openclaw googlemeet create --transport chrome-node --mode realtime
@@ -151,29 +149,27 @@ openclaw googlemeet create --no-join
   konfiguriert sind. Dies ist der deterministischste Pfad und hängt nicht vom
   Browser-UI-Zustand ab.
 - Browser-Fallback: wird verwendet, wenn OAuth-Anmeldedaten fehlen. OpenClaw
-  verwendet den angehefteten Chrome-Node, öffnet `https://meet.google.com/new`,
-  wartet darauf, dass Google zu einer echten Besprechungscode-URL weiterleitet,
-  und gibt dann diese URL zurück. Dieser Pfad erfordert, dass das OpenClaw-
-  Chrome-Profil auf dem Node bereits bei Google angemeldet ist.
-  Die Browser-Automatisierung behandelt Meets eigene Mikrofonaufforderung beim
-  ersten Start; diese Aufforderung wird nicht als Google-Anmeldefehler
-  behandelt.
-  Beitritts- und Erstellungsabläufe versuchen außerdem, einen vorhandenen
-  Meet-Tab wiederzuverwenden, bevor ein neuer geöffnet wird. Der Abgleich
-  ignoriert harmlose URL-Abfragezeichenfolgen wie `authuser`, sodass ein
-  erneuter Agent-Versuch die bereits geöffnete Besprechung fokussieren sollte,
-  statt einen zweiten Chrome-Tab zu erstellen.
+  verwendet den gepinnten Chrome-Node, öffnet `https://meet.google.com/new`,
+  wartet darauf, dass Google zu einer echten Meeting-Code-URL weiterleitet, und
+  gibt dann diese URL zurück. Dieser Pfad erfordert, dass das OpenClaw-Chrome-
+  Profil auf dem Node bereits bei Google angemeldet ist. Die Browser-
+  Automatisierung behandelt Meets eigene Erststart-Mikrofonabfrage; diese
+  Abfrage wird nicht als Google-Anmeldefehler behandelt.
+  Beitritts- und Erstellungsabläufe versuchen außerdem, einen vorhandenen Meet-
+  Tab wiederzuverwenden, bevor ein neuer geöffnet wird. Der Abgleich ignoriert
+  harmlose URL-Abfragezeichenfolgen wie `authuser`, sodass ein erneuter
+  Agentenversuch das bereits geöffnete Meeting fokussieren sollte, statt einen
+  zweiten Chrome-Tab zu erstellen.
 
-Die Befehls-/Tool-Ausgabe enthält ein `source`-Feld (`api` oder `browser`),
-damit Agents erklären können, welcher Pfad verwendet wurde. `create` tritt der
-neuen Besprechung standardmäßig bei und gibt `joined: true` plus die
-Beitrittssitzung zurück. Um nur die URL zu erzeugen, verwenden Sie
-`create --no-join` in der CLI oder übergeben Sie `"join": false` an das Tool.
+Die Befehls-/Tool-Ausgabe enthält ein Feld `source` (`api` oder `browser`),
+damit Agenten erklären können, welcher Pfad verwendet wurde. `create` tritt dem
+neuen Meeting standardmäßig bei und gibt `joined: true` plus die Beitrittssitzung
+zurück. Um nur die URL zu erzeugen, verwenden Sie `create --no-join` in der CLI
+oder übergeben Sie `"join": false` an das Tool.
 
-Oder sagen Sie einem Agent: „Erstellen Sie ein Google Meet, treten Sie mit
-Realtime-Sprache bei und senden Sie mir den Link.“ Der Agent sollte `google_meet`
-mit `action: "create"` aufrufen und anschließend die zurückgegebene `meetingUri`
-teilen.
+Oder sagen Sie einem Agenten: „Erstelle ein Google Meet, tritt ihm mit
+Echtzeitsprache bei und sende mir den Link.“ Der Agent sollte `google_meet` mit
+`action: "create"` aufrufen und dann die zurückgegebene `meetingUri` teilen.
 
 ```json
 {
@@ -184,49 +180,54 @@ teilen.
 ```
 
 Für einen reinen Beobachtungs-/Browsersteuerungsbeitritt setzen Sie
-`"mode": "transcribe"`. Dadurch wird die Duplex-Realtime-Modellbrücke nicht
-gestartet, BlackHole oder SoX sind nicht erforderlich, und es wird nicht in die
-Besprechung zurückgesprochen. Chrome-Beitritte in diesem Modus vermeiden
-außerdem OpenClaws Mikrofon-/Kameraberechtigungserteilung und den Meet-Pfad
-**Mikrofon verwenden**. Wenn Meet einen Zwischendialog zur Audioauswahl anzeigt,
-versucht die Automatisierung den Pfad ohne Mikrofon und meldet andernfalls eine
-manuelle Aktion, statt das lokale Mikrofon zu öffnen.
+`"mode": "transcribe"`. Dadurch wird die duplexe Echtzeit-Modellbrücke nicht
+gestartet, BlackHole oder SoX sind nicht erforderlich, und es wird nicht in das
+Meeting zurückgesprochen. Chrome-Beitritte in diesem Modus vermeiden außerdem
+OpenClaws Mikrofon-/Kamera-Berechtigungserteilung und den Meet-Pfad **Mikrofon
+verwenden**. Wenn Meet einen Audio-Auswahl-Zwischendialog anzeigt, versucht die
+Automatisierung den Pfad ohne Mikrofon und meldet andernfalls eine manuelle
+Aktion, statt das lokale Mikrofon zu öffnen. Im Transcribe-Modus installieren
+verwaltete Chrome-Transporte außerdem einen Best-Effort-Meet-Untertitel-
+Beobachter. `googlemeet status --json` und `googlemeet doctor` zeigen
+`captioning`, `captionsEnabledAttempted`, `transcriptLines`, `lastCaptionAt`,
+`lastCaptionSpeaker`, `lastCaptionText` und einen kurzen `recentTranscript`-
+Nachlauf an, damit Betreiber erkennen können, ob der Browser dem Anruf
+beigetreten ist und ob Meet-Untertitel Text erzeugen.
 
-Während Realtime-Sitzungen enthält der `google_meet`-Status den Zustand des
-Browsers und der Audiobrücke, etwa `inCall`, `manualActionRequired`,
-`providerConnected`, `realtimeReady`, `audioInputActive`, `audioOutputActive`,
-Zeitstempel der letzten Eingabe/Ausgabe, Byte-Zähler und den geschlossenen
-Zustand der Brücke. Wenn eine sichere Meet-Seitenaufforderung angezeigt wird,
-behandelt die Browser-Automatisierung sie, soweit möglich. Anmeldung,
-Host-Zulassung und Browser-/OS-Berechtigungsaufforderungen werden als manuelle
-Aktion mit Grund und Nachricht gemeldet, damit der Agent sie weitergeben kann.
-Verwaltete Chrome-Sitzungen geben die Einführung oder Testphrase erst aus,
-nachdem der Browserzustand `inCall: true` meldet; andernfalls meldet der Status
-`speechReady: false`, und der Sprechversuch wird blockiert, statt vorzugeben,
-der Agent habe in die Besprechung gesprochen.
+Während Echtzeitsitzungen enthält der Status von `google_meet` Browser- und
+Audiobrücken-Zustand wie `inCall`, `manualActionRequired`, `providerConnected`,
+`realtimeReady`, `audioInputActive`, `audioOutputActive`, letzte Ein-/Ausgabe-
+Zeitstempel, Byte-Zähler und den geschlossenen Zustand der Brücke. Wenn eine
+sichere Meet-Seitenabfrage erscheint, behandelt die Browser-Automatisierung sie,
+wenn möglich. Anmeldung, Host-Zulassung und Browser-/OS-Berechtigungsabfragen
+werden als manuelle Aktion mit Grund und Nachricht gemeldet, damit der Agent sie
+weitergeben kann. Verwaltete Chrome-Sitzungen geben die Einführung oder Testphrase
+erst aus, nachdem der Browser-Zustand `inCall: true` meldet; andernfalls meldet
+der Status `speechReady: false`, und der Sprechversuch wird blockiert, statt
+vorzugeben, der Agent habe in das Meeting gesprochen.
 
-Lokale Chrome-Beitritte verwenden das angemeldete OpenClaw-Browserprofil.
-Realtime-Modus erfordert `BlackHole 2ch` für den von OpenClaw genutzten
-Mikrofon-/Lautsprecherpfad. Für sauberes Duplex-Audio verwenden Sie getrennte
+Lokale Chrome-Beitritte laufen über das angemeldete OpenClaw-Browserprofil. Der
+Echtzeitmodus erfordert `BlackHole 2ch` für den von OpenClaw verwendeten
+Mikrofon-/Lautsprecherpfad. Für sauberes Duplex-Audio verwenden Sie separate
 virtuelle Geräte oder einen Loopback-artigen Graphen; ein einzelnes BlackHole-
-Gerät reicht für einen ersten Smoke-Test, kann aber Echo erzeugen.
+Gerät reicht für einen ersten Smoke-Test, kann aber ein Echo erzeugen.
 
 ### Lokaler Gateway + Parallels Chrome
 
-Sie benötigen keinen vollständigen OpenClaw Gateway oder Modell-API-Schlüssel in
-einer macOS-VM, nur damit die VM Chrome besitzt. Führen Sie den Gateway und den
-Agent lokal aus und führen Sie dann einen Node-Host in der VM aus. Aktivieren Sie
-das gebündelte Plugin einmal in der VM, damit der Node den Chrome-Befehl
+Sie benötigen keinen vollständigen OpenClaw Gateway und keinen Modell-API-
+Schlüssel in einer macOS-VM, nur damit die VM Chrome besitzt. Führen Sie Gateway
+und Agent lokal aus und führen Sie dann einen Node-Host in der VM aus. Aktivieren
+Sie das gebündelte Plugin einmal in der VM, damit der Node den Chrome-Befehl
 ankündigt:
 
 Was wo läuft:
 
-- Gateway-Host: OpenClaw Gateway, Agent-Arbeitsbereich, Modell-/API-Schlüssel,
-  Realtime-Provider und die Konfiguration des Google Meet-Plugins.
+- Gateway-Host: OpenClaw Gateway, Agenten-Arbeitsbereich, Modell-/API-Schlüssel,
+  Echtzeit-Provider und die Google Meet-Plugin-Konfiguration.
 - Parallels-macOS-VM: OpenClaw CLI/Node-Host, Google Chrome, SoX, BlackHole 2ch
   und ein bei Google angemeldetes Chrome-Profil.
-- In der VM nicht benötigt: Gateway-Dienst, Agent-Konfiguration, OpenAI/GPT-
-  Schlüssel oder Einrichtung eines Modell-Providers.
+- In der VM nicht benötigt: Gateway-Dienst, Agentenkonfiguration, OpenAI/GPT-
+  Schlüssel oder Modell-Provider-Einrichtung.
 
 Installieren Sie die VM-Abhängigkeiten:
 
@@ -262,9 +263,9 @@ Starten Sie den Node-Host in der VM:
 openclaw node run --host <gateway-host> --port 18789 --display-name parallels-macos
 ```
 
-Wenn `<gateway-host>` eine LAN-IP ist und Sie kein TLS verwenden, lehnt der Node
-das Klartext-WebSocket ab, sofern Sie diese vertrauenswürdige private Verbindung
-nicht ausdrücklich aktivieren:
+Wenn `<gateway-host>` eine LAN-IP ist und Sie kein TLS verwenden, verweigert der
+Node den Klartext-WebSocket, sofern Sie diese vertrauenswürdige private
+Netzwerkverbindung nicht ausdrücklich zulassen:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -282,7 +283,7 @@ openclaw node restart
 
 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` ist eine Prozessumgebung, keine
 `openclaw.json`-Einstellung. `openclaw node install` speichert sie in der
-LaunchAgent-Umgebung, wenn sie beim Installationsbefehl vorhanden ist.
+LaunchAgent-Umgebung, wenn sie im Installationsbefehl vorhanden ist.
 
 Genehmigen Sie den Node vom Gateway-Host aus:
 
@@ -328,95 +329,95 @@ Leiten Sie Meet auf dem Gateway-Host über diesen Node:
 }
 ```
 
-Treten Sie nun wie gewohnt vom Gateway-Host aus bei:
+Treten Sie nun normal vom Gateway-Host aus bei:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij
 ```
 
-oder bitten Sie den Agent, das `google_meet`-Tool mit
+oder bitten Sie den Agenten, das Tool `google_meet` mit
 `transport: "chrome-node"` zu verwenden.
 
-Für einen Ein-Befehl-Smoke-Test, der eine Sitzung erstellt oder wiederverwendet,
-eine bekannte Phrase spricht und den Sitzungszustand ausgibt:
+Für einen Smoke-Test mit einem Befehl, der eine Sitzung erstellt oder
+wiederverwendet, eine bekannte Phrase spricht und den Sitzungszustand ausgibt:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij
 ```
 
-Während des Realtime-Beitritts füllt die OpenClaw-Browser-Automatisierung den
+Während des Echtzeitbeitritts füllt die OpenClaw-Browser-Automatisierung den
 Gastnamen aus, klickt auf Beitreten/Beitritt anfragen und akzeptiert Meets
-„Mikrofon verwenden“-Auswahl beim ersten Start, wenn diese Aufforderung
-erscheint. Während eines reinen Beobachtungsbeitritts oder einer browserbasierten
-Besprechungserstellung fährt sie bei derselben Aufforderung ohne Mikrofon fort,
-wenn diese Auswahl verfügbar ist. Wenn das Browserprofil nicht angemeldet ist,
-Meet auf Host-Zulassung wartet, Chrome für einen Realtime-Beitritt eine Mikrofon-/
-Kameraberechtigung benötigt oder Meet bei einer Aufforderung festhängt, die die
-Automatisierung nicht lösen konnte, meldet das Join-/Test-Speech-Ergebnis
-`manualActionRequired: true` mit `manualActionReason` und
-`manualActionMessage`. Agents sollten den erneuten Beitrittsversuch stoppen,
-genau diese Nachricht plus die aktuelle `browserUrl`/`browserTitle` melden und
-erst erneut versuchen, wenn die manuelle Browseraktion abgeschlossen ist.
+erstmalige Auswahl „Mikrofon verwenden“, wenn diese Abfrage erscheint. Während
+eines reinen Beobachtungsbeitritts oder einer reinen Browser-Meeting-Erstellung
+fährt sie bei derselben Abfrage ohne Mikrofon fort, wenn diese Auswahl verfügbar
+ist. Wenn das Browserprofil nicht angemeldet ist, Meet auf Host-Zulassung wartet,
+Chrome für einen Echtzeitbeitritt Mikrofon-/Kameraberechtigung benötigt oder Meet
+in einer Abfrage festhängt, die die Automatisierung nicht auflösen konnte,
+meldet das Join-/Test-Speech-Ergebnis `manualActionRequired: true` mit
+`manualActionReason` und `manualActionMessage`. Agenten sollten aufhören, den
+Beitritt erneut zu versuchen, genau diese Nachricht plus die aktuelle
+`browserUrl`/`browserTitle` melden und erst erneut versuchen, wenn die manuelle
+Browseraktion abgeschlossen ist.
 
-Wenn `chromeNode.node` weggelassen wird, wählt OpenClaw nur dann automatisch aus,
+Wenn `chromeNode.node` ausgelassen wird, wählt OpenClaw nur dann automatisch aus,
 wenn genau ein verbundener Node sowohl `googlemeet.chrome` als auch
 Browsersteuerung ankündigt. Wenn mehrere geeignete Nodes verbunden sind, setzen
 Sie `chromeNode.node` auf die Node-ID, den Anzeigenamen oder die Remote-IP.
 
 Häufige Fehlerprüfungen:
 
-- `Configured Google Meet node ... is not usable: offline`: die angeheftete Node ist
-  dem Gateway bekannt, aber nicht verfügbar. Agenten sollten diese Node als
-  Diagnosezustand behandeln, nicht als nutzbaren Chrome-Host, und den
+- `Configured Google Meet node ... is not usable: offline`: die fixierte Node ist
+  dem Gateway bekannt, aber nicht verfügbar. Agents sollten diese Node als
+  Diagnosestatus behandeln, nicht als nutzbaren Chrome-Host, und den
   Einrichtungsblocker melden, statt auf einen anderen Transport zurückzufallen,
-  es sei denn, der Benutzer hat dies angefordert.
+  sofern der Benutzer dies nicht angefordert hat.
 - `No connected Google Meet-capable node`: starten Sie `openclaw node run` in der VM,
-  genehmigen Sie das Pairing, und stellen Sie sicher, dass `openclaw plugins enable google-meet` und
+  genehmigen Sie das Pairing und stellen Sie sicher, dass `openclaw plugins enable google-meet` und
   `openclaw plugins enable browser` in der VM ausgeführt wurden. Bestätigen Sie außerdem, dass der
   Gateway-Host beide Node-Befehle mit
   `gateway.nodes.allowCommands: ["googlemeet.chrome", "browser.proxy"]` erlaubt.
-- `BlackHole 2ch audio device not found`: installieren Sie `blackhole-2ch` auf dem Host,
-  der geprüft wird, und starten Sie neu, bevor Sie lokales Chrome-Audio verwenden.
+- `BlackHole 2ch audio device not found`: installieren Sie `blackhole-2ch` auf dem geprüften Host
+  und starten Sie neu, bevor Sie lokales Chrome-Audio verwenden.
 - `BlackHole 2ch audio device not found on the node`: installieren Sie `blackhole-2ch`
   in der VM und starten Sie die VM neu.
-- Chrome wird geöffnet, kann aber nicht beitreten: Melden Sie sich beim Browserprofil innerhalb der VM an, oder
-  lassen Sie `chrome.guestName` für den Gastbeitritt gesetzt. Der automatische Gastbeitritt verwendet OpenClaw
+- Chrome öffnet sich, kann aber nicht beitreten: melden Sie sich im Browserprofil innerhalb der VM an, oder
+  lassen Sie `chrome.guestName` für den Gastbeitritt gesetzt. Der automatische Gastbeitritt verwendet OpenClaw-
   Browserautomatisierung über den Node-Browser-Proxy; stellen Sie sicher, dass die Node-Browser-
-  Konfiguration auf das gewünschte Profil verweist, zum Beispiel
-  `browser.defaultProfile: "user"` oder ein benanntes Profil einer bestehenden Sitzung.
-- Doppelte Meet-Tabs: Lassen Sie `chrome.reuseExistingTab: true` aktiviert. OpenClaw
+  Konfiguration auf das gewünschte Profil zeigt, zum Beispiel
+  `browser.defaultProfile: "user"` oder ein benanntes Profil einer vorhandenen Sitzung.
+- Doppelte Meet-Tabs: lassen Sie `chrome.reuseExistingTab: true` aktiviert. OpenClaw
   aktiviert einen vorhandenen Tab für dieselbe Meet-URL, bevor ein neuer geöffnet wird, und
   die Browser-Meeting-Erstellung verwendet einen laufenden `https://meet.google.com/new`-
-  oder Google-Konto-Aufforderungs-Tab erneut, bevor ein weiterer geöffnet wird.
-- Kein Audio: Leiten Sie in Meet Mikrofon/Lautsprecher über den von OpenClaw verwendeten
-  Pfad des virtuellen Audiogeräts; verwenden Sie separate virtuelle Geräte oder Routing
-  im Loopback-Stil für sauberes Duplex-Audio.
+  oder Google-Konto-Aufforderungstab wieder, bevor ein weiterer geöffnet wird.
+- Kein Audio: leiten Sie in Meet Mikrofon/Lautsprecher über den von OpenClaw verwendeten Pfad des virtuellen Audiogeräts;
+  verwenden Sie separate virtuelle Geräte oder Routing im Loopback-Stil
+  für sauberes Duplex-Audio.
 
 ## Installationshinweise
 
-Die Chrome-Echtzeit-Standardeinstellung verwendet zwei externe Tools:
+Der Chrome-Echtzeitstandard verwendet zwei externe Tools:
 
-- `sox`: Befehlszeilen-Audio-Dienstprogramm. Das Plugin verwendet explizite CoreAudio-
-  Gerätebefehle für die standardmäßige 24-kHz-PCM16-Audiobrücke.
+- `sox`: Audio-Dienstprogramm für die Befehlszeile. Das Plugin verwendet explizite CoreAudio-
+  Gerätebefehle für die standardmäßige 24-kHz-PCM16-Audio-Bridge.
 - `blackhole-2ch`: virtueller macOS-Audiotreiber. Er erstellt das Audiogerät `BlackHole 2ch`,
   über das Chrome/Meet routen kann.
 
-OpenClaw bündelt oder vertreibt keines der beiden Pakete. Die Dokumentation weist Benutzer an,
+OpenClaw bündelt oder verteilt keines der beiden Pakete. Die Dokumentation fordert Benutzer auf,
 sie als Host-Abhängigkeiten über Homebrew zu installieren. SoX ist lizenziert als
 `LGPL-2.0-only AND GPL-2.0-only`; BlackHole ist GPL-3.0. Wenn Sie ein
-Installationsprogramm oder eine Appliance erstellen, die BlackHole mit OpenClaw bündelt, prüfen Sie die
+Installationsprogramm oder Appliance erstellen, das BlackHole mit OpenClaw bündelt, prüfen Sie die
 Upstream-Lizenzbedingungen von BlackHole oder beziehen Sie eine separate Lizenz von Existential Audio.
 
-## Transportarten
+## Transporte
 
 ### Chrome
 
 Der Chrome-Transport öffnet die Meet-URL über die OpenClaw-Browsersteuerung und tritt
 als angemeldetes OpenClaw-Browserprofil bei. Unter macOS prüft das Plugin vor dem Start auf
-`BlackHole 2ch`. Falls konfiguriert, führt es außerdem vor dem Öffnen von Chrome einen Audiobrücken-
-Health-Befehl und Startbefehl aus. Verwenden Sie `chrome`, wenn
+`BlackHole 2ch`. Falls konfiguriert, führt es außerdem einen Audio-Bridge-
+Integritätsbefehl und Startbefehl aus, bevor Chrome geöffnet wird. Verwenden Sie `chrome`, wenn
 Chrome/Audio auf dem Gateway-Host laufen; verwenden Sie `chrome-node`, wenn Chrome/Audio
-auf einer gekoppelten Node wie einer Parallels-macOS-VM laufen. Wählen Sie für lokales Chrome das
+auf einer gekoppelten Node wie einer Parallels-macOS-VM laufen. Für lokales Chrome wählen Sie das
 Profil mit `browser.defaultProfile`; `chrome.browserProfile` wird an
 `chrome-node`-Hosts übergeben.
 
@@ -425,20 +426,20 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome-node
 ```
 
-Leiten Sie Chrome-Mikrofon- und Lautsprecheraudio über die lokale OpenClaw-Audiobrücke.
-Wenn `BlackHole 2ch` nicht installiert ist, schlägt der Beitritt mit einem Einrichtungsfehler fehl,
-statt stillschweigend ohne Audiopfad beizutreten.
+Leiten Sie Chrome-Mikrofon- und Lautsprecheraudio über die lokale OpenClaw-Audio-
+Bridge. Wenn `BlackHole 2ch` nicht installiert ist, schlägt der Beitritt mit einem Einrichtungsfehler
+fehl, statt stillschweigend ohne Audiopfad beizutreten.
 
 ### Twilio
 
-Der Twilio-Transport ist ein strikter Wählplan, der an das Voice-Call-Plugin delegiert wird. Er
-analysiert keine Meet-Seiten nach Telefonnummern.
+Der Twilio-Transport ist ein strikter Wählplan, der an das Voice Call-Plugin delegiert wird. Er
+parst keine Meet-Seiten nach Telefonnummern.
 
 Verwenden Sie dies, wenn Chrome-Teilnahme nicht verfügbar ist oder Sie einen Telefon-Einwahl-
-Fallback wünschen. Google Meet muss eine Telefon-Einwahlnummer und PIN für das
-Meeting bereitstellen; OpenClaw ermittelt diese nicht aus der Meet-Seite.
+Fallback wünschen. Google Meet muss für das Meeting eine Telefon-Einwahlnummer und PIN
+bereitstellen; OpenClaw ermittelt diese nicht aus der Meet-Seite.
 
-Aktivieren Sie das Voice-Call-Plugin auf dem Gateway-Host, nicht auf der Chrome-Node:
+Aktivieren Sie das Voice Call-Plugin auf dem Gateway-Host, nicht auf der Chrome-Node:
 
 ```json5
 {
@@ -463,7 +464,7 @@ Aktivieren Sie das Voice-Call-Plugin auf dem Gateway-Host, nicht auf der Chrome-
 }
 ```
 
-Stellen Sie Twilio-Anmeldedaten über die Umgebung oder Konfiguration bereit. Die Umgebung hält
+Stellen Sie Twilio-Anmeldedaten über Umgebung oder Konfiguration bereit. Die Umgebung hält
 Geheimnisse aus `openclaw.json` heraus:
 
 ```bash
@@ -472,10 +473,10 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-Starten Sie das Gateway neu oder laden Sie es neu, nachdem Sie `voice-call` aktiviert haben; Plugin-Konfigurationsänderungen
-erscheinen in einem bereits laufenden Gateway-Prozess erst nach einem Neuladen.
+Starten Sie das Gateway neu oder laden Sie es neu, nachdem `voice-call` aktiviert wurde; Änderungen an der Plugin-Konfiguration
+erscheinen in einem bereits laufenden Gateway-Prozess erst nach dem Neuladen.
 
-Prüfen Sie anschließend:
+Prüfen Sie dann:
 
 ```bash
 openclaw config validate
@@ -483,7 +484,7 @@ openclaw plugins list | grep -E 'google-meet|voice-call'
 openclaw googlemeet setup
 ```
 
-Wenn die Twilio-Delegierung verdrahtet ist, enthält `googlemeet setup` erfolgreiche
+Wenn die Twilio-Delegation verdrahtet ist, enthält `googlemeet setup` erfolgreiche
 Prüfungen für `twilio-voice-call-plugin`, `twilio-voice-call-credentials` und
 `twilio-voice-call-webhook`.
 
@@ -509,48 +510,48 @@ OAuth ist für das Erstellen eines Meet-Links optional, da `googlemeet create` a
 Browserautomatisierung zurückfallen kann. Konfigurieren Sie OAuth, wenn Sie offizielle API-Erstellung,
 Space-Auflösung oder Vorabprüfungen der Meet Media API wünschen.
 
-Der Zugriff auf die Google Meet API verwendet Benutzer-OAuth: Erstellen Sie einen Google Cloud-OAuth-Client,
-fordern Sie die erforderlichen Scopes an, autorisieren Sie ein Google-Konto, und speichern Sie dann das
+Der Google Meet API-Zugriff verwendet Benutzer-OAuth: erstellen Sie einen Google Cloud-OAuth-Client,
+fordern Sie die erforderlichen Scopes an, autorisieren Sie ein Google-Konto und speichern Sie dann das
 resultierende Refresh Token in der Google Meet-Plugin-Konfiguration oder stellen Sie die
-`OPENCLAW_GOOGLE_MEET_*`-Umgebungsvariablen bereit.
+Umgebungsvariablen `OPENCLAW_GOOGLE_MEET_*` bereit.
 
-OAuth ersetzt den Chrome-Beitrittspfad nicht. Chrome- und Chrome-node-Transporte
+OAuth ersetzt nicht den Chrome-Beitrittspfad. Chrome- und Chrome-node-Transporte
 treten weiterhin über ein angemeldetes Chrome-Profil, BlackHole/SoX und eine verbundene
 Node bei, wenn Sie Browserteilnahme verwenden. OAuth ist nur für den offiziellen Google
-Meet API-Pfad vorgesehen: Meeting-Spaces erstellen, Spaces auflösen und Vorabprüfungen der Meet Media API
-ausführen.
+Meet API-Pfad vorgesehen: Meeting-Spaces erstellen, Spaces auflösen und Meet Media API-
+Vorabprüfungen ausführen.
 
 ### Google-Anmeldedaten erstellen
 
 In der Google Cloud Console:
 
-1. Erstellen oder wählen Sie ein Google Cloud-Projekt aus.
+1. Erstellen oder wählen Sie ein Google Cloud-Projekt.
 2. Aktivieren Sie **Google Meet REST API** für dieses Projekt.
 3. Konfigurieren Sie den OAuth-Zustimmungsbildschirm.
    - **Internal** ist für eine Google Workspace-Organisation am einfachsten.
-   - **External** funktioniert für persönliche/Test-Setups; während sich die App in Testing befindet,
+   - **External** funktioniert für private/Test-Setups; solange sich die App im Testing befindet,
      fügen Sie jedes Google-Konto, das die App autorisieren soll, als Testbenutzer hinzu.
 4. Fügen Sie die von OpenClaw angeforderten Scopes hinzu:
    - `https://www.googleapis.com/auth/meetings.space.created`
    - `https://www.googleapis.com/auth/meetings.space.readonly`
    - `https://www.googleapis.com/auth/meetings.conference.media.readonly`
 5. Erstellen Sie eine OAuth-Client-ID.
-   - Anwendungstyp: **Web application**.
+   - Anwendungstyp: **Webanwendung**.
    - Autorisierte Weiterleitungs-URI:
 
      ```text
      http://localhost:8085/oauth2callback
      ```
 
-6. Kopieren Sie die Client-ID und das Client Secret.
+6. Kopieren Sie die Client-ID und das Client-Secret.
 
-`meetings.space.created` wird von Google Meet `spaces.create` benötigt.
-`meetings.space.readonly` ermöglicht OpenClaw, Meet-URLs/-Codes zu Spaces aufzulösen.
-`meetings.conference.media.readonly` ist für die Meet Media API-Vorabprüfung und Medienarbeit
-bestimmt; Google kann für die tatsächliche Nutzung der Media API eine Developer Preview-Registrierung verlangen.
+`meetings.space.created` ist für Google Meet `spaces.create` erforderlich.
+`meetings.space.readonly` lässt OpenClaw Meet-URLs/-Codes zu Spaces auflösen.
+`meetings.conference.media.readonly` ist für Meet Media API-Vorabprüfungen und Medien-
+Arbeit vorgesehen; Google kann für die tatsächliche Nutzung der Media API eine Developer Preview-Registrierung verlangen.
 Wenn Sie nur browserbasierte Chrome-Beitritte benötigen, überspringen Sie OAuth vollständig.
 
-### Refresh Token erstellen
+### Refresh Token ausstellen
 
 Konfigurieren Sie `oauth.clientId` und optional `oauth.clientSecret`, oder übergeben Sie sie als
 Umgebungsvariablen, und führen Sie dann aus:
@@ -617,26 +618,26 @@ Speichern Sie das `oauth`-Objekt unter der Google Meet-Plugin-Konfiguration:
 
 Bevorzugen Sie Umgebungsvariablen, wenn Sie das Refresh Token nicht in der Konfiguration haben möchten.
 Wenn sowohl Konfigurations- als auch Umgebungswerte vorhanden sind, löst das Plugin zuerst die Konfiguration
-und dann den Umgebungs-Fallback auf.
+und danach den Umgebungs-Fallback auf.
 
 Die OAuth-Zustimmung umfasst Meet-Space-Erstellung, Lesezugriff auf Meet-Spaces und Lesezugriff auf Meet-
-Konferenzmedien. Wenn Sie sich authentifiziert haben, bevor Unterstützung für die Meeting-Erstellung
+Konferenzmedien. Wenn Sie sich authentifiziert haben, bevor Unterstützung für Meeting-Erstellung
 existierte, führen Sie `openclaw googlemeet auth login --json` erneut aus, damit das Refresh
 Token den Scope `meetings.space.created` hat.
 
-### OAuth mit Doctor prüfen
+### OAuth mit doctor prüfen
 
-Führen Sie den OAuth-Doctor aus, wenn Sie eine schnelle, geheimnisfreie Health-Prüfung wünschen:
+Führen Sie den OAuth-doctor aus, wenn Sie eine schnelle, geheimnisfreie Integritätsprüfung wünschen:
 
 ```bash
 openclaw googlemeet doctor --oauth --json
 ```
 
-Dies lädt die Chrome-Laufzeit nicht und erfordert keine verbundene Chrome-Node. Es
-prüft, ob OAuth-Konfiguration vorhanden ist und ob das Refresh Token ein Access
+Dies lädt weder die Chrome-Runtime noch erfordert es eine verbundene Chrome-Node. Es
+prüft, dass OAuth-Konfiguration vorhanden ist und dass das Refresh Token ein Access
 Token ausstellen kann. Der JSON-Bericht enthält nur Statusfelder wie `ok`, `configured`,
-`tokenSource`, `expiresAt` und Prüfnachrichten; er gibt weder das Access
-Token, Refresh Token noch Client Secret aus.
+`tokenSource`, `expiresAt` und Prüfnachrichten; er gibt weder Access
+Token, Refresh Token noch Client-Secret aus.
 
 Häufige Ergebnisse:
 
@@ -647,16 +648,16 @@ Häufige Ergebnisse:
 | `meet-spaces-get`    | Optionale `--meeting`-Prüfung hat einen vorhandenen Meet-Space aufgelöst.               |
 | `meet-spaces-create` | Optionale `--create-space`-Prüfung hat einen neuen Meet-Space erstellt.                |
 
-Um die Aktivierung der Google Meet API und den Scope `spaces.create` ebenfalls nachzuweisen, führen Sie die
-seiteneffektbehaftete Erstellungsprüfung aus:
+Um auch die Aktivierung der Google Meet API und den `spaces.create`-Scope nachzuweisen, führen Sie die
+nebenwirkende Erstellungsprüfung aus:
 
 ```bash
 openclaw googlemeet doctor --oauth --create-space --json
 openclaw googlemeet create --no-join --json
 ```
 
-`--create-space` erstellt eine wegwerfbare Meet-URL. Verwenden Sie dies, wenn Sie bestätigen müssen,
-dass im Google Cloud-Projekt die Meet API aktiviert ist und das autorisierte
+`--create-space` erstellt eine Wegwerf-Meet-URL. Verwenden Sie dies, wenn Sie bestätigen müssen,
+dass im Google Cloud-Projekt die Meet API aktiviert ist und dass das autorisierte
 Konto den Scope `meetings.space.created` hat.
 
 Um Lesezugriff für einen vorhandenen Meeting-Space nachzuweisen:
@@ -670,8 +671,8 @@ openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 Space nach, auf den das autorisierte Google-Konto zugreifen kann. Ein `403` aus diesen Prüfungen
 bedeutet in der Regel, dass die Google Meet REST API deaktiviert ist, dem zugestimmten Refresh Token
 der erforderliche Scope fehlt oder das Google-Konto nicht auf diesen Meet-
-Space zugreifen kann. Ein Refresh-Token-Fehler bedeutet: Führen Sie `openclaw googlemeet auth login
---json` erneut aus und speichern Sie den neuen `oauth`-Block.
+Space zugreifen kann. Ein Refresh-Token-Fehler bedeutet, dass Sie `openclaw googlemeet auth login
+--json` erneut ausführen und den neuen `oauth`-Block speichern müssen.
 
 Für den Browser-Fallback sind keine OAuth-Anmeldedaten erforderlich. In diesem Modus stammt Google-
 Auth aus dem angemeldeten Chrome-Profil auf der ausgewählten Node, nicht aus der
@@ -700,7 +701,7 @@ Führen Sie vor Medienarbeiten einen Preflight aus:
 openclaw googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
 ```
 
-Listen Sie Meeting-Artefakte und Teilnahme auf, nachdem Meet Konferenzdatensätze erstellt hat:
+Listen Sie Meeting-Artefakte und Anwesenheit auf, nachdem Meet Konferenzdatensätze erstellt hat:
 
 ```bash
 openclaw googlemeet artifacts --meeting https://meet.google.com/abc-defg-hij
@@ -708,12 +709,9 @@ openclaw googlemeet attendance --meeting https://meet.google.com/abc-defg-hij
 openclaw googlemeet export --meeting https://meet.google.com/abc-defg-hij --output ./meet-export
 ```
 
-Mit `--meeting` verwenden `artifacts` und `attendance` standardmäßig den neuesten
-Konferenzdatensatz. Übergeben Sie `--all-conference-records`, wenn Sie alle
-beibehaltenen Datensätze für dieses Meeting möchten.
+Mit `--meeting` verwenden `artifacts` und `attendance` standardmäßig den neuesten Konferenzdatensatz. Übergeben Sie `--all-conference-records`, wenn Sie jeden aufbewahrten Datensatz für dieses Meeting möchten.
 
-Die Kalendersuche kann die Meeting-URL aus Google Calendar auflösen, bevor
-Meet-Artefakte gelesen werden:
+Die Kalendersuche kann die Meeting-URL aus Google Calendar auflösen, bevor Meet-Artefakte gelesen werden:
 
 ```bash
 openclaw googlemeet latest --today
@@ -722,15 +720,9 @@ openclaw googlemeet artifacts --event "Weekly sync"
 openclaw googlemeet attendance --today --format csv --output attendance.csv
 ```
 
-`--today` durchsucht den heutigen `primary`-Kalender nach einem Calendar-Ereignis
-mit einem Google Meet-Link. Verwenden Sie `--event <query>`, um passenden
-Ereignistext zu suchen, und `--calendar <id>` für einen nicht primären Kalender.
-Die Kalendersuche erfordert eine neue OAuth-Anmeldung, die den schreibgeschützten
-Scope für Calendar-Ereignisse enthält. `calendar-events` zeigt die passenden
-Meet-Ereignisse in einer Vorschau an und markiert das Ereignis, das `latest`,
-`artifacts`, `attendance` oder `export` auswählt.
+`--today` durchsucht den heutigen `primary`-Kalender nach einem Calendar-Ereignis mit einem Google Meet-Link. Verwenden Sie `--event <query>`, um passenden Ereignistext zu suchen, und `--calendar <id>` für einen nicht primären Kalender. Die Kalendersuche erfordert eine frische OAuth-Anmeldung, die den schreibgeschützten Scope für Calendar-Ereignisse enthält. `calendar-events` zeigt die passenden Meet-Ereignisse in der Vorschau an und markiert das Ereignis, das `latest`, `artifacts`, `attendance` oder `export` auswählt.
 
-Wenn Ihnen die Konferenzdatensatz-ID bereits bekannt ist, adressieren Sie sie direkt:
+Wenn Sie die Konferenzdatensatz-ID bereits kennen, adressieren Sie sie direkt:
 
 ```bash
 openclaw googlemeet latest --meeting https://meet.google.com/abc-defg-hij
@@ -753,40 +745,11 @@ openclaw googlemeet export --conference-record conferenceRecords/abc123 \
   --include-doc-bodies --dry-run
 ```
 
-`artifacts` gibt Metadaten des Konferenzdatensatzes sowie Metadaten zu
-Teilnehmern, Aufzeichnungen, Transkripten, strukturierten Transkripteinträgen
-und Smart-Note-Ressourcen zurück, wenn Google sie für das Meeting bereitstellt.
-Verwenden Sie `--no-transcript-entries`, um die Eintragsabfrage bei großen
-Meetings zu überspringen. `attendance` erweitert Teilnehmer zu
-Teilnehmersitzungszeilen mit Zeiten für erstes/letztes Auftreten,
-Gesamtsitzungsdauer, Markierungen für Verspätung/frühes Verlassen und
-duplizierten Teilnehmerressourcen, die nach angemeldetem Benutzer oder
-Anzeigename zusammengeführt wurden. Übergeben Sie `--no-merge-duplicates`, um
-Rohteilnehmerressourcen getrennt zu halten, `--late-after-minutes`, um die
-Verspätungserkennung anzupassen, und `--early-before-minutes`, um die Erkennung
-für frühes Verlassen anzupassen.
+`artifacts` gibt Konferenzdatensatz-Metadaten sowie Metadaten zu Teilnehmern, Aufzeichnungen, Transkripten, strukturierten Transkripteinträgen und Smart-Note-Ressourcen zurück, wenn Google sie für das Meeting bereitstellt. Verwenden Sie `--no-transcript-entries`, um die Suche nach Einträgen bei großen Meetings zu überspringen. `attendance` erweitert Teilnehmer zu Teilnehmer-Sitzungszeilen mit Zeiten für erstes/letztes Gesehenwerden, gesamter Sitzungsdauer, Kennzeichen für Verspätung/frühes Verlassen und nach angemeldetem Nutzer oder Anzeigename zusammengeführten doppelten Teilnehmerressourcen. Übergeben Sie `--no-merge-duplicates`, um rohe Teilnehmerressourcen getrennt zu halten, `--late-after-minutes`, um die Verspätungserkennung abzustimmen, und `--early-before-minutes`, um die Erkennung frühen Verlassens abzustimmen.
 
-`export` schreibt einen Ordner mit `summary.md`, `attendance.csv`,
-`transcript.md`, `artifacts.json`, `attendance.json` und `manifest.json`.
-`manifest.json` zeichnet die gewählte Eingabe, Exportoptionen,
-Konferenzdatensätze, Ausgabedateien, Zählwerte, Token-Quelle, das Calendar-Ereignis,
-falls eines verwendet wurde, und alle Warnungen zu teilweisem Abruf auf.
-Übergeben Sie `--zip`, um zusätzlich neben dem Ordner ein portables Archiv zu
-schreiben. Übergeben Sie `--include-doc-bodies`, um verknüpfte Transkript- und
-Smart-Note-Texte aus Google Docs über Google Drive `files.export` zu exportieren;
-dies erfordert eine neue OAuth-Anmeldung, die den schreibgeschützten Drive
-Meet-Scope enthält. Ohne `--include-doc-bodies` enthalten Exporte nur
-Meet-Metadaten und strukturierte Transkripteinträge. Wenn Google einen
-teilweisen Artefaktfehler zurückgibt, etwa einen Fehler beim Auflisten von
-Smart Notes, bei Transkripteinträgen oder beim Drive-Dokumenttext, behalten
-Zusammenfassung und Manifest die Warnung bei, statt den gesamten Export
-fehlschlagen zu lassen. Verwenden Sie `--dry-run`, um dieselben Artefakt- und
-Teilnahmedaten abzurufen und das Manifest-JSON auszugeben, ohne den Ordner oder
-die ZIP-Datei zu erstellen. Das ist nützlich, bevor Sie einen großen Export
-schreiben oder wenn ein Agent nur Zählwerte, ausgewählte Datensätze und
-Warnungen benötigt.
+`export` schreibt einen Ordner mit `summary.md`, `attendance.csv`, `transcript.md`, `artifacts.json`, `attendance.json` und `manifest.json`. `manifest.json` erfasst die gewählte Eingabe, Exportoptionen, Konferenzdatensätze, Ausgabedateien, Zählwerte, Tokenquelle, das Calendar-Ereignis, wenn eines verwendet wurde, und alle Warnungen zu teilweiser Abrufbarkeit. Übergeben Sie `--zip`, um zusätzlich ein portables Archiv neben dem Ordner zu schreiben. Übergeben Sie `--include-doc-bodies`, um verknüpfte Transkript- und Smart-Note-Google-Docs-Texte über Google Drive `files.export` zu exportieren; dies erfordert eine frische OAuth-Anmeldung, die den schreibgeschützten Drive-Meet-Scope enthält. Ohne `--include-doc-bodies` enthalten Exporte nur Meet-Metadaten und strukturierte Transkripteinträge. Wenn Google einen teilweisen Artefaktfehler zurückgibt, etwa einen Fehler beim Auflisten von Smart Notes, bei Transkripteinträgen oder beim Drive-Dokumentinhalt, behalten Zusammenfassung und Manifest die Warnung bei, statt den gesamten Export fehlschlagen zu lassen. Verwenden Sie `--dry-run`, um dieselben Artefakt-/Anwesenheitsdaten abzurufen und das Manifest-JSON auszugeben, ohne den Ordner oder die ZIP-Datei zu erstellen. Das ist nützlich, bevor Sie einen großen Export schreiben oder wenn ein Agent nur Zählwerte, ausgewählte Datensätze und Warnungen benötigt.
 
-Agents können dasselbe Bundle auch über das `google_meet`-Tool erstellen:
+Agenten können dasselbe Bundle auch über das `google_meet`-Tool erstellen:
 
 ```json
 {
@@ -798,10 +761,9 @@ Agents können dasselbe Bundle auch über das `google_meet`-Tool erstellen:
 }
 ```
 
-Setzen Sie `"dryRun": true`, um nur das Exportmanifest zurückzugeben und
-Dateischreibvorgänge zu überspringen.
+Setzen Sie `"dryRun": true`, um nur das Exportmanifest zurückzugeben und Dateischreibvorgänge zu überspringen.
 
-Führen Sie den geschützten Live-Smoke gegen ein echtes beibehaltenes Meeting aus:
+Führen Sie den geschützten Live-Smoke gegen ein echtes aufbewahrtes Meeting aus:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 \
@@ -812,38 +774,24 @@ pnpm test:live -- extensions/google-meet/google-meet.live.test.ts
 Live-Smoke-Umgebung:
 
 - `OPENCLAW_LIVE_TEST=1` aktiviert geschützte Live-Tests.
-- `OPENCLAW_GOOGLE_MEET_LIVE_MEETING` verweist auf eine beibehaltene Meet-URL,
-  einen Code oder `spaces/{id}`.
-- `OPENCLAW_GOOGLE_MEET_CLIENT_ID` oder `GOOGLE_MEET_CLIENT_ID` stellt die
-  OAuth-Client-ID bereit.
-- `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` oder `GOOGLE_MEET_REFRESH_TOKEN` stellt
-  das Refresh-Token bereit.
-- Optional: `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET`,
-  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN` und
-  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` verwenden dieselben
-  Fallback-Namen ohne das Präfix `OPENCLAW_`.
+- `OPENCLAW_GOOGLE_MEET_LIVE_MEETING` verweist auf eine aufbewahrte Meet-URL, einen Code oder
+  `spaces/{id}`.
+- `OPENCLAW_GOOGLE_MEET_CLIENT_ID` oder `GOOGLE_MEET_CLIENT_ID` stellt die OAuth-Client-ID bereit.
+- `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` oder `GOOGLE_MEET_REFRESH_TOKEN` stellt das Refresh-Token bereit.
+- Optional: `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET`, `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN` und
+  `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` verwenden dieselben Fallback-Namen ohne das Präfix `OPENCLAW_`.
 
-Der Basis-Live-Smoke für Artefakte/Teilnahme benötigt
-`https://www.googleapis.com/auth/meetings.space.readonly` und
-`https://www.googleapis.com/auth/meetings.conference.media.readonly`. Die
-Kalendersuche benötigt `https://www.googleapis.com/auth/calendar.events.readonly`.
-Der Export von Drive-Dokumenttexten benötigt
-`https://www.googleapis.com/auth/drive.meet.readonly`.
+Der grundlegende Artefakt-/Anwesenheits-Live-Smoke benötigt `https://www.googleapis.com/auth/meetings.space.readonly` und `https://www.googleapis.com/auth/meetings.conference.media.readonly`. Die Kalendersuche benötigt `https://www.googleapis.com/auth/calendar.events.readonly`. Der Export von Drive-Dokumentinhalten benötigt `https://www.googleapis.com/auth/drive.meet.readonly`.
 
-Erstellen Sie einen neuen Meet-Raum:
+Erstellen Sie einen frischen Meet-Bereich:
 
 ```bash
 openclaw googlemeet create
 ```
 
-Der Befehl gibt die neue `meeting uri`, die Quelle und die Beitrittssitzung aus.
-Mit OAuth-Anmeldedaten verwendet er die offizielle Google Meet API. Ohne
-OAuth-Anmeldedaten verwendet er als Fallback das angemeldete Browserprofil des
-gepinnten Chrome-Node. Agents können das `google_meet`-Tool mit
-`action: "create"` verwenden, um in einem Schritt zu erstellen und beizutreten.
-Für eine reine URL-Erstellung übergeben Sie `"join": false`.
+Der Befehl gibt die neue `meeting uri`, die Quelle und die Beitrittssitzung aus. Mit OAuth-Anmeldedaten verwendet er die offizielle Google Meet API. Ohne OAuth-Anmeldedaten verwendet er als Fallback das angemeldete Browserprofil des angehefteten Chrome-Node. Agenten können das Tool `google_meet` mit `action: "create"` verwenden, um in einem Schritt zu erstellen und beizutreten. Für eine reine URL-Erstellung übergeben Sie `"join": false`.
 
-Beispiel-JSON-Ausgabe aus dem Browser-Fallback:
+Beispielhafte JSON-Ausgabe aus dem Browser-Fallback:
 
 ```json
 {
@@ -863,10 +811,7 @@ Beispiel-JSON-Ausgabe aus dem Browser-Fallback:
 }
 ```
 
-Wenn der Browser-Fallback auf eine Google-Anmeldung oder einen Meet-Berechtigungsblocker
-stößt, bevor er die URL erstellen kann, gibt die Gateway-Methode eine fehlgeschlagene
-Antwort zurück, und das `google_meet`-Tool gibt strukturierte Details statt
-einer einfachen Zeichenfolge zurück:
+Wenn der Browser-Fallback auf eine Google-Anmeldung oder eine Meet-Berechtigungssperre trifft, bevor er die URL erstellen kann, gibt die Gateway-Methode eine fehlgeschlagene Antwort zurück und das Tool `google_meet` gibt strukturierte Details statt einer einfachen Zeichenfolge zurück:
 
 ```json
 {
@@ -884,11 +829,9 @@ einer einfachen Zeichenfolge zurück:
 }
 ```
 
-Wenn ein Agent `manualActionRequired: true` sieht, sollte er die
-`manualActionMessage` sowie den Browser-Node-/Tab-Kontext melden und keine neuen
-Meet-Tabs mehr öffnen, bis der Operator den Browser-Schritt abgeschlossen hat.
+Wenn ein Agent `manualActionRequired: true` sieht, sollte er die `manualActionMessage` plus den Browser-Node-/Tab-Kontext melden und keine neuen Meet-Tabs mehr öffnen, bis der Operator den Browserschritt abgeschlossen hat.
 
-Beispiel-JSON-Ausgabe aus der API-Erstellung:
+Beispielhafte JSON-Ausgabe aus der API-Erstellung:
 
 ```json
 {
@@ -909,24 +852,13 @@ Beispiel-JSON-Ausgabe aus der API-Erstellung:
 }
 ```
 
-Das Erstellen eines Meet tritt standardmäßig bei. Der Chrome- oder
-Chrome-Node-Transport benötigt weiterhin ein angemeldetes Google Chrome-Profil,
-um über den Browser beizutreten. Wenn das Profil abgemeldet ist, meldet
-OpenClaw `manualActionRequired: true` oder einen Browser-Fallback-Fehler und
-fordert den Operator auf, die Google-Anmeldung abzuschließen, bevor er es erneut
-versucht.
+Beim Erstellen eines Meet wird standardmäßig beigetreten. Der Chrome- oder Chrome-Node-Transport benötigt weiterhin ein angemeldetes Google-Chrome-Profil, um über den Browser beizutreten. Wenn das Profil abgemeldet ist, meldet OpenClaw `manualActionRequired: true` oder einen Browser-Fallback-Fehler und fordert den Operator auf, die Google-Anmeldung abzuschließen, bevor erneut versucht wird.
 
-Setzen Sie `preview.enrollmentAcknowledged: true` erst, nachdem Sie bestätigt
-haben, dass Ihr Cloud-Projekt, Ihr OAuth-Prinzipal und die Meeting-Teilnehmer
-im Google Workspace Developer Preview Program für Meet-Medien-APIs registriert
-sind.
+Setzen Sie `preview.enrollmentAcknowledged: true` erst, nachdem Sie bestätigt haben, dass Ihr Cloud-Projekt, Ihr OAuth-Prinzipal und die Meeting-Teilnehmer im Google Workspace Developer Preview Program für Meet-Medien-APIs registriert sind.
 
 ## Konfiguration
 
-Der gemeinsame Chrome-Echtzeitpfad benötigt nur das aktivierte Plugin,
-BlackHole, SoX und einen Schlüssel für einen Backend-Echtzeit-Sprach-Provider.
-OpenAI ist die Standardeinstellung; setzen Sie `realtime.provider: "google"`,
-um Google Gemini Live zu verwenden:
+Der gemeinsame Chrome-Echtzeitpfad benötigt nur ein aktiviertes Plugin, BlackHole, SoX und einen Schlüssel für einen Backend-Echtzeit-Sprach-Provider. OpenAI ist der Standard; setzen Sie `realtime.provider: "google"`, um Google Gemini Live zu verwenden:
 
 ```bash
 brew install blackhole-2ch sox
@@ -954,31 +886,24 @@ Standardwerte:
 
 - `defaultTransport: "chrome"`
 - `defaultMode: "realtime"`
-- `chromeNode.node`: optionale Node-ID, optionaler Name oder optionale IP für `chrome-node`
+- `chromeNode.node`: optionale Node-ID/-Name/-IP für `chrome-node`
 - `chrome.audioBackend: "blackhole-2ch"`
-- `chrome.guestName: "OpenClaw Agent"`: Name, der auf dem Meet-Gastbildschirm
-  für abgemeldete Benutzer verwendet wird
-- `chrome.autoJoin: true`: Best-Effort-Ausfüllen des Gastnamens und Klick auf
-  „Join Now“ über die OpenClaw-Browserautomatisierung auf `chrome-node`
-- `chrome.reuseExistingTab: true`: vorhandenen Meet-Tab aktivieren, statt
-  Duplikate zu öffnen
-- `chrome.waitForInCallMs: 20000`: warten, bis der Meet-Tab „im Anruf“ meldet,
-  bevor die Echtzeit-Einführung ausgelöst wird
-- `chrome.audioFormat: "pcm16-24khz"`: Audioformat für das Befehlspaar.
-  Verwenden Sie `"g711-ulaw-8khz"` nur für alte/benutzerdefinierte Befehlspaare,
-  die weiterhin Telefonie-Audio ausgeben.
-- `chrome.audioInputCommand`: SoX-Befehl, der aus CoreAudio `BlackHole 2ch` liest
-  und Audio in `chrome.audioFormat` schreibt
-- `chrome.audioOutputCommand`: SoX-Befehl, der Audio in `chrome.audioFormat`
-  liest und nach CoreAudio `BlackHole 2ch` schreibt
+- `chrome.guestName: "OpenClaw Agent"`: Name, der auf dem Meet-Gastbildschirm im abgemeldeten Zustand verwendet wird
+- `chrome.autoJoin: true`: Best-Effort-Ausfüllen des Gastnamens und Klick auf „Join Now“ über die OpenClaw-Browserautomatisierung auf `chrome-node`
+- `chrome.reuseExistingTab: true`: einen vorhandenen Meet-Tab aktivieren, statt Duplikate zu öffnen
+- `chrome.waitForInCallMs: 20000`: warten, bis der Meet-Tab meldet, dass er in einem Anruf ist, bevor die Echtzeit-Einführung ausgelöst wird
+- `chrome.audioFormat: "pcm16-24khz"`: Audioformat für Befehlspaare. Verwenden Sie `"g711-ulaw-8khz"` nur für veraltete/benutzerdefinierte Befehlspaare, die noch Telefonieaudio ausgeben.
+- `chrome.audioInputCommand`: SoX-Befehl, der aus CoreAudio `BlackHole 2ch` liest und Audio in `chrome.audioFormat` schreibt
+- `chrome.audioOutputCommand`: SoX-Befehl, der Audio in `chrome.audioFormat` liest und in CoreAudio `BlackHole 2ch` schreibt
+- `chrome.bargeInInputCommand`: optionaler lokaler Mikrofonbefehl, der signiertes 16-Bit-Little-Endian-Mono-PCM für die Erkennung menschlicher Unterbrechungen schreibt, während die Assistentenwiedergabe aktiv ist. Dies gilt derzeit für die vom Gateway gehostete `chrome`-Befehlspaar-Brücke.
+- `chrome.bargeInRmsThreshold: 650`: RMS-Pegel, der auf `chrome.bargeInInputCommand` als menschliche Unterbrechung zählt
+- `chrome.bargeInPeakThreshold: 2500`: Spitzenpegel, der auf `chrome.bargeInInputCommand` als menschliche Unterbrechung zählt
+- `chrome.bargeInCooldownMs: 900`: minimale Verzögerung zwischen wiederholten Löschungen menschlicher Unterbrechungen
 - `realtime.provider: "openai"`
 - `realtime.toolPolicy: "safe-read-only"`
-- `realtime.instructions`: kurze gesprochene Antworten, mit
-  `openclaw_agent_consult` für ausführlichere Antworten
-- `realtime.introMessage`: kurze gesprochene Bereitschaftsprüfung, wenn die
-  Echtzeit-Bridge verbindet; setzen Sie sie auf `""`, um stumm beizutreten
-- `realtime.agentId`: optionale OpenClaw-Agent-ID für
-  `openclaw_agent_consult`; standardmäßig `main`
+- `realtime.instructions`: kurze gesprochene Antworten, mit `openclaw_agent_consult` für tiefere Antworten
+- `realtime.introMessage`: kurze gesprochene Bereitschaftsprüfung, wenn die Echtzeit-Brücke verbunden wird; setzen Sie sie auf `""`, um still beizutreten
+- `realtime.agentId`: optionale OpenClaw-Agenten-ID für `openclaw_agent_consult`; Standard ist `main`
 
 Optionale Überschreibungen:
 
@@ -993,6 +918,24 @@ Optionale Überschreibungen:
   chrome: {
     guestName: "OpenClaw Agent",
     waitForInCallMs: 30000,
+    bargeInInputCommand: [
+      "sox",
+      "-q",
+      "-t",
+      "coreaudio",
+      "External Microphone",
+      "-r",
+      "24000",
+      "-c",
+      "1",
+      "-b",
+      "16",
+      "-e",
+      "signed-integer",
+      "-t",
+      "raw",
+      "-",
+    ],
   },
   chromeNode: {
     node: "parallels-macos",
@@ -1027,16 +970,11 @@ Nur-Twilio-Konfiguration:
 }
 ```
 
-`voiceCall.enabled` ist standardmäßig `true`; mit Twilio-Transport delegiert es den
-eigentlichen PSTN-Anruf, DTMF und die Begrüßungseinleitung an das Voice Call-Plugin. Voice Call
-spielt die DTMF-Sequenz ab, bevor der Realtime-Medienstrom geöffnet wird, und verwendet dann den
-gespeicherten Einleitungstext als anfängliche Realtime-Begrüßung. Wenn `voice-call` nicht
-aktiviert ist, kann Google Meet den Wählplan weiterhin validieren und aufzeichnen, aber es kann
-den Twilio-Anruf nicht platzieren.
+`voiceCall.enabled` ist standardmäßig `true`; mit Twilio-Transport delegiert es den tatsächlichen PSTN-Anruf, DTMF und die Einführungsansage an das Voice Call-Plugin. Voice Call spielt die DTMF-Sequenz ab, bevor der Echtzeit-Medienstrom geöffnet wird, und verwendet dann den gespeicherten Einführungstext als erste Echtzeit-Begrüßung. Wenn `voice-call` nicht aktiviert ist, kann Google Meet den Wählplan weiterhin validieren und aufzeichnen, aber den Twilio-Anruf nicht platzieren.
 
 ## Tool
 
-Agents können das `google_meet`-Tool verwenden:
+Agenten können das Tool `google_meet` verwenden:
 
 ```json
 {
@@ -1047,34 +985,19 @@ Agents können das `google_meet`-Tool verwenden:
 }
 ```
 
-Verwenden Sie `transport: "chrome"`, wenn Chrome auf dem Gateway-Host läuft. Verwenden Sie
-`transport: "chrome-node"`, wenn Chrome auf einem gekoppelten Node läuft, etwa einer Parallels-
-VM. In beiden Fällen laufen das Realtime-Modell und `openclaw_agent_consult` auf dem
-Gateway-Host, sodass Modell-Anmeldedaten dort bleiben.
+Verwenden Sie `transport: "chrome"`, wenn Chrome auf dem Gateway-Host läuft. Verwenden Sie `transport: "chrome-node"`, wenn Chrome auf einer gekoppelten Node wie einer Parallels-VM läuft. In beiden Fällen laufen das Echtzeitmodell und `openclaw_agent_consult` auf dem Gateway-Host, sodass die Modell-Anmeldedaten dort bleiben.
 
-Verwenden Sie `action: "status"`, um aktive Sitzungen aufzulisten oder eine Sitzungs-ID zu prüfen. Verwenden Sie
-`action: "speak"` mit `sessionId` und `message`, damit der Realtime-Agent
-sofort spricht. Verwenden Sie `action: "test_speech"`, um die Sitzung zu erstellen oder wiederzuverwenden,
-eine bekannte Phrase auszulösen und `inCall`-Integrität zurückzugeben, wenn der Chrome-Host sie
-melden kann. `test_speech` erzwingt immer `mode: "realtime"` und schlägt fehl, wenn es in
-`mode: "transcribe"` ausgeführt werden soll, weil reine Beobachtungssitzungen absichtlich keine
-Sprache ausgeben können. Das Ergebnis `speechOutputVerified` basiert darauf, dass die Realtime-Audioausgabebytes
-während dieses Testaufrufs zunehmen, sodass eine wiederverwendete Sitzung mit älterem Audio
-nicht als frische erfolgreiche Sprachprüfung zählt. Verwenden Sie `action: "leave"`, um eine
-Sitzung als beendet zu markieren.
+Verwenden Sie `action: "status"`, um aktive Sitzungen aufzulisten oder eine Sitzungs-ID zu prüfen. Verwenden Sie `action: "speak"` mit `sessionId` und `message`, damit der Echtzeit-Agent sofort spricht. Verwenden Sie `action: "test_speech"`, um die Sitzung zu erstellen oder wiederzuverwenden, eine bekannte Phrase auszulösen und den Zustand `inCall` zurückzugeben, wenn der Chrome-Host ihn melden kann. `test_speech` erzwingt immer `mode: "realtime"` und schlägt fehl, wenn die Ausführung in `mode: "transcribe"` angefordert wird, weil reine Beobachtungssitzungen absichtlich keine Sprache ausgeben können. Das Ergebnis `speechOutputVerified` basiert darauf, dass während dieses Testaufrufs die Echtzeit-Audioausgabebytes zunehmen; eine wiederverwendete Sitzung mit älterem Audio zählt daher nicht als frische erfolgreiche Sprachprüfung. Verwenden Sie `action: "leave"`, um eine Sitzung als beendet zu markieren.
 
-`status` enthält Chrome-Integrität, wenn verfügbar:
+`status` enthält den Chrome-Zustand, sofern verfügbar:
 
 - `inCall`: Chrome scheint sich im Meet-Anruf zu befinden
-- `micMuted`: Best-Effort-Status des Meet-Mikrofons
-- `manualActionRequired` / `manualActionReason` / `manualActionMessage`: das
-  Browserprofil benötigt eine manuelle Anmeldung, Zulassung durch den Meet-Host, Berechtigungen oder
-  eine Reparatur der Browser-Steuerung, bevor Sprache funktionieren kann
-- `speechReady` / `speechBlockedReason` / `speechBlockedMessage`: ob
-  verwaltete Chrome-Sprache jetzt erlaubt ist. `speechReady: false` bedeutet, dass OpenClaw die
-  Einleitungs-/Testphrase nicht in die Audio-Bridge gesendet hat.
-- `providerConnected` / `realtimeReady`: Status der Realtime-Sprach-Bridge
-- `lastInputAt` / `lastOutputAt`: zuletzt von der Bridge empfangenes oder an sie gesendetes Audio
+- `micMuted`: bestmöglicher Meet-Mikrofonstatus
+- `manualActionRequired` / `manualActionReason` / `manualActionMessage`: Das Browserprofil benötigt manuelle Anmeldung, Zulassung durch den Meet-Host, Berechtigungen oder eine Reparatur der Browsersteuerung, bevor Sprache funktionieren kann
+- `speechReady` / `speechBlockedReason` / `speechBlockedMessage`: ob verwaltete Chrome-Sprachausgabe jetzt erlaubt ist. `speechReady: false` bedeutet, dass OpenClaw die Einführungs-/Testphrase nicht in die Audio-Bridge gesendet hat.
+- `providerConnected` / `realtimeReady`: Zustand der Echtzeit-Sprach-Bridge
+- `lastInputAt` / `lastOutputAt`: zuletzt von der Bridge gesehenes oder an die Bridge gesendetes Audio
+- `lastSuppressedInputAt` / `suppressedInputBytes`: ignorierte Loopback-Eingabe, während die Assistentenwiedergabe aktiv ist
 
 ```json
 {
@@ -1084,33 +1007,21 @@ Sitzung als beendet zu markieren.
 }
 ```
 
-## Realtime-Agent-Consult
+## Echtzeit-Agent-Consult
 
-Der Chrome-Realtime-Modus ist für eine Live-Sprachschleife optimiert. Der Realtime-Sprach-
-Provider hört das Meeting-Audio und spricht über die konfigurierte Audio-Bridge.
-Wenn das Realtime-Modell tieferes Reasoning, aktuelle Informationen oder normale
-OpenClaw-Tools benötigt, kann es `openclaw_agent_consult` aufrufen.
+Der Chrome-Echtzeitmodus ist für einen Live-Sprach-Loop optimiert. Der Echtzeit-Sprach-Provider hört das Meeting-Audio und spricht über die konfigurierte Audio-Bridge. Wenn das Echtzeitmodell tieferes Reasoning, aktuelle Informationen oder normale OpenClaw-Tools benötigt, kann es `openclaw_agent_consult` aufrufen.
 
-Das Consult-Tool führt im Hintergrund den regulären OpenClaw-Agent mit aktuellem
-Meeting-Transkriptkontext aus und gibt eine knappe gesprochene Antwort an die Realtime-
-Sprachsitzung zurück. Das Sprachmodell kann diese Antwort dann zurück in das Meeting sprechen.
-Es verwendet dasselbe gemeinsame Realtime-Consult-Tool wie Voice Call.
+Das Consult-Tool führt im Hintergrund den regulären OpenClaw-Agenten mit aktuellem Meeting-Transkriptkontext aus und gibt eine knappe gesprochene Antwort an die Echtzeit-Sprachsitzung zurück. Das Sprachmodell kann diese Antwort dann in das Meeting sprechen. Es verwendet dasselbe gemeinsam genutzte Echtzeit-Consult-Tool wie Voice Call.
 
-Standardmäßig laufen Consults gegen den `main`-Agent. Setzen Sie `realtime.agentId`, wenn eine
-Meet-Lane einen dedizierten OpenClaw-Agent-Arbeitsbereich, Modellvorgaben,
-Tool-Richtlinien, Speicher und Sitzungsverlauf konsultieren soll.
+Standardmäßig laufen Consults gegen den Agenten `main`. Legen Sie `realtime.agentId` fest, wenn eine Meet-Lane einen dedizierten OpenClaw-Agenten-Arbeitsbereich, Modellvorgaben, Tool-Richtlinie, Memory und Sitzungsverlauf konsultieren soll.
 
 `realtime.toolPolicy` steuert den Consult-Lauf:
 
-- `safe-read-only`: das Consult-Tool verfügbar machen und den regulären Agent auf
-  `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` und
-  `memory_get` beschränken.
-- `owner`: das Consult-Tool verfügbar machen und dem regulären Agent erlauben, die normale
-  Agent-Tool-Richtlinie zu verwenden.
-- `none`: das Consult-Tool dem Realtime-Sprachmodell nicht verfügbar machen.
+- `safe-read-only`: Das Consult-Tool verfügbar machen und den regulären Agenten auf `read`, `web_search`, `web_fetch`, `x_search`, `memory_search` und `memory_get` beschränken.
+- `owner`: Das Consult-Tool verfügbar machen und den regulären Agenten die normale Agenten-Tool-Richtlinie verwenden lassen.
+- `none`: Das Consult-Tool dem Echtzeit-Sprachmodell nicht verfügbar machen.
 
-Der Consult-Sitzungsschlüssel ist pro Meet-Sitzung begrenzt, sodass nachfolgende Consult-Aufrufe
-während desselben Meetings vorherigen Consult-Kontext wiederverwenden können.
+Der Consult-Sitzungsschlüssel ist pro Meet-Sitzung begrenzt, sodass nachfolgende Consult-Aufrufe während desselben Meetings früheren Consult-Kontext wiederverwenden können.
 
 Um eine gesprochene Bereitschaftsprüfung zu erzwingen, nachdem Chrome dem Anruf vollständig beigetreten ist:
 
@@ -1118,7 +1029,7 @@ Um eine gesprochene Bereitschaftsprüfung zu erzwingen, nachdem Chrome dem Anruf
 openclaw googlemeet speak meet_... "Say exactly: I'm here and listening."
 ```
 
-Für den vollständigen Join-and-Speak-Smoke:
+Für den vollständigen Beitreten-und-Sprechen-Smoke:
 
 ```bash
 openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
@@ -1128,7 +1039,7 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
 
 ## Live-Test-Checkliste
 
-Verwenden Sie diese Sequenz, bevor Sie ein Meeting an einen unbeaufsichtigten Agent übergeben:
+Verwenden Sie diese Sequenz, bevor Sie ein Meeting an einen unbeaufsichtigten Agenten übergeben:
 
 ```bash
 openclaw googlemeet setup
@@ -1138,18 +1049,15 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij \
   --message "Say exactly: Google Meet speech test complete."
 ```
 
-Erwarteter Chrome-Node-Status:
+Erwarteter Chrome-node-Zustand:
 
 - `googlemeet setup` ist vollständig grün.
-- `googlemeet setup` enthält `chrome-node-connected`, wenn Chrome-Node der
-  Standardtransport ist oder ein Node fixiert ist.
-- `nodes status` zeigt, dass der ausgewählte Node verbunden ist.
-- Der ausgewählte Node kündigt sowohl `googlemeet.chrome` als auch `browser.proxy` an.
-- Der Meet-Tab tritt dem Anruf bei, und `test-speech` gibt Chrome-Integrität mit
-  `inCall: true` zurück.
+- `googlemeet setup` enthält `chrome-node-connected`, wenn Chrome-node der Standardtransport ist oder eine Node festgelegt ist.
+- `nodes status` zeigt, dass die ausgewählte Node verbunden ist.
+- Die ausgewählte Node kündigt sowohl `googlemeet.chrome` als auch `browser.proxy` an.
+- Der Meet-Tab tritt dem Anruf bei, und `test-speech` gibt den Chrome-Zustand mit `inCall: true` zurück.
 
-Für einen entfernten Chrome-Host wie eine Parallels-macOS-VM ist dies die kürzeste
-sichere Prüfung nach einer Aktualisierung des Gateway oder der VM:
+Für einen entfernten Chrome-Host wie eine Parallels-macOS-VM ist dies nach der Aktualisierung des Gateway oder der VM die kürzeste sichere Prüfung:
 
 ```bash
 openclaw googlemeet setup
@@ -1160,9 +1068,7 @@ openclaw nodes invoke \
   --params '{"action":"setup"}'
 ```
 
-Das weist nach, dass das Gateway-Plugin geladen ist, der VM-Node mit dem
-aktuellen Token verbunden ist und die Meet-Audio-Bridge verfügbar ist, bevor ein Agent einen
-echten Meeting-Tab öffnet.
+Das belegt, dass das Gateway-Plugin geladen ist, die VM-Node mit dem aktuellen Token verbunden ist und die Meet-Audio-Bridge verfügbar ist, bevor ein Agent einen echten Meeting-Tab öffnet.
 
 Für einen Twilio-Smoke verwenden Sie ein Meeting, das telefonische Einwahldetails bereitstellt:
 
@@ -1174,12 +1080,12 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --pin 123456
 ```
 
-Erwarteter Twilio-Status:
+Erwarteter Twilio-Zustand:
 
-- `googlemeet setup` enthält grüne Prüfungen für `twilio-voice-call-plugin`,
-  `twilio-voice-call-credentials` und `twilio-voice-call-webhook`.
+- `googlemeet setup` enthält grüne Prüfungen für `twilio-voice-call-plugin`, `twilio-voice-call-credentials` und `twilio-voice-call-webhook`.
 - `voicecall` ist nach dem Neuladen des Gateway in der CLI verfügbar.
 - Die zurückgegebene Sitzung hat `transport: "twilio"` und eine `twilio.voiceCallId`.
+- `openclaw logs --follow` zeigt, dass DTMF-TwiML vor Echtzeit-TwiML bereitgestellt wurde, anschließend eine Echtzeit-Bridge mit der eingereihten Anfangsbegrüßung.
 - `googlemeet leave <sessionId>` legt den delegierten Sprachanruf auf.
 
 ## Fehlerbehebung
@@ -1193,13 +1099,11 @@ openclaw plugins list | grep google-meet
 openclaw googlemeet setup
 ```
 
-Wenn Sie gerade `plugins.entries.google-meet` bearbeitet haben, starten oder laden Sie das Gateway neu.
-Der laufende Agent sieht nur Plugin-Tools, die vom aktuellen Gateway-
-Prozess registriert wurden.
+Wenn Sie gerade `plugins.entries.google-meet` bearbeitet haben, starten oder laden Sie das Gateway neu. Der laufende Agent sieht nur Plugin-Tools, die vom aktuellen Gateway-Prozess registriert wurden.
 
-### Kein verbundener Google-Meet-fähiger Node
+### Keine verbundene Google-Meet-fähige Node
 
-Führen Sie auf dem Node-Host aus:
+Führen Sie auf dem Node-Host Folgendes aus:
 
 ```bash
 openclaw plugins enable google-meet
@@ -1208,7 +1112,7 @@ OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
   openclaw node run --host <gateway-lan-ip> --port 18789 --display-name parallels-macos
 ```
 
-Genehmigen Sie auf dem Gateway-Host den Node und prüfen Sie die Befehle:
+Genehmigen Sie auf dem Gateway-Host die Node und prüfen Sie die Befehle:
 
 ```bash
 openclaw devices list
@@ -1216,8 +1120,7 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Der Node muss verbunden sein und `googlemeet.chrome` plus `browser.proxy` auflisten.
-Die Gateway-Konfiguration muss diese Node-Befehle erlauben:
+Die Node muss verbunden sein und `googlemeet.chrome` plus `browser.proxy` auflisten. Die Gateway-Konfiguration muss diese Node-Befehle erlauben:
 
 ```json5
 {
@@ -1229,9 +1132,7 @@ Die Gateway-Konfiguration muss diese Node-Befehle erlauben:
 }
 ```
 
-Wenn `googlemeet setup` bei `chrome-node-connected` fehlschlägt oder das Gateway-Log
-`gateway token mismatch` meldet, installieren oder starten Sie den Node mit dem aktuellen Gateway-
-Token neu. Für ein LAN-Gateway bedeutet das normalerweise:
+Wenn `googlemeet setup` bei `chrome-node-connected` fehlschlägt oder das Gateway-Protokoll `gateway token mismatch` meldet, installieren oder starten Sie die Node mit dem aktuellen Gateway-Token neu. Für ein LAN-Gateway bedeutet das in der Regel:
 
 ```bash
 OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 \
@@ -1251,112 +1152,67 @@ openclaw nodes status --connected
 
 ### Browser öffnet sich, aber Agent kann nicht beitreten
 
-Führen Sie `googlemeet test-speech` aus und prüfen Sie die zurückgegebene Chrome-Integrität. Wenn sie
-`manualActionRequired: true` meldet, zeigen Sie dem Operator `manualActionMessage`
-und stoppen Sie weitere Versuche, bis die Browseraktion abgeschlossen ist.
+Führen Sie `googlemeet test-speech` aus und prüfen Sie den zurückgegebenen Chrome-Zustand. Wenn `manualActionRequired: true` gemeldet wird, zeigen Sie dem Bediener `manualActionMessage` und stoppen Sie weitere Wiederholungen, bis die Browseraktion abgeschlossen ist.
 
 Häufige manuelle Aktionen:
 
-- Im Chrome-Profil anmelden.
-- Den Gast vom Meet-Host-Konto zulassen.
-- Chrome-Mikrofon-/Kameraberechtigungen erteilen, wenn die native Berechtigungsabfrage von Chrome
-  erscheint.
-- Einen blockierten Meet-Berechtigungsdialog schließen oder reparieren.
+- Beim Chrome-Profil anmelden.
+- Den Gast über das Meet-Hostkonto zulassen.
+- Chrome-Mikrofon-/Kameraberechtigungen gewähren, wenn Chromes nativer Berechtigungsdialog erscheint.
+- Einen hängengebliebenen Meet-Berechtigungsdialog schließen oder reparieren.
 
-Melden Sie nicht „nicht angemeldet“, nur weil Meet „Do you want people to
-hear you in the meeting?“ anzeigt. Das ist Meets Audio-Auswahl-Zwischenschritt; OpenClaw
-klickt **Use microphone** per Browser-Automatisierung an, wenn verfügbar, und wartet weiter
-auf den echten Meeting-Status. Für den Create-only-Browser-Fallback kann OpenClaw
-**Continue without microphone** anklicken, weil das Erstellen der URL den
-Realtime-Audiopfad nicht benötigt.
+Melden Sie nicht „not signed in“, nur weil Meet „Do you want people to hear you in the meeting?“ anzeigt. Das ist Meets Audioauswahl-Zwischenschritt; OpenClaw klickt **Use microphone** per Browserautomatisierung, wenn verfügbar, und wartet weiter auf den echten Meeting-Zustand. Für den Browser-Fallback nur zum Erstellen kann OpenClaw **Continue without microphone** klicken, weil zum Erstellen der URL der Echtzeit-Audiopfad nicht benötigt wird.
 
 ### Meeting-Erstellung schlägt fehl
 
-`googlemeet create` verwendet zuerst den Google Meet API-Endpunkt `spaces.create`,
-wenn OAuth-Anmeldedaten konfiguriert sind. Ohne OAuth-Anmeldedaten fällt es auf
-den fixierten Chrome-Node-Browser zurück. Bestätigen Sie:
+`googlemeet create` verwendet zuerst den Google-Meet-API-Endpunkt `spaces.create`, wenn OAuth-Anmeldedaten konfiguriert sind. Ohne OAuth-Anmeldedaten fällt es auf den angehefteten Chrome-Node-Browser zurück. Bestätigen Sie:
 
-- Für API-Erstellung: `oauth.clientId` und `oauth.refreshToken` sind konfiguriert,
-  oder passende `OPENCLAW_GOOGLE_MEET_*`-Umgebungsvariablen sind vorhanden.
-- Für API-Erstellung: Das Refresh-Token wurde erstellt, nachdem Create-Unterstützung
-  hinzugefügt wurde. Älteren Token kann der Scope `meetings.space.created` fehlen; führen Sie
-  `openclaw googlemeet auth login --json` erneut aus und aktualisieren Sie die Plugin-Konfiguration.
-- Für Browser-Fallback: `defaultTransport: "chrome-node"` und
-  `chromeNode.node` zeigen auf einen verbundenen Node mit `browser.proxy` und
-  `googlemeet.chrome`.
-- Für Browser-Fallback: Das OpenClaw-Chrome-Profil auf diesem Node ist bei Google angemeldet
-  und kann `https://meet.google.com/new` öffnen.
-- Für Browser-Fallback: Wiederholungen verwenden einen vorhandenen `https://meet.google.com/new`-
-  oder Google-Konto-Eingabeaufforderungs-Tab wieder, bevor ein neuer Tab geöffnet wird. Wenn ein Agent eine Zeitüberschreitung erreicht,
-  wiederholen Sie den Tool-Aufruf, statt manuell einen weiteren Meet-Tab zu öffnen.
-- Für Browser-Fallback: Wenn das Tool `manualActionRequired: true` zurückgibt, verwenden Sie
-  die zurückgegebenen Werte `browser.nodeId`, `browser.targetId`, `browserUrl` und
-  `manualActionMessage`, um den Operator zu führen. Wiederholen Sie nicht in einer Schleife, bis diese
-  Aktion abgeschlossen ist.
-- Für Browser-Fallback: Wenn Meet „Do you want people to hear you in the
-  meeting?“ anzeigt, lassen Sie den Tab geöffnet. OpenClaw sollte **Use microphone** oder, für
-  den Create-only-Fallback, **Continue without microphone** per Browser-
-  Automatisierung anklicken und weiter auf die generierte Meet-URL warten. Wenn das nicht gelingt, sollte der
-  Fehler `meet-audio-choice-required` erwähnen, nicht `google-login-required`.
+- Für API-Erstellung: `oauth.clientId` und `oauth.refreshToken` sind konfiguriert, oder passende Umgebungsvariablen `OPENCLAW_GOOGLE_MEET_*` sind vorhanden.
+- Für API-Erstellung: Das Refresh-Token wurde erstellt, nachdem Erstellungsunterstützung hinzugefügt wurde. Älteren Tokens kann der Scope `meetings.space.created` fehlen; führen Sie `openclaw googlemeet auth login --json` erneut aus und aktualisieren Sie die Plugin-Konfiguration.
+- Für Browser-Fallback: `defaultTransport: "chrome-node"` und `chromeNode.node` zeigen auf eine verbundene Node mit `browser.proxy` und `googlemeet.chrome`.
+- Für Browser-Fallback: Das OpenClaw-Chrome-Profil auf dieser Node ist bei Google angemeldet und kann `https://meet.google.com/new` öffnen.
+- Für Browser-Fallback: Wiederholungen verwenden einen vorhandenen `https://meet.google.com/new`- oder Google-Konto-Aufforderungstab wieder, bevor ein neuer Tab geöffnet wird. Wenn ein Agent in ein Timeout läuft, wiederholen Sie den Tool-Aufruf, statt manuell einen weiteren Meet-Tab zu öffnen.
+- Für Browser-Fallback: Wenn das Tool `manualActionRequired: true` zurückgibt, verwenden Sie die zurückgegebenen Werte `browser.nodeId`, `browser.targetId`, `browserUrl` und `manualActionMessage`, um den Bediener anzuleiten. Wiederholen Sie nicht in einer Schleife, bis diese Aktion abgeschlossen ist.
+- Für Browser-Fallback: Wenn Meet „Do you want people to hear you in the meeting?“ anzeigt, lassen Sie den Tab geöffnet. OpenClaw sollte **Use microphone** oder, beim Fallback nur zum Erstellen, **Continue without microphone** per Browserautomatisierung klicken und weiter auf die generierte Meet-URL warten. Wenn das nicht möglich ist, sollte der Fehler `meet-audio-choice-required` erwähnen, nicht `google-login-required`.
 
 ### Agent tritt bei, spricht aber nicht
 
-Prüfen Sie den Realtime-Pfad:
+Prüfen Sie den Echtzeitpfad:
 
 ```bash
 openclaw googlemeet setup
 openclaw googlemeet doctor
 ```
 
-Verwenden Sie `mode: "realtime"` für Zuhören/Rücksprechen. `mode: "transcribe"` startet absichtlich
-nicht die Duplex-Realtime-Sprach-Bridge. `googlemeet test-speech`
-prüft immer den Realtime-Pfad und meldet, ob Bridge-Ausgabebytes für diesen Aufruf
-beobachtet wurden. Wenn `speechOutputVerified` false und
-`speechOutputTimedOut` true ist, hat der Realtime-Provider die
-Äußerung möglicherweise akzeptiert, aber OpenClaw hat nicht gesehen, dass neue Ausgabebytes die Chrome-Audio-
-Bridge erreichen.
+Verwenden Sie `mode: "realtime"` für Zuhören/Rücksprechen. `mode: "transcribe"` startet die duplexe Echtzeit-Sprachbrücke absichtlich nicht. Führen Sie für reines Beobachtungs-Debugging `openclaw googlemeet status --json <session-id>` aus, nachdem Teilnehmer gesprochen haben, und prüfen Sie `captioning`, `transcriptLines` und `lastCaptionText`. Wenn `inCall` true ist, `transcriptLines` aber bei `0` bleibt, sind Meet-Untertitel möglicherweise deaktiviert, niemand hat seit der Installation des Beobachters gesprochen, die Meet-UI hat sich geändert, oder Live-Untertitel sind für die Meeting-Sprache bzw. das Konto nicht verfügbar.
+
+`googlemeet test-speech` prüft immer den Echtzeitpfad und meldet, ob für diesen Aufruf Bridge-Ausgabebytes beobachtet wurden. Wenn `speechOutputVerified` false und `speechOutputTimedOut` true ist, hat der Realtime-Provider die Äußerung möglicherweise akzeptiert, aber OpenClaw hat nicht gesehen, dass neue Ausgabebytes die Chrome-Audio-Bridge erreicht haben.
 
 Prüfen Sie außerdem:
 
-- Ein Realtime-Provider-Schlüssel ist auf dem Gateway-Host verfügbar, etwa
+- Ein Realtime-Provider-Schlüssel ist auf dem Gateway-Host verfügbar, z. B.
   `OPENAI_API_KEY` oder `GEMINI_API_KEY`.
 - `BlackHole 2ch` ist auf dem Chrome-Host sichtbar.
 - `sox` ist auf dem Chrome-Host vorhanden.
-- Meet-Mikrofon und -Lautsprecher sind über den von OpenClaw verwendeten virtuellen Audiopfad
-  geroutet.
+- Meet-Mikrofon und -Lautsprecher werden über den von OpenClaw verwendeten
+  virtuellen Audiopfad geroutet.
 
-`googlemeet doctor [session-id]` gibt Sitzung, Node, In-Call-Status,
-Grund für manuelle Aktion, Realtime-Provider-Verbindung, `realtimeReady`, Audio-
-Eingabe-/Ausgabeaktivität, letzte Audiozeitstempel, Byte-Zähler und Browser-URL aus.
-Verwenden Sie `googlemeet status [session-id] --json`, wenn Sie das rohe JSON benötigen. Verwenden Sie
-`googlemeet doctor --oauth`, wenn Sie Google-Meet-OAuth-Refresh prüfen müssen,
-ohne Token offenzulegen; fügen Sie `--meeting` oder `--create-space` hinzu, wenn Sie außerdem einen
-Google-Meet-API-Nachweis benötigen.
+`googlemeet doctor [session-id]` gibt Sitzung, Node, In-Call-Status, Grund für manuelle Aktion, Verbindung zum Realtime-Provider, `realtimeReady`, Audio-Eingabe-/Ausgabeaktivität, letzte Audio-Zeitstempel, Byte-Zähler und Browser-URL aus. Verwenden Sie `googlemeet status [session-id] --json`, wenn Sie das rohe JSON benötigen. Verwenden Sie `googlemeet doctor --oauth`, wenn Sie die Google Meet-OAuth-Aktualisierung ohne Offenlegung von Tokens prüfen müssen; fügen Sie `--meeting` oder `--create-space` hinzu, wenn Sie zusätzlich einen Google Meet-API-Nachweis benötigen.
 
-Wenn ein Agent eine Zeitüberschreitung erreicht hat und Sie sehen können, dass bereits ein Meet-Tab geöffnet ist, prüfen Sie diesen Tab,
-ohne einen weiteren zu öffnen:
+Wenn ein Agent ein Timeout hatte und bereits ein Meet-Tab geöffnet ist, prüfen Sie diesen Tab, ohne einen weiteren zu öffnen:
 
 ```bash
 openclaw googlemeet recover-tab
 openclaw googlemeet recover-tab https://meet.google.com/abc-defg-hij
 ```
 
-Die entsprechende Tool-Aktion ist `recover_current_tab`. Sie fokussiert und prüft einen
-vorhandenen Meet-Tab für den ausgewählten Transport. Mit `chrome` verwendet sie die lokale
-Browsersteuerung über das Gateway; mit `chrome-node` verwendet sie den konfigurierten
-Chrome-Node. Sie öffnet keinen neuen Tab und erstellt keine neue Sitzung; sie meldet den
-aktuellen Blocker, etwa Anmeldung, Zulassung, Berechtigungen oder den Status der
-Audioauswahl. Der CLI-Befehl kommuniziert mit dem konfigurierten Gateway, daher muss das
-Gateway laufen; `chrome-node` erfordert außerdem, dass der Chrome-Node verbunden ist.
+Die entsprechende Tool-Aktion ist `recover_current_tab`. Sie fokussiert und prüft ein vorhandenes Meet-Tab für den ausgewählten Transport. Mit `chrome` verwendet sie lokale Browsersteuerung über das Gateway; mit `chrome-node` verwendet sie den konfigurierten Chrome-Node. Sie öffnet keinen neuen Tab und erstellt keine neue Sitzung; sie meldet den aktuellen Blocker, z. B. Anmeldung, Zulassung, Berechtigungen oder Audioauswahlstatus. Der CLI-Befehl spricht mit dem konfigurierten Gateway, daher muss das Gateway laufen; `chrome-node` erfordert außerdem, dass der Chrome-Node verbunden ist.
 
-### Twilio-Einrichtungsprüfungen schlagen fehl
+### Twilio-Setup-Prüfungen schlagen fehl
 
-`twilio-voice-call-plugin` schlägt fehl, wenn `voice-call` nicht erlaubt oder nicht aktiviert ist.
-Fügen Sie es zu `plugins.allow` hinzu, aktivieren Sie `plugins.entries.voice-call`, und laden Sie das
-Gateway neu.
+`twilio-voice-call-plugin` schlägt fehl, wenn `voice-call` nicht erlaubt oder nicht aktiviert ist. Fügen Sie es zu `plugins.allow` hinzu, aktivieren Sie `plugins.entries.voice-call`, und laden Sie das Gateway neu.
 
-`twilio-voice-call-credentials` schlägt fehl, wenn dem Twilio-Backend Konto-
-SID, Auth-Token oder Anrufernummer fehlen. Legen Sie diese auf dem Gateway-Host fest:
+`twilio-voice-call-credentials` schlägt fehl, wenn dem Twilio-Backend Konto-SID, Auth-Token oder Absendernummer fehlt. Setzen Sie diese auf dem Gateway-Host:
 
 ```bash
 export TWILIO_ACCOUNT_SID=AC...
@@ -1364,14 +1220,9 @@ export TWILIO_AUTH_TOKEN=...
 export TWILIO_FROM_NUMBER=+15550001234
 ```
 
-`twilio-voice-call-webhook` schlägt fehl, wenn `voice-call` keine öffentliche Webhook-
-Erreichbarkeit hat oder wenn `publicUrl` auf Loopback oder privaten Netzwerkbereich zeigt.
-Setzen Sie `plugins.entries.voice-call.config.publicUrl` auf die öffentliche Provider-URL oder
-konfigurieren Sie einen `voice-call`-Tunnel bzw. eine Tailscale-Freigabe.
+`twilio-voice-call-webhook` schlägt fehl, wenn `voice-call` keine öffentliche Webhook-Erreichbarkeit hat oder wenn `publicUrl` auf local loopback oder privaten Netzwerkraum zeigt. Setzen Sie `plugins.entries.voice-call.config.publicUrl` auf die öffentliche Provider-URL oder konfigurieren Sie eine `voice-call`-Tunnel-/Tailscale-Erreichbarkeit.
 
-Loopback- und private URLs sind für Carrier-Callbacks nicht gültig. Verwenden Sie
-`localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`,
-`192.168.x`, `169.254.x`, `fc00::/7` oder `fd00::/8` nicht als `publicUrl`.
+Loopback- und private URLs sind für Carrier-Callbacks nicht gültig. Verwenden Sie `localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`, `192.168.x`, `169.254.x`, `fc00::/7` oder `fd00::/8` nicht als `publicUrl`.
 
 Für eine stabile öffentliche URL:
 
@@ -1392,8 +1243,7 @@ Für eine stabile öffentliche URL:
 }
 ```
 
-Verwenden Sie für die lokale Entwicklung einen Tunnel oder eine Tailscale-Freigabe statt einer privaten
-Host-URL:
+Verwenden Sie für die lokale Entwicklung statt einer privaten Host-URL einen Tunnel oder eine Tailscale-Erreichbarkeit:
 
 ```json5
 {
@@ -1411,7 +1261,7 @@ Host-URL:
 }
 ```
 
-Starten oder laden Sie anschließend das Gateway neu, und führen Sie Folgendes aus:
+Starten oder laden Sie anschließend das Gateway neu und führen Sie aus:
 
 ```bash
 openclaw googlemeet setup --transport twilio
@@ -1419,14 +1269,13 @@ openclaw voicecall setup
 openclaw voicecall smoke
 ```
 
-`voicecall smoke` ist standardmäßig nur eine Bereitschaftsprüfung. Für einen Testlauf mit einer bestimmten Nummer:
+`voicecall smoke` ist standardmäßig nur eine Bereitschaftsprüfung. Für einen Probelauf mit einer bestimmten Nummer:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123"
 ```
 
-Fügen Sie `--yes` nur hinzu, wenn Sie absichtlich einen ausgehenden Live-Benachrichtigungsanruf
-platzieren möchten:
+Fügen Sie `--yes` nur hinzu, wenn Sie bewusst einen echten ausgehenden Benachrichtigungsanruf platzieren möchten:
 
 ```bash
 openclaw voicecall smoke --to "+15555550123" --yes
@@ -1434,8 +1283,7 @@ openclaw voicecall smoke --to "+15555550123" --yes
 
 ### Twilio-Anruf startet, tritt dem Meeting aber nie bei
 
-Bestätigen Sie, dass das Meet-Ereignis Telefon-Einwahldetails bereitstellt. Übergeben Sie die genaue Einwahl-
-nummer und PIN oder eine benutzerdefinierte DTMF-Sequenz:
+Bestätigen Sie, dass das Meet-Ereignis Telefon-Einwahldaten bereitstellt. Übergeben Sie die exakte Einwahlnummer und PIN oder eine benutzerdefinierte DTMF-Sequenz:
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij \
@@ -1444,57 +1292,38 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
   --dtmf-sequence ww123456#
 ```
 
-Verwenden Sie ein führendes `w` oder Kommas in `--dtmf-sequence`, wenn der Provider vor der
-PIN-Eingabe eine Pause benötigt.
+Verwenden Sie führende `w` oder Kommas in `--dtmf-sequence`, wenn der Provider vor der PIN-Eingabe eine Pause benötigt.
 
-Wenn der Telefonanruf erstellt wird, die Meet-Teilnehmerliste den Einwahl-
-teilnehmer aber nie anzeigt:
+Wenn der Telefonanruf erstellt wird, die Meet-Teilnehmerliste den Einwahlteilnehmer aber nie anzeigt:
 
-- Führen Sie `openclaw voicecall status --call-id <id>` aus, und bestätigen Sie, dass der Anruf noch
-  aktiv ist.
-- Führen Sie `openclaw voicecall tail` aus, und prüfen Sie, ob Twilio-Webhooks am
-  Gateway ankommen.
-- Führen Sie `openclaw googlemeet setup --transport twilio` erneut aus; eine grüne Einrichtungsprüfung ist
-  erforderlich, beweist aber nicht, dass die Meeting-PIN-Sequenz korrekt ist.
-- Bestätigen Sie, dass die Einwahlnummer zur selben Meet-Einladung und Region gehört wie
-  die PIN.
-- Erhöhen Sie die führenden Pausen in `--dtmf-sequence`, wenn Meet langsam antwortet, zum
-  Beispiel `wwww123456#`.
-- Wenn der Teilnehmer beitritt, Sie die Begrüßung aber nicht hören, prüfen Sie
-  `openclaw voicecall tail` auf einen Twilio-Stream-Start, gefolgt von der Bereitschaft des Echtzeit-
-  Providers. Die Begrüßung wird jetzt aus der initialen
-  `voicecall.start`-Nachricht erzeugt, nachdem sich der Stream verbunden hat.
+- Führen Sie `openclaw googlemeet doctor <session-id>` aus, um die delegierte Twilio-Anruf-ID zu bestätigen, ob DTMF in die Warteschlange gestellt wurde und ob die Begrüßung angefordert wurde.
+- Führen Sie `openclaw voicecall status --call-id <id>` aus und bestätigen Sie, dass der Anruf weiterhin aktiv ist.
+- Führen Sie `openclaw voicecall tail` aus und prüfen Sie, ob Twilio-Webhooks am Gateway eingehen.
+- Führen Sie `openclaw logs --follow` aus und suchen Sie nach der Twilio-Meet-Sequenz: Google Meet delegiert den Beitritt, Voice Call speichert DTMF-TwiML vor der Verbindung, stellt dieses anfängliche TwiML bereit, stellt dann Realtime-TwiML bereit und startet die Realtime-Bridge mit `initialGreeting=queued`.
+- Führen Sie `openclaw googlemeet setup --transport twilio` erneut aus; eine grüne Setup-Prüfung ist erforderlich, beweist aber nicht, dass die Meeting-PIN-Sequenz korrekt ist.
+- Bestätigen Sie, dass die Einwahlnummer zur gleichen Meet-Einladung und Region gehört wie die PIN.
+- Erhöhen Sie die führenden Pausen in `--dtmf-sequence`, wenn Meet langsam antwortet, z. B. `wwww123456#`.
+- Wenn der Teilnehmer beitritt, Sie aber die Begrüßung nicht hören, prüfen Sie `openclaw logs --follow` auf Realtime-TwiML, Start der Realtime-Bridge und `initialGreeting=queued`. Die Begrüßung wird aus der anfänglichen `voicecall.start`-Nachricht generiert, nachdem die Realtime-Bridge verbunden ist.
 
-Wenn Webhooks nicht ankommen, debuggen Sie zuerst das Voice Call Plugin: Der Provider muss
-`plugins.entries.voice-call.config.publicUrl` oder den konfigurierten Tunnel erreichen.
-Siehe [Fehlerbehebung für Sprachanrufe](/de/plugins/voice-call#troubleshooting).
+Wenn Webhooks nicht eintreffen, debuggen Sie zuerst das Voice Call-Plugin: Der Provider muss `plugins.entries.voice-call.config.publicUrl` oder den konfigurierten Tunnel erreichen. Siehe [Fehlerbehebung für Sprachanrufe](/de/plugins/voice-call#troubleshooting).
 
 ## Hinweise
 
-Die offizielle Medien-API von Google Meet ist empfangsorientiert, daher benötigt das Sprechen in einen Meet-
-Anruf weiterhin einen Teilnehmerpfad. Dieses Plugin macht diese Grenze sichtbar:
-Chrome übernimmt die Browserteilnahme und das lokale Audio-Routing; Twilio übernimmt
-die Teilnahme per Telefoneinwahl.
+Die offizielle Medien-API von Google Meet ist empfangsorientiert, daher benötigt das Sprechen in einen Meet-Anruf weiterhin einen Teilnehmerpfad. Dieses Plugin macht diese Grenze sichtbar: Chrome übernimmt Browser-Teilnahme und lokales Audio-Routing; Twilio übernimmt die Teilnahme per Telefoneinwahl.
 
-Der Chrome-Echtzeitmodus benötigt `BlackHole 2ch` plus entweder:
+Der Chrome-Realtime-Modus benötigt `BlackHole 2ch` sowie entweder:
 
-- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw besitzt die
-  Echtzeitmodell-Bridge und leitet Audio in `chrome.audioFormat` zwischen diesen
-  Befehlen und dem ausgewählten Echtzeit-Voice-Provider weiter. Der Standard-Chrome-Pfad ist
-  24 kHz PCM16; 8 kHz G.711 mu-law bleibt für Legacy-Befehlspaare verfügbar.
-- `chrome.audioBridgeCommand`: Ein externer Bridge-Befehl besitzt den gesamten lokalen
-  Audiopfad und muss nach dem Starten oder Validieren seines Daemons beendet werden.
+- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw besitzt die Realtime-Modell-Bridge und leitet Audio in `chrome.audioFormat` zwischen diesen Befehlen und dem ausgewählten Realtime-Voice-Provider weiter. Der Standard-Chrome-Pfad ist 24 kHz PCM16; 8 kHz G.711 mu-law bleibt für Legacy-Befehlspaare verfügbar.
+- `chrome.audioBridgeCommand`: Ein externer Bridge-Befehl besitzt den gesamten lokalen Audiopfad und muss nach dem Starten oder Validieren seines Daemons beendet werden.
 
-Für sauberes Duplex-Audio leiten Sie Meet-Ausgabe und Meet-Mikrofon durch getrennte
-virtuelle Geräte oder einen virtuellen Gerätegraphen im Loopback-Stil. Ein einzelnes gemeinsam genutztes
-BlackHole-Gerät kann andere Teilnehmer zurück in den Anruf spiegeln.
+Für sauberes Duplex-Audio routen Sie Meet-Ausgabe und Meet-Mikrofon über separate virtuelle Geräte oder einen virtuellen Gerätegraphen im Stil von Loopback. Ein einzelnes gemeinsam genutztes BlackHole-Gerät kann andere Teilnehmer zurück in den Anruf spiegeln.
 
-`googlemeet speak` löst die aktive Echtzeit-Audio-Bridge für eine Chrome-
-Sitzung aus. `googlemeet leave` stoppt diese Bridge. Bei Twilio-Sitzungen, die
-über das Voice Call Plugin delegiert werden, legt `leave` auch den zugrunde liegenden Sprachanruf auf.
+Mit der Chrome-Bridge aus Befehlspaaren kann `chrome.bargeInInputCommand` auf ein separates lokales Mikrofon hören und die Assistentenwiedergabe löschen, wenn der Mensch zu sprechen beginnt. Dadurch bleibt menschliche Sprache vor der Assistentenausgabe, selbst wenn die gemeinsam genutzte BlackHole-Loopback-Eingabe während der Assistentenwiedergabe vorübergehend unterdrückt wird. Wie `chrome.audioInputCommand` und `chrome.audioOutputCommand` ist dies ein vom Betreiber konfigurierter lokaler Befehl. Verwenden Sie einen expliziten vertrauenswürdigen Befehlspfad oder eine Argumentliste, und verweisen Sie nicht auf Skripte aus nicht vertrauenswürdigen Speicherorten.
+
+`googlemeet speak` löst die aktive Realtime-Audio-Bridge für eine Chrome-Sitzung aus. `googlemeet leave` stoppt diese Bridge. Bei Twilio-Sitzungen, die über das Voice Call-Plugin delegiert wurden, legt `leave` auch den zugrunde liegenden Sprachanruf auf.
 
 ## Verwandt
 
-- [Voice Call Plugin](/de/plugins/voice-call)
+- [Voice Call-Plugin](/de/plugins/voice-call)
 - [Sprechmodus](/de/nodes/talk)
 - [Plugins erstellen](/de/plugins/building-plugins)

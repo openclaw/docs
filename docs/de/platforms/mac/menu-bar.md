@@ -1,42 +1,43 @@
 ---
 read_when:
-    - mac-Menü-UI oder Statuslogik anpassen
-summary: Logik der Menüleisten-Statusanzeige und was den Benutzern angezeigt wird
+    - Anpassen der Mac-Menü-UI oder Statuslogik
+summary: Statuslogik der Menüleiste und was Benutzern angezeigt wird
 title: Menüleiste
 x-i18n:
-    generated_at: "2026-04-24T06:48:01Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T06:38:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
+    source_hash: 340b86a2e222fb1fe7fda4f0f0434127af1393a64348ea033ea284ba52866beb
     source_path: platforms/mac/menu-bar.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Logik der Menüleisten-Statusanzeige
+# Statuslogik der Menüleiste
 
 ## Was angezeigt wird
 
-- Wir zeigen den aktuellen Arbeitsstatus des Agenten im Symbol der Menüleiste und in der ersten Statuszeile des Menüs an.
-- Der Health-Status wird ausgeblendet, solange Arbeit aktiv ist; er kehrt zurück, wenn alle Sitzungen inaktiv sind.
-- Der Block „Nodes“ im Menü listet nur **Geräte** auf (gekoppelte Nodes über `node.list`), nicht Client-/Presence-Einträge.
-- Ein Abschnitt „Usage“ erscheint unter Context, wenn Snapshots zur Providernutzung verfügbar sind.
+- Wir zeigen den aktuellen Arbeitszustand des Agenten im Menüleisten-Icon und in der ersten Statuszeile des Menüs an.
+- Der Integritätsstatus ist ausgeblendet, während Arbeit aktiv ist; er kehrt zurück, wenn alle Sitzungen im Leerlauf sind.
+- Ein Stamm-Untermenü „Kontext“ enthält aktuelle Sitzungen, anstatt sie direkt im Stammmenü aufzuklappen.
+- Der Block „Nodes“ im Stammmenü listet nur **Geräte** auf (gekoppelte Nodes über `node.list`), keine Client-/Präsenz-Einträge.
+- Ein Stammabschnitt „Nutzung“ erscheint unterhalb von „Kontext“, wenn Provider-Nutzungs-Snapshots verfügbar sind, gefolgt von Nutzungskosten-Details, sofern verfügbar.
 
-## Statusmodell
+## Zustandsmodell
 
-- Sitzungen: Events treffen mit `runId` (pro Lauf) sowie `sessionKey` in der Nutzlast ein. Die „main“-Sitzung ist der Schlüssel `main`; wenn sie fehlt, greifen wir auf die zuletzt aktualisierte Sitzung zurück.
-- Priorität: main gewinnt immer. Wenn main aktiv ist, wird ihr Status sofort angezeigt. Wenn main inaktiv ist, wird die zuletzt aktive Nicht-Main-Sitzung angezeigt. Wir wechseln nicht mitten in einer Aktivität hin und her; wir schalten nur um, wenn die aktuelle Sitzung inaktiv wird oder main aktiv wird.
+- Sitzungen: Ereignisse treffen mit `runId` (pro Lauf) plus `sessionKey` in der Nutzlast ein. Die Sitzung „main“ ist der Schlüssel `main`; falls sie fehlt, fallen wir auf die zuletzt aktualisierte Sitzung zurück.
+- Priorität: `main` hat immer Vorrang. Wenn `main` aktiv ist, wird ihr Zustand sofort angezeigt. Wenn `main` im Leerlauf ist, wird die zuletzt aktive Nicht-`main`-Sitzung angezeigt. Wir wechseln nicht mitten in einer Aktivität hin und her; wir wechseln nur, wenn die aktuelle Sitzung in den Leerlauf geht oder `main` aktiv wird.
 - Aktivitätsarten:
-  - `job`: Ausführung von Befehlen auf hoher Ebene (`state: started|streaming|done|error`).
+  - `job`: Befehlsausführung auf hoher Ebene (`state: started|streaming|done|error`).
   - `tool`: `phase: start|result` mit `toolName` und `meta/args`.
 
-## Enum `IconState` (Swift)
+## IconState-Enum (Swift)
 
 - `idle`
 - `workingMain(ActivityKind)`
 - `workingOther(ActivityKind)`
-- `overridden(ActivityKind)` (Debug-Override)
+- `overridden(ActivityKind)` (Debug-Überschreibung)
 
-### `ActivityKind` → Glyph
+### ActivityKind → Symbol
 
 - `exec` → 💻
 - `read` → 📄
@@ -47,47 +48,55 @@ x-i18n:
 
 ### Visuelle Zuordnung
 
-- `idle`: normales Critter.
-- `workingMain`: Badge mit Glyph, volle Tönung, Bein-Animation „working“.
-- `workingOther`: Badge mit Glyph, gedämpfte Tönung, kein Herumhuschen.
-- `overridden`: verwendet unabhängig von der Aktivität das gewählte Glyph/die gewählte Tönung.
+- `idle`: normales Tierchen.
+- `workingMain`: Abzeichen mit Symbol, voller Farbton, „Arbeits“-Animation der Beine.
+- `workingOther`: Abzeichen mit Symbol, gedämpfter Farbton, kein Huschen.
+- `overridden`: verwendet unabhängig von der Aktivität das gewählte Symbol/den gewählten Farbton.
 
-## Text der Statuszeile (Menü)
+## Kontext-Untermenü
 
-- Solange Arbeit aktiv ist: `<Session role> · <activity label>`
+- Das Stammmenü zeigt eine Zeile „Kontext“ mit Sitzungsanzahl/-status und öffnet ein Untermenü.
+- Die Kopfzeile des Kontext-Untermenüs zeigt die Anzahl aktiver Sitzungen der letzten 24 Stunden.
+- Jede Sitzungszeile behält ihre Token-Leiste, ihr Alter, ihre Vorschau, Denken/ausführliche Ausgabe sowie die Aktionen zum Zurücksetzen, Komprimieren und Löschen.
+- Lade-, Verbindungsgetrennt- und Sitzungs-Ladefehlermeldungen erscheinen im Kontext-Untermenü.
+- Provider-Nutzung und Nutzungskosten-Details bleiben auf Stammebene unterhalb von „Kontext“, sodass sie ohne Öffnen des Untermenüs auf einen Blick sichtbar bleiben.
+
+## Statuszeilentext (Menü)
+
+- Während Arbeit aktiv ist: `<Session role> · <activity label>`
   - Beispiele: `Main · exec: pnpm test`, `Other · read: apps/macos/Sources/OpenClaw/AppState.swift`.
-- Wenn inaktiv: fällt auf die Health-Zusammenfassung zurück.
+- Im Leerlauf: fällt auf die Integritätszusammenfassung zurück.
 
-## Event-Ingestion
+## Ereignisaufnahme
 
-- Quelle: `agent`-Events des Control-Channels (`ControlChannel.handleAgentEvent`).
+- Quelle: Control-Channel-`agent`-Ereignisse (`ControlChannel.handleAgentEvent`).
 - Geparste Felder:
   - `stream: "job"` mit `data.state` für Start/Stopp.
   - `stream: "tool"` mit `data.phase`, `name`, optional `meta`/`args`.
-- Labels:
+- Beschriftungen:
   - `exec`: erste Zeile von `args.command`.
   - `read`/`write`: gekürzter Pfad.
-  - `edit`: Pfad plus abgeleitete Änderungsart aus `meta`/Diff-Anzahlen.
+  - `edit`: Pfad plus aus `meta`/Diff-Zählungen abgeleitete Änderungsart.
   - Fallback: Tool-Name.
 
-## Debug-Override
+## Debug-Überschreibung
 
-- Einstellungen ▸ Debug ▸ Auswahl „Icon override“:
+- Einstellungen ▸ Debug ▸ Auswahl „Icon-Überschreibung“:
   - `System (auto)` (Standard)
   - `Working: main` (pro Tool-Art)
   - `Working: other` (pro Tool-Art)
   - `Idle`
-- Gespeichert über `@AppStorage("iconOverride")`; abgebildet auf `IconState.overridden`.
+- Gespeichert über `@AppStorage("iconOverride")`; zugeordnet zu `IconState.overridden`.
 
-## Checkliste für Tests
+## Testcheckliste
 
-- Job in der Main-Sitzung auslösen: prüfen, dass das Symbol sofort umschaltet und die Statuszeile das Main-Label anzeigt.
-- Job in einer Nicht-Main-Sitzung auslösen, während main inaktiv ist: Symbol/Status zeigen Nicht-Main an; bleibt stabil, bis der Job fertig ist.
-- Main starten, während eine andere Sitzung aktiv ist: Symbol springt sofort auf main um.
-- Schnelle Tool-Bursts: sicherstellen, dass das Badge nicht flackert (TTL-Übergangszeit bei Tool-Ergebnissen).
-- Health-Zeile erscheint wieder, sobald alle Sitzungen inaktiv sind.
+- Job der Hauptsitzung auslösen: Prüfen Sie, dass das Icon sofort wechselt und die Statuszeile die Hauptbeschriftung anzeigt.
+- Job einer Nicht-Hauptsitzung auslösen, während `main` im Leerlauf ist: Icon/Status zeigt die Nicht-Hauptsitzung an; bleibt stabil, bis sie beendet ist.
+- `main` starten, während eine andere Sitzung aktiv ist: Icon wechselt sofort zu `main`.
+- Schnelle Tool-Serien: Sicherstellen, dass das Abzeichen nicht flackert (TTL-Toleranz bei Tool-Ergebnissen).
+- Integritätszeile erscheint wieder, sobald alle Sitzungen im Leerlauf sind.
 
 ## Verwandt
 
 - [macOS-App](/de/platforms/macos)
-- [Menüleistensymbol](/de/platforms/mac/icon)
+- [Menüleisten-Icon](/de/platforms/mac/icon)

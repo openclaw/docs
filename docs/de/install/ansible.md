@@ -2,24 +2,24 @@
 read_when:
     - Sie möchten eine automatisierte Serverbereitstellung mit Sicherheitshärtung
     - Sie benötigen eine durch eine Firewall isolierte Einrichtung mit VPN-Zugriff
-    - Sie stellen auf entfernten Debian-/Ubuntu-Servern bereit
+    - Sie stellen auf entfernten Debian/Ubuntu-Servern bereit
 summary: Automatisierte, gehärtete OpenClaw-Installation mit Ansible, Tailscale-VPN und Firewall-Isolierung
 title: Ansible
 x-i18n:
-    generated_at: "2026-04-30T06:59:05Z"
+    generated_at: "2026-05-02T06:37:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fbe42e3f83b02e436f0dc5111dda1e069c573b32fdde23ad50dbb2b147c6dd72
+    source_hash: 789763c82483f4eec0963f4dccb06f2daa22d470a5e69e275f38c70a00a10ba4
     source_path: install/ansible.md
     workflow: 16
 ---
 
 # Ansible-Installation
 
-Stellen Sie OpenClaw mit **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** auf Produktionsservern bereit -- einem automatisierten Installer mit Security-First-Architektur.
+Stellen Sie OpenClaw mit **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** auf Produktionsservern bereit -- einem automatisierten Installer mit Security-first-Architektur.
 
 <Info>
-Das Repository [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) ist die maßgebliche Quelle für die Ansible-Bereitstellung. Diese Seite ist eine kurze Übersicht.
+Das Repository [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) ist die maßgebliche Quelle für das Ansible-Deployment. Diese Seite bietet einen kurzen Überblick.
 </Info>
 
 ## Voraussetzungen
@@ -29,16 +29,16 @@ Das Repository [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) 
 | **OS**      | Debian 11+ oder Ubuntu 20.04+                             |
 | **Zugriff** | Root- oder sudo-Berechtigungen                            |
 | **Netzwerk** | Internetverbindung für die Paketinstallation             |
-| **Ansible** | 2.14+ (wird automatisch vom Schnellstartskript installiert) |
+| **Ansible** | 2.14+ (wird automatisch vom Schnellstart-Skript installiert) |
 
 ## Was Sie erhalten
 
-- **Firewall-First-Sicherheit** -- UFW + Docker-Isolation (nur SSH + Tailscale erreichbar)
-- **Tailscale VPN** -- sicherer Fernzugriff, ohne Dienste öffentlich bereitzustellen
-- **Docker** -- isolierte Sandbox-Container, nur localhost-Bindings
-- **Defense in Depth** -- 4-Schichten-Sicherheitsarchitektur
-- **Systemd-Integration** -- automatischer Start beim Booten mit Härtung
-- **Ein-Befehl-Einrichtung** -- vollständige Bereitstellung in wenigen Minuten
+- **Firewall-first-Sicherheit** -- UFW + Docker-Isolation (nur SSH + Tailscale erreichbar)
+- **Tailscale-VPN** -- sicherer Remote-Zugriff, ohne Dienste öffentlich offenzulegen
+- **Docker** -- isolierte Sandbox-Container, Bindings nur an localhost
+- **Defense in Depth** -- 4-schichtige Sicherheitsarchitektur
+- **Systemd-Integration** -- automatischer Start beim Booten mit Hardening
+- **Ein-Befehl-Setup** -- vollständiges Deployment in wenigen Minuten
 
 ## Schnellstart
 
@@ -52,17 +52,17 @@ curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/inst
 
 Das Ansible-Playbook installiert und konfiguriert:
 
-1. **Tailscale** -- Mesh-VPN für sicheren Fernzugriff
+1. **Tailscale** -- Mesh-VPN für sicheren Remote-Zugriff
 2. **UFW-Firewall** -- nur SSH- + Tailscale-Ports
-3. **Docker CE + Compose V2** -- für das Standard-Backend der Agent-Sandbox
+3. **Docker CE + Compose V2** -- für das standardmäßige Agent-Sandbox-Backend
 4. **Node.js 24 + pnpm** -- Runtime-Abhängigkeiten (Node 22 LTS, derzeit `22.14+`, bleibt unterstützt)
 5. **OpenClaw** -- hostbasiert, nicht containerisiert
-6. **Systemd-Dienst** -- automatischer Start mit Sicherheitshärtung
+6. **Systemd-Dienst** -- automatischer Start mit Security Hardening
 
 <Note>
-Der Gateway läuft direkt auf dem Host (nicht in Docker). Agent-Sandboxing ist
-optional; dieses Playbook installiert Docker, weil es das Standard-Sandbox-
-Backend ist. Details und andere Backends finden Sie unter [Sandboxing](/de/gateway/sandboxing).
+Das Gateway läuft direkt auf dem Host (nicht in Docker). Agent-Sandboxing ist
+optional; dieses Playbook installiert Docker, weil es das standardmäßige Sandbox-
+Backend ist. Weitere Details und andere Backends finden Sie unter [Sandboxing](/de/gateway/sandboxing).
 </Note>
 
 ## Einrichtung nach der Installation
@@ -73,8 +73,8 @@ Backend ist. Details und andere Backends finden Sie unter [Sandboxing](/de/gatew
     sudo -i -u openclaw
     ```
   </Step>
-  <Step title="Onboarding-Assistenten ausführen">
-    Das Post-Install-Skript führt Sie durch die Konfiguration der OpenClaw-Einstellungen.
+  <Step title="Onboarding-Assistent ausführen">
+    Das Post-Installationsskript führt Sie durch die Konfiguration der OpenClaw-Einstellungen.
   </Step>
   <Step title="Messaging-Provider verbinden">
     Melden Sie sich bei WhatsApp, Telegram, Discord oder Signal an:
@@ -89,7 +89,7 @@ Backend ist. Details und andere Backends finden Sie unter [Sandboxing](/de/gatew
     ```
   </Step>
   <Step title="Mit Tailscale verbinden">
-    Treten Sie Ihrem VPN-Mesh für sicheren Fernzugriff bei.
+    Treten Sie Ihrem VPN-Mesh für sicheren Remote-Zugriff bei.
   </Step>
 </Steps>
 
@@ -112,12 +112,12 @@ openclaw channels login
 
 ## Sicherheitsarchitektur
 
-Die Bereitstellung nutzt ein 4-Schichten-Verteidigungsmodell:
+Das Deployment verwendet ein 4-schichtiges Defense-in-Depth-Modell:
 
-1. **Firewall (UFW)** -- nur SSH (22) + Tailscale (41641/udp) öffentlich exponiert
-2. **VPN (Tailscale)** -- Gateway nur über das VPN-Mesh erreichbar
-3. **Docker-Isolation** -- DOCKER-USER-iptables-Chain verhindert externe Portfreigaben
-4. **Systemd-Härtung** -- NoNewPrivileges, PrivateTmp, unprivilegierter Benutzer
+1. **Firewall (UFW)** -- nur SSH (22) + Tailscale (41641/udp) sind öffentlich exponiert
+2. **VPN (Tailscale)** -- Gateway ist nur über das VPN-Mesh erreichbar
+3. **Docker-Isolation** -- die DOCKER-USER-iptables-Chain verhindert externe Port-Exposition
+4. **Systemd-Hardening** -- NoNewPrivileges, PrivateTmp, unprivilegierter Benutzer
 
 So überprüfen Sie Ihre externe Angriffsfläche:
 
@@ -125,13 +125,13 @@ So überprüfen Sie Ihre externe Angriffsfläche:
 nmap -p- YOUR_SERVER_IP
 ```
 
-Nur Port 22 (SSH) sollte offen sein. Alle anderen Dienste (Gateway, Docker) sind gesperrt.
+Nur Port 22 (SSH) sollte geöffnet sein. Alle anderen Dienste (Gateway, Docker) sind gesperrt.
 
-Docker wird für Agent-Sandboxes (isolierte Tool-Ausführung) installiert, nicht für den Betrieb des Gateways selbst. Informationen zur Sandbox-Konfiguration finden Sie unter [Multi-Agent Sandbox and Tools](/de/tools/multi-agent-sandbox-tools).
+Docker wird für Agent-Sandboxen (isolierte Tool-Ausführung) installiert, nicht zum Ausführen des Gateway selbst. Informationen zur Sandbox-Konfiguration finden Sie unter [Multi-Agent Sandbox and Tools](/de/tools/multi-agent-sandbox-tools).
 
 ## Manuelle Installation
 
-Wenn Sie die Automatisierung lieber manuell steuern möchten:
+Wenn Sie manuelle Kontrolle der Automatisierung vorziehen:
 
 <Steps>
   <Step title="Voraussetzungen installieren">
@@ -155,7 +155,7 @@ Wenn Sie die Automatisierung lieber manuell steuern möchten:
     ./run-playbook.sh
     ```
 
-    Alternativ können Sie es direkt ausführen und anschließend das Einrichtungsskript manuell starten:
+    Alternativ können Sie es direkt ausführen und anschließend das Setup-Skript manuell ausführen:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
     # Then run: /tmp/openclaw-setup.sh
@@ -166,7 +166,7 @@ Wenn Sie die Automatisierung lieber manuell steuern möchten:
 
 ## Aktualisierung
 
-Der Ansible-Installer richtet OpenClaw für manuelle Updates ein. Den standardmäßigen Aktualisierungsablauf finden Sie unter [Aktualisierung](/de/install/updating).
+Der Ansible-Installer richtet OpenClaw für manuelle Updates ein. Den Standard-Update-Ablauf finden Sie unter [Aktualisierung](/de/install/updating).
 
 So führen Sie das Ansible-Playbook erneut aus (zum Beispiel für Konfigurationsänderungen):
 
@@ -181,9 +181,9 @@ Dies ist idempotent und kann sicher mehrfach ausgeführt werden.
 
 <AccordionGroup>
   <Accordion title="Firewall blockiert meine Verbindung">
-    - Stellen Sie sicher, dass Sie zuerst über Tailscale VPN zugreifen können
+    - Stellen Sie sicher, dass Sie zuerst über das Tailscale-VPN zugreifen können
     - SSH-Zugriff (Port 22) ist immer erlaubt
-    - Der Gateway ist absichtlich nur über Tailscale erreichbar
+    - Das Gateway ist absichtlich nur über Tailscale erreichbar
 
   </Accordion>
   <Accordion title="Dienst startet nicht">
@@ -201,7 +201,7 @@ Dies ist idempotent und kann sicher mehrfach ausgeführt werden.
     ```
 
   </Accordion>
-  <Accordion title="Probleme mit der Docker-Sandbox">
+  <Accordion title="Docker-Sandbox-Probleme">
     ```bash
     # Verify Docker is running
     sudo systemctl status docker
@@ -209,13 +209,15 @@ Dies ist idempotent und kann sicher mehrfach ausgeführt werden.
     # Check sandbox image
     sudo docker images | grep openclaw-sandbox
 
-    # Build sandbox image if missing
+    # Build sandbox image if missing (requires source checkout)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
+    # For npm installs without a source checkout, see
+    # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
-  <Accordion title="Provider-Anmeldung schlägt fehl">
+  <Accordion title="Provider-Login schlägt fehl">
     Stellen Sie sicher, dass Sie als Benutzer `openclaw` ausführen:
     ```bash
     sudo -i -u openclaw
@@ -226,15 +228,15 @@ Dies ist idempotent und kann sicher mehrfach ausgeführt werden.
 
 ## Erweiterte Konfiguration
 
-Detaillierte Informationen zur Sicherheitsarchitektur und Fehlerbehebung finden Sie im openclaw-ansible-Repository:
+Ausführliche Informationen zur Sicherheitsarchitektur und Fehlerbehebung finden Sie im Repository openclaw-ansible:
 
 - [Sicherheitsarchitektur](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [Technische Details](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
-- [Anleitung zur Fehlerbehebung](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
+- [Fehlerbehebungsleitfaden](https://github.com/openclaw/openclaw-ansible/blob/main/docs/troubleshooting.md)
 
 ## Verwandte Themen
 
-- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- vollständige Bereitstellungsanleitung
-- [Docker](/de/install/docker) -- containerisierte Gateway-Einrichtung
+- [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- vollständiger Deployment-Leitfaden
+- [Docker](/de/install/docker) -- containerisiertes Gateway-Setup
 - [Sandboxing](/de/gateway/sandboxing) -- Agent-Sandbox-Konfiguration
 - [Multi-Agent Sandbox and Tools](/de/tools/multi-agent-sandbox-tools) -- Isolation pro Agent

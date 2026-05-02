@@ -5,17 +5,17 @@ read_when:
 summary: CLI-Referenz für `openclaw message` (Senden + Kanalaktionen)
 title: Nachricht
 x-i18n:
-    generated_at: "2026-04-30T06:46:21Z"
+    generated_at: "2026-05-02T06:29:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43f14b3815d89c92a7503e620e2424f41a3f6b92e20e089504017305b19bace4
+    source_hash: f429acc2c81f33d1ade543ab1170220e293077e1d1721ac0940937de3d19f0d2
     source_path: cli/message.md
     workflow: 16
 ---
 
 # `openclaw message`
 
-Ein einzelner ausgehender Befehl zum Senden von Nachrichten und Kanalaktionen
+Einzelner ausgehender Befehl zum Senden von Nachrichten und Kanalaktionen
 (Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## Verwendung
@@ -29,7 +29,7 @@ Kanalauswahl:
 - `--channel` ist erforderlich, wenn mehr als ein Kanal konfiguriert ist.
 - Wenn genau ein Kanal konfiguriert ist, wird er zum Standard.
 - Werte: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost erfordert ein Plugin)
-- `openclaw message` löst den ausgewählten Kanal zu seinem besitzenden Plugin auf, wenn `--channel` oder ein Ziel mit Kanalpräfix vorhanden ist; andernfalls lädt es konfigurierte Kanal-Plugins zur Ableitung des Standardkanals.
+- `openclaw message` löst den ausgewählten Kanal in das zugehörige Plugin auf, wenn `--channel` oder ein Ziel mit Kanalpräfix vorhanden ist; andernfalls lädt es konfigurierte Kanal-Plugins, um den Standardkanal abzuleiten.
 
 Zielformate (`--target`):
 
@@ -46,15 +46,15 @@ Zielformate (`--target`):
 
 Namenssuche:
 
-- Für unterstützte Provider (Discord/Slack/usw.) werden Kanalnamen wie `Help` oder `#help` über den Verzeichnis-Cache aufgelöst.
-- Bei einem Cache-Fehltreffer versucht OpenClaw eine Live-Verzeichnissuche, wenn der Provider dies unterstützt.
+- Für unterstützte Provider (Discord/Slack usw.) werden Kanalnamen wie `Help` oder `#help` über den Verzeichniscache aufgelöst.
+- Bei einem Cache-Fehltreffer versucht OpenClaw eine Live-Verzeichnissuche, wenn der Provider sie unterstützt.
 
-## Häufige Flags
+## Allgemeine Flags
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (Zielkanal oder Benutzer für Senden/Abrufen/Lesen/usw.)
-- `--targets <name>` (wiederholen; nur Broadcast)
+- `--target <dest>` (Zielkanal oder Benutzer für Senden/Abfragen/Lesen usw.)
+- `--targets <name>` (wiederholbar; nur Broadcast)
 - `--json`
 - `--dry-run`
 - `--verbose`
@@ -64,10 +64,10 @@ Namenssuche:
 - `openclaw message` löst unterstützte Kanal-SecretRefs auf, bevor die ausgewählte Aktion ausgeführt wird.
 - Die Auflösung ist nach Möglichkeit auf das aktive Aktionsziel beschränkt:
   - kanalbezogen, wenn `--channel` gesetzt ist (oder aus Zielen mit Präfix wie `discord:...` abgeleitet wird)
-  - kontobezogen, wenn `--account` gesetzt ist (Kanal-Globals + ausgewählte Kontooberflächen)
+  - kontobezogen, wenn `--account` gesetzt ist (globale Kanalwerte + Oberflächen des ausgewählten Kontos)
   - wenn `--account` ausgelassen wird, erzwingt OpenClaw keinen `default`-Konto-SecretRef-Scope
-- Nicht aufgelöste SecretRefs auf nicht verwandten Kanälen blockieren keine zielgerichtete Nachrichtenaktion.
-- Wenn die SecretRef des ausgewählten Kanals/Kontos nicht aufgelöst ist, schlägt der Befehl für diese Aktion geschlossen fehl.
+- Nicht aufgelöste SecretRefs in nicht verwandten Kanälen blockieren eine gezielte Nachrichtenaktion nicht.
+- Wenn der SecretRef des ausgewählten Kanals/Kontos nicht aufgelöst ist, schlägt der Befehl für diese Aktion geschlossen fehl.
 
 ## Aktionen
 
@@ -78,16 +78,16 @@ Namenssuche:
   - Erforderlich: `--target` plus `--message`, `--media` oder `--presentation`
   - Optional: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
   - Gemeinsame Präsentations-Payloads: `--presentation` sendet semantische Blöcke (`text`, `context`, `divider`, `buttons`, `select`), die der Kern über die deklarierten Fähigkeiten des ausgewählten Kanals rendert. Siehe [Nachrichtenpräsentation](/de/plugins/message-presentation).
-  - Generische Zustellpräferenzen: `--delivery` akzeptiert Zustellhinweise wie `{ "pin": true }`; `--pin` ist eine Kurzform für angeheftete Zustellung, wenn der Kanal sie unterstützt.
+  - Generische Zustellungspräferenzen: `--delivery` akzeptiert Zustellungshinweise wie `{ "pin": true }`; `--pin` ist eine Kurzform für angeheftete Zustellung, wenn der Kanal sie unterstützt.
   - Nur Telegram: `--force-document` (Bilder und GIFs als Dokumente senden, um Telegram-Komprimierung zu vermeiden)
-  - Nur Telegram: `--thread-id` (Forumsthemen-ID)
+  - Nur Telegram: `--thread-id` (Forum-Themen-ID)
   - Nur Slack: `--thread-id` (Thread-Zeitstempel; `--reply-to` verwendet dasselbe Feld)
   - Telegram + Discord: `--silent`
   - Nur WhatsApp: `--gif-playback`
 
 - `poll`
   - Kanäle: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - Erforderlich: `--target`, `--poll-question`, `--poll-option` (wiederholen)
+  - Erforderlich: `--target`, `--poll-question`, `--poll-option` (wiederholbar)
   - Optional: `--poll-multi`
   - Nur Discord: `--poll-duration-hours`, `--silent`, `--message`
   - Nur Telegram: `--poll-duration-seconds` (5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
@@ -96,7 +96,7 @@ Namenssuche:
   - Kanäle: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
   - Erforderlich: `--message-id`, `--target`
   - Optional: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
-  - Hinweis: `--remove` erfordert `--emoji` (`--emoji` auslassen, um eigene Reaktionen zu löschen, sofern unterstützt; siehe /tools/reactions)
+  - Hinweis: `--remove` erfordert `--emoji` (`--emoji` auslassen, um eigene Reaktionen zu entfernen, sofern unterstützt; siehe /tools/reactions)
   - Nur WhatsApp: `--participant`, `--from-me`
   - Signal-Gruppenreaktionen: `--target-author` oder `--target-author-uuid` erforderlich
 
@@ -108,7 +108,8 @@ Namenssuche:
 - `read`
   - Kanäle: Discord/Slack/Matrix
   - Erforderlich: `--target`
-  - Optional: `--limit`, `--before`, `--after`
+  - Optional: `--limit`, `--message-id`, `--before`, `--after`
+  - Nur Slack: `--message-id` liest einen bestimmten Slack-Nachrichtenzeitstempel; mit `--thread-id` kombinieren, um eine genaue Thread-Antwort zu lesen.
   - Nur Discord: `--around`
 
 - `edit`
@@ -135,7 +136,7 @@ Namenssuche:
 - `search`
   - Kanäle: Discord
   - Erforderlich: `--guild-id`, `--query`
-  - Optional: `--channel-id`, `--channel-ids` (wiederholen), `--author-id`, `--author-ids` (wiederholen), `--limit`
+  - Optional: `--channel-id`, `--channel-ids` (wiederholbar), `--author-id`, `--author-ids` (wiederholbar), `--limit`
 
 ### Threads
 
@@ -163,13 +164,13 @@ Namenssuche:
 - `emoji upload`
   - Kanäle: Discord
   - Erforderlich: `--guild-id`, `--emoji-name`, `--media`
-  - Optional: `--role-ids` (wiederholen)
+  - Optional: `--role-ids` (wiederholbar)
 
 ### Sticker
 
 - `sticker send`
   - Kanäle: Discord
-  - Erforderlich: `--target`, `--sticker-id` (wiederholen)
+  - Erforderlich: `--target`, `--sticker-id` (wiederholbar)
   - Optional: `--message`
 
 - `sticker upload`
@@ -193,7 +194,7 @@ Namenssuche:
 
 ### Moderation (Discord)
 
-- `timeout`: `--guild-id`, `--user-id` (optional `--duration-min` oder `--until`; beide auslassen, um Timeout zu löschen)
+- `timeout`: `--guild-id`, `--user-id` (optional `--duration-min` oder `--until`; beides auslassen, um das Timeout zu entfernen)
 - `kick`: `--guild-id`, `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
   - `timeout` unterstützt auch `--reason`
@@ -201,7 +202,7 @@ Namenssuche:
 ### Broadcast
 
 - `broadcast`
-  - Kanäle: jeder konfigurierte Kanal; verwenden Sie `--channel all`, um alle Provider anzusprechen
+  - Kanäle: jeder konfigurierte Kanal; verwenden Sie `--channel all`, um alle Provider als Ziel zu verwenden
   - Erforderlich: `--targets <target...>`
   - Optional: `--message`, `--media`, `--dry-run`
 
@@ -214,7 +215,7 @@ openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Eine Nachricht mit semantischen Schaltflächen senden:
+Eine Nachricht mit semantischen Buttons senden:
 
 ```
 openclaw message send --channel discord \
@@ -222,9 +223,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Der Kern rendert dieselbe `presentation`-Payload je nach Kanalfähigkeit in Discord-Komponenten, Slack-Blöcke, Telegram-Inline-Schaltflächen, Mattermost-Props oder Teams/Feishu-Karten. Siehe [Nachrichtenpräsentation](/de/plugins/message-presentation) für den vollständigen Vertrag und die Fallback-Regeln.
+Der Kern rendert denselben `presentation`-Payload je nach Kanalfähigkeit in Discord-Komponenten, Slack-Blöcke, Telegram-Inline-Buttons, Mattermost-Props oder Teams/Feishu-Karten. Siehe [Nachrichtenpräsentation](/de/plugins/message-presentation) für den vollständigen Vertrag und die Fallback-Regeln.
 
-Eine umfangreichere Präsentations-Payload senden:
+Einen umfangreicheren Präsentations-Payload senden:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -242,7 +243,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Eine Telegram-Umfrage erstellen (automatisches Schließen nach 2 Minuten):
+Eine Telegram-Umfrage erstellen (automatisch in 2 Minuten schließen):
 
 ```
 openclaw message poll --channel telegram \
@@ -283,7 +284,7 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Telegram-Inline-Schaltflächen über generische Präsentation senden:
+Telegram-Inline-Buttons über generische Präsentation senden:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
@@ -305,7 +306,7 @@ openclaw message send --channel telegram --target @mychat \
   --media ./diagram.png --force-document
 ```
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
-- [Agent send](/de/tools/agent-send)
+- [Agent senden](/de/tools/agent-send)

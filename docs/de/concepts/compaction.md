@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Sie möchten automatische Compaction und /compact verstehen
+    - Sie möchten Auto-Compaction und /compact verstehen
     - Sie debuggen lange Sitzungen, die Kontextlimits erreichen
 summary: Wie OpenClaw lange Unterhaltungen zusammenfasst, um innerhalb der Modellgrenzen zu bleiben
 title: Compaction
 x-i18n:
-    generated_at: "2026-04-30T06:48:17Z"
+    generated_at: "2026-05-02T06:31:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9beac513a8226a7dd107cdc3a7bfd7550d87e98648004c80487db968c57742d4
+    source_hash: 2f8e6f372508a0f5421654d3e2a694695eb8a7fda4e3928159bf8f08b2a2156b
     source_path: concepts/compaction.md
     workflow: 16
 ---
 
-Jedes Modell hat ein Kontextfenster: die maximale Anzahl von Tokens, die es verarbeiten kann. Wenn sich eine Unterhaltung diesem Limit nähert, führt OpenClaw eine **Compaction** älterer Nachrichten zu einer Zusammenfassung durch, damit der Chat fortgesetzt werden kann.
+Jedes Modell hat ein Kontextfenster: die maximale Anzahl von Tokens, die es verarbeiten kann. Wenn sich eine Unterhaltung diesem Limit nähert, führt OpenClaw für ältere Nachrichten eine **Compaction** zu einer Zusammenfassung durch, damit der Chat fortgesetzt werden kann.
 
 ## Funktionsweise
 
@@ -21,9 +21,9 @@ Jedes Modell hat ein Kontextfenster: die maximale Anzahl von Tokens, die es vera
 2. Die Zusammenfassung wird im Sitzungstranskript gespeichert.
 3. Aktuelle Nachrichten bleiben unverändert erhalten.
 
-Wenn OpenClaw den Verlauf in Compaction-Abschnitte aufteilt, hält es Tool-Aufrufe des Assistenten mit ihren passenden `toolResult`-Einträgen zusammen. Wenn ein Trennpunkt innerhalb eines Tool-Blocks liegt, verschiebt OpenClaw die Grenze, damit das Paar zusammenbleibt und das aktuelle nicht zusammengefasste Ende erhalten wird.
+Wenn OpenClaw den Verlauf in Compaction-Blöcke aufteilt, bleiben Tool-Aufrufe des Assistenten mit ihren passenden `toolResult`-Einträgen gekoppelt. Wenn ein Trennpunkt innerhalb eines Tool-Blocks liegt, verschiebt OpenClaw die Grenze, damit das Paar zusammenbleibt und der aktuelle, nicht zusammengefasste Rest erhalten bleibt.
 
-Der vollständige Unterhaltungsverlauf bleibt auf dem Datenträger. Compaction ändert nur, was das Modell im nächsten Schritt sieht.
+Der vollständige Unterhaltungsverlauf bleibt auf dem Datenträger erhalten. Compaction ändert nur, was das Modell im nächsten Schritt sieht.
 
 ## Automatische Compaction
 
@@ -35,11 +35,11 @@ Sie sehen:
 - `/status` zeigt `🧹 Compactions: <count>`.
 
 <Info>
-Vor der Compaction erinnert OpenClaw den Agenten automatisch daran, wichtige Notizen in [Memory](/de/concepts/memory)-Dateien zu speichern. Dadurch wird Kontextverlust verhindert.
+Vor der Compaction erinnert OpenClaw den Agenten automatisch daran, wichtige Notizen in [Memory](/de/concepts/memory)-Dateien zu speichern. Das verhindert Kontextverlust.
 </Info>
 
 <AccordionGroup>
-  <Accordion title="Erkannte Überlauf-Signaturen">
+  <Accordion title="Erkannte Überlaufsignaturen">
     OpenClaw erkennt Kontextüberlauf anhand dieser Provider-Fehlermuster:
 
     - `request_too_large`
@@ -60,15 +60,15 @@ Geben Sie in einem beliebigen Chat `/compact` ein, um eine Compaction zu erzwing
 /compact Focus on the API design decisions
 ```
 
-Wenn `agents.defaults.compaction.keepRecentTokens` gesetzt ist, berücksichtigt die manuelle Compaction diesen Pi-Schnittpunkt und behält das aktuelle Ende im neu aufgebauten Kontext bei. Ohne explizites Beibehaltungsbudget verhält sich die manuelle Compaction wie ein harter Prüfpunkt und wird nur mit der neuen Zusammenfassung fortgesetzt.
+Wenn `agents.defaults.compaction.keepRecentTokens` gesetzt ist, berücksichtigt die manuelle Compaction diesen Pi-Schnittpunkt und behält den aktuellen Rest im neu aufgebauten Kontext bei. Ohne ein explizites Aufbewahrungsbudget verhält sich die manuelle Compaction wie ein harter Prüfpunkt und wird nur aus der neuen Zusammenfassung fortgesetzt.
 
 ## Konfiguration
 
-Konfigurieren Sie Compaction unter `agents.defaults.compaction` in Ihrer `openclaw.json`. Die wichtigsten Optionen sind unten aufgeführt; die vollständige Referenz finden Sie unter [Ausführliche Sitzungsverwaltung](/de/reference/session-management-compaction).
+Konfigurieren Sie Compaction unter `agents.defaults.compaction` in Ihrer `openclaw.json`. Die gängigsten Stellschrauben sind unten aufgeführt; die vollständige Referenz finden Sie unter [Ausführliche Sitzungverwaltung](/de/reference/session-management-compaction).
 
-### Anderes Modell verwenden
+### Ein anderes Modell verwenden
 
-Standardmäßig verwendet Compaction das primäre Modell des Agenten. Setzen Sie `agents.defaults.compaction.model`, um die Zusammenfassung an ein leistungsfähigeres oder spezialisiertes Modell zu delegieren. Die Überschreibung akzeptiert jede `provider/model-id`-Zeichenkette:
+Standardmäßig verwendet Compaction das primäre Modell des Agenten. Setzen Sie `agents.defaults.compaction.model`, um die Zusammenfassung an ein leistungsfähigeres oder spezialisiertes Modell zu delegieren. Die Überschreibung akzeptiert jede `provider/model-id`-Zeichenfolge:
 
 ```json
 {
@@ -82,7 +82,7 @@ Standardmäßig verwendet Compaction das primäre Modell des Agenten. Setzen Sie
 }
 ```
 
-Dies funktioniert auch mit lokalen Modellen, zum Beispiel mit einem zweiten Ollama-Modell, das der Zusammenfassung gewidmet ist:
+Das funktioniert auch mit lokalen Modellen, zum Beispiel mit einem zweiten Ollama-Modell, das speziell für Zusammenfassungen vorgesehen ist:
 
 ```json
 {
@@ -96,30 +96,30 @@ Dies funktioniert auch mit lokalen Modellen, zum Beispiel mit einem zweiten Olla
 }
 ```
 
-Wenn nichts gesetzt ist, verwendet Compaction das primäre Modell des Agenten.
+Wenn nicht gesetzt, startet Compaction mit dem aktiven Sitzungsmodell. Wenn die Zusammenfassung mit einem Provider-Fehler fehlschlägt, der für Modell-Fallback geeignet ist, versucht OpenClaw diesen Compaction-Versuch über die vorhandene Modell-Fallback-Kette der Sitzung erneut. Die Fallback-Auswahl ist temporär und wird nicht in den Sitzungszustand zurückgeschrieben. Eine explizite Überschreibung über `agents.defaults.compaction.model` bleibt exakt und erbt die Sitzungs-Fallback-Kette nicht.
 
-### Beibehaltung von Kennungen
+### Beibehaltung von Bezeichnern
 
-Die Compaction-Zusammenfassung bewahrt standardmäßig undurchsichtige Kennungen (`identifierPolicy: "strict"`). Überschreiben Sie dies mit `identifierPolicy: "off"`, um es zu deaktivieren, oder mit `identifierPolicy: "custom"` plus `identifierInstructions` für eigene Vorgaben.
+Die Compaction-Zusammenfassung bewahrt undurchsichtige Bezeichner standardmäßig (`identifierPolicy: "strict"`). Überschreiben Sie dies mit `identifierPolicy: "off"`, um es zu deaktivieren, oder mit `identifierPolicy: "custom"` plus `identifierInstructions` für benutzerdefinierte Anweisungen.
 
-### Byte-Schutz für aktives Transkript
+### Byte-Grenze für aktives Transkript
 
-Wenn `agents.defaults.compaction.maxActiveTranscriptBytes` gesetzt ist, löst OpenClaw vor einem Lauf eine normale lokale Compaction aus, falls die aktive JSONL-Datei diese Größe erreicht. Das ist nützlich für lange laufende Sitzungen, bei denen das Provider-seitige Kontextmanagement den Modellkontext gesund halten kann, während das lokale Transkript weiter wächst. Es teilt keine rohen JSONL-Bytes auf, sondern fordert die normale Compaction-Pipeline auf, eine semantische Zusammenfassung zu erstellen.
+Wenn `agents.defaults.compaction.maxActiveTranscriptBytes` gesetzt ist, löst OpenClaw vor einem Lauf eine normale lokale Compaction aus, sobald die aktive JSONL-Datei diese Größe erreicht. Das ist nützlich für lange laufende Sitzungen, bei denen das providerseitige Kontextmanagement den Modellkontext stabil halten kann, während das lokale Transkript weiter wächst. Dabei werden keine rohen JSONL-Bytes aufgeteilt; stattdessen wird die normale Compaction-Pipeline angewiesen, eine semantische Zusammenfassung zu erstellen.
 
 <Warning>
-Der Byte-Schutz erfordert `truncateAfterCompaction: true`. Ohne Transkript-Rotation würde die aktive Datei nicht schrumpfen und der Schutz bleibt inaktiv.
+Die Byte-Grenze erfordert `truncateAfterCompaction: true`. Ohne Transkriptrotation würde die aktive Datei nicht schrumpfen und die Grenze bleibt inaktiv.
 </Warning>
 
-### Nachfolge-Transkripte
+### Nachfolgetranskripte
 
-Wenn `agents.defaults.compaction.truncateAfterCompaction` aktiviert ist, schreibt OpenClaw das bestehende Transkript nicht direkt um. Es erstellt aus der Compaction-Zusammenfassung, dem beibehaltenen Zustand und dem nicht zusammengefassten Ende ein neues aktives Nachfolge-Transkript und behält die vorherige JSONL-Datei als archivierte Prüfpunktquelle.
-Nachfolge-Transkripte entfernen außerdem exakt doppelte lange Benutzereingaben, die innerhalb eines kurzen Wiederholungsfensters eintreffen, damit Wiederholungsstürme von Kanälen nach der Compaction nicht in das nächste aktive Transkript übernommen werden.
+Wenn `agents.defaults.compaction.truncateAfterCompaction` aktiviert ist, schreibt OpenClaw das vorhandene Transkript nicht direkt um. Es erstellt aus der Compaction-Zusammenfassung, dem erhaltenen Zustand und dem nicht zusammengefassten Rest ein neues aktives Nachfolgetranskript und behält die vorherige JSONL-Datei als archivierte Prüfpunktquelle bei.
+Nachfolgetranskripte entfernen außerdem exakt doppelte lange Benutzerbeiträge, die innerhalb eines kurzen Wiederholungsfensters eintreffen, damit Wiederholungsstürme aus Kanälen nach der Compaction nicht in das nächste aktive Transkript übernommen werden.
 
-Prüfpunkte vor der Compaction werden nur beibehalten, solange sie unter der OpenClaw-Größenobergrenze für Prüfpunkte bleiben; übergroße aktive Transkripte werden trotzdem kompaktiert, aber OpenClaw überspringt den großen Debug-Snapshot, statt die Datenträgernutzung zu verdoppeln.
+Vor-Compaction-Prüfpunkte bleiben nur erhalten, solange sie unter OpenClaws Größenlimit für Prüfpunkte bleiben; übergroße aktive Transkripte werden weiterhin kompaktiert, aber OpenClaw überspringt den großen Debug-Snapshot, statt die Datenträgernutzung zu verdoppeln.
 
 ### Compaction-Hinweise
 
-Standardmäßig läuft Compaction im Hintergrund. Setzen Sie `notifyUser`, um kurze Statusmeldungen anzuzeigen, wenn Compaction startet und abgeschlossen ist:
+Standardmäßig läuft Compaction still. Setzen Sie `notifyUser`, um kurze Statusmeldungen anzuzeigen, wenn Compaction startet und abgeschlossen ist:
 
 ```json5
 {
@@ -135,7 +135,7 @@ Standardmäßig läuft Compaction im Hintergrund. Setzen Sie `notifyUser`, um ku
 
 ### Memory-Flush
 
-Vor der Compaction kann OpenClaw einen **stillen Memory-Flush**-Schritt ausführen, um dauerhafte Notizen auf dem Datenträger zu speichern. Setzen Sie `agents.defaults.compaction.memoryFlush.model`, wenn dieser Verwaltungsdurchlauf ein lokales Modell statt des aktiven Unterhaltungsmodells verwenden soll:
+Vor der Compaction kann OpenClaw einen **stillen Memory-Flush**-Schritt ausführen, um dauerhafte Notizen auf dem Datenträger zu speichern. Setzen Sie `agents.defaults.compaction.memoryFlush.model`, wenn dieser Aufräumschritt ein lokales Modell statt des aktiven Unterhaltungsmodells verwenden soll:
 
 ```json
 {
@@ -151,13 +151,13 @@ Vor der Compaction kann OpenClaw einen **stillen Memory-Flush**-Schritt ausführ
 }
 ```
 
-Die Modellüberschreibung für den Memory-Flush ist exakt und erbt nicht die Fallback-Kette der aktiven Sitzung. Details und Konfiguration finden Sie unter [Memory](/de/concepts/memory).
+Die Modellüberschreibung für den Memory-Flush ist exakt und erbt die aktive Sitzungs-Fallback-Kette nicht. Details und Konfiguration finden Sie unter [Memory](/de/concepts/memory).
 
 ## Austauschbare Compaction-Provider
 
-Plugins können über `registerCompactionProvider()` in der Plugin-API einen eigenen Compaction-Provider registrieren. Wenn ein Provider registriert und konfiguriert ist, delegiert OpenClaw die Zusammenfassung an ihn statt an die integrierte LLM-Pipeline.
+Plugins können über `registerCompactionProvider()` in der Plugin-API einen benutzerdefinierten Compaction-Provider registrieren. Wenn ein Provider registriert und konfiguriert ist, delegiert OpenClaw die Zusammenfassung an ihn statt an die integrierte LLM-Pipeline.
 
-Um einen registrierten Provider zu verwenden, setzen Sie seine ID in Ihrer Konfiguration:
+Um einen registrierten Provider zu verwenden, setzen Sie dessen ID in Ihrer Konfiguration:
 
 ```json
 {
@@ -171,35 +171,35 @@ Um einen registrierten Provider zu verwenden, setzen Sie seine ID in Ihrer Konfi
 }
 ```
 
-Das Setzen eines `provider` erzwingt automatisch `mode: "safeguard"`. Provider erhalten dieselben Compaction-Anweisungen und dieselbe Richtlinie zur Beibehaltung von Kennungen wie der integrierte Pfad, und OpenClaw bewahrt nach der Provider-Ausgabe weiterhin Kontext aus aktuellen Schritten und geteilten Schritten als Suffix.
+Das Setzen eines `provider` erzwingt automatisch `mode: "safeguard"`. Provider erhalten dieselben Compaction-Anweisungen und dieselbe Richtlinie zur Beibehaltung von Bezeichnern wie der integrierte Pfad, und OpenClaw bewahrt auch nach der Provider-Ausgabe weiterhin den Suffixkontext aus aktuellen Schritten und geteilten Schritten.
 
 <Note>
 Wenn der Provider fehlschlägt oder ein leeres Ergebnis zurückgibt, fällt OpenClaw auf die integrierte LLM-Zusammenfassung zurück.
 </Note>
 
-## Compaction im Vergleich zu Kürzung
+## Compaction vs. Bereinigung
 
-|                  | Compaction                         | Kürzung                                      |
-| ---------------- | ---------------------------------- | ------------------------------------------- |
-| **Was geschieht** | Fasst ältere Unterhaltung zusammen | Kürzt alte Tool-Ergebnisse                  |
-| **Gespeichert?** | Ja (im Sitzungstranskript)         | Nein (nur im Arbeitsspeicher, pro Anfrage) |
-| **Umfang**       | Gesamte Unterhaltung               | Nur Tool-Ergebnisse                         |
+|                  | Compaction                         | Bereinigung                         |
+| ---------------- | ---------------------------------- | ----------------------------------- |
+| **Funktion**     | Fasst ältere Unterhaltung zusammen | Kürzt alte Tool-Ergebnisse          |
+| **Gespeichert?** | Ja (im Sitzungstranskript)         | Nein (nur im Arbeitsspeicher, je Anfrage) |
+| **Geltungsbereich** | Gesamte Unterhaltung            | Nur Tool-Ergebnisse                 |
 
-[Sitzungskürzung](/de/concepts/session-pruning) ist eine leichtgewichtigere Ergänzung, die Tool-Ausgaben kürzt, ohne sie zusammenzufassen.
+[Session-Bereinigung](/de/concepts/session-pruning) ist eine leichtgewichtigere Ergänzung, die Tool-Ausgaben kürzt, ohne sie zusammenzufassen.
 
 ## Fehlerbehebung
 
-**Zu häufige Compaction?** Das Kontextfenster des Modells ist möglicherweise klein, oder Tool-Ausgaben sind groß. Aktivieren Sie probeweise die [Sitzungskürzung](/de/concepts/session-pruning).
+**Zu häufige Compaction?** Das Kontextfenster des Modells ist möglicherweise klein, oder Tool-Ausgaben sind möglicherweise groß. Versuchen Sie, [Session-Bereinigung](/de/concepts/session-pruning) zu aktivieren.
 
 **Kontext wirkt nach der Compaction veraltet?** Verwenden Sie `/compact Focus on <topic>`, um die Zusammenfassung zu steuern, oder aktivieren Sie den [Memory-Flush](/de/concepts/memory), damit Notizen erhalten bleiben.
 
-**Benötigen Sie einen sauberen Neustart?** `/new` startet eine neue Sitzung ohne Compaction.
+**Benötigen Sie einen Neustart ohne Altlasten?** `/new` startet eine neue Sitzung ohne Compaction.
 
-Erweiterte Konfiguration (reservierte Tokens, Beibehaltung von Kennungen, eigene Kontext-Engines, OpenAI-serverseitige Compaction) finden Sie in der [ausführlichen Sitzungsverwaltung](/de/reference/session-management-compaction).
+Erweiterte Konfigurationen (reservierte Tokens, Beibehaltung von Bezeichnern, benutzerdefinierte Kontext-Engines, serverseitige OpenAI-Compaction) finden Sie in der [ausführlichen Sitzungsverwaltung](/de/reference/session-management-compaction).
 
 ## Verwandte Themen
 
-- [Sitzung](/de/concepts/session): Sitzungsverwaltung und Lebenszyklus.
-- [Sitzungskürzung](/de/concepts/session-pruning): Kürzen von Tool-Ergebnissen.
-- [Kontext](/de/concepts/context): wie Kontext für Agentenschritte erstellt wird.
-- [Hooks](/de/automation/hooks): Compaction-Lebenszyklus-Hooks (`before_compaction`, `after_compaction`).
+- [Session](/de/concepts/session): Sitzungsverwaltung und Lebenszyklus.
+- [Session-Bereinigung](/de/concepts/session-pruning): Kürzen von Tool-Ergebnissen.
+- [Kontext](/de/concepts/context): wie Kontext für Agentenschritte aufgebaut wird.
+- [Hooks](/de/automation/hooks): Hooks für den Compaction-Lebenszyklus (`before_compaction`, `after_compaction`).
