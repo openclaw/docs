@@ -1,57 +1,57 @@
 ---
 read_when:
-    - Inzicht in hoe de QA-stack in elkaar zit
+    - Begrijpen hoe de QA-stack samenhangt
     - qa-lab, qa-channel of een transportadapter uitbreiden
     - Repo-ondersteunde QA-scenario's toevoegen
-    - Realistischere QA-automatisering rond het Gateway-dashboard bouwen
-summary: 'Overzicht van QA-stack: qa-lab, qa-channel, repo-ondersteunde scenario''s, live transportlanes, transportadapters en rapportage.'
+    - Bouwen aan realistischere QA-automatisering rond het Gateway-dashboard
+summary: 'Overzicht van de QA-stack: qa-lab, qa-channel, repo-ondersteunde scenario''s, live transportbanen, transportadapters en rapportage.'
 title: QA-overzicht
 x-i18n:
-    generated_at: "2026-04-29T22:39:54Z"
+    generated_at: "2026-05-02T20:43:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b62a5081fc2b67333f2ec6f3469e97043f048d5912858b9d8cc565c2e5fc8de2
+    source_hash: 1f1cba04d6624bb1e0fc54105bd836f16ada0ba1cc1de9ab7065b90220e23bdf
     source_path: concepts/qa-e2e-automation.md
     workflow: 16
 ---
 
 De private QA-stack is bedoeld om OpenClaw op een realistischer,
-kanaalvormige manier te testen dan een enkele unit-test kan.
+kanaalvormige manier te testen dan met een enkele unit-test kan.
 
 Huidige onderdelen:
 
-- `extensions/qa-channel`: synthetisch berichtenkanaal met oppervlakken voor DM, kanaal, thread,
-  reactie, bewerking en verwijdering.
+- `extensions/qa-channel`: synthetisch berichtkanaal met oppervlakken voor DM, kanaal, thread,
+  reactie, bewerken en verwijderen.
 - `extensions/qa-lab`: debugger-UI en QA-bus voor het observeren van het transcript,
-  het injecteren van binnenkomende berichten en het exporteren van een Markdown-rapport.
+  injecteren van inkomende berichten en exporteren van een Markdown-rapport.
 - `extensions/qa-matrix`, toekomstige runner-plugins: live-transportadapters die
-  een echt kanaal aansturen binnen een onderliggende QA-Gateway.
-- `qa/`: repo-ondersteunde seed-assets voor de starttaak en baseline-QA-
+  een echt kanaal aansturen binnen een onderliggende QA-gateway.
+- `qa/`: door de repo ondersteunde seed-assets voor de starttaak en baseline-QA-
   scenario's.
 
-## Commandosurface
+## Opdrachtoppervlak
 
-Elke QA-flow draait onder `pnpm openclaw qa <subcommand>`. Veel hebben `pnpm qa:*`-
+Elke QA-flow draait onder `pnpm openclaw qa <subcommand>`. Veel hebben `pnpm qa:*`
 scriptaliassen; beide vormen worden ondersteund.
 
-| Commando                                            | Doel                                                                                                                                                                   |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `qa run`                                            | Gebundelde QA-zelfcontrole; schrijft een Markdown-rapport.                                                                                                             |
-| `qa suite`                                          | Voer repo-ondersteunde scenario's uit tegen de QA-Gateway-lane. Aliassen: `pnpm openclaw qa suite --runner multipass` voor een wegwerpbare Linux-VM.                  |
-| `qa coverage`                                       | Druk de markdown-inventaris van scenariodekking af (`--json` voor machine-uitvoer).                                                                                    |
-| `qa parity-report`                                  | Vergelijk twee `qa-suite-summary.json`-bestanden en schrijf het agentische parity-gate-rapport.                                                                        |
-| `qa character-eval`                                 | Voer het karakter-QA-scenario uit over meerdere live modellen met een beoordeeld rapport. Zie [Rapportage](#reporting).                                                |
-| `qa manual`                                         | Voer een eenmalige prompt uit tegen de geselecteerde provider-/modellane.                                                                                              |
-| `qa ui`                                             | Start de QA-debugger-UI en lokale QA-bus (alias: `pnpm qa:lab:ui`).                                                                                                    |
-| `qa docker-build-image`                             | Bouw de vooraf gebakken QA-Docker-image.                                                                                                                               |
-| `qa docker-scaffold`                                | Schrijf een docker-compose-scaffold voor het QA-dashboard + de Gateway-lane.                                                                                           |
-| `qa up`                                             | Bouw de QA-site, start de Docker-ondersteunde stack en druk de URL af (alias: `pnpm qa:lab:up`; de `:fast`-variant voegt `--use-prebuilt-image --bind-ui-dist --skip-ui-build` toe). |
-| `qa aimock`                                         | Start alleen de AIMock-providerserver.                                                                                                                                 |
-| `qa mock-openai`                                    | Start alleen de scenariobewuste `mock-openai`-providerserver.                                                                                                          |
-| `qa credentials doctor` / `add` / `list` / `remove` | Beheer de gedeelde Convex-credentialpool.                                                                                                                              |
-| `qa matrix`                                         | Live-transportlane tegen een wegwerpbare Tuwunel-homeserver. Zie [Matrix-QA](/nl/concepts/qa-matrix).                                                                     |
-| `qa telegram`                                       | Live-transportlane tegen een echte private Telegram-groep.                                                                                                             |
-| `qa discord`                                        | Live-transportlane tegen een echt privaat Discord-guildkanaal.                                                                                                         |
+| Opdracht                                            | Doel                                                                                                                                                                  |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qa run`                                            | Gebundelde QA-zelfcontrole; schrijft een Markdown-rapport.                                                                                                            |
+| `qa suite`                                          | Voer door de repo ondersteunde scenario's uit tegen de QA-Gateway-lane. Aliassen: `pnpm openclaw qa suite --runner multipass` voor een wegwerpbare Linux-VM.          |
+| `qa coverage`                                       | Druk de markdown-inventaris voor scenariodekking af (`--json` voor machine-uitvoer).                                                                                  |
+| `qa parity-report`                                  | Vergelijk twee `qa-suite-summary.json`-bestanden en schrijf het agentische pariteitsrapport.                                                                          |
+| `qa character-eval`                                 | Voer het character-QA-scenario uit over meerdere live modellen met een beoordeeld rapport. Zie [Rapportage](#reporting).                                             |
+| `qa manual`                                         | Voer een eenmalige prompt uit tegen de geselecteerde provider/model-lane.                                                                                             |
+| `qa ui`                                             | Start de QA-debugger-UI en lokale QA-bus (alias: `pnpm qa:lab:ui`).                                                                                                   |
+| `qa docker-build-image`                             | Bouw de voorgebakken QA-Docker-image.                                                                                                                                 |
+| `qa docker-scaffold`                                | Schrijf een docker-compose-scaffold voor het QA-dashboard + de Gateway-lane.                                                                                          |
+| `qa up`                                             | Bouw de QA-site, start de door Docker ondersteunde stack, druk de URL af (alias: `pnpm qa:lab:up`; variant `:fast` voegt `--use-prebuilt-image --bind-ui-dist --skip-ui-build` toe). |
+| `qa aimock`                                         | Start alleen de AIMock-provider-server.                                                                                                                               |
+| `qa mock-openai`                                    | Start alleen de scenariobewuste `mock-openai`-provider-server.                                                                                                        |
+| `qa credentials doctor` / `add` / `list` / `remove` | Beheer de gedeelde Convex-referentiepool.                                                                                                                            |
+| `qa matrix`                                         | Live-transport-lane tegen een wegwerpbare Tuwunel-homeserver. Zie [Matrix-QA](/nl/concepts/qa-matrix).                                                                  |
+| `qa telegram`                                       | Live-transport-lane tegen een echte private Telegram-groep.                                                                                                           |
+| `qa discord`                                        | Live-transport-lane tegen een echt privaat Discord-guildkanaal.                                                                                                       |
 
 ## Operatorflow
 
@@ -66,13 +66,13 @@ Voer dit uit met:
 pnpm qa:lab:up
 ```
 
-Dit bouwt de QA-site, start de Docker-ondersteunde Gateway-lane en stelt de
-QA Lab-pagina beschikbaar waar een operator of automatiseringslus de agent een QA-
-missie kan geven, echt kanaalgedrag kan observeren en kan vastleggen wat werkte, faalde of
+Dat bouwt de QA-site, start de door Docker ondersteunde Gateway-lane en stelt de
+QA Lab-pagina beschikbaar waar een operator of automatiseringsloop de agent een QA-
+missie kan geven, echt kanaalgedrag kan observeren en kan vastleggen wat werkte, mislukte of
 geblokkeerd bleef.
 
 Voor snellere QA Lab-UI-iteratie zonder telkens de Docker-image opnieuw te bouwen,
-start je de stack met een bind-mounted QA Lab-bundel:
+start je de stack met een bind-gemounte QA Lab-bundel:
 
 ```bash
 pnpm openclaw qa docker-build-image
@@ -83,8 +83,8 @@ pnpm qa:lab:watch
 
 `qa:lab:up:fast` houdt de Docker-services op een vooraf gebouwde image en bind-mount
 `extensions/qa-lab/web/dist` in de `qa-lab`-container. `qa:lab:watch`
-bouwt die bundel opnieuw bij wijzigingen, en de browser laadt automatisch opnieuw wanneer de QA Lab-
-assethash verandert.
+bouwt die bundel opnieuw bij wijzigingen, en de browser herlaadt automatisch wanneer de QA Lab-
+asset-hash verandert.
 
 Voor een lokale OpenTelemetry-trace-smoke voer je uit:
 
@@ -93,57 +93,57 @@ pnpm qa:otel:smoke
 ```
 
 Dat script start een lokale OTLP/HTTP-trace-ontvanger, voert het
-`otel-trace-smoke`-QA-scenario uit met de `diagnostics-otel`-Plugin ingeschakeld, decodeert daarna
+`otel-trace-smoke`-QA-scenario uit met de Plugin `diagnostics-otel` ingeschakeld, decodeert daarna
 de geëxporteerde protobuf-spans en controleert de releasekritieke vorm:
 `openclaw.run`, `openclaw.harness.run`, `openclaw.model.call`,
 `openclaw.context.assembled` en `openclaw.message.delivery` moeten aanwezig zijn;
-modelaanroepen mogen bij geslaagde turns geen `StreamAbandoned` exporteren; ruwe diagnostische ID's en
+modelaanroepen mogen bij succesvolle beurten geen `StreamAbandoned` exporteren; ruwe diagnostische ID's en
 `openclaw.content.*`-attributen moeten buiten de trace blijven. Het schrijft
 `otel-smoke-summary.json` naast de QA-suite-artifacts.
 
 Observability-QA blijft alleen voor source-checkouts. De npm-tarball laat
-QA Lab bewust weg, dus package-Docker-releaselanes voeren geen `qa`-commando's uit. Gebruik
+QA Lab bewust weg, zodat package-Docker-release-lanes geen `qa`-opdrachten uitvoeren. Gebruik
 `pnpm qa:otel:smoke` vanuit een gebouwde source-checkout wanneer je diagnostische
 instrumentatie wijzigt.
 
-Voor een transport-echte Matrix-smokelane voer je uit:
+Voor een transport-realistische Matrix-smoke-lane voer je uit:
 
 ```bash
 pnpm openclaw qa matrix --profile fast --fail-fast
 ```
 
-De volledige CLI-referentie, profiel-/scenariocatalogus, env-vars en artifactindeling voor deze lane staan in [Matrix-QA](/nl/concepts/qa-matrix). In het kort: het provisiont een wegwerpbare Tuwunel-homeserver in Docker, registreert tijdelijke driver-/SUT-/observer-gebruikers, voert de echte Matrix-Plugin uit binnen een onderliggende QA-Gateway die tot dat transport is beperkt (geen `qa-channel`), en schrijft daarna een Markdown-rapport, JSON-samenvatting, artifact met geobserveerde events en gecombineerd uitvoerlog onder `.artifacts/qa-e2e/matrix-<timestamp>/`.
+De volledige CLI-referentie, profiel-/scenariocatalogus, env-vars en artifact-layout voor deze lane staan in [Matrix-QA](/nl/concepts/qa-matrix). In het kort: deze provisiont een wegwerpbare Tuwunel-homeserver in Docker, registreert tijdelijke driver/SUT/observer-gebruikers, voert de echte Matrix-Plugin uit binnen een onderliggende QA-Gateway die tot dat transport is beperkt (geen `qa-channel`), en schrijft daarna een Markdown-rapport, JSON-samenvatting, observed-events-artifact en gecombineerd uitvoerlog onder `.artifacts/qa-e2e/matrix-<timestamp>/`.
 
-Voor transport-echte Telegram- en Discord-smokelanes:
+Voor transport-realistische Telegram- en Discord-smoke-lanes:
 
 ```bash
 pnpm openclaw qa telegram
 pnpm openclaw qa discord
 ```
 
-Beide richten zich op een vooraf bestaand echt kanaal met twee bots (driver + SUT). Vereiste env-vars, scenariolijsten, uitvoerartifacts en de Convex-credentialpool zijn hieronder gedocumenteerd in [Telegram- en Discord-QA-referentie](#telegram-and-discord-qa-reference).
+Beide richten zich op een bestaand echt kanaal met twee bots (driver + SUT). Vereiste env-vars, scenariolijsten, uitvoer-artifacts en de Convex-referentiepool zijn hieronder gedocumenteerd in [Telegram- en Discord-QA-referentie](#telegram-and-discord-qa-reference).
 
-Voer dit uit voordat je gepoolde live credentials gebruikt:
+Voer vóór het gebruiken van gepoolde live referenties uit:
 
 ```bash
 pnpm openclaw qa credentials doctor
 ```
 
-De doctor controleert de Convex-broker-env, valideert endpointinstellingen en verifieert admin-/lijstbereikbaarheid wanneer het maintainer-geheim aanwezig is. Hij rapporteert voor secrets alleen de status ingesteld/ontbrekend.
+De doctor controleert Convex-broker-env, valideert endpointinstellingen en verifieert admin-/list-bereikbaarheid wanneer het maintainer-geheim aanwezig is. Hij rapporteert voor geheimen alleen de status ingesteld/ontbrekend.
 
 ## Live-transportdekking
 
-Live-transportlanes delen één contract in plaats van elk hun eigen vorm voor scenariolijsten te bedenken. `qa-channel` is de brede synthetische suite voor productgedrag en maakt geen deel uit van de live-transportdekkingsmatrix.
+Live-transport-lanes delen één contract in plaats van elk hun eigen scenariolijstvorm te bedenken. `qa-channel` is de brede synthetische suite voor productgedrag en maakt geen deel uit van de live-transportdekkingsmatrix.
 
-| Lane     | Canary | Mention-gating | Bot-naar-bot | Allowlist-blokkade | Antwoord op topniveau | Hervatten na herstart | Thread-opvolging | Thread-isolatie | Reactie-observatie | Help-commando | Native command-registratie |
-| -------- | ------ | -------------- | ------------ | ------------------ | --------------------- | --------------------- | ---------------- | ---------------- | ------------------ | ------------- | --------------------------- |
-| Matrix   | x      | x              | x            | x                  | x                     | x                     | x                | x                | x                  |               |                             |
-| Telegram | x      | x              | x            |                    |                       |                       |                  |                  |                    | x             |                             |
-| Discord  | x      | x              | x            |                    |                       |                       |                  |                  |                    |               | x                           |
+| Lane     | Canary | Vermeldingspoort | Bot-naar-bot | Allowlist-blokkering | Antwoord op topniveau | Herstart hervatten | Thread-opvolging | Thread-isolatie | Reactie-observatie | Help-opdracht | Native opdrachtregistratie |
+| -------- | ------ | ---------------- | ------------ | -------------------- | --------------------- | ------------------ | ---------------- | --------------- | ------------------ | ------------- | --------------------------- |
+| Matrix   | x      | x                | x            | x                    | x                     | x                  | x                | x               | x                  |               |                             |
+| Telegram | x      | x                | x            |                      |                       |                    |                  |                 |                    | x             |                             |
+| Discord  | x      | x                | x            |                      |                       |                    |                  |                 |                    |               | x                           |
 
 Dit houdt `qa-channel` als de brede suite voor productgedrag, terwijl Matrix,
-Telegram en toekomstige live transports één expliciete checklist voor transportcontracten
-delen.
+Telegram en toekomstige live transports één expliciete transportcontract-
+checklist delen.
 
 Voor een wegwerpbare Linux-VM-lane zonder Docker in het QA-pad te brengen, voer je uit:
 
@@ -151,42 +151,42 @@ Voor een wegwerpbare Linux-VM-lane zonder Docker in het QA-pad te brengen, voer 
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-Dit start een nieuwe Multipass-guest, installeert afhankelijkheden, bouwt OpenClaw
+Dit start een nieuwe Multipass-guest, installeert dependencies, bouwt OpenClaw
 binnen de guest, voert `qa suite` uit en kopieert daarna het normale QA-rapport en de
 samenvatting terug naar `.artifacts/qa-e2e/...` op de host.
 Het hergebruikt hetzelfde scenariokeuzegedrag als `qa suite` op de host.
-Host- en Multipass-suite-runs voeren meerdere geselecteerde scenario's standaard parallel uit
+Host- en Multipass-suiteruns voeren standaard meerdere geselecteerde scenario's parallel uit
 met geïsoleerde Gateway-workers. `qa-channel` gebruikt standaard concurrency
-4, begrensd door het aantal geselecteerde scenario's. Gebruik `--concurrency <count>` om
+4, begrensd door het geselecteerde aantal scenario's. Gebruik `--concurrency <count>` om
 het aantal workers af te stemmen, of `--concurrency 1` voor seriële uitvoering.
-Het commando sluit af met een niet-nulstatus wanneer een scenario faalt. Gebruik `--allow-failures` wanneer
+De opdracht eindigt met een niet-nulcode wanneer een scenario faalt. Gebruik `--allow-failures` wanneer
 je artifacts wilt zonder een falende exitcode.
-Live-runs sturen de ondersteunde QA-auth-invoer door die praktisch is voor de
-guest: env-gebaseerde providersleutels, het QA-live-providerconfigpad en
+Live-runs geven de ondersteunde QA-auth-invoer door die praktisch is voor de
+guest: env-gebaseerde provider keys, het QA-live-providerconfiguratiepad en
 `CODEX_HOME` wanneer aanwezig. Houd `--output-dir` onder de repo-root zodat de guest
-via de gemounte workspace terug kan schrijven.
+kan terugschrijven via de gemounte workspace.
 
 ## Telegram- en Discord-QA-referentie
 
-Matrix heeft een [eigen pagina](/nl/concepts/qa-matrix) vanwege het aantal scenario's en Docker-ondersteunde homeserver-provisioning. Telegram en Discord zijn kleiner: elk een handvol scenario's, geen profielsysteem, tegen vooraf bestaande echte kanalen, dus hun referentie staat hier.
+Matrix heeft een [eigen pagina](/nl/concepts/qa-matrix) vanwege het aantal scenario's en de door Docker ondersteunde homeserver-provisioning. Telegram en Discord zijn kleiner — enkele scenario's elk, geen profielsysteem, tegen bestaande echte kanalen — dus hun referentie staat hier.
 
-### Gedeelde CLI-vlaggen
+### Gedeelde CLI-flags
 
-Beide lanes registreren via `extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` en accepteren dezelfde vlaggen:
+Beide lanes registreren via `extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` en accepteren dezelfde flags:
 
-| Vlag                                  | Standaardwaarde                                           | Beschrijving                                                                                                                  |
-| ------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `--scenario <id>`                     | —                                                         | Voer alleen dit scenario uit. Herhaalbaar.                                                                                    |
-| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/{telegram,discord}-<timestamp>` | Waar rapporten/samenvatting/waargenomen berichten en het uitvoerlogboek worden geschreven. Relatieve paden worden opgelost ten opzichte van `--repo-root`. |
-| `--repo-root <path>`                  | `process.cwd()`                                           | Repositoryroot wanneer aangeroepen vanuit een neutrale cwd.                                                                   |
-| `--sut-account <id>`                  | `sut`                                                     | Tijdelijke account-id binnen de QA-gatewayconfiguratie.                                                                       |
-| `--provider-mode <mode>`              | `live-frontier`                                           | `mock-openai` of `live-frontier` (verouderde `live-openai` werkt nog steeds).                                                 |
-| `--model <ref>` / `--alt-model <ref>` | standaardwaarde van provider                              | Primaire/alternatieve modelreferenties.                                                                                       |
-| `--fast`                              | uit                                                       | Snelle providermodus waar ondersteund.                                                                                        |
-| `--credential-source <env\|convex>`   | `env`                                                     | Zie [Convex-referentiepool](#convex-credential-pool).                                                                         |
-| `--credential-role <maintainer\|ci>`  | `ci` in CI, anders `maintainer`                           | Rol die wordt gebruikt wanneer `--credential-source convex`.                                                                  |
+| Vlag                                  | Standaard                                                | Beschrijving                                                                                                          |
+| ------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `--scenario <id>`                     | —                                                        | Voer alleen dit scenario uit. Herhaalbaar.                                                                            |
+| `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/{telegram,discord}-<timestamp>` | Waar rapporten/samenvatting/waargenomen berichten en het uitvoerlog worden weggeschreven. Relatieve paden worden opgelost ten opzichte van `--repo-root`. |
+| `--repo-root <path>`                  | `process.cwd()`                                          | Repository-root bij aanroepen vanuit een neutrale cwd.                                                                |
+| `--sut-account <id>`                  | `sut`                                                    | Tijdelijke account-id binnen de QA Gateway-configuratie.                                                              |
+| `--provider-mode <mode>`              | `live-frontier`                                          | `mock-openai` of `live-frontier` (verouderde `live-openai` werkt nog steeds).                                         |
+| `--model <ref>` / `--alt-model <ref>` | standaardwaarde van provider                             | Primaire/alternatieve modelrefs.                                                                                      |
+| `--fast`                              | uit                                                      | Snelle providermodus waar ondersteund.                                                                                |
+| `--credential-source <env\|convex>`   | `env`                                                    | Zie [Convex-referentiegegevenspool](#convex-credential-pool).                                                         |
+| `--credential-role <maintainer\|ci>`  | `ci` in CI, anders `maintainer`                          | Rol die wordt gebruikt bij `--credential-source convex`.                                                              |
 
-Beide sluiten af met een niet-nulcode bij elk mislukt scenario. `--allow-failures` schrijft artefacten zonder een falende exitcode in te stellen.
+Beide eindigen met een niet-nul-afsluitcode bij elk mislukt scenario. `--allow-failures` schrijft artefacten zonder een falende afsluitcode in te stellen.
 
 ### Telegram-QA
 
@@ -194,11 +194,11 @@ Beide sluiten af met een niet-nulcode bij elk mislukt scenario. `--allow-failure
 pnpm openclaw qa telegram
 ```
 
-Richt zich op een echte privé-Telegram-groep met twee verschillende bots (driver + SUT). De SUT-bot moet een Telegram-gebruikersnaam hebben; bot-naar-bot-observatie werkt het beste wanneer beide bots **Bot-to-Bot Communication Mode** ingeschakeld hebben in `@BotFather`.
+Richt zich op één echte privé-Telegram-groep met twee afzonderlijke bots (driver + SUT). De SUT-bot moet een Telegram-gebruikersnaam hebben; bot-naar-bot-observatie werkt het best wanneer beide bots **Bot-to-Bot Communication Mode** hebben ingeschakeld in `@BotFather`.
 
-Vereiste env wanneer `--credential-source env`:
+Vereiste env bij `--credential-source env`:
 
-- `OPENCLAW_QA_TELEGRAM_GROUP_ID` — numerieke chat-id (string).
+- `OPENCLAW_QA_TELEGRAM_GROUP_ID` — numerieke chat-id (tekenreeks).
 - `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`
 
@@ -220,7 +220,7 @@ Scenario's (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runtim
 Uitvoerartefacten:
 
 - `telegram-qa-report.md`
-- `telegram-qa-summary.json` — bevat RTT per antwoord (driver verzendt → waargenomen SUT-antwoord), beginnend met de canary.
+- `telegram-qa-summary.json` — bevat RTT per antwoord (driver verzenden → waargenomen SUT-antwoord), beginnend met de canary.
 - `telegram-qa-observed-messages.json` — inhoud geredigeerd tenzij `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1`.
 
 ### Discord-QA
@@ -229,15 +229,15 @@ Uitvoerartefacten:
 pnpm openclaw qa discord
 ```
 
-Richt zich op een echt privé-Discord-guildkanaal met twee bots: een driverbot die door de harness wordt aangestuurd en een SUT-bot die door de onderliggende OpenClaw-Gateway wordt gestart via de gebundelde Discord-Plugin. Verifieert kanaalvermeldingsafhandeling en dat de SUT-bot de native `/help`-opdracht bij Discord heeft geregistreerd.
+Richt zich op één echt privé-Discord-guildkanaal met twee bots: een driverbot die door de harness wordt aangestuurd en een SUT-bot die door de onderliggende OpenClaw Gateway wordt gestart via de meegeleverde Discord Plugin. Verifieert verwerking van kanaalvermeldingen en dat de SUT-bot de native `/help`-opdracht bij Discord heeft geregistreerd.
 
-Vereiste env wanneer `--credential-source env`:
+Vereiste env bij `--credential-source env`:
 
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
 - `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` — moet overeenkomen met de SUT-botgebruikers-id die door Discord wordt geretourneerd (anders faalt de lane snel).
+- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` — moet overeenkomen met de gebruikers-id van de SUT-bot die door Discord wordt teruggegeven (anders faalt de lane snel).
 
 Optioneel:
 
@@ -255,16 +255,16 @@ Uitvoerartefacten:
 - `discord-qa-summary.json`
 - `discord-qa-observed-messages.json` — inhoud geredigeerd tenzij `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1`.
 
-### Convex-referentiepool
+### Convex-referentiegegevenspool
 
-Zowel Telegram- als Discord-lanes kunnen referenties leasen uit een gedeelde Convex-pool in plaats van de env-vars hierboven te lezen. Geef `--credential-source convex` door (of stel `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` in); QA Lab verkrijgt een exclusieve lease, heartbeats die gedurende de uitvoering, en geeft die vrij bij afsluiten. Poolsoorten zijn `"telegram"` en `"discord"`.
+Zowel Telegram- als Discord-lanes kunnen referentiegegevens leasen uit een gedeelde Convex-pool in plaats van de bovenstaande env-vars te lezen. Geef `--credential-source convex` door (of stel `OPENCLAW_QA_CREDENTIAL_SOURCE=convex` in); QA Lab verkrijgt een exclusieve lease, stuurt gedurende de run heartbeats en geeft de lease vrij bij afsluiten. Poolsoorten zijn `"telegram"` en `"discord"`.
 
-Payloadvormen die de broker valideert op `admin/add`:
+Payload-vormen die de broker valideert op `admin/add`:
 
-- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string, sutToken: string }` — `groupId` moet een numerieke chat-id-string zijn.
+- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string, sutToken: string }` — `groupId` moet een numerieke chat-id-tekenreeks zijn.
 - Discord (`kind: "discord"`): `{ guildId: string, channelId: string, driverBotToken: string, sutBotToken: string, sutApplicationId: string }`.
 
-Operationele env-vars en het endpointcontract van de Convex-broker staan in [Testen → Gedeelde Telegram-referenties via Convex](/nl/help/testing#shared-telegram-credentials-via-convex-v1) (de sectienaam dateert van vóór Discord-ondersteuning; de brokersemantiek is identiek voor beide soorten).
+Operationele env-vars en het endpointcontract van de Convex-broker staan in [Testen → Gedeelde Telegram-referentiegegevens via Convex](/nl/help/testing#shared-telegram-credentials-via-convex-v1) (de sectienaam dateert van vóór Discord-ondersteuning; de brokersemantiek is identiek voor beide soorten).
 
 ## Repository-ondersteunde seeds
 
@@ -273,65 +273,51 @@ Seed-assets staan in `qa/`:
 - `qa/scenarios/index.md`
 - `qa/scenarios/<theme>/*.md`
 
-Deze staan bewust in git zodat het QA-plan zichtbaar is voor zowel mensen als de
-agent.
+Deze staan bewust in git zodat het QA-plan zichtbaar is voor zowel mensen als de agent.
 
-`qa-lab` moet een generieke markdown-runner blijven. Elk scenario-markdownbestand is
-de bron van waarheid voor één testuitvoering en moet het volgende definiëren:
+`qa-lab` moet een generieke markdown-runner blijven. Elk scenario-markdownbestand is de bron van waarheid voor één testrun en moet het volgende definiëren:
 
 - scenariometadata
-- optionele categorie-, capability-, lane- en risicometadata
-- documentatie- en codereferenties
+- optionele metadata voor categorie, capability, lane en risico
+- docs- en coderefs
 - optionele Plugin-vereisten
 - optionele Gateway-configuratiepatch
 - de uitvoerbare `qa-flow`
 
-Het herbruikbare runtime-oppervlak dat `qa-flow` ondersteunt mag generiek
-en cross-cutting blijven. Markdown-scenario's kunnen bijvoorbeeld transport-side
-helpers combineren met browser-side helpers die de ingebedde Control UI aansturen via de
-Gateway-`browser.request`-seam, zonder een runner voor speciale gevallen toe te voegen.
+Het herbruikbare runtime-oppervlak dat `qa-flow` ondersteunt, mag generiek en domeinoverstijgend blijven. Markdown-scenario's kunnen bijvoorbeeld transportzijdige helpers combineren met browserzijdige helpers die de ingesloten Control UI aansturen via de Gateway-`browser.request`-seam, zonder een speciale runner toe te voegen.
 
-Scenariobestanden moeten worden gegroepeerd op productcapability in plaats van op source-tree
-map. Houd scenario-id's stabiel wanneer bestanden worden verplaatst; gebruik `docsRefs` en `codeRefs`
-voor implementatietraceerbaarheid.
+Scenariobestanden moeten worden gegroepeerd op productcapability in plaats van op source-tree-map. Houd scenario-id's stabiel wanneer bestanden worden verplaatst; gebruik `docsRefs` en `codeRefs` voor traceerbaarheid van de implementatie.
 
-De basislijst moet breed genoeg blijven om het volgende te dekken:
+De baselinelijst moet breed genoeg blijven om het volgende te dekken:
 
 - DM- en kanaalchat
 - threadgedrag
-- levenscyclus van berichtacties
+- lifecycle van berichtacties
 - cron-callbacks
 - geheugenherinnering
-- modelwisseling
-- overdracht naar subagent
-- repository lezen en documentatie lezen
+- model wisselen
+- overdracht aan subagent
+- repository lezen en docs lezen
 - één kleine buildtaak zoals Lobster Invaders
 
-## Provider-mock-lanes
+## Provider-mocklanes
 
-`qa suite` heeft twee lokale provider-mock-lanes:
+`qa suite` heeft twee lokale provider-mocklanes:
 
-- `mock-openai` is de scenario-bewuste OpenClaw-mock. Deze blijft de standaard
-  deterministische mock-lane voor repository-ondersteunde QA en parity-gates.
-- `aimock` start een door AIMock ondersteunde providerserver voor experimentele protocol-,
-  fixture-, record/replay- en chaosdekking. Deze is additief en vervangt de
-  `mock-openai`-scenariodispatcher niet.
+- `mock-openai` is de scenariobewuste OpenClaw-mock. Dit blijft de standaard deterministische mocklane voor repository-ondersteunde QA en pariteitsgates.
+- `aimock` start een door AIMock ondersteunde providerserver voor experimentele protocol-, fixture-, record/replay- en chaosdekking. Deze is additief en vervangt de `mock-openai`-scenariodispatcher niet.
 
-Provider-lane-implementatie staat onder `extensions/qa-lab/src/providers/`.
-Elke provider beheert zijn standaardwaarden, lokale serverstart, Gateway-modelconfiguratie,
-stagingbehoeften voor auth-profielen, en live/mock-capabilityvlaggen. Gedeelde suite- en
-Gateway-code moet via het providerregister routeren in plaats van te vertakken op
-providernamen.
+Provider-lane-implementatie staat onder `extensions/qa-lab/src/providers/`. Elke provider beheert zijn eigen standaardwaarden, lokale serverstart, Gateway-modelconfiguratie, stagingbehoeften voor auth-profielen en live/mock-capabilityvlaggen. Gedeelde suite- en Gateway-code moet via het providerregister routeren in plaats van op providernamen te vertakken.
 
 ## Transportadapters
 
-`qa-lab` beheert een generieke transport-seam voor markdown-QA-scenario's. `qa-channel` is de eerste adapter op die seam, maar het ontwerpdoel is breder: toekomstige echte of synthetische kanalen moeten in dezelfde suite-runner kunnen worden ingeplugd in plaats van een transportspecifieke QA-runner toe te voegen.
+`qa-lab` beheert een generieke transportseam voor markdown-QA-scenario's. `qa-channel` is de eerste adapter op die seam, maar het ontwerpdoel is breder: toekomstige echte of synthetische kanalen moeten op dezelfde suite-runner aansluiten in plaats van een transportspecifieke QA-runner toe te voegen.
 
-Op architectuurniveau is de splitsing:
+Op architectuurniveau is de verdeling:
 
-- `qa-lab` beheert generieke scenario-uitvoering, workerconcurrency, artefactschrijven en rapportage.
-- De transportadapter beheert Gateway-configuratie, gereedheid, inkomende en uitgaande observatie, transportacties en genormaliseerde transportstatus.
-- Markdown-scenariobestanden onder `qa/scenarios/` definiëren de testuitvoering; `qa-lab` biedt het herbruikbare runtime-oppervlak dat ze uitvoert.
+- `qa-lab` beheert generieke scenario-uitvoering, worker-concurrency, schrijven van artefacten en rapportage.
+- De transportadapter beheert Gateway-configuratie, gereedheid, inbound- en outbound-observatie, transportacties en genormaliseerde transportstatus.
+- Markdown-scenariobestanden onder `qa/scenarios/` definiëren de testrun; `qa-lab` biedt het herbruikbare runtime-oppervlak dat ze uitvoert.
 
 ### Een kanaal toevoegen
 
@@ -345,9 +331,9 @@ Voeg geen nieuwe top-level QA-opdrachtroot toe wanneer de gedeelde `qa-lab`-host
 `qa-lab` beheert de gedeelde hostmechanica:
 
 - de `openclaw qa`-opdrachtroot
-- suite-start en -teardown
-- workerconcurrency
-- artefactschrijven
+- starten en afbreken van suites
+- worker-concurrency
+- schrijven van artefacten
 - rapportgeneratie
 - scenario-uitvoering
 - compatibiliteitsaliassen voor oudere `qa-channel`-scenario's
@@ -355,30 +341,30 @@ Voeg geen nieuwe top-level QA-opdrachtroot toe wanneer de gedeelde `qa-lab`-host
 Runner-Plugins beheren het transportcontract:
 
 - hoe `openclaw qa <runner>` onder de gedeelde `qa`-root wordt gemount
-- hoe de Gateway wordt geconfigureerd voor dat transport
+- hoe de Gateway voor dat transport wordt geconfigureerd
 - hoe gereedheid wordt gecontroleerd
-- hoe inkomende events worden geïnjecteerd
-- hoe uitgaande berichten worden waargenomen
-- hoe transcripts en genormaliseerde transportstatus worden blootgesteld
-- hoe door transport ondersteunde acties worden uitgevoerd
+- hoe inbound-events worden geïnjecteerd
+- hoe outbound-berichten worden waargenomen
+- hoe transcripties en genormaliseerde transportstatus worden blootgesteld
+- hoe transportondersteunde acties worden uitgevoerd
 - hoe transportspecifieke reset of opschoning wordt afgehandeld
 
 De minimale adoptiedrempel voor een nieuw kanaal:
 
 1. Houd `qa-lab` als eigenaar van de gedeelde `qa`-root.
-2. Implementeer de transport-runner op de gedeelde `qa-lab`-host-seam.
+2. Implementeer de transport-runner op de gedeelde `qa-lab`-hostseam.
 3. Houd transportspecifieke mechanica binnen de runner-Plugin of kanaalharness.
-4. Mount de runner als `openclaw qa <runner>` in plaats van een concurrerende rootopdracht te registreren. Runner-Plugins moeten `qaRunners` declareren in `openclaw.plugin.json` en een overeenkomende `qaRunnerCliRegistrations`-array exporteren uit `runtime-api.ts`. Houd `runtime-api.ts` licht; lazy CLI- en runner-uitvoering moeten achter aparte entrypoints blijven.
-5. Auteur of pas markdown-scenario's aan onder de gethematiseerde `qa/scenarios/`-directories.
+4. Mount de runner als `openclaw qa <runner>` in plaats van een concurrerende root-opdracht te registreren. Runner-Plugins moeten `qaRunners` declareren in `openclaw.plugin.json` en een overeenkomende `qaRunnerCliRegistrations`-array exporteren vanuit `runtime-api.ts`. Houd `runtime-api.ts` licht; luie CLI- en runner-uitvoering moeten achter afzonderlijke entrypoints blijven.
+5. Maak of pas markdown-scenario's aan onder de thematische `qa/scenarios/`-mappen.
 6. Gebruik de generieke scenariohelpers voor nieuwe scenario's.
 7. Houd bestaande compatibiliteitsaliassen werkend tenzij de repository een bewuste migratie uitvoert.
 
 De beslisregel is strikt:
 
-- Als gedrag één keer in `qa-lab` kan worden uitgedrukt, plaats het in `qa-lab`.
-- Als gedrag afhangt van één kanaaltransport, houd het in die runner-Plugin of Plugin-harness.
+- Als gedrag één keer in `qa-lab` kan worden uitgedrukt, plaats het dan in `qa-lab`.
+- Als gedrag afhankelijk is van één kanaaltransport, houd het dan in die runner-Plugin of Plugin-harness.
 - Als een scenario een nieuwe capability nodig heeft die meer dan één kanaal kan gebruiken, voeg dan een generieke helper toe in plaats van een kanaalspecifieke vertakking in `suite.ts`.
-- Als gedrag alleen betekenisvol is voor één transport, houd het scenario transportspecifiek en maak dat expliciet in het scenariocontract.
+- Als gedrag alleen zinvol is voor één transport, houd het scenario dan transportspecifiek en maak dat expliciet in het scenariocontract.
 
 ### Namen van scenariohelpers
 
@@ -397,22 +383,22 @@ Voorkeurshelpers voor nieuwe scenario's:
 - `formatTransportTranscript`
 - `resetTransport`
 
-Compatibiliteitsaliassen blijven beschikbaar voor bestaande scenario's — `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` — maar nieuwe scenario's moeten de generieke namen gebruiken. De aliassen bestaan om een flag-day-migratie te voorkomen, niet als het model voor de toekomst.
+Compatibiliteitsaliassen blijven beschikbaar voor bestaande scenario's — `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` — maar nieuwe scenario's moeten de generieke namen gebruiken. De aliassen bestaan om een flag-day-migratie te vermijden, niet als het model voor de toekomst.
 
 ## Rapportage
 
 `qa-lab` exporteert een Markdown-protocolrapport vanuit de waargenomen bustijdlijn.
-Het rapport moet antwoord geven op:
+Het rapport moet beantwoorden:
 
 - Wat werkte
 - Wat faalde
 - Wat geblokkeerd bleef
-- Welke vervolscenario's de moeite waard zijn om toe te voegen
+- Welke vervolgsccenario's het waard zijn om toe te voegen
 
-Voor een inventaris van beschikbare scenario's - handig bij het inschatten van vervolgwerk of het aansluiten van een nieuw transport - voer `pnpm openclaw qa coverage` uit (voeg `--json` toe voor machineleesbare uitvoer).
+Voer `pnpm openclaw qa coverage` uit voor de inventaris van beschikbare scenario's — handig bij het inschatten van vervolgwerk of het aansluiten van een nieuw transport — (voeg `--json` toe voor machineleesbare uitvoer).
 
-Voor teken- en stijlcontroles voer je hetzelfde scenario uit over meerdere live model
-refs en schrijf je een beoordeeld Markdown-rapport:
+Voer voor karakter- en stijlcontroles hetzelfde scenario uit over meerdere live modelrefs
+en schrijf een beoordeeld Markdown-rapport:
 
 ```bash
 pnpm openclaw qa character-eval \
@@ -431,41 +417,41 @@ pnpm openclaw qa character-eval \
   --judge-concurrency 16
 ```
 
-De opdracht voert lokale onderliggende QA Gateway-processen uit, geen Docker. Character eval-
-scenario's moeten de persona instellen via `SOUL.md` en daarna gewone gebruikersbeurten uitvoeren
-zoals chat, hulp bij de werkruimte en kleine bestandstaken. Het kandidaatmodel mag
+De opdracht voert lokale QA-Gateway-kindprocessen uit, geen Docker. Scenario's voor karakterevaluatie
+moeten de persona instellen via `SOUL.md` en daarna gewone gebruikersbeurten uitvoeren,
+zoals chat, hulp bij de workspace en kleine bestandstaken. Het kandidaatmodel mag
 niet te horen krijgen dat het wordt geëvalueerd. De opdracht bewaart elk volledig
-transcript, registreert basisstatistieken van de run en vraagt vervolgens de judge models in fast mode met
-`xhigh`-redenering waar ondersteund om de runs te rangschikken op natuurlijkheid, vibe en humor.
-Gebruik `--blind-judge-models` wanneer je providers vergelijkt: de judge-prompt krijgt nog steeds
-elk transcript en elke runstatus, maar kandidaat-refs worden vervangen door neutrale
-labels zoals `candidate-01`; het rapport koppelt de rangschikkingen na het parsen terug aan echte refs.
-Kandidaatruns gebruiken standaard `high` thinking, met `medium` voor GPT-5.5 en `xhigh`
-voor oudere OpenAI-eval-refs die dit ondersteunen. Overschrijf een specifieke kandidaat inline met
+transcript, legt basisstatistieken van de run vast en vraagt daarna de jury-modellen in snelle modus met
+`xhigh`-redenering waar ondersteund om de runs te rangschikken op natuurlijkheid, sfeer en humor.
+Gebruik `--blind-judge-models` wanneer je providers vergelijkt: de juryprompt krijgt nog steeds
+elk transcript en elke runstatus, maar kandidaatrefs worden vervangen door neutrale
+labels zoals `candidate-01`; het rapport koppelt ranglijsten na het parsen terug aan de echte refs.
+Kandidaatruns gebruiken standaard `high`-denkvermogen, met `medium` voor GPT-5.5 en `xhigh`
+voor oudere OpenAI-evaluatierefs die dit ondersteunen. Overschrijf een specifieke kandidaat inline met
 `--model provider/model,thinking=<level>`. `--thinking <level>` stelt nog steeds een
 globale fallback in, en de oudere vorm `--model-thinking <provider/model=level>` blijft
 behouden voor compatibiliteit.
-OpenAI-kandidaat-refs gebruiken standaard fast mode zodat prioriteitsverwerking wordt gebruikt waar
+OpenAI-kandidaatrefs gebruiken standaard snelle modus, zodat prioriteitsverwerking wordt gebruikt waar
 de provider dit ondersteunt. Voeg inline `,fast`, `,no-fast` of `,fast=false` toe wanneer een
-enkele kandidaat of judge een overschrijving nodig heeft. Geef `--fast` alleen door wanneer je
-fast mode voor elk kandidaatmodel wilt afdwingen. Duur van kandidaat- en judge-runs wordt
-in het rapport vastgelegd voor benchmarkanalyse, maar judge-prompts zeggen expliciet
-niet op snelheid te rangschikken.
-Kandidaat- en judge-modelruns gebruiken beide standaard concurrency 16. Verlaag
+enkele kandidaat of jury een overschrijving nodig heeft. Geef `--fast` alleen door wanneer je
+snelle modus wilt afdwingen voor elk kandidaatmodel. De duur van kandidaat- en juryruns wordt
+in het rapport vastgelegd voor benchmarkanalyse, maar juryprompts zeggen expliciet
+dat er niet op snelheid mag worden gerangschikt.
+Kandidaat- en jurymodelruns gebruiken beide standaard concurrency 16. Verlaag
 `--concurrency` of `--judge-concurrency` wanneer providerlimieten of lokale Gateway-
-belasting een run te ruisgevoelig maken.
-Wanneer geen kandidaat `--model` wordt doorgegeven, gebruikt character eval standaard
+druk een run te ruisachtig maken.
+Wanneer geen kandidaat-`--model` wordt doorgegeven, gebruikt de karakterevaluatie standaard
 `openai/gpt-5.5`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-6`,
 `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
 `moonshot/kimi-k2.5` en
 `google/gemini-3.1-pro-preview` wanneer geen `--model` wordt doorgegeven.
-Wanneer geen `--judge-model` wordt doorgegeven, gebruiken de judges standaard
+Wanneer geen `--judge-model` wordt doorgegeven, gebruiken de jury's standaard
 `openai/gpt-5.5,thinking=xhigh,fast` en
 `anthropic/claude-opus-4-6,thinking=high`.
 
 ## Gerelateerde documentatie
 
-- [Matrix QA](/nl/concepts/qa-matrix)
+- [Matrix-QA](/nl/concepts/qa-matrix)
 - [QA Channel](/nl/channels/qa-channel)
 - [Testen](/nl/help/testing)
 - [Dashboard](/nl/web/dashboard)

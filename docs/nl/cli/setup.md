@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Je voert de setup bij eerste gebruik uit zonder volledige CLI-onboarding
+    - Je voert de eerste configuratie uit zonder volledige CLI-begeleiding
     - Je wilt het standaardwerkruimtepad instellen
 summary: CLI-referentie voor `openclaw setup` (configuratie + werkruimte initialiseren)
 title: Installatie
 x-i18n:
-    generated_at: "2026-04-29T22:35:11Z"
+    generated_at: "2026-05-02T20:42:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -35,16 +35,16 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## Opties
 
 - `--workspace <dir>`: agentwerkruimtemap (opgeslagen als `agents.defaults.workspace`)
-- `--wizard`: voer de introductie uit
-- `--non-interactive`: voer de introductie uit zonder prompts
+- `--wizard`: introductie uitvoeren
+- `--non-interactive`: introductie zonder prompts uitvoeren
 - `--mode <local|remote>`: introductiemodus
-- `--import-from <provider>`: migratieprovider die tijdens de introductie moet worden uitgevoerd
-- `--import-source <path>`: bronmap van de agent voor `--import-from`
-- `--import-secrets`: importeer ondersteunde geheimen tijdens de introductiemigratie
-- `--remote-url <url>`: externe Gateway WebSocket-URL
-- `--remote-token <token>`: extern Gateway-token
+- `--import-from <provider>`: migratieprovider om tijdens de introductie uit te voeren
+- `--import-source <path>`: bron-agent-home voor `--import-from`
+- `--import-secrets`: ondersteunde geheimen importeren tijdens introductiemigratie
+- `--remote-url <url>`: WebSocket-URL van externe Gateway
+- `--remote-token <token>`: token voor externe Gateway
 
-Om de introductie via setup uit te voeren:
+Om introductie via setup uit te voeren:
 
 ```bash
 openclaw setup --wizard
@@ -52,9 +52,10 @@ openclaw setup --wizard
 
 Opmerkingen:
 
-- Gewone `openclaw setup` initialiseert configuratie + werkruimte zonder de volledige introductiestroom.
+- Gewoon `openclaw setup` initialiseert de configuratie en werkruimte zonder de volledige introductiestroom.
+- Voer na gewone setup `openclaw configure` uit om modellen, kanalen, Gateway, plugins, Skills of gezondheidscontroles te kiezen.
 - Introductie wordt automatisch uitgevoerd wanneer er introductievlaggen aanwezig zijn (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Als Hermes-status wordt gedetecteerd, kan interactieve introductie automatisch migratie aanbieden. Importintroductie vereist een nieuwe setup; gebruik [Migreren](/nl/cli/migrate) voor dry-run-plannen, back-ups en overschrijfmodus buiten de introductie.
+- Als Hermes-status wordt gedetecteerd, kan interactieve introductie automatisch migratie aanbieden. Importintroductie vereist een nieuwe setup; gebruik [Migreren](/nl/cli/migrate) voor dry-runplannen, back-ups en overschrijfmodus buiten introductie.
 
 ## Gerelateerd
 

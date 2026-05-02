@@ -1,55 +1,54 @@
 ---
 read_when:
-    - Je wilt een nieuwe OpenClaw Plugin maken
+    - Je wilt een nieuwe OpenClaw-plugin maken
     - Je hebt een snelstartgids voor Plugin-ontwikkeling nodig
-    - Je voegt een nieuw kanaal, een nieuwe provider, een nieuwe tool of andere functionaliteit toe aan OpenClaw
+    - Je voegt een nieuw kanaal, een nieuwe provider, tool of andere mogelijkheid toe aan OpenClaw
 sidebarTitle: Getting Started
 summary: Maak binnen enkele minuten je eerste OpenClaw Plugin
 title: Plugins bouwen
 x-i18n:
-    generated_at: "2026-05-02T11:21:32Z"
+    generated_at: "2026-05-02T20:46:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2cf85c1c1c1f6ae6752f7fb8d842a420bffac6ebaf4d64803fb8bb8ab9f6f83c
+    source_hash: b42170b40094f89a63b1497c08ec31e397931dd536bd6faeeb8bc3c123ae45d1
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
 Plugins breiden OpenClaw uit met nieuwe mogelijkheden: kanalen, modelproviders,
-spraak, realtime transcriptie, realtime spraak, mediabegrip, afbeeldingsgeneratie,
-videogeneratie, web-fetch, webzoekopdrachten, agenttools of elke
-combinatie daarvan.
+spraak, realtime transcriptie, realtime spraak, mediabegrip, beeldgeneratie,
+videogeneratie, web fetch, web search, agenttools, of elke combinatie daarvan.
 
-Je hoeft je plugin niet aan de OpenClaw-repository toe te voegen. Publiceer naar
+Je hoeft je plugin niet toe te voegen aan de OpenClaw-repository. Publiceer naar
 [ClawHub](/nl/tools/clawhub) en gebruikers installeren met
-`openclaw plugins install <package-name>`. OpenClaw probeert eerst ClawHub en
-valt automatisch terug op npm voor pakketten die nog npm-distributie gebruiken.
+`openclaw plugins install clawhub:<package-name>`. Kale pakketspecificaties
+installeren tijdens de launch-overgang nog steeds vanaf npm.
 
 ## Vereisten
 
 - Node >= 22 en een pakketbeheerder (npm of pnpm)
-- Vertrouwdheid met TypeScript (ESM)
-- Voor plugins in de repo: repository gekloond en `pnpm install` uitgevoerd. Pluginontwikkeling vanuit een broncheckout is alleen pnpm, omdat OpenClaw gebundelde
-  plugins laadt vanuit de `extensions/*`-workspacepakketten.
+- Bekendheid met TypeScript (ESM)
+- Voor plugins in de repository: repository gekloond en `pnpm install` uitgevoerd. Pluginontwikkeling via een source checkout is alleen pnpm, omdat OpenClaw gebundelde
+  plugins laadt uit de `extensions/*`-workspacepakketten.
 
-## Wat voor soort plugin?
+## Welk soort plugin?
 
 <CardGroup cols={3}>
   <Card title="Kanaalplugin" icon="messages-square" href="/nl/plugins/sdk-channel-plugins">
     Verbind OpenClaw met een berichtenplatform (Discord, IRC, enz.)
   </Card>
   <Card title="Providerplugin" icon="cpu" href="/nl/plugins/sdk-provider-plugins">
-    Voeg een modelprovider toe (LLM, proxy of aangepast endpoint)
+    Voeg een modelprovider toe (LLM, proxy of aangepaste endpoint)
   </Card>
-  <Card title="Tool- / hookplugin" icon="wrench" href="/nl/plugins/hooks">
-    Registreer agenttools, event hooks of services — ga hieronder verder
+  <Card title="Tool- / hook-plugin" icon="wrench" href="/nl/plugins/hooks">
+    Registreer agenttools, eventhooks of services — ga hieronder verder
   </Card>
 </CardGroup>
 
-Voor een kanaalplugin waarvan niet gegarandeerd is dat die is geïnstalleerd wanneer onboarding/setup
-wordt uitgevoerd, gebruik je `createOptionalChannelSetupSurface(...)` uit
+Gebruik voor een kanaalplugin waarvan niet gegarandeerd is dat die is geïnstalleerd wanneer onboarding/setup
+wordt uitgevoerd `createOptionalChannelSetupSurface(...)` uit
 `openclaw/plugin-sdk/channel-setup`. Dit produceert een setupadapter + wizardpaar
-dat de installatievereiste aangeeft en veilig gesloten faalt bij echte configuratieschrijfacties
+dat de installatievereiste aankondigt en gesloten faalt bij echte configuratieschrijfacties
 totdat de plugin is geïnstalleerd.
 
 ## Snelstart: toolplugin
@@ -58,7 +57,7 @@ Deze walkthrough maakt een minimale plugin die een agenttool registreert. Kanaal
 en providerplugins hebben eigen handleidingen die hierboven zijn gelinkt.
 
 <Steps>
-  <Step title="Maak het pakket en manifest">
+  <Step title="Maak het pakket en het manifest">
     <CodeGroup>
     ```json package.json
     {
@@ -98,10 +97,10 @@ en providerplugins hebben eigen handleidingen die hierboven zijn gelinkt.
     ```
     </CodeGroup>
 
-    Elke plugin heeft een manifest nodig, zelfs zonder configuratie. Tools die tijdens runtime worden geregistreerd
-    moeten in `contracts.tools` worden vermeld, zodat OpenClaw de eigenaarplugin kan ontdekken
+    Elke plugin heeft een manifest nodig, zelfs zonder configuratie. Runtime-geregistreerde tools
+    moeten worden vermeld in `contracts.tools`, zodat OpenClaw de eigenaar-plugin kan ontdekken
     zonder elke pluginruntime te laden. Plugins moeten ook
-    `activation.onStartup` bewust declareren. Dit voorbeeld zet dit op `true`. Zie
+    `activation.onStartup` bewust declareren. Dit voorbeeld stelt dit in op `true`. Zie
     [Manifest](/nl/plugins/manifest) voor het volledige schema. De canonieke ClawHub-
     publicatiesnippets staan in `docs/snippets/plugin-publish/`.
 
@@ -131,7 +130,7 @@ en providerplugins hebben eigen handleidingen die hierboven zijn gelinkt.
     });
     ```
 
-    `definePluginEntry` is voor niet-kanaalplugins. Gebruik voor kanalen
+    `definePluginEntry` is bedoeld voor niet-kanaalplugins. Gebruik voor kanalen
     `defineChannelPluginEntry` — zie [Kanaalplugins](/nl/plugins/sdk-channel-plugins).
     Zie [Entrypoints](/nl/plugins/sdk-entrypoints) voor alle entrypointopties.
 
@@ -139,7 +138,7 @@ en providerplugins hebben eigen handleidingen die hierboven zijn gelinkt.
 
   <Step title="Test en publiceer">
 
-    **Externe plugins:** valideer en publiceer met ClawHub, en installeer daarna:
+    **Externe plugins:** valideer en publiceer met ClawHub, installeer daarna:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -147,11 +146,10 @@ en providerplugins hebben eigen handleidingen die hierboven zijn gelinkt.
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    OpenClaw controleert ook ClawHub vóór npm voor kale pakketspecificaties zoals
-    `@myorg/openclaw-my-plugin`; npm blijft een fallback voor pakketten die nog
-    niet naar ClawHub zijn gemigreerd.
+    Kale pakketspecificaties zoals `@myorg/openclaw-my-plugin` installeren tijdens
+    de launch-overgang vanaf npm. Gebruik `clawhub:` wanneer je ClawHub-resolutie wilt.
 
-    **Plugins in de repo:** plaats ze onder de gebundelde plugin-workspaceboom — automatisch ontdekt.
+    **Plugins in de repository:** plaats ze onder de gebundelde plugin-workspaceboom — ze worden automatisch ontdekt.
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -160,7 +158,7 @@ en providerplugins hebben eigen handleidingen die hierboven zijn gelinkt.
   </Step>
 </Steps>
 
-## Pluginmogelijkheden
+## Plugin-mogelijkheden
 
 Eén plugin kan elk aantal mogelijkheden registreren via het `api`-object:
 
@@ -168,21 +166,21 @@ Eén plugin kan elk aantal mogelijkheden registreren via het `api`-object:
 | ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
 | Tekstinferentie (LLM)  | `api.registerProvider(...)`                      | [Providerplugins](/nl/plugins/sdk-provider-plugins)                                |
 | CLI-inferentiebackend  | `api.registerCliBackend(...)`                    | [CLI-backends](/nl/gateway/cli-backends)                                           |
-| Kanaal / berichten     | `api.registerChannel(...)`                       | [Kanaalplugins](/nl/plugins/sdk-channel-plugins)                                   |
+| Kanaal / messaging     | `api.registerChannel(...)`                       | [Kanaalplugins](/nl/plugins/sdk-channel-plugins)                                   |
 | Spraak (TTS/STT)       | `api.registerSpeechProvider(...)`                | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Realtime transcriptie  | `api.registerRealtimeTranscriptionProvider(...)` | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Realtime spraak        | `api.registerRealtimeVoiceProvider(...)`         | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Mediabegrip            | `api.registerMediaUnderstandingProvider(...)`    | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Afbeeldingsgeneratie   | `api.registerImageGenerationProvider(...)`       | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Beeldgeneratie         | `api.registerImageGenerationProvider(...)`       | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Muziekgeneratie        | `api.registerMusicGenerationProvider(...)`       | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Videogeneratie         | `api.registerVideoGenerationProvider(...)`       | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Web-fetch              | `api.registerWebFetchProvider(...)`              | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Webzoekopdracht        | `api.registerWebSearchProvider(...)`             | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Toolresultaatmiddleware | `api.registerAgentToolResultMiddleware(...)`    | [SDK-overzicht](/nl/plugins/sdk-overview#registration-api)                         |
+| Web fetch              | `api.registerWebFetchProvider(...)`              | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Web search             | `api.registerWebSearchProvider(...)`             | [Providerplugins](/nl/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Toolresultaat-middleware | `api.registerAgentToolResultMiddleware(...)`   | [SDK-overzicht](/nl/plugins/sdk-overview#registration-api)                         |
 | Agenttools             | `api.registerTool(...)`                          | Hieronder                                                                       |
 | Aangepaste opdrachten  | `api.registerCommand(...)`                       | [Entrypoints](/nl/plugins/sdk-entrypoints)                                         |
-| Plugin hooks           | `api.on(...)`                                    | [Plugin hooks](/nl/plugins/hooks)                                                  |
-| Interne event hooks    | `api.registerHook(...)`                          | [Entrypoints](/nl/plugins/sdk-entrypoints)                                         |
+| Pluginhooks            | `api.on(...)`                                    | [Pluginhooks](/nl/plugins/hooks)                                                   |
+| Interne eventhooks     | `api.registerHook(...)`                          | [Entrypoints](/nl/plugins/sdk-entrypoints)                                         |
 | HTTP-routes            | `api.registerHttpRoute(...)`                     | [Internals](/nl/plugins/architecture-internals#gateway-http-routes)                |
 | CLI-subopdrachten      | `api.registerCli(...)`                           | [Entrypoints](/nl/plugins/sdk-entrypoints)                                         |
 
@@ -192,38 +190,38 @@ Gebundelde plugins kunnen `api.registerAgentToolResultMiddleware(...)` gebruiken
 asynchrone herschrijving van toolresultaten nodig hebben voordat het model de uitvoer ziet. Declareer de
 beoogde runtimes in `contracts.agentToolResultMiddleware`, bijvoorbeeld
 `["pi", "codex"]`. Dit is een vertrouwde seam voor gebundelde plugins; externe
-plugins moeten bij voorkeur reguliere OpenClaw-pluginhooks gebruiken, tenzij OpenClaw een
+plugins moeten gewone OpenClaw-pluginhooks verkiezen, tenzij OpenClaw een
 expliciet vertrouwensbeleid voor deze mogelijkheid krijgt.
 
-Als je plugin aangepaste Gateway-RPC-methoden registreert, houd ze dan onder een
-pluginspecifiek prefix. Kern-adminnamespaces (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) blijven gereserveerd en lossen altijd op naar
-`operator.admin`, zelfs als een plugin om een nauwere scope vraagt.
+Als je plugin aangepaste Gateway-RPC-methoden registreert, houd die dan op een
+pluginspecifiek prefix. Core-adminnamespaces (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) blijven gereserveerd en worden altijd opgelost naar
+`operator.admin`, zelfs als een plugin om een smallere scope vraagt.
 
-Hook-guardsemantiek om rekening mee te houden:
+Hook-guardsemantiek om in gedachten te houden:
 
 - `before_tool_call`: `{ block: true }` is terminaal en stopt handlers met lagere prioriteit.
 - `before_tool_call`: `{ block: false }` wordt behandeld als geen beslissing.
-- `before_tool_call`: `{ requireApproval: true }` pauzeert agentuitvoering en vraagt de gebruiker om goedkeuring via de exec-goedkeuringsoverlay, Telegram-knoppen, Discord-interacties of de opdracht `/approve` op elk kanaal.
+- `before_tool_call`: `{ requireApproval: true }` pauzeert agentuitvoering en vraagt de gebruiker om goedkeuring via de exec-goedkeuringsoverlay, Telegram-knoppen, Discord-interacties of de `/approve`-opdracht op elk kanaal.
 - `before_install`: `{ block: true }` is terminaal en stopt handlers met lagere prioriteit.
 - `before_install`: `{ block: false }` wordt behandeld als geen beslissing.
 - `message_sending`: `{ cancel: true }` is terminaal en stopt handlers met lagere prioriteit.
 - `message_sending`: `{ cancel: false }` wordt behandeld als geen beslissing.
-- `message_received`: geef de voorkeur aan het getypte veld `threadId` wanneer je inkomende thread-/topicrouting nodig hebt. Houd `metadata` voor kanaalspecifieke extra's.
-- `message_sending`: geef de voorkeur aan getypte routingvelden `replyToId` / `threadId` boven kanaalspecifieke metadatasleutels.
+- `message_received`: geef de voorkeur aan het getypte veld `threadId` wanneer je routering van inkomende threads/onderwerpen nodig hebt. Houd `metadata` voor kanaalspecifieke extra's.
+- `message_sending`: geef de voorkeur aan getypte routeringsvelden `replyToId` / `threadId` boven kanaalspecifieke metadatasleutels.
 
-De opdracht `/approve` behandelt zowel exec- als plugingoedkeuringen met begrensde fallback: wanneer een exec-goedkeurings-id niet wordt gevonden, probeert OpenClaw hetzelfde id opnieuw via plugingoedkeuringen. Doorsturen van plugingoedkeuringen kan onafhankelijk worden geconfigureerd via `approvals.plugin` in de configuratie.
+De opdracht `/approve` verwerkt zowel exec- als plugingoedkeuringen met begrensde fallback: wanneer een exec-goedkeurings-id niet wordt gevonden, probeert OpenClaw hetzelfde id opnieuw via plugingoedkeuringen. Doorsturen van plugingoedkeuringen kan onafhankelijk worden geconfigureerd via `approvals.plugin` in config.
 
-Als aangepaste goedkeuringsplumbing diezelfde begrensde fallbackcase moet detecteren,
-gebruik dan bij voorkeur `isApprovalNotFoundError` uit `openclaw/plugin-sdk/error-runtime`
-in plaats van goedkeuringsvervalstrings handmatig te matchen.
+Als aangepaste goedkeuringsplumbing dezelfde begrensde fallbackcase moet detecteren,
+gebruik dan liever `isApprovalNotFoundError` uit `openclaw/plugin-sdk/error-runtime`
+in plaats van goedkeuring-vervalstrings handmatig te matchen.
 
-Zie [Plugin hooks](/nl/plugins/hooks) voor voorbeelden en de hookreferentie.
+Zie [Pluginhooks](/nl/plugins/hooks) voor voorbeelden en de hookreferentie.
 
 ## Agenttools registreren
 
-Tools zijn getypte functies die de LLM kan aanroepen. Ze kunnen verplicht zijn (altijd
-beschikbaar) of optioneel (opt-in door de gebruiker):
+Tools zijn getypeerde functies die de LLM kan aanroepen. Ze kunnen vereist (altijd
+beschikbaar) of optioneel (gebruiker opt-in) zijn:
 
 ```typescript
 register(api) {
@@ -252,8 +250,8 @@ register(api) {
 }
 ```
 
-Elke tool die met `api.registerTool(...)` wordt geregistreerd, moet ook in het
-pluginmanifest worden gedeclareerd:
+Elke tool die met `api.registerTool(...)` is geregistreerd, moet ook worden gedeclareerd in het
+pluginmanifest:
 
 ```json
 {
@@ -263,7 +261,12 @@ pluginmanifest worden gedeclareerd:
 }
 ```
 
-Gebruikers schakelen optionele tools in de configuratie in:
+OpenClaw legt de gevalideerde descriptor van de geregistreerde tool vast en cachet die,
+zodat plugins geen `description`- of schemagegevens in het manifest dupliceren. Het
+manifestcontract declareert alleen eigenaarschap en ontdekking; uitvoering roept nog steeds
+de live geregistreerde toolimplementatie aan.
+
+Gebruikers schakelen optionele tools in config in:
 
 ```json5
 {
@@ -272,15 +275,15 @@ Gebruikers schakelen optionele tools in de configuratie in:
 ```
 
 - Toolnamen mogen niet botsen met kerntools (conflicten worden overgeslagen)
-- Tools met ongeldig gevormde registratieobjecten, inclusief ontbrekende `parameters`, worden overgeslagen en gemeld in Plugin-diagnostiek in plaats van agentuitvoeringen te onderbreken
-- Gebruik `optional: true` voor tools met bijwerkingen of extra binaire vereisten
-- Gebruikers kunnen alle tools van een Plugin inschakelen door de Plugin-id toe te voegen aan `tools.allow`
+- Tools met misvormde registratieobjecten, inclusief ontbrekende `parameters`, worden overgeslagen en gemeld in plugindiagnostiek in plaats van agentruns te onderbreken
+- Gebruik `optional: true` voor tools met neveneffecten of extra binaire vereisten
+- Gebruikers kunnen alle tools van een plugin inschakelen door de plugin-id toe te voegen aan `tools.allow`
 
 ## CLI-opdrachten registreren
 
-Plugins kunnen hoofdgroepen voor `openclaw`-opdrachten toevoegen met `api.registerCli`. Geef
-`descriptors` op voor elke opdrachtroot op het hoogste niveau, zodat OpenClaw de opdracht kan tonen en routeren
-zonder elke Plugin-runtime vooraf te laden.
+Plugins kunnen root-`openclaw`-opdrachtgroepen toevoegen met `api.registerCli`. Geef
+`descriptors` op voor elke root van een opdracht op het hoogste niveau, zodat OpenClaw
+de opdracht kan tonen en routeren zonder elke plugin-runtime vooraf te laden.
 
 ```typescript
 register(api) {
@@ -310,7 +313,7 @@ register(api) {
 }
 ```
 
-Controleer na installatie de runtimeregistratie en voer de opdracht uit:
+Controleer na installatie de runtime-registratie en voer de opdracht uit:
 
 ```bash
 openclaw plugins inspect demo-plugin --runtime --json
@@ -329,71 +332,71 @@ import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import { ... } from "openclaw/plugin-sdk";
 ```
 
-Zie [SDK-overzicht](/nl/plugins/sdk-overview) voor de volledige subpadreferentie.
+Zie [SDK-overzicht](/nl/plugins/sdk-overview) voor de volledige subpath-referentie.
 
-Gebruik binnen je Plugin lokale barrelbestanden (`api.ts`, `runtime-api.ts`) voor
-interne imports — importeer je eigen Plugin nooit via het SDK-pad ervan.
+Gebruik binnen je plugin lokale barrelbestanden (`api.ts`, `runtime-api.ts`) voor
+interne imports; importeer je eigen plugin nooit via het SDK-pad ervan.
 
-Voor provider-Plugins bewaar je provider-specifieke helpers in die package-root
-barrels, tenzij de seam echt generiek is. Huidige meegeleverde voorbeelden:
+Voor providerplugins bewaar je providerspecifieke helpers in die package-root
+barrels, tenzij de seam echt generiek is. Huidige gebundelde voorbeelden:
 
-- Anthropic: Claude-streamwrappers en `service_tier` / beta-helpers
-- OpenAI: provider-builders, helpers voor standaardmodellen, realtime providers
-- OpenRouter: provider-builder plus onboarding-/configuratiehelpers
+- Anthropic: Claude-streamwrappers en `service_tier`-/bètahelpers
+- OpenAI: providerbuilders, helpers voor standaardmodellen, realtimeproviders
+- OpenRouter: providerbuilder plus onboarding-/configuratiehelpers
 
-Als een helper alleen nuttig is binnen een meegeleverd providerpakket, houd die dan op die
-package-root seam in plaats van hem te promoveren naar `openclaw/plugin-sdk/*`.
+Als een helper alleen nuttig is binnen één gebundeld providerpakket, bewaar deze dan op die
+package-root seam in plaats van deze te promoveren naar `openclaw/plugin-sdk/*`.
 
-Sommige gegenereerde helper-seams voor `openclaw/plugin-sdk/<bundled-id>` bestaan nog steeds voor
-onderhoud van meegeleverde Plugins wanneer ze bijgehouden eigenaargebruik hebben. Behandel die als
-gereserveerde oppervlakken, niet als het standaardpatroon voor nieuwe externe Plugins.
+Sommige gegenereerde `openclaw/plugin-sdk/<bundled-id>`-helperseams bestaan nog steeds voor
+onderhoud van gebundelde plugins wanneer ze bijgehouden eigenaargebruik hebben. Behandel die als
+gereserveerde oppervlakken, niet als het standaardpatroon voor nieuwe plugins van derden.
 
-## Checklist voor indiening
+## Checklist vóór indiening
 
 <Check>**package.json** heeft correcte `openclaw`-metadata</Check>
 <Check>**openclaw.plugin.json**-manifest is aanwezig en geldig</Check>
-<Check>Entry point gebruikt `defineChannelPluginEntry` of `definePluginEntry`</Check>
+<Check>Entrypoint gebruikt `defineChannelPluginEntry` of `definePluginEntry`</Check>
 <Check>Alle imports gebruiken gerichte `plugin-sdk/<subpath>`-paden</Check>
 <Check>Interne imports gebruiken lokale modules, geen SDK-self-imports</Check>
 <Check>Tests slagen (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` slaagt (Plugins in de repo)</Check>
+<Check>`pnpm check` slaagt (plugins in de repo)</Check>
 
-## Beta-releasetesten
+## Bètarelease testen
 
-1. Let op GitHub-releasetags op [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) en abonneer je via `Watch` > `Releases`. Beta-tags zien eruit als `v2026.3.N-beta.1`. Je kunt ook meldingen inschakelen voor het officiële OpenClaw X-account [@openclaw](https://x.com/openclaw) voor releaseaankondigingen.
-2. Test je Plugin tegen de beta-tag zodra deze verschijnt. De periode vóór stable is meestal maar een paar uur.
-3. Plaats na het testen een bericht in de thread van je Plugin in het Discord-kanaal `plugin-forum` met `all good` of wat er kapotging. Als je nog geen thread hebt, maak er dan een.
-4. Als er iets kapotgaat, open of werk een issue bij met de titel `Beta blocker: <plugin-name> - <summary>` en pas het label `beta-blocker` toe. Plaats de issuelink in je thread.
-5. Open een PR naar `main` met de titel `fix(<plugin-id>): beta blocker - <summary>` en link het issue in zowel de PR als je Discord-thread. Bijdragers kunnen PR's niet labelen, dus de titel is het PR-signaal voor maintainers en automatisering. Blockers met een PR worden gemerged; blockers zonder PR kunnen alsnog worden uitgebracht. Maintainers volgen deze threads tijdens betatesten.
-6. Stilte betekent groen. Als je de periode mist, landt je fix waarschijnlijk in de volgende cyclus.
+1. Let op GitHub-releasetags op [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) en abonneer je via `Watch` > `Releases`. Bèta-tags zien eruit als `v2026.3.N-beta.1`. Je kunt ook meldingen inschakelen voor het officiële OpenClaw X-account [@openclaw](https://x.com/openclaw) voor releaseaankondigingen.
+2. Test je plugin tegen de bèta-tag zodra deze verschijnt. Het tijdvenster vóór stable is meestal maar een paar uur.
+3. Plaats na het testen in de thread van je plugin in het Discord-kanaal `plugin-forum` met `all good` of wat er kapotging. Als je nog geen thread hebt, maak er dan een.
+4. Als er iets kapotgaat, open of update een issue met de titel `Beta blocker: <plugin-name> - <summary>` en pas het label `beta-blocker` toe. Zet de issuelink in je thread.
+5. Open een PR naar `main` met de titel `fix(<plugin-id>): beta blocker - <summary>` en link het issue in zowel de PR als je Discord-thread. Contributors kunnen PR's niet labelen, dus de titel is het signaal aan de PR-kant voor maintainers en automatisering. Blockers met een PR worden gemerged; blockers zonder PR kunnen toch worden uitgebracht. Maintainers volgen deze threads tijdens bètatests.
+6. Stilte betekent groen. Als je het tijdvenster mist, landt je fix waarschijnlijk in de volgende cyclus.
 
 ## Volgende stappen
 
 <CardGroup cols={2}>
-  <Card title="Kanaal-Plugins" icon="messages-square" href="/nl/plugins/sdk-channel-plugins">
-    Bouw een Plugin voor een messaging-kanaal
+  <Card title="Kanaalplugins" icon="messages-square" href="/nl/plugins/sdk-channel-plugins">
+    Bouw een messagingkanaalplugin
   </Card>
-  <Card title="Provider-Plugins" icon="cpu" href="/nl/plugins/sdk-provider-plugins">
-    Bouw een Plugin voor een modelprovider
+  <Card title="Providerplugins" icon="cpu" href="/nl/plugins/sdk-provider-plugins">
+    Bouw een modelproviderplugin
   </Card>
   <Card title="SDK-overzicht" icon="book-open" href="/nl/plugins/sdk-overview">
-    Importmap en referentie voor de registratie-API
+    Importmap en registratie-API-referentie
   </Card>
   <Card title="Runtimehelpers" icon="settings" href="/nl/plugins/sdk-runtime">
     TTS, zoeken, subagent via api.runtime
   </Card>
   <Card title="Testen" icon="test-tubes" href="/nl/plugins/sdk-testing">
-    Testhulpmiddelen en patronen
+    Testhulpprogramma's en patronen
   </Card>
   <Card title="Pluginmanifest" icon="file-json" href="/nl/plugins/manifest">
-    Volledige referentie voor het manifestschema
+    Volledige referentie voor manifestschema
   </Card>
 </CardGroup>
 
 ## Gerelateerd
 
-- [Pluginarchitectuur](/nl/plugins/architecture) — diepgaande uitleg van de interne architectuur
-- [SDK-overzicht](/nl/plugins/sdk-overview) — referentie voor de Plugin SDK
-- [Manifest](/nl/plugins/manifest) — Pluginmanifestindeling
-- [Kanaal-Plugins](/nl/plugins/sdk-channel-plugins) — kanaal-Plugins bouwen
-- [Provider-Plugins](/nl/plugins/sdk-provider-plugins) — provider-Plugins bouwen
+- [Pluginarchitectuur](/nl/plugins/architecture) — diepgaande uitleg van interne architectuur
+- [SDK-overzicht](/nl/plugins/sdk-overview) — Plugin-SDK-referentie
+- [Manifest](/nl/plugins/manifest) — pluginmanifestformaat
+- [Kanaalplugins](/nl/plugins/sdk-channel-plugins) — kanaalplugins bouwen
+- [Providerplugins](/nl/plugins/sdk-provider-plugins) — providerplugins bouwen

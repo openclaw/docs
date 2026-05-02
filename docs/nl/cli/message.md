@@ -2,13 +2,13 @@
 read_when:
     - CLI-acties voor berichten toevoegen of wijzigen
     - Gedrag van uitgaande kanalen wijzigen
-summary: CLI-referentie voor `openclaw message` (verzenden + kanaalacties)
+summary: CLI-referentie voor `openclaw message` (send + kanaalacties)
 title: Bericht
 x-i18n:
-    generated_at: "2026-05-02T11:12:13Z"
+    generated_at: "2026-05-02T20:41:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f429acc2c81f33d1ade543ab1170220e293077e1d1721ac0940937de3d19f0d2
+    source_hash: 6b73a50da34838f80ad5d0d266f5c66f95436f8535e6312296ae022918b1ab55
     source_path: cli/message.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 # `openclaw message`
 
 Enkele uitgaande opdracht voor het verzenden van berichten en kanaalacties
-(Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## Gebruik
 
@@ -28,17 +28,17 @@ Kanaalselectie:
 
 - `--channel` is vereist als meer dan één kanaal is geconfigureerd.
 - Als precies één kanaal is geconfigureerd, wordt dat de standaard.
-- Waarden: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost vereist Plugin)
-- `openclaw message` koppelt het geselecteerde kanaal aan de bijbehorende Plugin wanneer `--channel` of een doel met kanaalprefix aanwezig is; anders laadt het geconfigureerde kanaalplugins voor standaardkanaalafleiding.
+- Waarden: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost vereist plugin)
+- `openclaw message` zet het geselecteerde kanaal om naar de bijbehorende plugin wanneer `--channel` of een doel met kanaalvoorvoegsel aanwezig is; anders laadt het geconfigureerde kanaalplugins voor standaardkanaalafleiding.
 
 Doelindelingen (`--target`):
 
-- WhatsApp: E.164 of groeps-JID
+- WhatsApp: E.164, groeps-JID of WhatsApp Channel/Newsletter-JID (`...@newsletter`)
 - Telegram: chat-id of `@username`
-- Discord: `channel:<id>` of `user:<id>` (of `<@id>`-vermelding; ruwe numerieke ids worden behandeld als kanalen)
+- Discord: `channel:<id>` of `user:<id>` (of `<@id>`-vermelding; ruwe numerieke ids worden als kanalen behandeld)
 - Google Chat: `spaces/<spaceId>` of `users/<userId>`
 - Slack: `channel:<id>` of `user:<id>` (ruwe kanaal-id wordt geaccepteerd)
-- Mattermost (Plugin): `channel:<id>`, `user:<id>` of `@username` (kale ids worden behandeld als kanalen)
+- Mattermost (plugin): `channel:<id>`, `user:<id>` of `@username` (kale ids worden als kanalen behandeld)
 - Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>` of `username:<name>`/`u:<name>`
 - iMessage: handle, `chat_id:<id>`, `chat_guid:<guid>` of `chat_identifier:<id>`
 - Matrix: `@user:server`, `!room:server` of `#alias:server`
@@ -46,14 +46,14 @@ Doelindelingen (`--target`):
 
 Naamopzoeking:
 
-- Voor ondersteunde providers (Discord/Slack/enzovoort) worden kanaalnamen zoals `Help` of `#help` opgelost via de directorycache.
-- Bij een cachemisser probeert OpenClaw een live directoryopzoeking wanneer de provider dit ondersteunt.
+- Voor ondersteunde providers (Discord/Slack/etc.) worden kanaalnamen zoals `Help` of `#help` opgelost via de directory-cache.
+- Bij een cachemisser probeert OpenClaw een live directory-opzoeking wanneer de provider dit ondersteunt.
 
 ## Algemene flags
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (doelkanaal of gebruiker voor verzenden/pollen/lezen/enzovoort)
+- `--target <dest>` (doelkanaal of doelgebruiker voor verzenden/pollen/lezen/etc.)
 - `--targets <name>` (herhalen; alleen broadcast)
 - `--json`
 - `--dry-run`
@@ -62,10 +62,10 @@ Naamopzoeking:
 ## SecretRef-gedrag
 
 - `openclaw message` lost ondersteunde kanaal-SecretRefs op voordat de geselecteerde actie wordt uitgevoerd.
-- Oplossing is waar mogelijk beperkt tot het actieve actiedoel:
-  - kanaalgebonden wanneer `--channel` is ingesteld (of afgeleid uit doelen met prefix zoals `discord:...`)
+- Resolutie wordt waar mogelijk beperkt tot het actieve actiedoel:
+  - kanaalgebonden wanneer `--channel` is ingesteld (of afgeleid uit doelen met voorvoegsel zoals `discord:...`)
   - accountgebonden wanneer `--account` is ingesteld (kanaalglobals + geselecteerde accountoppervlakken)
-  - wanneer `--account` is weggelaten, forceert OpenClaw geen `default` account-SecretRef-scope
+  - wanneer `--account` is weggelaten, forceert OpenClaw geen `default`-account-SecretRef-scope
 - Niet-opgeloste SecretRefs op niet-gerelateerde kanalen blokkeren een gerichte berichtactie niet.
 - Als de geselecteerde kanaal-/account-SecretRef niet is opgelost, faalt de opdracht gesloten voor die actie.
 
@@ -74,16 +74,16 @@ Naamopzoeking:
 ### Kern
 
 - `send`
-  - Kanalen: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - Kanalen: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
   - Vereist: `--target`, plus `--message`, `--media` of `--presentation`
   - Optioneel: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Gedeelde presentatiepayloads: `--presentation` verzendt semantische blokken (`text`, `context`, `divider`, `buttons`, `select`) die de kern rendert via de aangegeven mogelijkheden van het geselecteerde kanaal. Zie [Berichtpresentatie](/nl/plugins/message-presentation).
-  - Generieke bezorgvoorkeuren: `--delivery` accepteert bezorghints zoals `{ "pin": true }`; `--pin` is een verkorte vorm voor vastgezette bezorging wanneer het kanaal dit ondersteunt.
+  - Gedeelde presentatiepayloads: `--presentation` verzendt semantische blokken (`text`, `context`, `divider`, `buttons`, `select`) die de kern rendert via de gedeclareerde mogelijkheden van het geselecteerde kanaal. Zie [Berichtpresentatie](/nl/plugins/message-presentation).
+  - Generieke bezorgingsvoorkeuren: `--delivery` accepteert bezorgingshints zoals `{ "pin": true }`; `--pin` is een verkorte vorm voor vastgezette bezorging wanneer het kanaal dit ondersteunt.
   - Alleen Telegram: `--force-document` (afbeeldingen en GIFs als documenten verzenden om Telegram-compressie te vermijden)
-  - Alleen Telegram: `--thread-id` (forumtopic-id)
-  - Alleen Slack: `--thread-id` (threadtimestamp; `--reply-to` gebruikt hetzelfde veld)
+  - Alleen Telegram: `--thread-id` (forumonderwerp-id)
+  - Alleen Slack: `--thread-id` (threadtijdstempel; `--reply-to` gebruikt hetzelfde veld)
   - Telegram + Discord: `--silent`
-  - Alleen WhatsApp: `--gif-playback`
+  - Alleen WhatsApp: `--gif-playback`; WhatsApp Channels/Newsletters worden geadresseerd met hun native `@newsletter`-JID.
 
 - `poll`
   - Kanalen: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
@@ -109,7 +109,7 @@ Naamopzoeking:
   - Kanalen: Discord/Slack/Matrix
   - Vereist: `--target`
   - Optioneel: `--limit`, `--message-id`, `--before`, `--after`
-  - Alleen Slack: `--message-id` leest een specifieke Slack-berichttimestamp; combineer met `--thread-id` om een exact threadantwoord te lezen.
+  - Alleen Slack: `--message-id` leest een specifiek Slack-berichttijdstempel; combineer met `--thread-id` om een exacte threadreactie te lezen.
   - Alleen Discord: `--around`
 
 - `edit`
@@ -186,7 +186,7 @@ Naamopzoeking:
 - `member info` (Discord/Slack): `--user-id` (+ `--guild-id` voor Discord)
 - `voice status` (Discord): `--guild-id`, `--user-id`
 
-### Evenementen
+### Events
 
 - `event list` (Discord): `--guild-id`
 - `event create` (Discord): `--guild-id`, `--event-name`, `--start-time`
@@ -202,20 +202,20 @@ Naamopzoeking:
 ### Broadcast
 
 - `broadcast`
-  - Kanalen: elk geconfigureerd kanaal; gebruik `--channel all` om alle providers als doel te kiezen
+  - Kanalen: elk geconfigureerd kanaal; gebruik `--channel all` om alle providers te targeten
   - Vereist: `--targets <target...>`
   - Optioneel: `--message`, `--media`, `--dry-run`
 
 ## Voorbeelden
 
-Een Discord-antwoord verzenden:
+Verzend een Discord-antwoord:
 
 ```
 openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Een bericht met semantische knoppen verzenden:
+Verzend een bericht met semantische knoppen:
 
 ```
 openclaw message send --channel discord \
@@ -223,9 +223,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-De kern rendert dezelfde `presentation`-payload naar Discord-componenten, Slack-blokken, Telegram-inlineknoppen, Mattermost-props of Teams/Feishu-kaarten, afhankelijk van de kanaalmogelijkheid. Zie [Berichtpresentatie](/nl/plugins/message-presentation) voor het volledige contract en fallbackregels.
+De kern rendert dezelfde `presentation`-payload naar Discord-componenten, Slack-blokken, Telegram-inlineknoppen, Mattermost-props of Teams/Feishu-kaarten, afhankelijk van de kanaalmogelijkheid. Zie [Berichtpresentatie](/nl/plugins/message-presentation) voor het volledige contract en terugvalregels.
 
-Een rijkere presentatiepayload verzenden:
+Verzend een rijkere presentatiepayload:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -233,7 +233,7 @@ openclaw message send --channel googlechat --target spaces/AAA... \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
 ```
 
-Een Discord-poll maken:
+Maak een Discord-poll:
 
 ```
 openclaw message poll --channel discord \
@@ -243,7 +243,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-Een Telegram-poll maken (automatisch sluiten na 2 minuten):
+Maak een Telegram-poll (sluit automatisch na 2 minuten):
 
 ```
 openclaw message poll --channel telegram \
@@ -253,14 +253,14 @@ openclaw message poll --channel telegram \
   --poll-duration-seconds 120 --silent
 ```
 
-Een proactief Teams-bericht verzenden:
+Verzend een proactief Teams-bericht:
 
 ```
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 --message "hi"
 ```
 
-Een Teams-poll maken:
+Maak een Teams-poll:
 
 ```
 openclaw message poll --channel msteams \
@@ -269,14 +269,14 @@ openclaw message poll --channel msteams \
   --poll-option Pizza --poll-option Sushi
 ```
 
-Reageren in Slack:
+Reageer in Slack:
 
 ```
 openclaw message react --channel slack \
   --target C123 --message-id 456 --emoji "✅"
 ```
 
-Reageren in een Signal-groep:
+Reageer in een Signal-groep:
 
 ```
 openclaw message react --channel signal \
@@ -284,14 +284,14 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-Telegram-inlineknoppen verzenden via generieke presentatie:
+Verzend Telegram-inlineknoppen via generieke presentatie:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-Een Teams-kaart verzenden via generieke presentatie:
+Verzend een Teams-kaart via generieke presentatie:
 
 ```bash
 openclaw message send --channel msteams \
@@ -299,7 +299,7 @@ openclaw message send --channel msteams \
   --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-Een Telegram-afbeelding als document verzenden om compressie te vermijden:
+Verzend een Telegram-afbeelding als document om compressie te vermijden:
 
 ```bash
 openclaw message send --channel telegram --target @mychat \

@@ -2,13 +2,13 @@
 read_when:
     - Je wilt een gecontaineriseerde Gateway in plaats van lokale installaties
     - Je valideert de Docker-flow
-summary: Optionele op Docker gebaseerde installatie en introductie voor OpenClaw
+summary: Optionele op Docker gebaseerde installatie en onboarding voor OpenClaw
 title: Docker
 x-i18n:
-    generated_at: "2026-05-02T11:20:04Z"
+    generated_at: "2026-05-02T20:45:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8467618438209c1c7c74eadf2c793dbae21622eb92fa3ddbd13d668d8be5bf1f
+    source_hash: 5e57659c89a0b207b4b331752e7faaa814fe1f0043dad97043e95e460286c551
     source_path: install/docker.md
     workflow: 16
 ---
@@ -17,17 +17,17 @@ Docker is **optioneel**. Gebruik het alleen als je een gecontaineriseerde Gatewa
 
 ## Is Docker geschikt voor mij?
 
-- **Ja**: je wilt een geisoleerde, tijdelijke Gateway-omgeving of OpenClaw draaien op een host zonder lokale installaties.
-- **Nee**: je draait op je eigen machine en wilt alleen de snelste ontwikkellus. Gebruik in plaats daarvan de normale installatieflow.
+- **Ja**: je wilt een geïsoleerde, tijdelijke Gateway-omgeving of OpenClaw uitvoeren op een host zonder lokale installaties.
+- **Nee**: je draait op je eigen machine en wilt gewoon de snelste ontwikkellus. Gebruik in plaats daarvan de normale installatieflow.
 - **Opmerking over sandboxing**: de standaard sandbox-backend gebruikt Docker wanneer sandboxing is ingeschakeld, maar sandboxing staat standaard uit en vereist **niet** dat de volledige Gateway in Docker draait. SSH- en OpenShell-sandbox-backends zijn ook beschikbaar. Zie [Sandboxing](/nl/gateway/sandboxing).
 
 ## Vereisten
 
 - Docker Desktop (of Docker Engine) + Docker Compose v2
-- Minimaal 2 GB RAM voor het bouwen van de image (`pnpm install` kan op hosts met 1 GB door OOM worden beeindigd met exit 137)
+- Minimaal 2 GB RAM voor het bouwen van de image (`pnpm install` kan op hosts met 1 GB door OOM worden beëindigd met exit 137)
 - Genoeg schijfruimte voor images en logs
 - Als je op een VPS/openbare host draait, bekijk dan
-  [Beveiligingshardening voor netwerkblootstelling](/nl/gateway/security),
+  [Beveiligingsverharding voor netwerkblootstelling](/nl/gateway/security),
   vooral het Docker `DOCKER-USER`-firewallbeleid.
 
 ## Gecontaineriseerde Gateway
@@ -60,19 +60,19 @@ Docker is **optioneel**. Gebruik het alleen als je een gecontaineriseerde Gatewa
     - een Gateway-token genereren en dit naar `.env` schrijven
     - de Gateway starten via Docker Compose
 
-    Tijdens de installatie worden onboarding voor het starten en configuratieschrijfacties rechtstreeks via
-    `openclaw-gateway` uitgevoerd. `openclaw-cli` is voor commando's die je uitvoert nadat
+    Tijdens de installatie worden onboarding vóór het starten en configuratieschrijfacties rechtstreeks via
+    `openclaw-gateway` uitgevoerd. `openclaw-cli` is voor opdrachten die je uitvoert nadat
     de Gateway-container al bestaat.
 
   </Step>
 
   <Step title="Open de Control UI">
     Open `http://127.0.0.1:18789/` in je browser en plak het geconfigureerde
-    gedeelde geheim in Instellingen. Het installatiescript schrijft standaard een token naar `.env`;
+    gedeelde geheim in Settings. Het installatiescript schrijft standaard een token naar `.env`;
     als je de containerconfiguratie overschakelt naar wachtwoordauthenticatie, gebruik dan in plaats daarvan dat
     wachtwoord.
 
-    Heb je de URL opnieuw nodig?
+    URL opnieuw nodig?
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
@@ -81,7 +81,7 @@ Docker is **optioneel**. Gebruik het alleen als je een gecontaineriseerde Gatewa
   </Step>
 
   <Step title="Configureer kanalen (optioneel)">
-    Gebruik de CLI-container om berichtkanalen toe te voegen:
+    Gebruik de CLI-container om berichtenkanalen toe te voegen:
 
     ```bash
     # WhatsApp (QR)
@@ -94,7 +94,7 @@ Docker is **optioneel**. Gebruik het alleen als je een gecontaineriseerde Gatewa
     docker compose run --rm openclaw-cli channels add --channel discord --token "<token>"
     ```
 
-    Documentatie: [WhatsApp](/nl/channels/whatsapp), [Telegram](/nl/channels/telegram), [Discord](/nl/channels/discord)
+    Docs: [WhatsApp](/nl/channels/whatsapp), [Telegram](/nl/channels/telegram), [Discord](/nl/channels/discord)
 
   </Step>
 </Steps>
@@ -119,8 +119,8 @@ neem dit op met `-f docker-compose.yml -f docker-compose.extra.yml`.
 </Note>
 
 <Note>
-Omdat `openclaw-cli` de netwerknaamruimte van `openclaw-gateway` deelt, is het een
-tool voor na het starten. Voer voor `docker compose up -d openclaw-gateway` onboarding
+Omdat `openclaw-cli` de netwerknamespace van `openclaw-gateway` deelt, is het een
+hulpmiddel voor na het starten. Voer vóór `docker compose up -d openclaw-gateway` onboarding
 en configuratieschrijfacties tijdens de installatie uit via `openclaw-gateway` met
 `--no-deps --entrypoint node`.
 </Note>
@@ -133,32 +133,32 @@ Het installatiescript accepteert deze optionele omgevingsvariabelen:
 | ------------------------------------------ | --------------------------------------------------------------- |
 | `OPENCLAW_IMAGE`                           | Gebruik een externe image in plaats van lokaal te bouwen        |
 | `OPENCLAW_DOCKER_APT_PACKAGES`             | Installeer extra apt-pakketten tijdens het bouwen (gescheiden door spaties) |
-| `OPENCLAW_EXTENSIONS`                      | Neem geselecteerde gebundelde plugin-helpers op tijdens het bouwen |
-| `OPENCLAW_EXTRA_MOUNTS`                    | Extra bind-mounts van de host (kommagescheiden `source:target[:opts]`) |
+| `OPENCLAW_EXTENSIONS`                      | Neem geselecteerde gebundelde Plugin-helpers op tijdens het bouwen |
+| `OPENCLAW_EXTRA_MOUNTS`                    | Extra bind mounts van host (`source:target[:opts]`, gescheiden door komma's) |
 | `OPENCLAW_HOME_VOLUME`                     | Bewaar `/home/node` in een benoemd Docker-volume                |
 | `OPENCLAW_SANDBOX`                         | Schakel sandbox-bootstrap in (`1`, `true`, `yes`, `on`)         |
 | `OPENCLAW_SKIP_ONBOARDING`                 | Sla de interactieve onboardingstap over (`1`, `true`, `yes`, `on`) |
-| `OPENCLAW_DOCKER_SOCKET`                   | Overschrijf het Docker-socketpad                                |
+| `OPENCLAW_DOCKER_SOCKET`                   | Overschrijf het pad naar de Docker-socket                       |
 | `OPENCLAW_DISABLE_BONJOUR`                 | Schakel Bonjour/mDNS-advertising uit (standaard `1` voor Docker) |
-| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | Schakel bron-bind-mount-overlays voor gebundelde plugins uit    |
+| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | Schakel bind-mount-overlays voor gebundelde Plugin-broncode uit |
 | `OTEL_EXPORTER_OTLP_ENDPOINT`              | Gedeeld OTLP/HTTP-collector-endpoint voor OpenTelemetry-export  |
 | `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | Signaalspecifieke OTLP-endpoints voor traces, metrics of logs   |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`              | Overschrijving van het OTLP-protocol. Alleen `http/protobuf` wordt vandaag ondersteund |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`              | Overschrijving van OTLP-protocol. Alleen `http/protobuf` wordt vandaag ondersteund |
 | `OTEL_SERVICE_NAME`                        | Servicenaam die wordt gebruikt voor OpenTelemetry-resources     |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`            | Meld je aan voor de nieuwste experimentele GenAI-semantische attributen |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`            | Schakel nieuwste experimentele GenAI semantische attributen in  |
 | `OPENCLAW_OTEL_PRELOADED`                  | Sla het starten van een tweede OpenTelemetry SDK over wanneer er al een is voorgeladen |
 
-Maintainers kunnen de bron van gebundelde plugins testen tegen een verpakte image door
-een plugin-bronmap te mounten over het verpakte bronpad, bijvoorbeeld
+Maintainers kunnen gebundelde Plugin-broncode testen tegen een verpakte image door
+één Plugin-bronmap over het verpakte bronpad ervan te mounten, bijvoorbeeld
 `OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`.
-Die gemounte bronmap overschrijft de overeenkomende gecompileerde
-`/app/dist/extensions/synology-chat`-bundel voor dezelfde plugin-id.
+Die gemounte bronmap overschrijft de bijbehorende gecompileerde
+`/app/dist/extensions/synology-chat`-bundel voor dezelfde Plugin-id.
 
 ### Observeerbaarheid
 
-OpenTelemetry-export is uitgaand vanuit de Gateway-container naar je OTLP-
-collector. Hiervoor is geen gepubliceerde Docker-poort vereist. Als je de image
-lokaal bouwt en de gebundelde OpenTelemetry-exporter beschikbaar wilt hebben in de image,
+OpenTelemetry-export gaat uitgaand vanuit de Gateway-container naar je OTLP
+collector. Er is geen gepubliceerde Docker-poort voor nodig. Als je de image
+lokaal bouwt en de gebundelde OpenTelemetry-exporter beschikbaar wilt hebben binnen de image,
 neem dan de runtime-afhankelijkheden ervan op:
 
 ```bash
@@ -168,28 +168,30 @@ export OTEL_SERVICE_NAME="openclaw-gateway"
 ./scripts/docker/setup.sh
 ```
 
-Installeer de officiele `@openclaw/diagnostics-otel`-plugin in verpakte Docker-
-installaties voordat je export inschakelt. Aangepaste vanuit bron gebouwde images kunnen nog steeds
-de lokale plugin-bron opnemen met `OPENCLAW_EXTENSIONS=diagnostics-otel`. Om
-export in te schakelen, sta de `diagnostics-otel`-plugin toe en schakel deze in de configuratie in, en stel daarna
-`diagnostics.otel.enabled=true` in of gebruik het configuratievoorbeeld in [OpenTelemetry-
-export](/nl/gateway/opentelemetry). Collector-authenticatieheaders worden geconfigureerd via
+Installeer de officiële `@openclaw/diagnostics-otel` Plugin vanuit ClawHub in
+verpakte Docker-installaties voordat je export inschakelt. Aangepaste, vanuit bron gebouwde images kunnen
+nog steeds de lokale Plugin-broncode opnemen met
+`OPENCLAW_EXTENSIONS=diagnostics-otel`. Om export in te schakelen, sta de
+`diagnostics-otel` Plugin toe en schakel deze in de configuratie in, stel vervolgens
+`diagnostics.otel.enabled=true` in of gebruik het configuratievoorbeeld in [OpenTelemetry
+export](/nl/gateway/opentelemetry). Authenticatieheaders voor de collector worden geconfigureerd via
 `diagnostics.otel.headers`, niet via Docker-omgevingsvariabelen.
 
-Prometheus-metrics gebruiken de al gepubliceerde Gateway-poort. Schakel de
-`diagnostics-prometheus`-plugin in en scrape daarna:
+Prometheus-metrics gebruiken de al gepubliceerde Gateway-poort. Installeer
+`clawhub:@openclaw/diagnostics-prometheus`, schakel de
+`diagnostics-prometheus` Plugin in en scrape vervolgens:
 
 ```text
 http://<gateway-host>:18789/api/diagnostics/prometheus
 ```
 
-De route wordt beschermd door Gateway-authenticatie. Stel geen aparte
+De route wordt beschermd door Gateway-authenticatie. Stel geen afzonderlijke
 openbare `/metrics`-poort of niet-geauthenticeerd reverse-proxy-pad bloot. Zie
 [Prometheus-metrics](/nl/gateway/prometheus).
 
 ### Health checks
 
-Container-probe-endpoints (geen authenticatie vereist):
+Containerprobe-endpoints (geen authenticatie vereist):
 
 ```bash
 curl -fsS http://127.0.0.1:18789/healthz   # liveness
@@ -197,8 +199,8 @@ curl -fsS http://127.0.0.1:18789/readyz     # readiness
 ```
 
 De Docker-image bevat een ingebouwde `HEALTHCHECK` die `/healthz` pingt.
-Als checks blijven mislukken, markeert Docker de container als `unhealthy` en
-kunnen orchestratiesystemen deze herstarten of vervangen.
+Als controles blijven mislukken, markeert Docker de container als `unhealthy` en
+kunnen orchestratiesystemen deze opnieuw starten of vervangen.
 
 Geauthenticeerde diepe health-snapshot:
 
@@ -212,11 +214,11 @@ docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLA
 `http://127.0.0.1:18789` werkt met Docker-poortpublicatie.
 
 - `lan` (standaard): hostbrowser en host-CLI kunnen de gepubliceerde Gateway-poort bereiken.
-- `loopback`: alleen processen binnen de netwerknaamruimte van de container kunnen
+- `loopback`: alleen processen binnen de netwerknamespace van de container kunnen
   de Gateway rechtstreeks bereiken.
 
 <Note>
-Gebruik bindmoduswaarden in `gateway.bind` (`lan` / `loopback` / `custom` /
+Gebruik bind-moduswaarden in `gateway.bind` (`lan` / `loopback` / `custom` /
 `tailnet` / `auto`), geen hostaliassen zoals `0.0.0.0` of `127.0.0.1`.
 </Note>
 
@@ -226,39 +228,39 @@ Wanneer OpenClaw in Docker draait, is `127.0.0.1` binnen de container de contain
 zelf, niet je hostmachine. Gebruik `host.docker.internal` voor AI-providers die
 op de host draaien:
 
-| Provider  | Standaard-URL op host     | Docker-installatie-URL              |
-| --------- | ------------------------- | ----------------------------------- |
-| LM Studio | `http://127.0.0.1:1234`   | `http://host.docker.internal:1234`  |
-| Ollama    | `http://127.0.0.1:11434`  | `http://host.docker.internal:11434` |
+| Provider  | Standaard-URL op host    | Docker-installatie-URL              |
+| --------- | ------------------------ | ----------------------------------- |
+| LM Studio | `http://127.0.0.1:1234`  | `http://host.docker.internal:1234`  |
+| Ollama    | `http://127.0.0.1:11434` | `http://host.docker.internal:11434` |
 
-De gebundelde Docker-installatie gebruikt die host-URL's als de onboardingstandaarden voor LM Studio en Ollama,
-en `docker-compose.yml` koppelt `host.docker.internal` aan
-Docker's host-Gateway voor Linux Docker Engine. Docker Desktop biedt
-dezelfde hostnaam al op macOS en Windows.
+De gebundelde Docker-installatie gebruikt die host-URL's als onboardingstandaarden
+voor LM Studio en Ollama, en `docker-compose.yml` koppelt `host.docker.internal` aan
+Docker's host-Gateway voor Linux Docker Engine. Docker Desktop biedt dezelfde
+hostnaam al op macOS en Windows.
 
-Hostservices moeten ook luisteren op een adres dat bereikbaar is vanuit Docker:
+Hostservices moeten ook luisteren op een adres dat vanuit Docker bereikbaar is:
 
 ```bash
 lms server start --port 1234 --bind 0.0.0.0
 OLLAMA_HOST=0.0.0.0:11434 ollama serve
 ```
 
-Als je je eigen Compose-bestand of `docker run`-commando gebruikt, voeg dan zelf dezelfde host-
-mapping toe, bijvoorbeeld
+Als je je eigen Compose-bestand of `docker run`-opdracht gebruikt, voeg dan zelf
+dezelfde hostmapping toe, bijvoorbeeld
 `--add-host=host.docker.internal:host-gateway`.
 
 ### Bonjour / mDNS
 
-Docker bridge networking stuurt Bonjour/mDNS-multicast
-(`224.0.0.251:5353`) meestal niet betrouwbaar door. De gebundelde Compose-installatie gebruikt daarom standaard
-`OPENCLAW_DISABLE_BONJOUR=1`, zodat de Gateway niet in een crash-loop belandt of herhaaldelijk
-opnieuw begint met adverteren wanneer de bridge multicastverkeer laat vallen.
+Docker bridge-netwerken geven Bonjour/mDNS-multicast (`224.0.0.251:5353`) meestal
+niet betrouwbaar door. De gebundelde Compose-installatie gebruikt daarom standaard
+`OPENCLAW_DISABLE_BONJOUR=1`, zodat de Gateway niet in een crash-loop terechtkomt of herhaaldelijk
+advertising opnieuw start wanneer de bridge multicastverkeer laat vallen.
 
 Gebruik de gepubliceerde Gateway-URL, Tailscale of wide-area DNS-SD voor Docker-hosts.
-Stel `OPENCLAW_DISABLE_BONJOUR=0` alleen in wanneer je draait met host networking, macvlan
+Stel `OPENCLAW_DISABLE_BONJOUR=0` alleen in wanneer je draait met hostnetwerken, macvlan
 of een ander netwerk waarvan bekend is dat mDNS-multicast werkt.
 
-Zie [Bonjour-discovery](/nl/gateway/bonjour) voor valkuilen en probleemoplossing.
+Zie [Bonjour-discovery](/nl/gateway/bonjour) voor aandachtspunten en probleemoplossing.
 
 ### Opslag en persistentie
 
@@ -267,27 +269,27 @@ Docker Compose bind-mount `OPENCLAW_CONFIG_DIR` naar `/home/node/.openclaw` en
 containervervanging overleven. Wanneer een van beide variabelen niet is ingesteld, valt de gebundelde
 `docker-compose.yml` terug op `${HOME}/.openclaw` (en
 `${HOME}/.openclaw/workspace` voor de workspace-mount), of `/tmp/.openclaw`
-wanneer `HOME` zelf ook ontbreekt. Dat voorkomt dat `docker compose up` een volumespecificatie met lege bron
-uitgeeft in kale omgevingen.
+wanneer `HOME` zelf ook ontbreekt. Dat voorkomt dat `docker compose up` een
+volumespecificatie met lege bron uitstuurt in kale omgevingen.
 
 Die gemounte configuratiemap is waar OpenClaw het volgende bewaart:
 
 - `openclaw.json` voor gedragsconfiguratie
-- `agents/<agentId>/agent/auth-profiles.json` voor opgeslagen provider-OAuth/API-sleutelauthenticatie
-- `.env` voor runtimegeheimen op basis van env, zoals `OPENCLAW_GATEWAY_TOKEN`
+- `agents/<agentId>/agent/auth-profiles.json` voor opgeslagen provider-OAuth/API-key-authenticatie
+- `.env` voor door env ondersteunde runtimegeheimen zoals `OPENCLAW_GATEWAY_TOKEN`
 
-Geinstalleerde downloadbare plugins slaan hun pakketstatus op onder de gemounte
-OpenClaw-home, zodat plugin-installatierecords en pakketroots containervervanging
-overleven. Gateway-startup genereert geen afhankelijkheidsbomen voor gebundelde plugins.
+Geïnstalleerde downloadbare Plugins slaan hun pakketstatus op onder de gemounte
+OpenClaw-home, zodat Plugin-installatierecords en pakketroots containervervanging
+overleven. Gateway-opstart genereert geen afhankelijkheidsbomen voor gebundelde Plugins.
 
-Zie voor volledige persistentiedetails over VM-deployments
+Zie voor volledige persistentiedetails bij VM-implementaties
 [Docker VM Runtime - Wat blijft waar behouden](/nl/install/docker-vm-runtime#what-persists-where).
 
-**Hotspots voor schijfgroei:** bewaak `media/`, JSONL-sessiebestanden,
-`cron/runs/*.jsonl`, roots van geïnstalleerde Plugin-pakketten en roterende bestandslogs
-onder `/tmp/openclaw/`.
+**Hotspots voor schijfgroei:** houd `media/`, sessie-JSONL-bestanden,
+`cron/runs/*.jsonl`, roots van geïnstalleerde pluginpakketten en roterende bestandslogs
+onder `/tmp/openclaw/` in de gaten.
 
-### Shell-helpers (optioneel)
+### Shellhelpers (optioneel)
 
 Installeer `ClawDock` voor eenvoudiger dagelijks Docker-beheer:
 
@@ -296,11 +298,11 @@ mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/open
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-Als je ClawDock hebt geïnstalleerd vanaf het oudere raw-pad `scripts/shell-helpers/clawdock-helpers.sh`, voer je de bovenstaande installatieopdracht opnieuw uit zodat je lokale helperbestand de nieuwe locatie volgt.
+Als je ClawDock hebt geïnstalleerd vanaf het oudere onbewerkte pad `scripts/shell-helpers/clawdock-helpers.sh`, voer dan de bovenstaande installatieopdracht opnieuw uit zodat je lokale helperbestand de nieuwe locatie volgt.
 
-Gebruik daarna `clawdock-start`, `clawdock-stop`, `clawdock-dashboard`, enzovoort. Voer
+Gebruik daarna `clawdock-start`, `clawdock-stop`, `clawdock-dashboard`, enz. Voer
 `clawdock-help` uit voor alle opdrachten.
-Zie [ClawDock](/nl/install/clawdock) voor de volledige helpergids.
+Zie [ClawDock](/nl/install/clawdock) voor de volledige helperhandleiding.
 
 <AccordionGroup>
   <Accordion title="Agentsandbox inschakelen voor Docker-gateway">
@@ -318,7 +320,7 @@ Zie [ClawDock](/nl/install/clawdock) voor de volledige helpergids.
     ```
 
     Het script mount `docker.sock` pas nadat aan de sandboxvereisten is voldaan. Als
-    sandboxconfiguratie niet kan worden voltooid, zet het script `agents.defaults.sandbox.mode`
+    de sandboxconfiguratie niet kan worden voltooid, zet het script `agents.defaults.sandbox.mode`
     terug naar `off`.
 
   </Accordion>
@@ -335,14 +337,14 @@ Zie [ClawDock](/nl/install/clawdock) voor de volledige helpergids.
 
   <Accordion title="Beveiligingsopmerking voor gedeeld netwerk">
     `openclaw-cli` gebruikt `network_mode: "service:openclaw-gateway"` zodat CLI-
-    opdrachten de Gateway via `127.0.0.1` kunnen bereiken. Behandel dit als een gedeelde
-    vertrouwensgrens. De compose-configuratie verwijdert `NET_RAW`/`NET_ADMIN` en schakelt
+    opdrachten de gateway via `127.0.0.1` kunnen bereiken. Behandel dit als een gedeelde
+    vertrouwensgrens. De compose-configuratie laat `NET_RAW`/`NET_ADMIN` vallen en schakelt
     `no-new-privileges` in op `openclaw-cli`.
   </Accordion>
 
   <Accordion title="Machtigingen en EACCES">
     De image draait als `node` (uid 1000). Als je machtigingsfouten ziet op
-    `/home/node/.openclaw`, zorg er dan voor dat je bind mounts op de host eigendom zijn van uid 1000:
+    `/home/node/.openclaw`, zorg er dan voor dat je host-bindmounts eigendom zijn van uid 1000:
 
     ```bash
     sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
@@ -351,8 +353,8 @@ Zie [ClawDock](/nl/install/clawdock) voor de volledige helpergids.
   </Accordion>
 
   <Accordion title="Snellere rebuilds">
-    Orden je Dockerfile zodat afhankelijkheidslagen worden gecachet. Zo voorkom je dat
-    `pnpm install` opnieuw wordt uitgevoerd tenzij lockfiles veranderen:
+    Orden je Dockerfile zodat afhankelijkheidslagen worden gecachet. Dit voorkomt dat
+    `pnpm install` opnieuw wordt uitgevoerd, tenzij lockfiles wijzigen:
 
     ```dockerfile
     FROM node:24-bookworm
@@ -375,33 +377,33 @@ Zie [ClawDock](/nl/install/clawdock) voor de volledige helpergids.
   </Accordion>
 
   <Accordion title="Containeropties voor power-users">
-    De standaardimage is beveiligingsgericht en draait als niet-root `node`. Voor een
-    uitgebreidere container:
+    De standaardimage geeft prioriteit aan beveiliging en draait als niet-root `node`. Voor een meer
+    volledig uitgeruste container:
 
-    1. **Behoud `/home/node`**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
-    2. **Bak systeemafhankelijkheden mee**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
-    3. **Installeer Playwright-browsers**:
+    1. **`/home/node` behouden**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
+    2. **Systeemafhankelijkheden inbakken**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
+    3. **Playwright-browsers installeren**:
        ```bash
        docker compose run --rm openclaw-cli \
          node /app/node_modules/playwright-core/cli.js install chromium
        ```
-    4. **Behoud browserdownloads**: stel
+    4. **Browserdownloads behouden**: stel
        `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` in en gebruik
        `OPENCLAW_HOME_VOLUME` of `OPENCLAW_EXTRA_MOUNTS`.
 
   </Accordion>
 
   <Accordion title="OpenAI Codex OAuth (headless Docker)">
-    Als je OpenAI Codex OAuth kiest in de wizard, opent deze een browser-URL. In
-    Docker- of headless-opstellingen kopieer je de volledige redirect-URL waarop je uitkomt en plak je
-    deze terug in de wizard om auth te voltooien.
+    Als je OpenAI Codex OAuth kiest in de wizard, wordt er een browser-URL geopend. In
+    Docker- of headless setups kopieer je de volledige omleidings-URL waarop je terechtkomt en plak je
+    die terug in de wizard om de authenticatie te voltooien.
   </Accordion>
 
   <Accordion title="Metadata van basisimage">
     De hoofdimage voor de Docker-runtime gebruikt `node:24-bookworm-slim` en publiceert OCI-
-    basisimage-annotaties, waaronder `org.opencontainers.image.base.name`,
-    `org.opencontainers.image.source` en andere. De Node-basisdigest wordt
-    vernieuwd via Dependabot-PR's voor Docker-basisimages; release-builds voeren geen
+    basisimageannotaties, waaronder `org.opencontainers.image.base.name`,
+    `org.opencontainers.image.source` en andere. De digest van de Node-basisimage wordt
+    vernieuwd via Dependabot-PR's voor Docker-basisimages; releasebuilds voeren geen
     distro-upgradelaag uit. Zie
     [OCI-imageannotaties](https://github.com/opencontainers/image-spec/blob/main/annotations.md).
   </Accordion>
@@ -410,27 +412,26 @@ Zie [ClawDock](/nl/install/clawdock) voor de volledige helpergids.
 ### Draaien op een VPS?
 
 Zie [Hetzner (Docker VPS)](/nl/install/hetzner) en
-[Docker VM Runtime](/nl/install/docker-vm-runtime) voor stappen voor gedeelde VM-deployment,
-waaronder binary baking, persistentie en updates.
+[Docker VM Runtime](/nl/install/docker-vm-runtime) voor stappen voor gedeelde VM-implementatie,
+inclusief binary baking, persistentie en updates.
 
 ## Agentsandbox
 
-Wanneer `agents.defaults.sandbox` is ingeschakeld met de Docker-backend, voert de Gateway
-agent-tooluitvoering (shell, bestanden lezen/schrijven, enzovoort) uit binnen geïsoleerde Docker-
-containers terwijl de Gateway zelf op de host blijft. Dit geeft je een harde scheiding
-rond niet-vertrouwde of multi-tenant agentsessies zonder de volledige
-Gateway te containeriseren.
+Wanneer `agents.defaults.sandbox` is ingeschakeld met de Docker-backend, voert de gateway
+agenttooluitvoering (shell, bestanden lezen/schrijven, enz.) uit binnen geïsoleerde Docker-
+containers terwijl de gateway zelf op de host blijft. Dit geeft je een harde scheiding
+rond niet-vertrouwde of multi-tenant agentsessies zonder de volledige gateway in een container te plaatsen.
 
 Sandboxscope kan per agent (standaard), per sessie of gedeeld zijn. Elke scope
 krijgt een eigen workspace die is gemount op `/workspace`. Je kunt ook
-toolbeleid voor toestaan/weigeren, netwerkisolatie, resourcelimieten en browser-
+toestaan/weigeren-toolbeleid, netwerkisolatie, resourcebeperkingen en browser-
 containers configureren.
 
-Zie voor volledige configuratie, images, beveiligingsopmerkingen en multi-agentprofielen:
+Voor volledige configuratie, images, beveiligingsopmerkingen en multi-agentprofielen, zie:
 
 - [Sandboxing](/nl/gateway/sandboxing) -- volledige sandboxreferentie
 - [OpenShell](/nl/gateway/openshell) -- interactieve shelltoegang tot sandboxcontainers
-- [Multi-agent sandbox en tools](/nl/tools/multi-agent-sandbox-tools) -- overrides per agent
+- [Multi-Agent Sandbox en Tools](/nl/tools/multi-agent-sandbox-tools) -- overrides per agent
 
 ### Snel inschakelen
 
@@ -447,7 +448,7 @@ Zie voor volledige configuratie, images, beveiligingsopmerkingen en multi-agentp
 }
 ```
 
-Bouw de standaard sandboximage (vanuit een source checkout):
+Bouw de standaard sandboximage (vanaf een source checkout):
 
 ```bash
 scripts/sandbox-setup.sh
@@ -463,25 +464,25 @@ Voor npm-installaties zonder source checkout, zie [Sandboxing § Images en setup
     [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)
     (source checkout) of de inline `docker build`-opdracht uit [Sandboxing § Images en setup](/nl/gateway/sandboxing#images-and-setup) (npm-installatie),
     of stel `agents.defaults.sandbox.docker.image` in op je aangepaste image.
-    Containers worden op aanvraag automatisch per sessie aangemaakt.
+    Containers worden automatisch per sessie aangemaakt wanneer nodig.
   </Accordion>
 
   <Accordion title="Machtigingsfouten in sandbox">
     Stel `docker.user` in op een UID:GID die overeenkomt met het eigendom van je gemounte workspace,
-    of wijzig de eigenaar van de workspace-map met chown.
+    of voer chown uit op de workspacemap.
   </Accordion>
 
   <Accordion title="Aangepaste tools niet gevonden in sandbox">
     OpenClaw voert opdrachten uit met `sh -lc` (login-shell), wat
     `/etc/profile` sourcet en PATH kan resetten. Stel `docker.env.PATH` in om je
-    aangepaste toolpaden vooraan toe te voegen, of voeg een script toe onder `/etc/profile.d/` in je Dockerfile.
+    aangepaste toolpaden vooraan te plaatsen, of voeg een script toe onder `/etc/profile.d/` in je Dockerfile.
   </Accordion>
 
   <Accordion title="OOM-killed tijdens imagebuild (exit 137)">
     De VM heeft minimaal 2 GB RAM nodig. Gebruik een grotere machineklasse en probeer het opnieuw.
   </Accordion>
 
-  <Accordion title="Niet geautoriseerd of pairing vereist in Control UI">
+  <Accordion title="Niet-geautoriseerd of koppeling vereist in Control UI">
     Haal een nieuwe dashboardlink op en keur het browserapparaat goed:
 
     ```bash
@@ -490,12 +491,12 @@ Voor npm-installaties zonder source checkout, zie [Sandboxing § Images en setup
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    Meer detail: [Dashboard](/nl/web/dashboard), [Apparaten](/nl/cli/devices).
+    Meer details: [Dashboard](/nl/web/dashboard), [Apparaten](/nl/cli/devices).
 
   </Accordion>
 
-  <Accordion title="Gatewaydoel toont ws://172.x.x.x of pairingfouten vanuit Docker CLI">
-    Reset Gatewaymodus en binding:
+  <Accordion title="Gatewaydoel toont ws://172.x.x.x of koppelingsfouten vanuit Docker CLI">
+    Reset gatewaymodus en bind:
 
     ```bash
     docker compose run --rm openclaw-cli config set --batch-json '[{"path":"gateway.mode","value":"local"},{"path":"gateway.bind","value":"lan"}]'
@@ -509,6 +510,6 @@ Voor npm-installaties zonder source checkout, zie [Sandboxing § Images en setup
 
 - [Installatieoverzicht](/nl/install) — alle installatiemethoden
 - [Podman](/nl/install/podman) — Podman-alternatief voor Docker
-- [ClawDock](/nl/install/clawdock) — Docker Compose-communityopstelling
+- [ClawDock](/nl/install/clawdock) — communitysetup met Docker Compose
 - [Bijwerken](/nl/install/updating) — OpenClaw up-to-date houden
-- [Configuratie](/nl/gateway/configuration) — Gatewayconfiguratie na installatie
+- [Configuratie](/nl/gateway/configuration) — gatewayconfiguratie na installatie

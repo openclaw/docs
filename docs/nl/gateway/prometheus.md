@@ -1,40 +1,45 @@
 ---
 read_when:
-    - Je wilt dat Prometheus, Grafana, VictoriaMetrics of een andere scraper OpenClaw Gateway-metrieken verzamelt
+    - Je wilt dat Prometheus, Grafana, VictoriaMetrics of een andere scraper OpenClaw Gateway-metrics verzamelt
     - Je hebt de Prometheus-metrieknamen en het labelbeleid nodig voor dashboards of waarschuwingen
-    - Je wilt metrieken zonder een OpenTelemetry-collector te draaien
+    - Je wilt metrics zonder een OpenTelemetry-collector te draaien
 sidebarTitle: Prometheus
-summary: Stel OpenClaw-diagnostiek beschikbaar als Prometheus-tekstmetrieken via de diagnostics-prometheus plugin
+summary: Stel OpenClaw-diagnostiek beschikbaar als Prometheus-tekstmetrieken via de diagnostics-prometheus Plugin
 title: Prometheus-metrieken
 x-i18n:
-    generated_at: "2026-04-29T22:47:08Z"
+    generated_at: "2026-05-02T20:44:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
+    source_hash: 49df17348c5b63c4b5f3c05f3378d43764e5de985135ad30c1e74ef607e0dd37
     source_path: gateway/prometheus.md
     workflow: 16
 ---
 
-OpenClaw kan diagnostische metrics beschikbaar maken via de gebundelde Plugin `diagnostics-prometheus`. Deze luistert naar vertrouwde interne diagnostiek en rendert een Prometheus-texteindpunt op:
+OpenClaw kan diagnostische metrics beschikbaar maken via de officiële `diagnostics-prometheus` Plugin. Deze luistert naar vertrouwde interne diagnostics en rendert een Prometheus-teksteindpunt op:
 
 ```text
 GET /api/diagnostics/prometheus
 ```
 
-Het inhoudstype is `text/plain; version=0.0.4; charset=utf-8`, de standaard Prometheus-expositie-indeling.
+Het contenttype is `text/plain; version=0.0.4; charset=utf-8`, de standaard Prometheus-expositie-indeling.
 
 <Warning>
-De route gebruikt Gateway-authenticatie (operator-scope). Stel deze niet beschikbaar als openbaar, niet-geauthenticeerd `/metrics`-eindpunt. Scrape deze via hetzelfde auth-pad dat je gebruikt voor andere operator-API's.
+De route gebruikt Gateway-authenticatie (operatorbereik). Stel deze niet bloot als openbaar, niet-geauthenticeerd `/metrics`-eindpunt. Scrape deze via hetzelfde authenticatiepad dat je gebruikt voor andere operator-API's.
 </Warning>
 
 Voor traces, logs, OTLP-push en OpenTelemetry GenAI-semantische attributen, zie [OpenTelemetry-export](/nl/gateway/opentelemetry).
 
-## Snel starten
+## Snel aan de slag
 
 <Steps>
+  <Step title="Installeer de Plugin">
+    ```bash
+    openclaw plugins install clawhub:@openclaw/diagnostics-prometheus
+    ```
+  </Step>
   <Step title="Schakel de Plugin in">
     <Tabs>
-      <Tab title="Configuratie">
+      <Tab title="Config">
         ```json5
         {
           plugins: {
@@ -57,10 +62,10 @@ Voor traces, logs, OTLP-push en OpenTelemetry GenAI-semantische attributen, zie 
     </Tabs>
   </Step>
   <Step title="Herstart de Gateway">
-    De HTTP-route wordt geregistreerd bij het starten van de Plugin, dus herlaad na het inschakelen.
+    De HTTP-route wordt geregistreerd bij het opstarten van de Plugin, dus laad opnieuw na het inschakelen.
   </Step>
   <Step title="Scrape de beschermde route">
-    Stuur dezelfde gateway-auth die je operator-clients gebruiken:
+    Stuur dezelfde gateway-authenticatie die je operatorclients gebruiken:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -84,12 +89,12 @@ Voor traces, logs, OTLP-push en OpenTelemetry GenAI-semantische attributen, zie 
 </Steps>
 
 <Note>
-`diagnostics.enabled: true` is vereist. Zonder deze instelling registreert de Plugin nog steeds de HTTP-route, maar er stromen geen diagnostische gebeurtenissen naar de exporter, waardoor de response leeg is.
+`diagnostics.enabled: true` is vereist. Zonder deze instelling registreert de Plugin nog steeds de HTTP-route, maar stromen er geen diagnostische events naar de exporter, waardoor de response leeg is.
 </Note>
 
 ## Geëxporteerde metrics
 
-| Metriek                                       | Type      | Labels                                                                                    |
+| Metric                                        | Type      | Labels                                                                                    |
 | --------------------------------------------- | --------- | ----------------------------------------------------------------------------------------- |
 | `openclaw_run_completed_total`                | counter   | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
 | `openclaw_run_duration_seconds`               | histogram | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
@@ -111,28 +116,28 @@ Voor traces, logs, OTLP-push en OpenTelemetry GenAI-semantische attributen, zie 
 | `openclaw_session_state_total`                | counter   | `reason`, `state`                                                                         |
 | `openclaw_session_queue_depth`                | gauge     | `state`                                                                                   |
 | `openclaw_memory_bytes`                       | gauge     | `kind`                                                                                    |
-| `openclaw_memory_rss_bytes`                   | histogram | none                                                                                      |
+| `openclaw_memory_rss_bytes`                   | histogram | geen                                                                                      |
 | `openclaw_memory_pressure_total`              | counter   | `level`, `reason`                                                                         |
 | `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
-| `openclaw_prometheus_series_dropped_total`    | counter   | none                                                                                      |
+| `openclaw_prometheus_series_dropped_total`    | counter   | geen                                                                                      |
 
 ## Labelbeleid
 
 <AccordionGroup>
   <Accordion title="Begrensde labels met lage cardinaliteit">
-    Prometheus-labels blijven begrensd en hebben lage cardinaliteit. De exporter emit geen ruwe diagnostische identificatiegegevens zoals `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, message-ID's, chat-ID's of provider-request-ID's.
+    Prometheus-labels blijven begrensd en hebben lage cardinaliteit. De exporter emitteert geen ruwe diagnostische identifiers zoals `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, bericht-ID's, chat-ID's of provider-request-ID's.
 
-    Labelwaarden worden geredigeerd en moeten voldoen aan OpenClaw's tekenbeleid voor lage cardinaliteit. Waarden die niet aan het beleid voldoen, worden vervangen door `unknown`, `other` of `none`, afhankelijk van de metriek.
+    Labelwaarden worden geredigeerd en moeten voldoen aan OpenClaw's tekenbeleid voor lage cardinaliteit. Waarden die niet aan het beleid voldoen, worden vervangen door `unknown`, `other` of `none`, afhankelijk van de metric.
 
   </Accordion>
   <Accordion title="Serielimiet en overflow-boekhouding">
-    De exporter begrenst bewaarde tijdreeksen in het geheugen op **2048** reeksen voor counters, gauges en histogrammen samen. Nieuwe reeksen boven die limiet worden gedropt, en `openclaw_prometheus_series_dropped_total` wordt telkens met één verhoogd.
+    De exporter beperkt behouden tijdreeksen in het geheugen tot **2048** series in totaal voor counters, gauges en histograms samen. Nieuwe series boven die limiet worden gedropt, en `openclaw_prometheus_series_dropped_total` wordt telkens met één verhoogd.
 
-    Houd deze counter in de gaten als hard signaal dat een bovenstrooms attribuut waarden met hoge cardinaliteit lekt. De exporter verhoogt de limiet nooit automatisch; als deze oploopt, los dan de bron op in plaats van de limiet uit te schakelen.
+    Houd deze counter in de gaten als hard signaal dat een upstream-attribuut waarden met hoge cardinaliteit lekt. De exporter verhoogt de limiet nooit automatisch; als deze oploopt, los dan de bron op in plaats van de limiet uit te schakelen.
 
   </Accordion>
   <Accordion title="Wat nooit in Prometheus-output verschijnt">
-    - prompttekst, responstekst, tool-inputs, tool-outputs, systeemprompts
+    - prompttekst, responstekst, toolinputs, tooloutputs, systeemprompts
     - ruwe provider-request-ID's (alleen begrensde hashes, waar van toepassing, op spans — nooit op metrics)
     - sessiesleutels en sessie-ID's
     - hostnamen, bestandspaden, geheime waarden
@@ -167,54 +172,54 @@ increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Geef de voorkeur aan `gen_ai_client_token_usage` voor dashboards over providers heen: deze volgt de OpenTelemetry GenAI-semantische conventies en is consistent met metrics van GenAI-services buiten OpenClaw.
+Geef de voorkeur aan `gen_ai_client_token_usage` voor dashboards over providers heen: dit volgt de semantische conventies van OpenTelemetry GenAI en is consistent met metrics van GenAI-services buiten OpenClaw.
 </Tip>
 
 ## Kiezen tussen Prometheus- en OpenTelemetry-export
 
-OpenClaw ondersteunt beide oppervlakken onafhankelijk. Je kunt een van beide, beide of geen van beide gebruiken.
+OpenClaw ondersteunt beide oppervlakken onafhankelijk. Je kunt een van beide gebruiken, allebei of geen van beide.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
     - **Pull**-model: Prometheus scrapt `/api/diagnostics/prometheus`.
     - Geen externe collector vereist.
-    - Geauthenticeerd via normale Gateway-auth.
-    - Oppervlak is alleen metrics (geen traces of logs).
+    - Geauthenticeerd via normale Gateway-authenticatie.
+    - Het oppervlak is alleen metrics (geen traces of logs).
     - Het meest geschikt voor stacks die al gestandaardiseerd zijn op Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
     - **Push**-model: OpenClaw stuurt OTLP/HTTP naar een collector of OTLP-compatibele backend.
-    - Oppervlak bevat metrics, traces en logs.
-    - Koppelt naar Prometheus via een OpenTelemetry Collector (`prometheus`- of `prometheusremotewrite`-exporter) wanneer je beide nodig hebt.
+    - Het oppervlak omvat metrics, traces en logs.
+    - Slaat een brug naar Prometheus via een OpenTelemetry Collector (`prometheus`- of `prometheusremotewrite`-exporter) wanneer je beide nodig hebt.
     - Zie [OpenTelemetry-export](/nl/gateway/opentelemetry) voor de volledige catalogus.
 
   </Tab>
 </Tabs>
 
-## Probleemoplossing
+## Problemen oplossen
 
 <AccordionGroup>
   <Accordion title="Lege responsebody">
-    - Controleer `diagnostics.enabled: true` in de configuratie.
+    - Controleer `diagnostics.enabled: true` in de config.
     - Bevestig dat de Plugin is ingeschakeld en geladen met `openclaw plugins list --enabled`.
-    - Genereer wat verkeer; counters en histogrammen emitten pas regels na minstens één gebeurtenis.
+    - Genereer wat verkeer; counters en histograms emitten pas regels na minstens één event.
 
   </Accordion>
-  <Accordion title="401 / niet geautoriseerd">
-    Het eindpunt vereist de Gateway-operator-scope (`auth: "gateway"` met `gatewayRuntimeScopeSurface: "trusted-operator"`). Gebruik hetzelfde token of wachtwoord dat Prometheus gebruikt voor elke andere Gateway-operatorroute. Er is geen openbare, niet-geauthenticeerde modus.
+  <Accordion title="401 / unauthorized">
+    Het eindpunt vereist het Gateway-operatorbereik (`auth: "gateway"` met `gatewayRuntimeScopeSurface: "trusted-operator"`). Gebruik hetzelfde token of wachtwoord dat Prometheus gebruikt voor elke andere Gateway-operatorroute. Er is geen openbare, niet-geauthenticeerde modus.
   </Accordion>
   <Accordion title="`openclaw_prometheus_series_dropped_total` loopt op">
-    Een nieuw attribuut overschrijdt de limiet van **2048** reeksen. Inspecteer recente metrics op een onverwacht label met hoge cardinaliteit en los dit bij de bron op. De exporter dropt bewust nieuwe reeksen in plaats van labels stilzwijgend te herschrijven.
+    Een nieuw attribuut overschrijdt de limiet van **2048** series. Inspecteer recente metrics op een onverwacht label met hoge cardinaliteit en los dit op bij de bron. De exporter dropt bewust nieuwe series in plaats van labels stilzwijgend te herschrijven.
   </Accordion>
-  <Accordion title="Prometheus toont verouderde reeksen na een herstart">
-    De Plugin bewaart alleen state in het geheugen. Na een Gateway-herstart worden counters teruggezet naar nul en starten gauges opnieuw bij hun eerstvolgende gerapporteerde waarde. Gebruik PromQL `rate()` en `increase()` om resets netjes af te handelen.
+  <Accordion title="Prometheus toont verouderde series na een herstart">
+    De Plugin houdt status alleen in geheugen bij. Na een Gateway-herstart worden counters teruggezet naar nul en beginnen gauges opnieuw bij hun volgende gerapporteerde waarde. Gebruik PromQL `rate()` en `increase()` om resets netjes af te handelen.
   </Accordion>
 </AccordionGroup>
 
 ## Gerelateerd
 
-- [Diagnostiekexport](/nl/gateway/diagnostics) — lokale diagnostiek-zip voor supportbundels
+- [Diagnostics-export](/nl/gateway/diagnostics) — lokale diagnostics-zip voor supportbundels
 - [Health en readiness](/nl/gateway/health) — `/healthz`- en `/readyz`-probes
 - [Logging](/nl/logging) — bestandsgebaseerde logging
 - [OpenTelemetry-export](/nl/gateway/opentelemetry) — OTLP-push voor traces, metrics en logs

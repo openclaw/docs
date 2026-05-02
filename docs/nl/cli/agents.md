@@ -1,13 +1,13 @@
 ---
 read_when:
     - Je wilt meerdere geïsoleerde agenten (werkruimten + routering + authenticatie)
-summary: CLI-referentie voor `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
+summary: CLI-referentie voor `openclaw agents` (weergeven/toevoegen/verwijderen/bindingen/binden/ontbinden/identiteit instellen)
 title: Agenten
 x-i18n:
-    generated_at: "2026-04-29T22:30:07Z"
+    generated_at: "2026-05-02T20:41:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 46742a890a57cb1035a053f14fe574044e4a3d7dcc04812cd11c633bd808819b
+    source_hash: 3522394dd416a9c8b4bf25767a14073484df0ff3d7c546cf6c730f111c5c51dc
     source_path: cli/agents.md
     workflow: 16
 ---
@@ -37,13 +37,13 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Routeringsbindingen
+## Routeringsbindings
 
-Gebruik routeringsbindingen om binnenkomend kanaalverkeer vast te zetten op een specifieke agent.
+Gebruik routeringsbindings om inkomend kanaalverkeer aan een specifieke agent vast te pinnen.
 
 Als je ook verschillende zichtbare Skills per agent wilt, configureer dan `agents.defaults.skills` en `agents.list[].skills` in `openclaw.json`. Zie [Skills-configuratie](/nl/tools/skills-config) en [Configuratiereferentie](/nl/gateway/config-agents#agents-defaults-skills).
 
-Bindingen weergeven:
+Bindings weergeven:
 
 ```bash
 openclaw agents bindings
@@ -51,13 +51,13 @@ openclaw agents bindings --agent work
 openclaw agents bindings --json
 ```
 
-Bindingen toevoegen:
+Bindings toevoegen:
 
 ```bash
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-Als je `accountId` weglaat (`--bind <channel>`), lost OpenClaw deze op vanuit kanaalstandaarden en Plugin-instelhooks wanneer beschikbaar.
+Als je `accountId` weglaat (`--bind <channel>`), lost OpenClaw dit op vanuit kanaalstandaardwaarden en Plugin-installatiehooks wanneer die beschikbaar zijn.
 
 Als je `--agent` weglaat voor `bind` of `unbind`, richt OpenClaw zich op de huidige standaardagent.
 
@@ -65,7 +65,7 @@ Als je `--agent` weglaat voor `bind` of `unbind`, richt OpenClaw zich op de huid
 
 - Een binding zonder `accountId` komt alleen overeen met het standaardaccount van het kanaal.
 - `accountId: "*"` is de kanaalbrede fallback (alle accounts) en is minder specifiek dan een expliciete accountbinding.
-- Als dezelfde agent al een overeenkomende kanaalbinding zonder `accountId` heeft, en je later bindt met een expliciete of opgeloste `accountId`, werkt OpenClaw die bestaande binding op zijn plaats bij in plaats van een duplicaat toe te voegen.
+- Als dezelfde agent al een overeenkomende kanaalbinding zonder `accountId` heeft, en je later bindt met een expliciete of opgeloste `accountId`, werkt OpenClaw die bestaande binding ter plekke bij in plaats van een duplicaat toe te voegen.
 
 Voorbeeld:
 
@@ -79,7 +79,7 @@ openclaw agents bind --agent work --bind telegram:ops
 
 Na de upgrade is routering voor die binding beperkt tot `telegram:ops`. Als je ook routering voor het standaardaccount wilt, voeg die dan expliciet toe (bijvoorbeeld `--bind telegram:default`).
 
-Bindingen verwijderen:
+Bindings verwijderen:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
@@ -88,18 +88,18 @@ openclaw agents unbind --agent work --all
 
 `unbind` accepteert ofwel `--all` of een of meer `--bind`-waarden, niet beide.
 
-## Opdrachtoppervlak
+## Commandosurface
 
 ### `agents`
 
-`openclaw agents` uitvoeren zonder subopdracht is gelijk aan `openclaw agents list`.
+Het uitvoeren van `openclaw agents` zonder subcommando is gelijk aan `openclaw agents list`.
 
 ### `agents list`
 
 Opties:
 
 - `--json`
-- `--bindings`: neem volledige routeringsregels op, niet alleen aantallen/samenvattingen per agent
+- `--bindings`: volledige routeringsregels opnemen, niet alleen aantallen/samenvattingen per agent
 
 ### `agents add [name]`
 
@@ -114,12 +114,12 @@ Opties:
 
 Opmerkingen:
 
-- Het doorgeven van expliciete add-vlaggen schakelt de opdracht over naar het niet-interactieve pad.
+- Het doorgeven van expliciete add-flags schakelt de opdracht over naar het niet-interactieve pad.
 - Niet-interactieve modus vereist zowel een agentnaam als `--workspace`.
 - `main` is gereserveerd en kan niet worden gebruikt als de nieuwe agent-id.
 - In interactieve modus kopieert auth-seeding alleen draagbare statische profielen
-  (standaard `api_key` en statische `token`). OAuth-profielen met refresh-tokens blijven
-  alleen beschikbaar via read-through-overerving vanuit de echte `main`-agentopslag.
+  (`api_key` en standaard statische `token`). OAuth-profielen met vernieuwingstokens blijven
+  alleen beschikbaar via read-through-overerving vanuit de echte `main`-agentstore.
   Als de geconfigureerde standaardagent niet `main` is, meld je dan apart aan voor OAuth-
   profielen op de nieuwe agent.
 
@@ -158,19 +158,20 @@ Opmerkingen:
 
 - `main` kan niet worden verwijderd.
 - Zonder `--force` is interactieve bevestiging vereist.
-- Werkruimte-, agentstatus- en sessietranscriptmappen worden naar de prullenmand verplaatst, niet definitief verwijderd.
-- Als de werkruimte van een andere agent hetzelfde pad is, binnen deze werkruimte ligt of deze werkruimte bevat,
+- Werkruimte-, agentstatus- en sessietranscriptmappen worden naar de prullenmand verplaatst, niet hard verwijderd.
+- Wanneer de Gateway bereikbaar is, wordt verwijdering via de Gateway verzonden, zodat config- en session-store-opschoning dezelfde writer gebruiken als runtimeverkeer. Als de Gateway niet bereikbaar is, valt de CLI terug op het offline lokale pad.
+- Als de werkruimte van een andere agent hetzelfde pad is, binnen deze werkruimte ligt, of deze werkruimte bevat,
   blijft de werkruimte behouden en rapporteert `--json` `workspaceRetained`,
   `workspaceRetainedReason` en `workspaceSharedWith`.
 
 ## Identiteitsbestanden
 
-Elke agentwerkruimte kan een `IDENTITY.md` bevatten in de hoofdmap van de werkruimte:
+Elke agentwerkruimte kan een `IDENTITY.md` bevatten in de root van de werkruimte:
 
 - Voorbeeldpad: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` leest vanuit de hoofdmap van de werkruimte (of een expliciet `--identity-file`)
+- `set-identity --from-identity` leest vanuit de root van de werkruimte (of een expliciet `--identity-file`)
 
-Avatarpaden worden relatief aan de hoofdmap van de werkruimte opgelost.
+Avatarpaden worden relatief aan de root van de werkruimte opgelost.
 
 ## Identiteit instellen
 
@@ -179,7 +180,7 @@ Avatarpaden worden relatief aan de hoofdmap van de werkruimte opgelost.
 - `name`
 - `theme`
 - `emoji`
-- `avatar` (werkruimterelatief pad, http(s)-URL of data-URI)
+- `avatar` (werkruimte-relatief pad, http(s)-URL of data-URI)
 
 Opties:
 
@@ -196,8 +197,8 @@ Opties:
 Opmerkingen:
 
 - `--agent` of `--workspace` kan worden gebruikt om de doelagent te selecteren.
-- Als je vertrouwt op `--workspace` en meerdere agents die werkruimte delen, mislukt de opdracht en wordt gevraagd `--agent` door te geven.
-- Wanneer er geen expliciete identiteitsvelden zijn opgegeven, leest de opdracht identiteitsgegevens uit `IDENTITY.md`.
+- Als je vertrouwt op `--workspace` en meerdere agents die werkruimte delen, mislukt de opdracht en wordt je gevraagd `--agent` door te geven.
+- Wanneer er geen expliciete identiteitsvelden worden opgegeven, leest de opdracht identiteitsgegevens uit `IDENTITY.md`.
 
 Laden vanuit `IDENTITY.md`:
 
@@ -211,7 +212,7 @@ Velden expliciet overschrijven:
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
 ```
 
-Configuratievoorbeeld:
+Config-voorbeeld:
 
 ```json5
 {
