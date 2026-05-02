@@ -1,38 +1,44 @@
 ---
 read_when:
     - Anda ingin mengirim penggunaan model OpenClaw, alur pesan, atau metrik sesi ke kolektor OpenTelemetry
-    - Anda sedang mengintegrasikan trace, metrik, atau log ke Grafana, Datadog, Honeycomb, New Relic, Tempo, atau backend OTLP lainnya
+    - Anda sedang menghubungkan jejak, metrik, atau log ke Grafana, Datadog, Honeycomb, New Relic, Tempo, atau backend OTLP lainnya
     - Anda memerlukan nama metrik, nama span, atau bentuk atribut yang tepat untuk membuat dasbor atau peringatan
-summary: Ekspor diagnostik OpenClaw ke kolektor OpenTelemetry mana pun melalui Plugin diagnostics-otel (OTLP/HTTP)
+summary: Ekspor diagnostik OpenClaw ke kolektor OpenTelemetry apa pun melalui Plugin diagnostics-otel (OTLP/HTTP)
 title: Ekspor OpenTelemetry
 x-i18n:
-    generated_at: "2026-04-30T09:50:57Z"
+    generated_at: "2026-05-02T09:21:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e9d06589d281223ebb57e76f6f19441d30c138b9f7b0636198ab7bae5fad3c8a
+    source_hash: a0aed4ca8818d3bd1f5461fb58fbbe5c0d3ed1262cac506c60ee326800d98e1b
     source_path: gateway/opentelemetry.md
     workflow: 16
 ---
 
-OpenClaw mengekspor diagnostik melalui Plugin `diagnostics-otel` bawaan
-menggunakan **OTLP/HTTP (protobuf)**. Collector atau backend apa pun yang menerima OTLP/HTTP
+OpenClaw mengekspor diagnostik melalui Plugin resmi `diagnostics-otel`
+menggunakan **OTLP/HTTP (protobuf)**. Kolektor atau backend apa pun yang menerima OTLP/HTTP
 berfungsi tanpa perubahan kode. Untuk log file lokal dan cara membacanya, lihat
 [Logging](/id/logging).
 
-## Cara semuanya terhubung
+## Cara semuanya saling terhubung
 
-- **Peristiwa diagnostik** adalah record terstruktur dalam proses yang dipancarkan oleh
-  Gateway dan Plugin bawaan untuk eksekusi model, alur pesan, sesi, antrean,
+- **Peristiwa diagnostik** adalah catatan terstruktur dalam proses yang dipancarkan oleh
+  Gateway dan Plugin bawaan untuk jalannya model, alur pesan, sesi, antrean,
   dan exec.
-- **Plugin `diagnostics-otel`** berlangganan peristiwa tersebut dan mengekspornya sebagai
+- **Plugin `diagnostics-otel`** berlangganan ke peristiwa tersebut dan mengekspornya sebagai
   **metrik**, **trace**, dan **log** OpenTelemetry melalui OTLP/HTTP.
-- **Panggilan provider** menerima header W3C `traceparent` dari konteks span
-  panggilan model tepercaya OpenClaw saat transport provider menerima header
-  kustom. Konteks trace yang dipancarkan Plugin tidak dipropagasikan.
-- Exporter hanya dipasang saat permukaan diagnostik dan Plugin sama-sama
-  diaktifkan, sehingga biaya dalam proses tetap mendekati nol secara default.
+- **Panggilan penyedia** menerima header W3C `traceparent` dari konteks span
+  panggilan model tepercaya milik OpenClaw ketika transport penyedia menerima header kustom.
+  Konteks trace yang dipancarkan Plugin tidak dipropagasikan.
+- Exporter hanya dipasang ketika permukaan diagnostik dan Plugin sama-sama
+  diaktifkan, sehingga biaya dalam proses tetap mendekati nol secara bawaan.
 
 ## Mulai cepat
+
+Untuk instalasi paket, instal Plugin terlebih dahulu:
+
+```bash
+openclaw plugins install @openclaw/diagnostics-otel
+```
 
 ```json5
 {
@@ -71,14 +77,14 @@ openclaw plugins enable diagnostics-otel
 
 ## Sinyal yang diekspor
 
-| Sinyal      | Isi di dalamnya                                                                                                                            |
+| Sinyal      | Apa yang masuk ke dalamnya                                                                                                                            |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Metrik**  | Counter dan histogram untuk penggunaan token, biaya, durasi eksekusi, alur pesan, jalur antrean, status sesi, exec, dan tekanan memori.    |
-| **Trace**   | Span untuk penggunaan model, panggilan model, siklus hidup harness, eksekusi tool, exec, pemrosesan webhook/pesan, penyusunan konteks, dan loop tool. |
-| **Log**     | Record `logging.file` terstruktur yang diekspor melalui OTLP saat `diagnostics.otel.logs` diaktifkan.                                      |
+| **Metrik** | Counter dan histogram untuk penggunaan token, biaya, durasi proses, alur pesan, jalur antrean, status sesi, exec, dan tekanan memori.          |
+| **Trace**  | Span untuk penggunaan model, panggilan model, siklus hidup harness, eksekusi alat, exec, pemrosesan webhook/pesan, penyusunan konteks, dan loop alat. |
+| **Log**    | Catatan `logging.file` terstruktur yang diekspor melalui OTLP ketika `diagnostics.otel.logs` diaktifkan.                                              |
 
-Aktifkan atau nonaktifkan `traces`, `metrics`, dan `logs` secara terpisah. Ketiganya default aktif
-saat `diagnostics.otel.enabled` bernilai true.
+Aktifkan/nonaktifkan `traces`, `metrics`, dan `logs` secara independen. Ketiganya aktif secara bawaan
+ketika `diagnostics.otel.enabled` bernilai true.
 
 ## Referensi konfigurasi
 
@@ -116,55 +122,55 @@ saat `diagnostics.otel.enabled` bernilai true.
 ### Variabel lingkungan
 
 | Variabel                                                                                                          | Tujuan                                                                                                                                                                                                                                    |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | Mengganti `diagnostics.otel.endpoint`. Jika nilainya sudah berisi `/v1/traces`, `/v1/metrics`, atau `/v1/logs`, nilai tersebut digunakan apa adanya.                                                                                       |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Penggantian endpoint khusus sinyal yang digunakan saat kunci konfigurasi `diagnostics.otel.*Endpoint` yang sesuai belum disetel. Konfigurasi khusus sinyal mengalahkan env khusus sinyal, yang mengalahkan endpoint bersama.              |
-| `OTEL_SERVICE_NAME`                                                                                               | Mengganti `diagnostics.otel.serviceName`.                                                                                                                                                                                                 |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Mengganti protokol wire protocol (hanya `http/protobuf` yang dihormati saat ini).                                                                                                                                                         |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Setel ke `gen_ai_latest_experimental` untuk memancarkan atribut span GenAI eksperimental terbaru (`gen_ai.provider.name`) alih-alih `gen_ai.system` lama. Metrik GenAI selalu menggunakan atribut semantik berbatas dan berkardinalitas rendah. |
-| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Setel ke `1` saat preload atau proses host lain sudah mendaftarkan OpenTelemetry SDK global. Plugin kemudian melewati siklus hidup NodeSDK miliknya sendiri tetapi tetap menghubungkan listener diagnostik dan menghormati `traces`/`metrics`/`logs`. |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | Menimpa `diagnostics.otel.endpoint`. Jika nilainya sudah berisi `/v1/traces`, `/v1/metrics`, atau `/v1/logs`, nilai tersebut digunakan apa adanya.                                                                                                          |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Penimpaan endpoint khusus sinyal yang digunakan ketika kunci konfigurasi `diagnostics.otel.*Endpoint` yang sesuai belum disetel. Konfigurasi khusus sinyal mengalahkan env khusus sinyal, yang mengalahkan endpoint bersama.                                     |
+| `OTEL_SERVICE_NAME`                                                                                               | Menimpa `diagnostics.otel.serviceName`.                                                                                                                                                                                                   |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Menimpa protokol wire (saat ini hanya `http/protobuf` yang dihormati).                                                                                                                                                                        |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Setel ke `gen_ai_latest_experimental` untuk memancarkan atribut span GenAI eksperimental terbaru (`gen_ai.provider.name`) alih-alih `gen_ai.system` lama. Metrik GenAI selalu menggunakan atribut semantik berbatas dan ber-kardinalitas rendah. |
+| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Setel ke `1` ketika preload lain atau proses host sudah mendaftarkan SDK OpenTelemetry global. Plugin kemudian melewati siklus hidup NodeSDK miliknya sendiri tetapi tetap menghubungkan listener diagnostik dan menghormati `traces`/`metrics`/`logs`.                |
 
 ## Privasi dan pengambilan konten
 
-Konten mentah model/tool **tidak** diekspor secara default. Span membawa
-identifier berbatas (channel, provider, model, kategori error, id permintaan hanya hash)
-dan tidak pernah menyertakan teks prompt, teks respons, input tool, output tool, atau
+Konten mentah model/alat **tidak** diekspor secara bawaan. Span membawa
+pengidentifikasi berbatas (channel, penyedia, model, kategori error, id permintaan hanya hash)
+dan tidak pernah menyertakan teks prompt, teks respons, input alat, output alat, atau
 kunci sesi.
 
 Permintaan model keluar dapat menyertakan header W3C `traceparent`. Header tersebut
-dibuat hanya dari konteks trace diagnostik milik OpenClaw untuk panggilan model
-aktif. Header `traceparent` yang sudah diberikan pemanggil akan diganti, sehingga Plugin atau
-opsi provider kustom tidak dapat memalsukan silsilah trace lintas layanan.
+dibuat hanya dari konteks trace diagnostik milik OpenClaw untuk panggilan model yang aktif.
+Header `traceparent` yang sudah diberikan pemanggil akan diganti, sehingga Plugin atau
+opsi penyedia kustom tidak dapat memalsukan asal-usul trace lintas layanan.
 
-Setel `diagnostics.otel.captureContent.*` ke `true` hanya saat collector dan
-kebijakan retensi Anda disetujui untuk teks prompt, respons, tool, atau system-prompt.
-Setiap subkunci bersifat opt-in secara terpisah:
+Setel `diagnostics.otel.captureContent.*` ke `true` hanya ketika kolektor dan
+kebijakan retensi Anda disetujui untuk teks prompt, respons, alat, atau
+system-prompt. Setiap subkunci bersifat opt-in secara independen:
 
 - `inputMessages` — konten prompt pengguna.
 - `outputMessages` — konten respons model.
-- `toolInputs` — payload argumen tool.
-- `toolOutputs` — payload hasil tool.
-- `systemPrompt` — prompt sistem/developer yang disusun.
+- `toolInputs` — payload argumen alat.
+- `toolOutputs` — payload hasil alat.
+- `systemPrompt` — prompt sistem/developer yang telah disusun.
 
-Saat subkunci apa pun diaktifkan, span model dan tool mendapatkan atribut
-`openclaw.content.*` berbatas dan disunting hanya untuk kelas tersebut.
+Ketika subkunci apa pun diaktifkan, span model dan alat mendapatkan atribut
+`openclaw.content.*` yang berbatas dan telah direduksi hanya untuk kelas tersebut.
 
 ## Sampling dan flushing
 
 - **Trace:** `diagnostics.otel.sampleRate` (hanya root-span, `0.0` membuang semua,
-  `1.0` menyimpan semua).
+  `1.0` mempertahankan semua).
 - **Metrik:** `diagnostics.otel.flushIntervalMs` (minimum `1000`).
 - **Log:** Log OTLP menghormati `logging.level` (level log file). Log tersebut menggunakan
-  jalur penyuntingan record log diagnostik, bukan pemformatan konsol. Instalasi bervolume tinggi
-  sebaiknya memilih sampling/filtering collector OTLP daripada sampling lokal.
-- **Korelasi file-log:** Log file JSONL menyertakan `traceId`,
-  `spanId`, `parentSpanId`, dan `traceFlags` di tingkat teratas saat panggilan log membawa
+  jalur reduksi catatan log diagnostik, bukan pemformatan konsol. Instalasi bervolume tinggi
+  sebaiknya memilih sampling/filtering kolektor OTLP daripada sampling lokal.
+- **Korelasi log file:** Log file JSONL menyertakan `traceId`,
+  `spanId`, `parentSpanId`, dan `traceFlags` tingkat atas ketika panggilan log membawa
   konteks trace diagnostik yang valid, sehingga pemroses log dapat menggabungkan baris log lokal dengan
   span yang diekspor.
 - **Korelasi permintaan:** Permintaan HTTP Gateway dan frame WebSocket membuat
   cakupan trace permintaan internal. Log dan peristiwa diagnostik di dalam cakupan tersebut
-  mewarisi trace permintaan secara default, sementara span eksekusi agent dan panggilan model
-  dibuat sebagai anak sehingga header `traceparent` provider tetap berada pada trace yang sama.
+  mewarisi trace permintaan secara bawaan, sementara span proses agen dan panggilan model
+  dibuat sebagai anak sehingga header `traceparent` penyedia tetap berada pada trace yang sama.
 
 ## Metrik yang diekspor
 
@@ -175,10 +181,10 @@ Saat subkunci apa pun diaktifkan, span model dan tool mendapatkan atribut
 - `openclaw.run.duration_ms` (histogram, attrs: `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 - `openclaw.context.tokens` (histogram, attrs: `openclaw.context`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 - `gen_ai.client.token.usage` (histogram, metrik konvensi semantik GenAI, attrs: `gen_ai.token.type` = `input`/`output`, `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`)
-- `gen_ai.client.operation.duration` (histogram, detik, metrik konvensi semantik GenAI, attrs: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, `error.type` opsional)
-- `openclaw.model_call.duration_ms` (histogram, attrs: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`, ditambah `openclaw.errorCategory` dan `openclaw.failureKind` pada error yang diklasifikasikan)
-- `openclaw.model_call.request_bytes` (histogram, ukuran byte UTF-8 dari payload permintaan model akhir; tanpa konten payload mentah)
-- `openclaw.model_call.response_bytes` (histogram, ukuran byte UTF-8 dari peristiwa respons model streaming; tanpa konten respons mentah)
+- `gen_ai.client.operation.duration` (histogram, detik, metrik konvensi semantik GenAI, attrs: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, opsional `error.type`)
+- `openclaw.model_call.duration_ms` (histogram, attrs: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`, plus `openclaw.errorCategory` dan `openclaw.failureKind` pada error terklasifikasi)
+- `openclaw.model_call.request_bytes` (histogram, ukuran byte UTF-8 dari payload permintaan model final; tanpa konten payload mentah)
+- `openclaw.model_call.response_bytes` (histogram, ukuran byte UTF-8 dari peristiwa respons model yang di-stream; tanpa konten respons mentah)
 - `openclaw.model_call.time_to_first_byte_ms` (histogram, waktu berlalu sebelum peristiwa respons streaming pertama)
 
 ### Alur pesan
@@ -199,41 +205,66 @@ Saat subkunci apa pun diaktifkan, span model dan tool mendapatkan atribut
 - `openclaw.queue.depth` (histogram, attrs: `openclaw.lane` atau `openclaw.channel=heartbeat`)
 - `openclaw.queue.wait_ms` (histogram, attrs: `openclaw.lane`)
 - `openclaw.session.state` (counter, attrs: `openclaw.state`, `openclaw.reason`)
-- `openclaw.session.stuck` (counter, attrs: `openclaw.state`)
-- `openclaw.session.stuck_age_ms` (histogram, attrs: `openclaw.state`)
+- `openclaw.session.stuck` (counter, attrs: `openclaw.state`; dipancarkan hanya untuk pembukuan sesi usang tanpa pekerjaan aktif)
+- `openclaw.session.stuck_age_ms` (histogram, attrs: `openclaw.state`; dipancarkan hanya untuk pembukuan sesi usang tanpa pekerjaan aktif)
 - `openclaw.run.attempt` (counter, attrs: `openclaw.attempt`)
+
+### Telemetri kelangsungan sesi
+
+`diagnostics.stuckSessionWarnMs` adalah ambang usia tanpa progres untuk diagnostik
+kelangsungan sesi. Sesi `processing` tidak bertambah usia menuju ambang ini
+selama OpenClaw mengamati progres runtime balasan, alat, status, blok, atau ACP.
+Keepalive pengetikan tidak dihitung sebagai progres, sehingga model atau harness yang senyap
+tetap dapat dideteksi.
+
+OpenClaw mengklasifikasikan sesi berdasarkan pekerjaan yang masih dapat diamatinya:
+
+- `session.long_running`: pekerjaan tertanam aktif, panggilan model, atau panggilan alat masih
+  membuat progres.
+- `session.stalled`: pekerjaan aktif ada, tetapi run aktif belum melaporkan
+  progres terbaru.
+- `session.stuck`: pembukuan sesi usang tanpa pekerjaan aktif. Ini adalah
+  satu-satunya klasifikasi liveness yang melepaskan lane sesi yang terdampak.
+
+Hanya `session.stuck` yang memancarkan counter `openclaw.session.stuck`,
+histogram `openclaw.session.stuck_age_ms`, dan span `openclaw.session.stuck`.
+Diagnostik `session.stuck` berulang akan melakukan back off selama sesi tetap
+tidak berubah, sehingga dasbor sebaiknya memberi peringatan pada peningkatan
+yang berkelanjutan, bukan pada setiap tick heartbeat. Untuk tombol konfigurasi
+dan default, lihat
+[Referensi konfigurasi](/id/gateway/configuration-reference#diagnostics).
 
 ### Siklus hidup harness
 
 - `openclaw.harness.duration_ms` (histogram, attrs: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.harness.phase` pada error)
 
-### Exec
+### Eksekusi
 
 - `openclaw.exec.duration_ms` (histogram, attrs: `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
 
-### Internal diagnostik (memori dan loop tool)
+### Internal diagnostik (memori dan loop alat)
 
-- `openclaw.memory.heap_used_bytes` (histogram, atribut: `openclaw.memory.kind`)
+- `openclaw.memory.heap_used_bytes` (histogram, attrs: `openclaw.memory.kind`)
 - `openclaw.memory.rss_bytes` (histogram)
-- `openclaw.memory.pressure` (counter, atribut: `openclaw.memory.level`)
-- `openclaw.tool.loop.iterations` (counter, atribut: `openclaw.toolName`, `openclaw.outcome`)
-- `openclaw.tool.loop.duration_ms` (histogram, atribut: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.memory.pressure` (counter, attrs: `openclaw.memory.level`)
+- `openclaw.tool.loop.iterations` (counter, attrs: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.tool.loop.duration_ms` (histogram, attrs: `openclaw.toolName`, `openclaw.outcome`)
 
 ## Span yang diekspor
 
 - `openclaw.model.usage`
   - `openclaw.channel`, `openclaw.provider`, `openclaw.model`
   - `openclaw.tokens.*` (input/output/cache_read/cache_write/total)
-  - `gen_ai.system` secara default, atau `gen_ai.provider.name` saat konvensi semantik GenAI terbaru diaktifkan
+  - `gen_ai.system` secara default, atau `gen_ai.provider.name` ketika konvensi semantik GenAI terbaru diikutsertakan
   - `gen_ai.request.model`, `gen_ai.operation.name`, `gen_ai.usage.*`
 - `openclaw.run`
   - `openclaw.outcome`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`, `openclaw.errorCategory`
 - `openclaw.model.call`
-  - `gen_ai.system` secara default, atau `gen_ai.provider.name` saat konvensi semantik GenAI terbaru diaktifkan
+  - `gen_ai.system` secara default, atau `gen_ai.provider.name` ketika konvensi semantik GenAI terbaru diikutsertakan
   - `gen_ai.request.model`, `gen_ai.operation.name`, `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`
-  - `openclaw.errorCategory` dan `openclaw.failureKind` opsional pada kesalahan
+  - `openclaw.errorCategory` dan `openclaw.failureKind` opsional pada error
   - `openclaw.model_call.request_bytes`, `openclaw.model_call.response_bytes`, `openclaw.model_call.time_to_first_byte_ms`
-  - `openclaw.provider.request_id_hash` (hash berbasis SHA terbatas dari id permintaan penyedia upstream; id mentah tidak diekspor)
+  - `openclaw.provider.request_id_hash` (hash terbatas berbasis SHA dari id permintaan penyedia upstream; id mentah tidak diekspor)
 - `openclaw.harness.run`
   - `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.provider`, `openclaw.model`, `openclaw.channel`
   - Saat selesai: `openclaw.harness.result_classification`, `openclaw.harness.yield_detected`, `openclaw.harness.items.started`, `openclaw.harness.items.completed`, `openclaw.harness.items.active`
@@ -253,19 +284,19 @@ Saat subkunci apa pun diaktifkan, span model dan tool mendapatkan atribut
 - `openclaw.session.stuck`
   - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`
 - `openclaw.context.assembled`
-  - `openclaw.prompt.size`, `openclaw.history.size`, `openclaw.context.tokens`, `openclaw.errorCategory` (tanpa prompt, riwayat, respons, atau konten session-key)
+  - `openclaw.prompt.size`, `openclaw.history.size`, `openclaw.context.tokens`, `openclaw.errorCategory` (tanpa konten prompt, riwayat, respons, atau kunci sesi)
 - `openclaw.tool.loop`
-  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (tanpa pesan loop, parameter, atau keluaran tool)
+  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (tanpa pesan loop, params, atau output alat)
 - `openclaw.memory.pressure`
   - `openclaw.memory.level`, `openclaw.memory.heap_used_bytes`, `openclaw.memory.rss_bytes`
 
-Saat penangkapan konten diaktifkan secara eksplisit, span model dan tool juga dapat
-menyertakan atribut `openclaw.content.*` yang terbatas dan disunting untuk kelas
-konten tertentu yang Anda pilih.
+Ketika penangkapan konten diaktifkan secara eksplisit, span model dan alat juga dapat
+menyertakan atribut `openclaw.content.*` yang terbatas dan telah diredaksi untuk kelas
+konten tertentu yang Anda ikutsertakan.
 
 ## Katalog peristiwa diagnostik
 
-Peristiwa di bawah mendukung metrik dan span di atas. Plugin juga dapat berlangganan
+Peristiwa di bawah ini mendukung metrik dan span di atas. Plugin juga dapat berlangganan
 langsung ke peristiwa tersebut tanpa ekspor OTLP.
 
 **Penggunaan model**
@@ -273,7 +304,7 @@ langsung ke peristiwa tersebut tanpa ekspor OTLP.
 - `model.usage` — token, biaya, durasi, konteks, penyedia/model/channel,
   id sesi. `usage` adalah akuntansi penyedia/turn untuk biaya dan telemetri;
   `context.used` adalah snapshot prompt/konteks saat ini dan dapat lebih rendah daripada
-  `usage.total` penyedia saat input yang di-cache atau panggilan tool-loop terlibat.
+  `usage.total` penyedia ketika input cache atau panggilan tool-loop terlibat.
 
 **Alur pesan**
 
@@ -284,29 +315,28 @@ langsung ke peristiwa tersebut tanpa ekspor OTLP.
 **Antrean dan sesi**
 
 - `queue.lane.enqueue` / `queue.lane.dequeue`
-- `session.state` / `session.stuck`
-- `run.attempt`
-- `diagnostic.heartbeat` (counter agregat: webhook/antrean/sesi)
+- `session.state` / `session.long_running` / `session.stalled` / `session.stuck`
+- `run.attempt` / `run.progress`
+- `diagnostic.heartbeat` (counter agregat: webhooks/queue/session)
 
 **Siklus hidup harness**
 
 - `harness.run.started` / `harness.run.completed` / `harness.run.error` —
-  siklus hidup per-run untuk harness agen. Mencakup `harnessId`, `pluginId` opsional,
-  penyedia/model/channel, dan id run. Penyelesaian menambahkan
+  siklus hidup per-run untuk harness agen. Menyertakan `harnessId`, `pluginId`
+  opsional, penyedia/model/channel, dan id run. Penyelesaian menambahkan
   `durationMs`, `outcome`, `resultClassification` opsional, `yieldDetected`,
-  dan hitungan `itemLifecycle`. Error menambahkan `phase`
+  dan jumlah `itemLifecycle`. Error menambahkan `phase`
   (`prepare`/`start`/`send`/`resolve`/`cleanup`), `errorCategory`, dan
   `cleanupFailed` opsional.
 
-**Exec**
+**Eksekusi**
 
 - `exec.process.completed` — hasil terminal, durasi, target, mode, kode keluar,
-  dan jenis kegagalan. Teks perintah dan direktori kerja tidak
-  disertakan.
+  dan jenis kegagalan. Teks perintah dan direktori kerja tidak disertakan.
 
-## Tanpa pengekspor
+## Tanpa exporter
 
-Anda dapat tetap menyediakan peristiwa diagnostik untuk plugin atau sink khusus tanpa
+Anda dapat menjaga peristiwa diagnostik tetap tersedia bagi Plugin atau sink kustom tanpa
 menjalankan `diagnostics-otel`:
 
 ```json5
@@ -315,7 +345,7 @@ menjalankan `diagnostics-otel`:
 }
 ```
 
-Untuk keluaran debug tertarget tanpa menaikkan `logging.level`, gunakan flag diagnostik.
+Untuk output debug bertarget tanpa menaikkan `logging.level`, gunakan flag diagnostik.
 Flag tidak peka huruf besar/kecil dan mendukung wildcard (misalnya `telegram.*` atau
 `*`):
 
@@ -331,8 +361,8 @@ Atau sebagai override env sekali pakai:
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload openclaw gateway
 ```
 
-Keluaran flag masuk ke file log standar (`logging.file`) dan tetap
-disunting oleh `logging.redactSensitive`. Panduan lengkap:
+Output flag masuk ke file log standar (`logging.file`) dan tetap
+diredaksi oleh `logging.redactSensitive`. Panduan lengkap:
 [Flag diagnostik](/id/diagnostics/flags).
 
 ## Nonaktifkan
@@ -348,8 +378,8 @@ Anda juga dapat tidak menyertakan `diagnostics-otel` dari `plugins.allow`, atau 
 
 ## Terkait
 
-- [Pencatatan log](/id/logging) — log file, keluaran konsol, tailing CLI, dan tab Log Control UI
-- [Internal pencatatan log Gateway](/id/gateway/logging) — gaya log WS, prefiks subsistem, dan penangkapan konsol
-- [Flag diagnostik](/id/diagnostics/flags) — flag log-debug tertarget
-- [Ekspor diagnostik](/id/gateway/diagnostics) — tool support-bundle operator (terpisah dari ekspor OTEL)
+- [Logging](/id/logging) — log file, output konsol, tailing CLI, dan tab Logs Control UI
+- [Internal logging Gateway](/id/gateway/logging) — gaya log WS, prefiks subsistem, dan penangkapan konsol
+- [Flag diagnostik](/id/diagnostics/flags) — flag debug-log bertarget
+- [Ekspor diagnostik](/id/gateway/diagnostics) — alat support-bundle operator (terpisah dari ekspor OTEL)
 - [Referensi konfigurasi](/id/gateway/configuration-reference#diagnostics) — referensi lengkap field `diagnostics.*`

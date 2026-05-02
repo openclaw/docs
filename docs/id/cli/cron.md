@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda menginginkan tugas terjadwal dan pemicu bangun
+    - Anda menginginkan tugas terjadwal dan pengaktifan
     - Anda sedang men-debug eksekusi Cron dan log
-summary: Referensi CLI untuk `openclaw cron` (menjadwalkan dan menjalankan tugas latar belakang)
+summary: Referensi CLI untuk `openclaw cron` (menjadwalkan dan menjalankan pekerjaan latar belakang)
 title: Cron
 x-i18n:
-    generated_at: "2026-04-30T09:39:01Z"
+    generated_at: "2026-05-02T09:15:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 03d79e0e2c71f673c900b84eb2beeab705662c1d016e1d0567323c8da73060bb
+    source_hash: 298ac3fc868462eb301febbc1aa5296d8087cad7fdc466870487081444c5856f
     source_path: cli/cron.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ x-i18n:
 Kelola pekerjaan Cron untuk penjadwal Gateway.
 
 <Tip>
-Jalankan `openclaw cron --help` untuk permukaan perintah lengkap. Lihat [pekerjaan Cron](/id/automation/cron-jobs) untuk panduan konseptual.
+Jalankan `openclaw cron --help` untuk permukaan perintah lengkap. Lihat [Pekerjaan Cron](/id/automation/cron-jobs) untuk panduan konseptual.
 </Tip>
 
 ## Sesi
@@ -26,38 +26,40 @@ Jalankan `openclaw cron --help` untuk permukaan perintah lengkap. Lihat [pekerja
 `--session` menerima `main`, `isolated`, `current`, atau `session:<id>`.
 
 <AccordionGroup>
-  <Accordion title="Kunci sesi">
+  <Accordion title="Session keys">
     - `main` mengikat ke sesi utama agen.
-    - `isolated` membuat transkrip baru dan id sesi untuk setiap eksekusi.
+    - `isolated` membuat transkrip dan id sesi baru untuk setiap eksekusi.
     - `current` mengikat ke sesi aktif pada waktu pembuatan.
     - `session:<id>` menyematkan ke kunci sesi persisten eksplisit.
 
   </Accordion>
-  <Accordion title="Semantik sesi terisolasi">
-    Eksekusi terisolasi mengatur ulang konteks percakapan ambien. Perutean channel dan grup, kebijakan kirim/antre, elevasi, asal, dan pengikatan runtime ACP diatur ulang untuk eksekusi baru. Preferensi aman dan penggantian model atau autentikasi yang dipilih pengguna secara eksplisit dapat dibawa antar eksekusi.
+  <Accordion title="Isolated session semantics">
+    Eksekusi terisolasi mengatur ulang konteks percakapan sekitar. Perutean kanal dan grup, kebijakan kirim/antre, elevasi, asal, dan pengikatan runtime ACP diatur ulang untuk eksekusi baru. Preferensi aman dan model yang dipilih pengguna secara eksplisit atau penggantian auth dapat dibawa lintas eksekusi.
   </Accordion>
 </AccordionGroup>
 
 ## Pengiriman
 
-`openclaw cron list` dan `openclaw cron show <job-id>` menampilkan pratinjau rute pengiriman yang diselesaikan. Untuk `channel: "last"`, pratinjau menampilkan apakah rute diselesaikan dari sesi utama atau saat ini, atau akan gagal tertutup.
+`openclaw cron list` dan `openclaw cron show <job-id>` mempratinjau rute pengiriman yang diselesaikan. Untuk `channel: "last"`, pratinjau menampilkan apakah rute diselesaikan dari sesi utama atau sesi saat ini, atau akan gagal tertutup.
+
+Target berprefiks penyedia dapat membedakan kanal pengumuman yang belum terselesaikan. Misalnya, `to: "telegram:123"` memilih Telegram saat `delivery.channel` dihilangkan atau `last`. Hanya prefiks yang diiklankan oleh plugin yang dimuat yang menjadi pemilih penyedia. Jika `delivery.channel` eksplisit, prefiks harus cocok dengan kanal tersebut; `channel: "whatsapp"` dengan `to: "telegram:123"` ditolak. Prefiks layanan seperti `imessage:` dan `sms:` tetap menjadi sintaks target milik kanal.
 
 <Note>
-Pekerjaan `cron add` terisolasi menggunakan pengiriman `--announce` secara default. Gunakan `--no-deliver` untuk menjaga output tetap internal. `--deliver` tetap menjadi alias usang untuk `--announce`.
+Pekerjaan `cron add` terisolasi secara default menggunakan pengiriman `--announce`. Gunakan `--no-deliver` untuk menjaga keluaran tetap internal. `--deliver` tetap ada sebagai alias yang tidak digunakan lagi untuk `--announce`.
 </Note>
 
 ### Kepemilikan pengiriman
 
-Pengiriman chat cron terisolasi dibagi antara agen dan runner:
+Pengiriman chat Cron terisolasi dibagi antara agen dan runner:
 
 - Agen dapat mengirim langsung menggunakan alat `message` saat rute chat tersedia.
 - `announce` mengirim cadangan balasan akhir hanya saat agen tidak mengirim langsung ke target yang diselesaikan.
-- `webhook` memposting payload yang sudah selesai ke URL.
+- `webhook` memposting payload selesai ke URL.
 - `none` menonaktifkan pengiriman cadangan runner.
 
-`--announce` adalah pengiriman cadangan runner untuk balasan akhir. `--no-deliver` menonaktifkan cadangan tersebut tetapi tidak menghapus alat `message` milik agen saat rute chat tersedia.
+`--announce` adalah pengiriman cadangan runner untuk balasan akhir. `--no-deliver` menonaktifkan cadangan tersebut tetapi tidak menghapus alat `message` agen saat rute chat tersedia.
 
-Pengingat yang dibuat dari chat aktif mempertahankan target pengiriman chat langsung untuk pengiriman announce cadangan. Kunci sesi internal dapat berupa huruf kecil; jangan gunakan sebagai sumber kebenaran untuk ID penyedia yang peka huruf besar-kecil seperti ID ruang Matrix.
+Pengingat yang dibuat dari chat aktif mempertahankan target pengiriman chat langsung untuk pengiriman pengumuman cadangan. Kunci sesi internal dapat berupa huruf kecil; jangan gunakan sebagai sumber kebenaran untuk ID penyedia yang peka huruf besar/kecil seperti ID ruang Matrix.
 
 ### Pengiriman kegagalan
 
@@ -65,21 +67,21 @@ Notifikasi kegagalan diselesaikan dalam urutan ini:
 
 1. `delivery.failureDestination` pada pekerjaan.
 2. `cron.failureDestination` global.
-3. Target announce utama pekerjaan (saat tidak ada tujuan kegagalan eksplisit yang ditetapkan).
+3. Target pengumuman utama pekerjaan (saat tidak ada tujuan kegagalan eksplisit yang diatur).
 
 <Note>
-Pekerjaan sesi utama hanya boleh menggunakan `delivery.failureDestination` saat mode pengiriman utama adalah `webhook`. Pekerjaan terisolasi menerimanya di semua mode.
+Pekerjaan sesi utama hanya dapat menggunakan `delivery.failureDestination` saat mode pengiriman utama adalah `webhook`. Pekerjaan terisolasi menerimanya dalam semua mode.
 </Note>
 
-Catatan: eksekusi cron terisolasi memperlakukan kegagalan agen tingkat eksekusi sebagai kesalahan pekerjaan meskipun
-tidak ada payload balasan yang dihasilkan, sehingga kegagalan model/penyedia tetap menaikkan penghitung
+Catatan: eksekusi Cron terisolasi memperlakukan kegagalan agen tingkat eksekusi sebagai kesalahan pekerjaan meskipun
+tidak ada payload balasan yang dihasilkan, sehingga kegagalan model/penyedia tetap menambah penghitung
 kesalahan dan memicu notifikasi kegagalan.
 
 ## Penjadwalan
 
 ### Pekerjaan sekali jalan
 
-`--at <datetime>` menjadwalkan eksekusi sekali jalan. Datetime tanpa offset diperlakukan sebagai UTC kecuali Anda juga meneruskan `--tz <iana>`, yang menafsirkan waktu jam dinding dalam zona waktu yang diberikan.
+`--at <datetime>` menjadwalkan eksekusi sekali jalan. Datetime tanpa offset diperlakukan sebagai UTC kecuali Anda juga meneruskan `--tz <iana>`, yang menafsirkan waktu jam-dinding di zona waktu yang diberikan.
 
 <Note>
 Pekerjaan sekali jalan dihapus setelah berhasil secara default. Gunakan `--keep-after-run` untuk mempertahankannya.
@@ -87,20 +89,20 @@ Pekerjaan sekali jalan dihapus setelah berhasil secara default. Gunakan `--keep-
 
 ### Pekerjaan berulang
 
-Pekerjaan berulang menggunakan backoff percobaan ulang eksponensial setelah kesalahan berturut-turut: 30d, 1m, 5m, 15m, 60m. Jadwal kembali normal setelah eksekusi berikutnya berhasil.
+Pekerjaan berulang menggunakan backoff percobaan ulang eksponensial setelah kesalahan beruntun: 30d, 1m, 5m, 15m, 60m. Jadwal kembali normal setelah eksekusi berhasil berikutnya.
 
-Eksekusi yang dilewati dilacak terpisah dari kesalahan eksekusi. Eksekusi tersebut tidak memengaruhi backoff percobaan ulang, tetapi `openclaw cron edit <job-id> --failure-alert-include-skipped` dapat memilih agar peringatan kegagalan menyertakan notifikasi berulang untuk eksekusi yang dilewati.
+Eksekusi yang dilewati dilacak terpisah dari kesalahan eksekusi. Eksekusi tersebut tidak memengaruhi backoff percobaan ulang, tetapi `openclaw cron edit <job-id> --failure-alert-include-skipped` dapat mengikutsertakan peringatan kegagalan dalam notifikasi eksekusi dilewati berulang.
 
-Untuk pekerjaan terisolasi yang menargetkan penyedia model lokal yang dikonfigurasi, cron menjalankan preflight penyedia ringan sebelum memulai giliran agen. Penyedia local loopback, jaringan privat, dan `.local` `api: "ollama"` diperiksa di `/api/tags`; penyedia lokal yang kompatibel dengan OpenAI seperti vLLM, SGLang, dan LM Studio diperiksa di `/models`. Jika endpoint tidak dapat dijangkau, eksekusi dicatat sebagai `skipped` dan dicoba ulang pada jadwal berikutnya; endpoint mati yang cocok di-cache selama 5 menit untuk mencegah banyak pekerjaan membanjiri server lokal yang sama.
+Untuk pekerjaan terisolasi yang menargetkan penyedia model lokal yang dikonfigurasi, Cron menjalankan preflight penyedia ringan sebelum memulai giliran agen. Penyedia loopback, jaringan privat, dan `.local` `api: "ollama"` diperiksa di `/api/tags`; penyedia kompatibel OpenAI lokal seperti vLLM, SGLang, dan LM Studio diperiksa di `/models`. Jika endpoint tidak dapat dijangkau, eksekusi dicatat sebagai `skipped` dan dicoba lagi pada jadwal berikutnya; endpoint mati yang cocok disimpan dalam cache selama 5 menit untuk menghindari banyak pekerjaan menghantam server lokal yang sama.
 
-Catatan: definisi pekerjaan cron berada di `jobs.json`, sedangkan status runtime tertunda berada di `jobs-state.json`. Jika `jobs.json` diedit secara eksternal, Gateway memuat ulang jadwal yang berubah dan membersihkan slot tertunda yang usang; penulisan ulang yang hanya mengubah pemformatan tidak membersihkan slot tertunda.
+Catatan: definisi pekerjaan Cron berada di `jobs.json`, sedangkan status runtime tertunda berada di `jobs-state.json`. Jika `jobs.json` diedit secara eksternal, Gateway memuat ulang jadwal yang berubah dan membersihkan slot tertunda yang basi; penulisan ulang hanya pemformatan tidak membersihkan slot tertunda.
 
 ### Eksekusi manual
 
 `openclaw cron run` kembali segera setelah eksekusi manual diantrekan. Respons berhasil menyertakan `{ ok: true, enqueued: true, runId }`. Gunakan `openclaw cron runs --id <job-id>` untuk mengikuti hasil akhirnya.
 
 <Note>
-`openclaw cron run <job-id>` menjalankan paksa secara default. Gunakan `--due` untuk mempertahankan perilaku lama "hanya jalankan jika sudah jatuh tempo".
+`openclaw cron run <job-id>` menjalankan paksa secara default. Gunakan `--due` untuk mempertahankan perilaku lama "hanya jalankan jika jatuh tempo".
 </Note>
 
 ## Model
@@ -108,46 +110,46 @@ Catatan: definisi pekerjaan cron berada di `jobs.json`, sedangkan status runtime
 `cron add|edit --model <ref>` memilih model yang diizinkan untuk pekerjaan.
 
 <Warning>
-Jika model tidak diizinkan atau tidak dapat diselesaikan, cron menggagalkan eksekusi dengan kesalahan validasi eksplisit alih-alih kembali ke pilihan model agen atau default milik pekerjaan.
+Jika model tidak diizinkan atau tidak dapat diselesaikan, Cron menggagalkan eksekusi dengan kesalahan validasi eksplisit alih-alih beralih ke pemilihan model agen atau default pekerjaan.
 </Warning>
 
 Cron `--model` adalah **utama pekerjaan**, bukan penggantian `/model` sesi chat. Artinya:
 
 - Fallback model yang dikonfigurasi tetap berlaku saat model pekerjaan yang dipilih gagal.
 - Payload per pekerjaan `fallbacks` menggantikan daftar fallback yang dikonfigurasi saat ada.
-- Daftar fallback per pekerjaan yang kosong (`fallbacks: []` dalam payload/API pekerjaan) membuat eksekusi cron ketat.
-- Saat pekerjaan memiliki `--model` tetapi tidak ada daftar fallback yang dikonfigurasi, OpenClaw meneruskan penggantian fallback kosong eksplisit sehingga model utama agen tidak ditambahkan sebagai target percobaan ulang tersembunyi.
+- Daftar fallback per pekerjaan kosong (`fallbacks: []` dalam payload/API pekerjaan) membuat eksekusi Cron ketat.
+- Saat pekerjaan memiliki `--model` tetapi tidak ada daftar fallback yang dikonfigurasi, OpenClaw meneruskan penggantian fallback kosong eksplisit sehingga agen utama tidak ditambahkan sebagai target percobaan ulang tersembunyi.
 
-### Presedensi model cron terisolasi
+### Prioritas model Cron terisolasi
 
 Cron terisolasi menyelesaikan model aktif dalam urutan ini:
 
 1. Penggantian hook Gmail.
 2. `--model` per pekerjaan.
-3. Penggantian model sesi cron tersimpan (saat pengguna memilihnya).
-4. Pilihan model agen atau default.
+3. Penggantian model sesi Cron tersimpan (saat pengguna memilihnya).
+4. Pemilihan model agen atau default.
 
 ### Mode cepat
 
-Mode cepat cron terisolasi mengikuti pilihan model langsung yang diselesaikan. Konfigurasi model `params.fastMode` berlaku secara default, tetapi penggantian `fastMode` sesi tersimpan tetap mengungguli konfigurasi.
+Mode cepat Cron terisolasi mengikuti pemilihan model langsung yang diselesaikan. Konfigurasi model `params.fastMode` berlaku secara default, tetapi penggantian `fastMode` sesi tersimpan tetap mengalahkan konfigurasi.
 
-### Percobaan ulang pergantian model langsung
+### Percobaan ulang penggantian model langsung
 
-Jika eksekusi terisolasi melempar `LiveSessionModelSwitchError`, cron mempertahankan penyedia dan model yang dialihkan (serta penggantian profil autentikasi yang dialihkan saat ada) untuk eksekusi aktif sebelum mencoba ulang. Loop percobaan ulang luar dibatasi hingga dua percobaan ulang pergantian setelah upaya awal, lalu dibatalkan alih-alih berulang selamanya.
+Jika eksekusi terisolasi melempar `LiveSessionModelSwitchError`, Cron mempertahankan penyedia dan model yang dialihkan (serta penggantian profil auth yang dialihkan saat ada) untuk eksekusi aktif sebelum mencoba lagi. Loop percobaan ulang luar dibatasi hingga dua percobaan ulang penggantian setelah upaya awal, lalu dibatalkan alih-alih berulang tanpa akhir.
 
-## Output eksekusi dan penolakan
+## Keluaran eksekusi dan penolakan
 
-### Supresi pengakuan usang
+### Supresi pengakuan basi
 
-Giliran cron terisolasi menekan balasan yang hanya berupa pengakuan usang. Jika hasil pertama hanya pembaruan status sementara dan tidak ada eksekusi subagen turunan yang bertanggung jawab atas jawaban akhir, cron meminta ulang satu kali untuk hasil sebenarnya sebelum pengiriman.
+Giliran Cron terisolasi menekan balasan hanya-pengakuan yang basi. Jika hasil pertama hanyalah pembaruan status sementara dan tidak ada eksekusi subagen turunan yang bertanggung jawab atas jawaban akhirnya, Cron meminta ulang satu kali untuk hasil nyata sebelum pengiriman.
 
 ### Supresi token senyap
 
-Jika eksekusi cron terisolasi hanya mengembalikan token senyap (`NO_REPLY` atau `no_reply`), cron menekan pengiriman keluar langsung dan jalur ringkasan antrean cadangan, sehingga tidak ada yang diposting kembali ke chat.
+Jika eksekusi Cron terisolasi hanya mengembalikan token senyap (`NO_REPLY` atau `no_reply`), Cron menekan pengiriman keluar langsung dan jalur ringkasan antrean cadangan, sehingga tidak ada yang diposting kembali ke chat.
 
 ### Penolakan terstruktur
 
-Eksekusi cron terisolasi lebih memilih metadata penolakan eksekusi terstruktur dari eksekusi tertanam, lalu kembali ke penanda penolakan yang dikenal dalam output akhir, seperti `SYSTEM_RUN_DENIED`, `INVALID_REQUEST`, dan frasa penolakan pengikatan persetujuan.
+Eksekusi Cron terisolasi lebih memilih metadata penolakan eksekusi terstruktur dari eksekusi tertanam, lalu beralih ke penanda penolakan yang dikenal dalam keluaran akhir, seperti `SYSTEM_RUN_DENIED`, `INVALID_REQUEST`, dan frasa penolakan pengikatan persetujuan.
 
 `cron list` dan riwayat eksekusi menampilkan alasan penolakan alih-alih melaporkan perintah yang diblokir sebagai `ok`.
 
@@ -161,7 +163,7 @@ Retensi dan pemangkasan dikontrol dalam konfigurasi:
 ## Memigrasikan pekerjaan lama
 
 <Note>
-Jika Anda memiliki pekerjaan cron dari sebelum format pengiriman dan penyimpanan saat ini, jalankan `openclaw doctor --fix`. Doctor menormalkan kolom cron lama (`jobId`, `schedule.cron`, kolom pengiriman tingkat atas termasuk `threadId` lama, alias pengiriman `provider` payload) dan memigrasikan pekerjaan fallback webhook sederhana `notify: true` ke pengiriman webhook eksplisit saat `cron.webhook` dikonfigurasi.
+Jika Anda memiliki pekerjaan Cron dari sebelum format pengiriman dan penyimpanan saat ini, jalankan `openclaw doctor --fix`. Doctor menormalkan bidang Cron lama (`jobId`, `schedule.cron`, bidang pengiriman tingkat atas termasuk `threadId` lama, alias pengiriman `provider` payload) dan memigrasikan pekerjaan fallback webhook sederhana `notify: true` ke pengiriman webhook eksplisit saat `cron.webhook` dikonfigurasi.
 </Note>
 
 ## Edit umum
@@ -184,13 +186,13 @@ Aktifkan konteks bootstrap ringan untuk pekerjaan terisolasi:
 openclaw cron edit <job-id> --light-context
 ```
 
-Announce ke channel tertentu:
+Umumkan ke kanal tertentu:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
 ```
 
-Announce ke topik forum Telegram:
+Umumkan ke topik forum Telegram:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "-1001234567890" --thread-id 42
@@ -208,7 +210,7 @@ openclaw cron add \
   --no-deliver
 ```
 
-`--light-context` hanya berlaku untuk pekerjaan giliran agen terisolasi. Untuk eksekusi cron, mode ringan menjaga konteks bootstrap tetap kosong alih-alih menyuntikkan set bootstrap workspace penuh.
+`--light-context` hanya berlaku untuk pekerjaan giliran agen terisolasi. Untuk eksekusi Cron, mode ringan menjaga konteks bootstrap tetap kosong alih-alih menyuntikkan set bootstrap ruang kerja lengkap.
 
 ## Perintah admin umum
 
@@ -222,7 +224,7 @@ openclaw cron run <job-id> --due
 openclaw cron runs --id <job-id> --limit 50
 ```
 
-Entri `cron runs` menyertakan diagnostik pengiriman dengan target cron yang dimaksud, target yang diselesaikan, pengiriman alat pesan, penggunaan fallback, dan status terkirim.
+Entri `cron runs` menyertakan diagnostik pengiriman dengan target Cron yang dimaksud, target yang diselesaikan, pengiriman alat pesan, penggunaan fallback, dan status terkirim.
 
 Penargetan ulang agen dan sesi:
 
@@ -233,7 +235,7 @@ openclaw cron edit <job-id> --session current
 openclaw cron edit <job-id> --session "session:daily-brief"
 ```
 
-`openclaw cron add` memperingatkan saat `--agent` dihilangkan pada pekerjaan giliran agen dan kembali ke agen default (`main`). Teruskan `--agent <id>` saat pembuatan untuk menyematkan agen tertentu.
+`openclaw cron add` memperingatkan saat `--agent` dihilangkan pada pekerjaan giliran agen dan beralih ke agen default (`main`). Teruskan `--agent <id>` saat pembuatan untuk menyematkan agen tertentu.
 
 Penyesuaian pengiriman:
 

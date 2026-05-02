@@ -1,61 +1,53 @@
 ---
 read_when:
     - Menyiapkan Mattermost
-    - Menelusuri kesalahan perutean Mattermost
+    - Pemecahan masalah perutean Mattermost
 sidebarTitle: Mattermost
-summary: Pengaturan bot Mattermost dan konfigurasi OpenClaw
+summary: Penyiapan bot Mattermost dan konfigurasi OpenClaw
 title: Mattermost
 x-i18n:
-    generated_at: "2026-04-30T09:34:36Z"
+    generated_at: "2026-05-02T09:13:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1926a1d7347ff35ed60f8d5c3e0b26a064863ada213ad0e171776af5a84d8475
+    source_hash: 319af8ba1cb8ff1aa5b52a57e809e6c76d3723012dc9cae7c456b89687dd6810
     source_path: channels/mattermost.md
     workflow: 16
 ---
 
-Status: Plugin bundel (token bot + peristiwa WebSocket). Saluran, grup, dan DM didukung. Mattermost adalah platform perpesanan tim yang dapat di-host sendiri; lihat situs resmi di [mattermost.com](https://mattermost.com) untuk detail produk dan unduhan.
+Status: Plugin yang dapat diunduh (token bot + peristiwa WebSocket). Saluran, grup, dan DM didukung. Mattermost adalah platform perpesanan tim yang dapat di-host sendiri; lihat situs resmi di [mattermost.com](https://mattermost.com) untuk detail produk dan unduhan.
 
-## Plugin bundel
+## Instal
 
-<Note>
-Mattermost disertakan sebagai Plugin bundel dalam rilis OpenClaw saat ini, jadi build paket normal tidak memerlukan instalasi terpisah.
-</Note>
-
-Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Mattermost, instal paket npm saat ini ketika sudah diterbitkan:
+Instal Mattermost sebelum mengonfigurasi saluran:
 
 <Tabs>
-  <Tab title="registry npm">
+  <Tab title="npm registry">
     ```bash
     openclaw plugins install @openclaw/mattermost
     ```
   </Tab>
-  <Tab title="Checkout lokal">
+  <Tab title="Local checkout">
     ```bash
     openclaw plugins install ./path/to/local/mattermost-plugin
     ```
   </Tab>
 </Tabs>
 
-Jika npm melaporkan paket milik OpenClaw sebagai tidak digunakan lagi, gunakan build
-OpenClaw paket saat ini atau jalur checkout lokal sampai paket npm yang lebih baru
-diterbitkan.
-
-Detail: [Plugin](/id/tools/plugin)
+Detail: [Plugins](/id/tools/plugin)
 
 ## Penyiapan cepat
 
 <Steps>
-  <Step title="Pastikan Plugin tersedia">
-    Rilis OpenClaw paket saat ini sudah membundelnya. Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
+  <Step title="Ensure plugin is available">
+    Rilis OpenClaw terpaket saat ini sudah menyertakannya. Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
   </Step>
-  <Step title="Buat bot Mattermost">
+  <Step title="Create a Mattermost bot">
     Buat akun bot Mattermost dan salin **token bot**.
   </Step>
-  <Step title="Salin URL dasar">
+  <Step title="Copy the base URL">
     Salin **URL dasar** Mattermost (misalnya, `https://chat.example.com`).
   </Step>
-  <Step title="Konfigurasikan OpenClaw dan mulai gateway">
+  <Step title="Configure OpenClaw and start the gateway">
     Konfigurasi minimal:
 
     ```json5
@@ -76,7 +68,7 @@ Detail: [Plugin](/id/tools/plugin)
 
 ## Perintah slash native
 
-Perintah slash native bersifat opsional. Saat diaktifkan, OpenClaw mendaftarkan perintah slash `oc_*` melalui API Mattermost dan menerima POST callback di server HTTP Gateway.
+Perintah slash native bersifat opt-in. Saat diaktifkan, OpenClaw mendaftarkan perintah slash `oc_*` melalui API Mattermost dan menerima POST callback di server HTTP Gateway.
 
 ```json5
 {
@@ -95,26 +87,28 @@ Perintah slash native bersifat opsional. Saat diaktifkan, OpenClaw mendaftarkan 
 ```
 
 <AccordionGroup>
-  <Accordion title="Catatan perilaku">
-    - `native: "auto"` secara default dinonaktifkan untuk Mattermost. Tetapkan `native: true` untuk mengaktifkan.
-    - Jika `callbackUrl` dihilangkan, OpenClaw menurunkannya dari host/port Gateway + `callbackPath`.
-    - Untuk penyiapan multi-akun, `commands` dapat ditetapkan di tingkat atas atau di bawah `channels.mattermost.accounts.<id>.commands` (nilai akun menimpa bidang tingkat atas).
-    - Callback perintah divalidasi dengan token per-perintah yang dikembalikan oleh Mattermost saat OpenClaw mendaftarkan perintah `oc_*`.
-    - Callback slash gagal tertutup saat pendaftaran gagal, startup parsial, atau token callback tidak cocok dengan salah satu perintah yang terdaftar.
+  <Accordion title="Behavior notes">
+    - `native: "auto"` secara default dinonaktifkan untuk Mattermost. Atur `native: true` untuk mengaktifkannya.
+    - Jika `callbackUrl` dihilangkan, OpenClaw membuatnya dari host/port Gateway + `callbackPath`.
+    - Untuk penyiapan multi-akun, `commands` dapat diatur di tingkat teratas atau di bawah `channels.mattermost.accounts.<id>.commands` (nilai akun menimpa bidang tingkat teratas).
+    - Callback perintah divalidasi dengan token per perintah yang dikembalikan oleh Mattermost saat OpenClaw mendaftarkan perintah `oc_*`.
+    - OpenClaw menyegarkan pendaftaran perintah Mattermost saat ini sebelum menerima setiap callback sehingga token usang dari perintah slash yang dihapus atau dibuat ulang berhenti diterima tanpa perlu memulai ulang Gateway.
+    - Validasi callback gagal secara tertutup jika API Mattermost tidak dapat mengonfirmasi bahwa perintah masih terkini; validasi yang gagal di-cache sebentar, lookup serentak digabungkan, dan awal lookup baru dibatasi lajunya per perintah untuk membatasi tekanan replay.
+    - Callback slash gagal secara tertutup saat pendaftaran gagal, startup parsial, atau token callback tidak cocok dengan token terdaftar milik perintah yang di-resolve (token yang valid untuk satu perintah tidak dapat mencapai validasi upstream untuk perintah lain).
 
   </Accordion>
-  <Accordion title="Persyaratan keterjangkauan">
+  <Accordion title="Reachability requirement">
     Endpoint callback harus dapat dijangkau dari server Mattermost.
 
-    - Jangan tetapkan `callbackUrl` ke `localhost` kecuali Mattermost berjalan pada host/namespace jaringan yang sama dengan OpenClaw.
-    - Jangan tetapkan `callbackUrl` ke URL dasar Mattermost Anda kecuali URL tersebut melakukan reverse-proxy `/api/channels/mattermost/command` ke OpenClaw.
-    - Pemeriksaan cepat adalah `curl https://<gateway-host>/api/channels/mattermost/command`; GET seharusnya mengembalikan `405 Method Not Allowed` dari OpenClaw, bukan `404`.
+    - Jangan atur `callbackUrl` ke `localhost` kecuali Mattermost berjalan di host/namespace jaringan yang sama dengan OpenClaw.
+    - Jangan atur `callbackUrl` ke URL dasar Mattermost Anda kecuali URL tersebut melakukan reverse-proxy `/api/channels/mattermost/command` ke OpenClaw.
+    - Pemeriksaan cepatnya adalah `curl https://<gateway-host>/api/channels/mattermost/command`; GET seharusnya mengembalikan `405 Method Not Allowed` dari OpenClaw, bukan `404`.
 
   </Accordion>
-  <Accordion title="Allowlist egress Mattermost">
-    Jika callback Anda menargetkan alamat privat/tailnet/internal, tetapkan `ServiceSettings.AllowedUntrustedInternalConnections` Mattermost agar menyertakan host/domain callback.
+  <Accordion title="Mattermost egress allowlist">
+    Jika callback Anda menargetkan alamat privat/tailnet/internal, atur `ServiceSettings.AllowedUntrustedInternalConnections` Mattermost agar menyertakan host/domain callback.
 
-    Gunakan entri host/domain, bukan URL lengkap.
+    Gunakan entri host/domain, bukan URL penuh.
 
     - Baik: `gateway.tailnet-name.ts.net`
     - Buruk: `https://gateway.tailnet-name.ts.net`
@@ -124,7 +118,7 @@ Perintah slash native bersifat opsional. Saat diaktifkan, OpenClaw mendaftarkan 
 
 ## Variabel lingkungan (akun default)
 
-Tetapkan ini pada host Gateway jika Anda lebih memilih env vars:
+Atur ini di host Gateway jika Anda lebih memilih env vars:
 
 - `MATTERMOST_BOT_TOKEN=...`
 - `MATTERMOST_URL=https://chat.example.com`
@@ -132,19 +126,19 @@ Tetapkan ini pada host Gateway jika Anda lebih memilih env vars:
 <Note>
 Env vars hanya berlaku untuk akun **default** (`default`). Akun lain harus menggunakan nilai konfigurasi.
 
-`MATTERMOST_URL` tidak dapat ditetapkan dari `.env` workspace; lihat [File `.env` workspace](/id/gateway/security).
+`MATTERMOST_URL` tidak dapat diatur dari `.env` workspace; lihat [File `.env` workspace](/id/gateway/security).
 </Note>
 
-## Mode chat
+## Mode obrolan
 
-Mattermost merespons DM secara otomatis. Perilaku saluran dikendalikan oleh `chatmode`:
+Mattermost merespons DM secara otomatis. Perilaku saluran dikontrol oleh `chatmode`:
 
 <Tabs>
   <Tab title="oncall (default)">
-    Respons hanya ketika disebut dengan @ di saluran.
+    Respons hanya saat @mentioned di saluran.
   </Tab>
   <Tab title="onmessage">
-    Respons setiap pesan saluran.
+    Respons ke setiap pesan saluran.
   </Tab>
   <Tab title="onchar">
     Respons saat pesan dimulai dengan prefiks pemicu.
@@ -166,17 +160,17 @@ Contoh konfigurasi:
 
 Catatan:
 
-- `onchar` tetap merespons @mention eksplisit.
+- `onchar` tetap merespons @mentions eksplisit.
 - `channels.mattermost.requireMention` dihormati untuk konfigurasi lama, tetapi `chatmode` lebih disarankan.
 
 ## Thread dan sesi
 
 Gunakan `channels.mattermost.replyToMode` untuk mengontrol apakah balasan saluran dan grup tetap berada di saluran utama atau memulai thread di bawah posting pemicu.
 
-- `off` (default): hanya balas di thread ketika posting masuk sudah berada di dalam thread.
-- `first`: untuk posting saluran/grup tingkat atas, mulai thread di bawah posting tersebut dan rutekan percakapan ke sesi bercakupan thread.
+- `off` (default): hanya balas dalam thread saat posting masuk sudah berada di dalam thread.
+- `first`: untuk posting saluran/grup tingkat atas, mulai thread di bawah posting tersebut dan rutekan percakapan ke sesi berscope thread.
 - `all`: perilaku yang sama dengan `first` untuk Mattermost saat ini.
-- Pesan langsung mengabaikan pengaturan ini dan tetap tidak menggunakan thread.
+- Pesan langsung mengabaikan pengaturan ini dan tetap non-threaded.
 
 Contoh konfigurasi:
 
@@ -192,25 +186,25 @@ Contoh konfigurasi:
 
 Catatan:
 
-- Sesi bercakupan thread menggunakan id posting pemicu sebagai root thread.
-- `first` dan `all` saat ini setara karena setelah Mattermost memiliki root thread, potongan lanjutan dan media berlanjut di thread yang sama.
+- Sesi berscope thread menggunakan id posting pemicu sebagai akar thread.
+- `first` dan `all` saat ini setara karena setelah Mattermost memiliki akar thread, chunk lanjutan dan media berlanjut di thread yang sama.
 
 ## Kontrol akses (DM)
 
-- Default: `channels.mattermost.dmPolicy = "pairing"` (pengirim tidak dikenal mendapatkan kode pairing).
+- Default: `channels.mattermost.dmPolicy = "pairing"` (pengirim yang tidak dikenal mendapatkan kode pairing).
 - Setujui melalui:
   - `openclaw pairing list mattermost`
   - `openclaw pairing approve mattermost <CODE>`
-- DM publik: `channels.mattermost.dmPolicy="open"` ditambah `channels.mattermost.allowFrom=["*"]`.
+- DM publik: `channels.mattermost.dmPolicy="open"` plus `channels.mattermost.allowFrom=["*"]`.
 
 ## Saluran (grup)
 
-- Default: `channels.mattermost.groupPolicy = "allowlist"` (dibatasi oleh mention).
+- Default: `channels.mattermost.groupPolicy = "allowlist"` (dibatasi mention).
 - Allowlist pengirim dengan `channels.mattermost.groupAllowFrom` (ID pengguna direkomendasikan).
-- Override mention per-saluran berada di bawah `channels.mattermost.groups.<channelId>.requireMention` atau `channels.mattermost.groups["*"].requireMention` untuk default.
-- Pencocokan `@username` dapat berubah dan hanya diaktifkan ketika `channels.mattermost.dangerouslyAllowNameMatching: true`.
-- Saluran terbuka: `channels.mattermost.groupPolicy="open"` (dibatasi oleh mention).
-- Catatan runtime: jika `channels.mattermost` sepenuhnya tidak ada, runtime fallback ke `groupPolicy="allowlist"` untuk pemeriksaan grup (meskipun `channels.defaults.groupPolicy` ditetapkan).
+- Override mention per saluran berada di bawah `channels.mattermost.groups.<channelId>.requireMention` atau `channels.mattermost.groups["*"].requireMention` untuk default.
+- Pencocokan `@username` dapat berubah dan hanya diaktifkan saat `channels.mattermost.dangerouslyAllowNameMatching: true`.
+- Saluran terbuka: `channels.mattermost.groupPolicy="open"` (dibatasi mention).
+- Catatan runtime: jika `channels.mattermost` sepenuhnya tidak ada, runtime kembali ke `groupPolicy="allowlist"` untuk pemeriksaan grup (meskipun `channels.defaults.groupPolicy` diatur).
 
 Contoh:
 
@@ -234,24 +228,24 @@ Gunakan format target ini dengan `openclaw message send` atau cron/webhooks:
 
 - `channel:<id>` untuk saluran
 - `user:<id>` untuk DM
-- `@username` untuk DM (diselesaikan melalui API Mattermost)
+- `@username` untuk DM (di-resolve melalui API Mattermost)
 
 <Warning>
-ID buram polos (seperti `64ifufp...`) **ambigu** di Mattermost (ID pengguna vs ID saluran).
+ID buram tanpa prefiks (seperti `64ifufp...`) **ambigu** di Mattermost (ID pengguna vs ID saluran).
 
-OpenClaw menyelesaikannya **pengguna terlebih dahulu**:
+OpenClaw me-resolve-nya dengan **pengguna lebih dulu**:
 
-- Jika ID ada sebagai pengguna (`GET /api/v4/users/<id>` berhasil), OpenClaw mengirim **DM** dengan menyelesaikan saluran langsung melalui `/api/v4/channels/direct`.
+- Jika ID ada sebagai pengguna (`GET /api/v4/users/<id>` berhasil), OpenClaw mengirim **DM** dengan me-resolve saluran langsung melalui `/api/v4/channels/direct`.
 - Jika tidak, ID diperlakukan sebagai **ID saluran**.
 
 Jika Anda membutuhkan perilaku deterministik, selalu gunakan prefiks eksplisit (`user:<id>` / `channel:<id>`).
 </Warning>
 
-## Retry saluran DM
+## Percobaan ulang saluran DM
 
-Saat OpenClaw mengirim ke target DM Mattermost dan perlu menyelesaikan saluran langsung terlebih dahulu, secara default OpenClaw mencoba ulang kegagalan pembuatan saluran langsung yang bersifat sementara.
+Saat OpenClaw mengirim ke target DM Mattermost dan perlu me-resolve saluran langsung terlebih dahulu, secara default OpenClaw mencoba ulang kegagalan sementara pembuatan saluran langsung.
 
-Gunakan `channels.mattermost.dmChannelRetry` untuk menyetel perilaku itu secara global bagi Plugin Mattermost, atau `channels.mattermost.accounts.<id>.dmChannelRetry` untuk satu akun.
+Gunakan `channels.mattermost.dmChannelRetry` untuk menyesuaikan perilaku tersebut secara global untuk Plugin Mattermost, atau `channels.mattermost.accounts.<id>.dmChannelRetry` untuk satu akun.
 
 ```json5
 {
@@ -271,12 +265,12 @@ Gunakan `channels.mattermost.dmChannelRetry` untuk menyetel perilaku itu secara 
 Catatan:
 
 - Ini hanya berlaku untuk pembuatan saluran DM (`/api/v4/channels/direct`), bukan setiap panggilan API Mattermost.
-- Retry berlaku untuk kegagalan sementara seperti batas laju, respons 5xx, serta kesalahan jaringan atau timeout.
+- Percobaan ulang berlaku untuk kegagalan sementara seperti batas laju, respons 5xx, serta kesalahan jaringan atau timeout.
 - Kesalahan klien 4xx selain `429` diperlakukan sebagai permanen dan tidak dicoba ulang.
 
 ## Streaming pratinjau
 
-Mattermost melakukan streaming pemikiran, aktivitas alat, dan teks balasan parsial ke dalam satu **posting pratinjau draf** yang difinalisasi di tempat saat jawaban akhir aman untuk dikirim. Pratinjau diperbarui pada id posting yang sama alih-alih membanjiri saluran dengan pesan per-potongan. Final media/kesalahan membatalkan edit pratinjau yang tertunda dan menggunakan pengiriman normal alih-alih membilas posting pratinjau sekali pakai.
+Mattermost melakukan streaming pemikiran, aktivitas tool, dan teks balasan parsial ke satu **posting pratinjau draf** yang difinalisasi di tempat saat jawaban akhir aman untuk dikirim. Pratinjau diperbarui pada id posting yang sama alih-alih membanjiri saluran dengan pesan per chunk. Final media/kesalahan membatalkan edit pratinjau yang tertunda dan menggunakan pengiriman normal alih-alih mengirim posting pratinjau sementara.
 
 Aktifkan melalui `channels.mattermost.streaming`:
 
@@ -291,27 +285,27 @@ Aktifkan melalui `channels.mattermost.streaming`:
 ```
 
 <AccordionGroup>
-  <Accordion title="Mode streaming">
-    - `partial` adalah pilihan umum: satu posting pratinjau yang diedit saat balasan bertambah, lalu difinalisasi dengan jawaban lengkap.
-    - `block` menggunakan potongan draf bergaya append di dalam posting pratinjau.
+  <Accordion title="Streaming modes">
+    - `partial` adalah pilihan umum: satu posting pratinjau yang diedit seiring balasan bertambah, lalu difinalisasi dengan jawaban lengkap.
+    - `block` menggunakan chunk draf bergaya append di dalam posting pratinjau.
     - `progress` menampilkan pratinjau status saat menghasilkan dan hanya memposting jawaban akhir saat selesai.
     - `off` menonaktifkan streaming pratinjau.
 
   </Accordion>
-  <Accordion title="Catatan perilaku streaming">
-    - Jika stream tidak dapat difinalisasi di tempat (misalnya posting dihapus di tengah stream), OpenClaw fallback dengan mengirim posting final baru agar balasan tidak pernah hilang.
-    - Payload khusus penalaran disembunyikan dari posting saluran, termasuk teks yang tiba sebagai blockquote `> Reasoning:`. Tetapkan `/reasoning on` untuk melihat pemikiran di permukaan lain; posting final Mattermost hanya mempertahankan jawaban.
+  <Accordion title="Streaming behavior notes">
+    - Jika stream tidak dapat difinalisasi di tempat (misalnya posting dihapus di tengah stream), OpenClaw fallback ke mengirim posting final baru agar balasan tidak pernah hilang.
+    - Payload yang hanya berisi penalaran ditekan dari posting saluran, termasuk teks yang datang sebagai blockquote `> Reasoning:`. Atur `/reasoning on` untuk melihat pemikiran di surface lain; posting final Mattermost hanya menyimpan jawaban.
     - Lihat [Streaming](/id/concepts/streaming#preview-streaming-modes) untuk matriks pemetaan saluran.
 
   </Accordion>
 </AccordionGroup>
 
-## Reaksi (alat pesan)
+## Reaksi (tool pesan)
 
 - Gunakan `message action=react` dengan `channel=mattermost`.
 - `messageId` adalah id posting Mattermost.
 - `emoji` menerima nama seperti `thumbsup` atau `:+1:` (titik dua opsional).
-- Tetapkan `remove=true` (boolean) untuk menghapus reaksi.
+- Atur `remove=true` (boolean) untuk menghapus reaksi.
 - Peristiwa tambah/hapus reaksi diteruskan sebagai peristiwa sistem ke sesi agen yang dirutekan.
 
 Contoh:
@@ -324,13 +318,13 @@ message action=react channel=mattermost target=channel:<channelId> messageId=<po
 Konfigurasi:
 
 - `channels.mattermost.actions.reactions`: aktifkan/nonaktifkan tindakan reaksi (default true).
-- Override per-akun: `channels.mattermost.accounts.<id>.actions.reactions`.
+- Override per akun: `channels.mattermost.accounts.<id>.actions.reactions`.
 
-## Tombol interaktif (alat pesan)
+## Tombol interaktif (tool pesan)
 
 Kirim pesan dengan tombol yang dapat diklik. Saat pengguna mengklik tombol, agen menerima pilihan dan dapat merespons.
 
-Aktifkan tombol dengan menambahkan `inlineButtons` ke kapabilitas saluran:
+Aktifkan tombol dengan menambahkan `inlineButtons` ke kemampuan saluran:
 
 ```json5
 {
@@ -360,11 +354,11 @@ Bidang tombol:
   Gaya tombol.
 </ParamField>
 
-Saat pengguna mengklik tombol:
+Saat pengguna mengeklik tombol:
 
 <Steps>
   <Step title="Tombol diganti dengan konfirmasi">
-    Semua tombol diganti dengan baris konfirmasi (misalnya, "✓ **Ya** dipilih oleh @user").
+    Semua tombol diganti dengan baris konfirmasi (misalnya, "✓ **Yes** dipilih oleh @user").
   </Step>
   <Step title="Agent menerima pilihan">
     Agent menerima pilihan sebagai pesan masuk dan merespons.
@@ -374,16 +368,16 @@ Saat pengguna mengklik tombol:
 <AccordionGroup>
   <Accordion title="Catatan implementasi">
     - Callback tombol menggunakan verifikasi HMAC-SHA256 (otomatis, tidak perlu konfigurasi).
-    - Mattermost menghapus data callback dari respons API-nya (fitur keamanan), sehingga semua tombol dihapus saat diklik — penghapusan sebagian tidak memungkinkan.
-    - ID tindakan yang berisi tanda hubung atau garis bawah disanitasi secara otomatis (batasan perutean Mattermost).
+    - Mattermost menghapus data callback dari respons API-nya (fitur keamanan), sehingga semua tombol dihapus saat diklik — penghapusan sebagian tidak dimungkinkan.
+    - ID tindakan yang berisi tanda hubung atau garis bawah disanitasi secara otomatis (batasan routing Mattermost).
 
   </Accordion>
   <Accordion title="Konfigurasi dan keterjangkauan">
     - `channels.mattermost.capabilities`: array string kapabilitas. Tambahkan `"inlineButtons"` untuk mengaktifkan deskripsi tool tombol di prompt sistem agent.
-    - `channels.mattermost.interactions.callbackBaseUrl`: URL dasar eksternal opsional untuk callback tombol (misalnya `https://gateway.example.com`). Gunakan ini ketika Mattermost tidak dapat menjangkau Gateway secara langsung di host bind-nya.
-    - Dalam penyiapan multi-akun, Anda juga dapat mengatur field yang sama di bawah `channels.mattermost.accounts.<id>.interactions.callbackBaseUrl`.
+    - `channels.mattermost.interactions.callbackBaseUrl`: URL dasar eksternal opsional untuk callback tombol (misalnya `https://gateway.example.com`). Gunakan ini saat Mattermost tidak dapat menjangkau gateway pada host bind-nya secara langsung.
+    - Dalam setup multi-akun, Anda juga dapat mengatur field yang sama di bawah `channels.mattermost.accounts.<id>.interactions.callbackBaseUrl`.
     - Jika `interactions.callbackBaseUrl` dihilangkan, OpenClaw menurunkan URL callback dari `gateway.customBindHost` + `gateway.port`, lalu fallback ke `http://localhost:<port>`.
-    - Aturan keterjangkauan: URL callback tombol harus dapat dijangkau dari server Mattermost. `localhost` hanya berfungsi ketika Mattermost dan OpenClaw berjalan pada host/namespace jaringan yang sama.
+    - Aturan keterjangkauan: URL callback tombol harus dapat dijangkau dari server Mattermost. `localhost` hanya berfungsi saat Mattermost dan OpenClaw berjalan pada host/namespace jaringan yang sama.
     - Jika target callback Anda bersifat privat/tailnet/internal, tambahkan host/domain-nya ke Mattermost `ServiceSettings.AllowedUntrustedInternalConnections`.
 
   </Accordion>
@@ -391,7 +385,7 @@ Saat pengguna mengklik tombol:
 
 ### Integrasi API langsung (skrip eksternal)
 
-Skrip eksternal dan webhook dapat memposting tombol langsung melalui Mattermost REST API alih-alih melalui tool `message` milik agent. Gunakan `buildButtonAttachments()` dari Plugin bila memungkinkan; jika memposting JSON mentah, ikuti aturan ini:
+Skrip eksternal dan webhook dapat memposting tombol secara langsung melalui Mattermost REST API alih-alih melalui tool `message` milik agent. Gunakan `buildButtonAttachments()` dari plugin jika memungkinkan; jika memposting JSON mentah, ikuti aturan berikut:
 
 **Struktur payload:**
 
@@ -426,12 +420,12 @@ Skrip eksternal dan webhook dapat memposting tombol langsung melalui Mattermost 
 ```
 
 <Warning>
-**Aturan penting**
+**Aturan kritis**
 
-1. Lampiran masuk ke `props.attachments`, bukan `attachments` tingkat atas (diabaikan secara diam-diam).
+1. Attachment masuk ke `props.attachments`, bukan `attachments` level atas (diabaikan secara diam-diam).
 2. Setiap tindakan memerlukan `type: "button"` — tanpanya, klik ditelan diam-diam.
 3. Setiap tindakan memerlukan field `id` — Mattermost mengabaikan tindakan tanpa ID.
-4. `id` tindakan harus **hanya alfanumerik** (`[a-zA-Z0-9]`). Tanda hubung dan garis bawah merusak perutean tindakan sisi server Mattermost (mengembalikan 404). Hapus sebelum digunakan.
+4. `id` tindakan harus **hanya alfanumerik** (`[a-zA-Z0-9]`). Tanda hubung dan garis bawah merusak routing tindakan sisi server Mattermost (mengembalikan 404). Hapus sebelum digunakan.
 5. `context.action_id` harus cocok dengan `id` tombol agar pesan konfirmasi menampilkan nama tombol (misalnya, "Approve") alih-alih ID mentah.
 6. `context.action_id` wajib ada — handler interaksi mengembalikan 400 tanpanya.
 
@@ -439,7 +433,7 @@ Skrip eksternal dan webhook dapat memposting tombol langsung melalui Mattermost 
 
 **Pembuatan token HMAC**
 
-Gateway memverifikasi klik tombol dengan HMAC-SHA256. Skrip eksternal harus membuat token yang cocok dengan logika verifikasi Gateway:
+Gateway memverifikasi klik tombol dengan HMAC-SHA256. Skrip eksternal harus membuat token yang cocok dengan logika verifikasi gateway:
 
 <Steps>
   <Step title="Turunkan secret dari token bot">
@@ -448,8 +442,8 @@ Gateway memverifikasi klik tombol dengan HMAC-SHA256. Skrip eksternal harus memb
   <Step title="Bangun objek konteks">
     Bangun objek konteks dengan semua field **kecuali** `_token`.
   </Step>
-  <Step title="Serialisasikan dengan key terurut">
-    Serialisasikan dengan **key terurut** dan **tanpa spasi** (Gateway menggunakan `JSON.stringify` dengan key terurut, yang menghasilkan output ringkas).
+  <Step title="Serialisasi dengan key terurut">
+    Serialisasikan dengan **key terurut** dan **tanpa spasi** (gateway menggunakan `JSON.stringify` dengan key terurut, yang menghasilkan output ringkas).
   </Step>
   <Step title="Tandatangani payload">
     `HMAC-SHA256(key=secret, data=serializedContext)`
@@ -477,20 +471,20 @@ context = {**ctx, "_token": token}
 ```
 
 <AccordionGroup>
-  <Accordion title="Kesalahan umum HMAC">
+  <Accordion title="Jebakan umum HMAC">
     - `json.dumps` Python menambahkan spasi secara default (`{"key": "val"}`). Gunakan `separators=(",", ":")` agar cocok dengan output ringkas JavaScript (`{"key":"val"}`).
     - Selalu tandatangani **semua** field konteks (dikurangi `_token`). Gateway menghapus `_token` lalu menandatangani semua yang tersisa. Menandatangani subset menyebabkan kegagalan verifikasi diam-diam.
-    - Gunakan `sort_keys=True` — Gateway mengurutkan key sebelum menandatangani, dan Mattermost dapat mengurutkan ulang field konteks saat menyimpan payload.
-    - Turunkan secret dari token bot (deterministik), bukan byte acak. Secret harus sama antara proses yang membuat tombol dan Gateway yang memverifikasi.
+    - Gunakan `sort_keys=True` — gateway mengurutkan key sebelum menandatangani, dan Mattermost dapat mengurutkan ulang field konteks saat menyimpan payload.
+    - Turunkan secret dari token bot (deterministik), bukan byte acak. Secret harus sama di proses yang membuat tombol dan gateway yang memverifikasi.
 
   </Accordion>
 </AccordionGroup>
 
-## Adapter direktori
+## Adaptor direktori
 
-Plugin Mattermost menyertakan adapter direktori yang menyelesaikan nama channel dan pengguna melalui Mattermost API. Ini mengaktifkan target `#channel-name` dan `@username` dalam `openclaw message send` serta pengiriman cron/webhook.
+Plugin Mattermost menyertakan adaptor direktori yang menyelesaikan nama channel dan pengguna melalui Mattermost API. Ini mengaktifkan target `#channel-name` dan `@username` dalam `openclaw message send` serta pengiriman cron/webhook.
 
-Tidak diperlukan konfigurasi — adapter menggunakan token bot dari konfigurasi akun.
+Tidak diperlukan konfigurasi — adaptor menggunakan token bot dari konfigurasi akun.
 
 ## Multi-akun
 
@@ -513,9 +507,9 @@ Mattermost mendukung beberapa akun di bawah `channels.mattermost.accounts`:
 
 <AccordionGroup>
   <Accordion title="Tidak ada balasan di channel">
-    Pastikan bot berada di channel dan sebutkan namanya (oncall), gunakan awalan pemicu (onchar), atau atur `chatmode: "onmessage"`.
+    Pastikan bot ada di channel dan sebutkan bot tersebut (oncall), gunakan prefiks pemicu (onchar), atau atur `chatmode: "onmessage"`.
   </Accordion>
-  <Accordion title="Kesalahan auth atau multi-akun">
+  <Accordion title="Error auth atau multi-akun">
     - Periksa token bot, URL dasar, dan apakah akun diaktifkan.
     - Masalah multi-akun: env var hanya berlaku untuk akun `default`.
 
@@ -523,29 +517,29 @@ Mattermost mendukung beberapa akun di bawah `channels.mattermost.accounts`:
   <Accordion title="Perintah slash native gagal">
     - `Unauthorized: invalid command token.`: OpenClaw tidak menerima token callback. Penyebab umum:
       - pendaftaran perintah slash gagal atau hanya selesai sebagian saat startup
-      - callback mengenai Gateway/akun yang salah
+      - callback mengenai gateway/akun yang salah
       - Mattermost masih memiliki perintah lama yang mengarah ke target callback sebelumnya
-      - Gateway dimulai ulang tanpa mengaktifkan ulang perintah slash
+      - gateway dimulai ulang tanpa mengaktifkan kembali perintah slash
     - Jika perintah slash native berhenti berfungsi, periksa log untuk `mattermost: failed to register slash commands` atau `mattermost: native slash commands enabled but no commands could be registered`.
-    - Jika `callbackUrl` dihilangkan dan log memperingatkan bahwa callback terselesaikan ke `http://127.0.0.1:18789/...`, URL itu kemungkinan hanya dapat dijangkau ketika Mattermost berjalan pada host/namespace jaringan yang sama dengan OpenClaw. Atur `commands.callbackUrl` eksplisit yang dapat dijangkau secara eksternal sebagai gantinya.
+    - Jika `callbackUrl` dihilangkan dan log memperingatkan bahwa callback diselesaikan menjadi `http://127.0.0.1:18789/...`, URL tersebut mungkin hanya dapat dijangkau saat Mattermost berjalan pada host/namespace jaringan yang sama dengan OpenClaw. Atur `commands.callbackUrl` eksplisit yang dapat dijangkau secara eksternal sebagai gantinya.
 
   </Accordion>
   <Accordion title="Masalah tombol">
-    - Tombol muncul sebagai kotak putih: agent mungkin mengirim data tombol yang tidak valid. Periksa bahwa setiap tombol memiliki field `text` dan `callback_data`.
-    - Tombol dirender tetapi klik tidak melakukan apa pun: verifikasi `AllowedUntrustedInternalConnections` dalam konfigurasi server Mattermost menyertakan `127.0.0.1 localhost`, dan bahwa `EnablePostActionIntegration` adalah `true` dalam ServiceSettings.
+    - Tombol muncul sebagai kotak putih: agent mungkin mengirim data tombol yang salah format. Periksa bahwa setiap tombol memiliki field `text` dan `callback_data`.
+    - Tombol dirender tetapi klik tidak melakukan apa pun: verifikasi `AllowedUntrustedInternalConnections` di konfigurasi server Mattermost menyertakan `127.0.0.1 localhost`, dan bahwa `EnablePostActionIntegration` adalah `true` di ServiceSettings.
     - Tombol mengembalikan 404 saat diklik: `id` tombol kemungkinan berisi tanda hubung atau garis bawah. Router tindakan Mattermost rusak pada ID non-alfanumerik. Gunakan hanya `[a-zA-Z0-9]`.
     - Log Gateway `invalid _token`: ketidakcocokan HMAC. Periksa bahwa Anda menandatangani semua field konteks (bukan subset), menggunakan key terurut, dan menggunakan JSON ringkas (tanpa spasi). Lihat bagian HMAC di atas.
-    - Log Gateway `missing _token in context`: field `_token` tidak ada dalam konteks tombol. Pastikan field itu disertakan saat membangun payload integrasi.
+    - Log Gateway `missing _token in context`: field `_token` tidak ada dalam konteks tombol. Pastikan field tersebut disertakan saat membangun payload integrasi.
     - Konfirmasi menampilkan ID mentah alih-alih nama tombol: `context.action_id` tidak cocok dengan `id` tombol. Atur keduanya ke nilai tersanitasi yang sama.
-    - Agent tidak tahu tentang tombol: tambahkan `capabilities: ["inlineButtons"]` ke konfigurasi channel Mattermost.
+    - Agent tidak mengetahui tombol: tambahkan `capabilities: ["inlineButtons"]` ke konfigurasi channel Mattermost.
 
   </Accordion>
 </AccordionGroup>
 
 ## Terkait
 
-- [Perutean Channel](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Routing Channel](/id/channels/channel-routing) — routing sesi untuk pesan
 - [Ikhtisar Channel](/id/channels) — semua channel yang didukung
-- [Grup](/id/channels/groups) — perilaku obrolan grup dan gating sebutan
+- [Grup](/id/channels/groups) — perilaku chat grup dan gerbang mention
 - [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
 - [Keamanan](/id/gateway/security) — model akses dan hardening

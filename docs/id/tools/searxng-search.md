@@ -1,32 +1,33 @@
 ---
 read_when:
-    - Anda menginginkan provider web search self-hosted@endsection to=final
-    - Anda ingin menggunakan SearXNG untuk `web_search`
-    - Anda memerlukan opsi pencarian yang berfokus pada privasi atau air-gapped
-summary: Pencarian web SearXNG -- provider meta-search self-hosted tanpa key
+    - Anda menginginkan penyedia pencarian web yang dihosting sendiri
+    - Anda ingin menggunakan SearXNG untuk web_search
+    - Anda membutuhkan opsi pencarian yang berfokus pada privasi atau terisolasi sepenuhnya dari jaringan
+summary: Pencarian web SearXNG -- penyedia meta-pencarian yang dihosting sendiri dan tanpa kunci
 title: Pencarian SearXNG
 x-i18n:
-    generated_at: "2026-04-24T09:32:47Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:35:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a07198ef7a6f363b9e5e78e57e6e31f193f8f10882945208191c8baea5fe67d6
+    source_hash: b9be62f7398379e1672ea7e934a571a529cac07dc5d880ac74e51f8445594034
     source_path: tools/searxng-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw mendukung [SearXNG](https://docs.searxng.org/) sebagai provider `web_search` **self-hosted, tanpa key**. SearXNG adalah meta-search engine open-source
-yang menggabungkan hasil dari Google, Bing, DuckDuckGo, dan sumber lainnya.
+OpenClaw mendukung [SearXNG](https://docs.searxng.org/) sebagai penyedia `web_search` **dihosting sendiri,
+tanpa kunci**. SearXNG adalah mesin metapencari sumber terbuka
+yang mengagregasi hasil dari Google, Bing, DuckDuckGo, dan sumber lain.
 
-Keuntungan:
+Keunggulan:
 
-- **Gratis dan tanpa batas** -- tidak memerlukan API key atau langganan komersial
-- **Privasi / air-gap** -- kueri tidak pernah keluar dari jaringan Anda
-- **Berfungsi di mana saja** -- tidak ada pembatasan region pada API pencarian komersial
+- **Gratis dan tanpa batas** -- tidak memerlukan kunci API atau langganan komersial
+- **Privasi / isolasi jaringan** -- kueri tidak pernah keluar dari jaringan Anda
+- **Berfungsi di mana saja** -- tidak ada batasan wilayah pada API pencarian komersial
 
 ## Penyiapan
 
 <Steps>
-  <Step title="Jalankan instance SearXNG">
+  <Step title="Run a SearXNG instance">
     ```bash
     docker run -d -p 8888:8080 searxng/searxng
     ```
@@ -35,13 +36,13 @@ Keuntungan:
     [dokumentasi SearXNG](https://docs.searxng.org/) untuk penyiapan produksi.
 
   </Step>
-  <Step title="Konfigurasikan">
+  <Step title="Configure">
     ```bash
     openclaw configure --section web
-    # Pilih "searxng" sebagai provider
+    # Select "searxng" as the provider
     ```
 
-    Atau setel env var dan biarkan auto-detection menemukannya:
+    Atau atur env var dan biarkan deteksi otomatis menemukannya:
 
     ```bash
     export SEARXNG_BASE_URL="http://localhost:8888"
@@ -64,7 +65,7 @@ Keuntungan:
 }
 ```
 
-Pengaturan tingkat Plugin untuk instance SearXNG:
+Pengaturan tingkat Plugin untuk instans SearXNG:
 
 ```json5
 {
@@ -74,8 +75,8 @@ Pengaturan tingkat Plugin untuk instance SearXNG:
         config: {
           webSearch: {
             baseUrl: "http://localhost:8888",
-            categories: "general,news", // opsional
-            language: "en", // opsional
+            categories: "general,news", // optional
+            language: "en", // optional
           },
         },
       },
@@ -84,53 +85,64 @@ Pengaturan tingkat Plugin untuk instance SearXNG:
 }
 ```
 
-Field `baseUrl` juga menerima objek SecretRef.
+Kolom `baseUrl` juga menerima objek SecretRef.
 
 Aturan transport:
 
-- `https://` berfungsi untuk host SearXNG publik maupun private
-- `http://` hanya diterima untuk host trusted private-network atau loopback
+- `https://` berfungsi untuk host SearXNG publik atau privat
+- `http://` hanya diterima untuk host jaringan privat tepercaya atau loopback
 - host SearXNG publik harus menggunakan `https://`
+- host privat/internal menggunakan pelindung jaringan yang dihosting sendiri; host
+  `https://` publik tetap berada pada pelindung pencarian web yang ketat dan tidak dapat
+  mengalihkan ke alamat privat
 
 ## Variabel lingkungan
 
-Setel `SEARXNG_BASE_URL` sebagai alternatif untuk konfigurasi:
+Atur `SEARXNG_BASE_URL` sebagai alternatif konfigurasi:
 
 ```bash
 export SEARXNG_BASE_URL="http://localhost:8888"
 ```
 
-Ketika `SEARXNG_BASE_URL` diatur dan tidak ada provider eksplisit yang dikonfigurasi, auto-detection
-akan memilih SearXNG secara otomatis (dengan prioritas terendah -- provider berbasis API apa pun dengan
-key akan menang terlebih dahulu).
+Saat `SEARXNG_BASE_URL` diatur dan tidak ada penyedia eksplisit yang dikonfigurasi, deteksi otomatis
+memilih SearXNG secara otomatis (dengan prioritas terendah -- penyedia berbasis API apa pun dengan
+kunci akan dipilih lebih dulu).
 
 ## Referensi konfigurasi Plugin
 
-| Field        | Deskripsi                                                        |
-| ------------ | ---------------------------------------------------------------- |
-| `baseUrl`    | Base URL instance SearXNG Anda (wajib)                           |
+| Kolom        | Deskripsi                                                        |
+| ------------ | ------------------------------------------------------------------ |
+| `baseUrl`    | URL dasar instans SearXNG Anda (wajib)                       |
 | `categories` | Kategori yang dipisahkan koma seperti `general`, `news`, atau `science` |
-| `language`   | Kode bahasa untuk hasil seperti `en`, `de`, atau `fr`            |
+| `language`   | Kode bahasa untuk hasil seperti `en`, `de`, atau `fr`              |
 
 ## Catatan
 
-- **API JSON** -- menggunakan endpoint `format=json` native milik SearXNG, bukan HTML scraping
-- **Tanpa API key** -- berfungsi langsung dengan instance SearXNG apa pun
-- **Validasi base URL** -- `baseUrl` harus berupa URL `http://` atau `https://`
+- **API JSON** -- menggunakan endpoint asli SearXNG `format=json`, bukan scraping HTML
+- **URL hasil gambar** -- hasil kategori gambar menyertakan `img_src` saat SearXNG
+  mengembalikan URL gambar langsung
+- **Tanpa kunci API** -- berfungsi dengan instans SearXNG apa pun langsung dari awal
+- **Validasi URL dasar** -- `baseUrl` harus berupa URL `http://` atau `https://`
   yang valid; host publik harus menggunakan `https://`
-- **Urutan auto-detection** -- SearXNG diperiksa terakhir (urutan 200) dalam
-  auto-detection. Provider berbasis API dengan key yang dikonfigurasi dijalankan terlebih dahulu, lalu
+- **Pelindung jaringan** -- endpoint SearXNG privat/internal memilih untuk mengaktifkan
+  akses jaringan privat; endpoint SearXNG `https://` publik mempertahankan perlindungan
+  SSRF yang ketat
+- **Urutan deteksi otomatis** -- SearXNG diperiksa terakhir (urutan 200) dalam
+  deteksi otomatis. Penyedia berbasis API dengan kunci yang dikonfigurasi berjalan lebih dulu, lalu
   DuckDuckGo (urutan 100), lalu Ollama Web Search (urutan 110)
-- **Self-hosted** -- Anda mengontrol instance, kueri, dan search engine upstream
-- **Categories** default ke `general` ketika tidak dikonfigurasi
+- **Dihosting sendiri** -- Anda mengendalikan instans, kueri, dan mesin pencari upstream
+- **Kategori** default ke `general` saat tidak dikonfigurasi
+- **Fallback kategori** -- jika permintaan kategori non-`general` berhasil tetapi
+  mengembalikan nol hasil, OpenClaw mencoba ulang kueri yang sama sekali lagi dengan `general`
+  sebelum mengembalikan kumpulan hasil kosong
 
 <Tip>
-  Agar API JSON SearXNG berfungsi, pastikan instance SearXNG Anda mengaktifkan format `json`
-  di `settings.yml` pada `search.formats`.
+  Agar API JSON SearXNG berfungsi, pastikan instans SearXNG Anda telah mengaktifkan format `json`
+  di `settings.yml` di bawah `search.formats`.
 </Tip>
 
 ## Terkait
 
-- [Ikhtisar Web Search](/id/tools/web) -- semua provider dan auto-detection
-- [DuckDuckGo Search](/id/tools/duckduckgo-search) -- fallback tanpa key lainnya
+- [Ikhtisar Web Search](/id/tools/web) -- semua penyedia dan deteksi otomatis
+- [DuckDuckGo Search](/id/tools/duckduckgo-search) -- fallback tanpa kunci lainnya
 - [Brave Search](/id/tools/brave-search) -- hasil terstruktur dengan tingkat gratis

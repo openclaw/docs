@@ -1,38 +1,38 @@
 ---
 read_when:
-    - Anda ingin memasang bundel yang kompatibel dengan Codex, Claude, atau Cursor
-    - Anda perlu memahami cara OpenClaw memetakan konten bundel ke fitur native
-    - Anda sedang memecahkan masalah deteksi bundel atau kapabilitas yang hilang
+    - Anda ingin menginstal bundel yang kompatibel dengan Codex, Claude, atau Cursor
+    - Anda perlu memahami bagaimana OpenClaw memetakan konten bundel ke fitur bawaan
+    - Anda sedang menelusuri masalah deteksi bundel atau kemampuan yang hilang
 summary: Instal dan gunakan bundel Codex, Claude, dan Cursor sebagai Plugin OpenClaw
 title: Bundel Plugin
 x-i18n:
-    generated_at: "2026-04-30T10:00:15Z"
+    generated_at: "2026-05-02T09:26:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6d03643c3029f5c6c81fab3aa1c00accba94da64a834e381b29db8f405d6bdee
+    source_hash: 4b949ad70881714a30ab136261441687b439e39b516638ffa052efeab6b75bd4
     source_path: plugins/bundles.md
     workflow: 16
 ---
 
 OpenClaw dapat menginstal plugin dari tiga ekosistem eksternal: **Codex**, **Claude**,
-dan **Cursor**. Ini disebut **bundel** — paket konten dan metadata yang
-dipetakan OpenClaw ke fitur native seperti Skills, hook, dan alat MCP.
+dan **Cursor**. Ini disebut **bundles** — paket konten dan metadata yang
+dipetakan OpenClaw ke fitur native seperti skills, hooks, dan alat MCP.
 
 <Info>
-  Bundel **tidak** sama dengan plugin OpenClaw native. Plugin native berjalan
-  dalam proses dan dapat mendaftarkan kapabilitas apa pun. Bundel adalah paket konten dengan
+  Bundles **tidak** sama dengan plugin native OpenClaw. Plugin native berjalan
+  dalam proses dan dapat mendaftarkan capability apa pun. Bundles adalah paket konten dengan
   pemetaan fitur selektif dan batas kepercayaan yang lebih sempit.
 </Info>
 
-## Mengapa bundel ada
+## Mengapa bundles ada
 
-Banyak plugin berguna dipublikasikan dalam format Codex, Claude, atau Cursor. Alih-alih
-mengharuskan pembuat menulis ulang semuanya sebagai plugin OpenClaw native, OpenClaw
-mendeteksi format ini dan memetakan konten yang didukung ke set fitur native.
-Ini berarti Anda dapat menginstal paket perintah Claude atau bundel Skill Codex
+Banyak plugin berguna diterbitkan dalam format Codex, Claude, atau Cursor. Alih-alih
+mengharuskan pembuat menulis ulang plugin tersebut sebagai plugin native OpenClaw, OpenClaw
+mendeteksi format ini dan memetakan konten yang didukungnya ke rangkaian fitur
+native. Artinya, Anda dapat menginstal paket perintah Claude atau bundle skill Codex
 dan langsung menggunakannya.
 
-## Instal bundel
+## Instal bundle
 
 <Steps>
   <Step title="Instal dari direktori, arsip, atau marketplace">
@@ -56,7 +56,7 @@ dan langsung menggunakannya.
     openclaw plugins inspect <id>
     ```
 
-    Bundel ditampilkan sebagai `Format: bundle` dengan subtipe `codex`, `claude`, atau `cursor`.
+    Bundles ditampilkan sebagai `Format: bundle` dengan subtype `codex`, `claude`, atau `cursor`.
 
   </Step>
 
@@ -65,56 +65,56 @@ dan langsung menggunakannya.
     openclaw gateway restart
     ```
 
-    Fitur yang dipetakan (Skills, hook, alat MCP, default LSP) tersedia pada sesi berikutnya.
+    Fitur yang dipetakan (skills, hooks, alat MCP, default LSP) tersedia di sesi berikutnya.
 
   </Step>
 </Steps>
 
-## Yang dipetakan OpenClaw dari bundel
+## Apa yang dipetakan OpenClaw dari bundles
 
-Tidak semua fitur bundel berjalan di OpenClaw saat ini. Berikut yang berfungsi dan yang
+Tidak setiap fitur bundle berjalan di OpenClaw saat ini. Berikut yang berfungsi dan yang
 terdeteksi tetapi belum dihubungkan.
 
-### Didukung sekarang
+### Didukung saat ini
 
-| Fitur         | Cara pemetaannya                                                                          | Berlaku untuk  |
-| ------------- | ------------------------------------------------------------------------------------------ | -------------- |
-| Konten Skill  | Akar Skill bundel dimuat sebagai Skills OpenClaw normal                                    | Semua format   |
-| Perintah      | `commands/` dan `.cursor/commands/` diperlakukan sebagai akar Skill                        | Claude, Cursor |
-| Paket hook    | Tata letak `HOOK.md` + `handler.ts` bergaya OpenClaw                                      | Codex          |
-| Alat MCP      | Konfigurasi MCP bundel digabungkan ke pengaturan Pi tertanam; server stdio dan HTTP yang didukung dimuat | Semua format   |
-| Server LSP    | `.lsp.json` Claude dan `lspServers` yang dideklarasikan manifes digabungkan ke default LSP Pi tertanam | Claude         |
-| Pengaturan    | `settings.json` Claude diimpor sebagai default Pi tertanam                                 | Claude         |
+| Fitur         | Cara pemetaannya                                                                             | Berlaku untuk  |
+| ------------- | -------------------------------------------------------------------------------------------- | -------------- |
+| Konten skill  | Root skill bundle dimuat sebagai skill OpenClaw normal                                       | Semua format   |
+| Perintah      | `commands/` dan `.cursor/commands/` diperlakukan sebagai root skill                          | Claude, Cursor |
+| Paket hook    | Layout `HOOK.md` + `handler.ts` bergaya OpenClaw                                             | Codex          |
+| Alat MCP      | Konfigurasi MCP bundle digabungkan ke pengaturan Pi tertanam; server stdio dan HTTP yang didukung dimuat | Semua format   |
+| Server LSP    | `.lsp.json` Claude dan `lspServers` yang dideklarasikan manifest digabungkan ke default LSP Pi tertanam | Claude         |
+| Pengaturan    | `settings.json` Claude diimpor sebagai default Pi tertanam                                   | Claude         |
 
-#### Konten Skill
+#### Konten skill
 
-- akar Skill bundel dimuat sebagai akar Skill OpenClaw normal
-- akar `commands` Claude diperlakukan sebagai akar Skill tambahan
-- akar `.cursor/commands` Cursor diperlakukan sebagai akar Skill tambahan
+- root skill bundle dimuat sebagai root skill OpenClaw normal
+- root `commands` Claude diperlakukan sebagai root skill tambahan
+- root `.cursor/commands` Cursor diperlakukan sebagai root skill tambahan
 
-Ini berarti file perintah markdown Claude berfungsi melalui pemuat Skill
-OpenClaw normal. Markdown perintah Cursor berfungsi melalui jalur yang sama.
+Artinya file perintah markdown Claude bekerja melalui loader skill OpenClaw
+normal. Markdown perintah Cursor bekerja melalui jalur yang sama.
 
 #### Paket hook
 
-- akar hook bundel berfungsi **hanya** saat menggunakan tata letak paket hook
-  OpenClaw normal. Saat ini ini terutama kasus yang kompatibel dengan Codex:
+- root hook bundle berfungsi **hanya** ketika menggunakan layout hook-pack OpenClaw
+  normal. Saat ini ini terutama kasus yang kompatibel dengan Codex:
   - `HOOK.md`
   - `handler.ts` atau `handler.js`
 
 #### MCP untuk Pi
 
-- bundel yang diaktifkan dapat menyumbangkan konfigurasi server MCP
-- OpenClaw menggabungkan konfigurasi MCP bundel ke pengaturan Pi tertanam yang efektif sebagai
+- bundle yang diaktifkan dapat menyumbangkan konfigurasi server MCP
+- OpenClaw menggabungkan konfigurasi MCP bundle ke pengaturan Pi tertanam efektif sebagai
   `mcpServers`
-- OpenClaw mengekspos alat MCP bundel yang didukung selama giliran agen Pi tertanam dengan
-  meluncurkan server stdio atau terhubung ke server HTTP
-- profil alat `coding` dan `messaging` menyertakan alat MCP bundel secara
-  default; gunakan `tools.deny: ["bundle-mcp"]` untuk mengecualikannya bagi agen atau Gateway
-- pengaturan Pi lokal proyek tetap diterapkan setelah default bundel, sehingga pengaturan
-  ruang kerja dapat menimpa entri MCP bundel bila diperlukan
-- katalog alat MCP bundel diurutkan secara deterministik sebelum pendaftaran, sehingga
-  perubahan urutan `listTools()` upstream tidak mengacak blok alat cache prompt
+- OpenClaw mengekspos alat MCP bundle yang didukung selama giliran agen Pi tertanam dengan
+  meluncurkan server stdio atau menyambung ke server HTTP
+- profil alat `coding` dan `messaging` menyertakan alat MCP bundle secara
+  default; gunakan `tools.deny: ["bundle-mcp"]` untuk menolak ikut serta bagi agen atau gateway
+- pengaturan Pi lokal proyek tetap berlaku setelah default bundle, sehingga pengaturan
+  workspace dapat mengganti entri MCP bundle saat diperlukan
+- katalog alat MCP bundle diurutkan secara deterministik sebelum pendaftaran, sehingga
+  perubahan urutan `listTools()` upstream tidak mengacak blok alat prompt-cache
 
 ##### Transport
 
@@ -136,7 +136,7 @@ Server MCP dapat menggunakan transport stdio atau HTTP:
 }
 ```
 
-**HTTP** terhubung ke server MCP yang sedang berjalan melalui `sse` secara default, atau `streamable-http` saat diminta:
+**HTTP** tersambung ke server MCP yang sedang berjalan melalui `sse` secara default, atau `streamable-http` jika diminta:
 
 ```json
 {
@@ -155,97 +155,97 @@ Server MCP dapat menggunakan transport stdio atau HTTP:
 }
 ```
 
-- `transport` dapat diatur ke `"streamable-http"` atau `"sse"`; saat dihilangkan, OpenClaw menggunakan `sse`
+- `transport` dapat diatur ke `"streamable-http"` atau `"sse"`; jika dihilangkan, OpenClaw menggunakan `sse`
 - `type: "http"` adalah bentuk hilir native CLI; gunakan `transport: "streamable-http"` dalam konfigurasi OpenClaw. `openclaw mcp set` dan `openclaw doctor --fix` menormalkan alias umum.
 - hanya skema URL `http:` dan `https:` yang diizinkan
 - nilai `headers` mendukung interpolasi `${ENV_VAR}`
 - entri server dengan `command` dan `url` sekaligus ditolak
-- kredensial URL (userinfo dan parameter kueri) disunting dari deskripsi
-  alat dan log
-- `connectionTimeoutMs` menimpa batas waktu koneksi default 30 detik untuk
+- kredensial URL (userinfo dan parameter kueri) disamarkan dari deskripsi alat
+  dan log
+- `connectionTimeoutMs` mengganti timeout koneksi default 30 detik untuk
   transport stdio dan HTTP
 
 ##### Penamaan alat
 
-OpenClaw mendaftarkan alat MCP bundel dengan nama yang aman untuk penyedia dalam bentuk
-`serverName__toolName`. Misalnya, server berkunci `"vigil-harbor"` yang mengekspos
+OpenClaw mendaftarkan alat MCP bundle dengan nama yang aman untuk provider dalam bentuk
+`serverName__toolName`. Misalnya, server dengan key `"vigil-harbor"` yang mengekspos
 alat `memory_search` didaftarkan sebagai `vigil-harbor__memory_search`.
 
 - karakter di luar `A-Za-z0-9_-` diganti dengan `-`
 - prefiks server dibatasi hingga 30 karakter
 - nama alat lengkap dibatasi hingga 64 karakter
-- nama server kosong menggunakan fallback `mcp`
+- nama server kosong fallback ke `mcp`
 - nama tersanitasi yang bertabrakan dibedakan dengan sufiks numerik
-- urutan akhir alat yang diekspos bersifat deterministik berdasarkan nama aman agar giliran Pi
-  berulang tetap stabil untuk cache
-- pemfilteran profil memperlakukan semua alat dari satu server MCP bundel sebagai dimiliki plugin
-  oleh `bundle-mcp`, sehingga daftar izinkan dan daftar tolak profil dapat menyertakan
-  nama alat terekspos individual atau kunci plugin `bundle-mcp`
+- urutan alat akhir yang diekspos deterministik berdasarkan nama aman agar giliran Pi
+  berulang tetap stabil cache
+- pemfilteran profil memperlakukan semua alat dari satu server MCP bundle sebagai milik plugin
+  oleh `bundle-mcp`, sehingga allowlist dan daftar deny profil dapat menyertakan
+  nama alat terekspos individual atau key plugin `bundle-mcp`
 
 #### Pengaturan Pi tertanam
 
 - `settings.json` Claude diimpor sebagai pengaturan Pi tertanam default saat
-  bundel diaktifkan
-- OpenClaw membersihkan kunci override shell sebelum menerapkannya
+  bundle diaktifkan
+- OpenClaw membersihkan key override shell sebelum menerapkannya
 
-Kunci tersanitasi:
+Key yang disanitasi:
 
 - `shellPath`
 - `shellCommandPrefix`
 
 #### LSP Pi tertanam
 
-- bundel Claude yang diaktifkan dapat menyumbangkan konfigurasi server LSP
-- OpenClaw memuat `.lsp.json` ditambah jalur `lspServers` apa pun yang dideklarasikan manifes
-- konfigurasi LSP bundel digabungkan ke default LSP Pi tertanam yang efektif
-- hanya server LSP berbasis stdio yang didukung yang dapat dijalankan saat ini; transport yang tidak didukung
-  tetap muncul di `openclaw plugins inspect <id>`
+- bundle Claude yang diaktifkan dapat menyumbangkan konfigurasi server LSP
+- OpenClaw memuat `.lsp.json` ditambah path `lspServers` yang dideklarasikan manifest
+- konfigurasi LSP bundle digabungkan ke default LSP Pi tertanam yang efektif
+- hanya server LSP berbasis stdio yang didukung yang dapat dijalankan saat ini; transport
+  yang tidak didukung tetap muncul di `openclaw plugins inspect <id>`
 
-### Terdeteksi tetapi tidak dijalankan
+### Terdeteksi tetapi tidak dieksekusi
 
 Ini dikenali dan ditampilkan dalam diagnostik, tetapi OpenClaw tidak menjalankannya:
 
-- `agents`, otomatisasi `hooks.json`, `outputStyles` Claude
+- `agents`, automasi `hooks.json`, `outputStyles` Claude
 - `.cursor/agents`, `.cursor/hooks.json`, `.cursor/rules` Cursor
-- metadata inline/aplikasi Codex di luar pelaporan kapabilitas
+- metadata inline/app Codex di luar pelaporan capability
 
-## Format bundel
+## Format bundle
 
 <AccordionGroup>
-  <Accordion title="Bundel Codex">
-    Penanda: `.codex-plugin/plugin.json`
+  <Accordion title="Bundle Codex">
+    Marker: `.codex-plugin/plugin.json`
 
     Konten opsional: `skills/`, `hooks/`, `.mcp.json`, `.app.json`
 
-    Bundel Codex paling cocok dengan OpenClaw saat menggunakan akar Skill dan direktori
-    paket hook bergaya OpenClaw (`HOOK.md` + `handler.ts`).
+    Bundle Codex paling cocok dengan OpenClaw ketika menggunakan root skill dan direktori
+    hook-pack bergaya OpenClaw (`HOOK.md` + `handler.ts`).
 
   </Accordion>
 
-  <Accordion title="Bundel Claude">
+  <Accordion title="Bundle Claude">
     Dua mode deteksi:
 
-    - **Berbasis manifes:** `.claude-plugin/plugin.json`
-    - **Tanpa manifes:** tata letak Claude default (`skills/`, `commands/`, `agents/`, `hooks/`, `.mcp.json`, `.lsp.json`, `settings.json`)
+    - **Berbasis manifest:** `.claude-plugin/plugin.json`
+    - **Tanpa manifest:** layout Claude default (`skills/`, `commands/`, `agents/`, `hooks/`, `.mcp.json`, `.lsp.json`, `settings.json`)
 
     Perilaku khusus Claude:
 
-    - `commands/` diperlakukan sebagai konten Skill
-    - `settings.json` diimpor ke pengaturan Pi tertanam (kunci override shell disanitasi)
+    - `commands/` diperlakukan sebagai konten skill
+    - `settings.json` diimpor ke pengaturan Pi tertanam (key override shell disanitasi)
     - `.mcp.json` mengekspos alat stdio yang didukung ke Pi tertanam
-    - `.lsp.json` ditambah jalur `lspServers` yang dideklarasikan manifes dimuat ke default LSP Pi tertanam
-    - `hooks/hooks.json` terdeteksi tetapi tidak dijalankan
-    - Jalur komponen kustom dalam manifes bersifat aditif (memperluas default, bukan menggantikannya)
+    - `.lsp.json` ditambah path `lspServers` yang dideklarasikan manifest dimuat ke default LSP Pi tertanam
+    - `hooks/hooks.json` terdeteksi tetapi tidak dieksekusi
+    - Path komponen kustom dalam manifest bersifat aditif (memperluas default, bukan menggantikannya)
 
   </Accordion>
 
-  <Accordion title="Bundel Cursor">
-    Penanda: `.cursor-plugin/plugin.json`
+  <Accordion title="Bundle Cursor">
+    Marker: `.cursor-plugin/plugin.json`
 
     Konten opsional: `skills/`, `.cursor/commands/`, `.cursor/agents/`, `.cursor/rules/`, `.cursor/hooks.json`, `.mcp.json`
 
-    - `.cursor/commands/` diperlakukan sebagai konten Skill
-    - `.cursor/rules/`, `.cursor/agents/`, dan `.cursor/hooks.json` hanya deteksi
+    - `.cursor/commands/` diperlakukan sebagai konten skill
+    - `.cursor/rules/`, `.cursor/agents/`, dan `.cursor/hooks.json` hanya dideteksi
 
   </Accordion>
 </AccordionGroup>
@@ -255,62 +255,61 @@ Ini dikenali dan ditampilkan dalam diagnostik, tetapi OpenClaw tidak menjalankan
 OpenClaw memeriksa format plugin native terlebih dahulu:
 
 1. `openclaw.plugin.json` atau `package.json` valid dengan `openclaw.extensions` — diperlakukan sebagai **plugin native**
-2. Penanda bundel (`.codex-plugin/`, `.claude-plugin/`, atau tata letak default Claude/Cursor) — diperlakukan sebagai **bundel**
+2. Marker bundle (`.codex-plugin/`, `.claude-plugin/`, atau layout default Claude/Cursor) — diperlakukan sebagai **bundle**
 
-Jika sebuah direktori berisi keduanya, OpenClaw menggunakan jalur native. Ini mencegah
-paket format ganda diinstal sebagian sebagai bundel.
+Jika direktori memuat keduanya, OpenClaw menggunakan jalur native. Ini mencegah
+paket berformat ganda diinstal sebagian sebagai bundles.
 
 ## Dependensi runtime dan pembersihan
 
-- Bundel kompatibel pihak ketiga tidak mendapatkan perbaikan `npm install` saat startup. Bundel tersebut
-  harus diinstal melalui `openclaw plugins install` dan membawa semua yang
-  diperlukan di direktori plugin terinstal.
-- Plugin bundel terkemas milik OpenClaw memiliki pengecualian sempit: saat salah satunya
-  diaktifkan, startup Gateway dapat memperbaiki dependensi runtime yang dideklarasikan tetapi hilang
-  sebelum impor. Operator dapat memeriksa atau memperbaiki tahap itu dengan
-  `openclaw plugins deps`.
-- Pipeline rilis tetap bertanggung jawab untuk mengirim payload dependensi bundel
-  yang lengkap bila memungkinkan (lihat aturan verifikasi pascapublikasi di
-  [Rilis](/id/reference/RELEASING)).
+- Bundle kompatibel pihak ketiga tidak mendapatkan perbaikan `npm install` saat startup. Bundle tersebut
+  harus diinstal melalui `openclaw plugins install` dan menyertakan semua yang
+  dibutuhkan di direktori plugin terinstal.
+- Plugin bundled milik OpenClaw dikirim ringan dalam core atau
+  dapat diunduh melalui penginstal plugin. Startup Gateway tidak pernah menjalankan
+  package manager untuk plugin tersebut.
+- `openclaw doctor --fix` menghapus direktori dependensi staged lama dan dapat
+  menginstal plugin unduhan terkonfigurasi yang hilang dari indeks plugin
+  lokal.
 
 ## Keamanan
 
-Bundel memiliki batas kepercayaan yang lebih sempit daripada plugin native:
+Bundles memiliki batas kepercayaan yang lebih sempit daripada plugin native:
 
-- OpenClaw **tidak** memuat modul runtime bundel arbitrer dalam proses
-- Jalur Skills dan paket hook harus tetap berada di dalam root plugin (diperiksa batasnya)
+- OpenClaw **tidak** memuat modul runtime bundle arbitrer dalam proses
+- Path Skills dan hook-pack harus tetap berada di dalam root plugin (diperiksa batasnya)
 - File pengaturan dibaca dengan pemeriksaan batas yang sama
-- Server MCP stdio yang didukung dapat diluncurkan sebagai subproses
+- Server MCP stdio yang didukung dapat diluncurkan sebagai subprocess
 
-Ini membuat bundel lebih aman secara default, tetapi Anda tetap harus memperlakukan bundel
-pihak ketiga sebagai konten tepercaya untuk fitur yang dieksposnya.
+Ini membuat bundles lebih aman secara default, tetapi Anda tetap harus memperlakukan bundle
+pihak ketiga sebagai konten tepercaya untuk fitur yang memang dieksposnya.
 
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="Bundel terdeteksi tetapi kapabilitas tidak berjalan">
-    Jalankan `openclaw plugins inspect <id>`. Jika sebuah kapabilitas tercantum tetapi ditandai sebagai
-    belum terhubung, itu adalah batasan produk — bukan instalasi yang rusak.
+  <Accordion title="Bundle terdeteksi tetapi capability tidak berjalan">
+    Jalankan `openclaw plugins inspect <id>`. Jika capability terdaftar tetapi ditandai sebagai
+    belum dihubungkan, itu adalah batas produk — bukan instalasi rusak.
   </Accordion>
 
   <Accordion title="File perintah Claude tidak muncul">
-    Pastikan bundel diaktifkan dan file markdown berada di dalam root
+    Pastikan bundle diaktifkan dan file markdown berada di dalam root
     `commands/` atau `skills/` yang terdeteksi.
   </Accordion>
 
-  <Accordion title="Pengaturan Claude tidak diterapkan">
+  <Accordion title="Pengaturan Claude tidak berlaku">
     Hanya pengaturan Pi tertanam dari `settings.json` yang didukung. OpenClaw tidak
-    memperlakukan pengaturan bundel sebagai patch konfigurasi mentah.
+    memperlakukan pengaturan bundle sebagai patch konfigurasi mentah.
   </Accordion>
 
-  <Accordion title="Hook Claude tidak dijalankan">
-    `hooks/hooks.json` hanya deteksi. Jika Anda memerlukan hook yang dapat dijalankan, gunakan tata letak
-    paket hook OpenClaw atau kirimkan plugin native.
+  <Accordion title="Hook Claude tidak dieksekusi">
+    `hooks/hooks.json` hanya dideteksi. Jika membutuhkan hook yang dapat berjalan, gunakan
+    layout hook-pack OpenClaw atau kirim plugin native.
   </Accordion>
 </AccordionGroup>
 
 ## Terkait
 
-- [Instal dan Konfigurasi Plugin](/id/tools/plugin)
+- [Instal dan Konfigurasikan Plugin](/id/tools/plugin)
 - [Membangun Plugin](/id/plugins/building-plugins) — buat plugin native
-- [Manifes Plugin](/id/plugins/manifest) — skema manifes native
+- [Manifest Plugin](/id/plugins/manifest) — skema manifest native

@@ -1,39 +1,44 @@
 ---
 read_when:
-    - Anda ingin agen menampilkan perubahan kode atau Markdown sebagai diff
-    - Anda menginginkan URL penampil yang siap untuk kanvas atau file diff yang dirender
-    - Anda memerlukan artefak diff sementara yang terkendali dengan default yang aman
+    - Anda ingin agen menampilkan perubahan kode atau Markdown dalam bentuk diff
+    - Anda menginginkan URL penampil siap-kanvas atau file diff yang dirender
+    - Anda memerlukan artefak diff sementara yang terkendali dengan pengaturan bawaan yang aman
 sidebarTitle: Diffs
 summary: Penampil diff dan perender file hanya-baca untuk agen (alat Plugin opsional)
 title: Perbedaan
 x-i18n:
-    generated_at: "2026-04-30T10:14:43Z"
+    generated_at: "2026-05-02T09:33:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8d8938b11f6bc612168057b7f4f5ceaafb22c2445e015fb746795b2e93f033e5
+    source_hash: 935f19ce45ff9a91d2c87c70603ce39b0f27f3fe58e52d809f25000a0c1ae82f
     source_path: tools/diffs.md
     workflow: 16
 ---
 
-`diffs` adalah alat Plugin opsional dengan panduan sistem bawaan singkat dan skill pendamping yang mengubah konten perubahan menjadi artefak diff baca-saja untuk agen.
+`diffs` adalah tool plugin opsional dengan panduan sistem bawaan singkat dan skill pendamping yang mengubah konten perubahan menjadi artefak diff baca-saja untuk agen.
 
-Alat ini menerima salah satu dari:
+Tool ini menerima salah satu dari:
 
 - teks `before` dan `after`
 - `patch` terpadu
 
-Alat ini dapat mengembalikan:
+Tool ini dapat mengembalikan:
 
-- URL penampil Gateway untuk presentasi canvas
-- jalur file hasil render (PNG atau PDF) untuk pengiriman pesan
+- URL penampil Gateway untuk presentasi kanvas
+- path file yang dirender (PNG atau PDF) untuk pengiriman pesan
 - kedua output dalam satu panggilan
 
-Saat diaktifkan, Plugin menambahkan panduan penggunaan ringkas ke ruang system-prompt dan juga mengekspos skill terperinci untuk kasus saat agen membutuhkan instruksi yang lebih lengkap.
+Saat diaktifkan, plugin ini menambahkan panduan penggunaan ringkas ke ruang system-prompt dan juga mengekspos skill mendetail untuk kasus ketika agen membutuhkan instruksi yang lebih lengkap.
 
 ## Mulai cepat
 
 <Steps>
-  <Step title="Aktifkan Plugin">
+  <Step title="Install the plugin">
+    ```bash
+    openclaw plugins install diffs
+    ```
+  </Step>
+  <Step title="Enable the plugin">
     ```json5
     {
       plugins: {
@@ -46,10 +51,10 @@ Saat diaktifkan, Plugin menambahkan panduan penggunaan ringkas ke ruang system-p
     }
     ```
   </Step>
-  <Step title="Pilih mode">
+  <Step title="Pick a mode">
     <Tabs>
       <Tab title="view">
-        Alur yang mengutamakan canvas: agen memanggil `diffs` dengan `mode: "view"` dan membuka `details.viewerUrl` dengan `canvas present`.
+        Alur yang mengutamakan kanvas: agen memanggil `diffs` dengan `mode: "view"` dan membuka `details.viewerUrl` dengan `canvas present`.
       </Tab>
       <Tab title="file">
         Pengiriman file chat: agen memanggil `diffs` dengan `mode: "file"` dan mengirim `details.filePath` dengan `message` menggunakan `path` atau `filePath`.
@@ -63,7 +68,7 @@ Saat diaktifkan, Plugin menambahkan panduan penggunaan ringkas ke ruang system-p
 
 ## Nonaktifkan panduan sistem bawaan
 
-Jika Anda ingin tetap mengaktifkan alat `diffs` tetapi menonaktifkan panduan system-prompt bawaannya, tetapkan `plugins.entries.diffs.hooks.allowPromptInjection` ke `false`:
+Jika Anda ingin tetap mengaktifkan tool `diffs` tetapi menonaktifkan panduan system-prompt bawaannya, atur `plugins.entries.diffs.hooks.allowPromptInjection` ke `false`:
 
 ```json5
 {
@@ -80,20 +85,20 @@ Jika Anda ingin tetap mengaktifkan alat `diffs` tetapi menonaktifkan panduan sys
 }
 ```
 
-Ini memblokir hook `before_prompt_build` milik Plugin diffs sambil tetap membuat Plugin, alat, dan skill pendamping tersedia.
+Ini memblokir hook `before_prompt_build` milik plugin diffs sambil tetap menyediakan plugin, tool, dan skill pendamping.
 
-Jika Anda ingin menonaktifkan panduan dan alatnya sekaligus, nonaktifkan Plugin sebagai gantinya.
+Jika Anda ingin menonaktifkan panduan dan tool sekaligus, nonaktifkan pluginnya.
 
 ## Alur kerja agen umum
 
 <Steps>
-  <Step title="Panggil diffs">
-    Agen memanggil alat `diffs` dengan input.
+  <Step title="Call diffs">
+    Agen memanggil tool `diffs` dengan input.
   </Step>
-  <Step title="Baca detail">
+  <Step title="Read details">
     Agen membaca bidang `details` dari respons.
   </Step>
-  <Step title="Presentasikan">
+  <Step title="Present">
     Agen membuka `details.viewerUrl` dengan `canvas present`, mengirim `details.filePath` dengan `message` menggunakan `path` atau `filePath`, atau melakukan keduanya.
   </Step>
 </Steps>
@@ -101,7 +106,7 @@ Jika Anda ingin menonaktifkan panduan dan alatnya sekaligus, nonaktifkan Plugin 
 ## Contoh input
 
 <Tabs>
-  <Tab title="Sebelum dan sesudah">
+  <Tab title="Before and after">
     ```json
     {
       "before": "# Hello\n\nOne",
@@ -121,15 +126,15 @@ Jika Anda ingin menonaktifkan panduan dan alatnya sekaligus, nonaktifkan Plugin 
   </Tab>
 </Tabs>
 
-## Referensi input alat
+## Referensi input tool
 
 Semua bidang bersifat opsional kecuali dinyatakan lain.
 
 <ParamField path="before" type="string">
-  Teks asli. Wajib bersama `after` saat `patch` dihilangkan.
+  Teks asli. Wajib bersama `after` ketika `patch` dihilangkan.
 </ParamField>
 <ParamField path="after" type="string">
-  Teks yang diperbarui. Wajib bersama `before` saat `patch` dihilangkan.
+  Teks yang diperbarui. Wajib bersama `before` ketika `patch` dihilangkan.
 </ParamField>
 <ParamField path="patch" type="string">
   Teks diff terpadu. Saling eksklusif dengan `before` dan `after`.
@@ -138,44 +143,44 @@ Semua bidang bersifat opsional kecuali dinyatakan lain.
   Nama file tampilan untuk mode sebelum dan sesudah.
 </ParamField>
 <ParamField path="lang" type="string">
-  Petunjuk pengganti bahasa untuk mode sebelum dan sesudah. Nilai yang tidak dikenal akan kembali ke teks biasa.
+  Petunjuk penimpaan bahasa untuk mode sebelum dan sesudah. Nilai yang tidak diketahui akan kembali ke teks polos.
 </ParamField>
 <ParamField path="title" type="string">
-  Pengganti judul penampil.
+  Penimpaan judul penampil.
 </ParamField>
 <ParamField path="mode" type='"view" | "file" | "both"'>
-  Mode output. Default ke default Plugin `defaults.mode`. Alias yang tidak digunakan lagi: `"image"` berperilaku seperti `"file"` dan masih diterima untuk kompatibilitas mundur.
+  Mode output. Default ke default plugin `defaults.mode`. Alias usang: `"image"` berperilaku seperti `"file"` dan masih diterima untuk kompatibilitas mundur.
 </ParamField>
 <ParamField path="theme" type='"light" | "dark"'>
-  Tema penampil. Default ke default Plugin `defaults.theme`.
+  Tema penampil. Default ke default plugin `defaults.theme`.
 </ParamField>
 <ParamField path="layout" type='"unified" | "split"'>
-  Tata letak diff. Default ke default Plugin `defaults.layout`.
+  Tata letak diff. Default ke default plugin `defaults.layout`.
 </ParamField>
 <ParamField path="expandUnchanged" type="boolean">
-  Perluas bagian yang tidak berubah saat konteks penuh tersedia. Opsi khusus per panggilan saja (bukan kunci default Plugin).
+  Perluas bagian yang tidak berubah ketika konteks lengkap tersedia. Opsi per panggilan saja (bukan kunci default plugin).
 </ParamField>
 <ParamField path="fileFormat" type='"png" | "pdf"'>
-  Format file hasil render. Default ke default Plugin `defaults.fileFormat`.
+  Format file yang dirender. Default ke default plugin `defaults.fileFormat`.
 </ParamField>
 <ParamField path="fileQuality" type='"standard" | "hq" | "print"'>
-  Prasetel kualitas untuk rendering PNG atau PDF.
+  Preset kualitas untuk rendering PNG atau PDF.
 </ParamField>
 <ParamField path="fileScale" type="number">
-  Pengganti skala perangkat (`1`-`4`).
+  Penimpaan skala perangkat (`1`-`4`).
 </ParamField>
 <ParamField path="fileMaxWidth" type="number">
   Lebar render maksimum dalam piksel CSS (`640`-`2400`).
 </ParamField>
 <ParamField path="ttlSeconds" type="number" default="1800">
-  TTL artefak dalam detik untuk output penampil dan file mandiri. Maksimum 21600.
+  TTL artefak dalam detik untuk output penampil dan file mandiri. Maks 21600.
 </ParamField>
 <ParamField path="baseUrl" type="string">
-  Pengganti origin URL penampil. Menggantikan `viewerBaseUrl` Plugin. Harus berupa `http` atau `https`, tanpa query/hash.
+  Penimpaan asal URL penampil. Menimpa `viewerBaseUrl` plugin. Harus berupa `http` atau `https`, tanpa query/hash.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Alias input lama">
+  <Accordion title="Legacy input aliases">
     Masih diterima untuk kompatibilitas mundur:
 
     - `format` -> `fileFormat`
@@ -185,18 +190,18 @@ Semua bidang bersifat opsional kecuali dinyatakan lain.
     - `imageMaxWidth` -> `fileMaxWidth`
 
   </Accordion>
-  <Accordion title="Validasi dan batas">
-    - `before` dan `after` masing-masing maksimum 512 KiB.
-    - `patch` maksimum 2 MiB.
-    - `path` maksimum 2048 byte.
-    - `lang` maksimum 128 byte.
-    - `title` maksimum 1024 byte.
-    - Batas kompleksitas patch: maksimum 128 file dan total 120000 baris.
-    - `patch` bersama `before` atau `after` ditolak.
-    - Batas keamanan file hasil render (berlaku untuk PNG dan PDF):
-      - `fileQuality: "standard"`: maksimum 8 MP (8.000.000 piksel hasil render).
-      - `fileQuality: "hq"`: maksimum 14 MP (14.000.000 piksel hasil render).
-      - `fileQuality: "print"`: maksimum 24 MP (24.000.000 piksel hasil render).
+  <Accordion title="Validation and limits">
+    - `before` dan `after` masing-masing maks 512 KiB.
+    - `patch` maks 2 MiB.
+    - `path` maks 2048 byte.
+    - `lang` maks 128 byte.
+    - `title` maks 1024 byte.
+    - Batas kompleksitas patch: maks 128 file dan total 120000 baris.
+    - `patch` dan `before` atau `after` bersama-sama ditolak.
+    - Batas keamanan file yang dirender (berlaku untuk PNG dan PDF):
+      - `fileQuality: "standard"`: maks 8 MP (8.000.000 piksel yang dirender).
+      - `fileQuality: "hq"`: maks 14 MP (14.000.000 piksel yang dirender).
+      - `fileQuality: "print"`: maks 24 MP (24.000.000 piksel yang dirender).
       - PDF juga memiliki maksimum 50 halaman.
 
   </Accordion>
@@ -204,10 +209,10 @@ Semua bidang bersifat opsional kecuali dinyatakan lain.
 
 ## Kontrak detail output
 
-Alat mengembalikan metadata terstruktur di bawah `details`.
+Tool mengembalikan metadata terstruktur di bawah `details`.
 
 <AccordionGroup>
-  <Accordion title="Bidang penampil">
+  <Accordion title="Viewer fields">
     Bidang bersama untuk mode yang membuat penampil:
 
     - `artifactId`
@@ -218,16 +223,16 @@ Alat mengembalikan metadata terstruktur di bawah `details`.
     - `inputKind`
     - `fileCount`
     - `mode`
-    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` saat tersedia)
+    - `context` (`agentId`, `sessionId`, `messageChannel`, `agentAccountId` jika tersedia)
 
   </Accordion>
-  <Accordion title="Bidang file">
-    Bidang file saat PNG atau PDF dirender:
+  <Accordion title="File fields">
+    Bidang file ketika PNG atau PDF dirender:
 
     - `artifactId`
     - `expiresAt`
     - `filePath`
-    - `path` (nilai yang sama dengan `filePath`, untuk kompatibilitas alat pesan)
+    - `path` (nilai yang sama dengan `filePath`, untuk kompatibilitas tool pesan)
     - `fileBytes`
     - `fileFormat`
     - `fileQuality`
@@ -235,7 +240,7 @@ Alat mengembalikan metadata terstruktur di bawah `details`.
     - `fileMaxWidth`
 
   </Accordion>
-  <Accordion title="Alias kompatibilitas">
+  <Accordion title="Compatibility aliases">
     Juga dikembalikan untuk pemanggil yang sudah ada:
 
     - `format` (nilai yang sama dengan `fileFormat`)
@@ -250,23 +255,23 @@ Alat mengembalikan metadata terstruktur di bawah `details`.
 
 Ringkasan perilaku mode:
 
-| Mode     | Yang dikembalikan                                                                                                      |
+| Mode     | Yang dikembalikan                                                                                                       |
 | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `"view"` | Hanya field penampil.                                                                                                  |
-| `"file"` | Hanya field file, tanpa artefak penampil.                                                                              |
-| `"both"` | Field penampil ditambah field file. Jika rendering file gagal, penampil tetap kembali dengan alias `fileError` dan `imageError`. |
+| `"view"` | Hanya bidang penampil.                                                                                                    |
+| `"file"` | Hanya bidang file, tanpa artefak penampil.                                                                                  |
+| `"both"` | Bidang penampil ditambah bidang file. Jika rendering file gagal, penampil tetap dikembalikan dengan alias `fileError` dan `imageError`. |
 
 ## Bagian tidak berubah yang diciutkan
 
 - Penampil dapat menampilkan baris seperti `N unmodified lines`.
 - Kontrol perluas pada baris tersebut bersifat kondisional dan tidak dijamin untuk setiap jenis input.
-- Kontrol perluas muncul saat diff yang dirender memiliki data konteks yang dapat diperluas, yang umum untuk input sebelum dan sesudah.
-- Untuk banyak input patch terpadu, isi konteks yang dihilangkan tidak tersedia di hunk patch yang diurai, sehingga baris dapat muncul tanpa kontrol perluas. Ini adalah perilaku yang diharapkan.
-- `expandUnchanged` hanya berlaku saat konteks yang dapat diperluas ada.
+- Kontrol perluas muncul ketika diff yang dirender memiliki data konteks yang dapat diperluas, yang umum untuk input sebelum dan sesudah.
+- Untuk banyak input patch terpadu, isi konteks yang dihilangkan tidak tersedia dalam hunk patch yang diurai, sehingga baris dapat muncul tanpa kontrol perluas. Ini adalah perilaku yang diharapkan.
+- `expandUnchanged` hanya berlaku ketika konteks yang dapat diperluas ada.
 
-## Default Plugin
+## Default plugin
 
-Tetapkan default di seluruh plugin dalam `~/.openclaw/openclaw.json`:
+Atur default di seluruh plugin dalam `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -315,12 +320,12 @@ Default yang didukung:
 - `fileMaxWidth`
 - `mode`
 
-Parameter alat eksplisit menimpa default ini.
+Parameter tool eksplisit menimpa default ini.
 
 ### Konfigurasi URL penampil persisten
 
 <ParamField path="viewerBaseUrl" type="string">
-  Fallback milik Plugin untuk tautan penampil yang dikembalikan saat panggilan alat tidak meneruskan `baseUrl`. Harus berupa `http` atau `https`, tanpa query/hash.
+  Fallback milik plugin untuk tautan penampil yang dikembalikan ketika panggilan tool tidak meneruskan `baseUrl`. Harus berupa `http` atau `https`, tanpa query/hash.
 </ParamField>
 
 ```json5
@@ -369,13 +374,13 @@ Parameter alat eksplisit menimpa default ini.
   - token acak (48 karakter hex)
   - `createdAt` dan `expiresAt`
   - path `viewer.html` yang disimpan
-- TTL artefak default adalah 30 menit jika tidak ditentukan.
+- TTL artefak default adalah 30 menit ketika tidak ditentukan.
 - TTL penampil maksimum yang diterima adalah 6 jam.
-- Pembersihan berjalan secara oportunistis setelah pembuatan artefak.
+- Pembersihan berjalan secara oportunistik setelah pembuatan artefak.
 - Artefak kedaluwarsa dihapus.
-- Pembersihan fallback menghapus folder basi yang lebih lama dari 24 jam saat metadata tidak ada.
+- Pembersihan fallback menghapus folder lama yang lebih dari 24 jam ketika metadata tidak ada.
 
-## Perilaku URL penampil dan jaringan
+## URL penampil dan perilaku jaringan
 
 Rute penampil:
 
@@ -390,10 +395,10 @@ Dokumen penampil menyelesaikan aset tersebut relatif terhadap URL penampil, sehi
 
 Perilaku konstruksi URL:
 
-- Jika `baseUrl` panggilan alat disediakan, itu digunakan setelah validasi ketat.
-- Jika tidak, jika `viewerBaseUrl` Plugin dikonfigurasi, itu digunakan.
-- Tanpa salah satu override, URL penampil default ke loopback `127.0.0.1`.
-- Jika mode bind gateway adalah `custom` dan `gateway.customBindHost` ditetapkan, host tersebut digunakan.
+- Jika `baseUrl` panggilan tool disediakan, nilai tersebut digunakan setelah validasi ketat.
+- Jika tidak, jika `viewerBaseUrl` plugin dikonfigurasi, nilai tersebut digunakan.
+- Tanpa salah satu penimpaan, URL penampil default ke loopback `127.0.0.1`.
+- Jika mode bind Gateway adalah `custom` dan `gateway.customBindHost` diatur, host tersebut digunakan.
 
 Aturan `baseUrl`:
 
@@ -404,7 +409,7 @@ Aturan `baseUrl`:
 ## Model keamanan
 
 <AccordionGroup>
-  <Accordion title="Viewer hardening">
+  <Accordion title="Penguatan penampil">
     - Hanya loopback secara default.
     - Path penampil bertoken dengan validasi ID dan token yang ketat.
     - CSP respons penampil:
@@ -413,11 +418,11 @@ Aturan `baseUrl`:
       - tanpa `connect-src` keluar
     - Pembatasan miss jarak jauh saat akses jarak jauh diaktifkan:
       - 40 kegagalan per 60 detik
-      - lockout 60 detik (`429 Too Many Requests`)
+      - penguncian 60 detik (`429 Too Many Requests`)
 
   </Accordion>
-  <Accordion title="Pengerasan perenderan file">
-    - Perutean permintaan browser tangkapan layar menolak secara default.
+  <Accordion title="Penguatan perenderan file">
+    - Perutean permintaan browser tangkapan layar bersifat tolak-secara-default.
     - Hanya aset penampil lokal dari `http://127.0.0.1/plugins/diffs/assets/*` yang diizinkan.
     - Permintaan jaringan eksternal diblokir.
 
@@ -441,7 +446,7 @@ Urutan resolusi:
 
   </Step>
   <Step title="Fallback platform">
-    Fallback penemuan perintah/jalur platform.
+    Fallback penemuan perintah/path platform.
   </Step>
 </Steps>
 
@@ -449,7 +454,7 @@ Teks kegagalan umum:
 
 - `Diff PNG/PDF rendering requires a Chromium-compatible browser...`
 
-Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau dengan mengatur salah satu opsi jalur executable di atas.
+Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau mengatur salah satu opsi path executable di atas.
 
 ## Pemecahan masalah
 
@@ -463,20 +468,20 @@ Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau dengan menga
 
   </Accordion>
   <Accordion title="Aksesibilitas penampil">
-    - URL penampil me-resolve ke `127.0.0.1` secara default.
+    - URL penampil secara default mengarah ke `127.0.0.1`.
     - Untuk skenario akses jarak jauh, lakukan salah satu:
       - atur `viewerBaseUrl` Plugin, atau
-      - teruskan `baseUrl` per pemanggilan tool, atau
+      - teruskan `baseUrl` per pemanggilan alat, atau
       - gunakan `gateway.bind=custom` dan `gateway.customBindHost`
-    - Jika `gateway.trustedProxies` mencakup loopback untuk proxy host yang sama (misalnya Tailscale Serve), permintaan penampil loopback mentah tanpa header IP klien yang diteruskan akan gagal tertutup sesuai desain.
+    - Jika `gateway.trustedProxies` menyertakan loopback untuk proxy pada host yang sama (misalnya Tailscale Serve), permintaan penampil loopback mentah tanpa header IP klien yang diteruskan akan gagal tertutup sesuai desain.
     - Untuk topologi proxy tersebut:
-      - utamakan `mode: "file"` atau `mode: "both"` saat Anda hanya memerlukan lampiran, atau
-      - aktifkan `security.allowRemoteViewer` secara sengaja dan atur `viewerBaseUrl` Plugin atau teruskan `baseUrl` proxy/publik saat Anda memerlukan URL penampil yang dapat dibagikan
-    - Aktifkan `security.allowRemoteViewer` hanya saat Anda memang menginginkan akses penampil eksternal.
+      - pilih `mode: "file"` atau `mode: "both"` saat Anda hanya membutuhkan lampiran, atau
+      - aktifkan `security.allowRemoteViewer` secara sengaja dan atur `viewerBaseUrl` Plugin atau teruskan `baseUrl` proxy/publik saat Anda membutuhkan URL penampil yang dapat dibagikan
+    - Aktifkan `security.allowRemoteViewer` hanya saat Anda memang membutuhkan akses penampil eksternal.
 
   </Accordion>
   <Accordion title="Baris tanpa perubahan tidak memiliki tombol perluas">
-    Ini dapat terjadi untuk input patch saat patch tidak membawa konteks yang dapat diperluas. Ini sesuai harapan dan tidak menunjukkan kegagalan penampil.
+    Ini dapat terjadi untuk input patch saat patch tidak membawa konteks yang dapat diperluas. Ini diharapkan dan tidak menunjukkan kegagalan penampil.
   </Accordion>
   <Accordion title="Artefak tidak ditemukan">
     - Artefak kedaluwarsa karena TTL.
@@ -488,12 +493,12 @@ Perbaiki dengan menginstal Chrome, Chromium, Edge, atau Brave, atau dengan menga
 
 ## Panduan operasional
 
-- Utamakan `mode: "view"` untuk tinjauan interaktif lokal di canvas.
-- Utamakan `mode: "file"` untuk kanal chat keluar yang memerlukan lampiran.
-- Biarkan `allowRemoteViewer` nonaktif kecuali deployment Anda memerlukan URL penampil jarak jauh.
-- Atur `ttlSeconds` singkat yang eksplisit untuk diff sensitif.
+- Pilih `mode: "view"` untuk ulasan interaktif lokal di kanvas.
+- Pilih `mode: "file"` untuk kanal obrolan keluar yang membutuhkan lampiran.
+- Biarkan `allowRemoteViewer` dinonaktifkan kecuali deployment Anda memerlukan URL penampil jarak jauh.
+- Tetapkan `ttlSeconds` singkat secara eksplisit untuk diff sensitif.
 - Hindari mengirim rahasia dalam input diff jika tidak diperlukan.
-- Jika kanal Anda mengompresi gambar secara agresif (misalnya Telegram atau WhatsApp), utamakan output PDF (`fileFormat: "pdf"`).
+- Jika kanal Anda mengompresi gambar secara agresif (misalnya Telegram atau WhatsApp), pilih output PDF (`fileFormat: "pdf"`).
 
 <Note>
 Mesin perenderan diff didukung oleh [Diffs](https://diffs.com).
@@ -503,4 +508,4 @@ Mesin perenderan diff didukung oleh [Diffs](https://diffs.com).
 
 - [Browser](/id/tools/browser)
 - [Plugins](/id/tools/plugin)
-- [Ikhtisar tool](/id/tools)
+- [Ikhtisar alat](/id/tools)

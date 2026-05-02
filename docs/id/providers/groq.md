@@ -5,22 +5,22 @@ read_when:
 summary: Penyiapan Groq (autentikasi + pemilihan model)
 title: Groq
 x-i18n:
-    generated_at: "2026-04-30T10:07:08Z"
+    generated_at: "2026-05-02T09:29:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ed612471939e7ac5362f8236f179d38ae07f9076709ff55020c1790f7c56a6fa
+    source_hash: 2cf6678047581a438906420894b250bafb68d71254fbaf30ea5dfcfc4799eac7
     source_path: providers/groq.md
     workflow: 16
 ---
 
-[Groq](https://groq.com) menyediakan inferensi ultra-cepat pada model sumber terbuka
+[Groq](https://groq.com) menyediakan inferensi sangat cepat pada model sumber terbuka
 (Llama, Gemma, Mistral, dan lainnya) menggunakan perangkat keras LPU khusus. OpenClaw terhubung
 ke Groq melalui API-nya yang kompatibel dengan OpenAI.
 
 | Properti | Nilai             |
 | -------- | ----------------- |
 | Penyedia | `groq`            |
-| Autentikasi | `GROQ_API_KEY` |
+| Auth     | `GROQ_API_KEY`    |
 | API      | Kompatibel dengan OpenAI |
 
 ## Memulai
@@ -62,8 +62,9 @@ ke Groq melalui API-nya yang kompatibel dengan OpenAI.
 
 ## Katalog bawaan
 
-Katalog model Groq sering berubah. Jalankan `openclaw models list | grep groq`
-untuk melihat model yang saat ini tersedia, atau periksa
+OpenClaw menyertakan katalog Groq berbasis manifes untuk daftar model cepat
+yang difilter berdasarkan penyedia. Jalankan `openclaw models list --all --provider groq` untuk melihat baris
+bawaan, atau periksa
 [console.groq.com/docs/models](https://console.groq.com/docs/models).
 
 | Model                       | Catatan                            |
@@ -74,23 +75,23 @@ untuk melihat model yang saat ini tersedia, atau periksa
 | **Mixtral 8x7B**            | Arsitektur MoE, penalaran kuat     |
 
 <Tip>
-Gunakan `openclaw models list --provider groq` untuk daftar model paling mutakhir yang
-tersedia di akun Anda.
+Gunakan `openclaw models list --all --provider groq` untuk baris Groq berbasis manifes
+yang diketahui oleh versi OpenClaw ini.
 </Tip>
 
 ## Model penalaran
 
 OpenClaw memetakan level `/think` bersama ke nilai `reasoning_effort`
-khusus model milik Groq. Untuk `qwen/qwen3-32b`, pemikiran yang dinonaktifkan mengirim
-`none` dan pemikiran yang diaktifkan mengirim `default`. Untuk model penalaran Groq GPT-OSS,
-OpenClaw mengirim `low`, `medium`, atau `high`; pemikiran yang dinonaktifkan menghilangkan
-`reasoning_effort` karena model tersebut tidak mendukung nilai yang dinonaktifkan.
+khusus model milik Groq. Untuk `qwen/qwen3-32b`, penalaran yang dinonaktifkan mengirim
+`none` dan penalaran yang diaktifkan mengirim `default`. Untuk model penalaran Groq GPT-OSS,
+OpenClaw mengirim `low`, `medium`, atau `high`; penalaran yang dinonaktifkan menghilangkan
+`reasoning_effort` karena model tersebut tidak mendukung nilai nonaktif.
 
 ## Transkripsi audio
 
-Groq juga menyediakan transkripsi audio cepat berbasis Whisper. Saat dikonfigurasi sebagai
+Groq juga menyediakan transkripsi audio berbasis Whisper yang cepat. Saat dikonfigurasi sebagai
 penyedia pemahaman media, OpenClaw menggunakan model `whisper-large-v3-turbo`
-milik Groq untuk mentranskripsikan pesan suara melalui permukaan bersama `tools.media.audio`.
+milik Groq untuk mentranskripsi pesan suara melalui permukaan bersama `tools.media.audio`.
 
 ```json5
 {
@@ -109,19 +110,19 @@ milik Groq untuk mentranskripsikan pesan suara melalui permukaan bersama `tools.
     | Properti | Nilai |
     |----------|-------|
     | Jalur konfigurasi bersama | `tools.media.audio` |
-    | URL dasar default | `https://api.groq.com/openai/v1` |
-    | Model default | `whisper-large-v3-turbo` |
-    | Endpoint API | `/audio/transcriptions` yang kompatibel dengan OpenAI |
+    | URL dasar default   | `https://api.groq.com/openai/v1` |
+    | Model default      | `whisper-large-v3-turbo` |
+    | Endpoint API       | `/audio/transcriptions` kompatibel dengan OpenAI |
   </Accordion>
 
   <Accordion title="Catatan lingkungan">
-    Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `GROQ_API_KEY`
-    tersedia untuk proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui
+    Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `GROQ_API_KEY` tersedia
+    untuk proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui
     `env.shellEnv`).
 
     <Warning>
-    Kunci yang hanya diatur di shell interaktif Anda tidak terlihat oleh proses
-    gateway yang dikelola daemon. Gunakan konfigurasi `~/.openclaw/.env` atau `env.shellEnv` untuk
+    Kunci yang hanya diatur di shell interaktif Anda tidak terlihat oleh proses Gateway
+    yang dikelola daemon. Gunakan konfigurasi `~/.openclaw/.env` atau `env.shellEnv` untuk
     ketersediaan persisten.
     </Warning>
 

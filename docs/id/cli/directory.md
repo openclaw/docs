@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Anda ingin mencari ID kontak/grup/diri sendiri untuk sebuah channel
-    - Anda sedang mengembangkan adapter direktori channel
-summary: Referensi CLI untuk `openclaw directory` (self, peer, grup)
+    - Anda ingin mencari ID kontak/grup/diri sendiri untuk sebuah saluran
+    - Anda sedang mengembangkan adaptor direktori saluran
+summary: Referensi CLI untuk `openclaw directory` (diri sendiri, rekan, grup)
 title: Direktori
 x-i18n:
-    generated_at: "2026-04-24T09:01:23Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:15:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-Pencarian direktori untuk channel yang mendukungnya (kontak/peer, grup, dan “saya”).
+Pencarian direktori untuk saluran yang mendukungnya (kontak/peer, grup, dan “saya”).
 
 ## Flag umum
 
-- `--channel <name>`: id/alias channel (wajib saat beberapa channel dikonfigurasi; otomatis saat hanya satu yang dikonfigurasi)
-- `--account <id>`: id akun (default: channel default)
-- `--json`: output JSON
+- `--channel <name>`: id/alias saluran (wajib ketika beberapa saluran dikonfigurasi; otomatis ketika hanya satu yang dikonfigurasi)
+- `--account <id>`: id akun (default: default saluran)
+- `--json`: keluarkan JSON
 
 ## Catatan
 
-- `directory` dimaksudkan untuk membantu Anda menemukan ID yang dapat ditempel ke perintah lain (terutama `openclaw message send --target ...`).
-- Untuk banyak channel, hasil didukung oleh config (allowlist / grup yang dikonfigurasi) alih-alih direktori provider live.
-- Output default adalah `id` (dan kadang `name`) yang dipisahkan dengan tab; gunakan `--json` untuk scripting.
+- `directory` dimaksudkan untuk membantu Anda menemukan ID yang dapat ditempelkan ke perintah lain (terutama `openclaw message send --target ...`).
+- Untuk banyak saluran, hasil didukung konfigurasi (daftar yang diizinkan / grup yang dikonfigurasi), bukan direktori penyedia langsung.
+- Plugin saluran yang terinstal tetap dapat tidak menyertakan dukungan direktori; dalam kasus tersebut, perintah melaporkan operasi direktori yang tidak didukung, bukan menginstal ulang Plugin.
+- Output default adalah `id` (dan kadang `name`) yang dipisahkan dengan tab; gunakan `--json` untuk skrip.
 
 ## Menggunakan hasil dengan `message send`
 
@@ -36,7 +37,7 @@ openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## Format ID (per channel)
+## Format ID (berdasarkan saluran)
 
 - WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grup)
 - Telegram: `@username` atau id chat numerik; grup adalah id numerik

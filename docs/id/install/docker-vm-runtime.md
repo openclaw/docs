@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda men-deploy OpenClaw di VM cloud dengan Docker
-    - Anda memerlukan proses pembuatan biner bersama, persistensi, dan alur pembaruan
-summary: Langkah-langkah eksekusi VM Docker bersama untuk inang OpenClaw Gateway jangka panjang
+    - Anda sedang menerapkan OpenClaw di VM cloud dengan Docker
+    - Anda memerlukan alur pembuatan biner bersama, persistensi, dan pembaruan
+summary: Langkah runtime VM Docker bersama untuk host OpenClaw Gateway yang berjalan lama
 title: Runtime VM Docker
 x-i18n:
-    generated_at: "2026-04-30T09:55:23Z"
+    generated_at: "2026-05-02T09:24:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
+    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
@@ -20,7 +20,7 @@ Langkah runtime bersama untuk instalasi Docker berbasis VM seperti GCP, Hetzner,
 Menginstal biner di dalam container yang sedang berjalan adalah jebakan.
 Apa pun yang diinstal saat runtime akan hilang saat restart.
 
-Semua biner eksternal yang diperlukan oleh Skills harus diinstal pada waktu build image.
+Semua biner eksternal yang diperlukan oleh Skills harus diinstal saat build image.
 
 Contoh di bawah hanya menampilkan tiga biner umum:
 
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-URL di atas adalah contoh. Untuk VM berbasis ARM, pilih aset `arm64`. Untuk build yang dapat direproduksi, sematkan URL rilis berversi.
+URL di atas adalah contoh. Untuk VM berbasis ARM, pilih aset `arm64`. Untuk build yang dapat direproduksi, pin URL rilis berversi.
 </Note>
 
 ## Build dan jalankan
@@ -93,7 +93,7 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-Jika build gagal dengan `Killed` atau `exit code 137` selama `pnpm install --frozen-lockfile`, VM kehabisan memori.
+Jika build gagal dengan `Killed` atau `exit code 137` saat `pnpm install --frozen-lockfile`, VM kehabisan memori.
 Gunakan kelas mesin yang lebih besar sebelum mencoba lagi.
 
 Verifikasi biner:
@@ -129,19 +129,19 @@ Output yang diharapkan:
 OpenClaw berjalan di Docker, tetapi Docker bukan sumber kebenaran.
 Semua status jangka panjang harus bertahan melewati restart, rebuild, dan reboot.
 
-| Komponen            | Lokasi                                   | Mekanisme persistensi  | Catatan                                                       |
-| ------------------- | ---------------------------------------- | ---------------------- | ------------------------------------------------------------- |
-| Konfig Gateway      | `/home/node/.openclaw/`                  | Mount volume host      | Mencakup `openclaw.json`, `.env`                              |
-| Profil auth model   | `/home/node/.openclaw/agents/`           | Mount volume host      | `agents/<agentId>/agent/auth-profiles.json` (OAuth, kunci API) |
-| Konfig Skill        | `/home/node/.openclaw/skills/`           | Mount volume host      | Status tingkat Skill                                          |
-| Workspace agen      | `/home/node/.openclaw/workspace/`        | Mount volume host      | Kode dan artefak agen                                         |
-| Sesi WhatsApp       | `/home/node/.openclaw/`                  | Mount volume host      | Mempertahankan login QR                                       |
-| Keyring Gmail       | `/home/node/.openclaw/`                  | Volume host + kata sandi | Memerlukan `GOG_KEYRING_PASSWORD`                             |
-| Dependensi runtime Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | Volume bernama Docker  | Dependensi Plugin bundel yang dihasilkan dan mirror runtime   |
-| Biner eksternal     | `/usr/local/bin/`                        | Image Docker           | Harus ditanamkan pada waktu build                             |
-| Runtime Node        | Sistem file container                    | Image Docker           | Dibangun ulang setiap build image                             |
-| Paket OS            | Sistem file container                    | Image Docker           | Jangan instal saat runtime                                    |
-| Container Docker    | Ephemeral                                | Dapat di-restart       | Aman untuk dihancurkan                                        |
+| Komponen            | Lokasi                                                 | Mekanisme persistensi   | Catatan                                                       |
+| ------------------- | ------------------------------------------------------ | ----------------------- | ------------------------------------------------------------- |
+| Konfigurasi Gateway | `/home/node/.openclaw/`                                | Mount volume host       | Mencakup `openclaw.json`, `.env`                              |
+| Profil auth model   | `/home/node/.openclaw/agents/`                         | Mount volume host       | `agents/<agentId>/agent/auth-profiles.json` (OAuth, kunci API) |
+| Konfigurasi Skill   | `/home/node/.openclaw/skills/`                         | Mount volume host       | Status tingkat Skill                                          |
+| Workspace agen      | `/home/node/.openclaw/workspace/`                      | Mount volume host       | Kode dan artefak agen                                         |
+| Sesi WhatsApp       | `/home/node/.openclaw/`                                | Mount volume host       | Mempertahankan login QR                                       |
+| Keyring Gmail       | `/home/node/.openclaw/`                                | Volume host + kata sandi | Memerlukan `GOG_KEYRING_PASSWORD`                             |
+| Paket Plugin        | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Mount volume host       | Root paket Plugin yang dapat diunduh                          |
+| Biner eksternal     | `/usr/local/bin/`                                      | Image Docker            | Harus ditanamkan saat build                                   |
+| Runtime Node        | Filesystem container                                   | Image Docker            | Dibangun ulang setiap build image                             |
+| Paket OS            | Filesystem container                                   | Image Docker            | Jangan instal saat runtime                                    |
+| Container Docker    | Sementara                                              | Dapat di-restart        | Aman untuk dihancurkan                                        |
 
 ## Pembaruan
 

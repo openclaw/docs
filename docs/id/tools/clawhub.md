@@ -2,44 +2,44 @@
 read_when:
     - Mencari, menginstal, atau memperbarui Skills atau Plugin
     - Menerbitkan Skills atau Plugin ke registri
-    - Mengonfigurasi CLI clawhub atau penggantian lingkungannya
+    - Mengonfigurasi CLI ClawHub atau penimpaan lingkungannya
 sidebarTitle: ClawHub
-summary: 'ClawHub: registri publik untuk Skills dan plugin OpenClaw, alur instalasi bawaan, dan CLI clawhub'
+summary: 'ClawHub: registri publik untuk Skills dan Plugin OpenClaw, alur instalasi bawaan, dan CLI clawhub'
 title: ClawHub
 x-i18n:
-    generated_at: "2026-04-30T10:14:19Z"
+    generated_at: "2026-05-02T09:33:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9ec09a3c76820137eb1f7ca829a184fc1ed6392d3b32a327ecbda4d2cad7a78d
+    source_hash: 353b224ccfb8096c270b7896e640e9e419fcb50c265298102a5ce0173566933e
     source_path: tools/clawhub.md
     workflow: 16
 ---
 
-ClawHub adalah registri publik untuk **OpenClaw Skills dan Plugin**.
+ClawHub adalah registry publik untuk **Skills dan Plugin OpenClaw**.
 
 - Gunakan perintah native `openclaw` untuk mencari, menginstal, dan memperbarui Skills, serta menginstal Plugin dari ClawHub.
-- Gunakan CLI `clawhub` terpisah untuk alur kerja autentikasi registri, publikasi, penghapusan/pemulihan penghapusan, dan sinkronisasi.
+- Gunakan CLI `clawhub` terpisah untuk alur kerja autentikasi registry, publikasi, hapus/pulihkan, dan sinkronisasi.
 
 Situs: [clawhub.ai](https://clawhub.ai)
 
 ## Mulai cepat
 
 <Steps>
-  <Step title="Cari">
+  <Step title="Search">
     ```bash
     openclaw skills search "calendar"
     ```
   </Step>
-  <Step title="Instal">
+  <Step title="Install">
     ```bash
     openclaw skills install <skill-slug>
     ```
   </Step>
-  <Step title="Gunakan">
-    Mulai sesi OpenClaw baru — sesi itu akan mengenali Skill baru.
+  <Step title="Use">
+    Mulai sesi OpenClaw baru — sesi itu akan memuat skill baru.
   </Step>
-  <Step title="Publikasikan (opsional)">
-    Untuk alur kerja yang terautentikasi registri (publikasi, sinkronisasi, pengelolaan), instal
+  <Step title="Publish (optional)">
+    Untuk alur kerja yang diautentikasi registry (publikasi, sinkronisasi, kelola), instal
     CLI `clawhub` terpisah:
 
     ```bash
@@ -62,22 +62,25 @@ Situs: [clawhub.ai](https://clawhub.ai)
     ```
 
     Perintah native `openclaw` menginstal ke workspace aktif Anda dan
-    menyimpan metadata sumber agar panggilan `update` berikutnya tetap dapat menggunakan ClawHub.
+    menyimpan metadata sumber sehingga panggilan `update` berikutnya tetap dapat menggunakan ClawHub.
 
   </Tab>
-  <Tab title="Plugin">
+  <Tab title="Plugins">
     ```bash
+    openclaw plugins search "calendar"
     openclaw plugins install clawhub:<package>
     openclaw plugins update --all
     ```
 
-    Spesifikasi Plugin yang aman untuk npm tanpa prefiks juga dicoba terhadap ClawHub sebelum npm:
+    `plugins search` mengueri katalog Plugin ClawHub dan mencetak nama
+    paket yang siap diinstal. Spesifikasi Plugin polos yang aman untuk npm juga dicoba terhadap ClawHub
+    sebelum npm:
 
     ```bash
     openclaw plugins install openclaw-codex-app-server
     ```
 
-    Gunakan `npm:<package>` saat Anda menginginkan resolusi khusus npm tanpa
+    Gunakan `npm:<package>` ketika Anda menginginkan resolusi khusus npm tanpa
     pencarian ClawHub:
 
     ```bash
@@ -85,96 +88,99 @@ Situs: [clawhub.ai](https://clawhub.ai)
     ```
 
     Instalasi Plugin memvalidasi kompatibilitas `pluginApi` dan
-    `minGatewayVersion` yang diiklankan sebelum instalasi arsip berjalan, sehingga
+    `minGatewayVersion` yang diumumkan sebelum instalasi arsip berjalan, sehingga
     host yang tidak kompatibel gagal tertutup lebih awal alih-alih menginstal
-    paket secara parsial.
+    paket secara parsial. Ketika versi paket menerbitkan artefak ClawPack,
+    OpenClaw memprioritaskan artefak tersebut, memverifikasi header digest ClawHub dan
+    byte yang diunduh, serta mencatat metadata digest ClawPack untuk
+    pembaruan berikutnya. Versi paket lama tanpa metadata ClawPack masih menggunakan
+    jalur verifikasi arsip paket lama.
 
   </Tab>
 </Tabs>
 
 <Note>
-`openclaw plugins install clawhub:...` hanya menerima keluarga Plugin yang
-dapat diinstal. Jika paket ClawHub sebenarnya adalah Skill, OpenClaw berhenti dan
+`openclaw plugins install clawhub:...` hanya menerima keluarga Plugin
+yang dapat diinstal. Jika paket ClawHub sebenarnya adalah skill, OpenClaw berhenti dan
 mengarahkan Anda ke `openclaw skills install <slug>` sebagai gantinya.
 
 Instalasi Plugin ClawHub anonim juga gagal tertutup untuk paket privat.
-Channel komunitas atau non-resmi lainnya tetap dapat diinstal, tetapi OpenClaw
-memperingatkan agar operator dapat meninjau sumber dan verifikasi sebelum
-mengaktifkannya.
+Channel komunitas atau channel nonresmi lainnya tetap dapat diinstal, tetapi OpenClaw
+memberi peringatan agar operator dapat meninjau sumber dan verifikasi sebelum mengaktifkannya.
 </Note>
 
 ## Apa itu ClawHub
 
-- Registri publik untuk Skills dan Plugin OpenClaw.
-- Penyimpanan berversi untuk bundel Skill dan metadata.
+- Registry publik untuk Skills dan Plugin OpenClaw.
+- Penyimpanan bundle skill dan metadata yang berversi.
 - Permukaan penemuan untuk pencarian, tag, dan sinyal penggunaan.
 
-Skill umumnya adalah bundel file berversi yang mencakup:
+Skill tipikal adalah bundle file berversi yang mencakup:
 
 - File `SKILL.md` dengan deskripsi utama dan penggunaan.
-- Konfigurasi, skrip, atau file pendukung opsional yang digunakan oleh Skill.
+- Konfigurasi, skrip, atau file pendukung opsional yang digunakan oleh skill.
 - Metadata seperti tag, ringkasan, dan persyaratan instalasi.
 
-ClawHub menggunakan metadata untuk mendukung penemuan dan mengekspos kemampuan Skill
-dengan aman. Registri melacak sinyal penggunaan (bintang, unduhan) untuk
+ClawHub menggunakan metadata untuk mendukung penemuan dan mengekspos
+kapabilitas skill secara aman. Registry melacak sinyal penggunaan (bintang, unduhan) untuk
 meningkatkan peringkat dan visibilitas. Setiap publikasi membuat versi semver
-baru, dan registri menyimpan riwayat versi agar pengguna dapat mengaudit
+baru, dan registry menyimpan riwayat versi agar pengguna dapat mengaudit
 perubahan.
 
-## Workspace dan pemuatan Skill
+## Workspace dan pemuatan skill
 
-CLI `clawhub` terpisah juga menginstal Skills ke `./skills` di bawah
+CLI `clawhub` terpisah juga menginstal skill ke `./skills` di bawah
 direktori kerja Anda saat ini. Jika workspace OpenClaw dikonfigurasi,
-`clawhub` kembali menggunakan workspace tersebut kecuali Anda menimpa `--workdir`
-(atau `CLAWHUB_WORKDIR`). OpenClaw memuat Skills workspace dari
-`<workspace>/skills` dan mengenalinya pada sesi **berikutnya**.
+`clawhub` kembali menggunakan workspace tersebut kecuali Anda mengganti `--workdir`
+(atau `CLAWHUB_WORKDIR`). OpenClaw memuat skill workspace dari
+`<workspace>/skills` dan memuatnya pada sesi **berikutnya**.
 
-Jika Anda sudah menggunakan `~/.openclaw/skills` atau Skills bawaan, Skills
-workspace memiliki prioritas. Untuk detail lebih lanjut tentang bagaimana Skills dimuat,
-dibagikan, dan dibatasi, lihat [Skills](/id/tools/skills).
+Jika Anda sudah menggunakan `~/.openclaw/skills` atau skill bawaan, skill
+workspace memiliki prioritas. Untuk detail lebih lanjut tentang cara skill dimuat,
+dibagikan, dan diberi gate, lihat [Skills](/id/tools/skills).
 
 ## Fitur layanan
 
 | Fitur                    | Catatan                                                             |
 | ------------------------ | ------------------------------------------------------------------- |
-| Penelusuran publik       | Skills dan konten `SKILL.md` mereka dapat dilihat secara publik.    |
+| Penelusuran publik       | Skills dan konten `SKILL.md` mereka dapat dilihat publik.           |
 | Pencarian                | Didukung embedding (pencarian vektor), bukan hanya kata kunci.      |
-| Pembuatan versi          | Semver, changelog, dan tag (termasuk `latest`).                     |
+| Pemberian versi          | Semver, changelog, dan tag (termasuk `latest`).                     |
 | Unduhan                  | Zip per versi.                                                      |
 | Bintang dan komentar     | Umpan balik komunitas.                                              |
 | Ringkasan pemindaian keamanan | Halaman detail menampilkan status pemindaian terbaru sebelum instalasi atau unduhan. |
 | Halaman detail pemindai  | Hasil VirusTotal, ClawScan, dan analisis statis memiliki tautan dalam. |
-| Dasbor pemulihan pemilik | Penerbit dapat melihat konten miliknya yang ditahan pemindaian dari `/dashboard`. |
+| Dasbor pemulihan pemilik | Penerbit dapat melihat konten milik mereka yang ditahan pemindaian dari `/dashboard`. |
 | Pemindaian ulang atas permintaan pemilik | Pemilik dapat meminta pemindaian ulang terbatas untuk pemulihan positif palsu. |
 | Moderasi                 | Persetujuan dan audit.                                              |
 | API ramah CLI            | Cocok untuk otomasi dan skrip.                                      |
 
 ## Keamanan dan moderasi
 
-ClawHub terbuka secara default — siapa pun dapat mengunggah Skills, tetapi akun GitHub
-harus berusia **setidaknya satu minggu** untuk memublikasikan. Ini memperlambat
+ClawHub terbuka secara default — siapa pun dapat mengunggah skill, tetapi akun GitHub
+harus **berusia setidaknya satu minggu** untuk memublikasikan. Ini memperlambat
 penyalahgunaan tanpa memblokir kontributor yang sah.
 
 <AccordionGroup>
-  <Accordion title="Pemindaian keamanan">
-    ClawHub menjalankan pemeriksaan keamanan otomatis pada Skills dan rilis Plugin
-    yang dipublikasikan. Halaman detail publik merangkum hasil saat ini, dan baris
-    pemindai menautkan ke halaman detail khusus untuk VirusTotal, ClawScan, dan analisis
+  <Accordion title="Security scans">
+    ClawHub menjalankan pemeriksaan keamanan otomatis pada skill yang dipublikasikan dan rilis
+    Plugin. Halaman detail publik merangkum hasil saat ini, dan baris pemindai
+    tertaut ke halaman detail khusus untuk VirusTotal, ClawScan, dan analisis
     statis.
 
     Rilis yang ditahan pemindaian atau diblokir mungkin tidak tersedia di katalog publik dan
     permukaan instalasi, tetapi tetap terlihat oleh pemiliknya di `/dashboard`.
 
   </Accordion>
-  <Accordion title="Pelaporan">
-    - Setiap pengguna yang masuk dapat melaporkan Skill.
+  <Accordion title="Reporting">
+    - Setiap pengguna yang masuk dapat melaporkan skill.
     - Alasan laporan wajib diisi dan dicatat.
     - Setiap pengguna dapat memiliki hingga 20 laporan aktif sekaligus.
-    - Skills dengan lebih dari 3 laporan unik disembunyikan otomatis secara default.
+    - Skill dengan lebih dari 3 laporan unik disembunyikan otomatis secara default.
 
   </Accordion>
-  <Accordion title="Moderasi">
-    - Moderator dapat melihat Skills tersembunyi, menampilkannya kembali, menghapusnya, atau memblokir pengguna.
+  <Accordion title="Moderation">
+    - Moderator dapat melihat skill tersembunyi, menampilkannya kembali, menghapusnya, atau memblokir pengguna.
     - Penyalahgunaan fitur laporan dapat mengakibatkan pemblokiran akun.
     - Tertarik menjadi moderator? Tanyakan di Discord OpenClaw dan hubungi moderator atau maintainer.
 
@@ -183,7 +189,7 @@ penyalahgunaan tanpa memblokir kontributor yang sah.
 
 ## CLI ClawHub
 
-Anda hanya memerlukan ini untuk alur kerja yang terautentikasi registri seperti
+Anda hanya memerlukan ini untuk alur kerja yang diautentikasi registry seperti
 publikasi/sinkronisasi.
 
 ### Opsi global
@@ -198,10 +204,10 @@ publikasi/sinkronisasi.
   URL dasar situs (login browser).
 </ParamField>
 <ParamField path="--registry <url>" type="string">
-  URL dasar API registri.
+  URL dasar API registry.
 </ParamField>
 <ParamField path="--no-input" type="boolean">
-  Nonaktifkan prompt (non-interaktif).
+  Nonaktifkan prompt (noninteraktif).
 </ParamField>
 <ParamField path="-V, --cli-version" type="boolean">
   Cetak versi CLI.
@@ -225,17 +231,17 @@ publikasi/sinkronisasi.
     - `--no-browser` — jangan buka browser (memerlukan `--token`).
 
   </Accordion>
-  <Accordion title="Cari">
+  <Accordion title="Search">
     ```bash
     clawhub search "query"
     ```
 
-    Mencari Skills. Untuk penemuan Plugin/paket, gunakan `clawhub package explore`.
+    Mencari skill. Untuk penemuan Plugin/paket, gunakan `clawhub package explore`.
 
-    - `--limit <n>` — hasil maksimal.
+    - `--limit <n>` — hasil maksimum.
 
   </Accordion>
-  <Accordion title="Telusuri / inspeksi Plugin">
+  <Accordion title="Browse / inspect plugins">
     ```bash
     clawhub package explore --family code-plugin
     clawhub package explore "episodic-claw" --family code-plugin
@@ -251,10 +257,10 @@ publikasi/sinkronisasi.
     - `--executes-code` — tampilkan hanya paket yang mengeksekusi kode.
     - `--version <version>` / `--tag <tag>` — inspeksi versi paket tertentu.
     - `--versions`, `--files`, `--file <path>` — inspeksi riwayat dan file paket.
-    - `--json` — output yang dapat dibaca mesin.
+    - `--json` — keluaran yang dapat dibaca mesin.
 
   </Accordion>
-  <Accordion title="Instal / perbarui / daftar">
+  <Accordion title="Install / update / list">
     ```bash
     clawhub install <slug>
     clawhub update <slug>
@@ -265,25 +271,25 @@ publikasi/sinkronisasi.
     Opsi:
 
     - `--version <version>` — instal atau perbarui ke versi tertentu (hanya satu slug pada `update`).
-    - `--force` — timpa jika folder sudah ada, atau saat file lokal tidak cocok dengan versi yang dipublikasikan mana pun.
+    - `--force` — timpa jika folder sudah ada, atau ketika file lokal tidak cocok dengan versi yang dipublikasikan mana pun.
     - `clawhub list` membaca `.clawhub/lock.json`.
 
   </Accordion>
-  <Accordion title="Publikasikan Skills">
+  <Accordion title="Publish skills">
     ```bash
     clawhub skill publish <path>
     ```
 
     Opsi:
 
-    - `--slug <slug>` — slug Skill.
+    - `--slug <slug>` — slug skill.
     - `--name <name>` — nama tampilan.
     - `--version <version>` — versi semver.
-    - `--changelog <text>` — teks changelog (boleh kosong).
+    - `--changelog <text>` — teks changelog (dapat kosong).
     - `--tags <tags>` — tag yang dipisahkan koma (default: `latest`).
 
   </Accordion>
-  <Accordion title="Publikasikan Plugin">
+  <Accordion title="Publish plugins">
     ```bash
     clawhub package publish <source>
     ```
@@ -293,12 +299,12 @@ publikasi/sinkronisasi.
 
     Opsi:
 
-    - `--dry-run` — buat rencana publikasi persisnya tanpa mengunggah apa pun.
-    - `--json` — hasilkan output yang dapat dibaca mesin untuk CI.
-    - `--source-repo`, `--source-commit`, `--source-ref` — penimpaan opsional saat deteksi otomatis tidak cukup.
+    - `--dry-run` — buat rencana publikasi persis tanpa mengunggah apa pun.
+    - `--json` — keluarkan hasil yang dapat dibaca mesin untuk CI.
+    - `--source-repo`, `--source-commit`, `--source-ref` — override opsional ketika deteksi otomatis tidak cukup.
 
   </Accordion>
-  <Accordion title="Minta pemindaian ulang">
+  <Accordion title="Request rescans">
     ```bash
     clawhub skill rescan <slug>
     clawhub skill rescan <slug> --yes --json
@@ -307,21 +313,21 @@ publikasi/sinkronisasi.
     clawhub package rescan <name> --yes --json
     ```
 
-    Perintah pemindaian ulang memerlukan token pemilik yang sudah login dan menargetkan versi Skill
-    atau rilis Plugin terbaru yang dipublikasikan. Dalam eksekusi non-interaktif, berikan
+    Perintah pemindaian ulang memerlukan token pemilik yang sudah login dan menargetkan versi skill
+    yang dipublikasikan terbaru atau rilis Plugin. Dalam eksekusi noninteraktif, berikan
     `--yes`.
 
     Respons JSON mencakup jenis target, nama, versi, status pemindaian ulang, dan
-    jumlah permintaan tersisa/maksimal untuk versi atau rilis tersebut.
+    jumlah permintaan tersisa/maksimum untuk versi atau rilis tersebut.
 
   </Accordion>
-  <Accordion title="Hapus / pulihkan penghapusan (pemilik atau admin)">
+  <Accordion title="Delete / undelete (owner or admin)">
     ```bash
     clawhub delete <slug> --yes
     clawhub undelete <slug> --yes
     ```
   </Accordion>
-  <Accordion title="Sinkronisasi (pindai lokal + publikasikan yang baru atau diperbarui)">
+  <Accordion title="Sync (scan local + publish new or updated)">
     ```bash
     clawhub sync
     ```
@@ -332,9 +338,9 @@ publikasi/sinkronisasi.
     - `--all` — unggah semuanya tanpa prompt.
     - `--dry-run` — tampilkan apa yang akan diunggah.
     - `--bump <type>` — `patch|minor|major` untuk pembaruan (default: `patch`).
-    - `--changelog <text>` — changelog untuk pembaruan non-interaktif.
+    - `--changelog <text>` — changelog untuk pembaruan noninteraktif.
     - `--tags <tags>` — tag yang dipisahkan koma (default: `latest`).
-    - `--concurrency <n>` — pemeriksaan registri (default: `4`).
+    - `--concurrency <n>` — pemeriksaan registry (default: `4`).
 
   </Accordion>
 </AccordionGroup>
@@ -347,7 +353,7 @@ publikasi/sinkronisasi.
     clawhub search "postgres backups"
     ```
   </Tab>
-  <Tab title="Temukan plugin">
+  <Tab title="Temukan Plugin">
     ```bash
     clawhub package explore --family code-plugin
     clawhub package explore "memory" --family code-plugin
@@ -374,7 +380,7 @@ publikasi/sinkronisasi.
     clawhub sync --all
     ```
   </Tab>
-  <Tab title="Publikasikan plugin dari GitHub">
+  <Tab title="Publikasikan Plugin dari GitHub">
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
     clawhub package publish your-org/your-plugin
@@ -386,7 +392,7 @@ publikasi/sinkronisasi.
 
 ### Metadata paket Plugin
 
-Plugin kode harus menyertakan metadata OpenClaw yang diperlukan dalam
+Plugin kode harus menyertakan metadata OpenClaw yang diperlukan di
 `package.json`:
 
 ```json
@@ -409,41 +415,41 @@ Plugin kode harus menyertakan metadata OpenClaw yang diperlukan dalam
 }
 ```
 
-Paket yang dipublikasikan sebaiknya mengirimkan **JavaScript hasil build** dan mengarahkan
-`runtimeExtensions` ke keluaran tersebut. Instalasi dari Git checkout masih dapat
-kembali menggunakan sumber TypeScript ketika tidak ada file hasil build, tetapi entri runtime
-hasil build menghindari kompilasi TypeScript saat runtime di jalur startup, doctor, dan
-pemuatan plugin.
+Paket yang dipublikasikan sebaiknya menyertakan **JavaScript yang sudah dibangun** dan mengarahkan
+`runtimeExtensions` ke keluaran tersebut. Instalasi dari checkout Git masih dapat
+kembali ke sumber TypeScript ketika tidak ada file hasil build, tetapi entri runtime
+yang sudah dibangun menghindari kompilasi TypeScript runtime di jalur startup, doctor, dan
+pemuatan Plugin.
 
-## Versioning, lockfile, dan telemetri
+## Pembuatan versi, lockfile, dan telemetri
 
 <AccordionGroup>
-  <Accordion title="Versioning dan tag">
+  <Accordion title="Pembuatan versi dan tag">
     - Setiap publikasi membuat `SkillVersion` **semver** baru.
-    - Tag (seperti `latest`) menunjuk ke sebuah versi; memindahkan tag memungkinkan Anda melakukan rollback.
+    - Tag (seperti `latest`) mengarah ke sebuah versi; memindahkan tag memungkinkan Anda melakukan rollback.
     - Changelog dilampirkan per versi dan dapat kosong saat menyinkronkan atau memublikasikan pembaruan.
 
   </Accordion>
   <Accordion title="Perubahan lokal vs versi registry">
     Pembaruan membandingkan konten skill lokal dengan versi registry menggunakan
-    hash konten. Jika file lokal tidak cocok dengan versi yang telah dipublikasikan,
+    hash konten. Jika file lokal tidak cocok dengan versi yang sudah dipublikasikan, 
     CLI akan meminta konfirmasi sebelum menimpa (atau memerlukan `--force` dalam
     eksekusi non-interaktif).
   </Accordion>
   <Accordion title="Pemindaian sinkronisasi dan root fallback">
     `clawhub sync` memindai workdir Anda saat ini terlebih dahulu. Jika tidak ada skill yang
-    ditemukan, perintah akan kembali ke lokasi legacy yang dikenal (misalnya
+    ditemukan, perintah ini akan fallback ke lokasi legacy yang dikenal (misalnya
     `~/openclaw/skills` dan `~/.openclaw/skills`). Ini dirancang untuk
     menemukan instalasi skill lama tanpa flag tambahan.
   </Accordion>
   <Accordion title="Penyimpanan dan lockfile">
     - Skill yang terinstal dicatat di `.clawhub/lock.json` di bawah workdir Anda.
-    - Token auth disimpan dalam file konfigurasi CLI ClawHub (timpa melalui `CLAWHUB_CONFIG_PATH`).
+    - Token auth disimpan di file konfigurasi CLI ClawHub (timpa melalui `CLAWHUB_CONFIG_PATH`).
 
   </Accordion>
   <Accordion title="Telemetri (jumlah instalasi)">
     Saat Anda menjalankan `clawhub sync` dalam keadaan login, CLI mengirim snapshot
-    minimal untuk menghitung jumlah instalasi. Anda dapat menonaktifkan ini sepenuhnya:
+    minimal untuk menghitung jumlah instalasi. Anda dapat menonaktifkannya sepenuhnya:
 
     ```bash
     export CLAWHUB_DISABLE_TELEMETRY=1

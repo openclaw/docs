@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda memerlukan signature tipe yang tepat dari definePluginEntry atau defineChannelPluginEntry
+    - Anda memerlukan tanda tangan tipe yang tepat dari definePluginEntry atau defineChannelPluginEntry
     - Anda ingin memahami mode pendaftaran (full vs setup vs metadata CLI)
     - Anda sedang mencari opsi titik masuk
 sidebarTitle: Entry Points
 summary: Referensi untuk definePluginEntry, defineChannelPluginEntry, dan defineSetupPluginEntry
 title: Titik masuk Plugin
 x-i18n:
-    generated_at: "2026-04-25T13:52:10Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:28:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8253cf0ac43ca11b42c0032027bba6e926c961b54901caaa63da70bd5ff5aab5
+    source_hash: a29e7e12c38fb579bb78a0e1e753edafc43298c2795504969c3477c849a5d74d
     source_path: plugins/sdk-entrypoints.md
-    workflow: 15
+    workflow: 16
 ---
 
 Setiap plugin mengekspor objek entri default. SDK menyediakan tiga helper untuk
 membuatnya.
 
-Untuk plugin yang terpasang, `package.json` harus mengarahkan pemuatan runtime ke
+Untuk plugin yang diinstal, `package.json` harus mengarahkan pemuatan runtime ke
 JavaScript hasil build saat tersedia:
 
 ```json
@@ -32,26 +32,31 @@ JavaScript hasil build saat tersedia:
 }
 ```
 
-`extensions` dan `setupEntry` tetap valid sebagai entri sumber untuk pengembangan
-workspace dan checkout git. `runtimeExtensions` dan `runtimeSetupEntry` lebih disukai
-saat OpenClaw memuat paket yang terpasang dan memungkinkan paket npm menghindari
-kompilasi TypeScript saat runtime. Jika paket yang terpasang hanya mendeklarasikan entri sumber TypeScript, OpenClaw akan menggunakan peer `dist/*.js` hasil build yang cocok saat ada, lalu fallback ke sumber TypeScript.
+`extensions` dan `setupEntry` tetap menjadi entri sumber yang valid untuk
+pengembangan workspace dan checkout git. `runtimeExtensions` dan
+`runtimeSetupEntry` lebih disukai saat OpenClaw memuat paket yang diinstal dan
+memungkinkan paket npm menghindari kompilasi TypeScript saat runtime. Entri
+runtime eksplisit wajib ada: `runtimeSetupEntry` memerlukan `setupEntry`, dan
+artefak `runtimeExtensions` atau `runtimeSetupEntry` yang hilang akan menggagalkan
+instalasi/penemuan alih-alih diam-diam kembali ke sumber. Jika sebuah paket yang
+diinstal hanya mendeklarasikan entri sumber TypeScript, OpenClaw akan menggunakan
+peer `dist/*.js` hasil build yang cocok saat ada, lalu kembali ke sumber TypeScript.
 
 Semua path entri harus tetap berada di dalam direktori paket plugin. Entri runtime
-dan peer JavaScript hasil build yang diinferensikan tidak membuat path sumber `extensions` atau
-`setupEntry` yang keluar dari paket menjadi valid.
+dan peer JavaScript hasil build yang disimpulkan tidak membuat path sumber
+`extensions` atau `setupEntry` yang keluar direktori menjadi valid.
 
 <Tip>
-  **Mencari panduan langkah demi langkah?** Lihat [Channel Plugins](/id/plugins/sdk-channel-plugins)
-  atau [Provider Plugins](/id/plugins/sdk-provider-plugins) untuk panduan langkah demi langkah.
+  **Mencari panduan langkah demi langkah?** Lihat [Plugin Saluran](/id/plugins/sdk-channel-plugins)
+  atau [Plugin Penyedia](/id/plugins/sdk-provider-plugins) untuk panduan bertahap.
 </Tip>
 
 ## `definePluginEntry`
 
-**Import:** `openclaw/plugin-sdk/plugin-entry`
+**Impor:** `openclaw/plugin-sdk/plugin-entry`
 
-Untuk plugin provider, plugin tool, plugin hook, dan apa pun yang **bukan**
-channel pesan.
+Untuk plugin penyedia, plugin alat, plugin hook, dan apa pun yang **bukan**
+saluran perpesanan.
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -71,7 +76,7 @@ export default definePluginEntry({
 });
 ```
 
-| Field          | Type                                                             | Wajib | Default             |
+| Kolom          | Tipe                                                             | Wajib | Default             |
 | -------------- | ---------------------------------------------------------------- | ----- | ------------------- |
 | `id`           | `string`                                                         | Ya    | —                   |
 | `name`         | `string`                                                         | Ya    | —                   |
@@ -80,17 +85,19 @@ export default definePluginEntry({
 | `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | Tidak | Skema objek kosong  |
 | `register`     | `(api: OpenClawPluginApi) => void`                               | Ya    | —                   |
 
-- `id` harus cocok dengan manifest `openclaw.plugin.json` Anda.
-- `kind` untuk slot eksklusif: `"memory"` atau `"context-engine"`.
-- `configSchema` dapat berupa fungsi untuk evaluasi lazy.
-- OpenClaw me-resolve dan memoize skema tersebut pada akses pertama, sehingga builder skema yang mahal hanya berjalan sekali.
+- `id` harus cocok dengan manifes `openclaw.plugin.json` Anda.
+- `kind` digunakan untuk slot eksklusif: `"memory"` atau `"context-engine"`.
+- `configSchema` dapat berupa fungsi untuk evaluasi malas.
+- OpenClaw menyelesaikan dan melakukan memoize skema tersebut pada akses pertama,
+  sehingga pembuat skema yang mahal hanya berjalan sekali.
 
 ## `defineChannelPluginEntry`
 
-**Import:** `openclaw/plugin-sdk/channel-core`
+**Impor:** `openclaw/plugin-sdk/channel-core`
 
-Membungkus `definePluginEntry` dengan wiring khusus channel. Secara otomatis memanggil
-`api.registerChannel({ plugin })`, mengekspos seam metadata CLI root-help opsional, dan mem-gate `registerFull` berdasarkan mode pendaftaran.
+Membungkus `definePluginEntry` dengan wiring khusus saluran. Secara otomatis
+memanggil `api.registerChannel({ plugin })`, mengekspos seam metadata CLI
+bantuan root opsional, dan membatasi `registerFull` berdasarkan mode registrasi.
 
 ```typescript
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -110,47 +117,50 @@ export default defineChannelPluginEntry({
 });
 ```
 
-| Field                 | Type                                                             | Wajib | Default             |
-| --------------------- | ---------------------------------------------------------------- | ----- | ------------------- |
-| `id`                  | `string`                                                         | Ya    | —                   |
-| `name`                | `string`                                                         | Ya    | —                   |
-| `description`         | `string`                                                         | Ya    | —                   |
-| `plugin`              | `ChannelPlugin`                                                  | Ya    | —                   |
-| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | Tidak | Skema objek kosong  |
-| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | Tidak | —                   |
-| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | Tidak | —                   |
-| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | Tidak | —                   |
+| Kolom                 | Tipe                                                             | Wajib | Default            |
+| --------------------- | ---------------------------------------------------------------- | ----- | ------------------ |
+| `id`                  | `string`                                                         | Ya    | —                  |
+| `name`                | `string`                                                         | Ya    | —                  |
+| `description`         | `string`                                                         | Ya    | —                  |
+| `plugin`              | `ChannelPlugin`                                                  | Ya    | —                  |
+| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | Tidak | Skema objek kosong |
+| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | Tidak | —                  |
+| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | Tidak | —                  |
+| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | Tidak | —                  |
 
-- `setRuntime` dipanggil selama pendaftaran sehingga Anda dapat menyimpan referensi runtime
-  (biasanya melalui `createPluginRuntimeStore`). Ini dilewati selama penangkapan metadata CLI.
+- `setRuntime` dipanggil selama registrasi agar Anda dapat menyimpan referensi
+  runtime (biasanya melalui `createPluginRuntimeStore`). Ini dilewati selama
+  pengambilan metadata CLI.
 - `registerCliMetadata` berjalan selama `api.registrationMode === "cli-metadata"`,
   `api.registrationMode === "discovery"`, dan
   `api.registrationMode === "full"`.
-  Gunakan ini sebagai tempat kanonik untuk descriptor CLI milik channel agar root help
-  tetap non-activating, snapshot discovery mencakup metadata perintah statis, dan
-  pendaftaran perintah CLI normal tetap kompatibel dengan pemuatan plugin penuh.
-- Pendaftaran discovery bersifat non-activating, bukan bebas import. OpenClaw dapat
-  mengevaluasi entri plugin tepercaya dan modul plugin channel untuk membangun
-  snapshot, jadi pertahankan import tingkat atas bebas efek samping dan letakkan socket,
-  klien, worker, dan layanan di balik path khusus `"full"`.
-- `registerFull` hanya berjalan ketika `api.registrationMode === "full"`. Ini dilewati
-  selama pemuatan setup-only.
-- Seperti `definePluginEntry`, `configSchema` dapat berupa factory lazy dan OpenClaw
-  memoize skema yang telah di-resolve pada akses pertama.
+  Gunakan ini sebagai tempat kanonis untuk deskriptor CLI milik saluran agar
+  bantuan root tetap tidak mengaktifkan, snapshot penemuan menyertakan metadata
+  perintah statis, dan registrasi perintah CLI normal tetap kompatibel dengan
+  pemuatan plugin penuh.
+- Registrasi penemuan bersifat tidak mengaktifkan, bukan bebas impor. OpenClaw
+  dapat mengevaluasi entri plugin tepercaya dan modul plugin saluran untuk
+  membuat snapshot, jadi jaga impor tingkat atas bebas efek samping dan letakkan
+  socket, klien, worker, dan layanan di belakang path khusus `"full"`.
+- `registerFull` hanya berjalan saat `api.registrationMode === "full"`. Ini
+  dilewati selama pemuatan khusus setup.
+- Seperti `definePluginEntry`, `configSchema` dapat berupa factory malas dan
+  OpenClaw melakukan memoize skema yang terselesaikan pada akses pertama.
 - Untuk perintah CLI root milik plugin, pilih `api.registerCli(..., { descriptors: [...] })`
-  ketika Anda ingin perintah tetap lazy-loaded tanpa menghilang dari
-  pohon parse CLI root. Untuk plugin channel, pilih mendaftarkan descriptor tersebut
-  dari `registerCliMetadata(...)` dan pertahankan `registerFull(...)` fokus pada pekerjaan khusus runtime.
-- Jika `registerFull(...)` juga mendaftarkan metode RPC gateway, pertahankan metode itu pada
-  prefiks khusus plugin. Namespace admin core yang dicadangkan (`config.*`,
+  saat Anda ingin perintah tetap dimuat secara malas tanpa menghilang dari
+  pohon parse CLI root. Untuk plugin saluran, pilih mendaftarkan deskriptor
+  tersebut dari `registerCliMetadata(...)` dan jaga `registerFull(...)` tetap
+  berfokus pada pekerjaan khusus runtime.
+- Jika `registerFull(...)` juga mendaftarkan metode RPC Gateway, pertahankan
+  pada prefiks khusus plugin. Namespace admin inti yang dicadangkan (`config.*`,
   `exec.approvals.*`, `wizard.*`, `update.*`) selalu dipaksa menjadi
   `operator.admin`.
 
 ## `defineSetupPluginEntry`
 
-**Import:** `openclaw/plugin-sdk/channel-core`
+**Impor:** `openclaw/plugin-sdk/channel-core`
 
-Untuk file `setup-entry.ts` yang ringan. Mengembalikan hanya `{ plugin }` tanpa
+Untuk file ringan `setup-entry.ts`. Mengembalikan hanya `{ plugin }` tanpa
 wiring runtime atau CLI.
 
 ```typescript
@@ -159,24 +169,27 @@ import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-OpenClaw memuat ini alih-alih entri penuh ketika channel dinonaktifkan,
-belum dikonfigurasi, atau ketika pemuatan tertunda diaktifkan. Lihat
-[Setup and Config](/id/plugins/sdk-setup#setup-entry) untuk kapan ini penting.
+OpenClaw memuat ini alih-alih entri penuh saat sebuah saluran dinonaktifkan,
+belum dikonfigurasi, atau saat pemuatan tertunda diaktifkan. Lihat
+[Setup dan Konfigurasi](/id/plugins/sdk-setup#setup-entry) untuk kapan ini penting.
 
-Dalam praktiknya, pasangkan `defineSetupPluginEntry(...)` dengan keluarga helper setup yang sempit:
+Dalam praktiknya, pasangkan `defineSetupPluginEntry(...)` dengan keluarga helper
+setup yang sempit:
 
-- `openclaw/plugin-sdk/setup-runtime` untuk helper setup yang aman saat runtime seperti
-  adaptor patch setup yang aman untuk import, output lookup-note,
+- `openclaw/plugin-sdk/setup-runtime` untuk helper setup yang aman bagi runtime
+  seperti adapter patch setup yang aman impor, output catatan pencarian,
   `promptResolvedAllowFrom`, `splitSetupEntries`, dan proxy setup terdelegasi
-- `openclaw/plugin-sdk/channel-setup` untuk permukaan setup optional-install
-- `openclaw/plugin-sdk/setup-tools` untuk helper CLI/archive/docs setup/install
+- `openclaw/plugin-sdk/channel-setup` untuk permukaan setup instalasi opsional
+- `openclaw/plugin-sdk/setup-tools` untuk helper setup/instalasi CLI/arsip/dokumen
 
-Pertahankan SDK berat, pendaftaran CLI, dan layanan runtime jangka panjang di entri penuh.
+Simpan SDK berat, registrasi CLI, dan layanan runtime berumur panjang di entri
+penuh.
 
-Channel workspace bawaan yang memisahkan permukaan setup dan runtime dapat menggunakan
-`defineBundledChannelSetupEntry(...)` dari
-`openclaw/plugin-sdk/channel-entry-contract` sebagai gantinya. Kontrak tersebut memungkinkan
-entri setup mempertahankan ekspor plugin/secrets yang aman untuk setup sambil tetap mengekspos setter runtime:
+Saluran workspace bawaan yang memisahkan permukaan setup dan runtime dapat
+menggunakan `defineBundledChannelSetupEntry(...)` dari
+`openclaw/plugin-sdk/channel-entry-contract` sebagai gantinya. Kontrak tersebut
+memungkinkan entri setup mempertahankan ekspor plugin/rahasia yang aman untuk
+setup sambil tetap mengekspos setter runtime:
 
 ```typescript
 import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
@@ -194,23 +207,24 @@ export default defineBundledChannelSetupEntry({
 });
 ```
 
-Gunakan kontrak bawaan itu hanya ketika alur setup benar-benar memerlukan setter runtime yang ringan
-sebelum entri channel penuh dimuat.
+Gunakan kontrak bawaan tersebut hanya saat alur setup benar-benar memerlukan
+setter runtime ringan sebelum entri saluran penuh dimuat.
 
-## Mode pendaftaran
+## Mode registrasi
 
-`api.registrationMode` memberi tahu plugin Anda bagaimana plugin tersebut dimuat:
+`api.registrationMode` memberi tahu plugin Anda bagaimana ia dimuat:
 
-| Mode              | Kapan                            | Apa yang harus didaftarkan                                                                                            |
-| ----------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `"full"`          | Startup gateway normal           | Semuanya                                                                                                              |
-| `"discovery"`     | Discovery kapabilitas hanya-baca | Pendaftaran channel plus descriptor CLI statis; kode entri boleh dimuat, tetapi lewati socket, worker, klien, dan layanan |
-| `"setup-only"`    | Channel dinonaktifkan/belum dikonfigurasi | Hanya pendaftaran channel                                                                                     |
-| `"setup-runtime"` | Alur setup dengan runtime tersedia | Pendaftaran channel plus hanya runtime ringan yang diperlukan sebelum entri penuh dimuat                              |
-| `"cli-metadata"`  | Root help / penangkapan metadata CLI | Hanya descriptor CLI                                                                                               |
+| Mode              | Kapan                             | Apa yang didaftarkan                                                                                                      |
+| ----------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `"full"`          | Startup gateway normal            | Semuanya                                                                                                                  |
+| `"discovery"`     | Penemuan kapabilitas baca-saja    | Registrasi saluran plus deskriptor CLI statis; kode entri dapat dimuat, tetapi lewati socket, worker, klien, dan layanan |
+| `"setup-only"`    | Saluran dinonaktifkan/belum dikonfigurasi | Registrasi saluran saja                                                                                             |
+| `"setup-runtime"` | Alur setup dengan runtime tersedia | Registrasi saluran plus hanya runtime ringan yang diperlukan sebelum entri penuh dimuat                                 |
+| `"cli-metadata"`  | Bantuan root / pengambilan metadata CLI | Deskriptor CLI saja                                                                                                  |
 
-`defineChannelPluginEntry` menangani pemisahan ini secara otomatis. Jika Anda menggunakan
-`definePluginEntry` langsung untuk sebuah channel, periksa mode sendiri:
+`defineChannelPluginEntry` menangani pemisahan ini secara otomatis. Jika Anda
+menggunakan `definePluginEntry` langsung untuk sebuah saluran, periksa mode
+sendiri:
 
 ```typescript
 register(api) {
@@ -231,46 +245,50 @@ register(api) {
 }
 ```
 
-Mode discovery membangun snapshot registri non-activating. Mode ini masih dapat mengevaluasi
-entri plugin dan objek plugin channel sehingga OpenClaw dapat mendaftarkan kapabilitas channel
-dan descriptor CLI statis. Perlakukan evaluasi modul dalam discovery sebagai
-tepercaya tetapi ringan: tanpa klien jaringan, subproses, listener, koneksi database,
-worker latar belakang, pembacaan kredensial, atau efek samping runtime langsung lainnya di tingkat atas.
+Mode penemuan membuat snapshot registry yang tidak mengaktifkan. Ini masih dapat
+mengevaluasi entri plugin dan objek plugin saluran agar OpenClaw dapat
+mendaftarkan kapabilitas saluran dan deskriptor CLI statis. Perlakukan evaluasi
+modul dalam penemuan sebagai tepercaya tetapi ringan: tidak ada klien jaringan,
+subproses, listener, koneksi basis data, worker latar belakang, pembacaan
+kredensial, atau efek samping runtime langsung lainnya di tingkat atas.
 
-Perlakukan `"setup-runtime"` sebagai jendela saat permukaan startup khusus-setup harus
-ada tanpa masuk kembali ke runtime channel bawaan penuh. Yang cocok di sini adalah
-pendaftaran channel, route HTTP yang aman untuk setup, metode gateway yang aman untuk setup, dan helper setup terdelegasi. Layanan latar belakang berat, registrar CLI, dan bootstrap SDK provider/klien
-tetap berada di `"full"`.
+Perlakukan `"setup-runtime"` sebagai jendela ketika permukaan startup khusus
+setup harus ada tanpa masuk kembali ke runtime saluran bawaan penuh. Kecocokan
+yang baik meliputi registrasi saluran, route HTTP yang aman untuk setup, metode
+Gateway yang aman untuk setup, dan helper setup terdelegasi. Layanan latar
+belakang berat, registrar CLI, dan bootstrap SDK penyedia/klien tetap berada di
+`"full"`.
 
 Khusus untuk registrar CLI:
 
-- gunakan `descriptors` ketika registrar memiliki satu atau lebih perintah root dan Anda
-  ingin OpenClaw lazy-load modul CLI yang sebenarnya pada pemanggilan pertama
-- pastikan descriptor tersebut mencakup setiap root perintah tingkat atas yang diekspos oleh
-  registrar
-- pertahankan nama perintah descriptor hanya berisi huruf, angka, tanda hubung, dan garis bawah,
-  dimulai dengan huruf atau angka; OpenClaw menolak nama descriptor di luar
-  bentuk tersebut dan menghapus urutan kontrol terminal dari deskripsi sebelum
-  merender help
-- gunakan `commands` saja hanya untuk jalur kompatibilitas eager
+- gunakan `descriptors` saat registrar memiliki satu atau beberapa perintah root
+  dan Anda ingin OpenClaw memuat modul CLI sebenarnya secara malas pada pemanggilan
+  pertama
+- pastikan deskriptor tersebut mencakup setiap root perintah tingkat atas yang
+  diekspos oleh registrar
+- jaga nama perintah deskriptor hanya berisi huruf, angka, tanda hubung, dan
+  garis bawah, dimulai dengan huruf atau angka; OpenClaw menolak nama deskriptor
+  di luar bentuk tersebut dan menghapus rangkaian kontrol terminal dari deskripsi
+  sebelum merender bantuan
+- gunakan `commands` saja hanya untuk path kompatibilitas eager
 
 ## Bentuk plugin
 
 OpenClaw mengklasifikasikan plugin yang dimuat berdasarkan perilaku pendaftarannya:
 
-| Shape                 | Deskripsi                                          |
+| Bentuk                | Deskripsi                                          |
 | --------------------- | -------------------------------------------------- |
-| **plain-capability**  | Satu jenis kapabilitas (mis. hanya-provider)       |
-| **hybrid-capability** | Beberapa jenis kapabilitas (mis. provider + ucapan) |
+| **plain-capability**  | Satu jenis kapabilitas (mis. hanya penyedia)       |
+| **hybrid-capability** | Beberapa jenis kapabilitas (mis. penyedia + ucapan) |
 | **hook-only**         | Hanya hook, tanpa kapabilitas                      |
-| **non-capability**    | Tool/perintah/layanan tetapi tanpa kapabilitas     |
+| **non-capability**    | Alat/perintah/layanan tetapi tanpa kapabilitas     |
 
-Gunakan `openclaw plugins inspect <id>` untuk melihat bentuk plugin.
+Gunakan `openclaw plugins inspect <id>` untuk melihat bentuk sebuah plugin.
 
 ## Terkait
 
-- [SDK Overview](/id/plugins/sdk-overview) — API pendaftaran dan referensi subpath
-- [Runtime Helpers](/id/plugins/sdk-runtime) — `api.runtime` dan `createPluginRuntimeStore`
-- [Setup and Config](/id/plugins/sdk-setup) — manifest, setup entry, deferred loading
-- [Channel Plugins](/id/plugins/sdk-channel-plugins) — membangun objek `ChannelPlugin`
-- [Provider Plugins](/id/plugins/sdk-provider-plugins) — pendaftaran provider dan hook
+- [Ikhtisar SDK](/id/plugins/sdk-overview) — API pendaftaran dan referensi subpath
+- [Helper Runtime](/id/plugins/sdk-runtime) — `api.runtime` dan `createPluginRuntimeStore`
+- [Penyiapan dan Konfigurasi](/id/plugins/sdk-setup) — manifes, entri penyiapan, pemuatan tertunda
+- [Plugin Kanal](/id/plugins/sdk-channel-plugins) — membangun objek `ChannelPlugin`
+- [Plugin Penyedia](/id/plugins/sdk-provider-plugins) — pendaftaran penyedia dan hook

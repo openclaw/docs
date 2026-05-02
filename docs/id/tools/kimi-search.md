@@ -1,29 +1,29 @@
 ---
 read_when:
     - Anda ingin menggunakan Kimi untuk web_search
-    - Anda memerlukan `KIMI_API_KEY` atau `MOONSHOT_API_KEY`
+    - Anda memerlukan KIMI_API_KEY atau MOONSHOT_API_KEY
 summary: Pencarian web Kimi melalui pencarian web Moonshot
-title: Kimi search
+title: Pencarian Kimi
 x-i18n:
-    generated_at: "2026-04-24T09:31:38Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:34:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
+    source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
     source_path: tools/kimi-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw mendukung Kimi sebagai provider `web_search`, menggunakan pencarian web Moonshot
+OpenClaw mendukung Kimi sebagai penyedia `web_search`, menggunakan pencarian web Moonshot
 untuk menghasilkan jawaban yang disintesis AI dengan sitasi.
 
-## Dapatkan API key
+## Dapatkan kunci API
 
 <Steps>
-  <Step title="Buat key">
-    Dapatkan API key dari [Moonshot AI](https://platform.moonshot.cn/).
+  <Step title="Buat kunci">
+    Dapatkan kunci API dari [Moonshot AI](https://platform.moonshot.cn/).
   </Step>
-  <Step title="Simpan key">
-    Setel `KIMI_API_KEY` atau `MOONSHOT_API_KEY` di lingkungan Gateway, atau
+  <Step title="Simpan kunci">
+    Atur `KIMI_API_KEY` atau `MOONSHOT_API_KEY` di lingkungan Gateway, atau
     konfigurasikan melalui:
 
     ```bash
@@ -33,13 +33,13 @@ untuk menghasilkan jawaban yang disintesis AI dengan sitasi.
   </Step>
 </Steps>
 
-Ketika Anda memilih **Kimi** selama `openclaw onboard` atau
-`openclaw configure --section web`, OpenClaw juga dapat menanyakan:
+Saat Anda memilih **Kimi** selama `openclaw onboard` atau
+`openclaw configure --section web`, OpenClaw juga dapat meminta:
 
 - region API Moonshot:
   - `https://api.moonshot.ai/v1`
   - `https://api.moonshot.cn/v1`
-- model default web-search Kimi (default `kimi-k2.6`)
+- model pencarian web Kimi bawaan (default ke `kimi-k2.6`)
 
 ## Konfigurasi
 
@@ -50,7 +50,7 @@ Ketika Anda memilih **Kimi** selama `openclaw onboard` atau
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // opsional jika KIMI_API_KEY atau MOONSHOT_API_KEY diatur
+            apiKey: "sk-...", // optional if KIMI_API_KEY or MOONSHOT_API_KEY is set
             baseUrl: "https://api.moonshot.ai/v1",
             model: "kimi-k2.6",
           },
@@ -69,13 +69,13 @@ Ketika Anda memilih **Kimi** selama `openclaw onboard` atau
 ```
 
 Jika Anda menggunakan host API China untuk chat (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`), OpenClaw menggunakan ulang host yang sama itu untuk Kimi
-`web_search` ketika `tools.web.search.kimi.baseUrl` dihilangkan, sehingga key dari
-[platform.moonshot.cn](https://platform.moonshot.cn/) tidak salah mengenai
-endpoint internasional (yang sering mengembalikan HTTP 401). Override dengan
-`tools.web.search.kimi.baseUrl` ketika Anda memerlukan base URL pencarian yang berbeda.
+`https://api.moonshot.cn/v1`), OpenClaw menggunakan ulang host yang sama untuk
+`web_search` Kimi saat `tools.web.search.kimi.baseUrl` dihilangkan, sehingga kunci dari
+[platform.moonshot.cn](https://platform.moonshot.cn/) tidak mengenai endpoint
+internasional secara keliru (yang sering mengembalikan HTTP 401). Timpa
+dengan `tools.web.search.kimi.baseUrl` saat Anda memerlukan URL dasar pencarian yang berbeda.
 
-**Alternatif environment:** setel `KIMI_API_KEY` atau `MOONSHOT_API_KEY` di
+**Alternatif lingkungan:** atur `KIMI_API_KEY` atau `MOONSHOT_API_KEY` di
 lingkungan Gateway. Untuk instalasi gateway, letakkan di `~/.openclaw/.env`.
 
 Jika Anda menghilangkan `baseUrl`, OpenClaw default ke `https://api.moonshot.ai/v1`.
@@ -83,21 +83,30 @@ Jika Anda menghilangkan `model`, OpenClaw default ke `kimi-k2.6`.
 
 ## Cara kerjanya
 
-Kimi menggunakan pencarian web Moonshot untuk mensintesis jawaban dengan sitasi inline,
-mirip dengan pendekatan respons grounded milik Gemini dan Grok.
+Kimi menggunakan pencarian web Moonshot untuk menyintesis jawaban dengan sitasi inline,
+mirip dengan pendekatan respons berlandasan Gemini dan Grok.
+
+OpenClaw menganggap `web_search` Kimi berhasil hanya setelah Moonshot mengembalikan
+bukti grounding pencarian web native, seperti payload alat `$web_search` yang dapat
+diputar ulang, `search_results`, atau URL sitasi. Jika Kimi langsung berhenti dengan
+jawaban chat biasa seperti "I cannot browse the internet" dan tanpa bukti grounding,
+OpenClaw mengembalikan error terstruktur `kimi_web_search_ungrounded` alih-alih
+membungkus teks tersebut sebagai hasil pencarian. Coba ulang kueri, beralih ke
+penyedia terstruktur seperti Brave, atau gunakan `web_fetch` / alat browser saat Anda sudah
+memiliki URL target.
 
 ## Parameter yang didukung
 
 Pencarian Kimi mendukung `query`.
 
 `count` diterima untuk kompatibilitas `web_search` bersama, tetapi Kimi tetap
-mengembalikan satu jawaban sintetis dengan sitasi, bukan daftar hasil sebanyak N.
+mengembalikan satu jawaban yang disintesis dengan sitasi, bukan daftar N hasil.
 
-Filter spesifik provider saat ini belum didukung.
+Filter khusus penyedia saat ini tidak didukung.
 
 ## Terkait
 
-- [Ikhtisar Web Search](/id/tools/web) -- semua provider dan auto-detection
-- [Moonshot AI](/id/providers/moonshot) -- dokumentasi provider model Moonshot + Kimi Coding
-- [Gemini Search](/id/tools/gemini-search) -- jawaban sintetis AI melalui grounding Google
-- [Grok Search](/id/tools/grok-search) -- jawaban sintetis AI melalui grounding xAI
+- [Ikhtisar Pencarian Web](/id/tools/web) -- semua penyedia dan deteksi otomatis
+- [Moonshot AI](/id/providers/moonshot) -- model Moonshot + dokumentasi penyedia Kimi Coding
+- [Pencarian Gemini](/id/tools/gemini-search) -- jawaban yang disintesis AI melalui grounding Google
+- [Pencarian Grok](/id/tools/grok-search) -- jawaban yang disintesis AI melalui grounding xAI

@@ -1,32 +1,33 @@
 ---
 read_when:
     - Anda ingin menggunakan MiniMax untuk web_search
-    - Anda memerlukan MiniMax Coding Plan key
-    - Anda menginginkan panduan host pencarian MiniMax CN/global
-summary: MiniMax Search melalui API pencarian Coding Plan
-title: MiniMax search
+    - Anda memerlukan kunci Token Plan MiniMax atau token OAuth
+    - Anda menginginkan panduan host pencarian CN/global MiniMax
+summary: Pencarian MiniMax melalui API pencarian Token Plan
+title: Pencarian MiniMax
 x-i18n:
-    generated_at: "2026-04-24T09:32:14Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:34:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 20a91bfae72661efd5e0bc3b6247ab05c3487db40ecd9cd5a874858bf3c69df3
+    source_hash: 5bb84f38c1407c203b76eea2d7a3ab5fefbdab0844dc20899742581945d7d77e
     source_path: tools/minimax-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw mendukung MiniMax sebagai provider `web_search` melalui API pencarian MiniMax
-Coding Plan. Provider ini mengembalikan hasil pencarian terstruktur dengan judul, URL,
-snippet, dan kueri terkait.
+OpenClaw mendukung MiniMax sebagai penyedia `web_search` melalui API pencarian MiniMax
+Token Plan. API ini mengembalikan hasil pencarian terstruktur dengan judul, URL,
+cuplikan, dan kueri terkait.
 
-## Dapatkan Coding Plan key
+## Dapatkan kredensial Token Plan
 
 <Steps>
-  <Step title="Buat key">
-    Buat atau salin MiniMax Coding Plan key dari
+  <Step title="Create a key">
+    Buat atau salin kunci MiniMax Token Plan dari
     [MiniMax Platform](https://platform.minimax.io/user-center/basic-information/interface-key).
+    Setup OAuth dapat menggunakan kembali `MINIMAX_OAUTH_TOKEN`.
   </Step>
-  <Step title="Simpan key">
-    Setel `MINIMAX_CODE_PLAN_KEY` di lingkungan Gateway, atau konfigurasikan melalui:
+  <Step title="Store the key">
+    Tetapkan `MINIMAX_CODE_PLAN_KEY` di lingkungan Gateway, atau konfigurasikan melalui:
 
     ```bash
     openclaw configure --section web
@@ -35,10 +36,12 @@ snippet, dan kueri terkait.
   </Step>
 </Steps>
 
-OpenClaw juga menerima `MINIMAX_CODING_API_KEY` sebagai alias env. `MINIMAX_API_KEY`
-masih dibaca sebagai fallback kompatibilitas ketika nilainya memang sudah menunjuk ke token coding-plan.
+OpenClaw juga menerima `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN`, dan
+`MINIMAX_API_KEY` sebagai alias env. `MINIMAX_API_KEY` harus mengarah ke
+kredensial Token Plan yang mendukung pencarian; kunci API model MiniMax biasa mungkin tidak
+diterima oleh endpoint pencarian Token Plan.
 
-## Konfigurasi
+## Konfig
 
 ```json5
 {
@@ -47,8 +50,8 @@ masih dibaca sebagai fallback kompatibilitas ketika nilainya memang sudah menunj
       minimax: {
         config: {
           webSearch: {
-            apiKey: "sk-cp-...", // opsional jika MINIMAX_CODE_PLAN_KEY diatur
-            region: "global", // atau "cn"
+            apiKey: "sk-cp-...", // optional if a MiniMax Token Plan env var is set
+            region: "global", // or "cn"
           },
         },
       },
@@ -64,41 +67,43 @@ masih dibaca sebagai fallback kompatibilitas ketika nilainya memang sudah menunj
 }
 ```
 
-**Alternatif environment:** setel `MINIMAX_CODE_PLAN_KEY` di lingkungan Gateway.
+**Alternatif lingkungan:** tetapkan `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`,
+`MINIMAX_OAUTH_TOKEN`, atau `MINIMAX_API_KEY` di lingkungan Gateway.
 Untuk instalasi gateway, letakkan di `~/.openclaw/.env`.
 
-## Pemilihan region
+## Pemilihan wilayah
 
 MiniMax Search menggunakan endpoint berikut:
 
 - Global: `https://api.minimax.io/v1/coding_plan/search`
 - CN: `https://api.minimaxi.com/v1/coding_plan/search`
 
-Jika `plugins.entries.minimax.config.webSearch.region` tidak diatur, OpenClaw menyelesaikan
-region dalam urutan ini:
+Jika `plugins.entries.minimax.config.webSearch.region` belum ditetapkan, OpenClaw menentukan
+wilayah dalam urutan berikut:
 
 1. `tools.web.search.minimax.region` / `webSearch.region` milik plugin
 2. `MINIMAX_API_HOST`
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-Artinya onboarding CN atau `MINIMAX_API_HOST=https://api.minimaxi.com/...`
-secara otomatis juga menjaga MiniMax Search tetap berada di host CN.
+Itu berarti onboarding CN atau `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+secara otomatis juga mempertahankan MiniMax Search pada host CN.
 
-Bahkan ketika Anda mengautentikasi MiniMax melalui jalur OAuth `minimax-portal`,
-web search tetap didaftarkan sebagai provider id `minimax`; base URL provider OAuth
-hanya digunakan sebagai petunjuk region untuk pemilihan host CN/global.
+Meskipun Anda mengautentikasi MiniMax melalui jalur OAuth `minimax-portal`,
+pencarian web tetap terdaftar sebagai id penyedia `minimax`; URL dasar penyedia OAuth
+digunakan sebagai petunjuk wilayah untuk pemilihan host CN/global, dan `MINIMAX_OAUTH_TOKEN`
+dapat memenuhi kredensial bearer MiniMax Search.
 
 ## Parameter yang didukung
 
 MiniMax Search mendukung:
 
 - `query`
-- `count` (OpenClaw memangkas daftar hasil yang dikembalikan sesuai count yang diminta)
+- `count` (OpenClaw memangkas daftar hasil yang dikembalikan sesuai jumlah yang diminta)
 
-Filter spesifik provider saat ini belum didukung.
+Filter khusus penyedia saat ini belum didukung.
 
 ## Terkait
 
-- [Ikhtisar Web Search](/id/tools/web) -- semua provider dan auto-detection
-- [MiniMax](/id/providers/minimax) -- penyiapan model, gambar, speech, dan auth
+- [Ikhtisar Web Search](/id/tools/web) -- semua penyedia dan deteksi otomatis
+- [MiniMax](/id/providers/minimax) -- setup model, gambar, ucapan, dan autentikasi

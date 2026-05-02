@@ -1,47 +1,53 @@
 ---
 read_when:
     - Mengubah perutean saluran atau perilaku kotak masuk
-summary: Aturan perutean per saluran (WhatsApp, Telegram, Discord, Slack) dan konteks bersama
-title: Perutean kanal
+summary: Aturan perutean untuk setiap saluran (WhatsApp, Telegram, Discord, Slack) dan konteks bersama
+title: Perutean saluran
 x-i18n:
-    generated_at: "2026-04-30T09:32:52Z"
+    generated_at: "2026-05-02T09:12:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c43347048fcfd137cc3a0b2cfdc4cf36426fdcf9645f2d1a05ce9cf49688cf0d
+    source_hash: 9a752696e70d2c13d3ab1c9cedd41442e0d8aee6d78b3a069b53dd2b262174da
     source_path: channels/channel-routing.md
     workflow: 16
 ---
 
-# Kanal & perutean
+# Kanal & routing
 
 OpenClaw merutekan balasan **kembali ke kanal tempat pesan berasal**. Model
-tidak memilih kanal; perutean bersifat deterministik dan dikendalikan oleh
+tidak memilih kanal; routing bersifat deterministik dan dikendalikan oleh
 konfigurasi host.
 
 ## Istilah kunci
 
-- **Kanal**: `telegram`, `whatsapp`, `discord`, `irc`, `googlechat`, `slack`, `signal`, `imessage`, `line`, plus kanal Plugin. `webchat` adalah kanal UI WebChat internal dan bukan kanal keluar yang dapat dikonfigurasi.
-- **AccountId**: instance akun per kanal (jika didukung).
+- **Kanal**: `telegram`, `whatsapp`, `discord`, `irc`, `googlechat`, `slack`, `signal`, `imessage`, `line`, plus kanal Plugin. `webchat` adalah kanal UI WebChat internal dan bukan kanal outbound yang dapat dikonfigurasi.
+- **AccountId**: instans akun per kanal (jika didukung).
 - Akun default kanal opsional: `channels.<channel>.defaultAccount` memilih
-  akun mana yang digunakan ketika jalur keluar tidak menentukan `accountId`.
-  - Dalam penyiapan multi-akun, tetapkan default eksplisit (`defaultAccount` atau `accounts.default`) ketika dua akun atau lebih dikonfigurasi. Tanpanya, perutean fallback dapat memilih ID akun ternormalisasi pertama.
-- **AgentId**: workspace + penyimpanan sesi yang terisolasi (“brain”).
-- **SessionKey**: kunci bucket yang digunakan untuk menyimpan konteks dan mengendalikan konkurensi.
+  akun mana yang digunakan ketika jalur outbound tidak menentukan `accountId`.
+  - Dalam setup multi-akun, tetapkan default eksplisit (`defaultAccount` atau `accounts.default`) ketika dua akun atau lebih dikonfigurasi. Tanpa itu, routing fallback dapat memilih ID akun ternormalisasi pertama.
+- **AgentId**: workspace terisolasi + penyimpanan sesi (“otak”).
+- **SessionKey**: kunci bucket yang digunakan untuk menyimpan konteks dan mengontrol konkurensi.
+
+## Prefiks target outbound
+
+Target outbound eksplisit dapat menyertakan prefiks penyedia, seperti `telegram:123` atau `tg:123`. Core memperlakukan prefiks tersebut sebagai petunjuk pemilihan kanal hanya ketika kanal yang dipilih adalah `last` atau belum terselesaikan, dan hanya ketika Plugin yang dimuat mengiklankan prefiks tersebut. Jika pemanggil sudah memilih kanal eksplisit, prefiks penyedia harus cocok dengan kanal tersebut; kombinasi lintas kanal seperti pengiriman WhatsApp ke `telegram:123` gagal sebelum normalisasi target khusus Plugin.
+
+Prefiks jenis target dan layanan seperti `channel:<id>`, `user:<id>`, `room:<id>`, `thread:<id>`, `imessage:<handle>`, dan `sms:<number>` tetap berada di dalam tata bahasa kanal yang dipilih. Prefiks tersebut tidak memilih penyedia dengan sendirinya.
 
 ## Bentuk kunci sesi (contoh)
 
-Pesan langsung secara default digabungkan ke sesi **main** agen:
+Pesan langsung diciutkan ke sesi **main** agen secara default:
 
 - `agent:<agentId>:<mainKey>` (default: `agent:main:main`)
 
 Bahkan ketika riwayat percakapan pesan langsung dibagikan dengan main, kebijakan sandbox dan
-tool menggunakan kunci runtime direct-chat per akun turunan untuk DM eksternal
-sehingga pesan yang berasal dari kanal tidak diperlakukan seperti run sesi main lokal.
+alat menggunakan kunci runtime percakapan langsung per akun turunan untuk DM eksternal
+agar pesan yang berasal dari kanal tidak diperlakukan seperti eksekusi sesi main lokal.
 
 Grup dan kanal tetap terisolasi per kanal:
 
 - Grup: `agent:<agentId>:<channel>:group:<id>`
-- Kanal/ruangan: `agent:<agentId>:<channel>:channel:<id>`
+- Kanal/ruang: `agent:<agentId>:<channel>:channel:<id>`
 
 Thread:
 
@@ -56,43 +62,43 @@ Contoh:
 ## Penyematan rute DM main
 
 Ketika `session.dmScope` adalah `main`, pesan langsung dapat berbagi satu sesi main.
-Untuk mencegah `lastRoute` sesi ditimpa oleh DM non-pemilik,
-OpenClaw menyimpulkan pemilik yang disematkan dari `allowFrom` ketika semua hal berikut benar:
+Untuk mencegah `lastRoute` sesi ditimpa oleh DM bukan pemilik,
+OpenClaw menyimpulkan pemilik yang disematkan dari `allowFrom` ketika semua kondisi ini benar:
 
 - `allowFrom` memiliki tepat satu entri non-wildcard.
-- Entri tersebut dapat dinormalisasi menjadi ID pengirim konkret untuk kanal itu.
-- Pengirim DM masuk tidak cocok dengan pemilik yang disematkan tersebut.
+- Entri tersebut dapat dinormalisasi menjadi ID pengirim konkret untuk kanal tersebut.
+- Pengirim DM inbound tidak cocok dengan pemilik yang disematkan tersebut.
 
-Dalam kasus ketidakcocokan itu, OpenClaw tetap mencatat metadata sesi masuk, tetapi
+Dalam kasus ketidakcocokan itu, OpenClaw tetap mencatat metadata sesi inbound, tetapi
 melewati pembaruan `lastRoute` sesi main.
 
-## Pencatatan masuk yang dijaga
+## Pencatatan inbound terlindungi
 
-Plugin kanal dapat menandai catatan sesi masuk sebagai `createIfMissing: false`
-ketika jalur yang dijaga tidak boleh membuat sesi OpenClaw baru. Dalam mode itu,
+Plugin kanal dapat menandai catatan sesi inbound sebagai `createIfMissing: false`
+ketika jalur terlindungi tidak boleh membuat sesi OpenClaw baru. Dalam mode itu,
 OpenClaw dapat memperbarui metadata dan `lastRoute` untuk sesi yang sudah ada, tetapi
-tidak membuat entri sesi khusus rute hanya karena sebuah pesan teramati.
+tidak membuat entri sesi khusus rute hanya karena sebuah pesan diamati.
 
-## Aturan perutean (bagaimana agen dipilih)
+## Aturan routing (cara agen dipilih)
 
-Perutean memilih **satu agen** untuk setiap pesan masuk:
+Routing memilih **satu agen** untuk setiap pesan inbound:
 
-1. **Kecocokan peer persis** (`bindings` dengan `peer.kind` + `peer.id`).
+1. **Kecocokan peer tepat** (`bindings` dengan `peer.kind` + `peer.id`).
 2. **Kecocokan peer induk** (pewarisan thread).
-3. **Kecocokan guild + role** (Discord) melalui `guildId` + `roles`.
+3. **Kecocokan guild + peran** (Discord) melalui `guildId` + `roles`.
 4. **Kecocokan guild** (Discord) melalui `guildId`.
 5. **Kecocokan tim** (Slack) melalui `teamId`.
 6. **Kecocokan akun** (`accountId` pada kanal).
-7. **Kecocokan kanal** (akun apa pun pada kanal itu, `accountId: "*"`).
-8. **Agen default** (`agents.list[].default`, selain itu entri daftar pertama, fallback ke `main`).
+7. **Kecocokan kanal** (akun apa pun pada kanal tersebut, `accountId: "*"`).
+8. **Agen default** (`agents.list[].default`, jika tidak ada entri daftar pertama, fallback ke `main`).
 
-Ketika sebuah binding menyertakan beberapa field kecocokan (`peer`, `guildId`, `teamId`, `roles`), **semua field yang disediakan harus cocok** agar binding tersebut berlaku.
+Ketika sebuah binding menyertakan beberapa bidang kecocokan (`peer`, `guildId`, `teamId`, `roles`), **semua bidang yang diberikan harus cocok** agar binding tersebut berlaku.
 
 Agen yang cocok menentukan workspace dan penyimpanan sesi mana yang digunakan.
 
 ## Grup siaran (menjalankan beberapa agen)
 
-Grup siaran memungkinkan Anda menjalankan **beberapa agen** untuk peer yang sama **ketika OpenClaw biasanya akan membalas** (misalnya: di grup WhatsApp, setelah gating mention/aktivasi).
+Grup siaran memungkinkan Anda menjalankan **beberapa agen** untuk peer yang sama **ketika OpenClaw biasanya akan membalas** (misalnya: di grup WhatsApp, setelah gating sebutan/aktivasi).
 
 Konfigurasi:
 
@@ -108,10 +114,10 @@ Konfigurasi:
 
 Lihat: [Grup Siaran](/id/channels/broadcast-groups).
 
-## Ikhtisar konfigurasi
+## Ringkasan konfigurasi
 
 - `agents.list`: definisi agen bernama (workspace, model, dll.).
-- `bindings`: memetakan kanal/akun/peer masuk ke agen.
+- `bindings`: memetakan kanal/akun/peer inbound ke agen.
 
 Contoh:
 
@@ -129,29 +135,29 @@ Contoh:
 
 ## Penyimpanan sesi
 
-Penyimpanan sesi berada di bawah direktori state (default `~/.openclaw`):
+Penyimpanan sesi berada di bawah direktori status (default `~/.openclaw`):
 
 - `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - Transkrip JSONL berada berdampingan dengan penyimpanan
 
-Anda dapat menimpa jalur penyimpanan melalui `session.store` dan templating `{agentId}`.
+Anda dapat mengganti jalur penyimpanan melalui `session.store` dan templating `{agentId}`.
 
 Penemuan sesi Gateway dan ACP juga memindai penyimpanan agen berbasis disk di bawah
-root `agents/` default dan di bawah root `session.store` bertemplate. Penyimpanan yang ditemukan
-harus tetap berada di dalam root agen yang di-resolve tersebut dan menggunakan file
+root default `agents/` dan di bawah root `session.store` bertemplat. Penyimpanan yang ditemukan
+harus tetap berada di dalam root agen terselesaikan tersebut dan menggunakan berkas
 `sessions.json` reguler. Symlink dan jalur di luar root diabaikan.
 
 ## Perilaku WebChat
 
-WebChat terhubung ke **agen yang dipilih** dan secara default menggunakan sesi main agen.
+WebChat terhubung ke **agen yang dipilih** dan default ke sesi main agen tersebut.
 Karena itu, WebChat memungkinkan Anda melihat konteks lintas kanal untuk agen tersebut
 di satu tempat.
 
 ## Konteks balasan
 
-Balasan masuk menyertakan:
+Balasan inbound menyertakan:
 
-- `ReplyToId`, `ReplyToBody`, dan `ReplyToSender` bila tersedia.
+- `ReplyToId`, `ReplyToBody`, dan `ReplyToSender` ketika tersedia.
 - Konteks kutipan ditambahkan ke `Body` sebagai blok `[Replying to ...]`.
 
 Ini konsisten di seluruh kanal.

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Anda ingin mengambil URL dan mengekstrak konten yang dapat dibaca
+    - Anda ingin mengambil URL dan mengekstrak konten yang mudah dibaca
     - Anda perlu mengonfigurasi web_fetch atau mekanisme cadangan Firecrawl-nya
-    - Anda ingin memahami batasan web_fetch dan penyimpanan cache
+    - Anda ingin memahami batasan dan penembolokan web_fetch
 sidebarTitle: Web Fetch
-summary: alat web_fetch -- pengambilan HTTP dengan ekstraksi konten yang dapat dibaca
+summary: alat web_fetch -- pengambilan HTTP dengan ekstraksi konten yang mudah dibaca
 title: Pengambilan web
 x-i18n:
-    generated_at: "2026-04-30T10:18:39Z"
+    generated_at: "2026-05-02T09:35:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
+    source_hash: f455da77c20049f0ed0246fa53e9f49d3cf2004e65bd64a0bf871861c6e93229
     source_path: tools/web-fetch.md
     workflow: 16
 ---
@@ -41,26 +41,26 @@ Format keluaran setelah ekstraksi konten utama.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Potong keluaran hingga sejumlah karakter ini.
+Pangkas keluaran hingga sejumlah karakter ini.
 </ParamField>
 
 ## Cara kerjanya
 
 <Steps>
-  <Step title="Fetch">
-    Mengirim HTTP GET dengan User-Agent mirip Chrome dan header
+  <Step title="Ambil">
+    Mengirim HTTP GET dengan User-Agent seperti Chrome dan header
     `Accept-Language`. Memblokir hostname privat/internal dan memeriksa ulang pengalihan.
   </Step>
-  <Step title="Extract">
+  <Step title="Ekstrak">
     Menjalankan Readability (ekstraksi konten utama) pada respons HTML.
   </Step>
-  <Step title="Fallback (optional)">
+  <Step title="Fallback (opsional)">
     Jika Readability gagal dan Firecrawl dikonfigurasi, mencoba ulang melalui
     API Firecrawl dengan mode pengelakan bot.
   </Step>
   <Step title="Cache">
     Hasil di-cache selama 15 menit (dapat dikonfigurasi) untuk mengurangi
-    pengambilan berulang URL yang sama.
+    pengambilan berulang atas URL yang sama.
   </Step>
 </Steps>
 
@@ -93,7 +93,7 @@ Potong keluaran hingga sejumlah karakter ini.
 
 ## Fallback Firecrawl
 
-Jika ekstraksi Readability gagal, `web_fetch` dapat melakukan fallback ke
+Jika ekstraksi Readability gagal, `web_fetch` dapat fallback ke
 [Firecrawl](/id/tools/firecrawl) untuk pengelakan bot dan ekstraksi yang lebih baik:
 
 ```json5
@@ -129,32 +129,36 @@ Konfigurasi lama `tools.web.fetch.firecrawl.*` dimigrasikan otomatis oleh `openc
 
 <Note>
   Jika Firecrawl diaktifkan dan SecretRef-nya tidak terselesaikan tanpa fallback env
-  `FIRECRAWL_API_KEY`, startup Gateway akan cepat gagal.
+  `FIRECRAWL_API_KEY`, startup gateway gagal cepat.
 </Note>
 
 <Note>
-  Override `baseUrl` Firecrawl dikunci ketat: harus menggunakan `https://` dan
-  host resmi Firecrawl (`api.firecrawl.dev`).
+  Override `baseUrl` Firecrawl dikunci ketat: trafik terhosting menggunakan
+  `https://api.firecrawl.dev`; override yang di-host sendiri harus menargetkan endpoint privat atau
+  internal, dan `http://` diterima hanya untuk target privat tersebut.
 </Note>
 
 Perilaku runtime saat ini:
 
 - `tools.web.fetch.provider` memilih penyedia fallback pengambilan secara eksplisit.
 - Jika `provider` dihilangkan, OpenClaw mendeteksi otomatis penyedia web-fetch
-  pertama yang siap dari kredensial yang tersedia. Saat ini penyedia bawaan adalah Firecrawl.
+  pertama yang siap dari kredensial yang tersedia. `web_fetch` non-sandbox dapat menggunakan
+  plugin terpasang yang mendeklarasikan `contracts.webFetchProviders` dan mendaftarkan
+  penyedia yang cocok saat runtime. Saat ini penyedia bawaan adalah Firecrawl.
+- Panggilan `web_fetch` sandbox tetap terbatas pada penyedia bawaan.
 - Jika Readability dinonaktifkan, `web_fetch` langsung melewati ke fallback
-  penyedia yang dipilih. Jika tidak ada penyedia yang tersedia, proses gagal tertutup.
+  penyedia yang dipilih. Jika tidak ada penyedia yang tersedia, ia gagal tertutup.
 
-## Batas dan keamanan
+## Batasan dan keamanan
 
 - `maxChars` dibatasi ke `tools.web.fetch.maxCharsCap`
-- Body respons dibatasi pada `maxResponseBytes` sebelum parsing; respons yang terlalu besar
-  dipotong dengan peringatan
+- Isi respons dibatasi pada `maxResponseBytes` sebelum parsing; respons yang terlalu besar
+  dipangkas dengan peringatan
 - Hostname privat/internal diblokir
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` dan
   `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` adalah opt-in sempit
-  untuk stack proxy IP palsu tepercaya; biarkan tidak diatur kecuali proxy Anda memiliki
-  rentang sintetis tersebut dan menerapkan kebijakan tujuan sendiri
+  untuk stack proxy fake-IP tepercaya; biarkan tidak disetel kecuali proxy Anda memiliki
+  rentang sintetis tersebut dan menerapkan kebijakan tujuannya sendiri
 - Pengalihan diperiksa dan dibatasi oleh `maxRedirects`
 - `web_fetch` bersifat upaya terbaik -- beberapa situs memerlukan [Peramban Web](/id/tools/browser)
 
@@ -174,5 +178,5 @@ Jika Anda menggunakan profil alat atau allowlist, tambahkan `web_fetch` atau `gr
 ## Terkait
 
 - [Pencarian Web](/id/tools/web) -- cari di web dengan beberapa penyedia
-- [Peramban Web](/id/tools/browser) -- otomatisasi peramban penuh untuk situs yang sangat bergantung pada JS
-- [Firecrawl](/id/tools/firecrawl) -- alat pencarian dan scrape Firecrawl
+- [Peramban Web](/id/tools/browser) -- otomasi peramban penuh untuk situs yang sangat bergantung pada JS
+- [Firecrawl](/id/tools/firecrawl) -- alat pencarian dan scraping Firecrawl

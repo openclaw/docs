@@ -1,32 +1,32 @@
 ---
 read_when:
     - Anda sedang mengonfigurasi Plugin memory-lancedb bawaan
-    - Anda menginginkan memori jangka panjang yang didukung LanceDB dengan pemanggilan otomatis atau penangkapan otomatis
+    - Anda menginginkan memori jangka panjang berbasis LanceDB dengan pemanggilan kembali otomatis atau penangkapan otomatis
     - Anda menggunakan embedding lokal yang kompatibel dengan OpenAI seperti Ollama
 sidebarTitle: Memory LanceDB
 summary: Konfigurasikan Plugin memori LanceDB bawaan, termasuk embedding lokal yang kompatibel dengan Ollama
 title: Memori LanceDB
 x-i18n:
-    generated_at: "2026-04-30T10:02:06Z"
+    generated_at: "2026-05-02T09:28:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bda53528857a492f1627f655e49be6775e0114115781371ff67debb155b7e731
+    source_hash: 671daa20e4f070f9beb0187ff76db9368297b3bc78873ebf3f09ac7ccffa00a2
     source_path: plugins/memory-lancedb.md
     workflow: 16
 ---
 
-`memory-lancedb` adalah Plugin memori bawaan yang menyimpan memori jangka panjang di
-LanceDB dan menggunakan embedding untuk pengingatan. Plugin ini dapat secara otomatis mengingat
+`memory-lancedb` adalah plugin memori bawaan yang menyimpan memori jangka panjang di
+LanceDB dan menggunakan embedding untuk recall. Plugin ini dapat otomatis me-recall
 memori yang relevan sebelum giliran model dan menangkap fakta penting setelah respons.
 
-Gunakan ini saat Anda menginginkan basis data vektor lokal untuk memori, membutuhkan endpoint
-embedding yang kompatibel dengan OpenAI, atau ingin menyimpan basis data memori di luar
+Gunakan saat Anda menginginkan basis data vektor lokal untuk memori, membutuhkan
+endpoint embedding yang kompatibel dengan OpenAI, atau ingin menyimpan basis data memori di luar
 penyimpanan memori bawaan default.
 
 <Note>
-`memory-lancedb` adalah Plugin Active Memory. Aktifkan dengan memilih slot memori
-menggunakan `plugins.slots.memory = "memory-lancedb"`. Plugin pendamping seperti
-`memory-wiki` dapat berjalan berdampingan dengannya, tetapi hanya satu Plugin yang memiliki slot Active Memory.
+`memory-lancedb` adalah plugin active memory. Aktifkan dengan memilih slot memori
+dengan `plugins.slots.memory = "memory-lancedb"`. Plugin pendamping seperti
+`memory-wiki` dapat berjalan di sampingnya, tetapi hanya satu plugin yang memiliki slot active memory.
 </Note>
 
 ## Mulai cepat
@@ -54,13 +54,13 @@ menggunakan `plugins.slots.memory = "memory-lancedb"`. Plugin pendamping seperti
 }
 ```
 
-Mulai ulang Gateway setelah mengubah konfigurasi Plugin:
+Mulai ulang Gateway setelah mengubah konfigurasi plugin:
 
 ```bash
 openclaw gateway restart
 ```
 
-Lalu verifikasi bahwa Plugin sudah dimuat:
+Lalu verifikasi bahwa plugin telah dimuat:
 
 ```bash
 openclaw plugins list
@@ -68,9 +68,9 @@ openclaw plugins list
 
 ## Embedding yang didukung penyedia
 
-`memory-lancedb` dapat menggunakan adaptor penyedia embedding memori yang sama dengan
+`memory-lancedb` dapat menggunakan adapter penyedia embedding memori yang sama seperti
 `memory-core`. Atur `embedding.provider` dan hilangkan `embedding.apiKey` untuk menggunakan
-profil autentikasi yang dikonfigurasi penyedia, variabel lingkungan, atau
+profil autentikasi terkonfigurasi milik penyedia, variabel lingkungan, atau
 `models.providers.<provider>.apiKey`.
 
 ```json5
@@ -96,7 +96,7 @@ profil autentikasi yang dikonfigurasi penyedia, variabel lingkungan, atau
 ```
 
 Jalur ini berfungsi dengan profil autentikasi penyedia yang mengekspos kredensial embedding.
-Misalnya, GitHub Copilot dapat digunakan saat profil/rencana Copilot mendukung
+Misalnya, GitHub Copilot dapat digunakan ketika profil/paket Copilot mendukung
 embedding:
 
 ```json5
@@ -121,14 +121,14 @@ embedding:
 ```
 
 OpenAI Codex / ChatGPT OAuth (`openai-codex`) bukan kredensial embedding OpenAI Platform.
-Untuk embedding OpenAI, gunakan profil autentikasi kunci OpenAI API,
+Untuk embedding OpenAI, gunakan profil autentikasi kunci API OpenAI,
 `OPENAI_API_KEY`, atau `models.providers.openai.apiKey`. Pengguna yang hanya memakai OAuth dapat menggunakan
 penyedia lain yang mendukung embedding seperti GitHub Copilot atau Ollama.
 
 ## Embedding Ollama
 
-Untuk embedding Ollama, sebaiknya gunakan penyedia embedding Ollama bawaan. Penyedia ini menggunakan
-endpoint Ollama `/api/embed` native dan mengikuti aturan autentikasi/base URL yang sama seperti
+Untuk embedding Ollama, utamakan penyedia embedding Ollama bawaan. Penyedia ini menggunakan
+endpoint Ollama native `/api/embed` dan mengikuti aturan autentikasi/base URL yang sama seperti
 penyedia Ollama yang didokumentasikan di [Ollama](/id/providers/ollama).
 
 ```json5
@@ -157,26 +157,26 @@ penyedia Ollama yang didokumentasikan di [Ollama](/id/providers/ollama).
 }
 ```
 
-Atur `dimensions` untuk model embedding nonstandar. OpenClaw mengetahui
+Atur `dimensions` untuk model embedding non-standar. OpenClaw mengetahui
 dimensi untuk `text-embedding-3-small` dan `text-embedding-3-large`; model kustom
-memerlukan nilai dalam konfigurasi agar LanceDB dapat membuat kolom vektor.
+memerlukan nilai ini dalam konfigurasi agar LanceDB dapat membuat kolom vektor.
 
-Untuk model embedding lokal kecil, turunkan `recallMaxChars` jika Anda melihat galat
-panjang konteks dari server lokal.
+Untuk model embedding lokal kecil, turunkan `recallMaxChars` jika Anda melihat galat panjang
+konteks dari server lokal.
 
 ## Penyedia yang kompatibel dengan OpenAI
 
-Beberapa penyedia embedding yang kompatibel dengan OpenAI menolak parameter
-`encoding_format`, sementara yang lain mengabaikannya dan selalu mengembalikan vektor `number[]`.
+Beberapa penyedia embedding yang kompatibel dengan OpenAI menolak parameter `encoding_format`,
+sementara yang lain mengabaikannya dan selalu mengembalikan vektor `number[]`.
 Karena itu, `memory-lancedb` menghilangkan `encoding_format` pada permintaan embedding dan
-menerima respons berupa array float atau respons float32 yang dienkode base64.
+menerima respons array float maupun respons float32 berkode base64.
 
-Jika Anda memiliki endpoint embedding mentah yang kompatibel dengan OpenAI dan tidak memiliki
-adaptor penyedia bawaan, hilangkan `embedding.provider` (atau biarkan sebagai `openai`) dan
-atur `embedding.apiKey` beserta `embedding.baseUrl`. Ini mempertahankan jalur klien langsung
+Jika Anda memiliki endpoint embedding mentah yang kompatibel dengan OpenAI yang tidak memiliki
+adapter penyedia bawaan, hilangkan `embedding.provider` (atau biarkan sebagai `openai`) dan
+atur `embedding.apiKey` plus `embedding.baseUrl`. Ini mempertahankan jalur klien langsung
 yang kompatibel dengan OpenAI.
 
-Atur `embedding.dimensions` untuk penyedia yang dimensi modelnya tidak tersedia bawaan.
+Atur `embedding.dimensions` untuk penyedia yang dimensi modelnya tidak tersedia secara bawaan.
 Misalnya, ZhiPu `embedding-3` menggunakan dimensi `2048`:
 
 ```json5
@@ -199,27 +199,27 @@ Misalnya, ZhiPu `embedding-3` menggunakan dimensi `2048`:
 }
 ```
 
-## Batas pengingatan dan penangkapan
+## Batas recall dan capture
 
 `memory-lancedb` memiliki dua batas teks terpisah:
 
-| Pengaturan       | Default | Rentang   | Berlaku untuk                                      |
-| ---------------- | ------- | --------- | ------------------------------------------------- |
-| `recallMaxChars`  | `1000`  | 100-10000 | teks yang dikirim ke embedding API untuk pengingatan |
-| `captureMaxChars` | `500`   | 100-10000 | panjang pesan asisten yang memenuhi syarat untuk ditangkap |
+| Pengaturan        | Default | Rentang   | Berlaku untuk                                |
+| ----------------- | ------- | --------- | ------------------------------------------- |
+| `recallMaxChars`  | `1000`  | 100-10000 | teks yang dikirim ke API embedding untuk recall |
+| `captureMaxChars` | `500`   | 100-10000 | panjang pesan asisten yang layak untuk capture |
 
-`recallMaxChars` mengontrol pengingatan otomatis, alat `memory_recall`, jalur kueri
-`memory_forget`, dan `openclaw ltm search`. Pengingatan otomatis memprioritaskan
-pesan pengguna terbaru dari giliran tersebut dan hanya kembali ke prompt penuh saat tidak ada
-pesan pengguna yang tersedia. Ini menjaga metadata kanal dan blok prompt besar
+`recallMaxChars` mengontrol auto-recall, alat `memory_recall`, jalur kueri
+`memory_forget`, dan `openclaw ltm search`. Auto-recall mengutamakan
+pesan pengguna terbaru dari giliran tersebut dan hanya kembali ke prompt lengkap ketika tidak ada
+pesan pengguna yang tersedia. Ini menjaga metadata channel dan blok prompt besar
 agar tidak masuk ke permintaan embedding.
 
-`captureMaxChars` mengontrol apakah respons cukup pendek untuk dipertimbangkan
-untuk penangkapan otomatis. Ini tidak membatasi embedding kueri pengingatan.
+`captureMaxChars` mengontrol apakah sebuah respons cukup pendek untuk dipertimbangkan
+bagi capture otomatis. Ini tidak membatasi embedding kueri recall.
 
 ## Perintah
 
-Saat `memory-lancedb` menjadi Plugin memori aktif, Plugin ini mendaftarkan namespace CLI `ltm`:
+Saat `memory-lancedb` menjadi plugin memori aktif, plugin ini mendaftarkan namespace CLI `ltm`:
 
 ```bash
 openclaw ltm list
@@ -240,16 +240,16 @@ openclaw memory query --filter "category = 'preference'" --order-by createdAt:de
 - `--limit <n>`: bilangan bulat positif; default `10`.
 - `--order-by <column>:<asc|desc>`: pengurutan dalam memori yang diterapkan setelah filter; kolom pengurutan otomatis disertakan dalam proyeksi.
 
-Agen juga mendapatkan alat memori LanceDB dari Plugin memori aktif:
+Agen juga mendapatkan alat memori LanceDB dari plugin memori aktif:
 
-- `memory_recall` untuk pengingatan yang didukung LanceDB
+- `memory_recall` untuk recall yang didukung LanceDB
 - `memory_store` untuk menyimpan fakta, preferensi, keputusan, dan entitas penting
 - `memory_forget` untuk menghapus memori yang cocok
 
 ## Penyimpanan
 
-Secara default, data LanceDB berada di bawah `~/.openclaw/memory/lancedb`. Timpa
-jalurnya dengan `dbPath`:
+Secara default, data LanceDB berada di bawah `~/.openclaw/memory/lancedb`. Ganti
+path dengan `dbPath`:
 
 ```json5
 {
@@ -299,24 +299,24 @@ mendukung ekspansi `${ENV_VAR}`:
 
 ## Dependensi runtime
 
-`memory-lancedb` bergantung pada paket native `@lancedb/lancedb`. Instalasi
-OpenClaw dalam paket pertama-tama mencoba dependensi runtime bawaan dan dapat memperbaiki
-dependensi runtime Plugin di bawah state OpenClaw saat impor bawaan tidak
-tersedia.
+`memory-lancedb` bergantung pada paket native `@lancedb/lancedb`. OpenClaw yang dikemas
+memperlakukan paket tersebut sebagai bagian dari paket plugin. Startup Gateway
+tidak memperbaiki dependensi plugin; jika dependensi hilang, instal ulang atau
+perbarui paket plugin dan mulai ulang Gateway.
 
 Jika instalasi lama mencatat galat `dist/package.json` yang hilang atau
-`@lancedb/lancedb` yang hilang selama pemuatan Plugin, tingkatkan OpenClaw dan mulai ulang
+`@lancedb/lancedb` yang hilang selama pemuatan plugin, tingkatkan OpenClaw dan mulai ulang
 Gateway.
 
-Jika Plugin mencatat bahwa LanceDB tidak tersedia di `darwin-x64`, gunakan backend
-memori default pada mesin tersebut, pindahkan Gateway ke platform yang didukung, atau
+Jika plugin mencatat bahwa LanceDB tidak tersedia pada `darwin-x64`, gunakan backend
+memori default di mesin tersebut, pindahkan Gateway ke platform yang didukung, atau
 nonaktifkan `memory-lancedb`.
 
 ## Pemecahan masalah
 
 ### Panjang input melebihi panjang konteks
 
-Ini biasanya berarti model embedding menolak kueri pengingatan:
+Ini biasanya berarti model embedding menolak kueri recall:
 
 ```text
 memory-lancedb: recall failed: Error: 400 the input length exceeds the context length
@@ -361,14 +361,14 @@ openclaw ltm stats
 openclaw ltm search "recent preference"
 ```
 
-Jika `autoCapture` dinonaktifkan, Plugin akan mengingat memori yang ada tetapi tidak akan
-secara otomatis menyimpan yang baru. Gunakan alat `memory_store` atau aktifkan
-`autoCapture` jika Anda menginginkan penangkapan otomatis.
+Jika `autoCapture` dinonaktifkan, plugin akan me-recall memori yang ada tetapi
+tidak akan otomatis menyimpan yang baru. Gunakan alat `memory_store` atau aktifkan
+`autoCapture` jika Anda menginginkan capture otomatis.
 
 ## Terkait
 
 - [Ikhtisar memori](/id/concepts/memory)
-- [Active Memory](/id/concepts/active-memory)
+- [Active memory](/id/concepts/active-memory)
 - [Pencarian memori](/id/concepts/memory-search)
 - [Memory Wiki](/id/plugins/memory-wiki)
 - [Ollama](/id/providers/ollama)
