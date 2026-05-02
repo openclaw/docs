@@ -395,6 +395,7 @@ OpenClaw は、メディア生成、音声、バッチ文字起こしに xAI の
     - `grok-4.20-multi-agent-experimental-beta-0304` は、標準の OpenClaw xAI トランスポートとは異なるアップストリーム API サーフェスを必要とするため、通常の xAI Provider パスではサポートされません。
     - xAI Realtime 音声はまだ OpenClaw Provider として登録されていません。バッチ STT やストリーミング文字起こしとは異なる、双方向音声セッション契約が必要です。
     - xAI 画像の `quality`、画像 `mask`、追加のネイティブ専用アスペクト比は、共有 `image_generate` ツールに対応するクロス Provider 制御が追加されるまで公開されません。
+
   </Accordion>
 
   <Accordion title="高度な注記">
