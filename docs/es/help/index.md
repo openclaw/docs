@@ -1,44 +1,45 @@
 ---
 read_when:
-    - Eres nuevo y quieres una guía de “qué hago clic/ejecuto”
-    - Algo se rompió y quieres la ruta más rápida hacia una solución
-summary: 'Centro de ayuda: correcciones comunes, comprobaciones de instalación y dónde buscar cuando algo falla'
+    - Estás empezando y quieres una guía de "dónde hacer clic/qué ejecutar"
+    - Algo se rompió y quieres la vía más rápida para solucionarlo
+summary: 'Centro de ayuda: soluciones comunes, comprobaciones básicas de instalación y dónde buscar cuando algo falla'
 title: Ayuda
 x-i18n:
-    generated_at: "2026-04-24T08:58:04Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T05:28:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f4ea596c304ceee2422fd0ba67f61ad6e38c423a476a41cabec06f53f7a55b38
+    source_hash: bb85d5c74da9efdb83762c4d735d0871e252a26956e904c09b42ab293e4dffca
     source_path: help/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Ruta rápida para “desbloquearte” ante los problemas más comunes:
+Ruta rápida para "desbloquearse" ante los problemas más comunes:
 
-- [Solución de problemas](/es/help/troubleshooting) — árbol de decisiones orientado por síntomas
-- [Depuración](/es/help/debugging) — modo watch, flujos sin procesar, perfil de desarrollo
-- [Comprobaciones de instalación](/es/install/node#troubleshooting) — comprobaciones de Node / npm / PATH
-- [Solución de problemas de Gateway](/es/gateway/troubleshooting) — problemas específicos de Gateway
+- [Solución de problemas](/es/help/troubleshooting) — árbol de decisión basado en síntomas
+- [Depuración](/es/help/debugging) — modo de observación, flujos sin procesar, perfil de desarrollo
+- [Comprobación de instalación](/es/install/node#troubleshooting) — comprobaciones de Node / npm / PATH
+- [Solución de problemas del Gateway](/es/gateway/troubleshooting) — problemas específicos de Gateway
 - [Doctor](/es/gateway/doctor) — reparación automatizada + paquete de diagnóstico
 
 ## Preguntas frecuentes
 
-- [Preguntas frecuentes](/es/help/faq) — conceptos del día a día y preguntas operativas
-- [Preguntas frecuentes de la primera ejecución](/es/help/faq-first-run) — instalación, incorporación, autenticación, suscripciones, fallos iniciales
-- [Preguntas frecuentes sobre modelos](/es/help/faq-models) — selección de modelos, failover, perfiles de autenticación
+- [Preguntas frecuentes](/es/help/faq) — conceptos cotidianos y preguntas operativas
+- [Preguntas frecuentes del primer inicio](/es/help/faq-first-run) — instalación, incorporación, autenticación, suscripciones, fallos iniciales
+- [Preguntas frecuentes sobre modelos](/es/help/faq-models) — selección de modelo, conmutación por error, perfiles de autenticación
 
 ## Diagnóstico
 
-- [Variables de entorno](/es/help/environment) — dónde OpenClaw carga variables de entorno y orden de precedencia
-- [Indicadores de diagnóstico](/es/diagnostics/flags) — diagnóstico de runtime y modos detallados
-- [Fallo de Node + tsx](/es/debug/node-issue) — escenarios específicos de fallo en runtime de Node / tsx
+- [Variables de entorno](/es/help/environment) — dónde carga OpenClaw las variables de entorno y su precedencia
+- [Indicadores de diagnóstico](/es/diagnostics/flags) — diagnósticos en tiempo de ejecución y modos detallados
+- [Bloqueo de Node + tsx](/es/debug/node-issue) — escenarios específicos de bloqueo en tiempo de ejecución de Node / tsx
 
 ## Pruebas
 
-- [Pruebas](/es/help/testing) — suites de pruebas y runners de Docker
-- [Pruebas en vivo](/es/help/testing-live) — smoke tests de proveedor y CLI que tocan la red
+- [Pruebas](/es/help/testing) — conjuntos de pruebas y ejecutores de Docker
+- [Pruebas de actualización y Plugin](/es/help/testing-updates-plugins) — validación de actualización de paquetes, migración e instalación de Plugin
+- [Pruebas en vivo](/es/help/testing-live) — pruebas rápidas de proveedores y CLI con acceso a la red
 
-## Comunidad y metadocumentación
+## Comunidad y meta
 
 - [Historia de OpenClaw](/es/start/lore) — la historia
 - [Centros de documentación](/es/start/hubs) — cómo está organizada esta documentación

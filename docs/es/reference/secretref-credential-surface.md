@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Verificación de la cobertura de credenciales SecretRef
+    - Verificación de la cobertura de credenciales de SecretRef
     - Auditar si una credencial es elegible para `secrets configure` o `secrets apply`
-    - Verificando por qué una credencial está fuera de la superficie compatible
-summary: Superficie canónica de credenciales SecretRef admitida frente a no admitida
-title: Superficie de credenciales SecretRef
+    - Verificando por qué una credencial está fuera de la superficie admitida
+summary: Superficie canónica de credenciales SecretRef compatibles frente a no compatibles
+title: Superficie de credenciales de SecretRef
 x-i18n:
-    generated_at: "2026-04-30T06:00:41Z"
+    generated_at: "2026-05-02T05:35:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b04902427e9851cc36c1dfd07ed44b46b55450c251075e9955af6696f08bc334
+    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
@@ -18,8 +18,8 @@ Esta página define la superficie canónica de credenciales SecretRef.
 
 Intención del alcance:
 
-- Dentro del alcance: credenciales estrictamente proporcionadas por el usuario que OpenClaw no emite ni rota.
-- Fuera del alcance: credenciales emitidas o rotadas en tiempo de ejecución, material de actualización OAuth y artefactos similares a sesiones.
+- Dentro del alcance: credenciales estrictamente suministradas por el usuario que OpenClaw no emite ni rota.
+- Fuera del alcance: credenciales emitidas o rotadas en tiempo de ejecución, material de actualización de OAuth y artefactos similares a sesiones.
 
 ## Credenciales compatibles
 
@@ -57,6 +57,8 @@ Intención del alcance:
 - `plugins.entries.firecrawl.config.webSearch.apiKey`
 - `plugins.entries.minimax.config.webSearch.apiKey`
 - `plugins.entries.tavily.config.webSearch.apiKey`
+- `plugins.entries.voice-call.config.realtime.providers.*.apiKey`
+- `plugins.entries.voice-call.config.streaming.providers.*.apiKey`
 - `plugins.entries.voice-call.config.tts.providers.*.apiKey`
 - `plugins.entries.voice-call.config.twilio.authToken`
 - `tools.web.search.apiKey`
@@ -125,19 +127,19 @@ Notas:
 - Los destinos del plan de perfiles de autenticación requieren `agentId`.
 - Las entradas del plan apuntan a `profiles.*.key` / `profiles.*.token` y escriben referencias hermanas (`keyRef` / `tokenRef`).
 - Las referencias de perfiles de autenticación se incluyen en la resolución en tiempo de ejecución y en la cobertura de auditoría.
-- En `openclaw.json`, SecretRefs debe usar objetos estructurados como `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Las cadenas marcadoras heredadas `secretref-env:<ENV_VAR>` se rechazan en rutas de credenciales SecretRef; ejecuta `openclaw doctor --fix` para migrar marcadores válidos.
-- Protección de política OAuth: `auth.profiles.<id>.mode = "oauth"` no puede combinarse con entradas SecretRef para ese perfil. El inicio, la recarga y la resolución de perfiles de autenticación fallan rápidamente cuando se infringe esta política.
-- Para proveedores de modelos gestionados con SecretRef, las entradas generadas de `agents/*/agent/models.json` conservan marcadores no secretos (no valores secretos resueltos) para las superficies `apiKey`/header.
-- La persistencia de marcadores es autoritativa según la fuente: OpenClaw escribe marcadores desde la instantánea activa de configuración de origen (antes de la resolución), no desde valores secretos resueltos en tiempo de ejecución.
+- En `openclaw.json`, las SecretRefs deben usar objetos estructurados como `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Las cadenas de marcador heredadas `secretref-env:<ENV_VAR>` se rechazan en rutas de credenciales SecretRef; ejecuta `openclaw doctor --fix` para migrar marcadores válidos.
+- Protección de política de OAuth: `auth.profiles.<id>.mode = "oauth"` no se puede combinar con entradas SecretRef para ese perfil. El inicio/la recarga y la resolución de perfiles de autenticación fallan inmediatamente cuando se infringe esta política.
+- Para proveedores de modelos administrados por SecretRef, las entradas generadas de `agents/*/agent/models.json` conservan marcadores no secretos (no valores secretos resueltos) para las superficies de `apiKey`/encabezados.
+- La persistencia de marcadores es autoritativa desde la fuente: OpenClaw escribe marcadores desde la instantánea de configuración de origen activa (antes de la resolución), no desde valores secretos resueltos en tiempo de ejecución.
 - Para la búsqueda web:
-  - En modo de proveedor explícito (`tools.web.search.provider` definido), solo está activa la clave del proveedor seleccionado.
+  - En modo de proveedor explícito (`tools.web.search.provider` definido), solo la clave del proveedor seleccionado está activa.
   - En modo automático (`tools.web.search.provider` sin definir), solo está activa la primera clave de proveedor que se resuelve por precedencia.
-  - En modo automático, las referencias de proveedores no seleccionados se tratan como inactivas hasta que se seleccionan.
-  - Las rutas heredadas de proveedor `tools.web.search.*` siguen resolviéndose durante la ventana de compatibilidad, pero la superficie canónica SecretRef es `plugins.entries.<plugin>.config.webSearch.*`.
+  - En modo automático, las referencias de proveedores no seleccionados se tratan como inactivas hasta que se seleccionen.
+  - Las rutas heredadas de proveedores `tools.web.search.*` aún se resuelven durante la ventana de compatibilidad, pero la superficie canónica de SecretRef es `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Credenciales no compatibles
 
-Las credenciales fuera del alcance incluyen:
+Las credenciales fuera de alcance incluyen:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -155,7 +157,7 @@ Las credenciales fuera del alcance incluyen:
 
 Justificación:
 
-- Estas credenciales son clases emitidas, rotadas, con sesión o duraderas de OAuth que no encajan en la resolución externa de solo lectura de SecretRef.
+- Estas credenciales pertenecen a clases emitidas, rotadas, portadoras de sesión o duraderas de OAuth que no encajan en la resolución externa de SecretRef de solo lectura.
 
 ## Relacionado
 

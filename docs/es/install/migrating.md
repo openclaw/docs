@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Estás trasladando OpenClaw a una laptop o un servidor nuevos
+    - Estás migrando OpenClaw a una computadora portátil o a un servidor nuevos
     - Vienes de otro sistema de agentes y quieres conservar el estado
-    - Estás actualizando un Plugin in situ
+    - Está actualizando un Plugin in situ
 summary: 'Centro de migración: importaciones entre sistemas, traslados de máquina a máquina y actualizaciones de Plugin'
 title: Guía de migración
 x-i18n:
-    generated_at: "2026-04-30T05:49:03Z"
+    generated_at: "2026-05-02T05:30:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e2a1dc86ed367a0b92cdc0d5189123bb045d327be944516f564dac723f324c97
+    source_hash: e447e38cf0086603a7b30ee5204e63cc8227ebc7a56add26d06ac2798a23e26f
     source_path: install/migrating.md
     workflow: 16
 ---
 
-OpenClaw admite tres rutas de migración: importar desde otro sistema de agentes, mover una instalación existente a una máquina nueva y actualizar un Plugin en su lugar.
+OpenClaw admite tres rutas de migración: importar desde otro sistema de agente, mover una instalación existente a una máquina nueva y actualizar un Plugin en el lugar.
 
-## Importar desde otro sistema de agentes
+## Importar desde otro sistema de agente
 
-Usa los proveedores de migración incluidos para llevar instrucciones, servidores MCP, Skills, configuración del modelo y claves de API (con consentimiento) a OpenClaw. Los planes se previsualizan antes de cualquier cambio, los secretos se redactan en los informes y la aplicación está respaldada por una copia de seguridad verificada.
+Usa los proveedores de migración incluidos para llevar instrucciones, servidores MCP, Skills, configuración de modelo y claves de API (opcionales) a OpenClaw. Los planes se previsualizan antes de cualquier cambio, los secretos se redactan en los informes y la aplicación está respaldada por una copia de seguridad verificada.
 
 <CardGroup cols={2}>
-  <Card title="Migrar desde Claude" href="/es/install/migrating-claude" icon="brain">
+  <Card title="Migración desde Claude" href="/es/install/migrating-claude" icon="brain">
     Importa el estado de Claude Code y Claude Desktop, incluidos `CLAUDE.md`, servidores MCP, Skills y comandos de proyecto.
   </Card>
-  <Card title="Migrar desde Hermes" href="/es/install/migrating-hermes" icon="feather">
-    Importa la configuración de Hermes, proveedores, servidores MCP, memoria, Skills y claves `.env` compatibles.
+  <Card title="Migración desde Hermes" href="/es/install/migrating-hermes" icon="feather">
+    Importa la configuración, proveedores, servidores MCP, memoria, Skills y claves `.env` admitidas de Hermes.
   </Card>
 </CardGroup>
 
@@ -37,12 +37,12 @@ Copia el **directorio de estado** (`~/.openclaw/` de forma predeterminada) y tu 
 
 - **Configuración** — `openclaw.json` y todos los ajustes del Gateway.
 - **Autenticación** — `auth-profiles.json` por agente (claves de API más OAuth), además de cualquier estado de canal o proveedor en `credentials/`.
-- **Sesiones** — historial de conversaciones y estado del agente.
+- **Sesiones** — historial de conversación y estado del agente.
 - **Estado del canal** — inicio de sesión de WhatsApp, sesión de Telegram y similares.
-- **Archivos del espacio de trabajo** — `MEMORY.md`, `USER.md`, Skills y prompts.
+- **Archivos del espacio de trabajo** — `MEMORY.md`, `USER.md`, Skills e instrucciones.
 
 <Tip>
-Ejecuta `openclaw status` en la máquina antigua para confirmar la ruta de tu directorio de estado. Los perfiles personalizados usan `~/.openclaw-<profile>/` o una ruta definida mediante `OPENCLAW_STATE_DIR`.
+Ejecuta `openclaw status` en la máquina antigua para confirmar la ruta de tu directorio de estado. Los perfiles personalizados usan `~/.openclaw-<profile>/` o una ruta establecida mediante `OPENCLAW_STATE_DIR`.
 </Tip>
 
 ### Pasos de migración
@@ -57,7 +57,7 @@ Ejecuta `openclaw status` en la máquina antigua para confirmar la ruta de tu di
     tar -czf openclaw-state.tgz .openclaw
     ```
 
-    Si usas varios perfiles (por ejemplo `~/.openclaw-work`), archiva cada uno por separado.
+    Si usas varios perfiles (por ejemplo, `~/.openclaw-work`), archiva cada uno por separado.
 
   </Step>
 
@@ -89,27 +89,35 @@ Ejecuta `openclaw status` en la máquina antigua para confirmar la ruta de tu di
   </Step>
 </Steps>
 
+Si Telegram o Discord usa la alternativa de entorno predeterminada (`TELEGRAM_BOT_TOKEN` o `DISCORD_BOT_TOKEN`), verifica que el `.env` del directorio de estado migrado contenga esas claves sin imprimir los valores secretos:
+
+```bash
+awk -F= '/^(TELEGRAM_BOT_TOKEN|DISCORD_BOT_TOKEN)=/ { print $1 "=present" }' ~/.openclaw/.env
+```
+
+`openclaw doctor` también advierte cuando una cuenta predeterminada habilitada de Telegram o Discord no tiene ningún token configurado y la variable de entorno correspondiente no está disponible para el proceso de doctor.
+
 ### Problemas comunes
 
 <AccordionGroup>
-  <Accordion title="Perfil o directorio de estado no coincidente">
+  <Accordion title="Discrepancia de perfil o directorio de estado">
     Si el Gateway antiguo usaba `--profile` u `OPENCLAW_STATE_DIR` y el nuevo no, los canales aparecerán con la sesión cerrada y las sesiones estarán vacías. Inicia el Gateway con el **mismo** perfil o directorio de estado que migraste y luego vuelve a ejecutar `openclaw doctor`.
   </Accordion>
 
   <Accordion title="Copiar solo openclaw.json">
-    El archivo de configuración por sí solo no basta. Los perfiles de autenticación de modelos están en `agents/<agentId>/agent/auth-profiles.json`, y el estado de canales y proveedores está en `credentials/`. Migra siempre el directorio de estado **completo**.
+    El archivo de configuración por sí solo no es suficiente. Los perfiles de autenticación de modelo están en `agents/<agentId>/agent/auth-profiles.json`, y el estado de canales y proveedores está en `credentials/`. Migra siempre el directorio de estado **completo**.
   </Accordion>
 
   <Accordion title="Permisos y propiedad">
-    Si copiaste como root o cambiaste de usuario, es posible que el Gateway no pueda leer las credenciales. Asegúrate de que el directorio de estado y el espacio de trabajo sean propiedad del usuario que ejecuta el Gateway.
+    Si copiaste como root o cambiaste de usuario, es posible que el Gateway no pueda leer las credenciales. Asegúrate de que el directorio de estado y el espacio de trabajo pertenezcan al usuario que ejecuta el Gateway.
   </Accordion>
 
   <Accordion title="Modo remoto">
-    Si tu UI apunta a un Gateway **remoto**, el host remoto posee las sesiones y el espacio de trabajo. Migra el propio host del Gateway, no tu portátil local. Consulta las [preguntas frecuentes](/es/help/faq#where-things-live-on-disk).
+    Si tu interfaz de usuario apunta a un Gateway **remoto**, el host remoto es el propietario de las sesiones y el espacio de trabajo. Migra el propio host del Gateway, no tu portátil local. Consulta las [Preguntas frecuentes](/es/help/faq#where-things-live-on-disk).
   </Accordion>
 
   <Accordion title="Secretos en copias de seguridad">
-    El directorio de estado contiene perfiles de autenticación, credenciales de canales y otro estado de proveedores. Almacena las copias de seguridad cifradas, evita canales de transferencia inseguros y rota las claves si sospechas que han quedado expuestas.
+    El directorio de estado contiene perfiles de autenticación, credenciales de canales y otro estado de proveedores. Almacena las copias de seguridad cifradas, evita canales de transferencia inseguros y rota las claves si sospechas exposición.
   </Accordion>
 </AccordionGroup>
 
@@ -118,13 +126,13 @@ Ejecuta `openclaw status` en la máquina antigua para confirmar la ruta de tu di
 En la máquina nueva, confirma:
 
 - [ ] `openclaw status` muestra que el Gateway está en ejecución.
-- [ ] Los canales siguen conectados (no hace falta volver a emparejarlos).
+- [ ] Los canales siguen conectados (no se necesita volver a emparejar).
 - [ ] El panel se abre y muestra las sesiones existentes.
 - [ ] Los archivos del espacio de trabajo (memoria, configuraciones) están presentes.
 
-## Actualizar un Plugin en su lugar
+## Actualizar un Plugin en el lugar
 
-Las actualizaciones de Plugin en su lugar conservan el mismo id de Plugin y las mismas claves de configuración, pero pueden mover el estado en disco al diseño actual. Las guías de actualización específicas de Plugin están junto a sus canales:
+Las actualizaciones de Plugin en el lugar conservan el mismo id de Plugin y las claves de configuración, pero pueden mover el estado en disco al diseño actual. Las guías de actualización específicas de Plugin se encuentran junto a sus canales:
 
 - [Migración de Matrix](/es/channels/matrix-migration): límites de recuperación de estado cifrado, comportamiento de instantáneas automáticas y comandos de recuperación manual.
 

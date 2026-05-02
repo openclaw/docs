@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Quieres modelos Z.AI / GLM en OpenClaw
+    - Quieres usar modelos de Z.AI / GLM en OpenClaw
     - Necesitas una configuración sencilla de ZAI_API_KEY
 summary: Usar Z.AI (modelos GLM) con OpenClaw
 title: Z.AI
 x-i18n:
-    generated_at: "2026-04-30T05:59:49Z"
+    generated_at: "2026-05-02T05:35:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0192797b9e023065a384b0428830e73877a5088d2c40c2190d5322273294607d
+    source_hash: 423fc2bc27c62352d9d9acd13c70aa2bc3804112dab25aa46505e844cb166c93
     source_path: providers/zai.md
     workflow: 16
 ---
 
-Z.AI es la plataforma de API para los modelos **GLM**. Proporciona API REST para GLM y utiliza claves de API
+Z.AI es la plataforma de API para modelos **GLM**. Proporciona API REST para GLM y usa claves de API
 para la autenticación. Crea tu clave de API en la consola de Z.AI. OpenClaw usa el proveedor `zai`
 con una clave de API de Z.AI.
 
@@ -28,12 +28,12 @@ con una clave de API de Z.AI.
     **Ideal para:** la mayoría de los usuarios. OpenClaw detecta el endpoint de Z.AI correspondiente a partir de la clave y aplica automáticamente la URL base correcta.
 
     <Steps>
-      <Step title="Ejecutar la incorporación">
+      <Step title="Ejecutar onboarding">
         ```bash
         openclaw onboard --auth-choice zai-api-key
         ```
       </Step>
-      <Step title="Configurar un modelo predeterminado">
+      <Step title="Establecer un modelo predeterminado">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -41,9 +41,9 @@ con una clave de API de Z.AI.
         }
         ```
       </Step>
-      <Step title="Verificar que el modelo esté disponible">
+      <Step title="Verificar que el modelo esté listado">
         ```bash
-        openclaw models list --provider zai
+        openclaw models list --all --provider zai
         ```
       </Step>
     </Steps>
@@ -54,22 +54,22 @@ con una clave de API de Z.AI.
     **Ideal para:** usuarios que quieren forzar un Coding Plan específico o una superficie de API general.
 
     <Steps>
-      <Step title="Elegir la opción de incorporación correcta">
+      <Step title="Elegir la opción de onboarding correcta">
         ```bash
-        # Coding Plan Global (recommended for Coding Plan users)
+        # Coding Plan Global (recomendado para usuarios de Coding Plan)
         openclaw onboard --auth-choice zai-coding-global
 
-        # Coding Plan CN (China region)
+        # Coding Plan CN (región de China)
         openclaw onboard --auth-choice zai-coding-cn
 
-        # General API
+        # API general
         openclaw onboard --auth-choice zai-global
 
-        # General API CN (China region)
+        # API general CN (región de China)
         openclaw onboard --auth-choice zai-cn
         ```
       </Step>
-      <Step title="Configurar un modelo predeterminado">
+      <Step title="Establecer un modelo predeterminado">
         ```json5
         {
           env: { ZAI_API_KEY: "sk-..." },
@@ -77,9 +77,9 @@ con una clave de API de Z.AI.
         }
         ```
       </Step>
-      <Step title="Verificar que el modelo esté disponible">
+      <Step title="Verificar que el modelo esté listado">
         ```bash
-        openclaw models list --provider zai
+        openclaw models list --all --provider zai
         ```
       </Step>
     </Steps>
@@ -89,7 +89,14 @@ con una clave de API de Z.AI.
 
 ## Catálogo integrado
 
-OpenClaw actualmente inicializa el proveedor `zai` incluido con:
+OpenClaw incluye el catálogo del proveedor `zai` en el manifiesto del Plugin, por lo que el listado
+de solo lectura puede mostrar filas GLM conocidas sin cargar el runtime del proveedor:
+
+```bash
+openclaw models list --all --provider zai
+```
+
+El catálogo respaldado por el manifiesto incluye actualmente:
 
 | Referencia de modelo | Notas                  |
 | -------------------- | ---------------------- |
@@ -108,14 +115,14 @@ OpenClaw actualmente inicializa el proveedor `zai` incluido con:
 | `zai/glm-4.5v`       |                        |
 
 <Tip>
-Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`). La referencia de modelo incluida de forma predeterminada es `zai/glm-5.1`.
+Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`). La referencia de modelo incluida predeterminada es `zai/glm-5.1`.
 </Tip>
 
 ## Configuración avanzada
 
 <AccordionGroup>
   <Accordion title="Resolución futura de modelos GLM-5 desconocidos">
-    Los id `glm-5*` desconocidos aún se resuelven hacia delante en la ruta del proveedor incluido
+    Los ids `glm-5*` desconocidos aún se resuelven hacia delante en la ruta del proveedor incluido
     sintetizando metadatos propiedad del proveedor a partir de la plantilla `glm-4.7` cuando el id
     coincide con la forma actual de la familia GLM-5.
   </Accordion>
@@ -139,13 +146,13 @@ Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`). La
 
   </Accordion>
 
-  <Accordion title="Razonamiento y razonamiento conservado">
-    El razonamiento de Z.AI sigue los controles `/think` de OpenClaw. Con el razonamiento desactivado,
+  <Accordion title="Pensamiento y pensamiento preservado">
+    El pensamiento de Z.AI sigue los controles `/think` de OpenClaw. Con el pensamiento desactivado,
     OpenClaw envía `thinking: { type: "disabled" }` para evitar respuestas que
     gasten el presupuesto de salida en `reasoning_content` antes del texto visible.
 
-    El razonamiento conservado es opcional porque Z.AI requiere reproducir todo el
-    historial de `reasoning_content`, lo que aumenta los tokens del prompt. Habilítalo
+    El pensamiento preservado es opcional porque Z.AI requiere que se reproduzca todo el
+    `reasoning_content` histórico, lo que aumenta los tokens del prompt. Habilítalo
     por modelo:
 
     ```json5
@@ -162,11 +169,11 @@ Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`). La
     }
     ```
 
-    Cuando está habilitado y el razonamiento está activado, OpenClaw envía
+    Cuando está habilitado y el pensamiento está activado, OpenClaw envía
     `thinking: { type: "enabled", clear_thinking: false }` y reproduce el
     `reasoning_content` previo para la misma transcripción compatible con OpenAI.
 
-    Los usuarios avanzados aún pueden sobrescribir la carga útil exacta del proveedor con
+    Los usuarios avanzados aún pueden anular el payload exacto del proveedor con
     `params.extra_body.thinking`.
 
   </Accordion>
@@ -178,14 +185,14 @@ Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`). La
     | --------- | ---------- |
     | Modelo    | `glm-4.6v` |
 
-    La comprensión de imágenes se resuelve automáticamente a partir de la autenticación de Z.AI configurada; no
+    La comprensión de imágenes se resuelve automáticamente desde la autenticación de Z.AI configurada; no
     se necesita configuración adicional.
 
   </Accordion>
 
   <Accordion title="Detalles de autenticación">
     - Z.AI usa autenticación Bearer con tu clave de API.
-    - La opción de incorporación `zai-api-key` detecta automáticamente el endpoint de Z.AI correspondiente a partir del prefijo de la clave.
+    - La opción de onboarding `zai-api-key` detecta automáticamente el endpoint de Z.AI correspondiente a partir del prefijo de la clave.
     - Usa las opciones regionales explícitas (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) cuando quieras forzar una superficie de API específica.
 
   </Accordion>
@@ -195,9 +202,9 @@ Los modelos GLM están disponibles como `zai/<model>` (ejemplo: `zai/glm-5`). La
 
 <CardGroup cols={2}>
   <Card title="Familia de modelos GLM" href="/es/providers/glm" icon="microchip">
-    Resumen de la familia de modelos GLM.
+    Descripción general de la familia de modelos GLM.
   </Card>
   <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
-    Elección de proveedores, referencias de modelos y comportamiento de conmutación por error.
+    Elección de proveedores, referencias de modelo y comportamiento de conmutación por error.
   </Card>
 </CardGroup>

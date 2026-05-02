@@ -1,22 +1,22 @@
 ---
 read_when:
     - Actualizar el comportamiento o los valores predeterminados de reintento del proveedor
-    - Depurar errores de envío del proveedor o límites de tasa
-summary: Política de reintentos para llamadas salientes al proveedor
+    - Depuración de errores de envío del proveedor o de límites de frecuencia
+summary: Política de reintentos para llamadas salientes a proveedores
 title: Política de reintentos
 x-i18n:
-    generated_at: "2026-04-24T05:26:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T05:24:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 38811a6dabb0b60b71167ee4fcc09fb042f941b4bbb1cf8b0f5a91c3c93b2e75
+    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
     source_path: concepts/retry.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Objetivos
 
 - Reintentar por solicitud HTTP, no por flujo de varios pasos.
-- Preservar el orden reintentando solo el paso actual.
+- Conservar el orden reintentando solo el paso actual.
 - Evitar duplicar operaciones no idempotentes.
 
 ## Valores predeterminados
@@ -24,7 +24,7 @@ x-i18n:
 - Intentos: 3
 - Límite máximo de demora: 30000 ms
 - Jitter: 0.1 (10 por ciento)
-- Valores predeterminados por proveedor:
+- Valores predeterminados del proveedor:
   - Demora mínima de Telegram: 400 ms
   - Demora mínima de Discord: 500 ms
 
@@ -32,26 +32,28 @@ x-i18n:
 
 ### Proveedores de modelos
 
-- OpenClaw deja que los SDK de proveedores manejen los reintentos cortos normales.
+- OpenClaw permite que los SDK de proveedores gestionen los reintentos cortos normales.
 - Para SDK basados en Stainless, como Anthropic y OpenAI, las respuestas reintentables
   (`408`, `409`, `429` y `5xx`) pueden incluir `retry-after-ms` o
-  `retry-after`. Cuando esa espera es superior a 60 segundos, OpenClaw inyecta
-  `x-should-retry: false` para que el SDK muestre el error inmediatamente y la
-  conmutación por error del modelo pueda rotar a otro perfil de autenticación o modelo alternativo.
+  `retry-after`. Cuando esa espera supera los 60 segundos, OpenClaw inyecta
+  `x-should-retry: false` para que el SDK exponga el error inmediatamente y la
+  conmutación por error de modelos pueda rotar a otro perfil de autenticación o modelo alternativo.
 - Sobrescribe el límite con `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Establécelo en `0`, `false`, `off`, `none` o `disabled` para permitir que los SDK respeten
-  internamente esperas largas de `Retry-After`.
+  Establécelo en `0`, `false`, `off`, `none` o `disabled` para permitir que los SDK respeten internamente las esperas largas de
+  `Retry-After`.
 
 ### Discord
 
-- Reintenta solo en errores de límite de tasa (HTTP 429).
-- Usa `retry_after` de Discord cuando está disponible; en caso contrario usa backoff exponencial.
+- Reintenta ante errores de límite de frecuencia (HTTP 429), tiempos de espera de solicitud, respuestas HTTP 5xx
+  y fallos transitorios de transporte, como fallos de búsqueda DNS, reinicios de conexión,
+  cierres de socket y fallos de fetch.
+- Usa `retry_after` de Discord cuando está disponible; de lo contrario, usa retroceso exponencial.
 
 ### Telegram
 
-- Reintenta en errores transitorios (429, timeout, connect/reset/closed, temporalmente no disponible).
-- Usa `retry_after` cuando está disponible; en caso contrario usa backoff exponencial.
-- Los errores de análisis de Markdown no se reintentan; recurren a texto plano.
+- Reintenta ante errores transitorios (429, tiempo de espera, conexión/reinicio/cierre, temporalmente no disponible).
+- Usa `retry_after` cuando está disponible; de lo contrario, usa retroceso exponencial.
+- Los errores de análisis de Markdown no se reintentan; recurren a texto sin formato.
 
 ## Configuración
 
@@ -83,7 +85,7 @@ Establece la política de reintentos por proveedor en `~/.openclaw/openclaw.json
 ## Notas
 
 - Los reintentos se aplican por solicitud (envío de mensaje, carga de medios, reacción, encuesta, sticker).
-- Los flujos compuestos no reintentan pasos ya completados.
+- Los flujos compuestos no reintentan los pasos completados.
 
 ## Relacionado
 

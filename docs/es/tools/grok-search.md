@@ -1,30 +1,23 @@
 ---
 read_when:
-    - Quieres usar Grok para `web_search`
-    - Necesitas un `XAI_API_KEY` para búsqueda web
-summary: Búsqueda web de Grok mediante respuestas con conexión web de xAI
+    - Quieres usar Grok para web_search
+    - Se necesita una XAI_API_KEY para la búsqueda web
+summary: Búsqueda web de Grok mediante respuestas fundamentadas en la web de xAI
 title: Búsqueda de Grok
 x-i18n:
-    generated_at: "2026-04-24T05:54:18Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T05:37:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
+    source_hash: 7238be2b488ba285c948065f5c1deff21898409aa11bdaa9ec893274d0eadd4a
     source_path: tools/grok-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw admite Grok como proveedor de `web_search`, usando respuestas con conexión web de xAI
-para producir respuestas sintetizadas por IA respaldadas por resultados de búsqueda en vivo
-con citas.
+OpenClaw admite Grok como proveedor de `web_search`, usando respuestas de xAI fundamentadas en la web para producir respuestas sintetizadas por IA respaldadas por resultados de búsqueda en vivo con citas.
 
-La misma `XAI_API_KEY` también puede alimentar la herramienta integrada `x_search` para búsqueda de publicaciones en X
-(antes Twitter). Si almacenas la clave en
-`plugins.entries.xai.config.webSearch.apiKey`, OpenClaw ahora la reutiliza como
-respaldo también para el proveedor de modelos xAI incluido.
+La misma `XAI_API_KEY` también puede alimentar la herramienta integrada `x_search` para la búsqueda de publicaciones en X (antes Twitter). Si almacenas la clave en `plugins.entries.xai.config.webSearch.apiKey`, OpenClaw ahora la reutiliza también como respaldo para el proveedor de modelos xAI incluido.
 
-Para métricas de publicaciones concretas en X como reposts, respuestas, favoritos o visualizaciones, prefiere
-`x_search` con la URL exacta de la publicación o el ID de estado en lugar de una
-consulta de búsqueda amplia.
+Para métricas de X a nivel de publicación, como republicaciones, respuestas, marcadores o visualizaciones, prefiere `x_search` con la URL exacta de la publicación o el ID de estado en lugar de una consulta de búsqueda amplia.
 
 ## Incorporación y configuración
 
@@ -33,20 +26,19 @@ Si eliges **Grok** durante:
 - `openclaw onboard`
 - `openclaw configure --section web`
 
-OpenClaw puede mostrar un paso adicional separado para habilitar `x_search` con la misma
-`XAI_API_KEY`. Ese paso adicional:
+OpenClaw puede mostrar un paso de seguimiento independiente para habilitar `x_search` con la misma `XAI_API_KEY`. Ese seguimiento:
 
-- solo aparece después de que elijas Grok para `web_search`
-- no es una opción separada de proveedor de búsqueda web de nivel superior
-- opcionalmente puede establecer el modelo `x_search` durante el mismo flujo
+- solo aparece después de que eliges Grok para `web_search`
+- no es una opción independiente de proveedor de búsqueda web de nivel superior
+- opcionalmente puede establecer el modelo de `x_search` durante el mismo flujo
 
-Si lo omites, puedes habilitar o cambiar `x_search` más adelante en la configuración.
+Si lo omites, puedes habilitar o cambiar `x_search` más tarde en la configuración.
 
-## Obtener una clave API
+## Obtener una clave de API
 
 <Steps>
   <Step title="Crear una clave">
-    Obtén una clave API en [xAI](https://console.x.ai/).
+    Obtén una clave de API de [xAI](https://console.x.ai/).
   </Step>
   <Step title="Almacenar la clave">
     Establece `XAI_API_KEY` en el entorno del Gateway, o configúrala mediante:
@@ -67,7 +59,8 @@ Si lo omites, puedes habilitar o cambiar `x_search` más adelante en la configur
       xai: {
         config: {
           webSearch: {
-            apiKey: "xai-...", // opcional si XAI_API_KEY está establecido
+            apiKey: "xai-...", // optional if XAI_API_KEY is set
+            baseUrl: "https://api.x.ai/v1", // optional Responses API proxy/base URL override
           },
         },
       },
@@ -83,25 +76,29 @@ Si lo omites, puedes habilitar o cambiar `x_search` más adelante en la configur
 }
 ```
 
-**Alternativa mediante entorno:** establece `XAI_API_KEY` en el entorno del Gateway.
-Para una instalación de gateway, colócalo en `~/.openclaw/.env`.
+**Alternativa de entorno:** establece `XAI_API_KEY` en el entorno del Gateway.
+Para una instalación de gateway, colócala en `~/.openclaw/.env`.
 
 ## Cómo funciona
 
-Grok usa respuestas con conexión web de xAI para sintetizar respuestas con citas en línea,
-de forma similar al enfoque de grounding de Google Search en Gemini.
+Grok usa respuestas de xAI fundamentadas en la web para sintetizar respuestas con citas en línea, de forma similar al enfoque de fundamentación de Google Search de Gemini.
 
-## Parámetros compatibles
+## Parámetros admitidos
 
 La búsqueda de Grok admite `query`.
 
-Se acepta `count` por compatibilidad con `web_search` compartido, pero Grok sigue
-devolviendo una única respuesta sintetizada con citas en lugar de una lista de N resultados.
+`count` se acepta por compatibilidad compartida con `web_search`, pero Grok sigue devolviendo una respuesta sintetizada con citas en lugar de una lista de N resultados.
 
 Actualmente no se admiten filtros específicos del proveedor.
 
+Grok usa un tiempo de espera predeterminado específico del proveedor de 60 segundos porque las búsquedas fundamentadas en la web de xAI Responses pueden tardar más que el valor predeterminado compartido de `web_search`. Establece `tools.web.search.timeoutSeconds` para sobrescribirlo.
+
+## Sobrescrituras de URL base
+
+Establece `plugins.entries.xai.config.webSearch.baseUrl` cuando la búsqueda web de Grok deba enrutarse a través de un proxy de operador o un endpoint de Responses compatible con xAI. OpenClaw publica en `<baseUrl>/responses` después de recortar las barras diagonales finales. `x_search` usa el mismo respaldo de `webSearch.baseUrl`, a menos que se establezca `plugins.entries.xai.config.xSearch.baseUrl`.
+
 ## Relacionado
 
-- [Descripción general de Web Search](/es/tools/web) -- todos los proveedores y autodetección
-- [x_search en Web Search](/es/tools/web#x_search) -- búsqueda de X de primera clase mediante xAI
-- [Búsqueda de Gemini](/es/tools/gemini-search) -- respuestas sintetizadas por IA mediante grounding de Google
+- [Resumen de búsqueda web](/es/tools/web) -- todos los proveedores y detección automática
+- [`x_search` en búsqueda web](/es/tools/web#x_search) -- búsqueda de X de primera clase mediante xAI
+- [Búsqueda de Gemini](/es/tools/gemini-search) -- respuestas sintetizadas por IA mediante fundamentación de Google
