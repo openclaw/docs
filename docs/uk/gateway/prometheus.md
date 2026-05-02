@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Ви хочете, щоб Prometheus, Grafana, VictoriaMetrics або інший скрапер збирав метрики OpenClaw Gateway
+    - Ви хочете, щоб Prometheus, Grafana, VictoriaMetrics або інший скрейпер збирав метрики OpenClaw Gateway
     - Вам потрібні назви метрик Prometheus і політика міток для панелей моніторингу або сповіщень
     - Вам потрібні метрики без запуску колектора OpenTelemetry
 sidebarTitle: Prometheus
-summary: Експортуйте діагностику OpenClaw як текстові метрики Prometheus через Plugin diagnostics-prometheus
+summary: Надайте діагностику OpenClaw як текстові метрики Prometheus через Plugin diagnostics-prometheus
 title: Метрики Prometheus
 x-i18n:
-    generated_at: "2026-04-28T11:13:35Z"
+    generated_at: "2026-05-02T15:15:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
+    source_hash: 49df17348c5b63c4b5f3c05f3378d43764e5de985135ad30c1e74ef607e0dd37
     source_path: gateway/prometheus.md
     workflow: 16
 ---
 
-OpenClaw може надавати діагностичні метрики через вбудований Plugin `diagnostics-prometheus`. Він прослуховує довірені внутрішні діагностичні дані та віддає текстовий endpoint Prometheus за адресою:
+OpenClaw може надавати діагностичні метрики через офіційний Plugin `diagnostics-prometheus`. Він слухає довірену внутрішню діагностику та віддає текстову кінцеву точку Prometheus за адресою:
 
 ```text
 GET /api/diagnostics/prometheus
@@ -24,17 +24,22 @@ GET /api/diagnostics/prometheus
 Тип вмісту — `text/plain; version=0.0.4; charset=utf-8`, стандартний формат експозиції Prometheus.
 
 <Warning>
-Маршрут використовує автентифікацію Gateway (область оператора). Не відкривайте його як публічний неавтентифікований endpoint `/metrics`. Збирайте його через той самий шлях автентифікації, який використовуєте для інших API оператора.
+Маршрут використовує автентифікацію Gateway (область оператора). Не відкривайте його як публічну неавтентифіковану кінцеву точку `/metrics`. Зчитуйте його через той самий шлях автентифікації, який ви використовуєте для інших API оператора.
 </Warning>
 
-Про трасування, журнали, OTLP push і семантичні атрибути OpenTelemetry GenAI див. [експорт OpenTelemetry](/uk/gateway/opentelemetry).
+Для трасувань, журналів, OTLP push і семантичних атрибутів OpenTelemetry GenAI див. [Експорт OpenTelemetry](/uk/gateway/opentelemetry).
 
 ## Швидкий старт
 
 <Steps>
-  <Step title="Увімкніть Plugin">
+  <Step title="Install the plugin">
+    ```bash
+    openclaw plugins install clawhub:@openclaw/diagnostics-prometheus
+    ```
+  </Step>
+  <Step title="Enable the plugin">
     <Tabs>
-      <Tab title="Конфігурація">
+      <Tab title="Config">
         ```json5
         {
           plugins: {
@@ -56,11 +61,11 @@ GET /api/diagnostics/prometheus
       </Tab>
     </Tabs>
   </Step>
-  <Step title="Перезапустіть Gateway">
-    HTTP-маршрут реєструється під час запуску Plugin, тому після ввімкнення перезавантажте його.
+  <Step title="Restart the Gateway">
+    HTTP-маршрут реєструється під час запуску Plugin, тож перезавантажте після ввімкнення.
   </Step>
-  <Step title="Збирайте захищений маршрут">
-    Надішліть ту саму автентифікацію gateway, яку використовують ваші клієнти оператора:
+  <Step title="Scrape the protected route">
+    Надішліть ті самі облікові дані автентифікації Gateway, які використовують ваші операторські клієнти:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -68,7 +73,7 @@ GET /api/diagnostics/prometheus
     ```
 
   </Step>
-  <Step title="Під’єднайте Prometheus">
+  <Step title="Wire Prometheus">
     ```yaml
     # prometheus.yml
     scrape_configs:
@@ -84,57 +89,57 @@ GET /api/diagnostics/prometheus
 </Steps>
 
 <Note>
-Потрібно встановити `diagnostics.enabled: true`. Без цього Plugin усе одно реєструє HTTP-маршрут, але діагностичні події не надходять до експортера, тому відповідь буде порожньою.
+`diagnostics.enabled: true` є обов’язковим. Без нього Plugin усе одно реєструє HTTP-маршрут, але діагностичні події не надходять в експортер, тому відповідь порожня.
 </Note>
 
 ## Експортовані метрики
 
 | Метрика                                       | Тип       | Мітки                                                                                     |
 | --------------------------------------------- | --------- | ----------------------------------------------------------------------------------------- |
-| `openclaw_run_completed_total`                | counter   | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
-| `openclaw_run_duration_seconds`               | histogram | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
-| `openclaw_model_call_total`                   | counter   | `api`, `error_category`, `model`, `outcome`, `provider`, `transport`                      |
-| `openclaw_model_call_duration_seconds`        | histogram | `api`, `error_category`, `model`, `outcome`, `provider`, `transport`                      |
-| `openclaw_model_tokens_total`                 | counter   | `agent`, `channel`, `model`, `provider`, `token_type`                                     |
-| `openclaw_gen_ai_client_token_usage`          | histogram | `model`, `provider`, `token_type`                                                         |
-| `openclaw_model_cost_usd_total`               | counter   | `agent`, `channel`, `model`, `provider`                                                   |
-| `openclaw_tool_execution_total`               | counter   | `error_category`, `outcome`, `params_kind`, `tool`                                        |
-| `openclaw_tool_execution_duration_seconds`    | histogram | `error_category`, `outcome`, `params_kind`, `tool`                                        |
-| `openclaw_harness_run_total`                  | counter   | `channel`, `error_category`, `harness`, `model`, `outcome`, `phase`, `plugin`, `provider` |
-| `openclaw_harness_run_duration_seconds`       | histogram | `channel`, `error_category`, `harness`, `model`, `outcome`, `phase`, `plugin`, `provider` |
-| `openclaw_message_processed_total`            | counter   | `channel`, `outcome`, `reason`                                                            |
-| `openclaw_message_processed_duration_seconds` | histogram | `channel`, `outcome`, `reason`                                                            |
-| `openclaw_message_delivery_total`             | counter   | `channel`, `delivery_kind`, `error_category`, `outcome`                                   |
-| `openclaw_message_delivery_duration_seconds`  | histogram | `channel`, `delivery_kind`, `error_category`, `outcome`                                   |
-| `openclaw_queue_lane_size`                    | gauge     | `lane`                                                                                    |
-| `openclaw_queue_lane_wait_seconds`            | histogram | `lane`                                                                                    |
-| `openclaw_session_state_total`                | counter   | `reason`, `state`                                                                         |
-| `openclaw_session_queue_depth`                | gauge     | `state`                                                                                   |
-| `openclaw_memory_bytes`                       | gauge     | `kind`                                                                                    |
-| `openclaw_memory_rss_bytes`                   | histogram | немає                                                                                     |
-| `openclaw_memory_pressure_total`              | counter   | `level`, `reason`                                                                         |
-| `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
-| `openclaw_prometheus_series_dropped_total`    | counter   | немає                                                                                     |
+| `openclaw_run_completed_total`                | лічильник | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
+| `openclaw_run_duration_seconds`               | гістограма | `channel`, `model`, `outcome`, `provider`, `trigger`                                      |
+| `openclaw_model_call_total`                   | лічильник | `api`, `error_category`, `model`, `outcome`, `provider`, `transport`                      |
+| `openclaw_model_call_duration_seconds`        | гістограма | `api`, `error_category`, `model`, `outcome`, `provider`, `transport`                      |
+| `openclaw_model_tokens_total`                 | лічильник | `agent`, `channel`, `model`, `provider`, `token_type`                                     |
+| `openclaw_gen_ai_client_token_usage`          | гістограма | `model`, `provider`, `token_type`                                                         |
+| `openclaw_model_cost_usd_total`               | лічильник | `agent`, `channel`, `model`, `provider`                                                   |
+| `openclaw_tool_execution_total`               | лічильник | `error_category`, `outcome`, `params_kind`, `tool`                                        |
+| `openclaw_tool_execution_duration_seconds`    | гістограма | `error_category`, `outcome`, `params_kind`, `tool`                                        |
+| `openclaw_harness_run_total`                  | лічильник | `channel`, `error_category`, `harness`, `model`, `outcome`, `phase`, `plugin`, `provider` |
+| `openclaw_harness_run_duration_seconds`       | гістограма | `channel`, `error_category`, `harness`, `model`, `outcome`, `phase`, `plugin`, `provider` |
+| `openclaw_message_processed_total`            | лічильник | `channel`, `outcome`, `reason`                                                            |
+| `openclaw_message_processed_duration_seconds` | гістограма | `channel`, `outcome`, `reason`                                                            |
+| `openclaw_message_delivery_total`             | лічильник | `channel`, `delivery_kind`, `error_category`, `outcome`                                   |
+| `openclaw_message_delivery_duration_seconds`  | гістограма | `channel`, `delivery_kind`, `error_category`, `outcome`                                   |
+| `openclaw_queue_lane_size`                    | вимірювач | `lane`                                                                                    |
+| `openclaw_queue_lane_wait_seconds`            | гістограма | `lane`                                                                                    |
+| `openclaw_session_state_total`                | лічильник | `reason`, `state`                                                                         |
+| `openclaw_session_queue_depth`                | вимірювач | `state`                                                                                   |
+| `openclaw_memory_bytes`                       | вимірювач | `kind`                                                                                    |
+| `openclaw_memory_rss_bytes`                   | гістограма | немає                                                                                     |
+| `openclaw_memory_pressure_total`              | лічильник | `level`, `reason`                                                                         |
+| `openclaw_telemetry_exporter_total`           | лічильник | `exporter`, `reason`, `signal`, `status`                                                  |
+| `openclaw_prometheus_series_dropped_total`    | лічильник | немає                                                                                     |
 
 ## Політика міток
 
 <AccordionGroup>
-  <Accordion title="Обмежені мітки з низькою кардинальністю">
-    Мітки Prometheus залишаються обмеженими та мають низьку кардинальність. Експортер не видає необроблені діагностичні ідентифікатори, як-от `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ID повідомлень, ID чатів або ID запитів провайдера.
+  <Accordion title="Bounded, low-cardinality labels">
+    Мітки Prometheus залишаються обмеженими та низькокардинальними. Експортер не виводить необроблені діагностичні ідентифікатори, як-от `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, ідентифікатори повідомлень, ідентифікатори чатів або ідентифікатори запитів провайдера.
 
-    Значення міток редагуються і мають відповідати політиці OpenClaw щодо символів із низькою кардинальністю. Значення, які не проходять цю політику, замінюються на `unknown`, `other` або `none` залежно від метрики.
-
-  </Accordion>
-  <Accordion title="Ліміт серій і облік переповнення">
-    Експортер обмежує збережені в пам’яті часові ряди до **2048** серій сумарно для лічильників, датчиків і гістограм. Нові серії понад цей ліміт відкидаються, а `openclaw_prometheus_series_dropped_total` збільшується на одиницю щоразу.
-
-    Стежте за цим лічильником як за чітким сигналом, що атрибут вище за потоком пропускає значення з високою кардинальністю. Експортер ніколи не знімає ліміт автоматично; якщо він зростає, виправте джерело, а не вимикайте ліміт.
+    Значення міток редагуються та мають відповідати політиці OpenClaw щодо низькокардинальних символів. Значення, що не відповідають політиці, замінюються на `unknown`, `other` або `none` залежно від метрики.
 
   </Accordion>
-  <Accordion title="Що ніколи не з’являється у виводі Prometheus">
-    - текст prompt, текст відповіді, входи інструментів, виходи інструментів, системні prompt
-    - необроблені ID запитів провайдера (лише обмежені хеші, де застосовно, у span — ніколи в метриках)
-    - ключі сесій і ID сесій
+  <Accordion title="Series cap and overflow accounting">
+    Експортер обмежує кількість збережених часових рядів у пам’яті до **2048** рядів сумарно для лічильників, вимірювачів і гістограм. Нові ряди понад цей ліміт відкидаються, а `openclaw_prometheus_series_dropped_total` щоразу збільшується на одиницю.
+
+    Відстежуйте цей лічильник як чіткий сигнал, що вищий за потоком атрибут пропускає висококардинальні значення. Експортер ніколи не піднімає ліміт автоматично; якщо він зростає, виправте джерело, а не вимикайте ліміт.
+
+  </Accordion>
+  <Accordion title="What never appears in Prometheus output">
+    - текст підказок, текст відповідей, вхідні дані інструментів, вихідні дані інструментів, системні підказки
+    - необроблені ідентифікатори запитів провайдера (лише обмежені хеші, де застосовно, у span — ніколи в метриках)
+    - ключі сеансів та ідентифікатори сеансів
     - імена хостів, шляхи файлів, секретні значення
 
   </Accordion>
@@ -167,27 +172,27 @@ increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Віддавайте перевагу `gen_ai_client_token_usage` для панелей моніторингу між різними провайдерами: він дотримується семантичних конвенцій OpenTelemetry GenAI і узгоджується з метриками сервісів GenAI поза OpenClaw.
+Надавайте перевагу `gen_ai_client_token_usage` для панелей моніторингу між провайдерами: він відповідає семантичним конвенціям OpenTelemetry GenAI і узгоджується з метриками від сервісів GenAI поза OpenClaw.
 </Tip>
 
 ## Вибір між Prometheus і експортом OpenTelemetry
 
-OpenClaw підтримує обидві поверхні незалежно. Ви можете використовувати одну, обидві або жодну.
+OpenClaw підтримує обидві поверхні незалежно. Ви можете запускати будь-яку з них, обидві або жодну.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - Модель **Pull**: Prometheus збирає `/api/diagnostics/prometheus`.
+    - Модель **pull**: Prometheus зчитує `/api/diagnostics/prometheus`.
     - Зовнішній колектор не потрібен.
-    - Автентифікується через звичайну автентифікацію Gateway.
+    - Автентифікація через звичайну автентифікацію Gateway.
     - Поверхня містить лише метрики (без трасувань або журналів).
     - Найкраще підходить для стеків, уже стандартизованих на Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - Модель **Push**: OpenClaw надсилає OTLP/HTTP до колектора або OTLP-сумісного бекенда.
+    - Модель **push**: OpenClaw надсилає OTLP/HTTP до колектора або OTLP-сумісного бекенду.
     - Поверхня містить метрики, трасування та журнали.
-    - Під’єднується до Prometheus через OpenTelemetry Collector (експортер `prometheus` або `prometheusremotewrite`), коли потрібні обидва.
-    - Повний каталог див. у [експорті OpenTelemetry](/uk/gateway/opentelemetry).
+    - З’єднує з Prometheus через OpenTelemetry Collector (експортер `prometheus` або `prometheusremotewrite`), коли потрібні обидва.
+    - Повний каталог див. у [Експорт OpenTelemetry](/uk/gateway/opentelemetry).
 
   </Tab>
 </Tabs>
@@ -195,26 +200,26 @@ OpenClaw підтримує обидві поверхні незалежно. В
 ## Усунення несправностей
 
 <AccordionGroup>
-  <Accordion title="Порожнє тіло відповіді">
+  <Accordion title="Empty response body">
     - Перевірте `diagnostics.enabled: true` у конфігурації.
-    - Переконайтеся, що Plugin увімкнено та завантажено, за допомогою `openclaw plugins list --enabled`.
-    - Згенеруйте певний трафік; лічильники й гістограми виводять рядки лише після принаймні однієї події.
+    - Підтвердьте, що Plugin увімкнено та завантажено за допомогою `openclaw plugins list --enabled`.
+    - Згенеруйте трохи трафіку; лічильники та гістограми виводять рядки лише після принаймні однієї події.
 
   </Accordion>
-  <Accordion title="401 / неавторизовано">
-    Endpoint потребує області оператора Gateway (`auth: "gateway"` з `gatewayRuntimeScopeSurface: "trusted-operator"`). Використовуйте той самий токен або пароль, який Prometheus використовує для будь-якого іншого маршруту оператора Gateway. Публічного неавтентифікованого режиму немає.
+  <Accordion title="401 / unauthorized">
+    Кінцева точка потребує операторської області Gateway (`auth: "gateway"` з `gatewayRuntimeScopeSurface: "trusted-operator"`). Використовуйте той самий токен або пароль, який Prometheus використовує для будь-якого іншого операторського маршруту Gateway. Публічного неавтентифікованого режиму немає.
   </Accordion>
-  <Accordion title="`openclaw_prometheus_series_dropped_total` зростає">
-    Новий атрибут перевищує ліміт у **2048** серій. Перегляньте останні метрики на наявність несподіваної мітки з високою кардинальністю та виправте її в джерелі. Експортер навмисно відкидає нові серії замість непомітного переписування міток.
+  <Accordion title="`openclaw_prometheus_series_dropped_total` is climbing">
+    Новий атрибут перевищує ліміт у **2048** рядів. Перегляньте нещодавні метрики на наявність неочікувано висококардинальної мітки та виправте її в джерелі. Експортер навмисно відкидає нові ряди замість того, щоб непомітно переписувати мітки.
   </Accordion>
-  <Accordion title="Prometheus показує застарілі серії після перезапуску">
-    Plugin зберігає стан лише в пам’яті. Після перезапуску Gateway лічильники скидаються до нуля, а датчики починають знову з наступного повідомленого значення. Використовуйте PromQL `rate()` і `increase()`, щоб коректно обробляти скидання.
+  <Accordion title="Prometheus shows stale series after a restart">
+    Plugin зберігає стан лише в пам’яті. Після перезапуску Gateway лічильники скидаються до нуля, а вимірювачі відновлюються з наступного повідомленого значення. Використовуйте PromQL `rate()` і `increase()`, щоб коректно обробляти скидання.
   </Accordion>
 </AccordionGroup>
 
 ## Пов’язане
 
-- [Експорт діагностики](/uk/gateway/diagnostics) — локальний діагностичний zip для пакетів підтримки
+- [Експорт діагностики](/uk/gateway/diagnostics) — локальний zip-файл діагностики для пакетів підтримки
 - [Стан і готовність](/uk/gateway/health) — проби `/healthz` і `/readyz`
 - [Журналювання](/uk/logging) — журналювання на основі файлів
 - [Експорт OpenTelemetry](/uk/gateway/opentelemetry) — OTLP push для трасувань, метрик і журналів
