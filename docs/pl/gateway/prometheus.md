@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Chcesz, aby Prometheus, Grafana, VictoriaMetrics lub inne narzędzie zbierające pobierało metryki OpenClaw Gateway
-    - Potrzebujesz nazw metryk Prometheus oraz zasad dotyczących etykiet dla pulpitów nawigacyjnych lub alertów
+    - Chcesz, aby Prometheus, Grafana, VictoriaMetrics lub inne narzędzie zbierające zbierało metryki OpenClaw Gateway
+    - Potrzebujesz nazw metryk Prometheus oraz zasad dotyczących etykiet dla paneli kontrolnych lub alertów
     - Chcesz mieć metryki bez uruchamiania kolektora OpenTelemetry
 sidebarTitle: Prometheus
-summary: Udostępnij diagnostykę OpenClaw jako metryki tekstowe Prometheus za pośrednictwem Plugin diagnostics-prometheus
-title: Metryki Prometheus
+summary: Udostępnij diagnostykę OpenClaw jako metryki tekstowe Prometheus za pomocą Plugin diagnostics-prometheus
+title: Metryki Prometheusa
 x-i18n:
-    generated_at: "2026-04-30T09:55:53Z"
+    generated_at: "2026-05-02T20:44:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d75a97a0b9dedd89eb25fee83626d8d726917872cc1c3bfcbf6e9634dd168a2b
+    source_hash: 49df17348c5b63c4b5f3c05f3378d43764e5de985135ad30c1e74ef607e0dd37
     source_path: gateway/prometheus.md
     workflow: 16
 ---
 
-OpenClaw może udostępniać metryki diagnostyczne przez dołączony Plugin `diagnostics-prometheus`. Nasłuchuje zaufanej diagnostyki wewnętrznej i renderuje tekstowy endpoint Prometheus pod adresem:
+OpenClaw może udostępniać metryki diagnostyczne za pomocą oficjalnego Plugin `diagnostics-prometheus`. Nasłuchuje on zaufanych wewnętrznych zdarzeń diagnostycznych i renderuje tekstowy endpoint Prometheus pod adresem:
 
 ```text
 GET /api/diagnostics/prometheus
@@ -24,14 +24,19 @@ GET /api/diagnostics/prometheus
 Typ zawartości to `text/plain; version=0.0.4; charset=utf-8`, czyli standardowy format ekspozycji Prometheus.
 
 <Warning>
-Trasa używa uwierzytelniania Gateway (zakres operatora). Nie udostępniaj jej jako publicznego, nieuwierzytelnionego endpointu `/metrics`. Scrape wykonuj przez tę samą ścieżkę uwierzytelniania, której używasz dla innych API operatora.
+Trasa używa uwierzytelniania Gateway (zakres operatora). Nie udostępniaj jej jako publicznego, nieuwierzytelnionego endpointu `/metrics`. Scrapuj ją przez tę samą ścieżkę uwierzytelniania, której używasz dla innych API operatora.
 </Warning>
 
-Informacje o śladach, logach, push OTLP i atrybutach semantycznych OpenTelemetry GenAI znajdziesz w sekcji [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
+Informacje o śladach, logach, wypychaniu OTLP i atrybutach semantycznych OpenTelemetry GenAI znajdziesz w [eksport OpenTelemetry](/pl/gateway/opentelemetry).
 
 ## Szybki start
 
 <Steps>
+  <Step title="Zainstaluj Plugin">
+    ```bash
+    openclaw plugins install clawhub:@openclaw/diagnostics-prometheus
+    ```
+  </Step>
   <Step title="Włącz Plugin">
     <Tabs>
       <Tab title="Konfiguracja">
@@ -57,10 +62,10 @@ Informacje o śladach, logach, push OTLP i atrybutach semantycznych OpenTelemetr
     </Tabs>
   </Step>
   <Step title="Uruchom ponownie Gateway">
-    Trasa HTTP jest rejestrowana podczas uruchamiania pluginu, więc po włączeniu wykonaj ponowne wczytanie.
+    Trasa HTTP jest rejestrowana podczas uruchamiania Plugin, więc przeładuj po włączeniu.
   </Step>
-  <Step title="Scrape chronionej trasy">
-    Wyślij to samo uwierzytelnianie gateway, którego używają klienci operatora:
+  <Step title="Scrapuj chronioną trasę">
+    Wyślij to samo uwierzytelnianie Gateway, którego używają klienci operatora:
 
     ```bash
     curl -H "Authorization: Bearer $OPENCLAW_GATEWAY_TOKEN" \
@@ -84,7 +89,7 @@ Informacje o śladach, logach, push OTLP i atrybutach semantycznych OpenTelemetr
 </Steps>
 
 <Note>
-Wymagane jest `diagnostics.enabled: true`. Bez tego Plugin nadal rejestruje trasę HTTP, ale żadne zdarzenia diagnostyczne nie trafiają do eksportera, więc odpowiedź jest pusta.
+`diagnostics.enabled: true` jest wymagane. Bez tego Plugin nadal rejestruje trasę HTTP, ale żadne zdarzenia diagnostyczne nie trafiają do eksportera, więc odpowiedź jest pusta.
 </Note>
 
 ## Eksportowane metryki
@@ -116,31 +121,31 @@ Wymagane jest `diagnostics.enabled: true`. Bez tego Plugin nadal rejestruje tras
 | `openclaw_telemetry_exporter_total`           | counter   | `exporter`, `reason`, `signal`, `status`                                                  |
 | `openclaw_prometheus_series_dropped_total`    | counter   | brak                                                                                      |
 
-## Zasady dotyczące etykiet
+## Zasady etykiet
 
 <AccordionGroup>
   <Accordion title="Ograniczone etykiety o niskiej kardynalności">
-    Etykiety Prometheus pozostają ograniczone i mają niską kardynalność. Eksporter nie emituje surowych identyfikatorów diagnostycznych, takich jak `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, identyfikatory wiadomości, identyfikatory czatów ani identyfikatory żądań dostawców.
+    Etykiety Prometheus pozostają ograniczone i mają niską kardynalność. Eksporter nie emituje surowych identyfikatorów diagnostycznych, takich jak `runId`, `sessionKey`, `sessionId`, `callId`, `toolCallId`, identyfikatory wiadomości, identyfikatory czatów ani identyfikatory żądań dostawcy.
 
-    Wartości etykiet są redagowane i muszą pasować do polityki znaków o niskiej kardynalności OpenClaw. Wartości, które nie spełniają tej polityki, są zastępowane przez `unknown`, `other` albo `none`, zależnie od metryki.
+    Wartości etykiet są redagowane i muszą spełniać zasady OpenClaw dotyczące znaków o niskiej kardynalności. Wartości, które nie spełniają zasad, są zastępowane przez `unknown`, `other` lub `none`, zależnie od metryki.
 
   </Accordion>
   <Accordion title="Limit serii i rozliczanie przepełnienia">
-    Eksporter ogranicza liczbę przechowywanych w pamięci szeregów czasowych do **2048** serii łącznie dla liczników, mierników i histogramów. Nowe serie ponad ten limit są odrzucane, a `openclaw_prometheus_series_dropped_total` zwiększa się o jeden za każdym razem.
+    Eksporter ogranicza przechowywane szeregi czasowe w pamięci do **2048** serii łącznie dla liczników, wskaźników i histogramów. Nowe serie ponad ten limit są odrzucane, a `openclaw_prometheus_series_dropped_total` zwiększa się o jeden za każdym razem.
 
-    Obserwuj ten licznik jako twardy sygnał, że atrybut wyżej w potoku przepuszcza wartości o wysokiej kardynalności. Eksporter nigdy nie podnosi limitu automatycznie; jeśli licznik rośnie, napraw źródło zamiast wyłączać limit.
+    Monitoruj ten licznik jako twardy sygnał, że atrybut wyżej w łańcuchu przepuszcza wartości o wysokiej kardynalności. Eksporter nigdy automatycznie nie podnosi limitu; jeśli licznik rośnie, napraw źródło zamiast wyłączać limit.
 
   </Accordion>
   <Accordion title="Co nigdy nie pojawia się w wyjściu Prometheus">
     - tekst promptu, tekst odpowiedzi, dane wejściowe narzędzi, dane wyjściowe narzędzi, prompty systemowe
-    - surowe identyfikatory żądań dostawców (tylko ograniczone hashe, gdy mają zastosowanie, w spanach — nigdy w metrykach)
+    - surowe identyfikatory żądań dostawcy (tylko ograniczone hashe, tam gdzie ma to zastosowanie, w spanach — nigdy w metrykach)
     - klucze sesji i identyfikatory sesji
     - nazwy hostów, ścieżki plików, wartości sekretów
 
   </Accordion>
 </AccordionGroup>
 
-## Receptury PromQL
+## Przepisy PromQL
 
 ```promql
 # Tokens per minute, split by provider
@@ -167,27 +172,27 @@ increase(openclaw_prometheus_series_dropped_total[15m]) > 0
 ```
 
 <Tip>
-Preferuj `gen_ai_client_token_usage` dla dashboardów obejmujących wielu dostawców: jest zgodne z konwencjami semantycznymi OpenTelemetry GenAI i spójne z metrykami usług GenAI innych niż OpenClaw.
+Preferuj `gen_ai_client_token_usage` dla pulpitów między dostawcami: podąża za konwencjami semantycznymi OpenTelemetry GenAI i jest spójne z metrykami z usług GenAI innych niż OpenClaw.
 </Tip>
 
-## Wybór między Prometheus a eksportem OpenTelemetry
+## Wybór między eksportem Prometheus i OpenTelemetry
 
-OpenClaw obsługuje obie powierzchnie niezależnie. Możesz uruchomić jedną z nich, obie albo żadną.
+OpenClaw obsługuje obie powierzchnie niezależnie. Możesz uruchomić jedną, obie albo żadnej.
 
 <Tabs>
   <Tab title="diagnostics-prometheus">
-    - Model **pull**: Prometheus pobiera `/api/diagnostics/prometheus`.
+    - Model **pull**: Prometheus scrapuje `/api/diagnostics/prometheus`.
     - Nie jest wymagany zewnętrzny kolektor.
-    - Uwierzytelnianie odbywa się przez zwykłe uwierzytelnianie Gateway.
-    - Powierzchnia obejmuje tylko metryki (bez śladów i logów).
+    - Uwierzytelnianie odbywa się przez normalne uwierzytelnianie Gateway.
+    - Powierzchnia obejmuje tylko metryki (bez śladów ani logów).
     - Najlepsze dla stosów już ustandaryzowanych na Prometheus + Grafana.
 
   </Tab>
   <Tab title="diagnostics-otel">
-    - Model **push**: OpenClaw wysyła OTLP/HTTP do kolektora albo backendu zgodnego z OTLP.
+    - Model **push**: OpenClaw wysyła OTLP/HTTP do kolektora lub backendu zgodnego z OTLP.
     - Powierzchnia obejmuje metryki, ślady i logi.
-    - Łączy się z Prometheus przez OpenTelemetry Collector (eksporter `prometheus` albo `prometheusremotewrite`), gdy potrzebujesz obu.
-    - Pełny katalog znajdziesz w sekcji [Eksport OpenTelemetry](/pl/gateway/opentelemetry).
+    - Łączy z Prometheus przez OpenTelemetry Collector (eksporter `prometheus` lub `prometheusremotewrite`), gdy potrzebujesz obu.
+    - Pełny katalog znajdziesz w [eksport OpenTelemetry](/pl/gateway/opentelemetry).
 
   </Tab>
 </Tabs>
@@ -197,24 +202,24 @@ OpenClaw obsługuje obie powierzchnie niezależnie. Możesz uruchomić jedną z 
 <AccordionGroup>
   <Accordion title="Pusta treść odpowiedzi">
     - Sprawdź `diagnostics.enabled: true` w konfiguracji.
-    - Potwierdź, że Plugin jest włączony i załadowany za pomocą `openclaw plugins list --enabled`.
-    - Wygeneruj ruch; liczniki i histogramy emitują linie dopiero po co najmniej jednym zdarzeniu.
+    - Potwierdź, że Plugin jest włączony i załadowany poleceniem `openclaw plugins list --enabled`.
+    - Wygeneruj trochę ruchu; liczniki i histogramy emitują wiersze dopiero po co najmniej jednym zdarzeniu.
 
   </Accordion>
   <Accordion title="401 / brak autoryzacji">
-    Endpoint wymaga zakresu operatora Gateway (`auth: "gateway"` z `gatewayRuntimeScopeSurface: "trusted-operator"`). Użyj tego samego tokenu albo hasła, którego Prometheus używa dla każdej innej trasy operatora Gateway. Nie ma publicznego trybu bez uwierzytelniania.
+    Endpoint wymaga zakresu operatora Gateway (`auth: "gateway"` z `gatewayRuntimeScopeSurface: "trusted-operator"`). Użyj tego samego tokenu lub hasła, którego Prometheus używa dla dowolnej innej trasy operatora Gateway. Nie ma publicznego trybu bez uwierzytelniania.
   </Accordion>
   <Accordion title="`openclaw_prometheus_series_dropped_total` rośnie">
     Nowy atrybut przekracza limit **2048** serii. Sprawdź ostatnie metryki pod kątem etykiety o nieoczekiwanie wysokiej kardynalności i napraw ją u źródła. Eksporter celowo odrzuca nowe serie zamiast po cichu przepisywać etykiety.
   </Accordion>
-  <Accordion title="Prometheus pokazuje nieaktualne serie po ponownym uruchomieniu">
-    Plugin przechowuje stan tylko w pamięci. Po ponownym uruchomieniu Gateway liczniki resetują się do zera, a mierniki uruchamiają się ponownie przy następnej zgłoszonej wartości. Użyj PromQL `rate()` i `increase()`, aby poprawnie obsłużyć resety.
+  <Accordion title="Prometheus pokazuje nieaktualne serie po restarcie">
+    Plugin przechowuje stan tylko w pamięci. Po restarcie Gateway liczniki resetują się do zera, a wskaźniki wznawiają działanie przy następnej zgłoszonej wartości. Użyj PromQL `rate()` i `increase()`, aby poprawnie obsługiwać resety.
   </Accordion>
 </AccordionGroup>
 
 ## Powiązane
 
-- [Eksport diagnostyki](/pl/gateway/diagnostics) — lokalny zip diagnostyczny dla pakietów wsparcia
+- [Eksport diagnostyki](/pl/gateway/diagnostics) — lokalne archiwum zip diagnostyki dla pakietów wsparcia
 - [Kondycja i gotowość](/pl/gateway/health) — sondy `/healthz` i `/readyz`
 - [Logowanie](/pl/logging) — logowanie oparte na plikach
-- [Eksport OpenTelemetry](/pl/gateway/opentelemetry) — push OTLP dla śladów, metryk i logów
+- [Eksport OpenTelemetry](/pl/gateway/opentelemetry) — wypychanie OTLP dla śladów, metryk i logów
