@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Quieres gestionar los hooks de agente
-    - Quieres inspeccionar la disponibilidad de los ganchos o habilitar los ganchos del espacio de trabajo
-summary: Referencia de CLI para `openclaw hooks` (hooks de agente)
+    - Quieres gestionar los ganchos de agente
+    - Quieres inspeccionar la disponibilidad de hooks o habilitar hooks de espacio de trabajo
+summary: Referencia de CLI para `openclaw hooks` (ganchos de agente)
 title: Ganchos
 x-i18n:
-    generated_at: "2026-04-30T05:33:59Z"
+    generated_at: "2026-05-02T20:44:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 63ab6b014923dd4776767a6a0333129b85f51d008c63bb9fbdff06228d4c2f4b
+    source_hash: 3b02c176b4a310adba3fa1fde3758f6c8a19d454aeec58e919458b3f1a66c87d
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Gestiona los ganchos de agente (automatizaciones basadas en eventos para comandos como `/new`, `/reset` y el inicio del Gateway).
+Gestiona hooks de agente (automatizaciones basadas en eventos para comandos como `/new`, `/reset` y el inicio del Gateway).
 
 Ejecutar `openclaw hooks` sin subcomando equivale a `openclaw hooks list`.
 
 Relacionado:
 
-- Ganchos: [Ganchos](/es/automation/hooks)
-- Ganchos de Plugin: [Ganchos de Plugin](/es/plugins/hooks)
+- Hooks: [Hooks](/es/automation/hooks)
+- Hooks de Plugin: [Hooks de Plugin](/es/plugins/hooks)
 
-## Listar todos los ganchos
+## Listar todos los hooks
 
 ```bash
 openclaw hooks list
 ```
 
-Lista todos los ganchos descubiertos desde los directorios del espacio de trabajo, administrados, adicionales y empaquetados.
-El inicio del Gateway no carga los manejadores internos de ganchos hasta que al menos un gancho interno esté configurado.
+Lista todos los hooks descubiertos desde directorios del espacio de trabajo, administrados, adicionales e incluidos.
+El inicio del Gateway no carga controladores internos de hooks hasta que se configura al menos un hook interno.
 
 **Opciones:**
 
-- `--eligible`: Muestra solo los ganchos aptos (requisitos cumplidos)
-- `--json`: Emite como JSON
+- `--eligible`: Muestra solo hooks elegibles (requisitos cumplidos)
+- `--json`: Genera salida como JSON
 - `-v, --verbose`: Muestra información detallada, incluidos los requisitos faltantes
 
 **Salida de ejemplo:**
@@ -57,7 +57,7 @@ Ready:
 openclaw hooks list --verbose
 ```
 
-Muestra los requisitos faltantes de los ganchos no aptos.
+Muestra los requisitos faltantes para hooks no elegibles.
 
 **Ejemplo (JSON):**
 
@@ -67,21 +67,21 @@ openclaw hooks list --json
 
 Devuelve JSON estructurado para uso programático.
 
-## Obtener información de un gancho
+## Obtener información de un hook
 
 ```bash
 openclaw hooks info <name>
 ```
 
-Muestra información detallada sobre un gancho específico.
+Muestra información detallada sobre un hook específico.
 
 **Argumentos:**
 
-- `<name>`: Nombre del gancho o clave del gancho (por ejemplo, `session-memory`)
+- `<name>`: Nombre del hook o clave del hook (por ejemplo, `session-memory`)
 
 **Opciones:**
 
-- `--json`: Emite como JSON
+- `--json`: Genera salida como JSON
 
 **Ejemplo:**
 
@@ -107,17 +107,17 @@ Requirements:
   Config: ✓ workspace.dir
 ```
 
-## Comprobar la aptitud de los ganchos
+## Comprobar la elegibilidad de hooks
 
 ```bash
 openclaw hooks check
 ```
 
-Muestra un resumen del estado de aptitud de los ganchos (cuántos están listos frente a no listos).
+Muestra un resumen del estado de elegibilidad de los hooks (cuántos están listos frente a no listos).
 
 **Opciones:**
 
-- `--json`: Emite como JSON
+- `--json`: Genera salida como JSON
 
 **Salida de ejemplo:**
 
@@ -129,19 +129,19 @@ Ready: 4
 Not ready: 0
 ```
 
-## Habilitar un gancho
+## Habilitar un hook
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-Habilita un gancho específico agregándolo a tu configuración (`~/.openclaw/openclaw.json` de forma predeterminada).
+Habilita un hook específico agregándolo a tu configuración (`~/.openclaw/openclaw.json` de forma predeterminada).
 
-**Nota:** Los ganchos del espacio de trabajo están deshabilitados de forma predeterminada hasta que se habiliten aquí o en la configuración. Los ganchos administrados por plugins muestran `plugin:<id>` en `openclaw hooks list` y no se pueden habilitar/deshabilitar aquí. En su lugar, habilita/deshabilita el Plugin.
+**Nota:** Los hooks del espacio de trabajo están deshabilitados de forma predeterminada hasta que se habilitan aquí o en la configuración. Los hooks administrados por plugins muestran `plugin:<id>` en `openclaw hooks list` y no se pueden habilitar/deshabilitar aquí. Habilita/deshabilita el plugin en su lugar.
 
 **Argumentos:**
 
-- `<name>`: Nombre del gancho (por ejemplo, `session-memory`)
+- `<name>`: Nombre del hook (por ejemplo, `session-memory`)
 
 **Ejemplo:**
 
@@ -157,27 +157,28 @@ openclaw hooks enable session-memory
 
 **Qué hace:**
 
-- Comprueba si el gancho existe y es apto
+- Comprueba si el hook existe y es elegible
 - Actualiza `hooks.internal.entries.<name>.enabled = true` en tu configuración
-- Guarda la configuración en el disco
+- Guarda la configuración en disco
 
-Si el gancho proviene de `<workspace>/hooks/`, este paso de suscripción es obligatorio antes de que el Gateway lo cargue.
+Si el hook provino de `<workspace>/hooks/`, este paso de adhesión explícita es obligatorio antes de que
+el Gateway lo cargue.
 
-**Después de habilitar:**
+**Después de habilitarlo:**
 
-- Reinicia el gateway para que los ganchos se recarguen (reinicio de la app de la barra de menús en macOS, o reinicia tu proceso de gateway en desarrollo).
+- Reinicia el Gateway para que los hooks se recarguen (reinicia la aplicación de la barra de menús en macOS o reinicia tu proceso de Gateway en desarrollo).
 
-## Deshabilitar un gancho
+## Deshabilitar un hook
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-Deshabilita un gancho específico actualizando tu configuración.
+Deshabilita un hook específico actualizando tu configuración.
 
 **Argumentos:**
 
-- `<name>`: Nombre del gancho (por ejemplo, `command-logger`)
+- `<name>`: Nombre del hook (por ejemplo, `command-logger`)
 
 **Ejemplo:**
 
@@ -191,41 +192,47 @@ openclaw hooks disable command-logger
 ⏸ Disabled hook: 📝 command-logger
 ```
 
-**Después de deshabilitar:**
+**Después de deshabilitarlo:**
 
-- Reinicia el gateway para que los ganchos se recarguen
+- Reinicia el Gateway para que los hooks se recarguen
 
 ## Notas
 
 - `openclaw hooks list --json`, `info --json` y `check --json` escriben JSON estructurado directamente en stdout.
-- Los ganchos administrados por plugins no se pueden habilitar ni deshabilitar aquí; habilita o deshabilita el Plugin propietario en su lugar.
+- Los hooks administrados por plugins no se pueden habilitar ni deshabilitar aquí; habilita o deshabilita el plugin propietario en su lugar.
 
-## Instalar paquetes de ganchos
+## Instalar paquetes de hooks
 
 ```bash
-openclaw plugins install <package>        # ClawHub first, then npm
+openclaw plugins install <package>        # npm by default
 openclaw plugins install npm:<package>    # npm only
 openclaw plugins install <package> --pin  # pin version
 openclaw plugins install <path>           # local path
 ```
 
-Instala paquetes de ganchos mediante el instalador unificado de plugins.
+Instala paquetes de hooks mediante el instalador unificado de plugins.
 
-`openclaw hooks install` sigue funcionando como alias de compatibilidad, pero imprime una advertencia de obsolescencia y reenvía a `openclaw plugins install`.
+`openclaw hooks install` sigue funcionando como alias de compatibilidad, pero imprime una
+advertencia de obsolescencia y reenvía a `openclaw plugins install`.
 
-Las especificaciones de npm son **solo de registro** (nombre del paquete + **versión exacta** opcional o **dist-tag**). Se rechazan las especificaciones de Git/URL/archivo y los rangos semver. Las instalaciones de dependencias se ejecutan de forma local al proyecto con `--ignore-scripts` por seguridad, incluso cuando tu shell tiene ajustes globales de instalación de npm.
+Las especificaciones de npm son **solo de registro** (nombre de paquete + **versión exacta** opcional o
+**dist-tag**). Se rechazan las especificaciones Git/URL/archivo y los rangos semver. Las instalaciones de
+dependencias se ejecutan localmente en el proyecto con `--ignore-scripts` por seguridad, incluso cuando tu
+shell tiene configuraciones globales de instalación de npm.
 
-Las especificaciones simples y `@latest` permanecen en la pista estable. Si npm resuelve cualquiera de ellas a una versión preliminar, OpenClaw se detiene y te pide que optes explícitamente por una etiqueta de versión preliminar como `@beta`/`@rc` o una versión preliminar exacta.
+Las especificaciones simples y `@latest` permanecen en la rama estable. Si npm resuelve cualquiera de
+ellas a una versión preliminar, OpenClaw se detiene y te pide que aceptes explícitamente con una
+etiqueta de versión preliminar como `@beta`/`@rc` o una versión preliminar exacta.
 
 **Qué hace:**
 
-- Copia el paquete de ganchos en `~/.openclaw/hooks/<id>`
-- Habilita los ganchos instalados en `hooks.internal.entries.*`
+- Copia el paquete de hooks en `~/.openclaw/hooks/<id>`
+- Habilita los hooks instalados en `hooks.internal.entries.*`
 - Registra la instalación en `hooks.internal.installs`
 
 **Opciones:**
 
-- `-l, --link`: Enlaza un directorio local en lugar de copiarlo (lo agrega a `hooks.internal.load.extraDirs`)
+- `-l, --link`: Vincula un directorio local en lugar de copiarlo (lo agrega a `hooks.internal.load.extraDirs`)
 - `--pin`: Registra las instalaciones de npm como `name@version` resuelto exacto en `hooks.internal.installs`
 
 **Archivos compatibles:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
@@ -246,31 +253,35 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-Los paquetes de ganchos enlazados se tratan como ganchos administrados desde un directorio configurado por el operador, no como ganchos del espacio de trabajo.
+Los paquetes de hooks vinculados se tratan como hooks administrados desde un directorio
+configurado por el operador, no como hooks del espacio de trabajo.
 
-## Actualizar paquetes de ganchos
+## Actualizar paquetes de hooks
 
 ```bash
 openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-Actualiza los paquetes de ganchos basados en npm con seguimiento mediante el actualizador unificado de plugins.
+Actualiza paquetes de hooks basados en npm con seguimiento mediante el actualizador unificado de plugins.
 
-`openclaw hooks update` sigue funcionando como alias de compatibilidad, pero imprime una advertencia de obsolescencia y reenvía a `openclaw plugins update`.
+`openclaw hooks update` sigue funcionando como alias de compatibilidad, pero imprime una
+advertencia de obsolescencia y reenvía a `openclaw plugins update`.
 
 **Opciones:**
 
-- `--all`: Actualiza todos los paquetes de ganchos con seguimiento
+- `--all`: Actualiza todos los paquetes de hooks con seguimiento
 - `--dry-run`: Muestra qué cambiaría sin escribir
 
-Cuando existe un hash de integridad almacenado y cambia el hash del artefacto obtenido, OpenClaw imprime una advertencia y solicita confirmación antes de continuar. Usa el `--yes` global para omitir los prompts en ejecuciones de CI/no interactivas.
+Cuando existe un hash de integridad almacenado y cambia el hash del artefacto recuperado,
+OpenClaw imprime una advertencia y pide confirmación antes de continuar. Usa
+`--yes` global para omitir prompts en CI/ejecuciones no interactivas.
 
-## Ganchos incluidos
+## Hooks incluidos
 
 ### session-memory
 
-Guarda el contexto de la sesión en la memoria cuando emites `/new` o `/reset`.
+Guarda el contexto de sesión en memoria cuando ejecutas `/new` o `/reset`.
 
 **Habilitar:**
 
@@ -284,7 +295,7 @@ openclaw hooks enable session-memory
 
 ### bootstrap-extra-files
 
-Inyecta archivos de bootstrap adicionales (por ejemplo, `AGENTS.md` / `TOOLS.md` locales al monorepo) durante `agent:bootstrap`.
+Inyecta archivos de bootstrap adicionales (por ejemplo, `AGENTS.md` / `TOOLS.md` locales de monorepo) durante `agent:bootstrap`.
 
 **Habilitar:**
 
@@ -323,7 +334,7 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 
 ### boot-md
 
-Ejecuta `BOOT.md` cuando se inicia el gateway (después de que se inician los canales).
+Ejecuta `BOOT.md` cuando se inicia el Gateway (después de que se inician los canales).
 
 **Eventos**: `gateway:startup`
 
@@ -338,4 +349,4 @@ openclaw hooks enable boot-md
 ## Relacionado
 
 - [Referencia de CLI](/es/cli)
-- [Ganchos de automatización](/es/automation/hooks)
+- [Hooks de automatización](/es/automation/hooks)

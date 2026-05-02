@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Estás realizando la configuración de primer uso sin la incorporación completa de la CLI.
-    - Quieres establecer la ruta predeterminada del espacio de trabajo
+    - Estás realizando la configuración de primera ejecución sin la incorporación completa de la CLI
+    - Desea establecer la ruta predeterminada del espacio de trabajo
 summary: Referencia de CLI para `openclaw setup` (inicializar configuración + espacio de trabajo)
 title: Configuración
 x-i18n:
-    generated_at: "2026-04-30T05:35:39Z"
+    generated_at: "2026-05-02T20:44:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -20,7 +20,7 @@ Inicializa `~/.openclaw/openclaw.json` y el espacio de trabajo del agente.
 Relacionado:
 
 - Primeros pasos: [Primeros pasos](/es/start/getting-started)
-- Incorporación de CLI: [Incorporación (CLI)](/es/start/wizard)
+- Incorporación con CLI: [Incorporación (CLI)](/es/start/wizard)
 
 ## Ejemplos
 
@@ -35,13 +35,13 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## Opciones
 
 - `--workspace <dir>`: directorio del espacio de trabajo del agente (almacenado como `agents.defaults.workspace`)
-- `--wizard`: ejecuta la incorporación
-- `--non-interactive`: ejecuta la incorporación sin avisos
+- `--wizard`: ejecutar la incorporación
+- `--non-interactive`: ejecutar la incorporación sin indicaciones
 - `--mode <local|remote>`: modo de incorporación
 - `--import-from <provider>`: proveedor de migración que se ejecutará durante la incorporación
-- `--import-source <path>`: directorio de inicio del agente de origen para `--import-from`
-- `--import-secrets`: importa secretos admitidos durante la migración de incorporación
-- `--remote-url <url>`: URL de WebSocket del Gateway remoto
+- `--import-source <path>`: directorio principal del agente de origen para `--import-from`
+- `--import-secrets`: importar los secretos compatibles durante la migración de incorporación
+- `--remote-url <url>`: URL WebSocket del Gateway remoto
 - `--remote-token <token>`: token del Gateway remoto
 
 Para ejecutar la incorporación mediante setup:
@@ -52,11 +52,12 @@ openclaw setup --wizard
 
 Notas:
 
-- El comando simple `openclaw setup` inicializa la configuración y el espacio de trabajo sin el flujo de incorporación completo.
-- La incorporación se ejecuta automáticamente cuando hay alguna marca de incorporación presente (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Si se detecta el estado de Hermes, la incorporación interactiva puede ofrecer la migración automáticamente. La incorporación con importación requiere una configuración nueva; usa [Migrar](/es/cli/migrate) para planes de ensayo, copias de seguridad y modo de sobrescritura fuera de la incorporación.
+- `openclaw setup` simple inicializa la configuración y el espacio de trabajo sin el flujo completo de incorporación.
+- Después de la configuración simple, ejecuta `openclaw configure` para elegir modelos, canales, Gateway, plugins, Skills o comprobaciones de estado.
+- La incorporación se ejecuta automáticamente cuando está presente cualquier opción de incorporación (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Si se detecta estado de Hermes, la incorporación interactiva puede ofrecer la migración automáticamente. La incorporación de importación requiere una configuración nueva; usa [Migrar](/es/cli/migrate) para planes de prueba, copias de seguridad y modo de sobrescritura fuera de la incorporación.
 
 ## Relacionado
 
-- [Referencia de CLI](/es/cli)
+- [Referencia de la CLI](/es/cli)
 - [Resumen de instalación](/es/install)
