@@ -74,6 +74,7 @@ Cùng tên ở nhiều nơi → nguồn có thứ tự ưu tiên cao nhất sẽ
     - Đặt `agents.list[].skills: []` để không có kỹ năng nào.
     - Danh sách `agents.list[].skills` không rỗng là tập hợp **cuối cùng** cho agent đó — nó không hợp nhất với mặc định.
     - Danh sách cho phép hiệu lực áp dụng trên toàn bộ quá trình dựng prompt, khám phá lệnh slash của kỹ năng, đồng bộ sandbox và snapshot kỹ năng.
+
   </Accordion>
 </AccordionGroup>
 

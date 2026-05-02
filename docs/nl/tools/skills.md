@@ -74,6 +74,7 @@ Skill**locatie** en skill**zichtbaarheid** zijn afzonderlijke controles. Locatie
     - Stel `agents.list[].skills: []` in voor geen skills.
     - Een niet-lege `agents.list[].skills`-lijst is de **definitieve** set voor die agent; deze wordt niet samengevoegd met defaults.
     - De effectieve allowlist geldt voor promptopbouw, ontdekking van slash-commands voor skills, sandbox-sync en skill-snapshots.
+
   </Accordion>
 </AccordionGroup>
 
