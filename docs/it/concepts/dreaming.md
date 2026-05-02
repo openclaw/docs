@@ -1,73 +1,73 @@
 ---
 read_when:
     - Vuoi che la promozione della memoria venga eseguita automaticamente
-    - Vuoi capire cosa fa ogni fase di Dreaming
-    - Vuoi ottimizzare il consolidamento senza sporcare MEMORY.md
+    - Vuoi capire che cosa fa ogni fase di Dreaming
+    - Vuoi regolare il consolidamento senza contaminare MEMORY.md
 sidebarTitle: Dreaming
-summary: Consolidamento della memoria in background con fasi leggere, profonde e REM più un diario dei sogni
+summary: Consolidamento della memoria in background con fasi leggere, profonde e REM, più un Diario dei sogni
 title: Dreaming
 x-i18n:
-    generated_at: "2026-04-30T08:46:34Z"
+    generated_at: "2026-05-02T20:44:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 85c323c073fc786069835aad25ee68781af49bb031e63b9601674461f385cc2a
+    source_hash: 23057bfeaaac1cc6b2bf2ee78928c8fdd820c817e461cc0b77f7c1e40ac14c22
     source_path: concepts/dreaming.md
     workflow: 16
 ---
 
-Dreaming è il sistema di consolidamento della memoria in background in `memory-core`. Aiuta OpenClaw a spostare i segnali forti a breve termine nella memoria durevole mantenendo il processo spiegabile e revisionabile.
+Dreaming è il sistema di consolidamento della memoria in background in `memory-core`. Aiuta OpenClaw a spostare segnali forti a breve termine nella memoria duratura mantenendo il processo spiegabile e revisionabile.
 
 <Note>
-Dreaming è **opt-in** e disabilitato per impostazione predefinita.
+Dreaming è **opt-in** ed è disabilitato per impostazione predefinita.
 </Note>
 
 ## Cosa scrive Dreaming
 
-Dreaming mantiene due tipi di output:
+Dreaming conserva due tipi di output:
 
 - **Stato macchina** in `memory/.dreams/` (archivio di richiamo, segnali di fase, checkpoint di ingestione, lock).
-- **Output leggibile dalle persone** in `DREAMS.md` (o `dreams.md` esistente) e file opzionali di report di fase sotto `memory/dreaming/<phase>/YYYY-MM-DD.md`.
+- **Output leggibile da persone** in `DREAMS.md` (o nel file esistente `dreams.md`) e file di report di fase opzionali sotto `memory/dreaming/<phase>/YYYY-MM-DD.md`.
 
-La promozione a lungo termine scrive ancora solo in `MEMORY.md`.
+La promozione a lungo termine continua a scrivere solo in `MEMORY.md`.
 
 ## Modello a fasi
 
 Dreaming usa tre fasi cooperative:
 
-| Fase  | Scopo                                      | Scrittura durevole |
+| Fase  | Scopo                                      | Scrittura duratura |
 | ----- | ------------------------------------------ | ------------------ |
-| Light | Ordinare e preparare materiale recente a breve termine | No                 |
-| Deep  | Valutare e promuovere candidati durevoli   | Sì (`MEMORY.md`)   |
-| REM   | Riflettere su temi e idee ricorrenti       | No                 |
+| Light | Ordina e prepara materiale recente a breve termine | No                 |
+| Deep  | Valuta e promuove candidati duraturi       | Sì (`MEMORY.md`)   |
+| REM   | Riflette su temi e idee ricorrenti         | No                 |
 
-Queste fasi sono dettagli di implementazione interni, non "modalità" separate configurate dall'utente.
+Queste fasi sono dettagli interni di implementazione, non "modalità" separate configurate dall'utente.
 
 <AccordionGroup>
-  <Accordion title="Light phase">
+  <Accordion title="Fase Light">
     La fase Light ingerisce segnali recenti di memoria giornaliera e tracce di richiamo, li deduplica e prepara righe candidate.
 
     - Legge dallo stato di richiamo a breve termine, dai file recenti di memoria giornaliera e dalle trascrizioni di sessione oscurate quando disponibili.
     - Scrive un blocco gestito `## Light Sleep` quando l'archiviazione include output inline.
-    - Registra segnali di rinforzo per la successiva classificazione deep.
+    - Registra segnali di rinforzo per il ranking Deep successivo.
     - Non scrive mai in `MEMORY.md`.
 
   </Accordion>
-  <Accordion title="Deep phase">
+  <Accordion title="Fase Deep">
     La fase Deep decide cosa diventa memoria a lungo termine.
 
-    - Classifica i candidati usando punteggio ponderato e soglie di sbarramento.
-    - Richiede che `minScore`, `minRecallCount` e `minUniqueQueries` vengano superati.
+    - Classifica i candidati usando punteggi ponderati e soglie di gate.
+    - Richiede che `minScore`, `minRecallCount` e `minUniqueQueries` siano superati.
     - Reidrata gli snippet dai file giornalieri live prima di scrivere, quindi gli snippet obsoleti/eliminati vengono saltati.
     - Aggiunge le voci promosse a `MEMORY.md`.
-    - Scrive un riepilogo `## Deep Sleep` in `DREAMS.md` e opzionalmente scrive `memory/dreaming/deep/YYYY-MM-DD.md`.
+    - Scrive un riepilogo `## Deep Sleep` in `DREAMS.md` e, facoltativamente, scrive `memory/dreaming/deep/YYYY-MM-DD.md`.
 
   </Accordion>
-  <Accordion title="REM phase">
+  <Accordion title="Fase REM">
     La fase REM estrae pattern e segnali riflessivi.
 
-    - Costruisce riepiloghi di temi e riflessioni dalle tracce recenti a breve termine.
+    - Crea riepiloghi di temi e riflessioni dalle tracce recenti a breve termine.
     - Scrive un blocco gestito `## REM Sleep` quando l'archiviazione include output inline.
-    - Registra segnali di rinforzo REM usati dalla classificazione deep.
+    - Registra segnali di rinforzo REM usati dal ranking Deep.
     - Non scrive mai in `MEMORY.md`.
 
   </Accordion>
@@ -75,48 +75,50 @@ Queste fasi sono dettagli di implementazione interni, non "modalità" separate c
 
 ## Ingestione delle trascrizioni di sessione
 
-Dreaming può ingerire trascrizioni di sessione oscurate nel corpus di Dreaming. Quando le trascrizioni sono disponibili, vengono fornite alla fase Light insieme ai segnali di memoria giornaliera e alle tracce di richiamo. I contenuti personali e sensibili vengono oscurati prima dell'ingestione.
+Dreaming può ingerire trascrizioni di sessione oscurate nel corpus di Dreaming. Quando le trascrizioni sono disponibili, vengono passate alla fase Light insieme ai segnali di memoria giornaliera e alle tracce di richiamo. I contenuti personali e sensibili vengono oscurati prima dell'ingestione.
 
-## Diario dei sogni
+## Dream Diary
 
-Dreaming mantiene anche un **Diario dei sogni** narrativo in `DREAMS.md`. Dopo che ogni fase ha materiale sufficiente, `memory-core` esegue un turno subagent in background best-effort e aggiunge una breve voce di diario. Usa il modello runtime predefinito salvo che `dreaming.model` sia configurato. Se il modello configurato non è disponibile, Diario dei sogni riprova una volta con il modello predefinito della sessione.
+Dreaming conserva anche un **Dream Diary** narrativo in `DREAMS.md`. Dopo che ogni fase ha materiale sufficiente, `memory-core` esegue un turno di subagent in background best-effort e aggiunge una breve voce di diario. Usa il modello runtime predefinito a meno che `dreaming.model` non sia configurato. Se il modello configurato non è disponibile, Dream Diary riprova una volta con il modello predefinito della sessione.
 
 <Note>
-Questo diario è destinato alla lettura umana nell'interfaccia Dreams, non è una fonte di promozione. Gli artefatti di diario/report generati da Dreaming sono esclusi dalla promozione a breve termine. Solo gli snippet di memoria fondati su evidenze sono idonei alla promozione in `MEMORY.md`.
+Questo diario è destinato alla lettura umana nella UI Dreams, non è una fonte di promozione. Gli artefatti di diario/report generati da Dreaming sono esclusi dalla promozione a breve termine. Solo gli snippet di memoria fondati su evidenze sono idonei alla promozione in `MEMORY.md`.
 </Note>
 
-Esiste anche una corsia di backfill storico fondata su evidenze per lavori di revisione e recupero:
+Esiste anche una corsia di backfill storico fondato su evidenze per attività di revisione e recupero:
 
 <AccordionGroup>
-  <Accordion title="Backfill commands">
-    - `memory rem-harness --path ... --grounded` visualizza in anteprima output di diario fondato su evidenze da note storiche `YYYY-MM-DD.md`.
+  <Accordion title="Comandi di backfill">
+    - `memory rem-harness --path ... --grounded` visualizza in anteprima l'output di diario fondato su evidenze dalle note storiche `YYYY-MM-DD.md`.
     - `memory rem-backfill --path ...` scrive voci di diario reversibili e fondate su evidenze in `DREAMS.md`.
-    - `memory rem-backfill --path ... --stage-short-term` prepara candidati durevoli fondati su evidenze nello stesso archivio di evidenze a breve termine che la normale fase deep usa già.
-    - `memory rem-backfill --rollback` e `--rollback-short-term` rimuovono tali artefatti di backfill preparati senza toccare le normali voci di diario o il richiamo live a breve termine.
+    - `memory rem-backfill --path ... --stage-short-term` prepara candidati duraturi fondati su evidenze nello stesso archivio di evidenze a breve termine già usato dalla normale fase Deep.
+    - `memory rem-backfill --rollback` e `--rollback-short-term` rimuovono quegli artefatti di backfill preparati senza toccare le voci di diario ordinarie o il richiamo live a breve termine.
 
   </Accordion>
 </AccordionGroup>
 
-La Control UI espone lo stesso flusso di backfill/reset del diario, così puoi ispezionare i risultati nella scena Dreams prima di decidere se i candidati fondati su evidenze meritano la promozione. La Scena mostra anche una corsia distinta fondata su evidenze, così puoi vedere quali voci a breve termine preparate provengono dal replay storico, quali elementi promossi sono stati guidati da evidenze e cancellare solo le voci preparate esclusivamente fondate su evidenze senza toccare il normale stato live a breve termine.
+La Control UI espone lo stesso flusso di backfill/reset del diario, così puoi ispezionare i risultati nella scena Dreams prima di decidere se i candidati fondati su evidenze meritano la promozione. La scena mostra anche una corsia distinta per i contenuti fondati su evidenze, così puoi vedere quali voci a breve termine preparate provengono dalla riproduzione storica, quali elementi promossi sono stati guidati da evidenze fondate, e cancellare solo le voci preparate esclusivamente fondate su evidenze senza toccare lo stato live ordinario a breve termine.
 
-## Segnali di classificazione Deep
+## Segnali di ranking Deep
 
-La classificazione Deep usa sei segnali di base ponderati più il rinforzo di fase:
+Il ranking Deep usa sei segnali base ponderati più il rinforzo di fase:
 
 | Segnale             | Peso | Descrizione                                      |
 | ------------------- | ---- | ------------------------------------------------ |
 | Frequenza           | 0.24 | Quanti segnali a breve termine ha accumulato la voce |
-| Rilevanza           | 0.30 | Qualità media di recupero per la voce            |
-| Diversità query     | 0.15 | Contesti distinti di query/giorno che l'hanno fatta emergere |
+| Rilevanza           | 0.30 | Qualità media di recupero della voce             |
+| Diversità delle query | 0.15 | Contesti distinti di query/giorno che l'hanno fatta emergere |
 | Recenza             | 0.15 | Punteggio di freschezza con decadimento temporale |
 | Consolidamento      | 0.10 | Forza della ricorrenza su più giorni             |
 | Ricchezza concettuale | 0.06 | Densità dei tag concettuali da snippet/percorso  |
 
-Gli hit delle fasi Light e REM aggiungono un piccolo boost con decadimento di recenza da `memory/.dreams/phase-signals.json`.
+Gli hit delle fasi Light e REM aggiungono un piccolo boost con decadimento della recenza da `memory/.dreams/phase-signals.json`.
 
 ## Pianificazione
 
-Quando abilitato, `memory-core` gestisce automaticamente un job cron per una scansione completa di Dreaming. Ogni scansione esegue le fasi in ordine: light → REM → deep.
+Quando è abilitato, `memory-core` gestisce automaticamente un job Cron per uno sweep completo di Dreaming. Ogni sweep esegue le fasi in ordine: Light → REM → Deep.
+
+Lo sweep include il workspace runtime principale e qualunque workspace agente configurato, deduplicati per percorso, così il fan-out dei workspace subagent non esclude il `DREAMS.md` e lo stato memoria dell'agente principale.
 
 Comportamento della cadenza predefinita:
 
@@ -128,7 +130,7 @@ Comportamento della cadenza predefinita:
 ## Avvio rapido
 
 <Tabs>
-  <Tab title="Enable dreaming">
+  <Tab title="Abilitare Dreaming">
     ```json
     {
       "plugins": {
@@ -145,7 +147,7 @@ Comportamento della cadenza predefinita:
     }
     ```
   </Tab>
-  <Tab title="Custom sweep cadence">
+  <Tab title="Cadenza sweep personalizzata">
     ```json
     {
       "plugins": {
@@ -178,7 +180,7 @@ Comportamento della cadenza predefinita:
 ## Flusso di lavoro CLI
 
 <Tabs>
-  <Tab title="Promotion preview / apply">
+  <Tab title="Anteprima promozione / applicazione">
     ```bash
     openclaw memory promote
     openclaw memory promote --apply
@@ -186,10 +188,10 @@ Comportamento della cadenza predefinita:
     openclaw memory status --deep
     ```
 
-    `memory promote` manuale usa per impostazione predefinita le soglie della fase deep, salvo override con flag CLI.
+    `memory promote` manuale usa per impostazione predefinita le soglie della fase Deep, salvo override con flag CLI.
 
   </Tab>
-  <Tab title="Explain promotion">
+  <Tab title="Spiegare la promozione">
     Spiega perché un candidato specifico verrebbe o non verrebbe promosso:
 
     ```bash
@@ -198,8 +200,8 @@ Comportamento della cadenza predefinita:
     ```
 
   </Tab>
-  <Tab title="REM harness preview">
-    Visualizza in anteprima riflessioni REM, verità candidate e output di promozione deep senza scrivere nulla:
+  <Tab title="Anteprima harness REM">
+    Visualizza in anteprima riflessioni REM, verità candidate e output di promozione Deep senza scrivere nulla:
 
     ```bash
     openclaw memory rem-harness
@@ -214,37 +216,37 @@ Comportamento della cadenza predefinita:
 Tutte le impostazioni si trovano sotto `plugins.entries.memory-core.config.dreaming`.
 
 <ParamField path="enabled" type="boolean" default="false">
-  Abilita o disabilita la scansione di Dreaming.
+  Abilita o disabilita lo sweep di Dreaming.
 </ParamField>
 <ParamField path="frequency" type="string" default="0 3 * * *">
-  Cadenza Cron per la scansione completa di Dreaming.
+  Cadenza Cron per lo sweep completo di Dreaming.
 </ParamField>
 <ParamField path="model" type="string">
-  Override opzionale del modello subagent di Diario dei sogni. Usa un valore canonico `provider/model` quando imposti anche una allowlist subagent `allowedModels`.
+  Override opzionale del modello subagent di Dream Diary. Usa un valore canonico `provider/model` quando imposti anche una allowlist subagent `allowedModels`.
 </ParamField>
 
 <Warning>
-`dreaming.model` richiede `plugins.entries.memory-core.subagent.allowModelOverride: true`. Per limitarlo, imposta anche `plugins.entries.memory-core.subagent.allowedModels`. I fallimenti di trust o allowlist rimangono visibili invece di ricadere silenziosamente su un fallback; il retry copre solo errori di modello non disponibile.
+`dreaming.model` richiede `plugins.entries.memory-core.subagent.allowModelOverride: true`. Per limitarlo, imposta anche `plugins.entries.memory-core.subagent.allowedModels`. I fallimenti di trust o allowlist restano visibili invece di eseguire fallback silenzioso; il nuovo tentativo copre solo gli errori di modello non disponibile.
 </Warning>
 
 <Note>
-La policy di fase, le soglie e il comportamento di archiviazione sono dettagli di implementazione interni (non configurazione esposta all'utente). Consulta [riferimento alla configurazione della memoria](/it/reference/memory-config#dreaming) per l'elenco completo delle chiavi.
+La policy di fase, le soglie e il comportamento di archiviazione sono dettagli interni di implementazione (non configurazione rivolta all'utente). Consulta [Riferimento di configurazione della memoria](/it/reference/memory-config#dreaming) per l'elenco completo delle chiavi.
 </Note>
 
-## Interfaccia Dreams
+## UI Dreams
 
-Quando abilitata, la scheda **Dreams** del Gateway mostra:
+Quando è abilitata, la scheda **Dreams** del Gateway mostra:
 
-- stato corrente di abilitazione di Dreaming
-- stato a livello di fase e presenza della scansione gestita
-- conteggi a breve termine, fondati su evidenze, di segnali e promossi oggi
+- stato attuale di abilitazione di Dreaming
+- stato a livello di fase e presenza dello sweep gestito
+- conteggi di breve termine, fondati su evidenze, segnali e promossi oggi
 - tempistica della prossima esecuzione pianificata
-- una corsia Scene distinta fondata su evidenze per le voci di replay storico preparate
-- un lettore espandibile del Diario dei sogni basato su `doctor.memory.dreamDiary`
+- una corsia Scene distinta per le voci di riproduzione storica preparate
+- un lettore Dream Diary espandibile supportato da `doctor.memory.dreamDiary`
 
 ## Correlati
 
 - [Memoria](/it/concepts/memory)
-- [CLI della memoria](/it/cli/memory)
-- [Riferimento alla configurazione della memoria](/it/reference/memory-config)
-- [Ricerca nella memoria](/it/concepts/memory-search)
+- [CLI memoria](/it/cli/memory)
+- [Riferimento di configurazione della memoria](/it/reference/memory-config)
+- [Ricerca memoria](/it/concepts/memory-search)
