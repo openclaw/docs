@@ -2,38 +2,40 @@
 read_when:
     - 새 모델 제공자 Plugin을 구축하고 있습니다
     - OpenClaw에 OpenAI 호환 프록시 또는 사용자 지정 LLM을 추가하려는 경우
-    - 제공자 인증, 카탈로그, 런타임 훅을 이해해야 합니다
+    - 프로바이더 인증, 카탈로그 및 런타임 훅을 이해해야 합니다
 sidebarTitle: Provider plugins
-summary: OpenClaw용 모델 제공자 Plugin을 구축하기 위한 단계별 가이드
-title: 프로바이더 Plugin 구축하기
+summary: OpenClaw용 모델 제공자 Plugin 구축 단계별 가이드
+title: 프로바이더 Plugin 빌드하기
 x-i18n:
-    generated_at: "2026-05-02T21:10:10Z"
+    generated_at: "2026-05-02T22:21:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f9d721673bdfef0b9c1979b4b8b4c86f19d114374d6b941facb928c3574cd1b
+    source_hash: f7cca1dcf2f0a34fd05c696149fef42ff8fecf1ca1fe0ccc63ba96212a9889fe
     source_path: plugins/sdk-provider-plugins.md
     workflow: 16
 ---
 
-이 가이드는 OpenClaw에 모델 제공자(LLM)를 추가하는 제공자 Plugin을 만드는 과정을 안내합니다. 끝까지 따라 하면 모델 카탈로그, API 키 인증, 동적 모델 해석을 갖춘 제공자를 만들 수 있습니다.
+이 가이드에서는 모델 제공자(LLM)를 OpenClaw에 추가하는 제공자 Plugin을 빌드하는 과정을 설명합니다. 끝까지 따라 하면 모델 카탈로그, API 키 인증, 동적 모델 해석을 갖춘 제공자를 만들 수 있습니다.
 
 <Info>
-  이전에 OpenClaw Plugin을 만든 적이 없다면 먼저 기본 패키지
-  구조와 매니페스트 설정을 위해
-  [시작하기](/ko/plugins/building-plugins)를 읽으세요.
+  OpenClaw Plugin을 아직 빌드해 본 적이 없다면, 먼저 기본 패키지
+  구조와 매니페스트 설정을 다루는
+  [시작하기](/ko/plugins/building-plugins)를 읽어 보세요.
 </Info>
 
 <Tip>
   제공자 Plugin은 OpenClaw의 일반 추론 루프에 모델을 추가합니다. 모델이
   스레드, Compaction 또는 도구 이벤트를 소유하는 네이티브 에이전트 데몬을
-  통해 실행되어야 한다면, 데몬 프로토콜 세부 정보를 코어에 넣는 대신
+  통해 실행되어야 한다면, 데몬 프로토콜 세부 정보를 코어에 넣지 말고
   제공자를 [에이전트 하네스](/ko/plugins/sdk-agent-harness)와 함께 사용하세요.
 </Tip>
 
-## 안내
+## 연습
 
 <Steps>
-  <Step title="Package and manifest">
+  <Step title="패키지와 매니페스트">
+    ### 1단계: 패키지와 매니페스트
+
     <CodeGroup>
     ```json package.json
     {
@@ -93,15 +95,15 @@ x-i18n:
 
     매니페스트는 `providerAuthEnvVars`를 선언하여 OpenClaw가 Plugin 런타임을
     로드하지 않고도 자격 증명을 감지할 수 있게 합니다. 제공자 변형이 다른
-    제공자 ID의 인증을 재사용해야 할 때 `providerAuthAliases`를 추가하세요.
+    제공자 ID의 인증을 재사용해야 한다면 `providerAuthAliases`를 추가하세요.
     `modelSupport`는 선택 사항이며, 런타임 훅이 존재하기 전에 OpenClaw가
-    `acme-large` 같은 축약 모델 ID에서 제공자 Plugin을 자동 로드할 수 있게
-    합니다. 제공자를 ClawHub에 게시하는 경우 `package.json`에 있는 해당
-    `openclaw.compat` 및 `openclaw.build` 필드가 필요합니다.
+    `acme-large` 같은 축약 모델 ID로 제공자 Plugin을 자동 로드할 수 있게
+    합니다. 제공자를 ClawHub에 게시한다면 `package.json`에 있는
+    `openclaw.compat` 및 `openclaw.build` 필드는 필수입니다.
 
   </Step>
 
-  <Step title="Register the provider">
+  <Step title="제공자 등록">
     최소 제공자에는 `id`, `label`, `auth`, `catalog`가 필요합니다.
 
     ```typescript index.ts
@@ -173,12 +175,12 @@ x-i18n:
     });
     ```
 
-    이것으로 동작하는 제공자가 완성됩니다. 이제 사용자는
+    이것만으로도 동작하는 제공자가 됩니다. 이제 사용자는
     `openclaw onboard --acme-ai-api-key <key>`를 실행하고
     `acme-ai/acme-large`를 모델로 선택할 수 있습니다.
 
     업스트림 제공자가 OpenClaw와 다른 제어 토큰을 사용한다면 스트림 경로를
-    교체하는 대신 작은 양방향 텍스트 변환을 추가하세요.
+    교체하지 말고 작은 양방향 텍스트 변환을 추가하세요.
 
     ```typescript
     api.registerTextTransforms({
@@ -195,13 +197,13 @@ x-i18n:
     });
     ```
 
-    `input`은 전송 전에 최종 시스템 프롬프트와 텍스트 메시지 내용을 다시
-    작성합니다. `output`은 OpenClaw가 자체 제어 마커 또는 채널 전달을
-    파싱하기 전에 어시스턴트 텍스트 델타와 최종 텍스트를 다시 작성합니다.
+    `input`은 전송 전에 최종 시스템 프롬프트와 텍스트 메시지 콘텐츠를 다시
+    씁니다. `output`은 OpenClaw가 자체 제어 마커나 채널 전달을 파싱하기 전에
+    어시스턴트 텍스트 델타와 최종 텍스트를 다시 씁니다.
 
-    API 키 인증과 단일 카탈로그 기반 런타임을 갖춘 하나의 텍스트 제공자만
+    API 키 인증과 단일 카탈로그 기반 런타임을 갖춘 텍스트 제공자 하나만
     등록하는 번들 제공자의 경우, 더 좁은
-    `defineSingleProviderPluginEntry(...)` 헬퍼를 선호하세요.
+    `defineSingleProviderPluginEntry(...)` 헬퍼를 사용하는 것이 좋습니다.
 
     ```typescript
     import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
@@ -241,33 +243,32 @@ x-i18n:
     });
     ```
 
-    `buildProvider`는 OpenClaw가 실제 제공자 인증을 해석할 수 있을 때
-    사용되는 라이브 카탈로그 경로입니다. 제공자별 탐색을 수행할 수 있습니다.
+    `buildProvider`는 OpenClaw가 실제 제공자 인증을 해석할 수 있을 때 사용되는
+    라이브 카탈로그 경로입니다. 제공자별 탐색을 수행할 수 있습니다.
     `buildStaticProvider`는 인증이 구성되기 전에 표시해도 안전한 오프라인
-    행에만 사용하세요. 자격 증명을 요구하거나 네트워크 요청을 해서는 안
-    됩니다. OpenClaw의 `models list --all` 표시는 현재 빈 구성, 빈 env,
-    에이전트/워크스페이스 경로 없음 상태에서 번들 제공자 Plugin에 대해서만
-    정적 카탈로그를 실행합니다.
+    행에만 사용하세요. 자격 증명이 필요하거나 네트워크 요청을 해서는 안 됩니다.
+    OpenClaw의 `models list --all` 표시는 현재 빈 구성, 빈 환경, 에이전트/워크스페이스
+    경로 없음 상태에서 번들 제공자 Plugin에 대해서만 정적 카탈로그를 실행합니다.
 
-    인증 흐름이 온보딩 중 `models.providers.*`, 별칭, 에이전트 기본 모델도
+    인증 흐름에서 `models.providers.*`, 별칭, 온보딩 중 에이전트 기본 모델도
     패치해야 한다면 `openclaw/plugin-sdk/provider-onboard`의 프리셋 헬퍼를
     사용하세요. 가장 좁은 헬퍼는
     `createDefaultModelPresetAppliers(...)`,
-    `createDefaultModelsPresetAppliers(...)`,
+    `createDefaultModelsPresetAppliers(...)`, 그리고
     `createModelCatalogPresetAppliers(...)`입니다.
 
-    제공자의 네이티브 엔드포인트가 일반 `openai-completions` 전송에서
-    스트리밍 사용량 블록을 지원하는 경우, 제공자 ID 검사를 하드코딩하는 대신
+    제공자의 네이티브 엔드포인트가 일반 `openai-completions` 전송에서 스트리밍
+    사용량 블록을 지원한다면, 제공자 ID 검사를 하드코딩하지 말고
     `openclaw/plugin-sdk/provider-catalog-shared`의 공유 카탈로그 헬퍼를
-    선호하세요. `supportsNativeStreamingUsageCompat(...)`와
+    사용하는 것이 좋습니다. `supportsNativeStreamingUsageCompat(...)`와
     `applyProviderNativeStreamingUsageCompat(...)`는 엔드포인트 기능 맵에서
     지원 여부를 감지하므로, Plugin이 사용자 지정 제공자 ID를 사용하더라도
-    네이티브 Moonshot/DashScope 스타일 엔드포인트가 계속 옵트인됩니다.
+    네이티브 Moonshot/DashScope 스타일 엔드포인트가 계속 옵트인할 수 있습니다.
 
   </Step>
 
-  <Step title="Add dynamic model resolution">
-    제공자가 임의의 모델 ID를 허용한다면(예: 프록시 또는 라우터)
+  <Step title="동적 모델 해석 추가">
+    제공자가 프록시나 라우터처럼 임의의 모델 ID를 허용한다면
     `resolveDynamicModel`을 추가하세요.
 
     ```typescript
@@ -290,16 +291,16 @@ x-i18n:
     ```
 
     해석에 네트워크 호출이 필요하다면 비동기 워밍업에
-    `prepareDynamicModel`을 사용하세요. 완료된 뒤 `resolveDynamicModel`이
-    다시 실행됩니다.
+    `prepareDynamicModel`을 사용하세요. 완료 후 `resolveDynamicModel`이 다시
+    실행됩니다.
 
   </Step>
 
-  <Step title="Add runtime hooks (as needed)">
-    대부분의 제공자는 `catalog` + `resolveDynamicModel`만 있으면 됩니다.
-    제공자에 필요해질 때마다 훅을 점진적으로 추가하세요.
+  <Step title="런타임 훅 추가(필요한 경우)">
+    대부분의 제공자는 `catalog` + `resolveDynamicModel`만 필요합니다. 제공자가
+    요구하는 만큼 훅을 점진적으로 추가하세요.
 
-    공유 헬퍼 빌더가 이제 가장 일반적인 replay/tool-compat 계열을 다루므로,
+    이제 공유 헬퍼 빌더가 가장 일반적인 재생/도구 호환성 계열을 처리하므로,
     Plugin은 보통 각 훅을 하나씩 직접 연결할 필요가 없습니다.
 
     ```typescript
@@ -320,38 +321,38 @@ x-i18n:
     });
     ```
 
-    현재 사용 가능한 replay 계열:
+    현재 사용 가능한 재생 계열은 다음과 같습니다.
 
     | 계열 | 연결되는 항목 | 번들 예시 |
     | --- | --- | --- |
-    | `openai-compatible` | 도구 호출 ID 정리, assistant-first 순서 수정, 전송에 필요한 경우 일반 Gemini 턴 검증을 포함한 OpenAI 호환 전송용 공유 OpenAI 스타일 replay 정책 | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | `modelId`로 선택되는 Claude 인식 replay 정책입니다. 따라서 Anthropic-message 전송은 해석된 모델이 실제로 Claude ID일 때만 Claude 전용 thinking-block 정리를 받습니다 | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | 네이티브 Gemini replay 정책과 부트스트랩 replay 정리 및 태그가 지정된 reasoning-output 모드 | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | OpenAI 호환 프록시 전송을 통해 실행되는 Gemini 모델의 Gemini thought-signature 정리입니다. 네이티브 Gemini replay 검증 또는 부트스트랩 재작성을 활성화하지 않습니다 | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | 하나의 Plugin에서 Anthropic-message와 OpenAI 호환 모델 표면을 혼합하는 제공자를 위한 하이브리드 정책입니다. 선택적 Claude 전용 thinking-block 삭제는 Anthropic 쪽으로 범위가 유지됩니다 | `minimax` |
+    | `openai-compatible` | 도구 호출 ID 정리, 어시스턴트 우선 순서 수정, 전송에서 필요한 경우 일반 Gemini 턴 검증을 포함하는 OpenAI 호환 전송용 공유 OpenAI 스타일 재생 정책 | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | `modelId`로 선택되는 Claude 인식 재생 정책으로, 해석된 모델이 실제로 Claude ID일 때만 Anthropic 메시지 전송에 Claude 전용 thinking-block 정리가 적용됩니다 | `amazon-bedrock`, `anthropic-vertex` |
+    | `google-gemini` | 네이티브 Gemini 재생 정책과 부트스트랩 재생 정리 및 태그가 지정된 reasoning-output 모드 | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | OpenAI 호환 프록시 전송을 통해 실행되는 Gemini 모델용 Gemini thought-signature 정리입니다. 네이티브 Gemini 재생 검증이나 부트스트랩 재작성을 활성화하지 않습니다 | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | 하나의 Plugin에서 Anthropic 메시지와 OpenAI 호환 모델 표면을 혼합하는 제공자를 위한 하이브리드 정책입니다. 선택적 Claude 전용 thinking-block 삭제는 Anthropic 쪽으로 범위가 제한됩니다 | `minimax` |
 
-    현재 사용 가능한 스트림 계열:
+    현재 사용 가능한 스트림 패밀리:
 
-    | 제품군 | 연결하는 항목 | 번들 예시 |
+    | 패밀리 | 연결되는 기능 | 번들 예시 |
     | --- | --- | --- |
-    | `google-thinking` | 공유 스트림 경로에서 Gemini thinking 페이로드 정규화 | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | 공유 프록시 스트림 경로에서 Kilo reasoning 래퍼. `kilo/auto`와 지원되지 않는 프록시 reasoning ID는 주입된 thinking을 건너뜀 | `kilocode` |
-    | `moonshot-thinking` | config + `/think` 수준에서 Moonshot 바이너리 native-thinking 페이로드 매핑 | `moonshot` |
-    | `minimax-fast-mode` | 공유 스트림 경로에서 MiniMax fast-mode 모델 재작성 | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | 공유 네이티브 OpenAI/Codex Responses 래퍼: attribution headers, `/fast`/`serviceTier`, 텍스트 상세도, 네이티브 Codex 웹 검색, reasoning 호환 페이로드 구성, Responses 컨텍스트 관리 | `openai`, `openai-codex` |
-    | `openrouter-thinking` | 프록시 라우트를 위한 OpenRouter reasoning 래퍼. 지원되지 않는 모델/`auto` 건너뛰기는 중앙에서 처리됨 | `openrouter` |
-    | `tool-stream-default-on` | 명시적으로 비활성화하지 않는 한 도구 스트리밍을 원하는 Z.AI 같은 제공자를 위한 기본 켜짐 `tool_stream` 래퍼 | `zai` |
+    | `google-thinking` | 공유 스트림 경로에서 Gemini 추론 페이로드 정규화 | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | 공유 프록시 스트림 경로의 Kilo 추론 래퍼이며, `kilo/auto` 및 지원되지 않는 프록시 추론 ID는 삽입된 추론을 건너뜁니다 | `kilocode` |
+    | `moonshot-thinking` | 구성 + `/think` 수준에서 Moonshot 바이너리 네이티브 추론 페이로드 매핑 | `moonshot` |
+    | `minimax-fast-mode` | 공유 스트림 경로에서 MiniMax 빠른 모드 모델 재작성 | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | 공유 네이티브 OpenAI/Codex Responses 래퍼: 어트리뷰션 헤더, `/fast`/`serviceTier`, 텍스트 상세도, 네이티브 Codex 웹 검색, 추론 호환 페이로드 구성, Responses 컨텍스트 관리 | `openai`, `openai-codex` |
+    | `openrouter-thinking` | 프록시 라우트를 위한 OpenRouter 추론 래퍼이며, 지원되지 않는 모델/`auto` 건너뛰기는 중앙에서 처리됩니다 | `openrouter` |
+    | `tool-stream-default-on` | 명시적으로 비활성화하지 않는 한 도구 스트리밍을 원하는 Z.AI 같은 제공자를 위한 기본 활성 `tool_stream` 래퍼 | `zai` |
 
-    <Accordion title="제품군 빌더를 구동하는 SDK 연결 지점">
-      각 제품군 빌더는 같은 패키지에서 내보내는 더 낮은 수준의 공개 헬퍼로 구성되며, 제공자가 일반 패턴을 벗어나야 할 때 이를 사용할 수 있습니다.
+    <Accordion title="패밀리 빌더를 구동하는 SDK 접점">
+      각 패밀리 빌더는 같은 패키지에서 내보내는 더 낮은 수준의 공개 헬퍼로 구성되며, 제공자가 공통 패턴을 벗어나야 할 때 이 헬퍼를 사용할 수 있습니다:
 
-      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)`, 원시 replay 빌더(`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). 또한 Gemini replay 헬퍼(`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`)와 endpoint/model 헬퍼(`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`, `normalizeNativeXaiModelId`)를 내보냅니다.
-      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, 그리고 공유 OpenAI/Codex 래퍼(`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), DeepSeek V4 OpenAI 호환 래퍼(`createDeepSeekV4OpenAICompatibleThinkingWrapper`), Anthropic Messages thinking prefill 정리(`createAnthropicThinkingPrefillPayloadWrapper`), 공유 프록시/제공자 래퍼(`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
-      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("gemini")`, 기반 Gemini 스키마 헬퍼(`normalizeGeminiToolSchemas`, `inspectGeminiToolSchemas`), xAI 호환 헬퍼(`resolveXaiModelCompatPatch()`, `applyXaiModelCompat(model)`). 번들 xAI Plugin은 이들과 함께 `normalizeResolvedModel` + `contributeResolvedModelCompat`를 사용해 xAI 규칙을 제공자가 소유하도록 유지합니다.
+      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)`, 원시 리플레이 빌더(`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). 또한 Gemini 리플레이 헬퍼(`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`)와 엔드포인트/모델 헬퍼(`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`, `normalizeNativeXaiModelId`)를 내보냅니다.
+      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, 공유 OpenAI/Codex 래퍼(`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), DeepSeek V4 OpenAI 호환 래퍼(`createDeepSeekV4OpenAICompatibleThinkingWrapper`), Anthropic Messages 추론 프리필 정리(`createAnthropicThinkingPrefillPayloadWrapper`), 공유 프록시/제공자 래퍼(`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`)를 제공합니다.
+      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("gemini")`, 기반 Gemini 스키마 헬퍼(`normalizeGeminiToolSchemas`, `inspectGeminiToolSchemas`), xAI 호환성 헬퍼(`resolveXaiModelCompatPatch()`, `applyXaiModelCompat(model)`). 번들 xAI Plugin은 `normalizeResolvedModel` + `contributeResolvedModelCompat`와 함께 이 헬퍼들을 사용하여 xAI 규칙이 제공자 소유로 유지되도록 합니다.
 
-      일부 스트림 헬퍼는 의도적으로 제공자 로컬에 남아 있습니다. `@openclaw/anthropic-provider`는 `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`와 더 낮은 수준의 Anthropic 래퍼 빌더를 자체 공개 `api.ts` / `contract-api.ts` 연결 지점에 유지합니다. Claude OAuth beta 처리와 `context1m` 게이팅을 인코딩하기 때문입니다. xAI Plugin도 네이티브 xAI Responses 구성을 자체 `wrapStreamFn`에 유지합니다(`/fast` 별칭, 기본 `tool_stream`, 지원되지 않는 strict-tool 정리, xAI 전용 reasoning 페이로드 제거).
+      일부 스트림 헬퍼는 의도적으로 제공자 내부에 남아 있습니다. `@openclaw/anthropic-provider`는 Claude OAuth 베타 처리와 `context1m` 게이팅을 인코딩하므로 `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`, 더 낮은 수준의 Anthropic 래퍼 빌더를 자체 공개 `api.ts` / `contract-api.ts` 접점에 유지합니다. xAI Plugin도 네이티브 xAI Responses 구성 조정을 자체 `wrapStreamFn`에 유지합니다(`/fast` 별칭, 기본 `tool_stream`, 지원되지 않는 엄격 도구 정리, xAI 전용 추론 페이로드 제거).
 
-      같은 패키지 루트 패턴은 `@openclaw/openai-provider`(제공자 빌더, 기본 모델 헬퍼, realtime 제공자 빌더)와 `@openclaw/openrouter-provider`(제공자 빌더 및 온보딩/config 헬퍼)도 뒷받침합니다.
+      동일한 패키지 루트 패턴은 `@openclaw/openai-provider`(제공자 빌더, 기본 모델 헬퍼, 실시간 제공자 빌더)와 `@openclaw/openrouter-provider`(제공자 빌더와 온보딩/구성 헬퍼)도 뒷받침합니다.
     </Accordion>
 
     <Tabs>
@@ -387,8 +388,8 @@ x-i18n:
         },
         ```
       </Tab>
-      <Tab title="네이티브 전송 ID">
-        범용 HTTP 또는 WebSocket 전송에서 네이티브 요청/세션 헤더나 메타데이터가 필요한 제공자의 경우:
+      <Tab title="네이티브 전송 식별 정보">
+        일반 HTTP 또는 WebSocket 전송에서 네이티브 요청/세션 헤더나 메타데이터가 필요한 제공자의 경우:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -408,8 +409,8 @@ x-i18n:
         }),
         ```
       </Tab>
-      <Tab title="사용량 및 청구">
-        사용량/청구 데이터를 노출하는 제공자의 경우:
+      <Tab title="사용량 및 결제">
+        사용량/결제 데이터를 노출하는 제공자의 경우:
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -423,81 +424,81 @@ x-i18n:
       </Tab>
     </Tabs>
 
-    <Accordion title="사용 가능한 모든 제공자 훅">
-      OpenClaw는 다음 순서로 훅을 호출합니다. 대부분의 제공자는 2~3개만 사용합니다.
+    <Accordion title="사용 가능한 모든 제공자 후크">
+      OpenClaw는 후크를 이 순서로 호출합니다. 대부분의 제공자는 2~3개만 사용합니다:
       OpenClaw가 더 이상 호출하지 않는 호환성 전용 제공자 필드(예:
-      `ProviderPlugin.capabilities` 및 `suppressBuiltInModel`)는 여기에
-      나열하지 않았습니다.
+      `ProviderPlugin.capabilities` 및 `suppressBuiltInModel`)는 여기에 나열되지 않습니다.
 
-      | # | 훅 | 사용 시점 |
+      | # | 후크 | 사용 시점 |
       | --- | --- | --- |
       | 1 | `catalog` | 모델 카탈로그 또는 기본 URL 기본값 |
-      | 2 | `applyConfigDefaults` | config 구체화 중 제공자 소유 전역 기본값 |
-      | 3 | `normalizeModelId` | 조회 전 레거시/preview model-id 별칭 정리 |
-      | 4 | `normalizeTransport` | 범용 모델 조립 전 제공자 제품군 `api` / `baseUrl` 정리 |
-      | 5 | `normalizeConfig` | `models.providers.<id>` config 정규화 |
-      | 6 | `applyNativeStreamingUsageCompat` | config 제공자의 네이티브 streaming-usage 호환 재작성 |
-      | 7 | `resolveConfigApiKey` | 제공자 소유 env-marker 인증 해석 |
-      | 8 | `resolveSyntheticAuth` | 로컬/셀프 호스팅 또는 config 기반 합성 인증 |
-      | 9 | `shouldDeferSyntheticProfileAuth` | env/config 인증 뒤로 합성 저장 프로필 플레이스홀더 낮추기 |
+      | 2 | `applyConfigDefaults` | 구성 구체화 중 제공자 소유 전역 기본값 |
+      | 3 | `normalizeModelId` | 조회 전 레거시/프리뷰 모델 ID 별칭 정리 |
+      | 4 | `normalizeTransport` | 일반 모델 조립 전 제공자 패밀리 `api` / `baseUrl` 정리 |
+      | 5 | `normalizeConfig` | `models.providers.<id>` 구성 정규화 |
+      | 6 | `applyNativeStreamingUsageCompat` | 구성 제공자를 위한 네이티브 스트리밍 사용량 호환성 재작성 |
+      | 7 | `resolveConfigApiKey` | 제공자 소유 환경 표시자 인증 해석 |
+      | 8 | `resolveSyntheticAuth` | 로컬/자체 호스팅 또는 구성 기반 합성 인증 |
+      | 9 | `shouldDeferSyntheticProfileAuth` | 환경/구성 인증보다 합성 저장 프로필 자리표시자의 우선순위를 낮춤 |
       | 10 | `resolveDynamicModel` | 임의의 업스트림 모델 ID 허용 |
       | 11 | `prepareDynamicModel` | 해석 전 비동기 메타데이터 가져오기 |
       | 12 | `normalizeResolvedModel` | 러너 전 전송 재작성 |
-      | 13 | `contributeResolvedModelCompat` | 다른 호환 전송 뒤에 있는 벤더 모델용 호환 플래그 |
+      | 13 | `contributeResolvedModelCompat` | 다른 호환 전송 뒤의 벤더 모델에 대한 호환성 플래그 |
       | 14 | `normalizeToolSchemas` | 등록 전 제공자 소유 도구 스키마 정리 |
       | 15 | `inspectToolSchemas` | 제공자 소유 도구 스키마 진단 |
-      | 16 | `resolveReasoningOutputMode` | tagged vs native reasoning-output 계약 |
-      | 17 | `prepareExtraParams` | 기본 요청 파라미터 |
+      | 16 | `resolveReasoningOutputMode` | 태그 방식과 네이티브 추론 출력 계약 |
+      | 17 | `prepareExtraParams` | 기본 요청 매개변수 |
       | 18 | `createStreamFn` | 완전한 사용자 지정 StreamFn 전송 |
       | 19 | `wrapStreamFn` | 일반 스트림 경로의 사용자 지정 헤더/본문 래퍼 |
       | 20 | `resolveTransportTurnState` | 네이티브 턴별 헤더/메타데이터 |
-      | 21 | `resolveWebSocketSessionPolicy` | 네이티브 WS 세션 헤더/cool-down |
+      | 21 | `resolveWebSocketSessionPolicy` | 네이티브 WS 세션 헤더/쿨다운 |
       | 22 | `formatApiKey` | 사용자 지정 런타임 토큰 형태 |
-      | 23 | `refreshOAuth` | 사용자 지정 OAuth refresh |
+      | 23 | `refreshOAuth` | 사용자 지정 OAuth 갱신 |
       | 24 | `buildAuthDoctorHint` | 인증 복구 안내 |
-      | 25 | `matchesContextOverflowError` | 제공자 소유 overflow 감지 |
-      | 26 | `classifyFailoverReason` | 제공자 소유 rate-limit/overload 분류 |
+      | 25 | `matchesContextOverflowError` | 제공자 소유 오버플로 감지 |
+      | 26 | `classifyFailoverReason` | 제공자 소유 속도 제한/과부하 분류 |
       | 27 | `isCacheTtlEligible` | 프롬프트 캐시 TTL 게이팅 |
-      | 28 | `buildMissingAuthMessage` | 사용자 지정 누락 인증 힌트 |
-      | 29 | `augmentModelCatalog` | 합성 forward-compat 행 |
+      | 28 | `buildMissingAuthMessage` | 사용자 지정 인증 누락 힌트 |
+      | 29 | `augmentModelCatalog` | 합성 전방 호환성 행 |
       | 30 | `resolveThinkingProfile` | 모델별 `/think` 옵션 세트 |
-      | 31 | `isBinaryThinking` | 바이너리 thinking on/off 호환성 |
-      | 32 | `supportsXHighThinking` | `xhigh` reasoning 지원 호환성 |
+      | 31 | `isBinaryThinking` | 바이너리 추론 켜기/끄기 호환성 |
+      | 32 | `supportsXHighThinking` | `xhigh` 추론 지원 호환성 |
       | 33 | `resolveDefaultThinkingLevel` | 기본 `/think` 정책 호환성 |
-      | 34 | `isModernModelRef` | live/smoke 모델 매칭 |
+      | 34 | `isModernModelRef` | 라이브/스모크 모델 매칭 |
       | 35 | `prepareRuntimeAuth` | 추론 전 토큰 교환 |
       | 36 | `resolveUsageAuth` | 사용자 지정 사용량 자격 증명 파싱 |
-      | 37 | `fetchUsageSnapshot` | 사용자 지정 사용량 endpoint |
-      | 38 | `createEmbeddingProvider` | memory/search용 제공자 소유 embedding adapter |
-      | 39 | `buildReplayPolicy` | 사용자 지정 transcript replay/Compaction 정책 |
-      | 40 | `sanitizeReplayHistory` | 범용 정리 후 제공자별 replay 재작성 |
-      | 41 | `validateReplayTurns` | 임베디드 러너 전 엄격한 replay-turn 검증 |
-      | 42 | `onModelSelected` | 선택 후 콜백(예: telemetry) |
+      | 37 | `fetchUsageSnapshot` | 사용자 지정 사용량 엔드포인트 |
+      | 38 | `createEmbeddingProvider` | 메모리/검색을 위한 제공자 소유 임베딩 어댑터 |
+      | 39 | `buildReplayPolicy` | 사용자 지정 트랜스크립트 리플레이/Compaction 정책 |
+      | 40 | `sanitizeReplayHistory` | 일반 정리 후 제공자별 리플레이 재작성 |
+      | 41 | `validateReplayTurns` | 임베디드 러너 전 엄격한 리플레이 턴 검증 |
+      | 42 | `onModelSelected` | 선택 후 콜백(예: 텔레메트리) |
 
-      런타임 fallback 참고:
+      런타임 폴백 참고 사항:
 
-      - `normalizeConfig`는 먼저 매칭된 제공자를 확인한 다음, 실제로 config를 변경하는 제공자가 나올 때까지 훅을 지원하는 다른 제공자 Plugin을 확인합니다. 지원되는 Google 제품군 config 항목을 어떤 제공자 훅도 재작성하지 않으면 번들 Google config 정규화기가 계속 적용됩니다.
-      - `resolveConfigApiKey`는 노출된 경우 제공자 훅을 사용합니다. 번들 `amazon-bedrock` 경로도 여기에서 내장 AWS env-marker resolver를 갖지만, Bedrock 런타임 인증 자체는 여전히 AWS SDK 기본 체인을 사용합니다.
-      - `resolveSystemPromptContribution`은 제공자가 모델 제품군을 위한 캐시 인식 시스템 프롬프트 안내를 주입할 수 있게 합니다. 동작이 하나의 제공자/모델 제품군에 속하며 안정/동적 캐시 분리를 보존해야 할 때는 `before_prompt_build`보다 이를 선호하세요.
+      - `normalizeConfig`는 먼저 일치하는 제공자를 확인한 다음, 실제로 구성을 변경하는 항목이 나올 때까지 후크를 지원하는 다른 제공자 Plugin을 확인합니다. 지원되는 Google 패밀리 구성 항목을 재작성하는 제공자 후크가 없으면 번들 Google 구성 정규화기가 계속 적용됩니다.
+      - `resolveConfigApiKey`는 노출된 경우 제공자 후크를 사용합니다. 번들 `amazon-bedrock` 경로도 여기에 내장 AWS 환경 표시자 해석기를 가지고 있지만, Bedrock 런타임 인증 자체는 여전히 AWS SDK 기본 체인을 사용합니다.
+      - `resolveSystemPromptContribution`은 제공자가 모델 패밀리에 대해 캐시 인식 시스템 프롬프트 안내를 삽입할 수 있게 합니다. 동작이 하나의 제공자/모델 패밀리에 속하고 안정/동적 캐시 분리를 보존해야 하는 경우 `before_prompt_build`보다 이를 선호하세요.
 
-      자세한 설명과 실제 예시는 [내부 구조: 제공자 런타임 훅](/ko/plugins/architecture-internals#provider-runtime-hooks)을 참조하세요.
+      자세한 설명과 실제 예시는 [내부 구조: 제공자 런타임 후크](/ko/plugins/architecture-internals#provider-runtime-hooks)를 참조하세요.
     </Accordion>
 
   </Step>
 
   <Step title="추가 기능 추가(선택 사항)">
-    제공자 Plugin은 텍스트 추론과 함께 음성, realtime 전사, realtime
+    ### 단계 5: 추가 기능 추가
+
+    제공자 Plugin은 텍스트 추론과 함께 음성, 실시간 전사, 실시간
     음성, 미디어 이해, 이미지 생성, 비디오 생성, 웹 가져오기,
     웹 검색을 등록할 수 있습니다. OpenClaw는 이를
-    **hybrid-capability** Plugin으로 분류합니다. 회사 Plugin에 권장되는
-    패턴입니다(벤더당 하나의 Plugin). 
+    **하이브리드 기능** Plugin으로 분류합니다. 이는 회사 Plugin에
+    권장되는 패턴입니다(벤더당 Plugin 하나). 자세한 내용은
     [내부 구조: 기능 소유권](/ko/plugins/architecture#capability-ownership-model)을 참조하세요.
 
-    기존 `api.registerProvider(...)` 호출과 함께 `register(api)` 내부에
-    각 기능을 등록하세요. 필요한 탭만 선택하세요:
+    기존 `api.registerProvider(...)` 호출과 함께 `register(api)` 안에 각 기능을 등록합니다. 필요한 탭만 선택하세요:
 
     <Tabs>
-      <Tab title="Speech (TTS)">
+      <Tab title="음성(TTS)">
         ```typescript
         import {
           assertOkOrThrowProviderError,
@@ -532,15 +533,15 @@ x-i18n:
         });
         ```
 
-        Provider HTTP 실패에는 `assertOkOrThrowProviderError(...)`를 사용하여
-        Plugin들이 제한된 오류 본문 읽기, JSON 오류 구문 분석, 그리고
-        request-id 접미사를 공유하도록 하세요.
+        provider HTTP 실패에는 `assertOkOrThrowProviderError(...)`를 사용하면
+        Plugin들이 제한된 오류 본문 읽기, JSON 오류 파싱, request-id 접미사를
+        공유할 수 있습니다.
       </Tab>
-      <Tab title="Realtime transcription">
-        `createRealtimeTranscriptionWebSocketSession(...)`를 선호하세요. 공유
-        helper가 proxy capture, reconnect backoff, close flushing, ready
-        handshakes, audio queueing, close-event diagnostics를 처리합니다. Plugin은
-        upstream events만 매핑하면 됩니다.
+      <Tab title="실시간 전사">
+        `createRealtimeTranscriptionWebSocketSession(...)`을 선호하세요. 공유
+        헬퍼가 프록시 캡처, 재연결 백오프, 닫기 플러시, 준비
+        핸드셰이크, 오디오 큐잉, 닫기 이벤트 진단을 처리합니다. Plugin은
+        업스트림 이벤트만 매핑하면 됩니다.
 
         ```typescript
         api.registerRealtimeTranscriptionProvider({
@@ -578,13 +579,13 @@ x-i18n:
         });
         ```
 
-        multipart audio를 POST하는 배치 STT provider는
+        multipart 오디오를 POST하는 배치 STT provider는
         `openclaw/plugin-sdk/provider-http`의
-        `buildAudioTranscriptionFormData(...)`를 사용해야 합니다. 이 helper는 호환되는
-        transcription API를 위해 M4A 스타일 파일 이름이 필요한 AAC 업로드를 포함해
-        업로드 파일 이름을 정규화합니다.
+        `buildAudioTranscriptionFormData(...)`를 사용해야 합니다. 이 헬퍼는
+        호환되는 전사 API를 위해 M4A 스타일 파일 이름이 필요한 AAC 업로드를
+        포함해 업로드 파일 이름을 정규화합니다.
       </Tab>
-      <Tab title="Realtime voice">
+      <Tab title="실시간 음성">
         ```typescript
         api.registerRealtimeVoiceProvider({
           id: "acme-ai",
@@ -607,11 +608,11 @@ x-i18n:
         });
         ```
 
-        transport가 사람이 assistant 재생을 끊고 있음을 감지할 수 있고 provider가
-        활성 audio response를 자르거나 지우는 것을 지원한다면 `handleBargeIn`을
+        transport가 사람이 assistant 재생을 가로막는 것을 감지할 수 있고 provider가
+        활성 오디오 응답을 자르거나 지우는 기능을 지원할 때 `handleBargeIn`을
         구현하세요.
       </Tab>
-      <Tab title="Media understanding">
+      <Tab title="미디어 이해">
         ```typescript
         api.registerMediaUnderstandingProvider({
           id: "acme-ai",
@@ -621,12 +622,13 @@ x-i18n:
         });
         ```
       </Tab>
-      <Tab title="Image and video generation">
-        video capabilities는 **mode-aware** 형태를 사용합니다: `generate`,
-        `imageToVideo`, `videoToVideo`. `maxInputImages` / `maxInputVideos` /
-        `maxDurationSeconds` 같은 flat aggregate field만으로는 transform-mode 지원이나
-        비활성화된 모드를 깔끔하게 알리기에 충분하지 않습니다.
-        music generation도 명시적인 `generate` / `edit` block으로 같은 패턴을 따릅니다.
+      <Tab title="이미지 및 비디오 생성">
+        비디오 기능은 **모드 인식** 형태인 `generate`,
+        `imageToVideo`, `videoToVideo`를 사용합니다. `maxInputImages` /
+        `maxInputVideos` / `maxDurationSeconds` 같은 평면 집계 필드만으로는
+        변환 모드 지원이나 비활성화된 모드를 명확하게 표시하기에 충분하지
+        않습니다. 음악 생성도 명시적인 `generate` / `edit` 블록으로 같은 패턴을
+        따릅니다.
 
         ```typescript
         api.registerImageGenerationProvider({
@@ -653,7 +655,7 @@ x-i18n:
         });
         ```
       </Tab>
-      <Tab title="Web fetch and search">
+      <Tab title="웹 가져오기 및 검색">
         ```typescript
         api.registerWebFetchProvider({
           id: "acme-ai-fetch",
@@ -686,7 +688,9 @@ x-i18n:
 
   </Step>
 
-  <Step title="Test">
+  <Step title="테스트">
+    ### 6단계: 테스트
+
     ```typescript src/provider.test.ts
     import { describe, it, expect } from "vitest";
     // Export your provider config object from index.ts or a dedicated file
@@ -722,14 +726,14 @@ x-i18n:
 
 ## ClawHub에 게시
 
-Provider Plugin은 다른 외부 code Plugin과 같은 방식으로 게시합니다:
+Provider Plugin은 다른 외부 코드 Plugin과 같은 방식으로 게시합니다.
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-여기서는 기존 skill-only 게시 alias를 사용하지 마세요. Plugin package는
+여기서는 레거시 skill 전용 게시 별칭을 사용하지 마세요. Plugin 패키지는
 `clawhub package publish`를 사용해야 합니다.
 
 ## 파일 구조
@@ -744,26 +748,27 @@ clawhub package publish your-org/your-plugin
     └── usage.ts              # Usage endpoint (optional)
 ```
 
-## Catalog 순서 참조
+## 카탈로그 순서 참조
 
-`catalog.order`는 catalog가 내장 provider와 비교해 언제 병합되는지를 제어합니다:
+`catalog.order`는 기본 제공 provider와 비교해 카탈로그가 병합되는 시점을
+제어합니다.
 
-| 순서      | 시점          | 사용 사례                                      |
+| 순서      | 시점          | 사용 사례                                        |
 | --------- | ------------- | ----------------------------------------------- |
-| `simple`  | 첫 번째 pass  | 일반 API key provider                          |
-| `profile` | simple 이후   | auth profile에 의해 제어되는 provider           |
-| `paired`  | profile 이후  | 여러 관련 entry 합성                            |
-| `late`    | 마지막 pass   | 기존 provider 재정의(충돌 시 우선)              |
+| `simple`  | 첫 번째 패스  | 일반 API 키 provider                            |
+| `profile` | simple 이후   | 인증 프로필에 의해 제한되는 provider            |
+| `paired`  | profile 이후  | 관련 항목 여러 개 합성                          |
+| `late`    | 마지막 패스   | 기존 provider 재정의(충돌 시 우선)              |
 
 ## 다음 단계
 
-- [Channel Plugin](/ko/plugins/sdk-channel-plugins) — Plugin이 channel도 제공하는 경우
-- [SDK Runtime](/ko/plugins/sdk-runtime) — `api.runtime` helper(TTS, search, subagent)
-- [SDK 개요](/ko/plugins/sdk-overview) — 전체 subpath import 참조
-- [Plugin 내부 구조](/ko/plugins/architecture-internals#provider-runtime-hooks) — hook 세부 정보와 번들 예제
+- [Channel Plugin](/ko/plugins/sdk-channel-plugins) — Plugin이 채널도 제공하는 경우
+- [SDK Runtime](/ko/plugins/sdk-runtime) — `api.runtime` 헬퍼(TTS, 검색, subagent)
+- [SDK 개요](/ko/plugins/sdk-overview) — 전체 하위 경로 import 참조
+- [Plugin 내부 구조](/ko/plugins/architecture-internals#provider-runtime-hooks) — hook 세부 정보 및 번들 예시
 
 ## 관련 항목
 
 - [Plugin SDK 설정](/ko/plugins/sdk-setup)
 - [Plugin 빌드](/ko/plugins/building-plugins)
-- [channel Plugin 빌드](/ko/plugins/sdk-channel-plugins)
+- [채널 Plugin 빌드](/ko/plugins/sdk-channel-plugins)

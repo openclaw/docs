@@ -1,47 +1,91 @@
 ---
 read_when:
-    - '`.experimental` config 키를 보고 이것이 안정적인지 알고 싶습니다'
-    - 일반 기본값과 혼동하지 않고 미리보기 런타임 기능을 사용해 보고 싶습니다
-    - 현재 문서화된 experimental 플래그를 한곳에서 찾고 싶습니다
-summary: OpenClaw에서 experimental 플래그의 의미와 현재 문서화된 항목들
+    - '`.experimental` 구성 키를 보고 해당 키가 안정적인지 알고 싶습니다'
+    - 일반 기본값과 혼동하지 않고 프리뷰 런타임 기능을 사용해 보고 싶은 경우
+    - 현재 문서화된 실험적 플래그를 한 곳에서 찾고 싶습니다
+summary: OpenClaw에서 실험적 플래그가 의미하는 것과 현재 문서화되어 있는 플래그들
 title: 실험적 기능
 x-i18n:
-    generated_at: "2026-04-24T06:10:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T22:18:14Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1a97e8efa180844e1ca94495d626956847a15a15bba0846aaf54ff9c918cda02
+    source_hash: 066efa297bac995597f1092ed6473d9cff28c01d7e28fa1382d7997f8f83a346
     source_path: concepts/experimental-features.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw의 실험적 기능은 **옵트인 미리보기 표면**입니다. 안정적인 기본값이나 오래 유지되는 공개 계약으로 만들기 전에 실제 환경에서의 사용 경험이 더 필요하기 때문에 명시적인 플래그 뒤에 있습니다.
+OpenClaw의 실험적 기능은 **옵트인 프리뷰 표면**입니다. 안정적인 기본값이나 장기 유지되는 공개 계약으로 삼기 전에 실제 환경에서 더 검증해야 하므로 명시적인 플래그 뒤에 있습니다.
 
-일반 config와는 다르게 취급하세요.
+일반 설정과는 다르게 취급하세요.
 
-- 관련 문서에서 사용해 보라고 안내하지 않는 한 기본적으로는 **꺼 둡니다**.
-- 안정적인 config보다 **형태와 동작이 더 빠르게 바뀔 수 있음**을 예상하세요.
-- 이미 안정적인 경로가 있다면 먼저 그 경로를 우선하세요.
-- OpenClaw를 넓게 배포하려면 experimental 플래그를 공용 기준 구성에 넣기 전에 더 작은 환경에서 먼저 테스트하세요.
+- 관련 문서에서 사용해 보라고 안내하지 않는 한 **기본적으로 꺼 두세요**.
+- 안정적인 설정보다 **형태와 동작이 더 빠르게 바뀔 수 있음**을 예상하세요.
+- 이미 안정적인 경로가 있다면 먼저 그 경로를 선호하세요.
+- OpenClaw를 넓게 배포하는 경우, 실험적 플래그를 공유 기준선에 포함하기 전에 더 작은 환경에서 테스트하세요.
 
 ## 현재 문서화된 플래그
 
-| 표면                    | 키                                                        | 사용 시점                                                                                                      | 자세히                                                                                       |
-| ----------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| 로컬 모델 런타임        | `agents.defaults.experimental.localModelLean`             | 더 작거나 더 엄격한 로컬 백엔드가 OpenClaw의 전체 기본 도구 표면을 감당하지 못할 때                           | [로컬 모델](/ko/gateway/local-models)                                                           |
-| 메모리 검색             | `agents.defaults.memorySearch.experimental.sessionMemory` | `memory_search`가 이전 세션 transcript를 인덱싱하고 추가 저장소/인덱싱 비용을 감수하길 원할 때                | [메모리 구성 참조](/ko/reference/memory-config#session-memory-search-experimental)             |
-| 구조화된 계획 도구      | `tools.experimental.planTool`                             | 호환되는 런타임 및 UI에서 다단계 작업 추적을 위해 구조화된 `update_plan` 도구를 노출하고 싶을 때              | [Gateway 구성 참조](/ko/gateway/config-tools#toolsexperimental)                                |
+| 표면                     | 키                                                        | 사용할 때                                                                                                           | 자세히                                                                                        |
+| ------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| 로컬 모델 런타임         | `agents.defaults.experimental.localModelLean`             | 더 작거나 더 엄격한 로컬 백엔드가 OpenClaw의 전체 기본 도구 표면을 처리하지 못할 때                                 | [로컬 모델](/ko/gateway/local-models)                                                            |
+| 메모리 검색              | `agents.defaults.memorySearch.experimental.sessionMemory` | `memory_search`가 이전 세션 트랜스크립트를 색인하고 추가 저장소/색인 비용을 감수하게 하려는 경우                     | [메모리 설정 참조](/ko/reference/memory-config#session-memory-search-experimental)                |
+| 구조화된 계획 도구       | `tools.experimental.planTool`                             | 호환되는 런타임과 UI에서 여러 단계 작업 추적을 위해 구조화된 `update_plan` 도구를 노출하려는 경우                   | [Gateway 설정 참조](/ko/gateway/config-tools#toolsexperimental)                                   |
 
-## 로컬 모델 lean 모드
+## 로컬 모델 경량 모드
 
-`agents.defaults.experimental.localModelLean: true`는 더 약한 로컬 모델 설정을 위한 완화 장치입니다. `browser`, `cron`, `message` 같은 무거운 기본 도구를 줄여 프롬프트 형태를 더 작고 덜 취약하게 만들어, 작은 컨텍스트 또는 더 엄격한 OpenAI 호환 백엔드에 맞춥니다.
+`agents.defaults.experimental.localModelLean: true`는 성능이 약한 로컬 모델 설정을 위한 압력 완화 장치입니다. 이 값이 켜져 있으면 OpenClaw는 매 턴마다 에이전트의 도구 표면에서 기본 도구 세 가지인 `browser`, `cron`, `message`를 제거합니다. 그 외에는 아무것도 바뀌지 않습니다.
 
-이는 의도적으로 **일반 경로가 아닙니다**. 백엔드가 전체 런타임을 문제없이 처리할 수 있다면 이 설정은 꺼 두세요.
+### 왜 이 세 가지 도구인가
 
-## experimental은 숨김을 의미하지 않습니다
+이 세 가지 도구는 기본 OpenClaw 런타임에서 설명이 가장 길고 매개변수 형태도 가장 많습니다. 작은 컨텍스트 또는 더 엄격한 OpenAI 호환 백엔드에서는 이것이 다음 차이를 만듭니다.
 
-어떤 기능이 experimental이라면 OpenClaw는 문서와 config 경로 자체에서 이를 분명히 밝혀야 합니다. 하지 말아야 할 것은 미리보기 동작을 안정적으로 보이는 기본 노브에 몰래 섞어 넣고 그것이 정상인 것처럼 가장하는 일입니다. 그렇게 되면 config 표면이 지저분해집니다.
+- 도구 스키마가 프롬프트에 깔끔하게 들어가는 경우와 대화 기록을 밀어내는 경우.
+- 모델이 올바른 도구를 선택하는 경우와 비슷해 보이는 스키마가 너무 많아 잘못된 형식의 도구 호출을 내보내는 경우.
+- Chat Completions 어댑터가 서버의 구조화된 출력 제한 안에 머무르는 경우와 도구 호출 페이로드 크기 때문에 400 오류를 일으키는 경우.
 
-## 관련 항목
+이들을 제거해도 OpenClaw가 조용히 다른 방식으로 연결되는 것은 아닙니다. 단지 도구 목록이 더 짧아질 뿐입니다. 모델은 여전히 `read`, `write`, `edit`, `exec`, `apply_patch`, 웹 검색/가져오기(설정된 경우), 메모리, 세션/에이전트 도구를 사용할 수 있습니다.
+
+### 켜야 할 때
+
+모델이 Gateway와 통신할 수 있음은 이미 입증했지만 전체 에이전트 턴이 오작동할 때 경량 모드를 활성화하세요. 일반적인 신호 흐름은 다음과 같습니다.
+
+1. `openclaw infer model run --gateway --model <ref> --prompt "Reply with exactly: pong"`이 성공합니다.
+2. 일반 에이전트 턴이 잘못된 형식의 도구 호출, 지나치게 큰 프롬프트, 또는 모델이 도구를 무시하는 문제로 실패합니다.
+3. `localModelLean: true`로 전환하면 실패가 사라집니다.
+
+### 꺼 두어야 할 때
+
+백엔드가 전체 기본 런타임을 깔끔하게 처리한다면 이 옵션을 꺼 두세요. 경량 모드는 기본값이 아니라 우회책입니다. 일부 로컬 스택은 정상 동작을 위해 더 작은 도구 표면이 필요하기 때문에 존재합니다. 호스팅 모델과 리소스가 충분한 로컬 장비에는 필요하지 않습니다.
+
+경량 모드는 `tools.profile`, `tools.allow`/`tools.deny`, 또는 모델 `compat.supportsTools: false` 탈출구를 대체하지도 않습니다. 특정 에이전트에 영구적으로 더 좁은 도구 표면이 필요하다면 실험적 플래그보다 이러한 안정적인 조절 항목을 선호하세요.
+
+### 활성화
+
+```json5
+{
+  agents: {
+    defaults: {
+      experimental: {
+        localModelLean: true,
+      },
+    },
+  },
+}
+```
+
+플래그를 변경한 뒤 Gateway를 다시 시작한 다음, 다음 명령으로 줄어든 도구 목록을 확인하세요.
+
+```bash
+openclaw status --deep
+```
+
+심층 상태 출력에는 활성 에이전트 도구가 표시됩니다. 경량 모드가 켜져 있으면 `browser`, `cron`, `message`가 없어야 합니다.
+
+## 실험적이라는 말은 숨겨졌다는 뜻이 아닙니다
+
+어떤 기능이 실험적이라면 OpenClaw는 문서와 설정 경로 자체에서 이를 명확히 밝혀야 합니다. 해서는 **안 되는** 일은 프리뷰 동작을 안정적으로 보이는 기본 조절 항목에 몰래 넣고 그것이 정상인 척하는 것입니다. 그렇게 하면 설정 표면이 지저분해집니다.
+
+## 관련
 
 - [기능](/ko/concepts/features)
 - [릴리스 채널](/ko/install/development-channels)
