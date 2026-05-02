@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Birden fazla yalıtılmış aracı istiyorsunuz (çalışma alanları + yönlendirme + kimlik doğrulama)
+    - Birden fazla yalıtılmış ajan istiyorsunuz (çalışma alanları + yönlendirme + kimlik doğrulama)
 summary: '`openclaw agents` için CLI referansı (list/add/delete/bindings/bind/unbind/set identity)'
 title: Ajanlar
 x-i18n:
-    generated_at: "2026-04-30T09:10:37Z"
+    generated_at: "2026-05-02T20:41:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 46742a890a57cb1035a053f14fe574044e4a3d7dcc04812cd11c633bd808819b
+    source_hash: 3522394dd416a9c8b4bf25767a14073484df0ff3d7c546cf6c730f111c5c51dc
     source_path: cli/agents.md
     workflow: 16
 ---
 
 # `openclaw agents`
 
-Yalıtılmış ajanları (çalışma alanları + kimlik doğrulama + yönlendirme) yönetin.
+Yalıtılmış ajanları yönetin (çalışma alanları + kimlik doğrulama + yönlendirme).
 
 İlgili:
 
@@ -41,7 +41,7 @@ openclaw agents delete work
 
 Gelen kanal trafiğini belirli bir ajana sabitlemek için yönlendirme bağlamalarını kullanın.
 
-Ajan başına farklı görünür skills de istiyorsanız, `openclaw.json` içinde `agents.defaults.skills` ve `agents.list[].skills` değerlerini yapılandırın. [Skills yapılandırması](/tr/tools/skills-config) ve [Yapılandırma başvurusu](/tr/gateway/config-agents#agents-defaults-skills) bölümlerine bakın.
+Ayrıca ajan başına farklı görünür skills istiyorsanız, `openclaw.json` içinde `agents.defaults.skills` ve `agents.list[].skills` yapılandırın. [Skills yapılandırması](/tr/tools/skills-config) ve [Yapılandırma başvurusu](/tr/gateway/config-agents#agents-defaults-skills) bölümlerine bakın.
 
 Bağlamaları listeleyin:
 
@@ -57,15 +57,15 @@ Bağlamalar ekleyin:
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-`accountId` değerini atlarsanız (`--bind <channel>`), OpenClaw kullanılabilir olduğunda bunu kanal varsayılanlarından ve plugin kurulum kancalarından çözer.
+`accountId` öğesini atlarsanız (`--bind <channel>`), OpenClaw mümkün olduğunda bunu kanal varsayılanlarından ve plugin kurulum kancalarından çözer.
 
-`bind` veya `unbind` için `--agent` değerini atlarsanız, OpenClaw geçerli varsayılan ajanı hedefler.
+`bind` veya `unbind` için `--agent` öğesini atlarsanız, OpenClaw geçerli varsayılan ajanı hedefler.
 
 ### Bağlama kapsamı davranışı
 
-- `accountId` içermeyen bir bağlama yalnızca kanal varsayılan hesabıyla eşleşir.
-- `accountId: "*"` kanal genelindeki yedektir (tüm hesaplar) ve açık bir hesap bağlamasından daha az özeldir.
-- Aynı ajanın zaten `accountId` olmadan eşleşen bir kanal bağlaması varsa ve daha sonra açık veya çözümlenmiş bir `accountId` ile bağlama yaparsanız, OpenClaw yinelenen bir bağlama eklemek yerine mevcut bağlamayı yerinde yükseltir.
+- `accountId` içermeyen bir bağlama yalnızca kanalın varsayılan hesabıyla eşleşir.
+- `accountId: "*"` kanal genelinde yedektir (tüm hesaplar) ve açık bir hesap bağlamasından daha az özeldir.
+- Aynı ajanın zaten `accountId` olmadan eşleşen bir kanal bağlaması varsa ve daha sonra açık veya çözümlenmiş bir `accountId` ile bağlama yaparsanız, OpenClaw yinelenen eklemek yerine mevcut bağlamayı yerinde yükseltir.
 
 Örnek:
 
@@ -77,7 +77,7 @@ openclaw agents bind --agent work --bind telegram
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-Yükseltmeden sonra bu bağlamanın yönlendirmesi `telegram:ops` kapsamına alınır. Varsayılan hesap yönlendirmesi de istiyorsanız, bunu açıkça ekleyin (örneğin `--bind telegram:default`).
+Yükseltmeden sonra, bu bağlama için yönlendirme `telegram:ops` kapsamına alınır. Varsayılan hesap yönlendirmesini de istiyorsanız, bunu açıkça ekleyin (örneğin `--bind telegram:default`).
 
 Bağlamaları kaldırın:
 
@@ -86,7 +86,7 @@ openclaw agents unbind --agent work --bind telegram:ops
 openclaw agents unbind --agent work --all
 ```
 
-`unbind`, `--all` veya bir ya da daha fazla `--bind` değeri kabul eder; ikisi birden kullanılamaz.
+`unbind`, `--all` ya da bir veya daha fazla `--bind` değeri kabul eder; ikisini birlikte kabul etmez.
 
 ## Komut yüzeyi
 
@@ -115,13 +115,11 @@ Seçenekler:
 Notlar:
 
 - Herhangi bir açık ekleme bayrağı geçirmek, komutu etkileşimsiz yola geçirir.
-- Etkileşimsiz mod hem bir ajan adı hem de `--workspace` gerektirir.
+- Etkileşimsiz mod hem ajan adı hem de `--workspace` gerektirir.
 - `main` ayrılmıştır ve yeni ajan kimliği olarak kullanılamaz.
-- Etkileşimli modda, kimlik doğrulama tohumlaması yalnızca taşınabilir statik profilleri
-  (varsayılan olarak `api_key` ve statik `token`) kopyalar. OAuth yenileme belirteci profilleri
-  yalnızca gerçek `main` ajan deposundan okuma yoluyla kalıtım ile kullanılabilir kalır.
-  Yapılandırılan varsayılan ajan `main` değilse, yeni ajandaki OAuth
-  profilleri için ayrıca oturum açın.
+- Etkileşimli modda kimlik doğrulama tohumlama yalnızca taşınabilir statik profilleri kopyalar
+  (varsayılan olarak `api_key` ve statik `token`). OAuth yenileme belirteci profilleri yalnızca gerçek `main` ajan deposundan okuma yoluyla kalıtım üzerinden kullanılabilir kalır.
+  Yapılandırılmış varsayılan ajan `main` değilse, yeni ajandaki OAuth profilleri için ayrı oturum açın.
 
 ### `agents bindings`
 
@@ -134,7 +132,7 @@ Seçenekler:
 
 Seçenekler:
 
-- `--agent <id>` (varsayılan olarak geçerli varsayılan ajan kullanılır)
+- `--agent <id>` (varsayılan olarak geçerli varsayılan ajan)
 - `--bind <channel[:accountId]>` (tekrarlanabilir)
 - `--json`
 
@@ -142,7 +140,7 @@ Seçenekler:
 
 Seçenekler:
 
-- `--agent <id>` (varsayılan olarak geçerli varsayılan ajan kullanılır)
+- `--agent <id>` (varsayılan olarak geçerli varsayılan ajan)
 - `--bind <channel[:accountId]>` (tekrarlanabilir)
 - `--all`
 - `--json`
@@ -158,9 +156,10 @@ Notlar:
 
 - `main` silinemez.
 - `--force` olmadan etkileşimli onay gerekir.
-- Çalışma alanı, ajan durumu ve oturum dökümü dizinleri kalıcı olarak silinmez, Çöp Kutusu'na taşınır.
+- Çalışma alanı, ajan durumu ve oturum dökümü dizinleri kalıcı olarak silinmez; Çöp Kutusu'na taşınır.
+- Gateway erişilebilir olduğunda silme işlemi Gateway üzerinden gönderilir; böylece yapılandırma ve oturum deposu temizliği, çalışma zamanı trafiğiyle aynı yazıcıyı paylaşır. Gateway'e ulaşılamazsa CLI çevrimdışı yerel yola geri döner.
 - Başka bir ajanın çalışma alanı aynı yolsa, bu çalışma alanının içindeyse veya bu çalışma alanını içeriyorsa,
-  çalışma alanı korunur ve `--json`, `workspaceRetained`,
+  çalışma alanı korunur ve `--json` `workspaceRetained`,
   `workspaceRetainedReason` ve `workspaceSharedWith` bildirir.
 
 ## Kimlik dosyaları
@@ -168,18 +167,18 @@ Notlar:
 Her ajan çalışma alanı, çalışma alanı kökünde bir `IDENTITY.md` içerebilir:
 
 - Örnek yol: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity`, çalışma alanı kökünden (veya açık bir `--identity-file` dosyasından) okur
+- `set-identity --from-identity`, çalışma alanı kökünden (veya açık bir `--identity-file` değerinden) okur
 
 Avatar yolları çalışma alanı köküne göre çözümlenir.
 
-## Kimliği ayarlama
+## Kimlik ayarla
 
 `set-identity`, alanları `agents.list[].identity` içine yazar:
 
 - `name`
 - `theme`
 - `emoji`
-- `avatar` (çalışma alanına göre yol, http(s) URL'si veya data URI)
+- `avatar` (çalışma alanına göreli yol, http(s) URL'si veya veri URI'si)
 
 Seçenekler:
 
@@ -196,8 +195,8 @@ Seçenekler:
 Notlar:
 
 - Hedef ajanı seçmek için `--agent` veya `--workspace` kullanılabilir.
-- `--workspace` değerine güveniyorsanız ve birden fazla ajan bu çalışma alanını paylaşıyorsa, komut başarısız olur ve `--agent` geçirmenizi ister.
-- Açık kimlik alanları sağlanmadığında, komut kimlik verilerini `IDENTITY.md` dosyasından okur.
+- `--workspace` kullanıyorsanız ve birden fazla ajan bu çalışma alanını paylaşıyorsa, komut başarısız olur ve `--agent` geçirmenizi ister.
+- Açık kimlik alanları sağlanmadığında komut kimlik verilerini `IDENTITY.md` dosyasından okur.
 
 `IDENTITY.md` dosyasından yükleyin:
 
