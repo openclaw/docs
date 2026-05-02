@@ -1,47 +1,97 @@
 ---
 read_when:
-    - 你看到了一个 `.experimental` 配置键，想知道它是否稳定
-    - 你想尝试预览版运行时功能，同时不将它们与正常默认设置混淆
-    - 你想在一个地方找到当前已记录的实验性标志
-summary: OpenClaw 中实验性标志的含义，以及当前已记录了哪些实验性标志
+    - 你看到一个 `.experimental` 配置键，并想知道它是否稳定
+    - 你想尝试预览版运行时功能，而不把它们和常规默认设置混淆
+    - 你想要一个地方来查找当前文档中记录的实验性标志
+summary: OpenClaw 中实验性标志的含义以及当前已记录的标志
 title: 实验性功能
 x-i18n:
-    generated_at: "2026-04-24T04:02:01Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T21:49:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1a97e8efa180844e1ca94495d626956847a15a15bba0846aaf54ff9c918cda02
+    source_hash: 066efa297bac995597f1092ed6473d9cff28c01d7e28fa1382d7997f8f83a346
     source_path: concepts/experimental-features.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw 中的实验性功能是**选择加入的预览能力**。它们被放在显式标志之后，是因为在成为稳定默认值或长期公开契约之前，仍然需要真实环境中的验证。
+Experimental features in OpenClaw are **opt-in preview surfaces**. They are
+behind explicit flags because they still need real-world mileage before they
+deserve a stable default or a long-lived public contract.
 
-请将它们与普通配置区别对待：
+Treat them differently from normal config:
 
-- 默认情况下保持**关闭**，除非相关文档明确建议你尝试某个标志。
-- 预期其**结构和行为会比稳定配置变化得更快**。
-- 如果已有稳定路径，优先使用稳定路径。
-- 如果你要大范围部署 OpenClaw，请先在较小环境中测试实验性标志，再将其纳入共享基线。
+- Keep them **off by default** unless the related doc tells you to try one.
+- Expect **shape and behavior to change** faster than stable config.
+- Prefer the stable path first when one already exists.
+- If you are rolling OpenClaw out broadly, test experimental flags in a smaller
+  environment before baking them into a shared baseline.
 
-## 当前已记录的标志
+## Currently documented flags
 
-| Surface | Key | Use it when | More |
+| Surface                  | Key                                                       | Use it when                                                                                                    | More                                                                                          |
 | ------------------------ | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| 本地模型运行时 | `agents.defaults.experimental.localModelLean` | 较小或更严格的本地后端无法处理 OpenClaw 完整的默认工具能力 | [本地模型](/zh-CN/gateway/local-models) |
-| 记忆搜索 | `agents.defaults.memorySearch.experimental.sessionMemory` | 你希望 `memory_search` 为先前的会话转录建立索引，并接受额外的存储/索引成本 | [记忆配置参考](/zh-CN/reference/memory-config#session-memory-search-experimental) |
-| 结构化规划工具 | `tools.experimental.planTool` | 你希望在兼容的运行时和 UI 中公开结构化的 `update_plan` 工具，用于多步骤工作跟踪 | [Gateway 网关配置参考](/zh-CN/gateway/config-tools#toolsexperimental) |
+| Local model runtime      | `agents.defaults.experimental.localModelLean`             | A smaller or stricter local backend chokes on OpenClaw's full default tool surface                             | [Local Models](/zh-CN/gateway/local-models)                                                         |
+| Memory search            | `agents.defaults.memorySearch.experimental.sessionMemory` | You want `memory_search` to index prior session transcripts and accept the extra storage/indexing cost         | [Memory configuration reference](/zh-CN/reference/memory-config#session-memory-search-experimental) |
+| Structured planning tool | `tools.experimental.planTool`                             | You want the structured `update_plan` tool exposed for multi-step work tracking in compatible runtimes and UIs | [Gateway configuration reference](/zh-CN/gateway/config-tools#toolsexperimental)                    |
 
-## 本地模型精简模式
+## Local model lean mode
 
-`agents.defaults.experimental.localModelLean: true` 是为较弱的本地模型环境提供的缓冲阀。它会裁剪像 `browser`、`cron` 和 `message` 这样的重量级默认工具，使提示结构更小，在小上下文或更严格的 OpenAI 兼容后端中更不易出问题。
+`agents.defaults.experimental.localModelLean: true` is a pressure-release valve for weaker local-model setups. When it is on, OpenClaw drops three default tools — `browser`, `cron`, and `message` — from the agent's tool surface for every turn. Nothing else changes.
 
-这**不是**正常路径。如果你的后端能够稳定处理完整运行时，请保持关闭。
+### Why these three tools
 
-## 实验性不等于隐藏
+These three tools have the largest descriptions and the most parameter shapes in the default OpenClaw runtime. On a small-context or stricter OpenAI-compatible backend that is the difference between:
 
-如果某个功能是实验性的，OpenClaw 应该在文档和配置路径本身中明确说明。它**不应该**做的是，把预览行为偷偷塞进一个看起来稳定的默认开关里，然后假装那是正常用法。那样只会让配置能力变得混乱。
+- Tool schemas fitting cleanly in the prompt vs. crowding out conversation history.
+- The model picking the right tool vs. emitting malformed tool calls because there are too many similar-looking schemas.
+- The Chat Completions adapter staying inside the server's structured-output limits vs. tripping a 400 on tool-call payload size.
 
-## 相关内容
+Removing them does not silently rewire OpenClaw — it just makes the tool list shorter. The model still has `read`, `write`, `edit`, `exec`, `apply_patch`, web search/fetch (when configured), memory, and session/agent tools available.
 
-- [功能](/zh-CN/concepts/features)
-- [发布渠道](/zh-CN/install/development-channels)
+### When to turn it on
+
+Enable lean mode when you have already proved the model can talk to the Gateway but full agent turns misbehave. The typical signal chain is:
+
+1. `openclaw infer model run --gateway --model <ref> --prompt "Reply with exactly: pong"` succeeds.
+2. A normal agent turn fails with malformed tool calls, oversized prompts, or the model ignoring its tools.
+3. Toggling `localModelLean: true` clears the failure.
+
+### When to leave it off
+
+If your backend handles the full default runtime cleanly, leave this off. Lean mode is a workaround, not a default. It exists because some local stacks need a smaller tool surface to behave; hosted models and well-resourced local rigs do not.
+
+Lean mode also does not replace `tools.profile`, `tools.allow`/`tools.deny`, or the model `compat.supportsTools: false` escape hatch. If you need a permanent narrower tool surface for a specific agent, prefer those stable knobs over the experimental flag.
+
+### Enable
+
+```json5
+{
+  agents: {
+    defaults: {
+      experimental: {
+        localModelLean: true,
+      },
+    },
+  },
+}
+```
+
+Restart the Gateway after changing the flag, then confirm the trimmed tool list with:
+
+```bash
+openclaw status --deep
+```
+
+The deep status output lists the active agent tools; `browser`, `cron`, and `message` should be absent when lean mode is on.
+
+## Experimental does not mean hidden
+
+If a feature is experimental, OpenClaw should say so plainly in docs and in the
+config path itself. What it should **not** do is smuggle preview behavior into a
+stable-looking default knob and pretend that is normal. That's how config
+surfaces get messy.
+
+## Related
+
+- [Features](/zh-CN/concepts/features)
+- [Release channels](/zh-CN/install/development-channels)
