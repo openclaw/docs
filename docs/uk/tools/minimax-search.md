@@ -1,29 +1,30 @@
 ---
 read_when:
     - Ви хочете використовувати MiniMax для web_search
-    - Вам потрібен ключ MiniMax Coding Plan
-    - Вам потрібні вказівки щодо хостів пошуку MiniMax CN/global
-summary: MiniMax Search через API пошуку Coding Plan
+    - Потрібен ключ MiniMax Token Plan або токен OAuth
+    - Вам потрібні настанови щодо хоста пошуку MiniMax CN/global
+summary: MiniMax Search через API пошуку Token Plan
 title: Пошук MiniMax
 x-i18n:
-    generated_at: "2026-04-23T21:16:12Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T04:48:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 20a91bfae72661efd5e0bc3b6247ab05c3487db40ecd9cd5a874858bf3c69df3
+    source_hash: cf721a293d6b244e69d952f433bde83417eb907ef8c0b46d04a567f1b668a32e
     source_path: tools/minimax-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw підтримує MiniMax як провайдера `web_search` через API пошуку MiniMax
-Coding Plan. Він повертає структуровані результати пошуку із заголовками, URL,
-snippets і related queries.
+OpenClaw підтримує MiniMax як провайдера `web_search` через пошуковий API MiniMax
+Token Plan. Він повертає структуровані результати пошуку з назвами, URL,
+фрагментами та пов’язаними запитами.
 
-## Отримайте ключ Coding Plan
+## Отримайте облікові дані Token Plan
 
 <Steps>
   <Step title="Створіть ключ">
-    Створіть або скопіюйте ключ MiniMax Coding Plan з
+    Створіть або скопіюйте ключ MiniMax Token Plan із
     [MiniMax Platform](https://platform.minimax.io/user-center/basic-information/interface-key).
+    Налаштування OAuth натомість можуть повторно використовувати `MINIMAX_OAUTH_TOKEN`.
   </Step>
   <Step title="Збережіть ключ">
     Задайте `MINIMAX_CODE_PLAN_KEY` у середовищі Gateway або налаштуйте через:
@@ -35,8 +36,9 @@ snippets і related queries.
   </Step>
 </Steps>
 
-OpenClaw також приймає `MINIMAX_CODING_API_KEY` як alias env. `MINIMAX_API_KEY`
-і далі читається як compatibility fallback, коли він уже вказує на токен coding-plan.
+OpenClaw також приймає `MINIMAX_CODING_API_KEY` і `MINIMAX_OAUTH_TOKEN` як
+псевдоніми змінних середовища. `MINIMAX_API_KEY` досі зчитується як резервний варіант сумісності, коли він
+уже вказує на облікові дані token-plan.
 
 ## Конфігурація
 
@@ -47,7 +49,7 @@ OpenClaw також приймає `MINIMAX_CODING_API_KEY` як alias env. `MIN
       minimax: {
         config: {
           webSearch: {
-            apiKey: "sk-cp-...", // optional if MINIMAX_CODE_PLAN_KEY is set
+            apiKey: "sk-cp-...", // optional if a MiniMax Token Plan env var is set
             region: "global", // or "cn"
           },
         },
@@ -64,41 +66,43 @@ OpenClaw також приймає `MINIMAX_CODING_API_KEY` як alias env. `MIN
 }
 ```
 
-**Альтернатива через середовище:** задайте `MINIMAX_CODE_PLAN_KEY` у середовищі Gateway.
-Для встановленого gateway помістіть його в `~/.openclaw/.env`.
+**Альтернатива через середовище:** задайте `MINIMAX_CODE_PLAN_KEY` або `MINIMAX_OAUTH_TOKEN`
+у середовищі Gateway.
+Для встановлення Gateway помістіть його в `~/.openclaw/.env`.
 
 ## Вибір регіону
 
-MiniMax Search використовує такі endpoint-и:
+MiniMax Search використовує такі кінцеві точки:
 
-- Global: `https://api.minimax.io/v1/coding_plan/search`
+- Глобальний: `https://api.minimax.io/v1/coding_plan/search`
 - CN: `https://api.minimaxi.com/v1/coding_plan/search`
 
-Якщо `plugins.entries.minimax.config.webSearch.region` не задано, OpenClaw розв’язує
+Якщо `plugins.entries.minimax.config.webSearch.region` не задано, OpenClaw визначає
 регіон у такому порядку:
 
-1. `tools.web.search.minimax.region` / `webSearch.region`, яким володіє plugin
+1. `tools.web.search.minimax.region` / належний Plugin `webSearch.region`
 2. `MINIMAX_API_HOST`
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-Це означає, що onboarding CN або `MINIMAX_API_HOST=https://api.minimaxi.com/...`
-автоматично утримує MiniMax Search також на хості CN.
+Це означає, що налаштування CN або `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+автоматично також залишає MiniMax Search на хості CN.
 
 Навіть якщо ви автентифікували MiniMax через шлях OAuth `minimax-portal`,
-web search усе одно реєструється як provider id `minimax`; base URL OAuth-провайдера
-використовується лише як підказка регіону для вибору хоста CN/global.
+вебпошук усе одно реєструється з ідентифікатором провайдера `minimax`; базовий URL провайдера OAuth
+використовується як підказка регіону для вибору хоста CN/global, а `MINIMAX_OAUTH_TOKEN`
+може задовольнити облікові дані bearer для MiniMax Search.
 
 ## Підтримувані параметри
 
 MiniMax Search підтримує:
 
 - `query`
-- `count` (OpenClaw обрізає повернений список результатів до запитаного count)
+- `count` (OpenClaw обрізає повернений список результатів до запитаної кількості)
 
 Фільтри, специфічні для провайдера, наразі не підтримуються.
 
 ## Пов’язане
 
-- [Огляд Web Search](/uk/tools/web) -- усі провайдери й auto-detection
-- [MiniMax](/uk/providers/minimax) -- налаштування моделей, image, speech і auth
+- [Огляд вебпошуку](/uk/tools/web) -- усі провайдери й автоматичне виявлення
+- [MiniMax](/uk/providers/minimax) -- налаштування моделі, зображень, мовлення й автентифікації

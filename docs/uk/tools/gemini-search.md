@@ -1,22 +1,22 @@
 ---
 read_when:
     - Ви хочете використовувати Gemini для web_search
-    - Вам потрібен GEMINI_API_KEY
-    - Вам потрібне обґрунтування результатами Google Search
-summary: Вебпошук Gemini з обґрунтуванням за допомогою Google Search
+    - Потрібен GEMINI_API_KEY або models.providers.google.apiKey
+    - Вам потрібне обґрунтування за допомогою Google Search
+summary: Вебпошук Gemini із прив’язкою до Google Search
 title: Пошук Gemini
 x-i18n:
-    generated_at: "2026-05-02T04:05:01Z"
+    generated_at: "2026-05-02T04:48:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e48b73a59f1af08cb1e30f149a18534dc76ba8dff26935d83fe8ccdaa8ab74e6
+    source_hash: 015d77fef123b1fd99d43eb6472bb8c672585328e17735d1fa0ead387cd2066a
     source_path: tools/gemini-search.md
     workflow: 16
 ---
 
-OpenClaw підтримує моделі Gemini з вбудованим
-[обґрунтуванням Google Search](https://ai.google.dev/gemini-api/docs/grounding),
-яке повертає синтезовані ШІ відповіді, підкріплені актуальними результатами Google Search із
+OpenClaw підтримує моделі Gemini з вбудованою
+[прив’язкою до Google Search](https://ai.google.dev/gemini-api/docs/grounding),
+яка повертає синтезовані ШІ відповіді на основі актуальних результатів Google Search із
 цитуваннями.
 
 ## Отримання API-ключа
@@ -27,7 +27,8 @@ OpenClaw підтримує моделі Gemini з вбудованим
     API-ключ.
   </Step>
   <Step title="Збережіть ключ">
-    Установіть `GEMINI_API_KEY` в оточенні Gateway або налаштуйте через:
+    Задайте `GEMINI_API_KEY` у середовищі Gateway, повторно використайте
+    `models.providers.google.apiKey` або налаштуйте окремий ключ для вебпошуку через:
 
     ```bash
     openclaw configure --section web
@@ -45,8 +46,8 @@ OpenClaw підтримує моделі Gemini з вбудованим
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // optional if GEMINI_API_KEY is set
-            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional proxy/base URL override
+            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
             model: "gemini-2.5-flash", // default
           },
         },
@@ -63,51 +64,57 @@ OpenClaw підтримує моделі Gemini з вбудованим
 }
 ```
 
-**Альтернатива через оточення:** установіть `GEMINI_API_KEY` в оточенні Gateway.
-Для встановлення gateway помістіть його в `~/.openclaw/.env`.
+**Пріоритет облікових даних:** вебпошук Gemini спочатку використовує
+`plugins.entries.google.config.webSearch.apiKey`, потім `GEMINI_API_KEY`,
+а тоді `models.providers.google.apiKey`. Для базових URL окреме значення
+`plugins.entries.google.config.webSearch.baseUrl` має пріоритет перед
+`models.providers.google.baseUrl`.
+
+Для встановлення Gateway розмістіть ключі середовища в `~/.openclaw/.env`.
 
 ## Як це працює
 
-На відміну від традиційних постачальників пошуку, які повертають список посилань і фрагментів,
-Gemini використовує обґрунтування Google Search, щоб створювати синтезовані ШІ відповіді з
-вбудованими цитуваннями. Результати містять як синтезовану відповідь, так і вихідні
-URL-адреси.
+На відміну від традиційних пошукових провайдерів, які повертають список посилань і фрагментів,
+Gemini використовує прив’язку до Google Search, щоб створювати синтезовані ШІ відповіді з
+вбудованими цитуваннями. Результати містять і синтезовану відповідь, і вихідні
+URL.
 
-- URL-адреси цитувань із обґрунтування Gemini автоматично перетворюються з URL-адрес
-  перенаправлення Google на прямі URL-адреси.
-- Обробка перенаправлень використовує шлях захисту від SSRF (HEAD + перевірки перенаправлень +
-  перевірка http/https) перед поверненням фінальної URL-адреси цитування.
-- Обробка перенаправлень використовує строгі стандартні налаштування SSRF, тому перенаправлення на
+- URL цитувань із прив’язки Gemini автоматично перетворюються з URL
+  перенаправлення Google на прямі URL.
+- Розв’язання перенаправлень використовує шлях захисту від SSRF (HEAD + перевірки перенаправлень +
+  перевірка http/https), перш ніж повернути фінальний URL цитування.
+- Розв’язання перенаправлень використовує суворі стандартні налаштування SSRF, тому перенаправлення на
   приватні/внутрішні цілі блокуються.
 
 ## Підтримувані параметри
 
 Пошук Gemini підтримує `query`, `freshness`, `date_after` і `date_before`.
 
-`count` приймається для сумісності зі спільним `web_search`, але обґрунтування Gemini
-все одно повертає одну синтезовану відповідь із цитуваннями, а не список із N результатів.
+`count` приймається для сумісності зі спільним `web_search`, але прив’язка Gemini
+усе одно повертає одну синтезовану відповідь із цитуваннями, а не список із N результатів.
 
 `freshness` приймає `day`, `week`, `month`, `year` і спільні скорочення
 `pd`, `pw`, `pm` та `py`. OpenClaw перетворює ці значення або явний
-діапазон `date_after`/`date_before` на `timeRangeFilter` обґрунтування
-Gemini Google Search. `country`, `language` і `domain_filter` не підтримуються.
+діапазон `date_after`/`date_before` на `timeRangeFilter` для прив’язки Gemini Google Search.
+`country`, `language` і `domain_filter` не підтримуються.
 
 ## Вибір моделі
 
-Стандартна модель — `gemini-2.5-flash` (швидка й економічно ефективна). Будь-яку модель Gemini,
-що підтримує обґрунтування, можна використовувати через
+Стандартна модель — `gemini-2.5-flash` (швидка та економічна). Будь-яку модель Gemini,
+що підтримує прив’язку, можна використовувати через
 `plugins.entries.google.config.webSearch.model`.
 
-## Перевизначення базової URL-адреси
+## Перевизначення базового URL
 
-Установіть `plugins.entries.google.config.webSearch.baseUrl`, коли вебпошук Gemini
-має проходити через операторський проксі або власну сумісну з Gemini кінцеву точку. Значення
-`https://generativelanguage.googleapis.com` нормалізується до
-`https://generativelanguage.googleapis.com/v1beta`; власні шляхи проксі залишаються
-такими, як надано, після обрізання кінцевих скісних рисок.
+Задайте `plugins.entries.google.config.webSearch.baseUrl`, коли вебпошук Gemini
+має проходити через проксі оператора або користувацький Gemini-сумісний endpoint. Якщо
+це значення не задано, вебпошук Gemini повторно використовує `models.providers.google.baseUrl`. Звичайне
+значення `https://generativelanguage.googleapis.com` нормалізується до
+`https://generativelanguage.googleapis.com/v1beta`; користувацькі шляхи проксі зберігаються
+як надано після обрізання кінцевих скісних рисок.
 
 ## Пов’язане
 
-- [Огляд вебпошуку](/uk/tools/web) -- усі постачальники та автовиявлення
+- [Огляд вебпошуку](/uk/tools/web) -- усі провайдери й автоматичне виявлення
 - [Brave Search](/uk/tools/brave-search) -- структуровані результати з фрагментами
 - [Perplexity Search](/uk/tools/perplexity-search) -- структуровані результати + витягування вмісту
