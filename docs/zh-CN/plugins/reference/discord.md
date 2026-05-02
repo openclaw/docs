@@ -1,13 +1,13 @@
 ---
 read_when:
     - 你正在安装、配置或审计 Discord 插件
-summary: 新增 Discord 渠道界面，用于发送和接收 OpenClaw 消息。
+summary: 添加用于发送和接收 OpenClaw 消息的 Discord 渠道界面。
 title: Discord 插件
 x-i18n:
-    generated_at: "2026-05-02T15:13:45Z"
+    generated_at: "2026-05-02T20:49:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fd84b465797fd02f9b008bb3f951c8a7e5f12a524b7c2d8c01681215271b83ba
+    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
@@ -18,12 +18,12 @@ x-i18n:
 
 ## 分发
 
-- 软件包：`@openclaw/discord`
-- 安装路径：包含在 OpenClaw 中
+- 包：`@openclaw/discord`
+- 安装方式：ClawHub + npm
 
 ## 界面
 
-渠道：discord
+channels: discord
 
 ## 相关文档
 
