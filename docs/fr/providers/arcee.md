@@ -5,24 +5,24 @@ read_when:
 summary: Configuration d’Arcee AI (authentification + sélection du modèle)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-04-24T07:25:57Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T23:39:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
+    source_hash: 622ee5288aec3ae0b45d3f06ba65fd6f972e07d7a7596ae3905d6fbdac0bf737
     source_path: providers/arcee.md
-    workflow: 15
+    workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) fournit un accès à la famille de modèles Trinity de type mixture-of-experts via une API compatible OpenAI. Tous les modèles Trinity sont sous licence Apache 2.0.
+[Arcee AI](https://arcee.ai) donne accès à la famille Trinity de modèles à mélange d’experts via une API compatible OpenAI. Tous les modèles Trinity sont sous licence Apache 2.0.
 
-Les modèles Arcee AI peuvent être utilisés directement via la plateforme Arcee ou via [OpenRouter](/fr/providers/openrouter).
+Les modèles Arcee AI sont accessibles directement via la plateforme Arcee ou via [OpenRouter](/fr/providers/openrouter).
 
-| Property | Value                                                                                 |
-| -------- | ------------------------------------------------------------------------------------- |
-| Provider | `arcee`                                                                               |
-| Auth     | `ARCEEAI_API_KEY` (direct) ou `OPENROUTER_API_KEY` (via OpenRouter)                   |
-| API      | Compatible OpenAI                                                                     |
-| Base URL | `https://api.arcee.ai/api/v1` (direct) ou `https://openrouter.ai/api/v1` (OpenRouter) |
+| Propriété | Valeur                                                                                |
+| --------- | ------------------------------------------------------------------------------------- |
+| Fournisseur | `arcee`                                                                             |
+| Auth      | `ARCEEAI_API_KEY` (direct) ou `OPENROUTER_API_KEY` (via OpenRouter)                   |
+| API       | Compatible OpenAI                                                                     |
+| URL de base | `https://api.arcee.ai/api/v1` (direct) ou `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Bien démarrer
 
@@ -72,7 +72,7 @@ Les modèles Arcee AI peuvent être utilisés directement via la plateforme Arce
         }
         ```
 
-        Les mêmes références de modèle fonctionnent à la fois pour les configurations directes et OpenRouter (par exemple `arcee/trinity-large-thinking`).
+        Les mêmes refs de modèles fonctionnent pour les configurations directes et OpenRouter (par exemple `arcee/trinity-large-thinking`).
       </Step>
     </Steps>
 
@@ -103,48 +103,48 @@ Les modèles Arcee AI peuvent être utilisés directement via la plateforme Arce
 
 ## Catalogue intégré
 
-OpenClaw fournit actuellement ce catalogue Arcee intégré :
+OpenClaw inclut actuellement ce catalogue Arcee groupé :
 
-| Model ref                      | Name                   | Input | Context | Cost (in/out per 1M) | Notes                                     |
-| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | Modèle par défaut ; raisonnement activé   |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | Usage général ; 400B paramètres, 13B actifs |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | Rapide et économique ; appels de fonction |
+| Ref de modèle                  | Nom                    | Entrée | Contexte | Coût (entrée/sortie par 1 M) | Notes                                      |
+| ------------------------------ | ---------------------- | ------ | -------- | ---------------------------- | ------------------------------------------ |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | texte  | 256K     | $0.25 / $0.90                | Modèle par défaut ; raisonnement activé ; pas d’outils |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | texte  | 128K     | $0.25 / $1.00                | Usage général ; 400B paramètres, 13B actifs |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | texte  | 128K     | $0.045 / $0.15               | Rapide et économique ; appel de fonctions  |
 
 <Tip>
-Le preset d’onboarding définit `arcee/trinity-large-thinking` comme modèle par défaut.
+Le préréglage d’onboarding définit `arcee/trinity-large-thinking` comme modèle par défaut. Il prend uniquement en charge le raisonnement/texte et ne prend pas en charge l’utilisation d’outils ni l’appel de fonctions.
 </Tip>
 
 ## Fonctionnalités prises en charge
 
-| Feature                                       | Supported                    |
-| --------------------------------------------- | ---------------------------- |
-| Streaming                                     | Oui                          |
-| Tool use / function calling                   | Oui                          |
-| Structured output (JSON mode and JSON schema) | Oui                          |
-| Extended thinking                             | Oui (Trinity Large Thinking) |
+| Fonctionnalité                               | Pris en charge                              |
+| ------------------------------------------- | ------------------------------------------ |
+| Streaming                                   | Oui                                        |
+| Utilisation d’outils / appel de fonctions   | Dépend du modèle ; pas Trinity Large Thinking |
+| Sortie structurée (mode JSON et schéma JSON) | Oui                                       |
+| Réflexion étendue                           | Oui (Trinity Large Thinking)               |
 
 <AccordionGroup>
-  <Accordion title="Remarque sur l’environnement">
-    Si le Gateway s’exécute comme démon (launchd/systemd), assurez-vous que `ARCEEAI_API_KEY`
-    (ou `OPENROUTER_API_KEY`) est disponible pour ce processus (par exemple dans
+  <Accordion title="Note sur l’environnement">
+    Si le Gateway s’exécute comme un daemon (launchd/systemd), assurez-vous que `ARCEEAI_API_KEY`
+    (ou `OPENROUTER_API_KEY`) est disponible pour ce processus (par exemple, dans
     `~/.openclaw/.env` ou via `env.shellEnv`).
   </Accordion>
 
   <Accordion title="Routage OpenRouter">
-    Lorsque vous utilisez des modèles Arcee via OpenRouter, les mêmes références de modèle `arcee/*` s’appliquent.
-    OpenClaw gère le routage de manière transparente en fonction de votre choix d’authentification. Voir la
-    [documentation du fournisseur OpenRouter](/fr/providers/openrouter) pour les détails de configuration spécifiques à OpenRouter.
+    Lorsque vous utilisez des modèles Arcee via OpenRouter, les mêmes refs de modèles `arcee/*` s’appliquent.
+    OpenClaw gère le routage de manière transparente selon votre choix d’authentification. Consultez la
+    [documentation du fournisseur OpenRouter](/fr/providers/openrouter) pour les détails de configuration propres à OpenRouter.
   </Accordion>
 </AccordionGroup>
 
-## Associé
+## Connexe
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/fr/providers/openrouter" icon="shuffle">
-    Accédez aux modèles Arcee et à beaucoup d’autres via une seule clé API.
+    Accédez aux modèles Arcee et à beaucoup d’autres avec une seule clé API.
   </Card>
-  <Card title="Sélection de modèle" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, les références de modèle et le comportement de basculement.
+  <Card title="Sélection du modèle" href="/fr/concepts/model-providers" icon="layers">
+    Choisir les fournisseurs, les refs de modèles et le comportement de basculement.
   </Card>
 </CardGroup>
