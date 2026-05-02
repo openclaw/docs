@@ -1,15 +1,15 @@
 ---
 read_when:
-    - می‌خواهید ببینید کدام Skills در دسترس و آمادهٔ اجرا هستند
+    - می‌خواهید ببینید کدام Skills در دسترس و آماده اجرا هستند
     - می‌خواهید Skills را از ClawHub جست‌وجو، نصب یا به‌روزرسانی کنید
-    - می‌خواهید نبودِ باینری‌ها/محیط/پیکربندی برای Skills را اشکال‌زدایی کنید
+    - می‌خواهید باینری‌ها/محیط/پیکربندیِ مفقود برای Skills را اشکال‌زدایی کنید
 summary: مرجع CLI برای `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-04-29T22:39:18Z"
+    generated_at: "2026-05-02T20:42:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5059bf04c68dabe289d2c376407a52989c970e3d16e7637a2c83f4e24ad6564c
+    source_hash: d819cdc421151a0093423f57a9e974489e9cc02de644358bd5700ee75181192e
     source_path: cli/skills.md
     workflow: 16
 ---
@@ -20,11 +20,11 @@ Skills محلی را بررسی کنید و Skills را از ClawHub نصب/به
 
 مرتبط:
 
-- سیستم Skills: [Skills](/fa/tools/skills)
-- پیکربندی Skills: [پیکربندی Skills](/fa/tools/skills-config)
+- سامانه Skills: [Skills](/fa/tools/skills)
+- پیکربندی Skills: [Skills config](/fa/tools/skills-config)
 - نصب‌های ClawHub: [ClawHub](/fa/tools/clawhub)
 
-## دستورها
+## فرمان‌ها
 
 ```bash
 openclaw skills search "calendar"
@@ -45,23 +45,37 @@ openclaw skills info <name>
 openclaw skills info <name> --json
 openclaw skills info <name> --agent <id>
 openclaw skills check
-openclaw skills check --json
 openclaw skills check --agent <id>
+openclaw skills check --json
 ```
 
-`search`/`install`/`update` مستقیماً از ClawHub استفاده می‌کنند و در دایرکتوری `skills/` فضای کاری فعال نصب می‌کنند. `list`/`info`/`check` همچنان Skills محلیِ قابل مشاهده برای فضای کاری و پیکربندی فعلی را بررسی می‌کنند. دستورهای مبتنی بر فضای کاری، فضای کاری هدف را ابتدا از `--agent <id>`، سپس از دایرکتوری کاری فعلی وقتی داخل یک فضای کاری عاملِ پیکربندی‌شده باشد، و سپس از عامل پیش‌فرض تعیین می‌کنند.
+`search`/`install`/`update` مستقیماً از ClawHub استفاده می‌کنند و در پوشه
+`skills/` فضای کاری فعال نصب می‌کنند. `list`/`info`/`check` همچنان Skills
+محلیِ قابل مشاهده برای فضای کاری و پیکربندی فعلی را بررسی می‌کنند. فرمان‌های
+متکی به فضای کاری، فضای کاری هدف را ابتدا از `--agent <id>`، سپس وقتی مسیر
+کاری فعلی داخل یک فضای کاری عامل پیکربندی‌شده باشد از مسیر کاری فعلی، و سپس از
+عامل پیش‌فرض تعیین می‌کنند.
 
-این دستور `install` در CLI پوشه‌های skill را از ClawHub دانلود می‌کند. نصب‌های وابستگی skill که از طریق Gateway و از onboarding یا تنظیمات Skills فعال می‌شوند، به‌جای آن از مسیر درخواست جداگانه `skills.install` استفاده می‌کنند.
+این فرمان `install` در CLI پوشه‌های Skills را از ClawHub دانلود می‌کند. نصب
+وابستگی‌های Skills که از طریق Gateway و از onboarding یا تنظیمات Skills راه‌اندازی
+می‌شوند، در عوض از مسیر درخواست جداگانه `skills.install` استفاده می‌کنند.
 
 نکته‌ها:
 
-- `search [query...]` یک کوئری اختیاری می‌پذیرد؛ برای مرور فید جستجوی پیش‌فرض ClawHub آن را حذف کنید.
-- `search --limit <n>` تعداد نتایج بازگردانده‌شده را محدود می‌کند.
-- `install --force` پوشه skill موجود در فضای کاری را برای همان slug بازنویسی می‌کند.
-- `--agent <id>` یک فضای کاری عاملِ پیکربندی‌شده را هدف قرار می‌دهد و استنتاج از دایرکتوری کاری فعلی را لغو می‌کند.
-- `update --all` فقط نصب‌های ClawHub رهگیری‌شده در فضای کاری فعال را به‌روزرسانی می‌کند.
-- وقتی هیچ زیردستوری ارائه نشود، `list` عمل پیش‌فرض است.
-- `list`، `info` و `check` خروجی رندرشده خود را در stdout می‌نویسند. با `--json`، یعنی payload قابل خواندن برای ماشین برای pipeها و اسکریپت‌ها روی stdout باقی می‌ماند.
+- `search [query...]` یک پرس‌وجوی اختیاری می‌پذیرد؛ برای مرور خوراک جست‌وجوی
+  پیش‌فرض ClawHub آن را حذف کنید.
+- `search --limit <n>` تعداد نتایج برگشتی را محدود می‌کند.
+- `install --force` پوشه موجودِ Skill در فضای کاری را برای همان slug بازنویسی
+  می‌کند.
+- `--agent <id>` یک فضای کاری عامل پیکربندی‌شده را هدف می‌گیرد و استنتاج از
+  مسیر کاری فعلی را نادیده می‌گیرد.
+- `update --all` فقط نصب‌های ردیابی‌شده ClawHub را در فضای کاری فعال به‌روزرسانی
+  می‌کند.
+- `check --agent <id>` فضای کاری عامل انتخاب‌شده را بررسی می‌کند و گزارش می‌دهد
+  کدام Skills آماده واقعاً برای prompt یا سطح فرمان آن عامل قابل مشاهده‌اند.
+- وقتی هیچ زیرفرمانی ارائه نشود، `list` کنش پیش‌فرض است.
+- `list`، `info` و `check` خروجی رندرشده خود را در stdout می‌نویسند. با `--json`،
+  یعنی payload قابل خواندن برای ماشین برای pipeها و اسکریپت‌ها روی stdout می‌ماند.
 
 ## مرتبط
 
