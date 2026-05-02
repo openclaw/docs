@@ -1,25 +1,25 @@
 ---
 read_when:
-    - 你正在安装、配置或审计 googlechat 插件
-summary: 新增 Google Chat 渠道支持，用于发送和接收 OpenClaw 消息。
+    - 你正在安装、配置或审核 googlechat 插件
+summary: 新增 Google Chat 渠道能力，用于发送和接收 OpenClaw 消息。
 title: Google Chat 插件
 x-i18n:
-    generated_at: "2026-05-02T15:14:35Z"
+    generated_at: "2026-05-02T21:41:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5806bfb6c5a21bfb83bccd20a998795c00a8ad69af69649aee52db72ae7f6cc4
+    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Google Chat 插件
 
-添加用于发送和接收 OpenClaw 消息的 Google Chat 渠道界面。
+添加 Google Chat 渠道界面，用于发送和接收 OpenClaw 消息。
 
 ## 分发
 
-- 包：`@openclaw/googlechat`
-- 安装路径：ClawHub + npm
+- 软件包：`@openclaw/googlechat`
+- 安装路径：包含在 OpenClaw 中
 
 ## 界面
 
