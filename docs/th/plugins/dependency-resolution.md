@@ -1,152 +1,130 @@
 ---
 read_when:
-    - คุณกำลังดีบักการซ่อมแซมการพึ่งพาขณะรันไทม์ของ Plugin ที่รวมมาให้
-    - คุณกำลังเปลี่ยนแปลงลักษณะการทำงานของการเริ่มทำงานของ Plugin, การตรวจวินิจฉัย หรือการติดตั้งผ่านตัวจัดการแพ็กเกจ
-    - คุณกำลังดูแลการติดตั้ง OpenClaw แบบแพ็กเกจหรือไฟล์กำกับของ Plugin ที่รวมมาในชุด
+    - คุณกำลังดีบักการติดตั้งแพ็กเกจ Plugin
+    - คุณกำลังเปลี่ยนพฤติกรรมการเริ่มต้น Plugin, doctor หรือการติดตั้งของตัวจัดการแพ็กเกจ
+    - คุณกำลังดูแลการติดตั้ง OpenClaw แบบแพ็กเกจหรือแมนิเฟสต์ของ Plugin ที่รวมมาด้วย
 sidebarTitle: Dependencies
-summary: วิธีที่ OpenClaw วางแผน จัดเตรียม และซ่อมแซมการพึ่งพาของรันไทม์สำหรับ Plugin ที่มาพร้อมระบบ
+summary: วิธีที่ OpenClaw ติดตั้งแพ็กเกจ Plugin และแก้ไขการพึ่งพาของ Plugin
 title: การแก้ไขการขึ้นต่อกันของ Plugin
 x-i18n:
-    generated_at: "2026-05-01T10:19:39Z"
+    generated_at: "2026-05-02T10:23:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e09245c2b7e2f1fb2a61d64f0f9dc77e7df7da58fd71608c391e3865345b7bc9
+    source_hash: c9476529ad1d44ed1b17caca628c58acfbb1d8c73393f58fa7d3d76944a71aea
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-OpenClaw ไม่ได้ติดตั้งแผนผัง dependency ทั้งหมดของ Plugin ที่มาพร้อมแพ็กเกจทุกตัวในเวลาติดตั้งแพ็กเกจ ระบบจะอนุมานแผน Plugin ที่มีผลจริงจาก config และ metadata ของ Plugin ก่อน จากนั้นจึงจัดเตรียม runtime dependencies เฉพาะสำหรับ Plugin ที่ OpenClaw เป็นเจ้าของและมาพร้อมแพ็กเกจ ซึ่งแผนสามารถโหลดได้จริง
+# การแก้ไข dependency ของ Plugin
 
-หน้านี้ครอบคลุม packaged runtime dependencies สำหรับ Plugin ของ OpenClaw ที่มาพร้อมแพ็กเกจ Plugin บุคคลที่สามและเส้นทาง Plugin แบบกำหนดเองยังคงใช้คำสั่งติดตั้ง Plugin อย่างชัดเจน เช่น `openclaw plugins install` และ `openclaw plugins update`
+OpenClaw เก็บงาน dependency ของ Plugin ไว้ในช่วงติดตั้ง/อัปเดต การโหลด runtime
+จะไม่เรียกใช้ package manager, ซ่อมแซม dependency tree หรือแก้ไขไดเรกทอรีแพ็กเกจของ OpenClaw
 
 ## การแบ่งความรับผิดชอบ
 
-OpenClaw เป็นเจ้าของแผนและนโยบาย:
+แพ็กเกจ Plugin เป็นเจ้าของ dependency graph ของตัวเอง:
 
-- Plugin ใด active สำหรับ config นี้
-- dependency roots ใดเขียนได้หรืออ่านอย่างเดียว
-- อนุญาตให้ repair เมื่อใด
-- Plugin ids ใดถูกจัดเตรียมสำหรับ startup
-- การตรวจสอบขั้นสุดท้ายก่อนนำเข้า plugin runtime modules
+- runtime dependencies อยู่ใน `dependencies` หรือ
+  `optionalDependencies` ของแพ็กเกจ Plugin
+- การ import SDK/core เป็น peer หรือ import ที่ OpenClaw จัดหาให้
+- Plugin สำหรับการพัฒนา local นำ dependency ที่ติดตั้งไว้แล้วของตัวเองมาใช้
+- Plugin จาก npm และ git จะถูกติดตั้งลงใน package root ที่ OpenClaw เป็นเจ้าของ
 
-package manager เป็นเจ้าของการทำให้ dependencies บรรจบกัน:
+OpenClaw เป็นเจ้าของเฉพาะวงจรชีวิตของ Plugin:
 
-- การ resolve package graph
-- การจัดการ production, optional และ peer dependencies
-- layout ของ `node_modules`
-- ความสมบูรณ์ของ package
-- lock และ install metadata
+- ค้นหาแหล่งที่มาของ Plugin
+- ติดตั้งหรืออัปเดตแพ็กเกจเมื่อมีการร้องขออย่างชัดเจน
+- บันทึก metadata การติดตั้ง
+- โหลด entrypoint ของ Plugin
+- ล้มเหลวพร้อมข้อผิดพลาดที่นำไปแก้ไขได้เมื่อ dependency ขาดหายไป
 
-ในทางปฏิบัติ OpenClaw ควรตัดสินใจว่าสิ่งใดจำเป็นต้องมีอยู่ `pnpm` หรือ `npm` ควรทำให้ filesystem ตรงกับการตัดสินใจนั้น
+## รากการติดตั้ง
 
-OpenClaw ยังเป็นเจ้าของ coordination lock ต่อ install root แต่ละตัวด้วย Package managers ปกป้อง install transaction ของตัวเอง แต่ไม่ได้ serialize การเขียน manifest ของ OpenClaw, การ copy/rename isolated-stage, การ validation ขั้นสุดท้าย หรือการ import Plugin เทียบกับ Gateway, doctor หรือ CLI process อื่นที่แตะ runtime dependency root เดียวกัน
+OpenClaw ใช้รากที่เสถียรตามแต่ละแหล่งที่มา:
 
-## แผน Plugin ที่มีผลจริง
+- แพ็กเกจ npm ติดตั้งใต้ `~/.openclaw/npm`
+- แพ็กเกจ git clone ใต้ `~/.openclaw/git`
+- การติดตั้ง local/path/archive จะถูกคัดลอกหรืออ้างอิงโดยไม่มีการซ่อมแซม dependency
 
-แผน Plugin ที่มีผลจริงอนุมานจาก config รวมกับ plugin metadata ที่ค้นพบ อินพุตเหล่านี้สามารถเปิดใช้งาน runtime dependencies ของ Plugin ที่มาพร้อมแพ็กเกจ:
-
-- `plugins.entries.<id>.enabled`
-- `plugins.allow`, `plugins.deny` และ `plugins.enabled`
-- config ของ channel แบบเดิม เช่น `channels.telegram.enabled`
-- providers, models หรือ CLI backend references ที่กำหนดค่าไว้ซึ่งต้องใช้ Plugin
-- ค่าเริ่มต้นของ bundled manifest เช่น `enabledByDefault`
-- installed plugin index และ bundled manifest metadata
-
-การปิดใช้งานอย่างชัดเจนมีผลเหนือกว่า Plugin ที่ disabled, plugin id ที่ denied, ระบบ Plugin ที่ disabled หรือ channel ที่ disabled จะไม่ trigger runtime dependency repair สถานะ auth ที่ persist ไว้เพียงอย่างเดียวก็ไม่ activate bundled channel หรือ provider เช่นกัน
-
-แผน Plugin คืออินพุตที่ stable วัสดุ dependency materialization ที่ generate ขึ้นคือเอาต์พุตของแผนนั้น
-
-## ลำดับการทำงานตอน Startup
-
-Gateway startup parse config และสร้าง startup plugin lookup table ก่อนโหลด plugin runtime modules จากนั้น startup จะจัดเตรียม runtime dependencies เฉพาะสำหรับ `startupPluginIds` ที่แผนนั้นเลือกไว้
-
-สำหรับ packaged installs อนุญาตให้ dependency staging เกิดก่อน plugin import ได้ หลังจาก staging แล้ว runtime loader จะ import startup plugins โดยปิด install repair ไว้ ณ จุดนั้น dependency materialization ที่หายไปจะถูกมองว่าเป็น load failure ไม่ใช่ repair loop อีกรอบ
-
-เมื่อ startup dependency staging ถูก defer ไว้หลัง HTTP bind สถานะ readiness ของ Gateway จะยังถูกบล็อกด้วยเหตุผล `plugin-runtime-deps` จนกว่า dependencies ของ startup plugin ที่เลือกจะถูก materialize และ startup plugin runtime โหลดเสร็จ
-
-## เมื่อใดที่ repair ทำงาน
-
-runtime dependency repair ควรทำงานเมื่อข้อใดข้อหนึ่งต่อไปนี้เป็นจริง:
-
-- แผน Plugin ที่มีผลจริงเปลี่ยนไปและเพิ่ม Plugin ที่มาพร้อมแพ็กเกจซึ่งต้องใช้ runtime dependencies
-- generated dependency manifest ไม่ตรงกับแผนที่มีผลจริงอีกต่อไป
-- expected installed package sentinels หายไปหรือไม่สมบูรณ์
-- มีการขอ `openclaw doctor --fix` หรือ `openclaw plugins deps --repair`
-
-runtime dependency repair ไม่ควรทำงานเพียงเพราะ OpenClaw เริ่มทำงาน startup ปกติที่มีแผนไม่เปลี่ยนและ dependency materialization ครบถ้วนควรข้ามงานของ package manager
-
-คำสั่งที่แก้ไข config, enable Plugin หรือ repair doctor findings สามารถเข้าสู่ plugin plan mode หนึ่งครั้ง materialize bundled dependencies ที่จำเป็นใหม่ แล้วกลับสู่ normal command flow ได้ Local `openclaw onboard` และ `openclaw configure` ทำสิ่งนี้โดยอัตโนมัติหลังจากเขียน config สำเร็จ ดังนั้นการรัน Gateway ครั้งถัดไปจะไม่พบว่าแพ็กเกจ Plugin ที่มาพร้อมแพ็กเกจหายไปหลังจาก startup เริ่มขึ้นแล้ว Remote onboarding/configure ยังคงเป็น read-only สำหรับ local runtime deps
-
-## กฎ Hot reload
-
-เส้นทาง hot reload ที่สามารถเปลี่ยน active plugins ต้องย้อนกลับผ่าน plugin plan mode ก่อนโหลด plugin runtime การ reload ควรเปรียบเทียบแผน Plugin ที่มีผลจริงใหม่กับแผนก่อนหน้า จัดเตรียม dependencies ที่หายไปสำหรับ Plugin ที่มาพร้อมแพ็กเกจซึ่งเพิ่ง active แล้วจึงโหลดหรือ restart runtime ที่ได้รับผลกระทบ
-
-ถ้า config reload ไม่เปลี่ยนแผน Plugin ที่มีผลจริง ก็ไม่ควร repair bundled runtime dependencies
-
-## การทำงานของ Package manager
-
-OpenClaw เขียน generated install manifest สำหรับ bundled runtime dependencies ที่เลือก และรัน package manager ใน runtime dependency install root ระบบจะเลือกใช้ `pnpm` เมื่อมี และ fallback ไปยัง runner ของ `npm` ที่มาพร้อม Node
-
-เส้นทาง `pnpm` ใช้ production dependencies, ปิด lifecycle scripts, ไม่สนใจ workspace และเก็บ store ไว้ภายใน install root:
+การติดตั้ง npm ทำงานในราก npm ด้วย:
 
 ```bash
-pnpm install \
-  --prod \
-  --ignore-scripts \
-  --ignore-workspace \
-  --config.frozen-lockfile=false \
-  --config.minimum-release-age=0 \
-  --config.store-dir=<install-root>/.openclaw-pnpm-store \
-  --config.node-linker=hoisted \
-  --config.virtual-store-dir=.pnpm
+npm install --prefix ~/.openclaw/npm <spec> --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-fallback ของ `npm` ใช้ safe npm install wrapper พร้อม production dependencies, ปิด lifecycle scripts, ปิด workspace mode, ปิด audit, ปิด fund output, ใช้ legacy peer dependency behavior และเปิด package-lock output สำหรับ generated install root
+npm อาจ hoist dependency แบบ transitive ไปยัง `~/.openclaw/npm/node_modules` ข้าง
+แพ็กเกจ Plugin OpenClaw จะสแกนราก npm ที่จัดการอยู่ก่อนเชื่อถือการติดตั้ง
+และใช้ npm เพื่อลบแพ็กเกจที่ npm จัดการระหว่างถอนการติดตั้ง ดังนั้น runtime
+dependencies ที่ถูก hoist จะยังอยู่ภายในขอบเขตการล้างข้อมูลที่จัดการไว้
 
-หลัง install แล้ว OpenClaw จะ validate staged dependency tree ก่อนทำให้มองเห็นได้ใน runtime dependency root isolated staging จะถูก copy เข้า runtime dependency root และ validate อีกครั้ง
-
-ส่วน repair/materialization ทั้งหมดถูกป้องกันด้วย install-root lock lock owners ปัจจุบันบันทึก PID, process start-time เมื่อมี และ creation time legacy locks ที่ไม่มี process start-time หรือ creation-time evidence จะถูก reclaim ด้วย filesystem age เท่านั้น ดังนั้น recycled Docker PID 1 locks จึง recover ได้โดยไม่ทำให้ normal long-running current installs หมดอายุด้วย age เพียงอย่างเดียว
-
-## Install roots
-
-Packaged installs ต้องไม่ mutate package directories ที่เป็น read-only OpenClaw สามารถอ่าน dependency roots จาก packaged layers ได้ แต่เขียน generated runtime dependencies ไปยัง writable stage เช่น:
-
-- `OPENCLAW_PLUGIN_STAGE_DIR`
-- `$STATE_DIRECTORY`
-- `~/.openclaw/plugin-runtime-deps`
-- `/var/lib/openclaw/plugin-runtime-deps` ใน container-style installs
-
-writable root คือเป้าหมาย materialization สุดท้าย read-only roots รุ่นเก่าจะถูกเก็บไว้เป็น compatibility layers เฉพาะเมื่อจำเป็นเท่านั้น
-
-เมื่อ packaged OpenClaw update เปลี่ยน versioned writable root แต่ bundled-plugin dependency plan ที่เลือกยังคง satisfied โดย previous staged root ระบบ repair จะ reuse tree ของ `node_modules` ก่อนหน้าแทนการรัน package manager อีกครั้ง new versioned root ยังคงได้ current package runtime mirror ของตัวเอง ดังนั้น plugin code จะมาจาก package OpenClaw ปัจจุบัน ในขณะที่ dependency trees ที่ไม่เปลี่ยนจะถูกแชร์ข้าม updates การ reuse จะข้าม previous roots ที่มี active OpenClaw runtime-dependency lock ดังนั้น root ใหม่จะไม่ link ไปยัง dependency tree ที่ Gateway, doctor หรือ CLI process อื่นกำลัง repair อยู่ในขณะนั้น
-
-## คำสั่ง Doctor และ CLI
-
-ใช้ `plugins deps` เพื่อตรวจสอบหรือ repair runtime dependency materialization ของ Plugin ที่มาพร้อมแพ็กเกจ:
+การติดตั้ง git จะ clone หรือ refresh repository แล้วเรียกใช้:
 
 ```bash
-openclaw plugins deps
-openclaw plugins deps --json
-openclaw plugins deps --repair
-openclaw plugins deps --prune
+npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-ใช้ doctor เมื่อ dependency state เป็นส่วนหนึ่งของสุขภาพการติดตั้งโดยรวม:
+จากนั้น Plugin ที่ติดตั้งแล้วจะโหลดจากไดเรกทอรีแพ็กเกจนั้น ดังนั้นการ resolve
+`node_modules` ทั้งแบบ package-local และ parent จึงทำงานเหมือนแพ็กเกจ Node ปกติ
+
+## Plugin แบบ local
+
+Plugin แบบ local ถือเป็นไดเรกทอรีที่นักพัฒนาควบคุมเอง OpenClaw จะไม่เรียกใช้
+`npm install`, `pnpm install` หรือซ่อมแซม dependency ให้ หาก Plugin แบบ local
+มี dependency ให้ติดตั้ง dependency เหล่านั้นใน Plugin นั้นก่อนโหลด
+
+Plugin TypeScript แบบ local ของบุคคลที่สามสามารถใช้เส้นทาง Jiti ฉุกเฉินได้
+Plugin JavaScript ที่จัดแพ็กเกจแล้วและ Plugin ภายในที่รวมมาด้วยจะโหลดผ่าน
+native import/require แทน Jiti
+
+## การเริ่มต้นและ reload
+
+การเริ่มต้น Gateway และการ reload config จะไม่ติดตั้ง dependency ของ Plugin
+โดยจะอ่านบันทึกการติดตั้ง Plugin, คำนวณ entrypoint แล้วโหลด Plugin
+
+หาก dependency ขาดหายไประหว่าง runtime, Plugin จะโหลดไม่สำเร็จ และข้อผิดพลาด
+ควรชี้ผู้ปฏิบัติการไปยังวิธีแก้ไขที่ชัดเจน:
 
 ```bash
-openclaw doctor
+openclaw plugins update <id>
+openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`plugins deps` และ doctor ทำงานกับ runtime dependencies ของ Plugin ที่ OpenClaw เป็นเจ้าของและมาพร้อมแพ็กเกจ ซึ่งถูกเลือกโดยแผน Plugin ที่มีผลจริง คำสั่งเหล่านี้ไม่ใช่คำสั่งติดตั้งหรือ update Plugin บุคคลที่สาม
+`doctor --fix` สามารถล้างสถานะ dependency เดิมที่ OpenClaw สร้างไว้ และติดตั้ง
+Plugin ที่ดาวน์โหลดได้ซึ่งกำหนดค่าไว้แต่ขาดหายจากบันทึกการติดตั้ง local
+คำสั่งนี้ไม่ซ่อมแซม dependency สำหรับ Plugin แบบ local ที่ติดตั้งไว้แล้ว
 
-## การแก้ไขปัญหา
+## Plugin ที่รวมมาด้วย
 
-ถ้า packaged install รายงานว่า bundled runtime dependencies หายไป:
+Plugin ที่รวมมาด้วยซึ่งมีน้ำหนักเบาและสำคัญต่อ core จะถูกจัดส่งเป็นส่วนหนึ่งของ OpenClaw
+Plugin เหล่านี้ควรไม่มี runtime dependency tree ขนาดใหญ่ หรือควรถูกย้ายออกไปเป็น
+แพ็กเกจที่ดาวน์โหลดได้บน ClawHub/npm
 
-1. รัน `openclaw plugins deps --json` เพื่อตรวจสอบแผนที่เลือกและ packages ที่หายไป
-2. รัน `openclaw plugins deps --repair` หรือ `openclaw doctor --fix` เพื่อ repair writable dependency stage
-3. ถ้า install root เป็น read-only ให้ตั้ง `OPENCLAW_PLUGIN_STAGE_DIR` เป็นเส้นทางที่เขียนได้ แล้วรัน repair อีกครั้ง
-4. restart Gateway หลัง repair ถ้า dependency ที่หายไปบล็อกการโหลด startup plugin
+สำหรับรายการที่สร้างขึ้นล่าสุดของ Plugin ที่จัดส่งในแพ็กเกจ core, ติดตั้งภายนอก,
+หรือยังคงเป็น source-only โปรดดู [รายการ Plugin](/th/plugins/plugin-inventory)
 
-ใน source checkouts โดยปกติ workspace install จะมี dependencies ของ Plugin ที่มาพร้อมแพ็กเกจอยู่แล้ว ให้รัน `pnpm install` สำหรับ source dependency repair แทนการใช้ packaged runtime dependency repair เป็นขั้นตอนแรก
+manifest ของ Plugin ที่รวมมาด้วยต้องไม่ร้องขอ dependency staging ฟังก์ชันของ Plugin
+ที่มีขนาดใหญ่หรือเป็น optional ควรถูกจัดแพ็กเกจเป็น Plugin ปกติ และติดตั้งผ่านเส้นทาง
+npm/git/ClawHub เดียวกับ Plugin ของบุคคลที่สาม
+
+ใน source checkout, OpenClaw ถือว่า repository เป็น pnpm monorepo หลังจาก
+`pnpm install`, Plugin ที่รวมมาด้วยจะโหลดจาก `extensions/<id>` เพื่อให้ dependency
+ของ workspace แบบ package-local พร้อมใช้งาน และการแก้ไขถูกนำมาใช้โดยตรง
+การพัฒนา source checkout รองรับเฉพาะ pnpm เท่านั้น; การใช้ `npm install` ธรรมดา
+ที่ราก repository ไม่ใช่วิธีที่รองรับสำหรับเตรียม dependency ของ Plugin ที่รวมมาด้วย
+
+| รูปแบบการติดตั้ง                    | ตำแหน่ง Plugin ที่รวมมาด้วย               | เจ้าของ dependency                                                     |
+| -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
+| `npm install -g openclaw`        | runtime tree ที่ build แล้วภายในแพ็กเกจ | แพ็กเกจ OpenClaw และ flow ติดตั้ง/อัปเดต/doctor ของ Plugin ที่ชัดเจน     |
+| Git checkout plus `pnpm install` | แพ็กเกจ workspace `extensions/<id>`  | pnpm workspace รวมถึง dependency ของแพ็กเกจ Plugin แต่ละตัว |
+| `openclaw plugins install ...`   | ราก Plugin npm/git/ClawHub ที่จัดการอยู่   | flow ติดตั้ง/อัปเดต Plugin                                       |
+
+## การล้างข้อมูล legacy
+
+OpenClaw เวอร์ชันเก่าสร้างราก dependency ของ Plugin ที่รวมมาด้วยในช่วงเริ่มต้น
+หรือระหว่างการซ่อมแซมโดย doctor การล้างข้อมูลของ doctor ปัจจุบันจะลบไดเรกทอรี
+และ symlink ที่ค้างอยู่เหล่านั้นเมื่อใช้ `--fix` รวมถึงราก `plugin-runtime-deps`
+เก่า, manifest `.openclaw-runtime-deps*`, `node_modules` ของ Plugin ที่สร้างขึ้น,
+ไดเรกทอรี stage การติดตั้ง และ store pnpm แบบ package-local
+
+เส้นทางเหล่านี้เป็นเพียงเศษตกค้างจาก legacy การติดตั้งใหม่ไม่ควรสร้างเส้นทางเหล่านี้

@@ -1,32 +1,33 @@
 ---
 read_when:
-    - คุณต้องการใช้ MiniMax สำหรับ `web_search`
-    - คุณต้องการคีย์ MiniMax Coding Plan
-    - คุณต้องการคำแนะนำเกี่ยวกับโฮสต์ค้นหา MiniMax แบบ CN/global
-summary: MiniMax Search ผ่าน Coding Plan search API
-title: MiniMax search
+    - คุณต้องการใช้ MiniMax สำหรับ web_search
+    - คุณต้องมีคีย์ MiniMax Token Plan หรือโทเค็น OAuth
+    - คุณต้องการคำแนะนำเกี่ยวกับโฮสต์การค้นหาของ MiniMax CN/global
+summary: การค้นหา MiniMax ผ่าน API การค้นหาของ Token Plan
+title: การค้นหา MiniMax
 x-i18n:
-    generated_at: "2026-04-24T09:37:36Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:31:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 20a91bfae72661efd5e0bc3b6247ab05c3487db40ecd9cd5a874858bf3c69df3
+    source_hash: 5bb84f38c1407c203b76eea2d7a3ab5fefbdab0844dc20899742581945d7d77e
     source_path: tools/minimax-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw รองรับ MiniMax เป็น provider สำหรับ `web_search` ผ่าน MiniMax
-Coding Plan search API โดยจะส่งกลับผลการค้นหาแบบมีโครงสร้าง พร้อมชื่อเรื่อง URLs,
-snippets และคำค้นที่เกี่ยวข้อง
+OpenClaw รองรับ MiniMax เป็นผู้ให้บริการ `web_search` ผ่าน API การค้นหา MiniMax
+Token Plan โดยส่งคืนผลการค้นหาแบบมีโครงสร้างพร้อมชื่อเรื่อง, URL,
+ข้อความตัวอย่าง และคำค้นหาที่เกี่ยวข้อง
 
-## รับคีย์ Coding Plan
+## รับข้อมูลรับรอง Token Plan
 
 <Steps>
   <Step title="สร้างคีย์">
-    สร้างหรือคัดลอกคีย์ MiniMax Coding Plan จาก
+    สร้างหรือคัดลอกคีย์ MiniMax Token Plan จาก
     [MiniMax Platform](https://platform.minimax.io/user-center/basic-information/interface-key)
+    การตั้งค่า OAuth สามารถใช้ `MINIMAX_OAUTH_TOKEN` ซ้ำแทนได้
   </Step>
   <Step title="จัดเก็บคีย์">
-    ตั้งค่า `MINIMAX_CODE_PLAN_KEY` ในสภาพแวดล้อมของ Gateway หรือกำหนดค่าผ่าน:
+    ตั้งค่า `MINIMAX_CODE_PLAN_KEY` ในสภาพแวดล้อม Gateway หรือกำหนดค่าผ่าน:
 
     ```bash
     openclaw configure --section web
@@ -35,10 +36,12 @@ snippets และคำค้นที่เกี่ยวข้อง
   </Step>
 </Steps>
 
-OpenClaw ยังยอมรับ `MINIMAX_CODING_API_KEY` เป็น env alias ด้วย โดย `MINIMAX_API_KEY`
-ยังคงถูกอ่านเป็น compatibility fallback เมื่อมันชี้ไปยังโทเค็น coding-plan อยู่แล้ว
+OpenClaw ยังยอมรับ `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` และ
+`MINIMAX_API_KEY` เป็นนามแฝง env ด้วย `MINIMAX_API_KEY` ควรชี้ไปยัง
+ข้อมูลรับรอง Token Plan ที่เปิดใช้งานการค้นหาแล้ว; คีย์ API โมเดล MiniMax
+ทั่วไปอาจไม่ได้รับการยอมรับโดยปลายทางการค้นหา Token Plan
 
-## Config
+## การกำหนดค่า
 
 ```json5
 {
@@ -47,8 +50,8 @@ OpenClaw ยังยอมรับ `MINIMAX_CODING_API_KEY` เป็น env a
       minimax: {
         config: {
           webSearch: {
-            apiKey: "sk-cp-...", // ไม่บังคับหากตั้งค่า MINIMAX_CODE_PLAN_KEY ไว้แล้ว
-            region: "global", // หรือ "cn"
+            apiKey: "sk-cp-...", // optional if a MiniMax Token Plan env var is set
+            region: "global", // or "cn"
           },
         },
       },
@@ -64,41 +67,43 @@ OpenClaw ยังยอมรับ `MINIMAX_CODING_API_KEY` เป็น env a
 }
 ```
 
-**ทางเลือกผ่านสภาพแวดล้อม:** ตั้งค่า `MINIMAX_CODE_PLAN_KEY` ในสภาพแวดล้อมของ Gateway
-สำหรับการติดตั้ง gateway ให้ใส่ไว้ใน `~/.openclaw/.env`
+**ทางเลือกด้วยสภาพแวดล้อม:** ตั้งค่า `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`,
+`MINIMAX_OAUTH_TOKEN` หรือ `MINIMAX_API_KEY` ในสภาพแวดล้อม Gateway
+สำหรับการติดตั้ง Gateway ให้ใส่ไว้ใน `~/.openclaw/.env`
 
-## การเลือก region
+## การเลือกภูมิภาค
 
-MiniMax Search ใช้ endpoints เหล่านี้:
+MiniMax Search ใช้ปลายทางเหล่านี้:
 
-- Global: `https://api.minimax.io/v1/coding_plan/search`
-- CN: `https://api.minimaxi.com/v1/coding_plan/search`
+- ทั่วโลก: `https://api.minimax.io/v1/coding_plan/search`
+- จีน: `https://api.minimaxi.com/v1/coding_plan/search`
 
-หากไม่ได้ตั้งค่า `plugins.entries.minimax.config.webSearch.region` OpenClaw จะ resolve
-region ตามลำดับนี้:
+หากไม่ได้ตั้งค่า `plugins.entries.minimax.config.webSearch.region` ไว้ OpenClaw จะระบุ
+ภูมิภาคตามลำดับนี้:
 
-1. `tools.web.search.minimax.region` / `webSearch.region` ที่ plugin เป็นเจ้าของ
+1. `tools.web.search.minimax.region` / `webSearch.region` ที่ Plugin เป็นเจ้าของ
 2. `MINIMAX_API_HOST`
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-ซึ่งหมายความว่า onboarding แบบ CN หรือ `MINIMAX_API_HOST=https://api.minimaxi.com/...`
-จะทำให้ MiniMax Search คงอยู่บนโฮสต์ CN โดยอัตโนมัติเช่นกัน
+นั่นหมายความว่าการเริ่มใช้งานในจีนหรือ `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+จะทำให้ MiniMax Search ใช้โฮสต์จีนโดยอัตโนมัติด้วย
 
-แม้ว่าคุณจะยืนยันตัวตนกับ MiniMax ผ่านเส้นทาง OAuth `minimax-portal`
-web search ก็ยังคงลงทะเบียนเป็น provider id `minimax`; Base URL ของ OAuth provider
-จะถูกใช้เพียงเป็นคำใบ้ region สำหรับการเลือกโฮสต์ CN/global เท่านั้น
+แม้คุณจะยืนยันตัวตน MiniMax ผ่านเส้นทาง OAuth `minimax-portal`
+การค้นหาเว็บยังคงลงทะเบียนเป็นรหัสผู้ให้บริการ `minimax`; URL ฐานของผู้ให้บริการ OAuth
+จะถูกใช้เป็นคำใบ้ภูมิภาคสำหรับการเลือกโฮสต์จีน/ทั่วโลก และ `MINIMAX_OAUTH_TOKEN`
+สามารถใช้เป็นข้อมูลรับรอง bearer สำหรับ MiniMax Search ได้
 
 ## พารามิเตอร์ที่รองรับ
 
 MiniMax Search รองรับ:
 
 - `query`
-- `count` (OpenClaw จะตัดรายการผลลัพธ์ที่ส่งกลับให้เหลือตามจำนวนที่ขอ)
+- `count` (OpenClaw ตัดรายการผลลัพธ์ที่ส่งคืนให้เหลือจำนวนที่ร้องขอ)
 
-ขณะนี้ยังไม่รองรับตัวกรองเฉพาะของ provider
+ขณะนี้ยังไม่รองรับตัวกรองเฉพาะผู้ให้บริการ
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวม Web Search](/th/tools/web) -- providers ทั้งหมดและการตรวจจับอัตโนมัติ
-- [MiniMax](/th/providers/minimax) -- การตั้งค่าโมเดล ภาพ เสียง และ auth
+- [ภาพรวม Web Search](/th/tools/web) -- ผู้ให้บริการทั้งหมดและการตรวจจับอัตโนมัติ
+- [MiniMax](/th/providers/minimax) -- การตั้งค่าโมเดล, รูปภาพ, คำพูด และการยืนยันตัวตน

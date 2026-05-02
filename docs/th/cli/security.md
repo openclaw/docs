@@ -1,27 +1,27 @@
 ---
 read_when:
-    - คุณต้องการรันการตรวจสอบความปลอดภัยอย่างรวดเร็วบน config/สถานะ
-    - คุณต้องการใช้คำแนะนำ “fix” ที่ปลอดภัย (สิทธิ์ไฟล์, ทำค่าเริ่มต้นให้เข้มงวดขึ้น)
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw security` (ตรวจสอบและแก้ไขจุดพลาดด้านความปลอดภัยที่พบบ่อย)
+    - คุณต้องการเรียกใช้การตรวจสอบความปลอดภัยอย่างรวดเร็วสำหรับการกำหนดค่า/สถานะ
+    - คุณต้องการนำคำแนะนำ “แก้ไข” ที่ปลอดภัยไปใช้ (สิทธิ์, ปรับค่าเริ่มต้นให้รัดกุมขึ้น)
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw security` (ตรวจสอบและแก้ไขจุดเสี่ยงด้านความปลอดภัยที่พลาดได้ง่ายที่พบบ่อย)
 title: ความปลอดภัย
 x-i18n:
-    generated_at: "2026-04-24T09:04:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:12:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b4c15f2111cac2492aa331e5217dd18de169c8b6440f103e3009e059a06d81f6
+    source_hash: 44eb50368cb54441782a7c4e20fab24d0488b80c9a1eedf8e1eb31dc8d7a9cf6
     source_path: cli/security.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw security`
 
-เครื่องมือด้านความปลอดภัย (audit + fixes แบบไม่บังคับ)
+เครื่องมือความปลอดภัย (ตรวจสอบ + แก้ไขเพิ่มเติมได้)
 
 ที่เกี่ยวข้อง:
 
-- คู่มือด้านความปลอดภัย: [Security](/th/gateway/security)
+- คู่มือความปลอดภัย: [ความปลอดภัย](/th/gateway/security)
 
-## Audit
+## การตรวจสอบ
 
 ```bash
 openclaw security audit
@@ -32,67 +32,69 @@ openclaw security audit --fix
 openclaw security audit --json
 ```
 
-การ audit จะเตือนเมื่อมีผู้ส่ง DM หลายคนใช้ main session ร่วมกัน และแนะนำให้ใช้ **secure DM mode**: `session.dmScope="per-channel-peer"` (หรือ `per-account-channel-peer` สำหรับแชนแนลแบบหลายบัญชี) สำหรับ inbox ที่มีผู้ใช้ร่วมกัน
-สิ่งนี้มีไว้เพื่อเสริมความปลอดภัยของ inbox แบบทำงานร่วมกัน/ใช้ร่วมกัน การใช้ Gateway เดียวร่วมกันโดยผู้ปฏิบัติงานที่ไม่ไว้ใจกันหรือมีลักษณะเป็นปฏิปักษ์กันไม่ใช่รูปแบบที่แนะนำ; ให้แยกขอบเขตความไว้วางใจด้วย gateways แยกกัน (หรือแยก OS users/hosts)
-นอกจากนี้ยังส่ง `security.trust_model.multi_user_heuristic` เมื่อ config บ่งชี้ถึง ingress แบบหลายผู้ใช้ที่น่าจะเป็นไปได้ (เช่น DM/group policy แบบ open, group targets ที่กำหนดไว้ หรือกฎ wildcard sender) และเตือนว่า OpenClaw ใช้โมเดลความไว้วางใจแบบผู้ช่วยส่วนตัวเป็นค่าเริ่มต้น
-สำหรับการตั้งค่าหลายผู้ใช้ที่ตั้งใจใช้งานจริง คำแนะนำจาก audit คือ sandbox ทุกเซสชัน จำกัดการเข้าถึง filesystem ให้อยู่ภายใน workspace และแยก identities หรือ credentials ส่วนตัว/ที่เป็นความลับออกจาก runtime นั้น
-นอกจากนี้ยังเตือนเมื่อใช้โมเดลขนาดเล็ก (`<=300B`) โดยไม่มี sandbox และเปิดใช้งาน web/browser tools
-สำหรับ webhook ingress จะเตือนเมื่อ `hooks.token` ใช้ token เดียวกับ Gateway, เมื่อ `hooks.token` สั้น, เมื่อ `hooks.path="/"`, เมื่อไม่ได้ตั้งค่า `hooks.defaultSessionKey`, เมื่อ `hooks.allowedAgentIds` ไม่ถูกจำกัด, เมื่อเปิดใช้ request `sessionKey` overrides และเมื่อเปิดใช้ overrides โดยไม่มี `hooks.allowedSessionKeyPrefixes`
-นอกจากนี้ยังเตือนเมื่อมีการกำหนดค่า sandbox Docker ไว้ในขณะที่ปิด sandbox mode อยู่, เมื่อ `gateway.nodes.denyCommands` ใช้รายการแบบ pattern-like/unknown ที่ไม่มีผล (รองรับเฉพาะการจับคู่ exact node command-name ไม่ใช่การกรอง shell text), เมื่อ `gateway.nodes.allowCommands` เปิดใช้ node commands ที่อันตรายอย่างชัดเจน, เมื่อ `tools.profile="minimal"` ระดับโกลบอลถูกแทนที่โดย agent tool profiles, เมื่อ open groups เปิดเผย runtime/filesystem tools โดยไม่มี sandbox/workspace guards และเมื่อ tools จาก Plugins ที่ติดตั้งไว้สามารถเข้าถึงได้ภายใต้นโยบาย tool ที่ผ่อนปรน
-นอกจากนี้ยังแจ้งเตือน `gateway.allowRealIpFallback=true` (มีความเสี่ยงจากการ spoof headers หาก proxies ถูกกำหนดค่าผิด) และ `discovery.mdns.mode="full"` (ข้อมูล metadata รั่วไหลผ่าน mDNS TXT records)
-นอกจากนี้ยังเตือนเมื่อ sandbox browser ใช้ Docker network แบบ `bridge` โดยไม่มี `sandbox.browser.cdpSourceRange`
-และยังแจ้งเตือนโหมดเครือข่าย Docker ของ sandbox ที่อันตราย (รวมถึง `host` และการเข้าร่วม namespace แบบ `container:*`)
-นอกจากนี้ยังเตือนเมื่อ Docker containers ของ sandbox browser ที่มีอยู่มี hash labels ที่หายไป/ล้าสมัย (เช่น containers ก่อนการย้ายที่ไม่มี `openclaw.browserConfigEpoch`) และแนะนำให้ใช้ `openclaw sandbox recreate --browser --all`
-นอกจากนี้ยังเตือนเมื่อระเบียนการติดตั้ง Plugin/hook แบบ npm ไม่มีการ pin, ไม่มี metadata ด้าน integrity หรือไม่ตรงกับเวอร์ชันแพ็กเกจที่ติดตั้งอยู่ในปัจจุบัน
-นอกจากนี้ยังเตือนเมื่อ allowlists ของแชนแนลอาศัยชื่อ/อีเมล/แท็กที่เปลี่ยนแปลงได้แทน stable IDs (Discord, Slack, Google Chat, Microsoft Teams, Mattermost, IRC scopes ที่เกี่ยวข้อง)
-นอกจากนี้ยังเตือนเมื่อ `gateway.auth.mode="none"` ทำให้ Gateway HTTP APIs เข้าถึงได้โดยไม่มี shared secret (`/tools/invoke` รวมถึง `/v1/*` endpoint ใด ๆ ที่เปิดใช้งาน)
-การตั้งค่าที่ขึ้นต้นด้วย `dangerous`/`dangerously` เป็นการแทนที่โดยผู้ปฏิบัติงานแบบ break-glass อย่างชัดเจน; การเปิดใช้เพียงอย่างเดียวไม่ถือเป็นรายงานช่องโหว่ด้านความปลอดภัย
-สำหรับรายการพารามิเตอร์อันตรายทั้งหมด ดูหัวข้อ "Insecure or dangerous flags summary" ใน [Security](/th/gateway/security)
+`security audit` แบบปกติจะอยู่บนเส้นทาง config/filesystem/read-only แบบเย็น โดยค่าเริ่มต้นจะไม่ค้นหาตัวรวบรวมความปลอดภัยของรันไทม์ Plugin ดังนั้นการตรวจสอบตามปกติจะไม่โหลดรันไทม์ของ Plugin ที่ติดตั้งไว้ทุกตัว ใช้ `--deep` เพื่อรวมการ probe Gateway สดแบบ best-effort และตัวรวบรวมการตรวจสอบความปลอดภัยที่ Plugin เป็นเจ้าของ ผู้เรียกภายในที่ระบุชัดเจนอาจเลือกใช้ตัวรวบรวมที่ Plugin เป็นเจ้าของเหล่านั้นได้ด้วย เมื่อมีขอบเขตรันไทม์ที่เหมาะสมอยู่แล้ว
 
-พฤติกรรมของ SecretRef:
+การตรวจสอบจะเตือนเมื่อผู้ส่ง DM หลายรายใช้เซสชันหลักร่วมกัน และแนะนำ **โหมด DM ที่ปลอดภัย**: `session.dmScope="per-channel-peer"` (หรือ `per-account-channel-peer` สำหรับช่องทางหลายบัญชี) สำหรับ inbox ที่ใช้ร่วมกัน
+สิ่งนี้มีไว้เพื่อเพิ่มความแข็งแกร่งให้ inbox แบบร่วมมือ/ใช้ร่วมกัน ไม่แนะนำการตั้งค่าให้ Gateway เดียวถูกใช้ร่วมกันโดยผู้ปฏิบัติการที่ไม่ไว้วางใจกัน/เป็นปฏิปักษ์กัน ให้แยกขอบเขตความไว้วางใจด้วย gateway แยกกัน (หรือผู้ใช้/โฮสต์ OS แยกกัน)
+นอกจากนี้ยังปล่อย `security.trust_model.multi_user_heuristic` เมื่อ config บ่งชี้ว่าน่าจะมีทางเข้าของผู้ใช้ร่วมกัน (เช่น นโยบาย DM/กลุ่มแบบเปิด เป้าหมายกลุ่มที่กำหนดค่าไว้ หรือกฎผู้ส่งแบบ wildcard) และเตือนว่าโดยค่าเริ่มต้น OpenClaw เป็นโมเดลความไว้วางใจแบบผู้ช่วยส่วนตัว
+สำหรับการตั้งค่าผู้ใช้ร่วมกันโดยตั้งใจ คำแนะนำจากการตรวจสอบคือให้ sandbox ทุกเซสชัน จำกัดการเข้าถึง filesystem ให้อยู่ในขอบเขต workspace และไม่นำตัวตนหรือข้อมูลรับรองส่วนตัว/ส่วนบุคคลไว้บนรันไทม์นั้น
+นอกจากนี้ยังเตือนเมื่อมีการใช้โมเดลขนาดเล็ก (`<=300B`) โดยไม่มี sandboxing และเปิดใช้เครื่องมือ web/browser
+สำหรับทางเข้า Webhook จะเตือนเมื่อ `hooks.token` ใช้ token ของ Gateway ซ้ำ เมื่อ `hooks.token` สั้น เมื่อ `hooks.path="/"` เมื่อไม่ได้ตั้งค่า `hooks.defaultSessionKey` เมื่อ `hooks.allowedAgentIds` ไม่ถูกจำกัด เมื่อเปิดใช้การ override `sessionKey` ของคำขอ และเมื่อเปิดใช้การ override โดยไม่มี `hooks.allowedSessionKeyPrefixes`
+นอกจากนี้ยังเตือนเมื่อมีการกำหนดค่า Docker ของ sandbox แต่ปิดโหมด sandbox อยู่ เมื่อ `gateway.nodes.denyCommands` ใช้รายการที่เหมือน pattern/ไม่รู้จักซึ่งไม่มีผล (จับคู่ชื่อคำสั่ง node แบบตรงตัวเท่านั้น ไม่ใช่การกรองข้อความ shell) เมื่อ `gateway.nodes.allowCommands` เปิดใช้คำสั่ง node ที่อันตรายอย่างชัดเจน เมื่อ `tools.profile="minimal"` แบบ global ถูก override โดย profile เครื่องมือของ agent เมื่อกลุ่มแบบเปิดเปิดเผยเครื่องมือ runtime/filesystem โดยไม่มีตัวป้องกัน sandbox/workspace และเมื่อเครื่องมือ Plugin ที่ติดตั้งไว้อาจเข้าถึงได้ภายใต้นโยบายเครื่องมือที่ผ่อนปรน
+นอกจากนี้ยัง flag `gateway.allowRealIpFallback=true` (ความเสี่ยงการปลอมแปลง header หากกำหนดค่า proxy ผิด) และ `discovery.mdns.mode="full"` (การรั่วไหลของ metadata ผ่านระเบียน mDNS TXT)
+นอกจากนี้ยังเตือนเมื่อ browser ของ sandbox ใช้เครือข่าย Docker `bridge` โดยไม่มี `sandbox.browser.cdpSourceRange`
+นอกจากนี้ยัง flag โหมดเครือข่าย Docker ของ sandbox ที่อันตราย (รวมถึง `host` และการ join namespace แบบ `container:*`)
+นอกจากนี้ยังเตือนเมื่อ container Docker ของ browser sandbox ที่มีอยู่ไม่มี label hash หรือ label hash เก่า (เช่น container ก่อนการ migration ที่ไม่มี `openclaw.browserConfigEpoch`) และแนะนำ `openclaw sandbox recreate --browser --all`
+นอกจากนี้ยังเตือนเมื่อระเบียนการติดตั้ง Plugin/hook แบบ npm ไม่ได้ pin ไม่มี metadata ความสมบูรณ์ หรือ drift จากเวอร์ชัน package ที่ติดตั้งอยู่ในปัจจุบัน
+จะเตือนเมื่อ allowlist ของช่องทางอิงชื่อ/อีเมล/tag ที่เปลี่ยนแปลงได้แทน ID ที่เสถียร (Discord, Slack, Google Chat, Microsoft Teams, Mattermost, IRC scope เมื่อเกี่ยวข้อง)
+จะเตือนเมื่อ `gateway.auth.mode="none"` ทำให้ HTTP API ของ Gateway เข้าถึงได้โดยไม่มี shared secret (`/tools/invoke` รวมถึง endpoint `/v1/*` ที่เปิดใช้)
+การตั้งค่าที่ขึ้นต้นด้วย `dangerous`/`dangerously` คือ override ของผู้ปฏิบัติการแบบ break-glass ที่ระบุชัดเจน การเปิดใช้งานรายการหนึ่งไม่ได้เป็นรายงานช่องโหว่ด้านความปลอดภัยโดยตัวมันเอง
+สำหรับรายการพารามิเตอร์อันตรายทั้งหมด โปรดดูส่วน "สรุป flag ที่ไม่ปลอดภัยหรืออันตราย" ใน [ความปลอดภัย](/th/gateway/security)
 
-- `security audit` จะ resolve SecretRefs ที่รองรับในโหมดอ่านอย่างเดียวสำหรับ paths เป้าหมายของมัน
-- หาก SecretRef ไม่พร้อมใช้งานในเส้นทางคำสั่งปัจจุบัน audit จะทำงานต่อและรายงาน `secretDiagnostics` (แทนที่จะล้มเหลว)
-- `--token` และ `--password` จะ override เฉพาะการยืนยันตัวตนสำหรับ deep-probe ของคำสั่งที่เรียกครั้งนั้นเท่านั้น; จะไม่เขียนทับ config หรือการแมป SecretRef
+พฤติกรรม SecretRef:
+
+- `security audit` resolve SecretRefs ที่รองรับในโหมด read-only สำหรับ path เป้าหมายของมัน
+- หาก SecretRef ไม่พร้อมใช้งานใน path คำสั่งปัจจุบัน การตรวจสอบจะดำเนินต่อและรายงาน `secretDiagnostics` (แทนที่จะ crash)
+- `--token` และ `--password` override auth ของ deep-probe สำหรับการเรียกคำสั่งครั้งนั้นเท่านั้น ไม่ได้เขียน config หรือ mapping ของ SecretRef ใหม่
 
 ## เอาต์พุต JSON
 
-ใช้ `--json` สำหรับการตรวจสอบใน CI/นโยบาย:
+ใช้ `--json` สำหรับการตรวจสอบ CI/นโยบาย:
 
 ```bash
 openclaw security audit --json | jq '.summary'
 openclaw security audit --deep --json | jq '.findings[] | select(.severity=="critical") | .checkId'
 ```
 
-หากใช้ `--fix` และ `--json` ร่วมกัน เอาต์พุตจะรวมทั้งการกระทำของ fix และรายงานสุดท้าย:
+หากใช้ `--fix` และ `--json` ร่วมกัน เอาต์พุตจะรวมทั้ง action การแก้ไขและรายงานสุดท้าย:
 
 ```bash
 openclaw security audit --fix --json | jq '{fix: .fix.ok, summary: .report.summary}'
 ```
 
-## สิ่งที่ `--fix` เปลี่ยนแปลง
+## `--fix` เปลี่ยนอะไร
 
 `--fix` ใช้การแก้ไขที่ปลอดภัยและกำหนดผลลัพธ์ได้แน่นอน:
 
-- เปลี่ยน `groupPolicy="open"` ที่พบบ่อยเป็น `groupPolicy="allowlist"` (รวมถึงรูปแบบต่อบัญชีในแชนแนลที่รองรับ)
-- เมื่อ group policy ของ WhatsApp ถูกเปลี่ยนเป็น `allowlist` จะ seed ค่า `groupAllowFrom` จาก
-  ไฟล์ `allowFrom` ที่เก็บไว้เมื่อมีรายการนั้นอยู่และใน config ยังไม่ได้
+- เปลี่ยน `groupPolicy="open"` ที่พบบ่อยเป็น `groupPolicy="allowlist"` (รวมถึง variant แบบบัญชีในช่องทางที่รองรับ)
+- เมื่อ policy ของกลุ่ม WhatsApp เปลี่ยนเป็น `allowlist` จะ seed `groupAllowFrom` จาก
+  ไฟล์ `allowFrom` ที่จัดเก็บไว้เมื่อมีรายการนั้นอยู่และ config ยังไม่ได้
   กำหนด `allowFrom`
 - ตั้งค่า `logging.redactSensitive` จาก `"off"` เป็น `"tools"`
-- ทำสิทธิ์ของ state/config และไฟล์สำคัญที่อ่อนไหวทั่วไปให้เข้มงวดยิ่งขึ้น
+- ทำให้สิทธิ์สำหรับไฟล์ state/config และไฟล์ละเอียดอ่อนที่พบบ่อยเข้มงวดขึ้น
   (`credentials/*.json`, `auth-profiles.json`, `sessions.json`, session
   `*.jsonl`)
-- รวมถึงทำให้ไฟล์ include ของ config ที่อ้างอิงจาก `openclaw.json` เข้มงวดยิ่งขึ้นด้วย
-- ใช้ `chmod` บนโฮสต์แบบ POSIX และรีเซ็ต `icacls` บน Windows
+- ทำให้ไฟล์ include ของ config ที่อ้างอิงจาก `openclaw.json` เข้มงวดขึ้นด้วย
+- ใช้ `chmod` บนโฮสต์ POSIX และ reset ด้วย `icacls` บน Windows
 
-`--fix` จะ **ไม่**:
+`--fix` **จะไม่**:
 
-- หมุนเวียน tokens/passwords/API keys
-- ปิดใช้งาน tools (`gateway`, `cron`, `exec` เป็นต้น)
+- rotate token/password/API key
+- ปิดใช้เครื่องมือ (`gateway`, `cron`, `exec` ฯลฯ)
 - เปลี่ยนตัวเลือก bind/auth/network exposure ของ gateway
-- ลบหรือเขียนทับ Plugins/Skills
+- ลบหรือเขียน Plugin/Skills ใหม่
 
 ## ที่เกี่ยวข้อง
 
-- [CLI reference](/th/cli)
-- [Security audit](/th/gateway/security)
+- [อ้างอิง CLI](/th/cli)
+- [การตรวจสอบความปลอดภัย](/th/gateway/security)

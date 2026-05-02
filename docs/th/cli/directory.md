@@ -1,33 +1,34 @@
 ---
 read_when:
-    - คุณต้องการค้นหา IDs ของผู้ติดต่อ/กลุ่ม/ตัวเองสำหรับช่องทางหนึ่ง
-    - คุณกำลังพัฒนาอะแดปเตอร์ไดเรกทอรีของช่องทาง
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw directory` (ตัวเอง เพื่อนร่วมงาน กลุ่ม)
+    - คุณต้องการค้นหารหัสรายชื่อติดต่อ/กลุ่ม/ตนเองสำหรับช่องทางหนึ่ง
+    - คุณกำลังพัฒนาอะแดปเตอร์ไดเรกทอรีช่องทาง
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw directory` (ตนเอง, เพียร์, กลุ่ม)
 title: ไดเรกทอรี
 x-i18n:
-    generated_at: "2026-04-24T09:02:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:10:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-การค้นหาไดเรกทอรีสำหรับช่องทางที่รองรับ (ผู้ติดต่อ/เพื่อนร่วมงาน กลุ่ม และ “ตัวฉัน”)
+การค้นหาไดเรกทอรีสำหรับช่องทางที่รองรับ (ผู้ติดต่อ/เพียร์, กลุ่ม และ “me”)
 
 ## แฟล็กทั่วไป
 
-- `--channel <name>`: id/alias ของช่องทาง (จำเป็นเมื่อมีการกำหนดค่าหลายช่องทาง; ใช้อัตโนมัติเมื่อกำหนดค่าไว้เพียงช่องทางเดียว)
-- `--account <id>`: account id (ค่าเริ่มต้น: ค่าเริ่มต้นของช่องทาง)
-- `--json`: แสดงผลเป็น JSON
+- `--channel <name>`: id/นามแฝงของช่องทาง (จำเป็นเมื่อกำหนดค่าหลายช่องทางไว้; อัตโนมัติเมื่อกำหนดค่าไว้เพียงช่องทางเดียว)
+- `--account <id>`: id บัญชี (ค่าเริ่มต้น: ค่าเริ่มต้นของช่องทาง)
+- `--json`: ส่งออก JSON
 
 ## หมายเหตุ
 
-- `directory` มีไว้เพื่อช่วยคุณค้นหา IDs ที่สามารถนำไปวางในคำสั่งอื่นได้ (โดยเฉพาะ `openclaw message send --target ...`)
-- สำหรับหลายช่องทาง ผลลัพธ์จะอิงตามคอนฟิก (allowlists / กลุ่มที่กำหนดค่าไว้) มากกว่าไดเรกทอรีสดจากผู้ให้บริการ
-- เอาต์พุตเริ่มต้นคือ `id` (และบางครั้งมี `name`) คั่นด้วยแท็บ; ใช้ `--json` สำหรับงานสคริปต์
+- `directory` มีไว้เพื่อช่วยคุณค้นหา ID ที่สามารถนำไปวางในคำสั่งอื่นได้ (โดยเฉพาะ `openclaw message send --target ...`)
+- สำหรับหลายช่องทาง ผลลัพธ์อิงตามการกำหนดค่า (allowlists / กลุ่มที่กำหนดค่าไว้) แทนที่จะเป็นไดเรกทอรีของผู้ให้บริการแบบสด
+- Plugin ช่องทางที่ติดตั้งแล้วอาจยังละเว้นการรองรับไดเรกทอรีได้; ในกรณีนั้น คำสั่งจะรายงานการดำเนินการไดเรกทอรีที่ไม่รองรับ แทนที่จะติดตั้ง Plugin ใหม่
+- เอาต์พุตเริ่มต้นคือ `id` (และบางครั้งคือ `name`) คั่นด้วยแท็บ; ใช้ `--json` สำหรับการเขียนสคริปต์
 
 ## การใช้ผลลัพธ์กับ `message send`
 
@@ -36,24 +37,24 @@ openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## รูปแบบ ID (แยกตามช่องทาง)
+## รูปแบบ ID (ตามช่องทาง)
 
 - WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (กลุ่ม)
-- Telegram: `@username` หรือ numeric chat id; กลุ่มเป็น numeric ids
+- Telegram: `@username` หรือ id แชตแบบตัวเลข; กลุ่มเป็น id แบบตัวเลข
 - Slack: `user:U…` และ `channel:C…`
 - Discord: `user:<id>` และ `channel:<id>`
-- Matrix (Plugin): `user:@user:server`, `room:!roomId:server` หรือ `#alias:server`
+- Matrix (Plugin): `user:@user:server`, `room:!roomId:server`, หรือ `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` และ `conversation:<id>`
-- Zalo (Plugin): user id (Bot API)
-- Zalo Personal / `zalouser` (Plugin): thread id (DM/กลุ่ม) จาก `zca` (`me`, `friend list`, `group list`)
+- Zalo (Plugin): id ผู้ใช้ (Bot API)
+- Zalo Personal / `zalouser` (Plugin): id เธรด (DM/กลุ่ม) จาก `zca` (`me`, `friend list`, `group list`)
 
-## ตัวฉัน ("me")
+## ตัวเอง ("me")
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## เพื่อนร่วมงาน (ผู้ติดต่อ/ผู้ใช้)
+## เพียร์ (ผู้ติดต่อ/ผู้ใช้)
 
 ```bash
 openclaw directory peers list --channel zalouser
@@ -71,4 +72,4 @@ openclaw directory groups members --channel zalouser --group-id <id>
 
 ## ที่เกี่ยวข้อง
 
-- [เอกสารอ้างอิง CLI](/th/cli)
+- [ข้อมูลอ้างอิง CLI](/th/cli)

@@ -1,26 +1,26 @@
 ---
 read_when:
-    - คุณจำเป็นต้องตรวจสอบเอาต์พุตดิบของโมเดลเพื่อหาการรั่วไหลของข้อมูลการให้เหตุผล
-    - คุณต้องการเรียกใช้ Gateway ในโหมดเฝ้าดูขณะปรับแก้ซ้ำ
+    - คุณต้องตรวจสอบเอาต์พุตดิบของโมเดลเพื่อหาการรั่วไหลของการให้เหตุผล
+    - คุณต้องการเรียกใช้ Gateway ในโหมดเฝ้าดูขณะปรับแก้ซ้ำไปมา
     - คุณต้องมีเวิร์กโฟลว์การดีบักที่ทำซ้ำได้
-summary: 'เครื่องมือดีบัก: โหมดเฝ้าดู, สตรีมดิบของโมเดล และการติดตามการรั่วไหลของการใช้เหตุผล'
+summary: 'เครื่องมือดีบัก: โหมดเฝ้าดู, สตรีมโมเดลดิบ และการติดตามการรั่วไหลของการให้เหตุผล'
 title: การดีบัก
 x-i18n:
-    generated_at: "2026-04-30T09:57:22Z"
+    generated_at: "2026-05-02T10:18:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c3c4ba151cf1ef1dd689077cee93467b7bc77b765665231028941a345b5345ea
+    source_hash: e7e28dd5f352abd8d751def61bb56acb6f22663600effdada14bf4a40214f62b
     source_path: help/debugging.md
     workflow: 16
 ---
 
-ตัวช่วยดีบักสำหรับเอาต์พุตสตรีม โดยเฉพาะเมื่อ provider ผสมเหตุผลลงในข้อความปกติ
+ตัวช่วยดีบักสำหรับเอาต์พุตแบบสตรีม โดยเฉพาะเมื่อผู้ให้บริการผสมเหตุผลลงในข้อความปกติ
 
-## การ override debug ขณะรันไทม์
+## การแทนที่การดีบักของรันไทม์
 
-ใช้ `/debug` ในแชตเพื่อตั้งค่า override ของ config แบบ **เฉพาะรันไทม์** (อยู่ในหน่วยความจำ ไม่ใช่ดิสก์)
-`/debug` ถูกปิดใช้งานโดยค่าเริ่มต้น เปิดใช้ด้วย `commands.debug: true`
-สิ่งนี้มีประโยชน์เมื่อคุณต้องสลับการตั้งค่าที่ไม่ค่อยใช้โดยไม่ต้องแก้ไข `openclaw.json`
+ใช้ `/debug` ในแชตเพื่อตั้งค่าการแทนที่คอนฟิกแบบ **เฉพาะรันไทม์** (หน่วยความจำ ไม่ใช่ดิสก์)
+`/debug` ถูกปิดใช้งานโดยค่าเริ่มต้น เปิดใช้งานด้วย `commands.debug: true`
+สิ่งนี้มีประโยชน์เมื่อคุณต้องสลับการตั้งค่าที่ไม่ค่อยพบโดยไม่ต้องแก้ไข `openclaw.json`
 
 ตัวอย่าง:
 
@@ -31,11 +31,11 @@ x-i18n:
 /debug reset
 ```
 
-`/debug reset` จะล้างค่า override ทั้งหมดและกลับไปใช้ config บนดิสก์
+`/debug reset` ล้างการแทนที่ทั้งหมดและกลับไปใช้คอนฟิกบนดิสก์
 
-## เอาต์พุต trace ของเซสชัน
+## เอาต์พุตร่องรอยของเซสชัน
 
-ใช้ `/trace` เมื่อคุณต้องการดูบรรทัด trace/debug ที่ Plugin เป็นเจ้าของในเซสชันเดียว
+ใช้ `/trace` เมื่อคุณต้องการดูบรรทัดร่องรอย/ดีบักที่ Plugin เป็นเจ้าของในหนึ่งเซสชัน
 โดยไม่ต้องเปิดโหมด verbose เต็มรูปแบบ
 
 ตัวอย่าง:
@@ -46,16 +46,16 @@ x-i18n:
 /trace off
 ```
 
-ใช้ `/trace` สำหรับการวินิจฉัย Plugin เช่น สรุป debug ของ Active Memory
-ใช้ `/verbose` ต่อไปสำหรับเอาต์พุตสถานะ/tool แบบ verbose ปกติ และใช้
-`/debug` ต่อไปสำหรับการ override config เฉพาะรันไทม์
+ใช้ `/trace` สำหรับการวินิจฉัย Plugin เช่น สรุปดีบักของ Active Memory
+ใช้ `/verbose` ต่อไปสำหรับเอาต์พุตสถานะ/เครื่องมือแบบ verbose ปกติ และใช้
+`/debug` ต่อไปสำหรับการแทนที่คอนฟิกแบบเฉพาะรันไทม์
 
-## trace วงจรชีวิต Plugin
+## ร่องรอยวงจรชีวิตของ Plugin
 
-ใช้ `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` เมื่อคำสั่งวงจรชีวิต Plugin รู้สึกช้า
-และคุณต้องการการแจกแจงเฟสในตัวสำหรับ metadata ของ Plugin, discovery, registry,
-runtime mirror, การแก้ไข config และงาน refresh trace นี้เป็นแบบ opt-in และเขียน
-ไปยัง stderr ดังนั้นเอาต์พุตคำสั่ง JSON จึงยัง parse ได้
+ใช้ `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` เมื่อคำสั่งวงจรชีวิตของ Plugin รู้สึกช้า
+และคุณต้องการรายละเอียดเฟสในตัวสำหรับเมทาดาทาของ Plugin, การค้นพบ, รีจิสทรี,
+มิเรอร์รันไทม์, การเปลี่ยนแปลงคอนฟิก และงานรีเฟรช ร่องรอยเป็นแบบเลือกเปิดและเขียน
+ไปยัง stderr ดังนั้นเอาต์พุตคำสั่ง JSON จึงยังคงแยกวิเคราะห์ได้
 
 ตัวอย่าง:
 
@@ -71,26 +71,26 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-ใช้สิ่งนี้สำหรับการสืบสวนวงจรชีวิต Plugin ก่อนจะไปใช้ CPU profiler
-ถ้าคำสั่งกำลังรันจาก source checkout ให้เลือกวัด runtime ที่ build แล้ว
+ใช้สิ่งนี้สำหรับการตรวจสอบวงจรชีวิตของ Plugin ก่อนหันไปใช้ตัวทำโปรไฟล์ CPU
+ถ้าคำสั่งกำลังรันจากเช็กเอาต์ซอร์ส ให้เลือกวัดรันไทม์ที่บิลด์แล้ว
 ด้วย `node dist/entry.js ...` หลังจาก `pnpm build`; `pnpm openclaw ...`
-จะวัด overhead ของ source-runner ด้วย
+ยังวัดโอเวอร์เฮดของตัวรันซอร์สด้วย
 
-## การจับเวลา debug ของ CLI ชั่วคราว
+## การจับเวลาดีบัก CLI ชั่วคราว
 
-OpenClaw เก็บ `src/cli/debug-timing.ts` ไว้เป็นตัวช่วยขนาดเล็กสำหรับการสืบสวน
-ในเครื่อง โดยตั้งใจไม่เชื่อมเข้ากับการเริ่มต้น CLI, การ route คำสั่ง,
-หรือคำสั่งใดๆ โดยค่าเริ่มต้น ใช้เฉพาะขณะดีบักคำสั่งที่ช้า จากนั้น
-ลบ import และ span ก่อน land การเปลี่ยนแปลงพฤติกรรม
+OpenClaw เก็บ `src/cli/debug-timing.ts` เป็นตัวช่วยขนาดเล็กสำหรับการตรวจสอบภายในเครื่อง
+โดยตั้งใจไม่เชื่อมเข้ากับการเริ่มต้น CLI, การกำหนดเส้นทางคำสั่ง,
+หรือคำสั่งใด ๆ โดยค่าเริ่มต้น ใช้เฉพาะระหว่างดีบักคำสั่งที่ช้า จากนั้น
+ลบ import และ span ก่อนลงการเปลี่ยนแปลงพฤติกรรม
 
-ใช้สิ่งนี้เมื่อคำสั่งช้าและคุณต้องการการแจกแจงเฟสอย่างรวดเร็วก่อน
-ตัดสินใจว่าจะใช้ CPU profiler หรือแก้ subsystem เฉพาะจุด
+ใช้สิ่งนี้เมื่อคำสั่งช้าและคุณต้องการรายละเอียดเฟสอย่างรวดเร็วก่อน
+ตัดสินใจว่าจะใช้ตัวทำโปรไฟล์ CPU หรือแก้ระบบย่อยเฉพาะ
 
 ### เพิ่ม span ชั่วคราว
 
-เพิ่ม helper ใกล้โค้ดที่คุณกำลังสืบสวน ตัวอย่างเช่น ขณะดีบัก
+เพิ่มตัวช่วยใกล้โค้ดที่คุณกำลังตรวจสอบ ตัวอย่างเช่น ระหว่างดีบัก
 `openclaw models list` แพตช์ชั่วคราวใน
-`src/commands/models/list.list-command.ts` อาจมีลักษณะดังนี้:
+`src/commands/models/list.list-command.ts` อาจหน้าตาแบบนี้:
 
 ```ts
 // Temporary debugging only. Remove before landing.
@@ -112,13 +112,13 @@ const loaded = await timing.timeAsync(
 
 แนวทาง:
 
-- เติม prefix ให้ชื่อเฟสชั่วคราวด้วย `debug:`
+- ขึ้นต้นชื่อเฟสชั่วคราวด้วย `debug:`
 - เพิ่ม span เพียงไม่กี่จุดรอบส่วนที่สงสัยว่าช้า
-- เลือกใช้เฟสกว้างๆ เช่น `registry`, `auth_store` หรือ `rows` แทนชื่อ helper
-- ใช้ `time()` สำหรับงานแบบ synchronous และ `timeAsync()` สำหรับ promise
-- รักษา stdout ให้สะอาด helper เขียนไปยัง stderr ดังนั้นเอาต์พุต JSON ของคำสั่งจึงยัง parse ได้
+- เลือกใช้เฟสกว้าง ๆ เช่น `registry`, `auth_store` หรือ `rows` แทนชื่อ helper
+- ใช้ `time()` สำหรับงานแบบซิงโครนัส และ `timeAsync()` สำหรับพรอมิส
+- รักษา stdout ให้สะอาด ตัวช่วยเขียนไปยัง stderr ดังนั้นเอาต์พุตคำสั่ง JSON จึงยังคงแยกวิเคราะห์ได้
 - ลบ import และ span ชั่วคราวก่อนเปิด PR แก้ไขขั้นสุดท้าย
-- รวมเอาต์พุต timing หรือสรุปสั้นๆ ใน issue หรือ PR ที่อธิบายการเพิ่มประสิทธิภาพ
+- ใส่เอาต์พุตการจับเวลา หรือสรุปสั้น ๆ ใน issue หรือ PR ที่อธิบายการปรับปรุงประสิทธิภาพ
 
 ### รันพร้อมเอาต์พุตที่อ่านง่าย
 
@@ -128,7 +128,7 @@ const loaded = await timing.timeAsync(
 OPENCLAW_DEBUG_TIMING=1 pnpm openclaw models list --all --provider moonshot
 ```
 
-เอาต์พุตตัวอย่างจากการสืบสวน `models list` ชั่วคราว:
+เอาต์พุตตัวอย่างจากการตรวจสอบ `models list` ชั่วคราว:
 
 ```text
 OpenClaw CLI debug timing: models list
@@ -159,28 +159,28 @@ moonshot/kimi-k2.6                         text+image  256k  no    no
 
 ข้อค้นพบจากเอาต์พุตนี้:
 
-| เฟส                                     |        เวลา | ความหมาย                                                                                               |
-| ---------------------------------------- | ---------: | ------------------------------------------------------------------------------------------------------- |
-| `debug:models:list:auth_store`           |      20.3s | การโหลด auth-profile store เป็นค่าใช้จ่ายที่มากที่สุดและควรถูกสืบสวนก่อน                              |
-| `debug:models:list:ensure_models_json`   |       5.0s | การ sync `models.json` มีค่าใช้จ่ายมากพอที่จะตรวจเรื่อง caching หรือเงื่อนไขการข้าม                    |
-| `debug:models:list:load_model_registry`  |       5.9s | การสร้าง registry และงาน availability ของ provider ก็เป็นค่าใช้จ่ายที่มีนัยสำคัญเช่นกัน              |
-| `debug:models:list:read_registry_models` |       2.4s | การอ่าน registry models ทั้งหมดไม่ฟรีและอาจสำคัญสำหรับ `--all`                                        |
-| เฟส append row                           | รวม 3.2s  | การสร้างแถวที่แสดงห้าแถวยังใช้เวลาหลายวินาที ดังนั้น path การกรองควรถูกตรวจให้ละเอียดขึ้น             |
-| `debug:models:list:print_model_table`    |        0ms | การ render ไม่ใช่คอขวด                                                                                 |
+| เฟส                                      |        เวลา | ความหมาย                                                                                                |
+| ---------------------------------------- | ----------: | -------------------------------------------------------------------------------------------------------- |
+| `debug:models:list:auth_store`           |       20.3s | การโหลดสโตร์ auth-profile เป็นต้นทุนที่ใหญ่ที่สุดและควรตรวจสอบก่อน                                      |
+| `debug:models:list:ensure_models_json`   |        5.0s | การซิงก์ `models.json` มีต้นทุนมากพอให้ตรวจสอบเรื่องแคชหรือเงื่อนไขการข้าม                              |
+| `debug:models:list:load_model_registry`  |        5.9s | การสร้างรีจิสทรีและงานความพร้อมใช้งานของผู้ให้บริการก็เป็นต้นทุนที่มีนัยสำคัญเช่นกัน                    |
+| `debug:models:list:read_registry_models` |        2.4s | การอ่านโมเดลรีจิสทรีทั้งหมดไม่ฟรีและอาจสำคัญสำหรับ `--all`                                             |
+| เฟสเพิ่มแถว                              | รวม 3.2s    | การสร้างแถวที่แสดงห้าแถวยังคงใช้เวลาหลายวินาที ดังนั้นเส้นทางการกรองสมควรถูกตรวจสอบให้ละเอียดขึ้น     |
+| `debug:models:list:print_model_table`    |         0ms | การเรนเดอร์ไม่ใช่คอขวด                                                                                  |
 
-ข้อค้นพบเหล่านี้เพียงพอที่จะนำทางแพตช์ถัดไปโดยไม่ต้องเก็บโค้ด timing ไว้ใน
-production paths
+ข้อค้นพบเหล่านั้นเพียงพอที่จะนำทางแพตช์ถัดไปโดยไม่ต้องเก็บโค้ดจับเวลาไว้ใน
+เส้นทางโปรดักชัน
 
 ### รันพร้อมเอาต์พุต JSON
 
-ใช้โหมด JSON เมื่อคุณต้องการบันทึกหรือเปรียบเทียบข้อมูล timing:
+ใช้โหมด JSON เมื่อคุณต้องการบันทึกหรือเปรียบเทียบข้อมูลการจับเวลา:
 
 ```bash
 OPENCLAW_DEBUG_TIMING=json pnpm openclaw models list --all --provider moonshot \
   2> .artifacts/models-list-timing.jsonl
 ```
 
-แต่ละบรรทัด stderr เป็น JSON object หนึ่งรายการ:
+แต่ละบรรทัด stderr เป็นออบเจ็กต์ JSON หนึ่งรายการ:
 
 ```json
 {
@@ -194,7 +194,7 @@ OPENCLAW_DEBUG_TIMING=json pnpm openclaw models list --all --provider moonshot \
 }
 ```
 
-### ทำความสะอาดก่อน land
+### ทำความสะอาดก่อนลงงาน
 
 ก่อนเปิด PR ขั้นสุดท้าย:
 
@@ -204,32 +204,32 @@ rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
   --glob '!*.test.ts'
 ```
 
-คำสั่งควรไม่คืนค่า call site ของ instrumentation ชั่วคราว เว้นแต่ PR
-กำลังเพิ่ม diagnostics surface แบบถาวรอย่างชัดเจน สำหรับการแก้ performance
-ปกติ ให้เก็บไว้เฉพาะการเปลี่ยนแปลงพฤติกรรม, tests และ note สั้นๆ พร้อมหลักฐาน timing
+คำสั่งควรไม่คืนไซต์เรียก instrumentation ชั่วคราว เว้นแต่ PR
+กำลังเพิ่มพื้นผิวการวินิจฉัยถาวรอย่างชัดเจน สำหรับการแก้ประสิทธิภาพปกติ
+ให้เก็บเฉพาะการเปลี่ยนแปลงพฤติกรรม, การทดสอบ และบันทึกสั้น ๆ พร้อมหลักฐานการจับเวลา
 
-สำหรับ CPU hotspot ที่ลึกขึ้น ให้ใช้ Node profiling (`--cpu-prof`) หรือ profiler
-ภายนอกแทนการเพิ่ม timing wrapper เพิ่มเติม
+สำหรับฮอตสปอต CPU ที่ลึกกว่า ให้ใช้การทำโปรไฟล์ของ Node (`--cpu-prof`) หรือตัวทำโปรไฟล์ภายนอก
+แทนการเพิ่ม wrapper จับเวลาเพิ่มเติม
 
-## โหมด watch ของ Gateway
+## โหมดเฝ้าดู Gateway
 
-เพื่อการทำซ้ำอย่างรวดเร็ว ให้รัน gateway ภายใต้ file watcher:
+เพื่อวนแก้ไขได้เร็ว ให้รัน Gateway ภายใต้ตัวเฝ้าดูไฟล์:
 
 ```bash
 pnpm gateway:watch
 ```
 
-โดยค่าเริ่มต้น สิ่งนี้จะเริ่มหรือรีสตาร์ต tmux session ชื่อ
-`openclaw-gateway-watch-main` (หรือ variant เฉพาะ profile/port เช่น
-`openclaw-gateway-watch-dev-19001`) และ auto-attach จาก terminal แบบ interactive
-shell แบบ non-interactive, CI และ agent exec call จะคง detached และพิมพ์คำแนะนำ
-การ attach แทน attach ด้วยตนเองเมื่อจำเป็น:
+โดยค่าเริ่มต้น สิ่งนี้จะเริ่มหรือรีสตาร์ตเซสชัน tmux ชื่อ
+`openclaw-gateway-watch-main` (หรือรูปแบบเฉพาะโปรไฟล์/พอร์ต เช่น
+`openclaw-gateway-watch-dev-19001`) และแนบอัตโนมัติจากเทอร์มินัลแบบโต้ตอบ
+เชลล์แบบไม่โต้ตอบ, CI และการเรียก exec ของเอเจนต์จะยังคงแยกอยู่และพิมพ์
+คำแนะนำการแนบแทน แนบด้วยตนเองเมื่อจำเป็น:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
 ```
 
-pane ของ tmux จะรัน watcher ดิบ:
+พาเนล tmux รันตัวเฝ้าดิบ:
 
 ```bash
 node scripts/watch-node.mjs gateway --force
@@ -243,73 +243,75 @@ pnpm gateway:watch:raw
 OPENCLAW_GATEWAY_WATCH_TMUX=0 pnpm gateway:watch
 ```
 
-ปิด auto-attach โดยยังคงการจัดการ tmux ไว้:
+ปิดการแนบอัตโนมัติขณะยังคงการจัดการ tmux:
 
 ```bash
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-tmux wrapper จะนำ runtime selector ทั่วไปที่ไม่ใช่ความลับ เช่น
+wrapper ของ tmux ส่งตัวเลือกไม่ลับของรันไทม์ที่ใช้บ่อย เช่น
 `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`,
-`OPENCLAW_GATEWAY_PORT` และ `OPENCLAW_SKIP_CHANNELS` เข้าไปใน pane ใส่
-credential ของ provider ไว้ใน profile/config ปกติของคุณ หรือใช้โหมด foreground ดิบ
-สำหรับความลับชั่วคราวแบบใช้ครั้งเดียว
+`OPENCLAW_GATEWAY_PORT` และ `OPENCLAW_SKIP_CHANNELS` เข้าไปในพาเนล ใส่
+ข้อมูลรับรองของผู้ให้บริการไว้ในโปรไฟล์/คอนฟิกปกติของคุณ หรือใช้โหมด foreground ดิบ
+สำหรับความลับชั่วคราวเฉพาะครั้ง
+พาเนล tmux ที่จัดการแล้วยังตั้งค่าเริ่มต้นให้บันทึก Gateway มีสีเพื่อให้อ่านง่าย
+ตั้ง `FORCE_COLOR=0` เมื่อเริ่ม `pnpm gateway:watch` เพื่อปิดเอาต์พุต ANSI
 
-watcher จะรีสตาร์ตเมื่อมีไฟล์ที่เกี่ยวข้องกับ build ใต้ `src/`, ไฟล์ source ของ extension,
-metadata `package.json` และ `openclaw.plugin.json` ของ extension, `tsconfig.json`,
-`package.json` และ `tsdown.config.ts` เปลี่ยน การเปลี่ยน metadata ของ extension จะรีสตาร์ต
-gateway โดยไม่บังคับให้ rebuild `tsdown`; การเปลี่ยน source และ config จะยัง
-rebuild `dist` ก่อน
+ตัวเฝ้าดูจะรีสตาร์ตเมื่อไฟล์ที่เกี่ยวข้องกับการบิลด์ใต้ `src/`, ไฟล์ซอร์สของ Plugin,
+เมทาดาทา `package.json` และ `openclaw.plugin.json` ของ Plugin, `tsconfig.json`,
+`package.json` และ `tsdown.config.ts` เปลี่ยนแปลง การเปลี่ยนแปลงเมทาดาทาของ Plugin จะรีสตาร์ต
+Gateway โดยไม่บังคับให้บิลด์ `tsdown` ใหม่ ส่วนการเปลี่ยนแปลงซอร์สและคอนฟิกยังคง
+บิลด์ `dist` ก่อน
 
-เพิ่ม flag ของ Gateway CLI หลัง `gateway:watch` และ flag เหล่านั้นจะถูกส่งต่อใน
-แต่ละการรีสตาร์ต การรันคำสั่ง watch เดิมซ้ำจะ respawn pane ของ tmux ตามชื่อ และ
-watcher ดิบยังคงรักษา lock แบบ single-watcher เพื่อให้ parent watcher ที่ซ้ำกัน
-ถูกแทนที่แทนที่จะสะสมขึ้นเรื่อยๆ
+เพิ่มแฟล็ก CLI ของ Gateway ใด ๆ หลัง `gateway:watch` แล้วแฟล็กเหล่านั้นจะถูกส่งต่อใน
+ทุกการรีสตาร์ต การรันคำสั่ง watch เดิมซ้ำจะสร้างพาเนล tmux ที่มีชื่อขึ้นใหม่ และ
+ตัวเฝ้าดิบยังคงใช้ล็อกตัวเฝ้าเดี่ยว ดังนั้นตัวเฝ้าพาเรนต์ที่ซ้ำกันจะถูกแทนที่
+แทนที่จะสะสมเพิ่มขึ้น
 
-## Dev profile + dev gateway (`--dev`)
+## โปรไฟล์ dev + Gateway dev (--dev)
 
-ใช้ dev profile เพื่อแยก state และเริ่ม setup ที่ปลอดภัยและทิ้งได้สำหรับ
-การดีบัก มี flag `--dev` อยู่ **สอง** แบบ:
+ใช้โปรไฟล์ dev เพื่อแยกสถานะและเริ่มชุดตั้งค่าที่ปลอดภัยและทิ้งได้สำหรับ
+การดีบัก มีแฟล็ก `--dev` **สอง** แบบ:
 
-- **Global `--dev` (profile):** แยก state ไว้ใต้ `~/.openclaw-dev` และ
-  ตั้งค่าเริ่มต้นของ port Gateway เป็น `19001` (port ที่ derive มาจะเลื่อนตาม)
-- **`gateway --dev`: บอกให้ Gateway สร้าง config +
-  workspace เริ่มต้นอัตโนมัติ** เมื่อขาดอยู่ (และข้าม BOOTSTRAP.md)
+- **`--dev` แบบโกลบอล (โปรไฟล์):** แยกสถานะไว้ใต้ `~/.openclaw-dev` และ
+  ตั้งค่าพอร์ต Gateway เริ่มต้นเป็น `19001` (พอร์ตที่อนุมานจะเลื่อนตาม)
+- **`gateway --dev`: บอก Gateway ให้สร้างคอนฟิก + เวิร์กสเปซเริ่มต้นอัตโนมัติ**
+  เมื่อไม่มีอยู่ (และข้าม BOOTSTRAP.md)
 
-flow ที่แนะนำ (dev profile + dev bootstrap):
+โฟลว์ที่แนะนำ (โปรไฟล์ dev + bootstrap dev):
 
 ```bash
 pnpm gateway:dev
 OPENCLAW_PROFILE=dev openclaw tui
 ```
 
-ถ้าคุณยังไม่มี global install ให้รัน CLI ผ่าน `pnpm openclaw ...`
+ถ้าคุณยังไม่มีการติดตั้งแบบโกลบอล ให้รัน CLI ผ่าน `pnpm openclaw ...`
 
-สิ่งที่ทำ:
+สิ่งนี้ทำอะไร:
 
-1. **การแยก profile** (global `--dev`)
+1. **การแยกโปรไฟล์** (`--dev` แบบโกลบอล)
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
-   - `OPENCLAW_GATEWAY_PORT=19001` (browser/canvas จะเลื่อนตาม)
+   - `OPENCLAW_GATEWAY_PORT=19001` (เบราว์เซอร์/แคนวาสเลื่อนตาม)
 
-2. **Dev bootstrap** (`gateway --dev`)
-   - เขียน config ขั้นต่ำถ้าขาดอยู่ (`gateway.mode=local`, bind loopback)
-   - ตั้ง `agent.workspace` เป็น dev workspace
+2. **Bootstrap dev** (`gateway --dev`)
+   - เขียนคอนฟิกขั้นต่ำถ้าไม่มี (`gateway.mode=local`, ผูกกับ loopback)
+   - ตั้ง `agent.workspace` เป็นเวิร์กสเปซ dev
    - ตั้ง `agent.skipBootstrap=true` (ไม่มี BOOTSTRAP.md)
-   - seed ไฟล์ workspace ถ้าขาดอยู่:
-     `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`
-   - identity เริ่มต้น: **C3‑PO** (protocol droid)
-   - ข้าม channel providers ใน dev mode (`OPENCLAW_SKIP_CHANNELS=1`)
+   - ใส่ไฟล์เวิร์กสเปซเริ่มต้นถ้าไม่มี:
+     `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
+   - อัตลักษณ์เริ่มต้น: **C3‑PO** (ดรอยด์พิธีการ)
+   - ข้ามผู้ให้บริการช่องทางในโหมด dev (`OPENCLAW_SKIP_CHANNELS=1`)
 
-flow การ reset (เริ่มใหม่):
+โฟลว์รีเซ็ต (เริ่มใหม่สะอาด):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` เป็น flag profile แบบ **global** และถูก runner บางตัวกินไป ถ้าคุณต้องระบุให้ชัด ให้ใช้รูปแบบ env var:
+`--dev` เป็นแฟล็กโปรไฟล์แบบ **โกลบอล** และถูกบาง runner กลืนไป ถ้าคุณต้องการเขียนให้ชัด ให้ใช้รูปแบบ env var:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -317,11 +319,11 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` จะล้าง config, credentials, sessions และ dev workspace (ใช้
-`trash` ไม่ใช่ `rm`) จากนั้นสร้าง setup dev เริ่มต้นใหม่
+`--reset` ล้างคอนฟิก, ข้อมูลรับรอง, เซสชัน และเวิร์กสเปซ dev (ใช้
+`trash` ไม่ใช่ `rm`) จากนั้นสร้างชุดตั้งค่า dev เริ่มต้นขึ้นใหม่
 
 <Tip>
-ถ้า gateway ที่ไม่ใช่ dev กำลังรันอยู่แล้ว (launchd หรือ systemd) ให้หยุดก่อน:
+ถ้า Gateway ที่ไม่ใช่ dev กำลังรันอยู่แล้ว (launchd หรือ systemd) ให้หยุดก่อน:
 
 ```bash
 openclaw gateway stop
@@ -329,11 +331,11 @@ openclaw gateway stop
 
 </Tip>
 
-## การ log raw stream (OpenClaw)
+## การบันทึกสตรีมดิบ (OpenClaw)
 
-OpenClaw สามารถ log **raw assistant stream** ก่อนการ filtering/formatting ใดๆ
-นี่เป็นวิธีที่ดีที่สุดในการดูว่า reasoning มาถึงเป็น plain text deltas
-(หรือเป็น thinking blocks แยกต่างหาก) หรือไม่
+OpenClaw สามารถบันทึก **สตรีมผู้ช่วยแบบดิบ** ก่อนการกรอง/จัดรูปแบบใดๆ ได้
+นี่เป็นวิธีที่ดีที่สุดในการดูว่า reasoning มาถึงในรูปแบบเดลตาข้อความธรรมดา
+(หรือเป็นบล็อก thinking แยกต่างหาก)
 
 เปิดใช้งานผ่าน CLI:
 
@@ -341,13 +343,13 @@ OpenClaw สามารถ log **raw assistant stream** ก่อนการ f
 pnpm gateway:watch --raw-stream
 ```
 
-การแทนที่พาธแบบเลือกได้:
+การแทนที่พาธแบบไม่บังคับ:
 
 ```bash
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
 ```
 
-ตัวแปรสภาพแวดล้อมที่เทียบเท่ากัน:
+ตัวแปรสภาพแวดล้อมที่เทียบเท่า:
 
 ```bash
 OPENCLAW_RAW_STREAM=1
@@ -360,14 +362,14 @@ OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 
 ## การบันทึกชังก์ดิบ (pi-mono)
 
-หากต้องการบันทึก **ชังก์ดิบที่เข้ากันได้กับ OpenAI** ก่อนที่จะถูกแยกวิเคราะห์เป็นบล็อก
-pi-mono มีตัวบันทึกแยกต่างหากให้ใช้:
+หากต้องการจับ **ชังก์ดิบที่เข้ากันได้กับ OpenAI** ก่อนที่ชังก์เหล่านั้นจะถูกแยกวิเคราะห์เป็นบล็อก
+pi-mono มี logger แยกต่างหาก:
 
 ```bash
 PI_RAW_STREAM=1
 ```
 
-พาธแบบเลือกได้:
+พาธแบบไม่บังคับ:
 
 ```bash
 PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
@@ -377,13 +379,13 @@ PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> หมายเหตุ: สิ่งนี้จะถูกส่งออกโดยเฉพาะจากโปรเซสที่ใช้ provider
+> หมายเหตุ: รายการนี้จะถูกส่งออกโดยโปรเซสที่ใช้ provider
 > `openai-completions` ของ pi-mono เท่านั้น
 
 ## หมายเหตุด้านความปลอดภัย
 
-- บันทึกสตรีมดิบอาจมีพรอมป์ทั้งหมด เอาต์พุตของเครื่องมือ และข้อมูลผู้ใช้
-- เก็บบันทึกไว้ในเครื่องและลบทิ้งหลังจากดีบักเสร็จ
+- บันทึกสตรีมดิบอาจรวมถึง prompt ฉบับเต็ม, ผลลัพธ์จากเครื่องมือ และข้อมูลผู้ใช้
+- เก็บบันทึกไว้ในเครื่องและลบหลังจากดีบักเสร็จ
 - หากคุณแชร์บันทึก ให้ลบข้อมูลลับและ PII ออกก่อน
 
 ## ที่เกี่ยวข้อง

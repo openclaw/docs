@@ -1,33 +1,34 @@
 ---
 read_when:
     - คุณต้องการใช้ Gemini สำหรับ web_search
-    - คุณต้องการ `GEMINI_API_KEY`
-    - คุณต้องการ Google Search grounding
-summary: การค้นหาเว็บด้วย Gemini พร้อม Google Search grounding
+    - คุณต้องมี GEMINI_API_KEY หรือ models.providers.google.apiKey
+    - คุณต้องการใช้ข้อมูลอ้างอิงจาก Google Search
+summary: การค้นหาเว็บของ Gemini พร้อมการยึดโยงด้วย Google Search
 title: การค้นหา Gemini
 x-i18n:
-    generated_at: "2026-04-24T09:37:09Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:31:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
+    source_hash: 015d77fef123b1fd99d43eb6472bb8c672585328e17735d1fa0ead387cd2066a
     source_path: tools/gemini-search.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw รองรับโมเดล Gemini พร้อม
-[Google Search grounding](https://ai.google.dev/gemini-api/docs/grounding) ในตัว
-ซึ่งส่งกลับคำตอบแบบสังเคราะห์โดย AI ที่อ้างอิงจากผลการค้นหา Google แบบสดพร้อม
-citation
+[การยึดโยงกับ Google Search ในตัว](https://ai.google.dev/gemini-api/docs/grounding)
+ซึ่งส่งคืนคำตอบที่ AI สังเคราะห์ขึ้นโดยอ้างอิงผลลัพธ์ Google Search แบบสดพร้อม
+การอ้างอิงแหล่งที่มา
 
-## รับ API key
+## รับคีย์ API
 
 <Steps>
-  <Step title="สร้างคีย์">
+  <Step title="Create a key">
     ไปที่ [Google AI Studio](https://aistudio.google.com/apikey) แล้วสร้าง
-    API key
+    คีย์ API
   </Step>
-  <Step title="เก็บคีย์ไว้">
-    ตั้งค่า `GEMINI_API_KEY` ในสภาพแวดล้อมของ Gateway หรือกำหนดค่าผ่าน:
+  <Step title="Store the key">
+    ตั้งค่า `GEMINI_API_KEY` ในสภาพแวดล้อมของ Gateway, ใช้
+    `models.providers.google.apiKey` ซ้ำ, หรือกำหนดค่าคีย์สำหรับค้นหาเว็บโดยเฉพาะผ่าน:
 
     ```bash
     openclaw configure --section web
@@ -36,7 +37,7 @@ citation
   </Step>
 </Steps>
 
-## คอนฟิก
+## การกำหนดค่า
 
 ```json5
 {
@@ -45,7 +46,8 @@ citation
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // optional if GEMINI_API_KEY is set
+            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
             model: "gemini-2.5-flash", // default
           },
         },
@@ -62,41 +64,58 @@ citation
 }
 ```
 
-**ทางเลือกผ่าน environment:** ตั้ง `GEMINI_API_KEY` ในสภาพแวดล้อมของ Gateway
-สำหรับการติดตั้ง gateway ให้ใส่ไว้ใน `~/.openclaw/.env`
+**ลำดับความสำคัญของข้อมูลรับรอง:** การค้นหาเว็บของ Gemini ใช้
+`plugins.entries.google.config.webSearch.apiKey` ก่อน จากนั้นจึงใช้ `GEMINI_API_KEY`
+แล้วจึงใช้ `models.providers.google.apiKey` สำหรับ URL ฐาน ค่า
+`plugins.entries.google.config.webSearch.baseUrl` ที่กำหนดไว้โดยเฉพาะจะมีผลก่อน
+`models.providers.google.baseUrl`
+
+สำหรับการติดตั้ง Gateway ให้วางคีย์สภาพแวดล้อมไว้ใน `~/.openclaw/.env`
 
 ## วิธีการทำงาน
 
-ต่างจาก provider ค้นหาแบบดั้งเดิมที่ส่งกลับรายการลิงก์และ snippet,
-Gemini ใช้ Google Search grounding เพื่อสร้างคำตอบแบบสังเคราะห์โดย AI พร้อม
-citation แบบ inline ผลลัพธ์จะมีทั้งคำตอบที่สังเคราะห์แล้วและ URL ของแหล่งข้อมูล
+ต่างจากผู้ให้บริการค้นหาแบบดั้งเดิมที่ส่งคืนรายการลิงก์และข้อความตัวอย่าง
+Gemini ใช้การยึดโยงกับ Google Search เพื่อสร้างคำตอบที่ AI สังเคราะห์ขึ้นพร้อม
+การอ้างอิงแหล่งที่มาแบบอินไลน์ ผลลัพธ์มีทั้งคำตอบที่สังเคราะห์ขึ้นและ URL
+ของแหล่งที่มา
 
-- citation URL จาก Gemini grounding จะถูก resolve จาก URL redirect ของ Google
-  ให้เป็น URL ปลายทางโดยอัตโนมัติ
-- การ resolve redirect ใช้เส้นทาง SSRF guard (HEAD + การตรวจ redirect +
-  การตรวจสอบ http/https) ก่อนจะคืน citation URL สุดท้าย
-- การ resolve redirect ใช้ค่า SSRF แบบเข้มงวดเป็นค่าปริยาย ดังนั้น redirect ไปยัง
-  เป้าหมายแบบ private/internal จะถูกบล็อก
+- URL การอ้างอิงจากการยึดโยงของ Gemini จะถูกแปลงจาก URL เปลี่ยนเส้นทางของ Google
+  เป็น URL โดยตรงโดยอัตโนมัติ
+- การแปลงการเปลี่ยนเส้นทางใช้เส้นทางป้องกัน SSRF (HEAD + การตรวจสอบการเปลี่ยนเส้นทาง +
+  การตรวจสอบ http/https) ก่อนส่งคืน URL การอ้างอิงสุดท้าย
+- การแปลงการเปลี่ยนเส้นทางใช้ค่าเริ่มต้น SSRF ที่เข้มงวด ดังนั้นการเปลี่ยนเส้นทางไปยัง
+  เป้าหมายส่วนตัว/ภายในจะถูกบล็อก
 
 ## พารามิเตอร์ที่รองรับ
 
-Gemini search รองรับ `query`
+การค้นหาของ Gemini รองรับ `query`, `freshness`, `date_after`, และ `date_before`
 
-`count` ถูกรับไว้เพื่อความเข้ากันได้กับ `web_search` ที่ใช้ร่วมกัน แต่ Gemini grounding
-ยังคงส่งกลับคำตอบแบบสังเคราะห์เพียงหนึ่งรายการพร้อม citation แทนรายการผลลัพธ์
-จำนวน N รายการ
+`count` ได้รับการยอมรับเพื่อความเข้ากันได้กับ `web_search` ที่ใช้ร่วมกัน แต่การยึดโยงของ Gemini
+ยังคงส่งคืนคำตอบที่สังเคราะห์ขึ้นหนึ่งรายการพร้อมการอ้างอิงแหล่งที่มา แทนที่จะเป็น
+รายการผลลัพธ์จำนวน N รายการ
 
-ไม่รองรับตัวกรองเฉพาะของ provider เช่น `country`, `language`, `freshness` และ
-`domain_filter`
+`freshness` รองรับ `day`, `week`, `month`, `year`, และทางลัดที่ใช้ร่วมกัน
+`pd`, `pw`, `pm`, และ `py` OpenClaw จะแปลงค่าเหล่านี้ หรือช่วง
+`date_after`/`date_before` ที่ระบุชัดเจน ให้เป็น
+`timeRangeFilter` ของการยึดโยงกับ Google Search ของ Gemini ไม่รองรับ `country`, `language`, และ `domain_filter`
 
 ## การเลือกโมเดล
 
-โมเดลค่าปริยายคือ `gemini-2.5-flash` (เร็วและคุ้มค่าใช้จ่าย) สามารถใช้โมเดล Gemini
-ใดก็ได้ที่รองรับ grounding ผ่าน
+โมเดลเริ่มต้นคือ `gemini-2.5-flash` (รวดเร็วและคุ้มค่า) สามารถใช้โมเดล Gemini
+ใดก็ได้ที่รองรับการยึดโยงผ่าน
 `plugins.entries.google.config.webSearch.model`
+
+## การแทนที่ URL ฐาน
+
+ตั้งค่า `plugins.entries.google.config.webSearch.baseUrl` เมื่อการค้นหาเว็บของ Gemini
+ต้องกำหนดเส้นทางผ่านพร็อกซีของผู้ปฏิบัติงานหรือปลายทางที่เข้ากันได้กับ Gemini แบบกำหนดเอง หาก
+ไม่ได้ตั้งค่านี้ การค้นหาเว็บของ Gemini จะใช้ `models.providers.google.baseUrl` ซ้ำ ค่า
+`https://generativelanguage.googleapis.com` แบบธรรมดาจะถูกปรับให้เป็น
+`https://generativelanguage.googleapis.com/v1beta`; เส้นทางพร็อกซีแบบกำหนดเองจะคงไว้
+ตามที่ระบุหลังจากตัดเครื่องหมายทับท้ายออก
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวม Web Search](/th/tools/web) -- provider ทั้งหมดและการตรวจจับอัตโนมัติ
-- [Brave Search](/th/tools/brave-search) -- ผลลัพธ์แบบมีโครงสร้างพร้อม snippet
-- [Perplexity Search](/th/tools/perplexity-search) -- ผลลัพธ์แบบมีโครงสร้าง + การดึงเนื้อหา
+- [ภาพรวมการค้นหาเว็บ](/th/tools/web) -- ผู้ให้บริการทั้งหมดและการตรวจจับอัตโนมัติ
+- [Brave Search](/th/tools/brave-search) -- ผลลัพธ์แบบมีโครงสร้างพร้อมข้อความตัวอย่าง
+- [Perplexity Search](/th/tools/perplexity-search) -- ผลลัพธ์แบบมีโครงสร้าง + การสกัดเนื้อหา

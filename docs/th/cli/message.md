@@ -1,22 +1,22 @@
 ---
 read_when:
     - การเพิ่มหรือแก้ไขการดำเนินการ CLI สำหรับข้อความ
-    - การเปลี่ยนลักษณะการทำงานของช่องทางขาออก
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw message` (ส่ง + การดำเนินการของช่องทาง)
+    - การเปลี่ยนพฤติกรรมของช่องทางขาออก
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw message` (การส่ง + การดำเนินการของช่องทาง)
 title: ข้อความ
 x-i18n:
-    generated_at: "2026-04-30T09:44:04Z"
+    generated_at: "2026-05-02T10:11:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43f14b3815d89c92a7503e620e2424f41a3f6b92e20e089504017305b19bace4
+    source_hash: f429acc2c81f33d1ade543ab1170220e293077e1d1721ac0940937de3d19f0d2
     source_path: cli/message.md
     workflow: 16
 ---
 
 # `openclaw message`
 
-คำสั่งขาออกคำสั่งเดียวสำหรับส่งข้อความและการดำเนินการของช่องทาง
-(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+คำสั่งขาออกเดียวสำหรับส่งข้อความและการดำเนินการของช่องทาง
+(Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp)
 
 ## การใช้งาน
 
@@ -26,62 +26,62 @@ openclaw message <subcommand> [flags]
 
 การเลือกช่องทาง:
 
-- ต้องใช้ `--channel` หากกำหนดค่าช่องทางไว้มากกว่าหนึ่งช่องทาง
-- หากกำหนดค่าช่องทางไว้เพียงหนึ่งช่องทาง ช่องทางนั้นจะเป็นค่าเริ่มต้น
-- ค่า: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost ต้องใช้ plugin)
-- `openclaw message` จะแปลงช่องทางที่เลือกไปยัง plugin ที่เป็นเจ้าของ เมื่อมี `--channel` หรือเป้าหมายที่ขึ้นต้นด้วยช่องทางอยู่ มิฉะนั้นจะโหลด Plugin ช่องทางที่กำหนดค่าไว้เพื่ออนุมานช่องทางเริ่มต้น
+- ต้องใช้ `--channel` หากมีการกำหนดค่ามากกว่าหนึ่งช่องทาง
+- หากมีการกำหนดค่าเพียงช่องทางเดียว ช่องทางนั้นจะเป็นค่าเริ่มต้น
+- ค่า: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost ต้องใช้ Plugin)
+- `openclaw message` จะแปลงช่องทางที่เลือกไปยัง Plugin เจ้าของเมื่อมี `--channel` หรือเป้าหมายที่ขึ้นต้นด้วยช่องทาง มิฉะนั้นจะโหลด Plugin ช่องทางที่กำหนดค่าไว้เพื่ออนุมานช่องทางเริ่มต้น
 
 รูปแบบเป้าหมาย (`--target`):
 
 - WhatsApp: E.164 หรือ JID ของกลุ่ม
-- Telegram: chat id หรือ `@username`
-- Discord: `channel:<id>` หรือ `user:<id>` (หรือการ mention แบบ `<@id>`; id ตัวเลขดิบจะถือว่าเป็นช่องทาง)
+- Telegram: id ของแชต หรือ `@username`
+- Discord: `channel:<id>` หรือ `user:<id>` (หรือการกล่าวถึง `<@id>`; id ตัวเลขดิบจะถือว่าเป็นช่องทาง)
 - Google Chat: `spaces/<spaceId>` หรือ `users/<userId>`
-- Slack: `channel:<id>` หรือ `user:<id>` (ยอมรับ channel id ดิบ)
-- Mattermost (plugin): `channel:<id>`, `user:<id>`, หรือ `@username` (id เปล่าจะถือว่าเป็นช่องทาง)
-- Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>`, หรือ `username:<name>`/`u:<name>`
-- iMessage: handle, `chat_id:<id>`, `chat_guid:<guid>`, หรือ `chat_identifier:<id>`
-- Matrix: `@user:server`, `!room:server`, หรือ `#alias:server`
-- Microsoft Teams: conversation id (`19:...@thread.tacv2`) หรือ `conversation:<id>` หรือ `user:<aad-object-id>`
+- Slack: `channel:<id>` หรือ `user:<id>` (ยอมรับ id ช่องทางดิบ)
+- Mattermost (Plugin): `channel:<id>`, `user:<id>` หรือ `@username` (id ที่ไม่มีคำนำหน้าจะถือว่าเป็นช่องทาง)
+- Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>` หรือ `username:<name>`/`u:<name>`
+- iMessage: แฮนเดิล, `chat_id:<id>`, `chat_guid:<guid>` หรือ `chat_identifier:<id>`
+- Matrix: `@user:server`, `!room:server` หรือ `#alias:server`
+- Microsoft Teams: id การสนทนา (`19:...@thread.tacv2`) หรือ `conversation:<id>` หรือ `user:<aad-object-id>`
 
 การค้นหาชื่อ:
 
 - สำหรับผู้ให้บริการที่รองรับ (Discord/Slack/ฯลฯ) ชื่อช่องทางอย่าง `Help` หรือ `#help` จะถูกแปลงผ่านแคชไดเรกทอรี
-- เมื่อแคชไม่พบ OpenClaw จะพยายามค้นหาไดเรกทอรีแบบสดเมื่อผู้ให้บริการรองรับ
+- เมื่อไม่พบในแคช OpenClaw จะพยายามค้นหาไดเรกทอรีสดเมื่อผู้ให้บริการรองรับ
 
-## flags ทั่วไป
+## แฟล็กทั่วไป
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (ช่องทางเป้าหมายหรือผู้ใช้สำหรับ send/poll/read/ฯลฯ)
+- `--target <dest>` (ช่องทางหรือผู้ใช้เป้าหมายสำหรับ send/poll/read/ฯลฯ)
 - `--targets <name>` (ทำซ้ำได้; เฉพาะ broadcast)
 - `--json`
 - `--dry-run`
 - `--verbose`
 
-## พฤติกรรมของ SecretRef
+## พฤติกรรม SecretRef
 
-- `openclaw message` จะแปลง SecretRefs ของช่องทางที่รองรับก่อนรันการดำเนินการที่เลือก
-- การแปลงจะจำกัดขอบเขตไว้ที่เป้าหมายของการดำเนินการที่ใช้งานอยู่เมื่อทำได้:
-  - จำกัดตามช่องทางเมื่อกำหนด `--channel` (หรืออนุมานจากเป้าหมายที่มีคำนำหน้า เช่น `discord:...`)
-  - จำกัดตามบัญชีเมื่อกำหนด `--account` (globals ของช่องทาง + surfaces ของบัญชีที่เลือก)
+- `openclaw message` จะแปลง SecretRef ของช่องทางที่รองรับก่อนเรียกใช้การดำเนินการที่เลือก
+- การแปลงจะจำกัดขอบเขตตามเป้าหมายการดำเนินการที่ใช้งานอยู่เมื่อทำได้:
+  - จำกัดตามช่องทางเมื่อมีการตั้งค่า `--channel` (หรืออนุมานจากเป้าหมายที่มีคำนำหน้า เช่น `discord:...`)
+  - จำกัดตามบัญชีเมื่อมีการตั้งค่า `--account` (ค่ากลางของช่องทาง + พื้นผิวของบัญชีที่เลือก)
   - เมื่อไม่ได้ระบุ `--account` OpenClaw จะไม่บังคับขอบเขต SecretRef ของบัญชี `default`
-- SecretRefs ที่ยังไม่ถูกแปลงในช่องทางที่ไม่เกี่ยวข้องจะไม่บล็อกการดำเนินการส่งข้อความแบบระบุเป้าหมาย
-- หาก SecretRef ของช่องทาง/บัญชีที่เลือกยังไม่ถูกแปลง คำสั่งจะปิดล้มเหลวสำหรับการดำเนินการนั้น
+- SecretRef ที่ยังแปลงไม่ได้บนช่องทางที่ไม่เกี่ยวข้องจะไม่บล็อกการดำเนินการส่งข้อความแบบเจาะจงเป้าหมาย
+- หาก SecretRef ของช่องทาง/บัญชีที่เลือกยังแปลงไม่ได้ คำสั่งจะปิดล้มเหลวสำหรับการดำเนินการนั้น
 
 ## การดำเนินการ
 
-### Core
+### หลัก
 
 - `send`
-  - ช่องทาง: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
-  - จำเป็น: `--target` รวมถึง `--message`, `--media`, หรือ `--presentation`
+  - ช่องทาง: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - จำเป็น: `--target` รวมถึง `--message`, `--media` หรือ `--presentation`
   - ไม่บังคับ: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - payload การนำเสนอที่ใช้ร่วมกัน: `--presentation` ส่งบล็อกเชิงความหมาย (`text`, `context`, `divider`, `buttons`, `select`) ที่ core เรนเดอร์ผ่านความสามารถที่ประกาศไว้ของช่องทางที่เลือก ดู [การนำเสนอข้อความ](/th/plugins/message-presentation)
-  - ค่ากำหนดการส่งมอบทั่วไป: `--delivery` รับคำใบ้การส่งมอบ เช่น `{ "pin": true }`; `--pin` เป็นรูปย่อสำหรับการส่งมอบแบบปักหมุดเมื่อช่องทางรองรับ
+  - เพย์โหลด presentation ที่ใช้ร่วมกัน: `--presentation` ส่งบล็อกเชิงความหมาย (`text`, `context`, `divider`, `buttons`, `select`) ที่ core เรนเดอร์ผ่านความสามารถที่ช่องทางที่เลือกประกาศไว้ ดู [การนำเสนอข้อความ](/th/plugins/message-presentation)
+  - การตั้งค่าการส่งแบบทั่วไป: `--delivery` ยอมรับคำใบ้การส่ง เช่น `{ "pin": true }`; `--pin` เป็นรูปย่อสำหรับการส่งแบบปักหมุดเมื่อช่องทางรองรับ
   - เฉพาะ Telegram: `--force-document` (ส่งรูปภาพและ GIF เป็นเอกสารเพื่อหลีกเลี่ยงการบีบอัดของ Telegram)
-  - เฉพาะ Telegram: `--thread-id` (forum topic id)
-  - เฉพาะ Slack: `--thread-id` (thread timestamp; `--reply-to` ใช้ฟิลด์เดียวกัน)
+  - เฉพาะ Telegram: `--thread-id` (id หัวข้อฟอรัม)
+  - เฉพาะ Slack: `--thread-id` (timestamp ของเธรด; `--reply-to` ใช้ฟิลด์เดียวกัน)
   - Telegram + Discord: `--silent`
   - เฉพาะ WhatsApp: `--gif-playback`
 
@@ -96,9 +96,9 @@ openclaw message <subcommand> [flags]
   - ช่องทาง: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
   - จำเป็น: `--message-id`, `--target`
   - ไม่บังคับ: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
-  - หมายเหตุ: `--remove` ต้องใช้ `--emoji` (ละ `--emoji` เพื่อเคลียร์ reaction ของตัวเองเมื่อรองรับ; ดู /tools/reactions)
+  - หมายเหตุ: `--remove` ต้องใช้ `--emoji` (ละเว้น `--emoji` เพื่อล้างรีแอ็กชันของตนเองเมื่อรองรับ; ดู /tools/reactions)
   - เฉพาะ WhatsApp: `--participant`, `--from-me`
-  - reaction ของกลุ่ม Signal: ต้องใช้ `--target-author` หรือ `--target-author-uuid`
+  - รีแอ็กชันกลุ่ม Signal: ต้องใช้ `--target-author` หรือ `--target-author-uuid`
 
 - `reactions`
   - ช่องทาง: Discord/Google Chat/Slack/Matrix
@@ -108,7 +108,8 @@ openclaw message <subcommand> [flags]
 - `read`
   - ช่องทาง: Discord/Slack/Matrix
   - จำเป็น: `--target`
-  - ไม่บังคับ: `--limit`, `--before`, `--after`
+  - ไม่บังคับ: `--limit`, `--message-id`, `--before`, `--after`
+  - เฉพาะ Slack: `--message-id` อ่าน timestamp ของข้อความ Slack ที่เจาะจง; รวมกับ `--thread-id` เพื่ออ่านข้อความตอบกลับในเธรดที่ตรงกัน
   - เฉพาะ Discord: `--around`
 
 - `edit`
@@ -130,18 +131,18 @@ openclaw message <subcommand> [flags]
 - `permissions`
   - ช่องทาง: Discord/Matrix
   - จำเป็น: `--target`
-  - เฉพาะ Matrix: ใช้งานได้เมื่อเปิดใช้งานการเข้ารหัส Matrix และอนุญาตการดำเนินการตรวจสอบยืนยัน
+  - เฉพาะ Matrix: ใช้ได้เมื่อเปิดใช้งานการเข้ารหัส Matrix และอนุญาตการดำเนินการยืนยัน
 
 - `search`
   - ช่องทาง: Discord
   - จำเป็น: `--guild-id`, `--query`
   - ไม่บังคับ: `--channel-id`, `--channel-ids` (ทำซ้ำได้), `--author-id`, `--author-ids` (ทำซ้ำได้), `--limit`
 
-### Threads
+### เธรด
 
 - `thread create`
   - ช่องทาง: Discord
-  - จำเป็น: `--thread-name`, `--target` (channel id)
+  - จำเป็น: `--thread-name`, `--target` (id ช่องทาง)
   - ไม่บังคับ: `--message-id`, `--message`, `--auto-archive-min`
 
 - `thread list`
@@ -151,21 +152,21 @@ openclaw message <subcommand> [flags]
 
 - `thread reply`
   - ช่องทาง: Discord
-  - จำเป็น: `--target` (thread id), `--message`
+  - จำเป็น: `--target` (id เธรด), `--message`
   - ไม่บังคับ: `--media`, `--reply-to`
 
-### Emojis
+### อีโมจิ
 
 - `emoji list`
   - Discord: `--guild-id`
-  - Slack: ไม่มี flags เพิ่มเติม
+  - Slack: ไม่มีแฟล็กเพิ่มเติม
 
 - `emoji upload`
   - ช่องทาง: Discord
   - จำเป็น: `--guild-id`, `--emoji-name`, `--media`
   - ไม่บังคับ: `--role-ids` (ทำซ้ำได้)
 
-### Stickers
+### สติกเกอร์
 
 - `sticker send`
   - ช่องทาง: Discord
@@ -176,7 +177,7 @@ openclaw message <subcommand> [flags]
   - ช่องทาง: Discord
   - จำเป็น: `--guild-id`, `--sticker-name`, `--sticker-desc`, `--sticker-tags`, `--media`
 
-### Roles / Channels / Members / Voice
+### บทบาท / ช่องทาง / สมาชิก / เสียง
 
 - `role info` (Discord): `--guild-id`
 - `role add` / `role remove` (Discord): `--guild-id`, `--user-id`, `--role-id`
@@ -185,18 +186,18 @@ openclaw message <subcommand> [flags]
 - `member info` (Discord/Slack): `--user-id` (+ `--guild-id` สำหรับ Discord)
 - `voice status` (Discord): `--guild-id`, `--user-id`
 
-### Events
+### เหตุการณ์
 
 - `event list` (Discord): `--guild-id`
 - `event create` (Discord): `--guild-id`, `--event-name`, `--start-time`
   - ไม่บังคับ: `--end-time`, `--desc`, `--channel-id`, `--location`, `--event-type`
 
-### การดูแล (Discord)
+### การกลั่นกรอง (Discord)
 
-- `timeout`: `--guild-id`, `--user-id` (ไม่บังคับ `--duration-min` หรือ `--until`; ละทั้งสองเพื่อเคลียร์ timeout)
+- `timeout`: `--guild-id`, `--user-id` (`--duration-min` หรือ `--until` ไม่บังคับ; ละเว้นทั้งคู่เพื่อล้าง timeout)
 - `kick`: `--guild-id`, `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
-  - `timeout` ยังรองรับ `--reason` ด้วย
+  - `timeout` รองรับ `--reason` ด้วย
 
 ### Broadcast
 
@@ -207,7 +208,7 @@ openclaw message <subcommand> [flags]
 
 ## ตัวอย่าง
 
-ส่งการตอบกลับใน Discord:
+ส่งข้อความตอบกลับ Discord:
 
 ```
 openclaw message send --channel discord \
@@ -222,9 +223,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Core เรนเดอร์ payload `presentation` เดียวกันเป็นคอมโพเนนต์ของ Discord, Slack blocks, ปุ่ม inline ของ Telegram, Mattermost props, หรือการ์ด Teams/Feishu ตามความสามารถของช่องทาง ดู [การนำเสนอข้อความ](/th/plugins/message-presentation) สำหรับสัญญาฉบับเต็มและกฎ fallback
+Core เรนเดอร์เพย์โหลด `presentation` เดียวกันเป็นคอมโพเนนต์ของ Discord, บล็อกของ Slack, ปุ่ม inline ของ Telegram, props ของ Mattermost หรือการ์ด Teams/Feishu ขึ้นอยู่กับความสามารถของช่องทาง ดู [การนำเสนอข้อความ](/th/plugins/message-presentation) สำหรับสัญญาฉบับเต็มและกฎ fallback
 
-ส่ง payload การนำเสนอที่ละเอียดขึ้น:
+ส่งเพย์โหลด presentation ที่สมบูรณ์ขึ้น:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -232,7 +233,7 @@ openclaw message send --channel googlechat --target spaces/AAA... \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Choose a path"},{"type":"buttons","buttons":[{"label":"Approve","value":"approve"},{"label":"Decline","value":"decline"}]}]}'
 ```
 
-สร้าง poll ใน Discord:
+สร้างโพล Discord:
 
 ```
 openclaw message poll --channel discord \
@@ -242,7 +243,7 @@ openclaw message poll --channel discord \
   --poll-multi --poll-duration-hours 48
 ```
 
-สร้าง poll ใน Telegram (ปิดอัตโนมัติใน 2 นาที):
+สร้างโพล Telegram (ปิดอัตโนมัติใน 2 นาที):
 
 ```
 openclaw message poll --channel telegram \
@@ -252,14 +253,14 @@ openclaw message poll --channel telegram \
   --poll-duration-seconds 120 --silent
 ```
 
-ส่งข้อความ proactive ของ Teams:
+ส่งข้อความเชิงรุกของ Teams:
 
 ```
 openclaw message send --channel msteams \
   --target conversation:19:abc@thread.tacv2 --message "hi"
 ```
 
-สร้าง poll ใน Teams:
+สร้างโพล Teams:
 
 ```
 openclaw message poll --channel msteams \
@@ -268,14 +269,14 @@ openclaw message poll --channel msteams \
   --poll-option Pizza --poll-option Sushi
 ```
 
-React ใน Slack:
+รีแอ็กต์ใน Slack:
 
 ```
 openclaw message react --channel slack \
   --target C123 --message-id 456 --emoji "✅"
 ```
 
-React ในกลุ่ม Signal:
+รีแอ็กต์ในกลุ่ม Signal:
 
 ```
 openclaw message react --channel signal \
@@ -283,14 +284,14 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-ส่งปุ่ม inline ของ Telegram ผ่านการนำเสนอทั่วไป:
+ส่งปุ่ม inline ของ Telegram ผ่าน presentation ทั่วไป:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Yes","value":"cmd:yes"},{"label":"No","value":"cmd:no"}]}]}'
 ```
 
-ส่งการ์ด Teams ผ่านการนำเสนอทั่วไป:
+ส่งการ์ด Teams ผ่าน presentation ทั่วไป:
 
 ```bash
 openclaw message send --channel msteams \
@@ -307,5 +308,5 @@ openclaw message send --channel telegram --target @mychat \
 
 ## ที่เกี่ยวข้อง
 
-- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [เอกสารอ้างอิง CLI](/th/cli)
 - [Agent send](/th/tools/agent-send)
