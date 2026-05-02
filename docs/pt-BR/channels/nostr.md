@@ -1,42 +1,41 @@
 ---
 read_when:
     - Você quer que o OpenClaw receba mensagens diretas via Nostr
-    - Você está configurando a troca de mensagens descentralizada
+    - Você está configurando mensagens descentralizadas
 summary: Canal de mensagens diretas do Nostr via mensagens criptografadas NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-04-30T09:37:21Z"
+    generated_at: "2026-05-02T22:16:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 545d68077c9fe81d5fa5a17262d37e3688185a1fb12d67b8b1053b27b96c3c7f
+    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
     source_path: channels/nostr.md
     workflow: 16
 ---
 
-**Status:** Plugin incluído opcional (desabilitado por padrão até ser configurado).
+**Status:** Plugin incluído opcional (desativado por padrão até ser configurado).
 
-Nostr é um protocolo descentralizado para redes sociais. Este canal permite que o OpenClaw receba e responda a mensagens diretas (DMs) criptografadas via NIP-04.
+Nostr é um protocolo descentralizado para redes sociais. Este canal permite que o OpenClaw receba e responda a mensagens diretas criptografadas (DMs) via NIP-04.
 
 ## Plugin incluído
 
-As versões atuais do OpenClaw distribuem o Nostr como um Plugin incluído, portanto builds
-empacotados normais não precisam de uma instalação separada.
+As versões atuais do OpenClaw distribuem o Nostr como um plugin incluído, portanto builds empacotados
+normais não precisam de uma instalação separada.
 
 ### Instalações antigas/personalizadas
 
 - O onboarding (`openclaw onboard`) e `openclaw channels add` ainda exibem
-  Nostr a partir do catálogo compartilhado de canais.
-- Se seu build excluir o Nostr incluído, instale um pacote npm atual quando um
-  for publicado.
+  o Nostr a partir do catálogo compartilhado de canais.
+- Se o seu build excluir o Nostr incluído, instale o pacote npm diretamente.
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Se o npm relatar que o pacote pertencente ao OpenClaw foi descontinuado, use um build
-empacotado atual do OpenClaw ou um checkout local até que um pacote npm mais novo seja publicado.
+Use o pacote simples para acompanhar a tag de versão oficial atual. Fixe uma
+versão exata somente quando precisar de uma instalação reproduzível.
 
-Use um checkout local (fluxos de trabalho de desenvolvimento):
+Use um checkout local (fluxos de desenvolvimento):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
@@ -84,15 +83,15 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Referência de configuração
 
-| Chave        | Tipo     | Padrão                                     | Descrição                              |
-| ------------ | -------- | ------------------------------------------ | -------------------------------------- |
-| `privateKey` | string   | obrigatório                                | Chave privada em formato `nsec` ou hex |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URLs de relays (WebSocket)             |
-| `dmPolicy`   | string   | `pairing`                                  | Política de acesso a DMs               |
-| `allowFrom`  | string[] | `[]`                                       | Pubkeys de remetentes permitidos       |
-| `enabled`    | boolean  | `true`                                     | Habilitar/desabilitar canal            |
-| `name`       | string   | -                                          | Nome de exibição                       |
-| `profile`    | object   | -                                          | Metadados de perfil NIP-01             |
+| Chave        | Tipo     | Padrão                                     | Descrição                               |
+| ------------ | -------- | ------------------------------------------- | --------------------------------------- |
+| `privateKey` | string   | obrigatório                                | Chave privada em formato `nsec` ou hex  |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URLs de relays (WebSocket)              |
+| `dmPolicy`   | string   | `pairing`                                   | Política de acesso a DMs                |
+| `allowFrom`  | string[] | `[]`                                        | Pubkeys de remetentes permitidos        |
+| `enabled`    | boolean  | `true`                                      | Habilitar/desabilitar canal             |
+| `name`       | string   | -                                           | Nome de exibição                        |
+| `profile`    | object   | -                                           | Metadados de perfil NIP-01              |
 
 ## Metadados de perfil
 
@@ -120,7 +119,7 @@ Exemplo:
 }
 ```
 
-Notas:
+Observações:
 
 - URLs de perfil devem usar `https://`.
 - A importação a partir de relays mescla campos e preserva substituições locais.
@@ -129,16 +128,16 @@ Notas:
 
 ### Políticas de DM
 
-- **pairing** (padrão): remetentes desconhecidos recebem um código de pareamento.
-- **allowlist**: somente pubkeys em `allowFrom` podem enviar DMs.
-- **open**: DMs públicas de entrada (requer `allowFrom: ["*"]`).
-- **disabled**: ignorar DMs de entrada.
+- **pairing** (padrão): remetentes desconhecidos recebem um código de pairing.
+- **allowlist**: somente pubkeys em `allowFrom` podem enviar DM.
+- **open**: DMs públicas de entrada (exige `allowFrom: ["*"]`).
+- **disabled**: ignora DMs de entrada.
 
-Notas de aplicação:
+Observações de aplicação:
 
-- As assinaturas de eventos de entrada são verificadas antes da política de remetente e da descriptografia NIP-04, portanto eventos falsificados são rejeitados cedo.
-- Respostas de pareamento são enviadas sem processar o corpo da DM original.
-- DMs de entrada têm limite de taxa e cargas úteis grandes demais são descartadas antes da descriptografia.
+- Assinaturas de eventos de entrada são verificadas antes da política de remetente e da descriptografia NIP-04, portanto eventos forjados são rejeitados cedo.
+- Respostas de pairing são enviadas sem processar o corpo da DM original.
+- DMs de entrada têm limite de taxa, e cargas úteis grandes demais são descartadas antes da descriptografia.
 
 ### Exemplo de allowlist
 
@@ -179,18 +178,18 @@ Padrões: `relay.damus.io` e `nos.lol`.
 Dicas:
 
 - Use 2 a 3 relays para redundância.
-- Evite relays em excesso (latência, duplicação).
+- Evite relays demais (latência, duplicação).
 - Relays pagos podem melhorar a confiabilidade.
-- Relays locais são bons para testes (`ws://localhost:7777`).
+- Relays locais são adequados para testes (`ws://localhost:7777`).
 
-## Suporte a protocolo
+## Suporte de protocolo
 
-| NIP    | Status       | Descrição                                  |
-| ------ | ------------ | ------------------------------------------ |
-| NIP-01 | Compatível   | Formato básico de evento + metadados de perfil |
-| NIP-04 | Compatível   | DMs criptografadas (`kind:4`)              |
-| NIP-17 | Planejado    | DMs gift-wrapped                           |
-| NIP-44 | Planejado    | Criptografia versionada                    |
+| NIP    | Status      | Descrição                                  |
+| ------ | ----------- | ------------------------------------------ |
+| NIP-01 | Compatível  | Formato básico de evento + metadados de perfil |
+| NIP-04 | Compatível  | DMs criptografadas (`kind:4`)              |
+| NIP-17 | Planejado   | DMs encapsuladas como presente             |
+| NIP-44 | Planejado   | Criptografia versionada                    |
 
 ## Testes
 
@@ -221,41 +220,41 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ## Solução de problemas
 
-### Não está recebendo mensagens
+### Não recebe mensagens
 
 - Verifique se a chave privada é válida.
-- Garanta que as URLs dos relays estejam acessíveis e usem `wss://` (ou `ws://` para local).
+- Garanta que as URLs de relay estejam acessíveis e usem `wss://` (ou `ws://` para local).
 - Confirme que `enabled` não é `false`.
-- Verifique os logs do Gateway para erros de conexão com relays.
+- Verifique os logs do Gateway para erros de conexão com relay.
 
-### Não está enviando respostas
+### Não envia respostas
 
-- Verifique se o relay aceita gravações.
+- Verifique se o relay aceita escritas.
 - Verifique a conectividade de saída.
-- Fique atento a limites de taxa do relay.
+- Fique atento aos limites de taxa do relay.
 
 ### Respostas duplicadas
 
 - Esperado ao usar vários relays.
-- As mensagens são desduplicadas pelo ID do evento; somente a primeira entrega aciona uma resposta.
+- As mensagens são desduplicadas por ID de evento; somente a primeira entrega aciona uma resposta.
 
 ## Segurança
 
 - Nunca faça commit de chaves privadas.
 - Use variáveis de ambiente para chaves.
-- Considere `allowlist` para bots de produção.
-- As assinaturas são verificadas antes da política de remetente, e a política de remetente é aplicada antes da descriptografia, portanto eventos falsificados são rejeitados cedo e remetentes desconhecidos não podem forçar trabalho criptográfico completo.
+- Considere `allowlist` para bots em produção.
+- Assinaturas são verificadas antes da política de remetente, e a política de remetente é aplicada antes da descriptografia, portanto eventos forjados são rejeitados cedo e remetentes desconhecidos não podem forçar trabalho criptográfico completo.
 
 ## Limitações (MVP)
 
 - Somente mensagens diretas (sem chats em grupo).
 - Sem anexos de mídia.
-- Apenas NIP-04 (gift-wrap NIP-17 planejado).
+- Somente NIP-04 (NIP-17 gift-wrap planejado).
 
-## Relacionado
+## Relacionados
 
 - [Visão geral de canais](/pt-BR/channels) — todos os canais compatíveis
-- [Pareamento](/pt-BR/channels/pairing) — autenticação por DM e fluxo de pareamento
+- [Pairing](/pt-BR/channels/pairing) — autenticação de DM e fluxo de pairing
 - [Grupos](/pt-BR/channels/groups) — comportamento de chat em grupo e controle por menções
 - [Roteamento de canais](/pt-BR/channels/channel-routing) — roteamento de sessões para mensagens
 - [Segurança](/pt-BR/gateway/security) — modelo de acesso e hardening

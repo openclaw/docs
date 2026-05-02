@@ -4,30 +4,30 @@ read_when:
     - Você precisa dos utilitários de teste do SDK de Plugin
     - Você quer entender os testes de contrato para plugins incluídos
 sidebarTitle: Testing
-summary: Utilitários e padrões de teste para plugins do OpenClaw
+summary: Utilitários e padrões de teste para Plugins do OpenClaw
 title: Testes de Plugin
 x-i18n:
-    generated_at: "2026-04-30T10:02:53Z"
+    generated_at: "2026-05-02T22:21:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7edf81e7662784356fcb0f481dd3fcdde05cc59da2a6c1b38eae1008b3ead96c
+    source_hash: 67092d71302d566ee9ed3f3f1e32b5aa6f4eabf522a9656ad13cad812550f1e8
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-Referência para utilitários, padrões e aplicação de lint em testes para plugins do OpenClaw.
+Referência para utilitários, padrões e aplicação de lint para testes de plugins do OpenClaw.
 
 <Tip>
-  **Procurando exemplos de testes?** Os guias práticos incluem exemplos de testes trabalhados:
-  [Testes de plugin de canal](/pt-BR/plugins/sdk-channel-plugins#step-6-test) e
-  [Testes de plugin de provedor](/pt-BR/plugins/sdk-provider-plugins#step-6-test).
+  **Procurando exemplos de teste?** Os guias práticos incluem exemplos de teste trabalhados:
+  [Testes de Plugin de canal](/pt-BR/plugins/sdk-channel-plugins#step-6-test) e
+  [Testes de Plugin de provedor](/pt-BR/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## Utilitários de teste
 
-**Importação de mock da API de Plugin:** `openclaw/plugin-sdk/plugin-test-api`
+**Importação de mock da API do Plugin:** `openclaw/plugin-sdk/plugin-test-api`
 
-**Importação de contrato de runtime de agente:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
+**Importação de contrato do runtime do agente:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
 
 **Importação de contrato de canal:** `openclaw/plugin-sdk/channel-contract-testing`
 
@@ -37,7 +37,7 @@ Referência para utilitários, padrões e aplicação de lint em testes para plu
 
 **Importação de contrato de Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
 
-**Importação de teste de runtime de Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
+**Importação de teste de runtime do Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
 
 **Importação de contrato de provedor:** `openclaw/plugin-sdk/provider-test-contracts`
 
@@ -45,15 +45,15 @@ Referência para utilitários, padrões e aplicação de lint em testes para plu
 
 **Importação de teste de ambiente/rede:** `openclaw/plugin-sdk/test-env`
 
-**Importação de fixture genérico:** `openclaw/plugin-sdk/test-fixtures`
+**Importação de fixture genérica:** `openclaw/plugin-sdk/test-fixtures`
 
-**Importação de mock integrado do Node:** `openclaw/plugin-sdk/test-node-mocks`
+**Importação de mock de módulo nativo do Node:** `openclaw/plugin-sdk/test-node-mocks`
 
-Prefira os subcaminhos focados abaixo para novos testes de plugin. O barrel amplo
+Prefira os subcaminhos focados abaixo para novos testes de plugin. O módulo agregador amplo
 `openclaw/plugin-sdk/testing` existe apenas para compatibilidade legada.
 As proteções do repositório rejeitam novas importações reais de `plugin-sdk/testing` e
-`plugin-sdk/test-utils`; esses nomes permanecem apenas como superfícies de compatibilidade obsoletas
-para plugins externos e testes de registro de compatibilidade.
+`plugin-sdk/test-utils`; esses nomes permanecem apenas como superfícies de compatibilidade
+obsoletas para plugins externos e testes de registro de compatibilidade.
 
 ```typescript
 import {
@@ -80,78 +80,78 @@ import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 
 ### Exportações disponíveis
 
-| Exportação                                           | Finalidade                                                                                                                                                          |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | Crie um mock mínimo da API de plugin para testes unitários de registro direto. Importe de `plugin-sdk/plugin-test-api`                                              |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Fixture compartilhada de contrato de perfil de autenticação para adaptadores nativos de runtime de agente. Importe de `plugin-sdk/agent-runtime-test-contracts`      |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Fixture compartilhada de contrato de supressão de entrega para adaptadores nativos de runtime de agente. Importe de `plugin-sdk/agent-runtime-test-contracts`        |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Fixture compartilhada de contrato de classificação de fallback para adaptadores nativos de runtime de agente. Importe de `plugin-sdk/agent-runtime-test-contracts`   |
-| `createParameterFreeTool`                            | Crie fixtures de esquema de ferramenta dinâmica para testes de contrato de runtime nativo. Importe de `plugin-sdk/agent-runtime-test-contracts`                      |
-| `expectChannelInboundContextContract`                | Verifique o formato do contexto de entrada do canal. Importe de `plugin-sdk/channel-contract-testing`                                                               |
-| `installChannelOutboundPayloadContractSuite`         | Instale casos de contrato de payload de saída de canal. Importe de `plugin-sdk/channel-contract-testing`                                                            |
-| `createStartAccountContext`                          | Crie contextos de ciclo de vida de conta de canal. Importe de `plugin-sdk/channel-test-helpers`                                                                     |
-| `installChannelActionsContractSuite`                 | Instale casos genéricos de contrato de ação de mensagem de canal. Importe de `plugin-sdk/channel-test-helpers`                                                     |
-| `installChannelSetupContractSuite`                   | Instale casos genéricos de contrato de configuração de canal. Importe de `plugin-sdk/channel-test-helpers`                                                         |
-| `installChannelStatusContractSuite`                  | Instale casos genéricos de contrato de status de canal. Importe de `plugin-sdk/channel-test-helpers`                                                               |
-| `expectDirectoryIds`                                 | Verifique os ids de diretório de canal a partir de uma função de listagem de diretórios. Importe de `plugin-sdk/channel-test-helpers`                               |
-| `assertBundledChannelEntries`                        | Verifique se os pontos de entrada de canal empacotados expõem o contrato público esperado. Importe de `plugin-sdk/channel-test-helpers`                             |
-| `formatEnvelopeTimestamp`                            | Formate timestamps determinísticos de envelope. Importe de `plugin-sdk/channel-test-helpers`                                                                        |
-| `expectPairingReplyText`                             | Verifique o texto de resposta de pareamento do canal e extraia seu código. Importe de `plugin-sdk/channel-test-helpers`                                            |
-| `describePluginRegistrationContract`                 | Instale verificações de contrato de registro de plugin. Importe de `plugin-sdk/plugin-test-contracts`                                                              |
-| `registerSingleProviderPlugin`                       | Registre um plugin de provedor em testes smoke do carregador. Importe de `plugin-sdk/plugin-test-runtime`                                                          |
-| `registerProviderPlugin`                             | Capture todos os tipos de provedor de um plugin. Importe de `plugin-sdk/plugin-test-runtime`                                                                        |
-| `registerProviderPlugins`                            | Capture registros de provedor em vários plugins. Importe de `plugin-sdk/plugin-test-runtime`                                                                       |
-| `requireRegisteredProvider`                          | Verifique se uma coleção de provedores contém um id. Importe de `plugin-sdk/plugin-test-runtime`                                                                   |
-| `createRuntimeEnv`                                   | Crie um ambiente de runtime de CLI/plugin com mock. Importe de `plugin-sdk/plugin-test-runtime`                                                                    |
-| `createPluginSetupWizardStatus`                      | Crie helpers de status de configuração para plugins de canal. Importe de `plugin-sdk/plugin-test-runtime`                                                          |
-| `describeOpenAIProviderRuntimeContract`              | Instale verificações de contrato de runtime de família de provedores. Importe de `plugin-sdk/provider-test-contracts`                                              |
-| `expectPassthroughReplayPolicy`                      | Verifique se as políticas de replay do provedor repassam ferramentas e metadados pertencentes ao provedor. Importe de `plugin-sdk/provider-test-contracts`          |
-| `runRealtimeSttLiveTest`                             | Execute um teste ao vivo de provedor STT em tempo real com fixtures de áudio compartilhadas. Importe de `plugin-sdk/provider-test-contracts`                        |
-| `normalizeTranscriptForMatch`                        | Normalize a saída de transcrição ao vivo antes de asserções aproximadas. Importe de `plugin-sdk/provider-test-contracts`                                           |
-| `expectExplicitVideoGenerationCapabilities`          | Verifique se provedores de vídeo declaram capacidades explícitas de modo de geração. Importe de `plugin-sdk/provider-test-contracts`                                |
-| `expectExplicitMusicGenerationCapabilities`          | Verifique se provedores de música declaram capacidades explícitas de geração/edição. Importe de `plugin-sdk/provider-test-contracts`                                |
-| `mockSuccessfulDashscopeVideoTask`                   | Instale uma resposta bem-sucedida de tarefa de vídeo compatível com DashScope. Importe de `plugin-sdk/provider-test-contracts`                                      |
-| `getProviderHttpMocks`                               | Acesse mocks Vitest opcionais de HTTP/autenticação de provedor. Importe de `plugin-sdk/provider-http-test-mocks`                                                   |
-| `installProviderHttpMockCleanup`                     | Redefina mocks de HTTP/autenticação de provedor após cada teste. Importe de `plugin-sdk/provider-http-test-mocks`                                                  |
-| `installCommonResolveTargetErrorCases`               | Casos de teste compartilhados para tratamento de erros de resolução de destino. Importe de `plugin-sdk/channel-target-testing`                                      |
-| `shouldAckReaction`                                  | Verifique se um canal deve adicionar uma reação de confirmação. Importe de `plugin-sdk/channel-feedback`                                                           |
-| `removeAckReactionAfterReply`                        | Remova a reação de confirmação após a entrega da resposta. Importe de `plugin-sdk/channel-feedback`                                                                |
-| `createTestRegistry`                                 | Crie uma fixture de registro de plugin de canal. Importe de `plugin-sdk/plugin-test-runtime` ou `plugin-sdk/channel-test-helpers`                                  |
-| `createEmptyPluginRegistry`                          | Crie uma fixture de registro de plugin vazia. Importe de `plugin-sdk/plugin-test-runtime` ou `plugin-sdk/channel-test-helpers`                                     |
-| `setActivePluginRegistry`                            | Instale uma fixture de registro para testes de runtime de plugin. Importe de `plugin-sdk/plugin-test-runtime` ou `plugin-sdk/channel-test-helpers`                 |
-| `createRequestCaptureJsonFetch`                      | Capture solicitações fetch JSON em testes de helpers de mídia. Importe de `plugin-sdk/test-env`                                                                    |
-| `withServer`                                         | Execute testes contra um servidor HTTP local descartável. Importe de `plugin-sdk/test-env`                                                                         |
-| `createMockIncomingRequest`                          | Crie um objeto mínimo de solicitação HTTP de entrada. Importe de `plugin-sdk/test-env`                                                                             |
-| `withFetchPreconnect`                                | Execute testes de fetch com hooks de preconexão instalados. Importe de `plugin-sdk/test-env`                                                                      |
-| `withEnv` / `withEnvAsync`                           | Aplique temporariamente patches em variáveis de ambiente. Importe de `plugin-sdk/test-env`                                                                         |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Crie fixtures isoladas de teste de sistema de arquivos. Importe de `plugin-sdk/test-env`                                                                           |
-| `createMockServerResponse`                           | Crie um mock mínimo de resposta de servidor HTTP. Importe de `plugin-sdk/test-env`                                                                                 |
-| `createCliRuntimeCapture`                            | Capture a saída do runtime da CLI em testes. Importe de `plugin-sdk/test-fixtures`                                                                                 |
-| `importFreshModule`                                  | Importe um módulo ESM com um token de consulta novo para contornar o cache de módulos. Importe de `plugin-sdk/test-fixtures`                                       |
-| `bundledPluginRoot` / `bundledPluginFile`            | Resolva caminhos de fixtures de origem ou dist de plugin empacotado. Importe de `plugin-sdk/test-fixtures`                                                        |
-| `mockNodeBuiltinModule`                              | Instale mocks Vitest restritos de módulos integrados do Node. Importe de `plugin-sdk/test-node-mocks`                                                             |
-| `createSandboxTestContext`                           | Crie contextos de teste de sandbox. Importe de `plugin-sdk/test-fixtures`                                                                                          |
-| `writeSkill`                                         | Escreva fixtures de skill. Importe de `plugin-sdk/test-fixtures`                                                                                                   |
-| `makeAgentAssistantMessage`                          | Crie fixtures de mensagem de transcrição de agente. Importe de `plugin-sdk/test-fixtures`                                                                          |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | Inspecione e redefina fixtures de eventos do sistema. Importe de `plugin-sdk/test-fixtures`                                                                        |
-| `sanitizeTerminalText`                               | Sanitize a saída do terminal para asserções. Importe de `plugin-sdk/test-fixtures`                                                                                 |
-| `countLines` / `hasBalancedFences`                   | Verifique o formato da saída de fragmentação. Importe de `plugin-sdk/test-fixtures`                                                                                |
-| `runProviderCatalog`                                 | Execute um hook de catálogo de provedor com dependências de teste                                                                                                  |
-| `resolveProviderWizardOptions`                       | Resolva escolhas do assistente de configuração de provedor em testes de contrato                                                                                   |
-| `resolveProviderModelPickerEntries`                  | Resolva entradas do seletor de modelos de provedor em testes de contrato                                                                                           |
-| `buildProviderPluginMethodChoice`                    | Crie ids de escolha do assistente de provedor para asserções                                                                                                       |
-| `setProviderWizardProvidersResolverForTest`          | Injete provedores do assistente de provedor para testes isolados                                                                                                   |
-| `createProviderUsageFetch`                           | Crie fixtures de fetch de uso do provedor                                                                                                      |
-| `useFrozenTime` / `useRealTime`                      | Congele e restaure timers para testes sensíveis ao tempo. Importe de `plugin-sdk/test-env`                                                    |
-| `createTestWizardPrompter`                           | Crie um prompter simulado do assistente de configuração                                                                                                     |
-| `createRuntimeTaskFlow`                              | Crie estado isolado de task-flow de runtime                                                                                                  |
-| `typedCases`                                         | Preserve tipos literais para testes orientados por tabela. Importe de `plugin-sdk/test-fixtures`                                                    |
+| Exportação                                           | Finalidade                                                                                                                              |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTestPluginApi`                                | Crie uma simulação mínima da API de Plugin para testes unitários de registro direto. Importe de `plugin-sdk/plugin-test-api`            |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Artefato de teste de contrato compartilhado de perfil de autenticação para adaptadores nativos de tempo de execução do agente. Importe de `plugin-sdk/agent-runtime-test-contracts` |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Artefato de teste de contrato compartilhado de supressão de entrega para adaptadores nativos de tempo de execução do agente. Importe de `plugin-sdk/agent-runtime-test-contracts` |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Artefato de teste de contrato compartilhado de classificação de fallback para adaptadores nativos de tempo de execução do agente. Importe de `plugin-sdk/agent-runtime-test-contracts` |
+| `createParameterFreeTool`                            | Crie artefatos de teste de esquema de ferramenta dinâmica para testes de contrato de tempo de execução nativo. Importe de `plugin-sdk/agent-runtime-test-contracts` |
+| `expectChannelInboundContextContract`                | Verifique o formato do contexto de entrada do canal. Importe de `plugin-sdk/channel-contract-testing`                                  |
+| `installChannelOutboundPayloadContractSuite`         | Instale casos de contrato de payload de saída do canal. Importe de `plugin-sdk/channel-contract-testing`                               |
+| `createStartAccountContext`                          | Crie contextos de ciclo de vida de conta do canal. Importe de `plugin-sdk/channel-test-helpers`                                        |
+| `installChannelActionsContractSuite`                 | Instale casos de contrato genéricos de ação de mensagem do canal. Importe de `plugin-sdk/channel-test-helpers`                        |
+| `installChannelSetupContractSuite`                   | Instale casos de contrato genéricos de configuração do canal. Importe de `plugin-sdk/channel-test-helpers`                            |
+| `installChannelStatusContractSuite`                  | Instale casos de contrato genéricos de status do canal. Importe de `plugin-sdk/channel-test-helpers`                                  |
+| `expectDirectoryIds`                                 | Verifique ids de diretório do canal a partir de uma função de listagem de diretório. Importe de `plugin-sdk/channel-test-helpers`      |
+| `assertBundledChannelEntries`                        | Verifique se os pontos de entrada de canal incluídos expõem o contrato público esperado. Importe de `plugin-sdk/channel-test-helpers`   |
+| `formatEnvelopeTimestamp`                            | Formate carimbos de data e hora de envelope determinísticos. Importe de `plugin-sdk/channel-test-helpers`                             |
+| `expectPairingReplyText`                             | Verifique o texto de resposta de pareamento do canal e extraia seu código. Importe de `plugin-sdk/channel-test-helpers`                |
+| `describePluginRegistrationContract`                 | Instale verificações de contrato de registro de Plugin. Importe de `plugin-sdk/plugin-test-contracts`                                  |
+| `registerSingleProviderPlugin`                       | Registre um Plugin de provedor em testes básicos do carregador. Importe de `plugin-sdk/plugin-test-runtime`                            |
+| `registerProviderPlugin`                             | Capture todos os tipos de provedor de um Plugin. Importe de `plugin-sdk/plugin-test-runtime`                                           |
+| `registerProviderPlugins`                            | Capture registros de provedores em vários plugins. Importe de `plugin-sdk/plugin-test-runtime`                                        |
+| `requireRegisteredProvider`                          | Verifique se uma coleção de provedores contém um id. Importe de `plugin-sdk/plugin-test-runtime`                                       |
+| `createRuntimeEnv`                                   | Crie um ambiente simulado de tempo de execução de CLI/Plugin. Importe de `plugin-sdk/plugin-test-runtime`                              |
+| `createPluginSetupWizardStatus`                      | Crie auxiliares de status de configuração para plugins de canal. Importe de `plugin-sdk/plugin-test-runtime`                           |
+| `describeOpenAIProviderRuntimeContract`              | Instale verificações de contrato de tempo de execução da família de provedores. Importe de `plugin-sdk/provider-test-contracts`        |
+| `expectPassthroughReplayPolicy`                      | Verifique se as políticas de repetição do provedor repassam ferramentas e metadados pertencentes ao provedor. Importe de `plugin-sdk/provider-test-contracts` |
+| `runRealtimeSttLiveTest`                             | Execute um teste ao vivo de provedor STT em tempo real com artefatos de áudio compartilhados. Importe de `plugin-sdk/provider-test-contracts` |
+| `normalizeTranscriptForMatch`                        | Normalize a saída de transcrição ao vivo antes de asserções aproximadas. Importe de `plugin-sdk/provider-test-contracts`               |
+| `expectExplicitVideoGenerationCapabilities`          | Verifique se provedores de vídeo declaram capacidades explícitas de modo de geração. Importe de `plugin-sdk/provider-test-contracts`   |
+| `expectExplicitMusicGenerationCapabilities`          | Verifique se provedores de música declaram capacidades explícitas de geração/edição. Importe de `plugin-sdk/provider-test-contracts`   |
+| `mockSuccessfulDashscopeVideoTask`                   | Instale uma resposta bem-sucedida de tarefa de vídeo compatível com DashScope. Importe de `plugin-sdk/provider-test-contracts`          |
+| `getProviderHttpMocks`                               | Acesse simulações opt-in de HTTP/autenticação de provedor do Vitest. Importe de `plugin-sdk/provider-http-test-mocks`                  |
+| `installProviderHttpMockCleanup`                     | Redefina simulações de HTTP/autenticação de provedor após cada teste. Importe de `plugin-sdk/provider-http-test-mocks`                 |
+| `installCommonResolveTargetErrorCases`               | Casos de teste compartilhados para tratamento de erros de resolução de destino. Importe de `plugin-sdk/channel-target-testing`         |
+| `shouldAckReaction`                                  | Verifique se um canal deve adicionar uma reação de confirmação. Importe de `plugin-sdk/channel-feedback`                               |
+| `removeAckReactionAfterReply`                        | Remova a reação de confirmação após a entrega da resposta. Importe de `plugin-sdk/channel-feedback`                                    |
+| `createTestRegistry`                                 | Crie um artefato de teste de registro de Plugin de canal. Importe de `plugin-sdk/plugin-test-runtime` ou `plugin-sdk/channel-test-helpers` |
+| `createEmptyPluginRegistry`                          | Crie um artefato de teste de registro de Plugin vazio. Importe de `plugin-sdk/plugin-test-runtime` ou `plugin-sdk/channel-test-helpers` |
+| `setActivePluginRegistry`                            | Instale um artefato de teste de registro para testes de tempo de execução de Plugin. Importe de `plugin-sdk/plugin-test-runtime` ou `plugin-sdk/channel-test-helpers` |
+| `createRequestCaptureJsonFetch`                      | Capture solicitações fetch JSON em testes de auxiliares de mídia. Importe de `plugin-sdk/test-env`                                     |
+| `withServer`                                         | Execute testes contra um servidor HTTP local descartável. Importe de `plugin-sdk/test-env`                                             |
+| `createMockIncomingRequest`                          | Crie um objeto mínimo de solicitação HTTP de entrada. Importe de `plugin-sdk/test-env`                                                 |
+| `withFetchPreconnect`                                | Execute testes de fetch com ganchos de pré-conexão instalados. Importe de `plugin-sdk/test-env`                                       |
+| `withEnv` / `withEnvAsync`                           | Aplique patches temporários em variáveis de ambiente. Importe de `plugin-sdk/test-env`                                                 |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Crie artefatos de teste isolados de sistema de arquivos. Importe de `plugin-sdk/test-env`                                              |
+| `createMockServerResponse`                           | Crie uma simulação mínima de resposta de servidor HTTP. Importe de `plugin-sdk/test-env`                                               |
+| `createCliRuntimeCapture`                            | Capture a saída de tempo de execução da CLI em testes. Importe de `plugin-sdk/test-fixtures`                                           |
+| `importFreshModule`                                  | Importe um módulo ESM com um token de consulta novo para ignorar o cache de módulos. Importe de `plugin-sdk/test-fixtures`             |
+| `bundledPluginRoot` / `bundledPluginFile`            | Resolva caminhos de artefatos de teste de origem ou distribuição de Plugin incluído. Importe de `plugin-sdk/test-fixtures`             |
+| `mockNodeBuiltinModule`                              | Instale simulações estreitas de módulos internos do Node no Vitest. Importe de `plugin-sdk/test-node-mocks`                            |
+| `createSandboxTestContext`                           | Crie contextos de teste de sandbox. Importe de `plugin-sdk/test-fixtures`                                                               |
+| `writeSkill`                                         | Grave artefatos de teste de skill. Importe de `plugin-sdk/test-fixtures`                                                               |
+| `makeAgentAssistantMessage`                          | Crie artefatos de teste de mensagens de transcrição do agente. Importe de `plugin-sdk/test-fixtures`                                  |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | Inspecione e redefina artefatos de teste de eventos do sistema. Importe de `plugin-sdk/test-fixtures`                                  |
+| `sanitizeTerminalText`                               | Higienize a saída do terminal para asserções. Importe de `plugin-sdk/test-fixtures`                                                    |
+| `countLines` / `hasBalancedFences`                   | Verifique o formato de saída de fragmentação. Importe de `plugin-sdk/test-fixtures`                                                    |
+| `runProviderCatalog`                                 | Execute um gancho de catálogo de provedor com dependências de teste                                                                     |
+| `resolveProviderWizardOptions`                       | Resolva escolhas do assistente de configuração de provedor em testes de contrato                                                        |
+| `resolveProviderModelPickerEntries`                  | Resolva entradas do seletor de modelo do provedor em testes de contrato                                                                 |
+| `buildProviderPluginMethodChoice`                    | Crie ids de escolha do assistente de provedor para asserções                                                                            |
+| `setProviderWizardProvidersResolverForTest`          | Injete provedores do assistente de provedor para testes isolados                                                                        |
+| `createProviderUsageFetch`                           | Cria fixtures de busca de uso do provedor                                                                                                |
+| `useFrozenTime` / `useRealTime`                      | Congela e restaura temporizadores para testes sensíveis ao tempo. Importe de `plugin-sdk/test-env`                                       |
+| `createTestWizardPrompter`                           | Cria um prompter simulado do assistente de configuração                                                                                  |
+| `createRuntimeTaskFlow`                              | Cria estado isolado de task-flow em tempo de execução                                                                                    |
+| `typedCases`                                         | Preserva tipos literais para testes orientados por tabela. Importe de `plugin-sdk/test-fixtures`                                         |
 
-As suítes de contrato de plugins incluídos também usam subcaminhos de teste do SDK para auxiliares de fixture somente de teste de registro, manifesto, artefato público e runtime. As suítes apenas do núcleo que dependem do inventário incluído do OpenClaw permanecem em `src/plugins/contracts`. Mantenha novos testes de extensão em um subcaminho focado e documentado do SDK, como `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env` ou `plugin-sdk/test-fixtures`, em vez de importar diretamente o barrel de compatibilidade amplo `plugin-sdk/testing`, arquivos `src/**` do repositório ou bridges `test/helpers/*` do repositório.
+Os conjuntos de contrato de plugins incluídos também usam subcaminhos de teste do SDK para auxiliares de fixture somente de teste para registro, manifesto, artefato público e runtime. Conjuntos somente de core que dependem do inventário incluído do OpenClaw permanecem em `src/plugins/contracts`. Mantenha novos testes de extensão em um subcaminho focado e documentado do SDK, como `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env` ou `plugin-sdk/test-fixtures`, em vez de importar diretamente o barrel amplo de compatibilidade `plugin-sdk/testing`, arquivos `src/**` do repo ou pontes `test/helpers/*` do repo.
 
 ### Tipos
 
-Subcaminhos focados de teste também reexportam tipos úteis em arquivos de teste:
+Subcaminhos de teste focados também reexportam tipos úteis em arquivos de teste:
 
 ```typescript
 import type {
@@ -162,9 +162,9 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## Teste de resolução de destino
+## Testando a resolução de alvo
 
-Use `installCommonResolveTargetErrorCases` para adicionar casos de erro padrão para a resolução de destino do canal:
+Use `installCommonResolveTargetErrorCases` para adicionar casos de erro padrão para a resolução de alvo de canal:
 
 ```typescript
 import { describe } from "vitest";
@@ -188,17 +188,17 @@ describe("my-channel target resolution", () => {
 
 ## Padrões de teste
 
-### Teste de contratos de registro
+### Testando contratos de registro
 
-Testes unitários que passam um mock `api` escrito manualmente para `register(api)` não exercitam os gates de aceitação do loader do OpenClaw. Adicione pelo menos um teste smoke baseado no loader para cada superfície de registro da qual seu plugin depende, especialmente hooks e capacidades exclusivas, como memória.
+Testes unitários que passam um mock `api` escrito manualmente para `register(api)` não exercitam os gates de aceitação do loader do OpenClaw. Adicione pelo menos um teste smoke com suporte do loader para cada superfície de registro da qual seu Plugin depende, especialmente hooks e capacidades exclusivas, como memória.
 
-O loader real falha o registro do plugin quando metadados obrigatórios estão ausentes ou quando um plugin chama uma API de capacidade que não possui. Por exemplo, `api.registerHook(...)` exige um nome de hook, e `api.registerMemoryCapability(...)` exige que o manifesto do plugin ou a entrada exportada declare `kind: "memory"`.
+O loader real falha o registro do Plugin quando metadados obrigatórios estão ausentes ou quando um Plugin chama uma API de capacidade que ele não possui. Por exemplo, `api.registerHook(...)` exige um nome de hook, e `api.registerMemoryCapability(...)` exige que o manifesto do Plugin ou a entrada exportada declare `kind: "memory"`.
 
-### Teste de acesso à configuração do runtime
+### Testando acesso à configuração de runtime
 
-Prefira o mock compartilhado de runtime de plugin de `openclaw/plugin-sdk/channel-test-helpers` ao testar plugins de canal incluídos. Seus mocks obsoletos `runtime.config.loadConfig()` e `runtime.config.writeConfigFile(...)` lançam erro por padrão para que os testes detectem novo uso de APIs de compatibilidade. Sobrescreva esses mocks somente quando o teste estiver cobrindo explicitamente comportamento de compatibilidade legado.
+Prefira o mock compartilhado de runtime de Plugin de `openclaw/plugin-sdk/channel-test-helpers` ao testar plugins de canal incluídos. Os mocks obsoletos `runtime.config.loadConfig()` e `runtime.config.writeConfigFile(...)` dele lançam erro por padrão, para que os testes detectem novo uso de APIs de compatibilidade. Sobrescreva esses mocks somente quando o teste estiver cobrindo explicitamente comportamento legado de compatibilidade.
 
-### Teste unitário de um plugin de canal
+### Testando unitariamente um Plugin de canal
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -234,7 +234,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### Teste unitário de um plugin de provider
+### Testando unitariamente um Plugin de provedor
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -262,9 +262,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### Mock do runtime do plugin
+### Fazendo mock do runtime do Plugin
 
-Para código que usa `createPluginRuntimeStore`, simule o runtime em testes:
+Para código que usa `createPluginRuntimeStore`, faça mock do runtime em testes:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -295,7 +295,7 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### Teste com stubs por instância
+### Testando com stubs por instância
 
 Prefira stubs por instância em vez de mutação de protótipo:
 
@@ -308,7 +308,7 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Testes de contrato (plugins no repositório)
+## Testes de contrato (plugins no repo)
 
 Plugins incluídos têm testes de contrato que verificam a propriedade do registro:
 
@@ -318,14 +318,14 @@ pnpm test -- src/plugins/contracts/
 
 Esses testes verificam:
 
-- Quais plugins registram quais providers
-- Quais plugins registram quais providers de fala
+- Quais plugins registram quais provedores
+- Quais plugins registram quais provedores de fala
 - Correção do formato de registro
-- Conformidade com contrato de runtime
+- Conformidade com o contrato de runtime
 
-### Execução de testes com escopo
+### Executando testes com escopo
 
-Para um plugin específico:
+Para um Plugin específico:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
@@ -335,23 +335,23 @@ Somente para testes de contrato:
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime.contract.test.ts
+pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
-## Aplicação por lint (plugins no repositório)
+## Aplicação de lint (plugins no repo)
 
-Três regras são aplicadas por `pnpm check` para plugins no repositório:
+Três regras são aplicadas por `pnpm check` para plugins no repo:
 
-1. **Sem importações monolíticas da raiz** -- o barrel raiz `openclaw/plugin-sdk` é rejeitado
-2. **Sem importações diretas de `src/`** -- plugins não podem importar `../../src/` diretamente
-3. **Sem autoimportações** -- plugins não podem importar seu próprio subcaminho `plugin-sdk/<name>`
+1. **Sem imports monolíticos da raiz** -- o barrel raiz `openclaw/plugin-sdk` é rejeitado
+2. **Sem imports diretos de `src/`** -- plugins não podem importar `../../src/` diretamente
+3. **Sem autoimports** -- plugins não podem importar seu próprio subcaminho `plugin-sdk/<name>`
 
 Plugins externos não estão sujeitos a essas regras de lint, mas é recomendado seguir os mesmos padrões.
 
 ## Configuração de teste
 
-O OpenClaw usa Vitest com limites de cobertura V8. Para testes de plugin:
+O OpenClaw usa Vitest com limites de cobertura V8. Para testes de Plugin:
 
 ```bash
 # Run all tests
@@ -376,6 +376,6 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 ## Relacionado
 
 - [Visão geral do SDK](/pt-BR/plugins/sdk-overview) -- convenções de importação
-- [Plugins de canal do SDK](/pt-BR/plugins/sdk-channel-plugins) -- interface de plugin de canal
-- [Plugins de provider do SDK](/pt-BR/plugins/sdk-provider-plugins) -- hooks de plugin de provider
-- [Criação de plugins](/pt-BR/plugins/building-plugins) -- guia de introdução
+- [Plugins de canal do SDK](/pt-BR/plugins/sdk-channel-plugins) -- interface de Plugin de canal
+- [Plugins de provedor do SDK](/pt-BR/plugins/sdk-provider-plugins) -- hooks de Plugin de provedor
+- [Criando plugins](/pt-BR/plugins/building-plugins) -- guia de introdução
