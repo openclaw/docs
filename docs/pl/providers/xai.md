@@ -1,20 +1,19 @@
 ---
 read_when:
-    - Chcesz używać modeli Grok w OpenClaw.
-    - Konfigurujesz uwierzytelnianie xAI lub identyfikatory modeli.
-summary: Używaj modeli xAI Grok w OpenClaw.
+    - Chcesz używać modeli Grok w OpenClaw
+    - Konfigurujesz uwierzytelnianie xAI lub identyfikatory modeli
+summary: Korzystanie z modeli xAI Grok w OpenClaw
 title: xAI
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-26T11:40:08Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 420f60d5e80964b926e50cf74cf414d11de1c30d3a4aa8917f1861e0d56ef5b9
-  source_path: providers/xai.md
-  workflow: 15
+    generated_at: "2026-05-02T10:01:10Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 7f36b597fd5c47b61724080deb0d545bca024aca17744fc8aa6a0eb4872d12d2
+    source_path: providers/xai.md
+    workflow: 16
 ---
 
-OpenClaw dostarcza wbudowany Plugin dostawcy `xai` dla modeli Grok.
+OpenClaw dostarcza dołączony Plugin dostawcy `xai` dla modeli Grok.
 
 ## Pierwsze kroki
 
@@ -33,77 +32,80 @@ OpenClaw dostarcza wbudowany Plugin dostawcy `xai` dla modeli Grok.
   <Step title="Wybierz model">
     ```json5
     {
-      agents: { defaults: { model: { primary: "xai/grok-4" } } },
+      agents: { defaults: { model: { primary: "xai/grok-4.3" } } },
     }
     ```
   </Step>
 </Steps>
 
 <Note>
-OpenClaw używa interfejsu xAI Responses API jako wbudowanego transportu xAI. Ten sam
-`XAI_API_KEY` może również zasilać `web_search` oparty na Grok, natywne
-`x_search` oraz zdalne `code_execution`.
-Jeśli przechowujesz klucz xAI w `plugins.entries.xai.config.webSearch.apiKey`,
-wbudowany dostawca modeli xAI również używa tego klucza jako rozwiązania zapasowego.
-Dostrajanie `code_execution` znajduje się w `plugins.entries.xai.config.codeExecution`.
+OpenClaw używa interfejsu xAI Responses API jako dołączonego transportu xAI. Ten sam
+`XAI_API_KEY` może także obsługiwać oparte na Grok `web_search`, pełnoprawne `x_search`
+oraz zdalne `code_execution`.
+Jeśli zapiszesz klucz xAI pod `plugins.entries.xai.config.webSearch.apiKey`,
+dołączony dostawca modeli xAI użyje tego klucza także jako wartości awaryjnej.
+Ustaw `plugins.entries.xai.config.webSearch.baseUrl`, aby kierować Grok `web_search`
+oraz, domyślnie, `x_search` przez operatorskie proxy xAI Responses.
+Dostrajanie `code_execution` znajduje się pod `plugins.entries.xai.config.codeExecution`.
 </Note>
 
 ## Wbudowany katalog
 
-OpenClaw zawiera te rodziny modeli xAI od razu po instalacji:
+OpenClaw zawiera od razu następujące rodziny modeli xAI:
 
 | Rodzina        | Identyfikatory modeli                                                     |
-| -------------- | ------------------------------------------------------------------------- |
-| Grok 3         | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`                |
-| Grok 4         | `grok-4`, `grok-4-0709`                                                   |
-| Grok 4 Fast    | `grok-4-fast`, `grok-4-fast-non-reasoning`                                |
-| Grok 4.1 Fast  | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                            |
-| Grok 4.20 Beta | `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning`  |
-| Grok Code      | `grok-code-fast-1`                                                        |
+| -------------- | ------------------------------------------------------------------------ |
+| Grok 3         | `grok-3`, `grok-3-fast`, `grok-3-mini`, `grok-3-mini-fast`               |
+| Grok 4.3       | `grok-4.3`                                                               |
+| Grok 4         | `grok-4`, `grok-4-0709`                                                  |
+| Grok 4 Fast    | `grok-4-fast`, `grok-4-fast-non-reasoning`                               |
+| Grok 4.1 Fast  | `grok-4-1-fast`, `grok-4-1-fast-non-reasoning`                           |
+| Grok 4.20 Beta | `grok-4.20-beta-latest-reasoning`, `grok-4.20-beta-latest-non-reasoning` |
+| Grok Code      | `grok-code-fast-1`                                                       |
 
-Plugin przekazuje również nowsze identyfikatory `grok-4*` i `grok-code-fast*`, gdy
+Plugin przekazuje także nowsze identyfikatory `grok-4*` i `grok-code-fast*`, gdy
 stosują ten sam kształt API.
 
 <Tip>
-`grok-4-fast`, `grok-4-1-fast` oraz warianty `grok-4.20-beta-*` to
-aktualne odwołania Grok z obsługą obrazów we wbudowanym katalogu.
+`grok-4.3`, `grok-4-fast`, `grok-4-1-fast` oraz warianty `grok-4.20-beta-*`
+to bieżące referencje Grok obsługujące obrazy w dołączonym katalogu.
 </Tip>
 
-## Zakres funkcji OpenClaw
+## Pokrycie funkcji OpenClaw
 
-Wbudowany Plugin mapuje aktualną publiczną powierzchnię API xAI na współdzielone
-kontrakty dostawców i narzędzi OpenClaw. Możliwości, które nie pasują do współdzielonego kontraktu
-(na przykład strumieniowe TTS i głos w czasie rzeczywistym), nie są udostępniane — patrz tabela
+Dołączony Plugin mapuje bieżącą publiczną powierzchnię API xAI na wspólne
+kontrakty dostawców i narzędzi OpenClaw. Możliwości, które nie pasują do wspólnego kontraktu
+(na przykład strumieniowe TTS i głos w czasie rzeczywistym), nie są udostępniane — zobacz tabelę
 poniżej.
 
-| Funkcja xAI                | Powierzchnia OpenClaw                    | Status                                                              |
-| -------------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
-| Chat / Responses           | dostawca modeli `xai/<model>`            | Tak                                                                 |
+| Możliwość xAI              | Powierzchnia OpenClaw                      | Status                                                              |
+| -------------------------- | ----------------------------------------- | ------------------------------------------------------------------- |
+| Chat / Responses           | dostawca modeli `xai/<model>`             | Tak                                                                 |
 | Wyszukiwanie w sieci po stronie serwera | dostawca `web_search` `grok`     | Tak                                                                 |
-| Wyszukiwanie X po stronie serwera | narzędzie `x_search`              | Tak                                                                 |
-| Wykonywanie kodu po stronie serwera | narzędzie `code_execution`      | Tak                                                                 |
-| Obrazy                     | `image_generate`                         | Tak                                                                 |
-| Wideo                      | `video_generate`                         | Tak                                                                 |
-| Wsadowe zamiana tekstu na mowę | `messages.tts.provider: "xai"` / `tts` | Tak                                                                 |
-| Strumieniowe TTS           | —                                        | Nieudostępniane; kontrakt TTS OpenClaw zwraca kompletne bufory audio |
-| Wsadowe zamiana mowy na tekst | `tools.media.audio` / rozumienie multimediów | Tak                                                            |
-| Strumieniowe zamiana mowy na tekst | Voice Call `streaming.provider: "xai"` | Tak                                                            |
-| Głos w czasie rzeczywistym | —                                        | Jeszcze nieudostępniane; inny kontrakt sesji/WebSocket              |
-| Pliki / batch              | Tylko zgodność z ogólnym API modeli      | Nie jest natywnym narzędziem OpenClaw                               |
+| Wyszukiwanie X po stronie serwera | narzędzie `x_search`                | Tak                                                                 |
+| Wykonywanie kodu po stronie serwera | narzędzie `code_execution`        | Tak                                                                 |
+| Obrazy                     | `image_generate`                          | Tak                                                                 |
+| Wideo                      | `video_generate`                          | Tak                                                                 |
+| Wsadowe text-to-speech     | `messages.tts.provider: "xai"` / `tts`    | Tak                                                                 |
+| Strumieniowe TTS           | —                                         | Nieudostępniane; kontrakt TTS OpenClaw zwraca kompletne bufory audio |
+| Wsadowe speech-to-text     | `tools.media.audio` / rozumienie multimediów | Tak                                                              |
+| Strumieniowe speech-to-text | Voice Call `streaming.provider: "xai"`   | Tak                                                                 |
+| Głos w czasie rzeczywistym | —                                         | Jeszcze nieudostępniany; inny kontrakt sesji/WebSocket              |
+| Pliki / partie             | Tylko ogólna zgodność z API modeli         | Nie jest pełnoprawnym narzędziem OpenClaw                           |
 
 <Note>
-OpenClaw używa interfejsów REST xAI dla obrazów/wideo/TTS/STT do generowania multimediów,
-mowy i transkrypcji wsadowej, strumieniowego WebSocket STT xAI do transkrypcji
-na żywo w połączeniach głosowych oraz Responses API dla modeli, wyszukiwania i
-narzędzi wykonania kodu. Funkcje wymagające innych kontraktów OpenClaw, takie jak
-sesje głosowe Realtime, są udokumentowane tutaj jako możliwości upstream zamiast
-ukrytego zachowania Pluginu.
+OpenClaw używa interfejsów REST API xAI dla obrazów/wideo/TTS/STT do generowania multimediów,
+mowy i transkrypcji wsadowej, strumieniowego WebSocket STT xAI do transkrypcji rozmów
+głosowych na żywo oraz Responses API dla narzędzi modeli, wyszukiwania i
+wykonywania kodu. Funkcje wymagające innych kontraktów OpenClaw, takie jak
+sesje głosu w czasie rzeczywistym, są tutaj udokumentowane jako możliwości upstream,
+a nie jako ukryte zachowanie Plugin.
 </Note>
 
 ### Mapowania trybu szybkiego
 
 `/fast on` lub `agents.defaults.models["xai/<model>"].params.fastMode: true`
-przepisuje natywne żądania xAI w następujący sposób:
+przepisuje natywne żądania xAI następująco:
 
 | Model źródłowy | Cel trybu szybkiego |
 | -------------- | ------------------- |
@@ -114,20 +116,20 @@ przepisuje natywne żądania xAI w następujący sposób:
 
 ### Starsze aliasy zgodności
 
-Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikatorów:
+Starsze aliasy nadal normalizują się do kanonicznych dołączonych identyfikatorów:
 
-| Starszy alias             | Identyfikator kanoniczny            |
-| ------------------------- | ----------------------------------- |
-| `grok-4-fast-reasoning`   | `grok-4-fast`                       |
-| `grok-4-1-fast-reasoning` | `grok-4-1-fast`                     |
-| `grok-4.20-reasoning`     | `grok-4.20-beta-latest-reasoning`   |
+| Starszy alias             | Identyfikator kanoniczny              |
+| ------------------------- | ------------------------------------- |
+| `grok-4-fast-reasoning`   | `grok-4-fast`                         |
+| `grok-4-1-fast-reasoning` | `grok-4-1-fast`                       |
+| `grok-4.20-reasoning`     | `grok-4.20-beta-latest-reasoning`     |
 | `grok-4.20-non-reasoning` | `grok-4.20-beta-latest-non-reasoning` |
 
 ## Funkcje
 
 <AccordionGroup>
   <Accordion title="Wyszukiwanie w sieci">
-    Wbudowany dostawca wyszukiwania w sieci `grok` również używa `XAI_API_KEY`:
+    Dołączony dostawca wyszukiwania w sieci `grok` także używa `XAI_API_KEY`:
 
     ```bash
     openclaw config set tools.web.search.provider grok
@@ -136,7 +138,7 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
   </Accordion>
 
   <Accordion title="Generowanie wideo">
-    Wbudowany Plugin `xai` rejestruje generowanie wideo przez współdzielone
+    Dołączony Plugin `xai` rejestruje generowanie wideo przez współdzielone
     narzędzie `video_generate`.
 
     - Domyślny model wideo: `xai/grok-imagine-video`
@@ -144,14 +146,14 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
       edycja wideo oraz zdalne rozszerzanie wideo
     - Proporcje obrazu: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`
     - Rozdzielczości: `480P`, `720P`
-    - Czas trwania: 1-15 sekund dla generowania/obraz-na-wideo, 1-10 sekund przy
-      użyciu ról `reference_image`, 2-10 sekund dla rozszerzania
+    - Czas trwania: 1–15 sekund dla generowania/obrazu-na-wideo, 1–10 sekund podczas
+      używania ról `reference_image`, 2–10 sekund dla rozszerzania
     - Generowanie z obrazem referencyjnym: ustaw `imageRoles` na `reference_image` dla
       każdego dostarczonego obrazu; xAI akceptuje do 7 takich obrazów
 
     <Warning>
-    Lokalne bufory wideo nie są akceptowane. Używaj zdalnych adresów URL `http(s)` dla
-    danych wejściowych edycji/rozszerzania wideo. Obraz-na-wideo akceptuje lokalne bufory obrazów, ponieważ
+    Lokalne bufory wideo nie są akceptowane. Używaj zdalnych URL-i `http(s)` jako
+    wejść edycji/rozszerzania wideo. Obraz-na-wideo akceptuje lokalne bufory obrazów, ponieważ
     OpenClaw może zakodować je jako adresy URL danych dla xAI.
     </Warning>
 
@@ -170,27 +172,27 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
     ```
 
     <Note>
-    Zobacz [Generowanie wideo](/pl/tools/video-generation), aby poznać współdzielone parametry narzędzia,
+    Zobacz [Generowanie wideo](/pl/tools/video-generation), aby poznać wspólne parametry narzędzia,
     wybór dostawcy i zachowanie przełączania awaryjnego.
     </Note>
 
   </Accordion>
 
   <Accordion title="Generowanie obrazów">
-    Wbudowany Plugin `xai` rejestruje generowanie obrazów przez współdzielone
+    Dołączony Plugin `xai` rejestruje generowanie obrazów przez współdzielone
     narzędzie `image_generate`.
 
-    - Domyślny model obrazów: `xai/grok-imagine-image`
+    - Domyślny model obrazu: `xai/grok-imagine-image`
     - Dodatkowy model: `xai/grok-imagine-image-pro`
     - Tryby: tekst-na-obraz i edycja z obrazem referencyjnym
-    - Dane wejściowe referencyjne: jeden `image` lub do pięciu `images`
+    - Wejścia referencyjne: jeden `image` albo do pięciu `images`
     - Proporcje obrazu: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`
     - Rozdzielczości: `1K`, `2K`
     - Liczba: do 4 obrazów
 
     OpenClaw prosi xAI o odpowiedzi obrazów `b64_json`, aby wygenerowane multimedia mogły być
-    przechowywane i dostarczane przez standardową ścieżkę załączników kanału. Lokalne
-    obrazy referencyjne są konwertowane na adresy URL danych; zdalne odwołania `http(s)` są
+    przechowywane i dostarczane normalną ścieżką załączników kanału. Lokalne
+    obrazy referencyjne są konwertowane na adresy URL danych; zdalne referencje `http(s)` są
     przekazywane dalej.
 
     Aby używać xAI jako domyślnego dostawcy obrazów:
@@ -208,24 +210,24 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
     ```
 
     <Note>
-    xAI dokumentuje również `quality`, `mask`, `user` oraz dodatkowe natywne proporcje
-    takie jak `1:2`, `2:1`, `9:20` i `20:9`. OpenClaw przekazuje dziś tylko
-    współdzielone międzydostawcowe kontrolki obrazów; nieobsługiwane natywne ustawienia
-    są celowo nieudostępniane przez `image_generate`.
+    xAI dokumentuje także `quality`, `mask`, `user` i dodatkowe natywne proporcje,
+    takie jak `1:2`, `2:1`, `9:20` i `20:9`. OpenClaw obecnie przekazuje tylko
+    współdzielone, międzydostawcze kontrolki obrazów; nieobsługiwane pokrętła wyłącznie natywne
+    celowo nie są udostępniane przez `image_generate`.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Zamiana tekstu na mowę">
-    Wbudowany Plugin `xai` rejestruje zamianę tekstu na mowę przez współdzieloną
-    powierzchnię dostawcy `tts`.
+  <Accordion title="Text-to-speech">
+    Dołączony Plugin `xai` rejestruje text-to-speech przez współdzieloną powierzchnię
+    dostawcy `tts`.
 
     - Głosy: `eve`, `ara`, `rex`, `sal`, `leo`, `una`
     - Domyślny głos: `eve`
     - Formaty: `mp3`, `wav`, `pcm`, `mulaw`, `alaw`
-    - Język: kod BCP-47 lub `auto`
-    - Prędkość: natywne nadpisanie prędkości dostawcy
-    - Natywny format notatki głosowej Opus nie jest obsługiwany
+    - Język: kod BCP-47 albo `auto`
+    - Szybkość: natywne dla dostawcy nadpisanie szybkości
+    - Natywny format notatek głosowych Opus nie jest obsługiwany
 
     Aby używać xAI jako domyślnego dostawcy TTS:
 
@@ -245,22 +247,22 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
     ```
 
     <Note>
-    OpenClaw używa wsadowego punktu końcowego `/v1/tts` xAI. xAI oferuje również strumieniowe TTS
+    OpenClaw używa wsadowego punktu końcowego xAI `/v1/tts`. xAI oferuje także strumieniowe TTS
     przez WebSocket, ale kontrakt dostawcy mowy OpenClaw obecnie oczekuje
     kompletnego bufora audio przed dostarczeniem odpowiedzi.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Zamiana mowy na tekst">
-    Wbudowany Plugin `xai` rejestruje wsadową zamianę mowy na tekst przez powierzchnię
+  <Accordion title="Speech-to-text">
+    Dołączony Plugin `xai` rejestruje wsadowe speech-to-text przez powierzchnię
     transkrypcji rozumienia multimediów OpenClaw.
 
     - Domyślny model: `grok-stt`
     - Punkt końcowy: xAI REST `/v1/stt`
-    - Ścieżka wejściowa: wieloczęściowe przesyłanie pliku audio
+    - Ścieżka wejściowa: przesyłanie wieloczęściowego pliku audio
     - Obsługiwane przez OpenClaw wszędzie tam, gdzie transkrypcja przychodzącego audio używa
-      `tools.media.audio`, w tym segmentów kanałów głosowych Discord i
+      `tools.media.audio`, w tym segmentów kanałów głosowych Discord oraz
       załączników audio kanału
 
     Aby wymusić xAI dla transkrypcji przychodzącego audio:
@@ -283,25 +285,25 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
     }
     ```
 
-    Język można podać przez współdzieloną konfigurację audio multimediów lub na żądanie
-    transkrypcji dla pojedynczego wywołania. Wskazówki promptu są akceptowane przez współdzieloną powierzchnię OpenClaw,
-    ale integracja xAI REST STT przekazuje dalej tylko plik, model i
-    język, ponieważ te elementy czysto mapują się na aktualny publiczny punkt końcowy xAI.
+    Język można podać przez wspólną konfigurację mediów audio albo przez żądanie
+    transkrypcji dla danego wywołania. Wskazówki promptu są akceptowane przez wspólną powierzchnię
+    OpenClaw, ale integracja xAI REST STT przekazuje tylko plik, model i
+    język, ponieważ te elementy jednoznacznie mapują się na bieżący publiczny punkt końcowy xAI.
 
   </Accordion>
 
-  <Accordion title="Strumieniowa zamiana mowy na tekst">
-    Wbudowany Plugin `xai` rejestruje również dostawcę transkrypcji realtime
-    dla dźwięku połączeń głosowych na żywo.
+  <Accordion title="Strumieniowe speech-to-text">
+    Dołączony Plugin `xai` rejestruje także dostawcę transkrypcji w czasie rzeczywistym
+    dla audio rozmów głosowych na żywo.
 
     - Punkt końcowy: xAI WebSocket `wss://api.x.ai/v1/stt`
     - Domyślne kodowanie: `mulaw`
     - Domyślna częstotliwość próbkowania: `8000`
-    - Domyślne endpointing: `800ms`
-    - Transkrypty pośrednie: domyślnie włączone
+    - Domyślne wykrywanie końca wypowiedzi: `800ms`
+    - Transkrypty tymczasowe: domyślnie włączone
 
-    Strumień multimediów Twilio dla Voice Call wysyła ramki audio G.711 µ-law, więc dostawca
-    xAI może przekazywać te ramki bezpośrednio bez transkodowania:
+    Strumień multimediów Twilio funkcji Voice Call wysyła ramki audio G.711 µ-law, więc
+    dostawca xAI może przekazywać te ramki bezpośrednio bez transkodowania:
 
     ```json5
     {
@@ -327,30 +329,31 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
     }
     ```
 
-    Konfiguracja należąca do dostawcy znajduje się w
+    Konfiguracja należąca do dostawcy znajduje się pod
     `plugins.entries.voice-call.config.streaming.providers.xai`. Obsługiwane
     klucze to `apiKey`, `baseUrl`, `sampleRate`, `encoding` (`pcm`, `mulaw` lub
     `alaw`), `interimResults`, `endpointingMs` i `language`.
 
     <Note>
-    Ten dostawca strumieniowy służy do ścieżki transkrypcji realtime w Voice Call.
-    Discord voice obecnie rejestruje krótkie segmenty i zamiast tego używa wsadowej
+    Ten dostawca streamingu jest przeznaczony dla ścieżki transkrypcji w czasie rzeczywistym Voice Call.
+    Głos Discord obecnie nagrywa krótkie segmenty i zamiast tego używa wsadowej
     ścieżki transkrypcji `tools.media.audio`.
     </Note>
 
   </Accordion>
 
   <Accordion title="Konfiguracja x_search">
-    Wbudowany Plugin xAI udostępnia `x_search` jako narzędzie OpenClaw do przeszukiwania
+    Dołączony Plugin xAI udostępnia `x_search` jako narzędzie OpenClaw do wyszukiwania
     treści X (dawniej Twitter) przez Grok.
 
     Ścieżka konfiguracji: `plugins.entries.xai.config.xSearch`
 
-    | Klucz              | Typ     | Domyślnie          | Opis                                 |
+    | Klucz              | Typ     | Domyślnie         | Opis                                 |
     | ------------------ | ------- | ------------------ | ------------------------------------ |
     | `enabled`          | boolean | —                  | Włącz lub wyłącz x_search            |
-    | `model`            | string  | `grok-4-1-fast`    | Model używany dla żądań x_search     |
-    | `inlineCitations`  | boolean | —                  | Dołącz cytowania w treści wyników    |
+    | `model`            | string  | `grok-4-1-fast`    | Model używany do żądań x_search      |
+    | `baseUrl`          | string  | —                  | Nadpisanie bazowego adresu URL xAI Responses |
+    | `inlineCitations`  | boolean | —                  | Dołącz cytowania w tekście do wyników |
     | `maxTurns`         | number  | —                  | Maksymalna liczba tur konwersacji    |
     | `timeoutSeconds`   | number  | —                  | Limit czasu żądania w sekundach      |
     | `cacheTtlMinutes`  | number  | —                  | Czas życia pamięci podręcznej w minutach |
@@ -364,6 +367,7 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
               xSearch: {
                 enabled: true,
                 model: "grok-4-1-fast",
+                baseUrl: "https://api.x.ai/v1",
                 inlineCitations: true,
               },
             },
@@ -376,20 +380,20 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
   </Accordion>
 
   <Accordion title="Konfiguracja wykonywania kodu">
-    Wbudowany Plugin xAI udostępnia `code_execution` jako narzędzie OpenClaw do
-    zdalnego wykonywania kodu w środowisku sandbox xAI.
+    Dołączony Plugin xAI udostępnia `code_execution` jako narzędzie OpenClaw do
+    zdalnego wykonywania kodu w środowisku piaskownicy xAI.
 
     Ścieżka konfiguracji: `plugins.entries.xai.config.codeExecution`
 
     | Klucz             | Typ     | Domyślnie                | Opis                                      |
     | ----------------- | ------- | ------------------------ | ----------------------------------------- |
     | `enabled`         | boolean | `true` (jeśli klucz jest dostępny) | Włącz lub wyłącz wykonywanie kodu |
-    | `model`           | string  | `grok-4-1-fast`          | Model używany dla żądań wykonywania kodu  |
+    | `model`           | string  | `grok-4-1-fast`          | Model używany do żądań wykonywania kodu   |
     | `maxTurns`        | number  | —                        | Maksymalna liczba tur konwersacji         |
     | `timeoutSeconds`  | number  | —                        | Limit czasu żądania w sekundach           |
 
     <Note>
-    To jest zdalne wykonanie w sandboxie xAI, a nie lokalne [`exec`](/pl/tools/exec).
+    To jest zdalne wykonywanie w piaskownicy xAI, a nie lokalne [`exec`](/pl/tools/exec).
     </Note>
 
     ```json5
@@ -412,41 +416,45 @@ Starsze aliasy są nadal normalizowane do kanonicznych wbudowanych identyfikator
   </Accordion>
 
   <Accordion title="Znane ograniczenia">
-    - Uwierzytelnianie obecnie obsługuje tylko klucz API. W OpenClaw nie ma jeszcze przepływu xAI OAuth ani device-code.
-    - `grok-4.20-multi-agent-experimental-beta-0304` nie jest obsługiwany w
+    - Uwierzytelnianie obecnie obsługuje tylko klucz API. W OpenClaw nie ma jeszcze
+      przepływu xAI OAuth ani kodu urządzenia.
+    - `grok-4.20-multi-agent-experimental-beta-0304` nie jest obsługiwany na
       standardowej ścieżce dostawcy xAI, ponieważ wymaga innej powierzchni API upstream
       niż standardowy transport xAI w OpenClaw.
     - Głos xAI Realtime nie jest jeszcze zarejestrowany jako dostawca OpenClaw. Wymaga
-      innego dwukierunkowego kontraktu sesji głosowej niż wsadowe STT lub
-      transkrypcja strumieniowa.
-    - `quality` obrazu xAI, `mask` obrazu oraz dodatkowe natywne proporcje obrazu
-      nie są udostępniane, dopóki współdzielone narzędzie `image_generate` nie będzie miało
-      odpowiadających im międzydostawcowych kontrolek.
+      innego kontraktu dwukierunkowej sesji głosowej niż wsadowe STT lub
+      transkrypcja streamingowa.
+    - `quality` obrazu xAI, `mask` obrazu i dodatkowe, wyłącznie natywne proporcje obrazu
+      nie są udostępniane, dopóki współdzielone narzędzie `image_generate` nie będzie mieć odpowiednich
+      kontrolek międzydostawcowych.
   </Accordion>
 
   <Accordion title="Uwagi zaawansowane">
-    - OpenClaw automatycznie stosuje poprawki zgodności schematu narzędzi i wywołań narzędzi specyficzne dla xAI
-      na współdzielonej ścieżce wykonawczej.
-    - Natywne żądania xAI domyślnie mają `tool_stream: true`. Ustaw
+    - OpenClaw automatycznie stosuje poprawki zgodności schematu narzędzi i wywołań narzędzi
+      specyficzne dla xAI na współdzielonej ścieżce runnera.
+    - Natywne żądania xAI domyślnie używają `tool_stream: true`. Ustaw
       `agents.defaults.models["xai/<model>"].params.tool_stream` na `false`, aby
       to wyłączyć.
-    - Wbudowany wrapper xAI usuwa nieobsługiwane ścisłe flagi schematu narzędzi i
-      klucze ładunku reasoning przed wysłaniem natywnych żądań xAI.
+    - Dołączony wrapper xAI usuwa nieobsługiwane rygorystyczne flagi schematu narzędzi i
+      klucze payloadu rozumowania przed wysłaniem natywnych żądań xAI.
     - `web_search`, `x_search` i `code_execution` są udostępniane jako narzędzia OpenClaw.
-      OpenClaw włącza konkretny wbudowany mechanizm xAI, którego potrzebuje, wewnątrz każdego
-      żądania narzędzia zamiast dołączać wszystkie natywne narzędzia do każdej tury czatu.
-    - `x_search` i `code_execution` należą do wbudowanego Pluginu xAI, a nie są
-      zakodowane na stałe w podstawowym środowisku wykonawczym modeli.
-    - `code_execution` to zdalne wykonanie w sandboxie xAI, a nie lokalne
+      OpenClaw włącza konkretną wbudowaną funkcję xAI potrzebną w każdym żądaniu narzędzia
+      zamiast dołączać wszystkie natywne narzędzia do każdej tury czatu.
+    - Grok `web_search` odczytuje `plugins.entries.xai.config.webSearch.baseUrl`.
+      `x_search` odczytuje `plugins.entries.xai.config.xSearch.baseUrl`, a następnie
+      wraca do bazowego adresu URL wyszukiwania web Grok.
+    - `x_search` i `code_execution` należą do dołączonego Pluginu xAI, a nie
+      są zakodowane na stałe w głównym środowisku uruchomieniowym modelu.
+    - `code_execution` to zdalne wykonywanie w piaskownicy xAI, a nie lokalne
       [`exec`](/pl/tools/exec).
   </Accordion>
 </AccordionGroup>
 
-## Testy na żywo
+## Testowanie na żywo
 
-Ścieżki multimediów xAI są objęte testami jednostkowymi i opcjonalnymi zestawami testów na żywo. Polecenia
-na żywo ładują sekrety z powłoki logowania, w tym `~/.profile`, przed
-sprawdzeniem `XAI_API_KEY`.
+Ścieżki multimediów xAI są objęte testami jednostkowymi i opcjonalnymi zestawami testów na żywo. Polecenia na żywo
+ładują sekrety z powłoki logowania, w tym `~/.profile`, przed
+sondowaniem `XAI_API_KEY`.
 
 ```bash
 pnpm test extensions/xai
@@ -455,16 +463,16 @@ OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 OPENCLAW_LIVE_IMAGE_GENERATION_P
 ```
 
 Plik na żywo specyficzny dla dostawcy syntetyzuje zwykłe TTS, przyjazne telefonii PCM
-TTS, transkrybuje audio przez wsadowe STT xAI, przesyła strumieniowo to samo PCM przez
-realtime STT xAI, generuje wynik tekst-na-obraz i edytuje obraz referencyjny. Współdzielony
-plik obrazu na żywo weryfikuje tego samego dostawcę xAI przez wybór środowiska wykonawczego OpenClaw,
-mechanizm zapasowy, normalizację i ścieżkę załączników multimedialnych.
+TTS, transkrybuje dźwięk przez wsadowe STT xAI, streamuje ten sam PCM przez xAI
+realtime STT, generuje wynik tekst-na-obraz i edytuje obraz referencyjny. Współdzielony
+plik na żywo obrazów weryfikuje tego samego dostawcę xAI przez ścieżkę wyboru
+środowiska uruchomieniowego OpenClaw, fallbacku, normalizacji i załączników multimedialnych.
 
 ## Powiązane
 
 <CardGroup cols={2}>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybieranie dostawców, odwołań do modeli i zachowania przełączania awaryjnego.
+    Wybieranie dostawców, referencji modeli i zachowania przełączania awaryjnego.
   </Card>
   <Card title="Generowanie wideo" href="/pl/tools/video-generation" icon="video">
     Współdzielone parametry narzędzia wideo i wybór dostawcy.

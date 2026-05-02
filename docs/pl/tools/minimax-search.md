@@ -1,29 +1,30 @@
 ---
 read_when:
-    - Chcesz używać MiniMax dla `web_search`
-    - Potrzebujesz klucza MiniMax Coding Plan
-    - Chcesz uzyskać wskazówki dotyczące hosta wyszukiwania MiniMax CN/global
-summary: MiniMax Search przez interfejs API wyszukiwania Coding Plan
+    - Chcesz używać MiniMax do web_search
+    - Potrzebujesz klucza MiniMax Token Plan lub tokenu OAuth
+    - Chcesz wskazówek dotyczących hosta wyszukiwania MiniMax CN/global
+summary: Wyszukiwanie MiniMax za pomocą interfejsu API wyszukiwania Token Plan
 title: Wyszukiwanie MiniMax
 x-i18n:
-    generated_at: "2026-04-24T09:37:19Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:05:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 20a91bfae72661efd5e0bc3b6247ab05c3487db40ecd9cd5a874858bf3c69df3
+    source_hash: 5bb84f38c1407c203b76eea2d7a3ab5fefbdab0844dc20899742581945d7d77e
     source_path: tools/minimax-search.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw obsługuje MiniMax jako dostawcę `web_search` przez interfejs API wyszukiwania MiniMax
-Coding Plan. Zwraca on ustrukturyzowane wyniki wyszukiwania z tytułami, URL-ami,
+Token Plan. Zwraca ustrukturyzowane wyniki wyszukiwania z tytułami, adresami URL,
 fragmentami i powiązanymi zapytaniami.
 
-## Pobierz klucz Coding Plan
+## Uzyskaj poświadczenie Token Plan
 
 <Steps>
   <Step title="Utwórz klucz">
-    Utwórz lub skopiuj klucz MiniMax Coding Plan z
+    Utwórz lub skopiuj klucz MiniMax Token Plan z
     [MiniMax Platform](https://platform.minimax.io/user-center/basic-information/interface-key).
+    Konfiguracje OAuth mogą zamiast tego ponownie użyć `MINIMAX_OAUTH_TOKEN`.
   </Step>
   <Step title="Zapisz klucz">
     Ustaw `MINIMAX_CODE_PLAN_KEY` w środowisku Gateway albo skonfiguruj przez:
@@ -35,8 +36,10 @@ fragmentami i powiązanymi zapytaniami.
   </Step>
 </Steps>
 
-OpenClaw akceptuje także `MINIMAX_CODING_API_KEY` jako alias zmiennej środowiskowej. `MINIMAX_API_KEY`
-jest nadal odczytywany jako zgodny wstecznie fallback, jeśli już wskazuje na token coding-plan.
+OpenClaw akceptuje też `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN` oraz
+`MINIMAX_API_KEY` jako aliasy zmiennych środowiskowych. `MINIMAX_API_KEY` powinien wskazywać na
+poświadczenie Token Plan z włączonym wyszukiwaniem; zwykłe klucze API modeli MiniMax mogą nie
+zostać zaakceptowane przez punkt końcowy wyszukiwania Token Plan.
 
 ## Konfiguracja
 
@@ -47,8 +50,8 @@ jest nadal odczytywany jako zgodny wstecznie fallback, jeśli już wskazuje na t
       minimax: {
         config: {
           webSearch: {
-            apiKey: "sk-cp-...", // opcjonalne, jeśli ustawiono MINIMAX_CODE_PLAN_KEY
-            region: "global", // albo "cn"
+            apiKey: "sk-cp-...", // optional if a MiniMax Token Plan env var is set
+            region: "global", // or "cn"
           },
         },
       },
@@ -64,30 +67,32 @@ jest nadal odczytywany jako zgodny wstecznie fallback, jeśli już wskazuje na t
 }
 ```
 
-**Alternatywa środowiskowa:** ustaw `MINIMAX_CODE_PLAN_KEY` w środowisku Gateway.
-W przypadku instalacji Gateway umieść go w `~/.openclaw/.env`.
+**Alternatywa środowiskowa:** ustaw `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`,
+`MINIMAX_OAUTH_TOKEN` albo `MINIMAX_API_KEY` w środowisku Gateway.
+W przypadku instalacji gateway umieść ją w `~/.openclaw/.env`.
 
 ## Wybór regionu
 
-MiniMax Search używa następujących endpointów:
+MiniMax Search używa tych punktów końcowych:
 
-- Global: `https://api.minimax.io/v1/coding_plan/search`
+- Globalny: `https://api.minimax.io/v1/coding_plan/search`
 - CN: `https://api.minimaxi.com/v1/coding_plan/search`
 
 Jeśli `plugins.entries.minimax.config.webSearch.region` nie jest ustawione, OpenClaw ustala
-region w następującej kolejności:
+region w tej kolejności:
 
-1. `tools.web.search.minimax.region` / należące do Plugin `webSearch.region`
+1. `tools.web.search.minimax.region` / należące do plugina `webSearch.region`
 2. `MINIMAX_API_HOST`
 3. `models.providers.minimax.baseUrl`
 4. `models.providers.minimax-portal.baseUrl`
 
-Oznacza to, że onboarding CN lub `MINIMAX_API_HOST=https://api.minimaxi.com/...`
-automatycznie utrzymuje także MiniMax Search na hoście CN.
+Oznacza to, że wdrażanie CN albo `MINIMAX_API_HOST=https://api.minimaxi.com/...`
+automatycznie utrzymuje MiniMax Search także na hoście CN.
 
-Nawet jeśli uwierzytelniono MiniMax przez ścieżkę OAuth `minimax-portal`,
-web search nadal rejestruje się jako identyfikator dostawcy `minimax`; bazowy URL dostawcy OAuth
-jest używany tylko jako wskazówka regionu przy wyborze hosta CN/global.
+Nawet gdy uwierzytelniono MiniMax przez ścieżkę OAuth `minimax-portal`,
+wyszukiwanie w sieci nadal rejestruje się jako identyfikator dostawcy `minimax`; bazowy adres URL dostawcy OAuth
+jest używany jako wskazówka regionu do wyboru hosta CN/globalnego, a `MINIMAX_OAUTH_TOKEN`
+może spełnić wymaganie poświadczenia bearer dla MiniMax Search.
 
 ## Obsługiwane parametry
 
@@ -100,5 +105,5 @@ Filtry specyficzne dla dostawcy nie są obecnie obsługiwane.
 
 ## Powiązane
 
-- [Przegląd Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
-- [MiniMax](/pl/providers/minimax) -- konfiguracja modelu, obrazów, mowy i uwierzytelniania
+- [Omówienie Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
+- [MiniMax](/pl/providers/minimax) -- konfiguracja modelu, obrazu, mowy i uwierzytelniania

@@ -1,26 +1,26 @@
 ---
 read_when:
     - Należy sprawdzić surowe dane wyjściowe modelu pod kątem wycieku rozumowania
-    - Chcesz uruchomić Gateway w trybie obserwowania zmian podczas pracy iteracyjnej
-    - Potrzebujesz powtarzalnego procesu debugowania
-summary: 'Narzędzia debugowania: tryb obserwacji, surowe strumienie modelu i śledzenie wycieku rozumowania'
+    - Chcesz uruchamiać Gateway w trybie obserwowania podczas pracy iteracyjnej
+    - Potrzebujesz powtarzalnego przepływu pracy do debugowania
+summary: 'Narzędzia do debugowania: tryb obserwacji, surowe strumienie modelu i śledzenie wycieku rozumowania'
 title: Debugowanie
 x-i18n:
-    generated_at: "2026-04-30T09:58:04Z"
+    generated_at: "2026-05-02T09:52:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c3c4ba151cf1ef1dd689077cee93467b7bc77b765665231028941a345b5345ea
+    source_hash: e7e28dd5f352abd8d751def61bb56acb6f22663600effdada14bf4a40214f62b
     source_path: help/debugging.md
     workflow: 16
 ---
 
-Pomocniki debugowania dla wyjścia strumieniowego, szczególnie gdy dostawca miesza rozumowanie ze zwykłym tekstem.
+Pomocniki debugowania dla wyjścia strumieniowego, zwłaszcza gdy dostawca miesza rozumowanie ze zwykłym tekstem.
 
 ## Nadpisania debugowania w czasie wykonywania
 
 Użyj `/debug` na czacie, aby ustawić nadpisania konfiguracji **tylko w czasie wykonywania** (pamięć, nie dysk).
-`/debug` jest domyślnie wyłączone; włącz za pomocą `commands.debug: true`.
-Jest to przydatne, gdy trzeba przełączać nieoczywiste ustawienia bez edytowania `openclaw.json`.
+`/debug` jest domyślnie wyłączone; włącz przez `commands.debug: true`.
+Jest to przydatne, gdy trzeba przełączyć mało oczywiste ustawienia bez edytowania `openclaw.json`.
 
 Przykłady:
 
@@ -33,9 +33,9 @@ Przykłady:
 
 `/debug reset` czyści wszystkie nadpisania i wraca do konfiguracji zapisanej na dysku.
 
-## Wyjście śledzenia sesji
+## Wyjście śladu sesji
 
-Użyj `/trace`, gdy chcesz zobaczyć należące do Plugin wiersze śledzenia/debugowania w jednej sesji
+Użyj `/trace`, gdy chcesz zobaczyć należące do pluginu wiersze śledzenia/debugowania w jednej sesji
 bez włączania pełnego trybu szczegółowego.
 
 Przykłady:
@@ -46,16 +46,16 @@ Przykłady:
 /trace off
 ```
 
-Użyj `/trace` do diagnostyki Plugin, takiej jak podsumowania debugowania Active Memory.
-Nadal używaj `/verbose` dla zwykłego szczegółowego wyjścia statusu/narzędzi i nadal używaj
-`/debug` dla nadpisań konfiguracji tylko w czasie wykonywania.
+Użyj `/trace` do diagnostyki pluginu, takiej jak podsumowania debugowania Active Memory.
+Nadal używaj `/verbose` do zwykłego szczegółowego statusu/wyjścia narzędzi i nadal używaj
+`/debug` do nadpisań konfiguracji tylko w czasie wykonywania.
 
-## Śledzenie cyklu życia Plugin
+## Ślad cyklu życia Plugin
 
-Użyj `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`, gdy polecenia cyklu życia Plugin wydają się wolne
-i potrzebujesz wbudowanego podziału na fazy dla metadanych Plugin, odkrywania, rejestru,
-lustra runtime, mutacji konfiguracji i odświeżania. Śledzenie jest dobrowolne i zapisuje
-do stderr, więc wyjście poleceń JSON pozostaje parsowalne.
+Użyj `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`, gdy polecenia cyklu życia pluginu wydają się powolne
+i potrzebujesz wbudowanego podziału faz dla metadanych pluginu, wykrywania, rejestru,
+lustra środowiska wykonawczego, mutacji konfiguracji i odświeżania. Ślad jest opcjonalny i zapisuje
+do stderr, więc wyjście poleceń JSON pozostaje możliwe do parsowania.
 
 Przykład:
 
@@ -71,26 +71,26 @@ Przykładowe wyjście:
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-Użyj tego do badania cyklu życia Plugin, zanim sięgniesz po profiler CPU.
-Jeśli polecenie działa z checkoutu źródłowego, preferuj pomiar zbudowanego
-runtime za pomocą `node dist/entry.js ...` po `pnpm build`; `pnpm openclaw ...`
-mierzy również narzut uruchamiacza źródeł.
+Użyj tego do badania cyklu życia pluginu, zanim sięgniesz po profiler CPU.
+Jeśli polecenie działa z kopii źródłowej, lepiej zmierzyć zbudowane środowisko wykonawcze
+przez `node dist/entry.js ...` po `pnpm build`; `pnpm openclaw ...`
+mierzy też narzut uruchamiania ze źródeł.
 
-## Tymczasowy pomiar czasu debugowania CLI
+## Tymczasowe pomiary debugowania CLI
 
-OpenClaw przechowuje `src/cli/debug-timing.ts` jako mały pomocnik do lokalnego
-badania. Celowo nie jest domyślnie podłączony do startu CLI, routingu poleceń
-ani żadnego polecenia. Używaj go tylko podczas debugowania wolnego polecenia, a następnie
-usuń importy i zakresy przed wdrożeniem zmiany zachowania.
+OpenClaw utrzymuje `src/cli/debug-timing.ts` jako mały pomocnik do lokalnego
+badania. Celowo nie jest domyślnie podłączony do uruchamiania CLI, routingu poleceń
+ani żadnego polecenia. Używaj go tylko podczas debugowania wolnego polecenia, a potem
+usuń import i zakresy przed wdrożeniem zmiany zachowania.
 
-Użyj tego, gdy polecenie jest wolne i potrzebujesz szybkiego podziału faz przed
-podjęciem decyzji, czy użyć profilera CPU, czy naprawić konkretny podsystem.
+Użyj tego, gdy polecenie jest wolne i potrzebujesz szybkiego podziału faz, zanim
+zdecydujesz, czy użyć profilera CPU, czy naprawić konkretny podsystem.
 
 ### Dodaj tymczasowe zakresy
 
-Dodaj pomocnik w pobliżu badanego kodu. Na przykład podczas debugowania
-`openclaw models list` tymczasowa poprawka w
-`src/commands/models/list.list-command.ts` może wyglądać tak:
+Dodaj pomocnik w pobliżu kodu, który badasz. Na przykład podczas debugowania
+`openclaw models list` tymczasowa łatka w
+`src/commands/models/list.list-command.ts` mogłaby wyglądać tak:
 
 ```ts
 // Temporary debugging only. Remove before landing.
@@ -113,13 +113,14 @@ const loaded = await timing.timeAsync(
 Wytyczne:
 
 - Poprzedzaj tymczasowe nazwy faz prefiksem `debug:`.
-- Dodaj tylko kilka zakresów wokół podejrzanych wolnych sekcji.
-- Preferuj szerokie fazy, takie jak `registry`, `auth_store` lub `rows`, zamiast nazw pomocników.
+- Dodaj tylko kilka zakresów wokół podejrzewanych wolnych sekcji.
+- Preferuj szerokie fazy, takie jak `registry`, `auth_store` lub `rows`, zamiast nazw
+  pomocników.
 - Używaj `time()` do pracy synchronicznej i `timeAsync()` do obietnic.
-- Utrzymuj stdout czysty. Pomocnik zapisuje do stderr, więc wyjście JSON polecenia pozostaje
-  parsowalne.
-- Usuń tymczasowe importy i zakresy przed otwarciem finalnego PR z poprawką.
-- Dołącz wyjście pomiaru czasu lub krótkie podsumowanie w zgłoszeniu albo PR, które wyjaśnia
+- Utrzymuj stdout w czystości. Pomocnik zapisuje do stderr, więc wyjście JSON polecenia pozostaje
+  możliwe do parsowania.
+- Usuń tymczasowe importy i zakresy przed otwarciem końcowego PR z poprawką.
+- Dołącz wyjście pomiarów lub krótkie podsumowanie w zgłoszeniu albo PR, które wyjaśnia
   optymalizację.
 
 ### Uruchom z czytelnym wyjściem
@@ -159,23 +160,23 @@ moonshot/kimi-k2.6                         text+image  256k  no    no
   36.9s     +0ms complete rows=5
 ```
 
-Ustalenia z tego wyjścia:
+Wnioski z tego wyjścia:
 
-| Faza                                     |       Czas | Co to oznacza                                                                                           |
-| ---------------------------------------- | ---------: | ------------------------------------------------------------------------------------------------------- |
-| `debug:models:list:auth_store`           |      20.3s | Ładowanie magazynu profili uwierzytelniania to największy koszt i należy zbadać je najpierw.            |
-| `debug:models:list:ensure_models_json`   |       5.0s | Synchronizacja `models.json` jest wystarczająco kosztowna, aby sprawdzić buforowanie lub warunki pomijania. |
-| `debug:models:list:load_model_registry`  |       5.9s | Budowa rejestru i praca nad dostępnością dostawcy również są istotnymi kosztami.                        |
-| `debug:models:list:read_registry_models` |       2.4s | Odczyt wszystkich modeli rejestru nie jest darmowy i może mieć znaczenie dla `--all`.                   |
-| fazy dodawania wierszy                   | 3.2s łącznie | Zbudowanie pięciu wyświetlanych wierszy nadal zajmuje kilka sekund, więc ścieżka filtrowania wymaga bliższego sprawdzenia. |
-| `debug:models:list:print_model_table`    |        0ms | Renderowanie nie jest wąskim gardłem.                                                                   |
+| Faza                                     |        Czas | Co to oznacza                                                                                           |
+| ---------------------------------------- | ----------: | ------------------------------------------------------------------------------------------------------- |
+| `debug:models:list:auth_store`           |       20.3s | Wczytywanie magazynu profili uwierzytelniania jest największym kosztem i należy zbadać je jako pierwsze. |
+| `debug:models:list:ensure_models_json`   |        5.0s | Synchronizacja `models.json` jest wystarczająco kosztowna, aby sprawdzić buforowanie lub warunki pomijania. |
+| `debug:models:list:load_model_registry`  |        5.9s | Budowanie rejestru i sprawdzanie dostępności dostawcy to także istotne koszty.                          |
+| `debug:models:list:read_registry_models` |        2.4s | Odczyt wszystkich modeli rejestru nie jest darmowy i może mieć znaczenie dla `--all`.                    |
+| fazy dodawania wierszy                   | łącznie 3.2s | Budowanie pięciu wyświetlanych wierszy nadal zajmuje kilka sekund, więc ścieżka filtrowania wymaga bliższego przyjrzenia się. |
+| `debug:models:list:print_model_table`    |         0ms | Renderowanie nie jest wąskim gardłem.                                                                   |
 
-Te ustalenia wystarczają, aby pokierować następną poprawką bez utrzymywania kodu pomiaru czasu w
+Te wnioski wystarczają, aby poprowadzić następną łatkę bez pozostawiania kodu pomiarów w
 ścieżkach produkcyjnych.
 
 ### Uruchom z wyjściem JSON
 
-Użyj trybu JSON, gdy chcesz zapisać lub porównać dane pomiaru czasu:
+Użyj trybu JSON, gdy chcesz zapisać lub porównać dane pomiarowe:
 
 ```bash
 OPENCLAW_DEBUG_TIMING=json pnpm openclaw models list --all --provider moonshot \
@@ -198,7 +199,7 @@ Każdy wiersz stderr jest jednym obiektem JSON:
 
 ### Posprzątaj przed wdrożeniem
 
-Przed otwarciem finalnego PR:
+Przed otwarciem końcowego PR:
 
 ```bash
 rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
@@ -207,15 +208,15 @@ rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
 ```
 
 Polecenie nie powinno zwrócić żadnych tymczasowych miejsc wywołań instrumentacji, chyba że PR
-jawnie dodaje stałą powierzchnię diagnostyczną. W przypadku zwykłych poprawek wydajności
-zostaw tylko zmianę zachowania, testy i krótką notatkę z dowodami z pomiaru czasu.
+jawnie dodaje stałą powierzchnię diagnostyczną. Przy zwykłych poprawkach wydajności
+zostaw tylko zmianę zachowania, testy i krótką notatkę z dowodami pomiarowymi.
 
-Dla głębszych hotspotów CPU użyj profilowania Node (`--cpu-prof`) lub zewnętrznego
-profilera zamiast dodawać więcej wrapperów pomiaru czasu.
+W przypadku głębszych hotspotów CPU użyj profilowania Node (`--cpu-prof`) albo zewnętrznego
+profilera zamiast dodawać więcej opakowań pomiarowych.
 
 ## Tryb obserwowania Gateway
 
-Do szybkiej iteracji uruchom gateway pod obserwatorem plików:
+Do szybkiej iteracji uruchom Gateway pod obserwatorem plików:
 
 ```bash
 pnpm gateway:watch
@@ -224,8 +225,8 @@ pnpm gateway:watch
 Domyślnie uruchamia to lub restartuje sesję tmux o nazwie
 `openclaw-gateway-watch-main` (albo wariant zależny od profilu/portu, taki jak
 `openclaw-gateway-watch-dev-19001`) i automatycznie dołącza z terminali interaktywnych.
-Powłoki nieinteraktywne, CI i wywołania exec agentów pozostają odłączone i zamiast tego wypisują
-instrukcje dołączenia. Dołącz ręcznie, gdy jest to potrzebne:
+Powłoki nieinteraktywne, CI i wywołania agent exec pozostają odłączone i zamiast tego wypisują
+instrukcje dołączenia. W razie potrzeby dołącz ręcznie:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
@@ -237,7 +238,7 @@ Panel tmux uruchamia surowy obserwator:
 node scripts/watch-node.mjs gateway --force
 ```
 
-Użyj trybu pierwszoplanowego, gdy tmux nie jest pożądany:
+Użyj trybu pierwszoplanowego, gdy tmux nie jest potrzebny:
 
 ```bash
 pnpm gateway:watch:raw
@@ -251,34 +252,36 @@ Wyłącz automatyczne dołączanie, zachowując zarządzanie tmux:
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-Wrapper tmux przenosi do panelu typowe niesekretne selektory runtime, takie jak
+Opakowanie tmux przenosi do panelu typowe nietajne selektory środowiska wykonawczego, takie jak
 `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`,
 `OPENCLAW_GATEWAY_PORT` i `OPENCLAW_SKIP_CHANNELS`. Umieść
-poświadczenia dostawców w normalnym profilu/konfiguracji albo użyj surowego trybu pierwszoplanowego
+dane uwierzytelniające dostawców w zwykłym profilu/konfiguracji albo użyj surowego trybu pierwszoplanowego
 dla jednorazowych sekretów efemerycznych.
+Zarządzany panel tmux domyślnie używa też kolorowych logów Gateway dla czytelności;
+ustaw `FORCE_COLOR=0` przy uruchamianiu `pnpm gateway:watch`, aby wyłączyć wyjście ANSI.
 
-Obserwator restartuje się przy plikach istotnych dla budowania pod `src/`, plikach źródłowych rozszerzeń,
-metadanych `package.json` i `openclaw.plugin.json` rozszerzeń, `tsconfig.json`,
-`package.json` oraz `tsdown.config.ts`. Zmiany metadanych rozszerzeń restartują
-gateway bez wymuszania przebudowy `tsdown`; zmiany źródeł i konfiguracji nadal
+Obserwator restartuje się przy plikach istotnych dla budowania w `src/`, plikach źródłowych pluginów,
+metadanych `package.json` i `openclaw.plugin.json` pluginów, `tsconfig.json`,
+`package.json` i `tsdown.config.ts`. Zmiany metadanych pluginów restartują
+Gateway bez wymuszania przebudowy `tsdown`; zmiany źródeł i konfiguracji nadal
 najpierw przebudowują `dist`.
 
-Dodaj dowolne flagi CLI gateway po `gateway:watch`, a zostaną przekazane przy
+Dodaj dowolne flagi CLI Gateway po `gateway:watch`, a zostaną przekazane przy
 każdym restarcie. Ponowne uruchomienie tego samego polecenia obserwowania odtwarza nazwany panel tmux, a
-surowy obserwator nadal utrzymuje blokadę pojedynczego obserwatora, więc zduplikowane procesy nadrzędne obserwatora
-są zastępowane zamiast się piętrzyć.
+surowy obserwator nadal utrzymuje blokadę pojedynczego obserwatora, więc zduplikowani rodzice obserwatora
+są zastępowani zamiast się piętrzyć.
 
-## Profil deweloperski + deweloperski Gateway (--dev)
+## Profil dev + Gateway dev (--dev)
 
-Użyj profilu deweloperskiego, aby odizolować stan i uruchomić bezpieczną, jednorazową konfigurację do
+Użyj profilu dev, aby odizolować stan i uruchomić bezpieczną, jednorazową konfigurację do
 debugowania. Istnieją **dwie** flagi `--dev`:
 
-- **Globalne `--dev` (profil):** izoluje stan pod `~/.openclaw-dev` i
-  domyślnie ustawia port gateway na `19001` (porty pochodne przesuwają się wraz z nim).
+- **Globalne `--dev` (profil):** izoluje stan w `~/.openclaw-dev` i
+  domyślnie ustawia port Gateway na `19001` (porty pochodne przesuwają się razem z nim).
 - **`gateway --dev`: mówi Gateway, aby automatycznie utworzył domyślną konfigurację +
-  workspace** w razie braku (i pominął BOOTSTRAP.md).
+  workspace** gdy ich brakuje (i pominął BOOTSTRAP.md).
 
-Zalecany przepływ (profil deweloperski + bootstrap deweloperski):
+Zalecany przepływ (profil dev + bootstrap dev):
 
 ```bash
 pnpm gateway:dev
@@ -295,14 +298,14 @@ Co to robi:
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
    - `OPENCLAW_GATEWAY_PORT=19001` (przeglądarka/canvas przesuwają się odpowiednio)
 
-2. **Bootstrap deweloperski** (`gateway --dev`)
-   - Zapisuje minimalną konfigurację, jeśli jej brakuje (`gateway.mode=local`, bind loopback).
-   - Ustawia `agent.workspace` na deweloperski workspace.
+2. **Bootstrap dev** (`gateway --dev`)
+   - Zapisuje minimalną konfigurację, jeśli jej brakuje (`gateway.mode=local`, wiązanie loopback).
+   - Ustawia `agent.workspace` na workspace dev.
    - Ustawia `agent.skipBootstrap=true` (bez BOOTSTRAP.md).
-   - Zasila pliki workspace, jeśli ich brakuje:
+   - Zasila brakujące pliki workspace:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
    - Domyślna tożsamość: **C3‑PO** (droid protokolarny).
-   - Pomija dostawców kanałów w trybie deweloperskim (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Pomija dostawców kanałów w trybie dev (`OPENCLAW_SKIP_CHANNELS=1`).
 
 Przepływ resetowania (świeży start):
 
@@ -311,7 +314,7 @@ pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` jest **globalną** flagą profilu i bywa przechwytywana przez niektóre uruchamiacze. Jeśli musisz zapisać to jawnie, użyj formy ze zmienną środowiskową:
+`--dev` jest **globalną** flagą profilu i bywa przechwytywana przez niektóre uruchamiacze. Jeśli musisz ją zapisać jawnie, użyj formy zmiennej środowiskowej:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -319,11 +322,11 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` czyści konfigurację, poświadczenia, sesje i deweloperski workspace (używając
-`trash`, nie `rm`), a następnie odtwarza domyślną konfigurację deweloperską.
+`--reset` czyści konfigurację, dane uwierzytelniające, sesje i workspace dev (używając
+`trash`, nie `rm`), a potem odtwarza domyślną konfigurację dev.
 
 <Tip>
-Jeśli gateway niedeweloperski już działa (launchd lub systemd), najpierw go zatrzymaj:
+Jeśli brama inna niż dev już działa (launchd lub systemd), najpierw ją zatrzymaj:
 
 ```bash
 openclaw gateway stop
@@ -333,8 +336,8 @@ openclaw gateway stop
 
 ## Surowe logowanie strumienia (OpenClaw)
 
-OpenClaw może logować **surowy strumień asystenta** przed jakimkolwiek filtrowaniem/formatowaniem.
-To najlepszy sposób, aby sprawdzić, czy rozumowanie przychodzi jako zwykłe delty tekstowe
+OpenClaw może rejestrować **surowy strumień asystenta** przed jakimkolwiek filtrowaniem/formatowaniem.
+To najlepszy sposób, aby sprawdzić, czy rozumowanie przychodzi jako delty zwykłego tekstu
 (czy jako osobne bloki myślenia).
 
 Włącz to przez CLI:
@@ -356,14 +359,14 @@ OPENCLAW_RAW_STREAM=1
 OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 ```
 
-Plik domyślny:
+Domyślny plik:
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## Logowanie surowych fragmentów (pi-mono)
+## Rejestrowanie surowych fragmentów (pi-mono)
 
-Aby przechwytywać **surowe fragmenty zgodne z OpenAI** przed ich sparsowaniem do bloków,
-pi-mono udostępnia osobny logger:
+Aby przechwycić **surowe fragmenty zgodne z OpenAI**, zanim zostaną sparsowane do bloków,
+pi-mono udostępnia osobny rejestrator:
 
 ```bash
 PI_RAW_STREAM=1
@@ -375,18 +378,18 @@ Opcjonalna ścieżka:
 PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 ```
 
-Plik domyślny:
+Domyślny plik:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> Uwaga: jest emitowane tylko przez procesy używające dostawcy
+> Uwaga: jest to emitowane tylko przez procesy używające dostawcy
 > `openai-completions` pi-mono.
 
 ## Uwagi dotyczące bezpieczeństwa
 
-- Logi surowego strumienia mogą zawierać pełne prompty, dane wyjściowe narzędzi i dane użytkownika.
-- Przechowuj logi lokalnie i usuń je po zakończeniu debugowania.
-- Jeśli udostępniasz logi, najpierw usuń z nich sekrety i dane osobowe.
+- Dzienniki surowego strumienia mogą zawierać pełne prompty, wyniki narzędzi i dane użytkownika.
+- Przechowuj dzienniki lokalnie i usuń je po debugowaniu.
+- Jeśli udostępniasz dzienniki, najpierw usuń sekrety i dane osobowe.
 
 ## Powiązane
 

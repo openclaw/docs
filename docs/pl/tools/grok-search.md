@@ -1,52 +1,44 @@
 ---
 read_when:
-    - Chcesz używać Grok do `web_search`
-    - Do `web_search` potrzebujesz `XAI_API_KEY`
-summary: Wyszukiwanie w sieci Grok przez odpowiedzi xAI oparte na źródłach z internetu
+    - Chcesz używać Grok do web_search
+    - Potrzebujesz XAI_API_KEY do wyszukiwania w internecie
+summary: Wyszukiwanie w sieci Grok za pomocą odpowiedzi xAI opartych na danych z sieci
 title: Wyszukiwanie Grok
 x-i18n:
-    generated_at: "2026-04-24T09:36:31Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:04:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 37e13e7210f0b008616e27ea08d38b4f1efe89d3c4f82a61aaac944a1e1dd0af
+    source_hash: 7238be2b488ba285c948065f5c1deff21898409aa11bdaa9ec893274d0eadd4a
     source_path: tools/grok-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw obsługuje Grok jako dostawcę `web_search`, używając odpowiedzi xAI opartych na źródłach z internetu
-do tworzenia odpowiedzi syntetyzowanych przez AI, opartych na wynikach wyszukiwania na żywo
-z cytowaniami.
+OpenClaw obsługuje Grok jako dostawcę `web_search`, używając odpowiedzi xAI opartych na wynikach z sieci do tworzenia odpowiedzi syntetyzowanych przez AI, popartych bieżącymi wynikami wyszukiwania z cytowaniami.
 
-Ten sam `XAI_API_KEY` może także zasilać wbudowane narzędzie `x_search` do wyszukiwania postów na X
-(dawniej Twitter). Jeśli przechowujesz klucz w
-`plugins.entries.xai.config.webSearch.apiKey`, OpenClaw używa go teraz ponownie jako
-awaryjnego rozwiązania także dla dołączonego dostawcy modeli xAI.
+Ten sam `XAI_API_KEY` może też zasilać wbudowane narzędzie `x_search` do wyszukiwania postów X (dawniej Twitter). Jeśli przechowujesz klucz w `plugins.entries.xai.config.webSearch.apiKey`, OpenClaw używa go teraz ponownie również jako mechanizmu zapasowego dla wbudowanego dostawcy modelu xAI.
 
-W przypadku metryk X na poziomie posta, takich jak reposty, odpowiedzi, zakładki czy wyświetlenia, preferuj
-`x_search` z dokładnym adresem URL posta lub identyfikatorem statusu zamiast szerokiego zapytania
-wyszukiwania.
+W przypadku metryk X na poziomie posta, takich jak reposty, odpowiedzi, zakładki lub wyświetlenia, preferuj `x_search` z dokładnym adresem URL posta albo identyfikatorem statusu zamiast szerokiego zapytania wyszukiwania.
 
-## Onboarding i konfiguracja
+## Wdrażanie i konfiguracja
 
 Jeśli wybierzesz **Grok** podczas:
 
 - `openclaw onboard`
 - `openclaw configure --section web`
 
-OpenClaw może pokazać osobny krok uzupełniający służący do włączenia `x_search` przy użyciu tego samego
-`XAI_API_KEY`. Ten krok uzupełniający:
+OpenClaw może pokazać osobny krok uzupełniający, aby włączyć `x_search` z tym samym `XAI_API_KEY`. Ten krok uzupełniający:
 
 - pojawia się tylko po wybraniu Grok dla `web_search`
-- nie jest osobnym wyborem dostawcy wyszukiwania w sieci na najwyższym poziomie
+- nie jest osobnym wyborem dostawcy wyszukiwania w sieci najwyższego poziomu
 - może opcjonalnie ustawić model `x_search` w tym samym przepływie
 
-Jeśli go pominiesz, możesz włączyć lub zmienić `x_search` później w konfiguracji.
+Jeśli go pominiesz, możesz później włączyć lub zmienić `x_search` w konfiguracji.
 
 ## Uzyskaj klucz API
 
 <Steps>
   <Step title="Utwórz klucz">
-    Uzyskaj klucz API w [xAI](https://console.x.ai/).
+    Uzyskaj klucz API z [xAI](https://console.x.ai/).
   </Step>
   <Step title="Zapisz klucz">
     Ustaw `XAI_API_KEY` w środowisku Gateway albo skonfiguruj przez:
@@ -67,7 +59,8 @@ Jeśli go pominiesz, możesz włączyć lub zmienić `x_search` później w konf
       xai: {
         config: {
           webSearch: {
-            apiKey: "xai-...", // opcjonalne, jeśli ustawiono XAI_API_KEY
+            apiKey: "xai-...", // optional if XAI_API_KEY is set
+            baseUrl: "https://api.x.ai/v1", // optional Responses API proxy/base URL override
           },
         },
       },
@@ -84,24 +77,28 @@ Jeśli go pominiesz, możesz włączyć lub zmienić `x_search` później w konf
 ```
 
 **Alternatywa środowiskowa:** ustaw `XAI_API_KEY` w środowisku Gateway.
-W przypadku instalacji gateway umieść go w `~/.openclaw/.env`.
+W przypadku instalacji Gateway umieść go w `~/.openclaw/.env`.
 
 ## Jak to działa
 
-Grok używa odpowiedzi xAI opartych na źródłach z internetu, aby syntetyzować odpowiedzi z wbudowanymi
-cytowaniami, podobnie do podejścia Google Search grounding w Gemini.
+Grok używa odpowiedzi xAI opartych na wynikach z sieci, aby syntetyzować odpowiedzi z cytowaniami w tekście, podobnie do podejścia Gemini polegającego na ugruntowaniu w Google Search.
 
 ## Obsługiwane parametry
 
 Wyszukiwanie Grok obsługuje `query`.
 
-`count` jest akceptowane dla zgodności ze współdzielonym `web_search`, ale Grok nadal
-zwraca jedną odpowiedź syntetyzowaną z cytowaniami zamiast listy N wyników.
+`count` jest akceptowane dla zgodności ze wspólnym `web_search`, ale Grok nadal zwraca jedną syntetyzowaną odpowiedź z cytowaniami zamiast listy N wyników.
 
 Filtry specyficzne dla dostawcy nie są obecnie obsługiwane.
+
+Grok używa specyficznego dla dostawcy domyślnego limitu czasu wynoszącego 60 sekund, ponieważ wyszukiwania xAI Responses oparte na wynikach z sieci mogą działać dłużej niż wspólna domyślna wartość `web_search`. Ustaw `tools.web.search.timeoutSeconds`, aby ją zastąpić.
+
+## Nadpisania bazowego URL
+
+Ustaw `plugins.entries.xai.config.webSearch.baseUrl`, gdy wyszukiwanie webowe Grok powinno być kierowane przez proxy operatora albo punkt końcowy Responses zgodny z xAI. OpenClaw wysyła żądania POST do `<baseUrl>/responses` po usunięciu końcowych ukośników. `x_search` używa tego samego mechanizmu zapasowego `webSearch.baseUrl`, chyba że ustawiono `plugins.entries.xai.config.xSearch.baseUrl`.
 
 ## Powiązane
 
 - [Przegląd Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
-- [x_search w Web Search](/pl/tools/web#x_search) -- pełnoprawne wyszukiwanie X przez xAI
-- [Gemini Search](/pl/tools/gemini-search) -- odpowiedzi syntetyzowane przez AI przez Google grounding
+- [`x_search` w Web Search](/pl/tools/web#x_search) -- pełnoprawne wyszukiwanie X przez xAI
+- [Gemini Search](/pl/tools/gemini-search) -- odpowiedzi syntetyzowane przez AI za pomocą ugruntowania Google

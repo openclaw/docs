@@ -1,61 +1,63 @@
 ---
 read_when:
-    - Aktualizowanie zachowania lub wartości domyślnych ponawiania providera
-    - Debugowanie błędów wysyłania providera lub limitów szybkości
-summary: Zasady ponawiania dla wychodzących wywołań providera
-title: Zasady ponawiania
+    - Aktualizowanie zachowania ponawiania prób lub wartości domyślnych dostawcy
+    - Debugowanie błędów wysyłania u dostawcy lub limitów częstotliwości
+summary: Zasady ponawiania prób dla wychodzących wywołań do dostawcy
+title: Zasady ponawiania prób
 x-i18n:
-    generated_at: "2026-04-24T09:07:07Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:48:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 38811a6dabb0b60b71167ee4fcc09fb042f941b4bbb1cf8b0f5a91c3c93b2e75
+    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
     source_path: concepts/retry.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Cele
 
-- Ponawiaj dla każdego żądania HTTP, a nie dla wieloetapowego workflow.
+- Ponawiaj próby dla każdego żądania HTTP, a nie dla całego wieloetapowego przepływu.
 - Zachowuj kolejność, ponawiając tylko bieżący krok.
-- Unikaj duplikowania operacji nieidempotentnych.
+- Unikaj powielania operacji nieidempotentnych.
 
 ## Wartości domyślne
 
 - Próby: 3
 - Maksymalny limit opóźnienia: 30000 ms
 - Jitter: 0.1 (10 procent)
-- Wartości domyślne providerów:
-  - Telegram minimalne opóźnienie: 400 ms
-  - Discord minimalne opóźnienie: 500 ms
+- Domyślne ustawienia dostawców:
+  - Minimalne opóźnienie Telegram: 400 ms
+  - Minimalne opóźnienie Discord: 500 ms
 
 ## Zachowanie
 
-### Providerzy modeli
+### Dostawcy modeli
 
-- OpenClaw pozwala, aby SDK providerów obsługiwały zwykłe krótkie ponowienia.
-- Dla SDK opartych na Stainless, takich jak Anthropic i OpenAI, odpowiedzi podlegające ponowieniu
+- OpenClaw pozwala zestawom SDK dostawców obsługiwać zwykłe krótkie ponowienia.
+- W przypadku zestawów SDK opartych na Stainless, takich jak Anthropic i OpenAI, odpowiedzi kwalifikujące się do ponowienia
   (`408`, `409`, `429` i `5xx`) mogą zawierać `retry-after-ms` lub
   `retry-after`. Gdy ten czas oczekiwania jest dłuższy niż 60 sekund, OpenClaw wstrzykuje
-  `x-should-retry: false`, aby SDK natychmiast zwróciło błąd i model
-  failover mógł przełączyć się na inny profil uwierzytelniania lub model zapasowy.
-- Nadpisz limit przez `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Ustaw go na `0`, `false`, `off`, `none` lub `disabled`, aby pozwolić SDK
-  wewnętrznie honorować długie opóźnienia `Retry-After`.
+  `x-should-retry: false`, aby SDK natychmiast zwrócił błąd, a przełączanie awaryjne modelu
+  mogło przejść na inny profil uwierzytelniania lub model zapasowy.
+- Zastąp limit za pomocą `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
+  Ustaw tę wartość na `0`, `false`, `off`, `none` lub `disabled`, aby SDK samodzielnie honorowały długie
+  oczekiwania `Retry-After`.
 
 ### Discord
 
-- Ponawia tylko przy błędach limitu szybkości (HTTP 429).
-- Używa Discord `retry_after`, gdy jest dostępne, w przeciwnym razie wykładniczego backoff.
+- Ponawia próby przy błędach limitu szybkości (HTTP 429), przekroczeniach czasu żądania, odpowiedziach HTTP 5xx
+  oraz przejściowych awariach transportu, takich jak błędy wyszukiwania DNS, resetowanie połączeń,
+  zamykanie gniazd i błędy fetch.
+- Używa `retry_after` Discord, gdy jest dostępne; w przeciwnym razie używa wykładniczego wydłużania opóźnień.
 
 ### Telegram
 
-- Ponawia przy błędach przejściowych (429, timeout, connect/reset/closed, tymczasowo niedostępne).
-- Używa `retry_after`, gdy jest dostępne, w przeciwnym razie wykładniczego backoff.
-- Błędy parsowania Markdown nie są ponawiane; wracają do zwykłego tekstu.
+- Ponawia próby przy błędach przejściowych (429, timeout, connect/reset/closed, temporarily unavailable).
+- Używa `retry_after`, gdy jest dostępne; w przeciwnym razie używa wykładniczego wydłużania opóźnień.
+- Błędy parsowania Markdown nie są ponawiane; następuje powrót do zwykłego tekstu.
 
 ## Konfiguracja
 
-Ustaw zasady ponawiania per provider w `~/.openclaw/openclaw.json`:
+Ustaw zasady ponawiania dla każdego dostawcy w `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -82,10 +84,10 @@ Ustaw zasady ponawiania per provider w `~/.openclaw/openclaw.json`:
 
 ## Uwagi
 
-- Ponowienia są stosowane dla każdego żądania osobno (wysłanie wiadomości, przesłanie multimediów, reakcja, ankieta, naklejka).
-- Złożone workflow nie ponawiają ukończonych kroków.
+- Ponowienia dotyczą każdego żądania (wysłanie wiadomości, przesłanie multimediów, reakcja, ankieta, naklejka).
+- Przepływy złożone nie ponawiają ukończonych kroków.
 
 ## Powiązane
 
-- [Model failover](/pl/concepts/model-failover)
+- [Przełączanie awaryjne modelu](/pl/concepts/model-failover)
 - [Kolejka poleceń](/pl/concepts/queue)

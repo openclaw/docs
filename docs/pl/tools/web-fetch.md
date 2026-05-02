@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Chcesz pobrać adres URL i wyodrębnić czytelną treść
-    - Należy skonfigurować web_fetch lub jego mechanizm rezerwowy Firecrawl
+    - Chcesz pobrać zawartość z adresu URL i wyodrębnić czytelną treść
+    - Musisz skonfigurować web_fetch lub jego mechanizm awaryjny Firecrawl.
     - Chcesz zrozumieć limity i buforowanie web_fetch
 sidebarTitle: Web Fetch
-summary: narzędzie web_fetch -- pobieranie HTTP z wyodrębnianiem czytelnej treści
+summary: narzędzie web_fetch -- pobieranie HTTP z ekstrakcją czytelnej treści
 title: Pobieranie z sieci
 x-i18n:
-    generated_at: "2026-04-30T10:25:50Z"
+    generated_at: "2026-05-02T10:06:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
+    source_hash: f455da77c20049f0ed0246fa53e9f49d3cf2004e65bd64a0bf871861c6e93229
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
 Narzędzie `web_fetch` wykonuje zwykłe żądanie HTTP GET i wyodrębnia czytelną treść
-(HTML do Markdown lub tekstu). **Nie** wykonuje JavaScriptu.
+(HTML do markdown lub tekstu). **Nie** wykonuje JavaScriptu.
 
-W przypadku witryn intensywnie korzystających z JS lub stron chronionych logowaniem użyj zamiast tego
-[Przeglądarki internetowej](/pl/tools/browser).
+W przypadku witryn mocno opartych na JS lub stron chronionych logowaniem użyj zamiast tego
+[Web Browser](/pl/tools/browser).
 
 ## Szybki start
 
 `web_fetch` jest **włączone domyślnie** -- konfiguracja nie jest potrzebna. Agent może
-wywołać je natychmiast:
+wywołać je od razu:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -37,11 +37,11 @@ URL do pobrania. Tylko `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
-Format wyjściowy po wyodrębnieniu głównej treści.
+Format wyjścia po wyodrębnieniu głównej treści.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Skróć wynik do tylu znaków.
+Skróć wyjście do tej liczby znaków.
 </ParamField>
 
 ## Jak to działa
@@ -55,12 +55,12 @@ Skróć wynik do tylu znaków.
     Uruchamia Readability (wyodrębnianie głównej treści) na odpowiedzi HTML.
   </Step>
   <Step title="Fallback (optional)">
-    Jeśli Readability się nie powiedzie, a Firecrawl jest skonfigurowany, ponawia próbę przez
-    API Firecrawl w trybie obchodzenia botów.
+    Jeśli Readability się nie powiedzie i skonfigurowano Firecrawl, ponawia próbę przez
+    API Firecrawl w trybie omijania botów.
   </Step>
   <Step title="Cache">
     Wyniki są buforowane przez 15 minut (konfigurowalne), aby ograniczyć powtarzane
-    pobrania tego samego URL.
+    pobrania tego samego adresu URL.
   </Step>
 </Steps>
 
@@ -91,10 +91,10 @@ Skróć wynik do tylu znaków.
 }
 ```
 
-## Awaryjne użycie Firecrawl
+## Zapasowe użycie Firecrawl
 
-Jeśli wyodrębnianie Readability się nie powiedzie, `web_fetch` może awaryjnie użyć
-[Firecrawl](/pl/tools/firecrawl), aby obchodzić boty i lepiej wyodrębniać treść:
+Jeśli wyodrębnianie przez Readability się nie powiedzie, `web_fetch` może użyć jako zapasowego
+[Firecrawl](/pl/tools/firecrawl) do omijania botów i lepszego wyodrębniania:
 
 ```json5
 {
@@ -128,35 +128,39 @@ Jeśli wyodrębnianie Readability się nie powiedzie, `web_fetch` może awaryjni
 Starsza konfiguracja `tools.web.fetch.firecrawl.*` jest automatycznie migrowana przez `openclaw doctor --fix`.
 
 <Note>
-  Jeśli Firecrawl jest włączony, a jego SecretRef nie zostanie rozwiązany i nie ma awaryjnej
-  zmiennej środowiskowej `FIRECRAWL_API_KEY`, uruchamianie Gateway szybko kończy się niepowodzeniem.
+  Jeśli Firecrawl jest włączony, a jego SecretRef nie może zostać rozwiązany i nie ma zapasowej
+  zmiennej środowiskowej `FIRECRAWL_API_KEY`, Gateway szybko przerywa uruchamianie.
 </Note>
 
 <Note>
-  Nadpisania `baseUrl` Firecrawl są ograniczone: muszą używać `https://` oraz
-  oficjalnego hosta Firecrawl (`api.firecrawl.dev`).
+  Nadpisania `baseUrl` Firecrawl są ograniczone: ruch hostowany używa
+  `https://api.firecrawl.dev`; nadpisania self-hosted muszą wskazywać prywatne lub
+  wewnętrzne punkty końcowe, a `http://` jest akceptowane tylko dla tych prywatnych celów.
 </Note>
 
-Bieżące zachowanie środowiska uruchomieniowego:
+Bieżące zachowanie w czasie wykonywania:
 
-- `tools.web.fetch.provider` jawnie wybiera awaryjnego dostawcę pobierania.
+- `tools.web.fetch.provider` jawnie wybiera zapasowego dostawcę pobierania.
 - Jeśli `provider` zostanie pominięty, OpenClaw automatycznie wykrywa pierwszego gotowego dostawcę web-fetch
-  na podstawie dostępnych poświadczeń. Obecnie dołączonym dostawcą jest Firecrawl.
+  na podstawie dostępnych poświadczeń. Nieizolowane w sandboxie `web_fetch` może używać
+  zainstalowanych plugins, które deklarują `contracts.webFetchProviders` i rejestrują
+  pasującego dostawcę w czasie wykonywania. Obecnie dostawcą dołączonym w pakiecie jest Firecrawl.
+- Wywołania `web_fetch` w sandboxie pozostają ograniczone do dostawców dołączonych w pakiecie.
 - Jeśli Readability jest wyłączone, `web_fetch` przechodzi od razu do wybranego
-  awaryjnego dostawcy. Jeśli żaden dostawca nie jest dostępny, kończy się bezpiecznym niepowodzeniem.
+  zapasowego dostawcy. Jeśli żaden dostawca nie jest dostępny, kończy się bezpieczną odmową.
 
 ## Limity i bezpieczeństwo
 
 - `maxChars` jest ograniczane do `tools.web.fetch.maxCharsCap`
-- Treść odpowiedzi jest ograniczana do `maxResponseBytes` przed analizą; zbyt duże
-  odpowiedzi są skracane z ostrzeżeniem
+- Treść odpowiedzi jest ograniczana do `maxResponseBytes` przed parsowaniem; zbyt duże
+  odpowiedzi są obcinane z ostrzeżeniem
 - Prywatne/wewnętrzne nazwy hostów są blokowane
-- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` oraz
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` to wąskie zgody opt-in
-  dla zaufanych stosów proxy fake-IP; pozostaw je nieustawione, chyba że proxy jest właścicielem
-  tych syntetycznych zakresów i egzekwuje własną politykę miejsc docelowych
+- `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` i
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` to wąskie opcje opt-in
+  dla zaufanych stosów proxy z fałszywymi adresami IP; pozostaw je nieustawione, chyba że Twoje proxy jest właścicielem
+  tych syntetycznych zakresów i egzekwuje własną politykę miejsca docelowego
 - Przekierowania są sprawdzane i ograniczane przez `maxRedirects`
-- `web_fetch` działa na zasadzie best-effort -- niektóre witryny wymagają [Przeglądarki internetowej](/pl/tools/browser)
+- `web_fetch` działa w trybie best-effort -- niektóre witryny wymagają [Web Browser](/pl/tools/browser)
 
 ## Profile narzędzi
 
@@ -173,6 +177,6 @@ Jeśli używasz profili narzędzi lub list dozwolonych, dodaj `web_fetch` albo `
 
 ## Powiązane
 
-- [Wyszukiwanie w sieci](/pl/tools/web) -- wyszukuj w sieci przy użyciu wielu dostawców
-- [Przeglądarka internetowa](/pl/tools/browser) -- pełna automatyzacja przeglądarki dla witryn intensywnie korzystających z JS
+- [Web Search](/pl/tools/web) -- wyszukiwanie w sieci przez wielu dostawców
+- [Web Browser](/pl/tools/browser) -- pełna automatyzacja przeglądarki dla witryn mocno opartych na JS
 - [Firecrawl](/pl/tools/firecrawl) -- narzędzia wyszukiwania i scrapowania Firecrawl

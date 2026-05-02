@@ -1,41 +1,41 @@
 ---
 read_when:
-    - Wdrażasz OpenClaw na maszynie wirtualnej w chmurze za pomocą Dockera
-    - Potrzebujesz wspólnego procesu przygotowywania binariów, utrwalania danych i procesu aktualizacji
-summary: Wspólne kroki środowiska uruchomieniowego maszyn wirtualnych Docker dla długotrwale działających hostów OpenClaw Gateway
+    - Wdrażasz OpenClaw na chmurowej maszynie wirtualnej z Dockerem
+    - Potrzebujesz współdzielonego przygotowania plików binarnych, persystencji i przepływu aktualizacji
+summary: Wspólne kroki uruchomieniowe Docker VM dla długotrwałych hostów OpenClaw Gateway
 title: Środowisko uruchomieniowe maszyny wirtualnej Docker
 x-i18n:
-    generated_at: "2026-04-30T10:00:18Z"
+    generated_at: "2026-05-02T09:54:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
+    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-Wspólne kroki środowiska uruchomieniowego dla instalacji Docker opartych na maszynach wirtualnych, takich jak GCP, Hetzner i podobni dostawcy VPS.
+Wspólne kroki runtime dla instalacji Docker opartych na maszynach VM, takich jak GCP, Hetzner i podobni dostawcy VPS.
 
-## Wypiecz wymagane pliki binarne w obrazie
+## Wbuduj wymagane pliki binarne w obraz
 
 Instalowanie plików binarnych wewnątrz działającego kontenera to pułapka.
-Wszystko, co zostanie zainstalowane w czasie działania, zostanie utracone po ponownym uruchomieniu.
+Wszystko, co zostanie zainstalowane w runtime, zostanie utracone po restarcie.
 
-Wszystkie zewnętrzne pliki binarne wymagane przez Skills muszą być zainstalowane podczas budowania obrazu.
+Wszystkie zewnętrzne pliki binarne wymagane przez Skills muszą zostać zainstalowane podczas budowania obrazu.
 
-Poniższe przykłady pokazują tylko trzy typowe pliki binarne:
+Poniższe przykłady pokazują tylko trzy często używane pliki binarne:
 
 - `gog` (z `gogcli`) do dostępu do Gmaila
 - `goplaces` do Google Places
 - `wacli` do WhatsApp
 
-To są przykłady, nie pełna lista.
+To są przykłady, a nie kompletna lista.
 Możesz zainstalować tyle plików binarnych, ile potrzebujesz, używając tego samego wzorca.
 
 Jeśli później dodasz nowe Skills zależne od dodatkowych plików binarnych, musisz:
 
 1. Zaktualizować Dockerfile
 2. Przebudować obraz
-3. Ponownie uruchomić kontenery
+3. Zrestartować kontenery
 
 **Przykładowy Dockerfile**
 
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-Powyższe adresy URL są przykładami. Dla maszyn wirtualnych opartych na ARM wybierz zasoby `arm64`. Aby uzyskać powtarzalne kompilacje, przypnij adresy URL wersjonowanych wydań.
+Powyższe adresy URL są przykładami. Dla maszyn VM opartych na ARM wybierz zasoby `arm64`. Aby uzyskać powtarzalne buildy, przypnij adresy URL wydań z konkretnymi wersjami.
 </Note>
 
 ## Zbuduj i uruchom
@@ -93,8 +93,8 @@ docker compose build
 docker compose up -d openclaw-gateway
 ```
 
-Jeśli budowanie nie powiedzie się z komunikatem `Killed` lub `exit code 137` podczas `pnpm install --frozen-lockfile`, maszynie wirtualnej brakuje pamięci.
-Użyj większej klasy maszyny przed ponowną próbą.
+Jeśli build zakończy się niepowodzeniem z komunikatem `Killed` lub `exit code 137` podczas `pnpm install --frozen-lockfile`, maszynie VM zabrakło pamięci.
+Przed ponowną próbą użyj większej klasy maszyny.
 
 Zweryfikuj pliki binarne:
 
@@ -104,7 +104,7 @@ docker compose exec openclaw-gateway which goplaces
 docker compose exec openclaw-gateway which wacli
 ```
 
-Oczekiwane dane wyjściowe:
+Oczekiwany wynik:
 
 ```
 /usr/local/bin/gog
@@ -118,7 +118,7 @@ Zweryfikuj Gateway:
 docker compose logs -f openclaw-gateway
 ```
 
-Oczekiwane dane wyjściowe:
+Oczekiwany wynik:
 
 ```
 [gateway] listening on ws://0.0.0.0:18789
@@ -127,25 +127,25 @@ Oczekiwane dane wyjściowe:
 ## Co gdzie jest utrwalane
 
 OpenClaw działa w Dockerze, ale Docker nie jest źródłem prawdy.
-Cały długotrwały stan musi przetrwać ponowne uruchomienia, przebudowy i restarty systemu.
+Cały długotrwały stan musi przetrwać restarty, przebudowy i ponowne uruchomienia systemu.
 
-| Komponent           | Lokalizacja                              | Mechanizm utrwalania      | Uwagi                                                        |
-| ------------------- | ---------------------------------------- | ------------------------- | ------------------------------------------------------------ |
-| Konfiguracja Gateway | `/home/node/.openclaw/`                  | Montowanie woluminu hosta | Obejmuje `openclaw.json`, `.env`                             |
-| Profile uwierzytelniania modeli | `/home/node/.openclaw/agents/`           | Montowanie woluminu hosta | `agents/<agentId>/agent/auth-profiles.json` (OAuth, klucze API) |
-| Konfiguracje Skills | `/home/node/.openclaw/skills/`           | Montowanie woluminu hosta | Stan na poziomie Skill                                       |
-| Obszar roboczy agenta | `/home/node/.openclaw/workspace/`        | Montowanie woluminu hosta | Kod i artefakty agenta                                      |
-| Sesja WhatsApp      | `/home/node/.openclaw/`                  | Montowanie woluminu hosta | Zachowuje logowanie QR                                      |
-| Baza kluczy Gmaila  | `/home/node/.openclaw/`                  | Wolumin hosta + hasło     | Wymaga `GOG_KEYRING_PASSWORD`                               |
-| Zależności środowiska uruchomieniowego Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | Nazwany wolumin Docker     | Wygenerowane zależności dołączonych Plugin i kopie środowiska uruchomieniowego |
-| Zewnętrzne pliki binarne | `/usr/local/bin/`                        | Obraz Docker              | Muszą być wypieczone podczas budowania                      |
-| Środowisko uruchomieniowe Node | System plików kontenera                 | Obraz Docker              | Przebudowywane przy każdym budowaniu obrazu                 |
-| Pakiety systemu operacyjnego | System plików kontenera                 | Obraz Docker              | Nie instaluj w czasie działania                             |
-| Kontener Docker     | Efemeryczny                              | Możliwy do ponownego uruchomienia | Można go bezpiecznie usunąć                                 |
+| Komponent           | Lokalizacja                                             | Mechanizm utrwalania    | Uwagi                                                         |
+| ------------------- | ------------------------------------------------------ | ----------------------- | ------------------------------------------------------------- |
+| Konfiguracja Gateway | `/home/node/.openclaw/`                                | Montowanie wolumenu hosta | Obejmuje `openclaw.json`, `.env`                              |
+| Profile uwierzytelniania modeli | `/home/node/.openclaw/agents/`                         | Montowanie wolumenu hosta | `agents/<agentId>/agent/auth-profiles.json` (OAuth, klucze API) |
+| Konfiguracje Skills | `/home/node/.openclaw/skills/`                         | Montowanie wolumenu hosta | Stan na poziomie Skill                                        |
+| Przestrzeń robocza agenta | `/home/node/.openclaw/workspace/`                      | Montowanie wolumenu hosta | Kod i artefakty agenta                                      |
+| Sesja WhatsApp      | `/home/node/.openclaw/`                                | Montowanie wolumenu hosta | Zachowuje logowanie QR                                            |
+| Keyring Gmaila      | `/home/node/.openclaw/`                                | Wolumen hosta + hasło | Wymaga `GOG_KEYRING_PASSWORD`                               |
+| Pakiety Plugin      | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Montowanie wolumenu hosta | Katalogi główne pobieralnych pakietów Plugin                             |
+| Zewnętrzne pliki binarne | `/usr/local/bin/`                                      | Obraz Docker           | Muszą zostać wbudowane podczas budowania                                   |
+| Runtime Node        | System plików kontenera                                | Obraz Docker           | Przebudowywany przy każdym budowaniu obrazu                                     |
+| Pakiety systemu operacyjnego | System plików kontenera                                | Obraz Docker           | Nie instaluj w runtime                                     |
+| Kontener Docker     | Efemeryczny                                            | Możliwy do restartu            | Można bezpiecznie zniszczyć                                               |
 
 ## Aktualizacje
 
-Aby zaktualizować OpenClaw na maszynie wirtualnej:
+Aby zaktualizować OpenClaw na maszynie VM:
 
 ```bash
 git pull

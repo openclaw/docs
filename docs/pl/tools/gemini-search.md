@@ -1,22 +1,23 @@
 ---
 read_when:
-    - Chcesz użyć Gemini do `web_search`
-    - Potrzebujesz `GEMINI_API_KEY`
-    - Chcesz ugruntowania w Google Search
-summary: Wyszukiwanie w sieci Gemini z ugruntowaniem w Google Search
+    - Chcesz używać Gemini do web_search
+    - Potrzebujesz GEMINI_API_KEY lub models.providers.google.apiKey
+    - Chcesz korzystać z ugruntowania w Google Search
+summary: Wyszukiwanie Gemini w internecie z ugruntowaniem za pomocą Google Search
 title: Wyszukiwanie Gemini
 x-i18n:
-    generated_at: "2026-04-24T09:37:05Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T10:04:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
+    source_hash: 015d77fef123b1fd99d43eb6472bb8c672585328e17735d1fa0ead387cd2066a
     source_path: tools/gemini-search.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw obsługuje modele Gemini z wbudowanym
-[ugruntowaniem w Google Search](https://ai.google.dev/gemini-api/docs/grounding),
-które zwraca odpowiedzi syntetyzowane przez AI, oparte na wynikach Google Search na żywo i opatrzone cytatami.
+[Google Search grounding](https://ai.google.dev/gemini-api/docs/grounding),
+które zwraca syntetyzowane przez AI odpowiedzi oparte na bieżących wynikach Google Search z
+cytowaniami.
 
 ## Uzyskaj klucz API
 
@@ -26,7 +27,8 @@ które zwraca odpowiedzi syntetyzowane przez AI, oparte na wynikach Google Searc
     klucz API.
   </Step>
   <Step title="Zapisz klucz">
-    Ustaw `GEMINI_API_KEY` w środowisku Gateway albo skonfiguruj przez:
+    Ustaw `GEMINI_API_KEY` w środowisku Gateway, użyj ponownie
+    `models.providers.google.apiKey` albo skonfiguruj dedykowany klucz wyszukiwania w sieci za pomocą:
 
     ```bash
     openclaw configure --section web
@@ -44,7 +46,8 @@ które zwraca odpowiedzi syntetyzowane przez AI, oparte na wynikach Google Searc
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // optional if GEMINI_API_KEY is set
+            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
             model: "gemini-2.5-flash", // default
           },
         },
@@ -61,41 +64,57 @@ które zwraca odpowiedzi syntetyzowane przez AI, oparte na wynikach Google Searc
 }
 ```
 
-**Alternatywa środowiskowa:** ustaw `GEMINI_API_KEY` w środowisku Gateway.
-W instalacji gateway umieść go w `~/.openclaw/.env`.
+**Priorytet danych uwierzytelniających:** wyszukiwanie w sieci Gemini najpierw używa
+`plugins.entries.google.config.webSearch.apiKey`, następnie `GEMINI_API_KEY`,
+a potem `models.providers.google.apiKey`. W przypadku bazowych adresów URL dedykowane
+`plugins.entries.google.config.webSearch.baseUrl` ma pierwszeństwo przed
+`models.providers.google.baseUrl`.
+
+W instalacji Gateway umieść klucze środowiskowe w `~/.openclaw/.env`.
 
 ## Jak to działa
 
-W przeciwieństwie do tradycyjnych providerów wyszukiwania, którzy zwracają listę linków i snippetów,
-Gemini używa ugruntowania w Google Search, aby tworzyć odpowiedzi syntetyzowane przez AI
-z cytatami inline. Wyniki zawierają zarówno odpowiedź syntetyzowaną, jak i źródłowe
-URL-e.
+W przeciwieństwie do tradycyjnych dostawców wyszukiwania, którzy zwracają listę linków i fragmentów,
+Gemini używa Google Search grounding do generowania syntetyzowanych przez AI odpowiedzi z
+cytowaniami w treści. Wyniki zawierają zarówno zsyntetyzowaną odpowiedź, jak i źródłowe
+adresy URL.
 
-- URL-e cytowań z ugruntowania Gemini są automatycznie rozwiązywane z URL-i przekierowań Google
-  do bezpośrednich URL-i.
-- Rozwiązywanie przekierowań używa ścieżki ochronnej SSRF (HEAD + sprawdzanie przekierowań +
-  walidacja http/https) przed zwróceniem końcowego URL-a cytowania.
-- Rozwiązywanie przekierowań używa ścisłych domyślnych ustawień SSRF, więc przekierowania do
+- Adresy URL cytowań z Gemini grounding są automatycznie rozwiązywane z adresów przekierowań Google
+  na bezpośrednie adresy URL.
+- Rozwiązywanie przekierowań używa ścieżki ochrony przed SSRF (HEAD + kontrole przekierowań +
+  walidacja http/https) przed zwróceniem końcowego adresu URL cytowania.
+- Rozwiązywanie przekierowań używa rygorystycznych domyślnych ustawień SSRF, więc przekierowania do
   prywatnych/wewnętrznych celów są blokowane.
 
 ## Obsługiwane parametry
 
-Wyszukiwanie Gemini obsługuje `query`.
+Wyszukiwanie Gemini obsługuje `query`, `freshness`, `date_after` i `date_before`.
 
-`count` jest akceptowane dla zgodności ze współdzielonym `web_search`, ale ugruntowanie Gemini
-nadal zwraca jedną odpowiedź syntetyzowaną z cytatami zamiast listy N wyników.
+`count` jest akceptowane dla zgodności ze wspólnym `web_search`, ale Gemini grounding
+nadal zwraca jedną zsyntetyzowaną odpowiedź z cytowaniami zamiast listy N wyników.
 
-Filtry specyficzne dla providera, takie jak `country`, `language`, `freshness` i
-`domain_filter`, nie są obsługiwane.
+`freshness` akceptuje `day`, `week`, `month`, `year` oraz wspólne skróty
+`pd`, `pw`, `pm` i `py`. OpenClaw konwertuje te wartości lub jawny zakres
+`date_after`/`date_before` na `timeRangeFilter` w Gemini Google Search grounding.
+`country`, `language` i `domain_filter` nie są obsługiwane.
 
 ## Wybór modelu
 
-Domyślnym modelem jest `gemini-2.5-flash` (szybki i opłacalny). Można użyć dowolnego modelu Gemini,
-który obsługuje grounding, przez
+Domyślny model to `gemini-2.5-flash` (szybki i opłacalny). Dowolny model Gemini,
+który obsługuje grounding, może być użyty przez
 `plugins.entries.google.config.webSearch.model`.
+
+## Nadpisania bazowego adresu URL
+
+Ustaw `plugins.entries.google.config.webSearch.baseUrl`, gdy wyszukiwanie w sieci Gemini
+musi przechodzić przez proxy operatora lub niestandardowy punkt końcowy zgodny z Gemini. Jeśli
+ta wartość nie jest ustawiona, wyszukiwanie w sieci Gemini ponownie używa `models.providers.google.baseUrl`. Zwykła
+wartość `https://generativelanguage.googleapis.com` jest normalizowana do
+`https://generativelanguage.googleapis.com/v1beta`; niestandardowe ścieżki proxy są zachowywane
+zgodnie z podaną wartością po usunięciu końcowych ukośników.
 
 ## Powiązane
 
-- [Przegląd Web Search](/pl/tools/web) -- wszyscy providerzy i automatyczne wykrywanie
-- [Brave Search](/pl/tools/brave-search) -- uporządkowane wyniki ze snippetami
-- [Perplexity Search](/pl/tools/perplexity-search) -- uporządkowane wyniki + ekstrakcja treści
+- [Omówienie Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
+- [Brave Search](/pl/tools/brave-search) -- ustrukturyzowane wyniki z fragmentami
+- [Perplexity Search](/pl/tools/perplexity-search) -- ustrukturyzowane wyniki + ekstrakcja treści

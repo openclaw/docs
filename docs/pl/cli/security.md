@@ -1,21 +1,21 @@
 ---
 read_when:
     - Chcesz przeprowadzić szybki audyt bezpieczeństwa konfiguracji/stanu
-    - Chcesz zastosować bezpieczne sugestie „naprawy” (uprawnienia, zaostrzenie ustawień domyślnych)
-summary: Dokumentacja CLI dla `openclaw security` (audytowanie i naprawianie typowych pułapek bezpieczeństwa)
+    - Chcesz zastosować bezpieczne sugestie „naprawy” (uprawnienia, zaostrzenie wartości domyślnych)
+summary: Dokumentacja referencyjna CLI dla `openclaw security` (audyt i naprawa typowych pułapek bezpieczeństwa)
 title: Bezpieczeństwo
 x-i18n:
-    generated_at: "2026-04-24T09:04:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:46:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b4c15f2111cac2492aa331e5217dd18de169c8b6440f103e3009e059a06d81f6
+    source_hash: 44eb50368cb54441782a7c4e20fab24d0488b80c9a1eedf8e1eb31dc8d7a9cf6
     source_path: cli/security.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw security`
 
-Narzędzia bezpieczeństwa (audyt + opcjonalne naprawy).
+Narzędzia bezpieczeństwa (audyt + opcjonalne poprawki).
 
 Powiązane:
 
@@ -32,28 +32,30 @@ openclaw security audit --fix
 openclaw security audit --json
 ```
 
-Audyt ostrzega, gdy wielu nadawców DM współdzieli sesję główną, i zaleca **bezpieczny tryb DM**: `session.dmScope="per-channel-peer"` (lub `per-account-channel-peer` dla kanałów wielokontowych) dla współdzielonych skrzynek odbiorczych.
-Dotyczy to utwardzania współpracujących/współdzielonych skrzynek odbiorczych. Jeden współdzielony Gateway używany przez operatorów wzajemnie sobie nieufających lub działających w sposób kontradyktoryjny nie jest zalecaną konfiguracją; rozdziel granice zaufania za pomocą osobnych Gateway (lub osobnych użytkowników systemu operacyjnego/hostów).
-Emituje też `security.trust_model.multi_user_heuristic`, gdy konfiguracja sugeruje prawdopodobny współdzielony ruch wejściowy wielu użytkowników (na przykład otwarta polityka DM/grup, skonfigurowane cele grupowe lub reguły nadawców z wildcard), i przypomina, że domyślnie OpenClaw działa według modelu zaufania osobistego asystenta.
-W przypadku celowo współdzielonych konfiguracji wielu użytkowników wskazówki audytu zalecają piaskownicowanie wszystkich sesji, utrzymanie dostępu do systemu plików w zakresie obszaru roboczego oraz trzymanie osobistych/prywatnych tożsamości lub poświadczeń z dala od tego środowiska uruchomieniowego.
-Audyt ostrzega także, gdy małe modele (`<=300B`) są używane bez piaskownicy i przy włączonych narzędziach web/browser.
-Dla ruchu przychodzącego przez Webhook ostrzega, gdy `hooks.token` używa ponownie tokenu Gateway, gdy `hooks.token` jest krótki, gdy `hooks.path="/"`, gdy `hooks.defaultSessionKey` nie jest ustawione, gdy `hooks.allowedAgentIds` nie jest ograniczone oraz gdy włączone są nadpisania `sessionKey` w żądaniu i brak `hooks.allowedSessionKeyPrefixes`.
-Ostrzega też, gdy ustawienia Docker dla sandbox są skonfigurowane, mimo że tryb sandbox jest wyłączony, gdy `gateway.nodes.denyCommands` używa nieskutecznych wpisów typu wzorzec/nieznanych (tylko dokładne dopasowanie nazw poleceń Node, bez filtrowania tekstu powłoki), gdy `gateway.nodes.allowCommands` jawnie włącza niebezpieczne polecenia Node, gdy globalne `tools.profile="minimal"` jest nadpisywane przez profile narzędzi agentów, gdy otwarte grupy udostępniają narzędzia środowiska uruchomieniowego/systemu plików bez zabezpieczeń sandbox/obszaru roboczego oraz gdy zainstalowane narzędzia Plugin mogą być osiągalne przy liberalnej polityce narzędzi.
-Sygnalizuje także `gateway.allowRealIpFallback=true` (ryzyko spoofingu nagłówków przy błędnej konfiguracji proxy) i `discovery.mdns.mode="full"` (wyciek metadanych przez rekordy TXT mDNS).
-Ostrzega też, gdy przeglądarka sandbox używa sieci Docker `bridge` bez `sandbox.browser.cdpSourceRange`.
-Sygnalizuje także niebezpieczne tryby sieci Docker sandbox (w tym `host` i dołączenia przestrzeni nazw `container:*`).
-Ostrzega również, gdy istniejące kontenery Docker przeglądarki sandbox mają brakujące/nieaktualne etykiety hash (na przykład kontenery sprzed migracji bez `openclaw.browserConfigEpoch`) i zaleca `openclaw sandbox recreate --browser --all`.
-Ostrzega też, gdy rekordy instalacji Plugin/hook opartych na npm nie są przypięte, nie mają metadanych integralności lub odbiegają od aktualnie zainstalowanych wersji pakietów.
-Ostrzega, gdy allowlisty kanałów opierają się na zmiennych nazwach/e-mailach/tagach zamiast stabilnych identyfikatorach (Discord, Slack, Google Chat, Microsoft Teams, Mattermost, zakresy IRC tam, gdzie ma to zastosowanie).
-Ostrzega, gdy `gateway.auth.mode="none"` pozostawia interfejsy HTTP Gateway dostępne bez współdzielonego sekretu (`/tools/invoke` oraz każdy włączony punkt końcowy `/v1/*`).
-Ustawienia z prefiksem `dangerous`/`dangerously` to jawne awaryjne nadpisania operatora; samo włączenie takiego ustawienia nie jest raportem o luce bezpieczeństwa.
-Pełny spis niebezpiecznych parametrów znajdziesz w sekcji „Insecure or dangerous flags summary” w [Bezpieczeństwo](/pl/gateway/security).
+Zwykłe `security audit` pozostaje na zimnej ścieżce konfiguracji/systemu plików/tylko do odczytu. Domyślnie nie wykrywa kolektorów bezpieczeństwa środowiska uruchomieniowego Plugin, więc rutynowe audyty nie ładują każdego zainstalowanego środowiska uruchomieniowego Plugin. Użyj `--deep`, aby dołączyć podejmowane w miarę możliwości sondy aktywnego Gateway oraz kolektory audytu bezpieczeństwa należące do Plugin; jawne wewnętrzne wywołania mogą także włączyć te kolektory należące do Plugin, gdy mają już odpowiedni zakres środowiska uruchomieniowego.
+
+Audyt ostrzega, gdy wielu nadawców DM współdzieli główną sesję, i zaleca **bezpieczny tryb DM**: `session.dmScope="per-channel-peer"` (lub `per-account-channel-peer` dla kanałów z wieloma kontami) dla współdzielonych skrzynek odbiorczych.
+Służy to wzmacnianiu ochrony współpracujących/współdzielonych skrzynek odbiorczych. Pojedynczy Gateway współdzielony przez wzajemnie niezaufanych/adwersarialnych operatorów nie jest zalecaną konfiguracją; rozdziel granice zaufania za pomocą osobnych gatewayów (lub osobnych użytkowników/hostów systemu operacyjnego).
+Emituje też `security.trust_model.multi_user_heuristic`, gdy konfiguracja sugeruje prawdopodobny dopływ od wielu współdzielących użytkowników (na przykład otwarta polityka DM/grup, skonfigurowane cele grupowe lub reguły nadawców z symbolami wieloznacznymi), i przypomina, że OpenClaw domyślnie działa w modelu zaufania osobistego asystenta.
+W przypadku celowych konfiguracji z wieloma współdzielącymi użytkownikami zaleceniem audytu jest uruchamianie wszystkich sesji w piaskownicy, utrzymywanie dostępu do systemu plików w zakresie obszaru roboczego oraz trzymanie osobistych/prywatnych tożsamości lub danych uwierzytelniających poza tym środowiskiem uruchomieniowym.
+Ostrzega też, gdy małe modele (`<=300B`) są używane bez piaskownicy i z włączonymi narzędziami web/przeglądarki.
+W przypadku dopływu przez Webhook ostrzega, gdy `hooks.token` ponownie używa tokenu Gateway, gdy `hooks.token` jest krótki, gdy `hooks.path="/"`, gdy `hooks.defaultSessionKey` nie jest ustawione, gdy `hooks.allowedAgentIds` nie jest ograniczone, gdy włączone są nadpisania `sessionKey` w żądaniach oraz gdy nadpisania są włączone bez `hooks.allowedSessionKeyPrefixes`.
+Ostrzega też, gdy ustawienia piaskownicy Docker są skonfigurowane, a tryb piaskownicy jest wyłączony, gdy `gateway.nodes.denyCommands` używa nieskutecznych wpisów podobnych do wzorców/nieznanych wpisów (tylko dokładne dopasowanie nazwy polecenia Node, nie filtrowanie tekstu powłoki), gdy `gateway.nodes.allowCommands` jawnie włącza niebezpieczne polecenia Node, gdy globalne `tools.profile="minimal"` jest nadpisywane przez profile narzędzi agentów, gdy otwarte grupy wystawiają narzędzia środowiska uruchomieniowego/systemu plików bez zabezpieczeń piaskownicy/obszaru roboczego oraz gdy zainstalowane narzędzia Plugin mogą być osiągalne przy liberalnej polityce narzędzi.
+Oznacza też `gateway.allowRealIpFallback=true` (ryzyko fałszowania nagłówków, jeśli proxy są źle skonfigurowane) oraz `discovery.mdns.mode="full"` (wyciek metadanych przez rekordy TXT mDNS).
+Ostrzega też, gdy przeglądarka w piaskownicy używa sieci Docker `bridge` bez `sandbox.browser.cdpSourceRange`.
+Oznacza też niebezpieczne tryby sieci Docker piaskownicy (w tym `host` i dołączanie do przestrzeni nazw `container:*`).
+Ostrzega też, gdy istniejące kontenery Docker przeglądarki w piaskownicy mają brakujące/nieaktualne etykiety skrótu (na przykład kontenery sprzed migracji bez `openclaw.browserConfigEpoch`) i zaleca `openclaw sandbox recreate --browser --all`.
+Ostrzega też, gdy rekordy instalacji Plugin/hook oparte na npm nie są przypięte, nie mają metadanych integralności lub różnią się od obecnie zainstalowanych wersji pakietów.
+Ostrzega, gdy listy dozwolonych kanałów opierają się na zmiennych nazwach/adresach e-mail/tagach zamiast stabilnych identyfikatorów (Discord, Slack, Google Chat, Microsoft Teams, Mattermost, zakresy IRC tam, gdzie ma to zastosowanie).
+Ostrzega, gdy `gateway.auth.mode="none"` pozostawia interfejsy API HTTP Gateway osiągalne bez współdzielonego sekretu (`/tools/invoke` oraz każdy włączony endpoint `/v1/*`).
+Ustawienia z prefiksami `dangerous`/`dangerously` są jawnymi awaryjnymi nadpisaniami operatora; włączenie jednego z nich samo w sobie nie jest zgłoszeniem podatności bezpieczeństwa.
+Pełny spis niebezpiecznych parametrów znajduje się w sekcji „Podsumowanie niebezpiecznych lub niezabezpieczonych flag” w [Bezpieczeństwo](/pl/gateway/security).
 
 Zachowanie SecretRef:
 
-- `security audit` rozwiązuje obsługiwane SecretRefs w trybie tylko do odczytu dla docelowych ścieżek.
-- Jeśli SecretRef nie jest dostępny w bieżącej ścieżce polecenia, audyt trwa dalej i raportuje `secretDiagnostics` (zamiast kończyć się awarią).
-- `--token` i `--password` nadpisują tylko uwierzytelnianie deep-probe dla tego wywołania polecenia; nie przepisują konfiguracji ani mapowań SecretRef.
+- `security audit` rozwiązuje obsługiwane SecretRefs w trybie tylko do odczytu dla swoich docelowych ścieżek.
+- Jeśli SecretRef jest niedostępny w bieżącej ścieżce polecenia, audyt kontynuuje działanie i raportuje `secretDiagnostics` (zamiast ulec awarii).
+- `--token` i `--password` nadpisują uwierzytelnianie głębokiej sondy tylko dla danego wywołania polecenia; nie przepisują konfiguracji ani mapowań SecretRef.
 
 ## Dane wyjściowe JSON
 
@@ -64,7 +66,7 @@ openclaw security audit --json | jq '.summary'
 openclaw security audit --deep --json | jq '.findings[] | select(.severity=="critical") | .checkId'
 ```
 
-Jeśli połączysz `--fix` i `--json`, dane wyjściowe będą zawierać zarówno działania naprawcze, jak i końcowy raport:
+Jeśli `--fix` i `--json` zostaną połączone, dane wyjściowe obejmują zarówno działania naprawcze, jak i końcowy raport:
 
 ```bash
 openclaw security audit --fix --json | jq '{fix: .fix.ok, summary: .report.summary}'
@@ -72,25 +74,25 @@ openclaw security audit --fix --json | jq '{fix: .fix.ok, summary: .report.summa
 
 ## Co zmienia `--fix`
 
-`--fix` stosuje bezpieczne, deterministyczne działania naprawcze:
+`--fix` stosuje bezpieczne, deterministyczne remediacje:
 
-- zmienia typowe `groupPolicy="open"` na `groupPolicy="allowlist"` (w tym warianty kont dla obsługiwanych kanałów)
-- gdy polityka grupowa WhatsApp zmienia się na `allowlist`, inicjalizuje `groupAllowFrom` z
-  zapisanego pliku `allowFrom`, jeśli ta lista istnieje, a konfiguracja nie definiuje już
-  `allowFrom`
+- przełącza typowe `groupPolicy="open"` na `groupPolicy="allowlist"` (w tym warianty kont w obsługiwanych kanałach)
+- gdy polityka grup WhatsApp przełącza się na `allowlist`, zasila `groupAllowFrom` z
+  zapisanego pliku `allowFrom`, jeśli ta lista istnieje, a konfiguracja nie
+  definiuje jeszcze `allowFrom`
 - ustawia `logging.redactSensitive` z `"off"` na `"tools"`
-- zaostrza uprawnienia do stanu/konfiguracji i typowych plików wrażliwych
-  (`credentials/*.json`, `auth-profiles.json`, `sessions.json`, sesja
+- zaostrza uprawnienia do stanu/konfiguracji oraz typowych plików wrażliwych
+  (`credentials/*.json`, `auth-profiles.json`, `sessions.json`, sesyjne
   `*.jsonl`)
-- zaostrza też uprawnienia do plików include konfiguracji, do których odwołuje się `openclaw.json`
+- zaostrza też uprawnienia plików dołączanych do konfiguracji, do których odwołuje się `openclaw.json`
 - używa `chmod` na hostach POSIX i resetów `icacls` w Windows
 
 `--fix` **nie**:
 
 - rotuje tokenów/haseł/kluczy API
-- wyłącza narzędzi (`gateway`, `cron`, `exec` itd.)
-- nie zmienia ustawień powiązania/uwierzytelniania/ekspozycji sieci Gateway
-- nie usuwa ani nie przepisuje Plugin/Skills
+- wyłącza narzędzi (`gateway`, `cron`, `exec` itp.)
+- zmienia wyborów dotyczących bindowania/uwierzytelniania/ekspozycji sieciowej gatewaya
+- usuwa ani nie przepisuje plugins/Skills
 
 ## Powiązane
 

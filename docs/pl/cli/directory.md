@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Chcesz wyszukać kontakty/grupy/własne identyfikatory dla kanału
-    - Tworzysz adapter katalogu kanału
-summary: Dokumentacja CLI dla `openclaw directory` (self, peers, groups)
+    - Chcesz odszukać identyfikatory kontaktów/grup/własne dla kanału
+    - Tworzysz adapter katalogu kanałów
+summary: Dokumentacja CLI dla `openclaw directory` (siebie, peerów, grup)
 title: Katalog
 x-i18n:
-    generated_at: "2026-04-24T09:02:28Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:45:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-Wyszukiwanie katalogowe dla kanałów, które to obsługują (kontakty/peerzy, grupy i „ja”).
+Wyszukiwanie w katalogu dla kanałów, które je obsługują (kontakty/peers, grupy oraz „me”).
 
-## Typowe flagi
+## Wspólne flagi
 
-- `--channel <name>`: identyfikator/alias kanału (wymagane, gdy skonfigurowano wiele kanałów; automatycznie, gdy skonfigurowano tylko jeden)
+- `--channel <name>`: identyfikator/alias kanału (wymagane, gdy skonfigurowano wiele kanałów; automatyczne, gdy skonfigurowano tylko jeden)
 - `--account <id>`: identyfikator konta (domyślnie: domyślne konto kanału)
 - `--json`: wyjście JSON
 
 ## Uwagi
 
-- `directory` ma pomóc znaleźć identyfikatory, które można wkleić do innych poleceń (szczególnie `openclaw message send --target ...`).
-- W przypadku wielu kanałów wyniki pochodzą z konfiguracji (allowlisty / skonfigurowane grupy), a nie z katalogu dostawcy na żywo.
-- Domyślne wyjście to `id` (a czasem `name`) oddzielone tabulatorem; do skryptów używaj `--json`.
+- `directory` ma pomóc znaleźć identyfikatory, które można wkleić do innych poleceń (zwłaszcza `openclaw message send --target ...`).
+- Dla wielu kanałów wyniki pochodzą z konfiguracji (listy dozwolonych / skonfigurowane grupy), a nie z katalogu dostawcy na żywo.
+- Zainstalowane Pluginy kanałów nadal mogą pomijać obsługę katalogu; w takim przypadku polecenie zgłasza nieobsługiwaną operację katalogu zamiast ponownie instalować Plugin.
+- Domyślne wyjście to `id` (a czasem `name`) oddzielone tabulatorem; użyj `--json` do skryptów.
 
 ## Używanie wyników z `message send`
 
@@ -36,24 +37,24 @@ openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## Formaty identyfikatorów (według kanału)
+## Formaty ID (według kanału)
 
-- WhatsApp: `+15551234567` (wiadomość prywatna), `1234567890-1234567890@g.us` (grupa)
-- Telegram: `@username` lub numeryczny identyfikator czatu; grupy mają identyfikatory numeryczne
+- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grupa)
+- Telegram: `@username` albo numeryczny identyfikator czatu; grupy mają numeryczne identyfikatory
 - Slack: `user:U…` i `channel:C…`
 - Discord: `user:<id>` i `channel:<id>`
-- Matrix (Plugin): `user:@user:server`, `room:!roomId:server` lub `#alias:server`
+- Matrix (Plugin): `user:@user:server`, `room:!roomId:server` albo `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` i `conversation:<id>`
 - Zalo (Plugin): identyfikator użytkownika (Bot API)
-- Zalo Personal / `zalouser` (Plugin): identyfikator wątku (wiadomość prywatna/grupa) z `zca` (`me`, `friend list`, `group list`)
+- Zalo Personal / `zalouser` (Plugin): identyfikator wątku (DM/grupa) z `zca` (`me`, `friend list`, `group list`)
 
-## Ja ("me")
+## Własny użytkownik ("me")
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## Peerzy (kontakty/użytkownicy)
+## Peers (kontakty/użytkownicy)
 
 ```bash
 openclaw directory peers list --channel zalouser
