@@ -1167,6 +1167,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "concepts/multi-agent",
+                  "concepts/parallel-specialist-lanes",
                   "concepts/presence",
                   "concepts/delegate-architecture"
                 ]
@@ -2647,6 +2648,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "zh-TW/concepts/multi-agent",
+                  "zh-TW/concepts/parallel-specialist-lanes",
                   "zh-TW/concepts/presence",
                   "zh-TW/concepts/delegate-architecture"
                 ]
@@ -3512,6 +3514,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "ja-JP/concepts/multi-agent",
+                  "ja-JP/concepts/parallel-specialist-lanes",
                   "ja-JP/concepts/presence",
                   "ja-JP/concepts/delegate-architecture"
                 ]
@@ -4377,6 +4380,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "es/concepts/multi-agent",
+                  "es/concepts/parallel-specialist-lanes",
                   "es/concepts/presence",
                   "es/concepts/delegate-architecture"
                 ]
@@ -5242,6 +5246,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "pt-BR/concepts/multi-agent",
+                  "pt-BR/concepts/parallel-specialist-lanes",
                   "pt-BR/concepts/presence",
                   "pt-BR/concepts/delegate-architecture"
                 ]
@@ -6107,6 +6112,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "ko/concepts/multi-agent",
+                  "ko/concepts/parallel-specialist-lanes",
                   "ko/concepts/presence",
                   "ko/concepts/delegate-architecture"
                 ]
@@ -6972,6 +6978,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "de/concepts/multi-agent",
+                  "de/concepts/parallel-specialist-lanes",
                   "de/concepts/presence",
                   "de/concepts/delegate-architecture"
                 ]
@@ -7837,6 +7844,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "fr/concepts/multi-agent",
+                  "fr/concepts/parallel-specialist-lanes",
                   "fr/concepts/presence",
                   "fr/concepts/delegate-architecture"
                 ]
@@ -8702,6 +8710,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "ar/concepts/multi-agent",
+                  "ar/concepts/parallel-specialist-lanes",
                   "ar/concepts/presence",
                   "ar/concepts/delegate-architecture"
                 ]
@@ -9567,6 +9576,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "it/concepts/multi-agent",
+                  "it/concepts/parallel-specialist-lanes",
                   "it/concepts/presence",
                   "it/concepts/delegate-architecture"
                 ]
@@ -10432,6 +10442,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "vi/concepts/multi-agent",
+                  "vi/concepts/parallel-specialist-lanes",
                   "vi/concepts/presence",
                   "vi/concepts/delegate-architecture"
                 ]
@@ -11297,6 +11308,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "nl/concepts/multi-agent",
+                  "nl/concepts/parallel-specialist-lanes",
                   "nl/concepts/presence",
                   "nl/concepts/delegate-architecture"
                 ]
@@ -12162,6 +12174,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "tr/concepts/multi-agent",
+                  "tr/concepts/parallel-specialist-lanes",
                   "tr/concepts/presence",
                   "tr/concepts/delegate-architecture"
                 ]
@@ -13027,6 +13040,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "uk/concepts/multi-agent",
+                  "uk/concepts/parallel-specialist-lanes",
                   "uk/concepts/presence",
                   "uk/concepts/delegate-architecture"
                 ]
@@ -13892,6 +13906,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "id/concepts/multi-agent",
+                  "id/concepts/parallel-specialist-lanes",
                   "id/concepts/presence",
                   "id/concepts/delegate-architecture"
                 ]
@@ -14757,6 +14772,7 @@
                 "group": "Multi-agent",
                 "pages": [
                   "pl/concepts/multi-agent",
+                  "pl/concepts/parallel-specialist-lanes",
                   "pl/concepts/presence",
                   "pl/concepts/delegate-architecture"
                 ]
