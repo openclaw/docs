@@ -5,17 +5,17 @@ read_when:
 summary: راه‌اندازی Arcee AI (احراز هویت + انتخاب مدل)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-04-29T23:22:53Z"
+    generated_at: "2026-05-02T23:39:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
+    source_hash: 622ee5288aec3ae0b45d3f06ba65fd6f972e07d7a7596ae3905d6fbdac0bf737
     source_path: providers/arcee.md
     workflow: 16
 ---
 
 [Arcee AI](https://arcee.ai) دسترسی به خانواده Trinity از مدل‌های mixture-of-experts را از طریق یک API سازگار با OpenAI فراهم می‌کند. همه مدل‌های Trinity تحت مجوز Apache 2.0 منتشر شده‌اند.
 
-مدل‌های Arcee AI را می‌توان مستقیما از طریق پلتفرم Arcee یا از طریق [OpenRouter](/fa/providers/openrouter) در دسترس داشت.
+مدل‌های Arcee AI را می‌توان مستقیماً از طریق پلتفرم Arcee یا از طریق [OpenRouter](/fa/providers/openrouter) استفاده کرد.
 
 | ویژگی | مقدار                                                                                 |
 | -------- | ------------------------------------------------------------------------------------- |
@@ -27,17 +27,17 @@ x-i18n:
 ## شروع به کار
 
 <Tabs>
-  <Tab title="مستقیم (پلتفرم Arcee)">
+  <Tab title="Direct (Arcee platform)">
     <Steps>
-      <Step title="دریافت کلید API">
+      <Step title="Get an API key">
         در [Arcee AI](https://chat.arcee.ai/) یک کلید API بسازید.
       </Step>
-      <Step title="اجرای راه‌اندازی اولیه">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="تنظیم مدل پیش‌فرض">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -51,17 +51,17 @@ x-i18n:
     </Steps>
   </Tab>
 
-  <Tab title="از طریق OpenRouter">
+  <Tab title="Via OpenRouter">
     <Steps>
-      <Step title="دریافت کلید API">
+      <Step title="Get an API key">
         در [OpenRouter](https://openrouter.ai/keys) یک کلید API بسازید.
       </Step>
-      <Step title="اجرای راه‌اندازی اولیه">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="تنظیم مدل پیش‌فرض">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -72,7 +72,7 @@ x-i18n:
         }
         ```
 
-        همان ارجاع‌های مدل برای هر دو پیکربندی مستقیم و OpenRouter کار می‌کنند (برای مثال `arcee/trinity-large-thinking`).
+        همان ارجاع‌های مدل برای هر دو راه‌اندازی مستقیم و OpenRouter کار می‌کنند (برای مثال `arcee/trinity-large-thinking`).
       </Step>
     </Steps>
 
@@ -82,7 +82,7 @@ x-i18n:
 ## راه‌اندازی غیرتعاملی
 
 <Tabs>
-  <Tab title="مستقیم (پلتفرم Arcee)">
+  <Tab title="Direct (Arcee platform)">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -91,7 +91,7 @@ x-i18n:
     ```
   </Tab>
 
-  <Tab title="از طریق OpenRouter">
+  <Tab title="Via OpenRouter">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -105,35 +105,35 @@ x-i18n:
 
 OpenClaw در حال حاضر این کاتالوگ Arcee همراه را ارائه می‌کند:
 
-| ارجاع مدل                      | نام                   | ورودی | زمینه | هزینه (ورودی/خروجی به‌ازای هر ۱ میلیون) | یادداشت‌ها                                     |
-| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | مدل پیش‌فرض؛ استدلال فعال است          |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | همه‌منظوره؛ 400B پارامتر، 13B فعال  |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | سریع و مقرون‌به‌صرفه؛ فراخوانی تابع |
+| ارجاع مدل                      | نام                   | ورودی | زمینه | هزینه (ورودی/خروجی به ازای هر ۱ میلیون) | یادداشت‌ها                                      |
+| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ------------------------------------------ |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | متن  | 256K    | $0.25 / $0.90        | مدل پیش‌فرض؛ استدلال فعال؛ بدون ابزار |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | متن  | 128K    | $0.25 / $1.00        | همه‌منظوره؛ 400B پارامتر، 13B فعال   |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | متن  | 128K    | $0.045 / $0.15       | سریع و مقرون‌به‌صرفه؛ فراخوانی تابع  |
 
 <Tip>
-پیش‌تنظیم راه‌اندازی اولیه، `arcee/trinity-large-thinking` را به‌عنوان مدل پیش‌فرض تنظیم می‌کند.
+پیش‌تنظیم onboarding، `arcee/trinity-large-thinking` را به عنوان مدل پیش‌فرض تنظیم می‌کند. این مدل فقط متنی/استدلالی است و از استفاده از ابزار یا فراخوانی تابع پشتیبانی نمی‌کند.
 </Tip>
 
 ## قابلیت‌های پشتیبانی‌شده
 
-| قابلیت                                       | پشتیبانی                    |
-| --------------------------------------------- | ---------------------------- |
-| جریان‌دهی                                     | بله                          |
-| استفاده از ابزار / فراخوانی تابع                   | بله                          |
-| خروجی ساختاریافته (حالت JSON و طرح‌واره JSON) | بله                          |
-| تفکر توسعه‌یافته                             | بله (Trinity Large Thinking) |
+| قابلیت                                       | پشتیبانی                                   |
+| --------------------------------------------- | ------------------------------------------- |
+| استریمینگ                                     | بله                                         |
+| استفاده از ابزار / فراخوانی تابع                   | وابسته به مدل؛ نه Trinity Large Thinking |
+| خروجی ساخت‌یافته (حالت JSON و طرح‌واره JSON) | بله                                         |
+| تفکر توسعه‌یافته                             | بله (Trinity Large Thinking)                |
 
 <AccordionGroup>
-  <Accordion title="یادداشت محیط">
+  <Accordion title="Environment note">
     اگر Gateway به‌صورت daemon (launchd/systemd) اجرا می‌شود، مطمئن شوید `ARCEEAI_API_KEY`
-    (یا `OPENROUTER_API_KEY`) برای آن فرایند در دسترس است (برای مثال، در
+    (یا `OPENROUTER_API_KEY`) در دسترس آن فرایند است (برای مثال، در
     `~/.openclaw/.env` یا از طریق `env.shellEnv`).
   </Accordion>
 
-  <Accordion title="مسیریابی OpenRouter">
+  <Accordion title="OpenRouter routing">
     هنگام استفاده از مدل‌های Arcee از طریق OpenRouter، همان ارجاع‌های مدل `arcee/*` اعمال می‌شوند.
-    OpenClaw مسیریابی را بر اساس انتخاب احراز هویت شما به‌صورت شفاف مدیریت می‌کند. برای جزئیات پیکربندی اختصاصی OpenRouter، به
+    OpenClaw مسیریابی را بر اساس انتخاب احراز هویت شما به‌صورت شفاف مدیریت می‌کند. برای جزئیات پیکربندی ویژه OpenRouter، به
     [مستندات ارائه‌دهنده OpenRouter](/fa/providers/openrouter) مراجعه کنید.
   </Accordion>
 </AccordionGroup>
@@ -144,7 +144,7 @@ OpenClaw در حال حاضر این کاتالوگ Arcee همراه را ارا
   <Card title="OpenRouter" href="/fa/providers/openrouter" icon="shuffle">
     به مدل‌های Arcee و بسیاری مدل‌های دیگر از طریق یک کلید API واحد دسترسی پیدا کنید.
   </Card>
-  <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/fa/concepts/model-providers" icon="layers">
     انتخاب ارائه‌دهندگان، ارجاع‌های مدل، و رفتار failover.
   </Card>
 </CardGroup>
