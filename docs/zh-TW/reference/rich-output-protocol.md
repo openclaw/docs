@@ -1,39 +1,49 @@
 ---
 read_when:
-    - 變更控制 UI 中的助理輸出呈現方式
+    - 在控制 UI 中變更助理輸出呈現方式
     - 偵錯 `[embed ...]`、`MEDIA:`、回覆或音訊呈現指令
-summary: 用於嵌入、媒體、音訊提示和回覆的豐富輸出短代碼協定
+summary: 用於嵌入、媒體、音訊提示與回覆的豐富輸出短代碼協定
 title: 豐富輸出協定
 x-i18n:
-    generated_at: "2026-04-30T03:36:58Z"
+    generated_at: "2026-05-02T22:22:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7c52a2f3a37e7a8d1237046edafc3e80c3199c01f890a1ef39662436590ef55d
+    source_hash: 8e0c365029c26d198090e1f181703e3979394afb0dfa1742f9c088885650de8b
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Assistant 輸出可以帶有一小組傳遞/呈現指令：
+Assistant 輸出可攜帶一小組傳遞／渲染指示：
 
 - `MEDIA:` 用於附件傳遞
 - `[[audio_as_voice]]` 用於音訊呈現提示
 - `[[reply_to_current]]` / `[[reply_to:<id>]]` 用於回覆中繼資料
-- `[embed ...]` 用於 Control UI 豐富呈現
+- `[embed ...]` 用於 Control UI 豐富渲染
 
-遠端 `MEDIA:` 附件必須是公開的 `https:` URL。純 `http:`、loopback、link-local、私有和內部主機名稱會被忽略，不作為附件指令；伺服器端媒體擷取器仍會執行自己的網路防護。
+遠端 `MEDIA:` 附件必須是公開的 `https:` URL。純 `http:`、
+loopback、link-local、私有和內部主機名稱都會作為附件
+指示被忽略；伺服器端媒體擷取器仍會執行自己的網路防護。
 
-純 Markdown 圖片語法預設會保留為文字。刻意將 Markdown 圖片回覆對應為媒體附件的頻道，會在其輸出轉接器中選擇啟用；Telegram 會這麼做，因此 `![alt](url)` 仍可變成媒體回覆。
+本機 `MEDIA:` 附件可以使用絕對路徑、相對於工作區的路徑，或
+相對於家目錄的 `~/` 路徑。在傳遞前，它們仍會通過代理程式的檔案讀取政策和
+媒體類型檢查。
 
-這些指令是彼此獨立的。`MEDIA:` 和回覆/語音標籤會保留為傳遞中繼資料；`[embed ...]` 則是僅限網頁的豐富呈現路徑。
-受信任的工具結果媒體在傳遞前會使用相同的 `MEDIA:` / `[[audio_as_voice]]` 剖析器，因此文字工具輸出仍可將音訊附件標記為語音備忘。
+純 Markdown 圖片語法預設會保留為文字。刻意將 Markdown 圖片回覆
+對應到媒體附件的 Channel，會在其輸出
+配接器選擇加入；Telegram 會這麼做，因此 `![alt](url)` 仍可變成媒體回覆。
 
-啟用區塊串流時，`MEDIA:` 在一個回合中仍是單次傳遞中繼資料。如果相同媒體 URL 在串流區塊中送出，並在最終 Assistant 酬載中重複，OpenClaw 會傳遞附件一次，並從最終酬載中移除重複項目。
+這些指示彼此獨立。`MEDIA:` 和回覆／語音標籤仍是傳遞中繼資料；`[embed ...]` 是僅限網頁的豐富渲染路徑。
+受信任工具結果媒體會在傳遞前使用相同的 `MEDIA:` / `[[audio_as_voice]]` 剖析器，因此文字工具輸出仍可將音訊附件標記為語音備註。
+
+啟用區塊串流時，`MEDIA:` 仍是一個回合的單次傳遞中繼資料。
+如果相同媒體 URL 在串流區塊中傳送，並在最終
+assistant payload 中重複，OpenClaw 會傳遞附件一次，並從最終 payload 中移除重複項。
 
 ## `[embed ...]`
 
-`[embed ...]` 是 Control UI 唯一面向 agent 的豐富呈現語法。
+`[embed ...]` 是 Control UI 唯一面向代理程式的豐富渲染語法。
 
-自我封閉範例：
+自閉合範例：
 
 ```text
 [embed ref="cv_123" title="Status" /]
@@ -42,15 +52,15 @@ Assistant 輸出可以帶有一小組傳遞/呈現指令：
 規則：
 
 - `[view ...]` 不再適用於新的輸出。
-- Embed 短代碼只會在 Assistant 訊息介面中呈現。
-- 只會呈現以 URL 為後盾的 embed。請使用 `ref="..."` 或 `url="..."`。
-- 不會呈現區塊形式的行內 HTML embed 短代碼。
-- Web UI 會從可見文字中移除短代碼，並將 embed 以内嵌方式呈現。
-- `MEDIA:` 不是 embed 別名，不應用於豐富 embed 呈現。
+- Embed 短碼只會在 assistant 訊息介面中渲染。
+- 只會渲染由 URL 支援的 embed。使用 `ref="..."` 或 `url="..."`。
+- 區塊形式的行內 HTML embed 短碼不會被渲染。
+- 網頁 UI 會從可見文字中移除短碼，並行內渲染 embed。
+- `MEDIA:` 不是 embed 別名，不應用於豐富 embed 渲染。
 
-## 儲存的呈現形狀
+## 已儲存的渲染形狀
 
-正規化/儲存的 Assistant 內容區塊是結構化的 `canvas` 項目：
+正規化／已儲存的 assistant 內容區塊是結構化的 `canvas` 項目：
 
 ```json
 {
@@ -67,9 +77,9 @@ Assistant 輸出可以帶有一小組傳遞/呈現指令：
 }
 ```
 
-儲存/呈現的豐富區塊會直接使用此 `canvas` 形狀。`present_view` 無法辨識。
+已儲存／已渲染的豐富區塊會直接使用這個 `canvas` 形狀。`present_view` 不會被識別。
 
 ## 相關
 
-- [RPC 轉接器](/zh-TW/reference/rpc)
+- [RPC 配接器](/zh-TW/reference/rpc)
 - [Typebox](/zh-TW/concepts/typebox)
