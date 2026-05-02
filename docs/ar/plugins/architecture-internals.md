@@ -1,121 +1,189 @@
 ---
 read_when:
-    - تنفيذ خطافات وقت تشغيل المزوّد، أو دورة حياة القناة، أو مجموعات الحزم
+    - تنفيذ خطافات وقت تشغيل المزوّد، أو دورة حياة القناة، أو حزم الباقات
     - تصحيح أخطاء ترتيب تحميل Plugin أو حالة السجل
     - إضافة قدرة Plugin جديدة أو Plugin لمحرك السياق
-summary: 'البنية الداخلية لـ Plugin: مسار التحميل، والسجل، وخطافات وقت التشغيل، ومسارات HTTP، وجداول المراجع'
-title: داخليات بنية Plugin
+summary: 'التفاصيل الداخلية لبنية Plugin: مسار التحميل، والسجل، وخطافات وقت التشغيل، ومسارات HTTP، والجداول المرجعية'
+title: داخليات معمارية Plugin
 x-i18n:
-    generated_at: "2026-05-02T07:34:36Z"
+    generated_at: "2026-05-02T20:49:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2de741c4b496c7c3dd31dafebf39c4b9a32c5edd71bdd201c14037d9de31718f
+    source_hash: fec593518e51f68ce617d5bc4e55cede2188e9247f863364a9ea956e50ca2675
     source_path: plugins/architecture-internals.md
     workflow: 16
 ---
 
-بالنسبة إلى نموذج القدرات العام، وأشكال Plugin، وعقود الملكية/التنفيذ، راجع [بنية Plugin](/ar/plugins/architecture). هذه الصفحة هي المرجع للآليات الداخلية: مسار التحميل، والسجل، وخطافات وقت التشغيل، ومسارات HTTP في Gateway، ومسارات الاستيراد، وجداول المخططات.
+For the public capability model, plugin shapes, and ownership/execution
+contracts, see [Plugin architecture](/ar/plugins/architecture). This page is the
+reference for the internal mechanics: load pipeline, registry, runtime hooks,
+Gateway HTTP routes, import paths, and schema tables.
 
-## مسار التحميل
+## Load pipeline
 
-عند بدء التشغيل، ينفذ OpenClaw تقريبًا ما يلي:
+At startup, OpenClaw does roughly this:
 
-1. يكتشف جذور Plugin المرشحة
-2. يقرأ بيانات الحزم الوصفية الأصلية أو المتوافقة وبيانات تعريف الحزمة
-3. يرفض المرشحات غير الآمنة
-4. يطبّع إعدادات Plugin (`plugins.enabled`، و`allow`، و`deny`، و`entries`،
-   و`slots`، و`load.paths`)
-5. يقرر التمكين لكل مرشح
-6. يحمّل الوحدات الأصلية الممكّنة: تستخدم الوحدات المضمّنة المبنية محمّلًا أصليًا؛
-   بينما يستخدم مصدر TypeScript المحلي من جهة خارجية خيار Jiti الاحتياطي الطارئ
-7. يستدعي خطافات `register(api)` الأصلية ويجمع التسجيلات في سجل Plugin
-8. يعرّض السجل للأوامر وأسطح وقت التشغيل
+1. discover candidate plugin roots
+2. read native or compatible bundle manifests and package metadata
+3. reject unsafe candidates
+4. normalize plugin config (`plugins.enabled`, `allow`, `deny`, `entries`,
+   `slots`, `load.paths`)
+5. decide enablement for each candidate
+6. load enabled native modules: built bundled modules use a native loader;
+   third-party local source TypeScript uses the emergency Jiti fallback
+7. call native `register(api)` hooks and collect registrations into the plugin registry
+8. expose the registry to commands/runtime surfaces
 
 <Note>
-`activate` هو اسم مستعار قديم لـ `register` — يحل المحمّل أيهما موجود (`def.register ?? def.activate`) ويستدعيه في النقطة نفسها. تستخدم كل Plugins المضمّنة `register`؛ ويفضَّل استخدام `register` في Plugins الجديدة.
+`activate` is a legacy alias for `register` — the loader resolves whichever is present (`def.register ?? def.activate`) and calls it at the same point. All bundled plugins use `register`; prefer `register` for new plugins.
 </Note>
 
-تحدث بوابات الأمان **قبل** تنفيذ وقت التشغيل. تُحظر المرشحات عندما يفلت الإدخال من جذر Plugin، أو يكون المسار قابلًا للكتابة من الجميع، أو تبدو ملكية المسار مثيرة للريبة في Plugins غير المضمّنة.
+The safety gates happen **before** runtime execution. Candidates are blocked
+when the entry escapes the plugin root, the path is world-writable, or path
+ownership looks suspicious for non-bundled plugins.
 
-### سلوك يبدأ من البيان
+### Manifest-first behavior
 
-البيان هو مصدر الحقيقة في مستوى التحكم. يستخدمه OpenClaw من أجل:
+The manifest is the control-plane source of truth. OpenClaw uses it to:
 
-- تحديد Plugin
-- اكتشاف القنوات/Skills/مخطط الإعدادات المعلنة أو قدرات الحزمة
-- التحقق من `plugins.entries.<id>.config`
-- إثراء تسميات/عناصر نائبة في Control UI
-- عرض بيانات التثبيت/الفهرس الوصفية
-- الحفاظ على واصفات تفعيل وإعداد رخيصة دون تحميل وقت تشغيل Plugin
+- identify the plugin
+- discover declared channels/skills/config schema or bundle capabilities
+- validate `plugins.entries.<id>.config`
+- augment Control UI labels/placeholders
+- show install/catalog metadata
+- preserve cheap activation and setup descriptors without loading plugin runtime
 
-بالنسبة إلى Plugins الأصلية، تكون وحدة وقت التشغيل هي جزء مستوى البيانات. فهي تسجّل السلوك الفعلي مثل الخطافات، أو الأدوات، أو الأوامر، أو تدفقات المزوّدين.
+For native plugins, the runtime module is the data-plane part. It registers
+actual behavior such as hooks, tools, commands, or provider flows.
 
-تبقى كتلتي البيان الاختياريتين `activation` و`setup` على مستوى التحكم. هما واصفات بيانات وصفية فقط لتخطيط التفعيل واكتشاف الإعداد؛ ولا تستبدلان تسجيل وقت التشغيل، أو `register(...)`، أو `setupEntry`. يستخدم أوائل مستهلكي التفعيل الحي الآن تلميحات أوامر البيان والقنوات والمزوّدين لتضييق تحميل Plugin قبل تجسيد السجل الأوسع:
+Optional manifest `activation` and `setup` blocks stay on the control plane.
+They are metadata-only descriptors for activation planning and setup discovery;
+they do not replace runtime registration, `register(...)`, or `setupEntry`.
+The first live activation consumers now use manifest command, channel, and provider hints
+to narrow plugin loading before broader registry materialization:
 
-- يضيّق تحميل CLI النطاق إلى Plugins التي تملك الأمر الأساسي المطلوب
-- يضيّق إعداد القناة/حل Plugin النطاق إلى Plugins التي تملك معرّف القناة المطلوب
-- يضيّق إعداد/حل وقت تشغيل المزوّد الصريح النطاق إلى Plugins التي تملك معرّف المزوّد المطلوب
-- يستخدم تخطيط بدء تشغيل Gateway‏ `activation.onStartup` لاستيرادات بدء التشغيل الصريحة وخيارات عدم الاشتراك في بدء التشغيل؛ أما Plugins التي لا تحتوي على بيانات وصفية لبدء التشغيل فلا تُحمّل إلا من خلال محفزات تفعيل أضيق
+- CLI loading narrows to plugins that own the requested primary command
+- channel setup/plugin resolution narrows to plugins that own the requested
+  channel id
+- explicit provider setup/runtime resolution narrows to plugins that own the
+  requested provider id
+- Gateway startup planning uses `activation.onStartup` for explicit startup
+  imports and startup opt-outs; plugins without startup metadata load only
+  through narrower activation triggers
 
-يكشف مخطط التفعيل عن API للمعرّفات فقط للمتصلين الحاليين، وAPI خطة للتشخيصات الجديدة. تبلّغ إدخالات الخطة عن سبب اختيار Plugin، مع فصل تلميحات مخطط `activation.*` الصريحة عن بديل ملكية البيان مثل `providers`، و`channels`، و`commandAliases`، و`setup.providers`، و`contracts.tools`، والخطافات. هذا الفصل في السبب هو حد التوافق: تستمر بيانات Plugin الوصفية الحالية في العمل، بينما يستطيع الكود الجديد اكتشاف التلميحات الواسعة أو سلوك البديل دون تغيير دلالات تحميل وقت التشغيل.
+Request-time runtime preloads that ask for the broad `all` scope still derive an
+explicit effective plugin id set from config, startup planning, configured
+channels, slots, and auto-enable rules. If that derived set is empty, OpenClaw
+loads an empty runtime registry instead of widening to every discoverable
+plugin.
 
-يفضّل اكتشاف الإعداد الآن المعرّفات المملوكة للواصفات مثل `setup.providers` و`setup.cliBackends` لتضييق Plugins المرشحة قبل أن يعود إلى `setup-api` في Plugins التي لا تزال تحتاج إلى خطافات وقت تشغيل أثناء الإعداد. تستخدم قوائم إعداد المزوّد `providerAuthChoices` في البيان، وخيارات الإعداد المشتقة من الواصفات، وبيانات فهرس التثبيت الوصفية دون تحميل وقت تشغيل المزوّد. يمثّل `setup.requiresRuntime: false` الصريح حدًا لوصف فقط؛ أما حذف `requiresRuntime` فيُبقي بديل `setup-api` القديم من أجل التوافق. إذا ادّعى أكثر من Plugin مكتشف واحد ملكية مزوّد إعداد أو معرّف واجهة CLI خلفية مطبّع، يرفض بحث الإعداد المالك الملتبس بدلًا من الاعتماد على ترتيب الاكتشاف. عندما يُنفّذ وقت تشغيل الإعداد، تبلّغ تشخيصات السجل عن الانحراف بين `setup.providers` / `setup.cliBackends` والمزوّدين أو واجهات CLI الخلفية المسجلة بواسطة setup-api دون حظر Plugins القديمة.
+The activation planner exposes both an ids-only API for existing callers and a
+plan API for new diagnostics. Plan entries report why a plugin was selected,
+separating explicit `activation.*` planner hints from manifest ownership
+fallback such as `providers`, `channels`, `commandAliases`, `setup.providers`,
+`contracts.tools`, and hooks. That reason split is the compatibility boundary:
+existing plugin metadata keeps working, while new code can detect broad hints
+or fallback behavior without changing runtime loading semantics.
 
-### حد ذاكرة Plugin المؤقتة
+Setup discovery now prefers descriptor-owned ids such as `setup.providers` and
+`setup.cliBackends` to narrow candidate plugins before it falls back to
+`setup-api` for plugins that still need setup-time runtime hooks. Provider
+setup lists use manifest `providerAuthChoices`, descriptor-derived setup
+choices, and install-catalog metadata without loading provider runtime. Explicit
+`setup.requiresRuntime: false` is a descriptor-only cutoff; omitted
+`requiresRuntime` keeps the legacy setup-api fallback for compatibility. If more
+than one discovered plugin claims the same normalized setup provider or CLI
+backend id, setup lookup refuses the ambiguous owner instead of relying on
+discovery order. When setup runtime does execute, registry diagnostics report
+drift between `setup.providers` / `setup.cliBackends` and the providers or CLI
+backends registered by setup-api without blocking legacy plugins.
 
-لا يخزّن OpenClaw مؤقتًا نتائج اكتشاف Plugin أو بيانات سجل البيان المباشرة خلف نوافذ زمنية تعتمد على ساعة الحائط. يجب أن تصبح عمليات التثبيت، وتعديلات البيان، وتغييرات مسار التحميل مرئية عند قراءة البيانات الوصفية الصريحة التالية أو إعادة بناء اللقطة التالية. قد يحتفظ محلل ملف البيان بذاكرة مؤقتة محدودة لتوقيع الملف، مفتاحة بمسار البيان المفتوح، ورقم inode، والحجم، والطوابع الزمنية؛ هذه الذاكرة المؤقتة تتجنب فقط إعادة تحليل البايتات غير المتغيرة، ويجب ألا تخزّن اكتشافًا أو سجلًا أو مالكًا أو إجابات سياسة.
+### Plugin cache boundary
 
-المسار السريع الآمن للبيانات الوصفية هو ملكية الكائنات الصريحة، وليس ذاكرة مؤقتة مخفية. ينبغي للمسارات الساخنة عند بدء تشغيل Gateway تمرير `PluginMetadataSnapshot` الحالي، أو `PluginLookUpTable` المشتق، أو سجل بيان صريح عبر سلسلة الاستدعاء. يمكن للتحقق من الإعدادات، والتمكين التلقائي عند بدء التشغيل، وتمهيد Plugin، واختيار المزوّد إعادة استخدام تلك الكائنات ما دامت تمثل الإعدادات الحالية ومخزون Plugin الحالي. لا يزال بحث الإعداد يعيد بناء بيانات البيان الوصفية عند الطلب إلا إذا تلقى مسار الإعداد المحدد سجل بيان صريحًا؛ أبقِ ذلك كبديل مسار بارد بدلًا من إضافة ذاكرات مؤقتة مخفية للبحث. عندما تتغير المدخلات، أعد بناء اللقطة واستبدلها بدلًا من تعديلها أو الاحتفاظ بنسخ تاريخية.
-ينبغي إعادة حساب العروض فوق سجل Plugin النشط ومساعدات تمهيد القنوات المضمّنة من السجل/الجذر الحالي. لا بأس بالخرائط قصيرة العمر داخل استدعاء واحد لإزالة تكرار العمل أو الحماية من إعادة الدخول؛ لكن يجب ألا تصبح ذاكرات مؤقتة لبيانات العملية الوصفية.
+OpenClaw does not cache plugin discovery results or direct manifest registry
+data behind wall-clock windows. Installs, manifest edits, and load-path changes
+must become visible on the next explicit metadata read or snapshot rebuild.
+The manifest file parser may keep a bounded file-signature cache keyed by the
+opened manifest path, inode, size, and timestamps; that cache only avoids
+re-parsing unchanged bytes and must not cache discovery, registry, owner, or
+policy answers.
 
-بالنسبة إلى تحميل Plugin، تكون طبقة الذاكرة المؤقتة المستمرة هي تحميل وقت التشغيل. قد تعيد استخدام حالة المحمّل عندما تُحمّل فعليًا الشيفرة أو المصنوعات المثبتة، مثل:
+The safe metadata fast path is explicit object ownership, not a hidden cache.
+Gateway startup hot paths should pass the current `PluginMetadataSnapshot`, the
+derived `PluginLookUpTable`, or an explicit manifest registry through the call
+chain. Config validation, startup auto-enable, plugin bootstrap, and provider
+selection can reuse those objects while they represent the current config and
+plugin inventory. Setup lookup still reconstructs manifest metadata on demand
+unless the specific setup path receives an explicit manifest registry; keep that
+as a cold-path fallback rather than adding hidden lookup caches. When the input
+changes, rebuild and replace the snapshot instead of mutating it or keeping
+historical copies.
+Views over the active plugin registry and bundled channel bootstrap helpers
+should be recomputed from the current registry/root. Short-lived maps are fine
+inside one call to dedupe work or guard reentry; they must not become process
+metadata caches.
 
-- `PluginLoaderCacheState` وسجلات وقت التشغيل النشطة المتوافقة
-- ذاكرات jiti/module المؤقتة وذاكرات محمّل السطح العام المؤقتة المستخدمة لتجنب استيراد سطح وقت التشغيل نفسه بشكل متكرر
-- ذاكرات نظام الملفات المؤقتة لمصنوعات Plugin المثبتة
-- خرائط قصيرة العمر لكل استدعاء لتطبيع المسارات أو حل التكرارات
+For plugin loading, the persistent cache layer is runtime loading. It may reuse
+loader state when code or installed artifacts are actually loaded, such as:
 
-تلك الذاكرات المؤقتة هي تفاصيل تنفيذ في مستوى البيانات. يجب ألا تجيب عن أسئلة مستوى التحكم مثل "أي Plugin يملك هذا المزوّد؟" إلا إذا طلب المتصل تحميل وقت التشغيل عمدًا.
+- `PluginLoaderCacheState` and compatible active runtime registries
+- jiti/module caches and public-surface loader caches used to avoid importing
+  the same runtime surface repeatedly
+- filesystem caches for installed plugin artifacts
+- short-lived per-call maps for path normalization or duplicate resolution
 
-لا تضف ذاكرات مؤقتة مستمرة أو معتمدة على ساعة الحائط من أجل:
+Those caches are data-plane implementation details. They must not answer
+control-plane questions such as "which plugin owns this provider?" unless the
+caller deliberately asked for runtime loading.
 
-- نتائج الاكتشاف
-- سجلات البيان المباشرة
-- سجلات البيان المعاد بناؤها من فهرس Plugin المثبت
-- بحث مالك المزوّد، أو كبت النموذج، أو سياسة المزوّد، أو بيانات المصنوعات العامة الوصفية
-- أي إجابة أخرى مشتقة من البيان حيث ينبغي أن يكون البيان المتغير، أو الفهرس المثبت، أو مسار التحميل مرئيًا في قراءة البيانات الوصفية التالية
+Do not add persistent or wall-clock caches for:
 
-يعيد المتصلون الذين يبنون بيانات البيان الوصفية من فهرس Plugin المثبت والمستمر بناء ذلك السجل عند الطلب. الفهرس المثبت هو حالة متينة في مستوى المصدر؛ وليس ذاكرة مؤقتة مخفية للبيانات الوصفية داخل العملية.
+- discovery results
+- direct manifest registries
+- manifest registries reconstructed from the installed plugin index
+- provider owner lookup, model suppression, provider policy, or public-artifact
+  metadata
+- any other manifest-derived answer where a changed manifest, installed index,
+  or load path should be visible on the next metadata read
 
-## نموذج السجل
+Callers that rebuild manifest metadata from the persisted installed plugin
+index reconstruct that registry on demand. The installed index is durable
+source-plane state; it is not a hidden in-process metadata cache.
 
-لا تعدّل Plugins المحمّلة العموميات العشوائية في النواة مباشرة. بل تسجّل في سجل Plugin مركزي.
+## Registry model
 
-يتتبع السجل:
+Loaded plugins do not directly mutate random core globals. They register into a
+central plugin registry.
 
-- سجلات Plugin (الهوية، والمصدر، والأصل، والحالة، والتشخيصات)
-- الأدوات
-- الخطافات القديمة والخطافات المعرّفة بأنواع
-- القنوات
-- المزوّدين
-- معالجات RPC في Gateway
-- مسارات HTTP
-- مسجلات CLI
-- خدمات الخلفية
-- الأوامر المملوكة لـ Plugin
+The registry tracks:
 
-ثم تقرأ ميزات النواة من ذلك السجل بدلًا من التحدث مباشرة إلى وحدات Plugin. هذا يُبقي التحميل باتجاه واحد:
+- plugin records (identity, source, origin, status, diagnostics)
+- tools
+- legacy hooks and typed hooks
+- channels
+- providers
+- gateway RPC handlers
+- HTTP routes
+- CLI registrars
+- background services
+- plugin-owned commands
 
-- وحدة Plugin -> تسجيل السجل
-- وقت تشغيل النواة -> استهلاك السجل
+Core features then read from that registry instead of talking to plugin modules
+directly. This keeps loading one-way:
 
-هذا الفصل مهم لقابلية الصيانة. فهو يعني أن معظم أسطح النواة لا تحتاج إلا إلى نقطة تكامل واحدة: "اقرأ السجل"، وليس "عامل كل وحدة Plugin كحالة خاصة".
+- plugin module -> registry registration
+- core runtime -> registry consumption
 
-## استدعاءات ربط المحادثة
+That separation matters for maintainability. It means most core surfaces only
+need one integration point: "read the registry", not "special-case every plugin
+module".
 
-يمكن لـ Plugins التي تربط محادثة أن تتفاعل عند حسم موافقة.
+## Conversation binding callbacks
 
-استخدم `api.onConversationBindingResolved(...)` لتلقي استدعاء بعد الموافقة على طلب ربط أو رفضه:
+Plugins that bind a conversation can react when an approval is resolved.
+
+Use `api.onConversationBindingResolved(...)` to receive a callback after a bind
+request is approved or denied:
 
 ```ts
 export default {
@@ -135,100 +203,119 @@ export default {
 };
 ```
 
-حقول حمولة الاستدعاء:
+Callback payload fields:
 
-- `status`:‏ `"approved"` أو `"denied"`
-- `decision`:‏ `"allow-once"`، أو `"allow-always"`، أو `"deny"`
-- `binding`: الربط المحسوم للطلبات الموافق عليها
-- `request`: ملخص الطلب الأصلي، وتلميح الفصل، ومعرّف المرسل، وبيانات المحادثة الوصفية
+- `status`: `"approved"` or `"denied"`
+- `decision`: `"allow-once"`, `"allow-always"`, or `"deny"`
+- `binding`: the resolved binding for approved requests
+- `request`: the original request summary, detach hint, sender id, and
+  conversation metadata
 
-هذا الاستدعاء للإشعار فقط. لا يغيّر من يُسمح له بربط محادثة، ويعمل بعد انتهاء معالجة الموافقة في النواة.
+This callback is notification-only. It does not change who is allowed to bind a
+conversation, and it runs after core approval handling finishes.
 
-## خطافات وقت تشغيل المزوّد
+## Provider runtime hooks
 
-تتكون Plugins المزوّدين من ثلاث طبقات:
+Provider plugins have three layers:
 
-- **بيانات البيان الوصفية** للبحث الرخيص قبل وقت التشغيل:
-  `setup.providers[].envVars`، والتوافق المهمل `providerAuthEnvVars`،
-  و`providerAuthAliases`، و`providerAuthChoices`، و`channelEnvVars`.
-- **خطافات وقت الإعدادات**:‏ `catalog` (القديم `discovery`) بالإضافة إلى
+- **Manifest metadata** for cheap pre-runtime lookup:
+  `setup.providers[].envVars`, deprecated compatibility `providerAuthEnvVars`,
+  `providerAuthAliases`, `providerAuthChoices`, and `channelEnvVars`.
+- **Config-time hooks**: `catalog` (legacy `discovery`) plus
   `applyConfigDefaults`.
-- **خطافات وقت التشغيل**: أكثر من 40 خطافًا اختياريًا تغطي المصادقة، وحل النماذج،
-  وتغليف التدفق، ومستويات التفكير، وسياسة إعادة التشغيل، ونقاط نهاية الاستخدام. راجع
-  القائمة الكاملة تحت [ترتيب الخطافات والاستخدام](#hook-order-and-usage).
+- **Runtime hooks**: 40+ optional hooks covering auth, model resolution,
+  stream wrapping, thinking levels, replay policy, and usage endpoints. See
+  the full list under [Hook order and usage](#hook-order-and-usage).
 
-لا يزال OpenClaw يملك حلقة الوكيل العامة، والتحويل عند الفشل، ومعالجة النسخة النصية، وسياسة الأدوات. هذه الخطافات هي سطح التوسعة للسلوك الخاص بالمزوّد دون الحاجة إلى نقل استدلال مخصص كامل.
+OpenClaw still owns the generic agent loop, failover, transcript handling, and
+tool policy. These hooks are the extension surface for provider-specific
+behavior without needing a whole custom inference transport.
 
-استخدم `setup.providers[].envVars` في البيان عندما تكون لدى المزوّد اعتمادات مستندة إلى متغيرات البيئة ينبغي أن تراها مسارات المصادقة/الحالة/اختيار النموذج العامة دون تحميل وقت تشغيل Plugin. لا يزال `providerAuthEnvVars` المهمل يُقرأ بواسطة محول التوافق خلال نافذة الإهمال، وتتلقى Plugins غير المضمّنة التي تستخدمه تشخيصًا للبيان. استخدم `providerAuthAliases` في البيان عندما ينبغي لمعرّف مزوّد واحد إعادة استخدام متغيرات البيئة، وملفات تعريف المصادقة، والمصادقة المدعومة بالإعدادات، وخيار إعداد مفتاح API لمعرّف مزوّد آخر. استخدم `providerAuthChoices` في البيان عندما ينبغي لأسطح CLI الخاصة بالإعداد/اختيار المصادقة معرفة معرّف اختيار المزوّد، وتسميات المجموعات، وتوصيل مصادقة بسيط عبر علم واحد دون تحميل وقت تشغيل المزوّد. أبقِ `envVars` الخاصة بوقت تشغيل المزوّد للتلميحات الموجهة إلى المشغل مثل تسميات الإعداد أو متغيرات إعداد OAuth client-id/client-secret.
+Use manifest `setup.providers[].envVars` when the provider has env-based
+credentials that generic auth/status/model-picker paths should see without
+loading plugin runtime. Deprecated `providerAuthEnvVars` is still read by the
+compatibility adapter during the deprecation window, and non-bundled plugins
+that use it receive a manifest diagnostic. Use manifest `providerAuthAliases`
+when one provider id should reuse another provider id's env vars, auth profiles,
+config-backed auth, and API-key onboarding choice. Use manifest
+`providerAuthChoices` when onboarding/auth-choice CLI surfaces should know the
+provider's choice id, group labels, and simple one-flag auth wiring without
+loading provider runtime. Keep provider runtime
+`envVars` for operator-facing hints such as onboarding labels or OAuth
+client-id/client-secret setup vars.
 
-استخدم `channelEnvVars` في البيان عندما تكون لدى قناة مصادقة أو إعداد مدفوع بمتغيرات البيئة ينبغي أن تراه بدائل بيئة الصدفة العامة، أو فحوصات الإعدادات/الحالة، أو مطالبات الإعداد دون تحميل وقت تشغيل القناة.
+Use manifest `channelEnvVars` when a channel has env-driven auth or setup that
+generic shell-env fallback, config/status checks, or setup prompts should see
+without loading channel runtime.
 
-### ترتيب الخطافات والاستخدام
+### Hook order and usage
 
-بالنسبة إلى Plugins النموذج/المزوّد، يستدعي OpenClaw الخطافات بهذا الترتيب التقريبي.
-عمود "متى يُستخدم" هو دليل القرار السريع.
-حقول المزوّد الخاصة بالتوافق فقط التي لم يعد OpenClaw يستدعيها، مثل
-`ProviderPlugin.capabilities` و`suppressBuiltInModel`، غير مدرجة هنا عمدًا.
+For model/provider plugins, OpenClaw calls hooks in this rough order.
+The "When to use" column is the quick decision guide.
+Compatibility-only provider fields that OpenClaw no longer calls, such as
+`ProviderPlugin.capabilities` and `suppressBuiltInModel`, are intentionally not
+listed here.
 
 | #   | الخطاف                            | ما يفعله                                                                                                      | متى يُستخدم                                                                                                                                   |
-| --- | --------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `catalog`                         | نشر إعدادات الموفّر في `models.providers` أثناء إنشاء `models.json`                                           | عندما يمتلك الموفّر كتالوجًا أو قيمًا افتراضية لعنوان URL الأساسي                                                                            |
-| 2   | `applyConfigDefaults`             | تطبيق القيم الافتراضية العامة للإعدادات المملوكة للموفّر أثناء تجسيد الإعدادات                               | عندما تعتمد القيم الافتراضية على وضع المصادقة، أو البيئة، أو دلالات عائلة نماذج الموفّر                                                      |
-| --  | _(بحث النماذج المضمّن)_           | يجرّب OpenClaw مسار السجل/الكتالوج المعتاد أولًا                                                              | _(ليس خطاف Plugin)_                                                                                                                           |
-| 3   | `normalizeModelId`                | تطبيع الأسماء المستعارة القديمة أو التجريبية لمعرّفات النماذج قبل البحث                                      | عندما يمتلك الموفّر تنظيف الأسماء المستعارة قبل حلّ النموذج القانوني                                                                         |
-| 4   | `normalizeTransport`              | تطبيع `api` / `baseUrl` لعائلة الموفّر قبل تجميع النموذج العام                                                | عندما يمتلك الموفّر تنظيف النقل لمعرّفات الموفّرين المخصصة ضمن عائلة النقل نفسها                                                            |
-| 5   | `normalizeConfig`                 | تطبيع `models.providers.<id>` قبل حلّ وقت التشغيل/الموفّر                                                     | عندما يحتاج الموفّر إلى تنظيف إعدادات يجب أن يبقى مع Plugin؛ كما توفّر مساعدات عائلة Google المضمّنة دعمًا احتياطيًا لإدخالات إعدادات Google المدعومة |
-| 6   | `applyNativeStreamingUsageCompat` | تطبيق إعادات كتابة توافق استخدام البث الأصلي على موفّري الإعدادات                                           | عندما يحتاج الموفّر إلى إصلاحات بيانات وصفية لاستخدام البث الأصلي تقودها نقطة النهاية                                                        |
-| 7   | `resolveConfigApiKey`             | حلّ مصادقة علامة البيئة لموفّري الإعدادات قبل تحميل مصادقة وقت التشغيل                                       | عندما يمتلك الموفّر حلّ مفتاح API عبر علامة بيئية مملوكًا له؛ كما يملك `amazon-bedrock` محلل علامات بيئة AWS مضمّنًا هنا                    |
-| 8   | `resolveSyntheticAuth`            | إظهار المصادقة المحلية/ذاتية الاستضافة أو المدعومة بالإعدادات دون حفظ نص عادي                               | عندما يستطيع الموفّر العمل بعلامة اعتماد اصطناعية/محلية                                                                                     |
-| 9   | `resolveExternalAuthProfiles`     | تركيب ملفات تعريف المصادقة الخارجية المملوكة للموفّر؛ القيمة الافتراضية لـ `persistence` هي `runtime-only` لاعتمادات CLI/التطبيق | عندما يعيد الموفّر استخدام اعتمادات مصادقة خارجية دون حفظ رموز تحديث منسوخة؛ صرّح عن `contracts.externalAuthProviders` في البيان           |
-| 10  | `shouldDeferSyntheticProfileAuth` | خفض أولوية عناصر نائبة لملفات تعريف اصطناعية محفوظة خلف مصادقة مدعومة بالبيئة/الإعدادات                    | عندما يخزّن الموفّر ملفات تعريف اصطناعية نائبة لا ينبغي أن تفوز بالأسبقية                                                                    |
-| 11  | `resolveDynamicModel`             | بديل متزامن لمعرّفات النماذج المملوكة للموفّر غير الموجودة بعد في السجل المحلي                               | عندما يقبل الموفّر معرّفات نماذج علوية عشوائية                                                                                               |
-| 12  | `prepareDynamicModel`             | إحماء غير متزامن، ثم يعمل `resolveDynamicModel` مرة أخرى                                                      | عندما يحتاج الموفّر إلى بيانات وصفية شبكية قبل حلّ المعرّفات غير المعروفة                                                                    |
-| 13  | `normalizeResolvedModel`          | إعادة الكتابة النهائية قبل أن يستخدم المشغّل المضمّن النموذج المحلول                                         | عندما يحتاج الموفّر إلى إعادات كتابة للنقل لكنه لا يزال يستخدم نقلًا أساسيًا                                                                 |
-| 14  | `contributeResolvedModelCompat`   | المساهمة بأعلام توافق لنماذج المورّد خلف نقل آخر متوافق                                                       | عندما يتعرّف الموفّر على نماذجه على نقل الوكيل دون تولّي الموفّر                                                                              |
-| 15  | `normalizeToolSchemas`            | تطبيع مخططات الأدوات قبل أن يراها المشغّل المضمّن                                                             | عندما يحتاج الموفّر إلى تنظيف مخططات عائلة النقل                                                                                             |
-| 16  | `inspectToolSchemas`              | إظهار تشخيصات المخططات المملوكة للموفّر بعد التطبيع                                                           | عندما يريد الموفّر تحذيرات كلمات مفتاحية دون تعليم النواة قواعد خاصة بالموفّر                                                                |
-| 17  | `resolveReasoningOutputMode`      | اختيار عقد مخرجات الاستدلال الأصلي مقابل الموسوم                                                              | عندما يحتاج الموفّر إلى استدلال/مخرج نهائي موسوم بدلًا من الحقول الأصلية                                                                     |
-| 18  | `prepareExtraParams`              | تطبيع معاملات الطلب قبل مغلفات خيارات البث العامة                                                             | عندما يحتاج الموفّر إلى معاملات طلب افتراضية أو تنظيف معاملات لكل موفّر                                                                      |
-| 19  | `createStreamFn`                  | استبدال مسار البث المعتاد بالكامل بنقل مخصص                                                                   | عندما يحتاج الموفّر إلى بروتوكول سلكي مخصص، لا مجرد مغلّف                                                                                   |
-| 20  | `wrapStreamFn`                    | مغلّف بث بعد تطبيق المغلفات العامة                                                                            | عندما يحتاج الموفّر إلى مغلفات توافق للرؤوس/الجسم/النموذج في الطلب دون نقل مخصص                                                             |
-| 21  | `resolveTransportTurnState`       | إرفاق رؤوس نقل أصلية لكل دور أو بيانات وصفية                                                                  | عندما يريد الموفّر من عمليات النقل العامة إرسال هوية الدور الأصلية للموفّر                                                                   |
-| 22  | `resolveWebSocketSessionPolicy`   | إرفاق رؤوس WebSocket أصلية أو سياسة تهدئة للجلسة                                                              | عندما يريد الموفّر من عمليات نقل WS العامة ضبط رؤوس الجلسة أو سياسة الرجوع الاحتياطي                                                        |
-| 23  | `formatApiKey`                    | منسّق ملف تعريف المصادقة: يتحول الملف المخزن إلى سلسلة `apiKey` وقت التشغيل                                  | عندما يخزّن الموفّر بيانات وصفية إضافية للمصادقة ويحتاج إلى شكل رمز وقت تشغيل مخصص                                                          |
-| 24  | `refreshOAuth`                    | تجاوز تحديث OAuth لنقاط نهاية تحديث مخصصة أو سياسة فشل التحديث                                               | عندما لا يلائم الموفّر محدّثات `pi-ai` المشتركة                                                                                              |
-| 25  | `buildAuthDoctorHint`             | تلميح إصلاح يُضاف عندما يفشل تحديث OAuth                                                                      | عندما يحتاج الموفّر إلى إرشادات إصلاح مصادقة مملوكة للموفّر بعد فشل التحديث                                                                 |
-| 26  | `matchesContextOverflowError`     | مطابق تجاوز نافذة السياق المملوك للموفّر                                                                      | عندما لدى الموفّر أخطاء تجاوز خام قد تفوتها الاستدلالات العامة                                                                               |
-| 27  | `classifyFailoverReason`          | تصنيف سبب الانتقال الاحتياطي المملوك للموفّر                                                                  | عندما يستطيع الموفّر ربط أخطاء API/النقل الخام بحدود المعدل/الحمل الزائد/إلخ                                                               |
-| 28  | `isCacheTtlEligible`              | سياسة ذاكرة تخزين المطالبات لموفّري الوكيل/النقل الخلفي                                                       | عندما يحتاج الموفّر إلى بوابة TTL لذاكرة التخزين المؤقت خاصة بالوكيل                                                                        |
-| 29  | `buildMissingAuthMessage`         | بديل لرسالة استرداد المصادقة المفقودة العامة                                                                  | عندما يحتاج الموفّر إلى تلميح استرداد مصادقة مفقودة خاص بالموفّر                                                                             |
-| 30  | `augmentModelCatalog`             | صفوف كتالوج اصطناعية/نهائية تُضاف بعد الاكتشاف                                                                | عندما يحتاج الموفّر إلى صفوف توافق أمامي اصطناعية في `models list` والمنتقيات                                                               |
-| 31  | `resolveThinkingProfile`          | مجموعة مستويات `/think` الخاصة بالنموذج، وتسميات العرض، والقيمة الافتراضية                                  | عندما يكشف الموفّر سلّم تفكير مخصصًا أو تسمية ثنائية لنماذج محددة                                                                            |
-| 32  | `isBinaryThinking`                | خطاف توافق تبديل الاستدلال تشغيل/إيقاف                                                                        | عندما يكشف الموفّر تفكيرًا ثنائيًا تشغيل/إيقاف فقط                                                                                           |
-| 33  | `supportsXHighThinking`           | خطاف توافق دعم استدلال `xhigh`                                                                                | عندما يريد الموفّر `xhigh` على مجموعة فرعية من النماذج فقط                                                                                  |
-| 34  | `resolveDefaultThinkingLevel`     | خطاف توافق مستوى `/think` الافتراضي                                                                           | عندما يمتلك الموفّر سياسة `/think` الافتراضية لعائلة نماذج                                                                                  |
-| 35  | `isModernModelRef`                | مطابق النموذج الحديث لمرشحات الملفات التعريفية الحية واختيار اختبارات الدخان                                 | عندما يمتلك الموفّر مطابقة النموذج المفضل للاختبارات الحية/اختبارات الدخان                                                                  |
-| 36  | `prepareRuntimeAuth`              | تبادل اعتماد معدّ إلى الرمز/المفتاح الفعلي وقت التشغيل مباشرة قبل الاستدلال                                  | عندما يحتاج الموفّر إلى تبادل رمز أو اعتماد طلب قصير العمر                                                                                  |
-| 37  | `resolveUsageAuth`                | حل بيانات اعتماد الاستخدام/الفوترة لـ `/usage` وواجهات الحالة ذات الصلة                                     | يحتاج المزوّد إلى تحليل مخصص لرمز الاستخدام/الحصة أو بيانات اعتماد استخدام مختلفة                                                               |
-| 38  | `fetchUsageSnapshot`              | جلب لقطات الاستخدام/الحصة الخاصة بالمزوّد وتطبيعها بعد حل المصادقة                             | يحتاج المزوّد إلى نقطة نهاية استخدام خاصة بالمزوّد أو محلل حمولة                                                                           |
-| 39  | `createEmbeddingProvider`         | بناء محوّل تضمين يملكه المزوّد للذاكرة/البحث                                                     | يعود سلوك تضمين الذاكرة إلى Plugin المزوّد                                                                                    |
-| 40  | `buildReplayPolicy`               | إرجاع سياسة إعادة تشغيل تتحكم في معالجة النص المنسوخ للمزوّد                                        | يحتاج المزوّد إلى سياسة نص منسوخ مخصصة (على سبيل المثال، إزالة كتل التفكير)                                                               |
-| 41  | `sanitizeReplayHistory`           | إعادة كتابة سجل إعادة التشغيل بعد التنظيف العام للنص المنسوخ                                                        | يحتاج المزوّد إلى إعادة كتابات إعادة تشغيل خاصة بالمزوّد تتجاوز مساعدات Compaction المشتركة                                                             |
-| 42  | `validateReplayTurns`             | التحقق النهائي من أدوار إعادة التشغيل أو إعادة تشكيلها قبل المشغّل المضمّن                                           | يحتاج نقل المزوّد إلى تحقق أكثر صرامة من الأدوار بعد التنقية العامة                                                                    |
-| 43  | `onModelSelected`                 | تشغيل الآثار الجانبية اللاحقة للاختيار والمملوكة للمزوّد                                                                 | يحتاج المزوّد إلى قياس عن بُعد أو حالة يملكها المزوّد عندما يصبح النموذج نشطًا                                                                  |
+| --- | --------------------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `catalog`                         | نشر إعدادات المزوّد في `models.providers` أثناء توليد `models.json`                                           | عندما يملك المزوّد فهرسًا أو قيمًا افتراضية لعنوان URL الأساسي                                                                                |
+| 2   | `applyConfigDefaults`             | تطبيق القيم الافتراضية العامة للإعدادات التي يملكها المزوّد أثناء تجسيد الإعدادات                             | عندما تعتمد القيم الافتراضية على وضع المصادقة أو البيئة أو دلالات عائلة نماذج المزوّد                                                        |
+| --  | _(البحث المدمج عن النموذج)_        | يحاول OpenClaw مسار السجل/الفهرس العادي أولًا                                                                 | _(ليس خطاف Plugin)_                                                                                                                           |
+| 3   | `normalizeModelId`                | تطبيع الأسماء المستعارة القديمة أو التجريبية لمعرّفات النماذج قبل البحث                                       | عندما يملك المزوّد تنظيف الأسماء المستعارة قبل حل النموذج المعياري                                                                            |
+| 4   | `normalizeTransport`              | تطبيع `api` / `baseUrl` لعائلة المزوّد قبل تجميع النموذج العام                                                | عندما يملك المزوّد تنظيف النقل لمعرّفات مزوّد مخصصة ضمن عائلة النقل نفسها                                                                    |
+| 5   | `normalizeConfig`                 | تطبيع `models.providers.<id>` قبل حل وقت التشغيل/المزوّد                                                      | عندما يحتاج المزوّد إلى تنظيف إعدادات يجب أن يبقى مع Plugin؛ كما تعمل مساعدات عائلة Google المضمنة كدعم احتياطي لإدخالات إعدادات Google المدعومة |
+| 6   | `applyNativeStreamingUsageCompat` | تطبيق إعادة كتابة توافق استخدام البث الأصلي على مزوّدي الإعدادات                                             | عندما يحتاج المزوّد إلى إصلاحات بيانات تعريف استخدام البث الأصلي المعتمدة على نقطة النهاية                                                    |
+| 7   | `resolveConfigApiKey`             | حل مصادقة علامة البيئة لمزوّدي الإعدادات قبل تحميل مصادقة وقت التشغيل                                        | عندما يملك المزوّد حل مفتاح API ذي علامة بيئية؛ كما يملك `amazon-bedrock` محللًا مدمجًا لعلامات بيئة AWS هنا                                  |
+| 8   | `resolveSyntheticAuth`            | إظهار مصادقة محلية/مستضافة ذاتيًا أو مدعومة بالإعدادات دون حفظ نص صريح                                       | عندما يستطيع المزوّد العمل باستخدام علامة بيانات اعتماد اصطناعية/محلية                                                                       |
+| 9   | `resolveExternalAuthProfiles`     | تركيب ملفات تعريف مصادقة خارجية يملكها المزوّد؛ القيمة الافتراضية لـ `persistence` هي `runtime-only` لبيانات الاعتماد التي تملكها CLI/التطبيق | عندما يعيد المزوّد استخدام بيانات اعتماد مصادقة خارجية دون حفظ رموز تحديث منسوخة؛ أعلن `contracts.externalAuthProviders` في البيان |
+| 10  | `shouldDeferSyntheticProfileAuth` | خفض أولوية عناصر نائبة محفوظة لملفات تعريف اصطناعية خلف مصادقة مدعومة بالبيئة/الإعدادات                    | عندما يخزن المزوّد ملفات تعريف بعناصر نائبة اصطناعية لا يجب أن تفوز بالأولوية                                                                |
+| 11  | `resolveDynamicModel`             | حل احتياطي متزامن لمعرّفات نماذج يملكها المزوّد ولم تدخل السجل المحلي بعد                                    | عندما يقبل المزوّد معرّفات نماذج عشوائية من المصدر الأعلى                                                                                    |
+| 12  | `prepareDynamicModel`             | تهيئة غير متزامنة، ثم يعمل `resolveDynamicModel` مرة أخرى                                                     | عندما يحتاج المزوّد إلى بيانات تعريف من الشبكة قبل حل المعرّفات غير المعروفة                                                                 |
+| 13  | `normalizeResolvedModel`          | إعادة كتابة نهائية قبل أن يستخدم المشغل المضمن النموذج المحلول                                                | عندما يحتاج المزوّد إلى إعادة كتابة النقل لكنه لا يزال يستخدم نقلًا أساسيًا                                                                  |
+| 14  | `contributeResolvedModelCompat`   | المساهمة بأعلام توافق لنماذج البائع خلف نقل آخر متوافق                                                        | عندما يتعرف المزوّد على نماذجه الخاصة على عمليات نقل وسيطة دون السيطرة على المزوّد                                                           |
+| 15  | `normalizeToolSchemas`            | تطبيع مخططات الأدوات قبل أن يراها المشغل المضمن                                                               | عندما يحتاج المزوّد إلى تنظيف مخططات عائلة النقل                                                                                             |
+| 16  | `inspectToolSchemas`              | إظهار تشخيصات مخططات يملكها المزوّد بعد التطبيع                                                               | عندما يريد المزوّد تحذيرات كلمات مفتاحية دون تعليم النواة قواعد خاصة بالمزوّد                                                                |
+| 17  | `resolveReasoningOutputMode`      | اختيار عقد مخرجات الاستدلال الأصلي مقابل الموسوم                                                              | عندما يحتاج المزوّد إلى استدلال/مخرجات نهائية موسومة بدلًا من الحقول الأصلية                                                                 |
+| 18  | `prepareExtraParams`              | تطبيع معلمات الطلب قبل أغلفة خيارات البث العامة                                                               | عندما يحتاج المزوّد إلى معلمات طلب افتراضية أو تنظيف معلمات لكل مزوّد                                                                        |
+| 19  | `createStreamFn`                  | استبدال مسار البث العادي بالكامل بنقل مخصص                                                                    | عندما يحتاج المزوّد إلى بروتوكول سلكي مخصص، وليس مجرد غلاف                                                                                   |
+| 20  | `wrapStreamFn`                    | غلاف بث بعد تطبيق الأغلفة العامة                                                                              | عندما يحتاج المزوّد إلى أغلفة توافق لرؤوس الطلب/الجسم/النموذج دون نقل مخصص                                                                  |
+| 21  | `resolveTransportTurnState`       | إرفاق رؤوس نقل أصلية لكل دور أو بيانات تعريف                                                                 | عندما يريد المزوّد من عمليات النقل العامة إرسال هوية دور أصلية للمزوّد                                                                       |
+| 22  | `resolveWebSocketSessionPolicy`   | إرفاق رؤوس WebSocket أصلية أو سياسة تهدئة للجلسة                                                              | عندما يريد المزوّد من عمليات نقل WS العامة ضبط رؤوس الجلسة أو سياسة الرجوع                                                                   |
+| 23  | `formatApiKey`                    | منسق ملف تعريف المصادقة: يصبح الملف المحفوظ سلسلة `apiKey` وقت التشغيل                                       | عندما يخزن المزوّد بيانات تعريف مصادقة إضافية ويحتاج إلى شكل رمز وقت تشغيل مخصص                                                             |
+| 24  | `refreshOAuth`                    | تجاوز تحديث OAuth لنقاط نهاية تحديث مخصصة أو سياسة فشل التحديث                                               | عندما لا يناسب المزوّد منعشات `pi-ai` المشتركة                                                                                               |
+| 25  | `buildAuthDoctorHint`             | تلميح إصلاح يُلحق عند فشل تحديث OAuth                                                                         | عندما يحتاج المزوّد إلى إرشاد إصلاح مصادقة يملكه المزوّد بعد فشل التحديث                                                                     |
+| 26  | `matchesContextOverflowError`     | مطابق يملكه المزوّد لتجاوز نافذة السياق                                                                       | عندما تكون لدى المزوّد أخطاء تجاوز خام قد تفوتها الاستدلالات العامة                                                                          |
+| 27  | `classifyFailoverReason`          | تصنيف سبب تجاوز الفشل الذي يملكه المزوّد                                                                      | عندما يستطيع المزوّد ربط أخطاء API/النقل الخام بحد المعدل/التحميل الزائد/إلخ                                                                |
+| 28  | `isCacheTtlEligible`              | سياسة ذاكرة التخزين المؤقت للموجه لمزوّدي الوكيل/النقل الخلفي                                                | عندما يحتاج المزوّد إلى بوابة TTL لذاكرة التخزين المؤقت خاصة بالوكيل                                                                         |
+| 29  | `buildMissingAuthMessage`         | بديل لرسالة استعادة المصادقة المفقودة العامة                                                                  | عندما يحتاج المزوّد إلى تلميح استعادة مصادقة مفقودة خاص بالمزوّد                                                                             |
+| 30  | `augmentModelCatalog`             | صفوف فهرس اصطناعية/نهائية تُلحق بعد الاكتشاف                                                                  | عندما يحتاج المزوّد إلى صفوف توافق أمامي اصطناعية في `models list` وأدوات الاختيار                                                           |
+| 31  | `resolveThinkingProfile`          | مجموعة مستويات `/think` الخاصة بالنموذج، وتسميات العرض، والقيمة الافتراضية                                   | عندما يوفّر المزوّد سلم تفكير مخصصًا أو تسمية ثنائية لنماذج مختارة                                                                           |
+| 32  | `isBinaryThinking`                | خطاف توافق تبديل الاستدلال تشغيل/إيقاف                                                                        | عندما يوفّر المزوّد تفكيرًا ثنائيًا فقط تشغيل/إيقاف                                                                                          |
+| 33  | `supportsXHighThinking`           | خطاف توافق دعم استدلال `xhigh`                                                                                | عندما يريد المزوّد `xhigh` على مجموعة فرعية فقط من النماذج                                                                                   |
+| 34  | `resolveDefaultThinkingLevel`     | خطاف توافق مستوى `/think` الافتراضي                                                                           | عندما يملك المزوّد سياسة `/think` الافتراضية لعائلة نماذج                                                                                    |
+| 35  | `isModernModelRef`                | مطابق النموذج الحديث لمرشحات الملفات الحية واختيار الاختبار الدخاني                                          | عندما يملك المزوّد مطابقة النموذج المفضل للاختبارات الحية/الدخانية                                                                           |
+| 36  | `prepareRuntimeAuth`              | استبدال بيانات اعتماد مهيأة بالرمز/المفتاح الفعلي لوقت التشغيل قبل الاستدلال مباشرة                         | عندما يحتاج المزوّد إلى تبادل رمز أو بيانات اعتماد طلب قصيرة العمر                                                                           |
+| 37  | `resolveUsageAuth`                | حل بيانات اعتماد الاستخدام/الفوترة لـ `/usage` وواجهات الحالة ذات الصلة                                     | يحتاج الموفر إلى تحليل مخصص لرمز الاستخدام/الحصة أو إلى بيانات اعتماد استخدام مختلفة                                                               |
+| 38  | `fetchUsageSnapshot`              | جلب لقطات الاستخدام/الحصة الخاصة بالموفر وتطبيعها بعد حل المصادقة                             | يحتاج الموفر إلى نقطة نهاية استخدام خاصة بالموفر أو محلل حمولة                                                                           |
+| 39  | `createEmbeddingProvider`         | بناء محول تضمين يملكه الموفر للذاكرة/البحث                                                     | ينتمي سلوك تضمين الذاكرة إلى Plugin الموفر                                                                                    |
+| 40  | `buildReplayPolicy`               | إرجاع سياسة إعادة تشغيل تتحكم في معالجة النص للموفر                                        | يحتاج الموفر إلى سياسة نص مخصصة (مثل إزالة كتل التفكير)                                                               |
+| 41  | `sanitizeReplayHistory`           | إعادة كتابة سجل إعادة التشغيل بعد التنظيف العام للنص                                                        | يحتاج الموفر إلى إعادة كتابات إعادة تشغيل خاصة بالموفر تتجاوز مساعدات Compaction المشتركة                                                             |
+| 42  | `validateReplayTurns`             | التحقق النهائي من أدوار إعادة التشغيل أو إعادة تشكيلها قبل المشغل المضمن                                           | يحتاج نقل الموفر إلى تحقق أكثر صرامة من الأدوار بعد التنقية العامة                                                                    |
+| 43  | `onModelSelected`                 | تشغيل الآثار الجانبية لما بعد التحديد التي يملكها الموفر                                                                 | يحتاج الموفر إلى قياسات عن بعد أو حالة يملكها الموفر عندما يصبح نموذج نشطًا                                                                  |
 
-`normalizeModelId` و`normalizeTransport` و`normalizeConfig` تتحقق أولا من
-Plugin المزوّد المطابق، ثم تنتقل إلى بقية Plugins المزوّدين القادرة على الخطافات
-إلى أن يغيّر أحدها فعليا معرّف النموذج أو النقل/الإعدادات. هذا يبقي
-حشوات مزوّدي الأسماء البديلة/التوافق تعمل من دون أن يحتاج المستدعي إلى معرفة أي
-Plugin مضمّن يملك إعادة الكتابة. إذا لم يَعِد أي خطاف مزوّد كتابة إدخال إعدادات
-مدعوم من عائلة Google، فسيظل مطبّع إعدادات Google المضمّن يطبّق تنظيف التوافق ذلك.
+يتحقق كل من `normalizeModelId` و`normalizeTransport` و`normalizeConfig` أولاً من
+Plugin المزوّد المطابق، ثم يتابع عبر Plugins المزوّدين الآخرين القادرين على استخدام الخطافات
+إلى أن يغيّر أحدها فعلياً معرف النموذج أو النقل/الإعدادات. يحافظ ذلك على عمل
+حشوات مزوّدي الاسم البديل/التوافق من دون مطالبة المستدعي بمعرفة أي
+Plugin مضمّن يملك إعادة الكتابة. إذا لم يُعد أي خطاف مزوّد كتابة إدخال إعدادات
+مدعوم من عائلة Google، فسيظل مطبّع إعدادات Google المضمّن يطبّق
+تنظيف التوافق ذلك.
 
-إذا كان المزوّد يحتاج إلى بروتوكول سلكي مخصّص بالكامل أو منفّذ طلبات مخصّص،
-فهذا صنف مختلف من الامتدادات. هذه الخطافات مخصّصة لسلوك المزوّد
+إذا كان المزوّد يحتاج إلى بروتوكول سلكي مخصص بالكامل أو منفّذ طلبات مخصص،
+فهذا صنف مختلف من الإضافات. هذه الخطافات مخصصة لسلوك المزوّد
 الذي لا يزال يعمل ضمن حلقة الاستدلال العادية في OpenClaw.
 
-### مثال على المزوّد
+### مثال مزوّد
 
 ```ts
 api.registerProvider({
@@ -284,45 +371,45 @@ api.registerProvider({
 
 ### أمثلة مضمّنة
 
-تجمع Plugins المزوّدين المضمّنة الخطافات أعلاه لتلائم كتالوج كل مورّد
-ومصادقته والتفكير وإعادة التشغيل واحتياجات الاستخدام. مجموعة الخطافات المعتمدة موجودة مع
-كل Plugin ضمن `extensions/`؛ تعرض هذه الصفحة الأشكال بدلا من
-عكس القائمة.
+تجمع Plugins المزوّدين المضمّنة الخطافات أعلاه لتلائم احتياجات كل مورّد من حيث الفهرس،
+والمصادقة، والتفكير، وإعادة التشغيل، والاستخدام. تعيش مجموعة الخطافات الموثوقة مع
+كل Plugin ضمن `extensions/`؛ توضح هذه الصفحة الأشكال بدلاً من
+مطابقة القائمة.
 
 <AccordionGroup>
-  <Accordion title="مزوّدو الكتالوج بالتمرير المباشر">
-    يسجّل OpenRouter وKilocode وZ.AI وxAI `catalog` إضافة إلى
-    `resolveDynamicModel` / `prepareDynamicModel` حتى يتمكنوا من إظهار
-    معرّفات النماذج من المصدر upstream قبل كتالوج OpenClaw الثابت.
+  <Accordion title="Pass-through catalog providers">
+    يسجّل OpenRouter وKilocode وZ.AI وxAI كلاً من `catalog` بالإضافة إلى
+    `resolveDynamicModel` / `prepareDynamicModel` حتى تتمكن من عرض
+    معرفات النماذج المنبعية قبل الفهرس الثابت في OpenClaw.
   </Accordion>
-  <Accordion title="مزوّدو OAuth ونقطة نهاية الاستخدام">
+  <Accordion title="OAuth and usage endpoint providers">
     يقرن GitHub Copilot وGemini CLI وChatGPT Codex وMiniMax وXiaomi وz.ai
-    `prepareRuntimeAuth` أو `formatApiKey` مع `resolveUsageAuth` +
-    `fetchUsageSnapshot` لامتلاك تبادل الرموز والتكامل مع `/usage`.
+    كلاً من `prepareRuntimeAuth` أو `formatApiKey` مع `resolveUsageAuth` +
+    `fetchUsageSnapshot` لامتلاك تبادل الرموز وتكامل `/usage`.
   </Accordion>
-  <Accordion title="عائلات إعادة التشغيل وتنظيف النصوص">
-    تتيح العائلات المشتركة المسماة (`google-gemini`, `passthrough-gemini`,
-    `anthropic-by-model`, `hybrid-anthropic-openai`) للمزوّدين الاشتراك في
-    سياسة النصوص عبر `buildReplayPolicy` بدلا من أن يعيد كل Plugin
+  <Accordion title="Replay and transcript cleanup families">
+    تتيح العائلات المسماة المشتركة (`google-gemini` و`passthrough-gemini`
+    و`anthropic-by-model` و`hybrid-anthropic-openai`) للمزوّدين الاشتراك في
+    سياسة النص عبر `buildReplayPolicy` بدلاً من أن يعيد كل Plugin
     تنفيذ التنظيف.
   </Accordion>
-  <Accordion title="مزوّدو الكتالوج فقط">
-    يسجّل `byteplus` و`cloudflare-ai-gateway` و`huggingface` و`kimi-coding` و`nvidia`
+  <Accordion title="Catalog-only providers">
+    تسجّل `byteplus` و`cloudflare-ai-gateway` و`huggingface` و`kimi-coding` و`nvidia`
     و`qianfan` و`synthetic` و`together` و`venice` و`vercel-ai-gateway` و
-    `volcengine` فقط `catalog` ويستخدمون حلقة الاستدلال المشتركة.
+    `volcengine` فقط `catalog` وتستخدم حلقة الاستدلال المشتركة.
   </Accordion>
-  <Accordion title="مساعدات البث الخاصة بـ Anthropic">
-    ترويسات Beta و`/fast` / `serviceTier` و`context1m` موجودة داخل
-    حد Plugin العام لـ Anthropic في `api.ts` / `contract-api.ts`
-    (`wrapAnthropicProviderStream`, `resolveAnthropicBetas`,
-    `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`) بدلا من أن تكون في
+  <Accordion title="Anthropic-specific stream helpers">
+    تعيش ترويسات الإصدار التجريبي و`/fast` / `serviceTier` و`context1m` داخل
+    سطح `api.ts` / `contract-api.ts` العام الخاص بـ Plugin من Anthropic
+    (`wrapAnthropicProviderStream` و`resolveAnthropicBetas`
+    و`resolveAnthropicFastMode` و`resolveAnthropicServiceTier`) بدلاً من أن تكون في
     SDK العام.
   </Accordion>
 </AccordionGroup>
 
 ## مساعدات وقت التشغيل
 
-يمكن لـ Plugins الوصول إلى مساعدات أساسية محددة عبر `api.runtime`. بالنسبة إلى TTS:
+يمكن أن تصل Plugins إلى مساعدات أساسية مختارة عبر `api.runtime`. بالنسبة إلى TTS:
 
 ```ts
 const clip = await api.runtime.tts.textToSpeech({
@@ -343,14 +430,14 @@ const voices = await api.runtime.tts.listVoices({
 
 ملاحظات:
 
-- يعيد `textToSpeech` حمولة مخرجات TTS الأساسية العادية لأسطح الملفات/الملاحظات الصوتية.
+- يعيد `textToSpeech` حمولة إخراج TTS الأساسية العادية لأسطح الملف/الملاحظة الصوتية.
 - يستخدم إعدادات `messages.tts` الأساسية واختيار المزوّد.
 - يعيد مخزن صوت PCM المؤقت + معدل العينة. يجب على Plugins إعادة أخذ العينات/الترميز للمزوّدين.
-- `listVoices` اختياري لكل مزوّد. استخدمه لاختيارات الصوت أو تدفقات الإعداد المملوكة للمورّد.
-- يمكن أن تتضمن قوائم الأصوات بيانات وصفية أغنى مثل اللغة المحلية والجنس ووسوم الشخصية للاختيارات الواعية بالمزوّد.
-- يدعم OpenAI وElevenLabs الهاتفية اليوم. لا يدعمها Microsoft.
+- `listVoices` اختياري لكل مزوّد. استخدمه لاختيارات الأصوات المملوكة للمورّد أو تدفقات الإعداد.
+- يمكن أن تتضمن قوائم الأصوات بيانات وصفية أغنى مثل اللغة، والجنس، ووسوم الشخصية للاختيارات الواعية بالمزوّد.
+- يدعم OpenAI وElevenLabs المهاتفة اليوم. لا يدعمها Microsoft.
 
-يمكن لـ Plugins أيضا تسجيل مزوّدي الكلام عبر `api.registerSpeechProvider(...)`.
+يمكن أن تسجّل Plugins أيضاً مزوّدي الكلام عبر `api.registerSpeechProvider(...)`.
 
 ```ts
 api.registerSpeechProvider({
@@ -371,14 +458,14 @@ api.registerSpeechProvider({
 ملاحظات:
 
 - أبقِ سياسة TTS والرجوع الاحتياطي وتسليم الرد في النواة.
-- استخدم مزوّدي الكلام لسلوك التوليف المملوك للمورّد.
-- يتم تطبيع إدخال Microsoft القديم `edge` إلى معرّف المزوّد `microsoft`.
-- نموذج الملكية المفضّل موجّه إلى الشركة: يمكن لـ Plugin مورّد واحد أن يملك
-  مزوّدي النص والكلام والصورة والوسائط المستقبلية بينما يضيف OpenClaw
-  عقود الإمكانات تلك.
+- استخدم مزوّدي الكلام لسلوك التركيب المملوك للمورّد.
+- تتم مطابقة إدخال Microsoft القديم `edge` مع معرف المزوّد `microsoft`.
+- نموذج الملكية المفضل موجه نحو الشركة: يمكن لـ Plugin مورّد واحد أن يملك
+  مزوّدي النص، والكلام، والصور، والوسائط المستقبلية مع إضافة OpenClaw
+  لعقود القدرات هذه.
 
-لفهم الصور/الصوت/الفيديو، تسجّل Plugins مزوّد فهم وسائط واحدا ذا نوع محدد
-بدلا من حقيبة مفاتيح/قيم عامة:
+لفهم الصور/الصوت/الفيديو، تسجّل Plugins مزوّد فهم وسائط واحداً محدد النوع
+بدلاً من حزمة مفاتيح/قيم عامة:
 
 ```ts
 api.registerMediaUnderstandingProvider({
@@ -392,15 +479,15 @@ api.registerMediaUnderstandingProvider({
 
 ملاحظات:
 
-- أبقِ التنسيق والرجوع الاحتياطي والإعدادات وتوصيل القنوات في النواة.
+- أبقِ التنسيق، والرجوع الاحتياطي، والإعدادات، وتوصيل القنوات في النواة.
 - أبقِ سلوك المورّد في Plugin المزوّد.
-- يجب أن يبقى التوسّع الإضافي ذا نوع محدد: طرائق اختيارية جديدة، وحقول نتائج اختيارية جديدة، وإمكانات اختيارية جديدة.
+- يجب أن يبقى التوسّع الإضافي محدد النوع: أساليب اختيارية جديدة، وحقول نتائج اختيارية جديدة، وقدرات اختيارية جديدة.
 - يتبع توليد الفيديو النمط نفسه بالفعل:
-  - تملك النواة عقد الإمكانات ومساعد وقت التشغيل
+  - تمتلك النواة عقد القدرة ومساعد وقت التشغيل
   - تسجّل Plugins المورّدين `api.registerVideoGenerationProvider(...)`
   - تستهلك Plugins الميزات/القنوات `api.runtime.videoGeneration.*`
 
-بالنسبة إلى مساعدات وقت تشغيل فهم الوسائط، يمكن لـ Plugins استدعاء:
+بالنسبة إلى مساعدات وقت تشغيل فهم الوسائط، يمكن أن تستدعي Plugins:
 
 ```ts
 const image = await api.runtime.mediaUnderstanding.describeImageFile({
@@ -415,8 +502,8 @@ const video = await api.runtime.mediaUnderstanding.describeVideoFile({
 });
 ```
 
-بالنسبة إلى نسخ الصوت، يمكن لـ Plugins استخدام إما وقت تشغيل فهم الوسائط
-أو الاسم البديل الأقدم لـ STT:
+بالنسبة إلى نسخ الصوت، يمكن أن تستخدم Plugins إما وقت تشغيل فهم الوسائط
+أو الاسم البديل الأقدم STT:
 
 ```ts
 const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
@@ -429,13 +516,13 @@ const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
 
 ملاحظات:
 
-- `api.runtime.mediaUnderstanding.*` هو السطح المشترك المفضّل
+- `api.runtime.mediaUnderstanding.*` هو السطح المشترك المفضل
   لفهم الصور/الصوت/الفيديو.
-- يستخدم إعدادات صوت فهم الوسائط الأساسية (`tools.media.audio`) وترتيب الرجوع الاحتياطي للمزوّدين.
-- يعيد `{ text: undefined }` عندما لا يتم إنتاج مخرج نسخ (مثلا عند تخطي إدخال أو عدم دعمه).
+- يستخدم إعدادات الصوت الأساسية لفهم الوسائط (`tools.media.audio`) وترتيب الرجوع الاحتياطي للمزوّدين.
+- يعيد `{ text: undefined }` عندما لا يتم إنتاج مخرج نسخ (على سبيل المثال إدخال متجاوز/غير مدعوم).
 - يبقى `api.runtime.stt.transcribeAudioFile(...)` كاسم بديل للتوافق.
 
-يمكن لـ Plugins أيضا تشغيل عمليات subagent في الخلفية عبر `api.runtime.subagent`:
+يمكن أن تطلق Plugins أيضاً عمليات تشغيل وكلاء فرعيين في الخلفية عبر `api.runtime.subagent`:
 
 ```ts
 const result = await api.runtime.subagent.run({
@@ -449,15 +536,15 @@ const result = await api.runtime.subagent.run({
 
 ملاحظات:
 
-- `provider` و`model` تجاوزات اختيارية لكل تشغيل، وليست تغييرات جلسة دائمة.
-- لا يحترم OpenClaw حقول التجاوز هذه إلا للمستدعين الموثوقين.
-- بالنسبة إلى عمليات الرجوع الاحتياطي المملوكة لـ Plugin، يجب على المشغّلين الاشتراك باستخدام `plugins.entries.<id>.subagent.allowModelOverride: true`.
-- استخدم `plugins.entries.<id>.subagent.allowedModels` لتقييد Plugins الموثوقة إلى أهداف `provider/model` معيارية محددة، أو `"*"` للسماح صراحة بأي هدف.
-- لا تزال عمليات subagent الصادرة عن Plugin غير موثوق تعمل، لكن طلبات التجاوز تُرفض بدلا من الرجوع بصمت.
-- تُوسم جلسات subagent التي ينشئها Plugin بمعرّف Plugin المنشئ. يمكن للرجوع الاحتياطي `api.runtime.subagent.deleteSession(...)` حذف تلك الجلسات المملوكة فقط؛ ولا يزال حذف أي جلسة عشوائية يتطلب طلب Gateway بنطاق مسؤول.
+- `provider` و`model` تجاوزات اختيارية لكل عملية تشغيل، وليست تغييرات جلسة دائمة.
+- يحترم OpenClaw حقول التجاوز هذه للمتصلين الموثوقين فقط.
+- بالنسبة إلى عمليات الرجوع الاحتياطي المملوكة لـ Plugin، يجب أن يختار المشغّلون الاشتراك عبر `plugins.entries.<id>.subagent.allowModelOverride: true`.
+- استخدم `plugins.entries.<id>.subagent.allowedModels` لتقييد Plugins الموثوقة إلى أهداف `provider/model` قانونية محددة، أو `"*"` للسماح صراحة بأي هدف.
+- لا تزال عمليات الوكيل الفرعي من Plugins غير الموثوقة تعمل، لكن تُرفض طلبات التجاوز بدلاً من الرجوع بصمت.
+- تُوسم جلسات الوكيل الفرعي التي تنشئها Plugins بمعرف Plugin المنشئ. قد يحذف الرجوع الاحتياطي `api.runtime.subagent.deleteSession(...)` تلك الجلسات المملوكة فقط؛ ولا يزال حذف جلسة عشوائية يتطلب طلب Gateway بنطاق مسؤول.
 
-بالنسبة إلى بحث الويب، يمكن لـ Plugins استهلاك مساعد وقت التشغيل المشترك بدلا من
-الوصول إلى توصيل أدوات الوكيل:
+بالنسبة إلى بحث الويب، يمكن أن تستهلك Plugins مساعد وقت التشغيل المشترك بدلاً من
+الوصول إلى توصيلات أداة الوكيل:
 
 ```ts
 const providers = api.runtime.webSearch.listProviders({
@@ -473,14 +560,14 @@ const result = await api.runtime.webSearch.search({
 });
 ```
 
-يمكن لـ Plugins أيضا تسجيل مزوّدي بحث الويب عبر
+يمكن أن تسجّل Plugins أيضاً مزوّدي بحث الويب عبر
 `api.registerWebSearchProvider(...)`.
 
 ملاحظات:
 
-- أبقِ اختيار المزوّد وحل بيانات الاعتماد ودلالات الطلب المشتركة في النواة.
-- استخدم مزوّدي بحث الويب لنواقل البحث الخاصة بالمورّدين.
-- `api.runtime.webSearch.*` هو السطح المشترك المفضّل لـ Plugins الميزات/القنوات التي تحتاج إلى سلوك بحث من دون الاعتماد على مغلّف أداة الوكيل.
+- أبقِ اختيار المزوّد، وحل بيانات الاعتماد، ودلالات الطلب المشتركة في النواة.
+- استخدم مزوّدي بحث الويب لنقل البحث الخاص بالمورّد.
+- `api.runtime.webSearch.*` هو السطح المشترك المفضل لـ Plugins الميزات/القنوات التي تحتاج إلى سلوك بحث من دون الاعتماد على مغلّف أداة الوكيل.
 
 ### `api.runtime.imageGeneration`
 
@@ -495,12 +582,12 @@ const providers = api.runtime.imageGeneration.listProviders({
 });
 ```
 
-- `generate(...)`: يولّد صورة باستخدام سلسلة مزوّدي توليد الصور المهيأة.
-- `listProviders(...)`: يسرد مزوّدي توليد الصور المتاحين وإمكاناتهم.
+- `generate(...)`: ولّد صورة باستخدام سلسلة مزوّد توليد الصور المكوّنة.
+- `listProviders(...)`: اسرد مزوّدي توليد الصور المتاحين وقدراتهم.
 
 ## مسارات HTTP في Gateway
 
-يمكن لـ Plugins كشف نقاط نهاية HTTP باستخدام `api.registerHttpRoute(...)`.
+يمكن أن تعرض Plugins نقاط نهاية HTTP باستخدام `api.registerHttpRoute(...)`.
 
 ```ts
 api.registerHttpRoute({
@@ -517,207 +604,207 @@ api.registerHttpRoute({
 
 حقول المسار:
 
-- `path`: مسار route ضمن خادم HTTP الخاص بالبوابة.
-- `auth`: مطلوب. استخدم `"gateway"` لطلب مصادقة البوابة العادية، أو `"plugin"` للمصادقة/التحقق من Webhook المدار بواسطة Plugin.
+- `path`: مسار التوجيه تحت خادم HTTP الخاص بـ Gateway.
+- `auth`: مطلوب. استخدم `"gateway"` لطلب مصادقة Gateway العادية، أو `"plugin"` للمصادقة/التحقق من Webhook المدارين بواسطة Plugin.
 - `match`: اختياري. `"exact"` (افتراضي) أو `"prefix"`.
-- `replaceExisting`: اختياري. يسمح لـ Plugin نفسه باستبدال تسجيل المسار الموجود الخاص به.
-- `handler`: أعد `true` عندما يتولى المسار معالجة الطلب.
+- `replaceExisting`: اختياري. يسمح لـ Plugin نفسه باستبدال تسجيل مساره الموجود.
+- `handler`: أعِد `true` عندما يعالج المسار الطلب.
 
 ملاحظات:
 
-- تمت إزالة `api.registerHttpHandler(...)` وسيؤدي استخدامها إلى خطأ في تحميل Plugin. استخدم `api.registerHttpRoute(...)` بدلًا منها.
-- يجب أن تعلن مسارات Plugin عن `auth` صراحةً.
-- تُرفض تعارضات `path + match` الدقيقة ما لم يكن `replaceExisting: true`، ولا يمكن لـ Plugin واحد أن يستبدل مسار Plugin آخر.
-- تُرفض المسارات المتداخلة ذات مستويات `auth` المختلفة. أبقِ سلاسل التمرير الاحتياطي `exact`/`prefix` على مستوى المصادقة نفسه فقط.
-- مسارات `auth: "plugin"` لا تتلقى نطاقات وقت تشغيل المشغّل تلقائيًا. فهي مخصصة لـ Webhook التي يديرها Plugin/التحقق من التوقيع، وليست لاستدعاءات مساعد Gateway ذات الامتيازات.
-- تعمل مسارات `auth: "gateway"` داخل نطاق وقت تشغيل طلب Gateway، لكن هذا النطاق محافظ عمدًا:
-  - مصادقة الحامل بالسر المشترك (`gateway.auth.mode = "token"` / `"password"`) تبقي نطاقات وقت تشغيل مسار Plugin مثبتة على `operator.write`، حتى إذا أرسل المستدعي `x-openclaw-scopes`
-  - أوضاع HTTP الموثوقة الحاملة للهوية (مثل `trusted-proxy` أو `gateway.auth.mode = "none"` على مدخل خاص) تحترم `x-openclaw-scopes` فقط عندما يكون الترويسة موجودة صراحةً
-  - إذا غابت `x-openclaw-scopes` عن طلبات مسار Plugin الحاملة للهوية تلك، يعود نطاق وقت التشغيل إلى `operator.write`
-- القاعدة العملية: لا تفترض أن مسار Plugin بمصادقة Gateway هو سطح إدارة ضمني. إذا كان مسارك يحتاج إلى سلوك يقتصر على الإدارة، فاشترط وضع مصادقة حاملًا للهوية ووثّق عقد ترويسة `x-openclaw-scopes` الصريح.
+- تمت إزالة `api.registerHttpHandler(...)` وسيتسبب ذلك في خطأ تحميل Plugin. استخدم `api.registerHttpRoute(...)` بدلا منه.
+- يجب أن تصرح مسارات Plugin عن `auth` بوضوح.
+- يتم رفض تعارضات `path + match` الدقيقة ما لم يكن `replaceExisting: true`، ولا يمكن لـ Plugin واحد استبدال مسار Plugin آخر.
+- يتم رفض المسارات المتداخلة ذات مستويات `auth` المختلفة. أبق سلاسل التمرير الاحتياطي `exact`/`prefix` على مستوى المصادقة نفسه فقط.
+- لا تتلقى مسارات `auth: "plugin"` نطاقات وقت تشغيل المشغل تلقائيا. فهي مخصصة Webhook المدارة بواسطة Plugin/التحقق من التوقيع، وليست لاستدعاءات مساعد Gateway ذات الامتيازات.
+- تعمل مسارات `auth: "gateway"` داخل نطاق وقت تشغيل طلب Gateway، لكن هذا النطاق محافظ عمدا:
+  - تبقي مصادقة الحامل بالسر المشترك (`gateway.auth.mode = "token"` / `"password"`) نطاقات وقت تشغيل مسارات Plugin مثبتة على `operator.write`، حتى إذا أرسل المستدعي `x-openclaw-scopes`
+  - تحترم أوضاع HTTP الموثوقة الحاملة للهوية (مثل `trusted-proxy` أو `gateway.auth.mode = "none"` على مدخل خاص) `x-openclaw-scopes` فقط عندما يكون الترويسة موجودا صراحة
+  - إذا كان `x-openclaw-scopes` غائبا في طلبات مسارات Plugin الحاملة للهوية تلك، يعود نطاق وقت التشغيل إلى `operator.write`
+- قاعدة عملية: لا تفترض أن مسار Plugin بمصادقة Gateway هو سطح إدارة ضمني. إذا كان مسارك يحتاج إلى سلوك مخصص للمدير فقط، فاشترط وضع مصادقة حامل للهوية ووثق عقد ترويسة `x-openclaw-scopes` الصريح.
 
 ## مسارات استيراد Plugin SDK
 
-استخدم المسارات الفرعية الضيقة لـ SDK بدلًا من البرميل الجذري الأحادي `openclaw/plugin-sdk`
+استخدم المسارات الفرعية الضيقة لـ SDK بدلا من برميل الجذر الأحادي `openclaw/plugin-sdk`
 عند تأليف Plugins جديدة. المسارات الفرعية الأساسية:
 
-| المسار الفرعي                       | الغرض                                             |
+| المسار الفرعي                       | الغرض                                              |
 | ----------------------------------- | -------------------------------------------------- |
 | `openclaw/plugin-sdk/plugin-entry`  | بدائيات تسجيل Plugin                              |
-| `openclaw/plugin-sdk/channel-core`  | مساعدات إدخال/بناء القناة                         |
-| `openclaw/plugin-sdk/core`          | مساعدات عامة مشتركة وعقد شامل                     |
+| `openclaw/plugin-sdk/channel-core`  | مساعدات إدخال/بناء القنوات                        |
+| `openclaw/plugin-sdk/core`          | مساعدات مشتركة عامة وعقد شامل                     |
 | `openclaw/plugin-sdk/config-schema` | مخطط Zod الجذري `openclaw.json` (`OpenClawSchema`) |
 
-تختار Plugins القنوات من عائلة من الأسطح الضيقة — `channel-setup`,
+تختار Plugins القنوات من عائلة من الواجهات الضيقة — `channel-setup`,
 `setup-runtime`, `setup-adapter-runtime`, `setup-tools`, `channel-pairing`,
 `channel-contract`, `channel-feedback`, `channel-inbound`, `channel-lifecycle`,
 `channel-reply-pipeline`, `command-auth`, `secret-input`, `webhook-ingress`,
-`channel-targets`، و`channel-actions`. ينبغي توحيد سلوك الموافقة
-على عقد `approvalCapability` واحد بدلًا من المزج عبر
-حقول Plugin غير مترابطة. راجع [Plugins القنوات](/ar/plugins/sdk-channel-plugins).
+`channel-targets`, و`channel-actions`. يجب أن يتوحد سلوك الموافقة
+على عقد `approvalCapability` واحد بدلا من الخلط بين حقول Plugin غير ذات صلة.
+راجع [Plugins القنوات](/ar/plugins/sdk-channel-plugins).
 
 توجد مساعدات وقت التشغيل والإعدادات تحت مسارات فرعية مركزة مطابقة `*-runtime`
 (`approval-runtime`, `agent-runtime`, `lazy-runtime`, `directory-runtime`,
 `text-runtime`, `runtime-store`, `system-event-runtime`, `heartbeat-runtime`,
-`channel-activity-runtime`، إلخ). فضّل `config-types`,
-`plugin-config-runtime`, `runtime-config-snapshot`، و`config-mutation`
-بدلًا من برميل التوافق الواسع `config-runtime`.
+`channel-activity-runtime`, إلخ). فضل `config-types`,
+`plugin-config-runtime`, `runtime-config-snapshot`, و`config-mutation`
+بدلا من برميل التوافق الواسع `config-runtime`.
 
 <Info>
-`openclaw/plugin-sdk/channel-runtime` و`openclaw/plugin-sdk/config-runtime`
-و`openclaw/plugin-sdk/infra-runtime` هي حشوات توافق مهملة لـ
-Plugins الأقدم. يجب أن تستورد الشيفرة الجديدة بدائيات عامة أضيق بدلًا من ذلك.
+`openclaw/plugin-sdk/channel-runtime`, `openclaw/plugin-sdk/config-runtime`,
+و`openclaw/plugin-sdk/infra-runtime` حشوات توافق مهملة لـ
+Plugins الأقدم. يجب أن تستورد الشيفرة الجديدة بدائيات عامة أضيق بدلا من ذلك.
 </Info>
 
-نقاط الدخول الداخلية للمستودع (لكل جذر حزمة Plugin مرفقة):
+نقاط الإدخال الداخلية للمستودع (لكل جذر حزمة Plugin مرفق):
 
 - `index.js` — إدخال Plugin مرفق
 - `api.js` — برميل مساعدات/أنواع
-- `runtime-api.js` — برميل مخصص لوقت التشغيل فقط
-- `setup-entry.js` — إدخال Plugin الإعداد
+- `runtime-api.js` — برميل لوقت التشغيل فقط
+- `setup-entry.js` — إدخال Plugin للإعداد
 
-ينبغي لـ Plugins الخارجية أن تستورد فقط المسارات الفرعية `openclaw/plugin-sdk/*`. لا
-تستورد أبدًا `src/*` الخاص بحزمة Plugin أخرى من النواة أو من Plugin آخر.
-تفضّل نقاط الدخول المحمّلة عبر الواجهة لقطة إعدادات وقت التشغيل النشطة عندما
+يجب أن تستورد Plugins الخارجية المسارات الفرعية `openclaw/plugin-sdk/*` فقط. لا
+تستورد أبدا `src/*` لحزمة Plugin أخرى من القلب أو من Plugin آخر.
+تفضل نقاط الإدخال المحملة عبر الواجهة لقطة إعدادات وقت التشغيل النشطة عندما
 توجد، ثم تعود إلى ملف الإعدادات المحلول على القرص.
 
-توجد مسارات فرعية خاصة بالقدرات مثل `image-generation` و`media-understanding`
-و`speech` لأن Plugins المرفقة تستخدمها اليوم. لكنها ليست
-عقودًا خارجية مجمّدة تلقائيًا على المدى الطويل — راجع صفحة مرجع SDK
+توجد مسارات فرعية خاصة بالقدرات مثل `image-generation`, `media-understanding`,
+و`speech` لأن Plugins المرفقة تستخدمها اليوم. وهي ليست
+عقودا خارجية مجمدة تلقائيا على المدى الطويل — تحقق من صفحة مرجع SDK
 ذات الصلة عند الاعتماد عليها.
 
 ## مخططات أداة الرسائل
 
-ينبغي أن تمتلك Plugins مساهمات مخطط `describeMessageTool(...)` الخاصة بالقناة
-للبدائيات غير الرسائل مثل التفاعلات والقراءات والاستطلاعات.
-ينبغي أن يستخدم عرض الإرسال المشترك عقد `MessagePresentation` العام
-بدلًا من أزرار أو مكونات أو كتل أو حقول بطاقات أصلية للمزوّد.
-راجع [عرض الرسائل](/ar/plugins/message-presentation) للاطلاع على العقد،
-وقواعد الرجوع، وتخطيط المزوّد، وقائمة تحقق مؤلف Plugin.
+يجب أن تمتلك Plugins مساهمات مخطط `describeMessageTool(...)` الخاصة بالقناة
+للبدائيات غير الرسائلية مثل التفاعلات، والقراءات، والاستطلاعات.
+يجب أن يستخدم عرض الإرسال المشترك عقد `MessagePresentation` العام
+بدلا من حقول الأزرار أو المكونات أو الكتل أو البطاقات الأصلية للمزود.
+راجع [عرض الرسائل](/ar/plugins/message-presentation) للعقد،
+وقواعد الرجوع، وتعيين المزود، وقائمة تحقق مؤلف Plugin.
 
-تعلن Plugins القادرة على الإرسال عما تستطيع عرضه عبر قدرات الرسائل:
+تصرح Plugins القادرة على الإرسال بما يمكنها عرضه عبر قدرات الرسائل:
 
 - `presentation` لكتل العرض الدلالية (`text`, `context`, `divider`, `buttons`, `select`)
-- `delivery-pin` لطلبات التسليم المثبّت
+- `delivery-pin` لطلبات التسليم المثبت
 
-تقرر النواة ما إذا كانت ستعرض العرض أصليًا أم تخفضه إلى نص.
-لا تكشف منافذ هروب واجهة مستخدم أصلية للمزوّد من أداة الرسائل العامة.
-تبقى مساعدات SDK المهملة للمخططات الأصلية القديمة مصدّرة من أجل
-Plugins الطرف الثالث الحالية، لكن ينبغي ألا تستخدمها Plugins الجديدة.
+يقرر القلب ما إذا كان سيعرض العرض بشكل أصلي أو يخفضه إلى نص.
+لا تكشف منافذ هروب واجهة مستخدم أصلية للمزود من أداة الرسائل العامة.
+تبقى مساعدات SDK المهملة للمخططات الأصلية القديمة مصدرة لـ
+Plugins الخارجية الحالية، لكن يجب ألا تستخدمها Plugins الجديدة.
 
-## حل هدف القناة
+## حل أهداف القناة
 
-ينبغي أن تمتلك Plugins القنوات دلالات الهدف الخاصة بالقناة. أبقِ مضيف
-الإرسال المشترك عامًا واستخدم سطح محول المراسلة لقواعد المزوّد:
+يجب أن تمتلك Plugins القنوات دلالات الأهداف الخاصة بالقناة. أبق مضيف
+الصادر المشترك عاما واستخدم سطح محول الرسائل لقواعد المزود:
 
-- يقرر `messaging.inferTargetChatType({ to })` ما إذا كان ينبغي التعامل مع هدف مطبّع
-  على أنه `direct` أو `group` أو `channel` قبل بحث الدليل.
-- يخبر `messaging.targetResolver.looksLikeId(raw, normalized)` النواة بما إذا كان
-  الإدخال ينبغي أن يتجاوز مباشرةً إلى حل شبيه بالمعرّف بدلًا من بحث الدليل.
+- `messaging.inferTargetChatType({ to })` يقرر ما إذا كان ينبغي التعامل مع هدف مطبع
+  كـ `direct` أو `group` أو `channel` قبل البحث في الدليل.
+- `messaging.targetResolver.looksLikeId(raw, normalized)` يخبر القلب بما إذا كان
+  يجب أن يتخطى الإدخال مباشرة إلى حل شبيه بالمعرف بدلا من البحث في الدليل.
 - `messaging.targetResolver.resolveTarget(...)` هو رجوع Plugin عندما
-  تحتاج النواة إلى حل نهائي مملوك للمزوّد بعد التطبيع أو بعد
-  إخفاق في الدليل.
-- يمتلك `messaging.resolveOutboundSessionRoute(...)` بناء مسار جلسة خاصًا بالمزوّد
-  بمجرد حل الهدف.
+  يحتاج القلب إلى حل نهائي مملوك للمزود بعد التطبيع أو بعد
+  إخفاق الدليل.
+- `messaging.resolveOutboundSessionRoute(...)` يمتلك إنشاء مسار جلسة
+  خاص بالمزود بمجرد حل الهدف.
 
 التقسيم الموصى به:
 
-- استخدم `inferTargetChatType` لقرارات الفئة التي ينبغي أن تحدث قبل
+- استخدم `inferTargetChatType` لقرارات الفئة التي يجب أن تحدث قبل
   البحث في الأقران/المجموعات.
-- استخدم `looksLikeId` لفحوصات "عامل هذا كمعرّف هدف صريح/أصلي".
-- استخدم `resolveTarget` كرجوع للتطبيع الخاص بالمزوّد، وليس
-  للبحث الواسع في الدليل.
-- أبقِ المعرّفات الأصلية للمزوّد مثل معرّفات الدردشة، ومعرّفات السلاسل، وJIDs، والمقابض، ومعرّفات الغرف
-  داخل قيم `target` أو المعاملات الخاصة بالمزوّد، لا في حقول SDK
+- استخدم `looksLikeId` لفحوصات "عامل هذا كمعرف هدف صريح/أصلي".
+- استخدم `resolveTarget` كرجوع تطبيع خاص بالمزود، وليس لـ
+  بحث واسع في الدليل.
+- أبق المعرفات الأصلية للمزود مثل معرفات الدردشة، ومعرفات الخيوط، وJIDs، والمعرّفات، ومعرفات الغرف
+  داخل قيم `target` أو المعاملات الخاصة بالمزود، وليس في حقول SDK
   العامة.
 
 ## الأدلة المدعومة بالإعدادات
 
-ينبغي أن تبقي Plugins التي تشتق إدخالات الدليل من الإعدادات ذلك المنطق داخل
+يجب أن تبقي Plugins التي تشتق إدخالات دليل من الإعدادات ذلك المنطق داخل
 Plugin وأن تعيد استخدام المساعدات المشتركة من
 `openclaw/plugin-sdk/directory-runtime`.
 
 استخدم هذا عندما تحتاج قناة إلى أقران/مجموعات مدعومة بالإعدادات مثل:
 
-- أقران الرسائل المباشرة المدفوعة بقائمة السماح
-- خرائط القنوات/المجموعات المكوّنة
+- أقران الرسائل المباشرة المدفوعون بقائمة السماح
+- خرائط القنوات/المجموعات المعدة
 - بدائل دليل ثابتة بنطاق الحساب
 
-تتعامل المساعدات المشتركة في `directory-runtime` فقط مع العمليات العامة:
+تتعامل المساعدات المشتركة في `directory-runtime` مع العمليات العامة فقط:
 
 - ترشيح الاستعلام
 - تطبيق الحد
 - مساعدات إزالة التكرار/التطبيع
 - بناء `ChannelDirectoryEntry[]`
 
-ينبغي أن يبقى فحص الحساب الخاص بالقناة وتطبيع المعرّف في
+يجب أن يبقى فحص الحساب الخاص بالقناة وتطبيع المعرف داخل
 تنفيذ Plugin.
 
-## كتالوجات المزوّدين
+## كتالوجات المزودين
 
-يمكن لـ Plugins المزوّدين تعريف كتالوجات نماذج للاستدلال باستخدام
+يمكن لـ Plugins المزودين تعريف كتالوجات نماذج للاستدلال باستخدام
 `registerProvider({ catalog: { run(...) { ... } } })`.
 
-تُرجع `catalog.run(...)` الشكل نفسه الذي يكتبه OpenClaw في
+يعيد `catalog.run(...)` الشكل نفسه الذي يكتبه OpenClaw في
 `models.providers`:
 
-- `{ provider }` لإدخال مزوّد واحد
-- `{ providers }` لإدخالات مزوّدين متعددة
+- `{ provider }` لإدخال مزود واحد
+- `{ providers }` لإدخالات مزودين متعددة
 
-استخدم `catalog` عندما يمتلك Plugin معرّفات نماذج خاصة بالمزوّد، أو افتراضيات عنوان URL الأساسي،
-أو بيانات وصفية للنموذج محمية بالمصادقة.
+استخدم `catalog` عندما يمتلك Plugin معرفات نماذج خاصة بالمزود، أو قيم URL الأساسية
+الافتراضية، أو بيانات تعريف نماذج محكومة بالمصادقة.
 
-يتحكم `catalog.order` في توقيت دمج كتالوج Plugin بالنسبة إلى
-المزوّدين الضمنيين المدمجين في OpenClaw:
+يتحكم `catalog.order` في وقت دمج كتالوج Plugin بالنسبة إلى مزودي OpenClaw
+الضمنيين المدمجين:
 
-- `simple`: مزوّدون عاديون مدفوعون بمفتاح API أو البيئة
-- `profile`: مزوّدون يظهرون عندما توجد ملفات تعريف مصادقة
-- `paired`: مزوّدون يركّبون إدخالات مزوّدين متعددة مرتبطة
-- `late`: المرور الأخير، بعد المزوّدين الضمنيين الآخرين
+- `simple`: مزودون عاديون مدفوعون بمفتاح API أو env
+- `profile`: مزودون يظهرون عند وجود ملفات تعريف مصادقة
+- `paired`: مزودون ينشئون عدة إدخالات مزودين ذات صلة
+- `late`: آخر تمريرة، بعد المزودين الضمنيين الآخرين
 
-يفوز المزوّدون اللاحقون عند تصادم المفاتيح، لذلك يمكن لـ Plugins أن تتجاوز عمدًا
-إدخال مزوّد مدمجًا له معرّف المزوّد نفسه.
+يفوز المزودون اللاحقون عند تصادم المفاتيح، لذلك يمكن لـ Plugins أن تتجاوز عمدا
+إدخال مزود مدمج له معرف المزود نفسه.
 
 التوافق:
 
 - لا يزال `discovery` يعمل كاسم مستعار قديم
-- إذا سُجّل كل من `catalog` و`discovery`، يستخدم OpenClaw `catalog`
+- إذا تم تسجيل كل من `catalog` و`discovery`، يستخدم OpenClaw `catalog`
 
 ## فحص القناة للقراءة فقط
 
-إذا كان Plugin الخاص بك يسجل قناة، ففضّل تنفيذ
+إذا سجل Plugin قناة، ففضل تنفيذ
 `plugin.config.inspectAccount(cfg, accountId)` إلى جانب `resolveAccount(...)`.
 
-السبب:
+لماذا:
 
-- `resolveAccount(...)` هو مسار وقت التشغيل. يُسمح له بافتراض أن بيانات الاعتماد
-  مجسّدة بالكامل ويمكنه الفشل بسرعة عندما تكون الأسرار المطلوبة مفقودة.
-- ينبغي ألا تحتاج مسارات الأوامر للقراءة فقط مثل `openclaw status` و`openclaw status --all`
-  و`openclaw channels status` و`openclaw channels resolve` وتدفقات doctor/إصلاح الإعدادات
+- `resolveAccount(...)` هو مسار وقت التشغيل. يسمح له بافتراض أن بيانات الاعتماد
+  مجسدة بالكامل ويمكنه الفشل بسرعة عند فقدان الأسرار المطلوبة.
+- يجب ألا تحتاج مسارات أوامر القراءة فقط مثل `openclaw status`, `openclaw status --all`,
+  `openclaw channels status`, `openclaw channels resolve`، وتدفقات إصلاح doctor/config
   إلى تجسيد بيانات اعتماد وقت التشغيل لمجرد
   وصف الإعدادات.
 
 سلوك `inspectAccount(...)` الموصى به:
 
-- أرجع حالة حساب وصفية فقط.
+- أعد حالة حساب وصفية فقط.
 - حافظ على `enabled` و`configured`.
-- ضمّن حقول مصدر/حالة بيانات الاعتماد عند الاقتضاء، مثل:
+- أدرج حقول مصدر/حالة بيانات الاعتماد عند اللزوم، مثل:
   - `tokenSource`, `tokenStatus`
   - `botTokenSource`, `botTokenStatus`
   - `appTokenSource`, `appTokenStatus`
   - `signingSecretSource`, `signingSecretStatus`
-- لا تحتاج إلى إرجاع قيم رموز خام لمجرد الإبلاغ عن
-  الإتاحة للقراءة فقط. يكفي إرجاع `tokenStatus: "available"` (وحقل المصدر
-  المطابق) لأوامر نمط الحالة.
-- استخدم `configured_unavailable` عندما تكون بيانات الاعتماد مكوّنة عبر SecretRef لكنها
+- لا تحتاج إلى إرجاع قيم الرموز الخام لمجرد الإبلاغ عن
+  التوافر للقراءة فقط. يكفي إرجاع `tokenStatus: "available"` (وحقل المصدر المطابق)
+  لأوامر نمط الحالة.
+- استخدم `configured_unavailable` عندما تكون بيانات الاعتماد معدة عبر SecretRef ولكنها
   غير متاحة في مسار الأمر الحالي.
 
-يتيح هذا لأوامر القراءة فقط الإبلاغ عن "مكوّن لكنه غير متاح في مسار
-الأمر هذا" بدلًا من الانهيار أو الإبلاغ خطأً عن الحساب على أنه غير مكوّن.
+يتيح هذا لأوامر القراءة فقط الإبلاغ عن "معد لكنه غير متاح في مسار هذا الأمر"
+بدلا من التعطل أو الإبلاغ خطأ عن أن الحساب غير معد.
 
 ## حزم الحزم
 
-قد يتضمن دليل Plugin ملف `package.json` مع `openclaw.extensions`:
+قد يتضمن دليل Plugin ملف `package.json` يحتوي على `openclaw.extensions`:
 
 ```json
 {
@@ -729,56 +816,66 @@ Plugin وأن تعيد استخدام المساعدات المشتركة من
 }
 ```
 
-يصبح كل إدخال Plugin. إذا كانت الحزمة تسرد Extensions متعددة، يصبح معرّف Plugin
+يصبح كل إدخال Plugin. إذا سردت الحزمة عدة extensions، يصبح معرف Plugin
 `name/<fileBase>`.
 
-إذا كان Plugin الخاص بك يستورد تبعيات npm، فثبّتها في ذلك الدليل بحيث
-تكون `node_modules` متاحة (`npm install` / `pnpm install`).
+إذا كان Plugin يستورد تبعيات npm، فثبتها في ذلك الدليل حتى
+يتاح `node_modules` (`npm install` / `pnpm install`).
 
 حاجز أمان: يجب أن يبقى كل إدخال `openclaw.extensions` داخل دليل Plugin
-بعد حل الروابط الرمزية. تُرفض الإدخالات التي تخرج من دليل الحزمة.
+بعد حل الروابط الرمزية. يتم رفض الإدخالات التي تهرب من دليل الحزمة.
 
-ملاحظة أمنية: يقوم `openclaw plugins install` بتثبيت تبعيات Plugin باستخدام
-`npm install --omit=dev --ignore-scripts` محليًا للمشروع (بلا نصوص دورة حياة،
-وبلا تبعيات تطوير في وقت التشغيل)، مع تجاهل إعدادات تثبيت npm العامة الموروثة.
-أبقِ أشجار تبعيات Plugin "JS/TS خالصة" وتجنب الحزم التي تتطلب
+ملاحظة أمنية: يثبت `openclaw plugins install` تبعيات Plugin باستخدام
+`npm install --omit=dev --ignore-scripts` محلي للمشروع (بلا سكربتات دورة حياة،
+ولا تبعيات تطوير في وقت التشغيل)، متجاهلا إعدادات تثبيت npm العالمية الموروثة.
+أبق أشجار تبعيات Plugin "JS/TS نقية" وتجنب الحزم التي تتطلب
 بناءات `postinstall`.
 
 اختياري: يمكن أن يشير `openclaw.setupEntry` إلى وحدة خفيفة للإعداد فقط.
-عندما يحتاج OpenClaw إلى أسطح إعداد لـ Plugin قناة معطّل، أو
-عندما تكون Plugin قناة مفعّلة لكنها لا تزال غير مكوّنة، فإنه يحمّل `setupEntry`
-بدلًا من إدخال Plugin الكامل. يبقي هذا بدء التشغيل والإعداد أخف
-عندما يربط إدخال Plugin الرئيسي أيضًا أدوات أو خطافات أو شيفرة أخرى مخصصة لوقت التشغيل فقط.
+عندما يحتاج OpenClaw إلى أسطح إعداد لـ Plugin قناة معطلة، أو
+عندما يكون Plugin قناة مفعلا لكنه لا يزال غير معد، فإنه يحمل `setupEntry`
+بدلا من إدخال Plugin الكامل. هذا يجعل بدء التشغيل والإعداد أخف
+عندما يكون إدخال Plugin الرئيسي لديك يربط أيضا الأدوات أو الخطافات أو شيفرة أخرى
+مخصصة لوقت التشغيل فقط.
 
 اختياري: يمكن لـ `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`
-أن يختار Plugin قناة الدخول إلى مسار `setupEntry` نفسه أثناء مرحلة بدء Gateway
-قبل الاستماع، حتى عندما تكون القناة مكوّنة بالفعل.
+أن يدخل Plugin قناة في مسار `setupEntry` نفسه أثناء مرحلة بدء تشغيل Gateway
+قبل الاستماع، حتى عندما تكون القناة معدة بالفعل.
 
 استخدم هذا فقط عندما يغطي `setupEntry` بالكامل سطح بدء التشغيل الذي يجب أن يوجد
-قبل أن يبدأ Gateway الاستماع. عمليًا، يعني ذلك أن إدخال الإعداد
+قبل أن يبدأ Gateway بالاستماع. عمليا، يعني ذلك أن إدخال الإعداد
 يجب أن يسجل كل قدرة مملوكة للقناة يعتمد عليها بدء التشغيل، مثل:
 
-- تسجيل القناة نفسها
-- أي مسارات HTTP يجب أن تكون متاحة قبل أن يبدأ Gateway الاستماع
-- أي أساليب أو أدوات أو خدمات Gateway يجب أن توجد خلال تلك النافذة نفسها
+- تسجيل القناة نفسه
+- أي مسارات HTTP يجب أن تكون متاحة قبل أن يبدأ Gateway بالاستماع
+- أي طرق أو أدوات أو خدمات Gateway يجب أن توجد خلال تلك النافذة نفسها
 
-إذا كان الإدخال الكامل الخاص بك لا يزال يمتلك أي قدرة بدء تشغيل مطلوبة، فلا تفعّل
-هذه العلامة. أبقِ Plugin على السلوك الافتراضي ودع OpenClaw يحمّل
+إذا كان إدخالك الكامل لا يزال يمتلك أي قدرة بدء تشغيل مطلوبة، فلا تمكن
+هذه الراية. أبق Plugin على السلوك الافتراضي ودع OpenClaw يحمل
 الإدخال الكامل أثناء بدء التشغيل.
 
-يمكن للقنوات المرفقة أيضًا نشر مساعدات سطح عقد مخصصة للإعداد فقط يمكن للنواة
-استشارتها قبل تحميل وقت تشغيل القناة الكامل. سطح ترويج الإعداد
-الحالي هو:
+يمكن للقنوات المرفقة أيضا نشر مساعدات سطح عقد للإعداد فقط يمكن للقلب
+استشارتها قبل تحميل وقت تشغيل القناة الكامل. سطح ترقية الإعداد الحالي هو:
 
 - `singleAccountKeysToMove`
 - `namedAccountPromotionKeys`
 - `resolveSingleAccountPromotionTarget(...)`
 
-يستخدم core ذلك السطح عندما يحتاج إلى ترقية إعدادات قناة حساب واحد قديمة إلى `channels.<id>.accounts.*` دون تحميل إدخال Plugin الكامل. Matrix هو المثال المضمّن الحالي: فهو ينقل مفاتيح المصادقة/التمهيد فقط إلى حساب مرقّى مسمّى عندما تكون الحسابات المسمّاة موجودة بالفعل، ويمكنه الحفاظ على مفتاح حساب افتراضي غير قياسي مُعدّ بدلاً من إنشاء `accounts.default` دائماً.
+يستخدم Core هذا السطح عندما يحتاج إلى ترقية تكوين قناة حساب واحد قديم إلى
+`channels.<id>.accounts.*` بدون تحميل إدخال Plugin الكامل.
+Matrix هو المثال المضمّن الحالي: ينقل فقط مفاتيح المصادقة/التمهيد إلى حساب
+مسمّى تمت ترقيته عندما تكون الحسابات المسمّاة موجودة بالفعل، ويمكنه الحفاظ على
+مفتاح حساب افتراضي غير قياسي مكوّن بدلاً من إنشاء
+`accounts.default` دائماً.
 
-تحافظ محوّلات رقع الإعداد هذه على اكتشاف سطح العقد المضمّن بشكل كسول. يبقى وقت الاستيراد خفيفاً؛ ولا يُحمّل سطح الترقية إلا عند أول استخدام بدلاً من إعادة الدخول إلى بدء تشغيل القناة المضمّنة عند استيراد الوحدة.
+تحافظ محولات تصحيح الإعداد هذه على كسل اكتشاف سطح العقد المضمّنة. يبقى وقت
+الاستيراد خفيفاً؛ إذ لا يُحمّل سطح الترقية إلا عند أول استخدام بدلاً من إعادة
+الدخول إلى بدء تشغيل القناة المضمّنة عند استيراد الوحدة.
 
-عندما تتضمن أسطح بدء التشغيل هذه أساليب Gateway RPC، أبقها على بادئة خاصة بـ Plugin. تظل مساحات أسماء إدارة core (`config.*`، و`exec.approvals.*`، و`wizard.*`، و`update.*`) محجوزة وتُحل دائماً إلى `operator.admin`، حتى إذا طلب Plugin نطاقاً أضيق.
+عندما تتضمن أسطح بدء التشغيل هذه طرق gateway RPC، أبقها على بادئة خاصة
+بالـ Plugin. تبقى مساحات أسماء إدارة Core (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) محجوزة وتُحل دائماً إلى
+`operator.admin`، حتى إذا طلب Plugin نطاقاً أضيق.
 
 مثال:
 
@@ -797,7 +894,8 @@ Plugin وأن تعيد استخدام المساعدات المشتركة من
 
 ### بيانات تعريف كتالوج القنوات
 
-يمكن لـ Plugins القنوات الإعلان عن بيانات تعريف الإعداد/الاكتشاف عبر `openclaw.channel` وتلميحات التثبيت عبر `openclaw.install`. هذا يحافظ على كتالوج core خالياً من البيانات.
+يمكن لـ Channel plugins الإعلان عن بيانات تعريف الإعداد/الاكتشاف عبر `openclaw.channel` و
+تلميحات التثبيت عبر `openclaw.install`. يُبقي هذا بيانات كتالوج Core خالية.
 
 مثال:
 
@@ -825,38 +923,69 @@ Plugin وأن تعيد استخدام المساعدات المشتركة من
 }
 ```
 
-حقول `openclaw.channel` المفيدة بخلاف المثال الأدنى:
+حقول `openclaw.channel` المفيدة خارج المثال الأدنى:
 
 - `detailLabel`: تسمية ثانوية لأسطح الكتالوج/الحالة الأكثر ثراءً
-- `docsLabel`: تجاوز نص رابط التوثيق
-- `preferOver`: معرّفات Plugin/القناة ذات الأولوية الأدنى التي ينبغي أن يتفوق عليها إدخال الكتالوج هذا
-- `selectionDocsPrefix`، و`selectionDocsOmitLabel`، و`selectionExtras`: عناصر تحكم في نص سطح الاختيار
-- `markdownCapable`: يعلّم القناة بأنها قادرة على Markdown لقرارات تنسيق الصادر
-- `exposure.configured`: إخفاء القناة من أسطح سرد القنوات المُعدّة عند ضبطه على `false`
-- `exposure.setup`: إخفاء القناة من منتقيات الإعداد/التهيئة التفاعلية عند ضبطه على `false`
-- `exposure.docs`: تعليم القناة بأنها داخلية/خاصة لأسطح تنقل التوثيق
-- `showConfigured` / `showInSetup`: أسماء مستعارة قديمة لا تزال مقبولة للتوافق؛ فضّل `exposure`
-- `quickstartAllowFrom`: إشراك القناة في تدفق البدء السريع القياسي `allowFrom`
+- `docsLabel`: تجاوز نص رابط الوثائق
+- `preferOver`: معرّفات Plugin/القناة ذات الأولوية الأدنى التي يجب أن يتقدم عليها إدخال الكتالوج هذا
+- `selectionDocsPrefix`, `selectionDocsOmitLabel`, `selectionExtras`: عناصر تحكم نسخ سطح الاختيار
+- `markdownCapable`: يعلّم القناة بأنها قادرة على markdown لقرارات تنسيق الإرسال
+- `exposure.configured`: إخفاء القناة من أسطح عرض القنوات المكوّنة عند ضبطه على `false`
+- `exposure.setup`: إخفاء القناة من منتقيات الإعداد/التكوين التفاعلية عند ضبطه على `false`
+- `exposure.docs`: تعليم القناة بأنها داخلية/خاصة لأسطح تنقل الوثائق
+- `showConfigured` / `showInSetup`: أسماء بديلة قديمة لا تزال مقبولة للتوافق؛ فضّل `exposure`
+- `quickstartAllowFrom`: إدخال القناة في تدفق البدء السريع القياسي `allowFrom`
 - `forceAccountBinding`: طلب ربط حساب صريح حتى عند وجود حساب واحد فقط
 - `preferSessionLookupForAnnounceTarget`: تفضيل البحث عن الجلسة عند حل أهداف الإعلان
 
-يمكن لـ OpenClaw أيضاً دمج **كتالوجات قنوات خارجية** (على سبيل المثال، تصدير سجل MPM). ضع ملف JSON في أحد المواضع التالية:
+يمكن لـ OpenClaw أيضاً دمج **كتالوجات قنوات خارجية** (على سبيل المثال، تصدير
+سجل MPM). ضع ملف JSON في أحد المواضع التالية:
 
 - `~/.openclaw/mpm/plugins.json`
 - `~/.openclaw/mpm/catalog.json`
 - `~/.openclaw/plugins/catalog.json`
 
-أو وجّه `OPENCLAW_PLUGIN_CATALOG_PATHS` (أو `OPENCLAW_MPM_CATALOG_PATHS`) إلى ملف JSON واحد أو أكثر (مفصولة بفواصل/فواصل منقوطة/`PATH`). يجب أن يحتوي كل ملف على `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`. يقبل المحلل أيضاً `"packages"` أو `"plugins"` كأسماء مستعارة قديمة للمفتاح `"entries"`.
+أو وجّه `OPENCLAW_PLUGIN_CATALOG_PATHS` (أو `OPENCLAW_MPM_CATALOG_PATHS`) إلى
+ملف JSON واحد أو أكثر (مفصولة بفاصلة/فاصلة منقوطة/`PATH`). يجب أن يحتوي كل ملف
+على `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`. يقبل المحلل أيضاً `"packages"` أو `"plugins"` كأسماء بديلة قديمة لمفتاح `"entries"`.
 
-تعرض إدخالات كتالوج القنوات المولّدة وإدخالات كتالوج تثبيت المزوّد حقائق مصدر التثبيت المطبّعة بجوار كتلة `openclaw.install` الخام. تحدد الحقائق المطبّعة ما إذا كانت مواصفة npm إصداراً دقيقاً أم محدداً عائماً، وما إذا كانت بيانات تعريف السلامة المتوقعة موجودة، وما إذا كان مسار مصدر محلي متاحاً أيضاً. عندما تكون هوية الكتالوج/الحزمة معروفة، تحذّر الحقائق المطبّعة إذا انحرف اسم حزمة npm المحلّل عن تلك الهوية. كما تحذّر عندما يكون `defaultChoice` غير صالح أو يشير إلى مصدر غير متاح، وعندما تكون بيانات تعريف سلامة npm موجودة دون مصدر npm صالح. يجب على المستهلكين التعامل مع `installSource` كحقل اختياري إضافي حتى لا تضطر الإدخالات اليدوية ومحاكيات الكتالوج إلى تصنيعه. يتيح هذا للإعداد والتشخيصات شرح حالة مستوى المصدر دون استيراد وقت تشغيل Plugin.
+تعرض إدخالات كتالوج القنوات المولّدة وإدخالات كتالوج تثبيت المزودين
+حقائق مصدر التثبيت المطبّعة بجوار كتلة `openclaw.install` الخام. تحدد
+الحقائق المطبّعة ما إذا كانت مواصفة npm إصداراً محدداً أم محدد اختيار عائماً،
+وما إذا كانت بيانات تعريف السلامة المتوقعة موجودة، وما إذا كان مسار مصدر محلي
+متاحاً أيضاً. عندما تكون هوية الكتالوج/الحزمة معروفة، تحذّر الحقائق المطبّعة
+إذا انحرف اسم حزمة npm المحلّل عن تلك الهوية.
+كما تحذّر عندما يكون `defaultChoice` غير صالح أو يشير إلى مصدر غير متاح،
+وعندما تكون بيانات تعريف سلامة npm موجودة بدون مصدر npm صالح. يجب على
+المستهلكين التعامل مع `installSource` كحقل اختياري إضافي حتى لا تضطر الإدخالات
+المبنية يدوياً ووسائط توافق الكتالوج إلى تركيبه.
+يتيح هذا للإعداد التشغيلي والتشخيصات شرح حالة مستوى المصدر دون
+استيراد وقت تشغيل Plugin.
 
-ينبغي أن تفضّل إدخالات npm الخارجية الرسمية `npmSpec` دقيقاً مع `expectedIntegrity`. لا تزال أسماء الحزم المجردة ووسوم التوزيع تعمل للتوافق، لكنها تُظهر تحذيرات مستوى المصدر حتى يتمكن الكتالوج من التحرك نحو تثبيتات مثبتة ومتحقق من سلامتها دون كسر Plugins الحالية. عندما يثبّت الإعداد من مسار كتالوج محلي، فإنه يسجل إدخال فهرس Plugin مُداراً مع `source: "path"` و`sourcePath` نسبي إلى مساحة العمل عندما يكون ذلك ممكناً. يبقى مسار التحميل التشغيلي المطلق في `plugins.load.paths`؛ ويتجنب سجل التثبيت تكرار مسارات محطة العمل المحلية في الإعدادات طويلة الأمد. هذا يُبقي تثبيتات التطوير المحلية مرئية لتشخيصات مستوى المصدر دون إضافة سطح إفصاح ثانٍ خام لمسار نظام الملفات. فهرس Plugin المستمر `plugins/installs.json` هو مصدر حقيقة التثبيت ويمكن تحديثه دون تحميل وحدات وقت تشغيل Plugin. خريطة `installRecords` الخاصة به دائمة حتى عندما يكون بيان Plugin مفقوداً أو غير صالح؛ ومصفوفة `plugins` الخاصة به هي عرض بيان قابل لإعادة البناء.
+يجب أن تفضّل إدخالات npm الخارجية الرسمية `npmSpec` محدداً بالإضافة إلى
+`expectedIntegrity`. لا تزال أسماء الحزم المجردة ووسوم التوزيع تعمل للتوافق،
+لكنها تعرض تحذيرات مستوى المصدر حتى يمكن للكتالوج الانتقال نحو تثبيتات مثبتة
+ومتحقق من سلامتها بدون كسر plugins الحالية.
+عندما يثبّت الإعداد التشغيلي من مسار كتالوج محلي، يسجل إدخال فهرس Plugin مُدار
+مع `source: "path"` و`sourcePath` نسبي إلى مساحة العمل عندما يكون ذلك ممكناً.
+يبقى مسار التحميل التشغيلي المطلق في
+`plugins.load.paths`؛ ويتجنب سجل التثبيت تكرار مسارات محطة العمل المحلية
+داخل تكوين طويل العمر. يُبقي هذا تثبيتات التطوير المحلية مرئية لتشخيصات مستوى
+المصدر دون إضافة سطح ثانٍ خام للإفصاح عن مسار نظام الملفات. فهرس Plugin
+المستمر `plugins/installs.json` هو مصدر حقيقة التثبيت ويمكن تحديثه دون تحميل
+وحدات وقت تشغيل Plugin.
+تكون خريطة `installRecords` الخاصة به دائمة حتى عندما يكون بيان Plugin مفقوداً
+أو غير صالح؛ وتكون مصفوفة `plugins` الخاصة به عرض بيان قابلاً لإعادة البناء.
 
 ## Plugins محرك السياق
 
-تمتلك Plugins محرك السياق تنسيق سياق الجلسة للإدخال، والتجميع، وCompaction. سجّلها من Plugin الخاص بك باستخدام `api.registerContextEngine(id, factory)`، ثم اختر المحرك النشط باستخدام `plugins.slots.contextEngine`.
+تمتلك Plugins محرك السياق تنسيق سياق الجلسة للإدخال والتجميع وCompaction.
+سجّلها من Plugin الخاص بك باستخدام
+`api.registerContextEngine(id, factory)`، ثم اختر المحرك النشط باستخدام
+`plugins.slots.contextEngine`.
 
-استخدم هذا عندما يحتاج Plugin الخاص بك إلى استبدال مسار السياق الافتراضي أو توسيعه بدلاً من مجرد إضافة بحث ذاكرة أو خطافات.
+استخدم هذا عندما يحتاج Plugin الخاص بك إلى استبدال أو توسيع مسار السياق
+الافتراضي بدلاً من مجرد إضافة بحث ذاكرة أو خطافات.
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
@@ -884,9 +1013,11 @@ export default function (api) {
 }
 ```
 
-يعرض المصنع `ctx` قيماً اختيارية لـ `config`، و`agentDir`، و`workspaceDir` للتهيئة وقت الإنشاء.
+يعرض المصنع `ctx` قيماً اختيارية هي `config` و`agentDir` و`workspaceDir`
+للتهيئة وقت الإنشاء.
 
-إذا كان محركك **لا** يمتلك خوارزمية Compaction، فأبقِ `compact()` منفذاً وفوّضه صراحةً:
+إذا كان محركك **لا** يمتلك خوارزمية Compaction، فأبقِ `compact()`
+منفذاً وفوّضها صراحةً:
 
 ```ts
 import {
@@ -923,37 +1054,45 @@ export default function (api) {
 
 ## إضافة قدرة جديدة
 
-عندما يحتاج Plugin إلى سلوك لا يناسب API الحالي، لا تتجاوز نظام Plugin عبر وصول خاص إلى الداخل. أضف القدرة المفقودة.
+عندما يحتاج Plugin إلى سلوك لا يناسب API الحالية، لا تتجاوز نظام Plugin
+بوصول خاص إلى الداخل. أضف القدرة المفقودة.
 
 التسلسل الموصى به:
 
-1. عرّف عقد core
-   قرر السلوك المشترك الذي ينبغي أن يمتلكه core: السياسة، والرجوع الاحتياطي، ودمج الإعدادات، ودورة الحياة، والدلالات الموجهة للقناة، وشكل مساعد وقت التشغيل.
-2. أضف أسطح تسجيل/وقت تشغيل Plugin typed
-   وسّع `OpenClawPluginApi` و/أو `api.runtime` بأصغر سطح قدرة typed مفيد.
-3. صِل core + مستهلكي القناة/الميزة
-   ينبغي أن تستهلك القنوات وPlugins الميزات القدرة الجديدة عبر core، لا عبر استيراد تنفيذ مورّد مباشرةً.
-4. سجّل تنفيذات المورّدين
-   تسجل Plugins المورّدين حينها الواجهات الخلفية الخاصة بها مقابل القدرة.
+1. عرّف عقد Core
+   قرر ما السلوك المشترك الذي يجب أن يمتلكه Core: السياسة، والرجوع الاحتياطي، ودمج التكوين،
+   ودورة الحياة، ودلالات مواجهة القناة، وشكل مساعد وقت التشغيل.
+2. أضف أسطح تسجيل/وقت تشغيل Plugin مكتوبة الأنواع
+   وسّع `OpenClawPluginApi` و/أو `api.runtime` بأصغر
+   سطح قدرة مكتوب الأنواع ومفيد.
+3. اربط مستهلكي Core + القناة/الميزة
+   يجب أن تستهلك القنوات وfeature plugins القدرة الجديدة عبر Core،
+   وليس باستيراد تنفيذ مورّد مباشرةً.
+4. سجّل تنفيذات المورّد
+   تسجّل Vendor plugins بعدها واجهاتها الخلفية مقابل القدرة.
 5. أضف تغطية للعقد
-   أضف اختبارات حتى تبقى الملكية وشكل التسجيل صريحين بمرور الوقت.
+   أضف اختبارات حتى يبقى شكل الملكية والتسجيل صريحاً مع مرور الوقت.
 
-بهذه الطريقة يبقى OpenClaw ذا رأي واضح دون أن يصبح مشفراً على رؤية مزوّد واحد للعالم. راجع [دليل القدرات العملي](/ar/plugins/architecture) للحصول على قائمة تحقق ملفات ملموسة ومثال عملي.
+هذه هي الطريقة التي يبقى بها OpenClaw ذا رأي تصميمي دون أن يصبح مضمن الترميز
+وفق منظور مزود واحد. راجع [كتاب وصفات القدرات](/ar/plugins/architecture)
+للحصول على قائمة تحقق ملفات ملموسة ومثال مطبّق.
 
 ### قائمة تحقق القدرة
 
-عندما تضيف قدرة جديدة، ينبغي أن يلمس التنفيذ عادةً هذه الأسطح معاً:
+عندما تضيف قدرة جديدة، يجب أن يلمس التنفيذ عادةً هذه الأسطح معاً:
 
-- أنواع عقد core في `src/<capability>/types.ts`
-- مساعد مشغّل/وقت تشغيل core في `src/<capability>/runtime.ts`
-- سطح تسجيل API الخاص بـ Plugin في `src/plugins/types.ts`
-- توصيل سجل Plugin في `src/plugins/registry.ts`
-- تعريض وقت تشغيل Plugin في `src/plugins/runtime/*` عندما تحتاج Plugins الميزات/القنوات إلى استهلاكه
-- مساعدات الالتقاط/الاختبار في `src/test-utils/plugin-registration.ts`
+- أنواع عقد Core في `src/<capability>/types.ts`
+- مساعد مشغل/وقت تشغيل Core في `src/<capability>/runtime.ts`
+- سطح تسجيل Plugin API في `src/plugins/types.ts`
+- ربط سجل Plugin في `src/plugins/registry.ts`
+- تعريض وقت تشغيل Plugin في `src/plugins/runtime/*` عندما تحتاج feature/channel
+  plugins إلى استهلاكه
+- مساعدو الالتقاط/الاختبار في `src/test-utils/plugin-registration.ts`
 - تأكيدات الملكية/العقد في `src/plugins/contracts/registry.ts`
-- توثيق المشغّل/Plugin في `docs/`
+- وثائق المشغل/Plugin في `docs/`
 
-إذا كان أحد هذه الأسطح مفقوداً، فغالباً ما يكون ذلك علامة على أن القدرة لم تُدمج بالكامل بعد.
+إذا كان أحد هذه الأسطح مفقوداً، فعادةً ما يكون ذلك علامة على أن القدرة
+لم تُدمج بالكامل بعد.
 
 ### قالب القدرة
 
@@ -989,16 +1128,16 @@ const clip = await api.runtime.videoGeneration.generate({
 expect(findVideoGenerationProviderIdsForPlugin("openai")).toEqual(["openai"]);
 ```
 
-يبقي ذلك القاعدة بسيطة:
+يُبقي ذلك القاعدة بسيطة:
 
-- يمتلك core عقد القدرة + التنسيق
-- تمتلك Plugins المورّدين تنفيذات المورّدين
-- تستهلك Plugins الميزات/القنوات مساعدات وقت التشغيل
+- يمتلك Core عقد القدرة + التنسيق
+- تمتلك Vendor plugins تنفيذات المورّد
+- تستهلك feature/channel plugins مساعدي وقت التشغيل
 - تُبقي اختبارات العقد الملكية صريحة
 
 ## ذو صلة
 
-- [بنية Plugin](/ar/plugins/architecture) — نموذج القدرات العام وأشكالها
+- [معمارية Plugin](/ar/plugins/architecture) — نموذج القدرات العام وأشكاله
 - [مسارات Plugin SDK الفرعية](/ar/plugins/sdk-subpaths)
 - [إعداد Plugin SDK](/ar/plugins/sdk-setup)
-- [بناء Plugins](/ar/plugins/building-plugins)
+- [بناء plugins](/ar/plugins/building-plugins)

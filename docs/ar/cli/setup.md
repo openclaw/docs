@@ -1,14 +1,14 @@
 ---
 read_when:
-    - أنت تجري إعداد التشغيل الأول دون عملية التهيئة الكاملة عبر CLI
+    - أنت تجري إعداد التشغيل الأول دون الإعداد التمهيدي الكامل عبر CLI
     - تريد تعيين مسار مساحة العمل الافتراضي
-summary: مرجع CLI لـ `openclaw setup` (تهيئة التكوين + مساحة العمل)
+summary: مرجع CLI لـ `openclaw setup` (تهيئة الإعدادات + مساحة العمل)
 title: الإعداد
 x-i18n:
-    generated_at: "2026-04-30T07:50:35Z"
+    generated_at: "2026-05-02T20:43:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -35,12 +35,12 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## الخيارات
 
 - `--workspace <dir>`: دليل مساحة عمل الوكيل (يُخزَّن باسم `agents.defaults.workspace`)
-- `--wizard`: تشغيل الإعداد الأولي
-- `--non-interactive`: تشغيل الإعداد الأولي من دون مطالبات
+- `--wizard`: شغّل الإعداد الأولي
+- `--non-interactive`: شغّل الإعداد الأولي دون مطالبات
 - `--mode <local|remote>`: وضع الإعداد الأولي
-- `--import-from <provider>`: مزوّد الترحيل المراد تشغيله أثناء الإعداد الأولي
-- `--import-source <path>`: موطن الوكيل المصدر لـ `--import-from`
-- `--import-secrets`: استيراد الأسرار المدعومة أثناء ترحيل الإعداد الأولي
+- `--import-from <provider>`: موفر الترحيل الذي سيُشغَّل أثناء الإعداد الأولي
+- `--import-source <path>`: مجلد المنزل للوكيل المصدر لـ `--import-from`
+- `--import-secrets`: استورد الأسرار المدعومة أثناء ترحيل الإعداد الأولي
 - `--remote-url <url>`: عنوان URL لـ WebSocket الخاص بـ Gateway البعيد
 - `--remote-token <token>`: رمز Gateway البعيد
 
@@ -52,9 +52,10 @@ openclaw setup --wizard
 
 ملاحظات:
 
-- يهيّئ `openclaw setup` العادي الإعدادات + مساحة العمل من دون تدفق الإعداد الأولي الكامل.
-- يعمل الإعداد الأولي تلقائيًا عند وجود أي أعلام للإعداد الأولي (`--wizard`، `--non-interactive`، `--mode`، `--import-from`، `--import-source`، `--import-secrets`، `--remote-url`، `--remote-token`).
-- إذا اكتُشفت حالة Hermes، يمكن للإعداد الأولي التفاعلي أن يعرض الترحيل تلقائيًا. يتطلب إعداد الاستيراد الأولي إعدادًا جديدًا؛ استخدم [الترحيل](/ar/cli/migrate) لخطط التشغيل التجريبي، والنسخ الاحتياطية، ووضع الاستبدال خارج الإعداد الأولي.
+- يقوم `openclaw setup` العادي بتهيئة الإعدادات + مساحة العمل دون تدفق الإعداد الأولي الكامل.
+- بعد الإعداد العادي، شغّل `openclaw configure` لاختيار النماذج، أو القنوات، أو Gateway، أو plugins، أو Skills، أو فحوصات السلامة.
+- يعمل الإعداد الأولي تلقائيًا عند وجود أي من أعلام الإعداد الأولي (`--wizard`، `--non-interactive`، `--mode`، `--import-from`، `--import-source`، `--import-secrets`، `--remote-url`، `--remote-token`).
+- إذا اكتُشفت حالة Hermes، يمكن للإعداد الأولي التفاعلي أن يعرض الترحيل تلقائيًا. يتطلب إعداد الاستيراد الأولي إعدادًا جديدًا؛ استخدم [الترحيل](/ar/cli/migrate) لخطط التشغيل التجريبي والنسخ الاحتياطية ووضع الاستبدال خارج الإعداد الأولي.
 
 ## ذات صلة
 

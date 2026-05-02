@@ -1,37 +1,38 @@
 ---
 read_when:
     - تثبيت أو تكوين إطار acpx لـ Claude Code / Codex / Gemini CLI
-    - تمكين جسر MCP الخاص بـ plugin-tools أو OpenClaw-tools
+    - تمكين جسر MCP لـ plugin-tools أو OpenClaw-tools
     - تكوين أوضاع أذونات ACP
 summary: 'إعداد وكلاء ACP: تهيئة حاضنة acpx، إعداد Plugin، الأذونات'
 title: وكلاء ACP — الإعداد
 x-i18n:
-    generated_at: "2026-05-02T07:43:31Z"
+    generated_at: "2026-05-02T21:03:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4426219227e77d5dc57039c0c8f7324590388db141689239deaa2441609f4afd
+    source_hash: 92a53744f13ad4301d40c04dd28bbc28ca9d0a21070c20ddbda55ae9f6673001
     source_path: tools/acp-agents-setup.md
     workflow: 16
 ---
 
-للحصول على النظرة العامة، ودليل تشغيل المشغّل، والمفاهيم، راجع [وكلاء ACP](/ar/tools/acp-agents).
+للاطلاع على النظرة العامة، ودليل تشغيل المشغّل، والمفاهيم، راجع [وكلاء ACP](/ar/tools/acp-agents).
 
-تغطي الأقسام أدناه إعداد حاضنة acpx، وإعداد Plugin لجسور MCP، وتكوين الأذونات.
+تغطي الأقسام أدناه تكوين مسخّر acpx، وإعداد Plugin لجسور MCP، وتكوين الأذونات.
 
-استخدم هذه الصفحة فقط عند إعداد مسار ACP/acpx. لتكوين وقت تشغيل خادم تطبيقات Codex الأصلي، استخدم [حاضنة Codex](/ar/plugins/codex-harness). بالنسبة إلى مفاتيح OpenAI API أو تكوين موفر نماذج Codex OAuth، استخدم [OpenAI](/ar/providers/openai).
+استخدم هذه الصفحة فقط عندما تكون بصدد إعداد مسار ACP/acpx. بالنسبة إلى تكوين تشغيل خادم تطبيق Codex الأصلي، استخدم [مسخّر Codex](/ar/plugins/codex-harness). وبالنسبة إلى مفاتيح OpenAI API أو تكوين موفّر نماذج Codex OAuth، استخدم
+[OpenAI](/ar/providers/openai).
 
 لدى Codex مساران في OpenClaw:
 
-| المسار                     | التكوين/الأمر                                           | صفحة الإعداد                            |
+| المسار                      | التكوين/الأمر                                         | صفحة الإعداد                              |
 | -------------------------- | ------------------------------------------------------ | --------------------------------------- |
-| خادم تطبيقات Codex الأصلي | `/codex ...`, `agentRuntime.id: "codex"`               | [حاضنة Codex](/ar/plugins/codex-harness) |
-| مهايئ Codex ACP الصريح    | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | هذه الصفحة                              |
+| خادم تطبيق Codex الأصلي    | `/codex ...`, `agentRuntime.id: "codex"`               | [مسخّر Codex](/ar/plugins/codex-harness) |
+| محوّل Codex ACP الصريح | `/acp spawn codex`, `runtime: "acp", agentId: "codex"` | هذه الصفحة                               |
 
-فضّل المسار الأصلي ما لم تكن تحتاج صراحة إلى سلوك ACP/acpx.
+فضّل المسار الأصلي ما لم تكن تحتاج صراحةً إلى سلوك ACP/acpx.
 
-## دعم حاضنة acpx (الحالي)
+## دعم مسخّر acpx (الحالي)
 
-أسماء الحاضنات المضمنة الحالية في acpx:
+أسماء مسخّرات acpx المضمّنة الحالية:
 
 - `claude`
 - `codex`
@@ -48,16 +49,16 @@ x-i18n:
 - `pi`
 - `qwen`
 
-عندما يستخدم OpenClaw خلفية acpx، فضّل هذه القيم لـ `agentId` ما لم يعرّف تكوين acpx لديك أسماء وكلاء مخصصة.
-إذا كان تثبيت Cursor المحلي لديك لا يزال يعرّض ACP على أنه `agent acp`، فتجاوز أمر وكيل `cursor` في تكوين acpx لديك بدلا من تغيير الإعداد الافتراضي المضمن.
+عندما يستخدم OpenClaw واجهة acpx الخلفية، فضّل هذه القيم لـ `agentId` ما لم يعرّف تكوين acpx لديك أسماء مستعارة مخصصة للوكلاء.
+إذا كان تثبيت Cursor المحلي لديك لا يزال يعرّض ACP بوصفه `agent acp`، فتجاوز أمر وكيل `cursor` في تكوين acpx لديك بدلًا من تغيير الإعداد الافتراضي المضمّن.
 
-يمكن لاستخدام acpx CLI المباشر أيضا استهداف مهايئات عشوائية عبر `--agent <command>`، لكن منفذ الهروب الخام هذا ميزة في acpx CLI (وليس مسار `agentId` المعتاد في OpenClaw).
+يمكن لاستخدام acpx CLI المباشر أيضًا استهداف محوّلات عشوائية عبر `--agent <command>`، لكن منفذ الهروب الخام هذا هو ميزة في acpx CLI (وليس مسار `agentId` العادي في OpenClaw).
 
-يعتمد التحكم في النموذج على إمكانات المهايئ. يقوم OpenClaw بتطبيع مراجع نماذج Codex ACP قبل بدء التشغيل. تحتاج الحاضنات الأخرى إلى ACP `models` مع دعم `session/set_model`؛ إذا لم تعرض الحاضنة تلك الإمكانية في ACP ولا علم نموذج بدء التشغيل الخاص بها، فلا يمكن لـ OpenClaw/acpx فرض اختيار نموذج.
+يعتمد التحكم في النموذج على قدرات المحوّل. يطبّع OpenClaw مراجع نماذج Codex ACP قبل بدء التشغيل. تحتاج المسخّرات الأخرى إلى `models` في ACP بالإضافة إلى دعم `session/set_model`؛ إذا لم يعرّض مسخّر ما تلك القدرة في ACP ولا علم نموذج بدء التشغيل الخاص به، فلن يتمكن OpenClaw/acpx من فرض اختيار نموذج.
 
 ## التكوين المطلوب
 
-خط الأساس الأساسي لـ ACP:
+خط أساس ACP الأساسي:
 
 ```json5
 {
@@ -95,7 +96,7 @@ x-i18n:
 }
 ```
 
-تكوين ربط السلاسل خاص بمهايئ القناة. مثال لـ Discord:
+تكوين ربط السلاسل خاص بمحوّل القناة. مثال لـ Discord:
 
 ```json5
 {
@@ -117,17 +118,25 @@ x-i18n:
 }
 ```
 
-إذا لم يعمل إنشاء ACP المرتبط بسلسلة، فتحقق أولا من علم ميزة المهايئ:
+إذا لم يعمل إنشاء ACP المرتبط بالسلسلة، فتحقق أولًا من علم ميزة المحوّل:
 
 - Discord: `channels.discord.threadBindings.spawnSessions=true`
 
-لا تتطلب روابط المحادثة الحالية إنشاء سلسلة فرعية. إنها تتطلب سياق محادثة نشطا ومهايئ قناة يعرّض روابط محادثات ACP.
+لا تتطلب روابط المحادثة الحالية إنشاء سلسلة فرعية. إنها تتطلب سياق محادثة نشطًا ومحوّل قناة يعرّض روابط محادثات ACP.
 
 راجع [مرجع التكوين](/ar/gateway/configuration-reference).
 
-## إعداد Plugin لخلفية acpx
+## إعداد Plugin لواجهة acpx الخلفية
 
-تأتي التثبيتات الجديدة مع Plugin وقت تشغيل `acpx` المضمن مفعلا افتراضيا، لذلك يعمل ACP عادة دون خطوة تثبيت Plugin يدوية.
+تستخدم التثبيتات المعبأة Plugin تشغيل `@openclaw/acpx` الرسمي لـ ACP.
+ثبّته وفعّله قبل استخدام جلسات مسخّر ACP:
+
+```bash
+openclaw plugins install @openclaw/acpx
+openclaw config set plugins.entries.acpx.enabled true
+```
+
+يمكن لنسخ المصدر أيضًا استخدام Plugin مساحة العمل المحلي بعد `pnpm install`.
 
 ابدأ بـ:
 
@@ -135,20 +144,20 @@ x-i18n:
 /acp doctor
 ```
 
-إذا عطّلت `acpx`، أو حظرته عبر `plugins.allow` / `plugins.deny`، أو أردت التبديل إلى نسخة تطوير محلية، فاستخدم مسار Plugin الصريح:
+إذا عطّلت `acpx`، أو منعته عبر `plugins.allow` / `plugins.deny`، أو أردت العودة إلى Plugin المعبأ، فاستخدم مسار الحزمة الصريح:
 
 ```bash
-openclaw plugins install acpx
+openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-تثبيت مساحة العمل المحلية أثناء التطوير:
+تثبيت مساحة العمل المحلي أثناء التطوير:
 
 ```bash
 openclaw plugins install ./path/to/local/acpx-plugin
 ```
 
-ثم تحقق من صحة الخلفية:
+ثم تحقق من صحة الواجهة الخلفية:
 
 ```text
 /acp doctor
@@ -156,7 +165,7 @@ openclaw plugins install ./path/to/local/acpx-plugin
 
 ### تكوين أمر acpx وإصداره
 
-افتراضيا، يسجل Plugin `acpx` المضمن خلفية ACP المضمنة دون إنشاء وكيل ACP أثناء بدء تشغيل Gateway. شغّل `/acp doctor` لإجراء فحص مباشر صريح. عيّن `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=1` فقط عندما تحتاج إلى أن يفحص Gateway الوكيل المكوّن عند بدء التشغيل.
+افتراضيًا، يسجّل Plugin `acpx` واجهة ACP الخلفية المضمّنة من دون تشغيل وكيل ACP أثناء بدء تشغيل Gateway. شغّل `/acp doctor` لإجراء فحص حي صريح. عيّن `OPENCLAW_ACPX_RUNTIME_STARTUP_PROBE=1` فقط عندما تحتاج إلى أن يفحص Gateway الوكيل المكوّن عند بدء التشغيل.
 
 تجاوز الأمر أو الإصدار في تكوين Plugin:
 
@@ -176,21 +185,21 @@ openclaw plugins install ./path/to/local/acpx-plugin
 }
 ```
 
-- يقبل `command` مسارا مطلقا، أو مسارا نسبيا (يتم حله من مساحة عمل OpenClaw)، أو اسم أمر.
-- يعطل `expectedVersion: "any"` مطابقة الإصدار الصارمة.
-- تعطل مسارات `command` المخصصة التثبيت التلقائي المحلي للـ Plugin.
+- يقبل `command` مسارًا مطلقًا، أو مسارًا نسبيًا (يُحل من مساحة عمل OpenClaw)، أو اسم أمر.
+- يعطّل `expectedVersion: "any"` مطابقة الإصدار الصارمة.
+- تعطّل مسارات `command` المخصصة التثبيت التلقائي المحلي لـ Plugin.
 
 راجع [Plugins](/ar/tools/plugin).
 
-### تثبيت التبعيات التلقائي
+### تثبيت التبعيات تلقائيًا
 
-عند تثبيت OpenClaw عالميا باستخدام `npm install -g openclaw`، يتم تثبيت تبعيات وقت تشغيل acpx (الثنائيات الخاصة بالمنصة) تلقائيا عبر خطاف postinstall. إذا فشل التثبيت التلقائي، فسيظل Gateway يبدأ بشكل طبيعي ويبلغ عن التبعية المفقودة عبر `openclaw acp doctor`.
+عند تثبيت OpenClaw عموميًا باستخدام `npm install -g openclaw`، تُثبّت تبعيات تشغيل acpx (الثنائيات الخاصة بالمنصة) تلقائيًا عبر خطاف ما بعد التثبيت. إذا فشل التثبيت التلقائي، فسيظل Gateway يبدأ بشكل طبيعي ويبلغ عن التبعية المفقودة عبر `openclaw acp doctor`.
 
 ### جسر MCP لأدوات Plugin
 
-افتراضيا، لا تعرّض جلسات ACPX أدوات OpenClaw المسجلة بواسطة Plugins إلى حاضنة ACP.
+افتراضيًا، لا تعرّض جلسات ACPX أدوات OpenClaw المسجّلة عبر Plugin إلى مسخّر ACP.
 
-إذا أردت أن يستدعي وكلاء ACP مثل Codex أو Claude Code أدوات Plugins المثبتة في OpenClaw مثل استدعاء/تخزين الذاكرة، ففعّل الجسر المخصص:
+إذا كنت تريد من وكلاء ACP مثل Codex أو Claude Code استدعاء أدوات Plugin المثبتة في OpenClaw مثل استرجاع/تخزين الذاكرة، ففعّل الجسر المخصص:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
@@ -198,22 +207,22 @@ openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
 
 ما يفعله هذا:
 
-- يحقن خادم MCP مضمنا باسم `openclaw-plugin-tools` في تمهيد جلسة ACPX.
-- يعرّض أدوات Plugins المسجلة مسبقا بواسطة Plugins المثبتة والمفعلة في OpenClaw.
-- يبقي الميزة صريحة ومعطلة افتراضيا.
+- يحقن خادم MCP مضمّنًا باسم `openclaw-plugin-tools` في تمهيد جلسة ACPX.
+- يعرّض أدوات Plugin المسجّلة مسبقًا بواسطة Plugins OpenClaw المثبتة والمفعّلة.
+- يبقي الميزة صريحة ومعطّلة افتراضيًا.
 
 ملاحظات الأمان والثقة:
 
-- يوسّع هذا سطح أدوات حاضنة ACP.
-- يحصل وكلاء ACP على الوصول فقط إلى أدوات Plugins النشطة بالفعل في Gateway.
-- تعامل مع هذا كحد الثقة نفسه مثل السماح لتلك Plugins بالتنفيذ داخل OpenClaw نفسه.
+- يوسّع هذا سطح أدوات مسخّر ACP.
+- يحصل وكلاء ACP على الوصول فقط إلى أدوات Plugin النشطة مسبقًا في Gateway.
+- تعامل مع هذا بصفته حد الثقة نفسه للسماح لتلك Plugins بالتنفيذ داخل OpenClaw نفسه.
 - راجع Plugins المثبتة قبل تفعيله.
 
-تستمر `mcpServers` المخصصة في العمل كما في السابق. جسر أدوات Plugins المضمن هو تسهيل إضافي اختياري، وليس بديلا عن تكوين خادم MCP العام.
+لا تزال `mcpServers` المخصصة تعمل كما كانت. جسر أدوات Plugin المضمّن هو تسهيل إضافي اختياري، وليس بديلًا عن تكوين خادم MCP العام.
 
 ### جسر MCP لأدوات OpenClaw
 
-افتراضيا، لا تعرّض جلسات ACPX أيضا أدوات OpenClaw المضمنة عبر MCP. فعّل جسر أدوات النواة المنفصل عندما يحتاج وكيل ACP إلى أدوات مضمنة محددة مثل `cron`:
+افتراضيًا، لا تعرّض جلسات ACPX أيضًا أدوات OpenClaw المضمّنة عبر MCP. فعّل جسر الأدوات الأساسية المنفصل عندما يحتاج وكيل ACP إلى أدوات مضمّنة محددة مثل `cron`:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
@@ -221,13 +230,13 @@ openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
 
 ما يفعله هذا:
 
-- يحقن خادم MCP مضمنا باسم `openclaw-tools` في تمهيد جلسة ACPX.
-- يعرّض أدوات OpenClaw مضمنة محددة. يعرّض الخادم الأولي `cron`.
-- يبقي تعريض أدوات النواة صريحا ومعطلا افتراضيا.
+- يحقن خادم MCP مضمّنًا باسم `openclaw-tools` في تمهيد جلسة ACPX.
+- يعرّض أدوات OpenClaw المضمّنة المحددة. يعرّض الخادم الأولي `cron`.
+- يبقي تعريض الأدوات الأساسية صريحًا ومعطّلًا افتراضيًا.
 
-### تكوين مهلة وقت التشغيل
+### تكوين مهلة التشغيل
 
-يضبط Plugin `acpx` المضمن مهلة افتراضية لدورات وقت التشغيل المضمنة قدرها 120 ثانية. يمنح هذا الحاضنات الأبطأ مثل Gemini CLI وقتا كافيا لإكمال بدء تشغيل ACP وتهيئته. تجاوزه إذا كان مضيفك يحتاج إلى حد وقت تشغيل مختلف:
+يضبط Plugin `acpx` افتراضيًا مهلة دورات التشغيل المضمّنة على 120 ثانية. يمنح هذا المسخّرات الأبطأ مثل Gemini CLI وقتًا كافيًا لإكمال بدء تشغيل ACP وتهيئته. تجاوزه إذا كان المضيف لديك يحتاج إلى حد تشغيل مختلف:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
@@ -237,7 +246,7 @@ openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
 
 ### تكوين وكيل فحص الصحة
 
-عندما يتحقق `/acp doctor` أو فحص بدء التشغيل الاختياري من الخلفية، يفحص Plugin `acpx` المضمن وكيل حاضنة واحدا. إذا تم تعيين `acp.allowedAgents`، فسيستخدم افتراضيا أول وكيل مسموح؛ وإلا فسيستخدم `codex` افتراضيا. إذا كان نشرُك يحتاج إلى وكيل ACP مختلف لفحوصات الصحة، فعيّن وكيل الفحص صراحة:
+عندما يفحص `/acp doctor` أو فحص بدء التشغيل الاختياري الواجهة الخلفية، يفحص Plugin `acpx` المجمّع وكيل مسخّر واحدًا. إذا تم تعيين `acp.allowedAgents`، فسيستخدم افتراضيًا أول وكيل مسموح؛ وإلا فسيستخدم `codex` افتراضيًا. إذا كان نشرُك يحتاج إلى وكيل ACP مختلف لفحوصات الصحة، فعيّن وكيل الفحص صراحةً:
 
 ```bash
 openclaw config set plugins.entries.acpx.config.probeAgent claude
@@ -247,28 +256,28 @@ openclaw config set plugins.entries.acpx.config.probeAgent claude
 
 ## تكوين الأذونات
 
-تعمل جلسات ACP بشكل غير تفاعلي، فلا توجد TTY للموافقة على مطالبات أذونات كتابة الملفات وتنفيذ shell أو رفضها. يوفر Plugin acpx مفتاحي تكوين يتحكمان في كيفية التعامل مع الأذونات:
+تعمل جلسات ACP بشكل غير تفاعلي — لا توجد TTY للموافقة على مطالبات أذونات كتابة الملفات وتنفيذ أوامر shell أو رفضها. يوفر Plugin acpx مفتاحي تكوين يتحكمان في كيفية التعامل مع الأذونات:
 
-تكون أذونات حاضنة ACPX هذه منفصلة عن موافقات التنفيذ في OpenClaw ومنفصلة عن أعلام تجاوز مورّدي خلفيات CLI مثل Claude CLI `--permission-mode bypassPermissions`. يعد ACPX `approve-all` مفتاح الطوارئ على مستوى الحاضنة لجلسات ACP.
+تُعد أذونات مسخّر ACPX هذه منفصلة عن موافقات التنفيذ في OpenClaw ومنفصلة عن أعلام تجاوز مورّد واجهة CLI الخلفية مثل Claude CLI `--permission-mode bypassPermissions`. يُعد `approve-all` في ACPX مفتاح كسر الحاجز على مستوى المسخّر لجلسات ACP.
 
 ### `permissionMode`
 
-يتحكم في العمليات التي يستطيع وكيل الحاضنة تنفيذها دون مطالبة.
+يتحكم في العمليات التي يمكن لوكيل المسخّر تنفيذها من دون مطالبة.
 
-| القيمة          | السلوك                                                   |
+| القيمة           | السلوك                                                  |
 | --------------- | --------------------------------------------------------- |
-| `approve-all`   | الموافقة تلقائيا على كل عمليات كتابة الملفات وأوامر shell. |
-| `approve-reads` | الموافقة تلقائيا على القراءات فقط؛ تتطلب الكتابات والتنفيذ مطالبات. |
-| `deny-all`      | رفض كل مطالبات الأذونات.                                |
+| `approve-all`   | الموافقة التلقائية على جميع عمليات كتابة الملفات وأوامر shell.          |
+| `approve-reads` | الموافقة التلقائية على القراءات فقط؛ تتطلب الكتابات والتنفيذ مطالبات. |
+| `deny-all`      | رفض جميع مطالبات الأذونات.                              |
 
 ### `nonInteractivePermissions`
 
-يتحكم فيما يحدث عندما كان سيتم عرض مطالبة أذونات ولكن لا تتوفر TTY تفاعلية (وهذا هو الحال دائما لجلسات ACP).
+يتحكم فيما يحدث عندما يُفترض عرض مطالبة إذن لكن لا تتوفر TTY تفاعلية (وهذا هو الحال دائمًا لجلسات ACP).
 
-| القيمة | السلوك                                                              |
-| ------ | ------------------------------------------------------------------- |
-| `fail` | إجهاض الجلسة مع `AcpRuntimeError`. **(افتراضي)**                    |
-| `deny` | رفض الإذن بصمت والمتابعة (تدهور تدريجي).                           |
+| القيمة  | السلوك                                                          |
+| ------ | ----------------------------------------------------------------- |
+| `fail` | إجهاض الجلسة مع `AcpRuntimeError`. **(افتراضي)**           |
+| `deny` | رفض الإذن بصمت والمتابعة (تدهور سلس). |
 
 ### التكوين
 
@@ -282,13 +291,13 @@ openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
 أعد تشغيل Gateway بعد تغيير هذه القيم.
 
 <Warning>
-يضبط OpenClaw افتراضيا `permissionMode=approve-reads` و`nonInteractivePermissions=fail`. في جلسات ACP غير التفاعلية، يمكن أن تفشل أي كتابة أو تنفيذ يطلق مطالبة أذونات مع `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
+يستخدم OpenClaw افتراضيًا `permissionMode=approve-reads` و`nonInteractivePermissions=fail`. في جلسات ACP غير التفاعلية، يمكن أن يفشل أي تنفيذ للكتابة أو الأوامر يؤدي إلى مطالبة إذن مع `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
 
-إذا احتجت إلى تقييد الأذونات، فعيّن `nonInteractivePermissions` إلى `deny` حتى تتدهور الجلسات تدريجيا بدلا من أن تتعطل.
+إذا كنت تحتاج إلى تقييد الأذونات، فعيّن `nonInteractivePermissions` إلى `deny` كي تتدهور الجلسات بسلاسة بدلًا من التعطل.
 </Warning>
 
 ## ذات صلة
 
-- [وكلاء ACP](/ar/tools/acp-agents) — النظرة العامة، دليل تشغيل المشغّل، المفاهيم
+- [وكلاء ACP](/ar/tools/acp-agents) — النظرة العامة، ودليل تشغيل المشغّل، والمفاهيم
 - [الوكلاء الفرعيون](/ar/tools/subagents)
 - [توجيه متعدد الوكلاء](/ar/concepts/multi-agent)

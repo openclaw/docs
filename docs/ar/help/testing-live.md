@@ -1,35 +1,35 @@
 ---
 read_when:
-    - تشغيل اختبارات الدخان لمصفوفة النماذج الحية / خلفية CLI / ACP / موفّر الوسائط
-    - تصحيح أخطاء حل بيانات اعتماد الاختبارات الحية
-    - إضافة اختبار مباشر جديد خاص بموفّر
+    - تشغيل اختبارات smoke لمصفوفة النماذج الحية / الواجهة الخلفية لـ CLI / ACP / موفّر الوسائط
+    - استكشاف أخطاء حل بيانات اعتماد الاختبار المباشر وإصلاحها
+    - إضافة اختبار مباشر جديد خاص بموفر
 sidebarTitle: Live tests
-summary: 'الاختبارات المباشرة (المتعاملة مع الشبكة): مصفوفة النماذج، الخلفيات البرمجية لـ CLI، ACP، موفرو الوسائط، بيانات الاعتماد'
+summary: 'اختبارات مباشرة (تتصل بالشبكة): مصفوفة النماذج، خلفيات CLI، ACP، موفرو الوسائط، بيانات الاعتماد'
 title: 'الاختبار: مجموعات الاختبار الحية'
 x-i18n:
-    generated_at: "2026-05-02T07:31:50Z"
+    generated_at: "2026-05-02T20:47:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ce8bd75ee7837b48e6ba1d888d281ee053fc13bdcf0907baddeb78ebcbbef31c
+    source_hash: 2268f20ce5c0bbee8bf610938851fe529f5e21fa31fe08a70400df94e9241cc3
     source_path: help/testing-live.md
     workflow: 16
 ---
 
-للبدء السريع، ومشغّلي ضمان الجودة، ومجموعات اختبارات الوحدة/التكامل، وتدفقات Docker، راجع
-[الاختبار](/ar/help/testing). تغطي هذه الصفحة مجموعات الاختبار **المباشرة** (التي تلامس الشبكة):
-مصفوفة النماذج، وخلفيات CLI، وACP، واختبارات مزوّد الوسائط المباشرة، إضافة إلى
+للبدء السريع، ومشغّلي QA، وحِزم اختبارات الوحدة/التكامل، وتدفقات Docker، راجع
+[الاختبار](/ar/help/testing). تغطي هذه الصفحة حِزم الاختبار **المباشرة** (التي تتعامل مع الشبكة):
+مصفوفة النماذج، وخلفيات CLI، وACP، واختبارات موفّر الوسائط المباشرة، بالإضافة إلى
 التعامل مع بيانات الاعتماد.
 
-## مباشر: أوامر smoke للملف الشخصي المحلي
+## مباشر: أوامر فحص profile المحلي السريعة
 
-حمّل `~/.profile` قبل الفحوصات المباشرة المخصصة حتى تطابق مفاتيح المزوّد ومسارات الأدوات
-المحلية الصدفة لديك:
+قم بتحميل `~/.profile` قبل الفحوصات المباشرة المؤقتة كي تطابق مفاتيح الموفّرين ومسارات الأدوات المحلية
+الصدفة لديك:
 
 ```bash
 source ~/.profile
 ```
 
-اختبار smoke آمن للوسائط:
+فحص وسائط آمن:
 
 ```bash
 pnpm openclaw infer tts convert --local --json \
@@ -37,7 +37,7 @@ pnpm openclaw infer tts convert --local --json \
   --output /tmp/openclaw-live-smoke.mp3
 ```
 
-اختبار smoke آمن لجاهزية المكالمات الصوتية:
+فحص آمن لجاهزية المكالمات الصوتية:
 
 ```bash
 pnpm openclaw voicecall setup --json
@@ -46,19 +46,19 @@ pnpm openclaw voicecall smoke --to "+15555550123"
 
 `voicecall smoke` هو تشغيل تجريبي ما لم يكن `--yes` موجودًا أيضًا. استخدم `--yes` فقط
 عندما تريد عمدًا إجراء مكالمة إشعار حقيقية. بالنسبة إلى Twilio وTelnyx و
-Plivo، يتطلب فحص الجاهزية الناجح عنوان URL عامًا لـ Webhook؛ يتم رفض بدائل
-local loopback/الخاصة فقط حسب التصميم.
+Plivo، يتطلب فحص الجاهزية الناجح عنوان URL عامًا لـ Webhook؛ ويتم رفض بدائل
+local loopback/الخاصة المحلية حسب التصميم.
 
-## مباشر: مسح قدرات عقدة Android
+## مباشر: مسح قدرات Node Android
 
 - الاختبار: `src/gateway/android-node.capabilities.live.test.ts`
 - السكربت: `pnpm android:test:integration`
-- الهدف: استدعاء **كل أمر معلن عنه حاليًا** بواسطة عقدة Android متصلة والتحقق من سلوك عقد الأمر.
+- الهدف: استدعاء **كل أمر مُعلَن عنه حاليًا** بواسطة Node Android متصل والتحقق من سلوك عقد الأمر.
 - النطاق:
-  - إعداد مسبق/يدوي (لا تثبّت المجموعة التطبيق أو تشغّله أو تقرنه).
-  - تحقق Gateway `node.invoke` أمرًا بأمر لعقدة Android المحددة.
+  - إعداد مسبق/يدوي (لا تثبّت الحزمة التطبيق ولا تشغّله ولا تقرنه).
+  - تحقق `node.invoke` في Gateway أمرًا بأمر لـ Node Android المحدد.
 - الإعداد المسبق المطلوب:
-  - تطبيق Android متصل ومقترن بالفعل بالـ Gateway.
+  - تطبيق Android متصل ومقترن بالفعل بـ Gateway.
   - إبقاء التطبيق في المقدمة.
   - منح الأذونات/موافقة الالتقاط للقدرات التي تتوقع نجاحها.
 - تجاوزات الهدف الاختيارية:
@@ -66,12 +66,12 @@ local loopback/الخاصة فقط حسب التصميم.
   - `OPENCLAW_ANDROID_GATEWAY_URL` / `OPENCLAW_ANDROID_GATEWAY_TOKEN` / `OPENCLAW_ANDROID_GATEWAY_PASSWORD`.
 - تفاصيل إعداد Android الكاملة: [تطبيق Android](/ar/platforms/android)
 
-## مباشر: smoke للنماذج (مفاتيح الملف الشخصي)
+## مباشر: فحص النماذج السريع (مفاتيح profile)
 
-تنقسم الاختبارات المباشرة إلى طبقتين حتى نتمكن من عزل الأعطال:
+تُقسَّم الاختبارات المباشرة إلى طبقتين كي نتمكن من عزل الإخفاقات:
 
-- "النموذج المباشر" يخبرنا أن المزوّد/النموذج يمكنه الإجابة أصلًا بالمفتاح المعطى.
-- "Gateway smoke" يخبرنا أن خط أنابيب Gateway+agent الكامل يعمل لذلك النموذج (الجلسات، والسجل، والأدوات، وسياسة sandbox، وغير ذلك).
+- “النموذج المباشر” يخبرنا أن الموفّر/النموذج يستطيع الإجابة أصلًا باستخدام المفتاح المعطى.
+- “فحص Gateway السريع” يخبرنا أن مسار Gateway+agent الكامل يعمل لذلك النموذج (الجلسات، السجل، الأدوات، سياسة sandbox، إلخ).
 
 ### الطبقة 1: إكمال النموذج المباشر (بدون Gateway)
 
@@ -79,63 +79,63 @@ local loopback/الخاصة فقط حسب التصميم.
 - الهدف:
   - تعداد النماذج المكتشفة
   - استخدام `getApiKeyForModel` لاختيار النماذج التي لديك بيانات اعتماد لها
-  - تشغيل إكمال صغير لكل نموذج (وانحدارات موجهة عند الحاجة)
-- طريقة التفعيل:
+  - تشغيل إكمال صغير لكل نموذج (والارتدادات المستهدفة عند الحاجة)
+- كيفية التفعيل:
   - `pnpm test:live` (أو `OPENCLAW_LIVE_TEST=1` إذا كنت تستدعي Vitest مباشرة)
-- اضبط `OPENCLAW_LIVE_MODELS=modern` (أو `all`، اسم مستعار لـ modern) لتشغيل هذه المجموعة فعليًا؛ وإلا فستتخطى للحفاظ على تركيز `pnpm test:live` على Gateway smoke
-- طريقة اختيار النماذج:
-  - `OPENCLAW_LIVE_MODELS=modern` لتشغيل قائمة السماح الحديثة (Opus/Sonnet 4.6+، وGPT-5.2 + Codex، وGemini 3، وDeepSeek V4، وGLM 4.7، وMiniMax M2.7، وGrok 4.3)
+- عيّن `OPENCLAW_LIVE_MODELS=modern` (أو `all`، وهو اسم مستعار لـ modern) لتشغيل هذه الحزمة فعليًا؛ وإلا فسيتم تخطيها لإبقاء `pnpm test:live` مركّزًا على فحص Gateway السريع
+- كيفية اختيار النماذج:
+  - `OPENCLAW_LIVE_MODELS=modern` لتشغيل قائمة السماح الحديثة (Opus/Sonnet 4.6+، GPT-5.2 + Codex، Gemini 3، DeepSeek V4، GLM 4.7، MiniMax M2.7، Grok 4.3)
   - `OPENCLAW_LIVE_MODELS=all` هو اسم مستعار لقائمة السماح الحديثة
   - أو `OPENCLAW_LIVE_MODELS="openai/gpt-5.5,openai-codex/gpt-5.5,anthropic/claude-opus-4-6,..."` (قائمة سماح مفصولة بفواصل)
-  - تعتمد مسوحات modern/all افتراضيًا سقفًا منتقى عالي الإشارة؛ اضبط `OPENCLAW_LIVE_MAX_MODELS=0` لإجراء مسح حديث شامل أو رقمًا موجبًا لسقف أصغر.
-  - تستخدم المسوحات الشاملة `OPENCLAW_LIVE_TEST_TIMEOUT_MS` لمهلة اختبار النموذج المباشر بالكامل. الافتراضي: 60 دقيقة.
-  - تعمل مجسات النموذج المباشر بتوازٍ قدره 20 مسارًا افتراضيًا؛ اضبط `OPENCLAW_LIVE_MODEL_CONCURRENCY` للتجاوز.
-- طريقة اختيار المزوّدين:
+  - تستخدم عمليات مسح modern/all افتراضيًا حدًا منسقًا عالي الإشارة؛ عيّن `OPENCLAW_LIVE_MAX_MODELS=0` لإجراء مسح حديث شامل أو رقمًا موجبًا لحد أصغر.
+  - تستخدم عمليات المسح الشاملة `OPENCLAW_LIVE_TEST_TIMEOUT_MS` كمهلة لاختبار النموذج المباشر بالكامل. الافتراضي: 60 دقيقة.
+  - تعمل مجسات النموذج المباشر افتراضيًا بتوازٍ مقداره 20؛ عيّن `OPENCLAW_LIVE_MODEL_CONCURRENCY` للتجاوز.
+- كيفية اختيار الموفّرين:
   - `OPENCLAW_LIVE_PROVIDERS="google,google-antigravity,google-gemini-cli"` (قائمة سماح مفصولة بفواصل)
-- مصدر المفاتيح:
-  - افتراضيًا: مخزن الملف الشخصي وبدائل env
-  - اضبط `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض **مخزن الملف الشخصي** فقط
+- من أين تأتي المفاتيح:
+  - افتراضيًا: مخزن profile وبدائل env
+  - عيّن `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض استخدام **مخزن profile** فقط
 - سبب وجود هذا:
-  - يفصل بين "واجهة API للمزوّد معطلة / المفتاح غير صالح" و"خط أنابيب وكيل Gateway معطل"
-  - يحتوي على انحدارات صغيرة ومعزولة (مثال: إعادة تشغيل الاستدلال في OpenAI Responses/Codex Responses + تدفقات استدعاء الأدوات)
+  - يفصل بين “واجهة API للموفّر معطلة / المفتاح غير صالح” و“مسار agent في Gateway معطل”
+  - يحتوي على ارتدادات صغيرة ومعزولة (مثال: إعادة تشغيل الاستدلال في OpenAI Responses/Codex Responses + تدفقات استدعاء الأدوات)
 
-### الطبقة 2: Gateway + smoke لوكيل التطوير (ما يفعله "@openclaw" فعليًا)
+### الطبقة 2: Gateway + فحص agent التطويري السريع (ما يفعله "@openclaw" فعليًا)
 
 - الاختبار: `src/gateway/gateway-models.profiles.live.test.ts`
 - الهدف:
   - تشغيل Gateway داخل العملية
   - إنشاء/تصحيح جلسة `agent:dev:*` (تجاوز النموذج لكل تشغيل)
   - تكرار النماذج ذات المفاتيح والتحقق من:
-    - استجابة "ذات معنى" (بدون أدوات)
+    - استجابة “ذات معنى” (بدون أدوات)
     - عمل استدعاء أداة حقيقي (مجس قراءة)
-    - مجسات أدوات إضافية اختيارية (مجس تنفيذ+قراءة)
-    - استمرار عمل مسارات انحدار OpenAI (استدعاء أداة فقط → متابعة)
-- تفاصيل المجسات (حتى تتمكن من شرح الأعطال بسرعة):
-  - مجس `read`: يكتب الاختبار ملف nonce في مساحة العمل ويطلب من الوكيل `read` له وترديد nonce مرة أخرى.
-  - مجس `exec+read`: يطلب الاختبار من الوكيل استخدام `exec` لكتابة nonce في ملف مؤقت، ثم `read` له مرة أخرى.
-  - مجس الصورة: يرفق الاختبار PNG مولّدًا (cat + رمز عشوائي) ويتوقع من النموذج إرجاع `cat <CODE>`.
+    - مجسات أدوات إضافية اختيارية (مجس exec+read)
+    - استمرار عمل مسارات ارتداد OpenAI (استدعاء أداة فقط → متابعة)
+- تفاصيل المجسات (كي تتمكن من شرح الإخفاقات بسرعة):
+  - مجس `read`: يكتب الاختبار ملف nonce في مساحة العمل ويطلب من agent أن `read`ه وأن يعيد nonce.
+  - مجس `exec+read`: يطلب الاختبار من agent أن يكتب nonce عبر `exec` في ملف مؤقت، ثم `read`ه مرة أخرى.
+  - مجس الصورة: يرفق الاختبار ملف PNG مولدًا (cat + رمز عشوائي) ويتوقع من النموذج إرجاع `cat <CODE>`.
   - مرجع التنفيذ: `src/gateway/gateway-models.profiles.live.test.ts` و`src/gateway/live-image-probe.ts`.
-- طريقة التفعيل:
+- كيفية التفعيل:
   - `pnpm test:live` (أو `OPENCLAW_LIVE_TEST=1` إذا كنت تستدعي Vitest مباشرة)
-- طريقة اختيار النماذج:
-  - الافتراضي: قائمة السماح الحديثة (Opus/Sonnet 4.6+، وGPT-5.2 + Codex، وGemini 3، وDeepSeek V4، وGLM 4.7، وMiniMax M2.7، وGrok 4.3)
+- كيفية اختيار النماذج:
+  - الافتراضي: قائمة السماح الحديثة (Opus/Sonnet 4.6+، GPT-5.2 + Codex، Gemini 3، DeepSeek V4، GLM 4.7، MiniMax M2.7، Grok 4.3)
   - `OPENCLAW_LIVE_GATEWAY_MODELS=all` هو اسم مستعار لقائمة السماح الحديثة
-  - أو اضبط `OPENCLAW_LIVE_GATEWAY_MODELS="provider/model"` (أو قائمة مفصولة بفواصل) للتضييق
-  - تعتمد مسوحات Gateway الحديثة/الكل افتراضيًا سقفًا منتقى عالي الإشارة؛ اضبط `OPENCLAW_LIVE_GATEWAY_MAX_MODELS=0` لإجراء مسح حديث شامل أو رقمًا موجبًا لسقف أصغر.
-- طريقة اختيار المزوّدين (لتجنب "كل شيء عبر OpenRouter"):
+  - أو عيّن `OPENCLAW_LIVE_GATEWAY_MODELS="provider/model"` (أو قائمة مفصولة بفواصل) للتضييق
+  - تستخدم عمليات مسح modern/all في Gateway افتراضيًا حدًا منسقًا عالي الإشارة؛ عيّن `OPENCLAW_LIVE_GATEWAY_MAX_MODELS=0` لإجراء مسح حديث شامل أو رقمًا موجبًا لحد أصغر.
+- كيفية اختيار الموفّرين (لتجنب “كل شيء من OpenRouter”):
   - `OPENCLAW_LIVE_GATEWAY_PROVIDERS="google,google-antigravity,google-gemini-cli,openai,anthropic,zai,minimax"` (قائمة سماح مفصولة بفواصل)
-- مجسات الأدوات + الصور مفعّلة دائمًا في هذا الاختبار المباشر:
+- تكون مجسات الأدوات + الصور مفعّلة دائمًا في هذا الاختبار المباشر:
   - مجس `read` + مجس `exec+read` (ضغط الأدوات)
   - يعمل مجس الصورة عندما يعلن النموذج دعم إدخال الصور
-  - التدفق (مستوى عالٍ):
-    - يولّد الاختبار PNG صغيرًا يحتوي على "CAT" + رمز عشوائي (`src/gateway/live-image-probe.ts`)
+  - التدفق (على مستوى عالٍ):
+    - ينشئ الاختبار ملف PNG صغيرًا يحتوي على “CAT” + رمز عشوائي (`src/gateway/live-image-probe.ts`)
     - يرسله عبر `agent` `attachments: [{ mimeType: "image/png", content: "<base64>" }]`
     - يحلل Gateway المرفقات إلى `images[]` (`src/gateway/server-methods/agent.ts` + `src/gateway/chat-attachments.ts`)
-    - يمرر الوكيل المضمن رسالة مستخدم متعددة الوسائط إلى النموذج
+    - يمرر agent المضمّن رسالة مستخدم متعددة الوسائط إلى النموذج
     - التأكيد: يحتوي الرد على `cat` + الرمز (تسامح OCR: يُسمح بالأخطاء الطفيفة)
 
 <Tip>
-لرؤية ما يمكنك اختباره على جهازك (ومعرّفات `provider/model` الدقيقة)، شغّل:
+لمعرفة ما يمكنك اختباره على جهازك (ومعرّفات `provider/model` الدقيقة)، شغّل:
 
 ```bash
 openclaw models list
@@ -144,27 +144,27 @@ openclaw models list --json
 
 </Tip>
 
-## مباشر: smoke لخلفية CLI (Claude أو Codex أو Gemini أو CLIs محلية أخرى)
+## مباشر: فحص خلفية CLI السريع (Claude أو Codex أو Gemini أو واجهات CLI محلية أخرى)
 
 - الاختبار: `src/gateway/gateway-cli-backend.live.test.ts`
-- الهدف: التحقق من خط أنابيب Gateway + agent باستخدام خلفية CLI محلية، بدون لمس إعداداتك الافتراضية.
-- توجد افتراضيات smoke الخاصة بالخلفية مع تعريف `cli-backend.ts` في Plugin المالك.
+- الهدف: التحقق من مسار Gateway + agent باستخدام خلفية CLI محلية، دون المساس بتكوينك الافتراضي.
+- توجد افتراضيات الفحص السريع الخاصة بكل خلفية مع تعريف `cli-backend.ts` الخاص بالـ Plugin المالكة.
 - التفعيل:
   - `pnpm test:live` (أو `OPENCLAW_LIVE_TEST=1` إذا كنت تستدعي Vitest مباشرة)
   - `OPENCLAW_LIVE_CLI_BACKEND=1`
 - الافتراضيات:
-  - المزوّد/النموذج الافتراضي: `claude-cli/claude-sonnet-4-6`
-  - تأتي سلوكيات الأمر/الوسائط/الصورة من بيانات Plugin الوصفية لخلفية CLI المالكة.
+  - الموفّر/النموذج الافتراضي: `claude-cli/claude-sonnet-4-6`
+  - يأتي سلوك الأمر/الوسيطات/الصور من بيانات Plugin الوصفية لخلفية CLI المالكة.
 - التجاوزات (اختيارية):
   - `OPENCLAW_LIVE_CLI_BACKEND_MODEL="codex-cli/gpt-5.5"`
   - `OPENCLAW_LIVE_CLI_BACKEND_COMMAND="/full/path/to/codex"`
   - `OPENCLAW_LIVE_CLI_BACKEND_ARGS='["exec","--json","--color","never","--sandbox","read-only","--skip-git-repo-check"]'`
-  - `OPENCLAW_LIVE_CLI_BACKEND_IMAGE_PROBE=1` لإرسال مرفق صورة حقيقي (تُحقن المسارات في الموجه). تعطل وصفات Docker هذا افتراضيًا ما لم يُطلب صراحة.
-  - `OPENCLAW_LIVE_CLI_BACKEND_IMAGE_ARG="--image"` لتمرير مسارات ملفات الصور كوسائط CLI بدلًا من حقنها في الموجه.
-  - `OPENCLAW_LIVE_CLI_BACKEND_IMAGE_MODE="repeat"` (أو `"list"`) للتحكم في كيفية تمرير وسائط الصور عند ضبط `IMAGE_ARG`.
+  - `OPENCLAW_LIVE_CLI_BACKEND_IMAGE_PROBE=1` لإرسال مرفق صورة حقيقي (تُحقن المسارات في الموجه). تعطل وصفات Docker هذا افتراضيًا ما لم يُطلب صراحةً.
+  - `OPENCLAW_LIVE_CLI_BACKEND_IMAGE_ARG="--image"` لتمرير مسارات ملفات الصور كوسيطات CLI بدلًا من حقنها في الموجه.
+  - `OPENCLAW_LIVE_CLI_BACKEND_IMAGE_MODE="repeat"` (أو `"list"`) للتحكم في كيفية تمرير وسيطات الصور عند ضبط `IMAGE_ARG`.
   - `OPENCLAW_LIVE_CLI_BACKEND_RESUME_PROBE=1` لإرسال دورة ثانية والتحقق من تدفق الاستئناف.
-  - `OPENCLAW_LIVE_CLI_BACKEND_MODEL_SWITCH_PROBE=1` للاشتراك في مجس استمرارية الجلسة نفسها Claude Sonnet -> Opus عندما يدعم النموذج المحدد هدف تبديل. تعطل وصفات Docker هذا افتراضيًا لتحسين موثوقية التجميع.
-  - `OPENCLAW_LIVE_CLI_BACKEND_MCP_PROBE=1` للاشتراك في مجس MCP/الأدوات عبر local loopback. تعطل وصفات Docker هذا افتراضيًا ما لم يُطلب صراحة.
+  - `OPENCLAW_LIVE_CLI_BACKEND_MODEL_SWITCH_PROBE=1` للاشتراك في مجس استمرارية الجلسة نفسها من Claude Sonnet إلى Opus عندما يدعم النموذج المحدد هدف تبديل. تعطل وصفات Docker هذا افتراضيًا لزيادة موثوقية التجميع.
+  - `OPENCLAW_LIVE_CLI_BACKEND_MCP_PROBE=1` للاشتراك في مجس MCP/الأداة عبر loopback. تعطل وصفات Docker هذا افتراضيًا ما لم يُطلب صراحةً.
 
 مثال:
 
@@ -174,17 +174,17 @@ OPENCLAW_LIVE_CLI_BACKEND=1 \
   pnpm test:live src/gateway/gateway-cli-backend.live.test.ts
 ```
 
-اختبار smoke رخيص لإعداد Gemini MCP:
+فحص سريع رخيص لتكوين Gemini MCP:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 \
   pnpm test:live src/agents/cli-runner/bundle-mcp.gemini.live.test.ts
 ```
 
-لا يطلب هذا من Gemini توليد استجابة. يكتب إعدادات النظام نفسها التي
-يعطيها OpenClaw إلى Gemini، ثم يشغّل `gemini --debug mcp list` لإثبات أن خادم
-`transport: "streamable-http"` المحفوظ يُطبّع إلى شكل HTTP MCP الخاص بـ Gemini
-ويمكنه الاتصال بخادم MCP محلي streamable-HTTP.
+لا يطلب هذا من Gemini توليد استجابة. إنه يكتب إعدادات النظام نفسها
+التي يعطيها OpenClaw إلى Gemini، ثم يشغّل `gemini --debug mcp list` لإثبات أن خادمًا محفوظًا
+بقيمة `transport: "streamable-http"` تتم تسويته إلى شكل HTTP MCP الخاص بـ Gemini
+ويمكنه الاتصال بخادم MCP محلي من نوع streamable-HTTP.
 
 وصفة Docker:
 
@@ -192,7 +192,7 @@ OPENCLAW_LIVE_TEST=1 \
 pnpm test:docker:live-cli-backend
 ```
 
-وصفات Docker لمزوّد واحد:
+وصفات Docker لموفّر واحد:
 
 ```bash
 pnpm test:docker:live-cli-backend:claude
@@ -204,27 +204,27 @@ pnpm test:docker:live-cli-backend:gemini
 ملاحظات:
 
 - يوجد مشغّل Docker في `scripts/test-live-cli-backend-docker.sh`.
-- يشغّل smoke لخلفية CLI المباشرة داخل صورة Docker الخاصة بالمستودع كمستخدم `node` غير الجذر.
-- يحل بيانات smoke الوصفية لـ CLI من Plugin المالك، ثم يثبّت حزمة CLI المطابقة لنظام Linux (`@anthropic-ai/claude-code` أو `@openai/codex` أو `@google/gemini-cli`) في بادئة قابلة للكتابة ومخزنة مؤقتًا عند `OPENCLAW_DOCKER_CLI_TOOLS_DIR` (الافتراضي: `~/.cache/openclaw/docker-cli-tools`).
-- يتطلب `pnpm test:docker:live-cli-backend:claude-subscription` اشتراك Claude Code OAuth قابلًا للنقل عبر إما `~/.claude/.credentials.json` مع `claudeAiOauth.subscriptionType` أو `CLAUDE_CODE_OAUTH_TOKEN` من `claude setup-token`. يثبت أولًا `claude -p` المباشر في Docker، ثم يشغّل دورتين لخلفية Gateway CLI بدون الاحتفاظ بمتغيرات env لمفتاح Anthropic API. يعطل مسار الاشتراك هذا مجسات Claude MCP/الأدوات والصور افتراضيًا لأن Claude يوجّه حاليًا استخدام تطبيقات الجهات الخارجية عبر فوترة استخدام إضافية بدلًا من حدود خطة الاشتراك العادية.
-- يمارس smoke المباشر لخلفية CLI الآن التدفق نفسه من البداية إلى النهاية لـ Claude وCodex وGemini: دورة نصية، ثم دورة تصنيف صورة، ثم استدعاء أداة MCP `cron` المتحقق منه عبر Gateway CLI.
-- كما يصحّح smoke الافتراضي لـ Claude الجلسة من Sonnet إلى Opus ويتحقق من أن الجلسة المستأنفة ما زالت تتذكر ملاحظة سابقة.
+- يشغّل فحص خلفية CLI المباشر السريع داخل صورة Docker الخاصة بالمستودع كمستخدم `node` غير root.
+- يحل بيانات فحص CLI الوصفية من Plugin المالكة، ثم يثبت حزمة CLI المطابقة على Linux (`@anthropic-ai/claude-code` أو `@openai/codex` أو `@google/gemini-cli`) في بادئة قابلة للكتابة ومخزنة مؤقتًا عند `OPENCLAW_DOCKER_CLI_TOOLS_DIR` (الافتراضي: `~/.cache/openclaw/docker-cli-tools`).
+- يتطلب `pnpm test:docker:live-cli-backend:claude-subscription` OAuth محمولًا لاشتراك Claude Code من خلال إما `~/.claude/.credentials.json` مع `claudeAiOauth.subscriptionType` أو `CLAUDE_CODE_OAUTH_TOKEN` من `claude setup-token`. يثبت أولًا `claude -p` المباشر في Docker، ثم يشغّل دورتين لخلفية CLI في Gateway دون الاحتفاظ بمتغيرات env الخاصة بمفتاح Anthropic API. يعطل مسار الاشتراك هذا مجسات Claude MCP/الأداة والصورة افتراضيًا لأن Claude يوجّه حاليًا استخدام تطبيقات الطرف الثالث عبر فوترة استخدام إضافية بدلًا من حدود خطة الاشتراك العادية.
+- يمارس فحص خلفية CLI المباشر السريع الآن التدفق الكامل نفسه من البداية إلى النهاية لـ Claude وCodex وGemini: دورة نصية، ثم دورة تصنيف صورة، ثم استدعاء أداة `cron` في MCP يتم التحقق منه عبر CLI في Gateway.
+- يقوم فحص Claude الافتراضي السريع أيضًا بتصحيح الجلسة من Sonnet إلى Opus ويتحقق من أن الجلسة المستأنفة لا تزال تتذكر ملاحظة سابقة.
 
-## مباشر: smoke لربط ACP (`/acp spawn ... --bind here`)
+## مباشر: فحص ربط ACP السريع (`/acp spawn ... --bind here`)
 
 - الاختبار: `src/gateway/gateway-acp-bind.live.test.ts`
-- الهدف: التحقق من تدفق ربط محادثة ACP الحقيقي مع وكيل ACP مباشر:
+- الهدف: التحقق من تدفق ربط محادثة ACP الحقيقي مع وكيل ACP حي:
   - إرسال `/acp spawn <agent> --bind here`
   - ربط محادثة قناة رسائل اصطناعية في موضعها
-  - إرسال متابعة عادية في المحادثة نفسها
-  - التحقق من وصول المتابعة إلى نص جلسة ACP المرتبطة
+  - إرسال متابعة عادية في تلك المحادثة نفسها
+  - التحقق من وصول المتابعة إلى نص جلسة ACP المربوطة
 - التفعيل:
   - `pnpm test:live src/gateway/gateway-acp-bind.live.test.ts`
   - `OPENCLAW_LIVE_ACP_BIND=1`
-- الإعدادات الافتراضية:
+- الافتراضيات:
   - وكلاء ACP في Docker: `claude,codex,gemini`
-  - وكيل ACP للأمر المباشر `pnpm test:live ...`: `claude`
-  - القناة الاصطناعية: سياق محادثة بأسلوب رسائل Slack المباشرة
+  - وكيل ACP للتشغيل المباشر `pnpm test:live ...`: `claude`
+  - القناة الاصطناعية: سياق محادثة بنمط رسائل Slack المباشرة
   - خلفية ACP: `acpx`
 - التجاوزات:
   - `OPENCLAW_LIVE_ACP_BIND_AGENT=claude`
@@ -240,9 +240,9 @@ pnpm test:docker:live-cli-backend:gemini
   - `OPENCLAW_LIVE_ACP_BIND_REQUIRE_CRON=1`
   - `OPENCLAW_LIVE_ACP_BIND_PARENT_MODEL=openai/gpt-5.5`
 - ملاحظات:
-  - يستخدم هذا المسار سطح `chat.send` في Gateway مع حقول مسار منشأ اصطناعية للمسؤولين فقط، حتى تتمكن الاختبارات من إرفاق سياق قناة الرسائل من دون الادعاء بالتسليم خارجيًا.
-  - عندما لا يكون `OPENCLAW_LIVE_ACP_BIND_AGENT_COMMAND` مضبوطًا، يستخدم الاختبار سجل الوكلاء المدمج في Plugin `acpx` المضمن لوكيل حزمة ACP المختار.
-  - إنشاء MCP الخاص بـ Cron للجلسة المرتبطة هو أفضل جهد افتراضيًا لأن حزم ACP الخارجية قد تلغي استدعاءات MCP بعد اجتياز إثبات الربط/الصورة؛ اضبط `OPENCLAW_LIVE_ACP_BIND_REQUIRE_CRON=1` لجعل فحص Cron بعد الربط صارمًا.
+  - يستخدم هذا المسار سطح `chat.send` في Gateway مع حقول مسار منشأ اصطناعية مخصصة للمسؤول فقط، بحيث تستطيع الاختبارات إرفاق سياق قناة رسائل دون التظاهر بالتسليم خارجيًا.
+  - عندما لا تكون `OPENCLAW_LIVE_ACP_BIND_AGENT_COMMAND` مضبوطة، يستخدم الاختبار سجل الوكلاء المدمج في Plugin `acpx` المضمن لوكيل أداة اختبار ACP المحدد.
+  - إنشاء MCP عبر cron للجلسة المربوطة يبذل أفضل جهد افتراضيًا لأن أدوات اختبار ACP الخارجية يمكن أن تلغي استدعاءات MCP بعد اجتياز إثبات الربط/الصورة؛ اضبط `OPENCLAW_LIVE_ACP_BIND_REQUIRE_CRON=1` لجعل فحص cron بعد الربط صارمًا.
 
 مثال:
 
@@ -271,37 +271,36 @@ pnpm test:docker:live-acp-bind:opencode
 ملاحظات Docker:
 
 - يوجد مشغل Docker في `scripts/test-live-acp-bind-docker.sh`.
-- افتراضيًا، يشغل فحص ACP bind smoke ضد وكلاء CLI المباشرين التجميعيين بالتسلسل: `claude`، ثم `codex`، ثم `gemini`.
+- افتراضيًا، يشغّل فحص ACP bind smoke على وكلاء CLI الحية المجمعة بالتسلسل: `claude`، ثم `codex`، ثم `gemini`.
 - استخدم `OPENCLAW_LIVE_ACP_BIND_AGENTS=claude` أو `OPENCLAW_LIVE_ACP_BIND_AGENTS=codex` أو `OPENCLAW_LIVE_ACP_BIND_AGENTS=droid` أو `OPENCLAW_LIVE_ACP_BIND_AGENTS=gemini` أو `OPENCLAW_LIVE_ACP_BIND_AGENTS=opencode` لتضييق المصفوفة.
-- يحمّل `~/.profile`، ويجهز مواد مصادقة CLI المطابقة داخل الحاوية، ثم يثبت CLI المباشر المطلوب (`@anthropic-ai/claude-code` أو `@openai/codex` أو Factory Droid عبر `https://app.factory.ai/cli` أو `@google/gemini-cli` أو `opencode-ai`) إذا كان مفقودًا. خلفية ACP نفسها هي حزمة `acpx/runtime` المضمنة المجمعة من Plugin `acpx`.
-- يجهز متغير Docker الخاص بـ Droid الدليل `~/.factory` للإعدادات، ويمرر `FACTORY_API_KEY`، ويتطلب مفتاح API ذلك لأن مصادقة OAuth/keyring المحلية الخاصة بـ Factory غير قابلة للنقل إلى الحاوية. يستخدم إدخال السجل المدمج في ACPX وهو `droid exec --output-format acp`.
-- متغير Docker الخاص بـ OpenCode هو مسار تراجع صارم لوكيل واحد. يكتب نموذجًا افتراضيًا مؤقتًا في `OPENCODE_CONFIG_CONTENT` من `OPENCLAW_LIVE_ACP_BIND_OPENCODE_MODEL` (الافتراضي `opencode/kimi-k2.6`) بعد تحميل `~/.profile`، ويتطلب `pnpm test:docker:live-acp-bind:opencode` نص مساعد مرتبطًا بدلًا من قبول التخطي العام بعد الربط.
-- استدعاءات CLI المباشرة لـ `acpx` هي فقط مسار يدوي/حل بديل لمقارنة السلوك خارج Gateway. فحص Docker ACP bind smoke يختبر خلفية تشغيل `acpx` المضمنة في OpenClaw.
+- يحمّل `~/.profile`، ويجهّز مواد مصادقة CLI المطابقة داخل الحاوية، ثم يثبّت CLI الحية المطلوبة (`@anthropic-ai/claude-code` أو `@openai/codex` أو Factory Droid عبر `https://app.factory.ai/cli` أو `@google/gemini-cli` أو `opencode-ai`) إذا كانت مفقودة. خلفية ACP نفسها هي حزمة `acpx/runtime` المضمنة من Plugin `acpx` الرسمي.
+- يجهّز متغير Docker الخاص بـ Droid المسار `~/.factory` للإعدادات، ويمرر `FACTORY_API_KEY`، ويتطلب مفتاح API هذا لأن مصادقة Factory OAuth/سلسلة المفاتيح المحلية غير قابلة للنقل إلى الحاوية. يستخدم إدخال السجل المدمج في ACPX وهو `droid exec --output-format acp`.
+- متغير Docker الخاص بـ OpenCode هو مسار انحدار صارم لوكيل واحد. يكتب نموذجًا افتراضيًا مؤقتًا في `OPENCODE_CONFIG_CONTENT` من `OPENCLAW_LIVE_ACP_BIND_OPENCODE_MODEL` (الافتراضي `opencode/kimi-k2.6`) بعد تحميل `~/.profile`، ويتطلب `pnpm test:docker:live-acp-bind:opencode` نص مساعد مربوطًا بدلًا من قبول التخطي العام بعد الربط.
+- استدعاءات CLI المباشرة لـ `acpx` هي مسار يدوي/التفاف فقط لمقارنة السلوك خارج Gateway. يفحص ACP bind smoke في Docker خلفية وقت تشغيل `acpx` المضمنة في OpenClaw.
 
-## مباشر: فحص smoke لحزمة خادم تطبيق Codex
+## مباشر: فحص smoke لأداة اختبار خادم تطبيق Codex
 
-- الهدف: التحقق من حزمة Codex المملوكة للـ Plugin عبر طريقة Gateway العادية
+- الهدف: التحقق من أداة اختبار Codex المملوكة للـ Plugin عبر طريقة Gateway العادية
   `agent`:
   - تحميل Plugin `codex` المضمن
-  - اختيار `OPENCLAW_AGENT_RUNTIME=codex`
-  - إرسال أول دورة وكيل Gateway إلى `openai/gpt-5.5` مع فرض حزمة Codex
-  - إرسال دورة ثانية إلى جلسة OpenClaw نفسها والتحقق من أن خيط خادم التطبيق
-    يمكنه الاستئناف
+  - تحديد `OPENCLAW_AGENT_RUNTIME=codex`
+  - إرسال أول دورة وكيل عبر Gateway إلى `openai/gpt-5.5` مع فرض أداة اختبار Codex
+  - إرسال دورة ثانية إلى جلسة OpenClaw نفسها والتحقق من قدرة خيط app-server
+    على الاستئناف
   - تشغيل `/codex status` و`/codex models` عبر مسار أمر Gateway نفسه
-  - اختياريًا، تشغيل فحصين صدفيين بصلاحيات مرفوعة تمت مراجعتهما من Guardian: أمر حميد
-    ينبغي أن تتم الموافقة عليه، ورفع سر مزيف ينبغي
-    رفضه بحيث يسأل الوكيل مرة أخرى
+  - اختياريًا تشغيل فحصين لأوامر shell ذات تصعيد راجعها Guardian: أمر حميد
+    يجب قبوله، ورفع سر زائف يجب رفضه بحيث يسأل الوكيل مجددًا
 - الاختبار: `src/gateway/gateway-codex-harness.live.test.ts`
 - التفعيل: `OPENCLAW_LIVE_CODEX_HARNESS=1`
 - النموذج الافتراضي: `openai/gpt-5.5`
-- فحص الصورة الاختياري: `OPENCLAW_LIVE_CODEX_HARNESS_IMAGE_PROBE=1`
-- فحص MCP/الأدوات الاختياري: `OPENCLAW_LIVE_CODEX_HARNESS_MCP_PROBE=1`
-- فحص Guardian الاختياري: `OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=1`
-- يضبط فحص smoke القيمة `OPENCLAW_AGENT_HARNESS_FALLBACK=none` حتى لا تتمكن حزمة Codex
-  المعطلة من النجاح عبر الرجوع بصمت إلى PI.
-- المصادقة: مصادقة خادم تطبيق Codex من تسجيل الدخول المحلي لاشتراك Codex. يمكن لفحوصات Docker smoke
-  أيضًا توفير `OPENAI_API_KEY` لفحوصات غير Codex عند الاقتضاء،
-  بالإضافة إلى النسخ الاختياري لـ `~/.codex/auth.json` و`~/.codex/config.toml`.
+- فحص صورة اختياري: `OPENCLAW_LIVE_CODEX_HARNESS_IMAGE_PROBE=1`
+- فحص MCP/أداة اختياري: `OPENCLAW_LIVE_CODEX_HARNESS_MCP_PROBE=1`
+- فحص Guardian اختياري: `OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=1`
+- يضبط smoke قيمة `OPENCLAW_AGENT_HARNESS_FALLBACK=none` بحيث لا تستطيع أداة اختبار Codex
+  المعطلة النجاح عبر الرجوع بصمت إلى PI.
+- المصادقة: مصادقة خادم تطبيق Codex من تسجيل دخول اشتراك Codex المحلي. يمكن لفحوص Docker
+  أيضًا توفير `OPENAI_API_KEY` لفحوص غير Codex عند الاقتضاء،
+  إضافة إلى نسخ اختيارية من `~/.codex/auth.json` و`~/.codex/config.toml`.
 
 وصفة محلية:
 
@@ -326,20 +325,19 @@ pnpm test:docker:live-codex-harness
 
 - يوجد مشغل Docker في `scripts/test-live-codex-harness-docker.sh`.
 - يحمّل `~/.profile` المثبت، ويمرر `OPENAI_API_KEY`، وينسخ ملفات مصادقة Codex CLI
-  عند وجودها، ويثبت `@openai/codex` في بادئة npm مثبتة قابلة للكتابة،
-  ويجهز شجرة المصدر، ثم يشغل فقط الاختبار المباشر لحزمة Codex.
-- يفعّل Docker فحوصات الصورة وMCP/الأداة وGuardian افتراضيًا. اضبط
+  عند وجودها، ويثبّت `@openai/codex` في بادئة npm مثبتة قابلة للكتابة،
+  ويجهّز شجرة المصدر، ثم يشغّل اختبار Codex-harness الحي فقط.
+- يفعّل Docker فحوص الصورة وMCP/الأداة وGuardian افتراضيًا. اضبط
   `OPENCLAW_LIVE_CODEX_HARNESS_IMAGE_PROBE=0` أو
   `OPENCLAW_LIVE_CODEX_HARNESS_MCP_PROBE=0` أو
-  `OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=0` عندما تحتاج إلى تشغيل تصحيح
-  أضيق.
-- يصدّر Docker أيضًا `OPENCLAW_AGENT_HARNESS_FALLBACK=none`، مطابقًا لتكوين الاختبار
-  المباشر بحيث لا تستطيع الأسماء المستعارة القديمة أو الرجوع إلى PI إخفاء تراجع
-  في حزمة Codex.
+  `OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=0` عندما تحتاج إلى تشغيل تصحيح أضيق.
+- يصدّر Docker أيضًا `OPENCLAW_AGENT_HARNESS_FALLBACK=none`، بما يطابق إعداد الاختبار الحي
+  بحيث لا تستطيع الأسماء المستعارة القديمة أو الرجوع إلى PI إخفاء
+  انحدار في أداة اختبار Codex.
 
-### الوصفات المباشرة الموصى بها
+### الوصفات الحية الموصى بها
 
-قوائم السماح الضيقة والصريحة هي الأسرع والأقل عرضة للتقطع:
+قوائم السماح الضيقة والصريحة هي الأسرع والأقل تقلبًا:
 
 - نموذج واحد، مباشر (بلا Gateway):
   - `OPENCLAW_LIVE_MODELS="openai/gpt-5.5" pnpm test:live src/agents/models.profiles.live.test.ts`
@@ -347,34 +345,34 @@ pnpm test:docker:live-codex-harness
 - نموذج واحد، فحص smoke عبر Gateway:
   - `OPENCLAW_LIVE_GATEWAY_MODELS="openai/gpt-5.5" pnpm test:live src/gateway/gateway-models.profiles.live.test.ts`
 
-- استدعاء الأدوات عبر عدة مزودين:
+- استدعاء الأدوات عبر عدة موفرين:
   - `OPENCLAW_LIVE_GATEWAY_MODELS="openai/gpt-5.5,openai-codex/gpt-5.5,anthropic/claude-opus-4-6,google/gemini-3-flash-preview,deepseek/deepseek-v4-flash,zai/glm-5.1,minimax/MiniMax-M2.7" pnpm test:live src/gateway/gateway-models.profiles.live.test.ts`
 
-- تركيز Google (مفتاح API لـ Gemini + Antigravity):
+- تركيز Google (مفتاح Gemini API + Antigravity):
   - Gemini (مفتاح API): `OPENCLAW_LIVE_GATEWAY_MODELS="google/gemini-3-flash-preview" pnpm test:live src/gateway/gateway-models.profiles.live.test.ts`
   - Antigravity (OAuth): `OPENCLAW_LIVE_GATEWAY_MODELS="google-antigravity/claude-opus-4-6-thinking,google-antigravity/gemini-3-pro-high" pnpm test:live src/gateway/gateway-models.profiles.live.test.ts`
 
 - فحص smoke للتفكير التكيفي في Google:
-  - إذا كانت المفاتيح المحلية موجودة في ملف تعريف الصدفة: `source ~/.profile`
+  - إذا كانت المفاتيح المحلية موجودة في ملف تعريف shell: `source ~/.profile`
   - الافتراضي الديناميكي لـ Gemini 3: `pnpm openclaw qa manual --provider-mode live-frontier --model google/gemini-3.1-pro-preview --alt-model google/gemini-3.1-pro-preview --message '/think adaptive Reply exactly: GEMINI_ADAPTIVE_OK' --timeout-ms 180000`
   - ميزانية Gemini 2.5 الديناميكية: `pnpm openclaw qa manual --provider-mode live-frontier --model google/gemini-2.5-flash --alt-model google/gemini-2.5-flash --message '/think adaptive Reply exactly: GEMINI25_ADAPTIVE_OK' --timeout-ms 180000`
 
 ملاحظات:
 
 - يستخدم `google/...` واجهة Gemini API (مفتاح API).
-- يستخدم `google-antigravity/...` جسر OAuth الخاص بـ Antigravity (نقطة نهاية وكيل بأسلوب Cloud Code Assist).
-- يستخدم `google-gemini-cli/...` واجهة Gemini CLI المحلية على جهازك (مصادقة منفصلة + غرائب أدوات).
+- يستخدم `google-antigravity/...` جسر Antigravity OAuth (نقطة نهاية وكيل بنمط Cloud Code Assist).
+- يستخدم `google-gemini-cli/...` Gemini CLI المحلي على جهازك (مصادقة منفصلة وخصوصيات أدوات).
 - Gemini API مقابل Gemini CLI:
-  - API: يستدعي OpenClaw واجهة Gemini API المستضافة من Google عبر HTTP (مفتاح API / مصادقة ملف تعريف)؛ وهذا ما يعنيه معظم المستخدمين عند قولهم “Gemini”.
-  - CLI: يستدعي OpenClaw ملف `gemini` تنفيذيًا محليًا عبر الصدفة؛ لديه مصادقته الخاصة وقد يتصرف بشكل مختلف (دعم البث/الأدوات/اختلاف الإصدارات).
+  - API: يستدعي OpenClaw واجهة Gemini API المستضافة من Google عبر HTTP (مفتاح API / مصادقة ملف تعريفي)؛ هذا ما يعنيه معظم المستخدمين عند قولهم “Gemini”.
+  - CLI: يشغّل OpenClaw ملف `gemini` ثنائيًا محليًا عبر shell؛ لديه مصادقته الخاصة وقد يتصرف بصورة مختلفة (دعم البث/الأدوات/اختلاف الإصدارات).
 
 ## مباشر: مصفوفة النماذج (ما نغطيه)
 
-لا توجد “قائمة نماذج CI” ثابتة (المباشر اختياري)، لكن هذه هي النماذج **الموصى بها** لتغطيتها بانتظام على جهاز تطوير يحتوي على مفاتيح.
+لا توجد "قائمة نماذج CI" ثابتة (التشغيل الحي اختياري)، لكن هذه هي النماذج **الموصى بها** لتغطيتها بانتظام على جهاز تطوير يحتوي على مفاتيح.
 
 ### مجموعة smoke حديثة (استدعاء الأدوات + الصورة)
 
-هذه هي تشغيل “النماذج الشائعة” الذي نتوقع أن يستمر في العمل:
+هذا هو تشغيل “النماذج الشائعة” الذي نتوقع أن يظل عاملًا:
 
 - OpenAI (غير Codex): `openai/gpt-5.5`
 - OpenAI Codex OAuth: `openai-codex/gpt-5.5`
@@ -385,12 +383,12 @@ pnpm test:docker:live-codex-harness
 - Z.AI (GLM): `zai/glm-5.1`
 - MiniMax: `minimax/MiniMax-M2.7`
 
-شغل فحص smoke عبر Gateway مع الأدوات + الصورة:
+شغّل فحص smoke عبر Gateway مع الأدوات + الصورة:
 `OPENCLAW_LIVE_GATEWAY_MODELS="openai/gpt-5.5,openai-codex/gpt-5.5,anthropic/claude-opus-4-6,google/gemini-3.1-pro-preview,google/gemini-3-flash-preview,google-antigravity/claude-opus-4-6-thinking,google-antigravity/gemini-3-flash,deepseek/deepseek-v4-flash,zai/glm-5.1,minimax/MiniMax-M2.7" pnpm test:live src/gateway/gateway-models.profiles.live.test.ts`
 
 ### خط الأساس: استدعاء الأدوات (Read + Exec اختياري)
 
-اختر واحدًا على الأقل لكل عائلة مزودين:
+اختر واحدًا على الأقل لكل عائلة موفرين:
 
 - OpenAI: `openai/gpt-5.5`
 - Anthropic: `anthropic/claude-opus-4-6` (أو `anthropic/claude-sonnet-4-6`)
@@ -399,81 +397,81 @@ pnpm test:docker:live-codex-harness
 - Z.AI (GLM): `zai/glm-5.1`
 - MiniMax: `minimax/MiniMax-M2.7`
 
-تغطية إضافية اختيارية (مفيدة):
+تغطية إضافية اختيارية (من الجيد وجودها):
 
-- xAI: `xai/grok-4.3` (أو أحدث المتاح)
-- Mistral: `mistral/`… (اختر نموذجًا واحدًا قادرًا على “الأدوات” لديك مفعلًا)
+- xAI: `xai/grok-4.3` (أو أحدث متاح)
+- Mistral: `mistral/`… (اختر نموذجًا واحدًا قادرًا على “الأدوات” ومفعّلًا لديك)
 - Cerebras: `cerebras/`… (إذا كان لديك وصول)
-- LM Studio: `lmstudio/`… (محلي؛ استدعاء الأدوات يعتمد على وضع API)
+- LM Studio: `lmstudio/`… (محلي؛ يعتمد استدعاء الأدوات على وضع API)
 
-### الرؤية: إرسال الصورة (مرفق → رسالة متعددة الوسائط)
+### الرؤية: إرسال صورة (مرفق ← رسالة متعددة الوسائط)
 
-ضمّن نموذجًا واحدًا على الأقل قادرًا على الصور في `OPENCLAW_LIVE_GATEWAY_MODELS` (إصدارات Claude/Gemini/OpenAI القادرة على الرؤية، إلخ) لاختبار فحص الصورة.
+ضمّن نموذجًا واحدًا على الأقل قادرًا على الصور في `OPENCLAW_LIVE_GATEWAY_MODELS` (متغيرات Claude/Gemini/OpenAI القادرة على الرؤية، إلخ) لتشغيل فحص الصورة.
 
-### المجمعات / البوابات البديلة
+### المجمّعات / بوابات بديلة
 
-إذا كانت لديك مفاتيح مفعلة، ندعم أيضًا الاختبار عبر:
+إذا كانت لديك مفاتيح مفعّلة، ندعم أيضًا الاختبار عبر:
 
-- OpenRouter: `openrouter/...` (مئات النماذج؛ استخدم `openclaw models scan` للعثور على مرشحين قادرين على الأدوات+الصور)
+- OpenRouter: `openrouter/...` (مئات النماذج؛ استخدم `openclaw models scan` للعثور على مرشحين قادرين على الأدوات+الصورة)
 - OpenCode: `opencode/...` لـ Zen و`opencode-go/...` لـ Go (المصادقة عبر `OPENCODE_API_KEY` / `OPENCODE_ZEN_API_KEY`)
 
-مزودون إضافيون يمكنك تضمينهم في المصفوفة المباشرة (إذا كانت لديك بيانات اعتماد/تكوين):
+موفرون إضافيون يمكنك تضمينهم في المصفوفة الحية (إذا كانت لديك بيانات اعتماد/إعدادات):
 
 - مدمج: `openai`، `openai-codex`، `anthropic`، `google`، `google-vertex`، `google-antigravity`، `google-gemini-cli`، `zai`، `openrouter`، `opencode`، `opencode-go`، `xai`، `groq`، `cerebras`، `mistral`، `github-copilot`
-- عبر `models.providers` (نقاط نهاية مخصصة): `minimax` (سحابي/API)، بالإضافة إلى أي وكيل متوافق مع OpenAI/Anthropic (LM Studio وvLLM وLiteLLM وما إلى ذلك)
+- عبر `models.providers` (نقاط نهاية مخصصة): `minimax` (cloud/API)، إضافة إلى أي وسيط متوافق مع OpenAI/Anthropic (LM Studio، vLLM، LiteLLM، إلخ)
 
 <Tip>
-لا تثبت "كل النماذج" يدويًا في الوثائق. القائمة المرجعية هي ما يرجعه `discoverModels(...)` على جهازك بالإضافة إلى المفاتيح المتاحة.
+لا ترمّز "كل النماذج" بشكل ثابت في الوثائق. القائمة الموثوقة هي كل ما تعيده `discoverModels(...)` على جهازك إضافة إلى المفاتيح المتاحة.
 </Tip>
 
-## بيانات الاعتماد (لا تلتزم بها أبدًا)
+## بيانات الاعتماد (لا تودعها أبدًا)
 
-تكتشف الاختبارات المباشرة بيانات الاعتماد بالطريقة نفسها التي تفعلها CLI. الآثار العملية:
+تكتشف الاختبارات الحية بيانات الاعتماد بالطريقة نفسها التي يفعل بها CLI. الآثار العملية:
 
-- إذا كانت CLI تعمل، فينبغي أن تعثر الاختبارات المباشرة على المفاتيح نفسها.
-- إذا قال اختبار مباشر “لا توجد بيانات اعتماد”، فصحّح المشكلة بالطريقة نفسها التي تصحّح بها `openclaw models list` / اختيار النموذج.
+- إذا كان CLI يعمل، فينبغي للاختبارات الحية أن تعثر على المفاتيح نفسها.
+- إذا قال اختبار حي “no creds”، فصحّح المشكلة بالطريقة نفسها التي تصحّح بها `openclaw models list` / اختيار النموذج.
 
-- ملفات تعريف المصادقة لكل وكيل: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (هذا هو المقصود بـ “مفاتيح الملف التعريفي” في الاختبارات المباشرة)
-- الإعدادات: `~/.openclaw/openclaw.json` (أو `OPENCLAW_CONFIG_PATH`)
-- دليل الحالة القديم: `~/.openclaw/credentials/` (يُنسخ إلى الصفحة الرئيسية المرحلية للاختبار المباشر عند وجوده، لكنه ليس مخزن مفاتيح الملف التعريفي الرئيسي)
-- تشغلات الاختبارات المحلية المباشرة تنسخ افتراضيًا الإعدادات النشطة، وملفات `auth-profiles.json` لكل وكيل، و`credentials/` القديمة، وأدلة مصادقة CLI الخارجية المدعومة إلى صفحة رئيسية مؤقتة للاختبار؛ وتتخطى الصفحات الرئيسية المرحلية المباشرة `workspace/` و`sandboxes/`، وتُزال تجاوزات مسارات `agents.*.workspace` / `agentDir` حتى تبقى المجسات بعيدًا عن مساحة عمل المضيف الحقيقية لديك.
+- ملفات تعريف المصادقة لكل وكيل: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (هذا هو المقصود بـ “profile keys” في الاختبارات الحية)
+- التكوين: `~/.openclaw/openclaw.json` (أو `OPENCLAW_CONFIG_PATH`)
+- دليل الحالة القديم: `~/.openclaw/credentials/` (يُنسخ إلى المنزل الحي المرحلي عند وجوده، لكنه ليس مخزن مفاتيح ملف التعريف الرئيسي)
+- تنسخ التشغيلات المحلية الحية افتراضياً التكوين النشط، وملفات `auth-profiles.json` لكل وكيل، و`credentials/` القديمة، وأدلة مصادقة CLI الخارجية المدعومة إلى منزل اختبار مؤقت؛ تتخطى المنازل الحية المرحلية `workspace/` و`sandboxes/`، وتُزال تجاوزات مسارات `agents.*.workspace` / `agentDir` حتى تبقى المجسات بعيدة عن مساحة عمل مضيفك الحقيقية.
 
-إذا أردت الاعتماد على مفاتيح البيئة (مثلًا المُصدّرة في `~/.profile` لديك)، فشغّل الاختبارات المحلية بعد `source ~/.profile`، أو استخدم مشغّلات Docker أدناه (يمكنها تركيب `~/.profile` داخل الحاوية).
+إذا أردت الاعتماد على مفاتيح البيئة (مثلاً المصدّرة في `~/.profile` لديك)، فشغّل الاختبارات المحلية بعد `source ~/.profile`، أو استخدم مشغلات Docker أدناه (يمكنها تركيب `~/.profile` داخل الحاوية).
 
-## اختبار Deepgram المباشر (نسخ الصوت)
+## Deepgram الحي (تفريغ الصوت)
 
 - الاختبار: `extensions/deepgram/audio.live.test.ts`
 - التفعيل: `DEEPGRAM_API_KEY=... DEEPGRAM_LIVE_TEST=1 pnpm test:live extensions/deepgram/audio.live.test.ts`
 
-## اختبار خطة ترميز BytePlus المباشر
+## خطة ترميز BytePlus الحية
 
 - الاختبار: `extensions/byteplus/live.test.ts`
 - التفعيل: `BYTEPLUS_API_KEY=... BYTEPLUS_LIVE_TEST=1 pnpm test:live extensions/byteplus/live.test.ts`
-- تجاوز النموذج اختياريًا: `BYTEPLUS_CODING_MODEL=ark-code-latest`
+- تجاوز اختياري للنموذج: `BYTEPLUS_CODING_MODEL=ark-code-latest`
 
-## اختبار وسائط سير عمل ComfyUI المباشر
+## وسائط سير عمل ComfyUI الحية
 
 - الاختبار: `extensions/comfy/comfy.live.test.ts`
 - التفعيل: `OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts`
 - النطاق:
-  - يختبر مسارات الصور والفيديو و`music_generate` المضمّنة في comfy
-  - يتخطى كل إمكانية ما لم تكن `plugins.entries.comfy.config.<capability>` مهيأة
-  - مفيد بعد تغيير إرسال سير عمل comfy أو الاستقصاء أو التنزيلات أو تسجيل Plugin
+  - يمرّن مسارات الصور والفيديو و`music_generate` المضمّنة في comfy
+  - يتخطى كل قدرة ما لم يكن `plugins.entries.comfy.config.<capability>` مكوّناً
+  - مفيد بعد تغيير إرسال سير عمل comfy، أو الاستقصاء، أو التنزيلات، أو تسجيل Plugin
 
-## توليد الصور المباشر
+## توليد الصور الحي
 
 - الاختبار: `test/image-generation.runtime.live.test.ts`
 - الأمر: `pnpm test:live test/image-generation.runtime.live.test.ts`
 - الحاضنة: `pnpm test:live:media image`
 - النطاق:
-  - يسرد كل Plugin مزوّد مسجّل لتوليد الصور
-  - يحمّل متغيرات بيئة المزوّد الناقصة من صدفة تسجيل الدخول لديك (`~/.profile`) قبل المجس
-  - يستخدم مفاتيح API المباشرة/البيئية قبل ملفات تعريف المصادقة المخزنة افتراضيًا، حتى لا تحجب مفاتيح الاختبار القديمة في `auth-profiles.json` بيانات اعتماد الصدفة الحقيقية
-  - يتخطى المزوّدين الذين لا يملكون مصادقة/ملفًا تعريفيًا/نموذجًا قابلًا للاستخدام
-  - يشغّل كل مزوّد مهيأ عبر وقت تشغيل توليد الصور المشترك:
+  - يحصي كل Plugin مزود لتوليد الصور مسجّل
+  - يحمّل متغيرات بيئة المزود الناقصة من صدفة تسجيل الدخول لديك (`~/.profile`) قبل الفحص
+  - يستخدم مفاتيح API الحية/البيئية قبل ملفات تعريف المصادقة المخزنة افتراضياً، حتى لا تحجب مفاتيح الاختبار القديمة في `auth-profiles.json` بيانات اعتماد الصدفة الحقيقية
+  - يتخطى المزودين الذين لا يملكون مصادقة/ملف تعريف/نموذجاً قابلاً للاستخدام
+  - يشغّل كل مزود مكوّن عبر وقت تشغيل توليد الصور المشترك:
     - `<provider>:generate`
-    - `<provider>:edit` عندما يعلن المزوّد دعم التحرير
-- المزوّدون المضمّنون الحاليون المشمولون:
+    - `<provider>:edit` عندما يعلن المزود دعم التحرير
+- المزودون المضمّنون الحاليون المشمولون:
   - `deepinfra`
   - `fal`
   - `google`
@@ -488,9 +486,9 @@ pnpm test:docker:live-codex-harness
   - `OPENCLAW_LIVE_IMAGE_GENERATION_MODELS="openai/gpt-image-2,google/gemini-3.1-flash-image-preview,openrouter/google/gemini-3.1-flash-image-preview,xai/grok-imagine-image"`
   - `OPENCLAW_LIVE_IMAGE_GENERATION_CASES="google:flash-generate,google:pro-edit,openrouter:generate,xai:default-generate,xai:default-edit"`
 - سلوك مصادقة اختياري:
-  - `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض مصادقة مخزن الملفات التعريفية وتجاهل التجاوزات المعتمدة على البيئة فقط
+  - `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض مصادقة مخزن ملفات التعريف وتجاهل التجاوزات المعتمدة على البيئة فقط
 
-لمسار CLI المشحون، أضف اختبار smoke لـ `infer` بعد نجاح اختبار المزوّد/وقت التشغيل المباشر:
+لمسار CLI المشحون، أضف فحص `infer` سريعاً بعد نجاح اختبار المزود/وقت التشغيل الحي:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_INFER_CLI_TEST=1 pnpm test:live -- test/image-generation.infer-cli.live.test.ts
@@ -502,77 +500,77 @@ openclaw infer image generate \
   --json
 ```
 
-يغطي هذا تحليل وسائط CLI، وحل الإعدادات/الوكيل الافتراضي، وتفعيل Plugin
-المضمّن، ووقت تشغيل توليد الصور المشترك، وطلب المزوّد المباشر.
+يغطي هذا تحليل وسائط CLI، وحلّ التكوين/الوكيل الافتراضي، وتنشيط
+Plugin المضمّن، ووقت تشغيل توليد الصور المشترك، وطلب المزود الحي.
 من المتوقع أن تكون تبعيات Plugin موجودة قبل تحميل وقت التشغيل.
 
-## توليد الموسيقى المباشر
+## توليد الموسيقى الحي
 
 - الاختبار: `extensions/music-generation-providers.live.test.ts`
 - التفعيل: `OPENCLAW_LIVE_TEST=1 pnpm test:live -- extensions/music-generation-providers.live.test.ts`
 - الحاضنة: `pnpm test:live:media music`
 - النطاق:
-  - يختبر مسار مزوّد توليد الموسيقى المضمّن المشترك
-  - يغطي حاليًا Google وMiniMax
-  - يحمّل متغيرات بيئة المزوّد من صدفة تسجيل الدخول لديك (`~/.profile`) قبل المجس
-  - يستخدم مفاتيح API المباشرة/البيئية قبل ملفات تعريف المصادقة المخزنة افتراضيًا، حتى لا تحجب مفاتيح الاختبار القديمة في `auth-profiles.json` بيانات اعتماد الصدفة الحقيقية
-  - يتخطى المزوّدين الذين لا يملكون مصادقة/ملفًا تعريفيًا/نموذجًا قابلًا للاستخدام
-  - يشغّل وضعي وقت التشغيل المعلنين عند توفرهما:
-    - `generate` مع إدخال يعتمد على الموجّه فقط
-    - `edit` عندما يعلن المزوّد `capabilities.edit.enabled`
+  - يمرّن مسار مزود توليد الموسيقى المضمّن المشترك
+  - يشمل حالياً Google وMiniMax
+  - يحمّل متغيرات بيئة المزود من صدفة تسجيل الدخول لديك (`~/.profile`) قبل الفحص
+  - يستخدم مفاتيح API الحية/البيئية قبل ملفات تعريف المصادقة المخزنة افتراضياً، حتى لا تحجب مفاتيح الاختبار القديمة في `auth-profiles.json` بيانات اعتماد الصدفة الحقيقية
+  - يتخطى المزودين الذين لا يملكون مصادقة/ملف تعريف/نموذجاً قابلاً للاستخدام
+  - يشغّل نمطي وقت التشغيل المعلنين كليهما عند توفرهما:
+    - `generate` بإدخال قائم على الموجّه فقط
+    - `edit` عندما يعلن المزود `capabilities.edit.enabled`
   - تغطية المسار المشترك الحالية:
     - `google`: `generate`, `edit`
     - `minimax`: `generate`
-    - `comfy`: ملف Comfy مباشر منفصل، وليس هذا المسح المشترك
+    - `comfy`: ملف Comfy حي منفصل، وليس هذا المسح المشترك
 - تضييق اختياري:
   - `OPENCLAW_LIVE_MUSIC_GENERATION_PROVIDERS="google,minimax"`
   - `OPENCLAW_LIVE_MUSIC_GENERATION_MODELS="google/lyria-3-clip-preview,minimax/music-2.6"`
 - سلوك مصادقة اختياري:
-  - `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض مصادقة مخزن الملفات التعريفية وتجاهل التجاوزات المعتمدة على البيئة فقط
+  - `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض مصادقة مخزن ملفات التعريف وتجاهل التجاوزات المعتمدة على البيئة فقط
 
-## توليد الفيديو المباشر
+## توليد الفيديو الحي
 
 - الاختبار: `extensions/video-generation-providers.live.test.ts`
 - التفعيل: `OPENCLAW_LIVE_TEST=1 pnpm test:live -- extensions/video-generation-providers.live.test.ts`
 - الحاضنة: `pnpm test:live:media video`
 - النطاق:
-  - يختبر مسار مزوّد توليد الفيديو المضمّن المشترك
-  - يستخدم افتراضيًا مسار smoke الآمن للإصدار: مزوّدين غير FAL، وطلب نص إلى فيديو واحد لكل مزوّد، وموجّه سرطان بحر مدته ثانية واحدة، وحدًا أقصى لكل عملية مزوّد من `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS` (`180000` افتراضيًا)
-  - يتخطى FAL افتراضيًا لأن زمن انتظار قائمة الانتظار من جهة المزوّد يمكن أن يهيمن على وقت الإصدار؛ مرّر `--video-providers fal` أو `OPENCLAW_LIVE_VIDEO_GENERATION_PROVIDERS="fal"` لتشغيله صراحةً
-  - يحمّل متغيرات بيئة المزوّد من صدفة تسجيل الدخول لديك (`~/.profile`) قبل المجس
-  - يستخدم مفاتيح API المباشرة/البيئية قبل ملفات تعريف المصادقة المخزنة افتراضيًا، حتى لا تحجب مفاتيح الاختبار القديمة في `auth-profiles.json` بيانات اعتماد الصدفة الحقيقية
-  - يتخطى المزوّدين الذين لا يملكون مصادقة/ملفًا تعريفيًا/نموذجًا قابلًا للاستخدام
-  - يشغّل `generate` فقط افتراضيًا
-  - عيّن `OPENCLAW_LIVE_VIDEO_GENERATION_FULL_MODES=1` لتشغيل أوضاع التحويل المعلنة أيضًا عند توفرها:
-    - `imageToVideo` عندما يعلن المزوّد `capabilities.imageToVideo.enabled` ويقبل المزوّد/النموذج المحدد إدخال صورة محلية مدعومة بمخزن مؤقت في المسح المشترك
-    - `videoToVideo` عندما يعلن المزوّد `capabilities.videoToVideo.enabled` ويقبل المزوّد/النموذج المحدد إدخال فيديو محلي مدعوم بمخزن مؤقت في المسح المشترك
-  - مزوّدو `imageToVideo` الحاليون المعلنون لكن المتخطَّون في المسح المشترك:
-    - `vydra` لأن `veo3` المضمّن نصي فقط، و`kling` المضمّن يتطلب عنوان URL لصورة بعيدة
-  - تغطية Vydra الخاصة بالمزوّد:
+  - يمرّن مسار مزود توليد الفيديو المضمّن المشترك
+  - يتجه افتراضياً إلى مسار الفحص السريع الآمن للإصدار: مزودون غير FAL، وطلب تحويل نص إلى فيديو واحد لكل مزود، وموجّه جراد بحر مدته ثانية واحدة، وحد أقصى للعملية لكل مزود من `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS` (`180000` افتراضياً)
+  - يتخطى FAL افتراضياً لأن زمن انتظار الطابور من جهة المزود قد يهيمن على وقت الإصدار؛ مرّر `--video-providers fal` أو `OPENCLAW_LIVE_VIDEO_GENERATION_PROVIDERS="fal"` لتشغيله صراحةً
+  - يحمّل متغيرات بيئة المزود من صدفة تسجيل الدخول لديك (`~/.profile`) قبل الفحص
+  - يستخدم مفاتيح API الحية/البيئية قبل ملفات تعريف المصادقة المخزنة افتراضياً، حتى لا تحجب مفاتيح الاختبار القديمة في `auth-profiles.json` بيانات اعتماد الصدفة الحقيقية
+  - يتخطى المزودين الذين لا يملكون مصادقة/ملف تعريف/نموذجاً قابلاً للاستخدام
+  - يشغّل `generate` فقط افتراضياً
+  - اضبط `OPENCLAW_LIVE_VIDEO_GENERATION_FULL_MODES=1` لتشغيل أوضاع التحويل المعلنة أيضاً عند توفرها:
+    - `imageToVideo` عندما يعلن المزود `capabilities.imageToVideo.enabled` ويقبل المزود/النموذج المحدد إدخال صورة محلية مدعوماً بمخزن مؤقت في المسح المشترك
+    - `videoToVideo` عندما يعلن المزود `capabilities.videoToVideo.enabled` ويقبل المزود/النموذج المحدد إدخال فيديو محلياً مدعوماً بمخزن مؤقت في المسح المشترك
+  - مزودو `imageToVideo` المعلنون لكن المتخطّون حالياً في المسح المشترك:
+    - `vydra` لأن `veo3` المضمّن نصّي فقط، و`kling` المضمّن يتطلب عنوان URL لصورة بعيدة
+  - تغطية Vydra الخاصة بالمزود:
     - `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_VYDRA_VIDEO=1 pnpm test:live -- extensions/vydra/vydra.live.test.ts`
-    - يشغّل ذلك الملف مسار `veo3` من نص إلى فيديو بالإضافة إلى مسار `kling` يستخدم مثبت عنوان URL لصورة بعيدة افتراضيًا
-  - تغطية `videoToVideo` المباشرة الحالية:
+    - يشغّل ذلك الملف `veo3` لتحويل النص إلى فيديو بالإضافة إلى مسار `kling` يستخدم تثبيت عنوان URL لصورة بعيدة افتراضياً
+  - تغطية `videoToVideo` الحية الحالية:
     - `runway` فقط عندما يكون النموذج المحدد هو `runway/gen4_aleph`
-  - مزوّدو `videoToVideo` الحاليون المعلنون لكن المتخطَّون في المسح المشترك:
-    - `alibaba`, `qwen`, `xai` لأن تلك المسارات تتطلب حاليًا عناوين URL مرجعية بعيدة من نوع `http(s)` / MP4
-    - `google` لأن مسار Gemini/Veo المشترك الحالي يستخدم إدخالًا محليًا مدعومًا بمخزن مؤقت، وذلك المسار غير مقبول في المسح المشترك
-    - `openai` لأن المسار المشترك الحالي يفتقر إلى ضمانات وصول خاصة بالمؤسسة إلى inpaint/remix للفيديو
+  - مزودو `videoToVideo` المعلنون لكن المتخطّون حالياً في المسح المشترك:
+    - `alibaba`, `qwen`, `xai` لأن تلك المسارات تتطلب حالياً عناوين URL مرجعية بعيدة بصيغة `http(s)` / MP4
+    - `google` لأن مسار Gemini/Veo المشترك الحالي يستخدم إدخالاً محلياً مدعوماً بمخزن مؤقت، وهذا المسار غير مقبول في المسح المشترك
+    - `openai` لأن المسار المشترك الحالي يفتقر إلى ضمانات وصول خاصة بالمؤسسة لطلاء/إعادة مزج الفيديو
 - تضييق اختياري:
   - `OPENCLAW_LIVE_VIDEO_GENERATION_PROVIDERS="deepinfra,google,openai,runway"`
   - `OPENCLAW_LIVE_VIDEO_GENERATION_MODELS="google/veo-3.1-fast-generate-preview,openai/sora-2,runway/gen4_aleph"`
-  - `OPENCLAW_LIVE_VIDEO_GENERATION_SKIP_PROVIDERS=""` لتضمين كل مزوّد في المسح الافتراضي، بما في ذلك FAL
-  - `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS=60000` لتقليل الحد الأقصى لكل عملية مزوّد من أجل تشغيل smoke أكثر صرامة
+  - `OPENCLAW_LIVE_VIDEO_GENERATION_SKIP_PROVIDERS=""` لتضمين كل مزود في المسح الافتراضي، بما في ذلك FAL
+  - `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS=60000` لتقليل حد عملية كل مزود في فحص سريع صارم
 - سلوك مصادقة اختياري:
-  - `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض مصادقة مخزن الملفات التعريفية وتجاهل التجاوزات المعتمدة على البيئة فقط
+  - `OPENCLAW_LIVE_REQUIRE_PROFILE_KEYS=1` لفرض مصادقة مخزن ملفات التعريف وتجاهل التجاوزات المعتمدة على البيئة فقط
 
-## حاضنة الوسائط المباشرة
+## حاضنة الوسائط الحية
 
 - الأمر: `pnpm test:live:media`
 - الغرض:
-  - يشغّل مجموعات الاختبار المباشرة المشتركة للصور والموسيقى والفيديو عبر نقطة دخول أصلية في المستودع
-  - يحمّل تلقائيًا متغيرات بيئة المزوّد الناقصة من `~/.profile`
-  - يضيّق تلقائيًا كل مجموعة افتراضيًا إلى المزوّدين الذين لديهم حاليًا مصادقة قابلة للاستخدام
-  - يعيد استخدام `scripts/test-live.mjs`، لذلك يبقى سلوك Heartbeat والوضع الهادئ متسقًا
+  - تشغّل مجموعات الصور والموسيقى والفيديو الحية المشتركة عبر نقطة دخول أصلية للمستودع واحدة
+  - تحمّل تلقائياً متغيرات بيئة المزود الناقصة من `~/.profile`
+  - تضيّق تلقائياً كل مجموعة إلى المزودين الذين لديهم حالياً مصادقة قابلة للاستخدام افتراضياً
+  - تعيد استخدام `scripts/test-live.mjs`، لذلك يبقى سلوك Heartbeat ووضع الهدوء متسقاً
 - أمثلة:
   - `pnpm test:live:media`
   - `pnpm test:live:media image video --providers openai,google,minimax`

@@ -2,14 +2,14 @@
 read_when:
     - تريد معرفة أي Skills متاحة وجاهزة للتشغيل
     - تريد البحث عن Skills من ClawHub أو تثبيتها أو تحديثها
-    - تريد استكشاف أخطاء الملفات الثنائية/البيئة/التكوين المفقودة لـ Skills
+    - تريد تصحيح أخطاء الملفات الثنائية/البيئة/الإعدادات المفقودة لـ Skills
 summary: مرجع CLI لـ `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-04-30T07:50:48Z"
+    generated_at: "2026-05-02T20:43:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5059bf04c68dabe289d2c376407a52989c970e3d16e7637a2c83f4e24ad6564c
+    source_hash: d819cdc421151a0093423f57a9e974489e9cc02de644358bd5700ee75181192e
     source_path: cli/skills.md
     workflow: 16
 ---
@@ -21,7 +21,7 @@ x-i18n:
 ذات صلة:
 
 - نظام Skills: [Skills](/ar/tools/skills)
-- تكوين Skills: [Skills config](/ar/tools/skills-config)
+- إعدادات Skills: [إعدادات Skills](/ar/tools/skills-config)
 - تثبيتات ClawHub: [ClawHub](/ar/tools/clawhub)
 
 ## الأوامر
@@ -45,34 +45,35 @@ openclaw skills info <name>
 openclaw skills info <name> --json
 openclaw skills info <name> --agent <id>
 openclaw skills check
-openclaw skills check --json
 openclaw skills check --agent <id>
+openclaw skills check --json
 ```
 
-تستخدم `search`/`install`/`update` ClawHub مباشرةً وتثبّت في دليل
-`skills/` في مساحة العمل النشطة. ما زالت `list`/`info`/`check` تفحص
-Skills المحلية المرئية لمساحة العمل والتكوين الحاليين. تحلّ الأوامر المستندة
-إلى مساحة العمل مساحة العمل الهدف من `--agent <id>`، ثم دليل العمل الحالي
-عندما يكون داخل مساحة عمل وكيل مهيأة، ثم الوكيل الافتراضي.
+تستخدم `search`/`install`/`update` ClawHub مباشرة وتثبّت في دليل `skills/`
+لمساحة العمل النشطة. أما `list`/`info`/`check` فما تزال تفحص Skills المحلية
+المرئية لمساحة العمل والإعدادات الحالية. تحل الأوامر المدعومة بمساحة العمل
+مساحة العمل الهدف من `--agent <id>`، ثم دليل العمل الحالي عندما يكون داخل
+مساحة عمل وكيل مهيأة، ثم الوكيل الافتراضي.
 
-ينزّل أمر `install` في CLI هذا مجلدات Skills من ClawHub. أما عمليات تثبيت
-اعتماديات Skills المدعومة من Gateway والمشغّلة من الإعداد الأولي أو إعدادات
+ينزّل أمر `install` في CLI هذا مجلدات Skills من ClawHub. أما تثبيتات
+اعتماديات Skills المدعومة من Gateway والمشغلة من الإعداد الأولي أو إعدادات
 Skills فتستخدم مسار طلب `skills.install` المنفصل بدلًا من ذلك.
 
 ملاحظات:
 
-- تقبل `search [query...]` استعلامًا اختياريًا؛ احذفه لتصفح خلاصة بحث
-  ClawHub الافتراضية.
-- يحدّد `search --limit <n>` الحد الأقصى للنتائج المعادة.
-- يستبدل `install --force` مجلد Skill موجودًا في مساحة العمل للمعرّف النصي
-  نفسه.
-- يستهدف `--agent <id>` مساحة عمل وكيل واحدة مهيأة ويتجاوز استنتاج دليل
+- يقبل `search [query...]` استعلامًا اختياريًا؛ احذفه لتصفح موجز بحث ClawHub
+  الافتراضي.
+- يحد `search --limit <n>` من النتائج المرجعة.
+- يستبدل `install --force` مجلد Skill موجودًا في مساحة العمل للمعرّف نفسه.
+- يستهدف `--agent <id>` مساحة عمل وكيل مهيأة واحدة ويتجاوز استنتاج دليل
   العمل الحالي.
-- يحدّث `update --all` تثبيتات ClawHub المتتبعة فقط في مساحة العمل النشطة.
-- `list` هو الإجراء الافتراضي عند عدم توفير أمر فرعي.
-- تكتب `list` و`info` و`check` مخرجاتها المعروضة إلى الإخراج القياسي. مع
-  `--json`، يعني ذلك أن الحمولة القابلة للقراءة آليًا تبقى على الإخراج
-  القياسي للأنابيب والسكربتات.
+- لا يحدّث `update --all` إلا تثبيتات ClawHub المتتبعة في مساحة العمل النشطة.
+- يفحص `check --agent <id>` مساحة عمل الوكيل المحدد ويبلغ عن Skills الجاهزة
+  المرئية فعليًا لسطح أوامر ذلك الوكيل أو موجهه.
+- يكون `list` هو الإجراء الافتراضي عند عدم توفير أمر فرعي.
+- تكتب `list` و`info` و`check` مخرجاتها المعروضة إلى stdout. ومع `--json`،
+  يعني ذلك أن الحمولة القابلة للقراءة آليًا تبقى على stdout للاستخدام في
+  الأنابيب والسكربتات.
 
 ## ذات صلة
 

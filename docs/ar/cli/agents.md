@@ -4,23 +4,23 @@ read_when:
 summary: مرجع CLI لـ `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
 title: الوكلاء
 x-i18n:
-    generated_at: "2026-04-30T07:45:59Z"
+    generated_at: "2026-05-02T20:41:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 46742a890a57cb1035a053f14fe574044e4a3d7dcc04812cd11c633bd808819b
+    source_hash: 3522394dd416a9c8b4bf25767a14073484df0ff3d7c546cf6c730f111c5c51dc
     source_path: cli/agents.md
     workflow: 16
 ---
 
 # `openclaw agents`
 
-إدارة وكلاء معزولين (مساحات العمل + المصادقة + التوجيه).
+إدارة الوكلاء المعزولين (مساحات العمل + المصادقة + التوجيه).
 
 ذات صلة:
 
 - [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent)
 - [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
-- [إعدادات Skills](/ar/tools/skills-config): إعدادات رؤية Skills.
+- [تكوين Skills](/ar/tools/skills-config): تكوين إتاحة المهارات.
 
 ## أمثلة
 
@@ -39,9 +39,9 @@ openclaw agents delete work
 
 ## ارتباطات التوجيه
 
-استخدم ارتباطات التوجيه لتثبيت حركة القنوات الواردة على وكيل محدد.
+استخدم ارتباطات التوجيه لتثبيت حركة مرور القنوات الواردة على وكيل محدد.
 
-إذا كنت تريد أيضا Skills مرئية مختلفة لكل وكيل، فاضبط `agents.defaults.skills` و`agents.list[].skills` في `openclaw.json`. راجع [إعدادات Skills](/ar/tools/skills-config) و[مرجع التهيئة](/ar/gateway/config-agents#agents-defaults-skills).
+إذا كنت تريد أيضا Skills مرئية مختلفة لكل وكيل، فكوّن `agents.defaults.skills` و`agents.list[].skills` في `openclaw.json`. راجع [تكوين Skills](/ar/tools/skills-config) و[مرجع التكوين](/ar/gateway/config-agents#agents-defaults-skills).
 
 عرض الارتباطات:
 
@@ -57,15 +57,15 @@ openclaw agents bindings --json
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-إذا حذفت `accountId` (`--bind <channel>`)، يحلّه OpenClaw من افتراضيات القناة وخطافات إعداد Plugin عند توفرها.
+إذا حذفت `accountId` (`--bind <channel>`)، فسيحله OpenClaw من إعدادات القناة الافتراضية وخطافات إعداد Plugin عند توفرها.
 
-إذا حذفت `--agent` للأمر `bind` أو `unbind`، يستهدف OpenClaw الوكيل الافتراضي الحالي.
+إذا حذفت `--agent` مع `bind` أو `unbind`، فسيستهدف OpenClaw الوكيل الافتراضي الحالي.
 
 ### سلوك نطاق الارتباط
 
 - الارتباط من دون `accountId` يطابق حساب القناة الافتراضي فقط.
-- `accountId: "*"` هو الاحتياطي على مستوى القناة (كل الحسابات)، وهو أقل تحديدا من ارتباط حساب صريح.
-- إذا كان لدى الوكيل نفسه مسبقا ارتباط قناة مطابق من دون `accountId`، ثم أضفت لاحقا ارتباطا باستخدام `accountId` صريح أو محلول، يرقي OpenClaw ذلك الارتباط الموجود في مكانه بدلا من إضافة نسخة مكررة.
+- `accountId: "*"` هو خيار الرجوع على مستوى القناة (كل الحسابات)، وهو أقل تحديدا من ارتباط حساب صريح.
+- إذا كان لدى الوكيل نفسه مسبقا ارتباط قناة مطابق من دون `accountId`، ثم ربطت لاحقا باستخدام `accountId` صريح أو محلول، فسيحدّث OpenClaw ذلك الارتباط الموجود في مكانه بدلا من إضافة نسخة مكررة.
 
 مثال:
 
@@ -77,7 +77,7 @@ openclaw agents bind --agent work --bind telegram
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-بعد الترقية، يكون التوجيه لذلك الارتباط محدودا بالنطاق `telegram:ops`. إذا كنت تريد أيضا توجيه حساب افتراضي، فأضفه صراحة (مثلا `--bind telegram:default`).
+بعد الترقية، يصبح توجيه ذلك الارتباط محصورا في `telegram:ops`. إذا كنت تريد أيضا توجيه حساب افتراضي، فأضفه صراحة (مثلا `--bind telegram:default`).
 
 إزالة الارتباطات:
 
@@ -92,14 +92,14 @@ openclaw agents unbind --agent work --all
 
 ### `agents`
 
-تشغيل `openclaw agents` من دون أمر فرعي يكافئ `openclaw agents list`.
+تشغيل `openclaw agents` بلا أمر فرعي يعادل `openclaw agents list`.
 
 ### `agents list`
 
 الخيارات:
 
 - `--json`
-- `--bindings`: تضمين قواعد التوجيه كاملة، وليس فقط الأعداد/الملخصات لكل وكيل
+- `--bindings`: تضمين قواعد التوجيه الكاملة، وليس فقط الأعداد/الملخصات لكل وكيل
 
 ### `agents add [name]`
 
@@ -114,14 +114,14 @@ openclaw agents unbind --agent work --all
 
 ملاحظات:
 
-- تمرير أي رايات إضافة صريحة يحول الأمر إلى المسار غير التفاعلي.
-- يتطلب الوضع غير التفاعلي اسم وكيل و`--workspace` معا.
+- تمرير أي أعلام إضافة صريحة ينقل الأمر إلى المسار غير التفاعلي.
+- يتطلب الوضع غير التفاعلي كلا من اسم وكيل و`--workspace`.
 - `main` محجوز ولا يمكن استخدامه كمعرف الوكيل الجديد.
-- في الوضع التفاعلي، ينسخ تمهيد المصادقة الملفات الشخصية الثابتة المحمولة فقط
-  (`api_key` و`token` ثابت افتراضيا). تظل الملفات الشخصية ذات رموز تحديث OAuth
-  متاحة فقط عبر وراثة القراءة من مخزن الوكيل `main` الحقيقي.
-  إذا لم يكن الوكيل الافتراضي المضبوط هو `main`، فسجل الدخول بشكل منفصل للملفات
-  الشخصية الخاصة بـ OAuth على الوكيل الجديد.
+- في الوضع التفاعلي، تنسخ تعبئة المصادقة ملفات التعريف الثابتة القابلة للنقل فقط
+  (`api_key` و`token` الثابت افتراضيا). تظل ملفات تعريف رموز تحديث OAuth
+  متاحة فقط عبر الوراثة بالقراءة من مخزن وكيل `main` الحقيقي.
+  إذا لم يكن الوكيل الافتراضي المكوّن هو `main`، فسجّل الدخول بشكل منفصل إلى ملفات تعريف OAuth
+  على الوكيل الجديد.
 
 ### `agents bindings`
 
@@ -134,7 +134,7 @@ openclaw agents unbind --agent work --all
 
 الخيارات:
 
-- `--agent <id>` (افتراضيا الوكيل الافتراضي الحالي)
+- `--agent <id>` (يعود افتراضيا إلى الوكيل الافتراضي الحالي)
 - `--bind <channel[:accountId]>` (قابل للتكرار)
 - `--json`
 
@@ -142,7 +142,7 @@ openclaw agents unbind --agent work --all
 
 الخيارات:
 
-- `--agent <id>` (افتراضيا الوكيل الافتراضي الحالي)
+- `--agent <id>` (يعود افتراضيا إلى الوكيل الافتراضي الحالي)
 - `--bind <channel[:accountId]>` (قابل للتكرار)
 - `--all`
 - `--json`
@@ -158,19 +158,20 @@ openclaw agents unbind --agent work --all
 
 - لا يمكن حذف `main`.
 - من دون `--force`، يلزم تأكيد تفاعلي.
-- تُنقل مساحة العمل وحالة الوكيل وأدلة نصوص الجلسات إلى سلة المهملات، ولا تُحذف نهائيا.
+- تُنقل أدلة مساحة العمل وحالة الوكيل ونصوص الجلسات إلى المهملات، ولا تُحذف حذفا نهائيا.
+- عندما يكون Gateway قابلا للوصول، يُرسل الحذف عبر Gateway بحيث يشترك تنظيف التكوين ومخزن الجلسات في الكاتب نفسه مثل حركة المرور وقت التشغيل. إذا تعذر الوصول إلى Gateway، يعود CLI إلى المسار المحلي غير المتصل.
 - إذا كانت مساحة عمل وكيل آخر هي المسار نفسه، أو داخل مساحة العمل هذه، أو تحتوي على مساحة العمل هذه،
-  فيُحتفظ بمساحة العمل ويبلغ `--json` عن `workspaceRetained`،
+  فيتم الاحتفاظ بمساحة العمل ويبلّغ `--json` عن `workspaceRetained`،
   و`workspaceRetainedReason`، و`workspaceSharedWith`.
 
 ## ملفات الهوية
 
 يمكن أن تتضمن كل مساحة عمل وكيل ملف `IDENTITY.md` في جذر مساحة العمل:
 
-- مثال مسار: `~/.openclaw/workspace/IDENTITY.md`
+- مسار مثال: `~/.openclaw/workspace/IDENTITY.md`
 - يقرأ `set-identity --from-identity` من جذر مساحة العمل (أو من `--identity-file` صريح)
 
-تُحل مسارات الصورة الرمزية نسبة إلى جذر مساحة العمل.
+تُحل مسارات الصور الرمزية نسبيا إلى جذر مساحة العمل.
 
 ## تعيين الهوية
 
@@ -179,7 +180,7 @@ openclaw agents unbind --agent work --all
 - `name`
 - `theme`
 - `emoji`
-- `avatar` (مسار نسبي لمساحة العمل، أو URL بنمط http(s)، أو data URI)
+- `avatar` (مسار نسبي إلى مساحة العمل، أو عنوان URL بنمط http(s)، أو URI بيانات)
 
 الخيارات:
 
@@ -196,8 +197,8 @@ openclaw agents unbind --agent work --all
 ملاحظات:
 
 - يمكن استخدام `--agent` أو `--workspace` لاختيار الوكيل الهدف.
-- إذا اعتمدت على `--workspace` وكان عدة وكلاء يشاركون مساحة العمل تلك، يفشل الأمر ويطلب منك تمرير `--agent`.
-- عندما لا تُقدم حقول هوية صريحة، يقرأ الأمر بيانات الهوية من `IDENTITY.md`.
+- إذا اعتمدت على `--workspace` وكان عدة وكلاء يتشاركون مساحة العمل تلك، فسيفشل الأمر ويطلب منك تمرير `--agent`.
+- عندما لا تُقدَّم حقول هوية صريحة، يقرأ الأمر بيانات الهوية من `IDENTITY.md`.
 
 التحميل من `IDENTITY.md`:
 
@@ -211,7 +212,7 @@ openclaw agents set-identity --workspace ~/.openclaw/workspace --from-identity
 openclaw agents set-identity --agent main --name "OpenClaw" --emoji "🦞" --avatar avatars/openclaw.png
 ```
 
-نموذج تهيئة:
+عينة تكوين:
 
 ```json5
 {
