@@ -1,93 +1,94 @@
 ---
 read_when:
-    - Вам потрібно зрозуміти, чому завдання CI виконалося або не виконалося
-    - Ви налагоджуєте перевірку GitHub Actions, яка не проходить.
-    - Ви координуєте запуск або повторний запуск перевірки релізу
+    - Потрібно зрозуміти, чому завдання CI запустилося або не запустилося
+    - Ви налагоджуєте перевірку GitHub Actions, що завершується помилкою
+    - Ви координуєте запуск або повторний запуск валідації релізу
     - Ви змінюєте диспетчеризацію ClawSweeper або пересилання активності GitHub
-summary: Граф завдань CI, гейти областей, релізні парасольки та локальні еквіваленти команд
+summary: Граф завдань CI, контрольні шлюзи області дії, релізні парасольки та локальні еквіваленти команд
 title: CI-конвеєр
 x-i18n:
-    generated_at: "2026-05-02T12:52:43Z"
+    generated_at: "2026-05-02T15:53:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f773c5a8221e3e458373e80b689d66e8cc4243d0df63364a4766701c2f4344a4
+    source_hash: 1cf280f1f46d49462656de86001b7f2bef7c63f133dbb8d208a7497c48fa3497
     source_path: ci.md
     workflow: 16
 ---
 
-OpenClaw CI запускається для кожного push до `main` і кожного pull request. Завдання `preflight` класифікує diff і вимикає дорогі lanes, коли змінено лише непов’язані ділянки. Ручні запуски `workflow_dispatch` навмисно обходять розумне обмеження scope і розгортають повний граф для release candidates і широкої валідації. Android lanes залишаються opt-in через `include_android`. Release-only покриття Plugin міститься в окремому workflow [`Plugin Prerelease`](#plugin-prerelease) і запускається лише з [`Full Release Validation`](#full-release-validation) або явного ручного dispatch.
+OpenClaw CI запускається під час кожного push до `main` і кожного pull request. Завдання `preflight` класифікує diff і вимикає дорогі напрями, коли змінено лише непов’язані області. Ручні запуски `workflow_dispatch` навмисно обходять розумне обмеження області й розгортають повний граф для реліз-кандидатів і широкої валідації. Android-напрями залишаються opt-in через `include_android`. Релізне покриття Plugin живе в окремому workflow [`Передреліз Plugin`](#plugin-prerelease) і запускається лише з [`Повної релізної валідації`](#full-release-validation) або явного ручного dispatch.
 
-## Огляд pipeline
+## Огляд конвеєра
 
-| Завдання                         | Призначення                                                                                  | Коли запускається                  |
-| -------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `preflight`                      | Виявляє зміни лише в docs, змінені scopes, змінені розширення та будує CI manifest           | Завжди для non-draft pushes і PRs  |
-| `security-scm-fast`              | Виявлення приватних ключів і аудит workflow через `zizmor`                                   | Завжди для non-draft pushes і PRs  |
-| `security-dependency-audit`      | Production-аудит lockfile без залежностей за npm advisories                                  | Завжди для non-draft pushes і PRs  |
-| `security-fast`                  | Обов’язковий агрегат для швидких security jobs                                               | Завжди для non-draft pushes і PRs  |
-| `check-dependencies`             | Production-прохід Knip лише для залежностей плюс guard allowlist невикористаних файлів       | Зміни, релевантні для Node         |
-| `build-artifacts`                | Збірка `dist/`, Control UI, перевірки built artifacts і reusable downstream artifacts        | Зміни, релевантні для Node         |
-| `checks-fast-core`               | Швидкі Linux correctness lanes, як-от перевірки bundled/plugin-contract/protocol             | Зміни, релевантні для Node         |
-| `checks-fast-contracts-channels` | Sharded перевірки channel contract зі стабільним aggregate check result                      | Зміни, релевантні для Node         |
-| `checks-node-core-test`          | Shards тестів Core Node, крім channel, bundled, contract і extension lanes                   | Зміни, релевантні для Node         |
-| `check`                          | Sharded еквівалент головного локального gate: prod types, lint, guards, test types і strict smoke | Зміни, релевантні для Node     |
-| `check-additional`               | Architecture, boundary, extension-surface guards, package-boundary і gateway-watch shards    | Зміни, релевантні для Node         |
-| `build-smoke`                    | Built-CLI smoke tests і startup-memory smoke                                                 | Зміни, релевантні для Node         |
-| `checks`                         | Verifier для built-artifact channel tests                                                    | Зміни, релевантні для Node         |
-| `checks-node-compat-node22`      | Node 22 compatibility build і smoke lane                                                     | Ручний CI dispatch для releases    |
-| `check-docs`                     | Форматування docs, lint і перевірки broken links                                             | Docs змінено                       |
-| `skills-python`                  | Ruff + pytest для Python-backed skills                                                       | Зміни, релевантні для Python skills |
-| `checks-windows`                 | Windows-specific process/path tests плюс спільні регресії runtime import specifier           | Зміни, релевантні для Windows      |
-| `macos-node`                     | macOS TypeScript test lane з використанням спільних built artifacts                          | Зміни, релевантні для macOS        |
-| `macos-swift`                    | Swift lint, build і tests для macOS app                                                      | Зміни, релевантні для macOS        |
-| `android`                        | Android unit tests для обох flavors плюс одна debug APK build                                | Зміни, релевантні для Android      |
-| `test-performance-agent`         | Щоденна оптимізація повільних тестів Codex після trusted activity                            | Успіх Main CI або ручний dispatch  |
+| Завдання                         | Призначення                                                                                               | Коли запускається                  |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `preflight`                      | Виявляє зміни лише в документації, змінені області, змінені extensions і будує маніфест CI                | Завжди для нечернеткових push і PR |
+| `security-scm-fast`              | Виявлення приватних ключів і аудит workflow через `zizmor`                                                | Завжди для нечернеткових push і PR |
+| `security-dependency-audit`      | Аудит production lockfile без залежностей щодо npm advisories                                             | Завжди для нечернеткових push і PR |
+| `security-fast`                  | Обов’язковий агрегат для швидких security-завдань                                                         | Завжди для нечернеткових push і PR |
+| `check-dependencies`             | Production-прохід Knip лише для залежностей плюс guard allowlist невикористаних файлів                    | Зміни, релевантні для Node         |
+| `build-artifacts`                | Збірка `dist/`, Control UI, перевірки зібраних артефактів і повторно використовувані downstream-артефакти | Зміни, релевантні для Node         |
+| `checks-fast-core`               | Швидкі Linux-напрями коректності, як-от bundled/plugin-contract/protocol перевірки                        | Зміни, релевантні для Node         |
+| `checks-fast-contracts-channels` | Sharded перевірки контрактів каналів зі стабільним агрегованим результатом перевірки                      | Зміни, релевантні для Node         |
+| `checks-node-core-test`          | Шарди тестів Core Node, без напрямів channel, bundled, contract і extension                               | Зміни, релевантні для Node         |
+| `check`                          | Sharded еквівалент головного локального gate: prod types, lint, guards, test types і strict smoke         | Зміни, релевантні для Node         |
+| `check-additional`               | Шарди architecture, boundary, extension-surface guards, package-boundary і gateway-watch                  | Зміни, релевантні для Node         |
+| `build-smoke`                    | Smoke-тести зібраного CLI і smoke startup-memory                                                          | Зміни, релевантні для Node         |
+| `checks`                         | Верифікатор для тестів каналів зібраних артефактів                                                        | Зміни, релевантні для Node         |
+| `checks-node-compat-node22`      | Напрям сумісності Node 22 зі збіркою і smoke                                                              | Ручний CI dispatch для релізів     |
+| `check-docs`                     | Форматування документації, lint і перевірки битих посилань                                                | Змінено документацію               |
+| `skills-python`                  | Ruff + pytest для Skills на базі Python                                                                   | Зміни, релевантні для Python Skills |
+| `checks-windows`                 | Специфічні для Windows тести процесів/шляхів плюс регресії спільних runtime import specifier              | Зміни, релевантні для Windows      |
+| `macos-node`                     | Напрям TypeScript-тестів macOS із використанням спільних зібраних артефактів                              | Зміни, релевантні для macOS        |
+| `macos-swift`                    | Swift lint, збірка і тести для застосунку macOS                                                           | Зміни, релевантні для macOS        |
+| `android`                        | Android unit-тести для обох flavor плюс одна debug APK збірка                                             | Зміни, релевантні для Android      |
+| `test-performance-agent`         | Щоденна оптимізація повільних тестів Codex після довіреної активності                                     | Успішний Main CI або ручний dispatch |
+| `openclaw-performance`           | Щоденні/on-demand звіти продуктивності runtime Kova з mock-provider, deep-profile і GPT 5.4 live напрямами | Запланований і ручний dispatch     |
 
 ## Порядок fail-fast
 
-1. `preflight` вирішує, які lanes взагалі існують. Логіка `docs-scope` і `changed-scope` є steps всередині цього job, а не standalone jobs.
-2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` і `skills-python` швидко падають, не очікуючи важчих artifact і platform matrix jobs.
-3. `build-artifacts` перекривається зі швидкими Linux lanes, щоб downstream consumers могли стартувати одразу після готовності shared build.
-4. Важчі platform і runtime lanes після цього розгортаються паралельно: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-core-test`, `checks`, `checks-windows`, `macos-node`, `macos-swift` і `android`.
+1. `preflight` вирішує, які напрями взагалі існують. Логіка `docs-scope` і `changed-scope` є кроками всередині цього завдання, а не окремими завданнями.
+2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` і `skills-python` швидко падають, не чекаючи важчих завдань матриці артефактів і платформ.
+3. `build-artifacts` перетинається зі швидкими Linux-напрямами, щоб downstream-споживачі могли стартувати щойно спільна збірка буде готова.
+4. Після цього розгортаються важчі platform і runtime напрями: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-core-test`, `checks`, `checks-windows`, `macos-node`, `macos-swift` і `android`.
 
-GitHub може позначати superseded jobs як `cancelled`, коли новіший push потрапляє на той самий PR або ref `main`. Вважайте це CI-шумом, якщо найновіший run для того самого ref також не падає. Aggregate shard checks використовують `!cancelled() && always()`, тому вони все ще повідомляють звичайні shard failures, але не стають у чергу після того, як увесь workflow уже superseded. Автоматичний CI concurrency key версійований (`CI-v7-*`), тому GitHub-side zombie у старій queue group не може нескінченно блокувати новіші main runs. Ручні full-suite runs використовують `CI-manual-v1-*` і не скасовують in-progress runs.
+GitHub може позначати замінені завдання як `cancelled`, коли новіший push потрапляє в той самий PR або ref `main`. Сприймайте це як шум CI, якщо найновіший запуск для того самого ref також не падає. Агреговані перевірки shard використовують `!cancelled() && always()`, тому вони все одно повідомляють звичайні збої shard, але не стають у чергу після того, як увесь workflow уже було замінено. Автоматичний ключ concurrency CI версіонований (`CI-v7-*`), тому zombie на боці GitHub у старій групі черги не може нескінченно блокувати новіші main-запуски. Ручні запуски повного набору використовують `CI-manual-v1-*` і не скасовують запуски, що виконуються.
 
-## Scope і routing
+## Область і маршрутизація
 
-Scope logic міститься в `scripts/ci-changed-scope.mjs` і покрита unit tests у `src/scripts/ci-changed-scope.test.ts`. Manual dispatch пропускає changed-scope detection і змушує preflight manifest поводитися так, ніби кожна scoped area змінилася.
+Логіка області живе в `scripts/ci-changed-scope.mjs` і покрита unit-тестами в `src/scripts/ci-changed-scope.test.ts`. Manual dispatch пропускає виявлення changed-scope і змушує маніфест preflight поводитися так, ніби змінилася кожна scoped-область.
 
-- **CI workflow edits** валідують Node CI graph плюс workflow linting, але самі по собі не примушують Windows, Android або macOS native builds; ці platform lanes залишаються scoped до змін platform source.
-- **CI routing-only edits, selected cheap core-test fixture edits, and narrow plugin contract helper/test-routing edits** використовують швидкий Node-only manifest path: `preflight`, security і одне завдання `checks-fast-core`. Цей path пропускає build artifacts, Node 22 compatibility, channel contracts, full core shards, bundled-plugin shards і additional guard matrices, коли зміна обмежена routing або helper surfaces, які fast task перевіряє напряму.
-- **Windows Node checks** scoped до Windows-specific process/path wrappers, npm/pnpm/UI runner helpers, package manager config і CI workflow surfaces, що виконують цю lane; unrelated source, plugin, install-smoke і test-only changes залишаються на Linux Node lanes.
+- **Редагування CI workflow** валідують граф Node CI плюс workflow linting, але самі по собі не змушують виконувати Windows, Android або macOS native builds; ці platform-напрями залишаються обмеженими змінами platform source.
+- **Редагування лише CI routing, вибрані дешеві редагування core-test fixture і вузькі plugin contract helper/test-routing редагування** використовують швидкий шлях маніфесту лише для Node: `preflight`, security і одне завдання `checks-fast-core`. Цей шлях пропускає build artifacts, сумісність Node 22, channel contracts, повні core shards, bundled-plugin shards і додаткові guard matrices, коли зміна обмежена routing або helper surfaces, які швидке завдання напряму вправляє.
+- **Windows Node checks** обмежені специфічними для Windows process/path wrappers, npm/pnpm/UI runner helpers, конфігурацією package manager і поверхнями CI workflow, які виконують цей напрям; непов’язані source, plugin, install-smoke і test-only зміни залишаються на Linux Node напрямах.
 
-Найповільніші сімейства Node tests розділені або збалансовані, щоб кожне job залишалося малим без надмірного резервування runners: channel contracts запускаються як три weighted shards, малі core unit lanes поєднані парами, auto-reply запускається як чотири balanced workers (із reply subtree, розділеним на shards agent-runner, dispatch і commands/state-routing), а agentic gateway/plugin configs розподілені між наявними source-only agentic Node jobs замість очікування built artifacts. Broad browser, QA, media і miscellaneous plugin tests використовують свої dedicated Vitest configs замість shared plugin catch-all. Include-pattern shards записують timing entries з використанням CI shard name, тому `.artifacts/vitest-shard-timings.json` може відрізнити цілий config від filtered shard. `check-additional` тримає package-boundary compile/canary work разом і відокремлює runtime topology architecture від gateway watch coverage; boundary guard shard запускає свої малі independent guards паралельно всередині одного job. Gateway watch, channel tests і core support-boundary shard запускаються паралельно всередині `build-artifacts` після того, як `dist/` і `dist-runtime/` уже зібрані.
+Найповільніші сімейства Node-тестів розділені або збалансовані так, щоб кожне завдання залишалося малим без надмірного резервування runners: channel contracts запускаються як три weighted shards, малі core unit напрями об’єднані парами, auto-reply запускається як чотири збалансовані workers (з reply subtree, розділеним на agent-runner, dispatch і commands/state-routing shards), а agentic gateway/plugin configs розподілені між наявними source-only agentic Node завданнями замість очікування на built artifacts. Широкі browser, QA, media і miscellaneous plugin тести використовують власні виділені конфіги Vitest замість спільного plugin catch-all. Include-pattern shards записують timing entries із назвою CI shard, тому `.artifacts/vitest-shard-timings.json` може відрізнити цілий config від filtered shard. `check-additional` тримає package-boundary compile/canary роботу разом і відокремлює runtime topology architecture від gateway watch coverage; shard boundary guard запускає свої малі незалежні guards паралельно всередині одного завдання. Gateway watch, channel tests і core support-boundary shard запускаються паралельно всередині `build-artifacts` після того, як `dist/` і `dist-runtime/` уже зібрані.
 
-Android CI запускає і `testPlayDebugUnitTest`, і `testThirdPartyDebugUnitTest`, а потім збирає Play debug APK. Third-party flavor не має окремого source set або manifest; його unit-test lane все одно компілює flavor з SMS/call-log BuildConfig flags, водночас уникаючи дублювання debug APK packaging job для кожного Android-relevant push.
+Android CI запускає і `testPlayDebugUnitTest`, і `testThirdPartyDebugUnitTest`, а потім збирає Play debug APK. Third-party flavor не має окремого source set або manifest; його unit-test напрям усе одно компілює flavor з SMS/call-log BuildConfig flags, уникаючи дублювання debug APK packaging job під час кожного Android-релевантного push.
 
-Shard `check-dependencies` запускає `pnpm deadcode:dependencies` (production Knip dependency-only pass, pinned до latest Knip version, з вимкненим pnpm minimum release age для `dlx` install) і `pnpm deadcode:unused-files`, який порівнює production unused-file findings Knip з `scripts/deadcode-unused-files.allowlist.mjs`. Unused-file guard падає, коли PR додає новий unreviewed unused file або залишає stale allowlist entry, водночас зберігаючи intentional dynamic plugin, generated, build, live-test і package bridge surfaces, які Knip не може статично resolve.
+Shard `check-dependencies` запускає `pnpm deadcode:dependencies` (production-прохід Knip лише для залежностей, закріплений на найновішій версії Knip, з вимкненим мінімальним віком релізу pnpm для встановлення `dlx`) і `pnpm deadcode:unused-files`, який порівнює production findings Knip щодо невикористаних файлів із `scripts/deadcode-unused-files.allowlist.mjs`. Guard невикористаних файлів падає, коли PR додає новий непереглянутий невикористаний файл або залишає застарілий запис allowlist, зберігаючи навмисні dynamic plugin, generated, build, live-test і package bridge surfaces, які Knip не може статично розв’язати.
 
-## Пересилання активності ClawSweeper
+## Перенаправлення активності ClawSweeper
 
-`.github/workflows/clawsweeper-dispatch.yml` є target-side bridge з активності репозиторію OpenClaw до ClawSweeper. Він не checkout і не виконує untrusted pull request code. Workflow створює GitHub App token з `CLAWSWEEPER_APP_PRIVATE_KEY`, а потім dispatches компактні `repository_dispatch` payloads до `openclaw/clawsweeper`.
+`.github/workflows/clawsweeper-dispatch.yml` є bridge на боці target із активності репозиторію OpenClaw до ClawSweeper. Він не checkout і не виконує недовірений код pull request. Workflow створює GitHub App token із `CLAWSWEEPER_APP_PRIVATE_KEY`, потім dispatch компактні payloads `repository_dispatch` до `openclaw/clawsweeper`.
 
-Workflow має чотири lanes:
+Workflow має чотири напрями:
 
-- `clawsweeper_item` для точних issue і pull request review requests;
-- `clawsweeper_comment` для явних команд ClawSweeper в issue comments;
-- `clawsweeper_commit_review` для commit-level review requests на `main` pushes;
-- `github_activity` для загальної GitHub activity, яку ClawSweeper agent може inspect.
+- `clawsweeper_item` для точних запитів review issue і pull request;
+- `clawsweeper_comment` для явних команд ClawSweeper у коментарях issue;
+- `clawsweeper_commit_review` для запитів review на рівні commit у push до `main`;
+- `github_activity` для загальної активності GitHub, яку агент ClawSweeper може інспектувати.
 
-Lane `github_activity` пересилає лише normalized metadata: event type, action, actor, repository, item number, URL, title, state і short excerpts для comments або reviews, коли вони наявні. Він навмисно уникає пересилання повного webhook body. Receiving workflow в `openclaw/clawsweeper` — це `.github/workflows/github-activity.yml`, який posts normalized event до OpenClaw Gateway hook для ClawSweeper agent.
+Напрям `github_activity` пересилає лише нормалізовані метадані: event type, action, actor, repository, item number, URL, title, state і короткі excerpts для comments або reviews, коли вони присутні. Він навмисно уникає пересилання повного webhook body. Приймальний workflow в `openclaw/clawsweeper` — це `.github/workflows/github-activity.yml`, який публікує нормалізовану подію в hook OpenClaw Gateway для агента ClawSweeper.
 
-General activity — це observation, а не delivery-by-default. ClawSweeper agent отримує Discord target у своєму prompt і має post до `#clawsweeper` лише тоді, коли event є surprising, actionable, risky або operationally useful. Routine opens, edits, bot churn, duplicate webhook noise і normal review traffic мають завершуватися `NO_REPLY`.
+Загальна активність є спостереженням, а не доставкою за замовчуванням. Агент ClawSweeper отримує Discord target у своєму prompt і має публікувати в `#clawsweeper` лише коли подія є несподіваною, actionable, ризикованою або операційно корисною. Рутинні відкриття, редагування, bot churn, duplicate webhook noise і звичайний review traffic мають завершуватися `NO_REPLY`.
 
-Вважайте GitHub titles, comments, bodies, review text, branch names і commit messages untrusted data на всьому цьому path. Вони є input для summarization і triage, а не instructions для workflow або agent runtime.
+Сприймайте titles, comments, bodies, review text, branch names і commit messages GitHub як недовірені дані на всьому цьому шляху. Це вхідні дані для summarization і triage, а не інструкції для workflow або agent runtime.
 
 ## Ручні dispatches
 
-Ручні CI dispatches запускають той самий job graph, що й normal CI, але примусово вмикають кожну non-Android scoped lane: Linux Node shards, bundled-plugin shards, channel contracts, Node 22 compatibility, `check`, `check-additional`, build smoke, docs checks, Python skills, Windows, macOS і Control UI i18n. Standalone manual CI dispatches запускають Android лише з `include_android=true`; full release umbrella вмикає Android, передаючи `include_android=true`. Plugin prerelease static checks, release-only shard `agentic-plugins`, full extension batch sweep і plugin prerelease Docker lanes виключені з CI. Docker prerelease suite запускається лише тоді, коли `Full Release Validation` dispatches окремий workflow `Plugin Prerelease` з увімкненим release-validation gate.
+Ручні запуски CI виконують той самий граф завдань, що й звичайний CI, але примусово вмикають усі scoped-доріжки, окрім Android: шарди Linux Node, шарди bundled-plugin, контракти каналів, сумісність із Node 22, `check`, `check-additional`, build smoke, перевірки документації, Python skills, Windows, macOS та інтернаціоналізацію Control UI. Окремі ручні запуски CI виконують лише Android з `include_android=true`; повна release-парасолька вмикає Android, передаючи `include_android=true`. Статичні перевірки попереднього випуску Plugin, release-only шард `agentic-plugins`, повний batch sweep Plugin та Docker-доріжки попереднього випуску Plugin виключено з CI. Docker-набір попереднього випуску запускається лише тоді, коли `Full Release Validation` запускає окремий workflow `Plugin Prerelease` з увімкненим release-validation gate.
 
-Manual runs використовують унікальну concurrency group, щоб release-candidate full suite не було скасовано іншим push або PR run на тому самому ref. Опційний input `target_ref` дає trusted caller змогу запускати цей graph проти branch, tag або full commit SHA, використовуючи workflow file з вибраного dispatch ref.
+Ручні запуски використовують унікальну concurrency group, тому повний набір для release-candidate не скасовується іншим push або PR-запуском на тому самому ref. Необов’язковий input `target_ref` дає змогу довіреному викликачеві запустити цей граф для branch, tag або повного commit SHA, використовуючи файл workflow з вибраного dispatch ref.
 
 ```bash
 gh workflow run ci.yml --ref release/YYYY.M.D
@@ -95,17 +96,17 @@ gh workflow run ci.yml --ref main -f target_ref=<branch-or-sha> -f include_andro
 gh workflow run full-release-validation.yml --ref main -f ref=<branch-or-sha>
 ```
 
-## Виконавці
+## Ранери
 
-| Виконавець                       | Завдання                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ubuntu-24.04`                   | `preflight`, швидкі завдання безпеки та агрегати (`security-scm-fast`, `security-dependency-audit`, `security-fast`), швидкі перевірки протоколу/контрактів/вбудованих компонентів, сегментовані перевірки контрактів каналів, сегменти `check`, крім lint, сегменти й агрегати `check-additional`, агрегатні перевірники тестів Node, перевірки документації, Python skills, workflow-sanity, labeler, auto-response; install-smoke preflight також використовує Ubuntu, розміщений у GitHub, щоб матриця Blacksmith могла стати в чергу раніше |
-| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`, легші сегменти розширень, `checks-fast-core`, `checks-node-compat-node22`, `check-prod-types` і `check-test-types`                                                                                                                                                                                                                                                                                                                           |
-| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`, build-smoke, сегменти тестів Linux Node, сегменти тестів вбудованих Plugin, `android`                                                                                                                                                                                                                                                                                                                                                                |
-| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint` (достатньо чутливий до CPU, тому 8 vCPU коштували більше, ніж заощаджували); Docker-збірки install-smoke (час очікування в черзі 32-vCPU коштував більше, ніж заощаджував)                                                                                                                                                                                                                                                                                 |
-| `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `blacksmith-6vcpu-macos-latest`  | `macos-node` на `openclaw/openclaw`; форки повертаються до `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                               |
-| `blacksmith-12vcpu-macos-latest` | `macos-swift` на `openclaw/openclaw`; форки повертаються до `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                              |
+| Ранер                            | Завдання                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ubuntu-24.04`                   | `preflight`, швидкі security jobs і агрегати (`security-scm-fast`, `security-dependency-audit`, `security-fast`), швидкі protocol/contract/bundled перевірки, шардовані перевірки контрактів каналів, шарди `check`, окрім lint, шарди й агрегати `check-additional`, верифікатори агрегатів Node-тестів, перевірки документації, Python skills, workflow-sanity, labeler, auto-response; install-smoke preflight також використовує Ubuntu, розміщений у GitHub, щоб матриця Blacksmith могла стати в чергу раніше |
+| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`, легші шарди Plugin, `checks-fast-core`, `checks-node-compat-node22`, `check-prod-types` і `check-test-types`                                                                                                                                                                                                                                                                                                                                  |
+| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`, build-smoke, шарди Linux Node-тестів, шарди тестів bundled Plugin, `android`                                                                                                                                                                                                                                                                                                                                                                          |
+| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint` (достатньо CPU-чутливий, щоб 8 vCPU коштували дорожче, ніж заощаджували); install-smoke Docker-збірки (час очікування в черзі 32-vCPU коштував дорожче, ніж заощаджував)                                                                                                                                                                                                                                                                                    |
+| `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `blacksmith-6vcpu-macos-latest`  | `macos-node` на `openclaw/openclaw`; forks повертаються до `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                                |
+| `blacksmith-12vcpu-macos-latest` | `macos-swift` на `openclaw/openclaw`; forks повертаються до `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## Локальні еквіваленти
 
@@ -131,21 +132,39 @@ node scripts/ci-run-timings.mjs --latest-main # ignore issue/comment noise and c
 node scripts/ci-run-timings.mjs --recent 10   # compare recent successful main CI runs
 pnpm test:perf:groups --full-suite --allow-failures --output .artifacts/test-perf/baseline-before.json
 pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifacts/test-perf/after-agent.json
+pnpm perf:kova:summary --report .artifacts/kova/reports/mock-provider/report.json --output .artifacts/kova/summary.md
 ```
 
-## Повна перевірка релізу
+## Продуктивність OpenClaw
 
-`Full Release Validation` — це ручний парасольковий workflow для «запустити все перед релізом». Він приймає гілку, тег або повний SHA коміту, запускає ручний workflow `CI` з цією ціллю, запускає `Plugin Prerelease` для релізних доказів Plugin/пакета/статичних файлів/Docker і запускає `OpenClaw Release Checks` для install smoke, package acceptance, наборів release-path Docker, live/E2E, OpenWebUI, паритету QA Lab, Matrix і напрямків Telegram. З `rerun_group=all` і `release_profile=full` він також запускає `NPM Telegram Beta E2E` проти артефакта `release-package-under-test` з перевірок релізу. Після публікації передайте `npm_telegram_package_spec`, щоб повторно запустити той самий напрям пакета Telegram проти опублікованого пакета npm.
+`OpenClaw Performance` — це workflow продуктивності продукту/runtime. Він щодня запускається на `main` і може бути запущений вручну:
 
-Див. [Повна перевірка релізу](/uk/reference/full-release-validation) для
-матриці етапів, точних назв завдань workflow, відмінностей профілів, артефактів і
-дескрипторів сфокусованого повторного запуску.
+```bash
+gh workflow run openclaw-performance.yml --ref main -f profile=diagnostic -f repeat=3
+gh workflow run openclaw-performance.yml --ref main -f profile=smoke -f repeat=1 -f deep_profile=true -f live_gpt54=true
+```
 
-`OpenClaw Release Publish` — це ручний мутаційний workflow релізу. Запускайте його
-з `release/YYYY.M.D` або `main` після того, як тег релізу існує і після того, як
-попередня перевірка OpenClaw npm успішно завершилася. Він перевіряє `pnpm plugins:sync:check`,
-запускає `Plugin NPM Release` для всіх придатних до публікації пакетів Plugin, запускає
-`Plugin ClawHub Release` для того самого SHA релізу, і лише потім запускає
+Workflow встановлює OCM із закріпленого release і Kova із закріпленого input `kova_ref`, а потім запускає три доріжки:
+
+- `mock-provider`: діагностичні сценарії Kova проти local-build runtime з детермінованою фейковою OpenAI-сумісною автентифікацією.
+- `mock-deep-profile`: CPU/heap/trace профілювання для startup, Gateway і hotspots agent-turn.
+- `live-gpt54`: реальний agent turn OpenAI `openai/gpt-5.4`, який пропускається, коли `OPENAI_API_KEY` недоступний.
+
+Кожна доріжка завантажує GitHub artifacts. Коли `CLAWGRIT_REPORTS_TOKEN` налаштовано, workflow також комітить `report.json`, `report.md`, bundles та `index.md` у `openclaw/clawgrit-reports` під `openclaw-performance/<ref>/<run-id>-<attempt>/<lane>/`. Поточний branch pointer записується як `openclaw-performance/<ref>/latest-<lane>.json`.
+
+## Повна release-валідація
+
+`Full Release Validation` — це ручний umbrella workflow для «запустити все перед release». Він приймає branch, tag або повний commit SHA, запускає ручний workflow `CI` із цією ціллю, запускає `Plugin Prerelease` для release-only proof Plugin/package/static/Docker і запускає `OpenClaw Release Checks` для install smoke, package acceptance, Docker release-path suites, live/E2E, OpenWebUI, QA Lab parity, Matrix і Telegram доріжок. З `rerun_group=all` і `release_profile=full` він також запускає `NPM Telegram Beta E2E` проти artifact `release-package-under-test` з release checks. Після публікації передайте `npm_telegram_package_spec`, щоб повторно запустити ту саму доріжку Telegram package проти опублікованого npm package.
+
+Див. [Повна release-валідація](/uk/reference/full-release-validation) для
+матриці етапів, точних назв workflow jobs, відмінностей профілів, artifacts і
+focused rerun handles.
+
+`OpenClaw Release Publish` — це ручний mutating release workflow. Запустіть його
+з `release/YYYY.M.D` або `main` після того, як release tag існує, і після того,
+як OpenClaw npm preflight успішно завершився. Він перевіряє `pnpm plugins:sync:check`,
+запускає `Plugin NPM Release` для всіх publishable Plugin packages, запускає
+`Plugin ClawHub Release` для того самого release SHA, і лише потім запускає
 `OpenClaw NPM Release` зі збереженим `preflight_run_id`.
 
 ```bash
@@ -156,46 +175,47 @@ gh workflow run openclaw-release-publish.yml \
   -f npm_dist_tag=beta
 ```
 
-Для доказу прив’язаного коміту на гілці, що швидко змінюється, використовуйте помічник замість
+Для pinned commit proof на branch, що швидко змінюється, використовуйте helper замість
 `gh workflow run ... --ref main -f ref=<sha>`:
 
 ```bash
 pnpm ci:full-release --sha <full-sha>
 ```
 
-Посилання dispatch для workflow GitHub мають бути гілками або тегами, а не сирими SHA комітів. Помічник надсилає тимчасову гілку `release-ci/<sha>-...` на цільовому SHA,
-запускає `Full Release Validation` з цього прив’язаного ref, перевіряє, що кожен дочірній
-workflow `headSha` збігається з ціллю, і видаляє тимчасову гілку після завершення
-запуску. Парасольковий перевірник також завершується помилкою, якщо будь-який дочірній workflow виконувався на
+GitHub workflow dispatch refs мають бути branches або tags, а не raw commit SHAs.
+Helper пушить тимчасовий branch `release-ci/<sha>-...` на цільовому SHA,
+запускає `Full Release Validation` із цього pinned ref, перевіряє, що кожен child
+workflow `headSha` збігається з ціллю, і видаляє тимчасовий branch після завершення
+запуску. Umbrella verifier також падає, якщо будь-який child workflow виконувався на
 іншому SHA.
 
-`release_profile` керує широтою live/provider, що передається до перевірок релізу. Ручні
-workflow релізу типово використовують `stable`; використовуйте `full` лише тоді, коли
-навмисно потрібна широка консультативна матриця provider/media.
+`release_profile` керує широтою live/provider, що передається в release checks. Ручні
+release workflows за замовчуванням використовують `stable`; використовуйте `full` лише тоді, коли ви
+навмисно хочете широку advisory provider/media matrix.
 
-- `minimum` залишає найшвидші критичні для релізу напрями OpenAI/core.
-- `stable` додає стабільний набір provider/backend.
-- `full` запускає широку консультативну матрицю provider/media.
+- `minimum` зберігає найшвидші OpenAI/core release-critical доріжки.
+- `stable` додає stable provider/backend set.
+- `full` запускає широку advisory provider/media matrix.
 
-Парасолька записує id запущених дочірніх запусків, а фінальне завдання `Verify full validation` повторно перевіряє поточні висновки дочірніх запусків і додає таблиці найповільніших завдань для кожного дочірнього запуску. Якщо дочірній workflow перезапущено і він стає зеленим, перезапустіть лише завдання перевірника батьківського workflow, щоб оновити результат парасольки та підсумок часу.
+Umbrella записує ids запущених child runs, а фінальне завдання `Verify full validation` повторно перевіряє поточні conclusions child runs і додає таблиці найповільніших jobs для кожного child run. Якщо child workflow повторно запущено і він став green, повторно запустіть лише parent verifier job, щоб оновити результат umbrella і timing summary.
 
-Для відновлення і `Full Release Validation`, і `OpenClaw Release Checks` приймають `rerun_group`. Використовуйте `all` для кандидата в реліз, `ci` лише для звичайного дочірнього повного CI, `plugin-prerelease` лише для дочірнього prerelease Plugin, `release-checks` для кожного дочірнього релізного завдання або вужчу групу: `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live` або `npm-telegram` на парасольці. Це обмежує повторний запуск невдалого релізного блока після сфокусованого виправлення.
+Для відновлення і `Full Release Validation`, і `OpenClaw Release Checks` приймають `rerun_group`. Використовуйте `all` для реліз-кандидата, `ci` лише для звичайного дочірнього повного CI, `plugin-prerelease` лише для дочірнього передрелізу Plugin, `release-checks` для кожного дочірнього релізу або вужчу групу: `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live` чи `npm-telegram` на парасольковому workflow. Це тримає повторний запуск невдалого релізного середовища обмеженим після сфокусованого виправлення.
 
-`OpenClaw Release Checks` використовує довірений ref workflow, щоб один раз розв’язати вибраний ref у tarball `release-package-under-test`, а потім передає цей артефакт і до release-path Docker workflow live/E2E, і до сегмента package acceptance. Це зберігає байти пакета узгодженими між релізними блоками й уникає повторного пакування того самого кандидата в кількох дочірніх завданнях.
+`OpenClaw Release Checks` використовує довірений ref workflow, щоб один раз розв’язати вибраний ref у tarball `release-package-under-test`, а потім передає цей артефакт і до Docker workflow live/E2E для релізного шляху, і до шарда приймання пакета. Це зберігає байти пакета узгодженими між релізними середовищами та уникає повторного пакування того самого кандидата в кількох дочірніх job.
 
 Дублікати запусків `Full Release Validation` для `ref=main` і `rerun_group=all`
-витісняють старішу парасольку. Батьківський монітор скасовує будь-який дочірній workflow, який він
-уже запустив, коли батьківський workflow скасовано, тому новіша перевірка main
-не стоїть за застарілим двогодинним запуском release-check. Перевірка гілки/тега релізу
-і сфокусовані групи повторного запуску зберігають `cancel-in-progress: false`.
+замінюють старіший парасольковий workflow. Батьківський монітор скасовує будь-який дочірній workflow, який
+він уже запустив, коли батьківський workflow скасовано, тож новіша валідація main
+не стоїть у черзі за застарілим двогодинним запуском release-check. Валідація релізної гілки/тега
+та сфокусовані групи повторного запуску зберігають `cancel-in-progress: false`.
 
-## Сегменти Live та E2E
+## Live та E2E шарди
 
-Дочірній release live/E2E зберігає широке нативне покриття `pnpm test:live`, але запускає його як іменовані сегменти через `scripts/test-live-shard.mjs` замість одного послідовного завдання:
+Дочірній release live/E2E зберігає широке нативне покриття `pnpm test:live`, але запускає його як іменовані шарди через `scripts/test-live-shard.mjs` замість одного послідовного job:
 
 - `native-live-src-agents`
 - `native-live-src-gateway-core`
-- provider-filtered `native-live-src-gateway-profiles` jobs
+- відфільтровані за провайдерами job `native-live-src-gateway-profiles`
 - `native-live-src-gateway-backends`
 - `native-live-test`
 - `native-live-extensions-a-k`
@@ -203,61 +223,61 @@ workflow релізу типово використовують `stable`; вик
 - `native-live-extensions-openai`
 - `native-live-extensions-o-z-other`
 - `native-live-extensions-xai`
-- split media audio/video shards and provider-filtered music shards
+- розділені медіашарди audio/video та відфільтровані за провайдерами музичні шарди
 
-Це зберігає те саме покриття файлів і водночас спрощує повторний запуск і діагностику повільних збоїв live provider. Агрегатні назви сегментів `native-live-extensions-o-z`, `native-live-extensions-media` і `native-live-extensions-media-music` залишаються чинними для ручних одноразових повторних запусків.
+Це зберігає те саме файлове покриття, водночас спрощуючи повторний запуск і діагностику повільних збоїв live-провайдерів. Агреговані назви шардів `native-live-extensions-o-z`, `native-live-extensions-media` і `native-live-extensions-media-music` залишаються чинними для ручних одноразових повторних запусків.
 
-Нативні live media сегменти запускаються в `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04`, зібраному workflow `Live Media Runner Image`. Цей образ попередньо встановлює `ffmpeg` і `ffprobe`; media-завдання лише перевіряють бінарні файли перед налаштуванням. Тримайте live-набори з Docker-підтримкою на звичайних виконавцях Blacksmith — container jobs є неправильним місцем для запуску вкладених Docker-тестів.
+Нативні live-медіашарди запускаються в `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04`, зібраному workflow `Live Media Runner Image`. Цей образ попередньо встановлює `ffmpeg` і `ffprobe`; медіа job лише перевіряють двійкові файли перед налаштуванням. Тримайте live-набори з Docker на звичайних runner Blacksmith — container jobs є неправильним місцем для запуску вкладених Docker-тестів.
 
-Підкріплені Docker шарди live-моделі/бекенду використовують окремий спільний образ `ghcr.io/openclaw/openclaw-live-test:<sha>` для кожного вибраного коміту. Процес live-релізу один раз збирає й публікує цей образ, після чого Docker-шарди live-моделі, розшардованого за провайдерами Gateway, CLI-бекенду, ACP-прив’язки та Codex harness запускаються з `OPENCLAW_SKIP_DOCKER_BUILD=1`. Docker-шарди Gateway мають явні обмеження `timeout` на рівні скриптів нижче за таймаут завдання workflow, щоб завислий контейнер або шлях очищення швидко завершувався помилкою, а не споживав увесь бюджет release-check. Якщо ці шарди незалежно перебудовують повну Docker-ціль із вихідного коду, запуск релізу налаштовано неправильно, і він марнуватиме фактичний час на дубльовані збірки образів.
+Live-шарди моделей/backend на базі Docker використовують окремий спільний образ `ghcr.io/openclaw/openclaw-live-test:<sha>` для кожного вибраного commit. Release live workflow збирає та публікує цей образ один раз, після чого Docker live model, provider-sharded gateway, CLI backend, ACP bind і Codex harness шарди запускаються з `OPENCLAW_SKIP_DOCKER_BUILD=1`. Docker-шарди Gateway мають явні обмеження `timeout` на рівні скриптів нижче за timeout job workflow, щоб завислий контейнер або шлях очищення швидко падав, а не витрачав увесь бюджет release-check. Якщо ці шарди самостійно перебудовують повну source Docker target, релізний запуск налаштований неправильно й марнуватиме час на дубльовані збірки образів.
 
 ## Приймання пакета
 
 Використовуйте `Package Acceptance`, коли питання звучить так: «чи працює цей інстальований пакет OpenClaw як продукт?» Це відрізняється від звичайного CI: звичайний CI перевіряє дерево вихідного коду, тоді як приймання пакета перевіряє один tarball через той самий Docker E2E harness, який користувачі задіюють після встановлення або оновлення.
 
-### Завдання
+### Jobs
 
-1. `resolve_package` виконує checkout `workflow_ref`, визначає одного кандидата пакета, записує `.artifacts/docker-e2e-package/openclaw-current.tgz`, записує `.artifacts/docker-e2e-package/package-candidate.json`, завантажує обидва як артефакт `package-under-test` і виводить джерело, workflow ref, package ref, версію, SHA-256 та профіль у зведенні кроку GitHub.
-2. `docker_acceptance` викликає `openclaw-live-and-e2e-checks-reusable.yml` з `ref=workflow_ref` і `package_artifact_name=package-under-test`. Повторно використовуваний workflow завантажує цей артефакт, перевіряє інвентар tarball, за потреби готує Docker-образи package-digest і запускає вибрані Docker lanes проти цього пакета замість пакування checkout workflow. Коли профіль вибирає кілька цільових `docker_lanes`, повторно використовуваний workflow готує пакет і спільні образи один раз, а потім розгортає ці lanes як паралельні цільові Docker-завдання з унікальними артефактами.
-3. `package_telegram` за бажанням викликає `NPM Telegram Beta E2E`. Він запускається, коли `telegram_mode` не дорівнює `none`, і встановлює той самий артефакт `package-under-test`, якщо Package Acceptance визначив його; автономний Telegram dispatch усе ще може встановити опубліковану npm-специфікацію.
-4. `summary` завершує workflow з помилкою, якщо визначення пакета, Docker-приймання або необов’язкова Telegram lane завершилися невдало.
+1. `resolve_package` checkout-ить `workflow_ref`, розв’язує одного кандидата пакета, записує `.artifacts/docker-e2e-package/openclaw-current.tgz`, записує `.artifacts/docker-e2e-package/package-candidate.json`, завантажує обидва як артефакт `package-under-test` і друкує джерело, workflow ref, package ref, версію, SHA-256 та профіль у зведенні кроку GitHub.
+2. `docker_acceptance` викликає `openclaw-live-and-e2e-checks-reusable.yml` з `ref=workflow_ref` і `package_artifact_name=package-under-test`. Багаторазовий workflow завантажує цей артефакт, перевіряє інвентар tarball, готує Docker-образи package-digest за потреби та запускає вибрані Docker lanes проти цього пакета замість пакування checkout workflow. Коли профіль вибирає кілька цільових `docker_lanes`, багаторазовий workflow готує пакет і спільні образи один раз, а потім розгортає ці lanes як паралельні цільові Docker jobs з унікальними артефактами.
+3. `package_telegram` опційно викликає `NPM Telegram Beta E2E`. Він запускається, коли `telegram_mode` не дорівнює `none`, і встановлює той самий артефакт `package-under-test`, коли Package Acceptance розв’язало його; самостійний Telegram dispatch усе ще може встановити опублікований npm spec.
+4. `summary` провалює workflow, якщо розв’язання пакета, Docker-приймання або опційний Telegram lane завершилися невдало.
 
 ### Джерела кандидатів
 
-- `source=npm` приймає лише `openclaw@beta`, `openclaw@latest` або точну версію релізу OpenClaw, наприклад `openclaw@2026.4.27-beta.2`. Використовуйте це для приймання опублікованих beta/stable.
-- `source=ref` пакує довірену гілку `package_ref`, тег або повний SHA коміту. Резолвер отримує гілки/теги OpenClaw, перевіряє, що вибраний коміт досяжний з історії гілок репозиторію або з релізного тегу, встановлює залежності у відокремленому worktree і пакує його за допомогою `scripts/package-openclaw-for-docker.mjs`.
+- `source=npm` приймає лише `openclaw@beta`, `openclaw@latest` або точну релізну версію OpenClaw, як-от `openclaw@2026.4.27-beta.2`. Використовуйте це для приймання опублікованих beta/stable.
+- `source=ref` пакує довірену гілку, тег або повний commit SHA `package_ref`. Resolver отримує гілки/теги OpenClaw, перевіряє, що вибраний commit досяжний з історії гілок репозиторію або релізного тега, встановлює залежності у від’єднаному worktree і пакує його за допомогою `scripts/package-openclaw-for-docker.mjs`.
 - `source=url` завантажує HTTPS `.tgz`; `package_sha256` є обов’язковим.
-- `source=artifact` завантажує один `.tgz` з `artifact_run_id` і `artifact_name`; `package_sha256` необов’язковий, але його варто надавати для зовнішньо поширених артефактів.
+- `source=artifact` завантажує один `.tgz` з `artifact_run_id` і `artifact_name`; `package_sha256` опційний, але його варто вказувати для зовнішньо поширених артефактів.
 
-Тримайте `workflow_ref` і `package_ref` окремо. `workflow_ref` — це довірений код workflow/harness, який запускає тест. `package_ref` — це вихідний коміт, який пакується, коли `source=ref`. Це дає поточному тестовому harness змогу перевіряти старі довірені коміти вихідного коду без запуску старої логіки workflow.
+Тримайте `workflow_ref` і `package_ref` окремо. `workflow_ref` — це довірений код workflow/harness, який запускає тест. `package_ref` — це source commit, який пакується, коли `source=ref`. Це дає змогу поточному test harness перевіряти старіші довірені source commits без запуску старої логіки workflow.
 
 ### Профілі наборів
 
 - `smoke` — `npm-onboard-channel-agent`, `gateway-network`, `config-reload`
 - `package` — `npm-onboard-channel-agent`, `doctor-switch`, `update-channel-switch`, `upgrade-survivor`, `published-upgrade-survivor`, `plugins-offline`, `plugin-update`
 - `product` — `package` плюс `mcp-channels`, `cron-mcp-cleanup`, `openai-web-search-minimal`, `openwebui`
-- `full` — повні фрагменти release-path Docker з OpenWebUI
+- `full` — повні Docker chunks релізного шляху з OpenWebUI
 - `custom` — точні `docker_lanes`; обов’язково, коли `suite_profile=custom`
 
-Профіль `package` використовує офлайн-покриття plugins, щоб перевірка опублікованого пакета не залежала від доступності live ClawHub. Необов’язкова Telegram lane повторно використовує артефакт `package-under-test` у `NPM Telegram Beta E2E`, а шлях опублікованої npm-специфікації зберігається для автономних dispatch.
+Профіль `package` використовує офлайн-покриття Plugin, щоб валідація опублікованого пакета не залежала від live-доступності ClawHub. Опційний Telegram lane повторно використовує артефакт `package-under-test` у `NPM Telegram Beta E2E`, а шлях опублікованого npm spec зберігається для самостійних dispatch.
 
-Політику, спеціально призначену для тестування оновлень і plugins, включно з локальними командами,
-Docker lanes, входами Package Acceptance, типовими значеннями релізу та тріажем помилок,
-див. у [Тестування оновлень і plugins](/uk/help/testing-updates-plugins).
+Щодо спеціальної політики тестування оновлень і Plugin, включно з локальними командами,
+Docker lanes, вхідними параметрами Package Acceptance, релізними типовими значеннями та triage збоїв,
+див. [Тестування оновлень і Plugin](/uk/help/testing-updates-plugins).
 
-Release checks викликають Package Acceptance з `source=artifact`, підготовленим артефактом релізного пакета, `suite_profile=custom`, `docker_lanes='doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update'`, `published_upgrade_survivor_baselines=release-history`, `published_upgrade_survivor_scenarios=reported-issues` і `telegram_mode=mock-openai`. Це тримає докази міграції пакета, оновлення, очищення застарілих залежностей plugins, офлайн-plugins, plugin-update і Telegram на одному й тому самому визначеному tarball пакета. Cross-OS release checks і далі покривають специфічні для ОС onboarding, інсталятор і поведінку платформи; перевірку продукту для пакета/оновлення слід починати з Package Acceptance. Docker lane `published-upgrade-survivor` перевіряє один baseline опублікованого пакета за запуск. У Package Acceptance визначений tarball `package-under-test` завжди є кандидатом, а `published_upgrade_survivor_baseline` вибирає fallback baseline опублікованого пакета, типово `openclaw@latest`; команди повторного запуску failed-lane зберігають цей baseline. Установіть `published_upgrade_survivor_baselines=release-history`, щоб розширити lane на дедупліковану матрицю історії: останні шість stable-релізів, `2026.4.23` і останній stable-реліз перед `2026-03-15`. Установіть `published_upgrade_survivor_scenarios=reported-issues`, щоб розширити ті самі baselines на issue-подібні fixtures для конфігурації Feishu, збережених файлів bootstrap/persona, шляхів логів із тильдою та застарілих коренів залежностей legacy plugins. Окремий workflow `Update Migration` використовує Docker lane `update-migration` з `all-since-2026.4.23` і `plugin-deps-cleanup`, коли питання полягає у вичерпному очищенні опублікованих оновлень, а не у звичайній широті Full Release CI. Локальні агреговані запуски можуть передавати точні специфікації пакетів через `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, тримати одну lane з `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, наприклад `openclaw@2026.4.15`, або встановити `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` для матриці сценаріїв. Опублікована lane налаштовує baseline за допомогою вбудованого рецепта команди `openclaw config set`, записує кроки рецепта в `summary.json` і перевіряє `/healthz`, `/readyz`, а також статус RPC після запуску Gateway. Свіжі lanes для Windows packaged та installer також перевіряють, що встановлений пакет може імпортувати override browser-control з сирого абсолютного шляху Windows. OpenAI cross-OS agent-turn smoke типово використовує `OPENCLAW_CROSS_OS_OPENAI_MODEL`, коли його задано, інакше `openai/gpt-5.4`, тож докази встановлення й Gateway залишаються на тестовій моделі GPT-5, уникаючи типових значень GPT-4.x.
+Release checks викликають Package Acceptance із `source=artifact`, підготовленим артефактом релізного пакета, `suite_profile=custom`, `docker_lanes='doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update'`, `published_upgrade_survivor_baselines=release-history`, `published_upgrade_survivor_scenarios=reported-issues` і `telegram_mode=mock-openai`. Це тримає перевірку міграції пакета, оновлення, очищення застарілих залежностей Plugin, офлайн Plugin, plugin-update і Telegram на тому самому розв’язаному tarball пакета. Cross-OS release checks все ще покривають специфічні для ОС onboarding, installer і platform behavior; product-валідація пакета/оновлення має починатися з Package Acceptance. Docker lane `published-upgrade-survivor` перевіряє одну опубліковану baseline пакета за запуск. У Package Acceptance розв’язаний tarball `package-under-test` завжди є кандидатом, а `published_upgrade_survivor_baseline` вибирає fallback опубліковану baseline, типово `openclaw@latest`; команди повторного запуску failed-lane зберігають цю baseline. Установіть `published_upgrade_survivor_baselines=release-history`, щоб розгорнути lane на дедупліковану історичну матрицю: останні шість stable-релізів, `2026.4.23` і останній stable-реліз перед `2026-03-15`. Установіть `published_upgrade_survivor_scenarios=reported-issues`, щоб розгорнути ті самі baselines на fixtures у формі issue для конфігурації Feishu, збережених bootstrap/persona files, шляхів журналів із тильдою та застарілих коренів залежностей legacy Plugin. Окремий workflow `Update Migration` використовує Docker lane `update-migration` з `all-since-2026.4.23` і `plugin-deps-cleanup`, коли питання стосується вичерпного очищення опублікованого оновлення, а не звичайної широти Full Release CI. Локальні агреговані запуски можуть передавати точні package specs через `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, зберігати один lane з `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC`, як-от `openclaw@2026.4.15`, або встановлювати `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` для scenario matrix. Опублікований lane налаштовує baseline за допомогою вбудованого рецепта команди `openclaw config set`, записує кроки рецепта в `summary.json` і перевіряє `/healthz`, `/readyz`, а також статус RPC після старту Gateway. Windows packaged і installer fresh lanes також перевіряють, що встановлений пакет може імпортувати browser-control override з raw absolute Windows path. Cross-OS agent-turn smoke OpenAI типово використовує `OPENCLAW_CROSS_OS_OPENAI_MODEL`, коли встановлено, інакше `openai/gpt-5.4`, тож перевірка встановлення та Gateway лишається на тестовій моделі GPT-5, уникаючи типових значень GPT-4.x.
 
-### Вікна legacy-сумісності
+### Вікна сумісності legacy
 
 Package Acceptance має обмежені вікна legacy-сумісності для вже опублікованих пакетів. Пакети до `2026.4.25` включно, зокрема `2026.4.25-beta.*`, можуть використовувати шлях сумісності:
 
-- відомі приватні QA-записи в `dist/postinstall-inventory.json` можуть вказувати на файли, пропущені в tarball;
-- `doctor-switch` може пропускати підвипадок persistence для `gateway install --wrapper`, коли пакет не надає цей прапорець;
-- `update-channel-switch` може видаляти відсутні `pnpm.patchedDependencies` з отриманого з tarball фіктивного git fixture і може логувати відсутній збережений `update.channel`;
-- plugin smokes можуть читати legacy-розташування install-record або приймати відсутність persistence для marketplace install-record;
-- `plugin-update` може дозволяти міграцію metadata конфігурації, водночас і далі вимагаючи, щоб install record і поведінка без перевстановлення залишалися незмінними.
+- відомі приватні QA entries у `dist/postinstall-inventory.json` можуть вказувати на файли, пропущені в tarball;
+- `doctor-switch` може пропускати підвипадок persistence `gateway install --wrapper`, коли пакет не надає цей flag;
+- `update-channel-switch` може прибирати відсутні `pnpm.patchedDependencies` із fake git fixture, похідної від tarball, і може логувати відсутній збережений `update.channel`;
+- plugin smokes можуть читати legacy locations install-record або приймати відсутню persistence marketplace install-record;
+- `plugin-update` може дозволяти міграцію metadata config, але все ще вимагати, щоб install record і поведінка no-reinstall залишалися незмінними.
 
-Опублікований пакет `2026.4.26` також може попереджати про файли stamp metadata локальної збірки, які вже були відвантажені. Пізніші пакети мають відповідати сучасним контрактам; ті самі умови спричиняють помилку, а не попередження чи пропуск.
+Опублікований пакет `2026.4.26` також може попереджати про локальні файли stamp метаданих збірки, які вже були shipped. Пізніші пакети мають відповідати сучасним контрактам; ті самі умови завершуються failure замість warning або skip.
 
 ### Приклади
 
@@ -300,152 +320,152 @@ gh workflow run package-acceptance.yml \
   -f docker_lanes='install-e2e plugin-update'
 ```
 
-Під час налагодження невдалого запуску приймання пакета починайте зі зведення `resolve_package`, щоб підтвердити джерело пакета, версію та SHA-256. Потім перевірте дочірній запуск `docker_acceptance` і його Docker-артефакти: `.artifacts/docker-tests/**/summary.json`, `failures.json`, логи lanes, timings фаз і команди повторного запуску. Надавайте перевагу повторному запуску невдалого профілю пакета або точних Docker lanes, а не повторному запуску повної release validation.
+Під час налагодження невдалого запуску приймання пакета починайте зі зведення `resolve_package`, щоб підтвердити джерело пакета, версію та SHA-256. Потім перевірте дочірній запуск `docker_acceptance` і його артефакти Docker: `.artifacts/docker-tests/**/summary.json`, `failures.json`, журнали ліній, часові показники фаз і команди повторного запуску. Надавайте перевагу повторному запуску невдалого профілю пакета або точних ліній Docker замість повторного запуску повної валідації релізу.
 
-## Install smoke
+## Димова перевірка встановлення
 
-Окремий workflow `Install Smoke` повторно використовує той самий scope-скрипт через власне завдання `preflight`. Він розділяє smoke-покриття на `run_fast_install_smoke` і `run_full_install_smoke`.
+Окремий workflow `Install Smoke` повторно використовує той самий скрипт області через власне завдання `preflight`. Він розділяє покриття димової перевірки на `run_fast_install_smoke` і `run_full_install_smoke`.
 
-- **Швидкий шлях** запускається для pull requests, що зачіпають Docker/package surfaces, зміни пакетів/маніфестів bundled plugins або поверхні core plugin/channel/gateway/Plugin SDK, які перевіряють Docker smoke-завдання. Зміни лише у вихідному коді bundled plugins, правки лише тестів і правки лише документації не резервують Docker workers. Швидкий шлях один раз збирає образ root Dockerfile, перевіряє CLI, запускає CLI smoke для agents delete shared-workspace, запускає container gateway-network e2e, перевіряє build arg bundled extension і запускає обмежений Docker-профіль bundled-plugin під 240-секундним сукупним таймаутом команди (Docker-запуск кожного сценарію обмежено окремо).
-- **Повний шлях** зберігає QR package install і Docker/update-покриття інсталятора для нічних запланованих запусків, ручних dispatch, workflow-call release checks і pull requests, які справді зачіпають installer/package/Docker surfaces. У повному режимі install-smoke готує або повторно використовує один target-SHA GHCR root Dockerfile smoke image, а потім запускає QR package install, root Dockerfile/gateway smokes, installer/update smokes і швидкий bundled-plugin Docker E2E як окремі завдання, щоб робота інсталятора не чекала за root image smokes.
+- **Швидкий шлях** запускається для pull request, які торкаються поверхонь Docker/пакетів, змін пакета/маніфесту bundled Plugin або поверхонь основного Plugin/каналу/Gateway/Plugin SDK, які перевіряють завдання димової перевірки Docker. Зміни лише у вихідному коді bundled Plugin, зміни лише тестів і зміни лише документації не резервують Docker workers. Швидкий шлях один раз збирає образ кореневого Dockerfile, перевіряє CLI, запускає CLI-димову перевірку agents delete shared-workspace, запускає container gateway-network e2e, перевіряє аргумент збірки bundled розширення та запускає обмежений Docker-профіль bundled-plugin із сукупним тайм-аутом команди 240 секунд (Docker-запуск кожного сценарію обмежується окремо).
+- **Повний шлях** зберігає встановлення QR-пакета та Docker/update-покриття інсталятора для нічних запланованих запусків, ручних запусків, workflow-call перевірок релізу та pull request, які справді торкаються поверхонь інсталятора/пакета/Docker. У повному режимі install-smoke готує або повторно використовує один target-SHA GHCR образ димової перевірки кореневого Dockerfile, а потім запускає встановлення QR-пакета, димові перевірки кореневого Dockerfile/Gateway, димові перевірки інсталятора/update і швидкий bundled-plugin Docker E2E як окремі завдання, щоб робота інсталятора не чекала після димових перевірок кореневого образу.
 
-Пуші в `main` (включно з merge commits) не форсують повний шлях; коли логіка changed-scope вимагала б повного покриття на push, workflow зберігає швидкий Docker smoke і залишає повний install smoke для нічної або релізної перевірки.
+Пуші в `main` (зокрема merge commits) не примушують повний шлях; коли логіка changed-scope запитала б повне покриття під час push, workflow зберігає швидку димову перевірку Docker і залишає повну димову перевірку встановлення для нічного запуску або валідації релізу.
 
-Повільний Bun global install image-provider smoke окремо керується через `run_bun_global_install_smoke`. Він запускається за нічним розкладом і з release checks workflow, а ручні dispatch `Install Smoke` можуть увімкнути його, але pull requests і пуші в `main` — ні. QR і installer Docker tests зберігають власні Dockerfiles, сфокусовані на встановленні.
+Повільна димова перевірка Bun global install image-provider окремо обмежується через `run_bun_global_install_smoke`. Вона запускається за нічним розкладом і з workflow перевірок релізу, а ручні запуски `Install Smoke` можуть увімкнути її, але pull request і пуші в `main` цього не роблять. QR і Docker-тести інсталятора зберігають власні Dockerfile, зосереджені на встановленні.
 
 ## Локальний Docker E2E
 
-`pnpm test:docker:all` попередньо збирає один спільний live-test image, один раз пакує OpenClaw як npm tarball і збирає два спільні образи `scripts/e2e/Dockerfile`:
+`pnpm test:docker:all` попередньо збирає один спільний live-test образ, один раз пакує OpenClaw як npm tarball і збирає два спільні образи `scripts/e2e/Dockerfile`:
 
-- bare Node/Git runner для lanes інсталятора/оновлення/plugin-dependency;
-- функціональний образ, який встановлює той самий tarball у `/app` для звичайних функціональних lanes.
+- bare Node/Git runner для ліній installer/update/plugin-dependency;
+- функціональний образ, який встановлює той самий tarball у `/app` для звичайних функціональних ліній.
 
-Docker-визначення ліній містяться в `scripts/lib/docker-e2e-scenarios.mjs`, логіка планувальника міститься в `scripts/lib/docker-e2e-plan.mjs`, а runner лише виконує вибраний план. Планувальник вибирає образ для кожної лінії за допомогою `OPENCLAW_DOCKER_E2E_BARE_IMAGE` і `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`, а потім запускає лінії з `OPENCLAW_SKIP_DOCKER_BUILD=1`.
+Визначення ліній Docker містяться в `scripts/lib/docker-e2e-scenarios.mjs`, логіка планувальника міститься в `scripts/lib/docker-e2e-plan.mjs`, а runner виконує лише вибраний план. Планувальник вибирає образ для кожної лінії за допомогою `OPENCLAW_DOCKER_E2E_BARE_IMAGE` і `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`, а потім запускає лінії з `OPENCLAW_SKIP_DOCKER_BUILD=1`.
 
 ### Параметри налаштування
 
-| Змінна                                 | Стандартне значення | Призначення                                                                                                  |
-| -------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10                  | Кількість слотів основного пулу для звичайних ліній.                                                         |
-| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10                  | Кількість слотів tail-пулу, чутливого до провайдерів.                                                        |
-| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`       | 9                   | Обмеження кількості одночасних live-ліній, щоб провайдери не throttled.                                      |
-| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10                  | Обмеження кількості одночасних ліній встановлення npm.                                                       |
-| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`    | 7                   | Обмеження кількості одночасних багатосервісних ліній.                                                        |
-| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000                | Затримка між стартами ліній, щоб уникнути сплесків створення в Docker daemon; задайте `0`, щоб вимкнути її. |
-| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`  | 7200000             | Резервний тайм-аут на лінію (120 хвилин); вибрані live/tail-лінії використовують жорсткіші обмеження.       |
-| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | не встановлено      | `1` виводить план планувальника без запуску ліній.                                                          |
-| `OPENCLAW_DOCKER_ALL_LANES`            | не встановлено      | Список точних ліній, розділених комами; пропускає cleanup smoke, щоб агенти могли відтворити одну невдалу лінію. |
+| Змінна                                | Типове значення | Призначення                                                                                                      |
+| ------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10              | Кількість слотів main-pool для звичайних ліній.                                                                  |
+| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10              | Кількість слотів tail-pool, чутливих до провайдерів.                                                             |
+| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`       | 9               | Ліміт одночасних live ліній, щоб провайдери не throttled.                                                        |
+| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10              | Ліміт одночасних ліній npm install.                                                                              |
+| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`    | 7               | Ліміт одночасних multi-service ліній.                                                                            |
+| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000            | Затримка між стартами ліній, щоб уникати бур створення Docker daemon; установіть `0`, щоб вимкнути затримку.     |
+| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`  | 7200000         | Резервний тайм-аут для кожної лінії (120 хвилин); вибрані live/tail лінії використовують жорсткіші обмеження.    |
+| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | не задано       | `1` виводить план планувальника без запуску ліній.                                                               |
+| `OPENCLAW_DOCKER_ALL_LANES`            | не задано       | Список точних ліній, розділених комами; пропускає cleanup smoke, щоб агенти могли відтворити одну невдалу лінію. |
 
-Лінія, важча за свій ефективний ліміт, усе ще може стартувати з порожнього пулу, а потім виконується самостійно, доки не звільнить ємність. Локальний aggregate попередньо перевіряє Docker, видаляє застарілі контейнери OpenClaw E2E, виводить статус активних ліній, зберігає тривалості ліній для впорядкування від найдовших до найкоротших і стандартно припиняє планувати нові pooled-лінії після першої помилки.
+Лінія, важча за свій ефективний ліміт, усе ще може стартувати з порожнього пулу, а потім працює сама, доки не звільнить capacity. Локальні сукупні preflight перевіряють Docker, видаляють застарілі контейнери OpenClaw E2E, виводять статус активних ліній, зберігають часові показники ліній для впорядкування longest-first і типово припиняють планувати нові pooled лінії після першої невдачі.
 
-### Багаторазовий live/E2E workflow
+### Повторно використовуваний live/E2E workflow
 
-Багаторазовий live/E2E workflow запитує `scripts/test-docker-all.mjs --plan-json`, яке покриття пакета, виду образу, live-образу, лінії та облікових даних потрібне. Потім `scripts/docker-e2e.mjs` перетворює цей план на вихідні дані та підсумки GitHub. Він або пакує OpenClaw через `scripts/package-openclaw-for-docker.mjs`, завантажує artifact пакета з поточного запуску, або завантажує artifact пакета з `package_artifact_run_id`; перевіряє inventory tarball; збирає та публікує bare/functional GHCR Docker E2E образи з тегами package-digest через кеш Docker-шарів Blacksmith, коли план потребує ліній із установленим пакетом; і повторно використовує надані вхідні дані `docker_e2e_bare_image`/`docker_e2e_functional_image` або наявні package-digest образи замість повторної збірки. Завантаження Docker-образів повторюються з обмеженим 180-секундним тайм-аутом на спробу, щоб завислий потік registry/cache швидко повторився, а не споживав більшість критичного шляху CI.
+Повторно використовуваний live/E2E workflow запитує в `scripts/test-docker-all.mjs --plan-json`, яке покриття пакета, типу образу, live образу, лінії та облікових даних потрібне. Потім `scripts/docker-e2e.mjs` перетворює цей план на GitHub outputs і зведення. Він або пакує OpenClaw через `scripts/package-openclaw-for-docker.mjs`, завантажує артефакт пакета з поточного запуску, або завантажує артефакт пакета з `package_artifact_run_id`; перевіряє інвентар tarball; збирає та публікує package-digest-tagged bare/functional GHCR Docker E2E образи через кеш Docker layer Blacksmith, коли плану потрібні лінії з установленим пакетом; і повторно використовує надані input `docker_e2e_bare_image`/`docker_e2e_functional_image` або наявні package-digest образи замість повторної збірки. Завантаження Docker image повторюються з обмеженим 180-секундним тайм-аутом на спробу, щоб завислий registry/cache stream швидко повторився замість споживання більшої частини критичного шляху CI.
 
 ### Фрагменти release-path
 
-Release Docker-покриття запускає менші chunked-завдання з `OPENCLAW_SKIP_DOCKER_BUILD=1`, щоб кожен фрагмент завантажував лише потрібний йому тип образу й виконував кілька ліній через той самий зважений планувальник:
+Docker-покриття релізу запускає менші chunked завдання з `OPENCLAW_SKIP_DOCKER_BUILD=1`, щоб кожен chunk завантажував лише потрібний йому тип образу й виконував кілька ліній через той самий зважений планувальник:
 
 - `OPENCLAW_DOCKER_ALL_PROFILE=release-path`
 - `OPENCLAW_DOCKER_ALL_CHUNK=core | package-update-openai | package-update-anthropic | package-update-core | plugins-runtime-plugins | plugins-runtime-services | plugins-runtime-install-a..h`
 
-Поточні release Docker-фрагменти: `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services` і `plugins-runtime-install-a` через `plugins-runtime-install-h`. `plugins-runtime-core`, `plugins-runtime` і `plugins-integrations` залишаються aggregate-псевдонімами plugin/runtime. Псевдонім лінії `install-e2e` залишається aggregate-псевдонімом ручного повторного запуску для обох ліній інсталяторів провайдерів.
+Поточні Docker chunks релізу: `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services` і від `plugins-runtime-install-a` до `plugins-runtime-install-h`. `plugins-runtime-core`, `plugins-runtime` і `plugins-integrations` залишаються aggregate plugin/runtime aliases. Alias лінії `install-e2e` залишається aggregate manual rerun alias для обох provider installer lanes.
 
-OpenWebUI включається до `plugins-runtime-services`, коли цього вимагає повне release-path покриття, і зберігає окремий фрагмент `openwebui` лише для dispatch, призначених тільки для OpenWebUI. Лінії оновлення bundled-channel повторюють спробу один раз у разі тимчасових npm network failures.
+OpenWebUI входить до `plugins-runtime-services`, коли повне release-path покриття запитує його, і зберігає окремий chunk `openwebui` лише для OpenWebUI-only dispatches. Лінії оновлення bundled-channel повторюють спробу один раз у разі transient npm network failures.
 
-Кожен фрагмент завантажує `.artifacts/docker-tests/` з журналами ліній, тривалостями, `summary.json`, `failures.json`, тривалостями фаз, JSON плану планувальника, таблицями повільних ліній і командами повторного запуску для кожної лінії. Вхідні дані workflow `docker_lanes` запускають вибрані лінії проти підготовлених образів замість chunk-завдань, що обмежує налагодження невдалих ліній одним targeted Docker-завданням і готує, завантажує або повторно використовує artifact пакета для цього запуску; якщо вибрана лінія є live Docker-лінією, targeted-завдання локально збирає live-test образ для цього повторного запуску. Згенеровані GitHub-команди повторного запуску для кожної лінії містять `package_artifact_run_id`, `package_artifact_name` і prepared image inputs, коли ці значення існують, щоб невдала лінія могла повторно використати точний пакет і образи з невдалого запуску.
+Кожен chunk вивантажує `.artifacts/docker-tests/` із журналами ліній, часовими показниками, `summary.json`, `failures.json`, часовими показниками фаз, JSON плану планувальника, таблицями повільних ліній і командами повторного запуску для кожної лінії. Input workflow `docker_lanes` запускає вибрані лінії проти підготовлених образів замість chunk jobs, що обмежує налагодження failed-lane одним цільовим Docker job і готує, завантажує або повторно використовує артефакт пакета для цього запуску; якщо вибрана лінія є live Docker lane, цільове завдання збирає live-test образ локально для цього rerun. Згенеровані GitHub команди повторного запуску для кожної лінії містять `package_artifact_run_id`, `package_artifact_name` і inputs підготовлених образів, коли ці значення існують, щоб невдала лінія могла повторно використати точний пакет і образи з невдалого запуску.
 
 ```bash
 pnpm test:docker:rerun <run-id>      # download Docker artifacts and print combined/per-lane targeted rerun commands
 pnpm test:docker:timings <summary>   # slow-lane and phase critical-path summaries
 ```
 
-Scheduled live/E2E workflow щодня запускає повний release-path Docker-набір.
+Запланований live/E2E workflow щодня запускає повний release-path Docker suite.
 
 ## Plugin Prerelease
 
-`Plugin Prerelease` є дорожчим покриттям продукту/пакета, тому це окремий workflow, який запускається `Full Release Validation` або явним оператором. Звичайні pull request, push у `main` і автономні ручні CI dispatch не вмикають цей набір. Він балансує bundled plugin tests між вісьмома extension workers; ці extension shard jobs запускають до двох груп конфігурації Plugin одночасно з одним Vitest worker на групу та більшим Node heap, щоб import-heavy Plugin batches не створювали додаткових CI-завдань. Release-only Docker prerelease path групує targeted Docker-лінії в малі групи, щоб не резервувати десятки runners для завдань на одну-три хвилини.
+`Plugin Prerelease` є дорожчим покриттям продукту/пакета, тому це окремий workflow, який запускається `Full Release Validation` або явним оператором. Звичайні pull request, пуші в `main` і standalone ручні CI dispatches тримають цей suite вимкненим. Він балансує тести bundled Plugin між вісьмома extension workers; ці extension shard jobs запускають до двох plugin config groups одночасно з одним Vitest worker на групу та більшим Node heap, щоб import-heavy plugin batches не створювали додаткові CI jobs. Release-only Docker prerelease path групує цільові Docker lanes у невеликі групи, щоб не резервувати десятки runners для завдань тривалістю від однієї до трьох хвилин.
 
 ## QA Lab
 
-QA Lab має окремі CI-лінії поза головним smart-scoped workflow.
+QA Lab має окремі CI lanes поза основним smart-scoped workflow.
 
-- Workflow `Parity gate` запускається при відповідних змінах у PR і ручному dispatch; він збирає приватний QA runtime і порівнює mock GPT-5.5 та Opus 4.6 agentic packs.
-- Workflow `QA-Lab - All Lanes` запускається щоночі на `main` і при ручному dispatch; він розгортає mock parity gate, live Matrix-лінію, а також live Telegram і Discord-лінії як паралельні завдання. Live-завдання використовують середовище `qa-live-shared`, а Telegram/Discord використовують Convex leases.
+- Workflow `Parity gate` запускається за відповідних змін PR і ручного dispatch; він збирає private QA runtime і порівнює mock GPT-5.5 та Opus 4.6 agentic packs.
+- Workflow `QA-Lab - All Lanes` запускається щоночі на `main` і під час ручного dispatch; він розгортає mock parity gate, live Matrix lane, а також live Telegram і Discord lanes як паралельні jobs. Live jobs використовують середовище `qa-live-shared`, а Telegram/Discord використовують Convex leases.
 
-Release checks запускають Matrix і Telegram live transport lanes з deterministic mock provider та mock-qualified models (`mock-openai/gpt-5.5` і `mock-openai/gpt-5.5-alt`), щоб контракт каналу був ізольований від затримки live model і звичайного запуску provider-plugin. Live transport gateway вимикає memory search, оскільки QA parity окремо покриває поведінку пам’яті; підключення провайдера покривають окремі live model, native provider і Docker provider suites.
+Перевірки релізу запускають Matrix і Telegram live transport lanes із детермінованим mock provider і mock-qualified models (`mock-openai/gpt-5.5` і `mock-openai/gpt-5.5-alt`), щоб channel contract був ізольований від затримки live model і звичайного startup provider-plugin. Live transport gateway вимикає memory search, тому що QA parity окремо покриває поведінку пам’яті; provider connectivity покривається окремими live model, native provider і Docker provider suites.
 
-Matrix використовує `--profile fast` для scheduled і release gates, додаючи `--fail-fast` лише тоді, коли checked-out CLI це підтримує. Стандартне значення CLI і ручний workflow input залишаються `all`; ручний dispatch `matrix_profile=all` завжди розбиває повне Matrix-покриття на завдання `transport`, `media`, `e2ee-smoke`, `e2ee-deep` і `e2ee-cli`.
+Matrix використовує `--profile fast` для scheduled і release gates, додаючи `--fail-fast` лише тоді, коли checked-out CLI підтримує це. Типове значення CLI і input ручного workflow залишаються `all`; ручний dispatch `matrix_profile=all` завжди розбиває повне Matrix coverage на jobs `transport`, `media`, `e2ee-smoke`, `e2ee-deep` і `e2ee-cli`.
 
-`OpenClaw Release Checks` також запускає release-critical QA Lab-лінії перед approval релізу; його QA parity gate запускає candidate і baseline packs як паралельні lane jobs, а потім завантажує обидва artifacts у невелике report job для фінального parity comparison.
+`OpenClaw Release Checks` також запускає release-critical QA Lab lanes перед release approval; його QA parity gate запускає candidate і baseline packs як паралельні lane jobs, а потім завантажує обидва artifacts у невеликий report job для фінального parity comparison.
 
-Не ставте PR landing path за `Parity gate`, якщо зміна фактично не торкається QA runtime, model-pack parity або поверхні, якою володіє parity workflow. Для звичайних виправлень channel, config, docs або unit-test розглядайте це як додатковий сигнал і дотримуйтеся scoped CI/check evidence.
+Не ставте PR landing path за `Parity gate`, якщо зміна фактично не торкається QA runtime, model-pack parity або поверхні, якою володіє parity workflow. Для звичайних виправлень каналів, конфігурації, документації або unit-test розглядайте це як optional signal і дотримуйтеся scoped CI/check evidence.
 
 ## CodeQL
 
-Workflow `CodeQL` навмисно є вузьким сканером безпеки першого проходу, а не повним sweep репозиторію. Щоденні, ручні та non-draft pull request guard runs сканують код Actions workflow плюс JavaScript/TypeScript поверхні з найвищим ризиком за допомогою high-confidence security queries, відфільтрованих до high/critical `security-severity`.
+Workflow `CodeQL` навмисно є вузьким first-pass security scanner, а не повним repository sweep. Щоденні, ручні та non-draft pull request guard runs сканують Actions workflow code плюс найризиковіші JavaScript/TypeScript surfaces із high-confidence security queries, відфільтрованими до high/critical `security-severity`.
 
-Pull request guard залишається легким: він стартує лише для змін у `.github/actions`, `.github/codeql`, `.github/workflows`, `packages` або `src`, і запускає ту саму high-confidence security matrix, що й scheduled workflow. Android і macOS CodeQL не входять до стандартних PR-перевірок.
+Pull request guard залишається легким: він стартує лише для змін у `.github/actions`, `.github/codeql`, `.github/workflows`, `packages` або `src` і запускає ту саму high-confidence security matrix, що й scheduled workflow. Android і macOS CodeQL не входять до типових PR перевірок.
 
 ### Категорії безпеки
 
-| Категорія                                        | Поверхня                                                                                                                          |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `/codeql-security-high/core-auth-secrets`        | Auth, secrets, sandbox, cron і gateway baseline                                                                                   |
-| `/codeql-security-high/channel-runtime-boundary` | Core channel implementation contracts плюс channel Plugin runtime, gateway, Plugin SDK, secrets, audit touchpoints                |
-| `/codeql-security-high/network-ssrf-boundary`    | Core SSRF, IP parsing, network guard, web-fetch і Plugin SDK SSRF policy surfaces                                                 |
-| `/codeql-security-high/mcp-process-tool-boundary` | MCP servers, process execution helpers, outbound delivery і agent tool-execution gates                                            |
-| `/codeql-security-high/plugin-trust-boundary`    | Plugin install, loader, manifest, registry, package-manager install, source-loading і Plugin SDK package contract trust surfaces |
+| Категорія                                       | Поверхня                                                                                                                             |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `/codeql-security-high/core-auth-secrets`         | Auth, secrets, sandbox, cron і базовий рівень gateway                                                                                |
+| `/codeql-security-high/channel-runtime-boundary`  | Контракти реалізації основного каналу, а також runtime plugin каналу, gateway, Plugin SDK, secrets, точки дотику аудиту              |
+| `/codeql-security-high/network-ssrf-boundary`     | Поверхні політики SSRF для core SSRF, розбору IP, network guard, web-fetch і Plugin SDK                                              |
+| `/codeql-security-high/mcp-process-tool-boundary` | MCP-сервери, помічники виконання процесів, вихідна доставка й шлюзи виконання інструментів агента                                    |
+| `/codeql-security-high/plugin-trust-boundary`     | Поверхні довіри встановлення Plugin, loader, manifest, registry, package-manager install, source-loading і контракту пакета Plugin SDK |
 
-### Платформоспецифічні security shards
+### Shard-и безпеки для окремих платформ
 
-- `CodeQL Android Critical Security` — scheduled Android security shard. Вручну збирає Android app для CodeQL на найменшому Blacksmith Linux runner, прийнятому workflow sanity. Завантажує в `/codeql-critical-security/android`.
-- `CodeQL macOS Critical Security` — щотижневий/ручний macOS security shard. Вручну збирає macOS app для CodeQL на Blacksmith macOS, відфільтровує dependency build results із завантаженого SARIF і завантажує в `/codeql-critical-security/macos`. Тримається поза щоденними стандартними перевірками, оскільки macOS build домінує за часом виконання навіть коли він чистий.
+- `CodeQL Android Critical Security` — запланований shard безпеки Android. Збирає Android app вручну для CodeQL на найменшому Blacksmith Linux runner, прийнятому workflow sanity. Завантажує в `/codeql-critical-security/android`.
+- `CodeQL macOS Critical Security` — щотижневий/ручний shard безпеки macOS. Збирає macOS app вручну для CodeQL на Blacksmith macOS, відфільтровує результати збірки залежностей із завантаженого SARIF і завантажує в `/codeql-critical-security/macos`. Тримається поза щоденними типовими запуском, бо збірка macOS домінує за часом виконання навіть у чистому стані.
 
 ### Категорії Critical Quality
 
-`CodeQL Critical Quality` є відповідним non-security shard. Він запускає лише error-severity, non-security JavaScript/TypeScript quality queries на вузьких high-value surfaces на меншому Blacksmith Linux runner. Його pull request guard навмисно менший за scheduled profile: non-draft PRs запускають лише відповідні shards `agent-runtime-boundary`, `config-boundary`, `core-auth-secrets`, `channel-runtime-boundary`, `gateway-runtime-boundary`, `memory-runtime-boundary`, `mcp-process-runtime-boundary`, `provider-runtime-boundary`, `session-diagnostics-boundary`, `plugin-boundary`, `plugin-sdk-package-contract` і `plugin-sdk-reply-runtime` для agent command/model/tool execution і reply dispatch code, config schema/migration/IO code, auth/secrets/sandbox/security code, core channel і bundled channel Plugin runtime, gateway protocol/server-method, memory runtime/SDK glue, MCP/process/outbound delivery, provider runtime/model catalog, session diagnostics/delivery queues, Plugin loader, Plugin SDK/package-contract або змін Plugin SDK reply runtime. Зміни CodeQL config і quality workflow запускають усі дванадцять PR quality shards.
+`CodeQL Critical Quality` — відповідний shard не пов’язаний із безпекою. Він запускає лише error-severity, non-security JavaScript/TypeScript quality-запити для вузьких цінних поверхонь на меншому Blacksmith Linux runner. Його захист pull request навмисно менший за запланований профіль: non-draft PR запускають лише відповідні shard-и `agent-runtime-boundary`, `config-boundary`, `core-auth-secrets`, `channel-runtime-boundary`, `gateway-runtime-boundary`, `memory-runtime-boundary`, `mcp-process-runtime-boundary`, `provider-runtime-boundary`, `session-diagnostics-boundary`, `plugin-boundary`, `plugin-sdk-package-contract` і `plugin-sdk-reply-runtime` для змін у коді виконання команд/моделей/інструментів агента та dispatch відповіді, схемі config/міграції/IO, auth/secrets/sandbox/security, основному каналі та runtime bundled channel plugin, gateway protocol/server-method, memory runtime/SDK glue, MCP/process/outbound delivery, provider runtime/model catalog, session diagnostics/delivery queues, plugin loader, Plugin SDK/package-contract або Plugin SDK reply runtime. Зміни CodeQL config і quality workflow запускають усі дванадцять PR quality shard-ів.
 
-Manual dispatch приймає:
+Ручний dispatch приймає:
 
 ```
 profile=all|agent-runtime-boundary|config-boundary|core-auth-secrets|channel-runtime-boundary|gateway-runtime-boundary|memory-runtime-boundary|mcp-process-runtime-boundary|plugin-boundary|plugin-sdk-package-contract|plugin-sdk-reply-runtime|provider-runtime-boundary|session-diagnostics-boundary
 ```
 
-Вузькі профілі є навчальними та ітераційними хуками для запуску одного якісного шарда ізольовано.
+Вузькі профілі — це навчальні/ітераційні hooks для запуску одного quality shard ізольовано.
 
-| Категорія                                              | Поверхня                                                                                                                                                                         |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/codeql-critical-quality/core-auth-secrets`            | Auth, secrets, sandbox, Cron і код межі безпеки Gateway                                                                                                                         |
-| `/codeql-critical-quality/config-boundary`              | Схема конфігурації, міграція, нормалізація та контракти IO                                                                                                                       |
-| `/codeql-critical-quality/gateway-runtime-boundary`     | Схеми протоколу Gateway і контракти серверних методів                                                                                                                           |
-| `/codeql-critical-quality/channel-runtime-boundary`     | Контракти реалізації основного каналу та вбудованого Plugin каналу                                                                                                               |
-| `/codeql-critical-quality/agent-runtime-boundary`       | Виконання команд, диспетчеризація model/provider, диспетчеризація автоматичних відповідей і черги, а також runtime-контракти площини керування ACP                              |
-| `/codeql-critical-quality/mcp-process-runtime-boundary` | MCP-сервери та мости інструментів, допоміжні засоби нагляду за процесами й контракти вихідної доставки                                                                          |
-| `/codeql-critical-quality/memory-runtime-boundary`      | SDK хоста памʼяті, runtime-фасади памʼяті, псевдоніми памʼяті Plugin SDK, звʼязувальний код runtime-активації памʼяті та команди doctor для памʼяті                            |
-| `/codeql-critical-quality/session-diagnostics-boundary` | Внутрішня логіка черги відповідей, черги доставки сеансів, допоміжні засоби привʼязування/доставки вихідних сеансів, поверхні діагностичних подій/пакетів логів і CLI-контракти session doctor |
-| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | Диспетчеризація вхідних відповідей Plugin SDK, допоміжні засоби payload/chunking/runtime відповідей, параметри відповідей каналу, черги доставки та допоміжні засоби привʼязування сеансу/потоку |
-| `/codeql-critical-quality/provider-runtime-boundary`    | Нормалізація каталогу моделей, автентифікація та виявлення провайдерів, реєстрація runtime провайдерів, стандартні значення/каталоги провайдерів і реєстри web/search/fetch/embedding |
-| `/codeql-critical-quality/ui-control-plane`             | Ініціалізація Control UI, локальна персистентність, потоки керування Gateway і runtime-контракти площини керування завданнями                                                   |
-| `/codeql-critical-quality/web-media-runtime-boundary`   | Контракти runtime для основних web fetch/search, media IO, розуміння медіа, генерації зображень і генерації медіа                                                               |
-| `/codeql-critical-quality/plugin-boundary`              | Контракти завантажувача, реєстру, публічної поверхні та точок входу Plugin SDK                                                                                                  |
-| `/codeql-critical-quality/plugin-sdk-package-contract`  | Опублікований package-side вихідний код Plugin SDK і допоміжні засоби контрактів пакетів Plugin                                                                                 |
+| Категорія                                             | Поверхня                                                                                                                                                           |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/codeql-critical-quality/core-auth-secrets`            | Код межі безпеки Auth, secrets, sandbox, cron і gateway                                                                                                           |
+| `/codeql-critical-quality/config-boundary`              | Контракти config schema, migration, normalization і IO                                                                                                            |
+| `/codeql-critical-quality/gateway-runtime-boundary`     | Схеми Gateway protocol і контракти server method                                                                                                                  |
+| `/codeql-critical-quality/channel-runtime-boundary`     | Контракти реалізації основного каналу та bundled channel plugin                                                                                                   |
+| `/codeql-critical-quality/agent-runtime-boundary`       | Runtime-контракти command execution, model/provider dispatch, auto-reply dispatch and queues і ACP control-plane                                                  |
+| `/codeql-critical-quality/mcp-process-runtime-boundary` | MCP-сервери та tool bridges, помічники process supervision і контракти outbound delivery                                                                          |
+| `/codeql-critical-quality/memory-runtime-boundary`      | Memory host SDK, memory runtime facades, memory Plugin SDK aliases, glue активації memory runtime і команди memory doctor                                        |
+| `/codeql-critical-quality/session-diagnostics-boundary` | Внутрішня логіка reply queue, session delivery queues, помічники outbound session binding/delivery, поверхні diagnostic event/log bundle і контракти session doctor CLI |
+| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | Plugin SDK inbound reply dispatch, reply payload/chunking/runtime helpers, channel reply options, delivery queues і session/thread binding helpers                |
+| `/codeql-critical-quality/provider-runtime-boundary`    | Нормалізація model catalog, provider auth and discovery, provider runtime registration, provider defaults/catalogs і registry web/search/fetch/embedding          |
+| `/codeql-critical-quality/ui-control-plane`             | Control UI bootstrap, local persistence, gateway control flows і runtime-контракти task control-plane                                                             |
+| `/codeql-critical-quality/web-media-runtime-boundary`   | Runtime-контракти core web fetch/search, media IO, media understanding, image-generation і media-generation                                                       |
+| `/codeql-critical-quality/plugin-boundary`              | Контракти entrypoint для loader, registry, public-surface і Plugin SDK                                                                                            |
+| `/codeql-critical-quality/plugin-sdk-package-contract`  | Опублікований package-side вихідний код Plugin SDK і помічники контрактів plugin package                                                                          |
 
-Якість залишається окремою від безпеки, щоб висновки щодо якості можна було планувати, вимірювати, вимикати або розширювати без затемнення сигналу безпеки. Розширення CodeQL для Swift, Python і вбудованих Plugin слід додавати назад як scoped або sharded подальшу роботу лише після того, як вузькі профілі матимуть стабільний runtime і сигнал.
+Quality лишається окремою від security, щоб findings якості можна було планувати, вимірювати, вимикати або розширювати без затемнення сигналу безпеки. Розширення CodeQL для Swift, Python і bundled-plugin слід додавати назад як scoped або sharded follow-up work лише після того, як вузькі профілі матимуть стабільний runtime і signal.
 
-## Робочі процеси обслуговування
+## Workflows обслуговування
 
-### Агент документації
+### Docs Agent
 
-Робочий процес `Docs Agent` — це подієво-керована лінія обслуговування Codex для підтримання наявної документації у відповідності до нещодавно внесених змін. Він не має чистого розкладу: успішний CI-запуск після push не від бота на `main` може його запустити, а ручний dispatch може запустити його напряму. Виклики від workflow-run пропускаються, коли `main` уже зсунувся вперед або коли протягом останньої години було створено інший непропущений запуск Docs Agent. Під час запуску він переглядає діапазон комітів від попереднього непропущеного source SHA Docs Agent до поточного `main`, тож один погодинний запуск може охопити всі зміни main, накопичені з останнього проходу документації.
+Workflow `Docs Agent` — це подієва maintenance lane Codex для підтримання наявної документації у відповідності з нещодавно злитими змінами. Він не має чистого розкладу: успішний non-bot push CI run на `main` може його запустити, а manual dispatch може запустити його напряму. Виклики workflow-run пропускаються, коли `main` уже зрушив далі або коли інший non-skipped Docs Agent run було створено протягом останньої години. Коли він запускається, він переглядає діапазон комітів від попереднього non-skipped Docs Agent source SHA до поточного `main`, тож один hourly run може охопити всі зміни main, накопичені з останнього проходу docs.
 
-### Агент продуктивності тестів
+### Test Performance Agent
 
-Робочий процес `Test Performance Agent` — це подієво-керована лінія обслуговування Codex для повільних тестів. Він не має чистого розкладу: успішний CI-запуск після push не від бота на `main` може його запустити, але він пропускається, якщо інший виклик workflow-run уже виконувався або виконується в цей UTC-день. Ручний dispatch обходить цей щоденний activity gate. Лінія будує згрупований звіт продуктивності Vitest для повного набору, дозволяє Codex робити лише невеликі виправлення продуктивності тестів зі збереженням покриття замість широких рефакторингів, потім повторно запускає звіт для повного набору й відхиляє зміни, які зменшують базову кількість тестів, що проходять. Якщо baseline має тести, що падають, Codex може виправляти лише очевидні збої, а after-agent звіт повного набору має пройти перед будь-яким комітом. Коли `main` просувається до того, як bot push потрапить у репозиторій, лінія rebases перевірений patch, повторно запускає `pnpm check:changed` і повторює push; конфліктні застарілі patches пропускаються. Вона використовує GitHub-hosted Ubuntu, щоб дія Codex могла зберігати ту саму drop-sudo позицію безпеки, що й агент документації.
+Workflow `Test Performance Agent` — це подієва maintenance lane Codex для повільних тестів. Він не має чистого розкладу: успішний non-bot push CI run на `main` може його запустити, але він пропускається, якщо інший workflow-run invocation уже запускався або виконується в цей UTC-день. Manual dispatch обходить цей daily activity gate. Lane будує full-suite grouped Vitest performance report, дозволяє Codex вносити лише невеликі performance fixes тестів зі збереженням coverage замість широких refactors, потім повторно запускає full-suite report і відхиляє зміни, які зменшують baseline test count, що проходить. Якщо baseline має failing tests, Codex може виправляти лише очевидні failures, а after-agent full-suite report має пройти, перш ніж щось буде закомічено. Коли `main` просувається до того, як bot push буде злитий, lane rebases validated patch, повторно запускає `pnpm check:changed` і повторює push; конфліктні stale patches пропускаються. Він використовує GitHub-hosted Ubuntu, щоб Codex action могла зберегти таку саму drop-sudo safety posture, як docs agent.
 
-### Дублікати PR після злиття
+### Дублікати PR після merge
 
-Робочий процес `Duplicate PRs After Merge` — це ручний робочий процес maintainer для очищення дублікатів після land. За замовчуванням він працює як dry-run і закриває лише явно перелічені PR, коли `apply=true`. Перед зміною GitHub він перевіряє, що landed PR злитий і що кожен дублікат має або спільне referenced issue, або перекривні змінені hunks.
+Workflow `Duplicate PRs After Merge` — це ручний maintainer workflow для post-land duplicate cleanup. Типово це dry-run, і він закриває лише явно перелічені PR, коли `apply=true`. Перед зміною GitHub він перевіряє, що landed PR merged, і що кожен duplicate має або спільний referenced issue, або overlapping changed hunks.
 
 ```bash
 gh workflow run duplicate-after-merge.yml \
@@ -454,29 +474,29 @@ gh workflow run duplicate-after-merge.yml \
   -f apply=true
 ```
 
-## Локальні check gates і маршрутизація змін
+## Local check gates і changed routing
 
-Локальна логіка changed-lane живе в `scripts/changed-lanes.mjs` і виконується через `scripts/check-changed.mjs`. Цей локальний check gate суворіший щодо архітектурних меж, ніж широка сфера платформи CI:
+Local changed-lane logic живе в `scripts/changed-lanes.mjs` і виконується через `scripts/check-changed.mjs`. Цей local check gate суворіший щодо architecture boundaries, ніж широкий scope платформи CI:
 
-- зміни core production запускають typecheck core prod і core test, а також core lint/guards;
-- зміни лише core test запускають тільки typecheck core test і core lint;
-- зміни extension production запускають typecheck extension prod і extension test, а також extension lint;
-- зміни лише extension test запускають typecheck extension test і extension lint;
-- зміни публічного Plugin SDK або plugin-contract розширюються до typecheck extensions, бо extensions залежать від цих core contracts (Vitest extension sweeps лишаються явною тестовою роботою);
-- version bumps лише release metadata запускають цільові перевірки version/config/root-dependency;
-- невідомі зміни root/config безпечно провалюються до всіх check lanes.
+- core production changes запускають core prod і core test typecheck плюс core lint/guards;
+- core test-only changes запускають лише core test typecheck плюс core lint;
+- extension production changes запускають extension prod і extension test typecheck плюс extension lint;
+- extension test-only changes запускають extension test typecheck плюс extension lint;
+- public Plugin SDK або plugin-contract changes розширюються до extension typecheck, бо extensions залежать від цих core contracts (Vitest extension sweeps лишаються явною test work);
+- release metadata-only version bumps запускають targeted version/config/root-dependency checks;
+- unknown root/config changes fail safe до всіх check lanes.
 
-Локальна маршрутизація changed-test живе в `scripts/test-projects.test-support.mjs` і навмисно дешевша за `check:changed`: прямі редагування тестів запускають самі себе, редагування source надають перевагу явним mappings, потім sibling tests і import-graph dependents. Спільна конфігурація delivery для group-room є одним із явних mappings: зміни до group visible-reply config, source reply delivery mode або message-tool system prompt проходять через core reply tests плюс регресії доставки Discord і Slack, щоб зміна спільного стандартного значення падала до першого PR push. Використовуйте `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` лише тоді, коли зміна достатньо широка для harness і дешевий mapped set не є надійним proxy.
+Local changed-test routing живе в `scripts/test-projects.test-support.mjs` і навмисно дешевший за `check:changed`: прямі test edits запускають самі себе, source edits віддають перевагу explicit mappings, потім sibling tests і import-graph dependents. Shared group-room delivery config — одне з explicit mappings: зміни до group visible-reply config, source reply delivery mode або message-tool system prompt проходять через core reply tests плюс Discord і Slack delivery regressions, щоб shared default change впала до першого PR push. Використовуйте `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` лише тоді, коли зміна достатньо harness-wide, що cheap mapped set не є надійним proxy.
 
 ## Валідація Testbox
 
-Запускайте Testbox з кореня репозиторію та надавайте перевагу свіжій прогрітій box для широкого доказу. Перед витрачанням повільного gate на box, яку повторно використали, строк дії якої минув або яка щойно повідомила про неочікувано велику синхронізацію, спершу запустіть `pnpm testbox:sanity` всередині box.
+Запускайте Testbox з кореня repo і віддавайте перевагу свіжому warmed box для широкого proof. Перед витратою повільного gate на box, який повторно використали, термін дії якого минув або який щойно повідомив про несподівано великий sync, спершу запустіть `pnpm testbox:sanity` всередині box.
 
-Sanity check швидко падає, коли потрібні кореневі файли, такі як `pnpm-lock.yaml`, зникли або коли `git status --short` показує щонайменше 200 tracked deletions. Зазвичай це означає, що remote sync state не є надійною копією PR; зупиніть цю box і прогрійте свіжу замість налагодження product test failure. Для навмисних PR із великим видаленням задайте `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` для цього sanity run.
+Sanity check швидко падає, коли обов’язкові root files, такі як `pnpm-lock.yaml`, зникли або коли `git status --short` показує щонайменше 200 tracked deletions. Зазвичай це означає, що remote sync state не є надійною копією PR; зупиніть цей box і прогрійте свіжий замість налагодження product test failure. Для навмисних PR із великим видаленням задайте `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` для цього sanity run.
 
-`pnpm testbox:run` також завершує локальний виклик Blacksmith CLI, який залишається у фазі sync понад пʼять хвилин без post-sync output. Задайте `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0`, щоб вимкнути цей guard, або використайте більше значення в мілісекундах для незвично великих локальних diffs.
+`pnpm testbox:run` також завершує локальний виклик Blacksmith CLI, який залишається у фазі синхронізації понад п’ять хвилин без виводу після синхронізації. Установіть `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0`, щоб вимкнути цей захист, або використайте більше значення в мілісекундах для незвично великих локальних змін.
 
-Crabbox — це repo-owned другий шлях remote-box для доказу на Linux, коли Blacksmith недоступний або коли власна cloud capacity бажаніша. Прогрійте box, hydrate її через project workflow, потім запускайте команди через Crabbox CLI:
+Crabbox — це другий, належний репозиторію, шлях віддаленої машини для підтвердження в Linux, коли Blacksmith недоступний або коли бажаніше використовувати власну хмарну ємність. Прогрійте машину, гідруйте її через робочий процес проєкту, а потім запускайте команди через Crabbox CLI:
 
 ```bash
 pnpm crabbox:warmup -- --idle-timeout 90m
@@ -485,9 +505,9 @@ pnpm crabbox:run -- --id <cbx_id> --shell "OPENCLAW_TESTBOX=1 pnpm check:changed
 pnpm crabbox:stop -- <cbx_id>
 ```
 
-`.crabbox.yaml` визначає стандартні параметри provider, sync і GitHub Actions hydration. Він виключає локальний `.git`, щоб hydrated Actions checkout зберігав власні remote Git metadata замість синхронізації maintainer-local remotes і object stores, а також виключає локальні runtime/build artifacts, які ніколи не слід передавати. `.github/workflows/crabbox-hydrate.yml` визначає checkout, налаштування Node/pnpm, fetch `origin/main` і non-secret environment handoff, який пізніші команди `crabbox run --id <cbx_id>` використовують як source.
+`.crabbox.yaml` визначає типові параметри провайдера, синхронізації та гідратації GitHub Actions. Він виключає локальний `.git`, щоб гідрований checkout Actions зберігав власні віддалені Git-метадані замість синхронізації локальних для мейнтейнера remote і сховищ об’єктів, а також виключає локальні runtime/build-артефакти, які ніколи не слід передавати. `.github/workflows/crabbox-hydrate.yml` визначає checkout, налаштування Node/pnpm, fetch `origin/main` і передавання несекретного середовища, яке пізніші команди `crabbox run --id <cbx_id>` використовують як джерело.
 
-## Повʼязане
+## Пов’язане
 
 - [Огляд встановлення](/uk/install)
 - [Канали розробки](/uk/install/development-channels)
