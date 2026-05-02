@@ -1,43 +1,43 @@
 ---
 read_when:
-    - mac メニュー UI やステータスロジックを調整すること
-summary: メニューバーのステータスロジックと、ユーザーに表示される内容
+    - Mac メニュー UI または状態ロジックの調整
+summary: メニューバーのステータスロジックとユーザーに表示される内容
 title: メニューバー
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:08:44Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 89b03f3b0f9e56057d4cbf10bd1252372c65a2b2ae5e0405a844e9a59b51405d
-  source_path: platforms/mac/menu-bar.md
-  workflow: 15
+    generated_at: "2026-05-02T04:59:41Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 340b86a2e222fb1fe7fda4f0f0434127af1393a64348ea033ea284ba52866beb
+    source_path: platforms/mac/menu-bar.md
+    workflow: 16
 ---
 
 # メニューバーのステータスロジック
 
-## 何が表示されるか
+## 表示内容
 
-- 現在のエージェント作業状態を、メニューバーアイコンとメニューの最初のステータス行に表示します。
-- 作業中はヘルスステータスは非表示になります。すべてのセッションが idle に戻ると再表示されます。
-- メニュー内の「Nodes」ブロックには、**devices** のみが表示されます（`node.list` 経由の paired Node）。client/presence エントリーは表示されません。
-- プロバイダー使用量スナップショットが利用可能な場合は、Context の下に「Usage」セクションが表示されます。
+- メニューバーアイコンとメニューの最初のステータス行に、現在のエージェント作業状態を表示します。
+- 作業がアクティブな間はヘルスステータスを非表示にし、すべてのセッションがアイドルになると再表示します。
+- ルートの「コンテキスト」サブメニューには、直近のセッションをルートメニュー内で直接展開せずに表示します。
+- ルートメニューの「ノード」ブロックには、クライアント/プレゼンス項目ではなく、**デバイス**のみ（`node.list` 経由のペアリング済みノード）を一覧表示します。
+- プロバイダー使用状況のスナップショットが利用可能な場合、ルートの「使用状況」セクションがコンテキストの下に表示され、利用可能な場合は使用コストの詳細が続きます。
 
 ## 状態モデル
 
-- セッション: event は `runId`（実行ごと）と payload 内の `sessionKey` とともに到着します。「main」セッションはキー `main` です。存在しない場合は、最後に更新されたセッションにフォールバックします。
-- 優先順位: 常に main が優先されます。main がアクティブなら、その状態が即座に表示されます。main が idle の場合は、最後にアクティブだった非 main セッションが表示されます。アクティビティの途中で頻繁に切り替えることはなく、現在のセッションが idle になるか、main がアクティブになったときだけ切り替えます。
+- セッション: イベントは `runId`（実行ごと）と、ペイロード内の `sessionKey` とともに届きます。「メイン」セッションはキー `main` です。存在しない場合は、最も最近更新されたセッションにフォールバックします。
+- 優先順位: メインが常に優先されます。メインがアクティブな場合、その状態が即座に表示されます。メインがアイドルの場合、最も最近アクティブだった非メインセッションが表示されます。アクティビティ中に切り替わり続けることはありません。現在のセッションがアイドルになるか、メインがアクティブになったときにのみ切り替えます。
 - アクティビティ種別:
   - `job`: 高レベルのコマンド実行（`state: started|streaming|done|error`）。
   - `tool`: `toolName` と `meta/args` を伴う `phase: start|result`。
 
-## IconState enum（Swift）
+## IconState 列挙型（Swift）
 
 - `idle`
 - `workingMain(ActivityKind)`
 - `workingOther(ActivityKind)`
-- `overridden(ActivityKind)`（デバッグ上書き）
+- `overridden(ActivityKind)`（デバッグオーバーライド）
 
-### ActivityKind → glyph
+### ActivityKind → グリフ
 
 - `exec` → 💻
 - `read` → 📄
@@ -46,49 +46,57 @@ x-i18n:
 - `attach` → 📎
 - デフォルト → 🛠️
 
-### 視覚的マッピング
+### 視覚的な対応
 
-- `idle`: 通常の critter。
-- `workingMain`: glyph 付きバッジ、フル tint、脚の「working」アニメーション。
-- `workingOther`: glyph 付きバッジ、抑えた tint、scurry なし。
-- `overridden`: アクティビティに関係なく、選択された glyph/tint を使います。
+- `idle`: 通常のクリッター。
+- `workingMain`: グリフ付きバッジ、フルティント、脚の「作業中」アニメーション。
+- `workingOther`: グリフ付きバッジ、控えめなティント、走り回りなし。
+- `overridden`: アクティビティに関係なく、選択したグリフ/ティントを使用します。
 
-## ステータス行のテキスト（メニュー）
+## コンテキストサブメニュー
 
-- 作業中: `<Session role> · <activity label>`
-  - 例: `Main · exec: pnpm test`, `Other · read: apps/macos/Sources/OpenClaw/AppState.swift`。
-- idle 時: ヘルス要約にフォールバックします。
+- ルートメニューには、セッション数/ステータス付きの「コンテキスト」行が 1 つ表示され、サブメニューを開きます。
+- コンテキストサブメニューのヘッダーには、過去 24 時間のアクティブセッション数が表示されます。
+- 各セッション行には、トークンバー、経過時間、プレビュー、思考中/詳細表示、リセット、コンパクト化、削除アクションが保持されます。
+- 読み込み中、切断中、セッション読み込みエラーのメッセージは、コンテキストサブメニュー内に表示されます。
+- プロバイダー使用状況と使用コストの詳細は、サブメニューを開かなくても一目で確認できるように、コンテキストの下のルートレベルに残ります。
 
-## Event 取り込み
+## ステータス行テキスト（メニュー）
 
-- ソース: control-channel の `agent` event（`ControlChannel.handleAgentEvent`）。
+- 作業がアクティブな間: `<Session role> · <activity label>`
+  - 例: `Main · exec: pnpm test`、`Other · read: apps/macos/Sources/OpenClaw/AppState.swift`。
+- アイドル時: ヘルスサマリーにフォールバックします。
+
+## イベント取り込み
+
+- ソース: コントロールチャネルの `agent` イベント（`ControlChannel.handleAgentEvent`）。
 - 解析されるフィールド:
-  - `data.state` を持つ `stream: "job"`（開始/停止用）。
-  - `data.phase`, `name`, 任意の `meta`/`args` を持つ `stream: "tool"`。
+  - 開始/停止用の `data.state` を伴う `stream: "job"`。
+  - `data.phase`、`name`、任意の `meta`/`args` を伴う `stream: "tool"`。
 - ラベル:
   - `exec`: `args.command` の最初の行。
   - `read`/`write`: 短縮されたパス。
-  - `edit`: パス + `meta`/diff 数から推定した変更種別。
-  - フォールバック: tool 名。
+  - `edit`: パスに加え、`meta`/diff 数から推定した変更種別。
+  - フォールバック: ツール名。
 
-## デバッグ上書き
+## デバッグオーバーライド
 
-- Settings ▸ Debug ▸ 「Icon override」 picker:
+- 設定 ▸ デバッグ ▸ 「アイコンオーバーライド」ピッカー:
   - `System (auto)`（デフォルト）
-  - `Working: main`（tool 種別ごと）
-  - `Working: other`（tool 種別ごと）
+  - `Working: main`（ツール種別ごと）
+  - `Working: other`（ツール種別ごと）
   - `Idle`
-- `@AppStorage("iconOverride")` で保存され、`IconState.overridden` にマップされます。
+- `@AppStorage("iconOverride")` 経由で保存され、`IconState.overridden` にマッピングされます。
 
 ## テストチェックリスト
 
-- main セッション job をトリガーする: アイコンが即座に切り替わり、ステータス行に main ラベルが表示されることを確認する。
-- main が idle のときに非 main セッション job をトリガーする: アイコン/ステータスに非 main が表示され、完了まで安定していることを確認する。
-- 他がアクティブなときに main を開始する: アイコンが即座に main に切り替わること。
-- 急速な tool バースト: バッジが点滅しないことを確認する（tool result に対する TTL grace）。
-- すべてのセッションが idle になるとヘルス行が再表示されること。
+- メインセッションジョブをトリガーする: アイコンが即座に切り替わり、ステータス行にメインラベルが表示されることを確認します。
+- メインがアイドルの間に非メインセッションジョブをトリガーする: アイコン/ステータスに非メインが表示され、完了するまで安定していることを確認します。
+- 他のセッションがアクティブな間にメインを開始する: アイコンが即座にメインへ切り替わることを確認します。
+- 急速なツールバースト: バッジがちらつかないことを確認します（ツール結果に対する TTL 猶予）。
+- すべてのセッションがアイドルになると、ヘルス行が再表示されます。
 
 ## 関連
 
-- [macOS app](/ja-JP/platforms/macos)
-- [Menu bar icon](/ja-JP/platforms/mac/icon)
+- [macOS アプリ](/ja-JP/platforms/macos)
+- [メニューバーアイコン](/ja-JP/platforms/mac/icon)

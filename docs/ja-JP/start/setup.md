@@ -1,14 +1,14 @@
 ---
 read_when:
-    - 新しいマシンのセットアップ
-    - 個人用のセットアップを壊さずに「最新かつ最高」を使いたい場合
+    - 新しいマシンをセットアップする
+    - 自分の環境を壊さずに「最新かつ最高」を使いたい場合
 summary: OpenClaw の高度なセットアップと開発ワークフロー
 title: セットアップ
 x-i18n:
-    generated_at: "2026-04-30T05:35:32Z"
+    generated_at: "2026-05-02T05:06:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f96e5e8d46e694f0dfc67eeeb34f4c49498a56e384c3a2a6266c2214afdc0870
+    source_hash: 101f7911d4a4cba139dd7a464b2ed82e2c80c630ba6ea58486309642c6690ee9
     source_path: start/setup.md
     workflow: 16
 ---
@@ -20,24 +20,26 @@ x-i18n:
 
 ## 要約
 
-更新をどのくらい頻繁に受け取りたいか、Gateway を自分で実行したいかに基づいて、セットアップワークフローを選びます。
+更新頻度と Gateway を自分で実行するかどうかに基づいて、セットアップワークフローを選択します。
 
-- **カスタマイズはリポジトリの外に置く:** 設定とワークスペースを `~/.openclaw/openclaw.json` と `~/.openclaw/workspace/` に置き、リポジトリの更新がそれらに触れないようにします。
-- **安定版ワークフロー（ほとんどの場合に推奨）:** macOS アプリをインストールし、同梱の Gateway を実行させます。
-- **最先端ワークフロー（開発）:** `pnpm gateway:watch` で Gateway を自分で実行し、その後 macOS アプリを Local モードで接続させます。
+- **カスタマイズはリポジトリの外に置く:** 設定とワークスペースを `~/.openclaw/openclaw.json` と `~/.openclaw/workspace/` に保持すると、リポジトリ更新の影響を受けません。
+- **安定ワークフロー（大半の用途に推奨）:** macOS アプリをインストールし、同梱 Gateway を実行させます。
+- **最先端ワークフロー（開発）:** `pnpm gateway:watch` で Gateway を自分で実行し、その後 macOS アプリを Local モードで接続します。
 
 ## 前提条件（ソースから）
 
-- Node 24 を推奨（Node 22 LTS、現在は `22.14+` も引き続きサポート）
-- `pnpm` を推奨（または意図的に [Bun ワークフロー](/ja-JP/install/bun)を使う場合は Bun）
-- Docker（任意。コンテナ化されたセットアップ/e2e の場合のみ — [Docker](/ja-JP/install/docker)を参照）
+- Node 24 推奨（Node 22 LTS、現在は `22.14+` も引き続きサポート）
+- ソースチェックアウトには `pnpm` が必要です。OpenClaw は dev モードで
+  `extensions/*` pnpm ワークスペースパッケージから同梱Pluginを読み込むため、ルートでの `npm install` だけでは
+  ソースツリー全体は準備されません。
+- Docker（任意。コンテナ化セットアップ/e2e の場合のみ。[Docker](/ja-JP/install/docker)を参照）
 
-## カスタマイズ戦略（更新で壊れないように）
+## カスタマイズ戦略（更新で困らないために）
 
-「100% 自分向けに調整」しつつ簡単に更新したい場合は、カスタマイズを次に置きます。
+「100% 自分向けにカスタマイズ」しつつ簡単に更新したい場合は、カスタマイズを次の場所に保持します。
 
 - **設定:** `~/.openclaw/openclaw.json`（JSON/JSON5 風）
-- **ワークスペース:** `~/.openclaw/workspace`（Skills、プロンプト、メモリ。プライベート git リポジトリにします）
+- **ワークスペース:** `~/.openclaw/workspace`（skills、プロンプト、メモリ。非公開 git リポジトリにするとよい）
 
 一度だけブートストラップします。
 
@@ -45,13 +47,13 @@ x-i18n:
 openclaw setup
 ```
 
-このリポジトリ内からは、ローカル CLI エントリを使います。
+このリポジトリ内からは、ローカル CLI エントリを使用します。
 
 ```bash
 openclaw setup
 ```
 
-まだグローバルインストールがない場合は、`pnpm openclaw setup` で実行します（Bun ワークフローを使っている場合は `bun run openclaw setup`）。
+グローバルインストールがまだない場合は、`pnpm openclaw setup` 経由で実行します。
 
 ## このリポジトリから Gateway を実行する
 
@@ -61,7 +63,7 @@ openclaw setup
 node openclaw.mjs gateway --port 18789 --verbose
 ```
 
-## 安定版ワークフロー（macOS アプリ優先）
+## 安定ワークフロー（macOS アプリ優先）
 
 1. **OpenClaw.app**（メニューバー）をインストールして起動します。
 2. オンボーディング/権限チェックリスト（TCC プロンプト）を完了します。
@@ -72,19 +74,19 @@ node openclaw.mjs gateway --port 18789 --verbose
 openclaw channels login
 ```
 
-5. 健全性を確認します。
+5. サニティチェックを実行します。
 
 ```bash
 openclaw health
 ```
 
-ビルドでオンボーディングが利用できない場合:
+ビルドでオンボーディングを利用できない場合:
 
 - `openclaw setup` を実行し、次に `openclaw channels login` を実行してから、Gateway を手動で起動します（`openclaw gateway`）。
 
 ## 最先端ワークフロー（ターミナル内の Gateway）
 
-目標: TypeScript Gateway を作業対象にし、ホットリロードを使い、macOS アプリ UI を接続したままにします。
+目的: TypeScript Gateway で作業し、ホットリロードを有効にし、macOS アプリ UI を接続したままにします。
 
 ### 0) （任意）macOS アプリもソースから実行する
 
@@ -94,7 +96,7 @@ macOS アプリも最先端にしたい場合:
 ./scripts/restart-mac.sh
 ```
 
-### 1) 開発用 Gateway を起動する
+### 1) dev Gateway を起動する
 
 ```bash
 pnpm install
@@ -103,30 +105,26 @@ pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-`gateway:watch` は、名前付き tmux セッションで Gateway の watch プロセスを開始または再起動し、対話型ターミナルから自動でアタッチします。非対話型シェルはデタッチされたままになり、`tmux attach -t openclaw-gateway-watch-main` を出力します。対話型実行をデタッチしたままにするには `OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` を使い、フォアグラウンド watch モードには `pnpm gateway:watch:raw` を使います。ウォッチャーは、関連するソース、設定、同梱 Plugin メタデータの変更時にリロードします。
-`pnpm openclaw setup` は、新しいチェックアウトに対するローカル設定/ワークスペースの一回限りの初期化手順です。
-`pnpm gateway:watch` は `dist/control-ui` を再ビルドしないため、`ui/` の変更後は `pnpm ui:build` を再実行するか、Control UI の開発中は `pnpm ui:dev` を使います。
+`gateway:watch` は、名前付き tmux
+セッションで Gateway 監視プロセスを起動または再起動し、対話型ターミナルから自動接続します。非対話型シェルは
+切断されたままで `tmux attach -t openclaw-gateway-watch-main` を出力します。対話型実行を
+切断したままにするには `OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` を使用し、
+フォアグラウンド監視モードには `pnpm gateway:watch:raw` を使用します。監視プロセスは、
+関連するソース、設定、同梱Pluginメタデータの変更でリロードします。
+`pnpm openclaw setup` は、新しいチェックアウトに対する一度限りのローカル設定/ワークスペース初期化手順です。
+`pnpm gateway:watch` は `dist/control-ui` を再ビルドしないため、`ui/` の変更後は `pnpm ui:build` を再実行するか、Control UI の開発中は `pnpm ui:dev` を使用してください。
 
-意図的に Bun ワークフローを使っている場合、同等のコマンドは次のとおりです。
-
-```bash
-bun install
-# First run only (or after resetting local OpenClaw config/workspace)
-bun run openclaw setup
-bun run gateway:watch
-```
-
-### 2) macOS アプリを実行中の Gateway に向ける
+### 2) 実行中の Gateway を macOS アプリに向ける
 
 **OpenClaw.app** で:
 
-- 接続モード: **Local**
-  アプリは、設定されたポートで実行中の Gateway に接続します。
+- Connection Mode: **Local**
+  アプリは設定されたポートで実行中の Gateway に接続します。
 
-### 3) 確認する
+### 3) 検証
 
-- アプリ内の Gateway ステータスに **「既存の gateway を使用中 …」** と表示されるはずです
-- または CLI から:
+- アプリ内 Gateway ステータスは **「既存の gateway を使用中 …」** と表示されるはずです
+- または CLI 経由:
 
 ```bash
 openclaw health
@@ -134,20 +132,20 @@ openclaw health
 
 ### よくある落とし穴
 
-- **ポートが違う:** Gateway WS のデフォルトは `ws://127.0.0.1:18789` です。アプリと CLI を同じポートにそろえてください。
+- **ポート違い:** Gateway WS のデフォルトは `ws://127.0.0.1:18789` です。アプリと CLI を同じポートに揃えてください。
 - **状態の保存場所:**
-  - チャンネル/プロバイダー状態: `~/.openclaw/credentials/`
+  - チャンネル/プロバイダーの状態: `~/.openclaw/credentials/`
   - モデル認証プロファイル: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
   - セッション: `~/.openclaw/agents/<agentId>/sessions/`
   - ログ: `/tmp/openclaw/`
 
 ## 認証情報ストレージマップ
 
-認証のデバッグ時やバックアップ対象を決めるときに使います。
+認証のデバッグ時やバックアップ対象を決めるときに使用してください。
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
-- **Telegram bot トークン**: 設定/env または `channels.telegram.tokenFile`（通常ファイルのみ。シンボリックリンクは拒否されます）
-- **Discord bot トークン**: 設定/env または SecretRef（env/file/exec プロバイダー）
+- **Telegram ボットトークン**: 設定/env または `channels.telegram.tokenFile`（通常ファイルのみ。シンボリックリンクは拒否）
+- **Discord ボットトークン**: 設定/env または SecretRef（env/file/exec プロバイダー）
 - **Slack トークン**: 設定/env（`channels.slack.*`）
 - **ペアリング許可リスト**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json`（デフォルトアカウント）
@@ -159,23 +157,26 @@ openclaw health
 
 ## 更新（セットアップを壊さずに）
 
-- `~/.openclaw/workspace` と `~/.openclaw/` は「自分のもの」として保ちます。個人用プロンプト/設定を `openclaw` リポジトリに入れないでください。
-- ソースの更新: `git pull` + 選択したパッケージマネージャーのインストール手順（デフォルトは `pnpm install`、Bun ワークフローでは `bun install`）+ 対応する `gateway:watch` コマンドを使い続けます。
+- `~/.openclaw/workspace` と `~/.openclaw/` は「自分のもの」として保持します。個人用プロンプト/設定を `openclaw` リポジトリに入れないでください。
+- ソースの更新: `git pull` + `pnpm install` + 引き続き `pnpm gateway:watch` を使用します。
 
 ## Linux（systemd ユーザーサービス）
 
-Linux インストールでは systemd **ユーザー**サービスを使います。デフォルトでは、systemd はログアウト/アイドル時にユーザーサービスを停止し、これにより Gateway が終了します。オンボーディングは lingering の有効化を試みます（sudo を求める場合があります）。まだオフの場合は、次を実行します。
+Linux インストールでは systemd **ユーザー**サービスを使用します。デフォルトでは、systemd はログアウト/アイドル時にユーザー
+サービスを停止するため、Gateway が終了します。オンボーディングは
+lingering を有効化しようとします（sudo を求める場合があります）。それでも無効な場合は、次を実行します。
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-常時稼働またはマルチユーザーのサーバーでは、ユーザーサービスの代わりに **システム**サービスを検討してください（lingering は不要です）。systemd の注記については [Gateway ランブック](/ja-JP/gateway) を参照してください。
+常時稼働またはマルチユーザーサーバーでは、ユーザーサービスではなく **システム**サービスを検討してください
+（lingering は不要です）。systemd の注記については [Gateway ランブック](/ja-JP/gateway)を参照してください。
 
 ## 関連ドキュメント
 
 - [Gateway ランブック](/ja-JP/gateway)（フラグ、監視、ポート）
 - [Gateway 設定](/ja-JP/gateway/configuration)（設定スキーマ + 例）
 - [Discord](/ja-JP/channels/discord) と [Telegram](/ja-JP/channels/telegram)（返信タグ + replyToMode 設定）
-- [OpenClaw アシスタントセットアップ](/ja-JP/start/openclaw)
+- [OpenClaw アシスタント設定](/ja-JP/start/openclaw)
 - [macOS アプリ](/ja-JP/platforms/macos)（gateway ライフサイクル）

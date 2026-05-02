@@ -1,63 +1,70 @@
 ---
 read_when:
-    - フィールド単位の正確な設定の意味またはデフォルト値が必要な場合
-    - チャネル、モデル、Gateway、またはツールの設定ブロックを検証している
-summary: OpenClaw のコアキー、デフォルト値、専用サブシステムリファレンスへのリンクに関する Gateway 設定リファレンス
+    - 正確なフィールド単位の設定セマンティクスまたはデフォルトが必要な場合
+    - チャネル、モデル、Gateway、またはツールの設定ブロックを検証しています
+summary: コア OpenClaw キー、デフォルト値、専用サブシステムのリファレンスへのリンクに関する Gateway 設定リファレンス
 title: 設定リファレンス
 x-i18n:
-    generated_at: "2026-04-30T05:11:55Z"
+    generated_at: "2026-05-02T04:54:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 83fd28b7d6a2e670ab97aac206bb14343bd887da3236c6135d7958cc6e97b735
+    source_hash: c644a12d8c33b28e666ffb0e6d74d1e3310d544812058c4973b34a8b16cf95d9
     source_path: gateway/configuration-reference.md
     workflow: 16
 ---
 
-`~/.openclaw/openclaw.json` のコア設定リファレンス。タスク指向の概要は [設定](/ja-JP/gateway/configuration) を参照してください。
+`~/.openclaw/openclaw.json` のコア設定リファレンス。タスク指向の概要については、[設定](/ja-JP/gateway/configuration) を参照してください。
 
-OpenClaw の主要な設定サーフェスを扱い、サブシステムに独自の詳細リファレンスがある場合はリンクします。チャネルおよび Plugin が所有するコマンドカタログや、メモリ/QMD の詳細な調整項目は、このページではなく各専用ページにあります。
+OpenClaw の主な設定サーフェスを扱い、サブシステムにより詳しい専用リファレンスがある場合はリンクします。チャンネルおよび Plugin 所有のコマンドカタログと、深いメモリ/QMD の調整項目は、このページではなく専用ページにあります。
 
-コード上の根拠:
+コード上の真実:
 
-- `openclaw config schema` は、検証と Control UI に使われるライブ JSON Schema を出力し、利用可能な場合はバンドル/Plugin/チャネルのメタデータをマージします
-- `config.schema.lookup` は、ドリルダウンツール用にパススコープのスキーマノードを 1 つ返します
+- `openclaw config schema` は、検証と Control UI に使われるライブ JSON Schema を出力し、利用可能な場合はバンドル済み/Plugin/チャンネルのメタデータもマージします
+- `config.schema.lookup` は、ドリルダウン用ツールのためにパススコープのスキーマノードを 1 つ返します
 - `pnpm config:docs:check` / `pnpm config:docs:gen` は、現在のスキーマサーフェスに対して設定ドキュメントのベースラインハッシュを検証します
 
-Agent の参照パス: 編集前に、正確なフィールドレベルのドキュメントと制約を確認するには、`gateway` ツールアクション `config.schema.lookup` を使用してください。タスク指向のガイダンスには [設定](/ja-JP/gateway/configuration) を使用し、より広いフィールドマップ、デフォルト、サブシステムリファレンスへのリンクにはこのページを使用してください。
+エージェントの参照パス: 編集前に正確なフィールド単位のドキュメントと制約を確認するには、
+`gateway` ツールアクション `config.schema.lookup` を使用してください。タスク指向のガイダンスには
+[設定](/ja-JP/gateway/configuration) を使用し、より広いフィールドマップ、デフォルト、サブシステムリファレンスへのリンクにはこのページを使用してください。
 
 専用の詳細リファレンス:
 
-- `agents.defaults.memorySearch.*`、`memory.qmd.*`、`memory.citations`、および `plugins.entries.memory-core.config.dreaming` 配下の Dreaming 設定については [メモリ設定リファレンス](/ja-JP/reference/memory-config)
+- `agents.defaults.memorySearch.*`、`memory.qmd.*`、`memory.citations`、および `plugins.entries.memory-core.config.dreaming` 配下の dreaming 設定については [メモリ設定リファレンス](/ja-JP/reference/memory-config)
 - 現在の組み込み + バンドル済みコマンドカタログについては [スラッシュコマンド](/ja-JP/tools/slash-commands)
-- チャネル固有のコマンドサーフェスについては、所有元のチャネル/Plugin ページ
+- チャンネル固有のコマンドサーフェスについては、所有するチャンネル/Plugin ページ
 
-設定形式は **JSON5** です（コメント + 末尾カンマを使用可能）。すべてのフィールドは任意です。省略された場合、OpenClaw は安全なデフォルトを使用します。
+設定形式は **JSON5** です（コメント + 末尾カンマが許可されます）。すべてのフィールドは任意です — 省略時は OpenClaw が安全なデフォルトを使用します。
 
 ---
 
-## チャネル
+## チャンネル
 
-チャネルごとの設定キーは専用ページに移動しました。Slack、Discord、Telegram、WhatsApp、Matrix、iMessage、およびその他のバンドル済みチャネル（認証、アクセス制御、マルチアカウント、メンションゲート）を含む `channels.*` については、[設定 — チャネル](/ja-JP/gateway/config-channels) を参照してください。
+チャンネル別の設定キーは専用ページに移動しました — Slack、Discord、Telegram、WhatsApp、Matrix、iMessage、その他のバンドル済みチャンネル（認証、アクセス制御、マルチアカウント、メンションゲート）を含む `channels.*` については、
+[設定 — チャンネル](/ja-JP/gateway/config-channels) を参照してください。
 
-## Agent デフォルト、マルチ Agent、セッション、メッセージ
+## エージェントデフォルト、マルチエージェント、セッション、メッセージ
 
-専用ページに移動しました。次については [設定 — Agent](/ja-JP/gateway/config-agents) を参照してください。
+専用ページに移動しました — 以下については
+[設定 — エージェント](/ja-JP/gateway/config-agents) を参照してください。
 
-- `agents.defaults.*`（ワークスペース、モデル、thinking、heartbeat、メモリ、メディア、skills、sandbox）
-- `multiAgent.*`（マルチ Agent ルーティングとバインディング）
-- `session.*`（セッションライフサイクル、compaction、pruning）
+- `agents.defaults.*`（ワークスペース、モデル、thinking、heartbeat、メモリ、メディア、skills、サンドボックス）
+- `multiAgent.*`（マルチエージェントのルーティングとバインディング）
+- `session.*`（セッションライフサイクル、compaction、プルーニング）
 - `messages.*`（メッセージ配信、TTS、Markdown レンダリング）
 - `talk.*`（Talk モード）
-  - `talk.speechLocale`: iOS/macOS の Talk 音声認識用の任意の BCP 47 ロケール ID
-  - `talk.silenceTimeoutMs`: 未設定の場合、Talk はトランスクリプトを送信する前にプラットフォームのデフォルトの一時停止ウィンドウを維持します（`macOS と Android では 700 ms、iOS では 900 ms`）
+  - `talk.speechLocale`: iOS/macOS での Talk 音声認識用の任意の BCP 47 ロケール ID
+  - `talk.silenceTimeoutMs`: 未設定の場合、Talk はトランスクリプト送信前のプラットフォーム既定の一時停止ウィンドウを維持します（`macOS と Android では 700 ms、iOS では 900 ms`）
 
 ## ツールとカスタムプロバイダー
 
-ツールポリシー、実験的なトグル、プロバイダーに支えられたツール設定、およびカスタムプロバイダー / ベース URL のセットアップは専用ページに移動しました。[設定 — ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools) を参照してください。
+ツールポリシー、実験的トグル、プロバイダーに基づくツール設定、カスタムプロバイダー / ベース URL のセットアップは専用ページに移動しました — 
+[設定 — ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools) を参照してください。
 
 ## モデル
 
-プロバイダー定義、モデル許可リスト、カスタムプロバイダーのセットアップは [設定 — ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools#custom-providers-and-base-urls) にあります。`models` ルートは、グローバルなモデルカタログの挙動も所有します。
+プロバイダー定義、モデル許可リスト、カスタムプロバイダーのセットアップは
+[設定 — ツールとカスタムプロバイダー](/ja-JP/gateway/config-tools#custom-providers-and-base-urls) にあります。
+`models` ルートはグローバルなモデルカタログ動作も所有します。
 
 ```json5
 {
@@ -68,13 +75,17 @@ Agent の参照パス: 編集前に、正確なフィールドレベルのドキ
 }
 ```
 
-- `models.mode`: プロバイダーカタログの挙動（`merge` または `replace`）。
+- `models.mode`: プロバイダーカタログの動作（`merge` または `replace`）。
 - `models.providers`: プロバイダー ID をキーにしたカスタムプロバイダーマップ。
-- `models.pricing.enabled`: バックグラウンドの価格ブートストラップを制御します。`false` の場合、Gateway 起動時に OpenRouter と LiteLLM の価格カタログ取得をスキップします。設定済みの `models.providers.*.models[].cost` 値は、ローカルのコスト見積もりでは引き続き機能します。
+- `models.pricing.enabled`: バックグラウンドの価格ブートストラップを制御します。
+  `false` の場合、Gateway 起動時に OpenRouter と LiteLLM の価格カタログ取得をスキップします。
+  設定済みの `models.providers.*.models[].cost` 値は、ローカルのコスト見積もりでは引き続き機能します。
 
 ## MCP
 
-OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋め込み Pi やその他のランタイムアダプターによって使用されます。`openclaw mcp list`、`show`、`set`、`unset` コマンドは、設定編集時に対象サーバーへ接続せずにこのブロックを管理します。
+OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、
+埋め込み Pi やその他のランタイムアダプターによって消費されます。`openclaw mcp list`、
+`show`、`set`、`unset` コマンドは、設定編集時にターゲットサーバーへ接続せずにこのブロックを管理します。
 
 ```json5
 {
@@ -98,11 +109,19 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 }
 ```
 
-- `mcp.servers`: 設定済み MCP ツールを公開するランタイム向けの、名前付き stdio またはリモート MCP サーバー定義。リモートエントリは `transport: "streamable-http"` または `transport: "sse"` を使用します。`type: "http"` は CLI ネイティブのエイリアスで、`openclaw mcp set` と `openclaw doctor --fix` はこれを正規の `transport` フィールドへ正規化します。
-- `mcp.sessionIdleTtlMs`: セッションスコープのバンドル済み MCP ランタイムのアイドル TTL。ワンショットの埋め込み実行は実行終了時のクリーンアップを要求します。この TTL は、長時間存続するセッションと将来の呼び出し元のためのバックストップです。
-- `mcp.*` 配下の変更は、キャッシュ済みのセッション MCP ランタイムを破棄してホット適用されます。次回のツール検出/使用時に新しい設定から再作成されるため、削除された `mcp.servers` エントリはアイドル TTL を待たずに即座に回収されます。
+- `mcp.servers`: 設定済み MCP ツールを公開するランタイム向けの、名前付き stdio またはリモート MCP サーバー定義。
+  リモートエントリは `transport: "streamable-http"` または `transport: "sse"` を使用します。
+  `type: "http"` は CLI ネイティブのエイリアスであり、`openclaw mcp set` と
+  `openclaw doctor --fix` が正規の `transport` フィールドへ正規化します。
+- `mcp.sessionIdleTtlMs`: セッションスコープのバンドル済み MCP ランタイムのアイドル TTL。
+  ワンショットの埋め込み実行は実行終了時のクリーンアップを要求します。この TTL は、
+  長寿命セッションと将来の呼び出し元のためのバックストップです。
+- `mcp.*` 配下の変更は、キャッシュされたセッション MCP ランタイムを破棄することでホット適用されます。
+  次回のツール検出/使用で新しい設定から再作成されるため、削除された
+  `mcp.servers` エントリはアイドル TTL を待たずに即座に回収されます。
 
-ランタイムの挙動については [MCP](/ja-JP/cli/mcp#openclaw-as-an-mcp-client-registry) と [CLI バックエンド](/ja-JP/gateway/cli-backends#bundle-mcp-overlays) を参照してください。
+ランタイム動作については [MCP](/ja-JP/cli/mcp#openclaw-as-an-mcp-client-registry) と
+[CLI バックエンド](/ja-JP/gateway/cli-backends#bundle-mcp-overlays) を参照してください。
 
 ## Skills
 
@@ -129,16 +148,16 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 }
 ```
 
-- `allowBundled`: バンドル済み Skills のみに対する任意の許可リスト（管理対象/ワークスペース Skills には影響しません）。
+- `allowBundled`: バンドル済み Skills のみを対象にする任意の許可リスト（管理対象/ワークスペース Skills には影響しません）。
 - `load.extraDirs`: 追加の共有 Skill ルート（最も低い優先度）。
-- `install.preferBrew`: true の場合、`brew` が利用可能なら、他のインストーラー種別へフォールバックする前に Homebrew インストーラーを優先します。
-- `install.nodeManager`: `metadata.openclaw.install` 仕様に対する Node インストーラーの優先設定（`npm` | `pnpm` | `yarn` | `bun`）。
+- `install.preferBrew`: true の場合、`brew` が利用可能なら他のインストーラー種別にフォールバックする前に Homebrew インストーラーを優先します。
+- `install.nodeManager`: `metadata.openclaw.install` 仕様の Node インストーラー設定（`npm` | `pnpm` | `yarn` | `bun`）。
 - `entries.<skillKey>.enabled: false` は、バンドル済み/インストール済みであっても Skill を無効にします。
-- `entries.<skillKey>.apiKey`: 主要な環境変数を宣言する Skills 向けの簡易指定（プレーンテキスト文字列または SecretRef オブジェクト）。
+- `entries.<skillKey>.apiKey`: プライマリ env var を宣言する Skills のための簡易指定（平文文字列または SecretRef オブジェクト）。
 
 ---
 
-## Plugin
+## Plugins
 
 ```json5
 {
@@ -163,30 +182,30 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 ```
 
 - `~/.openclaw/extensions`、`<workspace>/.openclaw/extensions`、および `plugins.load.paths` から読み込まれます。
-- 検出は、ネイティブ OpenClaw Plugin に加えて、互換性のある Codex バンドルと Claude バンドル（マニフェストなしの Claude デフォルトレイアウトバンドルを含む）を受け入れます。
+- 検出では、ネイティブ OpenClaw Plugins に加えて互換性のある Codex バンドルと Claude バンドルを受け付けます。これには manifest のない Claude デフォルトレイアウトバンドルも含まれます。
 - **設定変更には Gateway の再起動が必要です。**
-- `allow`: 任意の許可リスト（一覧にある Plugin のみ読み込み）。`deny` が優先されます。
+- `allow`: 任意の許可リスト（列挙された Plugins のみ読み込まれます）。`deny` が優先されます。
 - `plugins.entries.<id>.apiKey`: Plugin レベルの API キー簡易フィールド（Plugin が対応している場合）。
-- `plugins.entries.<id>.env`: Plugin スコープの環境変数マップ。
-- `plugins.entries.<id>.hooks.allowPromptInjection`: `false` の場合、core は `before_prompt_build` をブロックし、レガシー `before_agent_start` からのプロンプト変更フィールドを無視します。一方で、レガシーの `modelOverride` と `providerOverride` は保持します。ネイティブ Plugin hooks と、対応するバンドル提供の hook ディレクトリに適用されます。
-- `plugins.entries.<id>.hooks.allowConversationAccess`: `true` の場合、信頼済みの非バンドル Plugin は、`llm_input`、`llm_output`、`before_agent_finalize`、`agent_end` などの型付き hooks から生の会話内容を読み取ることができます。
-- `plugins.entries.<id>.subagent.allowModelOverride`: この Plugin が、バックグラウンド subagent 実行ごとに `provider` と `model` の上書きを要求することを明示的に信頼します。
-- `plugins.entries.<id>.subagent.allowedModels`: 信頼済み subagent の上書きに対する正規 `provider/model` ターゲットの任意の許可リスト。任意のモデルを許可したいことを意図している場合にのみ `"*"` を使用してください。
+- `plugins.entries.<id>.env`: Plugin スコープの env var マップ。
+- `plugins.entries.<id>.hooks.allowPromptInjection`: `false` の場合、コアは `before_prompt_build` をブロックし、レガシー `before_agent_start` からのプロンプト変更フィールドを無視します。一方で、レガシーの `modelOverride` と `providerOverride` は保持します。ネイティブ Plugin フックと、対応するバンドル提供フックディレクトリに適用されます。
+- `plugins.entries.<id>.hooks.allowConversationAccess`: `true` の場合、信頼された非バンドル Plugins は、`llm_input`、`llm_output`、`before_agent_finalize`、`agent_end` などの型付きフックから生の会話内容を読み取れます。
+- `plugins.entries.<id>.subagent.allowModelOverride`: この Plugin がバックグラウンドサブエージェント実行ごとに `provider` と `model` のオーバーライドを要求することを明示的に信頼します。
+- `plugins.entries.<id>.subagent.allowedModels`: 信頼されたサブエージェントオーバーライド向けに、正規の `provider/model` ターゲットを指定する任意の許可リスト。任意のモデルを許可したい意図がある場合にのみ `"*"` を使用してください。
 - `plugins.entries.<id>.config`: Plugin 定義の設定オブジェクト（利用可能な場合はネイティブ OpenClaw Plugin スキーマで検証されます）。
-- チャネル Plugin のアカウント/ランタイム設定は `channels.<id>` 配下にあり、中央の OpenClaw オプションレジストリではなく、所有元 Plugin のマニフェスト `channelConfigs` メタデータで記述されるべきです。
+- チャンネル Plugin のアカウント/ランタイム設定は `channels.<id>` 配下にあり、中央の OpenClaw オプションレジストリではなく、所有する Plugin の manifest `channelConfigs` メタデータで説明されるべきです。
 - `plugins.entries.firecrawl.config.webFetch`: Firecrawl web-fetch プロバイダー設定。
-  - `apiKey`: Firecrawl API キー（SecretRef を受け入れます）。`plugins.entries.firecrawl.config.webSearch.apiKey`、レガシー `tools.web.fetch.firecrawl.apiKey`、または `FIRECRAWL_API_KEY` 環境変数にフォールバックします。
+  - `apiKey`: Firecrawl API キー（SecretRef を受け付けます）。`plugins.entries.firecrawl.config.webSearch.apiKey`、レガシー `tools.web.fetch.firecrawl.apiKey`、または `FIRECRAWL_API_KEY` env var にフォールバックします。
   - `baseUrl`: Firecrawl API ベース URL（デフォルト: `https://api.firecrawl.dev`）。
   - `onlyMainContent`: ページからメインコンテンツのみを抽出します（デフォルト: `true`）。
   - `maxAgeMs`: 最大キャッシュ期間（ミリ秒）（デフォルト: `172800000` / 2 日）。
   - `timeoutSeconds`: スクレイプ要求のタイムアウト秒数（デフォルト: `60`）。
-- `plugins.entries.xai.config.xSearch`: xAI X Search（Grok web search）設定。
+- `plugins.entries.xai.config.xSearch`: xAI X Search（Grok Web 検索）設定。
   - `enabled`: X Search プロバイダーを有効にします。
   - `model`: 検索に使用する Grok モデル（例: `"grok-4-1-fast"`）。
-- `plugins.entries.memory-core.config.dreaming`: メモリ Dreaming 設定。フェーズとしきい値については [Dreaming](/ja-JP/concepts/dreaming) を参照してください。
-  - `enabled`: Dreaming のマスタースイッチ（デフォルト `false`）。
-  - `frequency`: Dreaming の各フルスイープの cron 間隔（デフォルトは `"0 3 * * *"`）。
-  - `model`: 任意の Dream Diary subagent モデル上書き。`plugins.entries.memory-core.subagent.allowModelOverride: true` が必要です。ターゲットを制限するには `allowedModels` と組み合わせます。モデル利用不可エラーはセッションのデフォルトモデルで 1 回再試行します。信頼または許可リストの失敗は黙ってフォールバックしません。
+- `plugins.entries.memory-core.config.dreaming`: メモリ dreaming 設定。フェーズとしきい値については [Dreaming](/ja-JP/concepts/dreaming) を参照してください。
+  - `enabled`: dreaming のマスタースイッチ（デフォルト `false`）。
+  - `frequency`: 各フル dreaming sweep の Cron 間隔（デフォルトは `"0 3 * * *"`）。
+  - `model`: 任意の Dream Diary サブエージェントモデルオーバーライド。`plugins.entries.memory-core.subagent.allowModelOverride: true` が必要です。ターゲットを制限するには `allowedModels` と組み合わせてください。モデル利用不可エラーはセッション既定モデルで 1 回再試行されます。信頼または許可リストの失敗は黙ってフォールバックしません。
   - フェーズポリシーとしきい値は実装詳細です（ユーザー向け設定キーではありません）。
 - 完全なメモリ設定は [メモリ設定リファレンス](/ja-JP/reference/memory-config) にあります。
   - `agents.defaults.memorySearch.*`
@@ -194,11 +213,11 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
   - `memory.citations`
   - `memory.qmd.*`
   - `plugins.entries.memory-core.config.dreaming`
-- 有効な Claude バンドル Plugin は、`settings.json` から埋め込み Pi デフォルトを提供することもできます。OpenClaw はそれらを、生の OpenClaw 設定パッチとしてではなく、サニタイズ済みの Agent 設定として適用します。
-- `plugins.slots.memory`: アクティブなメモリ Plugin ID を選択します。メモリ Plugin を無効にするには `"none"` を指定します。
+- 有効化された Claude バンドル Plugins は、`settings.json` から埋め込み Pi デフォルトを提供することもできます。OpenClaw はそれらを、生の OpenClaw 設定パッチではなく、サニタイズ済みのエージェント設定として適用します。
+- `plugins.slots.memory`: アクティブなメモリ Plugin ID を選択するか、メモリ Plugins を無効にするには `"none"` を指定します。
 - `plugins.slots.contextEngine`: アクティブなコンテキストエンジン Plugin ID を選択します。別のエンジンをインストールして選択しない限り、デフォルトは `"legacy"` です。
 
-[Plugin](/ja-JP/tools/plugin) を参照してください。
+[Plugins](/ja-JP/tools/plugin) を参照してください。
 
 ---
 
@@ -249,29 +268,29 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 ```
 
 - `evaluateEnabled: false` は `act:evaluate` と `wait --fn` を無効にします。
-- `tabCleanup` は、アイドル時間の経過後、またはセッションが上限を超えたときに、追跡対象のプライマリエージェントタブを回収します。個別のクリーンアップモードを無効にするには、`idleMinutes: 0` または `maxTabsPerSession: 0` を設定します。
-- `ssrfPolicy.dangerouslyAllowPrivateNetwork` は未設定時には無効になるため、ブラウザナビゲーションはデフォルトで厳格なままです。
-- プライベートネットワークのブラウザナビゲーションを意図的に信頼する場合にのみ、`ssrfPolicy.dangerouslyAllowPrivateNetwork: true` を設定してください。
-- strict モードでは、リモート CDP プロファイルエンドポイント (`profiles.*.cdpUrl`) は到達性/検出チェック中に同じプライベートネットワークブロックの対象になります。
-- `ssrfPolicy.allowPrivateNetwork` は従来のエイリアスとして引き続きサポートされます。
-- strict モードでは、明示的な例外には `ssrfPolicy.hostnameAllowlist` と `ssrfPolicy.allowedHostnames` を使用します。
-- リモートプロファイルは attach 専用です (start/stop/reset は無効)。
+- `tabCleanup` は、アイドル時間の経過後、またはセッションが上限を超えたときに、追跡対象の主要エージェントタブを回収します。個別のクリーンアップモードを無効にするには、`idleMinutes: 0` または `maxTabsPerSession: 0` を設定します。
+- `ssrfPolicy.dangerouslyAllowPrivateNetwork` は未設定の場合は無効になるため、ブラウザーナビゲーションはデフォルトで厳格なままです。
+- プライベートネットワークのブラウザーナビゲーションを意図的に信頼する場合にのみ、`ssrfPolicy.dangerouslyAllowPrivateNetwork: true` を設定します。
+- 厳格モードでは、リモート CDP プロファイルエンドポイント（`profiles.*.cdpUrl`）は到達性/検出チェック中に同じプライベートネットワークブロックの対象になります。
+- `ssrfPolicy.allowPrivateNetwork` はレガシーエイリアスとして引き続きサポートされます。
+- 厳格モードでは、明示的な例外に `ssrfPolicy.hostnameAllowlist` と `ssrfPolicy.allowedHostnames` を使用します。
+- リモートプロファイルはアタッチ専用です（開始/停止/リセットは無効）。
 - `profiles.*.cdpUrl` は `http://`、`https://`、`ws://`、`wss://` を受け付けます。
   OpenClaw に `/json/version` を検出させたい場合は HTTP(S) を使用し、プロバイダーが直接の DevTools WebSocket URL を提供する場合は WS(S) を使用します。
-- `remoteCdpTimeoutMs` と `remoteCdpHandshakeTimeoutMs` は、リモートおよび `attachOnly` の CDP 到達性とタブを開くリクエストに適用されます。管理対象のループバックプロファイルは、ローカル CDP のデフォルトを維持します。
-- 外部管理の CDP サービスがループバック経由で到達可能な場合は、そのプロファイルの `attachOnly: true` を設定してください。そうしないと、OpenClaw はループバックポートをローカル管理のブラウザプロファイルとして扱い、ローカルポートの所有権エラーを報告する可能性があります。
-- `existing-session` プロファイルは CDP の代わりに Chrome MCP を使用し、選択されたホスト上、または接続済みのブラウザノード経由で attach できます。
-- `existing-session` プロファイルでは、Brave や Edge など特定の Chromium ベースのブラウザプロファイルを対象にするために `userDataDir` を設定できます。
-- `existing-session` プロファイルは現在の Chrome MCP ルート制限を維持します:
-  CSS セレクターターゲティングの代わりに snapshot/ref 駆動のアクション、1 ファイルアップロードフック、ダイアログタイムアウト上書きなし、`wait --load networkidle` なし、`responsebody`、PDF エクスポート、ダウンロードインターセプト、バッチアクションなし。
-- ローカル管理の `openclaw` プロファイルは `cdpPort` と `cdpUrl` を自動割り当てします。リモート CDP の場合にのみ `cdpUrl` を明示的に設定してください。
-- ローカル管理プロファイルでは、そのプロファイルのグローバルな `browser.executablePath` を上書きするために `executablePath` を設定できます。これを使用すると、あるプロファイルを Chrome で、別のプロファイルを Brave で実行できます。
-- ローカル管理プロファイルは、プロセス開始後の Chrome CDP HTTP 検出に `browser.localLaunchTimeoutMs` を使用し、起動後の CDP websocket 準備完了に `browser.localCdpReadyTimeoutMs` を使用します。Chrome は正常に起動しているものの、準備完了チェックが起動処理と競合する遅いホストでは、これらを引き上げてください。どちらの値も `120000` ms 以下の正の整数である必要があり、無効な設定値は拒否されます。
-- 自動検出順序: Chromium ベースの場合はデフォルトブラウザ → Chrome → Brave → Edge → Chromium → Chrome Canary。
+- `remoteCdpTimeoutMs` と `remoteCdpHandshakeTimeoutMs` は、リモートおよび `attachOnly` CDP の到達性に加えて、タブを開くリクエストにも適用されます。管理対象のループバックプロファイルは、ローカル CDP のデフォルトを維持します。
+- 外部管理の CDP サービスがループバック経由で到達可能な場合は、そのプロファイルの `attachOnly: true` を設定します。それ以外の場合、OpenClaw はループバックポートをローカル管理ブラウザープロファイルとして扱い、ローカルポートの所有権エラーを報告する可能性があります。
+- `existing-session` プロファイルは CDP ではなく Chrome MCP を使用し、選択したホストまたは接続済みブラウザーノード経由でアタッチできます。
+- `existing-session` プロファイルでは、Brave や Edge などの特定の Chromium ベースのブラウザープロファイルを対象にするために `userDataDir` を設定できます。
+- `existing-session` プロファイルは、現在の Chrome MCP ルート制限を維持します:
+  CSS セレクター対象指定ではなくスナップショット/ref 駆動のアクション、単一ファイルアップロードフック、ダイアログタイムアウト上書きなし、`wait --load networkidle` なし、`responsebody`、PDF エクスポート、ダウンロードインターセプト、バッチアクションなし。
+- ローカル管理の `openclaw` プロファイルは `cdpPort` と `cdpUrl` を自動割り当てします。`cdpUrl` を明示的に設定するのはリモート CDP の場合のみです。
+- ローカル管理プロファイルでは、そのプロファイルに対してグローバルな `browser.executablePath` を上書きするために `executablePath` を設定できます。これを使用して、一方のプロファイルを Chrome で、もう一方を Brave で実行できます。
+- ローカル管理プロファイルは、プロセス開始後の Chrome CDP HTTP 検出に `browser.localLaunchTimeoutMs` を使用し、起動後の CDP WebSocket 準備完了に `browser.localCdpReadyTimeoutMs` を使用します。Chrome は正常に起動するものの準備完了チェックが起動と競合する遅いホストでは、これらを引き上げます。どちらの値も `120000` ms までの正の整数である必要があり、無効な設定値は拒否されます。
+- 自動検出順序: Chromium ベースの場合はデフォルトブラウザー → Chrome → Brave → Edge → Chromium → Chrome Canary。
 - `browser.executablePath` と `browser.profiles.<name>.executablePath` はどちらも、Chromium 起動前に OS のホームディレクトリとして `~` と `~/...` を受け付けます。
-  `existing-session` プロファイルのプロファイル別 `userDataDir` もチルダ展開されます。
-- コントロールサービス: ループバックのみ (`gateway.port` から派生したポート、デフォルトは `18791`)。
-- `extraArgs` はローカル Chromium 起動に追加の起動フラグを付加します (たとえば `--disable-gpu`、ウィンドウサイズ指定、デバッグフラグ)。
+  `existing-session` プロファイルのプロファイル単位の `userDataDir` もチルダ展開されます。
+- コントロールサービス: ループバックのみ（ポートは `gateway.port` から派生、デフォルトは `18791`）。
+- `extraArgs` は、ローカル Chromium 起動に追加の起動フラグを付加します（例: `--disable-gpu`、ウィンドウサイズ指定、デバッグフラグ）。
 
 ---
 
@@ -289,8 +308,8 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 }
 ```
 
-- `seamColor`: ネイティブアプリ UI chrome のアクセントカラー (Talk Mode の吹き出しの色など)。
-- `assistant`: Control UI の識別情報の上書き。アクティブエージェントの識別情報にフォールバックします。
+- `seamColor`: ネイティブアプリ UI クロームのアクセントカラー（Talk Mode バブルの色合いなど）。
+- `assistant`: Control UI の ID 上書き。アクティブなエージェント ID にフォールバックします。
 
 ---
 
@@ -365,55 +384,55 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 }
 ```
 
-<Accordion title="Gateway field details">
+<Accordion title="Gateway フィールドの詳細">
 
-- `mode`: `local` (gatewayを実行) または `remote` (リモートgatewayに接続)。`local` でない限り、Gatewayは起動を拒否します。
-- `port`: WS + HTTP 用の単一多重化ポート。優先順位: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`。
-- `bind`: `auto`、`loopback` (デフォルト)、`lan` (`0.0.0.0`)、`tailnet` (Tailscale IP のみ)、または `custom`。
-- **従来のバインドエイリアス**: `gateway.bind` ではホストエイリアス (`0.0.0.0`、`127.0.0.1`、`localhost`、`::`、`::1`) ではなく、バインドモード値 (`auto`、`loopback`、`lan`、`tailnet`、`custom`) を使用してください。
-- **Docker の注意**: デフォルトの `loopback` バインドは、コンテナ内の `127.0.0.1` で待ち受けます。Docker ブリッジネットワーク (`-p 18789:18789`) では、トラフィックは `eth0` に到着するため、gatewayに到達できません。`--network host` を使用するか、すべてのインターフェイスで待ち受けるために `bind: "lan"` (または `customBindHost: "0.0.0.0"` を指定した `bind: "custom"`) を設定してください。
-- **認証**: デフォルトで必須です。非 loopback バインドでは gateway 認証が必要です。実際には、共有トークン/パスワード、または `gateway.auth.mode: "trusted-proxy"` を指定した ID 認識リバースプロキシを意味します。オンボーディング ウィザードはデフォルトでトークンを生成します。
-- `gateway.auth.token` と `gateway.auth.password` の両方が設定されている場合 (SecretRef を含む)、`gateway.auth.mode` を明示的に `token` または `password` に設定してください。両方が設定され、モードが未設定の場合、起動およびサービスのインストール/修復フローは失敗します。
-- `gateway.auth.mode: "none"`: 明示的な認証なしモード。信頼された local loopback セットアップでのみ使用してください。これは意図的にオンボーディングプロンプトでは提示されません。
-- `gateway.auth.mode: "trusted-proxy"`: ブラウザー/ユーザー認証を ID 認識リバースプロキシに委任し、`gateway.trustedProxies` からの ID ヘッダーを信頼します ([信頼済みプロキシ認証](/ja-JP/gateway/trusted-proxy-auth) を参照)。このモードでは、デフォルトで **非 loopback** のプロキシソースを想定します。同一ホストの loopback リバースプロキシには、明示的な `gateway.auth.trustedProxy.allowLoopback = true` が必要です。内部の同一ホスト呼び出し元は、ローカル直接フォールバックとして `gateway.auth.password` を使用できます。`gateway.auth.token` は trusted-proxy モードとは引き続き相互排他です。
-- `gateway.auth.allowTailscale`: `true` の場合、Tailscale Serve の ID ヘッダーで Control UI/WebSocket 認証を満たせます (`tailscale whois` で検証)。HTTP API エンドポイントは、その Tailscale ヘッダー認証を**使用しません**。代わりに gateway の通常の HTTP 認証モードに従います。このトークンなしフローは、gateway ホストが信頼されていることを前提とします。`tailscale.mode = "serve"` の場合、デフォルトは `true` です。
-- `gateway.auth.rateLimit`: 任意の認証失敗リミッター。クライアント IP ごと、および認証スコープごとに適用されます (共有シークレットとデバイストークンは個別に追跡されます)。ブロックされた試行は `429` + `Retry-After` を返します。
-  - 非同期 Tailscale Serve Control UI パスでは、同じ `{scope, clientIp}` に対する失敗試行は、失敗を書き込む前に直列化されます。そのため、同じクライアントからの同時の不正な試行は、単なる不一致として両方が競合して通過するのではなく、2 番目のリクエストでリミッターにかかる可能性があります。
-  - `gateway.auth.rateLimit.exemptLoopback` のデフォルトは `true` です。localhost トラフィックも意図的にレート制限したい場合 (テストセットアップや厳格なプロキシデプロイメントなど) は `false` を設定してください。
-- ブラウザー由来の WS 認証試行は、常に loopback 免除を無効にしてスロットリングされます (ブラウザー経由の localhost 総当たり攻撃に対する多層防御)。
-- loopback では、これらのブラウザー由来のロックアウトは正規化された `Origin`
-  値ごとに分離されるため、ある localhost オリジンからの繰り返し失敗によって、
-  別のオリジンが自動的にロックアウトされることはありません。
-- `tailscale.mode`: `serve` (tailnet のみ、loopback バインド) または `funnel` (公開、認証必須)。
-- `controlUi.allowedOrigins`: Gateway WebSocket 接続用の明示的なブラウザーオリジン許可リスト。非 loopback オリジンからブラウザークライアントが想定される場合に必須です。
-- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: Host ヘッダーのオリジンフォールバックに意図的に依存するデプロイメント向けに、Host ヘッダーのオリジンフォールバックを有効にする危険なモード。
-- `remote.transport`: `ssh` (デフォルト) または `direct` (ws/wss)。`direct` の場合、`remote.url` は `ws://` または `wss://` である必要があります。
-- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: 信頼されたプライベートネットワーク
+- `mode`: `local`（Gateway を実行）または `remote`（リモート Gateway に接続）。`local` でない限り、Gateway は起動を拒否します。
+- `port`: WS + HTTP 用の単一の多重化ポート。優先順位: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`。
+- `bind`: `auto`、`loopback`（デフォルト）、`lan`（`0.0.0.0`）、`tailnet`（Tailscale IP のみ）、または `custom`。
+- **レガシー bind エイリアス**: `gateway.bind` ではホストエイリアス（`0.0.0.0`、`127.0.0.1`、`localhost`、`::`、`::1`）ではなく、bind モード値（`auto`、`loopback`、`lan`、`tailnet`、`custom`）を使用します。
+- **Docker の注意**: デフォルトの `loopback` bind はコンテナ内の `127.0.0.1` で待ち受けます。Docker ブリッジネットワーク（`-p 18789:18789`）では、トラフィックは `eth0` に到達するため、Gateway に到達できません。すべてのインターフェイスで待ち受けるには、`--network host` を使用するか、`bind: "lan"`（または `customBindHost: "0.0.0.0"` と併せて `bind: "custom"`）を設定します。
+- **認証**: デフォルトで必須です。非 loopback bind には Gateway 認証が必要です。実際には、共有トークン/パスワード、または `gateway.auth.mode: "trusted-proxy"` を指定した ID 認識リバースプロキシを意味します。オンボーディング ウィザードはデフォルトでトークンを生成します。
+- `gateway.auth.token` と `gateway.auth.password` の両方が設定されている場合（SecretRef を含む）、`gateway.auth.mode` を明示的に `token` または `password` に設定します。両方が設定され、mode が未設定の場合、起動およびサービスのインストール/修復フローは失敗します。
+- `gateway.auth.mode: "none"`: 明示的な認証なしモード。信頼済みの local loopback セットアップにのみ使用してください。これは意図的にオンボーディング プロンプトでは提示されません。
+- `gateway.auth.mode: "trusted-proxy"`: ブラウザー/ユーザー認証を ID 認識リバースプロキシに委任し、`gateway.trustedProxies` からの ID ヘッダーを信頼します（[信頼済みプロキシ認証](/ja-JP/gateway/trusted-proxy-auth) を参照）。このモードはデフォルトで **非 loopback** プロキシソースを想定します。同一ホストの loopback リバースプロキシには、明示的な `gateway.auth.trustedProxy.allowLoopback = true` が必要です。内部の同一ホスト呼び出し元は、ローカル直接フォールバックとして `gateway.auth.password` を使用できます。`gateway.auth.token` は trusted-proxy モードと引き続き相互排他的です。
+- `gateway.auth.allowTailscale`: `true` の場合、Tailscale Serve ID ヘッダーで Control UI/WebSocket 認証を満たすことができます（`tailscale whois` で検証）。HTTP API エンドポイントはその Tailscale ヘッダー認証を**使用しません**。代わりに Gateway の通常の HTTP 認証モードに従います。このトークンレスフローは、Gateway ホストが信頼済みであることを前提にしています。`tailscale.mode = "serve"` の場合、デフォルトは `true` です。
+- `gateway.auth.rateLimit`: 任意の認証失敗リミッター。クライアント IP ごと、および認証スコープごと（shared-secret と device-token は個別に追跡）に適用されます。ブロックされた試行は `429` + `Retry-After` を返します。
+  - 非同期 Tailscale Serve Control UI パスでは、同じ `{scope, clientIp}` の失敗試行は失敗書き込みの前に直列化されます。そのため、同じクライアントからの同時の不正な試行は、両方が単なる不一致として競合して通過するのではなく、2 回目のリクエストでリミッターに達することがあります。
+  - `gateway.auth.rateLimit.exemptLoopback` のデフォルトは `true` です。localhost トラフィックも意図的にレート制限したい場合（テストセットアップや厳格なプロキシデプロイなど）は `false` に設定します。
+- ブラウザー origin の WS 認証試行は、loopback 免除を無効にした状態で常にスロットリングされます（ブラウザー経由の localhost 総当たり攻撃に対する多層防御）。
+- loopback では、これらのブラウザー origin のロックアウトは正規化された `Origin`
+  値ごとに分離されるため、ある localhost origin からの失敗が繰り返されても、別の origin が自動的に
+  ロックアウトされることはありません。
+- `tailscale.mode`: `serve`（tailnet のみ、loopback bind）または `funnel`（公開、認証が必要）。
+- `controlUi.allowedOrigins`: Gateway WebSocket 接続用の明示的なブラウザー origin 許可リスト。非 loopback origin からブラウザークライアントが想定される場合に必要です。
+- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: Host ヘッダー origin ポリシーに意図的に依存するデプロイ向けに、Host ヘッダー origin フォールバックを有効にする危険なモード。
+- `remote.transport`: `ssh`（デフォルト）または `direct`（ws/wss）。`direct` の場合、`remote.url` は `ws://` または `wss://` である必要があります。
+- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: 信頼済みプライベートネットワーク
   IP への平文 `ws://` を許可する、クライアント側プロセス環境の
-  緊急回避オーバーライド。平文のデフォルトは引き続き loopback のみです。対応する `openclaw.json`
+  緊急時オーバーライド。平文のデフォルトは引き続き loopback のみです。対応する `openclaw.json`
   設定はなく、
-  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` のようなブラウザーのプライベートネットワーク設定は Gateway
+  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` のようなブラウザーのプライベートネットワーク設定は、Gateway
   WebSocket クライアントには影響しません。
-- `gateway.remote.token` / `.password` はリモートクライアントの認証情報フィールドです。それ自体で gateway 認証を設定するものではありません。
-- `gateway.push.apns.relay.baseUrl`: 公式/TestFlight iOS ビルドが relay-backed 登録を gateway に公開した後に使用する外部 APNs リレーのベース HTTPS URL。この URL は、iOS ビルドにコンパイルされたリレー URL と一致している必要があります。
-- `gateway.push.apns.relay.timeoutMs`: gateway からリレーへの送信タイムアウト (ミリ秒)。デフォルトは `10000` です。
-- relay-backed 登録は特定の gateway ID に委任されます。ペアリングされた iOS アプリは `gateway.identity.get` を取得し、その ID をリレー登録に含め、登録スコープの送信許可を gateway に転送します。別の gateway は、その保存済み登録を再利用できません。
-- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: 上記リレー設定の一時的な環境変数オーバーライド。
-- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: loopback HTTP リレー URL 用の開発専用回避手段。本番のリレー URL は HTTPS のままにしてください。
-- `gateway.handshakeTimeoutMs`: 認証前 Gateway WebSocket ハンドシェイクタイムアウト (ミリ秒)。デフォルト: `15000`。`OPENCLAW_HANDSHAKE_TIMEOUT_MS` が設定されている場合は優先されます。負荷が高いホストや低電力ホストで、起動時のウォームアップがまだ落ち着いていない間にもローカルクライアントが接続できる場合は、この値を増やしてください。
-- `gateway.channelHealthCheckMinutes`: チャネルヘルスモニターの間隔 (分)。ヘルスモニターによる再起動をグローバルに無効にするには `0` を設定します。デフォルト: `5`。
-- `gateway.channelStaleEventThresholdMinutes`: stale socket のしきい値 (分)。これは `gateway.channelHealthCheckMinutes` 以上にしてください。デフォルト: `30`。
-- `gateway.channelMaxRestartsPerHour`: ローリング 1 時間あたりのチャネル/アカウントごとのヘルスモニター再起動の最大数。デフォルト: `10`。
-- `channels.<provider>.healthMonitor.enabled`: グローバルモニターを有効にしたまま、チャネルごとにヘルスモニター再起動をオプトアウトする設定。
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: マルチアカウントチャネル用のアカウントごとのオーバーライド。設定されている場合、チャネルレベルのオーバーライドより優先されます。
-- ローカル gateway 呼び出しパスは、`gateway.auth.*` が未設定の場合にのみ `gateway.remote.*` をフォールバックとして使用できます。
-- `gateway.auth.token` / `gateway.auth.password` が SecretRef 経由で明示的に設定され、解決されない場合、解決は fail closed になります (リモートフォールバックによるマスクなし)。
-- `trustedProxies`: TLS を終端する、または転送元クライアントヘッダーを注入するリバースプロキシ IP。制御しているプロキシだけを列挙してください。loopback エントリは、同一ホストのプロキシ/ローカル検出セットアップ (たとえば Tailscale Serve やローカルリバースプロキシ) でも有効ですが、それによって loopback リクエストが `gateway.auth.mode: "trusted-proxy"` の対象になるわけではありません。
-- `allowRealIpFallback`: `true` の場合、`X-Forwarded-For` がないときに gateway は `X-Real-IP` を受け入れます。fail-closed の挙動のため、デフォルトは `false` です。
-- `gateway.nodes.pairing.autoApproveCidrs`: 要求スコープなしの初回ノードデバイスペアリングを自動承認するための任意の CIDR/IP 許可リスト。未設定の場合は無効です。これは operator/browser/Control UI/WebChat ペアリングを自動承認せず、ロール、スコープ、メタデータ、公開鍵のアップグレードも自動承認しません。
-- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: ペアリング後およびプラットフォーム許可リスト評価後に、宣言済みノードコマンドをグローバルに許可/拒否するための整形設定。`camera.snap`、`camera.clip`、`screen.record` のような危険なノードコマンドを明示的に有効化するには `allowCommands` を使用します。`denyCommands` は、プラットフォームのデフォルトや明示的な許可に含まれていても、コマンドを削除します。ノードが宣言済みコマンドリストを変更した後は、そのデバイスペアリングを拒否して再承認し、gateway が更新されたコマンドスナップショットを保存するようにしてください。
-- `gateway.tools.deny`: HTTP `POST /tools/invoke` でブロックされる追加ツール名 (デフォルト拒否リストを拡張)。
-- `gateway.tools.allow`: デフォルトの HTTP 拒否リストからツール名を削除します。
+- `gateway.remote.token` / `.password` はリモートクライアント資格情報フィールドです。それ自体では Gateway 認証を設定しません。
+- `gateway.push.apns.relay.baseUrl`: 公式/TestFlight iOS ビルドがリレー backed 登録を Gateway に公開した後に使用する、外部 APNs リレーのベース HTTPS URL。この URL は iOS ビルドにコンパイルされたリレー URL と一致している必要があります。
+- `gateway.push.apns.relay.timeoutMs`: Gateway からリレーへの送信タイムアウト（ミリ秒）。デフォルトは `10000` です。
+- リレー backed 登録は特定の Gateway ID に委任されます。ペアリングされた iOS アプリは `gateway.identity.get` を取得し、その ID をリレー登録に含め、登録スコープの送信許可を Gateway に転送します。別の Gateway はその保存済み登録を再利用できません。
+- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: 上記のリレー設定に対する一時的な環境オーバーライド。
+- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: loopback HTTP リレー URL 用の開発専用の退避手段。本番リレー URL は HTTPS のままにしてください。
+- `gateway.handshakeTimeoutMs`: 認証前 Gateway WebSocket ハンドシェイクタイムアウト（ミリ秒）。デフォルト: `15000`。`OPENCLAW_HANDSHAKE_TIMEOUT_MS` が設定されている場合は優先されます。負荷が高いホストや低性能ホストで、起動時のウォームアップがまだ安定していない間にローカルクライアントが接続できる場合は、この値を増やします。
+- `gateway.channelHealthCheckMinutes`: チャンネルヘルスモニター間隔（分）。ヘルスモニターによる再起動をグローバルに無効にするには `0` を設定します。デフォルト: `5`。
+- `gateway.channelStaleEventThresholdMinutes`: 古いソケットのしきい値（分）。これは `gateway.channelHealthCheckMinutes` 以上にしてください。デフォルト: `30`。
+- `gateway.channelMaxRestartsPerHour`: 1 時間のローリング期間におけるチャンネル/アカウントごとのヘルスモニター再起動の最大回数。デフォルト: `10`。
+- `channels.<provider>.healthMonitor.enabled`: グローバルモニターを有効にしたまま、チャンネルごとにヘルスモニター再起動をオプトアウトします。
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: マルチアカウントチャンネル向けのアカウントごとのオーバーライド。設定されている場合、チャンネルレベルのオーバーライドより優先されます。
+- ローカル Gateway 呼び出しパスは、`gateway.auth.*` が未設定の場合にのみ `gateway.remote.*` をフォールバックとして使用できます。
+- `gateway.auth.token` / `gateway.auth.password` が SecretRef 経由で明示的に設定され、解決されない場合、解決は fail-closed になります（リモートフォールバックによるマスクはありません）。
+- `trustedProxies`: TLS を終端する、または転送クライアントヘッダーを注入するリバースプロキシ IP。自分が制御するプロキシのみを列挙してください。loopback エントリは、同一ホストのプロキシ/ローカル検出セットアップ（たとえば Tailscale Serve やローカルリバースプロキシ）にも引き続き有効ですが、loopback リクエストが `gateway.auth.mode: "trusted-proxy"` の対象になるわけでは**ありません**。
+- `allowRealIpFallback`: `true` の場合、`X-Forwarded-For` がないときに Gateway は `X-Real-IP` を受け入れます。fail-closed 動作のため、デフォルトは `false` です。
+- `gateway.nodes.pairing.autoApproveCidrs`: 要求スコープがない初回ノードデバイスペアリングを自動承認するための任意の CIDR/IP 許可リスト。未設定の場合は無効です。これは operator/browser/Control UI/WebChat ペアリングを自動承認せず、ロール、スコープ、メタデータ、公開鍵のアップグレードも自動承認しません。
+- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: ペアリングおよびプラットフォーム許可リスト評価後の、宣言済みノードコマンドに対するグローバルな許可/拒否の制御。`camera.snap`、`camera.clip`、`screen.record` などの危険なノードコマンドをオプトインするには `allowCommands` を使用します。`denyCommands` は、プラットフォームデフォルトまたは明示的な許可に含まれる場合でも、コマンドを削除します。ノードが宣言済みコマンドリストを変更した後は、そのデバイスペアリングを拒否して再承認し、Gateway が更新済みコマンドスナップショットを保存するようにします。
+- `gateway.tools.deny`: HTTP `POST /tools/invoke` でブロックする追加ツール名（デフォルト拒否リストを拡張）。
+- `gateway.tools.allow`: デフォルト HTTP 拒否リストからツール名を削除します。
 
 </Accordion>
 
@@ -421,18 +440,18 @@ OpenClaw 管理の MCP サーバー定義は `mcp.servers` 配下にあり、埋
 
 - Chat Completions: デフォルトでは無効です。`gateway.http.endpoints.chatCompletions.enabled: true` で有効にします。
 - Responses API: `gateway.http.endpoints.responses.enabled`。
-- Responses の URL 入力強化:
+- Responses URL 入力の強化:
   - `gateway.http.endpoints.responses.maxUrlParts`
   - `gateway.http.endpoints.responses.files.urlAllowlist`
   - `gateway.http.endpoints.responses.images.urlAllowlist`
-    空の許可リストは未設定として扱われます。URL 取得を無効にするには `gateway.http.endpoints.responses.files.allowUrl=false`
-    および/または `gateway.http.endpoints.responses.images.allowUrl=false` を使用してください。
+    空の許可リストは未設定として扱われます。URL 取得を無効にするには、`gateway.http.endpoints.responses.files.allowUrl=false`
+    および/または `gateway.http.endpoints.responses.images.allowUrl=false` を使用します。
 - 任意のレスポンス強化ヘッダー:
-  - `gateway.http.securityHeaders.strictTransportSecurity` (制御している HTTPS オリジンにのみ設定してください。[信頼済みプロキシ認証](/ja-JP/gateway/trusted-proxy-auth#tls-termination-and-hsts) を参照)
+  - `gateway.http.securityHeaders.strictTransportSecurity`（自分が制御する HTTPS origin にのみ設定します。[信頼済みプロキシ認証](/ja-JP/gateway/trusted-proxy-auth#tls-termination-and-hsts) を参照）
 
 ### マルチインスタンス分離
 
-一意のポートと状態ディレクトリを使用して、1 つのホストで複数の gateway を実行します。
+一意のポートと状態ディレクトリを使用して、1 つのホスト上で複数の Gateway を実行します。
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
@@ -440,7 +459,7 @@ OPENCLAW_STATE_DIR=~/.openclaw-a \
 openclaw gateway --port 19001
 ```
 
-便利なフラグ: `--dev` (`~/.openclaw-dev` + ポート `19001` を使用)、`--profile <name>` (`~/.openclaw-<name>` を使用)。
+便利なフラグ: `--dev`（`~/.openclaw-dev` + ポート `19001` を使用）、`--profile <name>`（`~/.openclaw-<name>` を使用）。
 
 [複数の Gateway](/ja-JP/gateway/multiple-gateways) を参照してください。
 
@@ -460,8 +479,8 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: gateway リスナーで TLS 終端 (HTTPS/WSS) を有効にします (デフォルト: `false`)。
-- `autoGenerate`: 明示的なファイルが設定されていない場合に、ローカルの自己署名証明書/鍵ペアを自動生成します。ローカル/開発用途のみです。
+- `enabled`: Gateway リスナーで TLS 終端（HTTPS/WSS）を有効にします（デフォルト: `false`）。
+- `autoGenerate`: 明示的なファイルが設定されていない場合に、ローカルの自己署名証明書/鍵ペアを自動生成します。ローカル/開発用途のみ。
 - `certPath`: TLS 証明書ファイルへのファイルシステムパス。
 - `keyPath`: TLS 秘密鍵ファイルへのファイルシステムパス。権限を制限してください。
 - `caPath`: クライアント検証またはカスタム信頼チェーン用の任意の CA バンドルパス。
@@ -482,11 +501,11 @@ openclaw gateway --port 19001
 
 - `mode`: 実行時に設定編集を適用する方法を制御します。
   - `"off"`: ライブ編集を無視します。変更には明示的な再起動が必要です。
-  - `"restart"`: 設定変更時に常に gateway プロセスを再起動します。
+  - `"restart"`: 設定変更時に常に Gateway プロセスを再起動します。
   - `"hot"`: 再起動せずにプロセス内で変更を適用します。
-  - `"hybrid"` (デフォルト): まずホットリロードを試行し、必要に応じて再起動にフォールバックします。
-- `debounceMs`: 設定変更が適用される前のデバウンス期間 (ミリ秒、非負整数)。
-- `deferralTimeoutMs`: 再起動を強制する前に、処理中の操作を待つ任意の最大時間 (ミリ秒)。デフォルトの上限付き待機 (`300000`) を使用するには省略します。無期限に待機し、保留中の警告を定期的にログに出すには `0` を設定します。
+  - `"hybrid"`（デフォルト）: まずホットリロードを試し、必要な場合は再起動にフォールバックします。
+- `debounceMs`: 設定変更を適用する前のデバウンスウィンドウ（ミリ秒、非負整数）。
+- `deferralTimeoutMs`: 再起動を強制する前に進行中の操作を待機する任意の最大時間（ミリ秒）。省略するとデフォルトの上限付き待機（`300000`）を使用します。無期限に待機し、まだ保留中であることを示す警告を定期的にログ出力するには `0` を設定します。
 
 ---
 
@@ -526,43 +545,43 @@ openclaw gateway --port 19001
 認証: `Authorization: Bearer <token>` または `x-openclaw-token: <token>`。
 クエリ文字列のフックトークンは拒否されます。
 
-検証と安全性に関する注意事項:
+検証と安全性に関する注意:
 
-- `hooks.enabled=true` には空でない `hooks.token` が必要です。
+- `hooks.enabled=true` には空ではない `hooks.token` が必要です。
 - `hooks.token` は `gateway.auth.token` と**異なる**必要があります。Gateway トークンの再利用は拒否されます。
-- `hooks.path` に `/` は使用できません。`/hooks` などの専用サブパスを使用してください。
-- `hooks.allowRequestSessionKey=true` の場合は、`hooks.allowedSessionKeyPrefixes` を制約してください（例: `["hook:"]`）。
-- マッピングまたはプリセットがテンプレート化された `sessionKey` を使用する場合は、`hooks.allowedSessionKeyPrefixes` と `hooks.allowRequestSessionKey=true` を設定してください。静的マッピングキーでは、このオプトインは不要です。
+- `hooks.path` に `/` は使用できません。`/hooks` のような専用サブパスを使用してください。
+- `hooks.allowRequestSessionKey=true` の場合は、`hooks.allowedSessionKeyPrefixes` を制限してください (例: `["hook:"]`)。
+- マッピングまたはプリセットがテンプレート化された `sessionKey` を使用する場合は、`hooks.allowedSessionKeyPrefixes` と `hooks.allowRequestSessionKey=true` を設定してください。静的マッピングキーにはそのオプトインは不要です。
 
 **エンドポイント:**
 
 - `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
 - `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
-  - リクエストペイロードの `sessionKey` は、`hooks.allowRequestSessionKey=true` の場合にのみ受け入れられます（デフォルト: `false`）。
+  - リクエストペイロードの `sessionKey` は `hooks.allowRequestSessionKey=true` の場合にのみ受け入れられます (デフォルト: `false`)。
 - `POST /hooks/<name>` → `hooks.mappings` によって解決されます
-  - テンプレートでレンダリングされたマッピングの `sessionKey` 値は、外部から提供されたものとして扱われ、同様に `hooks.allowRequestSessionKey=true` が必要です。
+  - テンプレートでレンダリングされたマッピングの `sessionKey` 値は外部から提供されたものとして扱われ、同様に `hooks.allowRequestSessionKey=true` が必要です。
 
 <Accordion title="Mapping details">
 
-- `match.path` は `/hooks` の後のサブパスに一致します（例: `/hooks/gmail` → `gmail`）。
+- `match.path` は `/hooks` の後のサブパスに一致します (例: `/hooks/gmail` → `gmail`)。
 - `match.source` は汎用パスのペイロードフィールドに一致します。
 - `{{messages[0].subject}}` のようなテンプレートはペイロードから読み取ります。
 - `transform` はフックアクションを返す JS/TS モジュールを指すことができます。
-  - `transform.module` は相対パスである必要があり、`hooks.transformsDir` 内にとどまります（絶対パスとトラバーサルは拒否されます）。
+  - `transform.module` は相対パスである必要があり、`hooks.transformsDir` 内に留まります (絶対パスとトラバーサルは拒否されます)。
 - `agentId` は特定のエージェントにルーティングします。不明な ID はデフォルトにフォールバックします。
-- `allowedAgentIds`: 明示的なルーティングを制限します（`*` または省略 = すべて許可、`[]` = すべて拒否）。
+- `allowedAgentIds`: 明示的なルーティングを制限します (`*` または省略 = すべて許可、`[]` = すべて拒否)。
 - `defaultSessionKey`: 明示的な `sessionKey` がないフックエージェント実行用の任意の固定セッションキーです。
-- `allowRequestSessionKey`: `/hooks/agent` の呼び出し元とテンプレート駆動のマッピングセッションキーが `sessionKey` を設定できるようにします（デフォルト: `false`）。
-- `allowedSessionKeyPrefixes`: 明示的な `sessionKey` 値（リクエスト + マッピング）用の任意のプレフィックス許可リストです。例: `["hook:"]`。マッピングまたはプリセットがテンプレート化された `sessionKey` を使用する場合は必須になります。
+- `allowRequestSessionKey`: `/hooks/agent` の呼び出し元とテンプレート駆動のマッピングセッションキーが `sessionKey` を設定できるようにします (デフォルト: `false`)。
+- `allowedSessionKeyPrefixes`: 明示的な `sessionKey` 値 (リクエスト + マッピング) の任意のプレフィックス許可リストです。例: `["hook:"]`。マッピングまたはプリセットがテンプレート化された `sessionKey` を使用する場合は必須になります。
 - `deliver: true` は最終返信をチャンネルに送信します。`channel` のデフォルトは `last` です。
-- `model` はこのフック実行の LLM を上書きします（モデルカタログが設定されている場合は許可されている必要があります）。
+- `model` はこのフック実行の LLM を上書きします (モデルカタログが設定されている場合は許可されている必要があります)。
 
 </Accordion>
 
-### Gmail連携
+### Gmail 連携
 
 - 組み込みの Gmail プリセットは `sessionKey: "hook:gmail:{{messages[0].id}}"` を使用します。
-- そのメッセージごとのルーティングを維持する場合は、`hooks.allowRequestSessionKey: true` を設定し、Gmail 名前空間に一致するように `hooks.allowedSessionKeyPrefixes` を制約してください。例: `["hook:", "hook:gmail:"]`。
+- そのメッセージ単位のルーティングを維持する場合は、`hooks.allowRequestSessionKey: true` を設定し、`hooks.allowedSessionKeyPrefixes` を Gmail 名前空間に一致するよう制限してください。例: `["hook:", "hook:gmail:"]`。
 - `hooks.allowRequestSessionKey: false` が必要な場合は、テンプレート化されたデフォルトの代わりに静的な `sessionKey` でプリセットを上書きしてください。
 
 ```json5
@@ -586,12 +605,12 @@ openclaw gateway --port 19001
 }
 ```
 
-- Gateway は設定されている場合、起動時に `gog gmail watch serve` を自動起動します。無効にするには `OPENCLAW_SKIP_GMAIL_WATCHER=1` を設定してください。
+- Gateway は設定されている場合、起動時に `gog gmail watch serve` を自動起動します。無効化するには `OPENCLAW_SKIP_GMAIL_WATCHER=1` を設定してください。
 - Gateway と並行して別の `gog gmail watch serve` を実行しないでください。
 
 ---
 
-## キャンバスホスト
+## Canvas ホスト
 
 ```json5
 {
@@ -603,24 +622,24 @@ openclaw gateway --port 19001
 }
 ```
 
-- エージェントが編集可能な HTML/CSS/JS と A2UI を、Gateway ポート配下の HTTP で提供します。
+- エージェントが編集可能な HTML/CSS/JS と A2UI を Gateway ポート下の HTTP で配信します:
   - `http://<gateway-host>:<gateway.port>/__openclaw__/canvas/`
   - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
-- ローカルのみ: `gateway.bind: "loopback"`（デフォルト）を維持してください。
-- 非 loopback バインド: キャンバスルートには、他の Gateway HTTP サーフェスと同様に Gateway 認証（トークン/パスワード/信頼済みプロキシ）が必要です。
-- Node WebView は通常、認証ヘッダーを送信しません。ノードがペアリングされ接続されると、Gateway はキャンバス/A2UI アクセス用にノードスコープのケイパビリティ URL を通知します。
-- ケイパビリティ URL はアクティブなノード WS セッションにバインドされ、すぐに期限切れになります。IP ベースのフォールバックは使用されません。
-- 提供される HTML にライブリロードクライアントを注入します。
-- 空の場合、スターター `index.html` を自動作成します。
-- A2UI も `/__openclaw__/a2ui/` で提供します。
+- ローカル専用: `gateway.bind: "loopback"` (デフォルト) のままにしてください。
+- 非ループバック bind: canvas ルートには、他の Gateway HTTP サーフェスと同様に Gateway 認証 (トークン/パスワード/信頼済みプロキシ) が必要です。
+- Node WebView は通常、認証ヘッダーを送信しません。ノードがペアリングされ接続されると、Gateway は canvas/A2UI アクセス用のノードスコープのケイパビリティ URL を通知します。
+- ケイパビリティ URL はアクティブなノード WS セッションに紐付けられ、すぐに期限切れになります。IP ベースのフォールバックは使用されません。
+- 配信される HTML にライブリロードクライアントを注入します。
+- 空の場合はスターター `index.html` を自動作成します。
+- A2UI も `/__openclaw__/a2ui/` で配信します。
 - 変更には Gateway の再起動が必要です。
-- 大きなディレクトリや `EMFILE` エラーではライブリロードを無効にしてください。
+- 大きなディレクトリや `EMFILE` エラーではライブリロードを無効化してください。
 
 ---
 
 ## 検出
 
-### mDNS（Bonjour）
+### mDNS (Bonjour)
 
 ```json5
 {
@@ -632,11 +651,11 @@ openclaw gateway --port 19001
 }
 ```
 
-- `minimal`（デフォルト）: TXT レコードから `cliPath` + `sshPort` を省略します。
+- `minimal` (デフォルト): TXT レコードから `cliPath` + `sshPort` を省略します。
 - `full`: `cliPath` + `sshPort` を含めます。
-- ホスト名は、有効な DNS ラベルである場合はシステムのホスト名がデフォルトになり、そうでなければ `openclaw` にフォールバックします。`OPENCLAW_MDNS_HOSTNAME` で上書きできます。
+- ホスト名は、有効な DNS ラベルである場合はシステムホスト名がデフォルトになり、そうでない場合は `openclaw` にフォールバックします。`OPENCLAW_MDNS_HOSTNAME` で上書きできます。
 
-### 広域（DNS-SD）
+### 広域 (DNS-SD)
 
 ```json5
 {
@@ -646,7 +665,7 @@ openclaw gateway --port 19001
 }
 ```
 
-`~/.openclaw/dns/` 配下にユニキャスト DNS-SD ゾーンを書き込みます。クロスネットワーク検出には、DNS サーバー（CoreDNS 推奨）+ Tailscale 分割 DNS と組み合わせてください。
+`~/.openclaw/dns/` の下にユニキャスト DNS-SD ゾーンを書き込みます。クロスネットワーク検出には、DNS サーバー (CoreDNS 推奨) + Tailscale スプリット DNS と組み合わせてください。
 
 セットアップ: `openclaw dns setup --apply`。
 
@@ -654,7 +673,7 @@ openclaw gateway --port 19001
 
 ## 環境
 
-### `env`（インライン環境変数）
+### `env` (インライン環境変数)
 
 ```json5
 {
@@ -671,14 +690,14 @@ openclaw gateway --port 19001
 }
 ```
 
-- インライン環境変数は、プロセス環境にそのキーがない場合にのみ適用されます。
-- `.env` ファイル: CWD の `.env` + `~/.openclaw/.env`（どちらも既存の変数を上書きしません）。
-- `shellEnv`: ログインシェルプロファイルから、欠落している想定キーをインポートします。
+- インラインの環境変数は、プロセス環境にキーがない場合にのみ適用されます。
+- `.env` ファイル: CWD `.env` + `~/.openclaw/.env` (どちらも既存の変数を上書きしません)。
+- `shellEnv`: ログインシェルプロファイルから、不足している想定キーをインポートします。
 - 完全な優先順位については [環境](/ja-JP/help/environment) を参照してください。
 
 ### 環境変数の置換
 
-任意の設定文字列で `${VAR_NAME}` を使って環境変数を参照します。
+任意の設定文字列で `${VAR_NAME}` を使って環境変数を参照します:
 
 ```json5
 {
@@ -689,19 +708,19 @@ openclaw gateway --port 19001
 ```
 
 - 一致するのは大文字の名前のみです: `[A-Z_][A-Z0-9_]*`。
-- 欠落している変数または空の変数は、設定読み込み時にエラーをスローします。
+- 変数が存在しない、または空の場合、設定の読み込み時にエラーが発生します。
 - リテラルの `${VAR}` には `$${VAR}` でエスケープします。
-- `$include` と併用できます。
+- `$include` と連携します。
 
 ---
 
 ## シークレット
 
-シークレット参照は追加的です。プレーンテキスト値も引き続き機能します。
+シークレット参照は追加的です。プレーンテキスト値も引き続き動作します。
 
 ### `SecretRef`
 
-次のオブジェクト形状を使用します。
+1 つのオブジェクト形式を使用します:
 
 ```json5
 { source: "env" | "file" | "exec", provider: "default", id: "..." }
@@ -711,15 +730,15 @@ openclaw gateway --port 19001
 
 - `provider` パターン: `^[a-z][a-z0-9_-]{0,63}$`
 - `source: "env"` の id パターン: `^[A-Z][A-Z0-9_]{0,127}$`
-- `source: "file"` の id: 絶対 JSON ポインター（例: `"/providers/openai/apiKey"`）
+- `source: "file"` の id: 絶対 JSON ポインター (例: `"/providers/openai/apiKey"`)
 - `source: "exec"` の id パターン: `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
-- `source: "exec"` の id には、スラッシュ区切りのパスセグメントとして `.` または `..` を含めてはいけません（例: `a/../b` は拒否されます）
+- `source: "exec"` の id には、スラッシュで区切られたパスセグメントとして `.` または `..` を含めてはいけません (例: `a/../b` は拒否されます)
 
 ### サポートされる認証情報サーフェス
 
 - 正規マトリクス: [SecretRef 認証情報サーフェス](/ja-JP/reference/secretref-credential-surface)
-- `secrets apply` は、サポートされている `openclaw.json` の認証情報パスを対象にします。
-- `auth-profiles.json` 参照は、ランタイム解決と監査カバレッジに含まれます。
+- `secrets apply` は、サポートされる `openclaw.json` 認証情報パスを対象にします。
+- `auth-profiles.json` の参照は、ランタイム解決と監査カバレッジに含まれます。
 
 ### シークレットプロバイダー設定
 
@@ -749,16 +768,16 @@ openclaw gateway --port 19001
 }
 ```
 
-注:
+注記:
 
-- `file` プロバイダーは `mode: "json"` と `mode: "singleValue"` をサポートします（singleValue モードでは `id` は `"value"` でなければなりません）。
-- Windows ACL 検証を利用できない場合、file および exec プロバイダーのパスはフェイルクローズします。検証できない信頼済みパスに対してのみ `allowInsecurePath: true` を設定してください。
-- `exec` プロバイダーには絶対 `command` パスが必要で、stdin/stdout 上のプロトコルペイロードを使用します。
+- `file` プロバイダーは `mode: "json"` と `mode: "singleValue"` をサポートします (singleValue モードでは `id` は `"value"` である必要があります)。
+- Windows ACL 検証が利用できない場合、file および exec プロバイダーのパスはフェイルクローズします。検証できない信頼済みパスに対してのみ `allowInsecurePath: true` を設定してください。
+- `exec` プロバイダーには絶対 `command` パスが必要で、stdin/stdout でプロトコルペイロードを使用します。
 - デフォルトでは、シンボリックリンクのコマンドパスは拒否されます。解決後のターゲットパスを検証しつつシンボリックリンクパスを許可するには、`allowSymlinkCommand: true` を設定します。
 - `trustedDirs` が設定されている場合、信頼済みディレクトリのチェックは解決後のターゲットパスに適用されます。
-- `exec` の子環境はデフォルトで最小限です。必要な変数は `passEnv` で明示的に渡してください。
-- シークレット参照はアクティベーション時にインメモリスナップショットへ解決され、その後リクエストパスはスナップショットのみを読み取ります。
-- アクティブサーフェスのフィルタリングはアクティベーション中に適用されます。有効なサーフェス上の未解決参照は起動/再読み込みを失敗させ、非アクティブなサーフェスは診断付きでスキップされます。
+- `exec` 子環境はデフォルトで最小限です。必要な変数は `passEnv` で明示的に渡してください。
+- シークレット参照は有効化時にインメモリスナップショットへ解決され、その後リクエストパスはそのスナップショットのみを読み取ります。
+- 有効化中はアクティブサーフェスのフィルタリングが適用されます。有効なサーフェス上の未解決参照は起動/再読み込みを失敗させ、非アクティブなサーフェスは診断付きでスキップされます。
 
 ---
 
@@ -781,11 +800,11 @@ openclaw gateway --port 19001
 ```
 
 - エージェントごとのプロファイルは `<agentDir>/auth-profiles.json` に保存されます。
-- `auth-profiles.json` は、静的な認証情報モード用に値レベル参照（`api_key` 用の `keyRef`、`token` 用の `tokenRef`）をサポートします。
-- `{ "provider": { "apiKey": "..." } }` のようなレガシーのフラットな `auth-profiles.json` マップはランタイム形式ではありません。`openclaw doctor --fix` はそれらを `.legacy-flat.*.bak` バックアップ付きの正規の `provider:default` API キープロファイルへ書き換えます。
-- OAuth モードのプロファイル（`auth.profiles.<id>.mode = "oauth"`）は、SecretRef によって支えられる認証プロファイル認証情報をサポートしません。
-- 静的ランタイム認証情報は、インメモリの解決済みスナップショットから取得されます。レガシーの静的 `auth.json` エントリは検出時にスクラブされます。
-- レガシー OAuth は `~/.openclaw/credentials/oauth.json` からインポートされます。
+- `auth-profiles.json` は、静的認証情報モード向けに値レベルの参照 (`api_key` 用の `keyRef`、`token` 用の `tokenRef`) をサポートします。
+- `{ "provider": { "apiKey": "..." } }` のようなレガシーのフラットな `auth-profiles.json` マップはランタイム形式ではありません。`openclaw doctor --fix` は、`.legacy-flat.*.bak` バックアップ付きで正規の `provider:default` API キープロファイルに書き換えます。
+- OAuth モードのプロファイル (`auth.profiles.<id>.mode = "oauth"`) は、SecretRef による auth-profile 認証情報をサポートしません。
+- 静的ランタイム認証情報は、インメモリの解決済みスナップショットから取得されます。レガシーの静的 `auth.json` エントリは検出時に削除されます。
+- レガシー OAuth は `~/.openclaw/credentials/oauth.json` からインポートします。
 - [OAuth](/ja-JP/concepts/oauth) を参照してください。
 - シークレットのランタイム動作と `audit/configure/apply` ツール: [シークレット管理](/ja-JP/gateway/secrets)。
 
@@ -809,21 +828,20 @@ openclaw gateway --port 19001
 }
 ```
 
-- `billingBackoffHours`: 実際の
-  請求/クレジット不足エラーによりプロファイルが失敗した場合の基本バックオフ時間（デフォルト: `5`）。明示的な請求関連テキストは
-  `401`/`403` レスポンスでもここに到達することがありますが、プロバイダー固有のテキスト
-  マッチャーは、それを所有するプロバイダーにスコープされたままです（例: OpenRouter
-  `Key limit exceeded`）。リトライ可能な HTTP `402` の使用ウィンドウまたは
-  組織/ワークスペースの支出上限メッセージは、代わりに `rate_limit` パスに
-  留まります。
-- `billingBackoffHoursByProvider`: 請求バックオフ時間に対する任意のプロバイダー別オーバーライド。
-- `billingMaxHours`: 請求バックオフの指数関数的増加の上限時間（デフォルト: `24`）。
-- `authPermanentBackoffMinutes`: 高信頼度の `auth_permanent` 失敗に対する基本バックオフ分数（デフォルト: `10`）。
-- `authPermanentMaxMinutes`: `auth_permanent` バックオフ増加の上限分数（デフォルト: `60`）。
-- `failureWindowHours`: バックオフカウンターに使用されるローリングウィンドウの時間数（デフォルト: `24`）。
-- `overloadedProfileRotations`: モデルフォールバックに切り替える前の、過負荷エラーに対する同一プロバイダーの認証プロファイルローテーションの最大数（デフォルト: `1`）。`ModelNotReadyException` のようなプロバイダービジー形状はここに到達します。
-- `overloadedBackoffMs`: 過負荷のプロバイダー/プロファイルローテーションをリトライする前の固定遅延（デフォルト: `0`）。
-- `rateLimitedProfileRotations`: モデルフォールバックに切り替える前の、レート制限エラーに対する同一プロバイダーの認証プロファイルローテーションの最大数（デフォルト: `1`）。このレート制限バケットには、`Too many concurrent requests`、`ThrottlingException`、`concurrency limit reached`、`workers_ai ... quota limit exceeded`、`resource exhausted` のようなプロバイダー形状のテキストが含まれます。
+- `billingBackoffHours`: プロファイルが真の
+  請求/クレジット不足エラーで失敗した場合の、時間単位のベースバックオフ (デフォルト: `5`)。明示的な請求関連テキストは
+  `401`/`403` レスポンスでもここに分類されることがありますが、プロバイダー固有のテキスト
+  マッチャーは、それを所有するプロバイダーにスコープされたままです (例: OpenRouter
+  `Key limit exceeded`)。再試行可能な HTTP `402` の使用時間枠、または
+  組織/ワークスペースの利用額上限メッセージは、代わりに `rate_limit` パスに残ります。
+- `billingBackoffHoursByProvider`: 請求バックオフ時間に対する、任意のプロバイダー別上書き。
+- `billingMaxHours`: 請求バックオフの指数的増加に対する時間単位の上限 (デフォルト: `24`)。
+- `authPermanentBackoffMinutes`: 高信頼度の `auth_permanent` 失敗に対する、分単位のベースバックオフ (デフォルト: `10`)。
+- `authPermanentMaxMinutes`: `auth_permanent` バックオフ増加に対する分単位の上限 (デフォルト: `60`)。
+- `failureWindowHours`: バックオフカウンターに使用する、時間単位のローリングウィンドウ (デフォルト: `24`)。
+- `overloadedProfileRotations`: モデルフォールバックへ切り替える前に、過負荷エラーに対して許可する同一プロバイダーの auth-profile ローテーション最大数 (デフォルト: `1`)。`ModelNotReadyException` のようなプロバイダー混雑形状はここに分類されます。
+- `overloadedBackoffMs`: 過負荷のプロバイダー/プロファイルローテーションを再試行する前の固定遅延 (デフォルト: `0`)。
+- `rateLimitedProfileRotations`: モデルフォールバックへ切り替える前に、レート制限エラーに対して許可する同一プロバイダーの auth-profile ローテーション最大数 (デフォルト: `1`)。そのレート制限バケットには、`Too many concurrent requests`、`ThrottlingException`、`concurrency limit reached`、`workers_ai ... quota limit exceeded`、`resource exhausted` のようなプロバイダー形式のテキストが含まれます。
 
 ---
 
@@ -844,9 +862,9 @@ openclaw gateway --port 19001
 
 - デフォルトのログファイル: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`。
 - 安定したパスには `logging.file` を設定します。
-- `--verbose` のとき `consoleLevel` は `debug` に上がります。
-- `maxFileBytes`: ローテーション前のアクティブなログファイルの最大サイズ (バイト単位、正の整数、デフォルト: `104857600` = 100 MB)。OpenClaw はアクティブなファイルの横に、番号付きアーカイブを最大 5 個保持します。
-- `redactSensitive` / `redactPatterns`: コンソール出力、ファイルログ、OTLP ログレコード、永続化されたセッショントランスクリプトテキストに対するベストエフォートのマスキング。`redactSensitive: "off"` は、この一般的なログ/トランスクリプトポリシーだけを無効にします。UI/ツール/診断の安全サーフェスは、送出前に引き続きシークレットを編集します。
+- `--verbose` のとき、`consoleLevel` は `debug` に上がります。
+- `maxFileBytes`: ローテーション前のアクティブなログファイルの最大サイズ（バイト単位、正の整数、デフォルト: `104857600` = 100 MB）。OpenClaw は、アクティブなファイルの隣に番号付きアーカイブを最大 5 個保持します。
+- `redactSensitive` / `redactPatterns`: コンソール出力、ファイルログ、OTLP ログレコード、永続化されたセッショントランスクリプトテキストに対するベストエフォートのマスク処理。`redactSensitive: "off"` は、この一般的なログ/トランスクリプトポリシーのみを無効にします。UI/ツール/診断の安全サーフェスは、送出前に引き続きシークレットをマスクします。
 
 ---
 
@@ -894,25 +912,25 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: インストルメンテーション出力のマスタートグル (デフォルト: `true`)。
-- `flags`: 対象を絞ったログ出力を有効にするフラグ文字列の配列 (`"telegram.*"` や `"*"` のようなワイルドカードをサポート)。
-- `stuckSessionWarnMs`: セッションが処理中状態のままになっている間に、スタックセッション警告を送出する経過時間しきい値 (ms)。
-- `otel.enabled`: OpenTelemetry エクスポートパイプラインを有効にします (デフォルト: `false`)。完全な構成、シグナルカタログ、プライバシーモデルについては、[OpenTelemetry エクスポート](/ja-JP/gateway/opentelemetry)を参照してください。
+- `enabled`: 計装出力のマスタートグル（デフォルト: `true`）。
+- `flags`: 対象を絞ったログ出力を有効にするフラグ文字列の配列（`"telegram.*"` や `"*"` のようなワイルドカードをサポート）。
+- `stuckSessionWarnMs`: 長時間実行中の処理セッションを `session.long_running`、`session.stalled`、または `session.stuck` に分類するための、進行なし経過時間のしきい値（ms）。返信、ツール、ステータス、ブロック、ACP 進行状況でタイマーはリセットされます。繰り返される `session.stuck` 診断は、変化がない間はバックオフします。
+- `otel.enabled`: OpenTelemetry エクスポートパイプラインを有効にします（デフォルト: `false`）。完全な設定、シグナルカタログ、プライバシーモデルについては、[OpenTelemetry エクスポート](/ja-JP/gateway/opentelemetry)を参照してください。
 - `otel.endpoint`: OTel エクスポート用のコレクター URL。
-- `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: 省略可能なシグナル固有の OTLP エンドポイント。設定すると、そのシグナルに限って `otel.endpoint` を上書きします。
-- `otel.protocol`: `"http/protobuf"` (デフォルト) または `"grpc"`。
+- `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: 任意のシグナル別 OTLP エンドポイント。設定すると、そのシグナルについてのみ `otel.endpoint` を上書きします。
+- `otel.protocol`: `"http/protobuf"`（デフォルト）または `"grpc"`。
 - `otel.headers`: OTel エクスポートリクエストで送信される追加の HTTP/gRPC メタデータヘッダー。
-- `otel.serviceName`: リソース属性のサービス名。
-- `otel.traces` / `otel.metrics` / `otel.logs`: トレース、メトリクス、ログのエクスポートを有効にします。
+- `otel.serviceName`: リソース属性用のサービス名。
+- `otel.traces` / `otel.metrics` / `otel.logs`: トレース、メトリクス、またはログのエクスポートを有効にします。
 - `otel.sampleRate`: トレースのサンプリング率 `0`–`1`。
-- `otel.flushIntervalMs`: 定期的なテレメトリのフラッシュ間隔 (ms)。
-- `otel.captureContent`: OTEL スパン属性用の生コンテンツキャプチャをオプトインで有効にします。デフォルトはオフです。ブール値 `true` は、非システムのメッセージ/ツールコンテンツをキャプチャします。オブジェクト形式では、`inputMessages`、`outputMessages`、`toolInputs`、`toolOutputs`、`systemPrompt` を明示的に有効にできます。
-- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: 最新の実験的な GenAI スパンプロバイダー属性の環境トグル。デフォルトでは、互換性のためスパンは従来の `gen_ai.system` 属性を保持し、GenAI メトリクスは境界付きのセマンティック属性を使用します。
-- `OPENCLAW_OTEL_PRELOADED=1`: グローバル OpenTelemetry SDK をすでに登録しているホスト用の環境トグル。これにより OpenClaw は、診断リスナーをアクティブに保ったまま、Plugin 所有の SDK 起動/シャットダウンをスキップします。
-- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`、`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`、`OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: 対応する設定キーが未設定の場合に使用される、シグナル固有のエンドポイント環境変数。
-- `cacheTrace.enabled`: 埋め込み実行用にキャッシュトレーススナップショットをログに記録します (デフォルト: `false`)。
-- `cacheTrace.filePath`: キャッシュトレース JSONL の出力パス (デフォルト: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`)。
-- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: キャッシュトレース出力に含める内容を制御します (すべてのデフォルト: `true`)。
+- `otel.flushIntervalMs`: 定期的なテレメトリフラッシュ間隔（ms）。
+- `otel.captureContent`: OTEL span 属性の生コンテンツキャプチャへのオプトイン。デフォルトはオフです。ブール値 `true` は、システム以外のメッセージ/ツールコンテンツをキャプチャします。オブジェクト形式では、`inputMessages`、`outputMessages`、`toolInputs`、`toolOutputs`、`systemPrompt` を明示的に有効にできます。
+- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: 最新の実験的な GenAI span プロバイダー属性用の環境トグル。デフォルトでは互換性のために span は従来の `gen_ai.system` 属性を保持し、GenAI メトリクスは境界付きセマンティック属性を使用します。
+- `OPENCLAW_OTEL_PRELOADED=1`: グローバル OpenTelemetry SDK をすでに登録しているホスト向けの環境トグル。その場合 OpenClaw は、診断リスナーをアクティブなまま維持しつつ、Plugin 所有の SDK 起動/シャットダウンをスキップします。
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`、`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`、`OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: 一致する設定キーが未設定の場合に使用される、シグナル別エンドポイント環境変数。
+- `cacheTrace.enabled`: 埋め込み実行のキャッシュトレーススナップショットをログに記録します（デフォルト: `false`）。
+- `cacheTrace.filePath`: キャッシュトレース JSONL の出力パス（デフォルト: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`）。
+- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: キャッシュトレース出力に含める内容を制御します（すべてデフォルト: `true`）。
 
 ---
 
@@ -934,12 +952,12 @@ openclaw gateway --port 19001
 }
 ```
 
-- `channel`: npm/git インストールのリリースチャネル — `"stable"`、`"beta"`、`"dev"`。
-- `checkOnStart`: Gateway の起動時に npm 更新を確認します (デフォルト: `true`)。
-- `auto.enabled`: パッケージインストールのバックグラウンド自動更新を有効にします (デフォルト: `false`)。
-- `auto.stableDelayHours`: stable チャネルの自動適用前の最小遅延時間 (時間単位、デフォルト: `6`、最大: `168`)。
-- `auto.stableJitterHours`: stable チャネルのロールアウト分散を追加する時間枠 (時間単位、デフォルト: `12`、最大: `168`)。
-- `auto.betaCheckIntervalHours`: beta チャネルのチェック実行頻度 (時間単位、デフォルト: `1`、最大: `24`)。
+- `channel`: npm/git インストール用のリリースチャネル — `"stable"`、`"beta"`、または `"dev"`。
+- `checkOnStart`: Gateway 起動時に npm 更新を確認します（デフォルト: `true`）。
+- `auto.enabled`: パッケージインストールのバックグラウンド自動更新を有効にします（デフォルト: `false`）。
+- `auto.stableDelayHours`: stable チャネルで自動適用する前の最小遅延時間（時間単位、デフォルト: `6`、最大: `168`）。
+- `auto.stableJitterHours`: stable チャネルのロールアウトを分散する追加ウィンドウ（時間単位、デフォルト: `12`、最大: `168`）。
+- `auto.betaCheckIntervalHours`: beta チャネルの確認を実行する頻度（時間単位、デフォルト: `1`、最大: `24`）。
 
 ---
 
@@ -972,23 +990,23 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: グローバル ACP 機能ゲート (デフォルト: `true`。ACP ディスパッチとスポーンの操作要素を非表示にするには `false` に設定)。
-- `dispatch.enabled`: ACP セッションターンディスパッチ用の独立したゲート (デフォルト: `true`)。ACP コマンドを利用可能に保ちつつ実行をブロックするには、`false` に設定します。
-- `backend`: デフォルトの ACP ランタイムバックエンド ID (登録済みの ACP ランタイム Plugin と一致する必要があります)。
-  `plugins.allow` が設定されている場合は、バックエンド Plugin ID (例: `acpx`) を含めてください。含めないと、バンドルされたデフォルト Plugin は読み込まれません。
-- `defaultAgent`: スポーンで明示的なターゲットが指定されていない場合の、フォールバック ACP ターゲットエージェント ID。
+- `enabled`: グローバル ACP 機能ゲート（デフォルト: `true`。ACP ディスパッチと生成の操作要素を非表示にするには `false` を設定）。
+- `dispatch.enabled`: ACP セッションターンのディスパッチ用の独立したゲート（デフォルト: `true`）。ACP コマンドを利用可能にしたまま実行をブロックするには `false` を設定します。
+- `backend`: デフォルトの ACP ランタイムバックエンド ID（登録済みの ACP ランタイム Plugin と一致する必要があります）。
+  `plugins.allow` が設定されている場合は、バックエンド Plugin ID（例: `acpx`）を含めてください。含めないとバンドルされたデフォルト Plugin は読み込まれません。
+- `defaultAgent`: 生成で明示的なターゲットが指定されない場合のフォールバック ACP ターゲットエージェント ID。
 - `allowedAgents`: ACP ランタイムセッションで許可されるエージェント ID の許可リスト。空の場合は追加の制限がないことを意味します。
 - `maxConcurrentSessions`: 同時にアクティブにできる ACP セッションの最大数。
-- `stream.coalesceIdleMs`: ストリーミングされたテキストのアイドルフラッシュ時間枠 (ms)。
-- `stream.maxChunkChars`: ストリーミングブロック投影を分割する前の最大チャンクサイズ。
-- `stream.repeatSuppression`: ターンごとに繰り返されるステータス/ツール行を抑制します (デフォルト: `true`)。
-- `stream.deliveryMode`: `"live"` はインクリメンタルにストリーミングします。`"final_only"` はターン終端イベントまでバッファリングします。
-- `stream.hiddenBoundarySeparator`: 非表示ツールイベント後の可視テキスト前に入れる区切り (デフォルト: `"paragraph"`)。
-- `stream.maxOutputChars`: ACP ターンごとに投影されるアシスタント出力文字数の最大値。
+- `stream.coalesceIdleMs`: ストリーミングされたテキストのアイドル時フラッシュウィンドウ（ms）。
+- `stream.maxChunkChars`: ストリーミングされたブロック投影を分割する前の最大チャンクサイズ。
+- `stream.repeatSuppression`: ターンごとに繰り返しのステータス/ツール行を抑制します（デフォルト: `true`）。
+- `stream.deliveryMode`: `"live"` は逐次ストリーミングします。`"final_only"` はターン終了イベントまでバッファします。
+- `stream.hiddenBoundarySeparator`: 非表示ツールイベントの後に続く可視テキストの前の区切り（デフォルト: `"paragraph"`）。
+- `stream.maxOutputChars`: ACP ターンごとに投影されるアシスタント出力文字の最大数。
 - `stream.maxSessionUpdateChars`: 投影される ACP ステータス/更新行の最大文字数。
-- `stream.tagVisibility`: ストリーミングイベントに対するタグ名からブール値の可視性上書きへのレコード。
-- `runtime.ttlMinutes`: ACP セッションワーカーがクリーンアップ対象になるまでのアイドル TTL (分単位)。
-- `runtime.installCommand`: ACP ランタイム環境のブートストラップ時に実行する省略可能なインストールコマンド。
+- `stream.tagVisibility`: ストリーミングイベントに対するタグ名からブール可視性上書きへのレコード。
+- `runtime.ttlMinutes`: ACP セッションワーカーがクリーンアップ対象になるまでのアイドル TTL（分単位）。
+- `runtime.installCommand`: ACP ランタイム環境のブートストラップ時に実行する任意のインストールコマンド。
 
 ---
 
@@ -1004,17 +1022,17 @@ openclaw gateway --port 19001
 }
 ```
 
-- `cli.banner.taglineMode` はバナーのタグラインスタイルを制御します。
-  - `"random"` (デフォルト): ローテーションするユーモラス/季節的なタグライン。
-  - `"default"`: 固定の中立的なタグライン (`All your chats, one OpenClaw.`)。
-  - `"off"`: タグラインテキストなし (バナータイトル/バージョンは引き続き表示されます)。
-- バナー全体を非表示にするには (タグラインだけでなく)、環境変数 `OPENCLAW_HIDE_BANNER=1` を設定します。
+- `cli.banner.taglineMode` はバナーのタグラインスタイルを制御します:
+  - `"random"`（デフォルト）: ローテーションするユーモア/季節タグライン。
+  - `"default"`: 固定の中立的なタグライン（`All your chats, one OpenClaw.`）。
+  - `"off"`: タグラインテキストなし（バナータイトル/バージョンは引き続き表示）。
+- バナー全体（タグラインだけではなく）を非表示にするには、環境変数 `OPENCLAW_HIDE_BANNER=1` を設定します。
 
 ---
 
 ## ウィザード
 
-CLI のガイド付きセットアップフロー (`onboard`、`configure`、`doctor`) によって書き込まれるメタデータ:
+CLI のガイド付きセットアップフロー（`onboard`、`configure`、`doctor`）によって書き込まれるメタデータ:
 
 ```json5
 {
@@ -1036,11 +1054,11 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 
 ---
 
-## ブリッジ (レガシー、削除済み)
+## ブリッジ（レガシー、削除済み）
 
-現在のビルドには TCP ブリッジは含まれなくなりました。Node は Gateway WebSocket 経由で接続します。`bridge.*` キーは設定スキーマの一部ではなくなりました (削除されるまで検証は失敗します。`openclaw doctor --fix` で不明なキーを取り除けます)。
+現在のビルドには TCP ブリッジは含まれなくなりました。Node は Gateway WebSocket 経由で接続します。`bridge.*` キーは設定スキーマの一部ではなくなりました（削除されるまで検証は失敗します。`openclaw doctor --fix` で不明なキーを取り除けます）。
 
-<Accordion title="Legacy bridge config (historical reference)">
+<Accordion title="レガシーブリッジ設定（履歴参照）">
 
 ```json
 {
@@ -1078,11 +1096,11 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 }
 ```
 
-- `sessionRetention`: 完了した分離 Cron 実行セッションを `sessions.json` から刈り込むまで保持する期間。アーカイブ済みの削除済み Cron トランスクリプトのクリーンアップも制御します。デフォルト: `24h`。無効にするには `false` を設定します。
-- `runLog.maxBytes`: 刈り込み前の実行ログファイル (`cron/runs/<jobId>.jsonl`) ごとの最大サイズ。デフォルト: `2_000_000` バイト。
-- `runLog.keepLines`: 実行ログの刈り込みがトリガーされたときに保持される最新行数。デフォルト: `2000`。
-- `webhookToken`: Cron Webhook POST 配信 (`delivery.mode = "webhook"`) に使用されるベアラートークン。省略した場合、認証ヘッダーは送信されません。
-- `webhook`: 非推奨のレガシーフォールバック Webhook URL (http/https)。まだ `notify: true` を持つ保存済みジョブにのみ使用されます。
+- `sessionRetention`: 完了した分離 cron 実行セッションを `sessions.json` から剪定するまで保持する期間。アーカイブ済みの削除済み cron トランスクリプトのクリーンアップも制御します。デフォルト: `24h`。無効にするには `false` を設定します。
+- `runLog.maxBytes`: 剪定前の実行ログファイル（`cron/runs/<jobId>.jsonl`）ごとの最大サイズ。デフォルト: `2_000_000` バイト。
+- `runLog.keepLines`: 実行ログの剪定がトリガーされたときに保持される最新行数。デフォルト: `2000`。
+- `webhookToken`: cron Webhook POST 配信（`delivery.mode = "webhook"`）に使用されるベアラートークン。省略した場合、認証ヘッダーは送信されません。
+- `webhook`: まだ `notify: true` を持つ保存済みジョブにのみ使用される、非推奨のレガシーフォールバック Webhook URL（http/https）。
 
 ### `cron.retry`
 
@@ -1098,11 +1116,11 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 }
 ```
 
-- `maxAttempts`: 一過性エラーに対するワンショットジョブの最大リトライ回数 (デフォルト: `3`、範囲: `0`–`10`)。
-- `backoffMs`: 各リトライ試行のバックオフ遅延 (ms) の配列 (デフォルト: `[30000, 60000, 300000]`、1–10 エントリ)。
-- `retryOn`: リトライをトリガーするエラー種別 — `"rate_limit"`、`"overloaded"`、`"network"`、`"timeout"`、`"server_error"`。省略すると、すべての一過性種別でリトライします。
+- `maxAttempts`: 一時的なエラーでの一回限りのジョブの最大リトライ回数（デフォルト: `3`、範囲: `0`–`10`）。
+- `backoffMs`: 各リトライ試行のバックオフ遅延（ms）の配列（デフォルト: `[30000, 60000, 300000]`、1–10 エントリ）。
+- `retryOn`: リトライをトリガーするエラー種別 — `"rate_limit"`、`"overloaded"`、`"network"`、`"timeout"`、`"server_error"`。省略すると、すべての一時的な種別でリトライします。
 
-ワンショット Cron ジョブにのみ適用されます。繰り返しジョブは別の失敗処理を使用します。
+一回限りの cron ジョブにのみ適用されます。繰り返しジョブは別の失敗処理を使用します。
 
 ### `cron.failureAlert`
 
@@ -1121,12 +1139,12 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 }
 ```
 
-- `enabled`: Cron ジョブの失敗アラートを有効にします (デフォルト: `false`)。
-- `after`: アラートが発火するまでの連続失敗回数 (正の整数、最小: `1`)。
-- `cooldownMs`: 同じジョブに対する繰り返しアラート間の最小ミリ秒数 (非負の整数)。
-- `includeSkipped`: 連続したスキップ実行をアラートしきい値にカウントします (デフォルト: `false`)。スキップされた実行は別個に追跡され、実行エラーのバックオフには影響しません。
-- `mode`: 配信モード — `"announce"` はチャネルメッセージ経由で送信し、`"webhook"` は設定済み Webhook に投稿します。
-- `accountId`: アラート配信のスコープを絞るための省略可能なアカウントまたはチャネル ID。
+- `enabled`: cron ジョブの失敗アラートを有効にします（デフォルト: `false`）。
+- `after`: アラートが発火するまでの連続失敗回数（正の整数、最小: `1`）。
+- `cooldownMs`: 同じジョブに対する繰り返しアラート間の最小ミリ秒数（非負の整数）。
+- `includeSkipped`: 連続スキップ実行をアラートしきい値にカウントします（デフォルト: `false`）。スキップ実行は別個に追跡され、実行エラーのバックオフには影響しません。
+- `mode`: 配信モード — `"announce"` はチャネルメッセージ経由で送信し、`"webhook"` は設定済みの Webhook に POST します。
+- `accountId`: アラート配信のスコープを絞る任意のアカウントまたはチャネル ID。
 
 ### `cron.failureDestination`
 
@@ -1143,20 +1161,20 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 }
 ```
 
-- すべてのジョブで cron 失敗通知に使うデフォルトの送信先。
-- `mode`: `"announce"` または `"webhook"`。十分なターゲットデータが存在する場合はデフォルトで `"announce"` になります。
-- `channel`: announce 配信用のチャンネル上書き。`"last"` は最後に確認された配信チャンネルを再利用します。
-- `to`: 明示的な announce ターゲットまたは Webhook URL。webhook モードでは必須です。
+- すべてのジョブに適用される Cron 失敗通知のデフォルト送信先。
+- `mode`: `"announce"` または `"webhook"`。十分なターゲットデータがある場合、デフォルトは `"announce"`。
+- `channel`: announce 配信用のチャンネル上書き。`"last"` は最後に確認された配信チャンネルを再利用する。
+- `to`: 明示的な announce ターゲットまたは Webhook URL。Webhook モードでは必須。
 - `accountId`: 配信用の任意のアカウント上書き。
-- ジョブごとの `delivery.failureDestination` は、このグローバルデフォルトを上書きします。
-- グローバルにもジョブごとにも失敗時の送信先が設定されていない場合、すでに `announce` で配信しているジョブは、失敗時にその主 announce ターゲットへフォールバックします。
-- `delivery.failureDestination` は、ジョブの主 `delivery.mode` が `"webhook"` でない限り、`sessionTarget="isolated"` のジョブでのみサポートされます。
+- ジョブごとの `delivery.failureDestination` は、このグローバルデフォルトを上書きする。
+- グローバルにもジョブごとにも失敗時の送信先が設定されていない場合、すでに `announce` で配信しているジョブは、失敗時にその主要 announce ターゲットへフォールバックする。
+- `delivery.failureDestination` は、ジョブの主要 `delivery.mode` が `"webhook"` の場合を除き、`sessionTarget="isolated"` ジョブでのみサポートされる。
 
-[Cron ジョブ](/ja-JP/automation/cron-jobs)を参照してください。分離された cron 実行は[バックグラウンドタスク](/ja-JP/automation/tasks)として追跡されます。
+[Cron ジョブ](/ja-JP/automation/cron-jobs)を参照。分離された Cron 実行は[バックグラウンドタスク](/ja-JP/automation/tasks)として追跡される。
 
 ---
 
-## メディアモデルテンプレート変数
+## メディアモデルのテンプレート変数
 
 `tools.media.models[].args` で展開されるテンプレートプレースホルダー:
 
@@ -1166,28 +1184,28 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 | `{{RawBody}}`      | 生の本文（履歴/送信者ラッパーなし）               |
 | `{{BodyStripped}}` | グループメンションを除去した本文                  |
 | `{{From}}`         | 送信者識別子                                      |
-| `{{To}}`           | 宛先識別子                                        |
+| `{{To}}`           | 送信先識別子                                      |
 | `{{MessageSid}}`   | チャンネルメッセージ ID                           |
 | `{{SessionId}}`    | 現在のセッション UUID                             |
 | `{{IsNewSession}}` | 新しいセッションが作成された場合は `"true"`       |
-| `{{MediaUrl}}`     | 受信メディアの擬似 URL                            |
+| `{{MediaUrl}}`     | 受信メディアの疑似 URL                            |
 | `{{MediaPath}}`    | ローカルメディアパス                              |
-| `{{MediaType}}`    | メディアタイプ（image/audio/document/…）          |
+| `{{MediaType}}`    | メディア種別（画像/音声/ドキュメント/…）          |
 | `{{Transcript}}`   | 音声文字起こし                                    |
-| `{{Prompt}}`       | CLI エントリ用に解決済みのメディアプロンプト      |
-| `{{MaxChars}}`     | CLI エントリ用に解決済みの最大出力文字数          |
+| `{{Prompt}}`       | CLI エントリ用に解決されたメディアプロンプト      |
+| `{{MaxChars}}`     | CLI エントリ用に解決された最大出力文字数          |
 | `{{ChatType}}`     | `"direct"` または `"group"`                       |
 | `{{GroupSubject}}` | グループ件名（ベストエフォート）                  |
 | `{{GroupMembers}}` | グループメンバーのプレビュー（ベストエフォート）  |
 | `{{SenderName}}`   | 送信者の表示名（ベストエフォート）                |
 | `{{SenderE164}}`   | 送信者の電話番号（ベストエフォート）              |
-| `{{Provider}}`     | プロバイダーのヒント（whatsapp、telegram、discord など） |
+| `{{Provider}}`     | プロバイダーヒント（whatsapp、telegram、discord など） |
 
 ---
 
-## 設定のインクルード（`$include`）
+## Config インクルード（`$include`）
 
-設定を複数のファイルに分割します:
+設定を複数のファイルに分割する:
 
 ```json5
 // ~/.openclaw/openclaw.json
@@ -1202,14 +1220,14 @@ CLI のガイド付きセットアップフロー (`onboard`、`configure`、`do
 
 **マージ動作:**
 
-- 単一ファイル: それを含むオブジェクトを置き換えます。
-- ファイル配列: 順番にディープマージされます（後のものが前のものを上書きします）。
-- 兄弟キー: include の後にマージされます（include された値を上書きします）。
-- ネストした include: 最大 10 レベルまで。
-- パス: include しているファイルからの相対パスとして解決されますが、トップレベル設定ディレクトリ（`openclaw.json` の `dirname`）内に留まる必要があります。絶対パス/`../` 形式は、その境界内に解決される場合のみ許可されます。
-- 単一ファイル include で裏付けられたトップレベルセクションを 1 つだけ変更する OpenClaw 所有の書き込みは、その include 先ファイルに書き込みます。たとえば、`plugins install` は `plugins.json5` 内の `plugins: { $include: "./plugins.json5" }` を更新し、`openclaw.json` はそのまま残します。
-- ルート include、include 配列、兄弟上書き付きの include は、OpenClaw 所有の書き込みでは読み取り専用です。これらの書き込みは設定をフラット化する代わりに fail closed します。
-- エラー: ファイル欠落、解析エラー、循環 include に対して明確なメッセージを表示します。
+- 単一ファイル: 含んでいるオブジェクトを置き換える。
+- ファイル配列: 順番にディープマージされる（後のものが前のものを上書き）。
+- 兄弟キー: インクルード後にマージされる（インクルードされた値を上書き）。
+- ネストされたインクルード: 最大 10 階層まで。
+- パス: インクルードしているファイルからの相対パスとして解決されるが、トップレベル設定ディレクトリ（`openclaw.json` の `dirname`）の内側に留まる必要がある。絶対パス/`../` 形式は、その境界内に解決される場合にのみ許可される。
+- 単一ファイルのインクルードに裏付けられたトップレベルセクションを 1 つだけ変更する OpenClaw 所有の書き込みは、そのインクルード先ファイルへ書き込まれる。たとえば、`plugins install` は `plugins: { $include: "./plugins.json5" }` を `plugins.json5` 内で更新し、`openclaw.json` はそのまま残す。
+- ルートインクルード、インクルード配列、兄弟上書きのあるインクルードは、OpenClaw 所有の書き込みでは読み取り専用。そのような書き込みは設定をフラット化する代わりに fail closed する。
+- エラー: 欠落ファイル、解析エラー、循環インクルードには明確なメッセージを出す。
 
 ---
 
