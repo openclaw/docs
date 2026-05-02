@@ -1,22 +1,22 @@
 ---
 read_when:
-    - การเรียกใช้หรือเรียกใช้การตรวจสอบความถูกต้องของรีลีสแบบเต็มซ้ำ
-    - การเปรียบเทียบโปรไฟล์การตรวจสอบการเผยแพร่แบบเสถียรและแบบเต็ม
+    - การเรียกใช้หรือเรียกใช้การตรวจสอบความถูกต้องของการเผยแพร่ฉบับเต็มอีกครั้ง
+    - การเปรียบเทียบโปรไฟล์การตรวจสอบความถูกต้องของรีลีสแบบเสถียรและแบบเต็ม
     - การดีบักความล้มเหลวของขั้นตอนการตรวจสอบความถูกต้องของรีลีส
-summary: ขั้นตอนการตรวจสอบการเผยแพร่แบบเต็ม เวิร์กโฟลว์ย่อย โปรไฟล์การเผยแพร่ ตัวอ้างอิงการรันซ้ำ และหลักฐาน
-title: การตรวจสอบความถูกต้องของการเผยแพร่แบบเต็ม
+summary: ขั้นตอนการตรวจสอบรีลีสแบบเต็ม เวิร์กโฟลว์ลูก โปรไฟล์รีลีส แฮนเดิลการรันซ้ำ และหลักฐาน
+title: การตรวจสอบรีลีสแบบเต็ม
 x-i18n:
-    generated_at: "2026-05-02T10:28:46Z"
+    generated_at: "2026-05-02T20:59:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: feb4edec850fb97405575c869547b4851bc773507321690670553e6faafc8b0b
+    source_hash: 3ce1e5a72227ca202335fe68b537491a0b68a0bb2af431aa56c41cf20989e88c
     source_path: reference/full-release-validation.md
     workflow: 16
 ---
 
-`Full Release Validation` คือเวิร์กโฟลว์ครอบของการรีลีส เป็นจุดเข้าใช้งานแบบ manual เพียงจุดเดียวสำหรับหลักฐานก่อนรีลีส แต่งานส่วนใหญ่เกิดขึ้นในเวิร์กโฟลว์ลูกเพื่อให้กล่องที่ล้มเหลวสามารถรันซ้ำได้โดยไม่ต้องเริ่มการรีลีสทั้งหมดใหม่
+`Full Release Validation` คือเวิร์กโฟลว์ครอบคลุมของการเผยแพร่ เป็นจุดเข้าแบบแมนนวลจุดเดียวสำหรับหลักฐานก่อนเผยแพร่ แต่การทำงานส่วนใหญ่เกิดขึ้นในเวิร์กโฟลว์ลูก เพื่อให้สามารถรันกล่องที่ล้มเหลวซ้ำได้โดยไม่ต้องเริ่มการเผยแพร่ทั้งหมดใหม่
 
-รันจาก workflow ref ที่เชื่อถือได้ โดยปกติคือ `main` แล้วส่ง branch รีลีส, tag หรือ SHA ของ commit แบบเต็มเป็น `ref`:
+รันจาก ref ของเวิร์กโฟลว์ที่เชื่อถือได้ ซึ่งปกติคือ `main` และส่งสาขาเผยแพร่ แท็ก หรือ SHA ของคอมมิตแบบเต็มเป็น `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
@@ -27,134 +27,127 @@ gh workflow run full-release-validation.yml \
   -f release_profile=stable
 ```
 
-เวิร์กโฟลว์ลูกใช้ workflow ref ที่เชื่อถือได้สำหรับ harness และใช้ input
-`ref` สำหรับ candidate ที่อยู่ระหว่างทดสอบ วิธีนี้ทำให้มี logic การตรวจสอบใหม่พร้อมใช้งาน
-เมื่อกำลังตรวจสอบ branch หรือ tag ของรีลีสที่เก่ากว่า
+เวิร์กโฟลว์ลูกใช้ ref ของเวิร์กโฟลว์ที่เชื่อถือได้สำหรับฮาร์เนส และใช้ค่าอินพุต `ref` สำหรับแคนดิเดตที่อยู่ระหว่างทดสอบ วิธีนี้ทำให้ตรรกะตรวจสอบความถูกต้องใหม่พร้อมใช้งานเมื่อกำลังตรวจสอบความถูกต้องของสาขาหรือแท็กเผยแพร่ที่เก่ากว่า
+
+โดยปกติ Package Acceptance จะสร้าง tarball ของแคนดิเดตจาก `ref` ที่ resolve แล้ว รวมถึงการรันด้วย SHA เต็มที่ dispatch ผ่าน `pnpm ci:full-release` หลังเผยแพร่ ให้ส่ง `package_acceptance_package_spec=openclaw@YYYY.M.D` (หรือ `openclaw@beta`/`openclaw@latest`) เพื่อรันเมทริกซ์แพ็กเกจ/อัปเดตเดียวกันกับแพ็กเกจ npm ที่จัดส่งแล้วแทน
 
 ## ขั้นตอนระดับบนสุด
 
 | ขั้นตอน                | รายละเอียด                                                                                                                                                                                                                                                                                                                                                                                       |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| การ resolve เป้าหมาย    | **งาน:** `Resolve target ref`<br />**เวิร์กโฟลว์ลูก:** ไม่มี<br />**พิสูจน์:** resolve branch รีลีส, tag หรือ SHA ของ commit แบบเต็ม และบันทึก input ที่เลือกไว้<br />**รันซ้ำ:** รัน umbrella ซ้ำหากขั้นตอนนี้ล้มเหลว                                                                                                                                                                              |
-| Vitest และ CI ปกติ | **งาน:** `Run normal full CI`<br />**เวิร์กโฟลว์ลูก:** `CI`<br />**พิสูจน์:** กราฟ CI แบบเต็มที่สั่ง manual กับ target ref รวมถึง Linux Node lanes, bundled plugin shards, channel contracts, ความเข้ากันได้กับ Node 22, `check`, `check-additional`, build smoke, docs checks, Python skills, Windows, macOS, Control UI i18n และ Android ผ่าน umbrella<br />**รันซ้ำ:** `rerun_group=ci` |
-| การตรวจสอบ prerelease ของ Plugin    | **งาน:** `Run plugin prerelease validation`<br />**เวิร์กโฟลว์ลูก:** `Plugin Prerelease`<br />**พิสูจน์:** static checks เฉพาะรีลีสของ Plugin, การครอบคลุม agentic plugin, full extension batch shards และ Docker lanes สำหรับ plugin prerelease<br />**รันซ้ำ:** `rerun_group=plugin-prerelease`                                                                                                       |
-| การตรวจสอบรีลีส       | **งาน:** `Run release/live/Docker/QA validation`<br />**เวิร์กโฟลว์ลูก:** `OpenClaw Release Checks`<br />**พิสูจน์:** install smoke, cross-OS package checks, live/E2E suites, Docker release-path chunks, Package Acceptance, QA Lab parity, live Matrix และ live Telegram<br />**รันซ้ำ:** `rerun_group=release-checks` หรือ handle ของ release-checks ที่แคบกว่า                                |
-| Package Telegram     | **งาน:** `Run package Telegram E2E`<br />**เวิร์กโฟลว์ลูก:** `NPM Telegram Beta E2E`<br />**พิสูจน์:** หลักฐานแพ็กเกจ Telegram ที่อิง artifact สำหรับ `rerun_group=all` พร้อม `release_profile=full` หรือหลักฐาน Telegram จากแพ็กเกจที่ publish แล้วเมื่อมีการตั้งค่า `npm_telegram_package_spec`<br />**รันซ้ำ:** `rerun_group=npm-telegram` พร้อม `npm_telegram_package_spec`                                     |
-| ตัวตรวจสอบ umbrella    | **งาน:** `Verify full validation`<br />**เวิร์กโฟลว์ลูก:** ไม่มี<br />**พิสูจน์:** ตรวจสอบ conclusions ของ child run ที่บันทึกไว้อีกครั้ง และเพิ่มตารางงานที่ช้าที่สุดจากเวิร์กโฟลว์ลูก<br />**รันซ้ำ:** รันซ้ำเฉพาะงานนี้หลังจากรันเวิร์กโฟลว์ลูกที่ล้มเหลวซ้ำจนเขียว                                                                                                                                   |
+| การ resolve เป้าหมาย    | **งาน:** `Resolve target ref`<br />**เวิร์กโฟลว์ลูก:** ไม่มี<br />**พิสูจน์:** resolve สาขาเผยแพร่ แท็ก หรือ SHA ของคอมมิตแบบเต็ม และบันทึกอินพุตที่เลือกไว้<br />**รันซ้ำ:** รันเวิร์กโฟลว์ครอบคลุมซ้ำหากขั้นตอนนี้ล้มเหลว                                                                                                                                                                              |
+| Vitest และ CI ปกติ | **งาน:** `Run normal full CI`<br />**เวิร์กโฟลว์ลูก:** `CI`<br />**พิสูจน์:** กราฟ CI เต็มแบบแมนนวลกับ ref เป้าหมาย รวมถึงเลน Linux Node, ชาร์ด Plugin ที่บันเดิลมา, สัญญาของช่องทาง, ความเข้ากันได้กับ Node 22, `check`, `check-additional`, smoke ของบิลด์, การตรวจสอบเอกสาร, Skills ของ Python, Windows, macOS, Control UI i18n และ Android ผ่านเวิร์กโฟลว์ครอบคลุม<br />**รันซ้ำ:** `rerun_group=ci` |
+| Plugin ก่อนเผยแพร่    | **งาน:** `Run plugin prerelease validation`<br />**เวิร์กโฟลว์ลูก:** `Plugin Prerelease`<br />**พิสูจน์:** การตรวจสอบสแตติกของ Plugin เฉพาะการเผยแพร่, ความครอบคลุม Plugin แบบ agentic, ชาร์ดแบตช์ส่วนขยายแบบเต็ม และเลน Docker ก่อนเผยแพร่ของ Plugin<br />**รันซ้ำ:** `rerun_group=plugin-prerelease`                                                                                                       |
+| การตรวจสอบการเผยแพร่       | **งาน:** `Run release/live/Docker/QA validation`<br />**เวิร์กโฟลว์ลูก:** `OpenClaw Release Checks`<br />**พิสูจน์:** install smoke, การตรวจสอบแพ็กเกจข้าม OS, ชุดทดสอบ live/E2E, ชังก์เส้นทางการเผยแพร่ Docker, Package Acceptance, ความเท่าเทียมของ QA Lab, Matrix แบบ live และ Telegram แบบ live<br />**รันซ้ำ:** `rerun_group=release-checks` หรือแฮนเดิล release-checks ที่แคบกว่า                                |
+| Package Telegram     | **งาน:** `Run package Telegram E2E`<br />**เวิร์กโฟลว์ลูก:** `NPM Telegram Beta E2E`<br />**พิสูจน์:** หลักฐานแพ็กเกจ Telegram ที่อ้างอิงอาร์ติแฟกต์สำหรับ `rerun_group=all` พร้อม `release_profile=full` หรือหลักฐาน Telegram ของแพ็กเกจที่เผยแพร่แล้วเมื่อกำหนด `npm_telegram_package_spec`<br />**รันซ้ำ:** `rerun_group=npm-telegram` พร้อม `npm_telegram_package_spec`                                     |
+| ตัวตรวจสอบเวิร์กโฟลว์ครอบคลุม    | **งาน:** `Verify full validation`<br />**เวิร์กโฟลว์ลูก:** ไม่มี<br />**พิสูจน์:** ตรวจซ้ำผลสรุปของการรันเวิร์กโฟลว์ลูกที่บันทึกไว้ และต่อท้ายตารางงานที่ช้าที่สุดจากเวิร์กโฟลว์ลูก<br />**รันซ้ำ:** รันเฉพาะงานนี้ซ้ำหลังจากรันเวิร์กโฟลว์ลูกที่ล้มเหลวซ้ำจนผ่าน                                                                                                                                   |
 
-สำหรับ `ref=main` และ `rerun_group=all` umbrella ที่ใหม่กว่าจะ supersede umbrella ที่เก่ากว่า
-เมื่อ parent ถูกยกเลิก monitor ของ parent จะยกเลิก child workflow ใดก็ตามที่ได้ dispatch ไปแล้ว
-การรันตรวจสอบ branch รีลีสและ tag จะไม่ยกเลิกกันเองโดยค่าเริ่มต้น
+สำหรับ `ref=main` และ `rerun_group=all` เวิร์กโฟลว์ครอบคลุมที่ใหม่กว่าจะ supersede เวิร์กโฟลว์เก่า เมื่อ parent ถูกยกเลิก monitor ของมันจะยกเลิกเวิร์กโฟลว์ลูกใด ๆ ที่ dispatch ไปแล้ว การรันตรวจสอบความถูกต้องของสาขาเผยแพร่และแท็กจะไม่ยกเลิกกันโดยค่าเริ่มต้น
 
-## ขั้นตอนการตรวจสอบรีลีส
+## ขั้นตอนการตรวจสอบการเผยแพร่
 
-`OpenClaw Release Checks` เป็นเวิร์กโฟลว์ลูกที่ใหญ่ที่สุด โดยจะ resolve เป้าหมายหนึ่งครั้ง
-และเตรียม artifact `release-package-under-test` ที่ใช้ร่วมกันเมื่อขั้นตอนที่เกี่ยวกับแพ็กเกจ
-หรือ Docker จำเป็นต้องใช้
+`OpenClaw Release Checks` คือเวิร์กโฟลว์ลูกที่ใหญ่ที่สุด โดย resolve เป้าหมายครั้งเดียว และเตรียมอาร์ติแฟกต์ `release-package-under-test` ที่แชร์กันเมื่อขั้นตอนที่เกี่ยวข้องกับแพ็กเกจหรือ Docker ต้องใช้
 
 | ขั้นตอน               | รายละเอียด                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| เป้าหมายรีลีส      | **งาน:** `Resolve target ref`<br />**เวิร์กโฟลว์รองรับ:** ไม่มี<br />**ทดสอบ:** ref ที่เลือก, SHA ที่คาดไว้แบบ optional, profile, rerun group และตัวกรอง focused live suite<br />**รันซ้ำ:** `rerun_group=release-checks`                                                                                                                                                                           |
-| Artifact แพ็กเกจ    | **งาน:** `Prepare release package artifact`<br />**เวิร์กโฟลว์รองรับ:** ไม่มี<br />**ทดสอบ:** pack หรือ resolve candidate tarball หนึ่งรายการ และ upload `release-package-under-test` สำหรับ checks downstream ที่เกี่ยวกับแพ็กเกจ<br />**รันซ้ำ:** กลุ่มแพ็กเกจ, cross-OS หรือ live/E2E ที่ได้รับผลกระทบ                                                                                                           |
-| Install smoke       | **งาน:** `Run install smoke`<br />**เวิร์กโฟลว์รองรับ:** `Install Smoke`<br />**ทดสอบ:** เส้นทาง install แบบเต็มพร้อมการใช้ root Dockerfile smoke image ซ้ำ, การ install แพ็กเกจ QR, root และ gateway Docker smokes, installer Docker tests, Bun global install image-provider smoke และ bundled-plugin install/uninstall E2E แบบเร็ว<br />**รันซ้ำ:** `rerun_group=install-smoke`                              |
-| Cross-OS            | **งาน:** `cross_os_release_checks`<br />**เวิร์กโฟลว์รองรับ:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**ทดสอบ:** fresh lanes และ upgrade lanes บน Linux, Windows และ macOS สำหรับ provider และ mode ที่เลือก โดยใช้ candidate tarball พร้อม baseline package<br />**รันซ้ำ:** `rerun_group=cross-os`                                                                               |
-| Repo และ live E2E   | **งาน:** `Run repo/live E2E validation`<br />**เวิร์กโฟลว์รองรับ:** `OpenClaw Live And E2E Checks (Reusable)`<br />**ทดสอบ:** repository E2E, live cache, OpenAI websocket streaming, native live provider และ plugin shards และ harnesses ของ live model/backend/gateway ที่อิง Docker ซึ่งเลือกโดย `release_profile`<br />**รันซ้ำ:** `rerun_group=live-e2e` พร้อม `live_suite_filter` แบบ optional |
-| Docker release path | **งาน:** `Run Docker release-path validation`<br />**เวิร์กโฟลว์รองรับ:** `OpenClaw Live And E2E Checks (Reusable)`<br />**ทดสอบ:** release-path Docker chunks กับ artifact แพ็กเกจที่ใช้ร่วมกัน<br />**รันซ้ำ:** `rerun_group=live-e2e`                                                                                                                                                      |
-| Package Acceptance  | **งาน:** `Run package acceptance`<br />**เวิร์กโฟลว์รองรับ:** `Package Acceptance`<br />**ทดสอบ:** offline plugin package fixtures, การ update Plugin และ mock-OpenAI Telegram package acceptance กับ tarball เดียวกัน<br />**รันซ้ำ:** `rerun_group=package`                                                                                                                                  |
-| QA parity           | **งาน:** `Run QA Lab parity lane` และ `Run QA Lab parity report`<br />**เวิร์กโฟลว์รองรับ:** งานโดยตรง<br />**ทดสอบ:** candidate และ baseline agentic parity packs จากนั้น parity report<br />**รันซ้ำ:** `rerun_group=qa-parity` หรือ `rerun_group=qa`                                                                                                                                       |
-| QA live Matrix      | **งาน:** `Run QA Lab live Matrix lane`<br />**เวิร์กโฟลว์รองรับ:** งานโดยตรง<br />**ทดสอบ:** fast live Matrix QA profile ใน environment `qa-live-shared`<br />**รันซ้ำ:** `rerun_group=qa-live` หรือ `rerun_group=qa`                                                                                                                                                                        |
-| QA live Telegram    | **งาน:** `Run QA Lab live Telegram lane`<br />**เวิร์กโฟลว์รองรับ:** งานโดยตรง<br />**ทดสอบ:** live Telegram QA พร้อม Convex CI credential leases<br />**รันซ้ำ:** `rerun_group=qa-live` หรือ `rerun_group=qa`                                                                                                                                                                                    |
-| ตัวตรวจสอบรีลีส    | **งาน:** `Verify release checks`<br />**เวิร์กโฟลว์รองรับ:** ไม่มี<br />**ทดสอบ:** งาน release-check ที่จำเป็นสำหรับ rerun group ที่เลือก<br />**รันซ้ำ:** รันซ้ำหลังจาก focused child jobs ผ่าน                                                                                                                                                                                                 |
+| เป้าหมายการเผยแพร่      | **งาน:** `Resolve target ref`<br />**เวิร์กโฟลว์รองรับ:** ไม่มี<br />**ทดสอบ:** ref ที่เลือก, SHA ที่คาดไว้ซึ่งเป็นตัวเลือก, โปรไฟล์, กลุ่มรันซ้ำ และตัวกรองชุดทดสอบ live แบบเจาะจง<br />**รันซ้ำ:** `rerun_group=release-checks`                                                                                                                                                                           |
+| อาร์ติแฟกต์แพ็กเกจ    | **งาน:** `Prepare release package artifact`<br />**เวิร์กโฟลว์รองรับ:** ไม่มี<br />**ทดสอบ:** แพ็กหรือ resolve tarball แคนดิเดตหนึ่งรายการ และอัปโหลด `release-package-under-test` สำหรับการตรวจสอบขั้นปลายที่เกี่ยวกับแพ็กเกจ<br />**รันซ้ำ:** กลุ่มแพ็กเกจ ข้าม OS หรือ live/E2E ที่ได้รับผลกระทบ                                                                                                           |
+| Install smoke       | **งาน:** `Run install smoke`<br />**เวิร์กโฟลว์รองรับ:** `Install Smoke`<br />**ทดสอบ:** เส้นทางติดตั้งเต็มรูปแบบพร้อมการใช้ image smoke ของ Dockerfile รากซ้ำ, การติดตั้งแพ็กเกจ QR, smoke ของ Docker สำหรับรากและ Gateway, การทดสอบ Docker ของตัวติดตั้ง, smoke ของ image-provider สำหรับการติดตั้ง Bun global และ E2E การติดตั้ง/ถอนการติดตั้ง Plugin ที่บันเดิลมาแบบเร็ว<br />**รันซ้ำ:** `rerun_group=install-smoke`                              |
+| ข้าม OS            | **งาน:** `cross_os_release_checks`<br />**เวิร์กโฟลว์รองรับ:** `OpenClaw Cross-OS Release Checks (Reusable)`<br />**ทดสอบ:** เลนติดตั้งใหม่และอัปเกรดบน Linux, Windows และ macOS สำหรับ provider และ mode ที่เลือก โดยใช้ tarball แคนดิเดตพร้อมแพ็กเกจ baseline<br />**รันซ้ำ:** `rerun_group=cross-os`                                                                               |
+| Repo และ live E2E   | **งาน:** `Run repo/live E2E validation`<br />**เวิร์กโฟลว์รองรับ:** `OpenClaw Live And E2E Checks (Reusable)`<br />**ทดสอบ:** E2E ของ repository, แคช live, การสตรีม websocket ของ OpenAI, ชาร์ด provider และ Plugin แบบ native live และฮาร์เนส model/backend/gateway แบบ live ที่อิง Docker ซึ่งเลือกโดย `release_profile`<br />**รันซ้ำ:** `rerun_group=live-e2e` พร้อม `live_suite_filter` ได้ตามต้องการ |
+| เส้นทางการเผยแพร่ Docker | **งาน:** `Run Docker release-path validation`<br />**เวิร์กโฟลว์รองรับ:** `OpenClaw Live And E2E Checks (Reusable)`<br />**ทดสอบ:** ชังก์ Docker เส้นทางการเผยแพร่กับอาร์ติแฟกต์แพ็กเกจที่แชร์กัน<br />**รันซ้ำ:** `rerun_group=live-e2e`                                                                                                                                                      |
+| Package Acceptance  | **งาน:** `Run package acceptance`<br />**เวิร์กโฟลว์รองรับ:** `Package Acceptance`<br />**ทดสอบ:** fixture แพ็กเกจ Plugin แบบออฟไลน์, การอัปเดต Plugin, package acceptance ของ Telegram แบบ mock-OpenAI และการตรวจสอบ survivor ของการอัปเกรดที่เผยแพร่แล้วจาก npm stable release ทุกเวอร์ชันตั้งแต่ `2026.4.23` เป็นต้นไปกับ tarball เดียวกัน<br />**รันซ้ำ:** `rerun_group=package`                                         |
+| ความเท่าเทียมของ QA           | **งาน:** `Run QA Lab parity lane` และ `Run QA Lab parity report`<br />**เวิร์กโฟลว์รองรับ:** งานโดยตรง<br />**ทดสอบ:** parity pack แบบ agentic ของแคนดิเดตและ baseline จากนั้นจึงเป็นรายงานความเท่าเทียม<br />**รันซ้ำ:** `rerun_group=qa-parity` หรือ `rerun_group=qa`                                                                                                                                       |
+| QA live Matrix      | **งาน:** `Run QA Lab live Matrix lane`<br />**เวิร์กโฟลว์รองรับ:** งานโดยตรง<br />**ทดสอบ:** โปรไฟล์ QA ของ Matrix แบบ live ที่รวดเร็วใน environment `qa-live-shared`<br />**รันซ้ำ:** `rerun_group=qa-live` หรือ `rerun_group=qa`                                                                                                                                                                        |
+| QA live Telegram    | **งาน:** `Run QA Lab live Telegram lane`<br />**เวิร์กโฟลว์รองรับ:** งานโดยตรง<br />**ทดสอบ:** QA ของ Telegram แบบ live พร้อม lease ของ credential Convex CI<br />**รันซ้ำ:** `rerun_group=qa-live` หรือ `rerun_group=qa`                                                                                                                                                                                    |
+| ตัวตรวจสอบการเผยแพร่    | **งาน:** `Verify release checks`<br />**เวิร์กโฟลว์รองรับ:** ไม่มี<br />**ทดสอบ:** งาน release-check ที่จำเป็นสำหรับกลุ่มรันซ้ำที่เลือก<br />**รันซ้ำ:** รันซ้ำหลังจากงานลูกแบบเจาะจงผ่านแล้ว                                                                                                                                                                                                 |
 
-## Docker release-path chunks
+## ชังก์เส้นทางการเผยแพร่ Docker
 
-ขั้นตอน Docker release-path จะรัน chunks เหล่านี้เมื่อ `live_suite_filter`
-ว่าง:
+ขั้นตอนเส้นทางการเผยแพร่ Docker จะรันชังก์เหล่านี้เมื่อ `live_suite_filter` ว่าง:
 
-| Chunk                                                           | การครอบคลุม                                                                |
+| ชังก์                                                           | ความครอบคลุม                                                                |
 | --------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `core`                                                          | Core Docker release-path smoke lanes.                                   |
-| `package-update-openai`                                         | พฤติกรรมการ install และ update แพ็กเกจ OpenAI                             |
-| `package-update-anthropic`                                      | พฤติกรรมการ install และ update แพ็กเกจ Anthropic                          |
-| `package-update-core`                                           | พฤติกรรมของแพ็กเกจและการ update ที่เป็น provider-neutral                           |
-| `plugins-runtime-plugins`                                       | Plugin runtime lanes ที่ exercise พฤติกรรมของ Plugin                     |
-| `plugins-runtime-services`                                      | Service-backed plugin runtime lanes รวมถึง OpenWebUI เมื่อร้องขอ |
-| `plugins-runtime-install-a` through `plugins-runtime-install-h` | ชุด install/runtime ของ Plugin ที่แบ่งสำหรับการตรวจสอบรีลีสแบบ parallel   |
+| `core`                                                          | เลน smoke ของเส้นทางการเผยแพร่ Docker หลัก                                   |
+| `package-update-openai`                                         | พฤติกรรมการติดตั้งและอัปเดตแพ็กเกจ OpenAI                             |
+| `package-update-anthropic`                                      | พฤติกรรมการติดตั้งและอัปเดตแพ็กเกจ Anthropic                          |
+| `package-update-core`                                           | พฤติกรรมแพ็กเกจและการอัปเดตที่ไม่ผูกกับ provider                           |
+| `plugins-runtime-plugins`                                       | เลน runtime ของ Plugin ที่ exercise พฤติกรรม Plugin                     |
+| `plugins-runtime-services`                                      | เลน runtime ของ Plugin ที่อิง service รวม OpenWebUI เมื่อร้องขอ |
+| `plugins-runtime-install-a` through `plugins-runtime-install-h` | แบตช์การติดตั้ง/runtime ของ Plugin ที่แบ่งสำหรับการตรวจสอบการเผยแพร่แบบขนาน   |
 
-ใช้ `docker_lanes=<lane[,lane]>` แบบ targeted บน reusable live/E2E workflow เมื่อ
-Docker lane เพียง lane เดียวล้มเหลว artifacts ของรีลีสมีคำสั่งรันซ้ำต่อ lane
-พร้อม input สำหรับ package artifact และการใช้ image ซ้ำเมื่อมีให้ใช้งาน
+ใช้ `docker_lanes=<lane[,lane]>` แบบเจาะจงบนเวิร์กโฟลว์ live/E2E ที่ reusable เมื่อมีเลน Docker เพียงเลนเดียวล้มเหลว อาร์ติแฟกต์การเผยแพร่มีคำสั่งรันซ้ำรายเลนพร้อมอินพุตอาร์ติแฟกต์แพ็กเกจและการใช้ image ซ้ำเมื่อพร้อมใช้งาน
 
-## โปรไฟล์รีลีส
+## โปรไฟล์การเผยแพร่
 
-`release_profile` ควบคุมขอบเขตของ live/provider ภายในการตรวจสอบรีลีสเป็นหลัก
-ไม่ได้ลบ normal full CI, Plugin Prerelease, install smoke, package
-acceptance, QA Lab หรือ Docker release-path chunks ออกไป `full` ยังทำให้
-umbrella รัน package Telegram E2E กับ artifact แพ็กเกจรีลีสเมื่อ
-`rerun_group=all` เพื่อให้ candidate แบบเต็มก่อน publish ไม่ข้าม
-Telegram package lane นั้นไปอย่างเงียบ ๆ
+`release_profile` ควบคุมขอบเขต live/provider ภายใน release checks เป็นหลัก
+ไม่ได้ตัด full CI ปกติ, Plugin Prerelease, install smoke, package
+acceptance, QA Lab หรือส่วน Docker release-path ออก `full` ยังทำให้
+umbrella เรียกใช้ Telegram E2E ของแพ็กเกจกับอาร์ติแฟกต์แพ็กเกจรีลีสเมื่อ
+`rerun_group=all` ดังนั้นตัวเลือกก่อนเผยแพร่แบบเต็มจะไม่ข้ามเลนแพ็กเกจ
+Telegram นั้นอย่างเงียบๆ
 
-| โปรไฟล์   | การใช้งานที่ตั้งใจไว้                      | ความครอบคลุมการทดสอบใช้งานจริง/ผู้ให้บริการที่รวมไว้                                                                                                                                               |
+| โปรไฟล์   | การใช้งานที่ตั้งใจ                      | ความครอบคลุม live/provider ที่รวมอยู่                                                                                                                                               |
 | --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `minimum` | การตรวจสอบขั้นต้นที่เร็วที่สุดสำหรับส่วนสำคัญของการปล่อยรุ่น   | เส้นทางใช้งานจริงของ OpenAI/core, โมเดลใช้งานจริงของ Docker สำหรับ OpenAI, แกน Gateway แบบเนทีฟ, โปรไฟล์ Gateway OpenAI แบบเนทีฟ, Plugin OpenAI แบบเนทีฟ และ Gateway OpenAI ใช้งานจริงบน Docker               |
-| `stable`  | โปรไฟล์เริ่มต้นสำหรับอนุมัติการปล่อยรุ่น | `minimum` รวมกับ Anthropic, Google, MiniMax, backend, ชุดทดสอบใช้งานจริงแบบเนทีฟ, backend CLI ใช้งานจริงบน Docker, การผูก ACP บน Docker, ชุดทดสอบ Codex บน Docker และชาร์ด smoke ของ OpenCode Go |
-| `full`    | การกวาดตรวจเชิงแนะนำแบบกว้าง             | `stable` รวมกับผู้ให้บริการเชิงแนะนำ, ชาร์ดใช้งานจริงของ Plugin และชาร์ดใช้งานจริงของสื่อ                                                                                                  |
+| `minimum` | smoke ที่เร็วที่สุดสำหรับรีลีสที่สำคัญ   | เส้นทาง live ของ OpenAI/core, โมเดล live ของ Docker สำหรับ OpenAI, แกนหลัก Gateway แบบเนทีฟ, โปรไฟล์ Gateway OpenAI แบบเนทีฟ, Plugin OpenAI แบบเนทีฟ และ Gateway live ของ Docker สำหรับ OpenAI               |
+| `stable`  | โปรไฟล์อนุมัติรีลีสเริ่มต้น | `minimum` บวก Anthropic, Google, MiniMax, backend, ชุดทดสอบ live แบบเนทีฟ, backend CLI live ของ Docker, Docker ACP bind, ชุดทดสอบ Codex ของ Docker และ shard smoke ของ OpenCode Go |
+| `full`    | การกวาดตรวจ advisory แบบกว้าง             | `stable` บวกผู้ให้บริการ advisory, shard live ของ Plugin และ shard live ของสื่อ                                                                                                  |
 
 ## รายการเพิ่มเติมเฉพาะ full
 
-ชุดทดสอบเหล่านี้ถูกข้ามโดย `stable` และถูกรวมไว้โดย `full`:
+ชุดเหล่านี้ถูกข้ามโดย `stable` และรวมอยู่ใน `full`:
 
 | พื้นที่                             | ความครอบคลุมเฉพาะ full                                                              |
 | -------------------------------- | ------------------------------------------------------------------------------- |
-| โมเดลใช้งานจริงของ Docker               | OpenCode Go, OpenRouter, xAI, Z.ai และ Fireworks                              |
-| Gateway ใช้งานจริงบน Docker              | ชาร์ดเชิงแนะนำสำหรับ DeepSeek, Fireworks, OpenCode Go, OpenRouter, xAI และ Z.ai |
-| โปรไฟล์ผู้ให้บริการ Gateway แบบเนทีฟ | Fireworks, DeepSeek, ชาร์ดโมเดล OpenCode Go แบบเต็ม, OpenRouter, xAI และ Z.ai  |
-| ชาร์ดใช้งานจริงของ Plugin แบบเนทีฟ        | Plugins A-K, L-N, O-Z อื่น ๆ, Moonshot และ xAI                                 |
-| ชาร์ดใช้งานจริงของสื่อแบบเนทีฟ         | เสียง, เพลง Google, เพลง MiniMax และกลุ่มวิดีโอ A-D                       |
+| โมเดล live ของ Docker               | OpenCode Go, OpenRouter, xAI, Z.ai และ Fireworks                              |
+| Gateway live ของ Docker              | shard advisory สำหรับ DeepSeek, Fireworks, OpenCode Go, OpenRouter, xAI และ Z.ai |
+| โปรไฟล์ผู้ให้บริการ Gateway แบบเนทีฟ | Fireworks, DeepSeek, shard โมเดล OpenCode Go แบบเต็ม, OpenRouter, xAI และ Z.ai  |
+| shard live ของ Plugin แบบเนทีฟ        | Plugins A-K, L-N, O-Z อื่นๆ, Moonshot และ xAI                                 |
+| shard live ของสื่อแบบเนทีฟ         | Audio, Google music, MiniMax music และกลุ่มวิดีโอ A-D                       |
 
 `stable` รวม `native-live-src-gateway-profiles-opencode-go-smoke`; `full`
-ใช้ชาร์ดโมเดล OpenCode Go ที่กว้างกว่าแทน
+ใช้ shard โมเดล OpenCode Go ที่กว้างกว่าแทน
 
-## การรันซ้ำแบบเจาะจง
+## การเรียกซ้ำแบบเจาะจง
 
-ใช้ `rerun_group` เพื่อหลีกเลี่ยงการทำซ้ำกล่องปล่อยรุ่นที่ไม่เกี่ยวข้อง:
+ใช้ `rerun_group` เพื่อหลีกเลี่ยงการรันกล่องรีลีสที่ไม่เกี่ยวข้องซ้ำ:
 
 | แฮนเดิล              | ขอบเขต                                                                 |
 | ------------------- | --------------------------------------------------------------------- |
 | `all`               | ทุกขั้นตอนของ Full Release Validation                                   |
-| `ci`                | เฉพาะ CI ลูกแบบเต็มที่สั่งเอง                                            |
-| `plugin-prerelease` | เฉพาะลูก Plugin Prerelease                                         |
+| `ci`                | เฉพาะ child full CI แบบ manual                                            |
+| `plugin-prerelease` | เฉพาะ child Plugin Prerelease                                         |
 | `release-checks`    | ทุกขั้นตอนของ OpenClaw Release Checks                                   |
-| `install-smoke`     | Install Smoke จนถึงการตรวจสอบการปล่อยรุ่น                                 |
-| `cross-os`          | การตรวจสอบการปล่อยรุ่นข้าม OS                                              |
-| `live-e2e`          | การตรวจสอบ E2E ของ repo/ใช้งานจริง และเส้นทางการปล่อยรุ่น Docker                     |
+| `install-smoke`     | Install Smoke ผ่าน release checks                                 |
+| `cross-os`          | release checks แบบ Cross-OS                                              |
+| `live-e2e`          | การตรวจสอบ repo/live E2E และ Docker release-path                     |
 | `package`           | Package Acceptance                                                   |
-| `qa`                | ความเท่าเทียม QA รวมกับเลนใช้งานจริง QA                                         |
-| `qa-parity`         | เฉพาะเลนและรายงานความเท่าเทียม QA                                      |
-| `qa-live`           | เฉพาะ Matrix ใช้งานจริงของ QA และ Telegram                                     |
-| `npm-telegram`      | E2E ของ Telegram สำหรับแพ็กเกจที่เผยแพร่แล้ว; ต้องใช้ `npm_telegram_package_spec` |
+| `qa`                | ความเท่าเทียม QA บวกเลน live ของ QA                                         |
+| `qa-parity`         | เฉพาะเลนความเท่าเทียม QA และรายงาน                                      |
+| `qa-live`           | เฉพาะ Matrix live ของ QA และ Telegram                                     |
+| `npm-telegram`      | Telegram E2E ของแพ็กเกจที่เผยแพร่แล้ว; ต้องใช้ `npm_telegram_package_spec` |
 
-ใช้ `live_suite_filter` กับ `rerun_group=live-e2e` เมื่อชุดทดสอบใช้งานจริงหนึ่งชุดล้มเหลว
-รหัสตัวกรองที่ถูกต้องถูกกำหนดในเวิร์กโฟลว์ใช้งานจริง/E2E ที่ใช้ซ้ำได้ รวมถึง
+ใช้ `live_suite_filter` กับ `rerun_group=live-e2e` เมื่อชุด live หนึ่งชุดล้มเหลว
+id ตัวกรองที่ใช้ได้ถูกกำหนดไว้ในเวิร์กโฟลว์ live/E2E ที่นำกลับมาใช้ซ้ำได้ รวมถึง
 `docker-live-models`, `live-gateway-docker`,
 `live-gateway-anthropic-docker`, `live-gateway-google-docker`,
 `live-gateway-minimax-docker`, `live-gateway-advisory-docker`,
 `live-cli-backend-docker`, `live-acp-bind-docker` และ
 `live-codex-harness-docker`
 
-## หลักฐานที่ต้องเก็บ
+## หลักฐานที่ควรเก็บไว้
 
-เก็บสรุป `Full Release Validation` ไว้เป็นดัชนีระดับการปล่อยรุ่น สรุปนี้ลิงก์ไปยัง
-รหัสการรันลูกและรวมตารางงานที่ช้าที่สุดไว้ด้วย เมื่อเกิดความล้มเหลว ให้ตรวจสอบ
-เวิร์กโฟลว์ลูกก่อน แล้วจึงรันแฮนเดิลที่ตรงกันและเล็กที่สุดจากด้านบนซ้ำ
+เก็บสรุป `Full Release Validation` ไว้เป็นดัชนีระดับรีลีส โดยจะลิงก์
+id ของ child run และรวมตารางงานที่ช้าที่สุดไว้ด้วย สำหรับความล้มเหลว ให้ตรวจสอบ
+child workflow ก่อน จากนั้นเรียกซ้ำด้วยแฮนเดิลที่ตรงกันและเล็กที่สุดด้านบน
 
 อาร์ติแฟกต์ที่มีประโยชน์:
 
 - `release-package-under-test` จาก `OpenClaw Release Checks`
-- อาร์ติแฟกต์เส้นทางการปล่อยรุ่น Docker ใต้ `.artifacts/docker-tests/`
-- `package-under-test` ของ Package Acceptance และอาร์ติแฟกต์การยอมรับ Docker
-- อาร์ติแฟกต์การตรวจสอบการปล่อยรุ่นข้าม OS สำหรับแต่ละ OS และชุดทดสอบ
-- อาร์ติแฟกต์ความเท่าเทียม QA, Matrix และ Telegram
+- อาร์ติแฟกต์ Docker release-path ภายใต้ `.artifacts/docker-tests/`
+- `package-under-test` ของ Package Acceptance และอาร์ติแฟกต์การยอมรับของ Docker
+- อาร์ติแฟกต์ release-check แบบ Cross-OS สำหรับแต่ละ OS และชุด
+- อาร์ติแฟกต์ QA parity, Matrix และ Telegram
 
 ## ไฟล์เวิร์กโฟลว์
 

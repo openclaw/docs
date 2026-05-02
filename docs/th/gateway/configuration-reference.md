@@ -1,63 +1,74 @@
 ---
 read_when:
-    - คุณต้องการความหมายของการกำหนดค่าระดับฟิลด์หรือค่าเริ่มต้นที่แน่นอน
-    - คุณกำลังตรวจสอบบล็อกการกำหนดค่าช่องทาง โมเดล Gateway หรือเครื่องมือ
-summary: เอกสารอ้างอิงการกำหนดค่า Gateway สำหรับคีย์หลักของ OpenClaw ค่าเริ่มต้น และลิงก์ไปยังเอกสารอ้างอิงของระบบย่อยเฉพาะ
+    - คุณต้องการความหมายของการกำหนดค่าระดับฟิลด์หรือค่าเริ่มต้นที่ถูกต้องแม่นยำ
+    - คุณกำลังตรวจสอบความถูกต้องของบล็อกการกำหนดค่าช่องทาง โมเดล Gateway หรือเครื่องมือ
+summary: เอกสารอ้างอิงการกำหนดค่า Gateway สำหรับคีย์หลักของ OpenClaw ค่าเริ่มต้น และลิงก์ไปยังเอกสารอ้างอิงระบบย่อยเฉพาะ
 title: ข้อมูลอ้างอิงการกำหนดค่า
 x-i18n:
-    generated_at: "2026-05-02T10:15:33Z"
+    generated_at: "2026-05-02T20:43:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fa8aeec6143ae70905e75f1034005c97c3a72fcaa34f14f61294dece561f4ce6
+    source_hash: 559a52c9ea7428aa0a33b9699eaf144aa114638acf57f813217642319ce77987
     source_path: gateway/configuration-reference.md
     workflow: 16
 ---
 
-ข้อมูลอ้างอิงการกำหนดค่าหลักสำหรับ `~/.openclaw/openclaw.json` สำหรับภาพรวมที่เน้นงาน ดู [การกำหนดค่า](/th/gateway/configuration)
+ข้อมูลอ้างอิงการกำหนดค่าหลักสำหรับ `~/.openclaw/openclaw.json` สำหรับภาพรวมแบบเน้นงาน ดู [การกำหนดค่า](/th/gateway/configuration)
 
-ครอบคลุมพื้นผิวการกำหนดค่าหลักของ OpenClaw และลิงก์ออกไปเมื่อระบบย่อยมีข้อมูลอ้างอิงเชิงลึกของตัวเอง แค็ตตาล็อกคำสั่งที่ channel และ Plugin เป็นเจ้าของ รวมถึงตัวเลือกเชิงลึกของหน่วยความจำ/QMD อยู่ในหน้าของตัวเองแทนที่จะอยู่ในหน้านี้
+ครอบคลุมพื้นผิวการกำหนดค่าหลักของ OpenClaw และลิงก์ออกไปเมื่อระบบย่อยมีข้อมูลอ้างอิงเชิงลึกของตัวเอง แค็ตตาล็อกคำสั่งที่ช่องทางและ Plugin เป็นเจ้าของ รวมถึงตัวเลือกเชิงลึกของหน่วยความจำ/QMD อยู่ในหน้าของตัวเองแทนที่จะอยู่ในหน้านี้
 
-แหล่งความจริงของโค้ด:
+แหล่งอ้างอิงจริงของโค้ด:
 
-- `openclaw config schema` พิมพ์ JSON Schema แบบสดที่ใช้สำหรับการตรวจสอบความถูกต้องและอินเทอร์เฟซควบคุม โดยรวมเมตาดาต้าของบันเดิล/Plugin/channel เมื่อมี
-- `config.schema.lookup` คืนค่าโหนดสคีมาหนึ่งรายการตามขอบเขตพาธสำหรับเครื่องมือเจาะลึก
-- `pnpm config:docs:check` / `pnpm config:docs:gen` ตรวจสอบแฮช baseline ของเอกสารการกำหนดค่าเทียบกับพื้นผิวสคีมาปัจจุบัน
+- `openclaw config schema` พิมพ์ JSON Schema สดที่ใช้สำหรับการตรวจสอบความถูกต้องและ UI ควบคุม พร้อมผสานเมทาดาตาของบันเดิล/Plugin/ช่องทางเข้าไปเมื่อพร้อมใช้งาน
+- `config.schema.lookup` ส่งคืนโหนดสคีมาหนึ่งรายการที่จำกัดตามพาธสำหรับเครื่องมือเจาะลึก
+- `pnpm config:docs:check` / `pnpm config:docs:gen` ตรวจสอบแฮชฐานของเอกสารการกำหนดค่ากับพื้นผิวสคีมาปัจจุบัน
 
-พาธค้นหา agent: ใช้การกระทำของเครื่องมือ `gateway` ชื่อ `config.schema.lookup` สำหรับเอกสารและข้อจำกัดระดับฟิลด์ที่แม่นยำก่อนแก้ไข ใช้ [การกำหนดค่า](/th/gateway/configuration) สำหรับคำแนะนำที่เน้นงาน และใช้หน้านี้สำหรับแผนที่ฟิลด์ที่กว้างขึ้น ค่าเริ่มต้น และลิงก์ไปยังข้อมูลอ้างอิงของระบบย่อย
+พาธการค้นหาเอเจนต์: ใช้การกระทำเครื่องมือ `gateway` ชื่อ `config.schema.lookup` สำหรับ
+เอกสารและข้อจำกัดระดับฟิลด์ที่แม่นยำก่อนแก้ไข ใช้
+[การกำหนดค่า](/th/gateway/configuration) สำหรับคำแนะนำแบบเน้นงาน และใช้หน้านี้
+สำหรับแผนที่ฟิลด์ที่กว้างกว่า ค่าเริ่มต้น และลิงก์ไปยังข้อมูลอ้างอิงของระบบย่อย
 
-ข้อมูลอ้างอิงเชิงลึกเฉพาะทาง:
+ข้อมูลอ้างอิงเชิงลึกเฉพาะ:
 
 - [ข้อมูลอ้างอิงการกำหนดค่าหน่วยความจำ](/th/reference/memory-config) สำหรับ `agents.defaults.memorySearch.*`, `memory.qmd.*`, `memory.citations` และการกำหนดค่า dreaming ภายใต้ `plugins.entries.memory-core.config.dreaming`
-- [คำสั่ง slash](/th/tools/slash-commands) สำหรับแค็ตตาล็อกคำสั่ง built-in + bundled ปัจจุบัน
-- หน้า channel/Plugin เจ้าของสำหรับพื้นผิวคำสั่งเฉพาะ channel
+- [คำสั่งสแลช](/th/tools/slash-commands) สำหรับแค็ตตาล็อกคำสั่งในตัว + คำสั่งที่บันเดิลไว้ในปัจจุบัน
+- หน้าของช่องทาง/Plugin เจ้าของ สำหรับพื้นผิวคำสั่งเฉพาะช่องทาง
 
-รูปแบบการกำหนดค่าคือ **JSON5** (อนุญาตความคิดเห็น + comma ท้ายรายการ) ทุกฟิลด์เป็นตัวเลือก — OpenClaw ใช้ค่าเริ่มต้นที่ปลอดภัยเมื่อไม่ได้ระบุ
+รูปแบบการกำหนดค่าคือ **JSON5** (อนุญาตให้มีคอมเมนต์ + จุลภาคท้ายรายการ) ฟิลด์ทั้งหมดเป็นแบบไม่บังคับ — OpenClaw ใช้ค่าเริ่มต้นที่ปลอดภัยเมื่อไม่ได้ระบุ
 
 ---
 
-## Channel
+## ช่องทาง
 
-คีย์การกำหนดค่าราย channel ย้ายไปยังหน้าเฉพาะแล้ว — ดู [การกำหนดค่า — channels](/th/gateway/config-channels) สำหรับ `channels.*` ซึ่งรวมถึง Slack, Discord, Telegram, WhatsApp, Matrix, iMessage และ channel แบบ bundled อื่นๆ (การยืนยันตัวตน, การควบคุมการเข้าถึง, หลายบัญชี, การกั้นด้วย mention)
+คีย์การกำหนดค่าต่อช่องทางย้ายไปยังหน้าเฉพาะแล้ว — ดู
+[การกำหนดค่า — ช่องทาง](/th/gateway/config-channels) สำหรับ `channels.*`
+รวมถึง Slack, Discord, Telegram, WhatsApp, Matrix, iMessage และช่องทางอื่น ๆ
+ที่บันเดิลไว้ (การยืนยันตัวตน, การควบคุมการเข้าถึง, หลายบัญชี, การควบคุมการกล่าวถึง)
 
-## ค่าเริ่มต้นของ agent, multi-agent, session และข้อความ
+## ค่าเริ่มต้นของเอเจนต์, หลายเอเจนต์, เซสชัน และข้อความ
 
-ย้ายไปยังหน้าเฉพาะแล้ว — ดู [การกำหนดค่า — agents](/th/gateway/config-agents) สำหรับ:
+ย้ายไปยังหน้าเฉพาะแล้ว — ดู
+[การกำหนดค่า — เอเจนต์](/th/gateway/config-agents) สำหรับ:
 
-- `agents.defaults.*` (workspace, model, thinking, Heartbeat, หน่วยความจำ, สื่อ, Skills, sandbox)
-- `multiAgent.*` (การกำหนดเส้นทางและการผูก multi-agent)
-- `session.*` (วงจรชีวิต session, Compaction, pruning)
-- `messages.*` (การส่งข้อความ, TTS, การเรนเดอร์ markdown)
+- `agents.defaults.*` (พื้นที่ทำงาน, โมเดล, การคิด, Heartbeat, หน่วยความจำ, สื่อ, Skills, sandbox)
+- `multiAgent.*` (การกำหนดเส้นทางและการผูกหลายเอเจนต์)
+- `session.*` (วงจรชีวิตเซสชัน, Compaction, การตัดแต่ง)
+- `messages.*` (การส่งข้อความ, TTS, การเรนเดอร์มาร์กดาวน์)
 - `talk.*` (โหมด Talk)
-  - `talk.speechLocale`: รหัส locale BCP 47 แบบตัวเลือกสำหรับการรู้จำเสียงพูดของ Talk บน iOS/macOS
-  - `talk.silenceTimeoutMs`: เมื่อไม่ได้ตั้งค่า Talk จะคงช่วงเวลาหยุดพูดเริ่มต้นของแพลตฟอร์มก่อนส่ง transcript (`700 ms on macOS and Android, 900 ms on iOS`)
+  - `talk.speechLocale`: รหัสโลเคล BCP 47 แบบไม่บังคับสำหรับการรู้จำเสียงพูด Talk บน iOS/macOS
+  - `talk.silenceTimeoutMs`: เมื่อไม่ได้ตั้งค่า Talk จะคงหน้าต่างหยุดพักค่าเริ่มต้นของแพลตฟอร์มไว้ก่อนส่งทรานสคริปต์ (`700 ms on macOS and Android, 900 ms on iOS`)
 
-## เครื่องมือและ provider แบบกำหนดเอง
+## เครื่องมือและผู้ให้บริการกำหนดเอง
 
-นโยบายเครื่องมือ, toggle เชิงทดลอง, การกำหนดค่าเครื่องมือที่มี provider รองรับ และการตั้งค่า provider / base-URL แบบกำหนดเองย้ายไปยังหน้าเฉพาะแล้ว — ดู [การกำหนดค่า — เครื่องมือและ provider แบบกำหนดเอง](/th/gateway/config-tools)
+นโยบายเครื่องมือ สวิตช์ทดลอง การกำหนดค่าเครื่องมือที่มีผู้ให้บริการหนุนหลัง และการตั้งค่า
+ผู้ให้บริการกำหนดเอง / URL ฐาน ย้ายไปยังหน้าเฉพาะแล้ว — ดู
+[การกำหนดค่า — เครื่องมือและผู้ให้บริการกำหนดเอง](/th/gateway/config-tools)
 
-## Model
+## โมเดล
 
-คำจำกัดความของ provider, allowlist ของ model และการตั้งค่า provider แบบกำหนดเองอยู่ใน [การกำหนดค่า — เครื่องมือและ provider แบบกำหนดเอง](/th/gateway/config-tools#custom-providers-and-base-urls) root `models` ยังเป็นเจ้าของพฤติกรรมแค็ตตาล็อก model ระดับ global ด้วย
+นิยามผู้ให้บริการ รายการอนุญาตของโมเดล และการตั้งค่าผู้ให้บริการกำหนดเองอยู่ใน
+[การกำหนดค่า — เครื่องมือและผู้ให้บริการกำหนดเอง](/th/gateway/config-tools#custom-providers-and-base-urls)
+รูท `models` ยังเป็นเจ้าของพฤติกรรมแค็ตตาล็อกโมเดลส่วนกลางด้วย
 
 ```json5
 {
@@ -68,13 +79,19 @@ x-i18n:
 }
 ```
 
-- `models.mode`: พฤติกรรมแค็ตตาล็อก provider (`merge` หรือ `replace`)
-- `models.providers`: แผนที่ provider แบบกำหนดเองที่ใช้ provider id เป็นคีย์
-- `models.pricing.enabled`: ควบคุมการ bootstrap ราคาพื้นหลัง เมื่อเป็น `false` การเริ่มต้น Gateway จะข้ามการดึงแค็ตตาล็อกราคาของ OpenRouter และ LiteLLM ค่า `models.providers.*.models[].cost` ที่กำหนดไว้ยังคงใช้ได้สำหรับการประมาณต้นทุนแบบ local
+- `models.mode`: พฤติกรรมแค็ตตาล็อกผู้ให้บริการ (`merge` หรือ `replace`)
+- `models.providers`: แมปผู้ให้บริการกำหนดเองที่ใช้รหัสผู้ให้บริการเป็นคีย์
+- `models.pricing.enabled`: ควบคุมการบูตสแตรปราคาพื้นหลังที่
+  เริ่มหลังจากไซด์คาร์และช่องทางเข้าสู่พาธพร้อมใช้งานของ Gateway เมื่อ `false`
+  Gateway จะข้ามการดึงแค็ตตาล็อกราคาของ OpenRouter และ LiteLLM; ค่า
+  `models.providers.*.models[].cost` ที่กำหนดค่าไว้ยังใช้ได้กับการประมาณต้นทุนในเครื่อง
 
 ## MCP
 
-คำจำกัดความของเซิร์ฟเวอร์ MCP ที่ OpenClaw จัดการอยู่ภายใต้ `mcp.servers` และถูกใช้โดย Pi แบบฝังและ adapter รันไทม์อื่นๆ คำสั่ง `openclaw mcp list`, `show`, `set` และ `unset` จัดการบล็อกนี้โดยไม่เชื่อมต่อกับเซิร์ฟเวอร์ปลายทางระหว่างการแก้ไขการกำหนดค่า
+นิยามเซิร์ฟเวอร์ MCP ที่ OpenClaw จัดการอยู่ภายใต้ `mcp.servers` และถูก
+ใช้โดย Pi แบบฝังและอะแดปเตอร์รันไทม์อื่น ๆ คำสั่ง `openclaw mcp list`,
+`show`, `set` และ `unset` จัดการบล็อกนี้โดยไม่เชื่อมต่อกับ
+เซิร์ฟเวอร์เป้าหมายระหว่างการแก้ไขการกำหนดค่า
 
 ```json5
 {
@@ -98,11 +115,20 @@ x-i18n:
 }
 ```
 
-- `mcp.servers`: คำจำกัดความเซิร์ฟเวอร์ MCP แบบ stdio หรือ remote ที่ตั้งชื่อไว้สำหรับรันไทม์ที่เปิดเผยเครื่องมือ MCP ที่กำหนดค่าไว้ รายการ remote ใช้ `transport: "streamable-http"` หรือ `transport: "sse"`; `type: "http"` เป็น alias ที่เป็น native ของ CLI ซึ่ง `openclaw mcp set` และ `openclaw doctor --fix` จะ normalize ไปยังฟิลด์ `transport` ตาม canonical
-- `mcp.sessionIdleTtlMs`: TTL เมื่อ idle สำหรับรันไทม์ MCP แบบ bundled ที่มีขอบเขตตาม session การรันแบบฝัง one-shot ขอ cleanup เมื่อจบการรัน TTL นี้เป็นตัวรองรับสุดท้ายสำหรับ session ที่มีอายุยาวและผู้เรียกในอนาคต
-- การเปลี่ยนแปลงภายใต้ `mcp.*` hot-apply โดย dispose รันไทม์ MCP ของ session ที่แคชไว้ การค้นพบ/ใช้เครื่องมือครั้งถัดไปจะสร้างใหม่จากการกำหนดค่าใหม่ ดังนั้นรายการ `mcp.servers` ที่ถูกลบจะถูกเก็บกวาดทันทีแทนที่จะรอ idle TTL
+- `mcp.servers`: นิยามเซิร์ฟเวอร์ MCP แบบ stdio หรือระยะไกลที่ตั้งชื่อไว้ สำหรับรันไทม์ที่
+  เปิดเผยเครื่องมือ MCP ที่กำหนดค่าไว้
+  รายการระยะไกลใช้ `transport: "streamable-http"` หรือ `transport: "sse"`;
+  `type: "http"` เป็นนามแฝงแบบเนทีฟของ CLI ที่ `openclaw mcp set` และ
+  `openclaw doctor --fix` ปรับให้เป็นฟิลด์ `transport` ตามรูปแบบมาตรฐาน
+- `mcp.sessionIdleTtlMs`: TTL เมื่อไม่ได้ใช้งานสำหรับรันไทม์ MCP ที่บันเดิลไว้และจำกัดตามเซสชัน
+  การรันแบบฝังครั้งเดียวร้องขอการล้างข้อมูลเมื่อจบรัน; TTL นี้เป็นกลไกสำรองสำหรับ
+  เซสชันที่มีอายุยาวและผู้เรียกในอนาคต
+- การเปลี่ยนแปลงภายใต้ `mcp.*` มีผลแบบ hot-apply โดยทิ้งรันไทม์ MCP ของเซสชันที่แคชไว้
+  การค้นพบ/ใช้งานเครื่องมือครั้งถัดไปจะสร้างใหม่จากการกำหนดค่าใหม่ ดังนั้นรายการ
+  `mcp.servers` ที่ถูกลบจะถูกเก็บกวาดทันทีแทนที่จะรอ TTL เมื่อไม่ได้ใช้งาน
 
-ดู [MCP](/th/cli/mcp#openclaw-as-an-mcp-client-registry) และ [backend ของ CLI](/th/gateway/cli-backends#bundle-mcp-overlays) สำหรับพฤติกรรมรันไทม์
+ดู [MCP](/th/cli/mcp#openclaw-as-an-mcp-client-registry) และ
+[แบ็กเอนด์ CLI](/th/gateway/cli-backends#bundle-mcp-overlays) สำหรับพฤติกรรมรันไทม์
 
 ## Skills
 
@@ -129,12 +155,14 @@ x-i18n:
 }
 ```
 
-- `allowBundled`: allowlist แบบตัวเลือกสำหรับ Skills แบบ bundled เท่านั้น (Skills แบบ managed/workspace ไม่ได้รับผลกระทบ)
-- `load.extraDirs`: root ของ skill ที่ใช้ร่วมกันเพิ่มเติม (precedence ต่ำสุด)
-- `install.preferBrew`: เมื่อเป็น true ให้เลือก installer ของ Homebrew ก่อนเมื่อมี `brew` พร้อมใช้งาน ก่อน fallback ไปยังชนิด installer อื่น
-- `install.nodeManager`: ค่ากำหนด installer ของ node สำหรับสเปก `metadata.openclaw.install` (`npm` | `pnpm` | `yarn` | `bun`)
-- `entries.<skillKey>.enabled: false` ปิดใช้งาน skill แม้จะเป็น bundled/installed
-- `entries.<skillKey>.apiKey`: ช่องทางลัดสำหรับ Skills ที่ประกาศ env var หลัก (สตริง plaintext หรือออบเจ็กต์ SecretRef)
+- `allowBundled`: รายการอนุญาตแบบไม่บังคับสำหรับ Skills ที่บันเดิลไว้เท่านั้น (Skills ที่จัดการ/อยู่ในพื้นที่ทำงานไม่ได้รับผลกระทบ)
+- `load.extraDirs`: ราก Skills ที่ใช้ร่วมกันเพิ่มเติม (ลำดับความสำคัญต่ำสุด)
+- `install.preferBrew`: เมื่อเป็น true ให้เลือกตัวติดตั้ง Homebrew ก่อนเมื่อ `brew`
+  พร้อมใช้งาน ก่อนถอยไปใช้ชนิดตัวติดตั้งอื่น
+- `install.nodeManager`: ค่ากำหนดตัวติดตั้ง node สำหรับสเปก `metadata.openclaw.install`
+  (`npm` | `pnpm` | `yarn` | `bun`)
+- `entries.<skillKey>.enabled: false` ปิดใช้งาน skill แม้ว่าจะบันเดิล/ติดตั้งไว้แล้วก็ตาม
+- `entries.<skillKey>.apiKey`: ตัวช่วยสำหรับ Skills ที่ประกาศตัวแปรสภาพแวดล้อมหลัก (สตริงข้อความธรรมดาหรือออบเจ็กต์ SecretRef)
 
 ---
 
@@ -163,40 +191,40 @@ x-i18n:
 ```
 
 - โหลดจาก `~/.openclaw/extensions`, `<workspace>/.openclaw/extensions` และ `plugins.load.paths`
-- การค้นพบรองรับ Plugin ของ OpenClaw แบบ native รวมถึง bundle ของ Codex และ bundle ของ Claude ที่เข้ากันได้ รวมถึง bundle layout เริ่มต้นของ Claude ที่ไม่มี manifest
-- **การเปลี่ยนแปลงการกำหนดค่าต้อง restart Gateway**
-- `allow`: allowlist แบบตัวเลือก (โหลดเฉพาะ Plugin ที่ระบุ) `deny` ชนะ
-- `plugins.entries.<id>.apiKey`: ฟิลด์ช่องทางลัด API key ระดับ Plugin (เมื่อ Plugin รองรับ)
-- `plugins.entries.<id>.env`: แผนที่ env var ที่มีขอบเขตตาม Plugin
-- `plugins.entries.<id>.hooks.allowPromptInjection`: เมื่อเป็น `false` core จะบล็อก `before_prompt_build` และละเว้นฟิลด์ที่แก้ไข prompt จาก `before_agent_start` แบบ legacy ขณะยังคงรักษา `modelOverride` และ `providerOverride` แบบ legacy ไว้ ใช้กับ hook ของ Plugin แบบ native และไดเรกทอรี hook ที่ bundle ให้มาซึ่งรองรับ
-- `plugins.entries.<id>.hooks.allowConversationAccess`: เมื่อเป็น `true` Plugin ที่ไม่ใช่ bundled และเชื่อถือได้อาจอ่านเนื้อหา conversation ดิบจาก hook แบบ typed เช่น `llm_input`, `llm_output`, `before_agent_finalize` และ `agent_end`
-- `plugins.entries.<id>.subagent.allowModelOverride`: เชื่อถือ Plugin นี้อย่างชัดเจนเพื่อขอ override `provider` และ `model` ต่อการรันสำหรับการรัน subagent พื้นหลัง
-- `plugins.entries.<id>.subagent.allowedModels`: allowlist แบบตัวเลือกของเป้าหมาย canonical `provider/model` สำหรับ override ของ subagent ที่เชื่อถือได้ ใช้ `"*"` เฉพาะเมื่อคุณตั้งใจอนุญาต model ใดก็ได้
-- `plugins.entries.<id>.config`: ออบเจ็กต์การกำหนดค่าที่ Plugin กำหนด (ตรวจสอบความถูกต้องด้วยสคีมา Plugin ของ OpenClaw แบบ native เมื่อมี)
-- การตั้งค่าบัญชี/รันไทม์ของ channel Plugin อยู่ภายใต้ `channels.<id>` และควรถูกอธิบายโดยเมตาดาต้า `channelConfigs` ใน manifest ของ Plugin เจ้าของ ไม่ใช่โดย registry ตัวเลือกกลางของ OpenClaw
-- `plugins.entries.firecrawl.config.webFetch`: การตั้งค่า provider web-fetch ของ Firecrawl
-  - `apiKey`: API key ของ Firecrawl (รับ SecretRef) fallback ไปยัง `plugins.entries.firecrawl.config.webSearch.apiKey`, `tools.web.fetch.firecrawl.apiKey` แบบ legacy หรือ env var `FIRECRAWL_API_KEY`
-  - `baseUrl`: base URL ของ API Firecrawl (ค่าเริ่มต้น: `https://api.firecrawl.dev`; override แบบ self-hosted ต้องชี้ไปยัง endpoint private/internal)
-  - `onlyMainContent`: แยกเฉพาะเนื้อหาหลักจากหน้า (ค่าเริ่มต้น: `true`)
-  - `maxAgeMs`: อายุ cache สูงสุดเป็นมิลลิวินาที (ค่าเริ่มต้น: `172800000` / 2 วัน)
-  - `timeoutSeconds`: timeout ของคำขอ scrape เป็นวินาที (ค่าเริ่มต้น: `60`)
-- `plugins.entries.xai.config.xSearch`: การตั้งค่า xAI X Search (การค้นเว็บของ Grok)
-  - `enabled`: เปิดใช้ provider X Search
-  - `model`: model ของ Grok ที่จะใช้สำหรับการค้นหา (เช่น `"grok-4-1-fast"`)
-- `plugins.entries.memory-core.config.dreaming`: การตั้งค่า memory dreaming ดู [Dreaming](/th/concepts/dreaming) สำหรับ phase และ threshold
+- การค้นพบรองรับ Plugin เนทีฟของ OpenClaw รวมถึงบันเดิล Codex และบันเดิล Claude ที่เข้ากันได้ รวมถึงบันเดิลเลย์เอาต์ค่าเริ่มต้นของ Claude ที่ไม่มี manifest
+- **การเปลี่ยนแปลงการกำหนดค่าต้องรีสตาร์ต gateway**
+- `allow`: รายการอนุญาตแบบไม่บังคับ (โหลดเฉพาะ Plugin ที่ระบุ) `deny` มีสิทธิ์เหนือกว่า
+- `plugins.entries.<id>.apiKey`: ฟิลด์ตัวช่วยคีย์ API ระดับ Plugin (เมื่อ Plugin รองรับ)
+- `plugins.entries.<id>.env`: แมปตัวแปรสภาพแวดล้อมที่จำกัดขอบเขตตาม Plugin
+- `plugins.entries.<id>.hooks.allowPromptInjection`: เมื่อเป็น `false` แกนหลักจะบล็อก `before_prompt_build` และเพิกเฉยต่อฟิลด์ที่แก้ไขพรอมป์จาก `before_agent_start` แบบเดิม ขณะยังคงรักษา `modelOverride` และ `providerOverride` แบบเดิมไว้ ใช้กับฮุก Plugin เนทีฟและไดเรกทอรีฮุกที่บันเดิลจัดเตรียมให้ซึ่งรองรับ
+- `plugins.entries.<id>.hooks.allowConversationAccess`: เมื่อเป็น `true` Plugin ที่ไม่ใช่บันเดิลและเชื่อถือได้อาจอ่านเนื้อหาการสนทนาดิบจากฮุกแบบมีชนิด เช่น `llm_input`, `llm_output`, `before_agent_finalize` และ `agent_end`
+- `plugins.entries.<id>.subagent.allowModelOverride`: เชื่อถือ Plugin นี้อย่างชัดเจนให้ร้องขอการแทนที่ `provider` และ `model` ต่อการรันสำหรับการรัน subagent พื้นหลัง
+- `plugins.entries.<id>.subagent.allowedModels`: รายการอนุญาตแบบไม่บังคับของเป้าหมาย `provider/model` ตามรูปแบบมาตรฐานสำหรับการแทนที่ subagent ที่เชื่อถือได้ ใช้ `"*"` เฉพาะเมื่อคุณตั้งใจอนุญาตโมเดลใดก็ได้
+- `plugins.entries.<id>.config`: ออบเจ็กต์การกำหนดค่าที่ Plugin นิยาม (ตรวจสอบความถูกต้องโดยสคีมา Plugin เนทีฟของ OpenClaw เมื่อพร้อมใช้งาน)
+- การตั้งค่าบัญชี/รันไทม์ของ Plugin ช่องทางอยู่ภายใต้ `channels.<id>` และควรอธิบายโดยเมทาดาตา `channelConfigs` ใน manifest ของ Plugin เจ้าของ ไม่ใช่โดยรีจิสทรีตัวเลือกกลางของ OpenClaw
+- `plugins.entries.firecrawl.config.webFetch`: การตั้งค่าผู้ให้บริการดึงเว็บ Firecrawl
+  - `apiKey`: คีย์ API ของ Firecrawl (รับ SecretRef) ถอยไปใช้ `plugins.entries.firecrawl.config.webSearch.apiKey`, `tools.web.fetch.firecrawl.apiKey` แบบเดิม หรือ ตัวแปรสภาพแวดล้อม `FIRECRAWL_API_KEY`
+  - `baseUrl`: URL ฐานของ Firecrawl API (ค่าเริ่มต้น: `https://api.firecrawl.dev`; การแทนที่แบบโฮสต์เองต้องชี้ไปยังเอนด์พอยต์ส่วนตัว/ภายใน)
+  - `onlyMainContent`: แยกเฉพาะเนื้อหาหลักจากหน้าเว็บ (ค่าเริ่มต้น: `true`)
+  - `maxAgeMs`: อายุแคชสูงสุดเป็นมิลลิวินาที (ค่าเริ่มต้น: `172800000` / 2 วัน)
+  - `timeoutSeconds`: หมดเวลาคำขอ scrape เป็นวินาที (ค่าเริ่มต้น: `60`)
+- `plugins.entries.xai.config.xSearch`: การตั้งค่า xAI X Search (การค้นหาเว็บ Grok)
+  - `enabled`: เปิดใช้งานผู้ให้บริการ X Search
+  - `model`: โมเดล Grok ที่จะใช้สำหรับการค้นหา (เช่น `"grok-4-1-fast"`)
+- `plugins.entries.memory-core.config.dreaming`: การตั้งค่า memory dreaming ดู [Dreaming](/th/concepts/dreaming) สำหรับเฟสและเกณฑ์
   - `enabled`: สวิตช์หลักของ dreaming (ค่าเริ่มต้น `false`)
-  - `frequency`: cadence แบบ Cron สำหรับการกวาด dreaming เต็มรูปแบบแต่ละครั้ง (`"0 3 * * *"` เป็นค่าเริ่มต้น)
-  - `model`: override model ของ subagent Dream Diary แบบตัวเลือก ต้องมี `plugins.entries.memory-core.subagent.allowModelOverride: true`; จับคู่กับ `allowedModels` เพื่อจำกัดเป้าหมาย ข้อผิดพลาด model-unavailable จะลองใหม่หนึ่งครั้งด้วย model เริ่มต้นของ session; ความล้มเหลวด้าน trust หรือ allowlist จะไม่ fallback แบบเงียบๆ
-  - นโยบาย phase และ threshold เป็นรายละเอียดการนำไปใช้งาน (ไม่ใช่คีย์การกำหนดค่าที่เปิดให้ผู้ใช้)
-- การกำหนดค่าหน่วยความจำทั้งหมดอยู่ใน [ข้อมูลอ้างอิงการกำหนดค่าหน่วยความจำ](/th/reference/memory-config):
+  - `frequency`: จังหวะ cron สำหรับการ sweep dreaming แบบเต็มแต่ละครั้ง (`"0 3 * * *"` เป็นค่าเริ่มต้น)
+  - `model`: การแทนที่โมเดล subagent Dream Diary แบบไม่บังคับ ต้องใช้ `plugins.entries.memory-core.subagent.allowModelOverride: true`; จับคู่กับ `allowedModels` เพื่อจำกัดเป้าหมาย ข้อผิดพลาดโมเดลไม่พร้อมใช้งานจะลองซ้ำหนึ่งครั้งด้วยโมเดลค่าเริ่มต้นของเซสชัน; ความล้มเหลวด้านความเชื่อถือหรือรายการอนุญาตจะไม่ถอยกลับแบบเงียบ
+  - นโยบายเฟสและเกณฑ์เป็นรายละเอียดการใช้งานจริง (ไม่ใช่คีย์การกำหนดค่าที่ผู้ใช้เห็น)
+- การกำหนดค่าหน่วยความจำฉบับเต็มอยู่ใน [ข้อมูลอ้างอิงการกำหนดค่าหน่วยความจำ](/th/reference/memory-config):
   - `agents.defaults.memorySearch.*`
   - `memory.backend`
   - `memory.citations`
   - `memory.qmd.*`
   - `plugins.entries.memory-core.config.dreaming`
-- Plugin ของ bundle Claude ที่เปิดใช้ยังสามารถสนับสนุนค่าเริ่มต้น Pi แบบฝังจาก `settings.json`; OpenClaw ใช้ค่านั้นเป็นการตั้งค่า agent ที่ sanitize แล้ว ไม่ใช่ patch การกำหนดค่า OpenClaw แบบดิบ
-- `plugins.slots.memory`: เลือก id ของ Plugin หน่วยความจำที่ใช้งานอยู่ หรือ `"none"` เพื่อปิดใช้งาน Plugin หน่วยความจำ
-- `plugins.slots.contextEngine`: เลือก id ของ Plugin context engine ที่ใช้งานอยู่; ค่าเริ่มต้นเป็น `"legacy"` เว้นแต่คุณจะติดตั้งและเลือก engine อื่น
+- Plugin บันเดิล Claude ที่เปิดใช้งานแล้วยังสามารถเพิ่มค่าเริ่มต้นของ Pi แบบฝังจาก `settings.json`; OpenClaw ใช้ค่าเหล่านั้นเป็นการตั้งค่าเอเจนต์ที่ผ่านการทำให้ปลอดภัยแล้ว ไม่ใช่เป็นแพตช์การกำหนดค่า OpenClaw แบบดิบ
+- `plugins.slots.memory`: เลือกรหัส Plugin หน่วยความจำที่ใช้งานอยู่ หรือ `"none"` เพื่อปิดใช้งาน Plugin หน่วยความจำ
+- `plugins.slots.contextEngine`: เลือกรหัส Plugin เครื่องมือบริบทที่ใช้งานอยู่; ค่าเริ่มต้นคือ `"legacy"` เว้นแต่คุณติดตั้งและเลือกเครื่องมืออื่น
 
 ดู [Plugin](/th/tools/plugin)
 
@@ -249,46 +277,48 @@ x-i18n:
 ```
 
 - `evaluateEnabled: false` ปิดใช้งาน `act:evaluate` และ `wait --fn`
-- `tabCleanup` เรียกคืนแท็บเอเจนต์หลักที่ติดตามไว้หลังจากไม่มีการใช้งาน หรือเมื่อเซสชันมีจำนวนแท็บเกินขีดจำกัด ตั้งค่า `idleMinutes: 0` หรือ `maxTabsPerSession: 0` เพื่อปิดใช้งานโหมดล้างข้อมูลแต่ละรายการ
-- `ssrfPolicy.dangerouslyAllowPrivateNetwork` จะปิดใช้งานเมื่อไม่ได้ตั้งค่า ดังนั้นการนำทางของเบราว์เซอร์จึงเข้มงวดตามค่าเริ่มต้น
-- ตั้งค่า `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` เฉพาะเมื่อคุณตั้งใจเชื่อถือการนำทางของเบราว์เซอร์ในเครือข่ายส่วนตัว
-- ในโหมดเข้มงวด เอ็นด์พอยต์โปรไฟล์ CDP ระยะไกล (`profiles.*.cdpUrl`) จะอยู่ภายใต้การบล็อกเครือข่ายส่วนตัวแบบเดียวกันระหว่างการตรวจสอบการเข้าถึง/การค้นพบ
-- `ssrfPolicy.allowPrivateNetwork` ยังคงรองรับในฐานะชื่อแฝงเดิม
-- ในโหมดเข้มงวด ให้ใช้ `ssrfPolicy.hostnameAllowlist` และ `ssrfPolicy.allowedHostnames` สำหรับข้อยกเว้นที่ระบุชัดเจน
-- โปรไฟล์ระยะไกลเป็นแบบแนบเท่านั้น (ปิดใช้งานการเริ่ม/หยุด/รีเซ็ต)
-- `profiles.*.cdpUrl` ยอมรับ `http://`, `https://`, `ws://` และ `wss://`
+- `tabCleanup` เรียกคืนแท็บของเอเจนต์หลักที่ถูกติดตามหลังจากเวลาว่าง หรือเมื่อ
+  เซสชันเกินขีดจำกัดของตัวเอง ตั้งค่า `idleMinutes: 0` หรือ `maxTabsPerSession: 0` เพื่อ
+  ปิดใช้งานโหมดการล้างข้อมูลแต่ละโหมดเหล่านั้น
+- `ssrfPolicy.dangerouslyAllowPrivateNetwork` จะถูกปิดใช้งานเมื่อไม่ได้ตั้งค่า ดังนั้นการนำทางเบราว์เซอร์จึงเข้มงวดตามค่าเริ่มต้น
+- ตั้งค่า `ssrfPolicy.dangerouslyAllowPrivateNetwork: true` เฉพาะเมื่อคุณตั้งใจเชื่อถือการนำทางเบราว์เซอร์ผ่านเครือข่ายส่วนตัว
+- ในโหมดเข้มงวด เอนด์พอยต์โปรไฟล์ CDP ระยะไกล (`profiles.*.cdpUrl`) อยู่ภายใต้การบล็อกเครือข่ายส่วนตัวแบบเดียวกันระหว่างการตรวจสอบการเข้าถึง/การค้นพบ
+- `ssrfPolicy.allowPrivateNetwork` ยังคงรองรับในฐานะนามแฝงเดิม
+- ในโหมดเข้มงวด ให้ใช้ `ssrfPolicy.hostnameAllowlist` และ `ssrfPolicy.allowedHostnames` สำหรับข้อยกเว้นแบบชัดเจน
+- โปรไฟล์ระยะไกลเป็นแบบแนบเท่านั้น (ปิดใช้งาน start/stop/reset)
+- `profiles.*.cdpUrl` รองรับ `http://`, `https://`, `ws://` และ `wss://`
   ใช้ HTTP(S) เมื่อคุณต้องการให้ OpenClaw ค้นพบ `/json/version`; ใช้ WS(S)
-  เมื่อผู้ให้บริการของคุณให้ URL WebSocket ของ DevTools โดยตรง
+  เมื่อผู้ให้บริการของคุณให้ URL DevTools WebSocket โดยตรง
 - `remoteCdpTimeoutMs` และ `remoteCdpHandshakeTimeoutMs` ใช้กับการเข้าถึง CDP ระยะไกลและ
-  `attachOnly` รวมถึงคำขอเปิดแท็บ โปรไฟล์ local loopback
-  ที่จัดการไว้จะยังใช้ค่าเริ่มต้น CDP ภายในเครื่อง
-- หากบริการ CDP ที่จัดการจากภายนอกเข้าถึงได้ผ่าน loopback ให้ตั้งค่า
+  `attachOnly` รวมถึงคำขอเปิดแท็บ โปรไฟล์ loopback ที่จัดการแล้ว
+  ยังคงใช้ค่าเริ่มต้น CDP ภายในเครื่อง
+- หากบริการ CDP ที่จัดการภายนอกเข้าถึงได้ผ่าน loopback ให้ตั้งค่า
   `attachOnly: true` ของโปรไฟล์นั้น มิฉะนั้น OpenClaw จะถือว่าพอร์ต loopback เป็น
-  โปรไฟล์เบราว์เซอร์ที่จัดการในเครื่อง และอาจรายงานข้อผิดพลาดความเป็นเจ้าของพอร์ตในเครื่อง
+  โปรไฟล์เบราว์เซอร์ที่จัดการภายในเครื่อง และอาจรายงานข้อผิดพลาดความเป็นเจ้าของพอร์ตภายในเครื่อง
 - โปรไฟล์ `existing-session` ใช้ Chrome MCP แทน CDP และสามารถแนบกับ
   โฮสต์ที่เลือกหรือผ่านโหนดเบราว์เซอร์ที่เชื่อมต่ออยู่
-- โปรไฟล์ `existing-session` สามารถตั้งค่า `userDataDir` เพื่อกำหนดเป้าหมาย
-  โปรไฟล์เบราว์เซอร์ที่ใช้ Chromium เฉพาะ เช่น Brave หรือ Edge
-- โปรไฟล์ `existing-session` คงข้อจำกัดเส้นทาง Chrome MCP ปัจจุบันไว้:
-  การกระทำที่ขับเคลื่อนด้วย snapshot/ref แทนการกำหนดเป้าหมายด้วย CSS selector, ฮุกอัปโหลดไฟล์เดียว,
-  ไม่มีการเขียนทับเวลาหมดอายุของกล่องโต้ตอบ, ไม่มี `wait --load networkidle` และไม่มี
-  `responsebody`, การส่งออก PDF, การสกัดกั้นการดาวน์โหลด หรือการกระทำแบบชุด
-- โปรไฟล์ `openclaw` ที่จัดการในเครื่องจะกำหนด `cdpPort` และ `cdpUrl` อัตโนมัติ; ให้ตั้งค่า
-  `cdpUrl` โดยชัดเจนเฉพาะสำหรับ CDP ระยะไกล
-- โปรไฟล์ที่จัดการในเครื่องสามารถตั้งค่า `executablePath` เพื่อเขียนทับ
+- โปรไฟล์ `existing-session` สามารถตั้งค่า `userDataDir` เพื่อเจาะจง
+  โปรไฟล์เบราว์เซอร์ที่ใช้ Chromium เช่น Brave หรือ Edge
+- โปรไฟล์ `existing-session` ยังคงใช้ขีดจำกัดเส้นทาง Chrome MCP ปัจจุบัน:
+  การดำเนินการที่ขับเคลื่อนด้วย snapshot/ref แทนการกำหนดเป้าหมายด้วย CSS selector, hooks อัปโหลดหนึ่งไฟล์,
+  ไม่มีการแทนที่เวลาหมดอายุของกล่องโต้ตอบ, ไม่มี `wait --load networkidle` และไม่มี
+  `responsebody`, การส่งออก PDF, การดักจับการดาวน์โหลด หรือการดำเนินการแบบชุด
+- โปรไฟล์ `openclaw` ที่จัดการภายในเครื่องกำหนด `cdpPort` และ `cdpUrl` โดยอัตโนมัติ; ให้
+  ตั้งค่า `cdpUrl` อย่างชัดเจนสำหรับ CDP ระยะไกลเท่านั้น
+- โปรไฟล์ที่จัดการภายในเครื่องสามารถตั้งค่า `executablePath` เพื่อแทนที่ค่า
   `browser.executablePath` ส่วนกลางสำหรับโปรไฟล์นั้น ใช้สิ่งนี้เพื่อรันโปรไฟล์หนึ่งใน
   Chrome และอีกโปรไฟล์ใน Brave
-- โปรไฟล์ที่จัดการในเครื่องใช้ `browser.localLaunchTimeoutMs` สำหรับการค้นพบ HTTP ของ Chrome CDP
+- โปรไฟล์ที่จัดการภายในเครื่องใช้ `browser.localLaunchTimeoutMs` สำหรับการค้นพบ Chrome CDP HTTP
   หลังเริ่มกระบวนการ และใช้ `browser.localCdpReadyTimeoutMs` สำหรับ
-  ความพร้อมของ CDP websocket หลังเปิดใช้งาน เพิ่มค่าเหล่านี้บนโฮสต์ที่ช้ากว่า ซึ่ง Chrome
-  เริ่มได้สำเร็จแต่การตรวจสอบความพร้อมแข่งขันกับการเริ่มต้น ค่าทั้งสองต้องเป็น
+  ความพร้อมของ CDP websocket หลังเปิดตัว เพิ่มค่านี้บนโฮสต์ที่ช้ากว่า ซึ่ง Chrome
+  เริ่มได้สำเร็จแต่การตรวจสอบความพร้อมแข่งกับการเริ่มต้น ค่าทั้งสองต้องเป็น
   จำนวนเต็มบวกไม่เกิน `120000` ms; ค่าคอนฟิกที่ไม่ถูกต้องจะถูกปฏิเสธ
 - ลำดับการตรวจจับอัตโนมัติ: เบราว์เซอร์เริ่มต้นหากใช้ Chromium → Chrome → Brave → Edge → Chromium → Chrome Canary
-- `browser.executablePath` และ `browser.profiles.<name>.executablePath` ทั้งคู่
-  ยอมรับ `~` และ `~/...` สำหรับไดเรกทอรีโฮมของ OS ก่อนเปิด Chromium
-  `userDataDir` ต่อโปรไฟล์ในโปรไฟล์ `existing-session` จะถูกขยาย tilde ด้วย
+- `browser.executablePath` และ `browser.profiles.<name>.executablePath` ต่างก็
+  รองรับ `~` และ `~/...` สำหรับไดเรกทอรีโฮมของ OS ของคุณก่อนเปิด Chromium
+  `userDataDir` ต่อโปรไฟล์บนโปรไฟล์ `existing-session` ก็จะถูกขยาย tilde ด้วย
 - บริการควบคุม: loopback เท่านั้น (พอร์ตได้มาจาก `gateway.port`, ค่าเริ่มต้น `18791`)
-- `extraArgs` เพิ่มแฟล็กการเปิดใช้งานเพิ่มเติมให้กับการเริ่มต้น Chromium ในเครื่อง (เช่น
+- `extraArgs` เพิ่มแฟล็กการเปิดเพิ่มเติมให้กับการเริ่มต้น Chromium ภายในเครื่อง (เช่น
   `--disable-gpu`, การกำหนดขนาดหน้าต่าง หรือแฟล็กดีบัก)
 
 ---
@@ -307,8 +337,8 @@ x-i18n:
 }
 ```
 
-- `seamColor`: สีเน้นสำหรับโครม UI ของแอปเนทีฟ (สีฟอง Talk Mode เป็นต้น)
-- `assistant`: การเขียนทับตัวตน Control UI ย้อนกลับไปใช้ตัวตนเอเจนต์ที่ใช้งานอยู่
+- `seamColor`: สีเน้นสำหรับโครม UI ของแอปเนทีฟ (โทนสีฟอง Talk Mode เป็นต้น)
+- `assistant`: การแทนที่ตัวตน Control UI ย้อนกลับไปใช้ตัวตนเอเจนต์ที่ใช้งานอยู่
 
 ---
 
@@ -343,6 +373,7 @@ x-i18n:
       // root: "dist/control-ui",
       // embedSandbox: "scripts", // strict | scripts | trusted
       // allowExternalEmbedUrls: false, // dangerous: allow absolute external http(s) embed URLs
+      // chatMessageMaxWidth: "min(1280px, 82%)", // optional grouped chat message max-width
       // allowedOrigins: ["https://control.example.com"], // required for non-loopback Control UI
       // dangerouslyAllowHostHeaderOriginFallback: false, // dangerous Host-header origin fallback mode
       // allowInsecureAuth: false,
@@ -385,57 +416,58 @@ x-i18n:
 
 <Accordion title="Gateway field details">
 
-- `mode`: `local` (รัน Gateway) หรือ `remote` (เชื่อมต่อกับ Gateway ระยะไกล) Gateway จะปฏิเสธการเริ่มทำงาน เว้นแต่เป็น `local`.
-- `port`: พอร์ตแบบมัลติเพล็กซ์เดียวสำหรับ WS + HTTP. ลำดับความสำคัญ: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`.
-- `bind`: `auto`, `loopback` (ค่าเริ่มต้น), `lan` (`0.0.0.0`), `tailnet` (เฉพาะ IP ของ Tailscale) หรือ `custom`.
-- **นามแฝง bind แบบเดิม**: ใช้ค่าโหมด bind ใน `gateway.bind` (`auto`, `loopback`, `lan`, `tailnet`, `custom`) ไม่ใช่นามแฝงโฮสต์ (`0.0.0.0`, `127.0.0.1`, `localhost`, `::`, `::1`).
-- **หมายเหตุ Docker**: bind ค่าเริ่มต้น `loopback` จะฟังบน `127.0.0.1` ภายในคอนเทนเนอร์ เมื่อใช้เครือข่ายแบบ bridge ของ Docker (`-p 18789:18789`) ทราฟฟิกจะเข้ามาทาง `eth0` ทำให้เข้าถึง Gateway ไม่ได้ ใช้ `--network host` หรือตั้งค่า `bind: "lan"` (หรือ `bind: "custom"` พร้อม `customBindHost: "0.0.0.0"`) เพื่อฟังบนทุกอินเทอร์เฟซ
-- **การตรวจสอบสิทธิ์**: จำเป็นตามค่าเริ่มต้น bind ที่ไม่ใช่ loopback ต้องใช้การตรวจสอบสิทธิ์ของ Gateway ในทางปฏิบัติหมายถึงโทเค็น/รหัสผ่านที่ใช้ร่วมกัน หรือ reverse proxy ที่รับรู้ตัวตนพร้อม `gateway.auth.mode: "trusted-proxy"` วิซาร์ด onboarding จะสร้างโทเค็นตามค่าเริ่มต้น
-- หากกำหนดค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` (รวมถึง SecretRefs) ให้ตั้งค่า `gateway.auth.mode` อย่างชัดเจนเป็น `token` หรือ `password` ขั้นตอนเริ่มทำงานและติดตั้ง/ซ่อมแซมบริการจะล้มเหลวเมื่อกำหนดค่าทั้งสองอย่างและไม่ได้ตั้งค่าโหมด
-- `gateway.auth.mode: "none"`: โหมดไม่มีการตรวจสอบสิทธิ์แบบชัดเจน ใช้เฉพาะกับการตั้งค่า local loopback ที่เชื่อถือได้เท่านั้น; โหมดนี้จงใจไม่ถูกเสนอโดยพรอมป์ onboarding
-- `gateway.auth.mode: "trusted-proxy"`: มอบหมายการตรวจสอบสิทธิ์ของเบราว์เซอร์/ผู้ใช้ให้ reverse proxy ที่รับรู้ตัวตน และเชื่อถือเฮดเดอร์ตัวตนจาก `gateway.trustedProxies` (ดู [การตรวจสอบสิทธิ์ผ่านพร็อกซีที่เชื่อถือได้](/th/gateway/trusted-proxy-auth)) โหมดนี้คาดหวังแหล่งพร็อกซีที่ **ไม่ใช่ loopback** ตามค่าเริ่มต้น; reverse proxy แบบ loopback บนโฮสต์เดียวกันต้องตั้งค่า `gateway.auth.trustedProxy.allowLoopback = true` อย่างชัดเจน ผู้เรียกภายในบนโฮสต์เดียวกันสามารถใช้ `gateway.auth.password` เป็นทางสำรองโดยตรงในเครื่องได้; `gateway.auth.token` ยังคงใช้ร่วมกับโหมด trusted-proxy ไม่ได้
-- `gateway.auth.allowTailscale`: เมื่อเป็น `true` เฮดเดอร์ตัวตนของ Tailscale Serve สามารถใช้ผ่านการตรวจสอบสิทธิ์ของส่วนติดต่อควบคุม/WebSocket ได้ (ตรวจสอบผ่าน `tailscale whois`) เอนด์พอยต์ HTTP API **ไม่** ใช้การตรวจสอบสิทธิ์ผ่านเฮดเดอร์ Tailscale นี้; แต่จะใช้โหมดการตรวจสอบสิทธิ์ HTTP ปกติของ Gateway แทน โฟลว์แบบไม่มีโทเค็นนี้ถือว่าโฮสต์ Gateway เชื่อถือได้ ค่าเริ่มต้นเป็น `true` เมื่อ `tailscale.mode = "serve"`
-- `gateway.auth.rateLimit`: ตัวจำกัดความถี่สำหรับการตรวจสอบสิทธิ์ที่ล้มเหลวแบบไม่บังคับ ใช้ต่อ IP ไคลเอนต์และต่อขอบเขตการตรวจสอบสิทธิ์ (shared-secret และ device-token ถูกติดตามแยกกัน) ความพยายามที่ถูกบล็อกจะส่งคืน `429` + `Retry-After`
-  - บนเส้นทางส่วนติดต่อควบคุมแบบ async ของ Tailscale Serve ความพยายามที่ล้มเหลวสำหรับ `{scope, clientIp}` เดียวกันจะถูกจัดลำดับก่อนเขียนผลล้มเหลว ดังนั้นความพยายามผิดพลาดพร้อมกันจากไคลเอนต์เดียวกันอาจทำให้ตัวจำกัดทำงานที่คำขอที่สอง แทนที่ทั้งสองคำขอจะวิ่งผ่านพร้อมกันเป็นการไม่ตรงกันธรรมดา
-  - `gateway.auth.rateLimit.exemptLoopback` มีค่าเริ่มต้นเป็น `true`; ตั้งเป็น `false` เมื่อคุณตั้งใจให้ทราฟฟิก localhost ถูกจำกัดความถี่ด้วย (สำหรับการตั้งค่าทดสอบหรือการปรับใช้พร็อกซีที่เข้มงวด)
-- ความพยายามตรวจสอบสิทธิ์ WS ที่มีต้นทางจากเบราว์เซอร์จะถูกจำกัดความถี่เสมอ โดยปิดการยกเว้น loopback (การป้องกันเชิงลึกต่อการเดารหัสผ่านแบบ brute force บน localhost ผ่านเบราว์เซอร์)
-- บน loopback การล็อกเอาต์จากต้นทางเบราว์เซอร์เหล่านั้นจะแยกตามค่า `Origin`
-  ที่ทำให้เป็นรูปแบบมาตรฐานแล้ว ดังนั้นความล้มเหลวซ้ำจากต้นทาง localhost หนึ่งจะไม่ล็อกเอาต์
-  ต้นทางอื่นโดยอัตโนมัติ
-- `tailscale.mode`: `serve` (เฉพาะ tailnet, bind แบบ loopback) หรือ `funnel` (สาธารณะ, ต้องใช้การตรวจสอบสิทธิ์)
-- `controlUi.allowedOrigins`: รายการอนุญาตต้นทางเบราว์เซอร์แบบชัดเจนสำหรับการเชื่อมต่อ WebSocket ของ Gateway จำเป็นเมื่อคาดว่าจะมีไคลเอนต์เบราว์เซอร์จากต้นทางที่ไม่ใช่ loopback
-- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: โหมดอันตรายที่เปิดใช้การ fallback ต้นทางจากเฮดเดอร์ Host สำหรับการปรับใช้ที่ตั้งใจพึ่งพานโยบายต้นทางจากเฮดเดอร์ Host
+- `mode`: `local` (เรียกใช้ Gateway) หรือ `remote` (เชื่อมต่อกับ Gateway ระยะไกล) Gateway จะปฏิเสธการเริ่มทำงานเว้นแต่จะเป็น `local`
+- `port`: พอร์ตมัลติเพล็กซ์เดียวสำหรับ WS + HTTP ลำดับความสำคัญ: `--port` > `OPENCLAW_GATEWAY_PORT` > `gateway.port` > `18789`
+- `bind`: `auto`, `loopback` (ค่าเริ่มต้น), `lan` (`0.0.0.0`), `tailnet` (เฉพาะ IP ของ Tailscale) หรือ `custom`
+- **alias bind แบบดั้งเดิม**: ใช้ค่าของโหมด bind ใน `gateway.bind` (`auto`, `loopback`, `lan`, `tailnet`, `custom`) ไม่ใช่ alias ของโฮสต์ (`0.0.0.0`, `127.0.0.1`, `localhost`, `::`, `::1`)
+- **หมายเหตุ Docker**: bind ค่าเริ่มต้น `loopback` จะฟังที่ `127.0.0.1` ภายในคอนเทนเนอร์ เมื่อใช้เครือข่าย Docker bridge (`-p 18789:18789`) ทราฟฟิกจะเข้ามาที่ `eth0` ทำให้เข้าถึง Gateway ไม่ได้ ใช้ `--network host` หรือตั้ง `bind: "lan"` (หรือ `bind: "custom"` พร้อม `customBindHost: "0.0.0.0"`) เพื่อฟังบนทุกอินเทอร์เฟซ
+- **การยืนยันตัวตน**: จำเป็นตามค่าเริ่มต้น การ bind ที่ไม่ใช่ loopback ต้องใช้การยืนยันตัวตนของ Gateway ในทางปฏิบัติ หมายถึงโทเค็น/รหัสผ่านที่ใช้ร่วมกัน หรือ reverse proxy ที่รับรู้ตัวตนพร้อม `gateway.auth.mode: "trusted-proxy"` วิซาร์ดเริ่มต้นใช้งานจะสร้างโทเค็นตามค่าเริ่มต้น
+- หากกำหนดค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` (รวมถึง SecretRefs) ให้ตั้ง `gateway.auth.mode` อย่างชัดเจนเป็น `token` หรือ `password` โฟลว์การเริ่มต้นและการติดตั้ง/ซ่อมแซมบริการจะล้มเหลวเมื่อกำหนดค่าทั้งคู่และไม่ได้ตั้งค่าโหมด
+- `gateway.auth.mode: "none"`: โหมดไม่ใช้การยืนยันตัวตนแบบระบุชัดเจน ใช้เฉพาะสำหรับการตั้งค่า local loopback ที่เชื่อถือได้เท่านั้น; ตัวเลือกนี้จงใจไม่เสนอในพรอมป์เริ่มต้นใช้งาน
+- `gateway.auth.mode: "trusted-proxy"`: มอบหมายการยืนยันตัวตนของเบราว์เซอร์/ผู้ใช้ให้กับ reverse proxy ที่รับรู้ตัวตน และเชื่อถือเฮดเดอร์ข้อมูลประจำตัวจาก `gateway.trustedProxies` (ดู [การยืนยันตัวตนด้วยพร็อกซีที่เชื่อถือได้](/th/gateway/trusted-proxy-auth)) โหมดนี้คาดหวังแหล่งที่มาของพร็อกซีที่ **ไม่ใช่ loopback** ตามค่าเริ่มต้น; reverse proxy แบบ loopback บนโฮสต์เดียวกันต้องตั้งค่า `gateway.auth.trustedProxy.allowLoopback = true` อย่างชัดเจน ผู้เรียกภายในบนโฮสต์เดียวกันสามารถใช้ `gateway.auth.password` เป็น fallback ภายในโดยตรงได้; `gateway.auth.token` ยังคงใช้ร่วมกับโหมด trusted-proxy ไม่ได้
+- `gateway.auth.allowTailscale`: เมื่อเป็น `true` เฮดเดอร์ข้อมูลประจำตัวของ Tailscale Serve สามารถใช้ยืนยันตัวตนของ UI ควบคุม/WebSocket ได้ (ตรวจสอบผ่าน `tailscale whois`) ปลายทาง HTTP API **ไม่** ใช้การยืนยันตัวตนจากเฮดเดอร์ Tailscale นี้; แต่จะใช้โหมดการยืนยันตัวตน HTTP ปกติของ Gateway แทน โฟลว์แบบไม่ใช้โทเค็นนี้ถือว่าโฮสต์ Gateway เชื่อถือได้ ค่าเริ่มต้นเป็น `true` เมื่อ `tailscale.mode = "serve"`
+- `gateway.auth.rateLimit`: ตัวจำกัดการยืนยันตัวตนที่ล้มเหลวแบบไม่บังคับ ใช้ต่อ IP ไคลเอนต์และต่อขอบเขตการยืนยันตัวตน (ติดตาม shared-secret และ device-token แยกกัน) ความพยายามที่ถูกบล็อกจะคืนค่า `429` + `Retry-After`
+  - บนพาธ UI ควบคุมของ Tailscale Serve แบบอะซิงโครนัส ความพยายามที่ล้มเหลวสำหรับ `{scope, clientIp}` เดียวกันจะถูกจัดลำดับก่อนเขียนค่าความล้มเหลว ดังนั้นความพยายามผิดพลาดพร้อมกันจากไคลเอนต์เดียวกันอาจทำให้ตัวจำกัดทำงานในคำขอที่สอง แทนที่ทั้งสองคำขอจะแข่งกันผ่านไปเป็นเพียงการไม่ตรงกันธรรมดา
+  - `gateway.auth.rateLimit.exemptLoopback` มีค่าเริ่มต้นเป็น `true`; ตั้งเป็น `false` เมื่อคุณตั้งใจให้ทราฟฟิก localhost ถูกจำกัดอัตราด้วย (สำหรับการตั้งค่าทดสอบหรือการปรับใช้พร็อกซีที่เข้มงวด)
+- ความพยายามยืนยันตัวตน WS ที่มาจาก origin ของเบราว์เซอร์จะถูกจำกัดอัตราเสมอโดยปิดการยกเว้น loopback (การป้องกันหลายชั้นต่อการ brute force localhost ผ่านเบราว์เซอร์)
+- บน loopback การล็อกเอาต์ที่มาจาก origin ของเบราว์เซอร์เหล่านั้นจะแยกตามค่า `Origin`
+  ที่ทำให้เป็นมาตรฐานแล้ว ดังนั้นความล้มเหลวซ้ำจาก origin หนึ่งบน localhost จะไม่
+  ล็อกเอาต์ origin อื่นโดยอัตโนมัติ
+- `tailscale.mode`: `serve` (เฉพาะ tailnet, bind แบบ loopback) หรือ `funnel` (สาธารณะ, ต้องใช้การยืนยันตัวตน)
+- `controlUi.allowedOrigins`: รายการอนุญาต origin ของเบราว์เซอร์แบบระบุชัดเจนสำหรับการเชื่อมต่อ WebSocket ของ Gateway จำเป็นเมื่อคาดว่าจะมีไคลเอนต์เบราว์เซอร์จาก origin ที่ไม่ใช่ loopback
+- `controlUi.chatMessageMaxWidth`: max-width แบบไม่บังคับสำหรับข้อความแชต UI ควบคุมที่จัดกลุ่ม รองรับค่าความกว้าง CSS ที่มีขอบเขต เช่น `960px`, `82%`, `min(1280px, 82%)` และ `calc(100% - 2rem)`
+- `controlUi.dangerouslyAllowHostHeaderOriginFallback`: โหมดอันตรายที่เปิดใช้ fallback origin จากเฮดเดอร์ Host สำหรับการปรับใช้ที่ตั้งใจพึ่งพานโยบาย origin จากเฮดเดอร์ Host
 - `remote.transport`: `ssh` (ค่าเริ่มต้น) หรือ `direct` (ws/wss) สำหรับ `direct`, `remote.url` ต้องเป็น `ws://` หรือ `wss://`
-- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: การแทนที่ฉุกเฉินผ่านสภาพแวดล้อมกระบวนการฝั่งไคลเอนต์
-  ที่อนุญาต plaintext `ws://` ไปยัง IP เครือข่ายส่วนตัวที่เชื่อถือได้;
-  ค่าเริ่มต้นยังคงเป็น plaintext เฉพาะ loopback เท่านั้น ไม่มีค่าเทียบเท่าใน `openclaw.json`
+- `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`: override สำหรับกรณีฉุกเฉินในสภาพแวดล้อมโปรเซสฝั่งไคลเอนต์
+  ที่อนุญาต `ws://` แบบข้อความล้วนไปยัง IP เครือข่ายส่วนตัว
+  ที่เชื่อถือได้; ค่าเริ่มต้นยังคงอนุญาตข้อความล้วนเฉพาะ loopback เท่านั้น ไม่มีรายการเทียบเท่าใน `openclaw.json`
   และการตั้งค่าเครือข่ายส่วนตัวของเบราว์เซอร์ เช่น
-  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` ไม่มีผลต่อไคลเอนต์ WebSocket
-  ของ Gateway
-- `gateway.remote.token` / `.password` เป็นฟิลด์ข้อมูลรับรองของไคลเอนต์ระยะไกล ฟิลด์เหล่านี้ไม่ได้กำหนดค่าการตรวจสอบสิทธิ์ของ Gateway ด้วยตัวเอง
-- `gateway.push.apns.relay.baseUrl`: URL ฐาน HTTPS สำหรับรีเลย์ APNs ภายนอกที่ใช้โดยบิลด์ iOS ทางการ/TestFlight หลังจากเผยแพร่การลงทะเบียนที่มีรีเลย์รองรับไปยัง Gateway URL นี้ต้องตรงกับ URL รีเลย์ที่คอมไพล์เข้าไปในบิลด์ iOS
-- `gateway.push.apns.relay.timeoutMs`: เวลาหมดอายุการส่งจาก Gateway ไปยังรีเลย์ หน่วยเป็นมิลลิวินาที ค่าเริ่มต้นคือ `10000`
-- การลงทะเบียนที่มีรีเลย์รองรับจะถูกมอบหมายให้ตัวตนของ Gateway ที่เฉพาะเจาะจง แอป iOS ที่จับคู่แล้วจะดึง `gateway.identity.get` รวมตัวตนนั้นในการลงทะเบียนรีเลย์ และส่งต่อสิทธิ์อนุญาตการส่งตามขอบเขตการลงทะเบียนไปยัง Gateway Gateway อื่นไม่สามารถนำการลงทะเบียนที่เก็บไว้นั้นไปใช้ซ้ำได้
-- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: การแทนที่ env ชั่วคราวสำหรับการตั้งค่ารีเลย์ด้านบน
-- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: ช่องทางเลี่ยงสำหรับการพัฒนาเท่านั้นสำหรับ URL รีเลย์ HTTP แบบ loopback URL รีเลย์สำหรับ production ควรคงอยู่บน HTTPS
-- `gateway.handshakeTimeoutMs`: เวลาหมดอายุ handshake ของ WebSocket ของ Gateway ก่อนตรวจสอบสิทธิ์ หน่วยเป็นมิลลิวินาที ค่าเริ่มต้น: `15000` `OPENCLAW_HANDSHAKE_TIMEOUT_MS` มีลำดับความสำคัญเมื่อถูกตั้งค่า เพิ่มค่านี้บนโฮสต์ที่มีโหลดสูงหรือพลังประมวลผลต่ำ ซึ่งไคลเอนต์ในเครื่องสามารถเชื่อมต่อได้ขณะการ warmup ตอนเริ่มต้นยังไม่เสถียรเต็มที่
-- `gateway.channelHealthCheckMinutes`: ช่วงเวลาของตัวเฝ้าดูสุขภาพช่องทาง หน่วยเป็นนาที ตั้ง `0` เพื่อปิดการรีสตาร์ทโดยตัวเฝ้าดูสุขภาพทั่วทั้งระบบ ค่าเริ่มต้น: `5`
-- `gateway.channelStaleEventThresholdMinutes`: เกณฑ์ซ็อกเก็ตค้าง หน่วยเป็นนาที ให้ค่านี้มากกว่าหรือเท่ากับ `gateway.channelHealthCheckMinutes` ค่าเริ่มต้น: `30`
-- `gateway.channelMaxRestartsPerHour`: จำนวนรีสตาร์ทสูงสุดโดยตัวเฝ้าดูสุขภาพต่อช่องทาง/บัญชีในช่วงหนึ่งชั่วโมงแบบ rolling ค่าเริ่มต้น: `10`
-- `channels.<provider>.healthMonitor.enabled`: การเลือกไม่ใช้การรีสตาร์ทโดยตัวเฝ้าดูสุขภาพรายช่องทาง ขณะที่ยังเปิดตัวเฝ้าดูระดับ global ไว้
-- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: การแทนที่รายบัญชีสำหรับช่องทางหลายบัญชี เมื่อถูกตั้งค่า จะมีลำดับความสำคัญเหนือการแทนที่ระดับช่องทาง
-- เส้นทางเรียก Gateway ในเครื่องสามารถใช้ `gateway.remote.*` เป็น fallback ได้เฉพาะเมื่อไม่ได้ตั้งค่า `gateway.auth.*`
-- หาก `gateway.auth.token` / `gateway.auth.password` ถูกกำหนดค่าอย่างชัดเจนผ่าน SecretRef และแก้ค่าไม่ได้ การแก้ค่าจะล้มเหลวแบบปิด (ไม่มี fallback ระยะไกลมาบังปัญหา)
-- `trustedProxies`: IP ของ reverse proxy ที่ยุติ TLS หรือฉีดเฮดเดอร์ forwarded-client ระบุเฉพาะพร็อกซีที่คุณควบคุม รายการ loopback ยังคงใช้ได้สำหรับการตั้งค่าพร็อกซีบนโฮสต์เดียวกัน/การตรวจจับในเครื่อง (เช่น Tailscale Serve หรือ reverse proxy ในเครื่อง) แต่รายการเหล่านี้ **ไม่** ทำให้คำขอ loopback เข้าเงื่อนไขสำหรับ `gateway.auth.mode: "trusted-proxy"`
-- `allowRealIpFallback`: เมื่อเป็น `true` Gateway จะยอมรับ `X-Real-IP` หากไม่มี `X-Forwarded-For` ค่าเริ่มต้น `false` สำหรับพฤติกรรมแบบ fail-closed
-- `gateway.nodes.pairing.autoApproveCidrs`: รายการอนุญาต CIDR/IP แบบไม่บังคับสำหรับอนุมัติการจับคู่อุปกรณ์โหนดครั้งแรกโดยอัตโนมัติเมื่อไม่มีขอบเขตที่ร้องขอ ถูกปิดใช้งานเมื่อไม่ได้ตั้งค่า สิ่งนี้ไม่อนุมัติการจับคู่ operator/เบราว์เซอร์/ส่วนติดต่อควบคุม/WebChat โดยอัตโนมัติ และไม่อนุมัติการอัปเกรด role, scope, metadata หรือ public-key โดยอัตโนมัติ
-- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: การกำหนด allow/deny ระดับ global สำหรับคำสั่งโหนดที่ประกาศ หลังจากการจับคู่และการประเมินรายการอนุญาตของแพลตฟอร์ม ใช้ `allowCommands` เพื่อเลือกใช้คำสั่งโหนดอันตราย เช่น `camera.snap`, `camera.clip` และ `screen.record`; `denyCommands` จะลบคำสั่งออกแม้ค่าเริ่มต้นของแพลตฟอร์มหรือ allow แบบชัดเจนจะรวมคำนั้นไว้ หลังจากโหนดเปลี่ยนรายการคำสั่งที่ประกาศ ให้ปฏิเสธและอนุมัติการจับคู่อุปกรณ์นั้นใหม่ เพื่อให้ Gateway เก็บสแนปช็อตคำสั่งที่อัปเดต
-- `gateway.tools.deny`: ชื่อเครื่องมือเพิ่มเติมที่ถูกบล็อกสำหรับ HTTP `POST /tools/invoke` (ขยายรายการ deny ค่าเริ่มต้น)
-- `gateway.tools.allow`: ลบชื่อเครื่องมือออกจากรายการ deny HTTP ค่าเริ่มต้น
+  `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` ไม่มีผลต่อไคลเอนต์
+  WebSocket ของ Gateway
+- `gateway.remote.token` / `.password` เป็นฟิลด์ข้อมูลรับรองของไคลเอนต์ระยะไกล ฟิลด์เหล่านี้ไม่ได้กำหนดค่าการยืนยันตัวตนของ Gateway ด้วยตัวเอง
+- `gateway.push.apns.relay.baseUrl`: URL ฐาน HTTPS สำหรับ relay APNs ภายนอกที่บิลด์ iOS อย่างเป็นทางการ/TestFlight ใช้หลังจากเผยแพร่การลงทะเบียนที่มี relay รองรับไปยัง Gateway URL นี้ต้องตรงกับ URL relay ที่คอมไพล์ไว้ในบิลด์ iOS
+- `gateway.push.apns.relay.timeoutMs`: ระยะหมดเวลาการส่งจาก Gateway ไปยัง relay เป็นมิลลิวินาที ค่าเริ่มต้นคือ `10000`
+- การลงทะเบียนที่มี relay รองรับจะถูกมอบหมายให้กับข้อมูลประจำตัว Gateway ที่ระบุ แอป iOS ที่จับคู่จะดึง `gateway.identity.get` รวมข้อมูลประจำตัวนั้นในการลงทะเบียน relay และส่งต่อสิทธิ์ส่งที่มีขอบเขตตามการลงทะเบียนไปยัง Gateway Gateway อื่นไม่สามารถนำการลงทะเบียนที่จัดเก็บไว้นั้นกลับมาใช้ได้
+- `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: ค่า override ตัวแปรสภาพแวดล้อมชั่วคราวสำหรับการตั้งค่า relay ข้างต้น
+- `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true`: ทางเลี่ยงสำหรับการพัฒนาเท่านั้นสำหรับ URL relay HTTP แบบ loopback URL relay สำหรับโปรดักชันควรอยู่บน HTTPS
+- `gateway.handshakeTimeoutMs`: ระยะหมดเวลาของการ handshake WebSocket ของ Gateway ก่อนการยืนยันตัวตน เป็นมิลลิวินาที ค่าเริ่มต้น: `15000` `OPENCLAW_HANDSHAKE_TIMEOUT_MS` มีลำดับความสำคัญเมื่อถูกตั้งค่า เพิ่มค่านี้บนโฮสต์ที่มีโหลดสูงหรือพลังประมวลผลต่ำ ซึ่งไคลเอนต์ภายในสามารถเชื่อมต่อได้ขณะที่การวอร์มอัปช่วงเริ่มต้นยังไม่เสร็จนิ่ง
+- `gateway.channelHealthCheckMinutes`: ช่วงเวลาของตัวตรวจสอบสุขภาพช่องทางเป็นนาที ตั้ง `0` เพื่อปิดการรีสตาร์ตโดยตัวตรวจสอบสุขภาพทั่วทั้งระบบ ค่าเริ่มต้น: `5`
+- `gateway.channelStaleEventThresholdMinutes`: เกณฑ์ซ็อกเก็ตค้างเป็นนาที ให้ค่านี้มากกว่าหรือเท่ากับ `gateway.channelHealthCheckMinutes` ค่าเริ่มต้น: `30`
+- `gateway.channelMaxRestartsPerHour`: จำนวนการรีสตาร์ตสูงสุดโดยตัวตรวจสอบสุขภาพต่อช่องทาง/บัญชีในช่วงหนึ่งชั่วโมงแบบเลื่อน ค่าเริ่มต้น: `10`
+- `channels.<provider>.healthMonitor.enabled`: การเลือกไม่ใช้การรีสตาร์ตโดยตัวตรวจสอบสุขภาพต่อช่องทาง โดยยังคงเปิดตัวตรวจสอบทั่วทั้งระบบไว้
+- `channels.<provider>.accounts.<accountId>.healthMonitor.enabled`: override ต่อบัญชีสำหรับช่องทางหลายบัญชี เมื่อตั้งค่าไว้ จะมีลำดับความสำคัญเหนือ override ระดับช่องทาง
+- พาธการเรียก Gateway ภายในสามารถใช้ `gateway.remote.*` เป็น fallback ได้เฉพาะเมื่อไม่ได้ตั้งค่า `gateway.auth.*`
+- หากกำหนดค่า `gateway.auth.token` / `gateway.auth.password` อย่างชัดเจนผ่าน SecretRef และแก้ค่าไม่ได้ การแก้ค่าจะล้มเหลวแบบปิดกั้น (ไม่มี fallback ระยะไกลมาปกปิด)
+- `trustedProxies`: IP ของ reverse proxy ที่สิ้นสุด TLS หรือแทรกเฮดเดอร์ไคลเอนต์ที่ส่งต่อ ระบุเฉพาะพร็อกซีที่คุณควบคุม รายการ loopback ยังคงใช้ได้สำหรับการตั้งค่าพร็อกซี/การตรวจจับภายในบนโฮสต์เดียวกัน (เช่น Tailscale Serve หรือ reverse proxy ภายใน) แต่รายการเหล่านี้ **ไม่** ทำให้คำขอ loopback มีสิทธิ์ใช้ `gateway.auth.mode: "trusted-proxy"`
+- `allowRealIpFallback`: เมื่อเป็น `true` Gateway จะยอมรับ `X-Real-IP` หากไม่มี `X-Forwarded-For` ค่าเริ่มต้นคือ `false` เพื่อพฤติกรรม fail-closed
+- `gateway.nodes.pairing.autoApproveCidrs`: รายการอนุญาต CIDR/IP แบบไม่บังคับสำหรับอนุมัติการจับคู่อุปกรณ์ Node ครั้งแรกโดยอัตโนมัติเมื่อไม่มีขอบเขตที่ร้องขอ ค่านี้จะปิดใช้งานเมื่อไม่ได้ตั้งค่า สิ่งนี้ไม่อนุมัติการจับคู่ของผู้ปฏิบัติการ/เบราว์เซอร์/UI ควบคุม/เว็บแชตโดยอัตโนมัติ และไม่อนุมัติ role, scope, metadata หรือการอัปเกรดคีย์สาธารณะโดยอัตโนมัติ
+- `gateway.nodes.allowCommands` / `gateway.nodes.denyCommands`: การกำหนดรูปแบบอนุญาต/ปฏิเสธระดับโกลบอลสำหรับคำสั่ง Node ที่ประกาศไว้หลังการจับคู่และหลังประเมินรายการอนุญาตของแพลตฟอร์ม ใช้ `allowCommands` เพื่อเลือกเปิดใช้คำสั่ง Node อันตราย เช่น `camera.snap`, `camera.clip` และ `screen.record`; `denyCommands` จะลบคำสั่งออก แม้ว่าค่าเริ่มต้นของแพลตฟอร์มหรือการอนุญาตแบบระบุชัดเจนจะรวมคำสั่งนั้นไว้ก็ตาม หลังจาก Node เปลี่ยนรายการคำสั่งที่ประกาศ ให้ปฏิเสธและอนุมัติการจับคู่อุปกรณ์นั้นใหม่ เพื่อให้ Gateway จัดเก็บสแนปช็อตคำสั่งที่อัปเดตแล้ว
+- `gateway.tools.deny`: ชื่อเครื่องมือเพิ่มเติมที่ถูกบล็อกสำหรับ HTTP `POST /tools/invoke` (ขยายรายการปฏิเสธค่าเริ่มต้น)
+- `gateway.tools.allow`: ลบชื่อเครื่องมือออกจากรายการปฏิเสธ HTTP ค่าเริ่มต้น
 
 </Accordion>
 
-### เอนด์พอยต์ที่เข้ากันได้กับ OpenAI
+### ปลายทางที่เข้ากันได้กับ OpenAI
 
 - Chat Completions: ปิดใช้งานตามค่าเริ่มต้น เปิดใช้ด้วย `gateway.http.endpoints.chatCompletions.enabled: true`
 - Responses API: `gateway.http.endpoints.responses.enabled`
@@ -443,14 +475,14 @@ x-i18n:
   - `gateway.http.endpoints.responses.maxUrlParts`
   - `gateway.http.endpoints.responses.files.urlAllowlist`
   - `gateway.http.endpoints.responses.images.urlAllowlist`
-    รายการอนุญาตว่างจะถือว่าไม่ได้ตั้งค่า; ใช้ `gateway.http.endpoints.responses.files.allowUrl=false`
+    รายการอนุญาตที่ว่างจะถือว่าไม่ได้ตั้งค่า; ใช้ `gateway.http.endpoints.responses.files.allowUrl=false`
     และ/หรือ `gateway.http.endpoints.responses.images.allowUrl=false` เพื่อปิดการดึง URL
 - เฮดเดอร์เสริมความปลอดภัยของการตอบกลับแบบไม่บังคับ:
-  - `gateway.http.securityHeaders.strictTransportSecurity` (ตั้งค่าเฉพาะสำหรับต้นทาง HTTPS ที่คุณควบคุม; ดู [การตรวจสอบสิทธิ์ผ่านพร็อกซีที่เชื่อถือได้](/th/gateway/trusted-proxy-auth#tls-termination-and-hsts))
+  - `gateway.http.securityHeaders.strictTransportSecurity` (ตั้งเฉพาะสำหรับ origin HTTPS ที่คุณควบคุม; ดู [การยืนยันตัวตนด้วยพร็อกซีที่เชื่อถือได้](/th/gateway/trusted-proxy-auth#tls-termination-and-hsts))
 
 ### การแยกหลายอินสแตนซ์
 
-รัน Gateway หลายตัวบนโฮสต์เดียวด้วยพอร์ตและไดเรกทอรีสถานะที่ไม่ซ้ำกัน:
+เรียกใช้ Gateway หลายตัวบนโฮสต์เดียวด้วยพอร์ตและไดเรกทอรีสถานะที่ไม่ซ้ำกัน:
 
 ```bash
 OPENCLAW_CONFIG_PATH=~/.openclaw/a.json \
@@ -478,11 +510,11 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: เปิดใช้การยุติ TLS ที่ listener ของ Gateway (HTTPS/WSS) (ค่าเริ่มต้น: `false`)
-- `autoGenerate`: สร้างคู่ใบรับรอง/กุญแจแบบ self-signed ในเครื่องโดยอัตโนมัติเมื่อไม่ได้กำหนดค่าไฟล์อย่างชัดเจน; สำหรับการใช้งาน local/dev เท่านั้น
-- `certPath`: พาธไฟล์ระบบไปยังไฟล์ใบรับรอง TLS
-- `keyPath`: พาธไฟล์ระบบไปยังไฟล์ private key ของ TLS; ควรจำกัดสิทธิ์ไว้
-- `caPath`: พาธ bundle ของ CA แบบไม่บังคับสำหรับการตรวจสอบไคลเอนต์หรือ trust chain แบบกำหนดเอง
+- `enabled`: เปิดใช้การสิ้นสุด TLS ที่ listener ของ Gateway (HTTPS/WSS) (ค่าเริ่มต้น: `false`)
+- `autoGenerate`: สร้างคู่ cert/key แบบ self-signed ภายในโดยอัตโนมัติเมื่อไม่ได้กำหนดไฟล์อย่างชัดเจน; สำหรับการใช้งานภายใน/พัฒนาเท่านั้น
+- `certPath`: พาธระบบไฟล์ไปยังไฟล์ใบรับรอง TLS
+- `keyPath`: พาธระบบไฟล์ไปยังไฟล์คีย์ส่วนตัว TLS; จำกัดสิทธิ์การเข้าถึงไว้
+- `caPath`: พาธ bundle CA แบบไม่บังคับสำหรับการตรวจสอบไคลเอนต์หรือ trust chain แบบกำหนดเอง
 
 ### `gateway.reload`
 
@@ -498,17 +530,17 @@ openclaw gateway --port 19001
 }
 ```
 
-- `mode`: ควบคุมวิธีนำการแก้ไขคอนฟิกไปใช้ขณะรันไทม์
-  - `"off"`: ไม่สนใจการแก้ไขสด; การเปลี่ยนแปลงต้องรีสตาร์ทอย่างชัดเจน
-  - `"restart"`: รีสตาร์ทกระบวนการ Gateway ทุกครั้งเมื่อคอนฟิกเปลี่ยน
-  - `"hot"`: นำการเปลี่ยนแปลงไปใช้ภายในกระบวนการโดยไม่รีสตาร์ท
-  - `"hybrid"` (ค่าเริ่มต้น): ลอง hot reload ก่อน; fallback ไปรีสตาร์ทหากจำเป็น
-- `debounceMs`: หน้าต่าง debounce หน่วยเป็น ms ก่อนนำการเปลี่ยนแปลงคอนฟิกไปใช้ (จำนวนเต็มไม่ติดลบ)
-- `deferralTimeoutMs`: เวลาสูงสุดแบบไม่บังคับ หน่วยเป็น ms เพื่อรอการดำเนินการที่กำลังทำงานอยู่ก่อนบังคับรีสตาร์ท เว้นไว้เพื่อใช้การรอแบบมีขอบเขตค่าเริ่มต้น (`300000`); ตั้ง `0` เพื่อรอไม่จำกัดเวลาและบันทึกคำเตือนว่ายังค้างอยู่เป็นระยะ
+- `mode`: ควบคุมวิธีนำการแก้ไข config ไปใช้ใน runtime
+  - `"off"`: ละเว้นการแก้ไขสด; การเปลี่ยนแปลงต้องรีสตาร์ตอย่างชัดเจน
+  - `"restart"`: รีสตาร์ตโปรเซส Gateway ทุกครั้งเมื่อ config เปลี่ยน
+  - `"hot"`: นำการเปลี่ยนแปลงไปใช้ในโปรเซสโดยไม่รีสตาร์ต
+  - `"hybrid"` (ค่าเริ่มต้น): ลองโหลดใหม่แบบ hot ก่อน; fallback เป็นการรีสตาร์ตหากจำเป็น
+- `debounceMs`: หน่วงเวลา debounce เป็นมิลลิวินาทีก่อนนำการเปลี่ยนแปลง config ไปใช้ (จำนวนเต็มไม่ติดลบ)
+- `deferralTimeoutMs`: เวลาสูงสุดแบบไม่บังคับเป็นมิลลิวินาทีที่จะรอการดำเนินการที่กำลังทำงานก่อนบังคับรีสตาร์ต ละไว้เพื่อใช้การรอแบบมีขอบเขตค่าเริ่มต้น (`300000`); ตั้ง `0` เพื่อรอไม่มีกำหนดและบันทึกคำเตือนว่ายังค้างอยู่เป็นระยะ
 
 ---
 
-## Hooks
+## ฮุก
 
 ```json5
 {
@@ -541,48 +573,48 @@ openclaw gateway --port 19001
 }
 ```
 
-การตรวจสอบสิทธิ์: `Authorization: Bearer <token>` หรือ `x-openclaw-token: <token>`
-โทเค็น hook ใน query-string จะถูกปฏิเสธ
+การรับรองความถูกต้อง: `Authorization: Bearer <token>` หรือ `x-openclaw-token: <token>`.
+โทเค็นฮุกในสตริงคำค้นหาจะถูกปฏิเสธ
 
-หมายเหตุการตรวจสอบความถูกต้องและความปลอดภัย:
+หมายเหตุด้านการตรวจสอบความถูกต้องและความปลอดภัย:
 
 - `hooks.enabled=true` ต้องมี `hooks.token` ที่ไม่ว่าง
 - `hooks.token` ต้อง **แตกต่าง** จาก `gateway.auth.token`; การใช้โทเค็น Gateway ซ้ำจะถูกปฏิเสธ
-- `hooks.path` ต้องไม่เป็น `/`; ให้ใช้เส้นทางย่อยเฉพาะ เช่น `/hooks`
-- หาก `hooks.allowRequestSessionKey=true` ให้จำกัด `hooks.allowedSessionKeyPrefixes` (เช่น `["hook:"]`)
-- หากการแมปหรือพรีเซ็ตใช้ `sessionKey` แบบเทมเพลต ให้ตั้งค่า `hooks.allowedSessionKeyPrefixes` และ `hooks.allowRequestSessionKey=true` คีย์การแมปแบบคงที่ไม่ต้องเลือกใช้งานตัวเลือกนี้
+- `hooks.path` เป็น `/` ไม่ได้; ใช้เส้นทางย่อยเฉพาะ เช่น `/hooks`
+- ถ้า `hooks.allowRequestSessionKey=true` ให้จำกัด `hooks.allowedSessionKeyPrefixes` (เช่น `["hook:"]`)
+- ถ้าการแมปหรือพรีเซ็ตใช้ `sessionKey` แบบเทมเพลต ให้ตั้งค่า `hooks.allowedSessionKeyPrefixes` และ `hooks.allowRequestSessionKey=true` คีย์การแมปแบบคงที่ไม่ต้องใช้การเลือกเปิดนี้
 
-**เอนด์พอยต์:**
+**ปลายทาง:**
 
 - `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
 - `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
-  - `sessionKey` จาก payload ของคำขอจะยอมรับเฉพาะเมื่อ `hooks.allowRequestSessionKey=true` (ค่าเริ่มต้น: `false`)
-- `POST /hooks/<name>` → แก้ไขผ่าน `hooks.mappings`
-  - ค่า `sessionKey` ของการแมปที่เรนเดอร์จากเทมเพลตจะถือว่าเป็นค่าที่ส่งมาจากภายนอก และต้องมี `hooks.allowRequestSessionKey=true` เช่นกัน
+  - `sessionKey` จากเพย์โหลดคำขอจะถูกรับเฉพาะเมื่อ `hooks.allowRequestSessionKey=true` (ค่าเริ่มต้น: `false`)
+- `POST /hooks/<name>` → แก้ค่าโดยผ่าน `hooks.mappings`
+  - ค่า `sessionKey` ของการแมปที่เรนเดอร์จากเทมเพลตจะถือว่าเป็นค่าที่ส่งมาจากภายนอก และต้องใช้ `hooks.allowRequestSessionKey=true` เช่นกัน
 
 <Accordion title="Mapping details">
 
 - `match.path` จับคู่เส้นทางย่อยหลัง `/hooks` (เช่น `/hooks/gmail` → `gmail`)
-- `match.source` จับคู่ฟิลด์ payload สำหรับเส้นทางทั่วไป
-- เทมเพลตอย่าง `{{messages[0].subject}}` อ่านค่าจาก payload
-- `transform` สามารถชี้ไปยังโมดูล JS/TS ที่ส่งคืนการกระทำของ hook
-  - `transform.module` ต้องเป็นเส้นทางสัมพัทธ์และต้องอยู่ภายใน `hooks.transformsDir` (เส้นทางสัมบูรณ์และการ traversal จะถูกปฏิเสธ)
-  - เก็บ `hooks.transformsDir` ไว้ใต้ `~/.openclaw/hooks/transforms`; ไดเรกทอรี skill ใน workspace จะถูกปฏิเสธ หาก `openclaw doctor` รายงานว่าเส้นทางนี้ไม่ถูกต้อง ให้ย้ายโมดูล transform ไปยังไดเรกทอรี hooks transforms หรือลบ `hooks.transformsDir`
-- `agentId` กำหนดเส้นทางไปยัง agent เฉพาะ; ID ที่ไม่รู้จักจะย้อนกลับไปใช้ค่าเริ่มต้น
-- `allowedAgentIds`: จำกัดการกำหนดเส้นทางแบบชัดเจน (`*` หรือเว้นไว้ = อนุญาตทั้งหมด, `[]` = ปฏิเสธทั้งหมด)
-- `defaultSessionKey`: คีย์เซสชันแบบคงที่ที่เป็นทางเลือกสำหรับการรัน hook agent ที่ไม่มี `sessionKey` แบบชัดเจน
+- `match.source` จับคู่ฟิลด์เพย์โหลดสำหรับเส้นทางทั่วไป
+- เทมเพลตอย่าง `{{messages[0].subject}}` อ่านจากเพย์โหลด
+- `transform` สามารถชี้ไปยังโมดูล JS/TS ที่คืนค่าการกระทำของฮุกได้
+  - `transform.module` ต้องเป็นเส้นทางสัมพัทธ์และอยู่ภายใน `hooks.transformsDir` (เส้นทางแบบสัมบูรณ์และการไต่เส้นทางจะถูกปฏิเสธ)
+  - เก็บ `hooks.transformsDir` ไว้ใต้ `~/.openclaw/hooks/transforms`; ไดเรกทอรี Skills ของเวิร์กสเปซจะถูกปฏิเสธ ถ้า `openclaw doctor` รายงานว่าเส้นทางนี้ไม่ถูกต้อง ให้ย้ายโมดูลทรานส์ฟอร์มไปยังไดเรกทอรีทรานส์ฟอร์มของฮุก หรือลบ `hooks.transformsDir`
+- `agentId` กำหนดเส้นทางไปยังเอเจนต์เฉพาะ; ID ที่ไม่รู้จักจะย้อนกลับไปใช้ค่าเริ่มต้น
+- `allowedAgentIds`: จำกัดการกำหนดเส้นทางแบบชัดเจน (`*` หรือไม่ระบุ = อนุญาตทั้งหมด, `[]` = ปฏิเสธทั้งหมด)
+- `defaultSessionKey`: คีย์เซสชันคงที่แบบไม่บังคับสำหรับการรันเอเจนต์ฮุกที่ไม่มี `sessionKey` แบบชัดเจน
 - `allowRequestSessionKey`: อนุญาตให้ผู้เรียก `/hooks/agent` และคีย์เซสชันของการแมปที่ขับเคลื่อนด้วยเทมเพลตตั้งค่า `sessionKey` (ค่าเริ่มต้น: `false`)
-- `allowedSessionKeyPrefixes`: รายการ prefix ที่อนุญาตแบบเป็นทางเลือกสำหรับค่า `sessionKey` แบบชัดเจน (คำขอ + การแมป) เช่น `["hook:"]` ค่านี้จะกลายเป็นสิ่งจำเป็นเมื่อการแมปหรือพรีเซ็ตใดใช้ `sessionKey` แบบเทมเพลต
-- `deliver: true` ส่งคำตอบสุดท้ายไปยังช่องทาง; `channel` มีค่าเริ่มต้นเป็น `last`
-- `model` แทนที่ LLM สำหรับการรัน hook นี้ (ต้องได้รับอนุญาตหากตั้งค่าแค็ตตาล็อกโมเดลไว้)
+- `allowedSessionKeyPrefixes`: รายการอนุญาตคำนำหน้าแบบไม่บังคับสำหรับค่า `sessionKey` แบบชัดเจน (คำขอ + การแมป) เช่น `["hook:"]` ค่านี้จะกลายเป็นข้อบังคับเมื่อการแมปหรือพรีเซ็ตใด ๆ ใช้ `sessionKey` แบบเทมเพลต
+- `deliver: true` ส่งคำตอบสุดท้ายไปยังช่องทาง; ค่าเริ่มต้นของ `channel` คือ `last`
+- `model` แทนที่ LLM สำหรับการรันฮุกนี้ (ต้องได้รับอนุญาตถ้าตั้งค่าแคตตาล็อกโมเดลไว้)
 
 </Accordion>
 
-### การผสานการทำงานกับ Gmail
+### การผสานรวม Gmail
 
 - พรีเซ็ต Gmail ในตัวใช้ `sessionKey: "hook:gmail:{{messages[0].id}}"`
-- หากคุณคงการกำหนดเส้นทางต่อข้อความไว้อย่างนั้น ให้ตั้งค่า `hooks.allowRequestSessionKey: true` และจำกัด `hooks.allowedSessionKeyPrefixes` ให้ตรงกับ namespace ของ Gmail เช่น `["hook:", "hook:gmail:"]`
-- หากคุณต้องการ `hooks.allowRequestSessionKey: false` ให้แทนที่พรีเซ็ตด้วย `sessionKey` แบบคงที่แทนค่าเริ่มต้นแบบเทมเพลต
+- ถ้าคุณคงการกำหนดเส้นทางรายข้อความนั้นไว้ ให้ตั้งค่า `hooks.allowRequestSessionKey: true` และจำกัด `hooks.allowedSessionKeyPrefixes` ให้ตรงกับเนมสเปซ Gmail เช่น `["hook:", "hook:gmail:"]`
+- ถ้าคุณต้องใช้ `hooks.allowRequestSessionKey: false` ให้แทนที่พรีเซ็ตด้วย `sessionKey` แบบคงที่แทนค่าเริ่มต้นแบบเทมเพลต
 
 ```json5
 {
@@ -605,7 +637,7 @@ openclaw gateway --port 19001
 }
 ```
 
-- Gateway จะเริ่ม `gog gmail watch serve` อัตโนมัติเมื่อบูตหากกำหนดค่าไว้ ตั้งค่า `OPENCLAW_SKIP_GMAIL_WATCHER=1` เพื่อปิดใช้งาน
+- Gateway เริ่ม `gog gmail watch serve` อัตโนมัติเมื่อบูตหากมีการกำหนดค่าไว้ ตั้งค่า `OPENCLAW_SKIP_GMAIL_WATCHER=1` เพื่อปิดใช้งาน
 - อย่ารัน `gog gmail watch serve` แยกต่างหากควบคู่กับ Gateway
 
 ---
@@ -622,18 +654,18 @@ openclaw gateway --port 19001
 }
 ```
 
-- ให้บริการ HTML/CSS/JS ที่ agent แก้ไขได้และ A2UI ผ่าน HTTP ใต้พอร์ต Gateway:
+- ให้บริการ HTML/CSS/JS ที่เอเจนต์แก้ไขได้และ A2UI ผ่าน HTTP ภายใต้พอร์ต Gateway:
   - `http://<gateway-host>:<gateway.port>/__openclaw__/canvas/`
   - `http://<gateway-host>:<gateway.port>/__openclaw__/a2ui/`
-- เฉพาะภายในเครื่อง: คง `gateway.bind: "loopback"` ไว้ (ค่าเริ่มต้น)
-- การ bind ที่ไม่ใช่ loopback: เส้นทาง canvas ต้องใช้การยืนยันตัวตนของ Gateway (token/password/trusted-proxy) เช่นเดียวกับพื้นผิว HTTP อื่นของ Gateway
-- โดยทั่วไป Node WebViews จะไม่ส่งส่วนหัว auth; หลังจาก node จับคู่และเชื่อมต่อแล้ว Gateway จะประกาศ URL ความสามารถที่มีขอบเขตตาม node สำหรับการเข้าถึง canvas/A2UI
-- URL ความสามารถผูกกับเซสชัน WS ของ node ที่ใช้งานอยู่และหมดอายุอย่างรวดเร็ว ไม่มีการใช้ fallback แบบอิง IP
-- ฉีดไคลเอนต์ live-reload เข้าไปใน HTML ที่ให้บริการ
+- เฉพาะในเครื่อง: คง `gateway.bind: "loopback"` ไว้ (ค่าเริ่มต้น)
+- การ bind ที่ไม่ใช่ local loopback: เส้นทาง canvas ต้องใช้การรับรองความถูกต้องของ Gateway (โทเค็น/รหัสผ่าน/พร็อกซีที่เชื่อถือ) เหมือนพื้นผิว HTTP อื่นของ Gateway
+- โดยทั่วไป Node WebViews ไม่ส่งส่วนหัวการรับรองความถูกต้อง; หลังจากจับคู่และเชื่อมต่อโหนดแล้ว Gateway จะประกาศ URL ความสามารถที่อยู่ในขอบเขตโหนดสำหรับการเข้าถึง canvas/A2UI
+- URL ความสามารถผูกกับเซสชัน WS ของโหนดที่ใช้งานอยู่และหมดอายุอย่างรวดเร็ว ไม่มีการใช้ทางเลือกสำรองตาม IP
+- ฉีดไคลเอนต์โหลดซ้ำสดเข้าไปใน HTML ที่ให้บริการ
 - สร้าง `index.html` เริ่มต้นโดยอัตโนมัติเมื่อว่าง
 - ให้บริการ A2UI ที่ `/__openclaw__/a2ui/` ด้วย
-- การเปลี่ยนแปลงต้องรีสตาร์ต gateway
-- ปิดใช้งาน live reload สำหรับไดเรกทอรีขนาดใหญ่หรือข้อผิดพลาด `EMFILE`
+- การเปลี่ยนแปลงต้องรีสตาร์ต Gateway
+- ปิดใช้งานการโหลดซ้ำสดสำหรับไดเรกทอรีขนาดใหญ่หรือข้อผิดพลาด `EMFILE`
 
 ---
 
@@ -653,7 +685,7 @@ openclaw gateway --port 19001
 
 - `minimal` (ค่าเริ่มต้น): ละเว้น `cliPath` + `sshPort` จากระเบียน TXT
 - `full`: รวม `cliPath` + `sshPort`
-- ชื่อโฮสต์มีค่าเริ่มต้นเป็นชื่อโฮสต์ของระบบเมื่อเป็นป้ายกำกับ DNS ที่ถูกต้อง และย้อนกลับไปใช้ `openclaw` หากไม่ถูกต้อง แทนที่ด้วย `OPENCLAW_MDNS_HOSTNAME`
+- ค่าเริ่มต้นของชื่อโฮสต์คือชื่อโฮสต์ของระบบเมื่อเป็นป้ายกำกับ DNS ที่ถูกต้อง มิฉะนั้นจะย้อนกลับไปใช้ `openclaw` แทนที่ด้วย `OPENCLAW_MDNS_HOSTNAME`
 
 ### พื้นที่กว้าง (DNS-SD)
 
@@ -665,9 +697,9 @@ openclaw gateway --port 19001
 }
 ```
 
-เขียนโซน unicast DNS-SD ใต้ `~/.openclaw/dns/` สำหรับการค้นพบข้ามเครือข่าย ให้ใช้ร่วมกับเซิร์ฟเวอร์ DNS (แนะนำ CoreDNS) + Tailscale split DNS
+เขียนโซน DNS-SD แบบยูนิแคสต์ใต้ `~/.openclaw/dns/` สำหรับการค้นพบข้ามเครือข่าย ให้จับคู่กับเซิร์ฟเวอร์ DNS (แนะนำ CoreDNS) + Tailscale split DNS
 
-การตั้งค่า: `openclaw dns setup --apply`
+ตั้งค่า: `openclaw dns setup --apply`
 
 ---
 
@@ -690,14 +722,14 @@ openclaw gateway --port 19001
 }
 ```
 
-- ตัวแปร env แบบอินไลน์จะถูกนำไปใช้เฉพาะเมื่อ process env ไม่มีคีย์นั้น
-- ไฟล์ `.env`: CWD `.env` + `~/.openclaw/.env` (ทั้งสองไม่แทนที่ตัวแปรที่มีอยู่)
-- `shellEnv`: นำเข้าคีย์ที่คาดไว้แต่ขาดหายจากโปรไฟล์ login shell ของคุณ
+- ตัวแปร env แบบอินไลน์จะถูกใช้เฉพาะเมื่อ env ของกระบวนการไม่มีคีย์นั้น
+- ไฟล์ `.env`: CWD `.env` + `~/.openclaw/.env` (ทั้งคู่ไม่แทนที่ตัวแปรที่มีอยู่)
+- `shellEnv`: นำเข้าคีย์ที่คาดหวังซึ่งหายไปจากโปรไฟล์เชลล์ล็อกอินของคุณ
 - ดู [สภาพแวดล้อม](/th/help/environment) สำหรับลำดับความสำคัญทั้งหมด
 
-### การแทนค่าตัวแปร Env
+### การแทนที่ตัวแปร Env
 
-อ้างอิงตัวแปร env ในสตริง config ใดก็ได้ด้วย `${VAR_NAME}`:
+อ้างอิงตัวแปร env ในสตริงการกำหนดค่าใด ๆ ด้วย `${VAR_NAME}`:
 
 ```json5
 {
@@ -708,19 +740,19 @@ openclaw gateway --port 19001
 ```
 
 - จับคู่เฉพาะชื่อที่เป็นตัวพิมพ์ใหญ่: `[A-Z_][A-Z0-9_]*`
-- ตัวแปรที่ขาดหาย/ว่างจะทำให้เกิดข้อผิดพลาดตอนโหลด config
-- escape ด้วย `$${VAR}` สำหรับ `${VAR}` แบบ literal
+- ตัวแปรที่หายไป/ว่างจะทำให้เกิดข้อผิดพลาดเมื่อโหลดการกำหนดค่า
+- เอสเคปด้วย `$${VAR}` สำหรับ `${VAR}` แบบลิเทอรัล
 - ใช้ได้กับ `$include`
 
 ---
 
 ## ความลับ
 
-การอ้างอิงความลับเป็นแบบเพิ่มเติม: ค่าข้อความธรรมดายังคงใช้ได้
+การอ้างอิงความลับเป็นแบบเพิ่มได้: ค่าข้อความธรรมดายังคงใช้ได้
 
 ### `SecretRef`
 
-ใช้รูปแบบอ็อบเจกต์เดียว:
+ใช้รูปร่างออบเจ็กต์หนึ่งแบบ:
 
 ```json5
 { source: "env" | "file" | "exec", provider: "default", id: "..." }
@@ -730,17 +762,17 @@ openclaw gateway --port 19001
 
 - รูปแบบ `provider`: `^[a-z][a-z0-9_-]{0,63}$`
 - รูปแบบ id ของ `source: "env"`: `^[A-Z][A-Z0-9_]{0,127}$`
-- id ของ `source: "file"`: JSON pointer แบบสัมบูรณ์ (เช่น `"/providers/openai/apiKey"`)
+- id ของ `source: "file"`: ตัวชี้ JSON แบบสัมบูรณ์ (เช่น `"/providers/openai/apiKey"`)
 - รูปแบบ id ของ `source: "exec"`: `^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$`
-- id ของ `source: "exec"` ต้องไม่มี segment ของเส้นทางที่คั่นด้วย slash เป็น `.` หรือ `..` (เช่น `a/../b` จะถูกปฏิเสธ)
+- id ของ `source: "exec"` ต้องไม่มีเซกเมนต์เส้นทางที่คั่นด้วยสแลชเป็น `.` หรือ `..` (เช่น `a/../b` จะถูกปฏิเสธ)
 
-### พื้นผิว credential ที่รองรับ
+### พื้นผิวข้อมูลประจำตัวที่รองรับ
 
-- เมทริกซ์ canonical: [พื้นผิว credential ของ SecretRef](/th/reference/secretref-credential-surface)
-- `secrets apply` กำหนดเป้าหมายไปยังเส้นทาง credential ของ `openclaw.json` ที่รองรับ
-- การอ้างอิงใน `auth-profiles.json` รวมอยู่ในการแก้ค่า runtime และความครอบคลุมของ audit
+- เมทริกซ์บัญญัติ: [พื้นผิวข้อมูลประจำตัว SecretRef](/th/reference/secretref-credential-surface)
+- เป้าหมาย `secrets apply` รองรับเส้นทางข้อมูลประจำตัวของ `openclaw.json`
+- การอ้างอิง `auth-profiles.json` รวมอยู่ในการแก้ค่ารันไทม์และความครอบคลุมการตรวจสอบ
 
-### Config ของผู้ให้บริการความลับ
+### การกำหนดค่าผู้ให้บริการความลับ
 
 ```json5
 {
@@ -771,17 +803,17 @@ openclaw gateway --port 19001
 หมายเหตุ:
 
 - ผู้ให้บริการ `file` รองรับ `mode: "json"` และ `mode: "singleValue"` (`id` ต้องเป็น `"value"` ในโหมด singleValue)
-- เส้นทางผู้ให้บริการ file และ exec จะล้มเหลวแบบปิดเมื่อไม่สามารถตรวจสอบ Windows ACL ได้ ตั้งค่า `allowInsecurePath: true` เฉพาะสำหรับเส้นทางที่เชื่อถือได้ซึ่งไม่สามารถตรวจสอบได้
-- ผู้ให้บริการ `exec` ต้องใช้เส้นทาง `command` แบบสัมบูรณ์และใช้ protocol payloads บน stdin/stdout
+- เส้นทางของผู้ให้บริการ file และ exec จะล้มเหลวแบบปิดเมื่อการตรวจสอบ Windows ACL ไม่พร้อมใช้งาน ตั้งค่า `allowInsecurePath: true` เฉพาะสำหรับเส้นทางที่เชื่อถือซึ่งตรวจสอบไม่ได้
+- ผู้ให้บริการ `exec` ต้องใช้เส้นทาง `command` แบบสัมบูรณ์และใช้เพย์โหลดโปรโตคอลบน stdin/stdout
 - โดยค่าเริ่มต้น เส้นทางคำสั่งที่เป็น symlink จะถูกปฏิเสธ ตั้งค่า `allowSymlinkCommand: true` เพื่ออนุญาตเส้นทาง symlink พร้อมตรวจสอบเส้นทางเป้าหมายที่แก้ค่าแล้ว
-- หากกำหนดค่า `trustedDirs` การตรวจสอบ trusted-dir จะใช้กับเส้นทางเป้าหมายที่แก้ค่าแล้ว
-- สภาพแวดล้อมของ child `exec` มีค่าเริ่มต้นเป็นแบบน้อยที่สุด; ส่งตัวแปรที่จำเป็นอย่างชัดเจนด้วย `passEnv`
-- การอ้างอิงความลับจะถูกแก้ค่าเมื่อ activation เป็น snapshot ในหน่วยความจำ จากนั้นเส้นทางคำขอจะอ่านเฉพาะ snapshot
-- การกรอง active-surface จะนำไปใช้ระหว่าง activation: การอ้างอิงที่แก้ค่าไม่ได้บนพื้นผิวที่เปิดใช้งานจะทำให้ startup/reload ล้มเหลว ส่วนพื้นผิวที่ไม่ใช้งานจะถูกข้ามพร้อม diagnostics
+- ถ้ากำหนดค่า `trustedDirs` ไว้ การตรวจสอบไดเรกทอรีที่เชื่อถือจะใช้กับเส้นทางเป้าหมายที่แก้ค่าแล้ว
+- สภาพแวดล้อมลูกของ `exec` เป็นแบบขั้นต่ำโดยค่าเริ่มต้น; ส่งตัวแปรที่จำเป็นอย่างชัดเจนด้วย `passEnv`
+- การอ้างอิงความลับจะถูกแก้ค่า ณ เวลาเปิดใช้งานเป็นสแนปช็อตในหน่วยความจำ จากนั้นเส้นทางคำขอจะอ่านเฉพาะสแนปช็อต
+- การกรองพื้นผิวที่ใช้งานอยู่จะใช้ระหว่างการเปิดใช้งาน: การอ้างอิงที่แก้ค่าไม่ได้บนพื้นผิวที่เปิดใช้งานจะทำให้การเริ่มต้น/โหลดซ้ำล้มเหลว ขณะที่พื้นผิวที่ไม่ใช้งานจะถูกข้ามพร้อมการวินิจฉัย
 
 ---
 
-## ที่เก็บ Auth
+## ที่เก็บการรับรองความถูกต้อง
 
 ```json5
 {
@@ -799,14 +831,14 @@ openclaw gateway --port 19001
 }
 ```
 
-- โปรไฟล์ต่อ agent ถูกจัดเก็บที่ `<agentDir>/auth-profiles.json`
-- `auth-profiles.json` รองรับการอ้างอิงระดับค่า (`keyRef` สำหรับ `api_key`, `tokenRef` สำหรับ `token`) สำหรับโหมด credential แบบคงที่
-- แมป `auth-profiles.json` แบบ flat เดิม เช่น `{ "provider": { "apiKey": "..." } }` ไม่ใช่รูปแบบ runtime; `openclaw doctor --fix` เขียนใหม่เป็นโปรไฟล์ API-key แบบ canonical `provider:default` พร้อมสำรองข้อมูล `.legacy-flat.*.bak`
-- โปรไฟล์โหมด OAuth (`auth.profiles.<id>.mode = "oauth"`) ไม่รองรับ credential ของ auth-profile ที่อิง SecretRef
-- credential runtime แบบคงที่มาจาก snapshot ที่แก้ค่าแล้วในหน่วยความจำ; รายการ `auth.json` แบบ static เดิมจะถูกล้างเมื่อพบ
-- การนำเข้า OAuth เดิมจาก `~/.openclaw/credentials/oauth.json`
+- โปรไฟล์ต่อเอเจนต์จะถูกจัดเก็บที่ `<agentDir>/auth-profiles.json`
+- `auth-profiles.json` รองรับการอ้างอิงระดับค่า (`keyRef` สำหรับ `api_key`, `tokenRef` สำหรับ `token`) สำหรับโหมดข้อมูลประจำตัวแบบคงที่
+- การแมป `auth-profiles.json` แบบแฟลตดั้งเดิม เช่น `{ "provider": { "apiKey": "..." } }` ไม่ใช่รูปแบบรันไทม์; `openclaw doctor --fix` จะเขียนใหม่เป็นโปรไฟล์คีย์ API แบบบัญญัติ `provider:default` พร้อมข้อมูลสำรอง `.legacy-flat.*.bak`
+- โปรไฟล์โหมด OAuth (`auth.profiles.<id>.mode = "oauth"`) ไม่รองรับข้อมูลประจำตัว auth-profile ที่หนุนด้วย SecretRef
+- ข้อมูลประจำตัวรันไทม์แบบคงที่มาจากสแนปช็อตที่แก้ค่าแล้วในหน่วยความจำ; รายการ `auth.json` แบบคงที่ดั้งเดิมจะถูกล้างเมื่อพบ
+- การนำเข้า OAuth ดั้งเดิมมาจาก `~/.openclaw/credentials/oauth.json`
 - ดู [OAuth](/th/concepts/oauth)
-- พฤติกรรม runtime ของความลับและเครื่องมือ `audit/configure/apply`: [การจัดการความลับ](/th/gateway/secrets)
+- พฤติกรรมรันไทม์ของความลับและเครื่องมือ `audit/configure/apply`: [การจัดการความลับ](/th/gateway/secrets)
 
 ### `auth.cooldowns`
 
@@ -828,19 +860,19 @@ openclaw gateway --port 19001
 }
 ```
 
-- `billingBackoffHours`: การหน่วงถอยหลังพื้นฐานเป็นชั่วโมงเมื่อโปรไฟล์ล้มเหลวจากข้อผิดพลาดด้านการเรียกเก็บเงินจริงหรือเครดิตไม่เพียงพอ (ค่าเริ่มต้น: `5`) ข้อความการเรียกเก็บเงินที่ชัดเจนอาจยังเข้าทางนี้ได้แม้ในคำตอบ `401`/`403` แต่ตัวจับคู่ข้อความเฉพาะผู้ให้บริการยังคงจำกัดอยู่กับผู้ให้บริการที่เป็นเจ้าของเท่านั้น (เช่น OpenRouter `Key limit exceeded`) ข้อความ HTTP `402` ที่ลองใหม่ได้เกี่ยวกับช่วงเวลาการใช้งานหรือขีดจำกัดค่าใช้จ่ายขององค์กร/เวิร์กสเปซยังคงอยู่ในเส้นทาง `rate_limit` แทน
-- `billingBackoffHoursByProvider`: การแทนที่เวลาหน่วงถอยหลังสำหรับการเรียกเก็บเงินแบบรายผู้ให้บริการที่ไม่บังคับ
-- `billingMaxHours`: เพดานเป็นชั่วโมงสำหรับการเติบโตแบบเอกซ์โพเนนเชียลของการหน่วงถอยหลังด้านการเรียกเก็บเงิน (ค่าเริ่มต้น: `24`)
-- `authPermanentBackoffMinutes`: การหน่วงถอยหลังพื้นฐานเป็นนาทีสำหรับความล้มเหลว `auth_permanent` ที่มีความมั่นใจสูง (ค่าเริ่มต้น: `10`)
-- `authPermanentMaxMinutes`: เพดานเป็นนาทีสำหรับการเติบโตของการหน่วงถอยหลัง `auth_permanent` (ค่าเริ่มต้น: `60`)
-- `failureWindowHours`: หน้าต่างแบบเลื่อนเป็นชั่วโมงที่ใช้สำหรับตัวนับการหน่วงถอยหลัง (ค่าเริ่มต้น: `24`)
-- `overloadedProfileRotations`: จำนวนสูงสุดของการหมุนเวียนโปรไฟล์การยืนยันตัวตนของผู้ให้บริการเดียวกันสำหรับข้อผิดพลาดโอเวอร์โหลดก่อนสลับไปใช้โมเดลสำรอง (ค่าเริ่มต้น: `1`) รูปแบบผู้ให้บริการไม่ว่าง เช่น `ModelNotReadyException` จะเข้าทางนี้
-- `overloadedBackoffMs`: ดีเลย์คงที่ก่อนลองหมุนเวียนผู้ให้บริการ/โปรไฟล์ที่โอเวอร์โหลดอีกครั้ง (ค่าเริ่มต้น: `0`)
-- `rateLimitedProfileRotations`: จำนวนสูงสุดของการหมุนเวียนโปรไฟล์การยืนยันตัวตนของผู้ให้บริการเดียวกันสำหรับข้อผิดพลาดขีดจำกัดอัตราก่อนสลับไปใช้โมเดลสำรอง (ค่าเริ่มต้น: `1`) บักเก็ตขีดจำกัดอัตรานั้นรวมข้อความในรูปแบบของผู้ให้บริการ เช่น `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` และ `resource exhausted`
+- `billingBackoffHours`: ระยะหน่วงถอยกลับพื้นฐานเป็นชั่วโมงเมื่อโปรไฟล์ล้มเหลวจากข้อผิดพลาดด้านการเรียกเก็บเงิน/เครดิตไม่เพียงพอจริง (ค่าเริ่มต้น: `5`) ข้อความการเรียกเก็บเงินที่ชัดเจนอาจยังเข้ามาที่นี่ได้แม้ในคำตอบ `401`/`403` แต่ตัวจับคู่ข้อความเฉพาะผู้ให้บริการจะยังจำกัดขอบเขตอยู่กับผู้ให้บริการที่เป็นเจ้าของเท่านั้น (เช่น OpenRouter `Key limit exceeded`) ข้อความ HTTP `402` ที่ลองใหม่ได้เกี่ยวกับช่วงเวลาการใช้งานหรือขีดจำกัดการใช้จ่ายขององค์กร/พื้นที่ทำงานจะอยู่ในเส้นทาง `rate_limit` แทน
+- `billingBackoffHoursByProvider`: การแทนที่ระยะหน่วงถอยกลับด้านการเรียกเก็บเงินเป็นชั่วโมงแบบรายผู้ให้บริการ ซึ่งไม่บังคับ
+- `billingMaxHours`: เพดานเป็นชั่วโมงสำหรับการเติบโตแบบเอ็กซ์โปเนนเชียลของระยะหน่วงถอยกลับด้านการเรียกเก็บเงิน (ค่าเริ่มต้น: `24`)
+- `authPermanentBackoffMinutes`: ระยะหน่วงถอยกลับพื้นฐานเป็นนาทีสำหรับความล้มเหลว `auth_permanent` ที่มีความมั่นใจสูง (ค่าเริ่มต้น: `10`)
+- `authPermanentMaxMinutes`: เพดานเป็นนาทีสำหรับการเติบโตของระยะหน่วงถอยกลับ `auth_permanent` (ค่าเริ่มต้น: `60`)
+- `failureWindowHours`: หน้าต่างแบบเลื่อนเป็นชั่วโมงที่ใช้สำหรับตัวนับระยะหน่วงถอยกลับ (ค่าเริ่มต้น: `24`)
+- `overloadedProfileRotations`: จำนวนสูงสุดของการหมุนเวียน auth-profile ในผู้ให้บริการเดียวกันสำหรับข้อผิดพลาดโหลดเกิน ก่อนสลับไปใช้โมเดลสำรอง (ค่าเริ่มต้น: `1`) รูปแบบผู้ให้บริการไม่ว่าง เช่น `ModelNotReadyException` จะเข้ามาที่นี่
+- `overloadedBackoffMs`: หน่วงเวลาคงที่ก่อนลองการหมุนเวียนผู้ให้บริการ/โปรไฟล์ที่โหลดเกินอีกครั้ง (ค่าเริ่มต้น: `0`)
+- `rateLimitedProfileRotations`: จำนวนสูงสุดของการหมุนเวียน auth-profile ในผู้ให้บริการเดียวกันสำหรับข้อผิดพลาดขีดจำกัดอัตรา ก่อนสลับไปใช้โมเดลสำรอง (ค่าเริ่มต้น: `1`) บัคเก็ตขีดจำกัดอัตรานี้รวมข้อความที่มีรูปแบบของผู้ให้บริการ เช่น `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` และ `resource exhausted`
 
 ---
 
-## การบันทึก
+## การบันทึกล็อก
 
 ```json5
 {
@@ -855,11 +887,11 @@ openclaw gateway --port 19001
 }
 ```
 
-- ไฟล์บันทึกเริ่มต้น: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
-- ตั้งค่า `logging.file` สำหรับพาธที่คงที่
-- `consoleLevel` จะยกระดับเป็น `debug` เมื่อใช้ `--verbose`
-- `maxFileBytes`: ขนาดไฟล์บันทึกที่ใช้งานอยู่สูงสุดเป็นไบต์ก่อนการหมุนเวียน (จำนวนเต็มบวก; ค่าเริ่มต้น: `104857600` = 100 MB) OpenClaw เก็บไฟล์เก็บถาวรแบบมีหมายเลขไว้ข้างไฟล์ที่ใช้งานอยู่ได้สูงสุดห้าไฟล์
-- `redactSensitive` / `redactPatterns`: การปิดบังแบบพยายามให้ดีที่สุดสำหรับเอาต์พุตคอนโซล ไฟล์บันทึก ระเบียนบันทึก OTLP และข้อความทรานสคริปต์เซสชันที่บันทึกถาวร `redactSensitive: "off"` ปิดใช้งานเฉพาะนโยบายบันทึก/ทรานสคริปต์ทั่วไปนี้เท่านั้น; พื้นผิวความปลอดภัยของ UI/เครื่องมือ/การวินิจฉัยยังคงปกปิดความลับก่อนส่งออก
+- ไฟล์ล็อกเริ่มต้น: `/tmp/openclaw/openclaw-YYYY-MM-DD.log`
+- ตั้งค่า `logging.file` เพื่อใช้เส้นทางคงที่
+- `consoleLevel` จะเพิ่มเป็น `debug` เมื่อใช้ `--verbose`
+- `maxFileBytes`: ขนาดสูงสุดของไฟล์ล็อกที่ใช้งานอยู่เป็นไบต์ก่อนหมุนเวียนไฟล์ (จำนวนเต็มบวก; ค่าเริ่มต้น: `104857600` = 100 MB) OpenClaw เก็บไฟล์เก็บถาวรแบบมีหมายเลขไว้สูงสุดห้าไฟล์ข้างไฟล์ที่ใช้งานอยู่
+- `redactSensitive` / `redactPatterns`: การปกปิดแบบพยายามอย่างดีที่สุดสำหรับเอาต์พุตคอนโซล ล็อกไฟล์ ระเบียนล็อก OTLP และข้อความ transcript ของเซสชันที่บันทึกไว้ `redactSensitive: "off"` จะปิดใช้งานเฉพาะนโยบายล็อก/transcript ทั่วไปนี้เท่านั้น; พื้นผิวความปลอดภัยของ UI/เครื่องมือ/การวินิจฉัยจะยังปกปิดความลับก่อนปล่อยออก
 
 ---
 
@@ -907,25 +939,25 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: สวิตช์หลักสำหรับเอาต์พุตเครื่องมือวัด (ค่าเริ่มต้น: `true`)
-- `flags`: อาร์เรย์ของสตริงแฟล็กที่เปิดใช้เอาต์พุตบันทึกแบบเจาะจง (รองรับไวลด์การ์ด เช่น `"telegram.*"` หรือ `"*"`)
-- `stuckSessionWarnMs`: เกณฑ์อายุที่ไม่มีความคืบหน้าเป็นมิลลิวินาทีสำหรับจัดประเภทเซสชันการประมวลผลที่รันนานเป็น `session.long_running`, `session.stalled` หรือ `session.stuck` การตอบกลับ เครื่องมือ สถานะ บล็อก และความคืบหน้า ACP จะรีเซ็ตตัวจับเวลา; การวินิจฉัย `session.stuck` ที่เกิดซ้ำจะหน่วงถอยหลังเมื่อยังไม่เปลี่ยนแปลง
-- `otel.enabled`: เปิดใช้ไปป์ไลน์การส่งออก OpenTelemetry (ค่าเริ่มต้น: `false`) สำหรับการกำหนดค่าทั้งหมด แค็ตตาล็อกสัญญาณ และโมเดลความเป็นส่วนตัว โปรดดู [การส่งออก OpenTelemetry](/th/gateway/opentelemetry)
-- `otel.endpoint`: URL ตัวรวบรวมสำหรับการส่งออก OTel
-- `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: ปลายทาง OTLP เฉพาะสัญญาณที่ไม่บังคับ เมื่อตั้งค่าแล้ว จะเขียนทับ `otel.endpoint` เฉพาะสัญญาณนั้นเท่านั้น
+- `enabled`: สวิตช์หลักสำหรับเอาต์พุต instrumentation (ค่าเริ่มต้น: `true`)
+- `flags`: อาร์เรย์ของสตริงแฟล็กที่เปิดใช้เอาต์พุตล็อกแบบเจาะจง (รองรับไวลด์การ์ด เช่น `"telegram.*"` หรือ `"*"`)
+- `stuckSessionWarnMs`: เกณฑ์อายุที่ไม่มีความคืบหน้าเป็นมิลลิวินาทีสำหรับจัดประเภทเซสชันประมวลผลที่รันนานเป็น `session.long_running`, `session.stalled` หรือ `session.stuck` การตอบกลับ เครื่องมือ สถานะ บล็อก และความคืบหน้า ACP จะรีเซ็ตตัวจับเวลา; การวินิจฉัย `session.stuck` ที่ซ้ำกันจะถอยกลับในขณะที่ยังไม่เปลี่ยนแปลง
+- `otel.enabled`: เปิดใช้ไปป์ไลน์ส่งออก OpenTelemetry (ค่าเริ่มต้น: `false`) สำหรับการกำหนดค่าเต็ม แค็ตตาล็อกสัญญาณ และโมเดลความเป็นส่วนตัว โปรดดู [การส่งออก OpenTelemetry](/th/gateway/opentelemetry)
+- `otel.endpoint`: URL ของตัวรวบรวมสำหรับการส่งออก OTel
+- `otel.tracesEndpoint` / `otel.metricsEndpoint` / `otel.logsEndpoint`: endpoint OTLP เฉพาะสัญญาณที่ไม่บังคับ เมื่อตั้งค่าแล้ว จะเขียนทับ `otel.endpoint` สำหรับสัญญาณนั้นเท่านั้น
 - `otel.protocol`: `"http/protobuf"` (ค่าเริ่มต้น) หรือ `"grpc"`
-- `otel.headers`: ส่วนหัวเมตาดาต้า HTTP/gRPC เพิ่มเติมที่ส่งพร้อมคำขอส่งออก OTel
+- `otel.headers`: เฮดเดอร์เมทาดาทา HTTP/gRPC เพิ่มเติมที่ส่งไปกับคำขอส่งออก OTel
 - `otel.serviceName`: ชื่อบริการสำหรับแอตทริบิวต์ทรัพยากร
-- `otel.traces` / `otel.metrics` / `otel.logs`: เปิดใช้การส่งออกเทรซ เมตริก หรือบันทึก
-- `otel.sampleRate`: อัตราการสุ่มตัวอย่างเทรซ `0`–`1`
-- `otel.flushIntervalMs`: ช่วงเวลาการล้างเทเลเมทรีตามรอบเป็นมิลลิวินาที
-- `otel.captureContent`: การเก็บเนื้อหาดิบแบบเลือกเปิดสำหรับแอตทริบิวต์สแปน OTEL ค่าเริ่มต้นปิดอยู่ บูลีน `true` จะเก็บเนื้อหาข้อความ/เครื่องมือที่ไม่ใช่ระบบ; รูปแบบออบเจ็กต์ช่วยให้คุณเปิดใช้ `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs` และ `systemPrompt` ได้อย่างชัดเจน
-- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: สวิตช์สภาพแวดล้อมสำหรับแอตทริบิวต์ผู้ให้บริการสแปน GenAI รุ่นทดลองล่าสุด โดยค่าเริ่มต้น สแปนจะเก็บแอตทริบิวต์ `gen_ai.system` แบบเดิมไว้เพื่อความเข้ากันได้; เมตริก GenAI ใช้แอตทริบิวต์เชิงความหมายแบบมีขอบเขต
-- `OPENCLAW_OTEL_PRELOADED=1`: สวิตช์สภาพแวดล้อมสำหรับโฮสต์ที่ลงทะเบียน OpenTelemetry SDK ส่วนกลางไว้แล้ว จากนั้น OpenClaw จะข้ามการเริ่มต้น/ปิด SDK ที่ Plugin เป็นเจ้าของ ขณะยังคงเปิดใช้งานตัวฟังการวินิจฉัย
-- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` และ `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: ตัวแปรสภาพแวดล้อมปลายทางเฉพาะสัญญาณที่ใช้เมื่อไม่ได้ตั้งค่าคีย์การกำหนดค่าที่ตรงกัน
-- `cacheTrace.enabled`: บันทึกสแนปชอตเทรซแคชสำหรับการรันแบบฝัง (ค่าเริ่มต้น: `false`)
-- `cacheTrace.filePath`: พาธเอาต์พุตสำหรับ JSONL เทรซแคช (ค่าเริ่มต้น: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`)
-- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: ควบคุมสิ่งที่รวมอยู่ในเอาต์พุตเทรซแคช (ค่าเริ่มต้นทั้งหมด: `true`)
+- `otel.traces` / `otel.metrics` / `otel.logs`: เปิดใช้การส่งออก trace, metrics หรือ log
+- `otel.sampleRate`: อัตราการสุ่มตัวอย่าง trace `0`–`1`
+- `otel.flushIntervalMs`: ช่วงเวลาการ flush telemetry เป็นมิลลิวินาทีแบบเป็นระยะ
+- `otel.captureContent`: การเลือกเปิดใช้การจับเนื้อหาดิบสำหรับแอตทริบิวต์ของ OTEL span ค่าเริ่มต้นคือปิด บูลีน `true` จะจับเนื้อหาข้อความ/เครื่องมือที่ไม่ใช่ระบบ; รูปแบบออบเจ็กต์ให้คุณเปิดใช้ `inputMessages`, `outputMessages`, `toolInputs`, `toolOutputs` และ `systemPrompt` ได้อย่างชัดเจน
+- `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: สวิตช์สภาพแวดล้อมสำหรับแอตทริบิวต์ผู้ให้บริการ span ของ GenAI รุ่นทดลองล่าสุด โดยค่าเริ่มต้น span จะคงแอตทริบิวต์ `gen_ai.system` แบบเก่าไว้เพื่อความเข้ากันได้; metrics ของ GenAI ใช้แอตทริบิวต์เชิงความหมายที่มีขอบเขต
+- `OPENCLAW_OTEL_PRELOADED=1`: สวิตช์สภาพแวดล้อมสำหรับโฮสต์ที่ลงทะเบียน OpenTelemetry SDK ส่วนกลางไว้แล้ว จากนั้น OpenClaw จะข้ามการเริ่มต้น/ปิด SDK ที่ Plugin เป็นเจ้าของ ขณะที่ยังคงให้ตัวรับฟังการวินิจฉัยทำงานอยู่
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` และ `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: ตัวแปรสภาพแวดล้อม endpoint เฉพาะสัญญาณที่ใช้เมื่อไม่ได้ตั้งค่าคีย์ config ที่ตรงกัน
+- `cacheTrace.enabled`: บันทึกสแนปช็อต trace ของแคชสำหรับการรันแบบฝังตัว (ค่าเริ่มต้น: `false`)
+- `cacheTrace.filePath`: เส้นทางเอาต์พุตสำหรับ JSONL ของ trace แคช (ค่าเริ่มต้น: `$OPENCLAW_STATE_DIR/logs/cache-trace.jsonl`)
+- `cacheTrace.includeMessages` / `includePrompt` / `includeSystem`: ควบคุมสิ่งที่รวมอยู่ในเอาต์พุต trace แคช (ทั้งหมดมีค่าเริ่มต้น: `true`)
 
 ---
 
@@ -947,12 +979,12 @@ openclaw gateway --port 19001
 }
 ```
 
-- `channel`: ช่องทางการเผยแพร่สำหรับการติดตั้ง npm/git — `"stable"`, `"beta"` หรือ `"dev"`
-- `checkOnStart`: ตรวจหาการอัปเดต npm เมื่อ Gateway เริ่มทำงาน (ค่าเริ่มต้น: `true`)
-- `auto.enabled`: เปิดใช้การอัปเดตอัตโนมัติในเบื้องหลังสำหรับการติดตั้งแพ็กเกจ (ค่าเริ่มต้น: `false`)
-- `auto.stableDelayHours`: ดีเลย์ขั้นต่ำเป็นชั่วโมงก่อนใช้การอัปเดตอัตโนมัติของช่องทางเสถียร (ค่าเริ่มต้น: `6`; สูงสุด: `168`)
-- `auto.stableJitterHours`: หน้าต่างการกระจายการปล่อยเพิ่มเติมของช่องทางเสถียรเป็นชั่วโมง (ค่าเริ่มต้น: `12`; สูงสุด: `168`)
-- `auto.betaCheckIntervalHours`: ความถี่ที่การตรวจสอบช่องทางเบต้าทำงานเป็นชั่วโมง (ค่าเริ่มต้น: `1`; สูงสุด: `24`)
+- `channel`: ช่องทางการปล่อยสำหรับการติดตั้ง npm/git — `"stable"`, `"beta"` หรือ `"dev"`
+- `checkOnStart`: ตรวจสอบการอัปเดต npm เมื่อ Gateway เริ่มทำงาน (ค่าเริ่มต้น: `true`)
+- `auto.enabled`: เปิดใช้การอัปเดตอัตโนมัติเบื้องหลังสำหรับการติดตั้งแพ็กเกจ (ค่าเริ่มต้น: `false`)
+- `auto.stableDelayHours`: ระยะหน่วงขั้นต่ำเป็นชั่วโมงก่อนนำไปใช้อัตโนมัติในช่องทาง stable (ค่าเริ่มต้น: `6`; สูงสุด: `168`)
+- `auto.stableJitterHours`: หน้าต่างกระจายการ rollout เพิ่มเติมของช่องทาง stable เป็นชั่วโมง (ค่าเริ่มต้น: `12`; สูงสุด: `168`)
+- `auto.betaCheckIntervalHours`: ความถี่ในการตรวจสอบช่องทาง beta เป็นชั่วโมง (ค่าเริ่มต้น: `1`; สูงสุด: `24`)
 
 ---
 
@@ -985,23 +1017,23 @@ openclaw gateway --port 19001
 }
 ```
 
-- `enabled`: เกตฟีเจอร์ ACP ส่วนกลาง (ค่าเริ่มต้น: `true`; ตั้งค่า `false` เพื่อซ่อนการส่ง ACP และตัวช่วยการสปอว์น)
-- `dispatch.enabled`: เกตอิสระสำหรับการส่งเทิร์นเซสชัน ACP (ค่าเริ่มต้น: `true`) ตั้งค่า `false` เพื่อให้คำสั่ง ACP ยังพร้อมใช้งานแต่บล็อกการดำเนินการ
-- `backend`: id แบ็กเอนด์รันไทม์ ACP เริ่มต้น (ต้องตรงกับ Plugin รันไทม์ ACP ที่ลงทะเบียนไว้)
-  ติดตั้ง Plugin แบ็กเอนด์ก่อน และหากตั้งค่า `plugins.allow` ให้รวม id ของ Plugin แบ็กเอนด์ (เช่น `acpx`) ไม่เช่นนั้นแบ็กเอนด์ ACP จะไม่โหลด
-- `defaultAgent`: id ตัวแทนเป้าหมาย ACP สำรองเมื่อการสปอว์นไม่ได้ระบุเป้าหมายอย่างชัดเจน
-- `allowedAgents`: รายการอนุญาตของ id ตัวแทนที่อนุญาตให้ใช้กับเซสชันรันไทม์ ACP; ว่างหมายถึงไม่มีข้อจำกัดเพิ่มเติม
-- `maxConcurrentSessions`: จำนวนเซสชัน ACP ที่ใช้งานพร้อมกันสูงสุด
-- `stream.coalesceIdleMs`: หน้าต่างล้างเมื่อว่างเป็นมิลลิวินาทีสำหรับข้อความที่สตรีม
-- `stream.maxChunkChars`: ขนาดชังก์สูงสุดก่อนแยกการฉายบล็อกที่สตรีม
+- `enabled`: เกตฟีเจอร์ ACP ส่วนกลาง (ค่าเริ่มต้น: `true`; ตั้งค่า `false` เพื่อซ่อน dispatch ของ ACP และ affordance สำหรับการ spawn)
+- `dispatch.enabled`: เกตอิสระสำหรับ dispatch เทิร์นเซสชัน ACP (ค่าเริ่มต้น: `true`) ตั้งค่า `false` เพื่อให้คำสั่ง ACP ยังคงใช้ได้ แต่บล็อกการดำเนินการ
+- `backend`: id แบ็กเอนด์ runtime ACP เริ่มต้น (ต้องตรงกับ runtime Plugin ของ ACP ที่ลงทะเบียนไว้)
+  ติดตั้ง Plugin แบ็กเอนด์ก่อน และถ้าตั้งค่า `plugins.allow` ไว้ ให้รวม id ของ Plugin แบ็กเอนด์ (เช่น `acpx`) มิฉะนั้นแบ็กเอนด์ ACP จะไม่โหลด
+- `defaultAgent`: id เอเจนต์เป้าหมาย ACP สำรองเมื่อการ spawn ไม่ได้ระบุเป้าหมายอย่างชัดเจน
+- `allowedAgents`: รายการอนุญาตของ id เอเจนต์ที่ได้รับอนุญาตสำหรับเซสชัน runtime ACP; ค่าว่างหมายถึงไม่มีข้อจำกัดเพิ่มเติม
+- `maxConcurrentSessions`: จำนวนสูงสุดของเซสชัน ACP ที่ใช้งานพร้อมกัน
+- `stream.coalesceIdleMs`: หน้าต่าง flush ขณะ idle เป็นมิลลิวินาทีสำหรับข้อความแบบสตรีม
+- `stream.maxChunkChars`: ขนาด chunk สูงสุดก่อนแยกการฉายบล็อกแบบสตรีม
 - `stream.repeatSuppression`: ระงับบรรทัดสถานะ/เครื่องมือที่ซ้ำกันต่อเทิร์น (ค่าเริ่มต้น: `true`)
-- `stream.deliveryMode`: `"live"` สตรีมแบบเพิ่มทีละส่วน; `"final_only"` บัฟเฟอร์จนถึงเหตุการณ์จบเทิร์น
-- `stream.hiddenBoundarySeparator`: ตัวคั่นก่อนข้อความที่มองเห็นได้หลังเหตุการณ์เครื่องมือที่ซ่อนอยู่ (ค่าเริ่มต้น: `"paragraph"`)
-- `stream.maxOutputChars`: จำนวนอักขระเอาต์พุตผู้ช่วยสูงสุดที่ฉายต่อเทิร์น ACP
+- `stream.deliveryMode`: `"live"` จะสตรีมแบบเพิ่มทีละส่วน; `"final_only"` จะบัฟเฟอร์จนถึงเหตุการณ์ปลายทางของเทิร์น
+- `stream.hiddenBoundarySeparator`: ตัวคั่นก่อนข้อความที่มองเห็นหลังเหตุการณ์เครื่องมือที่ซ่อนอยู่ (ค่าเริ่มต้น: `"paragraph"`)
+- `stream.maxOutputChars`: จำนวนอักขระเอาต์พุต assistant สูงสุดที่ฉายต่อเทิร์น ACP
 - `stream.maxSessionUpdateChars`: จำนวนอักขระสูงสุดสำหรับบรรทัดสถานะ/อัปเดต ACP ที่ฉาย
 - `stream.tagVisibility`: ระเบียนของชื่อแท็กเป็นการแทนที่การมองเห็นแบบบูลีนสำหรับเหตุการณ์ที่สตรีม
-- `runtime.ttlMinutes`: TTL เมื่อว่างเป็นนาทีสำหรับเวิร์กเกอร์เซสชัน ACP ก่อนมีสิทธิ์ถูกล้าง
-- `runtime.installCommand`: คำสั่งติดตั้งที่ไม่บังคับสำหรับรันเมื่อบูตสแตรปสภาพแวดล้อมรันไทม์ ACP
+- `runtime.ttlMinutes`: TTL ขณะ idle เป็นนาทีสำหรับ worker เซสชัน ACP ก่อนมีสิทธิ์ล้างข้อมูล
+- `runtime.installCommand`: คำสั่งติดตั้งที่ไม่บังคับเพื่อรันเมื่อ bootstrap สภาพแวดล้อม runtime ACP
 
 ---
 
@@ -1017,17 +1049,17 @@ openclaw gateway --port 19001
 }
 ```
 
-- `cli.banner.taglineMode` ควบคุมรูปแบบสโลแกนของแบนเนอร์:
-  - `"random"` (ค่าเริ่มต้น): สโลแกนตลก/ตามฤดูกาลแบบหมุนเวียน
-  - `"default"`: สโลแกนกลางแบบคงที่ (`All your chats, one OpenClaw.`)
-  - `"off"`: ไม่มีข้อความสโลแกน (ยังคงแสดงชื่อ/เวอร์ชันของแบนเนอร์)
-- หากต้องการซ่อนแบนเนอร์ทั้งหมด (ไม่ใช่แค่สโลแกน) ให้ตั้งค่าตัวแปรสภาพแวดล้อม `OPENCLAW_HIDE_BANNER=1`
+- `cli.banner.taglineMode` ควบคุมสไตล์ tagline ของแบนเนอร์:
+  - `"random"` (ค่าเริ่มต้น): tagline ตลก/ตามฤดูกาลแบบหมุนเวียน
+  - `"default"`: tagline กลางแบบคงที่ (`All your chats, one OpenClaw.`)
+  - `"off"`: ไม่มีข้อความ tagline (ยังแสดงชื่อ/เวอร์ชันของแบนเนอร์)
+- หากต้องการซ่อนแบนเนอร์ทั้งหมด (ไม่ใช่แค่ tagline) ให้ตั้งค่า env `OPENCLAW_HIDE_BANNER=1`
 
 ---
 
-## วิซาร์ด
+## Wizard
 
-เมตาดาต้าที่เขียนโดยโฟลว์การตั้งค่าแบบมีคำแนะนำของ CLI (`onboard`, `configure`, `doctor`):
+เมทาดาทาที่เขียนโดยโฟลว์การตั้งค่าแบบมีคำแนะนำของ CLI (`onboard`, `configure`, `doctor`):
 
 ```json5
 {
@@ -1043,17 +1075,17 @@ openclaw gateway --port 19001
 
 ---
 
-## ข้อมูลประจำตัว
+## ข้อมูลระบุตัวตน
 
-ดูฟิลด์ข้อมูลประจำตัว `agents.list` ใต้ [ค่าเริ่มต้นของตัวแทน](/th/gateway/config-agents#agent-defaults)
+ดูฟิลด์ข้อมูลระบุตัวตน `agents.list` ภายใต้ [ค่าเริ่มต้นของเอเจนต์](/th/gateway/config-agents#agent-defaults)
 
 ---
 
-## บริดจ์ (เดิม, นำออกแล้ว)
+## Bridge (เดิม, ถูกนำออกแล้ว)
 
-บิลด์ปัจจุบันไม่รวมบริดจ์ TCP แล้ว Node เชื่อมต่อผ่าน Gateway WebSocket คีย์ `bridge.*` ไม่ได้เป็นส่วนหนึ่งของสกีมาการกำหนดค่าอีกต่อไป (การตรวจสอบความถูกต้องจะล้มเหลวจนกว่าจะนำออก; `openclaw doctor --fix` สามารถตัดคีย์ที่ไม่รู้จักออกได้)
+บิลด์ปัจจุบันไม่มี TCP bridge แล้ว Node เชื่อมต่อผ่าน Gateway WebSocket คีย์ `bridge.*` ไม่ได้เป็นส่วนหนึ่งของสคีมา config อีกต่อไป (การตรวจสอบความถูกต้องจะล้มเหลวจนกว่าจะลบออก; `openclaw doctor --fix` สามารถลบคีย์ที่ไม่รู้จักได้)
 
-<Accordion title="การกำหนดค่าบริดจ์เดิม (อ้างอิงทางประวัติศาสตร์)">
+<Accordion title="Config ของ bridge เดิม (ข้อมูลอ้างอิงเชิงประวัติ)">
 
 ```json
 {
@@ -1091,11 +1123,11 @@ openclaw gateway --port 19001
 }
 ```
 
-- `sessionRetention`: ระยะเวลาที่จะเก็บเซสชันการรัน Cron แบบแยกที่เสร็จสมบูรณ์ก่อนตัดออกจาก `sessions.json` ยังควบคุมการล้างทรานสคริปต์ Cron ที่ถูกลบและเก็บถาวรด้วย ค่าเริ่มต้น: `24h`; ตั้งค่า `false` เพื่อปิดใช้งาน
-- `runLog.maxBytes`: ขนาดสูงสุดต่อไฟล์บันทึกการรัน (`cron/runs/<jobId>.jsonl`) ก่อนตัดแต่ง ค่าเริ่มต้น: `2_000_000` ไบต์
-- `runLog.keepLines`: บรรทัดใหม่ล่าสุดที่คงไว้เมื่อการตัดแต่งบันทึกการรันถูกทริกเกอร์ ค่าเริ่มต้น: `2000`
-- `webhookToken`: โทเคน bearer ที่ใช้สำหรับการส่ง Cron Webhook POST (`delivery.mode = "webhook"`) หากละไว้จะไม่ส่งส่วนหัวการยืนยันตัวตน
-- `webhook`: URL Webhook สำรองเดิมที่เลิกใช้แล้ว (http/https) ซึ่งใช้เฉพาะกับงานที่จัดเก็บไว้และยังมี `notify: true`
+- `sessionRetention`: ระยะเวลาที่เก็บเซสชันการรัน Cron แบบแยกที่เสร็จแล้วไว้ก่อนตัดออกจาก `sessions.json` และยังควบคุมการล้าง transcript ของ Cron ที่ถูกลบและเก็บถาวร ค่าเริ่มต้น: `24h`; ตั้งค่า `false` เพื่อปิดใช้งาน
+- `runLog.maxBytes`: ขนาดสูงสุดต่อไฟล์ล็อกการรัน (`cron/runs/<jobId>.jsonl`) ก่อนตัดออก ค่าเริ่มต้น: `2_000_000` ไบต์
+- `runLog.keepLines`: บรรทัดล่าสุดที่เก็บไว้เมื่อมีการทริกเกอร์การตัดล็อกการรัน ค่าเริ่มต้น: `2000`
+- `webhookToken`: bearer token ที่ใช้สำหรับการส่ง Webhook POST ของ Cron (`delivery.mode = "webhook"`) หากละไว้ จะไม่ส่งเฮดเดอร์ auth
+- `webhook`: URL Webhook สำรองเดิมที่เลิกใช้แล้ว (http/https) ใช้เฉพาะกับงานที่บันทึกไว้ซึ่งยังมี `notify: true`
 
 ### `cron.retry`
 
@@ -1112,10 +1144,10 @@ openclaw gateway --port 19001
 ```
 
 - `maxAttempts`: จำนวนครั้งสูงสุดในการลองใหม่สำหรับงานแบบครั้งเดียวเมื่อเกิดข้อผิดพลาดชั่วคราว (ค่าเริ่มต้น: `3`; ช่วง: `0`–`10`)
-- `backoffMs`: อาร์เรย์ของเวลาหน่วงการถอยกลับเป็น ms สำหรับการลองใหม่แต่ละครั้ง (ค่าเริ่มต้น: `[30000, 60000, 300000]`; 1–10 รายการ)
-- `retryOn`: ประเภทข้อผิดพลาดที่ทำให้เกิดการลองใหม่ — `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"` ไม่ต้องระบุหากต้องการลองใหม่สำหรับประเภทชั่วคราวทั้งหมด
+- `backoffMs`: อาร์เรย์ของระยะเวลาหน่วงแบบ backoff เป็นมิลลิวินาทีสำหรับการลองใหม่แต่ละครั้ง (ค่าเริ่มต้น: `[30000, 60000, 300000]`; 1–10 รายการ)
+- `retryOn`: ประเภทข้อผิดพลาดที่ทำให้เกิดการลองใหม่ — `"rate_limit"`, `"overloaded"`, `"network"`, `"timeout"`, `"server_error"` ไม่ต้องระบุหากต้องการลองใหม่กับประเภทชั่วคราวทั้งหมด
 
-ใช้เฉพาะกับงาน Cron แบบครั้งเดียว งานที่เกิดซ้ำใช้การจัดการความล้มเหลวแยกต่างหาก
+ใช้กับงาน Cron แบบครั้งเดียวเท่านั้น งานที่เกิดซ้ำใช้การจัดการความล้มเหลวแยกต่างหาก
 
 ### `cron.failureAlert`
 
@@ -1135,11 +1167,11 @@ openclaw gateway --port 19001
 ```
 
 - `enabled`: เปิดใช้การแจ้งเตือนความล้มเหลวสำหรับงาน Cron (ค่าเริ่มต้น: `false`)
-- `after`: จำนวนความล้มเหลวติดต่อกันก่อนส่งการแจ้งเตือน (จำนวนเต็มบวก, ขั้นต่ำ: `1`)
-- `cooldownMs`: จำนวนมิลลิวินาทีขั้นต่ำระหว่างการแจ้งเตือนซ้ำสำหรับงานเดียวกัน (จำนวนเต็มไม่ติดลบ)
-- `includeSkipped`: นับการรันที่ถูกข้ามติดต่อกันรวมในเกณฑ์การแจ้งเตือน (ค่าเริ่มต้น: `false`) การรันที่ถูกข้ามจะถูกติดตามแยกต่างหากและไม่กระทบการถอยกลับของข้อผิดพลาดในการดำเนินการ
+- `after`: จำนวนความล้มเหลวติดต่อกันก่อนที่จะส่งการแจ้งเตือน (จำนวนเต็มบวก, ขั้นต่ำ: `1`)
+- `cooldownMs`: จำนวนมิลลิวินาทีขั้นต่ำระหว่างการแจ้งเตือนซ้ำสำหรับงานเดียวกัน (จำนวนเต็มที่ไม่ติดลบ)
+- `includeSkipped`: นับรอบการทำงานที่ถูกข้ามติดต่อกันรวมกับเกณฑ์การแจ้งเตือน (ค่าเริ่มต้น: `false`) รอบที่ถูกข้ามจะถูกติดตามแยกต่างหากและไม่ส่งผลต่อ backoff ของข้อผิดพลาดในการดำเนินการ
 - `mode`: โหมดการส่ง — `"announce"` ส่งผ่านข้อความของช่อง; `"webhook"` โพสต์ไปยัง Webhook ที่กำหนดค่าไว้
-- `accountId`: รหัสบัญชีหรือช่องที่ไม่บังคับ เพื่อจำกัดขอบเขตการส่งการแจ้งเตือน
+- `accountId`: บัญชีหรือรหัสช่องที่ไม่บังคับสำหรับจำกัดขอบเขตการส่งการแจ้งเตือน
 
 ### `cron.failureDestination`
 
@@ -1159,48 +1191,48 @@ openclaw gateway --port 19001
 - ปลายทางเริ่มต้นสำหรับการแจ้งเตือนความล้มเหลวของ Cron ในทุกงาน
 - `mode`: `"announce"` หรือ `"webhook"`; ค่าเริ่มต้นเป็น `"announce"` เมื่อมีข้อมูลเป้าหมายเพียงพอ
 - `channel`: การแทนที่ช่องสำหรับการส่งแบบ announce `"last"` ใช้ช่องส่งล่าสุดที่ทราบซ้ำ
-- `to`: เป้าหมาย announce หรือ URL ของ Webhook แบบชัดเจน จำเป็นสำหรับโหมด Webhook
+- `to`: เป้าหมาย announce หรือ URL ของ Webhook ที่ระบุโดยตรง จำเป็นสำหรับโหมด Webhook
 - `accountId`: การแทนที่บัญชีที่ไม่บังคับสำหรับการส่ง
-- `delivery.failureDestination` รายงานระดับงานจะแทนที่ค่าเริ่มต้นส่วนกลางนี้
-- เมื่อไม่ได้ตั้งค่าปลายทางความล้มเหลวทั้งส่วนกลางและระดับงาน งานที่ส่งผ่าน `announce` อยู่แล้วจะถอยกลับไปใช้เป้าหมาย announce หลักนั้นเมื่อเกิดความล้มเหลว
-- รองรับ `delivery.failureDestination` เฉพาะสำหรับงาน `sessionTarget="isolated"` เว้นแต่ `delivery.mode` หลักของงานจะเป็น `"webhook"`
+- `delivery.failureDestination` ต่อหนึ่งงานจะแทนที่ค่าเริ่มต้นส่วนกลางนี้
+- เมื่อไม่มีการตั้งค่าปลายทางความล้มเหลวทั้งแบบส่วนกลางและต่อหนึ่งงาน งานที่ส่งผ่าน `announce` อยู่แล้วจะย้อนกลับไปใช้เป้าหมาย announce หลักนั้นเมื่อเกิดความล้มเหลว
+- `delivery.failureDestination` รองรับเฉพาะงาน `sessionTarget="isolated"` เว้นแต่ `delivery.mode` หลักของงานจะเป็น `"webhook"`
 
-ดู [งาน Cron](/th/automation/cron-jobs) การดำเนินการ Cron แบบแยกเดี่ยวจะถูกติดตามเป็น [งานเบื้องหลัง](/th/automation/tasks)
+ดู [งาน Cron](/th/automation/cron-jobs) การดำเนินการ Cron แบบ isolated จะถูกติดตามเป็น [งานเบื้องหลัง](/th/automation/tasks)
 
 ---
 
-## ตัวแปรเทมเพลตโมเดลสื่อ
+## ตัวแปรเทมเพลตของโมเดลสื่อ
 
-ตัวแทนเทมเพลตที่ถูกขยายใน `tools.media.models[].args`:
+ตัวแทนที่เทมเพลตที่ขยายใน `tools.media.models[].args`:
 
-| ตัวแปร             | คำอธิบาย                                      |
+| ตัวแปร           | คำอธิบาย                                       |
 | ------------------ | ------------------------------------------------- |
-| `{{Body}}`         | เนื้อหาข้อความขาเข้าแบบเต็ม                      |
-| `{{RawBody}}`      | เนื้อหาดิบ (ไม่มีตัวครอบประวัติ/ผู้ส่ง)          |
-| `{{BodyStripped}}` | เนื้อหาที่ตัดการกล่าวถึงกลุ่มออกแล้ว             |
-| `{{From}}`         | ตัวระบุผู้ส่ง                                    |
-| `{{To}}`           | ตัวระบุปลายทาง                                   |
-| `{{MessageSid}}`   | รหัสข้อความของช่อง                               |
-| `{{SessionId}}`    | UUID ของเซสชันปัจจุบัน                           |
-| `{{IsNewSession}}` | `"true"` เมื่อสร้างเซสชันใหม่                    |
-| `{{MediaUrl}}`     | URL เสมือนของสื่อขาเข้า                          |
-| `{{MediaPath}}`    | เส้นทางสื่อในเครื่อง                             |
+| `{{Body}}`         | เนื้อหาข้อความขาเข้าทั้งหมด                         |
+| `{{RawBody}}`      | เนื้อหาดิบ (ไม่มี history/sender wrappers)             |
+| `{{BodyStripped}}` | เนื้อหาที่ตัดการกล่าวถึงกลุ่มออกแล้ว                 |
+| `{{From}}`         | ตัวระบุผู้ส่ง                                 |
+| `{{To}}`           | ตัวระบุปลายทาง                            |
+| `{{MessageSid}}`   | รหัสข้อความของช่อง                                |
+| `{{SessionId}}`    | UUID ของเซสชันปัจจุบัน                              |
+| `{{IsNewSession}}` | `"true"` เมื่อสร้างเซสชันใหม่                 |
+| `{{MediaUrl}}`     | pseudo-URL ของสื่อขาเข้า                          |
+| `{{MediaPath}}`    | พาธสื่อในเครื่อง                                  |
 | `{{MediaType}}`    | ประเภทสื่อ (รูปภาพ/เสียง/เอกสาร/…)               |
-| `{{Transcript}}`   | ข้อความถอดเสียง                                  |
-| `{{Prompt}}`       | พรอมป์สื่อที่แก้ค่าแล้วสำหรับรายการ CLI          |
-| `{{MaxChars}}`     | จำนวนอักขระเอาต์พุตสูงสุดที่แก้ค่าแล้วสำหรับรายการ CLI |
-| `{{ChatType}}`     | `"direct"` หรือ `"group"`                         |
-| `{{GroupSubject}}` | หัวข้อกลุ่ม (พยายามให้ดีที่สุด)                  |
-| `{{GroupMembers}}` | ตัวอย่างสมาชิกกลุ่ม (พยายามให้ดีที่สุด)          |
-| `{{SenderName}}`   | ชื่อที่แสดงของผู้ส่ง (พยายามให้ดีที่สุด)         |
-| `{{SenderE164}}`   | หมายเลขโทรศัพท์ของผู้ส่ง (พยายามให้ดีที่สุด)     |
-| `{{Provider}}`     | คำใบ้ผู้ให้บริการ (whatsapp, telegram, discord, ฯลฯ) |
+| `{{Transcript}}`   | ทรานสคริปต์เสียง                                  |
+| `{{Prompt}}`       | พรอมป์สื่อที่ resolve แล้วสำหรับรายการ CLI             |
+| `{{MaxChars}}`     | จำนวนอักขระเอาต์พุตสูงสุดที่ resolve แล้วสำหรับรายการ CLI         |
+| `{{ChatType}}`     | `"direct"` หรือ `"group"`                           |
+| `{{GroupSubject}}` | หัวข้อกลุ่ม (พยายามดีที่สุด)                       |
+| `{{GroupMembers}}` | ตัวอย่างสมาชิกกลุ่ม (พยายามดีที่สุด)               |
+| `{{SenderName}}`   | ชื่อที่แสดงของผู้ส่ง (พยายามดีที่สุด)                 |
+| `{{SenderE164}}`   | หมายเลขโทรศัพท์ของผู้ส่ง (พยายามดีที่สุด)                 |
+| `{{Provider}}`     | คำใบ้ Provider (whatsapp, telegram, discord, ฯลฯ) |
 
 ---
 
-## การรวมไฟล์การกำหนดค่า (`$include`)
+## การ include คอนฟิก (`$include`)
 
-แยกการกำหนดค่าเป็นหลายไฟล์:
+แยกคอนฟิกออกเป็นหลายไฟล์:
 
 ```json5
 // ~/.openclaw/openclaw.json
@@ -1213,16 +1245,16 @@ openclaw gateway --port 19001
 }
 ```
 
-**พฤติกรรมการผสาน:**
+**พฤติกรรมการ merge:**
 
-- ไฟล์เดียว: แทนที่อ็อบเจกต์ที่ครอบอยู่
-- อาร์เรย์ของไฟล์: ผสานเชิงลึกตามลำดับ (รายการหลังแทนที่รายการก่อนหน้า)
-- คีย์ระดับเดียวกัน: ผสานหลังจาก includes (แทนที่ค่าที่รวมเข้ามา)
-- Includes ซ้อนกัน: ลึกได้สูงสุด 10 ระดับ
-- เส้นทาง: แก้ค่าโดยสัมพันธ์กับไฟล์ที่รวม แต่ต้องอยู่ภายในไดเรกทอรีการกำหนดค่าระดับบนสุด (`dirname` ของ `openclaw.json`) รูปแบบแบบสัมบูรณ์/`../` อนุญาตเฉพาะเมื่อยังแก้ค่าให้อยู่ภายในขอบเขตนั้น
-- การเขียนที่ OpenClaw เป็นเจ้าของซึ่งเปลี่ยนเพียงหนึ่งส่วนระดับบนสุดที่มี single-file include รองรับ จะเขียนทะลุไปยังไฟล์ที่รวมเข้ามานั้น ตัวอย่างเช่น `plugins install` อัปเดต `plugins: { $include: "./plugins.json5" }` ใน `plugins.json5` และคง `openclaw.json` ไว้เหมือนเดิม
-- Root includes, อาร์เรย์ include และ includes ที่มีการแทนที่ด้วยคีย์ระดับเดียวกันเป็นแบบอ่านอย่างเดียวสำหรับการเขียนที่ OpenClaw เป็นเจ้าของ; การเขียนเหล่านั้นจะล้มเหลวแบบปิดแทนการทำให้การกำหนดค่าแบนลง
-- ข้อผิดพลาด: ข้อความชัดเจนสำหรับไฟล์ที่หายไป ข้อผิดพลาดในการแยกวิเคราะห์ และ includes แบบวนซ้ำ
+- ไฟล์เดียว: แทนที่ออบเจ็กต์ที่ครอบอยู่
+- อาร์เรย์ของไฟล์: deep-merge ตามลำดับ (รายการหลังแทนที่รายการก่อนหน้า)
+- คีย์ระดับพี่น้อง: merge หลัง includes (แทนที่ค่าที่ include มา)
+- includes ที่ซ้อนกัน: ลึกได้สูงสุด 10 ระดับ
+- พาธ: resolve สัมพัทธ์กับไฟล์ที่ include แต่ต้องอยู่ภายในไดเรกทอรีคอนฟิกระดับบนสุด (`dirname` ของ `openclaw.json`) รูปแบบ absolute/`../` อนุญาตเฉพาะเมื่อยัง resolve อยู่ภายในขอบเขตนั้น
+- การเขียนที่ OpenClaw เป็นเจ้าของซึ่งเปลี่ยนเฉพาะหนึ่งส่วนระดับบนสุดที่รองรับด้วย include แบบไฟล์เดียว จะเขียนผ่านไปยังไฟล์ที่ include นั้น ตัวอย่างเช่น `plugins install` อัปเดต `plugins: { $include: "./plugins.json5" }` ใน `plugins.json5` และปล่อย `openclaw.json` ไว้เหมือนเดิม
+- root includes, อาร์เรย์ include และ includes ที่มีการแทนที่ด้วยคีย์พี่น้องเป็นแบบอ่านอย่างเดียวสำหรับการเขียนที่ OpenClaw เป็นเจ้าของ; การเขียนเหล่านั้นจะล้มเหลวแบบปิดแทนที่จะ flatten คอนฟิก
+- ข้อผิดพลาด: ข้อความชัดเจนสำหรับไฟล์ที่หายไป, ข้อผิดพลาดการ parse และ includes แบบวนซ้ำ
 
 ---
 

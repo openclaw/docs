@@ -2,14 +2,14 @@
 read_when:
     - คุณต้องการดูว่า Skills ใดพร้อมใช้งานและพร้อมเรียกใช้
     - คุณต้องการค้นหา ติดตั้ง หรืออัปเดต Skills จาก ClawHub
-    - คุณต้องการดีบักไบนารี/สภาพแวดล้อม/การกำหนดค่าที่ขาดหายสำหรับ Skills
-summary: คู่มืออ้างอิง CLI สำหรับ `openclaw skills` (search/install/update/list/info/check)
+    - คุณต้องการดีบักไบนารี/env/config ที่ขาดหายไปสำหรับ Skills
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-04-30T09:45:16Z"
+    generated_at: "2026-05-02T20:43:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5059bf04c68dabe289d2c376407a52989c970e3d16e7637a2c83f4e24ad6564c
+    source_hash: d819cdc421151a0093423f57a9e974489e9cc02de644358bd5700ee75181192e
     source_path: cli/skills.md
     workflow: 16
 ---
@@ -21,7 +21,7 @@ x-i18n:
 ที่เกี่ยวข้อง:
 
 - ระบบ Skills: [Skills](/th/tools/skills)
-- การกำหนดค่า Skills: [การกำหนดค่า Skills](/th/tools/skills-config)
+- การกำหนดค่า Skills: [Skills config](/th/tools/skills-config)
 - การติดตั้งจาก ClawHub: [ClawHub](/th/tools/clawhub)
 
 ## คำสั่ง
@@ -45,34 +45,36 @@ openclaw skills info <name>
 openclaw skills info <name> --json
 openclaw skills info <name> --agent <id>
 openclaw skills check
-openclaw skills check --json
 openclaw skills check --agent <id>
+openclaw skills check --json
 ```
 
-`search`/`install`/`update` ใช้ ClawHub โดยตรงและติดตั้งลงในไดเรกทอรี `skills/`
-ของ workspace ที่ใช้งานอยู่ `list`/`info`/`check` ยังคงตรวจสอบ Skills ภายในเครื่อง
-ที่ workspace และการกำหนดค่าปัจจุบันมองเห็นได้ คำสั่งที่อิง workspace
-จะแก้หา workspace เป้าหมายจาก `--agent <id>` จากนั้นใช้ไดเรกทอรีทำงานปัจจุบัน
-เมื่ออยู่ภายใน workspace ของ agent ที่กำหนดค่าไว้ แล้วจึงใช้ agent เริ่มต้น
+`search`/`install`/`update` ใช้ ClawHub โดยตรง และติดตั้งลงในไดเรกทอรี
+`skills/` ของเวิร์กสเปซที่ใช้งานอยู่ `list`/`info`/`check` ยังคงตรวจสอบ
+Skills ภายในเครื่องที่เวิร์กสเปซและการกำหนดค่าปัจจุบันมองเห็นได้ คำสั่งที่อิงกับเวิร์กสเปซ
+จะระบุเวิร์กสเปซเป้าหมายจาก `--agent <id>` จากนั้นใช้ไดเรกทอรีทำงานปัจจุบัน
+เมื่อไดเรกทอรีนั้นอยู่ภายในเวิร์กสเปซของเอเจนต์ที่กำหนดค่าไว้ แล้วจึงใช้
+เอเจนต์เริ่มต้น
 
-คำสั่ง `install` ของ CLI นี้ดาวน์โหลดโฟลเดอร์ Skills จาก ClawHub ส่วนการติดตั้ง
-การพึ่งพา Skills ที่อิง Gateway ซึ่งถูกทริกเกอร์จาก onboarding หรือการตั้งค่า Skills
-จะใช้เส้นทางคำขอ `skills.install` แยกต่างหากแทน
+คำสั่ง CLI `install` นี้ดาวน์โหลดโฟลเดอร์ Skills จาก ClawHub การติดตั้ง
+dependency ของ Skills ที่อิงกับ Gateway ซึ่งถูกเรียกจากการเริ่มใช้งานหรือการตั้งค่า Skills จะใช้
+เส้นทางคำขอ `skills.install` แยกต่างหากแทน
 
 หมายเหตุ:
 
-- `search [query...]` รับ query แบบไม่บังคับ; ไม่ต้องระบุเพื่อเรียกดูฟีดค้นหา
-  เริ่มต้นของ ClawHub
+- `search [query...]` รับคำค้นหาแบบไม่บังคับ; ละไว้เพื่อเรียกดูฟีดค้นหาเริ่มต้นของ
+  ClawHub
 - `search --limit <n>` จำกัดจำนวนผลลัพธ์ที่ส่งคืน
-- `install --force` เขียนทับโฟลเดอร์ Skills ใน workspace ที่มีอยู่สำหรับ slug
-  เดียวกัน
-- `--agent <id>` กำหนดเป้าหมายไปยัง workspace ของ agent ที่กำหนดค่าไว้หนึ่งรายการ
-  และแทนที่การอนุมานจากไดเรกทอรีทำงานปัจจุบัน
-- `update --all` อัปเดตเฉพาะการติดตั้งจาก ClawHub ที่ติดตามไว้ใน workspace
-  ที่ใช้งานอยู่
-- `list` เป็นการทำงานเริ่มต้นเมื่อไม่ได้ระบุคำสั่งย่อย
+- `install --force` เขียนทับโฟลเดอร์ Skills ของเวิร์กสเปซที่มีอยู่สำหรับ
+  slug เดียวกัน
+- `--agent <id>` กำหนดเป้าหมายเป็นเวิร์กสเปซของเอเจนต์ที่กำหนดค่าไว้หนึ่งรายการ และแทนที่การอนุมานจาก
+  ไดเรกทอรีทำงานปัจจุบัน
+- `update --all` อัปเดตเฉพาะการติดตั้ง ClawHub ที่ติดตามไว้ในเวิร์กสเปซที่ใช้งานอยู่
+- `check --agent <id>` ตรวจสอบเวิร์กสเปซของเอเจนต์ที่เลือก และรายงานว่า
+  Skills ที่พร้อมใช้งานรายการใดมองเห็นได้จริงในพรอมป์หรืออินเทอร์เฟซคำสั่งของเอเจนต์นั้น
+- `list` เป็นการดำเนินการเริ่มต้นเมื่อไม่ได้ระบุคำสั่งย่อย
 - `list`, `info` และ `check` เขียนเอาต์พุตที่เรนเดอร์แล้วไปยัง stdout เมื่อใช้
-  `--json` นั่นหมายความว่า payload ที่เครื่องอ่านได้จะยังอยู่บน stdout สำหรับ pipe
+  `--json` หมายความว่า payload ที่เครื่องอ่านได้จะยังคงอยู่บน stdout สำหรับ pipe
   และสคริปต์
 
 ## ที่เกี่ยวข้อง
