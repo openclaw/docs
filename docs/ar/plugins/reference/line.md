@@ -1,29 +1,29 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin line أو تهيئته أو تدقيقه
-summary: يضيف واجهة قناة LINE لإرسال رسائل OpenClaw واستقبالها.
-title: Plugin LINE
+    - أنت تثبّت Plugin الخاص بـ line أو تهيئه أو تدقّقه
+summary: يضيف واجهة قناة LINE لإرسال رسائل OpenClaw واستلامها.
+title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:02Z"
+    generated_at: "2026-05-02T22:22:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 469a8781af08abd50a475fe58e4ff4e93b592d4a412f17b01d34640422e0cc6f
+    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # Plugin LINE
 
-يضيف واجهة قناة LINE لإرسال رسائل OpenClaw وتلقيها.
+يضيف سطح قناة LINE لإرسال رسائل OpenClaw واستقبالها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/line`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: مضمّن في OpenClaw
 
-## الواجهة
+## السطح
 
-channels: line
+القنوات: line
 
 ## المستندات ذات الصلة
 
