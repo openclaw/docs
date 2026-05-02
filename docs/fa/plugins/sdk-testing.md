@@ -1,59 +1,59 @@
 ---
 read_when:
     - شما در حال نوشتن آزمون‌هایی برای یک Plugin هستید
-    - شما به ابزارهای کمکی آزمایش از کیت توسعه نرم‌افزار Plugin نیاز دارید
-    - می‌خواهید تست‌های قرارداد را برای Pluginهای همراه درک کنید
+    - به ابزارهای کمکی آزمون از SDK مربوط به Plugin نیاز دارید
+    - می‌خواهید آزمون‌های قرارداد مربوط به Pluginهای همراه را درک کنید
 sidebarTitle: Testing
 summary: ابزارهای کمکی و الگوهای آزمون برای Plugin‌های OpenClaw
 title: آزمایش Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:20:48Z"
+    generated_at: "2026-05-02T22:23:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7edf81e7662784356fcb0f481dd3fcdde05cc59da2a6c1b38eae1008b3ead96c
+    source_hash: 67092d71302d566ee9ed3f3f1e32b5aa6f4eabf522a9656ad13cad812550f1e8
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-مرجع ابزارهای آزمون، الگوها، و اعمال lint برای Pluginهای OpenClaw.
+مرجع ابزارهای کمکی آزمون، الگوها، و اعمال lint برای Pluginهای OpenClaw.
 
 <Tip>
-  **دنبال نمونه‌های آزمون هستید؟** راهنماهای گام‌به‌گام شامل نمونه‌های آزمون حل‌شده هستند:
+  **به‌دنبال نمونه‌های آزمون هستید؟** راهنماهای چگونگی شامل نمونه‌های آزمون کارشده هستند:
   [آزمون‌های Plugin کانال](/fa/plugins/sdk-channel-plugins#step-6-test) و
   [آزمون‌های Plugin ارائه‌دهنده](/fa/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
-## ابزارهای آزمون
+## ابزارهای کمکی آزمون
 
-**ایمپورت mock برای Plugin API:** `openclaw/plugin-sdk/plugin-test-api`
+**واردسازی شبیه‌ساز API Plugin:** `openclaw/plugin-sdk/plugin-test-api`
 
-**ایمپورت قرارداد runtime عامل:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
+**واردسازی قرارداد اجرای عامل:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
 
-**ایمپورت قرارداد کانال:** `openclaw/plugin-sdk/channel-contract-testing`
+**واردسازی قرارداد کانال:** `openclaw/plugin-sdk/channel-contract-testing`
 
-**ایمپورت کمکی آزمون کانال:** `openclaw/plugin-sdk/channel-test-helpers`
+**واردسازی کمک‌کننده آزمون کانال:** `openclaw/plugin-sdk/channel-test-helpers`
 
-**ایمپورت آزمون هدف کانال:** `openclaw/plugin-sdk/channel-target-testing`
+**واردسازی آزمون هدف کانال:** `openclaw/plugin-sdk/channel-target-testing`
 
-**ایمپورت قرارداد Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
+**واردسازی قرارداد Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
 
-**ایمپورت آزمون runtime برای Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
+**واردسازی آزمون اجرای Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
 
-**ایمپورت قرارداد ارائه‌دهنده:** `openclaw/plugin-sdk/provider-test-contracts`
+**واردسازی قرارداد ارائه‌دهنده:** `openclaw/plugin-sdk/provider-test-contracts`
 
-**ایمپورت mock برای HTTP ارائه‌دهنده:** `openclaw/plugin-sdk/provider-http-test-mocks`
+**واردسازی شبیه‌ساز HTTP ارائه‌دهنده:** `openclaw/plugin-sdk/provider-http-test-mocks`
 
-**ایمپورت آزمون محیط/شبکه:** `openclaw/plugin-sdk/test-env`
+**واردسازی آزمون محیط/شبکه:** `openclaw/plugin-sdk/test-env`
 
-**ایمپورت fixture عمومی:** `openclaw/plugin-sdk/test-fixtures`
+**واردسازی fixture عمومی:** `openclaw/plugin-sdk/test-fixtures`
 
-**ایمپورت mock برای builtin در Node:** `openclaw/plugin-sdk/test-node-mocks`
+**واردسازی شبیه‌ساز داخلی Node:** `openclaw/plugin-sdk/test-node-mocks`
 
-برای آزمون‌های جدید Plugin، subpathهای متمرکز زیر را ترجیح دهید. barrel گسترده
-`openclaw/plugin-sdk/testing` فقط برای سازگاری legacy است.
-guardrailهای repo ایمپورت‌های واقعی جدید از `plugin-sdk/testing` و
+برای آزمون‌های جدید Plugin، زیربخشی‌های متمرکز زیر را ترجیح دهید. صادرات تجمیعی گسترده
+`openclaw/plugin-sdk/testing` فقط برای سازگاری قدیمی است.
+حفاظ‌های مخزن واردسازی‌های واقعی جدید از `plugin-sdk/testing` و
 `plugin-sdk/test-utils` را رد می‌کنند؛ این نام‌ها فقط به‌عنوان سطح‌های سازگاری
-منسوخ برای Pluginهای خارجی و آزمون‌های ثبت سازگاری باقی می‌مانند.
+منسوخ‌شده برای Pluginهای خارجی و آزمون‌های رکورد سازگاری باقی می‌مانند.
 
 ```typescript
 import {
@@ -78,90 +78,80 @@ import {
 import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 ```
 
-### خروجی‌های در دسترس
+### صادرات موجود
 
 | خروجی                                               | هدف                                                                                                                                  |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | ساخت یک mock حداقلی برای API Plugin جهت آزمون‌های واحد ثبت مستقیم. از `plugin-sdk/plugin-test-api` import کنید                             |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | fixture قرارداد مشترک نمایه احراز هویت برای آداپتورهای زمان اجرای عامل بومی. از `plugin-sdk/agent-runtime-test-contracts` import کنید            |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | fixture قرارداد مشترک سرکوب تحویل برای آداپتورهای زمان اجرای عامل بومی. از `plugin-sdk/agent-runtime-test-contracts` import کنید    |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | fixture قرارداد مشترک طبقه‌بندی fallback برای آداپتورهای زمان اجرای عامل بومی. از `plugin-sdk/agent-runtime-test-contracts` import کنید |
-| `createParameterFreeTool`                            | ساخت fixtureهای طرح‌واره ابزار پویا برای آزمون‌های قرارداد زمان اجرای بومی. از `plugin-sdk/agent-runtime-test-contracts` import کنید              |
-| `expectChannelInboundContextContract`                | اعتبارسنجی شکل زمینه ورودی کانال. از `plugin-sdk/channel-contract-testing` import کنید                                                  |
-| `installChannelOutboundPayloadContractSuite`         | نصب موارد قرارداد payload خروجی کانال. از `plugin-sdk/channel-contract-testing` import کنید                                       |
-| `createStartAccountContext`                          | ساخت زمینه‌های چرخه عمر حساب کانال. از `plugin-sdk/channel-test-helpers` import کنید                                                  |
-| `installChannelActionsContractSuite`                 | نصب موارد قرارداد عمومی کنش پیام کانال. از `plugin-sdk/channel-test-helpers` import کنید                                     |
-| `installChannelSetupContractSuite`                   | نصب موارد قرارداد عمومی راه‌اندازی کانال. از `plugin-sdk/channel-test-helpers` import کنید                                              |
-| `installChannelStatusContractSuite`                  | نصب موارد قرارداد عمومی وضعیت کانال. از `plugin-sdk/channel-test-helpers` import کنید                                             |
-| `expectDirectoryIds`                                 | اعتبارسنجی شناسه‌های دایرکتوری کانال از یک تابع فهرست‌کردن دایرکتوری. از `plugin-sdk/channel-test-helpers` import کنید                               |
-| `assertBundledChannelEntries`                        | اعتبارسنجی اینکه entrypointهای کانال‌های بسته‌بندی‌شده قرارداد عمومی مورد انتظار را ارائه می‌کنند. از `plugin-sdk/channel-test-helpers` import کنید                    |
-| `formatEnvelopeTimestamp`                            | قالب‌بندی timestampهای قطعی envelope. از `plugin-sdk/channel-test-helpers` import کنید                                                  |
-| `expectPairingReplyText`                             | اعتبارسنجی متن پاسخ جفت‌سازی کانال و استخراج کد آن. از `plugin-sdk/channel-test-helpers` import کنید                                    |
-| `describePluginRegistrationContract`                 | نصب بررسی‌های قرارداد ثبت Plugin. از `plugin-sdk/plugin-test-contracts` import کنید                                              |
-| `registerSingleProviderPlugin`                       | ثبت یک Plugin ارائه‌دهنده در آزمون‌های smoke بارگذار. از `plugin-sdk/plugin-test-runtime` import کنید                                         |
-| `registerProviderPlugin`                             | ثبت همه انواع ارائه‌دهنده از یک Plugin. از `plugin-sdk/plugin-test-runtime` import کنید                                                 |
-| `registerProviderPlugins`                            | ثبت ثبت‌نام‌های ارائه‌دهنده در چند Plugin. از `plugin-sdk/plugin-test-runtime` import کنید                                     |
-| `requireRegisteredProvider`                          | اعتبارسنجی اینکه یک مجموعه ارائه‌دهنده شامل یک شناسه است. از `plugin-sdk/plugin-test-runtime` import کنید                                           |
-| `createRuntimeEnv`                                   | ساخت یک محیط mockشده زمان اجرای CLI/Plugin. از `plugin-sdk/plugin-test-runtime` import کنید                                              |
-| `createPluginSetupWizardStatus`                      | ساخت helperهای وضعیت راه‌اندازی برای Pluginهای کانال. از `plugin-sdk/plugin-test-runtime` import کنید                                             |
-| `describeOpenAIProviderRuntimeContract`              | نصب بررسی‌های قرارداد زمان اجرای خانواده ارائه‌دهنده. از `plugin-sdk/provider-test-contracts` import کنید                                        |
-| `expectPassthroughReplayPolicy`                      | اعتبارسنجی اینکه سیاست‌های بازپخش ارائه‌دهنده، ابزارها و metadata متعلق به ارائه‌دهنده را عبور می‌دهند. از `plugin-sdk/provider-test-contracts` import کنید         |
-| `runRealtimeSttLiveTest`                             | اجرای یک آزمون زنده ارائه‌دهنده STT بلادرنگ با fixtureهای صوتی مشترک. از `plugin-sdk/provider-test-contracts` import کنید                       |
-| `normalizeTranscriptForMatch`                        | نرمال‌سازی خروجی transcript زنده پیش از assertionهای fuzzy. از `plugin-sdk/provider-test-contracts` import کنید                               |
-| `expectExplicitVideoGenerationCapabilities`          | اعتبارسنجی اینکه ارائه‌دهندگان ویدئو قابلیت‌های صریح حالت تولید را اعلام می‌کنند. از `plugin-sdk/provider-test-contracts` import کنید                   |
-| `expectExplicitMusicGenerationCapabilities`          | اعتبارسنجی اینکه ارائه‌دهندگان موسیقی قابلیت‌های صریح تولید/ویرایش را اعلام می‌کنند. از `plugin-sdk/provider-test-contracts` import کنید                   |
-| `mockSuccessfulDashscopeVideoTask`                   | نصب یک پاسخ task ویدئویی موفق سازگار با DashScope. از `plugin-sdk/provider-test-contracts` import کنید                          |
-| `getProviderHttpMocks`                               | دسترسی به mockهای opt-in HTTP/auth ارائه‌دهنده در Vitest. از `plugin-sdk/provider-http-test-mocks` import کنید                                         |
-| `installProviderHttpMockCleanup`                     | بازنشانی mockهای HTTP/auth ارائه‌دهنده پس از هر آزمون. از `plugin-sdk/provider-http-test-mocks` import کنید                                        |
-| `installCommonResolveTargetErrorCases`               | موارد آزمون مشترک برای مدیریت خطای تفکیک target. از `plugin-sdk/channel-target-testing` import کنید                                  |
-| `shouldAckReaction`                                  | بررسی اینکه آیا یک کانال باید واکنش ack اضافه کند. از `plugin-sdk/channel-feedback` import کنید                                            |
-| `removeAckReactionAfterReply`                        | حذف واکنش ack پس از تحویل پاسخ. از `plugin-sdk/channel-feedback` import کنید                                                      |
-| `createTestRegistry`                                 | ساخت یک fixture رجیستری Plugin کانال. از `plugin-sdk/plugin-test-runtime` یا `plugin-sdk/channel-test-helpers` import کنید               |
-| `createEmptyPluginRegistry`                          | ساخت یک fixture رجیستری خالی Plugin. از `plugin-sdk/plugin-test-runtime` یا `plugin-sdk/channel-test-helpers` import کنید                |
-| `setActivePluginRegistry`                            | نصب یک fixture رجیستری برای آزمون‌های زمان اجرای Plugin. از `plugin-sdk/plugin-test-runtime` یا `plugin-sdk/channel-test-helpers` import کنید   |
-| `createRequestCaptureJsonFetch`                      | ثبت درخواست‌های fetch JSON در آزمون‌های helper رسانه. از `plugin-sdk/test-env` import کنید                                                     |
-| `withServer`                                         | اجرای آزمون‌ها روی یک سرور HTTP محلی یک‌بارمصرف. از `plugin-sdk/test-env` import کنید                                                      |
-| `createMockIncomingRequest`                          | ساخت یک شیء حداقلی درخواست HTTP ورودی. از `plugin-sdk/test-env` import کنید                                                          |
-| `withFetchPreconnect`                                | اجرای آزمون‌های fetch با hookهای preconnect نصب‌شده. از `plugin-sdk/test-env` import کنید                                                       |
-| `withEnv` / `withEnvAsync`                           | وصله موقت متغیرهای محیطی. از `plugin-sdk/test-env` import کنید                                                               |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | ایجاد fixtureهای آزمون filesystem ایزوله. از `plugin-sdk/test-env` import کنید                                                              |
-| `createMockServerResponse`                           | ایجاد یک mock حداقلی پاسخ سرور HTTP. از `plugin-sdk/test-env` import کنید                                                            |
-| `createCliRuntimeCapture`                            | ثبت خروجی زمان اجرای CLI در آزمون‌ها. از `plugin-sdk/test-fixtures` import کنید                                                              |
-| `importFreshModule`                                  | import کردن یک ماژول ESM با یک token پرس‌وجوی تازه برای دور زدن cache ماژول. از `plugin-sdk/test-fixtures` import کنید                             |
-| `bundledPluginRoot` / `bundledPluginFile`            | تفکیک مسیرهای fixture منبع یا dist Plugin بسته‌بندی‌شده. از `plugin-sdk/test-fixtures` import کنید                                              |
-| `mockNodeBuiltinModule`                              | نصب mockهای محدود Vitest برای builtinهای Node. از `plugin-sdk/test-node-mocks` import کنید                                                       |
-| `createSandboxTestContext`                           | ساخت زمینه‌های آزمون sandbox. از `plugin-sdk/test-fixtures` import کنید                                                                      |
-| `writeSkill`                                         | نوشتن fixtureهای skill. از `plugin-sdk/test-fixtures` import کنید                                                                             |
-| `makeAgentAssistantMessage`                          | ساخت fixtureهای پیام transcript عامل. از `plugin-sdk/test-fixtures` import کنید                                                          |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | بررسی و بازنشانی fixtureهای رویداد سیستم. از `plugin-sdk/test-fixtures` import کنید                                                          |
-| `sanitizeTerminalText`                               | پاک‌سازی خروجی ترمینال برای assertionها. از `plugin-sdk/test-fixtures` import کنید                                                          |
-| `countLines` / `hasBalancedFences`                   | اعتبارسنجی شکل خروجی chunking. از `plugin-sdk/test-fixtures` import کنید                                                                     |
-| `runProviderCatalog`                                 | اجرای یک hook کاتالوگ ارائه‌دهنده با وابستگی‌های آزمون                                                                                   |
-| `resolveProviderWizardOptions`                       | تفکیک گزینه‌های wizard راه‌اندازی ارائه‌دهنده در آزمون‌های قرارداد                                                                                  |
-| `resolveProviderModelPickerEntries`                  | تفکیک entryهای model-picker ارائه‌دهنده در آزمون‌های قرارداد                                                                                  |
-| `buildProviderPluginMethodChoice`                    | ساخت شناسه‌های انتخاب wizard ارائه‌دهنده برای assertionها                                                                                          |
-| `setProviderWizardProvidersResolverForTest`          | تزریق ارائه‌دهندگان wizard ارائه‌دهنده برای آزمون‌های ایزوله                                                                                      |
+| `createTestPluginApi`                                | یک mock حداقلی از API مربوط به Plugin برای آزمون‌های واحد ثبت مستقیم بسازید. از `plugin-sdk/plugin-test-api` وارد کنید                             |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | fixture قرارداد مشترک نمایه احراز هویت برای آداپتورهای زمان اجرای عامل بومی. از `plugin-sdk/agent-runtime-test-contracts` وارد کنید            |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | fixture قرارداد مشترک سرکوب تحویل برای آداپتورهای زمان اجرای عامل بومی. از `plugin-sdk/agent-runtime-test-contracts` وارد کنید    |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | fixture قرارداد مشترک دسته‌بندی fallback برای آداپتورهای زمان اجرای عامل بومی. از `plugin-sdk/agent-runtime-test-contracts` وارد کنید |
+| `createParameterFreeTool`                            | fixtureهای schema ابزار پویا را برای آزمون‌های قرارداد زمان اجرای بومی بسازید. از `plugin-sdk/agent-runtime-test-contracts` وارد کنید              |
+| `expectChannelInboundContextContract`                | شکل context ورودی کانال را assert کنید. از `plugin-sdk/channel-contract-testing` وارد کنید                                                  |
+| `installChannelOutboundPayloadContractSuite`         | موردهای قرارداد payload خروجی کانال را نصب کنید. از `plugin-sdk/channel-contract-testing` وارد کنید                                       |
+| `createStartAccountContext`                          | contextهای چرخه عمر حساب کانال را بسازید. از `plugin-sdk/channel-test-helpers` وارد کنید                                                  |
+| `installChannelActionsContractSuite`                 | موردهای قرارداد عمومی کنش پیام کانال را نصب کنید. از `plugin-sdk/channel-test-helpers` وارد کنید                                     |
+| `installChannelSetupContractSuite`                   | موردهای قرارداد عمومی راه‌اندازی کانال را نصب کنید. از `plugin-sdk/channel-test-helpers` وارد کنید                                              |
+| `installChannelStatusContractSuite`                  | موردهای قرارداد عمومی وضعیت کانال را نصب کنید. از `plugin-sdk/channel-test-helpers` وارد کنید                                             |
+| `expectDirectoryIds`                                 | شناسه‌های دایرکتوری کانال را از یک تابع فهرست دایرکتوری assert کنید. از `plugin-sdk/channel-test-helpers` وارد کنید                               |
+| `assertBundledChannelEntries`                        | assert کنید entrypointهای کانال همراه، قرارداد عمومی مورد انتظار را expose می‌کنند. از `plugin-sdk/channel-test-helpers` وارد کنید                    |
+| `formatEnvelopeTimestamp`                            | Timestampهای deterministic پاکت را قالب‌بندی کنید. از `plugin-sdk/channel-test-helpers` وارد کنید                                                  |
+| `expectPairingReplyText`                             | متن پاسخ pairing کانال را assert کنید و کد آن را استخراج کنید. از `plugin-sdk/channel-test-helpers` وارد کنید                                    |
+| `describePluginRegistrationContract`                 | بررسی‌های قرارداد ثبت Plugin را نصب کنید. از `plugin-sdk/plugin-test-contracts` وارد کنید                                              |
+| `registerSingleProviderPlugin`                       | یک Plugin ارائه‌دهنده را در آزمون‌های smoke بارگذار ثبت کنید. از `plugin-sdk/plugin-test-runtime` وارد کنید                                         |
+| `registerProviderPlugin`                             | همه گونه‌های ارائه‌دهنده را از یک Plugin ثبت کنید. از `plugin-sdk/plugin-test-runtime` وارد کنید                                                 |
+| `registerProviderPlugins`                            | ثبت‌های ارائه‌دهنده را در چند Plugin ثبت کنید. از `plugin-sdk/plugin-test-runtime` وارد کنید                                     |
+| `requireRegisteredProvider`                          | assert کنید یک مجموعه ارائه‌دهنده شامل یک شناسه است. از `plugin-sdk/plugin-test-runtime` وارد کنید                                           |
+| `createRuntimeEnv`                                   | یک محیط زمان اجرای mock شده CLI/Plugin بسازید. از `plugin-sdk/plugin-test-runtime` وارد کنید                                              |
+| `createPluginSetupWizardStatus`                      | helperهای وضعیت راه‌اندازی را برای Pluginهای کانال بسازید. از `plugin-sdk/plugin-test-runtime` وارد کنید                                             |
+| `describeOpenAIProviderRuntimeContract`              | بررسی‌های قرارداد زمان اجرای خانواده ارائه‌دهنده را نصب کنید. از `plugin-sdk/provider-test-contracts` وارد کنید                                        |
+| `expectPassthroughReplayPolicy`                      | assert کنید سیاست‌های replay ارائه‌دهنده، ابزارها و metadata متعلق به ارائه‌دهنده را بدون تغییر عبور می‌دهند. از `plugin-sdk/provider-test-contracts` وارد کنید         |
+| `runRealtimeSttLiveTest`                             | یک آزمون زنده ارائه‌دهنده STT realtime را با fixtureهای صوتی مشترک اجرا کنید. از `plugin-sdk/provider-test-contracts` وارد کنید                       |
+| `normalizeTranscriptForMatch`                        | خروجی transcript زنده را پیش از assertهای fuzzy نرمال‌سازی کنید. از `plugin-sdk/provider-test-contracts` وارد کنید                               |
+| `expectExplicitVideoGenerationCapabilities`          | assert کنید ارائه‌دهندگان ویدیو قابلیت‌های صریح حالت تولید را اعلام می‌کنند. از `plugin-sdk/provider-test-contracts` وارد کنید                   |
+| `expectExplicitMusicGenerationCapabilities`          | assert کنید ارائه‌دهندگان موسیقی قابلیت‌های صریح تولید/ویرایش را اعلام می‌کنند. از `plugin-sdk/provider-test-contracts` وارد کنید                   |
+| `mockSuccessfulDashscopeVideoTask`                   | یک پاسخ موفق وظیفه ویدیویی سازگار با DashScope نصب کنید. از `plugin-sdk/provider-test-contracts` وارد کنید                          |
+| `getProviderHttpMocks`                               | به mockهای opt-in مربوط به HTTP/auth ارائه‌دهنده در Vitest دسترسی پیدا کنید. از `plugin-sdk/provider-http-test-mocks` وارد کنید                                         |
+| `installProviderHttpMockCleanup`                     | mockهای HTTP/auth ارائه‌دهنده را پس از هر آزمون reset کنید. از `plugin-sdk/provider-http-test-mocks` وارد کنید                                        |
+| `installCommonResolveTargetErrorCases`               | موردهای آزمون مشترک برای مدیریت خطای resolution مقصد. از `plugin-sdk/channel-target-testing` وارد کنید                                  |
+| `shouldAckReaction`                                  | بررسی کنید آیا یک کانال باید یک واکنش ack اضافه کند. از `plugin-sdk/channel-feedback` وارد کنید                                            |
+| `removeAckReactionAfterReply`                        | واکنش ack را پس از تحویل پاسخ حذف کنید. از `plugin-sdk/channel-feedback` وارد کنید                                                      |
+| `createTestRegistry`                                 | یک fixture رجیستری Plugin کانال بسازید. از `plugin-sdk/plugin-test-runtime` یا `plugin-sdk/channel-test-helpers` وارد کنید               |
+| `createEmptyPluginRegistry`                          | یک fixture رجیستری Plugin خالی بسازید. از `plugin-sdk/plugin-test-runtime` یا `plugin-sdk/channel-test-helpers` وارد کنید                |
+| `setActivePluginRegistry`                            | یک fixture رجیستری را برای آزمون‌های زمان اجرای Plugin نصب کنید. از `plugin-sdk/plugin-test-runtime` یا `plugin-sdk/channel-test-helpers` وارد کنید   |
+| `createRequestCaptureJsonFetch`                      | درخواست‌های JSON fetch را در آزمون‌های helper رسانه ثبت کنید. از `plugin-sdk/test-env` وارد کنید                                                     |
+| `withServer`                                         | آزمون‌ها را در برابر یک سرور HTTP محلی disposable اجرا کنید. از `plugin-sdk/test-env` وارد کنید                                                      |
+| `createMockIncomingRequest`                          | یک شیء حداقلی درخواست HTTP ورودی بسازید. از `plugin-sdk/test-env` وارد کنید                                                          |
+| `withFetchPreconnect`                                | آزمون‌های fetch را با hookهای preconnect نصب‌شده اجرا کنید. از `plugin-sdk/test-env` وارد کنید                                                       |
+| `withEnv` / `withEnvAsync`                           | متغیرهای محیطی را موقتاً patch کنید. از `plugin-sdk/test-env` وارد کنید                                                               |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | fixtureهای آزمون فایل‌سیستم ایزوله ایجاد کنید. از `plugin-sdk/test-env` وارد کنید                                                              |
+| `createMockServerResponse`                           | یک mock حداقلی پاسخ سرور HTTP ایجاد کنید. از `plugin-sdk/test-env` وارد کنید                                                            |
+| `createCliRuntimeCapture`                            | خروجی زمان اجرای CLI را در آزمون‌ها ثبت کنید. از `plugin-sdk/test-fixtures` وارد کنید                                                              |
+| `importFreshModule`                                  | یک ماژول ESM را با یک توکن query تازه وارد کنید تا cache ماژول دور زده شود. از `plugin-sdk/test-fixtures` وارد کنید                             |
+| `bundledPluginRoot` / `bundledPluginFile`            | مسیرهای fixture منبع یا dist مربوط به Plugin همراه را resolve کنید. از `plugin-sdk/test-fixtures` وارد کنید                                              |
+| `mockNodeBuiltinModule`                              | mockهای محدود Vitest برای builtinهای Node را نصب کنید. از `plugin-sdk/test-node-mocks` وارد کنید                                                       |
+| `createSandboxTestContext`                           | contextهای آزمون sandbox را بسازید. از `plugin-sdk/test-fixtures` وارد کنید                                                                      |
+| `writeSkill`                                         | fixtureهای skill را بنویسید. از `plugin-sdk/test-fixtures` وارد کنید                                                                             |
+| `makeAgentAssistantMessage`                          | fixtureهای پیام transcript عامل را بسازید. از `plugin-sdk/test-fixtures` وارد کنید                                                          |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | fixtureهای رویداد سیستم را inspect و reset کنید. از `plugin-sdk/test-fixtures` وارد کنید                                                          |
+| `sanitizeTerminalText`                               | خروجی terminal را برای assertها پاک‌سازی کنید. از `plugin-sdk/test-fixtures` وارد کنید                                                          |
+| `countLines` / `hasBalancedFences`                   | شکل خروجی chunking را assert کنید. از `plugin-sdk/test-fixtures` وارد کنید                                                                     |
+| `runProviderCatalog`                                 | یک hook کاتالوگ ارائه‌دهنده را با وابستگی‌های آزمون اجرا کنید                                                                                   |
+| `resolveProviderWizardOptions`                       | گزینه‌های ویزارد راه‌اندازی ارائه‌دهنده را در آزمون‌های قرارداد resolve کنید                                                                                  |
+| `resolveProviderModelPickerEntries`                  | entryهای انتخاب‌گر مدل ارائه‌دهنده را در آزمون‌های قرارداد resolve کنید                                                                                  |
+| `buildProviderPluginMethodChoice`                    | شناسه‌های انتخاب ویزارد ارائه‌دهنده را برای assertها بسازید                                                                                          |
+| `setProviderWizardProvidersResolverForTest`          | ارائه‌دهندگان ویزارد ارائه‌دهنده را برای آزمون‌های ایزوله inject کنید                                                                                      |
 | `createProviderUsageFetch`                           | فیکسچرهای واکشی میزان استفادهٔ ارائه‌دهنده را بسازید                                                                                                      |
-| `useFrozenTime` / `useRealTime`                      | تایمرها را برای آزمون‌های حساس به زمان ثابت و بازیابی کنید. از `plugin-sdk/test-env` وارد کنید                                                    |
-| `createTestWizardPrompter`                           | یک پرامپتر جادوگر راه‌اندازی شبیه‌سازی‌شده بسازید                                                                                                     |
-| `createRuntimeTaskFlow`                              | وضعیت جداافتادهٔ جریان وظیفهٔ زمان اجرا را ایجاد کنید                                                                                                  |
-| `typedCases`                                         | نوع‌های لیترال را برای آزمون‌های جدول‌محور حفظ کنید. از `plugin-sdk/test-fixtures` وارد کنید                                                    |
+| `useFrozenTime` / `useRealTime`                      | تایمرها را برای آزمون‌های حساس به زمان منجمد و بازیابی کنید. از `plugin-sdk/test-env` وارد کنید                                                    |
+| `createTestWizardPrompter`                           | یک اعلان‌گر جادوگر راه‌اندازی شبیه‌سازی‌شده بسازید                                                                                                     |
+| `createRuntimeTaskFlow`                              | وضعیت ایزولهٔ TaskFlow زمان اجرا را ایجاد کنید                                                                                                  |
+| `typedCases`                                         | نوع‌های لفظی را برای آزمون‌های جدول‌محور حفظ کنید. از `plugin-sdk/test-fixtures` وارد کنید                                                    |
 
-مجموعه‌های قرارداد Pluginهای همراه همچنین از زیرمسیرهای آزمون SDK برای کمک‌ابزارهای مخصوص آزمون
-registry، manifest، public-artifact و fixtureهای زمان اجرا استفاده می‌کنند. مجموعه‌های فقط هسته
-که به موجودی OpenClaw همراه وابسته‌اند، زیر `src/plugins/contracts` باقی می‌مانند.
-آزمون‌های جدید extension را به‌جای import مستقیم از barrel سازگاری گسترده
-`plugin-sdk/testing`، فایل‌های `src/**` repo، یا پل‌های `test/helpers/*` repo،
-روی یک زیرمسیر SDK متمرکز و مستند مانند
-`plugin-sdk/plugin-test-api`، `plugin-sdk/channel-contract-testing`،
-`plugin-sdk/agent-runtime-test-contracts`، `plugin-sdk/channel-test-helpers`،
-`plugin-sdk/plugin-test-contracts`، `plugin-sdk/plugin-test-runtime`،
-`plugin-sdk/provider-test-contracts`، `plugin-sdk/provider-http-test-mocks`،
-`plugin-sdk/test-env`، یا `plugin-sdk/test-fixtures` نگه دارید.
+مجموعه‌های قرارداد Pluginهای همراه همچنین از زیـرمسیرهای آزمایشی SDK برای کمک‌کننده‌های فقط-آزمونِ رجیستری، مانیفست، مصنوع عمومی، و فیکسچر زمان اجرا استفاده می‌کنند. مجموعه‌های فقط-هسته که به موجودی OpenClaw همراه وابسته‌اند، زیر `src/plugins/contracts` باقی می‌مانند. آزمون‌های جدید افزونه را روی یک زیـرمسیر متمرکز و مستند SDK مانند `plugin-sdk/plugin-test-api`، `plugin-sdk/channel-contract-testing`، `plugin-sdk/agent-runtime-test-contracts`، `plugin-sdk/channel-test-helpers`، `plugin-sdk/plugin-test-contracts`، `plugin-sdk/plugin-test-runtime`، `plugin-sdk/provider-test-contracts`، `plugin-sdk/provider-http-test-mocks`، `plugin-sdk/test-env`، یا `plugin-sdk/test-fixtures` نگه دارید، نه اینکه barrel سازگاریِ گسترده‌ی `plugin-sdk/testing`، فایل‌های `src/**` مخزن، یا پل‌های `test/helpers/*` مخزن را مستقیما import کنید.
 
-### انواع
+### نوع‌ها
 
-زیرمسیرهای آزمون متمرکز همچنین نوع‌هایی را که در فایل‌های آزمون مفید هستند دوباره export می‌کنند:
+زیـرمسیرهای متمرکز آزمایشی همچنین نوع‌های مفید در فایل‌های آزمون را دوباره export می‌کنند:
 
 ```typescript
 import type {
@@ -172,10 +162,9 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## تفکیک هدف آزمون
+## تشخیص مقصد آزمون
 
-از `installCommonResolveTargetErrorCases` برای افزودن حالت‌های خطای استاندارد برای
-تفکیک هدف channel استفاده کنید:
+از `installCommonResolveTargetErrorCases` برای افزودن حالت‌های خطای استاندارد برای تشخیص مقصد کانال استفاده کنید:
 
 ```typescript
 import { describe } from "vitest";
@@ -199,25 +188,15 @@ describe("my-channel target resolution", () => {
 
 ## الگوهای آزمون
 
-### آزمون قراردادهای ثبت
+### آزمودن قراردادهای ثبت
 
-آزمون‌های واحدی که یک mock دست‌نویس `api` را به `register(api)` می‌دهند،
-دروازه‌های پذیرش loader در OpenClaw را اجرا نمی‌کنند. برای هر سطح ثبت که Plugin شما به آن وابسته است،
-به‌ویژه hookها و قابلیت‌های انحصاری مانند memory، دست‌کم یک آزمون smoke پشتوانه‌دار با loader اضافه کنید.
+آزمون‌های واحدی که یک mock دست‌نویس `api` را به `register(api)` می‌دهند، دروازه‌های پذیرش loader در OpenClaw را اجرا نمی‌کنند. برای هر سطح ثبت که Plugin شما به آن وابسته است، به‌ویژه hookها و قابلیت‌های انحصاری مانند حافظه، دست‌کم یک آزمون smoke متکی بر loader اضافه کنید.
 
-loader واقعی وقتی metadata لازم وجود نداشته باشد یا یک Plugin API قابلیتی را فراخوانی کند که مالک آن نیست،
-ثبت Plugin را با شکست مواجه می‌کند. برای نمونه،
-`api.registerHook(...)` به نام hook نیاز دارد، و
-`api.registerMemoryCapability(...)` نیاز دارد manifest مربوط به Plugin یا
-ورودی exportشده `kind: "memory"` را اعلام کند.
+loader واقعی وقتی فراداده‌ی الزامی وجود نداشته باشد یا یک Plugin API قابلیتی را فراخوانی کند که مالک آن نیست، ثبت Plugin را ناموفق می‌کند. برای مثال، `api.registerHook(...)` به نام hook نیاز دارد، و `api.registerMemoryCapability(...)` نیاز دارد مانیفست Plugin یا entry خروجی، `kind: "memory"` را declare کند.
 
-### آزمون دسترسی به پیکربندی زمان اجرا
+### آزمودن دسترسی به پیکربندی زمان اجرا
 
-هنگام آزمون Pluginهای channel همراه، mock مشترک زمان اجرای Plugin از `openclaw/plugin-sdk/channel-test-helpers`
-را ترجیح دهید. mockهای منسوخ `runtime.config.loadConfig()` و
-`runtime.config.writeConfigFile(...)` آن به‌صورت پیش‌فرض خطا می‌دهند تا آزمون‌ها استفاده جدید
-از APIهای سازگاری را تشخیص دهند. این mockها را فقط وقتی override کنید که آزمون
-صراحتا رفتار سازگاری قدیمی را پوشش می‌دهد.
+هنگام آزمودن Pluginهای کانال همراه، mock مشترک زمان اجرای Plugin را از `openclaw/plugin-sdk/channel-test-helpers` ترجیح دهید. mockهای منسوخ `runtime.config.loadConfig()` و `runtime.config.writeConfigFile(...)` آن به‌طور پیش‌فرض throw می‌کنند تا آزمون‌ها استفاده‌ی جدید از APIهای سازگاری را تشخیص دهند. این mockها را فقط وقتی override کنید که آزمون صریحا رفتار سازگاری قدیمی را پوشش می‌دهد.
 
 ### آزمون واحد یک Plugin کانال
 
@@ -316,9 +295,9 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### آزمون با stubهای هر نمونه
+### آزمودن با stubهای مخصوص هر instance
 
-stubهای هر نمونه را به جهش prototype ترجیح دهید:
+stubهای مخصوص هر instance را به جهش prototype ترجیح دهید:
 
 ```typescript
 // Preferred: per-instance stub
@@ -329,9 +308,9 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## آزمون‌های قرارداد (Pluginهای داخل repo)
+## آزمون‌های قرارداد (Pluginهای داخل مخزن)
 
-Pluginهای همراه آزمون‌های قراردادی دارند که مالکیت ثبت را راستی‌آزمایی می‌کنند:
+Pluginهای همراه آزمون‌های قراردادی دارند که مالکیت ثبت را بررسی می‌کنند:
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -342,9 +321,9 @@ pnpm test -- src/plugins/contracts/
 - کدام Pluginها کدام ارائه‌دهنده‌ها را ثبت می‌کنند
 - کدام Pluginها کدام ارائه‌دهنده‌های گفتار را ثبت می‌کنند
 - درستی شکل ثبت
-- انطباق قرارداد زمان اجرا
+- تطابق با قرارداد زمان اجرا
 
-### اجرای آزمون‌های scoped
+### اجرای آزمون‌های محدود به دامنه
 
 برای یک Plugin مشخص:
 
@@ -356,20 +335,19 @@ pnpm test -- <bundled-plugin-root>/my-channel/
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime.contract.test.ts
+pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
-## اعمال lint (Pluginهای داخل repo)
+## اعمال lint (Pluginهای داخل مخزن)
 
-سه قانون توسط `pnpm check` برای Pluginهای داخل repo اعمال می‌شود:
+سه قانون توسط `pnpm check` برای Pluginهای داخل مخزن اعمال می‌شود:
 
-1. **بدون importهای ریشه یکپارچه** -- barrel ریشه `openclaw/plugin-sdk` رد می‌شود
-2. **بدون import مستقیم از `src/`** -- Pluginها نمی‌توانند مستقیما از `../../src/` import کنند
-3. **بدون self-import** -- Pluginها نمی‌توانند زیرمسیر `plugin-sdk/<name>` خودشان را import کنند
+1. **بدون importهای ریشه‌ی یکپارچه** -- barrel ریشه‌ی `openclaw/plugin-sdk` رد می‌شود
+2. **بدون import مستقیم `src/`** -- Pluginها نمی‌توانند مستقیما `../../src/` را import کنند
+3. **بدون self-import** -- Pluginها نمی‌توانند زیـرمسیر `plugin-sdk/<name>` خودشان را import کنند
 
-Pluginهای خارجی مشمول این قوانین lint نیستند، اما پیروی از همین
-الگوها توصیه می‌شود.
+Pluginهای خارجی مشمول این قوانین lint نیستند، اما پیروی از همان الگوها توصیه می‌شود.
 
 ## پیکربندی آزمون
 

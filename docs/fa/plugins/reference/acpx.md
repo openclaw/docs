@@ -4,22 +4,22 @@ read_when:
 summary: بک‌اند زمان اجرای ACP تعبیه‌شده با مدیریت نشست و انتقال تحت مالکیت Plugin.
 title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-05-02T20:49:28Z"
+    generated_at: "2026-05-02T22:22:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 254a6fc1bc68cb18c7bdd9c10d5c8ff370c80b1c58cc082be9b206a8a44e1013
+    source_hash: 1a0452131c85969d16cd1ebb603bd2369be8cd929841b6756165f64ede4109a4
     source_path: plugins/reference/acpx.md
     workflow: 16
 ---
 
 # ACPx Plugin
 
-بک‌اند runtime تعبیه‌شدهٔ ACP با مدیریت نشست و انتقال تحت مالکیت Plugin.
+پس‌زمینهٔ زمان اجرای ACP جاسازی‌شده با مدیریت نشست و انتقال تحت مالکیت Plugin.
 
 ## توزیع
 
 - بسته: `@openclaw/acpx`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: در OpenClaw گنجانده شده است
 
 ## سطح
 

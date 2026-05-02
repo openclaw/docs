@@ -1,59 +1,59 @@
 ---
 read_when:
-    - کار روی قابلیت‌های کانال Nextcloud Talk
+    - کار روی ویژگی‌های کانال Nextcloud Talk
 summary: وضعیت پشتیبانی، قابلیت‌ها و پیکربندی Nextcloud Talk
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-04-29T22:27:38Z"
+    generated_at: "2026-05-02T22:16:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fcbe8a65adfddc95d2b4944af88f9982e23a1676752efec2bbf40cfc4dd846d2
+    source_hash: 4956586ae8622118dcf136f4279c6ed1c2895fd4bb4576a7f5799de600a95740
     source_path: channels/nextcloud-talk.md
     workflow: 16
 ---
 
-وضعیت: Plugin همراه (ربات Webhook). پیام‌های مستقیم، اتاق‌ها، واکنش‌ها و پیام‌های markdown پشتیبانی می‌شوند.
+وضعیت: Plugin همراه (بات Webhook). پیام‌های مستقیم، اتاق‌ها، واکنش‌ها و پیام‌های markdown پشتیبانی می‌شوند.
 
 ## Plugin همراه
 
 Nextcloud Talk در نسخه‌های فعلی OpenClaw به‌صورت Plugin همراه عرضه می‌شود، بنابراین
-بیلدهای بسته‌بندی‌شده معمولی به نصب جداگانه نیاز ندارند.
+ساخت‌های بسته‌بندی‌شدهٔ معمولی به نصب جداگانه نیاز ندارند.
 
-اگر از یک بیلد قدیمی‌تر یا نصب سفارشی استفاده می‌کنید که Nextcloud Talk را شامل نمی‌شود،
-وقتی یک بسته npm فعلی منتشر شد، آن را نصب کنید:
+اگر از یک ساخت قدیمی‌تر یا نصب سفارشی استفاده می‌کنید که Nextcloud Talk را شامل نمی‌شود،
+بستهٔ npm را مستقیماً نصب کنید:
 
-نصب از طریق CLI (رجیستری npm، وقتی بسته فعلی وجود داشته باشد):
+نصب از طریق CLI (رجیستری npm):
 
 ```bash
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-اگر npm بسته متعلق به OpenClaw را منسوخ‌شده گزارش کرد، تا زمانی که بسته npm جدیدتری
-منتشر شود، از بیلد بسته‌بندی‌شده فعلی OpenClaw یا مسیر checkout محلی استفاده کنید.
+از بستهٔ بدون نسخهٔ مشخص استفاده کنید تا برچسب انتشار رسمی فعلی را دنبال کند. فقط زمانی یک
+نسخهٔ دقیق را پین کنید که به نصب قابل بازتولید نیاز دارید.
 
-checkout محلی (هنگام اجرا از یک مخزن git):
+چک‌اوت محلی (هنگام اجرا از یک مخزن git):
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-جزئیات: [Pluginها](/fa/tools/plugin)
+جزئیات: [Plugins](/fa/tools/plugin)
 
 ## راه‌اندازی سریع (مبتدی)
 
 1. مطمئن شوید Plugin مربوط به Nextcloud Talk در دسترس است.
-   - نسخه‌های بسته‌بندی‌شده فعلی OpenClaw از قبل آن را همراه خود دارند.
-   - نصب‌های قدیمی‌تر/سفارشی می‌توانند با دستورهای بالا آن را به‌صورت دستی اضافه کنند.
-2. در سرور Nextcloud خود، یک ربات بسازید:
+   - نسخه‌های بسته‌بندی‌شدهٔ فعلی OpenClaw از قبل آن را همراه دارند.
+   - نصب‌های قدیمی‌تر/سفارشی می‌توانند آن را با فرمان‌های بالا به‌صورت دستی اضافه کنند.
+2. روی سرور Nextcloud خود، یک بات ایجاد کنید:
 
    ```bash
    ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction
    ```
 
-3. ربات را در تنظیمات اتاق هدف فعال کنید.
+3. بات را در تنظیمات اتاق هدف فعال کنید.
 4. OpenClaw را پیکربندی کنید:
    - پیکربندی: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - یا متغیر محیطی: `NEXTCLOUD_TALK_BOT_SECRET` (فقط حساب پیش‌فرض)
+   - یا env: `NEXTCLOUD_TALK_BOT_SECRET` (فقط حساب پیش‌فرض)
 
    راه‌اندازی CLI:
 
@@ -71,7 +71,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret "<shared-secret>"
    ```
 
-   secret مبتنی بر فایل:
+   رمز مبتنی بر فایل:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -79,7 +79,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. Gateway را بازراه‌اندازی کنید (یا راه‌اندازی را کامل کنید).
+5. Gateway را بازراه‌اندازی کنید (یا راه‌اندازی را تمام کنید).
 
 پیکربندی حداقلی:
 
@@ -98,14 +98,14 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## نکات
 
-- ربات‌ها نمی‌توانند DMها را آغاز کنند. کاربر باید ابتدا به ربات پیام بدهد.
-- URL مربوط به Webhook باید برای Gateway قابل دسترسی باشد؛ اگر پشت پراکسی هستید `webhookPublicUrl` را تنظیم کنید.
-- بارگذاری رسانه توسط API ربات پشتیبانی نمی‌شود؛ رسانه به‌صورت URL ارسال می‌شود.
-- payload مربوط به Webhook بین DMها و اتاق‌ها تمایز قائل نمی‌شود؛ برای فعال کردن جست‌وجوی نوع اتاق، `apiUser` + `apiPassword` را تنظیم کنید (در غیر این صورت DMها به‌عنوان اتاق در نظر گرفته می‌شوند).
+- بات‌ها نمی‌توانند DMها را آغاز کنند. کاربر باید ابتدا به بات پیام بدهد.
+- URL مربوط به Webhook باید برای Gateway قابل دسترسی باشد؛ اگر پشت پراکسی هستید، `webhookPublicUrl` را تنظیم کنید.
+- بارگذاری رسانه توسط API بات پشتیبانی نمی‌شود؛ رسانه به‌صورت URL ارسال می‌شود.
+- بار دادهٔ Webhook بین DMها و اتاق‌ها تمایز قائل نمی‌شود؛ برای فعال‌سازی جست‌وجوی نوع اتاق، `apiUser` + `apiPassword` را تنظیم کنید (در غیر این صورت DMها به‌عنوان اتاق در نظر گرفته می‌شوند).
 
 ## کنترل دسترسی (DMها)
 
-- پیش‌فرض: `channels.nextcloud-talk.dmPolicy = "pairing"`. فرستنده‌های ناشناخته یک کد pairing دریافت می‌کنند.
+- پیش‌فرض: `channels.nextcloud-talk.dmPolicy = "pairing"`. فرستندگان ناشناس یک کد جفت‌سازی دریافت می‌کنند.
 - تأیید از طریق:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
@@ -114,7 +114,7 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## اتاق‌ها (گروه‌ها)
 
-- پیش‌فرض: `channels.nextcloud-talk.groupPolicy = "allowlist"` (کنترل‌شده با mention).
+- پیش‌فرض: `channels.nextcloud-talk.groupPolicy = "allowlist"` (محدود به منشن).
 - اتاق‌ها را با `channels.nextcloud-talk.rooms` در allowlist قرار دهید:
 
 ```json5
@@ -133,14 +133,14 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 
 ## قابلیت‌ها
 
-| قابلیت | وضعیت |
-| --------------- | ------------- |
-| پیام‌های مستقیم | پشتیبانی می‌شود |
-| اتاق‌ها | پشتیبانی می‌شود |
-| رشته‌ها | پشتیبانی نمی‌شود |
-| رسانه | فقط URL |
-| واکنش‌ها | پشتیبانی می‌شود |
-| دستورهای بومی | پشتیبانی نمی‌شود |
+| ویژگی          | وضعیت             |
+| -------------- | ----------------- |
+| پیام‌های مستقیم | پشتیبانی می‌شود    |
+| اتاق‌ها         | پشتیبانی می‌شود    |
+| رشته‌ها         | پشتیبانی نمی‌شود   |
+| رسانه          | فقط URL           |
+| واکنش‌ها        | پشتیبانی می‌شود    |
+| فرمان‌های بومی  | پشتیبانی نمی‌شود   |
 
 ## مرجع پیکربندی (Nextcloud Talk)
 
@@ -149,34 +149,34 @@ openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 گزینه‌های ارائه‌دهنده:
 
 - `channels.nextcloud-talk.enabled`: فعال/غیرفعال کردن راه‌اندازی کانال.
-- `channels.nextcloud-talk.baseUrl`: URL نمونه Nextcloud.
-- `channels.nextcloud-talk.botSecret`: secret مشترک ربات.
-- `channels.nextcloud-talk.botSecretFile`: مسیر secret در قالب فایل معمولی. symlinkها رد می‌شوند.
+- `channels.nextcloud-talk.baseUrl`: URL نمونهٔ Nextcloud.
+- `channels.nextcloud-talk.botSecret`: رمز مشترک بات.
+- `channels.nextcloud-talk.botSecretFile`: مسیر فایل معمولی رمز. پیوندهای نمادین رد می‌شوند.
 - `channels.nextcloud-talk.apiUser`: کاربر API برای جست‌وجوی اتاق‌ها (تشخیص DM).
-- `channels.nextcloud-talk.apiPassword`: گذرواژه API/app برای جست‌وجوی اتاق‌ها.
-- `channels.nextcloud-talk.apiPasswordFile`: مسیر فایل گذرواژه API.
-- `channels.nextcloud-talk.webhookPort`: پورت listener مربوط به Webhook (پیش‌فرض: 8788).
+- `channels.nextcloud-talk.apiPassword`: گذرواژهٔ API/برنامه برای جست‌وجوی اتاق‌ها.
+- `channels.nextcloud-talk.apiPasswordFile`: مسیر فایل گذرواژهٔ API.
+- `channels.nextcloud-talk.webhookPort`: پورت شنوندهٔ Webhook (پیش‌فرض: 8788).
 - `channels.nextcloud-talk.webhookHost`: میزبان Webhook (پیش‌فرض: 0.0.0.0).
 - `channels.nextcloud-talk.webhookPath`: مسیر Webhook (پیش‌فرض: /nextcloud-talk-webhook).
 - `channels.nextcloud-talk.webhookPublicUrl`: URL مربوط به Webhook که از بیرون قابل دسترسی است.
 - `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
 - `channels.nextcloud-talk.allowFrom`: allowlist مربوط به DM (شناسه‌های کاربری). `open` به `"*"` نیاز دارد.
 - `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
-- `channels.nextcloud-talk.groupAllowFrom`: allowlist مربوط به گروه (شناسه‌های کاربری).
-- `channels.nextcloud-talk.rooms`: تنظیمات و allowlist هر اتاق.
-- `channels.nextcloud-talk.historyLimit`: محدودیت تاریخچه گروه (0 غیرفعال می‌کند).
-- `channels.nextcloud-talk.dmHistoryLimit`: محدودیت تاریخچه DM (0 غیرفعال می‌کند).
-- `channels.nextcloud-talk.dms`: overrideهای هر DM (historyLimit).
-- `channels.nextcloud-talk.textChunkLimit`: اندازه قطعه متن خروجی (نویسه‌ها).
-- `channels.nextcloud-talk.chunkMode`: `length` (پیش‌فرض) یا `newline` برای تقسیم بر اساس خطوط خالی (مرزهای پاراگراف) قبل از قطعه‌بندی بر اساس طول.
-- `channels.nextcloud-talk.blockStreaming`: غیرفعال کردن block streaming برای این کانال.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: تنظیمات coalesce برای block streaming.
-- `channels.nextcloud-talk.mediaMaxMb`: سقف رسانه ورودی (MB).
+- `channels.nextcloud-talk.groupAllowFrom`: allowlist گروه (شناسه‌های کاربری).
+- `channels.nextcloud-talk.rooms`: تنظیمات و allowlist برای هر اتاق.
+- `channels.nextcloud-talk.historyLimit`: محدودیت تاریخچهٔ گروه (0 غیرفعال می‌کند).
+- `channels.nextcloud-talk.dmHistoryLimit`: محدودیت تاریخچهٔ DM (0 غیرفعال می‌کند).
+- `channels.nextcloud-talk.dms`: بازنویسی‌های هر DM (historyLimit).
+- `channels.nextcloud-talk.textChunkLimit`: اندازهٔ قطعهٔ متن خروجی (نویسه‌ها).
+- `channels.nextcloud-talk.chunkMode`: `length` (پیش‌فرض) یا `newline` برای تقسیم بر اساس خطوط خالی (مرزهای پاراگراف) پیش از قطعه‌بندی بر اساس طول.
+- `channels.nextcloud-talk.blockStreaming`: غیرفعال کردن پخش جریانی بلوکی برای این کانال.
+- `channels.nextcloud-talk.blockStreamingCoalesce`: تنظیم همجوشی پخش جریانی بلوکی.
+- `channels.nextcloud-talk.mediaMaxMb`: سقف رسانهٔ ورودی (MB).
 
 ## مرتبط
 
-- [نمای کلی کانال‌ها](/fa/channels) — همه کانال‌های پشتیبانی‌شده
-- [Pairing](/fa/channels/pairing) — احراز هویت DM و جریان pairing
-- [گروه‌ها](/fa/channels/groups) — رفتار گفت‌وگوی گروهی و کنترل mention
+- [نمای کلی کانال‌ها](/fa/channels) — همهٔ کانال‌های پشتیبانی‌شده
+- [جفت‌سازی](/fa/channels/pairing) — احراز هویت DM و جریان جفت‌سازی
+- [گروه‌ها](/fa/channels/groups) — رفتار گفت‌وگوی گروهی و محدودسازی با منشن
 - [مسیریابی کانال](/fa/channels/channel-routing) — مسیریابی نشست برای پیام‌ها
-- [امنیت](/fa/gateway/security) — مدل دسترسی و سخت‌سازی
+- [امنیت](/fa/gateway/security) — مدل دسترسی و مقاوم‌سازی

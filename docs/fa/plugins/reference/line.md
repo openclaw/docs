@@ -1,13 +1,13 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin line هستید
+    - در حال نصب، پیکربندی یا ممیزی Plugin خط هستید
 summary: سطح کانال LINE را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
-title: LINE Plugin
+title: Plugin LINE
 x-i18n:
-    generated_at: "2026-05-02T20:54:32Z"
+    generated_at: "2026-05-02T22:23:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 469a8781af08abd50a475fe58e4ff4e93b592d4a412f17b01d34640422e0cc6f
+    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
     source_path: plugins/reference/line.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/line`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: همراه با OpenClaw
 
 ## سطح
 
 channels: line
 
-## اسناد مرتبط
+## مستندات مرتبط
 
 - [line](/fa/channels/line)
