@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Discord Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını göndermek ve almak için Discord kanal yüzeyini ekler.
+    - Discord Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajları gönderip almak için Discord kanal yüzeyini ekler.
 title: Discord Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:12Z"
+    generated_at: "2026-05-02T22:20:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fd84b465797fd02f9b008bb3f951c8a7e5f12a524b7c2d8c01681215271b83ba
+    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord Plugin
 
-OpenClaw iletilerini göndermek ve almak için Discord kanal yüzeyini ekler.
+OpenClaw mesajlarını göndermek ve almak için Discord kanal yüzeyini ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/discord`
-- Kurulum yolu: OpenClaw'a dahildir
+- Kurulum yolu: ClawHub + npm
 
 ## Yüzey
 
 channels: discord
 
-## İlgili belgeler
+## İlgili dokümanlar
 
-- [Discord](/tr/channels/discord)
+- [discord](/tr/channels/discord)

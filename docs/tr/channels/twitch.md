@@ -5,10 +5,10 @@ sidebarTitle: Twitch
 summary: Twitch sohbet botu yapılandırması ve kurulumu
 title: Twitch
 x-i18n:
-    generated_at: "2026-04-30T09:09:40Z"
+    generated_at: "2026-05-02T22:16:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 897079687a243c9c2ce2be63167e59f4413bbd89735fb79f03928547023bd787
+    source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
     source_path: channels/twitch.md
     workflow: 16
 ---
@@ -21,7 +21,7 @@ Twitch sohbet desteği, IRC bağlantısı üzerinden sağlanır. OpenClaw, kanal
 Twitch, mevcut OpenClaw sürümlerinde paketle birlikte gelen bir Plugin olarak sunulur; bu nedenle normal paketlenmiş derlemeler ayrı bir kurulum gerektirmez.
 </Note>
 
-Twitch'i hariç tutan eski bir derleme veya özel kurulum kullanıyorsanız, yayımlandığında güncel bir npm paketini kurun:
+Daha eski bir derlemedeyseniz veya Twitch'i hariç tutan özel bir kurulum kullanıyorsanız npm paketini doğrudan kurun:
 
 <Tabs>
   <Tab title="npm registry">
@@ -36,7 +36,7 @@ Twitch'i hariç tutan eski bir derleme veya özel kurulum kullanıyorsanız, yay
   </Tab>
 </Tabs>
 
-npm, OpenClaw tarafından sahip olunan paketi kullanımdan kaldırılmış olarak bildirirse, daha yeni bir npm paketi yayımlanana kadar güncel paketlenmiş bir OpenClaw derlemesi veya yerel checkout yolunu kullanın.
+Geçerli resmi yayın etiketini izlemek için yalın paketi kullanın. Tam sürümü yalnızca yeniden üretilebilir bir kurulum gerektiğinde sabitleyin.
 
 Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 
@@ -44,7 +44,7 @@ Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 
 <Steps>
   <Step title="Ensure plugin is available">
-    Güncel paketlenmiş OpenClaw sürümleri bunu zaten içerir. Eski/özel kurulumlar, yukarıdaki komutlarla bunu elle ekleyebilir.
+    Mevcut paketlenmiş OpenClaw sürümleri zaten bunu içerir. Daha eski/özel kurulumlar yukarıdaki komutlarla bunu elle ekleyebilir.
   </Step>
   <Step title="Create a Twitch bot account">
     Bot için ayrılmış bir Twitch hesabı oluşturun (veya mevcut bir hesabı kullanın).
@@ -58,13 +58,13 @@ Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 
   </Step>
   <Step title="Find your Twitch user ID">
-    Bir kullanıcı adını Twitch kullanıcı kimliğine dönüştürmek için [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) kullanın.
+    Bir kullanıcı adını Twitch kullanıcı kimliğine dönüştürmek için [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) adresini kullanın.
   </Step>
   <Step title="Configure the token">
-    - Env: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (yalnızca varsayılan hesap)
-    - Veya config: `channels.twitch.accessToken`
+    - Ortam: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (yalnızca varsayılan hesap)
+    - Veya yapılandırma: `channels.twitch.accessToken`
 
-    İkisi de ayarlanmışsa config önceliklidir (env fallback yalnızca varsayılan hesap içindir).
+    İkisi de ayarlanmışsa yapılandırma önceliklidir (ortam geri dönüşü yalnızca varsayılan hesap içindir).
 
   </Step>
   <Step title="Start the gateway">
@@ -76,7 +76,7 @@ Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 Yetkisiz kullanıcıların botu tetiklemesini önlemek için erişim denetimi (`allowFrom` veya `allowedRoles`) ekleyin. `requireMention` varsayılan olarak `true` değerindedir.
 </Warning>
 
-Minimal config:
+En küçük yapılandırma:
 
 ```json5
 {
@@ -95,14 +95,14 @@ Minimal config:
 
 ## Nedir
 
-- Gateway tarafından sahip olunan bir Twitch kanalı.
+- Gateway tarafından sahiplenilen bir Twitch kanalıdır.
 - Belirleyici yönlendirme: yanıtlar her zaman Twitch'e geri gider.
 - Her hesap, yalıtılmış bir oturum anahtarına eşlenir: `agent:<agentId>:twitch:<accountName>`.
-- `username` botun hesabıdır (kimlik doğrulayan kullanıcı), `channel` ise katılınacak sohbet odasıdır.
+- `username`, botun hesabıdır (kimlik doğrulayan kişi); `channel`, katılınacak sohbet odasıdır.
 
 ## Kurulum (ayrıntılı)
 
-### Kimlik bilgilerini oluşturma
+### Kimlik bilgileri oluşturma
 
 [Twitch Token Generator](https://twitchtokengenerator.com/) kullanın:
 
@@ -111,7 +111,7 @@ Minimal config:
 - **Client ID** ve **Access Token** değerlerini kopyalayın
 
 <Note>
-Elle uygulama kaydı gerekmez. Token'ların süresi birkaç saat sonra dolar.
+Elle uygulama kaydı gerekmez. Token'lar birkaç saat sonra sona erer.
 </Note>
 
 ### Botu yapılandırma
@@ -139,7 +139,7 @@ Elle uygulama kaydı gerekmez. Token'ların süresi birkaç saat sonra dolar.
   </Tab>
 </Tabs>
 
-Hem env hem de config ayarlanmışsa config önceliklidir.
+Hem ortam hem de yapılandırma ayarlanmışsa yapılandırma önceliklidir.
 
 ### Erişim denetimi (önerilir)
 
@@ -158,7 +158,7 @@ Kesin bir izin listesi için `allowFrom` tercih edin. Rol tabanlı erişim istiy
 **Kullanılabilir roller:** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
 
 <Note>
-**Neden kullanıcı kimlikleri?** Kullanıcı adları değişebilir ve bu, başkasının kimliğine bürünmeye olanak tanır. Kullanıcı kimlikleri kalıcıdır.
+**Neden kullanıcı kimlikleri?** Kullanıcı adları değişebilir ve bu, kimliğe bürünmeye izin verebilir. Kullanıcı kimlikleri kalıcıdır.
 
 Twitch kullanıcı kimliğinizi bulun: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (Twitch kullanıcı adınızı kimliğe dönüştürün)
 </Note>
@@ -167,7 +167,7 @@ Twitch kullanıcı kimliğinizi bulun: [https://www.streamweasels.com/tools/conv
 
 [Twitch Token Generator](https://twitchtokengenerator.com/) tarafından oluşturulan token'lar otomatik olarak yenilenemez; süresi dolduğunda yeniden oluşturun.
 
-Otomatik token yenileme için [Twitch Developer Console](https://dev.twitch.tv/console) üzerinden kendi Twitch uygulamanızı oluşturun ve config'e ekleyin:
+Otomatik token yenileme için [Twitch Developer Console](https://dev.twitch.tv/console) üzerinde kendi Twitch uygulamanızı oluşturun ve yapılandırmaya ekleyin:
 
 ```json5
 {
@@ -180,13 +180,13 @@ Otomatik token yenileme için [Twitch Developer Console](https://dev.twitch.tv/c
 }
 ```
 
-Bot, token'ları süreleri dolmadan önce otomatik olarak yeniler ve yenileme olaylarını günlüğe kaydeder.
+Bot, token'ları süresi dolmadan önce otomatik olarak yeniler ve yenileme olaylarını günlüğe kaydeder.
 
 ## Çoklu hesap desteği
 
-Hesap başına token'larla `channels.twitch.accounts` kullanın. Paylaşılan kalıp için [Yapılandırma](/tr/gateway/configuration) bölümüne bakın.
+Hesap başına token'larla `channels.twitch.accounts` kullanın. Paylaşılan desen için [Yapılandırma](/tr/gateway/configuration) bölümüne bakın.
 
-Örnek (iki kanalda tek bot hesabı):
+Örnek (iki kanalda bir bot hesabı):
 
 ```json5
 {
@@ -212,7 +212,7 @@ Hesap başına token'larla `channels.twitch.accounts` kullanın. Paylaşılan ka
 ```
 
 <Note>
-Her hesabın kendi token'ı gerekir (kanal başına bir token).
+Her hesabın kendi token'ına ihtiyacı vardır (kanal başına bir token).
 </Note>
 
 ## Erişim denetimi
@@ -252,7 +252,7 @@ Her hesabın kendi token'ı gerekir (kanal başına bir token).
 
   </Tab>
   <Tab title="Disable @mention requirement">
-    Varsayılan olarak `requireMention`, `true` değerindedir. Bunu devre dışı bırakmak ve tüm mesajlara yanıt vermek için:
+    Varsayılan olarak `requireMention`, `true` değerindedir. Devre dışı bırakmak ve tüm mesajlara yanıt vermek için:
 
     ```json5
     {
@@ -282,16 +282,16 @@ openclaw channels status --probe
 
 <AccordionGroup>
   <Accordion title="Bot does not respond to messages">
-    - **Erişim denetimini kontrol edin:** Kullanıcı kimliğinizin `allowFrom` içinde olduğundan emin olun veya test etmek için `allowFrom` öğesini geçici olarak kaldırıp `allowedRoles: ["all"]` ayarlayın.
+    - **Erişim denetimini kontrol edin:** Kullanıcı kimliğinizin `allowFrom` içinde olduğundan emin olun veya test etmek için geçici olarak `allowFrom` değerini kaldırıp `allowedRoles: ["all"]` ayarlayın.
     - **Botun kanalda olduğunu kontrol edin:** Bot, `channel` içinde belirtilen kanala katılmalıdır.
 
   </Accordion>
   <Accordion title="Token issues">
-    "Failed to connect" veya kimlik doğrulama hataları:
+    "Bağlanılamadı" veya kimlik doğrulama hataları:
 
-    - `accessToken` değerinin OAuth erişim token'ı değeri olduğunu doğrulayın (genellikle `oauth:` önekiyle başlar)
+    - `accessToken` değerinin OAuth erişim token'ı değeri olduğunu doğrulayın (genellikle `oauth:` ön ekiyle başlar)
     - Token'ın `chat:read` ve `chat:write` kapsamlarına sahip olduğunu kontrol edin
-    - Token yenileme kullanıyorsanız `clientSecret` ve `refreshToken` değerlerinin ayarlı olduğunu doğrulayın
+    - Token yenileme kullanıyorsanız `clientSecret` ve `refreshToken` değerlerinin ayarlandığını doğrulayın
 
   </Accordion>
   <Accordion title="Token refresh not working">
@@ -310,9 +310,9 @@ openclaw channels status --probe
   </Accordion>
 </AccordionGroup>
 
-## Config
+## Yapılandırma
 
-### Hesap config'i
+### Hesap yapılandırması
 
 <ParamField path="username" type="string">
   Bot kullanıcı adı.
@@ -336,10 +336,10 @@ openclaw channels status --probe
   İsteğe bağlı: otomatik token yenileme için.
 </ParamField>
 <ParamField path="expiresIn" type="number">
-  Saniye cinsinden token süre sonu.
+  Token sona erme süresi, saniye cinsinden.
 </ParamField>
 <ParamField path="obtainmentTimestamp" type="number">
-  Token alınma zaman damgası.
+  Token'ın alındığı zaman damgası.
 </ParamField>
 <ParamField path="allowFrom" type="string[]">
   Kullanıcı kimliği izin listesi.
@@ -353,12 +353,12 @@ openclaw channels status --probe
 
 ### Sağlayıcı seçenekleri
 
-- `channels.twitch.enabled` - Kanal başlatmayı etkinleştir/devre dışı bırak
-- `channels.twitch.username` - Bot kullanıcı adı (basitleştirilmiş tek hesap config'i)
-- `channels.twitch.accessToken` - OAuth erişim token'ı (basitleştirilmiş tek hesap config'i)
-- `channels.twitch.clientId` - Twitch Client ID (basitleştirilmiş tek hesap config'i)
-- `channels.twitch.channel` - Katılınacak kanal (basitleştirilmiş tek hesap config'i)
-- `channels.twitch.accounts.<accountName>` - Çoklu hesap config'i (yukarıdaki tüm hesap alanları)
+- `channels.twitch.enabled` - Kanal başlangıcını etkinleştir/devre dışı bırak
+- `channels.twitch.username` - Bot kullanıcı adı (basitleştirilmiş tek hesap yapılandırması)
+- `channels.twitch.accessToken` - OAuth erişim token'ı (basitleştirilmiş tek hesap yapılandırması)
+- `channels.twitch.clientId` - Twitch Client ID (basitleştirilmiş tek hesap yapılandırması)
+- `channels.twitch.channel` - Katılınacak kanal (basitleştirilmiş tek hesap yapılandırması)
+- `channels.twitch.accounts.<accountName>` - Çoklu hesap yapılandırması (yukarıdaki tüm hesap alanları)
 
 Tam örnek:
 
@@ -397,7 +397,7 @@ Tam örnek:
 
 ## Araç eylemleri
 
-Ajan, şu eylemle `twitch` çağırabilir:
+Aracı `twitch` çağrısını şu eylemle yapabilir:
 
 - `send` - Bir kanala mesaj gönder
 
@@ -413,25 +413,25 @@ Ajan, şu eylemle `twitch` çağırabilir:
 }
 ```
 
-## Güvenlik ve operasyonlar
+## Güvenlik ve operasyon
 
-- **Token'lara parola gibi davranın** — Token'ları asla git'e commit etmeyin.
-- Uzun süre çalışan botlar için **otomatik token yenileme kullanın**.
-- Erişim denetimi için kullanıcı adları yerine **kullanıcı kimliği izin listeleri kullanın**.
-- Token yenileme olayları ve bağlantı durumu için **günlükleri izleyin**.
+- **Token'ları parola gibi ele alın** — Token'ları asla git'e commit etmeyin.
+- **Uzun süre çalışan botlar için otomatik token yenileme kullanın**.
+- **Erişim denetimi için kullanıcı adları yerine kullanıcı kimliği izin listeleri kullanın**.
+- **Token yenileme olayları ve bağlantı durumu için günlükleri izleyin**.
 - **Token kapsamlarını en aza indirin** — Yalnızca `chat:read` ve `chat:write` isteyin.
-- **Takılırsanız**: Oturumun başka bir işleme ait olmadığını doğruladıktan sonra Gateway'i yeniden başlatın.
+- **Takılırsanız**: Oturuma başka hiçbir sürecin sahip olmadığını doğruladıktan sonra Gateway'i yeniden başlatın.
 
 ## Sınırlar
 
-- Mesaj başına **500 karakter** (kelime sınırlarında otomatik olarak parçalara ayrılır).
-- Markdown, parçalara ayırmadan önce kaldırılır.
+- Mesaj başına **500 karakter** (sözcük sınırlarında otomatik olarak parçalara bölünür).
+- Markdown, parçalara bölmeden önce kaldırılır.
 - Hız sınırlaması yoktur (Twitch'in yerleşik hız sınırlarını kullanır).
 
 ## İlgili
 
-- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirme
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
-- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve mention kapısı
-- [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulama ve eşleştirme akışı
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve mention geçidi
+- [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
 - [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma

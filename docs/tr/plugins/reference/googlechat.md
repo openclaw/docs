@@ -1,13 +1,13 @@
 ---
 read_when:
     - googlechat Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını göndermek ve almak için Google Chat kanal yüzeyini ekler.
-title: Google Chat Plugin'i
+summary: OpenClaw mesajlarını gönderme ve alma için Google Chat kanal yüzeyini ekler.
+title: Google Chat Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:21Z"
+    generated_at: "2026-05-02T22:20:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5806bfb6c5a21bfb83bccd20a998795c00a8ad69af69649aee52db72ae7f6cc4
+    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ OpenClaw mesajlarını göndermek ve almak için Google Chat kanal yüzeyini ekl
 ## Dağıtım
 
 - Paket: `@openclaw/googlechat`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 
 channels: googlechat
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [googlechat](/tr/channels/googlechat)

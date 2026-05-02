@@ -1,13 +1,13 @@
 ---
 read_when:
-    - line Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını göndermek ve almak için LINE kanal yüzeyini ekler.
+    - line Plugin'ını yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajlarını gönderip almak için LINE kanal yüzeyini ekler.
 title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:57Z"
+    generated_at: "2026-05-02T22:21:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 469a8781af08abd50a475fe58e4ff4e93b592d4a412f17b01d34640422e0cc6f
+    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
     source_path: plugins/reference/line.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ OpenClaw mesajlarını göndermek ve almak için LINE kanal yüzeyini ekler.
 ## Dağıtım
 
 - Paket: `@openclaw/line`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: OpenClaw'a dahil
 
 ## Yüzey
 

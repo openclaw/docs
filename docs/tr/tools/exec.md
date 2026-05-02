@@ -5,22 +5,22 @@ read_when:
 summary: Exec aracı kullanımı, stdin modları ve TTY desteği
 title: Yürütme aracı
 x-i18n:
-    generated_at: "2026-04-30T09:48:34Z"
+    generated_at: "2026-05-02T22:23:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7949cfde9f141202a3bc36c2be72ecdf6d43305b5f16fb02835a69bcaa46067b
+    source_hash: 67d2847f70142b326f527a79ffddab1015b897e8ec4d7ce4557430e57fe0956a
     source_path: tools/exec.md
     workflow: 16
 ---
 
-Çalışma alanında kabuk komutları çalıştırın. `process` üzerinden ön plan + arka plan yürütmeyi destekler.
+Çalışma alanında shell komutları çalıştırın. `process` üzerinden ön plan + arka plan yürütmesini destekler.
 `process` izin verilmiyorsa, `exec` eşzamanlı çalışır ve `yieldMs`/`background` değerlerini yok sayar.
-Arka plan oturumları ajan başına kapsamlanır; `process` yalnızca aynı ajanın oturumlarını görür.
+Arka plan oturumları agent başına kapsamlanır; `process` yalnızca aynı agent’tan gelen oturumları görür.
 
 ## Parametreler
 
 <ParamField path="command" type="string" required>
-Çalıştırılacak kabuk komutu.
+Çalıştırılacak shell komutu.
 </ParamField>
 
 <ParamField path="workdir" type="string" default="cwd">
@@ -40,15 +40,15 @@ Bu gecikmeden sonra komutu otomatik olarak arka plana alın (ms).
 </ParamField>
 
 <ParamField path="timeout" type="number" default="tools.exec.timeoutSec">
-Bu çağrı için yapılandırılmış exec zaman aşımını geçersiz kılın. `timeout: 0` değerini yalnızca komut exec işlem zaman aşımı olmadan çalışmalıysa ayarlayın.
+Bu çağrı için yapılandırılmış exec zaman aşımını geçersiz kılın. `timeout: 0` değerini yalnızca komut exec işlemi zaman aşımı olmadan çalışması gerektiğinde ayarlayın.
 </ParamField>
 
 <ParamField path="pty" type="boolean" default="false">
-Mümkün olduğunda sözde uçbirimde çalıştırın. Yalnızca TTY gerektiren CLI'lar, kodlama ajanları ve terminal arayüzleri için kullanın.
+Kullanılabildiğinde sözde terminalde çalıştırın. Yalnızca TTY ile çalışan CLI’ler, kodlama agent’ları ve terminal UI’ları için kullanın.
 </ParamField>
 
 <ParamField path="host" type="'auto' | 'sandbox' | 'gateway' | 'node'" default="auto">
-Nerede yürütüleceği. `auto`, sandbox çalışma zamanı etkin olduğunda `sandbox`, aksi halde `gateway` olarak çözümlenir.
+Nerede yürütüleceği. `auto`, bir sandbox çalışma zamanı etkinken `sandbox` olarak, aksi halde `gateway` olarak çözümlenir.
 </ParamField>
 
 <ParamField path="security" type="'deny' | 'allowlist' | 'full'">
@@ -64,47 +64,51 @@ Nerede yürütüleceği. `auto`, sandbox çalışma zamanı etkin olduğunda `sa
 </ParamField>
 
 <ParamField path="elevated" type="boolean" default="false">
-Yükseltilmiş mod isteyin — sandbox'tan yapılandırılmış host yoluna çıkın. `security=full` yalnızca elevated `full` olarak çözümlendiğinde zorlanır.
+Yükseltilmiş mod isteyin — sandbox’tan yapılandırılmış ana makine yoluna çıkın. `security=full` yalnızca elevated `full` olarak çözümlendiğinde zorlanır.
 </ParamField>
 
 Notlar:
 
-- `host` varsayılan olarak `auto` olur: oturum için sandbox çalışma zamanı etkin olduğunda sandbox, aksi halde gateway.
-- `host` yalnızca `auto`, `sandbox`, `gateway` veya `node` kabul eder. Bir ana makine adı seçici değildir; ana makine adına benzeyen değerler komut çalışmadan önce reddedilir.
-- `auto` varsayılan yönlendirme stratejisidir, joker karakter değildir. `auto` içinden çağrı başına `host=node` izinlidir; çağrı başına `host=gateway` yalnızca etkin sandbox çalışma zamanı yokken izinlidir.
-- Ek yapılandırma olmadan, `host=auto` yine de "sadece çalışır": sandbox yoksa `gateway` olarak çözümlenir; canlı sandbox varsa sandbox içinde kalır.
-- `elevated`, sandbox'tan yapılandırılmış host yoluna çıkar: varsayılan olarak `gateway`, ya da `tools.exec.host=node` olduğunda (veya oturum varsayılanı `host=node` ise) `node`. Yalnızca geçerli oturum/sağlayıcı için yükseltilmiş erişim etkinleştirildiğinde kullanılabilir.
-- `gateway`/`node` onayları `~/.openclaw/exec-approvals.json` tarafından denetlenir.
-- `node`, eşleştirilmiş bir Node (eşlikçi uygulama veya başsız Node host'u) gerektirir.
-- Birden fazla Node varsa, birini seçmek için `exec.node` veya `tools.exec.node` ayarlayın.
-- `exec host=node`, Node'lar için tek kabuk yürütme yoludur; eski `nodes.run` sarmalayıcısı kaldırılmıştır.
-- `timeout`, ön plan, arka plan, `yieldMs`, gateway, sandbox ve Node `system.run` yürütmesi için geçerlidir. Atlanırsa OpenClaw `tools.exec.timeoutSec` kullanır; açık `timeout: 0`, bu çağrı için exec işlem zaman aşımını devre dışı bırakır.
-- Windows dışı host'larda exec, ayarlanmışsa `SHELL` kullanır; `SHELL` `fish` ise fish ile uyumsuz betiklerden kaçınmak için `PATH` içinden `bash` (veya `sh`) tercih eder, ikisi de yoksa `SHELL` değerine geri döner.
-- Windows host'larında exec, PowerShell 7 (`pwsh`) keşfini tercih eder (Program Files, ProgramW6432, sonra PATH), ardından Windows PowerShell 5.1'e geri döner.
-- Host yürütmesi (`gateway`/`node`), ikili ele geçirmeyi veya enjekte edilmiş kodu önlemek için `env.PATH` ve yükleyici geçersiz kılmalarını (`LD_*`/`DYLD_*`) reddeder.
-- OpenClaw, kabuk/profil kurallarının exec aracı bağlamını algılayabilmesi için başlatılan komut ortamında (PTY ve sandbox yürütmesi dahil) `OPENCLAW_SHELL=exec` ayarlar.
-- `openclaw channels login`, etkileşimli bir kanal kimlik doğrulama akışı olduğu için `exec` içinden engellenir; bunu Gateway host'unda bir terminalde çalıştırın veya mevcut olduğunda sohbetten kanala özgü oturum açma aracını kullanın.
-- Önemli: sandbox varsayılan olarak **kapalıdır**. Sandbox kapalıysa, örtük `host=auto` `gateway` olarak çözümlenir. Açık `host=sandbox`, Gateway host'unda sessizce çalışmak yerine kapalı biçimde başarısız olmaya devam eder. Sandbox'ı etkinleştirin veya onaylarla `host=gateway` kullanın.
-- Betik ön uç kontrolleri (yaygın Python/Node kabuk sözdizimi hataları için) yalnızca etkili `workdir` sınırı içindeki dosyaları inceler. Bir betik yolu `workdir` dışına çözümlenirse, o dosya için ön kontrol atlanır.
-- Şimdi başlayan uzun süreli işler için işi bir kez başlatın ve etkinleştirildiğinde, komut çıktı verdiğinde veya başarısız olduğunda otomatik tamamlanma uyandırmasına güvenin. Günlükler, durum, giriş veya müdahale için `process` kullanın; sleep döngüleri, timeout döngüleri veya tekrarlanan yoklamalarla zamanlamayı taklit etmeyin.
-- Daha sonra veya bir zamanlamaya göre gerçekleşmesi gereken işler için `exec` sleep/gecikme kalıpları yerine Cron kullanın.
+- `host` varsayılan olarak `auto` olur: oturum için sandbox çalışma zamanı etkinken sandbox, aksi halde gateway.
+- `host` yalnızca `auto`, `sandbox`, `gateway` veya `node` kabul eder. Bu bir ana makine adı seçici değildir; ana makine adına benzer değerler komut çalışmadan önce reddedilir.
+- `auto` varsayılan yönlendirme stratejisidir, joker değildir. Çağrı başına `host=node`, `auto` üzerinden kullanılabilir; çağrı başına `host=gateway` yalnızca etkin bir sandbox çalışma zamanı yokken kullanılabilir.
+- Ek yapılandırma olmadan da `host=auto` “doğrudan çalışır”: sandbox yoksa `gateway` olarak çözümlenir; canlı bir sandbox varsa sandbox içinde kalır.
+- `elevated`, sandbox’tan yapılandırılmış ana makine yoluna çıkar: varsayılan olarak `gateway` veya `tools.exec.host=node` olduğunda (ya da oturum varsayılanı `host=node` olduğunda) `node`. Yalnızca geçerli oturum/sağlayıcı için yükseltilmiş erişim etkinleştirildiğinde kullanılabilir.
+- `gateway`/`node` onayları `~/.openclaw/exec-approvals.json` tarafından kontrol edilir.
+- `node`, eşleştirilmiş bir node (yardımcı uygulama veya başsız node ana makinesi) gerektirir.
+- Birden fazla node varsa, birini seçmek için `exec.node` veya `tools.exec.node` ayarlayın.
+- `exec host=node`, node’lar için tek shell yürütme yoludur; eski `nodes.run` sarmalayıcısı kaldırıldı.
+- `timeout`; ön plan, arka plan, `yieldMs`, gateway, sandbox ve node `system.run` yürütmesine uygulanır. Atlanırsa OpenClaw `tools.exec.timeoutSec` kullanır; açık `timeout: 0`, bu çağrı için exec işlemi zaman aşımını devre dışı bırakır.
+- Windows dışı ana makinelerde exec, ayarlıysa `SHELL` kullanır; `SHELL` `fish` ise fish ile uyumsuz betiklerden kaçınmak için `PATH` içinden `bash` (veya `sh`) tercih eder, sonra ikisi de yoksa `SHELL` değerine geri döner.
+- Windows ana makinelerde exec, PowerShell 7 (`pwsh`) keşfini tercih eder (Program Files, ProgramW6432, sonra PATH),
+  ardından Windows PowerShell 5.1’e geri döner.
+- Ana makine yürütmesi (`gateway`/`node`), ikili ele geçirmeyi veya enjekte edilmiş kodu önlemek için `env.PATH` ve yükleyici geçersiz kılmalarını (`LD_*`/`DYLD_*`) reddeder.
+- OpenClaw, shell/profil kurallarının exec aracı bağlamını algılayabilmesi için oluşturulan komut ortamında (PTY ve sandbox yürütmesi dahil) `OPENCLAW_SHELL=exec` ayarlar.
+- `openclaw channels login`, etkileşimli bir kanal kimlik doğrulama akışı olduğu için `exec` üzerinden engellenir; bunu gateway ana makinesindeki bir terminalde çalıştırın veya mevcutsa sohbetten kanala özgü giriş aracını kullanın.
+- Önemli: sandboxing varsayılan olarak **kapalıdır**. Sandboxing kapalıysa örtük `host=auto`
+  `gateway` olarak çözümlenir. Açık `host=sandbox`, gateway ana makinesinde sessizce
+  çalışmak yerine kapalı şekilde başarısız olur. Sandboxing’i etkinleştirin veya onaylarla `host=gateway` kullanın.
+- Betik ön kontrol denetimleri (yaygın Python/Node shell sözdizimi hataları için) yalnızca etkili `workdir` sınırı içindeki dosyaları inceler. Bir betik yolu `workdir` dışına çözümlenirse, o dosya için ön kontrol atlanır.
+- Şimdi başlayan uzun süreli işler için işi bir kez başlatın ve etkin olduğunda, komut çıktı verdiğinde veya başarısız olduğunda otomatik tamamlama uyandırmasına güvenin.
+  Günlükler, durum, girdi veya müdahale için `process` kullanın; sleep döngüleri, zaman aşımı döngüleri veya tekrarlanan yoklamayla zamanlama taklit etmeyin.
+- Daha sonra veya bir programa göre yapılması gereken işler için `exec` sleep/gecikme kalıpları yerine cron kullanın.
 
 ## Yapılandırma
 
 - `tools.exec.notifyOnExit` (varsayılan: true): true olduğunda, arka plana alınmış exec oturumları çıkışta bir sistem olayı kuyruğa alır ve Heartbeat ister.
-- `tools.exec.approvalRunningNoticeMs` (varsayılan: 10000): onay kapılı bir exec bu süreden uzun çalıştığında tek bir “çalışıyor” bildirimi yayınlar (0 devre dışı bırakır).
-- `tools.exec.timeoutSec` (varsayılan: 1800): saniye cinsinden varsayılan komut başına exec zaman aşımı. Çağrı başına `timeout` bunu geçersiz kılar; çağrı başına `timeout: 0` exec işlem zaman aşımını devre dışı bırakır.
-- `tools.exec.host` (varsayılan: `auto`; sandbox çalışma zamanı etkin olduğunda `sandbox`, aksi halde `gateway` olarak çözümlenir)
-- `tools.exec.security` (varsayılan: sandbox için `deny`, ayarlanmamışsa gateway + Node için `full`)
+- `tools.exec.approvalRunningNoticeMs` (varsayılan: 10000): onay kapılı bir exec bundan uzun çalıştığında tek bir “çalışıyor” bildirimi yayınla (0 devre dışı bırakır).
+- `tools.exec.timeoutSec` (varsayılan: 1800): komut başına varsayılan exec zaman aşımı, saniye cinsinden. Çağrı başına `timeout` bunu geçersiz kılar; çağrı başına `timeout: 0` exec işlemi zaman aşımını devre dışı bırakır.
+- `tools.exec.host` (varsayılan: `auto`; sandbox çalışma zamanı etkinken `sandbox`, aksi halde `gateway` olarak çözümlenir)
+- `tools.exec.security` (varsayılan: sandbox için `deny`, ayarlanmamışsa gateway + node için `full`)
 - `tools.exec.ask` (varsayılan: `off`)
-- Onaysız host exec, gateway + Node için varsayılandır. Onay/izin listesi davranışı istiyorsanız hem `tools.exec.*` hem de host `~/.openclaw/exec-approvals.json` ayarlarını sıkılaştırın; bkz. [Exec onayları](/tr/tools/exec-approvals#no-approval-yolo-mode).
-- YOLO, `host=auto` değerinden değil host ilkesi varsayılanlarından (`security=full`, `ask=off`) gelir. Gateway veya Node yönlendirmesini zorlamak istiyorsanız `tools.exec.host` ayarlayın veya `/exec host=...` kullanın.
-- `security=full` artı `ask=off` modunda, host exec yapılandırılmış ilkeyi doğrudan izler; ek bir sezgisel komut gizleme ön filtresi veya betik ön kontrol reddetme katmanı yoktur.
+- Onaysız ana makine exec, gateway + node için varsayılandır. Onaylar/allowlist davranışı istiyorsanız hem `tools.exec.*` hem de ana makine `~/.openclaw/exec-approvals.json` değerlerini sıkılaştırın; bkz. [Exec onayları](/tr/tools/exec-approvals#yolo-mode-no-approval).
+- YOLO, `host=auto` değerinden değil, ana makine ilkesi varsayılanlarından (`security=full`, `ask=off`) gelir. Gateway veya node yönlendirmesini zorlamak istiyorsanız `tools.exec.host` ayarlayın ya da `/exec host=...` kullanın.
+- `security=full` artı `ask=off` modunda, ana makine exec yapılandırılmış ilkeyi doğrudan izler; ek bir sezgisel komut gizleme ön filtresi veya betik ön kontrol reddetme katmanı yoktur.
 - `tools.exec.node` (varsayılan: ayarlanmamış)
-- `tools.exec.strictInlineEval` (varsayılan: false): true olduğunda, `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `lua -e` ve `osascript -e` gibi satır içi yorumlayıcı eval biçimleri her zaman açık onay gerektirir. `allow-always` zararsız yorumlayıcı/betik çağrılarını yine kalıcılaştırabilir, ancak satır içi eval biçimleri her seferinde istem göstermeye devam eder.
+- `tools.exec.strictInlineEval` (varsayılan: false): true olduğunda, `python -c`, `node -e`, `ruby -e`, `perl -e`, `php -r`, `lua -e` ve `osascript -e` gibi satır içi yorumlayıcı eval biçimleri her zaman açık onay gerektirir. `allow-always`, zararsız yorumlayıcı/betik çağrılarını yine de kalıcılaştırabilir, ancak satır içi eval biçimleri her seferinde istem gösterir.
 - `tools.exec.pathPrepend`: exec çalıştırmaları için `PATH` başına eklenecek dizinlerin listesi (yalnızca gateway + sandbox).
-- `tools.exec.safeBins`: açık izin listesi girdileri olmadan çalışabilen, yalnızca stdin kullanan güvenli ikililer. Davranış ayrıntıları için bkz. [Güvenli ikililer](/tr/tools/exec-approvals-advanced#safe-bins-stdin-only).
-- `tools.exec.safeBinTrustedDirs`: `safeBins` yol kontrolleri için güvenilen ek açık dizinler. `PATH` girdileri hiçbir zaman otomatik olarak güvenilir sayılmaz. Yerleşik varsayılanlar `/bin` ve `/usr/bin` değerleridir.
+- `tools.exec.safeBins`: açık allowlist girdileri olmadan çalışabilen, yalnızca stdin kullanan güvenli ikililer. Davranış ayrıntıları için bkz. [Güvenli ikililer](/tr/tools/exec-approvals-advanced#safe-bins-stdin-only).
+- `tools.exec.safeBinTrustedDirs`: `safeBins` yol denetimleri için güvenilen ek açık dizinler. `PATH` girdileri asla otomatik güvenilir sayılmaz. Yerleşik varsayılanlar `/bin` ve `/usr/bin` şeklindedir.
 - `tools.exec.safeBinProfiles`: güvenli ikili başına isteğe bağlı özel argv ilkesi (`minPositional`, `maxPositional`, `allowedValueFlags`, `deniedFlags`).
 
 Örnek:
@@ -121,25 +125,28 @@ Notlar:
 
 ### PATH işleme
 
-- `host=gateway`: oturum açma kabuğunuzun `PATH` değerini exec ortamına birleştirir. Host yürütmesi için `env.PATH` geçersiz kılmaları reddedilir. Daemon'ın kendisi yine de en düşük düzeyde bir `PATH` ile çalışır:
+- `host=gateway`: oturum açma shell’inizin `PATH` değerini exec ortamıyla birleştirir. `env.PATH` geçersiz kılmaları ana makine yürütmesi için reddedilir. Daemon’ın kendisi yine de minimal bir `PATH` ile çalışır:
   - macOS: `/opt/homebrew/bin`, `/usr/local/bin`, `/usr/bin`, `/bin`
   - Linux: `/usr/local/bin`, `/usr/bin`, `/bin`
-- `host=sandbox`: kapsayıcı içinde `sh -lc` (oturum açma kabuğu) çalıştırır, bu nedenle `/etc/profile` `PATH` değerini sıfırlayabilir. OpenClaw, profil kaynaklandıktan sonra dahili bir ortam değişkeni üzerinden `env.PATH` değerini başa ekler (kabuk enterpolasyonu yoktur); `tools.exec.pathPrepend` burada da uygulanır.
-- `host=node`: yalnızca ilettiğiniz engellenmemiş ortam geçersiz kılmaları Node'a gönderilir. `env.PATH` geçersiz kılmaları host yürütmesi için reddedilir ve Node host'ları tarafından yok sayılır. Bir Node'da ek PATH girdilerine ihtiyacınız varsa, Node host hizmet ortamını (systemd/launchd) yapılandırın veya araçları standart konumlara kurun.
+- `host=sandbox`: konteyner içinde `sh -lc` (login shell) çalıştırır, bu nedenle `/etc/profile` `PATH` değerini sıfırlayabilir.
+  OpenClaw, profil kaynaklandıktan sonra dahili bir env var üzerinden `env.PATH` değerini başa ekler (shell enterpolasyonu yoktur);
+  `tools.exec.pathPrepend` burada da uygulanır.
+- `host=node`: yalnızca ilettiğiniz engellenmemiş env geçersiz kılmaları node’a gönderilir. `env.PATH` geçersiz kılmaları ana makine yürütmesi için reddedilir ve node ana makineleri tarafından yok sayılır. Bir node üzerinde ek PATH girdilerine ihtiyacınız varsa,
+  node ana makine hizmet ortamını (systemd/launchd) yapılandırın veya araçları standart konumlara yükleyin.
 
-Ajan başına Node bağlaması (yapılandırmada ajan listesi indeksini kullanın):
+Agent başına node bağlama (yapılandırmada agent listesi indeksini kullanın):
 
 ```bash
 openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-Denetim arayüzü: Nodes sekmesi aynı ayarlar için küçük bir “Exec node binding” paneli içerir.
+Denetim UI’ı: Nodes sekmesi aynı ayarlar için küçük bir “Exec node bağlama” paneli içerir.
 
 ## Oturum geçersiz kılmaları (`/exec`)
 
 `host`, `security`, `ask` ve `node` için **oturum başına** varsayılanları ayarlamak üzere `/exec` kullanın.
-Geçerli değerleri göstermek için `/exec` komutunu bağımsız değişken olmadan gönderin.
+Geçerli değerleri göstermek için `/exec` komutunu argümansız gönderin.
 
 Örnek:
 
@@ -149,38 +156,39 @@ Geçerli değerleri göstermek için `/exec` komutunu bağımsız değişken olm
 
 ## Yetkilendirme modeli
 
-`/exec` yalnızca **yetkili gönderenler** için dikkate alınır (kanal izin listeleri/eşleştirme artı `commands.useAccessGroups`).
-Yalnızca **oturum durumunu** günceller ve yapılandırma yazmaz. exec'i katı biçimde devre dışı bırakmak için araç ilkesiyle (`tools.deny: ["exec"]` veya ajan başına) reddedin. Açıkça `security=full` ve `ask=off` ayarlamadığınız sürece host onayları yine uygulanır.
+`/exec` yalnızca **yetkili gönderenler** için dikkate alınır (kanal allowlist’leri/eşleştirme artı `commands.useAccessGroups`).
+Yalnızca **oturum durumunu** günceller ve yapılandırma yazmaz. Exec’i kalıcı olarak devre dışı bırakmak için araç ilkesiyle (`tools.deny: ["exec"]` veya agent başına) reddedin. Açıkça `security=full` ve `ask=off` ayarlamadığınız sürece ana makine onayları yine de geçerlidir.
 
-## Exec onayları (eşlikçi uygulama / Node host'u)
+## Exec onayları (yardımcı uygulama / node ana makinesi)
 
-Sandbox içindeki ajanlar, `exec` Gateway veya Node host'unda çalışmadan önce istek başına onay gerektirebilir.
-İlke, izin listesi ve arayüz akışı için bkz. [Exec onayları](/tr/tools/exec-approvals).
+Sandbox’lı agent’lar, `exec` gateway veya node ana makinesinde çalışmadan önce istek başına onay gerektirebilir.
+İlke, allowlist ve UI akışı için bkz. [Exec onayları](/tr/tools/exec-approvals).
 
-Onaylar gerektiğinde, exec aracı `status: "approval-pending"` ve bir onay kimliğiyle hemen döner. Onaylandıktan (veya reddedildikten / zaman aşımına uğradıktan) sonra Gateway sistem olayları yayınlar (`Exec finished` / `Exec denied`). Komut `tools.exec.approvalRunningNoticeMs` sonrasında hâlâ çalışıyorsa, tek bir `Exec running` bildirimi yayınlanır.
-Yerel onay kartları/düğmeleri olan kanallarda, ajan önce bu yerel arayüze güvenmeli ve yalnızca araç sonucu sohbet onaylarının kullanılamadığını veya elle onayın tek yol olduğunu açıkça söylüyorsa elle `/approve` komutu eklemelidir.
+Onaylar gerektiğinde exec aracı hemen `status: "approval-pending"` ve bir onay kimliğiyle döner. Onaylandığında (veya reddedildiğinde / zaman aşımına uğradığında),
+Gateway sistem olayları yayınlar (`Exec finished` / `Exec denied`). Komut `tools.exec.approvalRunningNoticeMs` sonrasında hâlâ çalışıyorsa tek bir `Exec running` bildirimi yayınlanır.
+Yerel onay kartları/düğmeleri olan kanallarda agent önce bu yerel UI’a güvenmeli ve yalnızca araç sonucu sohbet onaylarının kullanılamadığını veya manuel onayın tek yol olduğunu açıkça söylediğinde manuel bir `/approve` komutu eklemelidir.
 
-## İzin listesi + güvenli ikililer
+## Allowlist + güvenli ikililer
 
-Elle izin listesi denetimi, çözümlenmiş ikili yol glob'ları ve yalın komut adı glob'ları ile eşleşir. Yalın adlar yalnızca PATH üzerinden çağrılan komutlarla eşleşir; bu nedenle komut `rg` olduğunda `rg`, `/opt/homebrew/bin/rg` ile eşleşebilir, ancak `./rg` veya `/tmp/rg` ile eşleşmez.
-`security=allowlist` olduğunda, kabuk komutları yalnızca her pipeline segmenti izin listesinde veya güvenli ikiliyse otomatik olarak izin verilir. Zincirleme (`;`, `&&`, `||`) ve yönlendirmeler, her üst düzey segment izin listesini (güvenli ikililer dahil) karşılamadıkça izin listesi modunda reddedilir. Yönlendirmeler desteklenmemeye devam eder.
-Kalıcı `allow-always` güveni bu kuralı atlamaz: zincirlenmiş bir komut yine de her üst düzey segmentin eşleşmesini gerektirir.
+Manuel allowlist zorlaması, çözümlenmiş ikili yol glob’ları ve yalın komut adı glob’larıyla eşleşir. Yalın adlar yalnızca PATH üzerinden çağrılan komutlarla eşleşir; bu yüzden komut `rg` olduğunda `rg`, `/opt/homebrew/bin/rg` ile eşleşebilir, ancak `./rg` veya `/tmp/rg` ile eşleşmez.
+`security=allowlist` olduğunda shell komutları yalnızca her pipeline segmenti allowlist’teyse veya güvenli bir ikiliyse otomatik olarak izinli sayılır. Zincirleme (`;`, `&&`, `||`) ve yönlendirmeler, her üst düzey segment allowlist’i (güvenli ikililer dahil) karşılamadıkça allowlist modunda reddedilir. Yönlendirmeler desteklenmemeye devam eder.
+Kalıcı `allow-always` güveni bu kuralı atlatmaz: zincirlenmiş bir komut yine her üst düzey segmentin eşleşmesini gerektirir.
 
-`autoAllowSkills`, exec onaylarında ayrı bir kolaylık yoludur. Elle yol izin listesi girdileriyle aynı şey değildir. Katı açık güven için `autoAllowSkills` devre dışı kalsın.
+`autoAllowSkills`, exec onaylarında ayrı bir kolaylık yoludur. Manuel yol allowlist girdileriyle aynı değildir. Katı açık güven için `autoAllowSkills` devre dışı bırakılmış kalsın.
 
-İki denetimi farklı işler için kullanın:
+Farklı işler için iki denetimi kullanın:
 
 - `tools.exec.safeBins`: küçük, yalnızca stdin kullanan akış filtreleri.
-- `tools.exec.safeBinTrustedDirs`: güvenli ikili çalıştırılabilir yolları için açık ek güvenilir dizinler.
+- `tools.exec.safeBinTrustedDirs`: güvenli ikili yürütülebilir dosya yolları için açık ek güvenilir dizinler.
 - `tools.exec.safeBinProfiles`: özel güvenli ikililer için açık argv ilkesi.
-- izin listesi: çalıştırılabilir yollar için açık güven.
+- allowlist: yürütülebilir dosya yolları için açık güven.
 
-`safeBins` öğesini genel bir izin listesi gibi ele almayın ve yorumlayıcı/runtime ikili dosyaları eklemeyin (örneğin `python3`, `node`, `ruby`, `bash`). Bunlara ihtiyacınız varsa açık izin listesi girdileri kullanın ve onay istemlerini etkin tutun.
-`openclaw security audit`, yorumlayıcı/runtime `safeBins` girdilerinde açık profiller eksik olduğunda uyarır ve `openclaw doctor --fix` eksik özel `safeBinProfiles` girdilerini iskelet olarak oluşturabilir.
-`openclaw security audit` ve `openclaw doctor`, `jq` gibi geniş davranışlı ikili dosyaları açıkça yeniden `safeBins` içine eklediğinizde de uyarır.
-Yorumlayıcıları açıkça izin listesine alırsanız, satır içi kod değerlendirme biçimlerinin yine de yeni bir onay gerektirmesi için `tools.exec.strictInlineEval` öğesini etkinleştirin.
+`safeBins` değerini genel bir izin listesi olarak ele almayın ve yorumlayıcı/çalışma zamanı ikililerini (örneğin `python3`, `node`, `ruby`, `bash`) eklemeyin. Bunlara ihtiyacınız varsa açık izin listesi girdileri kullanın ve onay istemlerini etkin tutun.
+`openclaw security audit`, yorumlayıcı/çalışma zamanı `safeBins` girdilerinde açık profiller eksik olduğunda uyarır ve `openclaw doctor --fix` eksik özel `safeBinProfiles` girdilerini iskelet olarak oluşturabilir.
+`openclaw security audit` ve `openclaw doctor`, `jq` gibi geniş davranışlı ikilileri açıkça tekrar `safeBins` içine eklediğinizde de uyarır.
+Yorumlayıcıları açıkça izin listesine alırsanız satır içi kod değerlendirme biçimlerinin yine de yeni bir onay gerektirmesi için `tools.exec.strictInlineEval` ayarını etkinleştirin.
 
-Tam ilke ayrıntıları ve örnekler için bkz. [Exec onayları](/tr/tools/exec-approvals-advanced#safe-bins-stdin-only) ve [Güvenli ikili dosyalar ile izin listesi karşılaştırması](/tr/tools/exec-approvals-advanced#safe-bins-versus-allowlist).
+Tam ilke ayrıntıları ve örnekler için [Exec onayları](/tr/tools/exec-approvals-advanced#safe-bins-stdin-only) ve [Güvenli ikililer ile izin listesi karşılaştırması](/tr/tools/exec-approvals-advanced#safe-bins-versus-allowlist) bölümlerine bakın.
 
 ## Örnekler
 
@@ -197,7 +205,7 @@ Arka plan + yoklama:
 {"tool":"process","action":"poll","sessionId":"<id>"}
 ```
 
-Yoklama, bekleme döngüleri için değil, isteğe bağlı durum içindir. Otomatik tamamlama uyandırması
+Yoklama, bekleme döngüleri için değil, isteğe bağlı durum içindir. Otomatik tamamlanma uyandırması
 etkinse komut çıktı ürettiğinde veya başarısız olduğunda oturumu uyandırabilir.
 
 Tuş gönderme (tmux tarzı):
@@ -238,9 +246,9 @@ devre dışı bırakmak veya belirli modellerle sınırlamak istediğinizde kull
 
 Notlar:
 
-- Yalnızca OpenAI/OpenAI Codex modellerinde kullanılabilir.
+- Yalnızca OpenAI/OpenAI Codex modelleri için kullanılabilir.
 - Araç ilkesi yine geçerlidir; `allow: ["write"]` örtük olarak `apply_patch` kullanımına izin verir.
-- Yapılandırma `tools.exec.applyPatch` altında yer alır.
+- Yapılandırma `tools.exec.applyPatch` altında bulunur.
 - `tools.exec.applyPatch.enabled` varsayılan olarak `true` değerindedir; aracı OpenAI modelleri için devre dışı bırakmak üzere `false` olarak ayarlayın.
 - `tools.exec.applyPatch.workspaceOnly` varsayılan olarak `true` değerindedir (çalışma alanıyla sınırlı). Bunu yalnızca `apply_patch` aracının çalışma alanı dizini dışında yazmasını/silmesini bilinçli olarak istiyorsanız `false` olarak ayarlayın.
 
@@ -248,5 +256,5 @@ Notlar:
 
 - [Exec Onayları](/tr/tools/exec-approvals) — kabuk komutları için onay kapıları
 - [Sandboxing](/tr/gateway/sandboxing) — komutları sandbox ortamlarında çalıştırma
-- [Arka Plan Süreci](/tr/gateway/background-process) — uzun süre çalışan exec ve process aracı
+- [Arka Plan Süreci](/tr/gateway/background-process) — uzun süre çalışan exec ve süreç aracı
 - [Güvenlik](/tr/gateway/security) — araç ilkesi ve yükseltilmiş erişim

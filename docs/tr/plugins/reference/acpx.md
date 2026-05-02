@@ -1,25 +1,25 @@
 ---
 read_when:
-    - acpx Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Plugin'e ait oturum ve aktarım yönetimine sahip gömülü ACP çalışma zamanı arka ucu.
+    - acpx Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Plugin'e ait oturum ve taşıma yönetimine sahip gömülü ACP çalışma zamanı arka ucu.
 title: ACPx Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:49:12Z"
+    generated_at: "2026-05-02T22:20:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 254a6fc1bc68cb18c7bdd9c10d5c8ff370c80b1c58cc082be9b206a8a44e1013
+    source_hash: 1a0452131c85969d16cd1ebb603bd2369be8cd929841b6756165f64ede4109a4
     source_path: plugins/reference/acpx.md
     workflow: 16
 ---
 
 # ACPx Plugin
 
-Plugin'e ait oturum ve taşıma yönetimi bulunan gömülü ACP çalışma zamanı arka ucu.
+Plugin'e ait oturum ve taşıma yönetimiyle gömülü ACP çalışma zamanı arka ucu.
 
 ## Dağıtım
 
 - Paket: `@openclaw/acpx`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: OpenClaw'a dahil
 
 ## Yüzey
 

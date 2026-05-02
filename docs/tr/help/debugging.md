@@ -1,24 +1,24 @@
 ---
 read_when:
     - Akıl yürütme sızıntısı olup olmadığını görmek için ham model çıktısını incelemeniz gerekir
-    - Gateway'i yineleme yaparken izleme modunda çalıştırmak istiyorsunuz
+    - Yineleme yaparken Gateway'i izleme modunda çalıştırmak istiyorsunuz
     - Tekrarlanabilir bir hata ayıklama iş akışına ihtiyacınız var
 summary: 'Hata ayıklama araçları: izleme modu, ham model akışları ve akıl yürütme sızıntısını izleme'
 title: Hata ayıklama
 x-i18n:
-    generated_at: "2026-05-02T20:46:02Z"
+    generated_at: "2026-05-02T22:19:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: de4bd994079f5463f4734404d1ba0768cb003609e16113f5f8f14179a190e917
+    source_hash: 7a72a1508915e37ffdc5317889cdfde7024de3f5702739640abc2f03c3abadb7
     source_path: help/debugging.md
     workflow: 16
 ---
 
-Akış çıktısı için hata ayıklama yardımcıları; özellikle bir sağlayıcı akıl yürütmeyi normal metne karıştırdığında kullanışlıdır.
+Akış çıktısı için hata ayıklama yardımcıları; özellikle bir sağlayıcı akıl yürütmeyi normal metne karıştırdığında.
 
 ## Çalışma zamanı hata ayıklama geçersiz kılmaları
 
-**Yalnızca çalışma zamanı** yapılandırma geçersiz kılmalarını (bellek, disk değil) ayarlamak için sohbette `/debug` kullanın.
+Sohbette **yalnızca çalışma zamanı** yapılandırma geçersiz kılmaları (bellek, disk değil) ayarlamak için `/debug` kullanın.
 `/debug` varsayılan olarak devre dışıdır; `commands.debug: true` ile etkinleştirin.
 Bu, `openclaw.json` dosyasını düzenlemeden belirsiz ayarları açıp kapatmanız gerektiğinde kullanışlıdır.
 
@@ -31,12 +31,11 @@ Bu, `openclaw.json` dosyasını düzenlemeden belirsiz ayarları açıp kapatman
 /debug reset
 ```
 
-`/debug reset` tüm geçersiz kılmaları temizler ve diskteki yapılandırmaya döner.
+`/debug reset` tüm geçersiz kılmaları temizler ve diskteki yapılandırmaya geri döner.
 
 ## Oturum izleme çıktısı
 
-Tam ayrıntılı modu açmadan, tek bir oturumda Plugin'e ait izleme/hata ayıklama
-satırlarını görmek istediğinizde `/trace` kullanın.
+Tam ayrıntılı modu açmadan tek bir oturumda Plugin sahipli izleme/hata ayıklama satırlarını görmek istediğinizde `/trace` kullanın.
 
 Örnekler:
 
@@ -46,18 +45,12 @@ satırlarını görmek istediğinizde `/trace` kullanın.
 /trace off
 ```
 
-Active Memory hata ayıklama özetleri gibi Plugin tanılamaları için `/trace`
-kullanın. Normal ayrıntılı durum/araç çıktısı için `/verbose` kullanmaya devam
-edin ve yalnızca çalışma zamanı yapılandırma geçersiz kılmaları için `/debug`
-kullanmaya devam edin.
+Active Memory hata ayıklama özetleri gibi Plugin tanılamaları için `/trace` kullanın.
+Normal ayrıntılı durum/araç çıktısı için `/verbose` kullanmayı sürdürün ve yalnızca çalışma zamanı yapılandırma geçersiz kılmaları için `/debug` kullanmayı sürdürün.
 
 ## Plugin yaşam döngüsü izlemesi
 
-Plugin yaşam döngüsü komutları yavaş hissettirdiğinde ve Plugin meta verileri,
-keşif, kayıt defteri, çalışma zamanı aynası, yapılandırma mutasyonu ve yenileme
-işi için yerleşik bir aşama dökümüne ihtiyaç duyduğunuzda
-`OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` kullanın. İzleme isteğe bağlıdır ve stderr'e
-yazar; böylece JSON komut çıktısı ayrıştırılabilir kalır.
+Plugin yaşam döngüsü komutları yavaş hissettirdiğinde ve Plugin metadata, discovery, registry, runtime mirror, yapılandırma mutasyonu ve yenileme işi için yerleşik bir aşama dökümüne ihtiyaç duyduğunuzda `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` kullanın. İzleme isteğe bağlıdır ve stderr’e yazar, bu nedenle JSON komut çıktısı ayrıştırılabilir kalır.
 
 Örnek:
 
@@ -73,173 +66,42 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-CPU profil oluşturucusuna başvurmadan önce bunu Plugin yaşam döngüsü incelemesi
-için kullanın. Komut bir kaynak checkout'tan çalışıyorsa, `pnpm build`
-sonrasında derlenmiş çalışma zamanını `node dist/entry.js ...` ile ölçmeyi tercih
-edin; `pnpm openclaw ...` kaynak çalıştırıcı ek yükünü de ölçer.
+Bir CPU profil oluşturucusuna başvurmadan önce bunu Plugin yaşam döngüsü araştırması için kullanın.
+Komut bir kaynak checkout’ından çalışıyorsa, `pnpm build` sonrasında yerleşik çalışma zamanını `node dist/entry.js ...` ile ölçmeyi tercih edin; `pnpm openclaw ...` kaynak çalıştırıcı ek yükünü de ölçer.
 
-## Geçici CLI hata ayıklama zamanlaması
+## CLI başlangıç ve komut profilleme
 
-OpenClaw, yerel inceleme için küçük bir yardımcı olarak `src/cli/debug-timing.ts`
-dosyasını tutar. Bu yardımcı kasıtlı olarak CLI başlangıcına, komut yönlendirmeye
-veya herhangi bir komuta varsayılan olarak bağlanmamıştır. Yalnızca yavaş bir
-komutta hata ayıklarken kullanın, ardından davranış değişikliğini indirmeden önce
-import'u ve aralıkları kaldırın.
-
-Bir komut yavaş olduğunda ve CPU profil oluşturucusu kullanmaya veya belirli bir
-alt sistemi düzeltmeye karar vermeden önce hızlı bir aşama dökümüne ihtiyaç
-duyduğunuzda bunu kullanın.
-
-### Geçici aralıklar ekleme
-
-Yardımcıyı incelediğiniz kodun yakınına ekleyin. Örneğin, `openclaw models list`
-hata ayıklanırken `src/commands/models/list.list-command.ts` içinde geçici bir
-yama şöyle görünebilir:
-
-```ts
-// Temporary debugging only. Remove before landing.
-import { createCliDebugTiming } from "../../cli/debug-timing.js";
-
-const timing = createCliDebugTiming({ command: "models list" });
-
-const authStore = timing.time("debug:models:list:auth_store", () => ensureAuthProfileStore());
-
-const loaded = await timing.timeAsync(
-  "debug:models:list:registry",
-  () => loadListModelRegistry(cfg, { sourceConfig }),
-  (result) => ({
-    models: result.models.length,
-    discoveredKeys: result.discoveredKeys.size,
-  }),
-);
-```
-
-Yönergeler:
-
-- Geçici aşama adlarını `debug:` ile önekleyin.
-- Şüphelenilen yavaş bölümlerin etrafına yalnızca birkaç aralık ekleyin.
-- Yardımcı adları yerine `registry`, `auth_store` veya `rows` gibi geniş
-  aşamaları tercih edin.
-- Eşzamanlı işler için `time()`, promise'ler için `timeAsync()` kullanın.
-- stdout'u temiz tutun. Yardımcı stderr'e yazar; böylece komut JSON çıktısı
-  ayrıştırılabilir kalır.
-- Son düzeltme PR'ını açmadan önce geçici import'ları ve aralıkları kaldırın.
-- Optimizasyonu açıklayan issue veya PR'a zamanlama çıktısını ya da kısa bir
-  özeti ekleyin.
-
-### Okunabilir çıktıyla çalıştırma
-
-Okunabilir mod canlı hata ayıklama için en iyisidir:
+Bir komut yavaş hissettirdiğinde depoya dahil edilmiş başlangıç benchmark’ını kullanın:
 
 ```bash
-OPENCLAW_DEBUG_TIMING=1 pnpm openclaw models list --all --provider moonshot
+pnpm test:startup:bench:smoke
+pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --runs 3
+pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu
 ```
 
-Geçici bir `models list` incelemesinden örnek çıktı:
-
-```text
-OpenClaw CLI debug timing: models list
-     0ms     +0ms start all=true json=false local=false plain=false provider="moonshot"
-     2ms     +2ms debug:models:list:import_runtime duration=2ms
-    17ms    +14ms debug:models:list:load_config duration=14ms sourceConfig=true
-  20.3s  +20.3s debug:models:list:auth_store duration=20.3s
-  20.3s     +0ms debug:models:list:resolve_agent_dir duration=0ms agentDir=true
-  20.3s     +0ms debug:models:list:resolve_provider_filter duration=0ms
-  25.3s   +5.0s debug:models:list:ensure_models_json duration=5.0s
-  31.2s   +5.9s debug:models:list:load_model_registry duration=5.9s models=869 availableKeys=38 discoveredKeys=868 availabilityError=false
-  31.2s     +0ms debug:models:list:resolve_configured_entries duration=0ms entries=1
-  31.2s     +0ms debug:models:list:build_configured_lookup duration=0ms entries=1
-  33.6s   +2.4s debug:models:list:read_registry_models duration=2.4s models=871
-  35.2s   +1.5s debug:models:list:append_discovered_rows duration=1.5s seenKeys=0 rows=0
-  36.9s   +1.7s debug:models:list:append_catalog_supplement_rows duration=1.7s seenKeys=5 rows=5
-
-Model                                      Input       Ctx   Local Auth  Tags
-moonshot/kimi-k2-thinking                  text        256k  no    no
-moonshot/kimi-k2-thinking-turbo            text        256k  no    no
-moonshot/kimi-k2-turbo                     text        250k  no    no
-moonshot/kimi-k2.5                         text+image  256k  no    no
-moonshot/kimi-k2.6                         text+image  256k  no    no
-
-  36.9s     +0ms debug:models:list:print_model_table duration=0ms rows=5
-  36.9s     +0ms complete rows=5
-```
-
-Bu çıktıdan bulgular:
-
-| Aşama                                    |            Süre | Ne anlama gelir                                                                                          |
-| ---------------------------------------- | --------------: | -------------------------------------------------------------------------------------------------------- |
-| `debug:models:list:auth_store`           |           20.3s | Auth-profile deposu yükü en büyük maliyettir ve önce incelenmelidir.                                     |
-| `debug:models:list:ensure_models_json`   |            5.0s | `models.json` eşitlemesi, önbelleğe alma veya atlama koşulları açısından incelenecek kadar pahalıdır.    |
-| `debug:models:list:load_model_registry`  |            5.9s | Kayıt defteri oluşturma ve sağlayıcı kullanılabilirliği işleri de anlamlı maliyetlerdir.                 |
-| `debug:models:list:read_registry_models` |            2.4s | Tüm kayıt defteri modellerini okumak ücretsiz değildir ve `--all` için önemli olabilir.                  |
-| satır ekleme aşamaları                   | toplam 3.2s     | Görüntülenen beş satırı oluşturmak yine de birkaç saniye sürüyor; bu yüzden filtreleme yolu daha yakından incelenmelidir. |
-| `debug:models:list:print_model_table`    |             0ms | İşleme darboğaz değildir.                                                                                |
-
-Bu bulgular, zamanlama kodunu üretim yollarında tutmadan bir sonraki yamaya yön
-vermek için yeterlidir.
-
-### JSON çıktısıyla çalıştırma
-
-Zamanlama verilerini kaydetmek veya karşılaştırmak istediğinizde JSON modunu
-kullanın:
+Normal kaynak çalıştırıcı üzerinden tek seferlik profilleme için `OPENCLAW_RUN_NODE_CPU_PROF_DIR` ayarlayın:
 
 ```bash
-OPENCLAW_DEBUG_TIMING=json pnpm openclaw models list --all --provider moonshot \
-  2> .artifacts/models-list-timing.jsonl
+OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-Her stderr satırı bir JSON nesnesidir:
-
-```json
-{
-  "command": "models list",
-  "phase": "debug:models:list:registry",
-  "elapsedMs": 31200,
-  "deltaMs": 5900,
-  "durationMs": 5900,
-  "models": 869,
-  "discoveredKeys": 868
-}
-```
-
-### İndirmeden önce temizleme
-
-Son PR'ı açmadan önce:
-
-```bash
-rg 'createCliDebugTiming|debug:[a-z0-9_-]+:' src/commands src/cli \
-  --glob '!src/cli/debug-timing.*' \
-  --glob '!*.test.ts'
-```
-
-PR açıkça kalıcı bir tanılama yüzeyi eklemiyorsa, komut hiçbir geçici
-enstrümantasyon çağrı yeri döndürmemelidir. Normal performans düzeltmeleri için
-yalnızca davranış değişikliğini, testleri ve zamanlama kanıtıyla birlikte kısa
-bir notu tutun.
-
-Daha derin CPU sıcak noktaları için daha fazla zamanlama sarmalayıcısı eklemek
-yerine Node profil oluşturmayı (`--cpu-prof`) veya harici bir profil
-oluşturucuyu kullanın.
+Kaynak çalıştırıcı Node CPU profil bayraklarını ekler ve komut için bir `.cpuprofile` yazar. Komut koduna geçici enstrümantasyon eklemeden önce bunu kullanın.
 
 ## Gateway izleme modu
 
-Hızlı yineleme için gateway'i dosya izleyicisi altında çalıştırın:
+Hızlı yineleme için Gateway’i dosya izleyicisi altında çalıştırın:
 
 ```bash
 pnpm gateway:watch
 ```
 
-Varsayılan olarak bu, `openclaw-gateway-watch-main` adlı bir tmux oturumu (veya
-`openclaw-gateway-watch-dev-19001` gibi profile/porta özgü bir varyant) başlatır
-ya da yeniden başlatır ve etkileşimli terminallerden otomatik olarak bağlanır.
-Etkileşimsiz kabuklar, CI ve agent exec çağrıları ayrık kalır ve bunun yerine
-bağlanma talimatlarını yazdırır. Gerektiğinde elle bağlanın:
+Varsayılan olarak bu, `openclaw-gateway-watch-main` adlı bir tmux oturumu (veya `openclaw-gateway-watch-dev-19001` gibi profile/porta özel bir varyant) başlatır veya yeniden başlatır ve etkileşimli terminallerden otomatik bağlanır. Etkileşimli olmayan kabuklar, CI ve aracı exec çağrıları ayrık kalır ve bunun yerine bağlanma yönergelerini yazdırır. Gerektiğinde elle bağlanın:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
 ```
 
-tmux bölmesi ham izleyiciyi çalıştırır:
+tmux paneli ham izleyiciyi çalıştırır:
 
 ```bash
 node scripts/watch-node.mjs gateway --force
@@ -259,18 +121,13 @@ tmux yönetimini korurken otomatik bağlanmayı devre dışı bırakın:
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-Başlangıç/çalışma zamanı sıcak noktalarında hata ayıklarken izlenen Gateway CPU
-süresini profilleyin:
+Başlangıç/çalışma zamanı sıcak noktalarını hata ayıklarken izlenen Gateway CPU süresini profilleyin:
 
 ```bash
 pnpm gateway:watch --benchmark
 ```
 
-İzleme sarmalayıcısı, Gateway'i çağırmadan önce `--benchmark` değerini tüketir
-ve her Gateway alt süreç çıkışı için `.artifacts/gateway-watch-profiles/`
-altına bir V8 `.cpuprofile` yazar. Geçerli profili boşaltmak için izlenen
-gateway'i durdurun veya yeniden başlatın, ardından Chrome DevTools ya da
-Speedscope ile açın:
+İzleme sarmalayıcısı Gateway’i çağırmadan önce `--benchmark` seçeneğini tüketir ve `.artifacts/gateway-watch-profiles/` altında her Gateway alt süreç çıkışı için bir V8 `.cpuprofile` yazar. Geçerli profili boşaltmak için izlenen Gateway’i durdurun veya yeniden başlatın, ardından Chrome DevTools ya da Speedscope ile açın:
 
 ```bash
 npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
@@ -278,72 +135,54 @@ npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 
 Profilleri başka bir yerde istediğinizde `--benchmark-dir <path>` kullanın.
 
-tmux sarmalayıcısı `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`,
-`OPENCLAW_STATE_DIR`, `OPENCLAW_GATEWAY_PORT` ve `OPENCLAW_SKIP_CHANNELS` gibi
-yaygın, gizli olmayan çalışma zamanı seçicilerini bölmeye taşır. Sağlayıcı kimlik
-bilgilerini normal profilinizde/yapılandırmanızda tutun veya tek seferlik geçici
-gizli değerler için ham ön plan modunu kullanın.
-Yönetilen tmux bölmesi okunabilirlik için varsayılan olarak renkli Gateway
-günlükleri de kullanır; ANSI çıktısını devre dışı bırakmak için
-`pnpm gateway:watch` başlatırken `FORCE_COLOR=0` ayarlayın.
+tmux sarmalayıcısı `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`, `OPENCLAW_GATEWAY_PORT` ve `OPENCLAW_SKIP_CHANNELS` gibi yaygın, gizli olmayan çalışma zamanı seçicilerini panele taşır. Sağlayıcı kimlik bilgilerini normal profil/yapılandırmanıza koyun veya tek seferlik geçici gizli bilgiler için ham ön plan modunu kullanın.
+Yönetilen tmux paneli ayrıca okunabilirlik için varsayılan olarak renkli Gateway günlükleri kullanır; ANSI çıktısını devre dışı bırakmak için `pnpm gateway:watch` başlatırken `FORCE_COLOR=0` ayarlayın.
 
-İzleyici `src/` altındaki derleme açısından ilgili dosyalarda, Plugin kaynak
-dosyalarında, Plugin `package.json` ve `openclaw.plugin.json` meta verilerinde,
-`tsconfig.json`, `package.json` ve `tsdown.config.ts` dosyalarında yeniden
-başlatılır. Plugin meta veri değişiklikleri, `tsdown` yeniden derlemesini
-zorlamadan gateway'i yeniden başlatır; kaynak ve yapılandırma değişiklikleri
-yine de önce `dist` derler.
+İzleyici `src/` altındaki derlemeyle ilgili dosyalarda, Plugin kaynak dosyalarında, Plugin `package.json` ve `openclaw.plugin.json` metadata dosyalarında, `tsconfig.json`, `package.json` ve `tsdown.config.ts` dosyalarında yeniden başlar. Plugin metadata değişiklikleri Gateway’i `tsdown` yeniden derlemesini zorlamadan yeniden başlatır; kaynak ve yapılandırma değişiklikleri yine önce `dist` derler.
 
-Her yeniden başlatmada iletilmeleri için `gateway:watch` sonrasına herhangi bir
-gateway CLI bayrağı ekleyin. Aynı izleme komutunu yeniden çalıştırmak, adlandırılmış
-tmux bölmesini yeniden oluşturur ve ham izleyici yine tek izleyici kilidini
-korur; böylece yinelenen izleyici üst süreçleri yığılmak yerine değiştirilir.
+Herhangi bir Gateway CLI bayrağını `gateway:watch` sonrasına ekleyin; her yeniden başlatmada geçirilir. Aynı izleme komutunu yeniden çalıştırmak adlı tmux panelini yeniden başlatır ve ham izleyici yine tek izleyici kilidini korur, böylece yinelenen izleyici üst süreçleri birikmek yerine değiştirilir.
 
-## Dev profili + dev gateway (--dev)
+## Geliştirici profili + geliştirici Gateway (--dev)
 
-Durumu yalıtmak ve hata ayıklama için güvenli, atılabilir bir kurulum başlatmak
-amacıyla dev profilini kullanın. **İki** `--dev` bayrağı vardır:
+Durumu izole etmek ve hata ayıklama için güvenli, tek kullanımlık bir kurulum başlatmak üzere geliştirici profilini kullanın. **İki** `--dev` bayrağı vardır:
 
-- **Global `--dev` (profil):** durumu `~/.openclaw-dev` altında yalıtır ve
-  gateway portunu varsayılan olarak `19001` yapar (türetilmiş portlar onunla
-  birlikte kayar).
-- **`gateway --dev`: eksik olduğunda Gateway'e varsayılan bir yapılandırma +
-  çalışma alanı otomatik oluşturmasını söyler** (ve BOOTSTRAP.md dosyasını atlar).
+- **Genel `--dev` (profil):** durumu `~/.openclaw-dev` altında izole eder ve Gateway portunu varsayılan olarak `19001` yapar (türetilmiş portlar onunla birlikte kayar).
+- **`gateway --dev`: Gateway’e eksik olduğunda varsayılan yapılandırma + çalışma alanını otomatik oluşturmasını söyler** (ve BOOTSTRAP.md dosyasını atlar).
 
-Önerilen akış (dev profili + dev bootstrap):
+Önerilen akış (geliştirici profili + geliştirici bootstrap):
 
 ```bash
 pnpm gateway:dev
 OPENCLAW_PROFILE=dev openclaw tui
 ```
 
-Henüz global kurulumunuz yoksa CLI'yi `pnpm openclaw ...` ile çalıştırın.
+Henüz global kurulumunuz yoksa CLI’yi `pnpm openclaw ...` üzerinden çalıştırın.
 
-Bunun yaptığı şey:
+Bunun yaptığı:
 
-1. **Profil yalıtımı** (global `--dev`)
+1. **Profil izolasyonu** (genel `--dev`)
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
    - `OPENCLAW_GATEWAY_PORT=19001` (tarayıcı/canvas buna göre kayar)
 
-2. **Dev bootstrap** (`gateway --dev`)
+2. **Geliştirici bootstrap** (`gateway --dev`)
    - Eksikse minimal bir yapılandırma yazar (`gateway.mode=local`, bind loopback).
-   - `agent.workspace` değerini dev çalışma alanına ayarlar.
+   - `agent.workspace` değerini geliştirici çalışma alanına ayarlar.
    - `agent.skipBootstrap=true` ayarlar (BOOTSTRAP.md yok).
    - Eksikse çalışma alanı dosyalarını tohumlar:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
    - Varsayılan kimlik: **C3‑PO** (protokol droidi).
-   - Dev modunda kanal sağlayıcılarını atlar (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Geliştirici modunda kanal sağlayıcılarını atlar (`OPENCLAW_SKIP_CHANNELS=1`).
 
-Sıfırlama akışı (taze başlangıç):
+Sıfırlama akışı (temiz başlangıç):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` **global** bir profil bayrağıdır ve bazı çalıştırıcılar tarafından işlenip kaldırılır. Açıkça belirtmeniz gerekirse env var biçimini kullanın:
+`--dev` **global** bir profil bayrağıdır ve bazı çalıştırıcılar tarafından tüketilir. Açıkça yazmanız gerekiyorsa env var biçimini kullanın:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -351,11 +190,10 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` yapılandırmayı, kimlik bilgilerini, oturumları ve dev çalışma alanını siler
-(`rm` değil, `trash` kullanarak), ardından varsayılan dev kurulumunu yeniden oluşturur.
+`--reset` yapılandırmayı, kimlik bilgilerini, oturumları ve geliştirici çalışma alanını (`rm` değil `trash` kullanarak) siler, ardından varsayılan geliştirici kurulumunu yeniden oluşturur.
 
 <Tip>
-Dev olmayan bir Gateway zaten çalışıyorsa (launchd veya systemd), önce onu durdurun:
+Geliştirici olmayan bir Gateway zaten çalışıyorsa (launchd veya systemd), önce durdurun:
 
 ```bash
 openclaw gateway stop
@@ -363,11 +201,10 @@ openclaw gateway stop
 
 </Tip>
 
-## Ham akış günlükleme (OpenClaw)
+## Ham akış günlüğü (OpenClaw)
 
-OpenClaw, herhangi bir filtreleme/biçimlendirmeden önce **ham asistan akışını**
-günlüğe kaydedebilir. Bu, reasoning’in düz metin deltaları olarak mı
-(yoksa ayrı düşünme blokları olarak mı) geldiğini görmenin en iyi yoludur.
+OpenClaw herhangi bir filtreleme/biçimlendirme öncesinde **ham asistan akışını** günlüğe kaydedebilir.
+Bu, akıl yürütmenin düz metin deltaları olarak mı (yoksa ayrı düşünme blokları olarak mı) geldiğini görmenin en iyi yoludur.
 
 CLI üzerinden etkinleştirin:
 
@@ -375,7 +212,7 @@ CLI üzerinden etkinleştirin:
 pnpm gateway:watch --raw-stream
 ```
 
-İsteğe bağlı yol geçersiz kılma:
+İsteğe bağlı yol geçersiz kılması:
 
 ```bash
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
@@ -392,10 +229,9 @@ Varsayılan dosya:
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## Ham parça günlükleme (pi-mono)
+## Ham parça günlüğü (pi-mono)
 
-**Ham OpenAI uyumlu parçaları** bloklara ayrıştırılmadan önce yakalamak için
-pi-mono ayrı bir günlükleyici sunar:
+**Ham OpenAI uyumlu parçaları** bloklara ayrıştırılmadan önce yakalamak için pi-mono ayrı bir günlükleyici sunar:
 
 ```bash
 PI_RAW_STREAM=1
@@ -411,8 +247,7 @@ Varsayılan dosya:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> Not: bu yalnızca pi-mono’nun `openai-completions` sağlayıcısını kullanan
-> süreçler tarafından yayınlanır.
+> Not: bu yalnızca pi-mono’nun `openai-completions` sağlayıcısını kullanan süreçler tarafından yayımlanır.
 
 ## Güvenlik notları
 
@@ -422,5 +257,5 @@ Varsayılan dosya:
 
 ## İlgili
 
-- [Sorun Giderme](/tr/help/troubleshooting)
+- [Sorun giderme](/tr/help/troubleshooting)
 - [SSS](/tr/help/faq)
