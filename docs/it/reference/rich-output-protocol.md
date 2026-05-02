@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Modifica del rendering dell'output dell'assistente nella Control UI
-    - Debug delle direttive di presentazione `[embed ...]`, `MEDIA:`, risposta o audio
-summary: Protocollo dei codici brevi per output ricco per contenuti incorporati, media, suggerimenti audio e risposte
+    - Modificare la visualizzazione dell'output dell'assistente nell'interfaccia di controllo
+    - Debug delle direttive di presentazione `[embed ...]`, `MEDIA:`, reply o audio
+summary: Protocollo shortcode per output avanzato per incorporamenti, media, suggerimenti audio e risposte
 title: Protocollo di output avanzato
 x-i18n:
-    generated_at: "2026-04-30T09:11:44Z"
+    generated_at: "2026-05-02T22:22:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7c52a2f3a37e7a8d1237046edafc3e80c3199c01f890a1ef39662436590ef55d
+    source_hash: 8e0c365029c26d198090e1f181703e3979394afb0dfa1742f9c088885650de8b
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
@@ -17,22 +17,26 @@ L'output dell'assistente può contenere un piccolo insieme di direttive di conse
 
 - `MEDIA:` per la consegna degli allegati
 - `[[audio_as_voice]]` per suggerimenti di presentazione audio
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` per i metadati di risposta
-- `[embed ...]` per il rendering avanzato nella Control UI
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` per metadati di risposta
+- `[embed ...]` per il rendering avanzato della Control UI
 
 Gli allegati `MEDIA:` remoti devono essere URL `https:` pubblici. `http:` semplice,
 loopback, link-local, privati e nomi host interni vengono ignorati come direttive
-di allegato; i recuperatori di contenuti multimediali lato server applicano comunque le proprie protezioni di rete.
+di allegato; i recuperatori di media lato server applicano comunque le proprie protezioni di rete.
 
-La sintassi Markdown semplice per le immagini rimane testo per impostazione predefinita. I canali che mappano intenzionalmente
-le risposte immagine Markdown ad allegati multimediali effettuano l'opt-in nel proprio
-adattatore in uscita; Telegram lo fa, quindi `![alt](url)` può comunque diventare una risposta multimediale.
+Gli allegati `MEDIA:` locali possono usare percorsi assoluti, percorsi relativi al workspace o
+percorsi `~/` relativi alla home. Passano comunque attraverso i criteri di lettura file dell'agente e
+i controlli del tipo di media prima della consegna.
 
-Queste direttive sono separate. `MEDIA:` e i tag di risposta/voce rimangono metadati di consegna; `[embed ...]` è il percorso di rendering avanzato solo per il web.
-I contenuti multimediali attendibili dei risultati degli strumenti usano lo stesso parser `MEDIA:` / `[[audio_as_voice]]` prima della consegna, quindi gli output testuali degli strumenti possono comunque contrassegnare un allegato audio come nota vocale.
+La normale sintassi Markdown per le immagini rimane testo per impostazione predefinita. I canali che intenzionalmente
+mappano le risposte immagine Markdown ad allegati media fanno opt-in nel proprio
+adattatore in uscita; Telegram lo fa, quindi `![alt](url)` può comunque diventare una risposta media.
 
-Quando lo streaming a blocchi è abilitato, `MEDIA:` rimane un metadato di consegna singola per un
-turno. Se lo stesso URL multimediale viene inviato in un blocco in streaming e ripetuto nel payload finale
+Queste direttive sono separate. `MEDIA:` e i tag di risposta/voce rimangono metadati di consegna; `[embed ...]` è il percorso di rendering avanzato solo web.
+I media dei risultati di tool attendibili usano lo stesso parser `MEDIA:` / `[[audio_as_voice]]` prima della consegna, quindi gli output testuali dei tool possono comunque contrassegnare un allegato audio come nota vocale.
+
+Quando lo streaming a blocchi è abilitato, `MEDIA:` rimane un metadato a consegna singola per un
+turno. Se lo stesso URL media viene inviato in un blocco in streaming e ripetuto nel payload finale
 dell'assistente, OpenClaw consegna l'allegato una sola volta e rimuove il duplicato
 dal payload finale.
 
@@ -48,16 +52,16 @@ Esempio autochiudente:
 
 Regole:
 
-- `[view ...]` non è più valido per i nuovi output.
-- Gli shortcode embed vengono renderizzati solo nella superficie del messaggio dell'assistente.
+- `[view ...]` non è più valido per il nuovo output.
+- Gli shortcode embed vengono renderizzati solo sulla superficie del messaggio dell'assistente.
 - Vengono renderizzati solo embed basati su URL. Usa `ref="..."` o `url="..."`.
 - Gli shortcode embed HTML inline in forma di blocco non vengono renderizzati.
-- L'interfaccia utente web rimuove lo shortcode dal testo visibile e renderizza l'embed inline.
-- `MEDIA:` non è un alias di embed e non deve essere usato per il rendering avanzato degli embed.
+- L'interfaccia web rimuove lo shortcode dal testo visibile e renderizza l'embed inline.
+- `MEDIA:` non è un alias embed e non deve essere usato per il rendering avanzato degli embed.
 
-## Forma di rendering archiviata
+## Forma di rendering memorizzata
 
-Il blocco di contenuto dell'assistente normalizzato/archiviato è un elemento `canvas` strutturato:
+Il blocco di contenuto dell'assistente normalizzato/memorizzato è un elemento `canvas` strutturato:
 
 ```json
 {
@@ -74,9 +78,9 @@ Il blocco di contenuto dell'assistente normalizzato/archiviato è un elemento `c
 }
 ```
 
-I blocchi avanzati archiviati/renderizzati usano direttamente questa forma `canvas`. `present_view` non viene riconosciuto.
+I blocchi avanzati memorizzati/renderizzati usano direttamente questa forma `canvas`. `present_view` non viene riconosciuto.
 
 ## Correlati
 
-- [Adattatori RPC](/it/reference/rpc)
+- [adattatori RPC](/it/reference/rpc)
 - [Typebox](/it/concepts/typebox)

@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Configurare l'integrazione della chat di Twitch per OpenClaw
+    - Configurazione dell'integrazione della chat di Twitch per OpenClaw
 sidebarTitle: Twitch
-summary: Configurazione e impostazione del bot della chat di Twitch
+summary: Configurazione e impostazione del bot per la chat di Twitch
 title: Twitch
 x-i18n:
-    generated_at: "2026-04-30T08:40:24Z"
+    generated_at: "2026-05-02T22:16:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 897079687a243c9c2ce2be63167e59f4413bbd89735fb79f03928547023bd787
+    source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
     source_path: channels/twitch.md
     workflow: 16
 ---
 
-Supporto della chat di Twitch tramite connessione IRC. OpenClaw si connette come utente Twitch (account bot) per ricevere e inviare messaggi nei canali.
+Supporto alla chat di Twitch tramite connessione IRC. OpenClaw si connette come utente Twitch (account bot) per ricevere e inviare messaggi nei canali.
 
 ## Plugin incluso
 
@@ -21,10 +21,10 @@ Supporto della chat di Twitch tramite connessione IRC. OpenClaw si connette come
 Twitch viene distribuito come Plugin incluso nelle versioni correnti di OpenClaw, quindi le normali build pacchettizzate non richiedono un'installazione separata.
 </Note>
 
-Se usi una build precedente o un'installazione personalizzata che esclude Twitch, installa un pacchetto npm corrente quando ne viene pubblicato uno:
+Se usi una build precedente o un'installazione personalizzata che esclude Twitch, installa direttamente il pacchetto npm:
 
 <Tabs>
-  <Tab title="Registro npm">
+  <Tab title="registro npm">
     ```bash
     openclaw plugins install @openclaw/twitch
     ```
@@ -36,17 +36,16 @@ Se usi una build precedente o un'installazione personalizzata che esclude Twitch
   </Tab>
 </Tabs>
 
-Se npm segnala il pacchetto di proprietà di OpenClaw come deprecato, usa una build
-OpenClaw pacchettizzata corrente o il percorso di checkout locale finché non viene
-pubblicato un pacchetto npm più recente.
+Usa il pacchetto senza vincoli per seguire l'attuale tag di rilascio ufficiale. Fissa una
+versione esatta solo quando hai bisogno di un'installazione riproducibile.
 
-Dettagli: [Plugin](/it/tools/plugin)
+Dettagli: [Plugins](/it/tools/plugin)
 
-## Configurazione rapida (principianti)
+## Configurazione rapida (principiante)
 
 <Steps>
   <Step title="Assicurati che il Plugin sia disponibile">
-    Le versioni OpenClaw pacchettizzate correnti lo includono già. Le installazioni precedenti/personalizzate possono aggiungerlo manualmente con i comandi sopra.
+    Le versioni pacchettizzate correnti di OpenClaw lo includono già. Le installazioni precedenti/personalizzate possono aggiungerlo manualmente con i comandi sopra.
   </Step>
   <Step title="Crea un account bot Twitch">
     Crea un account Twitch dedicato per il bot (oppure usa un account esistente).
@@ -56,7 +55,7 @@ Dettagli: [Plugin](/it/tools/plugin)
 
     - Seleziona **Bot Token**
     - Verifica che gli scope `chat:read` e `chat:write` siano selezionati
-    - Copia il **Client ID** e l'**Access Token**
+    - Copia **Client ID** e **Access Token**
 
   </Step>
   <Step title="Trova il tuo ID utente Twitch">
@@ -66,16 +65,16 @@ Dettagli: [Plugin](/it/tools/plugin)
     - Env: `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (solo account predefinito)
     - Oppure configurazione: `channels.twitch.accessToken`
 
-    Se sono impostati entrambi, la configurazione ha la precedenza (il fallback env vale solo per l'account predefinito).
+    Se entrambi sono impostati, la configurazione ha la precedenza (il fallback env vale solo per l'account predefinito).
 
   </Step>
-  <Step title="Avvia il gateway">
-    Avvia il gateway con il canale configurato.
+  <Step title="Avvia il Gateway">
+    Avvia il Gateway con il canale configurato.
   </Step>
 </Steps>
 
 <Warning>
-Aggiungi il controllo degli accessi (`allowFrom` o `allowedRoles`) per impedire a utenti non autorizzati di attivare il bot. `requireMention` ha valore predefinito `true`.
+Aggiungi il controllo degli accessi (`allowFrom` o `allowedRoles`) per impedire a utenti non autorizzati di attivare il bot. Il valore predefinito di `requireMention` è `true`.
 </Warning>
 
 Configurazione minima:
@@ -97,10 +96,10 @@ Configurazione minima:
 
 ## Che cos'è
 
-- Un canale Twitch di proprietà del Gateway.
+- Un canale Twitch posseduto dal Gateway.
 - Routing deterministico: le risposte tornano sempre a Twitch.
 - Ogni account viene mappato a una chiave di sessione isolata `agent:<agentId>:twitch:<accountName>`.
-- `username` è l'account del bot (chi si autentica), `channel` è la chat room a cui accedere.
+- `username` è l'account del bot (chi si autentica), `channel` è la chat room a cui unirsi.
 
 ## Configurazione (dettagliata)
 
@@ -110,10 +109,10 @@ Usa [Twitch Token Generator](https://twitchtokengenerator.com/):
 
 - Seleziona **Bot Token**
 - Verifica che gli scope `chat:read` e `chat:write` siano selezionati
-- Copia il **Client ID** e l'**Access Token**
+- Copia **Client ID** e **Access Token**
 
 <Note>
-Non è necessaria la registrazione manuale dell'app. I token scadono dopo diverse ore.
+Non è necessaria alcuna registrazione manuale dell'app. I token scadono dopo diverse ore.
 </Note>
 
 ### Configura il bot
@@ -160,12 +159,12 @@ Preferisci `allowFrom` per una allowlist rigida. Usa invece `allowedRoles` se vu
 **Ruoli disponibili:** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
 
 <Note>
-**Perché gli ID utente?** I nomi utente possono cambiare, consentendo impersonificazioni. Gli ID utente sono permanenti.
+**Perché gli ID utente?** I nomi utente possono cambiare, consentendo l'impersonificazione. Gli ID utente sono permanenti.
 
 Trova il tuo ID utente Twitch: [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (Converti il tuo nome utente Twitch in ID)
 </Note>
 
-## Aggiornamento del token (facoltativo)
+## Aggiornamento del token (opzionale)
 
 I token di [Twitch Token Generator](https://twitchtokengenerator.com/) non possono essere aggiornati automaticamente: rigenerali quando scadono.
 
@@ -182,11 +181,11 @@ Per l'aggiornamento automatico del token, crea la tua applicazione Twitch in [Tw
 }
 ```
 
-Il bot aggiorna automaticamente i token prima della scadenza e registra gli eventi di aggiornamento nei log.
+Il bot aggiorna automaticamente i token prima della scadenza e registra gli eventi di aggiornamento.
 
 ## Supporto multi-account
 
-Usa `channels.twitch.accounts` con token per account. Vedi [Configurazione](/it/gateway/configuration) per il pattern condiviso.
+Usa `channels.twitch.accounts` con token per account. Consulta [Configurazione](/it/gateway/configuration) per il pattern condiviso.
 
 Esempio (un account bot in due canali):
 
@@ -253,8 +252,8 @@ Ogni account richiede il proprio token (un token per canale).
     `allowFrom` è una allowlist rigida. Quando è impostata, sono consentiti solo quegli ID utente. Se vuoi un accesso basato sui ruoli, lascia `allowFrom` non impostato e configura invece `allowedRoles`.
 
   </Tab>
-  <Tab title="Disattiva il requisito @mention">
-    Per impostazione predefinita, `requireMention` è `true`. Per disattivarlo e rispondere a tutti i messaggi:
+  <Tab title="Disabilita il requisito @mention">
+    Per impostazione predefinita, `requireMention` è `true`. Per disabilitarlo e rispondere a tutti i messaggi:
 
     ```json5
     {
@@ -284,14 +283,14 @@ openclaw channels status --probe
 
 <AccordionGroup>
   <Accordion title="Il bot non risponde ai messaggi">
-    - **Controlla il controllo degli accessi:** assicurati che il tuo ID utente sia in `allowFrom`, oppure rimuovi temporaneamente `allowFrom` e imposta `allowedRoles: ["all"]` per fare una prova.
-    - **Controlla che il bot sia nel canale:** il bot deve accedere al canale specificato in `channel`.
+    - **Controlla il controllo degli accessi:** assicurati che il tuo ID utente sia in `allowFrom`, oppure rimuovi temporaneamente `allowFrom` e imposta `allowedRoles: ["all"]` per provare.
+    - **Controlla che il bot sia nel canale:** il bot deve unirsi al canale specificato in `channel`.
 
   </Accordion>
   <Accordion title="Problemi con il token">
-    "Impossibile connettersi" o errori di autenticazione:
+    Errori "Failed to connect" o di autenticazione:
 
-    - Verifica che `accessToken` sia il valore del token di accesso OAuth (di solito inizia con il prefisso `oauth:`)
+    - Verifica che `accessToken` sia il valore del token di accesso OAuth (in genere inizia con il prefisso `oauth:`)
     - Controlla che il token abbia gli scope `chat:read` e `chat:write`
     - Se usi l'aggiornamento del token, verifica che `clientSecret` e `refreshToken` siano impostati
 
@@ -323,19 +322,19 @@ openclaw channels status --probe
   Token di accesso OAuth con `chat:read` e `chat:write`.
 </ParamField>
 <ParamField path="clientId" type="string">
-  Client ID Twitch (da Token Generator o dalla tua app).
+  Twitch Client ID (da Token Generator o dalla tua app).
 </ParamField>
 <ParamField path="channel" type="string" required>
-  Canale a cui accedere.
+  Canale a cui unirsi.
 </ParamField>
 <ParamField path="enabled" type="boolean" default="true">
   Abilita questo account.
 </ParamField>
 <ParamField path="clientSecret" type="string">
-  Facoltativo: per l'aggiornamento automatico del token.
+  Opzionale: per l'aggiornamento automatico del token.
 </ParamField>
 <ParamField path="refreshToken" type="string">
-  Facoltativo: per l'aggiornamento automatico del token.
+  Opzionale: per l'aggiornamento automatico del token.
 </ParamField>
 <ParamField path="expiresIn" type="number">
   Scadenza del token in secondi.
@@ -350,7 +349,7 @@ openclaw channels status --probe
   Controllo degli accessi basato sui ruoli.
 </ParamField>
 <ParamField path="requireMention" type="boolean" default="true">
-  Richiedi @mention.
+  Richiede @mention.
 </ParamField>
 
 ### Opzioni del provider
@@ -358,8 +357,8 @@ openclaw channels status --probe
 - `channels.twitch.enabled` - Abilita/disabilita l'avvio del canale
 - `channels.twitch.username` - Nome utente del bot (configurazione semplificata per account singolo)
 - `channels.twitch.accessToken` - Token di accesso OAuth (configurazione semplificata per account singolo)
-- `channels.twitch.clientId` - Client ID Twitch (configurazione semplificata per account singolo)
-- `channels.twitch.channel` - Canale a cui accedere (configurazione semplificata per account singolo)
+- `channels.twitch.clientId` - Twitch Client ID (configurazione semplificata per account singolo)
+- `channels.twitch.channel` - Canale a cui unirsi (configurazione semplificata per account singolo)
 - `channels.twitch.accounts.<accountName>` - Configurazione multi-account (tutti i campi account sopra)
 
 Esempio completo:
@@ -397,7 +396,7 @@ Esempio completo:
 }
 ```
 
-## Azioni dello strumento
+## Azioni degli strumenti
 
 L'agente può chiamare `twitch` con l'azione:
 
@@ -417,23 +416,23 @@ Esempio:
 
 ## Sicurezza e operazioni
 
-- **Tratta i token come password** — Non commettere mai token in git.
+- **Tratta i token come password** — Non committare mai token in git.
 - **Usa l'aggiornamento automatico del token** per bot a lunga esecuzione.
 - **Usa allowlist di ID utente** invece dei nomi utente per il controllo degli accessi.
 - **Monitora i log** per gli eventi di aggiornamento del token e lo stato della connessione.
 - **Limita al minimo gli scope dei token** — Richiedi solo `chat:read` e `chat:write`.
-- **Se sei bloccato**: riavvia il gateway dopo aver confermato che nessun altro processo possiede la sessione.
+- **Se sei bloccato**: riavvia il Gateway dopo aver confermato che nessun altro processo possieda la sessione.
 
 ## Limiti
 
-- **500 caratteri** per messaggio (suddivisione automatica ai confini delle parole).
-- Markdown viene rimosso prima della suddivisione.
-- Nessuna limitazione della frequenza (usa i limiti di frequenza integrati di Twitch).
+- **500 caratteri** per messaggio (suddivisi automaticamente ai confini delle parole).
+- Il Markdown viene rimosso prima della suddivisione.
+- Nessun rate limiting (usa i limiti di frequenza integrati di Twitch).
 
 ## Correlati
 
-- [Routing dei canali](/it/channels/channel-routing) — routing delle sessioni per i messaggi
+- [Routing dei canali](/it/channels/channel-routing) — routing di sessione per i messaggi
 - [Panoramica dei canali](/it/channels) — tutti i canali supportati
-- [Gruppi](/it/channels/groups) — comportamento delle chat di gruppo e gating delle menzioni
-- [Abbinamento](/it/channels/pairing) — autenticazione DM e flusso di abbinamento
-- [Sicurezza](/it/gateway/security) — modello di accesso e hardening
+- [Gruppi](/it/channels/groups) — comportamento delle chat di gruppo e gating delle mention
+- [Pairing](/it/channels/pairing) — autenticazione DM e flusso di pairing
+- [Sicurezza](/it/gateway/security) — modello di accesso e rafforzamento

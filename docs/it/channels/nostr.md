@@ -5,36 +5,35 @@ read_when:
 summary: Canale DM Nostr tramite messaggi crittografati NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-04-30T08:38:47Z"
+    generated_at: "2026-05-02T22:16:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 545d68077c9fe81d5fa5a17262d37e3688185a1fb12d67b8b1053b27b96c3c7f
+    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
     source_path: channels/nostr.md
     workflow: 16
 ---
 
-**Stato:** Plugin incluso opzionale (disabilitato per impostazione predefinita finché non viene configurato).
+**Stato:** Plugin in bundle opzionale (disabilitato per impostazione predefinita finché non viene configurato).
 
-Nostr è un protocollo decentralizzato per il social networking. Questo canale consente a OpenClaw di ricevere e rispondere ai messaggi diretti (DM) crittografati tramite NIP-04.
+Nostr è un protocollo decentralizzato per i social network. Questo canale consente a OpenClaw di ricevere e rispondere ai messaggi diretti (DM) crittografati tramite NIP-04.
 
-## Plugin incluso
+## Plugin in bundle
 
-Le versioni attuali di OpenClaw distribuiscono Nostr come plugin incluso, quindi le normali
-build pacchettizzate non richiedono un'installazione separata.
+Le versioni attuali di OpenClaw distribuiscono Nostr come Plugin in bundle, quindi le normali build pacchettizzate
+non richiedono un'installazione separata.
 
-### Installazioni meno recenti/personalizzate
+### Installazioni precedenti/personalizzate
 
 - L'onboarding (`openclaw onboard`) e `openclaw channels add` mostrano ancora
   Nostr dal catalogo dei canali condiviso.
-- Se la tua build esclude Nostr incluso, installa un pacchetto npm attuale quando
-  ne viene pubblicato uno.
+- Se la tua build esclude Nostr in bundle, installa direttamente il pacchetto npm.
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Se npm segnala il pacchetto di proprietà di OpenClaw come deprecato, usa una build
-OpenClaw pacchettizzata attuale o un checkout locale finché non viene pubblicato un pacchetto npm più recente.
+Usa il pacchetto base per seguire l'attuale tag di rilascio ufficiale. Fissa una versione esatta
+solo quando hai bisogno di un'installazione riproducibile.
 
 Usa un checkout locale (flussi di lavoro di sviluppo):
 
@@ -42,7 +41,7 @@ Usa un checkout locale (flussi di lavoro di sviluppo):
 openclaw plugins install --link <path-to-local-nostr-plugin>
 ```
 
-Riavvia il Gateway dopo aver installato o abilitato i plugin.
+Riavvia il Gateway dopo aver installato o abilitato i Plugin.
 
 ### Configurazione non interattiva
 
@@ -82,17 +81,17 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 4. Riavvia il Gateway.
 
-## Riferimento di configurazione
+## Riferimento della configurazione
 
-| Chiave       | Tipo     | Predefinito                                | Descrizione                          |
-| ------------ | -------- | ------------------------------------------- | ------------------------------------ |
+| Chiave       | Tipo     | Predefinito                                 | Descrizione                         |
+| ------------ | -------- | ------------------------------------------- | ----------------------------------- |
 | `privateKey` | string   | obbligatorio                                | Chiave privata in formato `nsec` o esadecimale |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL dei relay (WebSocket)            |
-| `dmPolicy`   | string   | `pairing`                                   | Criterio di accesso ai DM            |
-| `allowFrom`  | string[] | `[]`                                        | Pubkey dei mittenti consentiti       |
-| `enabled`    | boolean  | `true`                                      | Abilita/disabilita il canale         |
-| `name`       | string   | -                                           | Nome visualizzato                    |
-| `profile`    | object   | -                                           | Metadati del profilo NIP-01          |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL dei relay (WebSocket)           |
+| `dmPolicy`   | string   | `pairing`                                   | Criterio di accesso ai DM           |
+| `allowFrom`  | string[] | `[]`                                        | Pubkey dei mittenti consentiti      |
+| `enabled`    | boolean  | `true`                                      | Abilita/disabilita il canale        |
+| `name`       | string   | -                                           | Nome visualizzato                   |
+| `profile`    | object   | -                                           | Metadati del profilo NIP-01         |
 
 ## Metadati del profilo
 
@@ -123,22 +122,22 @@ Esempio:
 Note:
 
 - Gli URL del profilo devono usare `https://`.
-- L'importazione dai relay unisce i campi e preserva le sovrascritture locali.
+- L'importazione dai relay unisce i campi e conserva le sovrascritture locali.
 
 ## Controllo degli accessi
 
 ### Criteri DM
 
-- **pairing** (predefinito): i mittenti sconosciuti ricevono un codice di pairing.
+- **pairing** (predefinito): i mittenti sconosciuti ricevono un codice di abbinamento.
 - **allowlist**: solo le pubkey in `allowFrom` possono inviare DM.
-- **open**: DM pubblici in ingresso (richiede `allowFrom: ["*"]`).
+- **open**: DM in ingresso pubblici (richiede `allowFrom: ["*"]`).
 - **disabled**: ignora i DM in ingresso.
 
 Note sull'applicazione:
 
-- Le firme degli eventi in ingresso vengono verificate prima del criterio del mittente e della decrittazione NIP-04, quindi gli eventi falsificati vengono rifiutati in anticipo.
+- Le firme degli eventi in ingresso vengono verificate prima della policy del mittente e della decrittazione NIP-04, quindi gli eventi falsificati vengono rifiutati in anticipo.
 - Le risposte di pairing vengono inviate senza elaborare il corpo del DM originale.
-- I DM in ingresso sono soggetti a limitazione di frequenza e i payload sovradimensionati vengono scartati prima della decrittazione.
+- I DM in ingresso sono soggetti a rate limit e i payload sovradimensionati vengono scartati prima della decrittazione.
 
 ### Esempio di allowlist
 
@@ -158,8 +157,8 @@ Note sull'applicazione:
 
 Formati accettati:
 
-- **Chiave privata:** `nsec...` o esadecimale da 64 caratteri
-- **Pubkey (`allowFrom`):** `npub...` o esadecimale
+- **Chiave privata:** `nsec...` o esadecimale di 64 caratteri
+- **Chiavi pubbliche (`allowFrom`):** `npub...` o esadecimale
 
 ## Relay
 
@@ -185,12 +184,12 @@ Suggerimenti:
 
 ## Supporto del protocollo
 
-| NIP    | Stato    | Descrizione                             |
-| ------ | -------- | --------------------------------------- |
-| NIP-01 | Supportato | Formato evento di base + metadati del profilo |
-| NIP-04 | Supportato | DM crittografati (`kind:4`)           |
-| NIP-17 | Pianificato | DM con gift wrap                      |
-| NIP-44 | Pianificato | Crittografia versionata               |
+| NIP    | Stato       | Descrizione                              |
+| ------ | ----------- | ---------------------------------------- |
+| NIP-01 | Supportato  | Formato evento di base + metadati profilo |
+| NIP-04 | Supportato  | DM crittografati (`kind:4`)              |
+| NIP-17 | Pianificato | DM con gift-wrap                         |
+| NIP-44 | Pianificato | Crittografia versionata                  |
 
 ## Test
 
@@ -214,37 +213,37 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### Test manuale
 
-1. Annota la pubkey del bot (npub) dai log.
+1. Prendi nota della chiave pubblica del bot (npub) dai log.
 2. Apri un client Nostr (Damus, Amethyst, ecc.).
-3. Invia un DM alla pubkey del bot.
+3. Invia un DM alla chiave pubblica del bot.
 4. Verifica la risposta.
 
 ## Risoluzione dei problemi
 
-### Non ricevi messaggi
+### Messaggi non ricevuti
 
 - Verifica che la chiave privata sia valida.
-- Assicurati che gli URL dei relay siano raggiungibili e usino `wss://` (o `ws://` per il locale).
+- Assicurati che gli URL dei relay siano raggiungibili e usino `wss://` (o `ws://` per locale).
 - Conferma che `enabled` non sia `false`.
-- Controlla i log del Gateway per errori di connessione ai relay.
+- Controlla nei log del Gateway la presenza di errori di connessione ai relay.
 
-### Non invii risposte
+### Risposte non inviate
 
-- Controlla che il relay accetti scritture.
+- Controlla che il relay accetti le scritture.
 - Verifica la connettività in uscita.
-- Fai attenzione ai limiti di frequenza dei relay.
+- Fai attenzione ai rate limit dei relay.
 
 ### Risposte duplicate
 
 - Previsto quando si usano più relay.
-- I messaggi vengono deduplicati in base all'ID evento; solo la prima consegna attiva una risposta.
+- I messaggi vengono deduplicati per ID evento; solo la prima consegna attiva una risposta.
 
 ## Sicurezza
 
-- Non eseguire mai il commit di chiavi private.
+- Non committare mai chiavi private.
 - Usa variabili d'ambiente per le chiavi.
 - Considera `allowlist` per i bot di produzione.
-- Le firme vengono verificate prima del criterio del mittente, e il criterio del mittente viene applicato prima della decrittazione, quindi gli eventi falsificati vengono rifiutati in anticipo e i mittenti sconosciuti non possono forzare il lavoro crittografico completo.
+- Le firme vengono verificate prima della policy del mittente, e la policy del mittente viene applicata prima della decrittazione, quindi gli eventi falsificati vengono rifiutati in anticipo e i mittenti sconosciuti non possono forzare il lavoro crittografico completo.
 
 ## Limitazioni (MVP)
 
@@ -256,6 +255,6 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 - [Panoramica dei canali](/it/channels) — tutti i canali supportati
 - [Pairing](/it/channels/pairing) — autenticazione DM e flusso di pairing
-- [Gruppi](/it/channels/groups) — comportamento delle chat di gruppo e controllo delle menzioni
-- [Routing dei canali](/it/channels/channel-routing) — routing delle sessioni per i messaggi
+- [Gruppi](/it/channels/groups) — comportamento delle chat di gruppo e gating delle menzioni
+- [Instradamento dei canali](/it/channels/channel-routing) — instradamento delle sessioni per i messaggi
 - [Sicurezza](/it/gateway/security) — modello di accesso e hardening

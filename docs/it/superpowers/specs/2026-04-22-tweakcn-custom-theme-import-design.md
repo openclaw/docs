@@ -1,71 +1,71 @@
 ---
 x-i18n:
-    generated_at: "2026-04-25T13:57:36Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T22:22:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cccaaa1b3e472279b7548ad5af5d50162db9e99a731e06be796de64ee9f8c8d8
+    source_hash: d9f2b5783c5762ebe7b5db108a89692e653c515138110b4fa9d23663e2ccbbd5
     source_path: superpowers/specs/2026-04-22-tweakcn-custom-theme-import-design.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Design di importazione del tema personalizzato Tweakcn
+# Progettazione dell'importazione di temi personalizzati tweakcn
 
 Stato: approvato nel terminale il 2026-04-22
 
 ## Riepilogo
 
-Aggiungere esattamente uno slot di tema personalizzato locale al browser per la Control UI che possa essere importato da un link di condivisione tweakcn. Le famiglie di temi integrate esistenti restano `claw`, `knot` e `dash`. La nuova famiglia `custom` si comporta come una normale famiglia di temi OpenClaw e supporta la modalità `light`, `dark` e `system` quando il payload tweakcn importato include sia il set di token light sia quello dark.
+Aggiungere esattamente uno slot di tema personalizzato della UI di controllo, locale al browser, importabile da un link di condivisione tweakcn. Le famiglie di temi integrate esistenti restano `claw`, `knot` e `dash`. La nuova famiglia `custom` si comporta come una normale famiglia di temi OpenClaw e supporta le modalità `light`, `dark` e `system` quando il payload tweakcn importato include sia il set di token chiaro sia quello scuro.
 
-Il tema importato viene memorizzato solo nel profilo del browser corrente insieme al resto delle impostazioni della Control UI. Non viene scritto nella configurazione del Gateway e non viene sincronizzato tra dispositivi o browser.
+Il tema importato viene archiviato solo nel profilo del browser corrente insieme al resto delle impostazioni della UI di controllo. Non viene scritto nella configurazione del Gateway e non viene sincronizzato tra dispositivi o browser.
 
 ## Problema
 
-Il sistema di temi della Control UI è attualmente chiuso su tre famiglie di temi codificate in modo statico:
+Il sistema di temi della UI di controllo è attualmente chiuso su tre famiglie di temi codificate rigidamente:
 
 - `ui/src/ui/theme.ts`
 - `ui/src/ui/views/config.ts`
 - `ui/src/styles/base.css`
 
-Gli utenti possono passare tra famiglie integrate e varianti di modalità, ma non possono importare un tema da tweakcn senza modificare il CSS del repository. Il risultato richiesto è più limitato di un sistema di theming generale: mantenere i tre temi integrati e aggiungere uno slot importato controllato dall'utente che possa essere sostituito tramite un link tweakcn.
+Gli utenti possono passare tra famiglie integrate e varianti di modalità, ma non possono importare un tema da tweakcn senza modificare il CSS del repo. Il risultato richiesto è più limitato di un sistema generale di tematizzazione: mantenere i tre temi integrati e aggiungere uno slot importato controllato dall'utente, sostituibile da un link tweakcn.
 
 ## Obiettivi
 
 - Mantenere invariate le famiglie di temi integrate esistenti.
 - Aggiungere esattamente uno slot personalizzato importato, non una libreria di temi.
 - Accettare un link di condivisione tweakcn o un URL diretto `https://tweakcn.com/r/themes/{id}`.
-- Rendere persistente il tema importato solo nel local storage del browser.
-- Fare in modo che lo slot importato funzioni con i controlli di modalità `light`, `dark` e `system` esistenti.
-- Mantenere sicuro il comportamento in caso di errore: un'importazione non valida non deve mai rompere il tema UI attivo.
+- Rendere persistente il tema importato solo nello storage locale del browser.
+- Far funzionare lo slot importato con i controlli di modalità `light`, `dark` e `system` esistenti.
+- Mantenere sicuro il comportamento in caso di errore: un'importazione non valida non deve mai rompere il tema attivo della UI.
 
 ## Non obiettivi
 
-- Nessuna libreria multi-tema o elenco locale al browser di importazioni.
+- Nessuna libreria multi-tema o lista locale al browser di importazioni.
 - Nessuna persistenza lato Gateway o sincronizzazione tra dispositivi.
 - Nessun editor CSS arbitrario o editor JSON grezzo del tema.
-- Nessun caricamento automatico di asset font remoti da tweakcn.
+- Nessun caricamento automatico di asset di font remoti da tweakcn.
 - Nessun tentativo di supportare payload tweakcn che espongono una sola modalità.
-- Nessun refactor del theming esteso all'intero repository oltre ai punti di integrazione richiesti per la Control UI.
+- Nessun refactor della tematizzazione a livello di repo oltre alle interfacce richieste per la UI di controllo.
 
 ## Decisioni utente già prese
 
 - Mantenere i tre temi integrati.
-- Aggiungere uno slot di importazione basato su tweakcn.
-- Memorizzare il tema importato nel browser, non nella configurazione del Gateway.
-- Supportare `light`, `dark` e `system` per il tema importato.
+- Aggiungere uno slot di importazione alimentato da tweakcn.
+- Archiviare il tema importato nel browser, non nella configurazione del Gateway.
+- Supportare `light`, `dark` e `system` per lo slot importato.
 - Sovrascrivere lo slot personalizzato con l'importazione successiva è il comportamento previsto.
 
 ## Approccio consigliato
 
-Aggiungere un quarto id di famiglia tema, `custom`, al modello dei temi della Control UI. La famiglia `custom` diventa selezionabile solo quando è presente un'importazione tweakcn valida. Il payload importato viene normalizzato in un record di tema personalizzato specifico di OpenClaw e memorizzato nel local storage del browser insieme al resto delle impostazioni UI.
+Aggiungere un quarto id di famiglia di temi, `custom`, al modello dei temi della UI di controllo. La famiglia `custom` diventa selezionabile solo quando è presente un'importazione tweakcn valida. Il payload importato viene normalizzato in un record di tema personalizzato specifico di OpenClaw e archiviato nello storage locale del browser insieme al resto delle impostazioni della UI.
 
-In fase di esecuzione, OpenClaw renderizza un tag `<style>` gestito che definisce i blocchi di variabili CSS personalizzate risolti:
+A runtime, OpenClaw renderizza un tag `<style>` gestito che definisce i blocchi di variabili CSS personalizzate risolti:
 
 ```css
 :root[data-theme="custom"] { ... }
 :root[data-theme="custom-light"] { ... }
 ```
 
-Questo mantiene le variabili del tema personalizzato circoscritte alla famiglia `custom` ed evita che variabili CSS inline si propaghino nelle famiglie integrate.
+Questo mantiene le variabili del tema personalizzato limitate alla famiglia `custom` ed evita di far trapelare variabili CSS inline nelle famiglie integrate.
 
 ## Architettura
 
@@ -76,7 +76,7 @@ Aggiornare `ui/src/ui/theme.ts`:
 - Estendere `ThemeName` per includere `custom`.
 - Estendere `ResolvedTheme` per includere `custom` e `custom-light`.
 - Estendere `VALID_THEME_NAMES`.
-- Aggiornare `resolveTheme()` in modo che `custom` rispecchi il comportamento esistente della famiglia:
+- Aggiornare `resolveTheme()` in modo che `custom` rispecchi il comportamento delle famiglie esistenti:
   - `custom + dark` -> `custom`
   - `custom + light` -> `custom-light`
   - `custom + system` -> `custom` o `custom-light` in base alla preferenza del sistema operativo
@@ -89,7 +89,7 @@ Estendere la persistenza di `UiSettings` in `ui/src/ui/storage.ts` con un payloa
 
 - `customTheme?: ImportedCustomTheme`
 
-Forma memorizzata consigliata:
+Forma archiviata consigliata:
 
 ```ts
 type ImportedCustomTheme = {
@@ -104,48 +104,48 @@ type ImportedCustomTheme = {
 
 Note:
 
-- `sourceUrl` memorizza l'input utente originale dopo la normalizzazione.
+- `sourceUrl` archivia l'input originale dell'utente dopo la normalizzazione.
 - `themeId` è l'id del tema tweakcn estratto dall'URL.
-- `label` è il campo tweakcn `name` quando presente, altrimenti `Custom`.
-- `light` e `dark` sono già mappe di token OpenClaw normalizzate, non payload tweakcn grezzi.
-- Il payload importato vive accanto alle altre impostazioni locali del browser ed è serializzato nello stesso documento di local storage.
-- Se i dati del tema personalizzato memorizzati sono mancanti o non validi al caricamento, ignorare il payload e tornare a `theme: "claw"` quando la famiglia persistita era `custom`.
+- `label` è il campo `name` di tweakcn quando presente, altrimenti `Custom`.
+- `light` e `dark` sono mappe di token OpenClaw già normalizzate, non payload tweakcn grezzi.
+- Il payload importato vive accanto alle altre impostazioni locali al browser ed è serializzato nello stesso documento di local storage.
+- Se i dati archiviati del tema personalizzato mancano o non sono validi al caricamento, ignorare il payload e tornare a `theme: "claw"` quando la famiglia persistita era `custom`.
 
-### Applicazione in fase di esecuzione
+### Applicazione runtime
 
-Aggiungere un gestore di stylesheet del tema personalizzato ristretto nel runtime della Control UI, gestito vicino a `ui/src/ui/app-settings.ts` e `ui/src/ui/theme.ts`.
+Aggiungere un gestore ristretto del foglio di stile del tema personalizzato nel runtime della UI di controllo, vicino a `ui/src/ui/app-settings.ts` e `ui/src/ui/theme.ts`.
 
 Responsabilità:
 
-- Creare o aggiornare un singolo tag stabile `<style id="openclaw-custom-theme">` in `document.head`.
+- Creare o aggiornare un tag `<style id="openclaw-custom-theme">` stabile in `document.head`.
 - Emettere CSS solo quando esiste un payload di tema personalizzato valido.
 - Rimuovere il contenuto del tag style quando il payload viene cancellato.
-- Mantenere il CSS delle famiglie integrate in `ui/src/styles/base.css`; non inserire i token importati nello stylesheet versionato.
+- Mantenere il CSS delle famiglie integrate in `ui/src/styles/base.css`; non innestare token importati nel foglio di stile versionato nel repo.
 
 Questo gestore viene eseguito ogni volta che le impostazioni vengono caricate, salvate, importate o cancellate.
 
-### Selettori della modalità light
+### Selettori della modalità chiara
 
-L'implementazione dovrebbe preferire `data-theme-mode="light"` per lo stile light cross-family invece di gestire casi speciali per `custom-light`. Se un selettore esistente è vincolato a `data-theme="light"` e deve applicarsi a ogni famiglia light, ampliarlo come parte di questo lavoro.
+L'implementazione dovrebbe preferire `data-theme-mode="light"` per gli stili chiari trasversali alle famiglie, invece di trattare `custom-light` come caso speciale. Se un selettore esistente è vincolato a `data-theme="light"` e deve applicarsi a ogni famiglia chiara, ampliarlo come parte di questo lavoro.
 
 ## UX di importazione
 
-Aggiornare `ui/src/ui/views/config.ts` nella sezione `Appearance`:
+Aggiornare `ui/src/ui/views/config.ts` nella sezione `Aspetto`:
 
-- Aggiungere una scheda tema `Custom` accanto a `Claw`, `Knot` e `Dash`.
+- Aggiungere una scheda tema `Personalizzato` accanto a `Claw`, `Knot` e `Dash`.
 - Mostrare la scheda come disabilitata quando non esiste alcun tema personalizzato importato.
 - Aggiungere un pannello di importazione sotto la griglia dei temi con:
   - un input di testo per un link di condivisione tweakcn o un URL `/r/themes/{id}`
-  - un pulsante `Import`
-  - un percorso `Replace` quando esiste già un payload personalizzato
-  - un'azione `Clear` quando esiste già un payload personalizzato
-- Mostrare l'etichetta del tema importato e l'host di origine quando esiste un payload.
-- Se il tema attivo è `custom`, l'importazione di una sostituzione si applica immediatamente.
-- Se il tema attivo non è `custom`, l'importazione memorizza solo il nuovo payload finché l'utente non seleziona la scheda `Custom`.
+  - un pulsante `Importa`
+  - un percorso `Sostituisci` quando esiste già un payload personalizzato
+  - un'azione `Cancella` quando esiste già un payload personalizzato
+- Mostrare l'etichetta del tema importato e l'host sorgente quando esiste un payload.
+- Se il tema attivo è `custom`, l'importazione di una sostituzione viene applicata immediatamente.
+- Se il tema attivo non è `custom`, l'importazione archivia solo il nuovo payload finché l'utente non seleziona la scheda `Personalizzato`.
 
-Anche il selettore rapido del tema in `ui/src/ui/views/config-quick.ts` dovrebbe mostrare `Custom` solo quando esiste un payload.
+Anche il selettore rapido del tema in `ui/src/ui/views/config-quick.ts` dovrebbe mostrare `Personalizzato` solo quando esiste un payload.
 
-## Parsing dell'URL e fetch remoto
+## Analisi dell'URL e fetch remoto
 
 Il percorso di importazione nel browser accetta:
 
@@ -156,26 +156,26 @@ L'implementazione dovrebbe normalizzare entrambe le forme in:
 
 - `https://tweakcn.com/r/themes/{id}`
 
-Il browser esegue quindi il fetch direttamente dell'endpoint normalizzato `/r/themes/{id}`.
+Il browser quindi effettua direttamente il fetch dell'endpoint `/r/themes/{id}` normalizzato.
 
-Usare un validatore di schema ristretto per il payload esterno. È preferibile uno schema zod perché si tratta di un confine esterno non affidabile.
+Usare un validatore di schema ristretto per il payload esterno. Uno schema zod è preferito perché questo è un confine esterno non attendibile.
 
 Campi remoti richiesti:
 
-- `name` di primo livello come stringa facoltativa
-- `cssVars.theme` come oggetto facoltativo
+- `name` di primo livello come stringa opzionale
+- `cssVars.theme` come oggetto opzionale
 - `cssVars.light` come oggetto
 - `cssVars.dark` come oggetto
 
-Se manca `cssVars.light` o `cssVars.dark`, rifiutare l'importazione. È intenzionale: il comportamento di prodotto approvato prevede il supporto completo delle modalità, non una sintesi best-effort della parte mancante.
+Se manca `cssVars.light` o `cssVars.dark`, rifiutare l'importazione. Questo è intenzionale: il comportamento di prodotto approvato è il supporto completo delle modalità, non una sintesi best-effort del lato mancante.
 
 ## Mappatura dei token
 
-Non rispecchiare ciecamente le variabili tweakcn. Normalizzare un sottoinsieme limitato nei token OpenClaw e derivare il resto in un helper.
+Non replicare alla cieca le variabili tweakcn. Normalizzare un sottoinsieme limitato in token OpenClaw e derivare il resto in un helper.
 
 ### Token importati direttamente
 
-Da ciascun blocco di modalità tweakcn:
+Da ciascun blocco modalità tweakcn:
 
 - `background`
 - `foreground`
@@ -203,11 +203,11 @@ Da `cssVars.theme` condiviso quando presente:
 - `font-sans`
 - `font-mono`
 
-Se un blocco di modalità sovrascrive `font-sans`, `font-mono` o `radius`, il valore locale della modalità ha la precedenza.
+Se un blocco modalità sovrascrive `font-sans`, `font-mono` o `radius`, vince il valore locale alla modalità.
 
 ### Token derivati per OpenClaw
 
-L'importatore deriva le variabili specifiche di OpenClaw dai colori base importati:
+L'importatore deriva variabili solo OpenClaw dai colori di base importati:
 
 - `--bg-accent`
 - `--bg-elevated`
@@ -235,10 +235,10 @@ L'importatore deriva le variabili specifiche di OpenClaw dai colori base importa
 - `--danger-muted`
 - `--danger-subtle`
 
-Le regole di derivazione vivono in un helper puro in modo da poter essere testate in modo indipendente. Le formule esatte di color mixing sono un dettaglio implementativo, ma l'helper deve soddisfare due vincoli:
+Le regole di derivazione vivono in un helper puro, così possono essere testate in modo indipendente. Le formule esatte di miscelazione dei colori sono un dettaglio implementativo, ma l'helper deve soddisfare due vincoli:
 
 - preservare un contrasto leggibile vicino all'intento del tema importato
-- produrre un output stabile per lo stesso payload importato
+- produrre output stabile per lo stesso payload importato
 
 ### Token ignorati nella v1
 
@@ -252,32 +252,32 @@ Questi token tweakcn vengono intenzionalmente ignorati nella prima versione:
 - `letter-spacing`
 - `spacing`
 
-Questo mantiene l'ambito concentrato sui token di cui la Control UI attuale ha realmente bisogno.
+Questo mantiene l'ambito sui token di cui l'attuale UI di controllo ha effettivamente bisogno.
 
 ### Font
 
-Le stringhe degli stack di font vengono importate se presenti, ma OpenClaw non carica asset font remoti nella v1. Se lo stack importato fa riferimento a font non disponibili nel browser, si applica il normale comportamento di fallback.
+Le stringhe dello stack di font vengono importate se presenti, ma OpenClaw non carica asset di font remoti nella v1. Se lo stack importato fa riferimento a font non disponibili nel browser, si applica il normale comportamento di fallback.
 
 ## Comportamento in caso di errore
 
-Le importazioni non valide devono fallire in modalità chiusa.
+Le importazioni non valide devono fallire in modo chiuso.
 
-- Formato URL non valido: mostrare un errore di validazione inline, non eseguire il fetch.
-- Host o forma del percorso non supportati: mostrare un errore di validazione inline, non eseguire il fetch.
-- Errore di rete, risposta non OK o JSON malformato: mostrare un errore inline, mantenere invariato il payload memorizzato corrente.
-- Errore di schema o blocchi light/dark mancanti: mostrare un errore inline, mantenere invariato il payload memorizzato corrente.
+- Formato URL non valido: mostrare un errore di validazione inline, non effettuare il fetch.
+- Host o forma del percorso non supportati: mostrare un errore di validazione inline, non effettuare il fetch.
+- Errore di rete, risposta non OK o JSON malformato: mostrare un errore inline, mantenere intatto il payload attualmente archiviato.
+- Errore di schema o blocchi light/dark mancanti: mostrare un errore inline, mantenere intatto il payload attualmente archiviato.
 - Azione di cancellazione:
-  - rimuove il payload personalizzato memorizzato
+  - rimuove il payload personalizzato archiviato
   - rimuove il contenuto del tag style personalizzato gestito
-  - se `custom` è attivo, riporta la famiglia tema a `claw`
-- Payload del tema personalizzato memorizzato non valido al primo caricamento:
-  - ignorare il payload memorizzato
+  - se `custom` è attivo, riporta la famiglia di temi a `claw`
+- Payload personalizzato archiviato non valido al primo caricamento:
+  - ignorare il payload archiviato
   - non emettere CSS personalizzato
-  - se la famiglia tema persistita era `custom`, tornare a `claw`
+  - se la famiglia di temi persistita era `custom`, tornare a `claw`
 
-In nessun momento un'importazione fallita deve lasciare il documento attivo con variabili CSS personalizzate parziali applicate.
+In nessun momento un'importazione non riuscita dovrebbe lasciare il documento attivo con variabili CSS personalizzate parziali applicate.
 
-## File che si prevede cambieranno nell'implementazione
+## File che dovrebbero cambiare nell'implementazione
 
 File principali:
 
@@ -288,40 +288,39 @@ File principali:
 - `ui/src/ui/views/config-quick.ts`
 - `ui/src/styles/base.css`
 
-Nuovi helper probabili:
+Helper probabilmente nuovi:
 
 - `ui/src/ui/custom-theme.ts`
-- `ui/src/ui/custom-theme-import.ts`
 
 Test:
 
 - `ui/src/ui/app-settings.test.ts`
 - `ui/src/ui/storage.node.test.ts`
 - `ui/src/ui/views/config.browser.test.ts`
-- nuovi test mirati per parsing URL e normalizzazione del payload
+- nuovi test mirati per l'analisi degli URL e la normalizzazione dei payload
 
-## Testing
+## Test
 
 Copertura minima dell'implementazione:
 
-- analizzare un URL share-link per ricavarne l'id del tema tweakcn
+- analizzare l'URL del link di condivisione nell'id del tema tweakcn
 - normalizzare `/themes/{id}` e `/r/themes/{id}` nell'URL di fetch
 - rifiutare host non supportati e id malformati
 - validare la forma del payload tweakcn
-- mappare un payload tweakcn valido in mappe di token OpenClaw light e dark normalizzate
-- caricare e salvare il payload personalizzato nelle impostazioni locali del browser
+- mappare un payload tweakcn valido in mappe di token OpenClaw chiara e scura normalizzate
+- caricare e salvare il payload personalizzato nelle impostazioni locali al browser
 - risolvere `custom` per `light`, `dark` e `system`
-- disabilitare la selezione `Custom` quando non esiste alcun payload
+- disabilitare la selezione di `Personalizzato` quando non esiste alcun payload
 - applicare immediatamente il tema importato quando `custom` è già attivo
 - tornare a `claw` quando il tema personalizzato attivo viene cancellato
 
 Obiettivo di verifica manuale:
 
-- importare un tema tweakcn noto da Settings
+- importare un tema tweakcn noto dalle Impostazioni
 - passare tra `light`, `dark` e `system`
 - passare tra `custom` e le famiglie integrate
-- ricaricare la pagina e confermare che il tema personalizzato importato persista localmente
+- ricaricare la pagina e confermare che il tema personalizzato importato persiste localmente
 
 ## Note di rollout
 
-Questa funzionalità è intenzionalmente piccola. Se in seguito gli utenti richiedono più temi importati, rinomina, esportazione o sincronizzazione tra dispositivi, trattarlo come un design successivo. Non pre-costruire un'astrazione di libreria di temi in questa implementazione.
+Questa funzionalità è intenzionalmente piccola. Se in seguito gli utenti chiedono più temi importati, rinomina, esportazione o sincronizzazione tra dispositivi, trattarlo come una progettazione successiva. Non pre-costruire un'astrazione di libreria di temi in questa implementazione.
