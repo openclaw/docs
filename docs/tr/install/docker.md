@@ -2,13 +2,13 @@
 read_when:
     - Yerel kurulumlar yerine konteynerleştirilmiş bir Gateway istiyorsunuz
     - Docker akışını doğruluyorsunuz
-summary: OpenClaw için isteğe bağlı Docker tabanlı kurulum ve ilk kullanıma hazırlık
+summary: OpenClaw için isteğe bağlı Docker tabanlı kurulum ve başlangıç yönlendirmesi
 title: Docker
 x-i18n:
-    generated_at: "2026-04-30T09:28:29Z"
+    generated_at: "2026-05-02T08:59:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c67a6351afb09961ff3b2e95a132acff7f33b02d3b67330d4608c46e3c18f63a
+    source_hash: 8467618438209c1c7c74eadf2c793dbae21622eb92fa3ddbd13d668d8be5bf1f
     source_path: install/docker.md
     workflow: 16
 ---
@@ -17,30 +17,30 @@ Docker **isteğe bağlıdır**. Yalnızca konteynerleştirilmiş bir Gateway ist
 
 ## Docker benim için doğru mu?
 
-- **Evet**: yalıtılmış, geçici bir Gateway ortamı istiyorsunuz veya OpenClaw’ı yerel kurulumlar olmadan bir sunucuda çalıştırmak istiyorsunuz.
+- **Evet**: yalıtılmış, geçici bir Gateway ortamı istiyorsunuz veya OpenClaw'ı yerel kurulumlar olmadan bir ana makinede çalıştırmak istiyorsunuz.
 - **Hayır**: kendi makinenizde çalışıyorsunuz ve yalnızca en hızlı geliştirme döngüsünü istiyorsunuz. Bunun yerine normal kurulum akışını kullanın.
-- **Sandboxing notu**: varsayılan sandbox arka ucu, sandboxing etkinleştirildiğinde Docker kullanır, ancak sandboxing varsayılan olarak kapalıdır ve tam Gateway’in Docker içinde çalışmasını **gerektirmez**. SSH ve OpenShell sandbox arka uçları da kullanılabilir. Bkz. [Sandboxing](/tr/gateway/sandboxing).
+- **Kum havuzu notu**: varsayılan kum havuzu arka ucu, kum havuzu etkinleştirildiğinde Docker kullanır; ancak kum havuzu varsayılan olarak kapalıdır ve tam Gateway'in Docker içinde çalışmasını **gerektirmez**. SSH ve OpenShell kum havuzu arka uçları da kullanılabilir. Bkz. [Kum havuzu](/tr/gateway/sandboxing).
 
 ## Ön koşullar
 
 - Docker Desktop (veya Docker Engine) + Docker Compose v2
-- İmaj derlemesi için en az 2 GB RAM (`pnpm install`, 1 GB sunucularda çıkış 137 ile OOM tarafından sonlandırılabilir)
+- İmaj derlemesi için en az 2 GB RAM (`pnpm install`, 1 GB ana makinelerde çıkış 137 ile OOM-killed olabilir)
 - İmajlar ve günlükler için yeterli disk alanı
-- Bir VPS/genel sunucuda çalıştırıyorsanız,
-  [Ağ erişimine açma için güvenlik sertleştirmesi](/tr/gateway/security)
-  bölümünü, özellikle Docker `DOCKER-USER` güvenlik duvarı politikasını inceleyin.
+- Bir VPS/genel ana makinede çalıştırıyorsanız,
+  [ağ erişimi için güvenlik sertleştirmesini](/tr/gateway/security),
+  özellikle Docker `DOCKER-USER` güvenlik duvarı politikasını inceleyin.
 
 ## Konteynerleştirilmiş Gateway
 
 <Steps>
-  <Step title="Build the image">
-    Repo kökünden kurulum betiğini çalıştırın:
+  <Step title="İmajı derleyin">
+    Depo kökünden kurulum betiğini çalıştırın:
 
     ```bash
     ./scripts/docker/setup.sh
     ```
 
-    Bu, Gateway imajını yerelde derler. Bunun yerine önceden derlenmiş bir imaj kullanmak için:
+    Bu, Gateway imajını yerel olarak derler. Bunun yerine önceden derlenmiş bir imaj kullanmak için:
 
     ```bash
     export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
@@ -48,32 +48,31 @@ Docker **isteğe bağlıdır**. Yalnızca konteynerleştirilmiş bir Gateway ist
     ```
 
     Önceden derlenmiş imajlar
-    [GitHub Container Registry](https://github.com/openclaw/openclaw/pkgs/container/openclaw)
-    üzerinde yayımlanır.
+    [GitHub Container Registry](https://github.com/openclaw/openclaw/pkgs/container/openclaw) üzerinde yayımlanır.
     Yaygın etiketler: `main`, `latest`, `<version>` (örn. `2026.2.26`).
 
   </Step>
 
-  <Step title="Complete onboarding">
-    Kurulum betiği onboarding’i otomatik olarak çalıştırır. Şunları yapar:
+  <Step title="İlk kurulumu tamamlayın">
+    Kurulum betiği ilk kurulumu otomatik olarak çalıştırır. Şunları yapar:
 
     - sağlayıcı API anahtarlarını ister
-    - bir Gateway token’ı üretir ve `.env` dosyasına yazar
-    - Gateway’i Docker Compose üzerinden başlatır
+    - bir Gateway token'ı oluşturur ve `.env` dosyasına yazar
+    - Docker Compose üzerinden Gateway'i başlatır
 
-    Kurulum sırasında, başlatma öncesi onboarding ve yapılandırma yazma işlemleri
+    Kurulum sırasında, başlatma öncesi ilk kurulum ve yapılandırma yazımları
     doğrudan `openclaw-gateway` üzerinden çalışır. `openclaw-cli`, Gateway
-    konteyneri zaten mevcut olduktan sonra çalıştırdığınız komutlar içindir.
+    konteyneri zaten var olduktan sonra çalıştırdığınız komutlar içindir.
 
   </Step>
 
-  <Step title="Open the Control UI">
+  <Step title="Kontrol kullanıcı arayüzünü açın">
     Tarayıcınızda `http://127.0.0.1:18789/` adresini açın ve yapılandırılmış
-    paylaşılan gizli değeri Settings’e yapıştırın. Kurulum betiği varsayılan
-    olarak `.env` dosyasına bir token yazar; konteyner yapılandırmasını parola
-    kimlik doğrulamasına geçirirseniz bunun yerine o parolayı kullanın.
+    paylaşılan sırrı Ayarlar'a yapıştırın. Kurulum betiği varsayılan olarak
+    `.env` dosyasına bir token yazar; konteyner yapılandırmasını parola kimlik
+    doğrulamasına geçirirseniz bunun yerine o parolayı kullanın.
 
-    URL’ye yeniden mi ihtiyacınız var?
+    URL'ye yeniden mi ihtiyacınız var?
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
@@ -81,7 +80,7 @@ Docker **isteğe bağlıdır**. Yalnızca konteynerleştirilmiş bir Gateway ist
 
   </Step>
 
-  <Step title="Configure channels (optional)">
+  <Step title="Kanalları yapılandırın (isteğe bağlı)">
     Mesajlaşma kanalları eklemek için CLI konteynerini kullanın:
 
     ```bash
@@ -95,7 +94,7 @@ Docker **isteğe bağlıdır**. Yalnızca konteynerleştirilmiş bir Gateway ist
     docker compose run --rm openclaw-cli channels add --channel discord --token "<token>"
     ```
 
-    Belgeler: [WhatsApp](/tr/channels/whatsapp), [Telegram](/tr/channels/telegram), [Discord](/tr/channels/discord)
+    Dokümanlar: [WhatsApp](/tr/channels/whatsapp), [Telegram](/tr/channels/telegram), [Discord](/tr/channels/discord)
 
   </Step>
 </Steps>
@@ -114,16 +113,16 @@ docker compose up -d openclaw-gateway
 ```
 
 <Note>
-`docker compose` komutunu repo kökünden çalıştırın. `OPENCLAW_EXTRA_MOUNTS`
-veya `OPENCLAW_HOME_VOLUME` etkinleştirdiyseniz, kurulum betiği `docker-compose.extra.yml`
+`docker compose` komutunu depo kökünden çalıştırın. `OPENCLAW_EXTRA_MOUNTS`
+veya `OPENCLAW_HOME_VOLUME` etkinleştirdiyseniz kurulum betiği `docker-compose.extra.yml`
 dosyasını yazar; bunu `-f docker-compose.yml -f docker-compose.extra.yml` ile dahil edin.
 </Note>
 
 <Note>
-`openclaw-cli`, `openclaw-gateway` ile aynı ağ ad alanını paylaştığı için
-başlatma sonrası kullanılan bir araçtır. `docker compose up -d openclaw-gateway`
-öncesinde onboarding’i ve kurulum zamanı yapılandırma yazma işlemlerini
-`--no-deps --entrypoint node` ile `openclaw-gateway` üzerinden çalıştırın.
+`openclaw-cli`, `openclaw-gateway` ağ ad alanını paylaştığı için başlatma sonrası
+bir araçtır. `docker compose up -d openclaw-gateway` öncesinde, ilk kurulumu ve
+kurulum zamanı yapılandırma yazımlarını `--no-deps --entrypoint node` ile
+`openclaw-gateway` üzerinden çalıştırın.
 </Note>
 
 ### Ortam değişkenleri
@@ -132,36 +131,35 @@ Kurulum betiği şu isteğe bağlı ortam değişkenlerini kabul eder:
 
 | Değişken                                   | Amaç                                                            |
 | ------------------------------------------ | --------------------------------------------------------------- |
-| `OPENCLAW_IMAGE`                           | Yerelde derlemek yerine uzak bir imaj kullanır                  |
+| `OPENCLAW_IMAGE`                           | Yerel olarak derlemek yerine uzak bir imaj kullanır             |
 | `OPENCLAW_DOCKER_APT_PACKAGES`             | Derleme sırasında ek apt paketleri kurar (boşlukla ayrılmış)    |
-| `OPENCLAW_EXTENSIONS`                      | Derleme zamanında Plugin bağımlılıklarını önceden kurar (boşlukla ayrılmış adlar) |
-| `OPENCLAW_EXTRA_MOUNTS`                    | Ek ana makine bind mount’ları (virgülle ayrılmış `source:target[:opts]`) |
-| `OPENCLAW_HOME_VOLUME`                     | `/home/node` yolunu adlandırılmış bir Docker volume içinde kalıcı tutar |
-| `OPENCLAW_PLUGIN_STAGE_DIR`                | Üretilen paketli Plugin bağımlılıkları ve mirror’lar için konteyner yolu |
-| `OPENCLAW_SANDBOX`                         | Sandbox bootstrap’a katılır (`1`, `true`, `yes`, `on`)          |
-| `OPENCLAW_SKIP_ONBOARDING`                 | Etkileşimli onboarding adımını atlar (`1`, `true`, `yes`, `on`) |
+| `OPENCLAW_EXTENSIONS`                      | Derleme zamanında seçili paketli Plugin yardımcılarını dahil eder |
+| `OPENCLAW_EXTRA_MOUNTS`                    | Ek ana makine bind mount'ları (virgülle ayrılmış `source:target[:opts]`) |
+| `OPENCLAW_HOME_VOLUME`                     | `/home/node` yolunu adlandırılmış bir Docker volume içinde kalıcı kılar |
+| `OPENCLAW_SANDBOX`                         | Kum havuzu bootstrap'ine katılır (`1`, `true`, `yes`, `on`)     |
+| `OPENCLAW_SKIP_ONBOARDING`                 | Etkileşimli ilk kurulum adımını atlar (`1`, `true`, `yes`, `on`) |
 | `OPENCLAW_DOCKER_SOCKET`                   | Docker socket yolunu geçersiz kılar                             |
 | `OPENCLAW_DISABLE_BONJOUR`                 | Bonjour/mDNS duyurusunu devre dışı bırakır (Docker için varsayılan `1`) |
-| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | Paketli Plugin kaynak bind-mount overlay’lerini devre dışı bırakır |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`              | OpenTelemetry dışa aktarımı için paylaşılan OTLP/HTTP collector endpoint’i |
-| `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | Trace, metrik veya günlükler için sinyale özgü OTLP endpoint’leri |
+| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | Paketli Plugin kaynak bind-mount overlay'lerini devre dışı bırakır |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`              | OpenTelemetry dışa aktarımı için paylaşılan OTLP/HTTP collector uç noktası |
+| `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | İzler, metrikler veya günlükler için sinyale özgü OTLP uç noktaları |
 | `OTEL_EXPORTER_OTLP_PROTOCOL`              | OTLP protokol geçersiz kılması. Bugün yalnızca `http/protobuf` desteklenir |
 | `OTEL_SERVICE_NAME`                        | OpenTelemetry kaynakları için kullanılan hizmet adı             |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`            | En yeni deneysel GenAI anlamsal özniteliklerine katılır         |
-| `OPENCLAW_OTEL_PRELOADED`                  | Bir OpenTelemetry SDK önceden yüklüyse ikinci bir SDK başlatmayı atlar |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`            | En son deneysel GenAI semantik özniteliklerine katılır          |
+| `OPENCLAW_OTEL_PRELOADED`                  | Bir OpenTelemetry SDK önceden yüklenmişse ikincisini başlatmayı atlar |
 
-Bakımcılar, paketlenmiş bir imaja karşı paketli Plugin kaynağını, örneğin
-`OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`
-ile tek bir Plugin kaynak dizinini paketlenmiş kaynak yolunun üzerine mount ederek test edebilir.
-Bu mount edilen kaynak dizini, aynı Plugin id’si için eşleşen derlenmiş
-`/app/dist/extensions/synology-chat` paketini geçersiz kılar.
+Bakımcılar, bir Plugin kaynak dizinini paketlenmiş kaynak yolu üzerine bağlayarak
+paketli bir imaja karşı paketli Plugin kaynağını test edebilir; örneğin
+`OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`.
+Bu bağlanan kaynak dizini, aynı Plugin id için eşleşen derlenmiş
+`/app/dist/extensions/synology-chat` bundle'ını geçersiz kılar.
 
 ### Gözlemlenebilirlik
 
-OpenTelemetry dışa aktarımı, Gateway konteynerinden OTLP collector’ınıza
-giden yöndedir. Yayımlanmış bir Docker portu gerektirmez. İmajı yerelde
-derliyorsanız ve paketli OpenTelemetry exporter’ın imaj içinde kullanılabilir
-olmasını istiyorsanız, çalışma zamanı bağımlılıklarını dahil edin:
+OpenTelemetry dışa aktarımı, Gateway konteynerinden OTLP collector'ınıza
+giden yöndedir. Yayımlanmış bir Docker portu gerektirmez. İmajı yerel olarak
+derliyorsanız ve paketli OpenTelemetry dışa aktarıcısının imaj içinde kullanılabilir
+olmasını istiyorsanız çalışma zamanı bağımlılıklarını dahil edin:
 
 ```bash
 export OPENCLAW_EXTENSIONS="diagnostics-otel"
@@ -170,31 +168,29 @@ export OTEL_SERVICE_NAME="openclaw-gateway"
 ./scripts/docker/setup.sh
 ```
 
-Resmi OpenClaw Docker release imajı paketli `diagnostics-otel` Plugin kaynağını
-içerir. İmaja ve önbellek durumuna bağlı olarak, Plugin ilk kez etkinleştirildiğinde
-Gateway yine de Plugin’e yerel OpenTelemetry çalışma zamanı bağımlılıklarını
-hazırlayabilir; bu nedenle ilk başlatmanın paket registry’sine erişmesine izin
-verin veya imajı release hattınızda önceden ısıtın. Dışa aktarımı etkinleştirmek
-için yapılandırmada `diagnostics-otel` Plugin’e izin verip etkinleştirin, ardından
-`diagnostics.otel.enabled=true` ayarlayın veya
-[OpenTelemetry dışa aktarımı](/tr/gateway/opentelemetry) bölümündeki yapılandırma
-örneğini kullanın. Collector kimlik doğrulama başlıkları Docker ortam değişkenleri
-üzerinden değil, `diagnostics.otel.headers` üzerinden yapılandırılır.
+Dışa aktarımı etkinleştirmeden önce paketli Docker kurulumlarında resmi
+`@openclaw/diagnostics-otel` Plugin'ini kurun. Özel kaynak derlemeli imajlar,
+yerel Plugin kaynağını `OPENCLAW_EXTENSIONS=diagnostics-otel` ile yine de
+dahil edebilir. Dışa aktarımı etkinleştirmek için yapılandırmada
+`diagnostics-otel` Plugin'ine izin verip etkinleştirin, ardından
+`diagnostics.otel.enabled=true` ayarlayın veya [OpenTelemetry dışa aktarımı](/tr/gateway/opentelemetry)
+içindeki yapılandırma örneğini kullanın. Collector kimlik doğrulama başlıkları
+Docker ortam değişkenleriyle değil, `diagnostics.otel.headers` üzerinden yapılandırılır.
 
 Prometheus metrikleri zaten yayımlanmış Gateway portunu kullanır.
-`diagnostics-prometheus` Plugin’i etkinleştirin, ardından scrape edin:
+`diagnostics-prometheus` Plugin'ini etkinleştirin, ardından şunu scrape edin:
 
 ```text
 http://<gateway-host>:18789/api/diagnostics/prometheus
 ```
 
 Rota Gateway kimlik doğrulamasıyla korunur. Ayrı bir genel `/metrics` portu
-veya kimliği doğrulanmamış reverse-proxy yolu açmayın. Bkz.
+veya kimlik doğrulamasız reverse-proxy yolu açmayın. Bkz.
 [Prometheus metrikleri](/tr/gateway/prometheus).
 
 ### Sağlık kontrolleri
 
-Konteyner probe endpoint’leri (kimlik doğrulama gerekmez):
+Konteyner probe uç noktaları (kimlik doğrulama gerekmez):
 
 ```bash
 curl -fsS http://127.0.0.1:18789/healthz   # liveness
@@ -211,37 +207,37 @@ Kimliği doğrulanmış derin sağlık anlık görüntüsü:
 docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-### LAN ve loopback karşılaştırması
+### LAN ve loopback
 
-`scripts/docker/setup.sh`, Docker port yayımlamasıyla ana makinenin
+`scripts/docker/setup.sh`, Docker port yayımlamayla ana makinenin
 `http://127.0.0.1:18789` erişiminin çalışması için varsayılan olarak
 `OPENCLAW_GATEWAY_BIND=lan` ayarlar.
 
-- `lan` (varsayılan): ana makine tarayıcısı ve ana makine CLI’si yayımlanan Gateway portuna erişebilir.
-- `loopback`: yalnızca konteyner ağ ad alanı içindeki işlemler Gateway’e doğrudan erişebilir.
+- `lan` (varsayılan): ana makine tarayıcısı ve ana makine CLI yayımlanmış Gateway portuna erişebilir.
+- `loopback`: Gateway'e doğrudan yalnızca konteyner ağ ad alanı içindeki süreçler erişebilir.
 
 <Note>
-`gateway.bind` içinde bind modu değerlerini kullanın (`lan` / `loopback` / `custom` /
-`tailnet` / `auto`); `0.0.0.0` veya `127.0.0.1` gibi ana makine takma adlarını kullanmayın.
+`gateway.bind` içinde bağlama modu değerlerini (`lan` / `loopback` / `custom` /
+`tailnet` / `auto`) kullanın; `0.0.0.0` veya `127.0.0.1` gibi ana makine alias'larını kullanmayın.
 </Note>
 
 ### Ana Makine Yerel Sağlayıcıları
 
-OpenClaw Docker içinde çalıştığında, konteyner içindeki `127.0.0.1` ana makineniz
-değil, konteynerin kendisidir. Ana makinede çalışan AI sağlayıcıları için
-`host.docker.internal` kullanın:
+OpenClaw Docker içinde çalıştığında, konteyner içindeki `127.0.0.1` ana
+makineniz değil, konteynerin kendisidir. Ana makinede çalışan AI sağlayıcıları
+için `host.docker.internal` kullanın:
 
-| Sağlayıcı | Ana makine varsayılan URL’si | Docker kurulum URL’si              |
-| --------- | ---------------------------- | ---------------------------------- |
+| Sağlayıcı | Ana makine varsayılan URL'si | Docker kurulum URL'si             |
+| --------- | ---------------------------- | --------------------------------- |
 | LM Studio | `http://127.0.0.1:1234`      | `http://host.docker.internal:1234` |
 | Ollama    | `http://127.0.0.1:11434`     | `http://host.docker.internal:11434` |
 
-Paketli Docker kurulumu, LM Studio ve Ollama onboarding varsayılanları olarak
-bu ana makine URL’lerini kullanır ve `docker-compose.yml`, Linux Docker Engine
-için `host.docker.internal` adını Docker’ın ana makine Gateway’ine eşler.
-Docker Desktop macOS ve Windows üzerinde aynı hostname’i zaten sağlar.
+Paketli Docker kurulumu, LM Studio ve Ollama ilk kurulum varsayılanları olarak
+bu ana makine URL'lerini kullanır ve `docker-compose.yml`, Linux Docker Engine
+için `host.docker.internal` adını Docker'ın ana makine Gateway'ine eşler.
+Docker Desktop macOS ve Windows üzerinde aynı ana makine adını zaten sağlar.
 
-Ana makine hizmetleri ayrıca Docker’dan erişilebilen bir adreste dinlemelidir:
+Ana makine hizmetleri Docker'dan erişilebilir bir adreste de dinlemelidir:
 
 ```bash
 lms server start --port 1234 --bind 0.0.0.0
@@ -249,46 +245,49 @@ OLLAMA_HOST=0.0.0.0:11434 ollama serve
 ```
 
 Kendi Compose dosyanızı veya `docker run` komutunuzu kullanıyorsanız aynı ana
-makine eşlemesini kendiniz ekleyin, örneğin
+makine eşlemesini kendiniz ekleyin; örneğin
 `--add-host=host.docker.internal:host-gateway`.
 
 ### Bonjour / mDNS
 
-Docker bridge ağı genellikle Bonjour/mDNS multicast’i (`224.0.0.251:5353`)
-güvenilir şekilde iletmez. Bu nedenle paketli Compose kurulumu varsayılan olarak
-`OPENCLAW_DISABLE_BONJOUR=1` kullanır; böylece Gateway, bridge multicast trafiğini
-düşürdüğünde crash-loop’a girmez veya duyuruyu tekrar tekrar yeniden başlatmaz.
+Docker bridge ağı genellikle Bonjour/mDNS multicast'ini (`224.0.0.251:5353`)
+güvenilir biçimde iletmez. Bu nedenle paketli Compose kurulumu varsayılan
+olarak `OPENCLAW_DISABLE_BONJOUR=1` ayarlar; böylece bridge multicast trafiğini
+düşürdüğünde Gateway crash-loop'a girmez veya duyuruyu sürekli yeniden başlatmaz.
 
-Docker sunucuları için yayımlanmış Gateway URL’sini, Tailscale’i veya geniş alan
-DNS-SD’yi kullanın. `OPENCLAW_DISABLE_BONJOUR=0` değerini yalnızca host networking,
-macvlan veya mDNS multicast’in çalıştığı bilinen başka bir ağ ile çalıştırırken ayarlayın.
+Docker ana makineleri için yayımlanmış Gateway URL'sini, Tailscale'i veya
+wide-area DNS-SD kullanın. `OPENCLAW_DISABLE_BONJOUR=0` değerini yalnızca host
+networking, macvlan veya mDNS multicast'in çalıştığı bilinen başka bir ağ ile
+çalıştırırken ayarlayın.
 
 Tuzaklar ve sorun giderme için bkz. [Bonjour keşfi](/tr/gateway/bonjour).
 
 ### Depolama ve kalıcılık
 
-Docker Compose, `OPENCLAW_CONFIG_DIR` değerini `/home/node/.openclaw` yoluna ve
-`OPENCLAW_WORKSPACE_DIR` değerini `/home/node/.openclaw/workspace` yoluna bind-mount
-eder; böylece bu yollar konteyner değişiminden sonra da korunur. Değişkenlerden
-biri ayarlanmamışsa, paketli `docker-compose.yml` `${HOME}/.openclaw` değerine
-(çalışma alanı mount’u için `${HOME}/.openclaw/workspace` değerine) veya `HOME`
-kendisi de yoksa `/tmp/.openclaw` değerine geri döner. Bu, yalın ortamlarda
-`docker compose up` komutunun boş kaynaklı volume belirtimi üretmesini engeller.
+Docker Compose, `OPENCLAW_CONFIG_DIR` yolunu `/home/node/.openclaw` konumuna ve
+`OPENCLAW_WORKSPACE_DIR` yolunu `/home/node/.openclaw/workspace` konumuna bind-mount
+eder; böylece bu yollar konteyner değişiminden sonra da kalır. Değişkenlerden
+biri ayarlanmamışsa paketli `docker-compose.yml`, `${HOME}/.openclaw` yoluna
+(çalışma alanı mount'u için `${HOME}/.openclaw/workspace` yoluna) ya da `HOME`
+kendisi de yoksa `/tmp/.openclaw` yoluna geri döner. Bu, çıplak ortamlarda
+`docker compose up` komutunun boş kaynaklı bir volume spec üretmesini engeller.
 
-OpenClaw bu mount edilen yapılandırma dizininde şunları tutar:
+Bu bağlanan yapılandırma dizini, OpenClaw'ın şunları tuttuğu yerdir:
 
 - davranış yapılandırması için `openclaw.json`
 - saklanan sağlayıcı OAuth/API anahtarı kimlik doğrulaması için `agents/<agentId>/agent/auth-profiles.json`
-- `OPENCLAW_GATEWAY_TOKEN` gibi ortam destekli çalışma zamanı gizli değerleri için `.env`
+- `OPENCLAW_GATEWAY_TOKEN` gibi ortam destekli çalışma zamanı sırları için `.env`
 
-Birlikte gelen Plugin çalışma zamanı bağımlılıkları ve aynalanmış çalışma zamanı dosyaları kullanıcı yapılandırması değil, oluşturulmuş durumdur. Compose bunları `/var/lib/openclaw/plugin-runtime-deps` konumuna bağlanan adlandırılmış Docker birimi `openclaw-plugin-runtime-deps` içinde saklar. Bu sık değişen ağacı ana makine yapılandırma bind mount'unun dışında tutmak, soğuk Gateway başlangıcı sırasında yavaş Docker Desktop/WSL dosya işlemlerini ve eski Windows tanıtıcılarını önler.
+Kurulu indirilebilir Plugin'ler paket durumlarını bağlanan OpenClaw home altında
+saklar; böylece Plugin kurulum kayıtları ve paket kökleri konteyner değişiminden
+sonra da kalır. Gateway başlangıcı paketli Plugin bağımlılık ağaçları oluşturmaz.
 
-Varsayılan Compose dosyası, `openclaw-gateway` ve `openclaw-cli` için `OPENCLAW_PLUGIN_STAGE_DIR` değerini bu yola ayarlar; böylece `openclaw doctor --fix`, kanal oturum açma/kurulum komutları ve Gateway başlangıcının tümü aynı oluşturulmuş çalışma zamanı birimini kullanır.
+VM dağıtımlarında tam kalıcılık ayrıntıları için bkz.
+[Docker VM Çalışma Zamanı - Neler nerede kalıcı olur](/tr/install/docker-vm-runtime#what-persists-where).
 
-VM dağıtımlarında kalıcılıkla ilgili tüm ayrıntılar için bkz.
-[Docker VM Çalışma Zamanı - Nerede ne kalıcı olur](/tr/install/docker-vm-runtime#what-persists-where).
-
-**Disk büyümesi sıcak noktaları:** `media/`, oturum JSONL dosyaları, `cron/runs/*.jsonl`, `openclaw-plugin-runtime-deps` Docker birimi ve `/tmp/openclaw/` altındaki dönen dosya günlüklerini izleyin.
+**Disk büyüme odakları:** `media/`, oturum JSONL dosyaları,
+`cron/runs/*.jsonl`, kurulu Plugin paket kökleri ve `/tmp/openclaw/`
+altındaki dönen dosya günlüklerini izleyin.
 
 ### Kabuk yardımcıları (isteğe bağlı)
 
@@ -299,14 +298,14 @@ mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/open
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-ClawDock'u eski `scripts/shell-helpers/clawdock-helpers.sh` ham yolundan kurduysanız, yerel yardımcı dosyanızın yeni konumu takip etmesi için yukarıdaki kurulum komutunu yeniden çalıştırın.
+ClawDock’u eski `scripts/shell-helpers/clawdock-helpers.sh` ham yolundan kurduysanız, yerel yardımcı dosyanızın yeni konumu izlemesi için yukarıdaki kurulum komutunu yeniden çalıştırın.
 
 Ardından `clawdock-start`, `clawdock-stop`, `clawdock-dashboard` vb. kullanın. Tüm komutlar için
 `clawdock-help` çalıştırın.
-Tam yardımcı kılavuzu için bkz. [ClawDock](/tr/install/clawdock).
+Tam yardımcı kılavuzu için [ClawDock](/tr/install/clawdock) sayfasına bakın.
 
 <AccordionGroup>
-  <Accordion title="Docker Gateway için ajan sandbox'ını etkinleştirme">
+  <Accordion title="Docker gateway için ajan sandbox'ını etkinleştirme">
     ```bash
     export OPENCLAW_SANDBOX=1
     ./scripts/docker/setup.sh
@@ -320,12 +319,14 @@ Tam yardımcı kılavuzu için bkz. [ClawDock](/tr/install/clawdock).
     ./scripts/docker/setup.sh
     ```
 
-    Betik `docker.sock` dosyasını yalnızca sandbox ön koşulları geçtikten sonra bağlar. Sandbox kurulumu tamamlanamazsa betik `agents.defaults.sandbox.mode` değerini `off` olarak sıfırlar.
+    Betik, `docker.sock` öğesini yalnızca sandbox önkoşulları geçtikten sonra bağlar. Sandbox
+    kurulumu tamamlanamazsa betik `agents.defaults.sandbox.mode` değerini
+    `off` olarak sıfırlar.
 
   </Accordion>
 
   <Accordion title="Otomasyon / CI (etkileşimsiz)">
-    Compose pseudo-TTY ayırmayı `-T` ile devre dışı bırakın:
+    Compose sözde TTY ayırmasını `-T` ile devre dışı bırakın:
 
     ```bash
     docker compose run -T --rm openclaw-cli gateway probe
@@ -334,12 +335,16 @@ Tam yardımcı kılavuzu için bkz. [ClawDock](/tr/install/clawdock).
 
   </Accordion>
 
-  <Accordion title="Paylaşılan ağ güvenliği notu">
-    `openclaw-cli`, CLI komutlarının Gateway'e `127.0.0.1` üzerinden erişebilmesi için `network_mode: "service:openclaw-gateway"` kullanır. Bunu paylaşılan bir güven sınırı olarak ele alın. Compose yapılandırması `NET_RAW`/`NET_ADMIN` değerlerini kaldırır ve `openclaw-cli` üzerinde `no-new-privileges` etkinleştirir.
+  <Accordion title="Paylaşılan ağ güvenlik notu">
+    `openclaw-cli`, CLI komutlarının `127.0.0.1` üzerinden gateway'e ulaşabilmesi için
+    `network_mode: "service:openclaw-gateway"` kullanır. Bunu paylaşılan bir
+    güven sınırı olarak ele alın. Compose yapılandırması `NET_RAW`/`NET_ADMIN`
+    yetkilerini kaldırır ve `openclaw-cli` üzerinde `no-new-privileges` etkinleştirir.
   </Accordion>
 
   <Accordion title="İzinler ve EACCES">
-    İmaj `node` (uid 1000) olarak çalışır. `/home/node/.openclaw` üzerinde izin hataları görürseniz, ana makine bind mount'larınızın uid 1000'e ait olduğundan emin olun:
+    İmaj `node` (uid 1000) olarak çalışır. `/home/node/.openclaw` üzerinde
+    izin hataları görürseniz, ana makine bind mount'larınızın uid 1000 tarafından sahiplenildiğinden emin olun:
 
     ```bash
     sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
@@ -348,7 +353,8 @@ Tam yardımcı kılavuzu için bkz. [ClawDock](/tr/install/clawdock).
   </Accordion>
 
   <Accordion title="Daha hızlı yeniden derlemeler">
-    Dockerfile'ınızı bağımlılık katmanları önbelleğe alınacak şekilde sıralayın. Bu, lockfile'lar değişmediği sürece `pnpm install` komutunun yeniden çalıştırılmasını önler:
+    Dockerfile'ınızı bağımlılık katmanları önbelleğe alınacak şekilde sıralayın. Bu, lockfile'lar değişmediği sürece
+    `pnpm install` komutunun yeniden çalışmasını önler:
 
     ```dockerfile
     FROM node:24-bookworm
@@ -371,7 +377,8 @@ Tam yardımcı kılavuzu için bkz. [ClawDock](/tr/install/clawdock).
   </Accordion>
 
   <Accordion title="İleri düzey kullanıcı konteyner seçenekleri">
-    Varsayılan imaj güvenlik önceliklidir ve root olmayan `node` olarak çalışır. Daha kapsamlı özelliklere sahip bir konteyner için:
+    Varsayılan imaj güvenlik önceliklidir ve root olmayan `node` olarak çalışır. Daha
+    tam özellikli bir konteyner için:
 
     1. **`/home/node` kalıcı olsun**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
     2. **Sistem bağımlılıklarını imaja ekleyin**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
@@ -380,34 +387,50 @@ Tam yardımcı kılavuzu için bkz. [ClawDock](/tr/install/clawdock).
        docker compose run --rm openclaw-cli \
          node /app/node_modules/playwright-core/cli.js install chromium
        ```
-    4. **Tarayıcı indirmelerini kalıcı yapın**: `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` ayarlayın ve `OPENCLAW_HOME_VOLUME` veya `OPENCLAW_EXTRA_MOUNTS` kullanın.
+    4. **Tarayıcı indirmelerini kalıcı yapın**:
+       `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` ayarlayın ve
+       `OPENCLAW_HOME_VOLUME` ya da `OPENCLAW_EXTRA_MOUNTS` kullanın.
 
   </Accordion>
 
   <Accordion title="OpenAI Codex OAuth (başsız Docker)">
-    Sihirbazda OpenAI Codex OAuth seçerseniz bir tarayıcı URL'si açılır. Docker veya başsız kurulumlarda, ulaştığınız tam yönlendirme URL'sini kopyalayın ve kimlik doğrulamayı tamamlamak için sihirbaza geri yapıştırın.
+    Sihirbazda OpenAI Codex OAuth seçerseniz, bir tarayıcı URL'si açar. Docker
+    veya başsız kurulumlarda, vardığınız tam yönlendirme URL'sini kopyalayıp
+    kimlik doğrulamayı tamamlamak için sihirbaza geri yapıştırın.
   </Accordion>
 
-  <Accordion title="Temel imaj meta verileri">
-    Ana Docker çalışma zamanı imajı `node:24-bookworm-slim` kullanır ve `org.opencontainers.image.base.name`, `org.opencontainers.image.source` ve diğerleri dahil OCI temel imaj açıklamalarını yayımlar. Node temel özeti Dependabot Docker temel imaj PR'ları aracılığıyla yenilenir; sürüm derlemeleri distro yükseltme katmanı çalıştırmaz. Bkz.
-    [OCI imaj açıklamaları](https://github.com/opencontainers/image-spec/blob/main/annotations.md).
+  <Accordion title="Temel imaj metaverisi">
+    Ana Docker çalışma zamanı imajı `node:24-bookworm-slim` kullanır ve
+    `org.opencontainers.image.base.name`, `org.opencontainers.image.source`
+    ve diğerlerini içeren OCI temel imaj ek açıklamaları yayımlar. Node temel digest'i
+    Dependabot Docker temel imaj PR'larıyla yenilenir; sürüm derlemeleri
+    dağıtım yükseltme katmanı çalıştırmaz. Bkz.
+    [OCI imaj ek açıklamaları](https://github.com/opencontainers/image-spec/blob/main/annotations.md).
   </Accordion>
 </AccordionGroup>
 
 ### VPS üzerinde mi çalıştırıyorsunuz?
 
-İkili dosyayı imaja ekleme, kalıcılık ve güncellemeler dahil paylaşılan VM dağıtım adımları için bkz. [Hetzner (Docker VPS)](/tr/install/hetzner) ve
-[Docker VM Çalışma Zamanı](/tr/install/docker-vm-runtime).
+Paylaşılan VM dağıtım adımları için [Hetzner (Docker VPS)](/tr/install/hetzner) ve
+[Docker VM Çalışma Zamanı](/tr/install/docker-vm-runtime) sayfalarına bakın;
+ikili dosya imaja ekleme, kalıcılık ve güncellemeler dahildir.
 
 ## Ajan sandbox'ı
 
-`agents.defaults.sandbox` Docker arka ucu ile etkinleştirildiğinde Gateway, ajan araç yürütmesini (kabuk, dosya okuma/yazma vb.) izole Docker konteynerleri içinde çalıştırırken Gateway'in kendisi ana makinede kalır. Bu, tüm Gateway'i konteynerleştirmeden güvenilmeyen veya çok kiracılı ajan oturumlarının etrafında sert bir sınır sağlar.
+`agents.defaults.sandbox`, Docker arka ucu ile etkinleştirildiğinde gateway,
+ajan araç yürütmesini (kabuk, dosya okuma/yazma vb.) yalıtılmış Docker
+konteynerleri içinde çalıştırırken gateway'in kendisi ana makinede kalır. Bu, tüm
+gateway'i konteynerleştirmeden güvenilmeyen veya çok kiracılı ajan oturumlarının
+etrafına sağlam bir duvar koyar.
 
-Sandbox kapsamı ajan başına (varsayılan), oturum başına veya paylaşılan olabilir. Her kapsam kendi çalışma alanını `/workspace` konumuna bağlı olarak alır. Ayrıca izin verme/engelleme araç ilkeleri, ağ izolasyonu, kaynak sınırları ve tarayıcı konteynerleri yapılandırabilirsiniz.
+Sandbox kapsamı ajan başına (varsayılan), oturum başına veya paylaşılan olabilir. Her kapsam
+`/workspace` konumuna bağlanan kendi çalışma alanını alır. Ayrıca
+izin ver/reddet araç politikaları, ağ yalıtımı, kaynak sınırları ve tarayıcı
+konteynerleri yapılandırabilirsiniz.
 
 Tam yapılandırma, imajlar, güvenlik notları ve çok ajanlı profiller için bkz.:
 
-- [Sandboxing](/tr/gateway/sandboxing) -- tam sandbox başvurusu
+- [Sandbox kullanımı](/tr/gateway/sandboxing) -- eksiksiz sandbox başvurusu
 - [OpenShell](/tr/gateway/openshell) -- sandbox konteynerlerine etkileşimli kabuk erişimi
 - [Çok Ajanlı Sandbox ve Araçlar](/tr/tools/multi-agent-sandbox-tools) -- ajan başına geçersiz kılmalar
 
@@ -426,11 +449,13 @@ Tam yapılandırma, imajlar, güvenlik notları ve çok ajanlı profiller için 
 }
 ```
 
-Varsayılan sandbox imajını derleyin:
+Varsayılan sandbox imajını derleyin (kaynak checkout'tan):
 
 ```bash
 scripts/sandbox-setup.sh
 ```
+
+Kaynak checkout olmadan npm kurulumları için satır içi `docker build` komutları adına [Sandbox kullanımı § İmajlar ve kurulum](/tr/gateway/sandboxing#images-and-setup) bölümüne bakın.
 
 ## Sorun giderme
 
@@ -438,20 +463,25 @@ scripts/sandbox-setup.sh
   <Accordion title="İmaj eksik veya sandbox konteyneri başlamıyor">
     Sandbox imajını
     [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)
-    ile derleyin veya `agents.defaults.sandbox.docker.image` değerini özel imajınıza ayarlayın.
-    Konteynerler gerektiğinde oturum başına otomatik oluşturulur.
+    (kaynak checkout) ile veya [Sandbox kullanımı § İmajlar ve kurulum](/tr/gateway/sandboxing#images-and-setup) bölümündeki satır içi `docker build` komutuyla (npm kurulumu) derleyin,
+    ya da `agents.defaults.sandbox.docker.image` değerini özel imajınıza ayarlayın.
+    Konteynerler istek üzerine oturum başına otomatik oluşturulur.
   </Accordion>
 
   <Accordion title="Sandbox içinde izin hataları">
-    `docker.user` değerini bağlı çalışma alanınızın sahipliğiyle eşleşen bir UID:GID olarak ayarlayın veya çalışma alanı klasörünün sahipliğini değiştirin.
+    `docker.user` değerini bağlanan çalışma alanınızın sahipliğiyle eşleşen bir UID:GID olarak ayarlayın
+    veya çalışma alanı klasörünün sahibini değiştirin.
   </Accordion>
 
   <Accordion title="Özel araçlar sandbox içinde bulunamıyor">
-    OpenClaw komutları `sh -lc` (oturum açma kabuğu) ile çalıştırır; bu da `/etc/profile` dosyasını kaynak olarak yükler ve PATH'i sıfırlayabilir. Özel araç yollarınızı başa eklemek için `docker.env.PATH` ayarlayın veya Dockerfile'ınızda `/etc/profile.d/` altına bir betik ekleyin.
+    OpenClaw komutları `sh -lc` (oturum açma kabuğu) ile çalıştırır; bu,
+    `/etc/profile` dosyasını kaynak olarak alır ve PATH'i sıfırlayabilir. Özel
+    araç yollarınızı başa eklemek için `docker.env.PATH` ayarlayın veya Dockerfile'ınızda
+    `/etc/profile.d/` altına bir betik ekleyin.
   </Accordion>
 
-  <Accordion title="İmaj derleme sırasında OOM nedeniyle sonlandırıldı (çıkış 137)">
-    VM'nin en az 2 GB RAM'e ihtiyacı vardır. Daha büyük bir makine sınıfı kullanın ve yeniden deneyin.
+  <Accordion title="İmaj derlemesi sırasında OOM-killed (çıkış 137)">
+    VM için en az 2 GB RAM gerekir. Daha büyük bir makine sınıfı kullanıp yeniden deneyin.
   </Accordion>
 
   <Accordion title="Control UI içinde yetkisiz veya eşleme gerekli">
@@ -467,8 +497,8 @@ scripts/sandbox-setup.sh
 
   </Accordion>
 
-  <Accordion title="Gateway hedefi ws://172.x.x.x gösteriyor veya Docker CLI'dan eşleme hataları geliyor">
-    Gateway modunu ve bağlamayı sıfırlayın:
+  <Accordion title="Gateway hedefi Docker CLI'dan ws://172.x.x.x gösteriyor veya eşleme hataları veriyor">
+    Gateway modunu ve bağlanma ayarını sıfırlayın:
 
     ```bash
     docker compose run --rm openclaw-cli config set --batch-json '[{"path":"gateway.mode","value":"local"},{"path":"gateway.bind","value":"lan"}]'
@@ -480,8 +510,8 @@ scripts/sandbox-setup.sh
 
 ## İlgili
 
-- [Kurulum Özeti](/tr/install) — tüm kurulum yöntemleri
-- [Podman](/tr/install/podman) — Docker alternatifi Podman
+- [Kurulum Genel Bakışı](/tr/install) — tüm kurulum yöntemleri
+- [Podman](/tr/install/podman) — Docker için Podman alternatifi
 - [ClawDock](/tr/install/clawdock) — Docker Compose topluluk kurulumu
 - [Güncelleme](/tr/install/updating) — OpenClaw'ı güncel tutma
-- [Yapılandırma](/tr/gateway/configuration) — kurulumdan sonra Gateway yapılandırması
+- [Yapılandırma](/tr/gateway/configuration) — kurulumdan sonra gateway yapılandırması

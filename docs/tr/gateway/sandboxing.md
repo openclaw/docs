@@ -2,36 +2,36 @@
 read_when: You want a dedicated explanation of sandboxing or need to tune agents.defaults.sandbox.
 sidebarTitle: Sandboxing
 status: active
-summary: 'OpenClaw korumalı alanı nasıl çalışır: modlar, kapsamlar, çalışma alanı erişimi ve görüntüler'
-title: Korumalı Alana Alma
+summary: 'OpenClaw korumalı alanının nasıl çalıştığı: modlar, kapsamlar, çalışma alanı erişimi ve görüntüler'
+title: Korumalı alana alma
 x-i18n:
-    generated_at: "2026-04-30T09:24:22Z"
+    generated_at: "2026-05-02T08:55:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 96861f3f70bf26b5ed20a063c047064f98a0dc74d36e8f4ccada1f3bb455118d
+    source_hash: 3f313333ec676aaef636b42d4a6f28f35bf213d9e1c5292ffb4868f312cf0eda
     source_path: gateway/sandboxing.md
     workflow: 16
 ---
 
-OpenClaw, etki alanını azaltmak için **araçları korumalı alan arka uçları içinde** çalıştırabilir. Bu **isteğe bağlıdır** ve yapılandırma (`agents.defaults.sandbox` veya `agents.list[].sandbox`) ile denetlenir. Korumalı alan kapalıysa araçlar ana makinede çalışır. Gateway ana makinede kalır; araç yürütme etkinleştirildiğinde yalıtılmış bir korumalı alanda çalışır.
+OpenClaw, etki alanını azaltmak için **araçları korumalı alan arka uçları içinde** çalıştırabilir. Bu **isteğe bağlıdır** ve yapılandırma (`agents.defaults.sandbox` veya `agents.list[].sandbox`) tarafından kontrol edilir. Korumalı alan kapalıysa araçlar ana makinede çalışır. Gateway ana makinede kalır; araç yürütmesi etkinleştirildiğinde yalıtılmış bir korumalı alanda çalışır.
 
 <Note>
-Bu kusursuz bir güvenlik sınırı değildir, ancak model mantıksız bir şey yaptığında dosya sistemi ve süreç erişimini önemli ölçüde sınırlar.
+Bu mükemmel bir güvenlik sınırı değildir, ancak model yanlış bir şey yaptığında dosya sistemi ve süreç erişimini önemli ölçüde sınırlar.
 </Note>
 
 ## Korumalı alana alınanlar
 
-- Araç yürütme (`exec`, `read`, `write`, `edit`, `apply_patch`, `process` vb.).
+- Araç yürütmesi (`exec`, `read`, `write`, `edit`, `apply_patch`, `process` vb.).
 - İsteğe bağlı korumalı alan tarayıcısı (`agents.defaults.sandbox.browser`).
 
 <AccordionGroup>
   <Accordion title="Korumalı alan tarayıcısı ayrıntıları">
-    - Varsayılan olarak, tarayıcı aracı gerektiğinde korumalı alan tarayıcısı otomatik başlar (CDP'nin erişilebilir olmasını sağlar). `agents.defaults.sandbox.browser.autoStart` ve `agents.defaults.sandbox.browser.autoStartTimeoutMs` ile yapılandırın.
-    - Varsayılan olarak, korumalı alan tarayıcı konteynerleri genel `bridge` ağı yerine ayrılmış bir Docker ağı (`openclaw-sandbox-browser`) kullanır. `agents.defaults.sandbox.browser.network` ile yapılandırın.
+    - Varsayılan olarak, korumalı alan tarayıcısı, tarayıcı aracı buna ihtiyaç duyduğunda otomatik başlar (CDP’ye erişilebilir olmasını sağlar). `agents.defaults.sandbox.browser.autoStart` ve `agents.defaults.sandbox.browser.autoStartTimeoutMs` üzerinden yapılandırın.
+    - Varsayılan olarak, korumalı alan tarayıcısı konteynerleri genel `bridge` ağı yerine ayrılmış bir Docker ağı (`openclaw-sandbox-browser`) kullanır. `agents.defaults.sandbox.browser.network` ile yapılandırın.
     - İsteğe bağlı `agents.defaults.sandbox.browser.cdpSourceRange`, konteyner kenarındaki CDP girişini bir CIDR izin listesiyle sınırlar (örneğin `172.21.0.1/32`).
-    - noVNC gözlemci erişimi varsayılan olarak parola korumalıdır; OpenClaw, yerel bir önyükleme sayfası sunan ve noVNC'yi URL parçasında parola ile açan kısa ömürlü bir belirteç URL'si üretir (sorgu/başlık günlüklerinde değil).
+    - noVNC gözlemci erişimi varsayılan olarak parola korumalıdır; OpenClaw, yerel bir başlangıç sayfası sunan ve noVNC’yi parolayla URL parçasında açan kısa ömürlü bir token URL’si üretir (sorgu/başlık günlüklerinde değil).
     - `agents.defaults.sandbox.browser.allowHostControl`, korumalı alan oturumlarının ana makine tarayıcısını açıkça hedeflemesine izin verir.
-    - İsteğe bağlı izin listeleri `target: "custom"` için kapı görevi görür: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+    - İsteğe bağlı izin listeleri `target: "custom"` seçeneğini kapılar: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
 
   </Accordion>
 </AccordionGroup>
@@ -40,21 +40,21 @@ Korumalı alana alınmayanlar:
 
 - Gateway sürecinin kendisi.
 - Korumalı alan dışında çalışmasına açıkça izin verilen herhangi bir araç (ör. `tools.elevated`).
-  - **Yükseltilmiş exec, korumalı alanı atlar ve yapılandırılmış çıkış yolunu kullanır (varsayılan olarak `gateway`, exec hedefi `node` olduğunda ise `node`).**
+  - **Yükseltilmiş exec, korumalı alanı atlar ve yapılandırılmış kaçış yolunu kullanır (varsayılan olarak `gateway`, exec hedefi `node` olduğunda ise `node`).**
   - Korumalı alan kapalıysa `tools.elevated` yürütmeyi değiştirmez (zaten ana makinededir). Bkz. [Yükseltilmiş Mod](/tr/tools/elevated).
 
 ## Modlar
 
-`agents.defaults.sandbox.mode`, korumalı alanın **ne zaman** kullanılacağını denetler:
+`agents.defaults.sandbox.mode`, korumalı alanın **ne zaman** kullanılacağını kontrol eder:
 
 <Tabs>
   <Tab title="off">
     Korumalı alan yok.
   </Tab>
   <Tab title="non-main">
-    Yalnızca **ana olmayan** oturumları korumalı alana alır (normal sohbetlerin ana makinede kalmasını istiyorsanız varsayılan).
+    Yalnızca **ana olmayan** oturumları korumalı alana alır (normal sohbetleri ana makinede istiyorsanız varsayılan).
 
-    `"non-main"`, agent kimliğine değil `session.mainKey` değerine (varsayılan `"main"`) dayanır. Grup/kanal oturumları kendi anahtarlarını kullanır, bu yüzden ana olmayan sayılır ve korumalı alana alınır.
+    `"non-main"`, aracı kimliğine değil `session.mainKey` değerine (varsayılan `"main"`) dayanır. Grup/kanal oturumları kendi anahtarlarını kullanır, bu yüzden ana olmayan sayılırlar ve korumalı alana alınırlar.
 
   </Tab>
   <Tab title="all">
@@ -64,54 +64,54 @@ Korumalı alana alınmayanlar:
 
 ## Kapsam
 
-`agents.defaults.sandbox.scope`, **kaç konteyner** oluşturulacağını denetler:
+`agents.defaults.sandbox.scope`, **kaç konteyner** oluşturulacağını kontrol eder:
 
-- `"agent"` (varsayılan): agent başına bir konteyner.
+- `"agent"` (varsayılan): aracı başına bir konteyner.
 - `"session"`: oturum başına bir konteyner.
 - `"shared"`: tüm korumalı alan oturumları tarafından paylaşılan bir konteyner.
 
 ## Arka uç
 
-`agents.defaults.sandbox.backend`, korumalı alanı **hangi çalışma zamanının** sağlayacağını denetler:
+`agents.defaults.sandbox.backend`, korumalı alanı **hangi çalışma zamanının** sağlayacağını kontrol eder:
 
-- `"docker"` (korumalı alan etkinleştirildiğinde varsayılan): yerel Docker destekli korumalı alan çalışma zamanı.
+- `"docker"` (korumalı alan etkin olduğunda varsayılan): yerel Docker destekli korumalı alan çalışma zamanı.
 - `"ssh"`: genel SSH destekli uzak korumalı alan çalışma zamanı.
 - `"openshell"`: OpenShell destekli korumalı alan çalışma zamanı.
 
-SSH'ye özgü yapılandırma `agents.defaults.sandbox.ssh` altında bulunur. OpenShell'e özgü yapılandırma `plugins.entries.openshell.config` altında bulunur.
+SSH’ye özgü yapılandırma `agents.defaults.sandbox.ssh` altında bulunur. OpenShell’e özgü yapılandırma `plugins.entries.openshell.config` altında bulunur.
 
 ### Arka uç seçme
 
 |                     | Docker                           | SSH                            | OpenShell                                           |
 | ------------------- | -------------------------------- | ------------------------------ | --------------------------------------------------- |
-| **Nerede çalışır**  | Yerel konteyner                  | SSH ile erişilebilir herhangi bir ana makine | OpenShell tarafından yönetilen korumalı alan         |
+| **Çalıştığı yer**   | Yerel konteyner                  | SSH ile erişilebilen herhangi bir ana makine | OpenShell tarafından yönetilen korumalı alan         |
 | **Kurulum**         | `scripts/sandbox-setup.sh`       | SSH anahtarı + hedef ana makine | OpenShell Plugin etkin                            |
-| **Çalışma alanı modeli** | Bağlama noktası veya kopya      | Uzak-kanonik (bir kez tohumlanır) | `mirror` veya `remote`                              |
-| **Ağ denetimi**     | `docker.network` (varsayılan: yok) | Uzak ana makineye bağlı       | OpenShell'e bağlı                                  |
+| **Çalışma alanı modeli** | Bağlama montajı veya kopyalama | Uzak-kanonik (bir kez tohumla) | `mirror` veya `remote`                              |
+| **Ağ denetimi**     | `docker.network` (varsayılan: yok) | Uzak ana makineye bağlı        | OpenShell’e bağlı                                  |
 | **Tarayıcı korumalı alanı** | Desteklenir              | Desteklenmez                  | Henüz desteklenmez                                  |
-| **Bağlama noktaları** | `docker.binds`                 | N/A                            | N/A                                                 |
-| **En uygun kullanım** | Yerel geliştirme, tam yalıtım  | Uzak bir makineye yük aktarma | İsteğe bağlı iki yönlü eşitlemeli yönetilen uzak korumalı alanlar |
+| **Bağlama montajları** | `docker.binds`                | N/A                            | N/A                                                 |
+| **En uygun olduğu durum** | Yerel geliştirme, tam yalıtım | Uzak bir makineye yük aktarma | İsteğe bağlı çift yönlü eşitlemeye sahip yönetilen uzak korumalı alanlar |
 
 ### Docker arka ucu
 
-Korumalı alan varsayılan olarak kapalıdır. Korumalı alanı etkinleştirir ve bir arka uç seçmezseniz OpenClaw Docker arka ucunu kullanır. Araçları ve korumalı alan tarayıcılarını Docker daemon soketi (`/var/run/docker.sock`) üzerinden yerel olarak yürütür. Korumalı alan konteyner yalıtımı Docker ad alanları tarafından belirlenir.
+Korumalı alan varsayılan olarak kapalıdır. Korumalı alanı etkinleştirir ve bir arka uç seçmezseniz OpenClaw Docker arka ucunu kullanır. Araçları ve korumalı alan tarayıcılarını Docker daemon soketi (`/var/run/docker.sock`) üzerinden yerel olarak yürütür. Korumalı alan konteyner yalıtımı Docker namespace’leri tarafından belirlenir.
 
-Ana makine GPU'larını Docker korumalı alanlarına açmak için `agents.defaults.sandbox.docker.gpus` değerini veya agent başına `agents.list[].sandbox.docker.gpus` geçersiz kılmasını ayarlayın. Değer, Docker'ın `--gpus` bayrağına ayrı bir argüman olarak geçirilir; örneğin `"all"` veya `"device=GPU-uuid"` ve NVIDIA Container Toolkit gibi uyumlu bir ana makine çalışma zamanı gerektirir.
+Ana makine GPU’larını Docker korumalı alanlarına açmak için `agents.defaults.sandbox.docker.gpus` veya aracı başına `agents.list[].sandbox.docker.gpus` geçersiz kılmasını ayarlayın. Değer, Docker’ın `--gpus` bayrağına ayrı bir argüman olarak iletilir; örneğin `"all"` veya `"device=GPU-uuid"` ve NVIDIA Container Toolkit gibi uyumlu bir ana makine çalışma zamanı gerektirir.
 
 <Warning>
-**Docker-out-of-Docker (DooD) kısıtları**
+**Docker-dışından-Docker (DooD) kısıtları**
 
-OpenClaw Gateway'in kendisini bir Docker konteyneri olarak dağıtırsanız, ana makinenin Docker soketini (DooD) kullanarak kardeş korumalı alan konteynerlerini yönetir. Bu, belirli bir yol eşleme kısıtı getirir:
+OpenClaw Gateway’in kendisini bir Docker konteyneri olarak dağıtırsanız, ana makinenin Docker soketini (DooD) kullanarak kardeş korumalı alan konteynerlerini yönetir. Bu belirli bir yol eşleme kısıtı getirir:
 
-- **Yapılandırma ana makine yollarını gerektirir**: `openclaw.json` `workspace` yapılandırması, dahili Gateway konteyner yolu değil, **ana makinenin mutlak yolunu** (ör. `/home/user/.openclaw/workspaces`) içermelidir. OpenClaw Docker daemon'dan bir korumalı alan başlatmasını istediğinde daemon yolları Gateway ad alanına göre değil, ana makine işletim sistemi ad alanına göre değerlendirir.
-- **FS köprüsü eşliği (aynı volume haritası)**: OpenClaw Gateway yerel süreci ayrıca `workspace` dizinine Heartbeat ve köprü dosyaları yazar. Gateway kendi konteynerleştirilmiş ortamının içinden tam olarak aynı dizeyi (ana makine yolunu) değerlendirdiği için Gateway dağıtımı, ana makine ad alanını yerel olarak bağlayan aynı volume haritasını içermelidir (`-v /home/user/.openclaw:/home/user/.openclaw`).
+- **Yapılandırma ana makine yolları gerektirir**: `openclaw.json` `workspace` yapılandırması, dahili Gateway konteyner yolunu değil **ana makinenin mutlak yolunu** (ör. `/home/user/.openclaw/workspaces`) İÇERMELİDİR. OpenClaw, Docker daemon’dan bir korumalı alan başlatmasını istediğinde daemon yolları Gateway namespace’ine göre değil, ana makine işletim sistemi namespace’ine göre değerlendirir.
+- **FS köprüsü eşliği (özdeş volume eşlemesi)**: OpenClaw Gateway yerel süreci de `workspace` dizinine Heartbeat ve köprü dosyaları yazar. Gateway kendi konteynerleştirilmiş ortamının içinden aynı dizeyi (ana makine yolunu) değerlendirdiği için, Gateway dağıtımı ana makine namespace’ini yerel olarak bağlayan özdeş bir volume eşlemesi İÇERMELİDİR (`-v /home/user/.openclaw:/home/user/.openclaw`).
 
-Yolları mutlak ana makine eşliği olmadan dahili olarak eşlerseniz OpenClaw, tam nitelikli yol dizesi yerel olarak mevcut olmadığı için konteyner ortamında Heartbeat dosyasını yazmaya çalışırken yerel olarak bir `EACCES` izin hatası fırlatır.
+Yolları mutlak ana makine eşliği olmadan dahili olarak eşlerseniz, OpenClaw konteyner ortamı içinde Heartbeat yazmaya çalışırken yerel olarak `EACCES` izin hatası fırlatır, çünkü tam nitelikli yol dizesi yerel olarak mevcut değildir.
 </Warning>
 
 ### SSH arka ucu
 
-OpenClaw'ın `exec`, dosya araçlarını ve medya okumalarını SSH ile erişilebilir rastgele bir makinede korumalı alana almasını istediğinizde `backend: "ssh"` kullanın.
+OpenClaw’ın `exec`, dosya araçları ve medya okumalarını SSH ile erişilebilen herhangi bir makinede korumalı alana almasını istediğinizde `backend: "ssh"` kullanın.
 
 ```json5
 {
@@ -144,33 +144,33 @@ OpenClaw'ın `exec`, dosya araçlarını ve medya okumalarını SSH ile erişile
 <AccordionGroup>
   <Accordion title="Nasıl çalışır">
     - OpenClaw, `sandbox.ssh.workspaceRoot` altında kapsam başına bir uzak kök oluşturur.
-    - Oluşturma veya yeniden oluşturma sonrasında ilk kullanımda OpenClaw, bu uzak çalışma alanını yerel çalışma alanından bir kez tohumlar.
+    - Oluşturma veya yeniden oluşturma sonrasındaki ilk kullanımda OpenClaw, bu uzak çalışma alanını yerel çalışma alanından bir kez tohumlar.
     - Bundan sonra `exec`, `read`, `write`, `edit`, `apply_patch`, istem medya okumaları ve gelen medya hazırlama doğrudan SSH üzerinden uzak çalışma alanına karşı çalışır.
-    - OpenClaw, uzak değişiklikleri yerel çalışma alanına otomatik olarak geri eşitlemez.
+    - OpenClaw, uzak değişiklikleri otomatik olarak yerel çalışma alanına geri eşitlemez.
 
   </Accordion>
   <Accordion title="Kimlik doğrulama materyali">
-    - `identityFile`, `certificateFile`, `knownHostsFile`: mevcut yerel dosyaları kullanır ve OpenSSH yapılandırması üzerinden geçirir.
-    - `identityData`, `certificateData`, `knownHostsData`: satır içi dizeleri veya SecretRefs kullanır. OpenClaw bunları normal gizli bilgiler çalışma zamanı snapshot'ı üzerinden çözer, `0600` ile geçici dosyalara yazar ve SSH oturumu sona erdiğinde siler.
+    - `identityFile`, `certificateFile`, `knownHostsFile`: mevcut yerel dosyaları kullanır ve bunları OpenSSH yapılandırması üzerinden geçirir.
+    - `identityData`, `certificateData`, `knownHostsData`: satır içi dizeler veya SecretRefs kullanır. OpenClaw bunları normal gizli bilgiler çalışma zamanı anlık görüntüsü üzerinden çözer, `0600` ile geçici dosyalara yazar ve SSH oturumu sona erdiğinde siler.
     - Aynı öğe için hem `*File` hem de `*Data` ayarlanmışsa, o SSH oturumu için `*Data` kazanır.
 
   </Accordion>
   <Accordion title="Uzak-kanonik sonuçlar">
-    Bu bir **uzak-kanonik** modeldir. Uzak SSH çalışma alanı, ilk tohumlamadan sonra gerçek korumalı alan durumu olur.
+    Bu bir **uzak-kanonik** modeldir. İlk tohumlamadan sonra uzak SSH çalışma alanı gerçek korumalı alan durumu haline gelir.
 
-    - Tohumlama adımından sonra OpenClaw dışında yapılan ana makine-yerel düzenlemeler, korumalı alanı yeniden oluşturana kadar uzakta görünmez.
+    - Tohumlama adımından sonra OpenClaw dışında yapılan ana makine yerel düzenlemeleri, korumalı alanı yeniden oluşturana kadar uzakta görünmez.
     - `openclaw sandbox recreate`, kapsam başına uzak kökü siler ve sonraki kullanımda yerelden yeniden tohumlar.
-    - SSH arka ucunda tarayıcı korumalı alanı desteklenmez.
-    - `sandbox.docker.*` ayarları SSH arka ucuna uygulanmaz.
+    - Tarayıcı korumalı alanı SSH arka ucunda desteklenmez.
+    - `sandbox.docker.*` ayarları SSH arka ucu için geçerli değildir.
 
   </Accordion>
 </AccordionGroup>
 
 ### OpenShell arka ucu
 
-OpenClaw'ın araçları OpenShell tarafından yönetilen uzak bir ortamda korumalı alana almasını istediğinizde `backend: "openshell"` kullanın. Tam kurulum kılavuzu, yapılandırma başvurusu ve çalışma alanı modu karşılaştırması için ayrılmış [OpenShell sayfasına](/tr/gateway/openshell) bakın.
+OpenClaw’ın araçları OpenShell tarafından yönetilen uzak bir ortamda korumalı alana almasını istediğinizde `backend: "openshell"` kullanın. Tam kurulum kılavuzu, yapılandırma başvurusu ve çalışma alanı modu karşılaştırması için özel [OpenShell sayfasına](/tr/gateway/openshell) bakın.
 
-OpenShell, genel SSH arka ucuyla aynı çekirdek SSH aktarımını ve uzak dosya sistemi köprüsünü yeniden kullanır ve OpenShell'e özgü yaşam döngüsünü (`sandbox create/get/delete`, `sandbox ssh-config`) ve isteğe bağlı `mirror` çalışma alanı modunu ekler.
+OpenShell, genel SSH arka ucuyla aynı çekirdek SSH aktarımını ve uzak dosya sistemi köprüsünü yeniden kullanır; buna OpenShell’e özgü yaşam döngüsü (`sandbox create/get/delete`, `sandbox ssh-config`) ve isteğe bağlı `mirror` çalışma alanı modunu ekler.
 
 ```json5
 {
@@ -202,130 +202,130 @@ OpenShell, genel SSH arka ucuyla aynı çekirdek SSH aktarımını ve uzak dosya
 
 OpenShell modları:
 
-- `mirror` (varsayılan): yerel çalışma alanı kanonik kalır. OpenClaw, exec öncesinde yerel dosyaları OpenShell içine eşitler ve exec sonrasında uzak çalışma alanını geri eşitler.
+- `mirror` (varsayılan): yerel çalışma alanı kanonik kalır. OpenClaw, exec öncesinde yerel dosyaları OpenShell’e eşitler ve exec sonrasında uzak çalışma alanını geri eşitler.
 - `remote`: korumalı alan oluşturulduktan sonra OpenShell çalışma alanı kanoniktir. OpenClaw, uzak çalışma alanını yerel çalışma alanından bir kez tohumlar; ardından dosya araçları ve exec, değişiklikleri geri eşitlemeden doğrudan uzak korumalı alana karşı çalışır.
 
 <AccordionGroup>
   <Accordion title="Uzak aktarım ayrıntıları">
-    - OpenClaw, `openshell sandbox ssh-config <name>` üzerinden OpenShell'den korumalı alana özgü SSH yapılandırması ister.
-    - Core, bu SSH yapılandırmasını geçici bir dosyaya yazar, SSH oturumunu açar ve `backend: "ssh"` tarafından kullanılan aynı uzak dosya sistemi köprüsünü yeniden kullanır.
+    - OpenClaw, `openshell sandbox ssh-config <name>` üzerinden OpenShell’den korumalı alana özgü SSH yapılandırması ister.
+    - Çekirdek, bu SSH yapılandırmasını geçici bir dosyaya yazar, SSH oturumunu açar ve `backend: "ssh"` tarafından kullanılan aynı uzak dosya sistemi köprüsünü yeniden kullanır.
     - `mirror` modunda yalnızca yaşam döngüsü farklıdır: exec öncesinde yerelden uzağa eşitle, ardından exec sonrasında geri eşitle.
 
   </Accordion>
-  <Accordion title="Mevcut OpenShell sınırlamaları">
-    - korumalı alan tarayıcısı henüz desteklenmez
-    - `sandbox.docker.binds`, OpenShell arka ucunda desteklenmez
-    - `sandbox.docker.*` altındaki Docker'a özgü çalışma zamanı ayarları hâlâ yalnızca Docker arka ucuna uygulanır
+  <Accordion title="Geçerli OpenShell sınırlamaları">
+    - korumalı alan tarayıcısı henüz desteklenmiyor
+    - `sandbox.docker.binds`, OpenShell arka ucunda desteklenmiyor
+    - `sandbox.docker.*` altındaki Docker’a özgü çalışma zamanı ayarları hâlâ yalnızca Docker arka ucu için geçerlidir
 
   </Accordion>
 </AccordionGroup>
 
 #### Çalışma alanı modları
 
-OpenShell'in iki çalışma alanı modeli vardır. Pratikte en önemli bölüm budur.
+OpenShell’in iki çalışma alanı modeli vardır. Pratikte en önemli kısım budur.
 
 <Tabs>
   <Tab title="mirror (yerel kanonik)">
-    **Yerel çalışma alanının kanonik kalmasını** istediğinizde `plugins.entries.openshell.config.mode: "mirror"` kullanın.
+    **yerel çalışma alanının kanonik kalmasını** istediğinizde `plugins.entries.openshell.config.mode: "mirror"` kullanın.
 
     Davranış:
 
     - `exec` öncesinde OpenClaw, yerel çalışma alanını OpenShell korumalı alanına eşitler.
     - `exec` sonrasında OpenClaw, uzak çalışma alanını yerel çalışma alanına geri eşitler.
-    - Dosya araçları hâlâ korumalı alan köprüsü üzerinden çalışır, ancak yerel çalışma alanı dönüşler arasında doğruluk kaynağı olarak kalır.
+    - Dosya araçları yine de korumalı alan köprüsü üzerinden çalışır, ancak yerel çalışma alanı turlar arasında doğruluk kaynağı olarak kalır.
 
-    Şu durumda kullanın:
+    Bunu şu durumlarda kullanın:
 
-    - dosyaları OpenClaw dışında yerel olarak düzenliyorsunuz ve bu değişikliklerin korumalı alanda otomatik olarak görünmesini istiyorsunuz
-    - OpenShell korumalı alanının olabildiğince Docker arka ucu gibi davranmasını istiyorsunuz
-    - ana makine çalışma alanının her exec turundan sonra korumalı alan yazmalarını yansıtmasını istiyorsunuz
+    - dosyaları OpenClaw dışında yerel olarak düzenliyorsunuz ve bu değişikliklerin sandbox içinde otomatik görünmesini istiyorsunuz
+    - OpenShell sandbox ortamının mümkün olduğunca Docker backend gibi davranmasını istiyorsunuz
+    - her exec turundan sonra ana makine çalışma alanının sandbox yazmalarını yansıtmasını istiyorsunuz
 
-    Ödün: exec öncesinde ve sonrasında ek eşitleme maliyeti.
+    Ödün: exec öncesi ve sonrası ek eşitleme maliyeti.
 
   </Tab>
   <Tab title="remote (OpenShell canonical)">
-    **OpenShell çalışma alanının kanonik olmasını** istediğinizde `plugins.entries.openshell.config.mode: "remote"` kullanın.
+    **OpenShell çalışma alanının kanonik kaynak olmasını** istediğinizde `plugins.entries.openshell.config.mode: "remote"` kullanın.
 
     Davranış:
 
-    - Korumalı alan ilk oluşturulduğunda, OpenClaw uzak çalışma alanını yerel çalışma alanından bir kez hazırlar.
+    - Sandbox ilk oluşturulduğunda, OpenClaw uzak çalışma alanını yerel çalışma alanından bir kez başlatır.
     - Bundan sonra `exec`, `read`, `write`, `edit` ve `apply_patch` doğrudan uzak OpenShell çalışma alanı üzerinde çalışır.
     - OpenClaw, exec sonrasında uzak değişiklikleri yerel çalışma alanına geri eşitlemez.
-    - İstem zamanındaki medya okumaları yine çalışır, çünkü dosya ve medya araçları yerel ana makine yolunu varsaymak yerine korumalı alan köprüsü üzerinden okur.
-    - Taşıma, `openshell sandbox ssh-config` tarafından döndürülen OpenShell korumalı alanına SSH ile yapılır.
+    - İstem zamanındaki medya okumaları yine çalışır; çünkü dosya ve medya araçları yerel bir ana makine yolunu varsaymak yerine sandbox köprüsü üzerinden okur.
+    - Aktarım, `openshell sandbox ssh-config` tarafından döndürülen OpenShell sandbox ortamına SSH ile yapılır.
 
     Önemli sonuçlar:
 
-    - Hazırlama adımından sonra OpenClaw dışında ana makinede dosya düzenlerseniz, uzak korumalı alan bu değişiklikleri otomatik olarak **görmez**.
-    - Korumalı alan yeniden oluşturulursa, uzak çalışma alanı yeniden yerel çalışma alanından hazırlanır.
+    - Başlatma adımından sonra ana makinede OpenClaw dışında dosya düzenlerseniz, uzak sandbox bu değişiklikleri otomatik olarak **görmez**.
+    - Sandbox yeniden oluşturulursa, uzak çalışma alanı yerel çalışma alanından yeniden başlatılır.
     - `scope: "agent"` veya `scope: "shared"` ile bu uzak çalışma alanı aynı kapsamda paylaşılır.
 
     Bunu şu durumlarda kullanın:
 
-    - korumalı alan esas olarak uzak OpenShell tarafında yaşamalıysa
-    - tur başına daha düşük eşitleme yükü istiyorsanız
-    - ana makinedeki yerel düzenlemelerin uzak korumalı alan durumunun üzerine sessizce yazmasını istemiyorsanız
+    - sandbox öncelikle uzak OpenShell tarafında yaşamalıysa
+    - tur başına eşitleme ek yükünü azaltmak istiyorsanız
+    - ana makinedeki yerel düzenlemelerin uzak sandbox durumunu sessizce üzerine yazmasını istemiyorsanız
 
   </Tab>
 </Tabs>
 
-Korumalı alanı geçici bir yürütme ortamı olarak düşünüyorsanız `mirror` seçin. Korumalı alanı gerçek çalışma alanı olarak düşünüyorsanız `remote` seçin.
+Sandbox ortamını geçici bir yürütme ortamı olarak düşünüyorsanız `mirror` seçin. Sandbox ortamını gerçek çalışma alanı olarak düşünüyorsanız `remote` seçin.
 
 #### OpenShell yaşam döngüsü
 
-OpenShell korumalı alanları hâlâ normal korumalı alan yaşam döngüsüyle yönetilir:
+OpenShell sandbox ortamları yine normal sandbox yaşam döngüsü üzerinden yönetilir:
 
 - `openclaw sandbox list`, Docker çalışma zamanlarının yanı sıra OpenShell çalışma zamanlarını da gösterir
-- `openclaw sandbox recreate`, geçerli çalışma zamanını siler ve OpenClaw'ın bir sonraki kullanımda onu yeniden oluşturmasına izin verir
-- budama mantığı da arka uçtan haberdardır
+- `openclaw sandbox recreate`, geçerli çalışma zamanını siler ve OpenClaw'ın bir sonraki kullanımda yeniden oluşturmasına izin verir
+- temizleme mantığı da backend farkındadır
 
 `remote` modu için yeniden oluşturma özellikle önemlidir:
 
-- yeniden oluşturma, o kapsamın kanonik uzak çalışma alanını siler
-- sonraki kullanım, yerel çalışma alanından yeni bir uzak çalışma alanı hazırlar
+- yeniden oluşturma, o kapsam için kanonik uzak çalışma alanını siler
+- bir sonraki kullanım, yerel çalışma alanından yeni bir uzak çalışma alanı başlatır
 
-`mirror` modu için yeniden oluşturma esas olarak uzak yürütme ortamını sıfırlar, çünkü yerel çalışma alanı zaten kanonik kalır.
+`mirror` modu için yeniden oluşturma, yerel çalışma alanı zaten kanonik kaldığından çoğunlukla uzak yürütme ortamını sıfırlar.
 
 ## Çalışma alanı erişimi
 
-`agents.defaults.sandbox.workspaceAccess`, **korumalı alanın neyi görebileceğini** denetler:
+`agents.defaults.sandbox.workspaceAccess`, **sandbox ortamının ne görebileceğini** denetler:
 
 <Tabs>
   <Tab title="none (default)">
-    Araçlar `~/.openclaw/sandboxes` altında bir korumalı alan çalışma alanı görür.
+    Araçlar `~/.openclaw/sandboxes` altında bir sandbox çalışma alanı görür.
   </Tab>
   <Tab title="ro">
-    Aracı çalışma alanını `/agent` konumuna salt okunur olarak bağlar (`write`/`edit`/`apply_patch` devre dışı bırakılır).
+    Ajan çalışma alanını `/agent` konumuna salt okunur olarak bağlar (`write`/`edit`/`apply_patch` devre dışı kalır).
   </Tab>
   <Tab title="rw">
-    Aracı çalışma alanını `/workspace` konumuna okuma/yazma olarak bağlar.
+    Ajan çalışma alanını `/workspace` konumuna okuma/yazma olarak bağlar.
   </Tab>
 </Tabs>
 
-OpenShell arka ucuyla:
+OpenShell backend ile:
 
 - `mirror` modu, exec turları arasında yerel çalışma alanını kanonik kaynak olarak kullanmaya devam eder
-- `remote` modu, ilk hazırlamadan sonra uzak OpenShell çalışma alanını kanonik kaynak olarak kullanır
+- `remote` modu, ilk başlatmadan sonra uzak OpenShell çalışma alanını kanonik kaynak olarak kullanır
 - `workspaceAccess: "ro"` ve `"none"` yazma davranışını aynı şekilde kısıtlamaya devam eder
 
-Gelen medya etkin korumalı alan çalışma alanına kopyalanır (`media/inbound/*`).
+Gelen medya etkin sandbox çalışma alanına kopyalanır (`media/inbound/*`).
 
 <Note>
-**Skills notu:** `read` aracı korumalı alan köklüdür. `workspaceAccess: "none"` ile OpenClaw, okunabilmeleri için uygun becerileri korumalı alan çalışma alanına (`.../skills`) yansıtır. `"rw"` ile çalışma alanı becerileri `/workspace/skills` konumundan okunabilir.
+**Skills notu:** `read` aracı sandbox köklüdür. `workspaceAccess: "none"` ile OpenClaw, okunabilmeleri için uygun Skills öğelerini sandbox çalışma alanına (`.../skills`) yansıtır. `"rw"` ile çalışma alanı Skills öğeleri `/workspace/skills` konumundan okunabilir.
 </Note>
 
-## Özel bağlama noktaları
+## Özel bind bağlamaları
 
-`agents.defaults.sandbox.docker.binds`, ek ana makine dizinlerini kapsayıcıya bağlar. Biçim: `host:container:mode` (ör. `"/home/user/source:/source:rw"`).
+`agents.defaults.sandbox.docker.binds`, ek ana makine dizinlerini container içine bağlar. Biçim: `host:container:mode` (ör. `"/home/user/source:/source:rw"`).
 
-Genel ve aracı başına bağlamalar **birleştirilir** (değiştirilmez). `scope: "shared"` altında aracı başına bağlamalar yok sayılır.
+Genel ve ajan başına bind bağlamaları **birleştirilir** (değiştirilmez). `scope: "shared"` altında, ajan başına bind bağlamaları yok sayılır.
 
-`agents.defaults.sandbox.browser.binds`, ek ana makine dizinlerini yalnızca **korumalı alan tarayıcısı** kapsayıcısına bağlar.
+`agents.defaults.sandbox.browser.binds`, ek ana makine dizinlerini yalnızca **sandbox tarayıcısı** container'ına bağlar.
 
-- Ayarlandığında (`[]` dahil), tarayıcı kapsayıcısı için `agents.defaults.sandbox.docker.binds` değerinin yerini alır.
-- Atlandığında, tarayıcı kapsayıcısı `agents.defaults.sandbox.docker.binds` değerine geri döner (geriye dönük uyumlu).
+- Ayarlandığında (`[]` dahil), tarayıcı container'ı için `agents.defaults.sandbox.docker.binds` değerinin yerine geçer.
+- Atlandığında, tarayıcı container'ı `agents.defaults.sandbox.docker.binds` değerine geri döner (geriye dönük uyumlu).
 
-Örnek (salt okunur kaynak + ek veri dizini):
+Örnek (salt okunur kaynak + ek bir veri dizini):
 
 ```json5
 {
@@ -352,17 +352,17 @@ Genel ve aracı başına bağlamalar **birleştirilir** (değiştirilmez). `scop
 ```
 
 <Warning>
-**Bağlama güvenliği**
+**Bind güvenliği**
 
-- Bağlamalar korumalı alan dosya sistemini atlar: ana makine yollarını ayarladığınız modla (`:ro` veya `:rw`) açığa çıkarır.
-- OpenClaw tehlikeli bağlama kaynaklarını engeller (örneğin: `docker.sock`, `/etc`, `/proc`, `/sys`, `/dev` ve bunları açığa çıkaracak üst bağlamalar).
-- OpenClaw ayrıca `~/.aws`, `~/.cargo`, `~/.config`, `~/.docker`, `~/.gnupg`, `~/.netrc`, `~/.npm` ve `~/.ssh` gibi yaygın ev dizini kimlik bilgisi köklerini engeller.
-- Bağlama doğrulaması yalnızca dize eşleştirme değildir. OpenClaw kaynak yolunu normalleştirir, ardından engellenen yolları ve izin verilen kökleri yeniden denetlemeden önce en derindeki mevcut ata üzerinden tekrar çözer.
-- Bu, son yaprak henüz mevcut olmasa bile sembolik bağlantı üst öğesi kaçışlarının kapalı başarısız olacağı anlamına gelir. Örnek: `run-link` orayı gösteriyorsa `/workspace/run-link/new-file` yine `/var/run/...` olarak çözülür.
-- İzin verilen kaynak kökleri aynı şekilde kanonikleştirilir, bu nedenle yalnızca sembolik bağlantı çözümlemesinden önce izin listesinin içinde gibi görünen bir yol yine de `outside allowed roots` olarak reddedilir.
+- Bind bağlamaları sandbox dosya sistemini atlar: ayarladığınız mod neyse (`:ro` veya `:rw`) ana makine yollarını o modla açığa çıkarır.
+- OpenClaw tehlikeli bind kaynaklarını engeller (örneğin: `docker.sock`, `/etc`, `/proc`, `/sys`, `/dev` ve bunları açığa çıkaracak üst bağlamalar).
+- OpenClaw ayrıca `~/.aws`, `~/.cargo`, `~/.config`, `~/.docker`, `~/.gnupg`, `~/.netrc`, `~/.npm` ve `~/.ssh` gibi yaygın ev dizini kimlik bilgisi köklerini de engeller.
+- Bind doğrulaması yalnızca dize eşleştirme değildir. OpenClaw kaynak yolunu normalleştirir, ardından engellenen yolları ve izin verilen kökleri yeniden denetlemeden önce en derindeki mevcut üst dizin üzerinden tekrar çözümler.
+- Bu, son yaprak henüz mevcut olmasa bile sembolik bağlantılı üst dizin kaçışlarının güvenli şekilde başarısız olacağı anlamına gelir. Örnek: `run-link` orayı işaret ediyorsa `/workspace/run-link/new-file` yine `/var/run/...` olarak çözümlenir.
+- İzin verilen kaynak kökleri de aynı şekilde kanonikleştirilir; bu nedenle sembolik bağlantı çözümlemesinden önce yalnızca izin listesi içinde görünüyor olan bir yol yine `outside allowed roots` olarak reddedilir.
 - Hassas bağlamalar (gizli bilgiler, SSH anahtarları, servis kimlik bilgileri) kesinlikle gerekmedikçe `:ro` olmalıdır.
-- Çalışma alanına yalnızca okuma erişimine ihtiyacınız varsa `workspaceAccess: "ro"` ile birleştirin; bağlama modları bağımsız kalır.
-- Bağlamaların araç ilkesi ve yükseltilmiş exec ile nasıl etkileştiği için [Korumalı Alan ve Araç İlkesi ve Yükseltilmiş](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) sayfasına bakın.
+- Çalışma alanına yalnızca okuma erişimi gerekiyorsa `workspaceAccess: "ro"` ile birleştirin; bind modları bağımsız kalır.
+- Bind bağlamalarının araç ilkesi ve yükseltilmiş exec ile nasıl etkileştiği için [Sandbox vs Tool Policy vs Elevated](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) bölümüne bakın.
 
 </Warning>
 
@@ -370,39 +370,74 @@ Genel ve aracı başına bağlamalar **birleştirilir** (değiştirilmez). `scop
 
 Varsayılan Docker imajı: `openclaw-sandbox:bookworm-slim`
 
+<Note>
+**Kaynak checkout ve npm kurulumu**
+
+`scripts/sandbox-setup.sh`, `scripts/sandbox-common-setup.sh` ve `scripts/sandbox-browser-setup.sh` yardımcı betikleri yalnızca bir [source checkout](https://github.com/openclaw/openclaw) üzerinden çalıştırırken kullanılabilir. npm paketine dahil değildir.
+
+OpenClaw'ı `npm install -g openclaw` ile kurduysanız, bunun yerine aşağıda gösterilen satır içi `docker build` komutlarını kullanın.
+</Note>
+
 <Steps>
-  <Step title="Varsayılan imajı oluştur">
+  <Step title="Build the default image">
+    Bir source checkout üzerinden:
+
     ```bash
     scripts/sandbox-setup.sh
     ```
 
-    Varsayılan imaj Node içermez. Bir beceri Node'a (veya başka çalışma zamanlarına) ihtiyaç duyuyorsa ya özel bir imaj hazırlayın ya da `sandbox.docker.setupCommand` üzerinden kurun (ağ çıkışı + yazılabilir kök + root kullanıcısı gerektirir).
+    Bir npm kurulumundan (source checkout gerekmez):
 
-    OpenClaw, `openclaw-sandbox:bookworm-slim` eksik olduğunda sessizce düz `debian:bookworm-slim` kullanmaz. Varsayılan imajı hedefleyen korumalı alan çalışmaları, siz `scripts/sandbox-setup.sh` çalıştırana kadar bir derleme talimatıyla hızlı başarısız olur, çünkü paketli imaj korumalı alan yazma/düzenleme yardımcıları için `python3` taşır.
+    ```bash
+    docker build -t openclaw-sandbox:bookworm-slim - <<'DOCKERFILE'
+    FROM debian:bookworm-slim
+    ENV DEBIAN_FRONTEND=noninteractive
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+      bash ca-certificates curl git jq python3 ripgrep \
+      && rm -rf /var/lib/apt/lists/*
+    RUN useradd --create-home --shell /bin/bash sandbox
+    USER sandbox
+    WORKDIR /home/sandbox
+    CMD ["sleep", "infinity"]
+    DOCKERFILE
+    ```
+
+    Varsayılan imaj Node içermez. Bir skill Node'a (veya başka çalışma zamanlarına) ihtiyaç duyuyorsa ya özel bir imaj oluşturun ya da `sandbox.docker.setupCommand` üzerinden kurun (ağ çıkışı + yazılabilir root + root kullanıcısı gerektirir).
+
+    `openclaw-sandbox:bookworm-slim` eksik olduğunda OpenClaw sessizce düz `debian:bookworm-slim` ile değiştirmez. Varsayılan imajı hedefleyen sandbox çalıştırmaları, imajı oluşturana kadar bir derleme talimatıyla hızlıca başarısız olur; çünkü paketlenen imaj sandbox yazma/düzenleme yardımcıları için `python3` taşır.
 
   </Step>
-  <Step title="İsteğe bağlı: ortak imajı oluştur">
-    Yaygın araçlarla daha işlevsel bir korumalı alan imajı için (örneğin `curl`, `jq`, `nodejs`, `python3`, `git`):
+  <Step title="Optional: build the common image">
+    Yaygın araçlara sahip daha işlevsel bir sandbox imajı için (örneğin `curl`, `jq`, `nodejs`, `python3`, `git`):
+
+    Bir source checkout üzerinden:
 
     ```bash
     scripts/sandbox-common-setup.sh
     ```
 
+    Bir npm kurulumundan, önce varsayılan imajı oluşturun (yukarıya bakın), ardından depodaki [`Dockerfile.sandbox-common`](https://github.com/openclaw/openclaw/blob/main/Dockerfile.sandbox-common) dosyasını kullanarak common imajını bunun üzerine oluşturun.
+
     Ardından `agents.defaults.sandbox.docker.image` değerini `openclaw-sandbox-common:bookworm-slim` olarak ayarlayın.
 
   </Step>
-  <Step title="İsteğe bağlı: korumalı alan tarayıcısı imajını oluştur">
+  <Step title="Optional: build the sandbox browser image">
+    Bir source checkout üzerinden:
+
     ```bash
     scripts/sandbox-browser-setup.sh
     ```
+
+    Bir npm kurulumundan, depodaki [`Dockerfile.sandbox-browser`](https://github.com/openclaw/openclaw/blob/main/Dockerfile.sandbox-browser) dosyasını kullanarak oluşturun.
+
   </Step>
 </Steps>
 
-Varsayılan olarak Docker korumalı alan kapsayıcıları **ağsız** çalışır. `agents.defaults.sandbox.docker.network` ile geçersiz kılın.
+Varsayılan olarak Docker sandbox container'ları **ağ olmadan** çalışır. `agents.defaults.sandbox.docker.network` ile geçersiz kılın.
 
 <AccordionGroup>
-  <Accordion title="Korumalı alan tarayıcısı Chromium varsayılanları">
-    Paketli korumalı alan tarayıcısı imajı, kapsayıcılaştırılmış iş yükleri için temkinli Chromium başlangıç varsayılanları da uygular. Geçerli kapsayıcı varsayılanları şunları içerir:
+  <Accordion title="Sandbox browser Chromium defaults">
+    Paketlenen sandbox tarayıcı imajı, container içinde çalışan iş yükleri için temkinli Chromium başlangıç varsayılanları da uygular. Geçerli container varsayılanları şunları içerir:
 
     - `--remote-debugging-address=127.0.0.1`
     - `--remote-debugging-port=<derived from OPENCLAW_BROWSER_CDP_PORT>`
@@ -422,63 +457,63 @@ Varsayılan olarak Docker korumalı alan kapsayıcıları **ağsız** çalışı
     - `--metrics-recording-only`
     - `--renderer-process-limit=2`
     - `noSandbox` etkinleştirildiğinde `--no-sandbox`.
-    - Üç grafik güçlendirme bayrağı (`--disable-3d-apis`, `--disable-software-rasterizer`, `--disable-gpu`) isteğe bağlıdır ve kapsayıcılar GPU desteğinden yoksun olduğunda kullanışlıdır. İş yükünüz WebGL veya diğer 3D/tarayıcı özellikleri gerektiriyorsa `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` ayarlayın.
+    - Üç grafik güçlendirme bayrağı (`--disable-3d-apis`, `--disable-software-rasterizer`, `--disable-gpu`) isteğe bağlıdır ve container'larda GPU desteği olmadığında yararlıdır. İş yükünüz WebGL veya başka 3D/tarayıcı özellikleri gerektiriyorsa `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` ayarlayın.
     - `--disable-extensions` varsayılan olarak etkindir ve uzantıya bağımlı akışlar için `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` ile devre dışı bırakılabilir.
-    - `--renderer-process-limit=2`, `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>` tarafından denetlenir; burada `0`, Chromium varsayılanını korur.
+    - `--renderer-process-limit=2`, `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>` tarafından denetlenir; burada `0`, Chromium'un varsayılanını korur.
 
-    Farklı bir çalışma zamanı profiline ihtiyacınız varsa özel bir tarayıcı imajı kullanın ve kendi giriş noktanızı sağlayın. Yerel (kapsayıcı olmayan) Chromium profilleri için ek başlangıç bayrakları eklemek üzere `browser.extraArgs` kullanın.
+    Farklı bir çalışma zamanı profiline ihtiyacınız varsa, özel bir tarayıcı imajı kullanın ve kendi entrypoint'inizi sağlayın. Yerel (container dışı) Chromium profilleri için ek başlangıç bayrakları eklemek üzere `browser.extraArgs` kullanın.
 
   </Accordion>
-  <Accordion title="Ağ güvenliği varsayılanları">
+  <Accordion title="Network security defaults">
     - `network: "host"` engellenir.
-    - `network: "container:<id>"` varsayılan olarak engellenir (ad alanına katılma baypas riski).
-    - Acil durum geçersiz kılması: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
+    - `network: "container:<id>"` varsayılan olarak engellenir (namespace join atlama riski).
+    - Acil durum geçersiz kılma: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
 
   </Accordion>
 </AccordionGroup>
 
-Docker kurulumları ve kapsayıcılaştırılmış Gateway burada bulunur: [Docker](/tr/install/docker)
+Docker kurulumları ve container içinde çalışan Gateway burada bulunur: [Docker](/tr/install/docker)
 
-Docker Gateway dağıtımları için `scripts/docker/setup.sh`, korumalı alan yapılandırmasını önyükleyebilir. Bu yolu etkinleştirmek için `OPENCLAW_SANDBOX=1` (veya `true`/`yes`/`on`) ayarlayın. Soket konumunu `OPENCLAW_DOCKER_SOCKET` ile geçersiz kılabilirsiniz. Tam kurulum ve ortam başvurusu: [Docker](/tr/install/docker#agent-sandbox).
+Docker Gateway dağıtımları için `scripts/docker/setup.sh`, sandbox yapılandırmasını başlatabilir. Bu yolu etkinleştirmek için `OPENCLAW_SANDBOX=1` (veya `true`/`yes`/`on`) ayarlayın. Socket konumunu `OPENCLAW_DOCKER_SOCKET` ile geçersiz kılabilirsiniz. Tam kurulum ve ortam referansı: [Docker](/tr/install/docker#agent-sandbox).
 
-## setupCommand (tek seferlik kapsayıcı kurulumu)
+## setupCommand (tek seferlik container kurulumu)
 
-`setupCommand`, korumalı alan kapsayıcısı oluşturulduktan sonra **bir kez** çalışır (her çalıştırmada değil). Kapsayıcı içinde `sh -lc` aracılığıyla yürütülür.
+`setupCommand`, sandbox container'ı oluşturulduktan sonra **bir kez** çalışır (her çalıştırmada değil). Container içinde `sh -lc` üzerinden yürütülür.
 
 Yollar:
 
 - Genel: `agents.defaults.sandbox.docker.setupCommand`
-- Aracı başına: `agents.list[].sandbox.docker.setupCommand`
+- Ajan başına: `agents.list[].sandbox.docker.setupCommand`
 
 <AccordionGroup>
-  <Accordion title="Yaygın tuzaklar">
+  <Accordion title="Common pitfalls">
     - Varsayılan `docker.network` `"none"` değeridir (çıkış yoktur), bu nedenle paket kurulumları başarısız olur.
     - `docker.network: "container:<id>"`, `dangerouslyAllowContainerNamespaceJoin: true` gerektirir ve yalnızca acil durum içindir.
-    - `readOnlyRoot: true` yazmaları engeller; `readOnlyRoot: false` ayarlayın veya özel bir imaj hazırlayın.
-    - Paket kurulumları için `user` root olmalıdır (`user` değerini atlayın veya `user: "0:0"` ayarlayın).
-    - Korumalı alan exec, ana makine `process.env` değerini devralmaz. Beceri API anahtarları için `agents.defaults.sandbox.docker.env` (veya özel bir imaj) kullanın.
+    - `readOnlyRoot: true` yazmaları engeller; `readOnlyRoot: false` ayarlayın veya özel bir imaj oluşturun.
+    - Paket kurulumları için `user` root olmalıdır (`user` değerini atlayın veya `user: "0:0"` olarak ayarlayın).
+    - Sandbox exec, ana makine `process.env` değerini devralmaz. Skill API anahtarları için `agents.defaults.sandbox.docker.env` (veya özel bir imaj) kullanın.
 
   </Accordion>
 </AccordionGroup>
 
-## Araç ilkesi ve kaçış yolları
+## Araç politikası ve kaçış yolları
 
-Araç izin/ret ilkeleri, korumalı alan kurallarından önce uygulanmaya devam eder. Bir araç genel olarak veya aracı başına reddedilmişse, korumalı alan onu geri getirmez.
+Araç izin verme/reddetme politikaları, sandbox kurallarından önce hâlâ uygulanır. Bir araç genel olarak veya aracı başına reddedildiyse, sandbox onu geri getirmez.
 
-`tools.elevated`, `exec` komutunu korumalı alan dışında çalıştıran açık bir kaçış yoludur (varsayılan olarak `gateway` veya exec hedefi `node` olduğunda `node`). `/exec` yönergeleri yalnızca yetkili gönderenler için geçerlidir ve oturum başına kalıcıdır; `exec` özelliğini sert şekilde devre dışı bırakmak için araç ilkesi reddini kullanın (bkz. [Korumalı Alan ve Araç İlkesi ve Yükseltilmiş](/tr/gateway/sandbox-vs-tool-policy-vs-elevated)).
+`tools.elevated`, `exec` komutunu sandbox dışında çalıştıran açık bir kaçış yoludur (varsayılan olarak `gateway`, exec hedefi `node` olduğunda ise `node`). `/exec` yönergeleri yalnızca yetkili gönderenler için geçerlidir ve oturum başına kalıcıdır; `exec` komutunu tamamen devre dışı bırakmak için araç politikası reddini kullanın (bkz. [Sandbox ile Araç Politikası ve Elevated karşılaştırması](/tr/gateway/sandbox-vs-tool-policy-vs-elevated)).
 
 Hata ayıklama:
 
-- Etkili korumalı alan modunu, araç ilkesini ve düzeltme yapılandırma anahtarlarını incelemek için `openclaw sandbox explain` kullanın.
-- "Bu neden engellendi?" zihinsel modeli için [Korumalı Alan ve Araç İlkesi ve Yükseltilmiş](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) sayfasına bakın.
+- Etkili sandbox modunu, araç politikasını ve düzeltme yapılandırma anahtarlarını incelemek için `openclaw sandbox explain` kullanın.
+- "Bu neden engellendi?" zihinsel modeli için [Sandbox ile Araç Politikası ve Elevated karşılaştırması](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) bölümüne bakın.
 
-Kilitli tutun.
+Sıkı şekilde kilitli tutun.
 
 ## Çoklu aracı geçersiz kılmaları
 
-Her aracı korumalı alan + araçları geçersiz kılabilir: `agents.list[].sandbox` ve `agents.list[].tools` (ayrıca korumalı alan araç ilkesi için `agents.list[].tools.sandbox.tools`). Öncelik için [Çoklu Aracı Korumalı Alanı ve Araçlar](/tr/tools/multi-agent-sandbox-tools) sayfasına bakın.
+Her aracı sandbox + araçları geçersiz kılabilir: `agents.list[].sandbox` ve `agents.list[].tools` (ayrıca sandbox araç politikası için `agents.list[].tools.sandbox.tools`). Öncelik sırası için [Çoklu Aracı Sandbox ve Araçlar](/tr/tools/multi-agent-sandbox-tools) bölümüne bakın.
 
-## En küçük etkinleştirme örneği
+## Minimal etkinleştirme örneği
 
 ```json5
 {
@@ -496,8 +531,8 @@ Her aracı korumalı alan + araçları geçersiz kılabilir: `agents.list[].sand
 
 ## İlgili
 
-- [Çoklu Ajan Sandbox ve Araçlar](/tr/tools/multi-agent-sandbox-tools) — ajan başına geçersiz kılmalar ve öncelik sırası
-- [OpenShell](/tr/gateway/openshell) — yönetilen sandbox arka ucu kurulumu, çalışma alanı modları ve yapılandırma başvurusu
+- [Çoklu Aracı Sandbox ve Araçlar](/tr/tools/multi-agent-sandbox-tools) — aracı başına geçersiz kılmalar ve öncelik sırası
+- [OpenShell](/tr/gateway/openshell) — yönetilen sandbox arka uç kurulumu, çalışma alanı modları ve yapılandırma referansı
 - [Sandbox yapılandırması](/tr/gateway/config-agents#agentsdefaultssandbox)
-- [Sandbox ile Araç İlkesi ile Yükseltilmiş Arasındaki Fark](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) — "bu neden engelleniyor?" hata ayıklaması
+- [Sandbox ile Araç Politikası ve Elevated karşılaştırması](/tr/gateway/sandbox-vs-tool-policy-vs-elevated) — "Bu neden engellendi?" hata ayıklaması
 - [Güvenlik](/tr/gateway/security)

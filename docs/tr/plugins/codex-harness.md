@@ -1,32 +1,40 @@
 ---
 read_when:
-    - Paketle birlikte gelen Codex app-server düzeneğini kullanmak istiyorsunuz
-    - Codex çalıştırma düzeneği yapılandırma örneklerine ihtiyacınız var
+    - Birlikte gelen Codex app-server test düzeneğini kullanmak istiyorsunuz
+    - Codex çalışma düzeneği yapılandırma örneklerine ihtiyacınız var
     - Yalnızca Codex dağıtımlarının PI'ye geri dönmek yerine başarısız olmasını istiyorsunuz
-summary: Paketle birlikte gelen Codex app-server çalışma düzeneği üzerinden OpenClaw gömülü ajan turlarını çalıştırın
-title: Codex düzeneği
+summary: OpenClaw gömülü ajan turlarını, birlikte gelen Codex app-server koşumu üzerinden çalıştırın
+title: Codex çalışma düzeneği
 x-i18n:
-    generated_at: "2026-05-01T09:02:52Z"
+    generated_at: "2026-05-02T09:00:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 740e8fa9e6f4a737dfd250fe26b85865a7f7e40839b41e879e9224a45cbe8d72
+    source_hash: 107f9fc0a3e8ad6a4790fc9eb68276c81d299236f11293014d2ab9bf6e235133
     source_path: plugins/codex-harness.md
     workflow: 16
 ---
 
-Birlikte verilen `codex` Plugin’i, OpenClaw’ın gömülü aracı turlarını yerleşik PI düzeneği yerine Codex app-server üzerinden çalıştırmasına izin verir.
+Birlikte gelen `codex` Plugin'i, OpenClaw'ın gömülü ajan turlarını yerleşik PI düzeneği yerine Codex uygulama sunucusu üzerinden çalıştırmasını sağlar.
 
-Bunu, düşük seviyeli aracı oturumunun Codex tarafından yönetilmesini istediğinizde kullanın: model keşfi, yerel iş parçacığına devam etme, yerel Compaction ve app-server yürütmesi. OpenClaw sohbet kanallarını, oturum dosyalarını, model seçimini, araçları, onayları, medya teslimini ve görünür transkript aynasını yönetmeye devam eder.
+Codex'in düşük seviyeli ajan oturumunun sahibi olmasını istediğinizde bunu kullanın: model keşfi, yerel iş parçacığı sürdürme, yerel sıkıştırma ve uygulama sunucusu yürütmesi. OpenClaw sohbet kanallarının, oturum dosyalarının, model seçiminin, araçların, onayların, medya tesliminin ve görünür transkript aynasının sahibi olmaya devam eder.
 
-Kendinizi konumlandırmaya çalışıyorsanız
-[Aracı çalışma zamanları](/tr/concepts/agent-runtimes) ile başlayın. Kısa sürüm şudur:
-`openai/gpt-5.5` model ref’idir, `codex` çalışma zamanıdır ve Telegram, Discord, Slack veya başka bir kanal iletişim yüzeyi olarak kalır.
+Bir kaynak sohbet turu Codex düzeneği üzerinden çalıştığında, dağıtım `messages.visibleReplies` değerini açıkça yapılandırmamışsa görünür yanıtlar varsayılan olarak OpenClaw `message` aracına gider. Ajan yine de Codex turunu özel olarak tamamlayabilir; yalnızca `message(action="send")` çağırdığında kanala gönderi yapar. Doğrudan sohbet final yanıtlarını eski otomatik teslim yolunda tutmak için `messages.visibleReplies: "automatic"` olarak ayarlayın.
+
+Codex Heartbeat turları da varsayılan olarak `heartbeat_respond` aracını alır; böylece ajan, uyandırmanın sessiz kalması mı yoksa bildirim göndermesi mi gerektiğini, bu kontrol akışını final metnine kodlamadan kaydedebilir.
+
+Kendinizi konumlandırmaya çalışıyorsanız, [Ajan çalışma zamanları](/tr/concepts/agent-runtimes) ile başlayın. Kısa sürüm şudur: `openai/gpt-5.5` model referansıdır, `codex` çalışma zamanıdır ve Telegram, Discord, Slack veya başka bir kanal iletişim yüzeyi olmaya devam eder.
 
 ## Hızlı yapılandırma
 
-GPT aracı turları için Codex düzeneğini kullanmak üzere model ref’ini
-`openai/gpt-*` olarak kanonik tutun, birlikte verilen `codex` Plugin’ini etkinleştirin ve
-`agentRuntime.id: "codex"` ayarlayın:
+"OpenClaw içinde Codex" isteyen çoğu kullanıcı şu yolu ister: bir ChatGPT/Codex aboneliğiyle oturum açın, ardından gömülü ajan turlarını yerel Codex uygulama sunucusu çalışma zamanı üzerinden çalıştırın. Model referansı yine kanonik olarak `openai/gpt-*` kalır; abonelik kimlik doğrulaması bir `openai-codex/*` model önekinden değil, Codex hesabından/profilinden gelir.
+
+Henüz yapmadıysanız önce Codex OAuth ile oturum açın:
+
+```bash
+openclaw models auth login --provider openai-codex
+```
+
+Ardından birlikte gelen `codex` Plugin'ini etkinleştirin ve Codex çalışma zamanını zorunlu kılın:
 
 ```json5
 {
@@ -49,7 +57,7 @@ GPT aracı turları için Codex düzeneğini kullanmak üzere model ref’ini
 }
 ```
 
-Yapılandırmanız `plugins.allow` kullanıyorsa, `codex` öğesini oraya da ekleyin:
+Yapılandırmanız `plugins.allow` kullanıyorsa, `codex` değerini oraya da ekleyin:
 
 ```json5
 {
@@ -64,130 +72,143 @@ Yapılandırmanız `plugins.allow` kullanıyorsa, `codex` öğesini oraya da ekl
 }
 ```
 
-Bu yol için `openai-codex/gpt-*` kullanmayın. Bu, ayrıca bir çalışma zamanını zorlamadığınız sürece normal PI çalıştırıcısı üzerinden Codex OAuth’u seçer. Yapılandırma değişiklikleri yeni veya sıfırlanmış oturumlara uygulanır; mevcut oturumlar kaydedilmiş çalışma zamanlarını korur.
+Yerel Codex çalışma zamanını kastettiğinizde `openai-codex/gpt-*` kullanmayın. Bu önek, açık "PI üzerinden Codex OAuth" yoludur. Yapılandırma değişiklikleri yeni veya sıfırlanmış oturumlara uygulanır; mevcut oturumlar kaydedilmiş çalışma zamanlarını korur.
 
-## Bu Plugin’in değiştirdikleri
+## Bu Plugin neyi değiştirir
 
-Birlikte verilen `codex` Plugin’i birkaç ayrı yetenek sağlar:
+Birlikte gelen `codex` Plugin'i birkaç ayrı yetenek sağlar:
 
-| Yetenek                           | Nasıl kullanırsınız                                 | Ne yapar                                                                      |
-| --------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Yerel gömülü çalışma zamanı       | `agentRuntime.id: "codex"`                          | OpenClaw gömülü aracı turlarını Codex app-server üzerinden çalıştırır.        |
-| Yerel sohbet denetim komutları    | `/codex bind`, `/codex resume`, `/codex steer`, ... | Bir mesajlaşma konuşmasından Codex app-server iş parçacıklarını bağlar ve denetler. |
-| Codex app-server sağlayıcı/katalog | `codex` iç işleyişleri, düzenek üzerinden sunulur   | Çalışma zamanının app-server modellerini keşfetmesini ve doğrulamasını sağlar. |
-| Codex medya anlama yolu           | `codex/*` görüntü modeli uyumluluk yolları          | Desteklenen görüntü anlama modelleri için sınırlı Codex app-server turları çalıştırır. |
-| Yerel kanca aktarıcısı            | Codex’e özgü olayların çevresindeki Plugin kancaları | OpenClaw’ın desteklenen Codex’e özgü araç/sonlandırma olaylarını gözlemlemesini/engellemesini sağlar. |
+| Yetenek                           | Nasıl kullanırsınız                                  | Ne yapar                                                                       |
+| --------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Yerel gömülü çalışma zamanı       | `agentRuntime.id: "codex"`                          | OpenClaw gömülü ajan turlarını Codex uygulama sunucusu üzerinden çalıştırır.   |
+| Yerel sohbet denetim komutları    | `/codex bind`, `/codex resume`, `/codex steer`, ... | Codex uygulama sunucusu iş parçacıklarını bir mesajlaşma konuşmasından bağlar ve denetler. |
+| Codex uygulama sunucusu sağlayıcısı/kataloğu | `codex` iç bileşenleri, düzenek üzerinden sunulur | Çalışma zamanının uygulama sunucusu modellerini keşfetmesini ve doğrulamasını sağlar. |
+| Codex medya anlama yolu           | `codex/*` görüntü modeli uyumluluk yolları          | Desteklenen görüntü anlama modelleri için sınırlı Codex uygulama sunucusu turları çalıştırır. |
+| Yerel hook aktarması              | Codex'e özgü olayların etrafındaki Plugin hook'ları | OpenClaw'ın desteklenen Codex'e özgü araç/finalleştirme olaylarını gözlemlemesini/engellemesini sağlar. |
 
-Plugin’i etkinleştirmek bu yetenekleri kullanılabilir kılar. Şunları **yapmaz**:
+Plugin'i etkinleştirmek bu yetenekleri kullanılabilir hale getirir. Şunları **yapmaz**:
 
-- her OpenAI modeli için Codex kullanmaya başlama
-- `openai-codex/*` model ref’lerini yerel çalışma zamanına dönüştürme
-- ACP/acpx’i varsayılan Codex yolu yapma
-- zaten PI çalışma zamanı kaydetmiş mevcut oturumları anında değiştirme
-- OpenClaw kanal teslimini, oturum dosyalarını, kimlik doğrulama profili depolamasını veya ileti yönlendirmeyi değiştirme
+- her OpenAI modeli için Codex kullanmaya başlamak
+- `openai-codex/*` model referanslarını yerel çalışma zamanına dönüştürmek
+- ACP/acpx'i varsayılan Codex yolu yapmak
+- halihazırda bir PI çalışma zamanı kaydetmiş mevcut oturumları anında değiştirmek
+- OpenClaw kanal teslimini, oturum dosyalarını, kimlik doğrulama profili depolamasını veya
+  ileti yönlendirmesini değiştirmek
 
-Aynı Plugin yerel `/codex` sohbet denetim komut yüzeyini de yönetir. Plugin etkinse ve kullanıcı sohbetten Codex iş parçacıklarını bağlamayı, sürdürmeyi, yönlendirmeyi, durdurmayı veya incelemeyi isterse aracılar ACP yerine `/codex ...` tercih etmelidir. ACP, kullanıcı ACP/acpx istediğinde veya ACP Codex bağdaştırıcısını test ettiğinde açık yedek olarak kalır.
+Aynı Plugin, yerel `/codex` sohbet denetim komutu yüzeyinin de sahibidir. Plugin etkinse ve kullanıcı sohbetten Codex iş parçacıklarını bağlamayı, sürdürmeyi, yönlendirmeyi, durdurmayı veya incelemeyi isterse ajanlar ACP yerine `/codex ...` kullanmayı tercih etmelidir. ACP, kullanıcı ACP/acpx istediğinde veya ACP Codex bağdaştırıcısını test ettiğinde açık yedek yol olarak kalır.
 
-Yerel Codex turları, OpenClaw Plugin kancalarını genel uyumluluk katmanı olarak korur. Bunlar süreç içi OpenClaw kancalarıdır, Codex `hooks.json` komut kancaları değildir:
+Yerel Codex turları, OpenClaw Plugin hook'larını genel uyumluluk katmanı olarak korur. Bunlar süreç içi OpenClaw hook'larıdır, Codex `hooks.json` komut hook'ları değildir:
 
 - `before_prompt_build`
 - `before_compaction`, `after_compaction`
 - `llm_input`, `llm_output`
 - `before_tool_call`, `after_tool_call`
-- `before_message_write` yansıtılmış transkript kayıtları için
-- Codex `Stop` aktarıcısı üzerinden `before_agent_finalize`
+- `before_message_write` aynalanmış transkript kayıtları için
+- Codex `Stop` aktarması üzerinden `before_agent_finalize`
 - `agent_end`
 
-Plugin’ler, OpenClaw aracı yürüttükten sonra ve sonuç Codex’e döndürülmeden önce OpenClaw dinamik araç sonuçlarını yeniden yazmak için çalışma zamanı nötr araç sonucu ara yazılımı da kaydedebilir. Bu, OpenClaw’a ait transkript araç sonucu yazımlarını dönüştüren genel `tool_result_persist` Plugin kancasından ayrıdır.
+Plugin'ler, OpenClaw aracı yürüttükten sonra ve sonuç Codex'e döndürülmeden önce OpenClaw dinamik araç sonuçlarını yeniden yazmak için çalışma zamanı bağımsız araç sonucu ara katmanı da kaydedebilir. Bu, OpenClaw'a ait transkript araç sonucu yazımlarını dönüştüren herkese açık `tool_result_persist` Plugin kancasından ayrıdır.
 
-Plugin kancası semantiğinin kendisi için [Plugin kancaları](/tr/plugins/hooks) ve [Plugin koruma davranışı](/tr/tools/plugin) sayfalarına bakın.
+Plugin kancası semantiklerinin kendisi için bkz. [Plugin kancaları](/tr/plugins/hooks) ve [Plugin koruma davranışı](/tr/tools/plugin).
 
-Düzenek varsayılan olarak kapalıdır. Yeni yapılandırmalar OpenAI model ref’lerini
-`openai/gpt-*` olarak kanonik tutmalı ve yerel app-server yürütmesi istediklerinde
-`agentRuntime.id: "codex"` veya `OPENCLAW_AGENT_RUNTIME=codex` değerini açıkça zorlamalıdır. Eski `codex/*` model ref’leri uyumluluk için düzeneği hâlâ otomatik seçer, ancak çalışma zamanı destekli eski sağlayıcı önekleri normal model/sağlayıcı seçenekleri olarak gösterilmez.
+Koşum varsayılan olarak kapalıdır. Yeni yapılandırmalar, OpenAI model referanslarını `openai/gpt-*` olarak standart tutmalı ve yerel uygulama sunucusu yürütmesi istediklerinde açıkça `agentRuntime.id: "codex"` ya da `OPENCLAW_AGENT_RUNTIME=codex` zorlamalıdır. Eski `codex/*` model referansları uyumluluk için koşumu hâlâ otomatik seçer, ancak çalışma zamanı destekli eski sağlayıcı önekleri normal model/sağlayıcı seçenekleri olarak gösterilmez.
 
-`codex` Plugin’i etkinse ancak birincil model hâlâ `openai-codex/*` ise, `openclaw doctor` rotayı değiştirmek yerine uyarı verir. Bu kasıtlıdır: `openai-codex/*` PI Codex OAuth/abonelik yolu olarak kalır ve yerel app-server yürütmesi açık bir çalışma zamanı seçimi olarak kalır.
+`codex` Plugin etkinse ancak birincil model hâlâ `openai-codex/*` ise, `openclaw doctor` rotayı değiştirmek yerine uyarır. Bu kasıtlıdır: `openai-codex/*` PI Codex OAuth/abonelik yolu olarak kalır ve yerel uygulama sunucusu yürütmesi açık bir çalışma zamanı seçimi olarak kalır.
 
 ## Rota haritası
 
 Yapılandırmayı değiştirmeden önce bu tabloyu kullanın:
 
-| İstenen davranış                         | Model ref                  | Çalışma zamanı yapılandırması           | Plugin gereksinimi          | Beklenen durum etiketi         |
-| ---------------------------------------- | -------------------------- | --------------------------------------- | --------------------------- | ------------------------------ |
-| Normal OpenClaw çalıştırıcısı üzerinden OpenAI API | `openai/gpt-*`             | atlanmış veya `runtime: "pi"`           | OpenAI sağlayıcısı          | `Runtime: OpenClaw Pi Default` |
-| PI üzerinden Codex OAuth/abonelik        | `openai-codex/gpt-*`       | atlanmış veya `runtime: "pi"`           | OpenAI Codex OAuth sağlayıcısı | `Runtime: OpenClaw Pi Default` |
-| Yerel Codex app-server gömülü turları    | `openai/gpt-*`             | `agentRuntime.id: "codex"`              | `codex` Plugin’i            | `Runtime: OpenAI Codex`        |
-| Temkinli otomatik modla karışık sağlayıcılar | sağlayıcıya özgü ref’ler   | `agentRuntime.id: "auto"`               | İsteğe bağlı Plugin çalışma zamanları | Seçilen çalışma zamanına bağlı |
-| Açık Codex ACP bağdaştırıcı oturumu      | ACP istem/model bağımlı    | `runtime: "acp"` ile `sessions_spawn`   | sağlıklı `acpx` arka ucu    | ACP görev/oturum durumu        |
+| İstenen davranış                                    | Model ref                  | Çalışma zamanı yapılandırması          | Kimlik doğrulama/profil rotası | Beklenen durum etiketi         |
+| --------------------------------------------------- | -------------------------- | -------------------------------------- | ------------------------------ | ------------------------------ |
+| Yerel Codex çalışma zamanıyla ChatGPT/Codex aboneliği | `openai/gpt-*`             | `agentRuntime.id: "codex"`             | Codex OAuth veya Codex hesabı  | `Runtime: OpenAI Codex`        |
+| Normal OpenClaw çalıştırıcısı üzerinden OpenAI API  | `openai/gpt-*`             | atlanmış veya `runtime: "pi"`          | OpenAI API anahtarı            | `Runtime: OpenClaw Pi Default` |
+| PI üzerinden ChatGPT/Codex aboneliği                | `openai-codex/gpt-*`       | atlanmış veya `runtime: "pi"`          | OpenAI Codex OAuth sağlayıcısı | `Runtime: OpenClaw Pi Default` |
+| Koruyucu otomatik modla karma sağlayıcılar          | sağlayıcıya özgü referanslar | `agentRuntime.id: "auto"`            | Seçilen sağlayıcı başına       | Seçilen çalışma zamanına bağlı |
+| Açık Codex ACP bağdaştırıcı oturumu                 | ACP prompt/model dependent | `sessions_spawn` with `runtime: "acp"` | ACP arka uç kimlik doğrulaması | ACP görev/oturum durumu        |
 
 Önemli ayrım sağlayıcı ile çalışma zamanı arasındadır:
 
-- `openai-codex/*` "PI hangi sağlayıcı/kimlik doğrulama rotasını kullanmalı?" sorusunu yanıtlar
-- `agentRuntime.id: "codex"` "bu gömülü turu hangi döngü yürütmeli?" sorusunu yanıtlar
-- `/codex ...` "bu sohbet hangi yerel Codex konuşmasını bağlamalı veya denetlemeli?" sorusunu yanıtlar
-- ACP "acpx hangi harici düzenek sürecini başlatmalı?" sorusunu yanıtlar
+- `openai-codex/*`, "PI hangi sağlayıcı/kimlik doğrulama rotasını kullanmalı?" sorusunu yanıtlar
+- `agentRuntime.id: "codex"`, "bu gömülü turu hangi döngü yürütmeli?" sorusunu yanıtlar
+- `/codex ...`, "bu sohbet hangi yerel Codex konuşmasına bağlanmalı veya hangisini denetlemeli?" sorusunu yanıtlar
+- ACP, "acpx hangi harici koşum sürecini başlatmalı?" sorusunu yanıtlar
 
 ## Doğru model önekini seçin
 
-OpenAI ailesi rotaları öneke özeldir. PI üzerinden Codex OAuth istediğinizde `openai-codex/*` kullanın; doğrudan OpenAI API erişimi istediğinizde veya yerel Codex app-server düzeneğini zorlarken `openai/*` kullanın:
+OpenAI ailesi rotalar öneke özgüdür. Yaygın abonelik artı yerel Codex çalışma zamanı kurulumu için `agentRuntime.id: "codex"` ile `openai/*` kullanın. `openai-codex/*` yalnızca PI üzerinden Codex OAuth'u özellikle istediğinizde kullanın:
 
-| Model ref                                     | Çalışma zamanı yolu                         | Ne zaman kullanılır                                                        |
-| --------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------- |
-| `openai/gpt-5.4`                              | OpenClaw/PI tesisatı üzerinden OpenAI sağlayıcısı | `OPENAI_API_KEY` ile güncel doğrudan OpenAI Platform API erişimi istediğinizde. |
-| `openai-codex/gpt-5.5`                        | OpenClaw/PI üzerinden OpenAI Codex OAuth    | Varsayılan PI çalıştırıcısıyla ChatGPT/Codex abonelik kimlik doğrulaması istediğinizde. |
-| `openai/gpt-5.5` + `agentRuntime.id: "codex"` | Codex app-server düzeneği                   | Gömülü aracı turu için yerel Codex app-server yürütmesi istediğinizde.     |
+| Model ref                                     | Çalışma zamanı yolu                       | Ne zaman kullanılmalı                                                     |
+| --------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
+| `openai/gpt-5.4`                              | OpenClaw/PI tesisatı üzerinden OpenAI sağlayıcısı | `OPENAI_API_KEY` ile güncel doğrudan OpenAI Platform API erişimi istiyorsunuz. |
+| `openai-codex/gpt-5.5`                        | OpenClaw/PI üzerinden OpenAI Codex OAuth  | Varsayılan PI çalıştırıcısıyla ChatGPT/Codex abonelik kimlik doğrulaması istiyorsunuz. |
+| `openai/gpt-5.5` + `agentRuntime.id: "codex"` | Codex uygulama sunucusu koşumu            | Yerel Codex yürütmesiyle ChatGPT/Codex abonelik kimlik doğrulaması istiyorsunuz. |
 
-GPT-5.5 şu anda OpenClaw’da yalnızca abonelik/OAuth ile kullanılabilir. PI OAuth için `openai-codex/gpt-5.5` veya Codex app-server düzeneğiyle `openai/gpt-5.5` kullanın. `openai/gpt-5.5` için doğrudan API anahtarı erişimi, OpenAI GPT-5.5’i genel API’de etkinleştirdiğinde desteklenir.
+GPT-5.5, hesabınız bunları sunduğunda hem doğrudan OpenAI API anahtarı hem de Codex abonelik rotalarında görünebilir. Yerel Codex çalışma zamanı için Codex uygulama sunucusu koşumuyla `openai/gpt-5.5`, PI OAuth için `openai-codex/gpt-5.5` veya doğrudan API anahtarı trafiği için Codex çalışma zamanı geçersiz kılması olmadan `openai/gpt-5.5` kullanın.
 
-Eski `codex/gpt-*` ref’leri uyumluluk takma adları olarak kabul edilmeye devam eder. Doctor uyumluluk migrasyonu eski birincil çalışma zamanı ref’lerini kanonik model ref’lerine yeniden yazar ve çalışma zamanı politikasını ayrı kaydeder; yalnızca yedek olan eski ref’ler ise değiştirilmeden bırakılır çünkü çalışma zamanı tüm aracı kapsayıcısı için yapılandırılır. Yeni PI Codex OAuth yapılandırmaları `openai-codex/gpt-*` kullanmalıdır; yeni yerel app-server düzeneği yapılandırmaları `openai/gpt-*` artı `agentRuntime.id: "codex"` kullanmalıdır.
+Eski `codex/gpt-*` referansları uyumluluk takma adları olarak kabul edilmeye devam eder. Doctor uyumluluk geçişi, eski birincil çalışma zamanı referanslarını standart model referanslarına yeniden yazar ve çalışma zamanı ilkesini ayrı kaydeder; yalnızca geri dönüş amaçlı eski referanslar ise değiştirilmeden bırakılır çünkü çalışma zamanı tüm ajan kapsayıcısı için yapılandırılır. Yeni PI Codex OAuth yapılandırmaları `openai-codex/gpt-*` kullanmalıdır; yeni yerel uygulama sunucusu koşumu yapılandırmaları `agentRuntime.id: "codex"` ile birlikte `openai/gpt-*` kullanmalıdır.
 
-`agents.defaults.imageModel` aynı önek ayrımını izler. Görüntü anlama OpenAI Codex OAuth sağlayıcı yolu üzerinden çalışmalıysa `openai-codex/gpt-*` kullanın. Görüntü anlama sınırlı bir Codex app-server turu üzerinden çalışmalıysa `codex/gpt-*` kullanın. Codex app-server modeli görüntü girişi desteği ilan etmelidir; yalnızca metin Codex modelleri medya turu başlamadan önce başarısız olur.
+`agents.defaults.imageModel` aynı önek ayrımını izler. Görüntü anlama OpenAI Codex OAuth sağlayıcı yolu üzerinden çalışmalıysa `openai-codex/gpt-*` kullanın. Görüntü anlama sınırlı bir Codex uygulama sunucusu turu üzerinden çalışmalıysa `codex/gpt-*` kullanın. Codex uygulama sunucusu modeli görüntü girdisi desteğini duyurmalıdır; yalnızca metin destekleyen Codex modelleri medya turu başlamadan önce başarısız olur.
 
-Geçerli oturum için etkin düzeneği doğrulamak üzere `/status` kullanın. Seçim şaşırtıcıysa `agents/harness` alt sistemi için hata ayıklama günlüğünü etkinleştirin ve Gateway’in yapılandırılmış `agent harness selected` kaydını inceleyin. Bu kayıt seçilen düzenek kimliğini, seçim nedenini, çalışma zamanı/yedek politikasını ve `auto` modunda her Plugin adayının destek sonucunu içerir.
+Geçerli oturum için etkin koşumu doğrulamak üzere `/status` kullanın. Seçim şaşırtıcıysa, `agents/harness` alt sistemi için hata ayıklama günlüklemesini etkinleştirin ve gateway'in yapılandırılmış `agent harness selected` kaydını inceleyin. Bu kayıt seçilen koşum kimliğini, seçim nedenini, çalışma zamanı/geri dönüş ilkesini ve `auto` modunda her Plugin adayının destek sonucunu içerir.
 
-### Doctor uyarıları ne anlama gelir
+### Doctor uyarıları ne anlama gelir?
 
-`openclaw doctor`, bunların tümü doğru olduğunda uyarı verir:
+`openclaw doctor`, aşağıdakilerin tümü doğru olduğunda uyarır:
 
-- birlikte verilen `codex` Plugin’i etkin veya izinli
-- bir aracının birincil modeli `openai-codex/*`
-- o aracının etkin çalışma zamanı `codex` değil
+- paketlenen `codex` Plugin etkinleştirilmiş veya izin verilmiştir
+- bir ajanın birincil modeli `openai-codex/*` şeklindedir
+- o ajanın etkin çalışma zamanı `codex` değildir
 
-Bu uyarı vardır çünkü kullanıcılar genellikle "Codex Plugin etkin" ifadesinin "yerel Codex app-server çalışma zamanı" anlamına gelmesini bekler. OpenClaw bu sıçramayı yapmaz. Uyarı şu anlama gelir:
+Bu uyarı vardır çünkü kullanıcılar sıklıkla "Codex Plugin etkin" ifadesinin "yerel Codex uygulama sunucusu çalışma zamanı" anlamına gelmesini bekler. OpenClaw bu sıçramayı yapmaz. Uyarının anlamı şudur:
 
-- PI üzerinden ChatGPT/Codex OAuth amaçladıysanız **değişiklik gerekmez**.
-- Yerel app-server yürütmesi amaçladıysanız modeli `openai/<model>` olarak değiştirin ve
-  `agentRuntime.id: "codex"` ayarlayın.
-- Mevcut oturumlar, çalışma zamanı değişikliğinden sonra hâlâ `/new` veya `/reset` gerektirir,
-  çünkü oturum çalışma zamanı sabitlemeleri yapışkandır.
+- PI üzerinden ChatGPT/Codex OAuth'u amaçladıysanız **değişiklik gerekmez**.
+- Yerel uygulama sunucusu yürütmesini amaçladıysanız modeli `openai/<model>` olarak değiştirin ve `agentRuntime.id: "codex"` ayarlayın.
+- Mevcut oturumlar, çalışma zamanı değişikliğinden sonra yine de `/new` veya `/reset` gerektirir, çünkü oturum çalışma zamanı sabitlemeleri kalıcıdır.
 
-Düzenek seçimi canlı oturum denetimi değildir. Gömülü bir tur çalıştığında OpenClaw, seçilen düzenek kimliğini o oturuma kaydeder ve aynı oturum kimliğindeki sonraki turlar için onu kullanmaya devam eder. Gelecekteki oturumların başka bir düzenek kullanmasını istediğinizde `agentRuntime` yapılandırmasını veya `OPENCLAW_AGENT_RUNTIME` değerini değiştirin; mevcut bir konuşmayı PI ile Codex arasında değiştirmeden önce yeni bir oturum başlatmak için `/new` veya `/reset` kullanın. Bu, bir transkriptin iki uyumsuz yerel oturum sistemi üzerinden yeniden oynatılmasını önler.
+Koşum seçimi canlı bir oturum denetimi değildir. Gömülü bir tur çalıştığında OpenClaw seçilen koşum kimliğini o oturuma kaydeder ve aynı oturum kimliğindeki sonraki turlarda onu kullanmaya devam eder. Gelecekteki oturumların başka bir koşum kullanmasını istediğinizde `agentRuntime` yapılandırmasını veya `OPENCLAW_AGENT_RUNTIME` değerini değiştirin; mevcut bir konuşmayı PI ile Codex arasında değiştirmeden önce yeni bir oturum başlatmak için `/new` veya `/reset` kullanın. Bu, bir transkriptin iki uyumsuz yerel oturum sistemi üzerinden yeniden oynatılmasını önler.
 
-Düzenek sabitlemelerinden önce oluşturulan eski oturumlar, transkript geçmişleri olduğunda PI’ye sabitlenmiş kabul edilir. Yapılandırmayı değiştirdikten sonra o konuşmayı Codex’e almak için `/new` veya `/reset` kullanın.
+Koşum sabitlemeleri oluşturulmadan önce yaratılmış eski oturumlar, transkript geçmişleri olduğunda PI'ye sabitlenmiş olarak değerlendirilir. Yapılandırmayı değiştirdikten sonra o konuşmayı Codex'e geçirmek için `/new` veya `/reset` kullanın.
 
-`/status` etkin model çalışma zamanını gösterir. Varsayılan PI düzeneği `Runtime: OpenClaw Pi Default` olarak, Codex app-server düzeneği ise `Runtime: OpenAI Codex` olarak görünür.
+`/status` etkili model çalışma zamanını gösterir. Varsayılan PI harness şu şekilde görünür:
+`Runtime: OpenClaw Pi Default`, Codex app-server harness ise şu şekilde görünür:
+`Runtime: OpenAI Codex`.
 
 ## Gereksinimler
 
-- Birlikte verilen `codex` Plugin’i kullanılabilir olan OpenClaw.
-- Codex app-server `0.125.0` veya daha yenisi. Birlikte verilen Plugin varsayılan olarak uyumlu bir Codex app-server ikilisini yönetir, bu nedenle `PATH` üzerindeki yerel `codex` komutları normal düzenek başlatmasını etkilemez.
-- app-server süreci veya OpenClaw’ın Codex kimlik doğrulama köprüsü için kullanılabilir Codex kimlik doğrulaması. Yerel app-server başlatmaları her aracı için OpenClaw tarafından yönetilen bir Codex home ve yalıtılmış bir alt `HOME` kullanır, bu nedenle varsayılan olarak kişisel `~/.codex` hesabınızı, Skills öğelerinizi, Plugin’lerinizi, yapılandırmanızı, iş parçacığı durumunuzu veya yerel `$HOME/.agents/skills` öğelerini okumaz.
+- Paketle gelen `codex` Plugin'i kullanılabilir olan OpenClaw.
+- Codex app-server `0.125.0` veya daha yenisi. Paketle gelen Plugin, varsayılan olarak uyumlu bir
+  Codex app-server ikilisini yönetir, bu nedenle `PATH` üzerindeki yerel `codex` komutları normal harness başlatmasını
+  etkilemez.
+- Codex kimlik doğrulaması app-server işlemi veya OpenClaw'ın Codex kimlik doğrulama
+  köprüsü için kullanılabilir olmalıdır. Yerel app-server başlatmaları her
+  aracı için OpenClaw tarafından yönetilen bir Codex home ve yalıtılmış bir alt `HOME` kullanır; bu nedenle varsayılan olarak kişisel
+  `~/.codex` hesabınızı, Skills'lerinizi, Plugin'lerinizi, yapılandırmanızı, iş parçacığı durumunuzu veya yerel
+  `$HOME/.agents/skills` dizininizi okumaz.
 
-Plugin, daha eski veya sürümlenmemiş app-server el sıkışmalarını engeller. Bu, OpenClaw’ın test edildiği protokol yüzeyinde kalmasını sağlar.
+Plugin, eski veya sürümsüz app-server el sıkışmalarını engeller. Bu, OpenClaw'ı
+test edilmiş olduğu protokol yüzeyinde tutar.
 
-Canlı ve Docker smoke testleri için kimlik doğrulama genellikle Codex CLI hesabından veya bir OpenClaw `openai-codex` kimlik doğrulama profilinden gelir. Yerel stdio app-server başlatmaları, hesap yoksa `CODEX_API_KEY` / `OPENAI_API_KEY` değerlerine de geri dönebilir.
+Canlı ve Docker smoke testleri için kimlik doğrulaması genellikle Codex CLI hesabından
+veya bir OpenClaw `openai-codex` kimlik doğrulama profilinden gelir. Yerel stdio app-server başlatmaları,
+hesap yoksa `CODEX_API_KEY` / `OPENAI_API_KEY` değerlerine de geri dönebilir.
 
 ## Diğer modellerin yanına Codex ekleyin
 
-Aynı ajanın Codex ve Codex dışı sağlayıcı modelleri arasında serbestçe geçiş yapması gerekiyorsa `agentRuntime.id: "codex"` değerini genel olarak ayarlamayın. Zorunlu runtime, o ajan veya oturum için her gömülü dönüşe uygulanır. Bu runtime zorunluyken bir Anthropic modeli seçerseniz OpenClaw yine Codex çalıştırma düzeneğini dener ve o dönüşü sessizce PI üzerinden yönlendirmek yerine kapalı şekilde başarısız olur.
+Aynı aracı Codex ve Codex dışı sağlayıcı modelleri arasında serbestçe geçiş yapacaksa
+`agentRuntime.id: "codex"` değerini genel olarak ayarlamayın. Zorunlu bir çalışma zamanı, o aracı veya oturum için
+her gömülü turda uygulanır. Bu çalışma zamanı zorunluyken bir Anthropic modeli seçerseniz,
+OpenClaw yine de Codex harness'ını dener ve o turu sessizce PI üzerinden yönlendirmek yerine kapalı şekilde başarısız olur.
 
 Bunun yerine şu yapılardan birini kullanın:
 
-- Codex'i `agentRuntime.id: "codex"` ile ayrılmış bir ajana koyun.
-- Normal karma sağlayıcı kullanımı için varsayılan ajanı `agentRuntime.id: "auto"` üzerinde ve PI yedeğiyle tutun.
-- Eski `codex/*` başvurularını yalnızca uyumluluk için kullanın. Yeni yapılandırmalar `openai/*` ile açık bir Codex runtime ilkesini tercih etmelidir.
+- Codex'i `agentRuntime.id: "codex"` ile ayrılmış bir aracıya koyun.
+- Varsayılan aracıyı normal karma sağlayıcı kullanımı için `agentRuntime.id: "auto"` ve PI fallback ile tutun.
+- Eski `codex/*` başvurularını yalnızca uyumluluk için kullanın. Yeni yapılandırmalar
+  `openai/*` ile birlikte açık bir Codex çalışma zamanı politikasını tercih etmelidir.
 
-Örneğin bu yapı, varsayılan ajanı normal otomatik seçimde tutar ve ayrı bir Codex ajanı ekler:
+Örneğin, bu yapı varsayılan aracıyı normal otomatik seçimde tutar ve
+ayrı bir Codex aracısı ekler:
 
 ```json5
 {
@@ -226,31 +247,36 @@ Bunun yerine şu yapılardan birini kullanın:
 
 Bu yapıyla:
 
-- Varsayılan `main` ajanı normal sağlayıcı yolunu ve PI uyumluluk yedeğini kullanır.
-- `codex` ajanı Codex uygulama sunucusu çalıştırma düzeneğini kullanır.
-- Codex, `codex` ajanı için eksik veya desteklenmiyorsa dönüş sessizce PI kullanmak yerine başarısız olur.
+- Varsayılan `main` aracısı normal sağlayıcı yolunu ve PI uyumluluk fallback'ini kullanır.
+- `codex` aracısı Codex app-server harness'ını kullanır.
+- Codex, `codex` aracısı için eksik veya desteklenmiyorsa tur,
+  sessizce PI kullanmak yerine başarısız olur.
 
-## Ajan komutu yönlendirme
+## Aracı komut yönlendirmesi
 
-Ajanlar kullanıcı isteklerini yalnızca "Codex" sözcüğüne göre değil, niyete göre yönlendirmelidir:
+Aracılar kullanıcı isteklerini yalnızca "Codex" sözcüğüne göre değil, niyete göre yönlendirmelidir:
 
-| Kullanıcı şunu ister...                                  | Ajan şunu kullanmalıdır...                        |
-| -------------------------------------------------------- | ------------------------------------------------ |
-| "Bu sohbeti Codex'e bağla"                               | `/codex bind`                                    |
-| "Codex dizisi `<id>` burada sürdür"                      | `/codex resume <id>`                             |
-| "Codex dizilerini göster"                                | `/codex threads`                                 |
-| "Kötü bir Codex çalıştırması için destek raporu oluştur" | `/diagnostics [note]`                            |
-| "Yalnızca bu ekli dizi için Codex geri bildirimi gönder" | `/codex diagnostics [note]`                      |
-| "Bu ajan için runtime olarak Codex kullan"               | `agentRuntime.id` için yapılandırma değişikliği  |
-| "Normal OpenClaw ile ChatGPT/Codex aboneliğimi kullan"   | `openai-codex/*` model başvuruları               |
-| "Codex'i ACP/acpx üzerinden çalıştır"                    | ACP `sessions_spawn({ runtime: "acp", ... })`    |
-| "Bir dizide Claude Code/Gemini/OpenCode/Cursor başlat"   | ACP/acpx, `/codex` değil ve yerel alt ajanlar değil |
+| Kullanıcı şunu ister...                                | Aracı şunu kullanmalıdır...                      |
+| ------------------------------------------------------ | ------------------------------------------------ |
+| "Bu sohbeti Codex'e bağla"                            | `/codex bind`                                    |
+| "Codex iş parçacığı `<id>` burada sürdür"              | `/codex resume <id>`                             |
+| "Codex iş parçacıklarını göster"                       | `/codex threads`                                 |
+| "Kötü bir Codex çalıştırması için destek raporu aç"    | `/diagnostics [note]`                            |
+| "Yalnızca bu ekli iş parçacığı için Codex geri bildirimi gönder" | `/codex diagnostics [note]`                      |
+| "ChatGPT/Codex aboneliğimi Codex çalışma zamanı ile kullan" | `openai/*` artı `agentRuntime.id: "codex"`       |
+| "ChatGPT/Codex aboneliğimi PI üzerinden kullan"        | `openai-codex/*` model başvuruları               |
+| "Codex'i ACP/acpx üzerinden çalıştır"                  | ACP `sessions_spawn({ runtime: "acp", ... })`    |
+| "Bir iş parçacığında Claude Code/Gemini/OpenCode/Cursor başlat" | ACP/acpx; `/codex` değil ve yerel alt aracılar değil |
 
-OpenClaw, ACP oluşturma rehberliğini ajanlara yalnızca ACP etkinse, dağıtılabiliyorsa ve yüklenmiş bir runtime arka ucu tarafından destekleniyorsa duyurur. ACP kullanılamıyorsa sistem istemi ve Plugin Skills ajana ACP yönlendirmesi öğretmemelidir.
+OpenClaw, ACP spawn rehberliğini aracılara yalnızca ACP etkin,
+gönderilebilir ve yüklenmiş bir çalışma zamanı backend'i tarafından destekleniyorsa duyurur. ACP kullanılabilir değilse,
+sistem istemi ve Plugin Skills aracıya ACP yönlendirmesini öğretmemelidir.
 
 ## Yalnızca Codex dağıtımları
 
-Her gömülü ajan dönüşünün Codex kullandığını kanıtlamanız gerektiğinde Codex çalıştırma düzeneğini zorunlu kılın. Açık Plugin runtime'ları varsayılan olarak PI yedeği kullanmaz, bu yüzden `fallback: "none"` isteğe bağlıdır ama çoğu zaman belgelendirme için yararlıdır:
+Her gömülü aracı turunun Codex kullandığını kanıtlamanız gerektiğinde Codex harness'ını zorunlu kılın.
+Açık Plugin çalışma zamanları varsayılan olarak PI fallback olmadan gelir, bu nedenle
+`fallback: "none"` isteğe bağlıdır ancak çoğu zaman dokümantasyon olarak yararlıdır:
 
 ```json5
 {
@@ -272,11 +298,13 @@ Ortam geçersiz kılması:
 OPENCLAW_AGENT_RUNTIME=codex openclaw gateway run
 ```
 
-Codex zorunlu olduğunda, Codex Plugin'i devre dışıysa, uygulama sunucusu çok eskiyse veya uygulama sunucusu başlatılamıyorsa OpenClaw erken başarısız olur. `OPENCLAW_AGENT_HARNESS_FALLBACK=pi` değerini yalnızca eksik çalıştırma düzeneği seçimini PI'ın işlemesini bilerek istiyorsanız ayarlayın.
+Codex zorunlu kılındığında, Codex Plugin devre dışıysa, app-server çok eskiyse
+veya app-server başlatılamıyorsa OpenClaw erken başarısız olur. Yalnızca eksik harness seçimini
+bilerek PI'ın işlemesini istiyorsanız `OPENCLAW_AGENT_HARNESS_FALLBACK=pi` değerini ayarlayın.
 
-## Ajan başına Codex
+## Aracı başına Codex
 
-Varsayılan ajan normal otomatik seçimi korurken bir ajanı yalnızca Codex yapabilirsiniz:
+Varsayılan aracı normal otomatik seçimi korurken bir aracı yalnızca Codex olacak şekilde ayarlanabilir:
 
 ```json5
 {
@@ -307,11 +335,15 @@ Varsayılan ajan normal otomatik seçimi korurken bir ajanı yalnızca Codex yap
 }
 ```
 
-Ajanlar ve modeller arasında geçiş yapmak için normal oturum komutlarını kullanın. `/new` yeni bir OpenClaw oturumu oluşturur ve Codex çalıştırma düzeneği gerektiğinde kendi yardımcı uygulama sunucusu dizisini oluşturur veya sürdürür. `/reset`, o dizi için OpenClaw oturumu bağını temizler ve sonraki dönüşün çalıştırma düzeneğini geçerli yapılandırmadan yeniden çözmesine izin verir.
+Aracılar ve modeller arasında geçiş yapmak için normal oturum komutlarını kullanın. `/new` yeni bir
+OpenClaw oturumu oluşturur ve Codex harness gerektiğinde kendi sidecar app-server
+iş parçacığını oluşturur veya sürdürür. `/reset`, o iş parçacığı için OpenClaw oturum bağlamasını temizler
+ve sonraki turun harness'ı yeniden geçerli yapılandırmadan çözümlemesine izin verir.
 
 ## Model keşfi
 
-Varsayılan olarak Codex Plugin'i kullanılabilir modeller için uygulama sunucusuna sorar. Keşif başarısız olursa veya zaman aşımına uğrarsa şu modeller için paketlenmiş yedek kataloğu kullanır:
+Varsayılan olarak Codex Plugin, kullanılabilir modelleri app-server'dan ister. Keşif
+başarısız olursa veya zaman aşımına uğrarsa şu modeller için paketle gelen fallback kataloğunu kullanır:
 
 - GPT-5.5
 - GPT-5.4 mini
@@ -337,7 +369,8 @@ Keşfi `plugins.entries.codex.config.discovery` altında ayarlayabilirsiniz:
 }
 ```
 
-Başlatmanın Codex'i yoklamasından kaçınmasını ve yedek kataloğa bağlı kalmasını istediğinizde keşfi devre dışı bırakın:
+Başlatmanın Codex'i yoklamaktan kaçınmasını ve fallback kataloğuna bağlı kalmasını istediğinizde
+keşfi devre dışı bırakın:
 
 ```json5
 {
@@ -356,7 +389,7 @@ Başlatmanın Codex'i yoklamasından kaçınmasını ve yedek kataloğa bağlı 
 }
 ```
 
-## Uygulama sunucusu bağlantısı ve ilkesi
+## App-server bağlantısı ve ilkesi
 
 Varsayılan olarak Plugin, OpenClaw'ın yönetilen Codex ikilisini yerel olarak şununla başlatır:
 
@@ -364,11 +397,16 @@ Varsayılan olarak Plugin, OpenClaw'ın yönetilen Codex ikilisini yerel olarak 
 codex app-server --listen stdio://
 ```
 
-Yönetilen ikili, paketlenmiş Plugin runtime bağımlılığı olarak bildirilir ve diğer `codex` Plugin bağımlılıklarıyla birlikte hazırlanır. Bu, uygulama sunucusu sürümünü yerelde ayrı olarak kurulu olan herhangi bir Codex CLI yerine paketlenmiş Plugin'e bağlı tutar. `appServer.command` değerini yalnızca farklı bir yürütülebilir dosyayı bilerek çalıştırmak istediğinizde ayarlayın.
+Yönetilen ikili, `codex` Plugin paketiyle birlikte gönderilir. Bu, app-server sürümünü
+yerelde ayrı olarak kurulu olan herhangi bir Codex CLI yerine paketle gelen Plugin'e bağlı tutar.
+`appServer.command` değerini yalnızca bilerek farklı bir çalıştırılabilir dosya çalıştırmak istediğinizde ayarlayın.
 
-Varsayılan olarak OpenClaw yerel Codex çalıştırma düzeneği oturumlarını YOLO modunda başlatır: `approvalPolicy: "never"`, `approvalsReviewer: "user"` ve `sandbox: "danger-full-access"`. Bu, özerk Heartbeat'ler için kullanılan güvenilir yerel operatör duruşudur: Codex, yanıtlayacak kimse yokken yerel onay istemlerinde durmadan kabuk ve ağ araçlarını kullanabilir.
+Varsayılan olarak OpenClaw, yerel Codex harness oturumlarını YOLO modunda başlatır:
+`approvalPolicy: "never"`, `approvalsReviewer: "user"` ve
+`sandbox: "danger-full-access"`. Bu, otonom Heartbeat'ler için kullanılan güvenilir yerel operatör duruşudur:
+Codex, yanıtlayacak kimse yokken yerel onay istemlerinde durmadan kabuk ve ağ araçlarını kullanabilir.
 
-Codex koruyucu tarafından incelenen onayları etkinleştirmek için `appServer.mode:
+Codex guardian tarafından gözden geçirilen onaylara katılmak için `appServer.mode:
 "guardian"` ayarlayın:
 
 ```json5
@@ -389,11 +427,20 @@ Codex koruyucu tarafından incelenen onayları etkinleştirmek için `appServer.
 }
 ```
 
-Koruyucu modu Codex'in yerel otomatik inceleme onay yolunu kullanır. Codex sanal alandan çıkmayı, çalışma alanı dışına yazmayı veya ağ erişimi gibi izinler eklemeyi istediğinde Codex bu onay isteğini insan istemi yerine yerel inceleyiciye yönlendirir. İnceleyici Codex'in risk çerçevesini uygular ve belirli isteği onaylar veya reddeder. YOLO modundan daha fazla koruma istediğiniz ama yine de gözetimsiz ajanların ilerleme kaydetmesi gerektiği durumlarda Koruyucu'yu kullanın.
+Guardian modu, Codex'in yerel otomatik inceleme onay yolunu kullanır. Codex
+sandbox dışına çıkmayı, çalışma alanı dışına yazmayı veya ağ erişimi gibi izinler eklemeyi istediğinde,
+Codex bu onay isteğini insan istemi yerine yerel inceleyiciye yönlendirir.
+İnceleyici Codex'in risk çerçevesini uygular ve ilgili isteği onaylar veya reddeder.
+YOLO modundan daha fazla koruma istediğiniz ancak gözetimsiz aracıların yine de ilerlemesi gerektiğinde Guardian kullanın.
 
-`guardian` ön ayarı `approvalPolicy: "on-request"`, `approvalsReviewer: "auto_review"` ve `sandbox: "workspace-write"` olarak genişler. Tek tek ilke alanları yine de `mode` değerini geçersiz kılar, bu yüzden gelişmiş dağıtımlar ön ayarı açık seçimlerle karıştırabilir. Daha eski `guardian_subagent` inceleyici değeri uyumluluk takma adı olarak hâlâ kabul edilir, ancak yeni yapılandırmalar `auto_review` kullanmalıdır.
+`guardian` ön ayarı `approvalPolicy: "on-request"`,
+`approvalsReviewer: "auto_review"` ve `sandbox: "workspace-write"` olarak genişler.
+Tek tek ilke alanları yine `mode` değerini geçersiz kılar; böylece gelişmiş dağıtımlar ön ayarı
+açık seçimlerle karıştırabilir. Eski `guardian_subagent` inceleyici değeri
+uyumluluk takma adı olarak hâlâ kabul edilir, ancak yeni yapılandırmalar
+`auto_review` kullanmalıdır.
 
-Zaten çalışan bir uygulama sunucusu için WebSocket aktarımını kullanın:
+Halihazırda çalışan bir app-server için WebSocket taşımasını kullanın:
 
 ```json5
 {
@@ -415,26 +462,48 @@ Zaten çalışan bir uygulama sunucusu için WebSocket aktarımını kullanın:
 }
 ```
 
-Stdio uygulama sunucusu başlatmaları varsayılan olarak OpenClaw'ın süreç ortamını devralır, ancak OpenClaw Codex uygulama sunucusu hesap köprüsüne sahiptir ve hem `CODEX_HOME` hem de `HOME` değerlerini o ajanın OpenClaw durumu altında ajan başına dizinlere ayarlar. Codex'in kendi skill yükleyicisi `$CODEX_HOME/skills` ve `$HOME/.agents/skills` konumlarını okur, bu yüzden yerel uygulama sunucusu başlatmaları için iki değer de yalıtılır. Bu, Codex'e özgü Skills, Plugin'ler, yapılandırma, hesaplar ve dizi durumunun operatörün kişisel Codex CLI ana dizininden sızmak yerine OpenClaw ajanı kapsamında kalmasını sağlar.
+Stdio app-server başlatmaları varsayılan olarak OpenClaw'ın işlem ortamını devralır,
+ancak OpenClaw Codex app-server hesap köprüsünün sahibidir ve hem
+`CODEX_HOME` hem de `HOME` değerlerini o aracının OpenClaw durumu altında aracı başına dizinlere ayarlar.
+Codex'in kendi skill loader'ı `$CODEX_HOME/skills` ve
+`$HOME/.agents/skills` okur; bu nedenle yerel app-server başlatmaları için iki değer de yalıtılmıştır.
+Bu, Codex yerel Skills, Plugin'ler, yapılandırma, hesaplar ve iş parçacığı durumunun operatörün
+kişisel Codex CLI home'undan sızmak yerine OpenClaw aracısına kapsamlanmasını sağlar.
 
-OpenClaw Plugin'leri ve OpenClaw skill anlık görüntüleri yine de OpenClaw'ın kendi Plugin kayıt defteri ve skill yükleyicisinden geçer. Kişisel Codex CLI varlıkları geçmez. Bir OpenClaw ajanının parçası olması gereken yararlı Codex CLI Skills veya Plugin'leriniz varsa bunların envanterini açıkça çıkarın:
+OpenClaw Plugin'leri ve OpenClaw skill snapshot'ları yine OpenClaw'ın kendi
+Plugin registry'si ve skill loader'ı üzerinden akar. Kişisel Codex CLI varlıkları akmaz.
+Bir OpenClaw aracısının parçası olması gereken yararlı Codex CLI Skills veya Plugin'leriniz varsa,
+bunların envanterini açıkça çıkarın:
 
 ```bash
 openclaw migrate codex --dry-run
 openclaw migrate apply codex --yes
 ```
 
-Codex geçiş sağlayıcısı Skills'i geçerli OpenClaw ajan çalışma alanına kopyalar. Codex yerel Plugin'leri, hook'ları ve yapılandırma dosyaları komut çalıştırabildikleri, MCP sunucuları açığa çıkarabildikleri veya kimlik bilgileri taşıyabildikleri için otomatik olarak etkinleştirilmek yerine manuel inceleme için raporlanır veya arşivlenir.
+Codex migration provider, Skills'leri geçerli OpenClaw aracı çalışma alanına kopyalar.
+Codex yerel Plugin'leri, hook'ları ve yapılandırma dosyaları, komut çalıştırabilecekleri,
+MCP sunucuları açığa çıkarabilecekleri veya kimlik bilgileri taşıyabilecekleri için otomatik olarak etkinleştirilmek yerine
+manuel inceleme için raporlanır veya arşivlenir.
 
-Kimlik doğrulama şu sırayla seçilir:
+Kimlik doğrulaması şu sırayla seçilir:
 
-1. Ajan için açık bir OpenClaw Codex kimlik doğrulama profili.
-2. Uygulama sunucusunun o ajanın Codex ana dizinindeki mevcut hesabı.
-3. Yalnızca yerel stdio uygulama sunucusu başlatmaları için, uygulama sunucusu hesabı yoksa ve OpenAI kimlik doğrulaması hâlâ gerekiyorsa `CODEX_API_KEY`, ardından `OPENAI_API_KEY`.
+1. Aracı için açık bir OpenClaw Codex kimlik doğrulama profili.
+2. App-server'ın o aracının Codex home içindeki mevcut hesabı.
+3. Yalnızca yerel stdio app-server başlatmaları için, app-server hesabı yoksa ve OpenAI kimlik doğrulaması
+   hâlâ gerekiyorsa `CODEX_API_KEY`, ardından
+   `OPENAI_API_KEY`.
 
-OpenClaw ChatGPT aboneliği tarzı bir Codex kimlik doğrulama profili gördüğünde, oluşturulan Codex alt sürecinden `CODEX_API_KEY` ve `OPENAI_API_KEY` değerlerini kaldırır. Bu, Gateway düzeyi API anahtarlarını gömmeler veya doğrudan OpenAI modelleri için kullanılabilir tutarken yerel Codex uygulama sunucusu dönüşlerinin yanlışlıkla API üzerinden faturalandırılmasını engeller. Açık Codex API anahtarı profilleri ve yerel stdio ortam anahtarı yedeği, devralınan alt süreç ortamı yerine uygulama sunucusu oturum açmasını kullanır. WebSocket uygulama sunucusu bağlantıları Gateway ortam API anahtarı yedeği almaz; açık bir kimlik doğrulama profili veya uzak uygulama sunucusunun kendi hesabını kullanın.
+OpenClaw, ChatGPT abonelik tarzı bir Codex kimlik doğrulama profili gördüğünde,
+oluşturulan Codex alt işleminden `CODEX_API_KEY` ve `OPENAI_API_KEY` değerlerini kaldırır. Bu,
+Gateway düzeyi API anahtarlarını embedding'ler veya doğrudan OpenAI modelleri için kullanılabilir tutarken
+yerel Codex app-server turlarının yanlışlıkla API üzerinden ücretlendirilmesini engeller.
+Açık Codex API anahtarı profilleri ve yerel stdio ortam anahtarı fallback'i, devralınan alt işlem ortamı yerine
+app-server oturum açmasını kullanır. WebSocket app-server bağlantıları
+Gateway ortam API anahtarı fallback'ini almaz; açık bir kimlik doğrulama profili veya
+uzak app-server'ın kendi hesabını kullanın.
 
-Bir dağıtım ek ortam yalıtımı gerektiriyorsa bu değişkenleri `appServer.clearEnv` değerine ekleyin:
+Bir dağıtım ek ortam yalıtımı gerektiriyorsa, bu değişkenleri
+`appServer.clearEnv` içine ekleyin:
 
 ```json5
 {
@@ -453,41 +522,55 @@ Bir dağıtım ek ortam yalıtımı gerektiriyorsa bu değişkenleri `appServer.
 }
 ```
 
-`appServer.clearEnv` yalnızca oluşturulan Codex uygulama sunucusu alt sürecini etkiler.
+`appServer.clearEnv` yalnızca oluşturulan Codex app-server alt işlemini etkiler.
+
+Codex dinamik araçları varsayılan olarak `native-first` profilini kullanır. Bu modda,
+OpenClaw Codex yerel çalışma alanı işlemlerini çoğaltan dinamik araçları açığa çıkarmaz:
+`read`, `write`, `edit`, `apply_patch`, `exec`, `process` ve
+`update_plan`. Mesajlaşma, oturumlar, medya,
+cron, tarayıcı, node'lar, gateway, `heartbeat_respond` ve `web_search` gibi OpenClaw entegrasyon araçları
+kullanılabilir kalır.
+
+Desteklenen üst düzey Codex Plugin alanları:
+
+| Alan                       | Varsayılan       | Anlam                                                                                                 |
+| -------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------- |
+| `codexDynamicToolsProfile` | `"native-first"` | Tüm OpenClaw dinamik araç kümesini Codex app-server'a açmak için `"openclaw-compat"` kullanın.        |
+| `codexDynamicToolsExclude` | `[]`             | Codex app-server turlarından çıkarılacak ek OpenClaw dinamik araç adları.                             |
 
 Desteklenen `appServer` alanları:
 
-| Alan                | Varsayılan                               | Anlam                                                                                                                                                                                                                                |
-| ------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `transport`         | `"stdio"`                                | `"stdio"` Codex'i başlatır; `"websocket"` `url` adresine bağlanır.                                                                                                                                                                   |
-| `command`           | yönetilen Codex ikili dosyası            | stdio aktarımı için çalıştırılabilir dosya. Yönetilen ikili dosyayı kullanmak için ayarlanmamış bırakın; yalnızca açık bir geçersiz kılma için ayarlayın.                                                                            |
-| `args`              | `["app-server", "--listen", "stdio://"]` | stdio aktarımı için argümanlar.                                                                                                                                                                                                      |
-| `url`               | ayarlanmamış                             | WebSocket app-server URL'si.                                                                                                                                                                                                         |
-| `authToken`         | ayarlanmamış                             | WebSocket aktarımı için Bearer token.                                                                                                                                                                                                |
-| `headers`           | `{}`                                     | Ek WebSocket üstbilgileri.                                                                                                                                                                                                           |
-| `clearEnv`          | `[]`                                     | OpenClaw devralınan ortamını oluşturduktan sonra başlatılan stdio app-server işleminden kaldırılan ek ortam değişkeni adları. `CODEX_HOME` ve `HOME`, yerel başlatmalarda OpenClaw'ın ajan başına Codex izolasyonu için ayrılmıştır. |
-| `requestTimeoutMs`  | `60000`                                  | app-server kontrol düzlemi çağrıları için zaman aşımı.                                                                                                                                                                               |
-| `mode`              | `"yolo"`                                 | YOLO veya koruyucu incelemeli yürütme için ön ayar.                                                                                                                                                                                  |
-| `approvalPolicy`    | `"never"`                                | İplik başlatma/sürdürme/tur işlemlerine gönderilen yerel Codex onay ilkesi.                                                                                                                                                          |
-| `sandbox`           | `"danger-full-access"`                   | İplik başlatma/sürdürme işlemlerine gönderilen yerel Codex sandbox modu.                                                                                                                                                             |
-| `approvalsReviewer` | `"user"`                                 | Codex'in yerel onay istemlerini incelemesine izin vermek için `"auto_review"` kullanın. `guardian_subagent` eski bir diğer ad olarak kalır.                                                                                          |
-| `serviceTier`       | ayarlanmamış                             | İsteğe bağlı Codex app-server hizmet katmanı: `"fast"`, `"flex"` veya `null`. Geçersiz eski değerler yok sayılır.                                                                                                                    |
+| Alan                | Varsayılan                               | Anlam                                                                                                                                                                                                                                      |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `transport`         | `"stdio"`                                | `"stdio"` Codex'i başlatır; `"websocket"` `url` adresine bağlanır.                                                                                                                                                                         |
+| `command`           | yönetilen Codex ikili dosyası            | stdio taşıması için çalıştırılabilir dosya. Yönetilen ikili dosyayı kullanmak için ayarlamadan bırakın; yalnızca açık bir geçersiz kılma için ayarlayın.                                                                                  |
+| `args`              | `["app-server", "--listen", "stdio://"]` | stdio taşıması için argümanlar.                                                                                                                                                                                                            |
+| `url`               | ayarlanmamış                             | WebSocket app-server URL'si.                                                                                                                                                                                                               |
+| `authToken`         | ayarlanmamış                             | WebSocket taşıması için Bearer token.                                                                                                                                                                                                      |
+| `headers`           | `{}`                                     | Ek WebSocket üstbilgileri.                                                                                                                                                                                                                 |
+| `clearEnv`          | `[]`                                     | OpenClaw devralınan ortamını oluşturduktan sonra başlatılan stdio app-server sürecinden kaldırılan ek ortam değişkeni adları. `CODEX_HOME` ve `HOME`, yerel başlatmalarda OpenClaw'ın ajan başına Codex yalıtımı için ayrılmıştır.       |
+| `requestTimeoutMs`  | `60000`                                  | app-server denetim düzlemi çağrıları için zaman aşımı.                                                                                                                                                                                     |
+| `mode`              | `"yolo"`                                 | YOLO veya guardian incelemeli yürütme için ön ayar.                                                                                                                                                                                        |
+| `approvalPolicy`    | `"never"`                                | Thread başlatma/sürdürme/tur işlemlerine gönderilen yerel Codex onay ilkesi.                                                                                                                                                               |
+| `sandbox`           | `"danger-full-access"`                   | Thread başlatma/sürdürme işlemlerine gönderilen yerel Codex sandbox modu.                                                                                                                                                                  |
+| `approvalsReviewer` | `"user"`                                 | Codex'in yerel onay istemlerini incelemesine izin vermek için `"auto_review"` kullanın. `guardian_subagent` eski bir takma ad olarak kalır.                                                                                                |
+| `serviceTier`       | ayarlanmamış                             | İsteğe bağlı Codex app-server hizmet katmanı: `"fast"`, `"flex"` veya `null`. Geçersiz eski değerler yok sayılır.                                                                                                                          |
 
 OpenClaw'a ait dinamik araç çağrıları `appServer.requestTimeoutMs` değerinden
 bağımsız olarak sınırlandırılır: her Codex `item/tool/call` isteği 30 saniye
-içinde bir OpenClaw yanıtı almalıdır. Zaman aşımında OpenClaw, desteklenen
+içinde bir OpenClaw yanıtı almalıdır. Zaman aşımında OpenClaw, desteklendiği
 yerlerde araç sinyalini iptal eder ve Codex'e başarısız bir dinamik araç yanıtı
 döndürür; böylece oturum `processing` durumunda bırakılmak yerine tur devam
 edebilir.
 
 OpenClaw bir Codex tur kapsamlı app-server isteğine yanıt verdikten sonra,
-test düzeneği Codex'in yerel turu `turn/completed` ile bitirmesini de bekler.
-app-server bu yanıttan sonra 60 saniye sessiz kalırsa OpenClaw en iyi çabayla
-Codex turunu keser, tanılama zaman aşımını kaydeder ve OpenClaw oturum hattını
-serbest bırakır; böylece takip eden sohbet iletileri eskimiş bir yerel turun
+harness ayrıca Codex'in yerel turu `turn/completed` ile bitirmesini bekler. Bu
+yanıttan sonra app-server 60 saniye sessiz kalırsa OpenClaw en iyi çabayla Codex
+turunu keser, tanılama amaçlı bir zaman aşımı kaydeder ve OpenClaw oturum
+şeridini serbest bırakır; böylece sonraki sohbet mesajları bayat bir yerel turun
 arkasında kuyruğa alınmaz.
 
-Yerel test için ortam geçersiz kılmaları kullanılabilir kalır:
+Yerel test için ortam geçersiz kılmaları kullanılabilir olmaya devam eder:
 
 - `OPENCLAW_CODEX_APP_SERVER_BIN`
 - `OPENCLAW_CODEX_APP_SERVER_ARGS`
@@ -501,16 +584,16 @@ ikili dosyayı atlar.
 `OPENCLAW_CODEX_APP_SERVER_GUARDIAN=1` kaldırıldı. Bunun yerine
 `plugins.entries.codex.config.appServer.mode: "guardian"` kullanın veya tek
 seferlik yerel test için `OPENCLAW_CODEX_APP_SERVER_MODE=guardian` kullanın.
-Yinelenebilir dağıtımlar için yapılandırma tercih edilir; çünkü Plugin
-davranışını Codex test düzeneği kurulumunun geri kalanıyla aynı incelenen
-dosyada tutar.
+Tekrarlanabilir dağıtımlar için yapılandırma tercih edilir, çünkü Plugin
+davranışını Codex harness kurulumunun geri kalanıyla aynı incelenmiş dosyada
+tutar.
 
 ## Bilgisayar kullanımı
 
 Bilgisayar Kullanımı kendi kurulum kılavuzunda ele alınır:
 [Codex Bilgisayar Kullanımı](/tr/plugins/codex-computer-use).
 
-Kısa sürüm: OpenClaw masaüstü denetim uygulamasını dahil etmez veya masaüstü
+Kısa sürüm: OpenClaw masaüstü denetim uygulamasını vendörlemez veya masaüstü
 eylemlerini kendisi yürütmez. Codex app-server'ı hazırlar, `computer-use` MCP
 sunucusunun kullanılabilir olduğunu doğrular ve ardından Codex modu turlarında
 yerel MCP araç çağrılarını Codex'in işlemesine izin verir.
@@ -549,31 +632,31 @@ En düşük yapılandırma:
 }
 ```
 
-Kurulum komut yüzeyinden denetlenebilir veya kurulabilir:
+Kurulum komut yüzeyinden denetlenebilir veya yüklenebilir:
 
 - `/codex computer-use status`
 - `/codex computer-use install`
 - `/codex computer-use install --source <marketplace-source>`
 - `/codex computer-use install --marketplace-path <path>`
 
-Bilgisayar Kullanımı macOS'a özeldir ve Codex MCP sunucusu uygulamaları
-denetleyebilmeden önce yerel işletim sistemi izinleri gerektirebilir.
+Bilgisayar Kullanımı macOS'a özgüdür ve Codex MCP sunucusunun uygulamaları
+denetleyebilmesinden önce yerel işletim sistemi izinleri gerektirebilir.
 `computerUse.enabled` true ise ve MCP sunucusu kullanılamıyorsa Codex modu
 turları, yerel Bilgisayar Kullanımı araçları olmadan sessizce çalışmak yerine
-iplik başlamadan önce başarısız olur. Marketplace seçenekleri, uzak katalog
+thread başlamadan önce başarısız olur. Marketplace seçenekleri, uzak katalog
 sınırları, durum nedenleri ve sorun giderme için
 [Codex Bilgisayar Kullanımı](/tr/plugins/codex-computer-use) bölümüne bakın.
 
-`computerUse.autoInstall` true olduğunda OpenClaw, Codex henüz yerel bir
-marketplace keşfetmediyse standart paketli Codex Desktop marketplace'i
+`computerUse.autoInstall` true olduğunda, Codex henüz yerel bir marketplace
+keşfetmediyse OpenClaw standart paketli Codex Desktop marketplace'i
 `/Applications/Codex.app/Contents/Resources/plugins/openai-bundled` konumundan
 kaydedebilir. Çalışma zamanı veya Bilgisayar Kullanımı yapılandırmasını
-değiştirdikten sonra `/new` veya `/reset` kullanın; böylece mevcut oturumlar
-eski bir PI ya da Codex iplik bağını tutmaz.
+değiştirdikten sonra mevcut oturumların eski bir PI ya da Codex thread
+bağlantısını tutmaması için `/new` veya `/reset` kullanın.
 
 ## Yaygın tarifler
 
-Varsayılan stdio aktarımıyla yerel Codex:
+Varsayılan stdio taşımasıyla yerel Codex:
 
 ```json5
 {
@@ -587,7 +670,7 @@ Varsayılan stdio aktarımıyla yerel Codex:
 }
 ```
 
-Yalnızca Codex test düzeneği doğrulaması:
+Yalnızca Codex harness doğrulaması:
 
 ```json5
 {
@@ -609,7 +692,7 @@ Yalnızca Codex test düzeneği doğrulaması:
 }
 ```
 
-Koruyucu incelemeli Codex onayları:
+Guardian incelemeli Codex onayları:
 
 ```json5
 {
@@ -655,225 +738,158 @@ Açık üstbilgilerle uzak app-server:
 ```
 
 Model değiştirme OpenClaw denetiminde kalır. Bir OpenClaw oturumu mevcut bir
-Codex ipliğine eklendiğinde, sonraki tur o anda seçili OpenAI modelini,
+Codex thread'ine eklendiğinde, sonraki tur o anda seçili OpenAI modelini,
 sağlayıcıyı, onay ilkesini, sandbox'ı ve hizmet katmanını app-server'a yeniden
-gönderir. `openai/gpt-5.5` modelinden `openai/gpt-5.2` modeline geçmek iplik
-bağını korur ancak Codex'ten yeni seçilen modelle devam etmesini ister.
+gönderir. `openai/gpt-5.5` modelinden `openai/gpt-5.2` modeline geçmek thread
+bağlantısını korur ancak Codex'ten yeni seçilen modelle devam etmesini ister.
 
 ## Codex komutu
 
-Paketli Plugin, `/codex` komutunu yetkili bir slash komutu olarak kaydeder.
-Geneldir ve OpenClaw metin komutlarını destekleyen herhangi bir kanalda çalışır.
+Paketli Plugin, `/codex` komutunu yetkili bir eğik çizgi komutu olarak
+kaydeder. Geneldir ve OpenClaw metin komutlarını destekleyen tüm kanallarda
+çalışır.
 
 Yaygın biçimler:
 
-- `/codex status` canlı app-server bağlantısını, modelleri, hesabı, hız sınırlarını, MCP sunucularını ve skills'i gösterir.
+- `/codex status` canlı app-server bağlantısını, modelleri, hesabı, hız sınırlarını, MCP sunucularını ve skills durumunu gösterir.
 - `/codex models` canlı Codex app-server modellerini listeler.
-- `/codex threads [filter]` son Codex ipliklerini listeler.
-- `/codex resume <thread-id>` mevcut OpenClaw oturumunu var olan bir Codex ipliğine ekler.
-- `/codex compact` Codex app-server'dan ekli ipliği sıkıştırmasını ister.
-- `/codex review` ekli iplik için Codex yerel incelemesini başlatır.
-- `/codex diagnostics [note]` ekli iplik için Codex tanılama geri bildirimi göndermeden önce sorar.
+- `/codex threads [filter]` son Codex thread'lerini listeler.
+- `/codex resume <thread-id>` geçerli OpenClaw oturumunu mevcut bir Codex thread'ine ekler.
+- `/codex compact` Codex app-server'dan ekli thread'i compact etmesini ister.
+- `/codex review` ekli thread için yerel Codex incelemesini başlatır.
+- `/codex diagnostics [note]` ekli thread için Codex tanılama geri bildirimi göndermeden önce sorar.
 - `/codex computer-use status` yapılandırılmış Bilgisayar Kullanımı Plugin'ini ve MCP sunucusunu denetler.
-- `/codex computer-use install` yapılandırılmış Bilgisayar Kullanımı Plugin'ini kurar ve MCP sunucularını yeniden yükler.
+- `/codex computer-use install` yapılandırılmış Bilgisayar Kullanımı Plugin'ini yükler ve MCP sunucularını yeniden yükler.
 - `/codex account` hesap ve hız sınırı durumunu gösterir.
 - `/codex mcp` Codex app-server MCP sunucusu durumunu listeler.
-- `/codex skills` Codex app-server skills'ini listeler.
+- `/codex skills` Codex app-server skills listesini gösterir.
 
 ### Yaygın hata ayıklama iş akışı
 
 Codex destekli bir ajan Telegram, Discord, Slack veya başka bir kanalda
-beklenmedik bir şey yaptığında, sorunun gerçekleştiği konuşmadan başlayın:
+şaşırtıcı bir şey yaptığında, sorunun yaşandığı konuşmayla başlayın:
 
-1. Gördüğünüz şeyi açıklayan `/diagnostics bad tool choice after image upload`
-   veya başka bir kısa not çalıştırın.
-2. Tanılama isteğini bir kez onaylayın. Onay yerel Gateway tanılama zip'ini
-   oluşturur ve oturum Codex test düzeneğini kullandığı için ilgili Codex geri
-   bildirim paketini OpenAI sunucularına da gönderir.
-3. Tamamlanan tanılama yanıtını hata raporuna veya destek ipliğine kopyalayın.
-   Yerel paket yolunu, gizlilik özetini, OpenClaw oturum kimliklerini, Codex
-   iplik kimliklerini ve her Codex ipliği için bir `Inspect locally` satırını
-   içerir.
-4. Çalıştırmayı kendiniz hata ayıklamak istiyorsanız yazdırılan `Inspect locally`
-   komutunu bir terminalde çalıştırın. `codex resume <thread-id>` gibi görünür
-   ve yerel Codex ipliğini açar; böylece konuşmayı inceleyebilir, yerel olarak
-   sürdürebilir veya Codex'e belirli bir aracı ya da planı neden seçtiğini
-   sorabilirsiniz.
+1. Gördüklerinizi açıklayan `/diagnostics bad tool choice after image upload` veya başka kısa bir not çalıştırın.
+2. Tanılama isteğini bir kez onaylayın. Onay, yerel Gateway tanılama zip dosyasını oluşturur ve oturum Codex harness kullandığı için ilgili Codex geri bildirim paketini de OpenAI sunucularına gönderir.
+3. Tamamlanan tanılama yanıtını hata raporuna veya destek ileti dizisine kopyalayın. Yanıt yerel paket yolunu, gizlilik özetini, OpenClaw oturum kimliklerini, Codex ileti dizisi kimliklerini ve her Codex ileti dizisi için bir `Inspect locally` satırını içerir.
+4. Çalıştırmayı kendiniz hata ayıklamak isterseniz, yazdırılan `Inspect locally` komutunu bir terminalde çalıştırın. Komut `codex resume <thread-id>` gibi görünür ve yerel Codex ileti dizisini açar; böylece konuşmayı inceleyebilir, yerelde sürdürebilir veya Codex'e neden belirli bir aracı ya da planı seçtiğini sorabilirsiniz.
 
-`/codex diagnostics [note]` komutunu yalnızca tam OpenClaw Gateway tanılama paketi olmadan, o anda ekli olan iş parçacığı için özellikle Codex geri bildirim yüklemesini istediğinizde kullanın. Çoğu destek raporu için `/diagnostics [note]` daha iyi bir başlangıç noktasıdır, çünkü yerel Gateway durumunu ve Codex iş parçacığı kimliklerini tek bir yanıtta ilişkilendirir. Tam gizlilik modeli ve grup sohbeti davranışı için [Tanılama dışa aktarımı](/tr/gateway/diagnostics) bölümüne bakın.
+`/codex diagnostics [note]` komutunu yalnızca tam OpenClaw Gateway tanılama paketi olmadan, şu anda bağlı olan ileti dizisi için Codex geri bildirim yüklemesini özellikle istediğinizde kullanın. Çoğu destek raporu için `/diagnostics [note]` daha iyi bir başlangıç noktasıdır; çünkü yerel Gateway durumunu ve Codex ileti dizisi kimliklerini tek bir yanıtta bir araya getirir. Tam gizlilik modeli ve grup sohbeti davranışı için [Tanılama dışa aktarımı](/tr/gateway/diagnostics) bölümüne bakın.
 
-Çekirdek OpenClaw ayrıca genel Gateway tanılama komutu olarak yalnızca sahiplerin kullanabildiği `/diagnostics [note]` komutunu da sunar. Onay istemi hassas veri ön açıklamasını gösterir, [Tanılama Dışa Aktarımı](/tr/gateway/diagnostics) bağlantısını verir ve her seferinde açık exec onayıyla `openclaw gateway diagnostics export --json` isteğinde bulunur. Tanılamayı tümüne izin veren bir kuralla onaylamayın. Onaydan sonra OpenClaw, yerel paket yolunu ve manifest özetini içeren yapıştırılabilir bir rapor gönderir. Etkin OpenClaw oturumu Codex koşumunu kullandığında, aynı onay ilgili Codex geri bildirim paketlerinin OpenAI sunucularına gönderilmesine de yetki verir. Onay istemi Codex geri bildiriminin gönderileceğini söyler, ancak onaydan önce Codex oturum veya iş parçacığı kimliklerini listelemez.
+Çekirdek OpenClaw ayrıca genel Gateway tanılama komutu olarak yalnızca sahiplerin kullanabildiği `/diagnostics [note]` komutunu da sunar. Bu komutun onay istemi hassas veri önsözünü gösterir, [Tanılama Dışa Aktarımı](/tr/gateway/diagnostics) sayfasına bağlantı verir ve her seferinde açık exec onayı üzerinden `openclaw gateway diagnostics export --json` ister. Tanılamayı tümüne izin veren bir kuralla onaylamayın. Onaydan sonra OpenClaw, yerel paket yolu ve manifest özetiyle birlikte yapıştırılabilir bir rapor gönderir. Etkin OpenClaw oturumu Codex harness kullanıyorsa, aynı onay ilgili Codex geri bildirim paketlerinin OpenAI sunucularına gönderilmesine de yetki verir. Onay istemi Codex geri bildiriminin gönderileceğini söyler, ancak onaydan önce Codex oturum veya ileti dizisi kimliklerini listelemez.
 
-Bir sahip grup sohbetinde `/diagnostics` komutunu çağırırsa OpenClaw paylaşılan kanalı temiz tutar: grup yalnızca kısa bir bildirim alırken, tanılama ön açıklaması, onay istemleri ve Codex oturum/iş parçacığı kimlikleri özel onay rotası üzerinden sahibine gönderilir. Özel sahip rotası yoksa OpenClaw grup isteğini reddeder ve sahibinden bunu bir DM üzerinden çalıştırmasını ister.
+`/diagnostics` bir grup sohbetinde bir sahip tarafından çağrılırsa, OpenClaw paylaşılan kanalı temiz tutar: grup yalnızca kısa bir bildirim alırken tanılama önsözü, onay istemleri ve Codex oturum/ileti dizisi kimlikleri özel onay yolu üzerinden sahibe gönderilir. Özel sahip yolu yoksa, OpenClaw grup isteğini reddeder ve sahibin bunu bir DM üzerinden çalıştırmasını ister.
 
-Onaylanan Codex yüklemesi Codex app-server `feedback/upload` çağrısını yapar ve app-server'dan, kullanılabilir olduğunda listelenen her iş parçacığı ve oluşturulmuş Codex alt iş parçacıkları için günlükleri dahil etmesini ister. Yükleme, Codex'in normal geri bildirim yolu üzerinden OpenAI sunucularına gider; o app-server'da Codex geri bildirimi devre dışıysa komut app-server hatasını döndürür. Tamamlanan tanılama yanıtı, gönderilen iş parçacıkları için kanalları, OpenClaw oturum kimliklerini, Codex iş parçacığı kimliklerini ve yerel `codex resume <thread-id>` komutlarını listeler. Onayı reddeder veya yok sayarsanız OpenClaw bu Codex kimliklerini yazdırmaz. Bu yükleme yerel Gateway tanılama dışa aktarımının yerine geçmez.
+Onaylanan Codex yüklemesi, Codex app-server `feedback/upload` çağrısı yapar ve app-server'dan, mümkün olduğunda listelenen her ileti dizisi ve oluşturulan Codex alt ileti dizileri için günlükleri eklemesini ister. Yükleme, Codex'in normal geri bildirim yolu üzerinden OpenAI sunucularına gider; bu app-server'da Codex geri bildirimi devre dışıysa komut app-server hatasını döndürür. Tamamlanan tanılama yanıtı, gönderilen ileti dizileri için kanalları, OpenClaw oturum kimliklerini, Codex ileti dizisi kimliklerini ve yerel `codex resume <thread-id>` komutlarını listeler. Onayı reddeder veya yok sayarsanız, OpenClaw bu Codex kimliklerini yazdırmaz. Bu yükleme yerel Gateway tanılama dışa aktarımının yerine geçmez.
 
-`/codex resume`, koşumun normal turlarda kullandığı aynı sidecar bağlama dosyasını yazar. Sonraki iletide OpenClaw o Codex iş parçacığını sürdürür, seçili OpenClaw modelini app-server'a geçirir ve genişletilmiş geçmişi etkin tutar.
+`/codex resume`, harness'ın normal dönüşler için kullandığı aynı sidecar bağlama dosyasını yazar. Bir sonraki iletide OpenClaw bu Codex ileti dizisini sürdürür, şu anda seçili OpenClaw modelini app-server'a geçirir ve genişletilmiş geçmişi etkin tutar.
 
-### CLI'dan bir Codex iş parçacığını inceleyin
+### CLI'dan bir Codex ileti dizisini inceleme
 
-Kötü bir Codex çalıştırmasını anlamanın en hızlı yolu çoğu zaman yerel Codex iş parçacığını doğrudan açmaktır:
+Kötü bir Codex çalıştırmasını anlamanın en hızlı yolu çoğu zaman yerel Codex ileti dizisini doğrudan açmaktır:
 
 ```sh
 codex resume <thread-id>
 ```
 
-Bunu, bir kanal konuşmasında hata fark ettiğinizde ve sorunlu Codex oturumunu incelemek, yerelde sürdürmek veya Codex'e neden belirli bir araç ya da akıl yürütme seçimi yaptığını sormak istediğinizde kullanın. En kolay yol genellikle önce `/diagnostics [note]` çalıştırmaktır: onayladıktan sonra tamamlanan rapor her Codex iş parçacığını listeler ve örneğin `codex resume <thread-id>` gibi bir `Inspect locally` komutu yazdırır. Bu komutu doğrudan bir terminale kopyalayabilirsiniz.
+Bunu, bir kanal konuşmasında hata fark ettiğinizde ve sorunlu Codex oturumunu incelemek, yerelde sürdürmek veya Codex'e neden belirli bir araç ya da akıl yürütme seçimi yaptığını sormak istediğinizde kullanın. En kolay yol genellikle önce `/diagnostics [note]` çalıştırmaktır: onayladıktan sonra tamamlanan rapor her Codex ileti dizisini listeler ve örneğin `codex resume <thread-id>` gibi bir `Inspect locally` komutu yazdırır. Bu komutu doğrudan bir terminale kopyalayabilirsiniz.
 
-Geçerli sohbet için `/codex binding` komutundan veya son Codex app-server iş parçacıkları için `/codex threads [filter]` komutundan da bir iş parçacığı kimliği alabilir, ardından kabuğunuzda aynı `codex resume` komutunu çalıştırabilirsiniz.
+Geçerli sohbet için `/codex binding` komutundan veya son Codex app-server ileti dizileri için `/codex threads [filter]` komutundan da bir ileti dizisi kimliği alabilir, ardından kabuğunuzda aynı `codex resume` komutunu çalıştırabilirsiniz.
 
-Komut yüzeyi Codex app-server `0.125.0` veya daha yenisini gerektirir. Gelecekteki veya özel bir app-server bu JSON-RPC yöntemini sunmuyorsa, tekil denetim yöntemleri `unsupported by this Codex app-server` olarak raporlanır.
+Komut yüzeyi Codex app-server `0.125.0` veya daha yenisini gerektirir. Gelecekteki veya özel bir app-server ilgili JSON-RPC yöntemini sunmuyorsa, tek tek denetim yöntemleri `unsupported by this Codex app-server` olarak raporlanır.
 
 ## Kanca sınırları
 
-Codex koşumunda üç kanca katmanı vardır:
+Codex harness üç kanca katmanına sahiptir:
 
-| Katman                                | Sahip                    | Amaç                                                                  |
-| ------------------------------------- | ------------------------ | --------------------------------------------------------------------- |
-| OpenClaw Plugin kancaları             | OpenClaw                 | PI ve Codex koşumları genelinde ürün/Plugin uyumluluğu.               |
-| Codex app-server uzantı ara katmanı   | OpenClaw paketli Plugin'ler | OpenClaw dinamik araçları etrafında tur başına bağdaştırıcı davranışı. |
-| Codex yerel kancaları                 | Codex                    | Codex yapılandırmasından düşük düzey Codex yaşam döngüsü ve yerel araç ilkesi. |
+| Katman                                | Sahip                    | Amaç                                                                |
+| ------------------------------------- | ------------------------ | ------------------------------------------------------------------- |
+| OpenClaw Plugin kancaları             | OpenClaw                 | PI ve Codex harness'ları genelinde ürün/Plugin uyumluluğu.          |
+| Codex app-server uzantı ara katmanı   | OpenClaw paket Plugin'leri | OpenClaw dinamik araçları etrafında dönüş başına adaptör davranışı. |
+| Codex yerel kancaları                 | Codex                    | Codex yapılandırmasından düşük düzeyli Codex yaşam döngüsü ve yerel araç ilkesi. |
 
-OpenClaw, OpenClaw Plugin davranışını yönlendirmek için proje veya genel Codex `hooks.json` dosyalarını kullanmaz. Desteklenen yerel araç ve izin köprüsü için OpenClaw, `PreToolUse`, `PostToolUse`, `PermissionRequest` ve `Stop` için iş parçacığı başına Codex yapılandırması enjekte eder. `SessionStart` ve `UserPromptSubmit` gibi diğer Codex kancaları Codex düzeyi denetimler olarak kalır; v1 sözleşmesinde OpenClaw Plugin kancaları olarak sunulmazlar.
+OpenClaw, OpenClaw Plugin davranışını yönlendirmek için proje veya genel Codex `hooks.json` dosyalarını kullanmaz. Desteklenen yerel araç ve izin köprüsü için OpenClaw, `PreToolUse`, `PostToolUse`, `PermissionRequest` ve `Stop` için ileti dizisi başına Codex yapılandırması enjekte eder. `SessionStart` ve `UserPromptSubmit` gibi diğer Codex kancaları Codex düzeyi denetimler olarak kalır; bunlar v1 sözleşmesinde OpenClaw Plugin kancaları olarak sunulmaz.
 
-OpenClaw dinamik araçları için OpenClaw, Codex çağrıyı istedikten sonra aracı yürütür; bu nedenle OpenClaw, koşum bağdaştırıcısında sahibi olduğu Plugin ve ara katman davranışını tetikler. Codex'e özgü yerel araçlar için kanonik araç kaydının sahibi Codex'tir. OpenClaw seçili olayları yansıtabilir, ancak Codex bu işlemi app-server veya yerel kanca geri çağrıları üzerinden sunmadıkça yerel Codex iş parçacığını yeniden yazamaz.
+OpenClaw dinamik araçları için OpenClaw, Codex çağrıyı istedikten sonra aracı yürütür; bu yüzden OpenClaw sahip olduğu Plugin ve ara katman davranışını harness adaptöründe tetikler. Codex yerel araçları için kanonik araç kaydının sahibi Codex'tir. OpenClaw seçili olayları yansıtabilir, ancak Codex bu işlemi app-server veya yerel kanca geri çağrıları üzerinden sunmadıkça yerel Codex ileti dizisini yeniden yazamaz.
 
-Compaction ve LLM yaşam döngüsü izdüşümleri, yerel Codex kanca komutlarından değil Codex app-server bildirimlerinden ve OpenClaw bağdaştırıcı durumundan gelir. OpenClaw'ın `before_compaction`, `after_compaction`, `llm_input` ve `llm_output` olayları bağdaştırıcı düzeyi gözlemlerdir; Codex'in iç isteğinin veya Compaction yüklerinin bayt bayt yakalamaları değildir.
+Compaction ve LLM yaşam döngüsü projeksiyonları, yerel Codex kanca komutlarından değil Codex app-server bildirimlerinden ve OpenClaw adaptör durumundan gelir. OpenClaw'ın `before_compaction`, `after_compaction`, `llm_input` ve `llm_output` olayları adaptör düzeyi gözlemlerdir; Codex'in iç isteğinin veya Compaction yüklerinin bayt bayt yakalanmış hali değildir.
 
-Codex yerel `hook/started` ve `hook/completed` app-server bildirimleri, yörünge ve hata ayıklama için `codex_app_server.hook` ajan olayları olarak yansıtılır. Bunlar OpenClaw Plugin kancalarını çağırmaz.
+Codex yerel `hook/started` ve `hook/completed` app-server bildirimleri, yörünge ve hata ayıklama için `codex_app_server.hook` aracı olayları olarak projekte edilir. Bunlar OpenClaw Plugin kancalarını çağırmaz.
 
 ## V1 destek sözleşmesi
 
-Codex modu, altında farklı bir model çağrısı olan PI değildir. Codex yerel model döngüsünün daha büyük bir bölümünün sahibidir ve OpenClaw Plugin ve oturum yüzeylerini bu sınıra göre uyarlar.
+Codex modu, altında farklı bir model çağrısı olan PI değildir. Codex yerel model döngüsünün daha büyük bir kısmına sahiptir ve OpenClaw Plugin ve oturum yüzeylerini bu sınırın etrafında uyarlar.
 
-Codex runtime v1'de desteklenir:
+Codex runtime v1'de desteklenenler:
 
-| Yüzey                                         | Destek                                  | Neden                                                                                                                                                                                                 |
-| --------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Codex üzerinden OpenAI model döngüsü          | Desteklenir                             | Codex app-server OpenAI turunun, yerel iş parçacığı sürdürmenin ve yerel araç devamının sahibidir.                                                                                                     |
-| OpenClaw kanal yönlendirme ve teslimi         | Desteklenir                             | Telegram, Discord, Slack, WhatsApp, iMessage ve diğer kanallar model runtime'ının dışında kalır.                                                                                                      |
-| OpenClaw dinamik araçları                     | Desteklenir                             | Codex, OpenClaw'dan bu araçları yürütmesini ister; bu nedenle OpenClaw yürütme yolunda kalır.                                                                                                        |
-| İstem ve bağlam Plugin'leri                   | Desteklenir                             | OpenClaw, iş parçacığını başlatmadan veya sürdürmeden önce istem örtülerini oluşturur ve bağlamı Codex turuna yansıtır.                                                                               |
-| Bağlam motoru yaşam döngüsü                   | Desteklenir                             | Birleştirme, içe alma veya tur sonrası bakım ve bağlam motoru Compaction koordinasyonu Codex turları için çalışır.                                                                                   |
-| Dinamik araç kancaları                        | Desteklenir                             | `before_tool_call`, `after_tool_call` ve araç sonucu ara katmanı, OpenClaw'ın sahibi olduğu dinamik araçların etrafında çalışır.                                                                      |
-| Yaşam döngüsü kancaları                       | Bağdaştırıcı gözlemleri olarak desteklenir | `llm_input`, `llm_output`, `agent_end`, `before_compaction` ve `after_compaction` dürüst Codex modu yükleriyle tetiklenir.                                                                            |
-| Son yanıt revizyon kapısı                     | Yerel kanca aktarıcısı üzerinden desteklenir | Codex `Stop`, `before_agent_finalize` öğesine aktarılır; `revise`, sonlandırmadan önce Codex'ten bir model geçişi daha ister.                                                                         |
-| Yerel kabuk, yama ve MCP engelleme veya gözlemleme | Yerel kanca aktarıcısı üzerinden desteklenir | Codex `PreToolUse` ve `PostToolUse`, Codex app-server `0.125.0` veya daha yenisindeki MCP yükleri dahil olmak üzere işlenmiş yerel araç yüzeyleri için aktarılır. Engelleme desteklenir; argüman yeniden yazma desteklenmez. |
-| Yerel izin ilkesi                             | Yerel kanca aktarıcısı üzerinden desteklenir | Codex `PermissionRequest`, runtime bunu sunduğunda OpenClaw ilkesi üzerinden yönlendirilebilir. OpenClaw karar döndürmezse Codex normal koruyucu veya kullanıcı onay yolundan devam eder.            |
+| Yüzey                                         | Destek                                  | Neden                                                                                                                                                                                                |
+| --------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Codex üzerinden OpenAI model döngüsü          | Desteklenir                             | Codex app-server, OpenAI dönüşünün, yerel ileti dizisi sürdürmenin ve yerel araç devamının sahibidir.                                                                                                 |
+| OpenClaw kanal yönlendirme ve teslimi         | Desteklenir                             | Telegram, Discord, Slack, WhatsApp, iMessage ve diğer kanallar model runtime dışında kalır.                                                                                                           |
+| OpenClaw dinamik araçları                     | Desteklenir                             | Codex, OpenClaw'dan bu araçları yürütmesini ister; bu nedenle OpenClaw yürütme yolunda kalır.                                                                                                         |
+| İstem ve bağlam Plugin'leri                   | Desteklenir                             | OpenClaw istem katmanları oluşturur ve ileti dizisini başlatmadan veya sürdürmeden önce bağlamı Codex dönüşüne projekte eder.                                                                         |
+| Bağlam motoru yaşam döngüsü                   | Desteklenir                             | Codex dönüşleri için birleştirme, içe alma veya dönüş sonrası bakım ve bağlam motoru Compaction koordinasyonu çalışır.                                                                                |
+| Dinamik araç kancaları                        | Desteklenir                             | `before_tool_call`, `after_tool_call` ve araç sonucu ara katmanı, OpenClaw'ın sahip olduğu dinamik araçların etrafında çalışır.                                                                       |
+| Yaşam döngüsü kancaları                       | Adaptör gözlemleri olarak desteklenir   | `llm_input`, `llm_output`, `agent_end`, `before_compaction` ve `after_compaction` dürüst Codex modu yükleriyle tetiklenir.                                                                            |
+| Son yanıt revizyon kapısı                     | Yerel kanca aktarımı üzerinden desteklenir | Codex `Stop`, `before_agent_finalize` içine aktarılır; `revise`, sonlandırmadan önce Codex'ten bir model geçişi daha ister.                                                                        |
+| Yerel kabuk, yama ve MCP engelleme veya gözlem | Yerel kanca aktarımı üzerinden desteklenir | Codex `PreToolUse` ve `PostToolUse`, Codex app-server `0.125.0` veya daha yenisindeki MCP yükleri dahil olmak üzere taahhüt edilmiş yerel araç yüzeyleri için aktarılır. Engelleme desteklenir; bağımsız değişken yeniden yazımı desteklenmez. |
+| Yerel izin ilkesi                             | Yerel kanca aktarımı üzerinden desteklenir | Runtime sunduğunda Codex `PermissionRequest`, OpenClaw ilkesi üzerinden yönlendirilebilir. OpenClaw karar döndürmezse Codex normal koruyucu veya kullanıcı onayı yolu üzerinden devam eder.          |
 | App-server yörünge yakalama                   | Desteklenir                             | OpenClaw, app-server'a gönderdiği isteği ve aldığı app-server bildirimlerini kaydeder.                                                                                                                |
 
-Codex runtime v1'de desteklenmez:
+Codex runtime v1'de desteklenmeyenler:
 
-| Yüzey                                             | V1 sınırı                                                                                                                                     | Gelecek yol                                                                               |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Yerel araç argümanı mutasyonu                       | Codex yerel araç öncesi kancaları engelleyebilir, ancak OpenClaw Codex'e özgü yerel araç argümanlarını yeniden yazmaz.                                               | Değiştirilecek araç girdisi için Codex kanca/şema desteği gerektirir.                            |
-| Düzenlenebilir Codex'e özgü yerel transkript geçmişi            | Codex, kanonik yerel iş parçacığı geçmişine sahiptir. OpenClaw bir aynaya sahiptir ve gelecekteki bağlamı yansıtabilir, ancak desteklenmeyen dahili yapıları değiştirmemelidir. | Yerel iş parçacığı cerrahisi gerekiyorsa açık Codex app-server API'leri ekleyin.                    |
-| Codex'e özgü yerel araç kayıtları için `tool_result_persist` | Bu kanca, Codex'e özgü yerel araç kayıtlarını değil, OpenClaw'a ait transkript yazımlarını dönüştürür.                                                           | Dönüştürülmüş kayıtları aynalayabilir, ancak kanonik yeniden yazım Codex desteği gerektirir.              |
-| Zengin yerel Compaction meta verisi                     | OpenClaw Compaction başlangıcını ve tamamlanmasını gözlemler, ancak kararlı bir tutuldu/bırakıldı listesi, token farkı veya özet yükü almaz.            | Daha zengin Codex Compaction olayları gerekir.                                                     |
-| Compaction müdahalesi                             | Mevcut OpenClaw Compaction kancaları Codex modunda bildirim düzeyindedir.                                                                         | Plugin'lerin yerel Compaction'ı veto etmesi veya yeniden yazması gerekiyorsa Codex ön/son Compaction kancaları ekleyin. |
-| Bayt bayt model API isteği yakalama             | OpenClaw app-server isteklerini ve bildirimlerini yakalayabilir, ancak Codex çekirdeği nihai OpenAI API isteğini dahili olarak oluşturur.                      | Bir Codex model isteği izleme olayı veya hata ayıklama API'si gerekir.                                   |
+| Yüzey                                               | V1 sınırı                                                                                                                                           | Gelecek yol                                                                                          |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Yerel araç bağımsız değişkeni mutasyonu             | Codex yerel ön araç hook'ları engelleyebilir, ancak OpenClaw Codex'e özgü yerel araç bağımsız değişkenlerini yeniden yazmaz.                       | Yedek araç girdisi için Codex hook/şema desteği gerektirir.                                          |
+| Düzenlenebilir Codex'e özgü yerel transcript geçmişi | Standart yerel iş parçacığı geçmişi Codex'e aittir. OpenClaw bir yansıtmanın sahibidir ve gelecekteki bağlamı yansıtabilir, ancak desteklenmeyen iç yapıları değiştirmemelidir. | Yerel iş parçacığı müdahalesi gerekiyorsa açık Codex uygulama sunucusu API'leri ekleyin.             |
+| Codex'e özgü yerel araç kayıtları için `tool_result_persist` | Bu hook OpenClaw'a ait transcript yazımlarını dönüştürür, Codex'e özgü yerel araç kayıtlarını değil.                                              | Dönüştürülmüş kayıtları yansıtabilir, ancak standart yeniden yazma Codex desteği gerektirir.         |
+| Zengin yerel Compaction meta verileri               | OpenClaw Compaction başlangıcını ve tamamlanmasını gözlemler, ancak kararlı bir tutulan/bırakılan listesi, token deltası veya özet yükü almaz.     | Daha zengin Codex Compaction olayları gerektirir.                                                    |
+| Compaction müdahalesi                               | Mevcut OpenClaw Compaction hook'ları Codex modunda bildirim düzeyindedir.                                                                          | Plugin'lerin yerel Compaction'ı veto etmesi veya yeniden yazması gerekiyorsa Codex ön/son Compaction hook'ları ekleyin. |
+| Bayt bayt model API isteği yakalama                 | OpenClaw uygulama sunucusu isteklerini ve bildirimlerini yakalayabilir, ancak son OpenAI API isteğini Codex çekirdeği dahili olarak oluşturur.     | Bir Codex model isteği izleme olayı veya hata ayıklama API'si gerektirir.                            |
 
 ## Araçlar, medya ve Compaction
 
-Codex harness yalnızca düşük düzeyli gömülü ajan yürütücüsünü değiştirir.
+Codex koşum takımı yalnızca düşük düzeyli gömülü ajan yürütücüsünü değiştirir.
 
-OpenClaw yine de araç listesini oluşturur ve harness'ten dinamik araç sonuçlarını
-alır. Metin, görüntüler, video, müzik, TTS, onaylar ve mesajlaşma aracı çıktısı
-normal OpenClaw teslim yolundan geçmeye devam eder.
+OpenClaw araç listesini oluşturmaya ve koşum takımından dinamik araç sonuçları almaya devam eder. Metin, görseller, video, müzik, TTS, onaylar ve mesajlaşma aracı çıktısı normal OpenClaw teslim yolundan geçmeye devam eder.
 
-Yerel kanca aktarıcısı kasıtlı olarak geneldir, ancak v1 destek sözleşmesi
-OpenClaw'ın test ettiği Codex'e özgü yerel araç ve izin yollarıyla sınırlıdır.
-Codex çalışma zamanında buna shell, patch ve MCP `PreToolUse`,
-`PostToolUse` ve `PermissionRequest` yükleri dahildir. Çalışma zamanı sözleşmesi
-adını verene kadar gelecekteki her Codex kanca olayının bir OpenClaw Plugin yüzeyi
-olduğunu varsaymayın.
+Yerel hook aktarımı kasıtlı olarak geneldir, ancak v1 destek sözleşmesi OpenClaw'ın test ettiği Codex'e özgü yerel araç ve izin yollarıyla sınırlıdır. Codex çalışma zamanında buna shell, patch ve MCP `PreToolUse`, `PostToolUse` ve `PermissionRequest` yükleri dahildir. Çalışma zamanı sözleşmesi adını vermeden her gelecekteki Codex hook olayının bir OpenClaw Plugin yüzeyi olduğunu varsaymayın.
 
-`PermissionRequest` için OpenClaw yalnızca politika karar verdiğinde açık izin
-veya ret kararları döndürür. Kararsız sonuç bir izin değildir. Codex bunu kanca
-kararı yok olarak değerlendirir ve kendi koruyucusuna veya kullanıcı onayı yoluna
-devreder.
+`PermissionRequest` için OpenClaw yalnızca ilke karar verdiğinde açık izin veya reddetme kararları döndürür. Kararsız sonuç izin değildir. Codex bunu hook kararı yok olarak ele alır ve kendi koruyucusuna veya kullanıcı onayı yoluna düşer.
 
-Codex MCP araç onayı istemleri, Codex `_meta.codex_approval_kind` değerini
-`"mcp_tool_call"` olarak işaretlediğinde OpenClaw'ın Plugin onay akışı üzerinden
-yönlendirilir. Codex `request_user_input` istemleri kaynak sohbete geri gönderilir
-ve sıradaki bir sonraki takip mesajı, ek bağlam olarak yönlendirilmek yerine bu
-yerel sunucu isteğini yanıtlar. Diğer MCP isteme istekleri yine kapalı şekilde
-başarısız olur.
+Codex MCP araç onayı istemleri, Codex `_meta.codex_approval_kind` değerini `"mcp_tool_call"` olarak işaretlediğinde OpenClaw'ın Plugin onay akışından yönlendirilir. Codex `request_user_input` istemleri kaynak sohbete geri gönderilir ve sıradaki sonraki takip mesajı, ekstra bağlam olarak yönlendirilmek yerine bu yerel sunucu isteğini yanıtlar. Diğer MCP isteme istekleri yine kapalı şekilde başarısız olur.
 
-Etkin çalışma kuyruğu yönlendirmesi Codex app-server `turn/steer` ile eşlenir.
-Varsayılan `messages.queue.mode: "steer"` ile OpenClaw, yapılandırılmış sessiz
-pencere boyunca kuyruktaki sohbet mesajlarını toplar ve bunları geliş sırasına
-göre tek bir `turn/steer` isteği olarak gönderir. Eski `queue` modu ayrı
-`turn/steer` istekleri gönderir. Codex inceleme ve manuel Compaction turları aynı
-tur yönlendirmesini reddedebilir; bu durumda seçilen mod geri dönüşe izin
-veriyorsa OpenClaw takip kuyruğunu kullanır. Bkz.
-[Yönlendirme kuyruğu](/tr/concepts/queue-steering).
+Etkin çalışma kuyruğu yönlendirmesi Codex uygulama sunucusu `turn/steer` üzerine eşlenir. Varsayılan `messages.queue.mode: "steer"` ile OpenClaw kuyruğa alınmış sohbet mesajlarını yapılandırılmış sessiz pencere boyunca toplar ve varış sırasıyla tek bir `turn/steer` isteği olarak gönderir. Eski `queue` modu ayrı `turn/steer` istekleri gönderir. Codex review ve manuel Compaction dönüşleri aynı dönüş yönlendirmesini reddedebilir; bu durumda OpenClaw, seçili mod geri dönüşe izin verdiğinde takip kuyruğunu kullanır. Bkz. [Yönlendirme kuyruğu](/tr/concepts/queue-steering).
 
-Seçilen model Codex harness kullandığında, yerel iş parçacığı Compaction'ı
-Codex app-server'a devredilir. OpenClaw kanal geçmişi, arama, `/new`, `/reset`
-ve gelecekteki model veya harness geçişi için bir transkript aynası tutar. Ayna,
-kullanıcı istemini, son asistan metnini ve app-server bunları yaydığında hafif
-Codex akıl yürütme veya plan kayıtlarını içerir. Bugün OpenClaw yalnızca yerel
-Compaction başlangıç ve tamamlanma sinyallerini kaydeder. Henüz insan tarafından
-okunabilir bir Compaction özeti veya Codex'in Compaction sonrasında hangi
-girdileri tuttuğuna dair denetlenebilir bir liste sunmaz.
+Seçili model Codex koşum takımını kullandığında, yerel iş parçacığı Compaction'ı Codex uygulama sunucusuna devredilir. OpenClaw kanal geçmişi, arama, `/new`, `/reset` ve gelecekteki model ya da koşum takımı geçişleri için bir transcript yansıtması tutar. Yansıtma, uygulama sunucusu bunları yaydığında kullanıcı istemini, son asistan metnini ve hafif Codex akıl yürütme ya da plan kayıtlarını içerir. Bugün OpenClaw yalnızca yerel Compaction başlangıç ve tamamlanma sinyallerini kaydeder. Henüz insan tarafından okunabilir bir Compaction özeti veya Codex'in Compaction sonrasında hangi girdileri tuttuğuna dair denetlenebilir bir liste sunmaz.
 
-Kanonik yerel iş parçacığı Codex'e ait olduğundan, `tool_result_persist` şu anda
-Codex'e özgü yerel araç sonuç kayıtlarını yeniden yazmaz. Yalnızca OpenClaw,
-OpenClaw'a ait bir oturum transkripti araç sonucu yazarken uygulanır.
+Standart yerel iş parçacığı Codex'e ait olduğundan, `tool_result_persist` şu anda Codex'e özgü yerel araç sonuç kayıtlarını yeniden yazmaz. Yalnızca OpenClaw, OpenClaw'a ait bir oturum transcript araç sonucu yazarken uygulanır.
 
-Medya üretimi PI gerektirmez. Görüntü, video, müzik, PDF, TTS ve medya anlama
-`agents.defaults.imageGenerationModel`, `videoGenerationModel`, `pdfModel` ve
-`messages.tts` gibi eşleşen sağlayıcı/model ayarlarını kullanmaya devam eder.
+Medya üretimi PI gerektirmez. Görsel, video, müzik, PDF, TTS ve medya anlama `agents.defaults.imageGenerationModel`, `videoGenerationModel`, `pdfModel` ve `messages.tts` gibi eşleşen sağlayıcı/model ayarlarını kullanmaya devam eder.
 
 ## Sorun giderme
 
-**Codex normal bir `/model` sağlayıcısı olarak görünmüyor:** yeni yapılandırmalar
-için bu beklenir. `agentRuntime.id: "codex"` ile bir `openai/gpt-*` modeli
-(veya eski bir `codex/*` referansı) seçin, `plugins.entries.codex.enabled`
-öğesini etkinleştirin ve `plugins.allow` öğesinin `codex` değerini dışlayıp
-dışlamadığını kontrol edin.
+**Codex normal bir `/model` sağlayıcısı olarak görünmüyor:** bu yeni yapılandırmalar için beklenen bir durumdur. `agentRuntime.id: "codex"` ile bir `openai/gpt-*` modeli (veya eski bir `codex/*` başvurusu) seçin, `plugins.entries.codex.enabled` değerini etkinleştirin ve `plugins.allow` öğesinin `codex` değerini hariç tutup tutmadığını kontrol edin.
 
-**OpenClaw Codex yerine PI kullanıyor:** `agentRuntime.id: "auto"` hiçbir Codex
-harness çalışmayı üstlenmediğinde uyumluluk arka ucu olarak hâlâ PI kullanabilir.
-Test sırasında Codex seçimini zorlamak için `agentRuntime.id: "codex"` ayarlayın.
-Zorlanan bir Codex çalışma zamanı artık, açıkça `agentRuntime.fallback: "pi"`
-ayarlamadığınız sürece PI'ye geri dönmek yerine başarısız olur. Codex app-server
-seçildikten sonra hataları ek geri dönüş yapılandırması olmadan doğrudan görünür.
+**OpenClaw Codex yerine PI kullanıyor:** `agentRuntime.id: "auto"`, hiçbir Codex koşum takımı çalışmayı üstlenmediğinde uyumluluk arka ucu olarak hâlâ PI kullanabilir. Test sırasında Codex seçimini zorlamak için `agentRuntime.id: "codex"` ayarlayın. Zorlanmış bir Codex çalışma zamanı artık açıkça `agentRuntime.fallback: "pi"` ayarlamadığınız sürece PI'ye geri dönmek yerine başarısız olur. Codex uygulama sunucusu seçildikten sonra hataları ek geri dönüş yapılandırması olmadan doğrudan görünür.
 
-**app-server reddediliyor:** app-server el sıkışmasının `0.125.0` veya daha yeni
-sürüm bildirmesi için Codex'i yükseltin. Aynı sürümün ön sürümleri veya
-`0.125.0-alpha.2` ya da `0.125.0+custom` gibi derleme sonekli sürümler reddedilir,
-çünkü OpenClaw'ın test ettiği kararlı protokol tabanı `0.125.0` sürümüdür.
+**Uygulama sunucusu reddediliyor:** uygulama sunucusu el sıkışması `0.125.0` veya daha yeni bir sürüm raporlayacak şekilde Codex'i yükseltin. `0.125.0-alpha.2` veya `0.125.0+custom` gibi aynı sürüm ön sürümleri ya da derleme sonekli sürümler reddedilir, çünkü OpenClaw'ın test ettiği kararlı `0.125.0` protokol alt sınırıdır.
 
-**Model keşfi yavaş:** `plugins.entries.codex.config.discovery.timeoutMs` değerini
-düşürün veya keşfi devre dışı bırakın.
+**Model keşfi yavaş:** `plugins.entries.codex.config.discovery.timeoutMs` değerini düşürün veya keşfi devre dışı bırakın.
 
-**WebSocket taşıması hemen başarısız oluyor:** `appServer.url`, `authToken` ve
-uzak app-server'ın aynı Codex app-server protokol sürümünü konuştuğunu kontrol
-edin.
+**WebSocket taşıması hemen başarısız oluyor:** `appServer.url`, `authToken` değerlerini ve uzak uygulama sunucusunun aynı Codex uygulama sunucusu protokol sürümünü konuştuğunu kontrol edin.
 
-**Codex olmayan bir model PI kullanıyor:** bu, söz konusu ajan için
-`agentRuntime.id: "codex"` zorlamadığınız veya eski bir `codex/*` referansı
-seçmediğiniz sürece beklenir. Düz `openai/gpt-*` ve diğer sağlayıcı referansları
-`auto` modunda normal sağlayıcı yollarında kalır. `agentRuntime.id: "codex"`
-zorlarsanız, o ajan için her gömülü turun Codex tarafından desteklenen bir OpenAI
-modeli olması gerekir.
+**Codex olmayan bir model PI kullanıyor:** bu, söz konusu ajan için `agentRuntime.id: "codex"` zorlamadığınız veya eski bir `codex/*` başvurusu seçmediğiniz sürece beklenen bir durumdur. Düz `openai/gpt-*` ve diğer sağlayıcı başvuruları `auto` modunda normal sağlayıcı yollarında kalır. `agentRuntime.id: "codex"` zorlarsanız, o ajanın her gömülü dönüşü Codex tarafından desteklenen bir OpenAI modeli olmalıdır.
 
-**Computer Use yüklü ancak araçlar çalışmıyor:** yeni bir oturumdan
-`/codex computer-use status` öğesini kontrol edin. Bir araç
-`Native hook relay unavailable` bildirirse `/new` veya `/reset` kullanın; devam
-ederse eski yerel kanca kayıtlarını temizlemek için Gateway'i yeniden başlatın.
-`computer-use.list_apps` zaman aşımına uğrarsa Codex Computer Use veya Codex
-Desktop'ı yeniden başlatıp tekrar deneyin.
+**Computer Use yüklü ancak araçlar çalışmıyor:** yeni bir oturumdan `/codex computer-use status` değerini kontrol edin. Bir araç `Native hook relay unavailable` bildirirse `/new` veya `/reset` kullanın; sorun sürerse eski yerel hook kayıtlarını temizlemek için gateway'i yeniden başlatın. `computer-use.list_apps` zaman aşımına uğrarsa Codex Computer Use veya Codex Desktop'ı yeniden başlatıp tekrar deneyin.
 
 ## İlgili
 
-- [Ajan harness Plugin'leri](/tr/plugins/sdk-agent-harness)
+- [Ajan koşum takımı Plugin'leri](/tr/plugins/sdk-agent-harness)
 - [Ajan çalışma zamanları](/tr/concepts/agent-runtimes)
 - [Model sağlayıcıları](/tr/concepts/model-providers)
 - [OpenAI sağlayıcısı](/tr/providers/openai)
 - [Durum](/tr/cli/status)
-- [Plugin kancaları](/tr/plugins/hooks)
-- [Yapılandırma referansı](/tr/gateway/configuration-reference)
-- [Test etme](/tr/help/testing-live#live-codex-app-server-harness-smoke)
+- [Plugin hook'ları](/tr/plugins/hooks)
+- [Yapılandırma başvurusu](/tr/gateway/configuration-reference)
+- [Test](/tr/help/testing-live#live-codex-app-server-harness-smoke)

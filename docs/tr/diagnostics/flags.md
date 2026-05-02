@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Genel günlük kaydı düzeylerini yükseltmeden hedefli hata ayıklama günlüklerine ihtiyacınız var
+    - Genel günlükleme düzeylerini yükseltmeden hedefli hata ayıklama günlüklerine ihtiyacınız var
     - Destek için alt sisteme özgü günlükleri yakalamanız gerekir
 summary: Hedefli hata ayıklama günlükleri için tanılama bayrakları
 title: Tanılama bayrakları
 x-i18n:
-    generated_at: "2026-04-30T09:19:32Z"
+    generated_at: "2026-05-02T08:53:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
+    source_hash: 1d0ff92d45cf1c5a12a7103ba5b97d656a55a13a7a4f2e86e26ba3a9cfae7687
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Tanılama bayrakları, her yerde ayrıntılı günlüklemeyi açmadan hedefli hata ayıklama günlüklerini etkinleştirmenizi sağlar. Bayraklar isteğe bağlıdır ve bir alt sistem onları denetlemediği sürece etkisi yoktur.
+Tanılama bayrakları, her yerde ayrıntılı günlük kaydını açmadan hedeflenmiş hata ayıklama günlüklerini etkinleştirmenizi sağlar. Bayraklar isteğe bağlıdır ve bir alt sistem bunları denetlemediği sürece etkili olmaz.
 
 ## Nasıl çalışır?
 
 - Bayraklar dizelerdir (büyük/küçük harfe duyarsız).
-- Bayrakları yapılandırmada veya bir ortam geçersiz kılmasıyla etkinleştirebilirsiniz.
+- Bayrakları yapılandırmada veya bir ortam değişkeni geçersiz kılmasıyla etkinleştirebilirsiniz.
 - Joker karakterler desteklenir:
   - `telegram.*`, `telegram.http` ile eşleşir
   - `*` tüm bayrakları etkinleştirir
@@ -38,14 +38,14 @@ Birden çok bayrak:
 ```json
 {
   "diagnostics": {
-    "flags": ["telegram.http", "gateway.*"]
+    "flags": ["telegram.http", "brave.http", "gateway.*"]
   }
 }
 ```
 
 Bayrakları değiştirdikten sonra Gateway'i yeniden başlatın.
 
-## Ortam geçersiz kılması (tek seferlik)
+## Ortam değişkeni geçersiz kılması (tek seferlik)
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload
@@ -59,7 +59,7 @@ OPENCLAW_DIAGNOSTICS=0
 
 ## Zaman çizelgesi artefaktları
 
-`timeline` bayrağı, harici QA test düzenekleri için yapılandırılmış başlangıç ve çalışma zamanı zamanlama olayları yazar:
+`timeline` bayrağı, harici QA donanımları için yapılandırılmış başlangıç ve çalışma zamanı zamanlama olayları yazar:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=timeline \
@@ -77,23 +77,23 @@ Bunu yapılandırmada da etkinleştirebilirsiniz:
 }
 ```
 
-Zaman çizelgesi dosya yolu yine `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` üzerinden gelir. `timeline` yalnızca yapılandırmadan etkinleştirildiğinde, OpenClaw yapılandırmayı henüz okumadığı için en erken yapılandırma yükleme aralıkları yayımlanmaz; sonraki başlangıç aralıkları yapılandırma bayrağını kullanır.
+Zaman çizelgesi dosya yolu yine `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH` değerinden gelir. `timeline` yalnızca yapılandırmadan etkinleştirildiğinde, OpenClaw yapılandırmayı henüz okumamış olduğundan en erken yapılandırma yükleme aralıkları yayımlanmaz; sonraki başlangıç aralıkları yapılandırma bayrağını kullanır.
 
-`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` ve `OPENCLAW_DIAGNOSTICS=*` da zaman çizelgesini etkinleştirir çünkü bunlar her tanılama bayrağını etkinleştirir. Yalnızca JSONL zamanlama artefaktını istiyorsanız `timeline` kullanmayı tercih edin.
+`OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` ve `OPENCLAW_DIAGNOSTICS=*` de her tanılama bayrağını etkinleştirdikleri için zaman çizelgesini etkinleştirir. Yalnızca JSONL zamanlama artefaktını istiyorsanız `timeline` tercih edin.
 
-Zaman çizelgesi kayıtları `openclaw.diagnostics.v1` zarfını kullanır. Olaylar süreç kimliklerini, aşama adlarını, aralık adlarını, süreleri, Plugin kimliklerini, bağımlılık sayılarını, olay döngüsü gecikme örneklerini, sağlayıcı işlem adlarını, alt süreç çıkış durumunu ve başlangıç hata adlarını/iletilerini içerebilir. Zaman çizelgesi dosyalarını yerel tanılama artefaktları olarak değerlendirin; makinenizin dışında paylaşmadan önce gözden geçirin.
+Zaman çizelgesi kayıtları `openclaw.diagnostics.v1` zarfını kullanır. Olaylar işlem kimlikleri, aşama adları, aralık adları, süreler, Plugin kimlikleri, bağımlılık sayıları, olay döngüsü gecikme örnekleri, sağlayıcı işlem adları, alt işlem çıkış durumu ve başlangıç hatası adları/iletileri içerebilir. Zaman çizelgesi dosyalarını yerel tanılama artefaktları olarak ele alın; makinenizin dışında paylaşmadan önce gözden geçirin.
 
-## Günlüklerin gittiği yer
+## Günlükler nereye gider?
 
-Bayraklar, standart tanılama günlük dosyasına günlükler yayar. Varsayılan olarak:
+Bayraklar, günlükleri standart tanılama günlük dosyasına yazar. Varsayılan olarak:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-`logging.file` ayarlarsanız bunun yerine o yolu kullanın. Günlükler JSONL biçimindedir (satır başına bir JSON nesnesi). Gizleme yine `logging.redactSensitive` temelinde uygulanır.
+`logging.file` ayarlarsanız bunun yerine o yolu kullanın. Günlükler JSONL biçimindedir (satır başına bir JSON nesnesi). Sansürleme yine `logging.redactSensitive` değerine göre uygulanır.
 
-## Günlükleri ayıklama
+## Günlükleri çıkarma
 
 En son günlük dosyasını seçin:
 
@@ -101,10 +101,16 @@ En son günlük dosyasını seçin:
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Telegram HTTP tanılamaları için filtreleyin:
+Telegram HTTP tanılaması için filtreleyin:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
+```
+
+Brave Search HTTP tanılaması için filtreleyin:
+
+```bash
+rg "brave http" /tmp/openclaw/openclaw-*.log
 ```
 
 Veya yeniden üretirken takip edin:
@@ -113,15 +119,16 @@ Veya yeniden üretirken takip edin:
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Uzak Gateway'ler için `openclaw logs --follow` komutunu da kullanabilirsiniz (bkz. [/cli/logs](/tr/cli/logs)).
+Uzak Gateway'ler için `openclaw logs --follow` da kullanabilirsiniz (bkz. [/cli/logs](/tr/cli/logs)).
 
 ## Notlar
 
-- `logging.level`, `warn` değerinden daha yüksek ayarlanırsa bu günlükler bastırılabilir. Varsayılan `info` uygundur.
-- Bayrakları etkin bırakmak güvenlidir; yalnızca belirli alt sistemin günlük hacmini etkilerler.
-- Günlük hedeflerini, düzeylerini ve gizlemeyi değiştirmek için [/logging](/tr/logging) kullanın.
+- `logging.level`, `warn` değerinden daha yüksek ayarlanmışsa bu günlükler bastırılabilir. Varsayılan `info` uygundur.
+- `brave.http`, Brave Search istek URL'lerini/sorgu parametrelerini, yanıt durumunu/zamanlamasını ve önbellek isabet/kaçırma/yazma olaylarını günlüğe kaydeder. API anahtarlarını veya yanıt gövdelerini günlüğe kaydetmez, ancak arama sorguları hassas olabilir.
+- Bayrakları etkin bırakmak güvenlidir; yalnızca ilgili alt sistemin günlük hacmini etkilerler.
+- Günlük hedeflerini, düzeylerini ve sansürlemeyi değiştirmek için [/logging](/tr/logging) kullanın.
 
 ## İlgili
 
-- [Gateway tanılamaları](/tr/gateway/diagnostics)
+- [Gateway tanılaması](/tr/gateway/diagnostics)
 - [Gateway sorun giderme](/tr/gateway/troubleshooting)

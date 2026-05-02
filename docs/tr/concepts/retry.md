@@ -1,28 +1,28 @@
 ---
 read_when:
     - Sağlayıcı yeniden deneme davranışını veya varsayılanlarını güncelleme
-    - Sağlayıcı gönderim hatalarında veya oran sınırlarında hata ayıklama
+    - Sağlayıcı gönderim hataları veya hız sınırları için hata ayıklama
 summary: Giden sağlayıcı çağrıları için yeniden deneme ilkesi
 title: Yeniden deneme ilkesi
 x-i18n:
-    generated_at: "2026-04-24T09:06:43Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T08:52:51Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 38811a6dabb0b60b71167ee4fcc09fb042f941b4bbb1cf8b0f5a91c3c93b2e75
+    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
     source_path: concepts/retry.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Hedefler
 
-- Çok adımlı akış başına değil, HTTP isteği başına yeniden deneme yapmak.
-- Yalnızca geçerli adımı yeniden deneyerek sıralamayı korumak.
-- İdempotent olmayan işlemleri çoğaltmaktan kaçınmak.
+- Çok adımlı akış başına değil, HTTP isteği başına yeniden deneyin.
+- Yalnızca geçerli adımı yeniden deneyerek sıralamayı koruyun.
+- İdempotent olmayan işlemleri çoğaltmaktan kaçının.
 
 ## Varsayılanlar
 
 - Deneme sayısı: 3
-- Maksimum gecikme üst sınırı: 30000 ms
+- Maksimum gecikme sınırı: 30000 ms
 - Jitter: 0.1 (yüzde 10)
 - Sağlayıcı varsayılanları:
   - Telegram minimum gecikme: 400 ms
@@ -32,30 +32,31 @@ x-i18n:
 
 ### Model sağlayıcıları
 
-- OpenClaw, sağlayıcı SDK'larının normal kısa yeniden denemeleri işlemesine izin verir.
-- Anthropic ve OpenAI gibi Stainless tabanlı SDK'larda, yeniden denenebilir yanıtlar
+- OpenClaw, sağlayıcı SDK'lerinin normal kısa yeniden denemeleri işlemesine izin verir.
+- Anthropic ve OpenAI gibi Stainless tabanlı SDK'ler için, yeniden denenebilir yanıtlar
   (`408`, `409`, `429` ve `5xx`) `retry-after-ms` veya
-  `retry-after` içerebilir. Bu bekleme 60 saniyeden uzunsa OpenClaw
-  `x-should-retry: false` enjekte eder; böylece SDK hatayı hemen gösterir ve model
-  yük devretme başka bir kimlik doğrulama profiline veya geri dönüş modeline dönebilir.
-- Üst sınırı `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>` ile geçersiz kılın.
-  SDK'ların uzun `Retry-After` beklemelerine içeride uymasına izin vermek için
-  bunu `0`, `false`, `off`, `none` veya `disabled` olarak ayarlayın.
+  `retry-after` içerebilir. Bu bekleme 60 saniyeden uzun olduğunda OpenClaw,
+  SDK'nin hatayı hemen göstermesi ve model yük devretmesinin başka bir kimlik doğrulama profiline veya yedek modele dönebilmesi için
+  `x-should-retry: false` ekler.
+- Sınırı `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>` ile geçersiz kılın.
+  SDK'lerin uzun `Retry-After` beklemelerini dahili olarak uygulamasına izin vermek için bunu
+  `0`, `false`, `off`, `none` veya `disabled` olarak ayarlayın.
 
 ### Discord
 
-- Yalnızca oran sınırı hatalarında (HTTP 429) yeniden dener.
-- Mümkün olduğunda Discord `retry_after` değerini, aksi halde üstel geri çekilmeyi kullanır.
+- Hız sınırı hatalarında (HTTP 429), istek zaman aşımlarında, HTTP 5xx yanıtlarında
+  ve DNS arama hataları, bağlantı sıfırlamaları, soket kapanmaları ve fetch hataları gibi geçici aktarım hatalarında yeniden dener.
+- Mevcut olduğunda Discord `retry_after` kullanır, aksi halde üstel geri çekilme uygular.
 
 ### Telegram
 
-- Geçici hatalarda yeniden dener (429, zaman aşımı, bağlanma/sıfırlama/kapanma, geçici olarak kullanılamıyor).
-- Mümkün olduğunda `retry_after`, aksi halde üstel geri çekilme kullanır.
-- Markdown ayrıştırma hataları yeniden denenmez; bunun yerine düz metne geri döner.
+- Geçici hatalarda (429, zaman aşımı, bağlanma/sıfırlama/kapanma, geçici olarak kullanılamama) yeniden dener.
+- Mevcut olduğunda `retry_after` kullanır, aksi halde üstel geri çekilme uygular.
+- Markdown ayrıştırma hataları yeniden denenmez; düz metne geri dönerler.
 
 ## Yapılandırma
 
-Yeniden deneme ilkesini sağlayıcı başına `~/.openclaw/openclaw.json` içinde ayarlayın:
+`~/.openclaw/openclaw.json` içinde sağlayıcı başına yeniden deneme politikasını ayarlayın:
 
 ```json5
 {
@@ -82,10 +83,10 @@ Yeniden deneme ilkesini sağlayıcı başına `~/.openclaw/openclaw.json` içind
 
 ## Notlar
 
-- Yeniden denemeler istek başına uygulanır (mesaj gönderimi, medya yükleme, tepki, anket, çıkartma).
-- Bileşik akışlar tamamlanmış adımları yeniden denemez.
+- Yeniden denemeler istek başına uygulanır (mesaj gönderme, medya yükleme, tepki, anket, çıkartma).
+- Bileşik akışlar tamamlanan adımları yeniden denemez.
 
 ## İlgili
 
-- [Model yük devretme](/tr/concepts/model-failover)
+- [Model yük devretmesi](/tr/concepts/model-failover)
 - [Komut kuyruğu](/tr/concepts/queue)

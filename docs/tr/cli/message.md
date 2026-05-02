@@ -5,17 +5,17 @@ read_when:
 summary: '`openclaw message` için CLI referansı (gönderme + kanal eylemleri)'
 title: Mesaj
 x-i18n:
-    generated_at: "2026-04-30T09:13:16Z"
+    generated_at: "2026-05-02T08:50:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43f14b3815d89c92a7503e620e2424f41a3f6b92e20e089504017305b19bace4
+    source_hash: f429acc2c81f33d1ade543ab1170220e293077e1d1721ac0940937de3d19f0d2
     source_path: cli/message.md
     workflow: 16
 ---
 
 # `openclaw message`
 
-Mesajlar ve kanal eylemleri göndermek için tek giden komut
+Mesaj ve kanal eylemleri göndermek için tek giden komut
 (Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## Kullanım
@@ -26,16 +26,16 @@ openclaw message <subcommand> [flags]
 
 Kanal seçimi:
 
-- Birden fazla kanal yapılandırılmışsa `--channel` gereklidir.
-- Tam olarak bir kanal yapılandırılmışsa, varsayılan olur.
+- Birden fazla kanal yapılandırılmışsa `--channel` zorunludur.
+- Tam olarak bir kanal yapılandırılmışsa varsayılan olur.
 - Değerler: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost Plugin gerektirir)
-- `--channel` veya kanal ön ekli bir hedef bulunduğunda `openclaw message`, seçilen kanalı sahibi olan Plugin'e çözümler; aksi takdirde varsayılan kanal çıkarımı için yapılandırılmış kanal Plugin'lerini yükler.
+- `--channel` veya kanal önekli bir hedef varsa `openclaw message`, seçilen kanalı sahibi olan Plugin ile çözümler; aksi takdirde varsayılan kanal çıkarımı için yapılandırılmış kanal Plugin'lerini yükler.
 
 Hedef biçimleri (`--target`):
 
-- WhatsApp: E.164 veya grup JID'si
+- WhatsApp: E.164 veya grup JID
 - Telegram: sohbet kimliği veya `@username`
-- Discord: `channel:<id>` veya `user:<id>` (ya da `<@id>` mention; ham sayısal kimlikler kanal olarak ele alınır)
+- Discord: `channel:<id>` veya `user:<id>` (ya da `<@id>` bahsi; ham sayısal kimlikler kanal olarak ele alınır)
 - Google Chat: `spaces/<spaceId>` veya `users/<userId>`
 - Slack: `channel:<id>` veya `user:<id>` (ham kanal kimliği kabul edilir)
 - Mattermost (Plugin): `channel:<id>`, `user:<id>` veya `@username` (yalın kimlikler kanal olarak ele alınır)
@@ -44,17 +44,17 @@ Hedef biçimleri (`--target`):
 - Matrix: `@user:server`, `!room:server` veya `#alias:server`
 - Microsoft Teams: konuşma kimliği (`19:...@thread.tacv2`) veya `conversation:<id>` ya da `user:<aad-object-id>`
 
-Ad arama:
+Ad araması:
 
-- Desteklenen sağlayıcılar için (Discord/Slack/vb.), `Help` veya `#help` gibi kanal adları dizin önbelleği üzerinden çözümlenir.
-- Önbellek kaçırıldığında, sağlayıcı destekliyorsa OpenClaw canlı dizin araması yapmayı dener.
+- Desteklenen sağlayıcılar için (Discord/Slack/vb.), `Help` veya `#help` gibi kanal adları dizin önbelleği aracılığıyla çözümlenir.
+- Önbellek isabetsizliğinde OpenClaw, sağlayıcı destekliyorsa canlı dizin araması deneyecektir.
 
 ## Yaygın bayraklar
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (send/poll/read/vb. için hedef kanal veya kullanıcı)
-- `--targets <name>` (tekrarlanabilir; yalnızca broadcast)
+- `--target <dest>` (gönderme/yoklama/okuma/vb. için hedef kanal veya kullanıcı)
+- `--targets <name>` (tekrarlanabilir; yalnızca yayın)
 - `--json`
 - `--dry-run`
 - `--verbose`
@@ -63,11 +63,11 @@ Ad arama:
 
 - `openclaw message`, seçilen eylemi çalıştırmadan önce desteklenen kanal SecretRef'lerini çözümler.
 - Çözümleme mümkün olduğunda etkin eylem hedefine kapsamlanır:
-  - `--channel` ayarlandığında kanal kapsamlı (veya `discord:...` gibi ön ekli hedeflerden çıkarıldığında)
-  - `--account` ayarlandığında hesap kapsamlı (kanal genelleri + seçilen hesap yüzeyleri)
-  - `--account` atlandığında, OpenClaw `default` hesap SecretRef kapsamını zorlamaz
-- İlgisiz kanallardaki çözümlenmemiş SecretRef'ler hedefli bir mesaj eylemini engellemez.
-- Seçilen kanal/hesap SecretRef'i çözümlenmemişse komut o eylem için kapalı başarısız olur.
+  - `--channel` ayarlandığında kanal kapsamlıdır (veya `discord:...` gibi önekli hedeflerden çıkarıldığında)
+  - `--account` ayarlandığında hesap kapsamlıdır (kanal genelleri + seçilen hesap yüzeyleri)
+  - `--account` atlandığında OpenClaw bir `default` hesap SecretRef kapsamını zorlamaz
+- İlgisiz kanallardaki çözümlenmemiş SecretRef'ler hedeflenmiş bir mesaj eylemini engellemez.
+- Seçilen kanal/hesap SecretRef'i çözümlenmemişse komut o eylem için kapalı hata verir.
 
 ## Eylemler
 
@@ -75,83 +75,84 @@ Ad arama:
 
 - `send`
   - Kanallar: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
-  - Gerekli: `--target`, ayrıca `--message`, `--media` veya `--presentation`
+  - Zorunlu: `--target`, ayrıca `--message`, `--media` veya `--presentation`
   - İsteğe bağlı: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Paylaşılan sunum yükleri: `--presentation`, çekirdeğin seçilen kanalın beyan edilmiş yetenekleri üzerinden işlediği semantik blokları (`text`, `context`, `divider`, `buttons`, `select`) gönderir. Bkz. [Mesaj Sunumu](/tr/plugins/message-presentation).
-  - Genel teslim tercihleri: `--delivery`, `{ "pin": true }` gibi teslim ipuçlarını kabul eder; kanal desteklediğinde `--pin`, sabitlenmiş teslim için kısaltmadır.
-  - Yalnızca Telegram: `--force-document` (Telegram sıkıştırmasını önlemek için görselleri ve GIF'leri belge olarak gönder)
+  - Paylaşılan sunum yükleri: `--presentation`, çekirdeğin seçilen kanalın beyan edilmiş yetenekleri üzerinden işlediği anlamsal blokları (`text`, `context`, `divider`, `buttons`, `select`) gönderir. Bkz. [Mesaj Sunumu](/tr/plugins/message-presentation).
+  - Genel teslim tercihleri: `--delivery`, `{ "pin": true }` gibi teslim ipuçlarını kabul eder; kanal destekliyorsa `--pin`, sabitlenmiş teslim için kısaltmadır.
+  - Yalnızca Telegram: `--force-document` (Telegram sıkıştırmasını önlemek için görüntüleri ve GIF'leri belge olarak gönderir)
   - Yalnızca Telegram: `--thread-id` (forum konusu kimliği)
-  - Yalnızca Slack: `--thread-id` (iş parçacığı zaman damgası; `--reply-to` aynı alanı kullanır)
+  - Yalnızca Slack: `--thread-id` (konu zaman damgası; `--reply-to` aynı alanı kullanır)
   - Telegram + Discord: `--silent`
   - Yalnızca WhatsApp: `--gif-playback`
 
 - `poll`
   - Kanallar: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - Gerekli: `--target`, `--poll-question`, `--poll-option` (tekrarlanabilir)
+  - Zorunlu: `--target`, `--poll-question`, `--poll-option` (tekrarlanabilir)
   - İsteğe bağlı: `--poll-multi`
   - Yalnızca Discord: `--poll-duration-hours`, `--silent`, `--message`
   - Yalnızca Telegram: `--poll-duration-seconds` (5-600), `--silent`, `--poll-anonymous` / `--poll-public`, `--thread-id`
 
 - `react`
   - Kanallar: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
-  - Gerekli: `--message-id`, `--target`
+  - Zorunlu: `--message-id`, `--target`
   - İsteğe bağlı: `--emoji`, `--remove`, `--participant`, `--from-me`, `--target-author`, `--target-author-uuid`
-  - Not: `--remove`, `--emoji` gerektirir (desteklendiği yerlerde kendi tepkilerinizi temizlemek için `--emoji` öğesini atlayın; bkz. /tools/reactions)
+  - Not: `--remove`, `--emoji` gerektirir (desteklendiği yerlerde kendi tepkilerinizi temizlemek için `--emoji` değerini atlayın; bkz. /tools/reactions)
   - Yalnızca WhatsApp: `--participant`, `--from-me`
-  - Signal grup tepkileri: `--target-author` veya `--target-author-uuid` gerekli
+  - Signal grup tepkileri: `--target-author` veya `--target-author-uuid` zorunludur
 
 - `reactions`
   - Kanallar: Discord/Google Chat/Slack/Matrix
-  - Gerekli: `--message-id`, `--target`
+  - Zorunlu: `--message-id`, `--target`
   - İsteğe bağlı: `--limit`
 
 - `read`
   - Kanallar: Discord/Slack/Matrix
-  - Gerekli: `--target`
-  - İsteğe bağlı: `--limit`, `--before`, `--after`
+  - Zorunlu: `--target`
+  - İsteğe bağlı: `--limit`, `--message-id`, `--before`, `--after`
+  - Yalnızca Slack: `--message-id` belirli bir Slack mesaj zaman damgasını okur; tam bir konu yanıtını okumak için `--thread-id` ile birleştirin.
   - Yalnızca Discord: `--around`
 
 - `edit`
   - Kanallar: Discord/Slack/Matrix
-  - Gerekli: `--message-id`, `--message`, `--target`
+  - Zorunlu: `--message-id`, `--message`, `--target`
 
 - `delete`
   - Kanallar: Discord/Slack/Telegram/Matrix
-  - Gerekli: `--message-id`, `--target`
+  - Zorunlu: `--message-id`, `--target`
 
 - `pin` / `unpin`
   - Kanallar: Discord/Slack/Matrix
-  - Gerekli: `--message-id`, `--target`
+  - Zorunlu: `--message-id`, `--target`
 
-- `pins` (liste)
+- `pins` (listele)
   - Kanallar: Discord/Slack/Matrix
-  - Gerekli: `--target`
+  - Zorunlu: `--target`
 
 - `permissions`
   - Kanallar: Discord/Matrix
-  - Gerekli: `--target`
-  - Yalnızca Matrix: Matrix şifrelemesi etkin olduğunda ve doğrulama eylemlerine izin verildiğinde kullanılabilir
+  - Zorunlu: `--target`
+  - Yalnızca Matrix: Matrix şifrelemesi etkin ve doğrulama eylemlerine izin verildiğinde kullanılabilir
 
 - `search`
   - Kanallar: Discord
-  - Gerekli: `--guild-id`, `--query`
+  - Zorunlu: `--guild-id`, `--query`
   - İsteğe bağlı: `--channel-id`, `--channel-ids` (tekrarlanabilir), `--author-id`, `--author-ids` (tekrarlanabilir), `--limit`
 
-### İş parçacıkları
+### Konular
 
 - `thread create`
   - Kanallar: Discord
-  - Gerekli: `--thread-name`, `--target` (kanal kimliği)
+  - Zorunlu: `--thread-name`, `--target` (kanal kimliği)
   - İsteğe bağlı: `--message-id`, `--message`, `--auto-archive-min`
 
 - `thread list`
   - Kanallar: Discord
-  - Gerekli: `--guild-id`
+  - Zorunlu: `--guild-id`
   - İsteğe bağlı: `--channel-id`, `--include-archived`, `--before`, `--limit`
 
 - `thread reply`
   - Kanallar: Discord
-  - Gerekli: `--target` (iş parçacığı kimliği), `--message`
+  - Zorunlu: `--target` (konu kimliği), `--message`
   - İsteğe bağlı: `--media`, `--reply-to`
 
 ### Emojiler
@@ -162,19 +163,19 @@ Ad arama:
 
 - `emoji upload`
   - Kanallar: Discord
-  - Gerekli: `--guild-id`, `--emoji-name`, `--media`
+  - Zorunlu: `--guild-id`, `--emoji-name`, `--media`
   - İsteğe bağlı: `--role-ids` (tekrarlanabilir)
 
 ### Çıkartmalar
 
 - `sticker send`
   - Kanallar: Discord
-  - Gerekli: `--target`, `--sticker-id` (tekrarlanabilir)
+  - Zorunlu: `--target`, `--sticker-id` (tekrarlanabilir)
   - İsteğe bağlı: `--message`
 
 - `sticker upload`
   - Kanallar: Discord
-  - Gerekli: `--guild-id`, `--sticker-name`, `--sticker-desc`, `--sticker-tags`, `--media`
+  - Zorunlu: `--guild-id`, `--sticker-name`, `--sticker-desc`, `--sticker-tags`, `--media`
 
 ### Roller / Kanallar / Üyeler / Ses
 
@@ -193,16 +194,16 @@ Ad arama:
 
 ### Moderasyon (Discord)
 
-- `timeout`: `--guild-id`, `--user-id` (isteğe bağlı `--duration-min` veya `--until`; timeout'u temizlemek için ikisini de atlayın)
+- `timeout`: `--guild-id`, `--user-id` (isteğe bağlı `--duration-min` veya `--until`; zaman aşımını temizlemek için ikisini de atlayın)
 - `kick`: `--guild-id`, `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
   - `timeout` ayrıca `--reason` destekler
 
-### Broadcast
+### Yayın
 
 - `broadcast`
   - Kanallar: yapılandırılmış herhangi bir kanal; tüm sağlayıcıları hedeflemek için `--channel all` kullanın
-  - Gerekli: `--targets <target...>`
+  - Zorunlu: `--targets <target...>`
   - İsteğe bağlı: `--message`, `--media`, `--dry-run`
 
 ## Örnekler
@@ -214,7 +215,7 @@ openclaw message send --channel discord \
   --target channel:123 --message "hi" --reply-to 456
 ```
 
-Semantik düğmeler içeren bir mesaj gönderin:
+Anlamsal düğmeler içeren mesaj gönderin:
 
 ```
 openclaw message send --channel discord \
@@ -222,7 +223,7 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-Çekirdek, aynı `presentation` yükünü kanal yeteneğine bağlı olarak Discord bileşenlerine, Slack bloklarına, Telegram satır içi düğmelerine, Mattermost props öğelerine veya Teams/Feishu kartlarına işler. Tam sözleşme ve fallback kuralları için bkz. [Mesaj Sunumu](/tr/plugins/message-presentation).
+Çekirdek, aynı `presentation` yükünü kanal yeteneğine bağlı olarak Discord bileşenlerine, Slack bloklarına, Telegram satır içi düğmelerine, Mattermost props değerlerine veya Teams/Feishu kartlarına işler. Tam sözleşme ve geri dönüş kuralları için bkz. [Mesaj Sunumu](/tr/plugins/message-presentation).
 
 Daha zengin bir sunum yükü gönderin:
 
@@ -298,7 +299,7 @@ openclaw message send --channel msteams \
   --presentation '{"title":"Status update","blocks":[{"type":"text","text":"Build completed"}]}'
 ```
 
-Sıkıştırmayı önlemek için Telegram görselini belge olarak gönderin:
+Sıkıştırmayı önlemek için Telegram görüntüsünü belge olarak gönderin:
 
 ```bash
 openclaw message send --channel telegram --target @mychat \

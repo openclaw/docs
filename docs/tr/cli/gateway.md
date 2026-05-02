@@ -1,37 +1,37 @@
 ---
 read_when:
     - Gateway'i CLI üzerinden çalıştırma (geliştirme veya sunucular)
-    - Gateway kimlik doğrulamasında, bağlama modlarında ve bağlantıda hata ayıklama
-    - Bonjour ile Gateway'leri keşfetme (yerel + geniş alan DNS-SD)
+    - Gateway kimlik doğrulaması, bağlama modları ve bağlantı sorunlarını giderme
+    - Bonjour aracılığıyla Gateway'leri keşfetme (yerel + geniş alan DNS-SD)
 sidebarTitle: Gateway
-summary: OpenClaw Gateway CLI (`openclaw gateway`) — Gateway'leri çalıştırma, sorgulama ve keşfetme
+summary: OpenClaw Gateway CLI (`openclaw gateway`) — Gateway'leri çalıştırın, sorgulayın ve keşfedin
 title: Gateway
 x-i18n:
-    generated_at: "2026-05-01T08:58:38Z"
+    generated_at: "2026-05-02T08:50:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 127a6ccb4baa1ad5e5051db0bc7ef0ed30d410c4c3d13f36356483a6e03dce4c
+    source_hash: 0f204b58e03c9dd1b75a7ddb2be0634ee70b42aa317a2668ab86cb33a0570b01
     source_path: cli/gateway.md
     workflow: 16
 ---
 
-Gateway, OpenClaw'ın WebSocket sunucusudur (kanallar, düğümler, oturumlar, hook'lar). Bu sayfadaki alt komutlar `openclaw gateway …` altında yer alır.
+Gateway, OpenClaw'ın WebSocket sunucusudur (kanallar, nodes, oturumlar, hooks). Bu sayfadaki alt komutlar `openclaw gateway …` altında yer alır.
 
 <CardGroup cols={3}>
-  <Card title="Bonjour discovery" href="/tr/gateway/bonjour">
+  <Card title="Bonjour keşfi" href="/tr/gateway/bonjour">
     Yerel mDNS + geniş alan DNS-SD kurulumu.
   </Card>
-  <Card title="Discovery overview" href="/tr/gateway/discovery">
-    OpenClaw'ın gateway'leri nasıl duyurduğu ve bulduğu.
+  <Card title="Keşfe genel bakış" href="/tr/gateway/discovery">
+    OpenClaw'ın Gateway'leri nasıl duyurduğu ve bulduğu.
   </Card>
-  <Card title="Configuration" href="/tr/gateway/configuration">
-    Üst düzey gateway yapılandırma anahtarları.
+  <Card title="Yapılandırma" href="/tr/gateway/configuration">
+    Üst düzey Gateway yapılandırma anahtarları.
   </Card>
 </CardGroup>
 
-## Gateway'i çalıştırma
+## Gateway'i çalıştırın
 
-Yerel bir Gateway işlemi çalıştırın:
+Yerel bir Gateway süreci çalıştırın:
 
 ```bash
 openclaw gateway
@@ -44,13 +44,13 @@ openclaw gateway run
 ```
 
 <AccordionGroup>
-  <Accordion title="Startup behavior">
+  <Accordion title="Başlatma davranışı">
     - Varsayılan olarak Gateway, `~/.openclaw/openclaw.json` içinde `gateway.mode=local` ayarlanmadıkça başlamayı reddeder. Geçici/geliştirme çalıştırmaları için `--allow-unconfigured` kullanın.
-    - `openclaw onboard --mode local` ve `openclaw setup` komutlarının `gateway.mode=local` yazması beklenir. Dosya varsa ancak `gateway.mode` eksikse, bunu local modun örtük olarak varsayılması yerine bozuk veya üzerine yazılmış bir yapılandırma olarak ele alın ve onarın.
-    - Dosya varsa ve `gateway.mode` eksikse Gateway bunu şüpheli yapılandırma hasarı olarak değerlendirir ve sizin için "local tahmini" yapmayı reddeder.
-    - Kimlik doğrulama olmadan loopback dışına bağlanma engellenir (güvenlik korkuluğu).
-    - Yetkilendirildiğinde `SIGUSR1` işlem içinde yeniden başlatmayı tetikler (`commands.restart` varsayılan olarak etkindir; manuel yeniden başlatmayı engellemek için `commands.restart: false` ayarlayın, gateway aracı/yapılandırma uygula/güncelleme izinli kalır).
-    - `SIGINT`/`SIGTERM` işleyicileri gateway işlemini durdurur, ancak özel terminal durumlarını geri yüklemez. CLI'ı bir TUI veya raw-mode girişle sararsanız, çıkmadan önce terminali geri yükleyin.
+    - `openclaw onboard --mode local` ve `openclaw setup` komutlarının `gateway.mode=local` yazması beklenir. Dosya varsa ancak `gateway.mode` eksikse, bunu yerel modu örtük olarak varsaymak yerine bozuk veya üzerine yazılmış yapılandırma olarak ele alın ve onarın.
+    - Dosya varsa ve `gateway.mode` eksikse, Gateway bunu şüpheli yapılandırma hasarı olarak değerlendirir ve sizin için "yereli tahmin etmeyi" reddeder.
+    - Kimlik doğrulama olmadan loopback dışına bağlama engellenir (güvenlik koruması).
+    - `SIGUSR1`, yetkilendirildiğinde süreç içinde yeniden başlatmayı tetikler (`commands.restart` varsayılan olarak etkindir; el ile yeniden başlatmayı engellemek için `commands.restart: false` ayarlayın, Gateway araç/yapılandırma uygula/güncelle işlemleri izinli kalır).
+    - `SIGINT`/`SIGTERM` işleyicileri Gateway sürecini durdurur, ancak özel terminal durumunu geri yüklemez. CLI'yi bir TUI veya raw-mode girişle sararsanız, çıkmadan önce terminali geri yükleyin.
 
   </Accordion>
 </AccordionGroup>
@@ -58,7 +58,7 @@ openclaw gateway run
 ### Seçenekler
 
 <ParamField path="--port <port>" type="number">
-  WebSocket portu (varsayılan config/env'den gelir; genellikle `18789`).
+  WebSocket portu (varsayılan yapılandırma/env'den gelir; genellikle `18789`).
 </ParamField>
 <ParamField path="--bind <loopback|lan|tailnet|auto|custom>" type="string">
   Dinleyici bağlama modu.
@@ -67,7 +67,7 @@ openclaw gateway run
   Kimlik doğrulama modu geçersiz kılması.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  Token geçersiz kılması (işlem için `OPENCLAW_GATEWAY_TOKEN` değerini de ayarlar).
+  Token geçersiz kılması (süreç için `OPENCLAW_GATEWAY_TOKEN` değerini de ayarlar).
 </ParamField>
 <ParamField path="--password <password>" type="string">
   Parola geçersiz kılması.
@@ -76,13 +76,13 @@ openclaw gateway run
   Gateway parolasını bir dosyadan oku.
 </ParamField>
 <ParamField path="--tailscale <off|serve|funnel>" type="string">
-  Gateway'i Tailscale üzerinden açığa çıkar.
+  Gateway'i Tailscale üzerinden yayımla.
 </ParamField>
 <ParamField path="--tailscale-reset-on-exit" type="boolean">
   Kapanışta Tailscale serve/funnel yapılandırmasını sıfırla.
 </ParamField>
 <ParamField path="--allow-unconfigured" type="boolean">
-  Yapılandırmada `gateway.mode=local` olmadan gateway başlatmaya izin ver. Başlangıç korumasını yalnızca geçici/geliştirme bootstrap için atlar; yapılandırma dosyasını yazmaz veya onarmaz.
+  Yapılandırmada `gateway.mode=local` olmadan Gateway başlatmaya izin ver. Başlatma korumasını yalnızca geçici/geliştirme bootstrap çalıştırmaları için atlar; yapılandırma dosyasını yazmaz veya onarmaz.
 </ParamField>
 <ParamField path="--dev" type="boolean">
   Eksikse geliştirme yapılandırması + çalışma alanı oluşturur (`BOOTSTRAP.md` atlanır).
@@ -91,13 +91,13 @@ openclaw gateway run
   Geliştirme yapılandırmasını + kimlik bilgilerini + oturumları + çalışma alanını sıfırlar (`--dev` gerektirir).
 </ParamField>
 <ParamField path="--force" type="boolean">
-  Başlamadan önce seçilen porttaki mevcut dinleyicileri sonlandır.
+  Başlatmadan önce seçilen porttaki mevcut dinleyiciyi sonlandırır.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
   Ayrıntılı günlükler.
 </ParamField>
 <ParamField path="--cli-backend-logs" type="boolean">
-  Konsolda yalnızca CLI arka uç günlüklerini göster (ve stdout/stderr'ı etkinleştir).
+  Konsolda yalnızca CLI backend günlüklerini gösterir (ve stdout/stderr etkinleştirir).
 </ParamField>
 <ParamField path="--ws-log <auto|full|compact>" type="string" default="auto">
   WebSocket günlük stili.
@@ -106,45 +106,45 @@ openclaw gateway run
   `--ws-log compact` için takma ad.
 </ParamField>
 <ParamField path="--raw-stream" type="boolean">
-  Ham model stream olaylarını jsonl'ye günlüğe yaz.
+  Ham model akış olaylarını jsonl'ye kaydet.
 </ParamField>
 <ParamField path="--raw-stream-path <path>" type="string">
-  Ham stream jsonl yolu.
+  Ham akış jsonl yolu.
 </ParamField>
 
 <Warning>
-Satır içi `--password` yerel işlem listelerinde açığa çıkabilir. `--password-file`, env veya SecretRef destekli `gateway.auth.password` tercih edin.
+Satır içi `--password`, yerel süreç listelerinde görünebilir. `--password-file`, env veya SecretRef destekli `gateway.auth.password` tercih edin.
 </Warning>
 
-### Başlangıç profilleme
+### Başlatma profilleme
 
-- Gateway başlangıcı sırasında aşama zamanlamalarını, aşama başına `eventLoopMax` gecikmesini ve kurulu dizin, manifest registry, başlangıç planlaması ve owner-map işleri için plugin arama tablosu zamanlamalarını günlüğe yazmak için `OPENCLAW_GATEWAY_STARTUP_TRACE=1` ayarlayın.
-- Harici QA harness'ları için en iyi çaba JSONL başlangıç tanılama zaman çizelgesi yazmak üzere `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` ile `OPENCLAW_DIAGNOSTICS=timeline` ayarlayın. Bayrağı yapılandırmada `diagnostics.flags: ["timeline"]` ile de etkinleştirebilirsiniz; yol yine env üzerinden sağlanır. Olay döngüsü örneklerini eklemek için `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` ekleyin.
-- Gateway başlangıcını benchmark etmek için `pnpm test:startup:gateway -- --runs 5 --warmup 1` çalıştırın. Benchmark ilk işlem çıktısını, `/healthz`, `/readyz`, başlangıç izleme zamanlamalarını, olay döngüsü gecikmesini ve plugin arama tablosu zamanlama ayrıntılarını kaydeder.
+- Gateway başlatması sırasında aşama zamanlamalarını günlüğe yazmak için `OPENCLAW_GATEWAY_STARTUP_TRACE=1` ayarlayın; buna her aşama için `eventLoopMax` gecikmesi ve installed-index, manifest registry, başlatma planlaması ve owner-map işleri için Plugin arama tablosu zamanlamaları dahildir.
+- Harici QA donanımları için en iyi çabayla JSONL başlatma tanılama zaman çizelgesi yazmak üzere `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` ile `OPENCLAW_DIAGNOSTICS=timeline` ayarlayın. Bayrağı yapılandırmada `diagnostics.flags: ["timeline"]` ile de etkinleştirebilirsiniz; yol yine env üzerinden sağlanır. Event-loop örneklerini dahil etmek için `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` ekleyin.
+- Gateway başlatmasını ölçmek için `pnpm test:startup:gateway -- --runs 5 --warmup 1` çalıştırın. Kıyaslama, ilk süreç çıktısını, `/healthz`, `/readyz`, başlatma izleme zamanlamalarını, event-loop gecikmesini ve Plugin arama tablosu zamanlama ayrıntılarını kaydeder.
 
 ## Çalışan bir Gateway'i sorgulama
 
 Tüm sorgu komutları WebSocket RPC kullanır.
 
 <Tabs>
-  <Tab title="Output modes">
+  <Tab title="Çıktı modları">
     - Varsayılan: insan tarafından okunabilir (TTY'de renkli).
     - `--json`: makine tarafından okunabilir JSON (stil/spinner yok).
     - `--no-color` (veya `NO_COLOR=1`): insan düzenini korurken ANSI'yi devre dışı bırakır.
 
   </Tab>
-  <Tab title="Shared options">
+  <Tab title="Paylaşılan seçenekler">
     - `--url <url>`: Gateway WebSocket URL'si.
     - `--token <token>`: Gateway token'ı.
     - `--password <password>`: Gateway parolası.
     - `--timeout <ms>`: zaman aşımı/bütçe (komuta göre değişir).
-    - `--expect-final`: "final" yanıtını bekle (ajan çağrıları).
+    - `--expect-final`: "final" yanıtı bekle (ajan çağrıları).
 
   </Tab>
 </Tabs>
 
 <Note>
-`--url` ayarladığınızda CLI yapılandırmaya veya ortam kimlik bilgilerine geri dönmez. `--token` veya `--password` değerini açıkça iletin. Açık kimlik bilgilerinin eksik olması bir hatadır.
+`--url` ayarladığınızda CLI, yapılandırmaya veya ortam kimlik bilgilerine geri dönmez. `--token` veya `--password` değerini açıkça iletin. Açık kimlik bilgilerinin eksik olması hatadır.
 </Note>
 
 ### `gateway health`
@@ -153,11 +153,11 @@ Tüm sorgu komutları WebSocket RPC kullanır.
 openclaw gateway health --url ws://127.0.0.1:18789
 ```
 
-HTTP `/healthz` uç noktası bir canlılık denetimidir: sunucu HTTP'ye yanıt verebildiğinde döner. HTTP `/readyz` uç noktası daha katıdır ve başlangıç plugin runtime bağımlılıkları, sidecar'lar, kanallar veya yapılandırılmış hook'lar hâlâ yerleşirken kırmızı kalır. Yerel veya kimliği doğrulanmış ayrıntılı readiness yanıtları, olay döngüsü gecikmesi, olay döngüsü kullanımı, CPU çekirdek oranı ve `degraded` bayrağı içeren bir `eventLoop` tanılama bloğu içerir.
+HTTP `/healthz` endpoint'i bir canlılık yoklamasıdır: sunucu HTTP'ye yanıt verebildiğinde döner. HTTP `/readyz` endpoint'i daha katıdır ve başlatma Plugin sidecar'ları, kanallar veya yapılandırılmış hooks hâlâ yerleşirken kırmızı kalır. Yerel veya kimliği doğrulanmış ayrıntılı hazır olma yanıtları, event-loop gecikmesi, event-loop kullanımı, CPU çekirdek oranı ve `degraded` bayrağı içeren bir `eventLoop` tanılama bloğu içerir.
 
 ### `gateway usage-cost`
 
-Oturum günlüklerinden kullanım maliyeti özetlerini getir.
+Oturum günlüklerinden kullanım-maliyet özetlerini getir.
 
 ```bash
 openclaw gateway usage-cost
@@ -171,7 +171,7 @@ openclaw gateway usage-cost --json
 
 ### `gateway stability`
 
-Çalışan bir Gateway'den son tanılama kararlılığı kaydedicisini getir.
+Çalışan bir Gateway'den son tanılama kararlılık kaydedicisini getir.
 
 ```bash
 openclaw gateway stability
@@ -182,7 +182,7 @@ openclaw gateway stability --json
 ```
 
 <ParamField path="--limit <limit>" type="number" default="25">
-  Dahil edilecek en fazla son olay sayısı (maksimum `1000`).
+  Dahil edilecek en fazla son olay sayısı (maks. `1000`).
 </ParamField>
 <ParamField path="--type <type>" type="string">
   `payload.large` veya `diagnostic.memory.pressure` gibi tanılama olay türüne göre filtrele.
@@ -191,7 +191,7 @@ openclaw gateway stability --json
   Yalnızca bir tanılama sıra numarasından sonraki olayları dahil et.
 </ParamField>
 <ParamField path="--bundle [path]" type="string">
-  Çalışan Gateway'i çağırmak yerine kalıcı bir kararlılık bundle'ı oku. Durum dizini altındaki en yeni bundle için `--bundle latest` (veya yalnızca `--bundle`) kullanın ya da doğrudan bir bundle JSON yolu iletin.
+  Çalışan Gateway'i çağırmak yerine kalıcı bir kararlılık paketini oku. Durum dizini altındaki en yeni paket için `--bundle latest` (veya yalnızca `--bundle`) kullanın ya da doğrudan bir paket JSON yolu iletin.
 </ParamField>
 <ParamField path="--export" type="boolean">
   Kararlılık ayrıntılarını yazdırmak yerine paylaşılabilir bir destek tanılama zip'i yaz.
@@ -201,16 +201,16 @@ openclaw gateway stability --json
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Privacy and bundle behavior">
-    - Kayıtlar operasyonel meta verileri tutar: olay adları, sayımlar, bayt boyutları, bellek okumaları, kuyruk/oturum durumu, kanal/plugin adları ve redakte edilmiş oturum özetleri. Sohbet metni, webhook gövdeleri, araç çıktıları, ham istek veya yanıt gövdeleri, token'lar, çerezler, gizli değerler, host adları veya ham oturum kimlikleri tutulmaz. Kaydediciyi tamamen devre dışı bırakmak için `diagnostics.enabled: false` ayarlayın.
-    - Ölümcül Gateway çıkışlarında, kapanış zaman aşımlarında ve yeniden başlatma başlangıç hatalarında OpenClaw, kaydedicide olaylar varsa aynı tanılama anlık görüntüsünü `~/.openclaw/logs/stability/openclaw-stability-*.json` konumuna yazar. En yeni bundle'ı `openclaw gateway stability --bundle latest` ile inceleyin; `--limit`, `--type` ve `--since-seq` bundle çıktısına da uygulanır.
+  <Accordion title="Gizlilik ve paket davranışı">
+    - Kayıtlar operasyonel meta verileri tutar: olay adları, sayılar, bayt boyutları, bellek okumaları, kuyruk/oturum durumu, kanal/Plugin adları ve redakte edilmiş oturum özetleri. Sohbet metni, Webhook gövdeleri, araç çıktıları, ham istek veya yanıt gövdeleri, token'lar, çerezler, gizli değerler, host adları veya ham oturum id'leri tutmazlar. Kaydediciyi tamamen devre dışı bırakmak için `diagnostics.enabled: false` ayarlayın.
+    - Ölümcül Gateway çıkışlarında, kapatma zaman aşımlarında ve yeniden başlatma başlatma hatalarında OpenClaw, kaydedicide olaylar varsa aynı tanılama anlık görüntüsünü `~/.openclaw/logs/stability/openclaw-stability-*.json` konumuna yazar. En yeni paketi `openclaw gateway stability --bundle latest` ile inceleyin; `--limit`, `--type` ve `--since-seq` paket çıktısına da uygulanır.
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway diagnostics export`
 
-Hata raporlarına eklenmek üzere tasarlanmış yerel bir tanılama zip'i yaz. Gizlilik modeli ve bundle içerikleri için [Diagnostics Export](/tr/gateway/diagnostics) bölümüne bakın.
+Hata raporlarına eklenmek üzere tasarlanmış yerel bir tanılama zip'i yaz. Gizlilik modeli ve paket içeriği için bkz. [Tanılama Dışa Aktarma](/tr/gateway/diagnostics).
 
 ```bash
 openclaw gateway diagnostics export
@@ -222,7 +222,7 @@ openclaw gateway diagnostics export --json
   Çıktı zip yolu. Varsayılan olarak durum dizini altında bir destek dışa aktarımıdır.
 </ParamField>
 <ParamField path="--log-lines <count>" type="number" default="5000">
-  Dahil edilecek en fazla sanitize edilmiş günlük satırı.
+  Dahil edilecek en fazla temizlenmiş günlük satırı.
 </ParamField>
 <ParamField path="--log-bytes <bytes>" type="number" default="1000000">
   İncelenecek en fazla günlük baytı.
@@ -240,19 +240,19 @@ openclaw gateway diagnostics export --json
   Durum/sağlık anlık görüntüsü zaman aşımı.
 </ParamField>
 <ParamField path="--no-stability-bundle" type="boolean">
-  Kalıcı kararlılık bundle'ı aramasını atla.
+  Kalıcı kararlılık paketi aramasını atla.
 </ParamField>
 <ParamField path="--json" type="boolean">
   Yazılan yolu, boyutu ve manifest'i JSON olarak yazdır.
 </ParamField>
 
-Dışa aktarım bir manifest, Markdown özeti, yapılandırma şekli, sanitize edilmiş yapılandırma ayrıntıları, sanitize edilmiş günlük özetleri, sanitize edilmiş Gateway durum/sağlık anlık görüntüleri ve varsa en yeni kararlılık bundle'ını içerir.
+Dışa aktarım bir manifest, Markdown özeti, yapılandırma şekli, temizlenmiş yapılandırma ayrıntıları, temizlenmiş günlük özetleri, temizlenmiş Gateway durum/sağlık anlık görüntüleri ve varsa en yeni kararlılık paketini içerir.
 
-Paylaşılmak üzere tasarlanmıştır. Güvenli OpenClaw günlük alanları, alt sistem adları, durum kodları, süreler, yapılandırılmış modlar, portlar, plugin kimlikleri, sağlayıcı kimlikleri, gizli olmayan özellik ayarları ve redakte edilmiş operasyonel günlük mesajları gibi hata ayıklamaya yardımcı operasyonel ayrıntıları tutar. Sohbet metni, webhook gövdeleri, araç çıktıları, kimlik bilgileri, çerezler, hesap/mesaj tanımlayıcıları, prompt/talimat metni, host adları ve gizli değerleri çıkarır veya redakte eder. LogTape tarzı bir mesaj kullanıcı/sohbet/araç payload metnine benzediğinde, dışa aktarım yalnızca mesajın çıkarıldığını ve bayt sayısını tutar.
+Paylaşılmak üzere tasarlanmıştır. Hata ayıklamaya yardımcı olan güvenli OpenClaw günlük alanları, alt sistem adları, durum kodları, süreler, yapılandırılmış modlar, portlar, Plugin id'leri, sağlayıcı id'leri, gizli olmayan özellik ayarları ve redakte edilmiş operasyonel günlük mesajları gibi operasyonel ayrıntıları tutar. Sohbet metni, Webhook gövdeleri, araç çıktıları, kimlik bilgileri, çerezler, hesap/mesaj tanımlayıcıları, prompt/talimat metni, host adları ve gizli değerleri çıkarır veya redakte eder. LogTape tarzı bir mesaj kullanıcı/sohbet/araç payload metnine benziyorsa, dışa aktarım yalnızca bir mesajın çıkarıldığını ve bayt sayısını tutar.
 
 ### `gateway status`
 
-`gateway status`, Gateway hizmetini (launchd/systemd/schtasks) ve isteğe bağlı bir bağlantı/kimlik doğrulama yeteneği denetimini gösterir.
+`gateway status`, Gateway hizmetini (launchd/systemd/schtasks) ve isteğe bağlı bağlantı/kimlik doğrulama yeteneği yoklamasını gösterir.
 
 ```bash
 openclaw gateway status
@@ -261,44 +261,44 @@ openclaw gateway status --require-rpc
 ```
 
 <ParamField path="--url <url>" type="string">
-  Açık bir denetim hedefi ekle. Yapılandırılmış uzak + localhost yine de denetlenir.
+  Açık bir yoklama hedefi ekle. Yapılandırılmış uzak + localhost yine de yoklanır.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  Denetim için token kimlik doğrulaması.
+  Yoklama için token kimlik doğrulaması.
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  Denetim için parola kimlik doğrulaması.
+  Yoklama için parola kimlik doğrulaması.
 </ParamField>
 <ParamField path="--timeout <ms>" type="number" default="10000">
-  Denetim zaman aşımı.
+  Yoklama zaman aşımı.
 </ParamField>
 <ParamField path="--no-probe" type="boolean">
-  Bağlantı denetimini atla (yalnızca hizmet görünümü).
+  Bağlantı yoklamasını atla (yalnızca hizmet görünümü).
 </ParamField>
 <ParamField path="--deep" type="boolean">
   Sistem düzeyi hizmetleri de tara.
 </ParamField>
 <ParamField path="--require-rpc" type="boolean">
-  Varsayılan bağlantı denetimini bir okuma denetimine yükselt ve bu okuma denetimi başarısız olduğunda sıfır olmayan kodla çık. `--no-probe` ile birleştirilemez.
+  Varsayılan bağlantı yoklamasını okuma yoklamasına yükselt ve bu okuma yoklaması başarısız olduğunda sıfır olmayan kodla çık. `--no-probe` ile birlikte kullanılamaz.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Durum anlamları">
+  <Accordion title="Durum semantiği">
     - `gateway status`, yerel CLI yapılandırması eksik veya geçersiz olsa bile tanılama için kullanılabilir kalır.
-    - Varsayılan `gateway status`; hizmet durumunu, WebSocket bağlantısını ve el sıkışma anında görünen kimlik doğrulama yeteneğini kanıtlar. Okuma/yazma/yönetici işlemlerini kanıtlamaz.
-    - Tanılama yoklamaları, ilk kez cihaz kimlik doğrulaması için değişiklik yapmaz: mevcut bir önbelleğe alınmış cihaz token'ı varsa bunu yeniden kullanırlar, ancak yalnızca durumu denetlemek için yeni bir CLI cihaz kimliği veya salt okunur cihaz eşleştirme kaydı oluşturmazlar.
-    - `gateway status`, mümkün olduğunda yoklama kimlik doğrulaması için yapılandırılmış kimlik doğrulama SecretRef'lerini çözümler.
-    - Bu komut yolunda gerekli bir kimlik doğrulama SecretRef'i çözümlenmemişse, yoklama bağlantısı/kimlik doğrulaması başarısız olduğunda `gateway status --json` `rpc.authWarning` bildirir; `--token`/`--password` değerini açıkça iletin veya önce gizli kaynak değerini çözümleyin.
-    - Yoklama başarılı olursa, yanlış pozitifleri önlemek için çözümlenmemiş auth-ref uyarıları bastırılır.
-    - Dinleyen bir hizmet yeterli olmadığında ve okuma kapsamlı RPC çağrılarının da sağlıklı olması gerektiğinde betiklerde ve otomasyonda `--require-rpc` kullanın.
-    - `--deep`, ek launchd/systemd/schtasks kurulumları için en iyi çabayla bir tarama ekler. Birden çok Gateway benzeri hizmet algılandığında, insan çıktısı temizlik ipuçları yazdırır ve çoğu kurulumun makine başına bir Gateway çalıştırması gerektiği konusunda uyarır.
-    - İnsan çıktısı, profil veya state-dir sapmasını tanılamaya yardımcı olmak için çözümlenmiş dosya günlük yolunu ve CLI ile hizmet yapılandırma yolları/geçerlilik anlık görüntüsünü içerir.
+    - Varsayılan `gateway status`, servis durumunu, WebSocket bağlantısını ve el sıkışma anında görünen kimlik doğrulama yeteneğini kanıtlar. Okuma/yazma/yönetici işlemlerini kanıtlamaz.
+    - Tanılama yoklamaları, ilk kez cihaz kimlik doğrulaması için değişiklik yapmaz: varsa mevcut önbelleğe alınmış bir cihaz belirtecini yeniden kullanır, ancak yalnızca durumu denetlemek için yeni bir CLI cihaz kimliği veya salt okunur cihaz eşleme kaydı oluşturmaz.
+    - `gateway status`, mümkün olduğunda yoklama kimlik doğrulaması için yapılandırılmış auth SecretRef'lerini çözer.
+    - Gerekli bir auth SecretRef bu komut yolunda çözülemiyorsa, yoklama bağlantısı/kimlik doğrulaması başarısız olduğunda `gateway status --json`, `rpc.authWarning` bildirir; `--token`/`--password` değerini açıkça geçin veya önce gizli kaynak çözümlemesini yapın.
+    - Yoklama başarılı olursa, hatalı pozitifleri önlemek için çözümlenmemiş auth-ref uyarıları bastırılır.
+    - Dinleyen bir servis yeterli olmadığında ve okuma kapsamlı RPC çağrılarının da sağlıklı olması gerektiğinde betiklerde ve otomasyonda `--require-rpc` kullanın.
+    - `--deep`, ek launchd/systemd/schtasks kurulumları için en iyi çabayla tarama ekler. Birden fazla gateway benzeri servis algılandığında, insan çıktısı temizleme ipuçları yazdırır ve çoğu kurulumun makine başına bir gateway çalıştırması gerektiği konusunda uyarır.
+    - İnsan çıktısı, profil veya state-dir kaymasını tanılamaya yardımcı olmak için çözümlenen dosya günlük yolunu ve CLI ile servis yapılandırma yolları/geçerlilik anlık görüntüsünü içerir.
 
   </Accordion>
-  <Accordion title="Linux systemd kimlik doğrulama sapması denetimleri">
-    - Linux systemd kurulumlarında, hizmet kimlik doğrulama sapması denetimleri birimden hem `Environment=` hem de `EnvironmentFile=` değerlerini okur (`%h`, tırnak içine alınmış yollar, birden çok dosya ve isteğe bağlı `-` dosyaları dahil).
-    - Sapma denetimleri, birleştirilmiş çalışma zamanı env değerini kullanarak `gateway.auth.token` SecretRef'lerini çözümler (önce hizmet komutu env, ardından süreç env yedeği).
-    - Token kimlik doğrulaması etkin biçimde aktif değilse (açık `gateway.auth.mode` değeri `password`/`none`/`trusted-proxy` ise veya parola kazanabilirken mod ayarlanmamışsa ve hiçbir token adayı kazanamıyorsa), token sapması denetimleri yapılandırma token çözümlemesini atlar.
+  <Accordion title="Linux systemd auth-drift denetimleri">
+    - Linux systemd kurulumlarında servis auth drift denetimleri, birimden hem `Environment=` hem de `EnvironmentFile=` değerlerini okur (`%h`, tırnaklı yollar, birden fazla dosya ve isteğe bağlı `-` dosyaları dahil).
+    - Drift denetimleri, birleştirilmiş çalışma zamanı env kullanarak `gateway.auth.token` SecretRef'lerini çözer (önce servis komutu env, sonra süreç env yedeği).
+    - Belirteç kimlik doğrulaması etkin biçimde aktif değilse (açık `gateway.auth.mode` değeri `password`/`none`/`trusted-proxy` ise veya mod ayarlanmamışken parola kazanabiliyor ve hiçbir belirteç adayı kazanamıyorsa), token-drift denetimleri yapılandırma belirteci çözümlemesini atlar.
 
   </Accordion>
 </AccordionGroup>
@@ -307,17 +307,17 @@ openclaw gateway status --require-rpc
 
 `gateway probe`, "her şeyi hata ayıkla" komutudur. Her zaman şunları yoklar:
 
-- yapılandırılmış uzak gateway'iniz (ayarlanmışsa) ve
+- yapılandırılmış uzak Gateway'iniz (ayarlanmışsa) ve
 - localhost (loopback), **uzak yapılandırılmış olsa bile**.
 
-`--url` iletirseniz, bu açık hedef her ikisinin önüne eklenir. İnsan çıktısı hedefleri şöyle etiketler:
+`--url` geçirirseniz, bu açık hedef ikisinin de önüne eklenir. İnsan çıktısı hedefleri şöyle etiketler:
 
 - `URL (explicit)`
 - `Remote (configured)` veya `Remote (configured, inactive)`
 - `Local loopback`
 
 <Note>
-Birden çok gateway erişilebilirse, hepsini yazdırır. Yalıtılmış profiller/portlar kullandığınızda (ör. bir kurtarma botu) birden çok gateway desteklenir, ancak çoğu kurulum yine de tek bir gateway çalıştırır.
+Birden fazla Gateway erişilebilirse, hepsini yazdırır. İzole profiller/portlar kullandığınızda birden fazla Gateway desteklenir (ör. bir kurtarma botu), ancak çoğu kurulum yine de tek bir Gateway çalıştırır.
 </Note>
 
 ```bash
@@ -328,11 +328,11 @@ openclaw gateway probe --json
 <AccordionGroup>
   <Accordion title="Yorumlama">
     - `Reachable: yes`, en az bir hedefin WebSocket bağlantısını kabul ettiği anlamına gelir.
-    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only`, yoklamanın kimlik doğrulama hakkında kanıtlayabildiği şeyi bildirir. Erişilebilirlikten ayrıdır.
+    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only`, yoklamanın kimlik doğrulama hakkında kanıtlayabildiği şeyi bildirir. Bu, erişilebilirlikten ayrıdır.
     - `Read probe: ok`, okuma kapsamlı ayrıntı RPC çağrılarının (`health`/`status`/`system-presence`/`config.get`) da başarılı olduğu anlamına gelir.
-    - `Read probe: limited - missing scope: operator.read`, bağlantının başarılı olduğunu ancak okuma kapsamlı RPC'nin sınırlı olduğunu belirtir. Bu, tam başarısızlık olarak değil, **bozulmuş** erişilebilirlik olarak bildirilir.
-    - `Connect: ok` sonrasında `Read probe: failed`, Gateway'in WebSocket bağlantısını kabul ettiği, ancak takip eden okuma tanılamalarının zaman aşımına uğradığı veya başarısız olduğu anlamına gelir. Bu da erişilemeyen Gateway değil, **bozulmuş** erişilebilirliktir.
-    - `gateway status` gibi probe da mevcut önbelleğe alınmış cihaz kimlik doğrulamasını yeniden kullanır, ancak ilk kez cihaz kimliği veya eşleştirme durumu oluşturmaz.
+    - `Read probe: limited - missing scope: operator.read`, bağlantının başarılı olduğu ancak okuma kapsamlı RPC'nin sınırlı olduğu anlamına gelir. Bu, tam arıza olarak değil, **bozulmuş** erişilebilirlik olarak bildirilir.
+    - `Connect: ok` sonrasında `Read probe: failed`, Gateway'in WebSocket bağlantısını kabul ettiği, ancak takip eden okuma tanılamalarının zaman aşımına uğradığı veya başarısız olduğu anlamına gelir. Bu da erişilemeyen bir Gateway değil, **bozulmuş** erişilebilirliktir.
+    - `gateway status` gibi, probe mevcut önbelleğe alınmış cihaz kimlik doğrulamasını yeniden kullanır ancak ilk kez cihaz kimliği veya eşleme durumu oluşturmaz.
     - Çıkış kodu yalnızca yoklanan hiçbir hedef erişilebilir olmadığında sıfırdan farklıdır.
 
   </Accordion>
@@ -340,38 +340,38 @@ openclaw gateway probe --json
     Üst düzey:
 
     - `ok`: en az bir hedef erişilebilir.
-    - `degraded`: en az bir hedef bağlantı kabul etti ancak tam ayrıntı RPC tanılamalarını tamamlamadı.
-    - `capability`: erişilebilir hedefler arasında görülen en iyi yetenek (`read_only`, `write_capable`, `admin_capable`, `pairing_pending`, `connected_no_operator_scope` veya `unknown`).
-    - `primaryTargetId`: bu sırayla etkin kazanan olarak ele alınacak en iyi hedef: açık URL, SSH tüneli, yapılandırılmış uzak, ardından local loopback.
-    - `warnings[]`: `code`, `message` ve isteğe bağlı `targetIds` içeren en iyi çaba uyarı kayıtları.
-    - `network`: mevcut yapılandırmadan ve ana makine ağ yapılandırmasından türetilen local loopback/tailnet URL ipuçları.
+    - `degraded`: en az bir hedef bağlantıyı kabul etti ancak tam ayrıntı RPC tanılamalarını tamamlamadı.
+    - `capability`: erişilebilir hedefler genelinde görülen en iyi yetenek (`read_only`, `write_capable`, `admin_capable`, `pairing_pending`, `connected_no_operator_scope` veya `unknown`).
+    - `primaryTargetId`: şu sırayla aktif kazanan olarak değerlendirilecek en iyi hedef: açık URL, SSH tüneli, yapılandırılmış uzak, ardından local loopback.
+    - `warnings[]`: `code`, `message` ve isteğe bağlı `targetIds` içeren en iyi çabayla uyarı kayıtları.
+    - `network`: mevcut yapılandırmadan ve ana makine ağından türetilen local loopback/tailnet URL ipuçları.
     - `discovery.timeoutMs` ve `discovery.count`: bu yoklama geçişi için kullanılan gerçek keşif bütçesi/sonuç sayısı.
 
     Hedef başına (`targets[].connect`):
 
-    - `ok`: bağlantı + bozulmuş sınıflandırma sonrası erişilebilirlik.
+    - `ok`: bağlantı + bozulmuş sınıflandırma sonrasında erişilebilirlik.
     - `rpcOk`: tam ayrıntı RPC başarısı.
-    - `scopeLimited`: eksik operator kapsamı nedeniyle ayrıntı RPC başarısız oldu.
+    - `scopeLimited`: eksik operatör kapsamı nedeniyle ayrıntı RPC başarısız oldu.
 
     Hedef başına (`targets[].auth`):
 
-    - `role`: varsa `hello-ok` içinde bildirilen kimlik doğrulama rolü.
-    - `scopes`: varsa `hello-ok` içinde bildirilen verilmiş kapsamlar.
-    - `capability`: ilgili hedef için yüzeye çıkarılan kimlik doğrulama yeteneği sınıflandırması.
+    - `role`: mevcut olduğunda `hello-ok` içinde bildirilen auth rolü.
+    - `scopes`: mevcut olduğunda `hello-ok` içinde bildirilen verilen kapsamlar.
+    - `capability`: bu hedef için yüzeye çıkarılan auth yeteneği sınıflandırması.
 
   </Accordion>
   <Accordion title="Yaygın uyarı kodları">
     - `ssh_tunnel_failed`: SSH tüneli kurulumu başarısız oldu; komut doğrudan yoklamalara geri döndü.
-    - `multiple_gateways`: birden fazla hedef erişilebilirdi; kurtarma botu gibi yalıtılmış profilleri bilerek çalıştırmadığınız sürece bu olağan dışıdır.
-    - `auth_secretref_unresolved`: yapılandırılmış bir kimlik doğrulama SecretRef'i başarısız bir hedef için çözümlenemedi.
+    - `multiple_gateways`: birden fazla hedef erişilebilirdi; kurtarma botu gibi izole profilleri kasıtlı olarak çalıştırmadığınız sürece bu olağan dışıdır.
+    - `auth_secretref_unresolved`: yapılandırılmış bir auth SecretRef, başarısız bir hedef için çözülemedi.
     - `probe_scope_limited`: WebSocket bağlantısı başarılı oldu, ancak okuma yoklaması eksik `operator.read` nedeniyle sınırlıydı.
 
   </Accordion>
 </AccordionGroup>
 
-#### SSH üzerinden uzak (Mac uygulaması eşdeğerliği)
+#### SSH üzerinden uzak bağlantı (Mac uygulamasıyla eşlik)
 
-macOS uygulamasındaki "Remote over SSH" modu, uzak gateway'in (yalnızca loopback'e bağlanmış olabilir) `ws://127.0.0.1:<port>` adresinde erişilebilir olmasını sağlamak için yerel port yönlendirme kullanır.
+macOS uygulamasındaki "SSH üzerinden uzak bağlantı" modu, uzak Gateway'in (yalnızca loopback'e bağlanmış olabilir) `ws://127.0.0.1:<port>` adresinden erişilebilir hale gelmesi için yerel port yönlendirme kullanır.
 
 CLI eşdeğeri:
 
@@ -380,13 +380,13 @@ openclaw gateway probe --ssh user@gateway-host
 ```
 
 <ParamField path="--ssh <target>" type="string">
-  `user@host` veya `user@host:port` (port varsayılanı `22`).
+  `user@host` veya `user@host:port` (port varsayılan olarak `22`).
 </ParamField>
 <ParamField path="--ssh-identity <path>" type="string">
   Kimlik dosyası.
 </ParamField>
 <ParamField path="--ssh-auto" type="boolean">
-  Çözümlenmiş keşif uç noktasından (`local.` artı varsa yapılandırılmış geniş alan etki alanı) ilk keşfedilen gateway ana makinesini SSH hedefi olarak seçer. Yalnızca TXT ipuçları yok sayılır.
+  Çözümlenen keşif uç noktasından (`local.` artı yapılandırılmış geniş alan etki alanı, varsa) keşfedilen ilk Gateway ana makinesini SSH hedefi olarak seçin. Yalnızca TXT ipuçları yok sayılır.
 </ParamField>
 
 Yapılandırma (isteğe bağlı, varsayılan olarak kullanılır):
@@ -396,7 +396,7 @@ Yapılandırma (isteğe bağlı, varsayılan olarak kullanılır):
 
 ### `gateway call <method>`
 
-Düşük seviyeli RPC yardımcısı.
+Düşük düzey RPC yardımcısı.
 
 ```bash
 openclaw gateway call status
@@ -404,13 +404,13 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
 ```
 
 <ParamField path="--params <json>" type="string" default="{}">
-  Parametreler için JSON nesne dizesi.
+  Params için JSON nesnesi dizesi.
 </ParamField>
 <ParamField path="--url <url>" type="string">
   Gateway WebSocket URL'si.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  Gateway token'ı.
+  Gateway belirteci.
 </ParamField>
 <ParamField path="--password <password>" type="string">
   Gateway parolası.
@@ -419,7 +419,7 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
   Zaman aşımı bütçesi.
 </ParamField>
 <ParamField path="--expect-final" type="boolean">
-  Esas olarak, nihai yükten önce ara olaylar akışı yapan ajan tarzı RPC'ler içindir.
+  Genellikle nihai yükten önce ara olayları stream eden ajan tarzı RPC'ler içindir.
 </ParamField>
 <ParamField path="--json" type="boolean">
   Makine tarafından okunabilir JSON çıktısı.
@@ -429,7 +429,7 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
 `--params` geçerli JSON olmalıdır.
 </Note>
 
-## Gateway hizmetini yönetin
+## Gateway servisini yönetin
 
 ```bash
 openclaw gateway install
@@ -439,9 +439,11 @@ openclaw gateway restart
 openclaw gateway uninstall
 ```
 
-### Bir wrapper ile kurulum
+### Wrapper ile kurulum
 
-Yönetilen hizmetin başka bir yürütülebilir dosya üzerinden başlatılması gerektiğinde `--wrapper` kullanın; örneğin bir gizli yönetici ara katmanı veya farklı kullanıcıyla çalıştırma yardımcısı. Wrapper, normal Gateway argümanlarını alır ve sonunda bu argümanlarla `openclaw` ya da Node'u exec etmekten sorumludur.
+Yönetilen servisin başka bir çalıştırılabilir dosya üzerinden başlatılması gerektiğinde `--wrapper` kullanın; örneğin bir
+gizli bilgiler yöneticisi shim'i veya farklı kullanıcıyla çalıştırma yardımcısı. Wrapper normal Gateway argümanlarını alır ve
+sonunda bu argümanlarla `openclaw` veya Node için exec çağırmaktan sorumludur.
 
 ```bash
 cat > ~/.local/bin/openclaw-doppler <<'EOF'
@@ -455,7 +457,9 @@ openclaw gateway install --wrapper ~/.local/bin/openclaw-doppler --force
 openclaw gateway restart
 ```
 
-Wrapper'ı ortam üzerinden de ayarlayabilirsiniz. `gateway install`, yolun yürütülebilir bir dosya olduğunu doğrular, wrapper'ı hizmet `ProgramArguments` içine yazar ve daha sonra zorunlu yeniden kurulumlar, güncellemeler ve doctor onarımları için hizmet ortamında `OPENCLAW_WRAPPER` değerini kalıcı hale getirir.
+Wrapper'ı ortam üzerinden de ayarlayabilirsiniz. `gateway install`, yolun
+çalıştırılabilir bir dosya olduğunu doğrular, wrapper'ı servis `ProgramArguments` içine yazar ve daha sonraki zorunlu yeniden kurulumlar, güncellemeler ve doctor
+onarımları için servis ortamında `OPENCLAW_WRAPPER` değerini kalıcı hale getirir.
 
 ```bash
 OPENCLAW_WRAPPER="$HOME/.local/bin/openclaw-doppler" openclaw gateway install --force
@@ -477,15 +481,15 @@ openclaw gateway restart
 
   </Accordion>
   <Accordion title="Yaşam döngüsü davranışı">
-    - Yönetilen bir hizmeti yeniden başlatmak için `gateway restart` kullanın. Yeniden başlatma yerine `gateway stop` ve `gateway start` komutlarını zincirlemeyin; macOS'te `gateway stop`, durdurmadan önce LaunchAgent'ı kasıtlı olarak devre dışı bırakır.
+    - Yönetilen bir servisi yeniden başlatmak için `gateway restart` kullanın. Yeniden başlatma yerine `gateway stop` ve `gateway start` komutlarını zincirlemeyin; macOS'ta `gateway stop`, durdurmadan önce LaunchAgent'ı bilinçli olarak devre dışı bırakır.
     - Yaşam döngüsü komutları betikleme için `--json` kabul eder.
 
   </Accordion>
-  <Accordion title="Kurulum zamanında kimlik doğrulama ve SecretRef'ler">
-    - Token kimlik doğrulaması bir token gerektirdiğinde ve `gateway.auth.token` SecretRef ile yönetildiğinde, `gateway install` SecretRef'in çözümlenebilir olduğunu doğrular ancak çözümlenmiş token'ı hizmet ortamı meta verilerine kalıcı olarak yazmaz.
-    - Token kimlik doğrulaması bir token gerektiriyorsa ve yapılandırılmış token SecretRef'i çözümlenmemişse, kurulum yedek düz metni kalıcılaştırmak yerine kapalı şekilde başarısız olur.
+  <Accordion title="Kurulum zamanında auth ve SecretRefs">
+    - Belirteç kimlik doğrulaması bir belirteç gerektirdiğinde ve `gateway.auth.token` SecretRef tarafından yönetildiğinde, `gateway install` SecretRef'in çözülebilir olduğunu doğrular ancak çözümlenen belirteci servis ortamı meta verilerinde kalıcı hale getirmez.
+    - Belirteç kimlik doğrulaması bir belirteç gerektiriyorsa ve yapılandırılmış belirteç SecretRef'i çözülemiyorsa, kurulum yedek düz metni kalıcı hale getirmek yerine kapalı biçimde başarısız olur.
     - `gateway run` üzerinde parola kimlik doğrulaması için satır içi `--password` yerine `OPENCLAW_GATEWAY_PASSWORD`, `--password-file` veya SecretRef destekli `gateway.auth.password` tercih edin.
-    - Çıkarımsal kimlik doğrulama modunda, yalnızca kabuktaki `OPENCLAW_GATEWAY_PASSWORD` kurulum token gereksinimlerini gevşetmez; yönetilen bir hizmet kurarken dayanıklı yapılandırma (`gateway.auth.password` veya config `env`) kullanın.
+    - Çıkarımlı auth modunda, yalnızca kabukta bulunan `OPENCLAW_GATEWAY_PASSWORD` kurulum belirteci gereksinimlerini gevşetmez; yönetilen bir servis kurarken dayanıklı yapılandırma (`gateway.auth.password` veya config `env`) kullanın.
     - Hem `gateway.auth.token` hem de `gateway.auth.password` yapılandırılmışsa ve `gateway.auth.mode` ayarlanmamışsa, mod açıkça ayarlanana kadar kurulum engellenir.
 
   </Accordion>
@@ -498,14 +502,14 @@ openclaw gateway restart
 - Multicast DNS-SD: `local.`
 - Unicast DNS-SD (Geniş Alan Bonjour): bir etki alanı seçin (örnek: `openclaw.internal.`) ve split DNS + bir DNS sunucusu kurun; bkz. [Bonjour](/tr/gateway/bonjour).
 
-Yalnızca Bonjour keşfi etkin olan Gateway'ler (varsayılan) beacon'ın reklamını yapar.
+Yalnızca Bonjour keşfi etkinleştirilmiş Gateway'ler (varsayılan) beacon'ı duyurur.
 
 Geniş Alan keşif kayıtları şunları içerir (TXT):
 
-- `role` (gateway rol ipucu)
-- `transport` (aktarım ipucu, ör. `gateway`)
+- `role` (Gateway rol ipucu)
+- `transport` (taşıma ipucu, ör. `gateway`)
 - `gatewayPort` (WebSocket portu, genellikle `18789`)
-- `sshPort` (isteğe bağlı; istemciler yoksa SSH hedeflerini varsayılan olarak `22` yapar)
+- `sshPort` (isteğe bağlı; istemciler, yoksa SSH hedeflerini varsayılan olarak `22` yapar)
 - `tailnetDns` (varsa MagicDNS ana makine adı)
 - `gatewayTls` / `gatewayTlsSha256` (TLS etkin + sertifika parmak izi)
 - `cliPath` (geniş alan bölgesine yazılan uzak kurulum ipucu)
@@ -517,7 +521,7 @@ openclaw gateway discover
 ```
 
 <ParamField path="--timeout <ms>" type="number" default="2000">
-  Komut başına zaman aşımı (göz atma/çözümleme).
+  Komut başına zaman aşımı (browse/resolve).
 </ParamField>
 <ParamField path="--json" type="boolean">
   Makine tarafından okunabilir çıktı (stil/spinner'ı da devre dışı bırakır).
@@ -531,7 +535,7 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 ```
 
 <Note>
-- CLI, etkinleştirildiğinde `local.` ile yapılandırılmış geniş alan etki alanını tarar.
+- CLI, biri etkinleştirildiğinde `local.` ve yapılandırılmış geniş alan etki alanını tarar.
 - JSON çıktısındaki `wsUrl`, `lanHost` veya `tailnetDns` gibi yalnızca TXT ipuçlarından değil, çözümlenen hizmet uç noktasından türetilir.
 - `local.` mDNS üzerinde `sshPort` ve `cliPath` yalnızca `discovery.mdns.mode` değeri `full` olduğunda yayınlanır. Geniş alan DNS-SD yine de `cliPath` yazar; `sshPort` orada da isteğe bağlı kalır.
 
@@ -540,4 +544,4 @@ openclaw gateway discover --json | jq '.beacons[].wsUrl'
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Gateway çalışma kitabı](/tr/gateway)
+- [Gateway çalıştırma kılavuzu](/tr/gateway)

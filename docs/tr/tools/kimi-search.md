@@ -1,29 +1,29 @@
 ---
 read_when:
-    - '`web_search` için Kimi kullanmak istiyorsunuz'
-    - Bir `KIMI_API_KEY` veya `MOONSHOT_API_KEY` gerekir
+    - web_search için Kimi kullanmak istiyorsunuz
+    - KIMI_API_KEY veya MOONSHOT_API_KEY gereklidir
 summary: Moonshot web araması aracılığıyla Kimi web araması
-title: Kimi arama
+title: Kimi araması
 x-i18n:
-    generated_at: "2026-04-24T09:35:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T09:08:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
+    source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
     source_path: tools/kimi-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, Kimi'yi bir `web_search` sağlayıcısı olarak destekler ve alıntılar içeren AI sentezli yanıtlar üretmek için Moonshot web aramasını kullanır.
+OpenClaw, atıflarla yapay zeka sentezli yanıtlar üretmek için Moonshot web aramasını kullanarak Kimi'yi bir `web_search` sağlayıcısı olarak destekler.
 
-## API key alın
+## Bir API anahtarı alın
 
 <Steps>
   <Step title="Bir anahtar oluşturun">
-    [Moonshot AI](https://platform.moonshot.cn/) üzerinden bir API key alın.
+    [Moonshot AI](https://platform.moonshot.cn/) üzerinden bir API anahtarı alın.
   </Step>
   <Step title="Anahtarı saklayın">
     Gateway ortamında `KIMI_API_KEY` veya `MOONSHOT_API_KEY` ayarlayın ya da
-    şu komutla yapılandırın:
+    şununla yapılandırın:
 
     ```bash
     openclaw configure --section web
@@ -32,13 +32,12 @@ OpenClaw, Kimi'yi bir `web_search` sağlayıcısı olarak destekler ve alıntıl
   </Step>
 </Steps>
 
-`openclaw onboard` veya
-`openclaw configure --section web` sırasında **Kimi** seçtiğinizde OpenClaw ayrıca şunları da sorabilir:
+`openclaw onboard` veya `openclaw configure --section web` sırasında **Kimi** seçtiğinizde, OpenClaw ayrıca şunları isteyebilir:
 
 - Moonshot API bölgesi:
   - `https://api.moonshot.ai/v1`
   - `https://api.moonshot.cn/v1`
-- varsayılan Kimi web-search modeli (`kimi-k2.6` varsayılandır)
+- varsayılan Kimi web arama modeli (varsayılan `kimi-k2.6`)
 
 ## Yapılandırma
 
@@ -49,7 +48,7 @@ OpenClaw, Kimi'yi bir `web_search` sağlayıcısı olarak destekler ve alıntıl
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // KIMI_API_KEY veya MOONSHOT_API_KEY ayarlıysa isteğe bağlı
+            apiKey: "sk-...", // optional if KIMI_API_KEY or MOONSHOT_API_KEY is set
             baseUrl: "https://api.moonshot.ai/v1",
             model: "kimi-k2.6",
           },
@@ -67,35 +66,31 @@ OpenClaw, Kimi'yi bir `web_search` sağlayıcısı olarak destekler ve alıntıl
 }
 ```
 
-Sohbet için Çin API ana makinesini kullanıyorsanız (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`), `tools.web.search.kimi.baseUrl` atlandığında OpenClaw aynı ana makineyi Kimi
-`web_search` için de yeniden kullanır; böylece
-[platform.moonshot.cn](https://platform.moonshot.cn/) üzerinden alınan anahtarlar yanlışlıkla
-uluslararası uç noktaya gitmez (bu durum çoğu zaman HTTP 401 döndürür). Farklı bir arama base URL'sine ihtiyacınız olduğunda
-`tools.web.search.kimi.baseUrl` ile geçersiz kılın.
+Sohbet için Çin API ana makinesini kullanırsanız (`models.providers.moonshot.baseUrl`:
+`https://api.moonshot.cn/v1`), `tools.web.search.kimi.baseUrl` atlandığında OpenClaw, Kimi `web_search` için aynı ana makineyi yeniden kullanır; böylece [platform.moonshot.cn](https://platform.moonshot.cn/) üzerinden alınan anahtarlar yanlışlıkla uluslararası uç noktaya gitmez (bu genellikle HTTP 401 döndürür). Farklı bir arama temel URL'si gerektiğinde `tools.web.search.kimi.baseUrl` ile geçersiz kılın.
 
-**Ortam alternatifi:** Gateway ortamında `KIMI_API_KEY` veya `MOONSHOT_API_KEY` ayarlayın.
-Bir gateway kurulumu için bunu `~/.openclaw/.env` içine koyun.
+**Ortam alternatifi:** Gateway ortamında `KIMI_API_KEY` veya `MOONSHOT_API_KEY` ayarlayın. Bir gateway kurulumu için bunu `~/.openclaw/.env` içine koyun.
 
-`baseUrl` atlanırsa OpenClaw varsayılan olarak `https://api.moonshot.ai/v1` kullanır.
-`model` atlanırsa OpenClaw varsayılan olarak `kimi-k2.6` kullanır.
+`baseUrl` atlarsanız OpenClaw varsayılan olarak `https://api.moonshot.ai/v1` kullanır.
+`model` atlarsanız OpenClaw varsayılan olarak `kimi-k2.6` kullanır.
 
 ## Nasıl çalışır
 
-Kimi, Gemini ve Grok'un grounded response yaklaşımına benzer şekilde,
-satır içi alıntılarla yanıt sentezlemek için Moonshot web aramasını kullanır.
+Kimi, Gemini ve Grok'un temellendirilmiş yanıt yaklaşımına benzer şekilde, satır içi atıflarla yanıt sentezlemek için Moonshot web aramasını kullanır.
+
+OpenClaw, Kimi `web_search` işlemini yalnızca Moonshot yeniden oynatılabilir bir `$web_search` araç yükü, `search_results` veya atıf URL'leri gibi yerel web araması temellendirme kanıtı döndürdükten sonra başarılı sayar. Kimi, temellendirme kanıtı olmadan "I cannot browse the internet" gibi düz bir sohbet yanıtıyla hemen durursa OpenClaw bu metni bir arama sonucu olarak sarmak yerine yapılandırılmış bir `kimi_web_search_ungrounded` hatası döndürür. Sorguyu yeniden deneyin, Brave gibi yapılandırılmış bir sağlayıcıya geçin veya zaten hedef URL'niz varsa `web_fetch` / tarayıcı aracını kullanın.
 
 ## Desteklenen parametreler
 
 Kimi araması `query` destekler.
 
-`count`, paylaşılan `web_search` uyumluluğu için kabul edilir, ancak Kimi yine de N sonuçlu bir liste yerine alıntılar içeren tek bir sentezlenmiş yanıt döndürür.
+`count`, paylaşılan `web_search` uyumluluğu için kabul edilir, ancak Kimi yine de N sonuçlu bir liste yerine atıflar içeren tek bir sentezlenmiş yanıt döndürür.
 
 Sağlayıcıya özgü filtreler şu anda desteklenmemektedir.
 
 ## İlgili
 
 - [Web Search genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
-- [Moonshot AI](/tr/providers/moonshot) -- Moonshot model + Kimi Coding sağlayıcı belgeleri
-- [Gemini Search](/tr/tools/gemini-search) -- Google grounding aracılığıyla AI sentezli yanıtlar
-- [Grok Search](/tr/tools/grok-search) -- xAI grounding aracılığıyla AI sentezli yanıtlar
+- [Moonshot AI](/tr/providers/moonshot) -- Moonshot modeli + Kimi Coding sağlayıcı belgeleri
+- [Gemini Search](/tr/tools/gemini-search) -- Google temellendirmesiyle yapay zeka sentezli yanıtlar
+- [Grok Search](/tr/tools/grok-search) -- xAI temellendirmesiyle yapay zeka sentezli yanıtlar

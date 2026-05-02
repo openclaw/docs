@@ -1,41 +1,41 @@
 ---
 read_when:
     - Ajanın hangi oturum araçlarına sahip olduğunu anlamak istiyorsunuz
-    - Oturumlar arası erişimi veya alt ajan oluşturmayı yapılandırmak istiyorsunuz
-    - Durumu incelemek veya başlatılan alt ajanları kontrol etmek istiyorsunuz
-summary: Oturumlar arası durum, anımsama, mesajlaşma ve alt ajan orkestrasyonu için ajan araçları
+    - Oturumlar arası erişimi veya alt aracı oluşturmayı yapılandırmak istiyorsunuz
+    - Başlatılan alt aracıların durumunu incelemek veya onları kontrol etmek istiyorsunuz
+summary: Oturumlar arası durum, hatırlama, mesajlaşma ve alt ajan orkestrasyonu için ajan araçları
 title: Oturum araçları
 x-i18n:
-    generated_at: "2026-04-30T09:18:40Z"
+    generated_at: "2026-05-02T08:53:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0464116d42e271da12cbe90529e06e9f51605981be85b54bb5850ee9b8fb7824
+    source_hash: fb8a3ab7fd1036ccd97940fc9824684d7b27ded0136f6a69416eb144bbfc64be
     source_path: concepts/session-tool.md
     workflow: 16
 ---
 
-OpenClaw, ajanlara oturumlar arasında çalışmak, durumu incelemek ve
-alt ajanları orkestre etmek için araçlar sağlar.
+OpenClaw, aracılara oturumlar arasında çalışmak, durumu incelemek ve
+alt aracıları orkestre etmek için araçlar sağlar.
 
 ## Kullanılabilir araçlar
 
 | Araç              | Ne yapar                                                                    |
 | ----------------- | --------------------------------------------------------------------------- |
-| `sessions_list`   | İsteğe bağlı filtrelerle oturumları listeler (kind, label, ajan, güncellik, önizleme) |
+| `sessions_list`   | İsteğe bağlı filtrelerle oturumları listeler (tür, etiket, aracı, güncellik, önizleme) |
 | `sessions_history` | Belirli bir oturumun dökümünü okur                                         |
-| `sessions_send`   | Başka bir oturuma mesaj gönderir ve isteğe bağlı olarak bekler              |
-| `sessions_spawn`  | Arka plan çalışması için yalıtılmış bir alt ajan oturumu başlatır           |
-| `sessions_yield`  | Geçerli dönüşü sonlandırır ve takip alt ajan sonuçlarını bekler             |
-| `subagents`       | Bu oturum için başlatılmış alt ajanları listeler, yönlendirir veya sonlandırır |
+| `sessions_send`   | Başka bir oturuma mesaj gönderir ve isteğe bağlı olarak bekler             |
+| `sessions_spawn`  | Arka plan çalışması için izole bir alt aracı oturumu başlatır              |
+| `sessions_yield`  | Geçerli turu sonlandırır ve takip eden alt aracı sonuçlarını bekler        |
+| `subagents`       | Bu oturum için başlatılmış alt aracıları listeler, yönlendirir veya sonlandırır |
 | `session_status`  | `/status` tarzı bir kart gösterir ve isteğe bağlı olarak oturum başına model geçersiz kılması ayarlar |
 
-Bu araçlar hâlâ etkin araç profiline ve izin/verme
-politikasına tabidir. `tools.profile: "coding"`, `sessions_spawn`,
-`sessions_yield` ve `subagents` dahil tam oturum orkestrasyonu
-kümesini içerir. `tools.profile: "messaging"` oturumlar arası mesajlaşma araçlarını
-(`sessions_list`, `sessions_history`, `sessions_send`, `session_status`) içerir ancak
-alt ajan başlatmayı içermez. Bir mesajlaşma profilini koruyup yine de
-yerel delegasyona izin vermek için şunu ekleyin:
+Bu araçlar hâlâ etkin araç profiline ve izin/verme engelleme politikasına
+tabidir. `tools.profile: "coding"`, `sessions_spawn`, `sessions_yield` ve
+`subagents` dahil olmak üzere tam oturum orkestrasyonu kümesini içerir.
+`tools.profile: "messaging"` oturumlar arası mesajlaşma araçlarını
+(`sessions_list`, `sessions_history`, `sessions_send`, `session_status`) içerir
+ancak alt aracı başlatmayı içermez. Mesajlaşma profilini koruyup yine de yerel
+delegasyona izin vermek için şunu ekleyin:
 
 ```json5
 {
@@ -46,134 +46,149 @@ yerel delegasyona izin vermek için şunu ekleyin:
 }
 ```
 
-Grup, sağlayıcı, sandbox ve ajan başına politikalar, profil aşamasından
-sonra bu araçları yine kaldırabilir. Etkili araç listesini incelemek için
-etkilenen oturumdan `/tools` kullanın.
+Grup, sağlayıcı, sandbox ve aracı başına politikalar, profil aşamasından sonra
+bu araçları yine de kaldırabilir. Etkilenen oturumdan `/tools` kullanarak
+etkin araç listesini inceleyin.
 
 ## Oturumları listeleme ve okuma
 
-`sessions_list`, oturumları key, agentId, kind, kanal, model,
-token sayıları ve zaman damgalarıyla döndürür. kind (`main`, `group`, `cron`, `hook`,
-`node`), tam `label`, tam `agentId`, arama metni veya güncelliğe
-(`activeMinutes`) göre filtreleyin. Posta kutusu tarzı triyaj gerektiğinde, her satırda
-görünürlük kapsamlı türetilmiş başlık, son mesaj önizleme parçacığı veya sınırlı
-son mesajlar da isteyebilir. Türetilmiş başlıklar ve önizlemeler yalnızca
-çağıranın yapılandırılmış oturum aracı görünürlük politikası altında zaten
-görebildiği oturumlar için üretilir; böylece ilgisiz oturumlar gizli kalır.
+`sessions_list`, oturumları anahtarları, agentId, türleri, kanalları, modelleri,
+token sayıları ve zaman damgalarıyla döndürür. Türe (`main`, `group`, `cron`,
+`hook`, `node`), tam `label`, tam `agentId`, arama metni veya güncelliğe
+(`activeMinutes`) göre filtreleyin. Posta kutusu tarzı önceliklendirmeye
+ihtiyacınız olduğunda, her satır için görünürlük kapsamlı türetilmiş bir başlık,
+son mesaj önizleme parçası veya sınırlandırılmış son mesajlar da isteyebilir.
+Türetilmiş başlıklar ve önizlemeler yalnızca çağıranın yapılandırılmış oturum
+aracı görünürlük politikası altında zaten görebildiği oturumlar için üretilir,
+böylece ilgisiz oturumlar gizli kalır.
 
-`sessions_history`, belirli bir oturum için konuşma dökümünü getirir.
-Varsayılan olarak araç sonuçları hariç tutulur; bunları görmek için `includeTools: true` geçin.
-Döndürülen görünüm kasıtlı olarak sınırlı ve güvenlik filtresinden geçirilmiştir:
+`sessions_history`, belirli bir oturumun konuşma dökümünü getirir.
+Varsayılan olarak araç sonuçları hariç tutulur; bunları görmek için
+`includeTools: true` iletin. Döndürülen görünüm bilinçli olarak sınırlandırılmış
+ve güvenlik açısından filtrelenmiştir:
 
-- assistant metni hatırlamadan önce normalleştirilir:
-  - thinking etiketleri çıkarılır
-  - `<relevant-memories>` / `<relevant_memories>` iskele blokları çıkarılır
+- asistan metni geri çağırmadan önce normalleştirilir:
+  - düşünme etiketleri kaldırılır
+  - `<relevant-memories>` / `<relevant_memories>` iskelet blokları kaldırılır
   - `<tool_call>...</tool_call>`, `<function_call>...</function_call>`,
-    `<tool_calls>...</tool_calls>` ve `<function_calls>...</function_calls>` gibi
-    düz metin araç çağrısı XML yük blokları, düzgün kapanmayan kesilmiş
-    yükler dahil çıkarılır
+    `<tool_calls>...</tool_calls>` ve
+    `<function_calls>...</function_calls>` gibi düz metin araç çağrısı XML
+    yük blokları, düzgün kapanmayan kesilmiş yükler dahil kaldırılır
   - `[Tool Call: ...]`, `[Tool Result ...]` ve `[Historical context ...]` gibi
-    düşürülmüş araç çağrısı/sonuç iskeleleri çıkarılır
-  - `<|assistant|>` gibi sızmış model denetim token’ları, diğer ASCII
-    `<|...|>` token’ları ve tam genişlikli `<｜...｜>` varyantları çıkarılır
-  - `<invoke ...>` / `</minimax:tool_call>` gibi bozuk MiniMax araç çağrısı XML’i çıkarılır
+    düşürülmüş araç çağrısı/sonuç iskeletleri kaldırılır
+  - `<|assistant|>` gibi sızmış model kontrol token’ları, diğer ASCII
+    `<|...|>` token’ları ve tam genişlikli `<｜...｜>` varyantları kaldırılır
+  - `<invoke ...>` / `</minimax:tool_call>` gibi hatalı biçimlendirilmiş MiniMax
+    araç çağrısı XML’i kaldırılır
 - kimlik bilgisi/token benzeri metin döndürülmeden önce redakte edilir
 - uzun metin blokları kesilir
 - çok büyük geçmişler eski satırları düşürebilir veya aşırı büyük bir satırı
   `[sessions_history omitted: message too large]` ile değiştirebilir
-- araç `truncated`, `droppedMessages`, `contentTruncated`, `contentRedacted` ve `bytes`
-  gibi özet bayrakları bildirir
+- araç `truncated`, `droppedMessages`, `contentTruncated`, `contentRedacted` ve
+  `bytes` gibi özet bayrakları raporlar
 
-Her iki araç da bir önceki liste çağrısından gelen bir **oturum anahtarı** (`"main"` gibi)
-veya bir **oturum ID’si** kabul eder.
+Her iki araç da önceki bir liste çağrısından gelen bir **oturum anahtarı**nı
+(`"main"` gibi) veya bir **oturum kimliği**ni kabul eder.
 
-Tam bayt bayt aynı döküme ihtiyacınız varsa, `sessions_history` öğesini ham döküm
-olarak ele almak yerine diskteki döküm dosyasını inceleyin.
+Tam bayt bayt aynı konuşma dökümüne ihtiyacınız varsa, `sessions_history`’yi ham
+döküm gibi ele almak yerine diskteki döküm dosyasını inceleyin.
 
 ## Oturumlar arası mesaj gönderme
 
-`sessions_send`, başka bir oturuma mesaj iletir ve isteğe bağlı olarak yanıtı bekler:
+`sessions_send`, başka bir oturuma mesaj iletir ve isteğe bağlı olarak yanıtı
+bekler:
 
-- **Gönder ve unut:** Kuyruğa almak ve hemen dönmek için `timeoutSeconds: 0` ayarlayın.
-- **Yanıt bekle:** Bir zaman aşımı ayarlayın ve yanıtı satır içinde alın.
+- **Gönder ve unut:** kuyruğa alıp hemen dönmek için `timeoutSeconds: 0` ayarlayın.
+- **Yanıtı bekle:** bir zaman aşımı ayarlayın ve yanıtı satır içinde alın.
 
-Mesajlar ve A2A takip yanıtları, alıcı prompt’ta
-(`[Inter-session message ... isUser=false]`) ve döküm kökeninde oturumlar arası veri
-olarak işaretlenir. Alıcı ajan bunları doğrudan son kullanıcı tarafından yazılmış
-bir talimat değil, araç üzerinden yönlendirilmiş veri olarak ele almalıdır.
+Slack veya Discord anahtarlarının `:thread:<id>` ile bitmesi gibi iş parçacığı
+kapsamlı sohbet oturumları geçerli `sessions_send` hedefleri değildir. Aracılar
+arası koordinasyon için üst kanal oturum anahtarını kullanın; böylece araçla
+yönlendirilen mesajlar etkin, insana dönük bir iş parçacığının içinde görünmez.
 
-Hedef yanıt verdikten sonra OpenClaw, ajanların dönüşümlü mesajlar gönderdiği
-(5 dönüşe kadar) bir **yanıt-geri döngüsü** çalıştırabilir. Hedef ajan erken
-durdurmak için `REPLY_SKIP` yanıtı verebilir.
+Mesajlar ve A2A takip yanıtları, alıcı prompt içinde
+(`[Inter-session message ... isUser=false]`) ve döküm köken bilgisinde oturumlar
+arası veri olarak işaretlenir. Alıcı aracı bunları doğrudan son kullanıcı
+tarafından yazılmış bir talimat olarak değil, araçla yönlendirilmiş veri olarak
+ele almalıdır.
+
+Hedef yanıt verdikten sonra OpenClaw, aracıların sırayla mesajlaştığı bir
+**yanıt-geri döngüsü** çalıştırabilir (en fazla 5 tur). Hedef aracı erken
+durdurmak için `REPLY_SKIP` yanıtını verebilir.
 
 ## Durum ve orkestrasyon yardımcıları
 
-`session_status`, geçerli veya görünür başka bir oturum için hafif `/status` eşdeğeri
-araçtır. Kullanımı, zamanı, model/çalışma zamanı durumunu ve varsa bağlantılı
-arka plan görevi bağlamını bildirir. `/status` gibi, seyrek token/cache sayaçlarını
-en son döküm kullanım girdisinden geriye dönük doldurabilir ve `model=default`
-oturum başına geçersiz kılmayı temizler. Çağıranın geçerli oturumu için
-`sessionKey="current"` kullanın; `openclaw-tui` gibi görünür istemci etiketleri
-oturum anahtarı değildir.
+`session_status`, geçerli veya görünür başka bir oturum için hafif
+`/status` eşdeğeri araçtır. Kullanımı, zamanı, model/çalışma zamanı durumunu ve
+varsa bağlı arka plan görev bağlamını raporlar. `/status` gibi, seyrek
+token/cache sayaçlarını son döküm kullanım girdisinden geriye dönük
+doldurabilir ve `model=default` oturum başına geçersiz kılmayı temizler.
+Çağıranın geçerli oturumu için `sessionKey="current"` kullanın; `openclaw-tui`
+gibi görünür istemci etiketleri oturum anahtarı değildir.
 
 `sessions_yield`, beklediğiniz takip olayının bir sonraki mesaj olabilmesi için
-geçerli dönüşü kasıtlı olarak sonlandırır. Alt ajanları başlattıktan sonra,
-tamamlanma sonuçlarının yoklama döngüleri kurmak yerine bir sonraki mesaj olarak
-gelmesini istediğinizde kullanın.
+geçerli turu bilinçli olarak sonlandırır. Tamamlanma sonuçlarının yoklama
+döngüleri kurmak yerine bir sonraki mesaj olarak gelmesini istediğinizde, alt
+aracıları başlattıktan sonra bunu kullanın.
 
-`subagents`, zaten başlatılmış OpenClaw alt ajanları için control-plane yardımcısıdır.
-Şunları destekler:
+`subagents`, zaten başlatılmış OpenClaw alt aracıları için kontrol düzlemi
+yardımcısıdır. Şunları destekler:
 
-- etkin/son çalışmaları incelemek için `action: "list"`
-- çalışan bir çocuğa takip yönlendirmesi göndermek için `action: "steer"`
-- bir çocuğu veya `all` öğesini durdurmak için `action: "kill"`
+- etkin/son çalıştırmaları incelemek için `action: "list"`
+- çalışan bir alt aracıya takip yönlendirmesi göndermek için `action: "steer"`
+- bir alt aracı veya `all` durdurmak için `action: "kill"`
 
-## Alt ajanları başlatma
+## Alt aracıları başlatma
 
-`sessions_spawn`, varsayılan olarak bir arka plan görevi için yalıtılmış bir oturum
-oluşturur. Her zaman engellemesizdir; bir `runId` ve `childSessionKey` ile hemen döner.
+`sessions_spawn`, varsayılan olarak bir arka plan görevi için izole bir oturum
+oluşturur. Her zaman engellemesizdir; hemen bir `runId` ve `childSessionKey` ile
+döner.
 
 Temel seçenekler:
 
-- `runtime: "subagent"` (varsayılan) veya harici harness ajanları için `"acp"`.
-- Çocuk oturum için `model` ve `thinking` geçersiz kılmaları.
+- `runtime: "subagent"` (varsayılan) veya harici denetim aracıları için `"acp"`.
+- Alt oturum için `model` ve `thinking` geçersiz kılmaları.
 - Başlatmayı bir sohbet iş parçacığına bağlamak için `thread: true` (Discord, Slack vb.).
-- Çocukta sandbox uygulamak için `sandbox: "require"`.
-- Çocuk geçerli istek sahibinin dökümüne ihtiyaç duyduğunda yerel alt ajanlar için
-  `context: "fork"`; temiz bir çocuk için bunu atlayın veya `context: "isolated"` kullanın.
+- Alt oturumda sandbox uygulanmasını zorunlu kılmak için `sandbox: "require"`.
+- Alt aracı geçerli istekte bulunan dökümüne ihtiyaç duyduğunda yerel alt aracılar
+  için `context: "fork"`; temiz bir alt aracı için bunu atlayın veya
+  `context: "isolated"` kullanın. İş parçacığına bağlı yerel alt aracılar,
+  `threadBindings.defaultSpawnContext` aksi yönde söylemedikçe varsayılan olarak
+  `context: "fork"` kullanır.
 
-Varsayılan yaprak alt ajanlara oturum araçları verilmez. `maxSpawnDepth >= 2`
-olduğunda, derinlik-1 orkestratör alt ajanlar ayrıca `sessions_spawn`, `subagents`,
-`sessions_list` ve `sessions_history` alır; böylece kendi çocuklarını yönetebilirler.
-Yaprak çalışmalar yine de özyinelemeli orkestrasyon araçları almaz.
+Varsayılan yaprak alt aracılar oturum araçları almaz. `maxSpawnDepth >= 2`
+olduğunda, depth-1 orkestratör alt aracılar ayrıca `sessions_spawn`,
+`subagents`, `sessions_list` ve `sessions_history` alır; böylece kendi alt
+aracılarını yönetebilirler. Yaprak çalıştırmalar yine de özyinelemeli
+orkestrasyon araçları almaz.
 
-Tamamlandıktan sonra bir duyuru adımı sonucu istek sahibinin kanalına gönderir.
-Tamamlanma teslimi, kullanılabiliyorsa bağlı iş parçacığı/konu yönlendirmesini
-korur; tamamlanma kaynağı yalnızca bir kanalı tanımlıyorsa OpenClaw doğrudan
-teslimat için istek sahibi oturumun saklanan rotasını (`lastChannel` / `lastTo`)
-yine de yeniden kullanabilir.
+Tamamlandıktan sonra, bir duyuru adımı sonucu istekte bulunanın kanalına
+gönderir. Tamamlanma teslimi, mevcut olduğunda bağlı iş parçacığı/konu
+yönlendirmesini korur; tamamlanma kaynağı yalnızca bir kanalı tanımlıyorsa
+OpenClaw doğrudan teslimat için istekte bulunan oturumun saklanan rotasını
+(`lastChannel` / `lastTo`) yine de yeniden kullanabilir.
 
-ACP’ye özgü davranış için bkz. [ACP Ajanları](/tr/tools/acp-agents).
+ACP’ye özgü davranış için bkz. [ACP Aracıları](/tr/tools/acp-agents).
 
 ## Görünürlük
 
-Oturum araçları, ajanın ne görebileceğini sınırlamak için kapsamlandırılır:
+Oturum araçları, aracının neleri görebileceğini sınırlamak için kapsamlanır:
 
-| Düzey   | Kapsam                                  |
-| ------- | --------------------------------------- |
-| `self`  | Yalnızca geçerli oturum                 |
-| `tree`  | Geçerli oturum + başlatılmış alt ajanlar |
-| `agent` | Bu ajan için tüm oturumlar              |
-| `all`   | Tüm oturumlar (yapılandırılmışsa ajanlar arası) |
+| Düzey   | Kapsam                                   |
+| ------- | ---------------------------------------- |
+| `self`  | Yalnızca geçerli oturum                  |
+| `tree`  | Geçerli oturum + başlatılmış alt aracılar |
+| `agent` | Bu aracıya ait tüm oturumlar             |
+| `all`   | Tüm oturumlar (yapılandırılmışsa aracılar arası) |
 
-Varsayılan `tree` şeklindedir. Sandboxed oturumlar, yapılandırmadan bağımsız olarak
-`tree` ile sınırlandırılır.
+Varsayılan `tree`’dir. Sandbox uygulanmış oturumlar, yapılandırmadan bağımsız
+olarak `tree` ile sınırlandırılır.
 
-## Daha fazla okuma
+## Ek okuma
 
 - [Oturum Yönetimi](/tr/concepts/session) -- yönlendirme, yaşam döngüsü, bakım
-- [ACP Ajanları](/tr/tools/acp-agents) -- harici harness başlatma
-- [Çok ajanlı](/tr/concepts/multi-agent) -- çok ajanlı mimari
+- [ACP Aracıları](/tr/tools/acp-agents) -- harici denetim aracı başlatma
+- [Çok aracılı](/tr/concepts/multi-agent) -- çok aracılı mimari
 - [Gateway Yapılandırması](/tr/gateway/configuration) -- oturum aracı yapılandırma düğmeleri
 
 ## İlgili

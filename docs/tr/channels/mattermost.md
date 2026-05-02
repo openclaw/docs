@@ -1,28 +1,24 @@
 ---
 read_when:
-    - Mattermost kurulumu
+    - Mattermost'u ayarlama
     - Mattermost yönlendirmesinde hata ayıklama
 sidebarTitle: Mattermost
 summary: Mattermost bot kurulumu ve OpenClaw yapılandırması
 title: Mattermost
 x-i18n:
-    generated_at: "2026-04-30T09:07:20Z"
+    generated_at: "2026-05-02T08:47:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1926a1d7347ff35ed60f8d5c3e0b26a064863ada213ad0e171776af5a84d8475
+    source_hash: 319af8ba1cb8ff1aa5b52a57e809e6c76d3723012dc9cae7c456b89687dd6810
     source_path: channels/mattermost.md
     workflow: 16
 ---
 
-Durum: paketle birlikte gelen Plugin (bot token + WebSocket etkinlikleri). Kanallar, gruplar ve DM'ler desteklenir. Mattermost, kendi ortamınızda barındırılabilen bir ekip mesajlaşma platformudur; ürün ayrıntıları ve indirmeler için resmi siteye [mattermost.com](https://mattermost.com) adresinden bakın.
+Durum: indirilebilir Plugin (bot belirteci + WebSocket olayları). Kanallar, gruplar ve DM’ler desteklenir. Mattermost, kendi sunucunuzda barındırılabilen bir ekip mesajlaşma platformudur; ürün ayrıntıları ve indirmeler için resmi siteye [mattermost.com](https://mattermost.com) adresinden bakın.
 
-## Paketle birlikte gelen Plugin
+## Kurulum
 
-<Note>
-Mattermost, güncel OpenClaw sürümlerinde paketle birlikte gelen bir Plugin olarak gelir; bu nedenle normal paketlenmiş derlemeler ayrı bir kurulum gerektirmez.
-</Note>
-
-Mattermost'u hariç tutan eski bir derlemede veya özel kurulumdaysanız, yayımlandığında güncel bir npm paketi kurun:
+Kanalı yapılandırmadan önce Mattermost’u kurun:
 
 <Tabs>
   <Tab title="npm registry">
@@ -30,30 +26,28 @@ Mattermost'u hariç tutan eski bir derlemede veya özel kurulumdaysanız, yayım
     openclaw plugins install @openclaw/mattermost
     ```
   </Tab>
-  <Tab title="Local checkout">
+  <Tab title="Yerel checkout">
     ```bash
     openclaw plugins install ./path/to/local/mattermost-plugin
     ```
   </Tab>
 </Tabs>
 
-npm, OpenClaw'a ait paketi kullanımdan kaldırılmış olarak bildirirse, daha yeni bir npm paketi yayımlanana kadar güncel paketlenmiş bir OpenClaw derlemesi veya yerel checkout yolunu kullanın.
-
 Ayrıntılar: [Plugins](/tr/tools/plugin)
 
 ## Hızlı kurulum
 
 <Steps>
-  <Step title="Ensure plugin is available">
-    Güncel paketlenmiş OpenClaw sürümleri bunu zaten içerir. Eski/özel kurulumlar yukarıdaki komutlarla bunu elle ekleyebilir.
+  <Step title="Plugin’in kullanılabilir olduğundan emin olun">
+    Mevcut paketlenmiş OpenClaw sürümleri bunu zaten paketler. Daha eski/özel kurulumlar yukarıdaki komutlarla bunu elle ekleyebilir.
   </Step>
-  <Step title="Create a Mattermost bot">
-    Bir Mattermost bot hesabı oluşturun ve **bot token**'ı kopyalayın.
+  <Step title="Bir Mattermost botu oluşturun">
+    Bir Mattermost bot hesabı oluşturun ve **bot belirtecini** kopyalayın.
   </Step>
-  <Step title="Copy the base URL">
-    Mattermost **base URL**'sini kopyalayın (ör. `https://chat.example.com`).
+  <Step title="Temel URL’yi kopyalayın">
+    Mattermost **temel URL’sini** kopyalayın (ör. `https://chat.example.com`).
   </Step>
-  <Step title="Configure OpenClaw and start the gateway">
+  <Step title="OpenClaw’u yapılandırın ve gateway’i başlatın">
     En küçük yapılandırma:
 
     ```json5
@@ -72,9 +66,9 @@ Ayrıntılar: [Plugins](/tr/tools/plugin)
   </Step>
 </Steps>
 
-## Yerel eğik çizgi komutları
+## Yerel slash komutları
 
-Yerel eğik çizgi komutları isteğe bağlıdır. Etkinleştirildiğinde OpenClaw, Mattermost API üzerinden `oc_*` eğik çizgi komutlarını kaydeder ve Gateway HTTP sunucusunda callback POST'larını alır.
+Yerel slash komutları isteğe bağlıdır. Etkinleştirildiğinde OpenClaw, Mattermost API aracılığıyla `oc_*` slash komutlarını kaydeder ve Gateway HTTP sunucusunda geri çağırma POST’ları alır.
 
 ```json5
 {
@@ -84,7 +78,7 @@ Yerel eğik çizgi komutları isteğe bağlıdır. Etkinleştirildiğinde OpenCl
         native: true,
         nativeSkills: true,
         callbackPath: "/api/channels/mattermost/command",
-        // Use when Mattermost cannot reach the gateway directly (reverse proxy/public URL).
+        // Mattermost gateway’e doğrudan erişemediğinde kullanın (ters proxy/genel URL).
         callbackUrl: "https://gateway.example.com/api/channels/mattermost/command",
       },
     },
@@ -93,29 +87,31 @@ Yerel eğik çizgi komutları isteğe bağlıdır. Etkinleştirildiğinde OpenCl
 ```
 
 <AccordionGroup>
-  <Accordion title="Behavior notes">
+  <Accordion title="Davranış notları">
     - `native: "auto"` Mattermost için varsayılan olarak devre dışıdır. Etkinleştirmek için `native: true` ayarlayın.
-    - `callbackUrl` atlanırsa OpenClaw, Gateway host/port + `callbackPath` değerinden bir URL türetir.
-    - Çok hesaplı kurulumlarda `commands` üst düzeyde veya `channels.mattermost.accounts.<id>.commands` altında ayarlanabilir (hesap değerleri üst düzey alanları geçersiz kılar).
-    - Komut callback'leri, OpenClaw `oc_*` komutlarını kaydettiğinde Mattermost tarafından döndürülen komuta özel token'larla doğrulanır.
-    - Kayıt başarısız olduğunda, başlangıç kısmi olduğunda veya callback token'ı kayıtlı komutlardan biriyle eşleşmediğinde eğik çizgi callback'leri kapalı biçimde başarısız olur.
+    - `callbackUrl` atlanırsa OpenClaw, Gateway ana makinesi/bağlantı noktası + `callbackPath` üzerinden bir tane türetir.
+    - Çok hesaplı kurulumlarda `commands`, üst düzeyde veya `channels.mattermost.accounts.<id>.commands` altında ayarlanabilir (hesap değerleri üst düzey alanları geçersiz kılar).
+    - Komut geri çağırmaları, OpenClaw `oc_*` komutlarını kaydettiğinde Mattermost tarafından döndürülen komut başına belirteçlerle doğrulanır.
+    - OpenClaw, silinmiş veya yeniden oluşturulmuş slash komutlarından kalan eski belirteçlerin Gateway yeniden başlatılmadan kabul edilmesini durdurmak için her geri çağırmayı kabul etmeden önce mevcut Mattermost komut kaydını yeniler.
+    - Mattermost API komutun hâlâ güncel olduğunu doğrulayamazsa geri çağırma doğrulaması kapalı başarısız olur; başarısız doğrulamalar kısa süreliğine önbelleğe alınır, eşzamanlı sorgular birleştirilir ve yeni sorgu başlangıçları yeniden yürütme baskısını sınırlamak için komut başına hız sınırına tabi tutulur.
+    - Kayıt başarısız olduysa, başlangıç kısmi olduysa veya geri çağırma belirteci çözümlenen komutun kayıtlı belirteciyle eşleşmiyorsa slash geri çağırmaları kapalı başarısız olur (bir komut için geçerli bir belirteç, farklı bir komut için upstream doğrulamaya ulaşamaz).
 
   </Accordion>
-  <Accordion title="Reachability requirement">
-    Callback uç noktası Mattermost sunucusundan erişilebilir olmalıdır.
+  <Accordion title="Erişilebilirlik gereksinimi">
+    Geri çağırma uç noktasına Mattermost sunucusundan erişilebilmelidir.
 
     - Mattermost, OpenClaw ile aynı ana makinede/ağ ad alanında çalışmıyorsa `callbackUrl` değerini `localhost` olarak ayarlamayın.
-    - Bu URL, `/api/channels/mattermost/command` yolunu OpenClaw'a ters proxy ile yönlendirmiyorsa `callbackUrl` değerini Mattermost base URL'niz olarak ayarlamayın.
-    - Hızlı bir kontrol `curl https://<gateway-host>/api/channels/mattermost/command` komutudur; GET, `404` değil, OpenClaw'dan `405 Method Not Allowed` döndürmelidir.
+    - Bu URL `/api/channels/mattermost/command` yolunu OpenClaw’a ters proxy ile yönlendirmiyorsa `callbackUrl` değerini Mattermost temel URL’niz olarak ayarlamayın.
+    - Hızlı bir kontrol `curl https://<gateway-host>/api/channels/mattermost/command` komutudur; GET, `404` değil OpenClaw’dan `405 Method Not Allowed` döndürmelidir.
 
   </Accordion>
-  <Accordion title="Mattermost egress allowlist">
-    Callback hedefleriniz özel/tailnet/dahili adreslerse Mattermost `ServiceSettings.AllowedUntrustedInternalConnections` değerini callback host/domain'ini içerecek şekilde ayarlayın.
+  <Accordion title="Mattermost çıkış izin listesi">
+    Geri çağırmanız özel/tailnet/dahili adresleri hedefliyorsa Mattermost `ServiceSettings.AllowedUntrustedInternalConnections` değerini geri çağırma ana makinesini/alan adını içerecek şekilde ayarlayın.
 
-    Tam URL'ler değil, host/domain girdileri kullanın.
+    Tam URL değil, ana makine/alan adı girdileri kullanın.
 
-    - İyi: `gateway.tailnet-name.ts.net`
-    - Kötü: `https://gateway.tailnet-name.ts.net`
+    - Doğru: `gateway.tailnet-name.ts.net`
+    - Yanlış: `https://gateway.tailnet-name.ts.net`
 
   </Accordion>
 </AccordionGroup>
@@ -135,10 +131,10 @@ Env vars yalnızca **varsayılan** hesap (`default`) için geçerlidir. Diğer h
 
 ## Sohbet modları
 
-Mattermost, DM'lere otomatik olarak yanıt verir. Kanal davranışı `chatmode` ile kontrol edilir:
+Mattermost, DM’lere otomatik olarak yanıt verir. Kanal davranışı `chatmode` tarafından denetlenir:
 
 <Tabs>
-  <Tab title="oncall (default)">
+  <Tab title="oncall (varsayılan)">
     Kanallarda yalnızca @mention edildiğinde yanıt ver.
   </Tab>
   <Tab title="onmessage">
@@ -164,17 +160,17 @@ Yapılandırma örneği:
 
 Notlar:
 
-- `onchar`, açık @mention'lara yine de yanıt verir.
-- `channels.mattermost.requireMention` eski yapılandırmalar için dikkate alınır ancak `chatmode` tercih edilir.
+- `onchar` açık @mention’lara yine yanıt verir.
+- Eski yapılandırmalar için `channels.mattermost.requireMention` dikkate alınır, ancak `chatmode` tercih edilir.
 
-## İş parçacıkları ve oturumlar
+## Thread’ler ve oturumlar
 
-Kanal ve grup yanıtlarının ana kanalda mı kalacağını yoksa tetikleyen gönderinin altında bir iş parçacığı mı başlatacağını kontrol etmek için `channels.mattermost.replyToMode` kullanın.
+Kanal ve grup yanıtlarının ana kanalda kalıp kalmayacağını veya tetikleyen gönderinin altında bir thread başlatıp başlatmayacağını denetlemek için `channels.mattermost.replyToMode` kullanın.
 
-- `off` (varsayılan): yalnızca gelen gönderi zaten bir iş parçacığındaysa bir iş parçacığında yanıt ver.
-- `first`: üst düzey kanal/grup gönderileri için, o gönderinin altında bir iş parçacığı başlat ve konuşmayı iş parçacığı kapsamlı bir oturuma yönlendir.
+- `off` (varsayılan): yalnızca gelen gönderi zaten bir thread içindeyse thread içinde yanıt ver.
+- `first`: üst düzey kanal/grup gönderileri için, o gönderinin altında bir thread başlat ve konuşmayı thread kapsamlı bir oturuma yönlendir.
 - `all`: bugün Mattermost için `first` ile aynı davranış.
-- Doğrudan mesajlar bu ayarı yok sayar ve iş parçacığı olmadan kalır.
+- Doğrudan mesajlar bu ayarı yok sayar ve thread’siz kalır.
 
 Yapılandırma örneği:
 
@@ -190,25 +186,25 @@ Yapılandırma örneği:
 
 Notlar:
 
-- İş parçacığı kapsamlı oturumlar, iş parçacığı kökü olarak tetikleyen gönderi kimliğini kullanır.
-- `first` ve `all` şu anda eşdeğerdir çünkü Mattermost bir iş parçacığı köküne sahip olduktan sonra takip parçaları ve medya aynı iş parçacığında devam eder.
+- Thread kapsamlı oturumlar, tetikleyen gönderi kimliğini thread kökü olarak kullanır.
+- `first` ve `all` şu anda eşdeğerdir; çünkü Mattermost’ta bir thread kökü oluştuğunda takip parçaları ve medya aynı thread içinde devam eder.
 
-## Erişim denetimi (DM'ler)
+## Erişim denetimi (DM’ler)
 
-- Varsayılan: `channels.mattermost.dmPolicy = "pairing"` (bilinmeyen gönderenler bir eşleştirme kodu alır).
+- Varsayılan: `channels.mattermost.dmPolicy = "pairing"` (bilinmeyen gönderenler eşleştirme kodu alır).
 - Şununla onaylayın:
   - `openclaw pairing list mattermost`
   - `openclaw pairing approve mattermost <CODE>`
-- Herkese açık DM'ler: `channels.mattermost.dmPolicy="open"` ve `channels.mattermost.allowFrom=["*"]`.
+- Genel DM’ler: `channels.mattermost.dmPolicy="open"` artı `channels.mattermost.allowFrom=["*"]`.
 
 ## Kanallar (gruplar)
 
-- Varsayılan: `channels.mattermost.groupPolicy = "allowlist"` (bahsetme kapılı).
+- Varsayılan: `channels.mattermost.groupPolicy = "allowlist"` (mention kapılı).
 - Gönderenleri `channels.mattermost.groupAllowFrom` ile izin listesine alın (kullanıcı kimlikleri önerilir).
-- Kanal başına bahsetme geçersiz kılmaları, bir varsayılan için `channels.mattermost.groups.<channelId>.requireMention` veya `channels.mattermost.groups["*"].requireMention` altında bulunur.
-- `@username` eşleştirmesi değişebilirdir ve yalnızca `channels.mattermost.dangerouslyAllowNameMatching: true` olduğunda etkinleştirilir.
-- Açık kanallar: `channels.mattermost.groupPolicy="open"` (bahsetme kapılı).
-- Çalışma zamanı notu: `channels.mattermost` tamamen eksikse, çalışma zamanı grup denetimleri için `groupPolicy="allowlist"` değerine geri döner (`channels.defaults.groupPolicy` ayarlanmış olsa bile).
+- Kanal başına mention geçersiz kılmaları, varsayılan için `channels.mattermost.groups.<channelId>.requireMention` veya `channels.mattermost.groups["*"].requireMention` altında bulunur.
+- `@username` eşleştirmesi değişkendir ve yalnızca `channels.mattermost.dangerouslyAllowNameMatching: true` olduğunda etkinleştirilir.
+- Açık kanallar: `channels.mattermost.groupPolicy="open"` (mention kapılı).
+- Çalışma zamanı notu: `channels.mattermost` tamamen eksikse çalışma zamanı grup kontrolleri için `groupPolicy="allowlist"` değerine geri döner (`channels.defaults.groupPolicy` ayarlanmış olsa bile).
 
 Örnek:
 
@@ -228,28 +224,28 @@ Notlar:
 
 ## Giden teslimat hedefleri
 
-Bu hedef biçimlerini `openclaw message send` veya Cron/Webhook'larla kullanın:
+Bu hedef biçimlerini `openclaw message send` veya cron/webhook’lar ile kullanın:
 
 - Bir kanal için `channel:<id>`
 - Bir DM için `user:<id>`
 - Bir DM için `@username` (Mattermost API aracılığıyla çözümlenir)
 
 <Warning>
-Çıplak opak kimlikler (`64ifufp...` gibi) Mattermost'ta **belirsizdir** (kullanıcı kimliği ile kanal kimliği).
+Çıplak opak kimlikler (`64ifufp...` gibi) Mattermost’ta **belirsizdir** (kullanıcı kimliği veya kanal kimliği).
 
-OpenClaw bunları **önce kullanıcı** olarak çözümler:
+OpenClaw bunları **önce kullanıcı** olarak çözer:
 
-- Kimlik bir kullanıcı olarak varsa (`GET /api/v4/users/<id>` başarılı olursa), OpenClaw `/api/v4/channels/direct` aracılığıyla doğrudan kanalı çözümleyerek bir **DM** gönderir.
-- Aksi takdirde kimlik bir **kanal kimliği** olarak ele alınır.
+- Kimlik bir kullanıcı olarak varsa (`GET /api/v4/users/<id>` başarılı olursa), OpenClaw doğrudan kanalı `/api/v4/channels/direct` aracılığıyla çözerek bir **DM** gönderir.
+- Aksi durumda kimlik bir **kanal kimliği** olarak ele alınır.
 
 Deterministik davranış gerekiyorsa her zaman açık önekleri kullanın (`user:<id>` / `channel:<id>`).
 </Warning>
 
 ## DM kanalı yeniden denemesi
 
-OpenClaw bir Mattermost DM hedefine gönderirken önce doğrudan kanalı çözümlemesi gerektiğinde, varsayılan olarak geçici doğrudan kanal oluşturma hatalarını yeniden dener.
+OpenClaw bir Mattermost DM hedefine gönderim yaptığında ve önce doğrudan kanalı çözmesi gerektiğinde, geçici doğrudan kanal oluşturma hatalarını varsayılan olarak yeniden dener.
 
-Bu davranışı Mattermost Plugin'i için genel olarak ayarlamak üzere `channels.mattermost.dmChannelRetry`, tek bir hesap içinse `channels.mattermost.accounts.<id>.dmChannelRetry` kullanın.
+Bu davranışı Mattermost Plugin’i için genel olarak ayarlamak üzere `channels.mattermost.dmChannelRetry`, tek bir hesap için `channels.mattermost.accounts.<id>.dmChannelRetry` kullanın.
 
 ```json5
 {
@@ -268,13 +264,13 @@ Bu davranışı Mattermost Plugin'i için genel olarak ayarlamak üzere `channel
 
 Notlar:
 
-- Bu yalnızca DM kanalı oluşturmaya (`/api/v4/channels/direct`) uygulanır, her Mattermost API çağrısına değil.
+- Bu, her Mattermost API çağrısına değil yalnızca DM kanalı oluşturma işlemine (`/api/v4/channels/direct`) uygulanır.
 - Yeniden denemeler hız sınırları, 5xx yanıtları ve ağ ya da zaman aşımı hataları gibi geçici hatalara uygulanır.
 - `429` dışındaki 4xx istemci hataları kalıcı kabul edilir ve yeniden denenmez.
 
 ## Önizleme akışı
 
-Mattermost, düşünmeyi, araç etkinliğini ve kısmi yanıt metnini tek bir **taslak önizleme gönderisine** aktarır; bu gönderi, son yanıtın gönderilmesi güvenli olduğunda yerinde sonlandırılır. Önizleme, kanalı parça başına iletilerle doldurmak yerine aynı gönderi kimliği üzerinde güncellenir. Medya/hata sonları bekleyen önizleme düzenlemelerini iptal eder ve kullan-at bir önizleme gönderisini boşaltmak yerine normal teslimatı kullanır.
+Mattermost düşünmeyi, araç etkinliğini ve kısmi yanıt metnini tek bir **taslak önizleme gönderisine** akıtır; son yanıt gönderilmeye güvenli olduğunda yerinde sonlandırılır. Önizleme, kanalı parça başına mesajlarla doldurmak yerine aynı gönderi kimliği üzerinde güncellenir. Medya/hata finalleri bekleyen önizleme düzenlemelerini iptal eder ve tek kullanımlık bir önizleme gönderisini boşaltmak yerine normal teslimatı kullanır.
 
 `channels.mattermost.streaming` ile etkinleştirin:
 
@@ -290,27 +286,27 @@ Mattermost, düşünmeyi, araç etkinliğini ve kısmi yanıt metnini tek bir **
 
 <AccordionGroup>
   <Accordion title="Akış modları">
-    - `partial` olağan seçimdir: yanıt büyüdükçe düzenlenen, ardından eksiksiz yanıtla sonlandırılan tek bir önizleme gönderisi.
+    - `partial` olağan seçimdir: yanıt büyüdükçe düzenlenen ve ardından tam yanıtla sonlandırılan tek bir önizleme gönderisi.
     - `block`, önizleme gönderisi içinde ekleme tarzı taslak parçaları kullanır.
     - `progress`, oluşturma sırasında bir durum önizlemesi gösterir ve yalnızca tamamlandığında son yanıtı gönderir.
     - `off`, önizleme akışını devre dışı bırakır.
 
   </Accordion>
   <Accordion title="Akış davranışı notları">
-    - Akış yerinde sonlandırılamazsa (örneğin gönderi akışın ortasında silindiyse), OpenClaw yanıtın asla kaybolmaması için yeni bir son gönderi göndermeye geri döner.
-    - Yalnızca akıl yürütme içeren yükler, `> Reasoning:` blok alıntısı olarak gelen metin de dahil olmak üzere kanal gönderilerinden bastırılır. Diğer yüzeylerde düşünmeyi görmek için `/reasoning on` ayarlayın; Mattermost son gönderisi yalnızca yanıtı tutar.
-    - Kanal eşleme matrisi için [Akış](/tr/concepts/streaming#preview-streaming-modes) bölümüne bakın.
+    - Akış yerinde sonlandırılamazsa (örneğin gönderi akış sırasında silindiyse), OpenClaw yanıtın asla kaybolmaması için yeni bir final gönderisi göndermeye geri döner.
+    - Yalnızca akıl yürütme yükleri kanal gönderilerinden bastırılır; buna `> Reasoning:` blockquote olarak gelen metin de dahildir. Düşünmeyi diğer yüzeylerde görmek için `/reasoning on` ayarlayın; Mattermost final gönderisi yalnızca yanıtı tutar.
+    - Kanal eşleme matrisi için bkz. [Akış](/tr/concepts/streaming#preview-streaming-modes).
 
   </Accordion>
 </AccordionGroup>
 
-## Tepkiler (ileti aracı)
+## Tepkiler (message aracı)
 
 - `channel=mattermost` ile `message action=react` kullanın.
 - `messageId`, Mattermost gönderi kimliğidir.
 - `emoji`, `thumbsup` veya `:+1:` gibi adları kabul eder (iki nokta üst üste isteğe bağlıdır).
 - Bir tepkiyi kaldırmak için `remove=true` (boolean) ayarlayın.
-- Tepki ekleme/kaldırma olayları, yönlendirilen aracı oturumuna sistem olayları olarak iletilir.
+- Tepki ekleme/kaldırma olayları, yönlendirilen ajan oturumuna sistem olayları olarak iletilir.
 
 Örnekler:
 
@@ -324,9 +320,9 @@ Yapılandırma:
 - `channels.mattermost.actions.reactions`: tepki eylemlerini etkinleştir/devre dışı bırak (varsayılan true).
 - Hesap başına geçersiz kılma: `channels.mattermost.accounts.<id>.actions.reactions`.
 
-## Etkileşimli düğmeler (ileti aracı)
+## Etkileşimli düğmeler (message aracı)
 
-Tıklanabilir düğmelerle iletiler gönderin. Bir kullanıcı bir düğmeye tıkladığında, aracı seçimi alır ve yanıt verebilir.
+Tıklanabilir düğmelerle mesaj gönderin. Bir kullanıcı bir düğmeye tıkladığında ajan seçimi alır ve yanıt verebilir.
 
 Kanal yeteneklerine `inlineButtons` ekleyerek düğmeleri etkinleştirin:
 
@@ -340,7 +336,7 @@ Kanal yeteneklerine `inlineButtons` ekleyerek düğmeleri etkinleştirin:
 }
 ```
 
-`buttons` parametresiyle `message action=send` kullanın. Düğmeler 2B dizidir (düğme satırları):
+`buttons` parametresiyle `message action=send` kullanın. Düğmeler 2B bir dizidir (düğme satırları):
 
 ```
 message action=send channel=mattermost target=channel:<channelId> buttons=[[{"text":"Yes","callback_data":"yes"},{"text":"No","callback_data":"no"}]]
@@ -349,7 +345,7 @@ message action=send channel=mattermost target=channel:<channelId> buttons=[[{"te
 Düğme alanları:
 
 <ParamField path="text" type="string" required>
-  Görüntü etiketi.
+  Görüntüleme etiketi.
 </ParamField>
 <ParamField path="callback_data" type="string" required>
   Tıklamada geri gönderilen değer (eylem kimliği olarak kullanılır).
@@ -361,35 +357,35 @@ Düğme alanları:
 Bir kullanıcı bir düğmeye tıkladığında:
 
 <Steps>
-  <Step title="Düğmeler onayla değiştirildi">
-    Tüm düğmeler bir onay satırıyla değiştirilir (ör. "@user tarafından ✓ **Evet** seçildi").
+  <Step title="Düğmeler onayla değiştirilir">
+    Tüm düğmeler bir onay satırıyla değiştirilir (ör. "✓ **Yes** selected by @user").
   </Step>
-  <Step title="Aracı seçimi alır">
-    Aracı seçimi gelen ileti olarak alır ve yanıtlar.
+  <Step title="Agent seçimi alır">
+    Agent seçimi gelen ileti olarak alır ve yanıt verir.
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="Uygulama notları">
     - Düğme geri çağrıları HMAC-SHA256 doğrulaması kullanır (otomatik, yapılandırma gerekmez).
-    - Mattermost, API yanıtlarından geri çağrı verilerini çıkarır (güvenlik özelliği), bu nedenle tıklamada tüm düğmeler kaldırılır — kısmi kaldırma mümkün değildir.
+    - Mattermost, API yanıtlarından geri çağrı verilerini çıkarır (güvenlik özelliği), bu yüzden tıklamada tüm düğmeler kaldırılır — kısmi kaldırma mümkün değildir.
     - Kısa çizgi veya alt çizgi içeren eylem kimlikleri otomatik olarak temizlenir (Mattermost yönlendirme sınırlaması).
 
   </Accordion>
   <Accordion title="Yapılandırma ve erişilebilirlik">
-    - `channels.mattermost.capabilities`: yetenek dizgilerinden oluşan dizi. Aracı sistem isteminde düğmeler aracı açıklamasını etkinleştirmek için `"inlineButtons"` ekleyin.
-    - `channels.mattermost.interactions.callbackBaseUrl`: düğme geri çağrıları için isteğe bağlı harici temel URL (örneğin `https://gateway.example.com`). Mattermost, Gateway'e bağlandığı ana makineden doğrudan erişemediğinde bunu kullanın.
+    - `channels.mattermost.capabilities`: yetenek dizelerinden oluşan dizi. Agent sistem isteminde düğmeler aracı açıklamasını etkinleştirmek için `"inlineButtons"` ekleyin.
+    - `channels.mattermost.interactions.callbackBaseUrl`: düğme geri çağrıları için isteğe bağlı harici temel URL (örneğin `https://gateway.example.com`). Mattermost, Gateway'e bağlandığı ana bilgisayardan doğrudan erişemediğinde bunu kullanın.
     - Çok hesaplı kurulumlarda aynı alanı `channels.mattermost.accounts.<id>.interactions.callbackBaseUrl` altında da ayarlayabilirsiniz.
-    - `interactions.callbackBaseUrl` atlanırsa OpenClaw, geri çağrı URL'sini `gateway.customBindHost` + `gateway.port` değerinden türetir, ardından `http://localhost:<port>` değerine geri döner.
-    - Erişilebilirlik kuralı: düğme geri çağrı URL'si Mattermost sunucusundan erişilebilir olmalıdır. `localhost` yalnızca Mattermost ve OpenClaw aynı ana makinede/ağ ad alanında çalıştığında çalışır.
-    - Geri çağrı hedefiniz özel/tailnet/dahili ise ana makinesini/etki alanını Mattermost `ServiceSettings.AllowedUntrustedInternalConnections` içine ekleyin.
+    - `interactions.callbackBaseUrl` atlanırsa OpenClaw, geri çağrı URL'sini `gateway.customBindHost` + `gateway.port` değerlerinden türetir, ardından `http://localhost:<port>` değerine geri döner.
+    - Erişilebilirlik kuralı: düğme geri çağrı URL'sine Mattermost sunucusundan erişilebilmelidir. `localhost` yalnızca Mattermost ve OpenClaw aynı ana bilgisayarda/ağ ad alanında çalıştığında işe yarar.
+    - Geri çağrı hedefiniz özel/tailnet/dahili ise ana bilgisayarını/alan adını Mattermost `ServiceSettings.AllowedUntrustedInternalConnections` öğesine ekleyin.
 
   </Accordion>
 </AccordionGroup>
 
 ### Doğrudan API entegrasyonu (harici betikler)
 
-Harici betikler ve Webhook'lar, aracının `message` aracından geçmek yerine düğmeleri doğrudan Mattermost REST API üzerinden gönderebilir. Mümkün olduğunda Plugin'den `buildButtonAttachments()` kullanın; ham JSON gönderiyorsanız şu kuralları izleyin:
+Harici betikler ve webhooks, agent'ın `message` aracını kullanmak yerine düğmeleri doğrudan Mattermost REST API üzerinden gönderebilir. Mümkün olduğunda Plugin'den `buildButtonAttachments()` kullanın; ham JSON gönderiyorsanız şu kurallara uyun:
 
 **Yük yapısı:**
 
@@ -427,33 +423,33 @@ Harici betikler ve Webhook'lar, aracının `message` aracından geçmek yerine d
 **Kritik kurallar**
 
 1. Ekler üst düzey `attachments` içine değil, `props.attachments` içine konur (sessizce yok sayılır).
-2. Her eylemin `type: "button"` değerine ihtiyacı vardır — bu olmadan tıklamalar sessizce yutulur.
-3. Her eylemin bir `id` alanına ihtiyacı vardır — Mattermost kimliği olmayan eylemleri yok sayar.
-4. Eylem `id` değeri **yalnızca alfanümerik** olmalıdır (`[a-zA-Z0-9]`). Kısa çizgiler ve alt çizgiler Mattermost'un sunucu tarafı eylem yönlendirmesini bozar (404 döndürür). Kullanmadan önce bunları çıkarın.
+2. Her eylem `type: "button"` gerektirir — yoksa tıklamalar sessizce yutulur.
+3. Her eylem bir `id` alanı gerektirir — Mattermost kimliği olmayan eylemleri yok sayar.
+4. Eylem `id` değeri **yalnızca alfasayısal** olmalıdır (`[a-zA-Z0-9]`). Kısa çizgiler ve alt çizgiler Mattermost'un sunucu tarafı eylem yönlendirmesini bozar (404 döndürür). Kullanmadan önce bunları çıkarın.
 5. Onay iletisinin ham kimlik yerine düğme adını (ör. "Approve") göstermesi için `context.action_id`, düğmenin `id` değeriyle eşleşmelidir.
-6. `context.action_id` zorunludur — etkileşim işleyicisi onsuz 400 döndürür.
+6. `context.action_id` zorunludur — etkileşim işleyicisi bu olmadan 400 döndürür.
 
 </Warning>
 
-**HMAC belirteci oluşturma**
+**HMAC belirteci üretimi**
 
-Gateway, düğme tıklamalarını HMAC-SHA256 ile doğrular. Harici betikler, Gateway'in doğrulama mantığıyla eşleşen belirteçler oluşturmalıdır:
+Gateway, düğme tıklamalarını HMAC-SHA256 ile doğrular. Harici betikler, Gateway'in doğrulama mantığıyla eşleşen belirteçler üretmelidir:
 
 <Steps>
   <Step title="Gizli anahtarı bot belirtecinden türetin">
     `HMAC-SHA256(key="openclaw-mattermost-interactions", data=botToken)`
   </Step>
   <Step title="Bağlam nesnesini oluşturun">
-    `_token` **hariç** tüm alanlarla bağlam nesnesini oluşturun.
+    Bağlam nesnesini `_token` **hariç** tüm alanlarla oluşturun.
   </Step>
-  <Step title="Sıralanmış anahtarlarla serileştirin">
-    **Sıralanmış anahtarlar** ve **boşluksuz** serileştirin (Gateway, sıralanmış anahtarlarla `JSON.stringify` kullanır; bu da kompakt çıktı üretir).
+  <Step title="Sıralanmış anahtarlarla seri hale getirin">
+    **Sıralanmış anahtarlarla** ve **boşluksuz** seri hale getirin (Gateway, sıralanmış anahtarlarla `JSON.stringify` kullanır; bu da kompakt çıktı üretir).
   </Step>
   <Step title="Yükü imzalayın">
     `HMAC-SHA256(key=secret, data=serializedContext)`
   </Step>
   <Step title="Belirteci ekleyin">
-    Ortaya çıkan hex özetini bağlama `_token` olarak ekleyin.
+    Ortaya çıkan onaltılık özeti bağlama `_token` olarak ekleyin.
   </Step>
 </Steps>
 
@@ -475,24 +471,24 @@ context = {**ctx, "_token": token}
 ```
 
 <AccordionGroup>
-  <Accordion title="Yaygın HMAC sorunları">
-    - Python'un `json.dumps` işlevi varsayılan olarak boşluk ekler (`{"key": "val"}`). JavaScript'in kompakt çıktısıyla (`{"key":"val"}`) eşleşmek için `separators=(",", ":")` kullanın.
-    - Her zaman **tüm** bağlam alanlarını (`_token` hariç) imzalayın. Gateway `_token` değerini çıkarır ve kalan her şeyi imzalar. Bir alt kümeyi imzalamak sessiz doğrulama hatasına neden olur.
-    - `sort_keys=True` kullanın — Gateway imzalamadan önce anahtarları sıralar ve Mattermost yükü depolarken bağlam alanlarını yeniden sıralayabilir.
-    - Gizli anahtarı rastgele baytlardan değil, bot belirtecinden (deterministik) türetin. Gizli anahtar, düğmeleri oluşturan süreç ile doğrulayan Gateway arasında aynı olmalıdır.
+  <Accordion title="Yaygın HMAC tuzakları">
+    - Python'ın `json.dumps` işlevi varsayılan olarak boşluk ekler (`{"key": "val"}`). JavaScript'in kompakt çıktısıyla (`{"key":"val"}`) eşleşmek için `separators=(",", ":")` kullanın.
+    - Her zaman **tüm** bağlam alanlarını (`_token` hariç) imzalayın. Gateway, `_token` öğesini çıkarır ve kalan her şeyi imzalar. Bir alt kümenin imzalanması sessiz doğrulama hatasına neden olur.
+    - `sort_keys=True` kullanın — Gateway imzalamadan önce anahtarları sıralar ve Mattermost yükü saklarken bağlam alanlarını yeniden sıralayabilir.
+    - Gizli anahtarı rastgele baytlardan değil, bot belirtecinden türetin (deterministik). Gizli anahtar, düğmeleri oluşturan süreç ile doğrulayan Gateway arasında aynı olmalıdır.
 
   </Accordion>
 </AccordionGroup>
 
 ## Dizin bağdaştırıcısı
 
-Mattermost Plugin'i, kanal ve kullanıcı adlarını Mattermost API üzerinden çözen bir dizin bağdaştırıcısı içerir. Bu, `openclaw message send` ve cron/Webhook teslimatlarında `#channel-name` ve `@username` hedeflerini etkinleştirir.
+Mattermost Plugin, Mattermost API üzerinden kanal ve kullanıcı adlarını çözen bir dizin bağdaştırıcısı içerir. Bu, `openclaw message send` ve cron/webhook teslimatlarında `#channel-name` ve `@username` hedeflerini etkinleştirir.
 
 Yapılandırma gerekmez — bağdaştırıcı, hesap yapılandırmasındaki bot belirtecini kullanır.
 
-## Çoklu hesap
+## Çok hesaplı
 
-Mattermost, `channels.mattermost.accounts` altında birden fazla hesabı destekler:
+Mattermost, `channels.mattermost.accounts` altında birden çok hesabı destekler:
 
 ```json5
 {
@@ -511,39 +507,39 @@ Mattermost, `channels.mattermost.accounts` altında birden fazla hesabı destekl
 
 <AccordionGroup>
   <Accordion title="Kanallarda yanıt yok">
-    Botun kanalda olduğundan emin olun ve ondan bahsedin (oncall), bir tetik öneki kullanın (onchar) veya `chatmode: "onmessage"` ayarlayın.
+    Botun kanalda olduğundan emin olun ve ondan bahsedin (oncall), bir tetikleyici ön eki kullanın (onchar) veya `chatmode: "onmessage"` ayarlayın.
   </Accordion>
-  <Accordion title="Kimlik doğrulama veya çoklu hesap hataları">
+  <Accordion title="Kimlik doğrulama veya çok hesaplı hatalar">
     - Bot belirtecini, temel URL'yi ve hesabın etkin olup olmadığını kontrol edin.
-    - Çoklu hesap sorunları: ortam değişkenleri yalnızca `default` hesabına uygulanır.
+    - Çok hesaplı sorunlar: ortam değişkenleri yalnızca `default` hesabına uygulanır.
 
   </Accordion>
   <Accordion title="Yerel slash komutları başarısız oluyor">
     - `Unauthorized: invalid command token.`: OpenClaw geri çağrı belirtecini kabul etmedi. Tipik nedenler:
       - slash komutu kaydı başlangıçta başarısız oldu veya yalnızca kısmen tamamlandı
-      - geri çağrı yanlış Gateway/hesaba gidiyor
-      - Mattermost'ta hâlâ önceki bir geri çağrı hedefini gösteren eski komutlar var
-      - Gateway slash komutlarını yeniden etkinleştirmeden yeniden başlatıldı
-    - Yerel slash komutları çalışmayı durdurursa günlüklerde `mattermost: failed to register slash commands` veya `mattermost: native slash commands enabled but no commands could be registered` ifadelerini kontrol edin.
-    - `callbackUrl` atlanırsa ve günlükler geri çağrının `http://127.0.0.1:18789/...` olarak çözüldüğü konusunda uyarıyorsa, bu URL'ye muhtemelen yalnızca Mattermost, OpenClaw ile aynı ana makinede/ağ ad alanında çalıştığında erişilebilir. Bunun yerine açıkça harici olarak erişilebilir bir `commands.callbackUrl` ayarlayın.
+      - geri çağrı yanlış Gateway/hesaba ulaşıyor
+      - Mattermost hâlâ önceki bir geri çağrı hedefine işaret eden eski komutlara sahip
+      - Gateway, slash komutlarını yeniden etkinleştirmeden yeniden başlatıldı
+    - Yerel slash komutları çalışmayı durdurursa günlüklerde `mattermost: failed to register slash commands` veya `mattermost: native slash commands enabled but no commands could be registered` olup olmadığını kontrol edin.
+    - `callbackUrl` atlanırsa ve günlükler geri çağrının `http://127.0.0.1:18789/...` olarak çözümlendiğine dair uyarı verirse bu URL'ye muhtemelen yalnızca Mattermost, OpenClaw ile aynı ana bilgisayarda/ağ ad alanında çalıştığında erişilebilir. Bunun yerine açıkça harici olarak erişilebilir bir `commands.callbackUrl` ayarlayın.
 
   </Accordion>
   <Accordion title="Düğme sorunları">
-    - Düğmeler beyaz kutular olarak görünür: aracı hatalı biçimlendirilmiş düğme verileri gönderiyor olabilir. Her düğmede hem `text` hem de `callback_data` alanları olduğunu kontrol edin.
-    - Düğmeler işleniyor ancak tıklamalar hiçbir şey yapmıyor: Mattermost sunucu yapılandırmasındaki `AllowedUntrustedInternalConnections` değerinin `127.0.0.1 localhost` içerdiğini ve ServiceSettings içinde `EnablePostActionIntegration` değerinin `true` olduğunu doğrulayın.
-    - Düğmeler tıklamada 404 döndürüyor: düğme `id` değeri muhtemelen kısa çizgiler veya alt çizgiler içeriyor. Mattermost'un eylem yönlendiricisi alfanümerik olmayan kimliklerde bozulur. Yalnızca `[a-zA-Z0-9]` kullanın.
+    - Düğmeler beyaz kutular olarak görünüyor: agent hatalı biçimlendirilmiş düğme verisi gönderiyor olabilir. Her düğmede hem `text` hem de `callback_data` alanlarının olduğunu kontrol edin.
+    - Düğmeler işleniyor ama tıklamalar hiçbir şey yapmıyor: Mattermost sunucu yapılandırmasındaki `AllowedUntrustedInternalConnections` öğesinin `127.0.0.1 localhost` içerdiğini ve ServiceSettings içinde `EnablePostActionIntegration` değerinin `true` olduğunu doğrulayın.
+    - Düğmeler tıklamada 404 döndürüyor: düğme `id` değeri büyük olasılıkla kısa çizgi veya alt çizgi içeriyor. Mattermost'un eylem yönlendiricisi alfasayısal olmayan kimliklerde bozulur. Yalnızca `[a-zA-Z0-9]` kullanın.
     - Gateway günlüklerinde `invalid _token`: HMAC uyuşmazlığı. Tüm bağlam alanlarını (bir alt küme değil) imzaladığınızı, sıralanmış anahtarlar kullandığınızı ve kompakt JSON (boşluksuz) kullandığınızı kontrol edin. Yukarıdaki HMAC bölümüne bakın.
-    - Gateway günlüklerinde `missing _token in context`: `_token` alanı düğmenin bağlamında değil. Entegrasyon yükünü oluştururken bunun dahil edildiğinden emin olun.
-    - Onay düğme adı yerine ham kimlik gösteriyor: `context.action_id`, düğmenin `id` değeriyle eşleşmiyor. İkisini de aynı temizlenmiş değere ayarlayın.
-    - Aracı düğmelerden haberdar değil: Mattermost kanal yapılandırmasına `capabilities: ["inlineButtons"]` ekleyin.
+    - Gateway günlüklerinde `missing _token in context`: `_token` alanı düğmenin bağlamında değil. Entegrasyon yükünü oluştururken dahil edildiğinden emin olun.
+    - Onay, düğme adı yerine ham kimlik gösteriyor: `context.action_id`, düğmenin `id` değeriyle eşleşmiyor. Her ikisini de aynı temizlenmiş değere ayarlayın.
+    - Agent düğmelerden haberdar değil: Mattermost kanal yapılandırmasına `capabilities: ["inlineButtons"]` ekleyin.
 
   </Accordion>
 </AccordionGroup>
 
 ## İlgili
 
-- [Kanal Yönlendirme](/tr/channels/channel-routing) — iletiler için oturum yönlendirme
+- [Kanal Yönlendirme](/tr/channels/channel-routing) — iletiler için oturum yönlendirmesi
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
 - [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme kapısı
 - [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
-- [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma
+- [Güvenlik](/tr/gateway/security) — erişim modeli ve güçlendirme

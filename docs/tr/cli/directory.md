@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Bir kanal için kişileri/grupları/kendi kimliklerini aramak istiyorsunuz
+    - Bir kanal için kişi/grup/kendi kimliklerini aramak istiyorsunuz
     - Bir kanal dizini bağdaştırıcısı geliştiriyorsunuz
-summary: '`openclaw directory` için CLI başvurusu (self, peers, groups)'
+summary: '`openclaw directory` için CLI referansı (self, peers, groups)'
 title: Dizin
 x-i18n:
-    generated_at: "2026-04-24T09:02:06Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T08:50:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
 Bunu destekleyen kanallar için dizin aramaları (kişiler/eşler, gruplar ve “ben”).
 
-## Yaygın bayraklar
+## Ortak bayraklar
 
-- `--channel <name>`: kanal kimliği/takma adı (birden fazla kanal yapılandırılmışsa gereklidir; yalnızca bir kanal yapılandırılmışsa otomatik)
-- `--account <id>`: hesap kimliği (varsayılan: kanalın varsayılan hesabı)
-- `--json`: JSON çıktısı
+- `--channel <name>`: kanal kimliği/takma adı (birden fazla kanal yapılandırıldığında zorunlu; yalnızca bir kanal yapılandırıldığında otomatik)
+- `--account <id>`: hesap kimliği (varsayılan: kanal varsayılanı)
+- `--json`: JSON çıktısı ver
 
 ## Notlar
 
 - `directory`, diğer komutlara yapıştırabileceğiniz kimlikleri bulmanıza yardımcı olmak içindir (özellikle `openclaw message send --target ...`).
 - Birçok kanal için sonuçlar canlı bir sağlayıcı dizini yerine yapılandırma desteklidir (izin listeleri / yapılandırılmış gruplar).
-- Varsayılan çıktı sekmeyle ayrılmış `id` (ve bazen `name`) biçimindedir; betikleme için `--json` kullanın.
+- Yüklü kanal Plugin'leri yine de dizin desteğini atlayabilir; bu durumda komut, Plugin'i yeniden yüklemek yerine desteklenmeyen dizin işlemini bildirir.
+- Varsayılan çıktı, sekme ile ayrılmış `id` (ve bazen `name`) değeridir; betik yazımı için `--json` kullanın.
 
 ## Sonuçları `message send` ile kullanma
 
@@ -45,9 +46,9 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 - Matrix (Plugin): `user:@user:server`, `room:!roomId:server` veya `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` ve `conversation:<id>`
 - Zalo (Plugin): kullanıcı kimliği (Bot API)
-- Zalo Personal / `zalouser` (Plugin): `zca` içinden iş parçacığı kimliği (DM/grup) (`me`, `friend list`, `group list`)
+- Zalo Personal / `zalouser` (Plugin): `zca` kaynağından iş parçacığı kimliği (DM/grup) (`me`, `friend list`, `group list`)
 
-## Benlik ("me")
+## Kendi kullanıcı ("me")
 
 ```bash
 openclaw directory self --channel zalouser
