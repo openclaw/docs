@@ -2,13 +2,13 @@
 read_when:
     - 你希望 OpenClaw 支持 Zalo Personal（非官方）
     - 你正在配置或开发 zalouser 插件
-summary: Zalo Personal 插件：通过原生 zca-js 进行 QR 登录 + 消息收发（插件安装 + 渠道配置 + 工具）
+summary: Zalo Personal 插件：通过原生 zca-js 实现二维码登录和消息收发（插件安装 + 渠道配置 + 工具）
 title: Zalo 个人插件
 x-i18n:
-    generated_at: "2026-04-29T05:41:29Z"
+    generated_at: "2026-05-02T21:05:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
+    source_hash: 0649c95317c09fc8316ec371a357d7d41d8bf801d0d9e500a29de13388421973
     source_path: plugins/zalouser.md
     workflow: 16
 ---
@@ -23,7 +23,7 @@ x-i18n:
 
 ## 命名
 
-渠道 ID 是 `zalouser`，以明确表示它自动化的是**个人 Zalo 用户账号**（非官方）。我们保留 `zalo`，用于未来可能的官方 Zalo API 集成。
+渠道 id 是 `zalouser`，用于明确表示它自动化的是**个人 Zalo 用户账号**（非官方）。我们保留 `zalo`，用于未来可能的官方 Zalo API 集成。
 
 ## 运行位置
 
@@ -41,7 +41,7 @@ x-i18n:
 openclaw plugins install @openclaw/zalouser
 ```
 
-如果 npm 报告 OpenClaw 拥有的软件包已弃用，则该软件包版本来自较旧的外部软件包链；请使用当前打包的 OpenClaw 构建，或在发布更新的 npm 软件包之前使用本地文件夹路径。
+当你使用 OpenClaw beta 渠道且 npmjs 显示 `beta` 领先于 `latest` 时，请使用 `@openclaw/zalouser@beta`。
 
 之后重启 Gateway 网关。
 
@@ -86,9 +86,9 @@ openclaw directory peers list --channel zalouser --query "name"
 
 操作：`send`、`image`、`link`、`friends`、`groups`、`me`、`status`
 
-渠道消息操作也支持用于消息回应的 `react`。
+渠道消息操作还支持 `react` 用于消息回应。
 
-## 相关内容
+## 相关
 
 - [构建插件](/zh-CN/plugins/building-plugins)
 - [社区插件](/zh-CN/plugins/community)
