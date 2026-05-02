@@ -1,25 +1,25 @@
 ---
 read_when:
     - Thêm hoặc sửa đổi các lệnh `openclaw infer`
-    - Thiết kế tự động hóa khả năng không giao diện ổn định
-summary: CLI ưu tiên suy luận cho các quy trình làm việc về mô hình, hình ảnh, âm thanh, TTS, video, web và embedding được hỗ trợ bởi nhà cung cấp
+    - Thiết kế tự động hóa năng lực không giao diện ổn định
+summary: CLI ưu tiên suy luận cho các quy trình làm việc với mô hình, hình ảnh, âm thanh, TTS, video, web và nhúng được hỗ trợ bởi nhà cung cấp
 title: CLI suy luận
 x-i18n:
-    generated_at: "2026-04-29T22:32:15Z"
+    generated_at: "2026-05-02T10:37:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8a154cf11a09f6c60117740f42937da3a0e6942931dde6eee6d902fb6e0ba461
+    source_hash: 04f8b4aeb70e960835612eedcc0a22202957803ca4e5eeb3f1e107e8c736e458
     source_path: cli/infer.md
     workflow: 16
 ---
 
-`openclaw infer` là bề mặt headless chuẩn cho các quy trình inference được hỗ trợ bởi nhà cung cấp.
+`openclaw infer` là bề mặt headless chính thức cho các quy trình suy luận được hậu thuẫn bởi nhà cung cấp.
 
-Nó chủ ý phơi bày các nhóm năng lực, không phải tên RPC Gateway thô và không phải id công cụ agent thô.
+Nó chủ ý hiển thị các nhóm năng lực, không phải tên RPC Gateway thô và cũng không phải id công cụ tác tử thô.
 
 ## Biến infer thành một kỹ năng
 
-Sao chép và dán nội dung này cho một agent:
+Sao chép và dán nội dung này cho một tác tử:
 
 ```text
 Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
@@ -28,10 +28,10 @@ Focus on model runs, image generation, video generation, audio transcription, TT
 
 Một kỹ năng dựa trên infer tốt nên:
 
-- ánh xạ các ý định phổ biến của người dùng tới đúng lệnh con infer
+- ánh xạ các ý định phổ biến của người dùng tới lệnh con infer phù hợp
 - bao gồm một vài ví dụ infer chuẩn cho các quy trình mà nó bao phủ
-- ưu tiên `openclaw infer ...` trong ví dụ và đề xuất
-- tránh ghi lại toàn bộ bề mặt infer trong phần thân kỹ năng
+- ưu tiên `openclaw infer ...` trong ví dụ và gợi ý
+- tránh ghi lại toàn bộ bề mặt infer bên trong phần thân kỹ năng
 
 Phạm vi điển hình của kỹ năng tập trung vào infer:
 
@@ -44,17 +44,17 @@ Phạm vi điển hình của kỹ năng tập trung vào infer:
 
 ## Vì sao dùng infer
 
-`openclaw infer` cung cấp một CLI nhất quán cho các tác vụ inference được hỗ trợ bởi nhà cung cấp trong OpenClaw.
+`openclaw infer` cung cấp một CLI nhất quán cho các tác vụ suy luận được hậu thuẫn bởi nhà cung cấp bên trong OpenClaw.
 
 Lợi ích:
 
 - Dùng các nhà cung cấp và mô hình đã được cấu hình trong OpenClaw thay vì nối các wrapper dùng một lần cho từng backend.
 - Giữ các quy trình mô hình, hình ảnh, phiên âm âm thanh, TTS, video, web và embedding trong cùng một cây lệnh.
-- Dùng dạng đầu ra `--json` ổn định cho script, tự động hóa và các quy trình do agent điều khiển.
-- Ưu tiên bề mặt OpenClaw chính chủ khi tác vụ về cơ bản là "chạy inference".
+- Dùng hình dạng đầu ra `--json` ổn định cho script, tự động hóa và các quy trình do tác tử điều khiển.
+- Ưu tiên bề mặt OpenClaw chính chủ khi tác vụ về cơ bản là "chạy suy luận".
 - Dùng đường dẫn cục bộ thông thường mà không yêu cầu Gateway cho hầu hết lệnh infer.
 
-Để kiểm tra nhà cung cấp từ đầu đến cuối, ưu tiên `openclaw infer ...` sau khi các bài kiểm thử nhà cung cấp cấp thấp hơn đã xanh. Nó thực thi CLI đã phát hành, tải cấu hình, phân giải agent mặc định, kích hoạt Plugin đi kèm, sửa chữa phụ thuộc runtime và runtime năng lực dùng chung trước khi yêu cầu nhà cung cấp được thực hiện.
+Để kiểm tra nhà cung cấp đầu-cuối, hãy ưu tiên `openclaw infer ...` sau khi các kiểm thử nhà cung cấp cấp thấp hơn đã xanh. Nó thực thi CLI đã phát hành, quá trình tải cấu hình, phân giải tác tử mặc định, kích hoạt Plugin đi kèm và runtime năng lực dùng chung trước khi yêu cầu nhà cung cấp được thực hiện.
 
 ## Cây lệnh
 
@@ -109,41 +109,41 @@ Lợi ích:
 
 ## Tác vụ phổ biến
 
-Bảng này ánh xạ các tác vụ inference phổ biến tới lệnh infer tương ứng.
+Bảng này ánh xạ các tác vụ suy luận phổ biến tới lệnh infer tương ứng.
 
 | Tác vụ                       | Lệnh                                                                                          | Ghi chú                                               |
 | ---------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | Chạy prompt văn bản/mô hình  | `openclaw infer model run --prompt "..." --json`                                              | Mặc định dùng đường dẫn cục bộ thông thường           |
 | Chạy prompt mô hình trên ảnh | `openclaw infer model run --prompt "Describe this" --file ./image.png --model provider/model` | Lặp lại `--file` cho nhiều đầu vào hình ảnh           |
 | Tạo hình ảnh                 | `openclaw infer image generate --prompt "..." --json`                                         | Dùng `image edit` khi bắt đầu từ một tệp hiện có      |
-| Mô tả tệp hình ảnh           | `openclaw infer image describe --file ./image.png --prompt "..." --json`                      | `--model` phải là `<provider/model>` có khả năng ảnh  |
+| Mô tả tệp hình ảnh           | `openclaw infer image describe --file ./image.png --prompt "..." --json`                      | `--model` phải là `<provider/model>` hỗ trợ hình ảnh  |
 | Phiên âm âm thanh            | `openclaw infer audio transcribe --file ./memo.m4a --json`                                    | `--model` phải là `<provider/model>`                  |
 | Tổng hợp giọng nói           | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json`                        | `tts status` hướng tới Gateway                        |
 | Tạo video                    | `openclaw infer video generate --prompt "..." --json`                                         | Hỗ trợ gợi ý nhà cung cấp như `--resolution`          |
 | Mô tả tệp video              | `openclaw infer video describe --file ./clip.mp4 --json`                                      | `--model` phải là `<provider/model>`                  |
 | Tìm kiếm web                 | `openclaw infer web search --query "..." --json`                                              |                                                       |
-| Lấy một trang web            | `openclaw infer web fetch --url https://example.com --json`                                   |                                                       |
+| Tải trang web                | `openclaw infer web fetch --url https://example.com --json`                                   |                                                       |
 | Tạo embedding                | `openclaw infer embedding create --text "..." --json`                                         |                                                       |
 
 ## Hành vi
 
 - `openclaw infer ...` là bề mặt CLI chính cho các quy trình này.
-- Dùng `--json` khi đầu ra sẽ được tiêu thụ bởi một lệnh hoặc script khác.
+- Dùng `--json` khi đầu ra sẽ được một lệnh hoặc script khác tiêu thụ.
 - Dùng `--provider` hoặc `--model provider/model` khi cần một backend cụ thể.
 - Với `image describe`, `audio transcribe` và `video describe`, `--model` phải dùng dạng `<provider/model>`.
-- Với `image describe`, một `--model` tường minh sẽ chạy trực tiếp nhà cung cấp/mô hình đó. Mô hình phải có khả năng xử lý hình ảnh trong danh mục mô hình hoặc cấu hình nhà cung cấp. `codex/<model>` chạy một lượt hiểu hình ảnh có giới hạn của máy chủ ứng dụng Codex; `openai-codex/<model>` dùng đường dẫn nhà cung cấp OAuth OpenAI Codex.
-- Các lệnh thực thi không trạng thái mặc định là cục bộ.
+- Với `image describe`, một `--model` tường minh sẽ chạy trực tiếp nhà cung cấp/mô hình đó. Mô hình phải hỗ trợ hình ảnh trong danh mục mô hình hoặc cấu hình nhà cung cấp. `codex/<model>` chạy một lượt hiểu hình ảnh qua app-server Codex có giới hạn; `openai-codex/<model>` dùng đường dẫn nhà cung cấp OAuth OpenAI Codex.
+- Các lệnh thực thi phi trạng thái mặc định là cục bộ.
 - Các lệnh trạng thái do Gateway quản lý mặc định là Gateway.
 - Đường dẫn cục bộ thông thường không yêu cầu Gateway đang chạy.
-- `model run` cục bộ là một completion nhà cung cấp một lần, gọn nhẹ. Nó phân giải mô hình agent và xác thực đã cấu hình, nhưng không bắt đầu lượt chat-agent, tải công cụ hoặc mở máy chủ MCP đi kèm.
+- `model run` cục bộ là một lượt hoàn thành nhà cung cấp one-shot gọn nhẹ. Nó phân giải mô hình và xác thực của tác tử đã cấu hình, nhưng không khởi động lượt chat-agent, tải công cụ, hoặc mở máy chủ MCP đi kèm.
 - `model run --file` chấp nhận tệp hình ảnh, phát hiện loại MIME của chúng và gửi chúng cùng prompt đã cung cấp tới mô hình đã chọn. Lặp lại `--file` cho nhiều hình ảnh.
 - `model run --file` từ chối đầu vào không phải hình ảnh. Dùng `infer audio transcribe` cho tệp âm thanh và `infer video describe` cho tệp video.
-- `model run --gateway` thực thi định tuyến Gateway, xác thực đã lưu, lựa chọn nhà cung cấp và runtime nhúng, nhưng vẫn chạy như một phép thăm dò mô hình thô: nó gửi prompt đã cung cấp và mọi tệp đính kèm hình ảnh mà không có transcript phiên trước đó, ngữ cảnh bootstrap/AGENTS, lắp ráp context-engine, công cụ hoặc máy chủ MCP đi kèm.
-- `model run --gateway --model <provider/model>` yêu cầu thông tin xác thực Gateway của operator đáng tin cậy vì yêu cầu này đề nghị Gateway chạy một override nhà cung cấp/mô hình dùng một lần.
+- `model run --gateway` thực thi định tuyến Gateway, xác thực đã lưu, lựa chọn nhà cung cấp và runtime nhúng, nhưng vẫn chạy như một phép thử mô hình thô: nó gửi prompt đã cung cấp và mọi tệp đính kèm hình ảnh mà không có bản ghi phiên trước đó, ngữ cảnh bootstrap/AGENTS, lắp ráp context-engine, công cụ hoặc máy chủ MCP đi kèm.
+- `model run --gateway --model <provider/model>` yêu cầu thông tin xác thực Gateway của người vận hành tin cậy vì yêu cầu đề nghị Gateway chạy một override nhà cung cấp/mô hình dùng một lần.
 
 ## Mô hình
 
-Dùng `model` cho inference văn bản được hỗ trợ bởi nhà cung cấp và kiểm tra mô hình/nhà cung cấp.
+Dùng `model` cho suy luận văn bản được hậu thuẫn bởi nhà cung cấp và kiểm tra mô hình/nhà cung cấp.
 
 ```bash
 openclaw infer model run --prompt "Reply with exactly: smoke-ok" --json
@@ -153,7 +153,7 @@ openclaw infer model providers --json
 openclaw infer model inspect --name gpt-5.5 --json
 ```
 
-Dùng ref `<provider/model>` đầy đủ để smoke-test một nhà cung cấp cụ thể mà không khởi động Gateway hoặc tải toàn bộ bề mặt công cụ agent:
+Dùng tham chiếu đầy đủ `<provider/model>` để smoke-test một nhà cung cấp cụ thể mà không khởi động Gateway hoặc tải toàn bộ bề mặt công cụ tác tử:
 
 ```bash
 openclaw infer model run --local --model anthropic/claude-sonnet-4-6 --prompt "Reply with exactly: pong" --json
@@ -168,12 +168,12 @@ openclaw infer model run --local --model ollama/qwen2.5vl:7b --prompt "Describe 
 Ghi chú:
 
 - `model run` cục bộ là smoke CLI hẹp nhất cho tình trạng nhà cung cấp/mô hình/xác thực vì nó chỉ gửi prompt đã cung cấp tới mô hình đã chọn.
-- `model run --file` cục bộ giữ đường dẫn gọn nhẹ đó và đính kèm trực tiếp nội dung hình ảnh vào một tin nhắn người dùng duy nhất. Các tệp hình ảnh phổ biến như PNG, JPEG và WebP hoạt động khi loại MIME của chúng được phát hiện là `image/*`; tệp không được hỗ trợ hoặc không nhận diện được sẽ thất bại trước khi nhà cung cấp được gọi.
-- `model run --file` là tốt nhất khi bạn muốn kiểm thử trực tiếp mô hình văn bản đa phương thức đã chọn. Dùng `infer image describe` khi bạn muốn lựa chọn nhà cung cấp hiểu hình ảnh của OpenClaw và định tuyến mô hình hình ảnh mặc định.
-- Mô hình đã chọn phải hỗ trợ đầu vào hình ảnh; các mô hình chỉ văn bản có thể từ chối yêu cầu ở lớp nhà cung cấp.
-- `model run --prompt` phải chứa văn bản không chỉ là khoảng trắng; prompt rỗng bị từ chối trước khi nhà cung cấp cục bộ hoặc Gateway được gọi.
-- `model run` cục bộ thoát khác 0 khi nhà cung cấp không trả về đầu ra văn bản, nên các nhà cung cấp cục bộ không truy cập được và completion rỗng không trông giống phép thăm dò thành công.
-- Dùng `model run --gateway` khi bạn cần kiểm thử định tuyến Gateway, thiết lập agent-runtime hoặc trạng thái nhà cung cấp do Gateway quản lý trong khi vẫn giữ đầu vào mô hình ở dạng thô. Dùng `openclaw agent` hoặc bề mặt chat khi bạn muốn ngữ cảnh agent đầy đủ, công cụ, bộ nhớ và transcript phiên.
+- `model run --file` cục bộ giữ đường dẫn gọn nhẹ đó và đính kèm nội dung hình ảnh trực tiếp vào thông điệp người dùng duy nhất. Các tệp hình ảnh phổ biến như PNG, JPEG và WebP hoạt động khi loại MIME của chúng được phát hiện là `image/*`; các tệp không được hỗ trợ hoặc không nhận diện được sẽ thất bại trước khi gọi nhà cung cấp.
+- `model run --file` phù hợp nhất khi bạn muốn kiểm thử trực tiếp mô hình văn bản đa phương thức đã chọn. Dùng `infer image describe` khi bạn muốn lựa chọn nhà cung cấp hiểu hình ảnh của OpenClaw và định tuyến mô hình hình ảnh mặc định.
+- Mô hình đã chọn phải hỗ trợ đầu vào hình ảnh; mô hình chỉ văn bản có thể từ chối yêu cầu ở lớp nhà cung cấp.
+- `model run --prompt` phải chứa văn bản không chỉ gồm khoảng trắng; prompt rỗng bị từ chối trước khi nhà cung cấp cục bộ hoặc Gateway được gọi.
+- `model run` cục bộ thoát khác 0 khi nhà cung cấp không trả về đầu ra văn bản, vì vậy nhà cung cấp cục bộ không truy cập được và lượt hoàn thành rỗng không trông giống như phép thử thành công.
+- Dùng `model run --gateway` khi bạn cần kiểm thử định tuyến Gateway, thiết lập agent-runtime hoặc trạng thái nhà cung cấp do Gateway quản lý trong khi vẫn giữ đầu vào mô hình thô. Dùng `openclaw agent` hoặc các bề mặt chat khi bạn muốn đầy đủ ngữ cảnh tác tử, công cụ, bộ nhớ và bản ghi phiên.
 - `model auth login`, `model auth logout` và `model auth status` quản lý trạng thái xác thực nhà cung cấp đã lưu.
 
 ## Hình ảnh
@@ -197,10 +197,10 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --p
 Ghi chú:
 
 - Dùng `image edit` khi bắt đầu từ các tệp đầu vào hiện có.
-- Dùng `--size`, `--aspect-ratio` hoặc `--resolution` với `image edit` cho các nhà cung cấp/mô hình hỗ trợ gợi ý hình học trên chỉnh sửa hình ảnh tham chiếu.
-- Dùng `--output-format png --background transparent` với `--model openai/gpt-image-1.5` cho đầu ra PNG OpenAI nền trong suốt; `--openai-background` vẫn có sẵn như một bí danh dành riêng cho OpenAI. Các nhà cung cấp không khai báo hỗ trợ nền sẽ báo gợi ý này là một override bị bỏ qua.
-- Dùng `image providers --json` để xác minh nhà cung cấp hình ảnh đi kèm nào có thể được phát hiện, đã cấu hình, được chọn, và mỗi nhà cung cấp phơi bày những năng lực tạo/chỉnh sửa nào.
-- Dùng `image generate --model <provider/model> --json` làm smoke CLI live hẹp nhất cho các thay đổi tạo hình ảnh. Ví dụ:
+- Dùng `--size`, `--aspect-ratio` hoặc `--resolution` với `image edit` cho các nhà cung cấp/mô hình hỗ trợ gợi ý hình học trên chỉnh sửa ảnh tham chiếu.
+- Dùng `--output-format png --background transparent` với `--model openai/gpt-image-1.5` cho đầu ra PNG nền trong suốt của OpenAI; `--openai-background` vẫn có sẵn như một bí danh dành riêng cho OpenAI. Các nhà cung cấp không khai báo hỗ trợ nền sẽ báo gợi ý đó là override bị bỏ qua.
+- Dùng `image providers --json` để xác minh các nhà cung cấp hình ảnh đi kèm nào có thể được phát hiện, đã cấu hình, được chọn và mỗi nhà cung cấp hiển thị những năng lực tạo/chỉnh sửa nào.
+- Dùng `image generate --model <provider/model> --json` làm smoke CLI trực tiếp hẹp nhất cho các thay đổi tạo hình ảnh. Ví dụ:
 
   ```bash
   openclaw infer image providers --json
@@ -212,17 +212,17 @@ Ghi chú:
   ```
 
   Phản hồi JSON báo cáo `ok`, `provider`, `model`, `attempts` và các đường dẫn
-  đầu ra đã được ghi. Khi `--output` được đặt, phần mở rộng cuối cùng có thể theo
-  loại MIME do nhà cung cấp trả về.
+  đầu ra đã ghi. Khi đặt `--output`, phần mở rộng cuối cùng có thể theo
+  kiểu MIME mà nhà cung cấp trả về.
 
-- Đối với `image describe` và `image describe-many`, dùng `--prompt` để cung cấp cho mô hình thị giác một chỉ dẫn riêng cho tác vụ như OCR, so sánh, kiểm tra giao diện người dùng hoặc tạo chú thích ngắn gọn.
-- Dùng `--timeout-ms` với các mô hình thị giác cục bộ chậm hoặc khi Ollama khởi động lạnh.
-- Đối với `image describe`, `--model` phải là một `<provider/model>` có khả năng xử lý hình ảnh.
-- Với các mô hình thị giác Ollama cục bộ, hãy tải mô hình trước và đặt `OLLAMA_API_KEY` thành bất kỳ giá trị giữ chỗ nào, ví dụ `ollama-local`. Xem [Ollama](/vi/providers/ollama#vision-and-image-description).
+- Với `image describe` và `image describe-many`, dùng `--prompt` để cung cấp cho mô hình thị giác một chỉ dẫn theo tác vụ cụ thể như OCR, so sánh, kiểm tra UI hoặc tạo chú thích ngắn gọn.
+- Dùng `--timeout-ms` với các mô hình thị giác cục bộ chậm hoặc các lần khởi động Ollama lạnh.
+- Với `image describe`, `--model` phải là một `<provider/model>` có khả năng xử lý hình ảnh.
+- Với các mô hình thị giác Ollama cục bộ, trước tiên hãy pull mô hình và đặt `OLLAMA_API_KEY` thành bất kỳ giá trị giữ chỗ nào, ví dụ `ollama-local`. Xem [Ollama](/vi/providers/ollama#vision-and-image-description).
 
 ## Âm thanh
 
-Dùng `audio` để chép lời tệp.
+Dùng `audio` để phiên âm tệp.
 
 ```bash
 openclaw infer audio transcribe --file ./memo.m4a --json
@@ -232,7 +232,7 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 Ghi chú:
 
-- `audio transcribe` dùng để chép lời tệp, không phải quản lý phiên thời gian thực.
+- `audio transcribe` dùng để phiên âm tệp, không phải quản lý phiên thời gian thực.
 - `--model` phải là `<provider/model>`.
 
 ## TTS
@@ -269,7 +269,7 @@ Ghi chú:
 
 ## Web
 
-Dùng `web` cho các quy trình tìm kiếm và tìm nạp.
+Dùng `web` cho quy trình tìm kiếm và fetch.
 
 ```bash
 openclaw infer web search --query "OpenClaw docs" --json
@@ -280,7 +280,7 @@ openclaw infer web providers --json
 
 Ghi chú:
 
-- Dùng `web providers` để kiểm tra các nhà cung cấp hiện có, đã cấu hình và được chọn.
+- Dùng `web providers` để kiểm tra các nhà cung cấp có sẵn, đã cấu hình và đã chọn.
 
 ## Embedding
 
@@ -294,7 +294,7 @@ openclaw infer embedding providers --json
 
 ## Đầu ra JSON
 
-Các lệnh infer chuẩn hóa đầu ra JSON trong một phong bì dùng chung:
+Các lệnh Infer chuẩn hóa đầu ra JSON trong một envelope dùng chung:
 
 ```json
 {
@@ -319,8 +319,8 @@ Các trường cấp cao nhất ổn định:
 - `outputs`
 - `error`
 
-Đối với các lệnh tạo phương tiện, `outputs` chứa các tệp do OpenClaw ghi. Dùng
-`path`, `mimeType`, `size` và mọi kích thước riêng của phương tiện trong mảng đó
+Với các lệnh tạo phương tiện, `outputs` chứa các tệp do OpenClaw ghi. Dùng
+`path`, `mimeType`, `size` và mọi kích thước riêng theo phương tiện trong mảng đó
 để tự động hóa thay vì phân tích stdout dành cho người đọc.
 
 ## Các lỗi thường gặp
@@ -343,7 +343,7 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 ## Ghi chú
 
-- `openclaw capability ...` là bí danh của `openclaw infer ...`.
+- `openclaw capability ...` là bí danh cho `openclaw infer ...`.
 
 ## Liên quan
 

@@ -1,223 +1,132 @@
 ---
 read_when:
-    - Bạn đang gỡ lỗi việc sửa chữa phụ thuộc lúc chạy của Plugin được đóng gói kèm
-    - Bạn đang thay đổi hành vi khởi động Plugin, doctor hoặc cài đặt của trình quản lý gói
-    - Bạn đang bảo trì các bản cài đặt OpenClaw đóng gói hoặc manifest plugin được đóng gói kèm
+    - Bạn đang gỡ lỗi quá trình cài đặt gói Plugin
+    - Bạn đang thay đổi hành vi khởi động Plugin, doctor hoặc cài đặt bằng trình quản lý gói
+    - Bạn đang bảo trì các bản cài đặt OpenClaw đóng gói hoặc các manifest Plugin đi kèm
 sidebarTitle: Dependencies
-summary: Cách OpenClaw lập kế hoạch, chuẩn bị và sửa chữa các phụ thuộc thời gian chạy của các Plugin được đóng gói kèm
-title: Phân giải phụ thuộc của Plugin
+summary: Cách OpenClaw cài đặt các gói Plugin và phân giải các phần phụ thuộc Plugin
+title: Phân giải phụ thuộc Plugin
 x-i18n:
-    generated_at: "2026-05-01T10:51:14Z"
+    generated_at: "2026-05-02T10:48:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e09245c2b7e2f1fb2a61d64f0f9dc77e7df7da58fd71608c391e3865345b7bc9
+    source_hash: c9476529ad1d44ed1b17caca628c58acfbb1d8c73393f58fa7d3d76944a71aea
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-OpenClaw không cài đặt toàn bộ cây phụ thuộc của mọi Plugin đi kèm tại thời điểm
-cài đặt gói. Trước tiên, OpenClaw suy ra một kế hoạch Plugin hiệu lực từ cấu hình
-và siêu dữ liệu Plugin, rồi chỉ dàn dựng các phụ thuộc runtime cho những Plugin
-đi kèm do OpenClaw sở hữu mà kế hoạch thực sự có thể tải.
+# Phân giải phụ thuộc của Plugin
 
-Trang này đề cập đến các phụ thuộc runtime được đóng gói cho những Plugin
-OpenClaw đi kèm. Plugin bên thứ ba và đường dẫn Plugin tùy chỉnh vẫn dùng các
-lệnh cài đặt Plugin tường minh như `openclaw plugins install` và
-`openclaw plugins update`.
+OpenClaw giữ công việc xử lý phụ thuộc của Plugin ở thời điểm cài đặt/cập nhật. Việc tải runtime
+không chạy trình quản lý gói, sửa cây phụ thuộc, hoặc thay đổi thư mục gói
+OpenClaw.
 
 ## Phân chia trách nhiệm
 
-OpenClaw sở hữu kế hoạch và chính sách:
+Các gói Plugin sở hữu đồ thị phụ thuộc của chúng:
 
-- Plugin nào đang hoạt động cho cấu hình này
-- gốc phụ thuộc nào có thể ghi hoặc chỉ đọc
-- khi nào được phép sửa chữa
-- id Plugin nào được dàn dựng cho khởi động
-- các kiểm tra cuối cùng trước khi nhập các mô-đun runtime của Plugin
+- các phụ thuộc runtime nằm trong `dependencies` hoặc
+  `optionalDependencies` của gói Plugin
+- các import SDK/core là peer hoặc các import do OpenClaw cung cấp
+- các Plugin phát triển cục bộ tự mang theo các phụ thuộc đã được cài đặt sẵn
+- các Plugin npm và git được cài đặt vào các gốc gói do OpenClaw sở hữu
 
-Trình quản lý gói sở hữu việc hội tụ phụ thuộc:
+OpenClaw chỉ sở hữu vòng đời Plugin:
 
-- phân giải đồ thị gói
-- xử lý phụ thuộc production, tùy chọn và peer
-- bố cục `node_modules`
-- tính toàn vẹn của gói
-- siêu dữ liệu khóa và cài đặt
-
-Trong thực tế, OpenClaw nên quyết định thứ gì cần tồn tại. `pnpm` hoặc `npm` nên
-làm cho hệ thống tệp khớp với quyết định đó.
-
-OpenClaw cũng sở hữu khóa điều phối theo từng gốc cài đặt. Trình quản lý gói
-bảo vệ giao dịch cài đặt riêng của chúng, nhưng chúng không tuần tự hóa việc ghi
-manifest của OpenClaw, sao chép/đổi tên vùng dàn dựng cô lập, xác thực cuối cùng
-hoặc nhập Plugin trước một Gateway, doctor hoặc tiến trình CLI khác đang chạm
-vào cùng gốc phụ thuộc runtime.
-
-## Kế hoạch Plugin hiệu lực
-
-Kế hoạch Plugin hiệu lực được suy ra từ cấu hình cộng với siêu dữ liệu Plugin đã
-phát hiện. Những đầu vào này có thể kích hoạt các phụ thuộc runtime của Plugin
-đi kèm:
-
-- `plugins.entries.<id>.enabled`
-- `plugins.allow`, `plugins.deny`, và `plugins.enabled`
-- cấu hình kênh cũ như `channels.telegram.enabled`
-- provider, model hoặc tham chiếu backend CLI đã cấu hình yêu cầu một Plugin
-- mặc định manifest đi kèm như `enabledByDefault`
-- chỉ mục Plugin đã cài đặt và siêu dữ liệu manifest đi kèm
-
-Vô hiệu hóa tường minh sẽ thắng. Một Plugin bị vô hiệu hóa, id Plugin bị từ
-chối, hệ thống Plugin bị vô hiệu hóa hoặc kênh bị vô hiệu hóa sẽ không kích hoạt
-sửa chữa phụ thuộc runtime. Chỉ riêng trạng thái xác thực đã lưu cũng không kích
-hoạt một kênh hoặc provider đi kèm.
-
-Kế hoạch Plugin là đầu vào ổn định. Phần vật chất hóa phụ thuộc được tạo là đầu
-ra của kế hoạch đó.
-
-## Luồng khởi động
-
-Khởi động Gateway phân tích cấu hình và xây dựng bảng tra cứu Plugin khởi động
-trước khi các mô-đun runtime của Plugin được tải. Sau đó, khởi động chỉ dàn dựng
-phụ thuộc runtime cho các `startupPluginIds` được kế hoạch đó chọn.
-
-Đối với các bản cài đặt đóng gói, việc dàn dựng phụ thuộc được phép trước khi
-nhập Plugin. Sau khi dàn dựng, trình tải runtime nhập các Plugin khởi động với
-sửa chữa cài đặt bị tắt; tại thời điểm đó, thiếu vật chất hóa phụ thuộc được xem
-là lỗi tải, không phải một vòng lặp sửa chữa khác.
-
-Khi dàn dựng phụ thuộc khởi động bị trì hoãn sau HTTP bind, trạng thái sẵn sàng
-của Gateway vẫn bị chặn bởi lý do `plugin-runtime-deps` cho đến khi các phụ thuộc
-Plugin khởi động đã chọn được vật chất hóa và runtime của Plugin khởi động đã
-tải.
-
-## Khi sửa chữa chạy
-
-Sửa chữa phụ thuộc runtime nên chạy khi một trong các điều sau là đúng:
-
-- kế hoạch Plugin hiệu lực thay đổi và thêm các Plugin đi kèm cần phụ thuộc
-  runtime
-- manifest phụ thuộc được tạo không còn khớp với kế hoạch hiệu lực
-- sentinel gói đã cài đặt dự kiến bị thiếu hoặc không đầy đủ
-- `openclaw doctor --fix` hoặc `openclaw plugins deps --repair` đã được yêu cầu
-
-Sửa chữa phụ thuộc runtime không nên chạy chỉ vì OpenClaw đã khởi động. Một lần
-khởi động bình thường với kế hoạch không đổi và vật chất hóa phụ thuộc hoàn
-chỉnh nên bỏ qua công việc của trình quản lý gói.
-
-Các lệnh chỉnh sửa cấu hình, bật Plugin hoặc sửa chữa phát hiện của doctor có
-thể vào chế độ kế hoạch Plugin một lần, vật chất hóa các phụ thuộc đi kèm mới
-được yêu cầu, rồi quay lại luồng lệnh bình thường. `openclaw onboard` cục bộ và
-`openclaw configure` tự động thực hiện việc này sau khi chúng ghi cấu hình thành
-công, để lần chạy Gateway tiếp theo không phát hiện thiếu các gói Plugin đi kèm
-sau khi khởi động đã bắt đầu. Onboarding/cấu hình từ xa vẫn ở chế độ chỉ đọc đối
-với phụ thuộc runtime cục bộ.
-
-## Quy tắc tải lại nóng
-
-Các đường dẫn tải lại nóng có thể thay đổi Plugin đang hoạt động phải đi lại qua
-chế độ kế hoạch Plugin trước khi tải runtime của Plugin. Việc tải lại nên so
-sánh kế hoạch Plugin hiệu lực mới với kế hoạch trước đó, dàn dựng các phụ thuộc
-còn thiếu cho những Plugin đi kèm mới hoạt động, rồi tải hoặc khởi động lại
-runtime bị ảnh hưởng.
-
-Nếu tải lại cấu hình không thay đổi kế hoạch Plugin hiệu lực, nó không nên sửa
-chữa các phụ thuộc runtime đi kèm.
-
-## Thực thi trình quản lý gói
-
-OpenClaw ghi manifest cài đặt được tạo cho các phụ thuộc runtime đi kèm đã chọn
-và chạy trình quản lý gói trong gốc cài đặt phụ thuộc runtime. OpenClaw ưu tiên
-`pnpm` khi có sẵn và dự phòng về trình chạy `npm` đi kèm Node.
-
-Đường dẫn `pnpm` dùng phụ thuộc production, tắt script vòng đời, bỏ qua
-workspace và giữ store bên trong gốc cài đặt:
-
-```bash
-pnpm install \
-  --prod \
-  --ignore-scripts \
-  --ignore-workspace \
-  --config.frozen-lockfile=false \
-  --config.minimum-release-age=0 \
-  --config.store-dir=<install-root>/.openclaw-pnpm-store \
-  --config.node-linker=hoisted \
-  --config.virtual-store-dir=.pnpm
-```
-
-Dự phòng `npm` dùng wrapper cài đặt npm an toàn với phụ thuộc production, script
-vòng đời bị tắt, chế độ workspace bị tắt, audit bị tắt, đầu ra fund bị tắt, hành
-vi phụ thuộc peer cũ và đầu ra package-lock được bật cho gốc cài đặt được tạo.
-
-Sau khi cài đặt, OpenClaw xác thực cây phụ thuộc đã dàn dựng trước khi làm cho nó
-hiển thị với gốc phụ thuộc runtime. Vùng dàn dựng cô lập được sao chép vào gốc
-phụ thuộc runtime và được xác thực lại.
-
-Toàn bộ phần sửa chữa/vật chất hóa được bảo vệ bằng một khóa gốc cài đặt. Chủ sở
-hữu khóa hiện tại ghi lại PID, thời điểm bắt đầu tiến trình khi có sẵn và thời
-điểm tạo. Các khóa cũ không có bằng chứng thời điểm bắt đầu tiến trình hoặc thời
-điểm tạo chỉ được thu hồi theo tuổi hệ thống tệp, để khóa PID 1 của Docker được
-tái sử dụng có thể phục hồi mà không làm hết hạn các bản cài đặt hiện tại chạy
-lâu bình thường chỉ dựa trên tuổi.
+- phát hiện nguồn Plugin
+- cài đặt hoặc cập nhật gói khi được yêu cầu rõ ràng
+- ghi lại siêu dữ liệu cài đặt
+- tải entrypoint của Plugin
+- thất bại với lỗi có thể hành động khi thiếu phụ thuộc
 
 ## Gốc cài đặt
 
-Các bản cài đặt đóng gói không được thay đổi thư mục gói chỉ đọc. OpenClaw có
-thể đọc gốc phụ thuộc từ các lớp đã đóng gói, nhưng ghi phụ thuộc runtime được
-tạo vào một vùng dàn dựng có thể ghi như:
+OpenClaw sử dụng các gốc ổn định theo từng nguồn:
 
-- `OPENCLAW_PLUGIN_STAGE_DIR`
-- `$STATE_DIRECTORY`
-- `~/.openclaw/plugin-runtime-deps`
-- `/var/lib/openclaw/plugin-runtime-deps` trong các bản cài đặt kiểu container
+- các gói npm cài đặt dưới `~/.openclaw/npm`
+- các gói git clone dưới `~/.openclaw/git`
+- các cài đặt cục bộ/đường dẫn/kho lưu trữ được sao chép hoặc tham chiếu mà không sửa phụ thuộc
 
-Gốc có thể ghi là đích vật chất hóa cuối cùng. Các gốc chỉ đọc cũ hơn chỉ được
-giữ làm lớp tương thích khi cần.
-
-Khi một bản cập nhật OpenClaw đóng gói thay đổi gốc có thể ghi được gắn phiên
-bản nhưng kế hoạch phụ thuộc Plugin đi kèm đã chọn vẫn được đáp ứng bởi một gốc
-đã dàn dựng trước đó, sửa chữa tái sử dụng cây `node_modules` trước đó thay vì
-chạy lại trình quản lý gói. Gốc phiên bản mới vẫn có bản sao runtime gói hiện
-tại riêng, nên mã Plugin đến từ gói OpenClaw hiện tại trong khi các cây phụ
-thuộc không đổi được chia sẻ qua các bản cập nhật. Việc tái sử dụng bỏ qua các
-gốc trước đó có khóa phụ thuộc runtime OpenClaw đang hoạt động, nên gốc mới
-không liên kết đến một cây phụ thuộc mà một tiến trình Gateway, doctor hoặc CLI
-khác hiện đang sửa chữa.
-
-## Lệnh doctor và CLI
-
-Dùng `plugins deps` để kiểm tra hoặc sửa chữa việc vật chất hóa phụ thuộc runtime
-của Plugin đi kèm:
+Các cài đặt npm chạy trong gốc npm với:
 
 ```bash
-openclaw plugins deps
-openclaw plugins deps --json
-openclaw plugins deps --repair
-openclaw plugins deps --prune
+npm install --prefix ~/.openclaw/npm <spec> --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-Dùng doctor khi trạng thái phụ thuộc là một phần của sức khỏe cài đặt rộng hơn:
+npm có thể hoist các phụ thuộc bắc cầu vào `~/.openclaw/npm/node_modules` bên cạnh
+gói Plugin. OpenClaw quét gốc npm được quản lý trước khi tin cậy bản
+cài đặt và dùng npm để xóa các gói do npm quản lý trong quá trình gỡ cài đặt, nên các phụ thuộc
+runtime đã hoist vẫn nằm trong ranh giới dọn dẹp được quản lý.
+
+Các cài đặt git clone hoặc làm mới repository, rồi chạy:
 
 ```bash
-openclaw doctor
+npm install --omit=dev --ignore-scripts --no-audit --no-fund
+```
+
+Plugin đã cài đặt sau đó tải từ thư mục gói đó, nên quá trình phân giải `node_modules`
+cục bộ trong gói và cha hoạt động giống như với một gói
+Node thông thường.
+
+## Plugin cục bộ
+
+Plugin cục bộ được xem là các thư mục do nhà phát triển kiểm soát. OpenClaw không
+chạy `npm install`, `pnpm install`, hoặc sửa chữa dependency cho chúng. Nếu một
+Plugin cục bộ có dependency, hãy cài đặt chúng trong Plugin đó trước khi tải Plugin.
+
+Plugin cục bộ TypeScript của bên thứ ba có thể dùng đường dẫn Jiti khẩn cấp. Plugin
+JavaScript đã đóng gói và Plugin nội bộ đi kèm được tải qua
+import/require gốc thay vì Jiti.
+
+## Khởi động và tải lại
+
+Quá trình khởi động Gateway và tải lại cấu hình không bao giờ cài đặt dependency của Plugin. Chúng đọc
+các bản ghi cài đặt Plugin, tính toán entrypoint, rồi tải Plugin.
+
+Nếu thiếu dependency khi chạy, Plugin sẽ không tải được và lỗi
+nên chỉ người vận hành đến một cách sửa rõ ràng:
+
+```bash
+openclaw plugins update <id>
+openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`plugins deps` và doctor hoạt động trên các phụ thuộc runtime của Plugin đi kèm
-do OpenClaw sở hữu được kế hoạch Plugin hiệu lực chọn. Chúng không phải là lệnh
-cài đặt hoặc cập nhật Plugin bên thứ ba.
+`doctor --fix` có thể dọn dẹp trạng thái dependency cũ do OpenClaw tạo và cài đặt
+các Plugin có thể tải xuống đã được cấu hình nhưng còn thiếu trong bản ghi cài đặt cục bộ.
+Lệnh này không sửa chữa dependency cho một Plugin cục bộ đã được cài đặt.
 
-## Khắc phục sự cố
+## Plugin đi kèm
 
-Nếu một bản cài đặt đóng gói báo thiếu phụ thuộc runtime đi kèm:
+Các Plugin đi kèm nhẹ và quan trọng với lõi được phát hành như một phần của OpenClaw.
+Chúng nên không có cây dependency runtime nặng, hoặc nên được chuyển ra thành một
+gói có thể tải xuống trên ClawHub/npm.
 
-1. Chạy `openclaw plugins deps --json` để kiểm tra kế hoạch đã chọn và các gói
-   còn thiếu.
-2. Chạy `openclaw plugins deps --repair` hoặc `openclaw doctor --fix` để sửa
-   chữa vùng dàn dựng phụ thuộc có thể ghi.
-3. Nếu gốc cài đặt là chỉ đọc, đặt `OPENCLAW_PLUGIN_STAGE_DIR` thành một đường
-   dẫn có thể ghi và chạy lại sửa chữa.
-4. Khởi động lại Gateway sau khi sửa chữa nếu phụ thuộc còn thiếu đã chặn việc
-   tải Plugin khởi động.
+Để xem danh sách được tạo hiện tại về các Plugin được phát hành trong gói lõi, cài đặt
+bên ngoài, hoặc chỉ ở dạng mã nguồn, hãy xem [Danh mục Plugin](/vi/plugins/plugin-inventory).
 
-Trong các checkout nguồn, bản cài đặt workspace thường cung cấp các phụ thuộc
-Plugin đi kèm. Chạy `pnpm install` để sửa chữa phụ thuộc nguồn thay vì dùng sửa
-chữa phụ thuộc runtime đóng gói làm bước đầu tiên.
+Manifest của Plugin đi kèm không được yêu cầu staging dependency. Chức năng Plugin lớn hoặc tùy chọn
+nên được đóng gói như một Plugin thông thường và cài đặt qua
+cùng đường dẫn npm/git/ClawHub như Plugin của bên thứ ba.
+
+Trong source checkout, OpenClaw xem repository là một pnpm monorepo. Sau
+`pnpm install`, Plugin đi kèm tải từ `extensions/<id>` để dependency workspace
+cục bộ theo gói có sẵn và các chỉnh sửa được nhận trực tiếp. Phát triển bằng source
+checkout chỉ hỗ trợ pnpm; `npm install` thuần ở thư mục gốc repository
+không phải là cách được hỗ trợ để chuẩn bị dependency cho Plugin đi kèm.
+
+| Hình thức cài đặt                | Vị trí Plugin đi kèm                 | Chủ sở hữu dependency                                                |
+| -------------------------------- | ------------------------------------ | -------------------------------------------------------------------- |
+| `npm install -g openclaw`        | Cây runtime đã build bên trong gói   | Gói OpenClaw và các luồng cài đặt/cập nhật/doctor Plugin rõ ràng     |
+| Git checkout cộng `pnpm install` | Các gói workspace `extensions/<id>`  | pnpm workspace, bao gồm dependency riêng của từng gói Plugin         |
+| `openclaw plugins install ...`   | Gốc Plugin npm/git/ClawHub được quản lý | Luồng cài đặt/cập nhật Plugin                                     |
+
+## Dọn dẹp legacy
+
+Các phiên bản OpenClaw cũ hơn đã tạo gốc dependency cho Plugin đi kèm khi khởi động hoặc
+trong quá trình sửa chữa bằng doctor. Tác vụ dọn dẹp doctor hiện tại xóa các thư mục và
+symlink cũ đó khi dùng `--fix`, bao gồm các gốc `plugin-runtime-deps` cũ,
+manifest `.openclaw-runtime-deps*`, `node_modules` Plugin đã tạo, thư mục
+install stage, và các pnpm store cục bộ theo gói.
+
+Các đường dẫn này chỉ là phần sót lại legacy. Cài đặt mới không nên tạo chúng.

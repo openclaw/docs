@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Bạn cần nhật ký gỡ lỗi có mục tiêu mà không nâng mức ghi nhật ký toàn cục
-    - Bạn cần thu thập nhật ký dành riêng cho từng hệ thống con để hỗ trợ
+    - Bạn cần nhật ký gỡ lỗi có mục tiêu mà không cần tăng mức ghi nhật ký toàn cục
+    - Bạn cần thu thập nhật ký theo từng hệ thống con để được hỗ trợ
 summary: Cờ chẩn đoán cho nhật ký gỡ lỗi có mục tiêu
 title: Cờ chẩn đoán
 x-i18n:
-    generated_at: "2026-04-29T22:41:04Z"
+    generated_at: "2026-05-02T10:40:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
+    source_hash: 1d0ff92d45cf1c5a12a7103ba5b97d656a55a13a7a4f2e86e26ba3a9cfae7687
     source_path: diagnostics/flags.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ Cờ chẩn đoán cho phép bạn bật nhật ký gỡ lỗi có mục tiêu m
 ## Cách hoạt động
 
 - Cờ là chuỗi (không phân biệt chữ hoa chữ thường).
-- Bạn có thể bật cờ trong cấu hình hoặc thông qua một ghi đè bằng biến môi trường.
+- Bạn có thể bật cờ trong cấu hình hoặc qua ghi đè bằng biến môi trường.
 - Hỗ trợ ký tự đại diện:
   - `telegram.*` khớp với `telegram.http`
   - `*` bật tất cả cờ
@@ -38,7 +38,7 @@ Nhiều cờ:
 ```json
 {
   "diagnostics": {
-    "flags": ["telegram.http", "gateway.*"]
+    "flags": ["telegram.http", "brave.http", "gateway.*"]
   }
 }
 ```
@@ -59,7 +59,7 @@ OPENCLAW_DIAGNOSTICS=0
 
 ## Tạo tác dòng thời gian
 
-Cờ `timeline` ghi các sự kiện thời gian có cấu trúc khi khởi động và khi chạy cho
+Cờ `timeline` ghi các sự kiện thời gian khởi động và thời gian chạy có cấu trúc cho
 các bộ kiểm thử QA bên ngoài:
 
 ```bash
@@ -85,24 +85,23 @@ chưa đọc cấu hình; các khoảng thời gian khởi động tiếp theo s
 
 `OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all`, và
 `OPENCLAW_DIAGNOSTICS=*` cũng bật dòng thời gian vì chúng bật mọi
-cờ chẩn đoán. Ưu tiên `timeline` khi bạn chỉ muốn tạo tác thời gian
-JSONL.
+cờ chẩn đoán. Nên dùng `timeline` khi bạn chỉ muốn tạo tác thời gian JSONL.
 
-Bản ghi dòng thời gian sử dụng phong bì `openclaw.diagnostics.v1`. Sự kiện có thể bao gồm
+Bản ghi dòng thời gian sử dụng bao bọc `openclaw.diagnostics.v1`. Sự kiện có thể bao gồm
 id tiến trình, tên giai đoạn, tên khoảng thời gian, thời lượng, id Plugin, số lượng phụ thuộc,
-mẫu độ trễ vòng lặp sự kiện, tên thao tác nhà cung cấp, trạng thái thoát tiến trình con,
-và tên/thông báo lỗi khởi động. Hãy xem tệp dòng thời gian là các
-tạo tác chẩn đoán cục bộ; xem lại chúng trước khi chia sẻ ra ngoài máy của bạn.
+mẫu độ trễ vòng lặp sự kiện, tên thao tác nhà cung cấp, trạng thái thoát của tiến trình con,
+và tên/thông báo lỗi khởi động. Hãy xem các tệp dòng thời gian là
+tạo tác chẩn đoán cục bộ; kiểm tra chúng trước khi chia sẻ ra ngoài máy của bạn.
 
 ## Nhật ký được ghi ở đâu
 
-Cờ phát nhật ký vào tệp nhật ký chẩn đoán chuẩn. Theo mặc định:
+Các cờ phát nhật ký vào tệp nhật ký chẩn đoán chuẩn. Theo mặc định:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Nếu bạn đặt `logging.file`, hãy dùng đường dẫn đó thay thế. Nhật ký là JSONL (mỗi dòng một đối tượng JSON). Việc biên tập vẫn áp dụng dựa trên `logging.redactSensitive`.
+Nếu bạn đặt `logging.file`, hãy dùng đường dẫn đó thay thế. Nhật ký là JSONL (một đối tượng JSON trên mỗi dòng). Việc biên tập vẫn áp dụng dựa trên `logging.redactSensitive`.
 
 ## Trích xuất nhật ký
 
@@ -118,19 +117,26 @@ Lọc chẩn đoán HTTP của Telegram:
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
+Lọc chẩn đoán HTTP của Brave Search:
+
+```bash
+rg "brave http" /tmp/openclaw/openclaw-*.log
+```
+
 Hoặc theo dõi trong khi tái hiện:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
 ```
 
-Đối với Gateway từ xa, bạn cũng có thể dùng `openclaw logs --follow` (xem [/cli/logs](/vi/cli/logs)).
+Với các Gateway từ xa, bạn cũng có thể dùng `openclaw logs --follow` (xem [/cli/logs](/vi/cli/logs)).
 
 ## Ghi chú
 
-- Nếu `logging.level` được đặt cao hơn `warn`, các nhật ký này có thể bị chặn. Mặc định `info` là ổn.
-- Có thể để cờ bật một cách an toàn; chúng chỉ ảnh hưởng đến dung lượng nhật ký của hệ thống con cụ thể.
-- Dùng [/logging](/vi/logging) để thay đổi đích, cấp độ và biên tập nhật ký.
+- Nếu `logging.level` được đặt cao hơn `warn`, các nhật ký này có thể bị chặn. Giá trị mặc định `info` là phù hợp.
+- `brave.http` ghi nhật ký URL/tham số truy vấn yêu cầu Brave Search, trạng thái/thời gian phản hồi, và sự kiện cache hit/miss/write. Nó không ghi nhật ký khóa API hoặc nội dung phản hồi, nhưng truy vấn tìm kiếm có thể nhạy cảm.
+- Có thể để các cờ bật an toàn; chúng chỉ ảnh hưởng đến dung lượng nhật ký cho hệ thống con cụ thể.
+- Dùng [/logging](/vi/logging) để thay đổi đích nhật ký, cấp độ và biên tập.
 
 ## Liên quan
 

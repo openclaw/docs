@@ -1,39 +1,50 @@
 ---
 read_when:
     - Thay đổi định tuyến kênh hoặc hành vi hộp thư đến
-summary: Quy tắc định tuyến theo từng kênh (WhatsApp, Telegram, Discord, Slack) và ngữ cảnh chung
+summary: Quy tắc định tuyến theo từng kênh (WhatsApp, Telegram, Discord, Slack) và ngữ cảnh dùng chung
 title: Định tuyến kênh
 x-i18n:
-    generated_at: "2026-04-29T22:24:35Z"
+    generated_at: "2026-05-02T10:33:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c43347048fcfd137cc3a0b2cfdc4cf36426fdcf9645f2d1a05ce9cf49688cf0d
+    source_hash: 9a752696e70d2c13d3ab1c9cedd41442e0d8aee6d78b3a069b53dd2b262174da
     source_path: channels/channel-routing.md
     workflow: 16
 ---
 
-# Kênh và định tuyến
+# Kênh & định tuyến
 
-OpenClaw định tuyến câu trả lời **trở lại kênh nơi tin nhắn bắt nguồn**. Mô hình không chọn kênh; việc định tuyến có tính xác định và được kiểm soát bởi cấu hình máy chủ.
+OpenClaw định tuyến phản hồi **trở lại kênh nơi tin nhắn đến**. Mô hình
+không chọn kênh; việc định tuyến là xác định và được kiểm soát bởi cấu hình
+host.
 
 ## Thuật ngữ chính
 
-- **Kênh**: `telegram`, `whatsapp`, `discord`, `irc`, `googlechat`, `slack`, `signal`, `imessage`, `line`, cùng các kênh Plugin. `webchat` là kênh giao diện WebChat nội bộ và không phải là kênh gửi đi có thể cấu hình.
+- **Kênh**: `telegram`, `whatsapp`, `discord`, `irc`, `googlechat`, `slack`, `signal`, `imessage`, `line`, cùng các kênh Plugin. `webchat` là kênh WebChat UI nội bộ và không phải là kênh gửi đi có thể cấu hình.
 - **AccountId**: phiên bản tài khoản theo từng kênh (khi được hỗ trợ).
-- Tài khoản mặc định tùy chọn của kênh: `channels.<channel>.defaultAccount` chọn tài khoản được dùng khi một đường dẫn gửi đi không chỉ định `accountId`.
-  - Trong thiết lập nhiều tài khoản, hãy đặt mặc định tường minh (`defaultAccount` hoặc `accounts.default`) khi cấu hình từ hai tài khoản trở lên. Nếu không, định tuyến dự phòng có thể chọn ID tài khoản đã chuẩn hóa đầu tiên.
-- **AgentId**: một workspace + kho phiên tách biệt (“bộ não”).
-- **SessionKey**: khóa nhóm được dùng để lưu ngữ cảnh và kiểm soát đồng thời.
+- Tài khoản mặc định tùy chọn của kênh: `channels.<channel>.defaultAccount` chọn
+  tài khoản nào được dùng khi đường dẫn gửi đi không chỉ định `accountId`.
+  - Trong các thiết lập nhiều tài khoản, hãy đặt một mặc định rõ ràng (`defaultAccount` hoặc `accounts.default`) khi hai hoặc nhiều tài khoản được cấu hình. Nếu không, định tuyến dự phòng có thể chọn ID tài khoản đã chuẩn hóa đầu tiên.
+- **AgentId**: một workspace + kho phiên biệt lập (“brain”).
+- **SessionKey**: khóa bucket dùng để lưu ngữ cảnh và kiểm soát đồng thời.
+
+## Tiền tố đích gửi đi
+
+Các đích gửi đi rõ ràng có thể bao gồm tiền tố nhà cung cấp, chẳng hạn như `telegram:123` hoặc `tg:123`. Core chỉ xem tiền tố đó là gợi ý chọn kênh khi kênh đã chọn là `last` hoặc chưa được phân giải theo cách khác, và chỉ khi Plugin đã tải quảng bá tiền tố đó. Nếu bên gọi đã chọn một kênh rõ ràng, tiền tố nhà cung cấp phải khớp với kênh đó; các tổ hợp chéo kênh như gửi WhatsApp đến `telegram:123` sẽ thất bại trước bước chuẩn hóa đích riêng của Plugin.
+
+Các tiền tố loại đích và dịch vụ như `channel:<id>`, `user:<id>`, `room:<id>`, `thread:<id>`, `imessage:<handle>`, và `sms:<number>` vẫn nằm trong ngữ pháp của kênh đã chọn. Tự chúng không chọn nhà cung cấp.
 
 ## Dạng khóa phiên (ví dụ)
 
-Theo mặc định, tin nhắn trực tiếp được gộp vào phiên **main** của agent:
+Tin nhắn trực tiếp mặc định được gộp vào phiên **main** của agent:
 
 - `agent:<agentId>:<mainKey>` (mặc định: `agent:main:main`)
 
-Ngay cả khi lịch sử hội thoại tin nhắn trực tiếp được chia sẻ với main, chính sách sandbox và công cụ vẫn dùng khóa runtime trò chuyện trực tiếp theo từng tài khoản được dẫn xuất cho DM bên ngoài, để các tin nhắn bắt nguồn từ kênh không bị xử lý như các lượt chạy phiên main cục bộ.
+Ngay cả khi lịch sử trò chuyện tin nhắn trực tiếp được chia sẻ với main, chính sách sandbox và
+công cụ dùng một khóa runtime trò chuyện trực tiếp dẫn xuất theo từng tài khoản cho DM bên ngoài
+để các tin nhắn phát sinh từ kênh không bị xử lý như các lần chạy phiên main cục bộ.
 
-Nhóm và kênh vẫn được cô lập theo từng kênh:
+Nhóm và kênh vẫn được biệt lập theo từng kênh:
 
 - Nhóm: `agent:<agentId>:<channel>:group:<id>`
 - Kênh/phòng: `agent:<agentId>:<channel>:channel:<id>`
@@ -50,17 +61,23 @@ Ví dụ:
 
 ## Ghim tuyến DM main
 
-Khi `session.dmScope` là `main`, tin nhắn trực tiếp có thể chia sẻ một phiên main. Để ngăn `lastRoute` của phiên bị DM không phải chủ sở hữu ghi đè, OpenClaw suy ra một chủ sở hữu được ghim từ `allowFrom` khi tất cả điều kiện sau đúng:
+Khi `session.dmScope` là `main`, tin nhắn trực tiếp có thể chia sẻ một phiên main.
+Để ngăn `lastRoute` của phiên bị ghi đè bởi các DM không phải chủ sở hữu,
+OpenClaw suy luận một chủ sở hữu đã ghim từ `allowFrom` khi tất cả điều kiện sau đúng:
 
 - `allowFrom` có đúng một mục không phải ký tự đại diện.
-- Mục đó có thể được chuẩn hóa thành ID người gửi cụ thể cho kênh đó.
-- Người gửi DM đến không khớp với chủ sở hữu được ghim đó.
+- Mục đó có thể được chuẩn hóa thành một ID người gửi cụ thể cho kênh đó.
+- Người gửi DM đến không khớp với chủ sở hữu đã ghim đó.
 
-Trong trường hợp không khớp đó, OpenClaw vẫn ghi lại siêu dữ liệu phiên đến, nhưng bỏ qua việc cập nhật `lastRoute` của phiên main.
+Trong trường hợp không khớp đó, OpenClaw vẫn ghi metadata phiên đến, nhưng
+bỏ qua việc cập nhật `lastRoute` của phiên main.
 
-## Ghi nhận đầu vào có bảo vệ
+## Ghi nhận đầu vào được bảo vệ
 
-Plugin kênh có thể đánh dấu một bản ghi phiên đến là `createIfMissing: false` khi một đường dẫn có bảo vệ không được tạo phiên OpenClaw mới. Ở chế độ đó, OpenClaw có thể cập nhật siêu dữ liệu và `lastRoute` cho phiên hiện có, nhưng không tạo mục phiên chỉ có tuyến chỉ vì đã quan sát thấy một tin nhắn.
+Plugin kênh có thể đánh dấu một bản ghi phiên đến là `createIfMissing: false`
+khi một đường dẫn được bảo vệ không được tạo phiên OpenClaw mới. Trong chế độ đó,
+OpenClaw có thể cập nhật metadata và `lastRoute` cho một phiên hiện có, nhưng
+không tạo mục phiên chỉ có tuyến chỉ vì đã quan sát thấy một tin nhắn.
 
 ## Quy tắc định tuyến (cách chọn agent)
 
@@ -70,18 +87,18 @@ Plugin kênh có thể đánh dấu một bản ghi phiên đến là `createIfM
 2. **Khớp peer cha** (kế thừa luồng).
 3. **Khớp guild + vai trò** (Discord) qua `guildId` + `roles`.
 4. **Khớp guild** (Discord) qua `guildId`.
-5. **Khớp nhóm** (Slack) qua `teamId`.
+5. **Khớp team** (Slack) qua `teamId`.
 6. **Khớp tài khoản** (`accountId` trên kênh).
 7. **Khớp kênh** (bất kỳ tài khoản nào trên kênh đó, `accountId: "*"`).
-8. **Agent mặc định** (`agents.list[].default`, nếu không thì mục đầu tiên trong danh sách, dự phòng về `main`).
+8. **Agent mặc định** (`agents.list[].default`, nếu không thì mục danh sách đầu tiên, dự phòng về `main`).
 
-Khi một binding bao gồm nhiều trường khớp (`peer`, `guildId`, `teamId`, `roles`), **tất cả các trường được cung cấp phải khớp** để binding đó được áp dụng.
+Khi một binding bao gồm nhiều trường khớp (`peer`, `guildId`, `teamId`, `roles`), **tất cả các trường đã cung cấp phải khớp** để binding đó được áp dụng.
 
-Agent khớp sẽ xác định workspace và kho phiên được sử dụng.
+Agent được khớp xác định workspace và kho phiên nào được dùng.
 
-## Nhóm phát rộng (chạy nhiều agent)
+## Nhóm broadcast (chạy nhiều agent)
 
-Nhóm phát rộng cho phép bạn chạy **nhiều agent** cho cùng một peer **khi OpenClaw thường sẽ trả lời** (ví dụ: trong nhóm WhatsApp, sau cổng nhắc đến/kích hoạt).
+Nhóm broadcast cho phép bạn chạy **nhiều agent** cho cùng một peer **khi OpenClaw bình thường sẽ phản hồi** (ví dụ: trong nhóm WhatsApp, sau bước cổng đề cập/kích hoạt).
 
 Cấu hình:
 
@@ -95,11 +112,11 @@ Cấu hình:
 }
 ```
 
-Xem: [Nhóm phát rộng](/vi/channels/broadcast-groups).
+Xem: [Nhóm broadcast](/vi/channels/broadcast-groups).
 
 ## Tổng quan cấu hình
 
-- `agents.list`: định nghĩa agent được đặt tên (workspace, mô hình, v.v.).
+- `agents.list`: định nghĩa agent có tên (workspace, mô hình, v.v.).
 - `bindings`: ánh xạ các kênh/tài khoản/peer đến vào agent.
 
 Ví dụ:
@@ -118,22 +135,26 @@ Ví dụ:
 
 ## Lưu trữ phiên
 
-Kho phiên nằm trong thư mục trạng thái (mặc định `~/.openclaw`):
+Kho phiên nằm dưới thư mục trạng thái (mặc định `~/.openclaw`):
 
 - `~/.openclaw/agents/<agentId>/sessions/sessions.json`
 - Transcript JSONL nằm cạnh kho
 
-Bạn có thể ghi đè đường dẫn kho qua `session.store` và mẫu `{agentId}`.
+Bạn có thể ghi đè đường dẫn kho qua `session.store` và tạo mẫu `{agentId}`.
 
-Việc khám phá phiên của Gateway và ACP cũng quét các kho agent dựa trên đĩa dưới gốc `agents/` mặc định và dưới các gốc `session.store` theo mẫu. Các kho được khám phá phải nằm bên trong gốc agent đã phân giải đó và dùng tệp `sessions.json` thông thường. Symlink và đường dẫn ngoài gốc bị bỏ qua.
+Khám phá phiên Gateway và ACP cũng quét các kho agent được lưu trên đĩa dưới
+gốc `agents/` mặc định và dưới các gốc `session.store` đã tạo mẫu. Các kho được
+phát hiện phải nằm bên trong gốc agent đã phân giải đó và dùng tệp
+`sessions.json` thông thường. Symlink và đường dẫn ngoài gốc bị bỏ qua.
 
 ## Hành vi WebChat
 
-WebChat gắn với **agent đã chọn** và mặc định dùng phiên main của agent. Vì vậy, WebChat cho phép bạn xem ngữ cảnh xuyên kênh cho agent đó ở một nơi.
+WebChat gắn vào **agent đã chọn** và mặc định dùng phiên main của agent.
+Vì vậy, WebChat cho phép bạn xem ngữ cảnh chéo kênh cho agent đó ở một nơi.
 
-## Ngữ cảnh trả lời
+## Ngữ cảnh phản hồi
 
-Câu trả lời đến bao gồm:
+Phản hồi đến bao gồm:
 
 - `ReplyToId`, `ReplyToBody`, và `ReplyToSender` khi có sẵn.
 - Ngữ cảnh được trích dẫn được thêm vào `Body` dưới dạng khối `[Replying to ...]`.
@@ -143,5 +164,5 @@ Câu trả lời đến bao gồm:
 ## Liên quan
 
 - [Nhóm](/vi/channels/groups)
-- [Nhóm phát rộng](/vi/channels/broadcast-groups)
+- [Nhóm broadcast](/vi/channels/broadcast-groups)
 - [Ghép nối](/vi/channels/pairing)
