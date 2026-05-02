@@ -1,14 +1,14 @@
 ---
 read_when:
     - Stai distribuendo OpenClaw su una VM cloud con Docker
-    - Serve il flusso condiviso per la preparazione del binario, la persistenza e l'aggiornamento
+    - Ti servono la preparazione del binario condiviso, la persistenza e il flusso di aggiornamento
 summary: Passaggi di runtime della VM Docker condivisa per host OpenClaw Gateway di lunga durata
 title: Runtime della VM Docker
 x-i18n:
-    generated_at: "2026-04-30T08:57:44Z"
+    generated_at: "2026-05-02T08:26:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
+    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ Passaggi di runtime condivisi per installazioni Docker basate su VM, come GCP, H
 ## Integra i binari richiesti nell'immagine
 
 Installare binari all'interno di un container in esecuzione è una trappola.
-Qualsiasi cosa installata a runtime verrà persa al riavvio.
+Qualsiasi cosa installata a runtime andrà persa al riavvio.
 
 Tutti i binari esterni richiesti dalle Skills devono essere installati al momento della build dell'immagine.
 
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-Gli URL sopra sono esempi. Per VM basate su ARM, scegli gli asset `arm64`. Per build riproducibili, usa URL di release versionate fissati.
+Gli URL sopra sono esempi. Per VM basate su ARM, scegli gli asset `arm64`. Per build riproducibili, usa URL di release con versione esplicita.
 </Note>
 
 ## Build e avvio
@@ -127,21 +127,21 @@ Output previsto:
 ## Cosa persiste e dove
 
 OpenClaw viene eseguito in Docker, ma Docker non è la fonte di verità.
-Tutto lo stato persistente deve sopravvivere a riavvii, rebuild e reboot.
+Tutto lo stato di lunga durata deve sopravvivere a riavvii, rebuild e riavvii della macchina.
 
-| Componente          | Posizione                                | Meccanismo di persistenza | Note                                                          |
-| ------------------- | ---------------------------------------- | ------------------------- | ------------------------------------------------------------- |
-| Configurazione Gateway | `/home/node/.openclaw/`               | Mount volume host         | Include `openclaw.json`, `.env`                               |
-| Profili auth modello | `/home/node/.openclaw/agents/`          | Mount volume host         | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chiavi API) |
-| Configurazioni Skills | `/home/node/.openclaw/skills/`         | Mount volume host         | Stato a livello di Skills                                     |
-| Workspace agente    | `/home/node/.openclaw/workspace/`        | Mount volume host         | Codice e artefatti agente                                     |
-| Sessione WhatsApp   | `/home/node/.openclaw/`                  | Mount volume host         | Conserva il login QR                                          |
-| Keyring Gmail       | `/home/node/.openclaw/`                  | Volume host + password    | Richiede `GOG_KEYRING_PASSWORD`                               |
-| Dipendenze runtime Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | Volume Docker con nome | Dipendenze Plugin in bundle generate e mirror runtime         |
-| Binari esterni      | `/usr/local/bin/`                        | Immagine Docker           | Devono essere integrati al momento della build                |
-| Runtime Node        | Filesystem del container                 | Immagine Docker           | Ricostruito a ogni build dell'immagine                        |
-| Pacchetti OS        | Filesystem del container                 | Immagine Docker           | Non installare a runtime                                      |
-| Container Docker    | Effimero                                 | Riavviabile               | Sicuro da distruggere                                         |
+| Componente          | Posizione                                              | Meccanismo di persistenza | Note                                                          |
+| ------------------- | ------------------------------------------------------ | ------------------------- | ------------------------------------------------------------- |
+| Configurazione Gateway | `/home/node/.openclaw/`                             | Mount di volume host      | Include `openclaw.json`, `.env`                               |
+| Profili di autenticazione modello | `/home/node/.openclaw/agents/`               | Mount di volume host      | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chiavi API) |
+| Configurazioni Skill | `/home/node/.openclaw/skills/`                        | Mount di volume host      | Stato a livello di Skill                                      |
+| Workspace agente    | `/home/node/.openclaw/workspace/`                      | Mount di volume host      | Codice e artefatti agente                                     |
+| Sessione WhatsApp   | `/home/node/.openclaw/`                                | Mount di volume host      | Conserva il login QR                                          |
+| Keyring Gmail       | `/home/node/.openclaw/`                                | Volume host + password    | Richiede `GOG_KEYRING_PASSWORD`                               |
+| Pacchetti Plugin    | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Mount di volume host      | Radici dei pacchetti Plugin scaricabili                       |
+| Binari esterni      | `/usr/local/bin/`                                      | Immagine Docker           | Devono essere integrati al momento della build                |
+| Runtime Node        | Filesystem del container                               | Immagine Docker           | Ricostruito a ogni build dell'immagine                        |
+| Pacchetti OS        | Filesystem del container                               | Immagine Docker           | Non installare a runtime                                      |
+| Container Docker    | Effimero                                               | Riavviabile               | Sicuro da distruggere                                         |
 
 ## Aggiornamenti
 

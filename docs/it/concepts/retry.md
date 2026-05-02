@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Aggiornamento del comportamento o dei valori predefiniti di retry del provider
-    - Debug delle chiamate provider fallite o dei limiti di frequenza
-summary: Criterio di retry per le chiamate ai provider in uscita
-title: Criterio di retry
+    - Aggiornamento del comportamento dei tentativi o dei valori predefiniti del provider
+    - Debug degli errori di invio del fornitore o dei limiti di frequenza
+summary: Criteri per i nuovi tentativi delle chiamate in uscita ai provider
+title: Politica di ripetizione
 x-i18n:
-    generated_at: "2026-04-24T08:37:42Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T08:21:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 38811a6dabb0b60b71167ee4fcc09fb042f941b4bbb1cf8b0f5a91c3c93b2e75
+    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
     source_path: concepts/retry.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Obiettivi
 
-- Retry per richiesta HTTP, non per flusso multi-step.
-- Preservare l'ordinamento ritentando solo il passaggio corrente.
+- Riprovare per ogni richiesta HTTP, non per ogni flusso a più passaggi.
+- Preservare l'ordine riprovando solo il passaggio corrente.
 - Evitare di duplicare operazioni non idempotenti.
 
 ## Valori predefiniti
 
 - Tentativi: 3
 - Limite massimo del ritardo: 30000 ms
-- Jitter: 0.1 (10 percento)
-- Valori predefiniti del provider:
+- Variabilità casuale: 0.1 (10 percento)
+- Valori predefiniti dei provider:
   - Ritardo minimo Telegram: 400 ms
   - Ritardo minimo Discord: 500 ms
 
@@ -33,29 +33,31 @@ x-i18n:
 ### Provider di modelli
 
 - OpenClaw lascia che gli SDK dei provider gestiscano i normali retry brevi.
-- Per gli SDK basati su Stainless, come Anthropic e OpenAI, le risposte ritentabili
+- Per gli SDK basati su Stainless, come Anthropic e OpenAI, le risposte retryable
   (`408`, `409`, `429` e `5xx`) possono includere `retry-after-ms` o
   `retry-after`. Quando quell'attesa è superiore a 60 secondi, OpenClaw inserisce
-  `x-should-retry: false` in modo che l'SDK esponga subito l'errore e il
-  failover del modello possa ruotare verso un altro profilo auth o un modello fallback.
-- Esegui l'override del limite con `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Impostalo su `0`, `false`, `off`, `none` o `disabled` per lasciare che gli SDK rispettino internamente
-  sleep `Retry-After` lunghi.
+  `x-should-retry: false` così l'SDK espone immediatamente l'errore e il failover
+  del modello può passare a un altro profilo di autenticazione o modello di fallback.
+- Sovrascrivi il limite con `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
+  Impostalo su `0`, `false`, `off`, `none` o `disabled` per lasciare che gli SDK rispettino internamente le lunghe
+  attese `Retry-After`.
 
 ### Discord
 
-- Esegue retry solo sugli errori di limite di frequenza (HTTP 429).
-- Usa `retry_after` di Discord quando disponibile, altrimenti exponential backoff.
+- Riprova in caso di errori di limite di frequenza (HTTP 429), timeout delle richieste, risposte HTTP 5xx
+  ed errori di trasporto transitori come errori di risoluzione DNS, reset della connessione,
+  chiusure di socket ed errori di fetch.
+- Usa `retry_after` di Discord quando disponibile, altrimenti il backoff esponenziale.
 
 ### Telegram
 
-- Esegue retry su errori transitori (429, timeout, connect/reset/closed, temporaneamente non disponibile).
-- Usa `retry_after` quando disponibile, altrimenti exponential backoff.
-- Gli errori di parsing Markdown non vengono ritentati; usano fallback al testo semplice.
+- Riprova in caso di errori transitori (429, timeout, connessione/reset/chiusura, temporaneamente non disponibile).
+- Usa `retry_after` quando disponibile, altrimenti il backoff esponenziale.
+- Gli errori di parsing Markdown non vengono ritentati; usano il testo normale come fallback.
 
 ## Configurazione
 
-Imposta il criterio di retry per provider in `~/.openclaw/openclaw.json`:
+Imposta la policy di retry per provider in `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -82,10 +84,10 @@ Imposta il criterio di retry per provider in `~/.openclaw/openclaw.json`:
 
 ## Note
 
-- I retry si applicano per richiesta (invio messaggio, caricamento media, reazione, sondaggio, sticker).
-- I flussi compositi non ritentano i passaggi già completati.
+- I retry si applicano per richiesta (invio di messaggi, caricamento di media, reazione, sondaggio, sticker).
+- I flussi compositi non riprovano i passaggi completati.
 
 ## Correlati
 
-- [Model failover](/it/concepts/model-failover)
-- [Command queue](/it/concepts/queue)
+- [Failover del modello](/it/concepts/model-failover)
+- [Coda dei comandi](/it/concepts/queue)
