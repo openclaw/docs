@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Bạn đang thực hiện thiết lập lần chạy đầu tiên mà không dùng quy trình hướng dẫn ban đầu đầy đủ của CLI
-    - Bạn muốn đặt đường dẫn không gian làm việc mặc định
-summary: Tham chiếu CLI cho `openclaw setup` (khởi tạo cấu hình + không gian làm việc)
+    - Bạn đang thực hiện thiết lập lần chạy đầu tiên mà không có đầy đủ quy trình hướng dẫn ban đầu của CLI
+    - Bạn muốn thiết lập đường dẫn không gian làm việc mặc định
+summary: Tài liệu tham chiếu CLI cho `openclaw setup` (khởi tạo cấu hình + không gian làm việc)
 title: Thiết lập
 x-i18n:
-    generated_at: "2026-04-29T22:34:24Z"
+    generated_at: "2026-05-02T20:42:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -20,7 +20,7 @@ Khởi tạo `~/.openclaw/openclaw.json` và không gian làm việc của tác 
 Liên quan:
 
 - Bắt đầu: [Bắt đầu](/vi/start/getting-started)
-- Thiết lập ban đầu qua CLI: [Thiết lập ban đầu (CLI)](/vi/start/wizard)
+- Thiết lập ban đầu CLI: [Thiết lập ban đầu (CLI)](/vi/start/wizard)
 
 ## Ví dụ
 
@@ -39,12 +39,12 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 - `--non-interactive`: chạy quy trình thiết lập ban đầu mà không có lời nhắc
 - `--mode <local|remote>`: chế độ thiết lập ban đầu
 - `--import-from <provider>`: nhà cung cấp di chuyển để chạy trong quá trình thiết lập ban đầu
-- `--import-source <path>`: thư mục gốc tác nhân nguồn cho `--import-from`
+- `--import-source <path>`: home tác nhân nguồn cho `--import-from`
 - `--import-secrets`: nhập các bí mật được hỗ trợ trong quá trình di chuyển khi thiết lập ban đầu
-- `--remote-url <url>`: URL WebSocket Gateway từ xa
+- `--remote-url <url>`: URL WebSocket của Gateway từ xa
 - `--remote-token <token>`: token Gateway từ xa
 
-Để chạy quy trình thiết lập ban đầu thông qua setup:
+Để chạy quy trình thiết lập ban đầu qua setup:
 
 ```bash
 openclaw setup --wizard
@@ -52,9 +52,10 @@ openclaw setup --wizard
 
 Ghi chú:
 
-- `openclaw setup` thuần túy khởi tạo cấu hình + không gian làm việc mà không chạy toàn bộ luồng thiết lập ban đầu.
+- Lệnh `openclaw setup` đơn thuần khởi tạo cấu hình + không gian làm việc mà không chạy toàn bộ luồng thiết lập ban đầu.
+- Sau khi setup đơn thuần, hãy chạy `openclaw configure` để chọn mô hình, kênh, Gateway, plugin, skills hoặc kiểm tra tình trạng.
 - Quy trình thiết lập ban đầu tự động chạy khi có bất kỳ cờ thiết lập ban đầu nào (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Nếu phát hiện trạng thái Hermes, quy trình thiết lập ban đầu tương tác có thể tự động đề xuất di chuyển. Nhập trong quá trình thiết lập ban đầu yêu cầu một thiết lập mới; dùng [Di chuyển](/vi/cli/migrate) để có kế hoạch chạy thử, bản sao lưu và chế độ ghi đè bên ngoài quy trình thiết lập ban đầu.
+- Nếu phát hiện trạng thái Hermes, quy trình thiết lập ban đầu tương tác có thể tự động đề xuất di chuyển. Thiết lập ban đầu nhập dữ liệu yêu cầu setup mới; dùng [Di chuyển](/vi/cli/migrate) cho kế hoạch chạy thử, bản sao lưu và chế độ ghi đè ngoài quy trình thiết lập ban đầu.
 
 ## Liên quan
 

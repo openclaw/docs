@@ -1,24 +1,24 @@
 ---
 read_when:
     - Tìm kiếm, cài đặt hoặc cập nhật Skills hoặc Plugin
-    - Xuất bản Skills hoặc Plugin lên kho đăng ký
+    - Xuất bản Skills hoặc các Plugin lên kho đăng ký
     - Cấu hình CLI clawhub hoặc các giá trị ghi đè môi trường của nó
 sidebarTitle: ClawHub
-summary: 'ClawHub: kho đăng ký công khai cho Skills và Plugin của OpenClaw, các quy trình cài đặt gốc và CLI clawhub'
+summary: 'ClawHub: registry công khai cho Skills và plugin của OpenClaw, các quy trình cài đặt tích hợp sẵn và CLI clawhub'
 title: ClawHub
 x-i18n:
-    generated_at: "2026-05-02T10:54:31Z"
+    generated_at: "2026-05-02T20:57:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 353b224ccfb8096c270b7896e640e9e419fcb50c265298102a5ce0173566933e
+    source_hash: cd422cb3e7e53fcc6d2b8a557ebc569debb0b470d5fcf141d90499c03fb4d7b3
     source_path: tools/clawhub.md
     workflow: 16
 ---
 
-ClawHub là registry công khai cho **Skills và plugins của OpenClaw**.
+ClawHub là sổ đăng ký công khai cho **Skills và Plugin của OpenClaw**.
 
-- Dùng các lệnh `openclaw` gốc để tìm kiếm, cài đặt và cập nhật Skills, cũng như cài đặt plugins từ ClawHub.
-- Dùng CLI `clawhub` riêng cho các workflow xác thực registry, publish, delete/undelete và sync.
+- Dùng các lệnh `openclaw` gốc để tìm kiếm, cài đặt và cập nhật Skills, cũng như cài đặt Plugin từ ClawHub.
+- Dùng CLI `clawhub` riêng cho các luồng xác thực sổ đăng ký, phát hành, xóa/khôi phục xóa và đồng bộ.
 
 Trang: [clawhub.ai](https://clawhub.ai)
 
@@ -38,8 +38,8 @@ Trang: [clawhub.ai](https://clawhub.ai)
   <Step title="Sử dụng">
     Bắt đầu một phiên OpenClaw mới — phiên này sẽ nhận Skills mới.
   </Step>
-  <Step title="Publish (tùy chọn)">
-    Với các workflow đã xác thực registry (publish, sync, quản lý), hãy cài đặt
+  <Step title="Phát hành (tùy chọn)">
+    Với các luồng đã xác thực với sổ đăng ký (phát hành, đồng bộ, quản lý), hãy cài đặt
     CLI `clawhub` riêng:
 
     ```bash
@@ -62,77 +62,78 @@ Trang: [clawhub.ai](https://clawhub.ai)
     ```
 
     Các lệnh `openclaw` gốc cài đặt vào workspace đang hoạt động của bạn và
-    lưu metadata nguồn để các lần gọi `update` sau này có thể tiếp tục dùng ClawHub.
+    lưu siêu dữ liệu nguồn để các lệnh `update` sau này có thể tiếp tục dùng ClawHub.
 
   </Tab>
-  <Tab title="Plugins">
+  <Tab title="Plugin">
     ```bash
     openclaw plugins search "calendar"
     openclaw plugins install clawhub:<package>
     openclaw plugins update --all
     ```
 
-    `plugins search` truy vấn danh mục Plugin của ClawHub và in ra các
-    tên package sẵn sàng để cài đặt. Các đặc tả Plugin dạng trần an toàn với npm cũng được thử với ClawHub
-    trước npm:
+    `plugins search` truy vấn danh mục Plugin của ClawHub và in ra tên
+    package sẵn sàng để cài đặt. Dùng `clawhub:<package>` khi bạn muốn phân giải qua ClawHub.
+    Các đặc tả Plugin npm-safe dạng trần sẽ cài từ npm trong giai đoạn chuyển đổi ra mắt:
 
     ```bash
     openclaw plugins install openclaw-codex-app-server
     ```
 
-    Dùng `npm:<package>` khi bạn muốn phân giải chỉ qua npm mà không
-    tra cứu ClawHub:
+    `npm:<package>` cũng chỉ dùng npm và hữu ích khi một đặc tả có thể
+    mơ hồ theo cách khác:
 
     ```bash
     openclaw plugins install npm:openclaw-codex-app-server
     ```
 
-    Các lượt cài đặt Plugin xác thực tính tương thích `pluginApi` và
-    `minGatewayVersion` được khai báo trước khi chạy cài đặt archive, vì vậy
-    host không tương thích sẽ đóng thất bại sớm thay vì cài đặt package
-    một phần. Khi một phiên bản package publish một artifact ClawPack,
-    OpenClaw ưu tiên artifact đó, xác minh header digest ClawHub và
-    các byte đã tải xuống, đồng thời ghi lại metadata digest ClawPack cho các
-    lần cập nhật sau. Những phiên bản package cũ hơn không có metadata ClawPack vẫn dùng
-    đường dẫn xác minh archive package cũ.
+    Việc cài Plugin xác thực tính tương thích của `pluginApi` và
+    `minGatewayVersion` được công bố trước khi cài đặt kho lưu trữ chạy, để
+    các host không tương thích đóng lỗi sớm thay vì cài đặt package một phần.
+    Khi một phiên bản package phát hành artifact ClawPack, OpenClaw ưu tiên
+    `.tgz` npm-pack đã tải lên chính xác, xác minh header digest ClawHub và
+    byte đã tải xuống, đồng thời ghi lại loại artifact, integrity npm, shasum npm,
+    tên tarball và siêu dữ liệu digest ClawPack cho các bản cập nhật sau này.
+    Các phiên bản package cũ không có siêu dữ liệu ClawPack vẫn dùng đường dẫn
+    xác minh kho lưu trữ package cũ.
 
   </Tab>
 </Tabs>
 
 <Note>
-`openclaw plugins install clawhub:...` chỉ chấp nhận các nhóm Plugin
-có thể cài đặt. Nếu một package ClawHub thực ra là một Skills, OpenClaw sẽ dừng và
-chỉ bạn dùng `openclaw skills install <slug>` thay thế.
+`openclaw plugins install clawhub:...` chỉ chấp nhận các họ Plugin
+có thể cài đặt. Nếu một package ClawHub thực ra là một Skills, OpenClaw dừng lại và
+chỉ bạn sang `openclaw skills install <slug>` thay thế.
 
-Các lượt cài đặt Plugin ClawHub ẩn danh cũng đóng thất bại với package riêng tư.
+Việc cài đặt Plugin ClawHub ẩn danh cũng đóng lỗi đối với các package riêng tư.
 Các kênh cộng đồng hoặc kênh không chính thức khác vẫn có thể cài đặt, nhưng OpenClaw
-cảnh báo để operator có thể xem xét nguồn và việc xác minh trước khi bật
+cảnh báo để người vận hành có thể xem xét nguồn và quá trình xác minh trước khi bật
 chúng.
 </Note>
 
 ## ClawHub là gì
 
-- Một registry công khai cho Skills và plugins của OpenClaw.
-- Một kho có phiên bản cho các bundle Skills và metadata.
-- Một bề mặt khám phá cho tìm kiếm, tag và tín hiệu sử dụng.
+- Một sổ đăng ký công khai cho Skills và Plugin của OpenClaw.
+- Một kho có phiên bản cho các gói Skills và siêu dữ liệu.
+- Một bề mặt khám phá cho tìm kiếm, thẻ và tín hiệu sử dụng.
 
-Một Skills điển hình là một bundle tệp có phiên bản, bao gồm:
+Một Skills điển hình là một gói tệp có phiên bản, bao gồm:
 
 - Một tệp `SKILL.md` với mô tả và cách dùng chính.
-- Các cấu hình, script hoặc tệp hỗ trợ tùy chọn được Skills dùng.
-- Metadata như tag, tóm tắt và yêu cầu cài đặt.
+- Các cấu hình, script hoặc tệp hỗ trợ tùy chọn mà Skills sử dụng.
+- Siêu dữ liệu như thẻ, tóm tắt và yêu cầu cài đặt.
 
-ClawHub dùng metadata để hỗ trợ khám phá và phơi bày an toàn các
-khả năng của Skills. Registry theo dõi tín hiệu sử dụng (sao, lượt tải xuống) để
-cải thiện xếp hạng và khả năng hiển thị. Mỗi lần publish tạo một phiên bản semver
-mới, và registry giữ lịch sử phiên bản để người dùng có thể kiểm tra
+ClawHub dùng siêu dữ liệu để hỗ trợ khám phá và hiển thị an toàn
+các khả năng của Skills. Sổ đăng ký theo dõi tín hiệu sử dụng (sao, lượt tải xuống) để
+cải thiện xếp hạng và khả năng hiển thị. Mỗi lần phát hành tạo một phiên bản semver
+mới, và sổ đăng ký giữ lịch sử phiên bản để người dùng có thể kiểm tra
 các thay đổi.
 
 ## Workspace và tải Skills
 
-CLI `clawhub` riêng cũng cài Skills vào `./skills` trong
+CLI `clawhub` riêng cũng cài đặt Skills vào `./skills` trong
 thư mục làm việc hiện tại của bạn. Nếu một workspace OpenClaw đã được cấu hình,
-`clawhub` sẽ dùng workspace đó làm dự phòng trừ khi bạn ghi đè `--workdir`
+`clawhub` sẽ dùng workspace đó làm dự phòng trừ khi bạn ghi đè bằng `--workdir`
 (hoặc `CLAWHUB_WORKDIR`). OpenClaw tải Skills của workspace từ
 `<workspace>/skills` và nhận chúng trong phiên **tiếp theo**.
 
@@ -142,35 +143,35 @@ chia sẻ và kiểm soát, xem [Skills](/vi/tools/skills).
 
 ## Tính năng dịch vụ
 
-| Tính năng                | Ghi chú                                                              |
+| Tính năng                | Ghi chú                                                             |
 | ------------------------ | ------------------------------------------------------------------- |
 | Duyệt công khai          | Skills và nội dung `SKILL.md` của chúng có thể được xem công khai.  |
-| Tìm kiếm                 | Dựa trên embedding (tìm kiếm vector), không chỉ từ khóa.             |
-| Quản lý phiên bản        | Semver, changelog và tag (bao gồm `latest`).                        |
+| Tìm kiếm                 | Được hỗ trợ bởi embedding (tìm kiếm vector), không chỉ từ khóa.     |
+| Phiên bản hóa            | Semver, nhật ký thay đổi và thẻ (bao gồm `latest`).                 |
 | Lượt tải xuống           | Zip theo từng phiên bản.                                            |
 | Sao và bình luận         | Phản hồi cộng đồng.                                                 |
 | Tóm tắt quét bảo mật     | Trang chi tiết hiển thị trạng thái quét mới nhất trước khi cài đặt hoặc tải xuống. |
-| Trang chi tiết trình quét | Kết quả VirusTotal, ClawScan và phân tích tĩnh có liên kết sâu.     |
-| Dashboard khôi phục chủ sở hữu | Publisher có thể xem nội dung sở hữu đang bị giữ do quét từ `/dashboard`. |
-| Quét lại theo yêu cầu của chủ sở hữu | Chủ sở hữu có thể yêu cầu quét lại giới hạn để khôi phục false-positive. |
+| Trang chi tiết bộ quét   | Kết quả VirusTotal, ClawScan và phân tích tĩnh có liên kết sâu.     |
+| Bảng điều khiển khôi phục của chủ sở hữu | Nhà phát hành có thể xem nội dung thuộc sở hữu bị giữ do quét từ `/dashboard`. |
+| Quét lại theo yêu cầu của chủ sở hữu | Chủ sở hữu có thể yêu cầu quét lại có giới hạn để khôi phục khi dương tính giả. |
 | Kiểm duyệt               | Phê duyệt và kiểm tra.                                              |
 | API thân thiện với CLI   | Phù hợp cho tự động hóa và scripting.                               |
 
 ## Bảo mật và kiểm duyệt
 
-ClawHub mở theo mặc định — bất kỳ ai cũng có thể upload Skills, nhưng một tài khoản GitHub
-phải **ít nhất một tuần tuổi** để publish. Điều này làm chậm hành vi
-lạm dụng mà không chặn các contributor hợp lệ.
+ClawHub mở theo mặc định — bất kỳ ai cũng có thể tải Skills lên, nhưng tài khoản GitHub
+phải **ít nhất một tuần tuổi** để phát hành. Điều này làm chậm hành vi
+lạm dụng mà không chặn những người đóng góp hợp lệ.
 
 <AccordionGroup>
   <Accordion title="Quét bảo mật">
-    ClawHub chạy các kiểm tra bảo mật tự động trên Skills đã publish và các bản phát hành
-    Plugin. Trang chi tiết công khai tóm tắt kết quả hiện tại, và các hàng trình quét
-    liên kết tới trang chi tiết riêng cho VirusTotal, ClawScan và phân tích
+    ClawHub chạy kiểm tra bảo mật tự động trên Skills và bản phát hành Plugin
+    đã phát hành. Trang chi tiết công khai tóm tắt kết quả hiện tại, và các hàng
+    bộ quét liên kết tới các trang chi tiết riêng cho VirusTotal, ClawScan và phân tích
     tĩnh.
 
-    Các bản phát hành bị giữ do quét hoặc bị chặn có thể không khả dụng trên danh mục công khai và
-    bề mặt cài đặt, trong khi vẫn hiển thị với chủ sở hữu trong `/dashboard`.
+    Các bản phát hành bị giữ do quét hoặc bị chặn có thể không có trên danh mục công khai và
+    bề mặt cài đặt, nhưng vẫn hiển thị với chủ sở hữu của chúng trong `/dashboard`.
 
   </Accordion>
   <Accordion title="Báo cáo">
@@ -181,34 +182,34 @@ lạm dụng mà không chặn các contributor hợp lệ.
 
   </Accordion>
   <Accordion title="Kiểm duyệt">
-    - Moderator có thể xem Skills bị ẩn, bỏ ẩn chúng, xóa chúng hoặc cấm người dùng.
-    - Lạm dụng tính năng báo cáo có thể dẫn đến cấm tài khoản.
-    - Muốn trở thành moderator? Hãy hỏi trong Discord của OpenClaw và liên hệ với một moderator hoặc maintainer.
+    - Người kiểm duyệt có thể xem Skills bị ẩn, bỏ ẩn, xóa chúng hoặc cấm người dùng.
+    - Lạm dụng tính năng báo cáo có thể dẫn đến việc tài khoản bị cấm.
+    - Quan tâm đến việc trở thành người kiểm duyệt? Hãy hỏi trong Discord của OpenClaw và liên hệ một người kiểm duyệt hoặc maintainer.
 
   </Accordion>
 </AccordionGroup>
 
 ## CLI ClawHub
 
-Bạn chỉ cần phần này cho các workflow đã xác thực registry như
-publish/sync.
+Bạn chỉ cần phần này cho các luồng đã xác thực với sổ đăng ký như
+phát hành/đồng bộ.
 
 ### Tùy chọn toàn cục
 
 <ParamField path="--workdir <dir>" type="string">
-  Thư mục làm việc. Mặc định: thư mục hiện tại; dùng workspace OpenClaw làm dự phòng.
+  Thư mục làm việc. Mặc định: thư mục hiện tại; dự phòng sang workspace OpenClaw.
 </ParamField>
 <ParamField path="--dir <dir>" type="string" default="skills">
   Thư mục Skills, tương đối với workdir.
 </ParamField>
 <ParamField path="--site <url>" type="string">
-  URL gốc của trang (đăng nhập trình duyệt).
+  URL cơ sở của trang (đăng nhập bằng trình duyệt).
 </ParamField>
 <ParamField path="--registry <url>" type="string">
-  URL gốc API registry.
+  URL cơ sở của API sổ đăng ký.
 </ParamField>
 <ParamField path="--no-input" type="boolean">
-  Tắt prompt (không tương tác).
+  Tắt lời nhắc (không tương tác).
 </ParamField>
 <ParamField path="-V, --cli-version" type="boolean">
   In phiên bản CLI.
@@ -217,7 +218,7 @@ publish/sync.
 ### Lệnh
 
 <AccordionGroup>
-  <Accordion title="Auth (login / logout / whoami)">
+  <Accordion title="Xác thực (login / logout / whoami)">
     ```bash
     clawhub login              # browser flow
     clawhub login --token <token>
@@ -227,8 +228,8 @@ publish/sync.
 
     Tùy chọn đăng nhập:
 
-    - `--token <token>` — dán một token API.
-    - `--label <label>` — nhãn được lưu cho token đăng nhập trình duyệt (mặc định: `CLI token`).
+    - `--token <token>` — dán API token.
+    - `--label <label>` — nhãn được lưu cho token đăng nhập bằng trình duyệt (mặc định: `CLI token`).
     - `--no-browser` — không mở trình duyệt (yêu cầu `--token`).
 
   </Accordion>
@@ -239,25 +240,25 @@ publish/sync.
 
     Tìm kiếm Skills. Để khám phá Plugin/package, dùng `clawhub package explore`.
 
-    - `--limit <n>` — kết quả tối đa.
+    - `--limit <n>` — số kết quả tối đa.
 
   </Accordion>
-  <Accordion title="Duyệt / kiểm tra plugins">
+  <Accordion title="Duyệt / kiểm tra Plugin">
     ```bash
     clawhub package explore --family code-plugin
     clawhub package explore "episodic-claw" --family code-plugin
     clawhub package inspect episodic-claw
     ```
 
-    `package explore` và `package inspect` là các bề mặt CLI ClawHub để khám phá Plugin/package và kiểm tra metadata. Các lượt cài đặt OpenClaw gốc vẫn dùng `openclaw plugins install clawhub:<package>`.
+    `package explore` và `package inspect` là các bề mặt CLI ClawHub để khám phá Plugin/package và kiểm tra siêu dữ liệu. Các lượt cài đặt OpenClaw gốc vẫn dùng `openclaw plugins install clawhub:<package>`.
 
     Tùy chọn:
 
-    - `--family skill|code-plugin|bundle-plugin` — lọc nhóm package.
+    - `--family skill|code-plugin|bundle-plugin` — lọc họ package.
     - `--official` — chỉ hiển thị package chính thức.
     - `--executes-code` — chỉ hiển thị package thực thi mã.
     - `--version <version>` / `--tag <tag>` — kiểm tra một phiên bản package cụ thể.
-    - `--versions`, `--files`, `--file <path>` — kiểm tra lịch sử và tệp của package.
+    - `--versions`, `--files`, `--file <path>` — kiểm tra lịch sử và tệp package.
     - `--json` — đầu ra máy có thể đọc.
 
   </Accordion>
@@ -272,11 +273,11 @@ publish/sync.
     Tùy chọn:
 
     - `--version <version>` — cài đặt hoặc cập nhật lên một phiên bản cụ thể (chỉ một slug trên `update`).
-    - `--force` — ghi đè nếu thư mục đã tồn tại, hoặc khi các tệp cục bộ không khớp với bất kỳ phiên bản đã publish nào.
+    - `--force` — ghi đè nếu thư mục đã tồn tại, hoặc khi tệp cục bộ không khớp với bất kỳ phiên bản đã phát hành nào.
     - `clawhub list` đọc `.clawhub/lock.json`.
 
   </Accordion>
-  <Accordion title="Publish Skills">
+  <Accordion title="Phát hành Skills">
     ```bash
     clawhub skill publish <path>
     ```
@@ -286,22 +287,22 @@ publish/sync.
     - `--slug <slug>` — slug Skills.
     - `--name <name>` — tên hiển thị.
     - `--version <version>` — phiên bản semver.
-    - `--changelog <text>` — văn bản changelog (có thể trống).
-    - `--tags <tags>` — tag phân tách bằng dấu phẩy (mặc định: `latest`).
+    - `--changelog <text>` — nội dung nhật ký thay đổi (có thể để trống).
+    - `--tags <tags>` — thẻ phân tách bằng dấu phẩy (mặc định: `latest`).
 
   </Accordion>
-  <Accordion title="Publish plugins">
+  <Accordion title="Phát hành Plugin">
     ```bash
     clawhub package publish <source>
     ```
 
-    `<source>` có thể là một thư mục cục bộ, `owner/repo`, `owner/repo@ref`, hoặc một
+    `<source>` có thể là thư mục cục bộ, `owner/repo`, `owner/repo@ref`, hoặc một
     URL GitHub.
 
     Tùy chọn:
 
-    - `--dry-run` — dựng kế hoạch publish chính xác mà không upload gì.
-    - `--json` — xuất đầu ra máy có thể đọc cho CI.
+    - `--dry-run` — xây dựng kế hoạch phát hành chính xác mà không tải gì lên.
+    - `--json` — phát ra đầu ra máy có thể đọc cho CI.
     - `--source-repo`, `--source-commit`, `--source-ref` — ghi đè tùy chọn khi tự động phát hiện là chưa đủ.
 
   </Accordion>
@@ -315,38 +316,38 @@ publish/sync.
     ```
 
     Các lệnh quét lại yêu cầu token chủ sở hữu đã đăng nhập và nhắm tới phiên bản Skills
-    đã publish mới nhất hoặc bản phát hành Plugin. Trong các lần chạy không tương tác, truyền
+    đã phát hành mới nhất hoặc bản phát hành Plugin. Trong các lần chạy không tương tác, truyền
     `--yes`.
 
-    Phản hồi JSON bao gồm loại mục tiêu, tên, phiên bản, trạng thái quét lại, và
+    Phản hồi JSON bao gồm loại đích, tên, phiên bản, trạng thái quét lại và
     số lượng yêu cầu còn lại/tối đa cho phiên bản hoặc bản phát hành đó.
 
   </Accordion>
-  <Accordion title="Xóa / khôi phục xóa (chủ sở hữu hoặc admin)">
+  <Accordion title="Xóa / khôi phục xóa (chủ sở hữu hoặc quản trị viên)">
     ```bash
     clawhub delete <slug> --yes
     clawhub undelete <slug> --yes
     ```
   </Accordion>
-  <Accordion title="Sync (quét cục bộ + publish mới hoặc đã cập nhật)">
+  <Accordion title="Đồng bộ (quét cục bộ + phát hành mới hoặc đã cập nhật)">
     ```bash
     clawhub sync
     ```
 
     Tùy chọn:
 
-    - `--root <dir...>` — root quét bổ sung.
-    - `--all` — upload mọi thứ mà không cần prompt.
-    - `--dry-run` — hiển thị những gì sẽ được upload.
-    - `--bump <type>` — `patch|minor|major` cho cập nhật (mặc định: `patch`).
-    - `--changelog <text>` — changelog cho các cập nhật không tương tác.
-    - `--tags <tags>` — tag phân tách bằng dấu phẩy (mặc định: `latest`).
-    - `--concurrency <n>` — kiểm tra registry (mặc định: `4`).
+    - `--root <dir...>` — gốc quét bổ sung.
+    - `--all` — tải mọi thứ lên mà không hỏi.
+    - `--dry-run` — hiển thị những gì sẽ được tải lên.
+    - `--bump <type>` — `patch|minor|major` cho các bản cập nhật (mặc định: `patch`).
+    - `--changelog <text>` — nhật ký thay đổi cho các bản cập nhật không tương tác.
+    - `--tags <tags>` — thẻ phân tách bằng dấu phẩy (mặc định: `latest`).
+    - `--concurrency <n>` — kiểm tra sổ đăng ký (mặc định: `4`).
 
   </Accordion>
 </AccordionGroup>
 
-## Workflow phổ biến
+## Luồng công việc phổ biến
 
 <Tabs>
   <Tab title="Tìm kiếm">
@@ -371,7 +372,7 @@ publish/sync.
     clawhub update --all
     ```
   </Tab>
-  <Tab title="Xuất bản một skill đơn lẻ">
+  <Tab title="Xuất bản một skill">
     ```bash
     clawhub skill publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0 --tags latest
     ```
@@ -393,7 +394,7 @@ publish/sync.
 
 ### Siêu dữ liệu gói Plugin
 
-Code plugin phải bao gồm siêu dữ liệu OpenClaw bắt buộc trong
+Các Plugin mã phải bao gồm siêu dữ liệu OpenClaw bắt buộc trong
 `package.json`:
 
 ```json
@@ -416,25 +417,26 @@ Code plugin phải bao gồm siêu dữ liệu OpenClaw bắt buộc trong
 }
 ```
 
-Các gói đã xuất bản nên đi kèm **JavaScript đã build** và trỏ
-`runtimeExtensions` đến đầu ra đó. Các bản cài đặt qua Git checkout vẫn có thể
-dự phòng về mã nguồn TypeScript khi không có tệp đã build, nhưng các mục nhập runtime
-đã build sẽ tránh việc biên dịch TypeScript runtime trong các đường dẫn khởi động, doctor và tải Plugin.
+Các gói đã xuất bản nên phân phối **JavaScript đã build** và trỏ
+`runtimeExtensions` đến đầu ra đó. Các bản cài đặt từ Git checkout vẫn có thể
+dự phòng về mã nguồn TypeScript khi không có tệp đã build, nhưng các mục nhập
+runtime đã build giúp tránh biên dịch TypeScript lúc runtime trong các đường dẫn
+khởi động, doctor và tải Plugin.
 
-## Đánh phiên bản, lockfile và telemetry
+## Quản lý phiên bản, lockfile và telemetry
 
 <AccordionGroup>
-  <Accordion title="Đánh phiên bản và thẻ">
-    - Mỗi lần xuất bản tạo một `SkillVersion` **semver** mới.
-    - Thẻ (như `latest`) trỏ đến một phiên bản; việc di chuyển thẻ cho phép bạn khôi phục.
+  <Accordion title="Quản lý phiên bản và thẻ">
+    - Mỗi lần xuất bản tạo một **semver** `SkillVersion` mới.
+    - Các thẻ (như `latest`) trỏ đến một phiên bản; di chuyển thẻ cho phép bạn quay lui.
     - Changelog được gắn theo từng phiên bản và có thể để trống khi đồng bộ hoặc xuất bản bản cập nhật.
 
   </Accordion>
   <Accordion title="Thay đổi cục bộ so với phiên bản registry">
     Các bản cập nhật so sánh nội dung skill cục bộ với các phiên bản registry bằng
-    mã băm nội dung. Nếu các tệp cục bộ không khớp với bất kỳ phiên bản đã xuất bản nào,
+    hàm băm nội dung. Nếu các tệp cục bộ không khớp với bất kỳ phiên bản đã xuất bản nào,
     CLI sẽ hỏi trước khi ghi đè (hoặc yêu cầu `--force` trong
-    các lần chạy không tương tác).
+    các lượt chạy không tương tác).
   </Accordion>
   <Accordion title="Quét đồng bộ và thư mục gốc dự phòng">
     `clawhub sync` quét workdir hiện tại của bạn trước. Nếu không tìm thấy skill nào,
@@ -443,13 +445,13 @@ dự phòng về mã nguồn TypeScript khi không có tệp đã build, nhưng 
     tìm các bản cài đặt skill cũ hơn mà không cần cờ bổ sung.
   </Accordion>
   <Accordion title="Lưu trữ và lockfile">
-    - Các skill đã cài đặt được ghi lại trong `.clawhub/lock.json` dưới workdir của bạn.
-    - Token xác thực được lưu trong tệp cấu hình CLI của ClawHub (ghi đè qua `CLAWHUB_CONFIG_PATH`).
+    - Các skill đã cài đặt được ghi lại trong `.clawhub/lock.json` bên dưới workdir của bạn.
+    - Token xác thực được lưu trong tệp cấu hình ClawHub CLI (ghi đè bằng `CLAWHUB_CONFIG_PATH`).
 
   </Accordion>
   <Accordion title="Telemetry (số lượt cài đặt)">
-    Khi bạn chạy `clawhub sync` trong lúc đã đăng nhập, CLI gửi một snapshot tối thiểu
-    để tính số lượt cài đặt. Bạn có thể tắt hoàn toàn tính năng này:
+    Khi bạn chạy `clawhub sync` trong lúc đã đăng nhập, CLI gửi một bản chụp tối thiểu
+    để tính số lượt cài đặt. Bạn có thể tắt hoàn toàn chức năng này:
 
     ```bash
     export CLAWHUB_DISABLE_TELEMETRY=1
@@ -460,9 +462,9 @@ dự phòng về mã nguồn TypeScript khi không có tệp đã build, nhưng 
 
 ## Biến môi trường
 
-| Biến                          | Hiệu lực                                         |
+| Biến                          | Tác dụng                                        |
 | ----------------------------- | ----------------------------------------------- |
-| `CLAWHUB_SITE`                | Ghi đè URL trang web.                           |
+| `CLAWHUB_SITE`                | Ghi đè URL của site.                            |
 | `CLAWHUB_REGISTRY`            | Ghi đè URL API registry.                        |
 | `CLAWHUB_CONFIG_PATH`         | Ghi đè nơi CLI lưu token/cấu hình.              |
 | `CLAWHUB_WORKDIR`             | Ghi đè workdir mặc định.                        |
