@@ -5,17 +5,17 @@ read_when:
 summary: Referensi CLI untuk `openclaw hooks` (hook agen)
 title: Kait
 x-i18n:
-    generated_at: "2026-04-30T09:39:48Z"
+    generated_at: "2026-05-02T20:42:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 63ab6b014923dd4776767a6a0333129b85f51d008c63bb9fbdff06228d4c2f4b
+    source_hash: 3b02c176b4a310adba3fa1fde3758f6c8a19d454aeec58e919458b3f1a66c87d
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Kelola hook agen (automasi berbasis peristiwa untuk perintah seperti `/new`, `/reset`, dan startup Gateway).
+Kelola hook agen (otomasi berbasis peristiwa untuk perintah seperti `/new`, `/reset`, dan startup gateway).
 
 Menjalankan `openclaw hooks` tanpa subperintah setara dengan `openclaw hooks list`.
 
@@ -77,7 +77,7 @@ Tampilkan informasi mendetail tentang hook tertentu.
 
 **Argumen:**
 
-- `<name>`: Nama hook atau kunci hook (mis., `session-memory`)
+- `<name>`: Nama hook atau kunci hook (misalnya, `session-memory`)
 
 **Opsi:**
 
@@ -113,7 +113,7 @@ Requirements:
 openclaw hooks check
 ```
 
-Tampilkan ringkasan status kelayakan hook (berapa banyak yang siap vs. belum siap).
+Tampilkan ringkasan status kelayakan hook (berapa banyak yang siap dibandingkan belum siap).
 
 **Opsi:**
 
@@ -135,13 +135,13 @@ Not ready: 0
 openclaw hooks enable <name>
 ```
 
-Aktifkan hook tertentu dengan menambahkannya ke config Anda (`~/.openclaw/openclaw.json` secara default).
+Aktifkan hook tertentu dengan menambahkannya ke konfigurasi Anda (`~/.openclaw/openclaw.json` secara default).
 
-**Catatan:** Hook workspace dinonaktifkan secara default sampai diaktifkan di sini atau di config. Hook yang dikelola oleh plugin menampilkan `plugin:<id>` di `openclaw hooks list` dan tidak dapat diaktifkan/dinonaktifkan di sini. Aktifkan/nonaktifkan plugin sebagai gantinya.
+**Catatan:** Hook workspace dinonaktifkan secara default sampai diaktifkan di sini atau di konfigurasi. Hook yang dikelola oleh Plugin menampilkan `plugin:<id>` di `openclaw hooks list` dan tidak dapat diaktifkan/dinonaktifkan di sini. Aktifkan/nonaktifkan Plugin tersebut sebagai gantinya.
 
 **Argumen:**
 
-- `<name>`: Nama hook (mis., `session-memory`)
+- `<name>`: Nama hook (misalnya, `session-memory`)
 
 **Contoh:**
 
@@ -158,15 +158,15 @@ openclaw hooks enable session-memory
 **Yang dilakukan:**
 
 - Memeriksa apakah hook ada dan memenuhi syarat
-- Memperbarui `hooks.internal.entries.<name>.enabled = true` di config Anda
-- Menyimpan config ke disk
+- Memperbarui `hooks.internal.entries.<name>.enabled = true` dalam konfigurasi Anda
+- Menyimpan konfigurasi ke disk
 
 Jika hook berasal dari `<workspace>/hooks/`, langkah opt-in ini diperlukan sebelum
 Gateway akan memuatnya.
 
 **Setelah mengaktifkan:**
 
-- Mulai ulang gateway agar hook dimuat ulang (restart aplikasi bilah menu di macOS, atau mulai ulang proses gateway Anda dalam dev).
+- Mulai ulang gateway agar hook dimuat ulang (mulai ulang aplikasi bilah menu di macOS, atau mulai ulang proses gateway Anda dalam dev).
 
 ## Nonaktifkan Hook
 
@@ -174,11 +174,11 @@ Gateway akan memuatnya.
 openclaw hooks disable <name>
 ```
 
-Nonaktifkan hook tertentu dengan memperbarui config Anda.
+Nonaktifkan hook tertentu dengan memperbarui konfigurasi Anda.
 
 **Argumen:**
 
-- `<name>`: Nama hook (mis., `command-logger`)
+- `<name>`: Nama hook (misalnya, `command-logger`)
 
 **Contoh:**
 
@@ -199,29 +199,29 @@ openclaw hooks disable command-logger
 ## Catatan
 
 - `openclaw hooks list --json`, `info --json`, dan `check --json` menulis JSON terstruktur langsung ke stdout.
-- Hook yang dikelola Plugin tidak dapat diaktifkan atau dinonaktifkan di sini; aktifkan atau nonaktifkan plugin pemiliknya sebagai gantinya.
+- Hook yang dikelola Plugin tidak dapat diaktifkan atau dinonaktifkan di sini; aktifkan atau nonaktifkan Plugin pemiliknya sebagai gantinya.
 
 ## Instal paket hook
 
 ```bash
-openclaw plugins install <package>        # ClawHub first, then npm
+openclaw plugins install <package>        # npm by default
 openclaw plugins install npm:<package>    # npm only
 openclaw plugins install <package> --pin  # pin version
 openclaw plugins install <path>           # local path
 ```
 
-Instal paket hook melalui penginstal plugins terpadu.
+Instal paket hook melalui penginstal Plugin terpadu.
 
 `openclaw hooks install` masih berfungsi sebagai alias kompatibilitas, tetapi mencetak
-peringatan deprecasi dan meneruskan ke `openclaw plugins install`.
+peringatan penghentian dan meneruskan ke `openclaw plugins install`.
 
-Spesifikasi npm bersifat **hanya registry** (nama paket + **versi persis** opsional atau
-**dist-tag**). Spesifikasi Git/URL/file dan rentang semver ditolak. Instalasi dependensi
-berjalan secara lokal proyek dengan `--ignore-scripts` demi keamanan, bahkan saat shell
-Anda memiliki pengaturan instal npm global.
+Spec npm adalah **hanya registry** (nama paket + **versi persis** opsional atau
+**dist-tag**). Spec Git/URL/file dan rentang semver ditolak. Instalasi dependensi
+berjalan secara lokal proyek dengan `--ignore-scripts` demi keamanan, bahkan ketika
+shell Anda memiliki pengaturan instalasi npm global.
 
-Spesifikasi bare dan `@latest` tetap berada di jalur stabil. Jika npm me-resolve salah satu dari
-keduanya ke prerelease, OpenClaw berhenti dan meminta Anda untuk ikut serta secara eksplisit dengan
+Spec kosong dan `@latest` tetap berada di jalur stabil. Jika npm menyelesaikan salah satu
+dari keduanya ke prerelease, OpenClaw berhenti dan meminta Anda untuk ikut serta secara eksplisit dengan
 tag prerelease seperti `@beta`/`@rc` atau versi prerelease persis.
 
 **Yang dilakukan:**
@@ -233,7 +233,7 @@ tag prerelease seperti `@beta`/`@rc` atau versi prerelease persis.
 **Opsi:**
 
 - `-l, --link`: Tautkan direktori lokal alih-alih menyalin (menambahkannya ke `hooks.internal.load.extraDirs`)
-- `--pin`: Catat instalasi npm sebagai `name@version` hasil resolve persis di `hooks.internal.installs`
+- `--pin`: Catat instalasi npm sebagai `name@version` hasil resolusi persis di `hooks.internal.installs`
 
 **Arsip yang didukung:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
 
@@ -253,8 +253,8 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-Paket hook tertaut diperlakukan sebagai hook terkelola dari direktori yang dikonfigurasi operator,
-bukan sebagai hook workspace.
+Paket hook yang ditautkan diperlakukan sebagai hook terkelola dari direktori
+yang dikonfigurasi operator, bukan sebagai hook workspace.
 
 ## Perbarui paket hook
 
@@ -263,25 +263,25 @@ openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-Perbarui paket hook berbasis npm yang terlacak melalui pembaru plugins terpadu.
+Perbarui paket hook berbasis npm yang dilacak melalui pembaru Plugin terpadu.
 
 `openclaw hooks update` masih berfungsi sebagai alias kompatibilitas, tetapi mencetak
-peringatan deprecasi dan meneruskan ke `openclaw plugins update`.
+peringatan penghentian dan meneruskan ke `openclaw plugins update`.
 
 **Opsi:**
 
-- `--all`: Perbarui semua paket hook yang terlacak
+- `--all`: Perbarui semua paket hook yang dilacak
 - `--dry-run`: Tampilkan apa yang akan berubah tanpa menulis
 
 Ketika hash integritas tersimpan ada dan hash artefak yang diambil berubah,
 OpenClaw mencetak peringatan dan meminta konfirmasi sebelum melanjutkan. Gunakan
-`--yes` global untuk melewati prompt dalam CI/jalankan non-interaktif.
+`--yes` global untuk melewati prompt dalam CI/proses non-interaktif.
 
 ## Hook bawaan
 
 ### session-memory
 
-Menyimpan konteks sesi ke memori saat Anda mengeluarkan `/new` atau `/reset`.
+Menyimpan konteks sesi ke memori saat Anda menjalankan `/new` atau `/reset`.
 
 **Aktifkan:**
 
@@ -295,7 +295,7 @@ openclaw hooks enable session-memory
 
 ### bootstrap-extra-files
 
-Menyuntikkan file bootstrap tambahan (misalnya `AGENTS.md` / `TOOLS.md` lokal monorepo) selama `agent:bootstrap`.
+Menyisipkan file bootstrap tambahan (misalnya `AGENTS.md` / `TOOLS.md` lokal monorepo) selama `agent:bootstrap`.
 
 **Aktifkan:**
 
@@ -349,4 +349,4 @@ openclaw hooks enable boot-md
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Hook automasi](/id/automation/hooks)
+- [Hook otomasi](/id/automation/hooks)

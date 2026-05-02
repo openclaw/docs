@@ -5,30 +5,30 @@ read_when:
 summary: Referensi CLI untuk `openclaw directory` (diri sendiri, rekan, grup)
 title: Direktori
 x-i18n:
-    generated_at: "2026-05-02T09:15:37Z"
+    generated_at: "2026-05-02T20:41:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
+    source_hash: 011f762d6f53605a37bd12b31c767594c0efa5681da4b2aabe7fb358751b1542
     source_path: cli/directory.md
     workflow: 16
 ---
 
 # `openclaw directory`
 
-Pencarian direktori untuk saluran yang mendukungnya (kontak/peer, grup, dan “saya”).
+Pencarian direktori untuk saluran yang mendukungnya (kontak/rekan, grup, dan “saya”).
 
 ## Flag umum
 
-- `--channel <name>`: id/alias saluran (wajib ketika beberapa saluran dikonfigurasi; otomatis ketika hanya satu yang dikonfigurasi)
+- `--channel <name>`: id/alias saluran (wajib saat beberapa saluran dikonfigurasi; otomatis saat hanya satu yang dikonfigurasi)
 - `--account <id>`: id akun (default: default saluran)
 - `--json`: keluarkan JSON
 
 ## Catatan
 
 - `directory` dimaksudkan untuk membantu Anda menemukan ID yang dapat ditempelkan ke perintah lain (terutama `openclaw message send --target ...`).
-- Untuk banyak saluran, hasil didukung konfigurasi (daftar yang diizinkan / grup yang dikonfigurasi), bukan direktori penyedia langsung.
-- Plugin saluran yang terinstal tetap dapat tidak menyertakan dukungan direktori; dalam kasus tersebut, perintah melaporkan operasi direktori yang tidak didukung, bukan menginstal ulang Plugin.
-- Output default adalah `id` (dan kadang `name`) yang dipisahkan dengan tab; gunakan `--json` untuk skrip.
+- Untuk banyak saluran, hasil didukung konfigurasi (allowlist / grup yang dikonfigurasi), bukan direktori penyedia langsung.
+- Plugin saluran yang terpasang tetap dapat tidak menyediakan dukungan direktori; dalam kasus itu perintah melaporkan operasi direktori yang tidak didukung alih-alih memasang ulang Plugin.
+- Keluaran default adalah `id` (dan terkadang `name`) yang dipisahkan oleh tab; gunakan `--json` untuk skrip.
 
 ## Menggunakan hasil dengan `message send`
 
@@ -39,22 +39,22 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 
 ## Format ID (berdasarkan saluran)
 
-- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grup)
-- Telegram: `@username` atau id chat numerik; grup adalah id numerik
+- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grup), `120363123456789@newsletter` (target keluar Channel/Newsletter)
+- Telegram: `@username` atau id obrolan numerik; grup adalah id numerik
 - Slack: `user:U…` dan `channel:C…`
 - Discord: `user:<id>` dan `channel:<id>`
 - Matrix (Plugin): `user:@user:server`, `room:!roomId:server`, atau `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` dan `conversation:<id>`
 - Zalo (Plugin): id pengguna (Bot API)
-- Zalo Personal / `zalouser` (Plugin): id thread (DM/grup) dari `zca` (`me`, `friend list`, `group list`)
+- Zalo Personal / `zalouser` (Plugin): id utas (DM/grup) dari `zca` (`me`, `friend list`, `group list`)
 
-## Diri sendiri ("me")
+## Diri Sendiri ("me")
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## Peer (kontak/pengguna)
+## Rekan (kontak/pengguna)
 
 ```bash
 openclaw directory peers list --channel zalouser

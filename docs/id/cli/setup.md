@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda melakukan penyiapan pertama kali tanpa proses orientasi CLI lengkap
+    - Anda melakukan penyiapan pertama kali tanpa proses orientasi awal CLI lengkap
     - Anda ingin menetapkan jalur ruang kerja default
 summary: Referensi CLI untuk `openclaw setup` (inisialisasi konfigurasi + ruang kerja)
 title: Penyiapan
 x-i18n:
-    generated_at: "2026-04-30T09:41:43Z"
+    generated_at: "2026-05-02T20:43:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -20,7 +20,7 @@ Inisialisasi `~/.openclaw/openclaw.json` dan ruang kerja agen.
 Terkait:
 
 - Memulai: [Memulai](/id/start/getting-started)
-- Orientasi CLI: [Orientasi (CLI)](/id/start/wizard)
+- Orientasi awal CLI: [Orientasi Awal (CLI)](/id/start/wizard)
 
 ## Contoh
 
@@ -35,16 +35,16 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## Opsi
 
 - `--workspace <dir>`: direktori ruang kerja agen (disimpan sebagai `agents.defaults.workspace`)
-- `--wizard`: jalankan orientasi
-- `--non-interactive`: jalankan orientasi tanpa permintaan masukan
-- `--mode <local|remote>`: mode orientasi
-- `--import-from <provider>`: penyedia migrasi yang akan dijalankan selama orientasi
-- `--import-source <path>`: beranda agen sumber untuk `--import-from`
-- `--import-secrets`: impor rahasia yang didukung selama migrasi orientasi
+- `--wizard`: jalankan orientasi awal
+- `--non-interactive`: jalankan orientasi awal tanpa prompt
+- `--mode <local|remote>`: mode orientasi awal
+- `--import-from <provider>`: penyedia migrasi yang dijalankan selama orientasi awal
+- `--import-source <path>`: direktori home agen sumber untuk `--import-from`
+- `--import-secrets`: impor rahasia yang didukung selama migrasi orientasi awal
 - `--remote-url <url>`: URL WebSocket Gateway jarak jauh
 - `--remote-token <token>`: token Gateway jarak jauh
 
-Untuk menjalankan orientasi melalui penyiapan:
+Untuk menjalankan orientasi awal melalui setup:
 
 ```bash
 openclaw setup --wizard
@@ -52,11 +52,12 @@ openclaw setup --wizard
 
 Catatan:
 
-- `openclaw setup` biasa menginisialisasi konfigurasi + ruang kerja tanpa alur orientasi penuh.
-- Orientasi berjalan otomatis ketika ada tanda orientasi apa pun (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Jika status Hermes terdeteksi, orientasi interaktif dapat menawarkan migrasi secara otomatis. Orientasi impor memerlukan penyiapan baru; gunakan [Migrasi](/id/cli/migrate) untuk rencana uji coba, cadangan, dan mode timpa di luar orientasi.
+- `openclaw setup` biasa menginisialisasi konfigurasi + ruang kerja tanpa alur orientasi awal penuh.
+- Setelah setup biasa, jalankan `openclaw configure` untuk memilih model, saluran, Gateway, plugin, skills, atau pemeriksaan kesehatan.
+- Orientasi awal berjalan otomatis saat ada flag orientasi awal apa pun (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Jika status Hermes terdeteksi, orientasi awal interaktif dapat menawarkan migrasi secara otomatis. Orientasi awal impor memerlukan setup baru; gunakan [Migrasi](/id/cli/migrate) untuk rencana simulasi, cadangan, dan mode penimpaan di luar orientasi awal.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Ikhtisar instalasi](/id/install)
+- [Ringkasan instalasi](/id/install)

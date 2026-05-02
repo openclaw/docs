@@ -2,13 +2,13 @@
 read_when:
     - Menambahkan atau memodifikasi tindakan CLI pesan
     - Mengubah perilaku saluran keluar
-summary: Referensi CLI untuk `openclaw message` (send + tindakan saluran)
+summary: Referensi CLI untuk `openclaw message` (kirim + tindakan saluran)
 title: Pesan
 x-i18n:
-    generated_at: "2026-05-02T09:16:23Z"
+    generated_at: "2026-05-02T20:42:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f429acc2c81f33d1ade543ab1170220e293077e1d1721ac0940937de3d19f0d2
+    source_hash: 6b73a50da34838f80ad5d0d266f5c66f95436f8535e6312296ae022918b1ab55
     source_path: cli/message.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 # `openclaw message`
 
 Perintah keluar tunggal untuk mengirim pesan dan tindakan channel
-(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+(Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## Penggunaan
 
@@ -28,17 +28,17 @@ Pemilihan channel:
 
 - `--channel` wajib jika lebih dari satu channel dikonfigurasi.
 - Jika tepat satu channel dikonfigurasi, channel tersebut menjadi default.
-- Nilai: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost memerlukan plugin)
-- `openclaw message` menyelesaikan channel yang dipilih ke plugin pemiliknya ketika `--channel` atau target berprefiks channel ada; jika tidak, perintah ini memuat plugin channel yang dikonfigurasi untuk inferensi channel default.
+- Nilai: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (Mattermost memerlukan Plugin)
+- `openclaw message` menyelesaikan channel yang dipilih ke Plugin pemiliknya saat `--channel` atau target berprefiks channel ada; jika tidak, perintah ini memuat Plugin channel yang dikonfigurasi untuk inferensi channel default.
 
 Format target (`--target`):
 
-- WhatsApp: E.164 atau JID grup
+- WhatsApp: E.164, JID grup, atau JID WhatsApp Channel/Newsletter (`...@newsletter`)
 - Telegram: id chat atau `@username`
 - Discord: `channel:<id>` atau `user:<id>` (atau mention `<@id>`; id numerik mentah diperlakukan sebagai channel)
 - Google Chat: `spaces/<spaceId>` atau `users/<userId>`
 - Slack: `channel:<id>` atau `user:<id>` (id channel mentah diterima)
-- Mattermost (plugin): `channel:<id>`, `user:<id>`, atau `@username` (id polos diperlakukan sebagai channel)
+- Mattermost (Plugin): `channel:<id>`, `user:<id>`, atau `@username` (id polos diperlakukan sebagai channel)
 - Signal: `+E.164`, `group:<id>`, `signal:+E.164`, `signal:group:<id>`, atau `username:<name>`/`u:<name>`
 - iMessage: handle, `chat_id:<id>`, `chat_guid:<guid>`, atau `chat_identifier:<id>`
 - Matrix: `@user:server`, `!room:server`, atau `#alias:server`
@@ -46,14 +46,14 @@ Format target (`--target`):
 
 Pencarian nama:
 
-- Untuk provider yang didukung (Discord/Slack/dll), nama channel seperti `Help` atau `#help` diselesaikan melalui cache direktori.
-- Saat cache tidak ditemukan, OpenClaw akan mencoba pencarian direktori langsung ketika provider mendukungnya.
+- Untuk penyedia yang didukung (Discord/Slack/dll), nama channel seperti `Help` atau `#help` diselesaikan melalui cache direktori.
+- Saat cache tidak cocok, OpenClaw akan mencoba pencarian direktori langsung jika penyedia mendukungnya.
 
-## Flag umum
+## Flag Umum
 
 - `--channel <name>`
 - `--account <id>`
-- `--target <dest>` (channel target atau pengguna untuk send/poll/read/dll)
+- `--target <dest>` (channel atau pengguna target untuk send/poll/read/dll)
 - `--targets <name>` (ulang; hanya broadcast)
 - `--json`
 - `--dry-run`
@@ -62,28 +62,28 @@ Pencarian nama:
 ## Perilaku SecretRef
 
 - `openclaw message` menyelesaikan SecretRef channel yang didukung sebelum menjalankan tindakan yang dipilih.
-- Resolusi dibatasi ke target tindakan aktif bila memungkinkan:
-  - berbatas channel ketika `--channel` ditetapkan (atau diinferensikan dari target berprefiks seperti `discord:...`)
-  - berbatas akun ketika `--account` ditetapkan (global channel + permukaan akun yang dipilih)
-  - ketika `--account` dihilangkan, OpenClaw tidak memaksa cakupan SecretRef akun `default`
-- SecretRef yang belum terselesaikan pada channel yang tidak terkait tidak memblokir tindakan pesan yang ditargetkan.
-- Jika SecretRef channel/akun yang dipilih belum terselesaikan, perintah gagal secara tertutup untuk tindakan tersebut.
+- Penyelesaian dicakup ke target tindakan aktif jika memungkinkan:
+  - tercakup channel saat `--channel` diatur (atau diinferensi dari target berprefiks seperti `discord:...`)
+  - tercakup akun saat `--account` diatur (global channel + permukaan akun yang dipilih)
+  - saat `--account` dihilangkan, OpenClaw tidak memaksa cakupan SecretRef akun `default`
+- SecretRef yang belum terselesaikan pada channel yang tidak terkait tidak memblokir tindakan pesan tertarget.
+- Jika SecretRef channel/akun yang dipilih belum terselesaikan, perintah gagal tertutup untuk tindakan tersebut.
 
 ## Tindakan
 
 ### Inti
 
 - `send`
-  - Channel: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - Channel: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
   - Wajib: `--target`, ditambah `--message`, `--media`, atau `--presentation`
   - Opsional: `--media`, `--presentation`, `--delivery`, `--pin`, `--reply-to`, `--thread-id`, `--gif-playback`, `--force-document`, `--silent`
-  - Payload presentasi bersama: `--presentation` mengirim blok semantik (`text`, `context`, `divider`, `buttons`, `select`) yang dirender inti melalui kapabilitas yang dideklarasikan channel terpilih. Lihat [Presentasi Pesan](/id/plugins/message-presentation).
-  - Preferensi pengiriman generik: `--delivery` menerima petunjuk pengiriman seperti `{ "pin": true }`; `--pin` adalah singkatan untuk pengiriman yang disematkan ketika channel mendukungnya.
+  - Payload presentasi bersama: `--presentation` mengirim blok semantik (`text`, `context`, `divider`, `buttons`, `select`) yang dirender inti melalui kapabilitas yang dinyatakan channel yang dipilih. Lihat [Presentasi Pesan](/id/plugins/message-presentation).
+  - Preferensi pengiriman generik: `--delivery` menerima petunjuk pengiriman seperti `{ "pin": true }`; `--pin` adalah singkatan untuk pengiriman tersemat saat channel mendukungnya.
   - Khusus Telegram: `--force-document` (mengirim gambar dan GIF sebagai dokumen untuk menghindari kompresi Telegram)
   - Khusus Telegram: `--thread-id` (id topik forum)
-  - Khusus Slack: `--thread-id` (timestamp thread; `--reply-to` menggunakan bidang yang sama)
+  - Khusus Slack: `--thread-id` (timestamp utas; `--reply-to` menggunakan bidang yang sama)
   - Telegram + Discord: `--silent`
-  - Khusus WhatsApp: `--gif-playback`
+  - Khusus WhatsApp: `--gif-playback`; WhatsApp Channels/Newsletters dialamati dengan JID `@newsletter` native-nya.
 
 - `poll`
   - Channel: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
@@ -109,7 +109,7 @@ Pencarian nama:
   - Channel: Discord/Slack/Matrix
   - Wajib: `--target`
   - Opsional: `--limit`, `--message-id`, `--before`, `--after`
-  - Khusus Slack: `--message-id` membaca timestamp pesan Slack tertentu; kombinasikan dengan `--thread-id` untuk membaca balasan thread yang tepat.
+  - Khusus Slack: `--message-id` membaca timestamp pesan Slack tertentu; gabungkan dengan `--thread-id` untuk membaca balasan utas yang tepat.
   - Khusus Discord: `--around`
 
 - `edit`
@@ -131,14 +131,14 @@ Pencarian nama:
 - `permissions`
   - Channel: Discord/Matrix
   - Wajib: `--target`
-  - Khusus Matrix: tersedia ketika enkripsi Matrix diaktifkan dan tindakan verifikasi diizinkan
+  - Khusus Matrix: tersedia saat enkripsi Matrix diaktifkan dan tindakan verifikasi diizinkan
 
 - `search`
   - Channel: Discord
   - Wajib: `--guild-id`, `--query`
   - Opsional: `--channel-id`, `--channel-ids` (ulang), `--author-id`, `--author-ids` (ulang), `--limit`
 
-### Thread
+### Utas
 
 - `thread create`
   - Channel: Discord
@@ -152,7 +152,7 @@ Pencarian nama:
 
 - `thread reply`
   - Channel: Discord
-  - Wajib: `--target` (id thread), `--message`
+  - Wajib: `--target` (id utas), `--message`
   - Opsional: `--media`, `--reply-to`
 
 ### Emoji
@@ -194,7 +194,7 @@ Pencarian nama:
 
 ### Moderasi (Discord)
 
-- `timeout`: `--guild-id`, `--user-id` (opsional `--duration-min` atau `--until`; hilangkan keduanya untuk menghapus timeout)
+- `timeout`: `--guild-id`, `--user-id` (`--duration-min` atau `--until` opsional; hilangkan keduanya untuk menghapus timeout)
 - `kick`: `--guild-id`, `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`, `--user-id` (+ `--delete-days`, `--reason`)
   - `timeout` juga mendukung `--reason`
@@ -202,7 +202,7 @@ Pencarian nama:
 ### Broadcast
 
 - `broadcast`
-  - Channel: channel apa pun yang dikonfigurasi; gunakan `--channel all` untuk menargetkan semua provider
+  - Channel: channel apa pun yang dikonfigurasi; gunakan `--channel all` untuk menargetkan semua penyedia
   - Wajib: `--targets <target...>`
   - Opsional: `--message`, `--media`, `--dry-run`
 
@@ -269,14 +269,14 @@ openclaw message poll --channel msteams \
   --poll-option Pizza --poll-option Sushi
 ```
 
-Beri reaksi di Slack:
+Bereaksi di Slack:
 
 ```
 openclaw message react --channel slack \
   --target C123 --message-id 456 --emoji "✅"
 ```
 
-Beri reaksi di grup Signal:
+Bereaksi di grup Signal:
 
 ```
 openclaw message react --channel signal \
@@ -309,4 +309,4 @@ openclaw message send --channel telegram --target @mychat \
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Kirim agen](/id/tools/agent-send)
+- [Pengiriman agen](/id/tools/agent-send)

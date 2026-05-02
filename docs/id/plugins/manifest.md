@@ -1,35 +1,35 @@
 ---
 read_when:
     - Anda sedang membangun Plugin OpenClaw
-    - Anda perlu menyediakan skema konfigurasi Plugin atau men-debug kesalahan validasi Plugin
+    - Anda perlu menyertakan skema konfigurasi Plugin atau men-debug kesalahan validasi Plugin
 summary: Persyaratan manifes Plugin + skema JSON (validasi konfigurasi ketat)
 title: Manifes Plugin
 x-i18n:
-    generated_at: "2026-05-02T09:27:36Z"
+    generated_at: "2026-05-02T20:48:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1e9cb6eff8d35cbd819178be9885801e2b84ad29cd12bbfd2f630467914366e4
+    source_hash: 2988275b976df8b883a4042ee389197e617d50e63f5a478ce248e7a643bb12fb
     source_path: plugins/manifest.md
     workflow: 16
 ---
 
 Halaman ini hanya untuk **manifes Plugin OpenClaw native**.
 
-Untuk tata letak bundle yang kompatibel, lihat [Bundle Plugin](/id/plugins/bundles).
+Untuk tata letak bundel yang kompatibel, lihat [Bundel Plugin](/id/plugins/bundles).
 
-Format bundle yang kompatibel menggunakan file manifes yang berbeda:
+Format bundel yang kompatibel menggunakan file manifes yang berbeda:
 
-- Bundle Codex: `.codex-plugin/plugin.json`
-- Bundle Claude: `.claude-plugin/plugin.json` atau tata letak komponen Claude default
-  tanpa manifes
-- Bundle Cursor: `.cursor-plugin/plugin.json`
+- Bundel Codex: `.codex-plugin/plugin.json`
+- Bundel Claude: `.claude-plugin/plugin.json` atau tata letak komponen Claude
+  default tanpa manifes
+- Bundel Cursor: `.cursor-plugin/plugin.json`
 
-OpenClaw juga mendeteksi otomatis tata letak bundle tersebut, tetapi tata letak itu tidak divalidasi
+OpenClaw juga mendeteksi otomatis tata letak bundel tersebut, tetapi tata letak itu tidak divalidasi
 terhadap skema `openclaw.plugin.json` yang dijelaskan di sini.
 
-Untuk bundle yang kompatibel, OpenClaw saat ini membaca metadata bundle beserta root
-skill yang dideklarasikan, root perintah Claude, default `settings.json` bundle Claude,
-default LSP bundle Claude, dan paket hook yang didukung ketika tata letaknya sesuai
+Untuk bundel yang kompatibel, OpenClaw saat ini membaca metadata bundel beserta root
+skill yang dideklarasikan, root perintah Claude, default `settings.json` bundel Claude,
+default LSP bundel Claude, dan paket hook yang didukung ketika tata letaknya sesuai
 dengan ekspektasi runtime OpenClaw.
 
 Setiap Plugin OpenClaw native **harus** mengirimkan file `openclaw.plugin.json` di
@@ -43,22 +43,22 @@ Untuk model kapabilitas native dan panduan kompatibilitas eksternal saat ini:
 
 ## Fungsi file ini
 
-`openclaw.plugin.json` adalah metadata yang dibaca OpenClaw **sebelum memuat kode
-Plugin Anda**. Semua hal di bawah ini harus cukup ringan untuk diperiksa tanpa menjalankan
+`openclaw.plugin.json` adalah metadata yang dibaca OpenClaw **sebelum memuat
+kode Plugin Anda**. Semua hal di bawah ini harus cukup ringan untuk diperiksa tanpa memulai
 runtime Plugin.
 
 **Gunakan untuk:**
 
 - identitas Plugin, validasi konfigurasi, dan petunjuk UI konfigurasi
-- metadata auth, onboarding, dan penyiapan (alias, auto-enable, variabel env penyedia, pilihan auth)
-- petunjuk aktivasi untuk permukaan control-plane
-- kepemilikan singkat keluarga model
+- metadata autentikasi, onboarding, dan penyiapan (alias, pengaktifan otomatis, variabel env penyedia, pilihan autentikasi)
+- petunjuk aktivasi untuk surface control-plane
+- kepemilikan shorthand keluarga model
 - snapshot kepemilikan kapabilitas statis (`contracts`)
 - metadata runner QA yang dapat diperiksa host `openclaw qa` bersama
-- metadata konfigurasi khusus channel yang digabungkan ke permukaan katalog dan validasi
+- metadata konfigurasi khusus kanal yang digabungkan ke surface katalog dan validasi
 
 **Jangan gunakan untuk:** mendaftarkan perilaku runtime, mendeklarasikan entrypoint kode,
-atau metadata instalasi npm. Hal-hal tersebut berada di kode Plugin Anda dan `package.json`.
+atau metadata instalasi npm. Hal itu berada di kode Plugin Anda dan `package.json`.
 
 ## Contoh minimal
 
@@ -150,59 +150,59 @@ atau metadata instalasi npm. Hal-hal tersebut berada di kode Plugin Anda dan `pa
 }
 ```
 
-## Referensi field tingkat atas
+## Referensi kolom tingkat atas
 
-| Bidang                               | Wajib | Tipe                             | Artinya                                                                                                                                                                                                                                           |
-| ------------------------------------ | ----- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                                 | Ya    | `string`                         | Id Plugin kanonis. Ini adalah id yang digunakan di `plugins.entries.<id>`.                                                                                                                                                                        |
-| `configSchema`                       | Ya    | `object`                         | JSON Schema sebaris untuk konfigurasi Plugin ini.                                                                                                                                                                                                |
-| `enabledByDefault`                   | Tidak | `true`                           | Menandai Plugin bawaan sebagai aktif secara default. Hilangkan bidang ini, atau tetapkan nilai non-`true` apa pun, agar Plugin tetap dinonaktifkan secara default.                                                                               |
-| `legacyPluginIds`                    | Tidak | `string[]`                       | Id lama yang dinormalisasi ke id Plugin kanonis ini.                                                                                                                                                                                             |
-| `autoEnableWhenConfiguredProviders`  | Tidak | `string[]`                       | Id penyedia yang harus mengaktifkan Plugin ini secara otomatis saat autentikasi, konfigurasi, atau referensi model menyebutkannya.                                                                                                                |
-| `kind`                               | Tidak | `"memory"` \| `"context-engine"` | Mendeklarasikan jenis Plugin eksklusif yang digunakan oleh `plugins.slots.*`.                                                                                                                                                                    |
-| `channels`                           | Tidak | `string[]`                       | Id saluran yang dimiliki Plugin ini. Digunakan untuk penemuan dan validasi konfigurasi.                                                                                                                                                          |
-| `providers`                          | Tidak | `string[]`                       | Id penyedia yang dimiliki Plugin ini.                                                                                                                                                                                                            |
-| `providerDiscoveryEntry`             | Tidak | `string`                         | Jalur modul penemuan penyedia ringan, relatif terhadap root Plugin, untuk metadata katalog penyedia berskup manifest yang dapat dimuat tanpa mengaktifkan runtime Plugin lengkap.                                                                |
-| `modelSupport`                       | Tidak | `object`                         | Metadata keluarga model singkat milik manifest yang digunakan untuk memuat otomatis Plugin sebelum runtime.                                                                                                                                       |
-| `modelCatalog`                       | Tidak | `object`                         | Metadata katalog model deklaratif untuk penyedia yang dimiliki Plugin ini. Ini adalah kontrak control-plane untuk daftar hanya baca, onboarding, pemilih model, alias, dan penekanan di masa mendatang tanpa memuat runtime Plugin.              |
-| `modelPricing`                       | Tidak | `object`                         | Kebijakan pencarian harga eksternal milik penyedia. Gunakan untuk mengecualikan penyedia lokal/self-hosted dari katalog harga jarak jauh atau memetakan referensi penyedia ke id katalog OpenRouter/LiteLLM tanpa meng-hardcode id penyedia di core. |
-| `modelIdNormalization`               | Tidak | `object`                         | Pembersihan alias/prefiks id model milik penyedia yang harus berjalan sebelum runtime penyedia dimuat.                                                                                                                                           |
-| `providerEndpoints`                  | Tidak | `object[]`                       | Metadata host/baseUrl endpoint milik manifest untuk rute penyedia yang harus diklasifikasikan core sebelum runtime penyedia dimuat.                                                                                                              |
-| `providerRequest`                    | Tidak | `object`                         | Metadata keluarga penyedia dan kompatibilitas permintaan yang ringan, digunakan oleh kebijakan permintaan generik sebelum runtime penyedia dimuat.                                                                                               |
-| `cliBackends`                        | Tidak | `string[]`                       | Id backend inferensi CLI yang dimiliki Plugin ini. Digunakan untuk aktivasi otomatis saat startup dari referensi konfigurasi eksplisit.                                                                                                          |
-| `syntheticAuthRefs`                  | Tidak | `string[]`                       | Referensi penyedia atau backend CLI yang hook autentikasi sintetis milik Plugin-nya harus diperiksa selama penemuan model cold sebelum runtime dimuat.                                                                                          |
-| `nonSecretAuthMarkers`               | Tidak | `string[]`                       | Nilai kunci API placeholder milik Plugin bawaan yang merepresentasikan status kredensial lokal, OAuth, atau ambient yang bukan rahasia.                                                                                                          |
-| `commandAliases`                     | Tidak | `object[]`                       | Nama perintah yang dimiliki Plugin ini yang harus menghasilkan diagnostik konfigurasi dan CLI sadar Plugin sebelum runtime dimuat.                                                                                                               |
-| `providerAuthEnvVars`                | Tidak | `Record<string, string[]>`       | Metadata env kompatibilitas yang tidak digunakan lagi untuk pencarian autentikasi/status penyedia. Lebih pilih `setup.providers[].envVars` untuk Plugin baru; OpenClaw masih membacanya selama jendela deprekasi.                               |
-| `providerAuthAliases`                | Tidak | `Record<string, string>`         | Id penyedia yang harus memakai ulang id penyedia lain untuk pencarian autentikasi, misalnya penyedia coding yang berbagi kunci API penyedia dasar dan profil autentikasi.                                                                        |
-| `channelEnvVars`                     | Tidak | `Record<string, string[]>`       | Metadata env saluran ringan yang dapat diperiksa OpenClaw tanpa memuat kode Plugin. Gunakan ini untuk penyiapan saluran berbasis env atau permukaan autentikasi yang harus terlihat oleh helper startup/konfigurasi generik.                    |
-| `providerAuthChoices`                | Tidak | `object[]`                       | Metadata pilihan autentikasi ringan untuk pemilih onboarding, resolusi penyedia pilihan, dan wiring flag CLI sederhana.                                                                                                                          |
-| `activation`                         | Tidak | `object`                         | Metadata perencana aktivasi ringan untuk pemuatan yang dipicu oleh startup, penyedia, perintah, saluran, rute, dan kapabilitas. Hanya metadata; runtime Plugin tetap memiliki perilaku aktual.                                                  |
-| `setup`                              | Tidak | `object`                         | Deskriptor penyiapan/onboarding ringan yang dapat diperiksa oleh permukaan penemuan dan penyiapan tanpa memuat runtime Plugin.                                                                                                                   |
-| `qaRunners`                          | Tidak | `object[]`                       | Deskriptor runner QA ringan yang digunakan oleh host `openclaw qa` bersama sebelum runtime Plugin dimuat.                                                                                                                                        |
-| `contracts`                          | Tidak | `object`                         | Snapshot kepemilikan kapabilitas statis untuk hook autentikasi eksternal, speech, transkripsi realtime, suara realtime, pemahaman media, pembuatan gambar, pembuatan musik, pembuatan video, web-fetch, pencarian web, dan kepemilikan tool. |
-| `mediaUnderstandingProviderMetadata` | Tidak | `Record<string, object>`         | Default pemahaman media ringan untuk id penyedia yang dideklarasikan di `contracts.mediaUnderstandingProviders`.                                                                                                                                 |
-| `imageGenerationProviderMetadata`    | Tidak | `Record<string, object>`         | Metadata autentikasi pembuatan gambar ringan untuk id penyedia yang dideklarasikan di `contracts.imageGenerationProviders`, termasuk alias autentikasi dan guard base-url milik penyedia.                                                       |
-| `videoGenerationProviderMetadata`    | Tidak | `Record<string, object>`         | Metadata autentikasi pembuatan video ringan untuk id penyedia yang dideklarasikan di `contracts.videoGenerationProviders`, termasuk alias autentikasi dan guard base-url milik penyedia.                                                        |
-| `musicGenerationProviderMetadata`    | Tidak | `Record<string, object>`         | Metadata autentikasi pembuatan musik ringan untuk id penyedia yang dideklarasikan di `contracts.musicGenerationProviders`, termasuk alias autentikasi dan guard base-url milik penyedia.                                                        |
-| `toolMetadata`                       | Tidak | `Record<string, object>`         | Metadata ketersediaan ringan untuk tool milik Plugin yang dideklarasikan di `contracts.tools`. Gunakan saat sebuah tool tidak boleh memuat runtime kecuali ada bukti konfigurasi, env, atau autentikasi.                                        |
-| `channelConfigs`                     | Tidak | `Record<string, object>`         | Metadata konfigurasi saluran milik manifest yang digabungkan ke permukaan penemuan dan validasi sebelum runtime dimuat.                                                                                                                          |
-| `skills`                             | Tidak | `string[]`                       | Direktori Skill yang akan dimuat, relatif terhadap root Plugin.                                                                                                                                                                                  |
-| `name`                               | Tidak | `string`                         | Nama Plugin yang mudah dibaca manusia.                                                                                                                                                                                                          |
-| `description`                        | Tidak       | `string`                         | Ringkasan singkat yang ditampilkan di permukaan Plugin.                                                                                                                                                                                             |
-| `version`                            | Tidak       | `string`                         | Versi Plugin informatif.                                                                                                                                                                                                       |
-| `uiHints`                            | Tidak       | `Record<string, object>`         | Label UI, placeholder, dan petunjuk sensitivitas untuk bidang konfigurasi.                                                                                                                                                                   |
+| Bidang                               | Wajib | Tipe                             | Artinya                                                                                                                                                                                                                             |
+| ------------------------------------ | ----- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                                 | Ya    | `string`                         | id Plugin kanonis. Ini adalah id yang digunakan dalam `plugins.entries.<id>`.                                                                                                                                                       |
+| `configSchema`                       | Ya    | `object`                         | JSON Schema sebaris untuk konfigurasi Plugin ini.                                                                                                                                                                                   |
+| `enabledByDefault`                   | Tidak | `true`                           | Menandai Plugin bawaan sebagai aktif secara default. Hilangkan, atau tetapkan nilai non-`true` apa pun, agar Plugin tetap nonaktif secara default.                                                                                  |
+| `legacyPluginIds`                    | Tidak | `string[]`                       | id lama yang dinormalisasi ke id Plugin kanonis ini.                                                                                                                                                                                |
+| `autoEnableWhenConfiguredProviders`  | Tidak | `string[]`                       | id penyedia yang seharusnya otomatis mengaktifkan Plugin ini saat autentikasi, konfigurasi, atau referensi model menyebutkannya.                                                                                                    |
+| `kind`                               | Tidak | `"memory"` \| `"context-engine"` | Mendeklarasikan jenis Plugin eksklusif yang digunakan oleh `plugins.slots.*`.                                                                                                                                                       |
+| `channels`                           | Tidak | `string[]`                       | id kanal yang dimiliki oleh Plugin ini. Digunakan untuk penemuan dan validasi konfigurasi.                                                                                                                                          |
+| `providers`                          | Tidak | `string[]`                       | id penyedia yang dimiliki oleh Plugin ini.                                                                                                                                                                                          |
+| `providerDiscoveryEntry`             | Tidak | `string`                         | Jalur modul penemuan penyedia ringan, relatif terhadap root Plugin, untuk metadata katalog penyedia berlingkup manifes yang dapat dimuat tanpa mengaktifkan seluruh waktu jalan Plugin.                                             |
+| `modelSupport`                       | Tidak | `object`                         | Metadata keluarga model ringkas yang dimiliki manifes dan digunakan untuk memuat otomatis Plugin sebelum waktu jalan.                                                                                                               |
+| `modelCatalog`                       | Tidak | `object`                         | Metadata katalog model deklaratif untuk penyedia yang dimiliki oleh Plugin ini. Ini adalah kontrak bidang kontrol untuk daftar baca-saja, onboarding, pemilih model, alias, dan supresi di masa mendatang tanpa memuat waktu jalan Plugin. |
+| `modelPricing`                       | Tidak | `object`                         | Kebijakan pencarian harga eksternal yang dimiliki penyedia. Gunakan ini untuk mengecualikan penyedia lokal/dihosting sendiri dari katalog harga jarak jauh atau memetakan referensi penyedia ke id katalog OpenRouter/LiteLLM tanpa menanamkan id penyedia secara keras di inti. |
+| `modelIdNormalization`               | Tidak | `object`                         | Pembersihan alias/prefiks id model yang dimiliki penyedia dan harus berjalan sebelum waktu jalan penyedia dimuat.                                                                                                                   |
+| `providerEndpoints`                  | Tidak | `object[]`                       | Metadata host/baseUrl endpoint yang dimiliki manifes untuk rute penyedia yang harus diklasifikasikan inti sebelum waktu jalan penyedia dimuat.                                                                                      |
+| `providerRequest`                    | Tidak | `object`                         | Metadata murah keluarga penyedia dan kompatibilitas permintaan yang digunakan oleh kebijakan permintaan generik sebelum waktu jalan penyedia dimuat.                                                                                |
+| `cliBackends`                        | Tidak | `string[]`                       | id backend inferensi CLI yang dimiliki oleh Plugin ini. Digunakan untuk aktivasi otomatis saat startup dari referensi konfigurasi eksplisit.                                                                                        |
+| `syntheticAuthRefs`                  | Tidak | `string[]`                       | Referensi penyedia atau backend CLI yang hook autentikasi sintetis milik Plugin-nya harus diperiksa selama penemuan model dingin sebelum waktu jalan dimuat.                                                                       |
+| `nonSecretAuthMarkers`               | Tidak | `string[]`                       | Nilai kunci API placeholder milik Plugin bawaan yang merepresentasikan status kredensial lokal, OAuth, atau sekitar yang bukan rahasia.                                                                                             |
+| `commandAliases`                     | Tidak | `object[]`                       | Nama perintah yang dimiliki oleh Plugin ini yang seharusnya menghasilkan diagnostik konfigurasi dan CLI sadar Plugin sebelum waktu jalan dimuat.                                                                                    |
+| `providerAuthEnvVars`                | Tidak | `Record<string, string[]>`       | Metadata lingkungan kompatibilitas yang tidak digunakan lagi untuk pencarian autentikasi/status penyedia. Utamakan `setup.providers[].envVars` untuk Plugin baru; OpenClaw masih membaca ini selama jendela deprekasi.              |
+| `providerAuthAliases`                | Tidak | `Record<string, string>`         | id penyedia yang seharusnya menggunakan ulang id penyedia lain untuk pencarian autentikasi, misalnya penyedia pengodean yang berbagi kunci API penyedia dasar dan profil autentikasi.                                              |
+| `channelEnvVars`                     | Tidak | `Record<string, string[]>`       | Metadata lingkungan kanal murah yang dapat diperiksa OpenClaw tanpa memuat kode Plugin. Gunakan ini untuk penyiapan kanal berbasis lingkungan atau permukaan autentikasi yang seharusnya terlihat oleh helper startup/konfigurasi generik. |
+| `providerAuthChoices`                | Tidak | `object[]`                       | Metadata pilihan autentikasi murah untuk pemilih onboarding, resolusi penyedia pilihan, dan pengawatan flag CLI sederhana.                                                                                                         |
+| `activation`                         | Tidak | `object`                         | Metadata perencana aktivasi murah untuk pemuatan yang dipicu startup, penyedia, perintah, kanal, rute, dan kapabilitas. Hanya metadata; waktu jalan Plugin tetap memiliki perilaku aktual.                                         |
+| `setup`                              | Tidak | `object`                         | Deskriptor penyiapan/onboarding murah yang dapat diperiksa permukaan penemuan dan penyiapan tanpa memuat waktu jalan Plugin.                                                                                                       |
+| `qaRunners`                          | Tidak | `object[]`                       | Deskriptor runner QA murah yang digunakan oleh host `openclaw qa` bersama sebelum waktu jalan Plugin dimuat.                                                                                                                        |
+| `contracts`                          | Tidak | `object`                         | Snapshot kepemilikan kapabilitas statis untuk hook autentikasi eksternal, ucapan, transkripsi realtime, suara realtime, pemahaman media, pembuatan gambar, pembuatan musik, pembuatan video, pengambilan web, pencarian web, dan kepemilikan alat. |
+| `mediaUnderstandingProviderMetadata` | Tidak | `Record<string, object>`         | Default pemahaman media murah untuk id penyedia yang dideklarasikan dalam `contracts.mediaUnderstandingProviders`.                                                                                                                  |
+| `imageGenerationProviderMetadata`    | Tidak | `Record<string, object>`         | Metadata autentikasi pembuatan gambar murah untuk id penyedia yang dideklarasikan dalam `contracts.imageGenerationProviders`, termasuk alias autentikasi dan penjaga base-url yang dimiliki penyedia.                              |
+| `videoGenerationProviderMetadata`    | Tidak | `Record<string, object>`         | Metadata autentikasi pembuatan video murah untuk id penyedia yang dideklarasikan dalam `contracts.videoGenerationProviders`, termasuk alias autentikasi dan penjaga base-url yang dimiliki penyedia.                               |
+| `musicGenerationProviderMetadata`    | Tidak | `Record<string, object>`         | Metadata autentikasi pembuatan musik murah untuk id penyedia yang dideklarasikan dalam `contracts.musicGenerationProviders`, termasuk alias autentikasi dan penjaga base-url yang dimiliki penyedia.                               |
+| `toolMetadata`                       | Tidak | `Record<string, object>`         | Metadata ketersediaan murah untuk alat milik Plugin yang dideklarasikan dalam `contracts.tools`. Gunakan ini saat sebuah alat tidak seharusnya memuat waktu jalan kecuali ada bukti konfigurasi, lingkungan, atau autentikasi.     |
+| `channelConfigs`                     | Tidak | `Record<string, object>`         | Metadata konfigurasi kanal yang dimiliki manifes dan digabungkan ke permukaan penemuan dan validasi sebelum waktu jalan dimuat.                                                                                                     |
+| `skills`                             | Tidak | `string[]`                       | Direktori Skills untuk dimuat, relatif terhadap root Plugin.                                                                                                                                                                        |
+| `name`                               | Tidak | `string`                         | Nama Plugin yang mudah dibaca manusia.                                                                                                                                                                                              |
+| `description`                        | Tidak    | `string`                         | Ringkasan singkat yang ditampilkan di permukaan Plugin.                                                                                                                                                                             |
+| `version`                            | Tidak    | `string`                         | Versi Plugin untuk informasi.                                                                                                                                                                                                       |
+| `uiHints`                            | Tidak    | `Record<string, object>`         | Label UI, placeholder, dan petunjuk sensitivitas untuk bidang konfigurasi.                                                                                                                                                          |
 
-## Referensi metadata penyedia pembuatan
+## Referensi metadata penyedia generasi
 
-Kolom metadata penyedia pembuatan menjelaskan sinyal autentikasi statis untuk
+Bidang metadata penyedia generasi menjelaskan sinyal auth statis untuk
 penyedia yang dideklarasikan dalam daftar `contracts.*GenerationProviders` yang sesuai.
-OpenClaw membaca kolom ini sebelum runtime penyedia dimuat sehingga alat inti dapat
-memutuskan apakah penyedia pembuatan tersedia tanpa mengimpor setiap
+OpenClaw membaca bidang-bidang ini sebelum runtime penyedia dimuat agar alat inti dapat
+memutuskan apakah penyedia generasi tersedia tanpa mengimpor setiap
 Plugin penyedia.
 
-Gunakan kolom ini hanya untuk fakta deklaratif yang murah. Transport, transformasi
-permintaan, penyegaran token, validasi kredensial, dan perilaku pembuatan aktual
+Gunakan bidang-bidang ini hanya untuk fakta deklaratif yang murah. Transport, transformasi
+permintaan, penyegaran token, validasi kredensial, dan perilaku generasi aktual
 tetap berada di runtime Plugin.
 
 ```json
@@ -247,53 +247,53 @@ tetap berada di runtime Plugin.
 
 Setiap entri metadata mendukung:
 
-| Bidang          | Wajib | Tipe       | Maknanya                                                                                                                       |
-| --------------- | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `aliases`       | Tidak | `string[]` | ID penyedia tambahan yang harus dihitung sebagai alias autentikasi statis untuk penyedia pembuatan.                           |
-| `authProviders` | Tidak | `string[]` | ID penyedia yang profil autentikasi terkonfigurasinya harus dihitung sebagai autentikasi untuk penyedia pembuatan ini.        |
-| `configSignals` | Tidak | `object[]` | Sinyal ketersediaan murah berbasis konfigurasi saja untuk penyedia lokal atau self-hosted yang dapat dikonfigurasi tanpa profil autentikasi atau variabel env. |
-| `authSignals`   | Tidak | `object[]` | Sinyal autentikasi eksplisit. Jika ada, ini menggantikan kumpulan sinyal default dari ID penyedia, `aliases`, dan `authProviders`. |
+| Bidang          | Wajib | Tipe       | Artinya                                                                                                                               |
+| --------------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `aliases`       | Tidak | `string[]` | Id penyedia tambahan yang harus dihitung sebagai alias auth statis untuk penyedia generasi.                                           |
+| `authProviders` | Tidak | `string[]` | Id penyedia yang profil auth terkonfigurasinya harus dihitung sebagai auth untuk penyedia generasi ini.                               |
+| `configSignals` | Tidak | `object[]` | Sinyal ketersediaan murah hanya-konfigurasi untuk penyedia lokal atau swakelola yang dapat dikonfigurasi tanpa profil auth atau env vars. |
+| `authSignals`   | Tidak | `object[]` | Sinyal auth eksplisit. Jika ada, ini menggantikan kumpulan sinyal default dari id penyedia, `aliases`, dan `authProviders`.            |
 
 Setiap entri `configSignals` mendukung:
 
-| Bidang        | Wajib | Tipe       | Maknanya                                                                                                                                                                         |
-| ------------- | ----- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rootPath`    | Ya    | `string`   | Path titik ke objek konfigurasi milik Plugin yang akan diperiksa, misalnya `plugins.entries.example.config`.                                                                     |
-| `overlayPath` | Tidak | `string`   | Path titik di dalam konfigurasi root yang objeknya harus menimpa objek root sebelum mengevaluasi sinyal. Gunakan ini untuk konfigurasi khusus kapabilitas seperti `image`, `video`, atau `music`. |
-| `required`    | Tidak | `string[]` | Path titik di dalam konfigurasi efektif yang harus memiliki nilai terkonfigurasi. String tidak boleh kosong; objek dan array tidak boleh kosong.                                |
-| `requiredAny` | Tidak | `string[]` | Path titik di dalam konfigurasi efektif yang setidaknya salah satunya harus memiliki nilai terkonfigurasi.                                                                       |
-| `mode`        | Tidak | `object`   | Guard mode string opsional di dalam konfigurasi efektif. Gunakan ini ketika ketersediaan berbasis konfigurasi saja hanya berlaku untuk satu mode.                                |
+| Bidang        | Wajib | Tipe       | Artinya                                                                                                                                                                            |
+| ------------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rootPath`    | Ya    | `string`   | Jalur titik ke objek konfigurasi milik Plugin yang akan diperiksa, misalnya `plugins.entries.example.config`.                                                                     |
+| `overlayPath` | Tidak | `string`   | Jalur titik di dalam konfigurasi root yang objeknya harus menimpa objek root sebelum mengevaluasi sinyal. Gunakan ini untuk konfigurasi khusus kapabilitas seperti `image`, `video`, atau `music`. |
+| `required`    | Tidak | `string[]` | Jalur titik di dalam konfigurasi efektif yang harus memiliki nilai terkonfigurasi. String harus tidak kosong; objek dan array tidak boleh kosong.                                  |
+| `requiredAny` | Tidak | `string[]` | Jalur titik di dalam konfigurasi efektif tempat setidaknya satu harus memiliki nilai terkonfigurasi.                                                                               |
+| `mode`        | Tidak | `object`   | Guard mode string opsional di dalam konfigurasi efektif. Gunakan ini ketika ketersediaan hanya-konfigurasi hanya berlaku untuk satu mode.                                          |
 
 Setiap guard `mode` mendukung:
 
-| Bidang       | Wajib | Tipe       | Maknanya                                                                       |
-| ------------ | ----- | ---------- | ------------------------------------------------------------------------------ |
-| `path`       | Tidak | `string`   | Path titik di dalam konfigurasi efektif. Default ke `mode`.                    |
-| `default`    | Tidak | `string`   | Nilai mode yang digunakan ketika konfigurasi menghilangkan path.               |
-| `allowed`    | Tidak | `string[]` | Jika ada, sinyal lolos hanya ketika mode efektif adalah salah satu nilai ini.  |
-| `disallowed` | Tidak | `string[]` | Jika ada, sinyal gagal ketika mode efektif adalah salah satu nilai ini.        |
+| Bidang        | Wajib | Tipe       | Artinya                                                                                  |
+| ------------ | ----- | ---------- | ---------------------------------------------------------------------------------------- |
+| `path`       | Tidak | `string`   | Jalur titik di dalam konfigurasi efektif. Default ke `mode`.                             |
+| `default`    | Tidak | `string`   | Nilai mode yang digunakan ketika konfigurasi menghilangkan jalur tersebut.               |
+| `allowed`    | Tidak | `string[]` | Jika ada, sinyal lolos hanya ketika mode efektif adalah salah satu dari nilai-nilai ini. |
+| `disallowed` | Tidak | `string[]` | Jika ada, sinyal gagal ketika mode efektif adalah salah satu dari nilai-nilai ini.       |
 
 Setiap entri `authSignals` mendukung:
 
-| Bidang           | Wajib | Tipe     | Maknanya                                                                                                                                                              |
-| ---------------- | ----- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`       | Ya    | `string` | ID penyedia yang akan diperiksa dalam profil autentikasi terkonfigurasi.                                                                                              |
-| `providerBaseUrl` | Tidak | `object` | Guard opsional yang membuat sinyal dihitung hanya ketika penyedia terkonfigurasi yang dirujuk menggunakan URL dasar yang diizinkan. Gunakan ini ketika alias autentikasi hanya valid untuk API tertentu. |
+| Bidang            | Wajib | Tipe     | Artinya                                                                                                                                                                  |
+| ----------------- | ----- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `provider`        | Ya    | `string` | Id penyedia yang akan diperiksa dalam profil auth terkonfigurasi.                                                                                                        |
+| `providerBaseUrl` | Tidak | `object` | Guard opsional yang membuat sinyal dihitung hanya ketika penyedia terkonfigurasi yang dirujuk menggunakan URL dasar yang diizinkan. Gunakan ini ketika alias auth hanya valid untuk API tertentu. |
 
 Setiap guard `providerBaseUrl` mendukung:
 
-| Bidang            | Wajib | Tipe       | Maknanya                                                                                                                                       |
-| ----------------- | ----- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `provider`        | Ya    | `string`   | ID konfigurasi penyedia yang `baseUrl`-nya harus diperiksa.                                                                                    |
-| `defaultBaseUrl`  | Tidak | `string`   | URL dasar yang diasumsikan ketika konfigurasi penyedia menghilangkan `baseUrl`.                                                               |
-| `allowedBaseUrls` | Ya    | `string[]` | URL dasar yang diizinkan untuk sinyal autentikasi ini. Sinyal diabaikan ketika URL dasar terkonfigurasi atau default tidak cocok dengan salah satu nilai yang dinormalisasi ini. |
+| Bidang            | Wajib | Tipe       | Artinya                                                                                                                                          |
+| ----------------- | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `provider`        | Ya    | `string`   | Id konfigurasi penyedia yang `baseUrl`-nya harus diperiksa.                                                                                      |
+| `defaultBaseUrl`  | Tidak | `string`   | URL dasar yang diasumsikan ketika konfigurasi penyedia menghilangkan `baseUrl`.                                                                  |
+| `allowedBaseUrls` | Ya    | `string[]` | URL dasar yang diizinkan untuk sinyal auth ini. Sinyal diabaikan ketika URL dasar terkonfigurasi atau default tidak cocok dengan salah satu nilai ternormalisasi ini. |
 
 ## Referensi metadata alat
 
-`toolMetadata` menggunakan bentuk `configSignals` dan `authSignals` yang sama dengan
-metadata penyedia pembuatan, dengan kunci berdasarkan nama alat. `contracts.tools` mendeklarasikan
-kepemilikan. `toolMetadata` mendeklarasikan bukti ketersediaan murah sehingga OpenClaw dapat
-menghindari impor runtime Plugin hanya agar factory alatnya mengembalikan `null`.
+`toolMetadata` menggunakan bentuk `configSignals` dan `authSignals` yang sama seperti
+metadata penyedia generasi, dengan kunci berupa nama alat. `contracts.tools` mendeklarasikan
+kepemilikan. `toolMetadata` mendeklarasikan bukti ketersediaan murah agar OpenClaw dapat
+menghindari mengimpor runtime Plugin hanya untuk membuat factory alatnya mengembalikan `null`.
 
 ```json
 {
@@ -323,41 +323,41 @@ menghindari impor runtime Plugin hanya agar factory alatnya mengembalikan `null`
 ```
 
 Jika sebuah alat tidak memiliki `toolMetadata`, OpenClaw mempertahankan perilaku yang ada dan
-memuat Plugin pemilik ketika kontrak alat cocok dengan kebijakan. Untuk alat hot-path
-yang factory-nya bergantung pada autentikasi/konfigurasi, penulis Plugin sebaiknya mendeklarasikan
+memuat Plugin pemilik ketika kontrak alat cocok dengan kebijakan. Untuk alat jalur-panas
+yang factory-nya bergantung pada auth/config, penulis Plugin harus mendeklarasikan
 `toolMetadata` alih-alih membuat inti mengimpor runtime untuk bertanya.
 
 ## Referensi providerAuthChoices
 
-Setiap entri `providerAuthChoices` menjelaskan satu pilihan onboarding atau autentikasi.
+Setiap entri `providerAuthChoices` menjelaskan satu pilihan onboarding atau auth.
 OpenClaw membaca ini sebelum runtime penyedia dimuat.
-Daftar penyiapan penyedia menggunakan pilihan manifes ini, pilihan penyiapan turunan deskriptor,
+Daftar penyiapan penyedia menggunakan pilihan manifes ini, pilihan penyiapan turunan descriptor,
 dan metadata katalog instal tanpa memuat runtime penyedia.
 
-| Bidang                | Wajib | Tipe                                            | Maknanya                                                                                              |
-| --------------------- | ----- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `provider`            | Ya    | `string`                                        | ID penyedia tempat pilihan ini berada.                                                                |
-| `method`              | Ya    | `string`                                        | ID metode autentikasi yang akan didispatch.                                                           |
-| `choiceId`            | Ya    | `string`                                        | ID pilihan autentikasi stabil yang digunakan oleh alur onboarding dan CLI.                            |
-| `choiceLabel`         | Tidak | `string`                                        | Label yang terlihat oleh pengguna. Jika dihilangkan, OpenClaw fallback ke `choiceId`.                 |
-| `choiceHint`          | Tidak | `string`                                        | Teks bantuan singkat untuk pemilih.                                                                   |
-| `assistantPriority`   | Tidak | `number`                                        | Nilai lebih rendah diurutkan lebih awal di pemilih interaktif yang digerakkan asisten.                |
-| `assistantVisibility` | Tidak | `"visible"` \| `"manual-only"`                  | Sembunyikan pilihan dari pemilih asisten sambil tetap mengizinkan pemilihan CLI manual.               |
-| `deprecatedChoiceIds` | Tidak | `string[]`                                      | ID pilihan lama yang harus mengarahkan pengguna ke pilihan pengganti ini.                             |
-| `groupId`             | Tidak | `string`                                        | ID grup opsional untuk mengelompokkan pilihan terkait.                                                |
-| `groupLabel`          | Tidak | `string`                                        | Label yang terlihat oleh pengguna untuk grup tersebut.                                                |
-| `groupHint`           | Tidak | `string`                                        | Teks bantuan singkat untuk grup.                                                                      |
-| `optionKey`           | Tidak | `string`                                        | Kunci opsi internal untuk alur autentikasi satu-flag sederhana.                                       |
-| `cliFlag`             | Tidak | `string`                                        | Nama flag CLI, seperti `--openrouter-api-key`.                                                        |
-| `cliOption`           | Tidak | `string`                                        | Bentuk opsi CLI lengkap, seperti `--openrouter-api-key <key>`.                                        |
-| `cliDescription`      | Tidak | `string`                                        | Deskripsi yang digunakan dalam bantuan CLI.                                                           |
-| `onboardingScopes`    | Tidak | `Array<"text-inference" \| "image-generation">` | Permukaan onboarding tempat pilihan ini harus muncul. Jika dihilangkan, default ke `["text-inference"]`. |
+| Bidang                | Wajib | Tipe                                            | Artinya                                                                                              |
+| --------------------- | ----- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `provider`            | Ya    | `string`                                        | Id penyedia tempat pilihan ini berada.                                                               |
+| `method`              | Ya    | `string`                                        | Id metode auth untuk dikirim.                                                                        |
+| `choiceId`            | Ya    | `string`                                        | Id pilihan auth stabil yang digunakan oleh alur onboarding dan CLI.                                  |
+| `choiceLabel`         | Tidak | `string`                                        | Label yang terlihat oleh pengguna. Jika dihilangkan, OpenClaw kembali menggunakan `choiceId`.        |
+| `choiceHint`          | Tidak | `string`                                        | Teks bantuan singkat untuk pemilih.                                                                  |
+| `assistantPriority`   | Tidak | `number`                                        | Nilai yang lebih rendah diurutkan lebih awal dalam pemilih interaktif yang digerakkan asisten.       |
+| `assistantVisibility` | Tidak | `"visible"` \| `"manual-only"`                  | Sembunyikan pilihan dari pemilih asisten sambil tetap mengizinkan pemilihan CLI manual.              |
+| `deprecatedChoiceIds` | Tidak | `string[]`                                      | Id pilihan lama yang harus mengarahkan pengguna ke pilihan pengganti ini.                            |
+| `groupId`             | Tidak | `string`                                        | Id grup opsional untuk mengelompokkan pilihan terkait.                                               |
+| `groupLabel`          | Tidak | `string`                                        | Label yang terlihat oleh pengguna untuk grup tersebut.                                               |
+| `groupHint`           | Tidak | `string`                                        | Teks bantuan singkat untuk grup.                                                                     |
+| `optionKey`           | Tidak | `string`                                        | Kunci opsi internal untuk alur auth sederhana satu-flag.                                             |
+| `cliFlag`             | Tidak | `string`                                        | Nama flag CLI, seperti `--openrouter-api-key`.                                                       |
+| `cliOption`           | Tidak | `string`                                        | Bentuk opsi CLI lengkap, seperti `--openrouter-api-key <key>`.                                       |
+| `cliDescription`      | Tidak | `string`                                        | Deskripsi yang digunakan dalam bantuan CLI.                                                          |
+| `onboardingScopes`    | Tidak | `Array<"text-inference" \| "image-generation">` | Permukaan onboarding tempat pilihan ini harus muncul. Jika dihilangkan, defaultnya adalah `["text-inference"]`. |
 
 ## Referensi commandAliases
 
-Gunakan `commandAliases` saat plugin memiliki nama perintah runtime yang mungkin
+Gunakan `commandAliases` ketika Plugin memiliki nama perintah runtime yang mungkin
 keliru dimasukkan pengguna ke `plugins.allow` atau dicoba dijalankan sebagai perintah CLI root. OpenClaw
-menggunakan metadata ini untuk diagnostik tanpa mengimpor kode runtime plugin.
+menggunakan metadata ini untuk diagnostik tanpa mengimpor kode runtime Plugin.
 
 ```json
 {
@@ -371,43 +371,43 @@ menggunakan metadata ini untuk diagnostik tanpa mengimpor kode runtime plugin.
 }
 ```
 
-| Bidang       | Wajib | Tipe              | Artinya                                                                 |
+| Bidang       | Wajib | Jenis             | Artinya                                                                 |
 | ------------ | ----- | ----------------- | ----------------------------------------------------------------------- |
-| `name`       | Ya    | `string`          | Nama perintah yang menjadi milik plugin ini.                            |
-| `kind`       | Tidak | `"runtime-slash"` | Menandai alias sebagai perintah slash chat, bukan perintah CLI root.     |
-| `cliCommand` | Tidak | `string`          | Perintah CLI root terkait yang disarankan untuk operasi CLI, jika ada.   |
+| `name`       | Ya    | `string`          | Nama perintah yang dimiliki Plugin ini.                                 |
+| `kind`       | Tidak | `"runtime-slash"` | Menandai alias sebagai perintah slash obrolan, bukan perintah CLI root. |
+| `cliCommand` | Tidak | `string`          | Perintah CLI root terkait untuk disarankan bagi operasi CLI, jika ada.  |
 
 ## referensi activation
 
-Gunakan `activation` saat plugin dapat mendeklarasikan dengan murah peristiwa control-plane mana
+Gunakan `activation` ketika Plugin dapat mendeklarasikan secara murah peristiwa bidang kontrol mana
 yang harus menyertakannya dalam rencana aktivasi/pemuatan.
 
-Blok ini adalah metadata planner, bukan API lifecycle. Ini tidak mendaftarkan
+Blok ini adalah metadata perencana, bukan API daur hidup. Blok ini tidak mendaftarkan
 perilaku runtime, tidak menggantikan `register(...)`, dan tidak menjanjikan bahwa
-kode plugin sudah dieksekusi. Planner aktivasi menggunakan bidang-bidang ini untuk
-mempersempit kandidat plugin sebelum kembali ke metadata kepemilikan manifes yang ada
+kode Plugin sudah dieksekusi. Perencana aktivasi menggunakan bidang-bidang ini untuk
+mempersempit kandidat Plugin sebelum kembali ke metadata kepemilikan manifes yang ada
 seperti `providers`, `channels`, `commandAliases`, `setup.providers`,
 `contracts.tools`, dan hook.
 
 Pilih metadata tersempit yang sudah mendeskripsikan kepemilikan. Gunakan
 `providers`, `channels`, `commandAliases`, deskriptor setup, atau `contracts`
-saat bidang-bidang tersebut mengekspresikan relasinya. Gunakan `activation` untuk petunjuk
-planner tambahan yang tidak dapat direpresentasikan oleh bidang kepemilikan tersebut.
+ketika bidang-bidang tersebut menyatakan hubungan itu. Gunakan `activation` untuk petunjuk perencana
+tambahan yang tidak dapat direpresentasikan oleh bidang kepemilikan tersebut.
 Gunakan `cliBackends` tingkat atas untuk alias runtime CLI seperti `claude-cli`,
 `codex-cli`, atau `google-gemini-cli`; `activation.onAgentHarnesses` hanya untuk
 id harness agen tertanam yang belum memiliki bidang kepemilikan.
 
-Blok ini hanya metadata. Ini tidak mendaftarkan perilaku runtime, dan tidak
-menggantikan `register(...)`, `setupEntry`, atau entrypoint runtime/plugin lainnya.
-Konsumen saat ini menggunakannya sebagai petunjuk penyempitan sebelum pemuatan plugin yang lebih luas, sehingga
+Blok ini hanya metadata. Blok ini tidak mendaftarkan perilaku runtime, dan tidak
+menggantikan `register(...)`, `setupEntry`, atau entrypoint runtime/Plugin lainnya.
+Konsumen saat ini menggunakannya sebagai petunjuk penyempitan sebelum pemuatan Plugin yang lebih luas, sehingga
 metadata aktivasi non-startup yang hilang biasanya hanya berdampak pada performa; hal itu
-tidak semestinya mengubah kebenaran selama fallback kepemilikan manifes masih ada.
+tidak boleh mengubah kebenaran selama fallback kepemilikan manifes masih ada.
 
-Setiap plugin harus menetapkan `activation.onStartup` secara sengaja. Setel ke `true`
-hanya saat plugin harus berjalan selama startup Gateway. Setel ke `false` saat
-plugin tidak aktif saat startup dan seharusnya dimuat hanya dari pemicu yang lebih sempit.
-Menghilangkan `onStartup` tidak lagi memuat plugin saat startup secara implisit; gunakan metadata
-aktivasi eksplisit untuk startup, channel, config, agent-harness, memory, atau
+Setiap Plugin harus menetapkan `activation.onStartup` secara sengaja. Tetapkan ke `true`
+hanya ketika Plugin harus berjalan selama startup Gateway. Tetapkan ke `false` ketika
+Plugin tidak aktif saat startup dan harus dimuat hanya dari pemicu yang lebih sempit.
+Menghilangkan `onStartup` tidak lagi memuat Plugin saat startup secara implisit; gunakan metadata
+aktivasi eksplisit untuk startup, channel, konfigurasi, harness agen, memori, atau
 pemicu aktivasi lain yang lebih sempit.
 
 ```json
@@ -424,45 +424,45 @@ pemicu aktivasi lain yang lebih sempit.
 }
 ```
 
-| Bidang             | Wajib | Tipe                                                 | Artinya                                                                                                                                                                                        |
+| Bidang             | Wajib | Jenis                                                | Artinya                                                                                                                                                                                        |
 | ------------------ | ----- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `onStartup`        | Tidak | `boolean`                                            | Aktivasi startup Gateway eksplisit. Setiap plugin harus menetapkannya. `true` mengimpor plugin selama startup; `false` membuatnya lazy saat startup kecuali pemicu lain yang cocok membutuhkan pemuatan. |
-| `onProviders`      | Tidak | `string[]`                                           | Id provider yang harus menyertakan plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                 |
-| `onAgentHarnesses` | Tidak | `string[]`                                           | Id runtime harness agen tertanam yang harus menyertakan plugin ini dalam rencana aktivasi/pemuatan. Gunakan `cliBackends` tingkat atas untuk alias backend CLI.                                |
-| `onCommands`       | Tidak | `string[]`                                           | Id perintah yang harus menyertakan plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                 |
-| `onChannels`       | Tidak | `string[]`                                           | Id channel yang harus menyertakan plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                  |
-| `onRoutes`         | Tidak | `string[]`                                           | Jenis rute yang harus menyertakan plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                  |
-| `onConfigPaths`    | Tidak | `string[]`                                           | Path config relatif terhadap root yang harus menyertakan plugin ini dalam rencana startup/pemuatan saat path ada dan tidak dinonaktifkan secara eksplisit.                                     |
-| `onCapabilities`   | Tidak | `Array<"provider" \| "channel" \| "tool" \| "hook">` | Petunjuk kapabilitas luas yang digunakan oleh perencanaan aktivasi control-plane. Pilih bidang yang lebih sempit bila memungkinkan.                                                            |
+| `onStartup`        | Tidak | `boolean`                                            | Aktivasi startup Gateway eksplisit. Setiap Plugin harus menetapkan ini. `true` mengimpor Plugin selama startup; `false` membuatnya tetap lazy saat startup kecuali pemicu lain yang cocok memerlukan pemuatan. |
+| `onProviders`      | Tidak | `string[]`                                           | Id penyedia yang harus menyertakan Plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                  |
+| `onAgentHarnesses` | Tidak | `string[]`                                           | Id runtime harness agen tertanam yang harus menyertakan Plugin ini dalam rencana aktivasi/pemuatan. Gunakan `cliBackends` tingkat atas untuk alias backend CLI.                                |
+| `onCommands`       | Tidak | `string[]`                                           | Id perintah yang harus menyertakan Plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                  |
+| `onChannels`       | Tidak | `string[]`                                           | Id channel yang harus menyertakan Plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                   |
+| `onRoutes`         | Tidak | `string[]`                                           | Jenis rute yang harus menyertakan Plugin ini dalam rencana aktivasi/pemuatan.                                                                                                                   |
+| `onConfigPaths`    | Tidak | `string[]`                                           | Jalur konfigurasi relatif terhadap root yang harus menyertakan Plugin ini dalam rencana startup/pemuatan ketika jalur tersebut ada dan tidak dinonaktifkan secara eksplisit.                    |
+| `onCapabilities`   | Tidak | `Array<"provider" \| "channel" \| "tool" \| "hook">` | Petunjuk kapabilitas luas yang digunakan oleh perencanaan aktivasi bidang kontrol. Pilih bidang yang lebih sempit bila memungkinkan.                                                           |
 
 Konsumen live saat ini:
 
-- Perencanaan startup Gateway menggunakan `activation.onStartup` untuk impor
-  startup eksplisit
-- perencanaan CLI yang dipicu perintah melakukan fallback ke
-  `commandAliases[].cliCommand` atau `commandAliases[].name` legacy
-- perencanaan startup agent-runtime menggunakan `activation.onAgentHarnesses` untuk
+- Perencanaan startup Gateway menggunakan `activation.onStartup` untuk impor startup
+  eksplisit
+- perencanaan CLI yang dipicu perintah kembali ke
+  `commandAliases[].cliCommand` atau `commandAliases[].name` lama
+- perencanaan startup runtime agen menggunakan `activation.onAgentHarnesses` untuk
   harness tertanam dan `cliBackends[]` tingkat atas untuk alias runtime CLI
-- perencanaan setup/channel yang dipicu channel melakukan fallback ke kepemilikan
-  `channels[]` legacy saat metadata aktivasi channel eksplisit tidak ada
-- perencanaan plugin startup menggunakan `activation.onConfigPaths` untuk permukaan config
-  root non-channel seperti blok `browser` milik plugin browser bawaan
-- perencanaan setup/runtime yang dipicu provider melakukan fallback ke kepemilikan
-  `providers[]` legacy dan `cliBackends[]` tingkat atas saat metadata aktivasi provider
-  eksplisit tidak ada
+- perencanaan setup/channel yang dipicu channel kembali ke kepemilikan `channels[]`
+  lama ketika metadata aktivasi channel eksplisit tidak ada
+- perencanaan Plugin startup menggunakan `activation.onConfigPaths` untuk permukaan konfigurasi root
+  non-channel seperti blok `browser` milik Plugin browser bawaan
+- perencanaan setup/runtime yang dipicu penyedia kembali ke kepemilikan `providers[]`
+  dan `cliBackends[]` tingkat atas lama ketika metadata aktivasi penyedia eksplisit
+  tidak ada
 
-Diagnostik planner dapat membedakan petunjuk aktivasi eksplisit dari fallback
+Diagnostik perencana dapat membedakan petunjuk aktivasi eksplisit dari fallback
 kepemilikan manifes. Misalnya, `activation-command-hint` berarti
 `activation.onCommands` cocok, sedangkan `manifest-command-alias` berarti
-planner menggunakan kepemilikan `commandAliases`. Label alasan ini untuk
-diagnostik host dan pengujian; penulis plugin sebaiknya tetap mendeklarasikan metadata
+perencana menggunakan kepemilikan `commandAliases` sebagai gantinya. Label alasan ini ditujukan untuk
+diagnostik host dan pengujian; penulis Plugin harus tetap mendeklarasikan metadata
 yang paling baik mendeskripsikan kepemilikan.
 
 ## referensi qaRunners
 
-Gunakan `qaRunners` saat plugin menyumbangkan satu atau beberapa runner transport di bawah
-root `openclaw qa` bersama. Jaga metadata ini tetap murah dan statis; runtime plugin
-tetap memiliki pendaftaran CLI aktual melalui permukaan
+Gunakan `qaRunners` ketika Plugin menyumbangkan satu atau beberapa runner transport di bawah
+root bersama `openclaw qa`. Jaga metadata ini tetap ringan dan statis; runtime
+Plugin tetap memiliki registrasi CLI aktual melalui permukaan
 `runtime-api.ts` ringan yang mengekspor `qaRunnerCliRegistrations`.
 
 ```json
@@ -476,15 +476,15 @@ tetap memiliki pendaftaran CLI aktual melalui permukaan
 }
 ```
 
-| Bidang        | Wajib | Tipe     | Artinya                                                           |
-| ------------- | ----- | -------- | ----------------------------------------------------------------- |
+| Bidang        | Wajib | Tipe     | Artinya                                                            |
+| ------------- | ----- | -------- | ------------------------------------------------------------------ |
 | `commandName` | Ya    | `string` | Subperintah yang dipasang di bawah `openclaw qa`, misalnya `matrix`. |
-| `description` | Tidak | `string` | Teks bantuan fallback yang digunakan saat host bersama membutuhkan perintah stub. |
+| `description` | Tidak | `string` | Teks bantuan fallback yang digunakan ketika host bersama membutuhkan perintah stub. |
 
-## referensi setup
+## Referensi setup
 
-Gunakan `setup` saat permukaan setup dan onboarding membutuhkan metadata milik plugin yang murah
-sebelum runtime dimuat.
+Gunakan `setup` ketika permukaan penyiapan dan onboarding membutuhkan metadata
+murah milik Plugin sebelum runtime dimuat.
 
 ```json
 {
@@ -512,83 +512,86 @@ sebelum runtime dimuat.
 }
 ```
 
-`cliBackends` tingkat atas tetap valid dan terus mendeskripsikan backend inferensi CLI.
-`setup.cliBackends` adalah permukaan deskriptor khusus setup untuk
-alur control-plane/setup yang harus tetap metadata-only.
+`cliBackends` tingkat atas tetap valid dan terus mendeskripsikan backend inferensi
+CLI. `setup.cliBackends` adalah permukaan deskriptor khusus penyiapan untuk
+alur control-plane/penyiapan yang harus tetap hanya metadata.
 
-Saat ada, `setup.providers` dan `setup.cliBackends` adalah permukaan lookup
-descriptor-first yang dipilih untuk penemuan setup. Jika deskriptor hanya
-mempersempit kandidat plugin dan setup masih membutuhkan hook runtime saat setup yang lebih kaya,
-setel `requiresRuntime: true` dan pertahankan `setup-api` sebagai
-jalur eksekusi fallback.
+Ketika ada, `setup.providers` dan `setup.cliBackends` adalah permukaan pencarian
+descriptor-first yang disukai untuk penemuan penyiapan. Jika deskriptor hanya
+mempersempit kandidat Plugin dan penyiapan masih membutuhkan hook runtime waktu
+penyiapan yang lebih kaya, tetapkan `requiresRuntime: true` dan pertahankan
+`setup-api` sebagai jalur eksekusi fallback.
 
-OpenClaw juga menyertakan `setup.providers[].envVars` dalam lookup auth provider generik dan
-env-var. `providerAuthEnvVars` tetap didukung melalui adapter kompatibilitas
-selama jendela deprekasi, tetapi plugin non-bawaan yang masih menggunakannya
-menerima diagnostik manifes. Plugin baru harus menempatkan metadata env setup/status
-pada `setup.providers[].envVars`.
+OpenClaw juga menyertakan `setup.providers[].envVars` dalam pencarian auth
+penyedia generik dan env-var. `providerAuthEnvVars` tetap didukung melalui
+adapter kompatibilitas selama jendela penghentian, tetapi Plugin non-bundel yang
+masih menggunakannya menerima diagnostik manifes. Plugin baru harus menempatkan
+metadata env penyiapan/status pada `setup.providers[].envVars`.
 
-OpenClaw juga dapat memperoleh pilihan setup sederhana dari `setup.providers[].authMethods`
-saat tidak ada entri setup, atau saat `setup.requiresRuntime: false`
-menyatakan runtime setup tidak diperlukan. Entri `providerAuthChoices` eksplisit tetap
-lebih dipilih untuk label kustom, flag CLI, cakupan onboarding, dan metadata asisten.
+OpenClaw juga dapat menurunkan pilihan penyiapan sederhana dari
+`setup.providers[].authMethods` ketika tidak ada entri penyiapan, atau ketika
+`setup.requiresRuntime: false` menyatakan runtime penyiapan tidak diperlukan.
+Entri eksplisit `providerAuthChoices` tetap lebih disukai untuk label kustom,
+flag CLI, cakupan onboarding, dan metadata asisten.
 
-Setel `requiresRuntime: false` hanya saat deskriptor tersebut cukup untuk
-permukaan setup. OpenClaw memperlakukan `false` eksplisit sebagai kontrak descriptor-only
-dan tidak akan mengeksekusi `setup-api` atau `openclaw.setupEntry` untuk lookup setup. Jika
-plugin descriptor-only masih mengirim salah satu entri runtime setup tersebut,
-OpenClaw melaporkan diagnostik aditif dan terus mengabaikannya. `requiresRuntime`
-yang dihilangkan mempertahankan perilaku fallback legacy sehingga plugin yang sudah ada yang menambahkan
-deskriptor tanpa flag tersebut tidak rusak.
+Tetapkan `requiresRuntime: false` hanya ketika deskriptor tersebut cukup untuk
+permukaan penyiapan. OpenClaw memperlakukan `false` eksplisit sebagai kontrak
+hanya deskriptor dan tidak akan mengeksekusi `setup-api` atau
+`openclaw.setupEntry` untuk pencarian penyiapan. Jika Plugin hanya deskriptor
+tetap mengirim salah satu entri runtime penyiapan tersebut, OpenClaw melaporkan
+diagnostik aditif dan terus mengabaikannya. `requiresRuntime` yang dihilangkan
+mempertahankan perilaku fallback lama sehingga Plugin yang sudah ada yang
+menambahkan deskriptor tanpa flag tersebut tidak rusak.
 
-Karena lookup setup dapat mengeksekusi kode `setup-api` milik plugin, nilai
-`setup.providers[].id` dan `setup.cliBackends[]` yang dinormalisasi harus tetap unik di seluruh
-plugin yang ditemukan. Kepemilikan ambigu gagal tertutup alih-alih memilih
-pemenang dari urutan penemuan.
+Karena pencarian penyiapan dapat mengeksekusi kode `setup-api` milik Plugin, nilai
+`setup.providers[].id` dan `setup.cliBackends[]` yang dinormalisasi harus tetap
+unik di seluruh Plugin yang ditemukan. Kepemilikan yang ambigu gagal secara
+tertutup alih-alih memilih pemenang dari urutan penemuan.
 
-Saat runtime setup dieksekusi, diagnostik registry setup melaporkan drift deskriptor
-jika `setup-api` mendaftarkan provider atau backend CLI yang tidak dideklarasikan
-deskriptor manifes, atau jika sebuah deskriptor tidak memiliki pendaftaran runtime
-yang cocok. Diagnostik ini bersifat aditif dan tidak menolak plugin legacy.
+Ketika runtime penyiapan memang dieksekusi, diagnostik registry penyiapan
+melaporkan drift deskriptor jika `setup-api` mendaftarkan penyedia atau backend
+CLI yang tidak dideklarasikan oleh deskriptor manifes, atau jika suatu
+deskriptor tidak memiliki registrasi runtime yang cocok. Diagnostik ini bersifat
+aditif dan tidak menolak Plugin lama.
 
-### referensi setup.providers
+### Referensi setup.providers
 
-| Bidang         | Wajib | Tipe       | Artinya                                                                                         |
-| -------------- | ----- | ---------- | ----------------------------------------------------------------------------------------------- |
-| `id`           | Ya    | `string`   | Id provider yang diekspos selama setup atau onboarding. Jaga id yang dinormalisasi tetap unik secara global. |
-| `authMethods`  | Tidak | `string[]` | Id metode setup/auth yang didukung provider ini tanpa memuat runtime penuh.                     |
-| `envVars`      | Tidak | `string[]` | Env vars yang dapat diperiksa permukaan setup/status generik sebelum runtime plugin dimuat.     |
-| `authEvidence` | Tidak | `object[]` | Pemeriksaan bukti auth lokal murah untuk provider yang dapat mengautentikasi melalui marker non-rahasia. |
+| Bidang         | Wajib | Tipe       | Artinya                                                                                          |
+| -------------- | ----- | ---------- | ------------------------------------------------------------------------------------------------ |
+| `id`           | Ya    | `string`   | Id penyedia yang diekspos selama penyiapan atau onboarding. Jaga id yang dinormalisasi tetap unik secara global. |
+| `authMethods`  | Tidak | `string[]` | Id metode penyiapan/auth yang didukung penyedia ini tanpa memuat runtime penuh.                  |
+| `envVars`      | Tidak | `string[]` | Env vars yang dapat diperiksa oleh permukaan penyiapan/status generik sebelum runtime Plugin dimuat. |
+| `authEvidence` | Tidak | `object[]` | Pemeriksaan bukti auth lokal yang murah untuk penyedia yang dapat mengautentikasi melalui penanda non-rahasia. |
 
 `authEvidence` ditujukan untuk penanda kredensial lokal milik penyedia yang dapat
-diverifikasi tanpa memuat kode runtime. Pemeriksaan ini harus tetap ringan dan lokal:
-tanpa panggilan jaringan, tanpa pembacaan keychain atau secret-manager, tanpa perintah shell, dan tanpa
+diverifikasi tanpa memuat kode runtime. Pemeriksaan ini harus tetap murah dan lokal:
+tanpa panggilan jaringan, tanpa pembacaan keychain atau secret manager, tanpa perintah shell, dan tanpa
 probe API penyedia.
 
 Entri bukti yang didukung:
 
-| Kolom              | Wajib | Tipe       | Artinya                                                                                                           |
-| ------------------ | ----- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
-| `type`             | Ya    | `string`   | Saat ini `local-file-with-env`.                                                                                   |
-| `fileEnvVar`       | Tidak | `string`   | Env var yang berisi path file kredensial eksplisit.                                                               |
-| `fallbackPaths`    | Tidak | `string[]` | Path file kredensial lokal yang diperiksa saat `fileEnvVar` tidak ada atau kosong. Mendukung `${HOME}` dan `${APPDATA}`. |
-| `requiresAnyEnv`   | Tidak | `string[]` | Setidaknya satu env var yang tercantum harus tidak kosong sebelum bukti valid.                                    |
-| `requiresAllEnv`   | Tidak | `string[]` | Setiap env var yang tercantum harus tidak kosong sebelum bukti valid.                                             |
-| `credentialMarker` | Ya    | `string`   | Penanda non-rahasia yang dikembalikan saat bukti ada.                                                             |
-| `source`           | Tidak | `string`   | Label sumber yang terlihat oleh pengguna untuk output autentikasi/status.                                         |
+| Bidang             | Wajib | Tipe       | Artinya                                                                                                             |
+| ------------------ | ----- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| `type`             | Ya    | `string`   | Saat ini `local-file-with-env`.                                                                                     |
+| `fileEnvVar`       | Tidak | `string`   | Variabel env yang berisi path file kredensial eksplisit.                                                            |
+| `fallbackPaths`    | Tidak | `string[]` | Path file kredensial lokal yang diperiksa ketika `fileEnvVar` tidak ada atau kosong. Mendukung `${HOME}` dan `${APPDATA}`. |
+| `requiresAnyEnv`   | Tidak | `string[]` | Setidaknya satu variabel env yang tercantum harus tidak kosong sebelum bukti valid.                                 |
+| `requiresAllEnv`   | Tidak | `string[]` | Setiap variabel env yang tercantum harus tidak kosong sebelum bukti valid.                                          |
+| `credentialMarker` | Ya    | `string`   | Penanda non-rahasia yang dikembalikan ketika bukti ada.                                                            |
+| `source`           | Tidak | `string`   | Label sumber yang terlihat pengguna untuk keluaran auth/status.                                                    |
 
-### kolom setup
+### bidang setup
 
-| Kolom              | Wajib | Tipe       | Artinya                                                                                                  |
-| ------------------ | ----- | ---------- | -------------------------------------------------------------------------------------------------------- |
-| `providers`        | Tidak | `object[]` | Deskriptor setup penyedia yang diekspos selama setup dan onboarding.                                     |
-| `cliBackends`      | Tidak | `string[]` | ID backend waktu setup yang digunakan untuk pencarian setup berbasis deskriptor terlebih dahulu. Jaga agar ID ternormalisasi unik secara global. |
-| `configMigrations` | Tidak | `string[]` | ID migrasi config yang dimiliki oleh permukaan setup plugin ini.                                         |
-| `requiresRuntime`  | Tidak | `boolean`  | Apakah setup masih membutuhkan eksekusi `setup-api` setelah pencarian deskriptor.                        |
+| Bidang             | Wajib | Tipe       | Artinya                                                                                                 |
+| ------------------ | ----- | ---------- | ------------------------------------------------------------------------------------------------------- |
+| `providers`        | Tidak | `object[]` | Deskriptor setup penyedia yang diekspos selama setup dan onboarding.                                    |
+| `cliBackends`      | Tidak | `string[]` | ID backend waktu setup yang digunakan untuk lookup setup berbasis deskriptor. Jaga agar ID ternormalisasi unik secara global. |
+| `configMigrations` | Tidak | `string[]` | ID migrasi config yang dimiliki oleh permukaan setup Plugin ini.                                        |
+| `requiresRuntime`  | Tidak | `boolean`  | Apakah setup masih memerlukan eksekusi `setup-api` setelah lookup deskriptor.                          |
 
 ## referensi uiHints
 
-`uiHints` adalah peta dari nama kolom config ke petunjuk rendering kecil.
+`uiHints` adalah peta dari nama bidang config ke petunjuk rendering kecil.
 
 ```json
 {
@@ -603,21 +606,21 @@ Entri bukti yang didukung:
 }
 ```
 
-Setiap petunjuk kolom dapat menyertakan:
+Setiap petunjuk bidang dapat mencakup:
 
-| Kolom         | Tipe       | Artinya                                  |
-| ------------- | ---------- | ---------------------------------------- |
-| `label`       | `string`   | Label kolom yang terlihat oleh pengguna. |
-| `help`        | `string`   | Teks bantuan singkat.                    |
-| `tags`        | `string[]` | Tag UI opsional.                         |
-| `advanced`    | `boolean`  | Menandai kolom sebagai lanjutan.         |
-| `sensitive`   | `boolean`  | Menandai kolom sebagai rahasia atau sensitif. |
-| `placeholder` | `string`   | Teks placeholder untuk input formulir.   |
+| Bidang        | Tipe       | Artinya                                      |
+| ------------- | ---------- | -------------------------------------------- |
+| `label`       | `string`   | Label bidang yang terlihat pengguna.         |
+| `help`        | `string`   | Teks bantuan singkat.                        |
+| `tags`        | `string[]` | Tag UI opsional.                             |
+| `advanced`    | `boolean`  | Menandai bidang sebagai lanjutan.            |
+| `sensitive`   | `boolean`  | Menandai bidang sebagai rahasia atau sensitif. |
+| `placeholder` | `string`   | Teks placeholder untuk input formulir.       |
 
 ## referensi contracts
 
-Gunakan `contracts` hanya untuk metadata kepemilikan kapabilitas statis yang dapat
-dibaca OpenClaw tanpa mengimpor runtime plugin.
+Gunakan `contracts` hanya untuk metadata kepemilikan kapabilitas statis yang dapat dibaca OpenClaw
+tanpa mengimpor runtime Plugin.
 
 ```json
 {
@@ -641,50 +644,50 @@ dibaca OpenClaw tanpa mengimpor runtime plugin.
 
 Setiap daftar bersifat opsional:
 
-| Kolom                            | Tipe       | Artinya                                                               |
+| Bidang                           | Tipe       | Artinya                                                               |
 | -------------------------------- | ---------- | --------------------------------------------------------------------- |
-| `embeddedExtensionFactories`     | `string[]` | ID factory ekstensi app-server Codex, saat ini `codex-app-server`.    |
-| `agentToolResultMiddleware`      | `string[]` | ID runtime yang boleh didaftarkan plugin bawaan untuk middleware hasil tool. |
-| `externalAuthProviders`          | `string[]` | ID penyedia yang hook profil autentikasi eksternalnya dimiliki plugin ini. |
-| `speechProviders`                | `string[]` | ID penyedia speech yang dimiliki plugin ini.                          |
-| `realtimeTranscriptionProviders` | `string[]` | ID penyedia transkripsi realtime yang dimiliki plugin ini.            |
-| `realtimeVoiceProviders`         | `string[]` | ID penyedia suara realtime yang dimiliki plugin ini.                  |
-| `memoryEmbeddingProviders`       | `string[]` | ID penyedia embedding memori yang dimiliki plugin ini.                |
-| `mediaUnderstandingProviders`    | `string[]` | ID penyedia pemahaman media yang dimiliki plugin ini.                 |
-| `imageGenerationProviders`       | `string[]` | ID penyedia pembuatan gambar yang dimiliki plugin ini.                |
-| `videoGenerationProviders`       | `string[]` | ID penyedia pembuatan video yang dimiliki plugin ini.                 |
-| `webFetchProviders`              | `string[]` | ID penyedia web-fetch yang dimiliki plugin ini.                       |
-| `webSearchProviders`             | `string[]` | ID penyedia web-search yang dimiliki plugin ini.                      |
-| `migrationProviders`             | `string[]` | ID penyedia impor yang dimiliki plugin ini untuk `openclaw migrate`.  |
-| `tools`                          | `string[]` | Nama tool agen yang dimiliki plugin ini.                              |
+| `embeddedExtensionFactories`     | `string[]` | ID factory extension app-server Codex, saat ini `codex-app-server`.   |
+| `agentToolResultMiddleware`      | `string[]` | ID runtime tempat Plugin terbundel dapat mendaftarkan middleware hasil tool. |
+| `externalAuthProviders`          | `string[]` | ID penyedia yang hook profil auth eksternalnya dimiliki Plugin ini.   |
+| `speechProviders`                | `string[]` | ID penyedia speech yang dimiliki Plugin ini.                          |
+| `realtimeTranscriptionProviders` | `string[]` | ID penyedia transkripsi realtime yang dimiliki Plugin ini.            |
+| `realtimeVoiceProviders`         | `string[]` | ID penyedia suara realtime yang dimiliki Plugin ini.                  |
+| `memoryEmbeddingProviders`       | `string[]` | ID penyedia embedding memori yang dimiliki Plugin ini.                |
+| `mediaUnderstandingProviders`    | `string[]` | ID penyedia pemahaman media yang dimiliki Plugin ini.                 |
+| `imageGenerationProviders`       | `string[]` | ID penyedia pembuatan gambar yang dimiliki Plugin ini.                |
+| `videoGenerationProviders`       | `string[]` | ID penyedia pembuatan video yang dimiliki Plugin ini.                 |
+| `webFetchProviders`              | `string[]` | ID penyedia web-fetch yang dimiliki Plugin ini.                       |
+| `webSearchProviders`             | `string[]` | ID penyedia web-search yang dimiliki Plugin ini.                      |
+| `migrationProviders`             | `string[]` | ID penyedia impor yang dimiliki Plugin ini untuk `openclaw migrate`.  |
+| `tools`                          | `string[]` | Nama tool agen yang dimiliki Plugin ini.                              |
 
-`contracts.embeddedExtensionFactories` dipertahankan untuk factory ekstensi bawaan Codex
-khusus app-server. Transformasi hasil tool bawaan sebaiknya
+`contracts.embeddedExtensionFactories` dipertahankan untuk factory extension
+khusus app-server Codex terbundel. Transformasi hasil tool terbundel sebaiknya
 mendeklarasikan `contracts.agentToolResultMiddleware` dan mendaftar dengan
-`api.registerAgentToolResultMiddleware(...)` sebagai gantinya. Plugin eksternal tidak dapat
-mendaftarkan middleware hasil tool karena seam tersebut dapat menulis ulang output tool
+`api.registerAgentToolResultMiddleware(...)`. Plugin eksternal tidak dapat
+mendaftarkan middleware hasil tool karena seam tersebut dapat menulis ulang keluaran tool
 berkepercayaan tinggi sebelum model melihatnya.
 
-Pendaftaran runtime `api.registerTool(...)` harus cocok dengan `contracts.tools`.
-Penemuan tool menggunakan daftar ini untuk hanya memuat runtime plugin yang dapat memiliki
+Registrasi runtime `api.registerTool(...)` harus cocok dengan `contracts.tools`.
+Penemuan tool menggunakan daftar ini untuk hanya memuat runtime Plugin yang dapat memiliki
 tool yang diminta.
 
 Plugin penyedia yang mengimplementasikan `resolveExternalAuthProfiles` sebaiknya mendeklarasikan
-`contracts.externalAuthProviders`. Plugin tanpa deklarasi tersebut tetap berjalan
-melalui fallback kompatibilitas yang sudah deprecated, tetapi fallback itu lebih lambat dan
+`contracts.externalAuthProviders`. Plugin tanpa deklarasi tersebut masih berjalan
+melalui fallback kompatibilitas yang deprecated, tetapi fallback itu lebih lambat dan
 akan dihapus setelah jendela migrasi.
 
-Penyedia embedding memori bawaan sebaiknya mendeklarasikan
-`contracts.memoryEmbeddingProviders` untuk setiap ID adapter yang mereka ekspos, termasuk
+Penyedia embedding memori terbundel sebaiknya mendeklarasikan
+`contracts.memoryEmbeddingProviders` untuk setiap ID adapter yang diekspos, termasuk
 adapter bawaan seperti `local`. Path CLI mandiri menggunakan kontrak manifest ini
-untuk hanya memuat plugin pemilik sebelum runtime Gateway penuh
+untuk hanya memuat Plugin pemilik sebelum runtime Gateway penuh
 mendaftarkan penyedia.
 
 ## referensi mediaUnderstandingProviderMetadata
 
-Gunakan `mediaUnderstandingProviderMetadata` saat penyedia pemahaman media memiliki
+Gunakan `mediaUnderstandingProviderMetadata` ketika penyedia pemahaman media memiliki
 model default, prioritas fallback auto-auth, atau dukungan dokumen native yang
-dibutuhkan helper core generik sebelum runtime dimuat. Key juga harus dideklarasikan di
+diperlukan helper core generik sebelum runtime dimuat. Key juga harus dideklarasikan di
 `contracts.mediaUnderstandingProviders`.
 
 ```json
@@ -708,42 +711,42 @@ dibutuhkan helper core generik sebelum runtime dimuat. Key juga harus dideklaras
 }
 ```
 
-Setiap entri penyedia dapat menyertakan:
+Setiap entri penyedia dapat mencakup:
 
-| Kolom                  | Tipe                                | Artinya                                                                    |
-| ---------------------- | ----------------------------------- | -------------------------------------------------------------------------- |
-| `capabilities`         | `("image" \| "audio" \| "video")[]` | Kapabilitas media yang diekspos oleh penyedia ini.                         |
-| `defaultModels`        | `Record<string, string>`            | Default kapabilitas-ke-model yang digunakan saat config tidak menentukan model. |
-| `autoPriority`         | `Record<string, number>`            | Angka yang lebih rendah diurutkan lebih awal untuk fallback penyedia berbasis kredensial otomatis. |
-| `nativeDocumentInputs` | `"pdf"[]`                           | Input dokumen native yang didukung oleh penyedia.                          |
+| Bidang                 | Tipe                                | Artinya                                                                      |
+| ---------------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| `capabilities`         | `("image" \| "audio" \| "video")[]` | Kapabilitas media yang diekspos oleh penyedia ini.                           |
+| `defaultModels`        | `Record<string, string>`            | Default capability-to-model yang digunakan ketika config tidak menentukan model. |
+| `autoPriority`         | `Record<string, number>`            | Angka lebih rendah diurutkan lebih awal untuk fallback penyedia otomatis berbasis kredensial. |
+| `nativeDocumentInputs` | `"pdf"[]`                           | Input dokumen native yang didukung oleh penyedia.                            |
 
 ## referensi channelConfigs
 
-Gunakan `channelConfigs` saat plugin channel membutuhkan metadata config ringan sebelum
-runtime dimuat. Penemuan setup/status channel hanya-baca dapat menggunakan metadata ini
-secara langsung untuk channel eksternal yang dikonfigurasi saat tidak ada entri setup, atau
-saat `setup.requiresRuntime: false` menyatakan runtime setup tidak diperlukan.
+Gunakan `channelConfigs` ketika Plugin channel memerlukan metadata config murah sebelum
+runtime dimuat. Penemuan setup/status channel read-only dapat menggunakan metadata ini
+secara langsung untuk channel eksternal yang terkonfigurasi ketika tidak ada entri setup,
+atau ketika `setup.requiresRuntime: false` menyatakan runtime setup tidak diperlukan.
 
-`channelConfigs` adalah metadata manifest plugin, bukan bagian config pengguna tingkat atas
+`channelConfigs` adalah metadata manifest Plugin, bukan bagian config pengguna top-level
 baru. Pengguna tetap mengonfigurasi instance channel di bawah `channels.<channel-id>`.
-OpenClaw membaca metadata manifest untuk menentukan plugin mana yang memiliki channel
-terkonfigurasi itu sebelum kode runtime plugin dieksekusi.
+OpenClaw membaca metadata manifest untuk memutuskan Plugin mana yang memiliki channel
+terkonfigurasi itu sebelum kode runtime Plugin dieksekusi.
 
-Untuk plugin channel, `configSchema` dan `channelConfigs` menjelaskan path yang berbeda:
+Untuk Plugin channel, `configSchema` dan `channelConfigs` menjelaskan path yang berbeda:
 
 - `configSchema` memvalidasi `plugins.entries.<plugin-id>.config`
 - `channelConfigs.<channel-id>.schema` memvalidasi `channels.<channel-id>`
 
-Plugin non-bawaan yang mendeklarasikan `channels[]` sebaiknya juga mendeklarasikan entri
-`channelConfigs` yang cocok. Tanpanya, OpenClaw tetap dapat memuat plugin, tetapi
-schema config cold-path, setup, dan permukaan Control UI tidak dapat mengetahui
-bentuk opsi milik channel hingga runtime plugin dieksekusi.
+Plugin non-terbundel yang mendeklarasikan `channels[]` sebaiknya juga mendeklarasikan entri
+`channelConfigs` yang cocok. Tanpa entri tersebut, OpenClaw masih dapat memuat Plugin, tetapi
+skema config cold-path, setup, dan permukaan Control UI tidak dapat mengetahui
+bentuk opsi milik channel sampai runtime Plugin dieksekusi.
 
 `channelConfigs.<channel-id>.commands.nativeCommandsAutoEnabled` dan
 `nativeSkillsAutoEnabled` dapat mendeklarasikan default `auto` statis untuk pemeriksaan config perintah
-yang berjalan sebelum runtime channel dimuat. Channel bawaan juga dapat memublikasikan
+yang berjalan sebelum runtime channel dimuat. Channel terbundel juga dapat memublikasikan
 default yang sama melalui `package.json#openclaw.channel.commands` bersama
-metadata katalog channel lain yang dimiliki paket.
+metadata katalog channel milik paket lainnya.
 
 ```json
 {
@@ -774,22 +777,22 @@ metadata katalog channel lain yang dimiliki paket.
 }
 ```
 
-Setiap entri channel dapat menyertakan:
+Setiap entri channel dapat mencakup:
 
-| Bidang        | Tipe                     | Artinya                                                                                                      |
-| ------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| `schema`      | `object`                 | Skema JSON untuk `channels.<id>`. Wajib untuk setiap entri konfigurasi saluran yang dideklarasikan.         |
-| `uiHints`     | `Record<string, object>` | Label/placeholder/petunjuk sensitif UI opsional untuk bagian konfigurasi saluran tersebut.                  |
-| `label`       | `string`                 | Label saluran yang digabungkan ke permukaan pemilih dan inspeksi saat metadata waktu jalan belum siap.      |
-| `description` | `string`                 | Deskripsi saluran singkat untuk permukaan inspeksi dan katalog.                                             |
-| `commands`    | `object`                 | Perintah native statis dan bawaan otomatis keahlian native untuk pemeriksaan konfigurasi pra-waktu jalan.   |
-| `preferOver`  | `string[]`               | id plugin lama atau berprioritas lebih rendah yang harus dikalahkan saluran ini di permukaan pemilihan.     |
+| Bidang        | Tipe                     | Artinya                                                                                   |
+| ------------- | ------------------------ | ----------------------------------------------------------------------------------------- |
+| `schema`      | `object`                 | Skema JSON untuk `channels.<id>`. Wajib untuk setiap entri konfigurasi saluran yang dideklarasikan. |
+| `uiHints`     | `Record<string, object>` | Label/placeholder/petunjuk sensitif UI opsional untuk bagian konfigurasi saluran tersebut. |
+| `label`       | `string`                 | Label saluran yang digabungkan ke permukaan pemilih dan inspeksi saat metadata waktu eksekusi belum siap. |
+| `description` | `string`                 | Deskripsi singkat saluran untuk permukaan inspeksi dan katalog.                           |
+| `commands`    | `object`                 | Perintah native statis dan default otomatis skill native untuk pemeriksaan konfigurasi pra-waktu-eksekusi. |
+| `preferOver`  | `string[]`               | Id Plugin lama atau berprioritas lebih rendah yang seharusnya dikalahkan saluran ini di permukaan pemilihan. |
 
-### Menggantikan plugin saluran lain
+### Mengganti Plugin saluran lain
 
-Gunakan `preferOver` ketika plugin Anda adalah pemilik yang dipilih untuk id saluran yang
-juga dapat disediakan oleh plugin lain. Kasus umum mencakup id plugin yang diganti namanya,
-plugin mandiri yang menggantikan plugin bawaan, atau fork terpelihara yang
+Gunakan `preferOver` saat Plugin Anda adalah pemilik yang lebih disukai untuk id saluran yang
+juga dapat disediakan oleh Plugin lain. Kasus umumnya adalah id Plugin yang diganti nama, Plugin
+mandiri yang menggantikan Plugin bawaan, atau fork yang dipelihara yang
 mempertahankan id saluran yang sama demi kompatibilitas konfigurasi.
 
 ```json
@@ -811,21 +814,21 @@ mempertahankan id saluran yang sama demi kompatibilitas konfigurasi.
 }
 ```
 
-Ketika `channels.chat` dikonfigurasi, OpenClaw mempertimbangkan id saluran dan
-id plugin pilihan. Jika plugin berprioritas lebih rendah hanya dipilih karena
-bersifat bawaan atau diaktifkan secara default, OpenClaw menonaktifkannya dalam
-konfigurasi waktu jalan efektif sehingga satu plugin memiliki saluran dan alatnya. Pilihan pengguna
-eksplisit tetap menang: jika pengguna secara eksplisit mengaktifkan kedua plugin, OpenClaw
+Saat `channels.chat` dikonfigurasi, OpenClaw mempertimbangkan id saluran dan
+id Plugin yang lebih disukai. Jika Plugin berprioritas lebih rendah hanya dipilih karena
+Plugin itu bawaan atau diaktifkan secara default, OpenClaw menonaktifkannya dalam
+konfigurasi waktu eksekusi efektif agar satu Plugin memiliki saluran beserta alatnya. Pemilihan
+pengguna yang eksplisit tetap menang: jika pengguna secara eksplisit mengaktifkan kedua Plugin, OpenClaw
 mempertahankan pilihan tersebut dan melaporkan diagnostik saluran/alat duplikat alih-alih
-mengubah kumpulan plugin yang diminta secara diam-diam.
+mengubah kumpulan Plugin yang diminta secara diam-diam.
 
-Batasi `preferOver` hanya pada id plugin yang benar-benar dapat menyediakan saluran yang sama.
+Jaga agar `preferOver` tetap terbatas pada id Plugin yang benar-benar dapat menyediakan saluran yang sama.
 Ini bukan bidang prioritas umum dan tidak mengganti nama kunci konfigurasi pengguna.
 
 ## Referensi modelSupport
 
-Gunakan `modelSupport` ketika OpenClaw harus menyimpulkan plugin penyedia Anda dari
-id model singkat seperti `gpt-5.5` atau `claude-sonnet-4.6` sebelum waktu jalan plugin
+Gunakan `modelSupport` saat OpenClaw harus menyimpulkan Plugin penyedia Anda dari
+id model singkat seperti `gpt-5.5` atau `claude-sonnet-4.6` sebelum waktu eksekusi Plugin
 dimuat.
 
 ```json
@@ -839,25 +842,25 @@ dimuat.
 
 OpenClaw menerapkan prioritas ini:
 
-- referensi `provider/model` eksplisit menggunakan metadata manifes `providers` pemilik
+- referensi `provider/model` eksplisit menggunakan metadata manifes `providers` milik pemiliknya
 - `modelPatterns` mengalahkan `modelPrefixes`
-- jika satu plugin non-bawaan dan satu plugin bawaan sama-sama cocok, plugin non-bawaan
+- jika satu Plugin non-bawaan dan satu Plugin bawaan sama-sama cocok, Plugin non-bawaan
   menang
 - ambiguitas yang tersisa diabaikan sampai pengguna atau konfigurasi menentukan penyedia
 
 Bidang:
 
-| Bidang          | Tipe       | Artinya                                                                                 |
-| --------------- | ---------- | --------------------------------------------------------------------------------------- |
-| `modelPrefixes` | `string[]` | Prefiks yang dicocokkan dengan `startsWith` terhadap id model singkat.                  |
+| Bidang          | Tipe       | Artinya                                                                         |
+| --------------- | ---------- | ------------------------------------------------------------------------------- |
+| `modelPrefixes` | `string[]` | Prefiks yang dicocokkan dengan `startsWith` terhadap id model singkat.          |
 | `modelPatterns` | `string[]` | Sumber regex yang dicocokkan terhadap id model singkat setelah penghapusan sufiks profil. |
 
 ## Referensi modelCatalog
 
-Gunakan `modelCatalog` ketika OpenClaw harus mengetahui metadata model penyedia sebelum
-memuat waktu jalan plugin. Ini adalah sumber milik manifes untuk baris katalog tetap,
-alias penyedia, aturan penekanan, dan mode penemuan. Penyegaran waktu jalan
-tetap berada dalam kode waktu jalan penyedia, tetapi manifes memberi tahu inti kapan waktu jalan
+Gunakan `modelCatalog` saat OpenClaw harus mengetahui metadata model penyedia sebelum
+memuat waktu eksekusi Plugin. Ini adalah sumber milik manifes untuk baris katalog
+tetap, alias penyedia, aturan supresi, dan mode penemuan. Penyegaran waktu eksekusi
+tetap menjadi bagian kode waktu eksekusi penyedia, tetapi manifes memberi tahu inti kapan waktu eksekusi
 diperlukan.
 
 ```json
@@ -909,79 +912,80 @@ diperlukan.
 
 Bidang tingkat atas:
 
-| Bidang         | Tipe                                                     | Artinya                                                                                                            |
-| -------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `providers`    | `Record<string, object>`                                 | Baris katalog untuk id penyedia yang dimiliki plugin ini. Kunci juga harus muncul di `providers` tingkat atas.     |
-| `aliases`      | `Record<string, object>`                                 | Alias penyedia yang harus dipecahkan ke penyedia yang dimiliki untuk perencanaan katalog atau penekanan.           |
-| `suppressions` | `object[]`                                               | Baris model dari sumber lain yang ditekan plugin ini karena alasan khusus penyedia.                                |
-| `discovery`    | `Record<string, "static" \| "refreshable" \| "runtime">` | Apakah katalog penyedia dapat dibaca dari metadata manifes, disegarkan ke cache, atau memerlukan waktu jalan.      |
+| Bidang         | Tipe                                                     | Artinya                                                                                               |
+| -------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `providers`    | `Record<string, object>`                                 | Baris katalog untuk id penyedia yang dimiliki Plugin ini. Kunci juga sebaiknya muncul di `providers` tingkat atas. |
+| `aliases`      | `Record<string, object>`                                 | Alias penyedia yang seharusnya diselesaikan ke penyedia milik sendiri untuk perencanaan katalog atau supresi. |
+| `suppressions` | `object[]`                                               | Baris model dari sumber lain yang disupresi Plugin ini karena alasan khusus penyedia.                  |
+| `discovery`    | `Record<string, "static" \| "refreshable" \| "runtime">` | Apakah katalog penyedia dapat dibaca dari metadata manifes, disegarkan ke cache, atau memerlukan waktu eksekusi. |
 
-`aliases` ikut serta dalam pencarian kepemilikan penyedia untuk perencanaan katalog model.
-Target alias harus berupa penyedia tingkat atas yang dimiliki oleh plugin yang sama. Ketika daftar
+`aliases` berpartisipasi dalam pencarian kepemilikan penyedia untuk perencanaan katalog model.
+Target alias harus merupakan penyedia tingkat atas yang dimiliki oleh Plugin yang sama. Saat daftar
 yang difilter berdasarkan penyedia menggunakan alias, OpenClaw dapat membaca manifes pemilik dan
-menerapkan penggantian API/URL dasar alias tanpa memuat waktu jalan penyedia.
-Alias tidak memperluas daftar katalog tanpa filter; daftar luas hanya mengeluarkan baris
-penyedia kanonis milik pemilik.
+menerapkan override API/URL dasar alias tanpa memuat waktu eksekusi penyedia.
+Alias tidak memperluas daftar katalog yang tidak difilter; daftar luas hanya memancarkan baris
+penyedia kanonis milik pemiliknya.
 
-`suppressions` menggantikan hook waktu jalan penyedia lama `suppressBuiltInModel`.
-Entri penekanan hanya dihormati ketika penyedia dimiliki oleh plugin atau
-dideklarasikan sebagai kunci `modelCatalog.aliases` yang menargetkan penyedia milik pemilik. Hook
-penekanan waktu jalan tidak lagi dipanggil selama resolusi model.
+`suppressions` menggantikan hook `suppressBuiltInModel` waktu eksekusi penyedia lama.
+Entri supresi hanya dihormati saat penyedia dimiliki oleh Plugin atau
+dideklarasikan sebagai kunci `modelCatalog.aliases` yang menargetkan penyedia milik sendiri. Hook
+supresi waktu eksekusi tidak lagi dipanggil selama resolusi model.
 
 Bidang penyedia:
 
-| Bidang    | Tipe                     | Artinya                                                                  |
-| --------- | ------------------------ | ------------------------------------------------------------------------ |
-| `baseUrl` | `string`                 | URL dasar default opsional untuk model dalam katalog penyedia ini.       |
-| `api`     | `ModelApi`               | Adapter API default opsional untuk model dalam katalog penyedia ini.     |
-| `headers` | `Record<string, string>` | Header statis opsional yang berlaku untuk katalog penyedia ini.          |
-| `models`  | `object[]`               | Baris model wajib. Baris tanpa `id` diabaikan.                           |
+| Bidang    | Tipe                     | Artinya                                                            |
+| --------- | ------------------------ | ------------------------------------------------------------------ |
+| `baseUrl` | `string`                 | URL dasar default opsional untuk model dalam katalog penyedia ini. |
+| `api`     | `ModelApi`               | Adapter API default opsional untuk model dalam katalog penyedia ini. |
+| `headers` | `Record<string, string>` | Header statis opsional yang berlaku untuk katalog penyedia ini.    |
+| `models`  | `object[]`               | Baris model wajib. Baris tanpa `id` diabaikan.                     |
 
 Bidang model:
 
-| Bidang          | Tipe                                                           | Artinya                                                                                 |
-| --------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `id`            | `string`                                                       | id model lokal penyedia, tanpa prefiks `provider/`.                                     |
-| `name`          | `string`                                                       | Nama tampilan opsional.                                                                 |
-| `api`           | `ModelApi`                                                     | Penggantian API per model opsional.                                                     |
-| `baseUrl`       | `string`                                                       | Penggantian URL dasar per model opsional.                                               |
-| `headers`       | `Record<string, string>`                                       | Header statis per model opsional.                                                       |
-| `input`         | `Array<"text" \| "image" \| "document" \| "audio" \| "video">` | Modalitas yang diterima model.                                                          |
-| `reasoning`     | `boolean`                                                      | Apakah model mengekspos perilaku penalaran.                                             |
-| `contextWindow` | `number`                                                       | Jendela konteks native penyedia.                                                        |
-| `contextTokens` | `number`                                                       | Batas konteks waktu jalan efektif opsional ketika berbeda dari `contextWindow`.         |
-| `maxTokens`     | `number`                                                       | Token keluaran maksimum jika diketahui.                                                 |
-| `cost`          | `object`                                                       | Harga USD per juta token opsional, termasuk `tieredPricing` opsional.                   |
+| Bidang          | Tipe                                                           | Artinya                                                                      |
+| --------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `id`            | `string`                                                       | Id model lokal penyedia, tanpa prefiks `provider/`.                          |
+| `name`          | `string`                                                       | Nama tampilan opsional.                                                       |
+| `api`           | `ModelApi`                                                     | Override API opsional per model.                                              |
+| `baseUrl`       | `string`                                                       | Override URL dasar opsional per model.                                        |
+| `headers`       | `Record<string, string>`                                       | Header statis opsional per model.                                             |
+| `input`         | `Array<"text" \| "image" \| "document" \| "audio" \| "video">` | Modalitas yang diterima model.                                                |
+| `reasoning`     | `boolean`                                                      | Apakah model mengekspos perilaku penalaran.                                   |
+| `contextWindow` | `number`                                                       | Jendela konteks native penyedia.                                              |
+| `contextTokens` | `number`                                                       | Batas konteks waktu eksekusi efektif opsional saat berbeda dari `contextWindow`. |
+| `maxTokens`     | `number`                                                       | Token keluaran maksimum saat diketahui.                                       |
+| `cost`          | `object`                                                       | Harga USD opsional per juta token, termasuk `tieredPricing` opsional.         |
 | `compat`        | `object`                                                       | Flag kompatibilitas opsional yang cocok dengan kompatibilitas konfigurasi model OpenClaw. |
-| `status`        | `"available"` \| `"preview"` \| `"deprecated"` \| `"disabled"` | Status daftar. Tekan hanya ketika baris sama sekali tidak boleh muncul.                 |
-| `statusReason`  | `string`                                                       | Alasan opsional yang ditampilkan dengan status non-tersedia.                            |
-| `replaces`      | `string[]`                                                     | id model lokal penyedia lama yang digantikan model ini.                                 |
-| `replacedBy`    | `string`                                                       | id model lokal penyedia pengganti untuk baris usang.                                    |
-| `tags`          | `string[]`                                                     | Tag stabil yang digunakan oleh pemilih dan filter.                                      |
+| `status`        | `"available"` \| `"preview"` \| `"deprecated"` \| `"disabled"` | Status daftar. Supresi hanya saat baris sama sekali tidak boleh muncul.       |
+| `statusReason`  | `string`                                                       | Alasan opsional yang ditampilkan dengan status non-tersedia.                  |
+| `replaces`      | `string[]`                                                     | Id model lokal penyedia lama yang digantikan model ini.                       |
+| `replacedBy`    | `string`                                                       | Id model lokal penyedia pengganti untuk baris yang usang.                     |
+| `tags`          | `string[]`                                                     | Tag stabil yang digunakan oleh pemilih dan filter.                            |
 
-Bidang penekanan:
+Bidang supresi:
 
-| Bidang                     | Tipe       | Artinya                                                                                                      |
-| -------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
-| `provider`                 | `string`   | id penyedia untuk baris hulu yang akan ditekan. Harus dimiliki plugin ini atau dideklarasikan sebagai alias milik pemilik. |
-| `model`                    | `string`   | id model lokal penyedia yang akan ditekan.                                                                   |
-| `reason`                   | `string`   | Pesan opsional yang ditampilkan ketika baris yang ditekan diminta secara langsung.                           |
-| `when.baseUrlHosts`        | `string[]` | Daftar opsional host URL dasar penyedia efektif yang wajib ada sebelum penekanan berlaku.                    |
-| `when.providerConfigApiIn` | `string[]` | Daftar opsional nilai `api` konfigurasi penyedia yang persis wajib ada sebelum penekanan berlaku.            |
+| Bidang                    | Tipe       | Artinya                                                                                              |
+| ------------------------- | ---------- | ---------------------------------------------------------------------------------------------------- |
+| `provider`                | `string`   | Id penyedia untuk baris upstream yang akan disupresi. Harus dimiliki Plugin ini atau dideklarasikan sebagai alias milik sendiri. |
+| `model`                   | `string`   | Id model lokal penyedia yang akan disupresi.                                                         |
+| `reason`                  | `string`   | Pesan opsional yang ditampilkan saat baris yang disupresi diminta secara langsung.                   |
+| `when.baseUrlHosts`       | `string[]` | Daftar opsional host URL dasar penyedia efektif yang diperlukan sebelum supresi berlaku.              |
+| `when.providerConfigApiIn` | `string[]` | Daftar opsional nilai `api` konfigurasi penyedia persis yang diperlukan sebelum supresi berlaku.      |
 
-Jangan letakkan data khusus waktu eksekusi di `modelCatalog`. Gunakan `static` hanya saat
-baris manifes cukup lengkap agar permukaan daftar yang difilter penyedia dan pemilih dapat melewati
-penemuan registri/waktu eksekusi. Gunakan `refreshable` saat baris manifes berguna sebagai
-benih atau pelengkap yang dapat didaftarkan tetapi penyegaran/cache dapat menambahkan lebih banyak baris nanti;
-baris yang dapat disegarkan tidak bersifat otoritatif sendiri. Gunakan `runtime` saat OpenClaw
-harus memuat waktu eksekusi penyedia untuk mengetahui daftarnya.
+Jangan letakkan data khusus runtime di `modelCatalog`. Gunakan `static` hanya ketika
+baris manifes sudah cukup lengkap agar daftar yang difilter berdasarkan penyedia dan
+permukaan pemilih dapat melewati penemuan registry/runtime. Gunakan `refreshable` ketika
+baris manifes berguna sebagai seed atau pelengkap yang dapat dicantumkan, tetapi
+refresh/cache dapat menambahkan lebih banyak baris nanti; baris refreshable tidak
+otoritatif dengan sendirinya. Gunakan `runtime` ketika OpenClaw harus memuat runtime
+penyedia untuk mengetahui daftarnya.
 
 ## Referensi modelIdNormalization
 
-Gunakan `modelIdNormalization` untuk pembersihan ID model murah milik penyedia yang harus
-terjadi sebelum waktu eksekusi penyedia dimuat. Ini menjaga alias seperti nama model pendek,
-ID warisan lokal penyedia, dan aturan awalan proksi tetap berada di manifes Plugin pemiliknya
-alih-alih di tabel pemilihan model inti.
+Gunakan `modelIdNormalization` untuk pembersihan model-id milik penyedia yang murah dan
+harus terjadi sebelum runtime penyedia dimuat. Ini menjaga alias seperti nama model
+pendek, id lama lokal penyedia, dan aturan prefiks proxy di manifes plugin pemilik,
+bukan di tabel pemilihan model inti.
 
 ```json
 {
@@ -1001,37 +1005,38 @@ alih-alih di tabel pemilihan model inti.
 }
 ```
 
-Kolom penyedia:
+Bidang penyedia:
 
-| Kolom                                | Tipe                    | Artinya                                                                                   |
+| Bidang                               | Tipe                    | Artinya                                                                                   |
 | ------------------------------------ | ----------------------- | ----------------------------------------------------------------------------------------- |
-| `aliases`                            | `Record<string,string>` | Alias ID model persis yang tidak peka huruf besar/kecil. Nilai dikembalikan seperti ditulis. |
-| `stripPrefixes`                      | `string[]`              | Awalan untuk dihapus sebelum pencarian alias, berguna untuk duplikasi penyedia/model warisan. |
-| `prefixWhenBare`                     | `string`                | Awalan untuk ditambahkan saat ID model yang dinormalisasi belum berisi `/`.                  |
-| `prefixWhenBareAfterAliasStartsWith` | `object[]`              | Aturan awalan ID polos bersyarat setelah pencarian alias, dikunci oleh `modelPrefix` dan `prefix`. |
+| `aliases`                            | `Record<string,string>` | Alias model-id persis yang tidak peka huruf besar/kecil. Nilai dikembalikan apa adanya.   |
+| `stripPrefixes`                      | `string[]`              | Prefiks yang dihapus sebelum pencarian alias, berguna untuk duplikasi penyedia/model lama. |
+| `prefixWhenBare`                     | `string`                | Prefiks yang ditambahkan ketika id model yang dinormalisasi belum berisi `/`.             |
+| `prefixWhenBareAfterAliasStartsWith` | `object[]`              | Aturan prefiks bare-id bersyarat setelah pencarian alias, dikunci oleh `modelPrefix` dan `prefix`. |
 
 ## Referensi providerEndpoints
 
-Gunakan `providerEndpoints` untuk klasifikasi endpoint yang harus diketahui kebijakan permintaan
-generik sebelum waktu eksekusi penyedia dimuat. Inti tetap memiliki makna setiap
-`endpointClass`; manifes Plugin memiliki metadata host dan URL dasar.
+Gunakan `providerEndpoints` untuk klasifikasi endpoint yang harus diketahui kebijakan
+permintaan generik sebelum runtime penyedia dimuat. Inti tetap memiliki makna setiap
+`endpointClass`; manifes plugin memiliki metadata host dan URL dasar.
 
-Kolom endpoint:
+Bidang endpoint:
 
-| Kolom                          | Tipe       | Artinya                                                                                       |
-| ------------------------------ | ---------- | --------------------------------------------------------------------------------------------- |
+| Bidang                         | Tipe       | Artinya                                                                                     |
+| ------------------------------ | ---------- | ------------------------------------------------------------------------------------------- |
 | `endpointClass`                | `string`   | Kelas endpoint inti yang dikenal, seperti `openrouter`, `moonshot-native`, atau `google-vertex`. |
-| `hosts`                        | `string[]` | Nama host persis yang dipetakan ke kelas endpoint.                                            |
-| `hostSuffixes`                 | `string[]` | Akhiran host yang dipetakan ke kelas endpoint. Awali dengan `.` untuk pencocokan khusus akhiran domain. |
-| `baseUrls`                     | `string[]` | URL dasar HTTP(S) ternormalisasi persis yang dipetakan ke kelas endpoint.                     |
-| `googleVertexRegion`           | `string`   | Wilayah Google Vertex statis untuk host global persis.                                        |
-| `googleVertexRegionHostSuffix` | `string`   | Akhiran yang dihapus dari host yang cocok untuk mengekspos awalan wilayah Google Vertex.      |
+| `hosts`                        | `string[]` | Nama host persis yang dipetakan ke kelas endpoint.                                          |
+| `hostSuffixes`                 | `string[]` | Sufiks host yang dipetakan ke kelas endpoint. Awali dengan `.` untuk pencocokan khusus sufiks domain. |
+| `baseUrls`                     | `string[]` | URL dasar HTTP(S) ternormalisasi persis yang dipetakan ke kelas endpoint.                   |
+| `googleVertexRegion`           | `string`   | Region Google Vertex statis untuk host global persis.                                       |
+| `googleVertexRegionHostSuffix` | `string`   | Sufiks yang dihapus dari host yang cocok untuk mengekspos prefiks region Google Vertex.     |
 
 ## Referensi providerRequest
 
-Gunakan `providerRequest` untuk metadata kompatibilitas permintaan murah yang dibutuhkan kebijakan
-permintaan generik tanpa memuat waktu eksekusi penyedia. Simpan penulisan ulang muatan khusus perilaku
-di kait waktu eksekusi penyedia atau pembantu bersama keluarga penyedia.
+Gunakan `providerRequest` untuk metadata kompatibilitas permintaan yang murah yang
+dibutuhkan kebijakan permintaan generik tanpa memuat runtime penyedia. Simpan
+penulisan ulang payload khusus perilaku di hook runtime penyedia atau helper bersama
+keluarga penyedia.
 
 ```json
 {
@@ -1049,19 +1054,19 @@ di kait waktu eksekusi penyedia atau pembantu bersama keluarga penyedia.
 }
 ```
 
-Kolom penyedia:
+Bidang penyedia:
 
-| Kolom                | Tipe         | Artinya                                                                               |
-| -------------------- | ------------ | ------------------------------------------------------------------------------------- |
-| `family`             | `string`     | Label keluarga penyedia yang digunakan oleh keputusan kompatibilitas permintaan generik dan diagnostik. |
-| `compatibilityFamily` | `"moonshot"` | Keranjang kompatibilitas keluarga penyedia opsional untuk pembantu permintaan bersama. |
-| `openAICompletions`  | `object`     | Bendera permintaan penyelesaian yang kompatibel dengan OpenAI, saat ini `supportsStreamingUsage`. |
+| Bidang                | Tipe         | Artinya                                                                                |
+| --------------------- | ------------ | -------------------------------------------------------------------------------------- |
+| `family`              | `string`     | Label keluarga penyedia yang digunakan oleh keputusan dan diagnostik kompatibilitas permintaan generik. |
+| `compatibilityFamily` | `"moonshot"` | Bucket kompatibilitas keluarga penyedia opsional untuk helper permintaan bersama.      |
+| `openAICompletions`   | `object`     | Flag permintaan completions yang kompatibel dengan OpenAI, saat ini `supportsStreamingUsage`. |
 
 ## Referensi modelPricing
 
-Gunakan `modelPricing` saat penyedia membutuhkan perilaku harga bidang kontrol sebelum
-waktu eksekusi dimuat. Cache harga Gateway membaca metadata ini tanpa mengimpor
-kode waktu eksekusi penyedia.
+Gunakan `modelPricing` ketika penyedia membutuhkan perilaku harga control-plane sebelum
+runtime dimuat. Cache harga Gateway membaca metadata ini tanpa mengimpor kode runtime
+penyedia.
 
 ```json
 {
@@ -1082,137 +1087,147 @@ kode waktu eksekusi penyedia.
 }
 ```
 
-Kolom penyedia:
+Bidang penyedia:
 
-| Kolom       | Tipe              | Artinya                                                                                         |
-| ----------- | ----------------- | ----------------------------------------------------------------------------------------------- |
-| `external`  | `boolean`         | Tetapkan `false` untuk penyedia lokal/dihosting sendiri yang tidak boleh pernah mengambil harga OpenRouter atau LiteLLM. |
-| `openRouter` | `false \| object` | Pemetaan pencarian harga OpenRouter. `false` menonaktifkan pencarian OpenRouter untuk penyedia ini. |
-| `liteLLM`   | `false \| object` | Pemetaan pencarian harga LiteLLM. `false` menonaktifkan pencarian LiteLLM untuk penyedia ini.      |
+| Bidang       | Tipe              | Artinya                                                                                         |
+| ------------ | ----------------- | ----------------------------------------------------------------------------------------------- |
+| `external`   | `boolean`         | Atur `false` untuk penyedia lokal/self-hosted yang tidak boleh pernah mengambil harga OpenRouter atau LiteLLM. |
+| `openRouter` | `false \| object` | Pemetaan lookup harga OpenRouter. `false` menonaktifkan lookup OpenRouter untuk penyedia ini.   |
+| `liteLLM`    | `false \| object` | Pemetaan lookup harga LiteLLM. `false` menonaktifkan lookup LiteLLM untuk penyedia ini.         |
 
-Kolom sumber:
+Bidang sumber:
 
-| Kolom                     | Tipe               | Artinya                                                                                                  |
-| ------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------- |
-| `provider`                | `string`           | ID penyedia katalog eksternal saat berbeda dari ID penyedia OpenClaw, misalnya `z-ai` untuk penyedia `zai`. |
-| `passthroughProviderModel` | `boolean`          | Perlakukan ID model yang berisi garis miring sebagai referensi penyedia/model bersarang, berguna untuk penyedia proksi seperti OpenRouter. |
-| `modelIdTransforms`       | `"version-dots"[]` | Varian ID model katalog eksternal tambahan. `version-dots` mencoba ID versi bertitik seperti `claude-opus-4.6`. |
+| Bidang                     | Tipe               | Artinya                                                                                                        |
+| -------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `provider`                 | `string`           | Id penyedia katalog eksternal ketika berbeda dari id penyedia OpenClaw, misalnya `z-ai` untuk penyedia `zai`. |
+| `passthroughProviderModel` | `boolean`          | Perlakukan id model yang berisi slash sebagai referensi penyedia/model bersarang, berguna untuk penyedia proxy seperti OpenRouter. |
+| `modelIdTransforms`        | `"version-dots"[]` | Varian model-id katalog eksternal tambahan. `version-dots` mencoba id versi bertitik seperti `claude-opus-4.6`. |
 
 ### Indeks Penyedia OpenClaw
 
 Indeks Penyedia OpenClaw adalah metadata pratinjau milik OpenClaw untuk penyedia
-yang Plugin-nya mungkin belum terpasang. Ini bukan bagian dari manifes Plugin.
-Manifes Plugin tetap menjadi otoritas Plugin terpasang. Indeks Penyedia adalah
-kontrak cadangan internal yang akan digunakan permukaan penyedia yang dapat dipasang dan pemilih model
-pra-pemasangan di masa mendatang saat Plugin penyedia belum terpasang.
+yang pluginnya mungkin belum terinstal. Ini bukan bagian dari manifes plugin.
+Manifes plugin tetap menjadi otoritas plugin terinstal. Indeks Penyedia adalah
+kontrak fallback internal yang akan dikonsumsi permukaan pemilih model
+installable-provider dan pra-instal di masa depan ketika plugin penyedia belum
+terinstal.
 
 Urutan otoritas katalog:
 
 1. Konfigurasi pengguna.
-2. `modelCatalog` manifes Plugin terpasang.
-3. Cache katalog model dari penyegaran eksplisit.
+2. Manifes plugin terinstal `modelCatalog`.
+3. Cache katalog model dari refresh eksplisit.
 4. Baris pratinjau Indeks Penyedia OpenClaw.
 
-Indeks Penyedia tidak boleh berisi rahasia, status aktif, kait waktu eksekusi, atau
-data model khusus akun langsung. Katalog pratinjaunya menggunakan bentuk baris penyedia
-`modelCatalog` yang sama seperti manifes Plugin, tetapi harus tetap dibatasi
-pada metadata tampilan stabil kecuali kolom adaptor waktu eksekusi seperti `api`,
-`baseUrl`, harga, atau bendera kompatibilitas sengaja dijaga selaras dengan
-manifes Plugin terpasang. Penyedia dengan penemuan `/models` langsung harus
-menulis baris yang disegarkan melalui jalur cache katalog model eksplisit alih-alih
-membuat proses daftar normal atau onboarding memanggil API penyedia.
+Indeks Penyedia tidak boleh berisi secret, status aktif, hook runtime, atau
+data model khusus akun live. Katalog pratinjaunya menggunakan bentuk baris
+penyedia `modelCatalog` yang sama seperti manifes plugin, tetapi harus tetap
+dibatasi pada metadata tampilan yang stabil kecuali bidang adaptor runtime
+seperti `api`, `baseUrl`, harga, atau flag kompatibilitas sengaja dijaga
+selaras dengan manifes plugin terinstal. Penyedia dengan penemuan live `/models`
+harus menulis baris yang di-refresh melalui jalur cache katalog model eksplisit,
+bukan membuat listing normal atau onboarding memanggil API penyedia.
 
-Entri Indeks Penyedia juga dapat membawa metadata Plugin yang dapat dipasang untuk penyedia
-yang Plugin-nya telah dipindahkan keluar dari inti atau belum terpasang. Metadata ini
-mencerminkan pola katalog kanal: nama paket, spesifikasi pemasangan npm,
-integritas yang diharapkan, dan label pilihan autentikasi murah sudah cukup untuk menampilkan
-opsi penyiapan yang dapat dipasang. Setelah Plugin terpasang, manifesnya menang dan
-entri Indeks Penyedia diabaikan untuk penyedia tersebut.
+Entri Indeks Penyedia juga dapat membawa metadata plugin yang dapat diinstal
+untuk penyedia yang pluginnya telah dipindahkan keluar dari inti atau belum
+terinstal. Metadata ini mencerminkan pola katalog channel: nama paket, spesifikasi
+instal npm, integritas yang diharapkan, dan label pilihan auth yang murah sudah
+cukup untuk menampilkan opsi penyiapan yang dapat diinstal. Setelah plugin
+terinstal, manifesnya menang dan entri Indeks Penyedia diabaikan untuk penyedia
+tersebut.
 
-Kunci kapabilitas tingkat atas warisan sudah usang. Gunakan `openclaw doctor --fix` untuk
+Kunci kapabilitas tingkat atas legacy sudah deprecated. Gunakan `openclaw doctor --fix` untuk
 memindahkan `speechProviders`, `realtimeTranscriptionProviders`,
 `realtimeVoiceProviders`, `mediaUnderstandingProviders`,
 `imageGenerationProviders`, `videoGenerationProviders`,
 `webFetchProviders`, dan `webSearchProviders` ke bawah `contracts`; pemuatan
-manifes normal tidak lagi memperlakukan kolom tingkat atas tersebut sebagai kepemilikan
-kapabilitas.
+manifes normal tidak lagi memperlakukan bidang tingkat atas tersebut sebagai
+kepemilikan kapabilitas.
 
 ## Manifes versus package.json
 
-Kedua berkas ini menjalankan tugas yang berbeda:
+Kedua file menjalankan tugas yang berbeda:
 
-| Berkas                 | Gunakan untuk                                                                                                                    |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `openclaw.plugin.json` | Penemuan, validasi konfigurasi, metadata pilihan autentikasi, dan petunjuk UI yang harus ada sebelum kode Plugin berjalan        |
-| `package.json`         | Metadata npm, pemasangan dependensi, dan blok `openclaw` yang digunakan untuk titik masuk, gating pemasangan, penyiapan, atau metadata katalog |
+| File                   | Gunakan untuk                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw.plugin.json` | Penemuan, validasi konfigurasi, metadata pilihan auth, dan petunjuk UI yang harus ada sebelum kode plugin berjalan              |
+| `package.json`         | Metadata npm, instalasi dependensi, dan blok `openclaw` yang digunakan untuk entrypoint, gating instalasi, penyiapan, atau metadata katalog |
 
-Jika Anda tidak yakin di mana sebuah metadata seharusnya berada, gunakan aturan ini:
+Jika Anda tidak yakin di mana suatu metadata harus ditempatkan, gunakan aturan ini:
 
-- jika OpenClaw harus mengetahuinya sebelum memuat kode Plugin, letakkan di `openclaw.plugin.json`
-- jika itu tentang pengemasan, berkas entri, atau perilaku pemasangan npm, letakkan di `package.json`
+- jika OpenClaw harus mengetahuinya sebelum memuat kode plugin, letakkan di `openclaw.plugin.json`
+- jika itu tentang packaging, file entry, atau perilaku instal npm, letakkan di `package.json`
 
-### Kolom package.json yang memengaruhi penemuan
+### Bidang package.json yang memengaruhi penemuan
 
-Beberapa metadata Plugin pra-waktu eksekusi sengaja berada di `package.json` di bawah blok
-`openclaw` alih-alih `openclaw.plugin.json`.
+Sebagian metadata plugin pra-runtime sengaja berada di `package.json` di bawah blok
+`openclaw`, bukan `openclaw.plugin.json`.
+`openclaw.bundle` dan `openclaw.bundle.json` bukan kontrak plugin OpenClaw;
+plugin native harus menggunakan `openclaw.plugin.json` ditambah bidang
+`package.json#openclaw` yang didukung di bawah ini.
 
 Contoh penting:
 
-| Bidang                                                            | Artinya                                                                                                                                                                             |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `openclaw.extensions`                                             | Mendeklarasikan entrypoint plugin native. Harus tetap berada di dalam direktori paket plugin.                                                                                       |
-| `openclaw.runtimeExtensions`                                      | Mendeklarasikan entrypoint runtime JavaScript hasil build untuk paket yang terpasang. Harus tetap berada di dalam direktori paket plugin.                                           |
-| `openclaw.setupEntry`                                             | Entrypoint ringan khusus penyiapan yang digunakan selama onboarding, startup kanal tertunda, dan penemuan status kanal/SecretRef baca-saja. Harus tetap berada di dalam direktori paket plugin. |
-| `openclaw.runtimeSetupEntry`                                      | Mendeklarasikan entrypoint penyiapan JavaScript hasil build untuk paket yang terpasang. Memerlukan `setupEntry`, harus ada, dan harus tetap berada di dalam direktori paket plugin. |
-| `openclaw.channel`                                                | Metadata katalog kanal yang murah seperti label, jalur docs, alias, dan salinan pemilihan.                                                                                          |
-| `openclaw.channel.commands`                                       | Metadata default otomatis perintah native dan skill native statis yang digunakan oleh permukaan config, audit, dan daftar perintah sebelum runtime kanal dimuat.                    |
-| `openclaw.channel.configuredState`                                | Metadata pemeriksa status-terkonfigurasi ringan yang dapat menjawab "apakah penyiapan khusus-env sudah ada?" tanpa memuat runtime kanal penuh.                                      |
-| `openclaw.channel.persistedAuthState`                             | Metadata pemeriksa autentikasi-tersimpan ringan yang dapat menjawab "apakah ada yang sudah masuk?" tanpa memuat runtime kanal penuh.                                                |
-| `openclaw.install.npmSpec` / `openclaw.install.localPath`         | Petunjuk pemasangan/pembaruan untuk plugin bawaan dan plugin yang dipublikasikan secara eksternal.                                                                                  |
-| `openclaw.install.defaultChoice`                                  | Jalur pemasangan yang disukai ketika beberapa sumber pemasangan tersedia.                                                                                                           |
-| `openclaw.install.minHostVersion`                                 | Versi host OpenClaw minimum yang didukung, menggunakan batas bawah semver seperti `>=2026.3.22` atau `>=2026.5.1-beta.1`.                                                          |
-| `openclaw.install.expectedIntegrity`                              | String integritas dist npm yang diharapkan seperti `sha512-...`; alur pemasangan dan pembaruan memverifikasi artefak yang diambil terhadap string ini.                             |
-| `openclaw.install.allowInvalidConfigRecovery`                     | Mengizinkan jalur pemulihan pemasangan ulang plugin bawaan yang sempit ketika config tidak valid.                                                                                   |
-| `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen` | Memungkinkan permukaan kanal khusus penyiapan dimuat sebelum plugin kanal penuh selama startup.                                                                                     |
+| Bidang                                                                                     | Artinya                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw.extensions`                                                                      | Mendeklarasikan titik masuk Plugin native. Harus tetap berada di dalam direktori paket Plugin.                                                                                      |
+| `openclaw.runtimeExtensions`                                                               | Mendeklarasikan titik masuk runtime JavaScript bawaan untuk paket terpasang. Harus tetap berada di dalam direktori paket Plugin.                                                    |
+| `openclaw.setupEntry`                                                                      | Titik masuk ringan khusus penyiapan yang digunakan selama orientasi awal, penundaan startup saluran, dan penemuan status saluran/SecretRef hanya-baca. Harus tetap berada di dalam direktori paket Plugin. |
+| `openclaw.runtimeSetupEntry`                                                               | Mendeklarasikan titik masuk penyiapan JavaScript bawaan untuk paket terpasang. Memerlukan `setupEntry`, harus ada, dan harus tetap berada di dalam direktori paket Plugin.          |
+| `openclaw.channel`                                                                         | Metadata katalog saluran yang murah seperti label, jalur dokumen, alias, dan salinan pilihan.                                                                                       |
+| `openclaw.channel.commands`                                                                | Metadata default otomatis perintah native statis dan skill native yang digunakan oleh permukaan konfigurasi, audit, dan daftar perintah sebelum runtime saluran dimuat.             |
+| `openclaw.channel.configuredState`                                                         | Metadata pemeriksa status-terkonfigurasi ringan yang dapat menjawab "apakah penyiapan khusus env sudah ada?" tanpa memuat runtime saluran penuh.                                    |
+| `openclaw.channel.persistedAuthState`                                                      | Metadata pemeriksa autentikasi tersimpan ringan yang dapat menjawab "apakah ada yang sudah masuk?" tanpa memuat runtime saluran penuh.                                              |
+| `openclaw.install.clawhubSpec` / `openclaw.install.npmSpec` / `openclaw.install.localPath` | Petunjuk instalasi/pembaruan untuk Plugin bawaan dan Plugin yang dipublikasikan secara eksternal.                                                                                   |
+| `openclaw.install.defaultChoice`                                                           | Jalur instalasi yang disukai ketika beberapa sumber instalasi tersedia.                                                                                                             |
+| `openclaw.install.minHostVersion`                                                          | Versi host OpenClaw minimum yang didukung, menggunakan batas bawah semver seperti `>=2026.3.22` atau `>=2026.5.1-beta.1`.                                                          |
+| `openclaw.install.expectedIntegrity`                                                       | String integritas dist npm yang diharapkan seperti `sha512-...`; alur instalasi dan pembaruan memverifikasi artefak yang diambil terhadap nilai ini.                                |
+| `openclaw.install.allowInvalidConfigRecovery`                                              | Mengizinkan jalur pemulihan instalasi ulang Plugin bawaan yang sempit ketika konfigurasi tidak valid.                                                                                |
+| `openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`                          | Memungkinkan permukaan saluran khusus penyiapan dimuat sebelum Plugin saluran penuh selama startup.                                                                                 |
 
-Metadata manifest menentukan pilihan penyedia/kanal/penyiapan mana yang muncul di
-onboarding sebelum runtime dimuat. `package.json#openclaw.install` memberi tahu
-onboarding cara mengambil atau mengaktifkan plugin tersebut ketika pengguna memilih salah satu dari
-pilihan itu. Jangan pindahkan petunjuk pemasangan ke `openclaw.plugin.json`.
+Metadata manifes menentukan pilihan penyedia/saluran/penyiapan mana yang muncul dalam
+orientasi awal sebelum runtime dimuat. `package.json#openclaw.install` memberi tahu
+orientasi awal cara mengambil atau mengaktifkan Plugin tersebut ketika pengguna memilih salah satu
+pilihan itu. Jangan pindahkan petunjuk instalasi ke `openclaw.plugin.json`.
 
-`openclaw.install.minHostVersion` diberlakukan selama pemasangan dan pemuatan
-registri manifest untuk sumber plugin non-bawaan. Nilai tidak valid ditolak;
-nilai yang lebih baru tetapi valid melewati plugin eksternal pada host lama. Sumber
-plugin bawaan diasumsikan diversi bersama dengan checkout host.
+`openclaw.install.minHostVersion` diberlakukan selama instalasi dan pemuatan
+registri manifes untuk sumber Plugin non-bawaan. Nilai tidak valid ditolak;
+nilai yang lebih baru tetapi valid melewati Plugin eksternal pada host lama. Sumber
+Plugin bawaan dianggap memiliki versi yang sama dengan checkout host.
+
+Metadata instalasi-saat-diperlukan resmi sebaiknya menggunakan `clawhubSpec` ketika Plugin
+dipublikasikan di ClawHub; orientasi awal memperlakukannya sebagai sumber jarak jauh yang disukai dan
+mencatat fakta artefak ClawHub setelah instalasi. `npmSpec` tetap menjadi fallback
+kompatibilitas untuk paket yang belum berpindah ke ClawHub.
 
 Penyematan versi npm persis sudah berada di `npmSpec`, misalnya
 `"npmSpec": "@wecom/wecom-openclaw-plugin@1.2.3"`. Entri katalog eksternal resmi
-sebaiknya memasangkan spesifikasi persis dengan `expectedIntegrity` agar alur pembaruan gagal
+sebaiknya memasangkan spec persis dengan `expectedIntegrity` agar alur pembaruan gagal
 tertutup jika artefak npm yang diambil tidak lagi cocok dengan rilis yang disematkan.
-Onboarding interaktif tetap menawarkan spesifikasi npm registri tepercaya, termasuk
-nama paket telanjang dan dist-tag, demi kompatibilitas. Diagnostik katalog dapat
-membedakan sumber persis, mengambang, disematkan-integritas, integritas-hilang, ketidakcocokan-nama-paket,
+Orientasi awal interaktif masih menawarkan spec npm registri tepercaya, termasuk nama
+paket polos dan dist-tag, untuk kompatibilitas. Diagnostik katalog dapat
+membedakan sumber persis, mengambang, disematkan-integritas, integritas-hilang, ketidakcocokan nama paket,
 dan pilihan-default tidak valid. Diagnostik juga memperingatkan ketika
-`expectedIntegrity` ada tetapi tidak ada sumber npm valid yang dapat disematkannya.
+`expectedIntegrity` ada tetapi tidak ada sumber npm valid yang dapat disematkan olehnya.
 Ketika `expectedIntegrity` ada,
-alur pemasangan/pembaruan memberlakukannya; ketika dihilangkan, resolusi registri
-direkam tanpa sematan integritas.
+alur instalasi/pembaruan memberlakukannya; ketika dihilangkan, resolusi registri
+dicatat tanpa pin integritas.
 
-Plugin kanal sebaiknya menyediakan `openclaw.setupEntry` ketika status, daftar kanal,
-atau pemindaian SecretRef perlu mengidentifikasi akun yang dikonfigurasi tanpa memuat runtime
-penuh. Entri penyiapan sebaiknya mengekspos metadata kanal serta adapter config,
+Plugin saluran sebaiknya menyediakan `openclaw.setupEntry` ketika status, daftar saluran,
+atau pemindaian SecretRef perlu mengidentifikasi akun terkonfigurasi tanpa memuat runtime
+penuh. Entri penyiapan sebaiknya mengekspos metadata saluran serta adapter konfigurasi,
 status, dan rahasia yang aman untuk penyiapan; simpan klien jaringan, listener Gateway, dan
-runtime transport di entrypoint ekstensi utama.
+runtime transportasi di titik masuk ekstensi utama.
 
-Bidang entrypoint runtime tidak menggantikan pemeriksaan batas paket untuk bidang
-entrypoint sumber. Misalnya, `openclaw.runtimeExtensions` tidak dapat membuat
-jalur `openclaw.extensions` yang keluar batas menjadi dapat dimuat.
+Bidang titik masuk runtime tidak menimpa pemeriksaan batas paket untuk bidang
+titik masuk sumber. Misalnya, `openclaw.runtimeExtensions` tidak dapat membuat jalur
+`openclaw.extensions` yang keluar dari batas menjadi dapat dimuat.
 
 `openclaw.install.allowInvalidConfigRecovery` sengaja sempit. Ini tidak
-membuat sembarang config rusak dapat dipasang. Saat ini ini hanya mengizinkan alur pemasangan
-memulihkan kegagalan upgrade plugin bawaan usang tertentu, seperti
-jalur plugin bawaan yang hilang atau entri `channels.<id>` usang untuk plugin bawaan yang sama.
-Kesalahan config yang tidak terkait tetap memblokir pemasangan dan mengarahkan operator
+membuat konfigurasi rusak sembarang menjadi dapat diinstal. Saat ini fitur ini hanya mengizinkan alur instalasi
+pulih dari kegagalan peningkatan Plugin bawaan yang kedaluwarsa tertentu, seperti jalur
+Plugin bawaan yang hilang atau entri `channels.<id>` kedaluwarsa untuk Plugin
+bawaan yang sama. Kesalahan konfigurasi yang tidak terkait tetap memblokir instalasi dan mengarahkan operator
 ke `openclaw doctor --fix`.
 
 `openclaw.channel.persistedAuthState` adalah metadata paket untuk modul pemeriksa
@@ -1232,15 +1247,15 @@ kecil:
 }
 ```
 
-Gunakan ini ketika alur penyiapan, doctor, status, atau kehadiran baca-saja memerlukan probe autentikasi
-ya/tidak yang murah sebelum plugin kanal penuh dimuat. Status autentikasi tersimpan bukan
-status kanal terkonfigurasi: jangan gunakan metadata ini untuk mengaktifkan plugin secara otomatis,
-memperbaiki dependensi runtime, atau memutuskan apakah runtime kanal harus dimuat.
+Gunakan ini ketika alur penyiapan, doctor, status, atau keberadaan hanya-baca memerlukan probe
+autentikasi ya/tidak yang murah sebelum Plugin saluran penuh dimuat. Status autentikasi tersimpan bukan
+status saluran terkonfigurasi: jangan gunakan metadata ini untuk mengaktifkan Plugin secara otomatis,
+memperbaiki dependensi runtime, atau memutuskan apakah runtime saluran harus dimuat.
 Ekspor target sebaiknya berupa fungsi kecil yang hanya membaca status tersimpan; jangan
-merutekannya melalui barrel runtime kanal penuh.
+rutekan melalui barrel runtime saluran penuh.
 
-`openclaw.channel.configuredState` mengikuti bentuk yang sama untuk pemeriksaan terkonfigurasi khusus-env
-yang murah:
+`openclaw.channel.configuredState` mengikuti bentuk yang sama untuk pemeriksaan terkonfigurasi
+khusus env yang murah:
 
 ```json
 {
@@ -1256,35 +1271,35 @@ yang murah:
 }
 ```
 
-Gunakan ini ketika kanal dapat menjawab status-terkonfigurasi dari env atau input kecil
-non-runtime lainnya. Jika pemeriksaan memerlukan resolusi config penuh atau runtime
-kanal nyata, simpan logika itu di hook plugin `config.hasConfiguredState`
-sebagai gantinya.
+Gunakan ini ketika saluran dapat menjawab status-terkonfigurasi dari env atau masukan
+non-runtime kecil lainnya. Jika pemeriksaan memerlukan resolusi konfigurasi penuh atau runtime
+saluran nyata, pertahankan logika tersebut di hook `config.hasConfiguredState`
+Plugin sebagai gantinya.
 
-## Prioritas penemuan (id plugin duplikat)
+## Prioritas penemuan (id Plugin duplikat)
 
-OpenClaw menemukan plugin dari beberapa root (bawaan, pemasangan global, workspace, jalur pilihan config eksplisit). Jika dua penemuan berbagi `id` yang sama, hanya manifest dengan **prioritas tertinggi** yang dipertahankan; duplikat berprioritas lebih rendah dibuang alih-alih dimuat berdampingan dengannya.
+OpenClaw menemukan Plugin dari beberapa root (bawaan, instalasi global, workspace, jalur yang dipilih konfigurasi secara eksplisit). Jika dua penemuan memiliki `id` yang sama, hanya manifes dengan **prioritas tertinggi** yang dipertahankan; duplikat berprioritas lebih rendah dibuang, bukan dimuat berdampingan dengannya.
 
 Prioritas, dari tertinggi ke terendah:
 
-1. **Dipilih config** — jalur yang disematkan secara eksplisit di `plugins.entries.<id>`
-2. **Bawaan** — plugin yang dikirim bersama OpenClaw
-3. **Pemasangan global** — plugin yang dipasang ke root plugin global OpenClaw
-4. **Workspace** — plugin yang ditemukan relatif terhadap workspace saat ini
+1. **Dipilih konfigurasi** — jalur yang disematkan secara eksplisit di `plugins.entries.<id>`
+2. **Bawaan** — Plugin yang dikirim bersama OpenClaw
+3. **Instalasi global** — Plugin yang diinstal ke root Plugin global OpenClaw
+4. **Workspace** — Plugin yang ditemukan relatif terhadap workspace saat ini
 
 Implikasi:
 
-- Salinan bercabang atau usang dari plugin bawaan yang berada di workspace tidak akan menutupi build bawaan.
-- Untuk benar-benar mengganti plugin bawaan dengan plugin lokal, sematkan melalui `plugins.entries.<id>` agar menang berdasarkan prioritas, bukan mengandalkan penemuan workspace.
-- Pembuangan duplikat dicatat agar diagnostik Doctor dan startup dapat menunjuk ke salinan yang dibuang.
-- Penggantian duplikat yang dipilih config dirumuskan sebagai penggantian eksplisit dalam diagnostik, tetapi tetap memperingatkan agar fork usang dan bayangan tidak sengaja tetap terlihat.
+- Salinan fork atau kedaluwarsa dari Plugin bawaan yang berada di workspace tidak akan membayangi build bawaan.
+- Untuk benar-benar menimpa Plugin bawaan dengan Plugin lokal, sematkan melalui `plugins.entries.<id>` agar menang berdasarkan prioritas, bukan mengandalkan penemuan workspace.
+- Pembuangan duplikat dicatat sehingga diagnostik Doctor dan startup dapat menunjuk ke salinan yang dibuang.
+- Penimpaan duplikat yang dipilih konfigurasi dirumuskan sebagai penimpaan eksplisit dalam diagnostik, tetapi tetap memperingatkan agar fork kedaluwarsa dan bayangan tidak disengaja tetap terlihat.
 
 ## Persyaratan JSON Schema
 
-- **Setiap plugin harus mengirimkan JSON Schema**, meskipun tidak menerima config.
+- **Setiap Plugin harus mengirimkan JSON Schema**, meskipun tidak menerima konfigurasi.
 - Skema kosong dapat diterima (misalnya, `{ "type": "object", "additionalProperties": false }`).
-- Skema divalidasi pada waktu baca/tulis config, bukan pada runtime.
-- Saat memperluas atau mem-fork plugin bawaan dengan kunci config baru, perbarui `configSchema` `openclaw.plugin.json` plugin tersebut pada saat yang sama. Skema plugin bawaan bersifat ketat, jadi menambahkan `plugins.entries.<id>.config.myNewKey` dalam config pengguna tanpa menambahkan `myNewKey` ke `configSchema.properties` akan ditolak sebelum runtime plugin dimuat.
+- Skema divalidasi pada waktu baca/tulis konfigurasi, bukan pada runtime.
+- Saat memperluas atau melakukan fork Plugin bawaan dengan kunci konfigurasi baru, perbarui `configSchema` `openclaw.plugin.json` Plugin tersebut pada saat yang sama. Skema Plugin bawaan bersifat ketat, sehingga menambahkan `plugins.entries.<id>.config.myNewKey` di konfigurasi pengguna tanpa menambahkan `myNewKey` ke `configSchema.properties` akan ditolak sebelum runtime Plugin dimuat.
 
 Contoh ekstensi skema:
 
@@ -1304,29 +1319,29 @@ Contoh ekstensi skema:
 
 ## Perilaku validasi
 
-- Kunci `channels.*` yang tidak dikenal adalah **kesalahan**, kecuali id kanal dideklarasikan oleh
-  manifest plugin.
+- Kunci `channels.*` yang tidak dikenal adalah **kesalahan**, kecuali id saluran dideklarasikan oleh
+  manifes Plugin.
 - `plugins.entries.<id>`, `plugins.allow`, `plugins.deny`, dan `plugins.slots.*`
-  harus merujuk ke id plugin yang **dapat ditemukan**. Id yang tidak dikenal adalah **kesalahan**.
-- Jika plugin terpasang tetapi memiliki manifest atau skema yang rusak atau hilang,
-  validasi gagal dan Doctor melaporkan kesalahan plugin.
-- Jika config plugin ada tetapi plugin **dinonaktifkan**, config dipertahankan dan
+  harus mereferensikan id Plugin yang **dapat ditemukan**. Id yang tidak dikenal adalah **kesalahan**.
+- Jika Plugin terinstal tetapi memiliki manifes atau skema yang rusak atau hilang,
+  validasi gagal dan Doctor melaporkan kesalahan Plugin.
+- Jika konfigurasi Plugin ada tetapi Plugin **dinonaktifkan**, konfigurasi dipertahankan dan
   **peringatan** ditampilkan di Doctor + log.
 
-Lihat [Referensi konfigurasi](/id/gateway/configuration) untuk skema `plugins.*` lengkap.
+Lihat [Referensi konfigurasi](/id/gateway/configuration) untuk skema lengkap `plugins.*`.
 
 ## Catatan
 
-- Manifest **wajib untuk Plugin OpenClaw native**, termasuk pemuatan dari sistem berkas lokal. Runtime tetap memuat modul Plugin secara terpisah; manifest hanya untuk penemuan + validasi.
-- Manifest native diuraikan dengan JSON5, jadi komentar, koma di akhir, dan kunci tanpa tanda kutip diterima selama nilai akhirnya tetap berupa objek.
-- Hanya bidang manifest yang terdokumentasi yang dibaca oleh pemuat manifest. Hindari kunci tingkat atas kustom.
-- `channels`, `providers`, `cliBackends`, dan `skills` semuanya dapat dihilangkan ketika Plugin tidak membutuhkannya.
+- Manifes **wajib untuk Plugin OpenClaw native**, termasuk pemuatan sistem file lokal. Runtime tetap memuat modul Plugin secara terpisah; manifes hanya untuk penemuan + validasi.
+- Manifes native diurai dengan JSON5, sehingga komentar, koma akhir, dan kunci tanpa tanda kutip diterima selama nilai akhirnya tetap berupa objek.
+- Hanya kolom manifes yang terdokumentasi yang dibaca oleh pemuat manifes. Hindari kunci tingkat atas kustom.
+- `channels`, `providers`, `cliBackends`, dan `skills` semuanya dapat dihilangkan ketika sebuah Plugin tidak membutuhkannya.
 - `providerDiscoveryEntry` harus tetap ringan dan tidak boleh mengimpor kode runtime yang luas; gunakan untuk metadata katalog provider statis atau deskriptor penemuan yang sempit, bukan eksekusi saat permintaan.
 - Jenis Plugin eksklusif dipilih melalui `plugins.slots.*`: `kind: "memory"` melalui `plugins.slots.memory`, `kind: "context-engine"` melalui `plugins.slots.contextEngine` (default `legacy`).
-- Deklarasikan jenis Plugin eksklusif dalam manifest ini. `OpenClawPluginDefinition.kind` pada entri runtime sudah usang dan tetap ada hanya sebagai fallback kompatibilitas untuk Plugin lama.
-- Metadata variabel lingkungan (`setup.providers[].envVars`, `providerAuthEnvVars` yang sudah usang, dan `channelEnvVars`) hanya deklaratif. Status, audit, validasi pengiriman Cron, dan permukaan baca-saja lainnya tetap menerapkan kebijakan kepercayaan Plugin dan aktivasi efektif sebelum memperlakukan variabel lingkungan sebagai sudah dikonfigurasi.
+- Deklarasikan jenis Plugin eksklusif dalam manifes ini. `OpenClawPluginDefinition.kind` pada entri runtime sudah tidak digunakan lagi dan tetap ada hanya sebagai fallback kompatibilitas untuk Plugin lama.
+- Metadata variabel env (`setup.providers[].envVars`, `providerAuthEnvVars` yang sudah tidak digunakan lagi, dan `channelEnvVars`) hanya deklaratif. Status, audit, validasi pengiriman cron, dan permukaan baca-saja lainnya tetap menerapkan kepercayaan Plugin dan kebijakan aktivasi efektif sebelum memperlakukan variabel env sebagai terkonfigurasi.
 - Untuk metadata wizard runtime yang memerlukan kode provider, lihat [hook runtime Provider](/id/plugins/architecture-internals#provider-runtime-hooks).
-- Jika Plugin Anda bergantung pada modul native, dokumentasikan langkah build dan persyaratan daftar izin manajer paket apa pun (misalnya, pnpm `allow-build-scripts` + `pnpm rebuild <package>`).
+- Jika Plugin Anda bergantung pada modul native, dokumentasikan langkah build dan persyaratan allowlist package-manager apa pun (misalnya, pnpm `allow-build-scripts` + `pnpm rebuild <package>`).
 
 ## Terkait
 

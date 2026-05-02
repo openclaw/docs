@@ -7,24 +7,27 @@ sidebarTitle: Install and Configure
 summary: Instal, konfigurasikan, dan kelola Plugin OpenClaw
 title: Plugin
 x-i18n:
-    generated_at: "2026-05-02T09:34:58Z"
+    generated_at: "2026-05-02T21:01:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c9378ef4a6aef26949148702f2f6d8537811869511e8830ae5c3d560ff06d98b
+    source_hash: d553c917d9054f4cb5a244ffd0d749c37f6dde230a5887b6b71ba7cf39fcefe5
     source_path: tools/plugin.md
     workflow: 16
 ---
 
-Plugin memperluas OpenClaw dengan kemampuan baru: channel, penyedia model,
+Plugin memperluas OpenClaw dengan kemampuan baru: kanal, penyedia model,
 harness agen, alat, Skills, ucapan, transkripsi waktu nyata, suara waktu nyata,
 pemahaman media, pembuatan gambar, pembuatan video, pengambilan web, pencarian
-web, dan lainnya. Beberapa Plugin adalah **inti** (dikirim bersama OpenClaw),
-yang lain adalah **eksternal**. Sebagian besar Plugin eksternal diterbitkan dan
-ditemukan melalui [ClawHub](/id/tools/clawhub). Npm tetap didukung untuk instalasi
+web, dan lainnya. Sebagian Plugin bersifat **inti** (dikirimkan bersama OpenClaw),
+sebagian lainnya **eksternal**. Sebagian besar Plugin eksternal diterbitkan dan
+ditemukan melalui [ClawHub](/id/tools/clawhub). Npm tetap didukung untuk pemasangan
 langsung dan untuk sekumpulan sementara paket Plugin milik OpenClaw selama
-migrasi tersebut selesai.
+migrasi itu diselesaikan.
 
 ## Mulai cepat
+
+Untuk contoh pemasangan salin-tempel, daftar, pencopotan, pembaruan, dan
+penerbitan, lihat [Kelola Plugin](/id/plugins/manage-plugins).
 
 <Steps>
   <Step title="Lihat apa yang dimuat">
@@ -63,6 +66,17 @@ migrasi tersebut selesai.
 
   </Step>
 
+  <Step title="Pengelolaan native chat">
+    Dalam Gateway yang berjalan, `/plugins enable` dan `/plugins disable` yang
+    hanya untuk pemilik memicu pemuat ulang konfigurasi Gateway. Gateway memuat
+    ulang permukaan runtime Plugin dalam proses, dan giliran agen baru membangun
+    ulang daftar alatnya dari registri yang telah disegarkan. `/plugins install`
+    mengubah kode sumber Plugin, sehingga Gateway meminta mulai ulang alih-alih
+    berpura-pura bahwa proses saat ini dapat memuat ulang modul yang sudah
+    diimpor dengan aman.
+
+  </Step>
+
   <Step title="Verifikasi Plugin">
     ```bash
     openclaw plugins inspect <plugin-id> --runtime --json
@@ -71,14 +85,15 @@ migrasi tersebut selesai.
     openclaw <plugin-command> --help
     ```
 
-    Gunakan `--runtime` saat Anda perlu membuktikan alat terdaftar, layanan,
-    metode Gateway, hook, atau perintah CLI milik Plugin. `inspect` biasa adalah
-    pemeriksaan manifest/registri dingin dan sengaja menghindari impor runtime Plugin.
+    Gunakan `--runtime` saat Anda perlu membuktikan alat, layanan, metode
+    gateway, hook, atau perintah CLI milik Plugin yang terdaftar. `inspect` biasa
+    adalah pemeriksaan manifes/registri dingin dan dengan sengaja menghindari
+    impor runtime Plugin.
 
   </Step>
 </Steps>
 
-Jika Anda lebih memilih kontrol native chat, aktifkan `commands.plugins: true` dan gunakan:
+Jika Anda lebih menyukai kontrol native chat, aktifkan `commands.plugins: true` dan gunakan:
 
 ```text
 /plugin install clawhub:<package>
@@ -86,73 +101,85 @@ Jika Anda lebih memilih kontrol native chat, aktifkan `commands.plugins: true` d
 /plugin enable <plugin-id>
 ```
 
-Jalur instalasi menggunakan resolver yang sama seperti CLI: path/arsip lokal,
+Jalur pemasangan menggunakan resolver yang sama dengan CLI: path/arsip lokal,
 `clawhub:<pkg>` eksplisit, `npm:<pkg>` eksplisit, `git:<repo>` eksplisit, atau
-spesifikasi paket polos (ClawHub lebih dulu, lalu fallback npm).
+spesifikasi paket polos melalui npm.
 
-Jika konfigurasi tidak valid, instalasi biasanya gagal tertutup dan mengarahkan Anda ke
-`openclaw doctor --fix`. Satu-satunya pengecualian pemulihan adalah jalur instal
-ulang Plugin bawaan yang sempit untuk Plugin yang memilih ikut
+Jika konfigurasi tidak valid, pemasangan biasanya gagal tertutup dan mengarahkan
+Anda ke `openclaw doctor --fix`. Satu-satunya pengecualian pemulihan adalah jalur
+pemasangan ulang Plugin bawaan yang sempit untuk Plugin yang ikut serta dalam
 `openclaw.install.allowInvalidConfigRecovery`.
-Saat Gateway mulai, konfigurasi tidak valid untuk satu Plugin diisolasi ke Plugin tersebut:
-startup mencatat masalah `plugins.entries.<id>.config`, melewati Plugin tersebut saat
-pemuatan, dan menjaga Plugin serta channel lain tetap online. Jalankan `openclaw doctor --fix`
-untuk mengarantina konfigurasi Plugin yang buruk dengan menonaktifkan entri Plugin tersebut
-dan menghapus payload konfigurasi yang tidak valid; cadangan konfigurasi normal menyimpan nilai
-sebelumnya. Saat konfigurasi channel merujuk ke Plugin yang tidak lagi dapat ditemukan tetapi
-id Plugin basi yang sama tetap ada dalam konfigurasi Plugin atau catatan instalasi, startup Gateway
-mencatat peringatan dan melewati channel tersebut alih-alih memblokir semua channel lain.
-Jalankan `openclaw doctor --fix` untuk menghapus entri channel/Plugin yang basi; kunci
-channel yang tidak dikenal tanpa bukti Plugin basi tetap menggagalkan validasi agar salah ketik tetap
-terlihat.
-Jika `plugins.enabled: false` disetel, referensi Plugin basi diperlakukan sebagai inert:
-startup Gateway melewati pekerjaan penemuan/pemuatan Plugin dan `openclaw doctor` mempertahankan
-konfigurasi Plugin yang dinonaktifkan alih-alih menghapusnya otomatis. Aktifkan kembali Plugin sebelum
-menjalankan pembersihan doctor jika Anda ingin id Plugin basi dihapus.
+Selama startup Gateway, konfigurasi tidak valid untuk satu Plugin diisolasi ke
+Plugin tersebut: startup mencatat masalah `plugins.entries.<id>.config`,
+melewati Plugin itu selama pemuatan, dan menjaga Plugin serta kanal lain tetap
+online. Jalankan `openclaw doctor --fix` untuk mengarantina konfigurasi Plugin
+yang buruk dengan menonaktifkan entri Plugin tersebut dan menghapus payload
+konfigurasi tidak validnya; cadangan konfigurasi normal menyimpan nilai
+sebelumnya.
+Saat konfigurasi kanal merujuk ke Plugin yang tidak lagi dapat ditemukan tetapi
+id Plugin usang yang sama tetap ada dalam konfigurasi Plugin atau catatan
+pemasangan, startup Gateway mencatat peringatan dan melewati kanal tersebut
+alih-alih memblokir setiap kanal lain.
+Jalankan `openclaw doctor --fix` untuk menghapus entri kanal/Plugin yang usang;
+kunci kanal yang tidak dikenal tanpa bukti Plugin usang tetap gagal validasi agar
+salah ketik tetap terlihat.
+Jika `plugins.enabled: false` disetel, referensi Plugin usang diperlakukan
+sebagai inert: startup Gateway melewati pekerjaan penemuan/pemuatan Plugin dan
+`openclaw doctor` mempertahankan konfigurasi Plugin yang dinonaktifkan
+alih-alih menghapusnya secara otomatis. Aktifkan kembali Plugin sebelum
+menjalankan pembersihan doctor jika Anda ingin id Plugin usang dihapus.
 
-Instalasi dependensi Plugin hanya terjadi selama alur instalasi/pembaruan eksplisit atau
-perbaikan doctor. Startup Gateway, pemuatan ulang konfigurasi, dan inspeksi runtime tidak
-menjalankan package manager atau memperbaiki pohon dependensi. Plugin lokal harus sudah
-memiliki dependensi yang terinstal, sementara Plugin npm, git, dan ClawHub diinstal di bawah root
-Plugin terkelola OpenClaw. Dependensi npm dapat di-hoist dalam root npm terkelola OpenClaw;
-instalasi/pembaruan memindai root terkelola tersebut sebelum trust dan uninstall menghapus paket
-terkelola npm melalui npm. Plugin eksternal dan path muat kustom tetap harus diinstal melalui
-`openclaw plugins install`. Lihat [Resolusi dependensi Plugin](/id/plugins/dependency-resolution) untuk
-siklus hidup saat instalasi.
+Instalasi dependensi Plugin hanya terjadi selama alur pemasangan/pembaruan
+eksplisit atau perbaikan doctor. Startup Gateway, pemuatan ulang konfigurasi, dan
+inspeksi runtime tidak menjalankan manajer paket atau memperbaiki pohon
+dependensi. Plugin lokal harus sudah memasang dependensinya, sementara Plugin
+npm, git, dan ClawHub dipasang di bawah root Plugin terkelola OpenClaw. Dependensi
+npm dapat di-hoist dalam root npm terkelola OpenClaw; pemasangan/pembaruan
+memindai root terkelola itu sebelum trust dan pencopotan menghapus paket
+terkelola npm melalui npm. Plugin eksternal dan path pemuatan khusus tetap harus
+dipasang melalui `openclaw plugins install`.
+Gunakan `openclaw plugins list --json` untuk melihat `dependencyStatus` statis
+untuk setiap Plugin yang terlihat tanpa mengimpor kode runtime atau memperbaiki
+dependensi.
+Lihat [Resolusi dependensi Plugin](/id/plugins/dependency-resolution) untuk siklus
+hidup saat pemasangan.
 
-Checkout sumber adalah workspace pnpm. Jika Anda mengkloning OpenClaw untuk mengutak-atik Plugin
-bawaan, jalankan `pnpm install`; OpenClaw lalu memuat Plugin bawaan dari
-`extensions/<id>` sehingga edit dan dependensi lokal paket digunakan secara langsung.
-Instalasi root npm biasa ditujukan untuk OpenClaw terpaket, bukan pengembangan checkout
-sumber.
+Checkout sumber adalah workspace pnpm. Jika Anda mengkloning OpenClaw untuk
+mengutak-atik Plugin bawaan, jalankan `pnpm install`; OpenClaw lalu memuat Plugin
+bawaan dari `extensions/<id>` sehingga perubahan dan dependensi lokal paket
+digunakan langsung.
+Pemasangan root npm biasa adalah untuk OpenClaw terpaket, bukan pengembangan
+checkout sumber.
 
 ## Jenis Plugin
 
 OpenClaw mengenali dua format Plugin:
 
-| Format     | Cara kerjanya                                                       | Contoh                                               |
-| ---------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **Native** | `openclaw.plugin.json` + modul runtime; dijalankan dalam proses       | Plugin resmi, paket npm komunitas               |
-| **Bundle** | Tata letak yang kompatibel dengan Codex/Claude/Cursor; dipetakan ke fitur OpenClaw | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
+| Format     | Cara kerjanya                                                     | Contoh                                                 |
+| ---------- | ----------------------------------------------------------------- | ------------------------------------------------------ |
+| **Native** | `openclaw.plugin.json` + modul runtime; dieksekusi dalam proses   | Plugin resmi, paket npm komunitas                      |
+| **Bundle** | Tata letak kompatibel Codex/Claude/Cursor; dipetakan ke fitur OpenClaw | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
 
 Keduanya muncul di bawah `openclaw plugins list`. Lihat [Bundle Plugin](/id/plugins/bundles) untuk detail bundle.
 
 Jika Anda menulis Plugin native, mulai dengan [Membangun Plugin](/id/plugins/building-plugins)
 dan [Ikhtisar SDK Plugin](/id/plugins/sdk-overview).
 
-## Entry point paket
+## Titik masuk paket
 
-Paket npm Plugin native harus mendeklarasikan `openclaw.extensions` di `package.json`.
-Setiap entri harus tetap berada di dalam direktori paket dan di-resolve ke file runtime
-yang dapat dibaca, atau ke file sumber TypeScript dengan peer JavaScript hasil build yang diinferensikan
-seperti `src/index.ts` ke `dist/index.js`.
+Paket npm Plugin native harus mendeklarasikan `openclaw.extensions` dalam
+`package.json`. Setiap entri harus tetap berada di dalam direktori paket dan
+di-resolve ke file runtime yang dapat dibaca, atau ke file sumber TypeScript
+dengan pasangan JavaScript hasil build yang diinferensikan seperti `src/index.ts`
+ke `dist/index.js`.
 
-Gunakan `openclaw.runtimeExtensions` saat file runtime yang diterbitkan tidak berada di
-path yang sama dengan entri sumber. Saat ada, `runtimeExtensions` harus berisi
-tepat satu entri untuk setiap entri `extensions`. Daftar yang tidak cocok menggagalkan instalasi dan
-penemuan Plugin alih-alih diam-diam fallback ke path sumber. Jika Anda juga
-menerbitkan `openclaw.setupEntry`, gunakan `openclaw.runtimeSetupEntry` untuk peer
-JavaScript hasil build-nya; file tersebut wajib ada saat dideklarasikan.
+Gunakan `openclaw.runtimeExtensions` saat file runtime yang diterbitkan tidak
+berada di path yang sama dengan entri sumber. Jika ada, `runtimeExtensions` harus
+berisi tepat satu entri untuk setiap entri `extensions`. Daftar yang tidak cocok
+menggagalkan pemasangan dan penemuan Plugin alih-alih diam-diam kembali ke path
+sumber. Jika Anda juga menerbitkan `openclaw.setupEntry`, gunakan
+`openclaw.runtimeSetupEntry` untuk pasangan JavaScript hasil build-nya; file itu
+wajib ada saat dideklarasikan.
 
 ```json
 {
@@ -169,16 +196,18 @@ JavaScript hasil build-nya; file tersebut wajib ada saat dideklarasikan.
 ### Paket npm milik OpenClaw selama migrasi
 
 ClawHub adalah jalur distribusi utama untuk sebagian besar Plugin. Rilis OpenClaw
-terpaket saat ini sudah menyertakan banyak Plugin resmi, sehingga Plugin tersebut tidak memerlukan
-instalasi npm terpisah dalam setup normal. Hingga setiap Plugin milik OpenClaw
-bermigrasi ke ClawHub, OpenClaw masih mengirimkan beberapa paket Plugin `@openclaw/*` di
-npm untuk instalasi lama/kustom dan alur kerja npm langsung.
+terpaket saat ini sudah membundel banyak Plugin resmi, sehingga Plugin tersebut
+tidak memerlukan pemasangan npm terpisah dalam penyiapan normal. Sampai setiap
+Plugin milik OpenClaw bermigrasi ke ClawHub, OpenClaw masih mengirimkan beberapa
+paket Plugin `@openclaw/*` di npm untuk pemasangan lama/khusus dan workflow npm
+langsung.
 
-Jika npm melaporkan paket Plugin `@openclaw/*` sebagai deprecated, versi paket tersebut
-berasal dari rangkaian paket eksternal yang lebih lama. Gunakan Plugin bawaan dari
-OpenClaw saat ini atau checkout lokal hingga paket npm yang lebih baru diterbitkan.
+Jika npm melaporkan paket Plugin `@openclaw/*` sebagai deprecated, versi paket
+itu berasal dari rangkaian paket eksternal yang lebih lama. Gunakan Plugin bawaan
+dari OpenClaw saat ini atau checkout lokal hingga paket npm yang lebih baru
+diterbitkan.
 
-| Plugin          | Paket                    | Dokumentasi                                       |
+| Plugin          | Paket                      | Dokumentasi                                |
 | --------------- | -------------------------- | ------------------------------------------ |
 | BlueBubbles     | `@openclaw/bluebubbles`    | [BlueBubbles](/id/channels/bluebubbles)       |
 | Discord         | `@openclaw/discord`        | [Discord](/id/channels/discord)               |
@@ -194,7 +223,7 @@ OpenClaw saat ini atau checkout lokal hingga paket npm yang lebih baru diterbitk
 | Zalo            | `@openclaw/zalo`           | [Zalo](/id/channels/zalo)                     |
 | Zalo Personal   | `@openclaw/zalouser`       | [Zalo Personal](/id/plugins/zalouser)         |
 
-### Inti (dikirim bersama OpenClaw)
+### Inti (dikirimkan bersama OpenClaw)
 
 <AccordionGroup>
   <Accordion title="Penyedia model (diaktifkan secara default)">
@@ -207,10 +236,10 @@ OpenClaw saat ini atau checkout lokal hingga paket npm yang lebih baru diterbitk
 
   <Accordion title="Plugin memori">
     - `memory-core` — pencarian memori bawaan (default melalui `plugins.slots.memory`)
-    - `memory-lancedb` — memori jangka panjang berbasis LanceDB dengan auto-recall/capture (setel `plugins.slots.memory = "memory-lancedb"`)
+    - `memory-lancedb` — memori jangka panjang berbasis LanceDB dengan recall/capture otomatis (setel `plugins.slots.memory = "memory-lancedb"`)
 
-    Lihat [Memory LanceDB](/id/plugins/memory-lancedb) untuk setup embedding yang kompatibel dengan OpenAI,
-    contoh Ollama, batas recall, dan pemecahan masalah.
+    Lihat [Memory LanceDB](/id/plugins/memory-lancedb) untuk penyiapan embedding
+    kompatibel OpenAI, contoh Ollama, batas recall, dan pemecahan masalah.
 
   </Accordion>
 
@@ -219,7 +248,7 @@ OpenClaw saat ini atau checkout lokal hingga paket npm yang lebih baru diterbitk
   </Accordion>
 
   <Accordion title="Lainnya">
-    - `browser` — Plugin browser bawaan untuk alat browser, CLI `openclaw browser`, metode Gateway `browser.request`, runtime browser, dan layanan kontrol browser default (diaktifkan secara default; nonaktifkan sebelum menggantinya)
+    - `browser` — Plugin browser bawaan untuk alat browser, CLI `openclaw browser`, metode gateway `browser.request`, runtime browser, dan layanan kontrol browser default (diaktifkan secara default; nonaktifkan sebelum menggantinya)
     - `copilot-proxy` — bridge VS Code Copilot Proxy (dinonaktifkan secara default)
 
   </Accordion>
@@ -243,120 +272,120 @@ Mencari Plugin pihak ketiga? Lihat [Plugin Komunitas](/id/plugins/community).
 }
 ```
 
-| Bidang            | Deskripsi                                               |
+| Bidang           | Deskripsi                                                 |
 | ---------------- | --------------------------------------------------------- |
-| `enabled`        | Toggle utama (default: `true`)                           |
-| `allow`          | Allowlist Plugin (opsional)                               |
-| `deny`           | Denylist Plugin (opsional; deny menang)                     |
+| `enabled`        | Toggle utama (default: `true`)                            |
+| `allow`          | Daftar izin Plugin (opsional)                             |
+| `deny`           | Daftar tolak Plugin (opsional; deny menang)               |
 | `load.paths`     | File/direktori Plugin tambahan                            |
-| `slots`          | Selektor slot eksklusif (mis. `memory`, `contextEngine`) |
-| `entries.\<id\>` | Toggle + konfigurasi per Plugin                               |
+| `slots`          | Pemilih slot eksklusif (mis. `memory`, `contextEngine`)   |
+| `entries.\<id\>` | Toggle + konfigurasi per Plugin                           |
 
-`plugins.allow` bersifat eksklusif. Saat tidak kosong, hanya Plugin yang terdaftar yang dapat dimuat
-atau mengekspos alat, bahkan jika `tools.allow` berisi `"*"` atau nama alat milik Plugin
-tertentu. Jika allowlist alat merujuk ke alat Plugin, tambahkan id Plugin pemilik
-ke `plugins.allow` atau hapus `plugins.allow`; `openclaw doctor` memperingatkan tentang bentuk ini.
+`plugins.allow` bersifat eksklusif. Saat nilainya tidak kosong, hanya Plugin
+yang tercantum yang dapat dimuat atau mengekspos alat, meskipun `tools.allow`
+berisi `"*"` atau nama alat tertentu milik Plugin. Jika daftar izin alat merujuk
+ke alat Plugin, tambahkan id Plugin pemiliknya ke `plugins.allow` atau hapus
+`plugins.allow`; `openclaw doctor` memperingatkan tentang bentuk ini.
 
-Perubahan konfigurasi **memerlukan restart Gateway**. Jika Gateway berjalan dengan config
-watch + restart dalam proses diaktifkan (path default `openclaw gateway`), restart tersebut
-biasanya dilakukan otomatis sesaat setelah penulisan konfigurasi masuk.
-Tidak ada jalur hot-reload yang didukung untuk kode runtime Plugin native atau hook siklus hidup;
-mulai ulang proses Gateway yang melayani channel live sebelum
-mengharapkan kode `register(api)` yang diperbarui, hook `api.on(...)`, alat, layanan, atau
-hook penyedia/runtime berjalan.
+Perubahan konfigurasi yang dibuat melalui `/plugins enable` atau `/plugins disable` memicu
+pemuatan ulang plugin Gateway di dalam proses. Giliran agen baru membangun ulang daftar alatnya dari
+registri plugin yang telah disegarkan. Operasi yang mengubah sumber seperti pemasangan,
+pembaruan, dan penghapusan pemasangan tetap memulai ulang proses Gateway karena modul
+plugin yang sudah diimpor tidak dapat diganti di tempat secara aman.
 
-`openclaw plugins list` adalah snapshot registri/konfigurasi plugin lokal. Plugin
-`enabled` di sana berarti registri yang dipertahankan dan konfigurasi saat ini
-mengizinkan plugin untuk berpartisipasi. Ini tidak membuktikan bahwa child
-Gateway jarak jauh yang sudah berjalan telah dimulai ulang ke kode plugin yang
-sama. Pada penyiapan VPS/kontainer dengan proses wrapper, kirim restart ke
-proses `openclaw gateway run` yang sebenarnya, atau gunakan
-`openclaw gateway restart` terhadap Gateway yang sedang berjalan.
+`openclaw plugins list` adalah cuplikan registri/konfigurasi plugin lokal. Plugin
+`enabled` di sana berarti registri persisten dan konfigurasi saat ini mengizinkan
+plugin untuk berpartisipasi. Itu tidak membuktikan bahwa Gateway jarak jauh yang sudah berjalan
+telah dimuat ulang atau dimulai ulang ke kode plugin yang sama. Pada penyiapan VPS/kontainer
+dengan proses pembungkus, arahkan mulai ulang atau penulisan yang memicu pemuatan ulang ke proses
+`openclaw gateway run` yang sebenarnya, atau gunakan `openclaw gateway restart` terhadap
+Gateway yang berjalan ketika pemuatan ulang melaporkan kegagalan.
 
-<Accordion title="Plugin states: disabled vs missing vs invalid">
+<Accordion title="Status Plugin: dinonaktifkan vs hilang vs tidak valid">
   - **Dinonaktifkan**: plugin ada tetapi aturan pengaktifan mematikannya. Konfigurasi dipertahankan.
-  - **Hilang**: konfigurasi mereferensikan id plugin yang tidak ditemukan oleh discovery.
-  - **Tidak valid**: plugin ada tetapi konfigurasinya tidak cocok dengan skema yang dideklarasikan. Startup Gateway hanya melewati plugin tersebut; `openclaw doctor --fix` dapat mengarantina entri yang tidak valid dengan menonaktifkannya dan menghapus payload konfigurasinya.
+  - **Hilang**: konfigurasi mereferensikan ID plugin yang tidak ditemukan oleh penemuan.
+  - **Tidak valid**: plugin ada tetapi konfigurasinya tidak cocok dengan skema yang dideklarasikan. Saat Gateway dimulai, hanya plugin tersebut yang dilewati; `openclaw doctor --fix` dapat mengarantina entri tidak valid dengan menonaktifkannya dan menghapus muatan konfigurasinya.
 
 </Accordion>
 
-## Discovery dan prioritas
+## Penemuan dan prioritas
 
-OpenClaw memindai plugin dalam urutan ini (kecocokan pertama menang):
+OpenClaw memindai plugin dalam urutan ini (kecocokan pertama yang digunakan):
 
 <Steps>
-  <Step title="Config paths">
-    `plugins.load.paths` — path file atau direktori eksplisit. Path yang menunjuk
+  <Step title="Jalur konfigurasi">
+    `plugins.load.paths` — jalur file atau direktori eksplisit. Jalur yang mengarah
     kembali ke direktori plugin bawaan terpaket milik OpenClaw sendiri diabaikan;
     jalankan `openclaw doctor --fix` untuk menghapus alias usang tersebut.
   </Step>
 
-  <Step title="Workspace plugins">
+  <Step title="Plugin ruang kerja">
     `\<workspace\>/.openclaw/<plugin-root>/*.ts` dan `\<workspace\>/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
-  <Step title="Global plugins">
+  <Step title="Plugin global">
     `~/.openclaw/<plugin-root>/*.ts` dan `~/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
-  <Step title="Bundled plugins">
-    Dikirim bersama OpenClaw. Banyak yang diaktifkan secara default (penyedia model, ucapan).
+  <Step title="Plugin bawaan">
+    Disertakan bersama OpenClaw. Banyak yang diaktifkan secara bawaan (penyedia model, ucapan).
     Yang lain memerlukan pengaktifan eksplisit.
   </Step>
 </Steps>
 
 Instalasi terpaket dan image Docker biasanya menyelesaikan plugin bawaan dari
-pohon `dist/extensions` yang telah dikompilasi. Jika direktori sumber plugin
-bawaan di-bind-mount di atas path sumber terpaket yang cocok, misalnya
-`/app/extensions/synology-chat`, OpenClaw memperlakukan direktori sumber yang
-di-mount tersebut sebagai overlay sumber bawaan dan menemukannya sebelum bundle
-terpaket `/app/dist/extensions/synology-chat`. Ini menjaga loop kontainer
-maintainer tetap berjalan tanpa mengalihkan setiap plugin bawaan kembali ke
-sumber TypeScript. Tetapkan `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS=1` untuk
-memaksa bundle dist terpaket meskipun mount overlay sumber ada.
+pohon `dist/extensions` yang dikompilasi. Jika direktori sumber plugin bawaan
+dipasang dengan bind mount di atas jalur sumber terpaket yang cocok, misalnya
+`/app/extensions/synology-chat`, OpenClaw memperlakukan direktori sumber yang dipasang itu
+sebagai overlay sumber bawaan dan menemukannya sebelum bundle
+`/app/dist/extensions/synology-chat` terpaket. Ini menjaga loop kontainer pemelihara
+tetap berjalan tanpa mengalihkan setiap plugin bawaan kembali ke sumber TypeScript.
+Setel `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS=1` untuk memaksa bundle dist terpaket
+meskipun mount overlay sumber ada.
 
 ### Aturan pengaktifan
 
-- `plugins.enabled: false` menonaktifkan semua plugin dan melewati pekerjaan discovery/load plugin
+- `plugins.enabled: false` menonaktifkan semua plugin dan melewati pekerjaan penemuan/pemuatan plugin
 - `plugins.deny` selalu menang atas allow
 - `plugins.entries.\<id\>.enabled: false` menonaktifkan plugin tersebut
-- Plugin asal workspace **dinonaktifkan secara default** (harus diaktifkan secara eksplisit)
-- Plugin bawaan mengikuti kumpulan default aktif bawaan kecuali ditimpa
-- Slot eksklusif dapat memaksa plugin yang dipilih untuk slot tersebut aktif
-- Beberapa plugin bawaan opt-in diaktifkan secara otomatis ketika konfigurasi
-  menamai surface milik plugin, seperti ref model penyedia, konfigurasi channel, atau runtime harness
+- Plugin yang berasal dari ruang kerja **dinonaktifkan secara bawaan** (harus diaktifkan secara eksplisit)
+- Plugin bawaan mengikuti kumpulan aktif-bawaan internal kecuali ditimpa
+- Slot eksklusif dapat memaksa aktif plugin yang dipilih untuk slot tersebut
+- Sebagian plugin bawaan yang perlu diikutsertakan diaktifkan otomatis ketika konfigurasi menamai
+  permukaan milik plugin, seperti referensi model penyedia, konfigurasi kanal, atau runtime
+  harness
 - Konfigurasi plugin usang dipertahankan selama `plugins.enabled: false` aktif;
-  aktifkan kembali plugin sebelum menjalankan pembersihan doctor jika Anda ingin id usang dihapus
-- Rute Codex keluarga OpenAI mempertahankan batas plugin terpisah:
+  aktifkan ulang plugin sebelum menjalankan pembersihan doctor jika Anda ingin ID usang dihapus
+- Rute Codex keluarga OpenAI menjaga batas plugin terpisah:
   `openai-codex/*` milik plugin OpenAI, sedangkan plugin app-server Codex
-  bawaan dipilih oleh `agentRuntime.id: "codex"` atau ref model
-  `codex/*` lama
+  bawaan dipilih oleh `agentRuntime.id: "codex"` atau referensi model lama
+  `codex/*`
 
-## Memecahkan masalah hook runtime
+## Memecahkan masalah hook waktu jalan
 
-Jika plugin muncul di `plugins list` tetapi efek samping atau hook
-`register(api)` tidak berjalan pada trafik chat live, periksa hal berikut lebih dulu:
+Jika plugin muncul di `plugins list` tetapi efek samping atau hook `register(api)`
+tidak berjalan dalam trafik percakapan langsung, periksa ini terlebih dahulu:
 
 - Jalankan `openclaw gateway status --deep --require-rpc` dan pastikan URL
-  Gateway aktif, profil, path konfigurasi, dan proses adalah yang sedang Anda edit.
-- Mulai ulang Gateway live setelah perubahan instalasi/konfigurasi/kode plugin. Dalam
-  kontainer wrapper, PID 1 mungkin hanya supervisor; mulai ulang atau kirim sinyal ke child
-  proses `openclaw gateway run`.
-- Gunakan `openclaw plugins inspect <id> --runtime --json` untuk mengonfirmasi registrasi hook dan
+  Gateway aktif, profil, jalur konfigurasi, dan prosesnya adalah yang sedang Anda edit.
+- Mulai ulang Gateway yang sedang aktif setelah perubahan pemasangan/konfigurasi/kode plugin. Dalam kontainer
+  pembungkus, PID 1 mungkin hanya supervisor; mulai ulang atau beri sinyal proses anak
+  `openclaw gateway run`.
+- Gunakan `openclaw plugins inspect <id> --runtime --json` untuk memastikan pendaftaran hook dan
   diagnostik. Hook percakapan non-bawaan seperti `llm_input`,
   `llm_output`, `before_agent_finalize`, dan `agent_end` memerlukan
   `plugins.entries.<id>.hooks.allowConversationAccess=true`.
-- Untuk penggantian model, pilih `before_model_resolve`. Ini berjalan sebelum
-  resolusi model untuk giliran agent; `llm_output` hanya berjalan setelah percobaan model
-  menghasilkan output assistant.
-- Untuk bukti model sesi efektif, gunakan `openclaw sessions` atau surface
-  sesi/status Gateway dan, saat men-debug payload penyedia, mulai
+- Untuk pergantian model, utamakan `before_model_resolve`. Ini berjalan sebelum penyelesaian model
+  untuk giliran agen; `llm_output` hanya berjalan setelah percobaan model
+  menghasilkan keluaran asisten.
+- Untuk bukti model sesi efektif, gunakan `openclaw sessions` atau
+  permukaan sesi/status Gateway dan, ketika men-debug muatan penyedia, mulai
   Gateway dengan `--raw-stream --raw-stream-path <path>`.
 
-### Penyiapan tool plugin lambat
+### Penyiapan alat plugin lambat
 
-Jika giliran agent tampak berhenti saat menyiapkan tool, aktifkan logging trace dan
-periksa baris timing factory tool plugin:
+Jika giliran agen tampak macet saat menyiapkan alat, aktifkan pencatatan trace dan
+periksa baris waktu pembuat alat plugin:
 
 ```bash
 openclaw config set logging.level trace
@@ -369,22 +398,28 @@ Cari:
 [trace:plugin-tools] factory timings ...
 ```
 
-Ringkasan mencantumkan total waktu factory dan factory tool plugin paling lambat,
-termasuk id plugin, nama tool yang dideklarasikan, bentuk hasil, dan apakah tool
-bersifat opsional. Baris lambat dipromosikan menjadi warning ketika satu factory
-memerlukan setidaknya 1 dtk atau total persiapan factory tool plugin memerlukan setidaknya 5 dtk.
+Ringkasan mencantumkan total waktu pembuat dan pembuat alat plugin paling lambat,
+termasuk ID plugin, nama alat yang dideklarasikan, bentuk hasil, dan apakah alat tersebut
+opsional. Baris lambat dinaikkan menjadi peringatan ketika satu pembuat memerlukan
+setidaknya 1 dtk atau total persiapan pembuat alat plugin memerlukan setidaknya 5 dtk.
 
-Jika satu plugin mendominasi timing, periksa registrasi runtime-nya:
+OpenClaw menyimpan cache hasil pembuat alat plugin yang berhasil untuk penyelesaian berulang
+dengan konteks permintaan efektif yang sama. Kunci cache mencakup konfigurasi
+waktu jalan efektif, ruang kerja, ID agen/sesi, kebijakan sandbox, pengaturan peramban,
+konteks pengiriman, identitas peminta, dan status kepemilikan, sehingga pembuat yang
+bergantung pada bidang tepercaya tersebut dijalankan ulang ketika konteks berubah.
+
+Jika satu plugin mendominasi waktu, periksa pendaftaran waktu jalannya:
 
 ```bash
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Lalu perbarui, instal ulang, atau nonaktifkan plugin tersebut. Penulis plugin harus memindahkan
-pemuatan dependensi yang mahal ke belakang jalur eksekusi tool alih-alih melakukannya
-di dalam factory tool.
+Lalu perbarui, pasang ulang, atau nonaktifkan plugin tersebut. Penulis plugin sebaiknya memindahkan
+pemuatan dependensi berat ke balik jalur eksekusi alat alih-alih melakukannya
+di dalam pembuat alat.
 
-### Kepemilikan channel atau tool duplikat
+### Kepemilikan kanal atau alat duplikat
 
 Gejala:
 
@@ -392,35 +427,35 @@ Gejala:
 - `channel setup already registered: <channel-id> (<plugin-id>)`
 - `plugin tool name conflict (<plugin-id>): <tool-name>`
 
-Ini berarti lebih dari satu plugin yang diaktifkan mencoba memiliki channel,
-alur penyiapan, atau nama tool yang sama. Penyebab paling umum adalah plugin channel eksternal
-yang diinstal berdampingan dengan plugin bawaan yang kini menyediakan id channel yang sama.
+Ini berarti lebih dari satu plugin aktif mencoba memiliki kanal,
+alur penyiapan, atau nama alat yang sama. Penyebab paling umum adalah plugin kanal eksternal
+yang dipasang berdampingan dengan plugin bawaan yang kini menyediakan ID kanal yang sama.
 
-Langkah debug:
+Langkah penelusuran masalah:
 
-- Jalankan `openclaw plugins list --enabled --verbose` untuk melihat setiap plugin
-  yang diaktifkan dan asalnya.
+- Jalankan `openclaw plugins list --enabled --verbose` untuk melihat setiap plugin aktif
+  dan asalnya.
 - Jalankan `openclaw plugins inspect <id> --runtime --json` untuk setiap plugin yang dicurigai dan
   bandingkan `channels`, `channelConfigs`, `tools`, dan diagnostik.
-- Jalankan `openclaw plugins registry --refresh` setelah menginstal atau menghapus
-  paket plugin agar metadata yang dipertahankan mencerminkan instalasi saat ini.
-- Mulai ulang Gateway setelah perubahan instalasi, registri, atau konfigurasi.
+- Jalankan `openclaw plugins registry --refresh` setelah memasang atau menghapus
+  paket plugin agar metadata persisten mencerminkan instalasi saat ini.
+- Mulai ulang Gateway setelah perubahan pemasangan, registri, atau konfigurasi.
 
 Opsi perbaikan:
 
-- Jika satu plugin secara sengaja menggantikan plugin lain untuk id channel yang sama, plugin
-  yang dipilih sebaiknya mendeklarasikan `channelConfigs.<channel-id>.preferOver` dengan
-  id plugin prioritas lebih rendah. Lihat [/plugins/manifest#replacing-another-channel-plugin](/id/plugins/manifest#replacing-another-channel-plugin).
-- Jika duplikat tidak disengaja, nonaktifkan salah satu sisi dengan
+- Jika satu plugin sengaja menggantikan plugin lain untuk ID kanal yang sama, plugin
+  yang diutamakan harus mendeklarasikan `channelConfigs.<channel-id>.preferOver` dengan
+  ID plugin yang prioritasnya lebih rendah. Lihat [/plugins/manifest#replacing-another-channel-plugin](/id/plugins/manifest#replacing-another-channel-plugin).
+- Jika duplikasi tidak disengaja, nonaktifkan salah satu pihak dengan
   `plugins.entries.<plugin-id>.enabled: false` atau hapus instalasi plugin
-  yang usang.
-- Jika Anda secara eksplisit mengaktifkan kedua plugin, OpenClaw mempertahankan permintaan tersebut dan
-  melaporkan konflik. Pilih satu pemilik untuk channel atau ubah nama tool milik plugin
-  agar surface runtime tidak ambigu.
+  usang.
+- Jika Anda mengaktifkan kedua plugin secara eksplisit, OpenClaw mempertahankan permintaan itu dan
+  melaporkan konflik. Pilih satu pemilik untuk kanal atau ganti nama alat milik plugin
+  agar permukaan waktu jalan tidak ambigu.
 
-## Slot plugin (kategori eksklusif)
+## Slot Plugin (kategori eksklusif)
 
-Beberapa kategori bersifat eksklusif (hanya satu yang aktif pada satu waktu):
+Sebagian kategori bersifat eksklusif (hanya satu yang aktif pada satu waktu):
 
 ```json5
 {
@@ -433,10 +468,10 @@ Beberapa kategori bersifat eksklusif (hanya satu yang aktif pada satu waktu):
 }
 ```
 
-| Slot            | Yang dikontrol        | Default             |
+| Slot            | Yang dikendalikan     | Bawaan              |
 | --------------- | --------------------- | ------------------- |
 | `memory`        | Plugin memori aktif   | `memory-core`       |
-| `contextEngine` | Mesin konteks aktif   | `legacy` (bawaan) |
+| `contextEngine` | Mesin konteks aktif   | `legacy` (bawaan)   |
 
 ## Referensi CLI
 
@@ -456,7 +491,7 @@ openclaw plugins registry                  # inspect persisted registry state
 openclaw plugins registry --refresh        # rebuild persisted registry
 openclaw doctor --fix                      # repair plugin registry state
 
-openclaw plugins install <package>         # install (ClawHub first, then npm)
+openclaw plugins install <package>         # install from npm by default
 openclaw plugins install clawhub:<pkg>     # install from ClawHub only
 openclaw plugins install npm:<pkg>         # install from npm only
 openclaw plugins install git:<repo>        # install from git
@@ -486,83 +521,84 @@ openclaw plugins enable <id>
 openclaw plugins disable <id>
 ```
 
-Plugin bawaan dikirim bersama OpenClaw. Banyak yang diaktifkan secara default (misalnya
-penyedia model bawaan, penyedia ucapan bawaan, dan plugin browser bawaan).
-Plugin bawaan lain masih memerlukan `openclaw plugins enable <id>`.
+Plugin bawaan dikirim bersama OpenClaw. Banyak yang diaktifkan secara bawaan (misalnya
+penyedia model bawaan, penyedia ucapan bawaan, dan plugin peramban
+bawaan). Plugin bawaan lain tetap memerlukan `openclaw plugins enable <id>`.
 
-`--force` menimpa plugin terinstal atau hook pack yang sudah ada di tempat. Gunakan
-`openclaw plugins update <id-or-npm-spec>` untuk peningkatan rutin plugin npm
-yang dilacak. Ini tidak didukung dengan `--link`, yang menggunakan kembali path sumber alih-alih
-menyalin ke target instalasi terkelola.
+`--force` menimpa plugin atau paket hook yang sudah dipasang di tempat. Gunakan
+`openclaw plugins update <id-or-npm-spec>` untuk pemutakhiran rutin plugin npm
+yang dilacak. Ini tidak didukung dengan `--link`, yang menggunakan ulang jalur sumber alih-alih
+menyalin ke atas target instalasi terkelola.
 
-Ketika `plugins.allow` sudah ditetapkan, `openclaw plugins install` menambahkan
-id plugin yang diinstal ke allowlist tersebut sebelum mengaktifkannya. Jika id plugin yang sama
-ada di `plugins.deny`, install menghapus entri deny usang tersebut sehingga
-instalasi eksplisit langsung dapat dimuat setelah restart.
+Ketika `plugins.allow` sudah disetel, `openclaw plugins install` menambahkan
+ID plugin yang dipasang ke daftar izin tersebut sebelum mengaktifkannya. Jika ID plugin yang sama
+ada dalam `plugins.deny`, pemasangan menghapus entri deny usang itu agar
+pemasangan eksplisit segera dapat dimuat setelah mulai ulang.
 
-OpenClaw mempertahankan registri plugin lokal yang dipersistenkan sebagai model baca dingin untuk
-inventaris plugin, kepemilikan kontribusi, dan perencanaan startup. Alur install, update,
-uninstall, enable, dan disable menyegarkan registri tersebut setelah mengubah status plugin.
-File `plugins/installs.json` yang sama menyimpan metadata instalasi tahan lama di
+OpenClaw menyimpan registri Plugin lokal persisten sebagai model baca awal untuk
+inventaris Plugin, kepemilikan kontribusi, dan perencanaan startup. Alur install,
+update, uninstall, enable, dan disable menyegarkan registri tersebut setelah mengubah
+status Plugin. File `plugins/installs.json` yang sama menyimpan metadata install tahan lama di
 `installRecords` tingkat atas dan metadata manifes yang dapat dibangun ulang di `plugins`. Jika
 registri hilang, usang, atau tidak valid, `openclaw plugins registry
---refresh` membangun ulang tampilan manifesnya dari catatan instalasi, kebijakan konfigurasi, dan
-metadata manifes/paket tanpa memuat modul runtime plugin.
-`openclaw plugins update <id-or-npm-spec>` berlaku untuk instalasi yang dilacak. Memberikan
-spec paket npm dengan dist-tag atau versi persis menyelesaikan nama paket
-kembali ke catatan plugin yang dilacak dan mencatat spec baru untuk update mendatang.
-Memberikan nama paket tanpa versi memindahkan instalasi yang dipin secara persis kembali ke
-jalur rilis default registri. Jika plugin npm yang terinstal sudah cocok dengan
-versi yang diselesaikan dan identitas artefak yang dicatat, OpenClaw melewati update
+--refresh` membangun ulang tampilan manifesnya dari catatan install, kebijakan konfigurasi, dan
+metadata manifes/paket tanpa memuat modul runtime Plugin.
+`openclaw plugins update <id-or-npm-spec>` berlaku untuk install yang dilacak. Meneruskan
+spesifikasi paket npm dengan dist-tag atau versi pasti menyelesaikan nama paket
+kembali ke catatan Plugin yang dilacak dan mencatat spesifikasi baru untuk update berikutnya.
+Meneruskan nama paket tanpa versi memindahkan install yang dipin tepat kembali ke
+jalur rilis default registri. Jika Plugin npm yang terinstal sudah cocok dengan
+versi yang diselesaikan dan identitas artefak yang tercatat, OpenClaw melewati update
 tanpa mengunduh, menginstal ulang, atau menulis ulang konfigurasi.
+Saat `openclaw update` berjalan di kanal beta, catatan Plugin npm dan ClawHub
+pada jalur default mencoba `@beta` terlebih dahulu dan kembali ke default/latest saat tidak ada
+rilis beta Plugin. Versi pasti dan tag eksplisit tetap dipin.
 
-`--pin` hanya untuk npm. Opsi ini tidak didukung bersama `--marketplace`, karena
-instalasi marketplace menyimpan metadata sumber marketplace, bukan spesifikasi npm.
+`--pin` hanya untuk npm. Ini tidak didukung dengan `--marketplace`, karena
+install marketplace mempertahankan metadata sumber marketplace alih-alih spesifikasi npm.
 
 `--dangerously-force-unsafe-install` adalah override darurat untuk positif palsu
-dari pemindai kode berbahaya bawaan. Opsi ini memungkinkan instalasi plugin
-dan pembaruan plugin tetap berlanjut melewati temuan `critical` bawaan, tetapi
-tetap tidak melewati pemblokiran kebijakan `before_install` plugin atau
-pemblokiran karena kegagalan pemindaian. Pemindaian instalasi mengabaikan file
-dan direktori pengujian umum seperti `tests/`, `__tests__/`, `*.test.*`, dan
-`*.spec.*` agar tidak memblokir mock pengujian yang dikemas; entrypoint runtime
-plugin yang dideklarasikan tetap dipindai meskipun menggunakan salah satu nama
-tersebut.
+dari pemindai kode berbahaya bawaan. Ini memungkinkan install Plugin
+dan update Plugin untuk terus berjalan melewati temuan `critical` bawaan, tetapi tetap
+tidak melewati pemblokiran kebijakan `before_install` Plugin atau pemblokiran kegagalan pemindaian.
+Pemindaian install mengabaikan file dan direktori pengujian umum seperti `tests/`,
+`__tests__/`, `*.test.*`, dan `*.spec.*` agar tidak memblokir mock pengujian yang dipaketkan;
+entrypoint runtime Plugin yang dideklarasikan tetap dipindai meskipun menggunakan salah satu
+nama tersebut.
 
-Flag CLI ini hanya berlaku untuk alur instalasi/pembaruan plugin. Instalasi
-dependensi skill yang didukung Gateway menggunakan override permintaan
-`dangerouslyForceUnsafeInstall` yang sesuai, sedangkan `openclaw skills install`
-tetap menjadi alur unduh/instal skill ClawHub yang terpisah.
+Flag CLI ini hanya berlaku untuk alur install/update Plugin. Install dependensi Skills
+yang didukung Gateway menggunakan override permintaan `dangerouslyForceUnsafeInstall`
+yang sesuai, sedangkan `openclaw skills install` tetap menjadi alur download/install Skills
+ClawHub yang terpisah.
 
-Jika plugin yang Anda publikasikan di ClawHub disembunyikan atau diblokir oleh
-pemindaian, buka dasbor ClawHub atau jalankan `clawhub package rescan <name>`
-untuk meminta ClawHub memeriksanya lagi. `--dangerously-force-unsafe-install`
-hanya memengaruhi instalasi di mesin Anda sendiri; opsi ini tidak meminta ClawHub
-memindai ulang plugin atau membuat rilis yang diblokir menjadi publik.
+Jika Plugin yang Anda publikasikan di ClawHub disembunyikan atau diblokir oleh pemindaian, buka
+dasbor ClawHub atau jalankan `clawhub package rescan <name>` untuk meminta ClawHub memeriksanya
+lagi. `--dangerously-force-unsafe-install` hanya memengaruhi install di mesin Anda sendiri;
+ini tidak meminta ClawHub memindai ulang Plugin atau membuat rilis yang diblokir
+menjadi publik.
 
-Bundle yang kompatibel ikut dalam alur daftar/inspeksi/aktifkan/nonaktifkan
-plugin yang sama. Dukungan runtime saat ini mencakup bundle skills, command-skills
-Claude, default `settings.json` Claude, default `.lsp.json` Claude dan
-`lspServers` yang dideklarasikan manifest, command-skills Cursor, serta direktori
-hook Codex yang kompatibel.
+Bundel yang kompatibel berpartisipasi dalam alur daftar/inspeksi/enable/disable
+Plugin yang sama. Dukungan runtime saat ini mencakup Skills bundel, Skills perintah Claude,
+default `settings.json` Claude, default Claude `.lsp.json` dan `lspServers`
+yang dideklarasikan manifes, Skills perintah Cursor, serta direktori hook Codex
+yang kompatibel.
 
-`openclaw plugins inspect <id>` juga melaporkan kapabilitas bundle yang terdeteksi
-serta entri server MCP dan LSP yang didukung atau tidak didukung untuk plugin
-berbasis bundle.
+`openclaw plugins inspect <id>` juga melaporkan kapabilitas bundel yang terdeteksi serta
+entri server MCP dan LSP yang didukung atau tidak didukung untuk Plugin berbasis bundel.
 
-Sumber marketplace dapat berupa nama known-marketplace Claude dari
+Sumber marketplace dapat berupa nama marketplace dikenal Claude dari
 `~/.claude/plugins/known_marketplaces.json`, root marketplace lokal atau path
-`marketplace.json`, singkatan GitHub seperti `owner/repo`, URL repo GitHub, atau
-URL git. Untuk marketplace jarak jauh, entri plugin harus tetap berada di dalam
+`marketplace.json`, singkatan GitHub seperti `owner/repo`, URL repo GitHub,
+atau URL git. Untuk marketplace jarak jauh, entri Plugin harus tetap berada di dalam
 repo marketplace yang dikloning dan hanya menggunakan sumber path relatif.
 
 Lihat [referensi CLI `openclaw plugins`](/id/cli/plugins) untuk detail lengkap.
 
 ## Ikhtisar API Plugin
 
-Plugin native mengekspor objek entri yang mengekspos `register(api)`. Plugin
-lama mungkin masih menggunakan `activate(api)` sebagai alias legacy, tetapi plugin
-baru sebaiknya menggunakan `register`.
+Plugin native mengekspor objek entri yang mengekspos `register(api)`. Plugin lama
+mungkin masih menggunakan `activate(api)` sebagai alias legacy, tetapi Plugin baru sebaiknya
+menggunakan `register`.
 
 ```typescript
 export default definePluginEntry({
@@ -582,39 +618,38 @@ export default definePluginEntry({
 });
 ```
 
-OpenClaw memuat objek entri dan memanggil `register(api)` selama aktivasi plugin.
-Loader masih fallback ke `activate(api)` untuk plugin lama, tetapi plugin bawaan
-dan plugin eksternal baru sebaiknya memperlakukan `register` sebagai kontrak
-publik.
+OpenClaw memuat objek entri dan memanggil `register(api)` selama aktivasi
+Plugin. Loader masih kembali ke `activate(api)` untuk Plugin lama,
+tetapi Plugin bundel dan Plugin eksternal baru sebaiknya memperlakukan `register` sebagai
+kontrak publik.
 
-`api.registrationMode` memberi tahu plugin mengapa entrinya sedang dimuat:
+`api.registrationMode` memberi tahu Plugin alasan entrinya sedang dimuat:
 
-| Mode            | Arti                                                                                                                               |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `full`          | Aktivasi runtime. Daftarkan tools, hook, layanan, perintah, rute, dan efek samping live lainnya.                                  |
-| `discovery`     | Penemuan kapabilitas baca-saja. Daftarkan provider dan metadata; kode entri plugin tepercaya dapat dimuat, tetapi lewati efek samping live. |
-| `setup-only`    | Pemuatan metadata penyiapan channel melalui entri penyiapan ringan.                                                                |
-| `setup-runtime` | Pemuatan penyiapan channel yang juga membutuhkan entri runtime.                                                                    |
-| `cli-metadata`  | Hanya pengumpulan metadata perintah CLI.                                                                                           |
+| Mode            | Arti                                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `full`          | Aktivasi runtime. Daftarkan alat, hook, layanan, perintah, route, dan efek samping live lainnya.                                 |
+| `discovery`     | Penemuan kapabilitas baca-saja. Daftarkan provider dan metadata; kode entri Plugin tepercaya dapat dimuat, tetapi lewati efek samping live. |
+| `setup-only`    | Pemuatan metadata setup kanal melalui entri setup ringan.                                                                        |
+| `setup-runtime` | Pemuatan setup kanal yang juga membutuhkan entri runtime.                                                                        |
+| `cli-metadata`  | Hanya pengumpulan metadata perintah CLI.                                                                                         |
 
-Entri plugin yang membuka socket, database, worker latar belakang, atau client
-berumur panjang harus menjaga efek samping tersebut dengan
-`api.registrationMode === "full"`. Pemuatan discovery di-cache terpisah dari
-pemuatan aktivasi dan tidak menggantikan registry Gateway yang sedang berjalan.
-Discovery tidak mengaktifkan, tetapi bukan tanpa impor: OpenClaw dapat mengevaluasi
-entri plugin tepercaya atau modul plugin channel untuk membangun snapshot. Jaga
-top level modul tetap ringan dan bebas efek samping, serta pindahkan client
-jaringan, subprocess, listener, pembacaan kredensial, dan startup layanan ke
-balik path runtime penuh.
+Entri Plugin yang membuka socket, database, worker latar belakang, atau klien berumur panjang
+sebaiknya melindungi efek samping tersebut dengan `api.registrationMode === "full"`.
+Pemuatan discovery di-cache terpisah dari pemuatan aktivasi dan tidak menggantikan
+registri Gateway yang sedang berjalan. Discovery bersifat nonaktif, bukan bebas impor:
+OpenClaw dapat mengevaluasi entri Plugin tepercaya atau modul Plugin kanal untuk membangun
+snapshot. Jaga level atas modul tetap ringan dan bebas efek samping, serta pindahkan
+klien jaringan, subproses, listener, pembacaan kredensial, dan startup layanan
+ke balik path runtime penuh.
 
-Metode pendaftaran umum:
+Metode registrasi umum:
 
 | Metode                                  | Yang didaftarkan              |
 | --------------------------------------- | ----------------------------- |
 | `registerProvider`                      | Provider model (LLM)          |
-| `registerChannel`                       | Channel chat                  |
-| `registerTool`                          | Tool agen                     |
-| `registerHook` / `on(...)`              | Hook lifecycle                |
+| `registerChannel`                       | Kanal chat                    |
+| `registerTool`                          | Alat agen                     |
+| `registerHook` / `on(...)`              | Hook siklus hidup             |
 | `registerSpeechProvider`                | Text-to-speech / STT          |
 | `registerRealtimeTranscriptionProvider` | STT streaming                 |
 | `registerRealtimeVoiceProvider`         | Suara realtime dupleks        |
@@ -623,35 +658,35 @@ Metode pendaftaran umum:
 | `registerMusicGenerationProvider`       | Pembuatan musik               |
 | `registerVideoGenerationProvider`       | Pembuatan video               |
 | `registerWebFetchProvider`              | Provider web fetch / scrape   |
-| `registerWebSearchProvider`             | Web search                    |
+| `registerWebSearchProvider`             | Pencarian web                 |
 | `registerHttpRoute`                     | Endpoint HTTP                 |
 | `registerCommand` / `registerCli`       | Perintah CLI                  |
 | `registerContextEngine`                 | Mesin konteks                 |
 | `registerService`                       | Layanan latar belakang        |
 
-Perilaku guard hook untuk hook lifecycle bertipe:
+Perilaku guard hook untuk hook siklus hidup bertipe:
 
-- `before_tool_call`: `{ block: true }` bersifat terminal; handler berprioritas lebih rendah dilewati.
+- `before_tool_call`: `{ block: true }` bersifat terminal; handler dengan prioritas lebih rendah dilewati.
 - `before_tool_call`: `{ block: false }` adalah no-op dan tidak menghapus blok sebelumnya.
-- `before_install`: `{ block: true }` bersifat terminal; handler berprioritas lebih rendah dilewati.
+- `before_install`: `{ block: true }` bersifat terminal; handler dengan prioritas lebih rendah dilewati.
 - `before_install`: `{ block: false }` adalah no-op dan tidak menghapus blok sebelumnya.
-- `message_sending`: `{ cancel: true }` bersifat terminal; handler berprioritas lebih rendah dilewati.
+- `message_sending`: `{ cancel: true }` bersifat terminal; handler dengan prioritas lebih rendah dilewati.
 - `message_sending`: `{ cancel: false }` adalah no-op dan tidak menghapus pembatalan sebelumnya.
 
-App-server Codex native menjembatani event tool Codex-native kembali ke permukaan
-hook ini. Plugin dapat memblokir tool Codex native melalui `before_tool_call`,
-mengamati hasil melalui `after_tool_call`, dan berpartisipasi dalam persetujuan
-`PermissionRequest` Codex. Bridge belum menulis ulang argumen tool Codex-native.
+App-server Codex native menjembatani event alat Codex-native kembali ke permukaan
+hook ini. Plugin dapat memblokir alat Codex native melalui `before_tool_call`,
+mengamati hasil melalui `after_tool_call`, dan berpartisipasi dalam persetujuan Codex
+`PermissionRequest`. Bridge belum menulis ulang argumen alat Codex-native.
 Batas dukungan runtime Codex yang tepat berada di
-[kontrak dukungan Codex harness v1](/id/plugins/codex-harness#v1-support-contract).
+[kontrak dukungan harness Codex v1](/id/plugins/codex-harness#v1-support-contract).
 
 Untuk perilaku hook bertipe lengkap, lihat [ikhtisar SDK](/id/plugins/sdk-overview#hook-decision-semantics).
 
 ## Terkait
 
-- [Membangun plugin](/id/plugins/building-plugins) — buat plugin Anda sendiri
-- [Bundle plugin](/id/plugins/bundles) — kompatibilitas bundle Codex/Claude/Cursor
-- [Manifest plugin](/id/plugins/manifest) — skema manifest
-- [Mendaftarkan tool](/id/plugins/building-plugins#registering-agent-tools) — tambahkan tool agen di plugin
-- [Internal plugin](/id/plugins/architecture) — model kapabilitas dan pipeline pemuatan
+- [Membangun Plugin](/id/plugins/building-plugins) — buat Plugin Anda sendiri
+- [Bundel Plugin](/id/plugins/bundles) — kompatibilitas bundel Codex/Claude/Cursor
+- [Manifes Plugin](/id/plugins/manifest) — skema manifes
+- [Mendaftarkan alat](/id/plugins/building-plugins#registering-agent-tools) — tambahkan alat agen di Plugin
+- [Internal Plugin](/id/plugins/architecture) — model kapabilitas dan pipeline pemuatan
 - [Plugin komunitas](/id/plugins/community) — daftar pihak ketiga
