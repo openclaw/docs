@@ -1,21 +1,21 @@
 ---
 read_when:
     - Sie möchten Agent-Hooks verwalten
-    - Sie möchten die Hook-Verfügbarkeit prüfen oder Arbeitsbereichs-Hooks aktivieren
+    - Sie möchten die Verfügbarkeit von Hooks prüfen oder Hooks für den Arbeitsbereich aktivieren
 summary: CLI-Referenz für `openclaw hooks` (Agent-Hooks)
 title: Einhängepunkte
 x-i18n:
-    generated_at: "2026-04-30T06:45:38Z"
+    generated_at: "2026-05-02T20:44:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 63ab6b014923dd4776767a6a0333129b85f51d008c63bb9fbdff06228d4c2f4b
+    source_hash: 3b02c176b4a310adba3fa1fde3758f6c8a19d454aeec58e919458b3f1a66c87d
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Verwalten Sie Agent-Hooks (ereignisgesteuerte Automatisierungen für Befehle wie `/new`, `/reset` und den Gateway-Start).
+Agent-Hooks verwalten (ereignisgesteuerte Automatisierungen für Befehle wie `/new`, `/reset` und den Gateway-Start).
 
 Das Ausführen von `openclaw hooks` ohne Unterbefehl entspricht `openclaw hooks list`.
 
@@ -30,13 +30,13 @@ Verwandt:
 openclaw hooks list
 ```
 
-List all discovered hooks from workspace, managed, extra, and bundled directories.
-Gateway startup does not load internal hook handlers until at least one internal hook is configured.
+Listet alle erkannten Hooks aus Arbeitsbereichs-, verwalteten, zusätzlichen und gebündelten Verzeichnissen auf.
+Der Gateway-Start lädt interne Hook-Handler erst, wenn mindestens ein interner Hook konfiguriert ist.
 
 **Optionen:**
 
 - `--eligible`: Nur geeignete Hooks anzeigen (Anforderungen erfüllt)
-- `--json`: Als JSON ausgeben
+- `--json`: Ausgabe als JSON
 - `-v, --verbose`: Detaillierte Informationen einschließlich fehlender Anforderungen anzeigen
 
 **Beispielausgabe:**
@@ -57,7 +57,7 @@ Ready:
 openclaw hooks list --verbose
 ```
 
-Zeigt fehlende Anforderungen für nicht geeignete Hooks an.
+Zeigt fehlende Anforderungen für ungeeignete Hooks an.
 
 **Beispiel (JSON):**
 
@@ -65,7 +65,7 @@ Zeigt fehlende Anforderungen für nicht geeignete Hooks an.
 openclaw hooks list --json
 ```
 
-Gibt strukturiertes JSON für die programmgesteuerte Nutzung zurück.
+Gibt strukturiertes JSON für die programmatische Verwendung zurück.
 
 ## Hook-Informationen abrufen
 
@@ -73,7 +73,7 @@ Gibt strukturiertes JSON für die programmgesteuerte Nutzung zurück.
 openclaw hooks info <name>
 ```
 
-Zeigt detaillierte Informationen zu einem bestimmten Hook an.
+Detaillierte Informationen zu einem bestimmten Hook anzeigen.
 
 **Argumente:**
 
@@ -81,7 +81,7 @@ Zeigt detaillierte Informationen zu einem bestimmten Hook an.
 
 **Optionen:**
 
-- `--json`: Als JSON ausgeben
+- `--json`: Ausgabe als JSON
 
 **Beispiel:**
 
@@ -117,7 +117,7 @@ Zeigt eine Zusammenfassung des Eignungsstatus der Hooks an (wie viele bereit bzw
 
 **Optionen:**
 
-- `--json`: Als JSON ausgeben
+- `--json`: Ausgabe als JSON
 
 **Beispielausgabe:**
 
@@ -135,9 +135,9 @@ Not ready: 0
 openclaw hooks enable <name>
 ```
 
-Aktiviert einen bestimmten Hook, indem er zu Ihrer Konfiguration hinzugefügt wird (standardmäßig `~/.openclaw/openclaw.json`).
+Aktiviert einen bestimmten Hook, indem er Ihrer Konfiguration hinzugefügt wird (standardmäßig `~/.openclaw/openclaw.json`).
 
-**Hinweis:** Workspace-Hooks sind standardmäßig deaktiviert, bis sie hier oder in der Konfiguration aktiviert werden. Von Plugins verwaltete Hooks zeigen `plugin:<id>` in `openclaw hooks list` an und können hier nicht aktiviert/deaktiviert werden. Aktivieren/deaktivieren Sie stattdessen das Plugin.
+**Hinweis:** Arbeitsbereichs-Hooks sind standardmäßig deaktiviert, bis sie hier oder in der Konfiguration aktiviert werden. Von Plugins verwaltete Hooks zeigen `plugin:<id>` in `openclaw hooks list` an und können hier nicht aktiviert/deaktiviert werden. Aktivieren/deaktivieren Sie stattdessen das Plugin.
 
 **Argumente:**
 
@@ -155,7 +155,7 @@ openclaw hooks enable session-memory
 ✓ Enabled hook: 💾 session-memory
 ```
 
-**Was es macht:**
+**Was dabei geschieht:**
 
 - Prüft, ob der Hook existiert und geeignet ist
 - Aktualisiert `hooks.internal.entries.<name>.enabled = true` in Ihrer Konfiguration
@@ -164,7 +164,7 @@ openclaw hooks enable session-memory
 Wenn der Hook aus `<workspace>/hooks/` stammt, ist dieser Opt-in-Schritt erforderlich, bevor
 der Gateway ihn lädt.
 
-**Nach der Aktivierung:**
+**Nach dem Aktivieren:**
 
 - Starten Sie den Gateway neu, damit Hooks neu geladen werden (Neustart der Menüleisten-App unter macOS oder Neustart Ihres Gateway-Prozesses in der Entwicklung).
 
@@ -174,7 +174,7 @@ der Gateway ihn lädt.
 openclaw hooks disable <name>
 ```
 
-Deaktiviert einen bestimmten Hook durch Aktualisierung Ihrer Konfiguration.
+Deaktiviert einen bestimmten Hook durch Aktualisieren Ihrer Konfiguration.
 
 **Argumente:**
 
@@ -192,7 +192,7 @@ openclaw hooks disable command-logger
 ⏸ Disabled hook: 📝 command-logger
 ```
 
-**Nach der Deaktivierung:**
+**Nach dem Deaktivieren:**
 
 - Starten Sie den Gateway neu, damit Hooks neu geladen werden
 
@@ -201,37 +201,38 @@ openclaw hooks disable command-logger
 - `openclaw hooks list --json`, `info --json` und `check --json` schreiben strukturiertes JSON direkt nach stdout.
 - Von Plugins verwaltete Hooks können hier nicht aktiviert oder deaktiviert werden; aktivieren oder deaktivieren Sie stattdessen das zugehörige Plugin.
 
-## Hook-Packs installieren
+## Hook-Pakete installieren
 
 ```bash
-openclaw plugins install <package>        # ClawHub first, then npm
+openclaw plugins install <package>        # npm by default
 openclaw plugins install npm:<package>    # npm only
 openclaw plugins install <package> --pin  # pin version
 openclaw plugins install <path>           # local path
 ```
 
-Installieren Sie Hook-Packs über den einheitlichen Plugin-Installer.
+Installieren Sie Hook-Pakete über das vereinheitlichte Plugin-Installationsprogramm.
 
 `openclaw hooks install` funktioniert weiterhin als Kompatibilitätsalias, gibt aber eine
 Veraltungswarnung aus und leitet an `openclaw plugins install` weiter.
 
-Npm-Spezifikationen sind **nur registrybasiert** (Paketname + optionale **exakte Version** oder
-**dist-tag**). Git-/URL-/Dateispezifikationen und Semver-Bereiche werden abgelehnt. Abhängigkeitsinstallationen laufen aus Sicherheitsgründen projektlokal mit `--ignore-scripts`, selbst wenn Ihre
+Npm-Spezifikationen sind **nur Registry** (Paketname + optionale **exakte Version** oder
+**dist-tag**). Git-/URL-/Datei-Spezifikationen und semver-Bereiche werden abgelehnt. Dependency-
+Installationen werden aus Sicherheitsgründen projektlokal mit `--ignore-scripts` ausgeführt, selbst wenn Ihre
 Shell globale npm-Installationseinstellungen hat.
 
-Bloße Spezifikationen und `@latest` bleiben auf dem stabilen Track. Wenn npm eines von
-beiden zu einer Vorabversion auflöst, stoppt OpenClaw und fordert Sie auf, sich explizit mit einem
-Vorabversions-Tag wie `@beta`/`@rc` oder einer exakten Vorabversion dafür zu entscheiden.
+Bare-Spezifikationen und `@latest` bleiben auf dem stabilen Kanal. Wenn npm eines von
+beidem zu einem Prerelease auflöst, stoppt OpenClaw und fordert Sie auf, sich explizit mit einem
+Prerelease-Tag wie `@beta`/`@rc` oder einer exakten Prerelease-Version dafür zu entscheiden.
 
-**Was es macht:**
+**Was dabei geschieht:**
 
-- Kopiert das Hook-Pack nach `~/.openclaw/hooks/<id>`
+- Kopiert das Hook-Paket nach `~/.openclaw/hooks/<id>`
 - Aktiviert die installierten Hooks in `hooks.internal.entries.*`
 - Zeichnet die Installation unter `hooks.internal.installs` auf
 
 **Optionen:**
 
-- `-l, --link`: Ein lokales Verzeichnis verlinken statt kopieren (fügt es zu `hooks.internal.load.extraDirs` hinzu)
+- `-l, --link`: Ein lokales Verzeichnis verknüpfen, statt es zu kopieren (fügt es zu `hooks.internal.load.extraDirs` hinzu)
 - `--pin`: npm-Installationen als exakt aufgelöstes `name@version` in `hooks.internal.installs` aufzeichnen
 
 **Unterstützte Archive:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
@@ -252,35 +253,35 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-Verlinkte Hook-Packs werden als verwaltete Hooks aus einem vom Operator konfigurierten
-Verzeichnis behandelt, nicht als Workspace-Hooks.
+Verknüpfte Hook-Pakete werden als verwaltete Hooks aus einem vom Operator konfigurierten
+Verzeichnis behandelt, nicht als Arbeitsbereichs-Hooks.
 
-## Hook-Packs aktualisieren
+## Hook-Pakete aktualisieren
 
 ```bash
 openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-Aktualisieren Sie nachverfolgte npm-basierte Hook-Packs über den einheitlichen Plugin-Updater.
+Aktualisieren Sie nachverfolgte npm-basierte Hook-Pakete über den vereinheitlichten Plugin-Aktualisierer.
 
 `openclaw hooks update` funktioniert weiterhin als Kompatibilitätsalias, gibt aber eine
 Veraltungswarnung aus und leitet an `openclaw plugins update` weiter.
 
 **Optionen:**
 
-- `--all`: Alle nachverfolgten Hook-Packs aktualisieren
+- `--all`: Alle nachverfolgten Hook-Pakete aktualisieren
 - `--dry-run`: Anzeigen, was sich ändern würde, ohne zu schreiben
 
 Wenn ein gespeicherter Integritäts-Hash vorhanden ist und sich der Hash des abgerufenen Artefakts ändert,
-gibt OpenClaw eine Warnung aus und bittet vor dem Fortfahren um Bestätigung. Verwenden Sie
-global `--yes`, um Eingabeaufforderungen in CI-/nicht interaktiven Läufen zu umgehen.
+gibt OpenClaw eine Warnung aus und fragt vor dem Fortfahren nach Bestätigung. Verwenden Sie
+das globale `--yes`, um Eingabeaufforderungen in CI-/nicht interaktiven Läufen zu umgehen.
 
 ## Gebündelte Hooks
 
 ### session-memory
 
-Speichert Sitzungskontext im Speicher, wenn Sie `/new` oder `/reset` ausführen.
+Speichert Sitzungskontext im Speicher, wenn Sie `/new` oder `/reset` ausgeben.
 
 **Aktivieren:**
 
@@ -306,7 +307,7 @@ openclaw hooks enable bootstrap-extra-files
 
 ### command-logger
 
-Protokolliert alle Befehlsereignisse in einer zentralen Audit-Datei.
+Protokolliert alle Befehlsereignisse in einer zentralisierten Audit-Datei.
 
 **Aktivieren:**
 

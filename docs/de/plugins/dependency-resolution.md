@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Sie beheben Fehler bei Plugin-Paketinstallationen
-    - Sie ändern das Startverhalten von Plugins, doctor oder die Installation über den Paketmanager
-    - Sie pflegen paketierte OpenClaw-Installationen oder gebündelte Plugin-Manifeste
+    - Sie debuggen Plugin-Paketinstallationen
+    - Sie ändern das Plugin-Startverhalten, das Doctor-Verhalten oder das Installationsverhalten des Paketmanagers
+    - Sie verwalten paketierte OpenClaw-Installationen oder gebündelte Plugin-Manifeste
 sidebarTitle: Dependencies
 summary: Wie OpenClaw Plugin-Pakete installiert und Plugin-Abhängigkeiten auflöst
 title: Auflösung von Plugin-Abhängigkeiten
 x-i18n:
-    generated_at: "2026-05-02T06:40:51Z"
+    generated_at: "2026-05-02T20:50:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43d8008c837d519fd7c886f9615ad53941da340d753b559dfb0a32877716bc1f
+    source_hash: c9476529ad1d44ed1b17caca628c58acfbb1d8c73393f58fa7d3d76944a71aea
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
-# Auflösung von Plugin-Abhängigkeiten
+# Plugin-Abhängigkeitsauflösung
 
-OpenClaw erledigt Plugin-Abhängigkeitsarbeiten zur Installations-/Update-Zeit. Das Laden zur Laufzeit
-führt keine Package Manager aus, repariert keine Abhängigkeitsbäume und verändert nicht das OpenClaw-
+OpenClaw führt Arbeiten an Plugin-Abhängigkeiten beim Installieren/Aktualisieren aus. Das Laden zur Laufzeit
+führt keine Paketmanager aus, repariert keine Abhängigkeitsbäume und verändert nicht das OpenClaw-
 Paketverzeichnis.
 
-## Aufteilung der Verantwortlichkeiten
+## Aufteilung der Zuständigkeiten
 
-Plugin-Pakete besitzen ihren Abhängigkeitsgraphen:
+Plugin-Pakete verwalten ihren Abhängigkeitsgraphen:
 
-- Laufzeitabhängigkeiten befinden sich in den `dependencies` oder
-  `optionalDependencies` des Plugin-Pakets
-- SDK-/Core-Importe sind Peer-Abhängigkeiten oder von OpenClaw bereitgestellte Importe
+- Laufzeitabhängigkeiten befinden sich in den Plugin-Paket-`dependencies` oder
+  `optionalDependencies`
+- SDK-/Core-Importe sind Peer- oder von OpenClaw bereitgestellte Importe
 - lokale Entwicklungs-Plugins bringen ihre eigenen bereits installierten Abhängigkeiten mit
-- npm- und git-Plugins werden in OpenClaw-eigene Paket-Roots installiert
+- npm- und git-Plugins werden in von OpenClaw verwaltete Paket-Roots installiert
 
-OpenClaw besitzt nur den Plugin-Lebenszyklus:
+OpenClaw verwaltet nur den Plugin-Lebenszyklus:
 
 - die Plugin-Quelle ermitteln
 - das Paket installieren oder aktualisieren, wenn dies ausdrücklich angefordert wird
@@ -45,7 +45,7 @@ OpenClaw verwendet stabile Roots pro Quelle:
 
 - npm-Pakete werden unter `~/.openclaw/npm` installiert
 - git-Pakete werden unter `~/.openclaw/git` geklont
-- lokale/Pfad-/Archivinstallationen werden ohne Abhängigkeitsreparatur kopiert oder referenziert
+- lokale/Pfad-/Archiv-Installationen werden kopiert oder referenziert, ohne Abhängigkeiten zu reparieren
 
 npm-Installationen laufen im npm-Root mit:
 
@@ -64,18 +64,18 @@ git-Installationen klonen oder aktualisieren das Repository und führen dann aus
 npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-Das installierte Plugin wird anschließend aus diesem Paketverzeichnis geladen, sodass paketlokale
-und übergeordnete `node_modules`-Auflösung genauso funktioniert wie bei einem normalen
+Das installierte Plugin wird dann aus diesem Paketverzeichnis geladen, sodass die Auflösung paketlokaler
+und übergeordneter `node_modules` genauso funktioniert wie bei einem normalen
 Node-Paket.
 
 ## Lokale Plugins
 
 Lokale Plugins werden als entwicklerkontrollierte Verzeichnisse behandelt. OpenClaw führt für sie kein
-`npm install`, `pnpm install` und keine Abhängigkeitsreparatur aus. Wenn ein lokales
+`npm install`, `pnpm install` und keine Reparatur von Abhängigkeiten aus. Wenn ein lokales
 Plugin Abhängigkeiten hat, installieren Sie diese in diesem Plugin, bevor Sie es laden.
 
-Lokale TypeScript-Plugins von Drittanbietern können den Jiti-Notfallpfad verwenden. Paketierte
-JavaScript-Plugins und gebündelte interne Plugins werden über native
+Lokale TypeScript-Plugins von Drittanbietern können den Notfallpfad über Jiti verwenden. Paketierte
+JavaScript-Plugins und gebündelte interne Plugins werden über natives
 import/require statt über Jiti geladen.
 
 ## Start und Neuladen
@@ -83,8 +83,8 @@ import/require statt über Jiti geladen.
 Gateway-Start und Konfigurationsneuladen installieren niemals Plugin-Abhängigkeiten. Sie lesen
 die Plugin-Installationsdatensätze, berechnen den Einstiegspunkt und laden ihn.
 
-Wenn zur Laufzeit eine Abhängigkeit fehlt, schlägt das Laden des Plugins fehl und der Fehler
-sollte den Betreiber auf eine ausdrückliche Lösung verweisen:
+Wenn zur Laufzeit eine Abhängigkeit fehlt, kann das Plugin nicht geladen werden, und der Fehler
+sollte den Betreiber auf eine explizite Behebung hinweisen:
 
 ```bash
 openclaw plugins update <id>
@@ -92,38 +92,41 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` kann von OpenClaw generierten Legacy-Abhängigkeitszustand bereinigen und
+`doctor --fix` kann veralteten, von OpenClaw erzeugten Abhängigkeitszustand bereinigen und
 konfigurierte herunterladbare Plugins installieren, die in den lokalen Installationsdatensätzen fehlen.
 Es repariert keine Abhängigkeiten für ein bereits installiertes lokales Plugin.
 
 ## Gebündelte Plugins
 
 Leichtgewichtige und für den Core kritische gebündelte Plugins werden als Teil von OpenClaw ausgeliefert.
-Sie sollten entweder keinen schweren Laufzeit-Abhängigkeitsbaum haben oder in ein
+Sie sollten entweder keinen umfangreichen Laufzeitabhängigkeitsbaum haben oder in ein
 herunterladbares Paket auf ClawHub/npm ausgelagert werden.
 
-Gebündelte Plugin-Manifeste dürfen kein Dependency Staging anfordern. Große oder optionale
+Die aktuelle generierte Liste der Plugins, die im Core-Paket ausgeliefert werden, extern
+installiert werden oder nur als Quellcode verbleiben, finden Sie im [Plugin-Bestand](/de/plugins/plugin-inventory).
+
+Gebündelte Plugin-Manifeste dürfen kein Dependency Staging anfordern. Umfangreiche oder optionale
 Plugin-Funktionalität sollte als normales Plugin paketiert und über
 denselben npm-/git-/ClawHub-Pfad wie Drittanbieter-Plugins installiert werden.
 
 In Source-Checkouts behandelt OpenClaw das Repository als pnpm-Monorepo. Nach
 `pnpm install` werden gebündelte Plugins aus `extensions/<id>` geladen, sodass paketlokale
-Workspace-Abhängigkeiten verfügbar sind und Änderungen direkt übernommen werden. Die Entwicklung in
-Source-Checkouts ist ausschließlich pnpm-basiert; ein einfaches `npm install` im Repository-Root ist
+Workspace-Abhängigkeiten verfügbar sind und Änderungen direkt übernommen werden. Die Entwicklung mit
+Source-Checkouts ist nur mit pnpm unterstützt; ein einfaches `npm install` im Repository-Root ist
 keine unterstützte Methode, um Abhängigkeiten gebündelter Plugins vorzubereiten.
 
-| Installationsform                | Speicherort gebündelter Plugins       | Besitzer der Abhängigkeiten                                          |
-| -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `npm install -g openclaw`        | Gebauter Laufzeitbaum im Paket        | OpenClaw-Paket und ausdrückliche Plugin-Installations-/Update-/Doctor-Abläufe |
-| Git-Checkout plus `pnpm install` | `extensions/<id>`-Workspace-Pakete    | Der pnpm-Workspace, einschließlich der eigenen Abhängigkeiten jedes Plugin-Pakets |
-| `openclaw plugins install ...`   | Verwalteter npm-/git-/ClawHub-Plugin-Root | Der Plugin-Installations-/Update-Ablauf                              |
+| Installationsform                 | Speicherort des gebündelten Plugins          | Verantwortlicher für Abhängigkeiten                                      |
+| --------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------ |
+| `npm install -g openclaw`         | Gebauter Laufzeitbaum innerhalb des Pakets   | OpenClaw-Paket und explizite Plugin-Installations-/Aktualisierungs-/doctor-Abläufe |
+| Git-Checkout plus `pnpm install`  | `extensions/<id>`-Workspace-Pakete           | Der pnpm-Workspace, einschließlich der eigenen Abhängigkeiten jedes Plugin-Pakets |
+| `openclaw plugins install ...`    | Verwalteter npm-/git-/ClawHub-Plugin-Root    | Der Plugin-Installations-/Aktualisierungsablauf                          |
 
-## Legacy-Bereinigung
+## Bereinigung von Altlasten
 
 Ältere OpenClaw-Versionen erzeugten Roots für Abhängigkeiten gebündelter Plugins beim Start oder
-während einer Doctor-Reparatur. Die aktuelle Doctor-Bereinigung entfernt diese veralteten Verzeichnisse und
+während einer doctor-Reparatur. Die aktuelle doctor-Bereinigung entfernt diese veralteten Verzeichnisse und
 Symlinks, wenn `--fix` verwendet wird, einschließlich alter `plugin-runtime-deps`-Roots,
 `.openclaw-runtime-deps*`-Manifeste, generierter Plugin-`node_modules`, Installations-
-Staging-Verzeichnisse und paketlokaler pnpm-Stores.
+Stage-Verzeichnisse und paketlokaler pnpm-Stores.
 
-Diese Pfade sind nur Legacy-Reste. Neue Installationen sollten sie nicht erstellen.
+Diese Pfade sind nur Altlasten. Neue Installationen sollten sie nicht erstellen.

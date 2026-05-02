@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Sie benötigen mehrere isolierte Agenten (Arbeitsbereiche + Routing + Authentifizierung)
+    - Sie möchten mehrere isolierte Agenten (Arbeitsbereiche + Routing + Authentifizierung)
 summary: CLI-Referenz für `openclaw agents` (list/add/delete/bindings/bind/unbind/set identity)
 title: Agenten
 x-i18n:
-    generated_at: "2026-04-30T06:43:51Z"
+    generated_at: "2026-05-02T20:42:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 46742a890a57cb1035a053f14fe574044e4a3d7dcc04812cd11c633bd808819b
+    source_hash: 3522394dd416a9c8b4bf25767a14073484df0ff3d7c546cf6c730f111c5c51dc
     source_path: cli/agents.md
     workflow: 16
 ---
 
 # `openclaw agents`
 
-Verwalten Sie isolierte Agenten (Arbeitsbereiche + Authentifizierung + Routing).
+Isolierte Agenten verwalten (Arbeitsbereiche + Authentifizierung + Routing).
 
 Verwandt:
 
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
-- [Agenten-Arbeitsbereich](/de/concepts/agent-workspace)
+- [Agent-Arbeitsbereich](/de/concepts/agent-workspace)
 - [Skills-Konfiguration](/de/tools/skills-config): Konfiguration der Skills-Sichtbarkeit.
 
 ## Beispiele
@@ -37,13 +37,13 @@ openclaw agents set-identity --agent main --avatar avatars/openclaw.png
 openclaw agents delete work
 ```
 
-## Routing-Bindings
+## Routing-Bindungen
 
-Verwenden Sie Routing-Bindings, um eingehenden Kanal-Traffic einem bestimmten Agenten fest zuzuordnen.
+Verwenden Sie Routing-Bindungen, um eingehenden Kanalverkehr einem bestimmten Agenten fest zuzuordnen.
 
 Wenn Sie außerdem je Agent unterschiedliche sichtbare Skills verwenden möchten, konfigurieren Sie `agents.defaults.skills` und `agents.list[].skills` in `openclaw.json`. Siehe [Skills-Konfiguration](/de/tools/skills-config) und [Konfigurationsreferenz](/de/gateway/config-agents#agents-defaults-skills).
 
-Bindings auflisten:
+Bindungen auflisten:
 
 ```bash
 openclaw agents bindings
@@ -51,21 +51,21 @@ openclaw agents bindings --agent work
 openclaw agents bindings --json
 ```
 
-Bindings hinzufügen:
+Bindungen hinzufügen:
 
 ```bash
 openclaw agents bind --agent work --bind telegram:ops --bind discord:guild-a
 ```
 
-Wenn Sie `accountId` (`--bind <channel>`) weglassen, löst OpenClaw sie aus den Kanal-Defaults und Plugin-Setup-Hooks auf, sofern verfügbar.
+Wenn Sie `accountId` (`--bind <channel>`) weglassen, löst OpenClaw diese aus den Kanalstandards und Plugin-Setup-Hooks auf, sofern verfügbar.
 
-Wenn Sie `--agent` für `bind` oder `unbind` weglassen, verwendet OpenClaw den aktuellen Standard-Agenten als Ziel.
+Wenn Sie `--agent` für `bind` oder `unbind` weglassen, verwendet OpenClaw den aktuellen Standardagenten als Ziel.
 
-### Verhalten des Binding-Geltungsbereichs
+### Verhalten des Bindungsbereichs
 
-- Ein Binding ohne `accountId` passt nur zum Standardkonto des Kanals.
-- `accountId: "*"` ist der kanalweite Fallback (alle Konten) und ist weniger spezifisch als ein explizites Konto-Binding.
-- Wenn derselbe Agent bereits ein passendes Kanal-Binding ohne `accountId` hat und Sie später mit einer expliziten oder aufgelösten `accountId` binden, aktualisiert OpenClaw dieses vorhandene Binding direkt, statt ein Duplikat hinzuzufügen.
+- Eine Bindung ohne `accountId` entspricht nur dem Standardkonto des Kanals.
+- `accountId: "*"` ist der kanalweite Fallback (alle Konten) und ist weniger spezifisch als eine explizite Kontobindung.
+- Wenn derselbe Agent bereits eine passende Kanalbindung ohne `accountId` hat und Sie später mit einer expliziten oder aufgelösten `accountId` binden, aktualisiert OpenClaw diese vorhandene Bindung direkt, statt ein Duplikat hinzuzufügen.
 
 Beispiel:
 
@@ -77,16 +77,16 @@ openclaw agents bind --agent work --bind telegram
 openclaw agents bind --agent work --bind telegram:ops
 ```
 
-Nach dem Upgrade ist das Routing für dieses Binding auf `telegram:ops` beschränkt. Wenn Sie zusätzlich Routing für das Standardkonto wünschen, fügen Sie es explizit hinzu (zum Beispiel `--bind telegram:default`).
+Nach der Aktualisierung ist das Routing für diese Bindung auf `telegram:ops` begrenzt. Wenn Sie auch Routing für das Standardkonto möchten, fügen Sie es explizit hinzu (zum Beispiel `--bind telegram:default`).
 
-Bindings entfernen:
+Bindungen entfernen:
 
 ```bash
 openclaw agents unbind --agent work --bind telegram:ops
 openclaw agents unbind --agent work --all
 ```
 
-`unbind` akzeptiert entweder `--all` oder einen oder mehrere `--bind`-Werte, nicht beides.
+`unbind` akzeptiert entweder `--all` oder einen oder mehrere `--bind`-Werte, aber nicht beides.
 
 ## Befehlsoberfläche
 
@@ -99,7 +99,7 @@ Das Ausführen von `openclaw agents` ohne Unterbefehl entspricht `openclaw agent
 Optionen:
 
 - `--json`
-- `--bindings`: vollständige Routing-Regeln einschließen, nicht nur Zählungen/Zusammenfassungen pro Agent
+- `--bindings`: vollständige Routing-Regeln einschließen, nicht nur Zählungen/Zusammenfassungen je Agent
 
 ### `agents add [name]`
 
@@ -114,13 +114,13 @@ Optionen:
 
 Hinweise:
 
-- Das Übergeben beliebiger expliziter Add-Flags schaltet den Befehl in den nicht interaktiven Pfad.
+- Das Übergeben expliziter Add-Flags schaltet den Befehl in den nicht interaktiven Pfad.
 - Der nicht interaktive Modus erfordert sowohl einen Agentennamen als auch `--workspace`.
 - `main` ist reserviert und kann nicht als neue Agenten-ID verwendet werden.
-- Im interaktiven Modus kopiert das Auth-Seeding nur portierbare statische Profile
-  (`api_key` und standardmäßig statisches `token`). OAuth-Refresh-Token-Profile bleiben
-  nur per Read-through-Vererbung aus dem echten `main`-Agentenspeicher verfügbar.
-  Wenn der konfigurierte Standard-Agent nicht `main` ist, melden Sie sich für OAuth-
+- Im interaktiven Modus kopiert das Authentifizierungs-Seeding nur portable statische Profile
+  (`api_key` und standardmäßig statische `token`). OAuth-Refresh-Token-Profile bleiben
+  nur über Read-through-Vererbung aus dem echten `main`-Agentenspeicher verfügbar.
+  Wenn der konfigurierte Standardagent nicht `main` ist, melden Sie sich für OAuth-
   Profile auf dem neuen Agenten separat an.
 
 ### `agents bindings`
@@ -134,7 +134,7 @@ Optionen:
 
 Optionen:
 
-- `--agent <id>` (standardmäßig der aktuelle Standard-Agent)
+- `--agent <id>` (standardmäßig der aktuelle Standardagent)
 - `--bind <channel[:accountId]>` (wiederholbar)
 - `--json`
 
@@ -142,7 +142,7 @@ Optionen:
 
 Optionen:
 
-- `--agent <id>` (standardmäßig der aktuelle Standard-Agent)
+- `--agent <id>` (standardmäßig der aktuelle Standardagent)
 - `--bind <channel[:accountId]>` (wiederholbar)
 - `--all`
 - `--json`
@@ -159,22 +159,23 @@ Hinweise:
 - `main` kann nicht gelöscht werden.
 - Ohne `--force` ist eine interaktive Bestätigung erforderlich.
 - Arbeitsbereich, Agentenstatus und Sitzungs-Transkriptverzeichnisse werden in den Papierkorb verschoben, nicht endgültig gelöscht.
+- Wenn der Gateway erreichbar ist, wird die Löschung über den Gateway gesendet, sodass Konfiguration und Bereinigung des Sitzungsspeichers denselben Writer wie der Laufzeitverkehr verwenden. Wenn der Gateway nicht erreichbar ist, fällt die CLI auf den lokalen Offline-Pfad zurück.
 - Wenn der Arbeitsbereich eines anderen Agenten derselbe Pfad ist, innerhalb dieses Arbeitsbereichs liegt oder diesen Arbeitsbereich enthält,
   bleibt der Arbeitsbereich erhalten und `--json` meldet `workspaceRetained`,
   `workspaceRetainedReason` und `workspaceSharedWith`.
 
 ## Identitätsdateien
 
-Jeder Agenten-Arbeitsbereich kann eine `IDENTITY.md` im Stamm des Arbeitsbereichs enthalten:
+Jeder Agenten-Arbeitsbereich kann eine `IDENTITY.md` im Stammverzeichnis des Arbeitsbereichs enthalten:
 
 - Beispielpfad: `~/.openclaw/workspace/IDENTITY.md`
-- `set-identity --from-identity` liest aus dem Stamm des Arbeitsbereichs (oder aus einer expliziten `--identity-file`)
+- `set-identity --from-identity` liest aus dem Stammverzeichnis des Arbeitsbereichs (oder aus einer expliziten `--identity-file`)
 
-Avatar-Pfade werden relativ zum Stamm des Arbeitsbereichs aufgelöst.
+Avatar-Pfade werden relativ zum Stammverzeichnis des Arbeitsbereichs aufgelöst.
 
 ## Identität festlegen
 
-`set-identity` schreibt Felder nach `agents.list[].identity`:
+`set-identity` schreibt Felder in `agents.list[].identity`:
 
 - `name`
 - `theme`
@@ -195,8 +196,8 @@ Optionen:
 
 Hinweise:
 
-- `--agent` oder `--workspace` können verwendet werden, um den Ziel-Agenten auszuwählen.
-- Wenn Sie sich auf `--workspace` verlassen und mehrere Agenten diesen Arbeitsbereich gemeinsam nutzen, schlägt der Befehl fehl und fordert Sie auf, `--agent` zu übergeben.
+- `--agent` oder `--workspace` kann verwendet werden, um den Zielagenten auszuwählen.
+- Wenn Sie `--workspace` verwenden und mehrere Agenten diesen Arbeitsbereich teilen, schlägt der Befehl fehl und fordert Sie auf, `--agent` zu übergeben.
 - Wenn keine expliziten Identitätsfelder angegeben werden, liest der Befehl Identitätsdaten aus `IDENTITY.md`.
 
 Aus `IDENTITY.md` laden:
@@ -235,4 +236,4 @@ Konfigurationsbeispiel:
 
 - [CLI-Referenz](/de/cli)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
-- [Agenten-Arbeitsbereich](/de/concepts/agent-workspace)
+- [Agent-Arbeitsbereich](/de/concepts/agent-workspace)

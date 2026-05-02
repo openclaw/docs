@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Sie benötigen gezielte Debug-Logs, ohne die globalen Logging-Level anzuheben
-    - Sie müssen subsystem-spezifische Logs für den Support erfassen
+    - Sie benötigen gezielte Debug-Logs, ohne die globalen Logging-Level zu erhöhen
+    - Sie müssen subsystem­spezifische Logs für den Support erfassen
 summary: Diagnose-Flags für gezielte Debug-Logs
 title: Diagnose-Flags
 x-i18n:
-    generated_at: "2026-04-30T06:51:38Z"
+    generated_at: "2026-05-02T20:46:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 486051e54c456dedcae5dce59e253add3554d8417660bfc97a75d21fa5fdd6f5
+    source_hash: 1d0ff92d45cf1c5a12a7103ba5b97d656a55a13a7a4f2e86e26ba3a9cfae7687
     source_path: diagnostics/flags.md
     workflow: 16
 ---
 
-Diagnose-Flags ermöglichen gezielte Debug-Logs, ohne ausführliches Logging überall zu aktivieren. Flags sind Opt-in und haben keine Wirkung, solange ein Subsystem sie nicht prüft.
+Diagnose-Flags ermöglichen es Ihnen, gezielte Debug-Logs zu aktivieren, ohne überall ausführliches Logging einzuschalten. Flags sind Opt-in und haben keine Wirkung, sofern ein Subsystem sie nicht prüft.
 
 ## Funktionsweise
 
@@ -23,7 +23,7 @@ Diagnose-Flags ermöglichen gezielte Debug-Logs, ohne ausführliches Logging üb
   - `telegram.*` entspricht `telegram.http`
   - `*` aktiviert alle Flags
 
-## Über Konfiguration aktivieren
+## Über die Konfiguration aktivieren
 
 ```json
 {
@@ -38,7 +38,7 @@ Mehrere Flags:
 ```json
 {
   "diagnostics": {
-    "flags": ["telegram.http", "gateway.*"]
+    "flags": ["telegram.http", "brave.http", "gateway.*"]
   }
 }
 ```
@@ -59,7 +59,7 @@ OPENCLAW_DIAGNOSTICS=0
 
 ## Timeline-Artefakte
 
-Das `timeline`-Flag schreibt strukturierte Timing-Ereignisse für Start und Laufzeit für
+Das Flag `timeline` schreibt strukturierte Zeitereignisse für Start und Laufzeit für
 externe QA-Harnesses:
 
 ```bash
@@ -80,28 +80,29 @@ Sie können es auch in der Konfiguration aktivieren:
 
 Der Dateipfad für die Timeline stammt weiterhin aus
 `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`. Wenn `timeline` nur über die
-Konfiguration aktiviert ist, werden die frühesten Spans zum Laden der Konfiguration nicht ausgegeben, weil OpenClaw die
+Konfiguration aktiviert ist, werden die frühesten Spans zum Laden der Konfiguration nicht ausgegeben, da OpenClaw die
 Konfiguration noch nicht gelesen hat; nachfolgende Start-Spans verwenden das Konfigurations-Flag.
 
 `OPENCLAW_DIAGNOSTICS=1`, `OPENCLAW_DIAGNOSTICS=all` und
-`OPENCLAW_DIAGNOSTICS=*` aktivieren ebenfalls die Timeline, weil sie jedes
-Diagnose-Flag aktivieren. Verwenden Sie bevorzugt `timeline`, wenn Sie nur das JSONL-Timing-Artefakt benötigen.
+`OPENCLAW_DIAGNOSTICS=*` aktivieren ebenfalls die Timeline, da sie jedes
+Diagnose-Flag aktivieren. Verwenden Sie bevorzugt `timeline`, wenn Sie nur das JSONL-Zeitmessungsartefakt
+möchten.
 
-Timeline-Datensätze verwenden den `openclaw.diagnostics.v1`-Umschlag. Ereignisse können
-Prozess-IDs, Phasennamen, Span-Namen, Dauern, Plugin-IDs, Abhängigkeitszähler,
-Event-Loop-Verzögerungsstichproben, Provider-Operationsnamen, Exit-Status von Unterprozessen
+Timeline-Datensätze verwenden den Umschlag `openclaw.diagnostics.v1`. Ereignisse können
+Prozess-IDs, Phasennamen, Span-Namen, Dauern, Plugin-IDs, Abhängigkeitsanzahlen,
+Event-Loop-Verzögerungsstichproben, Namen von Provider-Operationen, den Exit-Zustand von Kindprozessen
 und Namen/Meldungen von Startfehlern enthalten. Behandeln Sie Timeline-Dateien als lokale Diagnoseartefakte;
-prüfen Sie sie, bevor Sie sie außerhalb Ihres Rechners teilen.
+prüfen Sie sie, bevor Sie sie außerhalb Ihres Computers weitergeben.
 
 ## Speicherort der Logs
 
-Flags schreiben Logs in die standardmäßige Diagnose-Logdatei. Standardmäßig:
+Flags geben Logs in die standardmäßige Diagnose-Logdatei aus. Standardmäßig:
 
 ```
 /tmp/openclaw/openclaw-YYYY-MM-DD.log
 ```
 
-Wenn Sie `logging.file` setzen, verwenden Sie stattdessen diesen Pfad. Logs sind JSONL (ein JSON-Objekt pro Zeile). Schwärzung wird weiterhin gemäß `logging.redactSensitive` angewendet.
+Wenn Sie `logging.file` festlegen, verwenden Sie stattdessen diesen Pfad. Logs sind JSONL (ein JSON-Objekt pro Zeile). Die Schwärzung gilt weiterhin basierend auf `logging.redactSensitive`.
 
 ## Logs extrahieren
 
@@ -111,13 +112,19 @@ Wählen Sie die neueste Logdatei aus:
 ls -t /tmp/openclaw/openclaw-*.log | head -n 1
 ```
 
-Nach Telegram-HTTP-Diagnose filtern:
+Nach Telegram-HTTP-Diagnosen filtern:
 
 ```bash
 rg "telegram http error" /tmp/openclaw/openclaw-*.log
 ```
 
-Oder beim Reproduzieren mitlesen:
+Nach Brave Search-HTTP-Diagnosen filtern:
+
+```bash
+rg "brave http" /tmp/openclaw/openclaw-*.log
+```
+
+Oder beim Reproduzieren per Tail mitlesen:
 
 ```bash
 tail -f /tmp/openclaw/openclaw-$(date +%F).log | rg "telegram http error"
@@ -127,8 +134,9 @@ Für Remote-Gateways können Sie auch `openclaw logs --follow` verwenden (siehe 
 
 ## Hinweise
 
-- Wenn `logging.level` höher als `warn` gesetzt ist, können diese Logs unterdrückt werden. Der Standardwert `info` ist geeignet.
-- Flags können aktiviert bleiben; sie beeinflussen nur das Logvolumen für das jeweilige Subsystem.
+- Wenn `logging.level` höher als `warn` gesetzt ist, können diese Logs unterdrückt werden. Der Standardwert `info` ist ausreichend.
+- `brave.http` protokolliert Brave Search-Anfrage-URLs/Query-Parameter, Antwortstatus/-Timing sowie Cache-Hit/Miss/Write-Ereignisse. Es protokolliert keine API-Schlüssel oder Antworttexte, Suchanfragen können jedoch sensibel sein.
+- Flags können aktiviert bleiben; sie wirken sich nur auf das Logvolumen des jeweiligen Subsystems aus.
 - Verwenden Sie [/logging](/de/logging), um Logziele, Level und Schwärzung zu ändern.
 
 ## Verwandte Themen

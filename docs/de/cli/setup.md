@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Sie führen die Ersteinrichtung ohne vollständiges CLI-Onboarding durch
-    - Sie möchten den Standardpfad für den Arbeitsbereich festlegen
+    - Sie führen die Ersteinrichtung ohne vollständige CLI-Einführung durch
+    - Sie möchten den standardmäßigen Workspace-Pfad festlegen
 summary: CLI-Referenz für `openclaw setup` (Konfiguration + Arbeitsbereich initialisieren)
 title: Einrichtung
 x-i18n:
-    generated_at: "2026-04-30T06:47:10Z"
+    generated_at: "2026-05-02T20:44:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Initialisieren Sie `~/.openclaw/openclaw.json` und den Agent-Arbeitsbereich.
+Initialisiert `~/.openclaw/openclaw.json` und den Agent-Workspace.
 
 Verwandt:
 
 - Erste Schritte: [Erste Schritte](/de/start/getting-started)
-- CLI-Einrichtung: [Einrichtung (CLI)](/de/start/wizard)
+- CLI-Onboarding: [Onboarding (CLI)](/de/start/wizard)
 
 ## Beispiele
 
@@ -34,17 +34,17 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## Optionen
 
-- `--workspace <dir>`: Verzeichnis des Agent-Arbeitsbereichs (gespeichert als `agents.defaults.workspace`)
-- `--wizard`: Einrichtung ausführen
-- `--non-interactive`: Einrichtung ohne Eingabeaufforderungen ausführen
-- `--mode <local|remote>`: Einrichtungsmodus
-- `--import-from <provider>`: Migrations-Provider, der während der Einrichtung ausgeführt werden soll
+- `--workspace <dir>`: Agent-Workspace-Verzeichnis (gespeichert als `agents.defaults.workspace`)
+- `--wizard`: Onboarding ausführen
+- `--non-interactive`: Onboarding ohne Eingabeaufforderungen ausführen
+- `--mode <local|remote>`: Onboarding-Modus
+- `--import-from <provider>`: Migrations-Provider, der während des Onboardings ausgeführt werden soll
 - `--import-source <path>`: Quell-Agent-Home für `--import-from`
-- `--import-secrets`: unterstützte Geheimnisse während der Einrichtungsmigration importieren
-- `--remote-url <url>`: WebSocket-URL des entfernten Gateway
-- `--remote-token <token>`: Token des entfernten Gateway
+- `--import-secrets`: unterstützte Secrets während der Onboarding-Migration importieren
+- `--remote-url <url>`: WebSocket-URL des Remote-Gateway
+- `--remote-token <token>`: Token des Remote-Gateway
 
-So führen Sie die Einrichtung über setup aus:
+So führen Sie Onboarding über Setup aus:
 
 ```bash
 openclaw setup --wizard
@@ -52,9 +52,10 @@ openclaw setup --wizard
 
 Hinweise:
 
-- Einfaches `openclaw setup` initialisiert Konfiguration und Arbeitsbereich ohne den vollständigen Einrichtungsablauf.
-- Die Einrichtung wird automatisch ausgeführt, wenn Einrichtungs-Flags vorhanden sind (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Wenn ein Hermes-Zustand erkannt wird, kann die interaktive Einrichtung automatisch eine Migration anbieten. Die Import-Einrichtung erfordert eine frische Einrichtung; verwenden Sie [Migrieren](/de/cli/migrate) für Testlaufpläne, Sicherungen und den Überschreibmodus außerhalb der Einrichtung.
+- Ein einfaches `openclaw setup` initialisiert Konfiguration und Workspace ohne den vollständigen Onboarding-Ablauf.
+- Führen Sie nach einem einfachen Setup `openclaw configure` aus, um Modelle, Kanäle, Gateway, Plugins, Skills oder Health Checks auszuwählen.
+- Onboarding wird automatisch ausgeführt, wenn Onboarding-Flags vorhanden sind (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Wenn ein Hermes-Status erkannt wird, kann interaktives Onboarding automatisch eine Migration anbieten. Import-Onboarding erfordert ein frisches Setup; verwenden Sie [Migrieren](/de/cli/migrate) für Dry-Run-Pläne, Backups und den Überschreibmodus außerhalb des Onboardings.
 
 ## Verwandt
 

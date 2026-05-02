@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Sie möchten, dass die Übernahme in den Speicher automatisch ausgeführt wird
+    - Sie möchten, dass die Speicher-Hochstufung automatisch ausgeführt wird
     - Sie möchten verstehen, was jede Dreaming-Phase bewirkt
-    - Sie möchten die Konsolidierung optimieren, ohne MEMORY.md zu verunreinigen
+    - Sie möchten die Konsolidierung feinabstimmen, ohne MEMORY.md zu überfrachten
 sidebarTitle: Dreaming
 summary: Gedächtniskonsolidierung im Hintergrund mit Leicht-, Tief- und REM-Phasen sowie einem Traumtagebuch
 title: Dreaming
 x-i18n:
-    generated_at: "2026-04-30T06:48:38Z"
+    generated_at: "2026-05-02T20:45:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 85c323c073fc786069835aad25ee68781af49bb031e63b9601674461f385cc2a
+    source_hash: 23057bfeaaac1cc6b2bf2ee78928c8fdd820c817e461cc0b77f7c1e40ac14c22
     source_path: concepts/dreaming.md
     workflow: 16
 ---
 
-Dreaming ist das Hintergrundsystem zur Speicherkonsolidierung in `memory-core`. Es hilft OpenClaw, starke Kurzzeitsignale in dauerhaften Speicher zu überführen, während der Prozess erklärbar und überprüfbar bleibt.
+Dreaming ist das Hintergrundsystem zur Speicherkonsolidierung in `memory-core`. Es hilft OpenClaw, starke Kurzzeitsignale in dauerhaften Speicher zu übertragen, während der Prozess erklärbar und überprüfbar bleibt.
 
 <Note>
 Dreaming ist **opt-in** und standardmäßig deaktiviert.
@@ -23,112 +23,114 @@ Dreaming ist **opt-in** und standardmäßig deaktiviert.
 
 ## Was Dreaming schreibt
 
-Dreaming behält zwei Arten von Ausgabe:
+Dreaming verwaltet zwei Arten von Ausgaben:
 
-- **Maschinenzustand** in `memory/.dreams/` (Recall-Speicher, Phasensignale, Ingestions-Checkpoints, Sperren).
-- **Für Menschen lesbare Ausgabe** in `DREAMS.md` (oder bestehender `dreams.md`) und optionale Phasenberichtsdateien unter `memory/dreaming/<phase>/YYYY-MM-DD.md`.
+- **Maschinenstatus** in `memory/.dreams/` (Recall-Speicher, Phasensignale, Ingestion-Checkpoints, Sperren).
+- **Für Menschen lesbare Ausgabe** in `DREAMS.md` (oder einer vorhandenen `dreams.md`) und optionale Phasenberichtsdateien unter `memory/dreaming/<phase>/YYYY-MM-DD.md`.
 
-Langfristige Promotion schreibt weiterhin ausschließlich nach `MEMORY.md`.
+Die Langzeit-Promotion schreibt weiterhin nur nach `MEMORY.md`.
 
 ## Phasenmodell
 
 Dreaming verwendet drei kooperative Phasen:
 
-| Phase | Zweck                                           | Dauerhafte Schreiboperation |
-| ----- | ----------------------------------------------- | --------------------------- |
-| Light | Aktuelles Kurzzeitmaterial sortieren und stagen | Nein                        |
-| Deep  | Dauerhafte Kandidaten bewerten und promoten     | Ja (`MEMORY.md`)            |
-| REM   | Themen und wiederkehrende Ideen reflektieren    | Nein                        |
+| Phase | Zweck                                             | Dauerhafte Schreiboperation |
+| ----- | ------------------------------------------------- | --------------------------- |
+| Light | Aktuelles Kurzzeitmaterial sortieren und stagen   | Nein                        |
+| Deep  | Dauerhafte Kandidaten bewerten und promoten       | Ja (`MEMORY.md`)            |
+| REM   | Über Themen und wiederkehrende Ideen reflektieren | Nein                        |
 
-Diese Phasen sind interne Implementierungsdetails, keine separaten vom Benutzer konfigurierten „Modi“.
+Diese Phasen sind interne Implementierungsdetails, keine separaten, benutzerkonfigurierten „Modi“.
 
 <AccordionGroup>
-  <Accordion title="Light-Phase">
-    Die Light-Phase nimmt aktuelle tägliche Speichersignale und Recall-Traces auf, dedupliziert sie und stellt Kandidatenzeilen bereit.
+  <Accordion title="Light phase">
+    Die Light-Phase nimmt aktuelle tägliche Speichersignale und Recall-Spuren auf, dedupliziert sie und staged Kandidatenzeilen.
 
-    - Liest aus Kurzzeit-Recall-Zustand, aktuellen täglichen Speicherdateien und redigierten Sitzungstranskripten, wenn verfügbar.
+    - Liest aus dem Kurzzeit-Recall-Status, aktuellen täglichen Speicherdateien und redigierten Sitzungstranskripten, sofern verfügbar.
     - Schreibt einen verwalteten `## Light Sleep`-Block, wenn der Speicher Inline-Ausgabe enthält.
-    - Zeichnet Verstärkungssignale für späteres Deep-Ranking auf.
-    - Schreibt nie nach `MEMORY.md`.
+    - Zeichnet Verstärkungssignale für das spätere Deep-Ranking auf.
+    - Schreibt niemals nach `MEMORY.md`.
 
   </Accordion>
-  <Accordion title="Deep-Phase">
-    Die Deep-Phase entscheidet, was zu langfristigem Speicher wird.
+  <Accordion title="Deep phase">
+    Die Deep-Phase entscheidet, was zu Langzeitspeicher wird.
 
-    - Ordnet Kandidaten mithilfe gewichteter Bewertung und Schwellenwert-Gates ein.
-    - Erfordert, dass `minScore`, `minRecallCount` und `minUniqueQueries` erfüllt werden.
-    - Rehydriert Snippets aus laufenden täglichen Dateien vor dem Schreiben, sodass veraltete/gelöschte Snippets übersprungen werden.
+    - Rangiert Kandidaten mit gewichteter Bewertung und Schwellenwert-Gates.
+    - Erfordert, dass `minScore`, `minRecallCount` und `minUniqueQueries` bestanden werden.
+    - Rehydriert Snippets aus aktiven täglichen Dateien vor dem Schreiben, sodass veraltete/gelöschte Snippets übersprungen werden.
     - Hängt promotete Einträge an `MEMORY.md` an.
     - Schreibt eine `## Deep Sleep`-Zusammenfassung in `DREAMS.md` und schreibt optional `memory/dreaming/deep/YYYY-MM-DD.md`.
 
   </Accordion>
-  <Accordion title="REM-Phase">
+  <Accordion title="REM phase">
     Die REM-Phase extrahiert Muster und reflektierende Signale.
 
-    - Erstellt Themen- und Reflexionszusammenfassungen aus aktuellen Kurzzeit-Traces.
+    - Erstellt Themen- und Reflexionszusammenfassungen aus aktuellen Kurzzeitspuren.
     - Schreibt einen verwalteten `## REM Sleep`-Block, wenn der Speicher Inline-Ausgabe enthält.
     - Zeichnet REM-Verstärkungssignale auf, die vom Deep-Ranking verwendet werden.
-    - Schreibt nie nach `MEMORY.md`.
+    - Schreibt niemals nach `MEMORY.md`.
 
   </Accordion>
 </AccordionGroup>
 
 ## Ingestion von Sitzungstranskripten
 
-Dreaming kann redigierte Sitzungstranskripte in den Dreaming-Korpus aufnehmen. Wenn Transkripte verfügbar sind, werden sie zusammen mit täglichen Speichersignalen und Recall-Traces in die Light-Phase eingespeist. Persönliche und sensible Inhalte werden vor der Ingestion redigiert.
+Dreaming kann redigierte Sitzungstranskripte in den Dreaming-Korpus aufnehmen. Wenn Transkripte verfügbar sind, werden sie zusammen mit täglichen Speichersignalen und Recall-Spuren in die Light-Phase eingespeist. Persönliche und sensible Inhalte werden vor der Ingestion redigiert.
 
 ## Traumtagebuch
 
-Dreaming führt außerdem ein narratives **Traumtagebuch** in `DREAMS.md`. Nachdem jede Phase genügend Material hat, führt `memory-core` im Hintergrund bestmöglich einen Subagent-Turn aus und hängt einen kurzen Tagebucheintrag an. Es verwendet das Standard-Laufzeitmodell, sofern `dreaming.model` nicht konfiguriert ist. Wenn das konfigurierte Modell nicht verfügbar ist, versucht das Traumtagebuch es einmal erneut mit dem Standardsitzungsmodell.
+Dreaming führt außerdem ein narratives **Traumtagebuch** in `DREAMS.md`. Nachdem jede Phase genügend Material hat, führt `memory-core` im Hintergrund bestmöglich einen Subagent-Turn aus und hängt einen kurzen Tagebucheintrag an. Es verwendet das Standard-Laufzeitmodell, sofern `dreaming.model` nicht konfiguriert ist. Wenn das konfigurierte Modell nicht verfügbar ist, versucht es das Traumtagebuch einmal erneut mit dem Standardmodell der Sitzung.
 
 <Note>
-Dieses Tagebuch ist für menschliches Lesen in der Dreams-UI gedacht, nicht als Promotion-Quelle. Von Dreaming erzeugte Tagebuch-/Berichtsartefakte sind von der Kurzzeit-Promotion ausgeschlossen. Nur fundierte Speicher-Snippets kommen für die Promotion nach `MEMORY.md` infrage.
+Dieses Tagebuch ist für Menschen in der Träume-UI gedacht, nicht als Promotion-Quelle. Von Dreaming erzeugte Tagebuch-/Berichtsartefakte sind von der Kurzzeit-Promotion ausgeschlossen. Nur fundierte Speicher-Snippets können in `MEMORY.md` promotet werden.
 </Note>
 
-Es gibt außerdem eine fundierte historische Backfill-Spur für Review- und Wiederherstellungsarbeiten:
+Es gibt außerdem einen fundierten historischen Backfill-Pfad für Überprüfungs- und Wiederherstellungsarbeiten:
 
 <AccordionGroup>
-  <Accordion title="Backfill-Befehle">
-    - `memory rem-harness --path ... --grounded` zeigt eine Vorschau fundierter Tagebuchausgabe aus historischen `YYYY-MM-DD.md`-Notizen an.
+  <Accordion title="Backfill commands">
+    - `memory rem-harness --path ... --grounded` zeigt eine Vorschau fundierter Tagebuchausgabe aus historischen `YYYY-MM-DD.md`-Notizen.
     - `memory rem-backfill --path ...` schreibt reversible fundierte Tagebucheinträge in `DREAMS.md`.
-    - `memory rem-backfill --path ... --stage-short-term` stellt fundierte dauerhafte Kandidaten in demselben Kurzzeit-Evidenzspeicher bereit, den die normale Deep-Phase bereits verwendet.
-    - `memory rem-backfill --rollback` und `--rollback-short-term` entfernen diese bereitgestellten Backfill-Artefakte, ohne gewöhnliche Tagebucheinträge oder laufenden Kurzzeit-Recall anzutasten.
+    - `memory rem-backfill --path ... --stage-short-term` staged fundierte dauerhafte Kandidaten in denselben Kurzzeit-Evidenzspeicher, den die normale Deep-Phase bereits verwendet.
+    - `memory rem-backfill --rollback` und `--rollback-short-term` entfernen diese gestagten Backfill-Artefakte, ohne gewöhnliche Tagebucheinträge oder aktiven Kurzzeit-Recall zu berühren.
 
   </Accordion>
 </AccordionGroup>
 
-Die Control-UI stellt denselben Tagebuch-Backfill-/Zurücksetzungsablauf bereit, damit Sie Ergebnisse in der Dreams-Szene prüfen können, bevor Sie entscheiden, ob die fundierten Kandidaten eine Promotion verdienen. Die Szene zeigt außerdem eine eigene fundierte Spur, damit Sie sehen können, welche bereitgestellten Kurzzeiteinträge aus historischer Wiedergabe stammen, welche promoteten Elemente fundiert geführt waren, und ausschließlich fundierte bereitgestellte Einträge löschen können, ohne den gewöhnlichen laufenden Kurzzeitzustand anzutasten.
+Die Control-UI stellt denselben Ablauf für Tagebuch-Backfill/Zurücksetzen bereit, damit Sie Ergebnisse in der Träume-Szene prüfen können, bevor Sie entscheiden, ob die fundierten Kandidaten eine Promotion verdienen. Die Szene zeigt außerdem eine eigene fundierte Spur, sodass Sie sehen können, welche gestagten Kurzzeiteinträge aus historischer Wiedergabe stammen, welche promoteten Elemente fundiert geführt wurden, und nur rein fundierte gestagte Einträge löschen können, ohne gewöhnlichen aktiven Kurzzeitstatus zu berühren.
 
 ## Deep-Ranking-Signale
 
 Deep-Ranking verwendet sechs gewichtete Basissignale plus Phasenverstärkung:
 
-| Signal                 | Gewichtung | Beschreibung                                                |
-| ---------------------- | ---------- | ----------------------------------------------------------- |
-| Häufigkeit             | 0.24       | Wie viele Kurzzeitsignale der Eintrag angesammelt hat       |
-| Relevanz               | 0.30       | Durchschnittliche Retrieval-Qualität für den Eintrag        |
-| Abfragevielfalt        | 0.15       | Unterschiedliche Abfrage-/Tageskontexte, in denen er auftauchte |
-| Aktualität             | 0.15       | Zeitlich abklingender Frischewert                           |
-| Konsolidierung         | 0.10       | Stärke der Wiederholung über mehrere Tage hinweg            |
-| Konzeptuelle Fülle     | 0.06       | Dichte der Konzept-Tags aus Snippet/Pfad                    |
+| Signal                | Gewichtung | Beschreibung                                          |
+| --------------------- | ---------- | ----------------------------------------------------- |
+| Häufigkeit            | 0.24       | Wie viele Kurzzeitsignale der Eintrag gesammelt hat   |
+| Relevanz              | 0.30       | Durchschnittliche Retrieval-Qualität für den Eintrag  |
+| Abfragevielfalt       | 0.15       | Unterschiedliche Abfrage-/Tageskontexte, die ihn zeigten |
+| Aktualität            | 0.15       | Zeitlich abklingender Frischewert                     |
+| Konsolidierung        | 0.10       | Stärke der Wiederkehr über mehrere Tage               |
+| Konzeptionelle Dichte | 0.06       | Konzept-Tag-Dichte aus Snippet/Pfad                   |
 
-Treffer in der Light- und REM-Phase fügen einen kleinen, mit der Aktualität abklingenden Boost aus `memory/.dreams/phase-signals.json` hinzu.
+Treffer aus der Light- und REM-Phase fügen einen kleinen, nach Aktualität abklingenden Boost aus `memory/.dreams/phase-signals.json` hinzu.
 
 ## Planung
 
-Wenn aktiviert, verwaltet `memory-core` automatisch einen Cron-Job für einen vollständigen Dreaming-Durchlauf. Jeder Durchlauf führt die Phasen der Reihe nach aus: Light → REM → Deep.
+Wenn aktiviert, verwaltet `memory-core` automatisch einen Cron-Job für einen vollständigen Dreaming-Durchlauf. Jeder Durchlauf führt die Phasen in dieser Reihenfolge aus: Light → REM → Deep.
 
-Standardverhalten für die Taktung:
+Der Durchlauf umfasst den primären Laufzeit-Workspace und alle konfigurierten Agent-Workspaces, nach Pfad dedupliziert, sodass die Subagent-Workspace-Auffächerung das `DREAMS.md` und den Speicherstatus des Hauptagenten nicht ausschließt.
 
-| Einstellung          | Standard       |
-| -------------------- | -------------- |
-| `dreaming.frequency` | `0 3 * * *`    |
+Standardverhalten der Kadenz:
+
+| Einstellung           | Standard      |
+| --------------------- | ------------- |
+| `dreaming.frequency` | `0 3 * * *`   |
 | `dreaming.model`     | Standardmodell |
 
 ## Schnellstart
 
 <Tabs>
-  <Tab title="Dreaming aktivieren">
+  <Tab title="Enable dreaming">
     ```json
     {
       "plugins": {
@@ -145,7 +147,7 @@ Standardverhalten für die Taktung:
     }
     ```
   </Tab>
-  <Tab title="Benutzerdefinierte Durchlauf-Taktung">
+  <Tab title="Custom sweep cadence">
     ```json
     {
       "plugins": {
@@ -178,7 +180,7 @@ Standardverhalten für die Taktung:
 ## CLI-Workflow
 
 <Tabs>
-  <Tab title="Promotion-Vorschau / anwenden">
+  <Tab title="Promotion preview / apply">
     ```bash
     openclaw memory promote
     openclaw memory promote --apply
@@ -186,11 +188,11 @@ Standardverhalten für die Taktung:
     openclaw memory status --deep
     ```
 
-    Manuelles `memory promote` verwendet standardmäßig Deep-Phase-Schwellenwerte, sofern diese nicht mit CLI-Flags überschrieben werden.
+    Manuelles `memory promote` verwendet standardmäßig die Schwellenwerte der Deep-Phase, sofern sie nicht mit CLI-Flags überschrieben werden.
 
   </Tab>
-  <Tab title="Promotion erklären">
-    Erklären, warum ein bestimmter Kandidat promotet oder nicht promotet würde:
+  <Tab title="Explain promotion">
+    Erklären Sie, warum ein bestimmter Kandidat promotet würde oder nicht:
 
     ```bash
     openclaw memory promote-explain "router vlan"
@@ -198,8 +200,8 @@ Standardverhalten für die Taktung:
     ```
 
   </Tab>
-  <Tab title="REM-Harness-Vorschau">
-    Vorschau von REM-Reflexionen, Kandidatenwahrheiten und Deep-Promotion-Ausgabe, ohne etwas zu schreiben:
+  <Tab title="REM harness preview">
+    Vorschau auf REM-Reflexionen, Kandidatenwahrheiten und Deep-Promotion-Ausgabe, ohne etwas zu schreiben:
 
     ```bash
     openclaw memory rem-harness
@@ -209,7 +211,7 @@ Standardverhalten für die Taktung:
   </Tab>
 </Tabs>
 
-## Wichtige Standards
+## Wichtige Standardwerte
 
 Alle Einstellungen befinden sich unter `plugins.entries.memory-core.config.dreaming`.
 
@@ -217,30 +219,30 @@ Alle Einstellungen befinden sich unter `plugins.entries.memory-core.config.dream
   Aktivieren oder deaktivieren Sie den Dreaming-Durchlauf.
 </ParamField>
 <ParamField path="frequency" type="string" default="0 3 * * *">
-  Cron-Taktung für den vollständigen Dreaming-Durchlauf.
+  Cron-Kadenz für den vollständigen Dreaming-Durchlauf.
 </ParamField>
 <ParamField path="model" type="string">
-  Optionale Subagent-Modellüberschreibung für das Traumtagebuch. Verwenden Sie einen kanonischen `provider/model`-Wert, wenn Sie auch eine Subagent-`allowedModels`-Allowlist festlegen.
+  Optionale Modellüberschreibung für den Traumtagebuch-Subagent. Verwenden Sie einen kanonischen `provider/model`-Wert, wenn Sie auch eine Subagent-`allowedModels`-Allowlist festlegen.
 </ParamField>
 
 <Warning>
-`dreaming.model` erfordert `plugins.entries.memory-core.subagent.allowModelOverride: true`. Um es einzuschränken, legen Sie außerdem `plugins.entries.memory-core.subagent.allowedModels` fest. Vertrauens- oder Allowlist-Fehler bleiben sichtbar, statt stillschweigend zurückzufallen; der erneute Versuch deckt nur Modell-nicht-verfügbar-Fehler ab.
+`dreaming.model` erfordert `plugins.entries.memory-core.subagent.allowModelOverride: true`. Um es einzuschränken, legen Sie zusätzlich `plugins.entries.memory-core.subagent.allowedModels` fest. Vertrauens- oder Allowlist-Fehler bleiben sichtbar, statt stillschweigend zurückzufallen; der erneute Versuch deckt nur Fehler durch nicht verfügbare Modelle ab.
 </Warning>
 
 <Note>
-Phasenrichtlinie, Schwellenwerte und Speicherverhalten sind interne Implementierungsdetails (keine benutzerseitige Konfiguration). Die vollständige Liste der Schlüssel finden Sie in der [Referenz zur Speicherkonfiguration](/de/reference/memory-config#dreaming).
+Phasenrichtlinie, Schwellenwerte und Speicherverhalten sind interne Implementierungsdetails (keine benutzerseitige Konfiguration). Die vollständige Schlüsselliste finden Sie in der [Referenz zur Speicherkonfiguration](/de/reference/memory-config#dreaming).
 </Note>
 
-## Dreams-UI
+## Träume-UI
 
-Wenn aktiviert, zeigt der Tab **Dreams** im Gateway:
+Wenn aktiviert, zeigt der Gateway-Tab **Träume**:
 
-- den aktuellen Aktivierungszustand von Dreaming
+- aktuellen aktivierten Dreaming-Status
 - Status auf Phasenebene und Vorhandensein eines verwalteten Durchlaufs
-- Zählungen für Kurzzeit-, fundierte, Signal- und heute promotete Einträge
+- Zählwerte für Kurzzeit, fundiert, Signal und heute promotet
 - Zeitpunkt des nächsten geplanten Laufs
-- eine eigene fundierte Szenenspur für bereitgestellte Einträge aus historischer Wiedergabe
-- einen aufklappbaren Traumtagebuch-Reader, der von `doctor.memory.dreamDiary` unterstützt wird
+- eine eigene fundierte Szenenspur für gestagte historische Wiedergabeeinträge
+- einen erweiterbaren Traumtagebuch-Reader, gestützt durch `doctor.memory.dreamDiary`
 
 ## Verwandt
 
