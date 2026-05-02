@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 保存済みセッションを一覧表示し、最近のアクティビティを確認したい
-summary: '`openclaw sessions` の CLI リファレンス（保存済みセッションの一覧表示 + 使用方法）'
+    - 保存済みセッションを一覧表示し、最近のアクティビティを確認したい場合
+summary: '`openclaw sessions` のコマンドラインリファレンス（保存済みセッションの一覧表示 + 使用方法）'
 title: セッション
 x-i18n:
-    generated_at: "2026-04-30T05:06:13Z"
+    generated_at: "2026-05-02T20:44:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9fea2014f538b00a27fa0078391a421843052333c5bcfc8100fced515eed0004
+    source_hash: 5c9ec3ca55f7c5b6217b481e9da62f5416df73e69405a0dc15e77d2afeac723f
     source_path: cli/sessions.md
     workflow: 16
 ---
@@ -15,6 +15,8 @@ x-i18n:
 # `openclaw sessions`
 
 保存済みの会話セッションを一覧表示します。
+
+セッション一覧は、チャンネル/プロバイダーの稼働状況チェックではありません。セッションストアから永続化済みの会話行を表示します。静かな Discord、Slack、Telegram、またはその他のチャンネルは、メッセージが処理されるまで新しいセッション行を作成せずに正常に再接続できます。ライブのチャンネル接続性が必要な場合は、`openclaw channels status --probe`、`openclaw status --deep`、または `openclaw health --verbose` を使用してください。
 
 ```bash
 openclaw sessions
@@ -27,13 +29,13 @@ openclaw sessions --json
 
 スコープ選択:
 
-- デフォルト: 構成済みのデフォルトエージェントストア
+- デフォルト: 設定済みのデフォルトエージェントストア
 - `--verbose`: 詳細ログ
-- `--agent <id>`: 構成済みエージェントストアを 1 つ指定
-- `--all-agents`: 構成済みのすべてのエージェントストアを集約
-- `--store <path>`: 明示的なストアパス（`--agent` や `--all-agents` とは併用不可）
+- `--agent <id>`: 1 つの設定済みエージェントストア
+- `--all-agents`: すべての設定済みエージェントストアを集約
+- `--store <path>`: 明示的なストアパス（`--agent` または `--all-agents` と併用不可）
 
-保存済みセッションのトラジェクトリバンドルをエクスポートします:
+保存済みセッションの軌跡バンドルをエクスポートします:
 
 ```bash
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
@@ -42,7 +44,7 @@ openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:12
 
 これは、所有者が exec リクエストを承認した後に `/export-trajectory` スラッシュコマンドで使用されるコマンドパスです。出力ディレクトリは、選択されたワークスペース配下の `.openclaw/trajectory-exports/` 内に常に解決されます。
 
-`openclaw sessions --all-agents` は構成済みエージェントストアを読み取ります。Gateway と ACP のセッション検出はより広範で、デフォルトの `agents/` ルート、またはテンプレート化された `session.store` ルート配下で見つかる、ディスク上にのみ存在するストアも含みます。検出されたストアは、エージェントルート内の通常の `sessions.json` ファイルに解決される必要があります。シンボリックリンクとルート外パスはスキップされます。
+`openclaw sessions --all-agents` は設定済みエージェントストアを読み取ります。Gateway と ACP のセッション検出はより広範です。デフォルトの `agents/` ルート、またはテンプレート化された `session.store` ルート配下で見つかったディスク上のみのストアも含まれます。検出されたストアは、エージェントルート内の通常の `sessions.json` ファイルに解決される必要があります。シンボリックリンクとルート外パスはスキップされます。
 
 JSON の例:
 
@@ -65,9 +67,9 @@ JSON の例:
 }
 ```
 
-## クリーンアップ保守
+## クリーンアップメンテナンス
 
-次の書き込みサイクルを待たずに、今すぐ保守を実行します:
+次の書き込みサイクルを待たずに、今すぐメンテナンスを実行します:
 
 ```bash
 openclaw sessions cleanup --dry-run
@@ -78,19 +80,21 @@ openclaw sessions cleanup --enforce --active-key "agent:main:telegram:direct:123
 openclaw sessions cleanup --json
 ```
 
-`openclaw sessions cleanup` は config の `session.maintenance` 設定を使用します:
+`openclaw sessions cleanup` は設定の `session.maintenance` 設定を使用します:
 
-- スコープ注記: `openclaw sessions cleanup` は、セッションストア、トランスクリプト、トラジェクトリのサイドカーを保守します。cron 実行ログ（`cron/runs/<jobId>.jsonl`）は削除しません。これらは [Cron 構成](/ja-JP/automation/cron-jobs#configuration) の `cron.runLog.maxBytes` と `cron.runLog.keepLines` で管理され、[Cron 保守](/ja-JP/automation/cron-jobs#maintenance) で説明されています。
+- スコープメモ: `openclaw sessions cleanup` はセッションストア、トランスクリプト、軌跡サイドカーをメンテナンスします。Cron 実行ログ（`cron/runs/<jobId>.jsonl`）は剪定しません。これらは [Cron 設定](/ja-JP/automation/cron-jobs#configuration) の `cron.runLog.maxBytes` と `cron.runLog.keepLines` によって管理され、[Cron メンテナンス](/ja-JP/automation/cron-jobs#maintenance) で説明されています。
 
-- `--dry-run`: 書き込みなしで、削除または上限適用されるエントリ数をプレビューします。
-  - テキストモードでは、dry-run はセッションごとのアクション表（`Action`, `Key`, `Age`, `Model`, `Flags`）を出力するため、何が保持され、何が削除されるかを確認できます。
-- `--enforce`: `session.maintenance.mode` が `warn` の場合でも保守を適用します。
-- `--fix-missing`: トランスクリプトファイルが欠落しているエントリを、通常ならまだ経過時間や件数で対象外になる場合でも削除します。
-- `--active-key <key>`: 特定のアクティブキーをディスク容量制限による退避から保護します。
-- `--agent <id>`: 構成済みエージェントストアを 1 つ指定して cleanup を実行します。
-- `--all-agents`: 構成済みのすべてのエージェントストアに対して cleanup を実行します。
+- `--dry-run`: 書き込みを行わずに、何件のエントリが剪定/上限適用されるかをプレビューします。
+  - テキストモードでは、ドライランはセッションごとのアクション表（`Action`、`Key`、`Age`、`Model`、`Flags`）を出力するため、保持されるものと削除されるものを確認できます。
+- `--enforce`: `session.maintenance.mode` が `warn` の場合でもメンテナンスを適用します。
+- `--fix-missing`: トランスクリプトファイルが欠落しているエントリを、通常はまだ経過時間/件数の対象外であっても削除します。
+- `--active-key <key>`: 特定のアクティブキーをディスク容量制限による退避から保護します。グループセッションやスレッドスコープのチャットセッションなど、永続的な外部会話ポインターも、経過時間/件数/ディスク容量制限メンテナンスで保持されます。
+- `--agent <id>`: 1 つの設定済みエージェントストアに対してクリーンアップを実行します。
+- `--all-agents`: すべての設定済みエージェントストアに対してクリーンアップを実行します。
 - `--store <path>`: 特定の `sessions.json` ファイルに対して実行します。
-- `--json`: JSON サマリーを出力します。`--all-agents` を指定した場合、出力にはストアごとのサマリーが含まれます。
+- `--json`: JSON サマリーを出力します。`--all-agents` の場合、出力にはストアごとに 1 つのサマリーが含まれます。
+
+Gateway に到達できる場合、設定済みエージェントストアの非ドライランクリーンアップは Gateway 経由で送信されるため、実行時トラフィックと同じセッションストア書き込み側を共有します。ストアファイルを明示的にオフライン修復する場合は `--store <path>` を使用してください。
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
@@ -122,7 +126,7 @@ openclaw sessions cleanup --json
 
 関連:
 
-- セッション config: [構成リファレンス](/ja-JP/gateway/config-agents#session)
+- セッション設定: [設定リファレンス](/ja-JP/gateway/config-agents#session)
 
 ## 関連
 

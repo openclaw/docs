@@ -2,25 +2,25 @@
 read_when:
     - /new、/reset、/stop、およびエージェントのライフサイクルイベント向けのイベント駆動型自動化が必要な場合
     - フックをビルド、インストール、またはデバッグしたい場合
-summary: 'フック: コマンドとライフサイクルイベントのためのイベント駆動型自動化'
+summary: 'フック: コマンドとライフサイクルイベント向けのイベント駆動型自動化'
 title: フック
 x-i18n:
-    generated_at: "2026-04-30T04:57:11Z"
+    generated_at: "2026-05-02T20:41:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a6c567ab79fbff8228d174816e9fb4613f0544ea15a99b5917190a4066af0f57
+    source_hash: 00ebf65dce03c8643fc1eac84c3915aaa00133c7f007a22483a845e61f055d6b
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Hooks は、Gateway 内で何かが発生したときに実行される小さなスクリプトです。これらはディレクトリから検出でき、`openclaw hooks` で調査できます。Gateway は、hooks を有効にするか、少なくとも 1 つの hook エントリ、hook pack、レガシーハンドラー、または追加 hook ディレクトリを設定した後でのみ、内部 hooks を読み込みます。
+フックは、Gateway 内で何かが発生したときに実行される小さなスクリプトです。ディレクトリから検出でき、`openclaw hooks` で確認できます。Gateway は、フックを有効化するか、少なくとも 1 つのフックエントリ、フックパック、レガシーハンドラー、または追加のフックディレクトリを設定した後でのみ、内部フックを読み込みます。
 
-OpenClaw には 2 種類の hooks があります。
+OpenClaw には 2 種類のフックがあります。
 
-- **内部 hooks**（このページ）: `/new`、`/reset`、`/stop`、またはライフサイクルイベントのようなエージェントイベントが発生したときに、Gateway 内で実行されます。
+- **内部フック**（このページ）: `/new`、`/reset`、`/stop`、ライフサイクルイベントなど、エージェントイベントが発火したときに Gateway 内で実行されます。
 - **Webhooks**: 他のシステムが OpenClaw で作業をトリガーできる外部 HTTP エンドポイントです。[Webhooks](/ja-JP/automation/cron-jobs#webhooks) を参照してください。
 
-Hooks は plugins 内にバンドルすることもできます。`openclaw hooks list` は、スタンドアロン hooks と plugin 管理の hooks の両方を表示します。
+フックは Plugin 内にバンドルすることもできます。`openclaw hooks list` は、スタンドアロンのフックと Plugin 管理のフックの両方を表示します。
 
 ## クイックスタート
 
@@ -40,7 +40,7 @@ openclaw hooks info session-memory
 
 ## イベントタイプ
 
-| イベント                 | 発生するタイミング                                                   |
+| イベント                 | 発火するタイミング                                             |
 | ------------------------ | ---------------------------------------------------------- |
 | `command:new`            | `/new` コマンドが発行されたとき                                      |
 | `command:reset`          | `/reset` コマンドが発行されたとき                                    |
@@ -50,19 +50,19 @@ openclaw hooks info session-memory
 | `session:compact:after`  | Compaction が完了した後                                 |
 | `session:patch`          | セッションプロパティが変更されたとき                       |
 | `agent:bootstrap`        | ワークスペースのブートストラップファイルが注入される前              |
-| `gateway:startup`        | チャンネルが開始し、hooks が読み込まれた後                  |
-| `gateway:shutdown`       | gateway のシャットダウンが始まるとき                               |
-| `gateway:pre-restart`    | 予期された gateway 再起動の前                         |
+| `gateway:startup`        | チャンネルが開始され、フックが読み込まれた後                  |
+| `gateway:shutdown`       | Gateway のシャットダウンが開始されたとき                               |
+| `gateway:pre-restart`    | 予定された Gateway 再起動の前                         |
 | `message:received`       | 任意のチャンネルからの受信メッセージ                           |
 | `message:transcribed`    | 音声文字起こしが完了した後                        |
-| `message:preprocessed`   | メディアとリンクの前処理が完了するか、スキップされた後 |
+| `message:preprocessed`   | メディアとリンクの前処理が完了またはスキップされた後 |
 | `message:sent`           | 送信メッセージが配信されたとき                                 |
 
-## Hooks を書く
+## フックを書く
 
-### Hook 構造
+### フック構造
 
-各 hook は 2 つのファイルを含むディレクトリです。
+各フックは、2 つのファイルを含むディレクトリです。
 
 ```
 my-hook/
@@ -70,7 +70,7 @@ my-hook/
 └── handler.ts       # Handler implementation
 ```
 
-### HOOK.md 形式
+### HOOK.md の形式
 
 ```markdown
 ---
@@ -89,12 +89,12 @@ Detailed documentation goes here.
 
 | フィールド | 説明                                          |
 | ---------- | ---------------------------------------------------- |
-| `emoji`    | CLI 用の表示絵文字                                |
-| `events`   | 待ち受けるイベントの配列                        |
-| `export`   | 使用する名前付きエクスポート（既定は `"default"`）        |
-| `os`       | 必須プラットフォーム（例: `["darwin", "linux"]`）     |
-| `requires` | 必須の `bins`、`anyBins`、`env`、または `config` パス |
-| `always`   | 適格性チェックをバイパス（ブール値）                  |
+| `emoji`    | CLI に表示する絵文字                                |
+| `events`   | リッスンするイベントの配列                        |
+| `export`   | 使用する名前付きエクスポート（デフォルトは `"default"`）        |
+| `os`       | 必要なプラットフォーム（例: `["darwin", "linux"]`）     |
+| `requires` | 必要な `bins`、`anyBins`、`env`、または `config` パス |
+| `always`   | 適格性チェックをバイパスする（真偽値）                  |
 | `install`  | インストール方法                                 |
 
 ### ハンドラー実装
@@ -115,63 +115,63 @@ const handler = async (event) => {
 export default handler;
 ```
 
-各イベントには、`type`、`action`、`sessionKey`、`timestamp`、`messages`（ユーザーに送信するには push）、`context`（イベント固有データ）が含まれます。エージェントおよびツール plugin の hook コンテキストには、`trace` も含めることができます。これは読み取り専用の W3C 互換診断 trace コンテキストで、plugins は OTEL 相関のために構造化ログへ渡せます。
+各イベントには、`type`、`action`、`sessionKey`、`timestamp`、`messages`（ユーザーへ送信するには push）、および `context`（イベント固有データ）が含まれます。エージェントおよびツール Plugin のフックコンテキストには、`trace` も含められます。これは読み取り専用の W3C 互換診断トレースコンテキストで、Plugin は OTEL 相関用の構造化ログへ渡すことができます。
 
 ### イベントコンテキストの要点
 
 **コマンドイベント**（`command:new`、`command:reset`）: `context.sessionEntry`、`context.previousSessionEntry`、`context.commandSource`、`context.workspaceDir`、`context.cfg`。
 
-**メッセージイベント**（`message:received`）: `context.from`、`context.content`、`context.channelId`、`context.metadata`（`senderId`、`senderName`、`guildId` を含むプロバイダー固有データ）。
+**メッセージイベント**（`message:received`）: `context.from`、`context.content`、`context.channelId`、`context.metadata`（`senderId`、`senderName`、`guildId` などのプロバイダー固有データ）。`context.content` は、コマンドらしいメッセージでは空でないコマンド本文を優先し、その後で生の受信本文と汎用本文へフォールバックします。スレッド履歴やリンク要約など、エージェント専用の拡張情報は含まれません。
 
 **メッセージイベント**（`message:sent`）: `context.to`、`context.content`、`context.success`、`context.channelId`。
 
 **メッセージイベント**（`message:transcribed`）: `context.transcript`、`context.from`、`context.channelId`、`context.mediaPath`。
 
-**メッセージイベント**（`message:preprocessed`）: `context.bodyForAgent`（最終的に拡充された本文）、`context.from`、`context.channelId`。
+**メッセージイベント**（`message:preprocessed`）: `context.bodyForAgent`（最終的に拡張された本文）、`context.from`、`context.channelId`。
 
-**ブートストラップイベント**（`agent:bootstrap`）: `context.bootstrapFiles`（変更可能な配列）、`context.agentId`。
+**ブートストラップイベント**（`agent:bootstrap`）: `context.bootstrapFiles`（可変配列）、`context.agentId`。
 
-**セッションパッチイベント**（`session:patch`）: `context.sessionEntry`、`context.patch`（変更されたフィールドのみ）、`context.cfg`。特権クライアントのみがパッチイベントをトリガーできます。
+**セッションパッチイベント**（`session:patch`）: `context.sessionEntry`、`context.patch`（変更されたフィールドのみ）、`context.cfg`。パッチイベントをトリガーできるのは、権限のあるクライアントだけです。
 
-**Compactionイベント**: `session:compact:before` には `messageCount`、`tokenCount` が含まれます。`session:compact:after` は `compactedCount`、`summaryLength`、`tokensBefore`、`tokensAfter` を追加します。
+**Compaction イベント**: `session:compact:before` には `messageCount`、`tokenCount` が含まれます。`session:compact:after` には `compactedCount`、`summaryLength`、`tokensBefore`、`tokensAfter` が追加されます。
 
-`command:stop` は、ユーザーが `/stop` を発行したことを監視します。これはキャンセル/コマンドのライフサイクルであり、エージェント最終化ゲートではありません。自然な最終回答を調査し、エージェントにもう 1 回のパスを求める必要がある plugins は、代わりに型付き plugin hook `before_agent_finalize` を使用してください。[Plugin hooks](/ja-JP/plugins/hooks) を参照してください。
+`command:stop` は、ユーザーが `/stop` を発行することを監視します。これはキャンセル/コマンドのライフサイクルであり、エージェント終了のゲートではありません。自然な最終回答を検査し、エージェントにもう一度処理させる必要がある Plugin は、代わりに型付き Plugin フック `before_agent_finalize` を使用してください。[Plugin フック](/ja-JP/plugins/hooks) を参照してください。
 
-**Gateway ライフサイクルイベント**: `gateway:shutdown` は `reason` と `restartExpectedMs` を含み、gateway のシャットダウンが始まると発生します。`gateway:pre-restart` は同じコンテキストを含みますが、シャットダウンが予期された再起動の一部であり、有限の `restartExpectedMs` 値が指定された場合にのみ発生します。シャットダウン中、各ライフサイクル hook の待機はベストエフォートで、ハンドラーが停止してもシャットダウンが続行されるよう上限が設けられます。
+**Gateway ライフサイクルイベント**: `gateway:shutdown` には `reason` と `restartExpectedMs` が含まれ、Gateway のシャットダウンが開始されたときに発火します。`gateway:pre-restart` には同じコンテキストが含まれますが、シャットダウンが予定された再起動の一部であり、有限の `restartExpectedMs` 値が指定されている場合にのみ発火します。シャットダウン中、各ライフサイクルフックの待機はベストエフォートで制限されているため、ハンドラーが停止してもシャットダウンは続行されます。
 
-## Hook の検出
+## フック検出
 
-Hooks は次のディレクトリから、上書き優先度が低い順に検出されます。
+フックは、上書き優先度が低いものから高いものの順に、次のディレクトリから検出されます。
 
-1. **バンドル hooks**: OpenClaw に同梱
-2. **Plugin hooks**: インストール済み plugins 内にバンドルされた hooks
-3. **管理対象 hooks**: `~/.openclaw/hooks/`（ユーザーがインストールし、ワークスペース間で共有）。`hooks.internal.load.extraDirs` からの追加ディレクトリはこの優先度を共有します。
-4. **ワークスペース hooks**: `<workspace>/hooks/`（エージェント単位、明示的に有効化されるまで既定で無効）
+1. **バンドルフック**: OpenClaw に同梱
+2. **Plugin フック**: インストール済み Plugin 内にバンドルされたフック
+3. **管理フック**: `~/.openclaw/hooks/`（ユーザーがインストールし、ワークスペース間で共有）。`hooks.internal.load.extraDirs` からの追加ディレクトリは、この優先度を共有します。
+4. **ワークスペースフック**: `<workspace>/hooks/`（エージェントごと、明示的に有効化されるまでデフォルトでは無効）
 
-ワークスペース hooks は新しい hook 名を追加できますが、同じ名前のバンドル、管理対象、または plugin 提供 hooks を上書きすることはできません。
+ワークスペースフックは新しいフック名を追加できますが、同じ名前のバンドルフック、管理フック、または Plugin 提供フックを上書きすることはできません。
 
-Gateway は、内部 hooks が設定されるまで、起動時の内部 hook 検出をスキップします。バンドルまたは管理対象の hook を有効にするには `openclaw hooks enable <name>` を使用するか、hook pack をインストールするか、`hooks.internal.enabled=true` を設定してオプトインします。1 つの名前付き hook を有効にすると、Gateway はその hook のハンドラーのみを読み込みます。`hooks.internal.enabled=true`、追加 hook ディレクトリ、レガシーハンドラーは広範な検出にオプトインします。
+Gateway は、内部フックが設定されるまで、起動時の内部フック検出をスキップします。バンドルフックまたは管理フックを `openclaw hooks enable <name>` で有効化するか、フックパックをインストールするか、`hooks.internal.enabled=true` を設定してオプトインします。名前付きフックを 1 つ有効化すると、Gateway はそのフックのハンドラーのみを読み込みます。`hooks.internal.enabled=true`、追加のフックディレクトリ、およびレガシーハンドラーは、広範な検出へオプトインします。
 
-### Hook packs
+### フックパック
 
-Hook packs は、`package.json` の `openclaw.hooks` を介して hooks をエクスポートする npm パッケージです。次でインストールします。
+フックパックは、`package.json` の `openclaw.hooks` 経由でフックをエクスポートする npm パッケージです。次でインストールします。
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Npm specs はレジストリ専用です（パッケージ名 + 任意の正確なバージョンまたは dist-tag）。Git/URL/file specs と semver 範囲は拒否されます。
+Npm 仕様はレジストリのみです（パッケージ名 + 任意の正確なバージョンまたは dist-tag）。Git/URL/file 仕様と semver 範囲は拒否されます。
 
-## バンドル hooks
+## 同梱フック
 
-| Hook                  | イベント                       | 機能                                          |
+| フック                | イベント                       | 処理内容                                              |
 | --------------------- | ------------------------------ | ----------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset` | セッションコンテキストを `<workspace>/memory/` に保存        |
-| bootstrap-extra-files | `agent:bootstrap`              | glob パターンから追加のブートストラップファイルを注入 |
-| command-logger        | `command`                      | すべてのコマンドを `~/.openclaw/logs/commands.log` に記録  |
-| boot-md               | `gateway:startup`              | gateway 起動時に `BOOT.md` を実行                |
+| session-memory        | `command:new`, `command:reset` | セッションコンテキストを `<workspace>/memory/` に保存します |
+| bootstrap-extra-files | `agent:bootstrap`              | glob パターンから追加の bootstrap ファイルを注入します |
+| command-logger        | `command`                      | すべてのコマンドを `~/.openclaw/logs/commands.log` に記録します |
+| boot-md               | `gateway:startup`              | Gateway の起動時に `BOOT.md` を実行します             |
 
-任意のバンドル hook を有効にします。
+任意の同梱フックを有効にします。
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -181,11 +181,11 @@ openclaw hooks enable <hook-name>
 
 ### session-memory の詳細
 
-最後の 15 件のユーザー/アシスタントメッセージを抽出し、LLM 経由で説明的なファイル名 slug を生成し、ホストのローカル日付を使用して `<workspace>/memory/YYYY-MM-DD-slug.md` に保存します。`workspace.dir` が設定されている必要があります。
+最後の 15 件のユーザー/アシスタントメッセージを抽出し、LLM で説明的なファイル名スラッグを生成して、ホストのローカル日付を使用して `<workspace>/memory/YYYY-MM-DD-slug.md` に保存します。`workspace.dir` が設定されている必要があります。
 
 <a id="bootstrap-extra-files"></a>
 
-### bootstrap-extra-files 設定
+### bootstrap-extra-files の設定
 
 ```json
 {
@@ -202,7 +202,7 @@ openclaw hooks enable <hook-name>
 }
 ```
 
-パスはワークスペースを基準に解決されます。認識されるブートストラップのベース名のみが読み込まれます（`AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md`、`MEMORY.md`）。
+パスはワークスペースからの相対パスとして解決されます。認識される bootstrap ベース名のみが読み込まれます（`AGENTS.md`、`SOUL.md`、`TOOLS.md`、`IDENTITY.md`、`USER.md`、`HEARTBEAT.md`、`BOOTSTRAP.md`、`MEMORY.md`）。
 
 <a id="command-logger"></a>
 
@@ -214,15 +214,15 @@ openclaw hooks enable <hook-name>
 
 ### boot-md の詳細
 
-gateway 起動時に、アクティブなワークスペースから `BOOT.md` を実行します。
+Gateway の起動時に、アクティブなワークスペースの `BOOT.md` を実行します。
 
-## Plugin hooks
+## Plugin フック
 
-Plugins は、より深い統合のために Plugin SDK を通じて型付き hooks を登録できます。
-ツール呼び出しのインターセプト、プロンプトの変更、メッセージフローの制御などが可能です。
-`before_tool_call`、`before_agent_reply`、`before_install`、またはその他のプロセス内ライフサイクル hooks が必要な場合は plugin hooks を使用してください。
+Plugin は、より深い統合のために Plugin SDK を通じて型付きフックを登録できます。
+ツール呼び出しのインターセプト、プロンプトの変更、メッセージフローの制御などができます。
+`before_tool_call`、`before_agent_reply`、`before_install`、またはその他のインプロセスのライフサイクルフックが必要な場合は、Plugin フックを使用してください。
 
-完全な plugin hook リファレンスについては、[Plugin hooks](/ja-JP/plugins/hooks) を参照してください。
+完全な Plugin フックのリファレンスについては、[Plugin フック](/ja-JP/plugins/hooks) を参照してください。
 
 ## 設定
 
@@ -240,7 +240,7 @@ Plugins は、より深い統合のために Plugin SDK を通じて型付き ho
 }
 ```
 
-Hook ごとの環境変数:
+フックごとの環境変数:
 
 ```json
 {
@@ -257,7 +257,7 @@ Hook ごとの環境変数:
 }
 ```
 
-追加 hook ディレクトリ:
+追加のフックディレクトリ:
 
 ```json
 {
@@ -272,7 +272,7 @@ Hook ごとの環境変数:
 ```
 
 <Note>
-レガシーの `hooks.internal.handlers` 配列設定形式は後方互換性のために引き続きサポートされていますが、新しい hooks では検出ベースのシステムを使用するべきです。
+従来の `hooks.internal.handlers` 配列設定形式は後方互換性のために引き続きサポートされていますが、新しいフックでは discovery ベースのシステムを使用してください。
 </Note>
 
 ## CLI リファレンス
@@ -294,14 +294,14 @@ openclaw hooks disable <hook-name>
 
 ## ベストプラクティス
 
-- **ハンドラーを高速に保つ。** Hooks はコマンド処理中に実行されます。重い作業は `void processInBackground(event)` で fire-and-forget にします。
-- **エラーを適切に処理する。** リスクのある操作は try/catch でラップします。他のハンドラーが実行できるように throw しないでください。
-- **イベントを早期にフィルタリングする。** イベントの type/action が関連しない場合は、すぐに return します。
-- **具体的なイベントキーを使用する。** オーバーヘッドを減らすために、`"events": ["command"]` より `"events": ["command:new"]` を優先します。
+- **ハンドラーは高速に保つ。** フックはコマンド処理中に実行されます。重い処理は `void processInBackground(event)` で fire-and-forget にします。
+- **エラーを適切に処理する。** リスクのある操作は try/catch で囲み、他のハンドラーが実行できるように throw しないでください。
+- **イベントを早期にフィルターする。** イベントのタイプ/アクションが関連しない場合は、ただちに返します。
+- **具体的なイベントキーを使用する。** オーバーヘッドを減らすため、`"events": ["command"]` よりも `"events": ["command:new"]` を優先してください。
 
 ## トラブルシューティング
 
-### Hook が検出されない
+### フックが検出されない
 
 ```bash
 # Verify directory structure
@@ -312,7 +312,7 @@ ls -la ~/.openclaw/hooks/my-hook/
 openclaw hooks list
 ```
 
-### Hook が適格でない
+### フックが eligible ではない
 
 ```bash
 openclaw hooks info my-hook
@@ -320,15 +320,15 @@ openclaw hooks info my-hook
 
 不足しているバイナリ（PATH）、環境変数、設定値、または OS 互換性を確認してください。
 
-### Hook が実行されない
+### フックが実行されない
 
-1. hook が有効になっていることを確認します: `openclaw hooks list`
-2. hooks が再読み込みされるように gateway プロセスを再起動します。
-3. gateway ログを確認します: `./scripts/clawlog.sh | grep hook`
+1. フックが有効になっていることを確認します: `openclaw hooks list`
+2. フックを再読み込みするために Gateway プロセスを再起動します。
+3. Gateway ログを確認します: `./scripts/clawlog.sh | grep hook`
 
 ## 関連
 
-- [CLI リファレンス: フック](/ja-JP/cli/hooks)
+- [CLI リファレンス: hooks](/ja-JP/cli/hooks)
 - [Webhook](/ja-JP/automation/cron-jobs#webhooks)
 - [Plugin フック](/ja-JP/plugins/hooks) — インプロセスの Plugin ライフサイクルフック
 - [設定](/ja-JP/gateway/configuration-reference#hooks)

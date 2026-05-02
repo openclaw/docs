@@ -1,30 +1,28 @@
 ---
 read_when:
-    - '`web_search` で Kimi を使いたい場合'
-    - '`KIMI_API_KEY` または `MOONSHOT_API_KEY` が必要な場合'
-summary: Moonshot web search 経由の Kimi web search
-title: Kimi search
+    - web_search に Kimi を使用したい場合
+    - KIMI_API_KEY または MOONSHOT_API_KEY が必要です
+summary: Moonshot Web 検索経由の Kimi Web 検索
+title: Kimi 検索
 x-i18n:
-    generated_at: "2026-04-24T05:25:16Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T21:08:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
+    source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
     source_path: tools/kimi-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw は Kimi を `web_search` provider としてサポートしており、Moonshot web search
-を使って、出典付きの AI 合成回答を生成します。
+OpenClaw は Kimi を `web_search` プロバイダーとしてサポートし、Moonshot の Web 検索を使用して、引用付きの AI 合成回答を生成します。
 
 ## API キーを取得する
 
 <Steps>
   <Step title="キーを作成する">
-    [Moonshot AI](https://platform.moonshot.cn/) で API キーを取得します。
+    [Moonshot AI](https://platform.moonshot.cn/) から API キーを取得します。
   </Step>
   <Step title="キーを保存する">
-    Gateway 環境に `KIMI_API_KEY` または `MOONSHOT_API_KEY` を設定するか、
-    次で設定します:
+    Gateway 環境で `KIMI_API_KEY` または `MOONSHOT_API_KEY` を設定するか、次の方法で構成します。
 
     ```bash
     openclaw configure --section web
@@ -33,15 +31,14 @@ OpenClaw は Kimi を `web_search` provider としてサポートしており、
   </Step>
 </Steps>
 
-`openclaw onboard` または
-`openclaw configure --section web` 中に **Kimi** を選ぶと、OpenClaw は次も確認できます:
+`openclaw onboard` または `openclaw configure --section web` で **Kimi** を選択すると、OpenClaw は次の項目も確認できます。
 
 - Moonshot API リージョン:
   - `https://api.moonshot.ai/v1`
   - `https://api.moonshot.cn/v1`
-- デフォルトの Kimi web-search model（デフォルトは `kimi-k2.6`）
+- デフォルトの Kimi Web 検索モデル（デフォルトは `kimi-k2.6`）
 
-## 設定
+## 構成
 
 ```json5
 {
@@ -50,7 +47,7 @@ OpenClaw は Kimi を `web_search` provider としてサポートしており、
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // KIMI_API_KEY または MOONSHOT_API_KEY が設定されている場合は任意
+            apiKey: "sk-...", // optional if KIMI_API_KEY or MOONSHOT_API_KEY is set
             baseUrl: "https://api.moonshot.ai/v1",
             model: "kimi-k2.6",
           },
@@ -68,36 +65,30 @@ OpenClaw は Kimi を `web_search` provider としてサポートしており、
 }
 ```
 
-チャット用に China API host（`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`）を使っている場合、OpenClaw は Kimi
-`web_search` でも、`tools.web.search.kimi.baseUrl` が省略されていれば同じ host を再利用します。これにより、
-[platform.moonshot.cn](https://platform.moonshot.cn/) のキーが
-誤って international endpoint に送られることを防ぎます（その場合はしばしば HTTP 401 を返します）。別の search base URL が必要な場合は、
-`tools.web.search.kimi.baseUrl` で override してください。
+チャット用に中国 API ホスト（`models.providers.moonshot.baseUrl`: `https://api.moonshot.cn/v1`）を使用している場合、`tools.web.search.kimi.baseUrl` が省略されると、OpenClaw は Kimi `web_search` に同じホストを再利用します。そのため、[platform.moonshot.cn](https://platform.moonshot.cn/) のキーが誤って国際エンドポイントに到達することはありません（多くの場合 HTTP 401 が返されます）。別の検索ベース URL が必要な場合は、`tools.web.search.kimi.baseUrl` で上書きしてください。
 
-**環境変数の代替方法:** Gateway 環境で `KIMI_API_KEY` または `MOONSHOT_API_KEY` を設定します。
-gateway インストールでは、`~/.openclaw/.env` に置いてください。
+**環境変数の代替:** Gateway 環境で `KIMI_API_KEY` または `MOONSHOT_API_KEY` を設定します。Gateway インストールの場合は、`~/.openclaw/.env` に配置します。
 
-`baseUrl` を省略した場合、OpenClaw はデフォルトで `https://api.moonshot.ai/v1` を使います。
-`model` を省略した場合、OpenClaw はデフォルトで `kimi-k2.6` を使います。
+`baseUrl` を省略すると、OpenClaw はデフォルトで `https://api.moonshot.ai/v1` を使用します。
+`model` を省略すると、OpenClaw はデフォルトで `kimi-k2.6` を使用します。
 
 ## 仕組み
 
-Kimi は Moonshot web search を使って、Gemini や Grok の grounded response アプローチに似た、
-インライン引用付きの合成回答を生成します。
+Kimi は Moonshot の Web 検索を使用して、Gemini や Grok の根拠付き応答アプローチと同様に、インライン引用付きの回答を合成します。
 
-## サポートされるパラメータ
+OpenClaw は、リプレイ可能な `$web_search` ツールペイロード、`search_results`、引用 URL など、Moonshot がネイティブの Web 検索根拠情報を返した場合にのみ、Kimi `web_search` を成功として扱います。Kimi が「I cannot browse the internet」のような通常のチャット回答だけで即座に停止し、根拠情報がない場合、OpenClaw はそのテキストを検索結果としてラップせず、構造化された `kimi_web_search_ungrounded` エラーを返します。クエリを再試行するか、Brave のような構造化プロバイダーに切り替えるか、ターゲット URL がすでにある場合は `web_fetch` / ブラウザーツールを使用してください。
 
-Kimi search は `query` をサポートします。
+## サポートされるパラメーター
 
-共有 `web_search` 互換性のため `count` も受け付けますが、Kimi は依然として
-N 件の結果リストではなく、引用付きの 1 つの合成回答を返します。
+Kimi 検索は `query` をサポートします。
 
-provider 固有のフィルタは現在サポートされていません。
+`count` は共有 `web_search` 互換性のために受け付けられますが、Kimi は N 件の結果リストではなく、引用付きの合成回答を 1 件返します。
+
+プロバイダー固有のフィルターは現在サポートされていません。
 
 ## 関連
 
-- [Web Search overview](/ja-JP/tools/web) -- すべての provider と自動検出
-- [Moonshot AI](/ja-JP/providers/moonshot) -- Moonshot model + Kimi Coding provider docs
-- [Gemini Search](/ja-JP/tools/gemini-search) -- Google grounding 経由の AI 合成回答
-- [Grok Search](/ja-JP/tools/grok-search) -- xAI grounding 経由の AI 合成回答
+- [Web 検索の概要](/ja-JP/tools/web) -- すべてのプロバイダーと自動検出
+- [Moonshot AI](/ja-JP/providers/moonshot) -- Moonshot モデル + Kimi Coding プロバイダードキュメント
+- [Gemini Search](/ja-JP/tools/gemini-search) -- Google grounding による AI 合成回答
+- [Grok Search](/ja-JP/tools/grok-search) -- xAI grounding による AI 合成回答
