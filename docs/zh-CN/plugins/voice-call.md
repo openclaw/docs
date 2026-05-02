@@ -1,23 +1,23 @@
 ---
 read_when:
     - 你想从 OpenClaw 发起外拨语音通话
-    - 你正在配置或开发语音通话插件
-    - 你需要电话通信中的实时语音或流式转写
+    - 你正在配置或开发 voice-call 插件
+    - 你需要在电话通信中使用实时语音或流式转录
 sidebarTitle: Voice call
-summary: 通过 Twilio、Telnyx 或 Plivo 发起外呼语音通话并接听呼入语音通话，可选择启用实时语音和流式转录
+summary: 通过 Twilio、Telnyx 或 Plivo 发起外呼并接听呼入语音通话，可选择启用实时语音和流式转录
 title: 语音通话插件
 x-i18n:
-    generated_at: "2026-05-01T11:40:33Z"
+    generated_at: "2026-05-02T07:52:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cde64fa054743d4ed3f146042bd65532af0e9eb5b792b088a856889b3d2cb3c9
+    source_hash: fc27646aca94c88d50d42838e166ac81eba3373154797cbb564e9c2eab0533fa
     source_path: plugins/voice-call.md
     workflow: 16
 ---
 
 通过插件为 OpenClaw 提供语音通话。支持出站通知、
-多轮对话、全双工实时语音、流式转写，
-以及带有允许列表策略的入站通话。
+多轮对话、全双工实时语音、流式
+转录，以及带允许列表策略的入站通话。
 
 **当前提供商：** `twilio`（Programmable Voice + Media Streams）、
 `telnyx`（Call Control v2）、`plivo`（Voice API + XML transfer + GetInput
@@ -48,26 +48,27 @@ Gateway 网关，请在运行 Gateway 网关的机器上安装并配置该插件
       </Tab>
     </Tabs>
 
-    如果 npm 将 OpenClaw 拥有的软件包报告为已弃用，该软件包版本
-    来自较旧的外部软件包发布线；请使用当前打包的 OpenClaw
+    如果 npm 报告 OpenClaw 拥有的软件包已弃用，该软件包版本
+    来自较旧的外部软件包发布序列；请使用当前打包的 OpenClaw
     构建，或在发布更新的 npm 软件包之前使用本地文件夹路径。
 
-    之后重启 Gateway 网关，以便插件加载。
+    之后重启 Gateway 网关，让插件加载。
 
   </Step>
   <Step title="配置提供商和 webhook">
-    在 `plugins.entries.voice-call.config` 下设置配置（完整结构见下方
+    在 `plugins.entries.voice-call.config` 下设置配置（完整结构请参见下方
     [配置](#configuration)）。至少需要：
-    `provider`、提供商凭据、`fromNumber`，以及可公开访问的 webhook URL。
+    `provider`、提供商凭证、`fromNumber`，以及一个可公开
+    访问的 webhook URL。
   </Step>
   <Step title="验证设置">
     ```bash
     openclaw voicecall setup
     ```
 
-    默认输出便于在聊天日志和终端中阅读。它会检查
-    插件启用状态、提供商凭据、webhook 暴露情况，以及是否
-    只有一种音频模式（`streaming` 或 `realtime`）处于激活状态。脚本请使用
+    默认输出适合在聊天日志和终端中阅读。它会检查
+    插件是否启用、提供商凭证、webhook 暴露情况，以及是否
+    只启用了一个音频模式（`streaming` 或 `realtime`）。脚本请使用
     `--json`。
 
   </Step>
@@ -77,7 +78,7 @@ Gateway 网关，请在运行 Gateway 网关的机器上安装并配置该插件
     openclaw voicecall smoke --to "+15555550123"
     ```
 
-    两者默认都是空运行。添加 `--yes` 可实际发起一次短的
+    两者默认都是试运行。添加 `--yes` 会实际发起一次简短的
     出站通知通话：
 
     ```bash
@@ -88,21 +89,21 @@ Gateway 网关，请在运行 Gateway 网关的机器上安装并配置该插件
 </Steps>
 
 <Warning>
-对于 Twilio、Telnyx 和 Plivo，设置必须解析到一个**公开 webhook URL**。
-如果 `publicUrl`、隧道 URL、Tailscale URL 或服务回退
-解析到 loopback 或专用网络空间，设置会失败，而不是
+对于 Twilio、Telnyx 和 Plivo，设置必须解析到一个 **公开 webhook URL**。
+如果 `publicUrl`、隧道 URL、Tailscale URL 或 serve 回退地址
+解析到回环地址或私有网络空间，设置会失败，而不是
 启动一个无法接收运营商 webhook 的提供商。
 </Warning>
 
 ## 配置
 
-如果 `enabled: true` 但选定的提供商缺少凭据，
-Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键名，
-并跳过运行时启动。命令、RPC 调用和智能体工具在使用时仍会
+如果 `enabled: true`，但所选提供商缺少凭证，
+Gateway 网关启动时会记录一条设置未完成警告，其中包含缺失的键名，并
+跳过启动运行时。命令、RPC 调用和智能体工具在使用时仍会
 返回确切缺失的提供商配置。
 
 <Note>
-语音通话凭据接受 SecretRefs。`plugins.entries.voice-call.config.twilio.authToken`、`plugins.entries.voice-call.config.realtime.providers.*.apiKey`、`plugins.entries.voice-call.config.streaming.providers.*.apiKey` 和 `plugins.entries.voice-call.config.tts.providers.*.apiKey` 会通过标准 SecretRef 界面解析；请参阅 [SecretRef 凭据界面](/zh-CN/reference/secretref-credential-surface)。
+语音通话凭证接受 SecretRefs。`plugins.entries.voice-call.config.twilio.authToken`、`plugins.entries.voice-call.config.realtime.providers.*.apiKey`、`plugins.entries.voice-call.config.streaming.providers.*.apiKey` 和 `plugins.entries.voice-call.config.tts.providers.*.apiKey` 会通过标准 SecretRef 表面解析；请参见 [SecretRef 凭证表面](/zh-CN/reference/secretref-credential-surface)。
 </Note>
 
 ```json5
@@ -115,6 +116,7 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
           provider: "twilio", // or "telnyx" | "plivo" | "mock"
           fromNumber: "+15550001234", // or TWILIO_FROM_NUMBER for Twilio
           toNumber: "+15550005678",
+          sessionScope: "per-phone", // per-phone | per-call
 
           twilio: {
             accountSid: "ACxxxxxxxx",
@@ -165,18 +167,18 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
 <AccordionGroup>
   <Accordion title="提供商暴露和安全说明">
     - Twilio、Telnyx 和 Plivo 都要求 webhook URL **可公开访问**。
-    - `mock` 是本地开发提供商（不进行网络调用）。
-    - Telnyx 要求 `telnyx.publicKey`（或 `TELNYX_PUBLIC_KEY`），除非 `skipSignatureVerification` 为 true。
+    - `mock` 是本地开发提供商（无网络调用）。
+    - Telnyx 要求设置 `telnyx.publicKey`（或 `TELNYX_PUBLIC_KEY`），除非 `skipSignatureVerification` 为 true。
     - `skipSignatureVerification` 仅用于本地测试。
-    - 在 ngrok 免费层上，请将 `publicUrl` 设置为确切的 ngrok URL；签名验证始终强制执行。
-    - `tunnel.allowNgrokFreeTierLoopbackBypass: true` 允许签名无效的 Twilio webhook，**仅**当 `tunnel.provider="ngrok"` 且 `serve.bind` 为 loopback（ngrok 本地代理）时如此。仅限本地开发。
-    - Ngrok 免费层 URL 可能会变化或添加中间页行为；如果 `publicUrl` 漂移，Twilio 签名会失败。生产环境：优先使用稳定域名或 Tailscale funnel。
+    - 在 ngrok 免费层上，请将 `publicUrl` 设置为准确的 ngrok URL；始终强制执行签名验证。
+    - `tunnel.allowNgrokFreeTierLoopbackBypass: true` 仅当 `tunnel.provider="ngrok"` 且 `serve.bind` 是回环地址（ngrok 本地智能体）时，才允许带无效签名的 Twilio webhook。仅限本地开发。
+    - Ngrok 免费层 URL 可能变化或添加插页行为；如果 `publicUrl` 偏移，Twilio 签名会失败。生产环境：优先使用稳定域名或 Tailscale funnel。
 
   </Accordion>
   <Accordion title="流式连接上限">
     - `streaming.preStartTimeoutMs` 会关闭从未发送有效 `start` 帧的套接字。
-    - `streaming.maxPendingConnections` 限制未认证预启动套接字的总数。
-    - `streaming.maxPendingConnectionsPerIp` 限制每个源 IP 的未认证预启动套接字数量。
+    - `streaming.maxPendingConnections` 限制未认证的预启动套接字总数。
+    - `streaming.maxPendingConnectionsPerIp` 限制每个来源 IP 的未认证预启动套接字数量。
     - `streaming.maxConnections` 限制打开的媒体流套接字总数（待处理 + 活跃）。
 
   </Accordion>
@@ -184,8 +186,8 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
     使用 `provider: "log"`、`twilio.from` 或旧版
     `streaming.*` OpenAI 键的较旧配置会由 `openclaw doctor --fix` 重写。
     运行时回退目前仍接受旧的语音通话键，但
-    重写路径是 `openclaw doctor --fix`，兼容 shim
-    是临时的。
+    重写路径是 `openclaw doctor --fix`，并且兼容垫片是
+    临时的。
 
     自动迁移的流式键：
 
@@ -198,11 +200,19 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
   </Accordion>
 </AccordionGroup>
 
+## 会话范围
+
+默认情况下，Voice Call 使用 `sessionScope: "per-phone"`，因此同一来电者的
+重复来电会保留对话记忆。当每个运营商通话都应以全新上下文开始时，
+请设置 `sessionScope: "per-call"`，例如前台接待、预订、IVR，
+或 Google Meet 桥接流程，其中同一个电话号码可能
+代表不同会议。
+
 ## 实时语音对话
 
-`realtime` 会为实时通话音频选择一个全双工实时语音提供商。
-它独立于 `streaming`，后者只会把音频转发给
-实时转写提供商。
+`realtime` 为实时通话音频选择一个全双工实时语音提供商。
+它不同于 `streaming`，后者只会将音频转发给
+实时转录提供商。
 
 <Warning>
 `realtime.enabled` 不能与 `streaming.enabled` 组合使用。每次通话请选择一种
@@ -212,13 +222,13 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
 当前运行时行为：
 
 - Twilio Media Streams 支持 `realtime.enabled`。
-- `realtime.provider` 是可选的。如果未设置，Voice Call 会使用第一个已注册的实时语音提供商。
+- `realtime.provider` 是可选的。如果未设置，Voice Call 会使用第一个注册的实时语音提供商。
 - 内置实时语音提供商：Google Gemini Live（`google`）和 OpenAI（`openai`），由各自的提供商插件注册。
 - 提供商拥有的原始配置位于 `realtime.providers.<providerId>` 下。
-- Voice Call 默认暴露共享的 `openclaw_agent_consult` 实时工具。当来电者要求更深入推理、当前信息或普通 OpenClaw 工具时，实时模型可以调用它。
-- `realtime.fastContext.enabled` 默认关闭。启用后，Voice Call 会先针对 consult 问题搜索已索引的记忆/会话上下文，并在 `realtime.fastContext.timeoutMs` 内将这些片段返回给实时模型；只有当 `realtime.fastContext.fallbackToConsult` 为 true 时，才会回退到完整的 consult 智能体。
+- Voice Call 默认暴露共享的 `openclaw_agent_consult` 实时工具。当来电者请求更深入推理、当前信息或常规 OpenClaw 工具时，实时模型可以调用它。
+- `realtime.fastContext.enabled` 默认关闭。启用后，Voice Call 会先为 consult 问题搜索已索引的记忆/会话上下文，并在 `realtime.fastContext.timeoutMs` 内将这些片段返回给实时模型；只有当 `realtime.fastContext.fallbackToConsult` 为 true 时，才会回退到完整的 consult 智能体。
 - 如果 `realtime.provider` 指向未注册的提供商，或根本没有注册实时语音提供商，Voice Call 会记录警告并跳过实时媒体，而不是让整个插件失败。
-- Consult 会话键会在可用时复用现有语音会话，然后回退到主叫/被叫电话号码，以便后续 consult 调用在通话期间保留上下文。
+- consult 会话键会在可用时复用已存储的通话会话，然后回退到配置的 `sessionScope`（默认为 `per-phone`，隔离通话为 `per-call`）。
 
 ### 工具策略
 
@@ -226,7 +236,7 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
 
 | 策略             | 行为                                                                                                                                     |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `safe-read-only` | 暴露 consult 工具，并将常规智能体限制为 `read`、`web_search`、`web_fetch`、`x_search`、`memory_search` 和 `memory_get`。 |
+| `safe-read-only` | 暴露 consult 工具，并将常规智能体限制为使用 `read`、`web_search`、`web_fetch`、`x_search`、`memory_search` 和 `memory_get`。 |
 | `owner`          | 暴露 consult 工具，并允许常规智能体使用正常的智能体工具策略。                                                      |
 | `none`           | 不暴露 consult 工具。自定义 `realtime.tools` 仍会传递给实时提供商。                               |
 
@@ -235,8 +245,8 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
 <Tabs>
   <Tab title="Google Gemini Live">
     默认值：API key 来自 `realtime.providers.google.apiKey`、
-    `GEMINI_API_KEY` 或 `GOOGLE_GENERATIVE_AI_API_KEY`；模型为
-    `gemini-2.5-flash-native-audio-preview-12-2025`；语音为 `Kore`。
+    `GEMINI_API_KEY` 或 `GOOGLE_GENERATIVE_AI_API_KEY`；模型
+    `gemini-2.5-flash-native-audio-preview-12-2025`；语音 `Kore`。
 
     ```json5
     {
@@ -291,20 +301,20 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
   </Tab>
 </Tabs>
 
-提供商专属的实时语音选项见 [Google 提供商](/zh-CN/providers/google) 和
+有关特定提供商的实时语音选项，请参见 [Google 提供商](/zh-CN/providers/google) 和
 [OpenAI provider](/zh-CN/providers/openai)。
 
-## 流式转写
+## 流式转录
 
-`streaming` 会为实时通话音频选择一个实时转写提供商。
+`streaming` 为实时通话音频选择一个实时转录提供商。
 
 当前运行时行为：
 
 - `streaming.provider` 是可选的。如果未设置，Voice Call 会使用第一个已注册的实时转录提供商。
-- 内置实时转录提供商：Deepgram (`deepgram`)、ElevenLabs (`elevenlabs`)、Mistral (`mistral`)、OpenAI (`openai`) 和 xAI (`xai`)，由它们各自的提供商插件注册。
+- 内置实时转录提供商：Deepgram（`deepgram`）、ElevenLabs（`elevenlabs`）、Mistral（`mistral`）、OpenAI（`openai`）和 xAI（`xai`），由各自的提供商插件注册。
 - 提供商拥有的原始配置位于 `streaming.providers.<providerId>` 下。
-- Twilio 发送已接受的流 `start` 消息后，Voice Call 会立即注册该流，在提供商连接期间通过转录提供商排队处理入站媒体，并且只在实时转录就绪后才开始初始问候语。
-- 如果 `streaming.provider` 指向未注册的提供商，或没有任何已注册的提供商，Voice Call 会记录一条警告并跳过媒体流式传输，而不是让整个插件失败。
+- Twilio 发送已接受的流 `start` 消息后，Voice Call 会立即注册该流，在提供商连接期间通过转录提供商排队处理入站媒体，并且仅在实时转录就绪后才开始初始问候语。
+- 如果 `streaming.provider` 指向未注册的提供商，或者没有任何提供商已注册，Voice Call 会记录警告并跳过媒体流式传输，而不是让整个插件失败。
 
 ### 流式传输提供商示例
 
@@ -374,11 +384,9 @@ Gateway 网关启动时会记录 setup-incomplete 警告，其中包含缺失键
   </Tab>
 </Tabs>
 
-## 通话 TTS
+## 通话的 TTS
 
-Voice Call 使用核心 `messages.tts` 配置为通话提供流式传输
-语音。你可以在插件配置下用**相同结构**覆盖它，该配置会与
-`messages.tts` 深度合并。
+Voice Call 使用核心 `messages.tts` 配置为通话流式传输语音。你可以在插件配置下用**相同结构**覆盖它，它会与 `messages.tts` 深度合并。
 
 ```json5
 {
@@ -395,17 +403,16 @@ Voice Call 使用核心 `messages.tts` 配置为通话提供流式传输
 ```
 
 <Warning>
-**语音通话会忽略 Microsoft speech。** 电话音频需要 PCM；
-当前 Microsoft 传输协议未暴露电话 PCM 输出。
+**Microsoft speech 会在语音通话中被忽略。** 电话音频需要 PCM；当前 Microsoft 传输未暴露电话 PCM 输出。
 </Warning>
 
 行为说明：
 
 - 插件配置中的旧版 `tts.<provider>` 键（`openai`、`elevenlabs`、`microsoft`、`edge`）会由 `openclaw doctor --fix` 修复；提交的配置应使用 `tts.providers.<provider>`。
 - 启用 Twilio 媒体流式传输时会使用核心 TTS；否则通话会回退到提供商原生语音。
-- 如果 Twilio 媒体流已处于活动状态，Voice Call 不会回退到 TwiML `<Say>`。如果在该状态下电话 TTS 不可用，播放请求会失败，而不是混用两条播放路径。
-- 当电话 TTS 回退到次要提供商时，Voice Call 会记录一条带有提供商链（`from`、`to`、`attempts`）的警告，便于调试。
-- 当 Twilio 插话或流拆除清空待处理 TTS 队列时，已排队的播放请求会完成结算，而不是让等待播放完成的来电者一直挂起。
+- 如果 Twilio 媒体流已处于活动状态，Voice Call 不会回退到 TwiML `<Say>`。如果在该状态下电话 TTS 不可用，播放请求会失败，而不是混合两条播放路径。
+- 当电话 TTS 回退到次级提供商时，Voice Call 会记录带有提供商链（`from`、`to`、`attempts`）的警告，便于调试。
+- 当 Twilio 插话或流拆除清空待处理 TTS 队列时，已排队的播放请求会完成结算，而不是让主叫方一直等待播放完成。
 
 ### TTS 示例
 
@@ -474,7 +481,7 @@ Voice Call 使用核心 `messages.tts` 配置为通话提供流式传输
 
 ## 入站通话
 
-入站策略默认为 `disabled`。要启用入站通话，请设置：
+入站策略默认值为 `disabled`。要启用入站通话，请设置：
 
 ```json5
 {
@@ -485,20 +492,14 @@ Voice Call 使用核心 `messages.tts` 配置为通话提供流式传输
 ```
 
 <Warning>
-`inboundPolicy: "allowlist"` 是一种低保障级别的主叫号码筛选。
-插件会规范化提供商提供的 `From` 值，并将其与
-`allowFrom` 比较。Webhook 验证会认证提供商投递和
-载荷完整性，但它**不会**证明 PSTN/VoIP 主叫号码
-所有权。请将 `allowFrom` 视为主叫号码过滤，而不是强主叫方
-身份认证。
+`inboundPolicy: "allowlist"` 是低保障的主叫号码屏蔽机制。该插件会规范化提供商提供的 `From` 值，并将其与 `allowFrom` 比较。网络钩子验证会认证提供商投递和载荷完整性，但它**不能**证明 PSTN/VoIP 主叫号码所有权。请将 `allowFrom` 视为主叫号码过滤，而不是强主叫身份验证。
 </Warning>
 
-自动响应使用智能体系统。使用 `responseModel`、
-`responseSystemPrompt` 和 `responseTimeoutMs` 进行调优。
+自动响应使用智能体系统。使用 `responseModel`、`responseSystemPrompt` 和 `responseTimeoutMs` 调整。
 
 ### 语音输出契约
 
-对于自动响应，Voice Call 会向系统提示追加严格的语音输出契约：
+对于自动响应，Voice Call 会将严格的语音输出契约附加到系统提示词：
 
 ```text
 {"spoken":"..."}
@@ -510,37 +511,33 @@ Voice Call 会防御性地提取语音文本：
 - 解析直接 JSON、围栏 JSON 或内联 `"spoken"` 键。
 - 回退到纯文本，并移除可能的规划/元信息开头段落。
 
-这会让语音播放聚焦于面向来电者的文本，并避免把规划文本泄露到音频中。
+这会让语音播放聚焦于面向主叫方的文本，并避免将规划文本泄漏到音频中。
 
-### 会话启动行为
+### 对话启动行为
 
-对于出站 `conversation` 通话，首条消息处理与实时
-播放状态绑定：
+对于出站 `conversation` 通话，首条消息处理与实时播放状态绑定：
 
-- 仅在初始问候语正在主动播报时，才会抑制插话队列清空和自动响应。
-- 如果初始播放失败，通话会返回 `listening`，并且初始消息会保持排队以便重试。
-- Twilio 流式传输的初始播放会在流连接时启动，没有额外延迟。
-- 插话会中止活动播放，并清空已排队但尚未播放的 Twilio TTS 条目。被清空的条目会解析为已跳过，因此后续响应逻辑可以继续，而不会等待永远不会播放的音频。
-- 实时语音会话使用实时流自身的开场轮次。Voice Call **不会**为该初始消息发送旧版 `<Say>` TwiML 更新，因此出站 `<Connect><Stream>` 会话会保持附加状态。
+- 仅当初始问候语正在主动发声时，才会抑制插话队列清空和自动响应。
+- 如果初始播放失败，通话会返回 `listening`，并且初始消息仍会排队等待重试。
+- Twilio 流式传输的初始播放会在流连接时开始，不会额外延迟。
+- 插话会中止活动播放，并清空已排队但尚未播放的 Twilio TTS 条目。已清空条目会解析为已跳过，因此后续响应逻辑可以继续，而无需等待永远不会播放的音频。
+- 实时语音对话使用实时流自身的开场轮次。Voice Call **不会**为该初始消息发布旧版 `<Say>` TwiML 更新，因此出站 `<Connect><Stream>` 会话会保持附着。
 
 ### Twilio 流断开宽限期
 
-当 Twilio 媒体流断开连接时，Voice Call 会等待 **2000 ms** 后
-自动结束通话：
+当 Twilio 媒体流断开时，Voice Call 会等待 **2000 ms** 后再自动结束通话：
 
-- 如果流在该窗口内重新连接，则会取消自动结束。
+- 如果该窗口期间流重新连接，自动结束会被取消。
 - 如果宽限期后没有流重新注册，则会结束通话，以防止活动通话卡住。
 
 ## 过期通话清理器
 
-使用 `staleCallReaperSeconds` 结束从未收到终止
-webhook 的通话（例如永不完成的通知模式通话）。默认值
-为 `0`（禁用）。
+使用 `staleCallReaperSeconds` 结束从未收到终止网络钩子的通话（例如永不完成的通知模式通话）。默认值为 `0`（禁用）。
 
 推荐范围：
 
 - **生产：** 对通知类流程使用 `120`–`300` 秒。
-- 保持此值**高于 `maxDurationSeconds`**，以便正常通话可以完成。一个不错的起点是 `maxDurationSeconds + 30–60` 秒。
+- 保持该值**高于 `maxDurationSeconds`**，以便正常通话可以完成。一个好的起点是 `maxDurationSeconds + 30–60` 秒。
 
 ```json5
 {
@@ -557,10 +554,9 @@ webhook 的通话（例如永不完成的通知模式通话）。默认值
 }
 ```
 
-## Webhook 安全
+## 网络钩子安全
 
-当代理或隧道位于 Gateway 网关 前面时，插件会
-重建用于签名验证的公共 URL。这些选项控制信任哪些转发标头：
+当代理或隧道位于 Gateway 网关 前面时，该插件会重建公共 URL 以进行签名验证。这些选项控制信任哪些转发标头：
 
 <ParamField path="webhookSecurity.allowedHosts" type="string[]">
   允许来自转发标头的主机列表。
@@ -569,17 +565,17 @@ webhook 的通话（例如永不完成的通知模式通话）。默认值
   在没有允许列表的情况下信任转发标头。
 </ParamField>
 <ParamField path="webhookSecurity.trustedProxyIPs" type="string[]">
-  仅当请求远程 IP 与列表匹配时才信任转发标头。
+  仅当请求远程 IP 匹配列表时才信任转发标头。
 </ParamField>
 
-额外保护：
+其他保护：
 
-- 已为 Twilio 和 Plivo 启用 Webhook **重放保护**。重放的有效 webhook 请求会被确认，但会跳过副作用。
-- Twilio 会话轮次在 `<Gather>` 回调中包含每轮 token，因此过期/重放的语音回调无法满足较新的待处理转录轮次。
-- 当缺少提供商所需的签名标头时，未认证的 webhook 请求会在读取正文前被拒绝。
-- voice-call webhook 使用共享的预认证正文配置（64 KB / 5 秒），并在签名验证前加入按 IP 计的并发上限。
+- Twilio 和 Plivo 已启用网络钩子**重放保护**。重放的有效网络钩子请求会被确认，但会跳过副作用。
+- Twilio 对话轮次在 `<Gather>` 回调中包含每轮令牌，因此过期/重放的语音回调无法满足较新的待处理转录轮次。
+- 当缺少提供商要求的签名标头时，未经认证的网络钩子请求会在读取正文之前被拒绝。
+- voice-call 网络钩子使用共享的预认证正文配置（64 KB / 5 秒），并在签名验证前增加按 IP 的进行中请求上限。
 
-使用稳定公共主机的示例：
+具有稳定公共主机的示例：
 
 ```json5
 {
@@ -613,20 +609,15 @@ openclaw voicecall latency                      # summarize turn latency from lo
 openclaw voicecall expose --mode funnel
 ```
 
-当 Gateway 网关 已在运行时，操作性 `voicecall` 命令会委托给
-Gateway 网关 拥有的 voice-call 运行时，这样 CLI 就不会绑定第二个
-webhook 服务器。如果无法访问任何 Gateway 网关，这些命令会回退到
-独立 CLI 运行时。
+当 Gateway 网关 已经运行时，操作性 `voicecall` 命令会委托给 Gateway 网关 拥有的 voice-call 运行时，因此 CLI 不会绑定第二个网络钩子服务器。如果无法访问 Gateway 网关，这些命令会回退到独立 CLI 运行时。
 
-`latency` 会从默认 voice-call 存储路径读取 `calls.jsonl`。
-使用 `--file <path>` 指向不同日志，使用 `--last <n>` 将
-分析限制为最后 N 条记录（默认 200）。输出包含轮次延迟和监听等待时间的 p50/p90/p99。
+`latency` 会从默认 voice-call 存储路径读取 `calls.jsonl`。使用 `--file <path>` 指向不同日志，并使用 `--last <n>` 将分析限制到最后 N 条记录（默认 200）。输出包含轮次延迟和监听等待时间的 p50/p90/p99。
 
 ## 智能体工具
 
 工具名称：`voice_call`。
 
-| 操作          | 参数                                       |
+| 操作            | 参数                                       |
 | --------------- | ------------------------------------------ |
 | `initiate_call` | `message`, `to?`, `mode?`, `dtmfSequence?` |
 | `continue_call` | `callId`, `message`                        |
@@ -635,11 +626,11 @@ webhook 服务器。如果无法访问任何 Gateway 网关，这些命令会回
 | `end_call`      | `callId`                                   |
 | `get_status`    | `callId`                                   |
 
-此仓库在 `skills/voice-call/SKILL.md` 提供匹配的 skill 文档。
+此仓库在 `skills/voice-call/SKILL.md` 提供了匹配的 Skills 文档。
 
 ## Gateway 网关 RPC
 
-| 方法               | 参数                                       |
+| 方法                 | 参数                                       |
 | -------------------- | ------------------------------------------ |
 | `voicecall.initiate` | `to?`, `message`, `mode?`, `dtmfSequence?` |
 | `voicecall.continue` | `callId`, `message`                        |
@@ -648,25 +639,31 @@ webhook 服务器。如果无法访问任何 Gateway 网关，这些命令会回
 | `voicecall.end`      | `callId`                                   |
 | `voicecall.status`   | `callId`                                   |
 
-`dtmfSequence` 仅在 `mode: "conversation"` 下有效。通知模式通话
-如果需要连接后的按键数字，应在通话存在后使用 `voicecall.dtmf`。
+`dtmfSequence` 仅在 `mode: "conversation"` 下有效。通知模式通话如果需要连接后数字，应在通话存在后使用 `voicecall.dtmf`。
 
 ## 故障排除
 
-### 设置 webhook 暴露失败
+### 设置网络钩子暴露失败
 
-从运行 Gateway 网关的同一环境中运行设置：
+从运行 Gateway 网关的同一环境运行设置：
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall setup --json
 ```
 
-对于 `twilio`、`telnyx` 和 `plivo`，`webhook-exposure` 必须为绿色。已配置的 `publicUrl` 如果指向本地或私有网络空间，仍会失败，因为运营商无法回调这些地址。不要将 `localhost`、`127.0.0.1`、`0.0.0.0`、`10.x`、`172.16.x`-`172.31.x`、`192.168.x`、`169.254.x`、`fc00::/7` 或 `fd00::/8` 用作 `publicUrl`。
+对于 `twilio`、`telnyx` 和 `plivo`，`webhook-exposure` 必须为绿色状态。已
+配置的 `publicUrl` 如果指向本地或私有网络空间，仍会失败，因为运营商无法回调到这些地址。不要将
+`localhost`、`127.0.0.1`、`0.0.0.0`、`10.x`、`172.16.x`-`172.31.x`、
+`192.168.x`、`169.254.x`、`fc00::/7` 或 `fd00::/8` 用作 `publicUrl`。
 
-Twilio notify-mode 外呼会在创建呼叫请求中直接发送初始 `<Say>` TwiML，因此第一条语音消息不依赖 Twilio 获取 webhook TwiML。状态回调、对话呼叫、连接前 DTMF、实时流和连接后呼叫控制仍然需要公共 webhook。
+Twilio notify-mode 出站呼叫会在
+创建呼叫请求中直接发送其初始 `<Say>` TwiML，因此第一条语音消息不依赖于 Twilio
+获取 webhook TwiML。状态回调、
+会话呼叫、连接前 DTMF、实时流和连接后呼叫
+控制仍然需要公共 webhook。
 
-使用一种公共暴露路径：
+使用一个公共暴露路径：
 
 ```json5
 {
@@ -693,21 +690,25 @@ openclaw voicecall setup
 openclaw voicecall smoke
 ```
 
-除非你传入 `--yes`，否则 `voicecall smoke` 是一次 dry run。
+除非传入 `--yes`，否则 `voicecall smoke` 是一次试运行。
 
 ### 提供商凭证失败
 
-检查所选提供商和必需的凭证字段：
+检查所选提供商以及必需的凭证字段：
 
-- Twilio：`twilio.accountSid`、`twilio.authToken` 和 `fromNumber`，或 `TWILIO_ACCOUNT_SID`、`TWILIO_AUTH_TOKEN` 和 `TWILIO_FROM_NUMBER`。
-- Telnyx：`telnyx.apiKey`、`telnyx.connectionId`、`telnyx.publicKey` 和 `fromNumber`。
+- Twilio：`twilio.accountSid`、`twilio.authToken` 和 `fromNumber`，或
+  `TWILIO_ACCOUNT_SID`、`TWILIO_AUTH_TOKEN` 和 `TWILIO_FROM_NUMBER`。
+- Telnyx：`telnyx.apiKey`、`telnyx.connectionId`、`telnyx.publicKey` 和
+  `fromNumber`。
 - Plivo：`plivo.authId`、`plivo.authToken` 和 `fromNumber`。
 
-凭证必须存在于 Gateway 网关主机上。编辑本地 shell profile 不会影响已经运行的 Gateway 网关，直到它重启或重新加载其环境。
+凭证必须存在于 Gateway 网关主机上。编辑本地 shell profile
+不会影响已经运行的 Gateway 网关，直到它重启或重新加载其
+环境。
 
-### 呼叫开始但提供商 webhook 未到达
+### 呼叫已开始但提供商 webhook 未到达
 
-确认提供商控制台指向确切的公共 webhook URL：
+确认提供商控制台指向准确的公共 webhook URL：
 
 ```text
 https://voice.example.com/voice/webhook
@@ -729,56 +730,71 @@ openclaw logs --follow
 - 防火墙或 DNS 将公共主机名路由到了 Gateway 网关以外的位置。
 - Gateway 网关重启时未启用 Voice Call 插件。
 
-当反向代理或隧道位于 Gateway 网关前面时，将 `webhookSecurity.allowedHosts` 设置为公共主机名，或对已知代理地址使用 `webhookSecurity.trustedProxyIPs`。仅当代理边界受你控制时，才使用 `webhookSecurity.trustForwardingHeaders`。
+当 Gateway 网关前面有反向代理或隧道时，将
+`webhookSecurity.allowedHosts` 设置为公共主机名，或对已知代理地址使用
+`webhookSecurity.trustedProxyIPs`。仅当代理边界在你的
+控制之下时，才使用 `webhookSecurity.trustForwardingHeaders`。
 
 ### 签名验证失败
 
 提供商签名会根据 OpenClaw 从传入请求重建的公共 URL 进行检查。如果签名失败：
 
-- 确认提供商 webhook URL 与 `publicUrl` 完全匹配，包括 scheme、host 和 path。
-- 对于 ngrok 免费层 URL，当隧道主机名变化时更新 `publicUrl`。
-- 确保代理保留原始 host 和 proto 标头，或配置 `webhookSecurity.allowedHosts`。
-- 不要在本地测试以外启用 `skipSignatureVerification`。
+- 确认提供商 webhook URL 与 `publicUrl` 完全匹配，包括
+  scheme、host 和 path。
+- 对于 ngrok 免费层 URL，在隧道主机名变化时更新 `publicUrl`。
+- 确保代理保留原始 host 和 proto 标头，或配置
+  `webhookSecurity.allowedHosts`。
+- 不要在本地测试之外启用 `skipSignatureVerification`。
 
 ### Google Meet Twilio 加入失败
 
-Google Meet 使用此插件执行 Twilio 拨入加入。先验证 Voice Call：
+Google Meet 使用此插件进行 Twilio 拨入加入。先验证 Voice Call：
 
 ```bash
 openclaw voicecall setup
 openclaw voicecall smoke --to "+15555550123"
 ```
 
-然后显式验证 Google Meet 传输：
+然后显式验证 Google Meet 传输协议：
 
 ```bash
 openclaw googlemeet setup --transport twilio
 ```
 
-如果 Voice Call 为绿色，但 Meet 参与者从未加入，请检查 Meet 拨入号码、PIN 和 `--dtmf-sequence`。电话呼叫可以是正常的，而会议可能拒绝或忽略不正确的 DTMF 序列。
+如果 Voice Call 为绿色状态，但 Meet 参与者从未加入，请检查 Meet
+拨入号码、PIN 和 `--dtmf-sequence`。电话呼叫可以是正常的，而
+会议可能会拒绝或忽略不正确的 DTMF 序列。
 
-Google Meet 会将 Meet DTMF 序列和介绍文本传递给 `voicecall.start`。对于 Twilio 呼叫，Voice Call 先提供 DTMF TwiML，重定向回 webhook，然后打开实时媒体流，以便在电话参与者加入会议后生成已保存的介绍。
+Google Meet 会将 Meet DTMF 序列和介绍文本传递给 `voicecall.start`。
+对于 Twilio 呼叫，Voice Call 会先提供 DTMF TwiML，重定向回
+webhook，然后打开实时媒体流，以便在电话参与者加入会议后
+生成保存的介绍文本。
 
-使用 `openclaw logs --follow` 查看实时阶段跟踪。健康的 Twilio Meet 加入会按此顺序记录日志：
+使用 `openclaw logs --follow` 查看实时阶段跟踪。健康的 Twilio Meet
+加入会按以下顺序记录日志：
 
 - Google Meet 将 Twilio 加入委托给 Voice Call。
 - Voice Call 存储连接前 DTMF TwiML。
-- Twilio 初始 TwiML 在实时处理前被消费并提供。
+- Twilio 初始 TwiML 在实时处理之前被消费并提供。
 - Voice Call 为 Twilio 呼叫提供实时 TwiML。
-- 实时桥接启动，并将初始问候语排入队列。
+- 实时桥接启动，并将初始问候语加入队列。
 
-`openclaw voicecall tail` 仍会显示持久化的呼叫记录；它对呼叫状态和转录很有用，但并非每个 webhook/实时转换都会出现在那里。
+`openclaw voicecall tail` 仍会显示持久化的呼叫记录；它适用于
+呼叫状态和转录文本，但并非每个 webhook/实时转换都会
+出现在其中。
 
 ### 实时呼叫没有语音
 
-确认只启用了一种音频模式。`realtime.enabled` 和 `streaming.enabled` 不能同时为 true。
+确认只启用了一种音频模式。`realtime.enabled` 和
+`streaming.enabled` 不能同时为 true。
 
 对于实时 Twilio 呼叫，还要验证：
 
 - 已加载并注册实时提供商插件。
 - `realtime.provider` 未设置，或命名了已注册的提供商。
-- Gateway 网关进程可以使用提供商 API key。
-- `openclaw logs --follow` 显示已提供实时 TwiML、实时桥接已启动，并且初始问候语已排入队列。
+- 提供商 API key 可供 Gateway 网关进程使用。
+- `openclaw logs --follow` 显示已提供实时 TwiML、实时桥接
+  已启动，并且初始问候语已加入队列。
 
 ## 相关内容
 
