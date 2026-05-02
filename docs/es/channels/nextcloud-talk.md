@@ -1,36 +1,32 @@
 ---
 read_when:
-    - Trabajando en funcionalidades del canal de Nextcloud Talk
+    - Trabajando en las funciones del canal de Nextcloud Talk
 summary: Estado de compatibilidad, capacidades y configuración de Nextcloud Talk
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-04-30T05:29:25Z"
+    generated_at: "2026-05-02T22:16:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fcbe8a65adfddc95d2b4944af88f9982e23a1676752efec2bbf40cfc4dd846d2
+    source_hash: 4956586ae8622118dcf136f4279c6ed1c2895fd4bb4576a7f5799de600a95740
     source_path: channels/nextcloud-talk.md
     workflow: 16
 ---
 
-Estado: Plugin incluido (bot de Webhook). Se admiten mensajes directos, salas, reacciones y mensajes markdown.
+Estado: Plugin incluido (bot de Webhook). Se admiten mensajes directos, salas, reacciones y mensajes Markdown.
 
 ## Plugin incluido
 
-Nextcloud Talk se distribuye como Plugin incluido en las versiones actuales de OpenClaw, por lo que
-las compilaciones empaquetadas normales no necesitan una instalación separada.
+Nextcloud Talk se distribuye como Plugin incluido en las versiones actuales de OpenClaw, por lo que las compilaciones empaquetadas normales no necesitan una instalación separada.
 
-Si usas una compilación anterior o una instalación personalizada que excluye Nextcloud Talk,
-instala un paquete npm actual cuando se publique uno:
+Si usas una compilación anterior o una instalación personalizada que excluye Nextcloud Talk, instala el paquete npm directamente:
 
-Instalar mediante CLI (registro npm, cuando exista un paquete actual):
+Instala mediante CLI (registro npm):
 
 ```bash
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-Si npm informa que el paquete propiedad de OpenClaw está obsoleto, usa una compilación
-empaquetada actual de OpenClaw o la ruta de checkout local hasta que se publique
-un paquete npm más reciente.
+Usa el paquete sin versión para seguir la etiqueta de versión oficial actual. Fija una versión exacta solo cuando necesites una instalación reproducible.
 
 Checkout local (al ejecutar desde un repositorio git):
 
@@ -54,9 +50,9 @@ Detalles: [Plugins](/es/tools/plugin)
 3. Habilita el bot en la configuración de la sala de destino.
 4. Configura OpenClaw:
    - Configuración: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - O env: `NEXTCLOUD_TALK_BOT_SECRET` (solo cuenta predeterminada)
+   - O variable de entorno: `NEXTCLOUD_TALK_BOT_SECRET` (solo cuenta predeterminada)
 
-   Configuración con CLI:
+   Configuración mediante CLI:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -80,7 +76,7 @@ Detalles: [Plugins](/es/tools/plugin)
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. Reinicia el Gateway (o finaliza la configuración).
+5. Reinicia el Gateway (o termina la configuración).
 
 Configuración mínima:
 
@@ -99,24 +95,24 @@ Configuración mínima:
 
 ## Notas
 
-- Los bots no pueden iniciar MD. El usuario debe enviar primero un mensaje al bot.
-- La URL de Webhook debe ser accesible para el Gateway; define `webhookPublicUrl` si está detrás de un proxy.
-- La API del bot no admite subidas de medios; los medios se envían como URL.
-- La carga útil del Webhook no distingue entre MD y salas; define `apiUser` + `apiPassword` para habilitar búsquedas de tipo de sala (de lo contrario, los MD se tratan como salas).
+- Los bots no pueden iniciar mensajes directos. El usuario debe enviar primero un mensaje al bot.
+- La URL del Webhook debe ser accesible para el Gateway; define `webhookPublicUrl` si está detrás de un proxy.
+- La API del bot no admite cargas de medios; los medios se envían como URL.
+- La carga útil del Webhook no distingue mensajes directos de salas; define `apiUser` + `apiPassword` para habilitar consultas de tipo de sala (de lo contrario, los mensajes directos se tratan como salas).
 
-## Control de acceso (MD)
+## Control de acceso (mensajes directos)
 
 - Predeterminado: `channels.nextcloud-talk.dmPolicy = "pairing"`. Los remitentes desconocidos reciben un código de emparejamiento.
 - Aprobar mediante:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
-- MD públicos: `channels.nextcloud-talk.dmPolicy="open"` más `channels.nextcloud-talk.allowFrom=["*"]`.
-- `allowFrom` coincide solo con IDs de usuario de Nextcloud; los nombres para mostrar se ignoran.
+- Mensajes directos públicos: `channels.nextcloud-talk.dmPolicy="open"` más `channels.nextcloud-talk.allowFrom=["*"]`.
+- `allowFrom` solo coincide con los ID de usuario de Nextcloud; los nombres visibles se ignoran.
 
 ## Salas (grupos)
 
-- Predeterminado: `channels.nextcloud-talk.groupPolicy = "allowlist"` (controlado por menciones).
-- Añade salas a la lista de permitidos con `channels.nextcloud-talk.rooms`:
+- Predeterminado: `channels.nextcloud-talk.groupPolicy = "allowlist"` (restringido por mención).
+- Incluye salas en la lista de permitidos con `channels.nextcloud-talk.rooms`:
 
 ```json5
 {
@@ -134,14 +130,14 @@ Configuración mínima:
 
 ## Capacidades
 
-| Función          | Estado             |
-| ---------------- | ------------------ |
-| Mensajes directos | Compatible         |
-| Salas            | Compatible         |
-| Hilos            | No compatible      |
-| Medios           | Solo URL           |
-| Reacciones       | Compatible         |
-| Comandos nativos | No compatible      |
+| Función          | Estado          |
+| --------------- | ------------- |
+| Mensajes directos | Admitido      |
+| Salas           | Admitido        |
+| Hilos           | No admitido     |
+| Medios          | Solo URL        |
+| Reacciones      | Admitido        |
+| Comandos nativos | No admitido    |
 
 ## Referencia de configuración (Nextcloud Talk)
 
@@ -153,31 +149,31 @@ Opciones del proveedor:
 - `channels.nextcloud-talk.baseUrl`: URL de la instancia de Nextcloud.
 - `channels.nextcloud-talk.botSecret`: secreto compartido del bot.
 - `channels.nextcloud-talk.botSecretFile`: ruta de secreto en archivo regular. Se rechazan los enlaces simbólicos.
-- `channels.nextcloud-talk.apiUser`: usuario de API para búsquedas de salas (detección de MD).
-- `channels.nextcloud-talk.apiPassword`: contraseña de API/app para búsquedas de salas.
+- `channels.nextcloud-talk.apiUser`: usuario de API para consultas de sala (detección de mensajes directos).
+- `channels.nextcloud-talk.apiPassword`: contraseña de API/aplicación para consultas de sala.
 - `channels.nextcloud-talk.apiPasswordFile`: ruta del archivo de contraseña de API.
 - `channels.nextcloud-talk.webhookPort`: puerto del listener de Webhook (predeterminado: 8788).
 - `channels.nextcloud-talk.webhookHost`: host del Webhook (predeterminado: 0.0.0.0).
 - `channels.nextcloud-talk.webhookPath`: ruta del Webhook (predeterminado: /nextcloud-talk-webhook).
-- `channels.nextcloud-talk.webhookPublicUrl`: URL de Webhook accesible externamente.
+- `channels.nextcloud-talk.webhookPublicUrl`: URL del Webhook accesible externamente.
 - `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
-- `channels.nextcloud-talk.allowFrom`: lista de permitidos de MD (IDs de usuario). `open` requiere `"*"`.
+- `channels.nextcloud-talk.allowFrom`: lista de permitidos para mensajes directos (ID de usuario). `open` requiere `"*"`.
 - `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
-- `channels.nextcloud-talk.groupAllowFrom`: lista de permitidos de grupo (IDs de usuario).
+- `channels.nextcloud-talk.groupAllowFrom`: lista de permitidos para grupos (ID de usuario).
 - `channels.nextcloud-talk.rooms`: configuración por sala y lista de permitidos.
 - `channels.nextcloud-talk.historyLimit`: límite de historial de grupo (0 deshabilita).
-- `channels.nextcloud-talk.dmHistoryLimit`: límite de historial de MD (0 deshabilita).
-- `channels.nextcloud-talk.dms`: anulaciones por MD (historyLimit).
+- `channels.nextcloud-talk.dmHistoryLimit`: límite de historial de mensajes directos (0 deshabilita).
+- `channels.nextcloud-talk.dms`: anulaciones por mensaje directo (historyLimit).
 - `channels.nextcloud-talk.textChunkLimit`: tamaño de fragmento de texto saliente (caracteres).
 - `channels.nextcloud-talk.chunkMode`: `length` (predeterminado) o `newline` para dividir por líneas en blanco (límites de párrafo) antes de fragmentar por longitud.
 - `channels.nextcloud-talk.blockStreaming`: deshabilita el streaming de bloques para este canal.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: ajuste de combinación del streaming de bloques.
+- `channels.nextcloud-talk.blockStreamingCoalesce`: ajuste de coalescencia del streaming de bloques.
 - `channels.nextcloud-talk.mediaMaxMb`: límite de medios entrantes (MB).
 
 ## Relacionado
 
-- [Resumen de canales](/es/channels) — todos los canales compatibles
-- [Emparejamiento](/es/channels/pairing) — autenticación de MD y flujo de emparejamiento
-- [Grupos](/es/channels/groups) — comportamiento de chat grupal y control por menciones
+- [Resumen de canales](/es/channels) — todos los canales admitidos
+- [Emparejamiento](/es/channels/pairing) — autenticación de mensajes directos y flujo de emparejamiento
+- [Grupos](/es/channels/groups) — comportamiento del chat grupal y restricción por mención
 - [Enrutamiento de canales](/es/channels/channel-routing) — enrutamiento de sesiones para mensajes
-- [Seguridad](/es/gateway/security) — modelo de acceso y refuerzo de seguridad
+- [Seguridad](/es/gateway/security) — modelo de acceso y endurecimiento
