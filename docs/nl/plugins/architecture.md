@@ -1,46 +1,46 @@
 ---
 read_when:
     - Native OpenClaw-plugins bouwen of debuggen
-    - Het Plugin-capabilitymodel of eigendomsgrenzen begrijpen
-    - Werken aan de Plugin-laadpipeline of het register
-    - Provider-runtimehooks of kanaal-Plugins implementeren
+    - Inzicht in het Plugin-mogelijkhedenmodel of eigendomsgrenzen
+    - Werken aan de Plugin-laadpijplijn of het register
+    - Providerruntime-hooks of kanaalplugins implementeren
 sidebarTitle: Internals
-summary: 'Interne Plugin-details: capaciteitenmodel, eigenaarschap, contracten, laadpijplijn en runtime-hulpfuncties'
-title: Interne werking van de Plugin
+summary: 'Plugin-internals: capaciteitsmodel, eigenaarschap, contracten, laadpipeline en runtimehulpfuncties'
+title: Interne werking van Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:01:41Z"
+    generated_at: "2026-05-02T11:21:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1516e0784a005af87a6c081d8027a1e2dc10445e47b6824488e9d9987bb96975
+    source_hash: 138fb962c98f71e29e8b2621ce318336c38a317636d090eb315fed806fc6abda
     source_path: plugins/architecture.md
     workflow: 16
 ---
 
-Dit is de **diepgaande architectuurreferentie** voor het Plugin-systeem van OpenClaw. Begin voor praktische handleidingen met een van de gerichte pagina's hieronder.
+Dit is de **uitgebreide architectuurreferentie** voor het OpenClaw-pluginsysteem. Begin voor praktische gidsen met een van de gerichte pagina's hieronder.
 
 <CardGroup cols={2}>
   <Card title="Plugins installeren en gebruiken" icon="plug" href="/nl/tools/plugin">
-    Eindgebruikershandleiding voor het toevoegen, inschakelen en probleemoplossing van plugins.
+    Eindgebruikersgids voor het toevoegen, inschakelen en oplossen van problemen met plugins.
   </Card>
   <Card title="Plugins bouwen" icon="rocket" href="/nl/plugins/building-plugins">
-    Tutorial voor je eerste Plugin met het kleinste werkende manifest.
+    Tutorial voor een eerste plugin met het kleinste werkende manifest.
   </Card>
   <Card title="Kanaalplugins" icon="comments" href="/nl/plugins/sdk-channel-plugins">
-    Bouw een Plugin voor een berichtkanaal.
+    Bouw een plugin voor een berichtenkanaal.
   </Card>
   <Card title="Providerplugins" icon="microchip" href="/nl/plugins/sdk-provider-plugins">
-    Bouw een Plugin voor een modelprovider.
+    Bouw een plugin voor een modelprovider.
   </Card>
   <Card title="SDK-overzicht" icon="book" href="/nl/plugins/sdk-overview">
-    Importmap en referentie voor de registratie-API.
+    Referentie voor importmap en registratie-API.
   </Card>
 </CardGroup>
 
-## Publiek capabilitymodel
+## Publiek capaciteitsmodel
 
-Capabilities zijn het publieke **native Plugin**-model binnen OpenClaw. Elke native OpenClaw-Plugin registreert zich voor een of meer capabilitytypen:
+Capaciteiten zijn het publieke **native plugin**-model binnen OpenClaw. Elke native OpenClaw-plugin registreert zich voor een of meer capaciteitstypen:
 
-| Capability             | Registratiemethode                              | Voorbeeldplugins                    |
+| Capaciteit             | Registratiemethode                              | Voorbeeldplugins                    |
 | ---------------------- | ------------------------------------------------ | ------------------------------------ |
 | Tekstinferentie        | `api.registerProvider(...)`                      | `openai`, `anthropic`                |
 | CLI-inferentiebackend  | `api.registerCliBackend(...)`                    | `openai`, `anthropic`                |
@@ -57,156 +57,156 @@ Capabilities zijn het publieke **native Plugin**-model binnen OpenClaw. Elke nat
 | Gateway-detectie       | `api.registerGatewayDiscoveryService(...)`       | `bonjour`                            |
 
 <Note>
-Een Plugin die nul capabilities registreert, maar hooks, tools, detectieservices of achtergrondservices biedt, is een **legacy hook-only** Plugin. Dat patroon wordt nog steeds volledig ondersteund.
+Een plugin die nul capaciteiten registreert maar hooks, tools, detectieservices of achtergrondservices levert, is een **verouderde hook-only** plugin. Dat patroon wordt nog steeds volledig ondersteund.
 </Note>
 
-### Externe compatibiliteitspositie
+### Standpunt over externe compatibiliteit
 
-Het capabilitymodel is in core geland en wordt vandaag gebruikt door gebundelde/native plugins, maar compatibiliteit voor externe plugins heeft nog steeds een strengere norm nodig dan "het is geëxporteerd, dus het is bevroren."
+Het capaciteitsmodel is in core geland en wordt vandaag gebruikt door gebundelde/native plugins, maar compatibiliteit voor externe plugins heeft nog een strengere lat nodig dan "het is geëxporteerd, dus het is bevroren."
 
-| Plugin-situatie                                 | Richtlijn                                                                                         |
+| Pluginsituatie                                  | Richtlijn                                                                                         |
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Bestaande externe plugins                         | Houd hook-gebaseerde integraties werkend; dit is de compatibiliteitsbaseline.                    |
-| Nieuwe gebundelde/native plugins                  | Geef de voorkeur aan expliciete capabilityregistratie boven leveranciersspecifieke reach-ins of nieuwe hook-only ontwerpen. |
-| Externe plugins die capabilityregistratie gebruiken | Toegestaan, maar behandel capabilityspecifieke helper-oppervlakken als in ontwikkeling tenzij docs ze als stabiel markeren. |
+| Bestaande externe plugins                         | Houd hookgebaseerde integraties werkend; dit is de compatibiliteitsbasis.                        |
+| Nieuwe gebundelde/native plugins                  | Geef de voorkeur aan expliciete capaciteitsregistratie boven leveranciersspecifieke reach-ins of nieuwe hook-only ontwerpen. |
+| Externe plugins die capaciteitsregistratie gebruiken | Toegestaan, maar behandel capaciteitsspecifieke hulpinterfaces als in ontwikkeling, tenzij docs ze als stabiel markeren. |
 
-Capabilityregistratie is de beoogde richting. Legacy hooks blijven tijdens de overgang het veiligste pad zonder breuken voor externe plugins. Geëxporteerde helper-subpaden zijn niet allemaal gelijk — geef de voorkeur aan smalle gedocumenteerde contracten boven incidentele helperexports.
+Capaciteitsregistratie is de beoogde richting. Verouderde hooks blijven tijdens de overgang het veiligste pad zonder breuken voor externe plugins. Geëxporteerde hulpsubpaden zijn niet allemaal gelijk — geef de voorkeur aan smalle gedocumenteerde contracten boven incidentele helperexports.
 
 ### Plugin-vormen
 
-OpenClaw classificeert elke geladen Plugin in een vorm op basis van het daadwerkelijke registratiegedrag (niet alleen statische metadata):
+OpenClaw classificeert elke geladen plugin in een vorm op basis van het daadwerkelijke registratiegedrag ervan (niet alleen statische metadata):
 
 <AccordionGroup>
   <Accordion title="plain-capability">
-    Registreert precies één capabilitytype (bijvoorbeeld een provider-only Plugin zoals `mistral`).
+    Registreert exact één capaciteitstype (bijvoorbeeld een provider-only plugin zoals `mistral`).
   </Accordion>
   <Accordion title="hybrid-capability">
-    Registreert meerdere capabilitytypen (bijvoorbeeld `openai` is eigenaar van tekstinferentie, spraak, mediabegrip en afbeeldingsgeneratie).
+    Registreert meerdere capaciteitstypen (bijvoorbeeld `openai` bezit tekstinferentie, spraak, mediabegrip en afbeeldingsgeneratie).
   </Accordion>
   <Accordion title="hook-only">
-    Registreert alleen hooks (getypeerd of aangepast), geen capabilities, tools, commando's of services.
+    Registreert alleen hooks (getypeerd of aangepast), geen capaciteiten, tools, opdrachten of services.
   </Accordion>
   <Accordion title="non-capability">
-    Registreert tools, commando's, services of routes, maar geen capabilities.
+    Registreert tools, opdrachten, services of routes, maar geen capaciteiten.
   </Accordion>
 </AccordionGroup>
 
-Gebruik `openclaw plugins inspect <id>` om de vorm en capability-uitsplitsing van een Plugin te zien. Zie [CLI-referentie](/nl/cli/plugins#inspect) voor details.
+Gebruik `openclaw plugins inspect <id>` om de vorm en capaciteitsuitsplitsing van een plugin te bekijken. Zie [CLI-referentie](/nl/cli/plugins#inspect) voor details.
 
-### Legacy hooks
+### Verouderde hooks
 
-De hook `before_agent_start` blijft ondersteund als compatibiliteitspad voor hook-only plugins. Legacy plugins uit de praktijk zijn er nog steeds van afhankelijk.
+De hook `before_agent_start` blijft ondersteund als compatibiliteitspad voor hook-only plugins. Verouderde echte plugins zijn er nog steeds van afhankelijk.
 
 Richting:
 
 - houd het werkend
-- documenteer het als legacy
+- documenteer het als verouderd
 - geef de voorkeur aan `before_model_resolve` voor werk rond model-/provideroverrides
-- geef de voorkeur aan `before_prompt_build` voor promptmutatiewerk
-- verwijder pas nadat echt gebruik is gedaald en fixturedekking migratieveiligheid bewijst
+- geef de voorkeur aan `before_prompt_build` voor werk rond promptmutatie
+- verwijder het pas nadat echt gebruik is afgenomen en fixturedekking bewijst dat migratie veilig is
 
 ### Compatibiliteitssignalen
 
-Wanneer je `openclaw doctor` of `openclaw plugins inspect <id>` uitvoert, zie je mogelijk een van deze labels:
+Wanneer je `openclaw doctor` of `openclaw plugins inspect <id>` uitvoert, kun je een van deze labels zien:
 
-| Signaal                    | Betekenis                                                   |
+| Signaal                    | Betekenis                                                    |
 | -------------------------- | ------------------------------------------------------------ |
 | **config valid**           | Configuratie wordt correct geparseerd en plugins worden opgelost |
 | **compatibility advisory** | Plugin gebruikt een ondersteund maar ouder patroon (bijv. `hook-only`) |
-| **legacy warning**         | Plugin gebruikt `before_agent_start`, wat verouderd is      |
-| **hard error**             | Configuratie is ongeldig of Plugin kon niet worden geladen  |
+| **legacy warning**         | Plugin gebruikt `before_agent_start`, wat verouderd is       |
+| **hard error**             | Configuratie is ongeldig of plugin kon niet worden geladen   |
 
-Noch `hook-only` noch `before_agent_start` breekt je Plugin vandaag: `hook-only` is adviserend, en `before_agent_start` activeert alleen een waarschuwing. Deze signalen verschijnen ook in `openclaw status --all` en `openclaw plugins doctor`.
+Noch `hook-only` noch `before_agent_start` breekt je plugin vandaag: `hook-only` is adviserend, en `before_agent_start` geeft alleen een waarschuwing. Deze signalen verschijnen ook in `openclaw status --all` en `openclaw plugins doctor`.
 
 ## Architectuuroverzicht
 
-Het Plugin-systeem van OpenClaw heeft vier lagen:
+Het pluginsysteem van OpenClaw heeft vier lagen:
 
 <Steps>
   <Step title="Manifest + detectie">
-    OpenClaw vindt kandidaatplugins uit geconfigureerde paden, werkruimteroots, globale pluginroots en gebundelde plugins. Detectie leest eerst native `openclaw.plugin.json`-manifesten plus ondersteunde bundelmanifesten.
+    OpenClaw vindt kandidaatplugins via geconfigureerde paden, werkruimteroots, globale pluginroots en gebundelde plugins. Detectie leest eerst native `openclaw.plugin.json`-manifesten plus ondersteunde bundlemanifesten.
   </Step>
   <Step title="Inschakeling + validatie">
-    Core bepaalt of een gevonden Plugin is ingeschakeld, uitgeschakeld, geblokkeerd of geselecteerd voor een exclusieve slot zoals geheugen.
+    Core bepaalt of een gevonden plugin ingeschakeld, uitgeschakeld, geblokkeerd of geselecteerd is voor een exclusieve sleuf zoals geheugen.
   </Step>
   <Step title="Runtime laden">
-    Native OpenClaw-plugins worden in-process geladen via jiti en registreren capabilities in een centraal register. Compatibele bundels worden genormaliseerd naar registerrecords zonder runtimecode te importeren.
+    Native OpenClaw-plugins worden in-process geladen en registreren capaciteiten in een centraal register. Verpakte JavaScript laadt via native `require`; TypeScript van lokale broncode van derden is de noodfallback via Jiti. Compatibele bundles worden genormaliseerd tot registerrecords zonder runtimecode te importeren.
   </Step>
-  <Step title="Oppervlakconsumptie">
-    De rest van OpenClaw leest het register om tools, kanalen, providerinstellingen, hooks, HTTP-routes, CLI-commando's en services beschikbaar te maken.
+  <Step title="Gebruik door oppervlakken">
+    De rest van OpenClaw leest het register om tools, kanalen, providerconfiguratie, hooks, HTTP-routes, CLI-opdrachten en services bloot te stellen.
   </Step>
 </Steps>
 
-Specifiek voor de Plugin-CLI is rootcommandodetectie opgesplitst in twee fasen:
+Voor de plugin-CLI specifiek is rootopdrachtdetectie opgesplitst in twee fasen:
 
-- parse-time metadata komt uit `registerCli(..., { descriptors: [...] })`
-- de echte Plugin-CLI-module kan lazy blijven en registreren bij de eerste aanroep
+- metadata tijdens het parsen komt uit `registerCli(..., { descriptors: [...] })`
+- de echte plugin-CLI-module kan lazy blijven en registreren bij de eerste aanroep
 
-Zo blijft CLI-code die eigendom is van de Plugin binnen de Plugin, terwijl OpenClaw nog steeds rootcommandonamen kan reserveren vóór het parsen.
+Daardoor blijft plugin-eigen CLI-code binnen de plugin, terwijl OpenClaw toch rootopdrachtnamen kan reserveren vóór het parsen.
 
 De belangrijke ontwerpgrens:
 
-- manifest-/configvalidatie moet werken vanuit **manifest-/schemametadata** zonder Plugincode uit te voeren
-- native capabilitydetectie mag vertrouwde Plugin-entrycode laden om een niet-activerende registersnapshot te bouwen
-- native runtimegedrag komt uit het `register(api)`-pad van de Plugin-module met `api.registrationMode === "full"`
+- manifest-/configvalidatie moet werken vanuit **manifest-/schemametadata** zonder plugincode uit te voeren
+- native capaciteitsdetectie mag vertrouwde plugin-entrycode laden om een niet-activerende registersnapshot te bouwen
+- native runtimegedrag komt uit het pad `register(api)` van de pluginmodule met `api.registrationMode === "full"`
 
-Door die scheiding kan OpenClaw configuratie valideren, ontbrekende/uitgeschakelde plugins uitleggen en UI-/schemahints bouwen voordat de volledige runtime actief is.
+Die splitsing laat OpenClaw configuratie valideren, ontbrekende/uitgeschakelde plugins uitleggen en UI-/schemahints bouwen voordat de volledige runtime actief is.
 
-### Snapshot van Plugin-metadata en opzoektabel
+### Snapshot van pluginmetadata en opzoektabel
 
-Bij het starten van de Gateway wordt één `PluginMetadataSnapshot` gebouwd voor de huidige configuratiesnapshot. De snapshot bevat alleen metadata: hij bewaart de geïnstalleerde Plugin-index, het manifestregister, manifestdiagnostiek, eigenaarsmappen, een Plugin-id-normalizer en manifestrecords. Hij bevat geen geladen Plugin-modules, provider-SDK's, pakketinhoud of runtime-exports.
+Bij het opstarten van de Gateway wordt één `PluginMetadataSnapshot` gebouwd voor de huidige configuratiesnapshot. De snapshot bevat alleen metadata: hij bewaart de geïnstalleerde pluginindex, het manifestregister, manifestdiagnostiek, eigenaarkaarten, een normalizer voor plugin-id's en manifestrecords. Hij bevat geen geladen pluginmodules, provider-SDK's, pakketinhoud of runtimeexports.
 
-Plugin-bewuste configvalidatie, automatisch inschakelen bij opstarten en Plugin-bootstrap van de Gateway gebruiken die snapshot in plaats van manifest-/indexmetadata onafhankelijk opnieuw op te bouwen. `PluginLookUpTable` wordt afgeleid van dezelfde snapshot en voegt het opstartplan voor plugins toe voor de huidige runtimeconfiguratie.
+Pluginbewuste configvalidatie, automatisch inschakelen bij opstarten en de Gateway-pluginbootstrap gebruiken die snapshot in plaats van manifest-/indexmetadata onafhankelijk opnieuw op te bouwen. `PluginLookUpTable` wordt afgeleid van dezelfde snapshot en voegt het opstartpluginplan toe voor de huidige runtimeconfiguratie.
 
-Na het opstarten houdt Gateway de huidige metadatasnapshot bij als een vervangbaar runtimeproduct. Herhaalde runtime-providerdetectie kan die snapshot lenen in plaats van de geïnstalleerde index en het manifestregister opnieuw te reconstrueren voor elke provider-cataloguspass. De snapshot wordt gewist of vervangen bij het afsluiten van de Gateway, wijzigingen in config/Plugin-inventaris en schrijfacties naar de geïnstalleerde index; callers vallen terug op het koude manifest-/indexpad wanneer er geen compatibele huidige snapshot bestaat. Compatibiliteitscontroles moeten Plugin-detectieroots bevatten, zoals `plugins.load.paths` en de standaard agentwerkruimte, omdat werkruimteplugins deel uitmaken van de metadatascope.
+Na het opstarten bewaart Gateway de huidige metadatasnapshot als een vervangbaar runtimeproduct. Herhaalde runtime-providerdetectie kan die snapshot lenen in plaats van voor elke provider-cataloguspass de geïnstalleerde index en het manifestregister opnieuw te reconstrueren. De snapshot wordt gewist of vervangen bij afsluiten van de Gateway, wijzigingen in configuratie/plugininventaris en schrijfacties naar de geïnstalleerde index; callers vallen terug op het koude manifest-/indexpad wanneer er geen compatibele huidige snapshot bestaat. Compatibiliteitscontroles moeten plugin-detectieroots bevatten zoals `plugins.load.paths` en de standaard agentwerkruimte, omdat werkruimteplugins deel uitmaken van de metadatascope.
 
 De snapshot en opzoektabel houden herhaalde opstartbeslissingen op het snelle pad:
 
 - kanaaleigenaarschap
 - uitgestelde kanaalstart
-- Plugin-id's bij opstarten
-- provider- en CLI-backendeigenaarschap
-- eigenaarschap van setup-provider, commandoalias, modelcatalogusprovider en manifestcontract
-- validatie van Plugin-configschema en kanaalconfigschema
+- opstartplugin-id's
+- eigenaarschap van provider- en CLI-backends
+- eigenaarschap van setup-provider, opdrachtalias, modelcatalogusprovider en manifestcontract
+- validatie van pluginconfigschema en kanaalconfigschema
 - beslissingen voor automatisch inschakelen bij opstarten
 
-De veiligheidsgrens is vervanging van snapshots, niet mutatie. Bouw de snapshot opnieuw wanneer config, Plugin-inventaris, installatierecords of persistent indexbeleid verandert. Behandel hem niet als een breed muteerbaar globaal register, en bewaar geen onbegrensde historische snapshots. Runtime laden van plugins blijft gescheiden van metadatasnapshots, zodat verouderde runtimestatus niet verborgen kan worden achter een metadatacache.
+De veiligheidsgrens is vervanging van snapshots, niet mutatie. Bouw de snapshot opnieuw wanneer configuratie, plugininventaris, installatierecords of bewaard indexbeleid verandert. Behandel hem niet als een breed muteerbaar globaal register, en bewaar geen onbeperkte historische snapshots. Runtime laden van plugins blijft gescheiden van metadatasnapshots zodat verouderde runtimestatus niet achter een metadatacache kan worden verborgen.
 
-De cacheregel is gedocumenteerd in [Interne Plugin-architectuur](/nl/plugins/architecture-internals#plugin-cache-boundary): manifest- en detectiemetadata zijn vers tenzij een caller een expliciete snapshot, opzoektabel of manifestregister voor de huidige flow heeft. Verborgen metadatacaches en wall-clock TTL's maken geen deel uit van het laden van plugins. Alleen runtime-loader-, module- en afhankelijkheidsartefactcaches mogen blijven bestaan nadat code of geïnstalleerde artefacten daadwerkelijk zijn geladen.
+De cacheregel is gedocumenteerd in [Interne pluginarchitectuur](/nl/plugins/architecture-internals#plugin-cache-boundary): manifest- en detectiemetadata zijn vers, tenzij een caller een expliciete snapshot, opzoektabel of manifestregister voor de huidige flow vasthoudt. Verborgen metadatacaches en TTL's op basis van de klok maken geen deel uit van pluginladen. Alleen runtime-loader-, module- en afhankelijkheidsartefactcaches mogen blijven bestaan nadat code of geïnstalleerde artefacten daadwerkelijk zijn geladen.
 
-Sommige cold-path callers reconstrueren manifestregisters nog steeds rechtstreeks vanuit de persistente geïnstalleerde Plugin-index in plaats van een Gateway-`PluginLookUpTable` te ontvangen. Dat pad reconstrueert het register nu op aanvraag; geef de voorkeur aan het doorgeven van de huidige opzoektabel of een expliciet manifestregister door runtimeflows wanneer een caller er al een heeft.
+Sommige callers op het koude pad reconstrueren manifestregisters nog steeds rechtstreeks vanuit de bewaarde geïnstalleerde pluginindex in plaats van een Gateway `PluginLookUpTable` te ontvangen. Dat pad reconstrueert het register nu op aanvraag; geef liever de huidige opzoektabel of een expliciet manifestregister door runtimeflows wanneer een caller er al een heeft.
 
-### Activatieplanning
+### Activeringsplanning
 
-Activatieplanning is onderdeel van het control plane. Callers kunnen vragen welke plugins relevant zijn voor een concreet commando, provider, kanaal, route, agentharnas of capability voordat bredere runtimeregisters worden geladen.
+Activeringsplanning maakt deel uit van het control plane. Callers kunnen vragen welke plugins relevant zijn voor een concrete opdracht, provider, kanaal, route, agentharnas of capaciteit voordat bredere runtimeregisters worden geladen.
 
 De planner houdt huidig manifestgedrag compatibel:
 
-- `activation.*`-velden zijn expliciete plannerhints
-- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` en hooks blijven fallback voor manifesteigenaarschap
+- velden `activation.*` zijn expliciete plannerhints
+- `providers`, `channels`, `commandAliases`, `setup.providers`, `contracts.tools` en hooks blijven manifest-eigenaarschapfallback
 - de ids-only planner-API blijft beschikbaar voor bestaande callers
-- de plan-API rapporteert redenlabels zodat diagnostiek expliciete hints kan onderscheiden van eigenaarschapsfallback
+- de plan-API rapporteert redenlabels zodat diagnostiek expliciete hints kan onderscheiden van eigenaarschapfallback
 
 <Warning>
-Behandel `activation` niet als een levenscyclus-hook of als vervanging voor `register(...)`. Het is metadata die wordt gebruikt om het laden te beperken. Geef de voorkeur aan eigendomsvelden wanneer die de relatie al beschrijven; gebruik `activation` alleen voor extra planner-hints.
+Behandel `activation` niet als een lifecycle-hook of als vervanging voor `register(...)`. Het is metadata die wordt gebruikt om het laden te beperken. Geef de voorkeur aan eigendomsvelden wanneer die de relatie al beschrijven; gebruik `activation` alleen voor extra planner-hints.
 </Warning>
 
 ### Kanaalplugins en de gedeelde berichttool
 
-Kanaalplugins hoeven geen aparte send/edit/react-tool te registreren voor normale chatacties. OpenClaw houdt een gedeelde `message`-tool in core, en kanaalplugins zijn eigenaar van de kanaalspecifieke discovery en uitvoering erachter.
+Kanaalplugins hoeven geen aparte tool voor verzenden/bewerken/reageren te registreren voor normale chatacties. OpenClaw bewaart één gedeelde `message`-tool in core, en kanaalplugins zijn eigenaar van de kanaalspecifieke ontdekking en uitvoering daarachter.
 
 De huidige grens is:
 
-- core is eigenaar van de gedeelde `message`-toolhost, prompt-wiring, sessie-/thread-administratie en uitvoeringsdispatch
-- kanaalplugins zijn eigenaar van scoped actiediscovery, capability-discovery en eventuele kanaalspecifieke schemafragmenten
-- kanaalplugins zijn eigenaar van provider-specifieke gespreksgrammatica voor sessies, zoals hoe gespreks-id's thread-id's coderen of erven van bovenliggende gesprekken
-- kanaalplugins voeren de uiteindelijke actie uit via hun actieadapter
+- core is eigenaar van de gedeelde host van de `message`-tool, prompt-bedrading, sessie-/threadboekhouding en uitvoeringsdispatch
+- kanaalplugins zijn eigenaar van gescopete actiediscovery, capability-discovery en eventuele kanaalspecifieke schemafragmenten
+- kanaalplugins zijn eigenaar van providerspecifieke grammatica voor sessiegesprekken, zoals hoe gespreks-id's thread-id's coderen of overerven van bovenliggende gesprekken
+- kanaalplugins voeren de uiteindelijke actie uit via hun action-adapter
 
-Voor kanaalplugins is het SDK-oppervlak `ChannelMessageActionAdapter.describeMessageTool(...)`. Met die uniforme discovery-call kan een plugin zijn zichtbare acties, capabilities en schemabijdragen samen teruggeven, zodat die onderdelen niet uit elkaar gaan lopen.
+Voor kanaalplugins is het SDK-oppervlak `ChannelMessageActionAdapter.describeMessageTool(...)`. Die uniforme discovery-call laat een plugin zijn zichtbare acties, capabilities en schemabijdragen samen teruggeven, zodat die onderdelen niet uit elkaar gaan lopen.
 
-Wanneer een kanaalspecifieke message-toolparameter een mediabron bevat, zoals een lokaal pad of externe media-URL, moet de plugin ook `mediaSourceParams` teruggeven vanuit `describeMessageTool(...)`. Core gebruikt die expliciete lijst om sandbox-padnormalisatie en hints voor uitgaande mediatoegang toe te passen zonder plugineigen parameternamen hard te coderen. Geef daar de voorkeur aan actiegescopete maps, niet een kanaalbrede platte lijst, zodat een media-param die alleen voor profielen geldt niet wordt genormaliseerd op niet-gerelateerde acties zoals `send`.
+Wanneer een kanaalspecifieke message-tool-param een mediabron bevat, zoals een lokaal pad of een externe media-URL, moet de plugin ook `mediaSourceParams` teruggeven vanuit `describeMessageTool(...)`. Core gebruikt die expliciete lijst om sandbox-padnormalisatie en hints voor uitgaande mediatoegang toe te passen zonder plugin-eigen param-namen hard te coderen. Geef daar de voorkeur aan actiegescopete maps, niet aan één kanaalbrede platte lijst, zodat een media-param die alleen voor profielen geldt niet wordt genormaliseerd bij niet-gerelateerde acties zoals `send`.
 
-Core geeft runtime-scope door aan die discoverystap. Belangrijke velden zijn onder meer:
+Core geeft runtime-scope door aan die discoverystap. Belangrijke velden zijn onder andere:
 
 - `accountId`
 - `currentChannelId`
@@ -217,44 +217,44 @@ Core geeft runtime-scope door aan die discoverystap. Belangrijke velden zijn ond
 - `agentId`
 - vertrouwde inkomende `requesterSenderId`
 
-Dat is belangrijk voor contextgevoelige plugins. Een kanaal kan berichtacties verbergen of zichtbaar maken op basis van het actieve account, de huidige room/thread/het huidige bericht of de vertrouwde identiteit van de aanvrager, zonder kanaalspecifieke branches hard te coderen in de core-`message`-tool.
+Dat is belangrijk voor contextgevoelige plugins. Een kanaal kan berichtacties verbergen of tonen op basis van het actieve account, de huidige room/thread/bericht of de vertrouwde identiteit van de aanvrager, zonder kanaalspecifieke vertakkingen hard te coderen in de core-`message`-tool.
 
-Daarom blijven routeringswijzigingen voor embedded runners pluginwerk: de runner is verantwoordelijk voor het doorsturen van de huidige chat-/sessie-identiteit naar de plugin-discoverygrens, zodat de gedeelde `message`-tool het juiste kanaaleigen oppervlak voor de huidige beurt zichtbaar maakt.
+Daarom blijven routeringswijzigingen voor embedded-runners pluginwerk: de runner is verantwoordelijk voor het doorsturen van de huidige chat-/sessie-identiteit naar de plugin-discoverygrens, zodat de gedeelde `message`-tool het juiste kanaaleigen oppervlak voor de huidige beurt toont.
 
-Voor kanaaleigen uitvoeringshelpers moeten gebundelde plugins de uitvoeringsruntime binnen hun eigen extension-modules houden. Core is niet langer eigenaar van de Discord-, Slack-, Telegram- of WhatsApp-runtimes voor berichtacties onder `src/agents/tools`. We publiceren geen afzonderlijke `plugin-sdk/*-action-runtime`-subpaden, en gebundelde plugins moeten hun eigen lokale runtimecode rechtstreeks importeren uit hun extension-eigen modules.
+Voor kanaaleigen uitvoeringshelpers moeten gebundelde plugins de uitvoeringsruntime binnen hun eigen extension-modules houden. Core is niet langer eigenaar van de Discord-, Slack-, Telegram- of WhatsApp-message-action-runtimes onder `src/agents/tools`. We publiceren geen aparte `plugin-sdk/*-action-runtime`-subpaden, en gebundelde plugins moeten hun eigen lokale runtimecode rechtstreeks importeren uit hun extension-eigen modules.
 
-Dezelfde grens geldt voor providerbenoemde SDK-seams in het algemeen: core mag geen kanaalspecifieke convenience barrels importeren voor Slack, Discord, Signal, WhatsApp of vergelijkbare extensions. Als core gedrag nodig heeft, consumeer dan de eigen `api.ts`- / `runtime-api.ts`-barrel van de gebundelde plugin of promoveer de behoefte naar een smalle generieke capability in de gedeelde SDK.
+Dezelfde grens geldt in het algemeen voor provider-genoemde SDK-seams: core mag geen kanaalspecifieke convenience barrels importeren voor Slack, Discord, Signal, WhatsApp of vergelijkbare extensions. Als core gedrag nodig heeft, consumeer dan ofwel de eigen `api.ts`- / `runtime-api.ts`-barrel van de gebundelde plugin, of promoveer de behoefte naar een smalle generieke capability in de gedeelde SDK.
 
-Gebundelde plugins volgen dezelfde regel. De `runtime-api.ts` van een gebundelde plugin mag zijn eigen branded `openclaw/plugin-sdk/<plugin-id>`-facade niet opnieuw exporteren. Die branded facades blijven compatibiliteitsshims voor externe plugins en oudere consumers, maar gebundelde plugins moeten lokale exports plus smalle generieke SDK-subpaden gebruiken, zoals `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` of `openclaw/plugin-sdk/webhook-ingress`. Nieuwe code mag geen plugin-id-specifieke SDK-facades toevoegen, tenzij de compatibiliteitsgrens voor een bestaand extern ecosysteem dit vereist.
+Gebundelde plugins volgen dezelfde regel. De `runtime-api.ts` van een gebundelde plugin mag zijn eigen gemerkte `openclaw/plugin-sdk/<plugin-id>`-facade niet opnieuw exporteren. Die gemerkte facades blijven compatibiliteitsshims voor externe plugins en oudere consumenten, maar gebundelde plugins moeten lokale exports gebruiken plus smalle generieke SDK-subpaden zoals `openclaw/plugin-sdk/channel-policy`, `openclaw/plugin-sdk/runtime-store` of `openclaw/plugin-sdk/webhook-ingress`. Nieuwe code mag geen plugin-id-specifieke SDK-facades toevoegen, tenzij de compatibiliteitsgrens voor een bestaand extern ecosysteem dat vereist.
 
 Specifiek voor polls zijn er twee uitvoeringspaden:
 
-- `outbound.sendPoll` is de gedeelde baseline voor kanalen die passen bij het algemene pollmodel
-- `actions.handleAction("poll")` is het voorkeurspad voor kanaalspecifieke pollsemantiek of extra pollparameters
+- `outbound.sendPoll` is de gedeelde basis voor kanalen die passen binnen het algemene pollmodel
+- `actions.handleAction("poll")` is het voorkeurs-pad voor kanaalspecifieke pollsemantiek of extra pollparameters
 
-Core stelt het parsen van gedeelde polls nu uit totdat plugin-polldispatch de actie afwijst, zodat plugineigen pollhandlers kanaalspecifieke pollvelden kunnen accepteren zonder eerst door de generieke pollparser te worden geblokkeerd.
+Core stelt gedeelde pollparsing nu uit tot nadat plugin-polldispatch de actie weigert, zodat plugin-eigen pollhandlers kanaalspecifieke pollvelden kunnen accepteren zonder eerst door de generieke pollparser te worden geblokkeerd.
 
-Zie [interne Plugin-architectuur](/nl/plugins/architecture-internals) voor de volledige opstartvolgorde.
+Zie [Interne pluginarchitectuur](/nl/plugins/architecture-internals) voor de volledige opstartvolgorde.
 
 ## Capability-eigendomsmodel
 
-OpenClaw behandelt een native plugin als de eigendomsgrens voor een **bedrijf** of een **feature**, niet als een verzameling niet-gerelateerde integraties.
+OpenClaw behandelt een native plugin als de eigendomsgrens voor een **bedrijf** of een **feature**, niet als een verzameling losstaande integraties.
 
 Dat betekent:
 
 - een bedrijfsplugin moet meestal eigenaar zijn van alle OpenClaw-gerichte oppervlakken van dat bedrijf
 - een featureplugin moet meestal eigenaar zijn van het volledige feature-oppervlak dat hij introduceert
-- kanalen moeten gedeelde core-capabilities consumeren in plaats van provider-gedrag ad hoc opnieuw te implementeren
+- kanalen moeten gedeelde core-capabilities gebruiken in plaats van provider-gedrag ad hoc opnieuw te implementeren
 
 <AccordionGroup>
-  <Accordion title="Vendor met meerdere capabilities">
-    `openai` is eigenaar van tekstinferentie, spraak, realtime stem, mediabegrip en beeldgeneratie. `google` is eigenaar van tekstinferentie plus mediabegrip, beeldgeneratie en webzoekopdrachten. `qwen` is eigenaar van tekstinferentie plus mediabegrip en videogeneratie.
+  <Accordion title="Vendor multi-capability">
+    `openai` is eigenaar van tekstinferentie, spraak, realtime stem, mediabegrip en beeldgeneratie. `google` is eigenaar van tekstinferentie plus mediabegrip, beeldgeneratie en webzoeken. `qwen` is eigenaar van tekstinferentie plus mediabegrip en videogeneratie.
   </Accordion>
-  <Accordion title="Vendor met één capability">
-    `elevenlabs` en `microsoft` zijn eigenaar van spraak; `firecrawl` is eigenaar van web-fetch; `minimax` / `mistral` / `moonshot` / `zai` zijn eigenaar van backends voor mediabegrip.
+  <Accordion title="Vendor single-capability">
+    `elevenlabs` en `microsoft` zijn eigenaar van spraak; `firecrawl` is eigenaar van web-fetch; `minimax` / `mistral` / `moonshot` / `zai` zijn eigenaar van mediabegrip-backends.
   </Accordion>
-  <Accordion title="Featureplugin">
-    `voice-call` is eigenaar van beltransport, tools, CLI, routes en Twilio media-stream-bridging, maar consumeert gedeelde capabilities voor spraak, realtime transcriptie en realtime stem in plaats van vendorplugins rechtstreeks te importeren.
+  <Accordion title="Feature plugin">
+    `voice-call` is eigenaar van call-transport, tools, CLI, routes en Twilio media-stream-bridging, maar gebruikt gedeelde capabilities voor spraak, realtime transcriptie en realtime stem in plaats van vendorplugins rechtstreeks te importeren.
   </Accordion>
 </AccordionGroup>
 
@@ -262,61 +262,61 @@ De beoogde eindtoestand is:
 
 - OpenAI leeft in één plugin, zelfs als die tekstmodellen, spraak, afbeeldingen en toekomstige video omvat
 - een andere vendor kan hetzelfde doen voor zijn eigen oppervlak
-- kanalen maakt het niet uit welke vendorplugin eigenaar is van de provider; ze consumeren het gedeelde capability-contract dat door core wordt blootgesteld
+- kanalen hoeven niet te weten welke vendorplugin eigenaar is van de provider; ze consumeren het gedeelde capability-contract dat door core wordt blootgesteld
 
-Dit is het kernverschil:
+Dit is het belangrijkste onderscheid:
 
 - **plugin** = eigendomsgrens
 - **capability** = core-contract dat meerdere plugins kunnen implementeren of consumeren
 
-Dus als OpenClaw een nieuw domein toevoegt, zoals video, is de eerste vraag niet "welke provider moet videoverwerking hard coderen?" De eerste vraag is "wat is het core-contract voor videocapability?" Zodra dat contract bestaat, kunnen vendorplugins zich ervoor registreren en kunnen kanaal-/featureplugins het consumeren.
+Dus als OpenClaw een nieuw domein toevoegt, zoals video, is de eerste vraag niet "welke provider moet videobehandeling hard coderen?" De eerste vraag is "wat is het core video-capability-contract?" Zodra dat contract bestaat, kunnen vendorplugins zich ertegen registreren en kunnen kanaal-/featureplugins het consumeren.
 
 Als de capability nog niet bestaat, is de juiste stap meestal:
 
 <Steps>
-  <Step title="Definieer de capability">
+  <Step title="Define the capability">
     Definieer de ontbrekende capability in core.
   </Step>
-  <Step title="Stel bloot via de SDK">
-    Stel die op een getypte manier bloot via de plugin-API/runtime.
+  <Step title="Expose through the SDK">
+    Stel die op een getypeerde manier beschikbaar via de plugin-API/runtime.
   </Step>
-  <Step title="Sluit consumers aan">
+  <Step title="Wire consumers">
     Sluit kanalen/features aan op die capability.
   </Step>
-  <Step title="Vendorimplementaties">
+  <Step title="Vendor implementations">
     Laat vendorplugins implementaties registreren.
   </Step>
 </Steps>
 
-Dit houdt eigendom expliciet en voorkomt tegelijk core-gedrag dat afhangt van één vendor of een eenmalig pluginspecifiek codepad.
+Dit houdt eigendom expliciet en vermijdt tegelijk core-gedrag dat afhankelijk is van één vendor of een eenmalig plugin-specifiek codepad.
 
 ### Capability-lagen
 
 Gebruik dit mentale model wanneer je beslist waar code thuishoort:
 
 <Tabs>
-  <Tab title="Core-capabilitylaag">
-    Gedeelde orkestratie, beleid, fallback, regels voor configuratiemerging, leveringssemantiek en getypte contracten.
+  <Tab title="Core capability layer">
+    Gedeelde orkestratie, beleid, fallback, config-samenvoegregels, leveringssemantiek en getypeerde contracten.
   </Tab>
-  <Tab title="Vendorpluginlaag">
-    Vendor-specifieke API's, auth, modelcatalogi, spraaksynthese, beeldgeneratie, toekomstige videobackends, usage-endpoints.
+  <Tab title="Vendor plugin layer">
+    Vendorspecifieke API's, auth, modelcatalogi, spraaksynthese, beeldgeneratie, toekomstige video-backends, usage-endpoints.
   </Tab>
-  <Tab title="Kanaal-/featurepluginlaag">
-    Slack-/Discord-/voice-call-/enz.-integratie die core-capabilities consumeert en ze op een oppervlak presenteert.
+  <Tab title="Channel/feature plugin layer">
+    Slack-/Discord-/voice-call-/enzovoort-integratie die core-capabilities consumeert en ze op een oppervlak presenteert.
   </Tab>
 </Tabs>
 
 TTS volgt bijvoorbeeld deze vorm:
 
-- core is eigenaar van TTS-beleid op reply-time, fallbackvolgorde, voorkeuren en kanaallevering
+- core is eigenaar van TTS-beleid op antwoordtijd, fallbackvolgorde, voorkeuren en kanaallevering
 - `openai`, `elevenlabs` en `microsoft` zijn eigenaar van synthese-implementaties
-- `voice-call` consumeert de runtimehelper voor telefonie-TTS
+- `voice-call` consumeert de telephony TTS-runtimehelper
 
 Datzelfde patroon verdient de voorkeur voor toekomstige capabilities.
 
-### Voorbeeld van een bedrijfsplugin met meerdere capabilities
+### Voorbeeld van bedrijfsplugin met meerdere capabilities
 
-Een bedrijfsplugin moet van buitenaf samenhangend aanvoelen. Als OpenClaw gedeelde contracten heeft voor modellen, spraak, realtime transcriptie, realtime stem, mediabegrip, beeldgeneratie, videogeneratie, web-fetch en webzoekopdrachten, kan een vendor al zijn oppervlakken op één plek bezitten:
+Een bedrijfsplugin moet van buitenaf coherent aanvoelen. Als OpenClaw gedeelde contracten heeft voor modellen, spraak, realtime transcriptie, realtime stem, mediabegrip, beeldgeneratie, videogeneratie, web-fetch en webzoeken, kan een vendor al zijn oppervlakken op één plek bezitten:
 
 ```ts
 import type { OpenClawPluginDefinition } from "openclaw/plugin-sdk/plugin-entry";
@@ -370,119 +370,119 @@ const plugin: OpenClawPluginDefinition = {
 export default plugin;
 ```
 
-Waar het om gaat zijn niet de exacte helpernamen. De vorm is belangrijk:
+Wat telt, zijn niet de exacte helpernamen. De vorm telt:
 
 - één plugin is eigenaar van het vendoroppervlak
 - core blijft eigenaar van de capability-contracten
 - kanalen en featureplugins consumeren `api.runtime.*`-helpers, geen vendorcode
-- contracttests kunnen controleren dat de plugin de capabilities heeft geregistreerd waarvan hij zegt eigenaar te zijn
+- contracttests kunnen bevestigen dat de plugin de capabilities heeft geregistreerd waarvan hij zegt eigenaar te zijn
 
 ### Capability-voorbeeld: videobegrip
 
-OpenClaw behandelt beeld-/audio-/videobegrip al als één gedeelde capability. Hetzelfde eigendomsmodel is daar van toepassing:
+OpenClaw behandelt beeld-/audio-/videobegrip al als één gedeelde capability. Hetzelfde eigendomsmodel geldt daar:
 
 <Steps>
-  <Step title="Core definieert het contract">
-    Core definieert het mediabegripcontract.
+  <Step title="Core defines the contract">
+    Core definieert het mediabegrip-contract.
   </Step>
-  <Step title="Vendorplugins registreren">
+  <Step title="Vendor plugins register">
     Vendorplugins registreren `describeImage`, `transcribeAudio` en `describeVideo` waar van toepassing.
   </Step>
-  <Step title="Consumers gebruiken het gedeelde gedrag">
-    Kanalen en featureplugins consumeren het gedeelde core-gedrag in plaats van rechtstreeks naar vendorcode te wiren.
+  <Step title="Consumers use the shared behavior">
+    Kanalen en featureplugins consumeren het gedeelde core-gedrag in plaats van rechtstreeks naar vendorcode te bedraden.
   </Step>
 </Steps>
 
 Dat voorkomt dat de videoaannames van één provider in core worden ingebakken. De plugin is eigenaar van het vendoroppervlak; core is eigenaar van het capability-contract en fallbackgedrag.
 
-Videogeneratie gebruikt al dezelfde volgorde: core is eigenaar van het getypte capability-contract en de runtimehelper, en vendorplugins registreren `api.registerVideoGenerationProvider(...)`-implementaties ervoor.
+Videogeneratie gebruikt al dezelfde volgorde: core is eigenaar van het getypeerde capability-contract en de runtimehelper, en vendorplugins registreren `api.registerVideoGenerationProvider(...)`-implementaties ertegen.
 
-Concrete rollout-checklist nodig? Zie [Capability Cookbook](/nl/plugins/architecture).
+Een concrete rollout-checklist nodig? Zie [Capability Cookbook](/nl/plugins/architecture).
 
-## Contracten en afdwinging
+## Contracten en handhaving
 
-Het plugin-API-oppervlak is bewust getypt en gecentraliseerd in `OpenClawPluginApi`. Dat contract definieert de ondersteunde registratiepunten en de runtimehelpers waarop een plugin mag vertrouwen.
+Het plugin-API-oppervlak is bewust getypeerd en gecentraliseerd in `OpenClawPluginApi`. Dat contract definieert de ondersteunde registratiepunten en de runtimehelpers waarop een plugin mag vertrouwen.
 
 Waarom dit belangrijk is:
 
 - pluginauteurs krijgen één stabiele interne standaard
-- core kan dubbel eigendom afwijzen, zoals twee plugins die hetzelfde provider-id registreren
-- startup kan bruikbare diagnostiek tonen voor foutieve registratie
+- core kan dubbel eigendom weigeren, zoals twee plugins die dezelfde provider-id registreren
+- startup kan bruikbare diagnostiek tonen voor misvormde registratie
 - contracttests kunnen eigendom van gebundelde plugins afdwingen en stille drift voorkomen
 
-Er zijn twee afdwingingslagen:
+Er zijn twee handhavingslagen:
 
 <AccordionGroup>
-  <Accordion title="Afdwingen van runtime-registratie">
-    Het plugin-register valideert registraties terwijl plugins laden. Voorbeelden: dubbele provider-id's, dubbele spraakprovider-id's en misvormde registraties leveren plugin-diagnostiek op in plaats van ongedefinieerd gedrag.
+  <Accordion title="Afdwinging van runtimeregistratie">
+    Het Plugin-register valideert registraties terwijl plugins worden geladen. Voorbeelden: dubbele provider-id's, dubbele spraakprovider-id's en ongeldige registraties leveren Plugin-diagnostiek op in plaats van ongedefinieerd gedrag.
   </Accordion>
   <Accordion title="Contracttests">
-    Gebundelde plugins worden tijdens testruns vastgelegd in contractregisters, zodat OpenClaw eigenaarschap expliciet kan controleren. Tegenwoordig wordt dit gebruikt voor modelproviders, spraakproviders, webzoekproviders en eigenaarschap van gebundelde registraties.
+    Gebundelde plugins worden tijdens testruns vastgelegd in contractregisters zodat OpenClaw eigenaarschap expliciet kan bevestigen. Tegenwoordig wordt dit gebruikt voor modelproviders, spraakproviders, webzoekproviders en eigenaarschap van gebundelde registraties.
   </Accordion>
 </AccordionGroup>
 
-Het praktische effect is dat OpenClaw vooraf weet welke plugin eigenaar is van welk oppervlak. Daardoor kunnen core en kanalen naadloos samenwerken, omdat eigenaarschap gedeclareerd, getypeerd en testbaar is in plaats van impliciet.
+Het praktische effect is dat OpenClaw vooraf weet welke Plugin eigenaar is van welk oppervlak. Daardoor kunnen core en kanalen naadloos samenwerken, omdat eigenaarschap gedeclareerd, getypeerd en testbaar is in plaats van impliciet.
 
-### Wat in een contract hoort
+### Wat hoort in een contract
 
 <Tabs>
   <Tab title="Goede contracten">
     - getypeerd
     - klein
-    - capability-specifiek
+    - capaciteitsspecifiek
     - eigendom van core
     - herbruikbaar door meerdere plugins
-    - bruikbaar door kanalen/functies zonder kennis van leveranciers
+    - te gebruiken door kanalen/functies zonder kennis van leveranciers
 
   </Tab>
   <Tab title="Slechte contracten">
-    - leveranciersspecifiek beleid verborgen in core
-    - eenmalige plugin-ontsnappingsroutes die het register omzeilen
+    - leveranciersspecifiek beleid dat verborgen zit in core
+    - eenmalige Plugin-ontsnappingsroutes die het register omzeilen
     - kanaalcode die rechtstreeks in een leveranciersimplementatie grijpt
-    - ad-hoc runtime-objecten die geen deel uitmaken van `OpenClawPluginApi` of `api.runtime`
+    - ad-hocruntimeobjecten die geen onderdeel zijn van `OpenClawPluginApi` of `api.runtime`
 
   </Tab>
 </Tabs>
 
-Verhoog bij twijfel het abstractieniveau: definieer eerst de capability en laat plugins er daarna op aansluiten.
+Bij twijfel, verhoog het abstractieniveau: definieer eerst de capaciteit en laat plugins er daarna op aansluiten.
 
 ## Uitvoeringsmodel
 
-Native OpenClaw-plugins draaien **in-process** met de Gateway. Ze zijn niet gesandboxt. Een geladen native plugin heeft dezelfde vertrouwensgrens op procesniveau als core-code.
+Native OpenClaw-plugins draaien **in-process** met de Gateway. Ze zijn niet gesandboxed. Een geladen native Plugin heeft dezelfde vertrouwensgrens op procesniveau als corecode.
 
 <Warning>
-Implicaties van native plugins: een plugin kan tools, netwerkhandlers, hooks en services registreren; een plugin-bug kan de Gateway laten crashen of destabiliseren; en een kwaadaardige native plugin staat gelijk aan willekeurige code-uitvoering binnen het OpenClaw-proces.
+Implicaties van native plugins: een Plugin kan tools, netwerkhandlers, hooks en services registreren; een Plugin-bug kan de Gateway laten crashen of destabiliseren; en een kwaadaardige native Plugin staat gelijk aan willekeurige code-uitvoering binnen het OpenClaw-proces.
 </Warning>
 
-Compatibele bundels zijn standaard veiliger, omdat OpenClaw ze momenteel behandelt als metadata-/contentpakketten. In huidige releases betekent dat vooral gebundelde Skills.
+Compatibele bundels zijn standaard veiliger omdat OpenClaw ze momenteel behandelt als metadata-/contentpakketten. In huidige releases betekent dat vooral gebundelde Skills.
 
-Gebruik allowlists en expliciete installatie-/laadpaden voor niet-gebundelde plugins. Behandel workspace-plugins als code voor ontwikkeltijd, niet als productiestandaarden.
+Gebruik allowlists en expliciete installatie-/laadpaden voor niet-gebundelde plugins. Behandel workspace-plugins als code voor ontwikkeltijd, niet als productie-standaardinstellingen.
 
-Houd voor gebundelde workspace-pakketnamen de plugin-id verankerd in de npm-naam: standaard `@openclaw/<id>`, of een goedgekeurd getypeerd achtervoegsel zoals `-provider`, `-plugin`, `-speech`, `-sandbox` of `-media-understanding` wanneer het pakket bewust een beperktere plugin-rol blootstelt.
+Houd voor gebundelde workspace-pakketnamen de Plugin-id verankerd in de npm-naam: standaard `@openclaw/<id>`, of een goedgekeurd getypeerd achtervoegsel zoals `-provider`, `-plugin`, `-speech`, `-sandbox` of `-media-understanding` wanneer het pakket bewust een smallere Plugin-rol beschikbaar stelt.
 
 <Note>
-**Vertrouwensnotitie:** `plugins.allow` vertrouwt **plugin-id's**, niet de herkomst van de bron. Een workspace-plugin met dezelfde id als een gebundelde plugin overschaduwt bewust de gebundelde kopie wanneer die workspace-plugin is ingeschakeld/toegestaan. Dit is normaal en nuttig voor lokale ontwikkeling, patchtests en hotfixes. Vertrouwen in gebundelde plugins wordt bepaald op basis van de bron-snapshot — het manifest en de code op schijf tijdens het laden — in plaats van installatiemetadata. Een beschadigde of vervangen installatieregistratie kan het vertrouwensoppervlak van een gebundelde plugin niet stilzwijgend verbreden buiten wat de daadwerkelijke bron claimt.
+**Vertrouwensnotitie:** `plugins.allow` vertrouwt **Plugin-id's**, niet de herkomst van de bron. Een workspace-Plugin met dezelfde id als een gebundelde Plugin overschaduwt bewust de gebundelde kopie wanneer die workspace-Plugin is ingeschakeld/toegestaan. Dit is normaal en nuttig voor lokale ontwikkeling, patchtests en hotfixes. Vertrouwen in gebundelde plugins wordt bepaald op basis van de bron-snapshot — het manifest en de code op schijf tijdens het laden — in plaats van op installatiemetadata. Een beschadigd of vervangen installatierecord kan het vertrouwensoppervlak van een gebundelde Plugin niet stilzwijgend uitbreiden voorbij wat de daadwerkelijke bron claimt.
 </Note>
 
 ## Exportgrens
 
-OpenClaw exporteert capabilities, geen implementatiegemak.
+OpenClaw exporteert capaciteiten, geen implementatiegemak.
 
-Houd capability-registratie publiek. Beperk exports van niet-contractuele helpers:
+Houd capaciteitsregistratie openbaar. Snoei helperexports die geen contract zijn:
 
-- helpersubpaden specifiek voor gebundelde plugins
-- runtime-plumbing-subpaden die niet als publieke API bedoeld zijn
+- helper-subpaden specifiek voor gebundelde plugins
+- runtime-plumbing-subpaden die niet bedoeld zijn als publieke API
 - leveranciersspecifieke gemakhelpers
 - setup-/onboardinghelpers die implementatiedetails zijn
 
-Gereserveerde helpersubpaden voor gebundelde plugins zijn verwijderd uit de gegenereerde SDK-exportmap. Houd eigenaarspecifieke helpers binnen het eigenaar-plugin-pakket; promoveer alleen herbruikbaar hostgedrag naar generieke SDK-contracten zoals `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` en `plugin-sdk/plugin-config-runtime`.
+Gereserveerde helper-subpaden voor gebundelde plugins zijn verwijderd uit de gegenereerde SDK-exportmap. Houd eigenaarspecifieke helpers binnen het eigen Plugin-pakket; promoveer alleen herbruikbaar hostgedrag naar generieke SDK-contracten zoals `plugin-sdk/gateway-runtime`, `plugin-sdk/security-runtime` en `plugin-sdk/plugin-config-runtime`.
 
 ## Internals en referentie
 
-Zie [Interne plugin-architectuur](/nl/plugins/architecture-internals) voor de laadpipeline, het registermodel, provider-runtime-hooks, Gateway-HTTP-routes, schemas voor berichttools, kanaaldoelresolutie, providercatalogi, context-engine-plugins en de gids voor het toevoegen van een nieuwe capability.
+Zie [Plugin-architectuurinternals](/nl/plugins/architecture-internals) voor de laadpipeline, het registermodel, provider-runtimehooks, Gateway-HTTP-routes, schemas voor berichtentools, resolutie van kanaaldoelen, providercatalogi, contextengine-plugins en de handleiding voor het toevoegen van een nieuwe capaciteit.
 
 ## Gerelateerd
 
 - [Plugins bouwen](/nl/plugins/building-plugins)
 - [Plugin-manifest](/nl/plugins/manifest)
-- [Plugin SDK instellen](/nl/plugins/sdk-setup)
+- [Plugin SDK-installatie](/nl/plugins/sdk-setup)

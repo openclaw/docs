@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Je implementeert OpenClaw op een cloud-VM met Docker
+    - Je rolt OpenClaw uit op een cloud-VM met Docker
     - Je hebt het gedeelde binaire bakproces, persistentie en de updateflow nodig
-summary: Gedeelde runtimestappen voor Docker-VM's voor langlevende OpenClaw Gateway-hosts
-title: Docker-VM-runtime
+summary: Gedeelde Docker-VM-runtimestappen voor langdurig draaiende OpenClaw Gateway-hostsystemen
+title: Docker-VM-uitvoeringsomgeving
 x-i18n:
-    generated_at: "2026-04-29T22:53:20Z"
+    generated_at: "2026-05-02T11:19:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
+    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
@@ -35,7 +35,7 @@ Als je later nieuwe Skills toevoegt die afhankelijk zijn van extra binaries, moe
 
 1. De Dockerfile bijwerken
 2. De image opnieuw bouwen
-3. De containers herstarten
+3. De containers opnieuw starten
 
 **Voorbeeld-Dockerfile**
 
@@ -83,7 +83,7 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-De bovenstaande URL's zijn voorbeelden. Kies voor ARM-gebaseerde VM's de `arm64`-assets. Pin release-URL's met versienummers voor reproduceerbare builds.
+De bovenstaande URL's zijn voorbeelden. Kies voor ARM-gebaseerde VM's de `arm64`-assets. Pin versiegebonden release-URL's voor reproduceerbare builds.
 </Note>
 
 ## Bouwen en starten
@@ -96,7 +96,7 @@ docker compose up -d openclaw-gateway
 Als de build tijdens `pnpm install --frozen-lockfile` mislukt met `Killed` of `exit code 137`, heeft de VM onvoldoende geheugen.
 Gebruik een grotere machineklasse voordat je het opnieuw probeert.
 
-Controleer binaries:
+Controleer de binaries:
 
 ```bash
 docker compose exec openclaw-gateway which gog
@@ -112,7 +112,7 @@ Verwachte uitvoer:
 /usr/local/bin/wacli
 ```
 
-Controleer Gateway:
+Controleer de Gateway:
 
 ```bash
 docker compose logs -f openclaw-gateway
@@ -124,28 +124,28 @@ Verwachte uitvoer:
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
-## Wat waar behouden blijft
+## Wat waar blijft bestaan
 
 OpenClaw draait in Docker, maar Docker is niet de bron van waarheid.
 Alle langlevende state moet herstarts, rebuilds en reboots overleven.
 
-| Component           | Locatie                                  | Persistentie-mechanisme | Opmerkingen                                                   |
-| ------------------- | ---------------------------------------- | ----------------------- | ------------------------------------------------------------- |
-| Gateway-config      | `/home/node/.openclaw/`                  | Host-volumemount        | Bevat `openclaw.json`, `.env`                                 |
-| Modelauth-profielen | `/home/node/.openclaw/agents/`           | Host-volumemount        | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
-| Skills-configuraties | `/home/node/.openclaw/skills/`          | Host-volumemount        | State op Skills-niveau                                        |
-| Agent-werkruimte    | `/home/node/.openclaw/workspace/`        | Host-volumemount        | Code en agent-artefacten                                      |
-| WhatsApp-sessie     | `/home/node/.openclaw/`                  | Host-volumemount        | Behoudt QR-login                                              |
-| Gmail-sleutelbos    | `/home/node/.openclaw/`                  | Host-volume + wachtwoord | Vereist `GOG_KEYRING_PASSWORD`                               |
-| Plugin-runtime-afhankelijkheden | `/var/lib/openclaw/plugin-runtime-deps/` | Docker-volume met naam | Gegenereerde gebundelde Plugin-afhankelijkheden en runtimemirrors |
-| Externe binaries    | `/usr/local/bin/`                        | Docker-image            | Moeten tijdens het bouwen worden ingebakken                   |
-| Node-runtime        | Containerbestandssysteem                 | Docker-image            | Wordt bij elke image-build opnieuw gebouwd                    |
-| OS-pakketten        | Containerbestandssysteem                 | Docker-image            | Niet tijdens runtime installeren                              |
-| Docker-container    | Tijdelijk                                | Herstartbaar            | Veilig om te verwijderen                                      |
+| Component           | Locatie                                                | Persistentiemechanisme | Opmerkingen                                                   |
+| ------------------- | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------------- |
+| Gateway-config      | `/home/node/.openclaw/`                                | Hostvolumemount        | Bevat `openclaw.json`, `.env`                                 |
+| Model-auth-profielen | `/home/node/.openclaw/agents/`                         | Hostvolumemount        | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API-sleutels) |
+| Skill-configuraties | `/home/node/.openclaw/skills/`                         | Hostvolumemount        | State op Skill-niveau                                         |
+| Agent-werkruimte    | `/home/node/.openclaw/workspace/`                      | Hostvolumemount        | Code en agent-artifacts                                       |
+| WhatsApp-sessie     | `/home/node/.openclaw/`                                | Hostvolumemount        | Behoudt QR-login                                              |
+| Gmail-keyring       | `/home/node/.openclaw/`                                | Hostvolume + wachtwoord | Vereist `GOG_KEYRING_PASSWORD`                                |
+| Plugin-pakketten    | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Hostvolumemount        | Downloadbare roots van Plugin-pakketten                       |
+| Externe binaries    | `/usr/local/bin/`                                      | Docker-image           | Moeten tijdens buildtijd worden ingebakken                    |
+| Node-runtime        | Containerbestandssysteem                              | Docker-image           | Opnieuw gebouwd bij elke image-build                          |
+| OS-pakketten        | Containerbestandssysteem                              | Docker-image           | Niet installeren tijdens runtime                              |
+| Docker-container    | Vluchtig                                               | Herstartbaar           | Veilig om te verwijderen                                      |
 
 ## Updates
 
-OpenClaw bijwerken op de VM:
+Om OpenClaw op de VM bij te werken:
 
 ```bash
 git pull

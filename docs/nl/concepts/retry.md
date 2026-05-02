@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Bijwerken van herhaalgedrag of standaardinstellingen voor providers
-    - Provider-verzendfouten of snelheidslimieten debuggen
-summary: Beleid voor opnieuw proberen bij uitgaande provideraanroepen
-title: Beleid voor nieuwe pogingen
+    - Provider-retrygedrag of standaardwaarden bijwerken
+    - Foutopsporing bij verzendfouten van providers of limieten voor aanvraagsnelheid
+summary: Beleid voor nieuwe pogingen voor uitgaande aanroepen naar aanbieders
+title: Beleid voor opnieuw proberen
 x-i18n:
-    generated_at: "2026-04-29T22:40:47Z"
+    generated_at: "2026-05-02T11:14:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 38811a6dabb0b60b71167ee4fcc09fb042f941b4bbb1cf8b0f5a91c3c93b2e75
+    source_hash: 7720092499effdfa011fc0a0310adb2ecddca9e94f57f749794eab1c9ab4c922
     source_path: concepts/retry.md
     workflow: 16
 ---
 
 ## Doelen
 
-- Probeer opnieuw per HTTP-verzoek, niet per meerstappenstroom.
+- Probeer opnieuw per HTTP-verzoek, niet per flow met meerdere stappen.
 - Behoud de volgorde door alleen de huidige stap opnieuw te proberen.
-- Voorkom dubbele niet-idempotente bewerkingen.
+- Vermijd duplicatie van niet-idempotente bewerkingen.
 
 ## Standaardwaarden
 
 - Pogingen: 3
 - Maximale vertragingslimiet: 30000 ms
-- Jitter: 0.1 (10 procent)
-- Provider-standaardwaarden:
+- Jitter: 0,1 (10 procent)
+- Standaardwaarden per provider:
   - Minimale vertraging voor Telegram: 400 ms
   - Minimale vertraging voor Discord: 500 ms
 
@@ -32,20 +32,21 @@ x-i18n:
 
 ### Modelproviders
 
-- OpenClaw laat provider-SDK's normale korte herpogingen afhandelen.
-- Voor op Stainless gebaseerde SDK's zoals Anthropic en OpenAI kunnen antwoorden
-  waarop opnieuw geprobeerd kan worden (`408`, `409`, `429` en `5xx`)
-  `retry-after-ms` of `retry-after` bevatten. Wanneer die wachttijd langer is
-  dan 60 seconden, voegt OpenClaw `x-should-retry: false` toe, zodat de SDK de
-  fout onmiddellijk doorgeeft en model-failover naar een ander auth-profiel of
-  fallbackmodel kan roteren.
+- OpenClaw laat provider-SDK's normale korte retries afhandelen.
+- Voor SDK's op basis van Stainless, zoals Anthropic en OpenAI, kunnen retrybare responses
+  (`408`, `409`, `429` en `5xx`) `retry-after-ms` of
+  `retry-after` bevatten. Wanneer die wachttijd langer is dan 60 seconden, injecteert OpenClaw
+  `x-should-retry: false`, zodat de SDK de fout direct doorgeeft en modelfailover
+  kan overschakelen naar een ander auth-profiel of fallbackmodel.
 - Overschrijf de limiet met `OPENCLAW_SDK_RETRY_MAX_WAIT_SECONDS=<seconds>`.
-  Stel deze in op `0`, `false`, `off`, `none` of `disabled` om SDK's lange
-  interne `Retry-After`-wachttijden te laten respecteren.
+  Stel dit in op `0`, `false`, `off`, `none` of `disabled` om SDK's lange
+  `Retry-After`-wachttijden intern te laten respecteren.
 
 ### Discord
 
-- Probeert alleen opnieuw bij rate-limit-fouten (HTTP 429).
+- Probeert opnieuw bij rate-limit-fouten (HTTP 429), request-time-outs, HTTP 5xx-responses
+  en tijdelijke transportfouten zoals DNS-lookupfouten, verbindingsresets,
+  socket-sluitingen en fetch-fouten.
 - Gebruikt Discord `retry_after` wanneer beschikbaar, anders exponentiële backoff.
 
 ### Telegram
@@ -56,7 +57,7 @@ x-i18n:
 
 ## Configuratie
 
-Stel het herpogingsbeleid per provider in `~/.openclaw/openclaw.json` in:
+Stel het retrybeleid per provider in `~/.openclaw/openclaw.json` in:
 
 ```json5
 {
@@ -83,10 +84,10 @@ Stel het herpogingsbeleid per provider in `~/.openclaw/openclaw.json` in:
 
 ## Opmerkingen
 
-- Herpogingen gelden per verzoek (bericht verzenden, media uploaden, reactie, poll, sticker).
-- Samengestelde stromen proberen voltooide stappen niet opnieuw.
+- Retries gelden per verzoek (bericht verzenden, media-upload, reactie, poll, sticker).
+- Samengestelde flows proberen voltooide stappen niet opnieuw.
 
 ## Gerelateerd
 
-- [Model-failover](/nl/concepts/model-failover)
+- [Modelfailover](/nl/concepts/model-failover)
 - [Opdrachtwachtrij](/nl/concepts/queue)

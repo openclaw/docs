@@ -4,95 +4,101 @@ read_when:
 summary: Routeringsregels per kanaal (WhatsApp, Telegram, Discord, Slack) en gedeelde context
 title: Kanaalroutering
 x-i18n:
-    generated_at: "2026-04-29T22:24:21Z"
+    generated_at: "2026-05-02T11:08:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c43347048fcfd137cc3a0b2cfdc4cf36426fdcf9645f2d1a05ce9cf49688cf0d
+    source_hash: 9a752696e70d2c13d3ab1c9cedd41442e0d8aee6d78b3a069b53dd2b262174da
     source_path: channels/channel-routing.md
     workflow: 16
 ---
 
-# Kanalen en routering
+# Kanalen en routing
 
 OpenClaw routeert antwoorden **terug naar het kanaal waar een bericht vandaan kwam**. Het
-model kiest geen kanaal; routering is deterministisch en wordt geregeld door de
+model kiest geen kanaal; de routing is deterministisch en wordt bepaald door de
 hostconfiguratie.
 
-## Belangrijke termen
+## Kernbegrippen
 
 - **Kanaal**: `telegram`, `whatsapp`, `discord`, `irc`, `googlechat`, `slack`, `signal`, `imessage`, `line`, plus Plugin-kanalen. `webchat` is het interne WebChat-UI-kanaal en is geen configureerbaar uitgaand kanaal.
 - **AccountId**: accountinstantie per kanaal (wanneer ondersteund).
 - Optioneel standaardaccount voor kanaal: `channels.<channel>.defaultAccount` kiest
   welk account wordt gebruikt wanneer een uitgaand pad geen `accountId` opgeeft.
-  - Stel in configuraties met meerdere accounts een expliciete standaard in (`defaultAccount` of `accounts.default`) wanneer twee of meer accounts zijn geconfigureerd. Zonder dit kan fallback-routering de eerste genormaliseerde account-ID kiezen.
-- **AgentId**: een geïsoleerde werkruimte + sessieopslag (“brein”).
-- **SessionKey**: de bucketsleutel die wordt gebruikt om context op te slaan en gelijktijdigheid te regelen.
+  - Stel in configuraties met meerdere accounts een expliciete standaardwaarde in (`defaultAccount` of `accounts.default`) wanneer twee of meer accounts zijn geconfigureerd. Zonder deze waarde kan fallback-routing de eerste genormaliseerde account-ID kiezen.
+- **AgentId**: een geisoleerde werkruimte + sessieopslag ("brein").
+- **SessionKey**: de bucket-sleutel die wordt gebruikt om context op te slaan en concurrency te beheren.
+
+## Prefixen voor uitgaande doelen
+
+Expliciete uitgaande doelen kunnen een providerprefix bevatten, zoals `telegram:123` of `tg:123`. Core behandelt die prefix alleen als hint voor kanaalselectie wanneer het geselecteerde kanaal `last` is of anderszins niet is opgelost, en alleen wanneer de geladen Plugin die prefix adverteert. Als de aanroeper al een expliciet kanaal heeft geselecteerd, moet de providerprefix overeenkomen met dat kanaal; kanaaloverschrijdende combinaties, zoals WhatsApp-bezorging naar `telegram:123`, mislukken voordat Plugin-specifieke doelnormalisatie plaatsvindt.
+
+Doelsoort- en serviceprefixen zoals `channel:<id>`, `user:<id>`, `room:<id>`, `thread:<id>`, `imessage:<handle>` en `sms:<number>` blijven binnen de grammatica van het geselecteerde kanaal. Ze selecteren de provider niet zelf.
 
 ## Vormen van sessiesleutels (voorbeelden)
 
-Directe berichten worden standaard samengevoegd in de **main**-sessie van de agent:
+Directe berichten vallen standaard samen in de **main**-sessie van de agent:
 
 - `agent:<agentId>:<mainKey>` (standaard: `agent:main:main`)
 
-Zelfs wanneer gespreksgeschiedenis van directe berichten wordt gedeeld met main, gebruiken sandbox- en
-toolbeleid een afgeleide runtime-sleutel per account voor externe DM's,
-zodat berichten die uit een kanaal komen niet worden behandeld als lokale main-sessieruns.
+Zelfs wanneer de gespreksgeschiedenis van directe berichten met main wordt gedeeld, gebruiken sandbox en
+toolbeleid een afgeleide runtime-sleutel per account voor externe directe chats,
+zodat berichten die vanuit een kanaal komen niet worden behandeld als lokale main-sessieruns.
 
-Groepen en kanalen blijven per kanaal geïsoleerd:
+Groepen en kanalen blijven per kanaal geisoleerd:
 
 - Groepen: `agent:<agentId>:<channel>:group:<id>`
-- Kanalen/ruimtes: `agent:<agentId>:<channel>:channel:<id>`
+- Kanalen/ruimten: `agent:<agentId>:<channel>:channel:<id>`
 
 Threads:
 
 - Slack/Discord-threads voegen `:thread:<threadId>` toe aan de basissleutel.
-- Telegram-forumonderwerpen voegen `:topic:<topicId>` in in de groepssleutel.
+- Telegram-forumonderwerpen nemen `:topic:<topicId>` op in de groepssleutel.
 
 Voorbeelden:
 
 - `agent:main:telegram:group:-1001234567890:topic:42`
 - `agent:main:discord:channel:123456:thread:987654`
 
-## Routevastzetting voor main-DM
+## Vastzetten van main-DM-route
 
-Wanneer `session.dmScope` `main` is, kunnen directe berichten één main-sessie delen.
-Om te voorkomen dat de `lastRoute` van de sessie wordt overschreven door DM's van niet-eigenaren,
+Wanneer `session.dmScope` `main` is, kunnen directe berichten een main-sessie delen.
+Om te voorkomen dat de `lastRoute` van de sessie wordt overschreven door DM's van niet-eigenaars,
 leidt OpenClaw een vastgezette eigenaar af uit `allowFrom` wanneer al het volgende waar is:
 
-- `allowFrom` heeft precies één niet-wildcarditem.
-- Het item kan worden genormaliseerd naar een concrete afzender-ID voor dat kanaal.
+- `allowFrom` heeft precies een niet-wildcardvermelding.
+- De vermelding kan worden genormaliseerd naar een concrete afzender-ID voor dat kanaal.
 - De inkomende DM-afzender komt niet overeen met die vastgezette eigenaar.
 
-In dat geval van mismatch legt OpenClaw nog steeds inkomende sessiemetadata vast, maar het
-slaat het bijwerken van `lastRoute` van de main-sessie over.
+In dat geval van een mismatch registreert OpenClaw nog steeds inkomende sessiemetadata, maar het
+slaat het bijwerken van de main-sessie `lastRoute` over.
 
-## Beveiligde inkomende registratie
+## Bewaakte inkomende registratie
 
-Kanaal-plugins kunnen een inkomend sessierecord markeren als `createIfMissing: false`
-wanneer een beveiligd pad geen nieuwe OpenClaw-sessie mag maken. In die modus
+Kanaal-Plugins kunnen een inkomend sessierecord markeren als `createIfMissing: false`
+wanneer een bewaakt pad geen nieuwe OpenClaw-sessie mag maken. In die modus
 kan OpenClaw metadata en `lastRoute` voor een bestaande sessie bijwerken, maar het
-maakt geen route-only sessie-item alleen omdat er een bericht is waargenomen.
+maakt geen sessievermelding met alleen een route aan alleen omdat een bericht is waargenomen.
 
-## Routeringsregels (hoe een agent wordt gekozen)
+## Routingregels (hoe een agent wordt gekozen)
 
-Routering kiest **één agent** voor elk inkomend bericht:
+Routing kiest **een agent** voor elk inkomend bericht:
 
 1. **Exacte peer-overeenkomst** (`bindings` met `peer.kind` + `peer.id`).
-2. **Overeenkomst met bovenliggende peer** (thread-overerving).
+2. **Bovenliggende peer-overeenkomst** (thread-overerving).
 3. **Guild + rollen-overeenkomst** (Discord) via `guildId` + `roles`.
 4. **Guild-overeenkomst** (Discord) via `guildId`.
-5. **Team-overeenkomst** (Slack) via `teamId`.
+5. **Teamovereenkomst** (Slack) via `teamId`.
 6. **Accountovereenkomst** (`accountId` op het kanaal).
 7. **Kanaalovereenkomst** (elk account op dat kanaal, `accountId: "*"`).
-8. **Standaardagent** (`agents.list[].default`, anders het eerste item in de lijst, fallback naar `main`).
+8. **Standaardagent** (`agents.list[].default`, anders eerste lijstvermelding, fallback naar `main`).
 
 Wanneer een binding meerdere matchvelden bevat (`peer`, `guildId`, `teamId`, `roles`), **moeten alle opgegeven velden overeenkomen** voordat die binding van toepassing is.
 
-De overeenkomende agent bepaalt welke werkruimte en sessieopslag worden gebruikt.
+De gematchte agent bepaalt welke werkruimte en sessieopslag worden gebruikt.
 
 ## Broadcastgroepen (meerdere agents uitvoeren)
 
-Met broadcastgroepen kun je **meerdere agents** uitvoeren voor dezelfde peer **wanneer OpenClaw normaal zou antwoorden** (bijvoorbeeld: in WhatsApp-groepen, na mention-/activatiecontrole).
+Met broadcastgroepen kun je **meerdere agents** uitvoeren voor dezelfde peer **wanneer OpenClaw normaal gesproken zou antwoorden** (bijvoorbeeld: in WhatsApp-groepen, na gating op vermelding/activatie).
 
 Configuratie:
 
@@ -110,7 +116,7 @@ Zie: [Broadcastgroepen](/nl/channels/broadcast-groups).
 
 ## Configuratieoverzicht
 
-- `agents.list`: benoemde agentdefinities (werkruimte, model, enz.).
+- `agents.list`: benoemde agentdefinities (werkruimte, model, enzovoort).
 - `bindings`: koppel inkomende kanalen/accounts/peers aan agents.
 
 Voorbeeld:
@@ -129,23 +135,23 @@ Voorbeeld:
 
 ## Sessieopslag
 
-Sessieopslag staat onder de statusmap (standaard `~/.openclaw`):
+Sessieopslagen bevinden zich onder de statusmap (standaard `~/.openclaw`):
 
 - `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- JSONL-transcripten staan naast de opslag
+- JSONL-transcripten bevinden zich naast de opslag
 
-Je kunt het opslagpad overschrijven via `session.store` en `{agentId}`-templates.
+Je kunt het opslagpad overschrijven via `session.store` en `{agentId}`-templating.
 
-Gateway- en ACP-sessiedetectie scant ook schijfgebaseerde agentopslag onder de
-standaardhoofdmap `agents/` en onder `session.store`-hoofdmappen met templates. Gedetecteerde
-opslag moet binnen die opgeloste agenthoofdmap blijven en een normaal
-`sessions.json`-bestand gebruiken. Symlinks en paden buiten de hoofdmap worden genegeerd.
+Gateway- en ACP-sessieontdekking scant ook schijfgebaseerde agentopslagen onder de
+standaardroot `agents/` en onder getemplate `session.store`-roots. Ontdekte
+opslagen moeten binnen die opgeloste agentroot blijven en een regulier
+`sessions.json`-bestand gebruiken. Symlinks en paden buiten de root worden genegeerd.
 
 ## WebChat-gedrag
 
 WebChat koppelt aan de **geselecteerde agent** en gebruikt standaard de main-sessie
 van de agent. Hierdoor kun je met WebChat kanaaloverschrijdende context voor die
-agent op één plek zien.
+agent op een plek zien.
 
 ## Antwoordcontext
 
@@ -154,7 +160,7 @@ Inkomende antwoorden bevatten:
 - `ReplyToId`, `ReplyToBody` en `ReplyToSender` wanneer beschikbaar.
 - Geciteerde context wordt toegevoegd aan `Body` als een `[Replying to ...]`-blok.
 
-Dit is consistent in alle kanalen.
+Dit is consistent tussen kanalen.
 
 ## Gerelateerd
 

@@ -4,32 +4,32 @@ read_when:
     - Je wilt door LanceDB ondersteund langetermijngeheugen met automatisch ophalen of automatisch vastleggen
     - Je gebruikt lokale OpenAI-compatibele embeddings zoals Ollama
 sidebarTitle: Memory LanceDB
-summary: Configureer de meegeleverde LanceDB-geheugenplugin, inclusief lokale Ollama-compatibele embeddings
+summary: Configureer de meegeleverde LanceDB-geheugen-Plugin, inclusief lokale Ollama-compatibele embeddings
 title: Geheugen LanceDB
 x-i18n:
-    generated_at: "2026-04-29T23:03:13Z"
+    generated_at: "2026-05-02T11:23:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bda53528857a492f1627f655e49be6775e0114115781371ff67debb155b7e731
+    source_hash: 671daa20e4f070f9beb0187ff76db9368297b3bc78873ebf3f09ac7ccffa00a2
     source_path: plugins/memory-lancedb.md
     workflow: 16
 ---
 
-`memory-lancedb` is een meegeleverde geheugenplugin die langetermijngeheugen opslaat in
-LanceDB en embeddings gebruikt voor terughalen. De plugin kan automatisch relevante
-herinneringen terughalen vóór een modelbeurt en belangrijke feiten vastleggen na een antwoord.
+`memory-lancedb` is een meegeleverde memory-plugin die langetermijngeheugen opslaat in
+LanceDB en embeddings gebruikt voor recall. De plugin kan automatisch relevante
+memories ophalen vóór een modelbeurt en belangrijke feiten vastleggen na een antwoord.
 
-Gebruik deze wanneer je een lokale vectordatabase voor geheugen wilt, een
-OpenAI-compatibel embedding-eindpunt nodig hebt, of een geheugendatabase buiten
-de standaard ingebouwde geheugenopslag wilt bewaren.
+Gebruik de plugin wanneer je een lokale vectordatabase voor memory wilt, een
+OpenAI-compatibel embedding-eindpunt nodig hebt, of een memory-database buiten
+de standaard ingebouwde memory-store wilt houden.
 
 <Note>
-`memory-lancedb` is een Active Memory-plugin. Schakel deze in door de geheugensleuf
+`memory-lancedb` is een Active Memory-plugin. Schakel deze in door het memory-slot
 te selecteren met `plugins.slots.memory = "memory-lancedb"`. Begeleidende plugins zoals
-`memory-wiki` kunnen ernaast draaien, maar slechts één plugin is eigenaar van de actieve geheugensleuf.
+`memory-wiki` kunnen ernaast draaien, maar slechts één plugin is eigenaar van het actieve memory-slot.
 </Note>
 
-## Snel aan de slag
+## Snelstart
 
 ```json5
 {
@@ -54,7 +54,7 @@ te selecteren met `plugins.slots.memory = "memory-lancedb"`. Begeleidende plugin
 }
 ```
 
-Start de Gateway opnieuw nadat je de pluginconfiguratie hebt gewijzigd:
+Herstart de Gateway nadat je de plugin-configuratie hebt gewijzigd:
 
 ```bash
 openclaw gateway restart
@@ -66,9 +66,9 @@ Controleer daarna of de plugin is geladen:
 openclaw plugins list
 ```
 
-## Door providers ondersteunde embeddings
+## Provider-ondersteunde embeddings
 
-`memory-lancedb` kan dezelfde provideradapters voor geheugenembeddings gebruiken als
+`memory-lancedb` kan dezelfde memory-embedding-provideradapters gebruiken als
 `memory-core`. Stel `embedding.provider` in en laat `embedding.apiKey` weg om het
 geconfigureerde auth-profiel, de omgevingsvariabele of
 `models.providers.<provider>.apiKey` van de provider te gebruiken.
@@ -95,7 +95,7 @@ geconfigureerde auth-profiel, de omgevingsvariabele of
 }
 ```
 
-Dit pad werkt met provider-auth-profielen die embedding-inloggegevens beschikbaar stellen.
+Dit pad werkt met provider-auth-profielen die embedding-referenties beschikbaar maken.
 GitHub Copilot kan bijvoorbeeld worden gebruikt wanneer het Copilot-profiel/-abonnement
 embeddings ondersteunt:
 
@@ -120,15 +120,15 @@ embeddings ondersteunt:
 }
 ```
 
-OpenAI Codex / ChatGPT OAuth (`openai-codex`) is geen OpenAI Platform-
-inloggegeven voor embeddings. Gebruik voor OpenAI-embeddings een OpenAI API-sleutel-auth-profiel,
-`OPENAI_API_KEY` of `models.providers.openai.apiKey`. Gebruikers met alleen OAuth kunnen
-een andere provider met embeddingondersteuning gebruiken, zoals GitHub Copilot of Ollama.
+OpenAI Codex / ChatGPT OAuth (`openai-codex`) is geen OpenAI Platform
+embedding-referentie. Gebruik voor OpenAI-embeddings een OpenAI API key-auth-profiel,
+`OPENAI_API_KEY`, of `models.providers.openai.apiKey`. Gebruikers met alleen OAuth kunnen
+een andere provider gebruiken die embeddings ondersteunt, zoals GitHub Copilot of Ollama.
 
 ## Ollama-embeddings
 
-Geef voor Ollama-embeddings de voorkeur aan de meegeleverde Ollama-embeddingprovider. Deze gebruikt het
-native Ollama-`/api/embed`-eindpunt en volgt dezelfde regels voor auth/basis-URL als
+Gebruik voor Ollama-embeddings bij voorkeur de meegeleverde Ollama-embeddingprovider. Deze gebruikt het
+native Ollama `/api/embed`-eindpunt en volgt dezelfde auth-/basis-URL-regels als
 de Ollama-provider die is gedocumenteerd in [Ollama](/nl/providers/ollama).
 
 ```json5
@@ -169,10 +169,10 @@ van de lokale server ziet.
 Sommige OpenAI-compatibele embeddingproviders weigeren de parameter `encoding_format`,
 terwijl andere deze negeren en altijd `number[]`-vectoren retourneren.
 `memory-lancedb` laat daarom `encoding_format` weg bij embeddingverzoeken en
-accepteert zowel antwoorden met float-arrays als base64-gecodeerde float32-antwoorden.
+accepteert zowel float-array-antwoorden als base64-gecodeerde float32-antwoorden.
 
-Als je een onbewerkt OpenAI-compatibel embeddings-eindpunt hebt waarvoor geen
-meegeleverde provideradapter bestaat, laat dan `embedding.provider` weg (of laat dit op `openai`) en
+Als je een raw OpenAI-compatibel embeddings-eindpunt hebt waarvoor geen
+meegeleverde provideradapter bestaat, laat `embedding.provider` dan weg (of laat deze op `openai` staan) en
 stel `embedding.apiKey` plus `embedding.baseUrl` in. Dit behoudt het directe
 OpenAI-compatibele clientpad.
 
@@ -199,28 +199,28 @@ zijn. ZhiPu `embedding-3` gebruikt bijvoorbeeld `2048` dimensies:
 }
 ```
 
-## Limieten voor terughalen en vastleggen
+## Recall- en capture-limieten
 
 `memory-lancedb` heeft twee afzonderlijke tekstlimieten:
 
 | Instelling        | Standaard | Bereik    | Van toepassing op                            |
-| ----------------- | --------- | --------- | --------------------------------------------- |
-| `recallMaxChars`  | `1000`    | 100-10000 | tekst die naar de embedding-API wordt gestuurd voor terughalen |
-| `captureMaxChars` | `500`     | 100-10000 | lengte van assistant-bericht die in aanmerking komt voor vastleggen |
+| ----------------- | --------- | --------- | -------------------------------------------- |
+| `recallMaxChars`  | `1000`    | 100-10000 | tekst die voor recall naar de embedding-API wordt verzonden |
+| `captureMaxChars` | `500`     | 100-10000 | lengte van assistentberichten die in aanmerking komen voor capture |
 
-`recallMaxChars` beheert automatisch terughalen, de tool `memory_recall`, het
-querypad `memory_forget` en `openclaw ltm search`. Automatisch terughalen geeft de voorkeur aan het
-nieuwste gebruikersbericht uit de beurt en valt alleen terug op de volledige prompt wanneer er geen
-gebruikersbericht beschikbaar is. Zo blijven kanaalmetadata en grote promptblokken
+`recallMaxChars` bepaalt auto-recall, de tool `memory_recall`, het
+querypad `memory_forget` en `openclaw ltm search`. Auto-recall geeft de voorkeur aan het
+laatste gebruikersbericht uit de beurt en valt alleen terug op de volledige prompt wanneer er geen
+gebruikersbericht beschikbaar is. Hierdoor blijven kanaalmetadata en grote promptblokken
 buiten het embeddingverzoek.
 
 `captureMaxChars` bepaalt of een antwoord kort genoeg is om in aanmerking te komen
-voor automatisch vastleggen. Het beperkt query-embeddings voor terughalen niet.
+voor automatische capture. Het beperkt recall-query-embeddings niet.
 
 ## Commando's
 
-Wanneer `memory-lancedb` de actieve geheugenplugin is, registreert deze de `ltm` CLI-
-naamruimte:
+Wanneer `memory-lancedb` de actieve memory-plugin is, registreert deze de `ltm` CLI
+namespace:
 
 ```bash
 openclaw ltm list
@@ -228,8 +228,8 @@ openclaw ltm search "project preferences"
 openclaw ltm stats
 ```
 
-De plugin breidt ook `openclaw memory` uit met een niet-vector-subcommando `query`
-dat rechtstreeks op de LanceDB-tabel draait:
+De plugin breidt ook `openclaw memory` uit met een niet-vector-`query`-subcommando
+dat rechtstreeks tegen de LanceDB-tabel draait:
 
 ```bash
 openclaw memory query --cols id,text,createdAt --limit 20
@@ -237,15 +237,15 @@ openclaw memory query --filter "category = 'preference'" --order-by createdAt:de
 ```
 
 - `--cols <columns>`: door komma's gescheiden allowlist met kolommen (standaard `id`, `text`, `importance`, `category`, `createdAt`).
-- `--filter <condition>`: SQL-achtige WHERE-clausule; begrensd op 200 tekens en beperkt tot alfanumerieke tekens, vergelijkingsoperatoren, aanhalingstekens, haakjes en een kleine set veilige interpunctie.
+- `--filter <condition>`: SQL-achtige WHERE-clausule; beperkt tot 200 tekens en tot alfanumerieke tekens, vergelijkingsoperators, aanhalingstekens, haakjes en een kleine set veilige leestekens.
 - `--limit <n>`: positief geheel getal; standaard `10`.
-- `--order-by <column>:<asc|desc>`: sortering in het geheugen die na het filter wordt toegepast; de sorteerkolom wordt automatisch opgenomen in de projectie.
+- `--order-by <column>:<asc|desc>`: in-memory sortering toegepast na het filter; de sorteerkolom wordt automatisch opgenomen in de projectie.
 
-Agents krijgen ook LanceDB-geheugentools van de actieve geheugenplugin:
+Agents krijgen ook LanceDB-memorytools van de actieve memory-plugin:
 
-- `memory_recall` voor door LanceDB ondersteund terughalen
+- `memory_recall` voor door LanceDB ondersteunde recall
 - `memory_store` voor het opslaan van belangrijke feiten, voorkeuren, beslissingen en entiteiten
-- `memory_forget` voor het verwijderen van overeenkomende herinneringen
+- `memory_forget` voor het verwijderen van overeenkomende memories
 
 ## Opslag
 
@@ -271,8 +271,8 @@ pad met `dbPath`:
 }
 ```
 
-`storageOptions` accepteert tekenreeks-sleutel/waardeparen voor LanceDB-opslagbackends en
-ondersteunt uitbreiding van `${ENV_VAR}`:
+`storageOptions` accepteert string key/value-paren voor LanceDB-opslagbackends en
+ondersteunt `${ENV_VAR}`-uitbreiding:
 
 ```json5
 {
@@ -300,30 +300,30 @@ ondersteunt uitbreiding van `${ENV_VAR}`:
 
 ## Runtime-afhankelijkheden
 
-`memory-lancedb` is afhankelijk van het native pakket `@lancedb/lancedb`. Gepackagede
-OpenClaw-installaties proberen eerst de meegeleverde runtime-afhankelijkheid en kunnen de
-plugin-runtime-afhankelijkheid onder OpenClaw-status repareren wanneer de meegeleverde import niet
-beschikbaar is.
+`memory-lancedb` is afhankelijk van het native pakket `@lancedb/lancedb`. Verpakte
+OpenClaw behandelt dat pakket als onderdeel van het pluginpakket. Het opstarten van de Gateway
+herstelt plugin-afhankelijkheden niet; als de afhankelijkheid ontbreekt, installeer of
+werk het pluginpakket opnieuw bij en herstart de Gateway.
 
-Als een oudere installatie tijdens het laden van de plugin een fout over een ontbrekende `dist/package.json` of ontbrekende
-`@lancedb/lancedb` logt, upgrade dan OpenClaw en start de
-Gateway opnieuw.
+Als een oudere installatie tijdens het laden van de plugin een ontbrekende `dist/package.json` of ontbrekende
+`@lancedb/lancedb`-fout logt, upgrade dan OpenClaw en herstart de
+Gateway.
 
 Als de plugin logt dat LanceDB niet beschikbaar is op `darwin-x64`, gebruik dan de standaard
-geheugenbackend op die machine, verplaats de Gateway naar een ondersteund platform, of
+memory-backend op die machine, verplaats de Gateway naar een ondersteund platform, of
 schakel `memory-lancedb` uit.
 
 ## Probleemoplossing
 
 ### Invoerlengte overschrijdt de contextlengte
 
-Dit betekent meestal dat het embeddingmodel de terughaalquery heeft geweigerd:
+Dit betekent meestal dat het embeddingmodel de recall-query heeft geweigerd:
 
 ```text
 memory-lancedb: recall failed: Error: 400 the input length exceeds the context length
 ```
 
-Stel een lagere `recallMaxChars` in en start daarna de Gateway opnieuw:
+Stel een lagere `recallMaxChars` in en herstart daarna de Gateway:
 
 ```json5
 {
@@ -353,23 +353,23 @@ Zonder `dimensions` zijn alleen de ingebouwde OpenAI-embeddingdimensies bekend.
 Stel voor lokale of aangepaste embeddingmodellen `embedding.dimensions` in op de vectorgrootte
 die door dat model wordt gerapporteerd.
 
-### Plugin laadt maar er verschijnen geen herinneringen
+### Plugin laadt, maar er verschijnen geen memories
 
-Controleer of `plugins.slots.memory` naar `memory-lancedb` verwijst en voer daarna uit:
+Controleer of `plugins.slots.memory` naar `memory-lancedb` wijst en voer daarna uit:
 
 ```bash
 openclaw ltm stats
 openclaw ltm search "recent preference"
 ```
 
-Als `autoCapture` is uitgeschakeld, haalt de plugin bestaande herinneringen terug, maar slaat deze
-niet automatisch nieuwe op. Gebruik de tool `memory_store` of schakel
-`autoCapture` in als je automatische vastlegging wilt.
+Als `autoCapture` is uitgeschakeld, zal de plugin bestaande memories ophalen maar
+niet automatisch nieuwe opslaan. Gebruik de tool `memory_store` of schakel
+`autoCapture` in als je automatische capture wilt.
 
 ## Gerelateerd
 
-- [Geheugenoverzicht](/nl/concepts/memory)
+- [Memory-overzicht](/nl/concepts/memory)
 - [Active Memory](/nl/concepts/active-memory)
-- [Geheugen zoeken](/nl/concepts/memory-search)
+- [Memory search](/nl/concepts/memory-search)
 - [Memory Wiki](/nl/plugins/memory-wiki)
 - [Ollama](/nl/providers/ollama)

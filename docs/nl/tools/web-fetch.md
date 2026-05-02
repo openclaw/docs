@@ -1,36 +1,36 @@
 ---
 read_when:
     - Je wilt een URL ophalen en leesbare inhoud extraheren
-    - Je moet web_fetch of de Firecrawl-fallback ervan configureren
-    - Je wilt inzicht krijgen in web_fetch-limieten en caching
+    - Je moet web_fetch of de Firecrawl-terugvaloptie configureren
+    - Je wilt de limieten en cachewerking van web_fetch begrijpen
 sidebarTitle: Web Fetch
-summary: web_fetch-tool -- HTTP-ophalen met extractie van leesbare inhoud
+summary: web_fetch-hulpmiddel -- HTTP-ophaalactie met extractie van leesbare inhoud
 title: Web ophalen
 x-i18n:
-    generated_at: "2026-04-29T23:28:09Z"
+    generated_at: "2026-05-02T11:31:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 430ff19fe477cff22bb88bc69f1fdd53185cb61c935f2b64481e98b2e5f4aff9
+    source_hash: f455da77c20049f0ed0246fa53e9f49d3cf2004e65bd64a0bf871861c6e93229
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
-Het hulpmiddel `web_fetch` voert een gewone HTTP GET uit en extraheert leesbare inhoud
-(HTML naar markdown of tekst). Het voert **geen** JavaScript uit.
+De tool `web_fetch` voert een gewone HTTP GET uit en extraheert leesbare inhoud
+(HTML naar markdown of tekst). Hij voert **geen** JavaScript uit.
 
-Voor JS-intensieve sites of pagina's achter een login gebruikt u in plaats daarvan de
-[Webbrowser](/nl/tools/browser).
+Gebruik voor JS-zware sites of pagina's achter een login in plaats daarvan de
+[Webbrowser](/nl/tools/browser). 
 
-## Snel aan de slag
+## Snel starten
 
 `web_fetch` is **standaard ingeschakeld** -- geen configuratie nodig. De agent kan
-het direct aanroepen:
+hem direct aanroepen:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
 ```
 
-## Hulpmiddelparameters
+## Toolparameters
 
 <ParamField path="url" type="string" required>
 URL om op te halen. Alleen `http(s)`.
@@ -41,26 +41,26 @@ Uitvoerformaat na extractie van de hoofdinhoud.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Kap de uitvoer af tot dit aantal tekens.
+Kap uitvoer af tot dit aantal tekens.
 </ParamField>
 
 ## Hoe het werkt
 
 <Steps>
-  <Step title="Fetch">
-    Stuurt een HTTP GET met een Chrome-achtige User-Agent en `Accept-Language`-
-    header. Blokkeert private/interne hostnamen en controleert redirects opnieuw.
+  <Step title="Ophalen">
+    Verstuurt een HTTP GET met een Chrome-achtige User-Agent en
+    `Accept-Language`-header. Blokkeert private/interne hostnamen en controleert omleidingen opnieuw.
   </Step>
-  <Step title="Extract">
+  <Step title="Extraheren">
     Voert Readability (extractie van hoofdinhoud) uit op de HTML-respons.
   </Step>
-  <Step title="Fallback (optional)">
+  <Step title="Fallback (optioneel)">
     Als Readability mislukt en Firecrawl is geconfigureerd, probeert het opnieuw via de
-    Firecrawl-API met bot-omzeilingsmodus.
+    Firecrawl-API met modus voor bot-omzeiling.
   </Step>
   <Step title="Cache">
-    Resultaten worden 15 minuten gecachet (configureerbaar) om herhaald ophalen
-    van dezelfde URL te verminderen.
+    Resultaten worden 15 minuten gecachet (configureerbaar) om herhaald
+    ophalen van dezelfde URL te verminderen.
   </Step>
 </Steps>
 
@@ -125,42 +125,46 @@ Als Readability-extractie mislukt, kan `web_fetch` terugvallen op
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey` ondersteunt SecretRef-objecten.
-Verouderde configuratie `tools.web.fetch.firecrawl.*` wordt automatisch gemigreerd door `openclaw doctor --fix`.
+Verouderde `tools.web.fetch.firecrawl.*`-configuratie wordt automatisch gemigreerd door `openclaw doctor --fix`.
 
 <Note>
   Als Firecrawl is ingeschakeld en de SecretRef ervan niet kan worden opgelost zonder
-  `FIRECRAWL_API_KEY` als env-fallback, faalt het opstarten van de Gateway snel.
+  `FIRECRAWL_API_KEY`-env-fallback, faalt het opstarten van de Gateway snel.
 </Note>
 
 <Note>
-  Firecrawl `baseUrl`-overschrijvingen zijn vergrendeld: ze moeten `https://` gebruiken en
-  de officiële Firecrawl-host (`api.firecrawl.dev`).
+  Firecrawl-overschrijvingen van `baseUrl` zijn afgeschermd: gehost verkeer gebruikt
+  `https://api.firecrawl.dev`; zelfgehoste overschrijvingen moeten private of
+  interne endpoints als doel hebben, en `http://` wordt alleen voor die private doelen geaccepteerd.
 </Note>
 
 Huidig runtimegedrag:
 
 - `tools.web.fetch.provider` selecteert expliciet de fallbackprovider voor ophalen.
-- Als `provider` is weggelaten, detecteert OpenClaw automatisch de eerste beschikbare web-fetch-
-  provider op basis van beschikbare referenties. Momenteel is de gebundelde provider Firecrawl.
-- Als Readability is uitgeschakeld, slaat `web_fetch` direct over naar de geselecteerde
+- Als `provider` is weggelaten, detecteert OpenClaw automatisch de eerste gereedstaande web-fetch-
+  provider uit beschikbare credentials. Niet-gesandboxte `web_fetch` kan
+  geinstalleerde plugins gebruiken die `contracts.webFetchProviders` declareren en tijdens runtime een
+  overeenkomende provider registreren. Vandaag is de gebundelde provider Firecrawl.
+- Gesandboxte `web_fetch`-aanroepen blijven beperkt tot gebundelde providers.
+- Als Readability is uitgeschakeld, slaat `web_fetch` direct door naar de geselecteerde
   providerfallback. Als er geen provider beschikbaar is, faalt het gesloten.
 
 ## Limieten en veiligheid
 
-- `maxChars` wordt begrensd tot `tools.web.fetch.maxCharsCap`
-- De responsbody wordt vóór het parsen begrensd op `maxResponseBytes`; te grote
-  responsen worden afgekapt met een waarschuwing
+- `maxChars` wordt begrensd op `tools.web.fetch.maxCharsCap`
+- De responsbody wordt voor het parsen begrensd op `maxResponseBytes`; te grote
+  responses worden afgekapt met een waarschuwing
 - Private/interne hostnamen worden geblokkeerd
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` en
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` zijn beperkte opt-ins
-  voor vertrouwde fake-IP-proxystacks; laat ze oningesteld tenzij uw proxy eigenaar is van
-  die synthetische bereiken en zijn eigen bestemmingsbeleid afdwingt
-- Redirects worden gecontroleerd en beperkt door `maxRedirects`
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` zijn nauwe opt-ins
+  voor vertrouwde fake-IP-proxystacks; laat ze unset tenzij je proxy
+  die synthetische bereiken bezit en zijn eigen bestemmingsbeleid afdwingt
+- Omleidingen worden gecontroleerd en beperkt door `maxRedirects`
 - `web_fetch` werkt op basis van best effort -- sommige sites hebben de [Webbrowser](/nl/tools/browser) nodig
 
-## Hulpmiddelprofielen
+## Toolprofielen
 
-Als u hulpmiddelprofielen of allowlists gebruikt, voeg dan `web_fetch` of `group:web` toe:
+Als je toolprofielen of allowlists gebruikt, voeg dan `web_fetch` of `group:web` toe:
 
 ```json5
 {
@@ -173,6 +177,6 @@ Als u hulpmiddelprofielen of allowlists gebruikt, voeg dan `web_fetch` of `group
 
 ## Gerelateerd
 
-- [Webzoekopdracht](/nl/tools/web) -- zoek op het web met meerdere providers
-- [Webbrowser](/nl/tools/browser) -- volledige browserautomatisering voor JS-intensieve sites
-- [Firecrawl](/nl/tools/firecrawl) -- Firecrawl-zoek- en scrapehulpmiddelen
+- [Webzoekopdracht](/nl/tools/web) -- doorzoek het web met meerdere providers
+- [Webbrowser](/nl/tools/browser) -- volledige browserautomatisering voor JS-zware sites
+- [Firecrawl](/nl/tools/firecrawl) -- Firecrawl-tools voor zoeken en scrapen

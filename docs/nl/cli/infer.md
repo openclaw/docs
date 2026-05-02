@@ -1,21 +1,21 @@
 ---
 read_when:
-    - '`openclaw infer`-opdrachten toevoegen of wijzigen'
-    - Stabiele automatisering van mogelijkheden zonder grafische interface ontwerpen
-summary: CLI met inferentie-eerst-benadering voor door providers ondersteunde workflows voor modellen, afbeeldingen, audio, TTS, video, web en embeddings
+    - Toevoegen of wijzigen van `openclaw infer`-commando's
+    - Stabiele automatisering van functies zonder gebruikersinterface ontwerpen
+summary: CLI met inferentie als uitgangspunt voor door providers ondersteunde workflows voor modellen, afbeeldingen, audio, TTS, video, web en embeddings
 title: Inferentie-CLI
 x-i18n:
-    generated_at: "2026-04-29T22:32:54Z"
+    generated_at: "2026-05-02T11:12:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8a154cf11a09f6c60117740f42937da3a0e6942931dde6eee6d902fb6e0ba461
+    source_hash: 04f8b4aeb70e960835612eedcc0a22202957803ca4e5eeb3f1e107e8c736e458
     source_path: cli/infer.md
     workflow: 16
 ---
 
-`openclaw infer` is het canonieke headless oppervlak voor door aanbieders ondersteunde inferentieworkflows.
+`openclaw infer` is het canonieke headless oppervlak voor door providers ondersteunde inferentieworkflows.
 
-Het toont bewust capaciteitsfamilies, geen ruwe Gateway-RPC-namen en geen ruwe tool-id's van agents.
+Het toont bewust capability-families, geen ruwe Gateway RPC-namen en geen ruwe agenttool-id's.
 
 ## Zet infer om in een skill
 
@@ -28,12 +28,12 @@ Focus on model runs, image generation, video generation, audio transcription, TT
 
 Een goede op infer gebaseerde skill moet:
 
-- veelvoorkomende gebruikersintenties koppelen aan het juiste infer-subcommando
-- enkele canonieke infer-voorbeelden opnemen voor de workflows die de skill dekt
-- `openclaw infer ...` gebruiken bij voorkeur in voorbeelden en suggesties
-- vermijden dat het volledige infer-oppervlak opnieuw wordt gedocumenteerd in de skill-body
+- veelvoorkomende gebruikersintenties aan de juiste infer-subcommand koppelen
+- een paar canonieke infer-voorbeelden bevatten voor de workflows die de skill dekt
+- `openclaw infer ...` in voorbeelden en suggesties verkiezen
+- vermijden om het volledige infer-oppervlak opnieuw te documenteren in de skill-body
 
-Typische dekking voor infer-gerichte skills:
+Typische dekking voor op infer gerichte Skills:
 
 - `openclaw infer model run`
 - `openclaw infer image generate`
@@ -44,19 +44,19 @@ Typische dekking voor infer-gerichte skills:
 
 ## Waarom infer gebruiken
 
-`openclaw infer` biedt één consistente CLI voor door aanbieders ondersteunde inferentietaken binnen OpenClaw.
+`openclaw infer` biedt één consistente CLI voor door providers ondersteunde inferentietaken binnen OpenClaw.
 
 Voordelen:
 
-- Gebruik de aanbieders en modellen die al in OpenClaw zijn geconfigureerd in plaats van eenmalige wrappers voor elke backend op te zetten.
-- Houd model-, afbeeldings-, audiotranscriptie-, TTS-, video-, web- en embeddingworkflows onder één commandostructuur.
-- Gebruik een stabiele `--json`-uitvoervorm voor scripts, automatisering en door agents aangestuurde workflows.
-- Geef de voorkeur aan een first-party OpenClaw-oppervlak wanneer de taak in wezen "inferentie uitvoeren" is.
+- Gebruik de providers en modellen die al in OpenClaw zijn geconfigureerd, in plaats van eenmalige wrappers voor elke backend te bedraden.
+- Houd workflows voor modellen, afbeeldingen, audiotranscriptie, TTS, video, web en embeddings onder één commandoboom.
+- Gebruik een stabiele `--json`-uitvoervorm voor scripts, automatisering en agentgestuurde workflows.
+- Verkies een first-party OpenClaw-oppervlak wanneer de taak fundamenteel "inferentie uitvoeren" is.
 - Gebruik het normale lokale pad zonder de Gateway te vereisen voor de meeste infer-commando's.
 
-Geef voor end-to-end providercontroles de voorkeur aan `openclaw infer ...` zodra lagere provider-tests groen zijn. Het test de verzonden CLI, het laden van configuratie, het oplossen van de standaardagent, activering van gebundelde plugins, herstel van runtime-afhankelijkheden en de gedeelde capaciteitsruntime voordat de provider-aanvraag wordt gedaan.
+Voor end-to-end providercontroles heeft `openclaw infer ...` de voorkeur zodra lagere provider-tests groen zijn. Het oefent de geleverde CLI, config laden, default-agent-resolutie, activering van gebundelde plugins en de gedeelde capability-runtime uit voordat het providerverzoek wordt gedaan.
 
-## Commandostructuur
+## Commandoboom
 
 ```text
  openclaw infer
@@ -113,15 +113,15 @@ Deze tabel koppelt veelvoorkomende inferentietaken aan het bijbehorende infer-co
 
 | Taak                         | Commando                                                                                      | Opmerkingen                                           |
 | ---------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Een tekst-/modelprompt uitvoeren | `openclaw infer model run --prompt "..." --json`                                          | Gebruikt standaard het normale lokale pad             |
-| Een modelprompt op afbeeldingen uitvoeren | `openclaw infer model run --prompt "Describe this" --file ./image.png --model provider/model` | Herhaal `--file` voor meerdere afbeeldingsinvoerbestanden |
-| Een afbeelding genereren     | `openclaw infer image generate --prompt "..." --json`                                         | Gebruik `image edit` wanneer je vanaf een bestaand bestand begint |
-| Een afbeeldingsbestand beschrijven | `openclaw infer image describe --file ./image.png --prompt "..." --json`                 | `--model` moet een afbeeldingsgeschikt `<provider/model>` zijn |
+| Een tekst-/modelprompt uitvoeren | `openclaw infer model run --prompt "..." --json`                                              | Gebruikt standaard het normale lokale pad             |
+| Een modelprompt op afbeeldingen uitvoeren | `openclaw infer model run --prompt "Describe this" --file ./image.png --model provider/model` | Herhaal `--file` voor meerdere afbeeldingsinputs      |
+| Een afbeelding genereren     | `openclaw infer image generate --prompt "..." --json`                                         | Gebruik `image edit` wanneer je vanuit een bestaand bestand start |
+| Een afbeeldingsbestand beschrijven | `openclaw infer image describe --file ./image.png --prompt "..." --json`                      | `--model` moet een afbeelding-capabel `<provider/model>` zijn |
 | Audio transcriberen          | `openclaw infer audio transcribe --file ./memo.m4a --json`                                    | `--model` moet `<provider/model>` zijn                |
 | Spraak synthetiseren         | `openclaw infer tts convert --text "..." --output ./speech.mp3 --json`                        | `tts status` is Gateway-georiënteerd                  |
 | Een video genereren          | `openclaw infer video generate --prompt "..." --json`                                         | Ondersteunt providerhints zoals `--resolution`        |
 | Een videobestand beschrijven | `openclaw infer video describe --file ./clip.mp4 --json`                                      | `--model` moet `<provider/model>` zijn                |
-| Het web doorzoeken           | `openclaw infer web search --query "..." --json`                                              |                                                       |
+| Op het web zoeken            | `openclaw infer web search --query "..." --json`                                              |                                                       |
 | Een webpagina ophalen        | `openclaw infer web fetch --url https://example.com --json`                                   |                                                       |
 | Embeddings maken             | `openclaw infer embedding create --text "..." --json`                                         |                                                       |
 
@@ -131,15 +131,15 @@ Deze tabel koppelt veelvoorkomende inferentietaken aan het bijbehorende infer-co
 - Gebruik `--json` wanneer de uitvoer door een ander commando of script wordt gebruikt.
 - Gebruik `--provider` of `--model provider/model` wanneer een specifieke backend vereist is.
 - Voor `image describe`, `audio transcribe` en `video describe` moet `--model` de vorm `<provider/model>` gebruiken.
-- Voor `image describe` voert een expliciet `--model` die provider/dat model direct uit. Het model moet afbeeldingsgeschikt zijn in de modelcatalogus of providerconfiguratie. `codex/<model>` voert een begrensde Codex-appserverronde voor afbeeldingsbegrip uit; `openai-codex/<model>` gebruikt het OpenAI Codex OAuth-providerpad.
+- Voor `image describe` voert een expliciete `--model` die provider/dat model rechtstreeks uit. Het model moet afbeelding-capabel zijn in de modelcatalogus of providerconfig. `codex/<model>` voert een begrensde Codex app-server beurt voor afbeeldingsbegrip uit; `openai-codex/<model>` gebruikt het OpenAI Codex OAuth-providerpad.
 - Stateless uitvoeringscommando's gebruiken standaard lokaal.
-- Door de Gateway beheerde statuscommando's gebruiken standaard de Gateway.
+- Gateway-beheerde statuscommando's gebruiken standaard de Gateway.
 - Het normale lokale pad vereist niet dat de Gateway actief is.
-- Lokale `model run` is een lichte eenmalige provider-completion. Het lost het geconfigureerde agentmodel en de auth op, maar start geen chat-agentronde, laadt geen tools en opent geen gebundelde MCP-servers.
+- Lokale `model run` is een slanke eenmalige providercompletion. Het lost het geconfigureerde agentmodel en de auth op, maar start geen chat-agentbeurt, laadt geen tools en opent geen gebundelde MCP-servers.
 - `model run --file` accepteert afbeeldingsbestanden, detecteert hun MIME-type en stuurt ze met de opgegeven prompt naar het geselecteerde model. Herhaal `--file` voor meerdere afbeeldingen.
-- `model run --file` weigert niet-afbeeldingsinvoer. Gebruik `infer audio transcribe` voor audiobestanden en `infer video describe` voor videobestanden.
-- `model run --gateway` test Gateway-routering, opgeslagen auth, providerselectie en de ingebedde runtime, maar draait nog steeds als een ruwe modelprobe: het stuurt de opgegeven prompt en eventuele afbeeldingsbijlagen zonder eerdere sessietranscriptie, bootstrap-/AGENTS-context, context-engine-assemblage, tools of gebundelde MCP-servers.
-- `model run --gateway --model <provider/model>` vereist een vertrouwde operator-Gateway-referentie omdat de aanvraag de Gateway vraagt een eenmalige provider/model-override uit te voeren.
+- `model run --file` weigert niet-afbeeldingsinputs. Gebruik `infer audio transcribe` voor audiobestanden en `infer video describe` voor videobestanden.
+- `model run --gateway` oefent Gateway-routering, opgeslagen auth, providerselectie en de ingebedde runtime uit, maar draait nog steeds als een ruwe modelprobe: het stuurt de opgegeven prompt en eventuele afbeeldingsbijlagen zonder eerdere sessietranscriptie, bootstrap-/AGENTS-context, context-engine-assemblage, tools of gebundelde MCP-servers.
+- `model run --gateway --model <provider/model>` vereist een vertrouwde operator-Gateway-referentie omdat het verzoek de Gateway vraagt om een eenmalige provider-/modeloverride uit te voeren.
 
 ## Model
 
@@ -153,7 +153,7 @@ openclaw infer model providers --json
 openclaw infer model inspect --name gpt-5.5 --json
 ```
 
-Gebruik volledige `<provider/model>`-verwijzingen om een specifieke provider te smoke-testen zonder de Gateway te starten of het volledige agent-tooloppervlak te laden:
+Gebruik volledige `<provider/model>`-verwijzingen om een specifieke provider te smoke-testen zonder de Gateway te starten of het volledige agenttool-oppervlak te laden:
 
 ```bash
 openclaw infer model run --local --model anthropic/claude-sonnet-4-6 --prompt "Reply with exactly: pong" --json
@@ -167,18 +167,18 @@ openclaw infer model run --local --model ollama/qwen2.5vl:7b --prompt "Describe 
 
 Opmerkingen:
 
-- Lokale `model run` is de smalste CLI-smoke voor provider-/model-/auth-gezondheid omdat het alleen de opgegeven prompt naar het geselecteerde model stuurt.
-- Lokale `model run --file` behoudt dat lichte pad en voegt afbeeldingsinhoud rechtstreeks toe aan het enkele gebruikersbericht. Veelvoorkomende afbeeldingsbestanden zoals PNG, JPEG en WebP werken wanneer hun MIME-type als `image/*` wordt gedetecteerd; niet-ondersteunde of niet-herkende bestanden falen voordat de provider wordt aangeroepen.
-- `model run --file` is het meest geschikt wanneer je het geselecteerde multimodale tekstmodel direct wilt testen. Gebruik `infer image describe` wanneer je OpenClaw's providerselectie voor afbeeldingsbegrip en standaardroutering voor afbeeldingsmodellen wilt gebruiken.
-- Het geselecteerde model moet afbeeldingsinvoer ondersteunen; modellen die alleen tekst ondersteunen kunnen de aanvraag op providerlaag weigeren.
+- Lokale `model run` is de smalste CLI-smoke voor provider-/model-/auth-gezondheid, omdat deze alleen de opgegeven prompt naar het geselecteerde model stuurt.
+- Lokale `model run --file` behoudt dat slanke pad en voegt afbeeldingsinhoud rechtstreeks toe aan het enkele gebruikersbericht. Veelvoorkomende afbeeldingsbestanden zoals PNG, JPEG en WebP werken wanneer hun MIME-type als `image/*` wordt gedetecteerd; niet-ondersteunde of niet-herkende bestanden falen voordat de provider wordt aangeroepen.
+- `model run --file` is het beste wanneer je het geselecteerde multimodale tekstmodel rechtstreeks wilt testen. Gebruik `infer image describe` wanneer je OpenClaw's providerselectie voor afbeeldingsbegrip en standaardrouting voor afbeeldingsmodellen wilt.
+- Het geselecteerde model moet afbeeldingsinput ondersteunen; tekst-only modellen kunnen het verzoek op de providerlaag weigeren.
 - `model run --prompt` moet tekst bevatten die niet alleen uit witruimte bestaat; lege prompts worden geweigerd voordat lokale providers of de Gateway worden aangeroepen.
-- Lokale `model run` sluit af met een niet-nulstatus wanneer de provider geen tekstuitvoer retourneert, zodat onbereikbare lokale providers en lege completions niet op succesvolle probes lijken.
-- Gebruik `model run --gateway` wanneer je Gateway-routering, agent-runtime-initialisatie of door de Gateway beheerde providerstatus moet testen terwijl de modelinvoer ruw blijft. Gebruik `openclaw agent` of chatoppervlakken wanneer je de volledige agentcontext, tools, geheugen en sessietranscriptie wilt.
-- `model auth login`, `model auth logout` en `model auth status` beheren opgeslagen provider-authstatus.
+- Lokale `model run` sluit af met een niet-nulcode wanneer de provider geen tekstuitvoer retourneert, zodat onbereikbare lokale providers en lege completions niet op succesvolle probes lijken.
+- Gebruik `model run --gateway` wanneer je Gateway-routering, agent-runtime-instelling of Gateway-beheerde providerstatus moet testen terwijl je de modelinput ruw houdt. Gebruik `openclaw agent` of chatoppervlakken wanneer je de volledige agentcontext, tools, geheugen en sessietranscriptie wilt.
+- `model auth login`, `model auth logout` en `model auth status` beheren opgeslagen provider-auth-status.
 
 ## Afbeelding
 
-Gebruik `image` voor genereren, bewerken en beschrijven.
+Gebruik `image` voor generatie, bewerking en beschrijving.
 
 ```bash
 openclaw infer image generate --prompt "friendly lobster illustration" --json
@@ -196,10 +196,10 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --p
 
 Opmerkingen:
 
-- Gebruik `image edit` wanneer je begint met bestaande invoerbestanden.
-- Gebruik `--size`, `--aspect-ratio` of `--resolution` met `image edit` voor providers/modellen die geometriehints ondersteunen bij bewerkingen van referentieafbeeldingen.
-- Gebruik `--output-format png --background transparent` met `--model openai/gpt-image-1.5` voor OpenAI PNG-uitvoer met transparante achtergrond; `--openai-background` blijft beschikbaar als OpenAI-specifieke alias. Providers die geen achtergrondondersteuning declareren, rapporteren de hint als een genegeerde override.
-- Gebruik `image providers --json` om te verifiëren welke gebundelde afbeeldingsproviders vindbaar, geconfigureerd en geselecteerd zijn, en welke genererings-/bewerkingscapaciteiten elke provider biedt.
+- Gebruik `image edit` wanneer je begint vanuit bestaande inputbestanden.
+- Gebruik `--size`, `--aspect-ratio` of `--resolution` met `image edit` voor providers/modellen die geometriehints ondersteunen bij bewerkingen met referentieafbeeldingen.
+- Gebruik `--output-format png --background transparent` met `--model openai/gpt-image-1.5` voor OpenAI PNG-uitvoer met transparante achtergrond; `--openai-background` blijft beschikbaar als OpenAI-specifieke alias. Providers die geen ondersteuning voor achtergronden declareren, rapporteren de hint als een genegeerde override.
+- Gebruik `image providers --json` om te verifiëren welke gebundelde afbeeldingsproviders vindbaar, geconfigureerd en geselecteerd zijn, en welke generatie-/bewerkingscapabilities elke provider blootstelt.
 - Gebruik `image generate --model <provider/model> --json` als de smalste live CLI-smoke voor wijzigingen in afbeeldingsgeneratie. Voorbeeld:
 
   ```bash
@@ -211,14 +211,14 @@ Opmerkingen:
     --json
   ```
 
-  De JSON-reactie rapporteert `ok`, `provider`, `model`, `attempts` en geschreven
+  De JSON-respons rapporteert `ok`, `provider`, `model`, `attempts` en geschreven
   uitvoerpaden. Wanneer `--output` is ingesteld, kan de uiteindelijke extensie het
   door de provider geretourneerde MIME-type volgen.
 
 - Gebruik voor `image describe` en `image describe-many` `--prompt` om het vision-model een taakspecifieke instructie te geven, zoals OCR, vergelijking, UI-inspectie of beknopte bijschriften.
-- Gebruik `--timeout-ms` met langzame lokale vision-modellen of koude Ollama-starts.
+- Gebruik `--timeout-ms` met trage lokale vision-modellen of koude Ollama-starts.
 - Voor `image describe` moet `--model` een image-capable `<provider/model>` zijn.
-- Voor lokale Ollama vision-modellen: haal eerst het model op en stel `OLLAMA_API_KEY` in op een willekeurige placeholderwaarde, bijvoorbeeld `ollama-local`. Zie [Ollama](/nl/providers/ollama#vision-and-image-description).
+- Voor lokale Ollama-vision-modellen moet je eerst het model ophalen en `OLLAMA_API_KEY` instellen op een willekeurige placeholderwaarde, bijvoorbeeld `ollama-local`. Zie [Ollama](/nl/providers/ollama#vision-and-image-description).
 
 ## Audio
 
@@ -232,7 +232,7 @@ openclaw infer audio transcribe --file ./memo.m4a --model openai/whisper-1 --jso
 
 Opmerkingen:
 
-- `audio transcribe` is bedoeld voor bestandstranscriptie, niet voor realtime sessiebeheer.
+- `audio transcribe` is bedoeld voor bestandstranscriptie, niet voor beheer van realtime sessies.
 - `--model` moet `<provider/model>` zijn.
 
 ## TTS
@@ -248,7 +248,7 @@ openclaw infer tts status --json
 
 Opmerkingen:
 
-- `tts status` gebruikt standaard Gateway, omdat het de door Gateway beheerde TTS-status weergeeft.
+- `tts status` gebruikt standaard gateway omdat dit de door de gateway beheerde TTS-status weerspiegelt.
 - Gebruik `tts providers`, `tts voices` en `tts set-provider` om TTS-gedrag te inspecteren en te configureren.
 
 ## Video
@@ -264,7 +264,7 @@ openclaw infer video describe --file ./clip.mp4 --model openai/gpt-4.1-mini --js
 
 Opmerkingen:
 
-- `video generate` accepteert `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark` en `--timeout-ms` en geeft deze door aan de runtime voor videogeneratie.
+- `video generate` accepteert `--size`, `--aspect-ratio`, `--resolution`, `--duration`, `--audio`, `--watermark` en `--timeout-ms`, en stuurt ze door naar de runtime voor videogeneratie.
 - `--model` moet `<provider/model>` zijn voor `video describe`.
 
 ## Web
@@ -284,7 +284,7 @@ Opmerkingen:
 
 ## Embedding
 
-Gebruik `embedding` voor het maken van vectoren en inspectie van embeddingproviders.
+Gebruik `embedding` voor het maken van vectoren en het inspecteren van embedding-providers.
 
 ```bash
 openclaw infer embedding create --text "friendly lobster" --json
@@ -294,7 +294,7 @@ openclaw infer embedding providers --json
 
 ## JSON-uitvoer
 
-Infer-opdrachten normaliseren JSON-uitvoer onder een gedeelde envelop:
+Infer-commando's normaliseren JSON-uitvoer onder een gedeelde envelop:
 
 ```json
 {
@@ -308,7 +308,7 @@ Infer-opdrachten normaliseren JSON-uitvoer onder een gedeelde envelop:
 }
 ```
 
-Velden op topniveau zijn stabiel:
+Velden op het hoogste niveau zijn stabiel:
 
 - `ok`
 - `capability`
@@ -319,9 +319,9 @@ Velden op topniveau zijn stabiel:
 - `outputs`
 - `error`
 
-Voor opdrachten voor gegenereerde media bevat `outputs` bestanden die door OpenClaw zijn geschreven. Gebruik
+Voor commando's die media genereren, bevat `outputs` bestanden die door OpenClaw zijn geschreven. Gebruik
 de `path`, `mimeType`, `size` en eventuele mediaspecifieke dimensies in die array
-voor automatisering in plaats van het parsen van voor mensen leesbare stdout.
+voor automatisering in plaats van door mensen leesbare stdout te parsen.
 
 ## Veelvoorkomende valkuilen
 

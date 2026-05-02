@@ -5,16 +5,16 @@ read_when:
 summary: Geavanceerde installatie- en ontwikkelworkflows voor OpenClaw
 title: Installatie
 x-i18n:
-    generated_at: "2026-04-29T23:19:55Z"
+    generated_at: "2026-05-02T11:28:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f96e5e8d46e694f0dfc67eeeb34f4c49498a56e384c3a2a6266c2214afdc0870
+    source_hash: 101f7911d4a4cba139dd7a464b2ed82e2c80c630ba6ea58486309642c6690ee9
     source_path: start/setup.md
     workflow: 16
 ---
 
 <Note>
-Als je dit voor het eerst instelt, begin dan met [Aan de slag](/nl/start/getting-started).
+Als je de eerste keer instelt, begin dan met [Aan de slag](/nl/start/getting-started).
 Zie [Onboarding (CLI)](/nl/start/wizard) voor onboardingdetails.
 </Note>
 
@@ -22,22 +22,24 @@ Zie [Onboarding (CLI)](/nl/start/wizard) voor onboardingdetails.
 
 Kies een instellingsworkflow op basis van hoe vaak je updates wilt en of je de Gateway zelf wilt uitvoeren:
 
-- **Aanpassingen staan buiten de repo:** bewaar je configuratie en workspace in `~/.openclaw/openclaw.json` en `~/.openclaw/workspace/`, zodat repo-updates ze niet raken.
+- **Aanpassingen staan buiten de repo:** bewaar je configuratie en werkruimte in `~/.openclaw/openclaw.json` en `~/.openclaw/workspace/`, zodat repo-updates ze niet raken.
 - **Stabiele workflow (aanbevolen voor de meeste gebruikers):** installeer de macOS-app en laat die de meegeleverde Gateway uitvoeren.
-- **Bleeding-edge-workflow (dev):** voer de Gateway zelf uit via `pnpm gateway:watch` en laat de macOS-app vervolgens verbinden in de lokale modus.
+- **Bleeding-edge workflow (dev):** voer de Gateway zelf uit via `pnpm gateway:watch` en laat de macOS-app daarna koppelen in lokale modus.
 
-## Vereisten (vanuit bron)
+## Vereisten (vanuit broncode)
 
-- Node 24 aanbevolen (Node 22 LTS, momenteel `22.14+`, wordt nog steeds ondersteund)
-- `pnpm` heeft de voorkeur (of Bun als je bewust de [Bun-workflow](/nl/install/bun) gebruikt)
-- Docker (optioneel; alleen voor containerized setup/e2e — zie [Docker](/nl/install/docker))
+- Node 24 aanbevolen (Node 22 LTS, momenteel `22.14+`, wordt nog ondersteund)
+- `pnpm` is vereist voor source-checkouts. OpenClaw laadt meegeleverde plugins uit de
+  `extensions/*` pnpm-werkruimtepakketten in devmodus, dus `npm install` in de root
+  bereidt de volledige source-tree niet voor.
+- Docker (optioneel; alleen voor gecontaineriseerde setup/e2e — zie [Docker](/nl/install/docker))
 
-## Aanpassingsstrategie (zodat updates geen pijn doen)
+## Aanpassingsstrategie (zodat updates geen schade doen)
 
-Als je “100% op mij afgestemd” _en_ eenvoudige updates wilt, bewaar je je aanpassingen in:
+Als je “100% op mij afgestemd” _en_ eenvoudige updates wilt, bewaar je aanpassingen dan in:
 
 - **Configuratie:** `~/.openclaw/openclaw.json` (JSON/JSON5-achtig)
-- **Workspace:** `~/.openclaw/workspace` (skills, prompts, memories; maak er een private git-repo van)
+- **Werkruimte:** `~/.openclaw/workspace` (Skills, prompts, herinneringen; maak er een private git-repo van)
 
 Bootstrap eenmalig:
 
@@ -51,7 +53,7 @@ Gebruik vanuit deze repo de lokale CLI-entry:
 openclaw setup
 ```
 
-Als je nog geen globale installatie hebt, voer dit dan uit via `pnpm openclaw setup` (of `bun run openclaw setup` als je de Bun-workflow gebruikt).
+Als je nog geen globale installatie hebt, voer dit dan uit via `pnpm openclaw setup`.
 
 ## Voer de Gateway uit vanuit deze repo
 
@@ -65,7 +67,7 @@ node openclaw.mjs gateway --port 18789 --verbose
 
 1. Installeer en start **OpenClaw.app** (menubalk).
 2. Voltooi de onboarding-/rechtenchecklist (TCC-prompts).
-3. Zorg dat Gateway **Local** is en draait (de app beheert dit).
+3. Controleer of Gateway **Local** is en draait (de app beheert dit).
 4. Koppel oppervlakken (voorbeeld: WhatsApp):
 
 ```bash
@@ -82,13 +84,13 @@ Als onboarding niet beschikbaar is in je build:
 
 - Voer `openclaw setup` uit, daarna `openclaw channels login`, en start vervolgens de Gateway handmatig (`openclaw gateway`).
 
-## Bleeding-edge-workflow (Gateway in een terminal)
+## Bleeding-edge workflow (Gateway in een terminal)
 
-Doel: werken aan de TypeScript-Gateway, hot reload krijgen en de macOS-app-UI verbonden houden.
+Doel: werken aan de TypeScript-Gateway, hot reload krijgen en de UI van de macOS-app gekoppeld houden.
 
-### 0) (Optioneel) Voer ook de macOS-app uit vanuit bron
+### 0) (Optioneel) Voer ook de macOS-app uit vanuit broncode
 
-Als je de macOS-app ook bleeding-edge wilt gebruiken:
+Als je de macOS-app ook op de bleeding edge wilt:
 
 ```bash
 ./scripts/restart-mac.sh
@@ -98,34 +100,30 @@ Als je de macOS-app ook bleeding-edge wilt gebruiken:
 
 ```bash
 pnpm install
-# Alleen de eerste keer (of na het resetten van lokale OpenClaw-config/workspace)
+# Alleen eerste uitvoering (of na het resetten van lokale OpenClaw-configuratie/werkruimte)
 pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-`gateway:watch` start of herstart het Gateway-watchproces in een benoemde tmux-sessie en koppelt automatisch vanuit interactieve terminals. Niet-interactieve shells blijven losgekoppeld en tonen `tmux attach -t openclaw-gateway-watch-main`; gebruik `OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` om een interactieve run losgekoppeld te houden, of `pnpm gateway:watch:raw` voor watchmodus op de voorgrond. De watcher herlaadt bij relevante wijzigingen in broncode, configuratie en metadata van meegeleverde plugins.
-`pnpm openclaw setup` is de eenmalige initialisatiestap voor lokale config/workspace bij een verse checkout.
-`pnpm gateway:watch` herbouwt `dist/control-ui` niet, dus voer `pnpm ui:build` opnieuw uit na wijzigingen in `ui/` of gebruik `pnpm ui:dev` tijdens het ontwikkelen van de Control UI.
-
-Als je bewust de Bun-workflow gebruikt, zijn de equivalente commando’s:
-
-```bash
-bun install
-# Alleen de eerste keer (of na het resetten van lokale OpenClaw-config/workspace)
-bun run openclaw setup
-bun run gateway:watch
-```
+`gateway:watch` start of herstart het Gateway-watchproces in een benoemde tmux-
+sessie en koppelt automatisch vanuit interactieve terminals. Niet-interactieve shells blijven
+losgekoppeld en printen `tmux attach -t openclaw-gateway-watch-main`; gebruik
+`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` om een interactieve uitvoering
+losgekoppeld te houden, of `pnpm gateway:watch:raw` voor foreground-watchmodus. De watcher
+herlaadt bij relevante wijzigingen in broncode, configuratie en metadata van meegeleverde plugins.
+`pnpm openclaw setup` is de eenmalige lokale initialisatiestap voor configuratie/werkruimte bij een verse checkout.
+`pnpm gateway:watch` bouwt `dist/control-ui` niet opnieuw, dus voer `pnpm ui:build` opnieuw uit na wijzigingen in `ui/` of gebruik `pnpm ui:dev` tijdens het ontwikkelen van de Control UI.
 
 ### 2) Wijs de macOS-app naar je draaiende Gateway
 
 In **OpenClaw.app**:
 
-- Connection Mode: **Local**
-  De app verbindt met de draaiende Gateway op de geconfigureerde poort.
+- Verbindingsmodus: **Local**
+  De app koppelt aan de draaiende gateway op de geconfigureerde poort.
 
-### 3) Verifieer
+### 3) Verifiëren
 
-- De Gateway-status in de app moet **“Using existing gateway …”** tonen
+- De Gateway-status in de app moet **“Bestaande gateway gebruiken …”** tonen
 - Of via CLI:
 
 ```bash
@@ -135,47 +133,50 @@ openclaw health
 ### Veelvoorkomende valkuilen
 
 - **Verkeerde poort:** Gateway WS gebruikt standaard `ws://127.0.0.1:18789`; houd app en CLI op dezelfde poort.
-- **Waar state staat:**
-  - Kanaal-/providerstate: `~/.openclaw/credentials/`
-  - Model-auth-profielen: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- **Waar status wordt opgeslagen:**
+  - Kanaal-/providerstatus: `~/.openclaw/credentials/`
+  - Modelauthenticatieprofielen: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
   - Sessies: `~/.openclaw/agents/<agentId>/sessions/`
   - Logs: `/tmp/openclaw/`
 
-## Overzicht van credentialopslag
+## Overzicht van opslag van credentials
 
-Gebruik dit bij het debuggen van auth of bij het bepalen wat je moet back-uppen:
+Gebruik dit bij het debuggen van authenticatie of wanneer je beslist waarvan je een back-up maakt:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
-- **Telegram-bottoken**: config/env of `channels.telegram.tokenFile` (alleen regulier bestand; symlinks worden geweigerd)
-- **Discord-bottoken**: config/env of SecretRef (env/file/exec-providers)
-- **Slack-tokens**: config/env (`channels.slack.*`)
-- **Pairing-allowlists**:
+- **Telegram-bottoken**: configuratie/env of `channels.telegram.tokenFile` (alleen regulier bestand; symlinks worden geweigerd)
+- **Discord-bottoken**: configuratie/env of SecretRef (env-/file-/exec-providers)
+- **Slack-tokens**: configuratie/env (`channels.slack.*`)
+- **Allowlists voor koppelen**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json` (standaardaccount)
   - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (niet-standaardaccounts)
-- **Model-auth-profielen**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **Bestandsgebaseerde secretspayload (optioneel)**: `~/.openclaw/secrets.json`
+- **Modelauthenticatieprofielen**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- **Bestandsgedragen geheimenpayload (optioneel)**: `~/.openclaw/secrets.json`
 - **Legacy OAuth-import**: `~/.openclaw/credentials/oauth.json`
-  Meer detail: [Beveiliging](/nl/gateway/security#credential-storage-map).
+  Meer details: [Beveiliging](/nl/gateway/security#credential-storage-map).
 
-## Bijwerken (zonder je setup te slopen)
+## Updaten (zonder je setup te slopen)
 
-- Behandel `~/.openclaw/workspace` en `~/.openclaw/` als “jouw spullen”; zet geen persoonlijke prompts/config in de `openclaw`-repo.
-- Broncode bijwerken: `git pull` + de installatiestap van je gekozen package manager (`pnpm install` standaard; `bun install` voor Bun-workflow) + blijf het bijpassende `gateway:watch`-commando gebruiken.
+- Behandel `~/.openclaw/workspace` en `~/.openclaw/` als “jouw spullen”; zet geen persoonlijke prompts/configuratie in de `openclaw`-repo.
+- Broncode updaten: `git pull` + `pnpm install` + blijf `pnpm gateway:watch` gebruiken.
 
 ## Linux (systemd-gebruikersservice)
 
-Linux-installaties gebruiken een systemd-**user**-service. Standaard stopt systemd gebruikersservices bij uitloggen/inactiviteit, waardoor de Gateway wordt gestopt. Onboarding probeert lingering voor je in te schakelen (kan om sudo vragen). Als het nog steeds uit staat, voer dan uit:
+Linux-installaties gebruiken een systemd-**gebruikers**service. Standaard stopt systemd gebruikers-
+services bij uitloggen/inactiviteit, waardoor de Gateway wordt beëindigd. Onboarding probeert
+lingering voor je in te schakelen (kan om sudo vragen). Als het nog steeds uit staat, voer dan uit:
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-Overweeg voor always-on- of multi-user-servers een **system**-service in plaats van een user-service (geen lingering nodig). Zie [Gateway-runbook](/nl/gateway) voor de systemd-notities.
+Voor always-on of multi-user servers kun je een **systeem**service overwegen in plaats van een
+gebruikersservice (geen lingering nodig). Zie [Gateway-runbook](/nl/gateway) voor de systemd-notities.
 
 ## Gerelateerde docs
 
 - [Gateway-runbook](/nl/gateway) (flags, supervisie, poorten)
-- [Gateway-configuratie](/nl/gateway/configuration) (configschema + voorbeelden)
-- [Discord](/nl/channels/discord) en [Telegram](/nl/channels/telegram) (reply-tags + replyToMode-instellingen)
+- [Gateway-configuratie](/nl/gateway/configuration) (configuratieschema + voorbeelden)
+- [Discord](/nl/channels/discord) en [Telegram](/nl/channels/telegram) (antwoordtags + replyToMode-instellingen)
 - [OpenClaw-assistent instellen](/nl/start/openclaw)
-- [macOS-app](/nl/platforms/macos) (Gateway-lifecycle)
+- [macOS-app](/nl/platforms/macos) (gatewaylevenscyclus)

@@ -2,33 +2,33 @@
 read_when:
     - Je moet weten welke omgevingsvariabelen worden geladen en in welke volgorde
     - Je debugt ontbrekende API-sleutels in de Gateway
-    - Je documenteert provider-authenticatie of implementatieomgevingen
-summary: Waar OpenClaw omgevingsvariabelen laadt en de prioriteitsvolgorde
+    - Je documenteert authenticatie voor providers of uitrolomgevingen
+summary: Waar OpenClaw omgevingsvariabelen laadt en in welke prioriteitsvolgorde
 title: Omgevingsvariabelen
 x-i18n:
-    generated_at: "2026-04-29T22:49:32Z"
+    generated_at: "2026-05-02T11:18:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d19b9053207a088b3eb39d03e36fc2d415295feb80da51bd71339884466b101b
+    source_hash: 66787dd6f87dcaf81f721465e88dda519421b1a598179f71bce0239bb4791c46
     source_path: help/environment.md
     workflow: 16
 ---
 
 OpenClaw haalt omgevingsvariabelen uit meerdere bronnen. De regel is: **overschrijf nooit bestaande waarden**.
 
-## Voorrang (hoogste → laagste)
+## Prioriteit (hoogste → laagste)
 
-1. **Procesomgeving** (wat het Gateway-proces al heeft vanuit de bovenliggende shell/daemon).
+1. **Procesomgeving** (wat het Gateway-proces al heeft van de bovenliggende shell/daemon).
 2. **`.env` in de huidige werkmap** (dotenv-standaard; overschrijft niet).
-3. **Globale `.env`** op `~/.openclaw/.env` (ook wel `$OPENCLAW_STATE_DIR/.env`; overschrijft niet).
-4. **Configuratie-`env`-blok** in `~/.openclaw/openclaw.json` (alleen toegepast als de waarde ontbreekt).
-5. **Optionele import uit login-shell** (`env.shellEnv.enabled` of `OPENCLAW_LOAD_SHELL_ENV=1`), alleen toegepast voor ontbrekende verwachte sleutels.
+3. **Globale `.env`** op `~/.openclaw/.env` (oftewel `$OPENCLAW_STATE_DIR/.env`; overschrijft niet).
+4. **Config-`env`-blok** in `~/.openclaw/openclaw.json` (alleen toegepast als het ontbreekt).
+5. **Optionele login-shellimport** (`env.shellEnv.enabled` of `OPENCLAW_LOAD_SHELL_ENV=1`), alleen toegepast voor ontbrekende verwachte sleutels.
 
-Bij verse Ubuntu-installaties die de standaard state-map gebruiken, behandelt OpenClaw ook `~/.config/openclaw/gateway.env` als compatibiliteitsfallback na de globale `.env`. Als beide bestanden bestaan en elkaar tegenspreken, behoudt OpenClaw `~/.openclaw/.env` en toont het een waarschuwing.
+Bij nieuwe Ubuntu-installaties die de standaard statusmap gebruiken, behandelt OpenClaw ook `~/.config/openclaw/gateway.env` als compatibiliteitsfallback na de globale `.env`. Als beide bestanden bestaan en van elkaar verschillen, behoudt OpenClaw `~/.openclaw/.env` en toont het een waarschuwing.
 
-Als het configuratiebestand volledig ontbreekt, wordt stap 4 overgeslagen; shell-import wordt nog steeds uitgevoerd als die is ingeschakeld.
+Als het configbestand helemaal ontbreekt, wordt stap 4 overgeslagen; shellimport wordt nog steeds uitgevoerd als die is ingeschakeld.
 
-## Configuratie-`env`-blok
+## Config-`env`-blok
 
 Twee equivalente manieren om inline omgevingsvariabelen in te stellen (beide overschrijven niet):
 
@@ -43,7 +43,7 @@ Twee equivalente manieren om inline omgevingsvariabelen in te stellen (beide ove
 }
 ```
 
-## Shell-omgevingsimport
+## Shell-env importeren
 
 `env.shellEnv` voert je login-shell uit en importeert alleen **ontbrekende** verwachte sleutels:
 
@@ -58,32 +58,32 @@ Twee equivalente manieren om inline omgevingsvariabelen in te stellen (beide ove
 }
 ```
 
-Equivalenten als omgevingsvariabele:
+Equivalenten als omgevingsvariabelen:
 
 - `OPENCLAW_LOAD_SHELL_ENV=1`
 - `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`
 
 ## Tijdens runtime geïnjecteerde omgevingsvariabelen
 
-OpenClaw injecteert ook contextmarkeringen in gestarte child-processen:
+OpenClaw injecteert ook contextmarkeringen in gestarte kindprocessen:
 
 - `OPENCLAW_SHELL=exec`: ingesteld voor opdrachten die via de `exec`-tool worden uitgevoerd.
-- `OPENCLAW_SHELL=acp`: ingesteld voor het starten van ACP-runtimebackendprocessen (bijvoorbeeld `acpx`).
-- `OPENCLAW_SHELL=acp-client`: ingesteld voor `openclaw acp client` wanneer het het ACP-bridgeproces start.
+- `OPENCLAW_SHELL=acp`: ingesteld voor processtarts van de ACP-runtimebackend (bijvoorbeeld `acpx`).
+- `OPENCLAW_SHELL=acp-client`: ingesteld voor `openclaw acp client` wanneer dit het ACP-bridgeproces start.
 - `OPENCLAW_SHELL=tui-local`: ingesteld voor lokale TUI-`!`-shellopdrachten.
 
-Dit zijn runtimemarkeringen (geen vereiste gebruikersconfiguratie). Ze kunnen worden gebruikt in shell-/profiellogica
+Dit zijn runtimemarkeringen (geen vereiste gebruikersconfiguratie). Ze kunnen worden gebruikt in shell-/profiel-logica
 om contextspecifieke regels toe te passen.
 
 ## UI-omgevingsvariabelen
 
 - `OPENCLAW_THEME=light`: forceer het lichte TUI-palet wanneer je terminal een lichte achtergrond heeft.
 - `OPENCLAW_THEME=dark`: forceer het donkere TUI-palet.
-- `COLORFGBG`: als je terminal dit exporteert, gebruikt OpenClaw de hint voor de achtergrondkleur om automatisch het TUI-palet te kiezen.
+- `COLORFGBG`: als je terminal dit exporteert, gebruikt OpenClaw de hint voor de achtergrondkleur om het TUI-palet automatisch te kiezen.
 
-## Vervanging van omgevingsvariabelen in configuratie
+## Vervanging van omgevingsvariabelen in config
 
-Je kunt rechtstreeks naar omgevingsvariabelen verwijzen in stringwaarden van de configuratie met de syntaxis `${VAR_NAME}`:
+Je kunt rechtstreeks naar omgevingsvariabelen verwijzen in stringwaarden van de config met de syntaxis `${VAR_NAME}`:
 
 ```json5
 {
@@ -97,36 +97,37 @@ Je kunt rechtstreeks naar omgevingsvariabelen verwijzen in stringwaarden van de 
 }
 ```
 
-Zie [Configuratie: vervanging van omgevingsvariabelen](/nl/gateway/configuration-reference#env-var-substitution) voor volledige details.
+Zie [Configuratie: vervanging van omgevingsvariabelen](/nl/gateway/configuration-reference#env-var-substitution) voor alle details.
 
-## Secret refs versus `${ENV}`-strings
+## Geheime refs versus `${ENV}`-strings
 
-OpenClaw ondersteunt twee omgevingsgestuurde patronen:
+OpenClaw ondersteunt twee patronen op basis van omgevingsvariabelen:
 
-- `${VAR}`-stringvervanging in configuratiewaarden.
-- SecretRef-objecten (`{ source: "env", provider: "default", id: "VAR" }`) voor velden die geheime verwijzingen ondersteunen.
+- `${VAR}`-stringvervanging in configwaarden.
+- SecretRef-objecten (`{ source: "env", provider: "default", id: "VAR" }`) voor velden die verwijzingen naar secrets ondersteunen.
 
-Beide worden tijdens activering vanuit de procesomgeving omgezet. Details over SecretRef zijn gedocumenteerd in [Geheimenbeheer](/nl/gateway/secrets).
+Beide worden tijdens activatie vanuit de procesomgeving opgelost. Details over SecretRef zijn gedocumenteerd in [Secrets-beheer](/nl/gateway/secrets).
 
 ## Padgerelateerde omgevingsvariabelen
 
-| Variabele              | Doel                                                                                                                                                                                       |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `OPENCLAW_HOME`        | Overschrijf de thuismap die wordt gebruikt voor alle interne padresolutie (`~/.openclaw/`, agentmappen, sessies, inloggegevens). Handig wanneer OpenClaw als toegewezen servicegebruiker draait. |
-| `OPENCLAW_STATE_DIR`   | Overschrijf de state-map (standaard `~/.openclaw`).                                                                                                                                          |
-| `OPENCLAW_CONFIG_PATH` | Overschrijf het pad naar het configuratiebestand (standaard `~/.openclaw/openclaw.json`).                                                                                                   |
+| Variabele                | Doel                                                                                                                                                                                                                         |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_HOME`          | Overschrijf de home-directory die wordt gebruikt voor alle interne padresolutie (`~/.openclaw/`, agentmappen, sessies, credentials). Nuttig wanneer OpenClaw als een speciale servicegebruiker wordt uitgevoerd.              |
+| `OPENCLAW_STATE_DIR`     | Overschrijf de statusmap (standaard `~/.openclaw`).                                                                                                                                                                          |
+| `OPENCLAW_CONFIG_PATH`   | Overschrijf het pad naar het configbestand (standaard `~/.openclaw/openclaw.json`).                                                                                                                                          |
+| `OPENCLAW_INCLUDE_ROOTS` | Padlijst van mappen waar `$include`-directieven bestanden buiten de configmap mogen oplossen (standaard: geen — `$include` is beperkt tot de configmap). Tilde wordt uitgebreid.                                             |
 
-## Logging
+## Logboekregistratie
 
 | Variabele             | Doel                                                                                                                                                                                                 |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OPENCLAW_LOG_LEVEL` | Overschrijf het logniveau voor zowel bestand als console (bijv. `debug`, `trace`). Heeft voorrang op `logging.level` en `logging.consoleLevel` in de configuratie. Ongeldige waarden worden genegeerd met een waarschuwing. |
+| `OPENCLAW_LOG_LEVEL` | Overschrijf het logniveau voor zowel bestand als console (bijv. `debug`, `trace`). Heeft prioriteit boven `logging.level` en `logging.consoleLevel` in de config. Ongeldige waarden worden genegeerd met een waarschuwing. |
 
 ### `OPENCLAW_HOME`
 
-Wanneer ingesteld, vervangt `OPENCLAW_HOME` de systeemthuismap (`$HOME` / `os.homedir()`) voor alle interne padresolutie. Dit maakt volledige bestandssysteemisolatie mogelijk voor headless serviceaccounts.
+Wanneer dit is ingesteld, vervangt `OPENCLAW_HOME` de systeem-home-directory (`$HOME` / `os.homedir()`) voor alle interne padresolutie. Dit maakt volledige bestandssysteemisolatie mogelijk voor headless serviceaccounts.
 
-**Voorrang:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > `os.homedir()`
+**Prioriteit:** `OPENCLAW_HOME` > `$HOME` > `USERPROFILE` > `os.homedir()`
 
 **Voorbeeld** (macOS LaunchDaemon):
 
@@ -142,16 +143,16 @@ Wanneer ingesteld, vervangt `OPENCLAW_HOME` de systeemthuismap (`$HOME` / `os.ho
 
 ## nvm-gebruikers: TLS-fouten met web_fetch
 
-Als Node.js is geïnstalleerd via **nvm** (niet via de systeempakketbeheerder), gebruikt de ingebouwde `fetch()`
-de meegeleverde CA-store van nvm, waarin moderne root-CA's kunnen ontbreken (ISRG Root X1/X2 voor Let's Encrypt,
-DigiCert Global Root G2, enz.). Hierdoor faalt `web_fetch` met `"fetch failed"` op de meeste HTTPS-sites.
+Als Node.js is geïnstalleerd via **nvm** (niet via de pakketbeheerder van het systeem), gebruikt de ingebouwde `fetch()`
+de gebundelde CA-store van nvm, waarin moderne root-CA's kunnen ontbreken (ISRG Root X1/X2 voor Let's Encrypt,
+DigiCert Global Root G2, enz.). Hierdoor mislukt `web_fetch` met `"fetch failed"` op de meeste HTTPS-sites.
 
-Op Linux detecteert OpenClaw nvm automatisch en past het de fix toe in de daadwerkelijke opstartomgeving:
+Op Linux detecteert OpenClaw nvm automatisch en past het de oplossing toe in de daadwerkelijke opstartomgeving:
 
 - `openclaw gateway install` schrijft `NODE_EXTRA_CA_CERTS` naar de systemd-serviceomgeving
-- het `openclaw`-CLI-entrypoint voert zichzelf opnieuw uit met `NODE_EXTRA_CA_CERTS` ingesteld vóór het starten van Node
+- het `openclaw` CLI-entrypoint voert zichzelf opnieuw uit met `NODE_EXTRA_CA_CERTS` ingesteld vóór het opstarten van Node
 
-**Handmatige fix (voor oudere versies of directe `node ...`-starts):**
+**Handmatige oplossing (voor oudere versies of directe `node ...`-starts):**
 
 Exporteer de variabele voordat je OpenClaw start:
 
@@ -160,7 +161,7 @@ export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 openclaw gateway run
 ```
 
-Vertrouw er niet op dat je deze variabele alleen naar `~/.openclaw/.env` schrijft; Node leest
+Vertrouw er voor deze variabele niet op dat je alleen naar `~/.openclaw/.env` schrijft; Node leest
 `NODE_EXTRA_CA_CERTS` bij het opstarten van het proces.
 
 ## Verouderde omgevingsvariabelen
@@ -169,14 +170,14 @@ OpenClaw leest alleen `OPENCLAW_*`-omgevingsvariabelen. De verouderde
 `CLAWDBOT_*`- en `MOLTBOT_*`-prefixen uit eerdere releases worden stilzwijgend
 genegeerd.
 
-Als er bij het opstarten nog een of meer op het Gateway-proces zijn ingesteld, geeft OpenClaw een
-enkele Node-deprecatiewaarschuwing (`OPENCLAW_LEGACY_ENV_VARS`) die de
-gedetecteerde prefixen en het totale aantal vermeldt. Hernoem elke waarde door de
-verouderde prefix te vervangen door `OPENCLAW_` (bijvoorbeeld `CLAWDBOT_GATEWAY_TOKEN` →
+Als er bij het opstarten nog variabelen op het Gateway-proces zijn ingesteld, geeft OpenClaw één
+Node-deprecationwaarschuwing (`OPENCLAW_LEGACY_ENV_VARS`) met de gedetecteerde
+prefixen en het totale aantal. Hernoem elke waarde door de verouderde prefix te vervangen door
+`OPENCLAW_` (bijvoorbeeld `CLAWDBOT_GATEWAY_TOKEN` →
 `OPENCLAW_GATEWAY_TOKEN`); de oude namen hebben geen effect.
 
 ## Gerelateerd
 
 - [Gateway-configuratie](/nl/gateway/configuration)
 - [FAQ: omgevingsvariabelen en .env laden](/nl/help/faq#env-vars-and-env-loading)
-- [Modellenoverzicht](/nl/concepts/models)
+- [Modeloverzicht](/nl/concepts/models)
