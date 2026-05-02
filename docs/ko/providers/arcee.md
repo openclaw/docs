@@ -1,43 +1,43 @@
 ---
 read_when:
-    - OpenClaw에서 Arcee AI를 사용하려고 합니다
+    - OpenClaw와 함께 Arcee AI를 사용하려고 합니다
     - API 키 환경 변수 또는 CLI 인증 선택이 필요합니다
 summary: Arcee AI 설정(인증 + 모델 선택)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-04-24T06:29:36Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T23:39:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
+    source_hash: 622ee5288aec3ae0b45d3f06ba65fd6f972e07d7a7596ae3905d6fbdac0bf737
     source_path: providers/arcee.md
-    workflow: 15
+    workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai)는 OpenAI 호환 API를 통해 Trinity 계열 mixture-of-experts 모델에 대한 접근을 제공합니다. 모든 Trinity 모델은 Apache 2.0 라이선스를 사용합니다.
+[Arcee AI](https://arcee.ai)는 OpenAI 호환 API를 통해 전문가 혼합 모델 Trinity 제품군에 대한 액세스를 제공합니다. 모든 Trinity 모델에는 Apache 2.0 라이선스가 적용됩니다.
 
-Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter](/ko/providers/openrouter)를 통해 접근할 수 있습니다.
+Arcee AI 모델은 Arcee 플랫폼을 통해 직접 액세스하거나 [OpenRouter](/ko/providers/openrouter)를 통해 액세스할 수 있습니다.
 
-| Property | Value                                                                                 |
+| 속성     | 값                                                                                    |
 | -------- | ------------------------------------------------------------------------------------- |
-| Provider | `arcee`                                                                               |
-| Auth     | `ARCEEAI_API_KEY` (직접) 또는 `OPENROUTER_API_KEY` (OpenRouter 경유)                  |
+| 제공자   | `arcee`                                                                               |
+| 인증     | `ARCEEAI_API_KEY` (직접) 또는 `OPENROUTER_API_KEY` (OpenRouter 경유)                   |
 | API      | OpenAI 호환                                                                           |
-| Base URL | `https://api.arcee.ai/api/v1` (직접) 또는 `https://openrouter.ai/api/v1` (OpenRouter) |
+| 기본 URL | `https://api.arcee.ai/api/v1` (직접) 또는 `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## 시작하기
 
 <Tabs>
-  <Tab title="직접(Arcee 플랫폼)">
+  <Tab title="Direct (Arcee platform)">
     <Steps>
-      <Step title="API 키 받기">
+      <Step title="Get an API key">
         [Arcee AI](https://chat.arcee.ai/)에서 API 키를 생성합니다.
       </Step>
-      <Step title="온보딩 실행">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="기본 모델 설정">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -51,17 +51,17 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter]
     </Steps>
   </Tab>
 
-  <Tab title="OpenRouter 경유">
+  <Tab title="Via OpenRouter">
     <Steps>
-      <Step title="API 키 받기">
+      <Step title="Get an API key">
         [OpenRouter](https://openrouter.ai/keys)에서 API 키를 생성합니다.
       </Step>
-      <Step title="온보딩 실행">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="기본 모델 설정">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -72,7 +72,7 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter]
         }
         ```
 
-        동일한 모델 ref를 직접 설정과 OpenRouter 설정 모두에 사용할 수 있습니다(예: `arcee/trinity-large-thinking`).
+        동일한 모델 참조는 직접 설정과 OpenRouter 설정 모두에서 작동합니다(예: `arcee/trinity-large-thinking`).
       </Step>
     </Steps>
 
@@ -82,7 +82,7 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter]
 ## 비대화형 설정
 
 <Tabs>
-  <Tab title="직접(Arcee 플랫폼)">
+  <Tab title="Direct (Arcee platform)">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -91,7 +91,7 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter]
     ```
   </Tab>
 
-  <Tab title="OpenRouter 경유">
+  <Tab title="Via OpenRouter">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -103,38 +103,38 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter]
 
 ## 내장 카탈로그
 
-현재 OpenClaw는 다음 번들 Arcee 카탈로그를 제공합니다.
+OpenClaw는 현재 다음 번들 Arcee 카탈로그를 제공합니다.
 
-| Model ref                      | Name                   | Input | Context | Cost (in/out per 1M) | Notes                                    |
-| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ---------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | 기본 모델; reasoning 활성화              |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | 범용 목적; 400B params, 13B active       |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | 빠르고 비용 효율적; function calling 지원 |
+| 모델 참조                     | 이름                   | 입력 | 컨텍스트 | 비용(1M당 입력/출력) | 참고                                       |
+| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ------------------------------------------ |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | 기본 모델, 추론 활성화, 도구 없음          |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | 범용, 400B 매개변수, 13B 활성              |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | 빠르고 비용 효율적, 함수 호출              |
 
 <Tip>
-온보딩 프리셋은 `arcee/trinity-large-thinking`을 기본 모델로 설정합니다.
+온보딩 프리셋은 `arcee/trinity-large-thinking`을 기본 모델로 설정합니다. 이 모델은 추론/텍스트 전용이며 도구 사용이나 함수 호출을 지원하지 않습니다.
 </Tip>
 
-## 지원 기능
+## 지원되는 기능
 
-| Feature                                       | Supported                    |
-| --------------------------------------------- | ---------------------------- |
-| Streaming                                     | 예                           |
-| Tool use / function calling                   | 예                           |
-| Structured output (JSON mode and JSON schema) | 예                           |
-| Extended thinking                             | 예 (Trinity Large Thinking)  |
+| 기능                                          | 지원                                        |
+| --------------------------------------------- | ------------------------------------------- |
+| 스트리밍                                      | 예                                          |
+| 도구 사용 / 함수 호출                         | 모델에 따라 다름, Trinity Large Thinking 제외 |
+| 구조화된 출력(JSON 모드 및 JSON 스키마)       | 예                                          |
+| 확장 사고                                     | 예(Trinity Large Thinking)                  |
 
 <AccordionGroup>
-  <Accordion title="환경 참고">
-    Gateway가 데몬(launchd/systemd)으로 실행되는 경우, 해당 프로세스에서
-    `ARCEEAI_API_KEY`(또는 `OPENROUTER_API_KEY`)를 사용할 수 있어야 합니다(예:
-    `~/.openclaw/.env` 또는 `env.shellEnv`).
+  <Accordion title="Environment note">
+    Gateway가 데몬(launchd/systemd)으로 실행되는 경우 `ARCEEAI_API_KEY`
+    (또는 `OPENROUTER_API_KEY`)가 해당 프로세스에서 사용할 수 있는지 확인하세요(예:
+    `~/.openclaw/.env` 또는 `env.shellEnv`를 통해).
   </Accordion>
 
-  <Accordion title="OpenRouter 라우팅">
-    OpenRouter를 통해 Arcee 모델을 사용할 때도 동일한 `arcee/*` 모델 ref가 적용됩니다.
-    OpenClaw는 선택한 인증 방식에 따라 라우팅을 투명하게 처리합니다. OpenRouter 전용
-    구성 세부 사항은 [OpenRouter provider 문서](/ko/providers/openrouter)를 참조하세요.
+  <Accordion title="OpenRouter routing">
+    OpenRouter를 통해 Arcee 모델을 사용할 때는 동일한 `arcee/*` 모델 참조가 적용됩니다.
+    OpenClaw는 인증 선택에 따라 라우팅을 투명하게 처리합니다. OpenRouter별
+    구성 세부 정보는 [OpenRouter 제공자 문서](/ko/providers/openrouter)를 참조하세요.
   </Accordion>
 </AccordionGroup>
 
@@ -142,9 +142,9 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 접근하거나 [OpenRouter]
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/ko/providers/openrouter" icon="shuffle">
-    단일 API 키를 통해 Arcee 모델과 그 외 여러 모델에 접근합니다.
+    단일 API 키를 통해 Arcee 모델 및 다른 많은 모델에 액세스합니다.
   </Card>
-  <Card title="모델 선택" href="/ko/concepts/model-providers" icon="layers">
-    provider, 모델 ref, failover 동작 선택하기.
+  <Card title="Model selection" href="/ko/concepts/model-providers" icon="layers">
+    제공자, 모델 참조, 장애 조치 동작 선택.
   </Card>
 </CardGroup>
