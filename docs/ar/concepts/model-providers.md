@@ -1,107 +1,113 @@
 ---
 read_when:
-    - تحتاج إلى مرجع لإعداد النماذج لكل موفّر على حدة
-    - تريد أمثلة على الإعدادات أو أوامر الإعداد الأولي عبر CLI لموفّري النماذج
+    - تحتاج إلى مرجع لإعداد النماذج لكل مزوّد على حدة
+    - تريد أمثلة على التكوينات أو أوامر الإعداد الأولي في CLI لموفّري النماذج
 sidebarTitle: Model providers
-summary: نظرة عامة على موفّري النماذج مع أمثلة على الإعدادات + تدفقات CLI
+summary: نظرة عامة على موفّر النماذج مع أمثلة على التكوينات + تدفقات CLI
 title: موفرو النماذج
 x-i18n:
-    generated_at: "2026-04-30T07:53:23Z"
+    generated_at: "2026-05-02T07:24:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3902194674d6d4e17a8477c28addb39b8e04c3b498eb6a0305e82c2f1b5d737e
+    source_hash: 02494bfb71c0e0449eacd9ec028316e7a1479e51c6591aea5885baf3941272d5
     source_path: concepts/model-providers.md
     workflow: 16
 ---
 
-مرجع لـ **موفّري LLM/النماذج** (وليس قنوات الدردشة مثل WhatsApp/Telegram). لقواعد اختيار النماذج، راجع [النماذج](/ar/concepts/models).
+مرجع لـ **مزوّدي LLM/النماذج** (وليس قنوات الدردشة مثل WhatsApp/Telegram). لقواعد اختيار النموذج، راجع [النماذج](/ar/concepts/models).
 
 ## قواعد سريعة
 
 <AccordionGroup>
-  <Accordion title="مراجع النماذج ومساعدات CLI">
-    - تستخدم مراجع النماذج الصيغة `provider/model` (مثال: `opencode/claude-opus-4-6`).
+  <Accordion title="Model refs and CLI helpers">
+    - تستخدم مراجع النماذج `provider/model` (مثال: `opencode/claude-opus-4-6`).
     - يعمل `agents.defaults.models` كقائمة سماح عند ضبطه.
     - مساعدات CLI: `openclaw onboard`، `openclaw models list`، `openclaw models set <provider/model>`.
-    - تضبط `models.providers.*.contextWindow` / `contextTokens` / `maxTokens` القيم الافتراضية على مستوى الموفّر؛ وتتجاوزها `models.providers.*.models[].contextWindow` / `contextTokens` / `maxTokens` لكل نموذج.
-    - قواعد الرجوع الاحتياطي، وفحوصات فترة التهدئة، واستمرار تجاوزات الجلسة: [تجاوز فشل النموذج](/ar/concepts/model-failover).
+    - تضبط `models.providers.*.contextWindow` / `contextTokens` / `maxTokens` الإعدادات الافتراضية على مستوى المزوّد؛ وتتجاوزها `models.providers.*.models[].contextWindow` / `contextTokens` / `maxTokens` لكل نموذج.
+    - قواعد الرجوع، ومجسّات التهدئة، واستمرارية تجاوزات الجلسة: [تجاوز فشل النموذج](/ar/concepts/model-failover).
 
   </Accordion>
-  <Accordion title="فصل موفّر/وقت تشغيل OpenAI">
-    مسارات عائلة OpenAI محددة بالبادئة:
+  <Accordion title="Adding provider auth does not change your primary model">
+    يحافظ `openclaw configure` على `agents.defaults.model.primary` موجود عند إضافة مزوّد أو إعادة المصادقة معه. قد تظل Plugins المزوّد تعيد نموذجًا افتراضيًا موصى به في تصحيح إعدادات المصادقة لديها، لكن configure يتعامل مع ذلك على أنه "إتاحة هذا النموذج" عندما يكون هناك نموذج أساسي موجود بالفعل، وليس "استبدال النموذج الأساسي الحالي."
 
-    - يستخدم `openai/<model>` موفّر مفتاح API المباشر لـ OpenAI في PI.
-    - يستخدم `openai-codex/<model>` Codex OAuth في PI.
-    - يستخدم `openai/<model>` مع `agents.defaults.agentRuntime.id: "codex"` حزمة خادم تطبيق Codex الأصلية.
-
-    راجع [OpenAI](/ar/providers/openai) و[حزمة Codex](/ar/plugins/codex-harness). إذا كان فصل الموفّر/وقت التشغيل مربكًا، فاقرأ [أوقات تشغيل الوكلاء](/ar/concepts/agent-runtimes) أولًا.
-
-    يتبع التفعيل التلقائي للـ Plugin الحد نفسه: ينتمي `openai-codex/<model>` إلى Plugin الخاص بـ OpenAI، بينما يتم تفعيل Plugin الخاص بـ Codex بواسطة `agentRuntime.id: "codex"` أو مراجع `codex/<model>` القديمة.
-
-    يتوفر GPT-5.5 عبر `openai/gpt-5.5` لحركة مرور مفاتيح API المباشرة، و`openai-codex/gpt-5.5` في PI لـ Codex OAuth، وحزمة خادم تطبيق Codex الأصلية عند ضبط `agentRuntime.id: "codex"`.
+    للتبديل عمدًا إلى النموذج الافتراضي، استخدم `openclaw models set <provider/model>` أو `openclaw models auth login --provider <id> --set-default`.
 
   </Accordion>
-  <Accordion title="أوقات تشغيل CLI">
-    تستخدم أوقات تشغيل CLI الفصل نفسه: اختر مراجع نماذج معيارية مثل `anthropic/claude-*` أو `google/gemini-*` أو `openai/gpt-*`، ثم اضبط `agents.defaults.agentRuntime.id` على `claude-cli` أو `google-gemini-cli` أو `codex-cli` عندما تريد خلفية CLI محلية.
+  <Accordion title="OpenAI provider/runtime split">
+    مسارات عائلة OpenAI خاصة بالبادئة:
 
-    تنتقل مراجع `claude-cli/*` و`google-gemini-cli/*` و`codex-cli/*` القديمة عائدةً إلى مراجع الموفّرين المعيارية مع تسجيل وقت التشغيل بشكل منفصل.
+    - يستخدم `openai/<model>` بالإضافة إلى `agents.defaults.agentRuntime.id: "codex"` حزمة تشغيل خادم تطبيقات Codex الأصلية. هذا هو إعداد اشتراك ChatGPT/Codex المعتاد.
+    - يستخدم `openai-codex/<model>` مصادقة Codex عبر OAuth في PI.
+    - يستخدم `openai/<model>` من دون تجاوز وقت تشغيل Codex مزوّد مفتاح OpenAI API المباشر في PI.
+
+    راجع [OpenAI](/ar/providers/openai) و[حزمة Codex](/ar/plugins/codex-harness). إذا كان فصل المزوّد/وقت التشغيل مربكًا، فاقرأ [أوقات تشغيل الوكلاء](/ar/concepts/agent-runtimes) أولًا.
+
+    يتبع التفعيل التلقائي للـ Plugin الحد نفسه: ينتمي `openai-codex/<model>` إلى Plugin OpenAI، بينما يتم تفعيل Plugin Codex بواسطة `agentRuntime.id: "codex"` أو مراجع `codex/<model>` القديمة.
+
+    يتوفر GPT-5.5 من خلال حزمة تشغيل خادم تطبيقات Codex الأصلية عند ضبط `agentRuntime.id: "codex"`، ومن خلال `openai-codex/gpt-5.5` في PI لمصادقة Codex عبر OAuth، ومن خلال `openai/gpt-5.5` في PI لحركة مرور مفتاح API المباشرة عندما يتيحه حسابك.
+
+  </Accordion>
+  <Accordion title="CLI runtimes">
+    تستخدم أوقات تشغيل CLI الفصل نفسه: اختر مراجع نماذج قياسية مثل `anthropic/claude-*` أو `google/gemini-*` أو `openai/gpt-*`، ثم اضبط `agents.defaults.agentRuntime.id` إلى `claude-cli` أو `google-gemini-cli` أو `codex-cli` عندما تريد خلفية CLI محلية.
+
+    تهاجر مراجع `claude-cli/*` و`google-gemini-cli/*` و`codex-cli/*` القديمة مرة أخرى إلى مراجع المزوّد القياسية مع تسجيل وقت التشغيل بشكل منفصل.
 
   </Accordion>
 </AccordionGroup>
 
-## سلوك الموفّرين المملوك للـ Plugin
+## سلوك المزوّد المملوك للـ Plugin
 
-توجد معظم المنطق الخاص بالموفّرين في Plugins الموفّرين (`registerProvider(...)`) بينما يحتفظ OpenClaw بحلقة الاستدلال العامة. تمتلك Plugins الإعداد الأولي، وكتالوجات النماذج، وربط متغيرات بيئة المصادقة، وتطبيع النقل/الإعدادات، وتنظيف مخطط الأدوات، وتصنيف تجاوز الفشل، وتحديث OAuth، وتقارير الاستخدام، وملفات تعريف التفكير/الاستدلال، والمزيد.
+تعيش معظم المنطقيات الخاصة بالمزوّد في Plugins المزوّد (`registerProvider(...)`) بينما يحافظ OpenClaw على حلقة الاستدلال العامة. تمتلك Plugins الإعداد الأولي، وكتالوجات النماذج، وربط متغيرات بيئة المصادقة، وتطبيع النقل/الإعدادات، وتنظيف مخطط الأدوات، وتصنيف تجاوز الفشل، وتحديث OAuth، وتقارير الاستخدام، وملفات تعريف التفكير/الاستدلال، والمزيد.
 
-توجد القائمة الكاملة لخطافات SDK الخاصة بالموفّرين وأمثلة Plugins المضمّنة في [Plugins الموفّرين](/ar/plugins/sdk-provider-plugins). الموفّر الذي يحتاج إلى منفّذ طلبات مخصص بالكامل هو سطح توسعة منفصل وأعمق.
+توجد القائمة الكاملة لخطافات provider-SDK وأمثلة Plugins المضمّنة في [Plugins المزوّد](/ar/plugins/sdk-provider-plugins). المزوّد الذي يحتاج إلى منفّذ طلبات مخصص بالكامل هو سطح امتداد منفصل وأعمق.
 
 <Note>
-يوجد سلوك المشغّل المملوك للموفّر في خطافات موفّر صريحة مثل سياسة إعادة التشغيل، وتطبيع مخطط الأدوات، وتغليف البث، ومساعدات النقل/الطلبات. حقيبة `ProviderPlugin.capabilities` الثابتة القديمة مخصصة للتوافق فقط ولم تعد تُقرأ بواسطة منطق المشغّل المشترك.
+يعيش سلوك المشغّل المملوك للمزوّد على خطافات مزوّد صريحة مثل سياسة إعادة التشغيل، وتطبيع مخطط الأدوات، وتغليف البث، ومساعدات النقل/الطلب. حقيبة `ProviderPlugin.capabilities` الثابتة القديمة مخصصة للتوافق فقط ولم تعد تُقرأ بواسطة منطق المشغّل المشترك.
 </Note>
 
 ## تدوير مفاتيح API
 
 <AccordionGroup>
-  <Accordion title="مصادر المفاتيح والأولوية">
+  <Accordion title="Key sources and priority">
     اضبط مفاتيح متعددة عبر:
 
-    - `OPENCLAW_LIVE_<PROVIDER>_KEY` (تجاوز مباشر واحد، أعلى أولوية)
+    - `OPENCLAW_LIVE_<PROVIDER>_KEY` (تجاوز حي واحد، أعلى أولوية)
     - `<PROVIDER>_API_KEYS` (قائمة مفصولة بفواصل أو فواصل منقوطة)
     - `<PROVIDER>_API_KEY` (المفتاح الأساسي)
-    - `<PROVIDER>_API_KEY_*` (قائمة مرقمة، مثل `<PROVIDER>_API_KEY_1`)
+    - `<PROVIDER>_API_KEY_*` (قائمة مرقّمة، مثل `<PROVIDER>_API_KEY_1`)
 
-    بالنسبة إلى موفّري Google، يتم تضمين `GOOGLE_API_KEY` أيضًا كخيار رجوع احتياطي. يحافظ ترتيب اختيار المفاتيح على الأولوية ويزيل القيم المكررة.
+    بالنسبة إلى مزوّدي Google، يتم أيضًا تضمين `GOOGLE_API_KEY` كخيار رجوع. يحافظ ترتيب اختيار المفاتيح على الأولوية ويزيل تكرار القيم.
 
   </Accordion>
-  <Accordion title="متى يبدأ التدوير">
-    - تُعاد محاولة الطلبات باستخدام المفتاح التالي فقط عند استجابات حد المعدل (على سبيل المثال `429` أو `rate_limit` أو `quota` أو `resource exhausted` أو `Too many concurrent requests` أو `ThrottlingException` أو `concurrency limit reached` أو `workers_ai ... quota limit exceeded` أو رسائل حد الاستخدام الدورية).
-    - تفشل الإخفاقات التي ليست بسبب حد المعدل فورًا؛ ولا تُحاوَل أي عملية تدوير للمفاتيح.
-    - عندما تفشل جميع المفاتيح المرشحة، يُعاد الخطأ النهائي من المحاولة الأخيرة.
+  <Accordion title="When rotation kicks in">
+    - تتم إعادة محاولة الطلبات بالمفتاح التالي فقط عند استجابات حد المعدّل (مثل `429`، أو `rate_limit`، أو `quota`، أو `resource exhausted`، أو `Too many concurrent requests`، أو `ThrottlingException`، أو `concurrency limit reached`، أو `workers_ai ... quota limit exceeded`، أو رسائل حد الاستخدام الدورية).
+    - تفشل حالات الفشل غير المتعلقة بحد المعدّل فورًا؛ ولا تتم محاولة تدوير المفاتيح.
+    - عندما تفشل كل المفاتيح المرشحة، يتم إرجاع الخطأ النهائي من المحاولة الأخيرة.
 
   </Accordion>
 </AccordionGroup>
 
-## الموفّرون المضمّنون (كتالوج pi-ai)
+## المزوّدون المدمجون (كتالوج pi-ai)
 
-يأتي OpenClaw مع كتالوج pi‑ai. لا يحتاج هؤلاء الموفّرون إلى أي إعداد `models.providers`؛ ما عليك سوى ضبط المصادقة واختيار نموذج.
+يأتي OpenClaw مع كتالوج pi‑ai. لا يتطلب هؤلاء المزوّدون **أي** إعداد `models.providers`؛ فقط اضبط المصادقة واختر نموذجًا.
 
 ### OpenAI
 
 - المزوّد: `openai`
 - المصادقة: `OPENAI_API_KEY`
-- التدوير الاختياري: `OPENAI_API_KEYS`، `OPENAI_API_KEY_1`، `OPENAI_API_KEY_2`، إضافة إلى `OPENCLAW_LIVE_OPENAI_KEY` (تجاوز واحد)
-- أمثلة على النماذج: `openai/gpt-5.5`، `openai/gpt-5.4-mini`
-- تحقّق من توفر الحساب/النموذج باستخدام `openclaw models list --provider openai` إذا كان تثبيت محدد أو مفتاح API يتصرف بشكل مختلف.
+- تدوير اختياري: `OPENAI_API_KEYS`، `OPENAI_API_KEY_1`، `OPENAI_API_KEY_2`، بالإضافة إلى `OPENCLAW_LIVE_OPENAI_KEY` (تجاوز واحد)
+- أمثلة نماذج: `openai/gpt-5.5`، `openai/gpt-5.4-mini`
+- تحقق من توفر الحساب/النموذج باستخدام `openclaw models list --provider openai` إذا كان تثبيت محدد أو مفتاح API يتصرف بشكل مختلف.
 - CLI: `openclaw onboard --auth-choice openai-api-key`
-- النقل الافتراضي هو `auto` (WebSocket أولًا، ثم الرجوع إلى SSE)
-- يمكن التجاوز لكل نموذج عبر `agents.defaults.models["openai/<model>"].params.transport` (`"sse"` أو `"websocket"` أو `"auto"`)
-- يكون الإحماء الافتراضي لـ OpenAI Responses WebSocket مفعّلًا عبر `params.openaiWsWarmup` (`true`/`false`)
+- النقل الافتراضي هو `auto` (WebSocket أولًا، مع رجوع إلى SSE)
+- تجاوز لكل نموذج عبر `agents.defaults.models["openai/<model>"].params.transport` (`"sse"` أو `"websocket"` أو `"auto"`)
+- الإحماء الافتراضي لـ OpenAI Responses WebSocket مفعّل عبر `params.openaiWsWarmup` (`true`/`false`)
 - يمكن تفعيل المعالجة ذات الأولوية في OpenAI عبر `agents.defaults.models["openai/<model>"].params.serviceTier`
-- يربط `/fast` و`params.fastMode` طلبات Responses المباشرة من `openai/*` إلى `service_tier=priority` على `api.openai.com`
-- استخدم `params.serviceTier` عندما تريد مستوى صريحًا بدل مفتاح التبديل المشترك `/fast`
-- لا تنطبق ترويسات الإسناد المخفية الخاصة بـ OpenClaw (`originator`، `version`، `User-Agent`) إلا على حركة OpenAI الأصلية إلى `api.openai.com`، وليس على الوكلاء العامين المتوافقين مع OpenAI
+- يربط `/fast` و`params.fastMode` طلبات Responses المباشرة لـ `openai/*` إلى `service_tier=priority` على `api.openai.com`
+- استخدم `params.serviceTier` عندما تريد طبقة صريحة بدلًا من مفتاح تبديل `/fast` المشترك
+- تنطبق رؤوس إسناد OpenClaw المخفية (`originator`، `version`، `User-Agent`) فقط على حركة مرور OpenAI الأصلية إلى `api.openai.com`، وليس على الوكلاء العامين المتوافقين مع OpenAI
 - تحتفظ مسارات OpenAI الأصلية أيضًا بـ Responses `store`، وتلميحات ذاكرة التخزين المؤقت للموجهات، وتشكيل الحمولة المتوافق مع استدلال OpenAI؛ أما مسارات الوكيل فلا تفعل ذلك
-- يتم إخفاء `openai/gpt-5.3-codex-spark` عمدًا في OpenClaw لأن طلبات OpenAI API الحية ترفضه، كما أن كتالوج Codex الحالي لا يعرِضه
+- يتم إخفاء `openai/gpt-5.3-codex-spark` عمدًا في OpenClaw لأن طلبات OpenAI API الحية ترفضه وكتالوج Codex الحالي لا يتيحه
 
 ```json5
 {
@@ -113,17 +119,17 @@ x-i18n:
 
 - المزوّد: `anthropic`
 - المصادقة: `ANTHROPIC_API_KEY`
-- التدوير الاختياري: `ANTHROPIC_API_KEYS`، `ANTHROPIC_API_KEY_1`، `ANTHROPIC_API_KEY_2`، إضافة إلى `OPENCLAW_LIVE_ANTHROPIC_KEY` (تجاوز واحد)
-- مثال على نموذج: `anthropic/claude-opus-4-6`
+- تدوير اختياري: `ANTHROPIC_API_KEYS`، `ANTHROPIC_API_KEY_1`، `ANTHROPIC_API_KEY_2`، بالإضافة إلى `OPENCLAW_LIVE_ANTHROPIC_KEY` (تجاوز واحد)
+- مثال نموذج: `anthropic/claude-opus-4-6`
 - CLI: `openclaw onboard --auth-choice apiKey`
-- تدعم طلبات Anthropic العامة المباشرة مفتاح التبديل المشترك `/fast` و`params.fastMode`، بما في ذلك حركة المرور المرسلة إلى `api.anthropic.com` والمصادَق عليها بمفتاح API أو OAuth؛ يربط OpenClaw ذلك بـ Anthropic `service_tier` (`auto` مقابل `standard_only`)
-- يحافظ تكوين Claude CLI المفضّل على مرجع النموذج القياسي ويختار واجهة CLI
-  الخلفية بشكل منفصل: `anthropic/claude-opus-4-7` مع
-  `agents.defaults.agentRuntime.id: "claude-cli"`. تظل مراجع
+- تدعم طلبات Anthropic العامة المباشرة مفتاح تبديل `/fast` المشترك و`params.fastMode`، بما في ذلك حركة المرور المرسلة إلى `api.anthropic.com` باستخدام مفتاح API أو مصادقة OAuth؛ يربط OpenClaw ذلك إلى `service_tier` في Anthropic (`auto` مقابل `standard_only`)
+- يحافظ إعداد Claude CLI المفضّل على مرجع النموذج قياسيًا ويحدد خلفية CLI
+  بشكل منفصل: `anthropic/claude-opus-4-7` مع
+  `agents.defaults.agentRuntime.id: "claude-cli"`. لا تزال مراجع
   `claude-cli/claude-opus-4-7` القديمة تعمل للتوافق.
 
 <Note>
-أخبرنا موظفو Anthropic بأن استخدام Claude CLI بأسلوب OpenClaw مسموح به مجددًا، لذلك يتعامل OpenClaw مع إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما معتمدان لهذا التكامل ما لم تنشر Anthropic سياسة جديدة. يظل رمز إعداد Anthropic متاحًا كمسار رموز مدعوم في OpenClaw، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI و`claude -p` عندما يكونان متاحين.
+أخبرنا موظفو Anthropic أن استخدام Claude CLI بأسلوب OpenClaw مسموح به مرة أخرى، لذلك يتعامل OpenClaw مع إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما معتمدان لهذا التكامل ما لم تنشر Anthropic سياسة جديدة. يظل setup-token الخاص بـ Anthropic متاحًا كمسار رمز مدعوم في OpenClaw، لكن OpenClaw يفضّل الآن إعادة استخدام Claude CLI و`claude -p` عند توفرهما.
 </Note>
 
 ```json5
@@ -137,23 +143,30 @@ x-i18n:
 - المزوّد: `openai-codex`
 - المصادقة: OAuth (ChatGPT)
 - مرجع نموذج PI: `openai-codex/gpt-5.5`
-- مرجع حزمة خادم تطبيق Codex الأصلية: `openai/gpt-5.5` مع `agents.defaults.agentRuntime.id: "codex"`
-- وثائق حزمة خادم تطبيق Codex الأصلية: [حزمة Codex](/ar/plugins/codex-harness)
+- مرجع حزمة تشغيل خادم تطبيقات Codex الأصلية: `openai/gpt-5.5` مع `agents.defaults.agentRuntime.id: "codex"`
+- مستندات حزمة تشغيل خادم تطبيقات Codex الأصلية: [حزمة Codex](/ar/plugins/codex-harness)
 - مراجع النماذج القديمة: `codex/gpt-*`
-- حد Plugin: يحمّل `openai-codex/*` Plugin الخاص بـ OpenAI؛ ولا يتم اختيار Plugin خادم تطبيق Codex الأصلي إلا بواسطة وقت تشغيل حزمة Codex أو مراجع `codex/*` القديمة.
+- حد Plugin: يحمّل `openai-codex/*` Plugin OpenAI؛ ولا يتم تحديد Plugin خادم تطبيقات Codex الأصلي إلا بواسطة وقت تشغيل حزمة Codex أو مراجع `codex/*` القديمة.
 - CLI: `openclaw onboard --auth-choice openai-codex` أو `openclaw models auth login --provider openai-codex`
-- النقل الافتراضي هو `auto` (WebSocket أولًا، ثم الرجوع إلى SSE)
-- يمكن التجاوز لكل نموذج PI عبر `agents.defaults.models["openai-codex/<model>"].params.transport` (`"sse"` أو `"websocket"` أو `"auto"`)
-- يتم أيضًا تمرير `params.serviceTier` على طلبات Codex Responses الأصلية (`chatgpt.com/backend-api`)
-- لا تُرفق ترويسات الإسناد المخفية الخاصة بـ OpenClaw (`originator`، `version`، `User-Agent`) إلا على حركة Codex الأصلية إلى `chatgpt.com/backend-api`، وليس على الوكلاء العامين المتوافقين مع OpenAI
-- يشارك تكوين مفتاح التبديل نفسه `/fast` و`params.fastMode` كما في `openai/*` المباشر؛ يربط OpenClaw ذلك بـ `service_tier=priority`
-- يستخدم `openai-codex/gpt-5.5` قيمة كتالوج Codex الأصلية `contextWindow = 400000` ووقت التشغيل الافتراضي `contextTokens = 272000`؛ تجاوز حد وقت التشغيل باستخدام `models.providers.openai-codex.models[].contextTokens`
-- ملاحظة سياسة: OpenAI Codex OAuth مدعوم صراحة للأدوات/سير العمل الخارجية مثل OpenClaw.
-- استخدم `openai-codex/gpt-5.5` عندما تريد مسار Codex OAuth/الاشتراك؛ واستخدم `openai/gpt-5.5` عندما يعرِض إعداد مفتاح API والكتالوج المحلي لديك مسار API العام.
+- النقل الافتراضي هو `auto` (WebSocket أولًا، مع رجوع إلى SSE)
+- تجاوز لكل نموذج PI عبر `agents.defaults.models["openai-codex/<model>"].params.transport` (`"sse"` أو `"websocket"` أو `"auto"`)
+- يتم أيضًا تمرير `params.serviceTier` في طلبات Codex Responses الأصلية (`chatgpt.com/backend-api`)
+- لا تُرفق رؤوس إسناد OpenClaw المخفية (`originator`، `version`، `User-Agent`) إلا على حركة مرور Codex الأصلية إلى `chatgpt.com/backend-api`، وليس على الوكلاء العامين المتوافقين مع OpenAI
+- يشارك إعداد `/fast` نفسه وإعداد `params.fastMode` مثل `openai/*` المباشر؛ يربط OpenClaw ذلك إلى `service_tier=priority`
+- يستخدم `openai-codex/gpt-5.5` قيمة `contextWindow = 400000` الأصلية في كتالوج Codex ووقت التشغيل الافتراضي `contextTokens = 272000`؛ تجاوز حد وقت التشغيل باستخدام `models.providers.openai-codex.models[].contextTokens`
+- ملاحظة سياسة: OpenAI Codex OAuth مدعوم صراحةً للأدوات/سير العمل الخارجية مثل OpenClaw.
+- بالنسبة إلى مسار الاشتراك الشائع بالإضافة إلى وقت تشغيل Codex الأصلي، سجّل الدخول بمصادقة `openai-codex` لكن اضبط `openai/gpt-5.5` بالإضافة إلى `agents.defaults.agentRuntime.id: "codex"`.
+- استخدم `openai-codex/gpt-5.5` فقط عندما تريد مسار Codex OAuth/الاشتراك عبر PI؛ واستخدم `openai/gpt-5.5` من دون تجاوز وقت تشغيل Codex عندما يتيح إعداد مفتاح API لديك والكتالوج المحلي مسار API العام.
 
 ```json5
 {
-  agents: { defaults: { model: { primary: "openai-codex/gpt-5.5" } } },
+  plugins: { entries: { codex: { enabled: true } } },
+  agents: {
+    defaults: {
+      model: { primary: "openai/gpt-5.5" },
+      agentRuntime: { id: "codex", fallback: "none" },
+    },
+  },
 }
 ```
 
@@ -176,10 +189,10 @@ x-i18n:
     خطة Z.AI Coding Plan أو نقاط نهاية API العامة.
   </Card>
   <Card title="MiniMax" href="/ar/providers/minimax">
-    OAuth لخطة MiniMax Coding Plan أو الوصول عبر مفتاح API.
+    مصادقة MiniMax Coding Plan عبر OAuth أو وصول مفتاح API.
   </Card>
   <Card title="Qwen Cloud" href="/ar/providers/qwen">
-    سطح مزوّد Qwen Cloud إضافة إلى Alibaba DashScope وربط نقاط نهاية Coding Plan.
+    سطح مزوّد Qwen Cloud بالإضافة إلى ربط نقاط نهاية Alibaba DashScope وCoding Plan.
   </Card>
 </CardGroup>
 
@@ -188,7 +201,7 @@ x-i18n:
 - المصادقة: `OPENCODE_API_KEY` (أو `OPENCODE_ZEN_API_KEY`)
 - مزوّد وقت تشغيل Zen: `opencode`
 - مزوّد وقت تشغيل Go: `opencode-go`
-- أمثلة على النماذج: `opencode/claude-opus-4-6`، `opencode-go/kimi-k2.6`
+- أمثلة نماذج: `opencode/claude-opus-4-6`، `opencode-go/kimi-k2.6`
 - CLI: `openclaw onboard --auth-choice opencode-zen` أو `openclaw onboard --auth-choice opencode-go`
 
 ```json5
@@ -201,21 +214,21 @@ x-i18n:
 
 - المزوّد: `google`
 - المصادقة: `GEMINI_API_KEY`
-- التدوير الاختياري: `GEMINI_API_KEYS`، `GEMINI_API_KEY_1`، `GEMINI_API_KEY_2`، الرجوع إلى `GOOGLE_API_KEY`، و`OPENCLAW_LIVE_GEMINI_KEY` (تجاوز واحد)
-- أمثلة على النماذج: `google/gemini-3.1-pro-preview`، `google/gemini-3-flash-preview`
-- التوافق: يتم تطبيع تكوين OpenClaw القديم الذي يستخدم `google/gemini-3.1-flash-preview` إلى `google/gemini-3-flash-preview`
-- الاسم البديل: يتم قبول `google/gemini-3.1-pro` وتطبيعه إلى معرّف Gemini API الحي لدى Google، وهو `google/gemini-3.1-pro-preview`
+- تدوير اختياري: `GEMINI_API_KEYS`، و`GEMINI_API_KEY_1`، و`GEMINI_API_KEY_2`، ورجوع احتياطي إلى `GOOGLE_API_KEY`، و`OPENCLAW_LIVE_GEMINI_KEY` (تجاوز واحد)
+- نماذج أمثلة: `google/gemini-3.1-pro-preview`، و`google/gemini-3-flash-preview`
+- التوافق: تتم تسوية إعدادات OpenClaw القديمة التي تستخدم `google/gemini-3.1-flash-preview` إلى `google/gemini-3-flash-preview`
+- الاسم المستعار: يتم قبول `google/gemini-3.1-pro` وتسويته إلى معرّف Gemini API المباشر من Google، وهو `google/gemini-3.1-pro-preview`
 - CLI: `openclaw onboard --auth-choice gemini-api-key`
-- التفكير: يستخدم `/think adaptive` التفكير الديناميكي من Google. لا يضمّن Gemini 3/3.1 قيمة ثابتة لـ `thinkingLevel`؛ ويرسل Gemini 2.5 قيمة `thinkingBudget: -1`.
-- تقبل عمليات تشغيل Gemini المباشرة أيضًا `agents.defaults.models["google/<model>"].params.cachedContent` (أو `cached_content` القديم) لتمرير مقبض أصلي للمزوّد بصيغة `cachedContents/...`؛ تظهر إصابات ذاكرة Gemini المؤقتة في OpenClaw باسم `cacheRead`
+- التفكير: يستخدم `/think adaptive` التفكير الديناميكي من Google. يحذف Gemini 3/3.1 قيمة `thinkingLevel` ثابتة؛ ويرسل Gemini 2.5 القيمة `thinkingBudget: -1`.
+- تقبل تشغيلات Gemini المباشرة أيضًا `agents.defaults.models["google/<model>"].params.cachedContent` (أو `cached_content` القديم) لتمرير مقبض أصلي للمزوّد بصيغة `cachedContents/...`؛ وتظهر إصابات ذاكرة Gemini المؤقتة بصفتها OpenClaw `cacheRead`
 
 ### Google Vertex وGemini CLI
 
-- المزوّدون: `google-vertex`، `google-gemini-cli`
-- المصادقة: يستخدم Vertex بيانات اعتماد gcloud ADC؛ ويستخدم Gemini CLI تدفق OAuth الخاص به
+- المزوّدون: `google-vertex`، و`google-gemini-cli`
+- المصادقة: يستخدم Vertex بيانات اعتماد gcloud ADC؛ ويستخدم Gemini CLI مسار OAuth الخاص به
 
 <Warning>
-Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض المستخدمين عن قيود على حسابات Google بعد استخدام عملاء تابعين لجهات خارجية. راجع شروط Google واستخدم حسابًا غير حرج إذا اخترت المتابعة.
+يُعد Gemini CLI OAuth في OpenClaw تكاملًا غير رسمي. أبلغ بعض المستخدمين عن قيود على حسابات Google بعد استخدام عملاء تابعين لجهات خارجية. راجع شروط Google واستخدم حسابًا غير بالغ الأهمية إذا اخترت المتابعة.
 </Warning>
 
 يُشحن Gemini CLI OAuth كجزء من Plugin `google` المضمّن.
@@ -245,15 +258,15 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
     openclaw models auth login --provider google-gemini-cli --set-default
     ```
 
-    النموذج الافتراضي: `google-gemini-cli/gemini-3-flash-preview`. لا تلصق **معرّف عميل** أو سرًا في `openclaw.json`. يخزّن تدفق تسجيل الدخول في CLI الرموز في ملفات تعريف المصادقة على مضيف Gateway.
+    النموذج الافتراضي: `google-gemini-cli/gemini-3-flash-preview`. لا تلصق **أي** معرّف عميل أو سر في `openclaw.json`. يخزّن مسار تسجيل الدخول في CLI الرموز المميزة في ملفات تعريف المصادقة على مضيف Gateway.
 
   </Step>
-  <Step title="عيّن المشروع (إذا لزم الأمر)">
-    إذا فشلت الطلبات بعد تسجيل الدخول، فعيّن `GOOGLE_CLOUD_PROJECT` أو `GOOGLE_CLOUD_PROJECT_ID` على مضيف Gateway.
+  <Step title="Set project (if needed)">
+    إذا فشلت الطلبات بعد تسجيل الدخول، فاضبط `GOOGLE_CLOUD_PROJECT` أو `GOOGLE_CLOUD_PROJECT_ID` على مضيف Gateway.
   </Step>
 </Steps>
 
-تُحلَّل ردود Gemini CLI بصيغة JSON من `response`؛ ويعود الاستخدام احتياطيًا إلى `stats`، مع تسوية `stats.cached` إلى `cacheRead` في OpenClaw.
+تُحلّل ردود Gemini CLI بصيغة JSON من `response`؛ ويرجع الاستخدام احتياطيًا إلى `stats`، مع تسوية `stats.cached` إلى OpenClaw `cacheRead`.
 
 ### Z.AI (GLM)
 
@@ -261,14 +274,14 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 - المصادقة: `ZAI_API_KEY`
 - نموذج مثال: `zai/glm-5.1`
 - CLI: `openclaw onboard --auth-choice zai-api-key`
-  - الأسماء المستعارة: تُسوّى `z.ai/*` و`z-ai/*` إلى `zai/*`
-  - يكتشف `zai-api-key` تلقائيًا نقطة نهاية Z.AI المطابقة؛ وتفرض `zai-coding-global` و`zai-coding-cn` و`zai-global` و`zai-cn` سطحًا محددًا
+  - الأسماء المستعارة: تتم تسوية `z.ai/*` و`z-ai/*` إلى `zai/*`
+  - يكتشف `zai-api-key` نقطة نهاية Z.AI المطابقة تلقائيًا؛ بينما تفرض `zai-coding-global`، و`zai-coding-cn`، و`zai-global`، و`zai-cn` سطحًا محددًا
 
 ### Vercel AI Gateway
 
 - المزوّد: `vercel-ai-gateway`
 - المصادقة: `AI_GATEWAY_API_KEY`
-- نماذج أمثلة: `vercel-ai-gateway/anthropic/claude-opus-4.6`، `vercel-ai-gateway/moonshotai/kimi-k2.6`
+- نماذج أمثلة: `vercel-ai-gateway/anthropic/claude-opus-4.6`، و`vercel-ai-gateway/moonshotai/kimi-k2.6`
 - CLI: `openclaw onboard --auth-choice ai-gateway-api-key`
 
 ### Kilo Gateway
@@ -278,14 +291,14 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 - نموذج مثال: `kilocode/kilo/auto`
 - CLI: `openclaw onboard --auth-choice kilocode-api-key`
 - عنوان URL الأساسي: `https://api.kilo.ai/api/gateway/`
-- يشحن الفهرس الاحتياطي الثابت `kilocode/kilo/auto`؛ ويمكن لاكتشاف `https://api.kilo.ai/api/gateway/models` المباشر توسيع فهرس وقت التشغيل أكثر.
-- التوجيه المنبعي الدقيق خلف `kilocode/kilo/auto` تملكه Kilo Gateway، وليس مضمّنًا ترميزيًا في OpenClaw.
+- يشحن كتالوج الرجوع الاحتياطي الثابت `kilocode/kilo/auto`؛ ويمكن لاكتشاف `https://api.kilo.ai/api/gateway/models` المباشر توسيع كتالوج وقت التشغيل أكثر.
+- يملك Kilo Gateway التوجيه الدقيق في المنبع خلف `kilocode/kilo/auto`، وليس مشفرًا صراحةً في OpenClaw.
 
-راجع [/providers/kilocode](/ar/providers/kilocode) لتفاصيل الإعداد.
+راجع [/providers/kilocode](/ar/providers/kilocode) للحصول على تفاصيل الإعداد.
 
-### Plugins المزوّدين المضمّنة الأخرى
+### مزوّدات Plugin المضمّنة الأخرى
 
-| المزوّد                | المعرّف                               | متغير بيئة المصادقة                                                     | نموذج مثال                                 |
+| المزوّد                 | المعرّف                          | متغير بيئة المصادقة                                          | نموذج مثال                                    |
 | ----------------------- | -------------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
 | BytePlus                | `byteplus` / `byteplus-plan`     | `BYTEPLUS_API_KEY`                                           | `byteplus-plan/ark-code-latest`               |
 | Cerebras                | `cerebras`                       | `CEREBRAS_API_KEY`                                           | `cerebras/zai-glm-4.7`                        |
@@ -294,9 +307,9 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 | DeepSeek                | `deepseek`                       | `DEEPSEEK_API_KEY`                                           | `deepseek/deepseek-v4-flash`                  |
 | GitHub Copilot          | `github-copilot`                 | `COPILOT_GITHUB_TOKEN` / `GH_TOKEN` / `GITHUB_TOKEN`         | —                                             |
 | Groq                    | `groq`                           | `GROQ_API_KEY`                                               | —                                             |
-| Hugging Face Inference  | `huggingface`                    | `HUGGINGFACE_HUB_TOKEN` أو `HF_TOKEN`                        | `huggingface/deepseek-ai/DeepSeek-R1`         |
+| Hugging Face Inference  | `huggingface`                    | `HUGGINGFACE_HUB_TOKEN` or `HF_TOKEN`                        | `huggingface/deepseek-ai/DeepSeek-R1`         |
 | Kilo Gateway            | `kilocode`                       | `KILOCODE_API_KEY`                                           | `kilocode/kilo/auto`                          |
-| Kimi Coding             | `kimi`                           | `KIMI_API_KEY` أو `KIMICODE_API_KEY`                         | `kimi/kimi-code`                              |
+| Kimi Coding             | `kimi`                           | `KIMI_API_KEY` or `KIMICODE_API_KEY`                         | `kimi/kimi-code`                              |
 | MiniMax                 | `minimax` / `minimax-portal`     | `MINIMAX_API_KEY` / `MINIMAX_OAUTH_TOKEN`                    | `minimax/MiniMax-M2.7`                        |
 | Mistral                 | `mistral`                        | `MISTRAL_API_KEY`                                            | `mistral/mistral-large-latest`                |
 | Moonshot                | `moonshot`                       | `MOONSHOT_API_KEY`                                           | `moonshot/kimi-k2.6`                          |
@@ -309,29 +322,29 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 | Venice                  | `venice`                         | `VENICE_API_KEY`                                             | —                                             |
 | Vercel AI Gateway       | `vercel-ai-gateway`              | `AI_GATEWAY_API_KEY`                                         | `vercel-ai-gateway/anthropic/claude-opus-4.6` |
 | Volcano Engine (Doubao) | `volcengine` / `volcengine-plan` | `VOLCANO_ENGINE_API_KEY`                                     | `volcengine-plan/ark-code-latest`             |
-| xAI                     | `xai`                            | `XAI_API_KEY`                                                | `xai/grok-4`                                  |
+| xAI                     | `xai`                            | `XAI_API_KEY`                                                | `xai/grok-4.3`                                |
 | Xiaomi                  | `xiaomi`                         | `XIAOMI_API_KEY`                                             | `xiaomi/mimo-v2-flash`                        |
 
-#### خصائص يجدر معرفتها
+#### خصوصيات جديرة بالمعرفة
 
 <AccordionGroup>
   <Accordion title="OpenRouter">
-    يطبّق ترويسات نسبة التطبيق وعلامات Anthropic `cache_control` فقط على مسارات `openrouter.ai` المتحقَّق منها. تكون مراجع DeepSeek وMoonshot وZAI مؤهلة لذاكرة التخزين المؤقت للمطالبات ذات مدة TTL التي يديرها OpenRouter، لكنها لا تتلقى علامات ذاكرة Anthropic المؤقتة. وبصفته مسارًا وكيلًا متوافقًا مع OpenAI، فإنه يتخطى التشكيل الخاص بـ OpenAI الأصلي فقط (`serviceTier`، و`store` في Responses، وتلميحات ذاكرة المطالبات المؤقتة، وتوافق استدلال OpenAI). تحتفظ المراجع المدعومة من Gemini بتنقية توقيع التفكير الخاصة بوكيل Gemini فقط.
+    يطبّق ترويسات إسناد التطبيق وعلامات Anthropic `cache_control` فقط على مسارات `openrouter.ai` المتحقَّق منها. مراجع DeepSeek وMoonshot وZAI مؤهّلة لمدة TTL لذاكرة التخزين المؤقت للمطالبات التي يديرها OpenRouter، لكنها لا تتلقى علامات ذاكرة التخزين المؤقت من Anthropic. وبصفته مسارًا بأسلوب الوكيل ومتوافقًا مع OpenAI، فإنه يتجاوز التشكيل الخاص بواجهات OpenAI الأصلية فقط (`serviceTier`، وResponses `store`، وتلميحات ذاكرة التخزين المؤقت للمطالبات، وتوافق الاستدلال مع OpenAI). تحتفظ المراجع المدعومة من Gemini بتنقية توقيع التفكير الخاصة بوكيل Gemini فقط.
   </Accordion>
   <Accordion title="Kilo Gateway">
-    تتبع المراجع المدعومة من Gemini مسار تنقية وكيل Gemini نفسه؛ ويتخطى `kilocode/kilo/auto` وغيره من المراجع غير الداعمة للاستدلال عبر الوكيل حقن الاستدلال عبر الوكيل.
+    تتبع المراجع المدعومة من Gemini مسار تنقية وكيل Gemini نفسه؛ ويتجاوز `kilocode/kilo/auto` والمراجع الأخرى غير الداعمة للاستدلال عبر الوكيل حقن الاستدلال عبر الوكيل.
   </Accordion>
   <Accordion title="MiniMax">
-    يكتب إعداد مفتاح API تعريفات صريحة لنماذج دردشة M2.7 النصية فقط؛ ويبقى فهم الصور على موفّر الوسائط `MiniMax-VL-01` المملوك للـ Plugin.
+    يكتب إعداد مفاتيح API تعريفات صريحة لنموذج دردشة M2.7 النصي فقط؛ ويبقى فهم الصور على موفّر الوسائط `MiniMax-VL-01` المملوك للـ Plugin.
   </Accordion>
   <Accordion title="NVIDIA">
-    تستخدم معرّفات النماذج مساحة أسماء `nvidia/<vendor>/<model>` (على سبيل المثال `nvidia/nvidia/nemotron-...` إلى جانب `nvidia/moonshotai/kimi-k2.5`)؛ وتحافظ أدوات الاختيار على تركيب `<provider>/<model-id>` الحرفي بينما يبقى المفتاح القانوني المرسل إلى API ذا بادئة واحدة.
+    تستخدم معرّفات النماذج مساحة أسماء `nvidia/<vendor>/<model>` (مثلًا `nvidia/nvidia/nemotron-...` إلى جانب `nvidia/moonshotai/kimi-k2.5`)؛ وتحافظ أدوات الاختيار على التركيب الحرفي `<provider>/<model-id>` بينما يبقى المفتاح القياسي المُرسَل إلى API مسبوقًا ببادئة واحدة.
   </Accordion>
   <Accordion title="xAI">
-    يستخدم مسار xAI Responses. يعيد `/fast` أو `params.fastMode: true` كتابة `grok-3` و`grok-3-mini` و`grok-4` و`grok-4-0709` إلى متغيراتها `*-fast`. يكون `tool_stream` مفعّلًا افتراضيًا؛ عطّله عبر `agents.defaults.models["xai/<model>"].params.tool_stream=false`.
+    يستخدم مسار xAI Responses. `grok-4.3` هو نموذج الدردشة الافتراضي المضمّن. يعيد `/fast` أو `params.fastMode: true` كتابة `grok-3` و`grok-3-mini` و`grok-4` و`grok-4-0709` إلى متغيرات `*-fast` الخاصة بها. يكون `tool_stream` مفعّلًا افتراضيًا؛ عطّله عبر `agents.defaults.models["xai/<model>"].params.tool_stream=false`.
   </Accordion>
   <Accordion title="Cerebras">
-    يشحن بصفته Plugin المزوّد المضمّن `cerebras`. يستخدم GLM `zai-glm-4.7`؛ وعنوان URL الأساسي المتوافق مع OpenAI هو `https://api.cerebras.ai/v1`.
+    يُشحن بوصفه Plugin المزوّد المضمّن `cerebras`. يستخدم GLM النموذج `zai-glm-4.7`؛ وعنوان URL الأساسي المتوافق مع OpenAI هو `https://api.cerebras.ai/v1`.
   </Accordion>
 </AccordionGroup>
 
@@ -339,17 +352,17 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 
 استخدم `models.providers` (أو `models.json`) لإضافة مزوّدين **مخصّصين** أو وكلاء متوافقين مع OpenAI/Anthropic.
 
-ينشر كثير من Plugins المزوّدين المضمّنة أدناه فهرسًا افتراضيًا بالفعل. استخدم إدخالات `models.providers.<id>` الصريحة فقط عندما تريد تجاوز عنوان URL الأساسي الافتراضي أو الترويسات أو قائمة النماذج.
+ينشر العديد من Plugins المزوّدين المضمّنين أدناه كتالوجًا افتراضيًا بالفعل. استخدم إدخالات `models.providers.<id>` الصريحة فقط عندما تريد تجاوز عنوان URL الأساسي الافتراضي أو الترويسات أو قائمة النماذج.
 
-تقرأ فحوصات قدرات نموذج Gateway أيضًا بيانات تعريف `models.providers.<id>.models[]` الصريحة. إذا كان نموذج مخصّص أو وكيل يقبل الصور، فعيّن `input: ["text", "image"]` على ذلك النموذج لكي تمرر مسارات WebChat ومرفقات أصل Node الصور كمدخلات نموذج أصلية بدلًا من مراجع وسائط نصية فقط.
+تقرأ فحوصات قدرات نماذج Gateway أيضًا بيانات `models.providers.<id>.models[]` الوصفية الصريحة. إذا كان نموذج مخصّص أو نموذج وكيل يقبل الصور، فعيّن `input: ["text", "image"]` على ذلك النموذج لكي تمرّر مسارات مرفقات WebChat ومصدر Node الصور كمدخلات نموذج أصلية بدلًا من مراجع وسائط نصية فقط.
 
 ### Moonshot AI (Kimi)
 
-يشحن Moonshot بصفته Plugin مزوّدًا مضمّنًا. استخدم المزوّد المدمج افتراضيًا، وأضف إدخال `models.providers.moonshot` صريحًا فقط عندما تحتاج إلى تجاوز عنوان URL الأساسي أو بيانات تعريف النموذج:
+يُشحن Moonshot بوصفه Plugin مزوّدًا مضمّنًا. استخدم المزوّد المدمج افتراضيًا، وأضف إدخال `models.providers.moonshot` صريحًا فقط عندما تحتاج إلى تجاوز عنوان URL الأساسي أو بيانات النموذج الوصفية:
 
 - المزوّد: `moonshot`
 - المصادقة: `MOONSHOT_API_KEY`
-- نموذج مثال: `moonshot/kimi-k2.6`
+- مثال نموذج: `moonshot/kimi-k2.6`
 - CLI: `openclaw onboard --auth-choice moonshot-api-key` أو `openclaw onboard --auth-choice moonshot-api-key-cn`
 
 معرّفات نماذج Kimi K2:
@@ -385,11 +398,11 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 
 ### برمجة Kimi
 
-يستخدم Kimi Coding نقطة نهاية متوافقة مع Anthropic من Moonshot AI:
+تستخدم Kimi Coding نقطة النهاية المتوافقة مع Anthropic الخاصة بـ Moonshot AI:
 
 - المزوّد: `kimi`
 - المصادقة: `KIMI_API_KEY`
-- نموذج مثال: `kimi/kimi-code`
+- مثال نموذج: `kimi/kimi-code`
 
 ```json5
 {
@@ -400,13 +413,13 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 }
 ```
 
-يبقى `kimi/k2p5` القديم مقبولًا كمعرّف نموذج للتوافق.
+يظل `kimi/k2p5` القديم مقبولاً كمعرّف نموذج للتوافق.
 
 ### Volcano Engine (Doubao)
 
 يوفّر Volcano Engine (火山引擎) الوصول إلى Doubao ونماذج أخرى في الصين.
 
-- المزوّد: `volcengine` (للبرمجة: `volcengine-plan`)
+- المزوّد: `volcengine` (البرمجة: `volcengine-plan`)
 - المصادقة: `VOLCANO_ENGINE_API_KEY`
 - نموذج مثال: `volcengine-plan/ark-code-latest`
 - CLI: `openclaw onboard --auth-choice volcengine-api-key`
@@ -419,9 +432,9 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 }
 ```
 
-تستخدم عملية الإعداد الافتراضي واجهة البرمجة، لكن يتم تسجيل كتالوج `volcengine/*` العام في الوقت نفسه.
+تستخدم عملية الإعداد السطح البرمجي افتراضياً، لكن يتم تسجيل كتالوج `volcengine/*` العام في الوقت نفسه.
 
-في منتقيات نماذج الإعداد/التهيئة، يفضّل خيار مصادقة Volcengine صفوف `volcengine/*` و`volcengine-plan/*` معًا. إذا لم تكن هذه النماذج محمّلة بعد، يعود OpenClaw إلى الكتالوج غير المفلتر بدلًا من عرض منتقي فارغ مقيّد بالمزوّد.
+في أدوات اختيار النموذج أثناء الإعداد/التكوين، يفضّل خيار مصادقة Volcengine صفوف `volcengine/*` و`volcengine-plan/*` معاً. إذا لم تكن هذه النماذج محمّلة بعد، يعود OpenClaw إلى الكتالوج غير المصفّى بدلاً من عرض أداة اختيار فارغة مقيّدة بالمزوّد.
 
 <Tabs>
   <Tab title="النماذج القياسية">
@@ -444,9 +457,9 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 
 ### BytePlus (دولي)
 
-يوفّر BytePlus ARK الوصول إلى النماذج نفسها التي يوفرها Volcano Engine للمستخدمين الدوليين.
+يوفّر BytePlus ARK الوصول إلى النماذج نفسها التي يوفّرها Volcano Engine للمستخدمين الدوليين.
 
-- المزوّد: `byteplus` (للبرمجة: `byteplus-plan`)
+- المزوّد: `byteplus` (البرمجة: `byteplus-plan`)
 - المصادقة: `BYTEPLUS_API_KEY`
 - نموذج مثال: `byteplus-plan/ark-code-latest`
 - CLI: `openclaw onboard --auth-choice byteplus-api-key`
@@ -459,18 +472,18 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 }
 ```
 
-تستخدم عملية الإعداد الافتراضي واجهة البرمجة، لكن يتم تسجيل كتالوج `byteplus/*` العام في الوقت نفسه.
+تستخدم عملية الإعداد السطح البرمجي افتراضياً، لكن يتم تسجيل كتالوج `byteplus/*` العام في الوقت نفسه.
 
-في منتقيات النماذج ضمن الإعداد الأولي/التكوين، يفضّل خيار مصادقة BytePlus صفوف `byteplus/*` و`byteplus-plan/*` معًا. إذا لم تكن تلك النماذج محمّلة بعد، يعود OpenClaw إلى الكتالوج غير المصفّى بدلًا من عرض منتقي فارغ محدد النطاق بالمزوّد.
+في أدوات اختيار النموذج أثناء الإعداد/التكوين، يفضّل خيار مصادقة BytePlus صفوف `byteplus/*` و`byteplus-plan/*` معاً. إذا لم تكن هذه النماذج محمّلة بعد، يعود OpenClaw إلى الكتالوج غير المصفّى بدلاً من عرض أداة اختيار فارغة مقيّدة بالمزوّد.
 
 <Tabs>
-  <Tab title="Standard models">
+  <Tab title="النماذج القياسية">
     - `byteplus/seed-1-8-251228` (Seed 1.8)
     - `byteplus/kimi-k2-5-260127` (Kimi K2.5)
     - `byteplus/glm-4-7-251222` (GLM 4.7)
 
   </Tab>
-  <Tab title="Coding models (byteplus-plan)">
+  <Tab title="نماذج البرمجة (byteplus-plan)">
     - `byteplus-plan/ark-code-latest`
     - `byteplus-plan/doubao-seed-code`
     - `byteplus-plan/kimi-k2.5`
@@ -486,7 +499,7 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 
 - المزوّد: `synthetic`
 - المصادقة: `SYNTHETIC_API_KEY`
-- مثال نموذج: `synthetic/hf:MiniMaxAI/MiniMax-M2.5`
+- نموذج مثال: `synthetic/hf:MiniMaxAI/MiniMax-M2.5`
 - CLI: `openclaw onboard --auth-choice synthetic-api-key`
 
 ```json5
@@ -510,36 +523,36 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 
 ### MiniMax
 
-يُكوَّن MiniMax عبر `models.providers` لأنه يستخدم نقاط نهاية مخصّصة:
+يتم تكوين MiniMax عبر `models.providers` لأنه يستخدم نقاط نهاية مخصّصة:
 
-- MiniMax OAuth (Global): `--auth-choice minimax-global-oauth`
-- MiniMax OAuth (CN): `--auth-choice minimax-cn-oauth`
-- مفتاح MiniMax API (Global): `--auth-choice minimax-global-api`
-- مفتاح MiniMax API (CN): `--auth-choice minimax-cn-api`
-- المصادقة: `MINIMAX_API_KEY` لـ `minimax`؛ `MINIMAX_OAUTH_TOKEN` أو `MINIMAX_API_KEY` لـ `minimax-portal`
+- MiniMax OAuth (عالمي): `--auth-choice minimax-global-oauth`
+- MiniMax OAuth (الصين): `--auth-choice minimax-cn-oauth`
+- مفتاح MiniMax API (عالمي): `--auth-choice minimax-global-api`
+- مفتاح MiniMax API (الصين): `--auth-choice minimax-cn-api`
+- المصادقة: `MINIMAX_API_KEY` لـ `minimax`؛ و`MINIMAX_OAUTH_TOKEN` أو `MINIMAX_API_KEY` لـ `minimax-portal`
 
-راجع [/providers/minimax](/ar/providers/minimax) للاطلاع على تفاصيل الإعداد، وخيارات النماذج، ومقتطفات التكوين.
+راجع [/providers/minimax](/ar/providers/minimax) لتفاصيل الإعداد، وخيارات النماذج، ومقاطع التكوين.
 
 <Note>
-على مسار البث المتوافق مع Anthropic في MiniMax، يعطّل OpenClaw التفكير افتراضيًا ما لم تضبطه صراحةً، ويعيد `/fast on` كتابة `MiniMax-M2.7` إلى `MiniMax-M2.7-highspeed`.
+في مسار البث المتوافق مع Anthropic الخاص بـ MiniMax، يعطّل OpenClaw التفكير افتراضياً ما لم تضبطه صراحةً، ويعيد `/fast on` كتابة `MiniMax-M2.7` إلى `MiniMax-M2.7-highspeed`.
 </Note>
 
-تقسيم القدرات المملوك من Plugin:
+تقسيم الإمكانات المملوك من Plugin:
 
-- تبقى افتراضيات النص/الدردشة على `minimax/MiniMax-M2.7`
+- تبقى الإعدادات الافتراضية للنص/الدردشة على `minimax/MiniMax-M2.7`
 - توليد الصور هو `minimax/image-01` أو `minimax-portal/image-01`
-- فهم الصور مملوك من Plugin عبر `MiniMax-VL-01` على مساري مصادقة MiniMax كليهما
+- فهم الصور مملوك من Plugin باستخدام `MiniMax-VL-01` على مساري مصادقة MiniMax كليهما
 - يبقى بحث الويب على معرّف المزوّد `minimax`
 
 ### LM Studio
 
-يأتي LM Studio بصفته Plugin مزوّدًا مضمّنًا يستخدم واجهة API الأصلية:
+يأتي LM Studio كـ Plugin مزوّد مضمّن يستخدم API الأصلي:
 
 - المزوّد: `lmstudio`
 - المصادقة: `LM_API_TOKEN`
 - عنوان URL الأساسي الافتراضي للاستدلال: `http://localhost:1234/v1`
 
-ثم عيّن نموذجًا (استبدله بأحد المعرّفات التي يعيدها `http://localhost:1234/api/v1/models`):
+ثم عيّن نموذجاً (استبدله بأحد المعرّفات التي يعيدها `http://localhost:1234/api/v1/models`):
 
 ```json5
 {
@@ -549,15 +562,15 @@ Gemini CLI OAuth في OpenClaw هو تكامل غير رسمي. أبلغ بعض 
 }
 ```
 
-يستخدم OpenClaw المسارين الأصليين في LM Studio وهما `/api/v1/models` و`/api/v1/models/load` للاكتشاف + التحميل التلقائي، مع `/v1/chat/completions` للاستدلال افتراضيًا. راجع [/providers/lmstudio](/ar/providers/lmstudio) للإعداد واستكشاف الأخطاء وإصلاحها.
+يستخدم OpenClaw واجهتي LM Studio الأصليتين `/api/v1/models` و`/api/v1/models/load` للاكتشاف والتحميل التلقائي، مع `/v1/chat/completions` للاستدلال افتراضياً. إذا أردت أن يتولى تحميل LM Studio عند الطلب، وTTL، والإخلاء التلقائي دورة حياة النموذج، فاضبط `models.providers.lmstudio.params.preload: false`. راجع [/providers/lmstudio](/ar/providers/lmstudio) للإعداد واستكشاف الأخطاء وإصلاحها.
 
 ### Ollama
 
-يأتي Ollama بصفته Plugin مزوّدًا مضمّنًا ويستخدم واجهة API الأصلية الخاصة بـ Ollama:
+يأتي Ollama كـ Plugin مزوّد مضمّن ويستخدم API الأصلي لـ Ollama:
 
 - المزوّد: `ollama`
 - المصادقة: غير مطلوبة (خادم محلي)
-- مثال نموذج: `ollama/llama3.3`
+- نموذج مثال: `ollama/llama3.3`
 - التثبيت: [https://ollama.com/download](https://ollama.com/download)
 
 ```bash
@@ -573,23 +586,23 @@ ollama pull llama3.3
 }
 ```
 
-يُكتشف Ollama محليًا عند `http://127.0.0.1:11434` عندما تشترك باستخدام `OLLAMA_API_KEY`، ويضيف Plugin المزوّد المضمّن Ollama مباشرةً إلى `openclaw onboard` ومنتقي النماذج. راجع [/providers/ollama](/ar/providers/ollama) للإعداد الأولي، ووضع السحابة/المحلي، والتكوين المخصّص.
+يتم اكتشاف Ollama محلياً عند `http://127.0.0.1:11434` عندما تختار الاشتراك باستخدام `OLLAMA_API_KEY`، ويضيف Plugin المزوّد المضمّن Ollama مباشرةً إلى `openclaw onboard` وأداة اختيار النموذج. راجع [/providers/ollama](/ar/providers/ollama) للإعداد، ووضع السحابة/المحلي، والتكوين المخصّص.
 
 ### vLLM
 
-يأتي vLLM بصفته Plugin مزوّدًا مضمّنًا للخوادم المحلية/ذاتية الاستضافة المتوافقة مع OpenAI:
+يأتي vLLM كـ Plugin مزوّد مضمّن لخوادم محلية/ذاتية الاستضافة متوافقة مع OpenAI:
 
 - المزوّد: `vllm`
 - المصادقة: اختيارية (تعتمد على خادمك)
 - عنوان URL الأساسي الافتراضي: `http://127.0.0.1:8000/v1`
 
-للاشتراك في الاكتشاف التلقائي محليًا (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة):
+للاشتراك في الاكتشاف التلقائي محلياً (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة):
 
 ```bash
 export VLLM_API_KEY="vllm-local"
 ```
 
-ثم عيّن نموذجًا (استبدله بأحد المعرّفات التي يعيدها `/v1/models`):
+ثم عيّن نموذجاً (استبدله بأحد المعرّفات التي يعيدها `/v1/models`):
 
 ```json5
 {
@@ -603,19 +616,19 @@ export VLLM_API_KEY="vllm-local"
 
 ### SGLang
 
-يأتي SGLang بصفته Plugin مزوّدًا مضمّنًا للخوادم السريعة ذاتية الاستضافة المتوافقة مع OpenAI:
+يأتي SGLang كـ Plugin مزوّد مضمّن لخوادم سريعة ذاتية الاستضافة متوافقة مع OpenAI:
 
 - المزوّد: `sglang`
 - المصادقة: اختيارية (تعتمد على خادمك)
 - عنوان URL الأساسي الافتراضي: `http://127.0.0.1:30000/v1`
 
-للاشتراك في الاكتشاف التلقائي محليًا (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة):
+للاشتراك في الاكتشاف التلقائي محلياً (أي قيمة تعمل إذا كان خادمك لا يفرض المصادقة):
 
 ```bash
 export SGLANG_API_KEY="sglang-local"
 ```
 
-ثم عيّن نموذجًا (استبدله بأحد المعرّفات التي يعيدها `/v1/models`):
+ثم عيّن نموذجاً (استبدله بأحد المعرّفات التي يعيدها `/v1/models`):
 
 ```json5
 {
@@ -627,7 +640,7 @@ export SGLANG_API_KEY="sglang-local"
 
 راجع [/providers/sglang](/ar/providers/sglang) للتفاصيل.
 
-### الوكلاء المحليون (LM Studio، وvLLM، وLiteLLM، وما إلى ذلك)
+### وكلاء محليون (LM Studio، وvLLM، وLiteLLM، وما إلى ذلك)
 
 مثال (متوافق مع OpenAI):
 
@@ -664,8 +677,8 @@ export SGLANG_API_KEY="sglang-local"
 ```
 
 <AccordionGroup>
-  <Accordion title="Default optional fields">
-    للمزوّدين المخصّصين، تكون `reasoning` و`input` و`cost` و`contextWindow` و`maxTokens` اختيارية. عند حذفها، يستخدم OpenClaw القيم الافتراضية التالية:
+  <Accordion title="الحقول الاختيارية الافتراضية">
+    بالنسبة إلى المزوّدين المخصّصين، تكون `reasoning` و`input` و`cost` و`contextWindow` و`maxTokens` اختيارية. عند حذفها، يستخدم OpenClaw القيم الافتراضية التالية:
 
     - `reasoning: false`
     - `input: ["text"]`
@@ -673,18 +686,18 @@ export SGLANG_API_KEY="sglang-local"
     - `contextWindow: 200000`
     - `maxTokens: 8192`
 
-    موصى به: اضبط قيمًا صريحة تطابق حدود الوكيل/النموذج لديك.
+    الموصى به: اضبط قيماً صريحة تطابق حدود الوكيل/النموذج لديك.
 
   </Accordion>
-  <Accordion title="Proxy-route shaping rules">
-    - بالنسبة إلى `api: "openai-completions"` على نقاط النهاية غير الأصلية (أي `baseUrl` غير فارغ لا يكون مضيفه `api.openai.com`)، يفرض OpenClaw القيمة `compat.supportsDeveloperRole: false` لتجنّب أخطاء 400 من المزوّد للأدوار غير المدعومة `developer`.
-    - تتخطى المسارات المتوافقة مع OpenAI بنمط الوكيل أيضًا تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط: لا `service_tier`، ولا Responses `store`، ولا Completions `store`، ولا تلميحات لذاكرة التخزين المؤقت للمطالبات، ولا تشكيل حمولة توافق التفكير في OpenAI، ولا ترويسات إسناد OpenClaw المخفية.
-    - بالنسبة إلى وكلاء Completions المتوافقين مع OpenAI الذين يحتاجون إلى حقول خاصة بالمورّد، اضبط `agents.defaults.models["provider/model"].params.extra_body` (أو `extraBody`) لدمج JSON إضافي في جسم الطلب الصادر.
-    - بالنسبة إلى عناصر تحكم قالب الدردشة في vLLM، اضبط `agents.defaults.models["provider/model"].params.chat_template_kwargs`. يرسل Plugin vLLM المضمّن تلقائيًا `enable_thinking: false` و`force_nonempty_content: true` لـ `vllm/nemotron-3-*` عندما يكون مستوى التفكير في الجلسة متوقفًا.
-    - للنماذج المحلية البطيئة أو مضيفي LAN/tailnet البعيدين، اضبط `models.providers.<id>.timeoutSeconds`. يوسّع هذا معالجة طلب HTTP لنموذج المزوّد، بما في ذلك الاتصال، والترويسات، وبث الجسم، وإيقاف الجلب المحمي الإجمالي، من دون زيادة مهلة تشغيل الوكيل بالكامل.
-    - إذا كان `baseUrl` فارغًا/محذوفًا، يحافظ OpenClaw على سلوك OpenAI الافتراضي (الذي يحل إلى `api.openai.com`).
-    - حرصًا على السلامة، تظل القيمة الصريحة `compat.supportsDeveloperRole: true` متجاوزة على نقاط نهاية `openai-completions` غير الأصلية.
-    - بالنسبة إلى `api: "anthropic-messages"` على نقاط النهاية غير المباشرة (أي مزوّد غير `anthropic` القانوني، أو `models.providers.anthropic.baseUrl` مخصّص لا يكون مضيفه نقطة نهاية عامة `api.anthropic.com`)، يكبت OpenClaw ترويسات Anthropic beta الضمنية مثل `claude-code-20250219` و`interleaved-thinking-2025-05-14` وعلامات OAuth، حتى لا ترفض الوكلاء المخصّصون المتوافقون مع Anthropic أعلام beta غير المدعومة. اضبط `models.providers.<id>.headers["anthropic-beta"]` صراحةً إذا كان وكيلك يحتاج إلى ميزات beta محددة.
+  <Accordion title="قواعد تشكيل مسارات الوكيل">
+    - بالنسبة إلى `api: "openai-completions"` على نقاط النهاية غير الأصلية (أي `baseUrl` غير فارغ يكون مضيفه ليس `api.openai.com`)، يفرض OpenClaw القيمة `compat.supportsDeveloperRole: false` لتجنّب أخطاء 400 من المزوّد بسبب أدوار `developer` غير المدعومة.
+    - تتخطى المسارات المتوافقة مع OpenAI بنمط الوكيل أيضاً تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط: لا `service_tier`، ولا `store` لـ Responses، ولا `store` لـ Completions، ولا تلميحات لذاكرة التخزين المؤقت للمطالبة، ولا تشكيل حمولة توافق التفكير في OpenAI، ولا ترويسات إسناد مخفية لـ OpenClaw.
+    - بالنسبة إلى وكلاء Completions المتوافقين مع OpenAI الذين يحتاجون إلى حقول خاصة بالبائع، اضبط `agents.defaults.models["provider/model"].params.extra_body` (أو `extraBody`) لدمج JSON إضافي في جسم الطلب الصادر.
+    - بالنسبة إلى عناصر تحكم قالب الدردشة في vLLM، اضبط `agents.defaults.models["provider/model"].params.chat_template_kwargs`. يرسل Plugin vLLM المضمّن تلقائياً `enable_thinking: false` و`force_nonempty_content: true` لـ `vllm/nemotron-3-*` عندما يكون مستوى التفكير في الجلسة متوقفاً.
+    - بالنسبة إلى النماذج المحلية البطيئة أو مضيفي LAN/tailnet البعيدين، اضبط `models.providers.<id>.timeoutSeconds`. يوسّع ذلك معالجة طلبات HTTP لنماذج المزوّد، بما في ذلك الاتصال، والترويسات، وبث الجسم، وإلغاء الجلب المحروس الكلي، من دون زيادة مهلة تشغيل الوكيل بالكامل.
+    - إذا كان `baseUrl` فارغاً/محذوفاً، يحتفظ OpenClaw بسلوك OpenAI الافتراضي (الذي يتحلل إلى `api.openai.com`).
+    - لأسباب تتعلق بالسلامة، تظل قيمة `compat.supportsDeveloperRole: true` الصريحة مستبدلة على نقاط نهاية `openai-completions` غير الأصلية.
+    - بالنسبة إلى `api: "anthropic-messages"` على نقاط النهاية غير المباشرة (أي مزوّد غير `anthropic` القياسي، أو `models.providers.anthropic.baseUrl` مخصّص لا يكون مضيفه نقطة نهاية عامة لـ `api.anthropic.com`)، يكبت OpenClaw ترويسات Anthropic التجريبية الضمنية مثل `claude-code-20250219` و`interleaved-thinking-2025-05-14` وعلامات OAuth، حتى لا ترفض الوكلاء المخصّصون المتوافقون مع Anthropic أعلاماً تجريبية غير مدعومة. اضبط `models.providers.<id>.headers["anthropic-beta"]` صراحةً إذا كان وكيلك يحتاج إلى ميزات تجريبية محددة.
 
   </Accordion>
 </AccordionGroup>
@@ -697,11 +710,11 @@ openclaw models set opencode/claude-opus-4-6
 openclaw models list
 ```
 
-انظر أيضًا: [التكوين](/ar/gateway/configuration) للحصول على أمثلة تكوين كاملة.
+راجع أيضاً: [التكوين](/ar/gateway/configuration) للحصول على أمثلة تكوين كاملة.
 
-## ذو صلة
+## ذات صلة
 
-- [مرجع التكوين](/ar/gateway/config-agents#agent-defaults) — مفاتيح تكوين النماذج
-- [انتقال النموذج عند الفشل](/ar/concepts/model-failover) — سلاسل الرجوع وسلوك إعادة المحاولة
+- [مرجع التكوين](/ar/gateway/config-agents#agent-defaults) — مفاتيح تكوين النموذج
+- [تجاوز فشل النموذج](/ar/concepts/model-failover) — سلاسل الاحتياط وسلوك إعادة المحاولة
 - [النماذج](/ar/concepts/models) — تكوين النماذج والأسماء المستعارة
-- [المزوّدون](/ar/providers) — أدلة الإعداد لكل مزوّد
+- [المزوّدون](/ar/providers) — أدلة إعداد لكل مزوّد

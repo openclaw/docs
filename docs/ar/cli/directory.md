@@ -1,33 +1,34 @@
 ---
 read_when:
-    - تريد البحث عن جهات الاتصال/المجموعات/معرّفات self الخاصة بقناة ما
-    - أنت تطوّر مهايئ دليل قناة
-summary: مرجع CLI لـ `openclaw directory` (self، والأقران، والمجموعات)
+    - تريد البحث عن معرّفات جهات الاتصال/المجموعات/المعرّفات الذاتية لقناة
+    - أنت تطوّر محوّل دليل القنوات
+summary: مرجع CLI لـ `openclaw directory` (الذات، الأقران، المجموعات)
 title: الدليل
 x-i18n:
-    generated_at: "2026-04-24T07:34:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T07:21:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-عمليات بحث الدليل للقنوات التي تدعم ذلك (جهات الاتصال/الأقران، والمجموعات، و"أنا").
+عمليات البحث في الدليل للقنوات التي تدعم ذلك (جهات الاتصال/الأقران، والمجموعات، و"أنا").
 
-## العلامات الشائعة
+## الخيارات الشائعة
 
-- `--channel <name>`: معرّف/اسم مستعار للقناة (مطلوب عند ضبط عدة قنوات؛ ويُحدَّد تلقائيًا عند ضبط قناة واحدة فقط)
-- `--account <id>`: معرّف الحساب (الافتراضي: الحساب الافتراضي للقناة)
+- `--channel <name>`: معرّف/اسم مستعار للقناة (مطلوب عند تكوين عدة قنوات؛ تلقائي عند تكوين قناة واحدة فقط)
+- `--account <id>`: معرّف الحساب (الافتراضي: الإعداد الافتراضي للقناة)
 - `--json`: إخراج JSON
 
 ## ملاحظات
 
-- يهدف `directory` إلى مساعدتك في العثور على المعرّفات التي يمكنك لصقها في أوامر أخرى (وخاصة `openclaw message send --target ...`).
-- بالنسبة إلى كثير من القنوات، تكون النتائج مدعومة بالإعدادات (قوائم السماح / المجموعات المضبوطة) بدلًا من دليل provider مباشر.
-- يكون الإخراج الافتراضي هو `id` (وأحيانًا `name`) مفصولين بعلامة تبويب؛ استخدم `--json` للبرمجة النصية.
+- يهدف `directory` إلى مساعدتك في العثور على معرّفات يمكنك لصقها في أوامر أخرى (خصوصًا `openclaw message send --target ...`).
+- بالنسبة إلى كثير من القنوات، تكون النتائج مدعومة بالإعدادات (قوائم السماح / المجموعات المكوّنة) بدلًا من دليل مباشر من المزوّد.
+- ما زال بإمكان Plugins القنوات المثبّتة حذف دعم الدليل؛ في هذه الحالة يبلّغ الأمر عن عملية الدليل غير المدعومة بدلًا من إعادة تثبيت Plugin.
+- الإخراج الافتراضي هو `id` (وأحيانًا `name`) مفصولًا بعلامة جدولة؛ استخدم `--json` للبرمجة النصية.
 
 ## استخدام النتائج مع `message send`
 
@@ -38,16 +39,16 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 
 ## تنسيقات المعرّفات (حسب القناة)
 
-- WhatsApp: ‏`+15551234567` (رسالة مباشرة)، ‏`1234567890-1234567890@g.us` (مجموعة)
-- Telegram: ‏`@username` أو معرّف دردشة رقمي؛ والمجموعات تكون معرّفات رقمية
-- Slack: ‏`user:U…` و`channel:C…`
-- Discord: ‏`user:<id>` و`channel:<id>`
-- Matrix (Plugin): ‏`user:@user:server` و`room:!roomId:server` أو `#alias:server`
-- Microsoft Teams (Plugin): ‏`user:<id>` و`conversation:<id>`
+- WhatsApp: `+15551234567` (رسالة مباشرة)، `1234567890-1234567890@g.us` (مجموعة)
+- Telegram: `@username` أو معرّف دردشة رقمي؛ المجموعات هي معرّفات رقمية
+- Slack: `user:U…` و`channel:C…`
+- Discord: `user:<id>` و`channel:<id>`
+- Matrix (Plugin): `user:@user:server`، أو `room:!roomId:server`، أو `#alias:server`
+- Microsoft Teams (Plugin): `user:<id>` و`conversation:<id>`
 - Zalo (Plugin): معرّف المستخدم (Bot API)
-- Zalo Personal / `zalouser` (Plugin): معرّف سلسلة المحادثة (مباشر/مجموعة) من `zca` ‏(`me` و`friend list` و`group list`)
+- Zalo Personal / `zalouser` (Plugin): معرّف سلسلة المحادثة (رسالة مباشرة/مجموعة) من `zca` (`me`، `friend list`، `group list`)
 
-## self ("أنا")
+## الذات ("أنا")
 
 ```bash
 openclaw directory self --channel zalouser

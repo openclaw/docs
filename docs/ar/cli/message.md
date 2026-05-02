@@ -5,10 +5,10 @@ read_when:
 summary: مرجع CLI لـ `openclaw message` (الإرسال + إجراءات القنوات)
 title: رسالة
 x-i18n:
-    generated_at: "2026-04-30T07:49:04Z"
+    generated_at: "2026-05-02T07:22:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43f14b3815d89c92a7503e620e2424f41a3f6b92e20e089504017305b19bace4
+    source_hash: f429acc2c81f33d1ade543ab1170220e293077e1d1721ac0940937de3d19f0d2
     source_path: cli/message.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 # `openclaw message`
 
 أمر صادر واحد لإرسال الرسائل وإجراءات القنوات
-(Discord/Google Chat/iMessage/Matrix/Mattermost (plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
+(Discord/Google Chat/iMessage/Matrix/Mattermost (Plugin)/Microsoft Teams/Signal/Slack/Telegram/WhatsApp).
 
 ## الاستخدام
 
@@ -26,68 +26,68 @@ openclaw message <subcommand> [flags]
 
 اختيار القناة:
 
-- يكون `--channel` مطلوبًا إذا كانت هناك أكثر من قناة واحدة مهيأة.
-- إذا كانت هناك قناة واحدة مهيأة بالضبط، فتصبح القناة الافتراضية.
-- القيم: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (يتطلب Mattermost plugin)
-- يحل `openclaw message` القناة المحددة إلى plugin المالكة لها عند وجود `--channel` أو هدف مسبوق باسم قناة؛ وإلا فإنه يحمّل plugins القنوات المهيأة لاستنتاج القناة الافتراضية.
+- يكون `--channel` مطلوبا إذا كانت أكثر من قناة واحدة مهيأة.
+- إذا كانت قناة واحدة فقط مهيأة، فتصبح هي الافتراضية.
+- القيم: `discord|googlechat|imessage|matrix|mattermost|msteams|signal|slack|telegram|whatsapp` (يتطلب Mattermost وجود Plugin)
+- يحل `openclaw message` القناة المحددة إلى Plugin المالك لها عند وجود `--channel` أو هدف مسبوق باسم قناة؛ وإلا فإنه يحمل Plugins القنوات المهيأة لاستنتاج القناة الافتراضية.
 
 تنسيقات الهدف (`--target`):
 
-- WhatsApp: E.164 أو JID مجموعة
-- Telegram: معرّف الدردشة أو `@username`
-- Discord: `channel:<id>` أو `user:<id>` (أو إشارة `<@id>`؛ تُعامل المعرّفات الرقمية الخام كقنوات)
+- WhatsApp: رقم E.164 أو JID لمجموعة
+- Telegram: معرف الدردشة أو `@username`
+- Discord: `channel:<id>` أو `user:<id>` (أو إشارة `<@id>`؛ تعامل المعرفات الرقمية الخام كقنوات)
 - Google Chat: `spaces/<spaceId>` أو `users/<userId>`
-- Slack: `channel:<id>` أو `user:<id>` (يُقبل معرّف القناة الخام)
-- Mattermost (plugin): `channel:<id>` أو `user:<id>` أو `@username` (تُعامل المعرّفات المجردة كقنوات)
+- Slack: `channel:<id>` أو `user:<id>` (يقبل معرف القناة الخام)
+- Mattermost (Plugin): `channel:<id>` أو `user:<id>` أو `@username` (تعامل المعرفات المجردة كقنوات)
 - Signal: `+E.164` أو `group:<id>` أو `signal:+E.164` أو `signal:group:<id>` أو `username:<name>`/`u:<name>`
-- iMessage: المعرّف، أو `chat_id:<id>`، أو `chat_guid:<guid>`، أو `chat_identifier:<id>`
+- iMessage: المقبض، أو `chat_id:<id>`، أو `chat_guid:<guid>`، أو `chat_identifier:<id>`
 - Matrix: `@user:server` أو `!room:server` أو `#alias:server`
-- Microsoft Teams: معرّف المحادثة (`19:...@thread.tacv2`) أو `conversation:<id>` أو `user:<aad-object-id>`
+- Microsoft Teams: معرف المحادثة (`19:...@thread.tacv2`) أو `conversation:<id>` أو `user:<aad-object-id>`
 
 البحث بالاسم:
 
-- بالنسبة إلى المزوّدين المدعومين (Discord/Slack/إلخ)، تُحل أسماء القنوات مثل `Help` أو `#help` عبر ذاكرة التخزين المؤقت للدليل.
-- عند عدم وجود نتيجة في ذاكرة التخزين المؤقت، سيحاول OpenClaw إجراء بحث مباشر في الدليل عندما يدعم المزوّد ذلك.
+- بالنسبة إلى الموفرين المدعومين (Discord/Slack/إلخ)، تحل أسماء القنوات مثل `Help` أو `#help` عبر ذاكرة التخزين المؤقت للدليل.
+- عند عدم وجود نتيجة في ذاكرة التخزين المؤقت، سيحاول OpenClaw إجراء بحث مباشر في الدليل عندما يدعمه الموفر.
 
 ## الأعلام الشائعة
 
 - `--channel <name>`
 - `--account <id>`
 - `--target <dest>` (القناة أو المستخدم الهدف للإرسال/الاستطلاع/القراءة/إلخ)
-- `--targets <name>` (يُكرر؛ للبث فقط)
+- `--targets <name>` (كرر؛ للبث فقط)
 - `--json`
 - `--dry-run`
 - `--verbose`
 
 ## سلوك SecretRef
 
-- يحل `openclaw message` قيم SecretRefs المدعومة للقنوات قبل تشغيل الإجراء المحدد.
-- يكون الحل محصورًا في هدف الإجراء النشط عندما يكون ذلك ممكنًا:
-  - بنطاق القناة عند تعيين `--channel` (أو استنتاجها من أهداف مسبوقة مثل `discord:...`)
-  - بنطاق الحساب عند تعيين `--account` (عموميات القناة + أسطح الحساب المحدد)
+- يحل `openclaw message` مراجع SecretRefs الخاصة بالقنوات المدعومة قبل تشغيل الإجراء المحدد.
+- يكون الحل محدود النطاق إلى هدف الإجراء النشط عندما يكون ذلك ممكنا:
+  - بنطاق القناة عند ضبط `--channel` (أو استنتاجه من أهداف مسبوقة مثل `discord:...`)
+  - بنطاق الحساب عند ضبط `--account` (عموميات القناة + واجهات الحساب المحدد)
   - عند حذف `--account`، لا يفرض OpenClaw نطاق SecretRef لحساب `default`
-- لا تمنع SecretRefs غير المحلولة في القنوات غير ذات الصلة إجراء رسالة مستهدفًا.
-- إذا لم يتم حل SecretRef للقناة/الحساب المحدد، يفشل الأمر بشكل مغلق لذلك الإجراء.
+- لا تمنع مراجع SecretRefs غير المحلولة على قنوات غير ذات صلة إجراء رسالة مستهدفا.
+- إذا كان SecretRef للقناة/الحساب المحدد غير محلول، يفشل الأمر بإغلاق آمن لذلك الإجراء.
 
 ## الإجراءات
 
 ### الأساسي
 
 - `send`
-  - القنوات: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (plugin)/Signal/iMessage/Matrix/Microsoft Teams
+  - القنوات: WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix/Microsoft Teams
   - مطلوب: `--target`، بالإضافة إلى `--message` أو `--media` أو `--presentation`
   - اختياري: `--media`، `--presentation`، `--delivery`، `--pin`، `--reply-to`، `--thread-id`، `--gif-playback`، `--force-document`، `--silent`
-  - حمولات العرض التقديمي المشتركة: يرسل `--presentation` كتلًا دلالية (`text`، `context`، `divider`، `buttons`، `select`) يعرضها النواة عبر القدرات المعلنة للقناة المحددة. راجع [عرض الرسائل](/ar/plugins/message-presentation).
-  - تفضيلات التسليم العامة: يقبل `--delivery` تلميحات تسليم مثل `{ "pin": true }`؛ ويُعد `--pin` اختصارًا للتسليم المثبت عندما تدعمه القناة.
+  - حمولات العرض التقديمي المشتركة: يرسل `--presentation` كتلا دلالية (`text`، `context`، `divider`، `buttons`، `select`) يعرضها القلب عبر الإمكانات المعلنة للقناة المحددة. راجع [عرض الرسائل](/ar/plugins/message-presentation).
+  - تفضيلات التسليم العامة: يقبل `--delivery` تلميحات تسليم مثل `{ "pin": true }`؛ ويعد `--pin` اختصارا للتسليم المثبت عندما تدعمه القناة.
   - Telegram فقط: `--force-document` (إرسال الصور وملفات GIF كمستندات لتجنب ضغط Telegram)
-  - Telegram فقط: `--thread-id` (معرّف موضوع المنتدى)
-  - Slack فقط: `--thread-id` (طابع وقت سلسلة المحادثات؛ يستخدم `--reply-to` الحقل نفسه)
+  - Telegram فقط: `--thread-id` (معرف موضوع المنتدى)
+  - Slack فقط: `--thread-id` (طابع وقت السلسلة؛ يستخدم `--reply-to` الحقل نفسه)
   - Telegram + Discord: `--silent`
   - WhatsApp فقط: `--gif-playback`
 
 - `poll`
   - القنوات: WhatsApp/Telegram/Discord/Matrix/Microsoft Teams
-  - مطلوب: `--target`، `--poll-question`، `--poll-option` (يُكرر)
+  - مطلوب: `--target`، `--poll-question`، `--poll-option` (كرر)
   - اختياري: `--poll-multi`
   - Discord فقط: `--poll-duration-hours`، `--silent`، `--message`
   - Telegram فقط: `--poll-duration-seconds` (5-600)، `--silent`، `--poll-anonymous` / `--poll-public`، `--thread-id`
@@ -96,9 +96,9 @@ openclaw message <subcommand> [flags]
   - القنوات: Discord/Google Chat/Slack/Telegram/WhatsApp/Signal/Matrix
   - مطلوب: `--message-id`، `--target`
   - اختياري: `--emoji`، `--remove`، `--participant`، `--from-me`، `--target-author`، `--target-author-uuid`
-  - ملاحظة: يتطلب `--remove` وجود `--emoji` (احذف `--emoji` لمسح تفاعلاتك حيثما يكون ذلك مدعومًا؛ راجع /tools/reactions)
+  - ملاحظة: يتطلب `--remove` وجود `--emoji` (احذف `--emoji` لمسح ردود فعلك حيثما كان ذلك مدعوما؛ راجع /tools/reactions)
   - WhatsApp فقط: `--participant`، `--from-me`
-  - تفاعلات مجموعات Signal: يكون `--target-author` أو `--target-author-uuid` مطلوبًا
+  - ردود فعل مجموعات Signal: مطلوب `--target-author` أو `--target-author-uuid`
 
 - `reactions`
   - القنوات: Discord/Google Chat/Slack/Matrix
@@ -108,7 +108,8 @@ openclaw message <subcommand> [flags]
 - `read`
   - القنوات: Discord/Slack/Matrix
   - مطلوب: `--target`
-  - اختياري: `--limit`، `--before`، `--after`
+  - اختياري: `--limit`، `--message-id`، `--before`، `--after`
+  - Slack فقط: يقرأ `--message-id` طابع وقت رسالة Slack محددة؛ اجمعه مع `--thread-id` لقراءة رد سلسلة دقيق.
   - Discord فقط: `--around`
 
 - `edit`
@@ -130,18 +131,18 @@ openclaw message <subcommand> [flags]
 - `permissions`
   - القنوات: Discord/Matrix
   - مطلوب: `--target`
-  - Matrix فقط: متاح عند تمكين تشفير Matrix والسماح بإجراءات التحقق
+  - Matrix فقط: متاح عندما يكون تشفير Matrix مفعلا وتكون إجراءات التحقق مسموحة
 
 - `search`
   - القنوات: Discord
   - مطلوب: `--guild-id`، `--query`
-  - اختياري: `--channel-id`، `--channel-ids` (يُكرر)، `--author-id`، `--author-ids` (يُكرر)، `--limit`
+  - اختياري: `--channel-id`، `--channel-ids` (كرر)، `--author-id`، `--author-ids` (كرر)، `--limit`
 
-### سلاسل المحادثات
+### السلاسل
 
 - `thread create`
   - القنوات: Discord
-  - مطلوب: `--thread-name`، `--target` (معرّف القناة)
+  - مطلوب: `--thread-name`، `--target` (معرف القناة)
   - اختياري: `--message-id`، `--message`، `--auto-archive-min`
 
 - `thread list`
@@ -151,7 +152,7 @@ openclaw message <subcommand> [flags]
 
 - `thread reply`
   - القنوات: Discord
-  - مطلوب: `--target` (معرّف سلسلة المحادثات)، `--message`
+  - مطلوب: `--target` (معرف السلسلة)، `--message`
   - اختياري: `--media`، `--reply-to`
 
 ### الرموز التعبيرية
@@ -163,13 +164,13 @@ openclaw message <subcommand> [flags]
 - `emoji upload`
   - القنوات: Discord
   - مطلوب: `--guild-id`، `--emoji-name`، `--media`
-  - اختياري: `--role-ids` (يُكرر)
+  - اختياري: `--role-ids` (كرر)
 
 ### الملصقات
 
 - `sticker send`
   - القنوات: Discord
-  - مطلوب: `--target`، `--sticker-id` (يُكرر)
+  - مطلوب: `--target`، `--sticker-id` (كرر)
   - اختياري: `--message`
 
 - `sticker upload`
@@ -193,15 +194,15 @@ openclaw message <subcommand> [flags]
 
 ### الإشراف (Discord)
 
-- `timeout`: `--guild-id`، `--user-id` (اختياريًا `--duration-min` أو `--until`؛ احذف كليهما لمسح المهلة)
+- `timeout`: `--guild-id`، `--user-id` (اختياري `--duration-min` أو `--until`؛ احذف كليهما لمسح المهلة)
 - `kick`: `--guild-id`، `--user-id` (+ `--reason`)
 - `ban`: `--guild-id`، `--user-id` (+ `--delete-days`، `--reason`)
-  - يدعم `timeout` أيضًا `--reason`
+  - يدعم `timeout` أيضا `--reason`
 
 ### البث
 
 - `broadcast`
-  - القنوات: أي قناة مهيأة؛ استخدم `--channel all` لاستهداف جميع المزوّدين
+  - القنوات: أي قناة مهيأة؛ استخدم `--channel all` لاستهداف جميع الموفرين
   - مطلوب: `--targets <target...>`
   - اختياري: `--message`، `--media`، `--dry-run`
 
@@ -222,9 +223,9 @@ openclaw message send --channel discord \
   --presentation '{"blocks":[{"type":"buttons","buttons":[{"label":"Approve","value":"approve","style":"success"},{"label":"Decline","value":"decline","style":"danger"}]}]}'
 ```
 
-تعرض النواة حمولة `presentation` نفسها إلى مكونات Discord، أو كتل Slack، أو أزرار Telegram المضمنة، أو خصائص Mattermost، أو بطاقات Teams/Feishu بحسب قدرة القناة. راجع [عرض الرسائل](/ar/plugins/message-presentation) للعقد الكامل وقواعد الرجوع.
+يعرض القلب حمولة `presentation` نفسها إلى مكونات Discord أو كتل Slack أو أزرار Telegram المضمنة أو خصائص Mattermost أو بطاقات Teams/Feishu اعتمادا على قدرة القناة. راجع [عرض الرسائل](/ar/plugins/message-presentation) للاطلاع على العقد الكامل وقواعد الرجوع الاحتياطي.
 
-إرسال حمولة عرض تقديمي أكثر ثراءً:
+إرسال حمولة عرض تقديمي أغنى:
 
 ```bash
 openclaw message send --channel googlechat --target spaces/AAA... \
@@ -268,14 +269,14 @@ openclaw message poll --channel msteams \
   --poll-option Pizza --poll-option Sushi
 ```
 
-إضافة تفاعل في Slack:
+إضافة رد فعل في Slack:
 
 ```
 openclaw message react --channel slack \
   --target C123 --message-id 456 --emoji "✅"
 ```
 
-إضافة تفاعل في مجموعة Signal:
+إضافة رد فعل في مجموعة Signal:
 
 ```
 openclaw message react --channel signal \
@@ -283,7 +284,7 @@ openclaw message react --channel signal \
   --emoji "✅" --target-author-uuid 123e4567-e89b-12d3-a456-426614174000
 ```
 
-إرسال أزرار Telegram المضمنة عبر العرض التقديمي العام:
+إرسال أزرار Telegram مضمنة عبر العرض التقديمي العام:
 
 ```
 openclaw message send --channel telegram --target @mychat --message "Choose:" \
@@ -308,4 +309,4 @@ openclaw message send --channel telegram --target @mychat \
 ## ذو صلة
 
 - [مرجع CLI](/ar/cli)
-- [إرسال Agent](/ar/tools/agent-send)
+- [إرسال الوكيل](/ar/tools/agent-send)

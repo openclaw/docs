@@ -1,25 +1,25 @@
 ---
 read_when:
-    - أنت بحاجة إلى التوقيع النوعي الدقيق لـ `definePluginEntry` أو `defineChannelPluginEntry`
-    - أنت تريد فهم وضع التسجيل (كامل مقابل setup مقابل بيانات تعريف CLI)
+    - تحتاج إلى توقيع النوع الدقيق لـ definePluginEntry أو defineChannelPluginEntry
+    - تريد فهم وضع التسجيل (كامل مقابل إعداد مقابل بيانات CLI الوصفية)
     - أنت تبحث عن خيارات نقطة الدخول
 sidebarTitle: Entry Points
-summary: مرجع `definePluginEntry` و`defineChannelPluginEntry` و`defineSetupPluginEntry`
+summary: مرجع لـ definePluginEntry وdefineChannelPluginEntry وdefineSetupPluginEntry
 title: نقاط دخول Plugin
 x-i18n:
-    generated_at: "2026-04-25T13:54:02Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T07:38:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8253cf0ac43ca11b42c0032027bba6e926c961b54901caaa63da70bd5ff5aab5
+    source_hash: a29e7e12c38fb579bb78a0e1e753edafc43298c2795504969c3477c849a5d74d
     source_path: plugins/sdk-entrypoints.md
-    workflow: 15
+    workflow: 16
 ---
 
-يصدّر كل Plugin كائن إدخال افتراضي. وتوفّر SDK ثلاث أدوات مساعدة
+تصدّر كل Plugin كائن إدخال افتراضيًا. يوفّر SDK ثلاث دوال مساعدة
 لإنشائها.
 
-بالنسبة إلى Plugins المثبتة، يجب أن يشير `package.json` إلى تحميل وقت التشغيل نحو
-JavaScript المبني عند توفره:
+بالنسبة إلى Plugins المثبّتة، يجب أن يوجّه `package.json` التحميل وقت التشغيل إلى JavaScript
+المبني عند توفره:
 
 ```json
 {
@@ -32,19 +32,21 @@ JavaScript المبني عند توفره:
 }
 ```
 
-تظل `extensions` و`setupEntry` صالحتيْن كإدخالات source للتطوير من مساحة العمل ونسخة
-git checkout. وتُفضَّل `runtimeExtensions` و`runtimeSetupEntry`
-عندما يحمّل OpenClaw حزمة مثبتة، وتسمحان لحزم npm بتجنب ترجمة TypeScript
-وقت التشغيل. وإذا كانت الحزمة المثبتة تعلن فقط عن إدخال source من TypeScript،
-فسيستخدم OpenClaw نظير `dist/*.js` المبني المطابق عندما يكون موجودًا،
-ثم يرجع إلى source الخاص بـ TypeScript.
+تبقى `extensions` و`setupEntry` إدخالات مصدر صالحة للتطوير ضمن مساحة العمل وعمليات
+checkout عبر git. وتُفضّل `runtimeExtensions` و`runtimeSetupEntry`
+عندما يحمّل OpenClaw حزمة مثبّتة، وتسمح لحزم npm بتجنب تجميع
+TypeScript وقت التشغيل. إدخالات وقت التشغيل الصريحة مطلوبة: يتطلب `runtimeSetupEntry`
+وجود `setupEntry`، ويؤدي غياب نواتج `runtimeExtensions` أو `runtimeSetupEntry`
+إلى فشل التثبيت/الاكتشاف بدلًا من الرجوع بصمت إلى المصدر. إذا
+كانت حزمة مثبّتة تعلن فقط عن إدخال مصدر TypeScript، فسيستخدم OpenClaw
+نظيرًا مبنيًا مطابقًا من `dist/*.js` عند وجوده، ثم يرجع إلى مصدر TypeScript.
 
-يجب أن تبقى جميع مسارات الإدخال داخل دليل حزمة Plugin. ولا تجعل إدخالات runtime
-وأقران JavaScript المبنية المستنتجة مسار source خاصًا بـ `extensions` أو
-`setupEntry` صالحًا إذا كان يهرب خارج الحزمة.
+يجب أن تبقى كل مسارات الإدخال داخل دليل حزمة Plugin. إدخالات وقت التشغيل
+ونظراء JavaScript المبنيون المستنتجون لا تجعل مسار مصدر `extensions` أو
+`setupEntry` الذي يخرج من الدليل صالحًا.
 
 <Tip>
-  **هل تبحث عن شرح عملي؟** راجع [Plugins القنوات](/ar/plugins/sdk-channel-plugins)
+  **تبحث عن شرح عملي؟** راجع [Plugins القنوات](/ar/plugins/sdk-channel-plugins)
   أو [Plugins المزوّدين](/ar/plugins/sdk-provider-plugins) للحصول على أدلة خطوة بخطوة.
 </Tip>
 
@@ -52,7 +54,7 @@ git checkout. وتُفضَّل `runtimeExtensions` و`runtimeSetupEntry`
 
 **الاستيراد:** `openclaw/plugin-sdk/plugin-entry`
 
-بالنسبة إلى Plugins المزوّدين، وPlugins الأدوات، وPlugins hooks، وأي شيء **ليس**
+لـ Plugins المزوّدين، وPlugins الأدوات، وPlugins الخطّافات، وأي شيء **ليس**
 قناة مراسلة.
 
 ```typescript
@@ -73,27 +75,28 @@ export default definePluginEntry({
 });
 ```
 
-| الحقل          | النوع                                                            | مطلوب | الافتراضي          |
-| -------------- | ---------------------------------------------------------------- | ------ | ------------------ |
-| `id`           | `string`                                                         | نعم    | —                  |
-| `name`         | `string`                                                         | نعم    | —                  |
-| `description`  | `string`                                                         | نعم    | —                  |
-| `kind`         | `string`                                                         | لا     | —                  |
-| `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | لا     | مخطط كائن فارغ     |
-| `register`     | `(api: OpenClawPluginApi) => void`                               | نعم    | —                  |
+| الحقل          | النوع                                                            | مطلوب | القيمة الافتراضية   |
+| -------------- | ---------------------------------------------------------------- | ----- | ------------------- |
+| `id`           | `string`                                                         | نعم   | —                   |
+| `name`         | `string`                                                         | نعم   | —                   |
+| `description`  | `string`                                                         | نعم   | —                   |
+| `kind`         | `string`                                                         | لا    | —                   |
+| `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | لا    | مخطط كائن فارغ      |
+| `register`     | `(api: OpenClawPluginApi) => void`                               | نعم   | —                   |
 
-- يجب أن يطابق `id` ملف manifest الخاص بك `openclaw.plugin.json`.
-- يُستخدم `kind` للفتحات الحصرية: `"memory"` أو `"context-engine"`.
-- يمكن أن يكون `configSchema` دالة من أجل التقييم الكسول.
-- يقوم OpenClaw بحل ذلك المخطط وتخزينه مؤقتًا عند أول وصول، لذا فإن بُناة المخططات
-  المكلفة لا تعمل إلا مرة واحدة.
+- يجب أن يطابق `id` ملف البيان `openclaw.plugin.json` الخاص بك.
+- يُستخدم `kind` للخانات الحصرية: `"memory"` أو `"context-engine"`.
+- يمكن أن يكون `configSchema` دالة للتقييم الكسول.
+- يحل OpenClaw ذلك المخطط ويحفظه مؤقتًا عند أول وصول، لذلك لا تعمل بُناة المخططات
+  المكلفة إلا مرة واحدة.
 
 ## `defineChannelPluginEntry`
 
 **الاستيراد:** `openclaw/plugin-sdk/channel-core`
 
-يلف `definePluginEntry` بأسلاك خاصة بالقنوات. ويستدعي تلقائيًا
-`api.registerChannel({ plugin })`، ويكشف طبقة اختيارية لبيانات تعريف CLI الخاصة بالمساعدة الجذرية، ويقيّد `registerFull` بحسب وضع التسجيل.
+يلف `definePluginEntry` مع توصيلات خاصة بالقنوات. يستدعي تلقائيًا
+`api.registerChannel({ plugin })`، ويعرض موضع توسيع اختياريًا لبيانات CLI الوصفية
+في مساعدة الجذر، ويقيّد `registerFull` بناءً على وضع التسجيل.
 
 ```typescript
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -113,49 +116,48 @@ export default defineChannelPluginEntry({
 });
 ```
 
-| الحقل                 | النوع                                                            | مطلوب | الافتراضي          |
-| --------------------- | ---------------------------------------------------------------- | ------ | ------------------ |
-| `id`                  | `string`                                                         | نعم    | —                  |
-| `name`                | `string`                                                         | نعم    | —                  |
-| `description`         | `string`                                                         | نعم    | —                  |
-| `plugin`              | `ChannelPlugin`                                                  | نعم    | —                  |
-| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | لا     | مخطط كائن فارغ     |
-| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | لا     | —                  |
-| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | لا     | —                  |
-| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | لا     | —                  |
+| الحقل                 | النوع                                                            | مطلوب | القيمة الافتراضية   |
+| --------------------- | ---------------------------------------------------------------- | ----- | ------------------- |
+| `id`                  | `string`                                                         | نعم   | —                   |
+| `name`                | `string`                                                         | نعم   | —                   |
+| `description`         | `string`                                                         | نعم   | —                   |
+| `plugin`              | `ChannelPlugin`                                                  | نعم   | —                   |
+| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | لا    | مخطط كائن فارغ      |
+| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | لا    | —                   |
+| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | لا    | —                   |
+| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | لا    | —                   |
 
-- يُستدعى `setRuntime` أثناء التسجيل حتى تتمكن من تخزين مرجع runtime
-  (عادةً عبر `createPluginRuntimeStore`). ويتم تخطيه أثناء التقاط
-  بيانات تعريف CLI.
+- يُستدعى `setRuntime` أثناء التسجيل حتى تتمكن من تخزين مرجع وقت التشغيل
+  (عادة عبر `createPluginRuntimeStore`). ويتم تخطيه أثناء التقاط بيانات CLI الوصفية.
 - يعمل `registerCliMetadata` أثناء `api.registrationMode === "cli-metadata"`،
   و`api.registrationMode === "discovery"`، و
   `api.registrationMode === "full"`.
-  استخدمه بوصفه المكان القانوني لوصفات CLI المملوكة للقناة حتى تظل
-  المساعدة الجذرية غير مفعِّلة، وتتضمن لقطات الاكتشاف بيانات تعريف الأوامر الثابتة،
-  ويظل تسجيل أوامر CLI العادي متوافقًا مع التحميل الكامل للـ Plugin.
-- تسجيل الاكتشاف غير مفعِّل، لكنه ليس خاليًا من الاستيراد. قد يقوم OpenClaw
-  بتقييم إدخال Plugin الموثوق ووحدة channel plugin لبناء
-  اللقطة، لذا أبقِ الاستيرادات على المستوى الأعلى خالية من التأثيرات الجانبية وضع
-  المقابس، والعملاء، والعمال، والخدمات خلف مسارات `"full"` فقط.
-- لا يعمل `registerFull` إلا عندما يكون `api.registrationMode === "full"`. ويُتخطى
+  استخدمه كمكان أساسي للواصفات المملوكة للقناة في CLI حتى تبقى مساعدة الجذر
+  غير منشِّطة، وتتضمن لقطات الاكتشاف بيانات وصفية ثابتة للأوامر، ويظل
+  تسجيل أوامر CLI العادي متوافقًا مع تحميلات Plugin الكاملة.
+- تسجيل الاكتشاف غير منشّط، وليس خاليًا من الاستيراد. قد يقيّم OpenClaw
+  إدخال Plugin الموثوق ووحدة Plugin القناة لبناء
+  اللقطة، لذلك أبقِ الاستيرادات على المستوى الأعلى بلا آثار جانبية، وضع المقابس
+  والعملاء والعاملين والخدمات خلف مسارات مخصصة لـ `"full"` فقط.
+- لا يعمل `registerFull` إلا عندما يكون `api.registrationMode === "full"`. ويتم تخطيه
   أثناء التحميل المخصص للإعداد فقط.
-- مثل `definePluginEntry`، يمكن أن يكون `configSchema` مصنعًا كسولًا ويقوم OpenClaw
-  بتخزين المخطط المحلول مؤقتًا عند أول وصول.
+- مثل `definePluginEntry`، يمكن أن يكون `configSchema` مصنعًا كسولًا، ويحفظ OpenClaw
+  المخطط المحلول مؤقتًا عند أول وصول.
 - بالنسبة إلى أوامر CLI الجذرية المملوكة لـ Plugin، فضّل `api.registerCli(..., { descriptors: [...] })`
-  عندما تريد أن يظل الأمر محمّلًا كسولًا من دون أن يختفي من
-  شجرة تحليل CLI الجذرية. وبالنسبة إلى Plugins القنوات، فضّل تسجيل هذه الواصفات
-  من `registerCliMetadata(...)` وأبقِ `registerFull(...)` مركّزًا على الأعمال الخاصة بـ runtime فقط.
-- إذا كان `registerFull(...)` يسجل أيضًا أساليب Gateway RPC، فأبقها على
-  بادئة خاصة بالـ Plugin. وتُحوَّل دائمًا مساحات أسماء الإدارة الأساسية المحجوزة (`config.*`،
-  و`exec.approvals.*`، و`wizard.*`، و`update.*`) إلى
+  عندما تريد أن يبقى الأمر محمّلًا كسولًا دون أن يختفي من
+  شجرة تحليل CLI الجذرية. بالنسبة إلى Plugins القنوات، فضّل تسجيل تلك الواصفات
+  من `registerCliMetadata(...)` وأبقِ `registerFull(...)` مركّزًا على العمل الخاص بوقت التشغيل فقط.
+- إذا كان `registerFull(...)` يسجل أيضًا طرائق RPC في Gateway، فأبقها ضمن
+  بادئة خاصة بـ Plugin. مساحات أسماء الإدارة الأساسية المحجوزة (`config.*`،
+  و`exec.approvals.*`، و`wizard.*`، و`update.*`) تُجبر دائمًا على
   `operator.admin`.
 
 ## `defineSetupPluginEntry`
 
 **الاستيراد:** `openclaw/plugin-sdk/channel-core`
 
-بالنسبة إلى ملف `setup-entry.ts` خفيف الوزن. يعيد فقط `{ plugin }` من دون
-runtime أو أسلاك CLI.
+لملف `setup-entry.ts` الخفيف. يعيد فقط `{ plugin }` دون
+توصيلات وقت تشغيل أو CLI.
 
 ```typescript
 import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -163,27 +165,25 @@ import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-يقوم OpenClaw بتحميل هذا بدلًا من الإدخال الكامل عندما تكون القناة معطلة،
+يحمّل OpenClaw هذا بدلًا من الإدخال الكامل عندما تكون قناة معطّلة،
 أو غير مهيأة، أو عندما يكون التحميل المؤجل مفعّلًا. راجع
-[الإعداد والتهيئة](/ar/plugins/sdk-setup#setup-entry) لمعرفة متى يهم هذا.
+[الإعداد والتهيئة](/ar/plugins/sdk-setup#setup-entry) لمعرفة متى يكون هذا مهمًا.
 
-عمليًا، اقترن `defineSetupPluginEntry(...)` بعائلات مساعدات الإعداد
-الضيقة:
+عمليًا، اربط `defineSetupPluginEntry(...)` بعائلات دوال الإعداد المساعدة الضيقة:
 
-- `openclaw/plugin-sdk/setup-runtime` لمساعدات الإعداد الآمنة مع runtime مثل
-  محولات تصحيح الإعداد الآمنة للاستيراد، ومخرجات lookup-note،
+- `openclaw/plugin-sdk/setup-runtime` لدوال الإعداد المساعدة الآمنة وقت التشغيل مثل
+  محوّلات تصحيح الإعداد الآمنة للاستيراد، ومخرجات ملاحظات البحث،
   و`promptResolvedAllowFrom`، و`splitSetupEntries`، ووكلاء الإعداد المفوضين
-- `openclaw/plugin-sdk/channel-setup` لأسطح الإعداد الخاصة بالتثبيت الاختياري
-- `openclaw/plugin-sdk/setup-tools` لمساعدات CLI/الأرشيف/المستندات الخاصة بالإعداد/التثبيت
+- `openclaw/plugin-sdk/channel-setup` لأسطح إعداد التثبيت الاختياري
+- `openclaw/plugin-sdk/setup-tools` لدوال CLI/الأرشيف/الوثائق المساعدة الخاصة بالإعداد/التثبيت
 
-أبقِ SDKs الثقيلة، وتسجيل CLI، وخدمات runtime طويلة العمر داخل
-الإدخال الكامل.
+أبقِ SDKs الثقيلة، وتسجيل CLI، وخدمات وقت التشغيل طويلة العمر في الإدخال الكامل.
 
-يمكن للقنوات المضمنة في مساحة العمل التي تفصل بين أسطح الإعداد وruntime
-استخدام `defineBundledChannelSetupEntry(...)` من
-`openclaw/plugin-sdk/channel-entry-contract` بدلًا من ذلك. ويسمح هذا العقد
-لإدخال الإعداد بالاحتفاظ بصادرات plugin/secrets الآمنة للإعداد مع الاستمرار في كشف
-أداة ضبط runtime:
+يمكن لقنوات مساحة العمل المضمّنة التي تفصل بين أسطح الإعداد ووقت التشغيل استخدام
+`defineBundledChannelSetupEntry(...)` من
+`openclaw/plugin-sdk/channel-entry-contract` بدلًا من ذلك. يتيح ذلك العقد
+لإدخال الإعداد الاحتفاظ بصادرات Plugin/الأسرار الآمنة للإعداد مع الاستمرار في عرض
+ضابط وقت تشغيل:
 
 ```typescript
 import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
@@ -201,23 +201,23 @@ export default defineBundledChannelSetupEntry({
 });
 ```
 
-استخدم هذا العقد المضمّن فقط عندما تحتاج تدفقات الإعداد حقًا إلى أداة ضبط runtime
-خفيفة الوزن قبل تحميل الإدخال الكامل للقناة.
+استخدم ذلك العقد المضمّن فقط عندما تحتاج تدفقات الإعداد فعلًا إلى ضابط وقت تشغيل خفيف
+قبل تحميل إدخال القناة الكامل.
 
 ## وضع التسجيل
 
-يخبر `api.registrationMode` Plugin الخاص بك بكيفية تحميله:
+يخبر `api.registrationMode` الـ Plugin بكيفية تحميله:
 
-| الوضع             | متى                              | ما الذي يجب تسجيله                                                                                                      |
-| ----------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `"full"`          | بدء تشغيل Gateway العادي         | كل شيء                                                                                                                  |
-| `"discovery"`     | اكتشاف قدرات للقراءة فقط         | تسجيل القناة بالإضافة إلى واصفات CLI الثابتة؛ قد يُحمَّل كود الإدخال، لكن تخطَّ المقابس والعمال والعملاء والخدمات       |
-| `"setup-only"`    | قناة معطلة/غير مهيأة            | تسجيل القناة فقط                                                                                                        |
-| `"setup-runtime"` | تدفق إعداد مع توفر runtime       | تسجيل القناة بالإضافة إلى runtime الخفيف فقط المطلوب قبل تحميل الإدخال الكامل                                           |
-| `"cli-metadata"`  | المساعدة الجذرية / التقاط بيانات تعريف CLI | واصفات CLI فقط                                                                                                  |
+| الوضع            | متى                              | ما الذي يجب تسجيله                                                                                                      |
+| ---------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `"full"`         | بدء Gateway العادي               | كل شيء                                                                                                                  |
+| `"discovery"`    | اكتشاف قدرات للقراءة فقط         | تسجيل القناة إضافة إلى واصفات CLI ثابتة؛ قد يتم تحميل كود الإدخال، لكن تخطَّ المقابس والعاملين والعملاء والخدمات        |
+| `"setup-only"`   | قناة معطّلة/غير مهيأة            | تسجيل القناة فقط                                                                                                        |
+| `"setup-runtime"` | تدفق إعداد مع توفر وقت التشغيل   | تسجيل القناة إضافة إلى وقت التشغيل الخفيف فقط المطلوب قبل تحميل الإدخال الكامل                                          |
+| `"cli-metadata"` | مساعدة الجذر / التقاط بيانات CLI الوصفية | واصفات CLI فقط                                                                                                  |
 
-يتعامل `defineChannelPluginEntry` مع هذا الانقسام تلقائيًا. وإذا استخدمت
-`definePluginEntry` مباشرةً لقناة، فتحقق من الوضع بنفسك:
+يتولى `defineChannelPluginEntry` هذا التقسيم تلقائيًا. إذا استخدمت
+`definePluginEntry` مباشرة لقناة، فتحقق من الوضع بنفسك:
 
 ```typescript
 register(api) {
@@ -233,52 +233,52 @@ register(api) {
   api.registerChannel({ plugin: myPlugin });
   if (api.registrationMode !== "full") return;
 
-  // تسجيلات runtime الثقيلة فقط
+  // Heavy runtime-only registrations
   api.registerService(/* ... */);
 }
 ```
 
-يبني وضع الاكتشاف لقطة سجل غير مفعِّلة. وقد يقيّم مع ذلك
-إدخال Plugin وكائن channel plugin حتى يتمكن OpenClaw من تسجيل قدرات القناة
-وواصفات CLI الثابتة. تعامل مع تقييم الوحدة في وضع الاكتشاف على أنه
-موثوق لكنه خفيف: لا عملاء شبكة، ولا عمليات فرعية، ولا listeners، ولا اتصالات قواعد بيانات،
-ولا عمال خلفية، ولا قراءات لبيانات الاعتماد، ولا أي تأثيرات جانبية حية أخرى لوقت التشغيل على المستوى الأعلى.
+يبني وضع الاكتشاف لقطة سجل غير منشّطة. وقد يظل يقيّم
+إدخال Plugin وكائن Plugin القناة حتى يتمكن OpenClaw من تسجيل قدرات القناة
+وواصفات CLI الثابتة. تعامل مع تقييم الوحدات في الاكتشاف على أنه
+موثوق لكنه خفيف: لا عملاء شبكة، أو عمليات فرعية، أو مستمعون، أو اتصالات قواعد بيانات،
+أو عاملون في الخلفية، أو قراءات بيانات اعتماد، أو آثار جانبية حية أخرى لوقت التشغيل على المستوى الأعلى.
 
-تعامل مع `"setup-runtime"` على أنه النافذة التي يجب أن تكون فيها
-أسطح بدء التشغيل الخاصة بالإعداد فقط موجودة من دون إعادة دخول runtime الكامل للقناة المضمنة. ومن الأمثلة المناسبة
-تسجيل القناة، ومسارات HTTP الآمنة للإعداد، وأساليب gateway الآمنة للإعداد، و
-مساعدات الإعداد المفوضة. أما خدمات الخلفية الثقيلة، ومسجلات CLI، و
-bootstraps الخاصة بـ SDK للعميل/المزوّد فلا تزال تنتمي إلى `"full"`.
+تعامل مع `"setup-runtime"` على أنه النافذة التي يجب أن تتوفر فيها أسطح بدء التشغيل المخصصة للإعداد فقط
+من دون إعادة الدخول إلى وقت تشغيل القناة المضمّنة الكامل. من الاستخدامات المناسبة
+تسجيل القناة، ومسارات HTTP الآمنة للإعداد، وطرائق Gateway الآمنة للإعداد، و
+دوال الإعداد المساعدة المفوضة. أما خدمات الخلفية الثقيلة، ومسجّلات CLI، و
+تهيئة SDKs المزوّد/العميل فما تزال تنتمي إلى `"full"`.
 
-بالنسبة إلى مسجلات CLI تحديدًا:
+بالنسبة إلى مسجّلات CLI تحديدًا:
 
-- استخدم `descriptors` عندما يملك المسجل أمرًا جذريًا واحدًا أو أكثر وتريد
-  أن يقوم OpenClaw بتحميل وحدة CLI الحقيقية تحميلًا كسولًا عند أول استدعاء
-- تأكد من أن هذه الواصفات تغطي كل جذر أوامر في المستوى الأعلى يكشفه
-  المسجل
-- أبقِ أسماء أوامر الواصفات على حروف وأرقام وشرطة سفلية وشرطة،
-  على أن تبدأ بحرف أو رقم؛ يرفض OpenClaw أسماء الواصفات خارج
-  هذا الشكل ويزيل تسلسلات التحكم الطرفية من الأوصاف قبل
+- استخدم `descriptors` عندما يملك المسجّل أمرًا جذريًا واحدًا أو أكثر وتريد
+  أن يحمّل OpenClaw وحدة CLI الحقيقية كسولًا عند أول استدعاء
+- تأكد من أن تلك الواصفات تغطي كل جذر أمر من المستوى الأعلى يعرضه
+  المسجّل
+- أبقِ أسماء أوامر الواصفات مقتصرة على الأحرف والأرقام والشرطة والشرطة السفلية،
+  وأن تبدأ بحرف أو رقم؛ يرفض OpenClaw أسماء الواصفات خارج
+  هذا الشكل، ويزيل تسلسلات التحكم الطرفية من الأوصاف قبل
   عرض المساعدة
-- استخدم `commands` وحدها فقط لمسارات التوافق المحمّلة eagerly
+- استخدم `commands` وحدها فقط لمسارات التوافق الفورية
 
 ## أشكال Plugin
 
-يصنّف OpenClaw Plugins المحمّلة وفقًا لسلوك التسجيل الخاص بها:
+يصنّف OpenClaw Plugins المحمّلة حسب سلوك تسجيلها:
 
-| الشكل                 | الوصف                                             |
-| --------------------- | ------------------------------------------------- |
-| **plain-capability**  | نوع قدرة واحد (مثل مزود فقط)                      |
-| **hybrid-capability** | أنواع قدرات متعددة (مثل مزود + speech)            |
-| **hook-only**         | hooks فقط، من دون قدرات                           |
-| **non-capability**    | أدوات/أوامر/خدمات ولكن من دون قدرات               |
+| الشكل                 | الوصف                                        |
+| --------------------- | -------------------------------------------------- |
+| **plain-capability**  | نوع قدرة واحد (مثلًا: موفّر فقط)           |
+| **hybrid-capability** | أنواع قدرات متعددة (مثلًا: موفّر + كلام) |
+| **hook-only**         | خطّافات فقط، بلا قدرات                        |
+| **non-capability**    | أدوات/أوامر/خدمات لكن بلا قدرات        |
 
 استخدم `openclaw plugins inspect <id>` لرؤية شكل Plugin.
 
 ## ذو صلة
 
-- [نظرة عامة على SDK](/ar/plugins/sdk-overview) — API التسجيل ومرجع المسارات الفرعية
-- [مساعدات Runtime](/ar/plugins/sdk-runtime) — `api.runtime` و`createPluginRuntimeStore`
-- [الإعداد والتهيئة](/ar/plugins/sdk-setup) — manifest، وإدخال الإعداد، والتحميل المؤجل
+- [نظرة عامة على SDK](/ar/plugins/sdk-overview) — واجهة API للتسجيل ومرجع المسارات الفرعية
+- [مساعدات وقت التشغيل](/ar/plugins/sdk-runtime) — `api.runtime` و`createPluginRuntimeStore`
+- [الإعداد والتهيئة](/ar/plugins/sdk-setup) — البيان، مدخل الإعداد، التحميل المؤجّل
 - [Plugins القنوات](/ar/plugins/sdk-channel-plugins) — بناء كائن `ChannelPlugin`
-- [Plugins المزوّدين](/ar/plugins/sdk-provider-plugins) — تسجيل المزوّد وhooks
+- [Plugins الموفّرين](/ar/plugins/sdk-provider-plugins) — تسجيل الموفّر والخطّافات

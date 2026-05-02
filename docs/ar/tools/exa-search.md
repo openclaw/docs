@@ -1,32 +1,32 @@
 ---
 read_when:
-    - تريد استخدام Exa لـ web_search
+    - تريد استخدام Exa من أجل web_search
     - تحتاج إلى EXA_API_KEY
-    - تريد بحثًا عصبيًا أو استخراجًا للمحتوى
-summary: بحث Exa AI -- بحث عصبي وبحث بالكلمات المفتاحية مع استخراج المحتوى
+    - تريد البحث العصبي أو استخراج المحتوى
+summary: بحث Exa AI -- بحث عصبي وبالكلمات المفتاحية مع استخراج المحتوى
 title: بحث Exa
 x-i18n:
-    generated_at: "2026-04-24T08:08:24Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T07:44:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 73cb69e672f432659c94c8d93ef52a88ecfcc9fa17d89af3e54493bd0cca4207
+    source_hash: d2ddf83c5130208eadc78eccb10aebf67af11b05690d75a817d6999f79be5fc3
     source_path: tools/exa-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-يدعم OpenClaw خدمة [Exa AI](https://exa.ai/) كمزوّد `web_search`. وتوفّر Exa
-أوضاع بحث عصبية، وبالكلمات المفتاحية، وهجينة، مع استخراج محتوى مدمج
-(إبرازات، ونص، وملخصات).
+يدعم OpenClaw ‏[Exa AI](https://exa.ai/) كموفر `web_search`. يوفّر Exa
+أوضاع بحث عصبية، وبالكلمات المفتاحية، وهجينة مع استخراج محتوى مدمج
+(تمييزات، ونص، وملخصات).
 
-## احصل على مفتاح API
+## الحصول على مفتاح API
 
 <Steps>
   <Step title="إنشاء حساب">
-    سجّل في [exa.ai](https://exa.ai/) وولّد مفتاح API من
-    لوحة التحكم الخاصة بك.
+    سجّل في [exa.ai](https://exa.ai/) وأنشئ مفتاح API من
+    لوحة التحكم لديك.
   </Step>
   <Step title="تخزين المفتاح">
-    اضبط `EXA_API_KEY` في بيئة Gateway، أو هيّئه عبر:
+    اضبط `EXA_API_KEY` في بيئة Gateway، أو اضبطه عبر:
 
     ```bash
     openclaw configure --section web
@@ -35,7 +35,7 @@ x-i18n:
   </Step>
 </Steps>
 
-## التهيئة
+## الإعدادات
 
 ```json5
 {
@@ -44,7 +44,8 @@ x-i18n:
       exa: {
         config: {
           webSearch: {
-            apiKey: "exa-...", // اختياري إذا كان EXA_API_KEY مضبوطًا
+            apiKey: "exa-...", // optional if EXA_API_KEY is set
+            baseUrl: "https://api.exa.ai", // optional; OpenClaw appends /search
           },
         },
       },
@@ -60,8 +61,16 @@ x-i18n:
 }
 ```
 
-**بديل بيئي:** اضبط `EXA_API_KEY` في بيئة Gateway.
-في تثبيت gateway، ضعه في `~/.openclaw/.env`.
+**بديل البيئة:** اضبط `EXA_API_KEY` في بيئة Gateway.
+لتثبيت gateway، ضعه في `~/.openclaw/.env`.
+
+## تجاوز عنوان URL الأساسي
+
+اضبط `plugins.entries.exa.config.webSearch.baseUrl` عندما ينبغي أن تمر طلبات بحث Exa
+عبر وكيل متوافق أو نقطة نهاية Exa بديلة. يقوم OpenClaw
+بتطبيع المضيفات العارية عبر إضافة `https://` في البداية، ويضيف `/search` إلا إذا كان
+المسار ينتهي بها بالفعل. تُضمَّن نقطة النهاية المحلولة في مفتاح ذاكرة التخزين المؤقت
+للبحث، لذلك لا تتم مشاركة النتائج من نقاط نهاية Exa المختلفة.
 
 ## معلمات الأداة
 
@@ -70,7 +79,7 @@ x-i18n:
 </ParamField>
 
 <ParamField path="count" type="number">
-النتائج المطلوب إرجاعها (1–100).
+النتائج المراد إرجاعها (1–100).
 </ParamField>
 
 <ParamField path="type" type="'auto' | 'neural' | 'fast' | 'deep' | 'deep-reasoning' | 'instant'">
@@ -95,7 +104,7 @@ x-i18n:
 
 ### استخراج المحتوى
 
-يمكن لـ Exa إرجاع محتوى مستخرج إلى جانب نتائج البحث. مرّر كائن `contents`
+يمكن لـ Exa إرجاع المحتوى المستخرج إلى جانب نتائج البحث. مرّر كائن `contents`
 للتفعيل:
 
 ```javascript
@@ -103,47 +112,48 @@ await web_search({
   query: "transformer architecture explained",
   type: "neural",
   contents: {
-    text: true, // نص الصفحة الكامل
-    highlights: { numSentences: 3 }, // الجمل الأساسية
-    summary: true, // ملخص AI
+    text: true, // full page text
+    highlights: { numSentences: 3 }, // key sentences
+    summary: true, // AI summary
   },
 });
 ```
 
-| خيار `contents` | النوع                                                                 | الوصف                 |
-| --------------- | --------------------------------------------------------------------- | --------------------- |
+| خيار المحتوى | النوع                                                                 | الوصف                  |
+| --------------- | --------------------------------------------------------------------- | ---------------------- |
 | `text`          | `boolean \| { maxCharacters }`                                        | استخراج نص الصفحة الكامل |
-| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | استخراج الجمل الأساسية |
-| `summary`       | `boolean \| { query }`                                                | ملخص مولّد بواسطة AI   |
+| `highlights`    | `boolean \| { maxCharacters, query, numSentences, highlightsPerUrl }` | استخراج الجمل الرئيسية |
+| `summary`       | `boolean \| { query }`                                                | ملخص مولّد بالذكاء الاصطناعي |
 
 ### أوضاع البحث
 
-| الوضع            | الوصف                              |
-| ---------------- | ---------------------------------- |
-| `auto`           | تختار Exa أفضل وضع (الافتراضي)    |
-| `neural`         | بحث دلالي/قائم على المعنى          |
-| `fast`           | بحث سريع بالكلمات المفتاحية        |
-| `deep`           | بحث عميق شامل                      |
-| `deep-reasoning` | بحث عميق مع استدلال                |
-| `instant`        | أسرع النتائج                       |
+| الوضع            | الوصف                          |
+| ---------------- | --------------------------------- |
+| `auto`           | يختار Exa أفضل وضع (الافتراضي) |
+| `neural`         | بحث دلالي/قائم على المعنى      |
+| `fast`           | بحث سريع بالكلمات المفتاحية    |
+| `deep`           | بحث عميق وشامل                 |
+| `deep-reasoning` | بحث عميق مع استدلال            |
+| `instant`        | أسرع النتائج                   |
 
 ## ملاحظات
 
-- إذا لم يُقدَّم أي خيار `contents`، تستخدم Exa افتراضيًا `{ highlights: true }`
-  بحيث تتضمن النتائج مقتطفات من الجمل الأساسية
-- تحافظ النتائج على حقلي `highlightScores` و`summary` من استجابة API الخاصة بـ Exa
+- إذا لم يتم توفير خيار `contents`، يستخدم Exa افتراضيًا `{ highlights: true }`
+  بحيث تتضمن النتائج مقتطفات من الجمل الرئيسية
+- تحتفظ النتائج بحقلي `highlightScores` و`summary` من استجابة API الخاصة بـ Exa
   عند توفرهما
-- تُحل أوصاف النتائج من الإبرازات أولًا، ثم الملخص، ثم
-  النص الكامل — أيّها متاح
-- لا يمكن جمع `freshness` مع `date_after`/`date_before` — استخدم
-  وضع ترشيح زمني واحد
-- يمكن إرجاع ما يصل إلى 100 نتيجة لكل استعلام (مع مراعاة حدود نوع بحث Exa)
-- تُخزَّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للتهيئة عبر
+- تُستخلص أوصاف النتائج من التمييزات أولًا، ثم الملخص، ثم
+  النص الكامل — أيها كان متوفرًا
+- لا يمكن الجمع بين `freshness` و`date_after`/`date_before` — استخدم وضع
+  ترشيح زمني واحد
+- يمكن إرجاع ما يصل إلى 100 نتيجة لكل استعلام (وفقًا لحدود نوع البحث
+  في Exa)
+- تُخزّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للضبط عبر
   `cacheTtlMinutes`)
-- Exa تكامل API رسمي مع استجابات JSON منظَّمة
+- Exa تكامل API رسمي مع استجابات JSON منظّمة
 
-## ذو صلة
+## ذات صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
+- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع الموفرين والاكتشاف التلقائي
 - [Brave Search](/ar/tools/brave-search) -- نتائج منظّمة مع مرشحات البلد/اللغة
-- [بحث Perplexity](/ar/tools/perplexity-search) -- نتائج منظّمة مع ترشيح حسب النطاق
+- [Perplexity Search](/ar/tools/perplexity-search) -- نتائج منظّمة مع ترشيح النطاقات

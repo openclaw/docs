@@ -1,40 +1,40 @@
 ---
 read_when:
     - تريد استخدام Groq مع OpenClaw
-    - تحتاج إلى متغير بيئة مفتاح API أو اختيار المصادقة عبر CLI
+    - تحتاج إلى متغير البيئة لمفتاح API أو خيار مصادقة CLI
 summary: إعداد Groq (المصادقة + اختيار النموذج)
 title: Groq
 x-i18n:
-    generated_at: "2026-04-30T08:20:59Z"
+    generated_at: "2026-05-02T07:39:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ed612471939e7ac5362f8236f179d38ae07f9076709ff55020c1790f7c56a6fa
+    source_hash: 2cf6678047581a438906420894b250bafb68d71254fbaf30ea5dfcfc4799eac7
     source_path: providers/groq.md
     workflow: 16
 ---
 
-توفّر [Groq](https://groq.com) استدلالًا فائق السرعة على نماذج مفتوحة المصدر
+[Groq](https://groq.com) يوفّر استدلالًا فائق السرعة على النماذج مفتوحة المصدر
 (Llama وGemma وMistral والمزيد) باستخدام عتاد LPU مخصّص. يتصل OpenClaw
 بـ Groq عبر API المتوافق مع OpenAI.
 
-| الخاصية | القيمة             |
+| الخاصية | القيمة            |
 | -------- | ----------------- |
 | المزوّد | `groq`            |
-| المصادقة     | `GROQ_API_KEY`    |
+| المصادقة | `GROQ_API_KEY`    |
 | API      | متوافق مع OpenAI |
 
-## بدء الاستخدام
+## البدء
 
 <Steps>
-  <Step title="الحصول على مفتاح API">
+  <Step title="Get an API key">
     أنشئ مفتاح API في [console.groq.com/keys](https://console.groq.com/keys).
   </Step>
-  <Step title="تعيين مفتاح API">
+  <Step title="Set the API key">
     ```bash
     export GROQ_API_KEY="gsk_..."
     ```
   </Step>
-  <Step title="تعيين نموذج افتراضي">
+  <Step title="Set a default model">
     ```json5
     {
       agents: {
@@ -47,7 +47,7 @@ x-i18n:
   </Step>
 </Steps>
 
-### مثال ملف الإعدادات
+### مثال ملف التكوين
 
 ```json5
 {
@@ -62,35 +62,36 @@ x-i18n:
 
 ## الفهرس المضمّن
 
-يتغير فهرس نماذج Groq كثيرًا. شغّل `openclaw models list | grep groq`
-للاطلاع على النماذج المتاحة حاليًا، أو راجع
+يشحن OpenClaw فهرس Groq مدعومًا ببيان لسرد النماذج بسرعة مع التصفية حسب المزوّد.
+شغّل `openclaw models list --all --provider groq` لرؤية الصفوف المضمّنة،
+أو راجع
 [console.groq.com/docs/models](https://console.groq.com/docs/models).
 
-| النموذج                       | الملاحظات                              |
+| النموذج                    | ملاحظات                           |
 | --------------------------- | ---------------------------------- |
-| **Llama 3.3 70B Versatile** | للأغراض العامة، سياق كبير     |
-| **Llama 3.1 8B Instant**    | سريع وخفيف                  |
-| **Gemma 2 9B**              | مدمج وفعّال                 |
-| **Mixtral 8x7B**            | معمارية MoE، استدلال قوي |
+| **Llama 3.3 70B Versatile** | للأغراض العامة، بسياق كبير        |
+| **Llama 3.1 8B Instant**    | سريع وخفيف                        |
+| **Gemma 2 9B**              | مدمج وفعّال                       |
+| **Mixtral 8x7B**            | بنية MoE، واستدلال قوي            |
 
 <Tip>
-استخدم `openclaw models list --provider groq` للحصول على أحدث قائمة بالنماذج
-المتاحة في حسابك.
+استخدم `openclaw models list --all --provider groq` لصفوف Groq المدعومة ببيان
+والمعروفة لإصدار OpenClaw هذا.
 </Tip>
 
 ## نماذج الاستدلال
 
 يربط OpenClaw مستويات `/think` المشتركة لديه بقيم `reasoning_effort` الخاصة
-بنماذج Groq. بالنسبة إلى `qwen/qwen3-32b`، يرسل التفكير المعطّل
-`none` ويرسل التفكير المفعّل `default`. بالنسبة إلى نماذج استدلال Groq GPT-OSS،
-يرسل OpenClaw `low` أو `medium` أو `high`؛ وعند تعطيل التفكير، يُسقط
-`reasoning_effort` لأن هذه النماذج لا تدعم قيمة معطّلة.
+بنماذج Groq. بالنسبة إلى `qwen/qwen3-32b`، يرسل التفكير المعطّل `none`
+ويرسل التفكير المفعّل `default`. وبالنسبة إلى نماذج استدلال Groq GPT-OSS،
+يرسل OpenClaw `low` أو `medium` أو `high`؛ أما التفكير المعطّل فيحذف
+`reasoning_effort` لأن تلك النماذج لا تدعم قيمة تعطيل.
 
 ## نسخ الصوت
 
-توفّر Groq أيضًا نسخًا سريعًا للصوت مستندًا إلى Whisper. عند تهيئتها كمزوّد
+يوفّر Groq أيضًا نسخًا صوتيًا سريعًا قائمًا على Whisper. عند تكوينه كمزوّد
 لفهم الوسائط، يستخدم OpenClaw نموذج Groq `whisper-large-v3-turbo`
-لنسخ الرسائل الصوتية عبر السطح المشترك `tools.media.audio`.
+لنسخ الرسائل الصوتية عبر سطح `tools.media.audio` المشترك.
 
 ```json5
 {
@@ -105,42 +106,42 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="تفاصيل نسخ الصوت">
+  <Accordion title="Audio transcription details">
     | الخاصية | القيمة |
     |----------|-------|
-    | مسار الإعداد المشترك | `tools.media.audio` |
-    | عنوان URL الأساسي الافتراضي   | `https://api.groq.com/openai/v1` |
-    | النموذج الافتراضي      | `whisper-large-v3-turbo` |
-    | نقطة نهاية API       | متوافقة مع OpenAI `/audio/transcriptions` |
+    | مسار التكوين المشترك | `tools.media.audio` |
+    | عنوان URL الأساسي الافتراضي | `https://api.groq.com/openai/v1` |
+    | النموذج الافتراضي | `whisper-large-v3-turbo` |
+    | نقطة نهاية API | متوافقة مع OpenAI `/audio/transcriptions` |
   </Accordion>
 
-  <Accordion title="ملاحظة عن البيئة">
-    إذا كان Gateway يعمل كخدمة خلفية (launchd/systemd)، فتأكد من أن `GROQ_API_KEY` متاح
-    لتلك العملية (على سبيل المثال، في `~/.openclaw/.env` أو عبر
+  <Accordion title="Environment note">
+    إذا كان Gateway يعمل كخدمة خفية (launchd/systemd)، فتأكد من أن `GROQ_API_KEY`
+    متاح لتلك العملية (على سبيل المثال، في `~/.openclaw/.env` أو عبر
     `env.shellEnv`).
 
     <Warning>
-    المفاتيح المعيّنة فقط في صدفتك التفاعلية غير مرئية لعمليات gateway المُدارة
-    كخدمات خلفية. استخدم إعداد `~/.openclaw/.env` أو `env.shellEnv`
-    للتوافر الدائم.
+    المفاتيح المضبوطة فقط في الصدفة التفاعلية لديك لا تكون مرئية لعمليات
+    Gateway المُدارة كخدمة خفية. استخدم تكوين `~/.openclaw/.env` أو `env.shellEnv`
+    لضمان التوفر الدائم.
     </Warning>
 
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    مخطط الإعدادات الكامل بما في ذلك إعدادات المزوّد والصوت.
+  <Card title="Configuration reference" href="/ar/gateway/configuration-reference" icon="gear">
+    مخطط التكوين الكامل بما في ذلك إعدادات المزوّد والصوت.
   </Card>
-  <Card title="وحدة تحكم Groq" href="https://console.groq.com" icon="arrow-up-right-from-square">
-    لوحة معلومات Groq ووثائق API والأسعار.
+  <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
+    لوحة معلومات Groq ووثائق API والتسعير.
   </Card>
-  <Card title="قائمة نماذج Groq" href="https://console.groq.com/docs/models" icon="list">
+  <Card title="Groq model list" href="https://console.groq.com/docs/models" icon="list">
     فهرس نماذج Groq الرسمي.
   </Card>
 </CardGroup>

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - تريد استخدام Kimi من أجل `web_search`
-    - أنت بحاجة إلى `KIMI_API_KEY` أو `MOONSHOT_API_KEY`
-summary: بحث Kimi على الويب عبر بحث الويب الخاص بـ Moonshot
+    - تريد استخدام Kimi من أجل web_search
+    - تحتاج إلى KIMI_API_KEY أو MOONSHOT_API_KEY
+summary: بحث الويب في Kimi عبر بحث الويب في Moonshot
 title: بحث Kimi
 x-i18n:
-    generated_at: "2026-04-24T08:09:44Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T07:45:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 11e9fce35ee84b433b674d0666459a830eac1a87c5091bb90792cc0cf753fd45
+    source_hash: e00dd963257cd40235ebf8375ddbc1ba0344b9b3a82886fbf0fcf975390c27f2
     source_path: tools/kimi-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-يدعم OpenClaw مزود Kimi باعتباره مزودًا لـ `web_search`، باستخدام بحث الويب الخاص بـ Moonshot
-لإنتاج إجابات مُركّبة بالذكاء الاصطناعي مع استشهادات.
+يدعم OpenClaw Kimi كموفّر `web_search`، باستخدام بحث الويب من Moonshot
+لإنتاج إجابات مركّبة بالذكاء الاصطناعي مع استشهادات.
 
-## احصل على مفتاح API
+## الحصول على مفتاح API
 
 <Steps>
-  <Step title="أنشئ مفتاحًا">
+  <Step title="Create a key">
     احصل على مفتاح API من [Moonshot AI](https://platform.moonshot.cn/).
   </Step>
-  <Step title="خزّن المفتاح">
-    اضبط `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في بيئة Gateway، أو
-    قم بالتهيئة عبر:
+  <Step title="Store the key">
+    عيّن `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في بيئة Gateway، أو
+    اضبطه عبر:
 
     ```bash
     openclaw configure --section web
@@ -33,13 +33,13 @@ x-i18n:
   </Step>
 </Steps>
 
-عندما تختار **Kimi** أثناء `openclaw onboard` أو
+عند اختيار **Kimi** أثناء `openclaw onboard` أو
 `openclaw configure --section web`، يمكن لـ OpenClaw أيضًا أن يطلب:
 
-- منطقة Moonshot API:
+- منطقة API الخاصة بـ Moonshot:
   - `https://api.moonshot.ai/v1`
   - `https://api.moonshot.cn/v1`
-- نموذج Kimi الافتراضي للبحث على الويب (الافتراضي `kimi-k2.6`)
+- نموذج بحث الويب الافتراضي من Kimi (القيمة الافتراضية هي `kimi-k2.6`)
 
 ## الإعدادات
 
@@ -68,36 +68,45 @@ x-i18n:
 }
 ```
 
-إذا كنت تستخدم مضيف China API للدردشة (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`)، فإن OpenClaw يعيد استخدام المضيف نفسه لـ Kimi
-`web_search` عندما تكون `tools.web.search.kimi.baseUrl` غير مضبوطة، بحيث لا تصل المفاتيح من
-[platform.moonshot.cn](https://platform.moonshot.cn/) إلى
-نقطة النهاية الدولية بالخطأ (والتي غالبًا ما تعيد HTTP 401). استخدم التجاوز
-`tools.web.search.kimi.baseUrl` عندما تحتاج إلى base URL مختلف للبحث.
+إذا كنت تستخدم مضيف API الصيني للمحادثة (`models.providers.moonshot.baseUrl`:
+`https://api.moonshot.cn/v1`)، يعيد OpenClaw استخدام المضيف نفسه لـ Kimi
+`web_search` عند حذف `tools.web.search.kimi.baseUrl`، بحيث لا تصل المفاتيح من
+[platform.moonshot.cn](https://platform.moonshot.cn/) إلى نقطة النهاية
+الدولية عن طريق الخطأ (والتي تُرجع غالبًا HTTP 401). تجاوز ذلك
+باستخدام `tools.web.search.kimi.baseUrl` عندما تحتاج إلى عنوان URL أساسي مختلف للبحث.
 
-**بديل عبر البيئة:** اضبط `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في
-بيئة Gateway. وبالنسبة إلى تثبيت gateway، ضعه في `~/.openclaw/.env`.
+**بديل البيئة:** عيّن `KIMI_API_KEY` أو `MOONSHOT_API_KEY` في بيئة
+Gateway. لتثبيت Gateway، ضعه في `~/.openclaw/.env`.
 
-إذا حذفت `baseUrl`، يستخدم OpenClaw افتراضيًا `https://api.moonshot.ai/v1`.
-وإذا حذفت `model`، يستخدم OpenClaw افتراضيًا `kimi-k2.6`.
+إذا حذفت `baseUrl`، يستخدم OpenClaw القيمة الافتراضية `https://api.moonshot.ai/v1`.
+إذا حذفت `model`، يستخدم OpenClaw القيمة الافتراضية `kimi-k2.6`.
 
-## كيف يعمل
+## آلية العمل
 
-يستخدم Kimi بحث الويب في Moonshot لتركيب إجابات مع استشهادات مضمنة،
-بشكل مشابه لأسلوب الاستجابات المرتكزة في Gemini وGrok.
+يستخدم Kimi بحث الويب من Moonshot لتركيب إجابات مع استشهادات مضمنة،
+على نحو مشابه لنهج الاستجابة المؤسَّسة لدى Gemini وGrok.
+
+يتعامل OpenClaw مع Kimi `web_search` على أنه ناجح فقط بعد أن يعيد Moonshot
+دليل تأصيل أصلي من بحث الويب، مثل حمولة أداة `$web_search` قابلة لإعادة التشغيل،
+أو `search_results`، أو عناوين URL للاستشهادات. إذا توقف Kimi فورًا مع إجابة
+محادثة عادية مثل "لا يمكنني تصفح الإنترنت" ومن دون دليل تأصيل،
+يعيد OpenClaw خطأ منظّمًا باسم `kimi_web_search_ungrounded` بدلًا من
+تغليف ذلك النص كنتيجة بحث. أعد محاولة الاستعلام، أو انتقل إلى موفّر منظّم
+مثل Brave، أو استخدم `web_fetch` / أداة المتصفح عندما يكون لديك بالفعل
+عنوان URL مستهدف.
 
 ## المعلمات المدعومة
 
-يدعم بحث Kimi المعلمة `query`.
+يدعم بحث Kimi `query`.
 
-ويتم قبول `count` لتوافق `web_search` المشترك، لكن Kimi لا يزال
-يعيد إجابة مُركّبة واحدة مع استشهادات بدلًا من قائمة من N نتائج.
+يُقبل `count` للتوافق المشترك مع `web_search`، لكن Kimi لا يزال
+يعيد إجابة مركّبة واحدة مع استشهادات بدلًا من قائمة نتائج بعدد N.
 
-ولا يتم دعم المرشحات الخاصة بالـ provider حاليًا.
+لا تُدعم المرشحات الخاصة بالموفّر حاليًا.
 
-## ذو صلة
+## ذات صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع providers والاكتشاف التلقائي
-- [Moonshot AI](/ar/providers/moonshot) -- وثائق مزود نموذج Moonshot + Kimi Coding
-- [بحث Gemini](/ar/tools/gemini-search) -- إجابات مركبة بالذكاء الاصطناعي عبر الارتكاز في Google
-- [بحث Grok](/ar/tools/grok-search) -- إجابات مركبة بالذكاء الاصطناعي عبر الارتكاز في xAI
+- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع الموفّرين والاكتشاف التلقائي
+- [Moonshot AI](/ar/providers/moonshot) -- وثائق نموذج Moonshot وموفّر Kimi Coding
+- [بحث Gemini](/ar/tools/gemini-search) -- إجابات مركّبة بالذكاء الاصطناعي عبر التأصيل من Google
+- [بحث Grok](/ar/tools/grok-search) -- إجابات مركّبة بالذكاء الاصطناعي عبر التأصيل من xAI

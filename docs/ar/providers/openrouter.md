@@ -1,22 +1,22 @@
 ---
 read_when:
-    - تريد مفتاح واجهة برمجة تطبيقات واحدًا للعديد من النماذج اللغوية الكبيرة
+    - تريد مفتاح واجهة برمجة تطبيقات واحدًا للعديد من نماذج اللغة الكبيرة
     - تريد تشغيل النماذج عبر OpenRouter في OpenClaw
     - تريد استخدام OpenRouter لتوليد الصور
     - تريد استخدام OpenRouter لتوليد الفيديو
-summary: استخدم واجهة برمجة التطبيقات الموحّدة الخاصة بـ OpenRouter للوصول إلى العديد من النماذج في OpenClaw
+summary: استخدم واجهة برمجة التطبيقات الموحدة من OpenRouter للوصول إلى العديد من النماذج في OpenClaw
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-04-30T08:22:18Z"
+    generated_at: "2026-05-02T07:41:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 47206ce7279eb8a38f71b5c40d34646ad01df2cac25860b629951f9cec73270f
+    source_hash: f6f7c6f9c77e2a62866fdeaa65667d3871930be2ce22a638accdb8baa76220fd
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-يوفّر OpenRouter **واجهة API موحّدة** توجّه الطلبات إلى نماذج عديدة خلف
-نقطة نهاية واحدة ومفتاح API واحد. وهو متوافق مع OpenAI، لذلك تعمل معظم حِزم OpenAI SDK بتغيير عنوان URL الأساسي.
+OpenRouter يوفر **واجهة API موحدة** توجه الطلبات إلى العديد من النماذج خلف
+نقطة نهاية واحدة ومفتاح API واحد. وهو متوافق مع OpenAI، لذا تعمل معظم حزم OpenAI SDK بمجرد تبديل عنوان URL الأساسي.
 
 ## البدء
 
@@ -39,7 +39,7 @@ x-i18n:
   </Step>
 </Steps>
 
-## مثال للإعدادات
+## مثال على الإعدادات
 
 ```json5
 {
@@ -55,20 +55,20 @@ x-i18n:
 ## مراجع النماذج
 
 <Note>
-تتبع مراجع النماذج النمط `openrouter/<provider>/<model>`. للاطّلاع على القائمة الكاملة
-للموفّرين والنماذج المتاحة، راجع [/concepts/model-providers](/ar/concepts/model-providers).
+تتبع مراجع النماذج النمط `openrouter/<provider>/<model>`. للاطلاع على القائمة الكاملة
+للموفرين والنماذج المتاحة، راجع [/concepts/model-providers](/ar/concepts/model-providers).
 </Note>
 
-أمثلة احتياطية مضمنة:
+أمثلة احتياطية مضمّنة:
 
-| مرجع النموذج                     | ملاحظات                       |
+| مرجع النموذج                    | ملاحظات                       |
 | --------------------------------- | ---------------------------- |
-| `openrouter/auto`                 | التوجيه التلقائي في OpenRouter |
+| `openrouter/auto`                 | توجيه OpenRouter التلقائي |
 | `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 عبر MoonshotAI     |
 
 ## توليد الصور
 
-يمكن أن يدعم OpenRouter أيضًا أداة `image_generate`. استخدم نموذج صور من OpenRouter ضمن `agents.defaults.imageGenerationModel`:
+يمكن لـ OpenRouter أيضًا دعم أداة `image_generate`. استخدم نموذج صور من OpenRouter ضمن `agents.defaults.imageGenerationModel`:
 
 ```json5
 {
@@ -84,11 +84,11 @@ x-i18n:
 }
 ```
 
-يرسل OpenClaw طلبات الصور إلى واجهة API صور إكمالات المحادثة في OpenRouter مع `modalities: ["image", "text"]`. تتلقى نماذج صور Gemini تلميحات `aspectRatio` و`resolution` المدعومة عبر `image_config` في OpenRouter. استخدم `agents.defaults.imageGenerationModel.timeoutMs` لنماذج صور OpenRouter الأبطأ؛ ويظل معامل `timeoutMs` لكل استدعاء في أداة `image_generate` هو صاحب الأولوية.
+يرسل OpenClaw طلبات الصور إلى واجهة API لصور إكمالات الدردشة في OpenRouter باستخدام `modalities: ["image", "text"]`. تتلقى نماذج صور Gemini تلميحات `aspectRatio` و`resolution` المدعومة عبر `image_config` الخاص بـ OpenRouter. استخدم `agents.defaults.imageGenerationModel.timeoutMs` لنماذج الصور الأبطأ في OpenRouter؛ وسيظل معامل `timeoutMs` الخاص بكل استدعاء في أداة `image_generate` هو صاحب الأولوية.
 
 ## توليد الفيديو
 
-يمكن أن يدعم OpenRouter أيضًا أداة `video_generate` عبر واجهة API غير المتزامنة `/videos`. استخدم نموذج فيديو من OpenRouter ضمن `agents.defaults.videoGenerationModel`:
+يمكن لـ OpenRouter أيضًا دعم أداة `video_generate` عبر واجهة API غير المتزامنة `/videos`. استخدم نموذج فيديو من OpenRouter ضمن `agents.defaults.videoGenerationModel`:
 
 ```json5
 {
@@ -103,19 +103,19 @@ x-i18n:
 }
 ```
 
-يرسل OpenClaw مهام تحويل النص إلى فيديو وتحويل الصورة إلى فيديو إلى OpenRouter، ويستعلم عن
+يرسل OpenClaw مهام تحويل النص إلى فيديو وتحويل الصورة إلى فيديو إلى OpenRouter، ويستطلع
 `polling_url` المُعاد، ثم ينزّل الفيديو المكتمل من
-`unsigned_urls` في OpenRouter أو من نقطة نهاية محتوى المهمة الموثقة.
-تُرسل الصور المرجعية افتراضيًا كصور إطار أول/أخير؛ وتُرسل الصور
-الموسومة بـ `reference_image` كمراجع إدخال في OpenRouter. يعلن الإعداد الافتراضي المضمن
-`google/veo-3.1-fast` عن مدد 4/6/8
-ثوانٍ المدعومة حاليًا، ودقات `720P`/`1080P`، ونِسب أبعاد `16:9`/`9:16`.
-لا يُسجّل تحويل الفيديو إلى فيديو لـ OpenRouter لأن واجهة API توليد الفيديو في المصدر الأعلى
-تقبل حاليًا مراجع النصوص والصور.
+`unsigned_urls` الخاصة بـ OpenRouter أو من نقطة نهاية محتوى المهمة الموثقة.
+تُرسل الصور المرجعية كصور للإطار الأول/الأخير افتراضيًا؛ أما الصور
+الموسومة بـ `reference_image` فتُرسل كمراجع إدخال في OpenRouter. يعلن
+الإعداد الافتراضي المضمّن `google/veo-3.1-fast` عن مدد الثواني 4/6/8
+المدعومة حاليًا، ودقات `720P`/`1080P`، ونسب العرض إلى الارتفاع
+`16:9`/`9:16`. لا يتم تسجيل تحويل الفيديو إلى فيديو في OpenRouter لأن واجهة API
+الأولية لتوليد الفيديو تقبل حاليًا مراجع النص والصور.
 
 ## تحويل النص إلى كلام
 
-يمكن أيضًا استخدام OpenRouter كمزوّد TTS عبر نقطة النهاية المتوافقة مع OpenAI
+يمكن أيضًا استخدام OpenRouter كموفر TTS عبر نقطة النهاية المتوافقة مع OpenAI
 `/audio/speech`.
 
 ```json5
@@ -136,7 +136,7 @@ x-i18n:
 }
 ```
 
-إذا حُذف `messages.tts.providers.openrouter.apiKey`، فسيعيد TTS استخدام
+إذا تم حذف `messages.tts.providers.openrouter.apiKey`، فسيعيد TTS استخدام
 `models.providers.openrouter.apiKey`، ثم `OPENROUTER_API_KEY`.
 
 ## المصادقة والترويسات
@@ -146,49 +146,55 @@ x-i18n:
 في طلبات OpenRouter الحقيقية (`https://openrouter.ai/api/v1`)، يضيف OpenClaw أيضًا
 ترويسات إسناد التطبيق الموثقة في OpenRouter:
 
-| الترويسة                  | القيمة                |
+| الترويسة                    | القيمة                 |
 | ------------------------- | --------------------- |
 | `HTTP-Referer`            | `https://openclaw.ai` |
 | `X-OpenRouter-Title`      | `OpenClaw`            |
 | `X-OpenRouter-Categories` | `cli-agent`           |
 
 <Warning>
-إذا أعدت توجيه موفّر OpenRouter إلى وكيل آخر أو عنوان URL أساسي آخر، فلن يحقن OpenClaw
-تلك الترويسات الخاصة بـ OpenRouter أو علامات ذاكرة التخزين المؤقت الخاصة بـ Anthropic.
+إذا أعدت توجيه موفر OpenRouter إلى وكيل آخر أو عنوان URL أساسي آخر، فإن OpenClaw
+**لا** يحقن تلك الترويسات الخاصة بـ OpenRouter أو علامات ذاكرة التخزين المؤقت الخاصة بـ Anthropic.
 </Warning>
 
-## إعدادات متقدمة
+## الإعدادات المتقدمة
 
 <AccordionGroup>
   <Accordion title="علامات ذاكرة التخزين المؤقت في Anthropic">
-    على مسارات OpenRouter التي تم التحقق منها، تحتفظ مراجع نماذج Anthropic
-    بعلامات `cache_control` الخاصة بـ Anthropic في OpenRouter التي يستخدمها OpenClaw من أجل
-    إعادة استخدام ذاكرة التخزين المؤقت للمطالبات بشكل أفضل في كتل مطالبات النظام/المطوّر.
+    في مسارات OpenRouter التي تم التحقق منها، تحتفظ مراجع نماذج Anthropic
+    بعلامات `cache_control` الخاصة بـ Anthropic في OpenRouter التي يستخدمها OpenClaw
+    لتحسين إعادة استخدام ذاكرة التخزين المؤقت للمطالبات في كتل مطالبات النظام/المطور.
   </Accordion>
 
-  <Accordion title="حقن التفكير / الاستدلال">
-    على المسارات المدعومة غير `auto`، يربط OpenClaw مستوى التفكير المحدد
-    بحمولات استدلال وكيل OpenRouter. تتخطى تلميحات النماذج غير المدعومة و
-    `openrouter/auto` حقن الاستدلال ذلك. يتخطى Hunter Alpha أيضًا
-    استدلال الوكيل لمراجع النماذج القديمة المضبوطة لأن OpenRouter قد
-    يعيد نص الإجابة النهائية في حقول الاستدلال لذلك المسار المتقاعد.
+  <Accordion title="تعبئة reasoning المسبقة في Anthropic">
+    في مسارات OpenRouter التي تم التحقق منها، تسقط مراجع نماذج Anthropic التي تم تفعيل reasoning لها
+    أدوار تعبئة المساعد اللاحقة قبل أن يصل الطلب إلى OpenRouter،
+    بما يطابق متطلب Anthropic بأن تنتهي محادثات reasoning بدور مستخدم.
+  </Accordion>
+
+  <Accordion title="حقن Thinking / reasoning">
+    في المسارات المدعومة غير `auto`، يعيّن OpenClaw مستوى التفكير المحدد إلى
+    حمولات reasoning الخاصة بوكيل OpenRouter. تتخطى تلميحات النماذج غير المدعومة و
+    `openrouter/auto` حقن reasoning هذا. كما يتخطى Hunter Alpha
+    reasoning عبر الوكيل لمراجع النماذج المضبوطة القديمة لأن OpenRouter قد
+    يعيد نص الإجابة النهائية في حقول reasoning لذلك المسار المتقاعد.
   </Accordion>
 
   <Accordion title="تشكيل الطلبات الخاصة بـ OpenAI فقط">
-    ما يزال OpenRouter يعمل عبر المسار المتوافق مع OpenAI بنمط الوكيل، لذلك
-    لا يُمرَّر تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط مثل `serviceTier` و`store` في Responses،
-    وحمولات توافق الاستدلال في OpenAI، وتلميحات ذاكرة التخزين المؤقت للمطالبات.
+    لا يزال OpenRouter يعمل عبر المسار المتوافق مع OpenAI بأسلوب الوكيل، لذلك
+    لا يتم تمرير تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط، مثل `serviceTier`، و`store` في Responses،
+    وحمولات توافق reasoning في OpenAI، وتلميحات ذاكرة التخزين المؤقت للمطالبات.
   </Accordion>
 
-  <Accordion title="مسارات مدعومة بـ Gemini">
+  <Accordion title="المسارات المدعومة بـ Gemini">
     تبقى مراجع OpenRouter المدعومة بـ Gemini على مسار proxy-Gemini: يحافظ OpenClaw
-    هناك على تنظيف تواقيع التفكير في Gemini، لكنه لا يفعّل التحقق الأصلي من إعادة التشغيل في Gemini
-    أو إعادة كتابة التمهيد.
+    على تنظيف تواقيع التفكير الخاصة بـ Gemini هناك، لكنه لا يفعّل تحقق إعادة التشغيل الأصلي في Gemini
+    أو إعادة كتابة bootstrap.
   </Accordion>
 
-  <Accordion title="بيانات توجيه الموفّر الوصفية">
-    إذا مرّرت توجيه موفّر OpenRouter ضمن معاملات النموذج، فسيعيد OpenClaw تمريره
-    كبيانات وصفية لتوجيه OpenRouter قبل تشغيل مغلّفات التدفق المشتركة.
+  <Accordion title="بيانات تعريف توجيه الموفر">
+    إذا مررت توجيه موفر OpenRouter ضمن معاملات النموذج، فإن OpenClaw يمرره
+    كبيانات تعريف توجيه OpenRouter قبل تشغيل أغلفة البث المشتركة.
   </Accordion>
 </AccordionGroup>
 
@@ -196,9 +202,9 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفّرين، ومراجع النماذج، وسلوك تجاوز الفشل.
+    اختيار الموفرين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
   <Card title="مرجع الإعدادات" href="/ar/gateway/configuration-reference" icon="gear">
-    المرجع الكامل لإعدادات الوكلاء، والنماذج، والموفّرين.
+    مرجع الإعدادات الكامل للوكلاء والنماذج والموفرين.
   </Card>
 </CardGroup>

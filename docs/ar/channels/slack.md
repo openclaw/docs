@@ -1,28 +1,28 @@
 ---
 read_when:
     - إعداد Slack أو تصحيح أخطاء وضع المقبس/HTTP في Slack
-summary: إعداد Slack وسلوك وقت التشغيل (وضع المقابس + عناوين URL لطلبات HTTP)
+summary: إعداد Slack وسلوك وقت التشغيل (وضع Socket + عناوين URL لطلبات HTTP)
 title: Slack
 x-i18n:
-    generated_at: "2026-04-30T16:27:37Z"
+    generated_at: "2026-05-02T07:19:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 55beddb43a6b91c6853dcf053eab713322de4da5beced7c107d73e1c066fded6
+    source_hash: 60e06b138e1579156ccd07bb6db1a25009be970d072ba500b61810c5b78fd01d
     source_path: channels/slack.md
     workflow: 16
 ---
 
-جاهز للإنتاج للرسائل المباشرة والقنوات عبر تكاملات تطبيق Slack. الوضع الافتراضي هو Socket Mode؛ كما تُدعم HTTP Request URLs أيضًا.
+جاهز للإنتاج للرسائل المباشرة والقنوات عبر تكاملات تطبيق Slack. الوضع الافتراضي هو Socket Mode؛ كما أن عناوين HTTP Request URLs مدعومة أيضًا.
 
 <CardGroup cols={3}>
-  <Card title="الإقران" icon="link" href="/ar/channels/pairing">
-    تعتمد رسائل Slack المباشرة وضع الإقران افتراضيًا.
+  <Card title="الاقتران" icon="link" href="/ar/channels/pairing">
+    تعتمد رسائل Slack المباشرة وضع الاقتران افتراضيًا.
   </Card>
-  <Card title="أوامر Slash" icon="terminal" href="/ar/tools/slash-commands">
+  <Card title="أوامر الشرطة المائلة" icon="terminal" href="/ar/tools/slash-commands">
     سلوك الأوامر الأصلي وفهرس الأوامر.
   </Card>
-  <Card title="استكشاف أخطاء القنوات وإصلاحها" icon="wrench" href="/ar/channels/troubleshooting">
-    تشخيصات عبر القنوات وخطط إصلاح.
+  <Card title="استكشاف مشكلات القنوات وإصلاحها" icon="wrench" href="/ar/channels/troubleshooting">
+    تشخيصات عبر القنوات وأدلة إصلاح تشغيلية.
   </Card>
 </CardGroup>
 
@@ -31,17 +31,17 @@ x-i18n:
 <Tabs>
   <Tab title="Socket Mode (افتراضي)">
     <Steps>
-      <Step title="أنشئ تطبيق Slack جديدًا">
-        في إعدادات تطبيق Slack، اضغط زر **[إنشاء تطبيق جديد](https://api.slack.com/apps/new)**:
+      <Step title="إنشاء تطبيق Slack جديد">
+        في إعدادات تطبيق Slack اضغط زر **[Create New App](https://api.slack.com/apps/new)**:
 
-        - اختر **من manifest** وحدد مساحة عمل لتطبيقك
-        - الصق [manifest المثال](#manifest-and-scope-checklist) أدناه وتابع الإنشاء
+        - اختر **from a manifest** وحدد مساحة عمل لتطبيقك
+        - الصق [نموذج البيان](#manifest-and-scope-checklist) أدناه وتابع الإنشاء
         - أنشئ **App-Level Token** ‏(`xapp-...`) مع `connections:write`
         - ثبّت التطبيق وانسخ **Bot Token** ‏(`xoxb-...`) المعروض
 
       </Step>
 
-      <Step title="اضبط OpenClaw">
+      <Step title="تكوين OpenClaw">
 
         إعداد SecretRef الموصى به:
 
@@ -73,7 +73,7 @@ SLACK_BOT_TOKEN=xoxb-...
 
       </Step>
 
-      <Step title="ابدأ Gateway">
+      <Step title="بدء Gateway">
 
 ```bash
 openclaw gateway
@@ -86,17 +86,17 @@ openclaw gateway
 
   <Tab title="HTTP Request URLs">
     <Steps>
-      <Step title="أنشئ تطبيق Slack جديدًا">
-        في إعدادات تطبيق Slack، اضغط زر **[إنشاء تطبيق جديد](https://api.slack.com/apps/new)**:
+      <Step title="إنشاء تطبيق Slack جديد">
+        في إعدادات تطبيق Slack اضغط زر **[Create New App](https://api.slack.com/apps/new)**:
 
-        - اختر **من manifest** وحدد مساحة عمل لتطبيقك
-        - الصق [manifest المثال](#manifest-and-scope-checklist) وحدّث عناوين URL قبل الإنشاء
+        - اختر **from a manifest** وحدد مساحة عمل لتطبيقك
+        - الصق [نموذج البيان](#manifest-and-scope-checklist) وحدّث عناوين URL قبل الإنشاء
         - احفظ **Signing Secret** للتحقق من الطلبات
         - ثبّت التطبيق وانسخ **Bot Token** ‏(`xoxb-...`) المعروض
 
       </Step>
 
-      <Step title="اضبط OpenClaw">
+      <Step title="تكوين OpenClaw">
 
         إعداد SecretRef الموصى به:
 
@@ -121,14 +121,14 @@ openclaw config patch --file ./slack.http.patch.json5
 ```
 
         <Note>
-        استخدم مسارات Webhook فريدة للحسابات المتعددة عبر HTTP
+        استخدم مسارات webhook فريدة للحسابات المتعددة عبر HTTP
 
-        امنح كل حساب `webhookPath` مميزًا (الافتراضي `/slack/events`) حتى لا تتصادم التسجيلات.
+        امنح كل حساب `webhookPath` مميزًا (الافتراضي `/slack/events`) حتى لا تتعارض التسجيلات.
         </Note>
 
       </Step>
 
-      <Step title="ابدأ Gateway">
+      <Step title="بدء Gateway">
 
 ```bash
 openclaw gateway
@@ -142,7 +142,7 @@ openclaw gateway
 
 ## ضبط نقل Socket Mode
 
-يضبط OpenClaw مهلة pong لعميل Slack SDK على 15 ثانية افتراضيًا في Socket Mode. لا تتجاوز إعدادات النقل إلا عندما تحتاج إلى ضبط خاص بمساحة عمل أو مضيف:
+يضبط OpenClaw مهلة انتظار pong لعميل Slack SDK على 15 ثانية افتراضيًا في Socket Mode. تجاوز إعدادات النقل فقط عندما تحتاج إلى ضبط خاص بمساحة العمل أو المضيف:
 
 ```json5
 {
@@ -159,13 +159,13 @@ openclaw gateway
 }
 ```
 
-استخدم هذا فقط لمساحات عمل Socket Mode التي تسجل مهل Slack websocket pong/server-ping أو تعمل على مضيفين لديهم جوع معروف في حلقة الأحداث. `clientPingTimeout` هي مدة انتظار pong بعد أن يرسل SDK إشارة ping من العميل؛ و`serverPingTimeout` هي مدة انتظار إشارات ping من خادم Slack. تظل رسائل التطبيق والأحداث حالة للتطبيق، وليست إشارات لحيوية النقل.
+استخدم هذا فقط لمساحات عمل Socket Mode التي تسجل مهل انتهاء Slack websocket pong/server-ping أو تعمل على مضيفين معروفين بوجود استنزاف في حلقة الأحداث لديهم. `clientPingTimeout` هو انتظار pong بعد أن ترسل SDK نبضة client ping؛ أما `serverPingTimeout` فهو انتظار نبضات ping من خادم Slack. تبقى رسائل التطبيق والأحداث حالة تطبيق، وليست إشارات لحيوية النقل.
 
-## قائمة تحقق manifest والنطاقات
+## قائمة تحقق البيان والنطاقات
 
-Manifest تطبيق Slack الأساسي هو نفسه في Socket Mode وHTTP Request URLs. يختلف فقط مقطع `settings` (و`url` الخاص بأمر slash).
+بيان تطبيق Slack الأساسي هو نفسه في Socket Mode وHTTP Request URLs. يختلف فقط قالب `settings` (و`url` لأمر الشرطة المائلة).
 
-Manifest الأساسي (Socket Mode افتراضي):
+البيان الأساسي (افتراضي Socket Mode):
 
 ```json
 {
@@ -176,6 +176,7 @@ Manifest الأساسي (Socket Mode افتراضي):
   "features": {
     "bot_user": { "display_name": "OpenClaw", "always_online": true },
     "app_home": {
+      "home_tab_enabled": true,
       "messages_tab_enabled": true,
       "messages_tab_read_only_enabled": false
     },
@@ -211,6 +212,7 @@ Manifest الأساسي (Socket Mode افتراضي):
         "pins:write",
         "reactions:read",
         "reactions:write",
+        "usergroups:read",
         "users:read"
       ]
     }
@@ -219,6 +221,7 @@ Manifest الأساسي (Socket Mode افتراضي):
     "socket_mode_enabled": true,
     "event_subscriptions": {
       "bot_events": [
+        "app_home_opened",
         "app_mention",
         "channel_rename",
         "member_joined_channel",
@@ -237,7 +240,7 @@ Manifest الأساسي (Socket Mode افتراضي):
 }
 ```
 
-بالنسبة إلى **وضع HTTP Request URLs**، استبدل `settings` بمتغير HTTP وأضف `url` إلى كل أمر slash. يلزم URL عام:
+بالنسبة إلى **وضع HTTP Request URLs**، استبدل `settings` بصيغة HTTP وأضف `url` إلى كل أمر شرطة مائلة. يلزم عنوان URL عام:
 
 ```json
 {
@@ -267,19 +270,21 @@ Manifest الأساسي (Socket Mode افتراضي):
 }
 ```
 
-### إعدادات manifest إضافية
+### إعدادات بيان إضافية
 
 اعرض ميزات مختلفة توسّع الإعدادات الافتراضية أعلاه.
 
+يمكّن البيان الافتراضي تبويب **Home** في Slack App Home ويشترك في `app_home_opened`. عندما يفتح عضو في مساحة العمل تبويب Home، ينشر OpenClaw عرض Home افتراضيًا وآمنًا باستخدام `views.publish`؛ ولا يتم تضمين أي حمولة محادثة أو تكوين خاص. يظل تبويب **Messages** مفعّلًا لرسائل Slack المباشرة.
+
 <AccordionGroup>
-  <Accordion title="أوامر slash أصلية اختيارية">
+  <Accordion title="أوامر الشرطة المائلة الأصلية الاختيارية">
 
-    يمكن استخدام عدة [أوامر slash أصلية](#commands-and-slash-behavior) بدلًا من أمر واحد مضبوط، مع بعض التفاصيل:
+    يمكن استخدام عدة [أوامر شرطة مائلة أصلية](#commands-and-slash-behavior) بدلًا من أمر واحد مكوّن، مع مراعاة التفاصيل التالية:
 
-    - استخدم `/agentstatus` بدلًا من `/status` لأن الأمر `/status` محجوز.
-    - لا يمكن إتاحة أكثر من 25 أمر slash في وقت واحد.
+    - استخدم `/agentstatus` بدلًا من `/status` لأن أمر `/status` محجوز.
+    - لا يمكن إتاحة أكثر من 25 أمر شرطة مائلة في الوقت نفسه.
 
-    استبدل مقطع `features.slash_commands` الحالي لديك بمجموعة فرعية من [الأوامر المتاحة](/ar/tools/slash-commands#command-list):
+    استبدل قسم `features.slash_commands` الحالي لديك بمجموعة فرعية من [الأوامر المتاحة](/ar/tools/slash-commands#command-list):
 
     <Tabs>
       <Tab title="Socket Mode (افتراضي)">
@@ -399,7 +404,7 @@ Manifest الأساسي (Socket Mode افتراضي):
 
       </Tab>
       <Tab title="HTTP Request URLs">
-        استخدم قائمة `slash_commands` نفسها كما في Socket Mode أعلاه، وأضف `"url": "https://gateway-host.example.com/slack/events"` إلى كل إدخال. مثال:
+        استخدم قائمة `slash_commands` نفسها الخاصة بـ Socket Mode أعلاه، وأضف `"url": "https://gateway-host.example.com/slack/events"` إلى كل إدخال. مثال:
 
 ```json
     "slash_commands": [
@@ -422,14 +427,14 @@ Manifest الأساسي (Socket Mode افتراضي):
     </Tabs>
 
   </Accordion>
-  <Accordion title="نطاقات التأليف الاختيارية (عمليات الكتابة)">
+  <Accordion title="نطاقات النسبة الاختيارية (عمليات الكتابة)">
     أضف نطاق البوت `chat:write.customize` إذا كنت تريد أن تستخدم الرسائل الصادرة هوية الوكيل النشط (اسم مستخدم وأيقونة مخصصين) بدلًا من هوية تطبيق Slack الافتراضية.
 
-    إذا كنت تستخدم أيقونة emoji، يتوقع Slack صياغة `:emoji_name:`.
+    إذا كنت تستخدم أيقونة emoji، يتوقع Slack صيغة `:emoji_name:`.
 
   </Accordion>
   <Accordion title="نطاقات رمز المستخدم الاختيارية (عمليات القراءة)">
-    إذا ضبطت `channels.slack.userToken`، فإن نطاقات القراءة النموذجية هي:
+    إذا ضبطت `channels.slack.userToken`، فالنطاقات النموذجية للقراءة هي:
 
     - `channels:history`, `groups:history`, `im:history`, `mpim:history`
     - `channels:read`, `groups:read`, `im:read`, `mpim:read`
@@ -444,27 +449,27 @@ Manifest الأساسي (Socket Mode افتراضي):
 
 ## نموذج الرمز
 
-- يلزم توفير `botToken` + `appToken` لاستخدام Socket Mode.
-- يتطلب وضع HTTP توفير `botToken` + `signingSecret`.
-- يقبل كل من `botToken` و`appToken` و`signingSecret` و`userToken` سلاسل نصية عادية
+- `botToken` + `appToken` مطلوبان لوضع Socket Mode.
+- يتطلب وضع HTTP كلًا من `botToken` + `signingSecret`.
+- تقبل `botToken` و`appToken` و`signingSecret` و`userToken` سلاسل نصية عادية
   أو كائنات SecretRef.
-- تتجاوز رموز التهيئة الاحتياطي عبر env.
-- ينطبق احتياطي env عبر `SLACK_BOT_TOKEN` / `SLACK_APP_TOKEN` على الحساب الافتراضي فقط.
-- `userToken` (`xoxp-...`) مخصص للتهيئة فقط (لا يوجد احتياطي عبر env) ويستخدم افتراضيًا سلوك القراءة فقط (`userTokenReadOnly: true`).
+- تتجاوز رموز الإعدادات بديل env.
+- لا ينطبق بديل env `SLACK_BOT_TOKEN` / `SLACK_APP_TOKEN` إلا على الحساب الافتراضي.
+- `userToken` (`xoxp-...`) مخصص للإعدادات فقط (لا يوجد بديل env) ويكون افتراضيًا بسلوك قراءة فقط (`userTokenReadOnly: true`).
 
 سلوك لقطة الحالة:
 
 - يتتبع فحص حساب Slack حقول `*Source` و`*Status` لكل اعتماد
   (`botToken` و`appToken` و`signingSecret` و`userToken`).
-- تكون الحالة `available` أو `configured_unavailable` أو `missing`.
-- تعني `configured_unavailable` أن الحساب مهيأ عبر SecretRef
-  أو مصدر سر آخر غير مضمّن مباشرة، لكن مسار الأمر/وقت التشغيل الحالي
+- الحالة هي `available` أو `configured_unavailable` أو `missing`.
+- تعني `configured_unavailable` أن الحساب مضبوط عبر SecretRef
+  أو مصدر أسرار آخر غير مضمّن، لكن مسار الأمر/وقت التشغيل الحالي
   لم يتمكن من حل القيمة الفعلية.
 - في وضع HTTP، يتم تضمين `signingSecretStatus`؛ وفي Socket Mode، يكون
   الزوج المطلوب هو `botTokenStatus` + `appTokenStatus`.
 
 <Tip>
-بالنسبة للإجراءات/قراءات الدليل، يمكن تفضيل رمز المستخدم عند تهيئته. بالنسبة للكتابات، يظل رمز البوت هو المفضل؛ ولا يُسمح بالكتابات عبر رمز المستخدم إلا عندما يكون `userTokenReadOnly: false` ورمز البوت غير متاح.
+بالنسبة إلى الإجراءات/قراءات الدليل، يمكن تفضيل رمز المستخدم عند ضبطه. أما بالنسبة إلى الكتابة، فيظل رمز البوت هو المفضل؛ ولا يُسمح بالكتابة عبر رمز المستخدم إلا عندما تكون `userTokenReadOnly: false` ويكون رمز البوت غير متاح.
 </Tip>
 
 ## الإجراءات والبوابات
@@ -474,67 +479,67 @@ Manifest الأساسي (Socket Mode افتراضي):
 مجموعات الإجراءات المتاحة في أدوات Slack الحالية:
 
 | المجموعة   | الافتراضي |
-| ---------- | --------- |
+| ---------- | ------- |
 | messages   | مفعّل |
 | reactions  | مفعّل |
 | pins       | مفعّل |
 | memberInfo | مفعّل |
 | emojiList  | مفعّل |
 
-تتضمن إجراءات رسائل Slack الحالية `send` و`upload-file` و`download-file` و`read` و`edit` و`delete` و`pin` و`unpin` و`list-pins` و`member-info` و`emoji-list`. يقبل `download-file` معرّفات ملفات Slack الظاهرة في عناصر نائب الملفات الواردة ويعيد معاينات صور للصور أو بيانات تعريف ملفات محلية لأنواع الملفات الأخرى.
+تشمل إجراءات رسائل Slack الحالية `send` و`upload-file` و`download-file` و`read` و`edit` و`delete` و`pin` و`unpin` و`list-pins` و`member-info` و`emoji-list`. يقبل `download-file` معرّفات ملفات Slack الظاهرة في العناصر النائبة للملفات الواردة، ويعيد معاينات صور للصور أو بيانات وصفية لملفات محلية لأنواع الملفات الأخرى.
 
 ## التحكم في الوصول والتوجيه
 
 <Tabs>
-  <Tab title="DM policy">
-    يتحكم `channels.slack.dmPolicy` في الوصول عبر DM. تُعد `channels.slack.allowFrom` قائمة السماح الرسمية للـ DM.
+  <Tab title="سياسة الرسائل المباشرة">
+    تتحكم `channels.slack.dmPolicy` في الوصول إلى الرسائل المباشرة. `channels.slack.allowFrom` هي قائمة السماح المعتمدة للرسائل المباشرة.
 
-    - `pairing` (افتراضي)
+    - `pairing` (الافتراضي)
     - `allowlist`
     - `open` (يتطلب أن تتضمن `channels.slack.allowFrom` القيمة `"*"`)
     - `disabled`
 
-    أعلام DM:
+    أعلام الرسائل المباشرة:
 
     - `dm.enabled` (الافتراضي true)
     - `channels.slack.allowFrom`
     - `dm.allowFrom` (قديم)
-    - `dm.groupEnabled` (DMs الجماعية افتراضيًا false)
+    - `dm.groupEnabled` (الرسائل المباشرة الجماعية افتراضيًا false)
     - `dm.groupChannels` (قائمة سماح MPIM اختيارية)
 
     أسبقية الحسابات المتعددة:
 
-    - تنطبق `channels.slack.accounts.default.allowFrom` على الحساب `default` فقط.
-    - ترث الحسابات المسماة `channels.slack.allowFrom` عندما لا تكون `allowFrom` الخاصة بها مضبوطة.
+    - لا ينطبق `channels.slack.accounts.default.allowFrom` إلا على الحساب `default`.
+    - ترث الحسابات المسماة `channels.slack.allowFrom` عندما لا يكون `allowFrom` الخاص بها مضبوطًا.
     - لا ترث الحسابات المسماة `channels.slack.accounts.default.allowFrom`.
 
-    لا يزال يتم قراءة `channels.slack.dm.policy` و`channels.slack.dm.allowFrom` القديمين للتوافق. ينقلهما `openclaw doctor --fix` إلى `dmPolicy` و`allowFrom` عندما يستطيع فعل ذلك دون تغيير الوصول.
+    لا تزال `channels.slack.dm.policy` و`channels.slack.dm.allowFrom` القديمتان تُقرآن للتوافق. يرحّلهما `openclaw doctor --fix` إلى `dmPolicy` و`allowFrom` عندما يمكنه فعل ذلك من دون تغيير الوصول.
 
-    يستخدم الاقتران في DMs الأمر `openclaw pairing approve slack <code>`.
+    يستخدم الاقتران في الرسائل المباشرة `openclaw pairing approve slack <code>`.
 
   </Tab>
 
-  <Tab title="Channel policy">
-    يتحكم `channels.slack.groupPolicy` في التعامل مع القنوات:
+  <Tab title="سياسة القناة">
+    تتحكم `channels.slack.groupPolicy` في التعامل مع القنوات:
 
     - `open`
     - `allowlist`
     - `disabled`
 
-    توجد قائمة سماح القنوات تحت `channels.slack.channels` و**يجب أن تستخدم معرّفات قنوات Slack المستقرة** (مثل `C12345678`) كمفاتيح تهيئة.
+    توجد قائمة سماح القنوات ضمن `channels.slack.channels` ويجب **أن تستخدم معرّفات قنوات Slack الثابتة** (مثل `C12345678`) كمفاتيح إعدادات.
 
-    ملاحظة وقت التشغيل: إذا كان `channels.slack` مفقودًا تمامًا (إعداد env فقط)، يعود وقت التشغيل إلى `groupPolicy="allowlist"` ويسجل تحذيرًا (حتى إذا كانت `channels.defaults.groupPolicy` مضبوطة).
+    ملاحظة وقت التشغيل: إذا كان `channels.slack` مفقودًا بالكامل (إعداد يعتمد على env فقط)، يعود وقت التشغيل إلى `groupPolicy="allowlist"` ويسجل تحذيرًا (حتى إذا كان `channels.defaults.groupPolicy` مضبوطًا).
 
     حل الاسم/المعرّف:
 
-    - يتم حل إدخالات قائمة سماح القنوات وإدخالات قائمة سماح DM عند بدء التشغيل عندما يسمح الوصول بالرمز
-    - تُحفظ إدخالات أسماء القنوات غير المحلولة كما هي مهيأة لكنها تُتجاهل افتراضيًا للتوجيه
-    - يكون التفويض الوارد وتوجيه القنوات قائمين على المعرّف أولًا افتراضيًا؛ وتتطلب مطابقة اسم المستخدم/الاسم المختصر المباشرة `channels.slack.dangerouslyAllowNameMatching: true`
+    - يتم حل إدخالات قائمة سماح القنوات وإدخالات قائمة سماح الرسائل المباشرة عند بدء التشغيل عندما يسمح وصول الرمز بذلك
+    - تُحفظ إدخالات أسماء القنوات غير المحلولة كما ضُبطت لكنها تُتجاهل للتوجيه افتراضيًا
+    - التفويض الوارد وتوجيه القنوات يعتمدان على المعرّف أولًا افتراضيًا؛ وتتطلب مطابقة اسم المستخدم/الاسم المختصر المباشرة `channels.slack.dangerouslyAllowNameMatching: true`
 
     <Warning>
-    لا تتطابق المفاتيح القائمة على الاسم (`#channel-name` أو `channel-name`) ضمن `groupPolicy: "allowlist"`. يتم البحث عن القناة بالمعرّف أولًا افتراضيًا، لذلك لن ينجح مفتاح قائم على الاسم في التوجيه أبدًا وسيتم حظر جميع الرسائل في تلك القناة بصمت. يختلف هذا عن `groupPolicy: "open"`، حيث لا يكون مفتاح القناة مطلوبًا للتوجيه ويبدو أن المفتاح القائم على الاسم يعمل.
+    لا تتطابق المفاتيح المعتمدة على الاسم (`#channel-name` أو `channel-name`) ضمن `groupPolicy: "allowlist"`. البحث عن القناة يعتمد على المعرّف أولًا افتراضيًا، لذلك لن ينجح مفتاح يعتمد على الاسم في التوجيه أبدًا، وستُحظر كل الرسائل في تلك القناة بصمت. يختلف هذا عن `groupPolicy: "open"`، حيث لا يكون مفتاح القناة مطلوبًا للتوجيه ويبدو أن المفتاح المعتمد على الاسم يعمل.
 
-    استخدم دائمًا معرّف قناة Slack كمفتاح. للعثور عليه: انقر بزر الماوس الأيمن على القناة في Slack ← **Copy link** — يظهر المعرّف (`C...`) في نهاية عنوان URL.
+    استخدم دائمًا معرّف قناة Slack كمفتاح. للعثور عليه: انقر بزر الفأرة الأيمن على القناة في Slack → **Copy link** — يظهر المعرّف (`C...`) في نهاية عنوان URL.
 
     صحيح:
 
@@ -551,7 +556,7 @@ Manifest الأساسي (Socket Mode افتراضي):
     }
     ```
 
-    غير صحيح (يُحظر بصمت ضمن `groupPolicy: "allowlist"`):
+    غير صحيح (محظور بصمت ضمن `groupPolicy: "allowlist"`):
 
     ```json5
     {
@@ -569,14 +574,15 @@ Manifest الأساسي (Socket Mode افتراضي):
 
   </Tab>
 
-  <Tab title="Mentions and channel users">
-    تكون رسائل القنوات مقيدة بالذكر افتراضيًا.
+  <Tab title="الإشارات ومستخدمي القنوات">
+    تكون رسائل القنوات مقيدة بالإشارة افتراضيًا.
 
-    مصادر الذكر:
+    مصادر الإشارة:
 
-    - ذكر التطبيق الصريح (`<@botId>`)
-    - أنماط التعبير النمطي للذكر (`agents.list[].groupChat.mentionPatterns`، والاحتياطي `messages.groupChat.mentionPatterns`)
-    - سلوك سلسلة الرد على البوت الضمني (معطل عندما تكون `thread.requireExplicitMention` هي `true`)
+    - إشارة تطبيق صريحة (`<@botId>`)
+    - إشارة مجموعة مستخدمي Slack (`<!subteam^S...>`) عندما يكون مستخدم البوت عضوًا في مجموعة المستخدمين تلك؛ تتطلب `usergroups:read`
+    - أنماط تعبيرات الإشارة النظامية (`agents.list[].groupChat.mentionPatterns`، وبديلها `messages.groupChat.mentionPatterns`)
+    - سلوك الرد الضمني على سلسلة رسائل البوت (معطل عندما تكون `thread.requireExplicitMention` بالقيمة `true`)
 
     عناصر التحكم لكل قناة (`channels.slack.channels.<id>`؛ الأسماء فقط عبر حل بدء التشغيل أو `dangerouslyAllowNameMatching`):
 
@@ -587,28 +593,29 @@ Manifest الأساسي (Socket Mode افتراضي):
     - `systemPrompt`
     - `tools`, `toolsBySender`
     - تنسيق مفتاح `toolsBySender`: `id:` أو `e164:` أو `username:` أو `name:` أو حرف البدل `"*"`
-      (لا تزال المفاتيح القديمة غير المسبوقة تُربط بـ `id:` فقط)
+      (لا تزال المفاتيح القديمة غير المسبوقة تُعيَّن إلى `id:` فقط)
 
-    يكون `allowBots` محافظًا للقنوات والقنوات الخاصة: لا تُقبل رسائل الغرف التي يؤلفها البوت إلا عندما يكون البوت المرسل مدرجًا صراحة في قائمة سماح `users` الخاصة بتلك الغرفة، أو عندما يكون معرّف مالك Slack صريح واحد على الأقل من `channels.slack.allowFrom` عضوًا حاليًا في الغرفة. لا تفي أحرف البدل وإدخالات المالك باسم العرض بوجود المالك. يستخدم وجود المالك `conversations.members` في Slack؛ تأكد من أن التطبيق لديه نطاق القراءة المطابق لنوع الغرفة (`channels:read` للقنوات العامة، و`groups:read` للقنوات الخاصة). إذا فشل البحث عن العضو، يسقط OpenClaw رسالة الغرفة التي ألّفها البوت.
+    `allowBots` محافظ للقنوات والقنوات الخاصة: لا تُقبل رسائل الغرف المكتوبة بواسطة البوت إلا عندما يكون البوت المُرسل مدرجًا صراحة في قائمة سماح `users` لتلك الغرفة، أو عندما يكون معرّف مالك Slack صريح واحد على الأقل من `channels.slack.allowFrom` عضوًا حاليًا في الغرفة. لا تحقق أحرف البدل وإدخالات المالك بأسماء العرض شرط حضور المالك. يستخدم حضور المالك `conversations.members` في Slack؛ تأكد من أن التطبيق لديه نطاق القراءة المطابق لنوع الغرفة (`channels:read` للقنوات العامة، و`groups:read` للقنوات الخاصة). إذا فشل البحث عن العضو، يسقط OpenClaw رسالة الغرفة المكتوبة بواسطة البوت.
 
   </Tab>
 </Tabs>
 
-## السلاسل، والجلسات، ووسوم الرد
+## سلاسل الرسائل والجلسات ووسوم الرد
 
-- تُوجّه DMs كـ `direct`؛ والقنوات كـ `channel`؛ وMPIMs كـ `group`.
-- مع `session.dmScope=main` الافتراضي، تُطوى DMs في Slack إلى الجلسة الرئيسية للوكيل.
+- تُوجَّه الرسائل المباشرة كـ `direct`؛ والقنوات كـ `channel`؛ وMPIMs كـ `group`.
+- تقبل ارتباطات توجيه Slack معرّفات الأقران الخام بالإضافة إلى صيغ أهداف Slack مثل `channel:C12345678` و`user:U12345678` و`<@U12345678>`.
+- مع `session.dmScope=main` الافتراضي، تُدمج رسائل Slack المباشرة في جلسة الوكيل الرئيسية.
 - جلسات القنوات: `agent:<agentId>:slack:channel:<channelId>`.
-- يمكن لردود السلاسل إنشاء لواحق جلسات سلسلة (`:thread:<threadTs>`) عند انطباق ذلك.
+- يمكن لردود السلاسل إنشاء لواحق جلسة سلسلة (`:thread:<threadTs>`) عند الاقتضاء.
 - الافتراضي لـ `channels.slack.thread.historyScope` هو `thread`؛ والافتراضي لـ `thread.inheritParent` هو `false`.
-- يتحكم `channels.slack.thread.initialHistoryLimit` في عدد رسائل السلسلة الحالية التي يتم جلبها عند بدء جلسة سلسلة جديدة (الافتراضي `20`؛ اضبطه على `0` للتعطيل).
-- `channels.slack.thread.requireExplicitMention` (الافتراضي `false`): عند `true`، يكبح إشارات السلسلة الضمنية بحيث لا يستجيب البوت إلا لذكور `@bot` الصريحة داخل السلاسل، حتى عندما يكون البوت قد شارك بالفعل في السلسلة. بدون هذا، تتجاوز الردود في سلسلة شارك فيها البوت بوابة `requireMention`.
+- تتحكم `channels.slack.thread.initialHistoryLimit` في عدد رسائل السلسلة الموجودة التي تُجلب عند بدء جلسة سلسلة جديدة (الافتراضي `20`؛ اضبط `0` للتعطيل).
+- `channels.slack.thread.requireExplicitMention` (الافتراضي `false`): عند `true`، يكبت الإشارات الضمنية في السلاسل بحيث لا يستجيب البوت إلا لإشارات `@bot` الصريحة داخل السلاسل، حتى عندما يكون البوت قد شارك بالفعل في السلسلة. بدون هذا، تتجاوز الردود في سلسلة شارك فيها البوت بوابة `requireMention`.
 
 عناصر التحكم في سلاسل الرد:
 
 - `channels.slack.replyToMode`: `off|first|all|batched` (الافتراضي `off`)
 - `channels.slack.replyToModeByChatType`: لكل `direct|group|channel`
-- احتياطي قديم للمحادثات المباشرة: `channels.slack.dm.replyToMode`
+- البديل القديم للدردشات المباشرة: `channels.slack.dm.replyToMode`
 
 وسوم الرد اليدوية مدعومة:
 
@@ -616,7 +623,7 @@ Manifest الأساسي (Socket Mode افتراضي):
 - `[[reply_to:<id>]]`
 
 <Note>
-يعطل `replyToMode="off"` **كل** سلاسل الرد في Slack، بما في ذلك وسوم `[[reply_to_*]]` الصريحة. يختلف هذا عن Telegram، حيث تظل الوسوم الصريحة محترمة في وضع `"off"`. تخفي سلاسل Slack الرسائل من القناة بينما تبقى ردود Telegram مرئية ضمن السطر.
+يعطل `replyToMode="off"` **كل** سلاسل الرد في Slack، بما في ذلك وسوم `[[reply_to_*]]` الصريحة. يختلف هذا عن Telegram، حيث تظل الوسوم الصريحة محترمة في وضع `"off"`. تخفي سلاسل Slack الرسائل من القناة، بينما تظل ردود Telegram مرئية ضمن السياق.
 </Note>
 
 ## تفاعلات الإقرار
@@ -628,11 +635,11 @@ Manifest الأساسي (Socket Mode افتراضي):
 - `channels.slack.accounts.<accountId>.ackReaction`
 - `channels.slack.ackReaction`
 - `messages.ackReaction`
-- احتياطي رمز تعبيري لهوية الوكيل (`agents.list[].identity.emoji`، وإلا "👀")
+- بديل الرمز التعبيري لهوية الوكيل (`agents.list[].identity.emoji`، وإلا "👀")
 
 ملاحظات:
 
-- يتوقع Slack رموزًا قصيرة (مثل `"eyes"`).
+- يتوقع Slack الرموز القصيرة (مثل `"eyes"`).
 - استخدم `""` لتعطيل التفاعل لحساب Slack أو عالميًا.
 
 ## بث النص
@@ -640,21 +647,21 @@ Manifest الأساسي (Socket Mode افتراضي):
 يتحكم `channels.slack.streaming` في سلوك المعاينة الحية:
 
 - `off`: تعطيل بث المعاينة الحية.
-- `partial` (افتراضي): استبدال نص المعاينة بأحدث مخرجات جزئية.
+- `partial` (الافتراضي): استبدال نص المعاينة بأحدث مخرجات جزئية.
 - `block`: إلحاق تحديثات معاينة مجزأة.
-- `progress`: إظهار نص حالة التقدم أثناء التوليد، ثم إرسال النص النهائي.
-- `streaming.preview.toolProgress`: عندما تكون معاينة المسودة نشطة، وجّه تحديثات الأداة/التقدم إلى رسالة المعاينة المعدلة نفسها (الافتراضي: `true`). اضبطه على `false` للاحتفاظ برسائل أداة/تقدم منفصلة.
+- `progress`: عرض نص حالة التقدم أثناء الإنشاء، ثم إرسال النص النهائي.
+- `streaming.preview.toolProgress`: عندما تكون معاينة المسودة نشطة، وجّه تحديثات الأداة/التقدم إلى رسالة المعاينة المعدلة نفسها (الافتراضي: `true`). اضبط `false` للاحتفاظ برسائل منفصلة للأداة/التقدم.
 
-يتحكم `channels.slack.streaming.nativeTransport` في بث النص الأصلي من Slack عندما يكون `channels.slack.streaming.mode` هو `partial` (الافتراضي: `true`).
+يتحكم `channels.slack.streaming.nativeTransport` في بث النص الأصلي في Slack عندما يكون `channels.slack.streaming.mode` هو `partial` (الافتراضي: `true`).
 
 - يجب أن تكون سلسلة رد متاحة لكي يظهر بث النص الأصلي وحالة سلسلة مساعد Slack. لا يزال اختيار السلسلة يتبع `replyToMode`.
-- لا يزال بإمكان جذور القنوات والمحادثات الجماعية استخدام معاينة المسودة العادية عندما لا يكون البث الأصلي متاحًا.
-- تظل DMs عالية المستوى في Slack خارج السلسلة افتراضيًا، لذلك لا تعرض معاينة نمط السلسلة؛ استخدم ردود السلاسل أو `typingReaction` إذا أردت تقدمًا مرئيًا هناك.
+- يمكن لجذور القنوات ودردشات المجموعات أن تستمر في استخدام معاينة المسودة العادية عندما لا يكون البث الأصلي متاحًا.
+- تبقى رسائل Slack المباشرة على المستوى الأعلى خارج السلسلة افتراضيًا، لذلك لا تعرض معاينة نمط السلسلة؛ استخدم ردود السلاسل أو `typingReaction` إذا أردت تقدمًا مرئيًا هناك.
 - تعود الوسائط والحمولات غير النصية إلى التسليم العادي.
-- تلغي النهايات الخاصة بالوسائط/الأخطاء تعديلات المعاينة المعلقة؛ ولا تُفرغ نهايات النص/الكتل المؤهلة إلا عندما يمكنها تعديل المعاينة في مكانها.
+- تلغي النهايات الخاصة بالوسائط/الأخطاء تعديلات المعاينة المعلقة؛ ولا تُفرغ النهايات النصية/الكتلية المؤهلة إلا عندما يمكنها تعديل المعاينة في مكانها.
 - إذا فشل البث في منتصف الرد، يعود OpenClaw إلى التسليم العادي للحمولات المتبقية.
 
-استخدم معاينة المسودة بدلًا من بث النص الأصلي من Slack:
+استخدم معاينة المسودة بدلًا من بث النص الأصلي في Slack:
 
 ```json5
 {
@@ -675,9 +682,9 @@ Manifest الأساسي (Socket Mode افتراضي):
 - يتم ترحيل `channels.slack.streaming` المنطقي تلقائيًا إلى `channels.slack.streaming.mode` و`channels.slack.streaming.nativeTransport`.
 - يتم ترحيل `channels.slack.nativeStreaming` القديم تلقائيًا إلى `channels.slack.streaming.nativeTransport`.
 
-## احتياطي تفاعل الكتابة
+## بديل تفاعل الكتابة
 
-يضيف `typingReaction` تفاعلًا مؤقتًا إلى رسالة Slack الواردة أثناء معالجة OpenClaw لرد، ثم يزيله عند انتهاء التشغيل. يكون هذا مفيدًا أكثر خارج ردود السلاسل، التي تستخدم مؤشر حالة افتراضيًا "is typing...".
+يضيف `typingReaction` تفاعلًا مؤقتًا إلى رسالة Slack الواردة أثناء معالجة OpenClaw لرد، ثم يزيله عند انتهاء التشغيل. يكون هذا أكثر فائدة خارج ردود السلاسل، التي تستخدم مؤشر حالة افتراضيًا "is typing...".
 
 ترتيب الحل:
 
@@ -686,16 +693,16 @@ Manifest الأساسي (Socket Mode افتراضي):
 
 ملاحظات:
 
-- يتوقع Slack رموزًا قصيرة (مثل `"hourglass_flowing_sand"`).
-- التفاعل على أساس أفضل جهد، وتتم محاولة التنظيف تلقائيًا بعد اكتمال مسار الرد أو الفشل.
+- يتوقع Slack الرموز القصيرة (مثل `"hourglass_flowing_sand"`).
+- التفاعل بأفضل جهد، وتُحاوَل عملية التنظيف تلقائيًا بعد اكتمال الرد أو مسار الفشل.
 
-## الوسائط، والتجزئة، والتسليم
+## الوسائط والتقسيم والتسليم
 
 <AccordionGroup>
-  <Accordion title="Inbound attachments">
-    يتم تنزيل مرفقات ملفات Slack من عناوين URL الخاصة المستضافة على Slack (تدفق طلب موثق بالرمز) وكتابتها إلى مخزن الوسائط عندما ينجح الجلب وتسمح حدود الحجم. تتضمن عناصر نائب الملفات `fileId` الخاص بـ Slack حتى تتمكن الوكلاء من جلب الملف الأصلي باستخدام `download-file`.
+  <Accordion title="المرفقات الواردة">
+    تُنزَّل مرفقات ملفات Slack من عناوين URL خاصة مستضافة لدى Slack (تدفق طلبات موثَّق بالرمز)، وتُكتب إلى مخزن الوسائط عندما ينجح الجلب وتسمح حدود الحجم. تتضمن عناصر نائبة للملفات `fileId` الخاص بـ Slack حتى تتمكن الوكلاء من جلب الملف الأصلي باستخدام `download-file`.
 
-    تستخدم التنزيلات مهل خمول ومهل إجمالية محدودة. إذا توقف استرداد ملف Slack أو فشل، يواصل OpenClaw معالجة الرسالة ويعود إلى عنصر نائب الملف.
+    تستخدم التنزيلات مهل انتظار محدودة للخمول والإجمالي. إذا تعطل استرداد ملف Slack أو فشل، يواصل OpenClaw معالجة الرسالة ويعود إلى العنصر النائب للملف.
 
     الحد الأقصى الافتراضي لحجم الوارد في وقت التشغيل هو `20MB` ما لم يتم تجاوزه بواسطة `channels.slack.mediaMaxMb`.
 
@@ -703,9 +710,9 @@ Manifest الأساسي (Socket Mode افتراضي):
 
   <Accordion title="النصوص والملفات الصادرة">
     - تستخدم أجزاء النص `channels.slack.textChunkLimit` (الافتراضي 4000)
-    - يفعّل `channels.slack.chunkMode="newline"` التقسيم الذي يقدّم الفقرات أولًا
-    - تستخدم عمليات إرسال الملفات واجهات رفع Slack ويمكن أن تتضمن ردودًا في السلاسل (`thread_ts`)
-    - يتبع حد الوسائط الصادرة `channels.slack.mediaMaxMb` عند ضبطه؛ وإلا تستخدم عمليات الإرسال في القنوات الافتراضيات حسب نوع MIME من مسار الوسائط
+    - يفعّل `channels.slack.chunkMode="newline"` التقسيم مع إعطاء الأولوية للفقرات
+    - تستخدم عمليات إرسال الملفات واجهات API للرفع في Slack ويمكن أن تتضمن ردود سلاسل المحادثات (`thread_ts`)
+    - يتبع الحد الأقصى للوسائط الصادرة `channels.slack.mediaMaxMb` عند تكوينه؛ وإلا تستخدم عمليات الإرسال عبر القناة الإعدادات الافتراضية حسب نوع MIME من مسار معالجة الوسائط
 
   </Accordion>
 
@@ -715,14 +722,14 @@ Manifest الأساسي (Socket Mode افتراضي):
     - `user:<id>` للرسائل المباشرة
     - `channel:<id>` للقنوات
 
-    تُفتح رسائل Slack المباشرة عبر واجهات محادثات Slack عند الإرسال إلى أهداف المستخدمين.
+    يمكن لرسائل Slack المباشرة النصية/المكوّنة من كتل فقط النشر مباشرة إلى معرفات المستخدمين؛ أما عمليات رفع الملفات والإرسال ضمن السلاسل فتفتح الرسالة المباشرة أولًا عبر واجهات API لمحادثات Slack لأن هذه المسارات تتطلب معرف محادثة محددًا.
 
   </Accordion>
 </AccordionGroup>
 
-## الأوامر وسلوك أوامر الشرطة المائلة
+## الأوامر وسلوك الشرطة المائلة
 
-تظهر أوامر الشرطة المائلة في Slack إما كأمر واحد مضبوط أو كعدة أوامر أصلية. اضبط `channels.slack.slashCommand` لتغيير افتراضيات الأوامر:
+تظهر أوامر الشرطة المائلة في Slack إما كأمر واحد مكوَّن أو كعدة أوامر أصلية. كوّن `channels.slack.slashCommand` لتغيير الإعدادات الافتراضية للأوامر:
 
 - `enabled: false`
 - `name: "openclaw"`
@@ -733,9 +740,9 @@ Manifest الأساسي (Socket Mode افتراضي):
 /openclaw /help
 ```
 
-تتطلب الأوامر الأصلية [إعدادات manifest إضافية](#additional-manifest-settings) في تطبيق Slack لديك وتُفعّل بدلًا من ذلك باستخدام `channels.slack.commands.native: true` أو `commands.native: true` في الإعدادات العامة.
+تتطلب الأوامر الأصلية [إعدادات بيان إضافية](#additional-manifest-settings) في تطبيق Slack الخاص بك، وتُفعَّل باستخدام `channels.slack.commands.native: true` أو `commands.native: true` في التكوينات العامة بدلًا من ذلك.
 
-- وضع الأوامر الأصلية التلقائي **متوقف** لـ Slack، لذلك لا يفعّل `commands.native: "auto"` أوامر Slack الأصلية.
+- وضع الأوامر الأصلية التلقائي **معطّل** في Slack، لذا لا يفعّل `commands.native: "auto"` أوامر Slack الأصلية.
 
 ```txt
 /help
@@ -744,21 +751,21 @@ Manifest الأساسي (Socket Mode افتراضي):
 تستخدم قوائم الوسيطات الأصلية استراتيجية عرض تكيفية تعرض نافذة تأكيد قبل إرسال قيمة الخيار المحدد:
 
 - حتى 5 خيارات: كتل أزرار
-- 6-100 خيار: قائمة اختيار ثابتة
-- أكثر من 100 خيار: اختيار خارجي مع ترشيح غير متزامن للخيارات عندما تكون معالجات خيارات التفاعل متاحة
-- عند تجاوز حدود Slack: تعود قيم الخيارات المشفرة إلى الأزرار
+- 6-100 خيار: قائمة تحديد ثابتة
+- أكثر من 100 خيار: تحديد خارجي مع ترشيح خيارات غير متزامن عندما تكون معالجات خيارات التفاعل متاحة
+- تجاوز حدود Slack: تعود قيم الخيارات المشفرة إلى الأزرار
 
 ```txt
 /think
 ```
 
-تستخدم جلسات الشرطة المائلة مفاتيح معزولة مثل `agent:<agentId>:slack:slash:<userId>` وتظل توجه تنفيذ الأوامر إلى جلسة المحادثة الهدف باستخدام `CommandTargetSessionKey`.
+تستخدم جلسات الشرطة المائلة مفاتيح معزولة مثل `agent:<agentId>:slack:slash:<userId>` وتظل توجه تنفيذ الأوامر إلى جلسة المحادثة المستهدفة باستخدام `CommandTargetSessionKey`.
 
 ## الردود التفاعلية
 
-يمكن لـ Slack عرض عناصر تحكم تفاعلية في الردود التي يكتبها الوكيل، لكن هذه الميزة معطلة افتراضيًا.
+يمكن لـ Slack عرض عناصر تحكم رد تفاعلية كتبها الوكيل، لكن هذه الميزة معطلة افتراضيًا.
 
-فعّلها عموميًا:
+فعّلها عالميًا:
 
 ```json5
 {
@@ -790,43 +797,44 @@ Manifest الأساسي (Socket Mode افتراضي):
 }
 ```
 
-عند التفعيل، يمكن للوكلاء إصدار توجيهات رد خاصة بـ Slack فقط:
+عند تفعيلها، يمكن للوكلاء إصدار توجيهات رد خاصة بـ Slack فقط:
 
 - `[[slack_buttons: Approve:approve, Reject:reject]]`
 - `[[slack_select: Choose a target | Canary:canary, Production:production]]`
 
-تُجمّع هذه التوجيهات إلى Slack Block Kit وتوجه النقرات أو الاختيارات مجددًا عبر مسار أحداث تفاعل Slack الحالي.
+تُحوَّل هذه التوجيهات إلى Slack Block Kit وتوجّه النقرات أو التحديدات مرة أخرى عبر مسار أحداث تفاعل Slack الحالي.
 
 ملاحظات:
 
-- هذه واجهة مستخدم خاصة بـ Slack. لا تترجم القنوات الأخرى توجيهات Slack Block Kit إلى أنظمة الأزرار الخاصة بها.
-- قيم معاودة الاتصال التفاعلية هي رموز مبهمة ينشئها OpenClaw، وليست قيمًا خامًا كتبها الوكيل.
+- هذه واجهة مستخدم خاصة بـ Slack. لا تترجم القنوات الأخرى توجيهات Slack Block Kit إلى أنظمة أزرار خاصة بها.
+- قيم معاودة النداء التفاعلية هي رموز معتمة يولدها OpenClaw، وليست قيمًا خامًا كتبها الوكيل.
 - إذا كانت الكتل التفاعلية المولدة ستتجاوز حدود Slack Block Kit، يعود OpenClaw إلى الرد النصي الأصلي بدلًا من إرسال حمولة كتل غير صالحة.
 
-## موافقات التنفيذ في Slack
+## موافقات Exec في Slack
 
-يمكن لـ Slack العمل كعميل موافقة أصلي مع أزرار وتفاعلات تفاعلية، بدلًا من الرجوع إلى واجهة الويب أو الطرفية.
+يمكن لـ Slack العمل كعميل موافقة أصلي باستخدام الأزرار والتفاعلات التفاعلية، بدلًا من الرجوع إلى واجهة الويب أو الطرفية.
 
-- تستخدم موافقات التنفيذ `channels.slack.execApprovals.*` للتوجيه الأصلي إلى الرسائل المباشرة/القنوات.
-- يمكن أن تظل موافقات Plugin تُحل عبر سطح الأزرار الأصلي نفسه في Slack عندما يصل الطلب أصلًا إلى Slack ويكون نوع معرّف الموافقة `plugin:`.
-- يظل تفويض الموافقين مفروضًا: لا يمكن إلا للمستخدمين المعرّفين كموافقين الموافقة على الطلبات أو رفضها عبر Slack.
+- تستخدم موافقات Exec ‏`channels.slack.execApprovals.*` للتوجيه الأصلي إلى الرسائل المباشرة/القنوات.
+- يمكن أن تظل موافقات Plugin تُحل عبر سطح الأزرار الأصلي نفسه في Slack عندما يصل الطلب بالفعل إلى Slack ويكون نوع معرف الموافقة `plugin:`.
+- لا يزال تفويض الموافقين مطبقًا: يمكن للمستخدمين المحددين كموافقين فقط الموافقة على الطلبات أو رفضها عبر Slack.
 
-يستخدم هذا سطح أزرار الموافقة المشترك نفسه مثل القنوات الأخرى. عند تفعيل `interactivity` في إعدادات تطبيق Slack لديك، تظهر مطالبات الموافقة كأزرار Block Kit مباشرة في المحادثة.
-عندما تكون هذه الأزرار موجودة، فهي تجربة الموافقة الأساسية؛ وينبغي لـ OpenClaw
-ألا يضمّن أمر `/approve` يدويًا إلا عندما تشير نتيجة الأداة إلى أن موافقات الدردشة
+يستخدم هذا سطح أزرار الموافقة المشترك نفسه كالقنوات الأخرى. عندما يكون `interactivity` مفعّلًا في إعدادات تطبيق Slack، تُعرض مطالبات الموافقة كأزرار Block Kit مباشرة في المحادثة.
+عند وجود هذه الأزرار، فهي تجربة الموافقة الأساسية؛ يجب ألا يضمّن OpenClaw
+أمر `/approve` يدويًا إلا عندما تشير نتيجة الأداة إلى أن موافقات الدردشة
 غير متاحة أو أن الموافقة اليدوية هي المسار الوحيد.
 
-مسار الإعداد:
+مسار التكوين:
 
 - `channels.slack.execApprovals.enabled`
 - `channels.slack.execApprovals.approvers` (اختياري؛ يعود إلى `commands.ownerAllowFrom` عندما يكون ذلك ممكنًا)
 - `channels.slack.execApprovals.target` (`dm` | `channel` | `both`، الافتراضي: `dm`)
 - `agentFilter`, `sessionFilter`
 
-يفعّل Slack تلقائيًا موافقات التنفيذ الأصلية عندما يكون `enabled` غير مضبوط أو `"auto"` ويُحلّ موافق واحد على الأقل. اضبط `enabled: false` لتعطيل Slack صراحة كعميل موافقة أصلي.
-اضبط `enabled: true` لفرض تشغيل الموافقات الأصلية عندما يُحلّ الموافقون.
+يفعّل Slack موافقات Exec الأصلية تلقائيًا عندما يكون `enabled` غير مضبوط أو `"auto"` ويتم حل
+موافق واحد على الأقل. عيّن `enabled: false` لتعطيل Slack كعميل موافقة أصلي صراحةً.
+عيّن `enabled: true` لفرض تشغيل الموافقات الأصلية عندما يتم حل الموافقين.
 
-السلوك الافتراضي دون إعداد صريح لموافقة تنفيذ Slack:
+السلوك الافتراضي من دون تكوين صريح لموافقة Exec في Slack:
 
 ```json5
 {
@@ -836,8 +844,8 @@ Manifest الأساسي (Socket Mode افتراضي):
 }
 ```
 
-لا يلزم الإعداد الصريح الأصلي لـ Slack إلا عندما تريد تجاوز الموافقين، أو إضافة مرشحات، أو
-اختيار التسليم إلى دردشة المنشأ:
+لا يلزم تكوين Slack الأصلي الصريح إلا عندما تريد تجاوز الموافقين، أو إضافة مرشحات، أو
+اختيار التسليم إلى دردشة المصدر:
 
 ```json5
 {
@@ -853,36 +861,36 @@ Manifest الأساسي (Socket Mode افتراضي):
 }
 ```
 
-إعادة التوجيه المشتركة `approvals.exec` منفصلة. استخدمها فقط عندما يجب أيضًا توجيه مطالبات موافقة التنفيذ
-إلى دردشات أخرى أو أهداف صريحة خارج المسار. إعادة التوجيه المشتركة `approvals.plugin` منفصلة أيضًا؛
-يمكن لأزرار Slack الأصلية أن تظل تحل موافقات Plugin عندما تصل هذه الطلبات أصلًا
+إعادة توجيه `approvals.exec` المشتركة منفصلة. استخدمها فقط عندما يجب أيضًا
+توجيه مطالبات موافقة Exec إلى دردشات أخرى أو أهداف صريحة خارج القناة. إعادة توجيه `approvals.plugin` المشتركة
+منفصلة أيضًا؛ يمكن لأزرار Slack الأصلية أن تظل تحل موافقات Plugin عندما تصل تلك الطلبات بالفعل
 إلى Slack.
 
-يعمل `/approve` في الدردشة نفسها أيضًا في قنوات Slack والرسائل المباشرة التي تدعم الأوامر أصلًا. راجع [موافقات التنفيذ](/ar/tools/exec-approvals) للاطلاع على نموذج إعادة توجيه الموافقات الكامل.
+يعمل `/approve` في الدردشة نفسها أيضًا في قنوات Slack والرسائل المباشرة التي تدعم الأوامر بالفعل. راجع [موافقات Exec](/ar/tools/exec-approvals) للاطلاع على نموذج إعادة توجيه الموافقات الكامل.
 
 ## الأحداث والسلوك التشغيلي
 
-- تُربط تعديلات الرسائل وحذفها بأحداث النظام.
-- تُعالج بثوث السلاسل ("الإرسال إلى القناة أيضًا" في ردود السلاسل) كرسائل مستخدم عادية.
-- تُربط أحداث إضافة/إزالة التفاعلات بأحداث النظام.
-- تُربط أحداث انضمام/مغادرة الأعضاء، وإنشاء/إعادة تسمية القنوات، وإضافة/إزالة التثبيت بأحداث النظام.
-- يمكن لـ `channel_id_changed` ترحيل مفاتيح إعداد القنوات عند تفعيل `configWrites`.
+- تُحوَّل تعديلات/حذوفات الرسائل إلى أحداث نظام.
+- تُعالَج عمليات بث السلاسل (ردود السلسلة "Also send to channel") كرسائل مستخدم عادية.
+- تُحوَّل أحداث إضافة/إزالة التفاعلات إلى أحداث نظام.
+- تُحوَّل أحداث انضمام/مغادرة الأعضاء، وإنشاء/إعادة تسمية القنوات، وإضافة/إزالة التثبيتات إلى أحداث نظام.
+- يمكن لـ `channel_id_changed` ترحيل مفاتيح تكوين القناة عندما يكون `configWrites` مفعّلًا.
 - تُعامل بيانات وصف موضوع/غرض القناة كسياق غير موثوق ويمكن حقنها في سياق التوجيه.
-- تُرشح بادئة السلسلة وبذر سياق سجل السلسلة الأولي حسب قوائم السماح للمرسلين المضبوطة عند انطباقها.
-- تصدر إجراءات الكتل وتفاعلات النوافذ أحداث نظام منظمة `Slack interaction: ...` مع حقول حمولة غنية:
-  - إجراءات الكتل: القيم المحددة، والتسميات، وقيم أدوات الاختيار، وبيانات `workflow_*` الوصفية
-  - أحداث modal `view_submission` و`view_closed` مع بيانات وصفية للقناة الموجهة ومدخلات النموذج
+- تُرشَّح بادئة السلسلة وبذر سياق سجل السلسلة الأولي بواسطة قوائم السماح المكونة للمرسلين عند الاقتضاء.
+- تُصدر إجراءات الكتل وتفاعلات النوافذ أحداث نظام منظمة `Slack interaction: ...` مع حقول حمولة غنية:
+  - إجراءات الكتل: القيم المحددة، والتسميات، وقيم المنتقي، وبيانات `workflow_*` الوصفية
+  - أحداث `view_submission` و`view_closed` للنوافذ مع بيانات وصفية للقناة الموجَّهة ومدخلات النماذج
 
-## مرجع الإعدادات
+## مرجع التكوين
 
-المرجع الأساسي: [مرجع الإعدادات - Slack](/ar/gateway/config-channels#slack).
+المرجع الأساسي: [مرجع التكوين - Slack](/ar/gateway/config-channels#slack).
 
 <Accordion title="حقول Slack عالية الأهمية">
 
 - الوضع/المصادقة: `mode`, `botToken`, `appToken`, `signingSecret`, `webhookPath`, `accounts.*`
 - الوصول إلى الرسائل المباشرة: `dm.enabled`, `dmPolicy`, `allowFrom` (قديم: `dm.policy`, `dm.allowFrom`), `dm.groupEnabled`, `dm.groupChannels`
-- مفتاح تبديل التوافق: `dangerouslyAllowNameMatching` (للطوارئ؛ اتركه متوقفًا ما لم تكن بحاجة إليه)
-- الوصول إلى القنوات: `groupPolicy`, `channels.*`, `channels.*.users`, `channels.*.requireMention`
+- مفتاح تبديل التوافق: `dangerouslyAllowNameMatching` (للطوارئ؛ أبقه معطلًا ما لم تكن هناك حاجة)
+- الوصول إلى القناة: `groupPolicy`, `channels.*`, `channels.*.users`, `channels.*.requireMention`
 - السلاسل/السجل: `replyToMode`, `replyToModeByChatType`, `thread.*`, `historyLimit`, `dmHistoryLimit`, `dms.*.historyLimit`
 - التسليم: `textChunkLimit`, `chunkMode`, `mediaMaxMb`, `streaming`, `streaming.nativeTransport`, `streaming.preview.toolProgress`
 - العمليات/الميزات: `configWrites`, `commands.native`, `slashCommand.*`, `actions.*`, `userToken`, `userTokenReadOnly`
@@ -893,12 +901,12 @@ Manifest الأساسي (Socket Mode افتراضي):
 
 <AccordionGroup>
   <Accordion title="لا توجد ردود في القنوات">
-    تحقق، بالترتيب:
+    تحقق بالترتيب:
 
     - `groupPolicy`
-    - قائمة سماح القنوات (`channels.slack.channels`) — **يجب أن تكون المفاتيح معرّفات قنوات** (`C12345678`)، وليست أسماء (`#channel-name`). تفشل المفاتيح المستندة إلى الاسم بصمت تحت `groupPolicy: "allowlist"` لأن توجيه القنوات يعتمد على المعرّف أولًا افتراضيًا. للعثور على معرّف: انقر بزر الفأرة الأيمن على القناة في Slack ← **نسخ الرابط** — قيمة `C...` في نهاية عنوان URL هي معرّف القناة.
+    - قائمة السماح للقنوات (`channels.slack.channels`) — **يجب أن تكون المفاتيح معرفات قنوات** (`C12345678`)، وليست أسماء (`#channel-name`). تفشل المفاتيح القائمة على الأسماء بصمت عند `groupPolicy: "allowlist"` لأن توجيه القنوات يعتمد على المعرف أولًا افتراضيًا. للعثور على معرف: انقر بزر الفأرة الأيمن على القناة في Slack → **Copy link** — قيمة `C...` في نهاية عنوان URL هي معرف القناة.
     - `requireMention`
-    - قائمة سماح `users` لكل قناة
+    - قائمة السماح `users` لكل قناة
 
     أوامر مفيدة:
 
@@ -910,15 +918,15 @@ openclaw doctor
 
   </Accordion>
 
-  <Accordion title="تجاهل رسائل الرسائل المباشرة">
+  <Accordion title="يتم تجاهل رسائل DM">
     تحقق من:
 
     - `channels.slack.dm.enabled`
     - `channels.slack.dmPolicy` (أو القديم `channels.slack.dm.policy`)
-    - موافقات الاقتران / إدخالات قائمة السماح
-    - أحداث رسائل Slack Assistant المباشرة: السجلات المفصلة التي تذكر `drop message_changed`
-      تعني عادة أن Slack أرسل حدث سلسلة Assistant معدّلًا بدون
-      مرسل بشري قابل للاسترداد في بيانات وصف الرسالة
+    - موافقات الإقران / إدخالات قائمة السماح
+    - أحداث DM الخاصة بـ Slack Assistant: السجلات المطوّلة التي تذكر `drop message_changed`
+      تعني عادة أن Slack أرسل حدث سلسلة Assistant معدّلًا من دون
+      مرسل بشري قابل للاسترداد في بيانات الرسالة الوصفية
 
 ```bash
 openclaw pairing list slack
@@ -926,25 +934,25 @@ openclaw pairing list slack
 
   </Accordion>
 
-  <Accordion title="وضع المقبس لا يتصل">
+  <Accordion title="وضع Socket غير متصل">
     تحقق من رموز bot + app وتفعيل Socket Mode في إعدادات تطبيق Slack.
 
-    إذا أظهر `openclaw channels status --probe --json` القيمة `botTokenStatus` أو
+    إذا أظهر `openclaw channels status --probe --json` قيمة `botTokenStatus` أو
     `appTokenStatus: "configured_unavailable"`، فهذا يعني أن حساب Slack
-    مضبوط لكن وقت التشغيل الحالي لم يتمكن من حل القيمة المدعومة بـ SecretRef.
+    مكوَّن لكن وقت التشغيل الحالي تعذر عليه حل القيمة المدعومة بـ SecretRef.
 
   </Accordion>
 
-  <Accordion title="وضع HTTP لا يستقبل الأحداث">
+  <Accordion title="وضع HTTP لا يتلقى الأحداث">
     تحقق من:
 
     - سر التوقيع
     - مسار Webhook
-    - عناوين طلب Slack URL (الأحداث + التفاعل + أوامر الشرطة المائلة)
+    - عناوين طلب Slack (الأحداث + التفاعل + أوامر الشرطة المائلة)
     - `webhookPath` فريد لكل حساب HTTP
 
     إذا ظهرت `signingSecretStatus: "configured_unavailable"` في لقطات
-    الحساب، فهذا يعني أن حساب HTTP مضبوط لكن وقت التشغيل الحالي لم يتمكن من
+    الحساب، فهذا يعني أن حساب HTTP مكوَّن لكن وقت التشغيل الحالي تعذر عليه
     حل سر التوقيع المدعوم بـ SecretRef.
 
   </Accordion>
@@ -952,96 +960,96 @@ openclaw pairing list slack
   <Accordion title="الأوامر الأصلية/أوامر الشرطة المائلة لا تعمل">
     تحقق مما إذا كنت تقصد:
 
-    - وضع الأوامر الأصلية (`channels.slack.commands.native: true`) مع أوامر الشرطة المائلة المطابقة المسجلة في Slack
+    - وضع الأمر الأصلي (`channels.slack.commands.native: true`) مع أوامر شرطة مائلة مطابقة مسجلة في Slack
     - أو وضع أمر الشرطة المائلة الواحد (`channels.slack.slashCommand.enabled: true`)
 
-    تحقق أيضًا من `commands.useAccessGroups` وقوائم سماح القنوات/المستخدمين.
+    تحقق أيضًا من `commands.useAccessGroups` وقوائم السماح للقنوات/المستخدمين.
 
   </Accordion>
 </AccordionGroup>
 
 ## مرجع رؤية المرفقات
 
-يمكن لـ Slack إرفاق الوسائط المنزلة بدورة الوكيل عندما تنجح تنزيلات ملفات Slack وتسمح حدود الحجم. يمكن تمرير ملفات الصور عبر مسار فهم الوسائط أو مباشرة إلى نموذج رد قادر على الرؤية؛ وتُحفظ الملفات الأخرى كسياق ملفات قابل للتنزيل بدلًا من معاملتها كمدخلات صور.
+يمكن لـ Slack إرفاق الوسائط المنزلة بدور الوكيل عندما تنجح تنزيلات ملفات Slack وتسمح حدود الحجم. يمكن تمرير ملفات الصور عبر مسار فهم الوسائط أو مباشرة إلى نموذج رد قادر على الرؤية؛ أما الملفات الأخرى فتُحتفظ بها كسياق ملفات قابل للتنزيل بدلًا من معاملتها كمدخلات صور.
 
 ### أنواع الوسائط المدعومة
 
-| نوع الوسائط                    | المصدر              | السلوك الحالي                                                                      | ملاحظات                                                                  |
+| نوع الوسائط                     | المصدر               | السلوك الحالي                                                                  | الملاحظات                                                                     |
 | ------------------------------ | -------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| صور JPEG / PNG / GIF / WebP | عنوان ملف Slack URL | تُنزّل وتُرفق بالدورة لمعالجة قادرة على الرؤية                                   | حد كل ملف: `channels.slack.mediaMaxMb` (الافتراضي 20 MB)                 |
-| ملفات PDF                      | عنوان ملف Slack URL | تُنزّل وتُعرض كسياق ملف لأدوات مثل `download-file` أو `pdf`                      | لا يحوّل وارد Slack ملفات PDF تلقائيًا إلى مدخلات رؤية الصور            |
-| ملفات أخرى                    | عنوان ملف Slack URL | تُنزّل عندما يكون ذلك ممكنًا وتُعرض كسياق ملف                                    | لا تُعامل الملفات الثنائية كمدخلات صور                                   |
-| ردود السلاسل                  | ملفات بادئ السلسلة | يمكن ترطيب ملفات رسالة الجذر كسياق عندما لا يحتوي الرد على وسائط مباشرة         | تستخدم بادئات الملفات فقط عنصرًا نائبًا للمرفق                           |
-| رسائل متعددة الصور            | عدة ملفات Slack     | يُقيّم كل ملف بشكل مستقل                                                          | تقتصر معالجة Slack على ثمانية ملفات لكل رسالة                            |
+| صور JPEG / PNG / GIF / WebP | عنوان URL لملف Slack       | يتم تنزيلها وإرفاقها بالدور لمعالجة قادرة على الرؤية                   | حد كل ملف: `channels.slack.mediaMaxMb` (الافتراضي 20 MB)                 |
+| ملفات PDF                      | عنوان URL لملف Slack       | يتم تنزيلها وإتاحتها كسياق ملف لأدوات مثل `download-file` أو `pdf` | لا يحوّل الإدخال الوارد من Slack ملفات PDF إلى إدخال رؤية صورية تلقائيًا |
+| ملفات أخرى                    | عنوان URL لملف Slack       | يتم تنزيلها عند الإمكان وإتاحتها كسياق ملف                              | لا تُعامل الملفات الثنائية كإدخال صور                               |
+| ردود السلاسل                 | ملفات بادئ السلسلة | يمكن تحميل ملفات الرسالة الجذر كسياق عندما لا يحتوي الرد على وسائط مباشرة  | تستخدم البوادئ التي تحتوي على ملفات فقط عنصرًا نائبًا للمرفق                          |
+| الرسائل متعددة الصور           | ملفات Slack متعددة | يُقيّم كل ملف بشكل مستقل                                              | تقتصر معالجة Slack على ثمانية ملفات لكل رسالة                     |
 
-### المسار الوارد
+### مسار الإدخال الوارد
 
 عند وصول رسالة Slack تحتوي على مرفقات ملفات:
 
 1. ينزّل OpenClaw الملف من عنوان URL الخاص في Slack باستخدام رمز البوت (`xoxb-...`).
 2. يُكتب الملف إلى مخزن الوسائط عند النجاح.
-3. تُضاف مسارات الوسائط المنزّلة وأنواع المحتوى إلى السياق الوارد.
-4. يمكن لمسارات النماذج/الأدوات القادرة على معالجة الصور استخدام مرفقات الصور من ذلك السياق.
-5. تبقى الملفات غير الصورية متاحة كبيانات وصفية للملفات أو مراجع وسائط للأدوات القادرة على التعامل معها.
+3. تُضاف مسارات الوسائط التي تم تنزيلها وأنواع المحتوى إلى سياق الإدخال الوارد.
+4. يمكن لمسارات النماذج/الأدوات القادرة على الصور استخدام مرفقات الصور من ذلك السياق.
+5. تبقى الملفات غير الصورية متاحة كبيانات وصفية للملفات أو كمراجع وسائط للأدوات التي يمكنها التعامل معها.
 
 ### وراثة مرفقات جذر السلسلة
 
-عندما تصل رسالة في سلسلة (لها أصل `thread_ts`):
+عند وصول رسالة في سلسلة (تحتوي على أصل `thread_ts`):
 
-- إذا لم يتضمن الرد نفسه وسائط مباشرة وكانت رسالة الجذر المضمّنة تحتوي على ملفات، فيمكن لـ Slack تعبئة ملفات الجذر كسياق بادئ للسلسلة.
-- تكون لمرفقات الرد المباشرة أولوية على مرفقات رسالة الجذر.
-- تُمثَّل رسالة الجذر التي تحتوي على ملفات فقط دون نص بعنصر نائب للمرفق بحيث يظل بإمكان المسار الاحتياطي تضمين ملفاتها.
+- إذا لم يكن الرد نفسه يحتوي على وسائط مباشرة وكانت الرسالة الجذر المضمّنة تحتوي على ملفات، يمكن لـ Slack تحميل ملفات الجذر كسياق بادئ السلسلة.
+- مرفقات الرد المباشرة لها أولوية على مرفقات الرسالة الجذر.
+- تُمثَّل الرسالة الجذر التي تحتوي على ملفات فقط ولا تحتوي على نص بعنصر نائب للمرفق حتى يظل بإمكان الاحتياطي تضمين ملفاتها.
 
 ### التعامل مع المرفقات المتعددة
 
 عندما تحتوي رسالة Slack واحدة على عدة مرفقات ملفات:
 
-- يُعالَج كل مرفق بشكل مستقل عبر مسار معالجة الوسائط.
-- تُجمَّع مراجع الوسائط المنزّلة في سياق الرسالة.
+- يُعالج كل مرفق بشكل مستقل عبر مسار الوسائط.
+- تُجمّع مراجع الوسائط التي تم تنزيلها في سياق الرسالة.
 - يتبع ترتيب المعالجة ترتيب ملفات Slack في حمولة الحدث.
-- لا يمنع فشل تنزيل مرفق واحد معالجة المرفقات الأخرى.
+- لا يمنع فشل تنزيل أحد المرفقات معالجة المرفقات الأخرى.
 
 ### حدود الحجم والتنزيل والنموذج
 
-- **حد الحجم**: الافتراضي 20 ميغابايت لكل ملف. قابل للتهيئة عبر `channels.slack.mediaMaxMb`.
-- **إخفاقات التنزيل**: تُتخطى الملفات التي لا يستطيع Slack تقديمها، وعناوين URL المنتهية، والملفات غير القابلة للوصول، والملفات المتجاوزة للحجم، واستجابات HTML الخاصة بمصادقة/تسجيل دخول Slack بدلاً من الإبلاغ عنها كتنسيقات غير مدعومة.
+- **حد الحجم**: الافتراضي 20 MB لكل ملف. قابل للتهيئة عبر `channels.slack.mediaMaxMb`.
+- **فشل التنزيل**: يتم تخطي الملفات التي لا يستطيع Slack تقديمها، وعناوين URL المنتهية الصلاحية، والملفات غير القابلة للوصول، والملفات كبيرة الحجم، واستجابات HTML الخاصة بمصادقة/تسجيل دخول Slack بدلًا من الإبلاغ عنها كتنسيقات غير مدعومة.
 - **نموذج الرؤية**: يستخدم تحليل الصور نموذج الرد النشط عندما يدعم الرؤية، أو نموذج الصور المهيأ في `agents.defaults.imageModel`.
 
 ### الحدود المعروفة
 
 | السيناريو                               | السلوك الحالي                                                             | الحل البديل                                                                 |
 | -------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| عنوان URL منتهي لملف Slack                 | يُتخطى الملف؛ لا يظهر أي خطأ                                                 | أعد رفع الملف في Slack                                                |
-| نموذج الرؤية غير مهيأ            | تُخزَّن مرفقات الصور كمراجع وسائط، لكنها لا تُحلَّل كصور | هيّئ `agents.defaults.imageModel` أو استخدم نموذج رد قادرًا على الرؤية |
-| صور كبيرة جدًا (> 20 ميغابايت افتراضيًا) | تُتخطى وفق حد الحجم                                                         | زِد `channels.slack.mediaMaxMb` إذا كان Slack يسمح بذلك                       |
-| مرفقات مُعاد توجيهها/مشاركتها           | يُتعامل مع النص ووسائط الصور/الملفات المستضافة على Slack بأفضل جهد                       | أعد المشاركة مباشرة في سلسلة OpenClaw                                   |
-| مرفقات PDF                        | تُخزَّن كسياق ملف/وسائط، ولا تُوجَّه تلقائيًا عبر رؤية الصور  | استخدم `download-file` لبيانات الملف الوصفية أو أداة `pdf` لتحليل PDF   |
+| عنوان URL لملف Slack منتهي الصلاحية                 | يتم تخطي الملف؛ لا يظهر خطأ                                                 | أعد رفع الملف في Slack                                                |
+| نموذج الرؤية غير مهيأ            | تُخزّن مرفقات الصور كمراجع وسائط، لكنها لا تُحلل كصور | هيّئ `agents.defaults.imageModel` أو استخدم نموذج رد قادرًا على الرؤية |
+| صور كبيرة جدًا (> 20 MB افتراضيًا) | يتم تخطيها حسب حد الحجم                                                         | زِد `channels.slack.mediaMaxMb` إذا كان Slack يسمح بذلك                       |
+| المرفقات المُعاد توجيهها/المشتركة           | النص والوسائط الصورية/الملفات المستضافة على Slack تُعالج بأفضل جهد                       | أعد مشاركتها مباشرة في سلسلة OpenClaw                                   |
+| مرفقات PDF                        | تُخزّن كسياق ملف/وسائط، ولا تُوجّه تلقائيًا عبر رؤية الصور  | استخدم `download-file` لبيانات الملف الوصفية أو أداة `pdf` لتحليل PDF   |
 
 ### الوثائق ذات الصلة
 
 - [مسار فهم الوسائط](/ar/nodes/media-understanding)
 - [أداة PDF](/ar/tools/pdf)
-- الملحمة: [#51349](https://github.com/openclaw/openclaw/issues/51349) — تمكين رؤية مرفقات Slack
+- الملحمة: [#51349](https://github.com/openclaw/openclaw/issues/51349) — تمكين الرؤية لمرفقات Slack
 - اختبارات الانحدار: [#51353](https://github.com/openclaw/openclaw/issues/51353)
-- التحقق الحي: [#51354](https://github.com/openclaw/openclaw/issues/51354)
+- التحقق المباشر: [#51354](https://github.com/openclaw/openclaw/issues/51354)
 
 ## ذات صلة
 
 <CardGroup cols={2}>
   <Card title="Pairing" icon="link" href="/ar/channels/pairing">
-    اقرن مستخدم Slack بالـ Gateway.
+    إقران مستخدم Slack بـ gateway.
   </Card>
   <Card title="Groups" icon="users" href="/ar/channels/groups">
-    سلوك القنوات والرسائل المباشرة الجماعية.
+    سلوك القنوات ورسائل DM الجماعية.
   </Card>
   <Card title="Channel routing" icon="route" href="/ar/channels/channel-routing">
-    وجّه الرسائل الواردة إلى الوكلاء.
+    توجيه الرسائل الواردة إلى الوكلاء.
   </Card>
   <Card title="Security" icon="shield" href="/ar/gateway/security">
     نموذج التهديد والتقوية.
   </Card>
   <Card title="Configuration" icon="sliders" href="/ar/gateway/configuration">
-    تخطيط التهيئة والأسبقية.
+    بنية التكوين والأسبقية.
   </Card>
   <Card title="Slash commands" icon="terminal" href="/ar/tools/slash-commands">
     كتالوج الأوامر وسلوكها.

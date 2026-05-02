@@ -5,23 +5,23 @@ read_when:
 summary: إعداد Brave Search API لـ web_search
 title: بحث Brave
 x-i18n:
-    generated_at: "2026-04-24T08:07:07Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T07:43:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
+    source_hash: 06cfef368f01d0af91ddb4e8adc13b7699019cbf662783b88c573049bfb77e18
     source_path: tools/brave-search.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Brave Search API
 
-يدعم OpenClaw خدمة Brave Search API كمزوّد `web_search`.
+يدعم OpenClaw واجهة Brave Search API بصفتها مزوّد `web_search`.
 
-## احصل على مفتاح API
+## الحصول على مفتاح API
 
-1. أنشئ حسابًا في Brave Search API على [https://brave.com/search/api/](https://brave.com/search/api/)
-2. من لوحة التحكم، اختر خطة **Search** وولّد مفتاح API.
-3. خزّن المفتاح في التهيئة أو اضبط `BRAVE_API_KEY` في بيئة Gateway.
+1. أنشئ حساب Brave Search API على [https://brave.com/search/api/](https://brave.com/search/api/)
+2. في لوحة التحكم، اختر خطة **Search** وأنشئ مفتاح API.
+3. خزّن المفتاح في التهيئة أو عيّن `BRAVE_API_KEY` في بيئة Gateway.
 
 ## مثال على التهيئة
 
@@ -33,7 +33,7 @@ x-i18n:
         config: {
           webSearch: {
             apiKey: "BRAVE_API_KEY_HERE",
-            mode: "web", // أو "llm-context"
+            mode: "web", // or "llm-context"
           },
         },
       },
@@ -51,13 +51,13 @@ x-i18n:
 }
 ```
 
-تعيش الآن إعدادات بحث Brave الخاصة بالمزوّد تحت `plugins.entries.brave.config.webSearch.*`.
-وما تزال `tools.web.search.apiKey` القديمة تُحمَّل عبر غلاف التوافق، لكنها لم تعد مسار التهيئة القانوني.
+توجد الآن إعدادات بحث Brave الخاصة بالمزوّد ضمن `plugins.entries.brave.config.webSearch.*`.
+ما يزال `tools.web.search.apiKey` القديم يُحمّل عبر طبقة التوافق، لكنه لم يعد مسار التهيئة الرسمي.
 
-يتحكم `webSearch.mode` في وسيلة نقل Brave:
+يتحكم `webSearch.mode` في نقل Brave:
 
-- `web` ‏(الافتراضي): بحث ويب Brave العادي مع العناوين، وعناوين URL، والمقتطفات
-- `llm-context`: واجهة Brave LLM Context API مع أجزاء نصية مستخرجة مسبقًا ومصادر من أجل الإسناد
+- `web` (الافتراضي): بحث ويب Brave العادي مع العناوين وعناوين URL والمقتطفات
+- `llm-context`: واجهة Brave LLM Context API مع مقاطع نصية ومصادر مستخرجة مسبقًا للإسناد
 
 ## معلمات الأداة
 
@@ -66,19 +66,19 @@ x-i18n:
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-عدد النتائج المطلوب إرجاعها (1–10).
+عدد النتائج المراد إرجاعها (1–10).
 </ParamField>
 
 <ParamField path="country" type="string">
-رمز بلد ISO مكوّن من حرفين (مثل `US` أو `DE`).
+رمز بلد ISO مكوّن من حرفين (مثل `US` و`DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-رمز لغة ISO 639-1 لنتائج البحث (مثل `en` أو `de` أو `fr`).
+رمز لغة ISO 639-1 لنتائج البحث (مثل `en` و`de` و`fr`).
 </ParamField>
 
 <ParamField path="search_lang" type="string">
-رمز لغة البحث الخاص بـ Brave ‏(مثل `en` أو `en-gb` أو `zh-hans`).
+رمز لغة بحث Brave (مثل `en` و`en-gb` و`zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
@@ -86,7 +86,7 @@ x-i18n:
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-مرشح الزمن — `day` تعني 24 ساعة.
+مرشح الوقت — `day` يعني 24 ساعة.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -100,20 +100,20 @@ x-i18n:
 **أمثلة:**
 
 ```javascript
-// بحث خاص ببلد ولغة محددين
+// Country and language-specific search
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// نتائج حديثة (خلال الأسبوع الماضي)
+// Recent results (past week)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// بحث ضمن نطاق تاريخي
+// Date range search
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
@@ -123,16 +123,17 @@ await web_search({
 
 ## ملاحظات
 
-- يستخدم OpenClaw خطة **Search** الخاصة بـ Brave. وإذا كانت لديك اشتراك قديم (مثل الخطة المجانية الأصلية مع 2,000 استعلام/شهر)، فما يزال صالحًا لكنه لا يتضمن الميزات الأحدث مثل LLM Context أو حدود المعدل الأعلى.
-- تتضمن كل خطة من Brave **رصيدًا مجانيًا بقيمة \$5/شهريًا** ‏(يتجدد). وتكلفة خطة Search هي \$5 لكل 1,000 طلب، لذلك يغطي الرصيد 1,000 استعلام/شهر. اضبط حد الاستخدام لديك في لوحة Brave لتجنب الرسوم غير المتوقعة. راجع [بوابة Brave API](https://brave.com/search/api/) للاطلاع على الخطط الحالية.
-- تتضمن خطة Search نقطة نهاية LLM Context وحقوق استدلال AI. أما تخزين النتائج لتدريب النماذج أو ضبطها فيتطلب خطة ذات حقوق تخزين صريحة. راجع [شروط الخدمة](https://api-dashboard.search.brave.com/terms-of-service) الخاصة بـ Brave.
-- يعيد وضع `llm-context` إدخالات مصادر مؤسَّسة بدلًا من شكل مقتطفات البحث على الويب العادي.
-- لا يدعم وضع `llm-context` المعلمات `ui_lang` أو `freshness` أو `date_after` أو `date_before`.
-- يجب أن تتضمن `ui_lang` علامة فرعية للمنطقة مثل `en-US`.
-- تُخزَّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للتهيئة عبر `cacheTtlMinutes`).
+- يستخدم OpenClaw خطة Brave **Search**. إذا كان لديك اشتراك قديم (مثل خطة Free الأصلية التي تتضمن 2,000 استعلام/شهر)، فسيظل صالحًا لكنه لا يتضمن ميزات أحدث مثل LLM Context أو حدود معدلات أعلى.
+- تتضمن كل خطة Brave **رصيدًا مجانيًا قدره \$5/شهر** (يتجدد). تبلغ تكلفة خطة Search مقدار \$5 لكل 1,000 طلب، لذا يغطي الرصيد 1,000 استعلام/شهر. عيّن حد استخدامك في لوحة تحكم Brave لتجنب الرسوم غير المتوقعة. راجع [بوابة Brave API](https://brave.com/search/api/) للاطلاع على الخطط الحالية.
+- تتضمن خطة Search نقطة نهاية LLM Context وحقوق استدلال الذكاء الاصطناعي. يتطلب تخزين النتائج لتدريب النماذج أو ضبطها خطة تتضمن حقوق تخزين صريحة. راجع [شروط خدمة](https://api-dashboard.search.brave.com/terms-of-service) Brave.
+- يعيد وضع `llm-context` إدخالات مصادر مسندة بدلًا من شكل مقتطف بحث الويب العادي.
+- يدعم وضع `llm-context` النطاقات `freshness` والمحدودة بـ `date_after` + `date_before`. ولا يدعم `ui_lang`؛ يُرفض `date_before` دون `date_after` لأن Brave يتطلب أن تتضمن نطاقات الحداثة المخصصة تاريخي بدء وانتهاء.
+- يجب أن يتضمن `ui_lang` وسمًا فرعيًا للمنطقة مثل `en-US`.
+- تُخزّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للتهيئة عبر `cacheTtlMinutes`).
+- فعّل علم التشخيصات `brave.http` لتسجيل عناوين URL/معلمات الاستعلام لطلبات Brave، وحالة/توقيت الاستجابة، وأحداث إصابة/إخفاق/كتابة ذاكرة التخزين المؤقت للبحث أثناء استكشاف المشكلات وإصلاحها. لا يسجل العلم مطلقًا مفتاح API أو أجسام الاستجابة، لكن استعلامات البحث قد تكون حساسة.
 
 ## ذو صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
-- [بحث Perplexity](/ar/tools/perplexity-search) -- نتائج منظّمة مع ترشيح حسب النطاق
+- [نظرة عامة على بحث الويب](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
+- [بحث Perplexity](/ar/tools/perplexity-search) -- نتائج منظمة مع تصفية حسب النطاقات
 - [بحث Exa](/ar/tools/exa-search) -- بحث عصبي مع استخراج المحتوى
