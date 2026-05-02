@@ -2,36 +2,36 @@
 read_when:
     - Anda menginginkan dukungan Zalo Personal (tidak resmi) di OpenClaw
     - Anda sedang mengonfigurasi atau mengembangkan Plugin zalouser
-summary: 'Plugin Zalo Personal: login QR + perpesanan melalui zca-js native (instalasi Plugin + konfigurasi kanal + alat)'
+summary: 'Plugin Zalo Personal: login QR + perpesanan melalui zca-js asli (instalasi Plugin + konfigurasi saluran + alat)'
 title: Plugin pribadi Zalo
 x-i18n:
-    generated_at: "2026-04-30T10:05:38Z"
+    generated_at: "2026-05-02T22:22:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
+    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
 # Zalo Personal (Plugin)
 
-Dukungan Zalo Personal untuk OpenClaw melalui sebuah Plugin, menggunakan `zca-js` native untuk mengotomatiskan akun pengguna Zalo biasa.
+Dukungan Zalo Personal untuk OpenClaw melalui Plugin, menggunakan `zca-js` native untuk mengotomatiskan akun pengguna Zalo biasa.
 
 <Warning>
-Otomatisasi tidak resmi dapat menyebabkan akun ditangguhkan atau diblokir. Gunakan dengan risiko Anda sendiri.
+Otomatisasi tidak resmi dapat menyebabkan penangguhan atau pemblokiran akun. Gunakan dengan risiko Anda sendiri.
 </Warning>
 
 ## Penamaan
 
-ID channel adalah `zalouser` untuk memperjelas bahwa ini mengotomatiskan **akun pengguna Zalo personal** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
+ID saluran adalah `zalouser` untuk menegaskan bahwa ini mengotomatiskan **akun pengguna Zalo pribadi** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
 
-## Tempat berjalan
+## Tempat menjalankannya
 
 Plugin ini berjalan **di dalam proses Gateway**.
 
 Jika Anda menggunakan Gateway jarak jauh, instal/konfigurasikan di **mesin yang menjalankan Gateway**, lalu mulai ulang Gateway.
 
-Tidak diperlukan binary CLI `zca`/`openzca` eksternal.
+Tidak diperlukan biner CLI eksternal `zca`/`openzca`.
 
 ## Instalasi
 
@@ -41,11 +41,11 @@ Tidak diperlukan binary CLI `zca`/`openzca` eksternal.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Jika npm melaporkan paket milik OpenClaw sebagai usang, versi paket tersebut berasal dari rangkaian paket eksternal yang lebih lama; gunakan build OpenClaw terpaket saat ini atau path folder lokal hingga paket npm yang lebih baru diterbitkan.
+Gunakan paket bare untuk mengikuti tag rilis resmi saat ini. Sematkan versi yang tepat hanya saat Anda memerlukan instalasi yang dapat direproduksi.
 
 Mulai ulang Gateway setelahnya.
 
-### Opsi B: instal dari folder lokal (pengembangan)
+### Opsi B: instal dari folder lokal (dev)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -57,7 +57,7 @@ Mulai ulang Gateway setelahnya.
 
 ## Konfigurasi
 
-Konfigurasi channel berada di bawah `channels.zalouser` (bukan `plugins.entries.*`):
+Konfigurasi saluran berada di bawah `channels.zalouser` (bukan `plugins.entries.*`):
 
 ```json5
 {
@@ -86,7 +86,7 @@ Nama alat: `zalouser`
 
 Tindakan: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Tindakan pesan channel juga mendukung `react` untuk reaksi pesan.
+Tindakan pesan saluran juga mendukung `react` untuk reaksi pesan.
 
 ## Terkait
 

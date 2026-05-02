@@ -1,14 +1,14 @@
 ---
 read_when:
     - Menyiapkan Zalo Personal untuk OpenClaw
-    - Men-debug alur login atau pesan Zalo Personal
-summary: Dukungan akun pribadi Zalo melalui zca-js asli (masuk dengan QR), kemampuan, dan konfigurasi
+    - Memecahkan masalah alur masuk atau pesan Zalo Personal
+summary: Dukungan akun pribadi Zalo melalui zca-js native (login QR), kemampuan, dan konfigurasi
 title: Zalo pribadi
 x-i18n:
-    generated_at: "2026-04-30T09:37:20Z"
+    generated_at: "2026-05-02T22:17:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 581a427f7fa37b0fa204f6b813c767eaa7af1f577baf2ac6ea3a31bf23ca6a49
+    source_hash: 0096775e0017e504130f2e19e05ab8114eadb873a9e11f79ea8f0dd91297567f
     source_path: channels/zalouser.md
     workflow: 16
 ---
@@ -16,36 +16,33 @@ x-i18n:
 Status: eksperimental. Integrasi ini mengotomatiskan **akun Zalo pribadi** melalui `zca-js` native di dalam OpenClaw.
 
 <Warning>
-Ini adalah integrasi tidak resmi dan dapat menyebabkan penangguhan atau pemblokiran akun. Gunakan dengan risiko Anda sendiri.
+Ini adalah integrasi tidak resmi dan dapat mengakibatkan akun ditangguhkan atau diblokir. Gunakan dengan risiko Anda sendiri.
 </Warning>
 
 ## Plugin bawaan
 
-Zalo Personal dikirim sebagai Plugin bawaan dalam rilis OpenClaw saat ini, jadi build
-paket normal tidak memerlukan instalasi terpisah.
+Zalo Personal disertakan sebagai Plugin bawaan dalam rilis OpenClaw saat ini, sehingga build
+terpaket normal tidak memerlukan instalasi terpisah.
 
 Jika Anda menggunakan build lama atau instalasi kustom yang mengecualikan Zalo Personal,
-instal paket npm saat ini ketika sudah diterbitkan:
+instal paket npm secara langsung:
 
 - Instal melalui CLI: `openclaw plugins install @openclaw/zalouser`
+- Versi yang dipin: `openclaw plugins install @openclaw/zalouser@2026.5.2`
 - Atau dari checkout sumber: `openclaw plugins install ./path/to/local/zalouser-plugin`
-- Detail: [Plugin](/id/tools/plugin)
+- Detail: [Plugins](/id/tools/plugin)
 
-Jika npm melaporkan paket milik OpenClaw sebagai usang, gunakan build OpenClaw
-paket saat ini atau jalur checkout lokal sampai paket npm yang lebih baru
-diterbitkan.
-
-Tidak diperlukan biner CLI eksternal `zca`/`openzca`.
+Tidak diperlukan binary CLI eksternal `zca`/`openzca`.
 
 ## Penyiapan cepat (pemula)
 
 1. Pastikan Plugin Zalo Personal tersedia.
-   - Rilis OpenClaw paket saat ini sudah menyertakannya.
+   - Rilis OpenClaw terpaket saat ini sudah menyertakannya.
    - Instalasi lama/kustom dapat menambahkannya secara manual dengan perintah di atas.
 2. Login (QR, pada mesin Gateway):
    - `openclaw channels login --channel zalouser`
    - Pindai kode QR dengan aplikasi seluler Zalo.
-3. Aktifkan kanal:
+3. Aktifkan channel:
 
 ```json5
 {
@@ -61,16 +58,16 @@ Tidak diperlukan biner CLI eksternal `zca`/`openzca`.
 4. Mulai ulang Gateway (atau selesaikan penyiapan).
 5. Akses DM default menggunakan pairing; setujui kode pairing pada kontak pertama.
 
-## Apa itu
+## Apa ini
 
 - Berjalan sepenuhnya dalam proses melalui `zca-js`.
-- Menggunakan event listener native untuk menerima pesan masuk.
-- Mengirim balasan langsung melalui JS API (teks/media/tautan).
+- Menggunakan listener event native untuk menerima pesan masuk.
+- Mengirim balasan langsung melalui API JS (teks/media/tautan).
 - Dirancang untuk kasus penggunaan “akun pribadi” ketika Zalo Bot API tidak tersedia.
 
 ## Penamaan
 
-ID kanal adalah `zalouser` untuk menegaskan bahwa ini mengotomatiskan **akun pengguna Zalo pribadi** (tidak resmi). Kami menjaga `zalo` tetap dicadangkan untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
+ID channel adalah `zalouser` untuk memperjelas bahwa ini mengotomatiskan **akun pengguna Zalo pribadi** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
 
 ## Menemukan ID (direktori)
 
@@ -103,7 +100,7 @@ Setujui melalui:
 - Default: `channels.zalouser.groupPolicy = "open"` (grup diizinkan). Gunakan `channels.defaults.groupPolicy` untuk menimpa default ketika belum diatur.
 - Batasi ke allowlist dengan:
   - `channels.zalouser.groupPolicy = "allowlist"`
-  - `channels.zalouser.groups` (kunci sebaiknya berupa ID grup yang stabil; nama diselesaikan menjadi ID saat startup jika memungkinkan)
+  - `channels.zalouser.groups` (key sebaiknya berupa ID grup yang stabil; nama diselesaikan menjadi ID saat startup jika memungkinkan)
   - `channels.zalouser.groupAllowFrom` (mengontrol pengirim mana dalam grup yang diizinkan yang dapat memicu bot)
 - Blokir semua grup: `channels.zalouser.groupPolicy = "disabled"`.
 - Wizard konfigurasi dapat meminta allowlist grup.
@@ -158,7 +155,7 @@ Contoh:
 
 ## Multi-akun
 
-Akun dipetakan ke profil `zalouser` dalam status OpenClaw. Contoh:
+Akun dipetakan ke profil `zalouser` dalam state OpenClaw. Contoh:
 
 ```json5
 {
@@ -174,13 +171,13 @@ Akun dipetakan ke profil `zalouser` dalam status OpenClaw. Contoh:
 }
 ```
 
-## Pengetikan, reaksi, dan konfirmasi pengiriman
+## Pengetikan, reaksi, dan pengakuan pengiriman
 
 - OpenClaw mengirim event pengetikan sebelum mengirim balasan (upaya terbaik).
-- Aksi reaksi pesan `react` didukung untuk `zalouser` dalam aksi kanal.
+- Action reaksi pesan `react` didukung untuk `zalouser` dalam action channel.
   - Gunakan `remove: true` untuk menghapus emoji reaksi tertentu dari sebuah pesan.
   - Semantik reaksi: [Reaksi](/id/tools/reactions)
-- Untuk pesan masuk yang menyertakan metadata event, OpenClaw mengirim konfirmasi delivered + seen (upaya terbaik).
+- Untuk pesan masuk yang menyertakan metadata event, OpenClaw mengirim pengakuan terkirim + terlihat (upaya terbaik).
 
 ## Pemecahan masalah
 
@@ -189,19 +186,19 @@ Akun dipetakan ke profil `zalouser` dalam status OpenClaw. Contoh:
 - `openclaw channels status --probe`
 - Login ulang: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
 
-**Nama allowlist/grup tidak terselesaikan:**
+**Allowlist/nama grup tidak terselesaikan:**
 
 - Gunakan ID numerik di `allowFrom`/`groupAllowFrom`/`groups`, atau nama teman/grup yang persis.
 
-**Ditingkatkan dari penyiapan lama berbasis CLI:**
+**Di-upgrade dari penyiapan lama berbasis CLI:**
 
-- Hapus asumsi proses eksternal `zca` lama.
-- Kanal sekarang berjalan sepenuhnya di OpenClaw tanpa biner CLI eksternal.
+- Hapus asumsi proses `zca` eksternal lama apa pun.
+- Channel sekarang berjalan sepenuhnya di OpenClaw tanpa binary CLI eksternal.
 
 ## Terkait
 
-- [Ikhtisar Kanal](/id/channels) — semua kanal yang didukung
+- [Ikhtisar Channel](/id/channels) — semua channel yang didukung
 - [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
 - [Grup](/id/channels/groups) — perilaku chat grup dan gating mention
-- [Perutean Kanal](/id/channels/channel-routing) — perutean sesi untuk pesan
-- [Keamanan](/id/gateway/security) — model akses dan pengerasan
+- [Perutean Channel](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Keamanan](/id/gateway/security) — model akses dan hardening

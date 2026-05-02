@@ -1,13 +1,13 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin googlechat
-summary: Menambahkan permukaan kanal Google Chat untuk mengirim dan menerima pesan OpenClaw.
+summary: Menambahkan antarmuka saluran Google Chat untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-05-02T20:52:53Z"
+    generated_at: "2026-05-02T22:21:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5806bfb6c5a21bfb83bccd20a998795c00a8ad69af69649aee52db72ae7f6cc4
+    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Menambahkan permukaan saluran Google Chat untuk mengirim dan menerima pesan Open
 ## Distribusi
 
 - Paket: `@openclaw/googlechat`
-- Rute pemasangan: ClawHub + npm
+- Rute pemasangan: disertakan dalam OpenClaw
 
 ## Permukaan
 
-channels: googlechat
+saluran: googlechat
 
 ## Dokumentasi terkait
 

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin line
-summary: Menambahkan permukaan saluran LINE untuk mengirim dan menerima pesan OpenClaw.
-title: Plugin LINE
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin line
+summary: Menambahkan antarmuka kanal LINE untuk mengirim dan menerima pesan OpenClaw.
+title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:40Z"
+    generated_at: "2026-05-02T22:21:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 469a8781af08abd50a475fe58e4ff4e93b592d4a412f17b01d34640422e0cc6f
+    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # Plugin LINE
 
-Menambahkan antarmuka channel LINE untuk mengirim dan menerima pesan OpenClaw.
+Menambahkan permukaan saluran LINE untuk mengirim dan menerima pesan OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/line`
-- Rute pemasangan: ClawHub + npm
+- Rute instalasi: disertakan dalam OpenClaw
 
-## Antarmuka
+## Permukaan
 
 channels: line
 
-## Dokumen terkait
+## Dokumentasi terkait
 
 - [line](/id/channels/line)
