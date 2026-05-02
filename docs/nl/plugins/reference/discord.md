@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de Discord Plugin
+    - Je installeert, configureert of controleert de Discord-Plugin
 summary: Voegt de Discord-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Discord-Plugin
+title: Discord Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:50:14Z"
+    generated_at: "2026-05-02T22:20:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fd84b465797fd02f9b008bb3f951c8a7e5f12a524b7c2d8c01681215271b83ba
+    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord Plugin
 
-Voegt de Discord-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+Voegt het Discord-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
 
 ## Distributie
 
 - Pakket: `@openclaw/discord`
-- Installatieroute: meegeleverd met OpenClaw
+- Installatieroute: ClawHub + npm
 
 ## Oppervlak
 
@@ -27,4 +27,4 @@ channels: discord
 
 ## Gerelateerde documentatie
 
-- [Discord](/nl/channels/discord)
+- [discord](/nl/channels/discord)

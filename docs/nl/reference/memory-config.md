@@ -1,37 +1,37 @@
 ---
 read_when:
-    - U wilt geheugenzoekproviders of embeddingmodellen configureren
+    - Je wilt aanbieders voor geheugenzoekopdrachten of embedding-modellen configureren
     - Je wilt de QMD-backend instellen
-    - Je wilt hybride zoeken, MMR of temporeel verval afstemmen
+    - Je wilt hybride zoeken, MMR of tijdverval afstemmen
     - Je wilt multimodale geheugenindexering inschakelen
 sidebarTitle: Memory config
-summary: Alle configuratieopties voor geheugenzoekfunctie, embeddingproviders, QMD, hybride zoekfunctie en multimodale indexering
+summary: Alle configuratie-instellingen voor geheugenzoekopdrachten, embeddingproviders, QMD, hybride zoekopdrachten en multimodale indexering
 title: Referentie voor geheugenconfiguratie
 x-i18n:
-    generated_at: "2026-05-02T11:27:20Z"
+    generated_at: "2026-05-02T22:22:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 11c4723b536338a777ec45673ca3c1a8c26834d6875dd4eb96617a570a55c5f5
+    source_hash: 99624a13b4e700da47a523206569d84c6750266fbb648ec73c463be9c5c285d0
     source_path: reference/memory-config.md
     workflow: 16
 ---
 
-Deze pagina vermeldt elke configuratieknop voor OpenClaw-geheugenzoekopdrachten. Zie voor conceptuele overzichten:
+Deze pagina vermeldt elke configuratieknop voor geheugenzoekopdrachten in OpenClaw. Zie voor conceptuele overzichten:
 
 <CardGroup cols={2}>
-  <Card title="Geheugenoverzicht" href="/nl/concepts/memory">
+  <Card title="Memory overview" href="/nl/concepts/memory">
     Hoe geheugen werkt.
   </Card>
-  <Card title="Ingebouwde engine" href="/nl/concepts/memory-builtin">
+  <Card title="Builtin engine" href="/nl/concepts/memory-builtin">
     Standaard SQLite-backend.
   </Card>
-  <Card title="QMD-engine" href="/nl/concepts/memory-qmd">
+  <Card title="QMD engine" href="/nl/concepts/memory-qmd">
     Local-first sidecar.
   </Card>
-  <Card title="Geheugenzoekopdracht" href="/nl/concepts/memory-search">
-    Zoekpipeline en afstemming.
+  <Card title="Memory search" href="/nl/concepts/memory-search">
+    Zoekpijplijn en tuning.
   </Card>
-  <Card title="Active Memory" href="/nl/concepts/active-memory">
+  <Card title="Active memory" href="/nl/concepts/active-memory">
     Geheugen-subagent voor interactieve sessies.
   </Card>
 </CardGroup>
@@ -39,12 +39,12 @@ Deze pagina vermeldt elke configuratieknop voor OpenClaw-geheugenzoekopdrachten.
 Alle instellingen voor geheugenzoekopdrachten staan onder `agents.defaults.memorySearch` in `openclaw.json`, tenzij anders vermeld.
 
 <Note>
-Als je de functietoggle en subagentconfiguratie voor **Active Memory** zoekt, staan die onder `plugins.entries.active-memory` in plaats van `memorySearch`.
+Als je zoekt naar de functietoggle en subagentconfiguratie voor **Active Memory**, die staat onder `plugins.entries.active-memory` in plaats van `memorySearch`.
 
-Active Memory gebruikt een model met twee gates:
+Active Memory gebruikt een model met twee poorten:
 
 1. de Plugin moet zijn ingeschakeld en gericht zijn op de huidige agent-id
-2. de aanvraag moet een geschikte interactieve persistente chatsessie zijn
+2. het verzoek moet een geschikte interactieve persistente chatsessie zijn
 
 Zie [Active Memory](/nl/concepts/active-memory) voor het activatiemodel, Plugin-eigen configuratie, transcriptpersistentie en het veilige uitrolpatroon.
 </Note>
@@ -53,14 +53,14 @@ Zie [Active Memory](/nl/concepts/active-memory) voor het activatiemodel, Plugin-
 
 ## Providerselectie
 
-| Sleutel    | Type      | Standaard        | Beschrijving                                                                                                                                                                                                                                     |
-| ---------- | --------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `provider` | `string`  | automatisch gedetecteerd | Embedding-adapter-ID zoals `bedrock`, `deepinfra`, `gemini`, `github-copilot`, `local`, `mistral`, `ollama`, `openai` of `voyage`; kan ook een geconfigureerde `models.providers.<id>` zijn waarvan `api` naar een van die adapters verwijst |
-| `model`    | `string`  | providerstandaard | Naam van het embeddingmodel                                                                                                                                                                                                                      |
-| `fallback` | `string`  | `"none"`         | Fallback-adapter-ID wanneer de primaire adapter faalt                                                                                                                                                                                            |
-| `enabled`  | `boolean` | `true`           | Geheugenzoekopdrachten in- of uitschakelen                                                                                                                                                                                                      |
+| Sleutel    | Type      | Standaard         | Beschrijving                                                                                                                                                                                                                         |
+| ---------- | --------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `provider` | `string`  | automatisch gedetecteerd | Embeddingadapter-ID zoals `bedrock`, `deepinfra`, `gemini`, `github-copilot`, `local`, `mistral`, `ollama`, `openai` of `voyage`; kan ook een geconfigureerde `models.providers.<id>` zijn waarvan `api` naar een van die adapters verwijst |
+| `model`    | `string`  | providerstandaard | Naam van het embeddingmodel                                                                                                                                                                                                          |
+| `fallback` | `string`  | `"none"`          | Fallback-adapter-ID wanneer de primaire adapter faalt                                                                                                                                                                                |
+| `enabled`  | `boolean` | `true`            | Geheugenzoekopdrachten in- of uitschakelen                                                                                                                                                                                           |
 
-### Volgorde voor automatische detectie
+### Volgorde van automatische detectie
 
 Wanneer `provider` niet is ingesteld, selecteert OpenClaw de eerste beschikbare optie:
 
@@ -87,7 +87,7 @@ Wanneer `provider` niet is ingesteld, selecteert OpenClaw de eerste beschikbare 
     Geselecteerd als een DeepInfra-sleutel kan worden gevonden.
   </Step>
   <Step title="bedrock">
-    Geselecteerd als de AWS SDK-referentieketen kan worden gevonden (instancerol, toegangssleutels, profiel, SSO, webidentiteit of gedeelde configuratie).
+    Geselecteerd als de credentialketen van de AWS SDK wordt gevonden (instancerol, toegangssleutels, profiel, SSO, webidentiteit of gedeelde configuratie).
   </Step>
 </Steps>
 
@@ -95,7 +95,7 @@ Wanneer `provider` niet is ingesteld, selecteert OpenClaw de eerste beschikbare 
 
 ### Aangepaste provider-id's
 
-`memorySearch.provider` kan verwijzen naar een aangepaste `models.providers.<id>`-vermelding. OpenClaw bepaalt de `api`-eigenaar van die provider voor de embedding-adapter, terwijl de aangepaste provider-id behouden blijft voor endpoint-, auth- en modelprefixafhandeling. Hierdoor kunnen multi-GPU- of multi-host-setups geheugenembeddings toewijzen aan een specifiek lokaal endpoint:
+`memorySearch.provider` kan naar een aangepaste `models.providers.<id>`-vermelding verwijzen. OpenClaw lost de `api`-eigenaar van die provider op voor de embeddingadapter, terwijl de aangepaste provider-id behouden blijft voor endpoint-, auth- en modelprefixafhandeling. Hierdoor kunnen multi-GPU- of multi-host-setups geheugenembeddings toewijzen aan een specifiek lokaal endpoint:
 
 ```json5
 {
@@ -122,26 +122,26 @@ Wanneer `provider` niet is ingesteld, selecteert OpenClaw de eerste beschikbare 
 
 ### API-sleutelresolutie
 
-Remote embeddings vereisen een API-sleutel. Bedrock gebruikt in plaats daarvan de standaard AWS SDK-referentieketen (instancerollen, SSO, toegangssleutels).
+Externe embeddings vereisen een API-sleutel. Bedrock gebruikt in plaats daarvan de standaardcredentialketen van de AWS SDK (instancerollen, SSO, toegangssleutels).
 
 | Provider       | Env-var                                            | Configuratiesleutel                 |
 | -------------- | -------------------------------------------------- | ----------------------------------- |
-| Bedrock        | AWS-referentieketen                                | Geen API-sleutel nodig              |
+| Bedrock        | AWS-credentialketen                                | Geen API-sleutel nodig              |
 | DeepInfra      | `DEEPINFRA_API_KEY`                                | `models.providers.deepinfra.apiKey` |
 | Gemini         | `GEMINI_API_KEY`                                   | `models.providers.google.apiKey`    |
-| GitHub Copilot | `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, `GITHUB_TOKEN` | Auth-profiel via apparaatlogin      |
+| GitHub Copilot | `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, `GITHUB_TOKEN` | Auth-profiel via device-login       |
 | Mistral        | `MISTRAL_API_KEY`                                  | `models.providers.mistral.apiKey`   |
 | Ollama         | `OLLAMA_API_KEY` (placeholder)                     | --                                  |
 | OpenAI         | `OPENAI_API_KEY`                                   | `models.providers.openai.apiKey`    |
 | Voyage         | `VOYAGE_API_KEY`                                   | `models.providers.voyage.apiKey`    |
 
 <Note>
-Codex OAuth dekt alleen chat/completions en voldoet niet voor embedding-aanvragen.
+Codex OAuth dekt alleen chat/completions en voldoet niet voor embeddingverzoeken.
 </Note>
 
 ---
 
-## Configuratie van remote endpoint
+## Configuratie van extern endpoint
 
 Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerstandaarden:
 
@@ -178,18 +178,18 @@ Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerst
 
 <AccordionGroup>
   <Accordion title="Gemini">
-    | Sleutel                | Type     | Standaard              | Beschrijving                              |
-    | ---------------------- | -------- | ---------------------- | ----------------------------------------- |
+    | Sleutel                | Type     | Standaard              | Beschrijving                               |
+    | ---------------------- | -------- | ---------------------- | ------------------------------------------ |
     | `model`                | `string` | `gemini-embedding-001` | Ondersteunt ook `gemini-embedding-2-preview` |
-    | `outputDimensionality` | `number` | `3072`                 | Voor Embedding 2: 768, 1536 of 3072       |
+    | `outputDimensionality` | `number` | `3072`                 | Voor Embedding 2: 768, 1536 of 3072        |
 
     <Warning>
-    Het wijzigen van model of `outputDimensionality` activeert automatisch een volledige herindexering.
+    Het wijzigen van het model of `outputDimensionality` activeert automatisch een volledige herindexering.
     </Warning>
 
   </Accordion>
-  <Accordion title="OpenAI-compatibele invoertypen">
-    OpenAI-compatibele embedding-endpoints kunnen zich aanmelden voor providerspecifieke `input_type`-aanvraagvelden. Dit is nuttig voor asymmetrische embeddingmodellen die verschillende labels vereisen voor query- en documentembeddings.
+  <Accordion title="OpenAI-compatible input types">
+    OpenAI-compatibele embeddingendpoints kunnen kiezen voor providerspecifieke `input_type`-verzoekvelden. Dit is handig voor asymmetrische embeddingmodellen die verschillende labels vereisen voor query- en documentembeddings.
 
     | Sleutel             | Type     | Standaard | Beschrijving                                             |
     | ------------------- | -------- | --------- | -------------------------------------------------------- |
@@ -220,7 +220,9 @@ Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerst
 
   </Accordion>
   <Accordion title="Bedrock">
-    Bedrock gebruikt de standaard AWS SDK-referentieketen; er zijn geen API-sleutels nodig. Als OpenClaw op EC2 draait met een Bedrock-geactiveerde instancerol, stel je alleen de provider en het model in:
+    ### Bedrock-embeddingconfiguratie
+
+    Bedrock gebruikt de standaardcredentialketen van de AWS SDK; er zijn geen API-sleutels nodig. Als OpenClaw op EC2 draait met een Bedrock-geactiveerde instancerol, stel dan alleen de provider en het model in:
 
     ```json5
     {
@@ -235,12 +237,12 @@ Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerst
     }
     ```
 
-    | Sleutel                | Type     | Standaard                      | Beschrijving                    |
-    | ---------------------- | -------- | ------------------------------ | ------------------------------- |
-    | `model`                | `string` | `amazon.titan-embed-text-v2:0` | Elk Bedrock-embeddingmodel-ID   |
-    | `outputDimensionality` | `number` | modelstandaard                 | Voor Titan V2: 256, 512 of 1024 |
+    | Sleutel                | Type     | Standaard                     | Beschrijving                    |
+    | ---------------------- | -------- | ----------------------------- | ------------------------------- |
+    | `model`                | `string` | `amazon.titan-embed-text-v2:0` | Elke Bedrock-embeddingmodel-ID  |
+    | `outputDimensionality` | `number` | modelstandaard                | Voor Titan V2: 256, 512 of 1024 |
 
-    **Ondersteunde modellen** (met familiedetectie en dimensiestandaarden):
+    **Ondersteunde modellen** (met familiedetectie en standaarddimensies):
 
     | Model-ID                                   | Provider   | Standaarddimensies | Configureerbare dimensies |
     | ------------------------------------------ | ---------- | ------------------ | ------------------------- |
@@ -255,19 +257,19 @@ Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerst
     | `twelvelabs.marengo-embed-3-0-v1:0`        | TwelveLabs | 512                | --                        |
     | `twelvelabs.marengo-embed-2-7-v1:0`        | TwelveLabs | 1024               | --                        |
 
-    Varianten met doorvoersuffix (bijv. `amazon.titan-embed-text-v1:2:8k`) erven de configuratie van het basismodel.
+    Varianten met throughput-suffix (bijv. `amazon.titan-embed-text-v1:2:8k`) erven de configuratie van het basismodel.
 
-    **Authenticatie:** Bedrock-auth gebruikt de standaard AWS SDK-volgorde voor referentieresolutie:
+    **Authenticatie:** Bedrock-auth gebruikt de standaardresolutievolgorde voor credentials van de AWS SDK:
 
     1. Omgevingsvariabelen (`AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`)
     2. SSO-tokencache
-    3. Referenties voor webidentiteitstokens
-    4. Gedeelde referentie- en configuratiebestanden
-    5. ECS- of EC2-metadatareferenties
+    3. Webidentiteitstokencredentials
+    4. Gedeelde credentials- en configuratiebestanden
+    5. ECS- of EC2-metadatacredentials
 
-    Regio wordt bepaald uit `AWS_REGION`, `AWS_DEFAULT_REGION`, de `amazon-bedrock` provider `baseUrl`, of valt terug op `us-east-1`.
+    Regio wordt opgelost vanuit `AWS_REGION`, `AWS_DEFAULT_REGION`, de `baseUrl` van de `amazon-bedrock`-provider, of valt terug op `us-east-1`.
 
-    **IAM-machtigingen:** de IAM-rol of gebruiker heeft nodig:
+    **IAM-machtigingen:** de IAM-rol of -gebruiker heeft nodig:
 
     ```json
     {
@@ -277,21 +279,21 @@ Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerst
     }
     ```
 
-    Voor least-privilege beperk je `InvokeModel` tot het specifieke model:
+    Voor least privilege beperk je `InvokeModel` tot het specifieke model:
 
     ```
     arn:aws:bedrock:*::foundation-model/amazon.titan-embed-text-v2:0
     ```
 
   </Accordion>
-  <Accordion title="Local (GGUF + node-llama-cpp)">
-    | Key                   | Type               | Standaard              | Beschrijving                                                                                                                                                                                                                                                                                                         |
+  <Accordion title="Lokaal (GGUF + node-llama-cpp)">
+    | Sleutel               | Type               | Standaardwaarde        | Beschrijving                                                                                                                                                                                                                                                                                                          |
     | --------------------- | ------------------ | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `local.modelPath`     | `string`           | automatisch gedownload | Pad naar GGUF-modelbestand                                                                                                                                                                                                                                                                                          |
-    | `local.modelCacheDir` | `string`           | node-llama-cpp-standaard | Cachemap voor gedownloade modellen                                                                                                                                                                                                                                                                                  |
-    | `local.contextSize`   | `number \| "auto"` | `4096`                 | Grootte van het contextvenster voor de embeddingcontext. 4096 dekt typische chunks (128-512 tokens) en begrenst tegelijk niet-gewicht-VRAM. Verlaag dit naar 1024-2048 op beperkte hosts. `"auto"` gebruikt het getrainde maximum van het model - niet aanbevolen voor 8B+-modellen (Qwen3-Embedding-8B: 40 960 tokens -> ~32 GB VRAM versus ~8,8 GB bij 4096). |
+    | `local.modelPath`     | `string`           | automatisch gedownload | Pad naar GGUF-modelbestand                                                                                                                                                                                                                                                                                            |
+    | `local.modelCacheDir` | `string`           | standaard van node-llama-cpp | Cachemap voor gedownloade modellen                                                                                                                                                                                                                                                                                    |
+    | `local.contextSize`   | `number \| "auto"` | `4096`                 | Grootte van het contextvenster voor de embeddingcontext. 4096 dekt typische chunks (128-512 tokens) en begrenst tegelijk niet-gewicht-VRAM. Verlaag naar 1024-2048 op beperkte hosts. `"auto"` gebruikt het getrainde maximum van het model - niet aanbevolen voor 8B+-modellen (Qwen3-Embedding-8B: 40 960 tokens -> ~32 GB VRAM versus ~8,8 GB bij 4096). |
 
-    Standaardmodel: `embeddinggemma-300m-qat-Q8_0.gguf` (~0,6 GB, automatisch gedownload). Source-checkouts vereisen nog steeds goedkeuring voor native builds: `pnpm approve-builds` en daarna `pnpm rebuild node-llama-cpp`.
+    Standaardmodel: `embeddinggemma-300m-qat-Q8_0.gguf` (~0,6 GB, automatisch gedownload). Bron-checkouts vereisen nog steeds goedkeuring voor native builds: `pnpm approve-builds` en daarna `pnpm rebuild node-llama-cpp`.
 
     Gebruik de zelfstandige CLI om hetzelfde providerpad te verifiëren dat de Gateway gebruikt:
 
@@ -305,39 +307,39 @@ Voor aangepaste OpenAI-compatibele endpoints of het overschrijven van providerst
   </Accordion>
 </AccordionGroup>
 
-### Time-out voor inline embedding
+### Time-out voor inline embeddings
 
 <ParamField path="sync.embeddingBatchTimeoutSeconds" type="number">
   Overschrijf de time-out voor inline embeddingbatches tijdens geheugenindexering.
 
-Niet ingesteld gebruikt de providerstandaard: 600 seconden voor lokale/zelf-gehoste providers zoals `local`, `ollama` en `lmstudio`, en 120 seconden voor gehoste providers. Verhoog dit wanneer lokale CPU-gebonden embeddingbatches gezond maar traag zijn.
+Indien niet ingesteld, wordt de standaardwaarde van de provider gebruikt: 600 seconden voor lokale/zelfgehoste providers zoals `local`, `ollama` en `lmstudio`, en 120 seconden voor gehoste providers. Verhoog dit wanneer lokale CPU-gebonden embeddingbatches gezond maar traag zijn.
 </ParamField>
 
 ---
 
-## Configuratie voor hybride zoeken
+## Configuratie voor hybride zoekopdrachten
 
 Alles onder `memorySearch.query.hybrid`:
 
-| Key                   | Type      | Standaard | Beschrijving                                |
-| --------------------- | --------- | --------- | ------------------------------------------- |
-| `enabled`             | `boolean` | `true`    | Hybride BM25 + vectorzoekactie inschakelen  |
-| `vectorWeight`        | `number`  | `0.7`     | Gewicht voor vectorscores (0-1)             |
-| `textWeight`          | `number`  | `0.3`     | Gewicht voor BM25-scores (0-1)              |
-| `candidateMultiplier` | `number`  | `4`       | Vermenigvuldiger voor grootte van kandidaatpool |
+| Sleutel               | Type      | Standaardwaarde | Beschrijving                         |
+| --------------------- | --------- | --------------- | ------------------------------------ |
+| `enabled`             | `boolean` | `true`          | Hybride BM25 + vectorzoeken inschakelen |
+| `vectorWeight`        | `number`  | `0.7`           | Gewicht voor vectorscores (0-1)      |
+| `textWeight`          | `number`  | `0.3`           | Gewicht voor BM25-scores (0-1)       |
+| `candidateMultiplier` | `number`  | `4`             | Vermenigvuldiger voor kandidaatpoolgrootte |
 
 <Tabs>
-  <Tab title="MMR (diversity)">
-    | Key           | Type      | Standaard | Beschrijving                              |
-    | ------------- | --------- | --------- | ----------------------------------------- |
-    | `mmr.enabled` | `boolean` | `false`   | MMR-herordening inschakelen               |
-    | `mmr.lambda`  | `number`  | `0.7`     | 0 = maximale diversiteit, 1 = maximale relevantie |
+  <Tab title="MMR (diversiteit)">
+    | Sleutel       | Type      | Standaardwaarde | Beschrijving                            |
+    | ------------- | --------- | --------------- | --------------------------------------- |
+    | `mmr.enabled` | `boolean` | `false`         | MMR-herrangschikking inschakelen        |
+    | `mmr.lambda`  | `number`  | `0.7`           | 0 = maximale diversiteit, 1 = maximale relevantie |
   </Tab>
-  <Tab title="Temporal decay (recency)">
-    | Key                          | Type      | Standaard | Beschrijving                 |
-    | ---------------------------- | --------- | --------- | ---------------------------- |
-    | `temporalDecay.enabled`      | `boolean` | `false`   | Recentheidsboost inschakelen |
-    | `temporalDecay.halfLifeDays` | `number`  | `30`      | Score halveert elke N dagen  |
+  <Tab title="Tijdverval (recentheid)">
+    | Sleutel                      | Type      | Standaardwaarde | Beschrijving                      |
+    | ---------------------------- | --------- | --------------- | --------------------------------- |
+    | `temporalDecay.enabled`      | `boolean` | `false`         | Recentheidsboost inschakelen      |
+    | `temporalDecay.halfLifeDays` | `number`  | `30`            | Score halveert elke N dagen       |
 
     Evergreen-bestanden (`MEMORY.md`, niet-gedateerde bestanden in `memory/`) vervallen nooit.
 
@@ -369,8 +371,8 @@ Alles onder `memorySearch.query.hybrid`:
 
 ## Aanvullende geheugenpaden
 
-| Key          | Type       | Beschrijving                                  |
-| ------------ | ---------- | --------------------------------------------- |
+| Sleutel      | Type       | Beschrijving                                |
+| ------------ | ---------- | ------------------------------------------- |
 | `extraPaths` | `string[]` | Aanvullende mappen of bestanden om te indexeren |
 
 ```json5
@@ -385,9 +387,9 @@ Alles onder `memorySearch.query.hybrid`:
 }
 ```
 
-Paden kunnen absoluut of werkruimte-relatief zijn. Mappen worden recursief gescand op `.md`-bestanden. De afhandeling van symlinks hangt af van de actieve backend: de ingebouwde engine negeert symlinks, terwijl QMD het gedrag van de onderliggende QMD-scanner volgt.
+Paden kunnen absoluut of werkruimte-relatief zijn. Mappen worden recursief gescand op `.md`-bestanden. Symlinkafhandeling hangt af van de actieve backend: de ingebouwde engine negeert symlinks, terwijl QMD het gedrag van de onderliggende QMD-scanner volgt.
 
-Gebruik voor agent-specifieke cross-agent transcriptzoekactie `agents.list[].memorySearch.qmd.extraCollections` in plaats van `memory.qmd.paths`. Die extra collecties volgen dezelfde `{ path, name, pattern? }`-vorm, maar ze worden per agent samengevoegd en kunnen expliciete gedeelde namen behouden wanneer het pad buiten de huidige werkruimte wijst. Als hetzelfde opgeloste pad zowel in `memory.qmd.paths` als in `memorySearch.qmd.extraCollections` voorkomt, behoudt QMD de eerste invoer en slaat het duplicaat over.
+Gebruik voor agent-scoped cross-agent transcript search `agents.list[].memorySearch.qmd.extraCollections` in plaats van `memory.qmd.paths`. Die extra verzamelingen volgen dezelfde vorm `{ path, name, pattern? }`, maar ze worden per agent samengevoegd en kunnen expliciete gedeelde namen behouden wanneer het pad buiten de huidige werkruimte wijst. Als hetzelfde opgeloste pad voorkomt in zowel `memory.qmd.paths` als `memorySearch.qmd.extraCollections`, behoudt QMD de eerste vermelding en slaat het duplicaat over.
 
 ---
 
@@ -395,51 +397,51 @@ Gebruik voor agent-specifieke cross-agent transcriptzoekactie `agents.list[].mem
 
 Indexeer afbeeldingen en audio naast Markdown met Gemini Embedding 2:
 
-| Key                       | Type       | Standaard | Beschrijving                             |
-| ------------------------- | ---------- | --------- | ---------------------------------------- |
-| `multimodal.enabled`      | `boolean`  | `false`   | Multimodale indexering inschakelen       |
-| `multimodal.modalities`   | `string[]` | --        | `["image"]`, `["audio"]` of `["all"]`    |
-| `multimodal.maxFileBytes` | `number`   | `10000000` | Maximale bestandsgrootte voor indexering |
+| Sleutel                   | Type       | Standaardwaarde | Beschrijving                          |
+| ------------------------- | ---------- | --------------- | ------------------------------------- |
+| `multimodal.enabled`      | `boolean`  | `false`         | Multimodale indexering inschakelen    |
+| `multimodal.modalities`   | `string[]` | --              | `["image"]`, `["audio"]`, of `["all"]` |
+| `multimodal.maxFileBytes` | `number`   | `10000000`      | Maximale bestandsgrootte voor indexering |
 
 <Note>
-Is alleen van toepassing op bestanden in `extraPaths`. Standaardgeheugenroots blijven alleen Markdown. Vereist `gemini-embedding-2-preview`. `fallback` moet `"none"` zijn.
+Geldt alleen voor bestanden in `extraPaths`. Standaardgeheugenroots blijven uitsluitend Markdown. Vereist `gemini-embedding-2-preview`. `fallback` moet `"none"` zijn.
 </Note>
 
-Ondersteunde indelingen: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic`, `.heif` (afbeeldingen); `.mp3`, `.wav`, `.ogg`, `.opus`, `.m4a`, `.aac`, `.flac` (audio).
+Ondersteunde formaten: `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.heic`, `.heif` (afbeeldingen); `.mp3`, `.wav`, `.ogg`, `.opus`, `.m4a`, `.aac`, `.flac` (audio).
 
 ---
 
-## Embeddingcache
+## Embedding-cache
 
-| Sleutel            | Type      | Standaard | Beschrijving                         |
-| ------------------ | --------- | --------- | ------------------------------------ |
-| `cache.enabled`    | `boolean` | `false`   | Cache chunk-embeddings in SQLite     |
-| `cache.maxEntries` | `number`  | `50000`   | Max. gecachte embeddings             |
+| Sleutel            | Type      | Standaard | Beschrijving                    |
+| ------------------ | --------- | --------- | -------------------------------- |
+| `cache.enabled`    | `boolean` | `false`   | Cache chunk-embeddings in SQLite |
+| `cache.maxEntries` | `number`  | `50000`   | Max. gecachte embeddings         |
 
-Voorkomt het opnieuw embeddingen van ongewijzigde tekst tijdens opnieuw indexeren of transcriptupdates.
+Voorkomt dat ongewijzigde tekst opnieuw wordt ge-embed tijdens herindexering of transcriptupdates.
 
 ---
 
 ## Batchindexering
 
-| Sleutel                       | Type      | Standaard | Beschrijving                    |
-| ----------------------------- | --------- | --------- | ------------------------------- |
-| `remote.nonBatchConcurrency`  | `number`  | `4`       | Parallelle inline embeddings    |
+| Sleutel                       | Type      | Standaard | Beschrijving                  |
+| ----------------------------- | --------- | --------- | ----------------------------- |
+| `remote.nonBatchConcurrency`  | `number`  | `4`       | Parallelle inline embeddings  |
 | `remote.batch.enabled`        | `boolean` | `false`   | Batch-embedding-API inschakelen |
-| `remote.batch.concurrency`    | `number`  | `2`       | Parallelle batchtaken           |
-| `remote.batch.wait`           | `boolean` | `true`    | Wachten op voltooiing batch     |
-| `remote.batch.pollIntervalMs` | `number`  | --        | Pollinterval                    |
-| `remote.batch.timeoutMinutes` | `number`  | --        | Batch-time-out                  |
+| `remote.batch.concurrency`    | `number`  | `2`       | Parallelle batchtaken         |
+| `remote.batch.wait`           | `boolean` | `true`    | Wachten op batchvoltooiing    |
+| `remote.batch.pollIntervalMs` | `number`  | --        | Poll-interval                 |
+| `remote.batch.timeoutMinutes` | `number`  | --        | Batch-time-out                |
 
-Beschikbaar voor `openai`, `gemini` en `voyage`. OpenAI-batch is doorgaans het snelst en goedkoopst voor grote backfills.
+Beschikbaar voor `openai`, `gemini` en `voyage`. OpenAI-batches zijn doorgaans het snelst en goedkoopst voor grote backfills.
 
-`remote.nonBatchConcurrency` regelt inline embedding-aanroepen die worden gebruikt door lokale/zelfgehoste providers en gehoste providers wanneer batch-API's van providers niet actief zijn. Ollama gebruikt standaard `1` voor niet-batchindexering om kleinere lokale hosts niet te overbelasten; stel een hogere waarde in op grotere machines.
+`remote.nonBatchConcurrency` bepaalt inline embedding-aanroepen die worden gebruikt door lokale/zelfgehoste providers en gehoste providers wanneer provider-batch-API's niet actief zijn. Ollama gebruikt standaard `1` voor niet-batchindexering om kleinere lokale hosts niet te overbelasten; stel een hogere waarde in op grotere machines.
 
-Dit staat los van `sync.embeddingBatchTimeoutSeconds`, dat de time-out voor inline embedding-aanroepen regelt.
+Dit staat los van `sync.embeddingBatchTimeoutSeconds`, dat de time-out voor inline embedding-aanroepen bepaalt.
 
 ---
 
-## Sessiegeheugen doorzoeken (experimenteel)
+## Zoeken in sessiegeheugen (experimenteel)
 
 Indexeer sessietranscripten en maak ze beschikbaar via `memory_search`:
 
@@ -447,32 +449,32 @@ Indexeer sessietranscripten en maak ze beschikbaar via `memory_search`:
 | ----------------------------- | ---------- | ------------ | --------------------------------------------- |
 | `experimental.sessionMemory`  | `boolean`  | `false`      | Sessie-indexering inschakelen                 |
 | `sources`                     | `string[]` | `["memory"]` | Voeg `"sessions"` toe om transcripten op te nemen |
-| `sync.sessions.deltaBytes`    | `number`   | `100000`     | Bytedrempel voor opnieuw indexeren            |
-| `sync.sessions.deltaMessages` | `number`   | `50`         | Berichtdrempel voor opnieuw indexeren         |
+| `sync.sessions.deltaBytes`    | `number`   | `100000`     | Bytedrempel voor herindexering                |
+| `sync.sessions.deltaMessages` | `number`   | `50`         | Berichtdrempel voor herindexering             |
 
 <Warning>
-Sessie-indexering is opt-in en wordt asynchroon uitgevoerd. Resultaten kunnen enigszins verouderd zijn. Sessielogs staan op schijf, dus behandel bestandssysteemtoegang als de vertrouwensgrens.
+Sessie-indexering is opt-in en wordt asynchroon uitgevoerd. Resultaten kunnen licht verouderd zijn. Sessielogboeken staan op schijf, dus behandel toegang tot het bestandssysteem als de vertrouwensgrens.
 </Warning>
 
 ---
 
 ## SQLite-vectorversnelling (sqlite-vec)
 
-| Sleutel                      | Type      | Standaard | Beschrijving                            |
-| ---------------------------- | --------- | --------- | --------------------------------------- |
-| `store.vector.enabled`       | `boolean` | `true`    | Gebruik sqlite-vec voor vectorquery's   |
-| `store.vector.extensionPath` | `string`  | bundled   | Overschrijf het sqlite-vec-pad          |
+| Sleutel                      | Type      | Standaard | Beschrijving                          |
+| ---------------------------- | --------- | --------- | ------------------------------------- |
+| `store.vector.enabled`       | `boolean` | `true`    | Gebruik sqlite-vec voor vectorquery's |
+| `store.vector.extensionPath` | `string`  | gebundeld | Overschrijf sqlite-vec-pad            |
 
-Wanneer sqlite-vec niet beschikbaar is, valt OpenClaw automatisch terug op cosinusovereenkomst in het proces.
+Wanneer sqlite-vec niet beschikbaar is, valt OpenClaw automatisch terug op in-process cosinusgelijkenis.
 
 ---
 
 ## Indexopslag
 
-| Sleutel               | Type     | Standaard                             | Beschrijving                                      |
-| --------------------- | -------- | ------------------------------------- | ------------------------------------------------- |
-| `store.path`          | `string` | `~/.openclaw/memory/{agentId}.sqlite` | Indexlocatie (ondersteunt token `{agentId}`)      |
-| `store.fts.tokenizer` | `string` | `unicode61`                           | FTS5-tokenizer (`unicode61` of `trigram`)         |
+| Sleutel               | Type     | Standaard                             | Beschrijving                                  |
+| --------------------- | -------- | ------------------------------------- | --------------------------------------------- |
+| `store.path`          | `string` | `~/.openclaw/memory/{agentId}.sqlite` | Indexlocatie (ondersteunt `{agentId}`-token)  |
+| `store.fts.tokenizer` | `string` | `unicode61`                           | FTS5-tokenizer (`unicode61` of `trigram`)     |
 
 ---
 
@@ -480,48 +482,48 @@ Wanneer sqlite-vec niet beschikbaar is, valt OpenClaw automatisch terug op cosin
 
 Stel `memory.backend = "qmd"` in om dit in te schakelen. Alle QMD-instellingen staan onder `memory.qmd`:
 
-| Sleutel                  | Type      | Standaard | Beschrijving                                                                           |
-| ------------------------ | --------- | --------- | -------------------------------------------------------------------------------------- |
-| `command`                | `string`  | `qmd`     | Pad naar QMD-uitvoerbaar bestand; stel een absoluut pad in wanneer service-`PATH` verschilt van je shell |
-| `searchMode`             | `string`  | `search`  | Zoekopdracht: `search`, `vsearch`, `query`                                             |
-| `includeDefaultMemory`   | `boolean` | `true`    | `MEMORY.md` + `memory/**/*.md` automatisch indexeren                                   |
-| `paths[]`                | `array`   | --        | Extra paden: `{ name, path, pattern? }`                                                |
-| `sessions.enabled`       | `boolean` | `false`   | Sessietranscripten indexeren                                                           |
-| `sessions.retentionDays` | `number`  | --        | Bewaartermijn voor transcripten                                                        |
+| Sleutel                  | Type      | Standaard | Beschrijving                                                                            |
+| ------------------------ | --------- | --------- | ---------------------------------------------------------------------------------------- |
+| `command`                | `string`  | `qmd`     | Pad naar QMD-uitvoerbaar bestand; stel een absoluut pad in wanneer service-`PATH` afwijkt van je shell |
+| `searchMode`             | `string`  | `search`  | Zoekopdracht: `search`, `vsearch`, `query`                                               |
+| `includeDefaultMemory`   | `boolean` | `true`    | `MEMORY.md` + `memory/**/*.md` automatisch indexeren                                     |
+| `paths[]`                | `array`   | --        | Extra paden: `{ name, path, pattern? }`                                                  |
+| `sessions.enabled`       | `boolean` | `false`   | Sessietranscripten indexeren                                                            |
+| `sessions.retentionDays` | `number`  | --        | Transcriptbewaartermijn                                                                 |
 | `sessions.exportDir`     | `string`  | --        | Exportmap                                                                               |
 
 `searchMode: "search"` is alleen lexicaal/BM25. OpenClaw voert geen gereedheidsprobes voor semantische vectoren of QMD-embeddingonderhoud uit voor die modus, ook niet tijdens `memory status --deep`; `vsearch` en `query` blijven QMD-vectorgereedheid en embeddings vereisen.
 
-OpenClaw geeft de voorkeur aan de huidige QMD-collection- en MCP-queryvormen, maar houdt oudere QMD-releases werkend door waar nodig compatibele collection-patternvlaggen en oudere MCP-toolnamen te proberen. Wanneer QMD ondersteuning voor meerdere collection-filters aankondigt, worden collections met dezelfde bron met één QMD-proces doorzocht; oudere QMD-builds houden het compatibiliteitspad per collection. Dezelfde bron betekent dat duurzame memory-collections samen worden gegroepeerd, terwijl collections met sessietranscripten een aparte groep blijven, zodat brondiversificatie nog steeds beide invoeren heeft.
+OpenClaw geeft de voorkeur aan de huidige QMD-collectie- en MCP-queryvormen, maar houdt oudere QMD-releases werkend door waar nodig compatibele collectiepatroonflags en oudere MCP-toolnamen te proberen. Wanneer QMD ondersteuning voor meerdere collectiefilters adverteert, worden collecties met dezelfde bron met één QMD-proces doorzocht; oudere QMD-builds blijven het compatibiliteitspad per collectie gebruiken. Dezelfde bron betekent dat duurzame geheugencollecties samen worden gegroepeerd, terwijl sessietranscriptcollecties een aparte groep blijven, zodat brondiversificatie nog steeds beide invoeren heeft.
 
 <Note>
-QMD-modeloverschrijvingen blijven aan de QMD-kant, niet in de OpenClaw-configuratie. Als je de modellen van QMD globaal moet overschrijven, stel dan omgevingsvariabelen zoals `QMD_EMBED_MODEL`, `QMD_RERANK_MODEL` en `QMD_GENERATE_MODEL` in de runtime-omgeving van de Gateway in.
+QMD-modeloverrides blijven aan de QMD-kant, niet in de OpenClaw-configuratie. Als je QMD's modellen globaal moet overschrijven, stel dan omgevingsvariabelen zoals `QMD_EMBED_MODEL`, `QMD_RERANK_MODEL` en `QMD_GENERATE_MODEL` in de Gateway-runtimeomgeving in.
 </Note>
 
 <AccordionGroup>
-  <Accordion title="Update schedule">
+  <Accordion title="Updateschema">
     | Sleutel                   | Type      | Standaard | Beschrijving                           |
     | ------------------------- | --------- | --------- | -------------------------------------- |
     | `update.interval`         | `string`  | `5m`      | Vernieuwingsinterval                   |
     | `update.debounceMs`       | `number`  | `15000`   | Bestandswijzigingen debouncen          |
-    | `update.onBoot`           | `boolean` | `true`    | Vernieuwen wanneer de langlevende QMD-manager opent; bewaakt ook opt-in-startupvernieuwing |
+    | `update.onBoot`           | `boolean` | `true`    | Vernieuwen wanneer de langlevende QMD-manager opent; bewaakt ook opt-in startvernieuwing |
     | `update.startup`          | `string`  | `off`     | Optionele vernieuwing bij Gateway-start: `off`, `idle` of `immediate` |
-    | `update.startupDelayMs`   | `number`  | `120000`  | Vertraging voordat vernieuwing met `startup: "idle"` wordt uitgevoerd |
-    | `update.waitForBootSync`  | `boolean` | `false`   | Manageropening blokkeren totdat de eerste vernieuwing is voltooid |
-    | `update.embedInterval`    | `string`  | --        | Aparte embed-cadans                    |
+    | `update.startupDelayMs`   | `number`  | `120000`  | Vertraging voordat `startup: "idle"`-vernieuwing wordt uitgevoerd |
+    | `update.waitForBootSync`  | `boolean` | `false`   | Manager openen blokkeren tot de eerste vernieuwing is voltooid |
+    | `update.embedInterval`    | `string`  | --        | Afzonderlijk embeddingritme           |
     | `update.commandTimeoutMs` | `number`  | --        | Time-out voor QMD-commando's           |
     | `update.updateTimeoutMs`  | `number`  | --        | Time-out voor QMD-updatebewerkingen    |
-    | `update.embedTimeoutMs`   | `number`  | --        | Time-out voor QMD-embedbewerkingen     |
+    | `update.embedTimeoutMs`   | `number`  | --        | Time-out voor QMD-embeddingbewerkingen |
   </Accordion>
-  <Accordion title="Limits">
-    | Sleutel                   | Type     | Standaard | Beschrijving                |
-    | ------------------------- | -------- | --------- | --------------------------- |
-    | `limits.maxResults`       | `number` | `6`       | Maximaal aantal zoekresultaten |
-    | `limits.maxSnippetChars`  | `number` | --        | Fragmentlengte begrenzen    |
+  <Accordion title="Limieten">
+    | Sleutel                   | Type     | Standaard | Beschrijving                    |
+    | ------------------------- | -------- | --------- | -------------------------------- |
+    | `limits.maxResults`       | `number` | `6`       | Maximaal aantal zoekresultaten   |
+    | `limits.maxSnippetChars`  | `number` | --        | Snippetlengte begrenzen          |
     | `limits.maxInjectedChars` | `number` | --        | Totaal aantal geïnjecteerde tekens begrenzen |
-    | `limits.timeoutMs`        | `number` | `4000`    | Zoektime-out                |
+    | `limits.timeoutMs`        | `number` | `4000`    | Zoektime-out                     |
   </Accordion>
-  <Accordion title="Scope">
+  <Accordion title="Bereik">
     Bepaalt welke sessies QMD-zoekresultaten kunnen ontvangen. Hetzelfde schema als [`session.sendPolicy`](/nl/gateway/config-agents#session):
 
     ```json5
@@ -537,24 +539,24 @@ QMD-modeloverschrijvingen blijven aan de QMD-kant, niet in de OpenClaw-configura
     }
     ```
 
-    De meegeleverde standaard staat directe en kanaalsessies toe, terwijl groepen nog steeds worden geweigerd.
+    De meegeleverde standaardinstelling staat directe sessies en kanaalsessies toe, terwijl groepen nog steeds worden geweigerd.
 
-    Standaard is alleen DM. `match.keyPrefix` komt overeen met de genormaliseerde sessiesleutel; `match.rawKeyPrefix` komt overeen met de ruwe sleutel inclusief `agent:<id>:`.
+    Standaard is alleen DM. `match.keyPrefix` matcht de genormaliseerde sessiesleutel; `match.rawKeyPrefix` matcht de ruwe sleutel inclusief `agent:<id>:`.
 
   </Accordion>
-  <Accordion title="Citations">
+  <Accordion title="Citaties">
     `memory.citations` geldt voor alle backends:
 
     | Waarde           | Gedrag                                             |
     | ---------------- | -------------------------------------------------- |
-    | `auto` (standaard) | Voegt `Source: <path#line>`-voettekst toe aan fragmenten |
-    | `on`             | Voettekst altijd opnemen                           |
-    | `off`            | Voettekst weglaten (pad wordt intern nog steeds aan de agent doorgegeven) |
+    | `auto` (standaard) | `Source: <path#line>`-footer opnemen in snippets |
+    | `on`             | Footer altijd opnemen                             |
+    | `off`            | Footer weglaten (pad wordt intern nog steeds aan agent doorgegeven) |
 
   </Accordion>
 </AccordionGroup>
 
-QMD-bootvernieuwingen gebruiken tijdens het starten van de Gateway een eenmalig subprocesspad. De langlevende QMD-manager blijft de reguliere bestandswatcher en intervaltimers beheren wanneer memory search wordt geopend voor interactief gebruik.
+QMD-opstartvernieuwingen gebruiken een eenmalig subprocesspad tijdens het starten van de Gateway. De langlevende QMD-manager blijft eigenaar van de reguliere bestandswatcher en intervaltimers wanneer geheugenzoekopdracht wordt geopend voor interactief gebruik.
 
 ### Volledig QMD-voorbeeld
 
@@ -585,15 +587,15 @@ Dreaming wordt geconfigureerd onder `plugins.entries.memory-core.config.dreaming
 
 Dreaming draait als één geplande sweep en gebruikt interne light/deep/REM-fasen als implementatiedetail.
 
-Zie [Dreaming](/nl/concepts/dreaming) voor conceptueel gedrag en slash-commando's.
+Zie [Dreaming](/nl/concepts/dreaming) voor conceptueel gedrag en slashcommando's.
 
 ### Gebruikersinstellingen
 
 | Sleutel     | Type      | Standaardmodel | Beschrijving                                      |
-| ----------- | --------- | --------------- | ------------------------------------------------- |
-| `enabled`   | `boolean` | `false`         | Dreaming volledig in- of uitschakelen             |
-| `frequency` | `string`  | `0 3 * * *`     | Optionele Cron-cadans voor de volledige Dreaming-sweep |
-| `model`     | `string`  | standaardmodel  | Optionele modeloverschrijving voor Dream Diary-subagent |
+| ----------- | --------- | -------------- | ------------------------------------------------- |
+| `enabled`   | `boolean` | `false`        | Dreaming volledig in- of uitschakelen             |
+| `frequency` | `string`  | `0 3 * * *`    | Optioneel cronritme voor de volledige Dreaming-sweep |
+| `model`     | `string`  | standaardmodel | Optionele modeloverride voor de Dream Diary-subagent |
 
 ### Voorbeeld
 
@@ -621,9 +623,9 @@ Zie [Dreaming](/nl/concepts/dreaming) voor conceptueel gedrag en slash-commando'
 
 <Note>
 - Dreaming schrijft machinestatus naar `memory/.dreams/`.
-- Dreaming schrijft menselijk leesbare verhalende uitvoer naar `DREAMS.md` (of bestaande `dreams.md`).
-- `dreaming.model` gebruikt de bestaande vertrouwensgate voor Plugin-subagents; stel `plugins.entries.memory-core.subagent.allowModelOverride: true` in voordat je dit inschakelt.
-- Dream Diary probeert het één keer opnieuw met het standaardsessiemodel wanneer het geconfigureerde model niet beschikbaar is. Vertrouwens- of allowlist-fouten worden gelogd en worden niet stilzwijgend opnieuw geprobeerd.
+- Dreaming schrijft menselijk leesbare narratieve uitvoer naar `DREAMS.md` (of bestaand `dreams.md`).
+- `dreaming.model` gebruikt de bestaande vertrouwenspoort voor Plugin-subagents; stel `plugins.entries.memory-core.subagent.allowModelOverride: true` in voordat je dit inschakelt.
+- Dream Diary probeert het één keer opnieuw met het standaardmodel van de sessie wanneer het geconfigureerde model niet beschikbaar is. Vertrouwens- of allowlistfouten worden gelogd en worden niet stilzwijgend opnieuw geprobeerd.
 - Het beleid en de drempels voor de light/deep/REM-fasen zijn intern gedrag, geen gebruikersgerichte configuratie.
 
 </Note>
@@ -631,5 +633,5 @@ Zie [Dreaming](/nl/concepts/dreaming) voor conceptueel gedrag en slash-commando'
 ## Gerelateerd
 
 - [Configuratiereferentie](/nl/gateway/configuration-reference)
-- [Memory-overzicht](/nl/concepts/memory)
-- [Memory search](/nl/concepts/memory-search)
+- [Geheugenoverzicht](/nl/concepts/memory)
+- [Geheugenzoekopdracht](/nl/concepts/memory-search)

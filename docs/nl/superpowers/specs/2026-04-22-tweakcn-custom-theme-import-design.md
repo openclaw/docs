@@ -1,71 +1,71 @@
 ---
 x-i18n:
-    generated_at: "2026-04-29T23:19:54Z"
+    generated_at: "2026-05-02T22:22:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cccaaa1b3e472279b7548ad5af5d50162db9e99a731e06be796de64ee9f8c8d8
+    source_hash: d9f2b5783c5762ebe7b5db108a89692e653c515138110b4fa9d23663e2ccbbd5
     source_path: superpowers/specs/2026-04-22-tweakcn-custom-theme-import-design.md
     workflow: 16
 ---
 
-# Ontwerp voor import van aangepast Tweakcn-thema
+# Tweakcn-ontwerp voor import van aangepast thema
 
 Status: goedgekeurd in terminal op 2026-04-22
 
 ## Samenvatting
 
-Voeg precies één browserlokaal aangepast Control UI-themaslot toe dat kan worden geïmporteerd vanuit een tweakcn-deellink. De bestaande ingebouwde themafamilies blijven `claw`, `knot` en `dash`. De nieuwe familie `custom` gedraagt zich als een normale OpenClaw-themafamilie en ondersteunt de modi `light`, `dark` en `system` wanneer de geïmporteerde tweakcn-payload zowel lichte als donkere tokensets bevat.
+Voeg precies één browser-lokaal aangepast Control UI-themaslot toe dat kan worden geïmporteerd vanuit een tweakcn-deellink. De bestaande ingebouwde themafamilies blijven `claw`, `knot` en `dash`. De nieuwe familie `custom` gedraagt zich als een normale OpenClaw-themafamilie en ondersteunt de modus `light`, `dark` en `system` wanneer de geïmporteerde tweakcn-payload zowel lichte als donkere tokensets bevat.
 
-Het geïmporteerde thema wordt alleen opgeslagen in het huidige browserprofiel, samen met de rest van de Control UI-instellingen. Het wordt niet naar de Gateway-configuratie geschreven en wordt niet tussen apparaten of browsers gesynchroniseerd.
+Het geïmporteerde thema wordt alleen opgeslagen in het huidige browserprofiel, samen met de rest van de Control UI-instellingen. Het wordt niet naar de Gateway-configuratie geschreven en synchroniseert niet tussen apparaten of browsers.
 
 ## Probleem
 
-Het Control UI-themasysteem is momenteel beperkt tot drie hardgecodeerde themafamilies:
+Het themasysteem van de Control UI is momenteel gesloten rond drie hard-gecodeerde themafamilies:
 
 - `ui/src/ui/theme.ts`
 - `ui/src/ui/views/config.ts`
 - `ui/src/styles/base.css`
 
-Gebruikers kunnen wisselen tussen ingebouwde families en modusvarianten, maar ze kunnen geen thema uit tweakcn gebruiken zonder repo-CSS te bewerken. Het gevraagde resultaat is kleiner dan een algemeen themasysteem: behoud de drie ingebouwde thema’s en voeg één door de gebruiker beheerd geïmporteerd slot toe dat vanuit een tweakcn-link kan worden vervangen.
+Gebruikers kunnen schakelen tussen ingebouwde families en modusvarianten, maar ze kunnen geen thema van tweakcn gebruiken zonder repo-CSS te bewerken. Het gevraagde resultaat is kleiner dan een algemeen themasysteem: behoud de drie ingebouwde thema’s en voeg één door de gebruiker beheerd importsleuf toe dat kan worden vervangen vanuit een tweakcn-link.
 
 ## Doelen
 
-- Laat de bestaande ingebouwde themafamilies ongewijzigd.
+- Houd de bestaande ingebouwde themafamilies ongewijzigd.
 - Voeg precies één geïmporteerd aangepast slot toe, geen themabibliotheek.
 - Accepteer een tweakcn-deellink of een directe `https://tweakcn.com/r/themes/{id}`-URL.
-- Bewaar het geïmporteerde thema alleen in de lokale opslag van de browser.
-- Laat het geïmporteerde slot werken met de bestaande modusbesturing voor `light`, `dark` en `system`.
-- Houd foutgedrag veilig: een foutieve import breekt nooit het actieve UI-thema.
+- Bewaar het geïmporteerde thema alleen in browser local storage.
+- Laat het geïmporteerde slot werken met de bestaande modusbesturingen `light`, `dark` en `system`.
+- Houd foutgedrag veilig: een mislukte import breekt nooit het actieve UI-thema.
 
 ## Niet-doelen
 
-- Geen bibliotheek met meerdere thema’s of browserlokale lijst met imports.
-- Geen opslag aan Gateway-zijde of synchronisatie tussen apparaten.
-- Geen willekeurige CSS-editor of ruwe thema-JSON-editor.
-- Geen automatisch laden van externe lettertype-assets vanuit tweakcn.
-- Geen poging om tweakcn-payloads te ondersteunen die slechts één modus beschikbaar maken.
-- Geen repo-brede herstructurering van theming buiten de noodzakelijke naden voor de Control UI.
+- Geen bibliotheek met meerdere thema’s of browser-lokale lijst met imports.
+- Geen Gateway-persistentie of synchronisatie tussen apparaten.
+- Geen willekeurige CSS-editor of editor voor ruwe thema-JSON.
+- Geen automatisch laden van externe lettertype-assets van tweakcn.
+- Geen poging om tweakcn-payloads te ondersteunen die slechts één modus blootleggen.
+- Geen repo-brede themarefactor buiten de naden die nodig zijn voor de Control UI.
 
 ## Gebruikersbeslissingen die al zijn genomen
 
 - Behoud de drie ingebouwde thema’s.
-- Voeg één door tweakcn aangedreven importslot toe.
-- Sla het geïmporteerde thema op in de browser, niet in de Gateway-configuratie.
+- Voeg één door tweakcn aangedreven importsleuf toe.
+- Sla het geïmporteerde thema op in de browser, niet in Gateway-configuratie.
 - Ondersteun `light`, `dark` en `system` voor het geïmporteerde slot.
-- Het overschrijven van het aangepaste slot met de volgende import is het beoogde gedrag.
+- Het aangepaste slot overschrijven met de volgende import is het beoogde gedrag.
 
 ## Aanbevolen aanpak
 
-Voeg een vierde themafamilie-id, `custom`, toe aan het Control UI-themamodel. De familie `custom` wordt alleen selecteerbaar wanneer er een geldige tweakcn-import aanwezig is. De geïmporteerde payload wordt genormaliseerd naar een OpenClaw-specifiek aangepast themarecord en opgeslagen in de lokale opslag van de browser, samen met de rest van de UI-instellingen.
+Voeg een vierde themafamilie-id toe, `custom`, aan het themamodel van de Control UI. De familie `custom` wordt alleen selecteerbaar wanneer er een geldige tweakcn-import aanwezig is. De geïmporteerde payload wordt genormaliseerd naar een OpenClaw-specifiek aangepast themarecord en opgeslagen in browser local storage samen met de rest van de UI-instellingen.
 
-Tijdens runtime rendert OpenClaw een beheerde `<style>`-tag die de opgeloste aangepaste CSS-variabeleblokken definieert:
+Tijdens runtime rendert OpenClaw een beheerde `<style>`-tag die de opgeloste aangepaste CSS-variabelenblokken definieert:
 
 ```css
 :root[data-theme="custom"] { ... }
 :root[data-theme="custom-light"] { ... }
 ```
 
-Dit houdt aangepaste themavariabelen beperkt tot de familie `custom` en voorkomt dat inline CSS-variabelen naar de ingebouwde families lekken.
+Dit houdt aangepaste themavariabelen beperkt tot de familie `custom` en voorkomt dat inline CSS-variabelen lekken naar de ingebouwde families.
 
 ## Architectuur
 
@@ -83,9 +83,9 @@ Werk `ui/src/ui/theme.ts` bij:
 
 Er worden geen legacy-aliassen toegevoegd voor `custom`.
 
-### Opslagmodel
+### Persistentiemodel
 
-Breid `UiSettings`-opslag in `ui/src/ui/storage.ts` uit met één optionele aangepaste-thema-payload:
+Breid `UiSettings`-persistentie in `ui/src/ui/storage.ts` uit met één optionele aangepaste thema-payload:
 
 - `customTheme?: ImportedCustomTheme`
 
@@ -105,28 +105,28 @@ type ImportedCustomTheme = {
 Opmerkingen:
 
 - `sourceUrl` slaat de oorspronkelijke gebruikersinvoer op na normalisatie.
-- `themeId` is de tweakcn-thema-id die uit de URL is gehaald.
+- `themeId` is de tweakcn-thema-id die uit de URL is geëxtraheerd.
 - `label` is het tweakcn-veld `name` wanneer aanwezig, anders `Custom`.
 - `light` en `dark` zijn al genormaliseerde OpenClaw-tokenmaps, geen ruwe tweakcn-payloads.
-- De geïmporteerde payload staat naast andere browserlokale instellingen en wordt geserialiseerd in hetzelfde lokale-opslagdocument.
-- Als opgeslagen aangepaste-themagegevens bij het laden ontbreken of ongeldig zijn, negeer de payload en val terug op `theme: "claw"` wanneer de opgeslagen familie `custom` was.
+- De geïmporteerde payload leeft naast andere browser-lokale instellingen en wordt geserialiseerd in hetzelfde local-storage-document.
+- Als opgeslagen aangepaste themagegevens ontbreken of ongeldig zijn bij het laden, negeer de payload en val terug naar `theme: "claw"` wanneer de gepersisteerde familie `custom` was.
 
-### Runtime-toepassing
+### Toepassing tijdens runtime
 
-Voeg een smalle aangepaste-thema-stylesheetbeheerder toe in de Control UI-runtime, beheerd in de buurt van `ui/src/ui/app-settings.ts` en `ui/src/ui/theme.ts`.
+Voeg een smalle aangepaste-thema-stylesheetbeheerder toe in de Control UI-runtime, in de buurt van `ui/src/ui/app-settings.ts` en `ui/src/ui/theme.ts`.
 
 Verantwoordelijkheden:
 
-- Maak of werk één stabiele `<style id="openclaw-custom-theme">`-tag in `document.head` bij.
-- Emit CSS alleen wanneer er een geldige aangepaste-thema-payload bestaat.
+- Maak of werk één stabiele `<style id="openclaw-custom-theme">`-tag bij in `document.head`.
+- Emit CSS alleen wanneer er een geldige aangepaste thema-payload bestaat.
 - Verwijder de inhoud van de style-tag wanneer de payload wordt gewist.
-- Houd CSS voor ingebouwde families in `ui/src/styles/base.css`; voeg geïmporteerde tokens niet in de ingecheckte stylesheet in.
+- Houd ingebouwde familie-CSS in `ui/src/styles/base.css`; voeg geïmporteerde tokens niet in de ingecheckte stylesheet in.
 
-Deze beheerder draait wanneer instellingen worden geladen, opgeslagen, geïmporteerd of gewist.
+Deze beheerder draait telkens wanneer instellingen worden geladen, opgeslagen, geïmporteerd of gewist.
 
-### Selectors voor lichte modus
+### Light-modus-selectors
 
-De implementatie moet bij voorkeur `data-theme-mode="light"` gebruiken voor lichtestijl over families heen, in plaats van `custom-light` apart te behandelen. Als een bestaande selector vastzit aan `data-theme="light"` en op elke lichte familie moet worden toegepast, verbreed die dan als onderdeel van dit werk.
+De implementatie moet de voorkeur geven aan `data-theme-mode="light"` voor light-styling over families heen in plaats van `custom-light` speciaal te behandelen. Als een bestaande selector vastzit aan `data-theme="light"` en op elke lichte familie moet worden toegepast, verbreed die dan als onderdeel van dit werk.
 
 ## Import-UX
 
@@ -134,20 +134,20 @@ Werk `ui/src/ui/views/config.ts` bij in de sectie `Appearance`:
 
 - Voeg een themakaart `Custom` toe naast `Claw`, `Knot` en `Dash`.
 - Toon de kaart als uitgeschakeld wanneer er geen geïmporteerd aangepast thema bestaat.
-- Voeg onder het themaraster een importpaneel toe met:
+- Voeg een importpaneel toe onder het themaraster met:
   - één tekstinvoer voor een tweakcn-deellink of `/r/themes/{id}`-URL
   - één knop `Import`
   - één pad `Replace` wanneer er al een aangepaste payload bestaat
   - één actie `Clear` wanneer er al een aangepaste payload bestaat
 - Toon het geïmporteerde themalabel en de bronhost wanneer er een payload bestaat.
-- Als het actieve thema `custom` is, wordt een geïmporteerde vervanging direct toegepast.
+- Als het actieve thema `custom` is, wordt een geïmporteerde vervanging onmiddellijk toegepast.
 - Als het actieve thema niet `custom` is, slaat importeren alleen de nieuwe payload op totdat de gebruiker de kaart `Custom` selecteert.
 
-De snelle themakiezer voor instellingen in `ui/src/ui/views/config-quick.ts` moet `Custom` ook alleen tonen wanneer er een payload bestaat.
+De snelle thema-kiezer in instellingen in `ui/src/ui/views/config-quick.ts` moet `Custom` ook alleen tonen wanneer er een payload bestaat.
 
-## URL-parsing en extern ophalen
+## URL-parsing en externe fetch
 
-Het browserimportpad accepteert:
+Het browser-importpad accepteert:
 
 - `https://tweakcn.com/themes/{id}`
 - `https://tweakcn.com/r/themes/{id}`
@@ -156,24 +156,24 @@ De implementatie moet beide vormen normaliseren naar:
 
 - `https://tweakcn.com/r/themes/{id}`
 
-De browser haalt daarna het genormaliseerde endpoint `/r/themes/{id}` direct op.
+De browser haalt vervolgens het genormaliseerde eindpunt `/r/themes/{id}` rechtstreeks op.
 
 Gebruik een smalle schemavalidator voor de externe payload. Een zod-schema heeft de voorkeur omdat dit een onvertrouwde externe grens is.
 
 Vereiste externe velden:
 
-- topniveau `name` als optionele string
+- top-level `name` als optionele string
 - `cssVars.theme` als optioneel object
 - `cssVars.light` als object
 - `cssVars.dark` als object
 
-Als `cssVars.light` of `cssVars.dark` ontbreekt, wijs de import dan af. Dit is bewust: het goedgekeurde productgedrag is volledige modusondersteuning, niet best-effort-synthese van een ontbrekende kant.
+Als `cssVars.light` of `cssVars.dark` ontbreekt, wijs de import af. Dit is bewust: het goedgekeurde productgedrag is volledige modusondersteuning, geen best-effort synthese van een ontbrekende kant.
 
 ## Tokenmapping
 
 Spiegel tweakcn-variabelen niet blind. Normaliseer een begrensde subset naar OpenClaw-tokens en leid de rest af in een helper.
 
-### Direct geïmporteerde tokens
+### Rechtstreeks geïmporteerde tokens
 
 Uit elk tweakcn-modusblok:
 
@@ -203,11 +203,11 @@ Uit gedeelde `cssVars.theme` wanneer aanwezig:
 - `font-sans`
 - `font-mono`
 
-Als een modusblok `font-sans`, `font-mono` of `radius` overschrijft, wint de modusspecifieke waarde.
+Als een modusblok `font-sans`, `font-mono` of `radius` overschrijft, wint de modus-lokale waarde.
 
 ### Tokens afgeleid voor OpenClaw
 
-De importeur leidt OpenClaw-specifieke variabelen af uit de geïmporteerde basiskleuren:
+De importer leidt OpenClaw-only variabelen af uit de geïmporteerde basiskleuren:
 
 - `--bg-accent`
 - `--bg-elevated`
@@ -235,14 +235,14 @@ De importeur leidt OpenClaw-specifieke variabelen af uit de geïmporteerde basis
 - `--danger-muted`
 - `--danger-subtle`
 
-Afleidingsregels staan in een pure helper, zodat ze onafhankelijk kunnen worden getest. Exacte kleurmengformules zijn een implementatiedetail, maar de helper moet aan twee beperkingen voldoen:
+Afleidingsregels staan in een pure helper zodat ze onafhankelijk kunnen worden getest. Exacte kleurmengformules zijn een implementatiedetail, maar de helper moet aan twee beperkingen voldoen:
 
 - behoud leesbaar contrast dicht bij de intentie van het geïmporteerde thema
-- produceer stabiele uitvoer voor dezelfde geïmporteerde payload
+- produceer stabiele output voor dezelfde geïmporteerde payload
 
-### Genegeerde tokens in v1
+### Tokens genegeerd in v1
 
-Deze tweakcn-tokens worden in de eerste versie bewust genegeerd:
+Deze tweakcn-tokens worden bewust genegeerd in de eerste versie:
 
 - `chart-*`
 - `sidebar-*`
@@ -256,28 +256,28 @@ Dit houdt de scope gericht op de tokens die de huidige Control UI daadwerkelijk 
 
 ### Lettertypen
 
-Lettertypestacks worden geïmporteerd als ze aanwezig zijn, maar OpenClaw laadt in v1 geen externe lettertype-assets. Als de geïmporteerde stack verwijst naar lettertypen die niet beschikbaar zijn in de browser, geldt normaal fallbackgedrag.
+Lettertypestackstrings worden geïmporteerd als ze aanwezig zijn, maar OpenClaw laadt geen externe lettertype-assets in v1. Als de geïmporteerde stack verwijst naar lettertypen die niet beschikbaar zijn in de browser, geldt normaal fallbackgedrag.
 
 ## Foutgedrag
 
-Foutieve imports moeten gesloten falen.
+Mislukte imports moeten gesloten falen.
 
-- Ongeldig URL-formaat: toon inline validatiefout, haal niets op.
-- Niet-ondersteunde host of padvorm: toon inline validatiefout, haal niets op.
-- Netwerkfout, niet-OK-respons of misvormde JSON: toon inline fout, laat de huidige opgeslagen payload onaangetast.
-- Schemafout of ontbrekende lichte/donkere blokken: toon inline fout, laat de huidige opgeslagen payload onaangetast.
+- Ongeldig URL-formaat: toon inline validatiefout, fetch niet.
+- Niet-ondersteunde host of padvorm: toon inline validatiefout, fetch niet.
+- Netwerkfout, niet-OK-respons of misvormde JSON: toon inline fout, laat de huidige opgeslagen payload ongemoeid.
+- Schemafout of ontbrekende light/dark-blokken: toon inline fout, laat de huidige opgeslagen payload ongemoeid.
 - Wisactie:
   - verwijdert de opgeslagen aangepaste payload
   - verwijdert de inhoud van de beheerde aangepaste style-tag
   - als `custom` actief is, schakelt de themafamilie terug naar `claw`
-- Ongeldige opgeslagen aangepaste payload bij eerste keer laden:
+- Ongeldige opgeslagen aangepaste payload bij eerste laadactie:
   - negeer de opgeslagen payload
   - emit geen aangepaste CSS
-  - als de opgeslagen themafamilie `custom` was, val terug op `claw`
+  - als de gepersisteerde themafamilie `custom` was, val terug naar `claw`
 
 Op geen enkel moment mag een mislukte import het actieve document achterlaten met gedeeltelijk toegepaste aangepaste CSS-variabelen.
 
-## Bestanden die naar verwachting wijzigen bij implementatie
+## Bestanden die naar verwachting wijzigen in de implementatie
 
 Primaire bestanden:
 
@@ -291,7 +291,6 @@ Primaire bestanden:
 Waarschijnlijke nieuwe helpers:
 
 - `ui/src/ui/custom-theme.ts`
-- `ui/src/ui/custom-theme-import.ts`
 
 Tests:
 
@@ -304,24 +303,24 @@ Tests:
 
 Minimale implementatiedekking:
 
-- parseer de deellink-URL naar een tweakcn-thema-id
+- parse de URL van een deellink naar een tweakcn-thema-id
 - normaliseer `/themes/{id}` en `/r/themes/{id}` naar de fetch-URL
 - wijs niet-ondersteunde hosts en misvormde id’s af
 - valideer de vorm van de tweakcn-payload
-- map een geldige tweakcn-payload naar genormaliseerde lichte en donkere OpenClaw-tokenmaps
-- laad en bewaar de aangepaste payload in browserlokale instellingen
+- map een geldige tweakcn-payload naar genormaliseerde OpenClaw-tokenmaps voor light en dark
+- laad en sla de aangepaste payload op in browser-lokale instellingen
 - los `custom` op voor `light`, `dark` en `system`
 - schakel selectie van `Custom` uit wanneer er geen payload bestaat
-- pas het geïmporteerde thema direct toe wanneer `custom` al actief is
-- val terug op `claw` wanneer het actieve aangepaste thema wordt gewist
+- pas het geïmporteerde thema onmiddellijk toe wanneer `custom` al actief is
+- val terug naar `claw` wanneer het actieve aangepaste thema wordt gewist
 
 Doel voor handmatige verificatie:
 
-- importeer een bekend tweakcn-thema vanuit Instellingen
-- wissel tussen `light`, `dark` en `system`
-- wissel tussen `custom` en de ingebouwde families
+- importeer een bekend tweakcn-thema vanuit Settings
+- schakel tussen `light`, `dark` en `system`
+- schakel tussen `custom` en de ingebouwde families
 - herlaad de pagina en bevestig dat het geïmporteerde aangepaste thema lokaal behouden blijft
 
 ## Uitrolnotities
 
-Deze functie is bewust klein. Als gebruikers later vragen om meerdere geïmporteerde thema’s, hernoemen, exporteren of synchronisatie tussen apparaten, behandel dat dan als een vervolgontwerp. Bouw in deze implementatie niet vooraf een abstractie voor een themabibliotheek.
+Deze functie is bewust klein. Als gebruikers later vragen om meerdere geïmporteerde thema’s, hernoemen, exporteren of synchronisatie tussen apparaten, behandel dat dan als een vervolgontwerp. Bouw in deze implementatie niet vooraf een themabibliotheekabstractie.

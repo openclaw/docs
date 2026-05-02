@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Je installeert, configureert of auditeert de googlechat-Plugin
-summary: Voegt de Google Chat-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Google Chat Plugin
+    - Je installeert, configureert of controleert de googlechat-Plugin
+summary: Voegt het Google Chat-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
+title: Google Chat-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:51:18Z"
+    generated_at: "2026-05-02T22:21:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5806bfb6c5a21bfb83bccd20a998795c00a8ad69af69649aee52db72ae7f6cc4
+    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Voegt het Google Chat-kanaaloppervlak toe voor het verzenden en ontvangen van Op
 ## Distributie
 
 - Pakket: `@openclaw/googlechat`
-- Installatieroute: ClawHub + npm
+- Installatieroute: opgenomen in OpenClaw
 
 ## Oppervlak
 
-channels: googlechat
+kanalen: googlechat
 
 ## Gerelateerde documentatie
 

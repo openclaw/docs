@@ -1,14 +1,14 @@
 ---
 read_when:
     - Je wilt ondersteuning voor Zalo Personal (onofficieel) in OpenClaw
-    - U configureert of ontwikkelt de zalouser-Plugin
-summary: 'Zalo Personal-plugin: QR-login + berichtenverkeer via native zca-js (plugininstallatie + kanaalconfiguratie + tool)'
-title: Persoonlijke Zalo-Plugin
+    - Je configureert of ontwikkelt de zalouser-Plugin
+summary: 'Zalo Personal-plugin: QR-login + berichten versturen via native zca-js (Plugininstallatie + kanaalconfiguratie + tool)'
+title: Zalo persoonlijke Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:07:47Z"
+    generated_at: "2026-05-02T22:21:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
+    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
     source_path: plugins/zalouser.md
     workflow: 16
 ---
@@ -18,12 +18,12 @@ x-i18n:
 Ondersteuning voor Zalo Personal in OpenClaw via een Plugin, met native `zca-js` om een normaal Zalo-gebruikersaccount te automatiseren.
 
 <Warning>
-Niet-officiële automatisering kan leiden tot opschorting of blokkering van het account. Gebruik op eigen risico.
+Onofficiële automatisering kan leiden tot opschorting of blokkering van het account. Gebruik op eigen risico.
 </Warning>
 
 ## Naamgeving
 
-De kanaal-id is `zalouser` om expliciet te maken dat dit een **persoonlijk Zalo-gebruikersaccount** automatiseert (niet-officieel). We houden `zalo` gereserveerd voor een mogelijke toekomstige officiële Zalo-API-integratie.
+De kanaal-id is `zalouser` om expliciet te maken dat dit een **persoonlijk Zalo-gebruikersaccount** automatiseert (onofficieel). We houden `zalo` gereserveerd voor een mogelijke toekomstige officiële integratie met de Zalo API.
 
 ## Waar het draait
 
@@ -35,15 +35,14 @@ Er is geen externe `zca`/`openzca` CLI-binary vereist.
 
 ## Installeren
 
-### Optie A: installeren vanuit npm
+### Optie A: installeren vanaf npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
-Als npm meldt dat het OpenClaw-pakket is verouderd, komt die pakketversie uit
-een oudere externe pakketlijn; gebruik een actuele verpakte OpenClaw-build of
-het lokale mappad totdat een nieuwer npm-pakket is gepubliceerd.
+Gebruik het kale pakket om de huidige officiële releasetag te volgen. Pin een exacte
+versie alleen wanneer je een reproduceerbare installatie nodig hebt.
 
 Herstart daarna de Gateway.
 
@@ -82,7 +81,7 @@ openclaw message send --channel zalouser --target <threadId> --message "Hello fr
 openclaw directory peers list --channel zalouser --query "name"
 ```
 
-## Agenttool
+## Agent-tool
 
 Toolnaam: `zalouser`
 
@@ -93,4 +92,4 @@ Kanaalberichtacties ondersteunen ook `react` voor berichtreacties.
 ## Gerelateerd
 
 - [Plugins bouwen](/nl/plugins/building-plugins)
-- [Communityplugins](/nl/plugins/community)
+- [Community-Plugins](/nl/plugins/community)
