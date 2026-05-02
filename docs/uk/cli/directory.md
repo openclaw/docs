@@ -1,33 +1,34 @@
 ---
 read_when:
-    - Ви хочете знайти контакти, групи або ідентифікатори self для каналу
-    - Ви розробляєте адаптер каталогу каналу
-summary: Довідник CLI для `openclaw directory` (self, peers, groups)
+    - Ви хочете знайти ідентифікатори контактів/груп/власного облікового запису для каналу
+    - Ви розробляєте адаптер каталогу каналів
+summary: Довідник CLI для `openclaw directory` (себе, однорангових учасників, груп)
 title: Каталог
 x-i18n:
-    generated_at: "2026-04-24T04:12:06Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T05:25:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: f63ed92469738501ae1f8f08aec3edf01d1f0f46008571ed38ccd9c77e5ba15e
+    source_hash: dcd0be284c0ec1aa347084d84f7001f1e2f47977ec5198025ba303297858aaab
     source_path: cli/directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw directory`
 
-Пошук у каталозі для каналів, які це підтримують (контакти/peers, групи та “me”).
+Пошук у каталозі для каналів, які це підтримують (контакти/співрозмовники, групи та «me»).
 
-## Загальні прапорці
+## Спільні прапорці
 
-- `--channel <name>`: id/псевдонім каналу (обов’язково, якщо налаштовано кілька каналів; автоматично, якщо налаштовано лише один)
-- `--account <id>`: id облікового запису (типово: типовий для каналу)
-- `--json`: вивід JSON
+- `--channel <name>`: ідентифікатор/псевдонім каналу (обов’язково, коли налаштовано кілька каналів; автоматично, коли налаштовано лише один)
+- `--account <id>`: ідентифікатор облікового запису (типово: стандартний для каналу)
+- `--json`: вивести JSON
 
 ## Примітки
 
-- `directory` призначено для того, щоб допомогти вам знайти ID, які можна вставити в інші команди (особливо `openclaw message send --target ...`).
-- Для багатьох каналів результати беруться з конфігурації (allowlist / налаштовані групи), а не з живого каталогу провайдера.
-- Типовий вивід — це `id` (а іноді й `name`), розділені табуляцією; для сценаріїв використовуйте `--json`.
+- `directory` призначено, щоб допомогти вам знайти ідентифікатори, які можна вставити в інші команди (особливо `openclaw message send --target ...`).
+- Для багатьох каналів результати базуються на конфігурації (списки дозволених / налаштовані групи), а не на живому каталозі провайдера.
+- Установлені Plugin каналів усе ще можуть не підтримувати каталог; у такому разі команда повідомляє про непідтримувану операцію каталогу замість перевстановлення Plugin.
+- Типовий вивід — це `id` (а іноді `name`), розділені табуляцією; використовуйте `--json` для сценаріїв.
 
 ## Використання результатів із `message send`
 
@@ -36,24 +37,24 @@ openclaw directory peers list --channel slack --query "U0"
 openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 ```
 
-## Формати ID (за каналами)
+## Формати ідентифікаторів (за каналом)
 
 - WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (група)
-- Telegram: `@username` або числовий id чату; групи — це числові id
+- Telegram: `@username` або числовий ідентифікатор чату; групи мають числові ідентифікатори
 - Slack: `user:U…` і `channel:C…`
 - Discord: `user:<id>` і `channel:<id>`
 - Matrix (Plugin): `user:@user:server`, `room:!roomId:server` або `#alias:server`
 - Microsoft Teams (Plugin): `user:<id>` і `conversation:<id>`
-- Zalo (Plugin): id користувача (Bot API)
-- Zalo Personal / `zalouser` (Plugin): id потоку (DM/група) з `zca` (`me`, `friend list`, `group list`)
+- Zalo (Plugin): ідентифікатор користувача (Bot API)
+- Zalo Personal / `zalouser` (Plugin): ідентифікатор потоку (DM/група) з `zca` (`me`, `friend list`, `group list`)
 
-## Self ("me")
+## Себе ("me")
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## Peers (контакти/користувачі)
+## Співрозмовники (контакти/користувачі)
 
 ```bash
 openclaw directory peers list --channel zalouser
