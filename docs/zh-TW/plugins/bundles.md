@@ -1,40 +1,40 @@
 ---
 read_when:
-    - 你想安裝與 Codex、Claude 或 Cursor 相容的套件組
-    - 你需要了解 OpenClaw 如何將套件包內容對應到原生功能
-    - 你正在偵錯套件組合偵測或缺少的功能
-summary: 將 Codex、Claude 和 Cursor 套件作為 OpenClaw Plugin 安裝並使用
+    - 您想要安裝與 Codex、Claude 或 Cursor 相容的套件包
+    - 你需要了解 OpenClaw 如何將套件內容對應到原生功能
+    - 你正在偵錯套件組合偵測或缺少的能力
+summary: 安裝並將 Codex、Claude 和 Cursor 套件作為 OpenClaw Plugin 使用
 title: Plugin 套件包
 x-i18n:
-    generated_at: "2026-04-30T03:22:48Z"
+    generated_at: "2026-05-02T02:54:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6d03643c3029f5c6c81fab3aa1c00accba94da64a834e381b29db8f405d6bdee
+    source_hash: 4b949ad70881714a30ab136261441687b439e39b516638ffa052efeab6b75bd4
     source_path: plugins/bundles.md
     workflow: 16
 ---
 
-OpenClaw 可以從三個外部生態系安裝 plugins：**Codex**、**Claude**、
-以及 **Cursor**。這些稱為 **bundles**，也就是內容與中繼資料套件，
-OpenClaw 會將其對應到 Skills、hooks 和 MCP tools 等原生功能。
+OpenClaw 可以從三個外部生態系統安裝 Plugin：**Codex**、**Claude**，
+以及 **Cursor**。這些稱為 **bundle**，也就是內容與中繼資料套件，
+OpenClaw 會將其對應到 Skills、hook 和 MCP 工具等原生功能。
 
 <Info>
-  Bundles **不**等同於原生 OpenClaw plugins。原生 plugins 會在行程內執行，
-  並且可以註冊任何能力。Bundles 則是內容套件，具備選擇性的功能對應，
-  信任邊界也較窄。
+  bundle **不同於** 原生 OpenClaw Plugin。原生 Plugin 會在
+  處理序內執行，並且可以註冊任何能力。bundle 則是內容套件，具備
+  選擇性的功能對應，以及較窄的信任邊界。
 </Info>
 
-## 為什麼存在 bundles
+## bundle 存在的原因
 
-許多實用的 plugins 會以 Codex、Claude 或 Cursor 格式發布。OpenClaw
-會偵測這些格式，並將其支援的內容對應到原生功能集，而不是要求作者
-將它們重寫為原生 OpenClaw plugins。這表示你可以安裝 Claude 命令套件
+許多實用的 Plugin 會以 Codex、Claude 或 Cursor 格式發布。OpenClaw
+不要求作者將它們重寫為原生 OpenClaw Plugin，而是偵測這些格式，
+並將其支援的內容對應到原生功能集合。這表示你可以安裝 Claude 指令套件
 或 Codex skill bundle，並立即使用。
 
 ## 安裝 bundle
 
 <Steps>
-  <Step title="從目錄、封存檔或 marketplace 安裝">
+  <Step title="從目錄、封存檔或市集安裝">
     ```bash
     # Local directory
     openclaw plugins install ./my-bundle
@@ -55,7 +55,7 @@ OpenClaw 會將其對應到 Skills、hooks 和 MCP tools 等原生功能。
     openclaw plugins inspect <id>
     ```
 
-    Bundles 會顯示為 `Format: bundle`，子類型為 `codex`、`claude` 或 `cursor`。
+    bundle 會顯示為 `Format: bundle`，並帶有 `codex`、`claude` 或 `cursor` 子類型。
 
   </Step>
 
@@ -64,62 +64,62 @@ OpenClaw 會將其對應到 Skills、hooks 和 MCP tools 等原生功能。
     openclaw gateway restart
     ```
 
-    對應後的功能（Skills、hooks、MCP tools、LSP 預設值）會在下一個工作階段中可用。
+    對應後的功能（Skills、hook、MCP 工具、LSP 預設值）會在下一個工作階段可用。
 
   </Step>
 </Steps>
 
-## OpenClaw 會從 bundles 對應哪些內容
+## OpenClaw 會從 bundle 對應什麼
 
-目前並非每個 bundle 功能都能在 OpenClaw 中執行。以下是已可運作的功能，
+目前並非每項 bundle 功能都會在 OpenClaw 中執行。以下列出可用的功能，
 以及已偵測但尚未接線的功能。
 
 ### 目前支援
 
-| 功能          | 對應方式                                                                                     | 適用於         |
-| ------------- | -------------------------------------------------------------------------------------------- | -------------- |
-| Skill 內容    | Bundle skill roots 會以一般 OpenClaw skills 載入                                             | 所有格式       |
-| 命令          | `commands/` 和 `.cursor/commands/` 會視為 skill roots                                        | Claude, Cursor |
-| Hook 套件     | OpenClaw 風格的 `HOOK.md` + `handler.ts` 版面配置                                            | Codex          |
-| MCP tools     | Bundle MCP 設定會合併到內嵌 Pi settings；支援的 stdio 和 HTTP servers 會被載入              | 所有格式       |
-| LSP servers   | Claude `.lsp.json` 和 manifest 宣告的 `lspServers` 會合併到內嵌 Pi LSP 預設值               | Claude         |
-| Settings      | Claude `settings.json` 會匯入為內嵌 Pi 預設值                                                | Claude         |
+| 功能          | 對應方式                                                                                    | 適用於         |
+| ------------- | ------------------------------------------------------------------------------------------- | -------------- |
+| Skill 內容    | bundle skill root 會以一般 OpenClaw Skills 載入                                             | 所有格式       |
+| 指令          | `commands/` 和 `.cursor/commands/` 會視為 skill root                                        | Claude、Cursor |
+| Hook 套件     | OpenClaw 風格的 `HOOK.md` + `handler.ts` 配置                                               | Codex          |
+| MCP 工具      | bundle MCP 設定會合併到內嵌 Pi 設定；載入支援的 stdio 和 HTTP 伺服器                       | 所有格式       |
+| LSP 伺服器    | Claude `.lsp.json` 和清單宣告的 `lspServers` 會合併到內嵌 Pi LSP 預設值                    | Claude         |
+| 設定          | Claude `settings.json` 會匯入為內嵌 Pi 預設值                                               | Claude         |
 
 #### Skill 內容
 
-- bundle skill roots 會以一般 OpenClaw skill roots 載入
-- Claude `commands` roots 會視為額外的 skill roots
-- Cursor `.cursor/commands` roots 會視為額外的 skill roots
+- bundle skill root 會以一般 OpenClaw skill root 載入
+- Claude `commands` root 會視為額外的 skill root
+- Cursor `.cursor/commands` root 會視為額外的 skill root
 
-這表示 Claude markdown 命令檔會透過一般 OpenClaw skill loader 運作。
-Cursor command markdown 也會透過相同路徑運作。
+這表示 Claude markdown 指令檔會透過一般 OpenClaw skill
+loader 運作。Cursor 指令 markdown 也會透過相同路徑運作。
 
 #### Hook 套件
 
-- bundle hook roots **只有**在使用一般 OpenClaw hook-pack 版面配置時才會運作。
-  目前主要是 Codex 相容案例：
+- bundle hook root **只有**在使用一般 OpenClaw hook-pack
+  配置時才會運作。目前這主要是相容 Codex 的情況：
   - `HOOK.md`
   - `handler.ts` 或 `handler.js`
 
 #### Pi 的 MCP
 
-- 已啟用的 bundles 可以提供 MCP server config
-- OpenClaw 會將 bundle MCP config 合併到有效的內嵌 Pi settings，
-  作為 `mcpServers`
-- OpenClaw 會在內嵌 Pi agent 回合期間，透過啟動 stdio servers
-  或連線到 HTTP servers，公開支援的 bundle MCP tools
-- `coding` 和 `messaging` tool profiles 預設會包含 bundle MCP tools；
-  若要針對 agent 或 gateway 選擇退出，請使用 `tools.deny: ["bundle-mcp"]`
-- 專案本機 Pi settings 仍會在 bundle defaults 之後套用，因此 workspace
-  settings 可以在需要時覆寫 bundle MCP entries
-- bundle MCP tool catalogs 會在註冊前以決定性方式排序，因此上游
-  `listTools()` 順序變動不會反覆擾動 prompt-cache tool blocks
+- 已啟用的 bundle 可以提供 MCP 伺服器設定
+- OpenClaw 會將 bundle MCP 設定合併到有效的內嵌 Pi 設定中，作為
+  `mcpServers`
+- OpenClaw 會在內嵌 Pi agent 回合期間公開支援的 bundle MCP 工具，
+  方式是啟動 stdio 伺服器或連線到 HTTP 伺服器
+- `coding` 和 `messaging` 工具 profile 預設包含 bundle MCP 工具；
+  若要為 agent 或 gateway 退出，請使用 `tools.deny: ["bundle-mcp"]`
+- 專案本機 Pi 設定仍會在 bundle 預設值之後套用，因此 workspace
+  設定可在需要時覆寫 bundle MCP 項目
+- bundle MCP 工具目錄會在註冊前以確定性方式排序，因此上游 `listTools()`
+  順序變更不會讓 prompt-cache 工具區塊反覆震盪
 
 ##### 傳輸
 
-MCP servers 可以使用 stdio 或 HTTP transport：
+MCP 伺服器可以使用 stdio 或 HTTP 傳輸：
 
-**Stdio** 會啟動子行程：
+**Stdio** 會啟動子處理序：
 
 ```json
 {
@@ -135,7 +135,7 @@ MCP servers 可以使用 stdio 或 HTTP transport：
 }
 ```
 
-**HTTP** 預設會透過 `sse` 連線到正在執行的 MCP server，或在要求時使用 `streamable-http`：
+**HTTP** 預設會透過 `sse` 連線到執行中的 MCP 伺服器，或在指定時使用 `streamable-http`：
 
 ```json
 {
@@ -154,157 +154,158 @@ MCP servers 可以使用 stdio 或 HTTP transport：
 }
 ```
 
-- `transport` 可以設定為 `"streamable-http"` 或 `"sse"`；省略時，OpenClaw 會使用 `sse`
-- `type: "http"` 是 CLI 原生的下游形狀；在 OpenClaw config 中請使用 `transport: "streamable-http"`。`openclaw mcp set` 和 `openclaw doctor --fix` 會正規化常見別名。
-- 只允許 `http:` 和 `https:` URL schemes
-- `headers` values 支援 `${ENV_VAR}` 插補
-- 同時包含 `command` 和 `url` 的 server entry 會被拒絕
-- URL credentials（userinfo 和 query params）會從 tool descriptions
-  和 logs 中遮蔽
-- `connectionTimeoutMs` 會覆寫 stdio 和 HTTP transports 的預設 30 秒連線逾時
+- `transport` 可設為 `"streamable-http"` 或 `"sse"`；省略時，OpenClaw 會使用 `sse`
+- `type: "http"` 是 CLI 原生的下游形狀；請在 OpenClaw 設定中使用 `transport: "streamable-http"`。`openclaw mcp set` 和 `openclaw doctor --fix` 會標準化常見別名。
+- 只允許 `http:` 和 `https:` URL scheme
+- `headers` 值支援 `${ENV_VAR}` 插值
+- 同時具有 `command` 和 `url` 的伺服器項目會被拒絕
+- URL 憑證（userinfo 和 query params）會從工具
+  描述與記錄中遮蔽
+- `connectionTimeoutMs` 會覆寫 stdio 和 HTTP 傳輸的預設 30 秒連線逾時
 
-##### Tool 命名
+##### 工具命名
 
-OpenClaw 會以 `serverName__toolName` 形式，使用 provider-safe names
-註冊 bundle MCP tools。例如，key 為 `"vigil-harbor"` 的 server 若公開
-`memory_search` tool，會註冊為 `vigil-harbor__memory_search`。
+OpenClaw 會以 provider-safe 名稱註冊 bundle MCP 工具，格式為
+`serverName__toolName`。例如，鍵為 `"vigil-harbor"` 的伺服器公開
+`memory_search` 工具時，會註冊為 `vigil-harbor__memory_search`。
 
 - `A-Za-z0-9_-` 以外的字元會替換為 `-`
-- server prefixes 上限為 30 個字元
-- 完整 tool names 上限為 64 個字元
-- 空的 server names 會退回使用 `mcp`
-- 發生衝突的 sanitized names 會以數字 suffixes 消除歧義
-- 最終公開的 tool order 會依 safe name 以決定性方式排序，讓重複的 Pi
-  回合保持 cache-stable
-- profile filtering 會將同一個 bundle MCP server 的所有 tools 視為由
-  `bundle-mcp` plugin 擁有，因此 profile allowlists 和 deny lists
-  可以包含個別公開的 tool names，或 `bundle-mcp` plugin key
+- 伺服器前綴上限為 30 個字元
+- 完整工具名稱上限為 64 個字元
+- 空白伺服器名稱會 fallback 至 `mcp`
+- 發生碰撞的清理後名稱會以數字後綴消歧
+- 最終公開的工具順序會依 safe name 確定性排序，以保持重複 Pi
+  回合的快取穩定
+- profile 篩選會將同一 bundle MCP 伺服器的所有工具視為由 `bundle-mcp`
+  這個 Plugin 擁有，因此 profile allowlist 和 deny list 可以包含
+  個別公開工具名稱，或 `bundle-mcp` Plugin 鍵
 
-#### 內嵌 Pi settings
+#### 內嵌 Pi 設定
 
-- Claude `settings.json` 會在 bundle 啟用時匯入為預設內嵌 Pi settings
-- OpenClaw 會在套用 shell override keys 前先進行清理
+- bundle 啟用時，Claude `settings.json` 會匯入為預設的內嵌 Pi 設定
+- OpenClaw 會先清理 shell 覆寫鍵，再套用它們
 
-清理後的 keys：
+清理後的鍵：
 
 - `shellPath`
 - `shellCommandPrefix`
 
 #### 內嵌 Pi LSP
 
-- 已啟用的 Claude bundles 可以提供 LSP server config
-- OpenClaw 會載入 `.lsp.json` 加上任何 manifest 宣告的 `lspServers` paths
-- bundle LSP config 會合併到有效的內嵌 Pi LSP 預設值
-- 目前只有支援的 stdio-backed LSP servers 可執行；不支援的
-  transports 仍會出現在 `openclaw plugins inspect <id>`
+- 已啟用的 Claude bundle 可以提供 LSP 伺服器設定
+- OpenClaw 會載入 `.lsp.json` 加上任何清單宣告的 `lspServers` 路徑
+- bundle LSP 設定會合併到有效的內嵌 Pi LSP 預設值中
+- 目前只有支援的 stdio-backed LSP 伺服器可執行；不支援的
+  傳輸仍會顯示在 `openclaw plugins inspect <id>` 中
 
-### 已偵測但未執行
+### 已偵測但不執行
 
-這些會被辨識並顯示在 diagnostics 中，但 OpenClaw 不會執行它們：
+這些項目會被識別並顯示在診斷資訊中，但 OpenClaw 不會執行它們：
 
-- Claude `agents`、`hooks.json` automation、`outputStyles`
+- Claude `agents`、`hooks.json` 自動化、`outputStyles`
 - Cursor `.cursor/agents`、`.cursor/hooks.json`、`.cursor/rules`
-- Codex inline/app metadata，僅限 capability reporting 以外的部分
+- Codex inline/app 中繼資料，但能力回報除外
 
-## Bundle 格式
+## bundle 格式
 
 <AccordionGroup>
-  <Accordion title="Codex bundles">
+  <Accordion title="Codex bundle">
     標記：`.codex-plugin/plugin.json`
 
     選用內容：`skills/`、`hooks/`、`.mcp.json`、`.app.json`
 
-    Codex bundles 在使用 skill roots 和 OpenClaw 風格 hook-pack
-    directories（`HOOK.md` + `handler.ts`）時，最符合 OpenClaw。
+    Codex bundle 在使用 skill root 和 OpenClaw 風格
+    hook-pack 目錄（`HOOK.md` + `handler.ts`）時最適合 OpenClaw。
 
   </Accordion>
 
-  <Accordion title="Claude bundles">
+  <Accordion title="Claude bundle">
     兩種偵測模式：
 
-    - **Manifest-based:** `.claude-plugin/plugin.json`
-    - **無 manifest：** 預設 Claude layout（`skills/`、`commands/`、`agents/`、`hooks/`、`.mcp.json`、`.lsp.json`、`settings.json`）
+    - **基於清單：** `.claude-plugin/plugin.json`
+    - **無清單：** 預設 Claude 配置（`skills/`、`commands/`、`agents/`、`hooks/`、`.mcp.json`、`.lsp.json`、`settings.json`）
 
     Claude 專屬行為：
 
-    - `commands/` 會視為 skill content
-    - `settings.json` 會匯入到內嵌 Pi settings（shell override keys 會被清理）
-    - `.mcp.json` 會向內嵌 Pi 公開支援的 stdio tools
-    - `.lsp.json` 加上 manifest 宣告的 `lspServers` paths 會載入到內嵌 Pi LSP defaults
-    - `hooks/hooks.json` 會被偵測但不會執行
-    - manifest 中的自訂 component paths 是加成式的（它們會擴充 defaults，而不是取代 defaults）
+    - `commands/` 會視為 skill 內容
+    - `settings.json` 會匯入內嵌 Pi 設定（shell 覆寫鍵會被清理）
+    - `.mcp.json` 會向內嵌 Pi 公開支援的 stdio 工具
+    - `.lsp.json` 加上清單宣告的 `lspServers` 路徑會載入內嵌 Pi LSP 預設值
+    - `hooks/hooks.json` 會被偵測但不執行
+    - 清單中的自訂元件路徑是加成式的（它們會擴充預設值，而非取代預設值）
 
   </Accordion>
 
-  <Accordion title="Cursor bundles">
+  <Accordion title="Cursor bundle">
     標記：`.cursor-plugin/plugin.json`
 
     選用內容：`skills/`、`.cursor/commands/`、`.cursor/agents/`、`.cursor/rules/`、`.cursor/hooks.json`、`.mcp.json`
 
-    - `.cursor/commands/` 會視為 skill content
-    - `.cursor/rules/`、`.cursor/agents/` 和 `.cursor/hooks.json` 僅供偵測
+    - `.cursor/commands/` 會視為 skill 內容
+    - `.cursor/rules/`、`.cursor/agents/` 和 `.cursor/hooks.json` 僅偵測
 
   </Accordion>
 </AccordionGroup>
 
 ## 偵測優先順序
 
-OpenClaw 會先檢查原生 plugin 格式：
+OpenClaw 會先檢查原生 Plugin 格式：
 
-1. `openclaw.plugin.json` 或具備 `openclaw.extensions` 的有效 `package.json` — 視為 **原生 plugin**
-2. Bundle 標記（`.codex-plugin/`、`.claude-plugin/`，或預設 Claude/Cursor layout）— 視為 **bundle**
+1. `openclaw.plugin.json` 或具有 `openclaw.extensions` 的有效 `package.json`，會視為**原生 Plugin**
+2. bundle 標記（`.codex-plugin/`、`.claude-plugin/`，或預設 Claude/Cursor 配置），會視為 **bundle**
 
-如果目錄同時包含兩者，OpenClaw 會使用原生路徑。這可避免
-雙格式 packages 被部分安裝為 bundles。
+如果目錄同時包含兩者，OpenClaw 會使用原生路徑。這可防止
+雙格式套件被部分安裝為 bundle。
 
 ## 執行階段相依性與清理
 
-- 第三方相容 bundles 不會取得啟動時的 `npm install` 修復。它們應該
-  透過 `openclaw plugins install` 安裝，並在已安裝的 plugin 目錄中
+- 第三方相容 bundle 不會取得啟動時的 `npm install` 修復。它們
+  應透過 `openclaw plugins install` 安裝，並在已安裝的 Plugin 目錄中
   隨附所需的一切。
-- OpenClaw 擁有的封裝式 bundled plugins 有一個狹窄例外：當其中一個
-  被啟用時，Gateway 啟動可以在 import 前修復遺失的已宣告執行階段相依性。
-  Operators 可以使用 `openclaw plugins deps` 檢查或修復該階段。
-- release pipeline 仍負責在可行情況下交付完整的 bundled dependency payload
-  （請參閱 [Releasing](/zh-TW/reference/RELEASING) 中的 postpublish verification rule）。
+- OpenClaw 擁有的 bundled Plugin 會以輕量形式隨 core 出貨，或可透過
+  Plugin 安裝器下載。Gateway 啟動時絕不會為它們執行
+  package manager。
+- `openclaw doctor --fix` 會移除舊版暫存相依性目錄，並可安裝本機
+  Plugin 索引中缺少的已設定可下載 Plugin。
 
 ## 安全性
 
-Bundles 的信任邊界比原生 plugins 更窄：
+bundle 的信任邊界比原生 Plugin 更窄：
 
-- OpenClaw **不會**在行程內載入任意 bundle runtime modules
-- Skills 和 hook-pack paths 必須保留在 plugin root 內（會進行 boundary check）
-- Settings files 會以相同 boundary checks 讀取
-- 支援的 stdio MCP servers 可以作為 subprocesses 啟動
+- OpenClaw **不會**在處理序內載入任意 bundle runtime 模組
+- Skills 和 hook-pack 路徑必須保留在 Plugin root 內（經邊界檢查）
+- 設定檔會使用相同的邊界檢查讀取
+- 支援的 stdio MCP 伺服器可能會作為子處理序啟動
 
-這讓 bundles 預設更安全，但你仍應將第三方 bundles 視為其公開功能的可信內容。
+這讓 bundle 預設更安全，但你仍應將第三方
+bundle 視為其公開功能的受信任內容。
 
 ## 疑難排解
 
 <AccordionGroup>
-  <Accordion title="Bundle 已偵測到，但 capabilities 未執行">
-    執行 `openclaw plugins inspect <id>`。如果 capability 已列出但標示為
-    not wired，這是產品限制，而不是安裝損壞。
+  <Accordion title="bundle 已被偵測但能力沒有執行">
+    執行 `openclaw plugins inspect <id>`。如果某項能力有列出但標記為
+    尚未接線，這是產品限制，不是安裝損壞。
   </Accordion>
 
-  <Accordion title="Claude command files 未出現">
-    請確認 bundle 已啟用，而且 markdown files 位於已偵測到的
+  <Accordion title="Claude 指令檔沒有出現">
+    確認 bundle 已啟用，且 markdown 檔案位於偵測到的
     `commands/` 或 `skills/` root 內。
   </Accordion>
 
-  <Accordion title="Claude settings 未套用">
-    僅支援來自 `settings.json` 的內嵌 Pi settings。OpenClaw 不會將
-    bundle settings 視為 raw config patches。
+  <Accordion title="Claude 設定沒有套用">
+    只支援來自 `settings.json` 的內嵌 Pi 設定。OpenClaw 不會
+    將 bundle 設定視為原始 config patch。
   </Accordion>
 
-  <Accordion title="Claude hooks 未執行">
-    `hooks/hooks.json` 僅供偵測。如果你需要可執行 hooks，請使用
-    OpenClaw hook-pack layout，或發布原生 plugin。
+  <Accordion title="Claude hook 沒有執行">
+    `hooks/hooks.json` 僅偵測。如果需要可執行的 hook，請使用
+    OpenClaw hook-pack 配置，或出貨原生 Plugin。
   </Accordion>
 </AccordionGroup>
 
 ## 相關
 
-- [安裝與設定 Plugins](/zh-TW/tools/plugin)
-- [建置 Plugins](/zh-TW/plugins/building-plugins) — 建立原生 plugin
-- [Plugin Manifest](/zh-TW/plugins/manifest) — 原生 manifest schema
+- [安裝與設定 Plugin](/zh-TW/tools/plugin)
+- [建置 Plugin](/zh-TW/plugins/building-plugins) — 建立原生 Plugin
+- [Plugin 清單](/zh-TW/plugins/manifest) — 原生清單 schema
