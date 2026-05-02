@@ -1,11 +1,11 @@
 ---
 x-i18n:
-    generated_at: "2026-04-25T13:58:30Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T22:23:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cccaaa1b3e472279b7548ad5af5d50162db9e99a731e06be796de64ee9f8c8d8
+    source_hash: d9f2b5783c5762ebe7b5db108a89692e653c515138110b4fa9d23663e2ccbbd5
     source_path: superpowers/specs/2026-04-22-tweakcn-custom-theme-import-design.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Projekt importu niestandardowego motywu Tweakcn
@@ -14,58 +14,58 @@ Status: zatwierdzono w terminalu 2026-04-22
 
 ## Podsumowanie
 
-Dodaj dokładnie jeden lokalny dla przeglądarki slot niestandardowego motywu Control UI, który można zaimportować z linku udostępniania tweakcn. Istniejące wbudowane rodziny motywów pozostają `claw`, `knot` i `dash`. Nowa rodzina `custom` zachowuje się jak zwykła rodzina motywów OpenClaw i obsługuje tryby `light`, `dark` oraz `system`, gdy zaimportowany ładunek tweakcn zawiera zarówno zestawy tokenów jasnych, jak i ciemnych.
+Dodaj dokładnie jeden lokalny dla przeglądarki slot niestandardowego motywu Control UI, który można zaimportować z linku udostępniania tweakcn. Istniejące wbudowane rodziny motywów pozostają `claw`, `knot` i `dash`. Nowa rodzina `custom` zachowuje się jak zwykła rodzina motywów OpenClaw i obsługuje tryby `light`, `dark` oraz `system`, gdy zaimportowany ładunek tweakcn zawiera zarówno jasny, jak i ciemny zestaw tokenów.
 
-Zaimportowany motyw jest przechowywany wyłącznie w bieżącym profilu przeglądarki razem z pozostałymi ustawieniami Control UI. Nie jest zapisywany do konfiguracji Gateway i nie synchronizuje się między urządzeniami ani przeglądarkami.
+Zaimportowany motyw jest przechowywany wyłącznie w bieżącym profilu przeglądarki wraz z pozostałymi ustawieniami Control UI. Nie jest zapisywany do konfiguracji Gateway i nie synchronizuje się między urządzeniami ani przeglądarkami.
 
 ## Problem
 
-System motywów Control UI jest obecnie zamknięty na trzy zakodowane na stałe rodziny motywów:
+System motywów Control UI jest obecnie ograniczony do trzech zakodowanych na stałe rodzin motywów:
 
 - `ui/src/ui/theme.ts`
 - `ui/src/ui/views/config.ts`
 - `ui/src/styles/base.css`
 
-Użytkownicy mogą przełączać się między wbudowanymi rodzinami i wariantami trybów, ale nie mogą wprowadzić motywu z tweakcn bez edytowania repozytoryjnego CSS. Oczekiwany wynik jest mniejszy niż ogólny system motywów: zachowaj trzy wbudowane motywy i dodaj jeden importowany slot sterowany przez użytkownika, który można zastąpić linkiem tweakcn.
+Użytkownicy mogą przełączać się między wbudowanymi rodzinami i wariantami trybu, ale nie mogą wprowadzić motywu z tweakcn bez edytowania CSS repozytorium. Oczekiwany wynik jest mniejszy niż ogólny system motywów: zachować trzy motywy wbudowane i dodać jeden kontrolowany przez użytkownika importowany slot, który można zastąpić z linku tweakcn.
 
 ## Cele
 
-- Zachować bez zmian istniejące wbudowane rodziny motywów.
-- Dodać dokładnie jeden importowany slot niestandardowy, a nie bibliotekę motywów.
-- Akceptować link udostępniania tweakcn lub bezpośredni URL `https://tweakcn.com/r/themes/{id}`.
-- Utrwalać zaimportowany motyw wyłącznie w local storage przeglądarki.
-- Sprawić, by importowany slot działał z istniejącymi kontrolkami trybu `light`, `dark` i `system`.
-- Zachować bezpieczne zachowanie przy błędach: nieudany import nigdy nie może zepsuć aktywnego motywu UI.
+- Zachować istniejące wbudowane rodziny motywów bez zmian.
+- Dodać dokładnie jeden importowany slot niestandardowy, nie bibliotekę motywów.
+- Akceptować link udostępniania tweakcn albo bezpośredni URL `https://tweakcn.com/r/themes/{id}`.
+- Utrwalać zaimportowany motyw tylko w lokalnym magazynie przeglądarki.
+- Sprawić, aby importowany slot działał z istniejącymi kontrolkami trybów `light`, `dark` i `system`.
+- Zachować bezpieczne zachowanie przy błędach: nieudany import nigdy nie psuje aktywnego motywu UI.
 
 ## Poza zakresem
 
 - Brak biblioteki wielu motywów ani lokalnej dla przeglądarki listy importów.
-- Brak utrwalania po stronie Gateway ani synchronizacji między urządzeniami.
-- Brak dowolnego edytora CSS ani edytora surowego JSON motywu.
-- Brak automatycznego ładowania zdalnych zasobów czcionek z tweakcn.
-- Brak prób obsługi ładunków tweakcn, które udostępniają tylko jeden tryb.
-- Brak refaktoryzacji motywów w całym repo poza punktami styku wymaganymi dla Control UI.
+- Brak utrwalania po stronie Gateway lub synchronizacji między urządzeniami.
+- Brak dowolnego edytora CSS lub edytora surowego JSON motywu.
+- Brak automatycznego ładowania zdalnych zasobów fontów z tweakcn.
+- Brak próby obsługi ładunków tweakcn, które udostępniają tylko jeden tryb.
+- Brak refaktoryzacji motywów w całym repozytorium poza punktami integracji wymaganymi dla Control UI.
 
 ## Decyzje użytkownika już podjęte
 
 - Zachować trzy wbudowane motywy.
 - Dodać jeden slot importu oparty na tweakcn.
-- Przechowywać importowany motyw w przeglądarce, a nie w konfiguracji Gateway.
+- Przechowywać zaimportowany motyw w przeglądarce, nie w konfiguracji Gateway.
 - Obsługiwać `light`, `dark` i `system` dla importowanego slotu.
-- Nadpisywanie slotu niestandardowego kolejnym importem jest zamierzonym zachowaniem.
+- Nadpisanie niestandardowego slotu kolejnym importem jest zamierzonym zachowaniem.
 
 ## Zalecane podejście
 
-Dodaj czwarty identyfikator rodziny motywu, `custom`, do modelu motywów Control UI. Rodzina `custom` staje się wybieralna tylko wtedy, gdy istnieje prawidłowy zaimportowany motyw tweakcn. Zaimportowany ładunek jest normalizowany do rekordu niestandardowego motywu specyficznego dla OpenClaw i przechowywany w local storage przeglądarki razem z pozostałymi ustawieniami UI.
+Dodaj czwarty identyfikator rodziny motywów, `custom`, do modelu motywów Control UI. Rodzina `custom` staje się wybieralna tylko wtedy, gdy istnieje prawidłowy import tweakcn. Zaimportowany ładunek jest normalizowany do specyficznego dla OpenClaw rekordu niestandardowego motywu i przechowywany w lokalnym magazynie przeglądarki wraz z pozostałymi ustawieniami UI.
 
-W czasie działania OpenClaw renderuje zarządzany tag `<style>`, który definiuje rozwiązane bloki niestandardowych zmiennych CSS:
+W czasie działania OpenClaw renderuje zarządzany tag `<style>`, który definiuje rozstrzygnięte bloki zmiennych CSS motywu niestandardowego:
 
 ```css
 :root[data-theme="custom"] { ... }
 :root[data-theme="custom-light"] { ... }
 ```
 
-Dzięki temu niestandardowe zmienne motywu pozostają ograniczone do rodziny `custom` i nie wyciekają jako wbudowane zmienne CSS inline do rodzin wbudowanych.
+Dzięki temu zmienne motywu niestandardowego są ograniczone do rodziny `custom` i nie przeciekają jako zmienne CSS inline do wbudowanych rodzin.
 
 ## Architektura
 
@@ -76,20 +76,20 @@ Zaktualizuj `ui/src/ui/theme.ts`:
 - Rozszerz `ThemeName`, aby obejmował `custom`.
 - Rozszerz `ResolvedTheme`, aby obejmował `custom` i `custom-light`.
 - Rozszerz `VALID_THEME_NAMES`.
-- Zaktualizuj `resolveTheme()`, aby `custom` odzwierciedlał istniejące zachowanie rodziny:
+- Zaktualizuj `resolveTheme()`, aby `custom` odzwierciedlał istniejące zachowanie rodzin:
   - `custom + dark` -> `custom`
   - `custom + light` -> `custom-light`
-  - `custom + system` -> `custom` lub `custom-light` zależnie od preferencji systemu operacyjnego
+  - `custom + system` -> `custom` albo `custom-light` na podstawie preferencji systemu operacyjnego
 
-Dla `custom` nie dodaje się żadnych starszych aliasów.
+Nie dodaje się starszych aliasów dla `custom`.
 
 ### Model utrwalania
 
-Rozszerz utrwalanie `UiSettings` w `ui/src/ui/storage.ts` o jeden opcjonalny ładunek custom-theme:
+Rozszerz utrwalanie `UiSettings` w `ui/src/ui/storage.ts` o jeden opcjonalny ładunek motywu niestandardowego:
 
 - `customTheme?: ImportedCustomTheme`
 
-Zalecany zapisany kształt:
+Zalecany przechowywany kształt:
 
 ```ts
 type ImportedCustomTheme = {
@@ -104,46 +104,46 @@ type ImportedCustomTheme = {
 
 Uwagi:
 
-- `sourceUrl` przechowuje oryginalne wejście użytkownika po normalizacji.
+- `sourceUrl` przechowuje oryginalne dane wejściowe użytkownika po normalizacji.
 - `themeId` to identyfikator motywu tweakcn wyodrębniony z URL.
-- `label` to pole `name` z tweakcn, jeśli istnieje, w przeciwnym razie `Custom`.
-- `light` i `dark` to już znormalizowane mapy tokenów OpenClaw, a nie surowe ładunki tweakcn.
+- `label` to pole `name` tweakcn, jeśli jest obecne, w przeciwnym razie `Custom`.
+- `light` i `dark` są już znormalizowanymi mapami tokenów OpenClaw, nie surowymi ładunkami tweakcn.
 - Zaimportowany ładunek znajduje się obok innych lokalnych dla przeglądarki ustawień i jest serializowany w tym samym dokumencie local-storage.
-- Jeśli zapisane dane custom-theme są brakujące lub nieprawidłowe podczas ładowania, zignoruj ładunek i wróć do `theme: "claw"`, jeśli utrwaloną rodziną było `custom`.
+- Jeśli przechowywane dane motywu niestandardowego są nieobecne lub nieprawidłowe przy ładowaniu, zignoruj ładunek i wróć do `theme: "claw"`, gdy utrwalona rodzina była `custom`.
 
 ### Zastosowanie w czasie działania
 
-Dodaj wąski menedżer arkusza stylów custom-theme w środowisku wykonawczym Control UI, utrzymywany blisko `ui/src/ui/app-settings.ts` i `ui/src/ui/theme.ts`.
+Dodaj wąski menedżer arkusza stylów motywu niestandardowego w runtime Control UI, umieszczony w pobliżu `ui/src/ui/app-settings.ts` i `ui/src/ui/theme.ts`.
 
 Odpowiedzialności:
 
 - Tworzyć lub aktualizować jeden stabilny tag `<style id="openclaw-custom-theme">` w `document.head`.
-- Emitować CSS tylko wtedy, gdy istnieje prawidłowy ładunek niestandardowego motywu.
-- Usuwać zawartość tagu stylu po wyczyszczeniu ładunku.
-- Zachować CSS rodzin wbudowanych w `ui/src/styles/base.css`; nie wstawiać importowanych tokenów do arkusza stylów trzymanego w repo.
+- Emitować CSS tylko wtedy, gdy istnieje prawidłowy ładunek motywu niestandardowego.
+- Usuwać zawartość tagu stylu, gdy ładunek zostanie wyczyszczony.
+- Trzymać CSS wbudowanych rodzin w `ui/src/styles/base.css`; nie wplatać importowanych tokenów do arkusza stylów zapisanego w repozytorium.
 
-Ten menedżer działa zawsze, gdy ustawienia są ładowane, zapisywane, importowane lub czyszczone.
+Ten menedżer uruchamia się zawsze, gdy ustawienia są ładowane, zapisywane, importowane lub czyszczone.
 
 ### Selektory trybu jasnego
 
-Implementacja powinna preferować `data-theme-mode="light"` do stylowania jasnego w różnych rodzinach zamiast specjalnego traktowania `custom-light`. Jeśli istniejący selektor jest przypięty do `data-theme="light"` i musi obowiązywać dla każdej jasnej rodziny, rozszerz go w ramach tej pracy.
+Implementacja powinna preferować `data-theme-mode="light"` do stylowania trybu jasnego między rodzinami zamiast specjalnie obsługiwać `custom-light`. Jeśli istniejący selektor jest przypięty do `data-theme="light"` i musi stosować się do każdej jasnej rodziny, rozszerz go w ramach tej pracy.
 
 ## UX importu
 
 Zaktualizuj `ui/src/ui/views/config.ts` w sekcji `Appearance`:
 
 - Dodaj kartę motywu `Custom` obok `Claw`, `Knot` i `Dash`.
-- Pokazuj kartę jako wyłączoną, gdy nie istnieje zaimportowany niestandardowy motyw.
-- Dodaj panel importu pod siatką motywów zawierający:
-  - jedno pole tekstowe na link udostępniania tweakcn lub URL `/r/themes/{id}`
-  - jeden przycisk `Import`
-  - jedną ścieżkę `Replace`, gdy istnieje już niestandardowy ładunek
-  - jedną akcję `Clear`, gdy istnieje już niestandardowy ładunek
-- Pokazuj etykietę zaimportowanego motywu i host źródła, gdy ładunek istnieje.
-- Jeśli aktywnym motywem jest `custom`, import zastępczy stosuje się natychmiast.
-- Jeśli aktywnym motywem nie jest `custom`, import jedynie zapisuje nowy ładunek, dopóki użytkownik nie wybierze karty `Custom`.
+- Pokaż kartę jako wyłączoną, gdy nie istnieje zaimportowany motyw niestandardowy.
+- Dodaj panel importu pod siatką motywów z:
+  - jednym polem tekstowym na link udostępniania tweakcn albo URL `/r/themes/{id}`
+  - jednym przyciskiem `Import`
+  - jedną ścieżką `Replace`, gdy niestandardowy ładunek już istnieje
+  - jedną akcją `Clear`, gdy niestandardowy ładunek już istnieje
+- Pokaż etykietę zaimportowanego motywu i host źródła, gdy istnieje ładunek.
+- Jeśli aktywnym motywem jest `custom`, zaimportowanie zamiennika stosuje go natychmiast.
+- Jeśli aktywnym motywem nie jest `custom`, import tylko zapisuje nowy ładunek do czasu, aż użytkownik wybierze kartę `Custom`.
 
-Szybki selektor motywu w `ui/src/ui/views/config-quick.ts` również powinien pokazywać `Custom` tylko wtedy, gdy istnieje ładunek.
+Szybki wybór motywu w ustawieniach w `ui/src/ui/views/config-quick.ts` powinien także pokazywać `Custom` tylko wtedy, gdy istnieje ładunek.
 
 ## Parsowanie URL i zdalne pobieranie
 
@@ -152,13 +152,13 @@ Szybki selektor motywu w `ui/src/ui/views/config-quick.ts` również powinien po
 - `https://tweakcn.com/themes/{id}`
 - `https://tweakcn.com/r/themes/{id}`
 
-Implementacja powinna normalizować obie formy do:
+Implementacja powinna znormalizować obie formy do:
 
 - `https://tweakcn.com/r/themes/{id}`
 
-Przeglądarka pobiera następnie bezpośrednio znormalizowany endpoint `/r/themes/{id}`.
+Następnie przeglądarka pobiera bezpośrednio znormalizowany endpoint `/r/themes/{id}`.
 
-Użyj wąskiego walidatora schematu dla zewnętrznego ładunku. Preferowany jest schemat zod, ponieważ jest to niezaufana granica zewnętrzna.
+Użyj wąskiego walidatora schematu dla zewnętrznego ładunku. Schemat zod jest preferowany, ponieważ jest to niezaufana granica zewnętrzna.
 
 Wymagane pola zdalne:
 
@@ -167,11 +167,11 @@ Wymagane pola zdalne:
 - `cssVars.light` jako obiekt
 - `cssVars.dark` jako obiekt
 
-Jeśli brakuje `cssVars.light` lub `cssVars.dark`, odrzuć import. To zamierzone: zatwierdzone zachowanie produktu to pełna obsługa trybów, a nie najlepsza możliwa synteza brakującej strony.
+Jeśli brakuje `cssVars.light` albo `cssVars.dark`, odrzuć import. To celowe: zatwierdzone zachowanie produktu to pełna obsługa trybów, a nie najlepsza możliwa synteza brakującej strony.
 
 ## Mapowanie tokenów
 
-Nie odwzorowuj zmiennych tweakcn ślepo. Znormalizuj ograniczony podzbiór do tokenów OpenClaw i wyprowadź resztę w pomocniku.
+Nie odzwierciedlaj zmiennych tweakcn na ślepo. Znormalizuj ograniczony podzbiór do tokenów OpenClaw i wyprowadź resztę w helperze.
 
 ### Tokeny importowane bezpośrednio
 
@@ -198,16 +198,16 @@ Z każdego bloku trybu tweakcn:
 - `ring`
 - `radius`
 
-Ze współdzielonego `cssVars.theme`, jeśli istnieje:
+Ze współdzielonego `cssVars.theme`, gdy jest obecne:
 
 - `font-sans`
 - `font-mono`
 
-Jeśli blok trybu nadpisuje `font-sans`, `font-mono` lub `radius`, wartość lokalna dla trybu ma pierwszeństwo.
+Jeśli blok trybu nadpisuje `font-sans`, `font-mono` lub `radius`, wartość lokalna dla trybu wygrywa.
 
 ### Tokeny wyprowadzane dla OpenClaw
 
-Importer wyprowadza zmienne tylko dla OpenClaw z zaimportowanych kolorów bazowych:
+Importer wyprowadza zmienne wyłącznie dla OpenClaw z zaimportowanych kolorów bazowych:
 
 - `--bg-accent`
 - `--bg-elevated`
@@ -235,10 +235,10 @@ Importer wyprowadza zmienne tylko dla OpenClaw z zaimportowanych kolorów bazowy
 - `--danger-muted`
 - `--danger-subtle`
 
-Zasady wyprowadzania znajdują się w czystym helperze, aby można je było testować niezależnie. Dokładne formuły mieszania kolorów są szczegółem implementacyjnym, ale helper musi spełniać dwa ograniczenia:
+Reguły wyprowadzania znajdują się w czystym helperze, aby można było testować je niezależnie. Dokładne formuły mieszania kolorów są szczegółem implementacyjnym, ale helper musi spełniać dwa ograniczenia:
 
-- zachować czytelny kontrast bliski intencji zaimportowanego motywu
-- produkować stabilne dane wyjściowe dla tego samego zaimportowanego ładunku
+- zachowywać czytelny kontrast zbliżony do intencji zaimportowanego motywu
+- generować stabilny wynik dla tego samego zaimportowanego ładunku
 
 ### Tokeny ignorowane w v1
 
@@ -252,34 +252,34 @@ Te tokeny tweakcn są celowo ignorowane w pierwszej wersji:
 - `letter-spacing`
 - `spacing`
 
-To utrzymuje zakres na tokenach, których bieżący Control UI rzeczywiście potrzebuje.
+Dzięki temu zakres pozostaje skupiony na tokenach, których bieżący Control UI faktycznie potrzebuje.
 
-### Czcionki
+### Fonty
 
-Jeśli istnieją, importowane są ciągi stosów czcionek, ale OpenClaw nie ładuje zdalnych zasobów czcionek w v1. Jeśli importowany stos odwołuje się do czcionek niedostępnych w przeglądarce, obowiązuje normalne zachowanie fallback.
+Ciągi stosu fontów są importowane, jeśli są obecne, ale OpenClaw nie ładuje zdalnych zasobów fontów w v1. Jeśli zaimportowany stos odwołuje się do fontów niedostępnych w przeglądarce, stosowane jest normalne zachowanie zapasowe.
 
 ## Zachowanie przy błędach
 
 Nieudane importy muszą kończyć się bezpiecznie.
 
-- Nieprawidłowy format URL: pokaż błąd walidacji inline, nie pobieraj.
-- Nieobsługiwany host lub kształt ścieżki: pokaż błąd walidacji inline, nie pobieraj.
-- Błąd sieci, odpowiedź nie-OK lub nieprawidłowy JSON: pokaż błąd inline, pozostaw obecnie zapisany ładunek bez zmian.
-- Błąd schematu lub brak bloków light/dark: pokaż błąd inline, pozostaw obecnie zapisany ładunek bez zmian.
-- Akcja czyszczenia:
-  - usuwa zapisany niestandardowy ładunek
+- Nieprawidłowy format URL: pokaż wbudowany błąd walidacji, nie pobieraj.
+- Nieobsługiwany host lub kształt ścieżki: pokaż wbudowany błąd walidacji, nie pobieraj.
+- Błąd sieci, odpowiedź inna niż OK albo zniekształcony JSON: pokaż wbudowany błąd, pozostaw bieżący przechowywany ładunek bez zmian.
+- Błąd schematu lub brak bloków light/dark: pokaż wbudowany błąd, pozostaw bieżący przechowywany ładunek bez zmian.
+- Akcja Clear:
+  - usuwa przechowywany ładunek niestandardowy
   - usuwa zawartość zarządzanego tagu stylu niestandardowego
   - jeśli aktywny jest `custom`, przełącza rodzinę motywu z powrotem na `claw`
-- Nieprawidłowy zapisany ładunek niestandardowy przy pierwszym ładowaniu:
-  - zignoruj zapisany ładunek
+- Nieprawidłowy przechowywany ładunek niestandardowy przy pierwszym ładowaniu:
+  - zignoruj przechowywany ładunek
   - nie emituj niestandardowego CSS
-  - jeśli utrwaloną rodziną motywu było `custom`, wróć do `claw`
+  - jeśli utrwalona rodzina motywu była `custom`, wróć do `claw`
 
 W żadnym momencie nieudany import nie powinien pozostawić aktywnego dokumentu z częściowo zastosowanymi niestandardowymi zmiennymi CSS.
 
 ## Pliki, które prawdopodobnie zmienią się w implementacji
 
-Główne pliki:
+Pliki podstawowe:
 
 - `ui/src/ui/theme.ts`
 - `ui/src/ui/storage.ts`
@@ -291,37 +291,36 @@ Główne pliki:
 Prawdopodobne nowe helpery:
 
 - `ui/src/ui/custom-theme.ts`
-- `ui/src/ui/custom-theme-import.ts`
 
 Testy:
 
 - `ui/src/ui/app-settings.test.ts`
 - `ui/src/ui/storage.node.test.ts`
 - `ui/src/ui/views/config.browser.test.ts`
-- nowe ukierunkowane testy dla parsowania URL i normalizacji ładunku
+- nowe ukierunkowane testy parsowania URL i normalizacji ładunku
 
 ## Testowanie
 
-Minimalny zakres implementacji:
+Minimalne pokrycie implementacji:
 
-- sparsowanie URL linku udostępniania do identyfikatora motywu tweakcn
-- znormalizowanie `/themes/{id}` i `/r/themes/{id}` do URL pobierania
-- odrzucenie nieobsługiwanych hostów i nieprawidłowych identyfikatorów
-- walidacja kształtu ładunku tweakcn
-- zmapowanie prawidłowego ładunku tweakcn do znormalizowanych map tokenów OpenClaw dla trybu jasnego i ciemnego
-- ładowanie i zapisywanie niestandardowego ładunku w ustawieniach lokalnych przeglądarki
-- rozwiązywanie `custom` dla `light`, `dark` i `system`
-- wyłączenie wyboru `Custom`, gdy nie ma ładunku
-- natychmiastowe zastosowanie zaimportowanego motywu, gdy `custom` jest już aktywny
-- powrót do `claw`, gdy aktywny niestandardowy motyw zostanie wyczyszczony
+- parsować URL linku udostępniania do identyfikatora motywu tweakcn
+- normalizować `/themes/{id}` i `/r/themes/{id}` do URL pobierania
+- odrzucać nieobsługiwane hosty i zniekształcone identyfikatory
+- walidować kształt ładunku tweakcn
+- mapować prawidłowy ładunek tweakcn do znormalizowanych jasnych i ciemnych map tokenów OpenClaw
+- ładować i zapisywać niestandardowy ładunek w lokalnych dla przeglądarki ustawieniach
+- rozstrzygać `custom` dla `light`, `dark` i `system`
+- wyłączać wybór `Custom`, gdy nie istnieje ładunek
+- stosować zaimportowany motyw natychmiast, gdy `custom` jest już aktywny
+- wracać do `claw`, gdy aktywny motyw niestandardowy zostanie wyczyszczony
 
 Cel weryfikacji ręcznej:
 
-- zaimportowanie znanego motywu tweakcn z Settings
-- przełączanie między `light`, `dark` i `system`
-- przełączanie między `custom` a rodzinami wbudowanymi
-- ponowne załadowanie strony i potwierdzenie, że zaimportowany niestandardowy motyw utrzymuje się lokalnie
+- zaimportować znany motyw tweakcn z ustawień
+- przełączać się między `light`, `dark` i `system`
+- przełączać między `custom` i rodzinami wbudowanymi
+- przeładować stronę i potwierdzić, że zaimportowany motyw niestandardowy utrzymuje się lokalnie
 
 ## Uwagi dotyczące wdrożenia
 
-Ta funkcja jest celowo mała. Jeśli użytkownicy później poproszą o wiele importowanych motywów, zmianę nazwy, eksport lub synchronizację między urządzeniami, potraktuj to jako kolejny projekt. Nie buduj zawczasu abstrakcji biblioteki motywów w tej implementacji.
+Ta funkcja jest celowo mała. Jeśli użytkownicy później poproszą o wiele importowanych motywów, zmianę nazwy, eksport albo synchronizację między urządzeniami, potraktuj to jako kolejny projekt. Nie buduj z góry abstrakcji biblioteki motywów w tej implementacji.

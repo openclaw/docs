@@ -1,27 +1,27 @@
 ---
 read_when:
     - Instalujesz, konfigurujesz lub audytujesz Plugin Discord
-summary: Dodaje interfejs kanału Discord do wysyłania i odbierania wiadomości OpenClaw.
+summary: Dodaje powierzchnię kanału Discord do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-05-02T20:51:25Z"
+    generated_at: "2026-05-02T22:21:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fd84b465797fd02f9b008bb3f951c8a7e5f12a524b7c2d8c01681215271b83ba
+    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Plugin Discord
 
-Dodaje interfejs kanału Discord do wysyłania i odbierania wiadomości OpenClaw.
+Dodaje powierzchnię kanału Discord do wysyłania i odbierania wiadomości OpenClaw.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/discord`
-- Ścieżka instalacji: zawarte w OpenClaw
+- Ścieżka instalacji: ClawHub + npm
 
-## Interfejs
+## Powierzchnia
 
 channels: discord
 

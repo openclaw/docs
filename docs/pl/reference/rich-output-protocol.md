@@ -1,44 +1,48 @@
 ---
 read_when:
-    - Zmiana sposobu renderowania odpowiedzi asystenta w interfejsie Control UI
+    - Zmiana renderowania danych wyjściowych asystenta w interfejsie sterowania
     - Debugowanie `[embed ...]`, `MEDIA:`, odpowiedzi lub dyrektyw prezentacji audio
-summary: Protokół shortcode dla bogatych danych wyjściowych, osadzeń, multimediów, wskazówek audio i odpowiedzi
-title: Protokół bogatego wyjścia
+summary: Protokół krótkich kodów dla rozbudowanego wyjścia, osadzonych elementów, multimediów, wskazówek audio i odpowiedzi
+title: Protokół rozbudowanych danych wyjściowych
 x-i18n:
-    generated_at: "2026-04-30T10:17:09Z"
+    generated_at: "2026-05-02T22:23:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7c52a2f3a37e7a8d1237046edafc3e80c3199c01f890a1ef39662436590ef55d
+    source_hash: 8e0c365029c26d198090e1f181703e3979394afb0dfa1742f9c088885650de8b
     source_path: reference/rich-output-protocol.md
     workflow: 16
 ---
 
-Dane wyjściowe asystenta mogą zawierać niewielki zestaw dyrektyw dostarczania/renderowania:
+Dane wyjściowe asystenta mogą zawierać mały zestaw dyrektyw dostarczania/renderowania:
 
 - `MEDIA:` do dostarczania załączników
-- `[[audio_as_voice]]` dla wskazówek dotyczących prezentacji audio
-- `[[reply_to_current]]` / `[[reply_to:<id>]]` dla metadanych odpowiedzi
-- `[embed ...]` dla renderowania rozszerzonego w Control UI
+- `[[audio_as_voice]]` do wskazówek prezentacji audio
+- `[[reply_to_current]]` / `[[reply_to:<id>]]` do metadanych odpowiedzi
+- `[embed ...]` do bogatego renderowania w Control UI
 
-Zdalne załączniki `MEDIA:` muszą być publicznymi adresami URL `https:`. Zwykłe `http:`,
+Zdalne załączniki `MEDIA:` muszą być publicznymi URL-ami `https:`. Zwykłe `http:`,
 loopback, link-local, prywatne i wewnętrzne nazwy hostów są ignorowane jako dyrektywy
-załączników; serwerowe mechanizmy pobierania mediów nadal egzekwują własne zabezpieczenia sieciowe.
+załączników; serwerowe mechanizmy pobierania mediów nadal wymuszają własne zabezpieczenia sieciowe.
+
+Lokalne załączniki `MEDIA:` mogą używać ścieżek bezwzględnych, ścieżek względnych względem obszaru roboczego albo
+ścieżek względnych względem katalogu domowego `~/`. Przed dostarczeniem nadal przechodzą przez politykę odczytu plików agenta oraz
+sprawdzanie typu mediów.
 
 Zwykła składnia obrazów Markdown domyślnie pozostaje tekstem. Kanały, które celowo
-mapują odpowiedzi z obrazami Markdown na załączniki multimedialne, włączają to w swoim
-adapterze wychodzącym; Telegram robi to, aby `![alt](url)` nadal mogło stać się odpowiedzią multimedialną.
+mapują odpowiedzi z obrazami Markdown na załączniki multimedialne, włączają to w swoim wychodzącym
+adapterze; Telegram robi to, aby `![alt](url)` nadal mogło stać się odpowiedzią multimedialną.
 
-Te dyrektywy są odrębne. `MEDIA:` oraz tagi odpowiedzi/głosowe pozostają metadanymi dostarczania; `[embed ...]` to ścieżka rozszerzonego renderowania tylko dla sieci.
-Zaufane media z wyników narzędzi używają tego samego parsera `MEDIA:` / `[[audio_as_voice]]` przed dostarczeniem, więc tekstowe dane wyjściowe narzędzia nadal mogą oznaczyć załącznik audio jako notatkę głosową.
+Te dyrektywy są oddzielne. `MEDIA:` oraz znaczniki odpowiedzi/głosu pozostają metadanymi dostarczania; `[embed ...]` jest ścieżką bogatego renderowania tylko dla webu.
+Zaufane media z wyników narzędzi używają tego samego parsera `MEDIA:` / `[[audio_as_voice]]` przed dostarczeniem, więc tekstowe dane wyjściowe narzędzi nadal mogą oznaczyć załącznik audio jako notatkę głosową.
 
-Gdy włączone jest przesyłanie strumieniowe bloków, `MEDIA:` pozostaje metadanymi pojedynczego dostarczenia dla
-tury. Jeśli ten sam adres URL multimediów zostanie wysłany w przesyłanym strumieniowo bloku i powtórzony w końcowym
-ładunku asystenta, OpenClaw dostarczy załącznik raz i usunie duplikat
+Gdy strumieniowanie blokowe jest włączone, `MEDIA:` pozostaje metadanymi jednokrotnego dostarczenia dla
+tury. Jeśli ten sam URL mediów zostanie wysłany w strumieniowanym bloku i powtórzony w końcowym
+ładunku asystenta, OpenClaw dostarcza załącznik raz i usuwa duplikat
 z końcowego ładunku.
 
 ## `[embed ...]`
 
-`[embed ...]` to jedyna składnia rozszerzonego renderowania przeznaczona dla agenta w Control UI.
+`[embed ...]` to jedyna składnia bogatego renderowania dostępna dla agenta w Control UI.
 
 Przykład samozamykający:
 
@@ -49,15 +53,15 @@ Przykład samozamykający:
 Reguły:
 
 - `[view ...]` nie jest już prawidłowe dla nowych danych wyjściowych.
-- Krótkie kody osadzeń renderują się wyłącznie na powierzchni wiadomości asystenta.
-- Renderowane są tylko osadzenia oparte na URL. Użyj `ref="..."` lub `url="..."`.
-- Blokowe krótkie kody osadzeń inline HTML nie są renderowane.
-- Interfejs webowy usuwa krótki kod z widocznego tekstu i renderuje osadzenie inline.
-- `MEDIA:` nie jest aliasem osadzenia i nie powinno być używane do renderowania rozszerzonych osadzeń.
+- Shortcode osadzenia renderują się tylko na powierzchni wiadomości asystenta.
+- Renderowane są tylko osadzenia oparte na URL-ach. Użyj `ref="..."` albo `url="..."`.
+- Blokowe shortcode osadzenia z osadzonym HTML-em nie są renderowane.
+- Web UI usuwa shortcode z widocznego tekstu i renderuje osadzenie inline.
+- `MEDIA:` nie jest aliasem osadzenia i nie powinno być używane do bogatego renderowania osadzeń.
 
-## Przechowywany kształt renderowania
+## Zapisany kształt renderowania
 
-Znormalizowany/przechowywany blok treści asystenta jest strukturalnym elementem `canvas`:
+Znormalizowany/zapisany blok treści asystenta to ustrukturyzowany element `canvas`:
 
 ```json
 {
@@ -74,7 +78,7 @@ Znormalizowany/przechowywany blok treści asystenta jest strukturalnym elementem
 }
 ```
 
-Przechowywane/renderowane bloki rozszerzone używają bezpośrednio tego kształtu `canvas`. `present_view` nie jest rozpoznawane.
+Zapisane/renderowane bloki bogate używają bezpośrednio tego kształtu `canvas`. `present_view` nie jest rozpoznawane.
 
 ## Powiązane
 
