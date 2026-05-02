@@ -2,25 +2,25 @@
 read_when:
     - Você está implantando o OpenClaw em uma VM na nuvem com Docker
     - Você precisa da geração do binário compartilhado, da persistência e do fluxo de atualização
-summary: Etapas de tempo de execução da VM Docker compartilhada para hosts do OpenClaw Gateway de longa duração
-title: Ambiente de execução da VM Docker
+summary: Etapas compartilhadas de tempo de execução da VM Docker para hosts OpenClaw Gateway de longa duração
+title: Runtime da VM do Docker
 x-i18n:
-    generated_at: "2026-04-30T09:54:21Z"
+    generated_at: "2026-05-02T05:50:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01ce5a7e58619da9c9ec97eb1e4f88323ab26f42f40e0a3d655b18019de798dd
+    source_hash: 7489d42e01199a7b5e6f3b98dcfe624d1b3133ef1682dda764b2c8ddd1324e78
     source_path: install/docker-vm-runtime.md
     workflow: 16
 ---
 
-Etapas compartilhadas de tempo de execução para instalações Docker baseadas em VM, como GCP, Hetzner e provedores VPS semelhantes.
+Etapas de runtime compartilhadas para instalações Docker baseadas em VM, como GCP, Hetzner e provedores VPS semelhantes.
 
-## Inclua os binários necessários na imagem
+## Incorpore os binários necessários à imagem
 
 Instalar binários dentro de um contêiner em execução é uma armadilha.
-Qualquer coisa instalada em tempo de execução será perdida na reinicialização.
+Qualquer coisa instalada em runtime será perdida na reinicialização.
 
-Todos os binários externos exigidos por Skills devem ser instalados no momento da construção da imagem.
+Todos os binários externos exigidos por Skills devem ser instalados no momento de build da imagem.
 
 Os exemplos abaixo mostram apenas três binários comuns:
 
@@ -31,10 +31,10 @@ Os exemplos abaixo mostram apenas três binários comuns:
 Estes são exemplos, não uma lista completa.
 Você pode instalar quantos binários forem necessários usando o mesmo padrão.
 
-Se você adicionar novas Skills posteriormente que dependam de binários adicionais, deverá:
+Se adicionar novas Skills posteriormente que dependam de binários adicionais, você deve:
 
 1. Atualizar o Dockerfile
-2. Reconstruir a imagem
+2. Recriar a imagem
 3. Reiniciar os contêineres
 
 **Dockerfile de exemplo**
@@ -83,10 +83,10 @@ CMD ["node","dist/index.js"]
 ```
 
 <Note>
-As URLs acima são exemplos. Para VMs baseadas em ARM, escolha os assets `arm64`. Para builds reprodutíveis, fixe URLs de versões de lançamento.
+As URLs acima são exemplos. Para VMs baseadas em ARM, escolha os assets `arm64`. Para builds reproduzíveis, fixe URLs de releases versionados.
 </Note>
 
-## Compile e inicie
+## Build e inicialização
 
 ```bash
 docker compose build
@@ -126,22 +126,22 @@ Saída esperada:
 
 ## O que persiste onde
 
-O OpenClaw roda no Docker, mas o Docker não é a fonte da verdade.
-Todo estado de longa duração deve sobreviver a reinicializações, reconstruções e reinícios.
+O OpenClaw é executado no Docker, mas o Docker não é a fonte da verdade.
+Todo estado de longa duração deve sobreviver a reinicializações, rebuilds e reinícios da máquina.
 
-| Componente             | Localização                              | Mecanismo de persistência | Observações                                                    |
-| ---------------------- | ---------------------------------------- | ------------------------- | -------------------------------------------------------------- |
-| Configuração do Gateway | `/home/node/.openclaw/`                  | Montagem de volume do host | Inclui `openclaw.json`, `.env`                                 |
-| Perfis de autenticação de modelo | `/home/node/.openclaw/agents/`           | Montagem de volume do host | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chaves de API) |
-| Configurações de Skills | `/home/node/.openclaw/skills/`           | Montagem de volume do host | Estado no nível de Skills                                      |
-| Workspace do agente     | `/home/node/.openclaw/workspace/`        | Montagem de volume do host | Código e artefatos do agente                                   |
-| Sessão do WhatsApp      | `/home/node/.openclaw/`                  | Montagem de volume do host | Preserva o login por QR                                        |
-| Keyring do Gmail        | `/home/node/.openclaw/`                  | Volume do host + senha     | Requer `GOG_KEYRING_PASSWORD`                                  |
-| Dependências de runtime do Plugin | `/var/lib/openclaw/plugin-runtime-deps/` | Volume nomeado do Docker   | Dependências de plugins empacotados geradas e espelhos de runtime |
-| Binários externos       | `/usr/local/bin/`                        | Imagem Docker              | Devem ser incluídos no momento do build                        |
-| Runtime do Node         | Sistema de arquivos do contêiner         | Imagem Docker              | Reconstruído a cada build de imagem                            |
-| Pacotes do SO           | Sistema de arquivos do contêiner         | Imagem Docker              | Não instale em tempo de execução                               |
-| Contêiner Docker        | Efêmero                                  | Reiniciável                | Seguro destruir                                                |
+| Componente          | Localização                                            | Mecanismo de persistência | Observações                                                   |
+| ------------------- | ------------------------------------------------------ | ------------------------- | ------------------------------------------------------------- |
+| Configuração do Gateway | `/home/node/.openclaw/`                                | Montagem de volume do host | Inclui `openclaw.json`, `.env`                                |
+| Perfis de autenticação de modelo | `/home/node/.openclaw/agents/`                         | Montagem de volume do host | `agents/<agentId>/agent/auth-profiles.json` (OAuth, chaves de API) |
+| Configurações de Skills | `/home/node/.openclaw/skills/`                         | Montagem de volume do host | Estado no nível de Skill                                      |
+| Workspace do agente | `/home/node/.openclaw/workspace/`                      | Montagem de volume do host | Código e artefatos do agente                                  |
+| Sessão do WhatsApp  | `/home/node/.openclaw/`                                | Montagem de volume do host | Preserva o login por QR                                       |
+| Keyring do Gmail    | `/home/node/.openclaw/`                                | Volume do host + senha    | Requer `GOG_KEYRING_PASSWORD`                                 |
+| Pacotes de Plugin   | `/home/node/.openclaw/npm`, `/home/node/.openclaw/git` | Montagem de volume do host | Raízes de pacotes de Plugin baixáveis                         |
+| Binários externos   | `/usr/local/bin/`                                      | Imagem Docker             | Devem ser incorporados no momento de build                    |
+| Runtime do Node     | Sistema de arquivos do contêiner                       | Imagem Docker             | Recriado a cada build de imagem                               |
+| Pacotes do SO       | Sistema de arquivos do contêiner                       | Imagem Docker             | Não instale em runtime                                        |
+| Contêiner Docker    | Efêmero                                                | Reiniciável               | Seguro para destruir                                          |
 
 ## Atualizações
 

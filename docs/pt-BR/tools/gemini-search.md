@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Você quer usar o Gemini para `web_search`
-    - Você precisa de um `GEMINI_API_KEY`
-    - Você quer grounding do Google Search
-summary: Pesquisa web Gemini com grounding do Google Search
-title: Pesquisa Gemini
+    - Você quer usar o Gemini para web_search
+    - Você precisa de uma GEMINI_API_KEY ou de models.providers.google.apiKey
+    - Você quer fundamentação com Google Search
+summary: Busca na web do Gemini com fundamentação no Google Search
+title: Pesquisa do Gemini
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T06:16:33Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 0778ae326e23ea1bb719fdc694b2accc5a6651e08658a695d4d70e20fc5943a4
-  source_path: tools/gemini-search.md
-  workflow: 15
+    generated_at: "2026-05-02T05:57:58Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 015d77fef123b1fd99d43eb6472bb8c672585328e17735d1fa0ead387cd2066a
+    source_path: tools/gemini-search.md
+    workflow: 16
 ---
 
-O OpenClaw oferece suporte a modelos Gemini com
-[grounding do Google Search](https://ai.google.dev/gemini-api/docs/grounding)
-integrado, que retorna respostas sintetizadas por IA com base em resultados ativos do Google Search e com
-citações.
+OpenClaw oferece suporte a modelos Gemini com
+[fundamentação do Google Search](https://ai.google.dev/gemini-api/docs/grounding)
+integrada, que retorna respostas sintetizadas por IA com base em resultados ao
+vivo do Google Search com citações.
 
-## Obter uma chave de API
+## Obtenha uma chave de API
 
 <Steps>
-  <Step title="Criar uma chave">
-    Vá para [Google AI Studio](https://aistudio.google.com/apikey) e crie uma
+  <Step title="Create a key">
+    Acesse o [Google AI Studio](https://aistudio.google.com/apikey) e crie uma
     chave de API.
   </Step>
-  <Step title="Armazenar a chave">
-    Defina `GEMINI_API_KEY` no ambiente do Gateway, ou configure via:
+  <Step title="Store the key">
+    Defina `GEMINI_API_KEY` no ambiente do Gateway, reutilize
+    `models.providers.google.apiKey` ou configure uma chave dedicada para pesquisa na web via:
 
     ```bash
     openclaw configure --section web
@@ -46,8 +46,9 @@ citações.
       google: {
         config: {
           webSearch: {
-            apiKey: "AIza...", // opcional se GEMINI_API_KEY estiver definido
-            model: "gemini-2.5-flash", // padrão
+            apiKey: "AIza...", // optional if GEMINI_API_KEY or models.providers.google.apiKey is set
+            baseUrl: "https://generativelanguage.googleapis.com/v1beta", // optional; falls back to models.providers.google.baseUrl
+            model: "gemini-2.5-flash", // default
           },
         },
       },
@@ -63,41 +64,56 @@ citações.
 }
 ```
 
-**Alternativa por ambiente:** defina `GEMINI_API_KEY` no ambiente do Gateway.
-Para uma instalação do gateway, coloque em `~/.openclaw/.env`.
+**Precedência de credenciais:** a pesquisa na web do Gemini usa
+`plugins.entries.google.config.webSearch.apiKey` primeiro, depois `GEMINI_API_KEY`,
+e então `models.providers.google.apiKey`. Para URLs base, a opção dedicada
+`plugins.entries.google.config.webSearch.baseUrl` tem precedência sobre
+`models.providers.google.baseUrl`.
+
+Para uma instalação do Gateway, coloque as chaves de ambiente em `~/.openclaw/.env`.
 
 ## Como funciona
 
-Diferentemente de providers de pesquisa tradicionais que retornam uma lista de links e trechos,
-o Gemini usa grounding do Google Search para produzir respostas sintetizadas por IA com
-citações inline. Os resultados incluem tanto a resposta sintetizada quanto as
-URLs de origem.
+Diferentemente de provedores de pesquisa tradicionais que retornam uma lista de links e trechos,
+o Gemini usa a fundamentação do Google Search para produzir respostas sintetizadas por IA com
+citações em linha. Os resultados incluem tanto a resposta sintetizada quanto os URLs de origem.
 
-- URLs de citação do grounding do Gemini são automaticamente resolvidas de URLs de redirecionamento do Google para URLs diretas.
-- A resolução de redirecionamento usa o caminho de proteção SSRF (HEAD + verificações de redirecionamento +
-  validação de http/https) antes de retornar a URL final da citação.
-- A resolução de redirecionamento usa padrões SSRF estritos, então redirecionamentos para
+- URLs de citação da fundamentação do Gemini são resolvidos automaticamente de URLs de
+  redirecionamento do Google para URLs diretos.
+- A resolução de redirecionamento usa o caminho de proteção contra SSRF (HEAD + verificações de redirecionamento +
+  validação de http/https) antes de retornar o URL de citação final.
+- A resolução de redirecionamento usa padrões estritos de SSRF, portanto redirecionamentos para
   destinos privados/internos são bloqueados.
 
 ## Parâmetros compatíveis
 
-A pesquisa Gemini oferece suporte a `query`.
+A pesquisa do Gemini oferece suporte a `query`, `freshness`, `date_after` e `date_before`.
 
-`count` é aceito por compatibilidade com `web_search` compartilhado, mas o grounding do Gemini
-ainda retorna uma única resposta sintetizada com citações, em vez de uma
-lista com N resultados.
+`count` é aceito para compatibilidade com o `web_search` compartilhado, mas a fundamentação do Gemini
+ainda retorna uma resposta sintetizada com citações, em vez de uma lista de N resultados.
 
-Filtros específicos do provider como `country`, `language`, `freshness` e
-`domain_filter` não são compatíveis.
+`freshness` aceita `day`, `week`, `month`, `year` e os atalhos compartilhados
+`pd`, `pw`, `pm` e `py`. O OpenClaw converte esses valores, ou um intervalo explícito
+`date_after`/`date_before`, no `timeRangeFilter` da fundamentação do Google Search do Gemini.
+`country`, `language` e `domain_filter` não são compatíveis.
 
 ## Seleção de modelo
 
-O modelo padrão é `gemini-2.5-flash` (rápido e com boa relação custo-benefício). Qualquer modelo Gemini
-que ofereça suporte a grounding pode ser usado via
+O modelo padrão é `gemini-2.5-flash` (rápido e econômico). Qualquer modelo Gemini
+compatível com fundamentação pode ser usado via
 `plugins.entries.google.config.webSearch.model`.
+
+## Substituições de URL base
+
+Defina `plugins.entries.google.config.webSearch.baseUrl` quando a pesquisa na web do Gemini
+precisar ser roteada por um proxy de operador ou endpoint personalizado compatível com Gemini. Se
+isso não estiver definido, a pesquisa na web do Gemini reutiliza `models.providers.google.baseUrl`. Um valor simples
+`https://generativelanguage.googleapis.com` é normalizado para
+`https://generativelanguage.googleapis.com/v1beta`; caminhos de proxy personalizados são mantidos
+como fornecidos após remover barras finais.
 
 ## Relacionado
 
-- [Visão geral de pesquisa na web](/pt-BR/tools/web) -- todos os providers e autodetecção
+- [Visão geral da Pesquisa na Web](/pt-BR/tools/web) -- todos os provedores e detecção automática
 - [Brave Search](/pt-BR/tools/brave-search) -- resultados estruturados com trechos
 - [Perplexity Search](/pt-BR/tools/perplexity-search) -- resultados estruturados + extração de conteúdo

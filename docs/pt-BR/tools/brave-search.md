@@ -1,27 +1,26 @@
 ---
 read_when:
-    - Você quer usar o Brave Search para `web_search`
-    - Você precisa de um `BRAVE_API_KEY` ou de detalhes do plano
-summary: Configuração da API Brave Search para `web_search`
-title: Brave Search
+    - Você quer usar o Brave Search para web_search
+    - Você precisa de uma BRAVE_API_KEY ou dos detalhes do plano
+summary: Configuração da API Brave Search para web_search
+title: Busca do Brave
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T06:14:32Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 0a59df7a5d52f665673b82b76ec9dce7ca34bf4e7b678029f6f7f7c5340c173b
-  source_path: tools/brave-search.md
-  workflow: 15
+    generated_at: "2026-05-02T05:57:14Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: d5b6624d078ba55e30fbac4dd863a0d016e2e8d160e32bcc406e5070998241ba
+    source_path: tools/brave-search.md
+    workflow: 16
 ---
 
-# API Brave Search
+# Brave Search API
 
-O OpenClaw oferece suporte à API Brave Search como um provedor `web_search`.
+OpenClaw oferece suporte à Brave Search API como provedor de `web_search`.
 
 ## Obter uma chave de API
 
-1. Crie uma conta da API Brave Search em [https://brave.com/search/api/](https://brave.com/search/api/)
-2. No dashboard, escolha o plano **Search** e gere uma chave de API.
+1. Crie uma conta da Brave Search API em [https://brave.com/search/api/](https://brave.com/search/api/)
+2. No painel, escolha o plano **Search** e gere uma chave de API.
 3. Armazene a chave na configuração ou defina `BRAVE_API_KEY` no ambiente do Gateway.
 
 ## Exemplo de configuração
@@ -34,7 +33,7 @@ O OpenClaw oferece suporte à API Brave Search como um provedor `web_search`.
         config: {
           webSearch: {
             apiKey: "BRAVE_API_KEY_HERE",
-            mode: "web", // ou "llm-context"
+            mode: "web", // or "llm-context"
           },
         },
       },
@@ -52,18 +51,18 @@ O OpenClaw oferece suporte à API Brave Search como um provedor `web_search`.
 }
 ```
 
-As configurações específicas de busca do provedor Brave agora ficam em `plugins.entries.brave.config.webSearch.*`.
-O legado `tools.web.search.apiKey` ainda é carregado pelo shim de compatibilidade, mas não é mais o caminho canônico de configuração.
+As configurações de pesquisa específicas do provedor Brave agora ficam em `plugins.entries.brave.config.webSearch.*`.
+O `tools.web.search.apiKey` legado ainda é carregado por meio do shim de compatibilidade, mas não é mais o caminho de configuração canônico.
 
 `webSearch.mode` controla o transporte do Brave:
 
-- `web` (padrão): busca web normal do Brave com títulos, URLs e snippets
-- `llm-context`: API Brave LLM Context com blocos de texto pré-extraídos e fontes para grounding
+- `web` (padrão): pesquisa web normal do Brave com títulos, URLs e trechos
+- `llm-context`: Brave LLM Context API com fragmentos de texto pré-extraídos e fontes para fundamentação
 
 ## Parâmetros da ferramenta
 
 <ParamField path="query" type="string" required>
-Consulta de busca.
+Consulta de pesquisa.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
@@ -71,23 +70,23 @@ Número de resultados a retornar (1–10).
 </ParamField>
 
 <ParamField path="country" type="string">
-Código ISO de país com 2 letras (por exemplo `US`, `DE`).
+Código de país ISO de 2 letras (por exemplo, `US`, `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-Código de idioma ISO 639-1 para resultados de busca (por exemplo `en`, `de`, `fr`).
+Código de idioma ISO 639-1 para resultados de pesquisa (por exemplo, `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="search_lang" type="string">
-Código de idioma de busca do Brave (por exemplo `en`, `en-gb`, `zh-hans`).
+Código de idioma de pesquisa do Brave (por exemplo, `en`, `en-gb`, `zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
-Código ISO de idioma para elementos da interface.
+Código de idioma ISO para elementos da UI.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Filtro de tempo — `day` corresponde a 24 horas.
+Filtro de tempo — `day` equivale a 24 horas.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -101,20 +100,20 @@ Somente resultados publicados antes desta data (`YYYY-MM-DD`).
 **Exemplos:**
 
 ```javascript
-// Busca específica por país e idioma
+// Country and language-specific search
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// Resultados recentes (última semana)
+// Recent results (past week)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// Busca por intervalo de datas
+// Date range search
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
@@ -124,16 +123,16 @@ await web_search({
 
 ## Observações
 
-- O OpenClaw usa o plano **Search** do Brave. Se você tiver uma assinatura legada (por exemplo, o plano Free original com 2.000 consultas/mês), ela continua válida, mas não inclui recursos mais novos como LLM Context ou limites de taxa mais altos.
-- Cada plano Brave inclui **\$5/mês em crédito grátis** (renovável). O plano Search custa \$5 por 1.000 requests, então o crédito cobre 1.000 consultas/mês. Defina seu limite de uso no dashboard do Brave para evitar cobranças inesperadas. Consulte o [portal da API Brave](https://brave.com/search/api/) para os planos atuais.
+- OpenClaw usa o plano **Search** do Brave. Se você tiver uma assinatura legada (por exemplo, o plano Free original com 2.000 consultas/mês), ela continua válida, mas não inclui recursos mais recentes como LLM Context ou limites de taxa mais altos.
+- Cada plano Brave inclui **\$5/mês em crédito gratuito** (renovável). O plano Search custa \$5 por 1.000 solicitações, então o crédito cobre 1.000 consultas/mês. Defina seu limite de uso no painel do Brave para evitar cobranças inesperadas. Consulte o [portal da Brave API](https://brave.com/search/api/) para ver os planos atuais.
 - O plano Search inclui o endpoint LLM Context e direitos de inferência de IA. Armazenar resultados para treinar ou ajustar modelos exige um plano com direitos explícitos de armazenamento. Consulte os [Termos de Serviço](https://api-dashboard.search.brave.com/terms-of-service) do Brave.
-- O modo `llm-context` retorna entradas de fonte com grounding em vez do formato normal de snippet de web search.
-- O modo `llm-context` não oferece suporte a `ui_lang`, `freshness`, `date_after` ou `date_before`.
-- `ui_lang` deve incluir uma subtag de região como `en-US`.
-- Os resultados ficam em cache por 15 minutos por padrão (configurável via `cacheTtlMinutes`).
+- O modo `llm-context` retorna entradas de fonte fundamentadas em vez do formato normal de trechos de pesquisa web.
+- O modo `llm-context` oferece suporte a `freshness` e intervalos delimitados de `date_after` + `date_before`. Ele não oferece suporte a `ui_lang`; `date_before` sem `date_after` é rejeitado porque o Brave exige que intervalos de atualização personalizados incluam datas de início e término.
+- `ui_lang` deve incluir uma subtag de região, como `en-US`.
+- Os resultados são armazenados em cache por 15 minutos por padrão (configurável via `cacheTtlMinutes`).
 
 ## Relacionados
 
-- [Web Search overview](/pt-BR/tools/web) -- todos os provedores e detecção automática
+- [Visão geral da Web Search](/pt-BR/tools/web) -- todos os provedores e detecção automática
 - [Perplexity Search](/pt-BR/tools/perplexity-search) -- resultados estruturados com filtragem por domínio
-- [Exa Search](/pt-BR/tools/exa-search) -- busca neural com extração de conteúdo
+- [Exa Search](/pt-BR/tools/exa-search) -- pesquisa neural com extração de conteúdo

@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Alteração da saída ou dos formatos de log
+    - Alteração da saída ou dos formatos de logs
     - Depuração da saída da CLI ou do Gateway
 summary: Superfícies de log, logs de arquivo, estilos de log WS e formatação do console
 title: Logs do Gateway
 x-i18n:
-    generated_at: "2026-05-01T05:56:44Z"
+    generated_at: "2026-05-02T05:47:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f843812a41c25f9ca1884543ad3a5663c8e0bc327027cbd2b58ea6557c466aa9
+    source_hash: eb5f5ccd77909e82bd2938a33514ce8361c69910eb945c731d9b2c8266174c13
     source_path: gateway/logging.md
     workflow: 16
 ---
@@ -17,12 +17,12 @@ x-i18n:
 
 Para uma visão geral voltada ao usuário (CLI + UI de Controle + configuração), consulte [/logging](/pt-BR/logging).
 
-O OpenClaw tem duas “superfícies” de log:
+OpenClaw tem duas “superfícies” de log:
 
 - **Saída do console** (o que você vê no terminal / UI de Depuração).
 - **Logs em arquivo** (linhas JSON) gravados pelo logger do Gateway.
 
-## Logger baseado em arquivos
+## Logger baseado em arquivo
 
 - O arquivo de log rotativo padrão fica em `/tmp/openclaw/` (um arquivo por dia): `openclaw-YYYY-MM-DD.log`
   - A data usa o fuso horário local do host do Gateway.
@@ -45,9 +45,12 @@ openclaw logs --follow
 
 - **Logs em arquivo** são controlados exclusivamente por `logging.level`.
 - `--verbose` afeta apenas a **verbosidade do console** (e o estilo de log WS); ele **não**
-  aumenta o nível de log do arquivo.
-- Para capturar detalhes que aparecem apenas no modo detalhado nos logs em arquivo, defina `logging.level` como `debug` ou
+  aumenta o nível dos logs em arquivo.
+- Para capturar detalhes exclusivos do modo detalhado nos logs em arquivo, defina `logging.level` como `debug` ou
   `trace`.
+- O registro em log de rastreamento também inclui resumos de tempos de diagnóstico para caminhos críticos selecionados,
+  como a preparação de fábricas de ferramentas de Plugin. Consulte
+  [/tools/plugin#slow-plugin-tool-setup](/pt-BR/tools/plugin#slow-plugin-tool-setup).
 
 ## Captura do console
 
@@ -62,22 +65,22 @@ Você pode ajustar a verbosidade do console de forma independente via:
 ## Redação
 
 O OpenClaw pode mascarar tokens sensíveis antes que a saída de log ou transcrição saia do
-processo. Essa política de redação de logs é aplicada a coletores de texto de console, log em arquivo, registros
-de log OTLP e transcrições de sessão, para que valores secretos correspondentes sejam
-mascarados antes que linhas JSONL ou mensagens sejam gravadas no disco.
+processo. Essa política de redação de logs é aplicada nos destinos de texto de console, log em arquivo,
+registro de log OTLP e transcrição de sessão, portanto valores de segredo correspondentes são
+mascarados antes que linhas JSONL ou mensagens sejam gravadas em disco.
 
 - `logging.redactSensitive`: `off` | `tools` (padrão: `tools`)
 - `logging.redactPatterns`: array de strings regex (substitui os padrões)
-  - Use strings regex brutas (auto `gi`) ou `/pattern/flags` se precisar de flags personalizadas.
-  - Correspondências são mascaradas mantendo os primeiros 6 + últimos 4 caracteres (comprimento >= 18); caso contrário, `***`.
-  - Os padrões cobrem atribuições comuns de chaves, flags de CLI, campos JSON, cabeçalhos bearer, blocos PEM, prefixos populares de token e nomes de campos de credenciais de pagamento, como número do cartão, CVC/CVV, token de pagamento compartilhado e credencial de pagamento.
+  - Use strings regex brutas (auto `gi`), ou `/pattern/flags` se precisar de flags personalizadas.
+  - Correspondências são mascaradas mantendo os primeiros 6 + últimos 4 caracteres (comprimento >= 18), caso contrário `***`.
+  - Os padrões cobrem atribuições de chaves comuns, flags de CLI, campos JSON, cabeçalhos bearer, blocos PEM, prefixos populares de token e nomes de campos de credenciais de pagamento, como número do cartão, CVC/CVV, token de pagamento compartilhado e credencial de pagamento.
 
-Alguns limites de segurança sempre fazem redação, independentemente de `logging.redactSensitive`.
+Alguns limites de segurança sempre fazem a redação, independentemente de `logging.redactSensitive`.
 Isso inclui eventos de chamada de ferramenta da UI de Controle, saída da ferramenta `sessions_history`,
-exportações de suporte de diagnósticos, observações de erros de provedores, exibição de comandos
-de aprovação de execução e logs do protocolo WebSocket do Gateway. Essas superfícies ainda podem usar
+exportações de suporte de diagnóstico, observações de erro de provedores, exibição de comandos de aprovação exec
+e logs do protocolo WebSocket do Gateway. Essas superfícies ainda podem usar
 `logging.redactPatterns` como padrões adicionais, mas `redactSensitive: "off"`
-não faz com que emitam segredos brutos.
+não faz com que elas emitam segredos brutos.
 
 ## Logs WebSocket do Gateway
 
@@ -87,14 +90,14 @@ O Gateway imprime logs do protocolo WebSocket em dois modos:
   - erros (`ok=false`)
   - chamadas lentas (limite padrão: `>= 50ms`)
   - erros de análise
-- **Modo detalhado (`--verbose`)**: imprime todo o tráfego de requisição/resposta WS.
+- **Modo detalhado (`--verbose`)**: imprime todo o tráfego de solicitação/resposta WS.
 
 ### Estilo de log WS
 
-`openclaw gateway` oferece suporte a uma troca de estilo por Gateway:
+`openclaw gateway` oferece suporte a uma alternância de estilo por Gateway:
 
 - `--ws-log auto` (padrão): o modo normal é otimizado; o modo detalhado usa saída compacta
-- `--ws-log compact`: saída compacta (requisição/resposta pareadas) quando detalhado
+- `--ws-log compact`: saída compacta (solicitação/resposta em pares) quando detalhado
 - `--ws-log full`: saída completa por quadro quando detalhado
 - `--compact`: alias para `--ws-log compact`
 
@@ -111,27 +114,27 @@ openclaw gateway --verbose --ws-log compact
 openclaw gateway --verbose --ws-log full
 ```
 
-## Formatação do console (logs de subsistema)
+## Formatação do console (log de subsistema)
 
-O formatador de console é **ciente de TTY** e imprime linhas consistentes com prefixo.
+O formatador de console é **consciente de TTY** e imprime linhas consistentes e prefixadas.
 Loggers de subsistema mantêm a saída agrupada e fácil de examinar.
 
 Comportamento:
 
 - **Prefixos de subsistema** em todas as linhas (por exemplo, `[gateway]`, `[canvas]`, `[tailscale]`)
-- **Cores de subsistema** (estáveis por subsistema) mais cores de nível
+- **Cores de subsistema** (estáveis por subsistema), além de coloração por nível
 - **Cor quando a saída é um TTY ou o ambiente parece um terminal rico** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), respeita `NO_COLOR`
-- **Prefixos de subsistema encurtados**: remove `gateway/` + `channels/` iniciais, mantém os últimos 2 segmentos (por exemplo, `whatsapp/outbound`)
+- **Prefixos de subsistema encurtados**: descarta `gateway/` + `channels/` iniciais, mantém os últimos 2 segmentos (por exemplo, `whatsapp/outbound`)
 - **Sub-loggers por subsistema** (prefixo automático + campo estruturado `{ subsystem }`)
 - **`logRaw()`** para saída de QR/UX (sem prefixo, sem formatação)
 - **Estilos de console** (por exemplo, `pretty | compact | json`)
-- **Nível de log do console** separado do nível de log do arquivo (o arquivo mantém detalhes completos quando `logging.level` é definido como `debug`/`trace`)
+- **Nível de log do console** separado do nível de log em arquivo (o arquivo mantém todos os detalhes quando `logging.level` está definido como `debug`/`trace`)
 - **Corpos de mensagens do WhatsApp** são registrados em `debug` (use `--verbose` para vê-los)
 
 Isso mantém os logs em arquivo existentes estáveis enquanto torna a saída interativa fácil de examinar.
 
-## Relacionado
+## Relacionados
 
 - [Logs](/pt-BR/logging)
-- [Exportação do OpenTelemetry](/pt-BR/gateway/opentelemetry)
-- [Exportação de diagnósticos](/pt-BR/gateway/diagnostics)
+- [Exportação OpenTelemetry](/pt-BR/gateway/opentelemetry)
+- [Exportação de diagnóstico](/pt-BR/gateway/diagnostics)
