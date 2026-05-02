@@ -2,41 +2,40 @@
 read_when:
     - Bạn muốn OpenClaw nhận tin nhắn trực tiếp qua Nostr
     - Bạn đang thiết lập nhắn tin phi tập trung
-summary: Kênh tin nhắn trực tiếp Nostr qua các tin nhắn được mã hóa NIP-04
+summary: Kênh DM Nostr qua tin nhắn được mã hóa NIP-04
 title: Nostr
 x-i18n:
-    generated_at: "2026-04-29T22:26:55Z"
+    generated_at: "2026-05-02T22:16:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 545d68077c9fe81d5fa5a17262d37e3688185a1fb12d67b8b1053b27b96c3c7f
+    source_hash: d6158c22c0ffc5aea56d0ac2b68955f30c3a785013dba5410cbd70f9b689dc3c
     source_path: channels/nostr.md
     workflow: 16
 ---
 
-**Trạng thái:** Plugin đi kèm tùy chọn (bị tắt theo mặc định cho đến khi được cấu hình).
+**Trạng thái:** Plugin đi kèm tùy chọn (mặc định bị tắt cho đến khi được cấu hình).
 
-Nostr là một giao thức phi tập trung dành cho mạng xã hội. Kênh này cho phép OpenClaw nhận và phản hồi tin nhắn trực tiếp (DM) được mã hóa qua NIP-04.
+Nostr là một giao thức phi tập trung cho mạng xã hội. Kênh này cho phép OpenClaw nhận và phản hồi tin nhắn trực tiếp (DM) được mã hóa qua NIP-04.
 
 ## Plugin đi kèm
 
-Các bản phát hành OpenClaw hiện tại phân phối Nostr dưới dạng Plugin đi kèm, nên các bản dựng đóng gói
+Các bản phát hành OpenClaw hiện tại cung cấp Nostr dưới dạng Plugin đi kèm, vì vậy các bản dựng đóng gói
 thông thường không cần cài đặt riêng.
 
 ### Bản cài đặt cũ/tùy chỉnh
 
 - Onboarding (`openclaw onboard`) và `openclaw channels add` vẫn hiển thị
   Nostr từ danh mục kênh dùng chung.
-- Nếu bản dựng của bạn loại trừ Nostr đi kèm, hãy cài đặt gói npm hiện tại khi gói đó
-  được phát hành.
+- Nếu bản dựng của bạn không bao gồm Nostr đi kèm, hãy cài đặt trực tiếp gói npm.
 
 ```bash
 openclaw plugins install @openclaw/nostr
 ```
 
-Nếu npm báo gói do OpenClaw sở hữu là không còn được khuyến nghị, hãy dùng bản dựng OpenClaw
-đóng gói hiện tại hoặc checkout cục bộ cho đến khi gói npm mới hơn được phát hành.
+Dùng gói trần để theo thẻ phát hành chính thức hiện tại. Chỉ ghim một
+phiên bản chính xác khi bạn cần một bản cài đặt có thể tái lập.
 
-Dùng checkout cục bộ (quy trình phát triển):
+Dùng checkout cục bộ (quy trình dev):
 
 ```bash
 openclaw plugins install --link <path-to-local-nostr-plugin>
@@ -55,7 +54,7 @@ Dùng `--use-env` để giữ `NOSTR_PRIVATE_KEY` trong môi trường thay vì 
 
 ## Thiết lập nhanh
 
-1. Tạo cặp khóa Nostr (nếu cần):
+1. Tạo một cặp khóa Nostr (nếu cần):
 
 ```bash
 # Using nak
@@ -84,19 +83,19 @@ export NOSTR_PRIVATE_KEY="nsec1..."
 
 ## Tham chiếu cấu hình
 
-| Khóa         | Kiểu     | Mặc định                                    | Mô tả                                  |
-| ------------ | -------- | ------------------------------------------- | -------------------------------------- |
-| `privateKey` | string   | bắt buộc                                    | Khóa riêng ở định dạng `nsec` hoặc hex |
-| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL relay (WebSocket)                  |
-| `dmPolicy`   | string   | `pairing`                                   | Chính sách truy cập DM                 |
-| `allowFrom`  | string[] | `[]`                                        | Pubkey người gửi được phép             |
-| `enabled`    | boolean  | `true`                                      | Bật/tắt kênh                           |
-| `name`       | string   | -                                           | Tên hiển thị                           |
-| `profile`    | object   | -                                           | Siêu dữ liệu hồ sơ NIP-01              |
+| Khóa         | Kiểu     | Mặc định                                    | Mô tả                                    |
+| ------------ | -------- | ------------------------------------------- | ---------------------------------------- |
+| `privateKey` | string   | bắt buộc                                    | Khóa riêng ở định dạng `nsec` hoặc hex   |
+| `relays`     | string[] | `['wss://relay.damus.io', 'wss://nos.lol']` | URL relay (WebSocket)                    |
+| `dmPolicy`   | string   | `pairing`                                   | Chính sách truy cập DM                   |
+| `allowFrom`  | string[] | `[]`                                        | Pubkey người gửi được phép               |
+| `enabled`    | boolean  | `true`                                      | Bật/tắt kênh                             |
+| `name`       | string   | -                                           | Tên hiển thị                             |
+| `profile`    | object   | -                                           | Siêu dữ liệu hồ sơ NIP-01                |
 
 ## Siêu dữ liệu hồ sơ
 
-Dữ liệu hồ sơ được phát hành dưới dạng sự kiện NIP-01 `kind:0`. Bạn có thể quản lý dữ liệu này từ Control UI (Channels -> Nostr -> Profile) hoặc đặt trực tiếp trong cấu hình.
+Dữ liệu hồ sơ được xuất bản dưới dạng sự kiện NIP-01 `kind:0`. Bạn có thể quản lý dữ liệu này từ Control UI (Channels -> Nostr -> Profile) hoặc đặt trực tiếp trong cấu hình.
 
 Ví dụ:
 
@@ -129,18 +128,18 @@ Ghi chú:
 
 ### Chính sách DM
 
-- **pairing** (mặc định): người gửi không xác định nhận được mã ghép nối.
-- **allowlist**: chỉ các pubkey trong `allowFrom` mới có thể gửi DM.
-- **open**: DM đến công khai (yêu cầu `allowFrom: ["*"]`).
-- **disabled**: bỏ qua DM đến.
+- **pairing** (mặc định): người gửi không xác định nhận được mã ghép đôi.
+- **allowlist**: chỉ pubkey trong `allowFrom` mới có thể DM.
+- **open**: DM công khai gửi vào (yêu cầu `allowFrom: ["*"]`).
+- **disabled**: bỏ qua DM gửi vào.
 
 Ghi chú thực thi:
 
-- Chữ ký sự kiện đến được xác minh trước chính sách người gửi và giải mã NIP-04, nên sự kiện giả mạo bị từ chối sớm.
-- Phản hồi ghép nối được gửi mà không xử lý nội dung DM ban đầu.
-- DM đến bị giới hạn tốc độ và payload quá lớn bị loại bỏ trước khi giải mã.
+- Chữ ký sự kiện gửi vào được xác minh trước chính sách người gửi và giải mã NIP-04, vì vậy sự kiện giả mạo bị từ chối sớm.
+- Phản hồi ghép đôi được gửi mà không xử lý nội dung DM gốc.
+- DM gửi vào bị giới hạn tốc độ và payload quá lớn bị loại bỏ trước khi giải mã.
 
-### Ví dụ allowlist
+### Ví dụ danh sách cho phép
 
 ```json5
 {
@@ -189,8 +188,8 @@ Mẹo:
 | ------ | ---------- | ------------------------------------------ |
 | NIP-01 | Được hỗ trợ | Định dạng sự kiện cơ bản + siêu dữ liệu hồ sơ |
 | NIP-04 | Được hỗ trợ | DM được mã hóa (`kind:4`)                  |
-| NIP-17 | Đã lên kế hoạch | DM được gói quà                          |
-| NIP-44 | Đã lên kế hoạch | Mã hóa có phiên bản                      |
+| NIP-17 | Đã lên kế hoạch | DM bọc quà                              |
+| NIP-44 | Đã lên kế hoạch | Mã hóa có phiên bản                     |
 
 ## Kiểm thử
 
@@ -214,9 +213,9 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ### Kiểm thử thủ công
 
-1. Ghi lại pubkey bot (npub) từ nhật ký.
-2. Mở một client Nostr (Damus, Amethyst, v.v.).
-3. Gửi DM đến pubkey bot.
+1. Ghi lại pubkey của bot (npub) từ log.
+2. Mở một ứng dụng khách Nostr (Damus, Amethyst, v.v.).
+3. Gửi DM tới pubkey của bot.
 4. Xác minh phản hồi.
 
 ## Khắc phục sự cố
@@ -226,25 +225,25 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 - Xác minh khóa riêng hợp lệ.
 - Đảm bảo URL relay có thể truy cập và dùng `wss://` (hoặc `ws://` cho cục bộ).
 - Xác nhận `enabled` không phải là `false`.
-- Kiểm tra nhật ký Gateway để tìm lỗi kết nối relay.
+- Kiểm tra log Gateway để tìm lỗi kết nối relay.
 
 ### Không gửi được phản hồi
 
 - Kiểm tra relay có chấp nhận ghi hay không.
-- Xác minh kết nối ra ngoài.
+- Xác minh kết nối gửi ra.
 - Theo dõi giới hạn tốc độ của relay.
 
 ### Phản hồi trùng lặp
 
-- Đây là điều có thể xảy ra khi dùng nhiều relay.
-- Tin nhắn được loại trùng theo ID sự kiện; chỉ lần phân phối đầu tiên kích hoạt phản hồi.
+- Đây là hành vi dự kiến khi dùng nhiều relay.
+- Tin nhắn được khử trùng lặp theo ID sự kiện; chỉ lần gửi đầu tiên kích hoạt phản hồi.
 
 ## Bảo mật
 
 - Không bao giờ commit khóa riêng.
 - Dùng biến môi trường cho khóa.
 - Cân nhắc `allowlist` cho bot production.
-- Chữ ký được xác minh trước chính sách người gửi, và chính sách người gửi được thực thi trước khi giải mã, nên sự kiện giả mạo bị từ chối sớm và người gửi không xác định không thể buộc thực hiện đầy đủ công việc mã hóa.
+- Chữ ký được xác minh trước chính sách người gửi, và chính sách người gửi được thực thi trước khi giải mã, vì vậy sự kiện giả mạo bị từ chối sớm và người gửi không xác định không thể buộc thực hiện toàn bộ công việc mật mã.
 
 ## Giới hạn (MVP)
 
@@ -254,8 +253,8 @@ docker run -p 7777:7777 ghcr.io/hoytech/strfry
 
 ## Liên quan
 
-- [Tổng quan kênh](/vi/channels) — tất cả kênh được hỗ trợ
-- [Ghép nối](/vi/channels/pairing) — xác thực DM và luồng ghép nối
-- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và cổng kiểm soát lượt nhắc
+- [Tổng quan về kênh](/vi/channels) — tất cả các kênh được hỗ trợ
+- [Ghép đôi](/vi/channels/pairing) — xác thực DM và luồng ghép đôi
+- [Nhóm](/vi/channels/groups) — hành vi trò chuyện nhóm và cổng đề cập
 - [Định tuyến kênh](/vi/channels/channel-routing) — định tuyến phiên cho tin nhắn
 - [Bảo mật](/vi/gateway/security) — mô hình truy cập và gia cố

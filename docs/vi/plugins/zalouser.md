@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Bạn muốn hỗ trợ Zalo Personal (không chính thức) trong OpenClaw
+    - Bạn muốn OpenClaw hỗ trợ Zalo Personal (không chính thức)
     - Bạn đang cấu hình hoặc phát triển Plugin zalouser
 summary: 'Plugin Zalo Personal: đăng nhập bằng QR + nhắn tin qua zca-js gốc (cài đặt Plugin + cấu hình kênh + công cụ)'
 title: Plugin Zalo cá nhân
 x-i18n:
-    generated_at: "2026-04-29T23:04:22Z"
+    generated_at: "2026-05-02T22:21:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4cbf56d81d4137706fb03b516f65b20f51a4e40ce301c2eaa7923ddc9ac0787f
+    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-# Zalo cá nhân (Plugin)
+# Zalo Personal (Plugin)
 
-Hỗ trợ Zalo cá nhân cho OpenClaw thông qua một Plugin, sử dụng `zca-js` gốc để tự động hóa một tài khoản người dùng Zalo thông thường.
+Hỗ trợ Zalo Personal cho OpenClaw thông qua một Plugin, sử dụng `zca-js` gốc để tự động hóa một tài khoản người dùng Zalo thông thường.
 
 <Warning>
 Tự động hóa không chính thức có thể dẫn đến việc tài khoản bị đình chỉ hoặc cấm. Bạn tự chịu rủi ro khi sử dụng.
 </Warning>
 
-## Đặt tên
+## Cách đặt tên
 
-ID kênh là `zalouser` để thể hiện rõ rằng kênh này tự động hóa một **tài khoản người dùng Zalo cá nhân** (không chính thức). Chúng tôi giữ `zalo` cho khả năng tích hợp API Zalo chính thức trong tương lai.
+Id kênh là `zalouser` để nêu rõ rằng kênh này tự động hóa một **tài khoản người dùng Zalo cá nhân** (không chính thức). Chúng tôi giữ `zalo` cho một khả năng tích hợp API Zalo chính thức trong tương lai.
 
-## Nơi chạy
+## Chạy ở đâu
 
 Plugin này chạy **bên trong tiến trình Gateway**.
 
-Nếu bạn sử dụng Gateway từ xa, hãy cài đặt/cấu hình Plugin trên **máy đang chạy Gateway**, sau đó khởi động lại Gateway.
+Nếu bạn dùng Gateway từ xa, hãy cài đặt/cấu hình Plugin trên **máy đang chạy Gateway**, rồi khởi động lại Gateway.
 
 Không cần binary CLI `zca`/`openzca` bên ngoài.
 
@@ -41,11 +41,9 @@ Không cần binary CLI `zca`/`openzca` bên ngoài.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Nếu npm báo gói do OpenClaw sở hữu là đã ngừng dùng, phiên bản gói đó là từ
-một luồng gói bên ngoài cũ hơn; hãy dùng bản dựng OpenClaw đã đóng gói hiện tại hoặc
-đường dẫn thư mục cục bộ cho đến khi một gói npm mới hơn được phát hành.
+Dùng package trần để theo tag phát hành chính thức hiện tại. Chỉ ghim một phiên bản chính xác khi bạn cần bản cài đặt có thể tái lập.
 
-Sau đó khởi động lại Gateway.
+Khởi động lại Gateway sau đó.
 
 ### Tùy chọn B: cài đặt từ thư mục cục bộ (dev)
 
@@ -55,7 +53,7 @@ openclaw plugins install "$PLUGIN_SRC"
 cd "$PLUGIN_SRC" && pnpm install
 ```
 
-Sau đó khởi động lại Gateway.
+Khởi động lại Gateway sau đó.
 
 ## Cấu hình
 
@@ -82,13 +80,13 @@ openclaw message send --channel zalouser --target <threadId> --message "Hello fr
 openclaw directory peers list --channel zalouser --query "name"
 ```
 
-## Công cụ agent
+## Công cụ tác tử
 
 Tên công cụ: `zalouser`
 
 Hành động: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Các hành động tin nhắn kênh cũng hỗ trợ `react` cho phản ứng tin nhắn.
+Hành động tin nhắn kênh cũng hỗ trợ `react` cho phản ứng tin nhắn.
 
 ## Liên quan
 

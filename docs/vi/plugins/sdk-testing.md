@@ -1,59 +1,59 @@
 ---
 read_when:
-    - Bạn đang viết các bài kiểm thử cho một Plugin
-    - Bạn cần các tiện ích kiểm thử từ Plugin SDK
-    - Bạn muốn tìm hiểu các bài kiểm thử hợp đồng cho các Plugin đi kèm
+    - Bạn đang viết kiểm thử cho một Plugin
+    - Bạn cần các tiện ích kiểm thử từ SDK Plugin
+    - Bạn muốn tìm hiểu các kiểm thử hợp đồng cho các Plugin được đóng gói kèm
 sidebarTitle: Testing
-summary: Tiện ích và mẫu hình kiểm thử cho các Plugin OpenClaw
+summary: Tiện ích và mẫu kiểm thử cho Plugin OpenClaw
 title: Kiểm thử Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:03:38Z"
+    generated_at: "2026-05-02T22:21:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7edf81e7662784356fcb0f481dd3fcdde05cc59da2a6c1b38eae1008b3ead96c
+    source_hash: 67092d71302d566ee9ed3f3f1e32b5aa6f4eabf522a9656ad13cad812550f1e8
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-Tham chiếu về tiện ích kiểm thử, mẫu và thực thi lint cho các plugin OpenClaw.
+Tài liệu tham chiếu về tiện ích kiểm thử, mẫu sử dụng và thực thi lint cho các Plugin của OpenClaw.
 
 <Tip>
-  **Đang tìm ví dụ kiểm thử?** Các hướng dẫn cách làm có ví dụ kiểm thử hoàn chỉnh:
-  [Kiểm thử plugin kênh](/vi/plugins/sdk-channel-plugins#step-6-test) và
-  [Kiểm thử plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-6-test).
+  **Bạn đang tìm ví dụ kiểm thử?** Các hướng dẫn cách làm có các ví dụ kiểm thử đã được trình bày:
+  [Kiểm thử Plugin kênh](/vi/plugins/sdk-channel-plugins#step-6-test) và
+  [Kiểm thử Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-6-test).
 </Tip>
 
 ## Tiện ích kiểm thử
 
-**Import mock Plugin API:** `openclaw/plugin-sdk/plugin-test-api`
+**Nhập mô phỏng API Plugin:** `openclaw/plugin-sdk/plugin-test-api`
 
-**Import hợp đồng runtime tác nhân:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
+**Nhập hợp đồng runtime tác nhân:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
 
-**Import hợp đồng kênh:** `openclaw/plugin-sdk/channel-contract-testing`
+**Nhập hợp đồng kênh:** `openclaw/plugin-sdk/channel-contract-testing`
 
-**Import helper kiểm thử kênh:** `openclaw/plugin-sdk/channel-test-helpers`
+**Nhập trình trợ giúp kiểm thử kênh:** `openclaw/plugin-sdk/channel-test-helpers`
 
-**Import kiểm thử đích kênh:** `openclaw/plugin-sdk/channel-target-testing`
+**Nhập kiểm thử mục tiêu kênh:** `openclaw/plugin-sdk/channel-target-testing`
 
-**Import hợp đồng Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
+**Nhập hợp đồng Plugin:** `openclaw/plugin-sdk/plugin-test-contracts`
 
-**Import kiểm thử runtime Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
+**Nhập kiểm thử runtime Plugin:** `openclaw/plugin-sdk/plugin-test-runtime`
 
-**Import hợp đồng nhà cung cấp:** `openclaw/plugin-sdk/provider-test-contracts`
+**Nhập hợp đồng nhà cung cấp:** `openclaw/plugin-sdk/provider-test-contracts`
 
-**Import mock HTTP nhà cung cấp:** `openclaw/plugin-sdk/provider-http-test-mocks`
+**Nhập mô phỏng HTTP nhà cung cấp:** `openclaw/plugin-sdk/provider-http-test-mocks`
 
-**Import kiểm thử môi trường/mạng:** `openclaw/plugin-sdk/test-env`
+**Nhập kiểm thử môi trường/mạng:** `openclaw/plugin-sdk/test-env`
 
-**Import fixture chung:** `openclaw/plugin-sdk/test-fixtures`
+**Nhập fixture chung:** `openclaw/plugin-sdk/test-fixtures`
 
-**Import mock builtin Node:** `openclaw/plugin-sdk/test-node-mocks`
+**Nhập mô phỏng tích hợp sẵn của Node:** `openclaw/plugin-sdk/test-node-mocks`
 
-Ưu tiên các đường dẫn con tập trung bên dưới cho các kiểm thử plugin mới. Barrel rộng
-`openclaw/plugin-sdk/testing` chỉ dành cho tương thích cũ.
-Các rào chắn của repo từ chối import thực mới từ `plugin-sdk/testing` và
-`plugin-sdk/test-utils`; các tên đó chỉ còn là bề mặt tương thích đã ngừng khuyến nghị
-cho plugin bên ngoài và kiểm thử bản ghi tương thích.
+Ưu tiên các subpath tập trung bên dưới cho các kiểm thử Plugin mới. Barrel rộng
+`openclaw/plugin-sdk/testing` chỉ dành cho tương thích kế thừa.
+Các rào chắn của repo từ chối những import thực mới từ `plugin-sdk/testing` và
+`plugin-sdk/test-utils`; các tên đó chỉ còn là bề mặt tương thích không được khuyến nghị
+cho các Plugin bên ngoài và kiểm thử bản ghi tương thích.
 
 ```typescript
 import {
@@ -80,74 +80,75 @@ import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 
 ### Các export có sẵn
 
-| Mục xuất                                             | Mục đích                                                                                                                                |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | Xây dựng mock API Plugin tối thiểu cho kiểm thử đơn vị đăng ký trực tiếp. Nhập từ `plugin-sdk/plugin-test-api`                          |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Fixture hợp đồng hồ sơ xác thực dùng chung cho bộ điều hợp runtime tác tử gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`        |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Fixture hợp đồng chặn gửi trả lời dùng chung cho bộ điều hợp runtime tác tử gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`      |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Fixture hợp đồng phân loại dự phòng dùng chung cho bộ điều hợp runtime tác tử gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`    |
-| `createParameterFreeTool`                            | Xây dựng fixture schema công cụ động cho kiểm thử hợp đồng runtime gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`               |
-| `expectChannelInboundContextContract`                | Xác nhận hình dạng ngữ cảnh đầu vào của kênh. Nhập từ `plugin-sdk/channel-contract-testing`                                              |
-| `installChannelOutboundPayloadContractSuite`         | Cài đặt các trường hợp hợp đồng payload đầu ra của kênh. Nhập từ `plugin-sdk/channel-contract-testing`                                  |
-| `createStartAccountContext`                          | Xây dựng ngữ cảnh vòng đời tài khoản kênh. Nhập từ `plugin-sdk/channel-test-helpers`                                                     |
-| `installChannelActionsContractSuite`                 | Cài đặt các trường hợp hợp đồng hành động tin nhắn kênh chung. Nhập từ `plugin-sdk/channel-test-helpers`                                |
-| `installChannelSetupContractSuite`                   | Cài đặt các trường hợp hợp đồng thiết lập kênh chung. Nhập từ `plugin-sdk/channel-test-helpers`                                         |
-| `installChannelStatusContractSuite`                  | Cài đặt các trường hợp hợp đồng trạng thái kênh chung. Nhập từ `plugin-sdk/channel-test-helpers`                                        |
-| `expectDirectoryIds`                                 | Xác nhận id thư mục kênh từ một hàm liệt kê thư mục. Nhập từ `plugin-sdk/channel-test-helpers`                                          |
-| `assertBundledChannelEntries`                        | Xác nhận các điểm vào kênh được đóng gói công khai hợp đồng dự kiến. Nhập từ `plugin-sdk/channel-test-helpers`                          |
-| `formatEnvelopeTimestamp`                            | Định dạng dấu thời gian phong bì xác định. Nhập từ `plugin-sdk/channel-test-helpers`                                                     |
-| `expectPairingReplyText`                             | Xác nhận văn bản phản hồi ghép đôi kênh và trích xuất mã của nó. Nhập từ `plugin-sdk/channel-test-helpers`                              |
-| `describePluginRegistrationContract`                 | Cài đặt các kiểm tra hợp đồng đăng ký Plugin. Nhập từ `plugin-sdk/plugin-test-contracts`                                                 |
-| `registerSingleProviderPlugin`                       | Đăng ký một Plugin nhà cung cấp trong kiểm thử khói bộ nạp. Nhập từ `plugin-sdk/plugin-test-runtime`                                    |
-| `registerProviderPlugin`                             | Ghi lại mọi loại nhà cung cấp từ một Plugin. Nhập từ `plugin-sdk/plugin-test-runtime`                                                    |
-| `registerProviderPlugins`                            | Ghi lại các đăng ký nhà cung cấp trên nhiều Plugin. Nhập từ `plugin-sdk/plugin-test-runtime`                                             |
-| `requireRegisteredProvider`                          | Xác nhận rằng một tập hợp nhà cung cấp chứa một id. Nhập từ `plugin-sdk/plugin-test-runtime`                                             |
-| `createRuntimeEnv`                                   | Xây dựng môi trường runtime CLI/Plugin được mock. Nhập từ `plugin-sdk/plugin-test-runtime`                                               |
-| `createPluginSetupWizardStatus`                      | Xây dựng helper trạng thái thiết lập cho Plugin kênh. Nhập từ `plugin-sdk/plugin-test-runtime`                                          |
-| `describeOpenAIProviderRuntimeContract`              | Cài đặt các kiểm tra hợp đồng runtime họ nhà cung cấp. Nhập từ `plugin-sdk/provider-test-contracts`                                     |
-| `expectPassthroughReplayPolicy`                      | Xác nhận chính sách phát lại của nhà cung cấp chuyển tiếp công cụ và siêu dữ liệu do nhà cung cấp sở hữu. Nhập từ `plugin-sdk/provider-test-contracts` |
-| `runRealtimeSttLiveTest`                             | Chạy kiểm thử trực tiếp nhà cung cấp STT thời gian thực với fixture âm thanh dùng chung. Nhập từ `plugin-sdk/provider-test-contracts`    |
-| `normalizeTranscriptForMatch`                        | Chuẩn hóa đầu ra bản chép lời trực tiếp trước các xác nhận mờ. Nhập từ `plugin-sdk/provider-test-contracts`                             |
-| `expectExplicitVideoGenerationCapabilities`          | Xác nhận nhà cung cấp video khai báo rõ khả năng chế độ tạo. Nhập từ `plugin-sdk/provider-test-contracts`                               |
-| `expectExplicitMusicGenerationCapabilities`          | Xác nhận nhà cung cấp nhạc khai báo rõ khả năng tạo/chỉnh sửa. Nhập từ `plugin-sdk/provider-test-contracts`                             |
-| `mockSuccessfulDashscopeVideoTask`                   | Cài đặt phản hồi tác vụ video tương thích DashScope thành công. Nhập từ `plugin-sdk/provider-test-contracts`                            |
-| `getProviderHttpMocks`                               | Truy cập mock Vitest HTTP/xác thực nhà cung cấp có chọn tham gia. Nhập từ `plugin-sdk/provider-http-test-mocks`                         |
-| `installProviderHttpMockCleanup`                     | Đặt lại mock HTTP/xác thực nhà cung cấp sau mỗi kiểm thử. Nhập từ `plugin-sdk/provider-http-test-mocks`                                 |
-| `installCommonResolveTargetErrorCases`               | Các trường hợp kiểm thử dùng chung cho xử lý lỗi phân giải mục tiêu. Nhập từ `plugin-sdk/channel-target-testing`                        |
-| `shouldAckReaction`                                  | Kiểm tra liệu một kênh có nên thêm phản ứng xác nhận hay không. Nhập từ `plugin-sdk/channel-feedback`                                   |
-| `removeAckReactionAfterReply`                        | Xóa phản ứng xác nhận sau khi gửi phản hồi. Nhập từ `plugin-sdk/channel-feedback`                                                        |
-| `createTestRegistry`                                 | Xây dựng fixture sổ đăng ký Plugin kênh. Nhập từ `plugin-sdk/plugin-test-runtime` hoặc `plugin-sdk/channel-test-helpers`                |
-| `createEmptyPluginRegistry`                          | Xây dựng fixture sổ đăng ký Plugin trống. Nhập từ `plugin-sdk/plugin-test-runtime` hoặc `plugin-sdk/channel-test-helpers`               |
-| `setActivePluginRegistry`                            | Cài đặt fixture sổ đăng ký cho kiểm thử runtime Plugin. Nhập từ `plugin-sdk/plugin-test-runtime` hoặc `plugin-sdk/channel-test-helpers` |
-| `createRequestCaptureJsonFetch`                      | Ghi lại yêu cầu fetch JSON trong kiểm thử helper phương tiện. Nhập từ `plugin-sdk/test-env`                                             |
-| `withServer`                                         | Chạy kiểm thử với máy chủ HTTP cục bộ dùng một lần. Nhập từ `plugin-sdk/test-env`                                                       |
-| `createMockIncomingRequest`                          | Xây dựng đối tượng yêu cầu HTTP đến tối thiểu. Nhập từ `plugin-sdk/test-env`                                                            |
-| `withFetchPreconnect`                                | Chạy kiểm thử fetch với hook tiền kết nối đã cài đặt. Nhập từ `plugin-sdk/test-env`                                                     |
-| `withEnv` / `withEnvAsync`                           | Tạm thời vá biến môi trường. Nhập từ `plugin-sdk/test-env`                                                                              |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Tạo fixture kiểm thử hệ thống tệp cô lập. Nhập từ `plugin-sdk/test-env`                                                                 |
-| `createMockServerResponse`                           | Tạo mock phản hồi máy chủ HTTP tối thiểu. Nhập từ `plugin-sdk/test-env`                                                                 |
-| `createCliRuntimeCapture`                            | Ghi lại đầu ra runtime CLI trong kiểm thử. Nhập từ `plugin-sdk/test-fixtures`                                                           |
-| `importFreshModule`                                  | Nhập một module ESM với token truy vấn mới để bỏ qua bộ nhớ đệm module. Nhập từ `plugin-sdk/test-fixtures`                              |
-| `bundledPluginRoot` / `bundledPluginFile`            | Phân giải đường dẫn fixture nguồn hoặc dist của Plugin được đóng gói. Nhập từ `plugin-sdk/test-fixtures`                                |
-| `mockNodeBuiltinModule`                              | Cài đặt mock Vitest hẹp cho phần dựng sẵn của Node. Nhập từ `plugin-sdk/test-node-mocks`                                                |
-| `createSandboxTestContext`                           | Xây dựng ngữ cảnh kiểm thử sandbox. Nhập từ `plugin-sdk/test-fixtures`                                                                  |
-| `writeSkill`                                         | Ghi fixture skill. Nhập từ `plugin-sdk/test-fixtures`                                                                                   |
-| `makeAgentAssistantMessage`                          | Xây dựng fixture tin nhắn bản ghi tác tử. Nhập từ `plugin-sdk/test-fixtures`                                                            |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | Kiểm tra và đặt lại fixture sự kiện hệ thống. Nhập từ `plugin-sdk/test-fixtures`                                                        |
-| `sanitizeTerminalText`                               | Làm sạch đầu ra terminal để xác nhận. Nhập từ `plugin-sdk/test-fixtures`                                                                |
-| `countLines` / `hasBalancedFences`                   | Xác nhận hình dạng đầu ra chia đoạn. Nhập từ `plugin-sdk/test-fixtures`                                                                 |
-| `runProviderCatalog`                                 | Thực thi hook danh mục nhà cung cấp với phụ thuộc kiểm thử                                                                              |
-| `resolveProviderWizardOptions`                       | Phân giải lựa chọn trình hướng dẫn thiết lập nhà cung cấp trong kiểm thử hợp đồng                                                       |
-| `resolveProviderModelPickerEntries`                  | Phân giải mục trình chọn mô hình nhà cung cấp trong kiểm thử hợp đồng                                                                   |
-| `buildProviderPluginMethodChoice`                    | Xây dựng id lựa chọn trình hướng dẫn nhà cung cấp để xác nhận                                                                           |
-| `setProviderWizardProvidersResolverForTest`          | Tiêm nhà cung cấp của trình hướng dẫn nhà cung cấp cho kiểm thử cô lập                                                                  |
-| `createProviderUsageFetch`                           | Tạo các fixture truy xuất mức sử dụng của nhà cung cấp                                                                                                      |
-| `useFrozenTime` / `useRealTime`                      | Đóng băng và khôi phục bộ hẹn giờ cho các kiểm thử nhạy cảm về thời gian. Nhập từ `plugin-sdk/test-env`                                                    |
-| `createTestWizardPrompter`                           | Tạo bộ nhắc trình hướng dẫn thiết lập được mô phỏng                                                                                                     |
-| `createRuntimeTaskFlow`                              | Tạo trạng thái luồng tác vụ runtime biệt lập                                                                                                  |
-| `typedCases`                                         | Giữ nguyên các kiểu literal cho kiểm thử điều khiển bằng bảng. Nhập từ `plugin-sdk/test-fixtures`                                                    |
+| Mục xuất                                             | Mục đích                                                                                                                                    |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTestPluginApi`                                | Tạo mô phỏng API Plugin tối thiểu cho kiểm thử đơn vị đăng ký trực tiếp. Nhập từ `plugin-sdk/plugin-test-api`                               |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Fixture hợp đồng auth-profile dùng chung cho các bộ chuyển đổi runtime agent gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`         |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Fixture hợp đồng chặn gửi dùng chung cho các bộ chuyển đổi runtime agent gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`             |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Fixture hợp đồng phân loại fallback dùng chung cho các bộ chuyển đổi runtime agent gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`   |
+| `createParameterFreeTool`                            | Tạo fixture schema công cụ động cho kiểm thử hợp đồng runtime gốc. Nhập từ `plugin-sdk/agent-runtime-test-contracts`                        |
+| `expectChannelInboundContextContract`                | Kiểm tra hình dạng ngữ cảnh inbound của kênh. Nhập từ `plugin-sdk/channel-contract-testing`                                                  |
+| `installChannelOutboundPayloadContractSuite`         | Cài đặt các trường hợp hợp đồng payload outbound của kênh. Nhập từ `plugin-sdk/channel-contract-testing`                                    |
+| `createStartAccountContext`                          | Tạo ngữ cảnh vòng đời tài khoản kênh. Nhập từ `plugin-sdk/channel-test-helpers`                                                             |
+| `installChannelActionsContractSuite`                 | Cài đặt các trường hợp hợp đồng hành động tin nhắn kênh chung. Nhập từ `plugin-sdk/channel-test-helpers`                                    |
+| `installChannelSetupContractSuite`                   | Cài đặt các trường hợp hợp đồng thiết lập kênh chung. Nhập từ `plugin-sdk/channel-test-helpers`                                             |
+| `installChannelStatusContractSuite`                  | Cài đặt các trường hợp hợp đồng trạng thái kênh chung. Nhập từ `plugin-sdk/channel-test-helpers`                                            |
+| `expectDirectoryIds`                                 | Kiểm tra id thư mục kênh từ hàm liệt kê thư mục. Nhập từ `plugin-sdk/channel-test-helpers`                                                  |
+| `assertBundledChannelEntries`                        | Kiểm tra các entrypoint kênh được đóng gói có công bố hợp đồng công khai mong đợi. Nhập từ `plugin-sdk/channel-test-helpers`                |
+| `formatEnvelopeTimestamp`                            | Định dạng dấu thời gian envelope xác định được. Nhập từ `plugin-sdk/channel-test-helpers`                                                   |
+| `expectPairingReplyText`                             | Kiểm tra văn bản trả lời ghép nối của kênh và trích xuất mã của nó. Nhập từ `plugin-sdk/channel-test-helpers`                              |
+| `describePluginRegistrationContract`                 | Cài đặt kiểm tra hợp đồng đăng ký Plugin. Nhập từ `plugin-sdk/plugin-test-contracts`                                                        |
+| `registerSingleProviderPlugin`                       | Đăng ký một Plugin provider trong kiểm thử khói loader. Nhập từ `plugin-sdk/plugin-test-runtime`                                            |
+| `registerProviderPlugin`                             | Thu thập mọi loại provider từ một Plugin. Nhập từ `plugin-sdk/plugin-test-runtime`                                                          |
+| `registerProviderPlugins`                            | Thu thập đăng ký provider trên nhiều Plugin. Nhập từ `plugin-sdk/plugin-test-runtime`                                                       |
+| `requireRegisteredProvider`                          | Kiểm tra một tập hợp provider có chứa một id. Nhập từ `plugin-sdk/plugin-test-runtime`                                                      |
+| `createRuntimeEnv`                                   | Tạo môi trường runtime CLI/Plugin được mô phỏng. Nhập từ `plugin-sdk/plugin-test-runtime`                                                   |
+| `createPluginSetupWizardStatus`                      | Tạo helper trạng thái thiết lập cho Plugin kênh. Nhập từ `plugin-sdk/plugin-test-runtime`                                                   |
+| `describeOpenAIProviderRuntimeContract`              | Cài đặt kiểm tra hợp đồng runtime cho họ provider. Nhập từ `plugin-sdk/provider-test-contracts`                                             |
+| `expectPassthroughReplayPolicy`                      | Kiểm tra chính sách phát lại provider truyền qua các công cụ và metadata do provider sở hữu. Nhập từ `plugin-sdk/provider-test-contracts`   |
+| `runRealtimeSttLiveTest`                             | Chạy kiểm thử trực tiếp provider STT thời gian thực với fixture âm thanh dùng chung. Nhập từ `plugin-sdk/provider-test-contracts`           |
+| `normalizeTranscriptForMatch`                        | Chuẩn hóa đầu ra bản ghi trực tiếp trước các kiểm tra gần đúng. Nhập từ `plugin-sdk/provider-test-contracts`                               |
+| `expectExplicitVideoGenerationCapabilities`          | Kiểm tra các provider video khai báo năng lực chế độ tạo rõ ràng. Nhập từ `plugin-sdk/provider-test-contracts`                              |
+| `expectExplicitMusicGenerationCapabilities`          | Kiểm tra các provider nhạc khai báo năng lực tạo/chỉnh sửa rõ ràng. Nhập từ `plugin-sdk/provider-test-contracts`                            |
+| `mockSuccessfulDashscopeVideoTask`                   | Cài đặt phản hồi tác vụ video tương thích DashScope thành công. Nhập từ `plugin-sdk/provider-test-contracts`                                |
+| `getProviderHttpMocks`                               | Truy cập mô phỏng Vitest HTTP/auth provider chọn tham gia. Nhập từ `plugin-sdk/provider-http-test-mocks`                                   |
+| `installProviderHttpMockCleanup`                     | Đặt lại mô phỏng HTTP/auth provider sau mỗi kiểm thử. Nhập từ `plugin-sdk/provider-http-test-mocks`                                        |
+| `installCommonResolveTargetErrorCases`               | Các trường hợp kiểm thử dùng chung cho xử lý lỗi phân giải mục tiêu. Nhập từ `plugin-sdk/channel-target-testing`                           |
+| `shouldAckReaction`                                  | Kiểm tra một kênh có nên thêm phản ứng xác nhận hay không. Nhập từ `plugin-sdk/channel-feedback`                                           |
+| `removeAckReactionAfterReply`                        | Gỡ phản ứng xác nhận sau khi gửi trả lời. Nhập từ `plugin-sdk/channel-feedback`                                                             |
+| `createTestRegistry`                                 | Tạo fixture registry Plugin kênh. Nhập từ `plugin-sdk/plugin-test-runtime` hoặc `plugin-sdk/channel-test-helpers`                          |
+| `createEmptyPluginRegistry`                          | Tạo fixture registry Plugin trống. Nhập từ `plugin-sdk/plugin-test-runtime` hoặc `plugin-sdk/channel-test-helpers`                         |
+| `setActivePluginRegistry`                            | Cài đặt fixture registry cho kiểm thử runtime Plugin. Nhập từ `plugin-sdk/plugin-test-runtime` hoặc `plugin-sdk/channel-test-helpers`       |
+| `createRequestCaptureJsonFetch`                      | Thu thập yêu cầu fetch JSON trong kiểm thử helper media. Nhập từ `plugin-sdk/test-env`                                                     |
+| `withServer`                                         | Chạy kiểm thử trên máy chủ HTTP cục bộ dùng một lần. Nhập từ `plugin-sdk/test-env`                                                         |
+| `createMockIncomingRequest`                          | Tạo đối tượng yêu cầu HTTP đến tối thiểu. Nhập từ `plugin-sdk/test-env`                                                                     |
+| `withFetchPreconnect`                                | Chạy kiểm thử fetch với hook preconnect đã cài đặt. Nhập từ `plugin-sdk/test-env`                                                          |
+| `withEnv` / `withEnvAsync`                           | Tạm thời vá biến môi trường. Nhập từ `plugin-sdk/test-env`                                                                                 |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Tạo fixture kiểm thử hệ thống tệp cô lập. Nhập từ `plugin-sdk/test-env`                                                                    |
+| `createMockServerResponse`                           | Tạo mô phỏng phản hồi máy chủ HTTP tối thiểu. Nhập từ `plugin-sdk/test-env`                                                                |
+| `createCliRuntimeCapture`                            | Thu thập đầu ra runtime CLI trong kiểm thử. Nhập từ `plugin-sdk/test-fixtures`                                                             |
+| `importFreshModule`                                  | Nhập mô-đun ESM với token truy vấn mới để bỏ qua bộ nhớ đệm mô-đun. Nhập từ `plugin-sdk/test-fixtures`                                    |
+| `bundledPluginRoot` / `bundledPluginFile`            | Phân giải đường dẫn fixture nguồn hoặc dist của Plugin được đóng gói. Nhập từ `plugin-sdk/test-fixtures`                                  |
+| `mockNodeBuiltinModule`                              | Cài đặt mô phỏng Vitest hẹp cho module tích hợp sẵn của Node. Nhập từ `plugin-sdk/test-node-mocks`                                        |
+| `createSandboxTestContext`                           | Tạo ngữ cảnh kiểm thử sandbox. Nhập từ `plugin-sdk/test-fixtures`                                                                          |
+| `writeSkill`                                         | Ghi fixture skill. Nhập từ `plugin-sdk/test-fixtures`                                                                                      |
+| `makeAgentAssistantMessage`                          | Tạo fixture tin nhắn bản ghi agent. Nhập từ `plugin-sdk/test-fixtures`                                                                     |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | Kiểm tra và đặt lại fixture sự kiện hệ thống. Nhập từ `plugin-sdk/test-fixtures`                                                          |
+| `sanitizeTerminalText`                               | Làm sạch đầu ra terminal cho các kiểm tra. Nhập từ `plugin-sdk/test-fixtures`                                                              |
+| `countLines` / `hasBalancedFences`                   | Kiểm tra hình dạng đầu ra chia đoạn. Nhập từ `plugin-sdk/test-fixtures`                                                                    |
+| `runProviderCatalog`                                 | Thực thi hook danh mục provider với phụ thuộc kiểm thử                                                                                     |
+| `resolveProviderWizardOptions`                       | Phân giải lựa chọn wizard thiết lập provider trong kiểm thử hợp đồng                                                                       |
+| `resolveProviderModelPickerEntries`                  | Phân giải các mục bộ chọn mô hình provider trong kiểm thử hợp đồng                                                                         |
+| `buildProviderPluginMethodChoice`                    | Tạo id lựa chọn wizard provider cho các kiểm tra                                                                                           |
+| `setProviderWizardProvidersResolverForTest`          | Tiêm provider wizard provider cho kiểm thử cô lập                                                                                          |
+| `createProviderUsageFetch`                           | Xây dựng fixture tìm nạp mức sử dụng của nhà cung cấp                                                                                                      |
+| `useFrozenTime` / `useRealTime`                      | Đóng băng và khôi phục bộ hẹn giờ cho các bài kiểm thử nhạy cảm với thời gian. Nhập từ `plugin-sdk/test-env`                                                    |
+| `createTestWizardPrompter`                           | Xây dựng prompter trình hướng dẫn thiết lập được mô phỏng                                                                                                     |
+| `createRuntimeTaskFlow`                              | Tạo trạng thái TaskFlow thời gian chạy biệt lập                                                                                                  |
+| `typedCases`                                         | Giữ nguyên các kiểu literal cho bài kiểm thử theo bảng. Nhập từ `plugin-sdk/test-fixtures`                                                    |
 
-Các bộ kiểm thử hợp đồng Plugin đi kèm cũng dùng các đường dẫn con kiểm thử SDK cho những helper chỉ dùng trong kiểm thử về registry, manifest, hiện vật công khai và fixture runtime. Các bộ kiểm thử chỉ dành cho lõi phụ thuộc vào kho kiểm kê OpenClaw đi kèm vẫn nằm trong `src/plugins/contracts`. Giữ các kiểm thử Plugin mới trên một đường dẫn con SDK tập trung đã được tài liệu hóa như `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env`, hoặc `plugin-sdk/test-fixtures` thay vì nhập trực tiếp barrel tương thích `plugin-sdk/testing` quá rộng, các tệp `src/**` của repo, hoặc các cầu nối `test/helpers/*` của repo.
+Các bộ kiểm thử hợp đồng của Plugin đi kèm cũng sử dụng các đường dẫn con kiểm thử SDK cho những trình trợ giúp chỉ dùng trong kiểm thử về registry, manifest, public-artifact và fixture runtime. Các bộ kiểm thử chỉ dành cho lõi phụ thuộc vào inventory OpenClaw đi kèm vẫn nằm trong `src/plugins/contracts`.
+Giữ các kiểm thử extension mới trên một đường dẫn con SDK tập trung đã được tài liệu hóa như `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env`, hoặc `plugin-sdk/test-fixtures` thay vì nhập trực tiếp barrel tương thích rộng `plugin-sdk/testing`, các tệp `src/**` của repo, hoặc các cầu nối `test/helpers/*` của repo.
 
 ### Kiểu
 
@@ -162,9 +163,9 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
-## Phân giải đích kiểm thử
+## Phân giải mục tiêu kiểm thử
 
-Dùng `installCommonResolveTargetErrorCases` để thêm các trường hợp lỗi tiêu chuẩn cho phân giải đích kênh:
+Dùng `installCommonResolveTargetErrorCases` để thêm các trường hợp lỗi tiêu chuẩn cho việc phân giải mục tiêu kênh:
 
 ```typescript
 import { describe } from "vitest";
@@ -190,13 +191,13 @@ describe("my-channel target resolution", () => {
 
 ### Kiểm thử hợp đồng đăng ký
 
-Các kiểm thử đơn vị truyền mock `api` viết tay vào `register(api)` không kiểm tra các cổng chấp nhận loader của OpenClaw. Thêm ít nhất một kiểm thử smoke dựa trên loader cho mỗi bề mặt đăng ký mà Plugin của bạn phụ thuộc vào, đặc biệt là hook và các năng lực độc quyền như bộ nhớ.
+Các kiểm thử đơn vị truyền một mock `api` viết tay vào `register(api)` không kiểm tra các cổng chấp nhận loader của OpenClaw. Thêm ít nhất một kiểm thử khói có loader hậu thuẫn cho mỗi bề mặt đăng ký mà Plugin của bạn phụ thuộc vào, đặc biệt là hook và các năng lực độc quyền như bộ nhớ.
 
-Loader thật sẽ làm đăng ký Plugin thất bại khi thiếu siêu dữ liệu bắt buộc hoặc khi Plugin gọi API năng lực mà nó không sở hữu. Ví dụ, `api.registerHook(...)` yêu cầu tên hook, và `api.registerMemoryCapability(...)` yêu cầu manifest Plugin hoặc entry đã xuất khai báo `kind: "memory"`.
+Loader thật làm đăng ký Plugin thất bại khi thiếu metadata bắt buộc hoặc một Plugin gọi API năng lực mà nó không sở hữu. Ví dụ, `api.registerHook(...)` yêu cầu tên hook, và `api.registerMemoryCapability(...)` yêu cầu manifest Plugin hoặc entry được xuất khai báo `kind: "memory"`.
 
-### Kiểm thử quyền truy cập cấu hình runtime
+### Kiểm thử truy cập cấu hình runtime
 
-Ưu tiên mock runtime Plugin dùng chung từ `openclaw/plugin-sdk/channel-test-helpers` khi kiểm thử các Plugin kênh đi kèm. Các mock đã lỗi thời `runtime.config.loadConfig()` và `runtime.config.writeConfigFile(...)` của nó mặc định sẽ ném lỗi để kiểm thử bắt được việc dùng mới các API tương thích. Chỉ ghi đè các mock đó khi kiểm thử đang bao phủ rõ ràng hành vi tương thích cũ.
+Ưu tiên mock runtime Plugin dùng chung từ `openclaw/plugin-sdk/channel-test-helpers` khi kiểm thử các Plugin kênh đi kèm. Các mock `runtime.config.loadConfig()` và `runtime.config.writeConfigFile(...)` đã lỗi thời của nó mặc định sẽ ném lỗi để kiểm thử phát hiện việc sử dụng mới các API tương thích. Chỉ ghi đè các mock đó khi kiểm thử đang bao phủ rõ ràng hành vi tương thích legacy.
 
 ### Kiểm thử đơn vị một Plugin kênh
 
@@ -234,7 +235,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### Kiểm thử đơn vị một Plugin nhà cung cấp
+### Kiểm thử đơn vị một Plugin provider
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -264,7 +265,7 @@ describe("my-provider plugin", () => {
 
 ### Mock runtime Plugin
 
-Với mã dùng `createPluginRuntimeStore`, hãy mock runtime trong kiểm thử:
+Đối với mã dùng `createPluginRuntimeStore`, hãy mock runtime trong kiểm thử:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -295,9 +296,9 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### Kiểm thử bằng stub theo từng phiên bản
+### Kiểm thử với stub theo từng thực thể
 
-Ưu tiên stub theo từng phiên bản thay vì đột biến prototype:
+Ưu tiên stub theo từng thực thể hơn là sửa đổi prototype:
 
 ```typescript
 // Preferred: per-instance stub
@@ -318,40 +319,40 @@ pnpm test -- src/plugins/contracts/
 
 Các kiểm thử này xác nhận:
 
-- Plugin nào đăng ký nhà cung cấp nào
-- Plugin nào đăng ký nhà cung cấp giọng nói nào
+- Plugin nào đăng ký provider nào
+- Plugin nào đăng ký provider giọng nói nào
 - Tính đúng đắn của hình dạng đăng ký
 - Tuân thủ hợp đồng runtime
 
 ### Chạy kiểm thử theo phạm vi
 
-Với một Plugin cụ thể:
+Cho một Plugin cụ thể:
 
 ```bash
 pnpm test -- <bundled-plugin-root>/my-channel/
 ```
 
-Chỉ với kiểm thử hợp đồng:
+Chỉ cho kiểm thử hợp đồng:
 
 ```bash
 pnpm test -- src/plugins/contracts/shape.contract.test.ts
-pnpm test -- src/plugins/contracts/auth.contract.test.ts
-pnpm test -- src/plugins/contracts/runtime.contract.test.ts
+pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
+pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
 ## Thực thi lint (Plugin trong repo)
 
 Ba quy tắc được `pnpm check` thực thi cho các Plugin trong repo:
 
-1. **Không nhập root nguyên khối** -- barrel root `openclaw/plugin-sdk` bị từ chối
-2. **Không nhập trực tiếp `src/`** -- Plugin không được nhập trực tiếp `../../src/`
-3. **Không tự nhập** -- Plugin không được nhập đường dẫn con `plugin-sdk/<name>` của chính nó
+1. **Không nhập root nguyên khối** -- barrel gốc `openclaw/plugin-sdk` bị từ chối
+2. **Không nhập trực tiếp `src/`** -- Plugin không thể nhập trực tiếp `../../src/`
+3. **Không tự nhập** -- Plugin không thể nhập đường dẫn con `plugin-sdk/<name>` của chính nó
 
-Plugin bên ngoài không chịu các quy tắc lint này, nhưng nên làm theo cùng các mẫu đó.
+Plugin bên ngoài không chịu các quy tắc lint này, nhưng nên làm theo cùng các mẫu.
 
 ## Cấu hình kiểm thử
 
-OpenClaw dùng Vitest với ngưỡng coverage V8. Với kiểm thử Plugin:
+OpenClaw sử dụng Vitest với ngưỡng coverage V8. Đối với kiểm thử Plugin:
 
 ```bash
 # Run all tests
@@ -377,5 +378,5 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 - [Tổng quan SDK](/vi/plugins/sdk-overview) -- quy ước nhập
 - [Plugin kênh SDK](/vi/plugins/sdk-channel-plugins) -- giao diện Plugin kênh
-- [Plugin nhà cung cấp SDK](/vi/plugins/sdk-provider-plugins) -- hook Plugin nhà cung cấp
+- [Plugin provider SDK](/vi/plugins/sdk-provider-plugins) -- hook Plugin provider
 - [Xây dựng Plugin](/vi/plugins/building-plugins) -- hướng dẫn bắt đầu
