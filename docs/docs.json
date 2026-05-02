@@ -1358,6 +1358,7 @@
                   "providers/anthropic",
                   "providers/arcee",
                   "providers/azure-speech",
+                  "providers/cerebras",
                   "providers/chutes",
                   "providers/claude-max-api-proxy",
                   "providers/cloudflare-ai-gateway",
@@ -1392,6 +1393,7 @@
                   "providers/qianfan",
                   "providers/qwen",
                   "providers/runway",
+                  "providers/senseaudio",
                   "providers/sglang",
                   "providers/stepfun",
                   "providers/synthetic",
@@ -1611,6 +1613,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "cli/backup",
+                      "cli/crestodian",
                       "cli/daemon",
                       "cli/doctor",
                       "cli/gateway",
@@ -1757,6 +1760,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "reference/application-modernization-plan",
                   "reference/credits"
                 ]
               },
@@ -2841,6 +2845,7 @@
                   "zh-TW/providers/anthropic",
                   "zh-TW/providers/arcee",
                   "zh-TW/providers/azure-speech",
+                  "zh-TW/providers/cerebras",
                   "zh-TW/providers/chutes",
                   "zh-TW/providers/claude-max-api-proxy",
                   "zh-TW/providers/cloudflare-ai-gateway",
@@ -2875,6 +2880,7 @@
                   "zh-TW/providers/qianfan",
                   "zh-TW/providers/qwen",
                   "zh-TW/providers/runway",
+                  "zh-TW/providers/senseaudio",
                   "zh-TW/providers/sglang",
                   "zh-TW/providers/stepfun",
                   "zh-TW/providers/synthetic",
@@ -3094,6 +3100,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "zh-TW/cli/backup",
+                      "zh-TW/cli/crestodian",
                       "zh-TW/cli/daemon",
                       "zh-TW/cli/doctor",
                       "zh-TW/cli/gateway",
@@ -3240,6 +3247,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "zh-TW/reference/application-modernization-plan",
                   "zh-TW/reference/credits"
                 ]
               },
@@ -3709,6 +3717,7 @@
                   "ja-JP/providers/anthropic",
                   "ja-JP/providers/arcee",
                   "ja-JP/providers/azure-speech",
+                  "ja-JP/providers/cerebras",
                   "ja-JP/providers/chutes",
                   "ja-JP/providers/claude-max-api-proxy",
                   "ja-JP/providers/cloudflare-ai-gateway",
@@ -3743,6 +3752,7 @@
                   "ja-JP/providers/qianfan",
                   "ja-JP/providers/qwen",
                   "ja-JP/providers/runway",
+                  "ja-JP/providers/senseaudio",
                   "ja-JP/providers/sglang",
                   "ja-JP/providers/stepfun",
                   "ja-JP/providers/synthetic",
@@ -3962,6 +3972,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ja-JP/cli/backup",
+                      "ja-JP/cli/crestodian",
                       "ja-JP/cli/daemon",
                       "ja-JP/cli/doctor",
                       "ja-JP/cli/gateway",
@@ -4108,6 +4119,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "ja-JP/reference/application-modernization-plan",
                   "ja-JP/reference/credits"
                 ]
               },
@@ -4577,6 +4589,7 @@
                   "es/providers/anthropic",
                   "es/providers/arcee",
                   "es/providers/azure-speech",
+                  "es/providers/cerebras",
                   "es/providers/chutes",
                   "es/providers/claude-max-api-proxy",
                   "es/providers/cloudflare-ai-gateway",
@@ -4611,6 +4624,7 @@
                   "es/providers/qianfan",
                   "es/providers/qwen",
                   "es/providers/runway",
+                  "es/providers/senseaudio",
                   "es/providers/sglang",
                   "es/providers/stepfun",
                   "es/providers/synthetic",
@@ -4830,6 +4844,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "es/cli/backup",
+                      "es/cli/crestodian",
                       "es/cli/daemon",
                       "es/cli/doctor",
                       "es/cli/gateway",
@@ -4976,6 +4991,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "es/reference/application-modernization-plan",
                   "es/reference/credits"
                 ]
               },
@@ -5445,6 +5461,7 @@
                   "pt-BR/providers/anthropic",
                   "pt-BR/providers/arcee",
                   "pt-BR/providers/azure-speech",
+                  "pt-BR/providers/cerebras",
                   "pt-BR/providers/chutes",
                   "pt-BR/providers/claude-max-api-proxy",
                   "pt-BR/providers/cloudflare-ai-gateway",
@@ -5479,6 +5496,7 @@
                   "pt-BR/providers/qianfan",
                   "pt-BR/providers/qwen",
                   "pt-BR/providers/runway",
+                  "pt-BR/providers/senseaudio",
                   "pt-BR/providers/sglang",
                   "pt-BR/providers/stepfun",
                   "pt-BR/providers/synthetic",
@@ -5698,6 +5716,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "pt-BR/cli/backup",
+                      "pt-BR/cli/crestodian",
                       "pt-BR/cli/daemon",
                       "pt-BR/cli/doctor",
                       "pt-BR/cli/gateway",
@@ -5844,6 +5863,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "pt-BR/reference/application-modernization-plan",
                   "pt-BR/reference/credits"
                 ]
               },
@@ -6313,6 +6333,7 @@
                   "ko/providers/anthropic",
                   "ko/providers/arcee",
                   "ko/providers/azure-speech",
+                  "ko/providers/cerebras",
                   "ko/providers/chutes",
                   "ko/providers/claude-max-api-proxy",
                   "ko/providers/cloudflare-ai-gateway",
@@ -6347,6 +6368,7 @@
                   "ko/providers/qianfan",
                   "ko/providers/qwen",
                   "ko/providers/runway",
+                  "ko/providers/senseaudio",
                   "ko/providers/sglang",
                   "ko/providers/stepfun",
                   "ko/providers/synthetic",
@@ -6566,6 +6588,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ko/cli/backup",
+                      "ko/cli/crestodian",
                       "ko/cli/daemon",
                       "ko/cli/doctor",
                       "ko/cli/gateway",
@@ -6712,6 +6735,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "ko/reference/application-modernization-plan",
                   "ko/reference/credits"
                 ]
               },
@@ -7181,6 +7205,7 @@
                   "de/providers/anthropic",
                   "de/providers/arcee",
                   "de/providers/azure-speech",
+                  "de/providers/cerebras",
                   "de/providers/chutes",
                   "de/providers/claude-max-api-proxy",
                   "de/providers/cloudflare-ai-gateway",
@@ -7215,6 +7240,7 @@
                   "de/providers/qianfan",
                   "de/providers/qwen",
                   "de/providers/runway",
+                  "de/providers/senseaudio",
                   "de/providers/sglang",
                   "de/providers/stepfun",
                   "de/providers/synthetic",
@@ -7434,6 +7460,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "de/cli/backup",
+                      "de/cli/crestodian",
                       "de/cli/daemon",
                       "de/cli/doctor",
                       "de/cli/gateway",
@@ -7580,6 +7607,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "de/reference/application-modernization-plan",
                   "de/reference/credits"
                 ]
               },
@@ -8049,6 +8077,7 @@
                   "fr/providers/anthropic",
                   "fr/providers/arcee",
                   "fr/providers/azure-speech",
+                  "fr/providers/cerebras",
                   "fr/providers/chutes",
                   "fr/providers/claude-max-api-proxy",
                   "fr/providers/cloudflare-ai-gateway",
@@ -8083,6 +8112,7 @@
                   "fr/providers/qianfan",
                   "fr/providers/qwen",
                   "fr/providers/runway",
+                  "fr/providers/senseaudio",
                   "fr/providers/sglang",
                   "fr/providers/stepfun",
                   "fr/providers/synthetic",
@@ -8302,6 +8332,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "fr/cli/backup",
+                      "fr/cli/crestodian",
                       "fr/cli/daemon",
                       "fr/cli/doctor",
                       "fr/cli/gateway",
@@ -8448,6 +8479,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "fr/reference/application-modernization-plan",
                   "fr/reference/credits"
                 ]
               },
@@ -8917,6 +8949,7 @@
                   "ar/providers/anthropic",
                   "ar/providers/arcee",
                   "ar/providers/azure-speech",
+                  "ar/providers/cerebras",
                   "ar/providers/chutes",
                   "ar/providers/claude-max-api-proxy",
                   "ar/providers/cloudflare-ai-gateway",
@@ -8951,6 +8984,7 @@
                   "ar/providers/qianfan",
                   "ar/providers/qwen",
                   "ar/providers/runway",
+                  "ar/providers/senseaudio",
                   "ar/providers/sglang",
                   "ar/providers/stepfun",
                   "ar/providers/synthetic",
@@ -9170,6 +9204,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "ar/cli/backup",
+                      "ar/cli/crestodian",
                       "ar/cli/daemon",
                       "ar/cli/doctor",
                       "ar/cli/gateway",
@@ -9316,6 +9351,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "ar/reference/application-modernization-plan",
                   "ar/reference/credits"
                 ]
               },
@@ -9785,6 +9821,7 @@
                   "it/providers/anthropic",
                   "it/providers/arcee",
                   "it/providers/azure-speech",
+                  "it/providers/cerebras",
                   "it/providers/chutes",
                   "it/providers/claude-max-api-proxy",
                   "it/providers/cloudflare-ai-gateway",
@@ -9819,6 +9856,7 @@
                   "it/providers/qianfan",
                   "it/providers/qwen",
                   "it/providers/runway",
+                  "it/providers/senseaudio",
                   "it/providers/sglang",
                   "it/providers/stepfun",
                   "it/providers/synthetic",
@@ -10038,6 +10076,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "it/cli/backup",
+                      "it/cli/crestodian",
                       "it/cli/daemon",
                       "it/cli/doctor",
                       "it/cli/gateway",
@@ -10184,6 +10223,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "it/reference/application-modernization-plan",
                   "it/reference/credits"
                 ]
               },
@@ -10653,6 +10693,7 @@
                   "vi/providers/anthropic",
                   "vi/providers/arcee",
                   "vi/providers/azure-speech",
+                  "vi/providers/cerebras",
                   "vi/providers/chutes",
                   "vi/providers/claude-max-api-proxy",
                   "vi/providers/cloudflare-ai-gateway",
@@ -10687,6 +10728,7 @@
                   "vi/providers/qianfan",
                   "vi/providers/qwen",
                   "vi/providers/runway",
+                  "vi/providers/senseaudio",
                   "vi/providers/sglang",
                   "vi/providers/stepfun",
                   "vi/providers/synthetic",
@@ -10906,6 +10948,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "vi/cli/backup",
+                      "vi/cli/crestodian",
                       "vi/cli/daemon",
                       "vi/cli/doctor",
                       "vi/cli/gateway",
@@ -11052,6 +11095,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "vi/reference/application-modernization-plan",
                   "vi/reference/credits"
                 ]
               },
@@ -11521,6 +11565,7 @@
                   "nl/providers/anthropic",
                   "nl/providers/arcee",
                   "nl/providers/azure-speech",
+                  "nl/providers/cerebras",
                   "nl/providers/chutes",
                   "nl/providers/claude-max-api-proxy",
                   "nl/providers/cloudflare-ai-gateway",
@@ -11555,6 +11600,7 @@
                   "nl/providers/qianfan",
                   "nl/providers/qwen",
                   "nl/providers/runway",
+                  "nl/providers/senseaudio",
                   "nl/providers/sglang",
                   "nl/providers/stepfun",
                   "nl/providers/synthetic",
@@ -11774,6 +11820,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "nl/cli/backup",
+                      "nl/cli/crestodian",
                       "nl/cli/daemon",
                       "nl/cli/doctor",
                       "nl/cli/gateway",
@@ -11920,6 +11967,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "nl/reference/application-modernization-plan",
                   "nl/reference/credits"
                 ]
               },
@@ -12389,6 +12437,7 @@
                   "tr/providers/anthropic",
                   "tr/providers/arcee",
                   "tr/providers/azure-speech",
+                  "tr/providers/cerebras",
                   "tr/providers/chutes",
                   "tr/providers/claude-max-api-proxy",
                   "tr/providers/cloudflare-ai-gateway",
@@ -12423,6 +12472,7 @@
                   "tr/providers/qianfan",
                   "tr/providers/qwen",
                   "tr/providers/runway",
+                  "tr/providers/senseaudio",
                   "tr/providers/sglang",
                   "tr/providers/stepfun",
                   "tr/providers/synthetic",
@@ -12642,6 +12692,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "tr/cli/backup",
+                      "tr/cli/crestodian",
                       "tr/cli/daemon",
                       "tr/cli/doctor",
                       "tr/cli/gateway",
@@ -12788,6 +12839,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "tr/reference/application-modernization-plan",
                   "tr/reference/credits"
                 ]
               },
@@ -13257,6 +13309,7 @@
                   "uk/providers/anthropic",
                   "uk/providers/arcee",
                   "uk/providers/azure-speech",
+                  "uk/providers/cerebras",
                   "uk/providers/chutes",
                   "uk/providers/claude-max-api-proxy",
                   "uk/providers/cloudflare-ai-gateway",
@@ -13291,6 +13344,7 @@
                   "uk/providers/qianfan",
                   "uk/providers/qwen",
                   "uk/providers/runway",
+                  "uk/providers/senseaudio",
                   "uk/providers/sglang",
                   "uk/providers/stepfun",
                   "uk/providers/synthetic",
@@ -13510,6 +13564,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "uk/cli/backup",
+                      "uk/cli/crestodian",
                       "uk/cli/daemon",
                       "uk/cli/doctor",
                       "uk/cli/gateway",
@@ -13656,6 +13711,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "uk/reference/application-modernization-plan",
                   "uk/reference/credits"
                 ]
               },
@@ -14125,6 +14181,7 @@
                   "id/providers/anthropic",
                   "id/providers/arcee",
                   "id/providers/azure-speech",
+                  "id/providers/cerebras",
                   "id/providers/chutes",
                   "id/providers/claude-max-api-proxy",
                   "id/providers/cloudflare-ai-gateway",
@@ -14159,6 +14216,7 @@
                   "id/providers/qianfan",
                   "id/providers/qwen",
                   "id/providers/runway",
+                  "id/providers/senseaudio",
                   "id/providers/sglang",
                   "id/providers/stepfun",
                   "id/providers/synthetic",
@@ -14378,6 +14436,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "id/cli/backup",
+                      "id/cli/crestodian",
                       "id/cli/daemon",
                       "id/cli/doctor",
                       "id/cli/gateway",
@@ -14524,6 +14583,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "id/reference/application-modernization-plan",
                   "id/reference/credits"
                 ]
               },
@@ -14993,6 +15053,7 @@
                   "pl/providers/anthropic",
                   "pl/providers/arcee",
                   "pl/providers/azure-speech",
+                  "pl/providers/cerebras",
                   "pl/providers/chutes",
                   "pl/providers/claude-max-api-proxy",
                   "pl/providers/cloudflare-ai-gateway",
@@ -15027,6 +15088,7 @@
                   "pl/providers/qianfan",
                   "pl/providers/qwen",
                   "pl/providers/runway",
+                  "pl/providers/senseaudio",
                   "pl/providers/sglang",
                   "pl/providers/stepfun",
                   "pl/providers/synthetic",
@@ -15246,6 +15308,7 @@
                     "group": "Gateway and service",
                     "pages": [
                       "pl/cli/backup",
+                      "pl/cli/crestodian",
                       "pl/cli/daemon",
                       "pl/cli/doctor",
                       "pl/cli/gateway",
@@ -15392,6 +15455,7 @@
               {
                 "group": "Project",
                 "pages": [
+                  "pl/reference/application-modernization-plan",
                   "pl/reference/credits"
                 ]
               },
