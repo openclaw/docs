@@ -1197,6 +1197,7 @@
                 "group": "Plugins",
                 "pages": [
                   "tools/plugin",
+                  "plugins/manage-plugins",
                   "plugins/community",
                   "plugins/plugin-inventory",
                   "plugins/reference",
@@ -2679,6 +2680,7 @@
                 "group": "Plugins",
                 "pages": [
                   "zh-TW/tools/plugin",
+                  "zh-TW/plugins/manage-plugins",
                   "zh-TW/plugins/community",
                   "zh-TW/plugins/plugin-inventory",
                   "zh-TW/plugins/reference",
@@ -3546,6 +3548,7 @@
                 "group": "Plugins",
                 "pages": [
                   "ja-JP/tools/plugin",
+                  "ja-JP/plugins/manage-plugins",
                   "ja-JP/plugins/community",
                   "ja-JP/plugins/plugin-inventory",
                   "ja-JP/plugins/reference",
@@ -4413,6 +4416,7 @@
                 "group": "Plugins",
                 "pages": [
                   "es/tools/plugin",
+                  "es/plugins/manage-plugins",
                   "es/plugins/community",
                   "es/plugins/plugin-inventory",
                   "es/plugins/reference",
@@ -5280,6 +5284,7 @@
                 "group": "Plugins",
                 "pages": [
                   "pt-BR/tools/plugin",
+                  "pt-BR/plugins/manage-plugins",
                   "pt-BR/plugins/community",
                   "pt-BR/plugins/plugin-inventory",
                   "pt-BR/plugins/reference",
@@ -6147,6 +6152,7 @@
                 "group": "Plugins",
                 "pages": [
                   "ko/tools/plugin",
+                  "ko/plugins/manage-plugins",
                   "ko/plugins/community",
                   "ko/plugins/plugin-inventory",
                   "ko/plugins/reference",
@@ -7014,6 +7020,7 @@
                 "group": "Plugins",
                 "pages": [
                   "de/tools/plugin",
+                  "de/plugins/manage-plugins",
                   "de/plugins/community",
                   "de/plugins/plugin-inventory",
                   "de/plugins/reference",
@@ -7881,6 +7888,7 @@
                 "group": "Plugins",
                 "pages": [
                   "fr/tools/plugin",
+                  "fr/plugins/manage-plugins",
                   "fr/plugins/community",
                   "fr/plugins/plugin-inventory",
                   "fr/plugins/reference",
@@ -8748,6 +8756,7 @@
                 "group": "Plugins",
                 "pages": [
                   "ar/tools/plugin",
+                  "ar/plugins/manage-plugins",
                   "ar/plugins/community",
                   "ar/plugins/plugin-inventory",
                   "ar/plugins/reference",
@@ -9615,6 +9624,7 @@
                 "group": "Plugins",
                 "pages": [
                   "it/tools/plugin",
+                  "it/plugins/manage-plugins",
                   "it/plugins/community",
                   "it/plugins/plugin-inventory",
                   "it/plugins/reference",
@@ -10482,6 +10492,7 @@
                 "group": "Plugins",
                 "pages": [
                   "vi/tools/plugin",
+                  "vi/plugins/manage-plugins",
                   "vi/plugins/community",
                   "vi/plugins/plugin-inventory",
                   "vi/plugins/reference",
@@ -11349,6 +11360,7 @@
                 "group": "Plugins",
                 "pages": [
                   "nl/tools/plugin",
+                  "nl/plugins/manage-plugins",
                   "nl/plugins/community",
                   "nl/plugins/plugin-inventory",
                   "nl/plugins/reference",
@@ -12216,6 +12228,7 @@
                 "group": "Plugins",
                 "pages": [
                   "tr/tools/plugin",
+                  "tr/plugins/manage-plugins",
                   "tr/plugins/community",
                   "tr/plugins/plugin-inventory",
                   "tr/plugins/reference",
@@ -13083,6 +13096,7 @@
                 "group": "Plugins",
                 "pages": [
                   "uk/tools/plugin",
+                  "uk/plugins/manage-plugins",
                   "uk/plugins/community",
                   "uk/plugins/plugin-inventory",
                   "uk/plugins/reference",
@@ -13950,6 +13964,7 @@
                 "group": "Plugins",
                 "pages": [
                   "id/tools/plugin",
+                  "id/plugins/manage-plugins",
                   "id/plugins/community",
                   "id/plugins/plugin-inventory",
                   "id/plugins/reference",
@@ -14817,6 +14832,7 @@
                 "group": "Plugins",
                 "pages": [
                   "pl/tools/plugin",
+                  "pl/plugins/manage-plugins",
                   "pl/plugins/community",
                   "pl/plugins/plugin-inventory",
                   "pl/plugins/reference",
