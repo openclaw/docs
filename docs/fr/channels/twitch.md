@@ -1,57 +1,56 @@
 ---
 read_when:
-    - Configuration de l’intégration du chat Twitch pour OpenClaw
+    - Configurer l’intégration du chat Twitch pour OpenClaw
 sidebarTitle: Twitch
 summary: Configuration et mise en place du bot de chat Twitch
 title: Twitch
 x-i18n:
-    generated_at: "2026-04-30T07:15:25Z"
+    generated_at: "2026-05-02T22:16:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 897079687a243c9c2ce2be63167e59f4413bbd89735fb79f03928547023bd787
+    source_hash: c0d5f16d1369e2783bec6e0c7b2d7bee8aae86f2a424b77b9adf14850de0f20b
     source_path: channels/twitch.md
     workflow: 16
 ---
 
-Prise en charge du chat Twitch via une connexion IRC. OpenClaw se connecte en tant qu’utilisateur Twitch (compte bot) pour recevoir et envoyer des messages dans des chaînes.
+Prise en charge du chat Twitch via une connexion IRC. OpenClaw se connecte en tant qu’utilisateur Twitch (compte de bot) pour recevoir et envoyer des messages dans les chaînes.
 
-## Plugin groupé
+## Plugin intégré
 
 <Note>
-Twitch est fourni comme Plugin groupé dans les versions actuelles d’OpenClaw ; les builds empaquetés normaux n’ont donc pas besoin d’une installation séparée.
+Twitch est fourni comme Plugin intégré dans les versions actuelles d’OpenClaw ; les builds empaquetés normaux ne nécessitent donc pas d’installation séparée.
 </Note>
 
-Si vous utilisez un build plus ancien ou une installation personnalisée qui exclut Twitch, installez un package npm actuel lorsqu’il est publié :
+Si vous utilisez un build plus ancien ou une installation personnalisée qui exclut Twitch, installez directement le paquet npm :
 
 <Tabs>
-  <Tab title="Registre npm">
+  <Tab title="npm registry">
     ```bash
     openclaw plugins install @openclaw/twitch
     ```
   </Tab>
-  <Tab title="Checkout local">
+  <Tab title="Local checkout">
     ```bash
     openclaw plugins install ./path/to/local/twitch-plugin
     ```
   </Tab>
 </Tabs>
 
-Si npm signale que le package détenu par OpenClaw est obsolète, utilisez un build
-OpenClaw empaqueté actuel ou le chemin de checkout local jusqu’à ce qu’un package npm plus récent soit
-publié.
+Utilisez le paquet nu pour suivre l’étiquette de version officielle actuelle. N’épinglez une
+version exacte que lorsque vous avez besoin d’une installation reproductible.
 
 Détails : [Plugins](/fr/tools/plugin)
 
 ## Configuration rapide (débutant)
 
 <Steps>
-  <Step title="Vérifier que le Plugin est disponible">
-    Les versions OpenClaw empaquetées actuelles l’incluent déjà. Les installations plus anciennes ou personnalisées peuvent l’ajouter manuellement avec les commandes ci-dessus.
+  <Step title="Ensure plugin is available">
+    Les versions empaquetées actuelles d’OpenClaw l’intègrent déjà. Les installations plus anciennes/personnalisées peuvent l’ajouter manuellement avec les commandes ci-dessus.
   </Step>
-  <Step title="Créer un compte bot Twitch">
-    Créez un compte Twitch dédié au bot (ou utilisez un compte existant).
+  <Step title="Create a Twitch bot account">
+    Créez un compte Twitch dédié pour le bot (ou utilisez un compte existant).
   </Step>
-  <Step title="Générer les identifiants">
+  <Step title="Generate credentials">
     Utilisez [Twitch Token Generator](https://twitchtokengenerator.com/) :
 
     - Sélectionnez **Bot Token**
@@ -59,23 +58,23 @@ Détails : [Plugins](/fr/tools/plugin)
     - Copiez le **Client ID** et l’**Access Token**
 
   </Step>
-  <Step title="Trouver votre ID utilisateur Twitch">
+  <Step title="Find your Twitch user ID">
     Utilisez [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) pour convertir un nom d’utilisateur en ID utilisateur Twitch.
   </Step>
-  <Step title="Configurer le jeton">
+  <Step title="Configure the token">
     - Env : `OPENCLAW_TWITCH_ACCESS_TOKEN=...` (compte par défaut uniquement)
-    - Ou configuration : `channels.twitch.accessToken`
+    - Ou config : `channels.twitch.accessToken`
 
-    Si les deux sont définis, la configuration est prioritaire (le repli env concerne uniquement le compte par défaut).
+    Si les deux sont définis, la configuration est prioritaire (le repli sur l’env concerne uniquement le compte par défaut).
 
   </Step>
-  <Step title="Démarrer le Gateway">
+  <Step title="Start the gateway">
     Démarrez le Gateway avec la chaîne configurée.
   </Step>
 </Steps>
 
 <Warning>
-Ajoutez un contrôle d’accès (`allowFrom` ou `allowedRoles`) pour empêcher des utilisateurs non autorisés de déclencher le bot. La valeur par défaut de `requireMention` est `true`.
+Ajoutez un contrôle d’accès (`allowFrom` ou `allowedRoles`) pour empêcher les utilisateurs non autorisés de déclencher le bot. `requireMention` vaut `true` par défaut.
 </Warning>
 
 Configuration minimale :
@@ -95,7 +94,7 @@ Configuration minimale :
 }
 ```
 
-## Présentation
+## Ce que c’est
 
 - Une chaîne Twitch détenue par le Gateway.
 - Routage déterministe : les réponses retournent toujours vers Twitch.
@@ -113,18 +112,18 @@ Utilisez [Twitch Token Generator](https://twitchtokengenerator.com/) :
 - Copiez le **Client ID** et l’**Access Token**
 
 <Note>
-Aucune inscription manuelle d’application n’est nécessaire. Les jetons expirent après plusieurs heures.
+Aucun enregistrement manuel d’application n’est nécessaire. Les jetons expirent après plusieurs heures.
 </Note>
 
 ### Configurer le bot
 
 <Tabs>
-  <Tab title="Variable env (compte par défaut uniquement)">
+  <Tab title="Env var (default account only)">
     ```bash
     OPENCLAW_TWITCH_ACCESS_TOKEN=oauth:abc123...
     ```
   </Tab>
-  <Tab title="Configuration">
+  <Tab title="Config">
     ```json5
     {
       channels: {
@@ -155,7 +154,7 @@ Si l’env et la configuration sont tous deux définis, la configuration est pri
 }
 ```
 
-Préférez `allowFrom` pour une liste d’autorisation stricte. Utilisez plutôt `allowedRoles` si vous voulez un accès basé sur les rôles.
+Préférez `allowFrom` pour une liste d’autorisation stricte. Utilisez plutôt `allowedRoles` si vous souhaitez un accès basé sur les rôles.
 
 **Rôles disponibles :** `"moderator"`, `"owner"`, `"vip"`, `"subscriber"`, `"all"`.
 
@@ -165,11 +164,11 @@ Préférez `allowFrom` pour une liste d’autorisation stricte. Utilisez plutôt
 Trouvez votre ID utilisateur Twitch : [https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/](https://www.streamweasels.com/tools/convert-twitch-username-to-user-id/) (Convertir votre nom d’utilisateur Twitch en ID)
 </Note>
 
-## Actualisation des jetons (facultatif)
+## Actualisation du jeton (facultatif)
 
 Les jetons de [Twitch Token Generator](https://twitchtokengenerator.com/) ne peuvent pas être actualisés automatiquement ; régénérez-les lorsqu’ils expirent.
 
-Pour l’actualisation automatique des jetons, créez votre propre application Twitch dans la [Twitch Developer Console](https://dev.twitch.tv/console) et ajoutez à la configuration :
+Pour l’actualisation automatique du jeton, créez votre propre application Twitch dans la [Twitch Developer Console](https://dev.twitch.tv/console) et ajoutez ceci à la configuration :
 
 ```json5
 {
@@ -184,11 +183,11 @@ Pour l’actualisation automatique des jetons, créez votre propre application T
 
 Le bot actualise automatiquement les jetons avant expiration et journalise les événements d’actualisation.
 
-## Prise en charge de plusieurs comptes
+## Prise en charge multi-comptes
 
-Utilisez `channels.twitch.accounts` avec des jetons par compte. Consultez [Configuration](/fr/gateway/configuration) pour le modèle partagé.
+Utilisez `channels.twitch.accounts` avec des jetons propres à chaque compte. Consultez [Configuration](/fr/gateway/configuration) pour le modèle partagé.
 
-Exemple (un compte bot dans deux chaînes) :
+Exemple (un compte de bot dans deux chaînes) :
 
 ```json5
 {
@@ -220,7 +219,7 @@ Chaque compte a besoin de son propre jeton (un jeton par chaîne).
 ## Contrôle d’accès
 
 <Tabs>
-  <Tab title="Liste d’autorisation d’ID utilisateur (la plus sécurisée)">
+  <Tab title="User ID allowlist (most secure)">
     ```json5
     {
       channels: {
@@ -235,7 +234,7 @@ Chaque compte a besoin de son propre jeton (un jeton par chaîne).
     }
     ```
   </Tab>
-  <Tab title="Basé sur les rôles">
+  <Tab title="Role-based">
     ```json5
     {
       channels: {
@@ -250,11 +249,11 @@ Chaque compte a besoin de son propre jeton (un jeton par chaîne).
     }
     ```
 
-    `allowFrom` est une liste d’autorisation stricte. Lorsqu’elle est définie, seuls ces ID utilisateur sont autorisés. Si vous voulez un accès basé sur les rôles, laissez `allowFrom` non défini et configurez plutôt `allowedRoles`.
+    `allowFrom` est une liste d’autorisation stricte. Lorsqu’elle est définie, seuls ces ID utilisateur sont autorisés. Si vous souhaitez un accès basé sur les rôles, laissez `allowFrom` non défini et configurez plutôt `allowedRoles`.
 
   </Tab>
-  <Tab title="Désactiver l’obligation de @mention">
-    Par défaut, `requireMention` vaut `true`. Pour désactiver cette obligation et répondre à tous les messages :
+  <Tab title="Disable @mention requirement">
+    Par défaut, `requireMention` vaut `true`. Pour le désactiver et répondre à tous les messages :
 
     ```json5
     {
@@ -283,20 +282,20 @@ openclaw channels status --probe
 ```
 
 <AccordionGroup>
-  <Accordion title="Le bot ne répond pas aux messages">
-    - **Vérifiez le contrôle d’accès :** assurez-vous que votre ID utilisateur est dans `allowFrom`, ou supprimez temporairement `allowFrom` et définissez `allowedRoles: ["all"]` pour tester.
-    - **Vérifiez que le bot est dans la chaîne :** le bot doit rejoindre la chaîne indiquée dans `channel`.
+  <Accordion title="Bot does not respond to messages">
+    - **Vérifiez le contrôle d’accès :** Assurez-vous que votre ID utilisateur figure dans `allowFrom`, ou supprimez temporairement `allowFrom` et définissez `allowedRoles: ["all"]` pour tester.
+    - **Vérifiez que le bot est dans la chaîne :** Le bot doit rejoindre la chaîne spécifiée dans `channel`.
 
   </Accordion>
-  <Accordion title="Problèmes de jeton">
-    « Failed to connect » ou erreurs d’authentification :
+  <Accordion title="Token issues">
+    « Échec de la connexion » ou erreurs d’authentification :
 
-    - Vérifiez que `accessToken` est la valeur du jeton d’accès OAuth (commence généralement par le préfixe `oauth:`)
+    - Vérifiez que `accessToken` est la valeur du jeton d’accès OAuth (elle commence généralement par le préfixe `oauth:`)
     - Vérifiez que le jeton possède les portées `chat:read` et `chat:write`
-    - Si vous utilisez l’actualisation des jetons, vérifiez que `clientSecret` et `refreshToken` sont définis
+    - Si vous utilisez l’actualisation du jeton, vérifiez que `clientSecret` et `refreshToken` sont définis
 
   </Accordion>
-  <Accordion title="L’actualisation des jetons ne fonctionne pas">
+  <Accordion title="Token refresh not working">
     Consultez les journaux pour les événements d’actualisation :
 
     ```
@@ -306,8 +305,8 @@ openclaw channels status --probe
 
     Si vous voyez « token refresh disabled (no refresh token) » :
 
-    - Vérifiez que `clientSecret` est fourni
-    - Vérifiez que `refreshToken` est fourni
+    - Assurez-vous que `clientSecret` est fourni
+    - Assurez-vous que `refreshToken` est fourni
 
   </Accordion>
 </AccordionGroup>
@@ -323,7 +322,7 @@ openclaw channels status --probe
   Jeton d’accès OAuth avec `chat:read` et `chat:write`.
 </ParamField>
 <ParamField path="clientId" type="string">
-  Client ID Twitch (depuis Token Generator ou votre application).
+  Twitch Client ID (depuis Token Generator ou votre application).
 </ParamField>
 <ParamField path="channel" type="string" required>
   Chaîne à rejoindre.
@@ -332,10 +331,10 @@ openclaw channels status --probe
   Activer ce compte.
 </ParamField>
 <ParamField path="clientSecret" type="string">
-  Facultatif : pour l’actualisation automatique des jetons.
+  Facultatif : pour l’actualisation automatique du jeton.
 </ParamField>
 <ParamField path="refreshToken" type="string">
-  Facultatif : pour l’actualisation automatique des jetons.
+  Facultatif : pour l’actualisation automatique du jeton.
 </ParamField>
 <ParamField path="expiresIn" type="number">
   Expiration du jeton en secondes.
@@ -344,13 +343,13 @@ openclaw channels status --probe
   Horodatage d’obtention du jeton.
 </ParamField>
 <ParamField path="allowFrom" type="string[]">
-  Liste d’autorisation d’ID utilisateur.
+  Liste d’autorisation des ID utilisateur.
 </ParamField>
 <ParamField path="allowedRoles" type='Array<"moderator" | "owner" | "vip" | "subscriber" | "all">'>
   Contrôle d’accès basé sur les rôles.
 </ParamField>
 <ParamField path="requireMention" type="boolean" default="true">
-  Exiger @mention.
+  Exiger une @mention.
 </ParamField>
 
 ### Options du fournisseur
@@ -358,7 +357,7 @@ openclaw channels status --probe
 - `channels.twitch.enabled` - Activer/désactiver le démarrage de la chaîne
 - `channels.twitch.username` - Nom d’utilisateur du bot (configuration simplifiée à compte unique)
 - `channels.twitch.accessToken` - Jeton d’accès OAuth (configuration simplifiée à compte unique)
-- `channels.twitch.clientId` - Client ID Twitch (configuration simplifiée à compte unique)
+- `channels.twitch.clientId` - Twitch Client ID (configuration simplifiée à compte unique)
 - `channels.twitch.channel` - Chaîne à rejoindre (configuration simplifiée à compte unique)
 - `channels.twitch.accounts.<accountName>` - Configuration multi-comptes (tous les champs de compte ci-dessus)
 
@@ -415,25 +414,25 @@ Exemple :
 }
 ```
 
-## Sécurité et exploitation
+## Sécurité et opérations
 
 - **Traitez les jetons comme des mots de passe** — Ne validez jamais de jetons dans git.
 - **Utilisez l’actualisation automatique des jetons** pour les bots de longue durée.
-- **Utilisez des listes d’autorisation d’ID utilisateur** au lieu des noms d’utilisateur pour le contrôle d’accès.
-- **Surveillez les journaux** pour les événements d’actualisation des jetons et l’état de la connexion.
+- **Utilisez des listes d’autorisation d’ID utilisateur** plutôt que des noms d’utilisateur pour le contrôle d’accès.
+- **Surveillez les journaux** pour les événements d’actualisation des jetons et l’état de connexion.
 - **Limitez les portées des jetons au minimum** — Ne demandez que `chat:read` et `chat:write`.
-- **Si vous êtes bloqué** : redémarrez le Gateway après avoir confirmé qu’aucun autre processus ne possède la session.
+- **Si vous êtes bloqué** : Redémarrez le Gateway après avoir confirmé qu’aucun autre processus ne possède la session.
 
 ## Limites
 
-- **500 caractères** par message (découpé automatiquement aux limites de mots).
-- Markdown est supprimé avant le découpage.
+- **500 caractères** par message (découpage automatique aux limites de mots).
+- Le Markdown est supprimé avant le découpage.
 - Aucune limitation de débit (utilise les limites de débit intégrées de Twitch).
 
 ## Connexe
 
 - [Routage des chaînes](/fr/channels/channel-routing) — routage de session pour les messages
 - [Vue d’ensemble des chaînes](/fr/channels) — toutes les chaînes prises en charge
-- [Groupes](/fr/channels/groups) — comportement de chat de groupe et filtrage par mention
-- [Association](/fr/channels/pairing) — authentification par DM et flux d’association
+- [Groupes](/fr/channels/groups) — comportement des chats de groupe et filtrage par mention
+- [Appairage](/fr/channels/pairing) — authentification en DM et flux d’appairage
 - [Sécurité](/fr/gateway/security) — modèle d’accès et durcissement
