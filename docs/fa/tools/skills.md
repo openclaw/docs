@@ -74,6 +74,7 @@ directory بومی `$CODEX_HOME/skills` در Codex CLI یکی از ریشه‌ه
     - برای نداشتن هیچ skill، `agents.list[].skills: []` را تنظیم کنید.
     - یک list غیرخالی `agents.list[].skills` مجموعه **نهایی** برای آن agent است — با defaults ادغام نمی‌شود.
     - allowlist موثر در سراسر ساخت prompt، کشف slash-command مربوط به skill، sync sandbox و snapshotهای skill اعمال می‌شود.
+
   </Accordion>
 </AccordionGroup>
 

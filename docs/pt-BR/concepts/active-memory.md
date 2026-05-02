@@ -670,6 +670,7 @@ Active Memory opera sobre o pipeline de recuperação do Plugin de memória conf
     - Monitore os logs do Gateway para `active-memory: ... start|done`, `memory sync failed (search-bootstrap)` ou erros de embeddings do provedor.
     - Execute `openclaw memory status --deep` para inspecionar o backend de busca de memória e a integridade do índice.
     - Se você usa `ollama`, confirme que o modelo de embeddings está instalado (`ollama list`).
+
   </Accordion>
 </AccordionGroup>
 

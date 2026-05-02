@@ -74,6 +74,7 @@ La **posizione** della skill e la **visibilità** della skill sono controlli sep
     - Imposta `agents.list[].skills: []` per nessuna skill.
     - Un elenco non vuoto `agents.list[].skills` è l'insieme **finale** per quell'agente — non viene unito ai valori predefiniti.
     - L'allowlist effettiva si applica alla costruzione del prompt, alla scoperta dei comandi slash delle skill, alla sincronizzazione della sandbox e agli snapshot delle skill.
+
   </Accordion>
 </AccordionGroup>
 

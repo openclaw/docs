@@ -74,6 +74,7 @@ La **ubicación** de la Skill y la **visibilidad** de la Skill son controles sep
     - Define `agents.list[].skills: []` para no permitir ninguna Skill.
     - Una lista no vacía `agents.list[].skills` es el conjunto **final** para ese agente; no se fusiona con los valores predeterminados.
     - La lista de permitidos efectiva se aplica a la construcción de prompts, el descubrimiento de comandos de barra de Skills, la sincronización del sandbox y las instantáneas de Skills.
+
   </Accordion>
 </AccordionGroup>
 

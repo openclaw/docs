@@ -74,6 +74,7 @@ L’**emplacement** des Skills et leur **visibilité** sont des contrôles disti
     - Définissez `agents.list[].skills: []` pour n’autoriser aucune Skill.
     - Une liste `agents.list[].skills` non vide est l’ensemble **final** pour cet agent — elle ne fusionne pas avec les valeurs par défaut.
     - La liste d’autorisation effective s’applique à la construction des prompts, à la découverte des slash commands de Skills, à la synchronisation de la sandbox et aux instantanés de Skills.
+
   </Accordion>
 </AccordionGroup>
 

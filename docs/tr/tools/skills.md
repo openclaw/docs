@@ -91,6 +91,7 @@ belirler.
     - Beceri olmaması için `agents.list[].skills: []` ayarlayın.
     - Boş olmayan bir `agents.list[].skills` listesi, o ajan için **nihai** kümedir — varsayılanlarla birleştirilmez.
     - Etkin izin listesi istem oluşturma, beceri slash-komutu keşfi, sandbox eşitlemesi ve beceri anlık görüntüleri genelinde uygulanır.
+
   </Accordion>
 </AccordionGroup>
 

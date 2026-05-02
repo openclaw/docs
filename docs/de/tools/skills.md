@@ -74,6 +74,7 @@ Skill-**Speicherort** und Skill-**Sichtbarkeit** sind getrennte Steuerungen. Spe
     - Setzen Sie `agents.list[].skills: []`, um keine Skills zu erlauben.
     - Eine nicht leere `agents.list[].skills`-Liste ist die **abschließende** Menge für diesen Agenten — sie wird nicht mit den Standardwerten zusammengeführt.
     - Die effektive Allowlist gilt über Prompt-Erstellung, Skill-Slash-Command-Erkennung, Sandbox-Synchronisierung und Skill-Snapshots hinweg.
+
   </Accordion>
 </AccordionGroup>
 

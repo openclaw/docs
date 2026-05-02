@@ -88,6 +88,7 @@ Codex CLI のネイティブな `$CODEX_HOME/skills` ディレクトリは、こ
     - スキルなしにするには、`agents.list[].skills: []` を設定します。
     - 空でない `agents.list[].skills` リストは、そのエージェントの**最終的な**セットです。デフォルトとはマージされません。
     - 有効な許可リストは、プロンプト構築、スキル slash-command 検出、サンドボックス同期、スキルスナップショット全体に適用されます。
+
   </Accordion>
 </AccordionGroup>
 

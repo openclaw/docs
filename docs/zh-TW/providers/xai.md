@@ -420,6 +420,7 @@ OpenClaw 使用 xAI 的 REST 影像/影片/TTS/STT API 進行媒體生成、
     - 一般 xAI 供應器路徑不支援 `grok-4.20-multi-agent-experimental-beta-0304`，因為它需要與標準 OpenClaw xAI 傳輸不同的上游 API 介面。
     - xAI Realtime 語音尚未註冊為 OpenClaw 供應器。它需要與批次 STT 或串流轉錄不同的雙向語音工作階段合約。
     - xAI 圖片 `quality`、圖片 `mask`，以及額外僅限原生的長寬比，在共用 `image_generate` 工具具備對應的跨供應器控制之前，不會公開。
+
   </Accordion>
 
   <Accordion title="進階備註">
