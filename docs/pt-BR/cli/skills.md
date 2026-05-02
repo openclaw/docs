@@ -1,24 +1,24 @@
 ---
 read_when:
     - Você quer ver quais Skills estão disponíveis e prontas para execução
-    - Você quer buscar, instalar ou atualizar Skills do ClawHub
+    - Você deseja pesquisar, instalar ou atualizar Skills do ClawHub
     - Você quer depurar binários/ambiente/configuração ausentes para Skills
 summary: Referência da CLI para `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-04-30T09:43:08Z"
+    generated_at: "2026-05-02T20:44:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5059bf04c68dabe289d2c376407a52989c970e3d16e7637a2c83f4e24ad6564c
+    source_hash: d819cdc421151a0093423f57a9e974489e9cc02de644358bd5700ee75181192e
     source_path: cli/skills.md
     workflow: 16
 ---
 
 # `openclaw skills`
 
-Inspecione Skills locais e instale/atualize Skills do ClawHub.
+Inspecione Skills locais e instale/atualize Skills a partir do ClawHub.
 
-Relacionado:
+Relacionados:
 
 - Sistema de Skills: [Skills](/pt-BR/tools/skills)
 - Configuração de Skills: [Configuração de Skills](/pt-BR/tools/skills-config)
@@ -45,38 +45,41 @@ openclaw skills info <name>
 openclaw skills info <name> --json
 openclaw skills info <name> --agent <id>
 openclaw skills check
-openclaw skills check --json
 openclaw skills check --agent <id>
+openclaw skills check --json
 ```
 
 `search`/`install`/`update` usam o ClawHub diretamente e instalam no diretório
 `skills/` do workspace ativo. `list`/`info`/`check` ainda inspecionam as Skills
-locais visíveis para o workspace e a configuração atuais. Comandos apoiados por
-workspace resolvem o workspace de destino a partir de `--agent <id>`, depois o
-diretório de trabalho atual quando ele está dentro de um workspace de agente
-configurado, e então o agente padrão.
+locais visíveis para o workspace e a configuração atuais. Comandos com suporte
+de workspace resolvem o workspace de destino a partir de `--agent <id>`, depois
+do diretório de trabalho atual quando ele está dentro de um workspace de agente
+configurado, e então do agente padrão.
 
 Este comando `install` da CLI baixa pastas de Skills do ClawHub. Instalações de
-dependências de Skills apoiadas pelo Gateway, acionadas pelo onboarding ou pelas
-configurações de Skills, usam o caminho de solicitação `skills.install`
-separado.
+dependências de Skills com suporte do Gateway acionadas pela integração inicial
+ou pelas configurações de Skills usam o caminho de solicitação separado
+`skills.install`.
 
 Observações:
 
 - `search [query...]` aceita uma consulta opcional; omita-a para navegar pelo
   feed de busca padrão do ClawHub.
 - `search --limit <n>` limita os resultados retornados.
-- `install --force` sobrescreve uma pasta de Skill existente no workspace para o
+- `install --force` substitui uma pasta de Skill existente no workspace para o
   mesmo slug.
 - `--agent <id>` direciona para um workspace de agente configurado e substitui a
   inferência pelo diretório de trabalho atual.
 - `update --all` atualiza apenas instalações rastreadas do ClawHub no workspace ativo.
+- `check --agent <id>` verifica o workspace do agente selecionado e informa quais
+  Skills prontas estão realmente visíveis para o prompt ou a superfície de
+  comandos desse agente.
 - `list` é a ação padrão quando nenhum subcomando é fornecido.
-- `list`, `info` e `check` gravam a saída renderizada em stdout. Com
-  `--json`, isso significa que o payload legível por máquina permanece em stdout
-  para pipes e scripts.
+- `list`, `info` e `check` gravam sua saída renderizada em stdout. Com `--json`,
+  isso significa que a carga útil legível por máquina permanece em stdout para
+  pipes e scripts.
 
-## Relacionado
+## Relacionados
 
 - [Referência da CLI](/pt-BR/cli)
 - [Skills](/pt-BR/tools/skills)

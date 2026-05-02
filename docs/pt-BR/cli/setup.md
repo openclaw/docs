@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Você está realizando a configuração de primeira execução sem o fluxo guiado completo da CLI
+    - Você está fazendo a configuração de primeira execução sem a integração inicial completa da CLI
     - Você quer definir o caminho padrão do espaço de trabalho
 summary: Referência da CLI para `openclaw setup` (inicializar configuração + espaço de trabalho)
 title: Configuração
 x-i18n:
-    generated_at: "2026-04-30T09:42:57Z"
+    generated_at: "2026-05-02T20:44:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 68e5c07a6b1769420c2125677f3eda9bd4841c938b4fc62583c5bed2a2596250
+    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Inicialize `~/.openclaw/openclaw.json` e a área de trabalho do agente.
+Inicialize `~/.openclaw/openclaw.json` e o espaço de trabalho do agente.
 
 Relacionado:
 
 - Primeiros passos: [Primeiros passos](/pt-BR/start/getting-started)
-- Integração inicial da CLI: [Integração inicial (CLI)](/pt-BR/start/wizard)
+- Integração inicial pela CLI: [Integração inicial (CLI)](/pt-BR/start/wizard)
 
 ## Exemplos
 
@@ -34,12 +34,12 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## Opções
 
-- `--workspace <dir>`: diretório da área de trabalho do agente (armazenado como `agents.defaults.workspace`)
+- `--workspace <dir>`: diretório do espaço de trabalho do agente (armazenado como `agents.defaults.workspace`)
 - `--wizard`: executar a integração inicial
 - `--non-interactive`: executar a integração inicial sem prompts
-- `--mode <local|remote>`: modo de integração inicial
-- `--import-from <provider>`: provedor de migração a executar durante a integração inicial
-- `--import-source <path>`: diretório inicial do agente de origem para `--import-from`
+- `--mode <local|remote>`: modo da integração inicial
+- `--import-from <provider>`: provedor de migração a ser executado durante a integração inicial
+- `--import-source <path>`: origem do diretório inicial do agente para `--import-from`
 - `--import-secrets`: importar segredos compatíveis durante a migração da integração inicial
 - `--remote-url <url>`: URL WebSocket do Gateway remoto
 - `--remote-token <token>`: token do Gateway remoto
@@ -52,9 +52,10 @@ openclaw setup --wizard
 
 Observações:
 
-- `openclaw setup` simples inicializa a configuração + área de trabalho sem o fluxo completo de integração inicial.
-- A integração inicial é executada automaticamente quando quaisquer flags de integração inicial estão presentes (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Se o estado do Hermes for detectado, a integração inicial interativa pode oferecer a migração automaticamente. A integração inicial com importação exige uma configuração nova; use [Migrar](/pt-BR/cli/migrate) para planos de simulação, cópias de segurança e modo de sobrescrita fora da integração inicial.
+- `openclaw setup` simples inicializa a configuração + o espaço de trabalho sem o fluxo completo de integração inicial.
+- Após o setup simples, execute `openclaw configure` para escolher modelos, canais, Gateway, plugins, Skills ou verificações de integridade.
+- A integração inicial é executada automaticamente quando qualquer flag de integração inicial está presente (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Se o estado do Hermes for detectado, a integração inicial interativa pode oferecer a migração automaticamente. A integração inicial com importação exige um setup novo; use [Migrar](/pt-BR/cli/migrate) para planos de simulação, backups e modo de sobrescrita fora da integração inicial.
 
 ## Relacionado
 
