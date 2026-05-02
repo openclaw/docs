@@ -1,43 +1,43 @@
 ---
 read_when:
     - Ви хочете використовувати Arcee AI з OpenClaw
-    - Вам потрібна env var ключа API або варіант auth у CLI
-summary: Налаштування Arcee AI (auth + вибір моделі)
+    - Потрібна змінна середовища для ключа API або вибір автентифікації CLI
+summary: Налаштування Arcee AI (автентифікація + вибір моделі)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-04-23T21:05:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-02T23:39:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
+    source_hash: 622ee5288aec3ae0b45d3f06ba65fd6f972e07d7a7596ae3905d6fbdac0bf737
     source_path: providers/arcee.md
-    workflow: 15
+    workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) надає доступ до сімейства моделей Trinity на основі mixture-of-experts через API, сумісний з OpenAI. Усі моделі Trinity ліцензовано за Apache 2.0.
+[Arcee AI](https://arcee.ai) надає доступ до сімейства моделей Trinity із сумішшю експертів через API, сумісний з OpenAI. Усі моделі Trinity ліцензовано за Apache 2.0.
 
-До моделей Arcee AI можна отримати доступ безпосередньо через платформу Arcee або через [OpenRouter](/uk/providers/openrouter).
+До моделей Arcee AI можна звертатися напряму через платформу Arcee або через [OpenRouter](/uk/providers/openrouter).
 
-| Властивість | Значення                                                                            |
-| ----------- | ----------------------------------------------------------------------------------- |
-| Provider    | `arcee`                                                                             |
-| Auth        | `ARCEEAI_API_KEY` (напряму) або `OPENROUTER_API_KEY` (через OpenRouter)            |
-| API         | Сумісний з OpenAI                                                                   |
-| Base URL    | `https://api.arcee.ai/api/v1` (напряму) або `https://openrouter.ai/api/v1` (OpenRouter) |
+| Властивість | Значення                                                                              |
+| -------- | ------------------------------------------------------------------------------------- |
+| Provider | `arcee`                                                                               |
+| Auth     | `ARCEEAI_API_KEY` (напряму) або `OPENROUTER_API_KEY` (через OpenRouter)               |
+| API      | сумісний з OpenAI                                                                      |
+| Base URL | `https://api.arcee.ai/api/v1` (напряму) або `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Початок роботи
 
 <Tabs>
   <Tab title="Напряму (платформа Arcee)">
     <Steps>
-      <Step title="Отримайте ключ API">
-        Створіть ключ API в [Arcee AI](https://chat.arcee.ai/).
+      <Step title="Отримайте API-ключ">
+        Створіть API-ключ в [Arcee AI](https://chat.arcee.ai/).
       </Step>
       <Step title="Запустіть онбординг">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="Задайте типову модель">
+      <Step title="Встановіть модель за замовчуванням">
         ```json5
         {
           agents: {
@@ -53,15 +53,15 @@ x-i18n:
 
   <Tab title="Через OpenRouter">
     <Steps>
-      <Step title="Отримайте ключ API">
-        Створіть ключ API в [OpenRouter](https://openrouter.ai/keys).
+      <Step title="Отримайте API-ключ">
+        Створіть API-ключ в [OpenRouter](https://openrouter.ai/keys).
       </Step>
       <Step title="Запустіть онбординг">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="Задайте типову модель">
+      <Step title="Встановіть модель за замовчуванням">
         ```json5
         {
           agents: {
@@ -72,7 +72,7 @@ x-i18n:
         }
         ```
 
-        Ті самі refs моделей працюють і для прямого налаштування, і для налаштування через OpenRouter (наприклад `arcee/trinity-large-thinking`).
+        Ті самі посилання на моделі працюють як для прямого налаштування, так і для налаштування через OpenRouter (наприклад, `arcee/trinity-large-thinking`).
       </Step>
     </Steps>
 
@@ -103,38 +103,39 @@ x-i18n:
 
 ## Вбудований каталог
 
-Наразі OpenClaw постачає такий вбудований каталог Arcee:
+OpenClaw наразі постачається з таким вбудованим каталогом Arcee:
 
-| Ref моделі                     | Назва                  | Вхід | Контекст | Вартість (in/out за 1M) | Примітки                                  |
-| ------------------------------ | ---------------------- | ---- | -------- | ----------------------- | ----------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | text | 256K     | $0.25 / $0.90           | Типова модель; reasoning увімкнено        |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | text | 128K     | $0.25 / $1.00           | Загального призначення; 400B params, 13B active |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | text | 128K     | $0.045 / $0.15          | Швидка й економна; function calling       |
+| Посилання на модель            | Назва                  | Ввід | Контекст | Вартість (ввід/вивід за 1 млн) | Примітки                                  |
+| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ------------------------------------------ |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | Модель за замовчуванням; reasoning увімкнено; без інструментів |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | Загального призначення; 400B параметрів, 13B активних |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | Швидка й економічна; виклик функцій       |
 
 <Tip>
-Preset онбордингу встановлює `arcee/trinity-large-thinking` як типову модель.
+Пресет онбордингу встановлює `arcee/trinity-large-thinking` як модель за замовчуванням. Вона підтримує reasoning/лише текст і не підтримує використання інструментів або виклик функцій.
 </Tip>
 
-## Підтримувані можливості
+## Підтримувані функції
 
-| Можливість                                    | Підтримується                |
-| --------------------------------------------- | ---------------------------- |
-| Streaming                                     | Так                          |
-| Tool use / function calling                   | Так                          |
-| Structured output (режим JSON і JSON schema)  | Так                          |
-| Extended thinking                             | Так (Trinity Large Thinking) |
+| Функція                                      | Підтримка                                  |
+| --------------------------------------------- | ------------------------------------------- |
+| Потокове передавання                          | Так                                         |
+| Використання інструментів / виклик функцій    | Залежить від моделі; не Trinity Large Thinking |
+| Структурований вивід (режим JSON і схема JSON) | Так                                      |
+| Розширене thinking                            | Так (Trinity Large Thinking)                |
 
 <AccordionGroup>
   <Accordion title="Примітка щодо середовища">
-    Якщо Gateway працює як daemon (launchd/systemd), переконайтеся, що `ARCEEAI_API_KEY`
+    Якщо Gateway працює як демон (launchd/systemd), переконайтеся, що `ARCEEAI_API_KEY`
     (або `OPENROUTER_API_KEY`) доступний цьому процесу (наприклад, у
     `~/.openclaw/.env` або через `env.shellEnv`).
   </Accordion>
 
   <Accordion title="Маршрутизація OpenRouter">
-    Коли ви використовуєте моделі Arcee через OpenRouter, застосовуються ті самі refs моделей `arcee/*`.
-    OpenClaw прозоро обробляє маршрутизацію залежно від вашого вибору auth. Див.
-    [документацію provider-а OpenRouter](/uk/providers/openrouter) щодо деталей конфігурації, специфічних для OpenRouter.
+    Під час використання моделей Arcee через OpenRouter застосовуються ті самі посилання на моделі `arcee/*`.
+    OpenClaw прозоро обробляє маршрутизацію на основі вашого вибору автентифікації. Див.
+    [документацію провайдера OpenRouter](/uk/providers/openrouter), щоб дізнатися
+    деталі конфігурації, специфічні для OpenRouter.
   </Accordion>
 </AccordionGroup>
 
@@ -142,9 +143,9 @@ Preset онбордингу встановлює `arcee/trinity-large-thinking` 
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/uk/providers/openrouter" icon="shuffle">
-    Доступ до моделей Arcee та багатьох інших через один ключ API.
+    Доступ до моделей Arcee та багатьох інших через один API-ключ.
   </Card>
   <Card title="Вибір моделі" href="/uk/concepts/model-providers" icon="layers">
-    Вибір provider-ів, refs моделей і поведінки failover.
+    Вибір провайдерів, посилань на моделі та поведінки відмовостійкості.
   </Card>
 </CardGroup>
