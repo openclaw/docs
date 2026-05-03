@@ -1,57 +1,52 @@
 ---
 read_when:
-    - 你正在将上下文引擎生命周期行为接入 Codex harness
-    - 你需要让 lossless-claw 或其他上下文引擎插件能够与 codex/* 嵌入式 harness 会话一起工作
-    - 你正在比较嵌入式 PI 和 Codex app-server 的上下文行为
-summary: 使内置 Codex app-server harness 遵循 OpenClaw 上下文引擎插件的规范
+    - 你正在将 context-engine 生命周期行为接入 Codex harness
+    - 你需要 lossless-claw 或其他 context-engine 插件，才能使用 codex/* 嵌入式 harness 会话
+    - 你正在比较嵌入式 PI 和 Codex 应用服务器的上下文行为
+summary: 让内置的 Codex app-server harness 支持 OpenClaw 上下文引擎插件的规范
 title: Codex Harness Context Engine Port
 x-i18n:
-    generated_at: "2026-04-24T18:09:10Z"
-    model: gpt-5.4
+    generated_at: "2026-05-03T04:51:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 61c29a6cd8955a41510b8da1575b89ed003565d564b25b37b3b0c7f65df6b663
+    source_hash: 6575c25973d43c04cada6157e39c52ea5ad1cc60171cf801fe36cbb9c54c9237
     source_path: plan/codex-context-engine-harness.md
-    workflow: 15
+    workflow: 16
 ---
 
-## 状态
+## Status
 
 草案实现规范。
 
 ## 目标
 
-让内置的 Codex app-server harness 遵循与嵌入式 PI 回合已经遵循的同一套 OpenClaw 上下文引擎生命周期契约。
+让内置的 Codex 应用服务器运行框架遵循与嵌入式 PI 回合已经遵循的相同 OpenClaw 上下文引擎生命周期契约。
 
-当会话使用 `agents.defaults.embeddedHarness.runtime: "codex"` 或
-`codex/*` 模型时，所选的上下文引擎插件（例如
-`lossless-claw`）仍应尽可能在 Codex app-server 边界允许的范围内，控制上下文组装、回合后摄取、维护，以及 OpenClaw 级别的压缩策略。
+使用 `agents.defaults.embeddedHarness.runtime: "codex"` 或 `codex/*` 模型的会话，仍应让所选上下文引擎插件（例如 `lossless-claw`）在 Codex 应用服务器边界允许的范围内控制上下文组装、回合后摄取、维护，以及 OpenClaw 级别的压缩策略。
 
 ## 非目标
 
-- 不重新实现 Codex app-server 内部机制。
-- 不让 Codex 原生线程压缩产出 lossless-claw 摘要。
+- 不重新实现 Codex 应用服务器内部机制。
+- 不让 Codex 原生线程压缩生成 `lossless-claw` 摘要。
 - 不要求非 Codex 模型使用 Codex harness。
-- 不更改 ACP/acpx 会话行为。本规范仅适用于
-  非 ACP 的嵌入式智能体 harness 路径。
-- 不让第三方插件注册 Codex app-server 扩展工厂；
-  现有的内置插件信任边界保持不变。
+- 不改变 ACP/acpx 会话行为。本规范仅适用于非 ACP 嵌入式智能体运行框架路径。
+- 不让第三方插件注册 Codex 应用服务器扩展工厂；现有内置插件信任边界保持不变。
 
 ## 当前架构
 
-嵌入式运行循环在选择具体底层 harness 之前，会为每次运行解析一次已配置的上下文引擎：
+嵌入式运行循环会在每次运行中先解析已配置的上下文引擎，然后再选择具体的底层运行框架：
 
 - `src/agents/pi-embedded-runner/run.ts`
   - 初始化上下文引擎插件
   - 调用 `resolveContextEngine(params.config)`
-  - 将 `contextEngine` 和 `contextTokenBudget` 传入
-    `runEmbeddedAttemptWithBackend(...)`
+  - 将 `contextEngine` 和 `contextTokenBudget` 传入 `runEmbeddedAttemptWithBackend(...)`
 
-`runEmbeddedAttemptWithBackend(...)` 会委托给所选的智能体 harness：
+`runEmbeddedAttemptWithBackend(...)` 会委托给所选的智能体运行框架：
 
 - `src/agents/pi-embedded-runner/run/backend.ts`
 - `src/agents/harness/selection.ts`
 
-Codex app-server harness 由内置 Codex 插件注册：
+Codex 应用服务器运行框架由内置 Codex 插件注册：
 
 - `extensions/codex/index.ts`
 - `extensions/codex/harness.ts`
@@ -60,20 +55,17 @@ Codex harness 实现接收与 PI 支持的尝试相同的 `EmbeddedRunAttemptPar
 
 - `extensions/codex/src/app-server/run-attempt.ts`
 
-这意味着所需的钩子点位于 OpenClaw 可控代码中。外部
-边界是 Codex app-server 协议本身：OpenClaw 可以控制它发送到
-`thread/start`、`thread/resume` 和 `turn/start` 的内容，并且可以观察
-通知，但无法更改 Codex 的内部线程存储或原生压缩器。
+这意味着所需的钩子点位于 OpenClaw 控制的代码中。外部边界是 Codex 应用服务器协议本身：OpenClaw 可以控制发送给 `thread/start`、`thread/resume` 和 `turn/start` 的内容，也可以观察通知，但不能更改 Codex 的内部线程存储或原生压缩器。
 
 ## 当前缺口
 
 嵌入式 PI 尝试会直接调用上下文引擎生命周期：
 
-- 在尝试前执行 bootstrap / maintenance
-- 在模型调用前执行 assemble
-- 在尝试后执行 `afterTurn` 或 `ingest`
-- 在成功回合后执行 maintenance
-- 为拥有压缩职责的引擎执行上下文引擎压缩
+- 尝试前的启动引导/维护
+- 模型调用前的组装
+- 尝试后的 `afterTurn` 或摄取
+- 成功回合后的维护
+- 由引擎自主管理压缩时的上下文引擎压缩
 
 相关 PI 代码：
 
@@ -81,11 +73,7 @@ Codex harness 实现接收与 PI 支持的尝试相同的 `EmbeddedRunAttemptPar
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Codex app-server 尝试当前会运行通用智能体 harness 钩子并镜像
-转录内容，但不会调用 `params.contextEngine.bootstrap`、
-`params.contextEngine.assemble`、`params.contextEngine.afterTurn`、
-`params.contextEngine.ingestBatch`、`params.contextEngine.ingest` 或
-`params.contextEngine.maintain`。
+Codex 应用服务器尝试目前会运行通用智能体运行框架钩子并镜像转录记录，但不会调用 `params.contextEngine.bootstrap`、`params.contextEngine.assemble`、`params.contextEngine.afterTurn`、`params.contextEngine.ingestBatch`、`params.contextEngine.ingest` 或 `params.contextEngine.maintain`。
 
 相关 Codex 代码：
 
@@ -96,91 +84,83 @@ Codex app-server 尝试当前会运行通用智能体 harness 钩子并镜像
 
 ## 期望行为
 
-对于 Codex harness 回合，OpenClaw 应保留以下生命周期：
+对于 Codex harness 回合，OpenClaw 应保留此生命周期：
 
-1. 读取镜像的 OpenClaw 会话转录。
-2. 当存在先前会话文件时，对活动上下文引擎执行 bootstrap。
-3. 在可用时运行 bootstrap maintenance。
-4. 使用活动上下文引擎组装上下文。
-5. 将组装后的上下文转换为与 Codex 兼容的输入。
-6. 启动或恢复 Codex 线程，并将任何
-   上下文引擎 `systemPromptAddition` 包含在 developer instructions 中。
-7. 使用组装后的面向用户提示词启动 Codex 回合。
-8. 将 Codex 结果镜像回 OpenClaw 转录。
-9. 如果实现了 `afterTurn` 则调用它，否则使用
-   镜像的转录快照调用 `ingestBatch`/`ingest`。
-10. 在成功且未中止的回合后运行回合 maintenance。
+1. 读取镜像的 OpenClaw 会话转录记录。
+2. 当存在先前的会话文件时，启动引导当前上下文引擎。
+3. 在可用时运行启动引导维护。
+4. 使用当前上下文引擎组装上下文。
+5. 将已组装的上下文转换为 Codex 兼容输入。
+6. 使用包含任何上下文引擎 `systemPromptAddition` 的开发者指令来启动或恢复 Codex 线程。
+7. 使用已组装的面向用户提示启动 Codex 回合。
+8. 将 Codex 结果镜像回 OpenClaw 转录记录。
+9. 如果实现了 `afterTurn`，则调用它；否则使用镜像的转录记录快照调用 `ingestBatch`/`ingest`。
+10. 在成功且未中止的回合后运行回合维护。
 11. 保留 Codex 原生压缩信号和 OpenClaw 压缩钩子。
 
 ## 设计约束
 
-### Codex app-server 仍然是原生线程状态的权威来源
+### Codex 应用服务器仍是原生线程状态的权威来源
 
-Codex 拥有其原生线程及任何内部扩展历史。OpenClaw 不应
-尝试通过受支持协议调用以外的方式修改 app-server 的内部历史。
+Codex 拥有其原生线程和任何内部扩展历史。OpenClaw 不应尝试通过受支持协议调用之外的方式修改应用服务器的内部历史。
 
-OpenClaw 的转录镜像仍然是 OpenClaw 功能的来源：
+OpenClaw 的转录记录镜像仍是 OpenClaw 功能的来源：
 
 - 聊天历史
 - 搜索
 - `/new` 和 `/reset` 记账
-- 未来的模型或 harness 切换
+- 未来模型或运行框架切换
 - 上下文引擎插件状态
 
-### 上下文引擎组装必须投影到 Codex 输入中
+### 上下文引擎组装必须投射到 Codex 输入
 
-上下文引擎接口返回的是 OpenClaw `AgentMessage[]`，而不是 Codex
-线程补丁。Codex app-server 的 `turn/start` 接受当前用户输入，而
-`thread/start` 和 `thread/resume` 接受 developer instructions。
+上下文引擎接口返回 OpenClaw `AgentMessage[]`，而不是 Codex 线程补丁。Codex 应用服务器 `turn/start` 接受当前用户输入，而 `thread/start` 和 `thread/resume` 接受开发者指令。
 
-因此，实现需要一个投影层。安全的第一版
-应避免假装它可以替换 Codex 内部历史。它应将组装好的上下文作为围绕
-当前回合的确定性提示词 / developer-instruction 材料注入。
+因此实现需要一个投射层。安全的首版应避免假装可以替换 Codex 内部历史。它应围绕当前回合，将已组装上下文作为确定性的提示/开发者指令材料注入。
 
-### Prompt-cache 稳定性很重要
+### 提示缓存稳定性很重要
 
-对于 lossless-claw 这样的引擎，组装后的上下文对于未变化的输入应保持确定性。不要向生成的上下文文本中加入时间戳、随机 id 或非确定性排序。
+对于 `lossless-claw` 这样的引擎，在输入不变时，已组装上下文应是确定性的。不要向生成的上下文文本添加时间戳、随机 ID 或不确定排序。
 
-### PI 回退语义不变
+### 运行时选择语义不变
 
-Harness 选择保持现状：
+运行框架选择保持现状：
 
 - `runtime: "pi"` 强制使用 PI
 - `runtime: "codex"` 选择已注册的 Codex harness
-- `runtime: "auto"` 让插件 harness 声明支持的 provider
-- `fallback: "none"` 在没有插件 harness 匹配时禁用 PI 回退
+- `runtime: "auto"` 允许插件运行框架声明支持的提供商
+- 未匹配的 `auto` 运行使用 PI
 
-这项工作更改的是 Codex harness 被选中之后发生的事情。
+此项工作改变的是选择 Codex harness 之后发生的事情。
 
 ## 实现计划
 
 ### 1. 导出或迁移可复用的上下文引擎尝试辅助函数
 
-当前，可复用的生命周期辅助函数位于 PI runner 下：
+目前可复用的生命周期辅助函数位于 PI runner 下：
 
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/run/attempt.prompt-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-如果可以避免，Codex 不应从一个名称暗示 PI 的实现路径导入。
+如果可以避免，Codex 不应从名称暗示 PI 的实现路径导入。
 
-创建一个与 harness 无关的模块，例如：
+创建一个与运行框架无关的模块，例如：
 
 - `src/agents/harness/context-engine-lifecycle.ts`
 
-迁移或重新导出：
+移动或重新导出：
 
 - `runAttemptContextEngineBootstrap`
 - `assembleAttemptContextEngine`
 - `finalizeAttemptContextEngineTurn`
 - `buildAfterTurnRuntimeContext`
 - `buildAfterTurnRuntimeContextFromUsage`
-- 一个围绕 `runContextEngineMaintenance` 的小型包装器
+- 围绕 `runContextEngineMaintenance` 的小型包装器
 
-通过从旧文件重新导出，或在同一个 PR 中更新 PI
-调用点，以保持 PI 导入仍可工作。
+保持 PI 导入可用，可以通过从旧文件重新导出，或在同一个 PR 中更新 PI 调用点。
 
-中立的辅助函数命名不应提及 PI。
+中立辅助函数名称不应提到 PI。
 
 建议名称：
 
@@ -190,20 +170,18 @@ Harness 选择保持现状：
 - `buildHarnessContextEngineRuntimeContext`
 - `runHarnessContextEngineMaintenance`
 
-### 2. 添加一个 Codex 上下文投影辅助函数
+### 2. 添加 Codex 上下文投射辅助函数
 
-添加一个新模块：
+添加新模块：
 
 - `extensions/codex/src/app-server/context-engine-projection.ts`
 
 职责：
 
-- 接收已组装的 `AgentMessage[]`、原始镜像历史和当前
-  提示词。
-- 判断哪些上下文应放入 developer instructions，哪些应放入当前用户
-  输入。
-- 保留当前用户提示词作为最终可执行请求。
-- 以稳定、显式的格式渲染先前消息。
+- 接收已组装的 `AgentMessage[]`、原始镜像历史和当前提示。
+- 判断哪些上下文属于开发者指令，哪些属于当前用户输入。
+- 将当前用户提示保留为最终可执行请求。
+- 以稳定、明确的格式渲染先前消息。
 - 避免易变元数据。
 
 建议 API：
@@ -224,15 +202,15 @@ export function projectContextEngineAssemblyForCodex(params: {
 }): CodexContextProjection;
 ```
 
-推荐的第一版投影：
+建议的首版投射：
 
-- 将 `systemPromptAddition` 放入 developer instructions。
-- 将组装后的转录上下文放在 `promptText` 中当前提示词之前。
-- 清晰标记它是 OpenClaw 组装的上下文。
-- 保持当前提示词位于最后。
-- 如果当前用户提示词已经出现在尾部，则排除重复项。
+- 将 `systemPromptAddition` 放入开发者指令。
+- 将已组装的转录记录上下文放在 `promptText` 中当前提示之前。
+- 清晰标注为 OpenClaw 已组装上下文。
+- 保持当前提示位于最后。
+- 如果当前用户提示已经出现在末尾，则排除重复项。
 
-示例提示词形状：
+示例提示形态：
 
 ```text
 OpenClaw assembled context for this turn:
@@ -249,21 +227,18 @@ Current user request:
 ...
 ```
 
-这不如原生 Codex 历史修补优雅，但它可以在 OpenClaw 内部实现，并保留上下文引擎语义。
+这不如原生 Codex 历史手术优雅，但它可在 OpenClaw 内部实现，并保留上下文引擎语义。
 
-未来改进：如果 Codex app-server 暴露了用于替换或
-补充线程历史的协议，则将此投影层切换为使用该 API。
+未来改进：如果 Codex 应用服务器公开用于替换或补充线程历史的协议，则将此投射层切换为使用该 API。
 
-### 3. 在 Codex 线程启动前接入 bootstrap
+### 3. 在 Codex 线程启动前接入启动引导
 
 在 `extensions/codex/src/app-server/run-attempt.ts` 中：
 
-- 按当前方式读取镜像会话历史。
-- 判断本次运行前会话文件是否已存在。优先使用一个
-  在镜像写入之前检查 `fs.stat(params.sessionFile)` 的辅助函数。
-- 打开一个 `SessionManager`，或者如果辅助函数
-  需要它，则使用一个窄化的会话管理器适配器。
-- 当 `params.contextEngine` 存在时，调用中立的 bootstrap 辅助函数。
+- 像现在一样读取镜像的会话历史。
+- 判断会话文件在此次运行前是否存在。优先使用在镜像写入前检查 `fs.stat(params.sessionFile)` 的辅助函数。
+- 打开 `SessionManager`，或在辅助函数需要时使用窄会话管理器适配器。
+- 当 `params.contextEngine` 存在时，调用中立启动引导辅助函数。
 
 伪流程：
 
@@ -285,22 +260,20 @@ await bootstrapHarnessContextEngine({
 });
 ```
 
-使用与 Codex 工具桥接和转录镜像相同的 `sessionKey` 约定。当前 Codex 会根据 `params.sessionKey` 或
-`params.sessionId` 计算 `sandboxSessionKey`；除非有理由保留原始 `params.sessionKey`，否则应一致使用它。
+使用与 Codex 工具桥接和转录记录镜像相同的 `sessionKey` 约定。如今 Codex 会从 `params.sessionKey` 或 `params.sessionId` 计算 `sandboxSessionKey`；除非有理由保留原始 `params.sessionKey`，否则应一致使用它。
 
-### 4. 在 `thread/start` / `thread/resume` 和 `turn/start` 之前接入 assemble
+### 4. 在 `thread/start` / `thread/resume` 和 `turn/start` 之前接入组装
 
 在 `runCodexAppServerAttempt` 中：
 
-1. 先构建动态工具，以便上下文引擎能看到实际可用的
-   工具名称。
-2. 读取镜像会话历史。
-3. 当 `params.contextEngine` 存在时运行上下文引擎 `assemble(...)`。
-4. 将组装结果投影为：
-   - developer instruction addition
-   - 用于 `turn/start` 的提示词文本
+1. 先构建动态工具，让上下文引擎看到实际可用的工具名称。
+2. 读取镜像的会话历史。
+3. 当 `params.contextEngine` 存在时，运行上下文引擎 `assemble(...)`。
+4. 将已组装结果投射到：
+   - 开发者指令追加内容
+   - `turn/start` 的提示文本
 
-现有的钩子调用：
+现有钩子调用：
 
 ```ts
 resolveAgentHarnessBeforePromptBuildResult({
@@ -311,51 +284,46 @@ resolveAgentHarnessBeforePromptBuildResult({
 });
 ```
 
-应变为具备上下文感知能力：
+应变为感知上下文：
 
-1. 使用 `buildDeveloperInstructions(params)` 计算基础 developer instructions
-2. 应用上下文引擎组装 / 投影
-3. 使用投影后的提示词 / developer instructions 运行 `before_prompt_build`
+1. 使用 `buildDeveloperInstructions(params)` 计算基础开发者指令
+2. 应用上下文引擎组装/投射
+3. 使用已投射的提示/开发者指令运行 `before_prompt_build`
 
-这种顺序可让通用提示词钩子看到 Codex 将实际接收的同一提示词。如果
-需要严格的 PI 对齐，则应在钩子组合之前运行上下文引擎组装，
-因为 PI 会在其提示词流水线之后，将上下文引擎 `systemPromptAddition` 应用到最终系统提示词中。重要的不变量是：上下文
-引擎和钩子都获得一个确定且有文档说明的顺序。
+此顺序让通用提示钩子看到与 Codex 将接收内容相同的提示。如果需要严格 PI 对齐，则在钩子组合前运行上下文引擎组装，因为 PI 会在其提示流水线之后将上下文引擎 `systemPromptAddition` 应用于最终系统提示。重要不变式是：上下文引擎和钩子都获得确定性且有文档说明的顺序。
 
-第一版实现的推荐顺序：
+建议首版实现顺序：
 
 1. `buildDeveloperInstructions(params)`
 2. 上下文引擎 `assemble()`
-3. 将 `systemPromptAddition` 追加 / 前置到 developer instructions
-4. 将组装后的消息投影到提示词文本中
+3. 将 `systemPromptAddition` 追加/前置到开发者指令
+4. 将已组装消息投射到提示文本
 5. `resolveAgentHarnessBeforePromptBuildResult(...)`
-6. 将最终 developer instructions 传入 `startOrResumeThread(...)`
-7. 将最终提示词文本传入 `buildTurnStartParams(...)`
+6. 将最终开发者指令传给 `startOrResumeThread(...)`
+7. 将最终提示文本传给 `buildTurnStartParams(...)`
 
-该规范应通过测试编码，以防未来更改不小心重排顺序。
+该规范应编码进测试，避免未来更改意外重排顺序。
 
-### 5. 保持 prompt-cache 格式稳定
+### 5. 保留提示缓存稳定格式
 
-投影辅助函数必须对相同输入产出字节级稳定的输出：
+投射辅助函数必须对相同输入生成字节稳定输出：
 
-- 稳定的消息顺序
-- 稳定的角色标签
-- 无生成的时间戳
+- 稳定消息顺序
+- 稳定角色标签
+- 无生成时间戳
 - 无对象键顺序泄漏
 - 无随机分隔符
-- 无每次运行 id
+- 无每次运行 ID
 
-使用固定分隔符和显式分节。
+使用固定分隔符和明确分区。
 
-### 6. 在转录镜像之后接入回合后流程
+### 6. 在转录记录镜像后接入回合后处理
 
-Codex 的 `CodexAppServerEventProjector` 会为当前回合构建一个本地 `messagesSnapshot`。
-`mirrorTranscriptBestEffort(...)` 会将该快照写入 OpenClaw 转录镜像。
+Codex 的 `CodexAppServerEventProjector` 会为当前轮次构建本地 `messagesSnapshot`。`mirrorTranscriptBestEffort(...)` 会把该快照写入 OpenClaw 转录镜像。
 
-无论镜像成功还是失败，在此之后都应使用最佳可用的消息快照调用上下文引擎终结器：
+镜像写入成功或失败后，使用可用的最佳消息快照调用上下文引擎终结器：
 
-- 优先使用写入后的完整镜像会话上下文，因为 `afterTurn`
-  期望的是会话快照，而不只是当前回合。
+- 优先使用写入后的完整镜像会话上下文，因为 `afterTurn` 期望的是会话快照，而不仅是当前轮次。
 - 如果无法重新打开会话文件，则回退到 `historyMessages + result.messagesSnapshot`。
 
 伪流程：
@@ -391,83 +359,73 @@ await finalizeHarnessContextEngineTurn({
 });
 ```
 
-如果镜像失败，仍然要使用回退快照调用 `afterTurn`，但要记录
-上下文引擎正在使用回退回合数据进行摄取。
+如果镜像写入失败，仍然使用回退快照调用 `afterTurn`，但要记录上下文引擎正在从回退轮次数据摄取。
 
-### 7. 规范化 usage 和 prompt-cache 运行时上下文
+### 7. 规范化用量和提示缓存运行时上下文
 
-Codex 结果在可用时会包含来自 app-server token 通知的规范化 usage。
-将该 usage 传入上下文引擎运行时上下文。
+Codex 结果会在可用时包含来自应用服务器令牌通知的规范化用量。将该用量传入上下文引擎运行时上下文。
 
-如果 Codex app-server 将来暴露 cache read/write 详情，则将其映射到
-`ContextEnginePromptCacheInfo`。在此之前，应省略 `promptCache`，而不是虚构零值。
+如果 Codex 应用服务器最终公开缓存读写详情，请将其映射到 `ContextEnginePromptCacheInfo`。在此之前，省略 `promptCache`，不要编造零值。
 
 ### 8. 压缩策略
 
-存在两套压缩系统：
+有两个压缩系统：
 
 1. OpenClaw 上下文引擎 `compact()`
-2. Codex app-server 原生 `thread/compact/start`
+2. Codex 应用服务器原生 `thread/compact/start`
 
-不要静默地将它们混为一谈。
+不要悄悄把它们混为一谈。
 
 #### `/compact` 和显式 OpenClaw 压缩
 
-当所选上下文引擎满足 `info.ownsCompaction === true` 时，显式
-OpenClaw 压缩应优先使用上下文引擎的 `compact()` 结果来处理 OpenClaw 转录镜像和插件状态。
+当所选上下文引擎的 `info.ownsCompaction === true` 时，显式 OpenClaw 压缩应优先把上下文引擎的 `compact()` 结果用于 OpenClaw 转录镜像和插件状态。
 
-当所选 Codex harness 具有原生线程绑定时，我们还可以额外请求
-Codex 原生压缩，以保持 app-server 线程健康，但这必须在 details 中作为一个独立的后端动作报告。
+当所选 Codex harness 具有原生线程绑定时，我们还可以额外请求 Codex 原生压缩，以保持应用服务器线程健康，但这必须在详情中报告为单独的后端操作。
 
-建议行为：
+推荐行为：
 
 - 如果 `contextEngine.info.ownsCompaction === true`：
   - 先调用上下文引擎 `compact()`
-  - 然后在存在线程绑定时尽最大努力调用 Codex 原生压缩
-  - 返回上下文引擎结果作为主结果
+  - 然后在存在线程绑定时尽力调用 Codex 原生压缩
+  - 将上下文引擎结果作为主结果返回
   - 在 `details.codexNativeCompaction` 中包含 Codex 原生压缩状态
-- 如果活动上下文引擎不拥有压缩职责：
+- 如果活动上下文引擎不拥有压缩：
   - 保留当前 Codex 原生压缩行为
 
-这很可能需要更改 `extensions/codex/src/app-server/compact.ts`，或从通用压缩路径对其进行包装，具体取决于
-`maybeCompactAgentHarnessSession(...)` 的调用位置。
+这可能需要修改 `extensions/codex/src/app-server/compact.ts`，或从通用压缩路径对其进行封装，具体取决于 `maybeCompactAgentHarnessSession(...)` 的调用位置。
 
-#### 回合内 Codex 原生 `contextCompaction` 事件
+#### 轮次内 Codex 原生 `contextCompaction` 事件
 
-Codex 可能会在回合期间发出 `contextCompaction` item 事件。保留当前
-`event-projector.ts` 中 before/after 压缩钩子的发出逻辑，但不要将其视为一次已完成的上下文引擎压缩。
+Codex 可能会在轮次期间发出 `contextCompaction` 条目事件。保留 `event-projector.ts` 中当前的压缩前/后钩子发出逻辑，但不要把它视为已完成的上下文引擎压缩。
 
-对于拥有压缩职责的引擎，当 Codex 仍然执行原生压缩时，发出一个显式诊断：
+对于拥有压缩的引擎，当 Codex 仍然执行原生压缩时，发出显式诊断：
 
-- 流 / 事件名称：现有的 `compaction` 流可以接受
-- details：`{ backend: "codex-app-server", ownsCompaction: true }`
+- 流/事件名称：可以使用现有 `compaction` 流
+- 详情：`{ backend: "codex-app-server", ownsCompaction: true }`
 
-这样可以让这一区分具有可审计性。
+这使两者的拆分可审计。
 
 ### 9. 会话重置和绑定行为
 
-现有的 Codex harness `reset(...)` 会从
-OpenClaw 会话文件中清除 Codex app-server 绑定。保留这一行为。
+现有 Codex harness 的 `reset(...)` 会从 OpenClaw 会话文件中清除 Codex 应用服务器绑定。保留该行为。
 
-同时还要确保上下文引擎状态清理继续通过现有的
-OpenClaw 会话生命周期路径进行。不要添加 Codex 特定的清理逻辑，除非当前所有 harness 的上下文引擎生命周期都遗漏了 reset/delete 事件。
+还要确保上下文引擎状态清理继续通过现有 OpenClaw 会话生命周期路径进行。除非当前上下文引擎生命周期对所有 harness 都遗漏了重置/删除事件，否则不要添加 Codex 专属清理逻辑。
 
 ### 10. 错误处理
 
 遵循 PI 语义：
 
-- bootstrap 失败时发出警告并继续
-- assemble 失败时发出警告，并回退到未组装的流水线消息 / 提示词
-- afterTurn/ingest 失败时发出警告，并将回合后终结标记为不成功
-- maintenance 仅在成功、未中止、未 yield 的回合后运行
-- 压缩错误不应作为新的提示词进行重试
+- 启动失败时警告并继续
+- 组装失败时警告，并回退到未组装的管线消息/提示
+- `afterTurn`/摄取失败时警告，并标记轮次后终结不成功
+- 维护仅在成功、非中止、非让出中止的轮次后运行
+- 压缩错误不应作为新提示重试
 
-Codex 特定补充：
+Codex 专属补充：
 
-- 如果上下文投影失败，发出警告并回退到原始提示词。
-- 如果转录镜像失败，仍然尝试使用回退消息执行上下文引擎终结。
-- 如果在上下文引擎压缩成功之后，Codex 原生压缩失败，
-  则当上下文引擎是主路径时，不应让整个 OpenClaw 压缩失败。
+- 如果上下文投影失败，警告并回退到原始提示。
+- 如果转录镜像失败，仍然尝试使用回退消息进行上下文引擎终结。
+- 如果上下文引擎压缩成功后 Codex 原生压缩失败，当上下文引擎是主系统时，不要让整个 OpenClaw 压缩失败。
 
 ## 测试计划
 
@@ -476,54 +434,49 @@ Codex 特定补充：
 在 `extensions/codex/src/app-server` 下添加测试：
 
 1. `run-attempt.context-engine.test.ts`
-   - 当会话文件存在时，Codex 会调用 `bootstrap`。
-   - Codex 会使用镜像消息、token budget、工具名称、
-     citations 模式、model id 和 prompt 调用 `assemble`。
-   - `systemPromptAddition` 会包含在 developer instructions 中。
-   - 组装后的消息会在当前请求之前投影到提示词中。
-   - Codex 会在转录镜像后调用 `afterTurn`。
-   - 没有 `afterTurn` 时，Codex 会调用 `ingestBatch` 或逐消息 `ingest`。
-   - 回合 maintenance 会在成功回合后运行。
-   - 当提示词错误、中止或 yield 中止时，不会运行回合 maintenance。
+   - 存在会话文件时，Codex 调用 `bootstrap`。
+   - Codex 使用镜像消息、令牌预算、工具名称、引用模式、模型 ID 和提示调用 `assemble`。
+   - `systemPromptAddition` 被包含在开发者指令中。
+   - 组装后的消息会在当前请求前投影到提示中。
+   - Codex 在转录镜像后调用 `afterTurn`。
+   - 没有 `afterTurn` 时，Codex 调用 `ingestBatch` 或逐条消息的 `ingest`。
+   - 轮次维护在成功轮次后运行。
+   - 轮次维护不会在提示错误、中止或让出中止时运行。
 
 2. `context-engine-projection.test.ts`
-   - 对相同输入输出稳定
-   - 当组装历史已包含当前提示词时，不重复当前提示词
+   - 相同输入的输出稳定
+   - 当组装历史已经包含当前提示时，不重复当前提示
    - 处理空历史
    - 保留角色顺序
-   - 仅在 developer instructions 中包含 system prompt addition
+   - 仅在开发者指令中包含系统提示补充
 
 3. `compact.context-engine.test.ts`
-   - 拥有压缩职责的上下文引擎主结果优先生效
-   - 当也尝试了 Codex 原生压缩时，details 中会出现其状态
-   - Codex 原生失败不会导致拥有压缩职责的上下文引擎压缩失败
-   - 不拥有压缩职责的上下文引擎会保留当前原生压缩行为
+   - 拥有压缩的上下文引擎主结果胜出
+   - 同时尝试 Codex 原生压缩时，其状态会出现在详情中
+   - Codex 原生失败不会导致拥有压缩的上下文引擎压缩失败
+   - 不拥有压缩的上下文引擎保留当前原生压缩行为
 
 ### 需要更新的现有测试
 
-- `extensions/codex/src/app-server/run-attempt.test.ts`，如果存在；否则更新
-  最接近的 Codex app-server 运行测试。
-- `extensions/codex/src/app-server/event-projector.test.ts`，仅当压缩
-  事件 details 发生变化时。
-- `src/agents/harness/selection.test.ts` 应无需更改，除非配置
-  行为发生变化；它应保持稳定。
-- PI 上下文引擎测试应继续保持不变并通过。
+- 如存在，更新 `extensions/codex/src/app-server/run-attempt.test.ts`；否则更新最近的 Codex 应用服务器运行测试。
+- 仅在压缩事件详情变化时更新 `extensions/codex/src/app-server/event-projector.test.ts`。
+- 除非配置行为变化，否则 `src/agents/harness/selection.test.ts` 不应需要修改；它应保持稳定。
+- PI 上下文引擎测试应继续原样通过。
 
-### 集成 / 实时测试
+### 集成 / 现场测试
 
-添加或扩展实时 Codex harness 冒烟测试：
+添加或扩展现场 Codex harness 冒烟测试：
 
 - 将 `plugins.slots.contextEngine` 配置为测试引擎
 - 将 `agents.defaults.model` 配置为 `codex/*` 模型
 - 配置 `agents.defaults.embeddedHarness.runtime = "codex"`
-- 断言测试引擎观察到了：
+- 断言测试引擎观察到：
   - bootstrap
   - assemble
   - afterTurn 或 ingest
   - maintenance
 
-避免在 OpenClaw 核心测试中要求使用 lossless-claw。请使用仓库内一个小型的 fake
-上下文引擎插件。
+避免在 OpenClaw 核心测试中要求 lossless-claw。使用一个小型仓库内伪上下文引擎插件。
 
 ## 可观测性
 
@@ -532,15 +485,15 @@ Codex 特定补充：
 - `codex context engine bootstrap started/completed/failed`
 - `codex context engine assemble applied`
 - `codex context engine finalize completed/failed`
-- `codex context engine maintenance skipped` 并附带原因
+- `codex context engine maintenance skipped`，带原因
 - `codex native compaction completed alongside context-engine compaction`
 
-避免记录完整提示词或转录内容。
+避免记录完整提示或转录内容。
 
-在合适时添加结构化字段：
+在有用的地方添加结构化字段：
 
 - `sessionId`
-- `sessionKey` 根据现有日志实践进行脱敏或省略
+- `sessionKey` 按现有日志实践脱敏或省略
 - `engineId`
 - `threadId`
 - `turnId`
@@ -552,52 +505,38 @@ Codex 特定补充：
 
 这应当向后兼容：
 
-- 如果未配置上下文引擎，则旧版上下文引擎行为应与当前 Codex harness 行为等价。
-- 如果上下文引擎 `assemble` 失败，Codex 应继续使用原始
-  提示词路径。
-- 现有 Codex 线程绑定应继续有效。
-- 动态工具指纹不应包含上下文引擎输出；否则
-  每次上下文变化都可能强制创建一个新 Codex 线程。只有工具目录
-  应影响动态工具指纹。
+- 如果未配置上下文引擎，旧版上下文引擎行为应等同于当前 Codex harness 行为。
+- 如果上下文引擎 `assemble` 失败，Codex 应继续使用原始提示路径。
+- 现有 Codex 线程绑定应保持有效。
+- 动态工具指纹不应包含上下文引擎输出；否则每次上下文变化都可能强制创建新的 Codex 线程。只有工具目录应影响动态工具指纹。
 
 ## 未决问题
 
-1. 组装后的上下文应全部注入到用户提示词中、全部
-   注入到 developer instructions 中，还是拆分处理？
+1. 组装后的上下文应完全注入用户提示、完全注入开发者指令，还是拆分？
 
-   建议：拆分。将 `systemPromptAddition` 放入 developer instructions；
-   将组装后的转录上下文放入用户提示词包装中。这最符合
-   当前 Codex 协议，同时不会修改原生线程历史。
+   建议：拆分。将 `systemPromptAddition` 放入开发者指令；将组装后的转录上下文放入用户提示包装器。这最符合当前 Codex 协议，且不会改变原生线程历史。
 
-2. 当上下文引擎拥有
-   压缩职责时，是否应禁用 Codex 原生压缩？
+2. 当上下文引擎拥有压缩时，是否应禁用 Codex 原生压缩？
 
-   建议：不，至少初期不这样做。Codex 原生压缩可能仍然
-   是维持 app-server 线程存活所必需的。但它必须被报告为
-   Codex 原生压缩，而不是上下文引擎压缩。
+   建议：一开始不要。Codex 原生压缩可能仍然是保持应用服务器线程存活所必需的。但必须将其报告为原生 Codex 压缩，而不是上下文引擎压缩。
 
 3. `before_prompt_build` 应在上下文引擎组装之前还是之后运行？
 
-   建议：对于 Codex，在上下文引擎投影之后运行，这样通用 harness
-   钩子就能看到 Codex 将实际接收的提示词 / developer instructions。如果为了与 PI
-   保持一致需要相反顺序，请在测试中编码选定顺序，并在
-   此处记录。
+   建议：对于 Codex，在上下文引擎投影之后运行，这样通用 harness 钩子能看到 Codex 实际会收到的提示/开发者指令。如果 PI 对等性要求相反顺序，请在测试中编码所选顺序，并在此处记录。
 
-4. Codex app-server 是否可以接受未来的结构化上下文 / 历史覆盖？
+4. Codex 应用服务器未来能否接受结构化上下文/历史覆盖？
 
-   未知。如果可以，则用该协议替换文本投影层，并保持生命周期调用不变。
+   未知。如果可以，用该协议替换文本投影层，并保持生命周期调用不变。
 
 ## 验收标准
 
-- 一个 `codex/*` 嵌入式 harness 回合会调用所选上下文引擎的
-  assemble 生命周期。
-- 上下文引擎 `systemPromptAddition` 会影响 Codex developer instructions。
-- 组装后的上下文会以确定性方式影响 Codex 回合输入。
-- 成功的 Codex 回合会调用 `afterTurn` 或 ingest 回退路径。
-- 成功的 Codex 回合会运行上下文引擎回合 maintenance。
-- 失败 / 中止 / yield 中止的回合不会运行回合 maintenance。
-- 由上下文引擎拥有的压缩对于 OpenClaw / 插件状态仍然是主路径。
-- Codex 原生压缩仍然可以作为原生 Codex 行为被审计。
-- 现有 PI 上下文引擎行为保持不变。
-- 当未选择非旧版上下文引擎
-  或当组装失败时，现有 Codex harness 行为保持不变。
+- `codex/*` embedded harness 轮次会调用所选上下文引擎的组装生命周期。
+- 上下文引擎的 `systemPromptAddition` 会影响 Codex 开发者指令。
+- 组装后的上下文会确定性地影响 Codex 轮次输入。
+- 成功的 Codex 轮次会调用 `afterTurn` 或摄取回退。
+- 成功的 Codex 轮次会运行上下文引擎轮次维护。
+- 失败/中止/让出中止的轮次不会运行轮次维护。
+- 上下文引擎拥有的压缩仍然是 OpenClaw/插件状态的主结果。
+- Codex 原生压缩仍可作为原生 Codex 行为审计。
+- 现有 PI 上下文引擎行为不变。
+- 当未选择非旧版上下文引擎或组装失败时，现有 Codex harness 行为不变。
