@@ -4,26 +4,26 @@ read_when:
 summary: Tham gia cuộc gọi Google Meet thông qua các phương thức truyền tải Chrome hoặc Twilio.
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-05-02T20:50:58Z"
+    generated_at: "2026-05-03T10:41:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 07a5137b5c6e2c55136c63d6558641165176f325a9e22a476ed0315de2d763a3
+    source_hash: 1418e8400d3efc0e9448e337269636d3801cee38ad05be1fa6657564974bfccb
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
 # Plugin Google Meet
 
-Tham gia cuộc gọi Google Meet thông qua các cơ chế truyền tải Chrome hoặc Twilio.
+Tham gia cuộc gọi Google Meet thông qua các phương thức truyền tải Chrome hoặc Twilio.
 
 ## Phân phối
 
 - Gói: `@openclaw/google-meet`
-- Phương thức cài đặt: ClawHub + npm
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-contracts: tools
+contracts: công cụ
 
 ## Tài liệu liên quan
 

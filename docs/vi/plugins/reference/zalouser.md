@@ -2,12 +2,12 @@
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin zalouser
 summary: Thêm bề mặt kênh Zalo Personal để gửi và nhận tin nhắn OpenClaw.
-title: Plugin Zalo cá nhân
+title: Plugin Zalo Cá nhân
 x-i18n:
-    generated_at: "2026-05-02T20:56:39Z"
+    generated_at: "2026-05-03T10:43:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd0398244efd8e15ac7a7331b4ed55dfd25a3bab547e0a501c2e5bed4ced182c
+    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Thêm bề mặt kênh Zalo Personal để gửi và nhận tin nhắn OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/zalouser`
-- Cách cài đặt: ClawHub + npm
+- Cách cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-kênh: zalouser; hợp đồng: tools
+channels: zalouser; contracts: tools
 
 ## Tài liệu liên quan
 

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin nostr
-summary: Thêm bề mặt kênh Nostr để gửi và nhận tin nhắn OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin nostr
+summary: Thêm giao diện kênh Nostr để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-02T20:53:13Z"
+    generated_at: "2026-05-03T10:42:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Plugin Nostr
+# Nostr Plugin
 
 Thêm bề mặt kênh Nostr để gửi và nhận tin nhắn OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/nostr`
-- Lộ trình cài đặt: ClawHub + npm
+- Cách cài đặt: npm; ClawHub
 
 ## Bề mặt
 

@@ -1,25 +1,25 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin brave
-summary: Thêm hỗ trợ cho nhà cung cấp tìm kiếm trên web.
+summary: Thêm hỗ trợ cho nhà cung cấp tìm kiếm web.
 title: Plugin Brave
 x-i18n:
-    generated_at: "2026-05-02T20:48:53Z"
+    generated_at: "2026-05-03T10:40:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 64ab341ee94d55f7364a6a670df8adb0d29d5a50fba2fd6e7cfe650cda407d93
+    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Plugin Brave
 
-Thêm hỗ trợ nhà cung cấp tìm kiếm trên web.
+Thêm hỗ trợ nhà cung cấp tìm kiếm web.
 
 ## Phân phối
 
 - Gói: `@openclaw/brave-plugin`
-- Tuyến cài đặt: ClawHub + npm
+- Cách cài đặt: npm; ClawHub
 
 ## Bề mặt
 

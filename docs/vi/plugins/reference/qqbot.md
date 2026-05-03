@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin qqbot
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin qqbot
 summary: Thêm giao diện kênh QQ Bot để gửi và nhận tin nhắn OpenClaw.
-title: Plugin bot QQ
+title: Plugin QQ Bot
 x-i18n:
-    generated_at: "2026-05-02T20:54:22Z"
+    generated_at: "2026-05-03T10:42:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bdf8ca36d93a5ad8e1a73ad56f8a4e65a8d3d90591ca307b6cd849ad65fded5
+    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Thêm bề mặt kênh QQ Bot để gửi và nhận tin nhắn OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/qqbot`
-- Cách cài đặt: ClawHub + npm
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-kênh: qqbot; hợp đồng: công cụ; Skills
+kênh: qqbot; hợp đồng: tools; skills
 
 ## Tài liệu liên quan
 

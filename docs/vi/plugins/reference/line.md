@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Bạn đang cài đặt, cấu hình hoặc rà soát Plugin line
-summary: Thêm giao diện kênh LINE để gửi và nhận tin nhắn OpenClaw.
+    - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin line
+summary: Bổ sung giao diện kênh LINE để gửi và nhận tin nhắn OpenClaw.
 title: Plugin LINE
 x-i18n:
-    generated_at: "2026-05-02T22:20:49Z"
+    generated_at: "2026-05-03T10:41:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
+    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # Plugin LINE
 
-Thêm bề mặt kênh LINE để gửi và nhận tin nhắn OpenClaw.
+Thêm giao diện kênh LINE để gửi và nhận tin nhắn OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/line`
-- Phương thức cài đặt: được bao gồm trong OpenClaw
+- Cách cài đặt: npm; ClawHub
 
-## Bề mặt
+## Giao diện
 
 channels: line
 

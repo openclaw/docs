@@ -1,13 +1,13 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin zalo
-summary: Thêm giao diện kênh Zalo để gửi và nhận tin nhắn OpenClaw.
+summary: Thêm bề mặt kênh Zalo để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-05-02T20:56:37Z"
+    generated_at: "2026-05-03T10:42:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 66b8b3643ce7b5be508bc07f78e9b5d20023f07ff23c8273667cf9844a78c750
+    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Thêm bề mặt kênh Zalo để gửi và nhận tin nhắn OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/zalo`
-- Cách cài đặt: ClawHub + npm
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 

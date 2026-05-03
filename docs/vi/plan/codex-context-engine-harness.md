@@ -1,84 +1,71 @@
 ---
 read_when:
-    - Bạn đang tích hợp hành vi vòng đời của công cụ ngữ cảnh vào bộ khung Codex
-    - Bạn cần lossless-claw hoặc một Plugin bộ máy ngữ cảnh khác để làm việc với các phiên khung điều khiển nhúng codex/*
+    - Bạn đang tích hợp hành vi vòng đời của context-engine vào bộ khung Codex
+    - Bạn cần lossless-claw hoặc một Plugin công cụ ngữ cảnh khác để làm việc với các phiên bộ khung nhúng codex/*
     - Bạn đang so sánh hành vi ngữ cảnh của PI nhúng và máy chủ ứng dụng Codex
-summary: Đặc tả để bộ harness app-server Codex đi kèm tôn trọng các plugin context-engine của OpenClaw
-title: Bản chuyển Context Engine sang Codex Harness
+summary: Đặc tả để làm cho harness app-server Codex được đóng gói kèm tuân thủ các Plugin context-engine của OpenClaw
+title: Bản chuyển cổng Bộ máy ngữ cảnh Codex Harness
 x-i18n:
-    generated_at: "2026-04-29T22:56:15Z"
+    generated_at: "2026-05-03T10:39:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61c29a6cd8955a41510b8da1575b89ed003565d564b25b37b3b0c7f65df6b663
+    source_hash: 6575c25973d43c04cada6157e39c52ea5ad1cc60171cf801fe36cbb9c54c9237
     source_path: plan/codex-context-engine-harness.md
     workflow: 16
 ---
 
 ## Trạng thái
 
-Đặc tả triển khai dạng bản nháp.
+Đặc tả triển khai bản nháp.
 
 ## Mục tiêu
 
-Làm cho harness app-server Codex đi kèm tuân thủ cùng hợp đồng vòng đời công cụ ngữ cảnh của OpenClaw
-mà các lượt PI nhúng đã tuân thủ.
+Làm cho harness app-server Codex được đóng gói tuân thủ cùng hợp đồng vòng đời context-engine của OpenClaw mà các lượt PI nhúng đã tuân thủ.
 
-Một phiên dùng `agents.defaults.embeddedHarness.runtime: "codex"` hoặc một
-model `codex/*` vẫn phải cho phép Plugin công cụ ngữ cảnh đã chọn, chẳng hạn
-`lossless-claw`, kiểm soát việc lắp ráp ngữ cảnh, nạp sau lượt, bảo trì, và
-chính sách Compaction cấp OpenClaw trong phạm vi ranh giới app-server Codex cho phép.
+Một phiên dùng `agents.defaults.embeddedHarness.runtime: "codex"` hoặc một mô hình `codex/*` vẫn nên cho phép Plugin context-engine đã chọn, chẳng hạn như `lossless-claw`, kiểm soát việc lắp ráp ngữ cảnh, ingest sau lượt, bảo trì và chính sách compaction cấp OpenClaw trong phạm vi ranh giới app-server Codex cho phép.
 
-## Ngoài phạm vi
+## Không phải mục tiêu
 
-- Không triển khai lại phần nội bộ của app-server Codex.
-- Không làm cho Compaction thread native của Codex tạo ra bản tóm tắt lossless-claw.
-- Không yêu cầu các model không phải Codex dùng harness Codex.
-- Không thay đổi hành vi phiên ACP/acpx. Đặc tả này chỉ dành cho đường dẫn
-  harness agent nhúng không phải ACP.
-- Không để Plugin bên thứ ba đăng ký các factory tiện ích mở rộng app-server Codex;
-  ranh giới tin cậy Plugin đi kèm hiện có vẫn giữ nguyên.
+- Không triển khai lại nội bộ app-server Codex.
+- Không làm cho compaction luồng native của Codex tạo ra bản tóm tắt lossless-claw.
+- Không yêu cầu các mô hình không phải Codex dùng harness Codex.
+- Không thay đổi hành vi phiên ACP/acpx. Đặc tả này chỉ dành cho đường dẫn harness tác nhân nhúng không phải ACP.
+- Không bắt các Plugin bên thứ ba đăng ký các factory tiện ích mở rộng app-server Codex; ranh giới tin cậy Plugin được đóng gói hiện có vẫn không đổi.
 
 ## Kiến trúc hiện tại
 
-Vòng lặp chạy nhúng phân giải công cụ ngữ cảnh đã cấu hình một lần cho mỗi lượt chạy trước khi
-chọn một harness cấp thấp cụ thể:
+Vòng lặp chạy nhúng phân giải context engine đã cấu hình một lần cho mỗi lần chạy trước khi chọn một harness cấp thấp cụ thể:
 
 - `src/agents/pi-embedded-runner/run.ts`
-  - khởi tạo các Plugin công cụ ngữ cảnh
+  - khởi tạo các Plugin context-engine
   - gọi `resolveContextEngine(params.config)`
-  - truyền `contextEngine` và `contextTokenBudget` vào
-    `runEmbeddedAttemptWithBackend(...)`
+  - truyền `contextEngine` và `contextTokenBudget` vào `runEmbeddedAttemptWithBackend(...)`
 
-`runEmbeddedAttemptWithBackend(...)` ủy quyền cho harness agent đã chọn:
+`runEmbeddedAttemptWithBackend(...)` ủy quyền cho harness tác nhân đã chọn:
 
 - `src/agents/pi-embedded-runner/run/backend.ts`
 - `src/agents/harness/selection.ts`
 
-Harness app-server Codex được đăng ký bởi Plugin Codex đi kèm:
+Harness app-server Codex được Plugin Codex được đóng gói đăng ký:
 
 - `extensions/codex/index.ts`
 - `extensions/codex/harness.ts`
 
-Triển khai harness Codex nhận cùng `EmbeddedRunAttemptParams`
-như các lượt thử dựa trên PI:
+Triển khai harness Codex nhận cùng `EmbeddedRunAttemptParams` như các lần thử dựa trên PI:
 
 - `extensions/codex/src/app-server/run-attempt.ts`
 
-Điều đó có nghĩa điểm hook bắt buộc nằm trong mã do OpenClaw kiểm soát. Ranh giới bên ngoài
-là chính giao thức app-server Codex: OpenClaw có thể kiểm soát nội dung nó
-gửi tới `thread/start`, `thread/resume`, và `turn/start`, và có thể quan sát
-thông báo, nhưng không thể thay đổi kho thread nội bộ hoặc bộ Compaction native
-của Codex.
+Điều đó có nghĩa là điểm hook bắt buộc nằm trong mã do OpenClaw kiểm soát. Ranh giới bên ngoài là chính giao thức app-server Codex: OpenClaw có thể kiểm soát nội dung gửi tới `thread/start`, `thread/resume` và `turn/start`, đồng thời có thể quan sát thông báo, nhưng không thể thay đổi kho luồng nội bộ hoặc trình compactor native của Codex.
 
 ## Khoảng trống hiện tại
 
-Các lượt thử PI nhúng gọi trực tiếp vòng đời công cụ ngữ cảnh:
+Các lần thử PI nhúng gọi trực tiếp vòng đời context-engine:
 
-- bootstrap/bảo trì trước lượt thử
-- lắp ráp trước lệnh gọi model
-- afterTurn hoặc nạp sau lượt thử
+- bootstrap/bảo trì trước lần thử
+- assemble trước lời gọi mô hình
+- afterTurn hoặc ingest sau lần thử
 - bảo trì sau một lượt thành công
-- Compaction công cụ ngữ cảnh cho các công cụ sở hữu Compaction
+- compaction context-engine cho các engine sở hữu compaction
 
 Mã PI liên quan:
 
@@ -86,11 +73,7 @@ Mã PI liên quan:
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Các lượt thử app-server Codex hiện chạy các hook harness agent chung và phản chiếu
-bản ghi hội thoại, nhưng không gọi `params.contextEngine.bootstrap`,
-`params.contextEngine.assemble`, `params.contextEngine.afterTurn`,
-`params.contextEngine.ingestBatch`, `params.contextEngine.ingest`, hoặc
-`params.contextEngine.maintain`.
+Các lần thử app-server Codex hiện chạy hook harness tác nhân chung và phản chiếu bản ghi, nhưng không gọi `params.contextEngine.bootstrap`, `params.contextEngine.assemble`, `params.contextEngine.afterTurn`, `params.contextEngine.ingestBatch`, `params.contextEngine.ingest` hoặc `params.contextEngine.maintain`.
 
 Mã Codex liên quan:
 
@@ -101,69 +84,58 @@ Mã Codex liên quan:
 
 ## Hành vi mong muốn
 
-Đối với các lượt harness Codex, OpenClaw nên bảo toàn vòng đời này:
+Đối với các lượt harness Codex, OpenClaw nên giữ nguyên vòng đời này:
 
-1. Đọc bản ghi phiên OpenClaw đã phản chiếu.
-2. Bootstrap công cụ ngữ cảnh đang hoạt động khi có tệp phiên trước đó.
+1. Đọc bản ghi phiên OpenClaw được phản chiếu.
+2. Bootstrap context engine đang hoạt động khi có tệp phiên trước đó.
 3. Chạy bảo trì bootstrap khi có.
-4. Lắp ráp ngữ cảnh bằng công cụ ngữ cảnh đang hoạt động.
-5. Chuyển đổi ngữ cảnh đã lắp ráp thành đầu vào tương thích với Codex.
-6. Bắt đầu hoặc tiếp tục thread Codex với chỉ dẫn dành cho nhà phát triển bao gồm mọi
-   `systemPromptAddition` của công cụ ngữ cảnh.
-7. Bắt đầu lượt Codex với prompt hướng tới người dùng đã lắp ráp.
+4. Lắp ráp ngữ cảnh bằng context engine đang hoạt động.
+5. Chuyển ngữ cảnh đã lắp ráp thành đầu vào tương thích với Codex.
+6. Khởi động hoặc tiếp tục luồng Codex với chỉ dẫn developer bao gồm mọi `systemPromptAddition` của context-engine.
+7. Khởi động lượt Codex với prompt hướng tới người dùng đã lắp ráp.
 8. Phản chiếu kết quả Codex trở lại bản ghi OpenClaw.
-9. Gọi `afterTurn` nếu được triển khai, nếu không thì `ingestBatch`/`ingest`, bằng
-   snapshot bản ghi đã phản chiếu.
-10. Chạy bảo trì lượt sau các lượt thành công và không bị hủy.
-11. Bảo toàn tín hiệu Compaction native của Codex và các hook Compaction của OpenClaw.
+9. Gọi `afterTurn` nếu đã triển khai, nếu không thì gọi `ingestBatch`/`ingest`, bằng snapshot bản ghi đã phản chiếu.
+10. Chạy bảo trì lượt sau các lượt thành công không bị hủy.
+11. Giữ nguyên tín hiệu compaction native của Codex và các hook compaction OpenClaw.
 
 ## Ràng buộc thiết kế
 
-### app-server Codex vẫn là nguồn chuẩn cho trạng thái thread native
+### App-server Codex vẫn là nguồn chuẩn cho trạng thái luồng native
 
-Codex sở hữu thread native của nó và mọi lịch sử mở rộng nội bộ. OpenClaw không nên
-cố biến đổi lịch sử nội bộ của app-server ngoại trừ qua các lệnh gọi giao thức
-được hỗ trợ.
+Codex sở hữu luồng native của nó và mọi lịch sử mở rộng nội bộ. OpenClaw không nên cố sửa đổi lịch sử nội bộ của app-server ngoài các lời gọi giao thức được hỗ trợ.
 
-Bản phản chiếu bản ghi của OpenClaw vẫn là nguồn cho các tính năng OpenClaw:
+Bản sao bản ghi của OpenClaw vẫn là nguồn cho các tính năng OpenClaw:
 
 - lịch sử trò chuyện
 - tìm kiếm
-- sổ sách cho `/new` và `/reset`
-- chuyển đổi model hoặc harness trong tương lai
-- trạng thái Plugin công cụ ngữ cảnh
+- ghi sổ `/new` và `/reset`
+- chuyển đổi mô hình hoặc harness trong tương lai
+- trạng thái Plugin context-engine
 
-### Việc lắp ráp công cụ ngữ cảnh phải được chiếu vào đầu vào Codex
+### Việc lắp ráp context engine phải được chiếu thành đầu vào Codex
 
-Giao diện công cụ ngữ cảnh trả về `AgentMessage[]` của OpenClaw, không phải một
-bản vá thread Codex. `turn/start` của app-server Codex chấp nhận một đầu vào người dùng hiện tại, trong khi
-`thread/start` và `thread/resume` chấp nhận chỉ dẫn dành cho nhà phát triển.
+Giao diện context-engine trả về `AgentMessage[]` của OpenClaw, không phải patch luồng Codex. `turn/start` của app-server Codex chấp nhận đầu vào người dùng hiện tại, trong khi `thread/start` và `thread/resume` chấp nhận chỉ dẫn developer.
 
-Vì vậy việc triển khai cần một lớp chiếu. Phiên bản đầu tiên an toàn
-nên tránh giả vờ rằng nó có thể thay thế lịch sử nội bộ của Codex. Nó nên chèn
-ngữ cảnh đã lắp ráp làm nội dung prompt/chỉ dẫn dành cho nhà phát triển xác định quanh
-lượt hiện tại.
+Vì vậy, triển khai cần một lớp chiếu. Phiên bản đầu tiên an toàn nên tránh giả định rằng nó có thể thay thế lịch sử nội bộ của Codex. Nó nên chèn ngữ cảnh đã lắp ráp dưới dạng nội dung prompt/chỉ dẫn developer xác định quanh lượt hiện tại.
 
-### Tính ổn định của bộ nhớ đệm prompt là quan trọng
+### Độ ổn định prompt-cache rất quan trọng
 
-Đối với các công cụ như lossless-claw, ngữ cảnh đã lắp ráp nên có tính xác định
-khi đầu vào không đổi. Không thêm dấu thời gian, id ngẫu nhiên, hoặc thứ tự
-không xác định vào văn bản ngữ cảnh được tạo.
+Đối với các engine như lossless-claw, ngữ cảnh đã lắp ráp nên xác định khi đầu vào không đổi. Không thêm dấu thời gian, id ngẫu nhiên hoặc thứ tự không xác định vào văn bản ngữ cảnh được tạo.
 
-### Ngữ nghĩa fallback PI không thay đổi
+### Ngữ nghĩa chọn runtime không thay đổi
 
-Lựa chọn harness giữ nguyên như hiện tại:
+Việc chọn harness vẫn giữ nguyên:
 
 - `runtime: "pi"` buộc dùng PI
 - `runtime: "codex"` chọn harness Codex đã đăng ký
 - `runtime: "auto"` cho phép các harness Plugin nhận các provider được hỗ trợ
-- `fallback: "none"` tắt fallback PI khi không có harness Plugin nào khớp
+- các lượt chạy `auto` không khớp dùng PI
 
 Công việc này thay đổi những gì xảy ra sau khi harness Codex được chọn.
 
 ## Kế hoạch triển khai
 
-### 1. Xuất hoặc di chuyển các helper lượt thử công cụ ngữ cảnh có thể tái sử dụng
+### 1. Xuất hoặc di dời các helper lần thử context-engine có thể tái sử dụng
 
 Hiện nay các helper vòng đời có thể tái sử dụng nằm dưới runner PI:
 
@@ -171,14 +143,13 @@ Hiện nay các helper vòng đời có thể tái sử dụng nằm dưới run
 - `src/agents/pi-embedded-runner/run/attempt.prompt-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Codex không nên import từ một đường dẫn triển khai có tên ngụ ý PI nếu chúng ta
-có thể tránh điều đó.
+Codex không nên import từ một đường dẫn triển khai có tên hàm ý PI nếu có thể tránh.
 
 Tạo một module trung lập với harness, ví dụ:
 
 - `src/agents/harness/context-engine-lifecycle.ts`
 
-Di chuyển hoặc tái xuất:
+Di chuyển hoặc xuất lại:
 
 - `runAttemptContextEngineBootstrap`
 - `assembleAttemptContextEngine`
@@ -187,8 +158,7 @@ Di chuyển hoặc tái xuất:
 - `buildAfterTurnRuntimeContextFromUsage`
 - một wrapper nhỏ quanh `runContextEngineMaintenance`
 
-Giữ các import PI tiếp tục hoạt động bằng cách tái xuất từ các tệp cũ hoặc cập nhật
-các điểm gọi PI trong cùng PR.
+Giữ các import PI hoạt động bằng cách xuất lại từ các tệp cũ hoặc cập nhật các điểm gọi PI trong cùng PR.
 
 Tên helper trung lập không nên nhắc đến PI.
 
@@ -208,11 +178,11 @@ Thêm một module mới:
 
 Trách nhiệm:
 
-- Nhận `AgentMessage[]` đã lắp ráp, lịch sử đã phản chiếu ban đầu, và prompt hiện tại.
-- Xác định ngữ cảnh nào thuộc về chỉ dẫn dành cho nhà phát triển so với đầu vào người dùng hiện tại.
-- Bảo toàn prompt người dùng hiện tại làm yêu cầu có thể hành động cuối cùng.
-- Render các tin nhắn trước đó theo một định dạng ổn định, rõ ràng.
-- Tránh metadata dễ biến động.
+- Nhận `AgentMessage[]` đã lắp ráp, lịch sử phản chiếu ban đầu và prompt hiện tại.
+- Xác định ngữ cảnh nào thuộc về chỉ dẫn developer so với đầu vào người dùng hiện tại.
+- Giữ nguyên prompt người dùng hiện tại làm yêu cầu có thể hành động cuối cùng.
+- Render các thông điệp trước đó ở định dạng ổn định, rõ ràng.
+- Tránh metadata biến động.
 
 API đề xuất:
 
@@ -232,15 +202,15 @@ export function projectContextEngineAssemblyForCodex(params: {
 }): CodexContextProjection;
 ```
 
-Phép chiếu đầu tiên được khuyến nghị:
+Cách chiếu đầu tiên được khuyến nghị:
 
-- Đưa `systemPromptAddition` vào chỉ dẫn dành cho nhà phát triển.
-- Đưa ngữ cảnh bản ghi đã lắp ráp vào trước prompt hiện tại trong `promptText`.
-- Gắn nhãn rõ ràng là ngữ cảnh đã lắp ráp của OpenClaw.
+- Đặt `systemPromptAddition` vào chỉ dẫn developer.
+- Đặt ngữ cảnh bản ghi đã lắp ráp trước prompt hiện tại trong `promptText`.
+- Gắn nhãn rõ là ngữ cảnh đã lắp ráp của OpenClaw.
 - Giữ prompt hiện tại ở cuối.
-- Loại trừ prompt người dùng hiện tại bị trùng nếu nó đã xuất hiện ở phần đuôi.
+- Loại trừ prompt người dùng hiện tại bị trùng nếu nó đã xuất hiện ở đuôi.
 
-Ví dụ hình dạng prompt:
+Dạng prompt ví dụ:
 
 ```text
 OpenClaw assembled context for this turn:
@@ -257,21 +227,17 @@ Current user request:
 ...
 ```
 
-Cách này kém thanh lịch hơn so với phẫu thuật lịch sử native của Codex, nhưng có thể triển khai
-bên trong OpenClaw và bảo toàn ngữ nghĩa công cụ ngữ cảnh.
+Cách này kém thanh lịch hơn so với phẫu thuật lịch sử native của Codex, nhưng có thể triển khai bên trong OpenClaw và giữ nguyên ngữ nghĩa context-engine.
 
-Cải tiến trong tương lai: nếu app-server Codex công bố một giao thức để thay thế hoặc
-bổ sung lịch sử thread, hãy đổi lớp chiếu này sang dùng API đó.
+Cải tiến trong tương lai: nếu app-server Codex cung cấp giao thức để thay thế hoặc bổ sung lịch sử luồng, hãy đổi lớp chiếu này sang dùng API đó.
 
-### 3. Nối bootstrap trước khi khởi động thread Codex
+### 3. Nối bootstrap trước khi khởi động luồng Codex
 
 Trong `extensions/codex/src/app-server/run-attempt.ts`:
 
-- Đọc lịch sử phiên đã phản chiếu như hiện nay.
-- Xác định tệp phiên đã tồn tại trước lượt chạy này hay chưa. Ưu tiên một helper
-  kiểm tra `fs.stat(params.sessionFile)` trước khi ghi phản chiếu.
-- Mở một `SessionManager` hoặc dùng một adapter trình quản lý phiên hẹp nếu helper
-  yêu cầu.
+- Đọc lịch sử phiên phản chiếu như hiện nay.
+- Xác định liệu tệp phiên có tồn tại trước lần chạy này hay không. Ưu tiên một helper kiểm tra `fs.stat(params.sessionFile)` trước các lần ghi phản chiếu.
+- Mở `SessionManager` hoặc dùng adapter session manager hẹp nếu helper yêu cầu.
 - Gọi helper bootstrap trung lập khi `params.contextEngine` tồn tại.
 
 Luồng giả:
@@ -294,24 +260,20 @@ await bootstrapHarnessContextEngine({
 });
 ```
 
-Dùng cùng quy ước `sessionKey` như cầu nối công cụ Codex và bản phản chiếu bản ghi.
-Hiện nay Codex tính `sandboxSessionKey` từ `params.sessionKey` hoặc
-`params.sessionId`; hãy dùng nhất quán giá trị đó trừ khi có lý do để giữ
-`params.sessionKey` thô.
+Dùng cùng quy ước `sessionKey` như cầu nối công cụ Codex và bản sao bản ghi. Hiện Codex tính `sandboxSessionKey` từ `params.sessionKey` hoặc `params.sessionId`; hãy dùng nhất quán giá trị đó trừ khi có lý do để giữ nguyên `params.sessionKey` thô.
 
 ### 4. Nối assemble trước `thread/start` / `thread/resume` và `turn/start`
 
 Trong `runCodexAppServerAttempt`:
 
-1. Xây dựng công cụ động trước, để công cụ ngữ cảnh thấy đúng các
-   tên công cụ có sẵn thực tế.
-2. Đọc lịch sử phiên đã phản chiếu.
-3. Chạy `assemble(...)` của công cụ ngữ cảnh khi `params.contextEngine` tồn tại.
+1. Xây dựng công cụ động trước, để context engine thấy tên các công cụ thực sự có sẵn.
+2. Đọc lịch sử phiên phản chiếu.
+3. Chạy `assemble(...)` của context-engine khi `params.contextEngine` tồn tại.
 4. Chiếu kết quả đã lắp ráp thành:
-   - phần bổ sung chỉ dẫn dành cho nhà phát triển
+   - phần bổ sung chỉ dẫn developer
    - văn bản prompt cho `turn/start`
 
-Lệnh gọi hook hiện có:
+Lời gọi hook hiện có:
 
 ```ts
 resolveAgentHarnessBeforePromptBuildResult({
@@ -322,56 +284,51 @@ resolveAgentHarnessBeforePromptBuildResult({
 });
 ```
 
-nên trở nên nhận biết ngữ cảnh:
+nên trở nên có nhận biết ngữ cảnh:
 
-1. tính chỉ dẫn dành cho nhà phát triển cơ sở bằng `buildDeveloperInstructions(params)`
-2. áp dụng lắp ráp/chiếu công cụ ngữ cảnh
-3. chạy `before_prompt_build` với prompt/chỉ dẫn dành cho nhà phát triển đã chiếu
+1. tính chỉ dẫn developer cơ sở bằng `buildDeveloperInstructions(params)`
+2. áp dụng assembly/chiếu context-engine
+3. chạy `before_prompt_build` với prompt/chỉ dẫn developer đã chiếu
 
-Thứ tự này cho phép các hook prompt chung nhìn thấy cùng prompt mà Codex sẽ nhận. Nếu
-cần tương đương PI nghiêm ngặt, hãy chạy lắp ráp công cụ ngữ cảnh trước khi hợp thành hook,
-vì PI áp dụng `systemPromptAddition` của công cụ ngữ cảnh vào system prompt cuối cùng
-sau pipeline prompt của nó. Bất biến quan trọng là cả công cụ ngữ cảnh và hook
-đều có một thứ tự xác định, được tài liệu hóa.
+Thứ tự này cho phép các hook prompt chung thấy cùng prompt mà Codex sẽ nhận. Nếu cần độ tương đương PI nghiêm ngặt, hãy chạy assembly context-engine trước khi hợp thành hook, vì PI áp dụng `systemPromptAddition` của context-engine vào prompt hệ thống cuối cùng sau pipeline prompt của nó. Bất biến quan trọng là cả context engine và hook đều có một thứ tự xác định, được tài liệu hóa.
 
 Thứ tự được khuyến nghị cho triển khai đầu tiên:
 
 1. `buildDeveloperInstructions(params)`
-2. `assemble()` của công cụ ngữ cảnh
-3. thêm vào trước/sau `systemPromptAddition` trong chỉ dẫn dành cho nhà phát triển
-4. chiếu các tin nhắn đã lắp ráp vào văn bản prompt
+2. `assemble()` của context-engine
+3. thêm `systemPromptAddition` vào đầu/cuối chỉ dẫn developer
+4. chiếu các thông điệp đã lắp ráp vào văn bản prompt
 5. `resolveAgentHarnessBeforePromptBuildResult(...)`
-6. truyền chỉ dẫn dành cho nhà phát triển cuối cùng cho `startOrResumeThread(...)`
-7. truyền văn bản prompt cuối cùng cho `buildTurnStartParams(...)`
+6. truyền chỉ dẫn developer cuối cùng vào `startOrResumeThread(...)`
+7. truyền văn bản prompt cuối cùng vào `buildTurnStartParams(...)`
 
-Đặc tả này nên được mã hóa trong test để các thay đổi tương lai không vô tình
-sắp xếp lại nó.
+Đặc tả nên được mã hóa trong test để các thay đổi tương lai không vô tình sắp xếp lại thứ tự.
 
-### 5. Bảo toàn định dạng ổn định cho bộ nhớ đệm prompt
+### 5. Giữ định dạng ổn định cho prompt-cache
 
-Helper chiếu phải tạo đầu ra ổn định từng byte cho các đầu vào giống hệt nhau:
+Helper chiếu phải tạo đầu ra ổn định ở cấp byte cho các đầu vào giống hệt nhau:
 
-- thứ tự tin nhắn ổn định
+- thứ tự thông điệp ổn định
 - nhãn vai trò ổn định
-- không tạo dấu thời gian
+- không có dấu thời gian được tạo
 - không rò rỉ thứ tự khóa object
-- không delimiter ngẫu nhiên
-- không id theo từng lượt chạy
+- không có delimiter ngẫu nhiên
+- không có id theo từng lần chạy
 
 Dùng delimiter cố định và các phần rõ ràng.
 
-### 6. Nối sau lượt sau khi phản chiếu bản ghi
+### 6. Nối post-turn sau khi phản chiếu bản ghi
 
-Codex's `CodexAppServerEventProjector` xây dựng một `messagesSnapshot` cục bộ cho lượt
-hiện tại. `mirrorTranscriptBestEffort(...)` ghi snapshot đó vào mirror bản ghi hội thoại
-OpenClaw.
+`CodexAppServerEventProjector` của Codex xây dựng một `messagesSnapshot` cục bộ cho
+lượt hiện tại. `mirrorTranscriptBestEffort(...)` ghi snapshot đó vào bản sao
+transcript của OpenClaw.
 
-Sau khi mirror thành công hoặc thất bại, hãy gọi finalizer của context-engine với
-snapshot tin nhắn tốt nhất hiện có:
+Sau khi sao chép thành công hoặc thất bại, hãy gọi finalizer của context-engine với
+snapshot thông điệp tốt nhất hiện có:
 
-- Ưu tiên toàn bộ ngữ cảnh phiên đã mirror sau khi ghi, vì `afterTurn`
+- Ưu tiên ngữ cảnh phiên đã được sao chép đầy đủ sau khi ghi, vì `afterTurn`
   mong đợi snapshot phiên, không chỉ lượt hiện tại.
-- Dự phòng về `historyMessages + result.messagesSnapshot` nếu không thể mở lại
+- Quay lại dùng `historyMessages + result.messagesSnapshot` nếu không thể mở lại
   tệp phiên.
 
 Luồng giả:
@@ -407,15 +364,15 @@ await finalizeHarnessContextEngineTurn({
 });
 ```
 
-Nếu mirror thất bại, vẫn gọi `afterTurn` với snapshot dự phòng, nhưng ghi log
-rằng context engine đang nạp từ dữ liệu lượt dự phòng.
+Nếu sao chép thất bại, vẫn gọi `afterTurn` với snapshot dự phòng, nhưng ghi log
+rằng context engine đang ingest từ dữ liệu lượt dự phòng.
 
-### 7. Chuẩn hóa ngữ cảnh runtime của usage và prompt-cache
+### 7. Chuẩn hóa usage và ngữ cảnh runtime prompt-cache
 
 Kết quả Codex bao gồm usage đã chuẩn hóa từ thông báo token của app-server khi
 có sẵn. Truyền usage đó vào ngữ cảnh runtime của context-engine.
 
-Nếu app-server Codex sau này công khai chi tiết đọc/ghi cache, hãy ánh xạ chúng vào
+Nếu Codex app-server cuối cùng phơi bày chi tiết đọc/ghi cache, hãy ánh xạ chúng vào
 `ContextEnginePromptCacheInfo`. Cho đến lúc đó, hãy bỏ qua `promptCache` thay vì
 tự tạo các giá trị zero.
 
@@ -424,74 +381,74 @@ tự tạo các giá trị zero.
 Có hai hệ thống Compaction:
 
 1. `compact()` của context-engine OpenClaw
-2. `thread/compact/start` native của app-server Codex
+2. `thread/compact/start` gốc của Codex app-server
 
-Đừng âm thầm gộp chúng với nhau.
+Không âm thầm trộn lẫn chúng.
 
-#### `/compact` và Compaction OpenClaw tường minh
+#### `/compact` và Compaction OpenClaw rõ ràng
 
-Khi context engine đã chọn có `info.ownsCompaction === true`, Compaction OpenClaw
-tường minh nên ưu tiên kết quả `compact()` của context engine cho mirror bản ghi hội thoại
-OpenClaw và trạng thái plugin.
+Khi context engine được chọn có `info.ownsCompaction === true`, Compaction
+OpenClaw rõ ràng nên ưu tiên kết quả `compact()` của context engine cho bản sao
+transcript OpenClaw và trạng thái Plugin.
 
-Khi harness Codex đã chọn có binding thread native, chúng ta có thể yêu cầu thêm
-Compaction native Codex theo best-effort để giữ thread app-server khỏe, nhưng việc này
-phải được báo cáo như một hành động backend riêng trong chi tiết.
+Khi Codex harness được chọn có liên kết thread gốc, chúng ta cũng có thể yêu cầu
+Compaction gốc của Codex để giữ cho thread app-server khỏe mạnh, nhưng việc này
+phải được báo cáo như một hành động backend riêng trong phần chi tiết.
 
 Hành vi khuyến nghị:
 
 - Nếu `contextEngine.info.ownsCompaction === true`:
   - gọi `compact()` của context-engine trước
-  - sau đó gọi Compaction native Codex theo best-effort khi có binding thread
+  - sau đó gọi best-effort Compaction gốc của Codex khi có liên kết thread
   - trả về kết quả context-engine làm kết quả chính
-  - bao gồm trạng thái Compaction native Codex trong `details.codexNativeCompaction`
+  - bao gồm trạng thái Compaction gốc của Codex trong `details.codexNativeCompaction`
 - Nếu context engine đang hoạt động không sở hữu Compaction:
-  - giữ nguyên hành vi Compaction native Codex hiện tại
+  - giữ nguyên hành vi Compaction gốc hiện tại của Codex
 
-Việc này có thể cần thay đổi `extensions/codex/src/app-server/compact.ts` hoặc
-bọc nó từ đường dẫn Compaction chung, tùy vào nơi
+Việc này có thể yêu cầu thay đổi `extensions/codex/src/app-server/compact.ts` hoặc
+bọc nó từ đường dẫn Compaction chung, tùy thuộc vào nơi
 `maybeCompactAgentHarnessSession(...)` được gọi.
 
-#### Sự kiện contextCompaction native Codex trong lượt
+#### Sự kiện contextCompaction gốc của Codex trong lượt
 
-Codex có thể phát các sự kiện mục `contextCompaction` trong một lượt. Giữ nguyên
-việc phát hook Compaction before/after hiện tại trong `event-projector.ts`, nhưng đừng xem
-đó là một Compaction context-engine đã hoàn tất.
+Codex có thể phát ra các sự kiện item `contextCompaction` trong một lượt. Giữ nguyên
+việc phát hook Compaction trước/sau hiện tại trong `event-projector.ts`, nhưng không
+xem đó là một Compaction context-engine đã hoàn tất.
 
-Đối với các engine sở hữu Compaction, phát một chẩn đoán tường minh khi Codex vẫn thực hiện
-Compaction native:
+Đối với các engine sở hữu Compaction, phát một chẩn đoán rõ ràng khi Codex vẫn thực hiện
+Compaction gốc:
 
-- tên stream/event: stream `compaction` hiện có là chấp nhận được
+- tên stream/sự kiện: stream `compaction` hiện có là chấp nhận được
 - chi tiết: `{ backend: "codex-app-server", ownsCompaction: true }`
 
-Việc này giúp phần tách biệt có thể được kiểm toán.
+Điều này làm cho sự tách biệt có thể kiểm toán được.
 
-### 9. Hành vi reset phiên và binding
+### 9. Hành vi đặt lại phiên và binding
 
-`reset(...)` hiện có của harness Codex xóa binding app-server Codex khỏi
+`reset(...)` hiện có của Codex harness xóa binding Codex app-server khỏi
 tệp phiên OpenClaw. Giữ nguyên hành vi đó.
 
-Cũng bảo đảm việc dọn dẹp trạng thái context-engine tiếp tục diễn ra qua các
-đường dẫn vòng đời phiên OpenClaw hiện có. Đừng thêm dọn dẹp riêng cho Codex trừ khi
-vòng đời context-engine hiện đang bỏ lỡ sự kiện reset/delete cho tất cả harness.
+Đồng thời bảo đảm việc dọn dẹp trạng thái context-engine tiếp tục diễn ra thông qua
+các đường dẫn vòng đời phiên OpenClaw hiện có. Không thêm dọn dẹp riêng cho Codex trừ khi
+vòng đời context-engine hiện bỏ sót sự kiện reset/delete cho tất cả harness.
 
 ### 10. Xử lý lỗi
 
 Tuân theo ngữ nghĩa PI:
 
 - lỗi bootstrap cảnh báo và tiếp tục
-- lỗi assemble cảnh báo và dự phòng về prompt/tin nhắn pipeline chưa assemble
-- lỗi afterTurn/ingest cảnh báo và đánh dấu finalization sau lượt không thành công
-- maintenance chỉ chạy sau các lượt thành công, không bị abort và không bị yield
+- lỗi assemble cảnh báo và quay lại dùng thông điệp/prompt pipeline chưa assemble
+- lỗi afterTurn/ingest cảnh báo và đánh dấu finalization sau lượt là không thành công
+- maintenance chỉ chạy sau các lượt thành công, không aborted, không yield
 - lỗi Compaction không nên được thử lại như prompt mới
 
 Bổ sung riêng cho Codex:
 
-- Nếu projection ngữ cảnh thất bại, cảnh báo và dự phòng về prompt gốc.
-- Nếu mirror bản ghi hội thoại thất bại, vẫn thử finalization context-engine với
-  tin nhắn dự phòng.
-- Nếu Compaction native Codex thất bại sau khi Compaction context-engine thành công,
-  đừng làm hỏng toàn bộ Compaction OpenClaw khi context engine là chính.
+- Nếu projection ngữ cảnh thất bại, cảnh báo và quay lại prompt gốc.
+- Nếu bản sao transcript thất bại, vẫn thử finalization context-engine với
+  thông điệp dự phòng.
+- Nếu Compaction gốc của Codex thất bại sau khi Compaction context-engine thành công,
+  không làm thất bại toàn bộ Compaction OpenClaw khi context engine là chính.
 
 ## Kế hoạch kiểm thử
 
@@ -500,66 +457,66 @@ Bổ sung riêng cho Codex:
 Thêm kiểm thử dưới `extensions/codex/src/app-server`:
 
 1. `run-attempt.context-engine.test.ts`
-   - Codex gọi `bootstrap` khi có tệp phiên.
-   - Codex gọi `assemble` với tin nhắn đã mirror, token budget, tên công cụ,
-     chế độ citations, model id và prompt.
-   - `systemPromptAddition` được bao gồm trong developer instructions.
-   - Tin nhắn đã assemble được project vào prompt trước yêu cầu hiện tại.
-   - Codex gọi `afterTurn` sau khi mirror bản ghi hội thoại.
-   - Khi không có `afterTurn`, Codex gọi `ingestBatch` hoặc `ingest` theo từng tin nhắn.
+   - Codex gọi `bootstrap` khi tồn tại tệp phiên.
+   - Codex gọi `assemble` với thông điệp đã sao chép, token budget, tên công cụ,
+     chế độ citations, model id, và prompt.
+   - `systemPromptAddition` được đưa vào developer instructions.
+   - Thông điệp đã assemble được project vào prompt trước yêu cầu hiện tại.
+   - Codex gọi `afterTurn` sau khi sao chép transcript.
+   - Khi không có `afterTurn`, Codex gọi `ingestBatch` hoặc `ingest` theo từng thông điệp.
    - Turn maintenance chạy sau các lượt thành công.
-   - Turn maintenance không chạy khi có lỗi prompt, abort hoặc yield abort.
+   - Turn maintenance không chạy khi có lỗi prompt, abort, hoặc yield abort.
 
 2. `context-engine-projection.test.ts`
-   - đầu ra ổn định cho các input giống hệt nhau
+   - đầu ra ổn định cho các đầu vào giống hệt nhau
    - không trùng lặp prompt hiện tại khi lịch sử đã assemble đã bao gồm nó
    - xử lý lịch sử rỗng
-   - giữ nguyên thứ tự role
-   - chỉ bao gồm bổ sung system prompt trong developer instructions
+   - giữ nguyên thứ tự vai trò
+   - chỉ bao gồm system prompt addition trong developer instructions
 
 3. `compact.context-engine.test.ts`
    - kết quả chính của context engine sở hữu sẽ thắng
-   - trạng thái Compaction native Codex xuất hiện trong chi tiết khi cũng được thử
-   - lỗi native Codex không làm hỏng Compaction context-engine sở hữu
-   - context engine không sở hữu giữ nguyên hành vi Compaction native hiện tại
+   - trạng thái Compaction gốc của Codex xuất hiện trong chi tiết khi cũng được thử
+   - lỗi gốc của Codex không làm thất bại Compaction context-engine sở hữu
+   - context engine không sở hữu giữ nguyên hành vi Compaction gốc hiện tại
 
 ### Kiểm thử hiện có cần cập nhật
 
 - `extensions/codex/src/app-server/run-attempt.test.ts` nếu có, nếu không thì
-  các kiểm thử chạy app-server Codex gần nhất.
+  các kiểm thử chạy Codex app-server gần nhất.
 - `extensions/codex/src/app-server/event-projector.test.ts` chỉ khi chi tiết sự kiện
   Compaction thay đổi.
-- `src/agents/harness/selection.test.ts` không cần thay đổi trừ khi hành vi cấu hình
-  thay đổi; nó nên giữ ổn định.
-- Các kiểm thử context-engine PI nên tiếp tục pass mà không thay đổi.
+- `src/agents/harness/selection.test.ts` không nên cần thay đổi trừ khi hành vi
+  cấu hình thay đổi; nó nên tiếp tục ổn định.
+- Các kiểm thử context-engine PI nên tiếp tục pass mà không đổi.
 
 ### Kiểm thử tích hợp / live
 
-Thêm hoặc mở rộng kiểm thử smoke live cho harness Codex:
+Thêm hoặc mở rộng các smoke test live cho Codex harness:
 
 - cấu hình `plugins.slots.contextEngine` thành một engine kiểm thử
 - cấu hình `agents.defaults.model` thành một model `codex/*`
 - cấu hình `agents.defaults.embeddedHarness.runtime = "codex"`
-- assert rằng engine kiểm thử đã quan sát:
+- assert engine kiểm thử đã quan sát:
   - bootstrap
   - assemble
   - afterTurn hoặc ingest
   - maintenance
 
-Tránh yêu cầu lossless-claw trong kiểm thử core OpenClaw. Dùng một plugin
-context engine giả nhỏ trong repo.
+Tránh yêu cầu lossless-claw trong kiểm thử core OpenClaw. Dùng một Plugin context engine giả
+nhỏ trong repo.
 
 ## Khả năng quan sát
 
-Thêm log debug quanh các lời gọi vòng đời context-engine Codex:
+Thêm debug log quanh các lệnh gọi vòng đời context-engine của Codex:
 
 - `codex context engine bootstrap started/completed/failed`
 - `codex context engine assemble applied`
 - `codex context engine finalize completed/failed`
-- `codex context engine maintenance skipped` kèm lý do
+- `codex context engine maintenance skipped` với lý do
 - `codex native compaction completed alongside context-engine compaction`
 
-Tránh log toàn bộ prompt hoặc nội dung bản ghi hội thoại.
+Tránh ghi log toàn bộ prompt hoặc nội dung transcript.
 
 Thêm các trường có cấu trúc khi hữu ích:
 
@@ -576,52 +533,53 @@ Thêm các trường có cấu trúc khi hữu ích:
 
 Việc này nên tương thích ngược:
 
-- Nếu không có context engine được cấu hình, hành vi context engine legacy nên
-  tương đương với hành vi harness Codex hiện nay.
+- Nếu không cấu hình context engine, hành vi context engine legacy nên tương đương
+  với hành vi Codex harness hiện nay.
 - Nếu `assemble` của context-engine thất bại, Codex nên tiếp tục với đường dẫn
   prompt gốc.
-- Binding thread Codex hiện có nên vẫn hợp lệ.
-- Fingerprinting công cụ động không nên bao gồm đầu ra context-engine; nếu không,
-  mỗi thay đổi ngữ cảnh có thể buộc tạo thread Codex mới. Chỉ catalog công cụ
-  nên ảnh hưởng đến fingerprint công cụ động.
+- Các binding thread Codex hiện có nên vẫn hợp lệ.
+- Dynamic tool fingerprinting không nên bao gồm đầu ra context-engine; nếu không
+  mỗi thay đổi ngữ cảnh có thể buộc tạo thread Codex mới. Chỉ tool catalog
+  nên ảnh hưởng đến dynamic tool fingerprint.
 
 ## Câu hỏi mở
 
-1. Ngữ cảnh đã assemble nên được chèn hoàn toàn vào user prompt, hoàn toàn
-   vào developer instructions, hay chia tách?
+1. Ngữ cảnh đã assemble nên được chèn hoàn toàn vào user prompt, hoàn toàn vào
+   developer instructions, hay chia ra?
 
-   Khuyến nghị: chia tách. Đặt `systemPromptAddition` trong developer instructions;
-   đặt ngữ cảnh bản ghi hội thoại đã assemble trong wrapper user prompt. Điều này khớp nhất
-   với protocol Codex hiện tại mà không làm thay đổi lịch sử thread native.
+   Khuyến nghị: chia ra. Đặt `systemPromptAddition` trong developer instructions;
+   đặt ngữ cảnh transcript đã assemble trong wrapper user prompt. Cách này khớp nhất
+   với giao thức Codex hiện tại mà không sửa đổi lịch sử thread gốc.
 
-2. Có nên tắt Compaction native Codex khi một context engine sở hữu
+2. Có nên tắt Compaction gốc của Codex khi một context engine sở hữu
    Compaction không?
 
-   Khuyến nghị: không, chưa nên. Compaction native Codex vẫn có thể
-   cần thiết để giữ thread app-server hoạt động. Nhưng nó phải được báo cáo là
-   Compaction Codex native, không phải là Compaction context-engine.
+   Khuyến nghị: không, ít nhất là ban đầu. Compaction gốc của Codex vẫn có thể
+   cần thiết để giữ cho thread app-server hoạt động. Nhưng nó phải được báo cáo là
+   Compaction Codex gốc, không phải Compaction context-engine.
 
-3. `before_prompt_build` nên chạy trước hay sau assembly của context-engine?
+3. `before_prompt_build` nên chạy trước hay sau assembly context-engine?
 
    Khuyến nghị: sau projection context-engine cho Codex, để các hook harness chung
-   thấy prompt/developer instructions thực tế mà Codex sẽ nhận. Nếu tính tương đồng PI
-   yêu cầu thứ tự ngược lại, hãy mã hóa thứ tự đã chọn trong kiểm thử và ghi tài liệu ở đây.
+   thấy prompt/developer instructions thực tế mà Codex sẽ nhận. Nếu tương đương PI
+   yêu cầu điều ngược lại, hãy mã hóa thứ tự đã chọn trong kiểm thử và ghi lại ở đây.
 
-4. App-server Codex có thể chấp nhận override ngữ cảnh/lịch sử có cấu trúc trong tương lai không?
+4. Codex app-server có thể chấp nhận override ngữ cảnh/lịch sử có cấu trúc trong tương lai không?
 
-   Chưa biết. Nếu có thể, hãy thay lớp projection văn bản bằng protocol đó và
-   giữ nguyên các lời gọi vòng đời.
+   Chưa biết. Nếu có thể, hãy thay lớp projection văn bản bằng giao thức đó và
+   giữ nguyên các lệnh gọi vòng đời.
 
 ## Tiêu chí chấp nhận
 
-- Một lượt harness nhúng `codex/*` gọi vòng đời assemble của context engine đã chọn.
+- Một lượt embedded harness `codex/*` gọi vòng đời assemble của context engine
+  được chọn.
 - `systemPromptAddition` của context-engine ảnh hưởng đến developer instructions của Codex.
-- Ngữ cảnh đã assemble ảnh hưởng đến input lượt Codex một cách xác định.
+- Ngữ cảnh đã assemble ảnh hưởng đến đầu vào lượt Codex một cách xác định.
 - Các lượt Codex thành công gọi `afterTurn` hoặc ingest dự phòng.
 - Các lượt Codex thành công chạy turn maintenance của context-engine.
 - Các lượt thất bại/aborted/yield-aborted không chạy turn maintenance.
-- Compaction do context-engine sở hữu vẫn là chính cho trạng thái OpenClaw/plugin.
-- Compaction native Codex vẫn có thể được kiểm toán như hành vi Codex native.
-- Hành vi context-engine PI hiện có không thay đổi.
-- Hành vi harness Codex hiện có không thay đổi khi không có context engine không legacy
-  được chọn hoặc khi assembly thất bại.
+- Compaction do context-engine sở hữu vẫn là chính cho trạng thái OpenClaw/Plugin.
+- Compaction gốc của Codex vẫn có thể kiểm toán như hành vi Codex gốc.
+- Hành vi context-engine PI hiện có không đổi.
+- Hành vi Codex harness hiện có không đổi khi không chọn context engine không legacy
+  hoặc khi assembly thất bại.

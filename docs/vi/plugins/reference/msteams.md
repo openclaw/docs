@@ -4,10 +4,10 @@ read_when:
 summary: Thêm giao diện kênh Microsoft Teams để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-02T20:53:07Z"
+    generated_at: "2026-05-03T10:42:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f7123c7309d22994897477cc7ff3ab083abb4dc37f452c139968b8af3731c0cd
+    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Thêm bề mặt kênh Microsoft Teams để gửi và nhận tin nhắn OpenCla
 ## Phân phối
 
 - Gói: `@openclaw/msteams`
-- Tuyến cài đặt: ClawHub + npm
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
-kênh: msteams
+channels: msteams
 
 ## Tài liệu liên quan
 

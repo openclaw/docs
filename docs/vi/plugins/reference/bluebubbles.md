@@ -4,10 +4,10 @@ read_when:
 summary: Thêm giao diện kênh BlueBubbles để gửi và nhận tin nhắn OpenClaw.
 title: Plugin BlueBubbles
 x-i18n:
-    generated_at: "2026-05-02T20:48:37Z"
+    generated_at: "2026-05-03T10:40:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Thêm bề mặt kênh BlueBubbles để gửi và nhận tin nhắn OpenClaw.
 ## Phân phối
 
 - Gói: `@openclaw/bluebubbles`
-- Cách cài đặt: ClawHub + npm
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 

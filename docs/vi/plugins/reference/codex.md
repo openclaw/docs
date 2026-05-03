@@ -4,24 +4,24 @@ read_when:
 summary: Bộ khung app-server của Codex và danh mục mô hình GPT do Codex quản lý.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-02T20:49:26Z"
+    generated_at: "2026-05-03T10:40:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Codex Plugin
+# Plugin Codex
 
-Bộ khung app-server của Codex và danh mục mô hình GPT do Codex quản lý.
+Bộ khung app-server Codex và danh mục mô hình GPT do Codex quản lý.
 
 ## Phân phối
 
 - Gói: `@openclaw/codex`
-- Kênh cài đặt: ClawHub + npm
+- Đường cài đặt: npm; ClawHub
 
-## Giao diện
+## Bề mặt
 
 providers: codex; contracts: mediaUnderstandingProviders, migrationProviders
 

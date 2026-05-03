@@ -4,22 +4,22 @@ read_when:
 summary: Trình xuất OpenTelemetry cho chẩn đoán OpenClaw.
 title: Plugin chẩn đoán OpenTelemetry
 x-i18n:
-    generated_at: "2026-05-02T20:49:59Z"
+    generated_at: "2026-05-03T10:40:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e6a2332284e8992fe9a53d779348178e741544f14042fa1deff84eea10acafe3
+    source_hash: ef589f6f406c4e1ef18667969a59169389f0e74253ceaad061eff6c6eb3d8b31
     source_path: plugins/reference/diagnostics-otel.md
     workflow: 16
 ---
 
-# Plugin Diagnostics OpenTelemetry
+# Plugin chẩn đoán OpenTelemetry
 
-Bộ xuất OpenTelemetry diagnostics của OpenClaw.
+Trình xuất OpenTelemetry chẩn đoán của OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/diagnostics-otel`
-- Tuyến cài đặt: ClawHub: `clawhub:@openclaw/diagnostics-otel`; npm
+- Cách cài đặt: npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`
 
 ## Bề mặt
 

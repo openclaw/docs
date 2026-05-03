@@ -1,25 +1,25 @@
 ---
 read_when:
     - Bạn đang cài đặt, cấu hình hoặc kiểm tra Plugin memory-lancedb
-summary: Thêm các công cụ mà tác nhân có thể gọi.
+summary: Thêm các công cụ mà tác tử có thể gọi.
 title: Plugin bộ nhớ Lancedb
 x-i18n:
-    generated_at: "2026-05-02T20:52:27Z"
+    generated_at: "2026-05-03T10:42:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
 # Plugin Memory Lancedb
 
-Thêm các công cụ mà tác nhân có thể gọi.
+Thêm các công cụ mà agent có thể gọi.
 
 ## Phân phối
 
 - Gói: `@openclaw/memory-lancedb`
-- Đường dẫn cài đặt: ClawHub + npm
+- Tuyến cài đặt: npm; ClawHub
 
 ## Bề mặt
 
