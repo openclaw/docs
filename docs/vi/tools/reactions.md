@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Xử lý phản ứng trong bất kỳ kênh nào
-    - Tìm hiểu cách phản ứng bằng emoji khác nhau giữa các nền tảng
+    - Làm việc với phản ứng trong bất kỳ kênh nào
+    - Tìm hiểu cách các phản ứng bằng biểu tượng cảm xúc khác nhau giữa các nền tảng
 summary: Ngữ nghĩa của công cụ phản ứng trên tất cả các kênh được hỗ trợ
 title: Phản ứng
 x-i18n:
-    generated_at: "2026-04-29T23:20:40Z"
+    generated_at: "2026-05-03T21:37:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
+    source_hash: 99008cdaf1fa7462bbe72066be7c404880df237a79d3deba01bffe00083c1e34
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-Tác nhân có thể thêm và xóa phản ứng emoji trên tin nhắn bằng công cụ `message` với hành động `react`. Hành vi phản ứng khác nhau tùy theo kênh và phương thức truyền tải.
+Tác nhân có thể thêm và xóa phản ứng emoji trên tin nhắn bằng công cụ `message` với hành động `react`. Hành vi phản ứng thay đổi tùy theo kênh và cơ chế truyền tải.
 
 ## Cách hoạt động
 
@@ -25,9 +25,10 @@ Tác nhân có thể thêm và xóa phản ứng emoji trên tin nhắn bằng c
 }
 ```
 
-- Cần có `emoji` khi thêm phản ứng.
+- `emoji` là bắt buộc khi thêm phản ứng.
 - Đặt `emoji` thành chuỗi rỗng (`""`) để xóa phản ứng của bot.
 - Đặt `remove: true` để xóa một emoji cụ thể (yêu cầu `emoji` không rỗng).
+- Trên các kênh hỗ trợ phản ứng trạng thái, `trackToolCalls: true` trên một phản ứng cho phép runtime dùng tin nhắn đã được phản ứng đó cho các phản ứng tiến trình công cụ tiếp theo trong cùng lượt.
 
 ## Hành vi theo kênh
 
@@ -69,21 +70,21 @@ Tác nhân có thể thêm và xóa phản ứng emoji trên tin nhắn bằng c
   </Accordion>
 
   <Accordion title="Signal">
-    - Thông báo phản ứng đến được kiểm soát bởi `channels.signal.reactionNotifications`: `"off"` tắt chúng, `"own"` (mặc định) phát sự kiện khi người dùng phản ứng với tin nhắn của bot, và `"all"` phát sự kiện cho tất cả phản ứng.
+    - Thông báo phản ứng đến được kiểm soát bằng `channels.signal.reactionNotifications`: `"off"` tắt chúng, `"own"` (mặc định) phát sự kiện khi người dùng phản ứng với tin nhắn của bot, và `"all"` phát sự kiện cho tất cả phản ứng.
 
   </Accordion>
 </AccordionGroup>
 
 ## Mức phản ứng
 
-Cấu hình `reactionLevel` theo kênh kiểm soát mức độ rộng rãi mà tác nhân sử dụng phản ứng. Các giá trị thường là `off`, `ack`, `minimal` hoặc `extensive`.
+Cấu hình `reactionLevel` theo kênh kiểm soát mức độ rộng rãi mà tác nhân dùng phản ứng. Các giá trị thường là `off`, `ack`, `minimal` hoặc `extensive`.
 
 - [Telegram reactionLevel](/vi/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/vi/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Đặt `reactionLevel` trên từng kênh để tinh chỉnh mức độ chủ động mà tác nhân phản ứng với tin nhắn trên mỗi nền tảng.
+Đặt `reactionLevel` trên từng kênh để điều chỉnh mức độ chủ động mà tác nhân phản ứng với tin nhắn trên mỗi nền tảng.
 
 ## Liên quan
 
 - [Agent Send](/vi/tools/agent-send) — công cụ `message` bao gồm `react`
-- [Channels](/vi/channels) — cấu hình dành riêng cho kênh
+- [Kênh](/vi/channels) — cấu hình riêng theo kênh

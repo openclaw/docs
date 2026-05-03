@@ -2,50 +2,51 @@
 read_when:
     - Bạn muốn bật hoặc cấu hình web_search
     - Bạn muốn bật hoặc cấu hình x_search
-    - Bạn cần chọn một nhà cung cấp dịch vụ tìm kiếm
-    - Bạn muốn hiểu về tính năng tự động phát hiện và cơ chế chuyển dự phòng nhà cung cấp
+    - Bạn cần chọn một nhà cung cấp tìm kiếm
+    - Bạn muốn hiểu về tự động phát hiện và cơ chế dự phòng nhà cung cấp
 sidebarTitle: Web Search
-summary: web_search, x_search và web_fetch -- tìm kiếm trên web, tìm kiếm bài đăng trên X hoặc tìm nạp nội dung trang
+summary: web_search, x_search, và web_fetch -- tìm kiếm trên web, tìm kiếm bài đăng trên X, hoặc lấy nội dung trang
 title: Tìm kiếm trên web
 x-i18n:
-    generated_at: "2026-05-02T10:56:46Z"
+    generated_at: "2026-05-03T21:37:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: faa333a522a6690e92e8bd00c6096c84b386a97cbfeb508654929a409b39b8ef
+    source_hash: 84de67b51f02e3b901bfa55017ae8e88de49295dfe6ed1103a45f034e073c087
     source_path: tools/web.md
     workflow: 16
 ---
 
-Công cụ `web_search` tìm kiếm trên web bằng provider bạn đã cấu hình và
+Công cụ `web_search` tìm kiếm trên web bằng nhà cung cấp bạn đã cấu hình và
 trả về kết quả. Kết quả được lưu vào bộ nhớ đệm theo truy vấn trong 15 phút (có thể cấu hình).
 
 OpenClaw cũng bao gồm `x_search` cho bài đăng trên X (trước đây là Twitter) và
-`web_fetch` để fetch URL gọn nhẹ. Trong giai đoạn này, `web_fetch` vẫn chạy
-cục bộ trong khi `web_search` và `x_search` có thể dùng xAI Responses bên dưới.
+`web_fetch` để lấy URL nhẹ. Trong giai đoạn này, `web_fetch` vẫn chạy
+cục bộ trong khi `web_search` và `x_search` có thể dùng xAI Responses ở bên dưới.
 
 <Info>
-  `web_search` là một công cụ HTTP gọn nhẹ, không phải tự động hóa trình duyệt. Với
-  các trang nặng JS hoặc cần đăng nhập, hãy dùng [Trình duyệt web](/vi/tools/browser). Để
-  fetch một URL cụ thể, hãy dùng [Web Fetch](/vi/tools/web-fetch).
+  `web_search` là công cụ HTTP nhẹ, không phải tự động hóa trình duyệt. Với
+  các trang dùng nhiều JS hoặc cần đăng nhập, hãy dùng [Trình duyệt web](/vi/tools/browser). Để
+  lấy một URL cụ thể, hãy dùng [Web Fetch](/vi/tools/web-fetch).
 </Info>
 
 ## Bắt đầu nhanh
 
 <Steps>
-  <Step title="Chọn provider">
-    Chọn một provider và hoàn tất mọi thiết lập bắt buộc. Một số provider
-    không cần khóa, trong khi các provider khác dùng khóa API. Xem các trang provider bên dưới để biết
+  <Step title="Chọn nhà cung cấp">
+    Chọn một nhà cung cấp và hoàn tất mọi thiết lập cần thiết. Một số nhà cung cấp
+    không cần khóa, trong khi các nhà cung cấp khác dùng khóa API. Xem các trang nhà cung cấp bên dưới để biết
     chi tiết.
   </Step>
   <Step title="Cấu hình">
     ```bash
     openclaw configure --section web
     ```
-    Lệnh này lưu provider và mọi thông tin xác thực cần thiết. Bạn cũng có thể đặt một biến môi trường
-    (ví dụ `BRAVE_API_KEY`) và bỏ qua bước này với các provider dùng API.
+    Lệnh này lưu nhà cung cấp và mọi thông tin xác thực cần thiết. Bạn cũng có thể đặt biến môi trường
+    (ví dụ `BRAVE_API_KEY`) và bỏ qua bước này đối với các nhà cung cấp
+    dựa trên API.
   </Step>
   <Step title="Sử dụng">
-    Agent giờ có thể gọi `web_search`:
+    Agent hiện có thể gọi `web_search`:
 
     ```javascript
     await web_search({ query: "OpenClaw plugin SDK" });
@@ -60,29 +61,29 @@ cục bộ trong khi `web_search` và `x_search` có thể dùng xAI Responses b
   </Step>
 </Steps>
 
-## Chọn provider
+## Chọn nhà cung cấp
 
 <CardGroup cols={2}>
   <Card title="Brave Search" icon="shield" href="/vi/tools/brave-search">
     Kết quả có cấu trúc kèm đoạn trích. Hỗ trợ chế độ `llm-context`, bộ lọc quốc gia/ngôn ngữ. Có gói miễn phí.
   </Card>
   <Card title="DuckDuckGo" icon="bird" href="/vi/tools/duckduckgo-search">
-    Phương án dự phòng không cần khóa. Không cần khóa API. Tích hợp không chính thức dựa trên HTML.
+    Dự phòng không cần khóa. Không cần khóa API. Tích hợp không chính thức dựa trên HTML.
   </Card>
   <Card title="Exa" icon="brain" href="/vi/tools/exa-search">
-    Tìm kiếm neural + từ khóa với trích xuất nội dung (phần nổi bật, văn bản, tóm tắt).
+    Tìm kiếm neural + từ khóa với trích xuất nội dung (đoạn nổi bật, văn bản, bản tóm tắt).
   </Card>
   <Card title="Firecrawl" icon="flame" href="/vi/tools/firecrawl">
-    Kết quả có cấu trúc. Phù hợp nhất khi kết hợp với `firecrawl_search` và `firecrawl_scrape` để trích xuất sâu.
+    Kết quả có cấu trúc. Phù hợp nhất khi dùng cùng `firecrawl_search` và `firecrawl_scrape` để trích xuất sâu.
   </Card>
   <Card title="Gemini" icon="sparkles" href="/vi/tools/gemini-search">
-    Câu trả lời do AI tổng hợp kèm trích dẫn thông qua grounding Google Search.
+    Câu trả lời do AI tổng hợp kèm trích dẫn thông qua nền tảng Google Search.
   </Card>
   <Card title="Grok" icon="zap" href="/vi/tools/grok-search">
-    Câu trả lời do AI tổng hợp kèm trích dẫn thông qua grounding web xAI.
+    Câu trả lời do AI tổng hợp kèm trích dẫn thông qua nền tảng web xAI.
   </Card>
   <Card title="Kimi" icon="moon" href="/vi/tools/kimi-search">
-    Câu trả lời do AI tổng hợp kèm trích dẫn thông qua tìm kiếm web Moonshot; phương án dự phòng chat không grounded sẽ lỗi rõ ràng.
+    Câu trả lời do AI tổng hợp kèm trích dẫn thông qua tìm kiếm web Moonshot; các phương án dự phòng chat không có nền tảng sẽ thất bại rõ ràng.
   </Card>
   <Card title="MiniMax Search" icon="globe" href="/vi/tools/minimax-search">
     Kết quả có cấu trúc thông qua API tìm kiếm MiniMax Token Plan.
@@ -94,45 +95,45 @@ cục bộ trong khi `web_search` và `x_search` có thể dùng xAI Responses b
     Kết quả có cấu trúc với điều khiển trích xuất nội dung và lọc miền.
   </Card>
   <Card title="SearXNG" icon="server" href="/vi/tools/searxng-search">
-    Meta-search tự host. Không cần khóa API. Tổng hợp Google, Bing, DuckDuckGo và nhiều nguồn khác.
+    Meta-search tự lưu trữ. Không cần khóa API. Tổng hợp Google, Bing, DuckDuckGo và nhiều nguồn khác.
   </Card>
   <Card title="Tavily" icon="globe" href="/vi/tools/tavily">
     Kết quả có cấu trúc với độ sâu tìm kiếm, lọc chủ đề và `tavily_extract` để trích xuất URL.
   </Card>
 </CardGroup>
 
-### So sánh provider
+### So sánh nhà cung cấp
 
-| Provider                                  | Kiểu kết quả                                                   | Bộ lọc                                          | Khóa API                                                                                 |
+| Nhà cung cấp                              | Kiểu kết quả                                                   | Bộ lọc                                          | Khóa API                                                                                 |
 | ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
 | [Brave](/vi/tools/brave-search)              | Đoạn trích có cấu trúc                                            | Quốc gia, ngôn ngữ, thời gian, chế độ `llm-context`      | `BRAVE_API_KEY`                                                                         |
 | [DuckDuckGo](/vi/tools/duckduckgo-search)    | Đoạn trích có cấu trúc                                            | --                                               | Không có (không cần khóa)                                                                         |
 | [Exa](/vi/tools/exa-search)                  | Có cấu trúc + đã trích xuất                                         | Chế độ neural/từ khóa, ngày, trích xuất nội dung    | `EXA_API_KEY`                                                                           |
-| [Firecrawl](/vi/tools/firecrawl)             | Đoạn trích có cấu trúc                                            | Thông qua công cụ `firecrawl_search`                      | `FIRECRAWL_API_KEY`                                                                     |
+| [Firecrawl](/vi/tools/firecrawl)             | Đoạn trích có cấu trúc                                            | Qua công cụ `firecrawl_search`                      | `FIRECRAWL_API_KEY`                                                                     |
 | [Gemini](/vi/tools/gemini-search)            | Do AI tổng hợp + trích dẫn                                     | --                                               | `GEMINI_API_KEY`                                                                        |
 | [Grok](/vi/tools/grok-search)                | Do AI tổng hợp + trích dẫn                                     | --                                               | `XAI_API_KEY`                                                                           |
-| [Kimi](/vi/tools/kimi-search)                | Do AI tổng hợp + trích dẫn; lỗi với phương án dự phòng chat không grounded | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
+| [Kimi](/vi/tools/kimi-search)                | Do AI tổng hợp + trích dẫn; thất bại khi dự phòng sang chat không có nền tảng | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
 | [MiniMax Search](/vi/tools/minimax-search)   | Đoạn trích có cấu trúc                                            | Khu vực (`global` / `cn`)                         | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
-| [Ollama Web Search](/vi/tools/ollama-search) | Đoạn trích có cấu trúc                                            | --                                               | Không có với máy chủ cục bộ đã đăng nhập; `OLLAMA_API_KEY` cho tìm kiếm trực tiếp `https://ollama.com` |
+| [Ollama Web Search](/vi/tools/ollama-search) | Đoạn trích có cấu trúc                                            | --                                               | Không có cho máy chủ cục bộ đã đăng nhập; `OLLAMA_API_KEY` cho tìm kiếm trực tiếp `https://ollama.com` |
 | [Perplexity](/vi/tools/perplexity-search)    | Đoạn trích có cấu trúc                                            | Quốc gia, ngôn ngữ, thời gian, miền, giới hạn nội dung | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
-| [SearXNG](/vi/tools/searxng-search)          | Đoạn trích có cấu trúc                                            | Danh mục, ngôn ngữ                             | Không có (tự host)                                                                      |
-| [Tavily](/vi/tools/tavily)                   | Đoạn trích có cấu trúc                                            | Thông qua công cụ `tavily_search`                         | `TAVILY_API_KEY`                                                                        |
+| [SearXNG](/vi/tools/searxng-search)          | Đoạn trích có cấu trúc                                            | Danh mục, ngôn ngữ                             | Không có (tự lưu trữ)                                                                      |
+| [Tavily](/vi/tools/tavily)                   | Đoạn trích có cấu trúc                                            | Qua công cụ `tavily_search`                         | `TAVILY_API_KEY`                                                                        |
 
 ## Tự động phát hiện
 
-## Tìm kiếm web OpenAI native
+## Tìm kiếm web OpenAI gốc
 
-Các model OpenAI Responses trực tiếp tự động dùng công cụ `web_search` được host bởi OpenAI khi tìm kiếm web của OpenClaw được bật và không ghim provider được quản lý nào. Đây là hành vi do provider sở hữu trong Plugin OpenAI đi kèm và chỉ áp dụng cho lưu lượng API OpenAI native, không áp dụng cho URL cơ sở proxy tương thích OpenAI hoặc các tuyến Azure. Đặt `tools.web.search.provider` thành một provider khác như `brave` để giữ công cụ `web_search` được quản lý cho các model OpenAI, hoặc đặt `tools.web.search.enabled: false` để tắt cả tìm kiếm được quản lý lẫn tìm kiếm OpenAI native.
+Các mô hình OpenAI Responses trực tiếp tự động dùng công cụ `web_search` được OpenAI lưu trữ khi tìm kiếm web OpenClaw được bật và không ghim nhà cung cấp được quản lý nào. Đây là hành vi do nhà cung cấp sở hữu trong Plugin OpenAI đi kèm và chỉ áp dụng cho lưu lượng API OpenAI gốc, không áp dụng cho URL cơ sở proxy tương thích OpenAI hoặc tuyến Azure. Đặt `tools.web.search.provider` thành một nhà cung cấp khác như `brave` để giữ công cụ `web_search` được quản lý cho các mô hình OpenAI, hoặc đặt `tools.web.search.enabled: false` để tắt cả tìm kiếm được quản lý và tìm kiếm OpenAI gốc.
 
-## Tìm kiếm web Codex native
+## Tìm kiếm web Codex gốc
 
-Các model có khả năng Codex có thể tùy chọn dùng công cụ `web_search` Responses native của provider thay vì hàm `web_search` được quản lý của OpenClaw.
+Các mô hình có khả năng Codex có thể tùy chọn dùng công cụ `web_search` Responses gốc của nhà cung cấp thay vì hàm `web_search` được quản lý của OpenClaw.
 
 - Cấu hình trong `tools.web.search.openaiCodex`
-- Chỉ kích hoạt với các model có khả năng Codex (`openai-codex/*` hoặc provider dùng `api: "openai-codex-responses"`)
-- `web_search` được quản lý vẫn áp dụng cho các model không phải Codex
+- Chỉ kích hoạt cho các mô hình có khả năng Codex (`openai-codex/*` hoặc các nhà cung cấp dùng `api: "openai-codex-responses"`)
+- `web_search` được quản lý vẫn áp dụng cho các mô hình không phải Codex
 - `mode: "cached"` là thiết lập mặc định và được khuyến nghị
-- `tools.web.search.enabled: false` tắt cả tìm kiếm được quản lý lẫn tìm kiếm native
+- `tools.web.search.enabled: false` tắt cả tìm kiếm được quản lý và tìm kiếm gốc
 
 ```json5
 {
@@ -157,17 +158,29 @@ Các model có khả năng Codex có thể tùy chọn dùng công cụ `web_sea
 }
 ```
 
-Nếu tìm kiếm Codex native được bật nhưng model hiện tại không có khả năng Codex, OpenClaw giữ hành vi `web_search` được quản lý bình thường.
+Nếu tìm kiếm Codex gốc được bật nhưng mô hình hiện tại không có khả năng Codex, OpenClaw giữ hành vi `web_search` được quản lý thông thường.
+
+## An toàn mạng
+
+Các lệnh gọi nhà cung cấp `web_search` được quản lý dùng đường dẫn fetch được bảo vệ của OpenClaw. Với
+máy chủ API nhà cung cấp đáng tin cậy, OpenClaw cho phép câu trả lời DNS fake-IP của Surge, Clash và sing-box
+trong `198.18.0.0/15` và `fc00::/7` chỉ cho hostname của nhà cung cấp đó.
+Các đích riêng tư, loopback, link-local và metadata khác vẫn bị chặn.
+
+Cấp phép tự động này không áp dụng cho URL `web_fetch` tùy ý. Với
+`web_fetch`, chỉ bật rõ ràng `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` và
+`tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` khi proxy đáng tin cậy của bạn
+sở hữu các dải tổng hợp đó.
 
 ## Thiết lập tìm kiếm web
 
-Danh sách provider trong tài liệu và luồng thiết lập được sắp xếp theo bảng chữ cái. Tự động phát hiện giữ một
-thứ tự ưu tiên riêng.
+Danh sách nhà cung cấp trong tài liệu và luồng thiết lập được sắp xếp theo bảng chữ cái. Tự động phát hiện giữ
+một thứ tự ưu tiên riêng.
 
-Nếu không đặt `provider`, OpenClaw kiểm tra các provider theo thứ tự này và dùng
-provider đầu tiên đã sẵn sàng:
+Nếu chưa đặt `provider`, OpenClaw kiểm tra các nhà cung cấp theo thứ tự này và dùng
+nhà cung cấp đầu tiên đã sẵn sàng:
 
-Các provider dùng API trước:
+Trước tiên là các nhà cung cấp dựa trên API:
 
 1. **Brave** -- `BRAVE_API_KEY` hoặc `plugins.entries.brave.config.webSearch.apiKey` (thứ tự 10)
 2. **MiniMax Search** -- `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN` / `MINIMAX_API_KEY` hoặc `plugins.entries.minimax.config.webSearch.apiKey` (thứ tự 15)
@@ -176,28 +189,28 @@ Các provider dùng API trước:
 5. **Kimi** -- `KIMI_API_KEY` / `MOONSHOT_API_KEY` hoặc `plugins.entries.moonshot.config.webSearch.apiKey` (thứ tự 40)
 6. **Perplexity** -- `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY` hoặc `plugins.entries.perplexity.config.webSearch.apiKey` (thứ tự 50)
 7. **Firecrawl** -- `FIRECRAWL_API_KEY` hoặc `plugins.entries.firecrawl.config.webSearch.apiKey` (thứ tự 60)
-8. **Exa** -- `EXA_API_KEY` hoặc `plugins.entries.exa.config.webSearch.apiKey`; `plugins.entries.exa.config.webSearch.baseUrl` tùy chọn sẽ ghi đè endpoint Exa (thứ tự 65)
+8. **Exa** -- `EXA_API_KEY` hoặc `plugins.entries.exa.config.webSearch.apiKey`; tùy chọn `plugins.entries.exa.config.webSearch.baseUrl` ghi đè endpoint Exa (thứ tự 65)
 9. **Tavily** -- `TAVILY_API_KEY` hoặc `plugins.entries.tavily.config.webSearch.apiKey` (thứ tự 70)
 
-Các phương án dự phòng không cần khóa sau đó:
+Sau đó là các phương án dự phòng không cần khóa:
 
-10. **DuckDuckGo** -- phương án dự phòng HTML không cần khóa, không cần tài khoản hoặc khóa API (thứ tự 100)
-11. **Ollama Web Search** -- phương án dự phòng không cần khóa thông qua máy chủ Ollama cục bộ đã cấu hình của bạn khi có thể truy cập được và đã đăng nhập bằng `ollama signin`; có thể tái sử dụng xác thực bearer của provider Ollama khi máy chủ cần, và có thể gọi tìm kiếm trực tiếp `https://ollama.com` khi được cấu hình với `OLLAMA_API_KEY` (thứ tự 110)
+10. **DuckDuckGo** -- dự phòng HTML không cần khóa, không cần tài khoản hoặc khóa API (thứ tự 100)
+11. **Ollama Web Search** -- dự phòng không cần khóa thông qua máy chủ Ollama cục bộ đã cấu hình của bạn khi có thể truy cập và đã đăng nhập bằng `ollama signin`; có thể dùng lại xác thực bearer của nhà cung cấp Ollama khi máy chủ cần, và có thể gọi tìm kiếm trực tiếp `https://ollama.com` khi được cấu hình với `OLLAMA_API_KEY` (thứ tự 110)
 12. **SearXNG** -- `SEARXNG_BASE_URL` hoặc `plugins.entries.searxng.config.webSearch.baseUrl` (thứ tự 200)
 
-Nếu không phát hiện provider nào, OpenClaw sẽ dự phòng về Brave (bạn sẽ nhận được lỗi thiếu khóa
+Nếu không phát hiện được nhà cung cấp nào, nó sẽ dự phòng về Brave (bạn sẽ nhận lỗi thiếu khóa
 nhắc bạn cấu hình một khóa).
 
 <Note>
-  Tất cả trường khóa provider đều hỗ trợ đối tượng SecretRef. SecretRef trong phạm vi Plugin
+  Tất cả trường khóa nhà cung cấp đều hỗ trợ đối tượng SecretRef. SecretRef trong phạm vi Plugin
   dưới `plugins.entries.<plugin>.config.webSearch.apiKey` được phân giải cho các
-  provider tìm kiếm web dùng API đi kèm, bao gồm Brave, Exa, Firecrawl,
+  nhà cung cấp tìm kiếm web dựa trên API đi kèm, bao gồm Brave, Exa, Firecrawl,
   Gemini, Grok, Kimi, MiniMax, Perplexity và Tavily,
-  dù provider được chọn rõ ràng qua `tools.web.search.provider` hay
-  được chọn qua tự động phát hiện. Ở chế độ tự động phát hiện, OpenClaw chỉ phân giải khóa
-  của provider được chọn -- các SecretRef không được chọn vẫn không hoạt động, vì vậy bạn có thể
-  giữ cấu hình nhiều provider mà không tốn chi phí phân giải cho
-  những provider không dùng.
+  dù nhà cung cấp được chọn rõ ràng qua `tools.web.search.provider` hay
+  được chọn thông qua tự động phát hiện. Ở chế độ tự động phát hiện, OpenClaw chỉ phân giải
+  khóa của nhà cung cấp được chọn -- các SecretRef không được chọn vẫn không hoạt động, nên bạn có thể
+  giữ cấu hình nhiều nhà cung cấp mà không phải trả chi phí phân giải cho những
+  nhà cung cấp bạn không dùng.
 </Note>
 
 ## Cấu hình
@@ -218,16 +231,16 @@ nhắc bạn cấu hình một khóa).
 }
 ```
 
-Cấu hình riêng cho từng provider (khóa API, URL cơ sở, chế độ) nằm trong
-`plugins.entries.<plugin>.config.webSearch.*`. Gemini cũng có thể tái sử dụng
-`models.providers.google.apiKey` và `models.providers.google.baseUrl` làm các phương án dự phòng
-ưu tiên thấp hơn sau cấu hình tìm kiếm web chuyên dụng của nó và `GEMINI_API_KEY`. Xem
-các trang provider để biết ví dụ.
+Cấu hình dành riêng cho nhà cung cấp (khóa API, URL cơ sở, chế độ) nằm trong
+`plugins.entries.<plugin>.config.webSearch.*`. Gemini cũng có thể dùng lại
+`models.providers.google.apiKey` và `models.providers.google.baseUrl` làm phương án
+dự phòng có độ ưu tiên thấp hơn sau cấu hình tìm kiếm web chuyên dụng của nó và `GEMINI_API_KEY`. Xem các
+trang nhà cung cấp để biết ví dụ.
 
 `tools.web.search.provider` được xác thực dựa trên các id nhà cung cấp tìm kiếm web
-được khai báo bởi manifest của Plugin được đóng gói kèm và đã cài đặt. Một lỗi chính tả như `"brvae"`
+được khai báo bởi các manifest Plugin đi kèm và đã cài đặt. Lỗi chính tả như `"brvae"`
 sẽ làm xác thực cấu hình thất bại thay vì âm thầm quay về tự động phát hiện. Nếu một
-nhà cung cấp đã cấu hình chỉ có bằng chứng Plugin đã cũ, chẳng hạn một khối
+nhà cung cấp đã cấu hình chỉ có bằng chứng Plugin đã cũ, chẳng hạn như một khối
 `plugins.entries.<plugin>` còn sót lại sau khi gỡ cài đặt Plugin bên thứ ba,
 OpenClaw vẫn giữ quá trình khởi động bền bỉ và báo cảnh báo để bạn có thể cài đặt lại
 Plugin hoặc chạy `openclaw doctor --fix` để dọn cấu hình đã cũ.
@@ -236,28 +249,28 @@ Việc chọn nhà cung cấp dự phòng cho `web_fetch` là riêng biệt:
 
 - chọn bằng `tools.web.fetch.provider`
 - hoặc bỏ qua trường đó và để OpenClaw tự động phát hiện nhà cung cấp web-fetch
-  sẵn sàng đầu tiên từ các thông tin xác thực có sẵn
+  sẵn sàng đầu tiên từ các thông tin xác thực hiện có
 - `web_fetch` không chạy trong sandbox có thể dùng các nhà cung cấp Plugin đã cài đặt khai báo
-  `contracts.webFetchProviders`; các lần fetch trong sandbox vẫn chỉ dùng nhà cung cấp đóng gói kèm
-- hiện nay nhà cung cấp web-fetch đóng gói kèm là Firecrawl, được cấu hình dưới
+  `contracts.webFetchProviders`; các lần fetch trong sandbox chỉ dùng nhà cung cấp đi kèm
+- hiện nay nhà cung cấp web-fetch đi kèm là Firecrawl, được cấu hình trong
   `plugins.entries.firecrawl.config.webFetch.*`
 
 Khi bạn chọn **Kimi** trong `openclaw onboard` hoặc
-`openclaw configure --section web`, OpenClaw cũng có thể hỏi về:
+`openclaw configure --section web`, OpenClaw cũng có thể hỏi:
 
-- vùng Moonshot API (`https://api.moonshot.ai/v1` hoặc `https://api.moonshot.cn/v1`)
+- vùng API Moonshot (`https://api.moonshot.ai/v1` hoặc `https://api.moonshot.cn/v1`)
 - mô hình tìm kiếm web Kimi mặc định (mặc định là `kimi-k2.6`)
 
-Đối với `x_search`, hãy cấu hình `plugins.entries.xai.config.xSearch.*`. Nó dùng cùng
-dự phòng `XAI_API_KEY` như tìm kiếm web Grok.
-Cấu hình cũ `tools.web.x_search.*` được tự động di chuyển bởi `openclaw doctor --fix`.
+Với `x_search`, cấu hình `plugins.entries.xai.config.xSearch.*`. Nó dùng cùng phương án dự phòng
+`XAI_API_KEY` như tìm kiếm web Grok.
+Cấu hình `tools.web.x_search.*` cũ được tự động di chuyển bởi `openclaw doctor --fix`.
 Khi bạn chọn Grok trong `openclaw onboard` hoặc `openclaw configure --section web`,
-OpenClaw cũng có thể cung cấp bước thiết lập `x_search` tùy chọn với cùng khóa.
-Đây là một bước tiếp theo riêng trong luồng Grok, không phải một lựa chọn nhà cung cấp
-tìm kiếm web cấp cao riêng. Nếu bạn chọn nhà cung cấp khác, OpenClaw sẽ không
+OpenClaw cũng có thể cung cấp thiết lập `x_search` tùy chọn với cùng khóa.
+Đây là một bước tiếp theo riêng bên trong luồng Grok, không phải một lựa chọn nhà cung cấp
+tìm kiếm web cấp cao riêng biệt. Nếu bạn chọn nhà cung cấp khác, OpenClaw sẽ không
 hiển thị lời nhắc `x_search`.
 
-### Lưu khóa API
+### Lưu trữ khóa API
 
 <Tabs>
   <Tab title="Tệp cấu hình">
@@ -287,7 +300,7 @@ hiển thị lời nhắc `x_search`.
     export BRAVE_API_KEY="YOUR_KEY"
     ```
 
-    Đối với một bản cài đặt Gateway, hãy đặt nó trong `~/.openclaw/.env`.
+    Với một bản cài đặt gateway, hãy đặt nó trong `~/.openclaw/.env`.
     Xem [Biến môi trường](/vi/help/faq#env-vars-and-env-loading).
 
   </Tab>
@@ -295,26 +308,26 @@ hiển thị lời nhắc `x_search`.
 
 ## Tham số công cụ
 
-| Tham số               | Mô tả                                                   |
-| --------------------- | ------------------------------------------------------- |
-| `query`               | Truy vấn tìm kiếm (bắt buộc)                            |
-| `count`               | Kết quả cần trả về (1-10, mặc định: 5)                  |
-| `country`             | Mã quốc gia ISO 2 chữ cái (ví dụ: "US", "DE")           |
-| `language`            | Mã ngôn ngữ ISO 639-1 (ví dụ: "en", "de")              |
-| `search_lang`         | Mã ngôn ngữ tìm kiếm (chỉ Brave)                        |
-| `freshness`           | Bộ lọc thời gian: `day`, `week`, `month`, hoặc `year`   |
-| `date_after`          | Kết quả sau ngày này (YYYY-MM-DD)                       |
-| `date_before`         | Kết quả trước ngày này (YYYY-MM-DD)                     |
-| `ui_lang`             | Mã ngôn ngữ UI (chỉ Brave)                              |
-| `domain_filter`       | Mảng danh sách cho phép/từ chối miền (chỉ Perplexity)   |
-| `max_tokens`          | Ngân sách nội dung tổng, mặc định 25000 (chỉ Perplexity) |
-| `max_tokens_per_page` | Giới hạn token mỗi trang, mặc định 2048 (chỉ Perplexity) |
+| Tham số               | Mô tả                                                       |
+| --------------------- | ----------------------------------------------------------- |
+| `query`               | Truy vấn tìm kiếm (bắt buộc)                                |
+| `count`               | Kết quả cần trả về (1-10, mặc định: 5)                      |
+| `country`             | Mã quốc gia ISO 2 chữ cái (ví dụ: "US", "DE")               |
+| `language`            | Mã ngôn ngữ ISO 639-1 (ví dụ: "en", "de")                  |
+| `search_lang`         | Mã ngôn ngữ tìm kiếm (chỉ Brave)                            |
+| `freshness`           | Bộ lọc thời gian: `day`, `week`, `month`, hoặc `year`       |
+| `date_after`          | Kết quả sau ngày này (YYYY-MM-DD)                           |
+| `date_before`         | Kết quả trước ngày này (YYYY-MM-DD)                         |
+| `ui_lang`             | Mã ngôn ngữ UI (chỉ Brave)                                  |
+| `domain_filter`       | Mảng danh sách cho phép/từ chối miền (chỉ Perplexity)       |
+| `max_tokens`          | Tổng ngân sách nội dung, mặc định 25000 (chỉ Perplexity)    |
+| `max_tokens_per_page` | Giới hạn token mỗi trang, mặc định 2048 (chỉ Perplexity)    |
 
 <Warning>
-  Không phải mọi tham số đều hoạt động với mọi nhà cung cấp. Chế độ `llm-context` của Brave
-  từ chối `ui_lang`; `date_before` cũng cần `date_after` vì các khoảng freshness tùy chỉnh của Brave
-  yêu cầu cả ngày bắt đầu và ngày kết thúc.
-  Gemini, Grok và Kimi trả về một câu trả lời tổng hợp kèm trích dẫn. Chúng
+  Không phải tất cả tham số đều hoạt động với mọi nhà cung cấp. Chế độ `llm-context` của Brave
+  từ chối `ui_lang`; `date_before` cũng cần `date_after` vì các khoảng
+  freshness tùy chỉnh của Brave yêu cầu cả ngày bắt đầu và ngày kết thúc.
+  Gemini, Grok, và Kimi trả về một câu trả lời tổng hợp kèm trích dẫn. Chúng
   chấp nhận `count` để tương thích với công cụ dùng chung, nhưng tham số này không thay đổi
   hình dạng câu trả lời có căn cứ. Gemini hỗ trợ `freshness`, `date_after`, và
   `date_before` bằng cách chuyển đổi chúng thành các khoảng thời gian grounding của Google Search.
@@ -329,17 +342,17 @@ hiển thị lời nhắc `x_search`.
 
 ## x_search
 
-`x_search` truy vấn bài đăng X (trước đây là Twitter) bằng xAI và trả về
-câu trả lời do AI tổng hợp kèm trích dẫn. Nó chấp nhận truy vấn ngôn ngữ tự nhiên và
+`x_search` truy vấn các bài đăng X (trước đây là Twitter) bằng xAI và trả về
+câu trả lời do AI tổng hợp kèm trích dẫn. Nó chấp nhận truy vấn bằng ngôn ngữ tự nhiên và
 các bộ lọc có cấu trúc tùy chọn. OpenClaw chỉ bật công cụ `x_search` xAI tích hợp
 trên yêu cầu phục vụ lệnh gọi công cụ này.
 
 <Note>
-  xAI ghi nhận `x_search` hỗ trợ tìm kiếm từ khóa, tìm kiếm ngữ nghĩa, tìm kiếm người dùng
+  xAI mô tả `x_search` là hỗ trợ tìm kiếm từ khóa, tìm kiếm ngữ nghĩa, tìm kiếm người dùng,
   và fetch luồng. Với thống kê tương tác theo từng bài đăng như repost,
-  trả lời, dấu trang hoặc lượt xem, nên dùng tra cứu nhắm mục tiêu cho URL bài đăng
-  hoặc status ID chính xác. Tìm kiếm từ khóa rộng có thể tìm thấy đúng bài đăng nhưng trả về
-  siêu dữ liệu theo từng bài đăng kém đầy đủ hơn. Một mẫu tốt là: định vị bài đăng trước, rồi
+  trả lời, đánh dấu, hoặc lượt xem, hãy ưu tiên tra cứu có mục tiêu bằng URL bài đăng chính xác
+  hoặc ID trạng thái. Các tìm kiếm từ khóa rộng có thể tìm thấy đúng bài đăng nhưng trả về
+  metadata theo từng bài đăng kém đầy đủ hơn. Một mẫu tốt là: trước tiên định vị bài đăng, rồi
   chạy truy vấn `x_search` thứ hai tập trung vào đúng bài đăng đó.
 </Note>
 
@@ -371,22 +384,22 @@ trên yêu cầu phục vụ lệnh gọi công cụ này.
 }
 ```
 
-`x_search` gửi POST đến `<baseUrl>/responses` khi
+`x_search` đăng lên `<baseUrl>/responses` khi
 `plugins.entries.xai.config.xSearch.baseUrl` được đặt. Nếu trường đó bị bỏ qua,
 nó quay về `plugins.entries.xai.config.webSearch.baseUrl`, rồi
 `tools.web.search.grok.baseUrl` cũ, và cuối cùng là endpoint xAI công khai.
 
 ### Tham số x_search
 
-| Tham số                      | Mô tả                                                    |
-| ---------------------------- | -------------------------------------------------------- |
-| `query`                      | Truy vấn tìm kiếm (bắt buộc)                             |
-| `allowed_x_handles`          | Giới hạn kết quả vào các X handle cụ thể                 |
-| `excluded_x_handles`         | Loại trừ các X handle cụ thể                             |
-| `from_date`                  | Chỉ bao gồm bài đăng vào hoặc sau ngày này (YYYY-MM-DD)  |
-| `to_date`                    | Chỉ bao gồm bài đăng vào hoặc trước ngày này (YYYY-MM-DD) |
-| `enable_image_understanding` | Cho phép xAI kiểm tra hình ảnh đính kèm bài đăng khớp    |
-| `enable_video_understanding` | Cho phép xAI kiểm tra video đính kèm bài đăng khớp       |
+| Tham số                      | Mô tả                                                      |
+| ---------------------------- | ---------------------------------------------------------- |
+| `query`                      | Truy vấn tìm kiếm (bắt buộc)                               |
+| `allowed_x_handles`          | Giới hạn kết quả vào các handle X cụ thể                   |
+| `excluded_x_handles`         | Loại trừ các handle X cụ thể                               |
+| `from_date`                  | Chỉ bao gồm bài đăng vào hoặc sau ngày này (YYYY-MM-DD)    |
+| `to_date`                    | Chỉ bao gồm bài đăng vào hoặc trước ngày này (YYYY-MM-DD)  |
+| `enable_image_understanding` | Cho phép xAI kiểm tra hình ảnh đính kèm với bài đăng khớp  |
+| `enable_video_understanding` | Cho phép xAI kiểm tra video đính kèm với bài đăng khớp     |
 
 ### Ví dụ x_search
 
@@ -447,6 +460,6 @@ Nếu bạn dùng hồ sơ công cụ hoặc danh sách cho phép, hãy thêm `w
 ## Liên quan
 
 - [Web Fetch](/vi/tools/web-fetch) -- fetch một URL và trích xuất nội dung dễ đọc
-- [Web Browser](/vi/tools/browser) -- tự động hóa trình duyệt đầy đủ cho các trang dùng nhiều JS
+- [Web Browser](/vi/tools/browser) -- tự động hóa trình duyệt đầy đủ cho các trang nặng JS
 - [Grok Search](/vi/tools/grok-search) -- Grok làm nhà cung cấp `web_search`
 - [Ollama Web Search](/vi/tools/ollama-search) -- tìm kiếm web không cần khóa thông qua máy chủ Ollama của bạn

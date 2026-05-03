@@ -1,40 +1,40 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Quản lý môi trường thời gian chạy hộp cát và kiểm tra chính sách hộp cát có hiệu lực
-title: CLI hộp cát
+summary: Quản lý các môi trường chạy sandbox và kiểm tra chính sách sandbox có hiệu lực
+title: CLI môi trường cách ly
 x-i18n:
-    generated_at: "2026-04-29T22:33:39Z"
+    generated_at: "2026-05-03T21:28:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
+    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-Quản lý các runtime sandbox để thực thi tác nhân cô lập.
+Quản lý các môi trường chạy sandbox để thực thi tác tử một cách cô lập.
 
 ## Tổng quan
 
-OpenClaw có thể chạy tác nhân trong các runtime sandbox cô lập để bảo mật. Các lệnh `sandbox` giúp bạn kiểm tra và tạo lại những runtime đó sau khi cập nhật hoặc thay đổi cấu hình.
+OpenClaw có thể chạy tác tử trong các môi trường chạy sandbox cô lập để bảo mật. Các lệnh `sandbox` giúp bạn kiểm tra và tạo lại những môi trường chạy đó sau khi cập nhật hoặc thay đổi cấu hình.
 
 Hiện nay, điều đó thường có nghĩa là:
 
-- Các container sandbox Docker
-- Runtime sandbox SSH khi `agents.defaults.sandbox.backend = "ssh"`
-- Runtime sandbox OpenShell khi `agents.defaults.sandbox.backend = "openshell"`
+- Container sandbox Docker
+- Môi trường chạy sandbox SSH khi `agents.defaults.sandbox.backend = "ssh"`
+- Môi trường chạy sandbox OpenShell khi `agents.defaults.sandbox.backend = "openshell"`
 
-Với `ssh` và OpenShell `remote`, việc tạo lại quan trọng hơn so với Docker:
+Đối với `ssh` và OpenShell `remote`, việc tạo lại quan trọng hơn so với Docker:
 
 - không gian làm việc từ xa là bản chuẩn sau lần khởi tạo ban đầu
 - `openclaw sandbox recreate` xóa không gian làm việc từ xa chuẩn đó cho phạm vi đã chọn
-- lần sử dụng tiếp theo sẽ khởi tạo lại từ không gian làm việc cục bộ hiện tại
+- lần dùng tiếp theo sẽ khởi tạo lại từ không gian làm việc cục bộ hiện tại
 
 ## Lệnh
 
 ### `openclaw sandbox explain`
 
-Kiểm tra chế độ/phạm vi/quyền truy cập không gian làm việc sandbox **có hiệu lực**, chính sách công cụ sandbox và các cổng yêu cầu quyền nâng cao (kèm đường dẫn khóa cấu hình để sửa).
+Kiểm tra chế độ/phạm vi/quyền truy cập không gian làm việc sandbox **hiệu lực**, chính sách công cụ sandbox và các cổng nâng quyền (kèm đường dẫn khóa cấu hình để sửa).
 
 ```bash
 openclaw sandbox explain
@@ -45,7 +45,7 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Liệt kê tất cả runtime sandbox cùng trạng thái và cấu hình của chúng.
+Liệt kê tất cả môi trường chạy sandbox cùng trạng thái và cấu hình của chúng.
 
 ```bash
 openclaw sandbox list
@@ -55,21 +55,21 @@ openclaw sandbox list --json     # Đầu ra JSON
 
 **Đầu ra bao gồm:**
 
-- Tên và trạng thái runtime
-- Backend (`docker`, `openshell`, v.v.)
-- Nhãn cấu hình và việc nó có khớp với cấu hình hiện tại hay không
-- Tuổi đời (thời gian kể từ khi tạo)
-- Thời gian nhàn rỗi (thời gian kể từ lần sử dụng cuối)
-- Phiên/tác nhân liên quan
+- Tên và trạng thái môi trường chạy
+- Phần phụ trợ (`docker`, `openshell`, v.v.)
+- Nhãn cấu hình và việc nhãn đó có khớp với cấu hình hiện tại hay không
+- Tuổi (thời gian kể từ khi tạo)
+- Thời gian rỗi (thời gian kể từ lần dùng cuối)
+- Phiên/tác tử liên quan
 
 ### `openclaw sandbox recreate`
 
-Xóa runtime sandbox để buộc tạo lại với cấu hình đã cập nhật.
+Xóa môi trường chạy sandbox để buộc tạo lại với cấu hình đã cập nhật.
 
 ```bash
 openclaw sandbox recreate --all                # Tạo lại tất cả container
 openclaw sandbox recreate --session main       # Phiên cụ thể
-openclaw sandbox recreate --agent mybot        # Tác nhân cụ thể
+openclaw sandbox recreate --agent mybot        # Tác tử cụ thể
 openclaw sandbox recreate --browser            # Chỉ container trình duyệt
 openclaw sandbox recreate --all --force        # Bỏ qua xác nhận
 ```
@@ -78,25 +78,25 @@ openclaw sandbox recreate --all --force        # Bỏ qua xác nhận
 
 - `--all`: Tạo lại tất cả container sandbox
 - `--session <key>`: Tạo lại container cho phiên cụ thể
-- `--agent <id>`: Tạo lại container cho tác nhân cụ thể
+- `--agent <id>`: Tạo lại container cho tác tử cụ thể
 - `--browser`: Chỉ tạo lại container trình duyệt
 - `--force`: Bỏ qua lời nhắc xác nhận
 
 <Note>
-Runtime sẽ tự động được tạo lại khi tác nhân được sử dụng lần tiếp theo.
+Môi trường chạy được tự động tạo lại khi tác tử được dùng lần tiếp theo.
 </Note>
 
 ## Trường hợp sử dụng
 
-### Sau khi cập nhật Docker image
+### Sau khi cập nhật image Docker
 
 ```bash
 # Pull image mới
 docker pull openclaw-sandbox:latest
 docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 
-# Cập nhật cấu hình để dùng image mới
-# Chỉnh sửa cấu hình: agents.defaults.sandbox.docker.image (hoặc agents.list[].sandbox.docker.image)
+# Cập nhật config để dùng image mới
+# Sửa config: agents.defaults.sandbox.docker.image (hoặc agents.list[].sandbox.docker.image)
 
 # Tạo lại container
 openclaw sandbox recreate --all
@@ -105,16 +105,16 @@ openclaw sandbox recreate --all
 ### Sau khi thay đổi cấu hình sandbox
 
 ```bash
-# Chỉnh sửa cấu hình: agents.defaults.sandbox.* (hoặc agents.list[].sandbox.*)
+# Sửa config: agents.defaults.sandbox.* (hoặc agents.list[].sandbox.*)
 
-# Tạo lại để áp dụng cấu hình mới
+# Tạo lại để áp dụng config mới
 openclaw sandbox recreate --all
 ```
 
-### Sau khi thay đổi đích SSH hoặc thông tin xác thực SSH
+### Sau khi thay đổi đích SSH hoặc dữ liệu xác thực SSH
 
 ```bash
-# Chỉnh sửa cấu hình:
+# Sửa config:
 # - agents.defaults.sandbox.backend
 # - agents.defaults.sandbox.ssh.target
 # - agents.defaults.sandbox.ssh.workspaceRoot
@@ -124,13 +124,13 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Với backend `ssh` lõi, tạo lại sẽ xóa thư mục gốc không gian làm việc từ xa theo phạm vi
+Đối với phần phụ trợ `ssh` lõi, việc tạo lại sẽ xóa thư mục gốc không gian làm việc từ xa theo phạm vi
 trên đích SSH. Lần chạy tiếp theo sẽ khởi tạo lại từ không gian làm việc cục bộ.
 
 ### Sau khi thay đổi nguồn, chính sách hoặc chế độ OpenShell
 
 ```bash
-# Chỉnh sửa cấu hình:
+# Sửa config:
 # - agents.defaults.sandbox.backend
 # - plugins.entries.openshell.config.from
 # - plugins.entries.openshell.config.mode
@@ -139,41 +139,50 @@ trên đích SSH. Lần chạy tiếp theo sẽ khởi tạo lại từ không g
 openclaw sandbox recreate --all
 ```
 
-Với chế độ OpenShell `remote`, tạo lại sẽ xóa không gian làm việc từ xa chuẩn
+Đối với chế độ OpenShell `remote`, việc tạo lại sẽ xóa không gian làm việc từ xa chuẩn
 cho phạm vi đó. Lần chạy tiếp theo sẽ khởi tạo lại từ không gian làm việc cục bộ.
 
 ### Sau khi thay đổi setupCommand
 
 ```bash
 openclaw sandbox recreate --all
-# hoặc chỉ một tác nhân:
+# hoặc chỉ một tác tử:
 openclaw sandbox recreate --agent family
 ```
 
-### Chỉ cho một tác nhân cụ thể
+### Chỉ cho một tác tử cụ thể
 
 ```bash
-# Chỉ cập nhật container của một tác nhân
+# Chỉ cập nhật container của một tác tử
 openclaw sandbox recreate --agent alfred
 ```
 
-## Vì sao cần thao tác này
+## Vì sao cần việc này
 
 Khi bạn cập nhật cấu hình sandbox:
 
-- Runtime hiện có tiếp tục chạy với thiết lập cũ.
-- Runtime chỉ bị dọn sau 24 giờ không hoạt động.
-- Các tác nhân được sử dụng thường xuyên sẽ giữ runtime cũ hoạt động vô thời hạn.
+- Các môi trường chạy hiện có tiếp tục chạy với thiết lập cũ.
+- Môi trường chạy chỉ được dọn dẹp sau 24 giờ không hoạt động.
+- Các tác tử được dùng thường xuyên sẽ giữ môi trường chạy cũ tồn tại vô thời hạn.
 
-Dùng `openclaw sandbox recreate` để buộc xóa runtime cũ. Chúng sẽ tự động được tạo lại với thiết lập hiện tại khi cần lần tiếp theo.
+Dùng `openclaw sandbox recreate` để buộc xóa môi trường chạy cũ. Chúng được tự động tạo lại với thiết lập hiện tại khi cần dùng lần tiếp theo.
 
 <Tip>
-Ưu tiên `openclaw sandbox recreate` thay vì dọn dẹp thủ công theo backend. Lệnh này dùng registry runtime của Gateway và tránh sai lệch khi phạm vi hoặc khóa phiên thay đổi.
+Ưu tiên `openclaw sandbox recreate` thay vì dọn dẹp thủ công theo từng phần phụ trợ. Lệnh này dùng sổ đăng ký môi trường chạy của Gateway và tránh sai lệch khi khóa phạm vi hoặc phiên thay đổi.
 </Tip>
+
+## Di chuyển sổ đăng ký
+
+OpenClaw lưu siêu dữ liệu môi trường chạy sandbox dưới dạng một shard JSON cho mỗi mục container/trình duyệt trong thư mục trạng thái sandbox. Các bản cài đặt cũ hơn có thể vẫn còn các tệp kế thừa dạng nguyên khối:
+
+- `~/.openclaw/sandbox/containers.json`
+- `~/.openclaw/sandbox/browsers.json`
+
+Việc đọc môi trường chạy sandbox thông thường không ghi lại các tệp đó. Chạy `openclaw doctor --fix` để di chuyển các mục kế thừa hợp lệ vào các thư mục sổ đăng ký dạng shard. Tệp kế thừa không hợp lệ sẽ được cách ly để một sổ đăng ký cũ bị lỗi không thể che khuất các mục môi trường chạy hiện tại.
 
 ## Cấu hình
 
-Thiết lập sandbox nằm trong `~/.openclaw/openclaw.json` dưới `agents.defaults.sandbox` (ghi đè theo từng tác nhân nằm trong `agents.list[].sandbox`):
+Thiết lập sandbox nằm trong `~/.openclaw/openclaw.json` dưới `agents.defaults.sandbox` (ghi đè theo từng tác tử nằm trong `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -186,11 +195,11 @@ Thiết lập sandbox nằm trong `~/.openclaw/openclaw.json` dưới `agents.de
         "docker": {
           "image": "openclaw-sandbox:bookworm-slim",
           "containerPrefix": "openclaw-sbx-",
-          // ... thêm tùy chọn Docker
+          // ... more Docker options
         },
         "prune": {
-          "idleHours": 24, // Tự động dọn sau 24 giờ nhàn rỗi
-          "maxAgeDays": 7, // Tự động dọn sau 7 ngày
+          "idleHours": 24, // Auto-prune after 24h idle
+          "maxAgeDays": 7, // Auto-prune after 7 days
         },
       },
     },
@@ -202,5 +211,5 @@ Thiết lập sandbox nằm trong `~/.openclaw/openclaw.json` dưới `agents.de
 
 - [Tham chiếu CLI](/vi/cli)
 - [Sandboxing](/vi/gateway/sandboxing)
-- [Không gian làm việc của tác nhân](/vi/concepts/agent-workspace)
+- [Không gian làm việc tác tử](/vi/concepts/agent-workspace)
 - [Doctor](/vi/gateway/doctor): kiểm tra thiết lập sandbox.
