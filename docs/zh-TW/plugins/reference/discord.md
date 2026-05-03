@@ -1,25 +1,25 @@
 ---
 read_when:
     - 您正在安裝、設定或稽核 Discord Plugin
-summary: 新增用於傳送和接收 OpenClaw 訊息的 Discord 頻道介面。
+summary: 新增 Discord 頻道介面，用於傳送和接收 OpenClaw 訊息。
 title: Discord Plugin
 x-i18n:
-    generated_at: "2026-05-02T22:20:21Z"
+    generated_at: "2026-05-03T21:40:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
+    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Discord Plugin
 
-新增 Discord 通道介面，用於傳送和接收 OpenClaw 訊息。
+新增 Discord 頻道介面，用於傳送與接收 OpenClaw 訊息。
 
 ## 發佈
 
 - 套件：`@openclaw/discord`
-- 安裝途徑：ClawHub + npm
+- 安裝途徑：npm；ClawHub
 
 ## 介面
 

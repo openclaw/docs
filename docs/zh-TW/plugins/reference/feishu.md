@@ -1,29 +1,29 @@
 ---
 read_when:
     - 你正在安裝、設定或稽核 feishu Plugin
-summary: 新增 Feishu 通道介面，用於傳送和接收 OpenClaw 訊息。
+summary: 新增飛書頻道介面，用於傳送和接收 OpenClaw 訊息。
 title: Feishu Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:30Z"
+    generated_at: "2026-05-03T21:40:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0c188fdc65a3e2e7a354063e090001099a76ad3f6df423f18611c6e3799b6983
+    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Feishu Plugin
 
-新增 Feishu 通道介面，用於傳送及接收 OpenClaw 訊息。
+新增 Feishu 通道介面，用於傳送和接收 OpenClaw 訊息。
 
-## 發行
+## 發佈
 
 - 套件：`@openclaw/feishu`
-- 安裝方式：ClawHub + npm
+- 安裝路徑：npm；ClawHub
 
 ## 介面
 
-channels: feishu; contracts: tools; skills
+通道：feishu；合約：工具；Skills
 
 ## 相關文件
 
