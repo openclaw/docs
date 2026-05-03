@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你正在安装、配置或审计 Line 插件
-summary: 新增 LINE 渠道功能面，用于发送和接收 OpenClaw 消息。
+    - 你正在安装、配置或审计 line 插件
+summary: 新增用于发送和接收 OpenClaw 消息的 LINE 渠道接口。
 title: LINE 插件
 x-i18n:
-    generated_at: "2026-05-02T21:41:31Z"
+    generated_at: "2026-05-03T02:13:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
+    source_hash: 469a8781af08abd50a475fe58e4ff4e93b592d4a412f17b01d34640422e0cc6f
     source_path: plugins/reference/line.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## 分发
 
 - 包：`@openclaw/line`
-- 安装方式：包含在 OpenClaw 中
+- 安装途径：ClawHub + npm
 
 ## 界面
 
