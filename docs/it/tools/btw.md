@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Vuoi fare una rapida domanda collaterale sulla sessione corrente
-    - Stai implementando o facendo debug del comportamento BTW su più client
-summary: Domande collaterali effimere con /btw
-title: Domande collaterali BTW
+    - Vuoi fare una breve domanda a margine sulla sessione corrente
+    - Stai implementando o eseguendo il debug del comportamento BTW nei diversi client
+summary: Domande secondarie temporanee con /btw
+title: A proposito, domande secondarie
 x-i18n:
-    generated_at: "2026-04-24T09:04:22Z"
-    model: gpt-5.4
+    generated_at: "2026-05-03T21:44:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
+    source_hash: f09ee066c02d31c9fbd66de1922f7a03fe2b48f1ba2c969c65551376e92c80d4
     source_path: tools/btw.md
-    workflow: 15
+    workflow: 16
 ---
 
-`/btw` ti permette di fare una rapida domanda collaterale sulla **sessione corrente** senza
-trasformare quella domanda nella normale cronologia della conversazione.
+`/btw` consente di porre una rapida domanda laterale sulla **sessione corrente** senza
+trasformare quella domanda nella normale cronologia della conversazione. `/side` è un alias.
 
-È modellato sul comportamento `/btw` di Claude Code, ma adattato
-all'architettura Gateway e multi-canale di OpenClaw.
+È modellato sul comportamento di `/btw` di Claude Code, ma adattato al Gateway
+di OpenClaw e alla sua architettura multicanale.
 
 ## Cosa fa
 
@@ -29,31 +29,31 @@ Quando invii:
 
 OpenClaw:
 
-1. crea uno snapshot del contesto della sessione corrente,
+1. acquisisce uno snapshot del contesto della sessione corrente,
 2. esegue una chiamata al modello separata **senza strumenti**,
-3. risponde solo alla domanda collaterale,
+3. risponde solo alla domanda laterale,
 4. lascia invariata l'esecuzione principale,
 5. **non** scrive la domanda o la risposta BTW nella cronologia della sessione,
-6. emette la risposta come **risultato collaterale live** invece che come normale messaggio dell'assistente.
+6. emette la risposta come **risultato laterale live** invece che come normale messaggio dell'assistente.
 
 Il modello mentale importante è:
 
 - stesso contesto di sessione
-- query collaterale separata one-shot
-- nessuna chiamata agli strumenti
-- nessun inquinamento del contesto futuro
-- nessuna persistenza nella trascrizione
+- query laterale separata una tantum
+- nessuna chiamata a strumenti
+- nessuna contaminazione del contesto futuro
+- nessuna persistenza della trascrizione
 
 ## Cosa non fa
 
 `/btw` **non**:
 
 - crea una nuova sessione durevole,
-- continua il task principale non completato,
-- esegue strumenti o cicli di strumenti dell'agente,
-- scrive i dati della domanda/risposta BTW nella cronologia della trascrizione,
-- compare in `chat.history`,
-- sopravvive a un reload.
+- continua l'attività principale incompleta,
+- esegue strumenti o loop di strumenti agente,
+- scrive i dati di domanda/risposta BTW nella cronologia della trascrizione,
+- appare in `chat.history`,
+- sopravvive a un ricaricamento.
 
 È intenzionalmente **effimero**.
 
@@ -61,15 +61,16 @@ Il modello mentale importante è:
 
 BTW usa la sessione corrente solo come **contesto di sfondo**.
 
-Se l'esecuzione principale è attualmente attiva, OpenClaw crea uno snapshot dello stato attuale dei messaggi
-e include il prompt principale in corso come contesto di sfondo, dicendo però esplicitamente al modello di:
+Se l'esecuzione principale è attualmente attiva, OpenClaw acquisisce uno
+snapshot dello stato corrente dei messaggi e include il prompt principale in
+corso come contesto di sfondo, indicando esplicitamente al modello di:
 
-- rispondere solo alla domanda collaterale,
-- non riprendere o completare il task principale non finito,
-- non emettere chiamate agli strumenti o pseudo-chiamate agli strumenti.
+- rispondere solo alla domanda laterale,
+- non riprendere né completare l'attività principale incompleta,
+- non emettere chiamate a strumenti o pseudo-chiamate a strumenti.
 
-Questo mantiene BTW isolato dall'esecuzione principale pur rendendolo consapevole di ciò
-di cui tratta la sessione.
+Questo mantiene BTW isolato dall'esecuzione principale, pur rendendolo
+consapevole dell'argomento della sessione.
 
 ## Modello di consegna
 
@@ -80,51 +81,54 @@ A livello di protocollo Gateway:
 - la normale chat dell'assistente usa l'evento `chat`
 - BTW usa l'evento `chat.side_result`
 
-Questa separazione è intenzionale. Se BTW riutilizzasse il normale percorso di eventi `chat`,
-i client lo tratterebbero come normale cronologia della conversazione.
+Questa separazione è intenzionale. Se BTW riutilizzasse il normale percorso
+dell'evento `chat`, i client lo tratterebbero come normale cronologia della conversazione.
 
-Poiché BTW usa un evento live separato e non viene ricaricato da
-`chat.history`, scompare dopo un reload.
+Poiché BTW usa un evento live separato e non viene riprodotto da
+`chat.history`, scompare dopo un ricaricamento.
 
-## Comportamento della superficie
+## Comportamento sulle superfici
 
 ### TUI
 
-Nella TUI, BTW viene renderizzato inline nella vista della sessione corrente, ma resta
-effimero:
+Nella TUI, BTW viene visualizzato inline nella vista della sessione corrente,
+ma rimane effimero:
 
 - visibilmente distinto da una normale risposta dell'assistente
-- chiudibile con `Enter` o `Esc`
-- non ricaricato dopo un reload
+- eliminabile con `Enter` o `Esc`
+- non riprodotto al ricaricamento
 
 ### Canali esterni
 
-Su canali come Telegram, WhatsApp e Discord, BTW viene consegnato come
-risposta one-off chiaramente etichettata perché quelle superfici non hanno un concetto
-di overlay effimero locale.
+Su canali come Telegram, WhatsApp e Discord, BTW viene consegnato come una
+risposta una tantum chiaramente etichettata, perché queste superfici non hanno
+un concetto di overlay effimero locale.
 
-La risposta viene comunque trattata come risultato collaterale, non come normale cronologia di sessione.
+La risposta viene comunque trattata come risultato laterale, non come normale cronologia della sessione.
 
 ### Control UI / web
 
 Il Gateway emette correttamente BTW come `chat.side_result`, e BTW non è incluso
 in `chat.history`, quindi il contratto di persistenza è già corretto per il web.
 
-L'attuale Control UI necessita ancora di un consumer dedicato `chat.side_result` per
-renderizzare BTW live nel browser. Finché questo supporto lato client non sarà disponibile, BTW sarà una funzionalità a livello Gateway con comportamento completo in TUI e sui canali esterni, ma non ancora una UX completa nel browser.
+L'attuale Control UI necessita ancora di un consumer dedicato per
+`chat.side_result` per visualizzare BTW live nel browser. Finché quel supporto
+lato client non sarà disponibile, BTW è una funzionalità a livello Gateway con
+comportamento completo in TUI e nei canali esterni, ma non ancora una UX browser completa.
 
 ## Quando usare BTW
 
-Usa `/btw` quando vuoi:
+Usa `/btw` quando desideri:
 
-- un rapido chiarimento sul lavoro corrente,
-- una risposta fattuale collaterale mentre un'esecuzione lunga è ancora in corso,
-- una risposta temporanea che non dovrebbe entrare nel contesto futuro della sessione.
+- un chiarimento rapido sul lavoro corrente,
+- una risposta laterale fattuale mentre un'esecuzione lunga è ancora in corso,
+- una risposta temporanea che non deve diventare parte del contesto futuro della sessione.
 
 Esempi:
 
 ```text
 /btw what file are we editing?
+/side what changed while the main run continued?
 /btw what does this error mean?
 /btw summarize the current task in one sentence
 /btw what is 17 * 19?
@@ -132,13 +136,13 @@ Esempi:
 
 ## Quando non usare BTW
 
-Non usare `/btw` quando vuoi che la risposta diventi parte del contesto di lavoro
-futuro della sessione.
+Non usare `/btw` quando vuoi che la risposta diventi parte del futuro contesto
+di lavoro della sessione.
 
-In quel caso, fai la domanda normalmente nella sessione principale invece di usare BTW.
+In quel caso, chiedi normalmente nella sessione principale invece di usare BTW.
 
 ## Correlati
 
 - [Comandi slash](/it/tools/slash-commands)
-- [Thinking Levels](/it/tools/thinking)
+- [Livelli di ragionamento](/it/tools/thinking)
 - [Sessione](/it/concepts/session)

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Stai installando, configurando o verificando il plugin memory-lancedb
+    - Stai installando, configurando o eseguendo l'audit del Plugin memory-lancedb
 summary: Aggiunge strumenti richiamabili dagli agenti.
 title: Plugin di memoria Lancedb
 x-i18n:
-    generated_at: "2026-05-02T20:55:04Z"
+    generated_at: "2026-05-03T21:41:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Aggiunge strumenti richiamabili dall'agente.
 ## Distribuzione
 
 - Pacchetto: `@openclaw/memory-lancedb`
-- Percorso di installazione: ClawHub + npm
+- Percorso di installazione: npm; ClawHub
 
 ## Superficie
 
