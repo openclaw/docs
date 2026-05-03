@@ -1324,6 +1324,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "tools/agent-send",
+                  "tools/steer",
                   "tools/subagents",
                   "tools/acp-agents",
                   "tools/acp-agents-setup",
@@ -2813,6 +2814,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "zh-TW/tools/agent-send",
+                  "zh-TW/tools/steer",
                   "zh-TW/tools/subagents",
                   "zh-TW/tools/acp-agents",
                   "zh-TW/tools/acp-agents-setup",
@@ -3687,6 +3689,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "ja-JP/tools/agent-send",
+                  "ja-JP/tools/steer",
                   "ja-JP/tools/subagents",
                   "ja-JP/tools/acp-agents",
                   "ja-JP/tools/acp-agents-setup",
@@ -4561,6 +4564,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "es/tools/agent-send",
+                  "es/tools/steer",
                   "es/tools/subagents",
                   "es/tools/acp-agents",
                   "es/tools/acp-agents-setup",
@@ -5435,6 +5439,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "pt-BR/tools/agent-send",
+                  "pt-BR/tools/steer",
                   "pt-BR/tools/subagents",
                   "pt-BR/tools/acp-agents",
                   "pt-BR/tools/acp-agents-setup",
@@ -6309,6 +6314,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "ko/tools/agent-send",
+                  "ko/tools/steer",
                   "ko/tools/subagents",
                   "ko/tools/acp-agents",
                   "ko/tools/acp-agents-setup",
@@ -7183,6 +7189,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "de/tools/agent-send",
+                  "de/tools/steer",
                   "de/tools/subagents",
                   "de/tools/acp-agents",
                   "de/tools/acp-agents-setup",
@@ -8057,6 +8064,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "fr/tools/agent-send",
+                  "fr/tools/steer",
                   "fr/tools/subagents",
                   "fr/tools/acp-agents",
                   "fr/tools/acp-agents-setup",
@@ -8931,6 +8939,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "ar/tools/agent-send",
+                  "ar/tools/steer",
                   "ar/tools/subagents",
                   "ar/tools/acp-agents",
                   "ar/tools/acp-agents-setup",
@@ -9805,6 +9814,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "it/tools/agent-send",
+                  "it/tools/steer",
                   "it/tools/subagents",
                   "it/tools/acp-agents",
                   "it/tools/acp-agents-setup",
@@ -10679,6 +10689,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "vi/tools/agent-send",
+                  "vi/tools/steer",
                   "vi/tools/subagents",
                   "vi/tools/acp-agents",
                   "vi/tools/acp-agents-setup",
@@ -11553,6 +11564,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "nl/tools/agent-send",
+                  "nl/tools/steer",
                   "nl/tools/subagents",
                   "nl/tools/acp-agents",
                   "nl/tools/acp-agents-setup",
@@ -12427,6 +12439,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "tr/tools/agent-send",
+                  "tr/tools/steer",
                   "tr/tools/subagents",
                   "tr/tools/acp-agents",
                   "tr/tools/acp-agents-setup",
@@ -13301,6 +13314,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "uk/tools/agent-send",
+                  "uk/tools/steer",
                   "uk/tools/subagents",
                   "uk/tools/acp-agents",
                   "uk/tools/acp-agents-setup",
@@ -14175,6 +14189,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "id/tools/agent-send",
+                  "id/tools/steer",
                   "id/tools/subagents",
                   "id/tools/acp-agents",
                   "id/tools/acp-agents-setup",
@@ -15049,6 +15064,7 @@
                 "group": "Agent coordination",
                 "pages": [
                   "pl/tools/agent-send",
+                  "pl/tools/steer",
                   "pl/tools/subagents",
                   "pl/tools/acp-agents",
                   "pl/tools/acp-agents-setup",
