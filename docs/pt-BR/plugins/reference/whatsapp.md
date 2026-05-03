@@ -4,10 +4,10 @@ read_when:
 summary: Adiciona a superfície do canal WhatsApp para enviar e receber mensagens do OpenClaw.
 title: Plugin do WhatsApp
 x-i18n:
-    generated_at: "2026-05-02T21:02:09Z"
+    generated_at: "2026-05-03T05:54:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3fbdcff85954d0ff0269348e9c75b8b85cae69b9897a568432bfa06ed7276ced
+    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ Adiciona a superfície de canal do WhatsApp para enviar e receber mensagens do O
 ## Distribuição
 
 - Pacote: `@openclaw/whatsapp`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 
 channels: whatsapp
 
-## Documentos relacionados
+## Documentação relacionada
 
 - [WhatsApp](/pt-BR/channels/whatsapp)

@@ -1,13 +1,13 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o Plugin brave
-summary: Adiciona suporte a provedores de busca na web.
-title: Plugin Brave
+summary: Adiciona suporte a provedor de busca na web.
+title: Plugin do Brave
 x-i18n:
-    generated_at: "2026-05-02T20:54:09Z"
+    generated_at: "2026-05-03T05:51:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 64ab341ee94d55f7364a6a670df8adb0d29d5a50fba2fd6e7cfe650cda407d93
+    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Adiciona suporte a provedores de pesquisa na web.
 ## Distribuição
 
 - Pacote: `@openclaw/brave-plugin`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 

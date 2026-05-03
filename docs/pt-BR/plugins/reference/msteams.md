@@ -1,13 +1,13 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o Plugin msteams
-summary: Adiciona a superfície do canal Microsoft Teams para enviar e receber mensagens do OpenClaw.
+summary: Adiciona a interface de canal do Microsoft Teams para enviar e receber mensagens do OpenClaw.
 title: Plugin do Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-02T20:58:29Z"
+    generated_at: "2026-05-03T05:53:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f7123c7309d22994897477cc7ff3ab083abb4dc37f452c139968b8af3731c0cd
+    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ Adiciona a superfície de canal do Microsoft Teams para enviar e receber mensage
 ## Distribuição
 
 - Pacote: `@openclaw/msteams`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 
 channels: msteams
 
-## Documentos relacionados
+## Documentação relacionada
 
 - [msteams](/pt-BR/channels/msteams)

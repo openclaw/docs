@@ -4,10 +4,10 @@ read_when:
 summary: Adiciona a superfície do canal Nostr para enviar e receber mensagens do OpenClaw.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-02T20:58:45Z"
+    generated_at: "2026-05-03T05:53:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Adiciona a superfície de canal Nostr para enviar e receber mensagens do OpenCla
 ## Distribuição
 
 - Pacote: `@openclaw/nostr`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 

@@ -1,13 +1,13 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o Plugin diffs
-summary: Visualizador de diferenças e renderizador de arquivos em modo somente leitura para agentes.
+summary: Visualizador de diferenças somente leitura e renderizador de arquivos para agentes.
 title: Plugin de diferenças
 x-i18n:
-    generated_at: "2026-05-02T20:55:25Z"
+    generated_at: "2026-05-03T05:52:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c1949ed6e1431a44121694f64ca17c0dc8b7c4c6171959ff8b7d6ab27793e8ab
+    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Visualizador de diffs somente leitura e renderizador de arquivos para agentes.
 ## Distribuição
 
 - Pacote: `@openclaw/diffs`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 

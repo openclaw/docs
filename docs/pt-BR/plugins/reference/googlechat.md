@@ -1,13 +1,13 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o Plugin googlechat
-summary: Adiciona a superfície de canal do Google Chat para enviar e receber mensagens do OpenClaw.
+summary: Adiciona a superfície do canal Google Chat para enviar e receber mensagens do OpenClaw.
 title: Plugin do Google Chat
 x-i18n:
-    generated_at: "2026-05-02T22:20:33Z"
+    generated_at: "2026-05-03T05:52:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
+    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ Adiciona a superfície de canal do Google Chat para enviar e receber mensagens d
 ## Distribuição
 
 - Pacote: `@openclaw/googlechat`
-- Rota de instalação: incluído no OpenClaw
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 
 channels: googlechat
 
-## Documentação relacionada
+## Documentos relacionados
 
 - [googlechat](/pt-BR/channels/googlechat)

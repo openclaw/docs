@@ -4,22 +4,22 @@ read_when:
 summary: Adiciona a superfície do canal Twitch para enviar e receber mensagens do OpenClaw.
 title: Plugin do Twitch
 x-i18n:
-    generated_at: "2026-05-02T21:01:23Z"
+    generated_at: "2026-05-03T05:53:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4b94959552ac4f423d2248405bbb9b826ae391cd646b07710a04a95acc478132
+    source_hash: c567b1d30b82f119f577dc74a416702c8e2c78930fb7036208368835af12805f
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
 
 # Plugin do Twitch
 
-Adiciona a superfície de canal do Twitch para enviar e receber mensagens do OpenClaw.
+Adiciona a superfície do canal Twitch para enviar e receber mensagens do OpenClaw.
 
 ## Distribuição
 
 - Pacote: `@openclaw/twitch`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 

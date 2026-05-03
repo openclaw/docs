@@ -1,13 +1,13 @@
 ---
 read_when:
     - Você está instalando, configurando ou auditando o Plugin bluebubbles
-summary: Adiciona a superfície de canal do BlueBubbles para enviar e receber mensagens do OpenClaw.
-title: Plugin do BlueBubbles
+summary: Adiciona a superfície de canal BlueBubbles para enviar e receber mensagens do OpenClaw.
+title: Plugin BlueBubbles
 x-i18n:
-    generated_at: "2026-05-02T20:53:46Z"
+    generated_at: "2026-05-03T05:51:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Adiciona a superfície de canal BlueBubbles para enviar e receber mensagens do O
 ## Distribuição
 
 - Pacote: `@openclaw/bluebubbles`
-- Rota de instalação: ClawHub + npm
+- Rota de instalação: npm; ClawHub
 
 ## Superfície
 
