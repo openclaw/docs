@@ -1,25 +1,25 @@
 ---
 read_when:
-    - bluebubbles Pluginをインストール、設定、または監査しています
-summary: OpenClawメッセージを送受信するためのBlueBubblesチャネルサーフェスを追加します。
-title: BlueBubblesプラグイン
+    - bluebubbles Pluginをインストール、設定、または監査している
+summary: OpenClaw メッセージの送受信用の BlueBubbles チャネルサーフェスを追加します。
+title: BlueBubbles Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:58Z"
+    generated_at: "2026-05-03T05:01:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
 
 # BlueBubbles Plugin
 
-BlueBubbles チャネルサーフェスを追加し、OpenClaw メッセージを送受信できるようにします。
+OpenClaw メッセージを送受信するための BlueBubbles チャネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/bluebubbles`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 

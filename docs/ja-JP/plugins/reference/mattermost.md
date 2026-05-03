@@ -1,29 +1,29 @@
 ---
 read_when:
-    - mattermost Pluginをインストール、構成、または監査している
-summary: OpenClaw メッセージの送受信用に Mattermost チャネルサーフェスを追加します。
+    - mattermost Pluginをインストール、設定、または監査しています
+summary: OpenClaw メッセージの送受信に対応する Mattermost チャネルサーフェスを追加します。
 title: Mattermost Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:59:01Z"
+    generated_at: "2026-05-03T05:03:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ea1281e7bb22bd5bca0ef1610fac282664fb12408d15d891a04b356a438c6f16
+    source_hash: 53b202de33507d8d747cad4e424f6ee7f90dac4dfbded566eb45772f118956db
     source_path: plugins/reference/mattermost.md
     workflow: 16
 ---
 
 # Mattermost Plugin
 
-OpenClaw メッセージを送受信するための Mattermost チャンネルサーフェスを追加します。
+OpenClaw メッセージの送受信に Mattermost チャンネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/mattermost`
-- インストール経路: ClawHub + npm
+- インストール経路: OpenClaw に含まれています
 
 ## サーフェス
 
-channels: mattermost
+チャンネル: mattermost
 
 ## 関連ドキュメント
 

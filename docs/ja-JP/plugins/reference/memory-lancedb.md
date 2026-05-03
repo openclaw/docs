@@ -1,29 +1,29 @@
 ---
 read_when:
-    - memory-lancedb Plugin をインストール、設定、または監査しています
-summary: エージェントから呼び出せるツールを追加します。
-title: Memory Lancedb Plugin
+    - memory-lancedb Pluginをインストール、設定、または監査しています
+summary: エージェントが呼び出せるツールを追加します。
+title: メモリ Lancedb プラグイン
 x-i18n:
-    generated_at: "2026-05-02T20:59:17Z"
+    generated_at: "2026-05-03T05:03:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
 # Memory Lancedb Plugin
 
-エージェントから呼び出し可能なツールを追加します。
+エージェントが呼び出せるツールを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/memory-lancedb`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-コントラクト: tools
+コントラクト: ツール
 
 ## 関連ドキュメント
 

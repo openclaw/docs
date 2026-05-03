@@ -1,25 +1,25 @@
 ---
 read_when:
-    - nostr プラグインのインストール、設定、または監査を行っています
-summary: OpenClawメッセージの送受信のためのNostrチャネルサーフェスを追加します。
+    - nostr Plugin をインストール、構成、または監査しています
+summary: OpenClaw メッセージの送受信のための Nostr チャネルサーフェスを追加します。
 title: Nostr Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:00:04Z"
+    generated_at: "2026-05-03T05:03:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
 
-# Nostr Plugin
+# Nostr プラグイン
 
-OpenClaw メッセージの送受信用に Nostr チャンネル サーフェスを追加します。
+OpenClaw メッセージを送受信するための Nostr チャンネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/nostr`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 

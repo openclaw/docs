@@ -1,29 +1,29 @@
 ---
 read_when:
-    - feishu Pluginをインストール、設定、または監査している
-summary: OpenClaw メッセージを送受信するための Feishu チャネルサーフェスを追加します。
+    - feishu Pluginのインストール、設定、または監査を行っています
+summary: OpenClaw メッセージの送受信に対応する Feishu チャンネルサーフェスを追加します。
 title: Feishu Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:24Z"
+    generated_at: "2026-05-03T05:02:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0c188fdc65a3e2e7a354063e090001099a76ad3f6df423f18611c6e3799b6983
+    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Feishu Plugin
 
-OpenClaw メッセージを送受信するための Feishu チャンネルサーフェスを追加します。
+OpenClaw メッセージを送受信するための Feishu チャネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/feishu`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-チャンネル: feishu; コントラクト: tools; Skills
+チャネル: feishu; 契約: tools; Skills
 
 ## 関連ドキュメント
 

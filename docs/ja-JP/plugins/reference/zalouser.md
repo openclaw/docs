@@ -1,29 +1,29 @@
 ---
 read_when:
-    - zalouser pluginをインストール、設定、または監査しています
+    - zalouser Plugin をインストール、設定、または監査している
 summary: OpenClaw メッセージを送受信するための Zalo Personal チャネルサーフェスを追加します。
 title: Zalo Personal Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:04:05Z"
+    generated_at: "2026-05-03T05:04:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd0398244efd8e15ac7a7331b4ed55dfd25a3bab547e0a501c2e5bed4ced182c
+    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
-# Zalo Personal プラグイン
+# Zalo Personal Plugin
 
-OpenClaw メッセージを送受信するための Zalo Personal チャネルサーフェスを追加します。
+OpenClaw メッセージの送受信用に Zalo Personal チャンネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/zalouser`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-チャネル: zalouser; コントラクト: tools
+チャンネル: zalouser; コントラクト: tools
 
 ## 関連ドキュメント
 

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - nextcloud-talk Pluginをインストール、設定、または監査しています
-summary: Nextcloud Talk チャンネルサーフェスを追加し、OpenClaw メッセージの送受信を可能にします。
-title: Nextcloud Talk プラグイン
+    - nextcloud-talk Plugin をインストール、設定、または監査している
+summary: OpenClaw メッセージを送受信するための Nextcloud Talk チャネルサーフェスを追加します。
+title: Nextcloud Talk Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:00:06Z"
+    generated_at: "2026-05-03T05:03:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 769f543754bf08068be8d705a8e0e022edcb0a4f023d44a2eb33cb9d06cc9df9
+    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
 
 # Nextcloud Talk Plugin
 
-OpenClaw メッセージを送受信するための Nextcloud Talk チャネルサーフェスを追加します。
+OpenClawメッセージを送受信するためのNextcloud Talkチャネルサーフェスを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/nextcloud-talk`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 

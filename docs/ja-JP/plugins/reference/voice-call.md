@@ -1,29 +1,29 @@
 ---
 read_when:
-    - 音声通話 Plugin をインストール、設定、または監査している
+    - 音声通話Pluginをインストール、設定、または監査しています
 summary: エージェントから呼び出し可能なツールを追加します。
-title: 音声通話Plugin
+title: 音声通話 Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:03:16Z"
+    generated_at: "2026-05-03T05:04:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
 # Voice Call Plugin
 
-エージェントが呼び出せるツールを追加します。
+エージェントから呼び出せるツールを追加します。
 
 ## 配布
 
 - パッケージ: `@openclaw/voice-call`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-contracts: tools
+コントラクト: ツール
 
 ## 関連ドキュメント
 

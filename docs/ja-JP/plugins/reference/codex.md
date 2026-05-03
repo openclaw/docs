@@ -1,29 +1,29 @@
 ---
 read_when:
-    - codex Plugin をインストール、設定、または監査しています
+    - codex Plugin のインストール、設定、または監査を行っている
 summary: Codex app-server ハーネスと Codex 管理の GPT モデルカタログ。
 title: Codex Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:55:53Z"
+    generated_at: "2026-05-03T05:01:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
-# Codex Plugin
+# Codexプラグイン
 
-Codex の app-server ハーネスと、Codex 管理の GPT モデルカタログ。
+Codexアプリサーバーハーネスと、Codexが管理するGPTモデルカタログ。
 
 ## 配布
 
 - パッケージ: `@openclaw/codex`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
-providers: codex; contracts: mediaUnderstandingProviders, migrationProviders
+プロバイダー: codex; コントラクト: mediaUnderstandingProviders, migrationProviders
 
 ## 関連ドキュメント
 

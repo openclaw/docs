@@ -1,25 +1,25 @@
 ---
 read_when:
-    - matrix Pluginをインストール、設定、または監査している
+    - matrix プラグインをインストール、設定、または監査している
 summary: OpenClaw メッセージを送受信するための Matrix チャネルサーフェスを追加します。
 title: Matrix Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:55Z"
+    generated_at: "2026-05-03T05:03:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 130549983f7931a98558921af10be36a3cbdb6bae61c1d3afee1bef2968a6001
+    source_hash: f4f791546090a868b4dd40dbfd458eb5fb2b6beafcf94c259655faac655fdfd8
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Matrix Plugin
 
-OpenClaw メッセージの送受信のための Matrix チャンネルサーフェスを追加します。
+Matrix チャネルサーフェスを追加し、OpenClaw メッセージを送受信できるようにします。
 
 ## 配布
 
 - パッケージ: `@openclaw/matrix`
-- インストール経路: ClawHub + npm
+- インストールルート: OpenClaw に含まれます
 
 ## サーフェス
 

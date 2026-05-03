@@ -1,25 +1,25 @@
 ---
 read_when:
-    - diffs Pluginをインストール、設定、または監査している
-summary: エージェント向けの読み取り専用の差分ビューアーおよびファイルレンダラー。
+    - diffs Pluginをインストール、設定、または監査しています
+summary: エージェント向けの読み取り専用差分ビューアーおよびファイルレンダラー。
 title: 差分 Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:41Z"
+    generated_at: "2026-05-03T05:02:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c1949ed6e1431a44121694f64ca17c0dc8b7c4c6171959ff8b7d6ab27793e8ab
+    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
 # Diffs Plugin
 
-エージェント向けの読み取り専用 diff ビューアーおよびファイルレンダラー。
+エージェント向けの読み取り専用の差分ビューアーおよびファイルレンダラー。
 
 ## 配布
 
 - パッケージ: `@openclaw/diffs`
-- インストール経路: ClawHub + npm
+- インストール経路: npm; ClawHub
 
 ## サーフェス
 
