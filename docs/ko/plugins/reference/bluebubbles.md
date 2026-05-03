@@ -1,25 +1,25 @@
 ---
 read_when:
-    - bluebubbles Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw 메시지를 보내고 받을 수 있는 BlueBubbles 채널 표면을 추가합니다.
+    - bluebubbles Plugin을 설치, 구성 또는 감사하는 중입니다
+summary: OpenClaw 메시지를 보내고 받을 수 있는 BlueBubbles 채널 인터페이스를 추가합니다.
 title: BlueBubbles Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:00:57Z"
+    generated_at: "2026-05-03T06:19:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
 
 # BlueBubbles Plugin
 
-BlueBubbles 채널 표면을 추가하여 OpenClaw 메시지를 보내고 받을 수 있게 합니다.
+OpenClaw 메시지를 보내고 받기 위한 BlueBubbles 채널 표면을 추가합니다.
 
 ## 배포
 
 - 패키지: `@openclaw/bluebubbles`
-- 설치 경로: ClawHub + npm
+- 설치 경로: npm; ClawHub
 
 ## 표면
 

@@ -1,29 +1,29 @@
 ---
 read_when:
     - codex Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: Codex 앱 서버 하네스 및 Codex 관리 GPT 모델 카탈로그.
+summary: Codex 앱 서버 하네스와 Codex 관리형 GPT 모델 카탈로그.
 title: Codex Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:01:44Z"
+    generated_at: "2026-05-03T06:19:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Codex Plugin
 
-Codex 앱 서버 하네스 및 Codex 관리 GPT 모델 카탈로그.
+Codex 앱 서버 하네스 및 Codex 관리형 GPT 모델 카탈로그.
 
 ## 배포
 
 - 패키지: `@openclaw/codex`
-- 설치 경로: ClawHub + npm
+- 설치 경로: npm; ClawHub
 
-## 노출 영역
+## 표면
 
-providers: codex; contracts: mediaUnderstandingProviders, migrationProviders
+제공자: codex; 계약: mediaUnderstandingProviders, migrationProviders
 
 ## 관련 문서
 

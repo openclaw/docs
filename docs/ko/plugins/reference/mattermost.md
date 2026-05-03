@@ -1,13 +1,13 @@
 ---
 read_when:
-    - mattermost Plugin을 설치, 구성 또는 감사하고 있습니다
-summary: OpenClaw 메시지를 보내고 받기 위한 Mattermost 채널 인터페이스를 추가합니다.
+    - Mattermost Plugin을 설치, 구성 또는 감사하고 있습니다
+summary: OpenClaw 메시지를 보내고 받을 수 있는 Mattermost 채널 인터페이스를 추가합니다.
 title: Mattermost Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:04:42Z"
+    generated_at: "2026-05-03T06:21:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ea1281e7bb22bd5bca0ef1610fac282664fb12408d15d891a04b356a438c6f16
+    source_hash: 53b202de33507d8d747cad4e424f6ee7f90dac4dfbded566eb45772f118956db
     source_path: plugins/reference/mattermost.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ OpenClaw 메시지를 보내고 받기 위한 Mattermost 채널 표면을 추가
 ## 배포
 
 - 패키지: `@openclaw/mattermost`
-- 설치 경로: ClawHub + npm
+- 설치 경로: OpenClaw에 포함됨
 
 ## 표면
 
-channels: mattermost
+채널: mattermost
 
 ## 관련 문서
 
-- [mattermost](/ko/channels/mattermost)
+- [Mattermost](/ko/channels/mattermost)

@@ -4,24 +4,24 @@ read_when:
 summary: OpenClaw 메시지를 보내고 받기 위한 LINE 채널 인터페이스를 추가합니다.
 title: LINE Plugin
 x-i18n:
-    generated_at: "2026-05-02T22:21:03Z"
+    generated_at: "2026-05-03T06:21:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
+    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
 # LINE Plugin
 
-OpenClaw 메시지를 보내고 받기 위한 LINE 채널 인터페이스를 추가합니다.
+OpenClaw 메시지를 보내고 받기 위한 LINE 채널 표면을 추가합니다.
 
 ## 배포
 
 - 패키지: `@openclaw/line`
-- 설치 경로: OpenClaw에 포함됨
+- 설치 경로: npm; ClawHub
 
-## 인터페이스
+## 표면
 
 channels: line
 

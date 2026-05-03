@@ -1,13 +1,13 @@
 ---
 read_when:
-    - memory-lancedb Plugin을 설치, 구성 또는 감사하고 있습니다
+    - memory-lancedb Plugin을 설치, 구성 또는 감사 중입니다
 summary: 에이전트가 호출할 수 있는 도구를 추가합니다.
 title: 메모리 Lancedb Plugin
 x-i18n:
-    generated_at: "2026-05-02T21:04:47Z"
+    generated_at: "2026-05-03T06:21:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ x-i18n:
 ## 배포
 
 - 패키지: `@openclaw/memory-lancedb`
-- 설치 경로: ClawHub + npm
+- 설치 경로: npm; ClawHub
 
 ## 표면
 
-contracts: tools
+계약: 도구
 
 ## 관련 문서
 

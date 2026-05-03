@@ -1,27 +1,27 @@
 ---
 read_when:
-    - OpenClaw와 함께 Arcee AI를 사용하려고 합니다
+    - OpenClaw와 함께 Arcee AI를 사용하려는 경우
     - API 키 환경 변수 또는 CLI 인증 선택이 필요합니다
 summary: Arcee AI 설정(인증 + 모델 선택)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-05-02T23:39:15Z"
+    generated_at: "2026-05-03T06:22:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 622ee5288aec3ae0b45d3f06ba65fd6f972e07d7a7596ae3905d6fbdac0bf737
+    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
     source_path: providers/arcee.md
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai)는 OpenAI 호환 API를 통해 전문가 혼합 모델 Trinity 제품군에 대한 액세스를 제공합니다. 모든 Trinity 모델에는 Apache 2.0 라이선스가 적용됩니다.
+[Arcee AI](https://arcee.ai)는 OpenAI 호환 API를 통해 전문가 혼합 모델인 Trinity 제품군에 대한 액세스를 제공합니다. 모든 Trinity 모델은 Apache 2.0 라이선스를 따릅니다.
 
 Arcee AI 모델은 Arcee 플랫폼을 통해 직접 액세스하거나 [OpenRouter](/ko/providers/openrouter)를 통해 액세스할 수 있습니다.
 
-| 속성     | 값                                                                                    |
+| 속성 | 값                                                                                 |
 | -------- | ------------------------------------------------------------------------------------- |
-| 제공자   | `arcee`                                                                               |
+| 제공자 | `arcee`                                                                               |
 | 인증     | `ARCEEAI_API_KEY` (직접) 또는 `OPENROUTER_API_KEY` (OpenRouter 경유)                   |
-| API      | OpenAI 호환                                                                           |
+| API      | OpenAI 호환                                                                     |
 | 기본 URL | `https://api.arcee.ai/api/v1` (직접) 또는 `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## 시작하기
@@ -105,34 +105,34 @@ Arcee AI 모델은 Arcee 플랫폼을 통해 직접 액세스하거나 [OpenRout
 
 OpenClaw는 현재 다음 번들 Arcee 카탈로그를 제공합니다.
 
-| 모델 참조                     | 이름                   | 입력 | 컨텍스트 | 비용(1M당 입력/출력) | 참고                                       |
-| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ------------------------------------------ |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | 기본 모델, 추론 활성화, 도구 없음          |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | 범용, 400B 매개변수, 13B 활성              |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | 빠르고 비용 효율적, 함수 호출              |
+| 모델 참조                      | 이름                   | 입력 | 컨텍스트 | 비용(100만 토큰당 입력/출력) | 참고                                     |
+| ------------------------------ | ---------------------- | ----- | ------- | -------------------- | ----------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | text  | 256K    | $0.25 / $0.90        | 기본 모델; 추론 활성화          |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | text  | 128K    | $0.25 / $1.00        | 범용; 400B 매개변수, 13B 활성  |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | text  | 128K    | $0.045 / $0.15       | 빠르고 비용 효율적; 함수 호출 |
 
 <Tip>
-온보딩 프리셋은 `arcee/trinity-large-thinking`을 기본 모델로 설정합니다. 이 모델은 추론/텍스트 전용이며 도구 사용이나 함수 호출을 지원하지 않습니다.
+온보딩 프리셋은 `arcee/trinity-large-thinking`을 기본 모델로 설정합니다.
 </Tip>
 
 ## 지원되는 기능
 
-| 기능                                          | 지원                                        |
-| --------------------------------------------- | ------------------------------------------- |
-| 스트리밍                                      | 예                                          |
-| 도구 사용 / 함수 호출                         | 모델에 따라 다름, Trinity Large Thinking 제외 |
-| 구조화된 출력(JSON 모드 및 JSON 스키마)       | 예                                          |
-| 확장 사고                                     | 예(Trinity Large Thinking)                  |
+| 기능                                       | 지원 여부                    |
+| --------------------------------------------- | ---------------------------- |
+| 스트리밍                                     | 예                          |
+| 도구 사용 / 함수 호출                   | 예                          |
+| 구조화된 출력(JSON 모드 및 JSON 스키마) | 예                          |
+| 확장 사고                             | 예(Trinity Large Thinking) |
 
 <AccordionGroup>
   <Accordion title="Environment note">
     Gateway가 데몬(launchd/systemd)으로 실행되는 경우 `ARCEEAI_API_KEY`
-    (또는 `OPENROUTER_API_KEY`)가 해당 프로세스에서 사용할 수 있는지 확인하세요(예:
+    (또는 `OPENROUTER_API_KEY`)를 해당 프로세스에서 사용할 수 있는지 확인하세요(예:
     `~/.openclaw/.env` 또는 `env.shellEnv`를 통해).
   </Accordion>
 
   <Accordion title="OpenRouter routing">
-    OpenRouter를 통해 Arcee 모델을 사용할 때는 동일한 `arcee/*` 모델 참조가 적용됩니다.
+    OpenRouter를 통해 Arcee 모델을 사용할 때도 동일한 `arcee/*` 모델 참조가 적용됩니다.
     OpenClaw는 인증 선택에 따라 라우팅을 투명하게 처리합니다. OpenRouter별
     구성 세부 정보는 [OpenRouter 제공자 문서](/ko/providers/openrouter)를 참조하세요.
   </Accordion>
@@ -142,7 +142,7 @@ OpenClaw는 현재 다음 번들 Arcee 카탈로그를 제공합니다.
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/ko/providers/openrouter" icon="shuffle">
-    단일 API 키를 통해 Arcee 모델 및 다른 많은 모델에 액세스합니다.
+    단일 API 키로 Arcee 모델과 그 밖의 많은 모델에 액세스하세요.
   </Card>
   <Card title="Model selection" href="/ko/concepts/model-providers" icon="layers">
     제공자, 모델 참조, 장애 조치 동작 선택.
