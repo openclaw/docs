@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你正在安装、配置或审核 brave 插件
+    - 你正在安装、配置或审计 brave 插件
 summary: 新增 Web 搜索提供商支持。
 title: Brave 插件
 x-i18n:
-    generated_at: "2026-05-02T15:12:51Z"
+    generated_at: "2026-05-03T02:48:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 64ab341ee94d55f7364a6a670df8adb0d29d5a50fba2fd6e7cfe650cda407d93
+    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
@@ -19,9 +19,9 @@ x-i18n:
 ## 分发
 
 - 包：`@openclaw/brave-plugin`
-- 安装路径：ClawHub + npm
+- 安装路径：npm；ClawHub
 
-## 接口面
+## 表面
 
 契约：webSearchProviders
 

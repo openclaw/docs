@@ -2,12 +2,12 @@
 read_when:
     - 你正在安装、配置或审计 zalouser 插件
 summary: 新增 Zalo Personal 渠道界面，用于发送和接收 OpenClaw 消息。
-title: Zalo Personal 插件
+title: Zalo 个人插件
 x-i18n:
-    generated_at: "2026-05-02T15:18:42Z"
+    generated_at: "2026-05-03T02:50:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd0398244efd8e15ac7a7331b4ed55dfd25a3bab547e0a501c2e5bed4ced182c
+    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
@@ -19,9 +19,9 @@ x-i18n:
 ## 分发
 
 - 包：`@openclaw/zalouser`
-- 安装路径：ClawHub + npm
+- 安装方式：npm；ClawHub
 
-## 接口面
+## 界面
 
 渠道：zalouser；契约：工具
 

@@ -1,13 +1,13 @@
 ---
 read_when:
     - 你正在安装、配置或审计 memory-lancedb 插件
-summary: 添加智能体可调用的工具。
-title: Memory Lancedb 插件
+summary: 添加可由智能体调用的工具。
+title: Memory LanceDB 插件
 x-i18n:
-    generated_at: "2026-05-02T15:15:32Z"
+    generated_at: "2026-05-03T02:49:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
@@ -18,10 +18,10 @@ x-i18n:
 
 ## 分发
 
-- 包：`@openclaw/memory-lancedb`
-- 安装路径：ClawHub + npm
+- 软件包：`@openclaw/memory-lancedb`
+- 安装途径：npm；ClawHub
 
-## 表面
+## 接口面
 
 契约：工具
 

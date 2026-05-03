@@ -1,13 +1,13 @@
 ---
 read_when:
     - 你正在安装、配置或审计 nostr 插件
-summary: 添加了用于发送和接收 OpenClaw 消息的 Nostr 渠道接口。
+summary: 新增用于发送和接收 OpenClaw 消息的 Nostr 渠道接口。
 title: Nostr 插件
 x-i18n:
-    generated_at: "2026-05-02T15:16:02Z"
+    generated_at: "2026-05-03T02:49:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -18,10 +18,10 @@ x-i18n:
 
 ## 分发
 
-- 软件包：`@openclaw/nostr`
-- 安装途径：ClawHub + npm
+- 包：`@openclaw/nostr`
+- 安装方式：npm；ClawHub
 
-## 界面
+## 功能面
 
 渠道：nostr
 
