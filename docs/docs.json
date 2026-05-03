@@ -1177,6 +1177,7 @@
                 "pages": [
                   "concepts/messages",
                   "concepts/streaming",
+                  "concepts/progress-drafts",
                   "concepts/retry",
                   "concepts/queue",
                   "concepts/queue-steering"
@@ -2665,6 +2666,7 @@
                 "pages": [
                   "zh-TW/concepts/messages",
                   "zh-TW/concepts/streaming",
+                  "zh-TW/concepts/progress-drafts",
                   "zh-TW/concepts/retry",
                   "zh-TW/concepts/queue",
                   "zh-TW/concepts/queue-steering"
@@ -3538,6 +3540,7 @@
                 "pages": [
                   "ja-JP/concepts/messages",
                   "ja-JP/concepts/streaming",
+                  "ja-JP/concepts/progress-drafts",
                   "ja-JP/concepts/retry",
                   "ja-JP/concepts/queue",
                   "ja-JP/concepts/queue-steering"
@@ -4411,6 +4414,7 @@
                 "pages": [
                   "es/concepts/messages",
                   "es/concepts/streaming",
+                  "es/concepts/progress-drafts",
                   "es/concepts/retry",
                   "es/concepts/queue",
                   "es/concepts/queue-steering"
@@ -5284,6 +5288,7 @@
                 "pages": [
                   "pt-BR/concepts/messages",
                   "pt-BR/concepts/streaming",
+                  "pt-BR/concepts/progress-drafts",
                   "pt-BR/concepts/retry",
                   "pt-BR/concepts/queue",
                   "pt-BR/concepts/queue-steering"
@@ -6157,6 +6162,7 @@
                 "pages": [
                   "ko/concepts/messages",
                   "ko/concepts/streaming",
+                  "ko/concepts/progress-drafts",
                   "ko/concepts/retry",
                   "ko/concepts/queue",
                   "ko/concepts/queue-steering"
@@ -7030,6 +7036,7 @@
                 "pages": [
                   "de/concepts/messages",
                   "de/concepts/streaming",
+                  "de/concepts/progress-drafts",
                   "de/concepts/retry",
                   "de/concepts/queue",
                   "de/concepts/queue-steering"
@@ -7903,6 +7910,7 @@
                 "pages": [
                   "fr/concepts/messages",
                   "fr/concepts/streaming",
+                  "fr/concepts/progress-drafts",
                   "fr/concepts/retry",
                   "fr/concepts/queue",
                   "fr/concepts/queue-steering"
@@ -8776,6 +8784,7 @@
                 "pages": [
                   "ar/concepts/messages",
                   "ar/concepts/streaming",
+                  "ar/concepts/progress-drafts",
                   "ar/concepts/retry",
                   "ar/concepts/queue",
                   "ar/concepts/queue-steering"
@@ -9649,6 +9658,7 @@
                 "pages": [
                   "it/concepts/messages",
                   "it/concepts/streaming",
+                  "it/concepts/progress-drafts",
                   "it/concepts/retry",
                   "it/concepts/queue",
                   "it/concepts/queue-steering"
@@ -10522,6 +10532,7 @@
                 "pages": [
                   "vi/concepts/messages",
                   "vi/concepts/streaming",
+                  "vi/concepts/progress-drafts",
                   "vi/concepts/retry",
                   "vi/concepts/queue",
                   "vi/concepts/queue-steering"
@@ -11395,6 +11406,7 @@
                 "pages": [
                   "nl/concepts/messages",
                   "nl/concepts/streaming",
+                  "nl/concepts/progress-drafts",
                   "nl/concepts/retry",
                   "nl/concepts/queue",
                   "nl/concepts/queue-steering"
@@ -12268,6 +12280,7 @@
                 "pages": [
                   "tr/concepts/messages",
                   "tr/concepts/streaming",
+                  "tr/concepts/progress-drafts",
                   "tr/concepts/retry",
                   "tr/concepts/queue",
                   "tr/concepts/queue-steering"
@@ -13141,6 +13154,7 @@
                 "pages": [
                   "uk/concepts/messages",
                   "uk/concepts/streaming",
+                  "uk/concepts/progress-drafts",
                   "uk/concepts/retry",
                   "uk/concepts/queue",
                   "uk/concepts/queue-steering"
@@ -14014,6 +14028,7 @@
                 "pages": [
                   "id/concepts/messages",
                   "id/concepts/streaming",
+                  "id/concepts/progress-drafts",
                   "id/concepts/retry",
                   "id/concepts/queue",
                   "id/concepts/queue-steering"
@@ -14887,6 +14902,7 @@
                 "pages": [
                   "pl/concepts/messages",
                   "pl/concepts/streaming",
+                  "pl/concepts/progress-drafts",
                   "pl/concepts/retry",
                   "pl/concepts/queue",
                   "pl/concepts/queue-steering"
