@@ -636,6 +636,7 @@ plugins.entries.active-memory
     - 查看 Gateway 网关日志中的 `active-memory: ... start|done`、`memory sync failed (search-bootstrap)` 或提供商嵌入错误。
     - 运行 `openclaw memory status --deep`，检查记忆搜索后端和索引健康状况。
     - 如果你使用 `ollama`，请确认嵌入模型已安装（`ollama list`）。
+
   </Accordion>
 
   <Accordion title="Gateway 网关重启后的首次召回返回 `status=timeout`">
