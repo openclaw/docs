@@ -1,25 +1,25 @@
 ---
 read_when:
-    - 生のモデル出力を検査して推論の漏えいがないか確認する必要があります
-    - Gateway を監視モードで実行しながら反復作業したい場合
-    - 再現性のあるデバッグワークフローが必要です
-summary: 'デバッグツール: 監視モード、生のモデルストリーム、推論漏えいのトレース'
+    - 推論の漏えいがないか、生のモデル出力を調査する必要があります
+    - 反復開発中に Gateway をウォッチモードで実行したい場合
+    - 再現可能なデバッグワークフローが必要です
+summary: 'デバッグツール: ウォッチモード、生のモデルストリーム、推論内容の漏えいのトレース'
 title: デバッグ
 x-i18n:
-    generated_at: "2026-05-02T22:19:14Z"
+    generated_at: "2026-05-03T21:34:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7a72a1508915e37ffdc5317889cdfde7024de3f5702739640abc2f03c3abadb7
+    source_hash: 7230112013a8db8d6a3853b765f4302a61609051ac4ffaf35a6f09de328deafc
     source_path: help/debugging.md
     workflow: 16
 ---
 
-デバッグヘルパーはストリーミング出力用です。特にプロバイダーが通常のテキストに推論を混ぜる場合に役立ちます。
+ストリーミング出力のデバッグヘルパー。特に、プロバイダーが推論を通常のテキストに混ぜる場合に役立ちます。
 
 ## ランタイムデバッグオーバーライド
 
-チャットで `/debug` を使うと、**ランタイム専用**の設定オーバーライド（メモリ上のみ、ディスクには保存しない）を設定できます。
-`/debug` はデフォルトで無効です。`commands.debug: true` で有効化します。
+チャットで `/debug` を使用して、**ランタイム専用**の設定オーバーライドを設定します（メモリ上のみ、ディスクには保存されません）。
+`/debug` はデフォルトで無効です。`commands.debug: true` で有効にします。
 これは、`openclaw.json` を編集せずに分かりにくい設定を切り替える必要がある場合に便利です。
 
 例:
@@ -31,11 +31,11 @@ x-i18n:
 /debug reset
 ```
 
-`/debug reset` はすべてのオーバーライドを消去し、ディスク上の設定に戻します。
+`/debug reset` はすべてのオーバーライドをクリアし、ディスク上の設定に戻します。
 
 ## セッショントレース出力
 
-完全な詳細モードを有効にせず、1つのセッションでPluginが所有するトレース/デバッグ行を確認したい場合は、`/trace` を使用します。
+完全な詳細モードを有効にせず、1 つのセッションで Plugin が所有するトレース/デバッグ行を確認したい場合は、`/trace` を使用します。
 
 例:
 
@@ -45,12 +45,13 @@ x-i18n:
 /trace off
 ```
 
-Active Memoryのデバッグ要約など、Plugin診断には `/trace` を使用します。
-通常の詳細なステータス/ツール出力には引き続き `/verbose` を使用し、ランタイム専用の設定オーバーライドには引き続き `/debug` を使用します。
+Active Memory のデバッグ要約などの Plugin 診断には `/trace` を使用します。
+通常の詳細なステータス/ツール出力には引き続き `/verbose` を使用し、ランタイム専用の設定オーバーライドには引き続き
+`/debug` を使用します。
 
-## Pluginライフサイクルトレース
+## Plugin ライフサイクルトレース
 
-Pluginライフサイクルコマンドが遅く感じられ、Pluginメタデータ、検出、レジストリ、ランタイムミラー、設定変更、更新処理について組み込みのフェーズ内訳が必要な場合は、`OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` を使用します。このトレースはオプトインで、stderr に書き込まれるため、JSONコマンド出力は引き続き解析可能です。
+Plugin ライフサイクルコマンドが遅く感じられ、Plugin メタデータ、検出、レジストリ、ランタイムミラー、設定変更、更新作業について組み込みのフェーズ分解が必要な場合は、`OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` を使用します。このトレースはオプトインで、stderr に書き込まれるため、JSON コマンド出力は解析可能なままです。
 
 例:
 
@@ -66,12 +67,13 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-CPUプロファイラーに手を伸ばす前に、Pluginライフサイクルの調査にこれを使用します。
-コマンドがソースチェックアウトから実行されている場合は、`pnpm build` の後に `node dist/entry.js ...` でビルド済みランタイムを測定することを優先してください。`pnpm openclaw ...` はソースランナーのオーバーヘッドも測定します。
+CPU プロファイラーに手を伸ばす前に、Plugin ライフサイクルの調査にはこれを使用します。
+コマンドをソースチェックアウトから実行している場合は、`pnpm build` の後に `node dist/entry.js ...` でビルド済みランタイムを測定することを推奨します。`pnpm openclaw ...`
+ではソースランナーのオーバーヘッドも測定されます。
 
-## CLI起動とコマンドプロファイリング
+## CLI 起動とコマンドプロファイリング
 
-コマンドが遅く感じられる場合は、リポジトリに含まれている起動ベンチマークを使用します。
+コマンドが遅く感じられる場合は、チェックイン済みの起動ベンチマークを使用します。
 
 ```bash
 pnpm test:startup:bench:smoke
@@ -79,36 +81,39 @@ pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --runs 3
 pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu
 ```
 
-通常のソースランナー経由で一度限りのプロファイリングを行うには、`OPENCLAW_RUN_NODE_CPU_PROF_DIR` を設定します。
+通常のソースランナー経由で一回限りのプロファイリングを行うには、
+`OPENCLAW_RUN_NODE_CPU_PROF_DIR` を設定します。
 
 ```bash
 OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-ソースランナーはNode CPUプロファイルフラグを追加し、コマンド用の `.cpuprofile` を書き込みます。コマンドコードに一時的な計測を追加する前にこれを使用します。
+ソースランナーは Node CPU プロファイルフラグを追加し、コマンドの
+`.cpuprofile` を書き込みます。コマンドコードに一時的な計測を追加する前にこれを使用します。
 
-## Gatewayウォッチモード
+## Gateway ウォッチモード
 
-高速な反復には、ファイルウォッチャーの下でGatewayを実行します。
+高速な反復作業には、ファイルウォッチャーの下で Gateway を実行します。
 
 ```bash
 pnpm gateway:watch
 ```
 
-デフォルトでは、これにより `openclaw-gateway-watch-main` という名前のtmuxセッション（または `openclaw-gateway-watch-dev-19001` のようなプロファイル/ポート固有のバリアント）が開始または再起動され、対話型ターミナルから自動的にアタッチされます。
-非対話型シェル、CI、エージェントのexec呼び出しはデタッチされたままになり、代わりにアタッチ手順を出力します。必要に応じて手動でアタッチします。
+デフォルトでは、`openclaw-gateway-watch-main` という名前の tmux セッション（または
+`openclaw-gateway-watch-dev-19001` のようなプロファイル/ポート固有のバリアント）を開始または再起動し、対話型ターミナルから自動的にアタッチします。
+非対話型シェル、CI、エージェントの exec 呼び出しはデタッチされたままになり、代わりにアタッチ手順を出力します。必要な場合は手動でアタッチします。
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
 ```
 
-tmuxペインは生のウォッチャーを実行します。
+tmux ペインは生のウォッチャーを実行します。
 
 ```bash
 node scripts/watch-node.mjs gateway --force
 ```
 
-tmuxが不要な場合はフォアグラウンドモードを使用します。
+tmux が不要な場合はフォアグラウンドモードを使用します。
 
 ```bash
 pnpm gateway:watch:raw
@@ -116,39 +121,47 @@ pnpm gateway:watch:raw
 OPENCLAW_GATEWAY_WATCH_TMUX=0 pnpm gateway:watch
 ```
 
-tmux管理は維持したまま自動アタッチを無効にします。
+tmux 管理を維持したまま自動アタッチを無効にします。
 
 ```bash
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-起動時/ランタイムのホットスポットをデバッグする際は、監視対象GatewayのCPU時間をプロファイルします。
+起動時/ランタイムのホットスポットをデバッグするときは、監視中の Gateway CPU 時間をプロファイルします。
 
 ```bash
 pnpm gateway:watch --benchmark
 ```
 
-ウォッチラッパーはGatewayを呼び出す前に `--benchmark` を消費し、Gateway子プロセスが終了するたびにV8 `.cpuprofile` を `.artifacts/gateway-watch-profiles/` の下に1つ書き込みます。監視対象Gatewayを停止または再起動して現在のプロファイルをフラッシュし、Chrome DevTools または Speedscope で開きます。
+ウォッチラッパーは Gateway を呼び出す前に `--benchmark` を消費し、Gateway 子プロセスの終了ごとに 1 つの V8 `.cpuprofile` を
+`.artifacts/gateway-watch-profiles/` の下に書き込みます。現在のプロファイルをフラッシュするには、監視中の Gateway を停止または再起動し、その後 Chrome DevTools または Speedscope で開きます。
 
 ```bash
 npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 ```
 
-プロファイルを別の場所に保存したい場合は、`--benchmark-dir <path>` を使用します。
+プロファイルを別の場所に置きたい場合は `--benchmark-dir <path>` を使用します。
+ベンチマーク対象の子プロセスでデフォルトの `--force` ポートクリーンアップをスキップし、Gateway ポートがすでに使用中の場合にすぐ失敗させたい場合は、`--benchmark-no-force` を使用します。
 
-tmuxラッパーは、`OPENCLAW_PROFILE`、`OPENCLAW_CONFIG_PATH`、`OPENCLAW_STATE_DIR`、`OPENCLAW_GATEWAY_PORT`、`OPENCLAW_SKIP_CHANNELS` など、一般的な非秘密のランタイムセレクターをペインに引き継ぎます。プロバイダー認証情報は通常のプロファイル/設定に入れるか、一度限りの一時的なシークレットには生のフォアグラウンドモードを使用します。
-管理対象のtmuxペインは、読みやすさのためにデフォルトで色付きのGatewayログも使用します。ANSI出力を無効にするには、`pnpm gateway:watch` の開始時に `FORCE_COLOR=0` を設定します。
+tmux ラッパーは、`OPENCLAW_PROFILE`、`OPENCLAW_CONFIG_PATH`、`OPENCLAW_STATE_DIR`、
+`OPENCLAW_GATEWAY_PORT`、`OPENCLAW_SKIP_CHANNELS` などの一般的な非シークレットのランタイムセレクターをペインに引き継ぎます。プロバイダー資格情報は通常のプロファイル/設定に置くか、一回限りの一時的なシークレットには生のフォアグラウンドモードを使用します。
+監視中の Gateway が起動中に終了した場合、ウォッチャーは
+`openclaw doctor --fix --non-interactive` を 1 回実行し、Gateway 子プロセスを再起動します。
+開発専用の修復パスを使わずに元の起動失敗を確認したい場合は、`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` を使用します。
+管理対象の tmux ペインでは、読みやすさのために色付きの Gateway ログもデフォルトになります。ANSI 出力を無効にするには、`pnpm gateway:watch` の開始時に `FORCE_COLOR=0` を設定します。
 
-ウォッチャーは、`src/` 配下のビルド関連ファイル、拡張機能のソースファイル、拡張機能の `package.json` と `openclaw.plugin.json` メタデータ、`tsconfig.json`、`package.json`、`tsdown.config.ts` の変更で再起動します。拡張機能メタデータの変更では、`tsdown` のリビルドを強制せずにGatewayを再起動します。ソースと設定の変更では、引き続き先に `dist` をリビルドします。
+ウォッチャーは、`src/` 配下のビルド関連ファイル、拡張機能のソースファイル、拡張機能の `package.json` と `openclaw.plugin.json` メタデータ、`tsconfig.json`、
+`package.json`、`tsdown.config.ts` で再起動します。拡張機能メタデータの変更では、`tsdown` のリビルドを強制せずに Gateway を再起動します。ソースと設定の変更では、引き続き先に `dist` をリビルドします。
 
-Gateway CLIフラグは `gateway:watch` の後に追加すると、各再起動時にそのまま渡されます。同じウォッチコマンドを再実行すると、名前付きtmuxペインが再生成されます。また、生のウォッチャーは単一ウォッチャーロックを維持するため、重複するウォッチャー親プロセスは積み上がらず置き換えられます。
+Gateway CLI フラグは `gateway:watch` の後に追加すると、各再起動時にそのまま渡されます。同じウォッチコマンドを再実行すると、名前付きの tmux ペインが再生成されます。また、生のウォッチャーは単一ウォッチャーロックを維持するため、重複したウォッチャー親プロセスは積み上がらずに置き換えられます。
 
-## 開発プロファイル + 開発Gateway（--dev）
+## 開発プロファイル + 開発 Gateway（--dev）
 
-状態を分離し、デバッグ用の安全で使い捨てのセットアップを起動するには、開発プロファイルを使用します。`--dev` フラグは**2つ**あります。
+状態を分離し、デバッグ用の安全で使い捨て可能なセットアップを起動するには、開発プロファイルを使用します。
+`--dev` フラグは**2 種類**あります。
 
-- **グローバル `--dev`（プロファイル）:** 状態を `~/.openclaw-dev` の下に分離し、Gatewayポートのデフォルトを `19001` にします（派生ポートもそれに合わせて移動します）。
-- **`gateway --dev`: 設定 + ワークスペースがない場合にGatewayへデフォルトの自動作成を指示します**（また、BOOTSTRAP.mdをスキップします）。
+- **グローバル `--dev`（プロファイル）:** 状態を `~/.openclaw-dev` の下に分離し、Gateway ポートをデフォルトで `19001` にします（派生ポートもそれに合わせて移動します）。
+- **`gateway --dev`: Gateway に、存在しない場合はデフォルト設定 + ワークスペースを自動作成するよう指示します**（そして BOOTSTRAP.md をスキップします）。
 
 推奨フロー（開発プロファイル + 開発ブートストラップ）:
 
@@ -157,7 +170,7 @@ pnpm gateway:dev
 OPENCLAW_PROFILE=dev openclaw tui
 ```
 
-まだグローバルインストールがない場合は、`pnpm openclaw ...` 経由でCLIを実行します。
+グローバルインストールがまだない場合は、`pnpm openclaw ...` 経由で CLI を実行します。
 
 これが行うこと:
 
@@ -165,13 +178,13 @@ OPENCLAW_PROFILE=dev openclaw tui
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
-   - `OPENCLAW_GATEWAY_PORT=19001`（browser/canvasもそれに応じて移動）
+   - `OPENCLAW_GATEWAY_PORT=19001`（ブラウザー/canvas もそれに応じて移動）
 
 2. **開発ブートストラップ**（`gateway --dev`）
-   - 存在しない場合、最小設定を書き込みます（`gateway.mode=local`、local loopbackにバインド）。
+   - 存在しない場合は最小設定を書き込みます（`gateway.mode=local`、loopback にバインド）。
    - `agent.workspace` を開発ワークスペースに設定します。
-   - `agent.skipBootstrap=true` を設定します（BOOTSTRAP.mdなし）。
-   - 存在しない場合、ワークスペースファイルをシードします:
+   - `agent.skipBootstrap=true` を設定します（BOOTSTRAP.md なし）。
+   - 存在しない場合はワークスペースファイルをシードします:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
    - デフォルトのアイデンティティ: **C3‑PO**（プロトコルドロイド）。
    - 開発モードではチャネルプロバイダーをスキップします（`OPENCLAW_SKIP_CHANNELS=1`）。
@@ -183,7 +196,7 @@ pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` は**グローバル**プロファイルフラグであり、一部のランナーに消費されます。明示的に指定する必要がある場合は、環境変数形式を使用します。
+`--dev` は**グローバル**プロファイルフラグであり、一部のランナーに消費されます。明示的に指定する必要がある場合は、env var 形式を使用します。
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -191,10 +204,11 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` は設定、認証情報、セッション、開発ワークスペースを消去し（`rm` ではなく `trash` を使用）、その後デフォルトの開発セットアップを再作成します。
+`--reset` は設定、資格情報、セッション、開発ワークスペースを消去し（`rm` ではなく
+`trash` を使用）、デフォルトの開発セットアップを再作成します。
 
 <Tip>
-非開発Gatewayがすでに実行中（launchdまたはsystemd）の場合は、先に停止します。
+非開発 Gateway がすでに実行中の場合（launchd または systemd）、先に停止します。
 
 ```bash
 openclaw gateway stop
@@ -204,10 +218,10 @@ openclaw gateway stop
 
 ## 生ストリームログ（OpenClaw）
 
-OpenClawは、フィルタリング/フォーマットの前に**生のアシスタントストリーム**をログに記録できます。
-これは、推論がプレーンテキストの差分として届いているのか（または別個のthinkingブロックとして届いているのか）を確認する最適な方法です。
+OpenClaw は、フィルタリング/整形の前に**生のアシスタントストリーム**をログに記録できます。
+これは、推論がプレーンテキストのデルタとして届いているのか（または別個の思考ブロックとして届いているのか）を確認する最良の方法です。
 
-CLI経由で有効化します。
+CLI 経由で有効にします。
 
 ```bash
 pnpm gateway:watch --raw-stream
@@ -219,7 +233,7 @@ pnpm gateway:watch --raw-stream
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
 ```
 
-同等の環境変数:
+同等の env var:
 
 ```bash
 OPENCLAW_RAW_STREAM=1
@@ -232,7 +246,7 @@ OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 
 ## 生チャンクログ（pi-mono）
 
-ブロックに解析される前の**生のOpenAI互換チャンク**を取得するために、pi-monoは別個のロガーを公開しています。
+ブロックに解析される前の**生の OpenAI 互換チャンク**を取得するために、pi-mono は別のロガーを公開しています。
 
 ```bash
 PI_RAW_STREAM=1
@@ -248,14 +262,14 @@ PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> 注: これは、pi-monoの
-> `openai-completions` プロバイダーを使用するプロセスからのみ出力されます。
+> 注: これは、pi-mono の
+> `openai-completions` プロバイダーを使用するプロセスによってのみ出力されます。
 
 ## 安全上の注意
 
-- 生ストリームログには、完全なプロンプト、ツール出力、ユーザーデータが含まれる場合があります。
-- ログはローカルに保管し、デバッグ後に削除してください。
-- ログを共有する場合は、先にシークレットとPIIを削除してください。
+- 生ストリームログには、完全なプロンプト、ツール出力、ユーザーデータが含まれることがあります。
+- ログはローカルに保持し、デバッグ後に削除してください。
+- ログを共有する場合は、先にシークレットと PII を除去してください。
 
 ## 関連
 
