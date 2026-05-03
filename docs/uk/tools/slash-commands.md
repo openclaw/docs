@@ -1,47 +1,47 @@
 ---
 read_when:
     - Використання або налаштування чат-команд
-    - Налагодження маршрутизації команд або дозволів
+    - Налагодження маршрутизації команд або прав доступу
 sidebarTitle: Slash commands
 summary: 'Слеш-команди: текстові й нативні, конфігурація та підтримувані команди'
-title: Слеш-команди
+title: Команди зі скісною рискою
 x-i18n:
-    generated_at: "2026-05-02T13:23:26Z"
+    generated_at: "2026-05-03T17:33:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c2829a33601eb53a63b914ad1a6c3bf51be4298fe3bd34faf6475f60a2d491d2
+    source_hash: 02b7c1f3daa9598515085fd94570172f82779ce61a2af34edac02a36ccc87543
     source_path: tools/slash-commands.md
     workflow: 16
 ---
 
-Commands are handled by the Gateway. Most commands must be sent as a **standalone** message that starts with `/`. The host-only bash chat command uses `! <cmd>` (with `/bash <cmd>` as an alias).
+Команди обробляються Gateway. Більшість команд потрібно надсилати як **окреме** повідомлення, що починається з `/`. Команда bash-чату лише для хоста використовує `! <cmd>` (з `/bash <cmd>` як псевдонімом).
 
-When a conversation or thread is bound to an ACP session, normal follow-up text routes to that ACP harness. Gateway management commands still stay local: `/acp ...` always reaches the OpenClaw ACP command handler, and `/status` plus `/unfocus` stay local whenever command handling is enabled for the surface.
+Коли розмова або thread прив’язана до сеансу ACP, звичайний подальший текст спрямовується до цього ACP harness. Команди керування Gateway все одно залишаються локальними: `/acp ...` завжди потрапляє до обробника команд OpenClaw ACP, а `/status` плюс `/unfocus` залишаються локальними щоразу, коли обробку команд увімкнено для цієї поверхні.
 
-There are two related systems:
+Існують дві пов’язані системи:
 
 <AccordionGroup>
   <Accordion title="Commands">
-    Standalone `/...` messages.
+    Окремі повідомлення `/...`.
   </Accordion>
   <Accordion title="Directives">
     `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`.
 
-    - Directives are stripped from the message before the model sees it.
-    - In normal chat messages (not directive-only), they are treated as "inline hints" and do **not** persist session settings.
-    - In directive-only messages (the message contains only directives), they persist to the session and reply with an acknowledgement.
-    - Directives are only applied for **authorized senders**. If `commands.allowFrom` is set, it is the only allowlist used; otherwise authorization comes from channel allowlists/pairing plus `commands.useAccessGroups`. Unauthorized senders see directives treated as plain text.
+    - Директиви вилучаються з повідомлення до того, як модель його побачить.
+    - У звичайних чат-повідомленнях (не лише з директивами) вони розглядаються як «inline hints» і **не** зберігають налаштування сеансу.
+    - У повідомленнях лише з директивами (повідомлення містить тільки директиви) вони зберігаються в сеансі й відповідають підтвердженням.
+    - Директиви застосовуються лише для **авторизованих відправників**. Якщо встановлено `commands.allowFrom`, використовується лише цей allowlist; інакше авторизація береться з allowlists/спарювання каналу плюс `commands.useAccessGroups`. Неавторизовані відправники бачать, що директиви обробляються як звичайний текст.
 
   </Accordion>
   <Accordion title="Inline shortcuts">
-    Allowlisted/authorized senders only: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
+    Лише allowlisted/авторизовані відправники: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
 
-    They run immediately, are stripped before the model sees the message, and the remaining text continues through the normal flow.
+    Вони виконуються негайно, вилучаються до того, як модель побачить повідомлення, а решта тексту продовжує проходити звичайним потоком.
 
   </Accordion>
 </AccordionGroup>
 
-## Config
+## Конфігурація
 
 ```json5
 {
@@ -69,134 +69,134 @@ There are two related systems:
 ```
 
 <ParamField path="commands.text" type="boolean" default="true">
-  Enables parsing `/...` in chat messages. On surfaces without native commands (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams), text commands still work even if you set this to `false`.
+  Умикає розбір `/...` у чат-повідомленнях. На поверхнях без нативних команд (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams) текстові команди все одно працюють, навіть якщо встановити це значення в `false`.
 </ParamField>
 <ParamField path="commands.native" type='boolean | "auto"' default='"auto"'>
-  Registers native commands. Auto: on for Discord/Telegram; off for Slack (until you add slash commands); ignored for providers without native support. Set `channels.discord.commands.native`, `channels.telegram.commands.native`, or `channels.slack.commands.native` to override per provider (bool or `"auto"`). `false` clears previously registered commands on Discord/Telegram at startup. Slack commands are managed in the Slack app and are not removed automatically.
+  Реєструє нативні команди. Авто: увімкнено для Discord/Telegram; вимкнено для Slack (доки ви не додасте slash commands); ігнорується для провайдерів без нативної підтримки. Встановіть `channels.discord.commands.native`, `channels.telegram.commands.native` або `channels.slack.commands.native`, щоб перевизначити для окремого провайдера (bool або `"auto"`). `false` очищає раніше зареєстровані команди в Discord/Telegram під час запуску. Команди Slack керуються в застосунку Slack і не видаляються автоматично.
 </ParamField>
-On Discord, native command specs may include `descriptionLocalizations`, which OpenClaw publishes as Discord `description_localizations` and includes in reconcile comparisons.
+У Discord специфікації нативних команд можуть містити `descriptionLocalizations`, які OpenClaw публікує як Discord `description_localizations` і включає в порівняння узгодження.
 <ParamField path="commands.nativeSkills" type='boolean | "auto"' default='"auto"'>
-  Registers **skill** commands natively when supported. Auto: on for Discord/Telegram; off for Slack (Slack requires creating a slash command per skill). Set `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills`, or `channels.slack.commands.nativeSkills` to override per provider (bool or `"auto"`).
+  Реєструє команди **skill** нативно, коли це підтримується. Авто: увімкнено для Discord/Telegram; вимкнено для Slack (Slack вимагає створення slash command для кожного skill). Встановіть `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills` або `channels.slack.commands.nativeSkills`, щоб перевизначити для окремого провайдера (bool або `"auto"`).
 </ParamField>
 <ParamField path="commands.bash" type="boolean" default="false">
-  Enables `! <cmd>` to run host shell commands (`/bash <cmd>` is an alias; requires `tools.elevated` allowlists).
+  Умикає `! <cmd>` для запуску shell-команд хоста (`/bash <cmd>` є псевдонімом; потребує allowlists `tools.elevated`).
 </ParamField>
 <ParamField path="commands.bashForegroundMs" type="number" default="2000">
-  Controls how long bash waits before switching to background mode (`0` backgrounds immediately).
+  Керує тим, як довго bash чекає перед перемиканням у фоновий режим (`0` переводить у фон негайно).
 </ParamField>
 <ParamField path="commands.config" type="boolean" default="false">
-  Enables `/config` (reads/writes `openclaw.json`).
+  Умикає `/config` (читає/записує `openclaw.json`).
 </ParamField>
 <ParamField path="commands.mcp" type="boolean" default="false">
-  Enables `/mcp` (reads/writes OpenClaw-managed MCP config under `mcp.servers`).
+  Умикає `/mcp` (читає/записує керовану OpenClaw конфігурацію MCP у `mcp.servers`).
 </ParamField>
 <ParamField path="commands.plugins" type="boolean" default="false">
-  Enables `/plugins` (plugin discovery/status plus install + enable/disable controls).
+  Умикає `/plugins` (виявлення/статус plugins плюс елементи керування встановленням і ввімкненням/вимкненням).
 </ParamField>
 <ParamField path="commands.debug" type="boolean" default="false">
-  Enables `/debug` (runtime-only overrides).
+  Умикає `/debug` (лише runtime-перевизначення).
 </ParamField>
 <ParamField path="commands.restart" type="boolean" default="true">
-  Enables `/restart` plus gateway restart tool actions.
+  Умикає `/restart` плюс дії інструментів перезапуску gateway.
 </ParamField>
 <ParamField path="commands.ownerAllowFrom" type="string[]">
-  Sets the explicit owner allowlist for owner-only command/tool surfaces. This is the human operator account that can approve dangerous actions and run commands such as `/diagnostics`, `/export-trajectory`, and `/config`. It is separate from `commands.allowFrom` and from DM pairing access.
+  Встановлює явний owner allowlist для командних/інструментальних поверхонь лише для owner. Це обліковий запис людського оператора, який може схвалювати небезпечні дії та виконувати команди, як-от `/diagnostics`, `/export-trajectory` і `/config`. Він окремий від `commands.allowFrom` і від доступу через DM-спарювання.
 </ParamField>
 <ParamField path="channels.<channel>.commands.enforceOwnerForCommands" type="boolean" default="false">
-  Per-channel: makes owner-only commands require **owner identity** to run on that surface. When `true`, the sender must either match a resolved owner candidate (for example an entry in `commands.ownerAllowFrom` or provider-native owner metadata) or hold internal `operator.admin` scope on an internal message channel. A wildcard entry in channel `allowFrom`, or an empty/unresolved owner-candidate list, is **not** sufficient — owner-only commands fail closed on that channel. Leave this off if you want owner-only commands gated only by `ownerAllowFrom` and the standard command allowlists.
+  Для кожного каналу: змушує команди лише для owner вимагати **ідентичність owner** для запуску на цій поверхні. Коли `true`, відправник має або збігатися з розв’язаним кандидатом owner (наприклад, записом у `commands.ownerAllowFrom` або нативними метаданими owner провайдера), або мати внутрішній scope `operator.admin` у внутрішньому каналі повідомлень. Запис wildcard у channel `allowFrom` або порожній/нерозв’язаний список кандидатів owner **не** є достатнім — команди лише для owner на цьому каналі відмовляють закрито. Залиште це вимкненим, якщо хочете, щоб команди лише для owner обмежувалися тільки `ownerAllowFrom` і стандартними command allowlists.
 </ParamField>
 <ParamField path="commands.ownerDisplay" type='"raw" | "hash"'>
-  Controls how owner ids appear in the system prompt.
+  Керує тим, як ids owner відображаються в системному prompt.
 </ParamField>
 <ParamField path="commands.ownerDisplaySecret" type="string">
-  Optionally sets the HMAC secret used when `commands.ownerDisplay="hash"`.
+  Необов’язково встановлює HMAC secret, що використовується, коли `commands.ownerDisplay="hash"`.
 </ParamField>
 <ParamField path="commands.allowFrom" type="object">
-  Per-provider allowlist for command authorization. When configured, it is the only authorization source for commands and directives (channel allowlists/pairing and `commands.useAccessGroups` are ignored). Use `"*"` for a global default; provider-specific keys override it.
+  Allowlist для авторизації команд за провайдерами. Коли налаштовано, це єдине джерело авторизації для команд і директив (channel allowlists/спарювання та `commands.useAccessGroups` ігноруються). Використовуйте `"*"` для глобального типового значення; ключі окремих провайдерів його перевизначають.
 </ParamField>
 <ParamField path="commands.useAccessGroups" type="boolean" default="true">
-  Enforces allowlists/policies for commands when `commands.allowFrom` is not set.
+  Застосовує allowlists/policies для команд, коли `commands.allowFrom` не встановлено.
 </ParamField>
 
-## Command list
+## Список команд
 
-Current source-of-truth:
+Поточне джерело істини:
 
-- core built-ins come from `src/auto-reply/commands-registry.shared.ts`
-- generated dock commands come from `src/auto-reply/commands-registry.data.ts`
-- plugin commands come from plugin `registerCommand()` calls
-- actual availability on your gateway still depends on config flags, channel surface, and installed/enabled plugins
+- core built-ins беруться з `src/auto-reply/commands-registry.shared.ts`
+- згенеровані dock commands беруться з `src/auto-reply/commands-registry.data.ts`
+- команди plugins беруться з викликів plugin `registerCommand()`
+- фактична доступність на вашому gateway все одно залежить від прапорців конфігурації, поверхні каналу та встановлених/увімкнених plugins
 
-### Core built-in commands
+### Вбудовані команди core
 
 <AccordionGroup>
   <Accordion title="Sessions and runs">
-    - `/new [model]` starts a new session; `/reset` is the reset alias.
-    - Control UI intercepts typed `/new` to create and switch to a fresh dashboard session; typed `/reset` still runs the Gateway's in-place reset.
-    - `/reset soft [message]` keeps the current transcript, drops reused CLI backend session ids, and reruns startup/system-prompt loading in-place.
-    - `/compact [instructions]` compacts the session context. See [Compaction](/uk/concepts/compaction).
-    - `/stop` aborts the current run.
-    - `/session idle <duration|off>` and `/session max-age <duration|off>` manage thread-binding expiry.
-    - `/export-session [path]` exports the current session to HTML. Alias: `/export`.
-    - `/export-trajectory [path]` asks for exec approval, then exports a JSONL [trajectory bundle](/uk/tools/trajectory) for the current session. Use it when you need the prompt, tool, and transcript timeline for one OpenClaw session. In group chats, the approval prompt and export result go to the owner privately. Alias: `/trajectory`.
+    - `/new [model]` запускає новий сеанс; `/reset` є псевдонімом скидання.
+    - Control UI перехоплює введений `/new`, щоб створити та перемкнутися на свіжий сеанс dashboard; введений `/reset` все одно виконує in-place reset Gateway.
+    - `/reset soft [message]` зберігає поточний transcript, відкидає повторно використані ids сеансів CLI backend і повторно запускає startup/system-prompt loading in-place.
+    - `/compact [instructions]` ущільнює контекст сеансу. Див. [Compaction](/uk/concepts/compaction).
+    - `/stop` перериває поточний запуск.
+    - `/session idle <duration|off>` і `/session max-age <duration|off>` керують строком дії прив’язки thread.
+    - `/export-session [path]` експортує поточний сеанс у HTML. Псевдонім: `/export`.
+    - `/export-trajectory [path]` запитує схвалення exec, а потім експортує JSONL [trajectory bundle](/uk/tools/trajectory) для поточного сеансу. Використовуйте це, коли вам потрібна хронологія prompt, tool і transcript для одного сеансу OpenClaw. У групових чатах prompt схвалення та результат експорту надсилаються owner приватно. Псевдонім: `/trajectory`.
 
   </Accordion>
   <Accordion title="Model and run controls">
-    - `/think <level>` sets the thinking level. Options come from the active model's provider profile; common levels are `off`, `minimal`, `low`, `medium`, and `high`, with custom levels such as `xhigh`, `adaptive`, `max`, or binary `on` only where supported. Aliases: `/thinking`, `/t`.
-    - `/verbose on|off|full` toggles verbose output. Alias: `/v`.
-    - `/trace on|off` toggles plugin trace output for the current session.
-    - `/fast [status|on|off]` shows or sets fast mode.
-    - `/reasoning [on|off|stream]` toggles reasoning visibility. Alias: `/reason`.
-    - `/elevated [on|off|ask|full]` toggles elevated mode. Alias: `/elev`.
-    - `/exec host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>` shows or sets exec defaults.
-    - `/model [name|#|status]` shows or sets the model.
-    - `/models [provider] [page] [limit=<n>|size=<n>|all]` lists configured/auth-available providers or models for a provider; add `all` to browse that provider's full catalog.
-    - `/queue <mode>` manages queue behavior (`steer`, legacy `queue`, `followup`, `collect`, `steer-backlog`, `interrupt`) plus options like `debounce:0.5s cap:25 drop:summarize`; `/queue default` or `/queue reset` clears the session override. See [Command queue](/uk/concepts/queue) and [Steering queue](/uk/concepts/queue-steering).
+    - `/think <level>` встановлює рівень thinking. Варіанти беруться з профілю провайдера активної моделі; поширені рівні: `off`, `minimal`, `low`, `medium` і `high`, а власні рівні, як-от `xhigh`, `adaptive`, `max`, або двійковий `on`, доступні лише там, де підтримуються. Псевдоніми: `/thinking`, `/t`.
+    - `/verbose on|off|full` перемикає verbose output. Псевдонім: `/v`.
+    - `/trace on|off` перемикає plugin trace output для поточного сеансу.
+    - `/fast [status|on|off]` показує або встановлює fast mode.
+    - `/reasoning [on|off|stream]` перемикає видимість reasoning. Псевдонім: `/reason`.
+    - `/elevated [on|off|ask|full]` перемикає elevated mode. Псевдонім: `/elev`.
+    - `/exec host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>` показує або встановлює типові значення exec.
+    - `/model [name|#|status]` показує або встановлює модель.
+    - `/models [provider] [page] [limit=<n>|size=<n>|all]` перелічує налаштованих/доступних за автентифікацією провайдерів або моделі для провайдера; додайте `all`, щоб переглянути повний catalog цього провайдера.
+    - `/queue <mode>` керує поведінкою черги (`steer`, legacy `queue`, `followup`, `collect`, `steer-backlog`, `interrupt`) плюс параметри на кшталт `debounce:0.5s cap:25 drop:summarize`; `/queue default` або `/queue reset` очищає перевизначення сеансу. Див. [Command queue](/uk/concepts/queue) і [Steering queue](/uk/concepts/queue-steering).
 
   </Accordion>
   <Accordion title="Discovery and status">
-    - `/help` shows the short help summary.
-    - `/commands` shows the generated command catalog.
-    - `/tools [compact|verbose]` shows what the current agent can use right now.
-    - `/status` shows execution/runtime status, including `Execution`/`Runtime` labels and provider usage/quota when available.
-    - `/diagnostics [note]` is the owner-only support-report flow for Gateway bugs and Codex harness runs. It asks for explicit exec approval every time before running `openclaw gateway diagnostics export --json`; do not approve diagnostics with an allow-all rule. After approval, it sends a pasteable report with the local bundle path, manifest summary, privacy notes, and relevant session ids. In group chats, the approval prompt and report go to the owner privately. When the active session uses the OpenAI Codex harness, the same approval also sends relevant Codex feedback to OpenAI servers and the completed reply lists the OpenClaw session ids, Codex thread ids, and `codex resume <thread-id>` commands. See [Diagnostics Export](/uk/gateway/diagnostics).
-    - `/crestodian <request>` runs the Crestodian setup and repair helper from an owner DM.
-    - `/tasks` lists active/recent background tasks for the current session.
-    - `/context [list|detail|json]` explains how context is assembled.
-    - `/whoami` shows your sender id. Alias: `/id`.
-    - `/usage off|tokens|full|cost` controls the per-response usage footer or prints a local cost summary.
+    - `/help` показує короткий довідковий підсумок.
+    - `/commands` показує згенерований catalog команд.
+    - `/tools [compact|verbose]` показує, що поточний агент може використовувати просто зараз.
+    - `/status` показує execution/runtime status, включно з мітками `Execution`/`Runtime` і usage/quota провайдера, коли доступно.
+    - `/diagnostics [note]` — це owner-only support-report flow для помилок Gateway і запусків Codex harness. Він щоразу запитує явне схвалення exec перед запуском `openclaw gateway diagnostics export --json`; не схвалюйте diagnostics правилом allow-all. Після схвалення він надсилає звіт, придатний для вставлення, з локальним шляхом bundle, підсумком manifest, privacy notes і релевантними ids сеансів. У групових чатах prompt схвалення та звіт надсилаються owner приватно. Коли активний сеанс використовує OpenAI Codex harness, те саме схвалення також надсилає релевантний Codex feedback на сервери OpenAI, а завершена відповідь перелічує ids сеансів OpenClaw, ids threads Codex і команди `codex resume <thread-id>`. Див. [Diagnostics Export](/uk/gateway/diagnostics).
+    - `/crestodian <request>` запускає helper налаштування та ремонту Crestodian з DM owner.
+    - `/tasks` перелічує активні/нещодавні фонові завдання для поточного сеансу.
+    - `/context [list|detail|json]` пояснює, як збирається контекст.
+    - `/whoami` показує ваш sender id. Псевдонім: `/id`.
+    - `/usage off|tokens|full|cost` керує per-response usage footer або друкує local cost summary.
 
   </Accordion>
   <Accordion title="Skills, allowlists, approvals">
-    - `/skill <name> [input]` runs a skill by name.
-    - `/allowlist [list|add|remove] ...` manages allowlist entries. Text-only.
-    - `/approve <id> <decision>` resolves exec approval prompts.
-    - `/btw <question>` asks a side question without changing future session context. See [BTW](/uk/tools/btw).
+    - `/skill <name> [input]` запускає skill за назвою.
+    - `/allowlist [list|add|remove] ...` керує записами allowlist. Лише текст.
+    - `/approve <id> <decision>` розв’язує prompts схвалення exec.
+    - `/btw <question>` ставить side question без зміни майбутнього контексту сеансу. Псевдонім: `/side`. Див. [BTW](/uk/tools/btw).
 
   </Accordion>
   <Accordion title="Субагенти та ACP">
     - `/subagents list|kill|log|info|send|steer|spawn` керує запусками субагентів для поточного сеансу.
     - `/acp spawn|cancel|steer|close|sessions|status|set-mode|set|cwd|permissions|timeout|model|reset-options|doctor|install|help` керує сеансами ACP та параметрами середовища виконання.
-    - `/focus <target>` прив’язує поточну гілку Discord або тему/розмову Telegram до цілі сеансу.
-    - `/unfocus` видаляє поточну прив’язку.
-    - `/agents` показує список агентів, прив’язаних до гілки, для поточного сеансу.
-    - `/kill <id|#|all>` перериває один або всі запущені субагенти.
+    - `/focus <target>` прив’язує поточний потік Discord або тему/розмову Telegram до цілі сеансу.
+    - `/unfocus` вилучає поточну прив’язку.
+    - `/agents` показує агентів, прив’язаних до потоку, для поточного сеансу.
+    - `/kill <id|#|all>` перериває одного або всіх запущених субагентів.
     - `/steer <id|#> <message>` надсилає керування запущеному субагенту. Псевдонім: `/tell`.
 
   </Accordion>
   <Accordion title="Записи лише для власника та адміністрування">
-    - `/config show|get|set|unset` читає або записує `openclaw.json`. Лише для власника. Потрібно `commands.config: true`.
-    - `/mcp show|get|set|unset` читає або записує конфігурацію MCP-сервера, керовану OpenClaw, у `mcp.servers`. Лише для власника. Потрібно `commands.mcp: true`.
-    - `/plugins list|inspect|show|get|install|enable|disable` перевіряє або змінює стан плагіна. `/plugin` є псевдонімом. Записи лише для власника. Потрібно `commands.plugins: true`.
-    - `/debug show|set|unset|reset` керує перевизначеннями конфігурації лише для середовища виконання. Лише для власника. Потрібно `commands.debug: true`.
-    - `/restart` перезапускає OpenClaw, коли ввімкнено. Типово: ввімкнено; задайте `commands.restart: false`, щоб вимкнути.
+    - `/config show|get|set|unset` читає або записує `openclaw.json`. Лише для власника. Потребує `commands.config: true`.
+    - `/mcp show|get|set|unset` читає або записує конфігурацію MCP-сервера, керовану OpenClaw, у `mcp.servers`. Лише для власника. Потребує `commands.mcp: true`.
+    - `/plugins list|inspect|show|get|install|enable|disable` перевіряє або змінює стан plugin. `/plugin` є псевдонімом. Записи лише для власника. Потребує `commands.plugins: true`.
+    - `/debug show|set|unset|reset` керує перевизначеннями конфігурації лише для середовища виконання. Лише для власника. Потребує `commands.debug: true`.
+    - `/restart` перезапускає OpenClaw, коли це ввімкнено. Типово: ввімкнено; задайте `commands.restart: false`, щоб вимкнути.
     - `/send on|off|inherit` задає політику надсилання. Лише для власника.
 
   </Accordion>
   <Accordion title="Голос, TTS, керування каналом">
     - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` керує TTS. Див. [TTS](/uk/tools/tts).
-    - `/activation mention|always` задає режим активації групи.
-    - `/bash <command>` запускає команду оболонки хоста. Лише текст. Псевдонім: `! <command>`. Потрібно `commands.bash: true` плюс списки дозволів `tools.elevated`.
+    - `/activation mention|always` задає режим активації в групі.
+    - `/bash <command>` запускає команду оболонки хоста. Лише текст. Псевдонім: `! <command>`. Потребує `commands.bash: true` плюс списки дозволів `tools.elevated`.
     - `!poll [sessionId]` перевіряє фонове завдання bash.
     - `!stop [sessionId]` зупиняє фонове завдання bash.
 
@@ -206,31 +206,32 @@ Current source-of-truth:
 ### Згенеровані команди стикування
 
 Команди стикування перемикають маршрут відповіді поточного сеансу на інший пов’язаний
-канал. Налаштування, приклади та усунення несправностей див. у [Стикуванні каналів](/uk/concepts/channel-docking).
+канал. Див. [Стикування каналів](/uk/concepts/channel-docking) щодо налаштування,
+прикладів і усунення неполадок.
 
-Команди стикування генеруються з плагінів каналів із підтримкою нативних команд. Поточний вбудований набір:
+Команди стикування генеруються з channel plugins із підтримкою нативних команд. Поточний вбудований набір:
 
 - `/dock-discord` (псевдонім: `/dock_discord`)
 - `/dock-mattermost` (псевдонім: `/dock_mattermost`)
 - `/dock-slack` (псевдонім: `/dock_slack`)
 - `/dock-telegram` (псевдонім: `/dock_telegram`)
 
-Використовуйте команди стикування з прямого чату, щоб перемкнути маршрут відповіді поточного сеансу на інший пов’язаний канал. Агент зберігає той самий контекст сеансу, але майбутні відповіді для цього сеансу доставляються вибраному адресату каналу.
+Використовуйте команди стикування з прямого чату, щоб перемкнути маршрут відповіді поточного сеансу на інший пов’язаний канал. Агент зберігає той самий контекст сеансу, але майбутні відповіді для цього сеансу доставляються вибраному співрозмовнику каналу.
 
-Команди стикування потребують `session.identityLinks`. Відправник джерела та цільовий адресат мають бути в одній групі ідентичностей, наприклад `["telegram:123", "discord:456"]`. Якщо користувач Telegram з id `123` надсилає `/dock_discord`, OpenClaw зберігає `lastChannel: "discord"` і `lastTo: "456"` в активному сеансі. Якщо відправник не пов’язаний з адресатом Discord, команда відповідає підказкою щодо налаштування, а не переходить до звичайного чату.
+Команди стикування потребують `session.identityLinks`. Відправник-джерело й цільовий співрозмовник мають бути в одній групі ідентичностей, наприклад `["telegram:123", "discord:456"]`. Якщо користувач Telegram з id `123` надсилає `/dock_discord`, OpenClaw зберігає `lastChannel: "discord"` і `lastTo: "456"` в активному сеансі. Якщо відправник не пов’язаний зі співрозмовником Discord, команда відповідає підказкою з налаштування замість переходу до звичайного чату.
 
-Стикування змінює лише активний маршрут сеансу. Воно не створює облікові записи каналів, не надає доступ, не обходить списки дозволів каналів і не переносить історію стенограми до іншого сеансу. Використовуйте `/dock-telegram`, `/dock-slack`, `/dock-mattermost` або іншу згенеровану команду стикування, щоб знову перемкнути маршрут.
+Стикування змінює лише маршрут активного сеансу. Воно не створює облікові записи каналів, не надає доступ, не обходить списки дозволів каналів і не переносить історію транскрипта до іншого сеансу. Використовуйте `/dock-telegram`, `/dock-slack`, `/dock-mattermost` або іншу згенеровану команду стикування, щоб знову перемкнути маршрут.
 
-### Команди вбудованих плагінів
+### Команди вбудованих plugins
 
-Вбудовані плагіни можуть додавати більше slash-команд. Поточні вбудовані команди в цьому репозиторії:
+Вбудовані plugins можуть додавати більше slash-команд. Поточні вбудовані команди в цьому репозиторії:
 
-- `/dreaming [on|off|status|help]` перемикає Dreaming пам’яті. Див. [Dreaming](/uk/concepts/dreaming).
+- `/dreaming [on|off|status|help]` перемикає memory dreaming. Див. [Dreaming](/uk/concepts/dreaming).
 - `/pair [qr|status|pending|approve|cleanup|notify]` керує потоком сполучення/налаштування пристрою. Див. [Сполучення](/uk/channels/pairing).
-- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` тимчасово активує високоризикові команди вузла телефону.
-- `/voice status|list [limit]|set <voiceId|name>` керує конфігурацією голосу Talk. У Discord нативна назва команди — `/talkvoice`.
-- `/card ...` надсилає пресети насичених карток LINE. Див. [LINE](/uk/channels/line).
-- `/codex status|models|threads|resume|compact|review|diagnostics|account|mcp|skills` перевіряє й керує вбудованим каркасом сервера застосунку Codex. Див. [Каркас Codex](/uk/plugins/codex-harness).
+- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` тимчасово активує високоризикові команди телефонного вузла.
+- `/voice status|list [limit]|set <voiceId|name>` керує конфігурацією голосу Talk. У Discord назва нативної команди: `/talkvoice`.
+- `/card ...` надсилає пресети багатих карток LINE. Див. [LINE](/uk/channels/line).
+- `/codex status|models|threads|resume|compact|review|diagnostics|account|mcp|skills` перевіряє та керує вбудованим серверним каркасом застосунку Codex. Див. [Каркас Codex](/uk/plugins/codex-harness).
 - Команди лише для QQBot:
   - `/bot-ping`
   - `/bot-version`
@@ -242,85 +243,85 @@ Current source-of-truth:
 
 Skills, які може викликати користувач, також доступні як slash-команди:
 
-- `/skill <name> [input]` завжди працює як загальна точка входу.
-- Skills також можуть з’являтися як прямі команди, наприклад `/prose`, коли Skill/плагін їх реєструє.
-- нативна реєстрація команд Skills керується `commands.nativeSkills` і `channels.<provider>.commands.nativeSkills`.
-- специфікації команд можуть надавати `descriptionLocalizations` для нативних поверхонь, що підтримують локалізовані описи, зокрема Discord.
+- `/skill <name> [input]` завжди працює як універсальна точка входу.
+- Skills також можуть з’являтися як прямі команди, наприклад `/prose`, коли skill/plugin їх реєструє.
+- реєстрація нативних команд Skills контролюється `commands.nativeSkills` і `channels.<provider>.commands.nativeSkills`.
+- специфікації команд можуть надавати `descriptionLocalizations` для нативних поверхонь, які підтримують локалізовані описи, зокрема Discord.
 
 <AccordionGroup>
-  <Accordion title="Нотатки щодо аргументів і парсера">
-    - Команди приймають необов’язковий `:` між командою й аргументами (наприклад, `/think: high`, `/send: on`, `/help:`).
-    - `/new <model>` приймає псевдонім моделі, `provider/model` або назву провайдера (нечіткий збіг); якщо збігу немає, текст обробляється як тіло повідомлення.
+  <Accordion title="Примітки щодо аргументів і парсера">
+    - Команди приймають необов’язковий `:` між командою та аргументами (наприклад, `/think: high`, `/send: on`, `/help:`).
+    - `/new <model>` приймає псевдонім моделі, `provider/model` або назву провайдера (нечіткий збіг); якщо збігу немає, текст вважається тілом повідомлення.
     - Для повної розбивки використання провайдерів використовуйте `openclaw status --usage`.
-    - `/allowlist add|remove` потребує `commands.config=true` і враховує канал `configWrites`.
-    - У багатооблікових каналах `/allowlist --account <id>`, націлений на конфігурацію, і `/config set channels.<provider>.accounts.<id>...` також враховують `configWrites` цільового облікового запису.
+    - `/allowlist add|remove` потребує `commands.config=true` і враховує `configWrites` каналу.
+    - У багатокористувацьких каналах `/allowlist --account <id>`, націлений на конфігурацію, і `/config set channels.<provider>.accounts.<id>...` також враховують `configWrites` цільового облікового запису.
     - `/usage` керує нижнім колонтитулом використання для кожної відповіді; `/usage cost` друкує локальний підсумок вартості з журналів сеансів OpenClaw.
     - `/restart` увімкнено типово; задайте `commands.restart: false`, щоб вимкнути.
-    - `/plugins install <spec>` приймає ті самі специфікації плагінів, що й `openclaw plugins install`: локальний шлях/архів, npm-пакет, `git:<repo>` або `clawhub:<pkg>`, а потім запитує перезапуск Gateway, бо модулі джерела плагіна змінилися.
-    - `/plugins enable|disable` оновлює конфігурацію плагіна та запускає перезавантаження плагінів Gateway для нових ходів агента.
+    - `/plugins install <spec>` приймає ті самі специфікації plugin, що й `openclaw plugins install`: локальний шлях/архів, npm-пакет, `git:<repo>` або `clawhub:<pkg>`, а потім запитує перезапуск Gateway, оскільки вихідні модулі plugin змінилися.
+    - `/plugins enable|disable` оновлює конфігурацію plugin і запускає перезавантаження plugins Gateway для нових ходів агента.
 
   </Accordion>
   <Accordion title="Поведінка, специфічна для каналу">
-    - Нативна команда лише для Discord: `/vc join|leave|status` керує голосовими каналами (недоступно як текст). `join` потребує гільдії та вибраного голосового/сценічного каналу. Потрібні `channels.discord.voice` і нативні команди.
-    - Команди прив’язування гілок Discord (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) потребують, щоб ефективні прив’язки гілок були ввімкнені (`session.threadBindings.enabled` та/або `channels.discord.threadBindings.enabled`).
-    - Довідник команд ACP і поведінка середовища виконання: [агенти ACP](/uk/tools/acp-agents).
+    - Нативна команда лише для Discord: `/vc join|leave|status` керує голосовими каналами (недоступна як текст). `join` потребує гільдії та вибраного голосового/сценічного каналу. Потребує `channels.discord.voice` і нативних команд.
+    - Команди прив’язки потоків Discord (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) потребують увімкнених ефективних прив’язок потоків (`session.threadBindings.enabled` та/або `channels.discord.threadBindings.enabled`).
+    - Довідник команд ACP і поведінка середовища виконання: [Агенти ACP](/uk/tools/acp-agents).
 
   </Accordion>
-  <Accordion title="Безпека verbose / trace / fast / reasoning">
-    - `/verbose` призначено для налагодження й додаткової видимості; тримайте його **вимкненим** у звичайному використанні.
-    - `/trace` вужчий за `/verbose`: він розкриває лише рядки трасування/налагодження, що належать плагіну, і залишає звичайний докладний шум інструментів вимкненим.
-    - `/fast on|off` зберігає перевизначення сеансу. Використовуйте опцію `inherit` в інтерфейсі Sessions, щоб очистити його й повернутися до типових значень конфігурації.
+  <Accordion title="Детальний режим / трасування / fast / безпека reasoning">
+    - `/verbose` призначено для налагодження та додаткової видимості; тримайте його **вимкненим** під час звичайного використання.
+    - `/trace` вужчий за `/verbose`: він показує лише рядки трасування/налагодження, що належать plugin, і не вмикає звичайний детальний шум інструментів.
+    - `/fast on|off` зберігає перевизначення сеансу. Використовуйте опцію `inherit` в інтерфейсі Sessions UI, щоб очистити його й повернутися до типових значень конфігурації.
     - `/fast` залежить від провайдера: OpenAI/OpenAI Codex зіставляють його з `service_tier=priority` на нативних кінцевих точках Responses, тоді як прямі публічні запити Anthropic, зокрема трафік з OAuth-автентифікацією, надісланий до `api.anthropic.com`, зіставляють його з `service_tier=auto` або `standard_only`. Див. [OpenAI](/uk/providers/openai) і [Anthropic](/uk/providers/anthropic).
-    - Підсумки збоїв інструментів і далі показуються, коли доречно, але докладний текст збою включається лише коли `/verbose` має значення `on` або `full`.
-    - `/reasoning`, `/verbose` і `/trace` ризиковані в групових налаштуваннях: вони можуть розкрити внутрішні міркування, вивід інструментів або діагностику плагінів, які ви не мали наміру показувати. Краще залишати їх вимкненими, особливо в групових чатах.
+    - Підсумки збоїв інструментів усе ще показуються, коли це доречно, але докладний текст збою включається лише коли `/verbose` має значення `on` або `full`.
+    - `/reasoning`, `/verbose` і `/trace` ризиковані в групових налаштуваннях: вони можуть розкрити внутрішнє reasoning, вивід інструментів або діагностику plugin, які ви не мали наміру показувати. Краще залишати їх вимкненими, особливо в групових чатах.
 
   </Accordion>
   <Accordion title="Перемикання моделі">
     - `/model` негайно зберігає нову модель сеансу.
-    - Якщо агент простоює, наступний запуск використовує її відразу.
-    - Якщо запуск уже активний, OpenClaw позначає перемикання наживо як очікуване й перезапускається в нову модель лише в чистій точці повтору.
-    - Якщо активність інструментів або вивід відповіді вже почалися, очікуване перемикання може залишатися в черзі до пізнішої можливості повтору або наступного ходу користувача.
-    - У локальному TUI `/crestodian [request]` повертає зі звичайного TUI агента до Crestodian. Це окремо від режиму порятунку каналу повідомлень і не надає віддалені повноваження конфігурації.
+    - Якщо агент простоює, наступний запуск одразу її використовує.
+    - Якщо запуск уже активний, OpenClaw позначає живе перемикання як очікуване й перезапускається в нову модель лише в чистій точці повторної спроби.
+    - Якщо активність інструментів або вивід відповіді вже почалися, очікуване перемикання може залишатися в черзі до пізнішої нагоди повторної спроби або наступного ходу користувача.
+    - У локальному TUI `/crestodian [request]` повертає зі звичайного TUI агента до Crestodian. Це окремо від rescue mode каналу повідомлень і не надає віддалених повноважень конфігурації.
 
   </Accordion>
-  <Accordion title="Швидкий шлях і вбудовані скорочення">
+  <Accordion title="Швидкий шлях та вбудовані скорочення">
     - **Швидкий шлях:** повідомлення лише з командами від відправників зі списку дозволів обробляються негайно (обхід черги + моделі).
-    - **Фільтр групових згадок:** повідомлення лише з командами від відправників зі списку дозволів обходять вимоги до згадок.
-    - **Вбудовані скорочення (лише відправники зі списку дозволів):** деякі команди також працюють, коли вбудовані у звичайне повідомлення, і видаляються до того, як модель побачить решту тексту.
+    - **Обмеження групових згадок:** повідомлення лише з командами від відправників зі списку дозволів обходять вимоги згадки.
+    - **Вбудовані скорочення (лише відправники зі списку дозволів):** певні команди також працюють, коли вбудовані у звичайне повідомлення, і вилучаються перед тим, як модель побачить решту тексту.
       - Приклад: `hey /status` запускає відповідь зі статусом, а решта тексту продовжує проходити звичайним потоком.
     - Наразі: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-    - Неавторизовані повідомлення лише з командами мовчки ігноруються, а вбудовані токени `/...` обробляються як звичайний текст.
+    - Несанкціоновані повідомлення лише з командами мовчки ігноруються, а вбудовані токени `/...` трактуються як звичайний текст.
 
   </Accordion>
   <Accordion title="Команди Skills і нативні аргументи">
-    - **Команди Skills:** Skills `user-invocable` доступні як slash-команди. Назви очищуються до `a-z0-9_` (макс. 32 символи); колізії отримують числові суфікси (наприклад, `_2`).
-      - `/skill <name> [input]` запускає Skill за назвою (корисно, коли обмеження нативних команд не дають створити окремі команди для кожної Skill).
+    - **Команди Skills:** Skills `user-invocable` доступні як slash-команди. Назви очищаються до `a-z0-9_` (макс. 32 символи); колізії отримують числові суфікси (наприклад, `_2`).
+      - `/skill <name> [input]` запускає skill за назвою (корисно, коли обмеження нативних команд не дають створити окремі команди для кожного skill).
       - Типово команди Skills пересилаються моделі як звичайний запит.
-      - Skills можуть необов’язково оголошувати `command-dispatch: tool`, щоб спрямувати команду безпосередньо до інструмента (детерміновано, без моделі).
-      - Приклад: `/prose` (плагін OpenProse) — див. [OpenProse](/uk/prose).
-    - **Аргументи нативних команд:** Discord використовує автодоповнення для динамічних параметрів (і меню кнопок, коли ви пропускаєте обов’язкові аргументи). Telegram і Slack показують меню кнопок, коли команда підтримує варіанти вибору, а ви пропускаєте аргумент. Динамічні варіанти вибору розв’язуються відносно цільової моделі сеансу, тому параметри, специфічні для моделі, як-от рівні `/think`, відповідають перевизначенню `/model` цього сеансу.
+      - Skills можуть необов’язково оголосити `command-dispatch: tool`, щоб спрямувати команду безпосередньо до інструмента (детерміновано, без моделі).
+      - Приклад: `/prose` (OpenProse plugin) — див. [OpenProse](/uk/prose).
+    - **Аргументи нативних команд:** Discord використовує автодоповнення для динамічних параметрів (і меню кнопок, коли ви пропускаєте обов’язкові аргументи). Telegram і Slack показують меню кнопок, коли команда підтримує варіанти, а ви пропускаєте аргумент. Динамічні варіанти визначаються відносно моделі цільового сеансу, тому параметри, специфічні для моделі, наприклад рівні `/think`, дотримуються перевизначення `/model` цього сеансу.
 
   </Accordion>
 </AccordionGroup>
 
 ## `/tools`
 
-`/tools` відповідає на питання середовища виконання, а не конфігурації: **що цей агент може використовувати прямо зараз у цій розмові**.
+`/tools` відповідає на запитання про середовище виконання, а не про конфігурацію: **що цей агент може використовувати прямо зараз у цій розмові**.
 
 - Типовий `/tools` компактний і оптимізований для швидкого перегляду.
 - `/tools verbose` додає короткі описи.
-- Поверхні нативних команд, що підтримують аргументи, надають той самий перемикач режиму `compact|verbose`.
-- Результати прив’язані до сеансу, тому зміна агента, каналу, гілки, авторизації відправника або моделі може змінити вивід.
-- `/tools` включає інструменти, які фактично доступні під час виконання, зокрема основні інструменти, підключені інструменти плагінів та інструменти, що належать каналу.
+- Поверхні нативних команд, які підтримують аргументи, надають той самий перемикач режиму `compact|verbose`.
+- Результати мають область дії сеансу, тому зміна агента, каналу, потоку, авторизації відправника або моделі може змінити вивід.
+- `/tools` включає інструменти, які справді доступні в середовищі виконання, зокрема базові інструменти, підключені інструменти plugin та інструменти, що належать каналу.
 
-Для редагування профілів і перевизначень використовуйте панель Tools в інтерфейсі Control UI або поверхні конфігурації/каталогу, а не розглядайте `/tools` як статичний каталог.
+Для редагування профілю та перевизначень використовуйте панель Tools в Control UI або поверхні конфігурації/каталогу, а не трактуйте `/tools` як статичний каталог.
 
 ## Поверхні використання (що де показується)
 
-- **Використання/квота провайдера** (приклад: "Claude 80% left") відображається в `/status` для поточного провайдера моделі, коли ввімкнено відстеження використання. OpenClaw нормалізує вікна провайдерів до `% left`; для MiniMax відсоткові поля лише із залишком інвертуються перед показом, а відповіді `model_remains` надають перевагу запису чат-моделі плюс мітці плану з тегом моделі.
-- **Рядки токенів/кешу** в `/status` можуть повертатися до найновішого запису використання транскрипту, коли живий знімок сесії розріджений. Наявні ненульові живі значення все одно мають пріоритет, а запасний варіант із транскрипту також може відновити мітку активної runtime-моделі плюс більший, орієнтований на prompt підсумок, коли збережені підсумки відсутні або менші.
-- **Виконання проти runtime:** `/status` повідомляє `Execution` для ефективного шляху sandbox і `Runtime` для того, хто фактично виконує сесію: `OpenClaw Pi Default`, `OpenAI Codex`, CLI backend або ACP backend.
-- **Токени/вартість на відповідь** керуються через `/usage off|tokens|full` (додається до звичайних відповідей).
+- **Використання/квота провайдера** (приклад: "Claude 80% left") відображається в `/status` для поточного провайдера моделі, коли ввімкнено відстеження використання. OpenClaw нормалізує вікна провайдера до `% left`; для MiniMax поля відсотків лише із залишком інвертуються перед показом, а відповіді `model_remains` надають перевагу запису чат-моделі плюс позначці плану з тегом моделі.
+- **Рядки токенів/кешу** в `/status` можуть повертатися до останнього запису використання з транскрипту, коли знімок живої сесії розріджений. Наявні ненульові живі значення все одно мають пріоритет, а fallback із транскрипту також може відновити мітку активної runtime-моделі плюс більшу prompt-орієнтовану суму, коли збережені підсумки відсутні або менші.
+- **Виконання проти runtime:** `/status` повідомляє `Execution` для ефективного шляху sandbox і `Runtime` для того, хто фактично запускає сесію: `OpenClaw Pi Default`, `OpenAI Codex`, CLI-бекенд або ACP-бекенд.
+- **Токени/вартість на відповідь** контролюється через `/usage off|tokens|full` (додається до звичайних відповідей).
 - `/model status` стосується **моделей/автентифікації/endpoint-ів**, а не використання.
 
 ## Вибір моделі (`/model`)
@@ -340,14 +341,14 @@ Skills, які може викликати користувач, також до
 
 Примітки:
 
-- `/model` і `/model list` показують компактний нумерований вибір (родина моделей + доступні провайдери).
-- У Discord `/model` і `/models` відкривають інтерактивний вибір із випадними списками провайдера та моделі, а також кроком Submit.
-- `/model <#>` вибирає з цього списку (і за можливості надає перевагу поточному провайдеру).
-- `/model status` показує детальний вигляд, включно з налаштованим endpoint провайдера (`baseUrl`) і режимом API (`api`), коли вони доступні.
+- `/model` і `/model list` показують компактний нумерований вибірник (сімейство моделей + доступні провайдери).
+- У Discord `/model` і `/models` відкривають інтерактивний вибірник із випадаючими списками провайдера та моделі плюс кроком Submit.
+- `/model <#>` вибирає з цього вибірника (і, коли можливо, надає перевагу поточному провайдеру).
+- `/model status` показує детальний вигляд, зокрема налаштований endpoint провайдера (`baseUrl`) і режим API (`api`), коли вони доступні.
 
-## Налагоджувальні перевизначення
+## Debug-перевизначення
 
-`/debug` дає змогу задавати **лише runtime** перевизначення конфігурації (у пам’яті, не на диску). Лише власник. Типово вимкнено; увімкніть через `commands.debug: true`.
+`/debug` дає змогу задавати **лише runtime** перевизначення конфігурації (у пам'яті, не на диску). Лише для власника. За замовчуванням вимкнено; увімкніть через `commands.debug: true`.
 
 Приклади:
 
@@ -360,12 +361,12 @@ Skills, які може викликати користувач, також до
 ```
 
 <Note>
-Перевизначення застосовуються негайно для нових читань конфігурації, але **не** записуються в `openclaw.json`. Використовуйте `/debug reset`, щоб очистити всі перевизначення й повернутися до конфігурації на диску.
+Перевизначення негайно застосовуються до нових читань конфігурації, але **не** записуються в `openclaw.json`. Використайте `/debug reset`, щоб очистити всі перевизначення й повернутися до конфігурації на диску.
 </Note>
 
 ## Вивід трасування Plugin
 
-`/trace` дає змогу вмикати або вимикати **рядки трасування/налагодження Plugin у межах сесії** без увімкнення повного докладного режиму.
+`/trace` дає змогу перемикати **сесійні рядки трасування/debug Plugin** без увімкнення повного verbose-режиму.
 
 Приклади:
 
@@ -379,14 +380,14 @@ Skills, які може викликати користувач, також до
 
 - `/trace` без аргументу показує поточний стан трасування сесії.
 - `/trace on` вмикає рядки трасування Plugin для поточної сесії.
-- `/trace off` знову вимикає їх.
-- Рядки трасування Plugin можуть з’являтися в `/status` і як подальше діагностичне повідомлення після звичайної відповіді асистента.
-- `/trace` не замінює `/debug`; `/debug` і далі керує лише runtime перевизначеннями конфігурації.
-- `/trace` не замінює `/verbose`; звичайний докладний вивід інструментів/статусу й далі належить до `/verbose`.
+- `/trace off` знову їх вимикає.
+- Рядки трасування Plugin можуть з'являтися в `/status` і як наступне діагностичне повідомлення після звичайної відповіді асистента.
+- `/trace` не замінює `/debug`; `/debug` усе ще керує лише runtime-перевизначеннями конфігурації.
+- `/trace` не замінює `/verbose`; звичайний verbose-вивід інструментів/статусу все ще належить до `/verbose`.
 
 ## Оновлення конфігурації
 
-`/config` записує у вашу конфігурацію на диску (`openclaw.json`). Лише власник. Типово вимкнено; увімкніть через `commands.config: true`.
+`/config` записує у вашу конфігурацію на диску (`openclaw.json`). Лише для власника. За замовчуванням вимкнено; увімкніть через `commands.config: true`.
 
 Приклади:
 
@@ -399,12 +400,12 @@ Skills, які може викликати користувач, також до
 ```
 
 <Note>
-Конфігурацію перевіряють перед записом; недійсні зміни відхиляються. Оновлення `/config` зберігаються між перезапусками.
+Конфігурацію перевіряють перед записом; недійсні зміни відхиляються. Оновлення `/config` зберігаються після перезапусків.
 </Note>
 
 ## Оновлення MCP
 
-`/mcp` записує керовані OpenClaw визначення MCP-серверів у `mcp.servers`. Лише власник. Типово вимкнено; увімкніть через `commands.mcp: true`.
+`/mcp` записує керовані OpenClaw визначення MCP-серверів у `mcp.servers`. Лише для власника. За замовчуванням вимкнено; увімкніть через `commands.mcp: true`.
 
 Приклади:
 
@@ -416,12 +417,12 @@ Skills, які може викликати користувач, також до
 ```
 
 <Note>
-`/mcp` зберігає конфігурацію в конфігурації OpenClaw, а не в налаштуваннях проєкту, що належать Pi. Runtime-адаптери вирішують, які transports фактично можна виконати.
+`/mcp` зберігає конфігурацію в конфігурації OpenClaw, а не в налаштуваннях проєкту, що належать Pi. Runtime-адаптери вирішують, які транспорти фактично можна виконувати.
 </Note>
 
 ## Оновлення Plugin
 
-`/plugins` дає операторам змогу переглядати виявлені plugins і перемикати їх увімкнення в конфігурації. Потоки лише для читання можуть використовувати `/plugin` як alias. Типово вимкнено; увімкніть через `commands.plugins: true`.
+`/plugins` дає операторам змогу переглядати виявлені Plugin і перемикати ввімкнення в конфігурації. Потоки лише для читання можуть використовувати `/plugin` як alias. За замовчуванням вимкнено; увімкніть через `commands.plugins: true`.
 
 Приклади:
 
@@ -434,36 +435,36 @@ Skills, які може викликати користувач, також до
 ```
 
 <Note>
-- `/plugins list` і `/plugins show` використовують реальне виявлення plugin у поточному workspace плюс конфігурацію на диску.
-- `/plugins install` встановлює з ClawHub, npm, git, локальних директорій і архівів.
-- `/plugins enable|disable` оновлює лише конфігурацію plugin; це не встановлює і не видаляє plugins.
-- Зміни ввімкнення й вимкнення гаряче перезавантажують runtime-поверхні Gateway plugin для нових ходів агентів; встановлення запитує перезапуск Gateway, бо вихідні модулі plugin змінилися.
+- `/plugins list` і `/plugins show` використовують справжнє виявлення Plugin у поточному workspace плюс конфігурацію на диску.
+- `/plugins install` встановлює з ClawHub, npm, git, локальних каталогів і архівів.
+- `/plugins enable|disable` оновлює лише конфігурацію Plugin; це не встановлює й не видаляє Plugin.
+- Зміни ввімкнення й вимкнення hot-reload runtime-поверхні Plugin у Gateway для нових ходів агента; install запитує перезапуск Gateway, бо вихідні модулі Plugin змінилися.
 
 </Note>
 
 ## Примітки щодо поверхонь
 
 <AccordionGroup>
-  <Accordion title="Сесії на поверхню">
+  <Accordion title="Сесії за поверхнею">
     - **Текстові команди** виконуються у звичайній чат-сесії (DM спільно використовують `main`, групи мають власну сесію).
     - **Нативні команди** використовують ізольовані сесії:
       - Discord: `agent:<agentId>:discord:slash:<userId>`
       - Slack: `agent:<agentId>:slack:slash:<userId>` (префікс налаштовується через `channels.slack.slashCommand.sessionPrefix`)
-      - Telegram: `telegram:slash:<userId>` (націлюється на чат-сесію через `CommandTargetSessionKey`)
-    - **`/stop`** націлюється на активну чат-сесію, щоб вона могла перервати поточний запуск.
+      - Telegram: `telegram:slash:<userId>` (цілиться в чат-сесію через `CommandTargetSessionKey`)
+    - **`/stop`** цілиться в активну чат-сесію, щоб вона могла перервати поточний запуск.
 
   </Accordion>
-  <Accordion title="Особливості Slack">
-    `channels.slack.slashCommand` і далі підтримується для однієї команди в стилі `/openclaw`. Якщо ви вмикаєте `commands.native`, потрібно створити по одній slash-команді Slack для кожної вбудованої команди (ті самі назви, що й у `/help`). Меню аргументів команд для Slack доставляються як ephemeral кнопки Block Kit.
+  <Accordion title="Специфіка Slack">
+    `channels.slack.slashCommand` усе ще підтримується для однієї команди стилю `/openclaw`. Якщо ви вмикаєте `commands.native`, потрібно створити одну slash-команду Slack для кожної вбудованої команди (ті самі назви, що й у `/help`). Меню аргументів команд для Slack доставляються як ephemeral-кнопки Block Kit.
 
-    Нативний виняток Slack: зареєструйте `/agentstatus` (не `/status`), бо Slack резервує `/status`. Текстова `/status` і далі працює в повідомленнях Slack.
+    Виняток для нативних команд Slack: зареєструйте `/agentstatus` (не `/status`), бо Slack резервує `/status`. Текстова `/status` усе ще працює в повідомленнях Slack.
 
   </Accordion>
 </AccordionGroup>
 
-## Побічні питання BTW
+## Побічні запитання BTW
 
-`/btw` — це швидке **побічне питання** щодо поточної сесії.
+`/btw` — це швидке **побічне запитання** про поточну сесію. `/side` є alias.
 
 На відміну від звичайного чату:
 
@@ -473,17 +474,18 @@ Skills, які може викликати користувач, також до
 - воно не записується в історію транскрипту,
 - воно доставляється як живий побічний результат замість звичайного повідомлення асистента.
 
-Це робить `/btw` корисним, коли потрібне тимчасове уточнення, поки основне завдання продовжує виконуватися.
+Це робить `/btw` корисним, коли вам потрібне тимчасове уточнення, поки основне завдання продовжує виконуватися.
 
 Приклад:
 
 ```text
 /btw what are we doing right now?
+/side what changed while the main run continued?
 ```
 
-Див. [Побічні питання BTW](/uk/tools/btw) для повної поведінки та деталей UX клієнта.
+Див. [Побічні запитання BTW](/uk/tools/btw), щоб отримати повну поведінку та деталі UX клієнта.
 
-## Пов’язане
+## Пов'язане
 
 - [Створення skills](/uk/tools/creating-skills)
 - [Skills](/uk/tools/skills)
