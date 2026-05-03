@@ -1,25 +1,25 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin diagnostics-otel أو تهيئته أو تدقيقه
+    - أنت بصدد تثبيت Plugin diagnostics-otel أو تكوينه أو تدقيقه
 summary: مصدّر OpenTelemetry لتشخيصات OpenClaw.
-title: Plugin OpenTelemetry للتشخيص
+title: Plugin OpenTelemetry للتشخيصات
 x-i18n:
-    generated_at: "2026-05-02T20:54:53Z"
+    generated_at: "2026-05-03T07:36:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e6a2332284e8992fe9a53d779348178e741544f14042fa1deff84eea10acafe3
+    source_hash: ef589f6f406c4e1ef18667969a59169389f0e74253ceaad061eff6c6eb3d8b31
     source_path: plugins/reference/diagnostics-otel.md
     workflow: 16
 ---
 
-# Plugin تشخيصات OpenTelemetry
+# Plugin OpenTelemetry للتشخيص
 
-مُصدِّر تشخيصات OpenClaw إلى OpenTelemetry.
+مصدّر OpenTelemetry لتشخيص OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/diagnostics-otel`
-- مسار التثبيت: ClawHub: `clawhub:@openclaw/diagnostics-otel`؛ npm
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/diagnostics-otel`
 
 ## الواجهة
 

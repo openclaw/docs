@@ -1,30 +1,30 @@
 ---
 read_when:
-    - أنت تثبّت Plugin msteams أو تكوّنه أو تدقّقه
+    - أنت تثبّت أو تكوّن أو تدقّق Plugin msteams
 summary: يضيف واجهة قناة Microsoft Teams لإرسال رسائل OpenClaw واستقبالها.
-title: Plugin الخاص بـ Microsoft Teams
+title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-02T20:58:04Z"
+    generated_at: "2026-05-03T07:37:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f7123c7309d22994897477cc7ff3ab083abb4dc37f452c139968b8af3731c0cd
+    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Plugin Microsoft Teams
 
-يضيف واجهة قناة Microsoft Teams لإرسال رسائل OpenClaw واستلامها.
+يضيف سطح قناة Microsoft Teams لإرسال رسائل OpenClaw واستلامها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/msteams`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
-## الواجهة
+## السطح
 
 channels: msteams
 
-## الوثائق ذات الصلة
+## المستندات ذات الصلة
 
 - [msteams](/ar/channels/msteams)

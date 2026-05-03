@@ -1,13 +1,13 @@
 ---
 read_when:
-    - أنت بصدد تثبيت Plugin nextcloud-talk أو تكوينه أو تدقيقه
+    - أنت تقوم بتثبيت Plugin nextcloud-talk أو تهيئته أو تدقيقه
 summary: يضيف واجهة قناة Nextcloud Talk لإرسال رسائل OpenClaw واستقبالها.
 title: Plugin Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-02T20:58:10Z"
+    generated_at: "2026-05-03T07:37:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 769f543754bf08068be8d705a8e0e022edcb0a4f023d44a2eb33cb9d06cc9df9
+    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## التوزيع
 
 - الحزمة: `@openclaw/nextcloud-talk`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
 ## الواجهة
 

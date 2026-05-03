@@ -1,30 +1,30 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin WhatsApp أو تهيئته أو تدقيقه
-summary: يضيف واجهة قناة WhatsApp لإرسال رسائل OpenClaw واستقبالها.
+    - أنت تثبّت Plugin WhatsApp أو تهيّئه أو تدقّقه
+summary: يضيف واجهة قناة WhatsApp لإرسال رسائل OpenClaw واستلامها.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-05-02T21:00:58Z"
+    generated_at: "2026-05-03T07:38:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3fbdcff85954d0ff0269348e9c75b8b85cae69b9897a568432bfa06ed7276ced
+    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
 # WhatsApp Plugin
 
-يضيف واجهة قناة WhatsApp لإرسال رسائل OpenClaw واستلامها.
+يضيف واجهة قناة WhatsApp لإرسال رسائل OpenClaw واستقبالها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/whatsapp`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
 ## الواجهة
 
 channels: whatsapp
 
-## الوثائق ذات الصلة
+## المستندات ذات الصلة
 
-- [whatsapp](/ar/channels/whatsapp)
+- [WhatsApp](/ar/channels/whatsapp)

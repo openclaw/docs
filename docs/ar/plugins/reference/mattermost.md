@@ -1,30 +1,30 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin mattermost أو تهيئته أو تدقيقه
+    - أنت بصدد تثبيت Plugin Mattermost أو تهيئته أو تدقيقه
 summary: يضيف واجهة قناة Mattermost لإرسال رسائل OpenClaw وتلقيها.
-title: Plugin لـ Mattermost
+title: Plugin Mattermost
 x-i18n:
-    generated_at: "2026-05-02T20:57:17Z"
+    generated_at: "2026-05-03T07:37:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ea1281e7bb22bd5bca0ef1610fac282664fb12408d15d891a04b356a438c6f16
+    source_hash: 53b202de33507d8d747cad4e424f6ee7f90dac4dfbded566eb45772f118956db
     source_path: plugins/reference/mattermost.md
     workflow: 16
 ---
 
 # Plugin Mattermost
 
-يضيف سطح قناة Mattermost لإرسال رسائل OpenClaw واستقبالها.
+يضيف واجهة قناة Mattermost لإرسال رسائل OpenClaw واستلامها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/mattermost`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: مضمن في OpenClaw
 
-## السطح
+## الواجهة
 
-channels: mattermost
+القنوات: mattermost
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [mattermost](/ar/channels/mattermost)

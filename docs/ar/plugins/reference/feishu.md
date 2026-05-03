@@ -1,29 +1,29 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin feishu أو تهيئته أو تدقيقه
-summary: يضيف واجهة قناة Feishu لإرسال رسائل OpenClaw واستلامها.
+    - أنت تثبّت Plugin feishu أو تهيّئه أو تراجعه
+summary: يضيف واجهة قناة Feishu لإرسال رسائل OpenClaw واستقبالها.
 title: Plugin Feishu
 x-i18n:
-    generated_at: "2026-05-02T20:55:43Z"
+    generated_at: "2026-05-03T07:36:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0c188fdc65a3e2e7a354063e090001099a76ad3f6df423f18611c6e3799b6983
+    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
-# Feishu Plugin
+# Plugin Feishu
 
-يضيف سطح قناة Feishu لإرسال رسائل OpenClaw واستلامها.
+يضيف سطح قناة Feishu لإرسال رسائل OpenClaw واستقبالها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/feishu`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
 ## السطح
 
-القنوات: feishu؛ العقود: الأدوات؛ Skills
+القنوات: feishu؛ العقود: tools؛ Skills
 
 ## المستندات ذات الصلة
 

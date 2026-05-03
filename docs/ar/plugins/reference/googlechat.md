@@ -1,25 +1,25 @@
 ---
 read_when:
-    - أنت تثبّت Plugin googlechat أو تهيئه أو تدقّقه
-summary: يضيف سطح قناة Google Chat لإرسال رسائل OpenClaw واستلامها.
+    - أنت بصدد تثبيت Plugin googlechat أو تكوينه أو تدقيقه
+summary: يضيف واجهة قناة Google Chat لإرسال رسائل OpenClaw واستلامها.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-05-02T22:22:15Z"
+    generated_at: "2026-05-03T07:36:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
+    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
 
 # Plugin Google Chat
 
-يضيف واجهة قناة Google Chat لإرسال رسائل OpenClaw واستقبالها.
+يضيف واجهة قناة Google Chat لإرسال رسائل OpenClaw واستلامها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/googlechat`
-- مسار التثبيت: مضمّن في OpenClaw
+- مسار التثبيت: npm؛ ClawHub
 
 ## الواجهة
 

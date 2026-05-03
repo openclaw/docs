@@ -1,13 +1,13 @@
 ---
 read_when:
-    - أنت تثبّت أو تهيّئ أو تدقّق Plugin google-meet
-summary: انضم إلى مكالمات Google Meet عبر وسائط نقل Chrome أو Twilio.
+    - أنت بصدد تثبيت Plugin google-meet أو تكوينه أو تدقيقه
+summary: انضم إلى مكالمات Google Meet عبر وسائل نقل Chrome أو Twilio.
 title: Plugin Google Meet
 x-i18n:
-    generated_at: "2026-05-02T20:56:00Z"
+    generated_at: "2026-05-03T07:36:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 07a5137b5c6e2c55136c63d6558641165176f325a9e22a476ed0315de2d763a3
+    source_hash: 1418e8400d3efc0e9448e337269636d3801cee38ad05be1fa6657564974bfccb
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ x-i18n:
 ## التوزيع
 
 - الحزمة: `@openclaw/google-meet`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
 ## الواجهة
 
 العقود: الأدوات
 
-## الوثائق ذات الصلة
+## المستندات ذات الصلة
 
 - [google-meet](/ar/plugins/google-meet)

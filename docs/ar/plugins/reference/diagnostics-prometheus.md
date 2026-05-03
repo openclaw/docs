@@ -1,26 +1,26 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin diagnostics-prometheus أو تكوينه أو تدقيقه
+    - أنت تُثبّت Plugin diagnostics-prometheus أو تُكوّنه أو تُدقّقه
 summary: مُصدِّر Prometheus لتشخيصات OpenClaw.
-title: Plugin Prometheus للتشخيص
+title: Plugin Prometheus للتشخيصات
 x-i18n:
-    generated_at: "2026-05-02T20:55:00Z"
+    generated_at: "2026-05-03T07:36:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f60d9dd60da733a910409892908616d675df9b4909c2bf13c376dcddb168ece
+    source_hash: d69cf5b607ea7d93ed5886e63816716fef762a7b144d8a0d1b92c0101aa3678c
     source_path: plugins/reference/diagnostics-prometheus.md
     workflow: 16
 ---
 
 # Plugin تشخيصات Prometheus
 
-مصدّر Prometheus لتشخيصات OpenClaw.
+مُصدِّر Prometheus لتشخيصات OpenClaw.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/diagnostics-prometheus`
-- مسار التثبيت: ClawHub: `clawhub:@openclaw/diagnostics-prometheus`؛ npm
+- مسار التثبيت: npm؛ ClawHub: `clawhub:@openclaw/diagnostics-prometheus`
 
-## السطح
+## الواجهة
 
 Plugin

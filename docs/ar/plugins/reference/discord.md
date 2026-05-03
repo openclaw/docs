@@ -1,30 +1,30 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin Discord أو تهيئته أو تدقيقه
+    - أنت تقوم بتثبيت Plugin Discord أو تكوينه أو تدقيقه
 summary: يضيف واجهة قناة Discord لإرسال رسائل OpenClaw واستقبالها.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-05-02T22:22:02Z"
+    generated_at: "2026-05-03T07:36:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
+    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
 # Plugin Discord
 
-يضيف واجهة قناة Discord لإرسال رسائل OpenClaw واستقبالها.
+يضيف واجهة قناة Discord لإرسال رسائل OpenClaw وتلقيها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/discord`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
 ## الواجهة
 
 channels: discord
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
-- [Discord](/ar/channels/discord)
+- [discord](/ar/channels/discord)

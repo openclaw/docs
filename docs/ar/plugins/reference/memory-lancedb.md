@@ -1,30 +1,30 @@
 ---
 read_when:
-    - أنت تقوم بتثبيت Plugin memory-lancedb أو تهيئته أو تدقيقه
+    - أنت بصدد تثبيت Plugin memory-lancedb أو تهيئته أو تدقيقه
 summary: يضيف أدوات قابلة للاستدعاء من قِبل الوكيل.
 title: Plugin ذاكرة Lancedb
 x-i18n:
-    generated_at: "2026-05-02T20:57:27Z"
+    generated_at: "2026-05-03T07:37:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Plugin ذاكرة Lancedb
+# Plugin Memory Lancedb
 
 يضيف أدوات يمكن للوكيل استدعاؤها.
 
 ## التوزيع
 
 - الحزمة: `@openclaw/memory-lancedb`
-- مسار التثبيت: ClawHub + npm
+- مسار التثبيت: npm؛ ClawHub
 
 ## الواجهة
 
 العقود: الأدوات
 
-## المستندات ذات الصلة
+## الوثائق ذات الصلة
 
 - [memory-lancedb](/ar/plugins/memory-lancedb)
