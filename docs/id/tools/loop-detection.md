@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Seorang pengguna melaporkan agen terjebak mengulangi pemanggilan alat
+    - Seorang pengguna melaporkan bahwa agen terjebak mengulang panggilan alat
     - Anda perlu menyesuaikan perlindungan panggilan berulang
-    - Anda sedang mengedit kebijakan alat/lingkungan eksekusi agen
-summary: Cara mengaktifkan dan menyesuaikan pagar pengaman yang mendeteksi perulangan panggilan alat yang repetitif
-title: Deteksi loop alat
+    - Anda sedang mengedit kebijakan alat/runtime agen
+summary: Cara mengaktifkan dan menyesuaikan pembatas pengaman yang mendeteksi loop panggilan alat berulang
+title: Deteksi perulangan alat
 x-i18n:
-    generated_at: "2026-04-30T10:16:30Z"
+    generated_at: "2026-05-03T21:38:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ba601384e7d23ddfd316f9e5eef92b3daa4618d2287228a516c76fe141700a28
+    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
     source_path: tools/loop-detection.md
     workflow: 16
 ---
@@ -48,7 +48,7 @@ Default global:
 }
 ```
 
-Override per-agen (opsional):
+Override per agen (opsional):
 
 ```json5
 {
@@ -73,20 +73,20 @@ Override per-agen (opsional):
 
 - `enabled`: Sakelar utama. `false` berarti tidak ada deteksi loop yang dilakukan.
 - `historySize`: jumlah panggilan alat terbaru yang disimpan untuk analisis.
-- `warningThreshold`: ambang sebelum mengklasifikasikan pola sebagai peringatan saja.
-- `criticalThreshold`: ambang untuk memblokir pola loop yang berulang.
-- `globalCircuitBreakerThreshold`: ambang pemutus global untuk kondisi tanpa kemajuan.
-- `detectors.genericRepeat`: mendeteksi pola alat yang sama + parameter yang sama secara berulang.
-- `detectors.knownPollNoProgress`: mendeteksi pola mirip polling yang dikenal tanpa perubahan status.
+- `warningThreshold`: ambang batas sebelum mengklasifikasikan pola sebagai hanya peringatan.
+- `criticalThreshold`: ambang batas untuk memblokir pola loop berulang.
+- `globalCircuitBreakerThreshold`: ambang pemutus global tanpa kemajuan.
+- `detectors.genericRepeat`: mendeteksi pola alat-sama + parameter-sama yang berulang.
+- `detectors.knownPollNoProgress`: mendeteksi pola yang mirip polling dan dikenal tanpa perubahan status.
 - `detectors.pingPong`: mendeteksi pola ping-pong bergantian.
 
-Untuk `exec`, pemeriksaan tanpa kemajuan membandingkan hasil perintah yang stabil dan mengabaikan metadata runtime yang berubah-ubah seperti durasi, PID, ID sesi, dan direktori kerja.
-Saat ID run tersedia, riwayat panggilan alat terbaru dievaluasi hanya dalam run tersebut sehingga siklus Heartbeat terjadwal dan run baru tidak mewarisi hitungan loop lama dari run sebelumnya.
+Untuk `exec`, pemeriksaan tanpa kemajuan membandingkan hasil perintah yang stabil dan mengabaikan metadata runtime yang mudah berubah seperti durasi, PID, ID sesi, dan direktori kerja.
+Ketika ID run tersedia, riwayat panggilan alat terbaru dievaluasi hanya di dalam run tersebut sehingga siklus Heartbeat terjadwal dan run baru tidak mewarisi hitungan loop usang dari run sebelumnya.
 
 ## Penyiapan yang direkomendasikan
 
-- Mulai dengan `enabled: true`, default tidak berubah.
-- Jaga urutan ambang sebagai `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
+- Untuk model yang lebih kecil, mulai dengan `enabled: true`, tanpa mengubah default. Model unggulan jarang memerlukan deteksi loop dan dapat membiarkannya dinonaktifkan.
+- Pertahankan urutan ambang batas sebagai `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
 - Jika terjadi positif palsu:
   - naikkan `warningThreshold` dan/atau `criticalThreshold`
   - (opsional) naikkan `globalCircuitBreakerThreshold`
@@ -95,16 +95,16 @@ Saat ID run tersedia, riwayat panggilan alat terbaru dievaluasi hanya dalam run 
 
 ## Log dan perilaku yang diharapkan
 
-Saat loop terdeteksi, OpenClaw melaporkan peristiwa loop dan memblokir atau meredam siklus alat berikutnya tergantung tingkat keparahan.
-Ini melindungi pengguna dari pemborosan token yang tidak terkendali dan kebuntuan sekaligus mempertahankan akses alat normal.
+Ketika loop terdeteksi, OpenClaw melaporkan peristiwa loop dan memblokir atau meredam siklus alat berikutnya tergantung tingkat keparahan.
+Ini melindungi pengguna dari pengeluaran token yang tak terkendali dan macet, sambil mempertahankan akses alat normal.
 
 - Utamakan peringatan dan supresi sementara terlebih dahulu.
-- Eskalasikan hanya saat bukti berulang terkumpul.
+- Eskalasikan hanya ketika bukti berulang terkumpul.
 
 ## Catatan
 
 - `tools.loopDetection` digabungkan dengan override tingkat agen.
-- Konfigurasi per-agen sepenuhnya menggantikan atau memperluas nilai global.
+- Konfigurasi per agen sepenuhnya menimpa atau memperluas nilai global.
 - Jika tidak ada konfigurasi, guardrail tetap nonaktif.
 
 ## Terkait

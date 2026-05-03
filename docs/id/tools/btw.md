@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Anda ingin mengajukan pertanyaan sampingan cepat tentang sesi saat ini
+    - Anda ingin mengajukan pertanyaan sampingan singkat tentang sesi saat ini
     - Anda sedang mengimplementasikan atau men-debug perilaku BTW di berbagai klien
 summary: Pertanyaan sampingan sementara dengan /btw
-title: Pertanyaan sampingan BTW
+title: Sebagai tambahan, pertanyaan sampingan
 x-i18n:
-    generated_at: "2026-04-24T09:29:48Z"
-    model: gpt-5.4
+    generated_at: "2026-05-03T21:37:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
+    source_hash: f09ee066c02d31c9fbd66de1922f7a03fe2b48f1ba2c969c65551376e92c80d4
     source_path: tools/btw.md
-    workflow: 15
+    workflow: 16
 ---
 
 `/btw` memungkinkan Anda mengajukan pertanyaan sampingan cepat tentang **sesi saat ini** tanpa
-mengubah pertanyaan itu menjadi bagian dari riwayat percakapan normal.
+mengubah pertanyaan itu menjadi riwayat percakapan normal. `/side` adalah alias.
 
-Fitur ini dimodelkan berdasarkan perilaku `/btw` Claude Code, tetapi diadaptasi untuk
-arsitektur Gateway dan multi-kanal milik OpenClaw.
+Ini dimodelkan setelah perilaku `/btw` milik Claude Code, tetapi disesuaikan dengan
+Gateway dan arsitektur multi-kanal OpenClaw.
 
-## Apa yang dilakukan
+## Apa yang dilakukannya
 
-Ketika Anda mengirim:
+Saat Anda mengirim:
 
 ```text
 /btw what changed?
@@ -30,46 +30,47 @@ Ketika Anda mengirim:
 OpenClaw:
 
 1. mengambil snapshot konteks sesi saat ini,
-2. menjalankan panggilan model **tanpa tool** yang terpisah,
-3. menjawab hanya pertanyaan sampingan itu,
-4. membiarkan run utama tetap berjalan,
+2. menjalankan panggilan model **tanpa alat** terpisah,
+3. menjawab hanya pertanyaan sampingan,
+4. membiarkan eksekusi utama tetap berjalan,
 5. **tidak** menulis pertanyaan atau jawaban BTW ke riwayat sesi,
-6. mengeluarkan jawaban sebagai **hasil sampingan live** alih-alih pesan asisten normal.
+6. memancarkan jawaban sebagai **hasil samping langsung**, bukan pesan asisten normal.
 
 Model mental yang penting adalah:
 
 - konteks sesi yang sama
-- kueri sampingan satu kali yang terpisah
-- tanpa panggilan tool
-- tanpa mencemari konteks masa depan
+- kueri sampingan sekali jalan yang terpisah
+- tanpa panggilan alat
+- tanpa pencemaran konteks mendatang
 - tanpa persistensi transkrip
 
-## Apa yang tidak dilakukan
+## Apa yang tidak dilakukannya
 
 `/btw` **tidak**:
 
-- membuat sesi tahan lama baru,
+- membuat sesi persisten baru,
 - melanjutkan tugas utama yang belum selesai,
-- menjalankan tool atau loop tool agen,
+- menjalankan alat atau loop alat agen,
 - menulis data pertanyaan/jawaban BTW ke riwayat transkrip,
 - muncul di `chat.history`,
-- bertahan setelah reload.
+- bertahan setelah muat ulang.
 
-Fitur ini sengaja bersifat **sementara**.
+Ini sengaja dibuat **sementara**.
 
 ## Cara kerja konteks
 
 BTW menggunakan sesi saat ini hanya sebagai **konteks latar belakang**.
 
-Jika run utama sedang aktif, OpenClaw mengambil snapshot status pesan saat ini
+Jika eksekusi utama sedang aktif, OpenClaw mengambil snapshot status pesan saat ini
 dan menyertakan prompt utama yang sedang berjalan sebagai konteks latar belakang, sambil
 secara eksplisit memberi tahu model:
 
 - jawab hanya pertanyaan sampingan,
 - jangan melanjutkan atau menyelesaikan tugas utama yang belum selesai,
-- jangan mengeluarkan panggilan tool atau pseudo-tool call.
+- jangan memancarkan panggilan alat atau panggilan alat semu.
 
-Ini menjaga BTW tetap terisolasi dari run utama sambil tetap menyadari topik sesi tersebut.
+Itu menjaga BTW tetap terisolasi dari eksekusi utama sambil tetap membuatnya mengetahui
+topik sesi.
 
 ## Model pengiriman
 
@@ -77,56 +78,57 @@ BTW **tidak** dikirim sebagai pesan transkrip asisten normal.
 
 Pada tingkat protokol Gateway:
 
-- obrolan asisten normal menggunakan event `chat`
+- chat asisten normal menggunakan event `chat`
 - BTW menggunakan event `chat.side_result`
 
 Pemisahan ini disengaja. Jika BTW menggunakan ulang jalur event `chat` normal,
-klien akan memperlakukannya seperti riwayat percakapan biasa.
+klien akan memperlakukannya seperti riwayat percakapan reguler.
 
-Karena BTW menggunakan event live terpisah dan tidak diputar ulang dari
-`chat.history`, BTW akan hilang setelah reload.
+Karena BTW menggunakan event langsung terpisah dan tidak diputar ulang dari
+`chat.history`, ia menghilang setelah muat ulang.
 
 ## Perilaku permukaan
 
 ### TUI
 
-Di TUI, BTW dirender inline dalam tampilan sesi saat ini, tetapi tetap
-bersifat sementara:
+Di TUI, BTW dirender inline di tampilan sesi saat ini, tetapi tetap
+sementara:
 
-- tampak berbeda jelas dari balasan asisten normal
+- terlihat berbeda dari balasan asisten normal
 - dapat ditutup dengan `Enter` atau `Esc`
-- tidak diputar ulang saat reload
+- tidak diputar ulang saat muat ulang
 
 ### Kanal eksternal
 
 Pada kanal seperti Telegram, WhatsApp, dan Discord, BTW dikirim sebagai
-balasan satu kali yang diberi label jelas karena permukaan tersebut tidak memiliki
-konsep overlay sementara lokal.
+balasan sekali pakai yang diberi label jelas karena permukaan tersebut tidak memiliki konsep
+overlay sementara lokal.
 
-Jawaban tetap diperlakukan sebagai hasil sampingan, bukan riwayat sesi normal.
+Jawaban tetap diperlakukan sebagai hasil samping, bukan riwayat sesi normal.
 
-### Control UI / web
+### UI Kontrol / web
 
-Gateway mengeluarkan BTW dengan benar sebagai `chat.side_result`, dan BTW tidak disertakan
-dalam `chat.history`, sehingga kontrak persistensinya sudah benar untuk web.
+Gateway memancarkan BTW dengan benar sebagai `chat.side_result`, dan BTW tidak disertakan
+dalam `chat.history`, sehingga kontrak persistensi sudah benar untuk web.
 
-Control UI saat ini masih memerlukan consumer `chat.side_result` khusus untuk
-merender BTW secara live di browser. Sampai dukungan sisi klien itu hadir, BTW adalah
-fitur tingkat Gateway dengan perilaku TUI dan kanal eksternal yang lengkap, tetapi
-belum menjadi UX browser yang lengkap.
+UI Kontrol saat ini masih memerlukan konsumen `chat.side_result` khusus untuk
+merender BTW secara langsung di browser. Sampai dukungan sisi klien tersebut hadir, BTW adalah
+fitur tingkat Gateway dengan perilaku TUI dan kanal eksternal penuh, tetapi belum
+menjadi UX browser yang lengkap.
 
 ## Kapan menggunakan BTW
 
-Gunakan `/btw` ketika Anda menginginkan:
+Gunakan `/btw` saat Anda menginginkan:
 
 - klarifikasi cepat tentang pekerjaan saat ini,
-- jawaban faktual sampingan saat run panjang masih berlangsung,
-- jawaban sementara yang tidak boleh menjadi bagian dari konteks sesi di masa depan.
+- jawaban sampingan faktual sementara eksekusi panjang masih berlangsung,
+- jawaban sementara yang tidak boleh menjadi bagian dari konteks sesi mendatang.
 
 Contoh:
 
 ```text
 /btw what file are we editing?
+/side what changed while the main run continued?
 /btw what does this error mean?
 /btw summarize the current task in one sentence
 /btw what is 17 * 19?
@@ -134,13 +136,13 @@ Contoh:
 
 ## Kapan tidak menggunakan BTW
 
-Jangan gunakan `/btw` ketika Anda ingin jawaban tersebut menjadi bagian dari
-konteks kerja sesi di masa depan.
+Jangan gunakan `/btw` saat Anda ingin jawaban menjadi bagian dari
+konteks kerja mendatang sesi.
 
-Dalam kasus itu, tanyakan secara normal di sesi utama alih-alih menggunakan BTW.
+Dalam kasus itu, ajukan pertanyaan secara normal di sesi utama alih-alih menggunakan BTW.
 
 ## Terkait
 
 - [Perintah slash](/id/tools/slash-commands)
-- [Thinking Levels](/id/tools/thinking)
+- [Tingkat Berpikir](/id/tools/thinking)
 - [Sesi](/id/concepts/session)

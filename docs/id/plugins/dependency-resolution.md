@@ -1,53 +1,53 @@
 ---
 read_when:
-    - Anda sedang men-debug instalasi paket Plugin
-    - Anda sedang mengubah perilaku inisialisasi plugin, doctor, atau instalasi pengelola paket
-    - Anda memelihara instalasi OpenClaw yang dipaketkan atau manifes Plugin terbundel
+    - Anda sedang melakukan debug instalasi paket Plugin
+    - Anda mengubah perilaku inisialisasi Plugin, doctor, atau pemasangan pengelola paket
+    - Anda memelihara instalasi OpenClaw terpaket atau manifest Plugin yang dibundel
 sidebarTitle: Dependencies
 summary: Cara OpenClaw menginstal paket Plugin dan menyelesaikan dependensi Plugin
 title: Resolusi dependensi Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:47:43Z"
+    generated_at: "2026-05-03T21:35:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c9476529ad1d44ed1b17caca628c58acfbb1d8c73393f58fa7d3d76944a71aea
+    source_hash: 46af62ff866d50cb53bb2761d9928f0fd2a25bdb945040885ec6bfb85be35c6d
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
 # Resolusi dependensi Plugin
 
-OpenClaw mempertahankan pekerjaan dependensi Plugin pada waktu pemasangan/pembaruan. Pemuatan runtime
-tidak menjalankan manajer paket, memperbaiki pohon dependensi, atau memutasi direktori
-paket OpenClaw.
+OpenClaw menangani pekerjaan dependensi Plugin pada waktu instalasi/pembaruan. Pemuatan waktu jalan
+tidak menjalankan manajer paket, memperbaiki pohon dependensi, atau mengubah direktori paket
+OpenClaw.
 
 ## Pembagian tanggung jawab
 
 Paket Plugin memiliki grafik dependensinya sendiri:
 
-- dependensi runtime berada di `dependencies` atau `optionalDependencies`
+- dependensi waktu jalan berada di `dependencies` atau `optionalDependencies`
   paket Plugin
-- impor SDK/core adalah peer atau impor yang disediakan OpenClaw
-- Plugin pengembangan lokal membawa dependensi mereka sendiri yang sudah terpasang
-- Plugin npm dan git dipasang ke dalam root paket milik OpenClaw
+- impor SDK/core adalah impor peer atau impor yang disediakan OpenClaw
+- Plugin pengembangan lokal membawa dependensi yang sudah terinstal sendiri
+- Plugin npm dan git diinstal ke root paket milik OpenClaw
 
 OpenClaw hanya memiliki siklus hidup Plugin:
 
 - menemukan sumber Plugin
-- memasang atau memperbarui paket saat diminta secara eksplisit
-- mencatat metadata pemasangan
-- memuat entrypoint Plugin
-- gagal dengan error yang dapat ditindaklanjuti saat dependensi hilang
+- menginstal atau memperbarui paket saat diminta secara eksplisit
+- mencatat metadata instalasi
+- memuat titik masuk Plugin
+- gagal dengan kesalahan yang dapat ditindaklanjuti saat dependensi hilang
 
-## Root pemasangan
+## Root instalasi
 
-OpenClaw menggunakan root per sumber yang stabil:
+OpenClaw menggunakan root stabil per sumber:
 
-- paket npm dipasang di bawah `~/.openclaw/npm`
+- paket npm diinstal di bawah `~/.openclaw/npm`
 - paket git dikloning di bawah `~/.openclaw/git`
-- pemasangan lokal/path/archive disalin atau direferensikan tanpa perbaikan dependensi
+- instalasi lokal/path/arsip disalin atau direferensikan tanpa perbaikan dependensi
 
-Pemasangan npm berjalan di root npm dengan:
+Instalasi npm dijalankan di root npm dengan:
 
 ```bash
 npm install --prefix ~/.openclaw/npm <spec> --omit=dev --ignore-scripts --no-audit --no-fund
@@ -55,35 +55,35 @@ npm install --prefix ~/.openclaw/npm <spec> --omit=dev --ignore-scripts --no-aud
 
 npm dapat mengangkat dependensi transitif ke `~/.openclaw/npm/node_modules` di samping
 paket Plugin. OpenClaw memindai root npm terkelola sebelum memercayai
-pemasangan dan menggunakan npm untuk menghapus paket yang dikelola npm selama pencopotan, sehingga dependensi
-runtime yang diangkat tetap berada di dalam batas pembersihan terkelola.
+instalasi dan menggunakan npm untuk menghapus paket yang dikelola npm saat penghapusan instalasi, sehingga dependensi
+waktu jalan yang diangkat tetap berada di dalam batas pembersihan terkelola.
 
-Pemasangan git mengkloning atau menyegarkan repositori, lalu menjalankan:
+Instalasi git mengkloning atau menyegarkan repositori, lalu menjalankan:
 
 ```bash
 npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-Plugin yang terpasang kemudian dimuat dari direktori paket tersebut, sehingga resolusi
+Plugin yang terinstal lalu dimuat dari direktori paket tersebut, sehingga resolusi
 `node_modules` lokal paket dan induk bekerja dengan cara yang sama seperti pada paket
 Node normal.
 
 ## Plugin lokal
 
-Plugin lokal diperlakukan sebagai direktori yang dikontrol pengembang. OpenClaw tidak
+Plugin lokal diperlakukan sebagai direktori yang dikendalikan pengembang. OpenClaw tidak
 menjalankan `npm install`, `pnpm install`, atau perbaikan dependensi untuknya. Jika Plugin
-lokal memiliki dependensi, pasang dependensi tersebut di Plugin itu sebelum memuatnya.
+lokal memiliki dependensi, instal dependensi tersebut di Plugin itu sebelum memuatnya.
 
 Plugin lokal TypeScript pihak ketiga dapat menggunakan jalur darurat Jiti. Plugin
-JavaScript terpaketkan dan Plugin internal bawaan dimuat melalui
+JavaScript terpaket dan Plugin internal bawaan dimuat melalui
 import/require native, bukan Jiti.
 
-## Startup dan muat ulang
+## Startup dan pemuatan ulang
 
-Startup Gateway dan muat ulang konfigurasi tidak pernah memasang dependensi Plugin. Keduanya membaca
-catatan pemasangan Plugin, menghitung entrypoint, dan memuatnya.
+Startup Gateway dan pemuatan ulang konfigurasi tidak pernah menginstal dependensi Plugin. Keduanya membaca
+catatan instalasi Plugin, menghitung titik masuk, dan memuatnya.
 
-Jika dependensi hilang saat runtime, Plugin gagal dimuat dan error
+Jika dependensi hilang pada waktu jalan, Plugin gagal dimuat dan kesalahan
 harus mengarahkan operator ke perbaikan eksplisit:
 
 ```bash
@@ -92,41 +92,44 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` dapat membersihkan state dependensi lama yang dihasilkan OpenClaw dan memasang
-Plugin unduhan terkonfigurasi yang hilang dari catatan pemasangan lokal.
-Itu tidak memperbaiki dependensi untuk Plugin lokal yang sudah terpasang.
+`doctor --fix` dapat membersihkan status dependensi lama yang dibuat OpenClaw dan menginstal
+Plugin unduhan terkonfigurasi yang hilang dari catatan instalasi lokal.
+Perintah ini tidak memperbaiki dependensi untuk Plugin lokal yang sudah terinstal.
 
 ## Plugin bawaan
 
-Plugin bawaan yang ringan dan kritis untuk core dikirim sebagai bagian dari OpenClaw.
-Plugin tersebut sebaiknya tidak memiliki pohon dependensi runtime yang berat atau dipindahkan
-ke paket unduhan di ClawHub/npm.
+Plugin bawaan yang ringan dan penting bagi core dikirim sebagai bagian dari OpenClaw.
+Plugin tersebut sebaiknya tidak memiliki pohon dependensi waktu jalan yang berat atau dipindahkan ke
+paket unduhan di ClawHub/npm.
 
-Untuk daftar yang dihasilkan saat ini tentang Plugin yang dikirim dalam paket core, dipasang
+Untuk daftar terbuat saat ini berisi Plugin yang dikirim dalam paket core, diinstal
 secara eksternal, atau tetap hanya sebagai sumber, lihat [Inventaris Plugin](/id/plugins/plugin-inventory).
 
-Manifes Plugin bawaan tidak boleh meminta staging dependensi. Fungsionalitas
-Plugin besar atau opsional sebaiknya dipaketkan sebagai Plugin normal dan dipasang melalui
+Manifes Plugin bawaan tidak boleh meminta staging dependensi. Fungsionalitas Plugin
+besar atau opsional sebaiknya dikemas sebagai Plugin normal dan diinstal melalui
 jalur npm/git/ClawHub yang sama seperti Plugin pihak ketiga.
 
 Dalam checkout sumber, OpenClaw memperlakukan repositori sebagai monorepo pnpm. Setelah
-`pnpm install`, Plugin bawaan dimuat dari `extensions/<id>` sehingga dependensi
-workspace lokal paket tersedia dan editan langsung terambil. Pengembangan
-checkout sumber hanya mendukung pnpm; `npm install` biasa di root repositori
-bukan cara yang didukung untuk menyiapkan dependensi Plugin bawaan.
+`pnpm install`, Plugin bawaan dimuat dari `extensions/<id>` sehingga dependensi workspace
+lokal paket tersedia dan perubahan langsung diambil. Pengembangan checkout
+sumber hanya mendukung pnpm; `npm install` biasa di root repositori bukan
+cara yang didukung untuk menyiapkan dependensi Plugin bawaan.
 
-| Bentuk pemasangan                | Lokasi Plugin bawaan                  | Pemilik dependensi                                                   |
+| Bentuk instalasi                 | Lokasi Plugin bawaan                  | Pemilik dependensi                                                    |
 | -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `npm install -g openclaw`        | Pohon runtime bawaan di dalam paket   | Paket OpenClaw dan alur pemasangan/pembaruan/doctor Plugin eksplisit |
-| Checkout git plus `pnpm install` | Paket workspace `extensions/<id>`     | Workspace pnpm, termasuk dependensi milik tiap paket Plugin sendiri  |
-| `openclaw plugins install ...`   | Root Plugin npm/git/ClawHub terkelola | Alur pemasangan/pembaruan Plugin                                     |
+| `npm install -g openclaw`        | Pohon waktu jalan bawaan di dalam paket | Paket OpenClaw dan alur instalasi/pembaruan/doctor Plugin eksplisit  |
+| Checkout Git plus `pnpm install` | Paket workspace `extensions/<id>`     | Workspace pnpm, termasuk dependensi milik tiap paket Plugin          |
+| `openclaw plugins install ...`   | Root Plugin npm/git/ClawHub terkelola | Alur instalasi/pembaruan Plugin                                      |
 
 ## Pembersihan lama
 
-Versi OpenClaw lama menghasilkan root dependensi Plugin bawaan saat startup atau
+Versi OpenClaw lama membuat root dependensi Plugin bawaan saat startup atau
 selama perbaikan doctor. Pembersihan doctor saat ini menghapus direktori dan
-symlink usang tersebut saat `--fix` digunakan, termasuk root `plugin-runtime-deps` lama,
-manifes `.openclaw-runtime-deps*`, `node_modules` Plugin yang dihasilkan, direktori
-stage pemasangan, dan store pnpm lokal paket.
+symlink usang tersebut saat `--fix` digunakan, termasuk root `plugin-runtime-deps` lama, symlink
+paket prefix Node global yang menunjuk ke target `plugin-runtime-deps` yang telah dipangkas,
+manifes `.openclaw-runtime-deps*`, `node_modules` Plugin yang dibuat, direktori stage
+instalasi, dan store pnpm lokal paket. Postinstall terpaket juga
+menghapus symlink global tersebut sebelum memangkas root target lama agar peningkatan versi
+tidak meninggalkan impor paket ESM yang menggantung.
 
-Path ini hanyalah sisa lama. Pemasangan baru tidak boleh membuatnya.
+Jalur ini hanyalah sisa lama. Instalasi baru tidak boleh membuatnya.
