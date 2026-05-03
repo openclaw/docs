@@ -1,25 +1,22 @@
 ---
 read_when:
     - Chcesz połączyć OpenClaw z QQ
-    - Wymagana konfiguracja danych uwierzytelniających QQ Bot
+    - Potrzebujesz konfiguracji danych uwierzytelniających QQ Bot
     - Potrzebujesz obsługi czatów grupowych lub prywatnych w QQ Bot
-summary: Konfiguracja, ustawienia i użycie bota QQ
-title: Bot QQ
+summary: Instalacja, konfiguracja i użycie bota QQ
+title: bot QQ
 x-i18n:
-    generated_at: "2026-05-02T09:43:32Z"
+    generated_at: "2026-05-03T21:27:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7d37dd5846ecf07b1e3e8729faa23877780abdd40577b8dab61ea1ac9399885a
+    source_hash: 471c24110bf0ab8896d22f5bb5932ac4e03ff5169560c99ba6b9d1ca4025d9a8
     source_path: channels/qqbot.md
     workflow: 16
 ---
 
-QQ Bot łączy się z OpenClaw przez oficjalne API QQ Bot (Gateway WebSocket). Plugin
-obsługuje prywatny czat C2C, grupowe @wiadomości oraz wiadomości w kanałach gildii z
-multimediami rozszerzonymi (obrazy, głos, wideo, pliki).
+QQ Bot łączy się z OpenClaw przez oficjalne API QQ Bot (Gateway WebSocket). Plugin obsługuje prywatny czat C2C, @wiadomości grupowe oraz wiadomości w kanałach gildii z bogatymi multimediami (obrazy, głos, wideo, pliki).
 
-Status: Plugin do pobrania. Obsługiwane są wiadomości bezpośrednie, czaty grupowe, kanały gildii oraz
-multimedia. Reakcje i wątki nie są obsługiwane.
+Status: Plugin do pobrania. Obsługiwane są wiadomości bezpośrednie, czaty grupowe, kanały gildii oraz multimedia. Reakcje i wątki nie są obsługiwane.
 
 ## Instalacja
 
@@ -31,8 +28,7 @@ openclaw plugins install @openclaw/qqbot
 
 ## Konfiguracja
 
-1. Przejdź do [QQ Open Platform](https://q.qq.com/) i zeskanuj kod QR swoim
-   telefonem QQ, aby się zarejestrować / zalogować.
+1. Przejdź do [QQ Open Platform](https://q.qq.com/) i zeskanuj kod QR telefonem z QQ, aby się zarejestrować / zalogować.
 2. Kliknij **Create Bot**, aby utworzyć nowego bota QQ.
 3. Znajdź **AppID** i **AppSecret** na stronie ustawień bota i skopiuj je.
 
@@ -89,16 +85,32 @@ AppSecret oparty na pliku:
 }
 ```
 
+AppSecret jako SecretRef ze zmiennej środowiskowej:
+
+```json5
+{
+  channels: {
+    qqbot: {
+      enabled: true,
+      appId: "YOUR_APP_ID",
+      clientSecret: { source: "env", provider: "default", id: "QQBOT_CLIENT_SECRET" },
+    },
+  },
+}
+```
+
 Uwagi:
 
-- Zapasowa konfiguracja ze zmiennych środowiskowych dotyczy tylko domyślnego konta QQ Bot.
-- `openclaw channels add --channel qqbot --token-file ...` dostarcza tylko
-  AppSecret; AppID musi być już ustawione w konfiguracji albo w `QQBOT_APP_ID`.
-- `clientSecret` akceptuje także wejście SecretRef, nie tylko ciąg zwykłego tekstu.
+- Rezerwowe użycie zmiennych środowiskowych dotyczy tylko domyślnego konta QQ Bot.
+- `openclaw channels add --channel qqbot --token-file ...` udostępnia tylko
+  AppSecret; AppID musi być już ustawiony w konfiguracji albo w `QQBOT_APP_ID`.
+- `clientSecret` przyjmuje też dane wejściowe SecretRef, nie tylko ciąg zwykłego tekstu.
+- Starsze ciągi znaczników `secretref:/...` nie są prawidłowymi wartościami `clientSecret`;
+  używaj strukturalnych obiektów SecretRef, jak w przykładzie powyżej.
 
 ### Konfiguracja wielu kont
 
-Uruchom wiele botów QQ w jednej instancji OpenClaw:
+Uruchamiaj wiele botów QQ w jednej instancji OpenClaw:
 
 ```json5
 {
@@ -119,8 +131,7 @@ Uruchom wiele botów QQ w jednej instancji OpenClaw:
 }
 ```
 
-Każde konto uruchamia własne połączenie WebSocket i utrzymuje niezależną
-pamięć podręczną tokenów (izolowaną według `appId`).
+Każde konto uruchamia własne połączenie WebSocket i utrzymuje niezależną pamięć podręczną tokenów (izolowaną według `appId`).
 
 Dodaj drugiego bota przez CLI:
 
@@ -130,8 +141,7 @@ openclaw channels add --channel qqbot --account bot2 --token "222222222:secret-o
 
 ### Czaty grupowe
 
-Obsługa czatów grupowych QQ Bot używa grupowych OpenID QQ, a nie nazw wyświetlanych. Dodaj bota
-do grupy, a następnie wspomnij o nim albo skonfiguruj grupę tak, aby działała bez wzmianki.
+Obsługa czatów grupowych QQ Bot używa grupowych OpenID QQ, a nie nazw wyświetlanych. Dodaj bota do grupy, a następnie wspomnij o nim albo skonfiguruj grupę tak, aby działała bez wzmianki.
 
 ```json5
 {
@@ -159,32 +169,28 @@ do grupy, a następnie wspomnij o nim albo skonfiguruj grupę tak, aby działał
 ```
 
 `groups["*"]` ustawia wartości domyślne dla każdej grupy, a konkretna pozycja
-`groups.GROUP_OPENID` zastępuje te wartości domyślne dla jednej grupy. Ustawienia grupy
-obejmują:
+`groups.GROUP_OPENID` zastępuje te wartości domyślne dla jednej grupy. Ustawienia grup obejmują:
 
 - `requireMention`: wymaga @wzmianki, zanim bot odpowie. Domyślnie: `true`.
 - `ignoreOtherMentions`: odrzuca wiadomości, które wspominają kogoś innego, ale nie bota.
-- `historyLimit`: zachowuje ostatnie grupowe wiadomości bez wzmianek jako kontekst dla następnej tury ze wzmianką. Ustaw `0`, aby wyłączyć.
-- `toolPolicy`: `full`, `restricted` albo `none` dla narzędzi ograniczonych do grupy.
-- `name`: przyjazna etykieta używana w logach i kontekście grupy.
-- `prompt`: prompt zachowania dla danej grupy, dołączany do kontekstu agenta.
+- `historyLimit`: zachowuje ostatnie wiadomości grupowe bez wzmianki jako kontekst dla następnej tury ze wzmianką. Ustaw `0`, aby wyłączyć.
+- `toolPolicy`: `full`, `restricted` albo `none` dla narzędzi w zakresie grupy.
+- `name`: przyjazna etykieta używana w dziennikach i kontekście grupy.
+- `prompt`: prompt zachowania dla grupy dodawany do kontekstu agenta.
 
-Tryby aktywacji to `mention` i `always`. `requireMention: true` mapuje się na
-`mention`; `requireMention: false` mapuje się na `always`. Nadpisanie aktywacji
-na poziomie sesji, jeśli występuje, ma pierwszeństwo przed konfiguracją.
+Tryby aktywacji to `mention` i `always`. `requireMention: true` mapuje na
+`mention`; `requireMention: false` mapuje na `always`. Jeśli istnieje zastąpienie aktywacji na poziomie sesji, ma ono pierwszeństwo przed konfiguracją.
 
-Kolejka przychodząca jest osobna dla każdego peera. Peery grupowe otrzymują większy limit kolejki, zachowują wiadomości
-ludzi przed wypowiedziami autorstwa bota, gdy kolejka jest pełna, i scalają serie zwykłych
-wiadomości grupowych w jedną przypisaną turę. Polecenia slash nadal działają pojedynczo.
+Kolejka przychodząca jest osobna dla każdego peera. Peery grupowe dostają większy limit kolejki, zachowują wiadomości od ludzi przed treściami botów, gdy kolejka jest pełna, oraz łączą serie zwykłych wiadomości grupowych w jedną przypisaną turę. Polecenia z ukośnikiem nadal uruchamiają się pojedynczo.
 
 ### Głos (STT / TTS)
 
-Obsługa STT i TTS ma dwupoziomową konfigurację z priorytetowym mechanizmem zapasowym:
+Obsługa STT i TTS używa dwupoziomowej konfiguracji z priorytetowym mechanizmem rezerwowym:
 
-| Ustawienie | Specyficzne dla Pluginu                                   | Zapasowe ustawienie frameworka |
-| ------- | -------------------------------------------------------- | ----------------------------- |
-| STT     | `channels.qqbot.stt`                                     | `tools.media.audio.models[0]` |
-| TTS     | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts` | `messages.tts`                |
+| Ustawienie | Specyficzne dla Pluginu                                  | Rezerwowe ustawienie frameworka |
+| ---------- | -------------------------------------------------------- | -------------------------------- |
+| STT        | `channels.qqbot.stt`                                     | `tools.media.audio.models[0]`    |
+| TTS        | `channels.qqbot.tts`, `channels.qqbot.accounts.<id>.tts` | `messages.tts`                   |
 
 ```json5
 {
@@ -213,16 +219,12 @@ Obsługa STT i TTS ma dwupoziomową konfigurację z priorytetowym mechanizmem za
 }
 ```
 
-Ustaw `enabled: false` na którymkolwiek z nich, aby go wyłączyć.
-Nadpisania TTS na poziomie konta używają tego samego kształtu co `messages.tts` i są głęboko scalane
-z konfiguracją TTS kanału/globalną.
+Ustaw `enabled: false` na dowolnym z nich, aby go wyłączyć.
+Zastąpienia TTS na poziomie konta używają tego samego kształtu co `messages.tts` i są głęboko scalane z konfiguracją TTS kanału/globalną.
 
-Przychodzące załączniki głosowe QQ są udostępniane agentom jako metadane multimediów audio, przy jednoczesnym
-trzymaniu surowych plików głosowych poza ogólnymi `MediaPaths`. Odpowiedzi zwykłym tekstem
-`[[audio_as_voice]]` syntetyzują TTS i wysyłają natywną wiadomość głosową QQ, gdy TTS jest
-skonfigurowane.
+Przychodzące załączniki głosowe QQ są udostępniane agentom jako metadane multimediów audio, a surowe pliki głosowe pozostają poza ogólnymi `MediaPaths`. Odpowiedzi zwykłym tekstem `[[audio_as_voice]]` syntetyzują TTS i wysyłają natywną wiadomość głosową QQ, gdy TTS jest skonfigurowany.
 
-Zachowanie wysyłania/transkodowania dźwięku wychodzącego można także dostroić za pomocą
+Zachowanie wysyłania/transkodowania dźwięku wychodzącego można też dostroić za pomocą
 `channels.qqbot.audioFormatPolicy`:
 
 - `sttDirectFormats`
@@ -231,70 +233,64 @@ Zachowanie wysyłania/transkodowania dźwięku wychodzącego można także dostr
 
 ## Formaty docelowe
 
-| Format                     | Opis               |
-| -------------------------- | ------------------ |
-| `qqbot:c2c:OPENID`         | Czat prywatny (C2C) |
-| `qqbot:group:GROUP_OPENID` | Czat grupowy       |
-| `qqbot:channel:CHANNEL_ID` | Kanał gildii       |
+| Format                     | Opis                 |
+| -------------------------- | -------------------- |
+| `qqbot:c2c:OPENID`         | Prywatny czat (C2C)  |
+| `qqbot:group:GROUP_OPENID` | Czat grupowy         |
+| `qqbot:channel:CHANNEL_ID` | Kanał gildii         |
 
-> Każdy bot ma własny zestaw OpenID użytkowników. OpenID odebranego przez Bota A **nie można**
+> Każdy bot ma własny zestaw OpenID użytkowników. OpenID otrzymanego przez Bota A **nie można**
 > użyć do wysyłania wiadomości przez Bota B.
 
-## Polecenia slash
+## Polecenia z ukośnikiem
 
 Wbudowane polecenia przechwytywane przed kolejką AI:
 
-| Polecenie      | Opis                                                                                                     |
-| -------------- | -------------------------------------------------------------------------------------------------------- |
-| `/bot-ping`    | Test opóźnienia                                                                                          |
-| `/bot-version` | Pokaż wersję frameworka OpenClaw                                                                         |
-| `/bot-help`    | Wyświetl wszystkie polecenia                                                                             |
-| `/bot-me`      | Pokaż ID użytkownika QQ nadawcy (openid) na potrzeby konfiguracji `allowFrom`/`groupAllowFrom`           |
-| `/bot-upgrade` | Pokaż link do przewodnika aktualizacji QQBot                                                             |
-| `/bot-logs`    | Wyeksportuj ostatnie logi Gateway jako plik                                                              |
-| `/bot-approve` | Zatwierdź oczekującą akcję QQ Bot (na przykład potwierdzenie wysyłki C2C lub grupowej) przez natywny przepływ. |
+| Polecenie      | Opis                                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| `/bot-ping`    | Test opóźnienia                                                                                           |
+| `/bot-version` | Pokazuje wersję frameworka OpenClaw                                                                        |
+| `/bot-help`    | Wyświetla wszystkie polecenia                                                                             |
+| `/bot-me`      | Pokazuje identyfikator użytkownika QQ nadawcy (openid) do konfiguracji `allowFrom`/`groupAllowFrom`       |
+| `/bot-upgrade` | Pokazuje link do przewodnika aktualizacji QQBot                                                           |
+| `/bot-logs`    | Eksportuje ostatnie dzienniki Gateway jako plik                                                           |
+| `/bot-approve` | Zatwierdza oczekującą akcję QQ Bot (na przykład potwierdzenie przesłania C2C lub grupowego) przez natywny przepływ. |
 
-Dodaj `?` do dowolnego polecenia, aby uzyskać pomoc dotyczącą użycia (na przykład `/bot-upgrade ?`).
+Dodaj `?` do dowolnego polecenia, aby uzyskać pomoc użycia (na przykład `/bot-upgrade ?`).
 
-Polecenia administratora (`/bot-me`, `/bot-upgrade`, `/bot-logs`, `/bot-clear-storage`, `/bot-streaming`, `/bot-approve`) są dostępne tylko w wiadomościach bezpośrednich i wymagają openid nadawcy na jawnej, nie-wieloznacznej liście `allowFrom`. Wieloznaczne `allowFrom: ["*"]` pozwala na czat, ale nie przyznaje dostępu do poleceń administratora. Wiadomości grupowe są najpierw dopasowywane względem `groupAllowFrom`, a potem zapasowo względem `allowFrom`. Uruchomienie polecenia administratora w grupie zwraca wskazówkę zamiast dyskretnie je odrzucać.
+Polecenia administratora (`/bot-me`, `/bot-upgrade`, `/bot-logs`, `/bot-clear-storage`, `/bot-streaming`, `/bot-approve`) są dostępne tylko w wiadomościach bezpośrednich i wymagają `openid` nadawcy na jawnej liście `allowFrom` bez symbolu wieloznacznego. Symbol wieloznaczny `allowFrom: ["*"]` zezwala na czat, ale nie przyznaje dostępu do poleceń administratora. Wiadomości grupowe są najpierw dopasowywane względem `groupAllowFrom`, a potem rezerwowo względem `allowFrom`. Uruchomienie polecenia administratora w grupie zwraca wskazówkę zamiast cicho je odrzucać.
 
 ## Architektura silnika
 
 QQ Bot jest dostarczany jako samodzielny silnik wewnątrz Pluginu:
 
-- Każde konto posiada izolowany stos zasobów (połączenie WebSocket, klient API, pamięć podręczna tokenów, katalog główny magazynu multimediów) identyfikowany przez `appId`. Konta nigdy nie współdzielą stanu przychodzącego/wychodzącego.
-- Logger wielu kont oznacza linie logów kontem właściciela, dzięki czemu diagnostyka pozostaje rozdzielna, gdy uruchamiasz kilka botów pod jednym Gateway.
-- Ścieżki przychodzące, wychodzące i pomostu Gateway współdzielą jeden katalog główny ładunków multimedialnych pod `~/.openclaw/media`, więc wysyłki, pobrania i pamięci podręczne transkodowania trafiają do jednego chronionego katalogu zamiast do drzewa osobnego dla każdego podsystemu.
-- Dostarczanie multimediów rozszerzonych przechodzi przez jedną ścieżkę `sendMedia` dla celów C2C i grupowych. Pliki lokalne i bufory powyżej progu dużego pliku używają punktów końcowych QQ do wysyłania w częściach, a mniejsze ładunki używają jednorazowego API multimediów.
-- Dane uwierzytelniające można tworzyć i przywracać jako część standardowych migawek danych uwierzytelniających OpenClaw; silnik ponownie podłącza stos zasobów każdego konta po przywróceniu bez wymagania świeżej pary kodu QR.
+- Każde konto ma izolowany stos zasobów (połączenie WebSocket, klient API, pamięć podręczna tokenów, główny katalog przechowywania multimediów) z kluczem według `appId`. Konta nigdy nie współdzielą stanu przychodzącego/wychodzącego.
+- Rejestrator wielu kont oznacza wiersze dziennika kontem właściciela, aby diagnostyka pozostawała rozdzielna podczas uruchamiania kilku botów pod jednym gatewayem.
+- Ścieżki przychodzące, wychodzące i mostka Gateway współdzielą jeden główny katalog ładunków multimediów pod `~/.openclaw/media`, dzięki czemu wysyłki, pobrania i pamięci podręczne transkodowania trafiają do jednego chronionego katalogu zamiast do drzewa osobnego dla każdego podsystemu.
+- Dostarczanie bogatych multimediów przechodzi przez jedną ścieżkę `sendMedia` dla celów C2C i grupowych. Pliki lokalne i bufory powyżej progu dużych plików używają segmentowanych punktów końcowych wysyłania QQ, a mniejsze ładunki używają jednorazowego API multimediów.
+- Dane uwierzytelniające można tworzyć jako kopię zapasową i przywracać jako część standardowych migawek danych uwierzytelniających OpenClaw; silnik ponownie dołącza stos zasobów każdego konta po przywróceniu bez wymagania świeżej pary kodu QR.
 
-## Onboarding kodem QR
+## Wdrażanie kodem QR
 
-Jako alternatywę dla ręcznego wklejania `AppID:AppSecret`, silnik obsługuje przepływ onboardingu kodem QR do łączenia QQ Bot z OpenClaw:
+Jako alternatywę dla ręcznego wklejania `AppID:AppSecret` silnik obsługuje przepływ wdrażania kodem QR do łączenia QQ Bot z OpenClaw:
 
 1. Uruchom ścieżkę konfiguracji QQ Bot (na przykład `openclaw channels add --channel qqbot`) i wybierz przepływ kodu QR, gdy pojawi się monit.
-2. Zeskanuj wygenerowany kod QR aplikacją na telefonie powiązaną z docelowym QQ Bot.
-3. Zatwierdź parowanie na telefonie. OpenClaw zapisuje zwrócone dane uwierzytelniające w `credentials/` w odpowiednim zakresie konta.
+2. Zeskanuj wygenerowany kod QR aplikacją w telefonie powiązaną z docelowym QQ Bot.
+3. Zatwierdź parowanie w telefonie. OpenClaw zapisze zwrócone dane uwierzytelniające w `credentials/` we właściwym zakresie konta.
 
-Monity zatwierdzania generowane przez samego bota (na przykład przepływy „zezwolić na tę akcję?” udostępniane przez API QQ Bot) pojawiają się jako natywne monity OpenClaw, które możesz zaakceptować za pomocą `/bot-approve` zamiast odpowiadać przez surowego klienta QQ.
+Monity zatwierdzenia generowane przez samego bota (na przykład przepływy „zezwolić na tę akcję?” udostępniane przez API QQ Bot) pojawiają się jako natywne monity OpenClaw, które można zaakceptować za pomocą `/bot-approve` zamiast odpowiadać przez surowego klienta QQ.
 
 ## Rozwiązywanie problemów
 
 - **Bot odpowiada „gone to Mars”:** dane uwierzytelniające nie są skonfigurowane albo Gateway nie został uruchomiony.
-- **Brak wiadomości przychodzących:** sprawdź, czy `appId` i `clientSecret` są poprawne oraz czy
-  bot jest włączony w QQ Open Platform.
-- **Powtarzające się auto-odpowiedzi:** OpenClaw zapisuje indeksy referencji wychodzących QQ jako
-  autorstwa bota i ignoruje zdarzenia przychodzące, których bieżące `msgIdx` odpowiada temu
-  samemu kontu bota. Zapobiega to pętlom echa platformy, a jednocześnie pozwala użytkownikom
-  cytować poprzednie wiadomości bota lub odpowiadać na nie.
-- **Konfiguracja z `--token-file` nadal pokazuje brak konfiguracji:** `--token-file` ustawia tylko
-  AppSecret. Nadal potrzebujesz `appId` w konfiguracji albo `QQBOT_APP_ID`.
-- **Wiadomości proaktywne nie docierają:** QQ może przechwytywać wiadomości inicjowane przez bota, jeśli
-  użytkownik nie wchodził ostatnio w interakcję.
+- **Brak wiadomości przychodzących:** sprawdź, czy `appId` i `clientSecret` są poprawne oraz czy bot jest włączony na QQ Open Platform.
+- **Powtarzające się samoodpowiedzi:** OpenClaw zapisuje indeksy odwołań wychodzących QQ jako utworzone przez bota i ignoruje zdarzenia przychodzące, których bieżące `msgIdx` pasuje do tego samego konta bota. Zapobiega to pętlom echa platformy, nadal pozwalając użytkownikom cytować poprzednie wiadomości bota lub na nie odpowiadać.
+- **Konfiguracja z `--token-file` nadal pokazuje brak konfiguracji:** `--token-file` ustawia tylko AppSecret. Nadal potrzebujesz `appId` w konfiguracji albo `QQBOT_APP_ID`.
+- **Wiadomości proaktywne nie docierają:** QQ może przechwytywać wiadomości inicjowane przez bota, jeśli użytkownik nie wchodził ostatnio w interakcję.
 - **Głos nie jest transkrybowany:** upewnij się, że STT jest skonfigurowane, a dostawca jest osiągalny.
 
 ## Powiązane
 
 - [Parowanie](/pl/channels/pairing)
 - [Grupy](/pl/channels/groups)
-- [Rozwiązywanie problemów z kanałem](/pl/channels/troubleshooting)
+- [Rozwiązywanie problemów z kanałami](/pl/channels/troubleshooting)

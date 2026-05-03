@@ -1,19 +1,20 @@
 ---
 read_when:
     - Praca z reakcjami w dowolnym kanale
-    - Zrozumienie różnic w reakcjach emoji między platformami
+    - Jak reakcje emoji różnią się między platformami
 summary: Semantyka narzędzia reakcji we wszystkich obsługiwanych kanałach
 title: Reakcje
 x-i18n:
-    generated_at: "2026-04-30T10:23:41Z"
+    generated_at: "2026-05-03T21:38:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
+    source_hash: 99008cdaf1fa7462bbe72066be7c404880df237a79d3deba01bffe00083c1e34
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-Agent może dodawać i usuwać reakcje emoji na wiadomościach za pomocą narzędzia `message` z akcją `react`. Zachowanie reakcji różni się w zależności od kanału i transportu.
+Agent może dodawać i usuwać reakcje emoji na wiadomościach za pomocą narzędzia `message`
+z akcją `react`. Zachowanie reakcji różni się w zależności od kanału i transportu.
 
 ## Jak to działa
 
@@ -27,7 +28,10 @@ Agent może dodawać i usuwać reakcje emoji na wiadomościach za pomocą narzę
 
 - `emoji` jest wymagane podczas dodawania reakcji.
 - Ustaw `emoji` na pusty ciąg (`""`), aby usunąć reakcję lub reakcje bota.
-- Ustaw `remove: true`, aby usunąć konkretne emoji (wymaga niepustego `emoji`).
+- Ustaw `remove: true`, aby usunąć określone emoji (wymaga niepustego `emoji`).
+- Na kanałach obsługujących reakcje statusu `trackToolCalls: true` w reakcji
+  pozwala środowisku uruchomieniowemu używać tej wiadomości z reakcją do kolejnych
+  reakcji postępu narzędzia w tej samej turze.
 
 ## Zachowanie kanałów
 
@@ -81,9 +85,9 @@ Konfiguracja `reactionLevel` dla poszczególnych kanałów kontroluje, jak szero
 - [Telegram reactionLevel](/pl/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/pl/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Ustaw `reactionLevel` dla poszczególnych kanałów, aby dostroić, jak aktywnie agent reaguje na wiadomości na każdej platformie.
+Ustaw `reactionLevel` na poszczególnych kanałach, aby dostosować, jak aktywnie agent reaguje na wiadomości na każdej platformie.
 
 ## Powiązane
 
-- [Wysyłanie przez agenta](/pl/tools/agent-send) — narzędzie `message`, które obejmuje `react`
+- [Wysyłanie agenta](/pl/tools/agent-send) — narzędzie `message`, które obejmuje `react`
 - [Kanały](/pl/channels) — konfiguracja specyficzna dla kanału

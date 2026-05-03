@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Tworzysz Plugin, który potrzebuje before_tool_call, before_agent_reply, haków wiadomości lub haków cyklu życia
+    - Tworzysz Plugin, który wymaga before_tool_call, before_agent_reply, hooków wiadomości lub hooków cyklu życia
     - Musisz blokować, przepisywać lub wymagać zatwierdzenia wywołań narzędzi z Plugin
-    - Wybierasz między wewnętrznymi hookami a hookami Plugin
+    - Decydujesz między wewnętrznymi hookami a hookami Plugin
 summary: 'Hooki Plugin: przechwytuj zdarzenia cyklu życia agenta, narzędzia, wiadomości, sesji i Gateway'
 title: Hooki Plugin
 x-i18n:
-    generated_at: "2026-05-02T09:57:49Z"
+    generated_at: "2026-05-03T21:35:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4efb07c6211debb5a7915d63678b1695946a91600c54d31faa0edf7025fbabf0
+    source_hash: 2c4ed060f1b89917e1f2f46d2da9448cd562edbcd6ce03bc9b1a83da3ed9a591
     source_path: plugins/hooks.md
     workflow: 16
 ---
 
-Hooki Plugin są punktami rozszerzeń działającymi w procesie dla pluginów OpenClaw. Używaj ich,
-gdy plugin musi sprawdzać lub zmieniać przebiegi agentów, wywołania narzędzi, przepływ wiadomości,
-cykl życia sesji, routowanie subagentów, instalacje albo uruchamianie Gateway.
+Hooki Plugin są punktami rozszerzeń działającymi w procesie dla Plugin OpenClaw. Używaj ich,
+gdy Plugin musi sprawdzać lub zmieniać uruchomienia agentów, wywołania narzędzi, przepływ wiadomości,
+cykl życia sesji, trasowanie podagentów, instalacje albo uruchamianie Gateway.
 
-Zamiast tego użyj [hooków wewnętrznych](/pl/automation/hooks), gdy potrzebujesz małego,
-instalowanego przez operatora skryptu `HOOK.md` dla zdarzeń komend i Gateway, takich jak
+Zamiast tego użyj [hooków wewnętrznych](/pl/automation/hooks), gdy potrzebujesz małego
+skryptu `HOOK.md` zainstalowanego przez operatora dla zdarzeń poleceń i Gateway, takich jak
 `/new`, `/reset`, `/stop`, `agent:bootstrap` lub `gateway:startup`.
 
 ## Szybki start
 
-Rejestruj typowane hooki pluginu za pomocą `api.on(...)` z punktu wejścia pluginu:
+Zarejestruj typowane hooki Plugin za pomocą `api.on(...)` z punktu wejścia swojego Plugin:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -56,61 +56,87 @@ export default definePluginEntry({
 });
 ```
 
-Procedury obsługi hooków działają sekwencyjnie w malejącej kolejności `priority`. Hooki
-o tym samym priorytecie zachowują kolejność rejestracji.
+Procedury obsługi hooków działają sekwencyjnie w malejącej kolejności `priority`. Hooki o tym samym priorytecie
+zachowują kolejność rejestracji.
 
 `api.on(name, handler, opts?)` przyjmuje:
 
-- `priority` — kolejność procedur obsługi (wyższa wartość działa pierwsza).
-- `timeoutMs` — opcjonalny limit czasu dla danego hooka. Gdy jest ustawiony, runner hooków przerywa tę
-  procedurę obsługi po upływie limitu i przechodzi do następnej, zamiast
-  pozwalać, aby wolna konfiguracja lub praca odtwarzania pamięci zużywała skonfigurowany przez wywołującego limit czasu modelu.
-  Pomiń go, aby użyć domyślnego limitu czasu obserwacji/decyzji, który
+- `priority` — kolejność procedur obsługi (wyższa wartość uruchamia się wcześniej).
+- `timeoutMs` — opcjonalny budżet dla pojedynczego hooka. Gdy jest ustawiony, runner hooków przerywa tę
+  procedurę obsługi po upływie budżetu i przechodzi do następnej, zamiast
+  pozwolić powolnej konfiguracji lub odtwarzaniu kontekstu zużyć skonfigurowany przez wywołującego
+  limit czasu modelu. Pomiń go, aby użyć domyślnego limitu czasu obserwacji/decyzji, który
   runner hooków stosuje ogólnie.
 
-Każdy hook otrzymuje `event.context.pluginConfig`, rozwiązaną konfigurację
-pluginu, który zarejestrował daną procedurę obsługi. Użyj jej do decyzji hooków, które wymagają
-bieżących opcji pluginu; OpenClaw wstrzykuje ją dla każdej procedury obsługi bez mutowania
-współdzielonego obiektu zdarzenia widzianego przez inne pluginy.
+Operatorzy mogą też ustawiać budżety hooków bez modyfikowania kodu Plugin:
+
+```json
+{
+  "plugins": {
+    "entries": {
+      "my-plugin": {
+        "hooks": {
+          "timeoutMs": 30000,
+          "timeouts": {
+            "before_prompt_build": 90000,
+            "agent_end": 60000
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+`hooks.timeouts.<hookName>` nadpisuje `hooks.timeoutMs`, które nadpisuje
+wartość `api.on(..., { timeoutMs })` zdefiniowaną przez autora Plugin. Każda skonfigurowana wartość musi
+być dodatnią liczbą całkowitą nie większą niż 600000 milisekund. Preferuj nadpisania dla konkretnych hooków
+dla znanych wolnych hooków, aby jeden Plugin nie otrzymywał dłuższego budżetu
+wszędzie.
+
+Każdy hook otrzymuje `event.context.pluginConfig`, rozwiązaną konfigurację dla
+Plugin, który zarejestrował tę procedurę obsługi. Używaj jej do decyzji hooków, które wymagają
+bieżących opcji Plugin; OpenClaw wstrzykuje ją dla każdej procedury obsługi bez mutowania
+współdzielonego obiektu zdarzenia widzianego przez inne Plugin.
 
 ## Katalog hooków
 
-Hooki są pogrupowane według powierzchni, którą rozszerzają. Nazwy oznaczone **pogrubieniem** akceptują
-wynik decyzji (blokadę, anulowanie, nadpisanie lub żądanie zatwierdzenia); wszystkie pozostałe są
-wyłącznie obserwacyjne.
+Hooki są pogrupowane według powierzchni, którą rozszerzają. Nazwy zapisane **pogrubieniem** akceptują
+wynik decyzji (blokada, anulowanie, nadpisanie lub wymaganie zatwierdzenia); wszystkie pozostałe służą
+wyłącznie do obserwacji.
 
 **Tura agenta**
 
 - `before_model_resolve` — nadpisz dostawcę lub model przed załadowaniem wiadomości sesji
-- `agent_turn_prepare` — skonsumuj zakolejkowane wstrzyknięcia tur pluginu i dodaj kontekst tej samej tury przed hookami promptu
+- `agent_turn_prepare` — zużyj zakolejkowane wstrzyknięcia tur Plugin i dodaj kontekst tej samej tury przed hookami promptu
 - `before_prompt_build` — dodaj dynamiczny kontekst lub tekst promptu systemowego przed wywołaniem modelu
-- `before_agent_start` — połączona faza wyłącznie dla zgodności; preferuj dwa powyższe hooki
-- **`before_agent_reply`** — przerwij turę modelu syntetyczną odpowiedzią lub ciszą
+- `before_agent_start` — wyłącznie faza zgodności łączonej; preferuj dwa powyższe hooki
+- **`before_agent_reply`** — skróć turę modelu syntetyczną odpowiedzią albo ciszą
 - **`before_agent_finalize`** — sprawdź naturalną odpowiedź końcową i zażądaj jeszcze jednego przebiegu modelu
-- `agent_end` — obserwuj końcowe wiadomości, stan powodzenia i czas trwania przebiegu
-- `heartbeat_prompt_contribution` — dodaj kontekst wyłącznie dla Heartbeat dla pluginów monitorowania w tle i cyklu życia
+- `agent_end` — obserwuj wiadomości końcowe, stan powodzenia i czas trwania uruchomienia
+- `heartbeat_prompt_contribution` — dodaj kontekst wyłącznie dla Heartbeat dla monitorów w tle i Plugin cyklu życia
 
 **Obserwacja konwersacji**
 
-- `model_call_started` / `model_call_ended` — obserwuj oczyszczone metadane wywołania dostawcy/modelu, czas, wynik i ograniczone hashe identyfikatorów żądań bez treści promptu lub odpowiedzi
+- `model_call_started` / `model_call_ended` — obserwuj oczyszczone metadane wywołania dostawcy/modelu, czas, wynik i ograniczone hashe identyfikatorów żądań bez treści promptu ani odpowiedzi
 - `llm_input` — obserwuj wejście dostawcy (prompt systemowy, prompt, historia)
 - `llm_output` — obserwuj wyjście dostawcy
 
 **Narzędzia**
 
-- **`before_tool_call`** — przepisz parametry narzędzia, zablokuj wykonanie albo zażądaj zatwierdzenia
+- **`before_tool_call`** — przepisz parametry narzędzia, zablokuj wykonanie albo wymagaj zatwierdzenia
 - `after_tool_call` — obserwuj wyniki narzędzia, błędy i czas trwania
 - **`tool_result_persist`** — przepisz wiadomość asystenta utworzoną z wyniku narzędzia
 - **`before_message_write`** — sprawdź lub zablokuj trwający zapis wiadomości (rzadkie)
 
 **Wiadomości i dostarczanie**
 
-- **`inbound_claim`** — przejmij wiadomość przychodzącą przed routowaniem agenta (syntetyczne odpowiedzi)
-- `message_received` — obserwuj przychodzącą treść, nadawcę, wątek i metadane
+- **`inbound_claim`** — przejmij wiadomość przychodzącą przed trasowaniem agenta (odpowiedzi syntetyczne)
+- `message_received` — obserwuj treść przychodzącą, nadawcę, wątek i metadane
 - **`message_sending`** — przepisz treść wychodzącą albo anuluj dostarczenie
-- `message_sent` — obserwuj powodzenie lub niepowodzenie dostarczenia wiadomości wychodzącej
-- **`before_dispatch`** — sprawdź lub przepisz wychodzące wysłanie przed przekazaniem do kanału
-- **`reply_dispatch`** — uczestnicz w końcowym potoku wysyłania odpowiedzi
+- `message_sent` — obserwuj powodzenie lub niepowodzenie dostarczenia wychodzącego
+- **`before_dispatch`** — sprawdź lub przepisz wysyłkę wychodzącą przed przekazaniem do kanału
+- **`reply_dispatch`** — uczestnicz w końcowym potoku wysyłki odpowiedzi
 
 **Sesje i Compaction**
 
@@ -118,15 +144,15 @@ wyłącznie obserwacyjne.
 - `before_compaction` / `after_compaction` — obserwuj lub adnotuj cykle Compaction
 - `before_reset` — obserwuj zdarzenia resetowania sesji (`/reset`, resetowania programowe)
 
-**Subagenci**
+**Podagenci**
 
-- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` — koordynuj routowanie subagentów i dostarczanie ukończenia
+- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` — koordynuj trasowanie podagentów i dostarczanie ukończenia
 
 **Cykl życia**
 
-- `gateway_start` / `gateway_stop` — uruchom lub zatrzymaj usługi należące do pluginu razem z Gateway
-- `cron_changed` — obserwuj zmiany cyklu życia cron zarządzanego przez Gateway (dodano, zaktualizowano, usunięto, uruchomiono, zakończono, zaplanowano)
-- **`before_install`** — sprawdź skany instalacji umiejętności lub pluginu i opcjonalnie zablokuj
+- `gateway_start` / `gateway_stop` — uruchamiaj lub zatrzymuj usługi należące do Plugin razem z Gateway
+- `cron_changed` — obserwuj zmiany cyklu życia Cron należące do gateway (dodano, zaktualizowano, usunięto, uruchomiono, zakończono, zaplanowano)
+- **`before_install`** — sprawdź skany instalacji Skills lub Plugin i opcjonalnie zablokuj
 
 ## Polityka wywołań narzędzi
 
@@ -137,7 +163,7 @@ wyłącznie obserwacyjne.
 - opcjonalne `event.runId`
 - opcjonalne `event.toolCallId`
 - pola kontekstu, takie jak `ctx.agentId`, `ctx.sessionKey`, `ctx.sessionId`,
-  `ctx.runId`, `ctx.jobId` (ustawiane w przebiegach sterowanych przez Cron) oraz diagnostyczne `ctx.trace`
+  `ctx.runId`, `ctx.jobId` (ustawiane w uruchomieniach sterowanych przez cron) oraz diagnostyczne `ctx.trace`
 
 Może zwrócić:
 
@@ -165,41 +191,43 @@ Reguły:
 - `block: true` jest terminalne i pomija procedury obsługi o niższym priorytecie.
 - `block: false` jest traktowane jako brak decyzji.
 - `params` przepisuje parametry narzędzia do wykonania.
-- `requireApproval` wstrzymuje przebieg agenta i pyta użytkownika przez zatwierdzenia pluginów. Komenda `/approve` może zatwierdzać zarówno zatwierdzenia exec, jak i pluginów.
-- `block: true` z niższym priorytetem nadal może zablokować po tym, jak hook o wyższym priorytecie
+- `requireApproval` wstrzymuje uruchomienie agenta i pyta użytkownika przez zatwierdzenia Plugin.
+  Polecenie `/approve` może zatwierdzać zarówno zatwierdzenia exec, jak i Plugin.
+- `block: true` o niższym priorytecie nadal może zablokować działanie po tym, jak hook o wyższym priorytecie
   zażądał zatwierdzenia.
-- `onResolution` otrzymuje rozwiązaną decyzję zatwierdzenia — `allow-once`,
+- `onResolution` otrzymuje rozstrzygniętą decyzję zatwierdzenia — `allow-once`,
   `allow-always`, `deny`, `timeout` lub `cancelled`.
 
-Wbudowane pluginy, które potrzebują polityki na poziomie hosta, mogą rejestrować zaufane polityki narzędzi
-za pomocą `api.registerTrustedToolPolicy(...)`. Działają one przed zwykłymi
-hookami `before_tool_call` i przed decyzjami pluginów zewnętrznych. Używaj ich tylko
-dla bramek zaufanych przez hosta, takich jak polityka obszaru roboczego, egzekwowanie budżetu lub
-bezpieczeństwo zastrzeżonych przepływów pracy. Pluginy zewnętrzne powinny używać zwykłych hooków `before_tool_call`.
+Wbudowane Plugin, które potrzebują polityki na poziomie hosta, mogą rejestrować zaufane polityki narzędzi
+za pomocą `api.registerTrustedToolPolicy(...)`. Uruchamiają się one przed zwykłymi
+hookami `before_tool_call` i przed decyzjami zewnętrznych Plugin. Używaj ich tylko
+dla zaufanych przez hosta bramek, takich jak polityka obszaru roboczego, egzekwowanie budżetu lub
+bezpieczeństwo zarezerwowanych przepływów pracy. Zewnętrzne Plugin powinny używać zwykłych
+hooków `before_tool_call`.
 
 ### Utrwalanie wyników narzędzi
 
-Wyniki narzędzi mogą zawierać strukturalne `details` do renderowania UI, diagnostyki,
-routowania multimediów lub metadanych należących do pluginu. Traktuj `details` jako metadane wykonawcze,
+Wyniki narzędzi mogą zawierać ustrukturyzowane `details` do renderowania UI, diagnostyki,
+trasowania multimediów lub metadanych należących do Plugin. Traktuj `details` jako metadane wykonawcze,
 a nie treść promptu:
 
-- OpenClaw usuwa `toolResult.details` przed odtworzeniem dla dostawcy i wejściem Compaction,
+- OpenClaw usuwa `toolResult.details` przed odtwarzaniem u dostawcy i wejściem Compaction,
   aby metadane nie stały się kontekstem modelu.
-- Utrwalone wpisy sesji zachowują tylko ograniczone `details`. Nadmiernie duże szczegóły są
+- Utrwalone wpisy sesji zachowują tylko ograniczone `details`. Zbyt duże szczegóły są
   zastępowane zwartym podsumowaniem i `persistedDetailsTruncated: true`.
-- `tool_result_persist` i `before_message_write` działają przed końcowym
-  limitem utrwalania. Hooki nadal powinny utrzymywać zwracane `details` małe i unikać
-  umieszczania tekstu istotnego dla promptu wyłącznie w `details`; wyjście narzędzia widoczne dla modelu
+- `tool_result_persist` i `before_message_write` uruchamiają się przed końcowym
+  limitem utrwalania. Hooki nadal powinny utrzymywać zwracane `details` jako małe i unikać
+  umieszczania tekstu istotnego dla promptu wyłącznie w `details`; dane wyjściowe narzędzia widoczne dla modelu
   umieszczaj w `content`.
 
-## Hooki promptów i modeli
+## Hooki promptu i modelu
 
-Używaj hooków specyficznych dla fazy dla nowych pluginów:
+Dla nowych Plugin używaj hooków specyficznych dla faz:
 
 - `before_model_resolve`: otrzymuje tylko bieżący prompt i metadane załączników.
   Zwróć `providerOverride` lub `modelOverride`.
 - `agent_turn_prepare`: otrzymuje bieżący prompt, przygotowane wiadomości sesji
-  oraz wszelkie dokładnie jednokrotne zakolejkowane wstrzyknięcia pobrane dla tej sesji. Zwróć
+  oraz wszelkie zakolejkowane wstrzyknięcia dokładnie-jeden-raz opróżnione dla tej sesji. Zwróć
   `prependContext` lub `appendContext`.
 - `before_prompt_build`: otrzymuje bieżący prompt i wiadomości sesji.
   Zwróć `prependContext`, `appendContext`, `systemPrompt`,
@@ -209,40 +237,40 @@ Używaj hooków specyficznych dla fazy dla nowych pluginów:
   które muszą podsumować bieżący stan bez zmieniania tur inicjowanych przez użytkownika.
 
 `before_agent_start` pozostaje dla zgodności. Preferuj jawne hooki powyżej,
-aby Twój plugin nie zależał od starszej połączonej fazy.
+aby Twój Plugin nie zależał od starszej fazy łączonej.
 
 `before_agent_start` i `agent_end` zawierają `event.runId`, gdy OpenClaw może
-zidentyfikować aktywny przebieg. Ta sama wartość jest również dostępna w `ctx.runId`.
-Przebiegi sterowane przez Cron udostępniają także `ctx.jobId` (identyfikator źródłowego zadania cron), aby
-hooki pluginów mogły ograniczać metryki, skutki uboczne lub stan do konkretnego zaplanowanego
+zidentyfikować aktywne uruchomienie. Ta sama wartość jest też dostępna w `ctx.runId`.
+Uruchomienia sterowane przez Cron ujawniają także `ctx.jobId` (identyfikator źródłowego zadania cron), aby
+hooki Plugin mogły zawężać metryki, efekty uboczne lub stan do konkretnego zaplanowanego
 zadania.
 
-Dla przebiegów pochodzących z kanału `ctx.messageProvider` jest powierzchnią dostawcy, taką jak
-`discord` lub `telegram`, natomiast `ctx.channelId` jest docelowym identyfikatorem konwersacji,
-gdy OpenClaw może wyprowadzić go z klucza sesji lub metadanych dostarczania.
+W przypadku uruchomień pochodzących z kanału `ctx.messageProvider` jest powierzchnią dostawcy, taką
+jak `discord` lub `telegram`, natomiast `ctx.channelId` jest docelowym identyfikatorem konwersacji,
+gdy OpenClaw może wyprowadzić go z klucza sesji lub metadanych dostarczenia.
 
-`agent_end` jest hookiem obserwacyjnym i działa w trybie fire-and-forget po turze. Runner
-hooków stosuje limit czasu 30 sekund, aby zawieszony plugin lub endpoint osadzeń
-nie mógł pozostawić obietnicy hooka oczekującej w nieskończoność. Limit czasu jest logowany, a
-OpenClaw kontynuuje; nie anuluje pracy sieciowej należącej do pluginu, chyba że
-plugin używa również własnego sygnału przerwania.
+`agent_end` jest hookiem obserwacyjnym i działa fire-and-forget po turze. Runner
+hooków stosuje 30-sekundowy limit czasu, aby zablokowany Plugin lub endpoint embeddingów
+nie mógł pozostawić obietnicy hooka w stanie oczekiwania bez końca. Limit czasu jest logowany, a
+OpenClaw kontynuuje; nie anuluje pracy sieciowej należącej do Plugin, chyba że
+Plugin używa także własnego sygnału przerwania.
 
 Używaj `model_call_started` i `model_call_ended` do telemetrii wywołań dostawcy,
 która nie powinna otrzymywać surowych promptów, historii, odpowiedzi, nagłówków, treści żądań
 ani identyfikatorów żądań dostawcy. Te hooki zawierają stabilne metadane, takie jak
-`runId`, `callId`, `provider`, `model`, opcjonalne `api`/`transport`, końcowe
+`runId`, `callId`, `provider`, `model`, opcjonalne `api`/`transport`, terminalne
 `durationMs`/`outcome` oraz `upstreamRequestIdHash`, gdy OpenClaw może wyprowadzić
 ograniczony hash identyfikatora żądania dostawcy.
 
 `before_agent_finalize` działa tylko wtedy, gdy harness ma zaakceptować naturalną
 końcową odpowiedź asystenta. Nie jest to ścieżka anulowania `/stop` i nie
-działa, gdy użytkownik przerywa turę. Zwróć `{ action: "revise", reason }`, aby poprosić
+uruchamia się, gdy użytkownik przerywa turę. Zwróć `{ action: "revise", reason }`, aby poprosić
 harness o jeszcze jeden przebieg modelu przed finalizacją, `{ action:
 "finalize", reason? }`, aby wymusić finalizację, albo pomiń wynik, aby kontynuować.
-Natywne hooki Codex `Stop` są przekazywane do tego hooka jako decyzje OpenClaw
+Natywne hooki `Stop` Codex są przekazywane do tego hooka jako decyzje OpenClaw
 `before_agent_finalize`.
 
-Niewbudowane pluginy, które potrzebują `llm_input`, `llm_output`,
+Niewbudowane Plugin, które potrzebują `llm_input`, `llm_output`,
 `before_agent_finalize` lub `agent_end`, muszą ustawić:
 
 ```json
@@ -259,115 +287,116 @@ Niewbudowane pluginy, które potrzebują `llm_input`, `llm_output`,
 }
 ```
 
-Hooki mutujące prompt i trwałe wstrzyknięcia następnej tury można wyłączyć dla każdego pluginu
+Hooki mutujące prompty i trwałe wstrzyknięcia następnej tury można wyłączyć dla każdego Plugin
 za pomocą `plugins.entries.<id>.hooks.allowPromptInjection=false`.
 
 ### Rozszerzenia sesji i wstrzyknięcia następnej tury
 
-Pluginy przepływów pracy mogą utrwalać mały, zgodny z JSON stan sesji za pomocą
+Plugin przepływów pracy mogą utrwalać mały stan sesji zgodny z JSON za pomocą
 `api.registerSessionExtension(...)` i aktualizować go przez metodę Gateway
 `sessions.pluginPatch`. Wiersze sesji projektują zarejestrowany stan rozszerzenia
-przez `pluginExtensions`, pozwalając Control UI i innym klientom renderować
-status należący do pluginu bez poznawania wewnętrznych szczegółów pluginu.
+przez `pluginExtensions`, umożliwiając Control UI i innym klientom renderowanie
+statusu należącego do Plugin bez poznawania wewnętrznych szczegółów Plugin.
 
-Użyj `api.enqueueNextTurnInjection(...)`, gdy plugin potrzebuje trwałego kontekstu, który
-dotrze do następnej tury modelu dokładnie raz. OpenClaw opróżnia zakolejkowane wstrzyknięcia przed
-hookami promptu, odrzuca wygasłe wstrzyknięcia i deduplikuje według `idempotencyKey`
-dla każdego pluginu. To właściwy punkt rozszerzeń dla wznowień zatwierdzeń, podsumowań polityk,
-delt monitorów w tle i kontynuacji komend, które powinny być widoczne dla
-modelu w następnej turze, ale nie powinny stać się stałym tekstem promptu systemowego.
+Użyj `api.enqueueNextTurnInjection(...)`, gdy Plugin potrzebuje trwałego kontekstu, który ma
+dotrzeć do następnej tury modelu dokładnie raz. OpenClaw opróżnia zakolejkowane wstrzyknięcia przed
+hakami promptu, odrzuca wygasłe wstrzyknięcia i deduplikuje je według `idempotencyKey`
+dla każdego Pluginu. To właściwy punkt integracji dla wznawiania zatwierdzeń, podsumowań zasad,
+delt monitorów w tle i kontynuacji poleceń, które powinny być widoczne dla
+modelu w następnej turze, ale nie powinny stać się trwałym tekstem promptu systemowego.
 
-Semantyka czyszczenia jest częścią kontraktu. Czyszczenie rozszerzeń sesji i
-callbacki czyszczenia cyklu życia środowiska wykonawczego otrzymują `reset`, `delete`, `disable` lub
-`restart`. Host usuwa trwały stan rozszerzenia sesji należący do danego pluginu
+Semantyka czyszczenia jest częścią kontraktu. Czyszczenie rozszerzenia sesji i
+wywołania zwrotne czyszczenia cyklu życia środowiska uruchomieniowego otrzymują `reset`, `delete`, `disable` lub
+`restart`. Host usuwa trwały stan rozszerzenia sesji należący do danego Pluginu
 oraz oczekujące wstrzyknięcia następnej tury dla reset/delete/disable; restart zachowuje
-trwały stan sesji, podczas gdy callbacki czyszczenia pozwalają pluginom zwolnić zadania harmonogramu,
-kontekst przebiegu i inne zasoby poza pasmem dla starej generacji środowiska wykonawczego.
+trwały stan sesji, a wywołania zwrotne czyszczenia pozwalają Pluginom zwolnić zadania
+harmonogramu, kontekst uruchomieniowy i inne zasoby poza pasmem dla starej generacji
+środowiska uruchomieniowego.
 
-## Hooki wiadomości
+## Haki wiadomości
 
-Używaj hooków wiadomości do routowania na poziomie kanału i polityki dostarczania:
+Używaj haków wiadomości do routingu na poziomie kanału i zasad dostarczania:
 
-- `message_received`: obserwuj treść przychodzącą, nadawcę, `threadId`, `messageId`,
+- `message_received`: obserwuj treści przychodzące, nadawcę, `threadId`, `messageId`,
   `senderId`, opcjonalną korelację uruchomienia/sesji oraz metadane.
 - `message_sending`: przepisz `content` albo zwróć `{ cancel: true }`.
-- `message_sent`: obserwuj ostateczny sukces lub niepowodzenie.
+- `message_sent`: obserwuj końcowe powodzenie lub niepowodzenie.
 
-W przypadku odpowiedzi TTS wyłącznie audio `content` może zawierać ukryty transkrypt mowy
+W przypadku odpowiedzi TTS tylko audio `content` może zawierać ukrytą wypowiedzianą transkrypcję
 nawet wtedy, gdy ładunek kanału nie ma widocznego tekstu/podpisu. Przepisanie tego
-`content` aktualizuje tylko transkrypt widoczny dla hooka; nie jest on renderowany jako
+`content` aktualizuje tylko transkrypcję widoczną dla haka; nie jest ona renderowana jako
 podpis multimediów.
 
-Konteksty hooków wiadomości udostępniają stabilne pola korelacji, gdy są dostępne:
+Konteksty haków wiadomości ujawniają stabilne pola korelacji, gdy są dostępne:
 `ctx.sessionKey`, `ctx.runId`, `ctx.messageId`, `ctx.senderId`, `ctx.trace`,
-`ctx.traceId`, `ctx.spanId`, `ctx.parentSpanId` oraz `ctx.callDepth`. Preferuj
+`ctx.traceId`, `ctx.spanId`, `ctx.parentSpanId` i `ctx.callDepth`. Preferuj
 te pola pierwszej klasy przed odczytem starszych metadanych.
 
-Preferuj typowane pola `threadId` i `replyToId` przed użyciem metadanych
+Preferuj typowane pola `threadId` i `replyToId` przed używaniem metadanych
 specyficznych dla kanału.
 
 Reguły decyzyjne:
 
-- `message_sending` z `cancel: true` jest terminalne.
+- `message_sending` z `cancel: true` jest końcowe.
 - `message_sending` z `cancel: false` jest traktowane jako brak decyzji.
-- Przepisane `content` przechodzi dalej do hooków o niższym priorytecie, chyba że późniejszy hook
+- Przepisane `content` przechodzi dalej do haków o niższym priorytecie, chyba że późniejszy hak
   anuluje dostarczenie.
 
-## Hooki instalacji
+## Haki instalacji
 
-`before_install` uruchamia się po wbudowanym skanowaniu instalacji Skills i pluginów.
+`before_install` działa po wbudowanym skanowaniu instalacji Skills i Pluginów.
 Zwróć dodatkowe ustalenia albo `{ block: true, blockReason }`, aby zatrzymać
 instalację.
 
-`block: true` jest terminalne. `block: false` jest traktowane jako brak decyzji.
+`block: true` jest końcowe. `block: false` jest traktowane jako brak decyzji.
 
 ## Cykl życia Gateway
 
-Użyj `gateway_start` dla usług pluginów, które potrzebują stanu należącego do Gateway. 
-Kontekst udostępnia `ctx.config`, `ctx.workspaceDir` oraz `ctx.getCron?.()` do
-inspekcji i aktualizacji cron. Użyj `gateway_stop`, aby wyczyścić długotrwałe
+Użyj `gateway_start` dla usług Pluginów, które potrzebują stanu należącego do Gateway. Kontekst
+udostępnia `ctx.config`, `ctx.workspaceDir` i `ctx.getCron?.()` do inspekcji
+i aktualizacji Cron. Użyj `gateway_stop`, aby wyczyścić długo działające
 zasoby.
 
-Nie polegaj na wewnętrznym hooku `gateway:startup` dla usług uruchomieniowych
-należących do pluginów.
+Nie polegaj na wewnętrznym haku `gateway:startup` dla usług środowiska uruchomieniowego
+należących do Pluginu.
 
-`cron_changed` uruchamia się dla zdarzeń cyklu życia cron należących do gatewaya z typowanym
+`cron_changed` uruchamia się dla zdarzeń cyklu życia Cron należących do gateway z typowanym
 ładunkiem zdarzenia obejmującym powody `added`, `updated`, `removed`, `started`, `finished`
-oraz `scheduled`. Zdarzenie przenosi migawkę `PluginHookGatewayCronJob`
-(w tym `state.nextRunAtMs`, `state.lastRunStatus` oraz
-`state.lastError`, gdy są obecne) oraz `PluginHookGatewayCronDeliveryStatus`
-o wartości `not-requested` | `delivered` | `not-delivered` | `unknown`. Zdarzenia usunięcia
-nadal przenoszą migawkę usuniętego zadania, aby zewnętrzne harmonogramy mogły
-uzgodnić stan. Używaj `ctx.getCron?.()` i `ctx.config` z kontekstu uruchomieniowego
-podczas synchronizowania zewnętrznych harmonogramów wybudzania i utrzymuj OpenClaw jako
-źródło prawdy dla sprawdzania terminów i wykonywania.
+i `scheduled`. Zdarzenie niesie migawkę `PluginHookGatewayCronJob`
+(w tym `state.nextRunAtMs`, `state.lastRunStatus` i
+`state.lastError`, gdy występuje) oraz `PluginHookGatewayCronDeliveryStatus`
+o wartości `not-requested` | `delivered` | `not-delivered` | `unknown`. Usunięte
+zdarzenia nadal niosą migawkę usuniętego zadania, aby zewnętrzne harmonogramy mogły
+uzgodnić stan. Używaj `ctx.getCron?.()` i `ctx.config` z kontekstu środowiska
+uruchomieniowego podczas synchronizacji zewnętrznych harmonogramów wybudzania i utrzymuj OpenClaw jako
+źródło prawdy dla sprawdzania terminów oraz wykonywania.
 
 ## Nadchodzące wycofania
 
-Kilka powierzchni powiązanych z hookami jest przestarzałych, ale nadal obsługiwanych. Przeprowadź migrację
-przed następnym wydaniem głównym:
+Kilka powierzchni powiązanych z hakami jest wycofanych, ale nadal obsługiwanych. Zmigruj
+przed następnym głównym wydaniem:
 
-- **Jawnotekstowe koperty kanałów** w handlerach `inbound_claim` i `message_received`.
+- **Koperty kanałów w postaci zwykłego tekstu** w handlerach `inbound_claim` i `message_received`.
   Odczytuj `BodyForAgent` oraz strukturalne bloki kontekstu użytkownika
   zamiast parsować płaski tekst koperty. Zobacz
-  [Jawnotekstowe koperty kanałów → BodyForAgent](/pl/plugins/sdk-migration#active-deprecations).
-- **`before_agent_start`** pozostaje dostępne dla zgodności. Nowe pluginy powinny używać
+  [Koperty kanałów w postaci zwykłego tekstu → BodyForAgent](/pl/plugins/sdk-migration#active-deprecations).
+- **`before_agent_start`** pozostaje dla zgodności. Nowe Pluginy powinny używać
   `before_model_resolve` i `before_prompt_build` zamiast połączonej
   fazy.
-- **`onResolution` w `before_tool_call`** używa teraz typowanej
-  unii `PluginApprovalResolution` (`allow-once` / `allow-always` / `deny` /
-  `timeout` / `cancelled`) zamiast dowolnego `string`.
+- **`onResolution` w `before_tool_call`** używa teraz typowanej unii
+  `PluginApprovalResolution` (`allow-once` / `allow-always` / `deny` /
+  `timeout` / `cancelled`) zamiast swobodnego `string`.
 
-Pełną listę — rejestrację możliwości pamięci, profil rozumowania dostawcy,
-zewnętrznych dostawców uwierzytelniania, typy wykrywania dostawców, akcesory środowiska uruchomieniowego zadań
-oraz zmianę nazwy `command-auth` → `command-status` — znajdziesz w
+Pełna lista — rejestracja funkcji pamięci, profil myślenia dostawcy,
+zewnętrzni dostawcy uwierzytelniania, typy wykrywania dostawców, akcesory środowiska
+uruchomieniowego zadań oraz zmiana nazwy `command-auth` → `command-status` — znajduje się w
 [Migracja Plugin SDK → Aktywne wycofania](/pl/plugins/sdk-migration#active-deprecations).
 
 ## Powiązane
 
-- [Migracja Plugin SDK](/pl/plugins/sdk-migration) — aktywne wycofania i harmonogram usunięcia
-- [Tworzenie pluginów](/pl/plugins/building-plugins)
+- [Migracja Plugin SDK](/pl/plugins/sdk-migration) — aktywne wycofania i harmonogram usuwania
+- [Budowanie Pluginów](/pl/plugins/building-plugins)
 - [Przegląd Plugin SDK](/pl/plugins/sdk-overview)
-- [Punkty wejścia pluginów](/pl/plugins/sdk-entrypoints)
-- [Hooki wewnętrzne](/pl/automation/hooks)
-- [Wewnętrzna architektura pluginów](/pl/plugins/architecture-internals)
+- [Punkty wejścia Pluginów](/pl/plugins/sdk-entrypoints)
+- [Wewnętrzne haki](/pl/automation/hooks)
+- [Wewnętrzna architektura Pluginów](/pl/plugins/architecture-internals)

@@ -4,37 +4,37 @@ status: active
 summary: Zarządzaj środowiskami uruchomieniowymi piaskownicy i sprawdzaj obowiązującą politykę piaskownicy
 title: CLI piaskownicy
 x-i18n:
-    generated_at: "2026-04-30T09:45:21Z"
+    generated_at: "2026-05-03T21:28:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
+    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-Zarządzaj środowiskami uruchomieniowymi piaskownicy dla izolowanego wykonywania agentów.
+Zarządzaj środowiskami uruchomieniowymi sandbox na potrzeby izolowanego wykonywania agentów.
 
-## Przegląd
+## Omówienie
 
-OpenClaw może uruchamiać agentów w izolowanych środowiskach uruchomieniowych piaskownicy ze względów bezpieczeństwa. Polecenia `sandbox` pomagają sprawdzać i odtwarzać te środowiska po aktualizacjach lub zmianach konfiguracji.
+OpenClaw może uruchamiać agentów w izolowanych środowiskach uruchomieniowych sandbox dla bezpieczeństwa. Polecenia `sandbox` pomagają sprawdzać i odtwarzać te środowiska po aktualizacjach lub zmianach konfiguracji.
 
 Obecnie zwykle oznacza to:
 
-- kontenery piaskownicy Docker
-- środowiska uruchomieniowe piaskownicy SSH, gdy `agents.defaults.sandbox.backend = "ssh"`
-- środowiska uruchomieniowe piaskownicy OpenShell, gdy `agents.defaults.sandbox.backend = "openshell"`
+- Kontenery sandbox Docker
+- Środowiska uruchomieniowe sandbox SSH, gdy `agents.defaults.sandbox.backend = "ssh"`
+- Środowiska uruchomieniowe sandbox OpenShell, gdy `agents.defaults.sandbox.backend = "openshell"`
 
-W przypadku `ssh` i OpenShell `remote` odtworzenie ma większe znaczenie niż przy Docker:
+Dla `ssh` i OpenShell `remote` odtworzenie ma większe znaczenie niż w przypadku Docker:
 
-- zdalny obszar roboczy jest kanoniczny po początkowym zainicjowaniu
+- zdalny obszar roboczy jest kanoniczny po początkowym zasianiu
 - `openclaw sandbox recreate` usuwa ten kanoniczny zdalny obszar roboczy dla wybranego zakresu
-- następne użycie ponownie inicjuje go z bieżącego lokalnego obszaru roboczego
+- następne użycie ponownie zasiewa go z bieżącego lokalnego obszaru roboczego
 
 ## Polecenia
 
 ### `openclaw sandbox explain`
 
-Sprawdź **efektywny** tryb/zakres/dostęp do obszaru roboczego piaskownicy, zasady narzędzi piaskownicy oraz bramki podniesionych uprawnień (ze ścieżkami kluczy konfiguracji do naprawy).
+Sprawdź **efektywny** tryb/zakres/dostęp do obszaru roboczego sandbox, politykę narzędzi sandbox oraz bramki podniesionych uprawnień (ze ścieżkami kluczy konfiguracji do naprawy).
 
 ```bash
 openclaw sandbox explain
@@ -45,7 +45,7 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Wyświetl wszystkie środowiska uruchomieniowe piaskownicy wraz z ich stanem i konfiguracją.
+Wyświetl wszystkie środowiska uruchomieniowe sandbox wraz z ich stanem i konfiguracją.
 
 ```bash
 openclaw sandbox list
@@ -55,16 +55,16 @@ openclaw sandbox list --json     # JSON output
 
 **Dane wyjściowe obejmują:**
 
-- nazwę i stan środowiska uruchomieniowego
-- backend (`docker`, `openshell` itd.)
-- etykietę konfiguracji oraz informację, czy odpowiada bieżącej konfiguracji
-- wiek (czas od utworzenia)
-- czas bezczynności (czas od ostatniego użycia)
-- powiązaną sesję/agenta
+- Nazwę i stan środowiska uruchomieniowego
+- Backend (`docker`, `openshell` itd.)
+- Etykietę konfiguracji i informację, czy pasuje do bieżącej konfiguracji
+- Wiek (czas od utworzenia)
+- Czas bezczynności (czas od ostatniego użycia)
+- Powiązaną sesję/agenta
 
 ### `openclaw sandbox recreate`
 
-Usuń środowiska uruchomieniowe piaskownicy, aby wymusić odtworzenie ze zaktualizowaną konfiguracją.
+Usuń środowiska uruchomieniowe sandbox, aby wymusić ich odtworzenie ze zaktualizowaną konfiguracją.
 
 ```bash
 openclaw sandbox recreate --all                # Recreate all containers
@@ -76,11 +76,11 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 
 **Opcje:**
 
-- `--all`: odtwórz wszystkie kontenery piaskownicy
-- `--session <key>`: odtwórz kontener dla określonej sesji
-- `--agent <id>`: odtwórz kontenery dla określonego agenta
-- `--browser`: odtwórz tylko kontenery przeglądarki
-- `--force`: pomiń monit o potwierdzenie
+- `--all`: Odtwórz wszystkie kontenery sandbox
+- `--session <key>`: Odtwórz kontener dla konkretnej sesji
+- `--agent <id>`: Odtwórz kontenery dla konkretnego agenta
+- `--browser`: Odtwórz tylko kontenery przeglądarki
+- `--force`: Pomiń monit o potwierdzenie
 
 <Note>
 Środowiska uruchomieniowe są automatycznie odtwarzane przy następnym użyciu agenta.
@@ -88,7 +88,7 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 
 ## Przypadki użycia
 
-### Po zaktualizowaniu obrazu Docker
+### Po aktualizacji obrazu Docker
 
 ```bash
 # Pull new image
@@ -102,7 +102,7 @@ docker tag openclaw-sandbox:latest openclaw-sandbox:bookworm-slim
 openclaw sandbox recreate --all
 ```
 
-### Po zmianie konfiguracji piaskownicy
+### Po zmianie konfiguracji sandbox
 
 ```bash
 # Edit config: agents.defaults.sandbox.* (or agents.list[].sandbox.*)
@@ -111,7 +111,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-### Po zmianie celu SSH lub materiału uwierzytelniającego SSH
+### Po zmianie celu SSH lub materiałów uwierzytelniania SSH
 
 ```bash
 # Edit config:
@@ -124,10 +124,10 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-W przypadku podstawowego backendu `ssh` odtworzenie usuwa zdalny katalog główny obszaru roboczego dla danego zakresu
-na celu SSH. Następne uruchomienie ponownie inicjuje go z lokalnego obszaru roboczego.
+Dla podstawowego backendu `ssh` odtworzenie usuwa zdalny katalog główny obszaru roboczego dla danego zakresu
+na celu SSH. Następne uruchomienie ponownie zasiewa go z lokalnego obszaru roboczego.
 
-### Po zmianie źródła, zasad lub trybu OpenShell
+### Po zmianie źródła, polityki lub trybu OpenShell
 
 ```bash
 # Edit config:
@@ -140,7 +140,7 @@ openclaw sandbox recreate --all
 ```
 
 W trybie OpenShell `remote` odtworzenie usuwa kanoniczny zdalny obszar roboczy
-dla tego zakresu. Następne uruchomienie ponownie inicjuje go z lokalnego obszaru roboczego.
+dla tego zakresu. Następne uruchomienie ponownie zasiewa go z lokalnego obszaru roboczego.
 
 ### Po zmianie setupCommand
 
@@ -150,7 +150,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --agent family
 ```
 
-### Tylko dla określonego agenta
+### Tylko dla konkretnego agenta
 
 ```bash
 # Update only one agent's containers
@@ -159,21 +159,30 @@ openclaw sandbox recreate --agent alfred
 
 ## Dlaczego jest to potrzebne
 
-Gdy aktualizujesz konfigurację piaskownicy:
+Gdy aktualizujesz konfigurację sandbox:
 
 - Istniejące środowiska uruchomieniowe nadal działają ze starymi ustawieniami.
 - Środowiska uruchomieniowe są usuwane dopiero po 24 godzinach bezczynności.
-- Regularnie używani agenci utrzymują stare środowiska uruchomieniowe przy życiu bezterminowo.
+- Regularnie używani agenci utrzymują stare środowiska uruchomieniowe aktywne bezterminowo.
 
 Użyj `openclaw sandbox recreate`, aby wymusić usunięcie starych środowisk uruchomieniowych. Zostaną one automatycznie odtworzone z bieżącymi ustawieniami, gdy będą ponownie potrzebne.
 
 <Tip>
-Preferuj `openclaw sandbox recreate` zamiast ręcznego czyszczenia specyficznego dla backendu. Używa ono rejestru środowisk uruchomieniowych Gateway i zapobiega niezgodnościom, gdy zmienią się zakres lub klucze sesji.
+Preferuj `openclaw sandbox recreate` zamiast ręcznego czyszczenia specyficznego dla backendu. Używa ono rejestru środowisk uruchomieniowych Gateway i pozwala uniknąć niezgodności, gdy zmieniają się klucze zakresu lub sesji.
 </Tip>
+
+## Migracja rejestru
+
+OpenClaw przechowuje metadane środowiska uruchomieniowego sandbox jako jeden fragment JSON na wpis kontenera/przeglądarki w katalogu stanu sandbox. Starsze instalacje mogą nadal mieć monolityczne pliki starszego typu:
+
+- `~/.openclaw/sandbox/containers.json`
+- `~/.openclaw/sandbox/browsers.json`
+
+Zwykłe odczyty środowisk uruchomieniowych sandbox nie przepisują tych plików. Uruchom `openclaw doctor --fix`, aby zmigrować prawidłowe starsze wpisy do katalogów rejestru podzielonego na fragmenty. Nieprawidłowe starsze pliki są poddawane kwarantannie, aby jeden wadliwy stary rejestr nie mógł ukryć bieżących wpisów środowisk uruchomieniowych.
 
 ## Konfiguracja
 
-Ustawienia piaskownicy znajdują się w `~/.openclaw/openclaw.json` pod `agents.defaults.sandbox` (nadpisania dla poszczególnych agentów trafiają do `agents.list[].sandbox`):
+Ustawienia sandbox znajdują się w `~/.openclaw/openclaw.json` pod `agents.defaults.sandbox` (nadpisania dla poszczególnych agentów trafiają do `agents.list[].sandbox`):
 
 ```jsonc
 {
@@ -201,6 +210,6 @@ Ustawienia piaskownicy znajdują się w `~/.openclaw/openclaw.json` pod `agents.
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
-- [Piaskownica](/pl/gateway/sandboxing)
+- [Sandboxing](/pl/gateway/sandboxing)
 - [Obszar roboczy agenta](/pl/concepts/agent-workspace)
-- [Doctor](/pl/gateway/doctor): sprawdza konfigurację piaskownicy.
+- [Doctor](/pl/gateway/doctor): sprawdza konfigurację sandbox.
