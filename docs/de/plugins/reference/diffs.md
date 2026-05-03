@@ -4,23 +4,23 @@ read_when:
 summary: Schreibgeschützter Diff-Viewer und Datei-Renderer für Agenten.
 title: Diffs-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:11Z"
+    generated_at: "2026-05-03T06:41:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c1949ed6e1431a44121694f64ca17c0dc8b7c4c6171959ff8b7d6ab27793e8ab
+    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
 # Diffs-Plugin
 
-Schreibgeschützter Diff-Viewer und Datei-Renderer für Agents.
+Schreibgeschützter Diff-Viewer und Datei-Renderer für Agenten.
 
 ## Distribution
 
 - Paket: `@openclaw/diffs`
-- Installationsroute: ClawHub + npm
+- Installationsweg: npm; ClawHub
 
 ## Oberfläche
 
-contracts: Tools; Skills
+Verträge: Werkzeuge; Skills

@@ -1,75 +1,72 @@
 ---
 read_when:
-    - Sie binden das Lebenszyklusverhalten der Context Engine in die Codex-Harness ein
-    - Sie benötigen lossless-claw oder ein anderes Context-Engine-Plugin, damit es mit eingebetteten Harness-Sitzungen von codex/* funktioniert
-    - Sie vergleichen das Kontextverhalten von eingebettetem PI und Codex-App-Server
-summary: Spezifikation dafür, dass die gebündelte Codex-App-Server-Harness Context-Engine-Plugins von OpenClaw berücksichtigt
-title: Codex-Harness-Portierung der Context Engine
+    - Sie integrieren das Lebenszyklusverhalten der Kontext-Engine in das Codex-Harness
+    - Sie benötigen lossless-claw oder ein anderes context-engine-Plugin für die Arbeit mit eingebetteten codex/*-Harness-Sitzungen.
+    - Sie vergleichen das Kontextverhalten von eingebettetem PI und dem Codex-App-Server
+summary: Spezifikation, damit der mitgelieferte Codex-App-Server-Harness OpenClaw-Kontext-Engine-Plugins berücksichtigt
+title: Portierung der Codex-Harness-Kontext-Engine
 x-i18n:
-    generated_at: "2026-04-25T13:50:27Z"
-    model: gpt-5.4
+    generated_at: "2026-05-03T06:39:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 61c29a6cd8955a41510b8da1575b89ed003565d564b25b37b3b0c7f65df6b663
+    source_hash: 6575c25973d43c04cada6157e39c52ea5ad1cc60171cf801fe36cbb9c54c9237
     source_path: plan/codex-context-engine-harness.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Status
 
-Entwurf einer Implementierungsspezifikation.
+Entwurf der Implementierungsspezifikation.
 
 ## Ziel
 
-Sicherstellen, dass die gebündelte Codex-App-Server-Harness denselben Lebenszyklusvertrag der OpenClaw-Context-Engine berücksichtigt, den eingebettete PI-Züge bereits einhalten.
+Sicherstellen, dass der gebündelte Codex-App-Server-Harness denselben OpenClaw-Kontext-Engine-Lebenszyklusvertrag einhält, den eingebettete PI-Turns bereits einhalten.
 
-Eine Sitzung mit `agents.defaults.embeddedHarness.runtime: "codex"` oder einem
-`codex/*`-Modell soll weiterhin der ausgewählten Context-Engine, etwa
-`lossless-claw`, erlauben, die Kontextzusammenstellung, die Erfassung nach dem Zug, die Wartung und die Compaction-Richtlinie auf OpenClaw-Ebene zu steuern, soweit die Grenze des Codex-App-Servers dies zulässt.
+Eine Sitzung mit `agents.defaults.embeddedHarness.runtime: "codex"` oder einem `codex/*`-Modell sollte weiterhin zulassen, dass das ausgewählte Kontext-Engine-Plugin, etwa `lossless-claw`, Kontextzusammenstellung, Post-Turn-Ingest, Wartung und OpenClaw-Compaction-Richtlinie so weit steuert, wie es die Codex-App-Server-Grenze erlaubt.
 
 ## Nicht-Ziele
 
-- Die Interna des Codex-App-Servers nicht neu implementieren.
-- Codex-native Thread-Compaction nicht dazu bringen, eine `lossless-claw`-Zusammenfassung zu erzeugen.
-- Nicht verlangen, dass Nicht-Codex-Modelle die Codex-Harness verwenden.
-- Das Verhalten von ACP-/acpx-Sitzungen nicht ändern. Diese Spezifikation gilt nur für den eingebetteten Agenten-Harness-Pfad ohne ACP.
-- Nicht dafür sorgen, dass Drittanbieter-Plugins Erweiterungsfabriken für den Codex-App-Server registrieren; die bestehende Vertrauensgrenze für gebündelte Plugins bleibt unverändert.
+- Codex-App-Server-Interna nicht neu implementieren.
+- Native Codex-Thread-Compaction nicht dazu bringen, eine lossless-claw-Zusammenfassung zu erzeugen.
+- Nicht verlangen, dass Nicht-Codex-Modelle den Codex-Harness verwenden.
+- ACP-/acpx-Sitzungsverhalten nicht ändern. Diese Spezifikation gilt nur für den Nicht-ACP-Pfad des eingebetteten Agent-Harness.
+- Drittanbieter-Plugins nicht dazu bringen, Codex-App-Server-Erweiterungs-Factories zu registrieren; die bestehende Vertrauensgrenze für gebündelte Plugins bleibt unverändert.
 
 ## Aktuelle Architektur
 
-Die eingebettete Ausführungsschleife löst die konfigurierte Context Engine einmal pro Lauf auf, bevor eine konkrete Low-Level-Harness ausgewählt wird:
+Die eingebettete Run-Schleife löst die konfigurierte Kontext-Engine einmal pro Run auf, bevor sie einen konkreten Low-Level-Harness auswählt:
 
 - `src/agents/pi-embedded-runner/run.ts`
-  - initialisiert Context-Engine-Plugins
+  - initialisiert Kontext-Engine-Plugins
   - ruft `resolveContextEngine(params.config)` auf
   - übergibt `contextEngine` und `contextTokenBudget` an
     `runEmbeddedAttemptWithBackend(...)`
 
-`runEmbeddedAttemptWithBackend(...)` delegiert an die ausgewählte Agenten-Harness:
+`runEmbeddedAttemptWithBackend(...)` delegiert an den ausgewählten Agent-Harness:
 
 - `src/agents/pi-embedded-runner/run/backend.ts`
 - `src/agents/harness/selection.ts`
 
-Die Codex-App-Server-Harness wird vom gebündelten Codex-Plugin registriert:
+Der Codex-App-Server-Harness wird vom gebündelten Codex-Plugin registriert:
 
 - `extensions/codex/index.ts`
 - `extensions/codex/harness.ts`
 
-Die Implementierung der Codex-Harness erhält dieselben `EmbeddedRunAttemptParams`
-wie PI-gestützte Versuche:
+Die Codex-Harness-Implementierung erhält dieselben `EmbeddedRunAttemptParams` wie PI-gestützte Versuche:
 
 - `extensions/codex/src/app-server/run-attempt.ts`
 
-Das bedeutet, dass sich der erforderliche Hook-Punkt in von OpenClaw kontrolliertem Code befindet. Die externe Grenze ist das Protokoll des Codex-App-Servers selbst: OpenClaw kann steuern, was an `thread/start`, `thread/resume` und `turn/start` gesendet wird, und kann Benachrichtigungen beobachten, aber es kann den internen Thread-Speicher oder den nativen Compactor von Codex nicht verändern.
+Das bedeutet, der erforderliche Hook-Punkt liegt in von OpenClaw kontrolliertem Code. Die externe Grenze ist das Codex-App-Server-Protokoll selbst: OpenClaw kann steuern, was es an `thread/start`, `thread/resume` und `turn/start` sendet, und kann Benachrichtigungen beobachten, aber es kann Codex' internen Thread-Speicher oder nativen Compactor nicht ändern.
 
 ## Aktuelle Lücke
 
-Eingebettete PI-Versuche rufen den Lebenszyklus der Context Engine direkt auf:
+Eingebettete PI-Versuche rufen den Kontext-Engine-Lebenszyklus direkt auf:
 
 - Bootstrap/Wartung vor dem Versuch
-- `assemble` vor dem Modellaufruf
-- `afterTurn` oder `ingest` nach dem Versuch
-- Wartung nach einem erfolgreichen Zug
-- Compaction der Context Engine für Engines, die Compaction selbst verwalten
+- Assemble vor dem Modellaufruf
+- afterTurn oder Ingest nach dem Versuch
+- Wartung nach einem erfolgreichen Turn
+- Kontext-Engine-Compaction für Engines, die Compaction besitzen
 
 Relevanter PI-Code:
 
@@ -77,10 +74,7 @@ Relevanter PI-Code:
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Versuche mit dem Codex-App-Server führen derzeit generische Agenten-Harness-Hooks aus und spiegeln das Transkript, rufen aber nicht `params.contextEngine.bootstrap`,
-`params.contextEngine.assemble`, `params.contextEngine.afterTurn`,
-`params.contextEngine.ingestBatch`, `params.contextEngine.ingest` oder
-`params.contextEngine.maintain` auf.
+Codex-App-Server-Versuche führen derzeit generische Agent-Harness-Hooks aus und spiegeln das Transkript, rufen aber weder `params.contextEngine.bootstrap`, `params.contextEngine.assemble`, `params.contextEngine.afterTurn`, `params.contextEngine.ingestBatch`, `params.contextEngine.ingest` noch `params.contextEngine.maintain` auf.
 
 Relevanter Codex-Code:
 
@@ -91,72 +85,72 @@ Relevanter Codex-Code:
 
 ## Gewünschtes Verhalten
 
-Für Codex-Harness-Züge soll OpenClaw diesen Lebenszyklus beibehalten:
+Für Codex-Harness-Turns sollte OpenClaw diesen Lebenszyklus beibehalten:
 
 1. Das gespiegelte OpenClaw-Sitzungstranskript lesen.
-2. Die aktive Context Engine bootstrappen, wenn bereits eine Sitzungsdatei existiert.
-3. Falls verfügbar, Bootstrap-Wartung ausführen.
-4. Kontext mit der aktiven Context Engine zusammenstellen.
+2. Die aktive Kontext-Engine per Bootstrap initialisieren, wenn eine vorherige Sitzungsdatei vorhanden ist.
+3. Bootstrap-Wartung ausführen, wenn verfügbar.
+4. Kontext mit der aktiven Kontext-Engine zusammenstellen.
 5. Den zusammengestellten Kontext in Codex-kompatible Eingaben umwandeln.
-6. Den Codex-Thread mit Entwickleranweisungen starten oder fortsetzen, die gegebenenfalls `systemPromptAddition` der Context Engine enthalten.
-7. Den Codex-Zug mit dem zusammengestellten benutzerseitigen Prompt starten.
+6. Den Codex-Thread mit Entwickleranweisungen starten oder fortsetzen, die eine etwaige Kontext-Engine-`systemPromptAddition` enthalten.
+7. Den Codex-Turn mit dem zusammengestellten benutzerseitigen Prompt starten.
 8. Das Codex-Ergebnis zurück in das OpenClaw-Transkript spiegeln.
-9. `afterTurn` aufrufen, falls implementiert, andernfalls `ingestBatch`/`ingest`, unter Verwendung des gespiegelten Snapshots des Transkripts.
-10. Nach erfolgreichen, nicht abgebrochenen Zügen die Zug-Wartung ausführen.
-11. Native Compaction-Signale von Codex und Compaction-Hooks von OpenClaw erhalten.
+9. `afterTurn` aufrufen, falls implementiert, andernfalls `ingestBatch`/`ingest`, unter Verwendung des gespiegelten Transkript-Snapshots.
+10. Turn-Wartung nach erfolgreichen, nicht abgebrochenen Turns ausführen.
+11. Native Codex-Compaction-Signale und OpenClaw-Compaction-Hooks beibehalten.
 
 ## Entwurfsbeschränkungen
 
-### Der Codex-App-Server bleibt kanonisch für nativen Thread-Status
+### Codex-App-Server bleibt kanonisch für nativen Thread-Zustand
 
-Codex verwaltet seinen nativen Thread und jeglichen internen erweiterten Verlauf. OpenClaw soll nicht versuchen, den internen Verlauf des App-Servers zu verändern, außer über unterstützte Protokollaufrufe.
+Codex besitzt seinen nativen Thread und jegliche interne erweiterte Historie. OpenClaw sollte nicht versuchen, die interne Historie des App-Servers außer über unterstützte Protokollaufrufe zu verändern.
 
-Der Transkript-Spiegel von OpenClaw bleibt die Quelle für OpenClaw-Funktionen:
+OpenClaws Transkriptspiegel bleibt die Quelle für OpenClaw-Funktionen:
 
-- Chat-Verlauf
+- Chatverlauf
 - Suche
-- Buchführung für `/new` und `/reset`
-- zukünftiges Umschalten von Modell oder Harness
-- Plugin-Status der Context Engine
+- `/new`- und `/reset`-Buchführung
+- zukünftiger Modell- oder Harness-Wechsel
+- Kontext-Engine-Plugin-Zustand
 
-### Die Zusammenstellung der Context Engine muss in Codex-Eingaben projiziert werden
+### Kontext-Engine-Assembly muss in Codex-Eingaben projiziert werden
 
-Die Schnittstelle der Context Engine gibt `AgentMessage[]` von OpenClaw zurück, keinen Thread-Patch für Codex. `turn/start` des Codex-App-Servers akzeptiert eine aktuelle Benutzereingabe, während `thread/start` und `thread/resume` Entwickleranweisungen akzeptieren.
+Die Kontext-Engine-Schnittstelle gibt OpenClaw-`AgentMessage[]` zurück, keinen Codex-Thread-Patch. Codex-App-Server-`turn/start` akzeptiert eine aktuelle Benutzereingabe, während `thread/start` und `thread/resume` Entwickleranweisungen akzeptieren.
 
-Daher benötigt die Implementierung eine Projektionsschicht. Die sichere erste Version soll vermeiden, vorzutäuschen, dass sie den internen Verlauf von Codex ersetzen kann. Sie soll zusammengestellten Kontext als deterministisches Prompt-/Entwickleranweisungsmaterial rund um den aktuellen Zug einfügen.
+Daher benötigt die Implementierung eine Projektionsschicht. Die sichere erste Version sollte nicht vorgeben, Codex-interne Historie ersetzen zu können. Sie sollte zusammengestellten Kontext als deterministisches Prompt-/Entwickleranweisungs-Material um den aktuellen Turn herum injizieren.
 
-### Stabilität des Prompt-Cache ist wichtig
+### Prompt-Cache-Stabilität ist wichtig
 
-Bei Engines wie `lossless-claw` soll der zusammengestellte Kontext bei unveränderten Eingaben deterministisch sein. Keine Timestamps, Zufalls-IDs oder nicht deterministische Reihenfolge im generierten Kontexttext hinzufügen.
+Für Engines wie lossless-claw sollte der zusammengestellte Kontext bei unveränderten Eingaben deterministisch sein. Fügen Sie dem erzeugten Kontexttext keine Zeitstempel, zufälligen IDs oder nichtdeterministische Sortierung hinzu.
 
-### Semantik des PI-Fallbacks ändert sich nicht
+### Laufzeitauswahl-Semantik ändert sich nicht
 
-Die Auswahl der Harness bleibt unverändert:
+Die Harness-Auswahl bleibt wie bisher:
 
 - `runtime: "pi"` erzwingt PI
-- `runtime: "codex"` wählt die registrierte Codex-Harness
+- `runtime: "codex"` wählt den registrierten Codex-Harness aus
 - `runtime: "auto"` lässt Plugin-Harnesses unterstützte Provider beanspruchen
-- `fallback: "none"` deaktiviert den PI-Fallback, wenn keine Plugin-Harness passt
+- nicht übereinstimmende `auto`-Runs verwenden PI
 
-Diese Arbeit ändert, was geschieht, nachdem die Codex-Harness ausgewählt wurde.
+Diese Arbeit ändert, was passiert, nachdem der Codex-Harness ausgewählt wurde.
 
 ## Implementierungsplan
 
-### 1. Wiederverwendbare Helper für Context-Engine-Versuche exportieren oder verschieben
+### 1. Wiederverwendbare Kontext-Engine-Versuchshelfer exportieren oder verschieben
 
-Derzeit befinden sich die wiederverwendbaren Lebenszyklus-Helper unter dem PI-Runner:
+Heute liegen die wiederverwendbaren Lebenszyklushelfer unter dem PI-Runner:
 
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/run/attempt.prompt-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Codex soll nach Möglichkeit nicht aus einem Implementierungspfad importieren, dessen Name auf PI verweist.
+Codex sollte nicht aus einem Implementierungspfad importieren, dessen Name PI impliziert, wenn wir das vermeiden können.
 
-Ein Harness-neutrales Modul erstellen, zum Beispiel:
+Erstellen Sie ein Harness-neutrales Modul, zum Beispiel:
 
 - `src/agents/harness/context-engine-lifecycle.ts`
 
-Verschieben oder erneut exportieren:
+Verschieben oder re-exportieren Sie:
 
 - `runAttemptContextEngineBootstrap`
 - `assembleAttemptContextEngine`
@@ -165,9 +159,9 @@ Verschieben oder erneut exportieren:
 - `buildAfterTurnRuntimeContextFromUsage`
 - einen kleinen Wrapper um `runContextEngineMaintenance`
 
-PI-Importe weiterhin funktionsfähig halten, entweder durch Re-Export aus den alten Dateien oder durch Aktualisierung der PI-Aufrufstellen in derselben PR.
+Halten Sie PI-Importe funktionsfähig, entweder durch Re-Export aus den alten Dateien oder durch Aktualisieren der PI-Aufrufstellen im selben PR.
 
-Die neutralen Helper-Namen sollen PI nicht erwähnen.
+Die neutralen Helfernamen sollten PI nicht erwähnen.
 
 Vorgeschlagene Namen:
 
@@ -177,18 +171,18 @@ Vorgeschlagene Namen:
 - `buildHarnessContextEngineRuntimeContext`
 - `runHarnessContextEngineMaintenance`
 
-### 2. Einen Codex-Projektions-Helper für Kontext hinzufügen
+### 2. Einen Codex-Kontextprojektionshelfer hinzufügen
 
-Ein neues Modul hinzufügen:
+Fügen Sie ein neues Modul hinzu:
 
 - `extensions/codex/src/app-server/context-engine-projection.ts`
 
 Verantwortlichkeiten:
 
-- Die zusammengestellten `AgentMessage[]`, den ursprünglichen gespiegelten Verlauf und den aktuellen Prompt akzeptieren.
-- Bestimmen, welcher Kontext in Entwickleranweisungen und welcher in die aktuelle Benutzereingabe gehört.
-- Den aktuellen Benutzer-Prompt als letzte ausführbare Anforderung erhalten.
-- Frühere Nachrichten in einem stabilen, expliziten Format rendern.
+- Die zusammengestellten `AgentMessage[]`, die ursprüngliche gespiegelte Historie und den aktuellen Prompt akzeptieren.
+- Bestimmen, welcher Kontext in Entwickleranweisungen gegenüber der aktuellen Benutzereingabe gehört.
+- Den aktuellen Benutzer-Prompt als abschließende ausführbare Anfrage beibehalten.
+- Vorherige Nachrichten in einem stabilen, expliziten Format rendern.
 - Flüchtige Metadaten vermeiden.
 
 Vorgeschlagene API:
@@ -211,16 +205,16 @@ export function projectContextEngineAssemblyForCodex(params: {
 
 Empfohlene erste Projektion:
 
-- `systemPromptAddition` in die Entwickleranweisungen aufnehmen.
-- Den zusammengestellten Transkriptkontext in `promptText` vor den aktuellen Prompt setzen.
+- `systemPromptAddition` in Entwickleranweisungen aufnehmen.
+- Den zusammengestellten Transkriptkontext vor dem aktuellen Prompt in `promptText` setzen.
 - Ihn klar als von OpenClaw zusammengestellten Kontext kennzeichnen.
-- Den aktuellen Prompt zuletzt beibehalten.
-- Den doppelten aktuellen Benutzer-Prompt ausschließen, falls er bereits am Ende erscheint.
+- Aktuellen Prompt zuletzt halten.
+- Doppelte aktuelle Benutzer-Prompts ausschließen, wenn sie bereits am Ende erscheinen.
 
-Beispiel für die Form des Prompts:
+Beispielhafte Prompt-Form:
 
 ```text
-Von OpenClaw zusammengestellter Kontext für diesen Zug:
+OpenClaw assembled context for this turn:
 
 <conversation_context>
 [user]
@@ -230,22 +224,22 @@ Von OpenClaw zusammengestellter Kontext für diesen Zug:
 ...
 </conversation_context>
 
-Aktuelle Benutzeranfrage:
+Current user request:
 ...
 ```
 
-Das ist weniger elegant als native Historienmanipulation in Codex, aber innerhalb von OpenClaw umsetzbar und bewahrt die Semantik der Context Engine.
+Das ist weniger elegant als native Codex-Historienbearbeitung, ist aber innerhalb von OpenClaw implementierbar und bewahrt die Kontext-Engine-Semantik.
 
-Zukünftige Verbesserung: Falls der Codex-App-Server ein Protokoll zum Ersetzen oder Ergänzen des Thread-Verlaufs bereitstellt, diese Projektionsschicht so austauschen, dass sie diese API verwendet.
+Zukünftige Verbesserung: Wenn der Codex-App-Server ein Protokoll zum Ersetzen oder Ergänzen der Thread-Historie bereitstellt, diese Projektionsschicht auf diese API umstellen.
 
-### 3. Bootstrap vor dem Starten des Codex-Threads einbinden
+### 3. Bootstrap vor dem Start des Codex-Threads verdrahten
 
 In `extensions/codex/src/app-server/run-attempt.ts`:
 
-- Den gespiegelten Sitzungsverlauf wie bisher lesen.
-- Bestimmen, ob die Sitzungsdatei vor diesem Lauf existierte. Bevorzugt ein Helper, der `fs.stat(params.sessionFile)` vor dem Schreiben des Spiegels prüft.
-- Einen `SessionManager` öffnen oder einen schmalen Adapter für den Session Manager verwenden, falls der Helper ihn benötigt.
-- Den neutralen Bootstrap-Helper aufrufen, wenn `params.contextEngine` existiert.
+- Gespiegelte Sitzungshistorie wie bisher lesen.
+- Bestimmen, ob die Sitzungsdatei vor diesem Run vorhanden war. Bevorzugen Sie einen Helfer, der `fs.stat(params.sessionFile)` vor Spiegelungsschreibvorgängen prüft.
+- Einen `SessionManager` öffnen oder einen schmalen Session-Manager-Adapter verwenden, falls der Helfer ihn benötigt.
+- Den neutralen Bootstrap-Helfer aufrufen, wenn `params.contextEngine` existiert.
 
 Pseudo-Ablauf:
 
@@ -267,17 +261,17 @@ await bootstrapHarnessContextEngine({
 });
 ```
 
-Dieselbe `sessionKey`-Konvention verwenden wie die Codex-Tool-Bridge und der Transkript-Spiegel. Derzeit berechnet Codex `sandboxSessionKey` aus `params.sessionKey` oder `params.sessionId`; dies konsistent verwenden, sofern es keinen Grund gibt, rohes `params.sessionKey` beizubehalten.
+Verwenden Sie dieselbe `sessionKey`-Konvention wie die Codex-Tool-Bridge und der Transkriptspiegel. Heute berechnet Codex `sandboxSessionKey` aus `params.sessionKey` oder `params.sessionId`; verwenden Sie dies konsistent, sofern es keinen Grund gibt, den rohen `params.sessionKey` beizubehalten.
 
-### 4. `assemble` vor `thread/start` / `thread/resume` und `turn/start` einbinden
+### 4. Assemble vor `thread/start` / `thread/resume` und `turn/start` verdrahten
 
 In `runCodexAppServerAttempt`:
 
-1. Zuerst dynamische Tools aufbauen, damit die Context Engine die tatsächlich verfügbaren Tool-Namen sieht.
-2. Den gespiegelten Sitzungsverlauf lesen.
-3. `assemble(...)` der Context Engine ausführen, wenn `params.contextEngine` existiert.
+1. Zuerst dynamische Tools erstellen, damit die Kontext-Engine die tatsächlich verfügbaren Tool-Namen sieht.
+2. Gespiegelte Sitzungshistorie lesen.
+3. Kontext-Engine-`assemble(...)` ausführen, wenn `params.contextEngine` existiert.
 4. Das zusammengestellte Ergebnis projizieren in:
-   - zusätzliche Entwickleranweisungen
+   - Ergänzung der Entwickleranweisungen
    - Prompt-Text für `turn/start`
 
 Der bestehende Hook-Aufruf:
@@ -291,51 +285,51 @@ resolveAgentHarnessBeforePromptBuildResult({
 });
 ```
 
-soll kontextbewusst werden:
+sollte kontextbewusst werden:
 
 1. Basis-Entwickleranweisungen mit `buildDeveloperInstructions(params)` berechnen
-2. Zusammenstellung/Projektion der Context Engine anwenden
+2. Kontext-Engine-Assembly/-Projektion anwenden
 3. `before_prompt_build` mit dem projizierten Prompt/den projizierten Entwickleranweisungen ausführen
 
-Diese Reihenfolge sorgt dafür, dass generische Prompt-Hooks denselben Prompt sehen, den Codex erhält. Falls strikte PI-Parität erforderlich ist, Context-Engine-Zusammenstellung vor der Hook-Komposition ausführen, da PI `systemPromptAddition` der Context Engine nach seiner Prompt-Pipeline auf den endgültigen Systemprompt anwendet. Die wichtige Invariante ist, dass sowohl Context Engine als auch Hooks eine deterministische, dokumentierte Reihenfolge erhalten.
+Diese Reihenfolge lässt generische Prompt-Hooks denselben Prompt sehen, den Codex erhalten wird. Wenn strikte PI-Parität benötigt wird, führen Sie Kontext-Engine-Assembly vor der Hook-Komposition aus, weil PI die Kontext-Engine-`systemPromptAddition` nach seiner Prompt-Pipeline auf den finalen System-Prompt anwendet. Die wichtige Invariante ist, dass sowohl Kontext-Engine als auch Hooks eine deterministische, dokumentierte Reihenfolge erhalten.
 
 Empfohlene Reihenfolge für die erste Implementierung:
 
 1. `buildDeveloperInstructions(params)`
-2. `assemble()` der Context Engine
+2. Kontext-Engine-`assemble()`
 3. `systemPromptAddition` an Entwickleranweisungen anhängen/voranstellen
-4. Zusammengestellte Nachrichten in Prompt-Text projizieren
+4. zusammengestellte Nachrichten in Prompt-Text projizieren
 5. `resolveAgentHarnessBeforePromptBuildResult(...)`
-6. Endgültige Entwickleranweisungen an `startOrResumeThread(...)` übergeben
-7. Endgültigen Prompt-Text an `buildTurnStartParams(...)` übergeben
+6. finale Entwickleranweisungen an `startOrResumeThread(...)` übergeben
+7. finalen Prompt-Text an `buildTurnStartParams(...)` übergeben
 
-Die Spezifikation soll in Tests kodiert werden, damit zukünftige Änderungen diese Reihenfolge nicht versehentlich ändern.
+Die Spezifikation sollte in Tests kodiert werden, damit künftige Änderungen die Reihenfolge nicht versehentlich verändern.
 
-### 5. Prompt-Cache-stabiles Format beibehalten
+### 5. Prompt-Cache-stabile Formatierung beibehalten
 
-Der Projektions-Helper muss bei identischen Eingaben byte-stabile Ausgabe erzeugen:
+Der Projektionshelfer muss bei identischen Eingaben byte-stabile Ausgabe erzeugen:
 
 - stabile Nachrichtenreihenfolge
-- stabile Rollenbezeichnungen
-- keine generierten Timestamps
-- keine Leckage der Reihenfolge von Objektschlüsseln
+- stabile Rollenlabels
+- keine generierten Zeitstempel
+- kein Durchsickern von Objekt-Schlüsselreihenfolgen
 - keine zufälligen Trennzeichen
-- keine IDs pro Lauf
+- keine IDs pro Run
 
-Feste Trennzeichen und explizite Abschnitte verwenden.
+Verwenden Sie feste Trennzeichen und explizite Abschnitte.
 
-### 6. Nach dem Spiegeln des Transkripts Nachbearbeitung nach dem Zug einbinden
+### 6. Post-Turn nach Transkriptspiegelung verdrahten
 
-`CodexAppServerEventProjector` von Codex erstellt einen lokalen `messagesSnapshot` für den
-aktuellen Zug. `mirrorTranscriptBestEffort(...)` schreibt diesen Snapshot in den
-OpenClaw-Transkriptspiegel.
+Codex’ `CodexAppServerEventProjector` erstellt ein lokales `messagesSnapshot` für den
+aktuellen Turn. `mirrorTranscriptBestEffort(...)` schreibt diesen Snapshot in die
+OpenClaw-Transkriptspiegelung.
 
-Nachdem das Spiegeln erfolgreich war oder fehlgeschlagen ist, den Finalizer der Context Engine mit dem
-besten verfügbaren Nachrichten-Snapshot aufrufen:
+Nachdem die Spiegelung erfolgreich war oder fehlgeschlagen ist, rufen Sie den Context-Engine-Finalizer mit dem
+besten verfügbaren Nachrichten-Snapshot auf:
 
-- Den vollständigen gespiegelten Sitzungskontext nach dem Schreiben bevorzugen, weil `afterTurn`
-  den Snapshot der Sitzung erwartet, nicht nur den aktuellen Zug.
-- Auf `historyMessages + result.messagesSnapshot` zurückfallen, wenn die Sitzungsdatei
+- Bevorzugen Sie den vollständigen gespiegelten Sitzungskontext nach dem Schreiben, da `afterTurn`
+  den Sitzungssnapshot erwartet, nicht nur den aktuellen Turn.
+- Fallen Sie auf `historyMessages + result.messagesSnapshot` zurück, wenn die Sitzungsdatei
   nicht erneut geöffnet werden kann.
 
 Pseudo-Ablauf:
@@ -371,128 +365,135 @@ await finalizeHarnessContextEngineTurn({
 });
 ```
 
-Wenn das Spiegeln fehlschlägt, `afterTurn` dennoch mit dem Fallback-Snapshot aufrufen, aber protokollieren,
-dass die Context Engine aus Fallback-Zugdaten erfasst.
+Wenn die Spiegelung fehlschlägt, rufen Sie `afterTurn` weiterhin mit dem Fallback-Snapshot auf, protokollieren Sie jedoch,
+dass die Context Engine Daten aus Fallback-Turn-Daten aufnimmt.
 
-### 7. Laufzeitkontext für Nutzung und Prompt-Cache normalisieren
+### 7. Nutzung und Prompt-Cache-Laufzeitkontext normalisieren
 
-Codex-Ergebnisse enthalten normalisierte Nutzung aus Token-Benachrichtigungen des App-Servers, sofern verfügbar. Diese Nutzung an den Laufzeitkontext der Context Engine übergeben.
+Codex-Ergebnisse enthalten normalisierte Nutzungsdaten aus App-Server-Token-Benachrichtigungen, wenn
+verfügbar. Übergeben Sie diese Nutzung an den Context-Engine-Laufzeitkontext.
 
-Falls der Codex-App-Server irgendwann Details zu Cache Read/Write bereitstellt, diese in
-`ContextEnginePromptCacheInfo` abbilden. Bis dahin `promptCache` weglassen, statt Nullen zu erfinden.
+Wenn der Codex-App-Server künftig Cache-Lese-/Schreibdetails offenlegt, ordnen Sie diese
+`ContextEnginePromptCacheInfo` zu. Bis dahin lassen Sie `promptCache` weg, statt
+Nullwerte zu erfinden.
 
 ### 8. Compaction-Richtlinie
 
 Es gibt zwei Compaction-Systeme:
 
-1. `compact()` der OpenClaw-Context-Engine
-2. natives `thread/compact/start` des Codex-App-Servers
+1. OpenClaw Context-Engine-`compact()`
+2. native `thread/compact/start` des Codex-App-Servers
 
-Diese nicht stillschweigend vermischen.
+Führen Sie diese nicht stillschweigend zusammen.
 
 #### `/compact` und explizite OpenClaw-Compaction
 
-Wenn die ausgewählte Context Engine `info.ownsCompaction === true` hat, soll explizite
-OpenClaw-Compaction das Ergebnis von `compact()` der Context Engine für den
-OpenClaw-Transkriptspiegel und den Plugin-Status bevorzugen.
+Wenn die ausgewählte Context Engine `info.ownsCompaction === true` hat, sollte die explizite
+OpenClaw-Compaction das `compact()`-Ergebnis der Context Engine für
+die OpenClaw-Transkriptspiegelung und den Plugin-Zustand bevorzugen.
 
-Wenn die ausgewählte Codex-Harness eine native Thread-Bindung hat, können wir zusätzlich
-native Compaction von Codex anfordern, um den Thread des App-Servers gesund zu halten, aber dies muss
-als separate Backend-Aktion in den Details gemeldet werden.
+Wenn der ausgewählte Codex-Harness eine native Thread-Bindung hat, können wir zusätzlich
+native Codex-Compaction anfordern, um den App-Server-Thread stabil zu halten, dies
+muss jedoch in den Details als separate Backend-Aktion gemeldet werden.
 
 Empfohlenes Verhalten:
 
 - Wenn `contextEngine.info.ownsCompaction === true`:
-  - zuerst `compact()` der Context Engine aufrufen
-  - dann best-effort native Compaction von Codex aufrufen, wenn eine Thread-Bindung existiert
-  - das Ergebnis der Context Engine als primäres Ergebnis zurückgeben
-  - den Status der nativen Compaction von Codex in `details.codexNativeCompaction` aufnehmen
+  - zuerst Context-Engine-`compact()` aufrufen
+  - anschließend best-effort native Codex-Compaction aufrufen, wenn eine Thread-Bindung vorhanden ist
+  - das Context-Engine-Ergebnis als primäres Ergebnis zurückgeben
+  - den Status der nativen Codex-Compaction in `details.codexNativeCompaction` aufnehmen
 - Wenn die aktive Context Engine keine Compaction besitzt:
-  - das aktuelle Verhalten der nativen Compaction von Codex beibehalten
+  - aktuelles natives Codex-Compaction-Verhalten beibehalten
 
-Dies erfordert wahrscheinlich eine Änderung an `extensions/codex/src/app-server/compact.ts` oder
-ein Wrapping aus dem generischen Compaction-Pfad, je nachdem, wo
+Dies erfordert wahrscheinlich eine Änderung von `extensions/codex/src/app-server/compact.ts` oder
+ein Wrapping aus dem generischen Compaction-Pfad, abhängig davon, wo
 `maybeCompactAgentHarnessSession(...)` aufgerufen wird.
 
-#### Native Codex-`contextCompaction`-Ereignisse während eines Zuges
+#### Native Codex-`contextCompaction`-Ereignisse während eines Turns
 
-Codex kann während eines Zuges Item-Ereignisse `contextCompaction` ausgeben. Die aktuelle Ausgabe von Hooks vor/nach der Compaction in `event-projector.ts` beibehalten, dies aber nicht als abgeschlossene Compaction der Context Engine behandeln.
+Codex kann während eines Turns `contextCompaction`-Item-Ereignisse ausgeben. Behalten Sie die aktuelle
+Emission der Before-/After-Compaction-Hooks in `event-projector.ts` bei, behandeln Sie
+dies aber nicht als abgeschlossene Context-Engine-Compaction.
 
-Für Engines, die Compaction besitzen, eine explizite Diagnose ausgeben, wenn Codex dennoch
+Für Engines, die Compaction besitzen, geben Sie eine explizite Diagnose aus, wenn Codex trotzdem
 native Compaction durchführt:
 
-- Stream-/Ereignisname: der bestehende Stream `compaction` ist akzeptabel
+- Stream-/Ereignisname: bestehender `compaction`-Stream ist akzeptabel
 - Details: `{ backend: "codex-app-server", ownsCompaction: true }`
 
 Dadurch wird die Trennung prüfbar.
 
-### 9. Verhalten bei Sitzungs-Reset und Bindungen
+### 9. Sitzungszurücksetzung und Bindungsverhalten
 
-Das bestehende `reset(...)` der Codex-Harness entfernt die Codex-App-Server-Bindung aus
-der OpenClaw-Sitzungsdatei. Dieses Verhalten beibehalten.
+Das bestehende Codex-Harness-`reset(...)` entfernt die Codex-App-Server-Bindung aus
+der OpenClaw-Sitzungsdatei. Behalten Sie dieses Verhalten bei.
 
-Außerdem sicherstellen, dass die Bereinigung des Status der Context Engine weiterhin über die bestehenden Lebenszykluspfade der OpenClaw-Sitzung erfolgt. Keine Codex-spezifische Bereinigung hinzufügen, es sei denn, dem Lebenszyklus der Context Engine fehlen derzeit Reset-/Delete-Ereignisse für alle Harnesses.
+Stellen Sie außerdem sicher, dass die Bereinigung des Context-Engine-Zustands weiterhin über bestehende
+OpenClaw-Sitzungslebenszykluspfade erfolgt. Fügen Sie keine Codex-spezifische Bereinigung hinzu, sofern der
+Context-Engine-Lebenszyklus derzeit keine Reset-/Delete-Ereignisse für alle Harnesses verpasst.
 
 ### 10. Fehlerbehandlung
 
-PI-Semantik befolgen:
+Folgen Sie der PI-Semantik:
 
-- Bootstrap-Fehler warnen und es wird fortgefahren
-- `assemble`-Fehler warnen und fallen auf nicht zusammengesetzte Pipeline-Nachrichten/Prompts zurück
-- `afterTurn`-/`ingest`-Fehler warnen und markieren die Finalisierung nach dem Zug als nicht erfolgreich
-- Wartung läuft nur nach erfolgreichen, nicht abgebrochenen Zügen ohne Yield
-- Compaction-Fehler dürfen nicht als neue Prompts erneut versucht werden
+- Bootstrap-Fehler warnen und fahren fort
+- Assemble-Fehler warnen und fallen auf nicht zusammengestellte Pipeline-Nachrichten/-Prompts zurück
+- `afterTurn`-/Ingest-Fehler warnen und markieren die Post-Turn-Finalisierung als nicht erfolgreich
+- Wartung läuft nur nach erfolgreichen, nicht abgebrochenen Turns ohne Yield-Abbruch
+- Compaction-Fehler sollten nicht als neue Prompts erneut versucht werden
 
 Codex-spezifische Ergänzungen:
 
 - Wenn die Kontextprojektion fehlschlägt, warnen und auf den ursprünglichen Prompt zurückfallen.
-- Wenn das Spiegeln des Transkripts fehlschlägt, dennoch versuchen, die Finalisierung der Context Engine mit
-  Fallback-Nachrichten durchzuführen.
-- Wenn native Compaction von Codex nach erfolgreicher Compaction der Context Engine fehlschlägt,
-  die gesamte OpenClaw-Compaction nicht fehlschlagen lassen, wenn die Context Engine primär ist.
+- Wenn die Transkriptspiegelung fehlschlägt, dennoch Context-Engine-Finalisierung mit
+  Fallback-Nachrichten versuchen.
+- Wenn native Codex-Compaction fehlschlägt, nachdem Context-Engine-Compaction erfolgreich war,
+  nicht die gesamte OpenClaw-Compaction fehlschlagen lassen, wenn die Context Engine primär ist.
 
 ## Testplan
 
 ### Unit-Tests
 
-Tests unter `extensions/codex/src/app-server` hinzufügen:
+Fügen Sie Tests unter `extensions/codex/src/app-server` hinzu:
 
 1. `run-attempt.context-engine.test.ts`
    - Codex ruft `bootstrap` auf, wenn eine Sitzungsdatei existiert.
    - Codex ruft `assemble` mit gespiegelten Nachrichten, Token-Budget, Tool-Namen,
      Zitiermodus, Modell-ID und Prompt auf.
-   - `systemPromptAddition` ist in den Entwickleranweisungen enthalten.
+   - `systemPromptAddition` ist in Entwickleranweisungen enthalten.
    - Zusammengestellte Nachrichten werden vor der aktuellen Anfrage in den Prompt projiziert.
-   - Codex ruft `afterTurn` nach dem Spiegeln des Transkripts auf.
-   - Ohne `afterTurn` ruft Codex `ingestBatch` oder `ingest` pro Nachricht auf.
-   - Zug-Wartung läuft nach erfolgreichen Zügen.
-   - Zug-Wartung läuft nicht bei Prompt-Fehler, Abbruch oder Yield-Abbruch.
+   - Codex ruft `afterTurn` nach der Transkriptspiegelung auf.
+   - Ohne `afterTurn` ruft Codex `ingestBatch` oder pro Nachricht `ingest` auf.
+   - Turn-Wartung läuft nach erfolgreichen Turns.
+   - Turn-Wartung läuft nicht bei Prompt-Fehler, Abbruch oder Yield-Abbruch.
 
 2. `context-engine-projection.test.ts`
-   - stabile Ausgabe bei identischen Eingaben
-   - kein doppelter aktueller Prompt, wenn der zusammengestellte Verlauf ihn enthält
-   - verarbeitet leeren Verlauf
-   - erhält die Rollenreihenfolge
-   - enthält die Ergänzung des Systemprompts nur in den Entwickleranweisungen
+   - stabile Ausgabe für identische Eingaben
+   - kein doppelter aktueller Prompt, wenn die zusammengestellte Historie ihn enthält
+   - verarbeitet leere Historie
+   - bewahrt die Rollenreihenfolge
+   - enthält System-Prompt-Ergänzung nur in Entwickleranweisungen
 
 3. `compact.context-engine.test.ts`
-   - das primäre Ergebnis der besitzenden Context Engine gewinnt
-   - der Status der nativen Compaction von Codex erscheint in den Details, wenn sie ebenfalls versucht wurde
-   - ein nativer Codex-Fehler lässt die Compaction einer besitzenden Context Engine nicht fehlschlagen
-   - eine nicht besitzende Context Engine bewahrt das aktuelle Verhalten der nativen Compaction
+   - primäres Ergebnis der besitzenden Context Engine gewinnt
+   - Status der nativen Codex-Compaction erscheint in Details, wenn sie ebenfalls versucht wurde
+   - nativer Codex-Fehler lässt die Compaction der besitzenden Context Engine nicht fehlschlagen
+   - nicht besitzende Context Engine bewahrt aktuelles natives Compaction-Verhalten
 
-### Bestehende Tests, die aktualisiert werden müssen
+### Zu aktualisierende bestehende Tests
 
 - `extensions/codex/src/app-server/run-attempt.test.ts`, falls vorhanden, andernfalls
-  die nächstliegenden Tests zu Codex-App-Server-Läufen.
-- `extensions/codex/src/app-server/event-projector.test.ts` nur, wenn sich die Details
-  von Compaction-Ereignissen ändern.
-- `src/agents/harness/selection.test.ts` sollte keine Änderungen benötigen, es sei denn, das Verhalten der Konfiguration ändert sich; es sollte stabil bleiben.
-- PI-Tests der Context Engine sollen unverändert weiter bestehen.
+  nächste Codex-App-Server-Run-Tests.
+- `extensions/codex/src/app-server/event-projector.test.ts` nur, wenn sich
+  Compaction-Ereignisdetails ändern.
+- `src/agents/harness/selection.test.ts` sollte keine Änderungen benötigen, sofern sich das
+  Konfigurationsverhalten nicht ändert; er sollte stabil bleiben.
+- PI-Context-Engine-Tests sollten unverändert weiterhin bestehen.
 
 ### Integrations-/Live-Tests
 
-Smoke-Tests für die Live-Codex-Harness hinzufügen oder erweitern:
+Fügen Sie Live-Codex-Harness-Smoke-Tests hinzu oder erweitern Sie sie:
 
 - `plugins.slots.contextEngine` auf eine Test-Engine konfigurieren
 - `agents.defaults.model` auf ein `codex/*`-Modell konfigurieren
@@ -500,14 +501,15 @@ Smoke-Tests für die Live-Codex-Harness hinzufügen oder erweitern:
 - sicherstellen, dass die Test-Engine Folgendes beobachtet hat:
   - Bootstrap
   - Assemble
-  - `afterTurn` oder `ingest`
+  - `afterTurn` oder Ingest
   - Wartung
 
-Nicht verlangen, dass `lossless-claw` in Core-Tests von OpenClaw verwendet wird. Stattdessen ein kleines Fake-Plugin für die Context Engine im Repository verwenden.
+Vermeiden Sie, `lossless-claw` in OpenClaw-Core-Tests vorauszusetzen. Verwenden Sie ein kleines im Repo enthaltenes Fake-
+Context-Engine-Plugin.
 
-## Observability
+## Beobachtbarkeit
 
-Debug-Logs rund um Aufrufe des Lebenszyklus der Codex-Context-Engine hinzufügen:
+Fügen Sie Debug-Logs um die Codex-Context-Engine-Lebenszyklusaufrufe hinzu:
 
 - `codex context engine bootstrap started/completed/failed`
 - `codex context engine assemble applied`
@@ -515,12 +517,12 @@ Debug-Logs rund um Aufrufe des Lebenszyklus der Codex-Context-Engine hinzufügen
 - `codex context engine maintenance skipped` mit Grund
 - `codex native compaction completed alongside context-engine compaction`
 
-Keine vollständigen Prompts oder Transkriptinhalte protokollieren.
+Vermeiden Sie das Protokollieren vollständiger Prompts oder Transkriptinhalte.
 
-Wo sinnvoll strukturierte Felder hinzufügen:
+Fügen Sie strukturierte Felder hinzu, wo sinnvoll:
 
 - `sessionId`
-- `sessionKey` entsprechend der bestehenden Logging-Praxis geschwärzt oder weggelassen
+- `sessionKey` gemäß bestehender Logging-Praxis geschwärzt oder ausgelassen
 - `engineId`
 - `threadId`
 - `turnId`
@@ -530,55 +532,55 @@ Wo sinnvoll strukturierte Felder hinzufügen:
 
 ## Migration / Kompatibilität
 
-Dies soll rückwärtskompatibel sein:
+Dies sollte abwärtskompatibel sein:
 
-- Wenn keine Context Engine konfiguriert ist, soll das veraltete Verhalten der Context Engine
-  dem heutigen Verhalten der Codex-Harness entsprechen.
-- Wenn `assemble` der Context Engine fehlschlägt, soll Codex mit dem ursprünglichen
+- Wenn keine Context Engine konfiguriert ist, sollte das Legacy-Context-Engine-Verhalten
+  dem heutigen Codex-Harness-Verhalten entsprechen.
+- Wenn Context-Engine-`assemble` fehlschlägt, sollte Codex mit dem ursprünglichen
   Prompt-Pfad fortfahren.
-- Bestehende Codex-Thread-Bindungen sollen gültig bleiben.
-- Dynamisches Tool-Fingerprinting soll keine Ausgabe der Context Engine enthalten; andernfalls
+- Bestehende Codex-Thread-Bindungen sollten gültig bleiben.
+- Dynamisches Tool-Fingerprinting sollte keine Context-Engine-Ausgabe enthalten; andernfalls
   könnte jede Kontextänderung einen neuen Codex-Thread erzwingen. Nur der Tool-Katalog
-  soll den dynamischen Tool-Fingerprint beeinflussen.
+  sollte den dynamischen Tool-Fingerprint beeinflussen.
 
 ## Offene Fragen
 
-1. Soll der zusammengestellte Kontext vollständig in den Benutzer-Prompt, vollständig
-   in die Entwickleranweisungen oder aufgeteilt injiziert werden?
+1. Sollte zusammengestellter Kontext vollständig in den Benutzer-Prompt, vollständig
+   in Entwickleranweisungen oder aufgeteilt injiziert werden?
 
-   Empfehlung: aufteilen. `systemPromptAddition` in die Entwickleranweisungen setzen;
-   zusammengestellten Transkriptkontext in den Wrapper des Benutzer-Prompts setzen. Das passt am besten
-   zum aktuellen Codex-Protokoll, ohne den nativen Thread-Verlauf zu verändern.
+   Empfehlung: aufteilen. `systemPromptAddition` in Entwickleranweisungen setzen;
+   zusammengestellten Transkriptkontext in den Benutzer-Prompt-Wrapper setzen. Dies passt am besten
+   zum aktuellen Codex-Protokoll, ohne die native Thread-Historie zu verändern.
 
-2. Soll native Compaction von Codex deaktiviert werden, wenn eine Context Engine
+2. Sollte native Codex-Compaction deaktiviert werden, wenn eine Context Engine
    Compaction besitzt?
 
-   Empfehlung: nein, zumindest zunächst nicht. Native Compaction von Codex kann weiterhin
-   erforderlich sein, um den App-Server-Thread am Leben zu halten. Sie muss aber als
-   native Codex-Compaction gemeldet werden, nicht als Compaction der Context Engine.
+   Empfehlung: zunächst nein. Native Codex-Compaction kann weiterhin
+   notwendig sein, um den App-Server-Thread am Leben zu halten. Sie muss jedoch als
+   native Codex-Compaction gemeldet werden, nicht als Context-Engine-Compaction.
 
-3. Soll `before_prompt_build` vor oder nach der Zusammenstellung der Context Engine laufen?
+3. Sollte `before_prompt_build` vor oder nach der Context-Engine-Assembly laufen?
 
-   Empfehlung: für Codex nach der Projektion der Context Engine, damit generische Harness-
-   Hooks den tatsächlichen Prompt/die tatsächlichen Entwickleranweisungen sehen, die Codex erhalten wird. Falls PI-
-   Parität das Gegenteil erfordert, die gewählte Reihenfolge in Tests festschreiben und hier
-   dokumentieren.
+   Empfehlung: nach der Context-Engine-Projektion für Codex, sodass generische Harness-
+   Hooks den tatsächlichen Prompt und die Entwickleranweisungen sehen, die Codex erhalten wird. Wenn PI-
+   Parität das Gegenteil erfordert, kodifizieren Sie die gewählte Reihenfolge in Tests und dokumentieren Sie sie
+   hier.
 
-4. Kann der Codex-App-Server künftig ein strukturiertes Override für Kontext/Verlauf akzeptieren?
+4. Kann der Codex-App-Server künftig einen strukturierten Kontext-/Historien-Override akzeptieren?
 
-   Unbekannt. Falls ja, die Text-Projektionsschicht durch dieses Protokoll ersetzen und
-   die Lebenszyklus-Aufrufe unverändert lassen.
+   Unbekannt. Wenn dies möglich ist, ersetzen Sie die Textprojektionsschicht durch dieses Protokoll und
+   lassen Sie die Lebenszyklusaufrufe unverändert.
 
 ## Akzeptanzkriterien
 
-- Ein eingebetteter Harness-Zug für `codex/*` ruft den `assemble`-Lebenszyklus der ausgewählten Context Engine auf.
-- Eine Context-Engine-`systemPromptAddition` wirkt sich auf die Entwickleranweisungen von Codex aus.
-- Zusammengestellter Kontext wirkt sich deterministisch auf die Zugeingabe von Codex aus.
-- Erfolgreiche Codex-Züge rufen `afterTurn` oder den Fallback `ingest` auf.
-- Erfolgreiche Codex-Züge führen die Zug-Wartung der Context Engine aus.
-- Fehlgeschlagene/abgebrochene/Yield-abgebrochene Züge führen keine Zug-Wartung aus.
-- Compaction einer Context Engine bleibt primär für OpenClaw-/Plugin-Status.
-- Native Compaction von Codex bleibt als natives Codex-Verhalten prüfbar.
-- Das bestehende Verhalten der PI-Context-Engine bleibt unverändert.
-- Das bestehende Verhalten der Codex-Harness bleibt unverändert, wenn keine nicht veraltete Context Engine
-  ausgewählt ist oder wenn die Zusammenstellung fehlschlägt.
+- Ein `codex/*`-Embedded-Harness-Turn ruft den Assemble-Lebenszyklus der ausgewählten Context Engine auf.
+- Eine Context-Engine-`systemPromptAddition` beeinflusst Codex-Entwickleranweisungen.
+- Zusammengestellter Kontext beeinflusst die Codex-Turn-Eingabe deterministisch.
+- Erfolgreiche Codex-Turns rufen `afterTurn` oder den Ingest-Fallback auf.
+- Erfolgreiche Codex-Turns führen Context-Engine-Turn-Wartung aus.
+- Fehlgeschlagene/abgebrochene/Yield-abgebrochene Turns führen keine Turn-Wartung aus.
+- Context-Engine-eigene Compaction bleibt primär für OpenClaw-/Plugin-Zustand.
+- Native Codex-Compaction bleibt als natives Codex-Verhalten prüfbar.
+- Bestehendes PI-Context-Engine-Verhalten ist unverändert.
+- Bestehendes Codex-Harness-Verhalten ist unverändert, wenn keine Nicht-Legacy-Context-Engine
+  ausgewählt ist oder wenn Assembly fehlschlägt.

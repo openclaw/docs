@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das googlechat-Plugin
-summary: Fügt die Google Chat-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder prüfen das googlechat-Plugin
+summary: Fügt die Oberfläche des Google Chat-Kanals zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Google Chat-Plugin
 x-i18n:
-    generated_at: "2026-05-02T22:20:23Z"
+    generated_at: "2026-05-03T06:41:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
+    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -16,10 +16,10 @@ x-i18n:
 
 Fügt die Google Chat-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
-## Bereitstellung
+## Distribution
 
 - Paket: `@openclaw/googlechat`
-- Installationsweg: in OpenClaw enthalten
+- Installationsweg: npm; ClawHub
 
 ## Oberfläche
 

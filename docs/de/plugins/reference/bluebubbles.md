@@ -4,10 +4,10 @@ read_when:
 summary: Fügt die BlueBubbles-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: BlueBubbles-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:30Z"
+    generated_at: "2026-05-03T06:40:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -16,14 +16,14 @@ x-i18n:
 
 Fügt die BlueBubbles-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/bluebubbles`
-- Installationsweg: ClawHub + npm
+- Installationsweg: npm; ClawHub
 
 ## Oberfläche
 
-Kanäle: bluebubbles
+channels: bluebubbles
 
 ## Zugehörige Dokumentation
 

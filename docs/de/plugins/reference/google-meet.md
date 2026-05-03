@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder überprüfen das Plugin google-meet
+    - Sie installieren, konfigurieren oder prüfen das google-meet-Plugin
 summary: Nehmen Sie über Chrome- oder Twilio-Transporte an Google Meet-Anrufen teil.
 title: Google Meet-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:52Z"
+    generated_at: "2026-05-03T06:41:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 07a5137b5c6e2c55136c63d6558641165176f325a9e22a476ed0315de2d763a3
+    source_hash: 1418e8400d3efc0e9448e337269636d3801cee38ad05be1fa6657564974bfccb
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
-# Google Meet-Plugin
+# Google Meet Plugin
 
 Nehmen Sie über Chrome- oder Twilio-Transporte an Google Meet-Anrufen teil.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/google-meet`
-- Installationsweg: ClawHub + npm
+- Installationsweg: npm; ClawHub
 
 ## Oberfläche
 
-Verträge: Werkzeuge
+Verträge: Tools
 
 ## Verwandte Dokumentation
 

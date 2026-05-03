@@ -4,10 +4,10 @@ read_when:
 summary: Fügt die Tlon-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Tlon-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:59:37Z"
+    generated_at: "2026-05-03T06:42:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a59a5331d3a06b77e980a9267472f40507dd9c77d98d4f2564f105e9626a5eb5
+    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Fügt die Tlon-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichte
 ## Distribution
 
 - Paket: `@openclaw/tlon`
-- Installationsweg: ClawHub + npm
+- Installationsroute: npm; ClawHub
 
 ## Oberfläche
 
-Kanäle: tlon; Contracts: Tools; Skills
+Kanäle: tlon; Verträge: Tools; Skills
 
 ## Zugehörige Dokumentation
 

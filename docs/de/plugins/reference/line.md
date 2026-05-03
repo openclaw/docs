@@ -4,22 +4,22 @@ read_when:
 summary: Fügt die LINE-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: LINE-Plugin
 x-i18n:
-    generated_at: "2026-05-02T22:20:51Z"
+    generated_at: "2026-05-03T06:41:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d7c00de98a476429a479d1e29a53751924e88fe8f2d01aa887d21ee79772c84f
+    source_hash: 307e6e08345161bc53fe5a04cc9d0a3fabbc9ff01e9ebcae98a39899288ef4d4
     source_path: plugins/reference/line.md
     workflow: 16
 ---
 
-# LINE Plugin
+# LINE-Plugin
 
 Fügt die LINE-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
 ## Verteilung
 
 - Paket: `@openclaw/line`
-- Installationsweg: in OpenClaw enthalten
+- Installationsweg: npm; ClawHub
 
 ## Oberfläche
 

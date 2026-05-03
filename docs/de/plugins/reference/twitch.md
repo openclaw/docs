@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das twitch-Plugin
+    - Sie installieren, konfigurieren oder prüfen das Twitch-Plugin
 summary: Fügt die Twitch-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Twitch-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:59:47Z"
+    generated_at: "2026-05-03T06:42:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4b94959552ac4f423d2248405bbb9b826ae391cd646b07710a04a95acc478132
+    source_hash: c567b1d30b82f119f577dc74a416702c8e2c78930fb7036208368835af12805f
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
@@ -16,15 +16,15 @@ x-i18n:
 
 Fügt die Twitch-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
-## Distribution
+## Verteilung
 
 - Paket: `@openclaw/twitch`
-- Installationsweg: ClawHub + npm
+- Installationsweg: npm; ClawHub
 
 ## Oberfläche
 
 channels: twitch
 
-## Verwandte Dokumentation
+## Zugehörige Dokumentation
 
-- [twitch](/de/channels/twitch)
+- [Twitch](/de/channels/twitch)

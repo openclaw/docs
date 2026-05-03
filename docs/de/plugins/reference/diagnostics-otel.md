@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das diagnostics-otel-Plugin
+    - Sie installieren, konfigurieren oder überprüfen das Plugin diagnostics-otel
 summary: OpenTelemetry-Exporter für OpenClaw-Diagnosedaten.
 title: Diagnose-OpenTelemetry-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:50Z"
+    generated_at: "2026-05-03T06:40:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e6a2332284e8992fe9a53d779348178e741544f14042fa1deff84eea10acafe3
+    source_hash: ef589f6f406c4e1ef18667969a59169389f0e74253ceaad061eff6c6eb3d8b31
     source_path: plugins/reference/diagnostics-otel.md
     workflow: 16
 ---
 
-# Diagnostics-OpenTelemetry-Plugin
+# Diagnose-OpenTelemetry-Plugin
 
-OpenClaw-Diagnostics-OpenTelemetry-Exporter.
+OpenClaw-Diagnose-OpenTelemetry-Exporter.
 
-## Distribution
+## Verteilung
 
 - Paket: `@openclaw/diagnostics-otel`
-- Installationsroute: ClawHub: `clawhub:@openclaw/diagnostics-otel`; npm
+- Installationsweg: npm; ClawHub: `clawhub:@openclaw/diagnostics-otel`
 
 ## Oberfläche
 

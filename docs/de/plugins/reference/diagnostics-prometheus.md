@@ -4,22 +4,22 @@ read_when:
 summary: Prometheus-Exporter für OpenClaw-Diagnosedaten.
 title: Diagnose-Prometheus-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:00Z"
+    generated_at: "2026-05-03T06:41:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f60d9dd60da733a910409892908616d675df9b4909c2bf13c376dcddb168ece
+    source_hash: d69cf5b607ea7d93ed5886e63816716fef762a7b144d8a0d1b92c0101aa3678c
     source_path: plugins/reference/diagnostics-prometheus.md
     workflow: 16
 ---
 
 # Diagnostics-Prometheus-Plugin
 
-OpenClaw-Diagnose-Prometheus-Exporter.
+OpenClaw-Diagnostics-Prometheus-Exporter.
 
-## Verteilung
+## Distribution
 
 - Paket: `@openclaw/diagnostics-prometheus`
-- Installationsweg: ClawHub: `clawhub:@openclaw/diagnostics-prometheus`; npm
+- Installationsweg: npm; ClawHub: `clawhub:@openclaw/diagnostics-prometheus`
 
 ## Oberfläche
 
