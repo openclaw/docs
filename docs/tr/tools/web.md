@@ -1,17 +1,17 @@
 ---
 read_when:
-    - web_search özelliğini etkinleştirmek veya yapılandırmak istiyorsunuz
+    - web_search ayarını etkinleştirmek veya yapılandırmak istiyorsunuz
     - x_search'i etkinleştirmek veya yapılandırmak istiyorsunuz
     - Bir arama sağlayıcısı seçmeniz gerekiyor
     - Otomatik algılamayı ve sağlayıcı geri dönüşünü anlamak istiyorsunuz
 sidebarTitle: Web Search
-summary: web_search, x_search ve web_fetch -- web'de arama yapar, X gönderilerinde arama yapar veya sayfa içeriğini getirir
+summary: web_search, x_search ve web_fetch -- web'de arama yapın, X gönderilerinde arama yapın veya sayfa içeriğini getirin
 title: Web araması
 x-i18n:
-    generated_at: "2026-05-02T09:09:49Z"
+    generated_at: "2026-05-03T21:40:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: faa333a522a6690e92e8bd00c6096c84b386a97cbfeb508654929a409b39b8ef
+    source_hash: 84de67b51f02e3b901bfa55017ae8e88de49295dfe6ed1103a45f034e073c087
     source_path: tools/web.md
     workflow: 16
 ---
@@ -20,13 +20,13 @@ x-i18n:
 sonuçları döndürür. Sonuçlar sorguya göre 15 dakika boyunca önbelleğe alınır (yapılandırılabilir).
 
 OpenClaw ayrıca X (eski adıyla Twitter) gönderileri için `x_search` ve
-hafif URL getirme için `web_fetch` içerir. Bu aşamada `web_fetch` yerel kalırken
+hafif URL getirme için `web_fetch` içerir. Bu aşamada, `web_fetch` yerel kalırken
 `web_search` ve `x_search` arka planda xAI Responses kullanabilir.
 
 <Info>
   `web_search`, tarayıcı otomasyonu değil, hafif bir HTTP aracıdır. JS ağırlıklı
-  siteler veya oturum açma işlemleri için [Web Browser](/tr/tools/browser) kullanın.
-  Belirli bir URL'yi getirmek için [Web Fetch](/tr/tools/web-fetch) kullanın.
+  siteler veya oturum açma işlemleri için [Web Tarayıcısı](/tr/tools/browser) kullanın. Belirli
+  bir URL'yi getirmek için [Web Fetch](/tr/tools/web-fetch) kullanın.
 </Info>
 
 ## Hızlı başlangıç
@@ -41,8 +41,8 @@ hafif URL getirme için `web_fetch` içerir. Bu aşamada `web_fetch` yerel kalı
     ```bash
     openclaw configure --section web
     ```
-    Bu, sağlayıcıyı ve gereken tüm kimlik bilgilerini saklar. Ayrıca bir env
-    var (örneğin `BRAVE_API_KEY`) ayarlayıp API destekli sağlayıcılar için
+    Bu, sağlayıcıyı ve gereken kimlik bilgisini depolar. Ayrıca bir env
+    var ayarlayabilir (örneğin `BRAVE_API_KEY`) ve API destekli sağlayıcılar için
     bu adımı atlayabilirsiniz.
   </Step>
   <Step title="Kullanın">
@@ -65,75 +65,75 @@ hafif URL getirme için `web_fetch` içerir. Bu aşamada `web_fetch` yerel kalı
 
 <CardGroup cols={2}>
   <Card title="Brave Search" icon="shield" href="/tr/tools/brave-search">
-    Parçacıklarla yapılandırılmış sonuçlar. `llm-context` modunu, ülke/dil filtrelerini destekler. Ücretsiz katman kullanılabilir.
+    Snippet'lar içeren yapılandırılmış sonuçlar. `llm-context` modunu, ülke/dil filtrelerini destekler. Ücretsiz katman mevcuttur.
   </Card>
   <Card title="DuckDuckGo" icon="bird" href="/tr/tools/duckduckgo-search">
     Anahtarsız yedek. API anahtarı gerekmez. Resmi olmayan HTML tabanlı entegrasyon.
   </Card>
   <Card title="Exa" icon="brain" href="/tr/tools/exa-search">
-    İçerik çıkarımıyla (vurgular, metin, özetler) nöral + anahtar kelime araması.
+    İçerik çıkarımıyla nöral + anahtar sözcük araması (vurgular, metin, özetler).
   </Card>
   <Card title="Firecrawl" icon="flame" href="/tr/tools/firecrawl">
     Yapılandırılmış sonuçlar. Derin çıkarım için en iyi `firecrawl_search` ve `firecrawl_scrape` ile birlikte kullanılır.
   </Card>
   <Card title="Gemini" icon="sparkles" href="/tr/tools/gemini-search">
-    Google Search dayanaklandırması üzerinden alıntılarla AI tarafından sentezlenen yanıtlar.
+    Google Search grounding üzerinden alıntılarla yapay zeka tarafından sentezlenmiş yanıtlar.
   </Card>
   <Card title="Grok" icon="zap" href="/tr/tools/grok-search">
-    xAI web dayanaklandırması üzerinden alıntılarla AI tarafından sentezlenen yanıtlar.
+    xAI web grounding üzerinden alıntılarla yapay zeka tarafından sentezlenmiş yanıtlar.
   </Card>
   <Card title="Kimi" icon="moon" href="/tr/tools/kimi-search">
-    Moonshot web araması üzerinden alıntılarla AI tarafından sentezlenen yanıtlar; dayanaklandırılmamış sohbet yedekleri açıkça başarısız olur.
+    Moonshot web araması üzerinden alıntılarla yapay zeka tarafından sentezlenmiş yanıtlar; grounding yapılmamış sohbet yedekleri açıkça başarısız olur.
   </Card>
   <Card title="MiniMax Search" icon="globe" href="/tr/tools/minimax-search">
     MiniMax Token Plan arama API'si üzerinden yapılandırılmış sonuçlar.
   </Card>
   <Card title="Ollama Web Search" icon="globe" href="/tr/tools/ollama-search">
-    Oturum açılmış yerel Ollama ana makinesi veya barındırılan Ollama API'si üzerinden arama.
+    Oturum açılmış yerel bir Ollama ana makinesi veya barındırılan Ollama API'si üzerinden arama.
   </Card>
   <Card title="Perplexity" icon="search" href="/tr/tools/perplexity-search">
-    İçerik çıkarımı denetimleri ve alan adı filtreleme ile yapılandırılmış sonuçlar.
+    İçerik çıkarma kontrolleri ve alan adı filtrelemesiyle yapılandırılmış sonuçlar.
   </Card>
   <Card title="SearXNG" icon="server" href="/tr/tools/searxng-search">
-    Kendi kendine barındırılan meta arama. API anahtarı gerekmez. Google, Bing, DuckDuckGo ve daha fazlasını toplar.
+    Kendinden barındırılan meta arama. API anahtarı gerekmez. Google, Bing, DuckDuckGo ve daha fazlasını birleştirir.
   </Card>
   <Card title="Tavily" icon="globe" href="/tr/tools/tavily">
-    Arama derinliği, konu filtreleme ve URL çıkarımı için `tavily_extract` ile yapılandırılmış sonuçlar.
+    Arama derinliği, konu filtrelemesi ve URL çıkarımı için `tavily_extract` ile yapılandırılmış sonuçlar.
   </Card>
 </CardGroup>
 
 ### Sağlayıcı karşılaştırması
 
-| Sağlayıcı                                 | Sonuç stili                                                   | Filtreler                                        | API anahtarı                                                                            |
-| ----------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| [Brave](/tr/tools/brave-search)              | Yapılandırılmış parçacıklar                                   | Ülke, dil, zaman, `llm-context` modu             | `BRAVE_API_KEY`                                                                         |
-| [DuckDuckGo](/tr/tools/duckduckgo-search)    | Yapılandırılmış parçacıklar                                   | --                                               | Yok (anahtarsız)                                                                        |
-| [Exa](/tr/tools/exa-search)                  | Yapılandırılmış + çıkarılmış                                  | Nöral/anahtar kelime modu, tarih, içerik çıkarımı | `EXA_API_KEY`                                                                           |
-| [Firecrawl](/tr/tools/firecrawl)             | Yapılandırılmış parçacıklar                                   | `firecrawl_search` aracı üzerinden              | `FIRECRAWL_API_KEY`                                                                     |
-| [Gemini](/tr/tools/gemini-search)            | AI tarafından sentezlenen + alıntılar                         | --                                               | `GEMINI_API_KEY`                                                                        |
-| [Grok](/tr/tools/grok-search)                | AI tarafından sentezlenen + alıntılar                         | --                                               | `XAI_API_KEY`                                                                           |
-| [Kimi](/tr/tools/kimi-search)                | AI tarafından sentezlenen + alıntılar; dayanaklandırılmamış sohbet yedeklerinde başarısız olur | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
-| [MiniMax Search](/tr/tools/minimax-search)   | Yapılandırılmış parçacıklar                                   | Bölge (`global` / `cn`)                          | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
-| [Ollama Web Search](/tr/tools/ollama-search) | Yapılandırılmış parçacıklar                                   | --                                               | Oturum açılmış yerel ana makineler için yok; doğrudan `https://ollama.com` araması için `OLLAMA_API_KEY` |
-| [Perplexity](/tr/tools/perplexity-search)    | Yapılandırılmış parçacıklar                                   | Ülke, dil, zaman, alan adları, içerik sınırları  | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
-| [SearXNG](/tr/tools/searxng-search)          | Yapılandırılmış parçacıklar                                   | Kategoriler, dil                                 | Yok (kendi kendine barındırılan)                                                        |
-| [Tavily](/tr/tools/tavily)                   | Yapılandırılmış parçacıklar                                   | `tavily_search` aracı üzerinden                 | `TAVILY_API_KEY`                                                                        |
+| Sağlayıcı                                  | Sonuç stili                                                   | Filtreler                                          | API anahtarı                                                                                 |
+| ----------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| [Brave](/tr/tools/brave-search)              | Yapılandırılmış snippet'lar                                            | Ülke, dil, zaman, `llm-context` modu      | `BRAVE_API_KEY`                                                                         |
+| [DuckDuckGo](/tr/tools/duckduckgo-search)    | Yapılandırılmış snippet'lar                                            | --                                               | Yok (anahtarsız)                                                                         |
+| [Exa](/tr/tools/exa-search)                  | Yapılandırılmış + çıkarılmış                                         | Nöral/anahtar sözcük modu, tarih, içerik çıkarımı    | `EXA_API_KEY`                                                                           |
+| [Firecrawl](/tr/tools/firecrawl)             | Yapılandırılmış snippet'lar                                            | `firecrawl_search` aracı üzerinden                      | `FIRECRAWL_API_KEY`                                                                     |
+| [Gemini](/tr/tools/gemini-search)            | Yapay zeka tarafından sentezlenmiş + alıntılar                                     | --                                               | `GEMINI_API_KEY`                                                                        |
+| [Grok](/tr/tools/grok-search)                | Yapay zeka tarafından sentezlenmiş + alıntılar                                     | --                                               | `XAI_API_KEY`                                                                           |
+| [Kimi](/tr/tools/kimi-search)                | Yapay zeka tarafından sentezlenmiş + alıntılar; grounding yapılmamış sohbet yedeklerinde başarısız olur | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
+| [MiniMax Search](/tr/tools/minimax-search)   | Yapılandırılmış snippet'lar                                            | Bölge (`global` / `cn`)                         | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
+| [Ollama Web Search](/tr/tools/ollama-search) | Yapılandırılmış snippet'lar                                            | --                                               | Oturum açılmış yerel ana makineler için yok; doğrudan `https://ollama.com` araması için `OLLAMA_API_KEY` |
+| [Perplexity](/tr/tools/perplexity-search)    | Yapılandırılmış snippet'lar                                            | Ülke, dil, zaman, alan adları, içerik sınırları | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
+| [SearXNG](/tr/tools/searxng-search)          | Yapılandırılmış snippet'lar                                            | Kategoriler, dil                             | Yok (kendinden barındırılan)                                                                      |
+| [Tavily](/tr/tools/tavily)                   | Yapılandırılmış snippet'lar                                            | `tavily_search` aracı üzerinden                         | `TAVILY_API_KEY`                                                                        |
 
 ## Otomatik algılama
 
 ## Yerel OpenAI web araması
 
-Doğrudan OpenAI Responses modelleri, OpenClaw web araması etkin olduğunda ve sabitlenmiş yönetilen sağlayıcı olmadığında OpenAI'nin barındırılan `web_search` aracını otomatik olarak kullanır. Bu, paketlenmiş OpenAI Plugin içinde sağlayıcıya ait bir davranıştır ve OpenAI uyumlu proxy temel URL'leri veya Azure rotaları için değil, yalnızca yerel OpenAI API trafiği için geçerlidir. OpenAI modelleri için yönetilen `web_search` aracını korumak üzere `tools.web.search.provider` değerini `brave` gibi başka bir sağlayıcıya ayarlayın veya hem yönetilen aramayı hem de yerel OpenAI aramasını devre dışı bırakmak için `tools.web.search.enabled: false` ayarlayın.
+Doğrudan OpenAI Responses modelleri, OpenClaw web araması etkinleştirildiğinde ve yönetilen bir sağlayıcı sabitlenmediğinde OpenAI'nin barındırılan `web_search` aracını otomatik olarak kullanır. Bu, paketlenen OpenAI plugin'inde sağlayıcıya ait bir davranıştır ve yalnızca yerel OpenAI API trafiği için geçerlidir; OpenAI uyumlu proxy temel URL'leri veya Azure rotaları için geçerli değildir. OpenAI modelleri için yönetilen `web_search` aracını korumak üzere `tools.web.search.provider` değerini `brave` gibi başka bir sağlayıcıya ayarlayın veya hem yönetilen aramayı hem de yerel OpenAI aramasını devre dışı bırakmak için `tools.web.search.enabled: false` ayarlayın.
 
 ## Yerel Codex web araması
 
-Codex yetenekli modeller, OpenClaw'ın yönetilen `web_search` işlevi yerine isteğe bağlı olarak sağlayıcıya özgü Responses `web_search` aracını kullanabilir.
+Codex özellikli modeller, isteğe bağlı olarak OpenClaw'ın yönetilen `web_search` işlevi yerine sağlayıcıya yerel Responses `web_search` aracını kullanabilir.
 
-- Bunu `tools.web.search.openaiCodex` altında yapılandırın
-- Yalnızca Codex yetenekli modeller için etkinleşir (`openai-codex/*` veya `api: "openai-codex-responses"` kullanan sağlayıcılar)
-- Yönetilen `web_search`, Codex olmayan modeller için hâlâ geçerlidir
+- `tools.web.search.openaiCodex` altında yapılandırın
+- Yalnızca Codex özellikli modeller için etkinleşir (`openai-codex/*` veya `api: "openai-codex-responses"` kullanan sağlayıcılar)
+- Yönetilen `web_search`, Codex olmayan modellere uygulanmaya devam eder
 - `mode: "cached"` varsayılan ve önerilen ayardır
-- `tools.web.search.enabled: false` hem yönetilen hem de yerel aramayı devre dışı bırakır
+- `tools.web.search.enabled: false`, hem yönetilen hem de yerel aramayı devre dışı bırakır
 
 ```json5
 {
@@ -158,15 +158,27 @@ Codex yetenekli modeller, OpenClaw'ın yönetilen `web_search` işlevi yerine is
 }
 ```
 
-Yerel Codex araması etkinse ancak geçerli model Codex yetenekli değilse, OpenClaw normal yönetilen `web_search` davranışını korur.
+Yerel Codex araması etkinse ancak geçerli model Codex özellikli değilse, OpenClaw normal yönetilen `web_search` davranışını korur.
+
+## Ağ güvenliği
+
+Yönetilen `web_search` sağlayıcı çağrıları OpenClaw'ın korumalı fetch yolunu kullanır. Güvenilen
+sağlayıcı API ana makineleri için OpenClaw, Surge, Clash ve sing-box fake-IP
+DNS yanıtlarına `198.18.0.0/15` ve `fc00::/7` içinde yalnızca o sağlayıcı ana makine adı için izin verir.
+Diğer özel, loopback, link-local ve metadata hedefleri engelli kalır.
+
+Bu otomatik izin, rastgele `web_fetch` URL'leri için geçerli değildir. `web_fetch` için
+`tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` ve
+`tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` seçeneklerini yalnızca güvenilen
+proxy'niz bu sentetik aralıklara sahipse açıkça etkinleştirin.
 
 ## Web aramasını ayarlama
 
-Belgelerdeki sağlayıcı listeleri ve kurulum akışları alfabetiktir. Otomatik algılama
-ayrı bir öncelik sırasını korur.
+Belgelerdeki ve kurulum akışlarındaki sağlayıcı listeleri alfabetiktir. Otomatik algılama
+ayrı bir öncelik sırası tutar.
 
-`provider` ayarlanmamışsa OpenClaw sağlayıcıları şu sırayla kontrol eder ve
-hazır olan ilk sağlayıcıyı kullanır:
+Hiçbir `provider` ayarlanmamışsa, OpenClaw sağlayıcıları bu sırayla denetler ve
+hazır olan ilkini kullanır:
 
 Önce API destekli sağlayıcılar:
 
@@ -180,23 +192,23 @@ hazır olan ilk sağlayıcıyı kullanır:
 8. **Exa** -- `EXA_API_KEY` veya `plugins.entries.exa.config.webSearch.apiKey`; isteğe bağlı `plugins.entries.exa.config.webSearch.baseUrl`, Exa uç noktasını geçersiz kılar (sıra 65)
 9. **Tavily** -- `TAVILY_API_KEY` veya `plugins.entries.tavily.config.webSearch.apiKey` (sıra 70)
 
-Ardından anahtarsız yedekler:
+Bundan sonra anahtarsız yedekler:
 
-10. **DuckDuckGo** -- hesap veya API anahtarı olmayan anahtarsız HTML yedeği (sıra 100)
-11. **Ollama Web Search** -- erişilebilir olduğunda ve `ollama signin` ile oturum açıldığında yapılandırılmış yerel Ollama ana makineniz üzerinden anahtarsız yedek; ana makine buna ihtiyaç duyduğunda Ollama sağlayıcı bearer kimlik doğrulamasını yeniden kullanabilir ve `OLLAMA_API_KEY` ile yapılandırıldığında doğrudan `https://ollama.com` araması çağırabilir (sıra 110)
+10. **DuckDuckGo** -- hesap veya API anahtarı gerektirmeyen anahtarsız HTML yedeği (sıra 100)
+11. **Ollama Web Search** -- erişilebilir olduğunda ve `ollama signin` ile oturum açıldığında yapılandırılmış yerel Ollama ana makineniz üzerinden anahtarsız yedek; ana makine gerektiriyorsa Ollama sağlayıcı bearer auth bilgisini yeniden kullanabilir ve `OLLAMA_API_KEY` ile yapılandırıldığında doğrudan `https://ollama.com` araması çağırabilir (sıra 110)
 12. **SearXNG** -- `SEARXNG_BASE_URL` veya `plugins.entries.searxng.config.webSearch.baseUrl` (sıra 200)
 
 Hiçbir sağlayıcı algılanmazsa Brave'e geri döner (birini yapılandırmanızı isteyen
 eksik anahtar hatası alırsınız).
 
 <Note>
-  Tüm sağlayıcı anahtar alanları SecretRef nesnelerini destekler. Plugin kapsamlı SecretRef'ler,
-  `plugins.entries.<plugin>.config.webSearch.apiKey` altında Brave, Exa, Firecrawl,
-  Gemini, Grok, Kimi, MiniMax, Perplexity ve Tavily dahil olmak üzere
-  paketlenmiş API destekli web araması sağlayıcıları için çözümlenir;
-  sağlayıcının `tools.web.search.provider` üzerinden açıkça seçilmesi veya
-  otomatik algılama yoluyla seçilmesi fark etmez. Otomatik algılama modunda OpenClaw yalnızca
-  seçilen sağlayıcı anahtarını çözümler -- seçilmeyen SecretRef'ler pasif kalır, böylece
+  Tüm sağlayıcı anahtar alanları SecretRef nesnelerini destekler. Plugin kapsamlı SecretRef'ler
+  `plugins.entries.<plugin>.config.webSearch.apiKey` altında, Brave, Exa, Firecrawl,
+  Gemini, Grok, Kimi, MiniMax, Perplexity ve Tavily dahil olmak üzere paketlenen
+  API destekli web arama sağlayıcıları için çözümlenir; sağlayıcı ister
+  `tools.web.search.provider` üzerinden açıkça seçilmiş olsun ister otomatik algılama yoluyla
+  seçilmiş olsun. Otomatik algılama modunda OpenClaw yalnızca
+  seçilen sağlayıcı anahtarını çözümler; seçilmeyen SecretRef'ler pasif kalır, böylece
   kullanmadıklarınız için çözümleme maliyeti ödemeden birden fazla sağlayıcıyı
   yapılandırılmış tutabilirsiniz.
 </Note>
@@ -221,34 +233,47 @@ eksik anahtar hatası alırsınız).
 
 Sağlayıcıya özgü yapılandırma (API anahtarları, temel URL'ler, modlar)
 `plugins.entries.<plugin>.config.webSearch.*` altında bulunur. Gemini ayrıca
-özel web araması yapılandırmasından ve `GEMINI_API_KEY` değerinden sonra daha düşük öncelikli
-yedekler olarak `models.providers.google.apiKey` ve `models.providers.google.baseUrl` değerlerini yeniden kullanabilir. Örnekler için
-sağlayıcı sayfalarına bakın.
+özel web arama yapılandırmasından ve `GEMINI_API_KEY` değerinden sonra daha düşük öncelikli
+geri dönüşler olarak `models.providers.google.apiKey` ve `models.providers.google.baseUrl`
+değerlerini yeniden kullanabilir. Örnekler için sağlayıcı sayfalarına bakın.
 
-`tools.web.search.provider`, birlikte gelen ve yüklü Plugin manifestlerinde bildirilen web arama sağlayıcı kimliklerine göre doğrulanır. `"brvae"` gibi bir yazım hatası, sessizce otomatik algılamaya geri dönmek yerine yapılandırma doğrulamasının başarısız olmasına neden olur. Yapılandırılmış bir sağlayıcıda yalnızca güncelliğini yitirmiş Plugin kanıtı varsa, örneğin üçüncü taraf bir Plugin kaldırıldıktan sonra kalan bir `plugins.entries.<plugin>` bloğu gibi, OpenClaw başlangıcı dayanıklı tutar ve Plugin'i yeniden yükleyebilmeniz veya güncelliğini yitirmiş yapılandırmayı temizlemek için `openclaw doctor --fix` çalıştırabilmeniz için bir uyarı bildirir.
+`tools.web.search.provider`, paketlenmiş ve yüklü Plugin manifestleri tarafından
+bildirilen web arama sağlayıcı kimliklerine göre doğrulanır. `"brvae"` gibi bir yazım hatası,
+sessizce otomatik algılamaya geri dönmek yerine yapılandırma doğrulamasının başarısız olmasına
+neden olur. Yapılandırılmış bir sağlayıcıda yalnızca eski Plugin kanıtı varsa, örneğin
+üçüncü taraf bir Plugin kaldırıldıktan sonra kalan bir `plugins.entries.<plugin>` bloğu gibi,
+OpenClaw başlangıcı dayanıklı tutar ve Plugin'i yeniden yükleyebilmeniz veya eski yapılandırmayı
+temizlemek için `openclaw doctor --fix` çalıştırabilmeniz için bir uyarı bildirir.
 
-`web_fetch` yedek sağlayıcı seçimi ayrıdır:
+`web_fetch` geri dönüş sağlayıcısı seçimi ayrıdır:
 
-- bunu `tools.web.fetch.provider` ile seçin
-- veya bu alanı atlayıp OpenClaw'ın mevcut kimlik bilgilerinden ilk hazır web fetch sağlayıcısını otomatik algılamasına izin verin
-- sandbox dışı `web_fetch`, `contracts.webFetchProviders` bildiren yüklü Plugin sağlayıcılarını kullanabilir; sandbox içindeki fetch işlemleri yalnızca birlikte gelenlerle sınırlı kalır
-- bugün birlikte gelen web fetch sağlayıcısı Firecrawl'dır ve `plugins.entries.firecrawl.config.webFetch.*` altında yapılandırılır
+- `tools.web.fetch.provider` ile seçin
+- veya bu alanı atlayın ve OpenClaw'ın kullanılabilir kimlik bilgilerinden ilk hazır web getirme
+  sağlayıcısını otomatik algılamasına izin verin
+- sanal alanda olmayan `web_fetch`, `contracts.webFetchProviders` bildiren yüklü Plugin sağlayıcılarını
+  kullanabilir; sanal alandaki getirmeler yalnızca paketlenmiş olanlarla sınırlı kalır
+- bugün paketlenmiş web getirme sağlayıcısı Firecrawl'dır ve
+  `plugins.entries.firecrawl.config.webFetch.*` altında yapılandırılır
 
-`openclaw onboard` veya `openclaw configure --section web` sırasında **Kimi** seçtiğinizde, OpenClaw şunları da sorabilir:
+`openclaw onboard` veya `openclaw configure --section web` sırasında **Kimi** seçtiğinizde,
+OpenClaw ayrıca şunları da sorabilir:
 
 - Moonshot API bölgesi (`https://api.moonshot.ai/v1` veya `https://api.moonshot.cn/v1`)
-- varsayılan Kimi web arama modeli (varsayılan: `kimi-k2.6`)
+- varsayılan Kimi web arama modeli (varsayılan `kimi-k2.6`)
 
-`x_search` için `plugins.entries.xai.config.xSearch.*` yapılandırın. Grok web aramasıyla aynı `XAI_API_KEY` yedeğini kullanır.
+`x_search` için `plugins.entries.xai.config.xSearch.*` yapılandırın. Grok web aramasıyla
+aynı `XAI_API_KEY` geri dönüşünü kullanır.
 Eski `tools.web.x_search.*` yapılandırması `openclaw doctor --fix` tarafından otomatik olarak taşınır.
-`openclaw onboard` veya `openclaw configure --section web` sırasında Grok seçtiğinizde, OpenClaw aynı anahtarla isteğe bağlı `x_search` kurulumunu da sunabilir.
-Bu, Grok yolu içinde ayrı bir takip adımıdır; ayrı bir üst düzey web arama sağlayıcısı seçimi değildir. Başka bir sağlayıcı seçerseniz OpenClaw `x_search` istemini göstermez.
+`openclaw onboard` veya `openclaw configure --section web` sırasında Grok seçtiğinizde,
+OpenClaw aynı anahtarla isteğe bağlı `x_search` kurulumunu da sunabilir.
+Bu, Grok yolu içinde ayrı bir takip adımıdır; ayrı bir üst düzey web arama sağlayıcısı seçimi değildir.
+Başka bir sağlayıcı seçerseniz OpenClaw `x_search` istemini göstermez.
 
-### API anahtarlarını depolama
+### API anahtarlarını saklama
 
 <Tabs>
-  <Tab title="Config file">
-    `openclaw configure --section web` komutunu çalıştırın veya anahtarı doğrudan ayarlayın:
+  <Tab title="Yapılandırma dosyası">
+    `openclaw configure --section web` çalıştırın veya anahtarı doğrudan ayarlayın:
 
     ```json5
     {
@@ -267,14 +292,14 @@ Bu, Grok yolu içinde ayrı bir takip adımıdır; ayrı bir üst düzey web ara
     ```
 
   </Tab>
-  <Tab title="Environment variable">
+  <Tab title="Ortam değişkeni">
     Sağlayıcı ortam değişkenini Gateway işlem ortamında ayarlayın:
 
     ```bash
     export BRAVE_API_KEY="YOUR_KEY"
     ```
 
-    Bir gateway kurulumu için bunu `~/.openclaw/.env` içine koyun.
+    Bir Gateway kurulumu için bunu `~/.openclaw/.env` dosyasına koyun.
     Bkz. [Ortam değişkenleri](/tr/help/faq#env-vars-and-env-loading).
 
   </Tab>
@@ -282,18 +307,18 @@ Bu, Grok yolu içinde ayrı bir takip adımıdır; ayrı bir üst düzey web ara
 
 ## Araç parametreleri
 
-| Parametre             | Açıklama                                               |
-| --------------------- | ------------------------------------------------------ |
-| `query`               | Arama sorgusu (zorunlu)                                |
-| `count`               | Döndürülecek sonuçlar (1-10, varsayılan: 5)            |
-| `country`             | 2 harfli ISO ülke kodu (örn. "US", "DE")               |
-| `language`            | ISO 639-1 dil kodu (örn. "en", "de")                   |
-| `search_lang`         | Arama dili kodu (yalnızca Brave)                       |
-| `freshness`           | Zaman filtresi: `day`, `week`, `month` veya `year`     |
-| `date_after`          | Bu tarihten sonraki sonuçlar (YYYY-MM-DD)              |
-| `date_before`         | Bu tarihten önceki sonuçlar (YYYY-MM-DD)               |
-| `ui_lang`             | UI dil kodu (yalnızca Brave)                           |
-| `domain_filter`       | Alan adı izin listesi/engelleme listesi dizisi (yalnızca Perplexity) |
+| Parametre             | Açıklama                                                   |
+| --------------------- | ---------------------------------------------------------- |
+| `query`               | Arama sorgusu (gerekli)                                    |
+| `count`               | Döndürülecek sonuçlar (1-10, varsayılan: 5)                |
+| `country`             | 2 harfli ISO ülke kodu (örn. "US", "DE")                   |
+| `language`            | ISO 639-1 dil kodu (örn. "en", "de")                       |
+| `search_lang`         | Arama dili kodu (yalnızca Brave)                           |
+| `freshness`           | Zaman filtresi: `day`, `week`, `month` veya `year`         |
+| `date_after`          | Bu tarihten sonraki sonuçlar (YYYY-MM-DD)                  |
+| `date_before`         | Bu tarihten önceki sonuçlar (YYYY-MM-DD)                   |
+| `ui_lang`             | UI dil kodu (yalnızca Brave)                               |
+| `domain_filter`       | Etki alanı izin listesi/engelleme listesi dizisi (yalnızca Perplexity) |
 | `max_tokens`          | Toplam içerik bütçesi, varsayılan 25000 (yalnızca Perplexity) |
 | `max_tokens_per_page` | Sayfa başına token sınırı, varsayılan 2048 (yalnızca Perplexity) |
 
@@ -301,32 +326,33 @@ Bu, Grok yolu içinde ayrı bir takip adımıdır; ayrı bir üst düzey web ara
   Tüm parametreler tüm sağlayıcılarla çalışmaz. Brave `llm-context` modu
   `ui_lang` değerini reddeder; `date_before` ayrıca `date_after` gerektirir çünkü Brave özel
   güncellik aralıkları hem başlangıç hem de bitiş tarihlerini gerektirir.
-  Gemini, Grok ve Kimi atıflarla birlikte tek bir sentezlenmiş yanıt döndürür. Paylaşılan araç
-  uyumluluğu için `count` kabul ederler, ancak bu dayanaklı yanıt biçimini değiştirmez.
-  Gemini, `freshness`, `date_after` ve `date_before` değerlerini Google Search dayanaklandırma zaman aralıklarına
-  dönüştürerek destekler.
+  Gemini, Grok ve Kimi alıntılarla birlikte tek bir sentezlenmiş yanıt döndürür. Paylaşılan araç
+  uyumluluğu için `count` kabul ederler, ancak bu temellendirilmiş yanıt biçimini değiştirmez.
+  Gemini, bunları Google Search temellendirme zaman aralıklarına dönüştürerek `freshness`,
+  `date_after` ve `date_before` destekler.
   Perplexity, Sonar/OpenRouter uyumluluk yolunu kullandığınızda aynı şekilde davranır
   (`plugins.entries.perplexity.config.webSearch.baseUrl` /
   `model` veya `OPENROUTER_API_KEY`).
-  SearXNG yalnızca güvenilir özel ağ veya local loopback hostları için `http://` kabul eder;
+  SearXNG yalnızca güvenilir özel ağ veya loopback ana makineleri için `http://` kabul eder;
   herkese açık SearXNG uç noktaları `https://` kullanmalıdır.
   Firecrawl ve Tavily, `web_search` üzerinden yalnızca `query` ve `count` destekler
-  -- gelişmiş seçenekler için özel araçlarını kullanın.
+  -- gelişmiş seçenekler için kendi özel araçlarını kullanın.
 </Warning>
 
 ## x_search
 
 `x_search`, xAI kullanarak X (eski adıyla Twitter) gönderilerini sorgular ve
-atıflarla birlikte AI tarafından sentezlenmiş yanıtlar döndürür. Doğal dil sorgularını ve
-isteğe bağlı yapılandırılmış filtreleri kabul eder. OpenClaw yerleşik xAI `x_search`
-aracını yalnızca bu araç çağrısını sunan istekte etkinleştirir.
+alıntılarla birlikte AI tarafından sentezlenmiş yanıtlar döndürür. Doğal dil sorgularını ve
+isteğe bağlı yapılandırılmış filtreleri kabul eder. OpenClaw, yerleşik xAI `x_search`
+aracını yalnızca bu araç çağrısına hizmet eden istekte etkinleştirir.
 
 <Note>
-  xAI, `x_search` aracını anahtar kelime araması, anlamsal arama, kullanıcı
-  araması ve ileti dizisi getirme desteğiyle belgeler. Yeniden gönderiler,
-  yanıtlar, yer imleri veya görüntülenmeler gibi gönderi başına etkileşim istatistikleri için tam gönderi URL'si
-  veya durum kimliğine yönelik hedefli bir aramayı tercih edin. Geniş anahtar kelime aramaları doğru gönderiyi bulabilir
-  ancak gönderi başına daha az eksiksiz metadata döndürebilir. İyi bir kalıp şudur: önce gönderiyi bulun, ardından
+  xAI, `x_search` aracının anahtar sözcük aramasını, anlamsal aramayı, kullanıcı
+  aramasını ve ileti dizisi getirmeyi desteklediğini belgeler. Yeniden gönderiler,
+  yanıtlar, yer işaretleri veya görüntülenmeler gibi gönderi başına etkileşim istatistikleri için
+  tam gönderi URL'si veya durum kimliği için hedefli bir aramayı tercih edin.
+  Geniş anahtar sözcük aramaları doğru gönderiyi bulabilir ancak gönderi başına daha az
+  eksiksiz meta veri döndürebilir. İyi bir kalıp şudur: önce gönderiyi bulun, sonra
   tam o gönderiye odaklanan ikinci bir `x_search` sorgusu çalıştırın.
 </Note>
 
@@ -359,21 +385,21 @@ aracını yalnızca bu araç çağrısını sunan istekte etkinleştirir.
 ```
 
 `plugins.entries.xai.config.xSearch.baseUrl` ayarlandığında `x_search`,
-`<baseUrl>/responses` adresine gönderi yapar. Bu alan atlanırsa
+`<baseUrl>/responses` adresine gönderi yapar. Bu alan atlanırsa,
 `plugins.entries.xai.config.webSearch.baseUrl` değerine, ardından eski
 `tools.web.search.grok.baseUrl` değerine ve son olarak herkese açık xAI uç noktasına geri döner.
 
 ### x_search parametreleri
 
-| Parametre                    | Açıklama                                               |
-| ---------------------------- | ------------------------------------------------------ |
-| `query`                      | Arama sorgusu (zorunlu)                                |
-| `allowed_x_handles`          | Sonuçları belirli X kullanıcı adlarıyla sınırla        |
-| `excluded_x_handles`         | Belirli X kullanıcı adlarını hariç tut                 |
+| Parametre                    | Açıklama                                                 |
+| ---------------------------- | -------------------------------------------------------- |
+| `query`                      | Arama sorgusu (gerekli)                                  |
+| `allowed_x_handles`          | Sonuçları belirli X kullanıcı adlarıyla sınırlandır      |
+| `excluded_x_handles`         | Belirli X kullanıcı adlarını hariç tut                   |
 | `from_date`                  | Yalnızca bu tarihte veya sonrasında olan gönderileri dahil et (YYYY-MM-DD) |
 | `to_date`                    | Yalnızca bu tarihte veya öncesinde olan gönderileri dahil et (YYYY-MM-DD) |
-| `enable_image_understanding` | xAI'nin eşleşen gönderilere eklenmiş görselleri incelemesine izin ver |
-| `enable_video_understanding` | xAI'nin eşleşen gönderilere eklenmiş videoları incelemesine izin ver |
+| `enable_image_understanding` | xAI'ın eşleşen gönderilere ekli görselleri incelemesine izin ver |
+| `enable_video_understanding` | xAI'ın eşleşen gönderilere ekli videoları incelemesine izin ver |
 
 ### x_search örneği
 
@@ -436,4 +462,4 @@ Araç profilleri veya izin listeleri kullanıyorsanız `web_search`, `x_search` 
 - [Web Fetch](/tr/tools/web-fetch) -- bir URL getirir ve okunabilir içeriği çıkarır
 - [Web Browser](/tr/tools/browser) -- JS ağırlıklı siteler için tam tarayıcı otomasyonu
 - [Grok Search](/tr/tools/grok-search) -- `web_search` sağlayıcısı olarak Grok
-- [Ollama Web Search](/tr/tools/ollama-search) -- Ollama hostunuz üzerinden anahtarsız web araması
+- [Ollama Web Search](/tr/tools/ollama-search) -- Ollama ana makineniz üzerinden anahtarsız web araması

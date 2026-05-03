@@ -1,19 +1,19 @@
 ---
 read_when:
     - Herhangi bir kanalda tepkilerle çalışma
-    - Emoji tepkilerinin platformlar arasında nasıl farklılık gösterdiğini anlamak
+    - Emoji tepkilerinin platformlar arasında nasıl farklılık gösterdiğini anlama
 summary: Desteklenen tüm kanallarda tepki aracı semantiği
 title: Tepkiler
 x-i18n:
-    generated_at: "2026-04-30T09:50:24Z"
+    generated_at: "2026-05-03T21:39:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
+    source_hash: 99008cdaf1fa7462bbe72066be7c404880df237a79d3deba01bffe00083c1e34
     source_path: tools/reactions.md
     workflow: 16
 ---
 
-Ajan, `react` eylemiyle `message` aracını kullanarak mesajlara emoji tepkileri ekleyip kaldırabilir. Tepki davranışı kanala ve taşıma katmanına göre değişir.
+Aracı, `react` eylemiyle `message` aracını kullanarak mesajlara emoji tepkileri ekleyip kaldırabilir. Tepki davranışı kanala ve aktarıma göre değişir.
 
 ## Nasıl çalışır
 
@@ -26,27 +26,28 @@ Ajan, `react` eylemiyle `message` aracını kullanarak mesajlara emoji tepkileri
 ```
 
 - Tepki eklerken `emoji` zorunludur.
-- Botun tepki(ler)ini kaldırmak için `emoji` değerini boş dizeye (`""`) ayarlayın.
+- Botun tepki(leri)ni kaldırmak için `emoji` değerini boş bir dizeye (`""`) ayarlayın.
 - Belirli bir emojiyi kaldırmak için `remove: true` ayarlayın (boş olmayan `emoji` gerektirir).
+- Durum tepkilerini destekleyen kanallarda, bir tepkide `trackToolCalls: true`, çalışma zamanının aynı tur sırasında sonraki araç ilerleme tepkileri için tepki verilen bu mesajı kullanmasına olanak tanır.
 
 ## Kanal davranışı
 
 <AccordionGroup>
-  <Accordion title="Discord and Slack">
-    - Boş `emoji`, mesajdaki bot tepkilerinin tümünü kaldırır.
+  <Accordion title="Discord ve Slack">
+    - Boş `emoji`, mesajdaki botun tüm tepkilerini kaldırır.
     - `remove: true` yalnızca belirtilen emojiyi kaldırır.
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - Boş `emoji`, uygulamanın mesajdaki tepkilerini kaldırır.
+    - Boş `emoji`, mesajdaki uygulamanın tepkilerini kaldırır.
     - `remove: true` yalnızca belirtilen emojiyi kaldırır.
 
   </Accordion>
 
   <Accordion title="Telegram">
     - Boş `emoji`, botun tepkilerini kaldırır.
-    - `remove: true` da tepkileri kaldırır, ancak araç doğrulaması için yine de boş olmayan bir `emoji` gerektirir.
+    - `remove: true` da tepkileri kaldırır ancak araç doğrulaması için yine de boş olmayan bir `emoji` gerektirir.
 
   </Accordion>
 
@@ -58,7 +59,7 @@ Ajan, `react` eylemiyle `message` aracını kullanarak mesajlara emoji tepkileri
 
   <Accordion title="Zalo Personal (zalouser)">
     - Boş olmayan `emoji` gerektirir.
-    - `remove: true` söz konusu emoji tepkisini kaldırır.
+    - `remove: true` ilgili belirli emoji tepkisini kaldırır.
 
   </Accordion>
 
@@ -76,14 +77,14 @@ Ajan, `react` eylemiyle `message` aracını kullanarak mesajlara emoji tepkileri
 
 ## Tepki düzeyi
 
-Kanal başına `reactionLevel` yapılandırması, ajanın tepkileri ne kadar geniş kapsamlı kullandığını denetler. Değerler genellikle `off`, `ack`, `minimal` veya `extensive` olur.
+Kanal başına `reactionLevel` yapılandırması, aracının tepkileri ne kadar geniş kapsamlı kullanacağını denetler. Değerler genellikle `off`, `ack`, `minimal` veya `extensive` olur.
 
 - [Telegram reactionLevel](/tr/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
 - [WhatsApp reactionLevel](/tr/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-Ajanın her platformdaki mesajlara ne kadar etkin tepki vereceğini ayarlamak için tek tek kanallarda `reactionLevel` değerini ayarlayın.
+Aracının her platformda mesajlara ne kadar etkin tepki vereceğini ayarlamak için `reactionLevel` değerini tek tek kanallarda ayarlayın.
 
 ## İlgili
 
-- [Ajan Gönderimi](/tr/tools/agent-send) — `react` içeren `message` aracı
+- [Aracı Gönderimi](/tr/tools/agent-send) — `react` içeren `message` aracı
 - [Kanallar](/tr/channels) — kanala özgü yapılandırma

@@ -1,26 +1,26 @@
 ---
 read_when:
     - before_tool_call, before_agent_reply, mesaj kancaları veya yaşam döngüsü kancaları gerektiren bir Plugin oluşturuyorsunuz
-    - Bir Plugin tarafından yapılan araç çağrılarını engellemeniz, yeniden yazmanız veya bunlar için onay gerektirmeniz gerekir
+    - Bir Plugin tarafından yapılan araç çağrılarını engellemeniz, yeniden yazmanız veya onay gerektirmeniz gerekir
     - Dahili kancalar ile Plugin kancaları arasında karar veriyorsunuz
-summary: 'Plugin kancaları: ajan, araç, mesaj, oturum ve Gateway yaşam döngüsü olaylarını yakalayın'
+summary: 'Plugin hook''ları: agent, araç, mesaj, oturum ve Gateway yaşam döngüsü olaylarını yakalayın'
 title: Plugin kancaları
 x-i18n:
-    generated_at: "2026-05-02T09:02:11Z"
+    generated_at: "2026-05-03T21:36:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4efb07c6211debb5a7915d63678b1695946a91600c54d31faa0edf7025fbabf0
+    source_hash: 2c4ed060f1b89917e1f2f46d2da9448cd562edbcd6ce03bc9b1a83da3ed9a591
     source_path: plugins/hooks.md
     workflow: 16
 ---
 
-Plugin kancaları, OpenClaw Plugin'leri için süreç içi genişletme noktalarıdır. Bir Plugin'in agent çalıştırmalarını, araç çağrılarını, mesaj akışını, oturum yaşam döngüsünü, alt agent yönlendirmesini, kurulumları veya Gateway başlangıcını incelemesi ya da değiştirmesi gerektiğinde bunları kullanın.
+Plugin hook'ları, OpenClaw Plugin'leri için işlem içi genişletme noktalarıdır. Bir Plugin'in agent çalıştırmalarını, tool çağrılarını, mesaj akışını, oturum yaşam döngüsünü, subagent yönlendirmesini, kurulumları veya Gateway başlangıcını incelemesi ya da değiştirmesi gerektiğinde bunları kullanın.
 
-`/new`, `/reset`, `/stop`, `agent:bootstrap` veya `gateway:startup` gibi komut ve Gateway olayları için operatör tarafından kurulmuş küçük bir `HOOK.md` betiği istediğinizde bunun yerine [dahili kancaları](/tr/automation/hooks) kullanın.
+`/new`, `/reset`, `/stop`, `agent:bootstrap` veya `gateway:startup` gibi komut ve Gateway olayları için operatör tarafından kurulmuş küçük bir `HOOK.md` betiği istiyorsanız bunun yerine [dahili hook'ları](/tr/automation/hooks) kullanın.
 
 ## Hızlı başlangıç
 
-Plugin girişinizden `api.on(...)` ile türlendirilmiş Plugin kancalarını kaydedin:
+Plugin girişinizden `api.on(...)` ile tiplenmiş Plugin hook'larını kaydedin:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -52,69 +52,91 @@ export default definePluginEntry({
 });
 ```
 
-Kanca işleyicileri azalan `priority` sırasıyla ardışık olarak çalışır. Aynı önceliğe sahip kancalar kayıt sırasını korur.
+Hook işleyicileri azalan `priority` sırasıyla ardışık çalışır. Aynı öncelikteki hook'lar kayıt sırasını korur.
 
 `api.on(name, handler, opts?)` şunları kabul eder:
 
-- `priority` — işleyici sıralaması (daha yüksek olan önce çalışır).
-- `timeoutMs` — isteğe bağlı kanca başına bütçe. Ayarlandığında, kanca çalıştırıcısı bu işleyiciyi bütçe dolduktan sonra durdurur ve yavaş kurulum ya da hatırlama işinin çağıranın yapılandırılmış model zaman aşımını tüketmesine izin vermek yerine bir sonrakine devam eder. Kanca çalıştırıcısının genel olarak uyguladığı varsayılan gözlem/karar zaman aşımını kullanmak için bunu atlayın.
+- `priority` — işleyici sıralaması (daha yüksek önce çalışır).
+- `timeoutMs` — hook başına isteğe bağlı süre bütçesi. Ayarlandığında hook çalıştırıcısı, yavaş kurulum veya hatırlama işinin çağıranın yapılandırılmış model zaman aşımını tüketmesine izin vermek yerine, bütçe dolduktan sonra ilgili işleyiciyi durdurur ve sonrakine devam eder. Hook çalıştırıcısının genel olarak uyguladığı varsayılan gözlem/karar zaman aşımını kullanmak için bunu atlayın.
 
-Her kanca, o işleyiciyi kaydeden Plugin için çözümlenmiş yapılandırma olan `event.context.pluginConfig` alır. Geçerli Plugin seçeneklerine ihtiyaç duyan kanca kararları için bunu kullanın; OpenClaw bunu, diğer Plugin'lerin gördüğü paylaşılan olay nesnesini değiştirmeden işleyici başına enjekte eder.
+Operatörler Plugin kodunu yamamadan da hook bütçeleri ayarlayabilir:
 
-## Kanca kataloğu
+```json
+{
+  "plugins": {
+    "entries": {
+      "my-plugin": {
+        "hooks": {
+          "timeoutMs": 30000,
+          "timeouts": {
+            "before_prompt_build": 90000,
+            "agent_end": 60000
+          }
+        }
+      }
+    }
+  }
+}
+```
 
-Kancalar, genişlettikleri yüzeye göre gruplanır. **Kalın** adlar bir karar sonucu (engelle, iptal et, geçersiz kıl veya onay iste) kabul eder; diğerlerinin tümü yalnızca gözlemdir.
+`hooks.timeouts.<hookName>`, `hooks.timeoutMs` değerini geçersiz kılar; o da Plugin tarafından yazılmış `api.on(..., { timeoutMs })` değerini geçersiz kılar. Yapılandırılan her değer, 600000 milisaniyeden büyük olmayan pozitif bir tam sayı olmalıdır. Bilinen yavaş hook'lar için hook başına geçersiz kılmaları tercih edin; böylece tek bir Plugin her yerde daha uzun bütçe almaz.
+
+Her hook, o işleyiciyi kaydeden Plugin için çözümlenmiş yapılandırma olan `event.context.pluginConfig` alır. Mevcut Plugin seçeneklerine ihtiyaç duyan hook kararlarında bunu kullanın; OpenClaw, diğer Plugin'lerin gördüğü paylaşılan olay nesnesini değiştirmeden bunu işleyici başına enjekte eder.
+
+## Hook kataloğu
+
+Hook'lar genişlettikleri yüzeye göre gruplanır. **Kalın** adlar bir karar sonucu (engelleme, iptal, geçersiz kılma veya onay isteme) kabul eder; diğerlerinin tümü yalnızca gözlemdir.
 
 **Agent turu**
 
 - `before_model_resolve` — oturum mesajları yüklenmeden önce sağlayıcıyı veya modeli geçersiz kıl
-- `agent_turn_prepare` — kuyruğa alınmış Plugin turu eklemelerini tüket ve istem kancalarından önce aynı tura bağlam ekle
-- `before_prompt_build` — model çağrısından önce dinamik bağlam veya sistem istemi metni ekle
-- `before_agent_start` — yalnızca uyumluluk amaçlı birleşik aşama; yukarıdaki iki kancayı tercih edin
-- **`before_agent_reply`** — model turunu yapay bir yanıtla veya sessizlikle kısa devre yap
-- **`before_agent_finalize`** — doğal son yanıtı incele ve bir model geçişi daha iste
-- `agent_end` — son mesajları, başarı durumunu ve çalışma süresini gözlemle
-- `heartbeat_prompt_contribution` — arka plan izleyicisi ve yaşam döngüsü Plugin'leri için yalnızca Heartbeat bağlamı ekle
+- `agent_turn_prepare` — sıraya alınmış Plugin turu enjeksiyonlarını tüket ve prompt hook'larından önce aynı tur bağlamı ekle
+- `before_prompt_build` — model çağrısından önce dinamik bağlam veya sistem prompt metni ekle
+- `before_agent_start` — yalnızca uyumluluk amaçlı birleşik faz; yukarıdaki iki hook'u tercih edin
+- **`before_agent_reply`** — model turunu sentetik bir yanıt veya sessizlikle kısa devreye al
+- **`before_agent_finalize`** — doğal nihai yanıtı incele ve bir model geçişi daha iste
+- `agent_end` — nihai mesajları, başarı durumunu ve çalışma süresini gözlemle
+- `heartbeat_prompt_contribution` — arka plan izleyici ve yaşam döngüsü Plugin'leri için yalnızca Heartbeat bağlamı ekle
 
 **Konuşma gözlemi**
 
-- `model_call_started` / `model_call_ended` — istem veya yanıt içeriği olmadan temizlenmiş sağlayıcı/model çağrısı meta verilerini, zamanlamayı, sonucu ve sınırlandırılmış istek kimliği karmalarını gözlemle
-- `llm_input` — sağlayıcı girdisini gözlemle (sistem istemi, istem, geçmiş)
+- `model_call_started` / `model_call_ended` — prompt veya yanıt içeriği olmadan, temizlenmiş sağlayıcı/model çağrısı üst verilerini, zamanlamayı, sonucu ve sınırlı istek kimliği hash'lerini gözlemle
+- `llm_input` — sağlayıcı girişini gözlemle (sistem prompt'u, prompt, geçmiş)
 - `llm_output` — sağlayıcı çıktısını gözlemle
 
 **Araçlar**
 
-- **`before_tool_call`** — araç parametrelerini yeniden yaz, yürütmeyi engelle veya onay iste
-- `after_tool_call` — araç sonuçlarını, hataları ve süreyi gözlemle
-- **`tool_result_persist`** — bir araç sonucundan üretilen assistant mesajını yeniden yaz
-- **`before_message_write`** — sürmekte olan bir mesaj yazımını incele veya engelle (nadiren)
+- **`before_tool_call`** — tool parametrelerini yeniden yaz, yürütmeyi engelle veya onay iste
+- `after_tool_call` — tool sonuçlarını, hataları ve süreyi gözlemle
+- **`tool_result_persist`** — bir tool sonucundan üretilen asistan mesajını yeniden yaz
+- **`before_message_write`** — devam eden bir mesaj yazımını incele veya engelle (nadiren)
 
-**Mesajlar ve teslim**
+**Mesajlar ve teslimat**
 
-- **`inbound_claim`** — agent yönlendirmesinden önce gelen bir mesajı sahiplen (yapay yanıtlar)
-- `message_received` — gelen içeriği, göndereni, ileti dizisini ve meta verileri gözlemle
-- **`message_sending`** — giden içeriği yeniden yaz veya teslimi iptal et
-- `message_sent` — giden teslim başarısını veya hatasını gözlemle
-- **`before_dispatch`** — kanal aktarımından önce giden bir gönderimi incele veya yeniden yaz
-- **`reply_dispatch`** — son yanıt gönderim hattına katıl
+- **`inbound_claim`** — agent yönlendirmesinden önce gelen bir mesajı sahiplen (sentetik yanıtlar)
+- `message_received` — gelen içeriği, göndereni, iş parçacığını ve üst verileri gözlemle
+- **`message_sending`** — giden içeriği yeniden yaz veya teslimatı iptal et
+- `message_sent` — giden teslimat başarısını veya başarısızlığını gözlemle
+- **`before_dispatch`** — kanal devrinden önce giden bir gönderimi incele veya yeniden yaz
+- **`reply_dispatch`** — nihai yanıt gönderim hattına katıl
 
 **Oturumlar ve Compaction**
 
-- `session_start` / `session_end` — oturum yaşam döngüsü sınırlarını izle
-- `before_compaction` / `after_compaction` — Compaction döngülerini gözlemle veya notlandır
+- `session_start` / `session_end` — oturum yaşam döngüsü sınırlarını takip et
+- `before_compaction` / `after_compaction` — Compaction döngülerini gözlemle veya açıklama ekle
 - `before_reset` — oturum sıfırlama olaylarını gözlemle (`/reset`, programatik sıfırlamalar)
 
-**Alt agent'lar**
+**Subagent'lar**
 
-- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` — alt agent yönlendirmesini ve tamamlama teslimini koordine et
+- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` — subagent yönlendirmesini ve tamamlama teslimatını koordine et
 
 **Yaşam döngüsü**
 
-- `gateway_start` / `gateway_stop` — Plugin'e ait hizmetleri Gateway ile başlat veya durdur
-- `cron_changed` — gateway'e ait Cron yaşam döngüsü değişikliklerini gözlemle (eklendi, güncellendi, kaldırıldı, başlatıldı, tamamlandı, zamanlandı)
-- **`before_install`** — skill veya Plugin kurulum taramalarını incele ve isteğe bağlı olarak engelle
+- `gateway_start` / `gateway_stop` — Gateway ile Plugin'e ait hizmetleri başlat veya durdur
+- `cron_changed` — Gateway'e ait Cron yaşam döngüsü değişikliklerini gözlemle (eklendi, güncellendi, kaldırıldı, başlatıldı, tamamlandı, zamanlandı)
+- **`before_install`** — Skill veya Plugin kurulum taramalarını incele ve isteğe bağlı olarak engelle
 
-## Araç çağrısı ilkesi
+## Tool çağrısı ilkesi
 
 `before_tool_call` şunları alır:
 
@@ -122,7 +144,7 @@ Kancalar, genişlettikleri yüzeye göre gruplanır. **Kalın** adlar bir karar 
 - `event.params`
 - isteğe bağlı `event.runId`
 - isteğe bağlı `event.toolCallId`
-- `ctx.agentId`, `ctx.sessionKey`, `ctx.sessionId`, `ctx.runId`, `ctx.jobId` (cron tabanlı çalıştırmalarda ayarlanır) ve tanılama `ctx.trace` gibi bağlam alanları
+- `ctx.agentId`, `ctx.sessionKey`, `ctx.sessionId`, `ctx.runId`, `ctx.jobId` (cron odaklı çalıştırmalarda ayarlanır) ve tanılama amaçlı `ctx.trace` gibi bağlam alanları
 
 Şunu döndürebilir:
 
@@ -147,45 +169,45 @@ type BeforeToolCallResult = {
 
 Kurallar:
 
-- `block: true` sonlandırıcıdır ve daha düşük öncelikli işleyicileri atlar.
-- `block: false` karar yok olarak değerlendirilir.
-- `params`, yürütme için araç parametrelerini yeniden yazar.
-- `requireApproval`, agent çalıştırmasını duraklatır ve kullanıcıdan Plugin onayları üzerinden onay ister. `/approve` komutu hem exec hem de Plugin onaylarını onaylayabilir.
-- Daha düşük öncelikli bir `block: true`, daha yüksek öncelikli bir kanca onay istemiş olsa bile yine de engelleyebilir.
-- `onResolution`, çözümlenen onay kararını alır: `allow-once`, `allow-always`, `deny`, `timeout` veya `cancelled`.
+- `block: true` terminaldir ve daha düşük öncelikli işleyicileri atlar.
+- `block: false` karar yok gibi değerlendirilir.
+- `params`, yürütme için tool parametrelerini yeniden yazar.
+- `requireApproval`, agent çalıştırmasını duraklatır ve Plugin onayları üzerinden kullanıcıya sorar. `/approve` komutu hem exec hem de Plugin onaylarını onaylayabilir.
+- Daha düşük öncelikli bir `block: true`, daha yüksek öncelikli bir hook onay istemiş olsa bile hâlâ engelleyebilir.
+- `onResolution`, çözümlenen onay kararını alır — `allow-once`, `allow-always`, `deny`, `timeout` veya `cancelled`.
 
-Ana makine düzeyi ilkeye ihtiyaç duyan birlikte gelen Plugin'ler, `api.registerTrustedToolPolicy(...)` ile güvenilir araç ilkeleri kaydedebilir. Bunlar sıradan `before_tool_call` kancalarından ve harici Plugin kararlarından önce çalışır. Bunları yalnızca çalışma alanı ilkesi, bütçe uygulaması veya ayrılmış iş akışı güvenliği gibi ana makinenin güvendiği kapılar için kullanın. Harici Plugin'ler normal `before_tool_call` kancalarını kullanmalıdır.
+Host düzeyi ilkeye ihtiyaç duyan paketli Plugin'ler `api.registerTrustedToolPolicy(...)` ile güvenilir tool ilkeleri kaydedebilir. Bunlar normal `before_tool_call` hook'larından ve harici Plugin kararlarından önce çalışır. Bunları yalnızca çalışma alanı ilkesi, bütçe uygulaması veya ayrılmış iş akışı güvenliği gibi host tarafından güvenilen geçitler için kullanın. Harici Plugin'ler normal `before_tool_call` hook'larını kullanmalıdır.
 
-### Araç sonucu kalıcılığı
+### Tool sonucu kalıcılığı
 
-Araç sonuçları, UI işleme, tanılama, medya yönlendirme veya Plugin'e ait meta veriler için yapılandırılmış `details` içerebilir. `details` alanını istem içeriği değil, çalışma zamanı meta verisi olarak değerlendirin:
+Tool sonuçları, UI işleme, tanılama, medya yönlendirme veya Plugin'e ait üst veriler için yapılandırılmış `details` içerebilir. `details` öğesini prompt içeriği değil, çalışma zamanı üst verisi olarak ele alın:
 
-- OpenClaw, meta verilerin model bağlamı haline gelmemesi için sağlayıcı yeniden oynatımı ve Compaction girdisinden önce `toolResult.details` alanını çıkarır.
-- Kalıcı oturum girişleri yalnızca sınırlandırılmış `details` tutar. Aşırı büyük ayrıntılar, kompakt bir özet ve `persistedDetailsTruncated: true` ile değiştirilir.
-- `tool_result_persist` ve `before_message_write`, son kalıcılık üst sınırından önce çalışır. Kancalar yine de döndürülen `details` değerlerini küçük tutmalı ve istemle ilgili metni yalnızca `details` içine koymaktan kaçınmalıdır; model tarafından görülebilen araç çıktısını `content` içine koyun.
+- OpenClaw, üst verinin model bağlamına dönüşmemesi için sağlayıcı yeniden oynatımı ve Compaction girdisinden önce `toolResult.details` öğesini çıkarır.
+- Kalıcı oturum girdileri yalnızca sınırlı `details` tutar. Aşırı büyük ayrıntılar kompakt bir özet ve `persistedDetailsTruncated: true` ile değiştirilir.
+- `tool_result_persist` ve `before_message_write`, nihai kalıcılık sınırından önce çalışır. Hook'lar yine de döndürülen `details` öğesini küçük tutmalı ve prompt açısından ilgili metni yalnızca `details` içine koymaktan kaçınmalıdır; modelin görebileceği tool çıktısını `content` içine koyun.
 
-## İstem ve model kancaları
+## Prompt ve model hook'ları
 
-Yeni Plugin'ler için aşamaya özgü kancaları kullanın:
+Yeni Plugin'ler için faza özel hook'ları kullanın:
 
-- `before_model_resolve`: yalnızca geçerli istemi ve ek meta verilerini alır. `providerOverride` veya `modelOverride` döndürün.
-- `agent_turn_prepare`: geçerli istemi, hazırlanmış oturum mesajlarını ve bu oturum için boşaltılan tam bir kez kuyruğa alınmış eklemeleri alır. `prependContext` veya `appendContext` döndürün.
-- `before_prompt_build`: geçerli istemi ve oturum mesajlarını alır. `prependContext`, `appendContext`, `systemPrompt`, `prependSystemContext` veya `appendSystemContext` döndürün.
-- `heartbeat_prompt_contribution`: yalnızca Heartbeat turları için çalışır ve `prependContext` veya `appendContext` döndürür. Kullanıcı tarafından başlatılan turları değiştirmeden geçerli durumu özetlemesi gereken arka plan izleyicileri için tasarlanmıştır.
+- `before_model_resolve`: yalnızca mevcut prompt'u ve ek üst verilerini alır. `providerOverride` veya `modelOverride` döndürür.
+- `agent_turn_prepare`: mevcut prompt'u, hazırlanmış oturum mesajlarını ve bu oturum için boşaltılmış tam olarak bir kez sıraya alınmış enjeksiyonları alır. `prependContext` veya `appendContext` döndürür.
+- `before_prompt_build`: mevcut prompt'u ve oturum mesajlarını alır. `prependContext`, `appendContext`, `systemPrompt`, `prependSystemContext` veya `appendSystemContext` döndürür.
+- `heartbeat_prompt_contribution`: yalnızca Heartbeat turlarında çalışır ve `prependContext` veya `appendContext` döndürür. Kullanıcı tarafından başlatılan turları değiştirmeden mevcut durumu özetlemesi gereken arka plan izleyicileri için tasarlanmıştır.
 
-`before_agent_start` uyumluluk için kalır. Plugin'inizin eski bir birleşik aşamaya bağımlı olmaması için yukarıdaki açık kancaları tercih edin.
+`before_agent_start` uyumluluk için kalır. Plugin'inizin eski birleşik faza bağımlı olmaması için yukarıdaki açık hook'ları tercih edin.
 
-`before_agent_start` ve `agent_end`, OpenClaw etkin çalıştırmayı tanımlayabildiğinde `event.runId` içerir. Aynı değer `ctx.runId` üzerinde de kullanılabilir. Cron tabanlı çalıştırmalar ayrıca `ctx.jobId` (kaynak cron işi kimliği) sunar; böylece Plugin kancaları metrikleri, yan etkileri veya durumu belirli bir zamanlanmış işe göre kapsamlandırabilir.
+OpenClaw etkin çalıştırmayı tanımlayabildiğinde `before_agent_start` ve `agent_end`, `event.runId` içerir. Aynı değer `ctx.runId` üzerinde de kullanılabilir. Cron odaklı çalıştırmalar ayrıca `ctx.jobId` (kaynak cron işi kimliği) gösterir; böylece Plugin hook'ları metrikleri, yan etkileri veya durumu belirli bir zamanlanmış işe göre kapsamlandırabilir.
 
-Kanal kaynaklı çalıştırmalar için `ctx.messageProvider`, `discord` veya `telegram` gibi sağlayıcı yüzeyidir; `ctx.channelId` ise OpenClaw oturum anahtarından veya teslim meta verilerinden türetebildiğinde konuşma hedefi tanımlayıcısıdır.
+Kanal kaynaklı çalıştırmalarda `ctx.messageProvider`, `discord` veya `telegram` gibi sağlayıcı yüzeyidir; `ctx.channelId` ise OpenClaw bunu oturum anahtarından veya teslimat üst verilerinden çıkarabildiğinde konuşma hedefi tanımlayıcısıdır.
 
-`agent_end` bir gözlem kancasıdır ve turdan sonra çalıştırılıp beklenmez. Kanca çalıştırıcısı 30 saniyelik zaman aşımı uygular; böylece takılmış bir Plugin veya embedding uç noktası kanca sözünü sonsuza kadar beklemede bırakamaz. Zaman aşımı günlüğe kaydedilir ve OpenClaw devam eder; Plugin kendi iptal sinyalini de kullanmadıkça Plugin'e ait ağ işini iptal etmez.
+`agent_end` bir gözlem hook'udur ve turdan sonra fire-and-forget olarak çalışır. Hook çalıştırıcısı, takılmış bir Plugin'in veya embedding uç noktasının hook promise'ini sonsuza dek beklemede bırakmaması için 30 saniyelik zaman aşımı uygular. Zaman aşımı günlüğe yazılır ve OpenClaw devam eder; Plugin ayrıca kendi abort sinyalini kullanmadığı sürece Plugin'e ait ağ işini iptal etmez.
 
-Ham istemler, geçmiş, yanıtlar, başlıklar, istek gövdeleri veya sağlayıcı istek kimlikleri almaması gereken sağlayıcı çağrısı telemetrisi için `model_call_started` ve `model_call_ended` kullanın. Bu kancalar `runId`, `callId`, `provider`, `model`, isteğe bağlı `api`/`transport`, son `durationMs`/`outcome` ve OpenClaw sınırlandırılmış bir sağlayıcı istek kimliği karması türetebildiğinde `upstreamRequestIdHash` gibi kararlı meta veriler içerir.
+Ham prompt'ları, geçmişi, yanıtları, üst bilgileri, istek gövdelerini veya sağlayıcı istek kimliklerini almaması gereken sağlayıcı çağrısı telemetrisi için `model_call_started` ve `model_call_ended` kullanın. Bu hook'lar `runId`, `callId`, `provider`, `model`, isteğe bağlı `api`/`transport`, terminal `durationMs`/`outcome` ve OpenClaw sınırlı bir sağlayıcı istek kimliği hash'i türetebildiğinde `upstreamRequestIdHash` gibi kararlı üst verileri içerir.
 
-`before_agent_finalize` yalnızca bir test düzeneği doğal son assistant yanıtını kabul etmek üzereyken çalışır. Bu, `/stop` iptal yolu değildir ve kullanıcı bir turu iptal ettiğinde çalışmaz. Sonlandırmadan önce bir model geçişi daha istemek için `{ action: "revise", reason }`, sonlandırmayı zorlamak için `{ action: "finalize", reason? }` döndürün veya devam etmek için sonuç döndürmeyin. Codex yerel `Stop` kancaları, OpenClaw `before_agent_finalize` kararları olarak bu kancaya aktarılır.
+`before_agent_finalize` yalnızca bir harness doğal bir nihai asistan yanıtını kabul etmek üzereyken çalışır. Bu, `/stop` iptal yolu değildir ve kullanıcı bir turu iptal ettiğinde çalışmaz. Sonlandırmadan önce harness'ten bir model geçişi daha istemek için `{ action: "revise", reason }`, sonlandırmayı zorlamak için `{ action: "finalize", reason? }` döndürün veya devam etmek için sonuç döndürmeyin. Codex yerel `Stop` hook'ları, OpenClaw `before_agent_finalize` kararları olarak bu hook'a aktarılır.
 
-`llm_input`, `llm_output`, `before_agent_finalize` veya `agent_end` ihtiyacı olan birlikte gelmeyen Plugin'ler şunu ayarlamalıdır:
+`llm_input`, `llm_output`, `before_agent_finalize` veya `agent_end` gerektiren paketli olmayan Plugin'ler şunu ayarlamalıdır:
 
 ```json
 {
@@ -201,70 +223,71 @@ Ham istemler, geçmiş, yanıtlar, başlıklar, istek gövdeleri veya sağlayıc
 }
 ```
 
-İstem değiştiren kancalar ve kalıcı sonraki tur eklemeleri, Plugin başına `plugins.entries.<id>.hooks.allowPromptInjection=false` ile devre dışı bırakılabilir.
+Prompt'u değiştiren hook'lar ve dayanıklı sonraki tur enjeksiyonları, Plugin başına `plugins.entries.<id>.hooks.allowPromptInjection=false` ile devre dışı bırakılabilir.
 
-### Oturum uzantıları ve sonraki tur eklemeleri
+### Oturum uzantıları ve sonraki tur enjeksiyonları
 
-İş akışı Plugin'leri, `api.registerSessionExtension(...)` ile küçük JSON uyumlu oturum durumunu kalıcı hale getirebilir ve bunu Gateway `sessions.pluginPatch` yöntemiyle güncelleyebilir. Oturum satırları, kayıtlı uzantı durumunu `pluginExtensions` üzerinden yansıtır; böylece Control UI ve diğer istemciler, Plugin iç ayrıntılarını öğrenmeden Plugin'e ait durumu işleyebilir.
+İş akışı Plugin'leri `api.registerSessionExtension(...)` ile küçük, JSON uyumlu oturum durumunu kalıcı hale getirebilir ve Gateway `sessions.pluginPatch` yöntemiyle güncelleyebilir. Oturum satırları kayıtlı uzantı durumunu `pluginExtensions` üzerinden yansıtır; böylece Control UI ve diğer istemciler, Plugin iç yapılarını öğrenmeden Plugin'e ait durumu işleyebilir.
 
-Bir Plugin'in kalıcı bağlamı sonraki model turuna tam bir kez ulaştırması gerektiğinde `api.enqueueNextTurnInjection(...)` kullanın. OpenClaw, istem kancalarından önce kuyruğa alınmış eklemeleri boşaltır, süresi dolmuş eklemeleri düşürür ve Plugin başına `idempotencyKey` ile tekilleştirir. Bu, onay devamları, ilke özetleri, arka plan izleyici deltaları ve sonraki turda model tarafından görülmesi gereken ancak kalıcı sistem istemi metni haline gelmemesi gereken komut devamları için doğru bağlantı noktasıdır.
+`api.enqueueNextTurnInjection(...)` işlevini, bir Plugin’in dayanıklı bağlamı sonraki model turuna tam olarak bir kez ulaştırması gerektiğinde kullanın. OpenClaw, sıraya alınmış eklemeleri prompt hook’larından önce boşaltır, süresi dolmuş eklemeleri bırakır ve Plugin başına `idempotencyKey` ile tekilleştirir. Bu, sonraki turda model tarafından görülebilir olması gereken ancak kalıcı sistem prompt metnine dönüşmemesi gereken onay sürdürmeleri, ilke özetleri, arka plan izleyici deltaları ve komut devamları için doğru dikiştir.
 
-Temizlik semantiği sözleşmenin parçasıdır. Oturum uzantısı temizliği ve çalışma zamanı yaşam döngüsü temizlik geri çağırmaları `reset`, `delete`, `disable` veya `restart` alır. Ana makine, sıfırlama/silme/devre dışı bırakma için sahip Plugin'in kalıcı oturum uzantısı durumunu ve bekleyen sonraki tur eklemelerini kaldırır; yeniden başlatma kalıcı oturum durumunu korurken temizlik geri çağırmaları Plugin'lerin eski çalışma zamanı nesli için zamanlayıcı işlerini, çalıştırma bağlamını ve bant dışı diğer kaynakları serbest bırakmasına izin verir.
+Temizleme semantiği sözleşmenin bir parçasıdır. Oturum extension temizliği ve runtime yaşam döngüsü temizleme callback’leri `reset`, `delete`, `disable` veya `restart` alır. Host, reset/delete/disable için sahip Plugin’in kalıcı oturum extension durumunu ve bekleyen sonraki tur eklemelerini kaldırır; restart, dayanıklı oturum durumunu korurken temizleme callback’leri Plugin’lerin eski runtime nesli için scheduler işlerini, run bağlamını ve diğer bant dışı kaynakları serbest bırakmasına izin verir.
 
-## Mesaj kancaları
+## Mesaj hook’ları
 
-Kanal düzeyi yönlendirme ve teslim ilkesi için mesaj kancalarını kullanın:
+Mesaj hook’larını kanal düzeyi yönlendirme ve teslim ilkesi için kullanın:
 
 - `message_received`: gelen içeriği, göndereni, `threadId`, `messageId`,
-  `senderId`, isteğe bağlı çalışma/oturum korelasyonunu ve meta verileri gözlemleyin.
-- `message_sending`: `content` değerini yeniden yazın veya `{ cancel: true }` döndürün.
+  `senderId`, isteğe bağlı run/oturum korelasyonunu ve metadata’yı gözlemleyin.
+- `message_sending`: `content` öğesini yeniden yazın veya `{ cancel: true }` döndürün.
 - `message_sent`: nihai başarıyı veya hatayı gözlemleyin.
 
-Yalnızca ses içeren TTS yanıtları için `content`, kanal yükünde görünür metin/açıklama olmasa bile gizli konuşulan transkripti içerebilir. Bu `content` değerini yeniden yazmak yalnızca hook tarafından görülebilen transkripti günceller; medya açıklaması olarak işlenmez.
+Yalnızca sesli TTS yanıtları için, kanal payload’ında görünür metin/açıklama olmasa bile `content` gizli söylenen transkripti içerebilir. Bu `content` öğesini yeniden yazmak yalnızca hook tarafından görülebilen transkripti günceller; medya açıklaması olarak render edilmez.
 
-Mesaj hook bağlamları, mevcut olduğunda kararlı korelasyon alanlarını sunar:
+Mesaj hook bağlamları, mevcut olduğunda kararlı korelasyon alanlarını açığa çıkarır:
 `ctx.sessionKey`, `ctx.runId`, `ctx.messageId`, `ctx.senderId`, `ctx.trace`,
-`ctx.traceId`, `ctx.spanId`, `ctx.parentSpanId` ve `ctx.callDepth`. Eski meta verileri okumadan önce bu birinci sınıf alanları tercih edin.
+`ctx.traceId`, `ctx.spanId`, `ctx.parentSpanId` ve `ctx.callDepth`. Eski metadata’yı okumadan önce bu birinci sınıf alanları tercih edin.
 
-Kanala özgü meta verileri kullanmadan önce tipli `threadId` ve `replyToId` alanlarını tercih edin.
+Kanala özgü metadata kullanmadan önce tipli `threadId` ve `replyToId` alanlarını tercih edin.
 
 Karar kuralları:
 
 - `cancel: true` ile `message_sending` terminaldir.
-- `cancel: false` ile `message_sending`, karar yok olarak değerlendirilir.
-- Yeniden yazılan `content`, daha sonraki bir hook teslimatı iptal etmediği sürece daha düşük öncelikli hooklara devam eder.
+- `cancel: false` ile `message_sending` karar yok olarak ele alınır.
+- Daha sonra gelen bir hook teslimi iptal etmediği sürece yeniden yazılmış `content` daha düşük öncelikli hook’lara devam eder.
 
-## Hookları yükleme
+## Kurulum hook’ları
 
-`before_install`, skill ve Plugin kurulumları için yerleşik taramadan sonra çalışır. Ek bulgular veya kurulumu durdurmak için `{ block: true, blockReason }` döndürün.
+`before_install`, Skills ve Plugin kurulumları için yerleşik taramadan sonra çalışır. Kurulumu durdurmak için ek bulgular veya `{ block: true, blockReason }` döndürün.
 
-`block: true` terminaldir. `block: false`, karar yok olarak değerlendirilir.
+`block: true` terminaldir. `block: false` karar yok olarak ele alınır.
 
 ## Gateway yaşam döngüsü
 
-Gateway’e ait duruma ihtiyaç duyan Plugin hizmetleri için `gateway_start` kullanın. Bağlam, Cron incelemesi ve güncellemeleri için `ctx.config`, `ctx.workspaceDir` ve `ctx.getCron?.()` değerlerini sunar. Uzun süre çalışan kaynakları temizlemek için `gateway_stop` kullanın.
+Gateway’e ait duruma ihtiyaç duyan Plugin hizmetleri için `gateway_start` kullanın. Bağlam, Cron incelemesi ve güncellemeleri için `ctx.config`, `ctx.workspaceDir` ve `ctx.getCron?.()` öğelerini açığa çıkarır. Uzun süre çalışan kaynakları temizlemek için `gateway_stop` kullanın.
 
-Plugin’e ait çalışma zamanı hizmetleri için dahili `gateway:startup` hookuna güvenmeyin.
+Plugin’e ait runtime hizmetleri için dahili `gateway:startup` hook’una güvenmeyin.
 
-`cron_changed`, Gateway’e ait Cron yaşam döngüsü olayları için `added`, `updated`, `removed`, `started`, `finished` ve `scheduled` nedenlerini kapsayan tipli bir olay yüküyle tetiklenir. Olay, bir `PluginHookGatewayCronJob` anlık görüntüsünün (mevcut olduğunda `state.nextRunAtMs`, `state.lastRunStatus` ve `state.lastError` dahil) yanı sıra `not-requested` | `delivered` | `not-delivered` | `unknown` değerlerinden oluşan bir `PluginHookGatewayCronDeliveryStatus` taşır. Kaldırılan olaylar, harici zamanlayıcıların durumu uzlaştırabilmesi için silinen iş anlık görüntüsünü yine de taşır. Harici uyandırma zamanlayıcılarını eşitlerken çalışma zamanı bağlamından `ctx.getCron?.()` ve `ctx.config` kullanın ve vade kontrolleri ile yürütme için doğruluk kaynağı olarak OpenClaw’ı koruyun.
+`cron_changed`, gateway’e ait Cron yaşam döngüsü olayları için `added`, `updated`, `removed`, `started`, `finished` ve `scheduled` nedenlerini kapsayan tipli bir event payload’ı ile tetiklenir. Event, bir `PluginHookGatewayCronJob` anlık görüntüsü (`state.nextRunAtMs`, `state.lastRunStatus` ve mevcut olduğunda `state.lastError` dahil) ile birlikte `not-requested` | `delivered` | `not-delivered` | `unknown` değerlerinden oluşan bir `PluginHookGatewayCronDeliveryStatus` taşır. Kaldırılmış event’ler, dış scheduler’ların durumu uzlaştırabilmesi için silinen iş anlık görüntüsünü yine de taşır. Dış wake scheduler’ları senkronize ederken runtime bağlamından `ctx.getCron?.()` ve `ctx.config` kullanın ve zamanı gelen kontroller ile yürütme için doğruluk kaynağı olarak OpenClaw’ı koruyun.
 
 ## Yaklaşan kullanımdan kaldırmalar
 
-Hook ile ilişkili birkaç yüzey kullanımdan kaldırılmıştır ancak hâlâ desteklenmektedir. Bir sonraki majör sürümden önce geçiş yapın:
+Hook’a yakın birkaç yüzey kullanımdan kaldırılmıştır ancak hâlâ desteklenir. Sonraki major sürümden önce geçiş yapın:
 
-- `inbound_claim` ve `message_received` işleyicilerinde **düz metin kanal zarfları**. Düz zarf metnini ayrıştırmak yerine `BodyForAgent` ve yapılandırılmış kullanıcı bağlamı bloklarını okuyun. Bkz.
+- `inbound_claim` ve `message_received` handler’larında **düz metin kanal zarfları**. Düz zarf metnini ayrıştırmak yerine `BodyForAgent` ve yapılandırılmış kullanıcı bağlamı bloklarını okuyun. Bkz.
   [Düz metin kanal zarfları → BodyForAgent](/tr/plugins/sdk-migration#active-deprecations).
-- **`before_agent_start`** uyumluluk için kalır. Yeni Pluginler, birleşik aşama yerine `before_model_resolve` ve `before_prompt_build` kullanmalıdır.
-- **`before_tool_call` içindeki `onResolution`** artık serbest biçimli bir `string` yerine tipli `PluginApprovalResolution` birleşimini (`allow-once` / `allow-always` / `deny` / `timeout` / `cancelled`) kullanır.
+- **`before_agent_start`** uyumluluk için kalır. Yeni Plugin’ler, birleşik aşama yerine `before_model_resolve` ve `before_prompt_build` kullanmalıdır.
+- **`before_tool_call` içinde `onResolution`** artık serbest biçimli bir `string` yerine tipli `PluginApprovalResolution` union’ını (`allow-once` / `allow-always` / `deny` /
+  `timeout` / `cancelled`) kullanır.
 
-Tam liste için — bellek yeteneği kaydı, sağlayıcı düşünme profili, harici kimlik doğrulama sağlayıcıları, sağlayıcı keşif tipleri, görev çalışma zamanı erişimcileri ve `command-auth` → `command-status` yeniden adlandırması — bkz.
+Tam liste için — bellek capability kaydı, provider thinking profili, dış auth provider’ları, provider discovery tipleri, task runtime erişimcileri ve `command-auth` → `command-status` yeniden adlandırması — bkz.
 [Plugin SDK geçişi → Aktif kullanımdan kaldırmalar](/tr/plugins/sdk-migration#active-deprecations).
 
 ## İlgili
 
-- [Plugin SDK geçişi](/tr/plugins/sdk-migration) — aktif kullanımdan kaldırmalar ve kaldırma takvimi
-- [Plugin oluşturma](/tr/plugins/building-plugins)
-- [Plugin SDK genel bakışı](/tr/plugins/sdk-overview)
+- [Plugin SDK geçişi](/tr/plugins/sdk-migration) — aktif kullanımdan kaldırmalar ve kaldırma zaman çizelgesi
+- [Plugin geliştirme](/tr/plugins/building-plugins)
+- [Plugin SDK genel bakış](/tr/plugins/sdk-overview)
 - [Plugin giriş noktaları](/tr/plugins/sdk-entrypoints)
-- [Dahili hooklar](/tr/automation/hooks)
-- [Plugin mimarisi iç yapısı](/tr/plugins/architecture-internals)
+- [Dahili hook’lar](/tr/automation/hooks)
+- [Plugin mimarisi iç yapıları](/tr/plugins/architecture-internals)

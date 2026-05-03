@@ -1,15 +1,15 @@
 ---
 read_when:
-    - SecretRef kimlik bilgileri kapsamını doğrulama
+    - SecretRef kimlik bilgisi kapsamını doğrulama
     - Bir kimlik bilgisinin `secrets configure` veya `secrets apply` için uygun olup olmadığını denetleme
     - Bir kimlik bilgisinin neden desteklenen yüzeyin dışında olduğunu doğrulama
-summary: Desteklenen ve desteklenmeyen SecretRef kimlik bilgisi yüzeyinin kanonik kapsamı
+summary: Standart desteklenen ve desteklenmeyen SecretRef kimlik bilgisi yüzeyi
 title: SecretRef kimlik bilgisi yüzeyi
 x-i18n:
-    generated_at: "2026-05-01T09:04:03Z"
+    generated_at: "2026-05-03T21:37:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 41111ac82142c906005e0f585c86f2ff0b454afdaec07343c295e6b83571718e
+    source_hash: 8f95ca284f241e40f233fc9e388c26be094dd8bc878daf8a420453ef65b0ad6d
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
@@ -18,8 +18,8 @@ Bu sayfa kanonik SecretRef kimlik bilgisi yüzeyini tanımlar.
 
 Kapsam amacı:
 
-- Kapsam içinde: OpenClaw tarafından oluşturulmayan veya döndürülmeyen, kesinlikle kullanıcı tarafından sağlanan kimlik bilgileri.
-- Kapsam dışında: çalışma zamanında oluşturulan veya dönen kimlik bilgileri, OAuth yenileme materyali ve oturum benzeri yapılar.
+- Kapsam içinde: OpenClaw'ın üretmediği veya döndürmediği, kesinlikle kullanıcı tarafından sağlanan kimlik bilgileri.
+- Kapsam dışında: çalışma zamanında üretilen veya döndürülen kimlik bilgileri, OAuth yenileme materyali ve oturum benzeri yapılar.
 
 ## Desteklenen kimlik bilgileri
 
@@ -97,6 +97,8 @@ Kapsam amacı:
 - `channels.feishu.accounts.*.appSecret`
 - `channels.feishu.accounts.*.encryptKey`
 - `channels.feishu.accounts.*.verificationToken`
+- `channels.qqbot.clientSecret`
+- `channels.qqbot.accounts.*.clientSecret`
 - `channels.msteams.appPassword`
 - `channels.mattermost.botToken`
 - `channels.mattermost.accounts.*.botToken`
@@ -124,18 +126,18 @@ Kapsam amacı:
 
 Notlar:
 
-- Auth-profile plan hedefleri `agentId` gerektirir.
+- Kimlik doğrulama profili plan hedefleri `agentId` gerektirir.
 - Plan girdileri `profiles.*.key` / `profiles.*.token` hedefler ve kardeş referansları (`keyRef` / `tokenRef`) yazar.
-- Auth-profile referansları çalışma zamanı çözümlemesine ve denetim kapsamına dahildir.
-- `openclaw.json` içinde SecretRef'ler `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` gibi yapılandırılmış nesneler kullanmalıdır. Eski `secretref-env:<ENV_VAR>` işaretçi dizeleri SecretRef kimlik bilgisi yollarında reddedilir; geçerli işaretçileri taşımak için `openclaw doctor --fix` komutunu çalıştırın.
-- OAuth ilke koruması: `auth.profiles.<id>.mode = "oauth"` bu profil için SecretRef girdileriyle birleştirilemez. Bu ilke ihlal edildiğinde başlatma/yeniden yükleme ve auth-profile çözümlemesi hızlı şekilde başarısız olur.
-- SecretRef tarafından yönetilen model sağlayıcıları için oluşturulan `agents/*/agent/models.json` girdileri, `apiKey`/üst bilgi yüzeyleri için gizli olmayan işaretçileri (çözümlenmiş gizli değerleri değil) kalıcı hale getirir.
-- İşaretçi kalıcılığı kaynak açısından yetkilidir: OpenClaw işaretçileri çözümlenmiş çalışma zamanı gizli değerlerinden değil, etkin kaynak yapılandırma anlık görüntüsünden (çözümleme öncesi) yazar.
+- Kimlik doğrulama profili referansları çalışma zamanı çözümlemesine ve denetim kapsamına dahildir.
+- `openclaw.json` içinde SecretRefs, `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` gibi yapılandırılmış nesneler kullanmalıdır. Eski `secretref-env:<ENV_VAR>` işaretçi dizeleri SecretRef kimlik bilgisi yollarında reddedilir; geçerli işaretçileri geçirmek için `openclaw doctor --fix` çalıştırın.
+- OAuth ilke koruması: `auth.profiles.<id>.mode = "oauth"` bu profil için SecretRef girdileriyle birleştirilemez. Bu ilke ihlal edildiğinde başlatma/yeniden yükleme ve kimlik doğrulama profili çözümlemesi hızlıca başarısız olur.
+- SecretRef tarafından yönetilen model sağlayıcıları için, oluşturulan `agents/*/agent/models.json` girdileri `apiKey`/başlık yüzeyleri için gizli olmayan işaretçileri (çözümlenmiş gizli değerleri değil) kalıcı hale getirir.
+- İşaretçi kalıcılığı kaynak yetkilidir: OpenClaw işaretçileri çözümlenmiş çalışma zamanı gizli değerlerinden değil, etkin kaynak yapılandırma anlık görüntüsünden (çözümleme öncesi) yazar.
 - Web araması için:
-  - Açık sağlayıcı modunda (`tools.web.search.provider` ayarlı), yalnızca seçilen sağlayıcı anahtarı etkindir.
-  - Otomatik modda (`tools.web.search.provider` ayarsız), önceliğe göre çözümlenen yalnızca ilk sağlayıcı anahtarı etkindir.
-  - Otomatik modda, seçilmeyen sağlayıcı referansları seçilene kadar etkin değil kabul edilir.
-  - Eski `tools.web.search.*` sağlayıcı yolları uyumluluk penceresi sırasında hâlâ çözümlenir, ancak kanonik SecretRef yüzeyi `plugins.entries.<plugin>.config.webSearch.*` şeklindedir.
+  - Açık sağlayıcı modunda (`tools.web.search.provider` ayarlı), yalnızca seçili sağlayıcı anahtarı etkindir.
+  - Otomatik modda (`tools.web.search.provider` ayarlanmamış), yalnızca önceliğe göre çözümlenen ilk sağlayıcı anahtarı etkindir.
+  - Otomatik modda, seçilmemiş sağlayıcı referansları seçilene kadar etkin değil kabul edilir.
+  - Eski `tools.web.search.*` sağlayıcı yolları uyumluluk penceresi boyunca hâlâ çözümlenir, ancak kanonik SecretRef yüzeyi `plugins.entries.<plugin>.config.webSearch.*` olur.
 
 ## Desteklenmeyen kimlik bilgileri
 
@@ -157,9 +159,9 @@ Kapsam dışı kimlik bilgileri şunları içerir:
 
 Gerekçe:
 
-- Bu kimlik bilgileri salt okunur harici SecretRef çözümlemesine uymayan, oluşturulan, döndürülen, oturum taşıyan veya OAuth açısından kalıcı sınıflardır.
+- Bu kimlik bilgileri salt okunur harici SecretRef çözümlemesine uymayan, üretilen, döndürülen, oturum taşıyan veya OAuth açısından kalıcı sınıflardır.
 
 ## İlgili
 
-- [Gizli bilgi yönetimi](/tr/gateway/secrets)
-- [Auth kimlik bilgisi semantiği](/tr/auth-credential-semantics)
+- [Gizli değer yönetimi](/tr/gateway/secrets)
+- [Kimlik doğrulama kimlik bilgisi semantiği](/tr/auth-credential-semantics)

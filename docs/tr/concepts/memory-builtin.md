@@ -2,26 +2,26 @@
 read_when:
     - Varsayılan bellek arka ucunu anlamak istiyorsunuz
     - Gömme sağlayıcılarını veya hibrit aramayı yapılandırmak istiyorsunuz
-summary: Anahtar sözcük, vektör ve hibrit arama özelliklerine sahip varsayılan SQLite tabanlı bellek arka ucu
+summary: Anahtar kelime, vektör ve hibrit arama özelliklerine sahip varsayılan SQLite tabanlı bellek arka ucu
 title: Yerleşik bellek motoru
 x-i18n:
-    generated_at: "2026-04-30T09:16:14Z"
+    generated_at: "2026-05-03T21:30:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: aa1597a9a49a6f1124cedf49f6f5a4c336f76dd5998ced246affb9c2e8171f05
+    source_hash: 72f5d1fee02bff0962bd012575b62846c1f11c030fd1174fdb2af1e81909f52a
     source_path: concepts/memory-builtin.md
     workflow: 16
 ---
 
-Yerleşik motor, varsayılan bellek arka ucudur. Bellek dizininizi
-ajan başına bir SQLite veritabanında depolar ve başlamak için ek bağımlılık gerektirmez.
+Yerleşik motor varsayılan bellek arka ucudur. Bellek dizininizi ajan başına
+ayrı bir SQLite veritabanında saklar ve başlamak için ek bağımlılık gerektirmez.
 
 ## Neler sağlar
 
-- FTS5 tam metin dizinleme (BM25 puanlama) ile **anahtar sözcük araması**.
-- Desteklenen herhangi bir sağlayıcıdan alınan gömmelerle **vektör araması**.
+- FTS5 tam metin dizinleme ile **anahtar sözcük araması** (BM25 puanlaması).
+- Desteklenen herhangi bir sağlayıcıdan gelen yerleştirmelerle **vektör araması**.
 - En iyi sonuçlar için ikisini birleştiren **hibrit arama**.
-- Çince, Japonca ve Korece için trigram belirteçleme ile **CJK desteği**.
+- Çince, Japonca ve Korece için trigram belirteçleştirme ile **CJK desteği**.
 - Veritabanı içi vektör sorguları için **sqlite-vec hızlandırması** (isteğe bağlı).
 
 ## Başlarken
@@ -43,9 +43,9 @@ Bir sağlayıcıyı açıkça ayarlamak için:
 }
 ```
 
-Bir gömme sağlayıcısı olmadan yalnızca anahtar sözcük araması kullanılabilir.
+Yerleştirme sağlayıcısı olmadan yalnızca anahtar sözcük araması kullanılabilir.
 
-Yerleşik yerel gömme sağlayıcısını zorunlu kılmak için, isteğe bağlı
+Yerleşik yerel yerleştirme sağlayıcısını zorunlu kılmak için, isteğe bağlı
 `node-llama-cpp` çalışma zamanı paketini OpenClaw yanına kurun, ardından `local.modelPath`
 değerini bir GGUF dosyasına yönlendirin:
 
@@ -65,58 +65,59 @@ değerini bir GGUF dosyasına yönlendirin:
 }
 ```
 
-## Desteklenen gömme sağlayıcıları
+## Desteklenen yerleştirme sağlayıcıları
 
-| Sağlayıcı | ID          | Otomatik algılanır | Notlar                              |
+| Sağlayıcı | Kimlik      | Otomatik algılanır | Notlar                              |
 | --------- | ----------- | ------------------ | ----------------------------------- |
 | OpenAI    | `openai`    | Evet               | Varsayılan: `text-embedding-3-small` |
 | Gemini    | `gemini`    | Evet               | Çok modluyu destekler (görüntü + ses) |
 | Voyage    | `voyage`    | Evet               |                                     |
 | Mistral   | `mistral`   | Evet               |                                     |
 | DeepInfra | `deepinfra` | Evet               | Varsayılan: `BAAI/bge-m3`           |
-| Ollama    | `ollama`    | Hayır              | Yerel, açıkça ayarlayın            |
+| Ollama    | `ollama`    | Hayır              | Yerel, açıkça ayarlayın             |
 | Yerel     | `local`     | Evet (ilk)         | İsteğe bağlı `node-llama-cpp` çalışma zamanı |
 
 Otomatik algılama, API anahtarı çözümlenebilen ilk sağlayıcıyı gösterilen
-sırayla seçer. Geçersiz kılmak için `memorySearch.provider` değerini ayarlayın.
+sıraya göre seçer. Geçersiz kılmak için `memorySearch.provider` değerini ayarlayın.
 
 ## Dizinleme nasıl çalışır
 
-OpenClaw, `MEMORY.md` ve `memory/*.md` dosyalarını parçalara (~400 belirteç,
-80 belirteç örtüşme ile) ayırarak dizinler ve bunları ajan başına bir SQLite veritabanında depolar.
+OpenClaw, `MEMORY.md` ve `memory/*.md` dosyalarını parçalara (~400 belirteç ve
+80 belirteç çakışma) dizinler ve bunları ajan başına ayrı bir SQLite veritabanında saklar.
 
 - **Dizin konumu:** `~/.openclaw/memory/<agentId>.sqlite`
-- **Depolama bakımı:** SQLite WAL yan dosyaları periyodik ve
-  kapanış kontrol noktalarıyla sınırlanır.
+- **Depolama bakımı:** SQLite WAL yan dosyaları periyodik ve kapatma
+  denetim noktalarıyla sınırlandırılır.
 - **Dosya izleme:** bellek dosyalarındaki değişiklikler gecikmeli yeniden dizinlemeyi tetikler (1,5 sn).
-- **Otomatik yeniden dizinleme:** gömme sağlayıcısı, model veya parçalama yapılandırması
-  değiştiğinde tüm dizin otomatik olarak yeniden oluşturulur.
+- **Otomatik yeniden dizinleme:** yerleştirme sağlayıcısı, model veya parçalama yapılandırması
+  değiştiğinde, tüm dizin otomatik olarak yeniden oluşturulur.
 - **İsteğe bağlı yeniden dizinleme:** `openclaw memory index --force`
 
 <Info>
-`memorySearch.extraPaths` ile çalışma alanı dışındaki Markdown dosyalarını da dizinleyebilirsiniz. Bkz.
-[yapılandırma referansı](/tr/reference/memory-config#additional-memory-paths).
+`memorySearch.extraPaths` ile çalışma alanının dışındaki Markdown dosyalarını da
+dizinleyebilirsiniz. Bkz.
+[yapılandırma başvurusu](/tr/reference/memory-config#additional-memory-paths).
 </Info>
 
 ## Ne zaman kullanılmalı
 
 Yerleşik motor çoğu kullanıcı için doğru seçimdir:
 
-- Ek bağımlılık olmadan hazır çalışır.
-- Anahtar sözcük ve vektör aramasını iyi yönetir.
-- Tüm gömme sağlayıcılarını destekler.
-- Hibrit arama, iki alma yaklaşımının en iyi yanlarını birleştirir.
+- Ek bağımlılık olmadan kullanıma hazır çalışır.
+- Anahtar sözcük ve vektör aramasını iyi işler.
+- Tüm yerleştirme sağlayıcılarını destekler.
+- Hibrit arama, iki geri getirme yaklaşımının en iyilerini birleştirir.
 
-Yeniden sıralama, sorgu genişletme veya çalışma alanı dışındaki dizinleri dizinleme
-ihtiyacınız varsa [QMD](/tr/concepts/memory-qmd) kullanmayı düşünün.
+Yeniden sıralama, sorgu genişletme gerekiyorsa veya çalışma alanı dışındaki
+dizinleri dizinlemek istiyorsanız [QMD](/tr/concepts/memory-qmd) seçeneğine geçmeyi düşünün.
 
-Otomatik kullanıcı modelleme ile oturumlar arası bellek istiyorsanız
-[Honcho](/tr/concepts/memory-honcho) kullanmayı düşünün.
+Otomatik kullanıcı modellemesiyle oturumlar arası bellek istiyorsanız
+[Honcho](/tr/concepts/memory-honcho) seçeneğini düşünün.
 
 ## Sorun giderme
 
-**Bellek araması devre dışı mı?** `openclaw memory status` komutunu kontrol edin. Hiçbir sağlayıcı
-algılanmazsa birini açıkça ayarlayın veya bir API anahtarı ekleyin.
+**Bellek araması devre dışı mı?** `openclaw memory status` komutunu kontrol edin. Hiç sağlayıcı
+algılanmazsa, birini açıkça ayarlayın veya bir API anahtarı ekleyin.
 
 **Yerel sağlayıcı algılanmadı mı?** Yerel yolun var olduğunu doğrulayın ve şunu çalıştırın:
 
@@ -126,21 +127,24 @@ openclaw memory index --force --agent main
 ```
 
 Hem bağımsız CLI komutları hem de Gateway aynı `local` sağlayıcı kimliğini kullanır.
-Sağlayıcı `auto` olarak ayarlanmışsa, yerel gömmeler yalnızca
-`memorySearch.local.modelPath` mevcut bir yerel dosyayı gösterdiğinde önce değerlendirilir.
+Sağlayıcı `auto` olarak ayarlanırsa, yerel yerleştirmeler yalnızca
+`memorySearch.local.modelPath` var olan bir yerel dosyaya işaret ettiğinde ilk olarak değerlendirilir.
 
-**Eski sonuçlar mı?** Yeniden oluşturmak için `openclaw memory index --force` komutunu çalıştırın. İzleyici
+**Sonuçlar güncel değil mi?** Yeniden oluşturmak için `openclaw memory index --force` komutunu çalıştırın. İzleyici
 nadir uç durumlarda değişiklikleri kaçırabilir.
 
-**sqlite-vec yüklenmiyor mu?** OpenClaw otomatik olarak süreç içi kosinüs benzerliğine
-geri döner. Belirli yükleme hatası için günlükleri kontrol edin.
+**sqlite-vec yüklenmiyor mu?** OpenClaw otomatik olarak işlem içi kosinüs benzerliğine
+geri döner. `openclaw memory status --deep`, yerel vektör deposunu yerleştirme sağlayıcısından
+ayrı olarak raporlar; bu nedenle `Vector store: unavailable` sqlite-vec yüklemesini,
+`Embeddings: unavailable` ise sağlayıcı/kimlik doğrulama veya model hazır olma durumunu
+işaret eder. Belirli yükleme hatası için günlükleri kontrol edin.
 
 ## Yapılandırma
 
-Gömme sağlayıcısı kurulumu, hibrit arama ayarı (ağırlıklar, MMR, zamansal
+Yerleştirme sağlayıcısı kurulumu, hibrit arama ayarı (ağırlıklar, MMR, zamansal
 azalma), toplu dizinleme, çok modlu bellek, sqlite-vec, ek yollar ve diğer tüm
-yapılandırma ayarları için
-[Bellek yapılandırma referansı](/tr/reference/memory-config) bölümüne bakın.
+yapılandırma düğmeleri için
+[Bellek yapılandırması başvurusu](/tr/reference/memory-config) bölümüne bakın.
 
 ## İlgili
 

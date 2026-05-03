@@ -1,13 +1,13 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Korumalı alan çalışma zamanlarını yönetin ve geçerli korumalı alan ilkesini inceleyin
+summary: Korumalı alan çalışma zamanlarını yönetin ve yürürlükteki korumalı alan politikasını inceleyin
 title: Korumalı Alan CLI
 x-i18n:
-    generated_at: "2026-04-30T09:14:05Z"
+    generated_at: "2026-05-03T21:29:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
+    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
     source_path: cli/sandbox.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ Yalıtılmış ajan yürütmesi için sandbox çalışma zamanlarını yönetin.
 
 OpenClaw, güvenlik için ajanları yalıtılmış sandbox çalışma zamanlarında çalıştırabilir. `sandbox` komutları, güncellemelerden veya yapılandırma değişikliklerinden sonra bu çalışma zamanlarını incelemenize ve yeniden oluşturmanıza yardımcı olur.
 
-Bugün bu genellikle şu anlama gelir:
+Günümüzde bu genellikle şunlar anlamına gelir:
 
 - Docker sandbox container'ları
 - `agents.defaults.sandbox.backend = "ssh"` olduğunda SSH sandbox çalışma zamanları
@@ -26,15 +26,15 @@ Bugün bu genellikle şu anlama gelir:
 
 `ssh` ve OpenShell `remote` için yeniden oluşturma, Docker'a göre daha önemlidir:
 
-- uzak çalışma alanı, ilk tohumlamadan sonra kanonik kaynaktır
+- uzak çalışma alanı, ilk tohumlamadan sonra kanoniktir
 - `openclaw sandbox recreate`, seçili kapsam için bu kanonik uzak çalışma alanını siler
-- sonraki kullanım, mevcut yerel çalışma alanından yeniden tohumlar
+- sonraki kullanım, geçerli yerel çalışma alanından yeniden tohumlar
 
 ## Komutlar
 
 ### `openclaw sandbox explain`
 
-**Etkin** sandbox modunu/kapsamını/çalışma alanı erişimini, sandbox araç politikasını ve yükseltilmiş kapıları inceleyin (düzeltme yapılandırma anahtarı yollarıyla birlikte).
+**Etkin** sandbox modunu/kapsamını/çalışma alanı erişimini, sandbox araç politikasını ve yükseltilmiş kapıları (düzeltme yapılandırma anahtarı yollarıyla) inceleyin.
 
 ```bash
 openclaw sandbox explain
@@ -56,7 +56,7 @@ openclaw sandbox list --json     # JSON output
 **Çıktı şunları içerir:**
 
 - Çalışma zamanı adı ve durumu
-- Arka uç (`docker`, `openshell` vb.)
+- Backend (`docker`, `openshell` vb.)
 - Yapılandırma etiketi ve geçerli yapılandırmayla eşleşip eşleşmediği
 - Yaş (oluşturulmasından bu yana geçen süre)
 - Boşta kalma süresi (son kullanımdan bu yana geçen süre)
@@ -83,7 +83,7 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 - `--force`: Onay istemini atla
 
 <Note>
-Çalışma zamanları, ajan bir sonraki kez kullanıldığında otomatik olarak yeniden oluşturulur.
+Çalışma zamanları, ajan bir sonraki kullanıldığında otomatik olarak yeniden oluşturulur.
 </Note>
 
 ## Kullanım durumları
@@ -124,7 +124,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Temel `ssh` arka ucu için yeniden oluşturma, SSH hedefindeki kapsam başına uzak çalışma alanı kökünü siler. Bir sonraki çalıştırma, bunu yerel çalışma alanından yeniden tohumlar.
+Çekirdek `ssh` backend'i için yeniden oluşturma, SSH hedefindeki kapsam başına uzak çalışma alanı kökünü siler. Sonraki çalıştırma, yerel çalışma alanından yeniden tohumlar.
 
 ### OpenShell kaynağını, politikasını veya modunu değiştirdikten sonra
 
@@ -138,7 +138,7 @@ Temel `ssh` arka ucu için yeniden oluşturma, SSH hedefindeki kapsam başına u
 openclaw sandbox recreate --all
 ```
 
-OpenShell `remote` modu için yeniden oluşturma, o kapsamın kanonik uzak çalışma alanını siler. Bir sonraki çalıştırma, bunu yerel çalışma alanından yeniden tohumlar.
+OpenShell `remote` modu için yeniden oluşturma, o kapsama ait kanonik uzak çalışma alanını siler. Sonraki çalıştırma, yerel çalışma alanından yeniden tohumlar.
 
 ### setupCommand değiştirildikten sonra
 
@@ -155,23 +155,32 @@ openclaw sandbox recreate --agent family
 openclaw sandbox recreate --agent alfred
 ```
 
-## Bu neden gereklidir
+## Bu neden gerekli
 
 Sandbox yapılandırmasını güncellediğinizde:
 
 - Mevcut çalışma zamanları eski ayarlarla çalışmaya devam eder.
-- Çalışma zamanları yalnızca 24 saatlik hareketsizlikten sonra temizlenir.
+- Çalışma zamanları yalnızca 24 saat hareketsizlikten sonra budanır.
 - Düzenli kullanılan ajanlar eski çalışma zamanlarını süresiz olarak canlı tutar.
 
-Eski çalışma zamanlarının kaldırılmasını zorlamak için `openclaw sandbox recreate` kullanın. Bunlar, bir sonraki ihtiyaç duyulduğunda geçerli ayarlarla otomatik olarak yeniden oluşturulur.
+Eski çalışma zamanlarının kaldırılmasını zorlamak için `openclaw sandbox recreate` kullanın. Sonraki ihtiyaçta geçerli ayarlarla otomatik olarak yeniden oluşturulurlar.
 
 <Tip>
-Elle arka uca özgü temizlik yapmak yerine `openclaw sandbox recreate` tercih edin. Gateway'in çalışma zamanı kayıt defterini kullanır ve kapsam veya oturum anahtarları değiştiğinde uyumsuzluklardan kaçınır.
+Manuel backend'e özgü temizleme yerine `openclaw sandbox recreate` tercih edin. Gateway'in çalışma zamanı kayıt defterini kullanır ve kapsam veya oturum anahtarları değiştiğinde uyuşmazlıkları önler.
 </Tip>
+
+## Kayıt defteri geçişi
+
+OpenClaw, sandbox çalışma zamanı meta verilerini sandbox durum dizini altında her container/browser girdisi için bir JSON parçası olarak saklar. Eski kurulumlarda hâlâ monolitik eski dosyalar bulunabilir:
+
+- `~/.openclaw/sandbox/containers.json`
+- `~/.openclaw/sandbox/browsers.json`
+
+Normal sandbox çalışma zamanı okumaları bu dosyaları yeniden yazmaz. Geçerli eski girdileri parçalı kayıt defteri dizinlerine geçirmek için `openclaw doctor --fix` çalıştırın. Geçersiz eski dosyalar karantinaya alınır; böylece tek bir bozuk eski kayıt defteri, geçerli çalışma zamanı girdilerini gizleyemez.
 
 ## Yapılandırma
 
-Sandbox ayarları, `agents.defaults.sandbox` altında `~/.openclaw/openclaw.json` içinde bulunur (ajan başına geçersiz kılmalar `agents.list[].sandbox` içine gider):
+Sandbox ayarları `~/.openclaw/openclaw.json` içinde `agents.defaults.sandbox` altında bulunur (ajan başına geçersiz kılmalar `agents.list[].sandbox` içine gider):
 
 ```jsonc
 {
