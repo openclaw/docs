@@ -1519,6 +1519,7 @@
                     "pages": [
                       "gateway/security/index",
                       "gateway/security/audit-checks",
+                      "gateway/operator-scopes",
                       "gateway/sandboxing",
                       "gateway/openshell",
                       "gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -3006,6 +3007,7 @@
                     "pages": [
                       "zh-TW/gateway/security/index",
                       "zh-TW/gateway/security/audit-checks",
+                      "zh-TW/gateway/operator-scopes",
                       "zh-TW/gateway/sandboxing",
                       "zh-TW/gateway/openshell",
                       "zh-TW/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -3878,6 +3880,7 @@
                     "pages": [
                       "ja-JP/gateway/security/index",
                       "ja-JP/gateway/security/audit-checks",
+                      "ja-JP/gateway/operator-scopes",
                       "ja-JP/gateway/sandboxing",
                       "ja-JP/gateway/openshell",
                       "ja-JP/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -4750,6 +4753,7 @@
                     "pages": [
                       "es/gateway/security/index",
                       "es/gateway/security/audit-checks",
+                      "es/gateway/operator-scopes",
                       "es/gateway/sandboxing",
                       "es/gateway/openshell",
                       "es/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -5622,6 +5626,7 @@
                     "pages": [
                       "pt-BR/gateway/security/index",
                       "pt-BR/gateway/security/audit-checks",
+                      "pt-BR/gateway/operator-scopes",
                       "pt-BR/gateway/sandboxing",
                       "pt-BR/gateway/openshell",
                       "pt-BR/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -6494,6 +6499,7 @@
                     "pages": [
                       "ko/gateway/security/index",
                       "ko/gateway/security/audit-checks",
+                      "ko/gateway/operator-scopes",
                       "ko/gateway/sandboxing",
                       "ko/gateway/openshell",
                       "ko/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -7366,6 +7372,7 @@
                     "pages": [
                       "de/gateway/security/index",
                       "de/gateway/security/audit-checks",
+                      "de/gateway/operator-scopes",
                       "de/gateway/sandboxing",
                       "de/gateway/openshell",
                       "de/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -8238,6 +8245,7 @@
                     "pages": [
                       "fr/gateway/security/index",
                       "fr/gateway/security/audit-checks",
+                      "fr/gateway/operator-scopes",
                       "fr/gateway/sandboxing",
                       "fr/gateway/openshell",
                       "fr/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -9110,6 +9118,7 @@
                     "pages": [
                       "ar/gateway/security/index",
                       "ar/gateway/security/audit-checks",
+                      "ar/gateway/operator-scopes",
                       "ar/gateway/sandboxing",
                       "ar/gateway/openshell",
                       "ar/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -9982,6 +9991,7 @@
                     "pages": [
                       "it/gateway/security/index",
                       "it/gateway/security/audit-checks",
+                      "it/gateway/operator-scopes",
                       "it/gateway/sandboxing",
                       "it/gateway/openshell",
                       "it/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -10854,6 +10864,7 @@
                     "pages": [
                       "vi/gateway/security/index",
                       "vi/gateway/security/audit-checks",
+                      "vi/gateway/operator-scopes",
                       "vi/gateway/sandboxing",
                       "vi/gateway/openshell",
                       "vi/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -11726,6 +11737,7 @@
                     "pages": [
                       "nl/gateway/security/index",
                       "nl/gateway/security/audit-checks",
+                      "nl/gateway/operator-scopes",
                       "nl/gateway/sandboxing",
                       "nl/gateway/openshell",
                       "nl/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -12598,6 +12610,7 @@
                     "pages": [
                       "tr/gateway/security/index",
                       "tr/gateway/security/audit-checks",
+                      "tr/gateway/operator-scopes",
                       "tr/gateway/sandboxing",
                       "tr/gateway/openshell",
                       "tr/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -13470,6 +13483,7 @@
                     "pages": [
                       "uk/gateway/security/index",
                       "uk/gateway/security/audit-checks",
+                      "uk/gateway/operator-scopes",
                       "uk/gateway/sandboxing",
                       "uk/gateway/openshell",
                       "uk/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -14342,6 +14356,7 @@
                     "pages": [
                       "id/gateway/security/index",
                       "id/gateway/security/audit-checks",
+                      "id/gateway/operator-scopes",
                       "id/gateway/sandboxing",
                       "id/gateway/openshell",
                       "id/gateway/sandbox-vs-tool-policy-vs-elevated"
@@ -15214,6 +15229,7 @@
                     "pages": [
                       "pl/gateway/security/index",
                       "pl/gateway/security/audit-checks",
+                      "pl/gateway/operator-scopes",
                       "pl/gateway/sandboxing",
                       "pl/gateway/openshell",
                       "pl/gateway/sandbox-vs-tool-policy-vs-elevated"
