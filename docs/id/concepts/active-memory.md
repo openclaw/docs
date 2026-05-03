@@ -694,6 +694,7 @@ Active Memory berjalan di atas pipeline recall plugin memori yang dikonfigurasi,
     - Pantau log Gateway untuk `active-memory: ... start|done`, `memory sync failed (search-bootstrap)`, atau error embedding provider.
     - Jalankan `openclaw memory status --deep` untuk memeriksa backend memory-search dan kesehatan indeks.
     - Jika Anda menggunakan `ollama`, pastikan model embedding terinstal (`ollama list`).
+
   </Accordion>
 
   <Accordion title="Recall pertama setelah restart Gateway mengembalikan `status=timeout`">

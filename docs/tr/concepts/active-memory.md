@@ -646,6 +646,7 @@ Active Memory, yapılandırılmış bellek Plugin'inin geri çağırma işlem ha
     - Gateway günlüklerinde `active-memory: ... start|done`, `memory sync failed (search-bootstrap)` veya sağlayıcı embedding hatalarını izleyin.
     - Bellek arama arka ucunu ve dizin sağlığını incelemek için `openclaw memory status --deep` çalıştırın.
     - `ollama` kullanıyorsanız embedding modelinin yüklü olduğunu doğrulayın (`ollama list`).
+
   </Accordion>
 
   <Accordion title="Gateway yeniden başlatıldıktan sonraki ilk geri çağırma `status=timeout` döndürüyor">
