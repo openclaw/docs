@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Вам потрібна автоматизація, керована подіями, для /new, /reset, /stop і подій життєвого циклу агента
+    - Вам потрібна подієво-керована автоматизація для /new, /reset, /stop і подій життєвого циклу агента
     - Ви хочете створювати, встановлювати або налагоджувати хуки
-summary: 'Хуки: подієво-орієнтована автоматизація для команд і подій життєвого циклу'
+summary: 'Хуки: подієво-керована автоматизація для команд і подій життєвого циклу'
 title: Хуки
 x-i18n:
-    generated_at: "2026-05-02T10:47:49Z"
+    generated_at: "2026-05-03T13:47:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 00ebf65dce03c8643fc1eac84c3915aaa00133c7f007a22483a845e61f055d6b
+    source_hash: 15f0d120ccf7314a991da5d66e65e5c78375222a846ba01d7a04ddfe1f02cb32
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Хуки — це невеликі скрипти, які запускаються, коли щось відбувається всередині Gateway. Їх можна виявляти в каталогах і переглядати за допомогою `openclaw hooks`. Gateway завантажує внутрішні хуки лише після того, як ви ввімкнете хуки або налаштуєте принаймні один запис хука, пакет хуків, застарілий обробник чи додатковий каталог хуків.
+Hooks — це невеликі скрипти, які запускаються, коли щось відбувається всередині Gateway. Їх можна виявляти з директорій і переглядати за допомогою `openclaw hooks`. Gateway завантажує внутрішні hooks лише після того, як ви ввімкнете hooks або налаштуєте принаймні один запис hook, пакет hook, застарілий обробник чи додаткову директорію hooks.
 
-В OpenClaw є два типи хуків:
+В OpenClaw є два типи hooks:
 
-- **Внутрішні хуки** (ця сторінка): запускаються всередині Gateway, коли спрацьовують події агента, як-от `/new`, `/reset`, `/stop` або події життєвого циклу.
-- **Webhooks**: зовнішні HTTP-ендпоїнти, які дають іншим системам змогу запускати роботу в OpenClaw. Див. [Webhooks](/uk/automation/cron-jobs#webhooks).
+- **Внутрішні hooks** (ця сторінка): запускаються всередині Gateway, коли спрацьовують події агента, як-от `/new`, `/reset`, `/stop` або події життєвого циклу.
+- **Webhook-и**: зовнішні HTTP endpoint-и, які дають іншим системам змогу запускати роботу в OpenClaw. Див. [Webhook-и](/uk/automation/cron-jobs#webhooks).
 
-Хуки також можуть постачатися в складі plugins. `openclaw hooks list` показує як автономні хуки, так і хуки, керовані plugins.
+Hooks також можуть бути включені до plugins. `openclaw hooks list` показує як окремі hooks, так і hooks, керовані plugins.
 
 ## Швидкий старт
 
@@ -41,28 +41,28 @@ openclaw hooks info session-memory
 ## Типи подій
 
 | Подія                    | Коли спрацьовує                                           |
-| ------------------------ | ---------------------------------------------------------- |
-| `command:new`            | Видано команду `/new`                                      |
-| `command:reset`          | Видано команду `/reset`                                    |
-| `command:stop`           | Видано команду `/stop`                                     |
-| `command`                | Будь-яка подія команди (загальний слухач)                  |
-| `session:compact:before` | Перед тим як Compaction підсумовує історію                 |
-| `session:compact:after`  | Після завершення Compaction                                |
-| `session:patch`          | Коли змінено властивості сесії                             |
-| `agent:bootstrap`        | Перед впровадженням файлів початкового налаштування робочого простору |
-| `gateway:startup`        | Після запуску каналів і завантаження хуків                 |
-| `gateway:shutdown`       | Коли починається вимкнення Gateway                         |
-| `gateway:pre-restart`    | Перед очікуваним перезапуском Gateway                      |
-| `message:received`       | Вхідне повідомлення з будь-якого каналу                    |
-| `message:transcribed`    | Після завершення транскрибування аудіо                     |
+| ------------------------ | --------------------------------------------------------- |
+| `command:new`            | Видано команду `/new`                                     |
+| `command:reset`          | Видано команду `/reset`                                   |
+| `command:stop`           | Видано команду `/stop`                                    |
+| `command`                | Будь-яка подія команди (загальний слухач)                 |
+| `session:compact:before` | Перед тим, як compaction підсумовує історію               |
+| `session:compact:after`  | Після завершення compaction                               |
+| `session:patch`          | Коли змінюються властивості сесії                         |
+| `agent:bootstrap`        | Перед вставленням bootstrap-файлів робочого простору      |
+| `gateway:startup`        | Після запуску каналів і завантаження hooks                |
+| `gateway:shutdown`       | Коли починається завершення роботи gateway                |
+| `gateway:pre-restart`    | Перед очікуваним перезапуском gateway                     |
+| `message:received`       | Вхідне повідомлення з будь-якого каналу                   |
+| `message:transcribed`    | Після завершення транскрипції аудіо                       |
 | `message:preprocessed`   | Після завершення або пропуску попередньої обробки медіа й посилань |
-| `message:sent`           | Вихідне повідомлення доставлено                            |
+| `message:sent`           | Вихідне повідомлення доставлено                           |
 
-## Написання хуків
+## Написання hooks
 
-### Структура хука
+### Структура hook
 
-Кожен хук — це каталог, що містить два файли:
+Кожен hook — це директорія, що містить два файли:
 
 ```
 my-hook/
@@ -87,11 +87,11 @@ Detailed documentation goes here.
 
 **Поля метаданих** (`metadata.openclaw`):
 
-| Поле      | Опис                                                  |
+| Поле      | Опис                                                 |
 | ---------- | ---------------------------------------------------- |
 | `emoji`    | Емодзі для відображення в CLI                        |
 | `events`   | Масив подій, які потрібно слухати                    |
-| `export`   | Іменований експорт для використання (типово `"default"`) |
+| `export`   | Іменований export для використання (за замовчуванням `"default"`) |
 | `os`       | Потрібні платформи (наприклад, `["darwin", "linux"]`) |
 | `requires` | Потрібні шляхи `bins`, `anyBins`, `env` або `config` |
 | `always`   | Обійти перевірки придатності (булеве значення)       |
@@ -115,63 +115,64 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Кожна подія містить: `type`, `action`, `sessionKey`, `timestamp`, `messages` (додайте елемент, щоб надіслати користувачу), і `context` (дані, специфічні для події). Контексти хуків agents і tool plugins також можуть містити `trace` — діагностичний контекст трасування лише для читання, сумісний із W3C, який plugins можуть передавати в структуровані журнали для кореляції OTEL.
+Кожна подія містить: `type`, `action`, `sessionKey`, `timestamp`, `messages` (додайте елемент, щоб надіслати користувачу), і `context` (дані, специфічні для події). Контексти hooks agents і tool plugins також можуть містити `trace`, діагностичний контекст трасування лише для читання, сумісний із W3C, який plugins можуть передавати в структуровані журнали для кореляції OTEL.
 
 ### Основні моменти контексту подій
 
 **Події команд** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
 
-**Події повідомлень** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (дані, специфічні для провайдера, зокрема `senderId`, `senderName`, `guildId`). `context.content` віддає перевагу непорожньому тілу команди для повідомлень, схожих на команди, потім повертається до сирого вхідного тіла та загального тіла; воно не містить збагачення лише для агента, як-от історії гілки або підсумків посилань.
+**Події повідомлень** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (дані, специфічні для провайдера, зокрема `senderId`, `senderName`, `guildId`). `context.content` надає перевагу непорожньому тілу команди для повідомлень, схожих на команди, а потім повертається до сирого вхідного тіла та загального тіла; він не містить збагачення лише для агента, такого як історія треду чи підсумки посилань.
 
 **Події повідомлень** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
 
 **Події повідомлень** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Події повідомлень** (`message:preprocessed`): `context.bodyForAgent` (кінцеве збагачене тіло), `context.from`, `context.channelId`.
+**Події повідомлень** (`message:preprocessed`): `context.bodyForAgent` (фінальне збагачене тіло), `context.from`, `context.channelId`.
 
-**Події початкового налаштування** (`agent:bootstrap`): `context.bootstrapFiles` (змінюваний масив), `context.agentId`.
+**Bootstrap-події** (`agent:bootstrap`): `context.bootstrapFiles` (змінюваний масив), `context.agentId`.
 
-**Події латання сесії** (`session:patch`): `context.sessionEntry`, `context.patch` (лише змінені поля), `context.cfg`. Лише привілейовані клієнти можуть запускати події латання.
+**Події patch сесії** (`session:patch`): `context.sessionEntry`, `context.patch` (лише змінені поля), `context.cfg`. Лише привілейовані клієнти можуть запускати patch-події.
 
-**Події Compaction**: `session:compact:before` містить `messageCount`, `tokenCount`. `session:compact:after` додає `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`.
+**Події compaction**: `session:compact:before` містить `messageCount`, `tokenCount`. `session:compact:after` додає `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter`.
 
-`command:stop` фіксує, що користувач видає `/stop`; це життєвий цикл скасування/команди, а не шлюз фіналізації агента. Plugins, яким потрібно перевірити природну фінальну відповідь і попросити агента виконати ще один прохід, повинні натомість використовувати типізований хук plugin `before_agent_finalize`. Див. [Хуки plugins](/uk/plugins/hooks).
+`command:stop` спостерігає за тим, як користувач видає `/stop`; це життєвий цикл скасування/команди, а не шлюз фіналізації агента. Plugins, яким потрібно переглянути природну фінальну відповідь і попросити агента виконати ще один прохід, мають натомість використовувати типізований plugin hook `before_agent_finalize`. Див. [Plugin hooks](/uk/plugins/hooks).
 
-**Події життєвого циклу Gateway**: `gateway:shutdown` містить `reason` і `restartExpectedMs` та спрацьовує, коли починається вимкнення Gateway. `gateway:pre-restart` містить той самий контекст, але спрацьовує лише тоді, коли вимкнення є частиною очікуваного перезапуску й надано скінченне значення `restartExpectedMs`. Під час вимкнення очікування кожного хука життєвого циклу виконується за принципом найкращих зусиль і має обмеження, щоб вимкнення продовжилося, якщо обробник зависне.
+**Події життєвого циклу Gateway**: `gateway:shutdown` містить `reason` і `restartExpectedMs` та спрацьовує, коли починається завершення роботи gateway. `gateway:pre-restart` містить той самий контекст, але спрацьовує лише тоді, коли завершення роботи є частиною очікуваного перезапуску й надано скінченне значення `restartExpectedMs`. Під час завершення роботи очікування кожного lifecycle hook виконується за принципом best-effort і має обмеження, щоб завершення роботи продовжувалося, якщо обробник зависає.
 
-## Виявлення хуків
+## Виявлення hooks
 
-Хуки виявляються з цих каталогів у порядку зростання пріоритету перевизначення:
+Hooks виявляються з цих директорій, у порядку зростання пріоритету перевизначення:
 
-1. **Вбудовані хуки**: постачаються з OpenClaw
-2. **Хуки plugins**: хуки, що постачаються всередині встановлених plugins
-3. **Керовані хуки**: `~/.openclaw/hooks/` (установлені користувачем, спільні для робочих просторів). Додаткові каталоги з `hooks.internal.load.extraDirs` мають той самий пріоритет.
-4. **Хуки робочого простору**: `<workspace>/hooks/` (для окремого агента, вимкнені за замовчуванням, доки їх явно не ввімкнуть)
+1. **Вбудовані hooks**: постачаються з OpenClaw
+2. **Plugin hooks**: hooks, включені до встановлених plugins
+3. **Керовані hooks**: `~/.openclaw/hooks/` (встановлені користувачем, спільні для робочих просторів). Додаткові директорії з `hooks.internal.load.extraDirs` мають той самий пріоритет.
+4. **Hooks робочого простору**: `<workspace>/hooks/` (для окремого агента, вимкнені за замовчуванням, доки їх явно не ввімкнуть)
 
-Хуки робочого простору можуть додавати нові імена хуків, але не можуть перевизначати вбудовані, керовані або надані plugins хуки з тим самим іменем.
+Hooks робочого простору можуть додавати нові назви hooks, але не можуть перевизначати вбудовані, керовані або надані plugins hooks із тією самою назвою.
 
-Gateway пропускає виявлення внутрішніх хуків під час запуску, доки внутрішні хуки не налаштовано. Увімкніть вбудований або керований хук за допомогою `openclaw hooks enable <name>`, установіть пакет хуків або задайте `hooks.internal.enabled=true`, щоб увімкнути цю можливість. Коли ви вмикаєте один іменований хук, Gateway завантажує лише обробник цього хука; `hooks.internal.enabled=true`, додаткові каталоги хуків і застарілі обробники вмикають широке виявлення.
+Gateway пропускає виявлення внутрішніх hooks під час запуску, доки внутрішні hooks не налаштовано. Увімкніть вбудований або керований hook за допомогою `openclaw hooks enable <name>`, установіть пакет hook або задайте `hooks.internal.enabled=true`, щоб увімкнути цю можливість. Коли ви вмикаєте один іменований hook, Gateway завантажує лише обробник цього hook; `hooks.internal.enabled=true`, додаткові директорії hooks і застарілі обробники вмикають широке виявлення.
 
-### Пакети хуків
+### Пакети hooks
 
-Пакети хуків — це npm-пакети, які експортують хуки через `openclaw.hooks` у `package.json`. Установлення:
+Пакети hooks — це npm-пакети, які експортують hooks через `openclaw.hooks` у `package.json`. Установіть за допомогою:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Специфікації Npm доступні лише з реєстру (назва пакета + необов’язкова точна версія або dist-tag). Специфікації Git/URL/file і діапазони semver відхиляються.
+Npm specs обмежені registry-only (назва пакета + необов’язкова точна версія або dist-tag). Git/URL/file specs і діапазони semver відхиляються.
 
-## Вбудовані хуки
+## Вбудовані hooks
 
-| Хук                   | Події                          | Що робить                                             |
-| --------------------- | ------------------------------ | ----------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset` | Зберігає контекст сеансу до `<workspace>/memory/`     |
-| bootstrap-extra-files | `agent:bootstrap`              | Додає додаткові bootstrap-файли з glob-шаблонів       |
-| command-logger        | `command`                      | Записує всі команди до `~/.openclaw/logs/commands.log` |
-| boot-md               | `gateway:startup`              | Запускає `BOOT.md`, коли Gateway стартує              |
+| Hook                  | Події                                             | Що робить                                                     |
+| --------------------- | ------------------------------------------------- | ------------------------------------------------------------- |
+| session-memory        | `command:new`, `command:reset`                    | Зберігає контекст сесії в `<workspace>/memory/`               |
+| bootstrap-extra-files | `agent:bootstrap`                                 | Вставляє додаткові bootstrap-файли з glob-шаблонів            |
+| command-logger        | `command`                                         | Журналює всі команди в `~/.openclaw/logs/commands.log`        |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Надсилає видимі повідомлення в чаті, коли compaction сесії починається/завершується |
+| boot-md               | `gateway:startup`                                 | Запускає `BOOT.md`, коли gateway стартує                      |
 
-Увімкнути будь-який вбудований хук:
+Увімкніть будь-який вбудований hook:
 
 ```bash
 openclaw hooks enable <hook-name>
@@ -179,9 +180,9 @@ openclaw hooks enable <hook-name>
 
 <a id="session-memory"></a>
 
-### Подробиці session-memory
+### Деталі session-memory
 
-Витягує останні 15 повідомлень користувача/асистента, генерує описовий slug імені файлу через LLM і зберігає до `<workspace>/memory/YYYY-MM-DD-slug.md`, використовуючи локальну дату хоста. Потрібно налаштувати `workspace.dir`.
+Витягує останні 15 повідомлень користувача/асистента, генерує описовий slug імені файлу через LLM і зберігає в `<workspace>/memory/YYYY-MM-DD-slug.md` з використанням локальної дати хоста. Потрібно, щоб `workspace.dir` було налаштовано.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -202,28 +203,34 @@ openclaw hooks enable <hook-name>
 }
 ```
 
-Шляхи визначаються відносно workspace. Завантажуються лише розпізнані базові імена bootstrap-файлів (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
+Шляхи вирішуються відносно робочого простору. Завантажуються лише розпізнані базові назви bootstrap-файлів (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
 <a id="command-logger"></a>
 
-### Подробиці command-logger
+### Деталі command-logger
 
-Записує кожну slash-команду до `~/.openclaw/logs/commands.log`.
+Журналює кожну slash-команду в `~/.openclaw/logs/commands.log`.
+
+<a id="compaction-notifier"></a>
+
+### Деталі compaction-notifier
+
+Надсилає короткі статусні повідомлення в поточну розмову, коли OpenClaw починає та завершує compacting транскрипту сесії. Це робить довгі ходи менш заплутаними на чат-поверхнях, бо користувач бачить, що асистент підсумовує контекст і продовжить після compaction.
 
 <a id="boot-md"></a>
 
-### Подробиці boot-md
+### Деталі boot-md
 
-Запускає `BOOT.md` з активного workspace, коли Gateway стартує.
+Запускає `BOOT.md` з активного робочого простору, коли gateway стартує.
 
-## Plugin-хуки
+## Plugin hooks
 
-Plugin-и можуть реєструвати типізовані хуки через Plugin SDK для глибшої інтеграції:
-перехоплення викликів інструментів, змінення промптів, керування потоком повідомлень тощо.
-Використовуйте Plugin-хуки, коли потрібні `before_tool_call`, `before_agent_reply`,
-`before_install` або інші lifecycle-хуки в межах процесу.
+Plugins можуть реєструвати типізовані hooks через Plugin SDK для глибшої інтеграції:
+перехоплення tool calls, змінення prompts, керування потоком повідомлень тощо.
+Використовуйте plugin hooks, коли вам потрібні `before_tool_call`, `before_agent_reply`,
+`before_install` або інші lifecycle hooks у процесі.
 
-Повний довідник Plugin-хуків див. у [Plugin-хуки](/uk/plugins/hooks).
+Повний довідник plugin hook див. у [Plugin hooks](/uk/plugins/hooks).
 
 ## Конфігурація
 
@@ -241,7 +248,7 @@ Plugin-и можуть реєструвати типізовані хуки че
 }
 ```
 
-Змінні середовища для окремих хуків:
+Змінні середовища для окремого hook:
 
 ```json
 {
@@ -258,7 +265,7 @@ Plugin-и можуть реєструвати типізовані хуки че
 }
 ```
 
-Додаткові каталоги хуків:
+Додаткові директорії hooks:
 
 ```json
 {
@@ -273,7 +280,7 @@ Plugin-и можуть реєструвати типізовані хуки че
 ```
 
 <Note>
-Застарілий формат конфігурації масиву `hooks.internal.handlers` досі підтримується для зворотної сумісності, але нові хуки мають використовувати систему на основі виявлення.
+Застарілий формат конфігурації масиву `hooks.internal.handlers` досі підтримується для зворотної сумісності, але нові hooks мають використовувати систему на основі виявлення.
 </Note>
 
 ## Довідник CLI
@@ -295,10 +302,10 @@ openclaw hooks disable <hook-name>
 
 ## Найкращі практики
 
-- **Тримайте обробники швидкими.** Хуки виконуються під час обробки команд. Запускайте важку роботу у фоновому режимі без очікування через `void processInBackground(event)`.
+- **Зберігайте обробники швидкими.** Хуки виконуються під час обробки команд. Запускайте важку роботу у фоновому режимі без очікування результату за допомогою `void processInBackground(event)`.
 - **Обробляйте помилки коректно.** Обгортайте ризиковані операції в try/catch; не кидайте винятки, щоб інші обробники могли виконатися.
 - **Фільтруйте події якомога раніше.** Негайно повертайтеся, якщо тип/дія події не релевантні.
-- **Використовуйте конкретні ключі подій.** Віддавайте перевагу `"events": ["command:new"]` замість `"events": ["command"]`, щоб зменшити накладні витрати.
+- **Використовуйте конкретні ключі подій.** Надавайте перевагу `"events": ["command:new"]` замість `"events": ["command"]`, щоб зменшити накладні витрати.
 
 ## Усунення несправностей
 
@@ -325,11 +332,11 @@ openclaw hooks info my-hook
 
 1. Переконайтеся, що хук увімкнено: `openclaw hooks list`
 2. Перезапустіть процес Gateway, щоб хуки перезавантажилися.
-3. Перевірте журнали Gateway: `./scripts/clawlog.sh | grep hook`
+3. Перевірте логи Gateway: `./scripts/clawlog.sh | grep hook`
 
 ## Пов’язане
 
 - [Довідник CLI: хуки](/uk/cli/hooks)
-- [Webhooks](/uk/automation/cron-jobs#webhooks)
+- [Webhook-и](/uk/automation/cron-jobs#webhooks)
 - [Хуки Plugin](/uk/plugins/hooks) — внутрішньопроцесні хуки життєвого циклу Plugin
 - [Конфігурація](/uk/gateway/configuration-reference#hooks)
