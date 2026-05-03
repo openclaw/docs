@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de memory-lancedb-Plugin
-summary: Voegt door agents aanroepbare tools toe.
+    - Je installeert, configureert of controleert de memory-lancedb-plugin
+summary: Voegt tools toe die door agents kunnen worden aangeroepen.
 title: Geheugen-Lancedb-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:52Z"
+    generated_at: "2026-05-03T11:15:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Memory Lancedb-Plugin
+# Memory Lancedb Plugin
 
-Voegt tools toe die door agenten kunnen worden aangeroepen.
+Voegt tools toe die door agents kunnen worden aangeroepen.
 
 ## Distributie
 
 - Pakket: `@openclaw/memory-lancedb`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Interface
 
-contracten: tools
+contracts: tools
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [memory-lancedb](/nl/plugins/memory-lancedb)

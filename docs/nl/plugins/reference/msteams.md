@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Je installeert, configureert of auditeert de msteams Plugin
+    - Je installeert, configureert of controleert de msteams-plugin
 summary: Voegt de Microsoft Teams-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Microsoft Teams-Plugin
+title: Microsoft Teams Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:27Z"
+    generated_at: "2026-05-03T11:15:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f7123c7309d22994897477cc7ff3ab083abb4dc37f452c139968b8af3731c0cd
+    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
-# Microsoft Teams Plugin
+# Microsoft Teams-plugin
 
 Voegt het Microsoft Teams-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
 
 ## Distributie
 
 - Pakket: `@openclaw/msteams`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 
-channels: msteams
+kanalen: msteams
 
-## Gerelateerde documentatie
+## Verwante documentatie
 
 - [msteams](/nl/channels/msteams)

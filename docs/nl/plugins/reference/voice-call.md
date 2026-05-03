@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Je installeert, configureert of auditeert de Plugin voor spraakoproepen
-summary: Voegt hulpmiddelen toe die door agenten kunnen worden aangeroepen.
-title: Plugin voor spraakoproepen
+    - Je installeert, configureert of controleert de spraakoproep-Plugin
+summary: Voegt hulpmiddelen toe die door de agent kunnen worden aangeroepen.
+title: Spraakoproep-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:43Z"
+    generated_at: "2026-05-03T11:16:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
 # Voice Call-Plugin
 
-Voegt door de agent aanroepbare tools toe.
+Voegt door agents aanroepbare tools toe.
 
 ## Distributie
 
 - Pakket: `@openclaw/voice-call`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 
-contracts: tools
+contracten: tools
 
-## Gerelateerde documentatie
+## Gerelateerde docs
 
 - [voice-call](/nl/plugins/voice-call)

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Je installeert, configureert of auditeert de nextcloud-talk-Plugin
+    - Je installeert, configureert of controleert de nextcloud-talk Plugin
 summary: Voegt de Nextcloud Talk-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
 title: Nextcloud Talk-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:33Z"
+    generated_at: "2026-05-03T11:15:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 769f543754bf08068be8d705a8e0e022edcb0a4f023d44a2eb33cb9d06cc9df9
+    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Voegt het Nextcloud Talk-kanaaloppervlak toe voor het verzenden en ontvangen van
 ## Distributie
 
 - Pakket: `@openclaw/nextcloud-talk`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 

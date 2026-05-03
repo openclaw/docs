@@ -4,10 +4,10 @@ read_when:
 summary: Voegt ondersteuning voor webzoekproviders toe.
 title: Brave Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:48:49Z"
+    generated_at: "2026-05-03T11:13:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 64ab341ee94d55f7364a6a670df8adb0d29d5a50fba2fd6e7cfe650cda407d93
+    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ Voegt ondersteuning voor webzoekproviders toe.
 ## Distributie
 
 - Pakket: `@openclaw/brave-plugin`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
-## Interface
+## Oppervlak
 
 contracten: webSearchProviders
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [brave](/nl/tools/brave-search)

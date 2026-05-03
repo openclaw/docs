@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de matrix-Plugin
+    - U installeert, configureert of controleert de matrix Plugin
 summary: Voegt de Matrix-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Matrix-Plugin
+title: Matrix-plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:27Z"
+    generated_at: "2026-05-03T11:15:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 130549983f7931a98558921af10be36a3cbdb6bae61c1d3afee1bef2968a6001
+    source_hash: f4f791546090a868b4dd40dbfd458eb5fb2b6beafcf94c259655faac655fdfd8
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Voegt het Matrix-kanaaloppervlak toe voor het verzenden en ontvangen van OpenCla
 ## Distributie
 
 - Pakket: `@openclaw/matrix`
-- Installatieroute: ClawHub + npm
+- Installatieroute: opgenomen in OpenClaw
 
-## Interface
+## Oppervlak
 
-channels: matrix
+kanalen: matrix
 
 ## Gerelateerde documentatie
 

@@ -1,56 +1,56 @@
 ---
 read_when:
-    - Een Plugin voor kanalen configureren (authenticatie, toegangscontrole, meerdere accounts)
-    - Probleemoplossing voor configuratiesleutels per kanaal
-    - DM-beleid, groepsbeleid of vermeldingscontrole auditen
-summary: 'Kanaalconfiguratie: toegangsbeheer, koppeling en kanaalspecifieke sleutels voor Slack, Discord, Telegram, WhatsApp, Matrix, iMessage en meer'
+    - Een kanaal-Plugin configureren (authenticatie, toegangsbeheer, meerdere accounts)
+    - Problemen oplossen met configuratiesleutels per kanaal
+    - DM-beleid, groepsbeleid of vermeldingscontrole controleren
+summary: 'Kanaalconfiguratie: toegangscontrole, koppeling, kanaalspecifieke sleutels voor Slack, Discord, Telegram, WhatsApp, Matrix, iMessage en meer'
 title: Configuratie — kanalen
 x-i18n:
-    generated_at: "2026-05-02T22:19:01Z"
+    generated_at: "2026-05-03T11:09:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5231efba32fab480313c05dfd5dcec12e32020a79001c4a72df4c3844966e65e
+    source_hash: 5ec4aad94a844f6e2f936b2e0d208343ea264c9a4c74f7fc610c516e0353b53b
     source_path: gateway/config-channels.md
     workflow: 16
 ---
 
-Configuratiesleutels per kanaal onder `channels.*`. Omvat toegang voor DM's en groepen,
-set-ups met meerdere accounts, mention-gating en sleutels per kanaal voor Slack, Discord,
-Telegram, WhatsApp, Matrix, iMessage en de andere meegeleverde kanaalplugins.
+Configuratiesleutels per kanaal onder `channels.*`. Behandelt DM- en groepstoegang,
+multi-accountconfiguraties, vermelding-gating en kanaalspecifieke sleutels voor Slack, Discord,
+Telegram, WhatsApp, Matrix, iMessage en de andere meegeleverde kanaal-Plugins.
 
-Zie voor agents, tools, Gateway-runtime en andere sleutels op het hoogste niveau
+Voor agents, tools, Gateway-runtime en andere sleutels op topniveau, zie
 [Configuratiereferentie](/nl/gateway/configuration-reference).
 
 ## Kanalen
 
 Elk kanaal start automatisch wanneer de configuratiesectie ervan bestaat (tenzij `enabled: false`).
 
-### Toegang voor DM's en groepen
+### DM- en groepstoegang
 
 Alle kanalen ondersteunen DM-beleid en groepsbeleid:
 
 | DM-beleid           | Gedrag                                                        |
-| ------------------- | ------------------------------------------------------------- |
-| `pairing` (standaard) | Onbekende afzenders krijgen een eenmalige koppelingscode; de eigenaar moet goedkeuren |
-| `allowlist`         | Alleen afzenders in `allowFrom` (of de gekoppelde allow-store) |
-| `open`              | Sta alle inkomende DM's toe (vereist `allowFrom: ["*"]`)      |
-| `disabled`          | Negeer alle inkomende DM's                                    |
+| ------------------- | --------------------------------------------------------------- |
+| `pairing` (standaard) | Onbekende afzenders krijgen een eenmalige koppelcode; eigenaar moet goedkeuren |
+| `allowlist`         | Alleen afzenders in `allowFrom` (of gekoppelde allow store)             |
+| `open`              | Sta alle inkomende DM's toe (vereist `allowFrom: ["*"]`)             |
+| `disabled`          | Negeer alle inkomende DM's                                          |
 
 | Groepsbeleid          | Gedrag                                               |
-| --------------------- | ---------------------------------------------------- |
-| `allowlist` (standaard) | Alleen groepen die overeenkomen met de geconfigureerde allowlist |
-| `open`                | Sla groeps-allowlists over (mention-gating blijft van toepassing) |
-| `disabled`            | Blokkeer alle groeps-/roomberichten                  |
+| --------------------- | ------------------------------------------------------ |
+| `allowlist` (standaard) | Alleen groepen die overeenkomen met de geconfigureerde allowlist          |
+| `open`                | Omzeil groeps-allowlists (vermelding-gating blijft van toepassing) |
+| `disabled`            | Blokkeer alle groeps-/ruimberichten                          |
 
 <Note>
-`channels.defaults.groupPolicy` stelt de standaard in wanneer de `groupPolicy` van een provider niet is ingesteld.
-Koppelingscodes verlopen na 1 uur. Openstaande DM-koppelingsverzoeken zijn begrensd op **3 per kanaal**.
+`channels.defaults.groupPolicy` stelt de standaard in wanneer `groupPolicy` van een provider niet is ingesteld.
+Koppelcodes verlopen na 1 uur. Wachtende DM-koppelverzoeken zijn beperkt tot **3 per kanaal**.
 Als een providerblok volledig ontbreekt (`channels.<provider>` afwezig), valt het runtime-groepsbeleid terug op `allowlist` (fail-closed) met een opstartwaarschuwing.
 </Note>
 
-### Modeloverschrijvingen per kanaal
+### Kanaalmodel-overschrijvingen
 
-Gebruik `channels.modelByChannel` om specifieke kanaal-ID's aan een model vast te pinnen. Waarden accepteren `provider/model` of geconfigureerde modelaliassen. De kanaaltoewijzing wordt toegepast wanneer een sessie nog geen modeloverschrijving heeft (bijvoorbeeld ingesteld via `/model`).
+Gebruik `channels.modelByChannel` om specifieke kanaal-ID's aan een model vast te zetten. Waarden accepteren `provider/model` of geconfigureerde modelaliassen. De kanaaltoewijzing wordt toegepast wanneer een sessie nog geen modeloverschrijving heeft (bijvoorbeeld ingesteld via `/model`).
 
 ```json5
 {
@@ -73,7 +73,7 @@ Gebruik `channels.modelByChannel` om specifieke kanaal-ID's aan een model vast t
 
 ### Kanaalstandaarden en Heartbeat
 
-Gebruik `channels.defaults` voor gedeeld groepsbeleid en Heartbeat-gedrag over providers heen:
+Gebruik `channels.defaults` voor gedeeld groepsbeleid en Heartbeat-gedrag tussen providers:
 
 ```json5
 {
@@ -91,10 +91,10 @@ Gebruik `channels.defaults` voor gedeeld groepsbeleid en Heartbeat-gedrag over p
 }
 ```
 
-- `channels.defaults.groupPolicy`: fallback-groepsbeleid wanneer een `groupPolicy` op providerniveau niet is ingesteld.
-- `channels.defaults.contextVisibility`: standaard zichtbaarheidsmodus voor aanvullende context voor alle kanalen. Waarden: `all` (standaard, neem alle geciteerde/thread-/geschiedeniscontext op), `allowlist` (neem alleen context op van afzenders op de allowlist), `allowlist_quote` (hetzelfde als allowlist, maar behoud expliciete quote-/antwoordcontext). Overschrijving per kanaal: `channels.<channel>.contextVisibility`.
+- `channels.defaults.groupPolicy`: terugvalgroepsbeleid wanneer `groupPolicy` op providerniveau niet is ingesteld.
+- `channels.defaults.contextVisibility`: standaardmodus voor aanvullende contextzichtbaarheid voor alle kanalen. Waarden: `all` (standaard, neem alle geciteerde/thread-/geschiedeniscontext op), `allowlist` (neem alleen context op van afzenders op de allowlist), `allowlist_quote` (hetzelfde als allowlist maar behoud expliciete citaat-/antwoordcontext). Overschrijving per kanaal: `channels.<channel>.contextVisibility`.
 - `channels.defaults.heartbeat.showOk`: neem gezonde kanaalstatussen op in Heartbeat-uitvoer.
-- `channels.defaults.heartbeat.showAlerts`: neem gedegradeerde/foutstatussen op in Heartbeat-uitvoer.
+- `channels.defaults.heartbeat.showAlerts`: neem verslechterde/foutstatussen op in Heartbeat-uitvoer.
 - `channels.defaults.heartbeat.useIndicator`: render compacte Heartbeat-uitvoer in indicatorstijl.
 
 ### WhatsApp
@@ -139,7 +139,7 @@ WhatsApp draait via het webkanaal van de Gateway (Baileys Web). Het start automa
 }
 ```
 
-<Accordion title="WhatsApp met meerdere accounts">
+<Accordion title="Multi-account WhatsApp">
 
 ```json5
 {
@@ -157,9 +157,9 @@ WhatsApp draait via het webkanaal van de Gateway (Baileys Web). Het start automa
 }
 ```
 
-- Uitgaande opdrachten gebruiken standaard account `default` als dat aanwezig is; anders de eerste geconfigureerde account-ID (gesorteerd).
-- Optioneel overschrijft `channels.whatsapp.defaultAccount` die fallbackselectie van het standaardaccount wanneer deze overeenkomt met een geconfigureerde account-ID.
-- Verouderde Baileys-authdir voor één account wordt door `openclaw doctor` gemigreerd naar `whatsapp/default`.
+- Uitgaande opdrachten gebruiken standaard account `default` als dat aanwezig is; anders de eerste geconfigureerde account-id (gesorteerd).
+- Optioneel `channels.whatsapp.defaultAccount` overschrijft die terugvalselectie voor het standaardaccount wanneer deze overeenkomt met een geconfigureerde account-id.
+- Verouderde Baileys-authenticatiemap voor één account wordt door `openclaw doctor` gemigreerd naar `whatsapp/default`.
 - Overschrijvingen per account: `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
 
 </Accordion>
@@ -219,12 +219,12 @@ WhatsApp draait via het webkanaal van de Gateway (Baileys Web). Het start automa
 }
 ```
 
-- Bottoken: `channels.telegram.botToken` of `channels.telegram.tokenFile` (alleen regulier bestand; symlinks geweigerd), met `TELEGRAM_BOT_TOKEN` als fallback voor het standaardaccount.
-- `apiRoot` is alleen de root van de Telegram Bot API. Gebruik `https://api.telegram.org` of je zelf gehoste/proxy-root, niet `https://api.telegram.org/bot<TOKEN>`; `openclaw doctor --fix` verwijdert een per ongeluk toegevoegde afsluitende suffix `/bot<TOKEN>`.
-- Optioneel overschrijft `channels.telegram.defaultAccount` de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerde account-ID.
-- Stel in set-ups met meerdere accounts (2+ account-ID's) een expliciete standaard in (`channels.telegram.defaultAccount` of `channels.telegram.accounts.default`) om fallback-routering te vermijden; `openclaw doctor` waarschuwt wanneer dit ontbreekt of ongeldig is.
-- `configWrites: false` blokkeert door Telegram geïnitieerde configuratiewijzigingen (supergroep-ID-migraties, `/config set|unset`).
-- Items op het hoogste niveau in `bindings[]` met `type: "acp"` configureren persistente ACP-bindingen voor forumtopics (gebruik canoniek `chatId:topic:topicId` in `match.peer.id`). Veldsemantiek wordt gedeeld in [ACP-agents](/nl/tools/acp-agents#persistent-channel-bindings).
+- Bottoken: `channels.telegram.botToken` of `channels.telegram.tokenFile` (alleen regulier bestand; symlinks geweigerd), met `TELEGRAM_BOT_TOKEN` als terugval voor het standaardaccount.
+- `apiRoot` is alleen de root van de Telegram Bot API. Gebruik `https://api.telegram.org` of je zelfgehoste/proxy-root, niet `https://api.telegram.org/bot<TOKEN>`; `openclaw doctor --fix` verwijdert een per ongeluk toegevoegde afsluitende `/bot<TOKEN>`-suffix.
+- Optioneel `channels.telegram.defaultAccount` overschrijft de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerde account-id.
+- Stel in multi-accountconfiguraties (2+ account-ID's) een expliciete standaard in (`channels.telegram.defaultAccount` of `channels.telegram.accounts.default`) om terugvalroutering te voorkomen; `openclaw doctor` waarschuwt wanneer dit ontbreekt of ongeldig is.
+- `configWrites: false` blokkeert door Telegram geïnitieerde configuratieschrijfacties (supergroep-ID-migraties, `/config set|unset`).
+- Items op topniveau in `bindings[]` met `type: "acp"` configureren persistente ACP-bindingen voor forumonderwerpen (gebruik canonieke `chatId:topic:topicId` in `match.peer.id`). Veldsemantiek wordt gedeeld in [ACP-agents](/nl/tools/acp-agents#persistent-channel-bindings).
 - Telegram-streamvoorbeelden gebruiken `sendMessage` + `editMessageText` (werkt in directe chats en groepschats).
 - Herhaalbeleid: zie [Herhaalbeleid](/nl/concepts/retry).
 
@@ -332,40 +332,40 @@ WhatsApp draait via het webkanaal van de Gateway (Baileys Web). Het start automa
 ```
 
 - Token: `channels.discord.token`, met `DISCORD_BOT_TOKEN` als fallback voor het standaardaccount.
-- Directe uitgaande aanroepen die een expliciete Discord-`token` opgeven, gebruiken die token voor de aanroep; instellingen voor accountretry/beleid komen nog steeds uit het geselecteerde account in de actieve runtime-snapshot.
-- Optionele `channels.discord.defaultAccount` overschrijft de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
-- Gebruik `user:<id>` (DM) of `channel:<id>` (guildkanaal) voor afleverdoelen; kale numerieke ID's worden geweigerd.
-- Guild-slugs zijn kleine letters waarbij spaties worden vervangen door `-`; kanaalsleutels gebruiken de geslugde naam (geen `#`). Geef de voorkeur aan guild-ID's.
-- Door bots geschreven berichten worden standaard genegeerd. `allowBots: true` schakelt ze in; gebruik `allowBots: "mentions"` om alleen botberichten te accepteren die de bot vermelden (eigen berichten blijven gefilterd).
+- Directe uitgaande calls die een expliciete Discord `token` opgeven, gebruiken die token voor de call; instellingen voor accountretry/beleid komen nog steeds uit het geselecteerde account in de actieve runtime-snapshot.
+- Optioneel `channels.discord.defaultAccount` overschrijft de selectie van het standaardaccount wanneer deze overeenkomt met een geconfigureerde account-id.
+- Gebruik `user:<id>` (DM) of `channel:<id>` (guild-kanaal) voor afleverdoelen; kale numerieke ID's worden geweigerd.
+- Guild-slugs zijn kleine letters waarbij spaties zijn vervangen door `-`; kanaalsleutels gebruiken de geslugde naam (geen `#`). Geef de voorkeur aan guild-ID's.
+- Door bots geschreven berichten worden standaard genegeerd. `allowBots: true` schakelt ze in; gebruik `allowBots: "mentions"` om alleen botberichten te accepteren die de bot vermelden (eigen berichten worden nog steeds gefilterd).
 - `channels.discord.guilds.<id>.ignoreOtherMentions` (en kanaaloverschrijvingen) laat berichten vallen die een andere gebruiker of rol vermelden maar niet de bot (met uitzondering van @everyone/@here).
-- `channels.discord.mentionAliases` koppelt stabiele uitgaande `@handle`-tekst aan Discord-gebruikers-ID's voordat wordt verzonden, zodat bekende teamgenoten deterministisch kunnen worden vermeld, zelfs wanneer de vluchtige directorycache leeg is. Overschrijvingen per account staan onder `channels.discord.accounts.<accountId>.mentionAliases`.
-- `maxLinesPerMessage` (standaard 17) splitst hoge berichten, zelfs wanneer ze onder 2000 tekens blijven.
-- `channels.discord.threadBindings` beheert Discord-routering die aan threads is gebonden:
-  - `enabled`: Discord-overschrijving voor threadgebonden sessiefuncties (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, en gebonden aflevering/routering)
-  - `idleHours`: Discord-overschrijving voor automatische unfocus bij inactiviteit in uren (`0` schakelt uit)
+- `channels.discord.mentionAliases` wijst stabiele uitgaande `@handle`-tekst toe aan Discord-gebruikers-ID's vóór verzending, zodat bekende teamgenoten deterministisch kunnen worden genoemd, zelfs wanneer de tijdelijke directorycache leeg is. Per-account overschrijvingen staan onder `channels.discord.accounts.<accountId>.mentionAliases`.
+- `maxLinesPerMessage` (standaard 17) splitst hoge berichten zelfs wanneer ze minder dan 2000 tekens bevatten.
+- `channels.discord.threadBindings` beheert Discord-threadgebonden routing:
+  - `enabled`: Discord-overschrijving voor threadgebonden sessiefuncties (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, en gebonden aflevering/routing)
+  - `idleHours`: Discord-overschrijving voor automatische ontfocus bij inactiviteit in uren (`0` schakelt uit)
   - `maxAgeHours`: Discord-overschrijving voor harde maximale leeftijd in uren (`0` schakelt uit)
-  - `spawnSessions`: schakelaar voor `sessions_spawn({ thread: true })` en automatische threadaanmaak/-binding voor ACP-threadspawn (standaard: `true`)
+  - `spawnSessions`: schakelaar voor `sessions_spawn({ thread: true })` en automatische threadaanmaak/-binding bij ACP-thread-spawn (standaard: `true`)
   - `defaultSpawnContext`: native subagentcontext voor threadgebonden spawns (standaard `"fork"`)
-- Top-level `bindings[]`-items met `type: "acp"` configureren persistente ACP-bindingen voor kanalen en threads (gebruik kanaal-/thread-id in `match.peer.id`). Veldsemantiek wordt gedeeld in [ACP Agents](/nl/tools/acp-agents#persistent-channel-bindings).
-- `channels.discord.ui.components.accentColor` stelt de accentkleur in voor Discord components v2-containers.
-- `channels.discord.voice` schakelt Discord-spraakkanaalgesprekken en optionele auto-join + LLM + TTS-overschrijvingen in. Tekst-only Discord-configuraties laten spraak standaard uit; stel `channels.discord.voice.enabled=true` in om te kiezen voor deelname.
+- Top-level `bindings[]`-vermeldingen met `type: "acp"` configureren persistente ACP-bindingen voor kanalen en threads (gebruik kanaal-/thread-id in `match.peer.id`). Veldsemantiek wordt gedeeld in [ACP-agenten](/nl/tools/acp-agents#persistent-channel-bindings).
+- `channels.discord.ui.components.accentColor` stelt de accentkleur in voor Discord-components v2-containers.
+- `channels.discord.voice` schakelt Discord-spraakkanaalgesprekken en optionele auto-join + LLM + TTS-overschrijvingen in. Alleen-tekst Discord-configuraties laten spraak standaard uit; stel `channels.discord.voice.enabled=true` in om in te schakelen.
 - `channels.discord.voice.model` overschrijft optioneel het LLM-model dat wordt gebruikt voor Discord-spraakkanaalantwoorden.
 - `channels.discord.voice.daveEncryption` en `channels.discord.voice.decryptionFailureTolerance` worden doorgegeven aan `@discordjs/voice` DAVE-opties (standaard `true` en `24`).
 - `channels.discord.voice.connectTimeoutMs` beheert de initiële `@discordjs/voice` Ready-wachttijd voor `/vc join` en auto-join-pogingen (standaard `30000`).
-- `channels.discord.voice.reconnectGraceMs` bepaalt hoelang een verbroken spraaksessie mag doen over het binnengaan van reconnect-signalering voordat OpenClaw deze vernietigt (standaard `15000`).
-- OpenClaw probeert daarnaast herstel van spraakontvangst door een spraaksessie te verlaten/opnieuw te joinen na herhaalde decryptiefouten.
-- `channels.discord.streaming` is de canonieke sleutel voor streammodus. Verouderde `streamMode`- en booleaanse `streaming`-waarden worden automatisch gemigreerd.
-- `channels.discord.autoPresence` koppelt runtime-beschikbaarheid aan botaanwezigheid (healthy => online, degraded => idle, exhausted => dnd) en staat optionele overschrijvingen voor statustekst toe.
-- `channels.discord.dangerouslyAllowNameMatching` schakelt veranderlijke naam-/tagmatching opnieuw in (compatibiliteitsmodus voor noodsituaties).
+- `channels.discord.voice.reconnectGraceMs` bepaalt hoelang een verbroken spraaksessie mag doen over het ingaan van reconnect-signalering voordat OpenClaw deze vernietigt (standaard `15000`).
+- OpenClaw probeert daarnaast spraakontvangst te herstellen door een spraaksessie te verlaten en opnieuw te joinen na herhaalde decryptiefouten.
+- `channels.discord.streaming` is de canonieke streammodussleutel. Legacy `streamMode`- en booleaanse `streaming`-waarden worden automatisch gemigreerd.
+- `channels.discord.autoPresence` koppelt runtimebeschikbaarheid aan botaanwezigheid (healthy => online, degraded => idle, exhausted => dnd) en staat optionele statustekstoverschrijvingen toe.
+- `channels.discord.dangerouslyAllowNameMatching` schakelt veranderlijke naam-/tagmatching opnieuw in (break-glass-compatibiliteitsmodus).
 - `channels.discord.execApprovals`: Discord-native levering van exec-goedkeuringen en autorisatie van goedkeurders.
-  - `enabled`: `true`, `false`, of `"auto"` (standaard). In automatische modus worden exec-goedkeuringen actief wanneer goedkeurders kunnen worden opgelost uit `approvers` of `commands.ownerAllowFrom`.
+  - `enabled`: `true`, `false` of `"auto"` (standaard). In automatische modus worden exec-goedkeuringen actief wanneer goedkeurders kunnen worden opgelost uit `approvers` of `commands.ownerAllowFrom`.
   - `approvers`: Discord-gebruikers-ID's die exec-aanvragen mogen goedkeuren. Valt terug op `commands.ownerAllowFrom` wanneer weggelaten.
-  - `agentFilter`: optionele allowlist met agent-ID's. Laat weg om goedkeuringen voor alle agents door te sturen.
+  - `agentFilter`: optionele allowlist met agent-ID's. Laat weg om goedkeuringen voor alle agenten door te sturen.
   - `sessionFilter`: optionele sessiesleutelpatronen (substring of regex).
-  - `target`: waar goedkeuringsprompts naartoe moeten. `"dm"` (standaard) stuurt naar DM's van goedkeurders, `"channel"` stuurt naar het oorspronkelijke kanaal, `"both"` stuurt naar beide. Wanneer target `"channel"` bevat, zijn knoppen alleen bruikbaar door opgeloste goedkeurders.
-  - `cleanupAfterResolve`: verwijdert, wanneer `true`, goedkeurings-DM's na goedkeuring, weigering of timeout.
+  - `target`: waar goedkeuringsprompts naartoe worden gestuurd. `"dm"` (standaard) stuurt naar DM's van goedkeurders, `"channel"` stuurt naar het oorspronkelijke kanaal, `"both"` stuurt naar beide. Wanneer target `"channel"` bevat, zijn knoppen alleen bruikbaar door opgeloste goedkeurders.
+  - `cleanupAfterResolve`: wanneer `true`, worden goedkeurings-DM's verwijderd na goedkeuring, afwijzing of time-out.
 
-**Reactiemeldingsmodi:** `off` (geen), `own` (berichten van de bot, standaard), `all` (alle berichten), `allowlist` (uit `guilds.<id>.users` op alle berichten).
+**Modi voor reactiemeldingen:** `off` (geen), `own` (berichten van de bot, standaard), `all` (alle berichten), `allowlist` (uit `guilds.<id>.users` op alle berichten).
 
 ### Google Chat
 
@@ -400,7 +400,7 @@ WhatsApp draait via het webkanaal van de Gateway (Baileys Web). Het start automa
 - Serviceaccount SecretRef wordt ook ondersteund (`serviceAccountRef`).
 - Env-fallbacks: `GOOGLE_CHAT_SERVICE_ACCOUNT` of `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
 - Gebruik `spaces/<spaceId>` of `users/<userId>` voor afleverdoelen.
-- `channels.googlechat.dangerouslyAllowNameMatching` schakelt veranderlijke matching van e-mailprincipals opnieuw in (compatibiliteitsmodus voor noodsituaties).
+- `channels.googlechat.dangerouslyAllowNameMatching` schakelt veranderlijke matching van e-mailprincipals opnieuw in (break-glass-compatibiliteitsmodus).
 
 ### Slack
 
@@ -472,35 +472,35 @@ WhatsApp draait via het webkanaal van de Gateway (Baileys Web). Het start automa
 }
 ```
 
-- **Socketmodus** vereist zowel `botToken` als `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` als env-fallback voor het standaardaccount).
+- **Socketmodus** vereist zowel `botToken` als `appToken` (`SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN` voor de env-fallback van het standaardaccount).
 - **HTTP-modus** vereist `botToken` plus `signingSecret` (op rootniveau of per account).
-- `socketMode` geeft transportafstemming voor de Slack SDK Socket Mode door aan de publieke Bolt receiver-API. Gebruik dit alleen bij onderzoek naar ping/pong-time-outs of verouderd websocketgedrag.
-- `botToken`, `appToken`, `signingSecret` en `userToken` accepteren plaintext-tekenreeksen of SecretRef-objecten.
-- Slack-accountsnapshots tonen bron-/statusvelden per credential, zoals `botTokenSource`, `botTokenStatus`, `appTokenStatus` en, in HTTP-modus, `signingSecretStatus`. `configured_unavailable` betekent dat het account via SecretRef is geconfigureerd, maar dat het huidige command-/runtimepad de secretwaarde niet kon oplossen.
+- `socketMode` geeft afstemming voor het Slack SDK Socket Mode-transport door aan de publieke Bolt receiver API. Gebruik dit alleen bij onderzoek naar ping/pong-time-outs of verouderd websocketgedrag.
+- `botToken`, `appToken`, `signingSecret` en `userToken` accepteren platte-tekststrings of SecretRef-objecten.
+- Slack-accountsnapshots tonen per-credential bron-/statusvelden zoals `botTokenSource`, `botTokenStatus`, `appTokenStatus` en, in HTTP-modus, `signingSecretStatus`. `configured_unavailable` betekent dat het account via SecretRef is geconfigureerd maar dat het huidige opdracht-/runtimepad de secretwaarde niet kon oplossen.
 - `configWrites: false` blokkeert door Slack geïnitieerde configuratieschrijfacties.
-- Optionele `channels.slack.defaultAccount` overschrijft de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
-- `channels.slack.streaming.mode` is de canonieke Slack-sleutel voor streammodus. `channels.slack.streaming.nativeTransport` beheert Slack's native streamingtransport. Verouderde `streamMode`-, booleaanse `streaming`- en `nativeStreaming`-waarden worden automatisch gemigreerd.
+- Optioneel `channels.slack.defaultAccount` overschrijft de selectie van het standaardaccount wanneer deze overeenkomt met een geconfigureerde account-id.
+- `channels.slack.streaming.mode` is de canonieke Slack-streammodussleutel. `channels.slack.streaming.nativeTransport` beheert Slacks native streamingtransport. Legacy `streamMode`-, booleaanse `streaming`- en `nativeStreaming`-waarden worden automatisch gemigreerd.
 - Gebruik `user:<id>` (DM) of `channel:<id>` voor afleverdoelen.
 
-**Reactiemeldingsmodi:** `off`, `own` (standaard), `all`, `allowlist` (uit `reactionAllowlist`).
+**Modi voor reactiemeldingen:** `off`, `own` (standaard), `all`, `allowlist` (uit `reactionAllowlist`).
 
 **Threadsessie-isolatie:** `thread.historyScope` is per thread (standaard) of gedeeld over het kanaal. `thread.inheritParent` kopieert het transcript van het bovenliggende kanaal naar nieuwe threads.
 
-- Slack-native streaming plus de Slack-assistentstijl `"is typing..."`-threadstatus vereisen een antwoordthreaddoel. Top-level DM's blijven standaard buiten threads, dus zij gebruiken in plaats van de threadstijl-preview `typingReaction` of normale aflevering.
-- `typingReaction` voegt een tijdelijke reactie toe aan het inkomende Slack-bericht terwijl een antwoord loopt, en verwijdert die vervolgens bij voltooiing. Gebruik een Slack-emoji-shortcode zoals `"hourglass_flowing_sand"`.
+- Slack native streaming plus de Slack-assistentstijl `"is typing..."`-threadstatus vereisen een antwoordthreadtarget. Top-level DM's blijven standaard buiten threads, zodat ze nog steeds kunnen streamen via Slack-concept-post-en-bewerkvoorbeelden in plaats van de threadstijl native stream-/statuspreview te tonen.
+- `typingReaction` voegt een tijdelijke reactie toe aan het inkomende Slack-bericht terwijl een antwoord wordt uitgevoerd, en verwijdert deze daarna bij voltooiing. Gebruik een Slack-emoji-shortcode zoals `"hourglass_flowing_sand"`.
 - `channels.slack.execApprovals`: Slack-native levering van exec-goedkeuringen en autorisatie van goedkeurders. Zelfde schema als Discord: `enabled` (`true`/`false`/`"auto"`), `approvers` (Slack-gebruikers-ID's), `agentFilter`, `sessionFilter` en `target` (`"dm"`, `"channel"` of `"both"`).
 
-| Actiegroep | Standaard | Opmerkingen                  |
-| ------------ | ------- | ---------------------- |
-| reactions    | ingeschakeld | Reageren + reacties weergeven |
-| messages     | ingeschakeld | Lezen/verzenden/bewerken/verwijderen  |
-| pins         | ingeschakeld | Vastzetten/losmaken/weergeven         |
-| memberInfo   | ingeschakeld | Lidgegevens            |
+| Actiegroep   | Standaard    | Opmerkingen                 |
+| ------------ | ------------ | --------------------------- |
+| reactions    | ingeschakeld | Reageren + reacties tonen   |
+| messages     | ingeschakeld | Lezen/verzenden/bewerken/verwijderen |
+| pins         | ingeschakeld | Vastmaken/losmaken/tonen    |
+| memberInfo   | ingeschakeld | Lidgegevens                 |
 | emojiList    | ingeschakeld | Aangepaste emoji-lijst      |
 
 ### Mattermost
 
-Mattermost wordt geleverd als gebundelde Plugin in huidige OpenClaw-releases. Oudere of aangepaste builds kunnen een huidig npm-pakket installeren met `openclaw plugins install @openclaw/mattermost`. Controleer [npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost) voor de huidige dist-tags voordat u een versie vastzet.
+Mattermost wordt meegeleverd als een gebundelde Plugin in huidige OpenClaw-releases. Oudere of aangepaste builds kunnen een huidig npm-pakket installeren met `openclaw plugins install @openclaw/mattermost`. Controleer [npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost) voor de huidige dist-tags voordat je een versie vastpint.
 
 ```json5
 {
@@ -530,23 +530,18 @@ Mattermost wordt geleverd als gebundelde Plugin in huidige OpenClaw-releases. Ou
 }
 ```
 
-Chatmodi: `oncall` (antwoord op @-vermelding, standaard), `onmessage` (elk bericht), `onchar` (berichten die beginnen met triggerprefix).
+Chatmodi: `oncall` (reageer op @-vermelding, standaard), `onmessage` (elk bericht), `onchar` (berichten die beginnen met triggerprefix).
 
-Wanneer Mattermost-native commands zijn ingeschakeld:
+Wanneer native Mattermost-opdrachten zijn ingeschakeld:
 
 - `commands.callbackPath` moet een pad zijn (bijvoorbeeld `/api/channels/mattermost/command`), geen volledige URL.
-- `commands.callbackUrl` moet naar het OpenClaw Gateway-eindpunt verwijzen en bereikbaar zijn vanaf de Mattermost-server.
-- Native slash-callbacks worden geauthenticeerd met de tokens per commando die
-  door Mattermost worden geretourneerd tijdens de registratie van slash-commando's. Als registratie mislukt of er geen
-  commando's zijn geactiveerd, weigert OpenClaw callbacks met
-  `Unauthorized: invalid command token.`
-- Voor private/tailnet/interne callbackhosts kan Mattermost vereisen dat
-  `ServiceSettings.AllowedUntrustedInternalConnections` de callbackhost/het callbackdomein bevat.
-  Gebruik host-/domeinwaarden, geen volledige URL's.
-- `channels.mattermost.configWrites`: Mattermost-geïnitieerde configuratieschrijfbewerkingen toestaan of weigeren.
-- `channels.mattermost.requireMention`: `@mention` vereisen voordat er in kanalen wordt geantwoord.
-- `channels.mattermost.groups.<channelId>.requireMention`: per-kanaal override voor mention-gating (`"*"` voor standaard).
-- Optioneel overschrijft `channels.mattermost.defaultAccount` de selectie van het standaardaccount wanneer dit overeenkomt met een geconfigureerde account-id.
+- `commands.callbackUrl` moet verwijzen naar het OpenClaw Gateway-eindpunt en bereikbaar zijn vanaf de Mattermost-server.
+- Native slash-callbacks worden geauthenticeerd met de tokens per opdracht die Mattermost retourneert tijdens registratie van slash-opdrachten. Als registratie mislukt of er geen opdrachten zijn geactiveerd, weigert OpenClaw callbacks met `Unauthorized: invalid command token.`
+- Voor privé-/tailnet-/interne callbackhosts kan Mattermost vereisen dat `ServiceSettings.AllowedUntrustedInternalConnections` de callbackhost of het callbackdomein bevat. Gebruik host-/domeinwaarden, geen volledige URL's.
+- `channels.mattermost.configWrites`: sta door Mattermost gestarte configuratieschrijfacties toe of weiger ze.
+- `channels.mattermost.requireMention`: vereis `@mention` voordat er in kanalen wordt geantwoord.
+- `channels.mattermost.groups.<channelId>.requireMention`: override per kanaal voor mention-gating (`"*"` voor standaard).
+- Optioneel overschrijft `channels.mattermost.defaultAccount` de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
 
 ### Signal
 
@@ -567,15 +562,15 @@ Wanneer Mattermost-native commands zijn ingeschakeld:
 }
 ```
 
-**Modi voor reactiemeldingen:** `off`, `own` (standaard), `all`, `allowlist` (van `reactionAllowlist`).
+**Modi voor reactiemeldingen:** `off`, `own` (standaard), `all`, `allowlist` (uit `reactionAllowlist`).
 
-- `channels.signal.account`: het opstarten van het kanaal vastzetten op een specifieke Signal-accountidentiteit.
-- `channels.signal.configWrites`: Signal-geïnitieerde configuratieschrijfbewerkingen toestaan of weigeren.
-- Optioneel overschrijft `channels.signal.defaultAccount` de selectie van het standaardaccount wanneer dit overeenkomt met een geconfigureerde account-id.
+- `channels.signal.account`: koppel het opstarten van het kanaal aan een specifieke Signal-accountidentiteit.
+- `channels.signal.configWrites`: sta door Signal gestarte configuratieschrijfacties toe of weiger ze.
+- Optioneel overschrijft `channels.signal.defaultAccount` de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
 
 ### BlueBubbles
 
-BlueBubbles is het aanbevolen iMessage-pad (ondersteund door een Plugin, geconfigureerd onder `channels.bluebubbles`).
+BlueBubbles is het aanbevolen iMessage-pad (Plugin-ondersteund, geconfigureerd onder `channels.bluebubbles`).
 
 ```json5
 {
@@ -590,9 +585,9 @@ BlueBubbles is het aanbevolen iMessage-pad (ondersteund door een Plugin, geconfi
 }
 ```
 
-- Belangrijkste paden die hier worden behandeld: `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
-- Optioneel overschrijft `channels.bluebubbles.defaultAccount` de selectie van het standaardaccount wanneer dit overeenkomt met een geconfigureerde account-id.
-- Items op topniveau in `bindings[]` met `type: "acp"` kunnen BlueBubbles-gesprekken aan persistente ACP-sessies koppelen. Gebruik een BlueBubbles-handle of doeltekenreeks (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) in `match.peer.id`. Semantiek van gedeelde velden: [ACP-agenten](/nl/tools/acp-agents#persistent-channel-bindings).
+- Kernsleutelpaden die hier worden behandeld: `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
+- Optioneel overschrijft `channels.bluebubbles.defaultAccount` de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
+- Top-level `bindings[]`-items met `type: "acp"` kunnen BlueBubbles-gesprekken koppelen aan persistente ACP-sessies. Gebruik een BlueBubbles-handle of doeltekenreeks (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) in `match.peer.id`. Gedeelde veldsemantiek: [ACP-agenten](/nl/tools/acp-agents#persistent-channel-bindings).
 - De volledige BlueBubbles-kanaalconfiguratie is gedocumenteerd in [BlueBubbles](/nl/channels/bluebubbles).
 
 ### iMessage
@@ -621,17 +616,17 @@ OpenClaw start `imsg rpc` (JSON-RPC via stdio). Geen daemon of poort vereist.
 }
 ```
 
-- Optioneel overschrijft `channels.imessage.defaultAccount` de selectie van het standaardaccount wanneer dit overeenkomt met een geconfigureerde account-id.
+- Optioneel overschrijft `channels.imessage.defaultAccount` de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
 
-- Vereist volledige schijftoegang tot de Messages DB.
+- Vereist volledige schijftoegang tot de Berichten-database.
 - Geef de voorkeur aan `chat_id:<id>`-doelen. Gebruik `imsg chats --limit 20` om chats weer te geven.
 - `cliPath` kan naar een SSH-wrapper verwijzen; stel `remoteHost` (`host` of `user@host`) in voor het ophalen van bijlagen via SCP.
-- `attachmentRoots` en `remoteAttachmentRoots` beperken paden voor inkomende bijlagen (standaard: `/Users/*/Library/Messages/Attachments`).
-- SCP gebruikt strikte host-key-controle, dus zorg ervoor dat de sleutel van de relayhost al in `~/.ssh/known_hosts` staat.
-- `channels.imessage.configWrites`: iMessage-geïnitieerde configuratieschrijfbewerkingen toestaan of weigeren.
-- Items op topniveau in `bindings[]` met `type: "acp"` kunnen iMessage-gesprekken aan persistente ACP-sessies koppelen. Gebruik een genormaliseerde handle of expliciet chatdoel (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) in `match.peer.id`. Semantiek van gedeelde velden: [ACP-agenten](/nl/tools/acp-agents#persistent-channel-bindings).
+- `attachmentRoots` en `remoteAttachmentRoots` beperken inkomende bijlagepaden (standaard: `/Users/*/Library/Messages/Attachments`).
+- SCP gebruikt strikte host-key-controle, dus zorg ervoor dat de sleutel van de relayhost al bestaat in `~/.ssh/known_hosts`.
+- `channels.imessage.configWrites`: sta door iMessage gestarte configuratieschrijfacties toe of weiger ze.
+- Top-level `bindings[]`-items met `type: "acp"` kunnen iMessage-gesprekken koppelen aan persistente ACP-sessies. Gebruik een genormaliseerde handle of expliciet chatdoel (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) in `match.peer.id`. Gedeelde veldsemantiek: [ACP-agenten](/nl/tools/acp-agents#persistent-channel-bindings).
 
-<Accordion title="Voorbeeld van iMessage SSH-wrapper">
+<Accordion title="iMessage SSH wrapper example">
 
 ```bash
 #!/usr/bin/env bash
@@ -642,7 +637,7 @@ exec ssh -T gateway-host imsg "$@"
 
 ### Matrix
 
-Matrix wordt ondersteund door een Plugin en geconfigureerd onder `channels.matrix`.
+Matrix is Plugin-ondersteund en geconfigureerd onder `channels.matrix`.
 
 ```json5
 {
@@ -672,25 +667,25 @@ Matrix wordt ondersteund door een Plugin en geconfigureerd onder `channels.matri
 }
 ```
 
-- Token-authenticatie gebruikt `accessToken`; wachtwoordauthenticatie gebruikt `userId` + `password`.
-- `channels.matrix.proxy` routeert Matrix HTTP-verkeer via een expliciete HTTP(S)-proxy. Benoemde accounts kunnen dit overschrijven met `channels.matrix.accounts.<id>.proxy`.
-- `channels.matrix.network.dangerouslyAllowPrivateNetwork` staat private/interne homeservers toe. `proxy` en deze netwerkopt-in zijn onafhankelijke controles.
+- Tokenauthenticatie gebruikt `accessToken`; wachtwoordauthenticatie gebruikt `userId` + `password`.
+- `channels.matrix.proxy` leidt Matrix-HTTP-verkeer via een expliciete HTTP(S)-proxy. Benoemde accounts kunnen dit overschrijven met `channels.matrix.accounts.<id>.proxy`.
+- `channels.matrix.network.dangerouslyAllowPrivateNetwork` staat privé/interne homeservers toe. `proxy` en deze netwerk-opt-in zijn onafhankelijke controles.
 - `channels.matrix.defaultAccount` selecteert het voorkeursaccount in configuraties met meerdere accounts.
-- `channels.matrix.autoJoin` staat standaard op `off`, dus uitgenodigde rooms en nieuwe DM-achtige uitnodigingen worden genegeerd totdat je `autoJoin: "allowlist"` met `autoJoinAllowlist` of `autoJoin: "always"` instelt.
+- `channels.matrix.autoJoin` staat standaard op `off`, zodat uitgenodigde kamers en nieuwe DM-achtige uitnodigingen worden genegeerd totdat je `autoJoin: "allowlist"` met `autoJoinAllowlist` of `autoJoin: "always"` instelt.
 - `channels.matrix.execApprovals`: Matrix-native levering van exec-goedkeuringen en autorisatie van goedkeurders.
-  - `enabled`: `true`, `false` of `"auto"` (standaard). In automatische modus worden exec-goedkeuringen geactiveerd wanneer goedkeurders kunnen worden opgelost vanuit `approvers` of `commands.ownerAllowFrom`.
+  - `enabled`: `true`, `false` of `"auto"` (standaard). In automatische modus worden exec-goedkeuringen geactiveerd wanneer goedkeurders kunnen worden herleid uit `approvers` of `commands.ownerAllowFrom`.
   - `approvers`: Matrix-gebruikers-ID's (bijv. `@owner:example.org`) die exec-verzoeken mogen goedkeuren.
-  - `agentFilter`: optionele allowlist met agent-ID's. Laat weg om goedkeuringen voor alle agenten door te sturen.
+  - `agentFilter`: optionele allowlist met agent-ID's. Laat weg om goedkeuringen voor alle agents door te sturen.
   - `sessionFilter`: optionele sessiesleutelpatronen (substring of regex).
-  - `target`: waar goedkeuringsprompts naartoe worden gestuurd. `"dm"` (standaard), `"channel"` (oorspronkelijke room) of `"both"`.
+  - `target`: waar goedkeuringsprompts naartoe moeten worden gestuurd. `"dm"` (standaard), `"channel"` (oorspronkelijke kamer) of `"both"`.
   - Overrides per account: `channels.matrix.accounts.<id>.execApprovals`.
-- `channels.matrix.dm.sessionScope` bepaalt hoe Matrix-DM's in sessies worden gegroepeerd: `per-user` (standaard) deelt op basis van de gerouteerde peer, terwijl `per-room` elke DM-room isoleert.
-- Matrix-statusprobes en live-directory-lookups gebruiken hetzelfde proxybeleid als runtimeverkeer.
-- Volledige Matrix-configuratie, targetingregels en configuratievoorbeelden zijn gedocumenteerd in [Matrix](/nl/channels/matrix).
+- `channels.matrix.dm.sessionScope` bepaalt hoe Matrix-DM's in sessies worden gegroepeerd: `per-user` (standaard) deelt per gerouteerde peer, terwijl `per-room` elke DM-kamer isoleert.
+- Matrix-statusprobes en live directory-lookups gebruiken hetzelfde proxybeleid als runtimeverkeer.
+- Volledige Matrix-configuratie, doelregels en configuratievoorbeelden zijn gedocumenteerd in [Matrix](/nl/channels/matrix).
 
 ### Microsoft Teams
 
-Microsoft Teams wordt ondersteund door een Plugin en geconfigureerd onder `channels.msteams`.
+Microsoft Teams is Plugin-ondersteund en geconfigureerd onder `channels.msteams`.
 
 ```json5
 {
@@ -705,12 +700,12 @@ Microsoft Teams wordt ondersteund door een Plugin en geconfigureerd onder `chann
 }
 ```
 
-- Belangrijkste paden die hier worden behandeld: `channels.msteams`, `channels.msteams.configWrites`.
-- Volledige Teams-configuratie (credentials, Webhook, DM-/groepsbeleid, overrides per team/per kanaal) is gedocumenteerd in [Microsoft Teams](/nl/channels/msteams).
+- Kernsleutelpaden die hier worden behandeld: `channels.msteams`, `channels.msteams.configWrites`.
+- Volledige Teams-configuratie (referenties, Webhook, DM-/groepsbeleid, overrides per team/per kanaal) is gedocumenteerd in [Microsoft Teams](/nl/channels/msteams).
 
 ### IRC
 
-IRC wordt ondersteund door een Plugin en geconfigureerd onder `channels.irc`.
+IRC is Plugin-ondersteund en geconfigureerd onder `channels.irc`.
 
 ```json5
 {
@@ -731,8 +726,8 @@ IRC wordt ondersteund door een Plugin en geconfigureerd onder `channels.irc`.
 }
 ```
 
-- Belangrijkste paden die hier worden behandeld: `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
-- Optioneel overschrijft `channels.irc.defaultAccount` de selectie van het standaardaccount wanneer dit overeenkomt met een geconfigureerde account-id.
+- Kernsleutelpaden die hier worden behandeld: `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
+- Optioneel overschrijft `channels.irc.defaultAccount` de standaardaccountselectie wanneer deze overeenkomt met een geconfigureerd account-id.
 - Volledige IRC-kanaalconfiguratie (host/poort/TLS/kanalen/allowlists/mention-gating) is gedocumenteerd in [IRC](/nl/channels/irc).
 
 ### Meerdere accounts (alle kanalen)
@@ -758,28 +753,28 @@ Voer meerdere accounts per kanaal uit (elk met een eigen `accountId`):
 }
 ```
 
-- `default` wordt gebruikt wanneer `accountId` wordt weggelaten (CLI + routing).
-- Env-tokens gelden alleen voor het **standaardaccount**.
-- Basiskanaalinstellingen gelden voor alle accounts tenzij ze per account worden overschreven.
+- `default` wordt gebruikt wanneer `accountId` is weggelaten (CLI + routering).
+- Env-tokens gelden alleen voor het **standaard**account.
+- Basiskanaalinstellingen gelden voor alle accounts, tenzij ze per account worden overschreven.
 - Gebruik `bindings[].match.accountId` om elk account naar een andere agent te routeren.
-- Als je een niet-standaardaccount toevoegt via `openclaw channels add` (of kanaalonboarding) terwijl je nog een topniveau-kanaalconfiguratie met één account gebruikt, promoveert OpenClaw eerst account-scoped topniveauwaarden voor één account naar de accountmap van het kanaal, zodat het oorspronkelijke account blijft werken. De meeste kanalen verplaatsen ze naar `channels.<channel>.accounts.default`; Matrix kan in plaats daarvan een bestaand overeenkomend benoemd/standaarddoel behouden.
-- Bestaande bindings met alleen een kanaal (geen `accountId`) blijven overeenkomen met het standaardaccount; account-scoped bindings blijven optioneel.
-- `openclaw doctor --fix` repareert ook gemengde vormen door account-scoped topniveauwaarden voor één account te verplaatsen naar het gepromoveerde account dat voor dat kanaal is gekozen. De meeste kanalen gebruiken `accounts.default`; Matrix kan in plaats daarvan een bestaand overeenkomend benoemd/standaarddoel behouden.
+- Als je een niet-standaardaccount toevoegt via `openclaw channels add` (of kanaalonboarding) terwijl je nog een top-level kanaalconfiguratie met één account gebruikt, promoveert OpenClaw eerst account-scoped top-level waarden voor één account naar de accountmap van het kanaal, zodat het oorspronkelijke account blijft werken. De meeste kanalen verplaatsen ze naar `channels.<channel>.accounts.default`; Matrix kan in plaats daarvan een bestaand overeenkomend benoemd/standaarddoel behouden.
+- Bestaande kanaal-only bindings (geen `accountId`) blijven overeenkomen met het standaardaccount; account-scoped bindings blijven optioneel.
+- `openclaw doctor --fix` herstelt ook gemengde vormen door account-scoped top-level waarden voor één account te verplaatsen naar het gepromoveerde account dat voor dat kanaal is gekozen. De meeste kanalen gebruiken `accounts.default`; Matrix kan in plaats daarvan een bestaand overeenkomend benoemd/standaarddoel behouden.
 
 ### Andere Plugin-kanalen
 
 Veel Plugin-kanalen worden geconfigureerd als `channels.<id>` en gedocumenteerd op hun eigen kanaalpagina's (bijvoorbeeld Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat en Twitch).
-Bekijk de volledige kanaalindex: [Kanalen](/nl/channels).
+Zie de volledige kanaalindex: [Kanalen](/nl/channels).
 
 ### Mention-gating voor groepschats
 
-Groepsberichten vereisen standaard een **mention** (metadata-mention of veilige regex-patronen). Geldt voor WhatsApp, Telegram, Discord, Google Chat en iMessage-groepschats.
+Groepsberichten vereisen standaard **mention** (metadata-mention of veilige regex-patronen). Geldt voor WhatsApp, Telegram, Discord, Google Chat en iMessage-groepschats.
 
-Zichtbare antwoorden worden afzonderlijk beheerd. Groeps-/channelrooms staan standaard op `messages.groupChat.visibleReplies: "message_tool"`: OpenClaw verwerkt de beurt nog steeds, maar normale definitieve antwoorden blijven privé en zichtbare roomuitvoer vereist `message(action=send)`. Stel `"automatic"` alleen in wanneer je het legacy-gedrag wilt waarbij normale antwoorden terug naar de room worden geplaatst. Stel `messages.visibleReplies: "message_tool"` in om hetzelfde tool-only gedrag voor zichtbare antwoorden ook op directe chats toe te passen; de Codex-harness gebruikt dat tool-only gedrag ook als niet-ingestelde standaard voor directe chats.
+Zichtbare antwoorden worden afzonderlijk beheerd. Groeps-/kanaalkamers gebruiken standaard `messages.groupChat.visibleReplies: "message_tool"`: OpenClaw verwerkt de beurt nog steeds, maar normale eindantwoorden blijven privé en zichtbare kameruitvoer vereist `message(action=send)`. Stel `"automatic"` alleen in wanneer je het oude gedrag wilt waarbij normale antwoorden terug naar de kamer worden geplaatst. Als je hetzelfde tool-only gedrag voor zichtbare antwoorden ook op directe chats wilt toepassen, stel dan `messages.visibleReplies: "message_tool"` in; de Codex-harness gebruikt dat tool-only gedrag ook als niet-ingestelde standaard voor directe chats.
 
 Als de berichttool niet beschikbaar is onder het actieve toolbeleid, valt OpenClaw terug op automatische zichtbare antwoorden in plaats van de reactie stilzwijgend te onderdrukken. `openclaw doctor` waarschuwt voor deze mismatch.
 
-De Gateway herlaadt de `messages`-configuratie live nadat het bestand is opgeslagen. Herstart alleen wanneer file watching of configuratieherladen in de deployment is uitgeschakeld.
+De Gateway laadt de configuratie van `messages` opnieuw zonder herstart nadat het bestand is opgeslagen. Herstart alleen wanneer file watching of configuratieherladen in de deployment is uitgeschakeld.
 
 **Mention-typen:**
 
@@ -802,11 +797,11 @@ De Gateway herlaadt de `messages`-configuratie live nadat het bestand is opgesla
 }
 ```
 
-`messages.groupChat.historyLimit` stelt de globale standaard in. Kanalen kunnen dit overschrijven met `channels.<channel>.historyLimit` (of per account). Stel in op `0` om uit te schakelen.
+`messages.groupChat.historyLimit` stelt de algemene standaard in. Kanalen kunnen dit overschrijven met `channels.<channel>.historyLimit` (of per account). Stel in op `0` om uit te schakelen.
 
-`messages.visibleReplies` is de globale standaard voor bronbeurten; `messages.groupChat.visibleReplies` overschrijft die voor bronbeurten in groepen/kanalen. Wanneer `messages.visibleReplies` niet is ingesteld, kan een harness een eigen standaard voor directe/bronbeurten leveren; de Codex-harness gebruikt standaard `message_tool`. Kanaal-allowlists en mention-gating bepalen nog steeds of een beurt wordt verwerkt.
+`messages.visibleReplies` is de algemene standaard voor bronbeurten; `messages.groupChat.visibleReplies` overschrijft dit voor groeps-/kanaalbronbeurten. Wanneer `messages.visibleReplies` niet is ingesteld, kan een harness zijn eigen standaard voor directe/bronbeurten leveren; de Codex-harness gebruikt standaard `message_tool`. Kanaal-allowlists en mention-gating bepalen nog steeds of een beurt wordt verwerkt.
 
-#### Limieten voor DM-geschiedenis
+#### Geschiedenislmieten voor DM's
 
 ```json5
 {
@@ -821,13 +816,13 @@ De Gateway herlaadt de `messages`-configuratie live nadat het bestand is opgesla
 }
 ```
 
-Resolutie: override per DM → providerstandaard → geen limiet (alles behouden).
+Resolutie: per-DM-overschrijving → providerstandaard → geen limiet (alles behouden).
 
 Ondersteund: `telegram`, `whatsapp`, `discord`, `slack`, `signal`, `imessage`, `msteams`.
 
-#### Zelfchatmodus
+#### Self-chatmodus
 
-Neem je eigen nummer op in `allowFrom` om de zelfchatmodus in te schakelen (negeert native @-mentions, reageert alleen op tekstpatronen):
+Neem je eigen nummer op in `allowFrom` om self-chatmodus in te schakelen (negeert native @-mentions, reageert alleen op tekstpatronen):
 
 ```json5
 {
@@ -877,32 +872,32 @@ Neem je eigen nummer op in `allowFrom` om de zelfchatmodus in te schakelen (nege
 
 <Accordion title="Opdrachtdetails">
 
-- Dit blok configureert opdrachtoppervlakken. Zie [Slashopdrachten](/nl/tools/slash-commands) voor de huidige ingebouwde en gebundelde opdrachtcatalogus.
-- Deze pagina is een **referentie voor configuratiesleutels**, niet de volledige opdrachtcatalogus. Kanaal-/Plugin-eigen opdrachten zoals QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, apparaatkoppeling `/pair`, geheugen `/dreaming`, telefoonbediening `/phone` en Talk `/voice` worden gedocumenteerd op hun kanaal-/Plugin-pagina's plus [Slashopdrachten](/nl/tools/slash-commands).
+- Dit blok configureert opdrachtoppervlakken. Zie [Slash Commands](/nl/tools/slash-commands) voor de huidige ingebouwde en meegeleverde opdrachtcatalogus.
+- Deze pagina is een **referentie voor configuratiesleutels**, niet de volledige opdrachtcatalogus. Kanaal-/Plugin-eigen opdrachten zoals QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, device-pair `/pair`, memory `/dreaming`, phone-control `/phone` en Talk `/voice` zijn gedocumenteerd op hun kanaal-/Plugin-pagina's plus [Slash Commands](/nl/tools/slash-commands).
 - Tekstopdrachten moeten **zelfstandige** berichten zijn met een voorafgaande `/`.
-- `native: "auto"` schakelt native opdrachten in voor Discord/Telegram en laat Slack uit.
-- `nativeSkills: "auto"` schakelt native Skills-opdrachten in voor Discord/Telegram en laat Slack uit.
-- Overschrijven per kanaal: `channels.discord.commands.native` (bool of `"auto"`). `false` wist eerder geregistreerde opdrachten.
-- Overschrijf native Skills-registratie per kanaal met `channels.<provider>.commands.nativeSkills`.
-- `channels.telegram.customCommands` voegt extra Telegram-botmenu-items toe.
+- `native: "auto"` schakelt native opdrachten in voor Discord/Telegram, laat Slack uit.
+- `nativeSkills: "auto"` schakelt native Skill-opdrachten in voor Discord/Telegram, laat Slack uit.
+- Overschrijf per kanaal: `channels.discord.commands.native` (bool of `"auto"`). `false` wist eerder geregistreerde opdrachten.
+- Overschrijf native Skill-registratie per kanaal met `channels.<provider>.commands.nativeSkills`.
+- `channels.telegram.customCommands` voegt extra vermeldingen toe aan het Telegram-botmenu.
 - `bash: true` schakelt `! <cmd>` in voor de hostshell. Vereist `tools.elevated.enabled` en afzender in `tools.elevated.allowFrom.<channel>`.
-- `config: true` schakelt `/config` in (leest/schrijft `openclaw.json`). Voor Gateway-`chat.send`-clients vereisen persistente `/config set|unset`-schrijfacties ook `operator.admin`; alleen-lezen `/config show` blijft beschikbaar voor normale operatorclients met schrijfscope.
+- `config: true` schakelt `/config` in (leest/schrijft `openclaw.json`). Voor Gateway-`chat.send`-clients vereisen persistente `/config set|unset`-schrijfacties ook `operator.admin`; alleen-lezen `/config show` blijft beschikbaar voor normale operator-clients met schrijfscope.
 - `mcp: true` schakelt `/mcp` in voor door OpenClaw beheerde MCP-serverconfiguratie onder `mcp.servers`.
-- `plugins: true` schakelt `/plugins` in voor Plugin-detectie, installatie en bediening voor inschakelen/uitschakelen.
-- `channels.<provider>.configWrites` schermt configuratiemutaties per kanaal af (standaard: true).
-- Voor kanalen met meerdere accounts schermt `channels.<provider>.accounts.<id>.configWrites` ook schrijfacties af die op dat account zijn gericht (bijvoorbeeld `/allowlist --config --account <id>` of `/config set channels.<provider>.accounts.<id>...`).
+- `plugins: true` schakelt `/plugins` in voor Plugin-ontdekking, installatie en besturing voor in-/uitschakelen.
+- `channels.<provider>.configWrites` beperkt configuratiemutaties per kanaal (standaard: true).
+- Voor kanalen met meerdere accounts beperkt `channels.<provider>.accounts.<id>.configWrites` ook schrijfacties die op dat account zijn gericht (bijvoorbeeld `/allowlist --config --account <id>` of `/config set channels.<provider>.accounts.<id>...`).
 - `restart: false` schakelt `/restart` en Gateway-herstarttoolacties uit. Standaard: `true`.
-- `ownerAllowFrom` is de expliciete owner-allowlist voor owner-only opdrachten/tools. Deze staat los van `allowFrom`.
+- `ownerAllowFrom` is de expliciete owner-allowlist voor opdrachten/tools die alleen voor owners zijn. Deze staat los van `allowFrom`.
 - `ownerDisplay: "hash"` hasht owner-id's in de systeemprompt. Stel `ownerDisplaySecret` in om hashing te beheren.
-- `allowFrom` is per provider. Wanneer ingesteld, is dit de **enige** autorisatiebron (kanaal-allowlists/koppeling en `useAccessGroups` worden genegeerd).
-- `useAccessGroups: false` staat toe dat opdrachten access-group-beleid omzeilen wanneer `allowFrom` niet is ingesteld.
+- `allowFrom` is per provider. Wanneer ingesteld, is dit de **enige** autorisatiebron (kanaal-allowlists/pairing en `useAccessGroups` worden genegeerd).
+- `useAccessGroups: false` staat toe dat opdrachten access-groupbeleid omzeilen wanneer `allowFrom` niet is ingesteld.
 - Kaart van opdrachtdocumentatie:
-  - ingebouwde en gebundelde catalogus: [Slashopdrachten](/nl/tools/slash-commands)
+  - ingebouwde en meegeleverde catalogus: [Slash Commands](/nl/tools/slash-commands)
   - kanaalspecifieke opdrachtoppervlakken: [Kanalen](/nl/channels)
   - QQ Bot-opdrachten: [QQ Bot](/nl/channels/qqbot)
-  - koppelingsopdrachten: [Koppelen](/nl/channels/pairing)
-  - LINE-kaartopdracht: [LINE](/nl/channels/line)
-  - geheugen-dreaming: [Dreaming](/nl/concepts/dreaming)
+  - pairing-opdrachten: [Pairing](/nl/channels/pairing)
+  - LINE-cardopdracht: [LINE](/nl/channels/line)
+  - memory-dreaming: [Dreaming](/nl/concepts/dreaming)
 
 </Accordion>
 
@@ -910,6 +905,6 @@ Neem je eigen nummer op in `allowFrom` om de zelfchatmodus in te schakelen (nege
 
 ## Gerelateerd
 
-- [Configuratiereferentie](/nl/gateway/configuration-reference) — sleutels op het hoogste niveau
+- [Configuratiereferentie](/nl/gateway/configuration-reference) — sleutels op topniveau
 - [Configuratie — agents](/nl/gateway/config-agents)
-- [Kanalenoverzicht](/nl/channels)
+- [Kanaaloverzicht](/nl/channels)

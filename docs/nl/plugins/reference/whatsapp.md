@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Je installeert, configureert of voert een audit uit op de WhatsApp Plugin
-summary: Voegt het WhatsApp-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: WhatsApp Plugin
+    - Je installeert, configureert of controleert de WhatsApp-plugin
+summary: Voegt de WhatsApp-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+title: WhatsApp-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:58Z"
+    generated_at: "2026-05-03T11:16:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3fbdcff85954d0ff0269348e9c75b8b85cae69b9897a568432bfa06ed7276ced
+    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
-# WhatsApp-Plugin
+# WhatsApp Plugin
 
-Voegt de WhatsApp-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+Voegt het WhatsApp-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
 
 ## Distributie
 
 - Pakket: `@openclaw/whatsapp`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
-## Interface
+## Oppervlak
 
 channels: whatsapp
 

@@ -2,12 +2,12 @@
 read_when:
     - Je installeert, configureert of controleert de nostr-Plugin
 summary: Voegt de Nostr-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
-title: Nostr-plugin
+title: Nostr Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:37Z"
+    generated_at: "2026-05-03T11:15:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ Voegt de Nostr-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-
 ## Distributie
 
 - Pakket: `@openclaw/nostr`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Interface
 
 channels: nostr
 
-## Verwante documentatie
+## Gerelateerde documentatie
 
 - [nostr](/nl/channels/nostr)

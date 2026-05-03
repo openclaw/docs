@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de bluebubbles Plugin
-summary: Voegt de BlueBubbles-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
+    - U installeert, configureert of controleert de bluebubbles Plugin
+summary: Voegt het BlueBubbles-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
 title: BlueBubbles Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:48:32Z"
+    generated_at: "2026-05-03T11:13:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
 
-# BlueBubbles Plugin
+# BlueBubbles-Plugin
 
 Voegt het BlueBubbles-kanaaloppervlak toe voor het verzenden en ontvangen van OpenClaw-berichten.
 
 ## Distributie
 
 - Pakket: `@openclaw/bluebubbles`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 
-channels: bluebubbles
+kanalen: bluebubbles
 
-## Gerelateerde documentatie
+## Gerelateerde docs
 
 - [bluebubbles](/nl/channels/bluebubbles)

@@ -4,23 +4,23 @@ read_when:
 summary: Alleen-lezen diffviewer en bestandsrenderer voor agenten.
 title: Verschillen-Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:50:04Z"
+    generated_at: "2026-05-03T11:14:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c1949ed6e1431a44121694f64ca17c0dc8b7c4c6171959ff8b7d6ab27793e8ab
+    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
-# Diffs Plugin
+# Diffs-Plugin
 
-Alleen-lezen diffviewer en bestandsrenderer voor agenten.
+Alleen-lezen diffviewer en bestandsrenderer voor agents.
 
 ## Distributie
 
 - Pakket: `@openclaw/diffs`
-- Installatieroute: ClawHub + npm
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 
-contracten: tools; skills
+contracten: tools; Skills

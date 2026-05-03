@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Je installeert, configureert of controleert de acpx-plugin
-summary: Ingebedde ACP-runtimebackend met door de Plugin beheerd sessie- en transportbeheer.
+    - Je installeert, configureert of auditeert de acpx-Plugin
+summary: Ingebedde ACP-runtimebackend met Plugin-beheerd sessie- en transportbeheer.
 title: ACPx Plugin
 x-i18n:
-    generated_at: "2026-05-02T22:20:44Z"
+    generated_at: "2026-05-03T11:12:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1a0452131c85969d16cd1ebb603bd2369be8cd929841b6756165f64ede4109a4
+    source_hash: 232154c08280d11f330dd0928fe4f546416116439c0bd3760bbae26d86c6599b
     source_path: plugins/reference/acpx.md
     workflow: 16
 ---
 
-# ACPx Plugin
+# ACPx-Plugin
 
-Ingebedde ACP-runtimebackend met door de Plugin beheerd sessie- en transportbeheer.
+Ingebouwde ACP-runtime-backend met Plugin-eigen sessie- en transportbeheer.
 
 ## Distributie
 
 - Pakket: `@openclaw/acpx`
-- Installatieroute: opgenomen in OpenClaw
+- Installatieroute: npm; ClawHub
 
 ## Oppervlak
 
