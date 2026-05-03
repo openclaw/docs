@@ -1,25 +1,25 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin مربوط به codex هستید
-summary: هارنس app-server متعلق به Codex و فهرست مدل‌های GPT مدیریت‌شده توسط Codex.
+    - در حال نصب، پیکربندی یا ممیزی Plugin codex هستید
+summary: هارنس app-server مربوط به Codex و کاتالوگ مدل GPT مدیریت‌شده توسط Codex.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-02T20:52:05Z"
+    generated_at: "2026-05-03T11:41:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Plugin Codex
 
-مهار app-server متعلق به Codex و کاتالوگ مدل GPT مدیریت‌شده توسط Codex.
+هارنس app-server Codex و کاتالوگ مدل‌های GPT مدیریت‌شده توسط Codex.
 
 ## توزیع
 
 - بسته: `@openclaw/codex`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 

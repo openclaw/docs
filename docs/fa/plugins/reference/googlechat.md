@@ -4,10 +4,10 @@ read_when:
 summary: سطح کانال Google Chat را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 title: Plugin Google Chat
 x-i18n:
-    generated_at: "2026-05-02T22:23:01Z"
+    generated_at: "2026-05-03T11:42:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 793341b8a6f977521b102ce8b53db0921d2445170335ccf92166fa638cc8b367
+    source_hash: 9d8626b6b5773218e22534e3f40aa82c5508c3f3e3223f6fd7343118efa63dc1
     source_path: plugins/reference/googlechat.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/googlechat`
-- مسیر نصب: در OpenClaw گنجانده شده است
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 

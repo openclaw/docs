@@ -1,13 +1,13 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin nostr هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin nostr هستید
 summary: سطح کانال Nostr را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-02T20:55:53Z"
+    generated_at: "2026-05-03T11:43:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/nostr`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 

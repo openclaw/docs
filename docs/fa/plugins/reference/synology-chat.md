@@ -4,10 +4,10 @@ read_when:
 summary: سطح کانال Synology Chat را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 title: Plugin Synology Chat
 x-i18n:
-    generated_at: "2026-05-02T20:57:27Z"
+    generated_at: "2026-05-03T11:43:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 359dc47d1a0a9d34d66f3652c6c54cafcf92fcdfe6524e00270caecca40a9bc5
+    source_hash: 545eb93ad56c25e1261a0840747a494915a04773636fc14424d9e83395b4f663
     source_path: plugins/reference/synology-chat.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/synology-chat`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 

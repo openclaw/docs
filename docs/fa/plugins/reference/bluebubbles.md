@@ -1,13 +1,13 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی یا ممیزی Plugin bluebubbles هستید
+    - شما در حال نصب، پیکربندی یا ممیزی Plugin ‏bluebubbles هستید
 summary: سطح کانال BlueBubbles را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 title: Plugin BlueBubbles
 x-i18n:
-    generated_at: "2026-05-02T20:50:56Z"
+    generated_at: "2026-05-03T11:40:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/bluebubbles`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 

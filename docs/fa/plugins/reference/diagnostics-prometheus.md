@@ -4,22 +4,22 @@ read_when:
 summary: صادرکنندهٔ Prometheus برای عیب‌یابی OpenClaw.
 title: Plugin عیب‌یابی Prometheus
 x-i18n:
-    generated_at: "2026-05-02T20:52:35Z"
+    generated_at: "2026-05-03T11:41:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f60d9dd60da733a910409892908616d675df9b4909c2bf13c376dcddb168ece
+    source_hash: d69cf5b607ea7d93ed5886e63816716fef762a7b144d8a0d1b92c0101aa3678c
     source_path: plugins/reference/diagnostics-prometheus.md
     workflow: 16
 ---
 
-# Plugin تشخیص Prometheus
+# Plugin Prometheus عیب‌یابی
 
-صادرکننده Prometheus برای تشخیص‌های OpenClaw.
+صادرکننده Prometheus عیب‌یابی OpenClaw.
 
 ## توزیع
 
 - بسته: `@openclaw/diagnostics-prometheus`
-- مسیر نصب: ClawHub: `clawhub:@openclaw/diagnostics-prometheus`; npm
+- مسیر نصب: npm؛ ClawHub: `clawhub:@openclaw/diagnostics-prometheus`
 
 ## سطح
 

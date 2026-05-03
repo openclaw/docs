@@ -1,13 +1,13 @@
 ---
 read_when:
-    - شما در حال نصب، پیکربندی یا ممیزی Plugin تماس صوتی هستید.
-summary: ابزارهای قابل فراخوانی توسط عامل را اضافه می‌کند.
+    - در حال نصب، پیکربندی یا ممیزی Plugin تماس صوتی هستید
+summary: ابزارهای قابل‌فراخوانی توسط عامل را اضافه می‌کند.
 title: Plugin تماس صوتی
 x-i18n:
-    generated_at: "2026-05-02T20:58:14Z"
+    generated_at: "2026-05-03T11:43:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ x-i18n:
 ## توزیع
 
 - بسته: `@openclaw/voice-call`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 
 قراردادها: ابزارها
 
-## اسناد مرتبط
+## مستندات مرتبط
 
 - [voice-call](/fa/plugins/voice-call)

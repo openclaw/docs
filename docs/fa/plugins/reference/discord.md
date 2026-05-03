@@ -4,22 +4,22 @@ read_when:
 summary: سطح کانال Discord را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-05-02T22:22:57Z"
+    generated_at: "2026-05-03T11:42:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
+    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
-# Plugin مربوط به Discord
+# Discord Plugin
 
 سطح کانال Discord را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 
 ## توزیع
 
 - بسته: `@openclaw/discord`
-- مسیر نصب: ClawHub + npm
+- مسیر نصب: npm؛ ClawHub
 
 ## سطح
 
@@ -27,4 +27,4 @@ channels: discord
 
 ## مستندات مرتبط
 
-- [Discord](/fa/channels/discord)
+- [discord](/fa/channels/discord)
