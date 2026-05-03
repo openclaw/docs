@@ -1,25 +1,25 @@
 ---
 read_when:
-    - 你正在安裝、設定或稽核 matrix Plugin
-summary: 新增 Matrix 通道介面，用於傳送與接收 OpenClaw 訊息。
+    - 您正在安裝、設定或稽核 matrix Plugin
+summary: 新增 Matrix 頻道介面，用於傳送和接收 OpenClaw 訊息。
 title: Matrix Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:44Z"
+    generated_at: "2026-05-03T02:46:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 130549983f7931a98558921af10be36a3cbdb6bae61c1d3afee1bef2968a6001
+    source_hash: f4f791546090a868b4dd40dbfd458eb5fb2b6beafcf94c259655faac655fdfd8
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Matrix Plugin
 
-新增 Matrix 頻道介面，用於傳送及接收 OpenClaw 訊息。
+新增 Matrix 通道介面，用於傳送與接收 OpenClaw 訊息。
 
-## 發佈
+## 發行
 
 - 套件：`@openclaw/matrix`
-- 安裝途徑：ClawHub + npm
+- 安裝途徑：包含於 OpenClaw
 
 ## 介面
 
