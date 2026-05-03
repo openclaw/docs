@@ -4,22 +4,22 @@ read_when:
 summary: Ajoute des outils appelables par l’agent.
 title: Plugin d’appel vocal
 x-i18n:
-    generated_at: "2026-05-02T20:59:48Z"
+    generated_at: "2026-05-03T07:14:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
-# Plugin Voice Call
+# Plugin d’appel vocal
 
-Ajoute des outils pouvant être appelés par l’agent.
+Ajoute des outils appelables par l’agent.
 
 ## Distribution
 
 - Package : `@openclaw/voice-call`
-- Voie d’installation : ClawHub + npm
+- Voie d’installation : npm ; ClawHub
 
 ## Surface
 

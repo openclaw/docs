@@ -4,10 +4,10 @@ read_when:
 summary: Harnais app-server de Codex et catalogue de modèles GPT géré par Codex.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-02T20:52:42Z"
+    generated_at: "2026-05-03T07:12:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
@@ -18,12 +18,12 @@ Harnais de serveur d’application Codex et catalogue de modèles GPT géré par
 
 ## Distribution
 
-- Paquet : `@openclaw/codex`
-- Mode d’installation : ClawHub + npm
+- Package : `@openclaw/codex`
+- Route d’installation : npm ; ClawHub
 
 ## Surface
 
-fournisseurs : codex ; contrats : mediaUnderstandingProviders, migrationProviders
+providers : codex ; contrats : mediaUnderstandingProviders, migrationProviders
 
 ## Documentation associée
 
