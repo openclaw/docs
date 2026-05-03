@@ -1,29 +1,29 @@
 ---
 read_when:
-    - feishu Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - feishu Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw mesajlarını göndermek ve almak için Feishu kanal yüzeyini ekler.
 title: Feishu Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:52:41Z"
+    generated_at: "2026-05-03T08:59:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0c188fdc65a3e2e7a354063e090001099a76ad3f6df423f18611c6e3799b6983
+    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Feishu Plugin
 
-OpenClaw mesajları göndermek ve almak için Feishu kanal yüzeyini ekler.
+OpenClaw mesajlarını göndermek ve almak için Feishu kanal yüzeyini ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/feishu`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 
-kanallar: feishu; sözleşmeler: araçlar; Skills
+kanallar: feishu; sözleşmeler: tools; Skills
 
 ## İlgili belgeler
 

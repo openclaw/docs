@@ -1,25 +1,25 @@
 ---
 read_when:
-    - twitch Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajları göndermek ve almak için Twitch kanal yüzeyini ekler.
+    - twitch Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajlarını gönderip almak için Twitch kanal yüzeyini ekler.
 title: Twitch Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:57:53Z"
+    generated_at: "2026-05-03T09:01:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4b94959552ac4f423d2248405bbb9b826ae391cd646b07710a04a95acc478132
+    source_hash: c567b1d30b82f119f577dc74a416702c8e2c78930fb7036208368835af12805f
     source_path: plugins/reference/twitch.md
     workflow: 16
 ---
 
 # Twitch Plugin
 
-OpenClaw mesajları göndermek ve almak için Twitch kanal yüzeyini ekler.
+OpenClaw mesajları gönderip almak için Twitch kanal yüzeyini ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/twitch`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 

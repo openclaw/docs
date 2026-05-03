@@ -1,13 +1,13 @@
 ---
 read_when:
-    - mattermost Plugin’ini kuruyor, yapılandırıyor veya denetliyorsunuz
+    - mattermost Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
 summary: OpenClaw mesajlarını göndermek ve almak için Mattermost kanal yüzeyini ekler.
 title: Mattermost Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:54:28Z"
+    generated_at: "2026-05-03T09:00:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ea1281e7bb22bd5bca0ef1610fac282664fb12408d15d891a04b356a438c6f16
+    source_hash: 53b202de33507d8d747cad4e424f6ee7f90dac4dfbded566eb45772f118956db
     source_path: plugins/reference/mattermost.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ OpenClaw mesajlarını göndermek ve almak için Mattermost kanal yüzeyini ekle
 ## Dağıtım
 
 - Paket: `@openclaw/mattermost`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: OpenClaw'a dahildir
 
 ## Yüzey
 

@@ -1,30 +1,30 @@
 ---
 read_when:
     - qqbot Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw mesajlarını göndermek ve almak için QQ Bot kanal yüzeyini ekler.
+summary: OpenClaw mesajları göndermek ve almak için QQ Bot kanal yüzeyini ekler.
 title: QQ Bot Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:56:27Z"
+    generated_at: "2026-05-03T09:01:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bdf8ca36d93a5ad8e1a73ad56f8a4e65a8d3d90591ca307b6cd849ad65fded5
+    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
 
-# QQ Bot Plugin’i
+# QQ Bot Plugin
 
 OpenClaw mesajlarını göndermek ve almak için QQ Bot kanal yüzeyini ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/qqbot`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 
-kanallar: qqbot; sözleşmeler: araçlar; Skills
+kanallar: qqbot; sözleşmeler: araçlar; skills
 
-## İlgili belgeler
+## İlgili dokümanlar
 
 - [qqbot](/tr/channels/qqbot)

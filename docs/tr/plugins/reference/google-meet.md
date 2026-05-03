@@ -1,29 +1,29 @@
 ---
 read_when:
-    - google-meet Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Chrome veya Twilio aktarımları aracılığıyla Google Meet aramalarına katılın.
+    - google-meet Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
+summary: Chrome veya Twilio taşıma katmanları üzerinden Google Meet çağrılarına katılın.
 title: Google Meet Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:53:07Z"
+    generated_at: "2026-05-03T09:00:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 07a5137b5c6e2c55136c63d6558641165176f325a9e22a476ed0315de2d763a3
+    source_hash: 1418e8400d3efc0e9448e337269636d3801cee38ad05be1fa6657564974bfccb
     source_path: plugins/reference/google-meet.md
     workflow: 16
 ---
 
 # Google Meet Plugin
 
-Chrome veya Twilio aktarımları üzerinden Google Meet görüşmelerine katılın.
+Google Meet aramalarına Chrome veya Twilio aktarımları üzerinden katılın.
 
 ## Dağıtım
 
 - Paket: `@openclaw/google-meet`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 
-sözleşmeler: araçlar
+contracts: tools
 
 ## İlgili belgeler
 

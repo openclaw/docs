@@ -1,13 +1,13 @@
 ---
 read_when:
-    - nostr Plugin'ini yüklüyor, yapılandırıyor veya denetliyorsunuz
-summary: OpenClaw iletilerini göndermek ve almak için Nostr kanal yüzeyini ekler.
-title: Nostr Plugin
+    - nostr Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
+summary: OpenClaw mesajları göndermek ve almak için Nostr kanal yüzeyini ekler.
+title: Nostr Plugin'i
 x-i18n:
-    generated_at: "2026-05-02T20:55:26Z"
+    generated_at: "2026-05-03T09:00:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -19,12 +19,12 @@ OpenClaw mesajlarını göndermek ve almak için Nostr kanal yüzeyini ekler.
 ## Dağıtım
 
 - Paket: `@openclaw/nostr`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 
 kanallar: nostr
 
-## İlgili dokümanlar
+## İlgili belgeler
 
 - [nostr](/tr/channels/nostr)

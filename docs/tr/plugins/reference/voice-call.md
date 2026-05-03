@@ -1,25 +1,25 @@
 ---
 read_when:
     - Sesli arama Plugin'ini kuruyor, yapılandırıyor veya denetliyorsunuz
-summary: Ajanın çağırabileceği araçlar ekler.
-title: Sesli Arama Plugin'i
+summary: Ajan tarafından çağrılabilen araçlar ekler.
+title: Sesli Arama Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:08Z"
+    generated_at: "2026-05-03T09:01:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
 # Voice Call Plugin
 
-Ajan tarafından çağrılabilen araçlar ekler.
+Aracının çağırabileceği araçlar ekler.
 
 ## Dağıtım
 
 - Paket: `@openclaw/voice-call`
-- Kurulum yolu: ClawHub + npm
+- Kurulum yolu: npm; ClawHub
 
 ## Yüzey
 
