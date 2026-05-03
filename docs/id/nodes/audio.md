@@ -1,43 +1,42 @@
 ---
 read_when:
     - Mengubah transkripsi audio atau penanganan media
-summary: Cara audio/catatan suara yang masuk diunduh, ditranskripsi, dan disisipkan ke dalam balasan
+summary: Bagaimana audio/catatan suara masuk diunduh, ditranskripsi, dan dimasukkan ke dalam balasan
 title: Audio dan catatan suara
 x-i18n:
-    generated_at: "2026-05-02T23:39:00Z"
+    generated_at: "2026-05-03T09:17:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 91cd6951f80c6137061a7d4e82415b0872bc92c6d6ad136273a2e9ad7ec00ac1
+    source_hash: 35074d79104f767ee252064462202a8ec21ac26f6db25c39e67f31f6b40edeb7
     source_path: nodes/audio.md
     workflow: 16
 ---
 
-# Audio / Catatan Suara (2026-01-17)
+# Catatan Audio / Suara (2026-01-17)
 
 ## Yang berfungsi
 
 - **Pemahaman media (audio)**: Jika pemahaman audio diaktifkan (atau terdeteksi otomatis), OpenClaw:
-  1. Menemukan lampiran audio pertama (path lokal atau URL) dan mengunduhnya jika perlu.
+  1. Menemukan lampiran audio pertama (path lokal atau URL) dan mengunduhnya jika diperlukan.
   2. Menerapkan `maxBytes` sebelum mengirim ke setiap entri model.
   3. Menjalankan entri model pertama yang memenuhi syarat secara berurutan (provider atau CLI).
   4. Jika gagal atau dilewati (ukuran/timeout), OpenClaw mencoba entri berikutnya.
   5. Jika berhasil, OpenClaw mengganti `Body` dengan blok `[Audio]` dan menetapkan `{{Transcript}}`.
-- **Penguraian perintah**: Saat transkripsi berhasil, `CommandBody`/`RawBody` ditetapkan ke transkrip sehingga perintah slash tetap berfungsi.
-- **Logging verbose**: Dalam `--verbose`, kami mencatat saat transkripsi berjalan dan saat transkripsi mengganti body.
-- **Dikte Control UI**: Penyusun Chat dapat mengirim klip mikrofon yang direkam browser ke `chat.transcribeAudio`. RPC Gateway tersebut menulis klip ke file lokal sementara, menjalankan pipeline transkripsi audio yang sama, mengembalikan teks draf ke browser, dan menghapus file sementara. Ini tidak membuat run agen dengan sendirinya.
+- **Penguraian perintah**: Saat transkripsi berhasil, `CommandBody`/`RawBody` diatur ke transkrip sehingga perintah slash tetap berfungsi.
+- **Logging verbose**: Dalam `--verbose`, kami mencatat saat transkripsi berjalan dan saat transkripsi mengganti isi body.
 
 ## Deteksi otomatis (default)
 
 Jika Anda **tidak mengonfigurasi model** dan `tools.media.audio.enabled` **tidak** diatur ke `false`,
 OpenClaw mendeteksi otomatis dalam urutan ini dan berhenti pada opsi pertama yang berfungsi:
 
-1. **Model balasan aktif** saat provider-nya mendukung pemahaman audio.
+1. **Model balasan aktif** saat providernya mendukung pemahaman audio.
 2. **CLI lokal** (jika terinstal)
    - `sherpa-onnx-offline` (memerlukan `SHERPA_ONNX_MODEL_DIR` dengan encoder/decoder/joiner/tokens)
    - `whisper-cli` (dari `whisper-cpp`; menggunakan `WHISPER_CPP_MODEL` atau model tiny bawaan)
    - `whisper` (CLI Python; mengunduh model secara otomatis)
-3. **CLI Gemini** (`gemini`) menggunakan `read_many_files`
-4. **Autentikasi provider**
+3. **Gemini CLI** (`gemini`) menggunakan `read_many_files`
+4. **Auth provider**
    - Entri `models.providers.*` yang dikonfigurasi dan mendukung audio dicoba terlebih dahulu
    - Urutan fallback bawaan: OpenAI → Groq → xAI → Deepgram → Google → SenseAudio → ElevenLabs → Mistral
 
@@ -71,7 +70,7 @@ Catatan: Deteksi biner bersifat upaya terbaik di macOS/Linux/Windows; pastikan C
 }
 ```
 
-### Hanya provider dengan pembatasan cakupan
+### Hanya provider dengan pembatasan scope
 
 ```json5
 {
@@ -135,7 +134,7 @@ Catatan: Deteksi biner bersifat upaya terbaik di macOS/Linux/Windows; pastikan C
 }
 ```
 
-### Gema transkrip ke chat (opt-in)
+### Pantulkan transkrip ke chat (opsional)
 
 ```json5
 {
@@ -154,7 +153,7 @@ Catatan: Deteksi biner bersifat upaya terbaik di macOS/Linux/Windows; pastikan C
 
 ## Catatan & batasan
 
-- Autentikasi provider mengikuti urutan autentikasi model standar (profil autentikasi, env vars, `models.providers.*.apiKey`).
+- Auth provider mengikuti urutan auth model standar (profil auth, env vars, `models.providers.*.apiKey`).
 - Detail penyiapan Groq: [Groq](/id/providers/groq).
 - Deepgram mengambil `DEEPGRAM_API_KEY` saat `provider: "deepgram"` digunakan.
 - Detail penyiapan Deepgram: [Deepgram (transkripsi audio)](/id/providers/deepgram).
@@ -169,13 +168,13 @@ Catatan: Deteksi biner bersifat upaya terbaik di macOS/Linux/Windows; pastikan C
 - Gunakan `tools.media.audio.attachments` untuk memproses beberapa catatan suara (`mode: "all"` + `maxAttachments`).
 - Transkrip tersedia untuk templat sebagai `{{Transcript}}`.
 - `tools.media.audio.echoTranscript` nonaktif secara default; aktifkan untuk mengirim konfirmasi transkrip kembali ke chat asal sebelum pemrosesan agen.
-- `tools.media.audio.echoFormat` menyesuaikan teks gema (placeholder: `{transcript}`).
+- `tools.media.audio.echoFormat` menyesuaikan teks pantulan (placeholder: `{transcript}`).
 - stdout CLI dibatasi (5MB); jaga agar output CLI tetap ringkas.
 - `args` CLI sebaiknya menggunakan `{{MediaPath}}` untuk path file audio lokal. Jalankan `openclaw doctor --fix` untuk memigrasikan placeholder `{input}` yang sudah usang dari konfigurasi `audio.transcription.command` lama.
 
 ### Dukungan lingkungan proxy
 
-Transkripsi audio berbasis provider mematuhi env vars proxy outbound standar:
+Transkripsi audio berbasis provider menghormati env vars proxy outbound standar:
 
 - `HTTPS_PROXY`
 - `HTTP_PROXY`
@@ -184,23 +183,23 @@ Transkripsi audio berbasis provider mematuhi env vars proxy outbound standar:
 - `http_proxy`
 - `all_proxy`
 
-Jika tidak ada env vars proxy yang diatur, egress langsung digunakan. Jika konfigurasi proxy salah format, OpenClaw mencatat peringatan dan fallback ke fetch langsung.
+Jika tidak ada env vars proxy yang diatur, egress langsung digunakan. Jika konfigurasi proxy salah format, OpenClaw mencatat peringatan dan kembali ke pengambilan langsung.
 
 ## Deteksi mention dalam grup
 
-Saat `requireMention: true` diatur untuk chat grup, OpenClaw sekarang mentranskripsi audio **sebelum** memeriksa mention. Ini memungkinkan catatan suara diproses bahkan ketika berisi mention.
+Saat `requireMention: true` diatur untuk chat grup, OpenClaw kini mentranskripsikan audio **sebelum** memeriksa mention. Ini memungkinkan catatan suara diproses meskipun berisi mention.
 
 **Cara kerjanya:**
 
 1. Jika pesan suara tidak memiliki body teks dan grup memerlukan mention, OpenClaw melakukan transkripsi "preflight".
 2. Transkrip diperiksa untuk pola mention (misalnya, `@BotName`, pemicu emoji).
 3. Jika mention ditemukan, pesan dilanjutkan melalui pipeline balasan penuh.
-4. Transkrip digunakan untuk deteksi mention sehingga catatan suara dapat melewati gerbang mention.
+4. Transkrip digunakan untuk deteksi mention agar catatan suara dapat melewati gerbang mention.
 
 **Perilaku fallback:**
 
-- Jika transkripsi gagal selama preflight (timeout, kesalahan API, dll.), pesan diproses berdasarkan deteksi mention teks saja.
-- Ini memastikan bahwa pesan campuran (teks + audio) tidak pernah keliru dibuang.
+- Jika transkripsi gagal selama preflight (timeout, error API, dll.), pesan diproses berdasarkan deteksi mention hanya teks.
+- Ini memastikan bahwa pesan campuran (teks + audio) tidak pernah salah dijatuhkan.
 
 **Opt-out per grup/topik Telegram:**
 
@@ -208,18 +207,18 @@ Saat `requireMention: true` diatur untuk chat grup, OpenClaw sekarang mentranskr
 - Atur `channels.telegram.groups.<chatId>.topics.<threadId>.disableAudioPreflight` untuk menimpa per topik (`true` untuk melewati, `false` untuk memaksa aktif).
 - Default adalah `false` (preflight diaktifkan saat kondisi yang dibatasi mention cocok).
 
-**Contoh:** Pengguna mengirim catatan suara yang mengatakan "Hey @Claude, what's the weather?" di grup Telegram dengan `requireMention: true`. Catatan suara ditranskripsi, mention terdeteksi, dan agen membalas.
+**Contoh:** Pengguna mengirim catatan suara yang mengatakan "Hey @Claude, what's the weather?" di grup Telegram dengan `requireMention: true`. Catatan suara ditranskripsikan, mention terdeteksi, dan agen membalas.
 
 ## Hal yang perlu diperhatikan
 
-- Aturan cakupan menggunakan kecocokan pertama yang menang. `chatType` dinormalisasi menjadi `direct`, `group`, atau `room`.
-- Pastikan CLI Anda keluar dengan 0 dan mencetak teks biasa; JSON perlu diproses melalui `jq -r .text`.
-- Untuk `parakeet-mlx`, jika Anda meneruskan `--output-dir`, OpenClaw membaca `<output-dir>/<media-basename>.txt` saat `--output-format` adalah `txt` (atau dihilangkan); format output non-`txt` fallback ke penguraian stdout.
-- Jaga timeout tetap wajar (`timeoutSeconds`, default 60d) untuk menghindari pemblokiran antrean balasan.
+- Aturan scope menggunakan kecocokan pertama yang menang. `chatType` dinormalisasi menjadi `direct`, `group`, atau `room`.
+- Pastikan CLI Anda keluar dengan 0 dan mencetak teks biasa; JSON perlu disesuaikan melalui `jq -r .text`.
+- Untuk `parakeet-mlx`, jika Anda meneruskan `--output-dir`, OpenClaw membaca `<output-dir>/<media-basename>.txt` saat `--output-format` adalah `txt` (atau dihilangkan); format output non-`txt` kembali ke penguraian stdout.
+- Jaga timeout tetap wajar (`timeoutSeconds`, default 60 dtk) agar tidak memblokir antrean balasan.
 - Transkripsi preflight hanya memproses lampiran audio **pertama** untuk deteksi mention. Audio tambahan diproses selama fase utama pemahaman media.
 
 ## Terkait
 
 - [Pemahaman media](/id/nodes/media-understanding)
 - [Mode bicara](/id/nodes/talk)
-- [Bangun suara](/id/nodes/voicewake)
+- [Pemicu suara](/id/nodes/voicewake)

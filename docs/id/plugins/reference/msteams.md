@@ -1,30 +1,30 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin msteams
-summary: Menambahkan antarmuka saluran Microsoft Teams untuk mengirim dan menerima pesan OpenClaw.
+summary: Menambahkan permukaan saluran Microsoft Teams untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-02T20:54:56Z"
+    generated_at: "2026-05-03T09:20:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f7123c7309d22994897477cc7ff3ab083abb4dc37f452c139968b8af3731c0cd
+    source_hash: b1e72dae5dc51a30521bde8520afec7cd743d236df63f440098b72a922bdad9c
     source_path: plugins/reference/msteams.md
     workflow: 16
 ---
 
 # Plugin Microsoft Teams
 
-Menambahkan permukaan kanal Microsoft Teams untuk mengirim dan menerima pesan OpenClaw.
+Menambahkan permukaan saluran Microsoft Teams untuk mengirim dan menerima pesan OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/msteams`
-- Rute pemasangan: ClawHub + npm
+- Rute pemasangan: npm; ClawHub
 
 ## Permukaan
 
 channels: msteams
 
-## Dokumentasi terkait
+## Dokumen terkait
 
 - [msteams](/id/channels/msteams)

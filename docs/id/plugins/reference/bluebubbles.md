@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin bluebubbles
-summary: Menambahkan antarmuka kanal BlueBubbles untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin bluebubbles
+summary: Menambahkan permukaan saluran BlueBubbles untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin BlueBubbles
 x-i18n:
-    generated_at: "2026-05-02T20:50:05Z"
+    generated_at: "2026-05-03T09:19:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
 
 # Plugin BlueBubbles
 
-Menambahkan permukaan kanal BlueBubbles untuk mengirim dan menerima pesan OpenClaw.
+Menambahkan permukaan saluran BlueBubbles untuk mengirim dan menerima pesan OpenClaw.
 
 ## Distribusi
 
 - Paket: `@openclaw/bluebubbles`
-- Rute pemasangan: ClawHub + npm
+- Rute pemasangan: npm; ClawHub
 
 ## Permukaan
 
-kanal: bluebubbles
+channels: bluebubbles
 
 ## Dokumentasi terkait
 

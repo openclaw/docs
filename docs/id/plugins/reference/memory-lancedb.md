@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin memory-lancedb
-summary: Menambahkan alat yang dapat dipanggil oleh agen.
+    - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin memory-lancedb
+summary: Menambahkan alat yang dapat dipanggil agen.
 title: Plugin memori Lancedb
 x-i18n:
-    generated_at: "2026-05-02T20:54:18Z"
+    generated_at: "2026-05-03T09:20:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15dc1a2a13349dc51ae4347e9d8b95c48caaaa3b2d7073931b58131992f70c46
+    source_hash: 68b679caf3a16929c59d9029b29f12520cf2a247ee51de0d67382d0caef4e694
     source_path: plugins/reference/memory-lancedb.md
     workflow: 16
 ---
 
-# Plugin Memori Lancedb
+# Plugin Memory Lancedb
 
 Menambahkan alat yang dapat dipanggil agen.
 
 ## Distribusi
 
 - Paket: `@openclaw/memory-lancedb`
-- Rute instalasi: ClawHub + npm
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 

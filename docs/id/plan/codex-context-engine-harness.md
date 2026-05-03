@@ -1,17 +1,17 @@
 ---
 read_when:
-    - Anda sedang menghubungkan perilaku siklus hidup mesin konteks ke harness Codex
-    - Anda memerlukan lossless-claw atau Plugin mesin konteks lain agar berfungsi dengan sesi harness tertanam `codex/*`
-    - Anda sedang membandingkan perilaku konteks Pi tertanam dan app-server Codex
-summary: Spesifikasi untuk membuat harness app-server Codex bawaan mematuhi Plugin mesin konteks OpenClaw
+    - Anda sedang menghubungkan perilaku siklus hidup mesin konteks ke dalam kerangka Codex
+    - Anda memerlukan lossless-claw atau Plugin mesin konteks lain untuk bekerja dengan sesi kerangka kerja tersemat codex/*
+    - Anda sedang membandingkan perilaku konteks PI tersemat dan server aplikasi Codex
+summary: Spesifikasi untuk membuat harness server aplikasi Codex yang dibundel mengindahkan Plugin context-engine OpenClaw
 title: Port Mesin Konteks Harness Codex
 x-i18n:
-    generated_at: "2026-04-25T13:49:52Z"
-    model: gpt-5.4
+    generated_at: "2026-05-03T09:17:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 61c29a6cd8955a41510b8da1575b89ed003565d564b25b37b3b0c7f65df6b663
+    source_hash: 6575c25973d43c04cada6157e39c52ea5ad1cc60171cf801fe36cbb9c54c9237
     source_path: plan/codex-context-engine-harness.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Status
@@ -20,29 +20,24 @@ Spesifikasi implementasi draf.
 
 ## Tujuan
 
-Membuat harness app-server Codex bawaan mematuhi kontrak siklus hidup mesin konteks OpenClaw yang sama seperti yang sudah dipatuhi oleh giliran Pi tertanam.
+Membuat harness app-server Codex bawaan mematuhi kontrak siklus hidup context-engine OpenClaw yang sama seperti yang sudah dipatuhi oleh giliran PI tertanam.
 
-Sesi yang menggunakan `agents.defaults.embeddedHarness.runtime: "codex"` atau model
-`codex/*` tetap harus memungkinkan Plugin mesin konteks yang dipilih, seperti
-`lossless-claw`, mengendalikan perakitan konteks, ingest pasca-giliran, pemeliharaan, dan kebijakan Compaction tingkat OpenClaw sejauh batas app-server Codex memungkinkan.
+Sesi yang menggunakan `agents.defaults.embeddedHarness.runtime: "codex"` atau model `codex/*` harus tetap memungkinkan plugin context-engine yang dipilih, seperti `lossless-claw`, mengontrol penyusunan konteks, ingest pascagiliran, pemeliharaan, dan kebijakan Compaction tingkat OpenClaw sejauh yang diizinkan oleh batas app-server Codex.
 
-## Non-tujuan
+## Bukan tujuan
 
 - Jangan mengimplementasikan ulang internal app-server Codex.
 - Jangan membuat Compaction thread native Codex menghasilkan ringkasan lossless-claw.
-- Jangan mewajibkan model non-Codex untuk menggunakan harness Codex.
-- Jangan mengubah perilaku sesi ACP/acpx. Spesifikasi ini hanya untuk
-  jalur harness agen tertanam non-ACP.
-- Jangan membuat Plugin pihak ketiga mendaftarkan factory ekstensi app-server Codex;
-  batas kepercayaan Plugin bawaan yang ada tetap tidak berubah.
+- Jangan mewajibkan model non-Codex menggunakan harness Codex.
+- Jangan mengubah perilaku sesi ACP/acpx. Spesifikasi ini hanya untuk jalur harness agen tertanam non-ACP.
+- Jangan membuat plugin pihak ketiga mendaftarkan factory ekstensi app-server Codex; batas kepercayaan plugin bawaan yang ada tetap tidak berubah.
 
 ## Arsitektur saat ini
 
-Loop eksekusi tertanam me-resolve mesin konteks yang dikonfigurasi sekali per eksekusi sebelum
-memilih harness tingkat rendah konkret:
+Loop eksekusi tertanam menyelesaikan context engine yang dikonfigurasi satu kali per eksekusi sebelum memilih harness tingkat rendah konkret:
 
 - `src/agents/pi-embedded-runner/run.ts`
-  - menginisialisasi Plugin mesin konteks
+  - menginisialisasi plugin context-engine
   - memanggil `resolveContextEngine(params.config)`
   - meneruskan `contextEngine` dan `contextTokenBudget` ke
     `runEmbeddedAttemptWithBackend(...)`
@@ -52,43 +47,36 @@ memilih harness tingkat rendah konkret:
 - `src/agents/pi-embedded-runner/run/backend.ts`
 - `src/agents/harness/selection.ts`
 
-Harness app-server Codex didaftarkan oleh Plugin Codex bawaan:
+Harness app-server Codex didaftarkan oleh plugin Codex bawaan:
 
 - `extensions/codex/index.ts`
 - `extensions/codex/harness.ts`
 
-Implementasi harness Codex menerima `EmbeddedRunAttemptParams` yang sama dengan percobaan
-berbasis Pi:
+Implementasi harness Codex menerima `EmbeddedRunAttemptParams` yang sama seperti upaya berbasis PI:
 
 - `extensions/codex/src/app-server/run-attempt.ts`
 
-Artinya titik hook yang diperlukan berada di kode yang dikendalikan OpenClaw. Batas
-eksternalnya adalah protokol app-server Codex itu sendiri: OpenClaw dapat mengendalikan apa yang dikirim ke `thread/start`, `thread/resume`, dan `turn/start`, serta dapat mengamati
-notifikasi, tetapi tidak dapat mengubah penyimpanan thread internal atau compactor native Codex.
+Itu berarti titik hook yang diperlukan berada di kode yang dikendalikan OpenClaw. Batas eksternalnya adalah protokol app-server Codex itu sendiri: OpenClaw dapat mengontrol apa yang dikirim ke `thread/start`, `thread/resume`, dan `turn/start`, serta dapat mengamati notifikasi, tetapi tidak dapat mengubah penyimpanan thread internal Codex atau compactor native.
 
 ## Kesenjangan saat ini
 
-Percobaan Pi tertanam memanggil siklus hidup mesin konteks secara langsung:
+Upaya PI tertanam memanggil siklus hidup context-engine secara langsung:
 
-- bootstrap/pemeliharaan sebelum percobaan
-- assemble sebelum pemanggilan model
-- afterTurn atau ingest setelah percobaan
-- pemeliharaan setelah giliran sukses
-- Compaction mesin konteks untuk mesin yang memiliki Compaction
+- bootstrap/pemeliharaan sebelum upaya
+- assemble sebelum panggilan model
+- afterTurn atau ingest setelah upaya
+- pemeliharaan setelah giliran berhasil
+- Compaction context-engine untuk engine yang memiliki Compaction
 
-Kode Pi yang relevan:
+Kode PI terkait:
 
 - `src/agents/pi-embedded-runner/run/attempt.ts`
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Percobaan app-server Codex saat ini menjalankan hook harness agen generik dan mencerminkan
-transkrip, tetapi tidak memanggil `params.contextEngine.bootstrap`,
-`params.contextEngine.assemble`, `params.contextEngine.afterTurn`,
-`params.contextEngine.ingestBatch`, `params.contextEngine.ingest`, atau
-`params.contextEngine.maintain`.
+Upaya app-server Codex saat ini menjalankan hook harness agen generik dan mencerminkan transkrip, tetapi tidak memanggil `params.contextEngine.bootstrap`, `params.contextEngine.assemble`, `params.contextEngine.afterTurn`, `params.contextEngine.ingestBatch`, `params.contextEngine.ingest`, atau `params.contextEngine.maintain`.
 
-Kode Codex yang relevan:
+Kode Codex terkait:
 
 - `extensions/codex/src/app-server/run-attempt.ts`
 - `extensions/codex/src/app-server/thread-lifecycle.ts`
@@ -100,73 +88,65 @@ Kode Codex yang relevan:
 Untuk giliran harness Codex, OpenClaw harus mempertahankan siklus hidup ini:
 
 1. Baca transkrip sesi OpenClaw yang dicerminkan.
-2. Bootstrap mesin konteks aktif saat file sesi sebelumnya ada.
-3. Jalankan pemeliharaan bootstrap saat tersedia.
-4. Rakit konteks menggunakan mesin konteks aktif.
-5. Ubah konteks yang dirakit menjadi input yang kompatibel dengan Codex.
-6. Mulai atau lanjutkan thread Codex dengan instruksi developer yang menyertakan
-   `systemPromptAddition` mesin konteks, jika ada.
-7. Mulai giliran Codex dengan prompt yang terlihat pengguna yang telah dirakit.
+2. Bootstrap context engine aktif ketika file sesi sebelumnya ada.
+3. Jalankan pemeliharaan bootstrap ketika tersedia.
+4. Assemble konteks menggunakan context engine aktif.
+5. Ubah konteks yang di-assemble menjadi input yang kompatibel dengan Codex.
+6. Mulai atau lanjutkan thread Codex dengan instruksi developer yang menyertakan `systemPromptAddition` context-engine apa pun.
+7. Mulai giliran Codex dengan prompt yang menghadap pengguna hasil assemble.
 8. Cerminkan hasil Codex kembali ke transkrip OpenClaw.
-9. Panggil `afterTurn` jika diimplementasikan, jika tidak `ingestBatch`/`ingest`, menggunakan snapshot transkrip yang dicerminkan.
-10. Jalankan pemeliharaan giliran setelah giliran yang berhasil dan tidak dibatalkan.
+9. Panggil `afterTurn` jika diimplementasikan, jika tidak gunakan `ingestBatch`/`ingest`, dengan snapshot transkrip yang dicerminkan.
+10. Jalankan pemeliharaan giliran setelah giliran non-dibatalkan yang berhasil.
 11. Pertahankan sinyal Compaction native Codex dan hook Compaction OpenClaw.
 
 ## Batasan desain
 
-### App-server Codex tetap kanonis untuk state thread native
+### App-server Codex tetap kanonis untuk status thread native
 
-Codex memiliki thread native-nya dan riwayat internal yang diperluas, jika ada. OpenClaw tidak boleh
-mencoba mengubah riwayat internal app-server kecuali melalui pemanggilan protokol yang didukung.
+Codex memiliki thread native-nya dan riwayat diperluas internal apa pun. OpenClaw tidak boleh mencoba memutasi riwayat internal app-server kecuali melalui panggilan protokol yang didukung.
 
 Cermin transkrip OpenClaw tetap menjadi sumber untuk fitur OpenClaw:
 
 - riwayat chat
 - pencarian
 - pembukuan `/new` dan `/reset`
-- pergantian model atau harness di masa depan
-- state Plugin mesin konteks
+- perpindahan model atau harness di masa depan
+- status plugin context-engine
 
-### Perakitan mesin konteks harus diproyeksikan ke input Codex
+### Assembly context engine harus diproyeksikan ke input Codex
 
-Interface mesin konteks mengembalikan `AgentMessage[]` OpenClaw, bukan patch thread Codex.
-`turn/start` app-server Codex menerima input pengguna saat ini, sedangkan
-`thread/start` dan `thread/resume` menerima instruksi developer.
+Antarmuka context-engine mengembalikan `AgentMessage[]` OpenClaw, bukan patch thread Codex. `turn/start` app-server Codex menerima input pengguna saat ini, sementara `thread/start` dan `thread/resume` menerima instruksi developer.
 
-Karena itu implementasinya memerlukan lapisan proyeksi. Versi aman pertama
-sebaiknya menghindari berpura-pura dapat menggantikan riwayat internal Codex. Versi ini harus menyuntikkan
-konteks yang dirakit sebagai materi prompt/instruksi developer yang deterministik di sekitar giliran saat ini.
+Karena itu, implementasi memerlukan lapisan proyeksi. Versi awal yang aman harus menghindari berpura-pura dapat mengganti riwayat internal Codex. Versi itu harus menyuntikkan konteks hasil assemble sebagai materi prompt/instruksi developer deterministik di sekitar giliran saat ini.
 
 ### Stabilitas prompt-cache penting
 
-Untuk mesin seperti lossless-claw, konteks yang dirakit harus deterministik
-untuk input yang tidak berubah. Jangan tambahkan cap waktu, id acak, atau pengurutan nondeterministik ke teks konteks yang dihasilkan.
+Untuk engine seperti lossless-claw, konteks hasil assemble harus deterministik untuk input yang tidak berubah. Jangan tambahkan timestamp, id acak, atau pengurutan nondeterministik ke teks konteks yang dihasilkan.
 
-### Semantik fallback Pi tidak berubah
+### Semantik pemilihan runtime tidak berubah
 
-Pemilihan harness tetap seperti saat ini:
+Pemilihan harness tetap seperti sekarang:
 
-- `runtime: "pi"` memaksa Pi
+- `runtime: "pi"` memaksa PI
 - `runtime: "codex"` memilih harness Codex yang terdaftar
-- `runtime: "auto"` membiarkan harness Plugin mengklaim provider yang didukung
-- `fallback: "none"` menonaktifkan fallback Pi saat tidak ada harness Plugin yang cocok
+- `runtime: "auto"` membiarkan harness plugin mengklaim provider yang didukung
+- eksekusi `auto` yang tidak cocok menggunakan PI
 
 Pekerjaan ini mengubah apa yang terjadi setelah harness Codex dipilih.
 
 ## Rencana implementasi
 
-### 1. Ekspor atau relokasi helper percobaan mesin konteks yang dapat digunakan ulang
+### 1. Ekspor atau pindahkan helper upaya context-engine yang dapat digunakan ulang
 
-Saat ini helper siklus hidup yang dapat digunakan ulang berada di bawah runner Pi:
+Saat ini helper siklus hidup yang dapat digunakan ulang berada di bawah runner PI:
 
 - `src/agents/pi-embedded-runner/run/attempt.context-engine-helpers.ts`
 - `src/agents/pi-embedded-runner/run/attempt.prompt-helpers.ts`
 - `src/agents/pi-embedded-runner/context-engine-maintenance.ts`
 
-Codex sebaiknya tidak mengimpor dari path implementasi yang namanya mengisyaratkan Pi jika
-itu bisa dihindari.
+Codex sebaiknya tidak mengimpor dari jalur implementasi yang namanya mengimplikasikan PI jika dapat dihindari.
 
-Buat modul yang netral terhadap harness, misalnya:
+Buat modul netral-harness, misalnya:
 
 - `src/agents/harness/context-engine-lifecycle.ts`
 
@@ -179,9 +159,9 @@ Pindahkan atau ekspor ulang:
 - `buildAfterTurnRuntimeContextFromUsage`
 - wrapper kecil di sekitar `runContextEngineMaintenance`
 
-Pertahankan impor Pi tetap berfungsi baik dengan mengekspor ulang dari file lama atau memperbarui call site Pi dalam PR yang sama.
+Pertahankan impor PI tetap berfungsi baik dengan mengekspor ulang dari file lama atau memperbarui call site PI dalam PR yang sama.
 
-Nama helper netral sebaiknya tidak menyebut Pi.
+Nama helper netral tidak boleh menyebut PI.
 
 Nama yang disarankan:
 
@@ -199,13 +179,11 @@ Tambahkan modul baru:
 
 Tanggung jawab:
 
-- Menerima `AgentMessage[]` yang telah dirakit, riwayat yang dicerminkan asli, dan
-  prompt saat ini.
-- Menentukan konteks mana yang masuk ke instruksi developer vs input pengguna
-  saat ini.
-- Mempertahankan prompt pengguna saat ini sebagai permintaan final yang dapat ditindaklanjuti.
+- Menerima `AgentMessage[]` hasil assemble, riwayat cermin asli, dan prompt saat ini.
+- Menentukan konteks mana yang masuk ke instruksi developer vs input pengguna saat ini.
+- Mempertahankan prompt pengguna saat ini sebagai permintaan akhir yang dapat ditindaklanjuti.
 - Merender pesan sebelumnya dalam format yang stabil dan eksplisit.
-- Menghindari metadata yang mudah berubah.
+- Menghindari metadata volatil.
 
 API yang diusulkan:
 
@@ -225,13 +203,13 @@ export function projectContextEngineAssemblyForCodex(params: {
 }): CodexContextProjection;
 ```
 
-Proyeksi pertama yang direkomendasikan:
+Proyeksi awal yang direkomendasikan:
 
 - Masukkan `systemPromptAddition` ke instruksi developer.
-- Masukkan konteks transkrip yang dirakit sebelum prompt saat ini di `promptText`.
-- Beri label dengan jelas sebagai konteks yang dirakit OpenClaw.
+- Masukkan konteks transkrip hasil assemble sebelum prompt saat ini di `promptText`.
+- Beri label dengan jelas sebagai konteks hasil assemble OpenClaw.
 - Pertahankan prompt saat ini di bagian akhir.
-- Kecualikan prompt pengguna saat ini yang duplikat jika sudah muncul di bagian akhir.
+- Kecualikan prompt pengguna saat ini yang duplikat jika sudah muncul di ekor.
 
 Contoh bentuk prompt:
 
@@ -250,24 +228,20 @@ Current user request:
 ...
 ```
 
-Ini memang kurang elegan dibanding operasi pada riwayat Codex native, tetapi dapat diimplementasikan
-di dalam OpenClaw dan mempertahankan semantik mesin konteks.
+Ini kurang elegan daripada pembedahan riwayat native Codex, tetapi dapat diimplementasikan di dalam OpenClaw dan mempertahankan semantik context-engine.
 
-Peningkatan di masa depan: jika app-server Codex mengekspos protokol untuk mengganti atau
-melengkapi riwayat thread, tukar lapisan proyeksi ini untuk menggunakan API tersebut.
+Peningkatan masa depan: jika app-server Codex mengekspos protokol untuk mengganti atau melengkapi riwayat thread, ganti lapisan proyeksi ini untuk menggunakan API tersebut.
 
 ### 3. Hubungkan bootstrap sebelum startup thread Codex
 
 Di `extensions/codex/src/app-server/run-attempt.ts`:
 
-- Baca riwayat sesi yang dicerminkan seperti sekarang.
-- Tentukan apakah file sesi sudah ada sebelum eksekusi ini. Sebaiknya gunakan helper
-  yang memeriksa `fs.stat(params.sessionFile)` sebelum penulisan cermin.
-- Buka `SessionManager` atau gunakan adapter session manager yang sempit jika helper
-  memerlukannya.
-- Panggil helper bootstrap netral saat `params.contextEngine` ada.
+- Baca riwayat sesi cermin seperti saat ini.
+- Tentukan apakah file sesi sudah ada sebelum eksekusi ini. Lebih baik gunakan helper yang memeriksa `fs.stat(params.sessionFile)` sebelum penulisan cermin.
+- Buka `SessionManager` atau gunakan adapter session manager sempit jika helper memerlukannya.
+- Panggil helper bootstrap netral ketika `params.contextEngine` ada.
 
-Pseudo-flow:
+Alur semu:
 
 ```ts
 const hadSessionFile = await fileExists(params.sessionFile);
@@ -287,21 +261,20 @@ await bootstrapHarnessContextEngine({
 });
 ```
 
-Gunakan konvensi `sessionKey` yang sama seperti bridge tool Codex dan cermin transkrip. Saat ini Codex menghitung `sandboxSessionKey` dari `params.sessionKey` atau
-`params.sessionId`; gunakan itu secara konsisten kecuali ada alasan untuk mempertahankan `params.sessionKey` mentah.
+Gunakan konvensi `sessionKey` yang sama seperti bridge tool Codex dan cermin transkrip. Saat ini Codex menghitung `sandboxSessionKey` dari `params.sessionKey` atau `params.sessionId`; gunakan itu secara konsisten kecuali ada alasan untuk mempertahankan `params.sessionKey` mentah.
 
 ### 4. Hubungkan assemble sebelum `thread/start` / `thread/resume` dan `turn/start`
 
 Di `runCodexAppServerAttempt`:
 
-1. Bangun tool dinamis terlebih dahulu, sehingga mesin konteks melihat nama tool yang benar-benar tersedia.
-2. Baca riwayat sesi yang dicerminkan.
-3. Jalankan `assemble(...)` mesin konteks saat `params.contextEngine` ada.
-4. Proyeksikan hasil yang dirakit menjadi:
-   - penambahan instruksi developer
+1. Bangun tool dinamis terlebih dahulu, sehingga context engine melihat nama tool aktual yang tersedia.
+2. Baca riwayat sesi cermin.
+3. Jalankan `assemble(...)` context-engine ketika `params.contextEngine` ada.
+4. Proyeksikan hasil assemble ke:
+   - tambahan instruksi developer
    - teks prompt untuk `turn/start`
 
-Pemanggilan hook yang ada:
+Panggilan hook yang ada:
 
 ```ts
 resolveAgentHarnessBeforePromptBuildResult({
@@ -312,56 +285,54 @@ resolveAgentHarnessBeforePromptBuildResult({
 });
 ```
 
-harus menjadi sadar konteks:
+harus menjadi sadar-konteks:
 
 1. hitung instruksi developer dasar dengan `buildDeveloperInstructions(params)`
-2. terapkan perakitan/proyeksi mesin konteks
-3. jalankan `before_prompt_build` dengan prompt/instruksi developer yang telah diproyeksikan
+2. terapkan assembly/proyeksi context-engine
+3. jalankan `before_prompt_build` dengan prompt/instruksi developer yang diproyeksikan
 
-Urutan ini memungkinkan hook prompt generik melihat prompt yang sama yang akan diterima Codex. Jika
-kita memerlukan paritas Pi yang ketat, jalankan perakitan mesin konteks sebelum komposisi hook,
-karena Pi menerapkan `systemPromptAddition` mesin konteks ke prompt sistem akhir setelah pipeline prompt-nya. Invarian pentingnya adalah bahwa mesin konteks dan hook sama-sama mendapatkan urutan yang deterministik dan terdokumentasi.
+Urutan ini memungkinkan hook prompt generik melihat prompt yang sama dengan yang akan diterima Codex. Jika kita memerlukan paritas PI yang ketat, jalankan assembly context-engine sebelum komposisi hook, karena PI menerapkan `systemPromptAddition` context-engine ke prompt sistem final setelah pipeline prompt-nya. Invarian pentingnya adalah bahwa context engine dan hook sama-sama mendapatkan urutan yang deterministik dan terdokumentasi.
 
 Urutan yang direkomendasikan untuk implementasi pertama:
 
 1. `buildDeveloperInstructions(params)`
-2. mesin konteks `assemble()`
-3. tambahkan di awal/akhir `systemPromptAddition` ke instruksi developer
-4. proyeksikan pesan yang dirakit ke teks prompt
+2. `assemble()` context-engine
+3. tambahkan di akhir/awal `systemPromptAddition` ke instruksi developer
+4. proyeksikan pesan hasil assemble ke teks prompt
 5. `resolveAgentHarnessBeforePromptBuildResult(...)`
-6. teruskan instruksi developer akhir ke `startOrResumeThread(...)`
-7. teruskan teks prompt akhir ke `buildTurnStartParams(...)`
+6. teruskan instruksi developer final ke `startOrResumeThread(...)`
+7. teruskan teks prompt final ke `buildTurnStartParams(...)`
 
-Spesifikasi ini harus dikodekan dalam pengujian agar perubahan di masa depan tidak mengubah urutannya secara tidak sengaja.
+Spesifikasi harus dikodekan dalam pengujian agar perubahan mendatang tidak menyusun ulangnya secara tidak sengaja.
 
-### 5. Pertahankan pemformatan prompt-cache yang stabil
+### 5. Pertahankan pemformatan stabil prompt-cache
 
-Helper proyeksi harus menghasilkan output yang stabil pada tingkat byte untuk input yang identik:
+Helper proyeksi harus menghasilkan output yang stabil secara byte untuk input identik:
 
-- urutan pesan yang stabil
-- label peran yang stabil
-- tanpa cap waktu yang dihasilkan
-- tanpa kebocoran urutan kunci objek
+- urutan pesan stabil
+- label peran stabil
+- tanpa timestamp yang dihasilkan
+- tanpa kebocoran urutan key objek
 - tanpa delimiter acak
-- tanpa id per-eksekusi
+- tanpa id per eksekusi
 
-Gunakan delimiter tetap dan section eksplisit.
+Gunakan delimiter tetap dan bagian eksplisit.
 
-### 6. Hubungkan pasca-giliran setelah pencerminan transkrip
+### 6. Hubungkan pascagiliran setelah pencerminan transkrip
 
-`CodexAppServerEventProjector` milik Codex membangun `messagesSnapshot` lokal untuk
-giliran saat ini. `mirrorTranscriptBestEffort(...)` menulis snapshot itu ke
+`CodexAppServerEventProjector` milik Codex membangun `messagesSnapshot` lokal untuk giliran
+saat ini. `mirrorTranscriptBestEffort(...)` menulis snapshot tersebut ke
 cermin transkrip OpenClaw.
 
-Setelah pencerminan berhasil atau gagal, panggil finalizer mesin konteks dengan
+Setelah mirroring berhasil atau gagal, panggil finalizer mesin konteks dengan
 snapshot pesan terbaik yang tersedia:
 
-- Utamakan konteks sesi yang telah dicerminkan sepenuhnya setelah penulisan, karena `afterTurn`
+- Utamakan konteks sesi penuh yang sudah dicerminkan setelah penulisan, karena `afterTurn`
   mengharapkan snapshot sesi, bukan hanya giliran saat ini.
 - Gunakan fallback ke `historyMessages + result.messagesSnapshot` jika file sesi
-  tidak dapat dibuka kembali.
+  tidak dapat dibuka ulang.
 
-Pseudo-flow:
+Alur semu:
 
 ```ts
 const prePromptMessageCount = historyMessages.length;
@@ -394,84 +365,87 @@ await finalizeHarnessContextEngineTurn({
 });
 ```
 
-Jika pencerminan gagal, tetap panggil `afterTurn` dengan snapshot fallback, tetapi catat ke log
-bahwa mesin konteks sedang melakukan ingest dari data giliran fallback.
+Jika mirroring gagal, tetap panggil `afterTurn` dengan snapshot fallback, tetapi catat
+bahwa mesin konteks sedang mencerna dari data giliran fallback.
 
-### 7. Normalkan konteks runtime penggunaan dan prompt-cache
+### 7. Normalkan penggunaan dan konteks runtime cache prompt
 
-Hasil Codex mencakup penggunaan yang telah dinormalisasi dari notifikasi token app-server saat
-tersedia. Teruskan penggunaan itu ke konteks runtime mesin konteks.
+Hasil Codex menyertakan penggunaan yang dinormalkan dari notifikasi token server aplikasi saat
+tersedia. Teruskan penggunaan tersebut ke konteks runtime mesin konteks.
 
-Jika app-server Codex pada akhirnya mengekspos detail baca/tulis cache, petakan
-ke `ContextEnginePromptCacheInfo`. Sampai saat itu, hilangkan `promptCache` alih-alih
-menciptakan nol palsu.
+Jika server aplikasi Codex pada akhirnya mengekspos detail baca/tulis cache, petakan ke
+`ContextEnginePromptCacheInfo`. Sampai saat itu, hilangkan `promptCache` alih-alih
+menciptakan nilai nol.
 
 ### 8. Kebijakan Compaction
 
 Ada dua sistem Compaction:
 
 1. `compact()` mesin konteks OpenClaw
-2. `thread/compact/start` native app-server Codex
+2. `thread/compact/start` native server aplikasi Codex
 
-Jangan menyatukannya secara diam-diam.
+Jangan menggabungkannya secara diam-diam.
 
 #### `/compact` dan Compaction OpenClaw eksplisit
 
-Saat mesin konteks yang dipilih memiliki `info.ownsCompaction === true`, Compaction OpenClaw
-eksplisit harus mengutamakan hasil `compact()` milik mesin konteks untuk cermin transkrip OpenClaw dan state Plugin.
+Saat mesin konteks yang dipilih memiliki `info.ownsCompaction === true`, Compaction
+OpenClaw eksplisit sebaiknya mengutamakan hasil `compact()` milik mesin konteks untuk
+cermin transkrip OpenClaw dan state Plugin.
 
 Saat harness Codex yang dipilih memiliki binding thread native, kita juga dapat
-meminta Compaction native Codex tambahan untuk menjaga thread app-server tetap sehat, tetapi ini
-harus dilaporkan sebagai aksi backend terpisah dalam detail.
+meminta Compaction native Codex untuk menjaga thread server aplikasi tetap sehat, tetapi ini
+harus dilaporkan sebagai tindakan backend terpisah dalam detail.
 
 Perilaku yang direkomendasikan:
 
 - Jika `contextEngine.info.ownsCompaction === true`:
   - panggil `compact()` mesin konteks terlebih dahulu
-  - lalu panggil Compaction native Codex secara best-effort saat binding thread ada
+  - lalu lakukan panggilan best-effort ke Compaction native Codex saat binding thread ada
   - kembalikan hasil mesin konteks sebagai hasil utama
-  - sertakan status Compaction native Codex di `details.codexNativeCompaction`
+  - sertakan status Compaction native Codex dalam `details.codexNativeCompaction`
 - Jika mesin konteks aktif tidak memiliki Compaction:
   - pertahankan perilaku Compaction native Codex saat ini
 
 Ini kemungkinan memerlukan perubahan pada `extensions/codex/src/app-server/compact.ts` atau
-membungkusnya dari jalur Compaction generik, bergantung pada tempat
+membungkusnya dari jalur Compaction generik, tergantung di mana
 `maybeCompactAgentHarnessSession(...)` dipanggil.
 
-#### Event `contextCompaction` native Codex di dalam giliran
+#### Event `contextCompaction` native Codex dalam giliran
 
-Codex dapat memancarkan event item `contextCompaction` selama giliran. Pertahankan emisi hook
-Compaction before/after saat ini di `event-projector.ts`, tetapi jangan perlakukan
-itu sebagai Compaction mesin konteks yang selesai.
+Codex dapat memancarkan event item `contextCompaction` selama sebuah giliran. Pertahankan
+emisi hook Compaction sebelum/sesudah saat ini di `event-projector.ts`, tetapi jangan anggap
+itu sebagai Compaction mesin konteks yang sudah selesai.
 
 Untuk mesin yang memiliki Compaction, pancarkan diagnostik eksplisit saat Codex tetap melakukan
 Compaction native:
 
-- nama stream/event: stream `compaction` yang ada dapat diterima
+- nama stream/event: stream `compaction` yang ada dapat digunakan
 - detail: `{ backend: "codex-app-server", ownsCompaction: true }`
 
 Ini membuat pemisahannya dapat diaudit.
 
 ### 9. Perilaku reset sesi dan binding
 
-`reset(...)` harness Codex yang ada menghapus binding app-server Codex dari
-file sesi OpenClaw. Pertahankan perilaku itu.
+`reset(...)` harness Codex yang ada menghapus binding server aplikasi Codex dari
+file sesi OpenClaw. Pertahankan perilaku tersebut.
 
-Juga pastikan pembersihan state mesin konteks tetap terjadi melalui jalur siklus hidup sesi OpenClaw yang ada. Jangan tambahkan pembersihan khusus Codex kecuali siklus hidup mesin konteks saat ini memang melewatkan event reset/delete untuk semua harness.
+Pastikan juga pembersihan state mesin konteks tetap terjadi melalui jalur siklus hidup sesi
+OpenClaw yang ada. Jangan tambahkan pembersihan khusus Codex kecuali siklus hidup
+mesin konteks saat ini melewatkan event reset/delete untuk semua harness.
 
 ### 10. Penanganan error
 
-Ikuti semantik Pi:
+Ikuti semantik PI:
 
-- kegagalan bootstrap memberi peringatan dan lanjut
-- kegagalan assemble memberi peringatan dan menggunakan fallback ke pesan/prompt pipeline yang tidak dirakit
-- kegagalan afterTurn/ingest memberi peringatan dan menandai finalisasi pasca-giliran tidak berhasil
-- pemeliharaan hanya berjalan setelah giliran yang berhasil, tidak dibatalkan, dan bukan yield
+- kegagalan bootstrap memperingatkan dan melanjutkan
+- kegagalan assemble memperingatkan dan fallback ke pesan/prompt pipeline yang belum dirakit
+- kegagalan afterTurn/ingest memperingatkan dan menandai finalisasi pascagiliran tidak berhasil
+- maintenance hanya berjalan setelah giliran berhasil, tidak dibatalkan, dan non-yield
 - error Compaction tidak boleh dicoba ulang sebagai prompt baru
 
-Penambahan khusus Codex:
+Tambahan khusus Codex:
 
-- Jika proyeksi konteks gagal, beri peringatan dan gunakan fallback ke prompt asli.
+- Jika proyeksi konteks gagal, peringatkan dan fallback ke prompt asli.
 - Jika cermin transkrip gagal, tetap coba finalisasi mesin konteks dengan
   pesan fallback.
 - Jika Compaction native Codex gagal setelah Compaction mesin konteks berhasil,
@@ -479,9 +453,9 @@ Penambahan khusus Codex:
 
 ## Rencana pengujian
 
-### Unit test
+### Uji unit
 
-Tambahkan test di bawah `extensions/codex/src/app-server`:
+Tambahkan pengujian di bawah `extensions/codex/src/app-server`:
 
 1. `run-attempt.context-engine.test.ts`
    - Codex memanggil `bootstrap` saat file sesi ada.
@@ -489,51 +463,53 @@ Tambahkan test di bawah `extensions/codex/src/app-server`:
      mode sitasi, id model, dan prompt.
    - `systemPromptAddition` disertakan dalam instruksi developer.
    - Pesan yang dirakit diproyeksikan ke prompt sebelum permintaan saat ini.
-   - Codex memanggil `afterTurn` setelah pencerminan transkrip.
+   - Codex memanggil `afterTurn` setelah mirroring transkrip.
    - Tanpa `afterTurn`, Codex memanggil `ingestBatch` atau `ingest` per pesan.
-   - Pemeliharaan giliran berjalan setelah giliran sukses.
-   - Pemeliharaan giliran tidak berjalan pada error prompt, abort, atau yield abort.
+   - Maintenance giliran berjalan setelah giliran berhasil.
+   - Maintenance giliran tidak berjalan pada error prompt, abort, atau yield abort.
 
 2. `context-engine-projection.test.ts`
-   - output stabil untuk input yang identik
-   - tidak ada prompt saat ini yang duplikat saat riwayat yang dirakit sudah menyertakannya
+   - output stabil untuk input identik
+   - tidak ada duplikasi prompt saat ini ketika riwayat yang dirakit menyertakannya
    - menangani riwayat kosong
    - mempertahankan urutan peran
-   - menyertakan penambahan prompt sistem hanya dalam instruksi developer
+   - menyertakan tambahan prompt sistem hanya dalam instruksi developer
 
 3. `compact.context-engine.test.ts`
-   - hasil utama mesin konteks yang memiliki Compaction menang
-   - status Compaction native Codex muncul di detail saat juga dicoba
-   - kegagalan native Codex tidak menggagalkan Compaction mesin konteks yang memiliki Compaction
-   - mesin konteks yang tidak memiliki Compaction mempertahankan perilaku Compaction native saat ini
+   - hasil utama mesin konteks pemilik menang
+   - status Compaction native Codex muncul dalam detail saat juga dicoba
+   - kegagalan native Codex tidak menggagalkan Compaction mesin konteks pemilik
+   - mesin konteks non-pemilik mempertahankan perilaku Compaction native saat ini
 
-### Test yang ada untuk diperbarui
+### Pengujian yang ada untuk diperbarui
 
 - `extensions/codex/src/app-server/run-attempt.test.ts` jika ada, jika tidak
-  test eksekusi app-server Codex terdekat.
+  pengujian run server aplikasi Codex terdekat.
 - `extensions/codex/src/app-server/event-projector.test.ts` hanya jika detail event
   Compaction berubah.
-- `src/agents/harness/selection.test.ts` seharusnya tidak perlu berubah kecuali perilaku config berubah; test ini harus tetap stabil.
-- Test mesin konteks Pi harus tetap lolos tanpa perubahan.
+- `src/agents/harness/selection.test.ts` tidak perlu perubahan kecuali perilaku
+  konfigurasi berubah; seharusnya tetap stabil.
+- Pengujian mesin konteks PI harus tetap lulus tanpa perubahan.
 
-### Integration / live test
+### Pengujian integrasi / live
 
-Tambahkan atau perluas smoke test harness Codex live:
+Tambahkan atau perluas pengujian smoke harness Codex live:
 
-- konfigurasikan `plugins.slots.contextEngine` ke mesin test
+- konfigurasikan `plugins.slots.contextEngine` ke mesin pengujian
 - konfigurasikan `agents.defaults.model` ke model `codex/*`
 - konfigurasikan `agents.defaults.embeddedHarness.runtime = "codex"`
-- tegaskan bahwa mesin test mengamati:
+- pastikan mesin pengujian mengamati:
   - bootstrap
   - assemble
   - afterTurn atau ingest
-  - pemeliharaan
+  - maintenance
 
-Hindari mewajibkan lossless-claw dalam test inti OpenClaw. Gunakan Plugin mesin konteks palsu kecil di dalam repo.
+Hindari mengharuskan lossless-claw dalam pengujian core OpenClaw. Gunakan Plugin
+mesin konteks palsu kecil di dalam repo.
 
 ## Observabilitas
 
-Tambahkan log debug di sekitar pemanggilan siklus hidup mesin konteks Codex:
+Tambahkan log debug di sekitar panggilan siklus hidup mesin konteks Codex:
 
 - `codex context engine bootstrap started/completed/failed`
 - `codex context engine assemble applied`
@@ -541,12 +517,12 @@ Tambahkan log debug di sekitar pemanggilan siklus hidup mesin konteks Codex:
 - `codex context engine maintenance skipped` dengan alasan
 - `codex native compaction completed alongside context-engine compaction`
 
-Hindari mencatat prompt penuh atau isi transkrip.
+Hindari mencatat prompt lengkap atau isi transkrip.
 
-Tambahkan field terstruktur bila berguna:
+Tambahkan field terstruktur jika berguna:
 
 - `sessionId`
-- `sessionKey` disamarkan atau dihilangkan sesuai praktik logging yang ada
+- `sessionKey` disensor atau dihilangkan sesuai praktik logging yang ada
 - `engineId`
 - `threadId`
 - `turnId`
@@ -556,9 +532,9 @@ Tambahkan field terstruktur bila berguna:
 
 ## Migrasi / kompatibilitas
 
-Ini seharusnya kompatibel ke belakang:
+Ini harus kompatibel mundur:
 
-- Jika tidak ada mesin konteks yang dikonfigurasi, perilaku mesin konteks lama harus
+- Jika tidak ada mesin konteks yang dikonfigurasi, perilaku mesin konteks legacy harus
   setara dengan perilaku harness Codex saat ini.
 - Jika `assemble` mesin konteks gagal, Codex harus melanjutkan dengan jalur
   prompt asli.
@@ -569,42 +545,43 @@ Ini seharusnya kompatibel ke belakang:
 
 ## Pertanyaan terbuka
 
-1. Apakah konteks yang dirakit harus disuntikkan seluruhnya ke prompt pengguna, seluruhnya
-   ke instruksi developer, atau dibagi?
+1. Apakah konteks yang dirakit harus disuntikkan sepenuhnya ke prompt pengguna, sepenuhnya
+   ke instruksi developer, atau dipisah?
 
-   Rekomendasi: dibagi. Masukkan `systemPromptAddition` ke instruksi developer;
-   masukkan konteks transkrip yang dirakit ke wrapper prompt pengguna. Ini paling cocok
-   dengan protokol Codex saat ini tanpa mengubah riwayat thread native.
+   Rekomendasi: pisah. Letakkan `systemPromptAddition` dalam instruksi developer;
+   letakkan konteks transkrip yang dirakit dalam wrapper prompt pengguna. Ini paling sesuai
+   dengan protokol Codex saat ini tanpa memutasi riwayat thread native.
 
-2. Apakah Compaction native Codex harus dinonaktifkan saat mesin konteks memiliki
+2. Haruskah Compaction native Codex dinonaktifkan saat mesin konteks memiliki
    Compaction?
 
-   Rekomendasi: tidak, setidaknya pada awalnya. Compaction native Codex mungkin tetap
-   diperlukan untuk menjaga thread app-server tetap hidup. Tetapi Compaction itu harus dilaporkan sebagai
-   Compaction Codex native, bukan sebagai Compaction mesin konteks.
+   Rekomendasi: tidak, belum pada awalnya. Compaction native Codex mungkin tetap
+   diperlukan untuk menjaga thread server aplikasi tetap hidup. Tetapi itu harus dilaporkan sebagai
+   Compaction native Codex, bukan sebagai Compaction mesin konteks.
 
-3. Apakah `before_prompt_build` harus dijalankan sebelum atau sesudah perakitan mesin konteks?
+3. Haruskah `before_prompt_build` berjalan sebelum atau sesudah assembly mesin konteks?
 
-   Rekomendasi: sesudah proyeksi mesin konteks untuk Codex, agar hook harness generik
-   melihat prompt/instruksi developer aktual yang akan diterima Codex. Jika paritas Pi
-   mengharuskan kebalikannya, kodekan urutan yang dipilih dalam test dan dokumentasikan
-   di sini.
+   Rekomendasi: setelah proyeksi mesin konteks untuk Codex, sehingga hook harness generik
+   melihat prompt/instruksi developer aktual yang akan diterima Codex. Jika paritas PI
+   memerlukan kebalikannya, kodekan urutan yang dipilih dalam pengujian dan dokumentasikan di
+   sini.
 
-4. Dapatkah app-server Codex menerima override konteks/riwayat terstruktur di masa depan?
+4. Bisakah server aplikasi Codex menerima override konteks/riwayat terstruktur di masa depan?
 
-   Tidak diketahui. Jika bisa, ganti lapisan proyeksi teks dengan protokol itu dan
-   pertahankan pemanggilan siklus hidup tidak berubah.
+   Tidak diketahui. Jika bisa, ganti lapisan proyeksi teks dengan protokol tersebut dan
+   pertahankan panggilan siklus hidup tanpa perubahan.
 
 ## Kriteria penerimaan
 
-- Giliran harness tertanam `codex/*` memanggil siklus hidup assemble milik mesin konteks yang dipilih.
+- Giliran harness tertanam `codex/*` memanggil siklus hidup assemble milik mesin konteks
+  yang dipilih.
 - `systemPromptAddition` mesin konteks memengaruhi instruksi developer Codex.
 - Konteks yang dirakit memengaruhi input giliran Codex secara deterministik.
 - Giliran Codex yang berhasil memanggil `afterTurn` atau fallback ingest.
-- Giliran Codex yang berhasil menjalankan pemeliharaan giliran mesin konteks.
-- Giliran yang gagal/dibatalkan/yield-aborted tidak menjalankan pemeliharaan giliran.
+- Giliran Codex yang berhasil menjalankan maintenance giliran mesin konteks.
+- Giliran gagal/dibatalkan/yield-aborted tidak menjalankan maintenance giliran.
 - Compaction yang dimiliki mesin konteks tetap menjadi yang utama untuk state OpenClaw/Plugin.
-- Compaction native Codex tetap dapat diaudit sebagai perilaku Codex native.
-- Perilaku mesin konteks Pi yang ada tidak berubah.
+- Compaction native Codex tetap dapat diaudit sebagai perilaku native Codex.
+- Perilaku mesin konteks PI yang ada tidak berubah.
 - Perilaku harness Codex yang ada tidak berubah saat tidak ada mesin konteks non-legacy
-  yang dipilih atau saat assemble gagal.
+  yang dipilih atau saat assembly gagal.

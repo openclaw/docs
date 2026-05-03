@@ -1,30 +1,30 @@
 ---
 read_when:
     - Anda sedang menginstal, mengonfigurasi, atau mengaudit plugin codex
-summary: Perangkat uji app-server Codex dan katalog model GPT yang dikelola Codex.
+summary: Harness app-server Codex dan katalog model GPT yang dikelola Codex.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-02T20:50:59Z"
+    generated_at: "2026-05-03T09:19:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Plugin Codex
 
-Harness app-server Codex dan katalog model GPT yang dikelola Codex.
+Rangkaian pengendali server aplikasi Codex dan katalog model GPT yang dikelola Codex.
 
 ## Distribusi
 
 - Paket: `@openclaw/codex`
-- Rute instalasi: ClawHub + npm
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-penyedia: codex; kontrak: mediaUnderstandingProviders, migrationProviders
+providers: codex; contracts: mediaUnderstandingProviders, migrationProviders
 
-## Dokumentasi terkait
+## Dokumen terkait
 
 - [codex](/id/plugins/codex-harness)

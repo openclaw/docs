@@ -4,26 +4,26 @@ read_when:
 summary: Backend runtime ACP tertanam dengan pengelolaan sesi dan transport milik Plugin.
 title: Plugin ACPx
 x-i18n:
-    generated_at: "2026-05-02T22:20:40Z"
+    generated_at: "2026-05-03T09:19:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1a0452131c85969d16cd1ebb603bd2369be8cd929841b6756165f64ede4109a4
+    source_hash: 232154c08280d11f330dd0928fe4f546416116439c0bd3760bbae26d86c6599b
     source_path: plugins/reference/acpx.md
     workflow: 16
 ---
 
-# ACPx Plugin
+# Plugin ACPx
 
-Backend runtime ACP tertanam dengan pengelolaan sesi dan transport milik Plugin.
+Backend runtime ACP tertanam dengan manajemen sesi dan transport yang dimiliki Plugin.
 
 ## Distribusi
 
 - Paket: `@openclaw/acpx`
-- Rute instalasi: disertakan dalam OpenClaw
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
-Skills
+skills
 
 ## Dokumentasi terkait
 

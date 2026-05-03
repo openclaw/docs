@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Anda sedang menginstal, mengonfigurasi, atau mengaudit Plugin WhatsApp
-summary: Menambahkan permukaan saluran WhatsApp untuk mengirim dan menerima pesan OpenClaw.
+    - Anda sedang memasang, mengonfigurasi, atau mengaudit Plugin WhatsApp
+summary: Menambahkan antarmuka saluran WhatsApp untuk mengirim dan menerima pesan OpenClaw.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-05-02T20:58:34Z"
+    generated_at: "2026-05-03T09:21:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3fbdcff85954d0ff0269348e9c75b8b85cae69b9897a568432bfa06ed7276ced
+    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Menambahkan permukaan kanal WhatsApp untuk mengirim dan menerima pesan OpenClaw.
 ## Distribusi
 
 - Paket: `@openclaw/whatsapp`
-- Rute pemasangan: ClawHub + npm
+- Rute instalasi: npm; ClawHub
 
 ## Permukaan
 
