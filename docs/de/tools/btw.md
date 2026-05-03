@@ -1,22 +1,23 @@
 ---
 read_when:
     - Sie möchten eine kurze Nebenfrage zur aktuellen Sitzung stellen
-    - Sie implementieren oder debuggen BTW-Verhalten clientübergreifend
-summary: Ephemere Nebenfragen mit /btw
-title: BTW-Nebenfragen
+    - Sie implementieren oder debuggen clientübergreifendes BTW-Verhalten
+summary: Temporäre Nebenfragen mit /btw
+title: 'Übrigens: Nebenfragen'
 x-i18n:
-    generated_at: "2026-04-24T07:01:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-03T21:38:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4e8b74f82356a1ecc38b2a2104b3c4616ef4530d2ce804910b24666c4932169e
+    source_hash: f09ee066c02d31c9fbd66de1922f7a03fe2b48f1ba2c969c65551376e92c80d4
     source_path: tools/btw.md
-    workflow: 15
+    workflow: 16
 ---
 
-`/btw` ermöglicht es Ihnen, eine schnelle Nebenfrage zur **aktuellen Sitzung** zu stellen, ohne
-dass diese Frage Teil des normalen Konversationsverlaufs wird.
+`/btw` ermöglicht Ihnen, eine kurze Nebenfrage zur **aktuellen Sitzung** zu stellen, ohne
+diese Frage in den normalen Konversationsverlauf aufzunehmen. `/side` ist ein Alias.
 
-Es orientiert sich am `/btw`-Verhalten von Claude Code, ist aber an die Gateway- und Multi-Channel-Architektur von OpenClaw angepasst.
+Es ist dem `/btw`-Verhalten von Claude Code nachempfunden, wurde aber an die
+Gateway- und Mehrkanalarchitektur von OpenClaw angepasst.
 
 ## Was es tut
 
@@ -26,118 +27,122 @@ Wenn Sie Folgendes senden:
 /btw what changed?
 ```
 
-macht OpenClaw Folgendes:
+OpenClaw:
 
 1. erstellt einen Snapshot des aktuellen Sitzungskontexts,
-2. führt einen separaten **toollosen** Modellaufruf aus,
+2. führt einen separaten **tool-losen** Modellaufruf aus,
 3. beantwortet nur die Nebenfrage,
-4. lässt den Hauptlauf unverändert,
-5. schreibt weder die BTW-Frage noch die Antwort in den Sitzungsverlauf,
-6. gibt die Antwort als **Live-Seitenergebnis** statt als normale Assistant-Nachricht aus.
+4. lässt den Hauptlauf unangetastet,
+5. schreibt die BTW-Frage oder -Antwort **nicht** in den Sitzungsverlauf,
+6. gibt die Antwort als **Live-Nebenergebnis** statt als normale Assistentennachricht aus.
 
 Das wichtige mentale Modell ist:
 
-- derselbe Sitzungskontext
-- separate einmalige Nebenanfrage
+- gleicher Sitzungskontext
+- separate einmalige Nebenabfrage
 - keine Tool-Aufrufe
-- keine Verschmutzung zukünftigen Kontexts
-- keine persistente Speicherung im Transkript
+- keine Verunreinigung des zukünftigen Kontexts
+- keine Persistenz im Transkript
 
 ## Was es nicht tut
 
 `/btw` tut **nicht** Folgendes:
 
 - eine neue dauerhafte Sitzung erstellen,
-- die unvollendete Hauptaufgabe fortsetzen,
-- Tools oder Tool-Schleifen des Agenten ausführen,
-- BTW-Frage/Antwort in den Transkriptverlauf schreiben,
+- die unfertige Hauptaufgabe fortsetzen,
+- Tools oder Agent-Tool-Schleifen ausführen,
+- BTW-Frage-/Antwortdaten in den Transkriptverlauf schreiben,
 - in `chat.history` erscheinen,
-- einen Reload überleben.
+- ein Neuladen überstehen.
 
-Es ist absichtlich **ephemer**.
+Es ist absichtlich **flüchtig**.
 
 ## Wie der Kontext funktioniert
 
 BTW verwendet die aktuelle Sitzung nur als **Hintergrundkontext**.
 
-Wenn der Hauptlauf gerade aktiv ist, erstellt OpenClaw einen Snapshot des aktuellen Nachrichten-
-Status und nimmt den laufenden Haupt-Prompt als Hintergrundkontext auf, während es
-dem Modell ausdrücklich sagt:
+Wenn der Hauptlauf gerade aktiv ist, erstellt OpenClaw einen Snapshot des aktuellen Nachrichtenstands
+und nimmt den laufenden Hauptprompt als Hintergrundkontext auf, während
+dem Modell ausdrücklich mitgeteilt wird:
 
 - nur die Nebenfrage beantworten,
-- die unvollendete Hauptaufgabe nicht fortsetzen oder abschließen,
+- die unfertige Hauptaufgabe nicht fortsetzen oder abschließen,
 - keine Tool-Aufrufe oder Pseudo-Tool-Aufrufe ausgeben.
 
-Dadurch bleibt BTW vom Hauptlauf getrennt und ist sich trotzdem bewusst, worum es in
-der Sitzung geht.
+So bleibt BTW vom Hauptlauf isoliert und weiß dennoch, worum es in der
+Sitzung geht.
 
 ## Zustellungsmodell
 
-BTW wird **nicht** als normale Assistant-Transkript-Nachricht zugestellt.
+BTW wird **nicht** als normale Assistentennachricht im Transkript zugestellt.
 
-Auf Ebene des Gateway-Protokolls gilt:
+Auf Gateway-Protokollebene gilt:
 
-- normaler Assistant-Chat verwendet das Ereignis `chat`
-- BTW verwendet das Ereignis `chat.side_result`
+- normaler Assistentenchat verwendet das `chat`-Ereignis
+- BTW verwendet das `chat.side_result`-Ereignis
 
-Diese Trennung ist absichtlich. Wenn BTW denselben normalen `chat`-Ereignispfad verwenden würde,
-würden Clients es als regulären Konversationsverlauf behandeln.
+Diese Trennung ist beabsichtigt. Wenn BTW den normalen `chat`-Ereignispfad wiederverwenden würde,
+würden Clients es wie regulären Konversationsverlauf behandeln.
 
 Da BTW ein separates Live-Ereignis verwendet und nicht aus
-`chat.history` erneut abgespielt wird, verschwindet es nach einem Reload.
+`chat.history` erneut wiedergegeben wird, verschwindet es nach dem Neuladen.
 
-## Verhalten an der Oberfläche
+## Verhalten in Oberflächen
 
 ### TUI
 
 In der TUI wird BTW inline in der aktuellen Sitzungsansicht gerendert, bleibt aber
-ephemer:
+flüchtig:
 
-- sichtbar von einer normalen Assistant-Antwort unterscheidbar
+- visuell von einer normalen Assistentenantwort unterscheidbar
 - mit `Enter` oder `Esc` ausblendbar
-- wird bei Reload nicht erneut abgespielt
+- nach dem Neuladen nicht erneut wiedergegeben
 
 ### Externe Kanäle
 
-Auf Kanälen wie Telegram, WhatsApp und Discord wird BTW als
-klar gekennzeichnete einmalige Antwort zugestellt, weil diese Oberflächen kein lokales
-Overlay-Konzept für ephemere Inhalte haben.
+In Kanälen wie Telegram, WhatsApp und Discord wird BTW als
+klar gekennzeichnete einmalige Antwort zugestellt, da diese Oberflächen kein lokales
+flüchtiges Overlay-Konzept haben.
 
-Die Antwort wird weiterhin als Seitenergebnis behandelt, nicht als normaler Sitzungsverlauf.
+Die Antwort wird weiterhin als Nebenergebnis behandelt, nicht als normaler Sitzungsverlauf.
 
 ### Control UI / Web
 
 Das Gateway gibt BTW korrekt als `chat.side_result` aus, und BTW ist nicht in
-`chat.history` enthalten, daher ist der Persistenzvertrag für das Web bereits korrekt.
+`chat.history` enthalten, sodass der Persistenzvertrag für Web bereits korrekt ist.
 
-Die aktuelle Control UI benötigt noch einen dedizierten Consumer für `chat.side_result`, um BTW live im Browser darzustellen. Bis diese clientseitige Unterstützung verfügbar ist, ist BTW auf Gateway-Ebene eine vollständige Funktion mit vollem Verhalten in TUI und externen Kanälen, aber noch keine vollständige Browser-UX.
+Die aktuelle Control UI benötigt noch einen dedizierten `chat.side_result`-Consumer, um
+BTW live im Browser zu rendern. Bis diese clientseitige Unterstützung bereitsteht, ist BTW ein
+Gateway-Level-Feature mit vollständigem TUI- und externem Kanalverhalten, aber noch
+keine vollständige Browser-UX.
 
-## Wann BTW verwendet werden sollte
+## Wann Sie BTW verwenden sollten
 
 Verwenden Sie `/btw`, wenn Sie Folgendes möchten:
 
-- eine schnelle Klarstellung zur aktuellen Arbeit,
-- eine faktische Nebenantwort, während ein langer Lauf noch in Arbeit ist,
+- eine kurze Klärung zur aktuellen Arbeit,
+- eine sachliche Nebenantwort, während ein langer Lauf noch läuft,
 - eine temporäre Antwort, die nicht Teil des zukünftigen Sitzungskontexts werden soll.
 
 Beispiele:
 
 ```text
 /btw what file are we editing?
+/side what changed while the main run continued?
 /btw what does this error mean?
 /btw summarize the current task in one sentence
 /btw what is 17 * 19?
 ```
 
-## Wann BTW nicht verwendet werden sollte
+## Wann Sie BTW nicht verwenden sollten
 
-Verwenden Sie `/btw` nicht, wenn die Antwort Teil des
-zukünftigen Arbeitskontexts der Sitzung werden soll.
+Verwenden Sie `/btw` nicht, wenn die Antwort Teil des zukünftigen
+Arbeitskontexts der Sitzung werden soll.
 
-Stellen Sie die Frage in diesem Fall normal in der Hauptsitzung statt BTW zu verwenden.
+Stellen Sie die Frage in diesem Fall stattdessen normal in der Hauptsitzung.
 
-## Verwandt
+## Verwandte Themen
 
-- [Slash commands](/de/tools/slash-commands)
+- [Slash-Befehle](/de/tools/slash-commands)
 - [Thinking Levels](/de/tools/thinking)
-- [Session](/de/concepts/session)
+- [Sitzung](/de/concepts/session)

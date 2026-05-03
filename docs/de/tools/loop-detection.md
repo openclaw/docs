@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Ein Benutzer meldet, dass Agenten festhängen und Tool-Aufrufe wiederholen
+    - Ein Benutzer meldet, dass Agenten beim Wiederholen von Tool-Aufrufen hängen bleiben
     - Sie müssen den Schutz vor wiederholten Aufrufen feinabstimmen
-    - Sie bearbeiten Richtlinien für Agenten-Werkzeuge und die Laufzeit
-summary: So aktivieren und optimieren Sie Schutzmechanismen, die wiederholte Tool-Aufrufschleifen erkennen
-title: Erkennung von Werkzeugschleifen
+    - Sie bearbeiten Richtlinien für Agentenwerkzeuge und -Laufzeiten
+summary: So aktivieren und optimieren Sie Schutzmechanismen, die sich wiederholende Tool-Aufruf-Schleifen erkennen
+title: Erkennung von Tool-Schleifen
 x-i18n:
-    generated_at: "2026-04-30T07:19:10Z"
+    generated_at: "2026-05-03T21:39:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ba601384e7d23ddfd316f9e5eef92b3daa4618d2287228a516c76fe141700a28
+    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
     source_path: tools/loop-detection.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Der Schutzmechanismus ist **standardmäßig deaktiviert**.
 
 Aktivieren Sie ihn nur dort, wo er benötigt wird, da er bei strengen Einstellungen legitime wiederholte Aufrufe blockieren kann.
 
-## Warum es das gibt
+## Warum dies existiert
 
-- Erkennt repetitive Sequenzen, die keinen Fortschritt machen.
-- Erkennt hochfrequente Schleifen ohne Ergebnis (gleiches Tool, gleiche Eingaben, wiederholte Fehler).
-- Erkennt bestimmte Muster wiederholter Aufrufe für bekannte Polling-Tools.
+- Erkennen repetitiver Sequenzen, die keinen Fortschritt erzielen.
+- Erkennen hochfrequenter Schleifen ohne Ergebnis (gleiches Tool, gleiche Eingaben, wiederholte Fehler).
+- Erkennen bestimmter Muster wiederholter Aufrufe für bekannte Polling-Tools.
 
 ## Konfigurationsblock
 
@@ -72,40 +72,40 @@ Globale Standardwerte:
 ### Feldverhalten
 
 - `enabled`: Hauptschalter. `false` bedeutet, dass keine Schleifenerkennung durchgeführt wird.
-- `historySize`: Anzahl der letzten Tool-Aufrufe, die für die Analyse aufbewahrt werden.
-- `warningThreshold`: Schwellenwert, ab dem ein Muster nur als Warnung eingestuft wird.
+- `historySize`: Anzahl der letzten Tool-Aufrufe, die für die Analyse vorgehalten werden.
+- `warningThreshold`: Schwellenwert, ab dem ein Muster als reine Warnung eingestuft wird.
 - `criticalThreshold`: Schwellenwert zum Blockieren repetitiver Schleifenmuster.
-- `globalCircuitBreakerThreshold`: Globaler Schwellenwert für den Unterbrecher bei fehlendem Fortschritt.
-- `detectors.genericRepeat`: erkennt wiederholte Muster mit gleichem Tool und gleichen Parametern.
-- `detectors.knownPollNoProgress`: erkennt bekannte pollingartige Muster ohne Zustandsänderung.
+- `globalCircuitBreakerThreshold`: globaler Schwellenwert für den Unterbrecher bei ausbleibendem Fortschritt.
+- `detectors.genericRepeat`: erkennt wiederholte Muster aus gleichem Tool und gleichen Parametern.
+- `detectors.knownPollNoProgress`: erkennt bekannte polling-ähnliche Muster ohne Zustandsänderung.
 - `detectors.pingPong`: erkennt alternierende Ping-Pong-Muster.
 
-Für `exec` vergleichen Prüfungen auf fehlenden Fortschritt stabile Befehlsergebnisse und ignorieren flüchtige Laufzeitmetadaten wie Dauer, PID, Sitzungs-ID und Arbeitsverzeichnis.
-Wenn eine Run-ID verfügbar ist, wird der aktuelle Tool-Aufrufverlauf nur innerhalb dieses Runs ausgewertet, sodass geplante Heartbeat-Zyklen und neue Runs keine veralteten Schleifenzähler aus früheren Runs übernehmen.
+Für `exec` vergleichen Prüfungen auf ausbleibenden Fortschritt stabile Befehlsresultate und ignorieren flüchtige Laufzeitmetadaten wie Dauer, PID, Sitzungs-ID und Arbeitsverzeichnis.
+Wenn eine Run-ID verfügbar ist, wird der Verlauf der letzten Tool-Aufrufe nur innerhalb dieses Runs ausgewertet, sodass geplante Heartbeat-Zyklen und neue Runs keine veralteten Schleifenzähler aus früheren Runs übernehmen.
 
 ## Empfohlene Einrichtung
 
-- Beginnen Sie mit `enabled: true` und unveränderten Standardwerten.
+- Für kleinere Modelle beginnen Sie mit `enabled: true` und unveränderten Standardwerten. Flaggschiffmodelle benötigen selten Schleifenerkennung und können sie deaktiviert lassen.
 - Halten Sie die Schwellenwerte in der Reihenfolge `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Wenn False Positives auftreten:
+- Wenn Fehlalarme auftreten:
   - erhöhen Sie `warningThreshold` und/oder `criticalThreshold`
   - erhöhen Sie (optional) `globalCircuitBreakerThreshold`
-  - deaktivieren Sie nur den Detektor, der Probleme verursacht
-  - reduzieren Sie `historySize` für einen weniger strengen historischen Kontext
+  - deaktivieren Sie nur den Detector, der Probleme verursacht
+  - reduzieren Sie `historySize` für weniger strikten historischen Kontext
 
-## Protokolle und erwartetes Verhalten
+## Logs und erwartetes Verhalten
 
 Wenn eine Schleife erkannt wird, meldet OpenClaw ein Schleifenereignis und blockiert oder dämpft den nächsten Tool-Zyklus abhängig vom Schweregrad.
-Dies schützt Benutzer vor unkontrolliertem Token-Verbrauch und Blockaden, während normaler Tool-Zugriff erhalten bleibt.
+Dies schützt Benutzer vor ausuferndem Token-Verbrauch und Blockaden, während der normale Tool-Zugriff erhalten bleibt.
 
-- Bevorzugen Sie zunächst Warnung und temporäre Unterdrückung.
-- Eskalieren Sie erst, wenn sich wiederholte Nachweise ansammeln.
+- Bevorzugen Sie zuerst Warnungen und temporäre Unterdrückung.
+- Eskalieren Sie erst, wenn sich wiederholte Evidenz ansammelt.
 
 ## Hinweise
 
 - `tools.loopDetection` wird mit Überschreibungen auf Agentenebene zusammengeführt.
-- Konfiguration pro Agent überschreibt oder erweitert globale Werte vollständig.
-- Wenn keine Konfiguration vorhanden ist, bleiben Guardrails deaktiviert.
+- Die Konfiguration pro Agent überschreibt oder erweitert globale Werte vollständig.
+- Wenn keine Konfiguration vorhanden ist, bleiben Schutzmechanismen ausgeschaltet.
 
 ## Verwandte Themen
 

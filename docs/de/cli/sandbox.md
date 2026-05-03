@@ -1,40 +1,40 @@
 ---
 read_when: You are managing sandbox runtimes or debugging sandbox/tool-policy behavior.
 status: active
-summary: Sandbox-Laufzeitumgebungen verwalten und die geltende Sandbox-Richtlinie prüfen
+summary: Sandbox-Runtimes verwalten und geltende Sandbox-Richtlinie prüfen
 title: Sandbox-CLI
 x-i18n:
-    generated_at: "2026-04-30T06:46:58Z"
+    generated_at: "2026-05-03T21:29:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 65520040611ccf0cfc28b28f0caf2ed1c7d3b32de06eec7884131042bba4a01e
+    source_hash: c50b97c35ba8cd79416de6a167a7cbc313d063b320db7deafd42f7a570e507ac
     source_path: cli/sandbox.md
     workflow: 16
 ---
 
-Verwalten Sie Sandbox-Laufzeiten für isolierte Agent-Ausführung.
+Sandbox-Laufzeitumgebungen für isolierte Agent-Ausführung verwalten.
 
-## Übersicht
+## Überblick
 
-OpenClaw kann Agents aus Sicherheitsgründen in isolierten Sandbox-Laufzeiten ausführen. Die `sandbox`-Befehle helfen Ihnen, diese Laufzeiten nach Updates oder Konfigurationsänderungen zu prüfen und neu zu erstellen.
+OpenClaw kann Agents aus Sicherheitsgründen in isolierten Sandbox-Laufzeitumgebungen ausführen. Die `sandbox`-Befehle helfen Ihnen, diese Laufzeitumgebungen nach Updates oder Konfigurationsänderungen zu prüfen und neu zu erstellen.
 
-Heute bedeutet das in der Regel:
+Derzeit bedeutet das in der Regel:
 
 - Docker-Sandbox-Container
-- SSH-Sandbox-Laufzeiten, wenn `agents.defaults.sandbox.backend = "ssh"`
-- OpenShell-Sandbox-Laufzeiten, wenn `agents.defaults.sandbox.backend = "openshell"`
+- SSH-Sandbox-Laufzeitumgebungen, wenn `agents.defaults.sandbox.backend = "ssh"`
+- OpenShell-Sandbox-Laufzeitumgebungen, wenn `agents.defaults.sandbox.backend = "openshell"`
 
 Für `ssh` und OpenShell `remote` ist das Neuerstellen wichtiger als bei Docker:
 
-- Der Remote-Arbeitsbereich ist nach dem anfänglichen Seed maßgeblich
+- Der Remote-Arbeitsbereich ist nach dem initialen Seed maßgeblich
 - `openclaw sandbox recreate` löscht diesen maßgeblichen Remote-Arbeitsbereich für den ausgewählten Geltungsbereich
-- Die nächste Verwendung seedet ihn erneut aus dem aktuellen lokalen Arbeitsbereich
+- Bei der nächsten Verwendung wird er erneut aus dem aktuellen lokalen Arbeitsbereich befüllt
 
 ## Befehle
 
 ### `openclaw sandbox explain`
 
-Prüfen Sie den **effektiven** Sandbox-Modus/-Geltungsbereich/Arbeitsbereichszugriff, die Sandbox-Tool-Richtlinie und erhöhte Gates (mit Fix-it-Konfigurationsschlüsselpfaden).
+Prüfen Sie den **effektiven** Sandbox-Modus, Geltungsbereich, Arbeitsbereichszugriff, die Sandbox-Tool-Richtlinie und erhöhte Gates (mit Fix-it-Konfigurationsschlüsselpfaden).
 
 ```bash
 openclaw sandbox explain
@@ -45,7 +45,7 @@ openclaw sandbox explain --json
 
 ### `openclaw sandbox list`
 
-Listen Sie alle Sandbox-Laufzeiten mit ihrem Status und ihrer Konfiguration auf.
+Listet alle Sandbox-Laufzeitumgebungen mit Status und Konfiguration auf.
 
 ```bash
 openclaw sandbox list
@@ -55,16 +55,16 @@ openclaw sandbox list --json     # JSON output
 
 **Ausgabe enthält:**
 
-- Laufzeitname und Status
+- Name und Status der Laufzeitumgebung
 - Backend (`docker`, `openshell` usw.)
 - Konfigurationslabel und ob es mit der aktuellen Konfiguration übereinstimmt
 - Alter (Zeit seit Erstellung)
 - Leerlaufzeit (Zeit seit letzter Verwendung)
-- Zugeordnete Sitzung/zugeordneter Agent
+- Zugeordnete Session/zugeordneter Agent
 
 ### `openclaw sandbox recreate`
 
-Entfernen Sie Sandbox-Laufzeiten, um eine Neuerstellung mit aktualisierter Konfiguration zu erzwingen.
+Entfernt Sandbox-Laufzeitumgebungen, um eine Neuerstellung mit aktualisierter Konfiguration zu erzwingen.
 
 ```bash
 openclaw sandbox recreate --all                # Recreate all containers
@@ -77,13 +77,13 @@ openclaw sandbox recreate --all --force        # Skip confirmation
 **Optionen:**
 
 - `--all`: Alle Sandbox-Container neu erstellen
-- `--session <key>`: Container für eine bestimmte Sitzung neu erstellen
+- `--session <key>`: Container für eine bestimmte Session neu erstellen
 - `--agent <id>`: Container für einen bestimmten Agent neu erstellen
 - `--browser`: Nur Browser-Container neu erstellen
 - `--force`: Bestätigungsabfrage überspringen
 
 <Note>
-Laufzeiten werden automatisch neu erstellt, wenn der Agent das nächste Mal verwendet wird.
+Laufzeitumgebungen werden automatisch neu erstellt, wenn der Agent das nächste Mal verwendet wird.
 </Note>
 
 ## Anwendungsfälle
@@ -111,7 +111,7 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-### Nach dem Ändern des SSH-Ziels oder von SSH-Auth-Material
+### Nach dem Ändern des SSH-Ziels oder des SSH-Authentifizierungsmaterials
 
 ```bash
 # Edit config:
@@ -124,10 +124,10 @@ openclaw sandbox recreate --all
 openclaw sandbox recreate --all
 ```
 
-Für das Kern-Backend `ssh` löscht das Neuerstellen das Remote-Arbeitsbereichs-Root pro Geltungsbereich
-auf dem SSH-Ziel. Der nächste Lauf seedet es erneut aus dem lokalen Arbeitsbereich.
+Für das Core-Backend `ssh` löscht das Neuerstellen das Remote-Arbeitsbereichs-Root pro Geltungsbereich
+auf dem SSH-Ziel. Der nächste Lauf befüllt ihn erneut aus dem lokalen Arbeitsbereich.
 
-### Nach dem Ändern von OpenShell-Quelle, -Richtlinie oder -Modus
+### Nach dem Ändern von OpenShell-Quelle, Richtlinie oder Modus
 
 ```bash
 # Edit config:
@@ -139,8 +139,8 @@ auf dem SSH-Ziel. Der nächste Lauf seedet es erneut aus dem lokalen Arbeitsbere
 openclaw sandbox recreate --all
 ```
 
-Für den OpenShell-Modus `remote` löscht das Neuerstellen den maßgeblichen Remote-Arbeitsbereich
-für diesen Geltungsbereich. Der nächste Lauf seedet ihn erneut aus dem lokalen Arbeitsbereich.
+Im OpenShell-`remote`-Modus löscht das Neuerstellen den maßgeblichen Remote-Arbeitsbereich
+für diesen Geltungsbereich. Der nächste Lauf befüllt ihn erneut aus dem lokalen Arbeitsbereich.
 
 ### Nach dem Ändern von setupCommand
 
@@ -157,19 +157,28 @@ openclaw sandbox recreate --agent family
 openclaw sandbox recreate --agent alfred
 ```
 
-## Warum dies nötig ist
+## Warum dies erforderlich ist
 
 Wenn Sie die Sandbox-Konfiguration aktualisieren:
 
-- Bestehende Laufzeiten laufen mit alten Einstellungen weiter.
-- Laufzeiten werden erst nach 24 Stunden Inaktivität entfernt.
-- Regelmäßig verwendete Agents halten alte Laufzeiten unbegrenzt am Leben.
+- Vorhandene Laufzeitumgebungen laufen mit alten Einstellungen weiter.
+- Laufzeitumgebungen werden erst nach 24 Stunden Inaktivität bereinigt.
+- Regelmäßig verwendete Agents halten alte Laufzeitumgebungen unbegrenzt aktiv.
 
-Verwenden Sie `openclaw sandbox recreate`, um das Entfernen alter Laufzeiten zu erzwingen. Sie werden bei Bedarf automatisch mit den aktuellen Einstellungen neu erstellt.
+Verwenden Sie `openclaw sandbox recreate`, um das Entfernen alter Laufzeitumgebungen zu erzwingen. Sie werden bei Bedarf automatisch mit den aktuellen Einstellungen neu erstellt.
 
 <Tip>
-Bevorzugen Sie `openclaw sandbox recreate` gegenüber manueller backend-spezifischer Bereinigung. Es nutzt die Runtime-Registry des Gateway und vermeidet Abweichungen, wenn sich Geltungsbereichs- oder Sitzungsschlüssel ändern.
+Bevorzugen Sie `openclaw sandbox recreate` gegenüber manueller, Backend-spezifischer Bereinigung. Es verwendet die Laufzeitregistrierung des Gateway und vermeidet Inkonsistenzen, wenn sich Geltungsbereichs- oder Session-Schlüssel ändern.
 </Tip>
+
+## Registry-Migration
+
+OpenClaw speichert Metadaten zu Sandbox-Laufzeitumgebungen als einen JSON-Shard pro Container-/Browser-Eintrag im Sandbox-Statusverzeichnis. Ältere Installationen haben möglicherweise noch monolithische Legacy-Dateien:
+
+- `~/.openclaw/sandbox/containers.json`
+- `~/.openclaw/sandbox/browsers.json`
+
+Reguläre Lesevorgänge für Sandbox-Laufzeitumgebungen schreiben diese Dateien nicht neu. Führen Sie `openclaw doctor --fix` aus, um gültige Legacy-Einträge in die geshardeten Registry-Verzeichnisse zu migrieren. Ungültige Legacy-Dateien werden unter Quarantäne gestellt, damit eine fehlerhafte alte Registry keine aktuellen Laufzeiteinträge verbergen kann.
 
 ## Konfiguration
 
