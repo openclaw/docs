@@ -5,16 +5,16 @@ read_when:
 summary: دلالات أداة التفاعل عبر جميع القنوات المدعومة
 title: التفاعلات
 x-i18n:
-    generated_at: "2026-04-30T08:31:48Z"
+    generated_at: "2026-05-03T21:43:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 29cbb4a3afa4c0fdd049bfd615890b0fccea26bf28f109d6cba6f041423ca5e0
+    source_hash: 99008cdaf1fa7462bbe72066be7c404880df237a79d3deba01bffe00083c1e34
     source_path: tools/reactions.md
     workflow: 16
 ---
 
 يمكن للوكيل إضافة تفاعلات الرموز التعبيرية وإزالتها على الرسائل باستخدام أداة `message`
-مع الإجراء `react`. يختلف سلوك التفاعل حسب القناة ووسيلة النقل.
+مع الإجراء `react`. يختلف سلوك التفاعلات حسب القناة ووسيلة النقل.
 
 ## كيف يعمل
 
@@ -26,39 +26,42 @@ x-i18n:
 }
 ```
 
-- `emoji` مطلوب عند إضافة تفاعل.
-- اضبط `emoji` على سلسلة فارغة (`""`) لإزالة تفاعل/تفاعلات البوت.
-- اضبط `remove: true` لإزالة رمز تعبيري محدد (يتطلب `emoji` غير فارغ).
+- تكون `emoji` مطلوبة عند إضافة تفاعل.
+- عيّن `emoji` إلى سلسلة فارغة (`""`) لإزالة تفاعل/تفاعلات البوت.
+- عيّن `remove: true` لإزالة رمز تعبيري محدد (يتطلب `emoji` غير فارغة).
+- في القنوات التي تدعم تفاعلات الحالة، يتيح `trackToolCalls: true` على
+  تفاعل لوقت التشغيل استخدام تلك الرسالة المتفاعل معها لتفاعلات تقدم الأدوات
+  اللاحقة خلال نفس الدور.
 
-## سلوك القنوات
+## سلوك القناة
 
 <AccordionGroup>
   <Accordion title="Discord وSlack">
-    - يزيل `emoji` الفارغ كل تفاعلات البوت على الرسالة.
+    - تزيل `emoji` الفارغة كل تفاعلات البوت على الرسالة.
     - يزيل `remove: true` الرمز التعبيري المحدد فقط.
 
   </Accordion>
 
   <Accordion title="Google Chat">
-    - يزيل `emoji` الفارغ تفاعلات التطبيق على الرسالة.
+    - تزيل `emoji` الفارغة تفاعلات التطبيق على الرسالة.
     - يزيل `remove: true` الرمز التعبيري المحدد فقط.
 
   </Accordion>
 
   <Accordion title="Telegram">
-    - يزيل `emoji` الفارغ تفاعلات البوت.
-    - يزيل `remove: true` التفاعلات أيضًا، لكنه ما يزال يتطلب `emoji` غير فارغ للتحقق من صحة الأداة.
+    - تزيل `emoji` الفارغة تفاعلات البوت.
+    - يزيل `remove: true` التفاعلات أيضًا، لكنه لا يزال يتطلب `emoji` غير فارغة للتحقق من صحة الأداة.
 
   </Accordion>
 
   <Accordion title="WhatsApp">
-    - يزيل `emoji` الفارغ تفاعل البوت.
-    - يُربط `remove: true` داخليًا برمز تعبيري فارغ (ما يزال يتطلب `emoji` في استدعاء الأداة).
+    - تزيل `emoji` الفارغة تفاعل البوت.
+    - يُحوَّل `remove: true` داخليًا إلى رمز تعبيري فارغ (مع بقاء `emoji` مطلوبة في استدعاء الأداة).
 
   </Accordion>
 
   <Accordion title="Zalo Personal (zalouser)">
-    - يتطلب `emoji` غير فارغ.
+    - يتطلب `emoji` غير فارغة.
     - يزيل `remove: true` تفاعل ذلك الرمز التعبيري المحدد.
 
   </Accordion>
@@ -70,7 +73,7 @@ x-i18n:
   </Accordion>
 
   <Accordion title="Signal">
-    - تتحكم `channels.signal.reactionNotifications` في إشعارات التفاعلات الواردة: يعطلها `"off"`، ويصدر `"own"` (الافتراضي) أحداثًا عندما يتفاعل المستخدمون مع رسائل البوت، ويصدر `"all"` أحداثًا لكل التفاعلات.
+    - تتحكم `channels.signal.reactionNotifications` في إشعارات التفاعلات الواردة: يعطّلها `"off"`، ويصدر `"own"` (الافتراضي) أحداثًا عندما يتفاعل المستخدمون مع رسائل البوت، ويصدر `"all"` أحداثًا لكل التفاعلات.
 
   </Accordion>
 </AccordionGroup>
@@ -79,12 +82,12 @@ x-i18n:
 
 يتحكم إعداد `reactionLevel` لكل قناة في مدى اتساع استخدام الوكيل للتفاعلات. تكون القيم عادةً `off` أو `ack` أو `minimal` أو `extensive`.
 
-- [مستوى التفاعل في Telegram](/ar/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
-- [مستوى التفاعل في WhatsApp](/ar/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
+- [Telegram reactionLevel](/ar/channels/telegram#reaction-notifications) — `channels.telegram.reactionLevel`
+- [WhatsApp reactionLevel](/ar/channels/whatsapp#reaction-level) — `channels.whatsapp.reactionLevel`
 
-اضبط `reactionLevel` على القنوات الفردية لتخصيص مدى نشاط تفاعل الوكيل مع الرسائل على كل منصة.
+عيّن `reactionLevel` على القنوات الفردية لضبط مدى نشاط تفاعل الوكيل مع الرسائل على كل منصة.
 
-## ذو صلة
+## ذات صلة
 
 - [إرسال الوكيل](/ar/tools/agent-send) — أداة `message` التي تتضمن `react`
-- [القنوات](/ar/channels) — إعدادات خاصة بالقنوات
+- [القنوات](/ar/channels) — الإعدادات الخاصة بكل قناة

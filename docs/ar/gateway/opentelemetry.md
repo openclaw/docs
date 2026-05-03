@@ -1,40 +1,40 @@
 ---
 read_when:
-    - تريد إرسال استخدام نماذج OpenClaw أو تدفق الرسائل أو مقاييس الجلسات إلى جامع OpenTelemetry
-    - أنت تربط التتبعات أو المقاييس أو السجلات بـ Grafana أو Datadog أو Honeycomb أو New Relic أو Tempo أو واجهة خلفية أخرى لـ OTLP
-    - تحتاج إلى أسماء المقاييس الدقيقة، أو أسماء المقاطع، أو بُنى السمات لإنشاء لوحات معلومات أو تنبيهات
-summary: صدّر تشخيصات OpenClaw إلى أي مُجمّع OpenTelemetry عبر Plugin diagnostics-otel (OTLP/HTTP)
+    - تريد إرسال استخدام نموذج OpenClaw، أو تدفق الرسائل، أو مقاييس الجلسات إلى مُجمِّع OpenTelemetry
+    - تقوم بتوصيل التتبعات أو المقاييس أو السجلات إلى Grafana أو Datadog أو Honeycomb أو New Relic أو Tempo أو واجهة خلفية أخرى لـ OTLP
+    - تحتاج إلى أسماء المقاييس الدقيقة، أو أسماء الامتدادات، أو أشكال السمات لإنشاء لوحات معلومات أو تنبيهات
+summary: تصدير تشخيصات OpenClaw إلى أي مجمِّع OpenTelemetry عبر Plugin diagnostics-otel (OTLP/HTTP)
 title: تصدير OpenTelemetry
 x-i18n:
-    generated_at: "2026-05-02T20:46:36Z"
+    generated_at: "2026-05-03T21:34:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3287540a32b9b8400f227ab9400073e8145af89e5246e6af06945a96b751826f
+    source_hash: c8091aa633a3e10593681f94913a858587a5dc69d9947e0c0d4132f6e897b00b
     source_path: gateway/opentelemetry.md
     workflow: 16
 ---
 
-OpenClaw يصدّر التشخيصات عبر Plugin الرسمي `diagnostics-otel`
+يصدّر OpenClaw التشخيصات عبر Plugin الرسمي `diagnostics-otel`
 باستخدام **OTLP/HTTP (protobuf)**. يعمل أي جامع أو خلفية تقبل OTLP/HTTP
 من دون تغييرات في الكود. لسجلات الملفات المحلية وكيفية قراءتها، راجع
 [التسجيل](/ar/logging).
 
-## كيف تترابط المكونات
+## كيف تتكامل الأجزاء معًا
 
 - **أحداث التشخيصات** هي سجلات منظمة داخل العملية يصدرها
-  Gateway والـ plugins المضمنة لتشغيلات النموذج، وتدفق الرسائل، والجلسات، والطوابير،
-  والتنفيذ.
-- **Plugin `diagnostics-otel`** يشترك في تلك الأحداث ويصدرها كـ
-  OpenTelemetry **مقاييس**، و**تتبعات**، و**سجلات** عبر OTLP/HTTP.
-- **استدعاءات المزوّد** تتلقى ترويسة W3C `traceparent` من OpenClaw
-  من سياق مدى استدعاء النموذج الموثوق عندما يقبل نقل المزوّد الترويسات
-  المخصصة. لا يتم نشر سياق التتبع الصادر من Plugin.
-- لا تُرفق المصدّرات إلا عند تفعيل سطح التشخيصات والـ Plugin معاً،
-  لذلك تبقى الكلفة داخل العملية قريبة من الصفر افتراضياً.
+  Gateway وPlugins المضمنة لتشغيلات النماذج، وتدفق الرسائل، والجلسات، والطوابير،
+  وexec.
+- **Plugin `diagnostics-otel`** يشترك في تلك الأحداث ويصدرها على هيئة
+  **مقاييس** و**آثار** و**سجلات** OpenTelemetry عبر OTLP/HTTP.
+- تتلقى **استدعاءات المزوّد** ترويسة W3C `traceparent` من سياق مقطع استدعاء النموذج
+  الموثوق المملوك لـ OpenClaw عندما يقبل نقل المزوّد الترويسات المخصصة.
+  لا يتم نشر سياق التتبع الصادر من Plugin.
+- لا يتم إرفاق المصدّرات إلا عندما يكون كل من سطح التشخيصات وPlugin
+  مفعّلين، لذلك تبقى تكلفة التنفيذ داخل العملية قريبة من الصفر افتراضيًا.
 
 ## البدء السريع
 
-للتثبيتات المعبأة، ثبّت الـ Plugin أولاً:
+للتثبيتات المعبأة، ثبّت Plugin أولًا:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/diagnostics-otel
@@ -65,26 +65,26 @@ openclaw plugins install clawhub:@openclaw/diagnostics-otel
 }
 ```
 
-يمكنك أيضاً تفعيل الـ Plugin من CLI:
+يمكنك أيضًا تفعيل Plugin من CLI:
 
 ```bash
 openclaw plugins enable diagnostics-otel
 ```
 
 <Note>
-يدعم `protocol` حالياً `http/protobuf` فقط. يتم تجاهل `grpc`.
+يدعم `protocol` حاليًا `http/protobuf` فقط. يتم تجاهل `grpc`.
 </Note>
 
 ## الإشارات المصدّرة
 
-| الإشارة      | ما الذي يدخل فيها                                                                                                                            |
+| الإشارة     | ما يدخل فيها                                                                                                                            |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **المقاييس** | عدادات ومدرجات تكرارية لاستخدام الرموز، والكلفة، ومدة التشغيل، وتدفق الرسائل، ومسارات الطوابير، وحالة الجلسة، والتنفيذ، وضغط الذاكرة.          |
-| **التتبعات**  | أمداء لاستخدام النموذج، واستدعاءات النموذج، ودورة حياة الحزام، وتنفيذ الأدوات، والتنفيذ، ومعالجة webhook/الرسائل، وتجميع السياق، وحلقات الأدوات. |
-| **السجلات**    | سجلات `logging.file` منظمة تُصدّر عبر OTLP عند تفعيل `diagnostics.otel.logs`.                                              |
+| **المقاييس** | عدادات ومدرجات تكرارية لاستخدام الرموز، والتكلفة، ومدة التشغيل، وتدفق الرسائل، ومسارات الطوابير، وحالة الجلسة، وexec، وضغط الذاكرة.          |
+| **الآثار**  | مقاطع لاستخدام النموذج، واستدعاءات النموذج، ودورة حياة الحاضنة، وتنفيذ الأدوات، وexec، ومعالجة Webhook/الرسائل، وتجميع السياق، وحلقات الأدوات. |
+| **السجلات**    | سجلات `logging.file` المنظمة التي يتم تصديرها عبر OTLP عند تفعيل `diagnostics.otel.logs`.                                              |
 
-بدّل `traces` و`metrics` و`logs` بشكل مستقل. تكون الثلاثة كلها مفعلة افتراضياً
-عندما تكون `diagnostics.otel.enabled` تساوي true.
+فعّل أو عطّل `traces` و`metrics` و`logs` كلًا على حدة. تكون الثلاثة كلها مفعّلة افتراضيًا
+عندما تكون `diagnostics.otel.enabled` صحيحة.
 
 ## مرجع الإعدادات
 
@@ -123,54 +123,54 @@ openclaw plugins enable diagnostics-otel
 
 | المتغير                                                                                                          | الغرض                                                                                                                                                                                                                                    |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | يتجاوز `diagnostics.otel.endpoint`. إذا كانت القيمة تحتوي مسبقاً على `/v1/traces` أو `/v1/metrics` أو `/v1/logs`، فتُستخدم كما هي.                                                                                                          |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | تجاوزات نقاط نهاية خاصة بالإشارة تُستخدم عندما لا يكون مفتاح إعدادات `diagnostics.otel.*Endpoint` المطابق مضبوطاً. تفوز الإعدادات الخاصة بالإشارة على متغير البيئة الخاص بالإشارة، والذي يفوز على نقطة النهاية المشتركة.                                     |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | يتجاوز `diagnostics.otel.endpoint`. إذا كانت القيمة تحتوي مسبقًا على `/v1/traces` أو `/v1/metrics` أو `/v1/logs`، فتُستخدم كما هي.                                                                                                          |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | تجاوزات نقاط نهاية خاصة بالإشارة تُستخدم عندما يكون مفتاح إعدادات `diagnostics.otel.*Endpoint` المطابق غير مضبوط. تتغلب الإعدادات الخاصة بالإشارة على متغير البيئة الخاص بالإشارة، والذي يتغلب بدوره على نقطة النهاية المشتركة.                                     |
 | `OTEL_SERVICE_NAME`                                                                                               | يتجاوز `diagnostics.otel.serviceName`.                                                                                                                                                                                                   |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | يتجاوز بروتوكول النقل السلكي (لا يُحترم اليوم إلا `http/protobuf`).                                                                                                                                                                        |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | اضبطه على `gen_ai_latest_experimental` لإصدار أحدث سمة مدى تجريبية لـ GenAI (`gen_ai.provider.name`) بدلاً من `gen_ai.system` القديمة. تستخدم مقاييس GenAI دائماً سمات دلالية محدودة ومنخفضة الكاردينالية بغض النظر عن ذلك. |
-| `OPENCLAW_OTEL_PRELOADED`                                                                                         | اضبطه على `1` عندما تكون عملية تحميل مسبق أخرى أو عملية مضيفة قد سجلت OpenTelemetry SDK العام بالفعل. عندها يتخطى الـ Plugin دورة حياة NodeSDK الخاصة به، لكنه يظل يوصل مستمعي التشخيصات ويحترم `traces`/`metrics`/`logs`.                |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | يتجاوز بروتوكول النقل السلكي (لا يُعتمد اليوم إلا `http/protobuf`).                                                                                                                                                                        |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | اضبطه على `gen_ai_latest_experimental` لإصدار أحدث سمة تجريبية لمقطع GenAI (`gen_ai.provider.name`) بدلًا من `gen_ai.system` القديم. تستخدم مقاييس GenAI دائمًا سمات دلالية محدودة ومنخفضة الكاردينالية بغض النظر عن ذلك. |
+| `OPENCLAW_OTEL_PRELOADED`                                                                                         | اضبطه على `1` عندما تكون عملية تحميل مسبق أخرى أو عملية مضيفة قد سجلت مسبقًا OpenTelemetry SDK العام. عندها يتخطى Plugin دورة حياة NodeSDK الخاصة به، لكنه يظل يوصّل مستمعي التشخيصات ويحترم `traces`/`metrics`/`logs`.                |
 
 ## الخصوصية والتقاط المحتوى
 
-لا يتم تصدير محتوى النموذج/الأداة الخام **افتراضياً**. تحمل الأمداء
-معرّفات محدودة (القناة، المزوّد، النموذج، فئة الخطأ، معرّفات الطلبات كتجزئة فقط)
-ولا تتضمن أبداً نص الموجه، أو نص الاستجابة، أو مدخلات الأداة، أو مخرجات الأداة، أو
-مفاتيح الجلسة.
+لا يتم تصدير محتوى النماذج/الأدوات الخام **افتراضيًا**. تحمل المقاطع
+معرّفات محدودة (القناة، والمزوّد، والنموذج، وفئة الخطأ، ومعرّفات طلبات بالتجزئة فقط)
+ولا تتضمن أبدًا نص المطالبة، أو نص الاستجابة، أو مدخلات الأدوات، أو مخرجات الأدوات، أو
+مفاتيح الجلسات.
 
-قد تتضمن طلبات النموذج الصادرة ترويسة W3C `traceparent`. يتم إنشاء تلك الترويسة
-فقط من سياق تتبع تشخيصي مملوك لـ OpenClaw لاستدعاء النموذج النشط.
-تُستبدل ترويسات `traceparent` الموجودة والمقدمة من المستدعي، لذلك لا يمكن للـ plugins أو
-خيارات المزوّد المخصصة انتحال أصل تتبع عابر للخدمات.
+قد تتضمن طلبات النماذج الصادرة ترويسة W3C `traceparent`. تُنشأ تلك الترويسة
+فقط من سياق تتبع التشخيصات المملوك لـ OpenClaw لاستدعاء النموذج النشط.
+يتم استبدال ترويسات `traceparent` المقدمة من المستدعي إن وجدت، لذلك لا تستطيع Plugins أو
+خيارات المزوّد المخصصة تزوير نسب التتبع عبر الخدمات.
 
-اضبط `diagnostics.otel.captureContent.*` على `true` فقط عندما يكون جامعك
-وسياسة الاحتفاظ لديك معتمدين لنصوص الموجهات، أو الاستجابات، أو الأدوات، أو موجهات النظام.
+اضبط `diagnostics.otel.captureContent.*` على `true` فقط عندما يكون الجامع
+وسياسة الاحتفاظ معتمدين لنص المطالبة، أو الاستجابة، أو الأداة، أو مطالبة النظام.
 كل مفتاح فرعي اختياري بشكل مستقل:
 
-- `inputMessages` — محتوى موجه المستخدم.
+- `inputMessages` — محتوى مطالبة المستخدم.
 - `outputMessages` — محتوى استجابة النموذج.
 - `toolInputs` — حمولات وسائط الأداة.
 - `toolOutputs` — حمولات نتائج الأداة.
-- `systemPrompt` — موجه النظام/المطور المجمّع.
+- `systemPrompt` — مطالبة النظام/المطور المجمّعة.
 
-عند تفعيل أي مفتاح فرعي، تحصل أمداء النموذج والأداة على سمات
+عند تفعيل أي مفتاح فرعي، تحصل مقاطع النموذج والأداة على سمات
 `openclaw.content.*` محدودة ومنقحة لتلك الفئة فقط.
 
 ## أخذ العينات والتفريغ
 
-- **التتبعات:** `diagnostics.otel.sampleRate` (مدى الجذر فقط، `0.0` يسقط الكل،
-  و`1.0` يحتفظ بالكل).
+- **الآثار:** `diagnostics.otel.sampleRate` (مقطع الجذر فقط، `0.0` يسقط الكل،
+  و`1.0` يبقي الكل).
 - **المقاييس:** `diagnostics.otel.flushIntervalMs` (الحد الأدنى `1000`).
 - **السجلات:** تحترم سجلات OTLP `logging.level` (مستوى سجل الملف). تستخدم
-  مسار تنقيح سجل التشخيصات، وليس تنسيق وحدة التحكم. يجب أن تفضل
-  التثبيتات عالية الحجم أخذ العينات/الترشيح في جامع OTLP بدلاً من أخذ العينات المحلي.
-- **ربط سجلات الملفات:** تتضمن سجلات ملفات JSONL حقول `traceId` و
-  `spanId` و`parentSpanId` و`traceFlags` على المستوى الأعلى عندما يحمل استدعاء السجل
-  سياق تتبع تشخيصياً صالحاً، ما يتيح لمعالجات السجلات ربط أسطر السجل المحلية
-  بالأمداء المصدّرة.
-- **ربط الطلبات:** تنشئ طلبات HTTP في Gateway وإطارات WebSocket
-  نطاق تتبع طلب داخلياً. ترث السجلات والأحداث التشخيصية داخل ذلك النطاق
-  تتبع الطلب افتراضياً، بينما تُنشأ أمداء تشغيل الوكيل واستدعاء النموذج
-  كأبناء بحيث تبقى ترويسات `traceparent` الخاصة بالمزوّد على التتبع نفسه.
+  مسار تنقيح سجل التشخيصات، وليس تنسيق وحدة التحكم. ينبغي للتثبيتات عالية الحجم
+  تفضيل أخذ العينات/الترشيح في جامع OTLP على أخذ العينات محليًا.
+- **ربط سجلات الملفات:** تتضمن سجلات ملفات JSONL حقول المستوى الأعلى `traceId`
+  و`spanId` و`parentSpanId` و`traceFlags` عندما يحمل استدعاء السجل سياق تتبع
+  تشخيصات صالحًا، مما يتيح لمعالجات السجلات ضم أسطر السجلات المحلية إلى
+  المقاطع المصدّرة.
+- **ربط الطلبات:** تنشئ طلبات HTTP الخاصة بـ Gateway وإطارات WebSocket نطاق تتبع طلب
+  داخليًا. ترث السجلات وأحداث التشخيصات داخل ذلك النطاق تتبع الطلب افتراضيًا،
+  بينما تُنشأ مقاطع تشغيل الوكيل واستدعاء النموذج كأبناء كي تبقى ترويسات `traceparent`
+  الخاصة بالمزوّد على التتبع نفسه.
 
 ## المقاييس المصدّرة
 
@@ -180,12 +180,12 @@ openclaw plugins enable diagnostics-otel
 - `openclaw.cost.usd` (عداد، السمات: `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 - `openclaw.run.duration_ms` (مدرج تكراري، السمات: `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 - `openclaw.context.tokens` (مدرج تكراري، السمات: `openclaw.context`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
-- `gen_ai.client.token.usage` (مدرج تكراري، مقياس اصطلاحات دلالية لـ GenAI، السمات: `gen_ai.token.type` = `input`/`output`, `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`)
-- `gen_ai.client.operation.duration` (مدرج تكراري، بالثواني، مقياس اصطلاحات دلالية لـ GenAI، السمات: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, اختياري `error.type`)
-- `openclaw.model_call.duration_ms` (مدرج تكراري، السمات: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`، بالإضافة إلى `openclaw.errorCategory` و`openclaw.failureKind` عند الأخطاء المصنفة)
-- `openclaw.model_call.request_bytes` (مدرج تكراري، حجم حمولة طلب النموذج النهائي بالبايتات UTF-8؛ بلا محتوى حمولة خام)
-- `openclaw.model_call.response_bytes` (مدرج تكراري، حجم أحداث استجابة النموذج المتدفقة بالبايتات UTF-8؛ بلا محتوى استجابة خام)
-- `openclaw.model_call.time_to_first_byte_ms` (مدرج تكراري، الوقت المنقضي قبل أول حدث استجابة متدفق)
+- `gen_ai.client.token.usage` (مدرج تكراري، مقياس اصطلاحات GenAI الدلالية، السمات: `gen_ai.token.type` = `input`/`output`, `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`)
+- `gen_ai.client.operation.duration` (مدرج تكراري، بالثواني، مقياس اصطلاحات GenAI الدلالية، السمات: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, و`error.type` اختياريًا)
+- `openclaw.model_call.duration_ms` (مدرج تكراري، السمات: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`، إضافة إلى `openclaw.errorCategory` و`openclaw.failureKind` عند الأخطاء المصنفة)
+- `openclaw.model_call.request_bytes` (مدرج تكراري، حجم حمولات طلب النموذج النهائية ببايتات UTF-8؛ بلا محتوى حمولة خام)
+- `openclaw.model_call.response_bytes` (مدرج تكراري، حجم أحداث استجابة النموذج المتدفقة ببايتات UTF-8؛ بلا محتوى استجابة خام)
+- `openclaw.model_call.time_to_first_byte_ms` (مدرج تكراري، الزمن المنقضي قبل أول حدث استجابة متدفق)
 
 ### تدفق الرسائل
 
@@ -205,103 +205,107 @@ openclaw plugins enable diagnostics-otel
 - `openclaw.queue.depth` (مدرج تكراري، السمات: `openclaw.lane` أو `openclaw.channel=heartbeat`)
 - `openclaw.queue.wait_ms` (مدرج تكراري، السمات: `openclaw.lane`)
 - `openclaw.session.state` (عداد، السمات: `openclaw.state`, `openclaw.reason`)
-- `openclaw.session.stuck` (عداد، السمات: `openclaw.state`؛ يُصدر فقط لمسك دفاتر الجلسات المتقادمة من دون عمل نشط)
-- `openclaw.session.stuck_age_ms` (مدرج تكراري، السمات: `openclaw.state`؛ يُصدر فقط لمسك دفاتر الجلسات المتقادمة من دون عمل نشط)
+- `openclaw.session.stuck` (عداد، السمات: `openclaw.state`؛ يصدر فقط لمحاسبة الجلسات القديمة من دون عمل نشط)
+- `openclaw.session.stuck_age_ms` (مدرج تكراري، السمات: `openclaw.state`؛ يصدر فقط لمحاسبة الجلسات القديمة من دون عمل نشط)
 - `openclaw.run.attempt` (عداد، السمات: `openclaw.attempt`)
 
-### قياسات حيوية الجلسة
+### قياس حيوية الجلسة عن بُعد
 
-`diagnostics.stuckSessionWarnMs` هو حد العمر بلا تقدم لتشخيصات حيوية الجلسة.
-لا تتقدم جلسة `processing` نحو هذا الحد بينما يلاحظ OpenClaw تقدماً في الرد أو الأداة أو الحالة أو الكتلة أو وقت تشغيل ACP.
-لا تُحتسب إشارات إبقاء الكتابة نشطة كتقدم، لذلك يمكن مع ذلك اكتشاف نموذج أو حزام صامت.
+`diagnostics.stuckSessionWarnMs` هو حد عمر انعدام التقدم لتشخيصات
+حيوية الجلسة. لا تتقدم جلسة `processing` نحو هذا الحد
+ما دام OpenClaw يرصد تقدمًا في الرد، أو الأداة، أو الحالة، أو الكتلة، أو وقت تشغيل ACP.
+لا تُحتسب إشارات بقاء الكتابة كتقدم، لذلك يمكن
+اكتشاف النموذج أو الحاضنة الصامتة مع ذلك.
 
-يصنف OpenClaw الجلسات حسب العمل الذي لا يزال بإمكانه ملاحظته:
+يصنّف OpenClaw الجلسات بحسب العمل الذي لا يزال قادرًا على رصده:
 
-- `session.long_running`: عمل مضمن نشط، أو استدعاءات نموذج، أو استدعاءات أدوات ما زالت
-  تحرز تقدماً.
+- `session.long_running`: عمل مضمّن نشط، أو استدعاءات نموذج، أو استدعاءات أدوات لا تزال
+  تحقق تقدمًا.
 - `session.stalled`: يوجد عمل نشط، لكن التشغيل النشط لم يبلّغ عن
-  تقدم حديث.
-- `session.stuck`: سجلات جلسة متقادمة بلا عمل نشط. هذا هو
-  تصنيف الحيوية الوحيد الذي يحرر مسار الجلسة المتأثر.
+  تقدم حديث. تبقى عمليات التشغيل المضمّنة المتوقفة مؤقتًا في وضع المراقبة فقط في البداية، ثم
+  تُجهض مع التصريف بعد 10 دقائق على الأقل و5 أضعاف `diagnostics.stuckSessionWarnMs`
+  بلا تقدم حتى يمكن استئناف الأدوار المصطفة خلف المسار.
+- `session.stuck`: تدوين قديم لحالة الجلسة بلا عمل نشط. يحرر هذا
+  مسار الجلسة المتأثر فورًا.
 
-يبث `session.stuck` فقط عداد `openclaw.session.stuck`، والمدرج التكراري
-`openclaw.session.stuck_age_ms`، والنطاق `openclaw.session.stuck`.
-تتراجع تشخيصات `session.stuck` المتكررة بينما تبقى الجلسة
-بلا تغيير، لذلك ينبغي أن تطلق لوحات المعلومات تنبيهاً عند الزيادات المستمرة بدلاً من كل
-نبضة Heartbeat. لمعرفة مفتاح الإعداد والقيم الافتراضية، راجع
+وحده `session.stuck` يصدر عداد `openclaw.session.stuck`،
+ومدرج `openclaw.session.stuck_age_ms`، ونطاق `openclaw.session.stuck`.
+تتراجع تشخيصات `session.stuck` المتكررة ما دامت الجلسة بلا تغيير،
+لذلك ينبغي أن تنبّه لوحات المعلومات عند الزيادات المستمرة بدلًا من كل
+نبضة Heartbeat. لمعرفة مقبض الإعداد والقيم الافتراضية، راجع
 [مرجع الإعدادات](/ar/gateway/configuration-reference#diagnostics).
 
 ### دورة حياة الحاضنة
 
-- `openclaw.harness.duration_ms` (مدرج تكراري، سمات: `openclaw.harness.id`، `openclaw.harness.plugin`، `openclaw.outcome`، `openclaw.harness.phase` عند الأخطاء)
+- `openclaw.harness.duration_ms` (مدرج، سمات: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.harness.phase` عند الأخطاء)
 
-### Exec
+### التنفيذ
 
-- `openclaw.exec.duration_ms` (مدرج تكراري، سمات: `openclaw.exec.target`، `openclaw.exec.mode`، `openclaw.outcome`، `openclaw.failureKind`)
+- `openclaw.exec.duration_ms` (مدرج، سمات: `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
 
-### الأجزاء الداخلية للتشخيصات (الذاكرة وحلقة الأدوات)
+### مكونات التشخيص الداخلية (الذاكرة وحلقة الأدوات)
 
-- `openclaw.memory.heap_used_bytes` (مدرج تكراري، سمات: `openclaw.memory.kind`)
-- `openclaw.memory.rss_bytes` (مدرج تكراري)
+- `openclaw.memory.heap_used_bytes` (مدرج، سمات: `openclaw.memory.kind`)
+- `openclaw.memory.rss_bytes` (مدرج)
 - `openclaw.memory.pressure` (عداد، سمات: `openclaw.memory.level`)
-- `openclaw.tool.loop.iterations` (عداد، سمات: `openclaw.toolName`، `openclaw.outcome`)
-- `openclaw.tool.loop.duration_ms` (مدرج تكراري، سمات: `openclaw.toolName`، `openclaw.outcome`)
+- `openclaw.tool.loop.iterations` (عداد، سمات: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.tool.loop.duration_ms` (مدرج، سمات: `openclaw.toolName`, `openclaw.outcome`)
 
 ## النطاقات المصدّرة
 
 - `openclaw.model.usage`
-  - `openclaw.channel`، `openclaw.provider`، `openclaw.model`
-  - `openclaw.tokens.*` (الإدخال/الإخراج/قراءة التخزين المؤقت/كتابة التخزين المؤقت/الإجمالي)
-  - `gen_ai.system` افتراضياً، أو `gen_ai.provider.name` عند تفعيل أحدث اصطلاحات GenAI الدلالية
-  - `gen_ai.request.model`، `gen_ai.operation.name`، `gen_ai.usage.*`
+  - `openclaw.channel`, `openclaw.provider`, `openclaw.model`
+  - `openclaw.tokens.*` (input/output/cache_read/cache_write/total)
+  - `gen_ai.system` افتراضيًا، أو `gen_ai.provider.name` عند تفعيل أحدث اصطلاحات GenAI الدلالية
+  - `gen_ai.request.model`, `gen_ai.operation.name`, `gen_ai.usage.*`
 - `openclaw.run`
-  - `openclaw.outcome`، `openclaw.channel`، `openclaw.provider`، `openclaw.model`، `openclaw.errorCategory`
+  - `openclaw.outcome`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`, `openclaw.errorCategory`
 - `openclaw.model.call`
-  - `gen_ai.system` افتراضياً، أو `gen_ai.provider.name` عند تفعيل أحدث اصطلاحات GenAI الدلالية
-  - `gen_ai.request.model`، `gen_ai.operation.name`، `openclaw.provider`، `openclaw.model`، `openclaw.api`، `openclaw.transport`
-  - `openclaw.errorCategory` و`openclaw.failureKind` الاختياري عند الأخطاء
-  - `openclaw.model_call.request_bytes`، `openclaw.model_call.response_bytes`، `openclaw.model_call.time_to_first_byte_ms`
-  - `openclaw.provider.request_id_hash` (تجزئة محدودة مستندة إلى SHA لمعرّف طلب المزوّد العلوي؛ لا تُصدّر المعرّفات الخام)
+  - `gen_ai.system` افتراضيًا، أو `gen_ai.provider.name` عند تفعيل أحدث اصطلاحات GenAI الدلالية
+  - `gen_ai.request.model`, `gen_ai.operation.name`, `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`
+  - `openclaw.errorCategory` و`openclaw.failureKind` اختياريًا عند الأخطاء
+  - `openclaw.model_call.request_bytes`, `openclaw.model_call.response_bytes`, `openclaw.model_call.time_to_first_byte_ms`
+  - `openclaw.provider.request_id_hash` (تجزئة محدودة مستندة إلى SHA لمعرّف طلب مزود المنبع؛ لا تُصدَّر المعرّفات الخام)
 - `openclaw.harness.run`
-  - `openclaw.harness.id`، `openclaw.harness.plugin`، `openclaw.outcome`، `openclaw.provider`، `openclaw.model`، `openclaw.channel`
-  - عند الاكتمال: `openclaw.harness.result_classification`، `openclaw.harness.yield_detected`، `openclaw.harness.items.started`، `openclaw.harness.items.completed`، `openclaw.harness.items.active`
-  - عند الخطأ: `openclaw.harness.phase`، `openclaw.errorCategory`، `openclaw.harness.cleanup_failed` الاختياري
+  - `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.provider`, `openclaw.model`, `openclaw.channel`
+  - عند الاكتمال: `openclaw.harness.result_classification`, `openclaw.harness.yield_detected`, `openclaw.harness.items.started`, `openclaw.harness.items.completed`, `openclaw.harness.items.active`
+  - عند الخطأ: `openclaw.harness.phase`, `openclaw.errorCategory`, و`openclaw.harness.cleanup_failed` اختياريًا
 - `openclaw.tool.execution`
-  - `gen_ai.tool.name`، `openclaw.toolName`، `openclaw.errorCategory`، `openclaw.tool.params.*`
+  - `gen_ai.tool.name`, `openclaw.toolName`, `openclaw.errorCategory`, `openclaw.tool.params.*`
 - `openclaw.exec`
-  - `openclaw.exec.target`، `openclaw.exec.mode`، `openclaw.outcome`، `openclaw.failureKind`، `openclaw.exec.command_length`، `openclaw.exec.exit_code`، `openclaw.exec.timed_out`
+  - `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`, `openclaw.exec.command_length`, `openclaw.exec.exit_code`, `openclaw.exec.timed_out`
 - `openclaw.webhook.processed`
-  - `openclaw.channel`، `openclaw.webhook`، `openclaw.chatId`
+  - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`
 - `openclaw.webhook.error`
-  - `openclaw.channel`، `openclaw.webhook`، `openclaw.chatId`، `openclaw.error`
+  - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`, `openclaw.error`
 - `openclaw.message.processed`
-  - `openclaw.channel`، `openclaw.outcome`، `openclaw.chatId`، `openclaw.messageId`، `openclaw.reason`
+  - `openclaw.channel`, `openclaw.outcome`, `openclaw.chatId`, `openclaw.messageId`, `openclaw.reason`
 - `openclaw.message.delivery`
-  - `openclaw.channel`، `openclaw.delivery.kind`، `openclaw.outcome`، `openclaw.errorCategory`، `openclaw.delivery.result_count`
+  - `openclaw.channel`, `openclaw.delivery.kind`, `openclaw.outcome`, `openclaw.errorCategory`, `openclaw.delivery.result_count`
 - `openclaw.session.stuck`
-  - `openclaw.state`، `openclaw.ageMs`، `openclaw.queueDepth`
+  - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`
 - `openclaw.context.assembled`
-  - `openclaw.prompt.size`، `openclaw.history.size`، `openclaw.context.tokens`، `openclaw.errorCategory` (بلا محتوى موجه أو سجل أو استجابة أو مفتاح جلسة)
+  - `openclaw.prompt.size`, `openclaw.history.size`, `openclaw.context.tokens`, `openclaw.errorCategory` (بلا محتوى مطالبة أو سجل أو استجابة أو مفتاح جلسة)
 - `openclaw.tool.loop`
-  - `openclaw.toolName`، `openclaw.outcome`، `openclaw.iterations`، `openclaw.errorCategory` (بلا رسائل حلقة أو معاملات أو مخرجات أدوات)
+  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (بلا رسائل حلقة أو معاملات أو مخرجات أداة)
 - `openclaw.memory.pressure`
-  - `openclaw.memory.level`، `openclaw.memory.heap_used_bytes`، `openclaw.memory.rss_bytes`
+  - `openclaw.memory.level`, `openclaw.memory.heap_used_bytes`, `openclaw.memory.rss_bytes`
 
-عند تفعيل التقاط المحتوى صراحةً، يمكن أن تتضمن نطاقات النموذج والأدوات أيضاً
-سمات `openclaw.content.*` محدودة ومنقحة لفئات المحتوى المحددة
-التي اخترت تفعيلها.
+عند تفعيل التقاط المحتوى صراحةً، يمكن لنطاقات النموذج والأدوات أيضًا
+أن تتضمن سمات `openclaw.content.*` محدودة ومنقحة لفئات
+المحتوى المحددة التي اخترت تفعيلها.
 
 ## كتالوج أحداث التشخيص
 
-تدعم الأحداث أدناه المقاييس والنطاقات أعلاه. يمكن لـ Plugins أيضاً الاشتراك
-فيها مباشرةً من دون تصدير OTLP.
+تدعم الأحداث أدناه المقاييس والنطاقات أعلاه. يمكن للـ Plugins أيضًا الاشتراك
+فيها مباشرةً دون تصدير OTLP.
 
 **استخدام النموذج**
 
-- `model.usage` — الرموز، التكلفة، المدة، السياق، المزوّد/النموذج/القناة،
-  معرّفات الجلسات. `usage` هي محاسبة المزوّد/الدورة للتكلفة والقياس عن بُعد؛
-  و`context.used` هي لقطة الموجه/السياق الحالية ويمكن أن تكون أقل من
-  `usage.total` لدى المزوّد عند وجود إدخال مخزّن مؤقتاً أو استدعاءات حلقة أدوات.
+- `model.usage` — الرموز، التكلفة، المدة، السياق، المزود/النموذج/القناة،
+  معرّفات الجلسة. `usage` هو احتساب المزود/الدور للتكلفة والقياس عن بُعد؛
+  و`context.used` هو لقطة المطالبة/السياق الحالية ويمكن أن يكون أقل من
+  `usage.total` لدى المزود عند وجود إدخال مخزّن مؤقتًا أو استدعاءات حلقة أدوات.
 
 **تدفق الرسائل**
 
@@ -309,31 +313,31 @@ openclaw plugins enable diagnostics-otel
 - `message.queued` / `message.processed`
 - `message.delivery.started` / `message.delivery.completed` / `message.delivery.error`
 
-**قائمة الانتظار والجلسة**
+**الصف والجلسة**
 
 - `queue.lane.enqueue` / `queue.lane.dequeue`
 - `session.state` / `session.long_running` / `session.stalled` / `session.stuck`
 - `run.attempt` / `run.progress`
-- `diagnostic.heartbeat` (عدادات مجمّعة: Webhook/قائمة الانتظار/الجلسة)
+- `diagnostic.heartbeat` (عدادات مجمعة: webhooks/queue/session)
 
 **دورة حياة الحاضنة**
 
 - `harness.run.started` / `harness.run.completed` / `harness.run.error` —
-  دورة حياة لكل تشغيل لحاضنة الوكيل. تتضمن `harnessId` و`pluginId` الاختياري
-  والمزوّد/النموذج/القناة ومعرّف التشغيل. يضيف الاكتمال
-  `durationMs` و`outcome` و`resultClassification` الاختياري و`yieldDetected`
-  وأعداد `itemLifecycle`. تضيف الأخطاء `phase`
+  دورة حياة لكل تشغيل لحاضنة الوكيل. تتضمن `harnessId`، و`pluginId`
+  اختياريًا، والمزود/النموذج/القناة، ومعرّف التشغيل. يضيف الاكتمال
+  `durationMs` و`outcome` و`resultClassification` اختياريًا و`yieldDetected`
+  وعدّادات `itemLifecycle`. تضيف الأخطاء `phase`
   (`prepare`/`start`/`send`/`resolve`/`cleanup`) و`errorCategory` و
-  `cleanupFailed` الاختياري.
+  `cleanupFailed` اختياريًا.
 
-**Exec**
+**التنفيذ**
 
-- `exec.process.completed` — النتيجة الطرفية، والمدة، والهدف، والوضع، ورمز الخروج،
-  ونوع الفشل. لا يتم تضمين نص الأمر ومجلدات العمل.
+- `exec.process.completed` — النتيجة النهائية، والمدة، والهدف، والوضع، ورمز الخروج،
+  ونوع الفشل. لا تُضمَّن نصوص الأوامر ولا أدلة العمل.
 
-## من دون مصدّر
+## دون مصدّر
 
-يمكنك إبقاء أحداث التشخيص متاحة لـ Plugins أو منافذ مخصصة من دون
+يمكنك إبقاء أحداث التشخيص متاحة للـ Plugins أو للمصارف المخصصة دون
 تشغيل `diagnostics-otel`:
 
 ```json5
@@ -342,7 +346,7 @@ openclaw plugins enable diagnostics-otel
 }
 ```
 
-لإخراج تصحيح أخطاء موجّه من دون رفع `logging.level`، استخدم أعلام التشخيص.
+للحصول على مخرجات تصحيح محددة دون رفع `logging.level`، استخدم أعلام التشخيص.
 الأعلام غير حساسة لحالة الأحرف وتدعم أحرف البدل (مثل `telegram.*` أو
 `*`):
 
@@ -352,14 +356,14 @@ openclaw plugins enable diagnostics-otel
 }
 ```
 
-أو كتجاوز بيئة لمرة واحدة:
+أو كتجاوز بيئي لمرة واحدة:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload openclaw gateway
 ```
 
-ينتقل إخراج العلم إلى ملف السجل القياسي (`logging.file`) ويظل
-منقحاً بواسطة `logging.redactSensitive`. الدليل الكامل:
+تذهب مخرجات الأعلام إلى ملف السجل القياسي (`logging.file`) وتظل
+منقحة بواسطة `logging.redactSensitive`. الدليل الكامل:
 [أعلام التشخيص](/ar/diagnostics/flags).
 
 ## التعطيل
@@ -370,13 +374,13 @@ OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload openclaw gateway
 }
 ```
 
-يمكنك أيضاً ترك `diagnostics-otel` خارج `plugins.allow`، أو تشغيل
+يمكنك أيضًا ترك `diagnostics-otel` خارج `plugins.allow`، أو تشغيل
 `openclaw plugins disable diagnostics-otel`.
 
-## ذات صلة
+## ذو صلة
 
-- [التسجيل](/ar/logging) — سجلات الملفات، وإخراج وحدة التحكم، والمتابعة عبر CLI، وتبويب سجلات واجهة التحكم
-- [الأجزاء الداخلية لتسجيل Gateway](/ar/gateway/logging) — أنماط سجلات WS، وبادئات الأنظمة الفرعية، والتقاط وحدة التحكم
-- [أعلام التشخيص](/ar/diagnostics/flags) — أعلام سجلات تصحيح الأخطاء الموجهة
-- [تصدير التشخيصات](/ar/gateway/diagnostics) — أداة حزمة دعم المشغّل (منفصلة عن تصدير OTEL)
+- [التسجيل](/ar/logging) — سجلات الملفات، ومخرجات وحدة التحكم، وتتبع CLI، وتبويب سجلات واجهة Control UI
+- [مكونات تسجيل Gateway الداخلية](/ar/gateway/logging) — أنماط سجلات WS، وبادئات الأنظمة الفرعية، والتقاط وحدة التحكم
+- [أعلام التشخيص](/ar/diagnostics/flags) — أعلام سجل تصحيح محددة
+- [تصدير التشخيصات](/ar/gateway/diagnostics) — أداة حزمة دعم المشغل (منفصلة عن تصدير OTEL)
 - [مرجع الإعدادات](/ar/gateway/configuration-reference#diagnostics) — مرجع كامل لحقول `diagnostics.*`
