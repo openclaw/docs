@@ -1,27 +1,27 @@
 ---
 read_when:
-    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin ของ WhatsApp
-summary: เพิ่มส่วนติดต่อของช่องทาง WhatsApp สำหรับส่งและรับข้อความ OpenClaw
-title: Plugin WhatsApp
+    - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin WhatsApp
+summary: เพิ่มส่วนเชื่อมต่อของช่องทาง WhatsApp สำหรับส่งและรับข้อความ OpenClaw.
+title: WhatsApp Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:58:12Z"
+    generated_at: "2026-05-03T10:17:54Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3fbdcff85954d0ff0269348e9c75b8b85cae69b9897a568432bfa06ed7276ced
+    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
 
-# WhatsApp Plugin
+# Plugin WhatsApp
 
-เพิ่มพื้นผิวช่องทาง WhatsApp สำหรับการส่งและรับข้อความ OpenClaw
+เพิ่มอินเทอร์เฟซช่องทาง WhatsApp สำหรับการส่งและรับข้อความ OpenClaw
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/whatsapp`
-- เส้นทางการติดตั้ง: ClawHub + npm
+- ช่องทางการติดตั้ง: npm; ClawHub
 
-## พื้นผิว
+## อินเทอร์เฟซ
 
 channels: whatsapp
 

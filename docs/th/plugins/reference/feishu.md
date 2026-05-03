@@ -1,13 +1,13 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin feishu
-summary: เพิ่มส่วนติดต่อช่องทาง Feishu สำหรับส่งและรับข้อความ OpenClaw.
+summary: เพิ่มส่วนติดต่อช่องทาง Feishu สำหรับส่งและรับข้อความ OpenClaw
 title: Plugin Feishu
 x-i18n:
-    generated_at: "2026-05-02T20:51:41Z"
+    generated_at: "2026-05-03T10:16:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0c188fdc65a3e2e7a354063e090001099a76ad3f6df423f18611c6e3799b6983
+    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## การแจกจ่าย
 
 - แพ็กเกจ: `@openclaw/feishu`
-- เส้นทางการติดตั้ง: ClawHub + npm
+- ช่องทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 

@@ -1,29 +1,29 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin การโทรด้วยเสียง
-summary: เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้.
+summary: เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
 title: Plugin การโทรด้วยเสียง
 x-i18n:
-    generated_at: "2026-05-02T20:57:47Z"
+    generated_at: "2026-05-03T10:17:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
 
-# Plugin Voice Call
+# Plugin การโทรด้วยเสียง
 
 เพิ่มเครื่องมือที่เอเจนต์เรียกใช้ได้
 
-## การแจกจ่าย
+## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/voice-call`
-- วิธีติดตั้ง: ClawHub + npm
+- เส้นทางการติดตั้ง: npm; ClawHub
 
-## ส่วนติดต่อ
+## พื้นผิว
 
-สัญญา: เครื่องมือ
+contracts: tools
 
 ## เอกสารที่เกี่ยวข้อง
 

@@ -1,26 +1,26 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin diffs
-summary: ตัวแสดง diff แบบอ่านอย่างเดียวและตัวเรนเดอร์ไฟล์สำหรับเอเจนต์
-title: Plugin แสดงความแตกต่าง
+summary: ตัวแสดงส่วนต่างและตัวแสดงผลไฟล์แบบอ่านอย่างเดียวสำหรับเอเจนต์
+title: Plugin ส่วนต่าง
 x-i18n:
-    generated_at: "2026-05-02T20:51:09Z"
+    generated_at: "2026-05-03T10:16:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c1949ed6e1431a44121694f64ca17c0dc8b7c4c6171959ff8b7d6ab27793e8ab
+    source_hash: 1a56c666d510a949b40b9aee47001844fc82206ee378ac5770f23bea9c550027
     source_path: plugins/reference/diffs.md
     workflow: 16
 ---
 
 # Plugin Diffs
 
-ตัวดู diff และตัวเรนเดอร์ไฟล์แบบอ่านอย่างเดียวสำหรับเอเจนต์
+โปรแกรมดูส่วนต่างและตัวแสดงผลไฟล์แบบอ่านอย่างเดียวสำหรับเอเจนต์
 
 ## การเผยแพร่
 
-- Package: `@openclaw/diffs`
-- เส้นทางการติดตั้ง: ClawHub + npm
+- แพ็กเกจ: `@openclaw/diffs`
+- เส้นทางการติดตั้ง: npm; ClawHub
 
-## พื้นผิว
+## ส่วนติดต่อ
 
-contracts: tools; skills
+สัญญา: เครื่องมือ; Skills

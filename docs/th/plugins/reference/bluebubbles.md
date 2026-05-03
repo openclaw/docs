@@ -1,13 +1,13 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin bluebubbles
-summary: เพิ่มส่วนติดต่อช่องทาง BlueBubbles สำหรับส่งและรับข้อความ OpenClaw.
-title: Plugin BlueBubbles
+summary: เพิ่มอินเทอร์เฟซช่องทาง BlueBubbles สำหรับการส่งและรับข้อความ OpenClaw.
+title: BlueBubbles Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:49:39Z"
+    generated_at: "2026-05-03T10:15:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ x-i18n:
 ## การเผยแพร่
 
 - แพ็กเกจ: `@openclaw/bluebubbles`
-- เส้นทางการติดตั้ง: ClawHub + npm
+- ช่องทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 

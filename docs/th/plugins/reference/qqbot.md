@@ -1,13 +1,13 @@
 ---
 read_when:
     - คุณกำลังติดตั้ง กำหนดค่า หรือตรวจสอบ Plugin qqbot
-summary: เพิ่มอินเทอร์เฟซช่องทาง QQ Bot สำหรับส่งและรับข้อความ OpenClaw
-title: Plugin QQ Bot
+summary: เพิ่มพื้นผิวช่องทาง QQ Bot สำหรับการส่งและรับข้อความ OpenClaw.
+title: Plugin บอต QQ
 x-i18n:
-    generated_at: "2026-05-02T20:55:49Z"
+    generated_at: "2026-05-03T10:17:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bdf8ca36d93a5ad8e1a73ad56f8a4e65a8d3d90591ca307b6cd849ad65fded5
+    source_hash: 988c342ef1cabeda5e3ede7ea598e3a96945bf814f9f823f17e1c357bfe3bf9c
     source_path: plugins/reference/qqbot.md
     workflow: 16
 ---
@@ -16,14 +16,14 @@ x-i18n:
 
 เพิ่มพื้นผิวช่องทาง QQ Bot สำหรับส่งและรับข้อความ OpenClaw
 
-## การเผยแพร่
+## การจัดจำหน่าย
 
 - แพ็กเกจ: `@openclaw/qqbot`
-- เส้นทางการติดตั้ง: ClawHub + npm
+- เส้นทางการติดตั้ง: npm; ClawHub
 
 ## พื้นผิว
 
-channels: qqbot; contracts: tools; skills
+ช่องทาง: qqbot; สัญญา: เครื่องมือ; Skills
 
 ## เอกสารที่เกี่ยวข้อง
 
